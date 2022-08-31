@@ -2,30 +2,30 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A395ECAAD1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A9DECAAD4
 	for <linux-iio@archiver.kernel.org>; Wed, 31 Aug 2022 10:05:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231124AbiHaKF1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:05:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59436 "EHLO
+        id S230472AbiHaKF3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230459AbiHaKFV (ORCPT
+        with ESMTP id S230304AbiHaKFV (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2022 06:05:21 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA19543F3;
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD29D7D79E;
         Wed, 31 Aug 2022 03:05:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1661940317;
-  x=1693476317;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1661940318;
+  x=1693476318;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=IV6/GgZtvZM/HS0HfOk29zo087rTH6OyitDmydT3TPc=;
-  b=MI+LNoqsJCy2Kkkg27zpOmFqFqpaVwsfQjFC+B1/1OOmkIAHk0ehzs9R
-   sma56gJoNT8wlDpd7F39bcEW+hAAEbvU0iKa8m9sZyJ5VlHTn4mifKM37
-   YoEkev4a0+4hBayPcbensKILZL8ZvVynN08nC3p1KfeROp5zf6ZiHe72Z
-   8mYvN0NVuINcTzj3W9HM4Rp60UJ3fUoPUpQhRNmK/T7xe0vmp7DuiEyLG
-   FalSgheXJvmRmuwrza4O+SLnemTEcQfWjgEXFHIkw9M3xB+PlMOqf/3zg
-   vMUmA70AXWGRs5U6ICBk1ZMIzhIruy2FdxfRsTomc6KpRBGA+9LwpeDav
+  bh=i+k41+n3odUDXGPNoejWF6hYf5Nr1U+AWwm9/HsCGUk=;
+  b=fi1zAo2Xz66IzFtu4jEbjEDMjkAoclzdeQ/n+aj8/cH6Yl5KV7kWnhcz
+   iV2VLoFtBzQeO8OdSpGPEbDo8kVYuoqBYyJ+mOmc2CuP9gzn+P8En99qq
+   IBVsuSM32bd0dwD5Wy8Q6kKZDBYh/LOFwjf4muWICKKOlHluUCIqxAbT0
+   a4eI5OykGWvy1iOupdO52O9zpZ17dbs+M6/yVVQr8WQLBNvliCk95ZZd0
+   aOEIBlYziL6emC5naq5THu5/BcAVK6k2ii3pQWAUHkeTsNfc9xeWv32/G
+   02i+dboVH6rTfcb3cVRKUQiFOduiQQD1UTjj82/TIJGOPYPcy5GU/KjdT
    A==;
 From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
 To:     <jic23@kernel.org>
@@ -33,9 +33,9 @@ CC:     <kernel@axis.com>,
         Vincent Whitchurch <vincent.whitchurch@axis.com>,
         <andy.shevchenko@gmail.com>, <lars@metafoo.de>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 4/5] iio: adc: mcp320x: use device managed functions
-Date:   Wed, 31 Aug 2022 12:05:05 +0200
-Message-ID: <20220831100506.3368103-5-vincent.whitchurch@axis.com>
+Subject: [PATCH v2 1/5] iio: adc: mcp320x: use callbacks for RX conversion
+Date:   Wed, 31 Aug 2022 12:05:02 +0200
+Message-ID: <20220831100506.3368103-2-vincent.whitchurch@axis.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220831100506.3368103-1-vincent.whitchurch@axis.com>
 References: <20220831100506.3368103-1-vincent.whitchurch@axis.com>
@@ -46,71 +46,239 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use devm_* functions in probe to remove some code and to make it easier
-to add further calls to the probe function.
+Replace the device_index switch with callbacks from the chip_info
+structure, so that the latter has all the information needed to handle
+the variants.
 
 Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
 ---
- drivers/iio/adc/mcp320x.c | 30 ++++++++++--------------------
- 1 file changed, 10 insertions(+), 20 deletions(-)
+ drivers/iio/adc/mcp320x.c | 115 ++++++++++++++++++++++----------------
+ 1 file changed, 67 insertions(+), 48 deletions(-)
 
 diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-index 8ed27df9a0bb..b1c1bf4b8047 100644
+index b4c69acb33e3..c71d90babb39 100644
 --- a/drivers/iio/adc/mcp320x.c
 +++ b/drivers/iio/adc/mcp320x.c
-@@ -390,6 +390,11 @@ static const struct mcp320x_chip_info mcp320x_chip_infos[] = {
- 	},
+@@ -61,11 +61,14 @@ enum {
+ 	mcp3553,
  };
  
-+static void mcp320x_reg_disable(void *reg)
++struct mcp320x;
++
+ struct mcp320x_chip_info {
+ 	const struct iio_chan_spec *channels;
+ 	unsigned int num_channels;
+ 	unsigned int resolution;
+ 	unsigned int conv_time; /* usec */
++	int (*convert_rx)(struct mcp320x *adc);
+ };
+ 
+ /**
+@@ -96,6 +99,54 @@ struct mcp320x {
+ 	u8 rx_buf[4];
+ };
+ 
++static int mcp3001_convert_rx(struct mcp320x *adc)
 +{
-+	regulator_disable(reg);
++	return adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3;
 +}
 +
- static int mcp320x_probe(struct spi_device *spi)
++static int mcp3002_convert_rx(struct mcp320x *adc)
++{
++	return adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6;
++}
++
++static int mcp3201_convert_rx(struct mcp320x *adc)
++{
++	return adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1;
++}
++
++static int mcp3202_convert_rx(struct mcp320x *adc)
++{
++	return adc->rx_buf[0] << 4 | adc->rx_buf[1] >> 4;
++}
++
++static int mcp3301_convert_rx(struct mcp320x *adc)
++{
++	return sign_extend32((adc->rx_buf[0] & 0x1f) << 8 | adc->rx_buf[1], 12);
++}
++
++static int mcp3550_convert_rx(struct mcp320x *adc)
++{
++	u32 raw = be32_to_cpup((__be32 *)adc->rx_buf);
++
++	if (!(adc->spi->mode & SPI_CPOL))
++		raw <<= 1; /* strip Data Ready bit in SPI mode 0,0 */
++
++	/*
++	 * If the input is within -vref and vref, bit 21 is the sign.
++	 * Up to 12% overrange or underrange are allowed, in which case
++	 * bit 23 is the sign and bit 0 to 21 is the value.
++	 */
++	raw >>= 8;
++	if (raw & BIT(22) && raw & BIT(23))
++		return -EIO; /* cannot have overrange AND underrange */
++	else if (raw & BIT(22))
++		raw &= ~BIT(22); /* overrange */
++	else if (raw & BIT(23) || raw & BIT(21))
++		raw |= GENMASK(31, 22); /* underrange or negative */
++
++	return (s32)raw;
++}
++
+ static int mcp320x_channel_to_tx_data(int device_index,
+ 			const unsigned int channel, bool differential)
  {
- 	struct iio_dev *indio_dev;
-@@ -460,27 +465,13 @@ static int mcp320x_probe(struct spi_device *spi)
+@@ -120,6 +171,7 @@ static int mcp320x_channel_to_tx_data(int device_index,
+ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+ 				  bool differential, int device_index, int *val)
+ {
++	const struct mcp320x_chip_info *info = adc->chip_info;
+ 	int ret;
+ 
+ 	if (adc->chip_info->conv_time) {
+@@ -140,55 +192,9 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
  	if (ret < 0)
  		return ret;
  
--	mutex_init(&adc->lock);
+-	switch (device_index) {
+-	case mcp3001:
+-		*val = (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
+-		return 0;
+-	case mcp3002:
+-	case mcp3004:
+-	case mcp3008:
+-		*val = (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
+-		return 0;
+-	case mcp3201:
+-		*val = (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
+-		return 0;
+-	case mcp3202:
+-	case mcp3204:
+-	case mcp3208:
+-		*val = (adc->rx_buf[0] << 4 | adc->rx_buf[1] >> 4);
+-		return 0;
+-	case mcp3301:
+-		*val = sign_extend32((adc->rx_buf[0] & 0x1f) << 8
+-				    | adc->rx_buf[1], 12);
+-		return 0;
+-	case mcp3550_50:
+-	case mcp3550_60:
+-	case mcp3551:
+-	case mcp3553: {
+-		u32 raw = be32_to_cpup((__be32 *)adc->rx_buf);
 -
--	ret = iio_device_register(indio_dev);
--	if (ret < 0)
--		goto reg_disable;
--
--	return 0;
--
--reg_disable:
--	regulator_disable(adc->reg);
--
--	return ret;
--}
-+	ret = devm_add_action_or_reset(&spi->dev, mcp320x_reg_disable, adc->reg);
-+	if (ret)
-+		return ret;
+-		if (!(adc->spi->mode & SPI_CPOL))
+-			raw <<= 1; /* strip Data Ready bit in SPI mode 0,0 */
++	*val = info->convert_rx(adc);
  
--static void mcp320x_remove(struct spi_device *spi)
--{
--	struct iio_dev *indio_dev = spi_get_drvdata(spi);
--	struct mcp320x *adc = iio_priv(indio_dev);
-+	mutex_init(&adc->lock);
- 
--	iio_device_unregister(indio_dev);
--	regulator_disable(adc->reg);
-+	return devm_iio_device_register(&spi->dev, indio_dev);
+-		/*
+-		 * If the input is within -vref and vref, bit 21 is the sign.
+-		 * Up to 12% overrange or underrange are allowed, in which case
+-		 * bit 23 is the sign and bit 0 to 21 is the value.
+-		 */
+-		raw >>= 8;
+-		if (raw & BIT(22) && raw & BIT(23))
+-			return -EIO; /* cannot have overrange AND underrange */
+-		else if (raw & BIT(22))
+-			raw &= ~BIT(22); /* overrange */
+-		else if (raw & BIT(23) || raw & BIT(21))
+-			raw |= GENMASK(31, 22); /* underrange or negative */
+-
+-		*val = (s32)raw;
+-		return 0;
+-		}
+-	default:
+-		return -EINVAL;
+-	}
++	return 0;
  }
  
- static const struct of_device_id mcp320x_dt_ids[] = {
-@@ -535,7 +526,6 @@ static struct spi_driver mcp320x_driver = {
- 		.of_match_table = mcp320x_dt_ids,
+ static int mcp320x_read_raw(struct iio_dev *indio_dev,
+@@ -302,51 +308,61 @@ static const struct mcp320x_chip_info mcp320x_chip_infos[] = {
+ 	[mcp3001] = {
+ 		.channels = mcp3201_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3201_channels),
++		.convert_rx = mcp3001_convert_rx,
+ 		.resolution = 10
  	},
- 	.probe = mcp320x_probe,
--	.remove = mcp320x_remove,
- 	.id_table = mcp320x_id,
- };
- module_spi_driver(mcp320x_driver);
+ 	[mcp3002] = {
+ 		.channels = mcp3202_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3202_channels),
++		.convert_rx = mcp3002_convert_rx,
+ 		.resolution = 10
+ 	},
+ 	[mcp3004] = {
+ 		.channels = mcp3204_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3204_channels),
++		.convert_rx = mcp3002_convert_rx,
+ 		.resolution = 10
+ 	},
+ 	[mcp3008] = {
+ 		.channels = mcp3208_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3208_channels),
++		.convert_rx = mcp3002_convert_rx,
+ 		.resolution = 10
+ 	},
+ 	[mcp3201] = {
+ 		.channels = mcp3201_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3201_channels),
++		.convert_rx = mcp3201_convert_rx,
+ 		.resolution = 12
+ 	},
+ 	[mcp3202] = {
+ 		.channels = mcp3202_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3202_channels),
++		.convert_rx = mcp3202_convert_rx,
+ 		.resolution = 12
+ 	},
+ 	[mcp3204] = {
+ 		.channels = mcp3204_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3204_channels),
++		.convert_rx = mcp3202_convert_rx,
+ 		.resolution = 12
+ 	},
+ 	[mcp3208] = {
+ 		.channels = mcp3208_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3208_channels),
++		.convert_rx = mcp3202_convert_rx,
+ 		.resolution = 12
+ 	},
+ 	[mcp3301] = {
+ 		.channels = mcp3201_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3201_channels),
++		.convert_rx = mcp3301_convert_rx,
+ 		.resolution = 13
+ 	},
+ 	[mcp3550_50] = {
+ 		.channels = mcp3201_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3201_channels),
++		.convert_rx = mcp3550_convert_rx,
+ 		.resolution = 21,
+ 		/* 2% max deviation + 144 clock periods to exit shutdown */
+ 		.conv_time = 80000 * 1.02 + 144000 / 102.4,
+@@ -354,18 +370,21 @@ static const struct mcp320x_chip_info mcp320x_chip_infos[] = {
+ 	[mcp3550_60] = {
+ 		.channels = mcp3201_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3201_channels),
++		.convert_rx = mcp3550_convert_rx,
+ 		.resolution = 21,
+ 		.conv_time = 66670 * 1.02 + 144000 / 122.88,
+ 	},
+ 	[mcp3551] = {
+ 		.channels = mcp3201_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3201_channels),
++		.convert_rx = mcp3550_convert_rx,
+ 		.resolution = 21,
+ 		.conv_time = 73100 * 1.02 + 144000 / 112.64,
+ 	},
+ 	[mcp3553] = {
+ 		.channels = mcp3201_channels,
+ 		.num_channels = ARRAY_SIZE(mcp3201_channels),
++		.convert_rx = mcp3550_convert_rx,
+ 		.resolution = 21,
+ 		.conv_time = 16670 * 1.02 + 144000 / 122.88,
+ 	},
 -- 
 2.34.1
 
