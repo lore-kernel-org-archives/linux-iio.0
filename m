@@ -2,175 +2,116 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A18C0502C
-	for <linux-iio@archiver.kernel.org>; Wed, 31 Aug 2022 13:30:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C3DECAAD1
+	for <linux-iio@archiver.kernel.org>; Wed, 31 Aug 2022 13:37:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230464AbiHaNaz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
+        id S229897AbiHaNhY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 31 Aug 2022 09:37:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiHaNax (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2022 09:30:53 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47D4C04CC;
-        Wed, 31 Aug 2022 06:30:51 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27VCNCuG026265;
-        Wed, 31 Aug 2022 09:30:44 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j7d48kxj0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 31 Aug 2022 09:30:44 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 27VDUgUa021322
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 31 Aug 2022 09:30:42 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 31 Aug
- 2022 09:30:41 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 31 Aug 2022 09:30:41 -0400
-Received: from rbolboac.ad.analog.com ([10.48.65.113])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27VDUTRF019685;
-        Wed, 31 Aug 2022 09:30:32 -0400
-From:   Ramona Bolboaca <ramona.bolboaca@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Ramona Bolboaca <ramona.bolboaca@analog.com>
-Subject: [PATCH v2 1/2] bindings: iio: adc: Add max11205 documentation file
-Date:   Wed, 31 Aug 2022 16:30:20 +0300
-Message-ID: <20220831133021.215625-1-ramona.bolboaca@analog.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229828AbiHaNhI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2022 09:37:08 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1349311806
+        for <linux-iio@vger.kernel.org>; Wed, 31 Aug 2022 06:36:28 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id z23so11790398ljk.1
+        for <linux-iio@vger.kernel.org>; Wed, 31 Aug 2022 06:36:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=gGkipS5OiOaDWG7u9ok23WWflnT/lUaJfPplZYAiYqM=;
+        b=rIgJ2niaj8guR1fs5O83kUj8QJ68k73tiR084IlVWinBwSlGua2nTLyO4+Xo+dYK6m
+         /jPSzqDBNjlGYDNcfrUOHFrBvSNqvDF0vW7CRruodQGCMwIbvYJ/6UyfdH7s1fgm3zqT
+         tgwN+CihxVRQ29p68jzJ6SMaBNxdb7BDSiovN4dKCVB+xjNtw1RgnEBb/x9oMRl8rDST
+         qhUlzz4/7Eyxyq7v6eFFnRwUbSacgm9fR8dfCjasXShYjMJW3km/IeCzluVzyAW/TP5L
+         5ygR+yIHst2ni9ru96avWjiaXQivkapvxZGrj6nwZFlXwU3X7nS7nrydxk+VJZkb4cU/
+         Tahw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=gGkipS5OiOaDWG7u9ok23WWflnT/lUaJfPplZYAiYqM=;
+        b=dhAEgdpclqdJECzpxCg7pY7PeMC6NwMoKNLxRO78ZbJ2huWMb3mcX61bnCDygw0G9Y
+         aNy64B3vEcDbHS2Vz2XDm20GRntUTVtk77uGZ4aQNELegVh9WHDdwp/QI2AD782qxPTP
+         uuG8eS1kolmnUXYxT+AQRwQymo/ztjVzZbgDHvgPe0v13pZVBKWfLWP2H04SiU3b29eJ
+         tvVxly4mcUG5KdkJliHPgO5DiYft89I5O01EkaPm3csqyR3EPrOO1C+7HqnPhqKFyQK3
+         sge0AVAcSpRVDs5MtKq3KfPbPME4fAM36p4c8TNCM01Ux9KK4QNXLmOnwBYpyevOA19W
+         yR8g==
+X-Gm-Message-State: ACgBeo1oYL1M5HKMnGu1H5wEKkZhVTKEbAoeUOTmk2wPAKSUdVdNi0hF
+        Bxs1wTMKijHQlescfwOD9nqxwA==
+X-Google-Smtp-Source: AA6agR4+4PSsSJU+cVCSvFtVroZCC/ZJUU3CHURUCcI2YOJxgUGe02lowT1jdYfMi/vnOpgoN1K0Hw==
+X-Received: by 2002:a2e:b74a:0:b0:25f:3f72:9210 with SMTP id k10-20020a2eb74a000000b0025f3f729210mr8647710ljo.8.1661952987193;
+        Wed, 31 Aug 2022 06:36:27 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id y20-20020a05651c107400b00261cd70e41asm1401636ljm.32.2022.08.31.06.36.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 06:36:26 -0700 (PDT)
+Message-ID: <d33607e2-42de-ac4e-7ed0-4c25504ac092@linaro.org>
+Date:   Wed, 31 Aug 2022 16:36:25 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: wI204ToU81DzyZbPbV5CL3VT19ZzNk-v
-X-Proofpoint-ORIG-GUID: wI204ToU81DzyZbPbV5CL3VT19ZzNk-v
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-31_08,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- impostorscore=0 priorityscore=1501 bulkscore=0 clxscore=1015
- malwarescore=0 lowpriorityscore=0 mlxlogscore=999 mlxscore=0 adultscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208310068
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v2 1/2] bindings: iio: adc: Add max11205 documentation
+ file
+Content-Language: en-US
+To:     Ramona Bolboaca <ramona.bolboaca@analog.com>, jic23@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220831133021.215625-1-ramona.bolboaca@analog.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220831133021.215625-1-ramona.bolboaca@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add bindings documentation file and MAINTAINERS entry for MAX11205.
+On 31/08/2022 16:30, Ramona Bolboaca wrote:
+> Add bindings documentation file and MAINTAINERS entry for MAX11205.
+> 
+> Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
 
-Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
----
-changes in v2:
- - reference /schemas/spi/spi-peripheral-props.yaml in allOf 
- - use unevaluatedProperties:false and remove additionalProperties:false
- - use generic node name and fix indentation in device-tree example
- - wrap lines nearer to 75-80 chars in documentation
- - add extra information to the description of the regulator
- .../bindings/iio/adc/maxim,max11205.yaml      | 69 +++++++++++++++++++
- MAINTAINERS                                   |  8 +++
- 2 files changed, 77 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
-new file mode 100644
-index 000000000000..7902f82da927
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
-@@ -0,0 +1,69 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/maxim,max11205.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Maxim MAX11205 ADC
-+
-+maintainers:
-+  - Ramona Bolboaca <ramona.bolboaca@analog.com>
-+
-+description: |
-+  The MAX11205 is an ultra-low-power (< 300FA max active current),
-+  high-resolution, serial-output ADC.
-+
-+  https://datasheets.maximintegrated.com/en/ds/MAX11205.pdf
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - maxim,max11205a
-+      - maxim,max11205b
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 5000000
-+
-+  spi-cpha: true
-+
-+  vref-supply:
-+    description:
-+      The regulator supply for the ADC reference voltage. This is a differential
-+      reference. It is equal to the V_REFP - V_REFN. The maximum value is 3.6V.
-+
-+required:
-+  - compatible
-+  - reg
-+  - spi-max-frequency
-+  - spi-cpha
-+  - interrupts
-+  - vref-supply
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        adc@0 {
-+            compatible = "maxim,max11205a";
-+            reg = <0>;
-+            spi-max-frequency = <5000000>;
-+            spi-cpha;
-+            interrupt-parent = <&gpio>;
-+            interrupts = <19 IRQ_TYPE_EDGE_FALLING>;
-+            vref-supply = <&max11205_vref>;
-+        };
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 96f47a7865d6..db1b5dc03988 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12341,6 +12341,14 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.yaml
- F:	drivers/iio/proximity/mb1232.c
- 
-+MAXIM MAX11205 DRIVER
-+M:	Ramona Bolboaca <ramona.bolboaca@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
-+F:	drivers/iio/adc/max11205.c
-+
- MAXIM MAX17040 FAMILY FUEL GAUGE DRIVERS
- R:	Iskren Chernev <iskren.chernev@gmail.com>
- R:	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
--- 
-2.25.1
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - maxim,max11205a
+> +      - maxim,max11205b
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 5000000
+> +
+> +  spi-cpha: true
+> +
+> +  vref-supply:
+> +    description:
+> +      The regulator supply for the ADC reference voltage. This is a differential
+> +      reference. It is equal to the V_REFP - V_REFN. The maximum value is 3.6V.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - spi-max-frequency
+> +  - spi-cpha
+> +  - interrupts
+> +  - vref-supply
 
+If you are going to send a new version, please put the properties here
+in the same order as they appear in top-level "properties:".
+
+In any case:
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
