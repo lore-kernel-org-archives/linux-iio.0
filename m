@@ -2,132 +2,122 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78564ECAAD1
-	for <linux-iio@archiver.kernel.org>; Wed, 31 Aug 2022 13:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0603C3DA6B
+	for <linux-iio@archiver.kernel.org>; Wed, 31 Aug 2022 14:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231534AbiHaNuy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
+        id S232115AbiHaOQW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:16:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231331AbiHaNux (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2022 09:50:53 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44799F18A;
-        Wed, 31 Aug 2022 06:50:51 -0700 (PDT)
-Received: from [IPV6:2405:201:10:389d:42df:ae4c:c047:294c] (unknown [IPv6:2405:201:10:389d:42df:ae4c:c047:294c])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: shreeya)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 2A19266015AB;
-        Wed, 31 Aug 2022 14:50:47 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661953850;
-        bh=qrAOSFiudT5hLLoyAKQTuL5l0pWRMOhoiKTCH02kSHA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=kXdIIWLqOs5QXlLV3w07O4cJu8gd8C0rqDl8/pEQKKypLt7mGZcancOeRqhM0rhEk
-         J0nJw2iSCQ02phR2J7zdxvYih4ZhzgCiAP8MOat9djBjfSuRHwews2nujiKuAj+OI0
-         F3Yk9IohyZb+eD83xQaPXpIwuPvu9XktfzQ9NnTg1bmRtM04W46XwYuBD+k+YfPQLD
-         B/S37rhAFp3gORYibum6Lz+bOuUw0Z0J7bqjtMFsBPgx0IPGBMAlWp6qy9wWt+v3ZO
-         yqMR+GR2wsRz51a/wWnzhwQEN1y6bxd5WfVQtp/MK3qJsmB0Ar3Z7ZlnITmBimfoL9
-         DTTlysGxVe+jA==
-Message-ID: <2bbbd71a-904f-2bdf-8dda-f699e38265f8@collabora.com>
-Date:   Wed, 31 Aug 2022 19:20:38 +0530
+        with ESMTP id S232140AbiHaOP7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2022 10:15:59 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E5D54C93;
+        Wed, 31 Aug 2022 07:15:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661955321; x=1693491321;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=L9mlAn2BFWn3JIKG5JcPjAbTHy4uCrPCXYYV2cWUXdk=;
+  b=l/B0P/Gy3eM3cTo/03Vt5WiaclCZK3igVmL/838vIY4qx5eckazw4Eo9
+   GlfS/f3EdNGyNHV5PKEo3X4fHCYvfXa4ffWEZwHIglUc7KNPLpVDksLTP
+   p1HZDW561mU3bPWnn00crHtwvvvBf6HzCu6NnQA0utpR0Qj4u86Oxhba8
+   Lyfz3cgLTm8wHBGZslce+PGzp7FCYneRdQatiEhC81jXuyN6bZrYUgHo/
+   GmAl5ERIAn6BxYnWglX/WLTLpqLUfXU+bxox1MMU5V9aYtYOYTvMK+L7w
+   pqOIsAK3JUEpjB6JnNT6w1AD4LIPptT/DtI4ZC87yf3D9BZPGgXvOJL8d
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="321594753"
+X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
+   d="scan'208";a="321594753"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 07:15:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
+   d="scan'208";a="787873718"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 31 Aug 2022 07:15:17 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id BFF7C1C3; Wed, 31 Aug 2022 17:15:32 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jakob Hauser <jahau@rocketmail.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 3/3] iio: magnetometer: yamaha-yas530: Use dev_err_probe()
+Date:   Wed, 31 Aug 2022 17:15:30 +0300
+Message-Id: <20220831141530.80572-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220831141530.80572-1-andriy.shevchenko@linux.intel.com>
+References: <20220831141530.80572-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2] iio: light: tsl2583: Fix module unloading
-Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     lars@metafoo.de, krisman@collabora.com,
-        dmitry.osipenko@collabora.com, kernel@collabora.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-References: <20220826122352.288438-1-shreeya.patel@collabora.com>
- <20220828173327.7949ad73@jic23-huawei>
-From:   Shreeya Patel <shreeya.patel@collabora.com>
-In-Reply-To: <20220828173327.7949ad73@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Unify error message format by using dev_err_probe().
 
-On 28/08/22 22:03, Jonathan Cameron wrote:
-> On Fri, 26 Aug 2022 17:53:52 +0530
-> Shreeya Patel <shreeya.patel@collabora.com> wrote:
->
->> tsl2583 uses devm_iio_device_register() function and
->> calling iio_device_unregister() in remove breaks the
->> module unloading.
->> Fix this by using iio_device_register() instead of
->> devm_iio_device_register() function in probe.
-> Not sure why you are wrapping at 55 chars. I rewrapped this whilst applying.
->
-> Reworded it a little too as I was touching it anyway.
->
-> Applied to the fixes-togreg branch of iio.git.
->
->> Cc: stable@vger.kernel.org
->> Fixes: 371894f5d1a0 ("iio: tsl2583: add runtime power management support")
-> I took a look at this patch and it introduces the issue I just pointed
-> out in replying to your v1 by dropping the
-> /* Make sure the chip is on */
-> Which was correct even with runtime pm because it covered the case of
-> runtime_pm being disabled.   We probably need to bring that back as well,
-> perhaps as part of a cleanup patch taking this fully devm_
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: no changes
+ drivers/iio/magnetometer/yamaha-yas530.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-Hi Jonathan,
+diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
+index a6e34d5f3e85..801c760feb4d 100644
+--- a/drivers/iio/magnetometer/yamaha-yas530.c
++++ b/drivers/iio/magnetometer/yamaha-yas530.c
+@@ -1415,10 +1415,8 @@ static int yas5xx_probe(struct i2c_client *i2c,
+ 		return dev_err_probe(dev, ret, "cannot get regulators\n");
+ 
+ 	ret = regulator_bulk_enable(ARRAY_SIZE(yas5xx->regs), yas5xx->regs);
+-	if (ret) {
+-		dev_err(dev, "cannot enable regulators\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "cannot enable regulators\n");
+ 
+ 	/* See comment in runtime resume callback */
+ 	usleep_range(31000, 40000);
+@@ -1426,15 +1424,13 @@ static int yas5xx_probe(struct i2c_client *i2c,
+ 	/* This will take the device out of reset if need be */
+ 	yas5xx->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
+ 	if (IS_ERR(yas5xx->reset)) {
+-		ret = dev_err_probe(dev, PTR_ERR(yas5xx->reset),
+-				    "failed to get reset line\n");
++		ret = dev_err_probe(dev, PTR_ERR(yas5xx->reset), "failed to get reset line\n");
+ 		goto reg_off;
+ 	}
+ 
+ 	yas5xx->map = devm_regmap_init_i2c(i2c, &yas5xx_regmap_config);
+ 	if (IS_ERR(yas5xx->map)) {
+-		dev_err(dev, "failed to allocate register map\n");
+-		ret = PTR_ERR(yas5xx->map);
++		ret = dev_err_probe(dev, PTR_ERR(yas5xx->map), "failed to allocate register map\n");
+ 		goto assert_reset;
+ 	}
+ 
+@@ -1484,13 +1480,13 @@ static int yas5xx_probe(struct i2c_client *i2c,
+ 					 yas5xx_handle_trigger,
+ 					 NULL);
+ 	if (ret) {
+-		dev_err(dev, "triggered buffer setup failed\n");
++		dev_err_probe(dev, ret, "triggered buffer setup failed\n");
+ 		goto assert_reset;
+ 	}
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret) {
+-		dev_err(dev, "device register failed\n");
++		dev_err_probe(dev, ret, "device register failed\n");
+ 		goto cleanup_buffer;
+ 	}
+ 
+-- 
+2.35.1
 
-I can work on fixing some of the issues with this driver in my free time.
-Thanks for taking a look at the patch and letting me know.
-
-FYI, I am also planning to work on ADT7316 driver to move out of staging.
-I have the adt7516 eval board with me which I'll be using for testing.
-
-
-Thanks,
-Shreeya Patel
-
-> This driver has another issue for working if runtime PM isn't built into
-> the kernel which is that it checks the return of pm_runtime_put_autosuspend()
-> which calls
->
-> static inline int __pm_runtime_suspend(struct device *dev, int rpmflags)
-> {
-> 	return -ENOSYS;
-> }
->
-> I've been meaning to do an audit for drivers that have this problem for
-> a while, but not yet gotten to it.
->
-> An ideal IIO driver needs to work correctly whether or not CONFIG_PM is
-> enabled.
->
-> Jonathan
->
->
->> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
->> ---
->> Changes in v2
->>    - Use iio_device_register() instead of devm_iio_device_register()
->>    - Add fixes and stable tags
->>
->>   drivers/iio/light/tsl2583.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
->> index 82662dab87c0..94d75ec687c3 100644
->> --- a/drivers/iio/light/tsl2583.c
->> +++ b/drivers/iio/light/tsl2583.c
->> @@ -858,7 +858,7 @@ static int tsl2583_probe(struct i2c_client *clientp,
->>   					 TSL2583_POWER_OFF_DELAY_MS);
->>   	pm_runtime_use_autosuspend(&clientp->dev);
->>   
->> -	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
->> +	ret = iio_device_register(indio_dev);
->>   	if (ret) {
->>   		dev_err(&clientp->dev, "%s: iio registration failed\n",
->>   			__func__);
->
