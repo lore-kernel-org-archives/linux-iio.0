@@ -2,103 +2,151 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07641C0502C
-	for <linux-iio@archiver.kernel.org>; Wed, 31 Aug 2022 09:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A1FCECAAD1
+	for <linux-iio@archiver.kernel.org>; Wed, 31 Aug 2022 10:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230322AbiHaJ4X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 31 Aug 2022 05:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
+        id S229555AbiHaKFR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230304AbiHaJ4V (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2022 05:56:21 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77896C579E
-        for <linux-iio@vger.kernel.org>; Wed, 31 Aug 2022 02:56:20 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oTKSB-0000vx-Ri; Wed, 31 Aug 2022 11:56:11 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oTKSA-0032Z6-UO; Wed, 31 Aug 2022 11:56:10 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oTKSA-00HRUl-CE; Wed, 31 Aug 2022 11:56:10 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v2 3/3] iio: adc: tsc2046: silent spi_device_id warning
-Date:   Wed, 31 Aug 2022 11:56:01 +0200
-Message-Id: <20220831095601.4157195-3-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220831095601.4157195-1-o.rempel@pengutronix.de>
-References: <20220831095601.4157195-1-o.rempel@pengutronix.de>
+        with ESMTP id S229916AbiHaKFP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2022 06:05:15 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D957818B1C;
+        Wed, 31 Aug 2022 03:05:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1661940313;
+  x=1693476313;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=OBlIcerlLMxcXOCk6lLphH5SI/cE6LX4zmms8VOffM4=;
+  b=Uf64svgJVZ6xeMde5BtURIEd2goDWo0l3Nn7MYTgidr+I64in9LfxHmI
+   FJp0UeRa1ePymE20mKiWeib45b1ZvE2exwDOvBFH0m9u2rzFP1q8avG6r
+   ytWxiaMUXdSIHUOMa66rx15UEhKQV/z6ag81lNA7nnXwVHt7js2bRKObo
+   E5vnmuQ2wMD+0Zc/j70AjaX7RFPkhiOZGHolSMScCVw1AHbOSJcNlBZZj
+   oPG+CHjsAATSg4l5/E/DHGg2IaDFJt1SfYujpGdAAXKqLc86CbMx9xlw0
+   Wl0G3g8xZmGt7sILJ2dS31uwDYFq2X5C5i9fBdYqpXwn2YGtpiAHTLdto
+   w==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     <jic23@kernel.org>
+CC:     <kernel@axis.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        <andy.shevchenko@gmail.com>, <lars@metafoo.de>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 2/5] iio: adc: mcp320x: remove device_index check for TX
+Date:   Wed, 31 Aug 2022 12:05:03 +0200
+Message-ID: <20220831100506.3368103-3-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220831100506.3368103-1-vincent.whitchurch@axis.com>
+References: <20220831100506.3368103-1-vincent.whitchurch@axis.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add spi_device_id to silent following kernel runtime warning:
-"SPI driver tsc2046 has no spi_device_id for ti,tsc2046e-adc"
+Replace the device_index switch with a TX value computation based on the
+number of channels in the chip_info structure, so that the latter has
+all the information needed to handle the variants.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
 ---
-changes v2:
-- attach actual driver_data
-- use spi_get_device_id fallback
----
- drivers/iio/adc/ti-tsc2046.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/iio/adc/mcp320x.c | 46 +++++++++++++++++++--------------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
-index bbc8b4137b0b1..ef78826241ee8 100644
---- a/drivers/iio/adc/ti-tsc2046.c
-+++ b/drivers/iio/adc/ti-tsc2046.c
-@@ -762,6 +762,13 @@ static int tsc2046_adc_probe(struct spi_device *spi)
+diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+index c71d90babb39..77fb4522a378 100644
+--- a/drivers/iio/adc/mcp320x.c
++++ b/drivers/iio/adc/mcp320x.c
+@@ -147,29 +147,34 @@ static int mcp3550_convert_rx(struct mcp320x *adc)
+ 	return (s32)raw;
+ }
+ 
+-static int mcp320x_channel_to_tx_data(int device_index,
+-			const unsigned int channel, bool differential)
++static int mcp320x_channel_to_tx_data(const struct mcp320x_chip_info *info,
++				      const struct iio_chan_spec *channel)
+ {
+ 	int start_bit = 1;
++	bool differential = channel->differential;
++	u8 address = channel->address;
++	/*
++	 * This happens to be the same as the last number of the model name for
++	 * multi-channel MCP300X and MCP320X.
++	 */
++	unsigned int num_nondiff_channels = info->num_channels / 2;
+ 
+-	switch (device_index) {
+-	case mcp3002:
+-	case mcp3202:
++	switch (num_nondiff_channels) {
++	case 2:
+ 		return ((start_bit << 4) | (!differential << 3) |
+-							(channel << 2));
+-	case mcp3004:
+-	case mcp3204:
+-	case mcp3008:
+-	case mcp3208:
++			(address << 2));
++	case 4:
++	case 8:
+ 		return ((start_bit << 6) | (!differential << 5) |
+-							(channel << 2));
++			(address << 2));
+ 	default:
+-		return -EINVAL;
++		return 0;
+ 	}
+ }
+ 
+-static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+-				  bool differential, int device_index, int *val)
++static int mcp320x_adc_conversion(struct mcp320x *adc,
++				  const struct iio_chan_spec *channel,
++				  int *val)
+ {
+ 	const struct mcp320x_chip_info *info = adc->chip_info;
+ 	int ret;
+@@ -185,8 +190,7 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+ 
+ 	memset(&adc->rx_buf, 0, sizeof(adc->rx_buf));
+ 	if (adc->chip_info->num_channels > 1)
+-		adc->tx_buf = mcp320x_channel_to_tx_data(device_index, channel,
+-							 differential);
++		adc->tx_buf = mcp320x_channel_to_tx_data(info, channel);
+ 
+ 	ret = spi_sync(adc->spi, &adc->msg);
+ 	if (ret < 0)
+@@ -203,16 +207,12 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
+ {
+ 	struct mcp320x *adc = iio_priv(indio_dev);
+ 	int ret = -EINVAL;
+-	int device_index = 0;
+ 
+ 	mutex_lock(&adc->lock);
+ 
+-	device_index = spi_get_device_id(adc->spi)->driver_data;
+-
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		ret = mcp320x_adc_conversion(adc, channel->address,
+-			channel->differential, device_index, val);
++		ret = mcp320x_adc_conversion(adc, channel, val);
+ 		if (ret < 0)
+ 			goto out;
+ 
+@@ -452,8 +452,8 @@ static int mcp320x_probe(struct spi_device *spi)
+ 		 * conversions without delay between them resets the chip
+ 		 * and ensures all subsequent conversions succeed.
+ 		 */
+-		mcp320x_adc_conversion(adc, 0, 1, device_index, &ret);
+-		mcp320x_adc_conversion(adc, 0, 1, device_index, &ret);
++		mcp320x_adc_conversion(adc, &chip_info->channels[0], &ret);
++		mcp320x_adc_conversion(adc, &chip_info->channels[0], &ret);
  	}
  
- 	dcfg = device_get_match_data(dev);
-+	if (!dcfg) {
-+		const struct spi_device_id *id;
-+
-+		id = spi_get_device_id(spi);
-+		dcfg = (const struct tsc2046_adc_dcfg *)id->driver_data;
-+	}
-+
- 	if (!dcfg)
- 		return -EINVAL;
- 
-@@ -878,11 +885,18 @@ static const struct of_device_id ads7950_of_table[] = {
- };
- MODULE_DEVICE_TABLE(of, ads7950_of_table);
- 
-+static const struct spi_device_id tsc2046_adc_spi_ids[] = {
-+	{ "tsc2046e-adc", (unsigned long)&tsc2046_adc_dcfg_tsc2046e },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, tsc2046_adc_spi_ids);
-+
- static struct spi_driver tsc2046_adc_driver = {
- 	.driver = {
- 		.name = "tsc2046",
- 		.of_match_table = ads7950_of_table,
- 	},
-+	.id_table = tsc2046_adc_spi_ids,
- 	.probe = tsc2046_adc_probe,
- 	.remove = tsc2046_adc_remove,
- };
+ 	adc->reg = devm_regulator_get(&spi->dev, "vref");
 -- 
-2.30.2
+2.34.1
 
