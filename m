@@ -2,59 +2,59 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A92C38145
-	for <linux-iio@archiver.kernel.org>; Fri,  2 Sep 2022 13:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46423C6FA85
+	for <linux-iio@archiver.kernel.org>; Fri,  2 Sep 2022 13:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238156AbiIBNwP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 2 Sep 2022 09:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46796 "EHLO
+        id S234406AbiIBNyF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:54:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238149AbiIBNvl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2022 09:51:41 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC0C2138C94
-        for <linux-iio@vger.kernel.org>; Fri,  2 Sep 2022 06:26:13 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id c7so2296323wrp.11
-        for <linux-iio@vger.kernel.org>; Fri, 02 Sep 2022 06:26:12 -0700 (PDT)
+        with ESMTP id S235709AbiIBNxO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2022 09:53:14 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBAC21E2E
+        for <linux-iio@vger.kernel.org>; Fri,  2 Sep 2022 06:27:36 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id lx1so3825263ejb.12
+        for <linux-iio@vger.kernel.org>; Fri, 02 Sep 2022 06:27:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=melexis.com; s=google;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date;
-        bh=yJzALTHOqe6QfIve70YAaeVz9nTrBVF/M11ycFDNp24=;
-        b=eFgGQSodHUN4MdqbSOoaPRy6Ygqxtz0Yjc3JL0GXIySm/S2cj2nytxdq9aDHq5iq9K
-         OW2WpoFBVAc125W6YSj1u1t2AE3n6cX5jfOCzg7EtBHKR0twuoXBHdTXcwg1GugHLVhf
-         aM3c+epDVCAOBpW+o2VrTYXSQ9Ki+yWHomeBhTjHpBPYscuKXde7/WIAJkGqFV1/qavl
-         zI/OPUD5Oe10jgW4TqCEkpDKxtQCsrQWsURZooKGO1KLOGs3LVHa7h6eFTefS1YxIVYf
-         xoZ9KqLmSgj+LYZB4ygFbnbSwR0wQTQJiqBpN9R2YUBFtQq4V+tPUF1NQnPxfWVZtgUK
-         KkOA==
+        bh=zz4sNoMS97lmRdGv4iOWUprIP1Nj2KXZnhQThJIzUvQ=;
+        b=IKn3bzQ6mCrmI5JYBH7OCs8QzZtwc2yQtUC9qDaVzlIPmhTxOcbqQqF/KsWVxnVng4
+         Uy7Qi1U7UWbeFS2S+z391yCXmIsHd4YXRGyzEGnsijY+bhdd9ncRopXQZ6VQE3bP/Juv
+         SmIL9tJpapqtJkx75KhRvxUo/kRGJgTjeEfdWO/MQUnOY38BBs08tUjvsiOz4aoCLiSY
+         nFzy1WmBM9orVNECaGJLgD/MSUzwakg0bcrCceufpRgFBGcOshcRRoHxiHg69Dvj2FQt
+         KsEvpkl78lpWstRgXuQYTXi/UfYnoGeXacwTAqnDACiPHTnd2iFgSZYMI0ro3ZWx2NuA
+         WBAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=yJzALTHOqe6QfIve70YAaeVz9nTrBVF/M11ycFDNp24=;
-        b=JMN3eWVPOiTpTugbrS6nMlTDxk5dD522KEctwqLkVuOfFdk1iCfhSGX/0HaEkuOE2y
-         sIkqwV403aIF1Q4s1wplLSGdw71kGhZF1qatT7zKT2gujaIPn0ML6JgIiHR4g3+qs9Bl
-         g0IWM0MzNZoo1EdbaUQDjOyd2FM6iieDjnJy+w4ZXjjsXYzXufal5XxDZ4TGUr8UWQuU
-         40mYT8Am1jv2tJ3AOulP3vo2C6ZxPB755ONlIloAzbKHLSqLuGpjFGWD1lZEqwux+6k1
-         2e69wxzBOJ2p0/jmgnaLJxzzddXG9JiUCymdxKWWPpzRpJIBGsw+b57DyAFWoECmYFL7
-         +7zw==
-X-Gm-Message-State: ACgBeo291nQxUx3DsXoxerTf/RRRT6ljspk5HbYxpdf5dBOXO+0jHtXj
-        vjJD3Cal5BUCOf/R6c1wuR0Jaw5Y4b4WSA==
-X-Google-Smtp-Source: AA6agR7rKNmnZfJhKmVwR5qy2gB0K/NDDZuacrO5wNDa9phlXV34WsFsTRZMZGPf0hlpMvmvtRt6Ug==
-X-Received: by 2002:a17:907:7b95:b0:731:113a:d7a2 with SMTP id ne21-20020a1709077b9500b00731113ad7a2mr26274699ejc.377.1662124358992;
-        Fri, 02 Sep 2022 06:12:38 -0700 (PDT)
+        bh=zz4sNoMS97lmRdGv4iOWUprIP1Nj2KXZnhQThJIzUvQ=;
+        b=Zm25oMCF0JG+U0V3KlJvf01QNoskgImWtDi4wkvsIUCzznyrn8hKQh40LHGnPUE2CD
+         FFTBIMgzlo3wCNscCFSgw5x9pr8gCKbQY4nfbFf2Z9w89lV16dQFQZE+8Z5aHArt4T+y
+         PN+5jQhX2zMHzkpHmicCkpjqSLvPjX1tfJHjUGizYQ2Z2DYL47iV7SNNIob8jvU7tjIb
+         RGbQ2iTmeqaj4oGePcDmxpI/PbtAYW2fonut39kDzRkay5J29IBqaSV4LPa9BeHj9HrH
+         tcvYewmcFg4ejkRL5Bf4c2sMXZ5KChVyhMwwCuX2/no5KDiHJV6UB517+3809RekAoEr
+         gXQQ==
+X-Gm-Message-State: ACgBeo3skeWN43t6/RPvAuG20Y93CGKgbvcbpHzZp2PcJxBTN3344cbe
+        tHWUsQ4bBedz9XvqVU9P7dKPtEPK1k2Q2w==
+X-Google-Smtp-Source: AA6agR4EGVo4h+PgI/jqb8iUfMuqcHI09FJLTpCi3OTYu7NkT4PBtllx5VKDjfKxbtFIx49XP8bTTg==
+X-Received: by 2002:a17:907:a40f:b0:730:c4ce:631c with SMTP id sg15-20020a170907a40f00b00730c4ce631cmr26229483ejc.362.1662124425294;
+        Fri, 02 Sep 2022 06:13:45 -0700 (PDT)
 Received: from cmo-ThinkPad-T495.telenet.be ([194.150.35.21])
-        by smtp.gmail.com with ESMTPSA id gz28-20020a170907a05c00b0072b92daef1csm1243371ejc.146.2022.09.02.06.12.37
+        by smtp.gmail.com with ESMTPSA id u9-20020a1709061da900b007477ee86946sm1239119ejh.87.2022.09.02.06.13.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 06:12:37 -0700 (PDT)
+        Fri, 02 Sep 2022 06:13:44 -0700 (PDT)
 From:   cmo@melexis.com
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Crt Mori <cmo@melexis.com>
-Subject: [PATCH 0/3] iio: temperature: mlx90632: Add powermanagement
-Date:   Fri,  2 Sep 2022 15:12:10 +0200
-Message-Id: <20220902131210.3316286-1-cmo@melexis.com>
+Subject: [PATCH 3/3] iio: temperature: mlx90632 Change return value of sensor measurement channel
+Date:   Fri,  2 Sep 2022 15:13:40 +0200
+Message-Id: <20220902131340.3316479-1-cmo@melexis.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -64,26 +64,31 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Crt Mori <cmo@melexis.com>
 
-As discussed previously on the group under the
-"Controlling device power management from terminal" thread the mlx90632
-sensor provides measurement capabilities under sleep_step mode. This
-series runtime suspends the unused chip to sleep step mode to save power
-but in case of continuous sequential reading it switches to continuous
-mode for faster readouts. This value is hardcoded to
-MLX90632_MEAS_MAX_TIME (with some buffer) and not user configurable.
+The current EINVAL value is more applicable to embedded library, where
+user can actually put the fixed value to the sensor. In case of the
+driver if the value of the channel is invalid it is better in inform
+userspace that Channel was out of range as that implies more to internal
+driver error than invalid input. It also makes for easier debugging of
+where the error comes from during the development.
 
-The sensor runtime suspension is set to MLX90632_SLEEP_DELAY_MS which is
-hardcoded to 3 times as much as MEAS_MAX_TIME.
+Signed-off-by: Crt Mori <cmo@melexis.com>
+---
+ drivers/iio/temperature/mlx90632.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Crt Mori (3):
-  iio: temperature: mlx90632 Add runtime powermanagement modes
-  iio: temperature: mlx90632 Read sampling frequency
-  iio: temperature: mlx90632 Change return value of sensor measurement
-    channel
-
- drivers/iio/temperature/mlx90632.c | 355 ++++++++++++++++++++++++++---
- 1 file changed, 317 insertions(+), 38 deletions(-)
-
+diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
+index 63b19ac1484c..031aaa5493e8 100644
+--- a/drivers/iio/temperature/mlx90632.c
++++ b/drivers/iio/temperature/mlx90632.c
+@@ -439,7 +439,7 @@ static int mlx90632_channel_new_select(int perform_ret, uint8_t *channel_new,
+ 		*channel_old = 1;
+ 		break;
+ 	default:
+-		return -EINVAL;
++		return -ECHRNG;
+ 	}
+ 
+ 	return 0;
 -- 
 2.34.1
 
