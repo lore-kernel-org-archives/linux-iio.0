@@ -2,168 +2,171 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2270ECAAD5
-	for <linux-iio@archiver.kernel.org>; Fri,  2 Sep 2022 12:10:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E6CECAAD5
+	for <linux-iio@archiver.kernel.org>; Fri,  2 Sep 2022 13:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235854AbiIBMKg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 2 Sep 2022 08:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58380 "EHLO
+        id S236300AbiIBNgJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 2 Sep 2022 09:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235881AbiIBMKb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2022 08:10:31 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F972A73F
-        for <linux-iio@vger.kernel.org>; Fri,  2 Sep 2022 05:10:28 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id cb8so1308719qtb.0
-        for <linux-iio@vger.kernel.org>; Fri, 02 Sep 2022 05:10:28 -0700 (PDT)
+        with ESMTP id S236266AbiIBNf3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2022 09:35:29 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 789673718E
+        for <linux-iio@vger.kernel.org>; Fri,  2 Sep 2022 06:15:06 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id y3so3860241ejc.1
+        for <linux-iio@vger.kernel.org>; Fri, 02 Sep 2022 06:15:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=melexis.com; s=google;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date;
-        bh=qJ+5rTllUEXndIRwC16RHfyczOD9RZjJHDBMLq4xn4E=;
-        b=XaF2OHSYSjd/Fqxdc4+3zeMhvsBqz15UidzNsC5nH/007NQpqThnifZOoVqbq6t29E
-         dSyWf4f1nyv+THgFu/+cz8aC7+9AbbpiRx3hz6ombHwsAxsCuix8DP53TanwVExanCKv
-         cKnHm0NUeis4XIOC8CVuVjX3H9JRgSN+SySnTinHOMutnm1RDxRQQvFBZdqDo2TpVOAh
-         Fh8dogbj3GRfv8ax5yVDWY44RLv4qbiuEB0BHEWkjMogudEfDBT/KlOaVC86Jqnw2zCF
-         aNvAs9YZFjCxP6PLT3Mi8ZVQy8sFuwSwARI+6qGmT0J4kfRti5VlReZgWrKHZFZ9qUCC
-         adgg==
+        bh=ne1CzWe4cfOGjFgnqh9c4T9gpw+pVEy0R/dHCBbC3j4=;
+        b=V1FZtHJ8d4R2pTVPWo+Qw3P3sv4CAtBdsbCusbBP+ewYWZygqpwDp2k8T0sNyreoPc
+         7+V1LPHimGgtaQVbkeFo3jwtBBylWxnXlka5WD1VDMI2aUJS0WEJ4A4AmS5Zsk6E854m
+         tC+NEC87TEW7qiZde4EG1EEPKzpUbVeXIpMUzNffzmqOKc9jpkRaGOgxMBXucJNvTII7
+         6cQHltIHmT56UTbOXwlbwO+uxIoGQpTrYaBs5DVbRrI/DYy3aO3pNnXEm58cDv5O4jwM
+         bQbtBCu7TOlW4W4J36BeQwkozY3V6iiyoheQSG2Ry5Uu5OKqNwoq1dpR2hdAQf+OW+mB
+         vmsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=qJ+5rTllUEXndIRwC16RHfyczOD9RZjJHDBMLq4xn4E=;
-        b=2AIT+p8d45nCzSpO/+E3ECiNoUr/TXd6oxBOGM763+NHMe2aelZiFuuPIbCSa/ygMO
-         1OltBz6OlEn+VMAj0IS+IlEO7hBDEMwOBVdu5Y4rEWQixRDTYHZFRHZgiW6KJedQDSRF
-         /ixfdPss5Pmc5EpNBwSTKyRIpHwO+mRwy8Wwe4J02LnGGUoVaFXB06gaaBIT9ZCkfCZ4
-         qltsS5D5RZJ2t8NpWHZv0waHU9ImGVG5Sz/C8Skr/fr+nqydBTVZNRcT1nUC4+r2XxUN
-         433ZbWz955YqBAb5vnnDc0gpfCoR217pRBoK52cUFZ+wvmmRbuNE7aZIaqeCYck50lCT
-         bN8g==
-X-Gm-Message-State: ACgBeo3/sV5G5nAtmJ8iksm8gdi9xFqIAYIB5HK+KCCWaPApHTmi5HNw
-        uGzGR9PZjcfqcEEr72Agw7rtGmptVfvAag==
-X-Google-Smtp-Source: AA6agR6UYujj0TrldztrCNZ0SxUDA5y4BY/uqML7IvPjp2zmQ/NTSUnCZBHGB1Yzieck2yayQmSsuA==
-X-Received: by 2002:a05:622a:1485:b0:343:781b:d1b with SMTP id t5-20020a05622a148500b00343781b0d1bmr27951187qtx.536.1662120627781;
-        Fri, 02 Sep 2022 05:10:27 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id l5-20020ac81485000000b0031f41ea94easm915395qtj.28.2022.09.02.05.10.26
+        bh=ne1CzWe4cfOGjFgnqh9c4T9gpw+pVEy0R/dHCBbC3j4=;
+        b=5a661ey3KP22ySPg1h/yMhp3tOSUvpYgO1HK+FrbEy67EsEaPeqCNS5b0ZE/U+Zffy
+         J51+zAJ7o2eazCNOtgvlLKd7YzPzplFAOAy2pgtYX4lIEb6J5wzH7SoxdifvOfSLw1NC
+         3GtxsugZGEjtxgWBtcP3wusQAJzoNkLRNlhPk1IgJuhPBAjay7r/QGGSbGtEzAFNZegk
+         nGtlXCiKkWjaj31fsknPKkfBJbn2nqg2NuCpafg2BDErhOSw3BpHZLHyJ6K+riX5IfJt
+         npujWBe+etaULuVLkHaMadNsA5WgESSD7Bw2fHrAdcNKhAUFfhmsHA/m5XDRo5RfuZ9V
+         XtEg==
+X-Gm-Message-State: ACgBeo1Vsz+ooVnyOJrSQ0fmEVyFgnHLpMXRDdhUxGNFc3UaZsW6Y8U1
+        Av6HL2jsvGP2WSE5cmE9ELWFtw==
+X-Google-Smtp-Source: AA6agR65d7VTPa+9d+skBZR8Hb8elzsXjsl6R4k9oV8XaPUR1OtZ1KxL3EqdxP9GfE5CZOns2JNk0w==
+X-Received: by 2002:a17:907:78d:b0:740:33e1:998 with SMTP id xd13-20020a170907078d00b0074033e10998mr23610530ejb.162.1662124413277;
+        Fri, 02 Sep 2022 06:13:33 -0700 (PDT)
+Received: from cmo-ThinkPad-T495.telenet.be ([194.150.35.21])
+        by smtp.gmail.com with ESMTPSA id cy16-20020a0564021c9000b00446ad774ea0sm1454311edb.7.2022.09.02.06.13.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 05:10:26 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     linux-iio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Yanteng Si <siyanteng@loongson.cn>
-Subject: [PATCH] counter: Realign counter_comp comment block to 80 characters
-Date:   Fri,  2 Sep 2022 08:08:39 -0400
-Message-Id: <20220902120839.4260-1-william.gray@linaro.org>
-X-Mailer: git-send-email 2.37.2
+        Fri, 02 Sep 2022 06:13:31 -0700 (PDT)
+From:   cmo@melexis.com
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Crt Mori <cmo@melexis.com>
+Subject: [PATCH 2/3] iio: temperature: mlx90632 Read sampling frequency
+Date:   Fri,  2 Sep 2022 15:13:28 +0200
+Message-Id: <20220902131328.3316436-1-cmo@melexis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The member documentation comment lines for struct counter_comp extend
-past the 80-characters column boundary due to extra identation at the
-start of each section. This patch realigns the comment block within the
-80-characters boundary by removing these superfluous indents.
+From: Crt Mori <cmo@melexis.com>
 
-Cc: Yanteng Si <siyanteng@loongson.cn>
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+Allow user to read sensor sampling frequency to better plan the
+application measurement requests.
+
+Signed-off-by: Crt Mori <cmo@melexis.com>
 ---
- include/linux/counter.h | 40 ++++++++++++++++++++--------------------
- 1 file changed, 20 insertions(+), 20 deletions(-)
+ drivers/iio/temperature/mlx90632.c | 44 ++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-diff --git a/include/linux/counter.h b/include/linux/counter.h
-index 1fe17f5adb09..a81234bc8ea8 100644
---- a/include/linux/counter.h
-+++ b/include/linux/counter.h
-@@ -38,64 +38,64 @@ enum counter_comp_type {
-  * @type:		Counter component data type
-  * @name:		device-specific component name
-  * @priv:		component-relevant data
-- * @action_read:		Synapse action mode read callback. The read value of the
-+ * @action_read:	Synapse action mode read callback. The read value of the
-  *			respective Synapse action mode should be passed back via
-  *			the action parameter.
-- * @device_u8_read:		Device u8 component read callback. The read value of the
-+ * @device_u8_read:	Device u8 component read callback. The read value of the
-  *			respective Device u8 component should be passed back via
-  *			the val parameter.
-- * @count_u8_read:		Count u8 component read callback. The read value of the
-+ * @count_u8_read:	Count u8 component read callback. The read value of the
-  *			respective Count u8 component should be passed back via
-  *			the val parameter.
-- * @signal_u8_read:		Signal u8 component read callback. The read value of the
-+ * @signal_u8_read:	Signal u8 component read callback. The read value of the
-  *			respective Signal u8 component should be passed back via
-  *			the val parameter.
-- * @device_u32_read:		Device u32 component read callback. The read value of
-+ * @device_u32_read:	Device u32 component read callback. The read value of
-  *			the respective Device u32 component should be passed
-  *			back via the val parameter.
-- * @count_u32_read:		Count u32 component read callback. The read value of the
-+ * @count_u32_read:	Count u32 component read callback. The read value of the
-  *			respective Count u32 component should be passed back via
-  *			the val parameter.
-- * @signal_u32_read:		Signal u32 component read callback. The read value of
-+ * @signal_u32_read:	Signal u32 component read callback. The read value of
-  *			the respective Signal u32 component should be passed
-  *			back via the val parameter.
-- * @device_u64_read:		Device u64 component read callback. The read value of
-+ * @device_u64_read:	Device u64 component read callback. The read value of
-  *			the respective Device u64 component should be passed
-  *			back via the val parameter.
-- * @count_u64_read:		Count u64 component read callback. The read value of the
-+ * @count_u64_read:	Count u64 component read callback. The read value of the
-  *			respective Count u64 component should be passed back via
-  *			the val parameter.
-- * @signal_u64_read:		Signal u64 component read callback. The read value of
-+ * @signal_u64_read:	Signal u64 component read callback. The read value of
-  *			the respective Signal u64 component should be passed
-  *			back via the val parameter.
-- * @action_write:		Synapse action mode write callback. The write value of
-+ * @action_write:	Synapse action mode write callback. The write value of
-  *			the respective Synapse action mode is passed via the
-  *			action parameter.
-- * @device_u8_write:		Device u8 component write callback. The write value of
-+ * @device_u8_write:	Device u8 component write callback. The write value of
-  *			the respective Device u8 component is passed via the val
-  *			parameter.
-- * @count_u8_write:		Count u8 component write callback. The write value of
-+ * @count_u8_write:	Count u8 component write callback. The write value of
-  *			the respective Count u8 component is passed via the val
-  *			parameter.
-- * @signal_u8_write:		Signal u8 component write callback. The write value of
-+ * @signal_u8_write:	Signal u8 component write callback. The write value of
-  *			the respective Signal u8 component is passed via the val
-  *			parameter.
-- * @device_u32_write:		Device u32 component write callback. The write value of
-+ * @device_u32_write:	Device u32 component write callback. The write value of
-  *			the respective Device u32 component is passed via the
-  *			val parameter.
-- * @count_u32_write:		Count u32 component write callback. The write value of
-+ * @count_u32_write:	Count u32 component write callback. The write value of
-  *			the respective Count u32 component is passed via the val
-  *			parameter.
-- * @signal_u32_write:		Signal u32 component write callback. The write value of
-+ * @signal_u32_write:	Signal u32 component write callback. The write value of
-  *			the respective Signal u32 component is passed via the
-  *			val parameter.
-- * @device_u64_write:		Device u64 component write callback. The write value of
-+ * @device_u64_write:	Device u64 component write callback. The write value of
-  *			the respective Device u64 component is passed via the
-  *			val parameter.
-- * @count_u64_write:		Count u64 component write callback. The write value of
-+ * @count_u64_write:	Count u64 component write callback. The write value of
-  *			the respective Count u64 component is passed via the val
-  *			parameter.
-- * @signal_u64_write:		Signal u64 component write callback. The write value of
-+ * @signal_u64_write:	Signal u64 component write callback. The write value of
-  *			the respective Signal u64 component is passed via the
-  *			val parameter.
-  */
-
-base-commit: a12224997bec72d231a8dd642876e6364decdc45
+diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
+index 45a1ab51fd0c..63b19ac1484c 100644
+--- a/drivers/iio/temperature/mlx90632.c
++++ b/drivers/iio/temperature/mlx90632.c
+@@ -80,6 +80,9 @@
+ #define MLX90632_PWR_STATUS_CONTINUOUS MLX90632_PWR_STATUS(3) /* continuous*/
+ 
+ #define MLX90632_EE_RR(ee_val) (ee_val & GENMASK(10, 8)) /* Only Refresh Rate bits*/
++#define MLX90632_REFRESH_RATE(ee_val) (MLX90632_EE_RR(ee_val) >> 8)
++					/* Extract Refresh Rate from ee register */
++#define MLX90632_REFRESH_RATE_STATUS(refresh_rate) (refresh_rate << 8)
+ 
+ /* Measurement types */
+ #define MLX90632_MTYP_MEDICAL 0
+@@ -915,6 +918,24 @@ static int mlx90632_calc_ambient_dsp105(struct mlx90632_data *data, int *val)
+ 	return ret;
+ }
+ 
++static int mlx90632_get_refresh_rate(struct mlx90632_data *data,
++				     int *refresh_rate)
++{
++	int ret;
++	unsigned int meas1;
++
++	ret = regmap_read(data->regmap, MLX90632_EE_MEDICAL_MEAS1, &meas1);
++	if (ret < 0)
++		return ret;
++
++	*refresh_rate = MLX90632_REFRESH_RATE(meas1);
++
++	return ret;
++}
++
++static const int mlx90632_freqs[8][2] = { {0, 500000}, {1, 0}, {2, 0}, {4, 0},
++					  {8, 0}, {16, 0}, {32, 0}, {64, 0} };
++
+ static int mlx90632_pm_interraction_wakeup(struct mlx90632_data *data)
+ {
+ 	unsigned long now;
+@@ -985,6 +1006,15 @@ static int mlx90632_read_raw(struct iio_dev *indio_dev,
+ 		*val = data->object_ambient_temperature;
+ 		ret = IIO_VAL_INT;
+ 		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret = mlx90632_get_refresh_rate(data, &cr);
++		if (ret < 0)
++			goto mlx90632_read_raw_pm;
++
++		*val = mlx90632_freqs[cr][0];
++		*val2 = mlx90632_freqs[cr][1];
++		ret = IIO_VAL_INT_PLUS_MICRO;
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 		break;
+@@ -1019,12 +1049,24 @@ static int mlx90632_write_raw(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
++static IIO_CONST_ATTR(sampling_frequency_available, "0.5 1 2 4 8 16 32 64");
++
++static struct attribute *mlx90632_attributes[] = {
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group mlx90632_attribute_group = {
++	.attrs = mlx90632_attributes,
++};
++
+ static const struct iio_chan_spec mlx90632_channels[] = {
+ 	{
+ 		.type = IIO_TEMP,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_TEMP_AMBIENT,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 	},
+ 	{
+ 		.type = IIO_TEMP,
+@@ -1032,12 +1074,14 @@ static const struct iio_chan_spec mlx90632_channels[] = {
+ 		.channel2 = IIO_MOD_TEMP_OBJECT,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+ 			BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) | BIT(IIO_CHAN_INFO_CALIBAMBIENT),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 	},
+ };
+ 
+ static const struct iio_info mlx90632_info = {
+ 	.read_raw = mlx90632_read_raw,
+ 	.write_raw = mlx90632_write_raw,
++	.attrs = &mlx90632_attribute_group,
+ };
+ 
+ static int mlx90632_sleep(struct mlx90632_data *data)
 -- 
-2.37.2
+2.34.1
 
