@@ -2,178 +2,178 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B5D8C6FA82
-	for <linux-iio@archiver.kernel.org>; Fri,  2 Sep 2022 18:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB12EC38145
+	for <linux-iio@archiver.kernel.org>; Sat,  3 Sep 2022 05:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229646AbiIBSjC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 2 Sep 2022 14:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40112 "EHLO
+        id S231753AbiICFDH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 3 Sep 2022 01:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiIBSjB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2022 14:39:01 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED37883E2;
-        Fri,  2 Sep 2022 11:39:00 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id x5so2138843qtv.9;
-        Fri, 02 Sep 2022 11:39:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=f8Lo6s5cYCeKgTcqKpSELWdXg3AuzkYKun3u5MU/k/U=;
-        b=hMWa7AByuX/kCqdyvO9V43nK37LvjnBUeACqhKSmH04hU45/R7SSRy5uBsXpx9Idl9
-         xsQjRaeW45WFt2yLXqAz8zqwUo3JkXsqPB9/0v208+Ov+z6Yf3xT29hvX2U3+6nYs/0S
-         P4BWtWjfm9CMLumm9DeZiN6wxE5YZJbLkeQffwP0XzxHQxe/NMQ0Wo6ADacvXwk4G4kG
-         O60K7M+Fe6P3dWUH3jImmAUacgumi0qnCVRi9LVT9meQyCB2ktdt2QtWOb3I+iFNgP2f
-         JZZmXlx1RjQcX5LjSSAa5YvhBUyhUrhm9AOZ3TvYmTHNsUkG15EnL13daG7laPjEwkcj
-         uTng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=f8Lo6s5cYCeKgTcqKpSELWdXg3AuzkYKun3u5MU/k/U=;
-        b=s1p9T45EzZ7zzL9OHLRxjwXTvxL+AEhf6uLCFMYjP7sO74C3OhGjgSDanaLLYGSt7B
-         otBpxtut7GMLMJ+j/RFQA3bZM1QQ1/NsAhb9m76NujxvrJetRh91DRp1noxHBv2+aUM3
-         zn9LhgSBIM6RF9dVG/L5FELEaNI75piDh2Ytt2nznUVtFt1vtUbUFWtlh2SBWrSsbxO4
-         MRuiRHvuhz4cWH4xE9UVlqDnun8D1KmmqNrAgCGTS5Qfh4CpObuLhjZ3N+BhGykS9Ffo
-         rpEdzszg7K+eTVgG90+R68Tti9B8m4ZsHHu1vp9oaYtWlmKwFBs7c1GYQo9RMepnt2Z7
-         9PqQ==
-X-Gm-Message-State: ACgBeo21eFt8rSQuJWjAfeapNfSrGr3nACUAJVGsnaKMD5/gi7ETJ7uZ
-        C2FLXqHNSFjejJGlTHbrgzarfrj0GpWeQBeinUaeWTA2nfY=
-X-Google-Smtp-Source: AA6agR6B8SJbUaGsNAIZi3LkSflXhd2O/YwCNpTvRUUD2ELXsv6+x0S5QlJ78ehztCME2jTJ/WxrpkPUxQY6Le3O3EE=
-X-Received: by 2002:ac8:5786:0:b0:343:3051:170d with SMTP id
- v6-20020ac85786000000b003433051170dmr29248087qta.429.1662143939459; Fri, 02
- Sep 2022 11:38:59 -0700 (PDT)
+        with ESMTP id S229952AbiICFDG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2022 01:03:06 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C108FE8690
+        for <linux-iio@vger.kernel.org>; Fri,  2 Sep 2022 22:03:04 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oULJ1-0000pw-52; Sat, 03 Sep 2022 07:02:55 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oULIy-003cUy-4d; Sat, 03 Sep 2022 07:02:54 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oULIz-00BNWD-A2; Sat, 03 Sep 2022 07:02:53 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v5 2/3] iio: adc: tsc2046: add vref support
+Date:   Sat,  3 Sep 2022 07:02:51 +0200
+Message-Id: <20220903050252.2711950-2-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220903050252.2711950-1-o.rempel@pengutronix.de>
+References: <20220903050252.2711950-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-References: <20220902131258.3316367-1-cmo@melexis.com> <CAHp75VdOHDHUVhVXj4L-6ZV25mTWTeO3s3EJQVgLxknXHKRUMg@mail.gmail.com>
- <CAKv63ut0rtTFh3XdF3oR6fxQSLzNkFRS+HPPOY8Xp4LX0OY4Tg@mail.gmail.com>
-In-Reply-To: <CAKv63ut0rtTFh3XdF3oR6fxQSLzNkFRS+HPPOY8Xp4LX0OY4Tg@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 2 Sep 2022 21:38:23 +0300
-Message-ID: <CAHp75VfJMpf3GeOryt9cH6-tK48BB8ZcfuGxhXovObBanDcc7w@mail.gmail.com>
-Subject: Re: [PATCH 1/3] iio: temperature: mlx90632 Add runtime
- powermanagement modes
-To:     Crt Mori <cmo@melexis.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Sep 2, 2022 at 8:59 PM Crt Mori <cmo@melexis.com> wrote:
-> On Fri, 2 Sept 2022 at 17:28, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > On Fri, Sep 2, 2022 at 4:13 PM <cmo@melexis.com> wrote:
+If VREF pin is attached, we should use external VREF source instead of
+the internal. Otherwise we will get wrong measurements on some of the channel
+types.
 
-For future replies, please remove unnecessary context when replying
-(I'm wasting my time for that)!
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+changes v5:
+- add "the" before channel
+- refactor error handling on regulator registration
+- use MILLI instead of 1000
+changes v4:
+- use vref_reg pointer instead of bool use_internal_vref
+- move regulator registration to a separate function
+- rework error handling
+- add devm_add_action_or_reset
+---
+ drivers/iio/adc/ti-tsc2046.c | 57 ++++++++++++++++++++++++++++++++++--
+ 1 file changed, 55 insertions(+), 2 deletions(-)
 
-...
-
-> > > +static int mlx90632_wakeup(struct mlx90632_data *data);
-> >
-> > Can we avoid forward declaration? (I don't even see how it is used
-> > among dozens of lines of below code in the patch)
-> >
-> This is existing function that I did not want to move upwards. Should
-> I have just moved it rather?
-
-Yes, move it in the preparatory (separate) patch.
-
-...
-
-> > > +       s32 ret = 0;
-> >
-> > Assignment is not needed, use 'return 0;' directly. Ditto for all
-> > cases like this.
-> >
-> This is used, because when powerstatus is not equal to sleep_step it
-> returns, otherwise the ret is changed in the function.
-
-Please, read what I have suggested.
-
-> > > +       if (data->powerstatus != MLX90632_PWR_STATUS_SLEEP_STEP) {
-> > > +               ret = regmap_write_bits(regmap, MLX90632_REG_CONTROL,
-> > > +                                       MLX90632_CFG_PWR_MASK,
-> > > +                                       MLX90632_PWR_STATUS_SLEEP_STEP);
-> > > +               if (ret < 0)
-> > > +                       return ret;
-> > > +
-> > > +               data->powerstatus = MLX90632_PWR_STATUS_SLEEP_STEP;
-> > > +       }
-> > > +       return ret;
-
-For your convenience...
-
-    return 0;
-
-...here.
-
-Or do you state that ret can be a positive number? In such cases,
-elaboration is required.
-
-...
-
-> > > +       reg = MLX90632_EE_RR(reg) >> 8;
-> >
-> > This makes it harder to understand the semantics of reg, can we simply
-> > unite this line with the below?
-> >
-> I find it easier to have it split but I can make one long statement.
-> > > +       return MLX90632_MEAS_MAX_TIME >> reg;
-
-If so, you need another variable with better naming to show what is in it.
-
-...
-
-> > > +       ret = regmap_read_poll_timeout(data->regmap, MLX90632_REG_STATUS,
-> > > +                                      reg_status,
-> > > +                                      ((reg_status & MLX90632_STAT_BUSY) == 0),
-> >
-> > Too many parentheses
-> >
-> I like the outer parentheses it shows that it is a break condition. I
-> have same in another function in this file.
-
-It's not a Lisp, we don't need to pollute code with unneeded obstacles.
-
-> > > +                                      10000, 100 * 10000);
-
-...
-
-> > > +       if (current_powerstatus == MLX90632_PWR_STATUS_SLEEP_STEP)
-> > > +               return mlx90632_pwr_set_sleep_step(data->regmap);
-> >
-> > > +       else
-> >
-> > Redundant.
-> >
-> No, the powermode changes among the type.
-
-Yes. 'else' keyword is always redundant in the
-
-  if (...)
-    return / break / continue / goto
-  else
-
-cases.
-
-> > > +               return mlx90632_pwr_continuous(data->regmap);
-
-...
-
-> > > +static int __maybe_unused mlx90632_pm_runtime_suspend(struct device *dev)
-> >
-> > No __maybe_unused, use pm_ptr() / pm_sleep_ptr() below.
-> >
-> Care to explain a bit more about this? I just followed what other
-> drivers have...
-
-And other drivers have what I said, but it's a new feature.
-If you run `git log --no-merges --grep 'pm_ptr' -- drivers/iio
-include/linux/` and read the history it will explain the case.
-
+diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
+index 0d9436a69cbfb..c7601b29b3bef 100644
+--- a/drivers/iio/adc/ti-tsc2046.c
++++ b/drivers/iio/adc/ti-tsc2046.c
+@@ -8,7 +8,9 @@
+ #include <linux/bitfield.h>
+ #include <linux/delay.h>
+ #include <linux/module.h>
++#include <linux/regulator/consumer.h>
+ #include <linux/spi/spi.h>
++#include <linux/units.h>
+ 
+ #include <asm/unaligned.h>
+ 
+@@ -175,6 +177,8 @@ struct tsc2046_adc_priv {
+ 	u32 time_per_bit_ns;
+ 
+ 	struct tsc2046_adc_ch_cfg ch_cfg[TI_TSC2046_MAX_CHAN];
++	unsigned int vref_mv;
++	struct regulator *vref_reg;
+ };
+ 
+ #define TI_TSC2046_V_CHAN(index, bits, name)			\
+@@ -252,7 +256,9 @@ static u8 tsc2046_adc_get_cmd(struct tsc2046_adc_priv *priv, int ch_idx,
+ 	case TI_TSC2046_ADDR_AUX:
+ 	case TI_TSC2046_ADDR_VBAT:
+ 	case TI_TSC2046_ADDR_TEMP0:
+-		pd |= TI_TSC2046_SER | TI_TSC2046_PD1_VREF_ON;
++		pd |= TI_TSC2046_SER;
++		if (!priv->vref_reg)
++			pd |= TI_TSC2046_PD1_VREF_ON;
+ 	}
+ 
+ 	return TI_TSC2046_START | FIELD_PREP(TI_TSC2046_ADDR, ch_idx) | pd;
+@@ -468,7 +474,7 @@ static int tsc2046_adc_read_raw(struct iio_dev *indio_dev,
+ 		 * So, it is better to use external voltage-divider driver
+ 		 * instead, which is calculating complete chain.
+ 		 */
+-		*val = TI_TSC2046_INT_VREF;
++		*val = priv->vref_mv;
+ 		*val2 = chan->scan_type.realbits;
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 	}
+@@ -740,6 +746,49 @@ static void tsc2046_adc_parse_fwnode(struct tsc2046_adc_priv *priv)
+ 	}
+ }
+ 
++static void tsc2046_adc_regulator_disable(void *data)
++{
++	struct tsc2046_adc_priv *priv = data;
++
++	regulator_disable(priv->vref_reg);
++}
++
++static int tsc2046_adc_configure_regulator(struct tsc2046_adc_priv *priv)
++{
++	struct device *dev = &priv->spi->dev;
++	int ret;
++
++	priv->vref_reg = devm_regulator_get_optional(dev, "vref");
++	if (IS_ERR(priv->vref_reg)) {
++		/* If regulator exists but can't be get, return an error */
++		if (PTR_ERR(priv->vref_reg) != -ENODEV)
++			return PTR_ERR(priv->vref_reg);
++		priv->vref_reg = NULL;
++	}
++	if (!priv->vref_reg) {
++		/* Use internal reference */
++		priv->vref_mv = TI_TSC2046_INT_VREF;
++		return 0;
++	}
++
++	ret = regulator_enable(priv->vref_reg);
++	if (ret)
++		return ret;
++
++	ret = devm_add_action_or_reset(dev, tsc2046_adc_regulator_disable,
++				       priv);
++	if (ret)
++		return ret;
++
++	ret = regulator_get_voltage(priv->vref_reg);
++	if (ret < 0)
++		return ret;
++
++	priv->vref_mv = ret / MILLI;
++
++	return 0;
++}
++
+ static int tsc2046_adc_probe(struct spi_device *spi)
+ {
+ 	const struct tsc2046_adc_dcfg *dcfg;
+@@ -781,6 +830,10 @@ static int tsc2046_adc_probe(struct spi_device *spi)
+ 	indio_dev->num_channels = dcfg->num_channels;
+ 	indio_dev->info = &tsc2046_adc_info;
+ 
++	ret = tsc2046_adc_configure_regulator(priv);
++	if (ret)
++		return ret;
++
+ 	tsc2046_adc_parse_fwnode(priv);
+ 
+ 	ret = tsc2046_adc_setup_spi_msg(priv);
 -- 
-With Best Regards,
-Andy Shevchenko
+2.30.2
+
