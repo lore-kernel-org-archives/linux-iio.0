@@ -2,119 +2,114 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77DA7ECAAA1
-	for <linux-iio@archiver.kernel.org>; Mon,  5 Sep 2022 08:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61183ECAAD5
+	for <linux-iio@archiver.kernel.org>; Mon,  5 Sep 2022 13:21:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237420AbiIEI6n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 5 Sep 2022 04:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56342 "EHLO
+        id S237696AbiIENVP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 5 Sep 2022 09:21:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237475AbiIEI6e (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2022 04:58:34 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3F5C50187
-        for <linux-iio@vger.kernel.org>; Mon,  5 Sep 2022 01:58:30 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id j14so12190601lfu.4
-        for <linux-iio@vger.kernel.org>; Mon, 05 Sep 2022 01:58:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=i9msuZqs3LoXT7dIhXOMujcWP3YuuePD3VZfcMcrkOg=;
-        b=OerpkYVloQLfSC1hgvnEikWuCfmRCfNmUN5+m8dvDE1MIgjo3ura9kLjoK0B+kphsA
-         IAmF+jCeIh91wNG2yC44JCaK8ebTwczZoXVdb18oU5Pj0meC0zTDNLuBjfWa9TlOameg
-         fiprMeNkIVPWuIUMmHxobrdwaijIVEKtO5A5KIqRn0AlVvybw4MkvkfZSzoa5SsstA/l
-         62QIevwlVwGRwWxDaGWIPZjXcSAKpMpi11mpUVYHo17I3ee6O6aXmtx5d7ZsP451Ao+U
-         3BqldgdT0F+DH/5R/KbVDqD95Vt2tRUs84C3pZCs7sEOKwHNd4YSdL3t9CIgbZywS2RN
-         osng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=i9msuZqs3LoXT7dIhXOMujcWP3YuuePD3VZfcMcrkOg=;
-        b=x+Jm9rALciTQ1Y0i+MO++XbvrvZVwcW87NYx5MV8dkqWX28GLnJ+nvzmUqujrtVlKY
-         q5U9xALWLpESndYtXPfUMuixxQpNVyd/zcK+XWAl/yr+Utptbz/b0GydXQoGKhJUM+CE
-         rKPfiGY76XtjPDPlmVkYDdPPepKSG3DunlnGOLBaVwf0X9ppPLWhJ6IE0aN1uTTfFvnG
-         bnV3aHKRKKYpQbbhw0CZMx3O+1qkMgugNhMM5NCyGawZQpVdXygdmSM2YpnFKIVhxEoy
-         yTzUdxnHp8vP2giPFT7mSyBek2F5X4REoP+Nk0dyRTlfNp6gbGMrFWNc9tySyxyStJub
-         CN9A==
-X-Gm-Message-State: ACgBeo3BEIF2GMWAcMFRsB1eqIMLAy36Oj8cTfqgMNLzLFsBSh24PAok
-        QefrJH7KTYHWJr488b2QbRWdVw==
-X-Google-Smtp-Source: AA6agR5cFOf6F4OqLwf6EMQNEzD7rUMxPpB9nVTZvLKy/sS71/291ArQ5Hq7KDmpOKdvIXyEIFlNTw==
-X-Received: by 2002:a05:6512:39c9:b0:48b:90c2:da46 with SMTP id k9-20020a05651239c900b0048b90c2da46mr15398459lfu.571.1662368308935;
-        Mon, 05 Sep 2022 01:58:28 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id o12-20020a2e9b4c000000b00261ca006158sm1340771ljj.54.2022.09.05.01.58.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Sep 2022 01:58:28 -0700 (PDT)
-Message-ID: <01aefa7d-5daa-d2f1-4344-581117cd1fb0@linaro.org>
-Date:   Mon, 5 Sep 2022 10:58:27 +0200
+        with ESMTP id S237621AbiIENVL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2022 09:21:11 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C041547BBF;
+        Mon,  5 Sep 2022 06:20:57 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 285CXuOL022519;
+        Mon, 5 Sep 2022 09:20:53 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3jc3u5vt6t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 05 Sep 2022 09:20:53 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 285DKpTk029090
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 5 Sep 2022 09:20:51 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 5 Sep 2022 09:20:50 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 5 Sep 2022 09:20:50 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 5 Sep 2022 09:20:50 -0400
+Received: from george-precision5560.ad.analog.com ([10.48.65.141])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 285DKaY8000352;
+        Mon, 5 Sep 2022 09:20:39 -0400
+From:   George Mois <george.mois@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <lucas.p.stankus@gmail.com>, George Mois <george.mois@analog.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v4 1/2] dt-bindings: iio: accel: adxl313: Add compatibles for adxl312 and adxl314
+Date:   Mon, 5 Sep 2022 16:20:17 +0300
+Message-ID: <20220905132018.364900-1-george.mois@analog.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v2 4/5] drivers: iio: adc: LTC2499 support
-Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Ciprian Regus <ciprian.regus@analog.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220901121700.1325733-1-ciprian.regus@analog.com>
- <20220901121700.1325733-4-ciprian.regus@analog.com>
- <4067432b-b5a6-f3eb-a707-5fa298ba846b@linaro.org>
- <20220902120611.000007a0@huawei.com>
- <CAHp75Vfn_84-xww5w_oHf0zqm4dZxycSU1cDKw7-KQzDyoCHXw@mail.gmail.com>
- <20220904155557.33c96d66@jic23-huawei>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220904155557.33c96d66@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: Rp_oEBMQY74BU084GlBYQo_k-cW6Gr3V
+X-Proofpoint-ORIG-GUID: Rp_oEBMQY74BU084GlBYQo_k-cW6Gr3V
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-09-05_09,2022-09-05_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
+ phishscore=0 adultscore=0 lowpriorityscore=0 spamscore=0 bulkscore=0
+ mlxscore=0 priorityscore=1501 impostorscore=0 mlxlogscore=999
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2209050063
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 04/09/2022 16:55, Jonathan Cameron wrote:
-> On Fri, 2 Sep 2022 14:37:03 +0300
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> 
->> On Fri, Sep 2, 2022 at 2:06 PM Jonathan Cameron
->> <Jonathan.Cameron@huawei.com> wrote:
->>> On Thu, 1 Sep 2022 16:23:09 +0300
->>> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:  
->>>> On 01/09/2022 15:16, Ciprian Regus wrote:  
->>
->> ...
->>
->>>>> Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/2499fe.pdf  
->>>>
->>>> Missing blank line. Use standard Git tools for handling your patches or
->>>> be sure you produce the same result when using some custom process.  
->>>
->>> My understanding is Datasheet is a standard tag as part of the main tag block.
->>> There should not be a blank line between that and the Sign off.
->>>
->>> +CC Andy who can probably point to a reference for that...  
->>
->> Yes, the idea to have a Datasheet as a formal tag. Which is, by the
->> way, somehow established practice (since ca.2020).
-> 
-> We should probably add it to the docs so we have somewhere to point at
-> beyond fairly common practice.
-> 
-> Hohum.  Anyone want to take that on with associated possible bikeshedding?
+Extend the adi,adxl313.yaml file with information regrding the
+ADXL312 and ADXL314 devices.
 
-Sorry for the noise then - I grepped, nothing popped up. It's not
-appearing in the checkpatch patterns, although indeed appears in the
-history, so it is fine.
+Signed-off-by: George Mois <george.mois@analog.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+changes in v4:
+ - rename patch title to comply with dt-bindings patches title format
+ .../devicetree/bindings/iio/accel/adi,adxl313.yaml     | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-Thanks for clarification.
+diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml
+index d6afc1b8c272..59d48ff1a16c 100644
+--- a/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml
+@@ -4,20 +4,24 @@
+ $id: http://devicetree.org/schemas/iio/accel/adi,adxl313.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: Analog Devices ADXL313 3-Axis Digital Accelerometer
++title: Analog Devices ADXL312, ADXL313, and ADXL314 3-Axis Digital Accelerometers
+ 
+ maintainers:
+   - Lucas Stankus <lucas.p.stankus@gmail.com>
+ 
+ description: |
+-  Analog Devices ADXL313 3-Axis Digital Accelerometer that supports
+-  both I2C & SPI interfaces.
++  Analog Devices ADXL312, ADXL313, and ADXL314 3-Axis Digital Accelerometer that
++  support both I2C & SPI interfaces.
++    https://www.analog.com/en/products/adxl312.html
+     https://www.analog.com/en/products/adxl313.html
++    https://www.analog.com/en/products/adxl314.html
+ 
+ properties:
+   compatible:
+     enum:
++      - adi,adxl312
+       - adi,adxl313
++      - adi,adxl314
+ 
+   reg:
+     maxItems: 1
+-- 
+2.30.2
 
-
-Best regards,
-Krzysztof
