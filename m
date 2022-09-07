@@ -2,36 +2,36 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2936C6FA8B
-	for <linux-iio@archiver.kernel.org>; Wed,  7 Sep 2022 13:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F551C6FA8E
+	for <linux-iio@archiver.kernel.org>; Wed,  7 Sep 2022 13:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229889AbiIGNhi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 7 Sep 2022 09:37:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57984 "EHLO
+        id S229908AbiIGNhj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 7 Sep 2022 09:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229759AbiIGNhg (ORCPT
+        with ESMTP id S229797AbiIGNhg (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Sep 2022 09:37:36 -0400
-X-Greylist: delayed 604 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 07 Sep 2022 06:37:32 PDT
+X-Greylist: delayed 605 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 07 Sep 2022 06:37:31 PDT
 Received: from es400ra02.iit.it (mx.iit.it [90.147.26.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76C588DDB;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E74F7876B2;
         Wed,  7 Sep 2022 06:37:31 -0700 (PDT)
-Received: from es400ra02.iit.it (127.0.0.1) id h32f9i0171sv; Wed, 7 Sep 2022 15:22:30 +0200 (envelope-from <prvs=1249fcc2cf=Andrea.Merello@iit.it>)
+Received: from es400ra02.iit.it (127.0.0.1) id h32f9i0171sv; Wed, 7 Sep 2022 15:22:20 +0200 (envelope-from <prvs=1249fcc2cf=Andrea.Merello@iit.it>)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iit.it;
         s=mx; i=@iit.it; h=Received:Received:From:To:CC:Subject:Date:
         Message-ID:In-Reply-To:References:MIME-Version:
-        Content-Transfer-Encoding:Content-Type; bh=K3e63DsllIB8jiQP3oThb
-        e+k0ee6w3x2H75Xq2bGxw0=; b=TaH4uy38azvp2BrA1GOyi86cr1HsWZRZE0VU4
-        Ozz9nW2XeeFq63F28T4v5aU6MNW3KrhkwEihf3HtpIVaTvSRFtPSz68nxx7Gqm8u
-        0Lq9GZkWYectgqeJxjrDMMqgJ7DSsyRBBN0O3xRDjSzgCTCKHPD51i/7lxZYQcm7
-        f3Dk/E=
+        Content-Transfer-Encoding:Content-Type; bh=iQpEBnJuPafx55iwdV3Ej
+        g0LjMatuJ5SSi358RWueTo=; b=U5rJO2+OAI8jTKHFCZaRJYYVQMirvm/kQ/FYE
+        Yr2/3OpUOaX1ahJ6Ku53rzy5vXzG5WXstxTvGGUB7niM4nPIo0BFxAqUf9cBOLw5
+        JGzCmVVswmmAm2nqNB0CbVRblvYMl07iKUPimcJ805qoBbwxbTG12XXP+DdXePLt
+        rCqDLg=
 Received: from mail.iit.it ([10.255.8.186])
         by es400ra02.iit.it ([172.31.0.242]) (SonicWall 10.0.16.7295)
         with ESMTPS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256)
-        id o202209071322300212551-8; Wed, 07 Sep 2022 15:22:30 +0200
+        id o202209071322200212545-8; Wed, 07 Sep 2022 15:22:20 +0200
 Received: from poker.iit.local (10.10.20.64) by iitmxwge020.iit.local
  (10.255.8.186) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2375.31; Wed, 7 Sep
- 2022 15:22:28 +0200
+ 2022 15:22:19 +0200
 From:   <andrea.merello@iit.it>
 To:     <jic23@kernel.org>, <mchehab+huawei@kernel.org>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
@@ -41,9 +41,9 @@ CC:     <lars@metafoo.de>, <robh+dt@kernel.org>,
         <ardeleanalex@gmail.com>, <jacopo@jmondi.org>,
         <andrea.merello@gmail.com>, <bagasdotme@gmail.com>,
         Andrea Merello <andrea.merello@iit.it>
-Subject: [v7 09/14] iio: document bno055 private sysfs attributes
-Date:   Wed, 7 Sep 2022 15:22:00 +0200
-Message-ID: <20220907132205.28021-10-andrea.merello@iit.it>
+Subject: [v7 02/14] iio: document linear acceleration modifiers
+Date:   Wed, 7 Sep 2022 15:21:53 +0200
+Message-ID: <20220907132205.28021-3-andrea.merello@iit.it>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220907132205.28021-1-andrea.merello@iit.it>
 References: <20220907132205.28021-1-andrea.merello@iit.it>
@@ -60,109 +60,42 @@ X-Mlf-Smartnet-Version: 20210917223710
 X-Mlf-Envelope-From: Andrea.Merello@iit.it
 X-Mlf-Version: 10.0.16.7295
 X-Mlf-License: BSV_C_AP_T_R
-X-Mlf-UniqueId: o202209071322300212551
+X-Mlf-UniqueId: o202209071322200212545
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Andrea Merello <andrea.merello@iit.it>
 
-Add ABI documentation for bno055 driver private sysfs attributes.
+Introduce ABI documentation for new IIO modifiers used for reporting
+"linear acceleration" measures.
 
 Signed-off-by: Andrea Merello <andrea.merello@iit.it>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- .../ABI/testing/sysfs-bus-iio-bno055          | 81 +++++++++++++++++++
- 1 file changed, 81 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-bno055
+ Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-bno055 b/Documentation/ABI/testing/sysfs-bus-iio-bno055
-new file mode 100644
-index 000000000000..f32b1644e986
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-bno055
-@@ -0,0 +1,81 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/in_accel_raw_range
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 80e8a38d1ee2..cc1fe672580f 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -260,6 +260,15 @@ Description:
+ 		Has all of the equivalent parameters as per voltageY. Units
+ 		after application of scale and offset are m/s^2.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_linear_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_linear_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_linear_z_raw
 +KernelVersion:	6.1
 +Contact:	linux-iio@vger.kernel.org
 +Description:
-+		Raw (unscaled) range for acceleration readings. Unit after
-+		application of scale is m/s^2. Note that this doesn't affects
-+		the scale (which should be used when changing the maximum and
-+		minimum readable value affects also the reading scaling factor).
++		As per in_accel_X_raw attributes, but minus the
++		acceleration due to gravity.
 +
-+What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_raw_range
-+KernelVersion:	6.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Range for angular velocity readings in radians per second. Note
-+		that this does not affects the scale (which should be used when
-+		changing the maximum and minimum readable value affects also the
-+		reading scaling factor).
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_accel_raw_range_available
-+KernelVersion:	6.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		List of allowed values for in_accel_raw_range attribute
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_raw_range_available
-+KernelVersion:	6.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		List of allowed values for in_anglvel_raw_range attribute
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_magn_calibration_fast_enable
-+KernelVersion:	6.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Can be 1 or 0. Enables/disables the "Fast Magnetometer
-+		Calibration" HW function.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/fusion_enable
-+KernelVersion:	6.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Can be 1 or 0. Enables/disables the "sensor fusion" (a.k.a.
-+		NDOF) HW function.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/calibration_data
-+KernelVersion:	6.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Reports the binary calibration data blob for the IMU sensors.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_accel_calibration_auto_status
-+KernelVersion:	6.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Reports the autocalibration status for the accelerometer sensor.
-+		Can be 0 (calibration non even enabled) or 1 to 5 where the greater
-+		the number, the better the calibration status.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_calibration_auto_status
-+KernelVersion:	6.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Reports the autocalibration status for the gyroscope sensor.
-+		Can be 0 (calibration non even enabled) or 1 to 5 where the greater
-+		the number, the better the calibration status.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_magn_calibration_auto_status
-+KernelVersion:	6.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Reports the autocalibration status for the magnetometer sensor.
-+		Can be 0 (calibration non even enabled) or 1 to 5 where the greater
-+		the number, the better the calibration status.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/sys_calibration_auto_status
-+KernelVersion:	6.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Reports the status for the IMU overall autocalibration.
-+		Can be 0 (calibration non even enabled) or 1 to 5 where the greater
-+		the number, the better the calibration status.
+ What:		/sys/bus/iio/devices/iio:deviceX/in_gravity_x_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_gravity_y_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_gravity_z_raw
 -- 
 2.17.1
 
