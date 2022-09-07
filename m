@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA489C54EE9
-	for <linux-iio@archiver.kernel.org>; Wed,  7 Sep 2022 13:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0BECC6FA89
+	for <linux-iio@archiver.kernel.org>; Wed,  7 Sep 2022 13:37:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbiIGNhh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 7 Sep 2022 09:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57990 "EHLO
+        id S229854AbiIGNhj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 7 Sep 2022 09:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbiIGNhg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Sep 2022 09:37:36 -0400
+        with ESMTP id S229817AbiIGNhh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Sep 2022 09:37:37 -0400
 Received: from es400ra02.iit.it (mx.iit.it [90.147.26.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E39D89923;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E56C8A1F2;
         Wed,  7 Sep 2022 06:37:31 -0700 (PDT)
-Received: from es400ra02.iit.it (127.0.0.1) id h32f9i0171sv; Wed, 7 Sep 2022 15:22:32 +0200 (envelope-from <prvs=1249fcc2cf=Andrea.Merello@iit.it>)
+Received: from es400ra02.iit.it (127.0.0.1) id h32f9i0171sv; Wed, 7 Sep 2022 15:22:23 +0200 (envelope-from <prvs=1249fcc2cf=Andrea.Merello@iit.it>)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iit.it;
         s=mx; i=@iit.it; h=Received:Received:From:To:CC:Subject:Date:
         Message-ID:In-Reply-To:References:MIME-Version:
-        Content-Transfer-Encoding:Content-Type; bh=lThD6BA32M/3+1gJOlZ6S
-        d+pgka8j0o3qmjB0KTkeU4=; b=GNESkznNWkqHThFJJRtw4G4dooqKNgXWsMrfR
-        /l1D1HSnbxQYNLz3LNbSCHvrMuOk+gTOUb1uugzkIvAGVFsiWpI0oCQdS7v1XAVq
-        kuRmrMRYjW8DAbg55sU8E7u3gSDve+BBHpHzN9d9npRD4/9KI215377VhjB0tpkK
-        KKGAcg=
+        Content-Transfer-Encoding:Content-Type; bh=OqaZw7zjlXrQeq7ikHAPb
+        zoTS/Lgjf6PPIgnfweh7ZE=; b=i2pXBO22g5+yLi6lYlfcKDHZ4ZhGPOUeasjTd
+        2m36Dl6TDeVNyDjOEDDK04wXkvi10xEE/lqVnVqoRv+h8Ed4bRi/CftIH3exbfUz
+        qv9AEjmLgOyn69dKsUSlscCgNrjEMnPoGTu3KBI1kgljDkcw20ar4GERpYfLFrvN
+        byMoZg=
 Received: from mail.iit.it ([10.255.8.186])
         by es400ra02.iit.it ([172.31.0.242]) (SonicWall 10.0.16.7295)
         with ESMTPS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256)
-        id o202209071322320212552-8; Wed, 07 Sep 2022 15:22:32 +0200
+        id o202209071322230212547-8; Wed, 07 Sep 2022 15:22:23 +0200
 Received: from poker.iit.local (10.10.20.64) by iitmxwge020.iit.local
  (10.255.8.186) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2375.31; Wed, 7 Sep
- 2022 15:22:31 +0200
+ 2022 15:22:22 +0200
 From:   <andrea.merello@iit.it>
 To:     <jic23@kernel.org>, <mchehab+huawei@kernel.org>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
@@ -39,11 +39,10 @@ CC:     <lars@metafoo.de>, <robh+dt@kernel.org>,
         <andy.shevchenko@gmail.com>, <matt.ranostay@konsulko.com>,
         <ardeleanalex@gmail.com>, <jacopo@jmondi.org>,
         <andrea.merello@gmail.com>, <bagasdotme@gmail.com>,
-        Andrea Merello <andrea.merello@iit.it>,
-        Rob Herring <robh@kernel.org>
-Subject: [v7 11/14] dt-bindings: iio/imu: Add Bosch BNO055
-Date:   Wed, 7 Sep 2022 15:22:02 +0200
-Message-ID: <20220907132205.28021-12-andrea.merello@iit.it>
+        Andrea Merello <andrea.merello@iit.it>
+Subject: [v7 04/14] iio: add modifers for pitch, yaw, roll
+Date:   Wed, 7 Sep 2022 15:21:55 +0200
+Message-ID: <20220907132205.28021-5-andrea.merello@iit.it>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220907132205.28021-1-andrea.merello@iit.it>
 References: <20220907132205.28021-1-andrea.merello@iit.it>
@@ -60,88 +59,51 @@ X-Mlf-Smartnet-Version: 20210917223710
 X-Mlf-Envelope-From: Andrea.Merello@iit.it
 X-Mlf-Version: 10.0.16.7295
 X-Mlf-License: BSV_C_AP_T_R
-X-Mlf-UniqueId: o202209071322320212552
+X-Mlf-UniqueId: o202209071322230212547
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Andrea Merello <andrea.merello@iit.it>
 
-Introduce new documentation file for the Bosch BNO055 IMU.
+Add modifiers for reporting rotations as euler angles (i.e. yaw, pitch and
+roll).
 
 Signed-off-by: Andrea Merello <andrea.merello@iit.it>
-Reviewed-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- .../bindings/iio/imu/bosch,bno055.yaml        | 59 +++++++++++++++++++
- 1 file changed, 59 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/imu/bosch,bno055.yaml
+ drivers/iio/industrialio-core.c | 3 +++
+ include/uapi/linux/iio/types.h  | 3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/imu/bosch,bno055.yaml b/Documentation/devicetree/bindings/iio/imu/bosch,bno055.yaml
-new file mode 100644
-index 000000000000..e0d06db161a9
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/imu/bosch,bno055.yaml
-@@ -0,0 +1,59 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/imu/bosch,bno055.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Bosch BNO055
-+
-+maintainers:
-+  - Andrea Merello <andrea.merello@iit.it>
-+
-+description: |
-+  Inertial Measurement Unit with Accelerometer, Gyroscope, Magnetometer and
-+  internal MCU for sensor fusion
-+  https://www.bosch-sensortec.com/products/smart-sensors/bno055/
-+
-+properties:
-+  compatible:
-+    enum:
-+      - bosch,bno055
-+
-+  reg:
-+    maxItems: 1
-+
-+  reset-gpios:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    serial {
-+      imu {
-+        compatible = "bosch,bno055";
-+        reset-gpios = <&gpio0 54 GPIO_ACTIVE_LOW>;
-+        clocks = <&imu_clk>;
-+      };
-+    };
-+
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      imu@28 {
-+        compatible = "bosch,bno055";
-+        reg = <0x28>;
-+        reset-gpios = <&gpio0 54 GPIO_ACTIVE_LOW>;
-+        clocks = <&imu_clk>;
-+      };
-+    };
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 37f7e231fce2..9e661efb6f47 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -137,6 +137,9 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LINEAR_X] = "linear_x",
+ 	[IIO_MOD_LINEAR_Y] = "linear_y",
+ 	[IIO_MOD_LINEAR_Z] = "linear_z",
++	[IIO_MOD_PITCH] = "pitch",
++	[IIO_MOD_YAW] = "yaw",
++	[IIO_MOD_ROLL] = "roll",
+ };
+ 
+ /* relies on pairs of these shared then separate */
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 0993f6b697fc..4853701ba70d 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -98,6 +98,9 @@ enum iio_modifier {
+ 	IIO_MOD_LINEAR_X,
+ 	IIO_MOD_LINEAR_Y,
+ 	IIO_MOD_LINEAR_Z,
++	IIO_MOD_PITCH,
++	IIO_MOD_YAW,
++	IIO_MOD_ROLL,
+ };
+ 
+ enum iio_event_type {
 -- 
 2.17.1
 
