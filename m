@@ -2,71 +2,85 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D1EC38145
-	for <linux-iio@archiver.kernel.org>; Thu,  8 Sep 2022 08:16:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA81C54EE9
+	for <linux-iio@archiver.kernel.org>; Thu,  8 Sep 2022 12:40:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231373AbiIHIQ3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 8 Sep 2022 04:16:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50612 "EHLO
+        id S230317AbiIHMkk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 8 Sep 2022 08:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231409AbiIHIQ2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 8 Sep 2022 04:16:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96562AA4C2;
-        Thu,  8 Sep 2022 01:16:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45F49B82050;
-        Thu,  8 Sep 2022 08:16:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3FAAC433C1;
-        Thu,  8 Sep 2022 08:16:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662624984;
-        bh=CZ+yncuAqJvVKnJLnhHlWLzhvVqLsLtlQMV5b4jIfSg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZS4dDaQ9d5+6NKxy1iB1bqWl+0NTbyRFI4lbD6rat9+aBjbqFWtydVfkHzA21xgRn
-         cX5kauvdGPssdIN6l+4ysc/Z7KHcN6h55Jh2voDz5p3UvjNNGW3IfOeUnp3tQJj2Tx
-         8AzhiWT8geQWgvqfvZnoH+6GufauTx05R3CS739BhHPh/wBCv3bPIKp6HXJVwkaWPq
-         yKQJAsU5OLkDAcPpCtqBY8tTHiKr6fPQ1BY2lh2xU7mlDggdjSZ4czc/OFoLtfY1aX
-         czCUATb26Vgh19PKxDhCUkyeIKzs0GxD6KRdcKXnGqgq7VQfD178DNJLiBp/O8mqfE
-         igrfc7+OFOnOw==
-Date:   Thu, 8 Sep 2022 09:16:18 +0100
-From:   Lee Jones <lee@kernel.org>
-To:     Robert Marko <robimarko@gmail.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
-        konrad.dybcio@somainline.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, jic23@kernel.org,
-        lars@metafoo.de, sboyd@kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v8 2/5] mfd: qcom-spmi-pmic: add support for PMP8074
-Message-ID: <Yxmk0sdWOAjY65Nn@google.com>
-References: <20220818221815.346233-1-robimarko@gmail.com>
- <20220818221815.346233-2-robimarko@gmail.com>
+        with ESMTP id S229989AbiIHMkj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 8 Sep 2022 08:40:39 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C9BC59D3;
+        Thu,  8 Sep 2022 05:40:38 -0700 (PDT)
+Received: from fraeml737-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MNdsT3ZPFz67n8d;
+        Thu,  8 Sep 2022 20:36:29 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml737-chm.china.huawei.com (10.206.15.218) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 8 Sep 2022 14:40:36 +0200
+Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 8 Sep
+ 2022 13:40:36 +0100
+Date:   Thu, 8 Sep 2022 13:40:35 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+CC:     <andrea.merello@gmail.com>, <andrea.merello@iit.it>,
+        <jic23@kernel.org>, <mchehab+huawei@kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <lars@metafoo.de>,
+        <robh+dt@kernel.org>, <andy.shevchenko@gmail.com>,
+        <matt.ranostay@konsulko.com>, <ardeleanalex@gmail.com>,
+        <jacopo@jmondi.org>
+Subject: Re: [v7 00/14] Add support for Bosch BNO055 IMU
+Message-ID: <20220908134035.000027ca@huawei.com>
+In-Reply-To: <dda8346f-2cfb-4d85-607c-553625cc98d4@gmail.com>
+References: <20220907132205.28021-1-andrea.merello@iit.it>
+        <1b30d814-3570-1cb7-573b-9bca90d5d3fd@gmail.com>
+        <CAN8YU5P1qjKtmSskA_+vLMnC6wHFmhk4ZvP+a-9KLr0OsY0FdA@mail.gmail.com>
+        <dda8346f-2cfb-4d85-607c-553625cc98d4@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220818221815.346233-2-robimarko@gmail.com>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 19 Aug 2022, Robert Marko wrote:
+On Thu, 8 Sep 2022 14:32:49 +0700
+Bagas Sanjaya <bagasdotme@gmail.com> wrote:
 
-> Add support for PMP8074 PMIC which is a companion PMIC for the Qualcomm
-> IPQ8074 SoC-s.
+> On 9/8/22 13:51, Andrea Merello wrote:
+> >> Rebased on what tree (and what commit)? I can't cleanly apply patch
+> >> [05/14].  
+> > 
+> > Sorry, it looks like I've raced against recent updates on iio-togreg
+> > branch (i.e. I've rebased, then I've got preemped by something else,
+> > then I've tested and sent the series some days later - I should have
+> > rebased again).
+> > 
+> > BTW patches can be applied on the top of this
+> > https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=togreg&id=2bc9cd66eb25d0fefbb081421d6586495e25840e
+> > 
+> > I'll prepare a v8 anyway.
+For minor stuff like Doc updates, don't about rebase if everything else
+is fine. I can fix little merge conflicts whilst applying.
+
+Thanks,
+
+Jonathan
+
+> >   
 > 
-> It shares the same subtype identifier as PM8901.
+> OK.
 > 
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
-> Acked-by: Lee Jones <lee.jones@linaro.org>
-> ---
->  drivers/mfd/qcom-spmi-pmic.c | 1 +
->  1 file changed, 1 insertion(+)
+> Don't forget to pass --base to git-format-patch(1) when preparing v8.
+> 
 
-Applied, thanks.
-
--- 
-Lee Jones [李琼斯]
