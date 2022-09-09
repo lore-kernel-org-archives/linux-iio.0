@@ -2,166 +2,82 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92AB8C6FA8A
-	for <linux-iio@archiver.kernel.org>; Fri,  9 Sep 2022 15:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 534F8ECAAD3
+	for <linux-iio@archiver.kernel.org>; Fri,  9 Sep 2022 16:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232324AbiIIPNo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 9 Sep 2022 11:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54124 "EHLO
+        id S229610AbiIIQQY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 9 Sep 2022 12:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232320AbiIIPNg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Sep 2022 11:13:36 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901D81449E4;
-        Fri,  9 Sep 2022 08:13:34 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 289F7Qqo002113;
-        Fri, 9 Sep 2022 11:13:15 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3jfu4m50r1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 09 Sep 2022 11:13:15 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 289FDDu8025311
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 9 Sep 2022 11:13:14 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 9 Sep 2022
- 11:13:13 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 9 Sep 2022 11:13:13 -0400
-Received: from nsa.sphairon.box ([10.44.3.57])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 289FCw9l024296;
-        Fri, 9 Sep 2022 11:13:06 -0400
-From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-To:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S229566AbiIIQQX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Sep 2022 12:16:23 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF62425FD;
+        Fri,  9 Sep 2022 09:16:22 -0700 (PDT)
+Received: from pan.home (unknown [IPv6:2a00:23c6:c311:3401:d3c:a31c:505b:8c33])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: martyn)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 68C2C6601FCC;
+        Fri,  9 Sep 2022 17:16:20 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.co.uk;
+        s=mail; t=1662740180;
+        bh=Hm55QYd3o7JpTilmkeW0jrl7fsyX4VP54gZONEhFths=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JPvSowkJNxrebAegvT18huox0SvsWkilvP5PF2H0q8vLL4PXfyXzyx9gZshlKGrKY
+         A0aZXA+Q+8HJMhHQOEYuWdvos1gBhF5M49I2yLmUxNPYPmgmFgJxMLP7pkE5p8aaZA
+         V7Fe6JP3fWe211M/sRqH0pUlW15qmRrJGztDtUb9vwvUAxwif+dw+wj+/TRULVq6fJ
+         buzhdy4ueiESDwcg0j5ag0ur/hFG+siAwqcCeMGX3HXfP2Pc99vYaLKFRQXB7Cuj6b
+         gLHW6JKqDjz5FzE4YW4beErxiEhdbKFigK0HzqyxS/0jfecBIKLsLBR7RVAu+HRbIX
+         lsKA3d1sMsqpQ==
+From:   Martyn Welch <martyn.welch@collabora.co.uk>
+To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Subject: [PATCH 1/3] iio: adc: ad7923: fix channel readings for some variants
-Date:   Fri, 9 Sep 2022 17:14:11 +0200
-Message-ID: <20220909151413.1164754-2-nuno.sa@analog.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220909151413.1164754-1-nuno.sa@analog.com>
-References: <20220909151413.1164754-1-nuno.sa@analog.com>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Cc:     kernel@collabora.com, Martyn Welch <martyn.welch@collabora.co.uk>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: iio: st,st-sensors add LPS22DF.
+Date:   Fri,  9 Sep 2022 17:16:09 +0100
+Message-Id: <20220909161611.780720-1-martyn.welch@collabora.co.uk>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: rX8RILpApa59nXkHxOmXc9PPWR60LHPA
-X-Proofpoint-GUID: rX8RILpApa59nXkHxOmXc9PPWR60LHPA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-09-09_08,2022-09-09_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 clxscore=1015
- adultscore=0 priorityscore=1501 suspectscore=0 phishscore=0 malwarescore=0
- impostorscore=0 mlxscore=0 lowpriorityscore=0 spamscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2209090053
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Some of the supported devices have 4 or 2 LSB trailing bits that should
-not be taken into account. Hence we need to shift these bits out which
-fits perfectly on the scan type shift property. This change fixes both
-raw and buffered reads.
+Add support for the ST LPS22DF, an I2C/SPI pressure sensor.
 
-Fixes: f2f7a449707e ("iio:adc:ad7923: Add support for the ad7904/ad7914/ad7924")
-Fixes: 851644a60d20 ("iio: adc: ad7923: Add support for the ad7908/ad7918/ad7928")
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+Signed-off-by: Martyn Welch <martyn.welch@collabora.co.uk>
 ---
- drivers/iio/adc/ad7923.c | 46 +++++++++++++++++++++-------------------
- 1 file changed, 24 insertions(+), 22 deletions(-)
+ Documentation/devicetree/bindings/iio/st,st-sensors.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
-index edad1f30121d..910cf05e75cd 100644
---- a/drivers/iio/adc/ad7923.c
-+++ b/drivers/iio/adc/ad7923.c
-@@ -80,7 +80,7 @@ enum ad7923_id {
- 	AD7928
- };
- 
--#define AD7923_V_CHAN(index, bits)					\
-+#define AD7923_V_CHAN(index, bits, _shift)				\
- 	{								\
- 		.type = IIO_VOLTAGE,					\
- 		.indexed = 1,						\
-@@ -93,38 +93,39 @@ enum ad7923_id {
- 			.sign = 'u',					\
- 			.realbits = (bits),				\
- 			.storagebits = 16,				\
-+			.shift = (_shift),				\
- 			.endianness = IIO_BE,				\
- 		},							\
- 	}
- 
--#define DECLARE_AD7923_CHANNELS(name, bits) \
-+#define DECLARE_AD7923_CHANNELS(name, bits, shift) \
- const struct iio_chan_spec name ## _channels[] = { \
--	AD7923_V_CHAN(0, bits), \
--	AD7923_V_CHAN(1, bits), \
--	AD7923_V_CHAN(2, bits), \
--	AD7923_V_CHAN(3, bits), \
-+	AD7923_V_CHAN(0, bits, shift), \
-+	AD7923_V_CHAN(1, bits, shift), \
-+	AD7923_V_CHAN(2, bits, shift), \
-+	AD7923_V_CHAN(3, bits, shift), \
- 	IIO_CHAN_SOFT_TIMESTAMP(4), \
- }
- 
--#define DECLARE_AD7908_CHANNELS(name, bits) \
-+#define DECLARE_AD7908_CHANNELS(name, bits, shift) \
- const struct iio_chan_spec name ## _channels[] = { \
--	AD7923_V_CHAN(0, bits), \
--	AD7923_V_CHAN(1, bits), \
--	AD7923_V_CHAN(2, bits), \
--	AD7923_V_CHAN(3, bits), \
--	AD7923_V_CHAN(4, bits), \
--	AD7923_V_CHAN(5, bits), \
--	AD7923_V_CHAN(6, bits), \
--	AD7923_V_CHAN(7, bits), \
-+	AD7923_V_CHAN(0, bits, shift), \
-+	AD7923_V_CHAN(1, bits, shift), \
-+	AD7923_V_CHAN(2, bits, shift), \
-+	AD7923_V_CHAN(3, bits, shift), \
-+	AD7923_V_CHAN(4, bits, shift), \
-+	AD7923_V_CHAN(5, bits, shift), \
-+	AD7923_V_CHAN(6, bits, shift), \
-+	AD7923_V_CHAN(7, bits, shift), \
- 	IIO_CHAN_SOFT_TIMESTAMP(8), \
- }
- 
--static DECLARE_AD7923_CHANNELS(ad7904, 8);
--static DECLARE_AD7923_CHANNELS(ad7914, 10);
--static DECLARE_AD7923_CHANNELS(ad7924, 12);
--static DECLARE_AD7908_CHANNELS(ad7908, 8);
--static DECLARE_AD7908_CHANNELS(ad7918, 10);
--static DECLARE_AD7908_CHANNELS(ad7928, 12);
-+static DECLARE_AD7923_CHANNELS(ad7904, 8, 4);
-+static DECLARE_AD7923_CHANNELS(ad7914, 10, 2);
-+static DECLARE_AD7923_CHANNELS(ad7924, 12, 0);
-+static DECLARE_AD7908_CHANNELS(ad7908, 8, 4);
-+static DECLARE_AD7908_CHANNELS(ad7918, 10, 2);
-+static DECLARE_AD7908_CHANNELS(ad7928, 12, 0);
- 
- static const struct ad7923_chip_info ad7923_chip_info[] = {
- 	[AD7904] = {
-@@ -268,7 +269,8 @@ static int ad7923_read_raw(struct iio_dev *indio_dev,
- 			return ret;
- 
- 		if (chan->address == EXTRACT(ret, 12, 4))
--			*val = EXTRACT(ret, 0, 12);
-+			*val = EXTRACT(ret, chan->scan_type.shift,
-+				       chan->scan_type.realbits);
- 		else
- 			return -EIO;
- 
+diff --git a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+index fcb2902683c7..250439b13152 100644
+--- a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
++++ b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+@@ -73,6 +73,7 @@ properties:
+       - description: STMicroelectronics Pressure Sensors
+         enum:
+           - st,lps001wp-press
++          - st,lps22df
+           - st,lps22hb-press
+           - st,lps22hh
+           - st,lps25h-press
+@@ -141,6 +142,7 @@ allOf:
+             - st,lis2mdl
+             - st,lis3l02dq
+             - st,lis3lv02dl-accel
++            - st,lps22df
+             - st,lps22hb-press
+             - st,lps22hh
+             - st,lps25h-press
 -- 
-2.37.3
+2.35.1
 
