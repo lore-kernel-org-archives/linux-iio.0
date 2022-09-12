@@ -2,114 +2,100 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 743B7C6FA83
-	for <linux-iio@archiver.kernel.org>; Mon, 12 Sep 2022 10:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8691BECAAD5
+	for <linux-iio@archiver.kernel.org>; Mon, 12 Sep 2022 10:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230016AbiILK2i (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 12 Sep 2022 06:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
+        id S229727AbiILKrB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 12 Sep 2022 06:47:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbiILK2h (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Sep 2022 06:28:37 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EE639B9C;
-        Mon, 12 Sep 2022 03:28:36 -0700 (PDT)
-Received: from mercury (unknown [185.122.133.20])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id D43596601FDD;
-        Mon, 12 Sep 2022 11:28:34 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1662978515;
-        bh=Xjl7kTJeZ2nONpBk10Yzpv6u6vfACUqH8y3R+xm4q+8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=I0M9rjwy5Q2EeroeuXJ11DmtRSQe8LkTof/d8GMVwx5v6wpaYrt7V0jlMzmODNZw6
-         2U9tBHjFMfArkXA6FvEEeLikNsCPUz5DfIYOk7pPEg0ez7Ifr5/EvM3VyeBqMfXNZO
-         QnS9W8ZafXgA+yYcskSaNJR3BUi5sbOUA5JKu7310dfyoJvG+cm0vHOwGzq1mlZsEc
-         FxvVIMdljhnGWWJJEG4vcyTNOP9eIIH6yFOnHplJhX+lqRRoaSWhViN4B2fuGiQZD4
-         XKuQMaSEEjmTNObtFKfBRMUKvKQMbsXBmVzzn0F04avbjWpoZD8n8uWSA1jYKrhCxo
-         ZqRyPIK892MEg==
-Received: by mercury (Postfix, from userid 1000)
-        id 641E71063363; Sun, 11 Sep 2022 15:31:01 +0200 (CEST)
-Date:   Sun, 11 Sep 2022 15:31:01 +0200
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Saravanan Sekar <sravanhome@gmail.com>
-Cc:     lee.jones@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, jic23@kernel.org,
-        lars@metafoo.de, andy.shevchenko@gmail.com,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 5/6] power: supply: Add support for mp2733 battery
- charger
-Message-ID: <20220911133101.7g6hnwp3dnnqrmgb@mercury.elektranox.org>
-References: <20220615145357.2370044-1-sravanhome@gmail.com>
- <20220615145357.2370044-6-sravanhome@gmail.com>
+        with ESMTP id S229735AbiILKq6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Sep 2022 06:46:58 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B563205D
+        for <linux-iio@vger.kernel.org>; Mon, 12 Sep 2022 03:46:55 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oXgxc-0008D1-QD; Mon, 12 Sep 2022 12:46:40 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oXgxW-000HXz-Og; Mon, 12 Sep 2022 12:46:33 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oXgxU-000MJM-Il; Mon, 12 Sep 2022 12:46:32 +0200
+Date:   Mon, 12 Sep 2022 12:46:31 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Denys Zagorui <dzagorui@cisco.com>, Meng.Li@windriver.com,
+        lars@metafoo.de, Michael.Hennerich@analog.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: ltc2497: Fix reading conversion results
+Message-ID: <20220912104631.zysrv2qqxvsjfbxc@pengutronix.de>
+References: <20220815091647.1523532-1-dzagorui@cisco.com>
+ <20220820130648.5b9bc66f@jic23-huawei>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qcqgmqhaojla5l7i"
+        protocol="application/pgp-signature"; boundary="ezvf3oge3bxykhco"
 Content-Disposition: inline
-In-Reply-To: <20220615145357.2370044-6-sravanhome@gmail.com>
+In-Reply-To: <20220820130648.5b9bc66f@jic23-huawei>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 
---qcqgmqhaojla5l7i
-Content-Type: text/plain; charset=us-ascii
+--ezvf3oge3bxykhco
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-On Wed, Jun 15, 2022 at 04:53:56PM +0200, Saravanan Sekar wrote:
-> mp2733 is updated version of mp2629 battery charge management
-> which supports USB fast-charge and higher range of input voltage.
+On Sat, Aug 20, 2022 at 01:06:48PM +0100, Jonathan Cameron wrote:
+> On Mon, 15 Aug 2022 09:16:47 +0000
+> Denys Zagorui <dzagorui@cisco.com> wrote:
 >=20
-> Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> ---
-> [...]
->  	psy_cfg.drv_data =3D charger;
-> -	psy_cfg.attr_grp =3D mp2629_charger_sysfs_groups;
-> +	if (charger->chip_info->has_impedance)
-> +		psy_cfg.attr_grp =3D mp2629_charger_sysfs_groups;
-> +
-> +	if (charger->chip_info->has_fast_charge)
-> +		psy_cfg.attr_grp =3D mp2733_charger_sysfs_groups;
-> +
->  	charger->battery =3D devm_power_supply_register(dev,
->  					 &mp2629_battery_desc, &psy_cfg);
->  	if (IS_ERR(charger->battery)) {
+> > From: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> >=20
+> > After the result of the previous conversion is read the chip
+> > automatically starts a new conversion and doesn't accept new i2c
+> > transfers until this conversion is completed which makes the function
+> > return failure.
+>=20
+> That's rather nasty.
+>=20
+> Could we add a cheeky sleep in the other path to ensure there is always
+> time for the conversion to be done?  Not ideal, but might ensure
+> there isn't a known problem path without introducing much complexity.
 
-Instead of having has_impedance and has_fast_charge feature
-flag that are mutual exclusive, store the device type and
-use if/else or switch statement to chose the correct attr_grp.
-Other than that:
+FTR: While the patch was originally authored by me, I don't currently
+have access to a machine with that chip. So currently there will be no
+incentive on my side to address this feedback.
 
-Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Best regards
+Uwe
 
--- Sebastian
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
---qcqgmqhaojla5l7i
+--ezvf3oge3bxykhco
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmMd4xEACgkQ2O7X88g7
-+poocA/+Lz3J1X/X7Tv6Qr1eROOD7GUNz0r9mAnvehTOu5seQCOA4N/RO8m9UlOg
-94ZqS8NjdOUyr4QuRDmr6fH8WkgTrBzeW4bDHp+tIEwhIsxp6LGwxet3A6165mkB
-99Tg0KEddnfGxSQ06ma2Fda8yWPKeYimHgETJLI+e3A7fOeVTnCSB+AOUNpnmc+J
-r8Xqbj0uckH4hTecKJPMPRpzMoDmjJh5LDpXN4QM5MnjMXlMLrbEl8XRoNsUMeg+
-TeQcsSwPJs+QwyokMUN6odEkuLKjxc64KNovztyhrFYq+ysVOwCYiLD+9yiMqkyQ
-A3N3T1Y8/3gHCNuV+3O+ORGsZT7hcUceTzFiRVzGknJpZU0fnRMxv4BUaC6aosHH
-r+J4WfD5pJP/O7Ji3y/uhCNHhgXtDQtaqrZlQEUIej+V9FxVGcxJGFeKw9jZkCHJ
-+aYW7fT1hg4bkzYZpUcMdkkcc/Y8iHmHvmS4c0iPh6USP66nIGknfxGez5HeVF+E
-efr6/kmDDw4gkB9NIA2QFRbfyikPNyW3d48ahY4N9U3cWYq7oGRMmDopQVhq9Ho4
-Brl7PjjebDyauG0QGFEaxamtYvg6clTkenevN1BiEGCdnQRsKqG3poh6Gh2iuTtZ
-m/DW9+cyjE57uWSIQZ3MDcL4ROK77FLNJ+FNErt1cqbAqOQ4A2k=
-=8nRK
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmMfDgQACgkQwfwUeK3K
+7AmQ6gf+NR1FwVMFUWi//G/dOvI5TtKnE0cBWo/3lgdWKrl4gI23fUrjPzLtj6NL
+gFNMKWNV9IXtcAlgqsupSgijpP1Z7Ekyy+J8tEmFEoxpSVwLD4f+teYSQfSsuufa
+GougDEpKASI4zg+IICkN1d7aqKb6oDbGEZgZyO1AxwveJka7h+Fs58m6dOd1F0LE
+VtxTJtNeQa5ZiNJBu51a6xKatwM/bksdyjDYhLbC7bH6pGZWxeHBQBt5o/3fNBVi
+L7gqYWoAhSvUMooGJaTOlJjtxsGvNBL1l4krxpsvhkjDWclfa+d3D2IUKklTWxGh
+y3WVQ5YzOb9nDZachCn/42qSkaE29Q==
+=4MJU
 -----END PGP SIGNATURE-----
 
---qcqgmqhaojla5l7i--
+--ezvf3oge3bxykhco--
