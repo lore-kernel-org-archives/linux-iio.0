@@ -2,316 +2,113 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B92B6C6FA90
-	for <linux-iio@archiver.kernel.org>; Mon, 12 Sep 2022 21:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABD3C6FA83
+	for <linux-iio@archiver.kernel.org>; Mon, 12 Sep 2022 22:27:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiILV2I (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 12 Sep 2022 17:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57902 "EHLO
+        id S230106AbiILW1Z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 12 Sep 2022 18:27:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiILV2G (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Sep 2022 17:28:06 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94AA4A820;
-        Mon, 12 Sep 2022 14:28:02 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28CLOlDR010615;
-        Mon, 12 Sep 2022 21:27:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=Cfu5FJZ4JG5jLdo4Iw5LJ1Ej88atCRf+rYVjWppK3As=;
- b=afqsEfXpwYYU8p0GpC236yenRtdWjtOAHGPAxd84h8TDfiiOJ1VWZhsxueco0xCnx7oO
- pXhf7Pm/huSvWFlFBhyo0+M9lCoVld4tYww0JoZEDCM8zsNBbXkGn/2FO6vtVYKBMSGV
- ZIJfjd9psOuv3+m2ubp2MW/qMo43YMXy0nYGVFV7J1t8CzkiG49cNy4AMGyYXsDZucFn
- pcvxX4CHkbiDW/kXs0ukO45v2NePUYx/Ilw67hvGm88ndkChY/T+Aa2k7GLfBJtoxRRX
- gZVdMpezuGHrR9r9FFzLHzLGw5KYV8uwjfn7wM/p4E2vWtaY4/4+0nBM05awf1TxYIz+ oA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jjcnn81b5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 12 Sep 2022 21:27:47 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 28CLRkDZ021169;
-        Mon, 12 Sep 2022 21:27:46 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jjcnn81av-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 12 Sep 2022 21:27:46 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28CLLuOT023750;
-        Mon, 12 Sep 2022 21:27:45 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma04dal.us.ibm.com with ESMTP id 3jgj7a3x37-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 12 Sep 2022 21:27:45 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28CLRj2k64029008
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 12 Sep 2022 21:27:45 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E53B0AE064;
-        Mon, 12 Sep 2022 21:27:44 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4C856AE05C;
-        Mon, 12 Sep 2022 21:27:44 +0000 (GMT)
-Received: from slate16.aus.stglabs.ibm.com (unknown [9.77.129.206])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 12 Sep 2022 21:27:44 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     jic23@kernel.org
-Cc:     lars@metafoo.de, linux-iio@vger.kernel.org, joel@jms.id.au,
-        linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
-        stable@vger.kernel.org, eajames@linux.ibm.com
-Subject: [PATCH v7 1/2] iio: pressure: dps310: Refactor startup procedure
-Date:   Mon, 12 Sep 2022 16:27:42 -0500
-Message-Id: <20220912212743.37365-2-eajames@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220912212743.37365-1-eajames@linux.ibm.com>
-References: <20220912212743.37365-1-eajames@linux.ibm.com>
+        with ESMTP id S229945AbiILW1Y (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Sep 2022 18:27:24 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15EF205D2;
+        Mon, 12 Sep 2022 15:27:22 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id b5so17778592wrr.5;
+        Mon, 12 Sep 2022 15:27:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=W9K0Nbt/PATc7AYj/Tml8RmmX7jWgySUjWvxLIPI9Hs=;
+        b=OPQqp90XxQK8MNhCyZoOlB+WrzpdCGgXnFA/R5DjvJaGBHJm4UEwGxwqHJQNkKNiZI
+         YFTR9ACJo8zLkhPIoZiE0/Y5V83TVrqbFIqmcEEpynmAg6cZCQoa1O7lBU/69WWUm6Pg
+         Y5J4fVXZ53akuJRe0UxiG8kwxWzWspUmBiceMW/GiAnEF32IO2izerYbStj5DfCHmW6/
+         L8Fg0UpFn5HN/8lSahK7yCPjJLaYTBfhBXbIUNnFFTeT0q23Dl9WHyZ5TIfsh12t8bEX
+         Pau5H9DBHmjl6CYkpi129TjS3SOKJY3Hip4zBTmu3zmVgVtc4S+dnkLkv1wbYq+Cb4/E
+         rA5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=W9K0Nbt/PATc7AYj/Tml8RmmX7jWgySUjWvxLIPI9Hs=;
+        b=ICYamR3BClZ6nvUnlDTyLdl7mpoRU9TEB5LKsnegFjAQknqgLezQE9AN9LKc/O7Mr5
+         khkMAoox9uchUQQkAEOlCB3oNX0cSB/HiZLtBEXM0l7HPcd8glw0t2EwvjrXLZ4iBnXB
+         GSsWcQG0N02hb24xSYczKV++s0t7ihtv5KUr4bsOfpMzdbEVPgivr48iPpr02VZt8UYZ
+         cgDxqSvE79plIm8rmPfO2Q+QSQTaMLDRzgrVTBH+ytYcrmjXjsr4EgeFLAW4cBsoveaK
+         qd6BRfuFb4940Zd7sVYh140uiHcNx3Ewudt4etfuQ2wC2SlVKqFQuUDiVTpnRWxJu/Tu
+         K1sw==
+X-Gm-Message-State: ACgBeo1lS+zszAbNEy3zltIbEXetFprIpI02r1zNvKm4J1HMBXzl4jCf
+        SsxCQOmQv7ukXz28++1ap5cAFggvSBs=
+X-Google-Smtp-Source: AA6agR6tnpc15rOuInOrql8gSUcH9upaUnlMbRgDrT3Wk8XtoGK4DV88jFgk9B0Q7nj2TsQ+B3jrmQ==
+X-Received: by 2002:a05:6000:1561:b0:22a:72a1:e3f1 with SMTP id 1-20020a056000156100b0022a72a1e3f1mr5392788wrz.456.1663021640859;
+        Mon, 12 Sep 2022 15:27:20 -0700 (PDT)
+Received: from localhost.localdomain (188.red-83-35-57.dynamicip.rima-tde.net. [83.35.57.188])
+        by smtp.gmail.com with ESMTPSA id n186-20020a1ca4c3000000b003b47b80cec3sm7067940wme.42.2022.09.12.15.27.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Sep 2022 15:27:20 -0700 (PDT)
+From:   Angel Iglesias <ang.iglesiasg@gmail.com>
+To:     linux-iio <linux-iio@vger.kernel.org>
+Cc:     Angel Iglesias <ang.iglesiasg@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Paul Cercueil <paul@crapouillou.net>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: pressure: bmp280: fix datasheet links
+Date:   Tue, 13 Sep 2022 00:26:44 +0200
+Message-Id: <20220912222645.377874-1-ang.iglesiasg@gmail.com>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <CAHp75VeSsVD8rMz-Cj6kFovqdQQPjbH7rUXWS6paRtsBaB-Kww@mail.gmail.com>
+References: <CAHp75VeSsVD8rMz-Cj6kFovqdQQPjbH7rUXWS6paRtsBaB-Kww@mail.gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: FmNZql93hiWmbzHXHJCdSkO-9L2T6YTH
-X-Proofpoint-ORIG-GUID: OXSUVhQARuUrLdV3-br5n0L7boDDTzEg
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-09-12_14,2022-09-12_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
- adultscore=0 mlxscore=0 lowpriorityscore=0 malwarescore=0 mlxlogscore=999
- suspectscore=0 bulkscore=0 spamscore=0 phishscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2209120071
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Move the startup procedure into a function, and correct a missing
-check on the return code for writing the PRS_CFG register.
+Updated links for BMP280 and BME280 datasheets on Bosch website.
+Datasheet of BMP180 is no longer available on the manufacturer's website,
+changed the link to a copy hosted by a third party.
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Reviewed-by: Joel Stanley <joel@jms.id.au>
+Changelog in v2:
+* Added a notice about the situation with bmp180 datasheet and list
+  missing changes from newer versions.
+
+Reported-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
 ---
- drivers/iio/pressure/dps310.c | 188 ++++++++++++++++++----------------
- 1 file changed, 99 insertions(+), 89 deletions(-)
+ drivers/iio/pressure/bmp280-core.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-index 36fb7ae0d0a9..c706a8b423b5 100644
---- a/drivers/iio/pressure/dps310.c
-+++ b/drivers/iio/pressure/dps310.c
-@@ -159,6 +159,102 @@ static int dps310_get_coefs(struct dps310_data *data)
- 	return 0;
- }
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index fe7aa81e7cc9..01cd32003ca8 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -9,9 +9,15 @@
+  * Driver for Bosch Sensortec BMP180 and BMP280 digital pressure sensor.
+  *
+  * Datasheet:
+- * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP180-DS000-121.pdf
+- * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP280-DS001-12.pdf
+- * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280_DS001-11.pdf
++ * https://cdn-shop.adafruit.com/datasheets/BST-BMP180-DS000-09.pdf
++ * https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp280-ds001.pdf
++ * https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme280-ds002.pdf
++ *
++ * Notice:
++ * The link to the bmp180 datasheet points to an outdated version missing these changes:
++ * - Changed document referral from ANP015 to BST-MPS-AN004-00 on page 26
++ * - Updated equation for B3 param on section 3.5 to ((((long)AC1 * 4 + X3) << oss) + 2) / 4
++ * - Updated RoHS directive to 2011/65/EU effective 8 June 2011 on page 26
+  */
  
-+/*
-+ * Some versions of the chip will read temperatures in the ~60C range when
-+ * it's actually ~20C. This is the manufacturer recommended workaround
-+ * to correct the issue. The registers used below are undocumented.
-+ */
-+static int dps310_temp_workaround(struct dps310_data *data)
-+{
-+	int rc;
-+	int reg;
-+
-+	rc = regmap_read(data->regmap, 0x32, &reg);
-+	if (rc)
-+		return rc;
-+
-+	/*
-+	 * If bit 1 is set then the device is okay, and the workaround does not
-+	 * need to be applied
-+	 */
-+	if (reg & BIT(1))
-+		return 0;
-+
-+	rc = regmap_write(data->regmap, 0x0e, 0xA5);
-+	if (rc)
-+		return rc;
-+
-+	rc = regmap_write(data->regmap, 0x0f, 0x96);
-+	if (rc)
-+		return rc;
-+
-+	rc = regmap_write(data->regmap, 0x62, 0x02);
-+	if (rc)
-+		return rc;
-+
-+	rc = regmap_write(data->regmap, 0x0e, 0x00);
-+	if (rc)
-+		return rc;
-+
-+	return regmap_write(data->regmap, 0x0f, 0x00);
-+}
-+
-+static int dps310_startup(struct dps310_data *data)
-+{
-+	int rc;
-+	int ready;
-+
-+	/*
-+	 * Set up pressure sensor in single sample, one measurement per second
-+	 * mode
-+	 */
-+	rc = regmap_write(data->regmap, DPS310_PRS_CFG, 0);
-+	if (rc)
-+		return rc;
-+
-+	/*
-+	 * Set up external (MEMS) temperature sensor in single sample, one
-+	 * measurement per second mode
-+	 */
-+	rc = regmap_write(data->regmap, DPS310_TMP_CFG, DPS310_TMP_EXT);
-+	if (rc)
-+		return rc;
-+
-+	/* Temp and pressure shifts are disabled when PRC <= 8 */
-+	rc = regmap_write_bits(data->regmap, DPS310_CFG_REG,
-+			       DPS310_PRS_SHIFT_EN | DPS310_TMP_SHIFT_EN, 0);
-+	if (rc)
-+		return rc;
-+
-+	/* MEAS_CFG doesn't update correctly unless first written with 0 */
-+	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
-+			       DPS310_MEAS_CTRL_BITS, 0);
-+	if (rc)
-+		return rc;
-+
-+	/* Turn on temperature and pressure measurement in the background */
-+	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
-+			       DPS310_MEAS_CTRL_BITS, DPS310_PRS_EN |
-+			       DPS310_TEMP_EN | DPS310_BACKGROUND);
-+	if (rc)
-+		return rc;
-+
-+	/*
-+	 * Calibration coefficients required for reporting temperature.
-+	 * They are available 40ms after the device has started
-+	 */
-+	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
-+				      ready & DPS310_COEF_RDY, 10000, 40000);
-+	if (rc)
-+		return rc;
-+
-+	rc = dps310_get_coefs(data);
-+	if (rc)
-+		return rc;
-+
-+	return dps310_temp_workaround(data);
-+}
-+
- static int dps310_get_pres_precision(struct dps310_data *data)
- {
- 	int rc;
-@@ -677,52 +773,12 @@ static const struct iio_info dps310_info = {
- 	.write_raw = dps310_write_raw,
- };
- 
--/*
-- * Some verions of chip will read temperatures in the ~60C range when
-- * its actually ~20C. This is the manufacturer recommended workaround
-- * to correct the issue. The registers used below are undocumented.
-- */
--static int dps310_temp_workaround(struct dps310_data *data)
--{
--	int rc;
--	int reg;
--
--	rc = regmap_read(data->regmap, 0x32, &reg);
--	if (rc < 0)
--		return rc;
--
--	/*
--	 * If bit 1 is set then the device is okay, and the workaround does not
--	 * need to be applied
--	 */
--	if (reg & BIT(1))
--		return 0;
--
--	rc = regmap_write(data->regmap, 0x0e, 0xA5);
--	if (rc < 0)
--		return rc;
--
--	rc = regmap_write(data->regmap, 0x0f, 0x96);
--	if (rc < 0)
--		return rc;
--
--	rc = regmap_write(data->regmap, 0x62, 0x02);
--	if (rc < 0)
--		return rc;
--
--	rc = regmap_write(data->regmap, 0x0e, 0x00);
--	if (rc < 0)
--		return rc;
--
--	return regmap_write(data->regmap, 0x0f, 0x00);
--}
--
- static int dps310_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
- 	struct dps310_data *data;
- 	struct iio_dev *iio;
--	int rc, ready;
-+	int rc;
- 
- 	iio = devm_iio_device_alloc(&client->dev,  sizeof(*data));
- 	if (!iio)
-@@ -747,54 +803,8 @@ static int dps310_probe(struct i2c_client *client,
- 	if (rc)
- 		return rc;
- 
--	/*
--	 * Set up pressure sensor in single sample, one measurement per second
--	 * mode
--	 */
--	rc = regmap_write(data->regmap, DPS310_PRS_CFG, 0);
--
--	/*
--	 * Set up external (MEMS) temperature sensor in single sample, one
--	 * measurement per second mode
--	 */
--	rc = regmap_write(data->regmap, DPS310_TMP_CFG, DPS310_TMP_EXT);
--	if (rc < 0)
--		return rc;
--
--	/* Temp and pressure shifts are disabled when PRC <= 8 */
--	rc = regmap_write_bits(data->regmap, DPS310_CFG_REG,
--			       DPS310_PRS_SHIFT_EN | DPS310_TMP_SHIFT_EN, 0);
--	if (rc < 0)
--		return rc;
--
--	/* MEAS_CFG doesn't update correctly unless first written with 0 */
--	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
--			       DPS310_MEAS_CTRL_BITS, 0);
--	if (rc < 0)
--		return rc;
--
--	/* Turn on temperature and pressure measurement in the background */
--	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
--			       DPS310_MEAS_CTRL_BITS, DPS310_PRS_EN |
--			       DPS310_TEMP_EN | DPS310_BACKGROUND);
--	if (rc < 0)
--		return rc;
--
--	/*
--	 * Calibration coefficients required for reporting temperature.
--	 * They are available 40ms after the device has started
--	 */
--	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
--				      ready & DPS310_COEF_RDY, 10000, 40000);
--	if (rc < 0)
--		return rc;
--
--	rc = dps310_get_coefs(data);
--	if (rc < 0)
--		return rc;
--
--	rc = dps310_temp_workaround(data);
--	if (rc < 0)
-+	rc = dps310_startup(data);
-+	if (rc)
- 		return rc;
- 
- 	rc = devm_iio_device_register(&client->dev, iio);
+ #define pr_fmt(fmt) "bmp280: " fmt
+
+base-commit: 2f61ff8272967c9bdcba810aa978170814b08f7c
 -- 
-2.31.1
+2.37.3
 
