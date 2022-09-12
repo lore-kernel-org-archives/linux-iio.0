@@ -2,44 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F48FECAAD5
-	for <linux-iio@archiver.kernel.org>; Mon, 12 Sep 2022 08:11:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0BE4C6FA83
+	for <linux-iio@archiver.kernel.org>; Mon, 12 Sep 2022 08:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbiILILo convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 12 Sep 2022 04:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46784 "EHLO
+        id S229997AbiILILp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 12 Sep 2022 04:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbiILILm (ORCPT
+        with ESMTP id S229882AbiILILm (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Sep 2022 04:11:42 -0400
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F64A2528B;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D426F24F33;
         Mon, 12 Sep 2022 01:11:41 -0700 (PDT)
 Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28C5gmD7018934;
-        Mon, 12 Sep 2022 04:11:21 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3jgme5mnks-1
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28C5LsfQ020124;
+        Mon, 12 Sep 2022 04:11:22 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3jgme5mnkx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 12 Sep 2022 04:11:21 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 28C8BKHB023845
+        Mon, 12 Sep 2022 04:11:22 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 28C8BKqk062620
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
         Mon, 12 Sep 2022 04:11:20 -0400
 Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 12 Sep 2022 04:11:19 -0400
+ 15.2.986.14; Mon, 12 Sep 2022 04:11:20 -0400
 Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
  ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 12 Sep 2022 04:11:17 -0400
+ 15.2.986.14; Mon, 12 Sep 2022 04:11:19 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 12 Sep 2022 04:11:17 -0400
+ Transport; Mon, 12 Sep 2022 04:11:19 -0400
 Received: from nsa.ad.analog.com ([10.44.3.57])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 28C8B4He011932;
-        Mon, 12 Sep 2022 04:11:07 -0400
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 28C8B4Hg011932;
+        Mon, 12 Sep 2022 04:11:14 -0400
 From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
 To:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
 CC:     Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -48,16 +47,18 @@ CC:     Michael Hennerich <Michael.Hennerich@analog.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH v2 0/3] ad7923 fixes and full range support
-Date:   Mon, 12 Sep 2022 10:12:20 +0200
-Message-ID: <20220912081223.173584-1-nuno.sa@analog.com>
+Subject: [PATCH v2 2/3] iio: adc: ad7923: support extended range
+Date:   Mon, 12 Sep 2022 10:12:22 +0200
+Message-ID: <20220912081223.173584-3-nuno.sa@analog.com>
 X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220912081223.173584-1-nuno.sa@analog.com>
+References: <20220912081223.173584-1-nuno.sa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: Q_YKxESZGDBfwXmbFt6ShrX3QN9FZmFJ
-X-Proofpoint-ORIG-GUID: Q_YKxESZGDBfwXmbFt6ShrX3QN9FZmFJ
+X-Proofpoint-GUID: rXSSxqIhsvqv9Jlr_tn2iskcmFK5b5v_
+X-Proofpoint-ORIG-GUID: rXSSxqIhsvqv9Jlr_tn2iskcmFK5b5v_
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
  definitions=2022-09-12_04,2022-09-09_01,2022-06-22_01
@@ -70,31 +71,49 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patchset adds important fixes for some of the variants supported by the
-driver with respect with raw and buffered reads. On top of this way, adds
-a new firmware property to be able to support all the scales supported by
-the hardware.
+By default the driver was always setting the RANGE bit which means that
+the analog input goes from 0 to VREF. However, we might want to have 0
+to 2xVREF. This change adds a new Firmware property to allow for the
+extended range while keeping the default behavior if nothing is provided.
 
-v2:
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+ drivers/iio/adc/ad7923.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-[1/3]
- * Calculate shift using 12 - realbits.
-
-[2/3]
- * Use a boolean property and change the code accordingly.
-
-[3/3]
- * Use a boolean property (adi,range-double).
-
-Nuno Sá (3):
-  iio: adc: ad7923: fix channel readings for some variants
-  iio: adc: ad7923: support extended range
-  dt-bindings: iio: adi,ad7923: add adi,range-double property
-
- .../devicetree/bindings/iio/adc/adi,ad7923.yaml       |  4 ++++
- drivers/iio/adc/ad7923.c                              | 11 +++++++++--
- 2 files changed, 13 insertions(+), 2 deletions(-)
-
+diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
+index 502253f53d96..9d6bf6d0927a 100644
+--- a/drivers/iio/adc/ad7923.c
++++ b/drivers/iio/adc/ad7923.c
+@@ -8,6 +8,7 @@
+ 
+ #include <linux/device.h>
+ #include <linux/kernel.h>
++#include <linux/property.h>
+ #include <linux/slab.h>
+ #include <linux/sysfs.h>
+ #include <linux/spi/spi.h>
+@@ -300,6 +301,7 @@ static void ad7923_regulator_disable(void *data)
+ 
+ static int ad7923_probe(struct spi_device *spi)
+ {
++	u32 ad7923_range = AD7923_RANGE;
+ 	struct ad7923_state *st;
+ 	struct iio_dev *indio_dev;
+ 	const struct ad7923_chip_info *info;
+@@ -311,8 +313,11 @@ static int ad7923_probe(struct spi_device *spi)
+ 
+ 	st = iio_priv(indio_dev);
+ 
++	if (device_property_read_bool(&spi->dev, "adi,range-double"))
++		ad7923_range = 0;
++
+ 	st->spi = spi;
+-	st->settings = AD7923_CODING | AD7923_RANGE |
++	st->settings = AD7923_CODING | ad7923_range |
+ 			AD7923_PM_MODE_WRITE(AD7923_PM_MODE_OPS);
+ 
+ 	info = &ad7923_chip_info[spi_get_device_id(spi)->driver_data];
 -- 
 2.37.3
 
