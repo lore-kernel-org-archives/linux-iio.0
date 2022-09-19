@@ -2,107 +2,109 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A12ECAAD3
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Sep 2022 15:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D94A9C54EE9
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Sep 2022 15:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230011AbiISPrs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 19 Sep 2022 11:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35232 "EHLO
+        id S230178AbiISPuc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 19 Sep 2022 11:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbiISPrr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Sep 2022 11:47:47 -0400
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A892CC97
-        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 08:47:46 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4MWTY90LWCzlCBv
-        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 23:46:05 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.102.38])
-        by APP2 (Coremail) with SMTP id Syh0CgDHGXMdjyhjdE1XBA--.65359S4;
-        Mon, 19 Sep 2022 23:47:41 +0800 (CST)
-From:   Wei Yongjun <weiyongjun@huaweicloud.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+        with ESMTP id S230310AbiISPub (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Sep 2022 11:50:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6DE33408
+        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 08:50:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 607A5B80AC7
+        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 15:50:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46C19C433C1;
+        Mon, 19 Sep 2022 15:50:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663602627;
+        bh=HiC4CCvv2rW5PrX0xpMkv8VORwExllEenz47jxeMIvI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YWqrZQvN4D93y9PrdxeqxBMazyd+iK+iG+9JHspBl+EgC/cXQrQYphMmVzMoJpS81
+         +WgVUUWpC9Wh8YE55gTTDj9iMpOXWVbUwImGMfBgDJiIPIq4MW6EqZjLJEUD032IfC
+         5IQ4HFy5z+ijyNiL9a1BELWw8cvEaXvWfe49GwrTPioka8qimdyLDMsgGUnaqppE+i
+         CR3sQAr98FxJB2pZovyAvXdrX9AERdVN+N8/jfTmMjgZE8ATSjh/2gU5WkE0MUOlWt
+         Qq5UyCLyNqc+6rUCfwVSk3pi1a2IYlz58+DGmae/5RNurPLKfHwjylGBQ+eOqxv3PU
+         C2l1HjMWIavBA==
+Date:   Mon, 19 Sep 2022 16:50:30 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Wei Yongjun <weiyongjun@huaweicloud.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
-        LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>,
-        Tomas Melin <tomas.melin@vaisala.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>, linux-iio@vger.kernel.org
-Subject: [PATCH v2] iio: accel: sca3300: Silent no spi_device_id warning
-Date:   Mon, 19 Sep 2022 16:04:59 +0000
-Message-Id: <20220919160459.1436053-1-weiyongjun@huaweicloud.com>
-X-Mailer: git-send-email 2.34.1
+        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Wei Yongjun <weiyongjun1@huawei.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ti-ads131e08: Silent no spi_device_id
+ warnings
+Message-ID: <20220919165030.541bb3ea@jic23-huawei>
+In-Reply-To: <20220919150011.823383-1-weiyongjun@huaweicloud.com>
+References: <20220919150011.823383-1-weiyongjun@huaweicloud.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: Syh0CgDHGXMdjyhjdE1XBA--.65359S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7CF48CF1kZFy7Gr4kJFyUAwb_yoW8Xr1DpF
-        s8Jry5ArZ7WF4rGrs3Zw1xZFy5K393Aa4agr47tw1S9rsxurWjga1fKFyxAr1DXrZ8Jw1a
-        qFy2grW2gF48A37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUgGb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7Cj
-        xVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I
-        0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
-        x7xfMcIj6xIIjxv20xvE14v26r126r1DMcIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x
-        0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Y
-        z7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zV
-        AF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4l
-        IxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVW8JVW3Jw
-        CI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnI
-        WIevJa73UjIFyTuYvjxUza9aDUUUU
-X-CM-SenderInfo: 5zhl50pqjm3046kxt4xhlfz01xgou0bp/
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+On Mon, 19 Sep 2022 15:00:11 +0000
+Wei Yongjun <weiyongjun@huaweicloud.com> wrote:
 
-SPI devices use the spi_device_id for module autoloading even on
-systems using device tree, after commit 5fa6863ba692 ("spi: Check
-we have a spi_device_id for each DT compatible"), kernel warns as
-follows since the spi_device_id is missing:
+> From: Wei Yongjun <weiyongjun1@huawei.com>
+> 
+> Add spi_device_id entries to silent following SPI warnings:
+> 
+> SPI driver ads131e08 has no spi_device_id for ti,ads131e04
+> SPI driver ads131e08 has no spi_device_id for ti,ads131e06
+> 
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> ---
+>  drivers/iio/adc/ti-ads131e08.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/ti-ads131e08.c b/drivers/iio/adc/ti-ads131e08.c
+> index 5235a93f28bc..9a6bc1be2877 100644
+> --- a/drivers/iio/adc/ti-ads131e08.c
+> +++ b/drivers/iio/adc/ti-ads131e08.c
+> @@ -926,12 +926,21 @@ static const struct of_device_id ads131e08_of_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(of, ads131e08_of_match);
+>  
+> +static const struct spi_device_id ads131e08_ids[] = {
+> +	{ "ads131e04", (kernel_ulong_t)&ads131e08_info_tbl[ads131e04] },
 
-SPI driver sca3300 has no spi_device_id for murata,scl3300
+If we are going to provide this, please also modify the getting of the
+const struct ads131e08_info to use spi_get_device_id(spi)->driver_data
+if device_get_match_data() returned NULL.
 
-Add spi_device_id entries to silent the warnings, and fix the
-module autoloading for the driver.
+ I don't think we have any magic in the SPI core to make that association
+(maybe I missed a change there).
 
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
-v1 -> v2: add more info to commit message
-          remove comma for the terminator entry as Andy's comment
----
- drivers/iio/accel/sca3300.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+This is needed in case we are probing via a route that doesn't provide
+firmware info via the interfaces in linux/property.h
+and hence uses the spi_device_id table to get this info.
 
-diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
-index eaa0c9cfda44..693fbe8d6cb9 100644
---- a/drivers/iio/accel/sca3300.c
-+++ b/drivers/iio/accel/sca3300.c
-@@ -679,12 +679,20 @@ static const struct of_device_id sca3300_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, sca3300_dt_ids);
- 
-+static const struct spi_device_id sca3300_ids[] = {
-+	{ "sca3300" },
-+	{ "scl3300" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, sca3300_ids);
-+
- static struct spi_driver sca3300_driver = {
--	.driver = {
-+	.driver   = {
- 		.name		= SCA3300_ALIAS,
- 		.of_match_table = sca3300_dt_ids,
- 	},
--	.probe	= sca3300_probe,
-+	.probe	  = sca3300_probe,
-+	.id_table = sca3300_ids,
- };
- module_spi_driver(sca3300_driver);
- 
--- 
-2.34.1
+
+> +	{ "ads131e06", (kernel_ulong_t)&ads131e08_info_tbl[ads131e06] },
+> +	{ "ads131e08", (kernel_ulong_t)&ads131e08_info_tbl[ads131e08] },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(spi, ads131e08_ids);
+> +
+>  static struct spi_driver ads131e08_driver = {
+>  	.driver = {
+>  		.name = "ads131e08",
+>  		.of_match_table = ads131e08_of_match,
+>  	},
+>  	.probe = ads131e08_probe,
+> +	.id_table = ads131e08_ids,
+>  };
+>  module_spi_driver(ads131e08_driver);
+>  
 
