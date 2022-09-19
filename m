@@ -2,89 +2,104 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1714CECAAD3
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Sep 2022 15:41:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16591C6FA86
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Sep 2022 15:46:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230149AbiISPlD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 19 Sep 2022 11:41:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53952 "EHLO
+        id S230237AbiISPqG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 19 Sep 2022 11:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229568AbiISPlB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Sep 2022 11:41:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E380433340
-        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 08:41:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F10B61765
-        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 15:41:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC07C433D7;
-        Mon, 19 Sep 2022 15:40:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663602059;
-        bh=kKazNoAuaXAO/5n9CiTx2lZ+FkEBJF+OGXcPwq2ojY0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HyUt1X9t2jiy8WIkkhONfbzxBK5plcPKTaKpdW/9oVawYz/kMIWF3B7EMBvLRFyRX
-         Xi1lX5VDvQ6afxjCE35zyc+MMLE+YpA7nRJHRyYG/Sv4oGYiSdrMVdXmmJ6pFvDVJE
-         W0yfTXRQoZlrKMbIQJVBdckVnesKRef2UXvrj9PoVOZ8bsq5XTwaZsIzSwHBBNIRgt
-         kIqRS3D7L8GEZuiQqB5cUT9+oMqFgzcAwXUqsgP/kbKPNIc5t3EMS7azQAVa58TzhV
-         pVRF4foifoPEwSwcO+Bi9l9JRGxqgwmvG2uvdIQcVYiGVBFlKJT0ul7w23xi80cZT5
-         uC8m5lSfzXmqg==
-Date:   Mon, 19 Sep 2022 16:41:04 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Jagath Jog J <jagathjog1996@gmail.com>, linux-iio@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alexander Potapenko <glider@google.com>
-Subject: Re: [PATCH] iio: accel: bma400: Fix smatch warning based on use of
- unintialized value.
-Message-ID: <20220919164104.46dc5f1a@jic23-huawei>
-In-Reply-To: <YygH7FZ23HioBZGH@kadam>
-References: <20220917131401.2815486-1-jic23@kernel.org>
-        <CAM+2Eu+YCtCMKoWS9yJToEV__YB=enh=54b5thO+q4wGE80wZA@mail.gmail.com>
-        <20220918184503.0db7e82a@jic23-huawei>
-        <YygH7FZ23HioBZGH@kadam>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        with ESMTP id S230225AbiISPqF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Sep 2022 11:46:05 -0400
+Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F741A06B
+        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 08:46:01 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4MWTVp4hYrz6T2f6
+        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 23:44:02 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.102.38])
+        by APP2 (Coremail) with SMTP id Syh0CgC3VW+1jihj3j1XBA--.46965S4;
+        Mon, 19 Sep 2022 23:45:59 +0800 (CST)
+From:   Wei Yongjun <weiyongjun@huaweicloud.com>
+To:     Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>, linux-iio@vger.kernel.org
+Subject: [PATCH v2] iio: adc: ad7124: Silent no spi_device_id warnings
+Date:   Mon, 19 Sep 2022 16:03:15 +0000
+Message-Id: <20220919160315.1435974-1-weiyongjun@huaweicloud.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: Syh0CgC3VW+1jihj3j1XBA--.46965S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7CF48CF4UGr45ZF4rGrWfKrg_yoW8Xw1fpa
+        1rXryrCrZrWF4fCFnaqw4UuFyUG3Zak3yFgFsrGa9I9r9xZa48Wan3tF17Ar1DJFW8J39x
+        tF47XryUGF4rArJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUgKb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I
+        0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
+        x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
+        0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Y
+        z7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zV
+        AF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4l
+        IxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s
+        0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBI
+        daVFxhVjvjDU0xZFpf9x07UWE__UUUUU=
+X-CM-SenderInfo: 5zhl50pqjm3046kxt4xhlfz01xgou0bp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 19 Sep 2022 09:10:52 +0300
-Dan Carpenter <dan.carpenter@oracle.com> wrote:
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-> On Sun, Sep 18, 2022 at 06:45:03PM +0100, Jonathan Cameron wrote:
-> > On Sun, 18 Sep 2022 20:05:48 +0530
-> > Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> >   
-> > > Hi Jonathan,
-> > > 
-> > > Thank you for sending this patch.
-> > > If you need a tag for this fix.
-> > > 
-> > > Fixes: 961db2da159d ("iio: accel: bma400: Add support for single and
-> > > double tap events")  
-> > Good point. I'm careful about fixes tags to stuff still not upstream
-> > because they tend to be a little unstable. This should be fine.
-> > I'll see if it's valid when I rebase the tree (hopefully in a few days
-> > time).  
-> 
-> If you forget to update the tags after a rebase then Stephen Rothwell
-> will let you know.  It's best to not make Stephen's job more difficult,
-> but it's some comfort to know that mistakes will get caught.
-> 
-> regards,
-> dan carpenter
-> 
-Hi Dan,
+SPI devices use the spi_device_id for module autoloading even on
+systems using device tree, after commit 5fa6863ba692 ("spi: Check
+we have a spi_device_id for each DT compatible"), kernel warns as
+follows since the spi_device_id is missing:
 
-Having messed this up and caused Stephen pointless work several times I now
-have scripting (thanks to Greg KH's scripts and some local modes to make
-sure the tag is in the upstream of the fix) to check this but some how
-I still mess it up from time to time :(
+SPI driver ad7124 has no spi_device_id for adi,ad7124-4
+SPI driver ad7124 has no spi_device_id for adi,ad7124-8
 
-Jonathan
+Add spi_device_id entries to silent the warnings, and fix the
+module autoloading for the driver.
+
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+---
+v1 -> v2: add more info to commit message
+          remove comma for the terminator entry as Andy's comment
+---
+ drivers/iio/adc/ad7124.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+index 4088786e1026..10a3fc6d26a2 100644
+--- a/drivers/iio/adc/ad7124.c
++++ b/drivers/iio/adc/ad7124.c
+@@ -1021,12 +1021,20 @@ static const struct of_device_id ad7124_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, ad7124_of_match);
+ 
++static const struct spi_device_id ad71124_ids[] = {
++	{ "ad7124-4", (kernel_ulong_t)&ad7124_chip_info_tbl[ID_AD7124_4] },
++	{ "ad7124-8", (kernel_ulong_t)&ad7124_chip_info_tbl[ID_AD7124_8] },
++	{}
++};
++MODULE_DEVICE_TABLE(spi, ad71124_ids);
++
+ static struct spi_driver ad71124_driver = {
+ 	.driver = {
+ 		.name = "ad7124",
+ 		.of_match_table = ad7124_of_match,
+ 	},
+ 	.probe = ad7124_probe,
++	.id_table = ad71124_ids,
+ };
+ module_spi_driver(ad71124_driver);
+ 
+-- 
+2.34.1
 
