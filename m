@@ -2,60 +2,63 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A9CECAAD3
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Sep 2022 08:48:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED65C6FA93
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Sep 2022 08:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230061AbiISIsp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 19 Sep 2022 04:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43132 "EHLO
+        id S230077AbiISIsq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 19 Sep 2022 04:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230119AbiISIsl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Sep 2022 04:48:41 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE83222A8
-        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 01:48:40 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id l14so62835135eja.7
-        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 01:48:40 -0700 (PDT)
+        with ESMTP id S230122AbiISIsn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Sep 2022 04:48:43 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B79FBE36
+        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 01:48:42 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id lc7so62895462ejb.0
+        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 01:48:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=melexis.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=XNzy8QXvxwZ2UpTnDHe3R7XKvvfCImteHTl3mRKpcsM=;
-        b=i+MT/i2ms5AZZ+tjGq43WTntkkCCpoEtS138K73adMJjmg041OUPqWXqFvpM9KVywj
-         TDgke3sufaBSbceIGNOubrQo146uutANELNtaUc7uhLe6ZIsCrc3MeMSDCUQhVSWeMyn
-         E7dmcmeHqMN0hUjx5Wvktr1kU3tNYC1BG76oFKi84ydETh3HDKfGJf78UO1wAy4kmvjE
-         TbBe9PbfQ9F3xZBLkfTtjd+dP2Hti4piDHyS0tg6E3Zimw0vKyejAwPssL7mWFdSwuP+
-         QAJE5fAdNaeRdTZgVfw1txMlxG+tfhYrMUBKSMffUtGfG+ABRaN6v+nX8ZxsUiXez2kU
-         U0zA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=KfvECBL+S/JPrWMvitZCT4r906w4Xvb7QinxUzGg82I=;
+        b=jKdOCXbmaRn4fuTRvg00cqA3G/aKJd9B/0PwqwJ+PwA3ee+ne5DF+Kf2phz6tlWyA+
+         8Ut9E5+F6pTR5+SJTS4//V/jBCEKAbTEYbjJhe4vuHPmx3O1CLzC4TRVmxfI/WSpYB/k
+         1D4+bzjStSxReou/eL4Ohzq2TGeYEFtZfeIzMWaYvRqbBXX8zf8SJYQ6k7xRFo5vFlrQ
+         BybX2j59IveBietAczpHGBZRsFvpR3OxiU8VI3VPBgEWjnAfLF55di0BFL+4rJP2Urpa
+         +FG8DvgvosRF/dtP7WhwKau9JvuCLKtEjAuLGrR9g6GPNph8kAr8DlfBpz3q+MPj+115
+         IbRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=XNzy8QXvxwZ2UpTnDHe3R7XKvvfCImteHTl3mRKpcsM=;
-        b=67nWimaONUzmMsfl3xPn4uxqbduRuQEvwCukNGW/+eDg0AjsHhH8N8PDXEasn/kkgg
-         sL2JvSqob/yhUACZxctPuud2hKZnTM7zmf/yUw/2chnUiIbbfzFJEtgAbrVd6UyhpnLu
-         u0AdZznTuYcbEdnLSZOvEuyONmI+tztHRhA/6tniOwv4SuVScJjDV3moYMPcbPPHVfq4
-         c4USO9e7IYiRcM48tgzJdMkkaYMiFLiLFOpM+DlqNbcIRvreq67qeghKbD4Z3R4OYYYA
-         eP0uQvnXlqJfguox6U+QFQMEI3vaN/sG9wDGgvO9eVsPN4F3ZPetBPSxhyaimg1iGRZz
-         XFFw==
-X-Gm-Message-State: ACrzQf0ZsVmy4/7P8gW6WDv1CUifHe3QCTLBD5+sANoqz7WNeBKkQOEY
-        kvOcxjFt6hmWZpZZts3HC0BYFg==
-X-Google-Smtp-Source: AMsMyM760H9jD3JILh4U8k4DxkhTrd/+xB9n82UOmO/VLgipGN3WKTwo+jUCQsAT/RBF5ZdDOP4hHg==
-X-Received: by 2002:a17:907:60d6:b0:77d:8aed:cf86 with SMTP id hv22-20020a17090760d600b0077d8aedcf86mr12082225ejc.43.1663577318848;
-        Mon, 19 Sep 2022 01:48:38 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=KfvECBL+S/JPrWMvitZCT4r906w4Xvb7QinxUzGg82I=;
+        b=YkH28QeFf9znG8hxY30lRWoSPyM7H6a4iXYgr8hP1Hf2oct3KrWfL1fA3DF20R0zuM
+         kyk8Bka/OaM+/ve9jjhwxwX1aOwSfr1BHuxkn9hGj3TwIhyNwNqrYBRyHAWZtjIvaMPY
+         fCbMEAXZSe2FkFuUWBfyjGDOnnD4E7o+rbBfnlYthHjg+p2Z6dBAKq63+Ory/X8xoN7T
+         NV2POz4RBGXwt+iYoPHHvj7VAldaiMopltblN9Y4BLTMPyaZROl2jXr4+nLJWSEzHnoI
+         c8d7zFW7wLYG8i1hyxj03IHSHcPK/hq/z2TTg6CckJPCZX0osz5GgDE8Nj7nB4/jow9M
+         Zfcw==
+X-Gm-Message-State: ACrzQf3vSTOpDTyHeQAXNd6ejXkZ08pbS3LUyh4Ved7Z8Lnpw9Ud3dAa
+        Z0sLlMwI+X96R8fEdg9UesDc4w==
+X-Google-Smtp-Source: AMsMyM5gqUd37DVKb2j+wDYtot7DdSm8vTzT+7NXNW8PGrfky/vyoarZWbs1Tb8GiPpUzk0CsqcM3Q==
+X-Received: by 2002:a17:906:ee81:b0:77e:829a:76e9 with SMTP id wt1-20020a170906ee8100b0077e829a76e9mr12685424ejb.207.1663577321662;
+        Mon, 19 Sep 2022 01:48:41 -0700 (PDT)
 Received: from cmo-ThinkPad-T495.telenet.be (ptr-4xh0y3vyam57ypepalv.18120a2.ip6.access.telenet.be. [2a02:1810:a44c:8f00:d368:146c:ce83:b3f3])
-        by smtp.gmail.com with ESMTPSA id r20-20020aa7d594000000b0044e9a3690e0sm20081326edq.9.2022.09.19.01.48.37
+        by smtp.gmail.com with ESMTPSA id r20-20020aa7d594000000b0044e9a3690e0sm20081326edq.9.2022.09.19.01.48.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Sep 2022 01:48:38 -0700 (PDT)
+        Mon, 19 Sep 2022 01:48:41 -0700 (PDT)
 From:   cmo@melexis.com
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Crt Mori <cmo@melexis.com>
-Subject: [PATCH v5 0/3] iio: temperature: mlx90632: Add powermanagement
-Date:   Mon, 19 Sep 2022 10:48:15 +0200
-Message-Id: <cover.1663577091.git.cmo@melexis.com>
+Subject: [PATCH v5 3/3] iio: temperature: mlx90632 Change return value of sensor measurement channel
+Date:   Mon, 19 Sep 2022 10:48:18 +0200
+Message-Id: <7f99e81b31a5584b4f0d2f7d689026f6e47a2d12.1663577091.git.cmo@melexis.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1663577091.git.cmo@melexis.com>
+References: <cover.1663577091.git.cmo@melexis.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -64,53 +67,31 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Crt Mori <cmo@melexis.com>
 
-As discussed previously on the group under the
-"Controlling device power management from terminal" thread the mlx90632
-sensor provides measurement capabilities under sleep_step mode. This
-series runtime suspends the unused chip to sleep step mode to save power
-but in case of continuous sequential reading it switches to continuous
-mode for faster readouts. This value is hardcoded to
-MLX90632_MEAS_MAX_TIME (with some buffer) and not user configurable.
+The current EINVAL value is more applicable to embedded library, where
+user can actually put the fixed value to the sensor. In case of the
+driver if the value of the channel is invalid it is better in inform
+userspace that Channel was out of range as that implies more to internal
+driver error than invalid input. It also makes for easier debugging of
+where the error comes from during the development.
 
-The sensor runtime suspension is set to MLX90632_SLEEP_DELAY_MS which is
-hardcoded to 3 times as much as MEAS_MAX_TIME.
+Signed-off-by: Crt Mori <cmo@melexis.com>
+---
+ drivers/iio/temperature/mlx90632.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changes in v5 (per review comments from Jonathan Cameron):
-
- - Migrate to devm also for driver removal, along with putting it to low
-   power mode
-
-Changes in v4 (per review comments from Jonathan Cameron):
-
- - Migrate back to devm_pm_runtime_enable and remove the pm_disable function
- - Remove pm stuff from remove and also sleep, since when iio device is
-   not registered also sleep makes no sense.
- - Replace use EOPNOTSUPP as per checkpatch suggestion although some drivers
-   still use ENOTSUPP.
- - Change the style of read frequency
-
-Changes in v3 (per review comments from Jonathan Cameron):
-
- - Change the "available" attribute presentation to more recent way
-   suggested
- - Replace devm_pm_runtime_enable with enable and devm_add_action_or_reset
- - When suspending device also put it to lower power mode in case there is
-   dummy regulator
- - Use more switch cases instead of if/else
-
-Changes in v2:
-
- - apply review comments from Andy Shevchenko
-
-Crt Mori (3):
-  iio: temperature: mlx90632 Add runtime powermanagement modes
-  iio: temperature: mlx90632 Read sampling frequency
-  iio: temperature: mlx90632 Change return value of sensor measurement
-    channel
-
- drivers/iio/temperature/mlx90632.c | 432 ++++++++++++++++++++++++-----
- 1 file changed, 360 insertions(+), 72 deletions(-)
-
+diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
+index c0bf385ebd6c..daaffe84b617 100644
+--- a/drivers/iio/temperature/mlx90632.c
++++ b/drivers/iio/temperature/mlx90632.c
+@@ -435,7 +435,7 @@ static int mlx90632_channel_new_select(int perform_ret, uint8_t *channel_new,
+ 		*channel_old = 1;
+ 		break;
+ 	default:
+-		return -EINVAL;
++		return -ECHRNG;
+ 	}
+ 
+ 	return 0;
 -- 
 2.34.1
 
