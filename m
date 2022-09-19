@@ -2,92 +2,89 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E2AFC6FA86
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Sep 2022 15:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1714CECAAD3
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Sep 2022 15:41:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbiISPh4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 19 Sep 2022 11:37:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
+        id S230149AbiISPlD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 19 Sep 2022 11:41:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiISPhy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Sep 2022 11:37:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EEF32A712
-        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 08:37:54 -0700 (PDT)
+        with ESMTP id S229568AbiISPlB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Sep 2022 11:41:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E380433340
+        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 08:41:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C4747B81BEC
-        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 15:37:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7A944C433C1
-        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 15:37:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F10B61765
+        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2022 15:41:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC07C433D7;
+        Mon, 19 Sep 2022 15:40:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663601871;
-        bh=YbPxC7rdDy/zPm5CPr4irjrpM3bC+zc7YX7WtNYoENg=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=s8AY/1aHLNfZxfz35j1ztfaFEzM4u/PbW7N9253fv04fWWCn+Vn6ML9k7RsMo9R3S
-         U2XRkj+1XBcg0hOv/DuAKl2V3T/8FdnMcoOUwVOaqTZLiwe/EpSzpta1KOley5AXZp
-         iNdW7IEfTDaQ+HlylOdRLlewfaBG+d/fjY8gmJP2Gv1rmcQyjyV5RB7Q2KfAufJDje
-         uM80Jd4Nf4624cHrH2cQCalGqyt3ocJZ/5vISiLXmxhLouNt7VLnXS8xUKywTnjhYq
-         ZZH7hr3XXjJj/I3yrZkoU3b76VTx1T4UkdoqUGSpwMCrVRcO1NyMwqn7fsaX+6xCi/
-         ErQx8aS0LBhiw==
-Received: by aws-us-west-2-korg-bugzilla-1.web.codeaurora.org (Postfix, from userid 48)
-        id 658E3C433E9; Mon, 19 Sep 2022 15:37:51 +0000 (UTC)
-From:   bugzilla-daemon@kernel.org
-To:     linux-iio@vger.kernel.org
-Subject: [Bug 200775] Cannot read the accelerometer raw data from the sensor
- LNG2DM
-Date:   Mon, 19 Sep 2022 15:37:51 +0000
-X-Bugzilla-Reason: None
-X-Bugzilla-Type: changed
-X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Product: Drivers
-X-Bugzilla-Component: IIO
-X-Bugzilla-Version: 2.5
-X-Bugzilla-Keywords: 
-X-Bugzilla-Severity: normal
-X-Bugzilla-Who: jic23@kernel.org
-X-Bugzilla-Status: NEW
-X-Bugzilla-Resolution: 
-X-Bugzilla-Priority: P1
-X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Flags: 
-X-Bugzilla-Changed-Fields: 
-Message-ID: <bug-200775-217253-qO3eZWzCcz@https.bugzilla.kernel.org/>
-In-Reply-To: <bug-200775-217253@https.bugzilla.kernel.org/>
-References: <bug-200775-217253@https.bugzilla.kernel.org/>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Bugzilla-URL: https://bugzilla.kernel.org/
-Auto-Submitted: auto-generated
+        s=k20201202; t=1663602059;
+        bh=kKazNoAuaXAO/5n9CiTx2lZ+FkEBJF+OGXcPwq2ojY0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HyUt1X9t2jiy8WIkkhONfbzxBK5plcPKTaKpdW/9oVawYz/kMIWF3B7EMBvLRFyRX
+         Xi1lX5VDvQ6afxjCE35zyc+MMLE+YpA7nRJHRyYG/Sv4oGYiSdrMVdXmmJ6pFvDVJE
+         W0yfTXRQoZlrKMbIQJVBdckVnesKRef2UXvrj9PoVOZ8bsq5XTwaZsIzSwHBBNIRgt
+         kIqRS3D7L8GEZuiQqB5cUT9+oMqFgzcAwXUqsgP/kbKPNIc5t3EMS7azQAVa58TzhV
+         pVRF4foifoPEwSwcO+Bi9l9JRGxqgwmvG2uvdIQcVYiGVBFlKJT0ul7w23xi80cZT5
+         uC8m5lSfzXmqg==
+Date:   Mon, 19 Sep 2022 16:41:04 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Jagath Jog J <jagathjog1996@gmail.com>, linux-iio@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alexander Potapenko <glider@google.com>
+Subject: Re: [PATCH] iio: accel: bma400: Fix smatch warning based on use of
+ unintialized value.
+Message-ID: <20220919164104.46dc5f1a@jic23-huawei>
+In-Reply-To: <YygH7FZ23HioBZGH@kadam>
+References: <20220917131401.2815486-1-jic23@kernel.org>
+        <CAM+2Eu+YCtCMKoWS9yJToEV__YB=enh=54b5thO+q4wGE80wZA@mail.gmail.com>
+        <20220918184503.0db7e82a@jic23-huawei>
+        <YygH7FZ23HioBZGH@kadam>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-https://bugzilla.kernel.org/show_bug.cgi?id=3D200775
+On Mon, 19 Sep 2022 09:10:52 +0300
+Dan Carpenter <dan.carpenter@oracle.com> wrote:
 
---- Comment #8 from Jonathan Cameron (jic23@kernel.org) ---
-On Mon, 29 Aug 2022 19:47:50 +0000
-bugzilla-daemon@kernel.org wrote:
+> On Sun, Sep 18, 2022 at 06:45:03PM +0100, Jonathan Cameron wrote:
+> > On Sun, 18 Sep 2022 20:05:48 +0530
+> > Jagath Jog J <jagathjog1996@gmail.com> wrote:
+> >   
+> > > Hi Jonathan,
+> > > 
+> > > Thank you for sending this patch.
+> > > If you need a tag for this fix.
+> > > 
+> > > Fixes: 961db2da159d ("iio: accel: bma400: Add support for single and
+> > > double tap events")  
+> > Good point. I'm careful about fixes tags to stuff still not upstream
+> > because they tend to be a little unstable. This should be fine.
+> > I'll see if it's valid when I rebase the tree (hopefully in a few days
+> > time).  
+> 
+> If you forget to update the tags after a rebase then Stephen Rothwell
+> will let you know.  It's best to not make Stephen's job more difficult,
+> but it's some comfort to know that mistakes will get caught.
+> 
+> regards,
+> dan carpenter
+> 
+Hi Dan,
 
-> https://bugzilla.kernel.org/show_bug.cgi?id=3D200775
->=20
-> --- Comment #7 from Srinivas Pandruvada (srinivas.pandruvada@linux.intel.=
-com)
-> ---
-> Without OEM's help, we can't resolve. It is possible that Windows also
-> polling.
->=20
-
-Annoying though it is to leave a user stuck.  I would suggest closing this =
-one
-given no means to obtain required info to debug.
+Having messed this up and caused Stephen pointless work several times I now
+have scripting (thanks to Greg KH's scripts and some local modes to make
+sure the tag is in the upstream of the fix) to check this but some how
+I still mess it up from time to time :(
 
 Jonathan
 
---=20
-You may reply to this email to add a comment.
-
-You are receiving this mail because:
-You are watching the assignee of the bug.=
