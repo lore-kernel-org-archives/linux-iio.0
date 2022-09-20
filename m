@@ -2,1190 +2,449 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F809C6FA90
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Sep 2022 15:27:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD99C54EE9
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Sep 2022 15:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbiITP1L (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 20 Sep 2022 11:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
+        id S231494AbiITP1c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 20 Sep 2022 11:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231490AbiITP1J (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Sep 2022 11:27:09 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AD766117
-        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 08:27:06 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28KEnWYK025082;
-        Tue, 20 Sep 2022 11:27:03 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3jpn46a6dr-1
+        with ESMTP id S231493AbiITP1a (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Sep 2022 11:27:30 -0400
+Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EAD66117
+        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 08:27:29 -0700 (PDT)
+Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28KEQbpK021293;
+        Tue, 20 Sep 2022 11:27:26 -0400
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2043.outbound.protection.outlook.com [104.47.66.43])
+        by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 3jn80atgup-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 20 Sep 2022 11:27:03 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 28KFR27v016763
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 20 Sep 2022 11:27:02 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 20 Sep 2022 11:27:01 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 20 Sep 2022 11:27:01 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 20 Sep 2022 11:27:01 -0400
-Received: from IST-LT-39247.ad.analog.com (IST-LT-39247.ad.analog.com [10.25.36.24])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 28KFQl8F007289;
-        Tue, 20 Sep 2022 11:26:54 -0400
-From:   Ibrahim Tilki <Ibrahim.Tilki@analog.com>
-To:     <jic23@kernel.org>
-CC:     Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
-        <linux-iio@vger.kernel.org>, <Nuno.Sa@analog.com>,
-        <Nurettin.Bolucu@analog.com>
-Subject: [PATCH v5 1/3] iio: adc: add max11410 adc driver
-Date:   Tue, 20 Sep 2022 18:26:26 +0300
-Message-ID: <20220920152628.285-2-Ibrahim.Tilki@analog.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220920152628.285-1-Ibrahim.Tilki@analog.com>
-References: <20220920152628.285-1-Ibrahim.Tilki@analog.com>
+        Tue, 20 Sep 2022 11:27:26 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C/wESrOEii6useWp/f0R6zytl6x02XlcY/3aDwPQsKp8isinLL8Basw/3LtHCRz51Vct/v5VFBmnQS3/dtrWNrowaAYEl1clxpKXLAtNa/fi+56gFPu9v2nidV/EeT4vyNmJlrSD6IApFd31skacCbaU2UilJJZGdjl7mbV1bPeihFoCwR6iw21kl6qTOQ5RQDmQfFYYylxgV7qRW4/43y3WsFEUpoa1nMIgJKt/8KHS9Xwt6rGkSdv85BF+5sTbMBAu+dcrorymSFRAGG/N3vBy1L2zzRlSjCp8k85r1/2vkeBGr02GSmDkLBw0TQfTGNrM2JGegRCCgBdAMaichw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4G93nJhMhqNbaUENMU1fDAdhzQDj9zPu5AgI8ZqY+FM=;
+ b=R/mWMZNR5u9g6EDPFK4l5KKajJYdeEJD1SGcyrVVRmSONC+5Te6nOpIbIoJW5AOEGSd/Znq26VYzmylSI2Ay1dYgmEGseGHzeoF4nwhQEhN1N0q6f7VZhG6SVn2kFR1k9RhPy4A+VAnoElkhlhr771s/B84vzi+i/1Yf3IT//2LIhudmZrr+Bc3MxPq1wJ/rFsUp6eCv7FoVP2ItOGjcDNlR1uEeNlPNnLOhO9XGNeMJHtD3GlkUGaq9gGPmYmOpKeZLfUpNR+jWaKX/awCl2LRpeuYPo/lKdZlh3DlPGDE1GrZSff+cFxqR3cxAsAH6SZjJMttG0pBGeH+s8RT2eA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4G93nJhMhqNbaUENMU1fDAdhzQDj9zPu5AgI8ZqY+FM=;
+ b=PdlgUeY45ewHtUpgQ33mkHZBxGYchqMFMF32WRaDIWZ987ulu7/8T+JIlbyrfu68B3q7n+k/N6IlLRlz06vMLby7krBAnKCNoBZJ7AEuC9/lN+qwxkUwdEaTPFMu4ZXsSeIBF/k9QxG24dcEjmSV/j/G6kQD9n92iF4sLGLb9Wo=
+Received: from DM8PR03MB6247.namprd03.prod.outlook.com (2603:10b6:8:3b::6) by
+ CO1PR03MB5729.namprd03.prod.outlook.com (2603:10b6:303:96::15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5654.14; Tue, 20 Sep 2022 15:27:23 +0000
+Received: from DM8PR03MB6247.namprd03.prod.outlook.com
+ ([fe80::781c:6cba:d36:2971]) by DM8PR03MB6247.namprd03.prod.outlook.com
+ ([fe80::781c:6cba:d36:2971%4]) with mapi id 15.20.5632.021; Tue, 20 Sep 2022
+ 15:27:23 +0000
+From:   "Tilki, Ibrahim" <Ibrahim.Tilki@analog.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "Sa, Nuno" <Nuno.Sa@analog.com>,
+        "Bolucu, Nurettin" <Nurettin.Bolucu@analog.com>
+Subject: RE: [PATCH v4 2/3] dt-bindings: iio: adc: add adi,max11410.yaml
+Thread-Topic: [PATCH v4 2/3] dt-bindings: iio: adc: add adi,max11410.yaml
+Thread-Index: AQHYw5JP5vq0TCFqOUGKBsln0Je6mq3lXbOAgAMjZOA=
+Date:   Tue, 20 Sep 2022 15:27:23 +0000
+Message-ID: <DM8PR03MB62477EAB8BCF6862032B30C5964C9@DM8PR03MB6247.namprd03.prod.outlook.com>
+References: <20220908144924.205547-1-Ibrahim.Tilki@analog.com>
+        <20220908144924.205547-3-Ibrahim.Tilki@analog.com>
+ <20220918162211.7a5ebdac@jic23-huawei>
+In-Reply-To: <20220918162211.7a5ebdac@jic23-huawei>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-dg-rorf: true
+x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcaWJyYWhpbS50?=
+ =?us-ascii?Q?aWxraVxhcHBkYXRhXHJvYW1pbmdcMDlkODQ5YjYtMzJkMy00YTQwLTg1ZWUt?=
+ =?us-ascii?Q?NmI4NGJhMjllMzViXG1zZ3NcbXNnLWI1ZjFhZWUwLTM4ZjgtMTFlZC04ZTVl?=
+ =?us-ascii?Q?LTdjYjI3ZDcyMzFhYlxhbWUtdGVzdFxiNWYxYWVlMS0zOGY4LTExZWQtOGU1?=
+ =?us-ascii?Q?ZS03Y2IyN2Q3MjMxYWJib2R5LnR4dCIgc3o9IjgxNzAiIHQ9IjEzMzA4MTYx?=
+ =?us-ascii?Q?MjQwNzAzNjg1OSIgaD0iczBhaEo5S0wzd2tyTUhWNlBnd3NXVXVjRnMwPSIg?=
+ =?us-ascii?Q?aWQ9IiIgYmw9IjAiIGJvPSIxIiBjaT0iY0FBQUFFUkhVMVJTUlVGTkNnVUFB?=
+ =?us-ascii?Q?RW9DQUFDN1c2aDVCYzNZQWRLMlo2bmkvdEtjMHJabnFlTCswcHdEQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUhBQUFBRGFBUUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUVBQVFBQkFBQUFYNWwyS3dBQUFBQUFBQUFBQUFBQUFKNEFBQUJo?=
+ =?us-ascii?Q?QUdRQWFRQmZBSE1BWlFCakFIVUFjZ0JsQUY4QWNBQnlBRzhBYWdCbEFHTUFk?=
+ =?us-ascii?Q?QUJ6QUY4QVpnQmhBR3dBY3dCbEFGOEFaZ0J2QUhNQWFRQjBBR2tBZGdCbEFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBRUFBQUFBQUFBQUFnQUFBQUFBbmdBQUFHRUFaQUJwQUY4QWN3QmxB?=
+ =?us-ascii?Q?R01BZFFCeUFHVUFYd0J3QUhJQWJ3QnFBR1VBWXdCMEFITUFYd0IwQUdrQVpR?=
+ =?us-ascii?Q?QnlBREVBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQVFBQUFBQUFB?=
+ =?us-ascii?Q?QUFDQUFBQUFBQ2VBQUFBWVFCa0FHa0FYd0J6QUdVQVl3QjFBSElBWlFCZkFI?=
+ =?us-ascii?Q?QUFjZ0J2QUdvQVpRQmpBSFFBY3dCZkFIUUFhUUJsQUhJQU1nQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUJBQUFBQUFBQUFBSUFBQUFBQUE9PSIv?=
+ =?us-ascii?Q?PjwvbWV0YT4=3D?=
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM8PR03MB6247:EE_|CO1PR03MB5729:EE_
+x-ms-office365-filtering-correlation-id: 9929f8c2-bbf5-48c8-53e1-08da9b1c9da7
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KPlf4nCC+kdrUWwNb1NtIb30jAxezmQkToIebzDkAJG5q/22ctdkZMmuHlNFvmVjcgu12QryvJx0Hs1cY3Ii+nHfyvJfnCpJZ0cZc36KpDh8HYoY/+7Hy//JDSGqcYRN09kkHXOBKq02i0cO2QDf2dIhwYDqOd6obgH9bQI5gSVWoK3EmCoxyEnsUlsyAMFS8fWvy50LI0irTKDUJBHRGBo7J/DuCWF3gTQeOwv/8DwKYPdwWJ82RrvX9n602hQQk6AiFFQfixNcYzlXsZ3dRAOGz1xT3eWqVDxDVPtNmI+4FeIniMrUmR0yB+652+zELYVUKblm9+5e9KxjmJacobxaGTCXKbaSC0pOumQmGmM0Rj+Qpflp9LFjyusFcJtYeE//unH6r3E9qsIABT0Y2RjHjy5HKujh5Rv4YiaAXu1xYhm5shCHSE1pbWcjdYs/1s9pkpAt66/+lvCXsLh+McLNOiKh9S5U+d2bJ2GOPx+sZFXdM7EJuszvX1eWLteoR1QgiXCa9W2/+IyM9CvUHufS28hB6OHsWiPB43n720vUETcCZODbXqTIi0C8FbI/HCEYpSvN7xAABL5LJkGUELWwERYB0wF9UHmwyIB+ZCMRISLxZ/36kMa0qVam7+J4UCSI8DP0NelTJazS4YUwC8WYQkFImDzFkXgx6iDCtmXF2WSoI+JHfouekdx7kyYwn3jlJU7WMuQxXiKxi6P/TioVflAxWUppIKwY/vn6DL4tP9oFAWz7p7JASpyq8P9+rbKH5SSUQzP/0aw9xxVERIq1AGj5aLOzO/PB45p34QAd+gd6fdUpDg14hVC2rjvDo7Q+7ZZaU0hAcaoqAKzSWlk7bDSyjQaNqlZB44IEuPk=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR03MB6247.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(136003)(366004)(39860400002)(376002)(451199015)(2906002)(966005)(5660300002)(38100700002)(52536014)(8936002)(478600001)(316002)(122000001)(107886003)(33656002)(6916009)(54906003)(86362001)(8676002)(64756008)(66446008)(66476007)(66556008)(4326008)(66946007)(76116006)(55016003)(71200400001)(41300700001)(38070700005)(6506007)(7696005)(83380400001)(186003)(9686003)(26005)(357404004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?qtd+QS3WWGhulUDoi95yOjIs6EtEJynbHU/Glc3QNTESvKPoB71pRfr4PDy+?=
+ =?us-ascii?Q?I9JubkZe9+hlxW/SOXCdSE5i2F/rzFcePcI8tPAKgB0uCUq9oRoWFLVQTX/q?=
+ =?us-ascii?Q?TNpbm0qcAo+uNNkEKS/f18i8KWddeShlqvK+Aw5env/28mf7DYvhkehxnD/h?=
+ =?us-ascii?Q?A8WoONH168d/8B+VrVohA8AzoFXirU51KaMWnGVRoWS16EXitH74He13/nhq?=
+ =?us-ascii?Q?KOIQ4U73e/owJnX79snAXp24D1bzJPArHAGslW+wyiD8XNLoUHajPuVgxHaD?=
+ =?us-ascii?Q?bQmwaFXwEwJqkP1dRyuByRTXudVh8J8K52LZjRyvOrWEbkrg9N/zPe3WcZVU?=
+ =?us-ascii?Q?3bwbX/04cJScHy0wzs4KYnZwHUByVvD2Zv06OvmkzCcFJ0iNuwrI5yj+J+fB?=
+ =?us-ascii?Q?XwwVsB9j4Q1mm9A3k3I6Myq6DpdzO924PkgWIZWcHvdfp8Vp14Ca9LfbPUBM?=
+ =?us-ascii?Q?WlN0yiq1AhcX8DN1sdnGKyGVP15ghIP5EqmA1dEw0kUtqZM2V5QW4wv5W0Hq?=
+ =?us-ascii?Q?DW46tIs3xjQ5JHv0mgKFvsHRCrG477oozIV8CV0RsmaDHwp2L/mZbaryaxAW?=
+ =?us-ascii?Q?GKM5uMJkSBbjwG6SuwDFklYhYGHoUEqz1S8OUtTcBzCvng0+lfXqhhPxPKc8?=
+ =?us-ascii?Q?swkjf/BgRT3lJ0hRRyiuXhpOiFHip7/5uGBfyQKSRF3W9fBIvnbIRpa9zk4a?=
+ =?us-ascii?Q?mSywqZZ/0m6vlW60XxPjdGTcvbxOeR+Q7KsxRTrSPs+YJCA6eMOxAuhTBm+9?=
+ =?us-ascii?Q?qS9eT9z3d7We4vW4CoNJXjOXUtxogzB1rZ+vMYs5rviH5DDVoApq/joouWAW?=
+ =?us-ascii?Q?heL0OVT0D0GHeh365g2cR5VTBeesIIj01go7IaWGPJIb616X2N4ukcnu8+qa?=
+ =?us-ascii?Q?f3QMR03SoEQ+UEaV3UUAeHLbQRqFrAnqMS86aewvievYwtxtaQY792n50vMo?=
+ =?us-ascii?Q?a92i9NlU0f0866eKZs6mq0KyRMJPGAixJ80h/K+WJ2kaLAAOViyPRKDI6vNS?=
+ =?us-ascii?Q?FXxJiWSEJB8xyQMMwjt02UxY4oseVTCRV04BAhGbKpBQEd1ylcZpjAhZG825?=
+ =?us-ascii?Q?KoEeaIu+apk6xPr8PpWHg2hUEZC1L11QZTu4KJM93J2GgCNRChGU7lnzAmC4?=
+ =?us-ascii?Q?6fER7yxr6GxueinBP3uYWWkRHzz3dQq9nBsQ1YA7VCAki9/D7suwYzzzes1M?=
+ =?us-ascii?Q?WxpZ90t77vZvE5xRbg5Yfsypwe4je7YssIm0sdNgPu5vcTn+ZwiYqpUzICfT?=
+ =?us-ascii?Q?Lozk1PSMYMav5qM52+hC6EhBzOzV5u1tYICbbH82Z9qDWTXRXkdZk3HROeQw?=
+ =?us-ascii?Q?kzwlBay+PfLMferp7Cn6OL1QxPurAmHc/zK6e+LKEQ5dj/RsAYzofAbYlYuB?=
+ =?us-ascii?Q?0026T6oSL9sQH4yzEjB6fOzvc7gktxGT+umnMtoMqQT0Hm6WdFT2M7eRxPfP?=
+ =?us-ascii?Q?NDMujRcLwwx+9AHB7rUT14UhMrFm1hfDVtLYQQl4sAsmwl0vlTkiqiLbLl+e?=
+ =?us-ascii?Q?ZiT5YakuOMOUdeZBnNS/pYsq0VilrWD30xBCrXvnMWboIYiHkSBlszXBwhiY?=
+ =?us-ascii?Q?CkvVdOp/xtwTXdS/6pRkz2c4enVK9y2F8FaysuGN?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: kyf6cmz_EIXLE0dysKHWTRNrGBFYuRRJ
-X-Proofpoint-GUID: kyf6cmz_EIXLE0dysKHWTRNrGBFYuRRJ
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR03MB6247.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9929f8c2-bbf5-48c8-53e1-08da9b1c9da7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2022 15:27:23.2412
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: s220IhXlEw3LEjQdcBe1m5xoqhZXvZMHHYX4XnrfiXwHYem/+WSL+VnWgFpnyCCacjjH8hT6KcmQAlnVjOkopbMwnb284PB+xkuGk28KcJ8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR03MB5729
+X-Proofpoint-GUID: iADf1WUGlNMaWsfg4pXWoN3DMfeAZCy4
+X-Proofpoint-ORIG-GUID: iADf1WUGlNMaWsfg4pXWoN3DMfeAZCy4
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
  definitions=2022-09-20_06,2022-09-20_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 bulkscore=0
- phishscore=0 clxscore=1015 spamscore=0 priorityscore=1501
- lowpriorityscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- malwarescore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 phishscore=0 mlxscore=0 mlxlogscore=762 adultscore=0
+ spamscore=0 clxscore=1015 impostorscore=0 bulkscore=0 priorityscore=1501
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2209130000 definitions=main-2209200091
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Adding support for max11410 24-bit, 1.9ksps delta-sigma adc which
-has 3 differential reference and 10 differential channel inputs.
-Inputs and references can be buffered internally. Inputs can also
-be amplified with internal PGA.
 
-Device has four digital filter modes: FIR50/60, FIR50, FIR60 and SINC4.
-FIR 50Hz and 60Hz rejections can be enabled/disabled separately.
-Digital filter selection affects sampling frequency range so driver
-has to consider the configured filter when configuring sampling frequency.
+> On Thu, 8 Sep 2022 17:49:23 +0300
+> Ibrahim Tilki <Ibrahim.Tilki@analog.com> wrote:
+>=20
+> > Adding devicetree binding documentation for max11410 adc.
+> >=20
+> > Signed-off-by: Ibrahim Tilki <Ibrahim.Tilki@analog.com>
+> > ---
+> >  .../bindings/iio/adc/adi,max11410.yaml        | 174 ++++++++++++++++++
+> >  1 file changed, 174 insertions(+)
+> >  create mode 100644=20
+> > Documentation/devicetree/bindings/iio/adc/adi,max11410.yaml
+> >=20
+> > diff --git=20
+> > a/Documentation/devicetree/bindings/iio/adc/adi,max11410.yaml=20
+> > b/Documentation/devicetree/bindings/iio/adc/adi,max11410.yaml
+> > new file mode 100644
+> > index 000000000..3ffab284b
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/adc/adi,max11410.yaml
+> > @@ -0,0 +1,174 @@
+> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) # Copyright 2022=
+=20
+> > +Analog Devices Inc.
+> > +%YAML 1.2
+> > +---
+> > +$id:=20
+> > +https://urldefense.com/v3/__http://devicetree.org/schemas/iio/adc/adi
+> > +,max11410.yaml*__;Iw!!A3Ni8CS0y2Y!9LhA6Qy9HXqdtKQfrUEeHtQ7xhm_bIEYwWU
+> > +8CyFFP9qvWNxJ5EE2jJ90UG_gph6M7EecEx_r5PuFIsbL$
+> > +$schema:=20
+> > +https://urldefense.com/v3/__http://devicetree.org/meta-schemas/core.y
+> > +aml*__;Iw!!A3Ni8CS0y2Y!9LhA6Qy9HXqdtKQfrUEeHtQ7xhm_bIEYwWU8CyFFP9qvWN
+> > +xJ5EE2jJ90UG_gph6M7EecEx_r5ClUIiuZ$
+> > +
+> > +title: Analog Devices MAX11410 ADC device driver
+> > +
+> > +maintainers:
+> > +  - Ibrahim Tilki <ibrahim.tilki@analog.com>
+> > +
+> > +description: |
+> > +  Bindings for the Analog Devices MAX11410 ADC device. Datasheet can=20
+> > +be
+> > +  found here:
+> > +    https://datasheets.maximintegrated.com/en/ds/MAX11410.pdf
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - adi,max11410
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+>=20
+> Why?  If someone wants to wire both lines, they can do so.
+> Then it will be up to the driver to pick which one to use.
+> Given we have names, we will know which is which and be able to pick our =
+favourite line to use.
+>=20
 
-Signed-off-by: Ibrahim Tilki <Ibrahim.Tilki@analog.com>
----
- drivers/iio/adc/Kconfig    |   13 +
- drivers/iio/adc/Makefile   |    1 +
- drivers/iio/adc/max11410.c | 1058 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 1072 insertions(+)
- create mode 100644 drivers/iio/adc/max11410.c
+Done
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 56e3ca3b4a..40e34cde16 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -667,6 +667,19 @@ config MAX11205
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called max11205.
- 
-+config MAX11410
-+	tristate "Analog Devices MAX11410 ADC driver"
-+	depends on SPI
-+	select REGMAP_SPI
-+	select IIO_BUFFER
-+	select IIO_TRIGGER
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	  Say yes here to build support for Analog Devices MAX11410 ADCs.
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called max11410.
-+
- config MAX1241
- 	tristate "Maxim max1241 ADC driver"
- 	depends on SPI_MASTER
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 46caba7a01..4d80341342 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -62,6 +62,7 @@ obj-$(CONFIG_MAX1027) += max1027.o
- obj-$(CONFIG_MAX11100) += max11100.o
- obj-$(CONFIG_MAX1118) += max1118.o
- obj-$(CONFIG_MAX11205) += max11205.o
-+obj-$(CONFIG_MAX11410) += max11410.o
- obj-$(CONFIG_MAX1241) += max1241.o
- obj-$(CONFIG_MAX1363) += max1363.o
- obj-$(CONFIG_MAX9611) += max9611.o
-diff --git a/drivers/iio/adc/max11410.c b/drivers/iio/adc/max11410.c
-new file mode 100644
-index 0000000000..5194672906
---- /dev/null
-+++ b/drivers/iio/adc/max11410.c
-@@ -0,0 +1,1058 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * MAX11410 SPI ADC driver
-+ *
-+ * Copyright 2022 Analog Devices Inc.
-+ */
-+#include <linux/bitfield.h>
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/spi/spi.h>
-+
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+#define MAX11410_REG_CONV_START	0x01
-+#define		MAX11410_CONV_TYPE_SINGLE	0x00
-+#define		MAX11410_CONV_TYPE_CONTINUOUS	0x01
-+#define MAX11410_REG_CAL_START	0x03
-+#define		MAX11410_CAL_START_SELF		0x00
-+#define		MAX11410_CAL_START_PGA		0x01
-+#define MAX11410_REG_GPIO_CTRL(ch)		((ch) ? 0x05 : 0x04)
-+#define		MAX11410_GPIO_INTRB		0xC1
-+#define MAX11410_REG_FILTER	0x08
-+#define		MAX11410_FILTER_RATE_MASK	GENMASK(3, 0)
-+#define		MAX11410_FILTER_RATE_MAX	0x0F
-+#define		MAX11410_FILTER_LINEF_MASK	GENMASK(5, 4)
-+#define		MAX11410_FILTER_50HZ		BIT(5)
-+#define		MAX11410_FILTER_60HZ		BIT(4)
-+#define MAX11410_REG_CTRL	0x09
-+#define		MAX11410_CTRL_REFSEL_MASK	GENMASK(2, 0)
-+#define		MAX11410_CTRL_VREFN_BUF_BIT	BIT(3)
-+#define		MAX11410_CTRL_VREFP_BUF_BIT	BIT(4)
-+#define		MAX11410_CTRL_FORMAT_BIT	BIT(5)
-+#define		MAX11410_CTRL_UNIPOLAR_BIT	BIT(6)
-+#define MAX11410_REG_MUX_CTRL0	0x0B
-+#define MAX11410_REG_PGA	0x0E
-+#define		MAX11410_PGA_GAIN_MASK		GENMASK(2, 0)
-+#define		MAX11410_PGA_SIG_PATH_MASK	GENMASK(5, 4)
-+#define		MAX11410_PGA_SIG_PATH_BUFFERED	0x00
-+#define		MAX11410_PGA_SIG_PATH_BYPASS	0x01
-+#define		MAX11410_PGA_SIG_PATH_PGA	0x02
-+#define MAX11410_REG_DATA0	0x30
-+#define MAX11410_REG_STATUS	0x38
-+#define		MAX11410_STATUS_CONV_READY_BIT	BIT(0)
-+#define		MAX11410_STATUS_CAL_READY_BIT	BIT(2)
-+
-+#define MAX11410_REFSEL_AVDD_AGND	0x03
-+#define MAX11410_REFSEL_MAX		0x06
-+#define MAX11410_SIG_PATH_MAX		0x02
-+#define MAX11410_CHANNEL_INDEX_MAX	0x0A
-+#define MAX11410_AINP_AVDD	0x0A
-+#define MAX11410_AINN_GND	0x0A
-+
-+#define MAX11410_CONVERSION_TIMEOUT_MS	2000
-+#define MAX11410_CALIB_TIMEOUT_MS	2000
-+
-+#define MAX11410_SCALE_AVAIL_SIZE	8
-+
-+enum max11410_filter {
-+	MAX11410_FILTER_FIR5060,
-+	MAX11410_FILTER_FIR50,
-+	MAX11410_FILTER_FIR60,
-+	MAX11410_FILTER_SINC4,
-+};
-+
-+static const u8 max11410_sampling_len[] = {
-+	[MAX11410_FILTER_FIR5060] = 5,
-+	[MAX11410_FILTER_FIR50] = 6,
-+	[MAX11410_FILTER_FIR60] = 6,
-+	[MAX11410_FILTER_SINC4] = 10,
-+};
-+
-+static const int max11410_sampling_rates[4][10][2] = {
-+	[MAX11410_FILTER_FIR5060] = {
-+		{ 1, 100000 },
-+		{ 2, 100000 },
-+		{ 4, 200000 },
-+		{ 8, 400000 },
-+		{ 16, 800000 }
-+	},
-+	[MAX11410_FILTER_FIR50] = {
-+		{ 1, 300000 },
-+		{ 2, 700000 },
-+		{ 5, 300000 },
-+		{ 10, 700000 },
-+		{ 21, 300000 },
-+		{ 40 }
-+	},
-+	[MAX11410_FILTER_FIR60] = {
-+		{ 1, 300000 },
-+		{ 2, 700000 },
-+		{ 5, 300000 },
-+		{ 10, 700000 },
-+		{ 21, 300000 },
-+		{ 40 }
-+	},
-+	[MAX11410_FILTER_SINC4] = {
-+		{ 4 },
-+		{ 10 },
-+		{ 20 },
-+		{ 40 },
-+		{ 60 },
-+		{ 120 },
-+		{ 240 },
-+		{ 480 },
-+		{ 960 },
-+		{ 1920 }
-+	}
-+};
-+
-+struct max11410_channel_config {
-+	u32 settling_time_us;
-+	u32 *scale_avail;
-+	u8 refsel;
-+	u8 sig_path;
-+	u8 gain;
-+	bool bipolar;
-+	bool buffered_vrefp;
-+	bool buffered_vrefn;
-+};
-+
-+struct max11410_state {
-+	struct spi_device *spi_dev;
-+	struct iio_trigger *trig;
-+	struct completion completion;
-+	struct mutex lock; /* Prevent changing channel config during sampling */
-+	struct regmap *regmap;
-+	struct regulator *avdd;
-+	struct regulator *vrefp[3];
-+	struct regulator *vrefn[3];
-+	struct max11410_channel_config *channels;
-+	int irq;
-+	struct {
-+		u32 data __aligned(IIO_DMA_MINALIGN);
-+		s64 ts __aligned(8);
-+	} scan;
-+};
-+
-+static const struct iio_chan_spec chanspec_template = {
-+	.type = IIO_VOLTAGE,
-+	.indexed = 1,
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			      BIT(IIO_CHAN_INFO_SCALE) |
-+			      BIT(IIO_CHAN_INFO_OFFSET),
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+	.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+	.scan_type = {
-+		.sign = 's',
-+		.realbits = 24,
-+		.storagebits = 32,
-+		.endianness = IIO_LE,
-+	},
-+};
-+
-+static unsigned int max11410_reg_size(unsigned int reg)
-+{
-+	/* Registers from 0x00 to 0x10 are 1 byte, the rest are 3 bytes long. */
-+	return reg <= 0x10 ? 1 : 3;
-+}
-+
-+static int max11410_write_reg(struct max11410_state *st, unsigned int reg,
-+			      unsigned int val)
-+{
-+	/* This driver only needs to write 8-bit registers */
-+	if (max11410_reg_size(reg) != 1)
-+		return -EINVAL;
-+
-+	return regmap_write(st->regmap, reg, val);
-+}
-+
-+static int max11410_read_reg(struct max11410_state *st, unsigned int reg,
-+			     int *val)
-+{
-+	int ret;
-+
-+	if (max11410_reg_size(reg) == 3) {
-+		ret = regmap_bulk_read(st->regmap, reg, &st->scan.data, 3);
-+		if (ret)
-+			return ret;
-+
-+		*val = get_unaligned_be24(&st->scan.data);
-+		return 0;
-+	}
-+
-+	return regmap_read(st->regmap, reg, val);
-+}
-+
-+static struct regulator *max11410_get_vrefp(struct max11410_state *st,
-+					    u8 refsel)
-+{
-+	refsel = refsel % 4;
-+	if (refsel == 3)
-+		return st->avdd;
-+
-+	return st->vrefp[refsel];
-+}
-+
-+static struct regulator *max11410_get_vrefn(struct max11410_state *st,
-+					    u8 refsel)
-+{
-+	if (refsel > 2)
-+		return NULL;
-+
-+	return st->vrefn[refsel];
-+}
-+
-+static const struct regmap_config regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = 0x39,
-+};
-+
-+static ssize_t max11410_notch_en_show(struct device *dev,
-+				      struct device_attribute *devattr,
-+				      char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct max11410_state *state = iio_priv(indio_dev);
-+	struct iio_dev_attr *iio_attr = to_iio_dev_attr(devattr);
-+	unsigned int val;
-+	int ret;
-+
-+	ret = max11410_read_reg(state, MAX11410_REG_FILTER, &val);
-+	if (ret)
-+		return ret;
-+
-+	switch (iio_attr->address) {
-+	case 0:
-+		val = !FIELD_GET(MAX11410_FILTER_50HZ, val);
-+		break;
-+	case 1:
-+		val = !FIELD_GET(MAX11410_FILTER_60HZ, val);
-+		break;
-+	case 2:
-+		val = FIELD_GET(MAX11410_FILTER_LINEF_MASK, val) == 3;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return sysfs_emit(buf, "%d\n", val);
-+}
-+
-+static ssize_t max11410_notch_en_store(struct device *dev,
-+				       struct device_attribute *devattr,
-+				       const char *buf, size_t count)
-+{
-+	struct iio_dev_attr *iio_attr = to_iio_dev_attr(devattr);
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct max11410_state *state = iio_priv(indio_dev);
-+	unsigned int filter_bits;
-+	bool enable;
-+	int ret;
-+
-+	ret = kstrtobool(buf, &enable);
-+	if (ret)
-+		return ret;
-+
-+	switch (iio_attr->address) {
-+	case 0:
-+		filter_bits = MAX11410_FILTER_50HZ;
-+		break;
-+	case 1:
-+		filter_bits = MAX11410_FILTER_60HZ;
-+		break;
-+	case 2:
-+	default:
-+		filter_bits = MAX11410_FILTER_50HZ | MAX11410_FILTER_60HZ;
-+		enable = !enable;
-+		break;
-+	}
-+
-+	if (enable)
-+		ret = regmap_clear_bits(state->regmap, MAX11410_REG_FILTER,
-+					filter_bits);
-+	else
-+		ret = regmap_set_bits(state->regmap, MAX11410_REG_FILTER,
-+				      filter_bits);
-+
-+	if (ret)
-+		return ret;
-+
-+	return count;
-+}
-+
-+static ssize_t in_voltage_filter2_notch_center_show(struct device *dev,
-+						    struct device_attribute *devattr,
-+						    char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct max11410_state *state = iio_priv(indio_dev);
-+	int ret, reg, rate, filter;
-+
-+	ret = regmap_read(state->regmap, MAX11410_REG_FILTER, &reg);
-+	if (ret)
-+		return ret;
-+
-+	rate = FIELD_GET(MAX11410_FILTER_RATE_MASK, reg);
-+	rate = clamp_val(rate, 0,
-+			 max11410_sampling_len[MAX11410_FILTER_SINC4] - 1);
-+	filter = max11410_sampling_rates[MAX11410_FILTER_SINC4][rate][0];
-+
-+	return sysfs_emit(buf, "%d\n", filter);
-+}
-+
-+static IIO_CONST_ATTR(in_voltage_filter0_notch_center, "50");
-+static IIO_CONST_ATTR(in_voltage_filter1_notch_center, "60");
-+static IIO_DEVICE_ATTR_RO(in_voltage_filter2_notch_center, 2);
-+
-+static IIO_DEVICE_ATTR(in_voltage_filter0_notch_en, 0644,
-+		       max11410_notch_en_show, max11410_notch_en_store, 0);
-+static IIO_DEVICE_ATTR(in_voltage_filter1_notch_en, 0644,
-+		       max11410_notch_en_show, max11410_notch_en_store, 1);
-+static IIO_DEVICE_ATTR(in_voltage_filter2_notch_en, 0644,
-+		       max11410_notch_en_show, max11410_notch_en_store, 2);
-+
-+static struct attribute *max11410_attributes[] = {
-+	&iio_const_attr_in_voltage_filter0_notch_center.dev_attr.attr,
-+	&iio_const_attr_in_voltage_filter1_notch_center.dev_attr.attr,
-+	&iio_dev_attr_in_voltage_filter2_notch_center.dev_attr.attr,
-+	&iio_dev_attr_in_voltage_filter0_notch_en.dev_attr.attr,
-+	&iio_dev_attr_in_voltage_filter1_notch_en.dev_attr.attr,
-+	&iio_dev_attr_in_voltage_filter2_notch_en.dev_attr.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group max11410_attribute_group = {
-+	.attrs = max11410_attributes,
-+};
-+
-+static int max11410_set_input_mux(struct max11410_state *st, u8 ainp, u8 ainn)
-+{
-+	if (ainp > MAX11410_CHANNEL_INDEX_MAX ||
-+	    ainn > MAX11410_CHANNEL_INDEX_MAX)
-+		return -EINVAL;
-+
-+	return max11410_write_reg(st, MAX11410_REG_MUX_CTRL0,
-+				  (ainp << 4) | ainn);
-+}
-+
-+static int max11410_configure_channel(struct max11410_state *st,
-+				      struct iio_chan_spec const *chan)
-+{
-+	struct max11410_channel_config cfg = st->channels[chan->address];
-+	unsigned int regval;
-+	int ret;
-+
-+	if (chan->differential)
-+		ret = max11410_set_input_mux(st, chan->channel, chan->channel2);
-+	else
-+		ret = max11410_set_input_mux(st, chan->channel,
-+					     MAX11410_AINN_GND);
-+
-+	if (ret)
-+		return ret;
-+
-+	regval = FIELD_PREP(MAX11410_CTRL_VREFP_BUF_BIT, cfg.buffered_vrefp) |
-+		 FIELD_PREP(MAX11410_CTRL_VREFN_BUF_BIT, cfg.buffered_vrefn) |
-+		 FIELD_PREP(MAX11410_CTRL_REFSEL_MASK, cfg.refsel) |
-+		 FIELD_PREP(MAX11410_CTRL_UNIPOLAR_BIT, !cfg.bipolar);
-+	ret = regmap_update_bits(st->regmap, MAX11410_REG_CTRL,
-+				 MAX11410_CTRL_REFSEL_MASK |
-+				 MAX11410_CTRL_VREFN_BUF_BIT |
-+				 MAX11410_CTRL_VREFN_BUF_BIT |
-+				 MAX11410_CTRL_UNIPOLAR_BIT, regval);
-+	if (ret)
-+		return ret;
-+
-+	regval = FIELD_PREP(MAX11410_PGA_SIG_PATH_MASK, cfg.sig_path) |
-+		 FIELD_PREP(MAX11410_PGA_GAIN_MASK, cfg.gain);
-+	ret = regmap_write(st->regmap, MAX11410_REG_PGA, regval);
-+	if (ret)
-+		return ret;
-+
-+	if (cfg.settling_time_us)
-+		fsleep(cfg.settling_time_us);
-+
-+	return 0;
-+}
-+
-+static int max11410_sample(struct max11410_state *st, int *sample_raw,
-+			   struct iio_chan_spec const *chan)
-+{
-+	int val, ret;
-+
-+	ret = max11410_configure_channel(st, chan);
-+	if (ret)
-+		return ret;
-+
-+	if (st->irq > 0)
-+		reinit_completion(&st->completion);
-+
-+	/* Start Conversion */
-+	ret = max11410_write_reg(st, MAX11410_REG_CONV_START,
-+				 MAX11410_CONV_TYPE_SINGLE);
-+	if (ret)
-+		return ret;
-+
-+	if (st->irq > 0) {
-+		/* Wait for an interrupt. */
-+		ret = wait_for_completion_timeout(&st->completion,
-+						  msecs_to_jiffies(MAX11410_CONVERSION_TIMEOUT_MS));
-+		if (!ret)
-+			return -ETIMEDOUT;
-+	} else {
-+		/* Wait for status register Conversion Ready flag */
-+		ret = read_poll_timeout(max11410_read_reg, ret,
-+					ret || (val & MAX11410_STATUS_CONV_READY_BIT),
-+					5000, MAX11410_CONVERSION_TIMEOUT_MS * 1000,
-+					true, st, MAX11410_REG_STATUS, &val);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/* Read ADC Data */
-+	return max11410_read_reg(st, MAX11410_REG_DATA0, sample_raw);
-+}
-+
-+static int max11410_get_scale(struct max11410_state *state,
-+			      struct max11410_channel_config cfg)
-+{
-+	struct regulator *vrefp, *vrefn;
-+	int scale;
-+
-+	vrefp = max11410_get_vrefp(state, cfg.refsel);
-+
-+	scale = regulator_get_voltage(vrefp) / 1000;
-+	vrefn = max11410_get_vrefn(state, cfg.refsel);
-+	if (vrefn)
-+		scale -= regulator_get_voltage(vrefn) / 1000;
-+
-+	if (cfg.bipolar)
-+		scale *= 2;
-+
-+	return scale >> cfg.gain;
-+}
-+
-+static int max11410_read_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long info)
-+{
-+	struct max11410_state *state = iio_priv(indio_dev);
-+	struct max11410_channel_config cfg = state->channels[chan->address];
-+	int ret, reg_val, filter, rate;
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = max11410_get_scale(state, cfg);
-+		*val2 = chan->scan_type.realbits;
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	case IIO_CHAN_INFO_OFFSET:
-+		if (cfg.bipolar)
-+			*val = -BIT(chan->scan_type.realbits - 1);
-+		else
-+			*val = 0;
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_RAW:
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
-+
-+		mutex_lock(&state->lock);
-+
-+		ret = max11410_sample(state, &reg_val, chan);
-+
-+		mutex_unlock(&state->lock);
-+
-+		iio_device_release_direct_mode(indio_dev);
-+
-+		if (ret)
-+			return ret;
-+
-+		*val = reg_val;
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		ret = regmap_read(state->regmap, MAX11410_REG_FILTER, &reg_val);
-+		if (ret)
-+			return ret;
-+
-+		filter = FIELD_GET(MAX11410_FILTER_LINEF_MASK, reg_val);
-+		rate = reg_val & MAX11410_FILTER_RATE_MASK;
-+		if (rate >= max11410_sampling_len[filter])
-+			rate = max11410_sampling_len[filter] - 1;
-+
-+		*val = max11410_sampling_rates[filter][rate][0];
-+		*val2 = max11410_sampling_rates[filter][rate][1];
-+
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	}
-+	return -EINVAL;
-+}
-+
-+static int max11410_write_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int val, int val2, long mask)
-+{
-+	struct max11410_state *st = iio_priv(indio_dev);
-+	int i, ret, reg_val, filter, gain;
-+	u32 *scale_avail;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		scale_avail = st->channels[chan->address].scale_avail;
-+		if (!scale_avail)
-+			return -EOPNOTSUPP;
-+
-+		/* Accept values in range 0.000001 <= scale < 1.000000 */
-+		if (val != 0 || val2 == 0)
-+			return -EINVAL;
-+
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
-+
-+		/* Convert from INT_PLUS_MICRO to FRACTIONAL_LOG2 */
-+		val2 = val2 * DIV_ROUND_CLOSEST(BIT(24), 1000000);
-+		val2 = DIV_ROUND_CLOSEST(scale_avail[0], val2);
-+		gain = order_base_2(val2);
-+
-+		st->channels[chan->address].gain = clamp_val(gain, 0, 7);
-+
-+		iio_device_release_direct_mode(indio_dev);
-+
-+		return 0;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
-+
-+		mutex_lock(&st->lock);
-+
-+		ret = regmap_read(st->regmap, MAX11410_REG_FILTER, &reg_val);
-+		if (ret)
-+			goto out;
-+
-+		filter = FIELD_GET(MAX11410_FILTER_LINEF_MASK, reg_val);
-+
-+		for (i = 0; i < max11410_sampling_len[filter]; ++i) {
-+			if (val == max11410_sampling_rates[filter][i][0] &&
-+			    val2 == max11410_sampling_rates[filter][i][1])
-+				break;
-+		}
-+		if (i == max11410_sampling_len[filter]) {
-+			ret = -EINVAL;
-+			goto out;
-+		}
-+
-+		ret = regmap_write_bits(st->regmap, MAX11410_REG_FILTER,
-+					MAX11410_FILTER_RATE_MASK, i);
-+
-+out:
-+		mutex_unlock(&st->lock);
-+		iio_device_release_direct_mode(indio_dev);
-+
-+		return ret;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int max11410_read_avail(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       const int **vals, int *type, int *length,
-+			       long info)
-+{
-+	struct max11410_state *st = iio_priv(indio_dev);
-+	struct max11410_channel_config cfg;
-+	int ret, reg_val, filter;
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		ret = regmap_read(st->regmap, MAX11410_REG_FILTER, &reg_val);
-+		if (ret)
-+			return ret;
-+
-+		filter = FIELD_GET(MAX11410_FILTER_LINEF_MASK, reg_val);
-+
-+		*vals = (const int *)max11410_sampling_rates[filter];
-+		*length = max11410_sampling_len[filter] * 2;
-+		*type = IIO_VAL_INT_PLUS_MICRO;
-+
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_SCALE:
-+		cfg = st->channels[chan->address];
-+
-+		if (!cfg.scale_avail)
-+			return -EINVAL;
-+
-+		*vals = cfg.scale_avail;
-+		*length = MAX11410_SCALE_AVAIL_SIZE * 2;
-+		*type = IIO_VAL_FRACTIONAL_LOG2;
-+
-+		return IIO_AVAIL_LIST;
-+	}
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info max11410_info = {
-+	.read_raw = max11410_read_raw,
-+	.write_raw = max11410_write_raw,
-+	.read_avail = max11410_read_avail,
-+	.attrs = &max11410_attribute_group,
-+};
-+
-+static irqreturn_t max11410_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct max11410_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = max11410_read_reg(st, MAX11410_REG_DATA0, &st->scan.data);
-+	if (ret) {
-+		dev_err(&indio_dev->dev, "cannot read data\n");
-+		goto out;
-+	}
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, &st->scan,
-+					   iio_get_time_ns(indio_dev));
-+
-+out:
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int max11410_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	struct max11410_state *st = iio_priv(indio_dev);
-+	int scan_ch, ret;
-+
-+	scan_ch = ffs(*indio_dev->active_scan_mask) - 1;
-+
-+	ret = max11410_configure_channel(st, &indio_dev->channels[scan_ch]);
-+	if (ret)
-+		return ret;
-+
-+	/* Start continuous conversion. */
-+	return max11410_write_reg(st, MAX11410_REG_CONV_START,
-+				  MAX11410_CONV_TYPE_CONTINUOUS);
-+}
-+
-+static int max11410_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct max11410_state *st = iio_priv(indio_dev);
-+
-+	/* Stop continuous conversion. */
-+	return max11410_write_reg(st, MAX11410_REG_CONV_START,
-+				  MAX11410_CONV_TYPE_SINGLE);
-+}
-+
-+static const struct iio_buffer_setup_ops max11410_buffer_ops = {
-+	.postenable = &max11410_buffer_postenable,
-+	.predisable = &max11410_buffer_predisable,
-+	.validate_scan_mask = &iio_validate_scan_mask_onehot,
-+};
-+
-+static const struct iio_trigger_ops max11410_trigger_ops = {
-+	.validate_device = iio_trigger_validate_own_device,
-+};
-+
-+static irqreturn_t max11410_interrupt(int irq, void *dev_id)
-+{
-+	struct iio_dev *indio_dev = dev_id;
-+	struct max11410_state *st = iio_priv(indio_dev);
-+
-+	if (iio_buffer_enabled(indio_dev))
-+		iio_trigger_poll_chained(st->trig);
-+	else
-+		complete(&st->completion);
-+
-+	return IRQ_HANDLED;
-+};
-+
-+static int max11410_parse_channels(struct max11410_state *st,
-+				   struct iio_dev *indio_dev)
-+{
-+	struct iio_chan_spec chanspec = chanspec_template;
-+	struct device *dev = &st->spi_dev->dev;
-+	struct max11410_channel_config *cfg;
-+	struct iio_chan_spec *channels;
-+	struct fwnode_handle *child;
-+	u32 reference, sig_path;
-+	const char *node_name;
-+	u32 inputs[2], scale;
-+	unsigned int num_ch;
-+	int chan_idx = 0;
-+	int ret, i;
-+
-+	num_ch = device_get_child_node_count(dev);
-+	if (num_ch == 0)
-+		return dev_err_probe(&indio_dev->dev, -ENODEV,
-+				     "FW has no channels defined\n");
-+
-+	/* Reserve space for soft timestamp channel */
-+	num_ch++;
-+	channels = devm_kcalloc(dev, num_ch, sizeof(*channels), GFP_KERNEL);
-+	if (!channels)
-+		return -ENOMEM;
-+
-+	st->channels = devm_kcalloc(dev, num_ch, sizeof(*st->channels),
-+				    GFP_KERNEL);
-+	if (!st->channels)
-+		return -ENOMEM;
-+
-+	device_for_each_child_node(dev, child) {
-+		node_name = fwnode_get_name(child);
-+		if (fwnode_property_present(child, "diff-channels")) {
-+			ret = fwnode_property_read_u32_array(child,
-+							     "diff-channels",
-+							     inputs,
-+							     ARRAY_SIZE(inputs));
-+
-+			chanspec.differential = 1;
-+		} else {
-+			ret = fwnode_property_read_u32(child, "reg", &inputs[0]);
-+
-+			inputs[1] = 0;
-+			chanspec.differential = 0;
-+		}
-+		if (ret) {
-+			fwnode_handle_put(child);
-+			return ret;
-+		}
-+
-+		if (inputs[0] > MAX11410_CHANNEL_INDEX_MAX ||
-+		    inputs[1] > MAX11410_CHANNEL_INDEX_MAX) {
-+			fwnode_handle_put(child);
-+			return dev_err_probe(&indio_dev->dev, -EINVAL,
-+					     "Invalid channel index for %s, should be less than %d\n",
-+					     node_name,
-+					     MAX11410_CHANNEL_INDEX_MAX + 1);
-+		}
-+
-+		cfg = &st->channels[chan_idx];
-+
-+		reference = MAX11410_REFSEL_AVDD_AGND;
-+		fwnode_property_read_u32(child, "adi,reference", &reference);
-+		if (reference > MAX11410_REFSEL_MAX) {
-+			fwnode_handle_put(child);
-+			return dev_err_probe(&indio_dev->dev, -EINVAL,
-+					     "Invalid adi,reference value for %s, should be less than %d.\n",
-+					     node_name, MAX11410_REFSEL_MAX + 1);
-+		}
-+
-+		if (!max11410_get_vrefp(st, reference) ||
-+		    (!max11410_get_vrefn(st, reference) && reference <= 2)) {
-+			fwnode_handle_put(child);
-+			return dev_err_probe(&indio_dev->dev, -EINVAL,
-+					     "Invalid VREF configuration for %s, either specify corresponding VREF regulators or change adi,reference property.\n",
-+					     node_name);
-+		}
-+
-+		sig_path = MAX11410_PGA_SIG_PATH_BUFFERED;
-+		fwnode_property_read_u32(child, "adi,input-mode", &sig_path);
-+		if (sig_path > MAX11410_SIG_PATH_MAX) {
-+			fwnode_handle_put(child);
-+			return dev_err_probe(&indio_dev->dev, -EINVAL,
-+					     "Invalid adi,input-mode value for %s, should be less than %d.\n",
-+					     node_name, MAX11410_SIG_PATH_MAX + 1);
-+		}
-+
-+		fwnode_property_read_u32(child, "settling-time-us",
-+					 &cfg->settling_time_us);
-+		cfg->bipolar = fwnode_property_read_bool(child, "bipolar");
-+		cfg->buffered_vrefp = fwnode_property_read_bool(child, "adi,buffered-vrefp");
-+		cfg->buffered_vrefn = fwnode_property_read_bool(child, "adi,buffered-vrefn");
-+		cfg->refsel = reference;
-+		cfg->sig_path = sig_path;
-+		cfg->gain = 0;
-+
-+		/* Enable scale_available property if input mode is PGA */
-+		if (sig_path == MAX11410_PGA_SIG_PATH_PGA) {
-+			__set_bit(IIO_CHAN_INFO_SCALE,
-+				  &chanspec.info_mask_separate_available);
-+			cfg->scale_avail = devm_kcalloc(dev, MAX11410_SCALE_AVAIL_SIZE * 2,
-+							sizeof(*cfg->scale_avail),
-+							GFP_KERNEL);
-+			if (!cfg->scale_avail) {
-+				fwnode_handle_put(child);
-+				return -ENOMEM;
-+			}
-+
-+			scale = max11410_get_scale(st, *cfg);
-+			for (i = 0; i < MAX11410_SCALE_AVAIL_SIZE; i++) {
-+				cfg->scale_avail[2 * i] = scale >> i;
-+				cfg->scale_avail[2 * i + 1] = chanspec.scan_type.realbits;
-+			}
-+		} else {
-+			__clear_bit(IIO_CHAN_INFO_SCALE,
-+				    &chanspec.info_mask_separate_available);
-+		}
-+
-+		chanspec.address = chan_idx;
-+		chanspec.scan_index = chan_idx;
-+		chanspec.channel = inputs[0];
-+		chanspec.channel2 = inputs[1];
-+
-+		channels[chan_idx] = chanspec;
-+		chan_idx++;
-+	}
-+
-+	channels[chan_idx] = (struct iio_chan_spec)IIO_CHAN_SOFT_TIMESTAMP(chan_idx);
-+
-+	indio_dev->num_channels = chan_idx + 1;
-+	indio_dev->channels = channels;
-+
-+	return 0;
-+}
-+
-+static void max11410_disable_reg(void *reg)
-+{
-+	regulator_disable(reg);
-+}
-+
-+static int max11410_init_vref(struct device *dev,
-+			      struct regulator **vref,
-+			      const char *id)
-+{
-+	struct regulator *reg;
-+	int ret;
-+
-+	reg = devm_regulator_get_optional(dev, id);
-+	if (PTR_ERR(reg) == -ENODEV) {
-+		*vref = NULL;
-+		return 0;
-+	} else if (IS_ERR(reg)) {
-+		return PTR_ERR(reg);
-+	}
-+	ret = regulator_enable(reg);
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "Failed to enable regulator %s\n", id);
-+
-+	*vref = reg;
-+	return devm_add_action_or_reset(dev, max11410_disable_reg, reg);
-+}
-+
-+static int max11410_calibrate(struct max11410_state *st, u32 cal_type)
-+{
-+	int ret, val;
-+
-+	ret = max11410_write_reg(st, MAX11410_REG_CAL_START, cal_type);
-+	if (ret)
-+		return ret;
-+
-+	/* Wait for status register Calibration Ready flag */
-+	return read_poll_timeout(max11410_read_reg, ret,
-+				 ret || (val & MAX11410_STATUS_CAL_READY_BIT),
-+				 50000, MAX11410_CALIB_TIMEOUT_MS * 1000, true,
-+				 st, MAX11410_REG_STATUS, &val);
-+}
-+
-+static int max11410_self_calibrate(struct max11410_state *st)
-+{
-+	int ret, i;
-+
-+	ret = regmap_write_bits(st->regmap, MAX11410_REG_FILTER,
-+				MAX11410_FILTER_RATE_MASK,
-+				FIELD_PREP(MAX11410_FILTER_RATE_MASK,
-+					   MAX11410_FILTER_RATE_MAX));
-+	if (ret)
-+		return ret;
-+
-+	ret = max11410_calibrate(st, MAX11410_CAL_START_SELF);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write_bits(st->regmap, MAX11410_REG_PGA,
-+				MAX11410_PGA_SIG_PATH_MASK,
-+				FIELD_PREP(MAX11410_PGA_SIG_PATH_MASK,
-+					   MAX11410_PGA_SIG_PATH_PGA));
-+	if (ret)
-+		return ret;
-+
-+	/* PGA calibrations */
-+	for (i = 1; i < 8; ++i) {
-+		ret = regmap_write_bits(st->regmap, MAX11410_REG_PGA,
-+					MAX11410_PGA_GAIN_MASK, i);
-+		if (ret)
-+			return ret;
-+
-+		ret = max11410_calibrate(st, MAX11410_CAL_START_PGA);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/* Cleanup */
-+	ret = regmap_write_bits(st->regmap, MAX11410_REG_PGA,
-+				MAX11410_PGA_GAIN_MASK, 0);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write_bits(st->regmap, MAX11410_REG_FILTER,
-+				MAX11410_FILTER_RATE_MASK, 0);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write_bits(st->regmap, MAX11410_REG_PGA,
-+				 MAX11410_PGA_SIG_PATH_MASK,
-+				 FIELD_PREP(MAX11410_PGA_SIG_PATH_MASK,
-+					    MAX11410_PGA_SIG_PATH_BUFFERED));
-+}
-+
-+static int max11410_probe(struct spi_device *spi)
-+{
-+	const char *vrefp_regs[] = { "vref0p", "vref1p", "vref2p" };
-+	const char *vrefn_regs[] = { "vref0n", "vref1n", "vref2n" };
-+	struct device *dev = &spi->dev;
-+	struct max11410_state *st;
-+	struct iio_dev *indio_dev;
-+	int ret, irqs[2];
-+	int i;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+	st->spi_dev = spi;
-+	init_completion(&st->completion);
-+	mutex_init(&st->lock);
-+
-+	indio_dev->name = "max11410";
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &max11410_info;
-+
-+	st->regmap = devm_regmap_init_spi(spi, &regmap_config);
-+	if (IS_ERR(st->regmap))
-+		return dev_err_probe(dev, PTR_ERR(st->regmap),
-+				     "regmap initialization failed\n");
-+
-+	st->avdd = devm_regulator_get(dev, "avdd");
-+	if (IS_ERR(st->avdd))
-+		return dev_err_probe(dev, PTR_ERR(st->avdd),
-+				     "avdd-supply is required.\n");
-+
-+	ret = regulator_enable(st->avdd);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(dev, max11410_disable_reg, st->avdd);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < ARRAY_SIZE(vrefp_regs); i++) {
-+		ret = max11410_init_vref(dev, &st->vrefp[i], vrefp_regs[i]);
-+		if (ret)
-+			return ret;
-+
-+		ret = max11410_init_vref(dev, &st->vrefn[i], vrefn_regs[i]);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/*
-+	 * Regulators must be configured before parsing channels for
-+	 * validating "adi,reference" property of each channel.
-+	 */
-+	ret = max11410_parse_channels(st, indio_dev);
-+	if (ret)
-+		return ret;
-+
-+	irqs[0] = fwnode_irq_get_byname(dev_fwnode(dev), "gpio0");
-+	irqs[1] = fwnode_irq_get_byname(dev_fwnode(dev), "gpio1");
-+
-+	if (irqs[0] > 0) {
-+		st->irq = irqs[0];
-+		ret = regmap_write(st->regmap, MAX11410_REG_GPIO_CTRL(0),
-+				   MAX11410_GPIO_INTRB);
-+	} else if (irqs[1] > 0) {
-+		st->irq = irqs[1];
-+		ret = regmap_write(st->regmap, MAX11410_REG_GPIO_CTRL(1),
-+				   MAX11410_GPIO_INTRB);
-+	} else if (spi->irq > 0) {
-+		return dev_err_probe(dev, -ENODEV,
-+				     "no interrupt name specified");
-+	}
-+
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_set_bits(st->regmap, MAX11410_REG_CTRL,
-+			      MAX11410_CTRL_FORMAT_BIT);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
-+					      &max11410_trigger_handler,
-+					      &max11410_buffer_ops);
-+	if (ret)
-+		return ret;
-+
-+	if (st->irq > 0) {
-+		st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
-+						  indio_dev->name,
-+						  iio_device_id(indio_dev));
-+		if (!st->trig)
-+			return -ENOMEM;
-+
-+		st->trig->ops = &max11410_trigger_ops;
-+		ret = devm_iio_trigger_register(dev, st->trig);
-+		if (ret)
-+			return ret;
-+
-+		ret = devm_request_threaded_irq(dev, st->irq, NULL,
-+						&max11410_interrupt,
-+						IRQF_ONESHOT, "max11410",
-+						indio_dev);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	ret = max11410_self_calibrate(st);
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "cannot perform device self calibration\n");
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static const struct of_device_id max11410_spi_of_id[] = {
-+	{ .compatible = "adi,max11410" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, max11410_spi_of_id);
-+
-+static const struct spi_device_id max11410_id[] = {
-+	{ "max11410" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, max11410_id);
-+
-+static struct spi_driver max11410_driver = {
-+	.driver = {
-+		.name	= "max11410",
-+		.of_match_table = max11410_spi_of_id,
-+	},
-+	.probe		= max11410_probe,
-+	.id_table	= max11410_id,
-+};
-+module_spi_driver(max11410_driver);
-+
-+MODULE_AUTHOR("David Jung <David.Jung@analog.com>");
-+MODULE_AUTHOR("Ibrahim Tilki <Ibrahim.Tilki@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices MAX11410 ADC");
-+MODULE_LICENSE("GPL");
--- 
-2.25.1
+> > +
+> > +  interrupt-names:
+> > +    description: Name of the gpio pin of max11410 used for IRQ
+> > +    maxItems: 1
+> > +    items:
+> > +      enum:
+> > +        - gpio0
+> > +        - gpio1
+> > +
+> > +  '#address-cells':
+> > +    const: 1
+> > +
+> > +  '#size-cells':
+> > +    const: 0
+> > +
+> > +  avdd-supply:
+> > +    description: Necessarry avdd supply. Used as reference when no exp=
+licit reference supplied.
+> > +
+> > +  vref0p-supply:
+> > +    description: vref0p supply can be used as reference for conversion=
+.
+> > +
+> > +  vref1p-supply:
+> > +    description: vref1p supply can be used as reference for conversion=
+.
+> > +
+> > +  vref2p-supply:
+> > +    description: vref2p supply can be used as reference for conversion=
+.
+> > +
+> > +  vref0n-supply:
+> > +    description: vref0n supply can be used as reference for conversion=
+.
+> > +
+> > +  vref1n-supply:
+> > +    description: vref1n supply can be used as reference for conversion=
+.
+> > +
+> > +  vref2n-supply:
+> > +    description: vref2n supply can be used as reference for conversion=
+.
+> > +
+> > +  spi-max-frequency:
+> > +    maximum: 8000000
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - avdd-supply
+> hmm.
+>=20
+> If explicit references are supplied and used, then will we query the volt=
+age of the avdd supply?  If not, it doesn't need to be supplied. Power is n=
+eeded but it might be coming from a fixed regulator no one bothered to put =
+in the device tree.  Perhaps we just don't care about that corner case?
+>=20
+
+That is correct. If all of the channels use external vref, then avdd-supply
+is no longer required. It is fine by me if we ignore this corner case.
+
+Current driver checks for avdd-supply unconditionally. Maybe we can change =
+the
+driver so that it results in error only if one of the channels use avdd as =
+reference
+in the absence of avdd-supply?
+
+
+> > +
+> > +patternProperties:
+> > +  "^channel(@[0-9a-f]+)?$":
+>=20
+> name isn't that flexible as we only allow reg 0-9
+>=20
+
+I changed it to "^channel(@[0-9])?$" in v5 but will this allow us to define
+more than 10 channels? Sharing analog inputs accross multiple channels is
+supported by driver. But I don't know how to correctly specify it here.
+For example following configuration is valid:
+
+  channel@0 {
+    reg =3D <0>;
+  };
+  channel@1 {
+    reg =3D <1>;
+  };
+  channel@2 {
+    reg =3D <2>;
+  };
+  channel@3 {
+    reg =3D <3>;
+  };
+  channel@4 {
+    reg =3D <4>;
+  };
+  channel@5 {
+    reg =3D <5>;
+  };
+  channel@6 {
+    reg =3D <6>;
+  };
+  channel@7 {
+    reg =3D <7>;
+  };
+  channel@8 {
+    reg =3D <8>;
+  };
+  channel@9 {
+    reg =3D <9>;
+  };
+  channel@a {
+    diff-channels =3D <1 2>;
+  };
+  channel@b {
+    diff-channels =3D <7 9>;
+  };
+
+
+> > +    $ref: "adc.yaml"
+> > +    type: object
+> > +    description: Represents the external channels which are connected =
+to the ADC.
+> > +
+> > +    properties:
+> > +      reg:
+> > +        description: The channel number in single-ended mode.
+> > +        minimum: 0
+> > +        maximum: 9
+> > +
+> > +      adi,reference:
+> > +        description: |
+> > +          Select the reference source to use when converting on
+> > +          the specific channel. Valid values are:
+> > +          0: VREF0P/VREF0N
+> > +          1: VREF1P/VREF1N
+> > +          2: VREF2P/VREF2N
+> > +          3: AVDD/AGND
+> > +          4: VREF0P/AGND
+> > +          5: VREF1P/AGND
+> > +          6: VREF2P/AGND
+> > +          If this field is left empty, AVDD/AGND is selected.
+> > +        $ref: /schemas/types.yaml#/definitions/uint32
+> > +        enum: [0, 1, 2, 3, 4, 5, 6]
+> > +        default: 3
+> > +
+> > +      adi,input-mode:
+> > +        description: |
+> > +          Select signal path of input channels. Valid values are:
+> > +          0: Buffered, low-power, unity-gain path (default)
+> > +          1: Bypass path
+> > +          2: PGA path
+> > +        $ref: /schemas/types.yaml#/definitions/uint32
+> > +        enum: [0, 1, 2]
+> > +        default: 0
+> > +
+> > +      diff-channels: true
+> > +
+> > +      bipolar: true
+> > +
+> > +      settling-time-us: true
+> > +
+> > +      adi,buffered-vrefp:
+> > +        description: Enable buffered mode for positive reference.
+> > +        type: boolean
+> > +
+> > +      adi,buffered-vrefn:
+> > +        description: Enable buffered mode for negative reference.
+> > +        type: boolean
+> > +
+> > +    required:
+> > +      - reg
+> > +
+> > +    additionalProperties: false
+> > +
+> > +additionalProperties: false
+>=20
+> This now needs to use the new spi-peripheral-props.yaml
+> https://lore.kernel.org/all/20220816124321.67817-1-krzysztof.kozlowski@li=
+naro.org/=20
+>=20
+> Your series crossed with that cleanup / binding documentation refactor.
+>=20
+
+Updated in v5
+
+> > +
+> > +examples:
+> > +  - |
+> > +    spi {
+> > +      #address-cells =3D <1>;
+> > +      #size-cells =3D <0>;
+> > +
+> > +      adc@0 {
+> > +        reg =3D <0>;
+> > +        compatible =3D "adi,max11410";
+> > +        spi-max-frequency =3D <8000000>;
+> > +
+> > +        interrupt-parent =3D <&gpio>;
+> > +        interrupts =3D <25 2>;
+> > +        interrupt-names =3D "gpio1";
+> > +
+> > +        avdd-supply =3D <&adc_avdd>;
+> > +
+> > +        vref1p-supply =3D <&adc_vref1p>;
+> > +        vref1n-supply =3D <&adc_vref1n>;
+> > +
+> > +        #address-cells =3D <1>;
+> > +        #size-cells =3D <0>;
+> > +
+> > +        channel@0 {
+> > +          reg =3D <0>;
+> > +        };
+> > +
+> > +        channel@1 {
+> > +          reg =3D <1>;
+> > +          diff-channels =3D <2 3>;
+> > +          adi,reference =3D <1>;
+> > +          bipolar;
+> > +          settling-time-us =3D <100000>;
+> > +        };
+> > +
+> > +        channel@2 {
+> > +          reg =3D <2>;
+> > +          diff-channels =3D <7 9>;
+> > +          adi,reference =3D <5>;
+> > +          adi,input-mode =3D <2>;
+> > +          settling-time-us =3D <50000>;
+> > +        };
+> > +      };
+> > +    };
 
