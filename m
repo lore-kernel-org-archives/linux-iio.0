@@ -2,62 +2,150 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCBBAC6FA8E
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Sep 2022 08:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBD8EECAAD8
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Sep 2022 11:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231239AbiITINP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 20 Sep 2022 04:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
+        id S230133AbiITL2m (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 20 Sep 2022 07:28:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230424AbiITIMv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Sep 2022 04:12:51 -0400
-Received: from mail.fadrush.pl (mail.fadrush.pl [54.37.225.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FDC65553
-        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 01:11:08 -0700 (PDT)
-Received: by mail.fadrush.pl (Postfix, from userid 1002)
-        id 6D9E02328E; Tue, 20 Sep 2022 08:10:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fadrush.pl; s=mail;
-        t=1663661467; bh=bD6j9gIFU6CLTaCGl0Ow9oeIxtirvTfMeNZSfLEZQ+I=;
-        h=Date:From:To:Subject:From;
-        b=AB0j/l9+OVuQ+qSyRQSoghSLRGmD+D5YxBur32Dol+hjWLGNJ8lzXuEW5ggwA967o
-         L5waH7t6oCfXjG20S9srOG4AXk7aDWBxewiY1hApZhW+RY8Uvdgtkrb9auktSA00oD
-         uSvTBOUoe1NALpHnWdQqLWA22w1/lLiek0iZs0kQ9vrUciuQQXOev67wnTTut7P7bU
-         erbCnA5c78xDl+hFfWrPYf2bCeYHPaF23gVNCBpHkdRGnEQ+eqvhguDoYxRZ2/oNjT
-         6rVcBmMHRhw9tipVCgOK1JXGEAVTqqsJTLihQPCZgIoY6u0Y/MX5eGTL2+FKGMcd86
-         WyXUAAZKr2Otw==
-Received: by mail.fadrush.pl for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 08:10:47 GMT
-Message-ID: <20220920064500-0.1.1q.gi0q.0.og0j72jb4n@fadrush.pl>
-Date:   Tue, 20 Sep 2022 08:10:47 GMT
-From:   "Jakub Olejniczak" <jakub.olejniczak@fadrush.pl>
-To:     <linux-iio@vger.kernel.org>
-Subject: =?UTF-8?Q?Zwi=C4=99kszenie_p=C5=82ynno=C5=9Bci_finansowej?=
-X-Mailer: mail.fadrush.pl
+        with ESMTP id S229736AbiITL2l (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Sep 2022 07:28:41 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97D06C101
+        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 04:28:40 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28K854bL006301;
+        Tue, 20 Sep 2022 07:27:57 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3jn835murn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 20 Sep 2022 07:27:57 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 28KBRtT1060612
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 20 Sep 2022 07:27:55 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 20 Sep
+ 2022 07:27:54 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 20 Sep 2022 07:27:54 -0400
+Received: from nsa.ad.analog.com ([10.44.3.57])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 28KBR4UP021723;
+        Tue, 20 Sep 2022 07:27:45 -0400
+From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+To:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-rockchip@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>, <linux-imx@nxp.com>,
+        <linux-iio@vger.kernel.org>
+CC:     Chunyan Zhang <zhang.lyra@gmail.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Cixi Geng <cixi.geng1@unisoc.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Andriy Tryshnivskyy <andriy.tryshnivskyy@opensynergy.com>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Florian Boor <florian.boor@kernelconcepts.de>,
+        Ciprian Regus <ciprian.regus@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Jyoti Bhayana <jbhayana@google.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Chen-Yu Tsai <wens@csie.org>, Orson Zhai <orsonzhai@gmail.com>
+Subject: [PATCH 03/15] iio: adc: axp288_adc: do not use internal iio_dev lock
+Date:   Tue, 20 Sep 2022 13:28:09 +0200
+Message-ID: <20220920112821.975359-4-nuno.sa@analog.com>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220920112821.975359-1-nuno.sa@analog.com>
+References: <20220920112821.975359-1-nuno.sa@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: Lr7Gy0WxKZ95RG24F2TVDROVWu8PQRcW
+X-Proofpoint-GUID: Lr7Gy0WxKZ95RG24F2TVDROVWu8PQRcW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-20_03,2022-09-16_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 adultscore=0
+ impostorscore=0 phishscore=0 priorityscore=1501 suspectscore=0 spamscore=0
+ malwarescore=0 mlxscore=0 mlxlogscore=999 bulkscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2209130000
+ definitions=main-2209200068
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Dzie=C5=84 dobry,
+The iio_device lock is only meant for internal use. Hence define a
+device local lock to protect against concurrent accesses.
 
-kontaktuj=C4=99 si=C4=99 z Pa=C5=84stwem, poniewa=C5=BC chcia=C5=82bym za=
-proponowa=C4=87 wygodne rozwi=C4=85zanie, kt=C3=B3re umo=C5=BCliwi Pa=C5=84=
-stwa firmie stabilny rozw=C3=B3j.=20
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+ drivers/iio/adc/axp288_adc.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Konkurencyjne otoczenie wymaga ci=C4=85g=C5=82ego ulepszania i poszerzeni=
-a oferty, co z kolei wi=C4=85=C5=BCe si=C4=99 z konieczno=C5=9Bci=C4=85 i=
-nwestowania. Brak odpowiedniego kapita=C5=82u powa=C5=BCnie ogranicza tem=
-po rozwoju firmy.
+diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
+index 580361bd9849..3bbb96156739 100644
+--- a/drivers/iio/adc/axp288_adc.c
++++ b/drivers/iio/adc/axp288_adc.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/dmi.h>
+ #include <linux/module.h>
++#include <linux/mutex.h>
+ #include <linux/kernel.h>
+ #include <linux/device.h>
+ #include <linux/regmap.h>
+@@ -50,6 +51,8 @@ enum axp288_adc_id {
+ struct axp288_adc_info {
+ 	int irq;
+ 	struct regmap *regmap;
++	/* lock to protect against multiple access to the device */
++	struct mutex lock;
+ 	bool ts_enabled;
+ };
+ 
+@@ -161,7 +164,7 @@ static int axp288_adc_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 	struct axp288_adc_info *info = iio_priv(indio_dev);
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&info->lock);
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		if (axp288_adc_set_ts(info, AXP288_ADC_TS_CURRENT_ON_ONDEMAND,
+@@ -178,7 +181,7 @@ static int axp288_adc_read_raw(struct iio_dev *indio_dev,
+ 	default:
+ 		ret = -EINVAL;
+ 	}
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&info->lock);
+ 
+ 	return ret;
+ }
+@@ -264,6 +267,7 @@ static int axp288_adc_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	info = iio_priv(indio_dev);
++	mutex_init(&info->lock);
+ 	info->irq = platform_get_irq(pdev, 0);
+ 	if (info->irq < 0)
+ 		return info->irq;
+-- 
+2.37.3
 
-Od wielu lat z powodzeniem pomagam firmom w uzyskaniu najlepszej formy fi=
-nansowania z banku oraz UE. Mam sta=C5=82ych Klient=C3=B3w, kt=C3=B3rzy n=
-adal ch=C4=99tnie korzystaj=C4=85 z moich us=C5=82ug, a tak=C5=BCe poleca=
-j=C4=85 je innym.
-
-Czy chcieliby Pa=C5=84stwo skorzysta=C4=87 z pomocy wykwalifikowanego i d=
-o=C5=9Bwiadczonego doradcy finansowego?
-
-
-Pozdrawiam
-Jakub Olejniczak
