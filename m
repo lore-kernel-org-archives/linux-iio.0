@@ -2,57 +2,57 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87EA6C6FA96
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Sep 2022 06:31:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26513C6FA99
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Sep 2022 06:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229525AbiIUGbF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 21 Sep 2022 02:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57552 "EHLO
+        id S229776AbiIUGbG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 21 Sep 2022 02:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiIUGaw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2022 02:30:52 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8903ECFD
-        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 23:30:51 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id z9so3755837qvn.9
-        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 23:30:51 -0700 (PDT)
+        with ESMTP id S229903AbiIUGa5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2022 02:30:57 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D097B1FE
+        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 23:30:56 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id h21so3443458qta.3
+        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 23:30:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=konsulko.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=EEEIkVBJ75c1He7ol3L/GMy6O2j7bpfcaiLKZ3AKsE0=;
-        b=ZJDah8N78ksArxAT6Gozi9vW0xRjIitzUcmHaXdaTbK3H/Wx4Aesa5+XuZ+rkXBofR
-         I1VJveiMvxCLoCLCCHKrHF4U3TBbStkfwx127M/5S5vPrYdkSCMnpwHTxWYufGDhoUz1
-         +HOYLpeGcNuRmzR0wS9wLvdxwtSjqq9/GgShU=
+        bh=mlVGPwO+07kuJrM0Nnjb7s2sOnMb8GPVRLx94R4E7gs=;
+        b=fss57bJBh8c6SOblTfdjH+G8dANT8AsNUqFiBVhincgz2iiJ7tJd4WjjAJEEb196yr
+         mdwywb8Ht7PGWW7WKcyQUWLtjUKd6mFidItRpE//Pk5M97b90IKaFivGAFXfNwg3gVLs
+         tN/S49ou0vNvS1iuF3N/+dOSTFTjnNUVeFc4M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=EEEIkVBJ75c1He7ol3L/GMy6O2j7bpfcaiLKZ3AKsE0=;
-        b=LQcNvJMBA0zROZ5nxfC0mOleNr1Z4QYBwLYebw/p1HqupRzql3x7wzkBFdAGo9H+UJ
-         YFAvH1NItgcPpa4j6RMnoP3+Jw9dUsp+Y7BgakgHd4mZTo5WE/UNxFpgHnCzoVQHzGek
-         nBd5xNXao8DcBkmjpgK8JCMMz7BfOnE5mkrQUAC+Ut8JPQmfK/rkiFzSkc/g8AzSaOhb
-         D6pyGrhrwPN2IiESWBlzWyUhyTnOLYr/cemW6XbFQ/a2KUrbJvGccTlen3gabPiO91+M
-         MZ5Q2qTufJAoQrD5CoKqTCBlCA2JaSWDo2E8AxmRNhRwcak0dfUYzixFqCgUJotfvqb5
-         zZjw==
-X-Gm-Message-State: ACrzQf2vEcLV0bDCIM1OgMFWjCnxKYXMKgkfqOND7a5ZihFsL6C23nHK
-        GFIeEPZdtlD69eU2bNZj5YfypmbxR+3EqHFuGlQ=
-X-Google-Smtp-Source: AMsMyM7+rfhHP0WFlK4pb4y4HRfC9wcWDXLEEq2JWTqgV/VHCrznChHrIGbQHc54zQmtykzCJZDJKA==
-X-Received: by 2002:a05:6214:2468:b0:4ac:8786:f20e with SMTP id im8-20020a056214246800b004ac8786f20emr21853047qvb.50.1663741850700;
-        Tue, 20 Sep 2022 23:30:50 -0700 (PDT)
+        bh=mlVGPwO+07kuJrM0Nnjb7s2sOnMb8GPVRLx94R4E7gs=;
+        b=P9rRdkzu5466wcfS59u+uIHLs27CHHhy7kOCvfWm/eAghpaDMOlsZ7R7D8bFmjlCqi
+         O/ZvemRc/5LpZsANx1qW9oa1b+rzbrU4Kui+pncQVeX8XLbTPvIFjk32jNT8t9SYJ3tz
+         Ndk2hcSMTjj9k4HF8T21e8c+kzo9E63AORJO44Od3p8Mj7tZragn8sU1rHAxc4z6S6nt
+         TcfKbV8du1t23SPo+5+NFlLzq0O7tXjJYwSjMOc29+3OIaIvrIvElbCZ2Mz1fo3wq9XY
+         aw/Q9jHq637IoWMPDmqLBlbZRB/gAFmLdvKw3QLLSXJO607kugqBZJTLTxQrISNq3frn
+         ogbg==
+X-Gm-Message-State: ACrzQf3XfBKo9VHcjn15yy67Sq1tN0oWA0awgr29B5wGtQfiFXsvKAzb
+        iaxR3cVoCQrsZ3abQo55vlDVo2eGZCv/aCuyAmg=
+X-Google-Smtp-Source: AMsMyM7lbGdMehRb5bQh41Qks9Goqd8Dg/VM4CIatKvSGNd+3cB3ygfNk9A9OokMRtpnYYjDz8f4SA==
+X-Received: by 2002:a05:622a:44b:b0:35c:e129:a1b with SMTP id o11-20020a05622a044b00b0035ce1290a1bmr15021109qtx.78.1663741854798;
+        Tue, 20 Sep 2022 23:30:54 -0700 (PDT)
 Received: from localhost.localdomain ([164.92.70.235])
-        by smtp.gmail.com with ESMTPSA id m10-20020ac807ca000000b00342f05defd1sm1060855qth.66.2022.09.20.23.30.49
+        by smtp.gmail.com with ESMTPSA id m10-20020ac807ca000000b00342f05defd1sm1060855qth.66.2022.09.20.23.30.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Sep 2022 23:30:50 -0700 (PDT)
+        Tue, 20 Sep 2022 23:30:54 -0700 (PDT)
 From:   Matt Ranostay <matt.ranostay@konsulko.com>
 To:     gupt21@gmail.com, jic23@kernel.org
 Cc:     linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-input@vger.kernel.org,
         Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: [PATCH v4 2/5] iio: addac: stx104: fix future recursive dependencies
-Date:   Tue, 20 Sep 2022 23:30:23 -0700
-Message-Id: <20220921063026.89619-3-matt.ranostay@konsulko.com>
+Subject: [PATCH v4 4/5] HID: mcp2221: switch i2c registration to devm functions
+Date:   Tue, 20 Sep 2022 23:30:25 -0700
+Message-Id: <20220921063026.89619-5-matt.ranostay@konsulko.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220921063026.89619-1-matt.ranostay@konsulko.com>
 References: <20220921063026.89619-1-matt.ranostay@konsulko.com>
@@ -62,38 +62,114 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-When using 'imply IIO' for other configurations which have 'select GPIOLIB'
-the following recursive dependency is detected for STX1040
-
-Switch from 'select GPIOLIB' to 'depends on GPIOLIB' to avoid this per
-recommendation in kconfig-language.rst
-
-drivers/gpio/Kconfig:14:error: recursive dependency detected!
-drivers/gpio/Kconfig:14:        symbol GPIOLIB is selected by STX104
-drivers/iio/addac/Kconfig:20:   symbol STX104 depends on IIO
-drivers/iio/Kconfig:6:  symbol IIO is implied by HID_MCP2221
-drivers/hid/Kconfig:1227:       symbol HID_MCP2221 depends on GPIOLIB
+Switch from i2c_add_adapter() to resource managed devm_i2c_add_adapter()
+for matching rest of driver initialization, and more concise code.
 
 Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- drivers/iio/addac/Kconfig | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/hid/hid-mcp2221.c | 45 +++++++++++++++++----------------------
+ 1 file changed, 19 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/iio/addac/Kconfig b/drivers/iio/addac/Kconfig
-index fcf6d2269bfc..494790816ac7 100644
---- a/drivers/iio/addac/Kconfig
-+++ b/drivers/iio/addac/Kconfig
-@@ -19,9 +19,8 @@ config AD74413R
+diff --git a/drivers/hid/hid-mcp2221.c b/drivers/hid/hid-mcp2221.c
+index de52e9f7bb8c..7ba63bcd66de 100644
+--- a/drivers/hid/hid-mcp2221.c
++++ b/drivers/hid/hid-mcp2221.c
+@@ -824,6 +824,14 @@ static int mcp2221_raw_event(struct hid_device *hdev,
+ 	return 1;
+ }
  
- config STX104
- 	tristate "Apex Embedded Systems STX104 driver"
--	depends on PC104 && X86
-+	depends on PC104 && X86 && GPIOLIB
- 	select ISA_BUS_API
--	select GPIOLIB
- 	help
- 	  Say yes here to build support for the Apex Embedded Systems STX104
- 	  integrated analog PC/104 card.
++static void mcp2221_hid_remove(void *ptr)
++{
++	struct hid_device *hdev = ptr;
++
++	hid_hw_close(hdev);
++	hid_hw_stop(hdev);
++}
++
+ static int mcp2221_probe(struct hid_device *hdev,
+ 					const struct hid_device_id *id)
+ {
+@@ -849,7 +857,8 @@ static int mcp2221_probe(struct hid_device *hdev,
+ 	ret = hid_hw_open(hdev);
+ 	if (ret) {
+ 		hid_err(hdev, "can't open device\n");
+-		goto err_hstop;
++		hid_hw_stop(hdev);
++		return ret;
+ 	}
+ 
+ 	mutex_init(&mcp->lock);
+@@ -857,6 +866,10 @@ static int mcp2221_probe(struct hid_device *hdev,
+ 	hid_set_drvdata(hdev, mcp);
+ 	mcp->hdev = hdev;
+ 
++	ret = devm_add_action_or_reset(&hdev->dev, mcp2221_hid_remove, hdev);
++	if (ret)
++		return ret;
++
+ 	/* Set I2C bus clock diviser */
+ 	if (i2c_clk_freq > 400)
+ 		i2c_clk_freq = 400;
+@@ -873,19 +886,17 @@ static int mcp2221_probe(struct hid_device *hdev,
+ 			"MCP2221 usb-i2c bridge on hidraw%d",
+ 			((struct hidraw *)hdev->hidraw)->minor);
+ 
+-	ret = i2c_add_adapter(&mcp->adapter);
++	ret = devm_i2c_add_adapter(&hdev->dev, &mcp->adapter);
+ 	if (ret) {
+ 		hid_err(hdev, "can't add usb-i2c adapter: %d\n", ret);
+-		goto err_i2c;
++		return ret;
+ 	}
+ 	i2c_set_adapdata(&mcp->adapter, mcp);
+ 
+ 	/* Setup GPIO chip */
+ 	mcp->gc = devm_kzalloc(&hdev->dev, sizeof(*mcp->gc), GFP_KERNEL);
+-	if (!mcp->gc) {
+-		ret = -ENOMEM;
+-		goto err_gc;
+-	}
++	if (!mcp->gc)
++		return -ENOMEM;
+ 
+ 	mcp->gc->label = "mcp2221_gpio";
+ 	mcp->gc->direction_input = mcp_gpio_direction_input;
+@@ -900,26 +911,9 @@ static int mcp2221_probe(struct hid_device *hdev,
+ 
+ 	ret = devm_gpiochip_add_data(&hdev->dev, mcp->gc, mcp);
+ 	if (ret)
+-		goto err_gc;
++		return ret;
+ 
+ 	return 0;
+-
+-err_gc:
+-	i2c_del_adapter(&mcp->adapter);
+-err_i2c:
+-	hid_hw_close(mcp->hdev);
+-err_hstop:
+-	hid_hw_stop(mcp->hdev);
+-	return ret;
+-}
+-
+-static void mcp2221_remove(struct hid_device *hdev)
+-{
+-	struct mcp2221 *mcp = hid_get_drvdata(hdev);
+-
+-	i2c_del_adapter(&mcp->adapter);
+-	hid_hw_close(mcp->hdev);
+-	hid_hw_stop(mcp->hdev);
+ }
+ 
+ static const struct hid_device_id mcp2221_devices[] = {
+@@ -932,7 +926,6 @@ static struct hid_driver mcp2221_driver = {
+ 	.name		= "mcp2221",
+ 	.id_table	= mcp2221_devices,
+ 	.probe		= mcp2221_probe,
+-	.remove		= mcp2221_remove,
+ 	.raw_event	= mcp2221_raw_event,
+ };
+ 
 -- 
 2.37.2
 
