@@ -2,57 +2,52 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40823ECAAD8
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Sep 2022 16:36:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 756F1C6FA82
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Sep 2022 16:36:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229490AbiIUQg3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S230263AbiIUQg3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 21 Sep 2022 12:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59888 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230312AbiIUQgO (ORCPT
+        with ESMTP id S230315AbiIUQgO (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2022 12:36:14 -0400
-Received: from dggsgout12.his.huawei.com (unknown [45.249.212.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1111AAA4F7
+Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F8EAB05A
         for <linux-iio@vger.kernel.org>; Wed, 21 Sep 2022 09:19:10 -0700 (PDT)
 Received: from mail02.huawei.com (unknown [172.30.67.153])
-        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4MXk856B0Qz6T8KB
-        for <linux-iio@vger.kernel.org>; Thu, 22 Sep 2022 00:17:09 +0800 (CST)
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4MXk8Q0F4KzlDj9
+        for <linux-iio@vger.kernel.org>; Thu, 22 Sep 2022 00:17:26 +0800 (CST)
 Received: from huaweicloud.com (unknown [10.175.102.38])
-        by APP1 (Coremail) with SMTP id cCh0CgCHDTF5OStjcRGBBA--.52958S6;
-        Thu, 22 Sep 2022 00:19:08 +0800 (CST)
+        by APP1 (Coremail) with SMTP id cCh0CgCHDTF5OStjcRGBBA--.52958S4;
+        Thu, 22 Sep 2022 00:19:07 +0800 (CST)
 From:   Wei Yongjun <weiyongjun@huaweicloud.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+To:     Lars-Peter Clausen <lars@metafoo.de>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
-        LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>,
-        Tomas Melin <tomas.melin@vaisala.com>,
-        =?UTF-8?q?Nuno=20S=E0=B8=A3=E0=B8=81?= <nuno.sa@analog.com>
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>
 Cc:     Wei Yongjun <weiyongjun1@huawei.com>, linux-iio@vger.kernel.org
-Subject: [PATCH 2/5 v3] iio: accel: sca3300: Silence no spi_device_id warning
-Date:   Wed, 21 Sep 2022 16:36:17 +0000
-Message-Id: <20220921163620.805879-3-weiyongjun@huaweicloud.com>
+Subject: [PATCH 0/5 v3] iio: Silence no spi_device_id warnings
+Date:   Wed, 21 Sep 2022 16:36:15 +0000
+Message-Id: <20220921163620.805879-1-weiyongjun@huaweicloud.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220921163620.805879-1-weiyongjun@huaweicloud.com>
-References: <20220921163620.805879-1-weiyongjun@huaweicloud.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: cCh0CgCHDTF5OStjcRGBBA--.52958S6
-X-Coremail-Antispam: 1UD129KBjvJXoW7CF48CF1kZFW8ZFyfAF1xuFg_yoW8Gry7pF
-        s8JFy5AFZ7uF4rGrs3Zw1xZFy5K393Ja4Ygr47tw1S9rsxurWYqa1ftFyxAr1UXrZ8Jr13
-        tFy7Kry7KF48AwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvEb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUXw
-        A2048vs2IY020Ec7CjxVAFwI0_Gr0_Xr1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
-        w2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
-        WxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AK
-        xVW8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7
-        xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Y
-        z7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7
-        v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF
-        1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIx
-        AIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI
-        42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
-        evJa73UjIFyTuYvjxU2GYLDUUUU
+X-CM-TRANSID: cCh0CgCHDTF5OStjcRGBBA--.52958S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7Gw4DXw1rXF18Aw47Xr4rGrg_yoW8JF45pF
+        WUKF90yryDuFn2kan3Zan7CFy5KF4SyayrX3W7K3Wj9wsxZa45JFWftFyjyw1DJay7t3ZF
+        qFy2gr18GF18Ar7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUy0b4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7
+        CjxVAFwI0_Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAq
+        x4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6x
+        CaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxAIw28IcxkI7VAKI48JMxC20s026xCa
+        FVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_Jr
+        Wlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j
+        6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WF
+        yUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4U
+        YxBIdaVFxhVjvjDU0xZFpf9x07UWE__UUUUU=
 X-CM-SenderInfo: 5zhl50pqjm3046kxt4xhlfz01xgou0bp/
 X-CFilter-Loop: Reflected
 Precedence: bulk
@@ -62,47 +57,36 @@ X-Mailing-List: linux-iio@vger.kernel.org
 From: Wei Yongjun <weiyongjun1@huawei.com>
 
 SPI devices use the spi_device_id for module autoloading even on
-systems using device tree, after commit 5fa6863ba692 ("spi: Check
-we have a spi_device_id for each DT compatible"), kernel warns as
-follows since the spi_device_id is missing:
+systems using device tree.
 
-SPI driver sca3300 has no spi_device_id for murata,scl3300
+Commit 5fa6863ba692 ("spi: Check we have a spi_device_id for each DT
+compatible") added a test to check that every SPI driver has a
+spi_device_id for each DT compatiable string defined by driver
+and warns if the spi_device_id is missing.
 
-Add spi_device_id entries to silence the warning, and ensure driver
-module autoloading works.
+This series add spi_device_id entries to silence the warnings, and
+ensure driver module autoloading works.
 
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
- drivers/iio/accel/sca3300.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+v2 -> v3:
+ - post as patch series
+ - make use of the spi_get_device_id(spi)->driver_data
+   path to provide the chip info structure if
+   of_device_get_match_data() returns NULL.
 
-diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
-index eaa0c9cfda44..306482b70fad 100644
---- a/drivers/iio/accel/sca3300.c
-+++ b/drivers/iio/accel/sca3300.c
-@@ -679,12 +679,20 @@ static const struct of_device_id sca3300_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, sca3300_dt_ids);
- 
-+static const struct spi_device_id sca3300_ids[] = {
-+	{ "sca3300" },
-+	{ "scl3300" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, sca3300_ids);
-+
- static struct spi_driver sca3300_driver = {
--	.driver = {
-+	.driver   = {
- 		.name		= SCA3300_ALIAS,
- 		.of_match_table = sca3300_dt_ids,
- 	},
--	.probe	= sca3300_probe,
-+	.probe	  = sca3300_probe,
-+	.id_table = sca3300_ids,
- };
- module_spi_driver(sca3300_driver);
- 
+Wei Yongjun (5):
+  iio: adc: ti-ads131e08: Silence no spi_device_id warnings
+  iio: accel: sca3300: Silence no spi_device_id warning
+  iio: adc: ad9467: Silence no spi_device_id warnings
+  iio: adc: ad7192: Silence no spi_device_id warnings
+  iio: adc: ad7124: Silence no spi_device_id warnings
+
+ drivers/iio/accel/sca3300.c    | 12 ++++++++++--
+ drivers/iio/adc/ad7124.c       | 10 ++++++++++
+ drivers/iio/adc/ad7192.c       | 12 ++++++++++++
+ drivers/iio/adc/ad9467.c       | 11 +++++++++++
+ drivers/iio/adc/ti-ads131e08.c | 11 +++++++++++
+ 5 files changed, 54 insertions(+), 2 deletions(-)
+
 -- 
 2.34.1
 
