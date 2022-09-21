@@ -2,93 +2,165 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1ABC6FA8E
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Sep 2022 10:06:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0936ECAAD8
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Sep 2022 11:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbiIUKGn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 21 Sep 2022 06:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60884 "EHLO
+        id S229900AbiIULlK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 21 Sep 2022 07:41:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbiIUKGl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2022 06:06:41 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A4785A8C
-        for <linux-iio@vger.kernel.org>; Wed, 21 Sep 2022 03:06:36 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id y17so12449603ejo.6
-        for <linux-iio@vger.kernel.org>; Wed, 21 Sep 2022 03:06:36 -0700 (PDT)
+        with ESMTP id S229528AbiIULlJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2022 07:41:09 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4073FA09;
+        Wed, 21 Sep 2022 04:41:07 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id k10so8725504lfm.4;
+        Wed, 21 Sep 2022 04:41:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=i7AiJke0RXt3Y3gefpg024oHyymEk36+1L9tZaTyjZQ=;
-        b=t6+YqmRo2WFruAVVMiAUGdnIJlq1p0yLTMFevb2kYhYeYvpy4T1UvGBSg7PiELpuho
-         yZZhIdh6b4QvllAVxv2url55QjqY6KTbA3UjrK9RE2jUopTautClbplRgLEp0buJBZ0R
-         gGWTn6bqC+/ebZQxGqzFv2py0Mbk6cfaKdGooPdBYso/V6+vYccINUbEN/3vgJL5/BB6
-         orkD5otB5j0sq9tO1z1zgVwwbH7M4SuOAUMs1iBLHu1dxpZQaCmv4KqSuiMuAdgL5av2
-         vaXpQCNDduyUl6jpfyqpyLOnL4nAm9Ve8gUb1JVu602ULji+YIM/cMGJdniO3oUUoSzD
-         T/Mw==
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date;
+        bh=86WCHSlEMusoGKw0NZFAnIdqU5oTHd5cwFDGXpyQVyw=;
+        b=gIxV95ew6909NSjTwq6elXTGLXbMVNr3z9Taos+ssn0KkKqswpNP7g8MUYDUYqU5j6
+         sZ2jJRECLxjLRmLX8sQKqLtnRsZGI8oK0MLjJBTBY+LEoWe+vL0Wl8DHTW+BDFnMOnzi
+         E2IPAmVMNaOaWxOm28Pz7QMNDZWfhjDHFB4C6iBR1IyEGLNIjUswAuvzGQCLqdr1yLEO
+         A2QSsDtwP4jaGt8ScpFbIfhvRKudXrsHzxY+YD7vqE9cH7GozWgKaenjOexqVTOF8WJz
+         R1eIbDK78ftJESX54HujxFP1oCvJweD0yeod8+CMYVrUU9tv+XgXYDsgBi9JXkFjibEU
+         RD4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=i7AiJke0RXt3Y3gefpg024oHyymEk36+1L9tZaTyjZQ=;
-        b=5G0Fmw2LepVdop9lzqQpd28NhGb6kJaJoRaR/HlvEGbkyLns6G2/5WXRbgAcJKHcjG
-         ZFXSYJmFJSAMxpr9W/Of/dOnWmHw5bItElJq/qYjOqQzkbEJDPNa1tU9FFPhtTHrbwOZ
-         34zuCIqTV7xXUssBXjXisucCHbEiqLmXXzIZDokwElWQcDn+brnPf67qToklcRbchcoW
-         hJYXJl/7V7hgMzzWSBvamphQReh5mTuxhBd50C8GGVTvgvw2UErlLDbJ4iJVdeJbIhqF
-         CBxXUVw4JzUUudMofYp8qq1Ioi50CRY5ZSl+iQLH0pr91PhGmX1EEF6EkfG879a65vAV
-         h7Ag==
-X-Gm-Message-State: ACrzQf1hLKScHsXOlkjIKHMrk+XhSvNyz17RTH7rnrOuO5m/Ml2Uweme
-        4sV1SvferixQqYmmsEgfiYM87w==
-X-Google-Smtp-Source: AMsMyM50oCeyjRxK+fmYG030jR8TngTYGZrmO525DVI9C+v/ppgfZYe2k1gzpHyS6YpuEkF1O2lgBQ==
-X-Received: by 2002:a17:907:320c:b0:741:1e55:7a69 with SMTP id xg12-20020a170907320c00b007411e557a69mr20507637ejb.740.1663754795366;
-        Wed, 21 Sep 2022 03:06:35 -0700 (PDT)
-Received: from baylibre-ThinkPad-T14s-Gen-2i.. (32.31.102.84.rev.sfr.net. [84.102.31.32])
-        by smtp.gmail.com with ESMTPSA id v1-20020a170906292100b0074134543f82sm1087710ejd.90.2022.09.21.03.06.34
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=86WCHSlEMusoGKw0NZFAnIdqU5oTHd5cwFDGXpyQVyw=;
+        b=n+ali3xj53rUpZczdMmjkIBwMy8nONabJuApLA7ENnCsTBHeClFh7q4u6JD9OTBUa5
+         afW1U24tLw9m68RPrb43B38TGPmD2dG7oUvRF7AIWO59vq8TWfy+wT030BsioWp3Ml4E
+         jEJsCWevTP2fII2BiF65nNpx53AFpE5IigbskGcx8UHXGuQvUNkXBmnDz4nrT9vA9LHT
+         BhxXtTgYurbASoCHM3tiEskvpiD0bxHo48/UzWPW24G+U1RLk+REcTm8Pxo3ctZ82Fdp
+         h/NFEBK3avTGg59VOIJA4v/19RvDyo6jRJ+FI4rzxeGsvijLQqVS4pB+KaZzpBMOXcPl
+         n4iw==
+X-Gm-Message-State: ACrzQf1upz8Q8fnCdZ63d3txIbRdsgWG4MHrZ4YW/nPZEFKm39DYdsfG
+        K2r5CVZ6M1FXTqt2Ws8njCE=
+X-Google-Smtp-Source: AMsMyM68inOfsUqdE0ZItjudPLNhLECQepLbDNrTvxhVZl9fi2Jvdbn3J7IC0KrZnxqLR2LeH8CQmQ==
+X-Received: by 2002:a19:ca57:0:b0:49f:52ce:d4b8 with SMTP id h23-20020a19ca57000000b0049f52ced4b8mr9171038lfj.491.1663760466079;
+        Wed, 21 Sep 2022 04:41:06 -0700 (PDT)
+Received: from dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi (dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::1])
+        by smtp.gmail.com with ESMTPSA id t27-20020ac2549b000000b00494603953b6sm402614lfk.6.2022.09.21.04.41.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Sep 2022 03:06:35 -0700 (PDT)
-From:   Julien Panis <jpanis@baylibre.com>
-To:     william.gray@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, mranostay@ti.com
-Subject: [PATCH v7 4/4] MAINTAINERS: add TI ECAP driver info
-Date:   Wed, 21 Sep 2022 12:06:27 +0200
-Message-Id: <20220921100627.124085-5-jpanis@baylibre.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220921100627.124085-1-jpanis@baylibre.com>
-References: <20220921100627.124085-1-jpanis@baylibre.com>
+        Wed, 21 Sep 2022 04:41:05 -0700 (PDT)
+Date:   Wed, 21 Sep 2022 14:40:33 +0300
+From:   Matti Vaittinen <mazziesaccount@gmail.com>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        Jagath Jog J <jagathjog1996@gmail.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [RFC PATCH 0/5] iio: Support ROHM/Kionix kx022a
+Message-ID: <cover.1663760018.git.mazziesaccount@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="9hXad1v1HaqKVtDZ"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This commit adds driver info for TI ECAP used in capture operating mode.
 
-Signed-off-by: Julien Panis <jpanis@baylibre.com>
+--9hXad1v1HaqKVtDZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Add initial support for ROHM/Kionix kx022a accelerometer
+
+This series is not ready for being merged as such. The first two patches
+in the series (the new regulator devm interfaces) are already merged to
+Mark's tree but have not yet found their way to the mainline. This is
+the reason I marked series as RFC. You can also skip the reviewing of
+first two patches as they are there just to make the series compile on
+top of the v6.0-rc4. I will re-spin the series without the patches 0001
+and 0002 and drop the RFC tag when the v6.1-rc1 is out.
+
+About the HW:
+KX022A accelerometer is a sensor which:
+	- supports G-ranges of (+/-) 2, 4, 8, and 16G
+	- can be connected to I2C or SPI
+	- has internal HW FIFO buffer
+	- supports various ODRs (output data rates)
+	- support detecting special events like double tap or motion
+	- can be configured to wake-up system when events are detected.
+
+About the series:
+
+This series adds support for only getting the accelerometer data and
+configuring the G-range / ODR via IIO. Motion detection or double-tap
+detection are not supported by the series. The other quite important but
+still missing piece is the runtime PM. Nevertheless, the driver should be
+usable and brings the basic support for getting accelerometer data.
+
 ---
- MAINTAINERS | 6 ++++++
- 1 file changed, 6 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d4999f68bda8..fa92518b22ef 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -20322,6 +20322,12 @@ T:	git git://linuxtv.org/mhadli/v4l-dvb-davinci_devices.git
- F:	drivers/media/platform/ti/davinci/
- F:	include/media/davinci/
- 
-+TI ENHANCED CAPTURE (eCAP) DRIVER
-+R:	Julien Panis <jpanis@baylibre.com>
-+L:	linux-iio@vger.kernel.org
-+F:	Documentation/devicetree/bindings/counter/ti,am62-ecap-capture.yaml
-+F:	drivers/counter/ti-ecap-capture.c
-+
- TI ENHANCED QUADRATURE ENCODER PULSE (eQEP) DRIVER
- R:	David Lechner <david@lechnology.com>
- L:	linux-iio@vger.kernel.org
--- 
-2.37.3
+Matti Vaittinen (5):
+  regulator: Add devm helpers for get and enable
+  regulator: Add devm helpers for get and enable
+  dt-bindings: iio: Add KX022A accelerometer
+  iio: accel: Support Kionix/ROHM KX022A accelerometer
+  MAINTAINERS: Add KX022A maintainer entry
 
+ .../bindings/iio/accel/kionix,kx022a.yaml     |   58 +
+ MAINTAINERS                                   |    5 +
+ drivers/iio/accel/Kconfig                     |   23 +
+ drivers/iio/accel/Makefile                    |    3 +
+ drivers/iio/accel/kionix-kx022a-i2c.c         |   52 +
+ drivers/iio/accel/kionix-kx022a-spi.c         |   50 +
+ drivers/iio/accel/kionix-kx022a.c             | 1149 +++++++++++++++++
+ drivers/iio/accel/kionix-kx022a.h             |   76 ++
+ drivers/regulator/devres.c                    |  164 +++
+ include/linux/regulator/consumer.h            |   27 +
+ 10 files changed, 1607 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/kionix,kx02=
+2a.yaml
+ create mode 100644 drivers/iio/accel/kionix-kx022a-i2c.c
+ create mode 100644 drivers/iio/accel/kionix-kx022a-spi.c
+ create mode 100644 drivers/iio/accel/kionix-kx022a.c
+ create mode 100644 drivers/iio/accel/kionix-kx022a.h
+
+--=20
+2.37.1
+
+
+--=20
+Matti Vaittinen, Linux device drivers
+ROHM Semiconductors, Finland SWDC
+Kiviharjunlenkki 1E
+90220 OULU
+FINLAND
+
+~~~ "I don't think so," said Rene Descartes. Just then he vanished ~~~
+Simon says - in Latin please.
+~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
+Thanks to Simon Glass for the translation =3D]=20
+
+--9hXad1v1HaqKVtDZ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmMq+A4ACgkQeFA3/03a
+ocVaCAgAhJI49AH0X8URK5kL0bqsz/aV47yH/+4E1sHpPojIK5Qz97XKjTadAvoj
+HUQevMG6/iyS3N5m36I0pDDTBiH9f1I8koBkX9hdB1LBeh9ST6aDuhUsqOpFa3yO
+p0gsgJ67Gjo7JGnl662dJkqKkKcr/se2fljbXgLSdcfYmPdOFM/YSqMrdp5sAgoZ
+kG/9DN40wcvn+Tv/ri5b7XYCui7IqH4hX8H8GGeWnHEUUDrAlb9ugJLltD0Vf5Kf
+Vm5R8TlMtcXkQli1dEaNaEKkgIEhp8oL3I1+SJFCV+KQ0U+4g42C8be6l6VUXLXd
+dTv3C8aUWJg8x8Ge0Fv8H8oVE/AwPA==
+=Mpuz
+-----END PGP SIGNATURE-----
+
+--9hXad1v1HaqKVtDZ--
