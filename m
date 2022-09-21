@@ -2,74 +2,98 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64B27C6FA90
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Sep 2022 02:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE15C6FA82
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Sep 2022 06:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229554AbiIUClv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 20 Sep 2022 22:41:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35202 "EHLO
+        id S229901AbiIUGbB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 21 Sep 2022 02:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230252AbiIUCln (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Sep 2022 22:41:43 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6D37D1F5
-        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 19:41:42 -0700 (PDT)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MXMxl4y9XzMnB5;
-        Wed, 21 Sep 2022 10:36:59 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
- (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 21 Sep
- 2022 10:41:40 +0800
-From:   Yuan Can <yuancan@huawei.com>
-To:     <dan@dlrobertson.com>, <jic23@kernel.org>, <lars@metafoo.de>,
-        <linux-iio@vger.kernel.org>
-CC:     <yuancan@huawei.com>
-Subject: [PATCH] iio: accel: bma400: Switch to use dev_err_probe() helper
-Date:   Wed, 21 Sep 2022 02:39:15 +0000
-Message-ID: <20220921023915.47300-1-yuancan@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S229703AbiIUGav (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2022 02:30:51 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8512A439
+        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 23:30:49 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id q11so3316699qkc.12
+        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 23:30:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=konsulko.com; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=/093o1NxENUaTouo0Mdw75upRRId/THkS7GyiJgLLTE=;
+        b=FgUmzi1dfdXBxW+EWGXKjLCCuHAwhBsR5vQEA9muOyMr3dKPjhQ2mBAg9784oU0vcW
+         QOuE694beWFUhq9p6GmdXGsPjvjTIQJTbxYECtkIYuUDiq6qZBgne0upMcPEUNhDym1E
+         XX6BATaZn61RKYAd5Gzu/uG0Z07kB76Sgdx3I=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=/093o1NxENUaTouo0Mdw75upRRId/THkS7GyiJgLLTE=;
+        b=tgKmBW44Xo+7d6pKXwF/Qv4bzyHpo7RHKube4bhrrlo3Jq+NeOLrCUMI7wDUnGW9KV
+         FUR/lBLwlyf528OdIWSrWJeP1zYrqGoDVmpe69TSx/qGS2Gcvseql4wTWiVIzit/0+cp
+         U6yBuNFE9rIqFGFlzSWEoqzut2y5N1qPwGXC3m+oto5UA+4bfD1KcwwDro6FF6wGQQDq
+         xRQ0AXDIgezgLYo+TLJaPPm7JtZbzXP3lJAEQUZ+Iv8Ny+nfRNukWvztnfwq1h36ewqx
+         LgUlGVX+XX3ozjehv5FfyQC7HtvFi24uLcOlpR2SCEelqJZOFICbcjSesONXWoDNiDmJ
+         0A6g==
+X-Gm-Message-State: ACrzQf1k9znyYG/0MV6ygilIoyokuGTe8C3QMVeIJ0+ZTBZ3ehe5mYjA
+        3oEkaeJrlYjUfdDq8lV7OVQrpg==
+X-Google-Smtp-Source: AMsMyM7VVlNQFM2jb19B9vU1xma0PWwNFZ9Hwj6vv6nqxc1WcJIo9JThqwHvdsmROp7UflCFr+TP6w==
+X-Received: by 2002:a05:620a:4809:b0:6ce:496c:7e78 with SMTP id eb9-20020a05620a480900b006ce496c7e78mr18631613qkb.470.1663741848731;
+        Tue, 20 Sep 2022 23:30:48 -0700 (PDT)
+Received: from localhost.localdomain ([164.92.70.235])
+        by smtp.gmail.com with ESMTPSA id m10-20020ac807ca000000b00342f05defd1sm1060855qth.66.2022.09.20.23.30.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Sep 2022 23:30:48 -0700 (PDT)
+From:   Matt Ranostay <matt.ranostay@konsulko.com>
+To:     gupt21@gmail.com, jic23@kernel.org
+Cc:     linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org,
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH v4 1/5] i2c: muxes: ltc4306: fix future recursive dependencies
+Date:   Tue, 20 Sep 2022 23:30:22 -0700
+Message-Id: <20220921063026.89619-2-matt.ranostay@konsulko.com>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220921063026.89619-1-matt.ranostay@konsulko.com>
+References: <20220921063026.89619-1-matt.ranostay@konsulko.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500024.china.huawei.com (7.185.36.10)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-In the probe path, dev_err() can be replace with dev_err_probe()
-which will check if error code is -EPROBE_DEFER and prints the
-error name.
+When using 'imply IIO' for other configurations which have 'select GPIOLIB'
+the following recursive dependency is detected for I2C_MUX_LTC4306
 
-Signed-off-by: Yuan Can <yuancan@huawei.com>
+Switch from 'select GPIOLIB' to 'depends on GPIOLIB' to avoid this per
+recommendation in kconfig-language.rst
+
+drivers/gpio/Kconfig:14:error: recursive dependency detected!
+drivers/gpio/Kconfig:14:        symbol GPIOLIB is selected by I2C_MUX_LTC4306
+drivers/i2c/muxes/Kconfig:47:   symbol I2C_MUX_LTC4306 depends on I2C_MUX
+drivers/i2c/Kconfig:62: symbol I2C_MUX is selected by MPU3050_I2C
+drivers/iio/gyro/Kconfig:127:   symbol MPU3050_I2C depends on IIO
+drivers/iio/Kconfig:6:  symbol IIO is implied by HID_MCP2221
+drivers/hid/Kconfig:1227:       symbol HID_MCP2221 depends on GPIOLIB
+
+Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- drivers/iio/accel/bma400_core.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ drivers/i2c/muxes/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-index eceb1f8d338d..cebd7e370b09 100644
---- a/drivers/iio/accel/bma400_core.c
-+++ b/drivers/iio/accel/bma400_core.c
-@@ -886,14 +886,10 @@ static int bma400_init(struct bma400_data *data)
- 	ret = devm_regulator_bulk_get(data->dev,
- 				      ARRAY_SIZE(data->regulators),
- 				      data->regulators);
--	if (ret) {
--		if (ret != -EPROBE_DEFER)
--			dev_err(data->dev,
--				"Failed to get regulators: %d\n",
--				ret);
-+	if (ret)
-+		return dev_err_probe(data->dev, ret, "Failed to get regulators: %d\n",
-+				     ret);
+diff --git a/drivers/i2c/muxes/Kconfig b/drivers/i2c/muxes/Kconfig
+index ea838dbae32e..7b6a68df4a39 100644
+--- a/drivers/i2c/muxes/Kconfig
++++ b/drivers/i2c/muxes/Kconfig
+@@ -46,7 +46,7 @@ config I2C_MUX_GPMUX
  
--		return ret;
--	}
- 	ret = regulator_bulk_enable(ARRAY_SIZE(data->regulators),
- 				    data->regulators);
- 	if (ret) {
+ config I2C_MUX_LTC4306
+ 	tristate "LTC LTC4306/5 I2C multiplexer"
+-	select GPIOLIB
++	depends on GPIOLIB
+ 	select REGMAP_I2C
+ 	help
+ 	  If you say yes here you get support for the Analog Devices
 -- 
-2.17.1
+2.37.2
 
