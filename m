@@ -2,97 +2,107 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89413C6FA8B
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Sep 2022 06:31:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4582C6FA94
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Sep 2022 06:31:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbiIUGbD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 21 Sep 2022 02:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57518 "EHLO
+        id S229673AbiIUGbE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 21 Sep 2022 02:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229673AbiIUGat (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2022 02:30:49 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC80D2716C
-        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 23:30:47 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id q11so3316669qkc.12
-        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 23:30:47 -0700 (PDT)
+        with ESMTP id S229496AbiIUGaz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2022 02:30:55 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9C252E4B
+        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 23:30:53 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id l14so3761759qvq.8
+        for <linux-iio@vger.kernel.org>; Tue, 20 Sep 2022 23:30:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=konsulko.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=ynq2EL20CO6hM5n78mikzYmKYVR0vy9jxqLHwfMIlh8=;
-        b=cWIUc3dJWuEwYUSz2ou4UAE89B4CrXEk8zbIYIpbQ4edujT50r2OrlBK+Sx49PUV8U
-         DisR5DjmeqxnNcZBowjXUQsPKK8QNvljsiHXMqkv3srkoO8rcKUMjCL+sCQG6bmkxEtS
-         LZDBCGnSPQndbho1fB5Q5A2CBcg1NWsx4HF8w=
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=3OBHFG8N1Wi/0+IDhzqdlFHWU7KQ36OfnHlG8UgKWrs=;
+        b=guDbos8H+2MulL5VMihZeNnAKhgf5f7tTlWaiadNPoot+VqaoIjDN+78BC+UdAl3nt
+         YFVMuCtgffobaeY3UYySVas8gJlgyOl7w37Kjj9hMHvJnsoTmHazpfiRPc+rp+Ev0RYH
+         FOKrLxndUHSLj6N41V4mNFZp2HzCBgz7vH3M4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=ynq2EL20CO6hM5n78mikzYmKYVR0vy9jxqLHwfMIlh8=;
-        b=yOBwVjwu//3Shckbtk6kN3etelc+03F//2BAYiQMsuHsEaiLmnbX7k/mlJRUCVwtvq
-         2sy7FHvb3LKIJ/0Xf93D2Ve5uSv61maFI1sGlzEE6GaC4CFPM8sYK8EKZdE2y+SlifFP
-         vzNEA1SZCe5SxUuE62Qv7ExijCqn0xjSI9iNblB4lIH6IjCAwnFgLByda1ciawQub65O
-         N+iaGkzvadgQU60aDxSjAfmYgcC5sE345QpGVR7xQc50Knr94I0jhkPgI7BlsAgcdWe0
-         cPC79zzhWO+/8eX+l8UCSNHvuK2Pt21eR3tuQf5dLqK+L9Yvmu7DKJNpRwx0GA8DrFC2
-         SvXg==
-X-Gm-Message-State: ACrzQf1dK7JGv2xfK79HVeS823N4FFRIRcMHfMSUALHDx43XzB7gW2xV
-        AicLW8NsadxtOc9j6JTvbw1/nQ==
-X-Google-Smtp-Source: AMsMyM6G36yO/HaPzW90E2W3HOgt/jMLVKw0pYL7mA241IBW6HiYe+3BObWfuMLcGfd/As4UQwTmwg==
-X-Received: by 2002:a05:620a:d96:b0:6ce:bca6:9dd0 with SMTP id q22-20020a05620a0d9600b006cebca69dd0mr19477102qkl.152.1663741846903;
-        Tue, 20 Sep 2022 23:30:46 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=3OBHFG8N1Wi/0+IDhzqdlFHWU7KQ36OfnHlG8UgKWrs=;
+        b=cbGIDpSv2UT53XqBL+OTnEIqcWOMKCBwyuKse13px8sp6sgKX36MhaOvE6tDATS9sY
+         qgkQpUDvU+FcUqhwJDtYg/haoQlMf4huwPGPPR0KZ2pRG8TJWaOoc308sFzRiPCMiIvd
+         biMgqsvIZDQdtl73+YK+Vi5SxvoQT/iMsNW4AL+Sbh4XPbif/c48EXDakpOk8VY46AXP
+         hWhJ1JjzQy3nxFEmYH9BUeWoNbVLtF2LuHBdoCihtl+WbbduIEZxnN+qR+iuZOsfI/P2
+         NkEhYUTVQNSzGkQjBbXP3cpG9mxpVAYPVKMx3bsNS2aFacczBIyk6DUOuHTmGg1qdFYo
+         0XNw==
+X-Gm-Message-State: ACrzQf3Bg/65lXm/k3oGPT9RLjdQw4d/saP69fPcPEI4MRrI6kMv+l7H
+        B8Cc5qfxoh1ZzJWEeok0uggJk9kzX5Ej0SuauqU=
+X-Google-Smtp-Source: AMsMyM7zFvK7QiqfmPImkZGwRtcWCoH4lq1sjNgZgk8F/zIlG7fpfDbQC9BVrs9Do3P7lyUFBIXuuA==
+X-Received: by 2002:a05:6214:2588:b0:49e:5dea:8e66 with SMTP id fq8-20020a056214258800b0049e5dea8e66mr22486940qvb.21.1663741852744;
+        Tue, 20 Sep 2022 23:30:52 -0700 (PDT)
 Received: from localhost.localdomain ([164.92.70.235])
-        by smtp.gmail.com with ESMTPSA id m10-20020ac807ca000000b00342f05defd1sm1060855qth.66.2022.09.20.23.30.45
+        by smtp.gmail.com with ESMTPSA id m10-20020ac807ca000000b00342f05defd1sm1060855qth.66.2022.09.20.23.30.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Sep 2022 23:30:46 -0700 (PDT)
+        Tue, 20 Sep 2022 23:30:52 -0700 (PDT)
 From:   Matt Ranostay <matt.ranostay@konsulko.com>
 To:     gupt21@gmail.com, jic23@kernel.org
 Cc:     linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-input@vger.kernel.org,
         Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: [PATCH v4 0/5] HID: mcp2221: iio support and device resource management
-Date:   Tue, 20 Sep 2022 23:30:21 -0700
-Message-Id: <20220921063026.89619-1-matt.ranostay@konsulko.com>
+Subject: [PATCH v4 3/5] iio: dac: fix future recursive dependencies
+Date:   Tue, 20 Sep 2022 23:30:24 -0700
+Message-Id: <20220921063026.89619-4-matt.ranostay@konsulko.com>
 X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220921063026.89619-1-matt.ranostay@konsulko.com>
+References: <20220921063026.89619-1-matt.ranostay@konsulko.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patchset is primarily to enable iio support for the MCP2221 HID driver,
-but requires several Kconfig changes and device resource management.
+When using 'imply IIO' for other configurations which have 'select GPIOLIB'
+the following recursive dependency is detected for AD5592R/AD5593R
 
-First attempt of this patchset is referenced here:
+Switch from 'select GPIOLIB' to 'depends on GPIOLIB' to avoid this per
+recommendation in kconfig-language.rst
 
-Link: https://lore.kernel.org/all/20220729154723.99947-1-matt.ranostay@xxxxxxxxxxxx/
+drivers/gpio/Kconfig:14:error: recursive dependency detected!
+drivers/gpio/Kconfig:14:        symbol GPIOLIB is selected by AD5592R
+drivers/iio/dac/Kconfig:93:     symbol AD5592R depends on IIO
+drivers/iio/Kconfig:6:  symbol IIO is implied by HID_MCP2221
+drivers/hid/Kconfig:1227:       symbol HID_MCP2221 depends on GPIOLIB
 
-Changes from v1:
-* Fixing various Kconfig recursive dependencies that appear with 'imply IIO'
-* Switch hid-mcp2221 driver to device managed resources for i2c support
-* Reworking patchset per advice on lore.kernel.org link above
+Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
+---
+ drivers/iio/dac/Kconfig | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-Changes from v2:
-* add linux-iio list to CC
-
-Changes from v3:
-* replace .remove() tasks with devm_add_action_or_reset() in .probe()
-* reschedule SRAM configuration read on failures
-* add IIO_CHAN_INFO_SCALE values for ADC + DAC based on reference voltage
-
-Matt Ranostay (5):
-  i2c: muxes: ltc4306: fix future recursive dependencies
-  iio: addac: stx104: fix future recursive dependencies
-  iio: dac: fix future recursive dependencies
-  HID: mcp2221: switch i2c registration to devm functions
-  HID: mcp2221: add ADC/DAC support via iio subsystem
-
- drivers/hid/Kconfig       |   1 +
- drivers/hid/hid-mcp2221.c | 297 ++++++++++++++++++++++++++++++++++----
- drivers/i2c/muxes/Kconfig |   2 +-
- drivers/iio/addac/Kconfig |   3 +-
- drivers/iio/dac/Kconfig   |   6 +-
- 5 files changed, 275 insertions(+), 34 deletions(-)
-
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 80521bd28d0f..b93003e80b70 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -92,8 +92,7 @@ config AD5592R_BASE
+ 
+ config AD5592R
+ 	tristate "Analog Devices AD5592R ADC/DAC driver"
+-	depends on SPI_MASTER
+-	select GPIOLIB
++	depends on SPI_MASTER && GPIOLIB
+ 	select AD5592R_BASE
+ 	help
+ 	  Say yes here to build support for Analog Devices AD5592R
+@@ -104,8 +103,7 @@ config AD5592R
+ 
+ config AD5593R
+ 	tristate "Analog Devices AD5593R ADC/DAC driver"
+-	depends on I2C
+-	select GPIOLIB
++	depends on I2C && GPIOLIB
+ 	select AD5592R_BASE
+ 	help
+ 	  Say yes here to build support for Analog Devices AD5593R
 -- 
 2.37.2
 
