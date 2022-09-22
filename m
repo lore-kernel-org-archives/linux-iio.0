@@ -2,747 +2,341 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D48C6FA91
-	for <linux-iio@archiver.kernel.org>; Thu, 22 Sep 2022 17:04:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFC4C54EE9
+	for <linux-iio@archiver.kernel.org>; Thu, 22 Sep 2022 18:40:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231782AbiIVRET (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 22 Sep 2022 13:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54774 "EHLO
+        id S231984AbiIVSkE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 22 Sep 2022 14:40:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231728AbiIVREO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Sep 2022 13:04:14 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D132FE04C
-        for <linux-iio@vger.kernel.org>; Thu, 22 Sep 2022 10:04:10 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id r3-20020a05600c35c300b003b4b5f6c6bdso1762998wmq.2
-        for <linux-iio@vger.kernel.org>; Thu, 22 Sep 2022 10:04:09 -0700 (PDT)
+        with ESMTP id S229705AbiIVSkC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Sep 2022 14:40:02 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85103FA2C
+        for <linux-iio@vger.kernel.org>; Thu, 22 Sep 2022 11:39:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=TyQfBYye4RRi4e/q9rKZ9dEVzt0J0gid9mIKhcVlJt0=;
-        b=Caf/pUVF+SZD5HssAo0CsB34juLXdMOrGH9iAb3nAkfXVVrAOJKU9WHqCn5IfHQIes
-         heMHGNkWIZ74wSYswPBYbiDy9HU/pHx4WqF6aAYc4eQuYYNdPZ6s2vcIANLYlDK7iHRw
-         /kWz4Tqmci7GAXivZpMUgFKFM7Fg7AczHcYW+XZdNW3dvYKEdMLgaTaprRHJGoHdiP9H
-         wa+1vhiZC4GKlZDgmTnD4zB/cwulq8JiI0fUKXc/j5qA7m2vxoAM5Lw4zZEzGGMSIjdx
-         BtTe3lPhFUku6FpOgXW5DeVOE4Jw4LvlbnNf3kXy0VqBvv7jjz37861WPXuYme3xYNWN
-         m/2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=TyQfBYye4RRi4e/q9rKZ9dEVzt0J0gid9mIKhcVlJt0=;
-        b=XXTsvZB9npbLKQcReJStfPRM0Pbst/pG6XJ5Yc54FhbKKehmtI+u7EbJOZvaJ1nRuW
-         6CTtZkSxu803aKhilkqhFB9ZsRb76GZBbPtoXlvljcPaTneVczZ1k6IWT6lyANQHLRT2
-         +vYl5+JkmFWB9gjMnICm2olCLWkKC8A7RwmMKZJ0AJ1ROqOW/pdaKcYJMbiOo6RXPJmi
-         lCO8YrgSark57PV5DqxjEqR+OF0qHOCZvuzRAUp0LK//72s+Pvrz9tQJFQoTo3GQ+J7G
-         hK2/gr6D9mNKCLutKy25KxpR2cEh9Or12ccCgMvBWJj0JBOidPC9T0CE0vjkC1GyNznt
-         n2Dw==
-X-Gm-Message-State: ACrzQf3BIAJyreR4tSTtQgO9Lbqy+z1y/+ovMiRIfBLGaMTbCCJbyQvZ
-        P/PaMP7F+Ou1eEUeP1ahYmsxoA==
-X-Google-Smtp-Source: AMsMyM4628iyOUTTe9Q8nKyO6m/7l6gRGyDKiQg45wHJ9Quh2vfwdRGtHKucLsXsGvYlBGMntatQRg==
-X-Received: by 2002:a05:600c:4e15:b0:3b4:a621:b54e with SMTP id b21-20020a05600c4e1500b003b4a621b54emr3066892wmq.47.1663866248437;
-        Thu, 22 Sep 2022 10:04:08 -0700 (PDT)
-Received: from baylibre-ThinkPad-T14s-Gen-2i.. (32.31.102.84.rev.sfr.net. [84.102.31.32])
-        by smtp.gmail.com with ESMTPSA id w21-20020a1cf615000000b003a604a29a34sm20334wmc.35.2022.09.22.10.04.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Sep 2022 10:04:08 -0700 (PDT)
-From:   Julien Panis <jpanis@baylibre.com>
-To:     william.gray@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, mranostay@ti.com
-Subject: [PATCH v8 3/4] counter: ti-ecap-capture: capture driver support for ECAP
-Date:   Thu, 22 Sep 2022 19:04:01 +0200
-Message-Id: <20220922170402.403683-4-jpanis@baylibre.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220922170402.403683-1-jpanis@baylibre.com>
-References: <20220922170402.403683-1-jpanis@baylibre.com>
+  d=axis.com; q=dns/txt; s=axis-central1; t=1663871999;
+  x=1695407999;
+  h=date:to:cc:subject:message-id:references:mime-version:
+   content-transfer-encoding:in-reply-to:from;
+  bh=OUB2PR5yIZttOiNYYHWuWPavjelX2m3ytWnWZspQAzA=;
+  b=eknGD5tUU87yWFzwgXEb2wRSseZcB2xQrc5prEMpCQ3yYKMK1Q+Mgreq
+   pRZ5mTZraE4mNkSekqNZPLCucEYexuJkczeeoLygN89LK9kVKe1SBboqB
+   J/NPSiW21y815Z6y60+WkhQgreauFiLu2dHhWuseX7ojWsZ0EHyd9mw88
+   f0+MAOtRPsAU7WAl1KT+2M3c8KS/7jlUUBc+J6df+vIKhVHjCw6+bPKfQ
+   vrQVUr7gkxdTSOpA6SQEHrPEvUvZC8vGaj4dJsNHmMDa2wwchVJBWSB+a
+   PREKPlmfpSr/Az+MgMpgei4rBgAt2jDoQNBb7Hjhduv+Zt69z1DzVxxcQ
+   g==;
+Date:   Thu, 22 Sep 2022 20:39:55 +0200
+To:     Paul Cercueil <paul@crapouillou.net>
+CC:     =?iso-8859-1?Q?M=E5rten?= Lindahl <Marten.Lindahl@axis.com>,
+        "Jonathan Cameron" <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@axis.com>
+Subject: Re: [PATCH 2/3] iio: light: vcnl4000: Add enable attributes for
+ vcnl4040
+Message-ID: <Yyyr+4yNbgbCe6lp@axis.com>
+References: <20220920180958.2308229-1-marten.lindahl@axis.com>
+ <20220920180958.2308229-3-marten.lindahl@axis.com>
+ <CU3JIR.R6ZZ1TYIUTVP3@crapouillou.net>
+ <Yyxdb6KFxOgb2WGA@axis.com>
+ <6E7MIR.YSB8G5DRB84E1@crapouillou.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <6E7MIR.YSB8G5DRB84E1@crapouillou.net>
+From:   Marten Lindahl <martenli@axis.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-ECAP hardware on TI AM62x SoC supports capture feature. It can be used
-to timestamp events (falling/rising edges) detected on input signal.
+On Thu, Sep 22, 2022 at 04:10:54PM +0200, Paul Cercueil wrote:
+> 
+> 
+> Le jeu., sept. 22 2022 at 15:04:47 +0200, Marten Lindahl 
+> <martenli@axis.com> a écrit :
+> > On Wed, Sep 21, 2022 at 12:01:24AM +0200, Paul Cercueil wrote:
+> >>  Hi Mårten,
+> >> 
+> >>  Le mar., sept. 20 2022 at 20:09:57 +0200, Mårten Lindahl
+> >>  <marten.lindahl@axis.com> a écrit :
+> >>  > Add channel attribute in_illuminance_en and in_proximity_en with
+> >>  > read/write access for vcnl4040. If automatic runtime power 
+> >> management
+> >>  > is
+> >>  > turned off (power/control = on), both sensors can be kept on or 
+> >> off by
+> >>  > userspace.
+> >> 
+> > 
+> > Hi Paul!
+> > 
+> >>  I don't really understand this. If automatic runtime power 
+> >> management
+> >>  is turned OFF, I would expect both sensors to be kept ON always.
+> >> 
+> >>  It's not userspace's job to do power management of the chip. Why are
+> >>  these channel attributes needed?
+> > 
+> > I think I understand the problem here. I added the *_en attributes
+> > because I couldn't see any way to turn the sensors on without forcing 
+> > it
+> > on during the *_raw read operation (with 
+> > vcnl4000_set_pm_runtime_state(true))
+> > after which it is turned off again (false).
+> 
+> What's wrong with doing that?
 
-This commit adds capture driver support for ECAP hardware on AM62x SoC.
+Hi!
 
-In the ECAP hardware, capture pin can also be configured to be in
-PWM mode. Current implementation only supports capture operating mode.
-Hardware also supports timebase sync between multiple instances, but
-this driver supports simple independent capture functionality.
+No, nothing is wrong with that. I was just confused by the fact that
+power/control=on didn't have any effect on the device. 
 
-Signed-off-by: Julien Panis <jpanis@baylibre.com>
----
- drivers/counter/Kconfig           |  15 +
- drivers/counter/Makefile          |   1 +
- drivers/counter/ti-ecap-capture.c | 621 ++++++++++++++++++++++++++++++
- 3 files changed, 637 insertions(+)
- create mode 100644 drivers/counter/ti-ecap-capture.c
+> 
+> > Even if the power/control is set to 'on', there will be no callback 
+> > for
+> > changing the state to active.
+> > 
+> > It seems this does not work in this driver (with or without my 
+> > patches) and I
+> > was confused by how it was supposed to work. But after some digging I 
+> > suspect
+> > there could be a bug in the driver since the sysfs control/* nodes 
+> > seems to
+> > operate on the indio_dev->dev and not on the driver dev, which is 
+> > used for
+> > the vcnl4000 driver pm_runtime operations.
+> 
+> I believe this is normal. The devm_iio_device_alloc() creates a new 
+> device, whose parent is your i2c_client->dev.
 
-diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
-index 5edd155f1911..d388bf26f4dc 100644
---- a/drivers/counter/Kconfig
-+++ b/drivers/counter/Kconfig
-@@ -101,4 +101,19 @@ config INTEL_QEP
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called intel-qep.
- 
-+config TI_ECAP_CAPTURE
-+	tristate "TI eCAP capture driver"
-+	depends on ARCH_OMAP2PLUS || ARCH_DAVINCI_DA8XX || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST
-+	depends on HAS_IOMEM
-+	select REGMAP_MMIO
-+	help
-+	  Select this option to enable the Texas Instruments Enhanced Capture
-+	  (eCAP) driver in input mode.
-+
-+	  It can be used to timestamp events (falling/rising edges) detected
-+	  on ECAP input signal.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called ti-ecap-capture.
-+
- endif # COUNTER
-diff --git a/drivers/counter/Makefile b/drivers/counter/Makefile
-index 8fde6c100ebc..b9a369e0d4fc 100644
---- a/drivers/counter/Makefile
-+++ b/drivers/counter/Makefile
-@@ -14,3 +14,4 @@ obj-$(CONFIG_TI_EQEP)		+= ti-eqep.o
- obj-$(CONFIG_FTM_QUADDEC)	+= ftm-quaddec.o
- obj-$(CONFIG_MICROCHIP_TCB_CAPTURE)	+= microchip-tcb-capture.o
- obj-$(CONFIG_INTEL_QEP)		+= intel-qep.o
-+obj-$(CONFIG_TI_ECAP_CAPTURE)	+= ti-ecap-capture.o
-diff --git a/drivers/counter/ti-ecap-capture.c b/drivers/counter/ti-ecap-capture.c
-new file mode 100644
-index 000000000000..3c4047f0d0df
---- /dev/null
-+++ b/drivers/counter/ti-ecap-capture.c
-@@ -0,0 +1,621 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * ECAP Capture driver
-+ *
-+ * Copyright (C) 2022 Julien Panis <jpanis@baylibre.com>
-+ */
-+
-+#include <linux/atomic.h>
-+#include <linux/clk.h>
-+#include <linux/counter.h>
-+#include <linux/err.h>
-+#include <linux/interrupt.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/regmap.h>
-+
-+#define ECAP_DRV_NAME "ecap"
-+
-+/* ECAP event IDs */
-+#define ECAP_CEVT1		0
-+#define ECAP_CEVT2		1
-+#define ECAP_CEVT3		2
-+#define ECAP_CEVT4		3
-+#define ECAP_CNTOVF		4
-+
-+#define ECAP_CEVT_LAST		ECAP_CEVT4
-+#define ECAP_NB_CEVT		(ECAP_CEVT_LAST + 1)
-+
-+#define ECAP_EVT_LAST		ECAP_CNTOVF
-+#define ECAP_NB_EVT		(ECAP_EVT_LAST + 1)
-+
-+/* Registers */
-+#define ECAP_TSCNT_REG			0x00
-+
-+#define ECAP_CAP_REG(i)		(((i) << 2) + 0x08)
-+
-+#define ECAP_ECCTL_REG			0x28
-+#define ECAP_CAPPOL_BIT(i)		BIT((i) << 1)
-+#define ECAP_EV_MODE_MASK		GENMASK(7, 0)
-+#define ECAP_CAPLDEN_BIT		BIT(8)
-+#define ECAP_CONT_ONESHT_BIT		BIT(16)
-+#define ECAP_STOPVALUE_MASK		GENMASK(18, 17)
-+#define ECAP_TSCNTSTP_BIT		BIT(20)
-+#define ECAP_SYNCO_DIS_MASK		GENMASK(23, 22)
-+#define ECAP_CAP_APWM_BIT		BIT(25)
-+#define ECAP_ECCTL_EN_MASK		(ECAP_CAPLDEN_BIT | ECAP_TSCNTSTP_BIT)
-+#define ECAP_ECCTL_CFG_MASK		(ECAP_SYNCO_DIS_MASK | ECAP_STOPVALUE_MASK	\
-+					| ECAP_ECCTL_EN_MASK | ECAP_CAP_APWM_BIT	\
-+					| ECAP_CONT_ONESHT_BIT)
-+
-+#define ECAP_ECINT_EN_FLG_REG		0x2c
-+#define ECAP_EVT_EN_MASK		GENMASK(ECAP_NB_EVT, ECAP_NB_CEVT)
-+#define ECAP_EVT_FLG_BIT(i)		BIT((i) + 17)
-+
-+#define ECAP_ECINT_CLR_FRC_REG	0x30
-+#define ECAP_INT_CLR_BIT		BIT(0)
-+#define ECAP_EVT_CLR_BIT(i)		BIT((i) + 1)
-+#define ECAP_EVT_CLR_MASK		GENMASK(ECAP_NB_EVT, 0)
-+
-+#define ECAP_PID_REG			0x5c
-+
-+/* ECAP signals */
-+#define ECAP_CLOCK_SIG 0
-+#define ECAP_INPUT_SIG 1
-+
-+static const struct regmap_config ecap_cnt_regmap_config = {
-+	.reg_bits = 32,
-+	.reg_stride = 4,
-+	.val_bits = 32,
-+	.max_register = ECAP_PID_REG,
-+};
-+
-+/**
-+ * struct ecap_cnt_dev - device private data structure
-+ * @enabled: device state
-+ * @clk:     device clock
-+ * @regmap:  device register map
-+ * @nb_ovf:  number of overflows since capture start
-+ * @pm_ctx:  device context for PM operations
-+ */
-+struct ecap_cnt_dev {
-+	bool enabled;
-+	struct clk *clk;
-+	struct regmap *regmap;
-+	atomic_t nb_ovf;
-+	struct {
-+		u8 ev_mode;
-+		u32 time_cntr;
-+	} pm_ctx;
-+};
-+
-+static u8 ecap_cnt_capture_get_evmode(struct counter_device *counter)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+	unsigned int regval;
-+
-+	pm_runtime_get_sync(counter->parent);
-+	regmap_read(ecap_dev->regmap, ECAP_ECCTL_REG, &regval);
-+	pm_runtime_put_sync(counter->parent);
-+
-+	return regval;
-+}
-+
-+static void ecap_cnt_capture_set_evmode(struct counter_device *counter, u8 ev_mode)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+
-+	pm_runtime_get_sync(counter->parent);
-+	regmap_update_bits(ecap_dev->regmap, ECAP_ECCTL_REG, ECAP_EV_MODE_MASK, ev_mode);
-+	pm_runtime_put_sync(counter->parent);
-+}
-+
-+static void ecap_cnt_capture_enable(struct counter_device *counter)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+
-+	pm_runtime_get_sync(counter->parent);
-+
-+	/* Enable interrupts on events */
-+	regmap_update_bits(ecap_dev->regmap, ECAP_ECINT_EN_FLG_REG,
-+			   ECAP_EVT_EN_MASK, ECAP_EVT_EN_MASK);
-+
-+	/* Run counter */
-+	regmap_update_bits(ecap_dev->regmap, ECAP_ECCTL_REG, ECAP_ECCTL_CFG_MASK,
-+			   ECAP_SYNCO_DIS_MASK | ECAP_STOPVALUE_MASK | ECAP_ECCTL_EN_MASK);
-+}
-+
-+static void ecap_cnt_capture_disable(struct counter_device *counter)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+
-+	/* Disable interrupts on events */
-+	regmap_update_bits(ecap_dev->regmap, ECAP_ECINT_EN_FLG_REG, ECAP_EVT_EN_MASK, 0);
-+
-+	/* Stop counter */
-+	regmap_update_bits(ecap_dev->regmap, ECAP_ECCTL_REG, ECAP_ECCTL_EN_MASK, 0);
-+
-+	pm_runtime_put_sync(counter->parent);
-+}
-+
-+static int ecap_cnt_count_get_val(struct counter_device *counter, unsigned int reg, u32 *val)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+	unsigned int regval;
-+
-+	pm_runtime_get_sync(counter->parent);
-+	regmap_read(ecap_dev->regmap, reg, &regval);
-+	pm_runtime_put_sync(counter->parent);
-+
-+	*val = regval;
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_count_set_val(struct counter_device *counter, unsigned int reg, u32 val)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+
-+	pm_runtime_get_sync(counter->parent);
-+	regmap_write(ecap_dev->regmap, reg, val);
-+	pm_runtime_put_sync(counter->parent);
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_count_read(struct counter_device *counter,
-+			       struct counter_count *count, u64 *val)
-+{
-+	u32 cnt;
-+	int ret = ecap_cnt_count_get_val(counter, ECAP_TSCNT_REG, &cnt);
-+
-+	*val = cnt;
-+
-+	return ret;
-+}
-+
-+static int ecap_cnt_count_write(struct counter_device *counter,
-+				struct counter_count *count, u64 val)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+
-+	if (ecap_dev->enabled)
-+		return -EBUSY;
-+	if (val > U32_MAX)
-+		return -ERANGE;
-+
-+	return ecap_cnt_count_set_val(counter, ECAP_TSCNT_REG, val);
-+}
-+
-+static int ecap_cnt_function_read(struct counter_device *counter,
-+				  struct counter_count *count,
-+				  enum counter_function *function)
-+{
-+	*function = COUNTER_FUNCTION_INCREASE;
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_action_read(struct counter_device *counter,
-+				struct counter_count *count,
-+				struct counter_synapse *synapse,
-+				enum counter_synapse_action *action)
-+{
-+	*action = (synapse->signal->id == ECAP_CLOCK_SIG) ?
-+		   COUNTER_SYNAPSE_ACTION_RISING_EDGE :
-+		   COUNTER_SYNAPSE_ACTION_NONE;
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_watch_validate(struct counter_device *counter,
-+				   const struct counter_watch *watch)
-+{
-+	if (watch->channel > ECAP_CEVT_LAST)
-+		return -EINVAL;
-+
-+	switch (watch->event) {
-+	case COUNTER_EVENT_CAPTURE:
-+	case COUNTER_EVENT_OVERFLOW:
-+		return 0;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ecap_cnt_clk_get_freq(struct counter_device *counter,
-+				 struct counter_signal *signal, u64 *freq)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+
-+	*freq = clk_get_rate(ecap_dev->clk);
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_pol_read(struct counter_device *counter,
-+			     struct counter_signal *signal,
-+			     size_t idx, enum counter_signal_polarity *pol)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+	int bitval;
-+
-+	pm_runtime_get_sync(counter->parent);
-+	bitval = regmap_test_bits(ecap_dev->regmap, ECAP_ECCTL_REG, ECAP_CAPPOL_BIT(idx));
-+	pm_runtime_put_sync(counter->parent);
-+
-+	*pol = bitval ? COUNTER_SIGNAL_POLARITY_NEGATIVE : COUNTER_SIGNAL_POLARITY_POSITIVE;
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_pol_write(struct counter_device *counter,
-+			      struct counter_signal *signal,
-+			      size_t idx, enum counter_signal_polarity pol)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+
-+	if (ecap_dev->enabled)
-+		return -EBUSY;
-+
-+	pm_runtime_get_sync(counter->parent);
-+	if (pol == COUNTER_SIGNAL_POLARITY_NEGATIVE)
-+		regmap_set_bits(ecap_dev->regmap, ECAP_ECCTL_REG, ECAP_CAPPOL_BIT(idx));
-+	else
-+		regmap_clear_bits(ecap_dev->regmap, ECAP_ECCTL_REG, ECAP_CAPPOL_BIT(idx));
-+	pm_runtime_put_sync(counter->parent);
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_cap_read(struct counter_device *counter,
-+			     struct counter_count *count,
-+			     size_t idx, u64 *cap)
-+{
-+	u32 cpt;
-+	int ret = ecap_cnt_count_get_val(counter, ECAP_CAP_REG(idx), &cpt);
-+
-+	*cap = cpt;
-+
-+	return ret;
-+}
-+
-+static int ecap_cnt_cap_write(struct counter_device *counter,
-+			      struct counter_count *count,
-+			      size_t idx, u64 cap)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+
-+	if (ecap_dev->enabled)
-+		return -EBUSY;
-+	if (cap > U32_MAX)
-+		return -ERANGE;
-+
-+	return ecap_cnt_count_set_val(counter, ECAP_CAP_REG(idx), cap);
-+}
-+
-+static int ecap_cnt_nb_ovf_read(struct counter_device *counter,
-+				struct counter_count *count, u64 *val)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+
-+	*val = atomic_read(&ecap_dev->nb_ovf);
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_nb_ovf_write(struct counter_device *counter,
-+				 struct counter_count *count, u64 val)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+
-+	if (ecap_dev->enabled)
-+		return -EBUSY;
-+	if (val > U32_MAX)
-+		return -ERANGE;
-+
-+	atomic_set(&ecap_dev->nb_ovf, val);
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_ceiling_read(struct counter_device *counter,
-+				 struct counter_count *count, u64 *val)
-+{
-+	*val = U32_MAX;
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_enable_read(struct counter_device *counter,
-+				struct counter_count *count, u8 *enable)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+
-+	*enable = ecap_dev->enabled;
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_enable_write(struct counter_device *counter,
-+				 struct counter_count *count, u8 enable)
-+{
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter);
-+
-+	if (enable == ecap_dev->enabled)
-+		return 0;
-+	if (enable)
-+		ecap_cnt_capture_enable(counter);
-+	else
-+		ecap_cnt_capture_disable(counter);
-+	ecap_dev->enabled = enable;
-+
-+	return 0;
-+}
-+
-+static const struct counter_ops ecap_cnt_ops = {
-+	.count_read = ecap_cnt_count_read,
-+	.count_write = ecap_cnt_count_write,
-+	.function_read = ecap_cnt_function_read,
-+	.action_read = ecap_cnt_action_read,
-+	.watch_validate = ecap_cnt_watch_validate,
-+};
-+
-+static const enum counter_function ecap_cnt_functions[] = {
-+	COUNTER_FUNCTION_INCREASE,
-+};
-+
-+static const enum counter_synapse_action ecap_cnt_clock_actions[] = {
-+	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
-+};
-+
-+static const enum counter_synapse_action ecap_cnt_input_actions[] = {
-+	COUNTER_SYNAPSE_ACTION_NONE,
-+};
-+
-+static struct counter_comp ecap_cnt_clock_ext[] = {
-+	COUNTER_COMP_SIGNAL_U64("frequency", ecap_cnt_clk_get_freq, NULL),
-+};
-+
-+static const enum counter_signal_polarity ecap_cnt_pol_avail[] = {
-+	COUNTER_SIGNAL_POLARITY_POSITIVE,
-+	COUNTER_SIGNAL_POLARITY_NEGATIVE,
-+};
-+
-+static DEFINE_COUNTER_ARRAY_POLARITY(ecap_cnt_pol_array, ecap_cnt_pol_avail, ECAP_NB_CEVT);
-+
-+static struct counter_comp ecap_cnt_signal_ext[] = {
-+	COUNTER_COMP_ARRAY_POLARITY(ecap_cnt_pol_read, ecap_cnt_pol_write, ecap_cnt_pol_array),
-+};
-+
-+static struct counter_signal ecap_cnt_signals[] = {
-+	{
-+		.id = ECAP_CLOCK_SIG,
-+		.name = "Clock Signal",
-+		.ext = ecap_cnt_clock_ext,
-+		.num_ext = ARRAY_SIZE(ecap_cnt_clock_ext),
-+	},
-+	{
-+		.id = ECAP_INPUT_SIG,
-+		.name = "Input Signal",
-+		.ext = ecap_cnt_signal_ext,
-+		.num_ext = ARRAY_SIZE(ecap_cnt_signal_ext),
-+	},
-+};
-+
-+static struct counter_synapse ecap_cnt_synapses[] = {
-+	{
-+		.actions_list = ecap_cnt_clock_actions,
-+		.num_actions = ARRAY_SIZE(ecap_cnt_clock_actions),
-+		.signal = &ecap_cnt_signals[ECAP_CLOCK_SIG],
-+	},
-+	{
-+		.actions_list = ecap_cnt_input_actions,
-+		.num_actions = ARRAY_SIZE(ecap_cnt_input_actions),
-+		.signal = &ecap_cnt_signals[ECAP_INPUT_SIG],
-+	},
-+};
-+
-+static DEFINE_COUNTER_ARRAY_CAPTURE(ecap_cnt_cap_array, ECAP_NB_CEVT);
-+
-+static struct counter_comp ecap_cnt_count_ext[] = {
-+	COUNTER_COMP_ARRAY_CAPTURE(ecap_cnt_cap_read, ecap_cnt_cap_write, ecap_cnt_cap_array),
-+	COUNTER_COMP_COUNT_U64("num_overflows", ecap_cnt_nb_ovf_read, ecap_cnt_nb_ovf_write),
-+	COUNTER_COMP_CEILING(ecap_cnt_ceiling_read, NULL),
-+	COUNTER_COMP_ENABLE(ecap_cnt_enable_read, ecap_cnt_enable_write),
-+};
-+
-+static struct counter_count ecap_cnt_counts[] = {
-+	{
-+		.id = 0,
-+		.name = "Timestamp Counter",
-+		.functions_list = ecap_cnt_functions,
-+		.num_functions = ARRAY_SIZE(ecap_cnt_functions),
-+		.synapses = ecap_cnt_synapses,
-+		.num_synapses = ARRAY_SIZE(ecap_cnt_synapses),
-+		.ext = ecap_cnt_count_ext,
-+		.num_ext = ARRAY_SIZE(ecap_cnt_count_ext),
-+	},
-+};
-+
-+static irqreturn_t ecap_cnt_isr(int irq, void *dev_id)
-+{
-+	struct counter_device *counter_dev = dev_id;
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter_dev);
-+	unsigned int clr = 0;
-+	unsigned int flg;
-+	int i;
-+
-+	regmap_read(ecap_dev->regmap, ECAP_ECINT_EN_FLG_REG, &flg);
-+
-+	/* Check capture events */
-+	for (i = 0 ; i < ECAP_NB_CEVT ; i++) {
-+		if (flg & ECAP_EVT_FLG_BIT(i)) {
-+			counter_push_event(counter_dev, COUNTER_EVENT_CAPTURE, i);
-+			clr |= ECAP_EVT_CLR_BIT(i);
-+		}
-+	}
-+
-+	/* Check counter overflow */
-+	if (flg & ECAP_EVT_FLG_BIT(ECAP_CNTOVF)) {
-+		atomic_inc(&ecap_dev->nb_ovf);
-+		for (i = 0 ; i < ECAP_NB_CEVT ; i++)
-+			counter_push_event(counter_dev, COUNTER_EVENT_OVERFLOW, i);
-+		clr |= ECAP_EVT_CLR_BIT(ECAP_CNTOVF);
-+	}
-+
-+	clr |= ECAP_INT_CLR_BIT;
-+	regmap_update_bits(ecap_dev->regmap, ECAP_ECINT_CLR_FRC_REG, ECAP_EVT_CLR_MASK, clr);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static void ecap_cnt_pm_disable(void *dev)
-+{
-+	pm_runtime_disable(dev);
-+}
-+
-+static int ecap_cnt_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct ecap_cnt_dev *ecap_dev;
-+	struct counter_device *counter_dev;
-+	void __iomem *mmio_base;
-+	unsigned long clk_rate;
-+	int ret;
-+
-+	counter_dev = devm_counter_alloc(dev, sizeof(*ecap_dev));
-+	if (IS_ERR(counter_dev))
-+		return PTR_ERR(counter_dev);
-+
-+	counter_dev->name = ECAP_DRV_NAME;
-+	counter_dev->parent = dev;
-+	counter_dev->ops = &ecap_cnt_ops;
-+	counter_dev->signals = ecap_cnt_signals;
-+	counter_dev->num_signals = ARRAY_SIZE(ecap_cnt_signals);
-+	counter_dev->counts = ecap_cnt_counts;
-+	counter_dev->num_counts = ARRAY_SIZE(ecap_cnt_counts);
-+
-+	ecap_dev = counter_priv(counter_dev);
-+
-+	ecap_dev->clk = devm_clk_get_enabled(dev, "fck");
-+	if (IS_ERR(ecap_dev->clk))
-+		return dev_err_probe(dev, PTR_ERR(ecap_dev->clk), "failed to get clock\n");
-+
-+	clk_rate = clk_get_rate(ecap_dev->clk);
-+	if (!clk_rate) {
-+		dev_err(dev, "failed to get clock rate\n");
-+		return -EINVAL;
-+	}
-+
-+	mmio_base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(mmio_base))
-+		return PTR_ERR(mmio_base);
-+
-+	ecap_dev->regmap = devm_regmap_init_mmio(dev, mmio_base, &ecap_cnt_regmap_config);
-+	if (IS_ERR(ecap_dev->regmap))
-+		return dev_err_probe(dev, PTR_ERR(ecap_dev->regmap), "failed to init regmap\n");
-+
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "failed to get irq\n");
-+
-+	ret = devm_request_irq(dev, ret, ecap_cnt_isr, 0, pdev->name, counter_dev);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to request irq\n");
-+
-+	platform_set_drvdata(pdev, counter_dev);
-+
-+	pm_runtime_enable(dev);
-+
-+	/* Register a cleanup callback to care for disabling PM */
-+	ret = devm_add_action_or_reset(dev, ecap_cnt_pm_disable, dev);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to add pm disable action\n");
-+
-+	ret = devm_counter_add(dev, counter_dev);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to add counter\n");
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_remove(struct platform_device *pdev)
-+{
-+	struct counter_device *counter_dev = platform_get_drvdata(pdev);
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter_dev);
-+
-+	if (ecap_dev->enabled)
-+		ecap_cnt_capture_disable(counter_dev);
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_suspend(struct device *dev)
-+{
-+	struct counter_device *counter_dev = dev_get_drvdata(dev);
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter_dev);
-+
-+	/* If eCAP is running, stop capture then save timestamp counter */
-+	if (ecap_dev->enabled) {
-+		/*
-+		 * Disabling capture has the following effects:
-+		 * - interrupts are disabled
-+		 * - loading of capture registers is disabled
-+		 * - timebase counter is stopped
-+		 */
-+		ecap_cnt_capture_disable(counter_dev);
-+		ecap_cnt_count_get_val(counter_dev, ECAP_TSCNT_REG, &ecap_dev->pm_ctx.time_cntr);
-+	}
-+
-+	ecap_dev->pm_ctx.ev_mode = ecap_cnt_capture_get_evmode(counter_dev);
-+
-+	clk_disable(ecap_dev->clk);
-+
-+	return 0;
-+}
-+
-+static int ecap_cnt_resume(struct device *dev)
-+{
-+	struct counter_device *counter_dev = dev_get_drvdata(dev);
-+	struct ecap_cnt_dev *ecap_dev = counter_priv(counter_dev);
-+
-+	clk_enable(ecap_dev->clk);
-+
-+	ecap_cnt_capture_set_evmode(counter_dev, ecap_dev->pm_ctx.ev_mode);
-+
-+	/* If eCAP was running, restore timestamp counter then run capture */
-+	if (ecap_dev->enabled) {
-+		ecap_cnt_count_set_val(counter_dev, ECAP_TSCNT_REG, ecap_dev->pm_ctx.time_cntr);
-+		ecap_cnt_capture_enable(counter_dev);
-+	}
-+
-+	return 0;
-+}
-+
-+static DEFINE_SIMPLE_DEV_PM_OPS(ecap_cnt_pm_ops, ecap_cnt_suspend, ecap_cnt_resume);
-+
-+static const struct of_device_id ecap_cnt_of_match[] = {
-+	{ .compatible	= "ti,am62-ecap-capture" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, ecap_cnt_of_match);
-+
-+static struct platform_driver ecap_cnt_driver = {
-+	.probe = ecap_cnt_probe,
-+	.remove = ecap_cnt_remove,
-+	.driver = {
-+		.name = "ecap-capture",
-+		.of_match_table = ecap_cnt_of_match,
-+		.pm = pm_sleep_ptr(&ecap_cnt_pm_ops),
-+	},
-+};
-+module_platform_driver(ecap_cnt_driver);
-+
-+MODULE_DESCRIPTION("ECAP Capture driver");
-+MODULE_AUTHOR("Julien Panis <jpanis@baylibre.com>");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS(COUNTER);
--- 
-2.37.3
+Ok
+> 
+> > Setting the power/control to 'on' invokes the rpm_resume function 
+> > which
+> > checks the dev.power.disable_depth attribute before it calls the
+> > resume_callback for setting the active state on the driver. But if the
+> > dev.power.disable_depth == 1 (which is the init value) the callback 
+> > will not
+> > be called. And nothing happens. And I suspect the reason why the
+> > dev.power.disable_depth is 1 may be that it is not the vcnl4000 dev
+> > object that is being checked, but the indio_dev->dev object, which 
+> > has not
+> > been configured for pm_runtime operations in the driver.
+> > 
+> > Sorry for a long reply to your question, but I suspect that if the
+> > automatic pm_runtime for this driver can be disabled by the sysfs
+> > power/control, the *_en attributes wont be needed.
+> > 
+> > I will look into why it does not work.
+> 
+> I still don't understand. Why do you *need* to disable runtime PM?
 
+There is no special reason to disable runtime PM for the usecases we
+have. The original reason behind this patch is a local patch from the
+4.19 kernel when runtime PM did not exist in the driver. The local
+patch added *_en attributes for turning the sensors on/off.
+
+I will gladly skip this patch, since it has come clear to me that it
+doesn't bring any value to the current version of the driver. I will
+probably look at a fix for the power/control=on problem, but any fix
+for that will be a separate patch.
+
+Kind regards
+Mårten
+
+> 
+> -Paul
+> 
+> > Kind regards
+> > Mårten
+> > 
+> >> 
+> >>  Cheers,
+> >>  -Paul
+> >> 
+> >>  > Signed-off-by: Mårten Lindahl <marten.lindahl@axis.com>
+> >>  > ---
+> >>  >  drivers/iio/light/vcnl4000.c | 79
+> >>  > ++++++++++++++++++++++++++++++++----
+> >>  >  1 file changed, 72 insertions(+), 7 deletions(-)
+> >>  >
+> >>  > diff --git a/drivers/iio/light/vcnl4000.c
+> >>  > b/drivers/iio/light/vcnl4000.c
+> >>  > index 0b226c684957..9838f0868372 100644
+> >>  > --- a/drivers/iio/light/vcnl4000.c
+> >>  > +++ b/drivers/iio/light/vcnl4000.c
+> >>  > @@ -125,6 +125,9 @@ struct vcnl4000_data {
+> >>  >  	enum vcnl4000_device_ids id;
+> >>  >  	int rev;
+> >>  >  	int al_scale;
+> >>  > +	bool als_enable;
+> >>  > +	bool ps_enable;
+> >>  > +
+> >>  >  	const struct vcnl4000_chip_spec *chip_spec;
+> >>  >  	struct mutex vcnl4000_lock;
+> >>  >  	struct vcnl4200_channel vcnl4200_al;
+> >>  > @@ -202,10 +205,13 @@ static ssize_t 
+> >> vcnl4000_write_als_enable(struct
+> >>  > vcnl4000_data *data, int val)
+> >>  >  		if (ret < 0)
+> >>  >  			return ret;
+> >>  >
+> >>  > -		if (val)
+> >>  > +		if (val) {
+> >>  >  			ret &= ~VCNL4040_ALS_CONF_ALS_SD;
+> >>  > -		else
+> >>  > +			data->als_enable = true;
+> >>  > +		} else {
+> >>  >  			ret |= VCNL4040_ALS_CONF_ALS_SD;
+> >>  > +			data->als_enable = false;
+> >>  > +		}
+> >>  >
+> >>  >  		return i2c_smbus_write_word_data(data->client, 
+> >> VCNL4200_AL_CONF,
+> >>  >  						 ret);
+> >>  > @@ -225,10 +231,13 @@ static ssize_t 
+> >> vcnl4000_write_ps_enable(struct
+> >>  > vcnl4000_data *data, int val)
+> >>  >  		if (ret < 0)
+> >>  >  			return ret;
+> >>  >
+> >>  > -		if (val)
+> >>  > +		if (val) {
+> >>  >  			ret &= ~VCNL4040_PS_CONF1_PS_SD;
+> >>  > -		else
+> >>  > +			data->ps_enable = true;
+> >>  > +		} else {
+> >>  >  			ret |= VCNL4040_PS_CONF1_PS_SD;
+> >>  > +			data->ps_enable = false;
+> >>  > +		}
+> >>  >
+> >>  >  		return i2c_smbus_write_word_data(data->client,
+> >>  >  						 VCNL4200_PS_CONF1, ret);
+> >>  > @@ -283,6 +292,8 @@ static int vcnl4200_init(struct vcnl4000_data
+> >>  > *data)
+> >>  >  	dev_dbg(&data->client->dev, "device id 0x%x", id);
+> >>  >
+> >>  >  	data->rev = (ret >> 8) & 0xf;
+> >>  > +	data->als_enable = false;
+> >>  > +	data->ps_enable = false;
+> >>  >
+> >>  >  	data->vcnl4200_al.reg = VCNL4200_AL_DATA;
+> >>  >  	data->vcnl4200_ps.reg = VCNL4200_PS_DATA;
+> >>  > @@ -459,8 +470,12 @@ static bool 
+> >> vcnl4010_is_in_periodic_mode(struct
+> >>  > vcnl4000_data *data)
+> >>  >  static int vcnl4000_set_pm_runtime_state(struct vcnl4000_data 
+> >> *data,
+> >>  > bool on)
+> >>  >  {
+> >>  >  	struct device *dev = &data->client->dev;
+> >>  > +	struct iio_dev *indio_dev = i2c_get_clientdata(data->client);
+> >>  >  	int ret;
+> >>  >
+> >>  > +	if (!indio_dev->dev.power.runtime_auto)
+> >>  > +		return 0;
+> >>  > +
+> >>  >  	if (on) {
+> >>  >  		ret = pm_runtime_resume_and_get(dev);
+> >>  >  	} else {
+> >>  > @@ -507,6 +522,38 @@ static int vcnl4000_read_raw(struct iio_dev
+> >>  > *indio_dev,
+> >>  >  		*val = 0;
+> >>  >  		*val2 = data->al_scale;
+> >>  >  		return IIO_VAL_INT_PLUS_MICRO;
+> >>  > +	case IIO_CHAN_INFO_ENABLE:
+> >>  > +		switch (chan->type) {
+> >>  > +		case IIO_LIGHT:
+> >>  > +			*val = data->als_enable;
+> >>  > +			return IIO_VAL_INT;
+> >>  > +		case IIO_PROXIMITY:
+> >>  > +			*val = data->ps_enable;
+> >>  > +			return IIO_VAL_INT;
+> >>  > +		default:
+> >>  > +			return -EINVAL;
+> >>  > +		}
+> >>  > +	default:
+> >>  > +		return -EINVAL;
+> >>  > +	}
+> >>  > +}
+> >>  > +
+> >>  > +static int vcnl4040_write_raw(struct iio_dev *indio_dev,
+> >>  > +				struct iio_chan_spec const *chan,
+> >>  > +				int val, int val2, long mask)
+> >>  > +{
+> >>  > +	struct vcnl4000_data *data = iio_priv(indio_dev);
+> >>  > +
+> >>  > +	switch (mask) {
+> >>  > +	case IIO_CHAN_INFO_ENABLE:
+> >>  > +		switch (chan->type) {
+> >>  > +		case IIO_LIGHT:
+> >>  > +			return vcnl4000_write_als_enable(data, val);
+> >>  > +		case IIO_PROXIMITY:
+> >>  > +			return vcnl4000_write_ps_enable(data, val);
+> >>  > +		default:
+> >>  > +			return -EINVAL;
+> >>  > +		}
+> >>  >  	default:
+> >>  >  		return -EINVAL;
+> >>  >  	}
+> >>  > @@ -845,6 +892,19 @@ static const struct iio_chan_spec
+> >>  > vcnl4010_channels[] = {
+> >>  >  	IIO_CHAN_SOFT_TIMESTAMP(1),
+> >>  >  };
+> >>  >
+> >>  > +static const struct iio_chan_spec vcnl4040_channels[] = {
+> >>  > +	{
+> >>  > +		.type = IIO_LIGHT,
+> >>  > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> >>  > +			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_ENABLE),
+> >>  > +	}, {
+> >>  > +		.type = IIO_PROXIMITY,
+> >>  > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> >>  > +			BIT(IIO_CHAN_INFO_ENABLE),
+> >>  > +		.ext_info = vcnl4000_ext_info,
+> >>  > +	}
+> >>  > +};
+> >>  > +
+> >>  >  static const struct iio_info vcnl4000_info = {
+> >>  >  	.read_raw = vcnl4000_read_raw,
+> >>  >  };
+> >>  > @@ -859,6 +919,11 @@ static const struct iio_info vcnl4010_info = 
+> >> {
+> >>  >  	.write_event_config = vcnl4010_write_event_config,
+> >>  >  };
+> >>  >
+> >>  > +static const struct iio_info vcnl4040_info = {
+> >>  > +	.read_raw = vcnl4000_read_raw,
+> >>  > +	.write_raw = vcnl4040_write_raw,
+> >>  > +};
+> >>  > +
+> >>  >  static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] 
+> >> = {
+> >>  >  	[VCNL4000] = {
+> >>  >  		.prod = "VCNL4000",
+> >>  > @@ -888,9 +953,9 @@ static const struct vcnl4000_chip_spec
+> >>  > vcnl4000_chip_spec_cfg[] = {
+> >>  >  		.measure_light = vcnl4200_measure_light,
+> >>  >  		.measure_proximity = vcnl4200_measure_proximity,
+> >>  >  		.set_power_state = vcnl4200_set_power_state,
+> >>  > -		.channels = vcnl4000_channels,
+> >>  > -		.num_channels = ARRAY_SIZE(vcnl4000_channels),
+> >>  > -		.info = &vcnl4000_info,
+> >>  > +		.channels = vcnl4040_channels,
+> >>  > +		.num_channels = ARRAY_SIZE(vcnl4040_channels),
+> >>  > +		.info = &vcnl4040_info,
+> >>  >  		.irq_support = false,
+> >>  >  	},
+> >>  >  	[VCNL4200] = {
+> >>  > --
+> >>  > 2.30.2
+> >>  >
+> >> 
+> >> 
+> 
+> 
