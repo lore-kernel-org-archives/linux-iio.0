@@ -2,123 +2,105 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33FA9C54EE9
-	for <linux-iio@archiver.kernel.org>; Thu, 22 Sep 2022 11:18:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3D8C54EE9
+	for <linux-iio@archiver.kernel.org>; Thu, 22 Sep 2022 11:21:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230440AbiIVLS4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 22 Sep 2022 07:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36048 "EHLO
+        id S231297AbiIVLVM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 22 Sep 2022 07:21:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbiIVLSz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Sep 2022 07:18:55 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78889DED5D;
-        Thu, 22 Sep 2022 04:18:54 -0700 (PDT)
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MYCMx3fZZz688vP;
-        Thu, 22 Sep 2022 19:14:05 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 22 Sep 2022 13:18:52 +0200
-Received: from localhost (10.81.208.231) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 22 Sep
- 2022 12:18:51 +0100
-Date:   Thu, 22 Sep 2022 12:18:50 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC:     Mark Brown <broonie@kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Wei Yongjun <weiyongjun@huaweicloud.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v1 1/1] spi: Introduce spi_get_device_match_data()
- helper
-Message-ID: <20220922121850.000006f3@huawei.com>
-In-Reply-To: <20220921204520.23984-1-andriy.shevchenko@linux.intel.com>
-References: <20220921204520.23984-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        with ESMTP id S230457AbiIVLVL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Sep 2022 07:21:11 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22B9E05D1
+        for <linux-iio@vger.kernel.org>; Thu, 22 Sep 2022 04:21:09 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id c19so5879119qkm.7
+        for <linux-iio@vger.kernel.org>; Thu, 22 Sep 2022 04:21:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=TeUFDnbgzk6Qzni8tpsAtgePE9982tK2aadkRLxu0D4=;
+        b=BsfophC5dzhj9jjtOTN6dxvid/9RYicp0IkYnikTVNT8X77Ntwvny+ZLysn4IXf/ei
+         snZOW1lC56nBZDTsAFNkmZcM/BU4MT/plAtgikj41nvuj05Wuqc9NfF9QwiUjGlRhgAM
+         CRLONG/UvKl7Yy7oLZuFFXslr1kjDG/Rb5o+2Qz8RPjKpHApQ0ydUG30zWIMVo1PynTq
+         MrMagl6hQPayWZpJBBFACZ8SsYUGx44v/A888pyJJZILTFv9M2p21mDcBHuij4eYoMT8
+         C+z+cNvltELFJvWXQPuRwXikR7ZCPMx4o57h2LPS08nRB2+CYTHDhNT+Vs5xaAfQOkzv
+         RABw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=TeUFDnbgzk6Qzni8tpsAtgePE9982tK2aadkRLxu0D4=;
+        b=FjzP4HA0onLI2RHCzPpCBgrcA0nbf3LBefNM3tl6kDzrLHO9AWP6ap+slPYcsvLQ+H
+         E7aC/Y1sBwe20PcN/G3iKEc/HHWK1KOS0EvzZJMu1yZ+T8o5+TPXUGGAKBm2TjhPu6ye
+         BmtHmgLNQKBisJtJWRCBBCL4xTWLa264s09wrNMJcvvkjNm8KPiEX60aA9hmkqa5qsI9
+         EDjSntbaQH+uMesNmG2JThGvV2ykKwvQwKqIKEmW654SMLy+2cwDvNBWaaeVFhXomcnQ
+         C7FCmIzVB59OEW3XVkeC/AfXGVowwjzC1rc+EesRYJ3ZkNhXjLMXedEtuCz61wdXmTFk
+         Nrww==
+X-Gm-Message-State: ACrzQf2ew76AHdqolsC6dQbP1pLin6yuxq3WLlu1CPA9IhdoVyqNN25f
+        swfmUi1qFRUPFFk0JJA3Pule4w==
+X-Google-Smtp-Source: AMsMyM4P0eYnq4telbZUObL68V71jiEKqshc/qCiJSkmy2zdtdma2gJzJHDwl+qpnHvKwe86AVoUvw==
+X-Received: by 2002:a37:790:0:b0:6cb:ebb2:2bd4 with SMTP id 138-20020a370790000000b006cbebb22bd4mr1676227qkh.612.1663845668678;
+        Thu, 22 Sep 2022 04:21:08 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id f39-20020a05622a1a2700b0035cf31005e2sm3487115qtb.73.2022.09.22.04.21.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Sep 2022 04:21:08 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-iio@vger.kernel.org,
+        William Breathitt Gray <william.gray@linaro.org>
+Subject: [PATCH 1/2] counter: 104-quad-8: Fix skipped IRQ lines during events configuration
+Date:   Thu, 22 Sep 2022 07:20:56 -0400
+Message-Id: <179eed11eaf225dbd908993b510df0c8f67b1230.1663844776.git.william.gray@linaro.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <cover.1663844776.git.william.gray@linaro.org>
+References: <cover.1663844776.git.william.gray@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.81.208.231]
-X-ClientProxiedBy: lhrpeml500005.china.huawei.com (7.191.163.240) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 21 Sep 2022 23:45:20 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+IRQ trigger configuration is skipped if it has already been set before;
+however, the IRQ line still needs to be OR'd to irq_enabled because
+irq_enabled is reset for every events_configure call. This patch moves
+the irq_enabled OR operation update to before the irq_trigger check so
+that IRQ line enablement is not skipped.
 
-> The proposed spi_get_device_match_data() helper is for retrieving
-> a driver data associated with the ID in an ID table. First, it tries
-> to get driver data of the device enumerated by firmware interface
-> (usually Device Tree or ACPI). If none is found it falls back to
-> the SPI ID table matching.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Fixes: c95cc0d95702 ("counter: 104-quad-8: Fix persistent enabled events bug")
+Link: https://lore.kernel.org/r/20220815122301.2750-1-william.gray@linaro.org/
+Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+---
+ drivers/counter/104-quad-8.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-
-I like this in general, but we need to keep a close eye on usecases
-that are introduced to make sure that there is alignment between the
-contents of the tables.
-
-Perhaps the text should also explain a bit about why we would allow
-both paths (in many case, the fallback will work fine)...
-Previously a strong reason for that was that there was nothing to ensure
-that all dt table entries were mirrored in the spi_device_id table.
-As a side effect of the check to ensure module autoloading works, there
-is now a check for that.
-
-My personal view is we should still use the more generic path, even if
-magic under the hood puts the data in spi_id->driver_data.
-
-Jonathan
-
-
-> ---
->  drivers/spi/spi.c       | 12 ++++++++++++
->  include/linux/spi/spi.h |  3 +++
->  2 files changed, 15 insertions(+)
-> 
-> diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-> index ad254b94308e..a0947d63afbc 100644
-> --- a/drivers/spi/spi.c
-> +++ b/drivers/spi/spi.c
-> @@ -360,6 +360,18 @@ const struct spi_device_id *spi_get_device_id(const struct spi_device *sdev)
->  }
->  EXPORT_SYMBOL_GPL(spi_get_device_id);
->  
-> +const void *spi_get_device_match_data(const struct spi_device *sdev)
-> +{
-> +	const void *match;
-> +
-> +	match = device_get_match_data(&sdev->dev);
-> +	if (match)
-> +		return match;
-> +
-> +	return (const void *)spi_get_device_id(sdev)->driver_data;
-> +}
-> +EXPORT_SYMBOL_GPL(spi_get_device_match_data);
-> +
->  static int spi_match_device(struct device *dev, struct device_driver *drv)
->  {
->  	const struct spi_device	*spi = to_spi_device(dev);
-> diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-> index 6ea889df0813..f2565c24ef27 100644
-> --- a/include/linux/spi/spi.h
-> +++ b/include/linux/spi/spi.h
-> @@ -1510,6 +1510,9 @@ extern void spi_unregister_device(struct spi_device *spi);
->  extern const struct spi_device_id *
->  spi_get_device_id(const struct spi_device *sdev);
->  
-> +extern const void *
-> +spi_get_device_match_data(const struct spi_device *sdev);
-> +
->  static inline bool
->  spi_transfer_is_last(struct spi_controller *ctlr, struct spi_transfer *xfer)
->  {
+diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+index 62c2b7ac4339..4407203e0c9b 100644
+--- a/drivers/counter/104-quad-8.c
++++ b/drivers/counter/104-quad-8.c
+@@ -449,6 +449,9 @@ static int quad8_events_configure(struct counter_device *counter)
+ 			return -EINVAL;
+ 		}
+ 
++		/* Enable IRQ line */
++		irq_enabled |= BIT(event_node->channel);
++
+ 		/* Skip configuration if it is the same as previously set */
+ 		if (priv->irq_trigger[event_node->channel] == next_irq_trigger)
+ 			continue;
+@@ -462,9 +465,6 @@ static int quad8_events_configure(struct counter_device *counter)
+ 			  priv->irq_trigger[event_node->channel] << 3;
+ 		iowrite8(QUAD8_CTR_IOR | ior_cfg,
+ 			 &priv->reg->channel[event_node->channel].control);
+-
+-		/* Enable IRQ line */
+-		irq_enabled |= BIT(event_node->channel);
+ 	}
+ 
+ 	iowrite8(irq_enabled, &priv->reg->index_interrupt);
+-- 
+2.37.3
 
