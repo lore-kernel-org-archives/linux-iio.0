@@ -2,60 +2,60 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4404C6FA92
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Sep 2022 14:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 926C1C6FA8B
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Sep 2022 14:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229865AbiIWOYt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 23 Sep 2022 10:24:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60984 "EHLO
+        id S232572AbiIWOYu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 23 Sep 2022 10:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232496AbiIWOYp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Sep 2022 10:24:45 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC44D1E73B
-        for <linux-iio@vger.kernel.org>; Fri, 23 Sep 2022 07:24:42 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id t7so220921wrm.10
-        for <linux-iio@vger.kernel.org>; Fri, 23 Sep 2022 07:24:42 -0700 (PDT)
+        with ESMTP id S232561AbiIWOYr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Sep 2022 10:24:47 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8812B1BB
+        for <linux-iio@vger.kernel.org>; Fri, 23 Sep 2022 07:24:44 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id r133-20020a1c448b000000b003b494ffc00bso3452692wma.0
+        for <linux-iio@vger.kernel.org>; Fri, 23 Sep 2022 07:24:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=aZ9inPx/SpVp/+EGUIHCzXQtKEo6kGOnnJXHLc8UgwM=;
-        b=YOGaryDSh5eMCTjfMznfvWNctOo5bnmgrfLp0T2b1FoSvPwCOLhO2KXAHALUJS7chj
-         aoVIBT9sRSrjuc1YwAFtMTW0KVXmGhBwTA9el7BG/DRkEjRyOYyQ6bXGtrVnPqUEsM3Y
-         N1vkorsv0dXIlGOgM5xWHRP3MZprdLjutkwD+aOeoyEeoWQ6W1eXZx3oA7wSehh4FXjT
-         3IuUEklaMR0ETL8tQfMsc7zCVgJU0RT26bzjYz7aNE+ftTnJYcw2u6Ritend42vFXJd8
-         j0mOH0ASvCv22tkAuNwANjgmC3gFjhkT86Atps/yR8/6bPJXDTqnOYA9QE8cz1ydGgxw
-         JaVw==
+        bh=+gg8BqSr/XzLdS7L9X25eMkIxvQJQPxB4iU34G/4vAc=;
+        b=0o5HIGq6dar3v4a3HY80WpxudV3MLVv9VYOMg/P9uNfQmm3yLUc0AhyOSBPJMmhEhM
+         2pHPFQQTN5N662SIjzzucJaswE9h5Q34kfKGwHwt8VVCTG0NYzGnFvjot21Vk6McZRKw
+         vzs/gSWml2QOH3t+49f5hmMWetF9kc0ZfJNqdfq8y3sWR4+mcEOqWDhh4pxff4BK+EL7
+         wu7l3vzEaBKiuFNwXHrcN/OCNQQYlTFNpsZND/Om8a7KWNq0Z45pbn5C5DSyy1fc4+0T
+         Blq5XGU9UrSTxZ27ad8DbTEp7qxW8Qjc5knrqZlOprF6O8KXUZzlJvQlEV5dJnMqTCFb
+         PGOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=aZ9inPx/SpVp/+EGUIHCzXQtKEo6kGOnnJXHLc8UgwM=;
-        b=Z0D7VfviymsIwFqUUvd4WrZaw3to4omCjuSs2YStR1C9/zOX0l8CP3yuU3LSf8QcyV
-         VbZ8rT8phL9TyVFVhAoeekZ7nhkQw4T71pHSjguXYw1eyUdyhRmgI9uUVa9dyZQFHfhP
-         ibO0gy7hPABN1lkPRSFYIoAWt5Za1oAFdOOi8kpLik9q5x/aEClsQy4PX+JtP7BmVRBl
-         W7toB9ZSqF0wR23wsv7JNttMa9PAcUJXPjZOERh1+j/dSIAK56CA9eahOCwbht7pWMeB
-         YC4R0HdSOuQDWigbR5yDIGZXpOhXsF1MUCfkNQc5PeE6VgqC2+qcLaoO2T0MEDeEJmrm
-         6yyg==
-X-Gm-Message-State: ACrzQf3aJk6ikoeh9MefOZMPIlZmNN3y/D7Z0X0W6s1+55yz9/3M/yt8
-        aDRgrTjEYesYdkBCdExAYHRGSQ==
-X-Google-Smtp-Source: AMsMyM5KSaCRz7TDVdc4PWQq1dCm9KKmVZbEN5+BoruRlucGDHgFFuxf5Os6GiLXj8b+FzECSYiogw==
-X-Received: by 2002:a5d:55c1:0:b0:228:6b57:c60b with SMTP id i1-20020a5d55c1000000b002286b57c60bmr5254820wrw.68.1663943080797;
-        Fri, 23 Sep 2022 07:24:40 -0700 (PDT)
+        bh=+gg8BqSr/XzLdS7L9X25eMkIxvQJQPxB4iU34G/4vAc=;
+        b=Yuq+JcMvsUosR68Eo7QrP1eGzDgLo2734PkUvhxLu8gzBpYPZ9g18fTF5x3j5c6QJV
+         o7aa6StRl6ecbvGHv6thu0EHaZIQOKv+hi0rnFI3bf6NG53g3EG8lub5zsmadbXM44Ch
+         QG5VizHMyY+7oYRgwHtSbtSBDibSgfEUGXYOW3fvew7hZrtOzwF5uknBEgJuoh1hml/a
+         N4CSIRe/MqYJB4WSorfrmlKjnIoGeGEB06Xmzblil/mj38jhFgcBMi7sUCg4A1deKLLY
+         6LboQD6lpORceyW3IrSQPwtMmqdVNtGQd7BPCprnEhDN5AfTMBNG/9QMPxpLiZmXLa3/
+         UoRA==
+X-Gm-Message-State: ACrzQf36+3JnSwQegXu+sd5fhiXqALulM8PF7qhyw919yi8GAlT2JOF4
+        1mNtxyunvbnYOBHqx3L6qKRcdA==
+X-Google-Smtp-Source: AMsMyM6fAayT1ZsV+SMonrVdKJ53U4/hjl7+ExfMxROz0nMYBnnFSyl3/Mqnz4L8GUMlT0dr0Kl0UA==
+X-Received: by 2002:a05:600c:3c8e:b0:3b4:d224:addf with SMTP id bg14-20020a05600c3c8e00b003b4d224addfmr13261549wmb.132.1663943083373;
+        Fri, 23 Sep 2022 07:24:43 -0700 (PDT)
 Received: from baylibre-ThinkPad-T14s-Gen-2i.. (32.31.102.84.rev.sfr.net. [84.102.31.32])
-        by smtp.gmail.com with ESMTPSA id m18-20020a5d56d2000000b0022878c0cc5esm7444627wrw.69.2022.09.23.07.24.39
+        by smtp.gmail.com with ESMTPSA id m18-20020a5d56d2000000b0022878c0cc5esm7444627wrw.69.2022.09.23.07.24.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Sep 2022 07:24:40 -0700 (PDT)
+        Fri, 23 Sep 2022 07:24:43 -0700 (PDT)
 From:   Julien Panis <jpanis@baylibre.com>
 To:     william.gray@linaro.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, mranostay@ti.com
-Subject: [PATCH v9 2/4] Documentation: ABI: sysfs-bus-counter: add frequency & num_overflows items
-Date:   Fri, 23 Sep 2022 16:24:35 +0200
-Message-Id: <20220923142437.271328-3-jpanis@baylibre.com>
+Subject: [PATCH v9 4/4] MAINTAINERS: add TI ECAP driver info
+Date:   Fri, 23 Sep 2022 16:24:37 +0200
+Message-Id: <20220923142437.271328-5-jpanis@baylibre.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220923142437.271328-1-jpanis@baylibre.com>
 References: <20220923142437.271328-1-jpanis@baylibre.com>
@@ -65,55 +65,33 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This commit adds frequency and num_overflows items to counter ABI file
-(e.g. for TI ECAP hardware used in capture operating mode).
+This commit adds driver info for TI ECAP used in capture operating mode.
 
 Signed-off-by: Julien Panis <jpanis@baylibre.com>
 ---
- Documentation/ABI/testing/sysfs-bus-counter | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ MAINTAINERS | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-counter b/Documentation/ABI/testing/sysfs-bus-counter
-index 30b6e1faa6f6..e177c6128236 100644
---- a/Documentation/ABI/testing/sysfs-bus-counter
-+++ b/Documentation/ABI/testing/sysfs-bus-counter
-@@ -209,6 +209,12 @@ Description:
- 		both edges:
- 			Any state transition.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d4999f68bda8..c189117f58eb 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -20322,6 +20322,15 @@ T:	git git://linuxtv.org/mhadli/v4l-dvb-davinci_devices.git
+ F:	drivers/media/platform/ti/davinci/
+ F:	include/media/davinci/
  
-+What:		/sys/bus/counter/devices/counterX/countY/num_overflows
-+KernelVersion:	6.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This attribute indicates the number of overflows of count Y.
++TI ENHANCED CAPTURE (eCAP) DRIVER
++M:	Vignesh Raghavendra <vigneshr@ti.com>
++R:	Julien Panis <jpanis@baylibre.com>
++L:	linux-iio@vger.kernel.org
++L:	linux-omap@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/counter/ti,am62-ecap-capture.yaml
++F:	drivers/counter/ti-ecap-capture.c
 +
- What:		/sys/bus/counter/devices/counterX/countY/ceiling_component_id
- What:		/sys/bus/counter/devices/counterX/countY/floor_component_id
- What:		/sys/bus/counter/devices/counterX/countY/count_mode_component_id
-@@ -219,11 +225,13 @@ What:		/sys/bus/counter/devices/counterX/countY/prescaler_component_id
- What:		/sys/bus/counter/devices/counterX/countY/preset_component_id
- What:		/sys/bus/counter/devices/counterX/countY/preset_enable_component_id
- What:		/sys/bus/counter/devices/counterX/countY/signalZ_action_component_id
-+What:		/sys/bus/counter/devices/counterX/countY/num_overflows_component_id
- What:		/sys/bus/counter/devices/counterX/signalY/cable_fault_component_id
- What:		/sys/bus/counter/devices/counterX/signalY/cable_fault_enable_component_id
- What:		/sys/bus/counter/devices/counterX/signalY/filter_clock_prescaler_component_id
- What:		/sys/bus/counter/devices/counterX/signalY/index_polarity_component_id
- What:		/sys/bus/counter/devices/counterX/signalY/synchronous_mode_component_id
-+What:		/sys/bus/counter/devices/counterX/signalY/frequency_component_id
- KernelVersion:	5.16
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -364,3 +372,9 @@ Description:
- 			via index_polarity. The index function (as enabled via
- 			preset_enable) is performed synchronously with the
- 			quadrature clock on the active level of the index input.
-+
-+What:		/sys/bus/counter/devices/counterX/signalY/frequency
-+KernelVersion:	6.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read-only attribute that indicates the signal Y frequency, in Hz.
+ TI ENHANCED QUADRATURE ENCODER PULSE (eQEP) DRIVER
+ R:	David Lechner <david@lechnology.com>
+ L:	linux-iio@vger.kernel.org
 -- 
 2.37.3
 
