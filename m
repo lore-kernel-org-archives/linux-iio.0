@@ -2,51 +2,52 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B48C0C6FA8E
-	for <linux-iio@archiver.kernel.org>; Mon, 26 Sep 2022 17:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7E82C07E9D
+	for <linux-iio@archiver.kernel.org>; Mon, 26 Sep 2022 17:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbiIZRQu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 26 Sep 2022 13:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48430 "EHLO
+        id S230197AbiIZRRK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 26 Sep 2022 13:17:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230223AbiIZRQ2 (ORCPT
+        with ESMTP id S229922AbiIZRQ2 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 26 Sep 2022 13:16:28 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073BB9F193
-        for <linux-iio@vger.kernel.org>; Mon, 26 Sep 2022 09:30:14 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id c19so4427865qkm.7
-        for <linux-iio@vger.kernel.org>; Mon, 26 Sep 2022 09:30:14 -0700 (PDT)
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7A99F8EF
+        for <linux-iio@vger.kernel.org>; Mon, 26 Sep 2022 09:30:16 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id x18so4432117qkn.6
+        for <linux-iio@vger.kernel.org>; Mon, 26 Sep 2022 09:30:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=mmHGu7GIqnLfc3oj6qy16LLQNqltkgBvvr4JGiJ4pdg=;
-        b=P6FZxUrhBdPi7i7DR0gVo/ZjxXDAK+vUOQc4jFe5+Ate0qP5u4GX994LFSZ9s5wKJI
-         LnJehcHH1ZsmmDggMI/cD1YcpqU3uYSzKHuVn1PO/IWqMBBfKQvUQD8ONjEgS9fCAN0k
-         eOJpYSw3YYy0/fId1hda19H+9r232pk29RkQ+1y4xIddOOULJ0IK78EDUyyJll2Bkj0D
-         ilm+qpuUVDY3pO0Ak6t+0aZEHZkkm8IgWfEUODvpYSiE8lvYYiqcrWsdbfVIBH/SOy3y
-         O91u903qLSP0q0zvAkNwd+inhFGDZlt9Vp5a3JlNzNkbi3FAqgRPC5dEj9vgV/W4XPib
-         XCGA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=WopcYcPly2clGQMko18Z5Oo2qU5OZoDnJ7KQZMk3xww=;
+        b=Kdp/uoGK85fu6tyAZORbR83uMplOEXpivdA4PlcKM2vAMe1HBJrTBjQcEAYSmFirxY
+         cBD/UAb2YSQh2itUDdQjIT64Q66GO8YjsJ86WB3+3cJKQH7b3Slm/qqnaTMzdhNgz6rM
+         pkFpOZlpEowzWgRQ2/OMGI6dZeGVUeWzAKdf7Ghvnt98XglvTNMIjWn12prg/zmoC3Dg
+         Qth82yewYn0RIdErtFZ+9MTzK/c+Kuk1qeW26nwqAks7I3v9ED9ABT1U9oxb+zevgiS8
+         /J/7Le2uhn6AB4rJkkgQcs6JdlRAWki6j6Q4pMCNgF7jHqACGQ7dvK/uzXR0hBo8JOty
+         /N6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=mmHGu7GIqnLfc3oj6qy16LLQNqltkgBvvr4JGiJ4pdg=;
-        b=pitoK/TSgZV3QPGN4YR3cFIOsgoP6L5pL1r7pt7KfcDENRjo/zKHDOlkngRGfyiEgy
-         7BOe+ZHW3WccJcTb2ENyo1Lo5geMvEyPQeS9D+p8w2H8JqvavaeF6gnDLf2jWlSiFdZy
-         Uvm5WWguMRKoovI5sik7vus4NQVVfRnm8IzHDAShD86ujfvbbMvtgY5bsbZ+zzKsdUYG
-         7ztCXhCZNuKEjsDkt/28+zcN8NktMBiqMnq1tl91QxyDYmLacYvgrq+ieOGY4jejwSzi
-         4WK2P7je6WWP+NSR8LdLA7Vel1Qv9cmzPz8UVeUyQcidOAuxevS7AzI3TzsEfPJmvr3V
-         cRYw==
-X-Gm-Message-State: ACrzQf39xveHPxgPQhJMzZrMS8kM0P0FqGNNaQ1ymfOE8Ho5Hbt/Qq+H
-        Uh4xjL3bt0V2q+gyu7oabQSB7ZNr7lGh+g==
-X-Google-Smtp-Source: AMsMyM5Z4nQMzaHqSq6Fw7kceX8iDr7t+2kNa9f+BzEt03cLzWmuhK1XJinmdrIEt+hL0e+n5e5fnA==
-X-Received: by 2002:a05:620a:4807:b0:6cf:55d:e4c3 with SMTP id eb7-20020a05620a480700b006cf055de4c3mr14795660qkb.563.1664209813300;
-        Mon, 26 Sep 2022 09:30:13 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=WopcYcPly2clGQMko18Z5Oo2qU5OZoDnJ7KQZMk3xww=;
+        b=Vit1OqeI/5yuyF2rCQ9nFxAT0Ha6FPTE4cL732ZrNAjlQ6U7RhfYxBTjWNOb0XbgZS
+         wEj8lrNf25tzQlaKtnLfCh7gDuXlcq7rRbVFkeHhQNCMbA6KnQwb3p2ZTRWl3ovqTZ9Z
+         TnFFY1PbiFMSOn7tfc4IM3vQV8vCDeytGDCN4Wb0qI/PcVDVe/VpmG5M9RFzQ8oXUZBi
+         tcOfxEhNN7vu2RcrZMa15Hf/1h8FdsjeAC6yI7rLqYm93Q+ZB+H0k+un5qQ1jM05ceiW
+         duAV/OlG6QYXctbkZMN4WNhoXzQe6ZD4nTIeCUndBDkH/gERVIMs6xlmcmW/UB20XjYY
+         RR0A==
+X-Gm-Message-State: ACrzQf2e1y1Xo0Vt1mFMHUKQVt7f8IvYmw4qAkhugZYnhdLAaDC3Os0Q
+        q7ZXUDHMlhf3K+HiMYaCTwhP33E8KbjZKw==
+X-Google-Smtp-Source: AMsMyM4WWWpTa1NyaV/TwmTsBOeWt448hcD9kbzwgcv3dtDpgXl36AaRVDMlJzT2UH/FEyOG4DYcNw==
+X-Received: by 2002:a05:620a:1b81:b0:6ce:b222:a46e with SMTP id dv1-20020a05620a1b8100b006ceb222a46emr14705885qkb.126.1664209814959;
+        Mon, 26 Sep 2022 09:30:14 -0700 (PDT)
 Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id 139-20020a370a91000000b006ce60296f97sm11542146qkk.68.2022.09.26.09.30.11
+        by smtp.gmail.com with ESMTPSA id 139-20020a370a91000000b006ce60296f97sm11542146qkk.68.2022.09.26.09.30.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Sep 2022 09:30:12 -0700 (PDT)
+        Mon, 26 Sep 2022 09:30:14 -0700 (PDT)
 From:   William Breathitt Gray <william.gray@linaro.org>
 To:     linux-iio@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, mranostay@ti.com,
@@ -54,127 +55,87 @@ Cc:     linux-kernel@vger.kernel.org, mranostay@ti.com,
         groeck@chromium.org, jic23@kernel.org, david@lechnology.com,
         robertcnelson@gmail.com,
         William Breathitt Gray <william.gray@linaro.org>
-Subject: [PATCH v6 0/5] Add support for Counter array components
-Date:   Mon, 26 Sep 2022 11:16:33 -0400
-Message-Id: <cover.1664204990.git.william.gray@linaro.org>
+Subject: [PATCH v6 2/5] counter: 104-quad-8: Add Signal polarity component
+Date:   Mon, 26 Sep 2022 11:16:35 -0400
+Message-Id: <01d00c21873159833035cb6775d0d0e8ad55f2ef.1664204990.git.william.gray@linaro.org>
 X-Mailer: git-send-email 2.37.3
+In-Reply-To: <cover.1664204990.git.william.gray@linaro.org>
+References: <cover.1664204990.git.william.gray@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Changes in v6:
- - Rebase on latest counter-next branch
- - Add ABI Documentation lines for capture_component_id and
-   polarity_component_id
+The 104-quad-8 driver provides support for Index signal polarity modes
+via the "index_polarity" Signal component. This patch exposes the same
+functionality through the more standard "polarity" Signal component.
 
-The COUNTER_COMP_ARRAY Counter component type is introduced to enable
-support for Counter array components. With Counter array components,
-exposure for buffers on counter devices can be defined via new Counter
-array component macros. This should simplify code for driver authors who
-would otherwise need to define individual Counter components for each
-array element.
+Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+---
+ drivers/counter/104-quad-8.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-Eight Counter array component macros are introduced::
-
-        DEFINE_COUNTER_ARRAY_U64(_name, _length)
-        DEFINE_COUNTER_ARRAY_CAPTURE(_name, _length)
-        DEFINE_COUNTER_ARRAY_POLARITY(_name, _enums, _length)
-        COUNTER_COMP_DEVICE_ARRAY_U64(_name, _read, _write, _array)
-        COUNTER_COMP_COUNT_ARRAY_U64(_name, _read, _write, _array)
-        COUNTER_COMP_SIGNAL_ARRAY_U64(_name, _read, _write, _array)
-        COUNTER_COMP_ARRAY_CAPTURE(_read, _write, _array)
-        COUNTER_COMP_ARRAY_POLARITY(_read, _write, _array)
-
-Eight Counter array callbacks are introduced as well::
-
-        int (*signal_array_u32_read)(struct counter_device *counter,
-                                     struct counter_signal *signal,
-                                     size_t idx, u32 *val);
-        int (*signal_array_u32_write)(struct counter_device *counter,
-                                      struct counter_signal *signal,
-                                      size_t idx, u32 val);
-        int (*device_array_u64_read)(struct counter_device *counter,
-                                     size_t idx, u64 *val);
-        int (*count_array_u64_read)(struct counter_device *counter,
-                                    struct counter_count *count,
-                                    size_t idx, u64 *val);
-        int (*signal_array_u64_read)(struct counter_device *counter,
-                                     struct counter_signal *signal,
-                                     size_t idx, u64 *val);
-        int (*device_array_u64_write)(struct counter_device *counter,
-                                      size_t idx, u64 val);
-        int (*count_array_u64_write)(struct counter_device *counter,
-                                     struct counter_count *count,
-                                     size_t idx, u64 val);
-        int (*signal_array_u64_write)(struct counter_device *counter,
-                                      struct counter_signal *signal,
-                                      size_t idx, u64 val);
-
-Driver authors can handle reads/writes for an array component by
-receiving an element index via the `idx` parameter and processing the
-respective value via the `val` parameter.
-
-For example, suppose a driver wants to expose a Count's read-only
-capture buffer of four elements using a callback
-`foobar_capture_read()`::
-
-        DEFINE_COUNTER_ARRAY_CAPTURE(foobar_capture_array, 4);
-        COUNTER_COMP_ARRAY_CAPTURE(foobar_capture_read, NULL,
-                                   foobar_capture_array)
-
-Respective sysfs attributes for each array element would appear for the
-respective Count:
-
-* /sys/bus/counter/devices/counterX/countY/capture0
-* /sys/bus/counter/devices/counterX/countY/capture1
-* /sys/bus/counter/devices/counterX/countY/capture2
-* /sys/bus/counter/devices/counterX/countY/capture3
-
-If a user tries to read _capture2_ for example, `idx` will be `2` when
-passed to the `foobar_capture_read()` callback, and thus the driver
-knows which array element to handle.
-
-In addition, this patchset introduces the Signal polarity component,
-which represents the active level of a respective Signal. There are two
-possible states: positive (rising edge) and negative (falling edge). The
-104-quad-8 driver is updated to expose its index_polarity functionality
-via this new polarity component.
-
-Counter arrays for polarity elements can be defined in a similar
-manner as u64 elements::
-
-        const enum counter_signal_polarity foobar_polarity_states[] = {
-                COUNTER_SIGNAL_POLARITY_POSITIVE,
-                COUNTER_SIGNAL_POLARITY_NEGATIVE,
-        };
-        DEFINE_COUNTER_ARRAY_POLARITY(foobar_polarity_array,
-                                      foobar_polarity_states, 4);
-        COUNTER_COMP_ARRAY_POLARITY(foobar_polarity_read,
-                                    foobar_polarity_write,
-                                    foobar_polarity_array)
-
-The only component types supported for Counter arrays currently are
-COUNTER_COMP_U64 and COUNTER_COMP_SIGNAL_POLARITY.
-
-William Breathitt Gray (5):
-  counter: Introduce the Signal polarity component
-  counter: 104-quad-8: Add Signal polarity component
-  counter: Introduce the Count capture component
-  counter: Consolidate Counter extension sysfs attribute creation
-  counter: Introduce the COUNTER_COMP_ARRAY component type
-
- Documentation/ABI/testing/sysfs-bus-counter |  21 ++
- drivers/counter/104-quad-8.c                |  35 +++
- drivers/counter/counter-chrdev.c            | 135 +++++++--
- drivers/counter/counter-sysfs.c             | 304 ++++++++++++++++----
- include/linux/counter.h                     | 147 ++++++++++
- include/uapi/linux/counter.h                |   8 +
- 6 files changed, 583 insertions(+), 67 deletions(-)
-
-
-base-commit: 7d333188e1d048457572d3a7d0630cd7b91f902d
+diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+index 1323edfbe40c..2a9d8259ed4b 100644
+--- a/drivers/counter/104-quad-8.c
++++ b/drivers/counter/104-quad-8.c
+@@ -549,6 +549,32 @@ static int quad8_index_polarity_set(struct counter_device *counter,
+ 	return 0;
+ }
+ 
++static int quad8_polarity_read(struct counter_device *counter,
++			       struct counter_signal *signal,
++			       enum counter_signal_polarity *polarity)
++{
++	int err;
++	u32 index_polarity;
++
++	err = quad8_index_polarity_get(counter, signal, &index_polarity);
++	if (err)
++		return err;
++
++	*polarity = (index_polarity) ? COUNTER_SIGNAL_POLARITY_POSITIVE :
++		COUNTER_SIGNAL_POLARITY_NEGATIVE;
++
++	return 0;
++}
++
++static int quad8_polarity_write(struct counter_device *counter,
++				struct counter_signal *signal,
++				enum counter_signal_polarity polarity)
++{
++	const u32 pol = (polarity == COUNTER_SIGNAL_POLARITY_POSITIVE) ? 1 : 0;
++
++	return quad8_index_polarity_set(counter, signal, pol);
++}
++
+ static const char *const quad8_synchronous_modes[] = {
+ 	"non-synchronous",
+ 	"synchronous"
+@@ -977,6 +1003,13 @@ static struct counter_comp quad8_signal_ext[] = {
+ 			       quad8_signal_fck_prescaler_write)
+ };
+ 
++static const enum counter_signal_polarity quad8_polarities[] = {
++	COUNTER_SIGNAL_POLARITY_POSITIVE,
++	COUNTER_SIGNAL_POLARITY_NEGATIVE,
++};
++
++static DEFINE_COUNTER_AVAILABLE(quad8_polarity_available, quad8_polarities);
++
+ static DEFINE_COUNTER_ENUM(quad8_index_pol_enum, quad8_index_polarity_modes);
+ static DEFINE_COUNTER_ENUM(quad8_synch_mode_enum, quad8_synchronous_modes);
+ 
+@@ -984,6 +1017,8 @@ static struct counter_comp quad8_index_ext[] = {
+ 	COUNTER_COMP_SIGNAL_ENUM("index_polarity", quad8_index_polarity_get,
+ 				 quad8_index_polarity_set,
+ 				 quad8_index_pol_enum),
++	COUNTER_COMP_POLARITY(quad8_polarity_read, quad8_polarity_write,
++			      quad8_polarity_available),
+ 	COUNTER_COMP_SIGNAL_ENUM("synchronous_mode", quad8_synchronous_mode_get,
+ 				 quad8_synchronous_mode_set,
+ 				 quad8_synch_mode_enum),
 -- 
 2.37.3
 
