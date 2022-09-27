@@ -2,148 +2,105 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1F3CC32771
-	for <linux-iio@archiver.kernel.org>; Mon, 26 Sep 2022 18:02:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C45C32771
+	for <linux-iio@archiver.kernel.org>; Tue, 27 Sep 2022 02:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbiIZSCB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 26 Sep 2022 14:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60836 "EHLO
+        id S229755AbiI0C5c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 26 Sep 2022 22:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229903AbiIZSBj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 26 Sep 2022 14:01:39 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0D625CD;
-        Mon, 26 Sep 2022 10:42:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664214156; x=1695750156;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=cG2DvqSDLyI1J+v9C/CXBPyOFA8Bzn/CTqdg+/ubto0=;
-  b=jcLuSexnv1HK6URTVRO/UFQfnxcICphtiQZYCCgIlmIWVhMosPL9TC8Q
-   4CgrhYguKwR0XaQ/QFNrmW3XPqpBHMYRc52vkyIrQES4hPkKxYgzD/5Nt
-   e0kH1X7Ymsvxe9copiD6JoPXry4+WDfD9TxhowUTkrYgoGElKAGAEeQJV
-   nehO6GE8yT8vQ4aNimLxmv8O3V3cbZ0UGie2WqnPxR17JTNMxL4sWCohP
-   3QS6NC2puTKhtC3Tf4Iot6TDD8+MfyulTIh2YfQ6jVt4fluLRmwcwN4Ut
-   y25PeeHlWVgHJYQ4TMGlu1u9zpWsISL7uluoO29AlmKaxnz1ClEEYqPkc
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="302569735"
-X-IronPort-AV: E=Sophos;i="5.93,346,1654585200"; 
-   d="scan'208";a="302569735"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2022 10:42:35 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="651920180"
-X-IronPort-AV: E=Sophos;i="5.93,346,1654585200"; 
-   d="scan'208";a="651920180"
-Received: from unknown (HELO rajath-NUC10i7FNH..) ([10.223.165.55])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2022 10:42:33 -0700
-From:   Rajat Khandelwal <rajat.khandelwal@intel.com>
-To:     jic23@kernel.org, lars@metafoo.de
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rajat Khandelwal <rajat.khandelwal@intel.com>
-Subject: [PATCH v2] iio: pressure: mpl115: Implementing low power mode by shutdown gpio
-Date:   Tue, 27 Sep 2022 23:12:12 +0530
-Message-Id: <20220927174212.1776567-1-rajat.khandelwal@intel.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S230385AbiI0Cz5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 26 Sep 2022 22:55:57 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FBC15A2F0
+        for <linux-iio@vger.kernel.org>; Mon, 26 Sep 2022 19:51:17 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id g23so5317577qtu.2
+        for <linux-iio@vger.kernel.org>; Mon, 26 Sep 2022 19:51:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=konsulko.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=MU+wKQYrdKFuLFKlM955jc4CyzX+lP8pj1xvxzTau7U=;
+        b=t2ByL0yttHKMUd6x2ww6R0pUM1xUPMi6Dk4L0zyaQ2bXT4rNibOmzdZ69lMpAK7BUY
+         yVTqQ/Xpgj1d6kGOlQC5zBqt15R/qGy+lCaJjEX+cFaU2/1KXnhCtU2nXddxaZqNt0M1
+         ktg+0h2zzeoCYLSzz35krSyY1uJmTIM/czQqE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=MU+wKQYrdKFuLFKlM955jc4CyzX+lP8pj1xvxzTau7U=;
+        b=H8sdCFiSN0NKlijqsyFVD2eaoAyROmx68hNJHWKfWHLtdXTNWt1eae4XdrV6DquI/K
+         1RHbY3dzFBDCjEr7ThkzVVkyXuA5QeMfvRptMZxU+KuXKkeVy4TKYxx8QnVqHygie88e
+         S8TTMcSC6ysf3Vrwt0zYTt6KRn5IQ/xknR6MvsJTKIW+0EmVxO78SN2EBOmgMGhfXi8A
+         xT+eJStYneNthJLo5eJEUC48EaxbXilvw+sefhNkn+r5m4HQeGF5dBxQC81/f3xU2Ft2
+         1X8G8uv4YeVI8sQohN5TVsFJ/kO/4jZf1FBKVC8WS5x4MxknpVMES2ukx6R5cvOWnkxk
+         U2ag==
+X-Gm-Message-State: ACrzQf2k86B6h/zzzrosltRHhFhHDFb+Y8dhmd5BESbwfzAAztp2TT/F
+        +gI68ncKsjKM+4jhKXMHoMISpw==
+X-Google-Smtp-Source: AMsMyM6STBSuhM0MntUL0l5oruWmmHAmKZZRcSneWAfpz6g+wbyWT/aioofYBGfV8Z6CR0pDatAYJg==
+X-Received: by 2002:ac8:5716:0:b0:35c:bd68:d34 with SMTP id 22-20020ac85716000000b0035cbd680d34mr20293945qtw.50.1664247076314;
+        Mon, 26 Sep 2022 19:51:16 -0700 (PDT)
+Received: from roguebox.lan ([164.92.70.235])
+        by smtp.gmail.com with ESMTPSA id y5-20020a37f605000000b006bb0f9b89cfsm199620qkj.87.2022.09.26.19.51.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Sep 2022 19:51:15 -0700 (PDT)
+From:   Matt Ranostay <matt.ranostay@konsulko.com>
+To:     jic23@kernel.org, gupt21@gmail.com, benjamin.tissoires@redhat.com,
+        jikos@kernel.org
+Cc:     linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-i2c@vger.kernel.org,
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH v5 0/5] HID: mcp2221: iio support and device resource management
+Date:   Mon, 26 Sep 2022 19:50:45 -0700
+Message-Id: <20220927025050.13316-1-matt.ranostay@konsulko.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-MPL115 supports shutdown gpio which can be used to set the default
-state to low power mode. Power from all internal circuits and
-registers is removed. This is done by pulling the SHDN pin to low.
-This patch sets the default mode to low-power and only exits when
-a reading is required from the chip. This maximises power savings.
+This patchset is primarily to enable iio support for the MCP2221 HID driver,
+but requires several Kconfig changes and device resource management.
 
-According to spec., a wakeup time period of ~5 ms exists between
-waking up and actually communicating with the device. This is
-implemented using sleep delay.
+First attempt of this patchset is referenced here:
 
-Signed-off-by: Rajat Khandelwal <rajat.khandelwal@intel.com>
----
+Link: https://lore.kernel.org/all/20220729154723.99947-1-matt.ranostay@xxxxxxxxxxxx/
 
-v2: Grammatically completing subject line
+Changes from v1:
+* Fixing various Kconfig recursive dependencies that appear with 'imply IIO'
+* Switch hid-mcp2221 driver to device managed resources for i2c support
+* Reworking patchset per advice on lore.kernel.org link above
 
- drivers/iio/pressure/mpl115.c | 33 +++++++++++++++++++++++++++++----
- 1 file changed, 29 insertions(+), 4 deletions(-)
+Changes from v2:
+* add linux-iio list to CC
 
-diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
-index 5bf5b9abe6f1..c0ad3e941d05 100644
---- a/drivers/iio/pressure/mpl115.c
-+++ b/drivers/iio/pressure/mpl115.c
-@@ -3,13 +3,12 @@
-  * mpl115.c - Support for Freescale MPL115A pressure/temperature sensor
-  *
-  * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
-- *
-- * TODO: shutdown pin
-  */
- 
- #include <linux/module.h>
- #include <linux/iio/iio.h>
- #include <linux/delay.h>
-+#include <linux/gpio/consumer.h>
- 
- #include "mpl115.h"
- 
-@@ -27,6 +26,7 @@ struct mpl115_data {
- 	s16 a0;
- 	s16 b1, b2;
- 	s16 c12;
-+	struct gpio_desc *shutdown;
- 	const struct mpl115_ops *ops;
- };
- 
-@@ -102,13 +102,27 @@ static int mpl115_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_PROCESSED:
--		ret = mpl115_comp_pressure(data, val, val2);
-+		if (data->shutdown) {
-+			gpiod_set_value(data->shutdown, 0);
-+			usleep_range(5000, 6000);
-+			ret = mpl115_comp_pressure(data, val, val2);
-+			gpiod_set_value(data->shutdown, 1);
-+		} else
-+			ret = mpl115_comp_pressure(data, val, val2);
-+
- 		if (ret < 0)
- 			return ret;
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_CHAN_INFO_RAW:
- 		/* temperature -5.35 C / LSB, 472 LSB is 25 C */
--		ret = mpl115_read_temp(data);
-+		if (data->shutdown) {
-+			gpiod_set_value(data->shutdown, 0);
-+			usleep_range(5000, 6000);
-+			ret = mpl115_read_temp(data);
-+			gpiod_set_value(data->shutdown, 1);
-+		} else
-+			ret = mpl115_read_temp(data);
-+
- 		if (ret < 0)
- 			return ret;
- 		*val = ret >> 6;
-@@ -185,6 +199,17 @@ int mpl115_probe(struct device *dev, const char *name,
- 		return ret;
- 	data->c12 = ret;
- 
-+	data->shutdown = devm_gpiod_get_optional(dev, "shutdown",
-+						 GPIOD_OUT_HIGH);
-+	if (IS_ERR(data->shutdown))
-+		return dev_err_probe(dev, PTR_ERR(data->shutdown),
-+				     "cannot get shutdown gpio\n");
-+
-+	if (data->shutdown)
-+		dev_dbg(dev, "low-power mode enabled");
-+	else
-+		dev_dbg(dev, "low-power mode disabled");
-+
- 	return devm_iio_device_register(dev, indio_dev);
- }
- EXPORT_SYMBOL_NS_GPL(mpl115_probe, IIO_MPL115);
+Changes from v3:
+* replace .remove() tasks with devm_add_action_or_reset() in .probe()
+* reschedule SRAM configuration read on failures
+* add IIO_CHAN_INFO_SCALE values for ADC + DAC based on reference voltage
+
+Changes from v4:
+* add .remove function with no operation to avoid hid_hw_stop() being called
+  twice due to new devm functions
+* add retries limit to five for reading SRAM configuration data
+* update 'io: adc: stx104: fix future recursive dependencies' to new Kconfig
+  location for STX104 driver on linux-next pending-fixes branch
+
+Matt Ranostay (5):
+  i2c: muxes: ltc4306: fix future recursive dependencies
+  iio: adc: stx104: fix future recursive dependencies
+  iio: dac: fix future recursive dependencies
+  HID: mcp2221: switch i2c registration to devm functions
+  HID: mcp2221: add ADC/DAC support via iio subsystem
+
+ drivers/hid/Kconfig       |   1 +
+ drivers/hid/hid-mcp2221.c | 309 ++++++++++++++++++++++++++++++++++----
+ drivers/i2c/muxes/Kconfig |   2 +-
+ drivers/iio/adc/Kconfig   |   3 +-
+ drivers/iio/dac/Kconfig   |   6 +-
+ 5 files changed, 288 insertions(+), 33 deletions(-)
+
 -- 
-2.34.1
+2.37.2
 
