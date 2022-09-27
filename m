@@ -2,59 +2,60 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 963D7C54EE9
-	for <linux-iio@archiver.kernel.org>; Tue, 27 Sep 2022 22:54:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E836C07E9D
+	for <linux-iio@archiver.kernel.org>; Tue, 27 Sep 2022 22:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231455AbiI0WyQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 27 Sep 2022 18:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
+        id S231759AbiI0WyR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 27 Sep 2022 18:54:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230443AbiI0WyN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 27 Sep 2022 18:54:13 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56ABECF4B3
-        for <linux-iio@vger.kernel.org>; Tue, 27 Sep 2022 15:54:12 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-13175b79807so5137470fac.9
-        for <linux-iio@vger.kernel.org>; Tue, 27 Sep 2022 15:54:12 -0700 (PDT)
+        with ESMTP id S231642AbiI0WyP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 27 Sep 2022 18:54:15 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528C2B6D1D
+        for <linux-iio@vger.kernel.org>; Tue, 27 Sep 2022 15:54:14 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-12803ac8113so15215782fac.8
+        for <linux-iio@vger.kernel.org>; Tue, 27 Sep 2022 15:54:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=IevjLYZWe9tsLyOFzg37+cXAWlF3HP2aFWQuERAyz5A=;
-        b=ukKxclW1ytzXKj6woU7axpA+gQGFnvT9sR5jqbzXuoZu+viXO/KuEZkNzr1GboxOdT
-         nqf+v33qNwiPCWPVUw0abYQTEJQCghbVjOFW/TTXon42d/fjIYg5KRfBVCV097KSxXnc
-         VRRGx7w/qQKoqOMNQ82yXAQipXutuq2b7HF/hEjaatCqOx8HKCdJunYQ6FchggLyFtz2
-         62t0GpFsm0sRFxp+KRYITO3yrxhIVzpPB0iaKoucEOFIH/Hhzq27yYyDBsGNgH3PvwVJ
-         sWFDJPr1tQI0Xtgf57jqK2Yimt9X2bhonG5reF5DV+vN3Yx1mCVdw6diA2T0P45C32Ul
-         u7ig==
+        bh=a7VLezTD0+GPejxCp7dPxU8OWFTrlgtVBSlhx4E+t6E=;
+        b=ALHzBCs/dzoKPi+sqH/xuMWcZDQrOIux1rIdClKBDNjFRs/UYr3DOfkcXIP7JYI+RK
+         8l7mj8YmpkwsLt3MQ1/fCsId/Z3n61miWc9/r6zmzbQsqqD0xcoiRjKa1APp32EA28WF
+         WmlHZzkDUYZGATIxpyssGH4eD6wpRdAcZ/UlqVwgHCPGCi/jadv5cwy5woVgeT0onWDi
+         7KpOmFRJzN2WpRzYXrB8GJPr7fwxKBdqaYbos3Tt/PmNT7wU6rtF3HYMbzL5I6PVb/bk
+         3pySsR/BqUn6yycjnerJxMEMxkXH3zKA3YBXMIge+ONbHQ6ek2zxqtB4KEI3gsrMkT3P
+         GZ8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=IevjLYZWe9tsLyOFzg37+cXAWlF3HP2aFWQuERAyz5A=;
-        b=KsyZN0fZ3UiH0cBlEKFA7ImJuYVYWEScCPBnQa3zE4v0rxpvn4nrl0MZvae7B0vIjd
-         +TjaimAkRWG/NWbhmzQKgpDAQCqxrPKwzxapgAbECYCbgWglumsgKnUHDtMemnPkKx27
-         5xhkYpXzcPqSKNHOHWyvHINi69OiMrfNd81cu4lK9yyowtt3K6KH6pXGNQbv2NH1HzaG
-         WWOkGaqpuNiNy1PhnwqIZdZjacs2HVKznwUVBkleZH+Wmyp7CQ9i2Y9ipRplXWy0yFoi
-         CYwA/Orp2JYOofjx8OvnEQzr9rH2HZCXYbxCrioH/iycta0hYG1ZHuBHvnrmYQSmVHpg
-         ci5Q==
-X-Gm-Message-State: ACrzQf056VzeEjwa798vNQ6IfJ1JFXrscg0jhnNsWOp8Qp1IMnfUYbOe
-        wAkznI7T2gwPNs3Qtgaxiy4WyC07bxgUNw==
-X-Google-Smtp-Source: AMsMyM7ZjxyL1+Odk/m/s7QJiHTB2eq7uXA4LusDYdvP8wVs9gBSKf5tFJ+TWY+A8n9EamMnce5KZA==
-X-Received: by 2002:a05:6871:7a1:b0:131:946a:7b30 with SMTP id o33-20020a05687107a100b00131946a7b30mr1825083oap.67.1664319251636;
-        Tue, 27 Sep 2022 15:54:11 -0700 (PDT)
+        bh=a7VLezTD0+GPejxCp7dPxU8OWFTrlgtVBSlhx4E+t6E=;
+        b=6/PyGNSGxeT8cqr+dGhL0nred62nbJIFGcz5/j0Cwmbd21GqHhPCD1gUWTmXI/Nh12
+         OwVFzQUoTGAqiWUSOPkv2xF1jz7SF+sfZAUrxl09DOlPqPyDujku20aQRpoqbwTeN+fc
+         egVxyh9mJGxqVIdyi31os15QRIx5XLOCnMT0vw+hLsZWiS1tz/o3+AKIXl0illsxeB1+
+         5oFEPlbr75MvwOSj3pdJGJl+PDyz42Jc77gH0qIGv23wQqWqEvX67wrFeGvyloa81LrV
+         tubY2iyRUwMkq/NRV4yKoJzrFV87VJRlrlDiwAOz4MpglDqZQUHhuohRfdHqmOghN0nv
+         SIqw==
+X-Gm-Message-State: ACrzQf3fOCctzEQRXJEY2aofXLQT/nvSWEy88BsdAvYh/XEBTBwwh6gi
+        6udgWn5ib4JBSwv+akKXud7fT5dM6Fgura6y
+X-Google-Smtp-Source: AMsMyM7rb0be+4Y7sLi173c3HACIYoOgg18OfObCT7IKGhqRvLdunxf9mWReo0ueMj6xA40KiHRbaw==
+X-Received: by 2002:a05:6871:1d5:b0:12b:239:ef00 with SMTP id q21-20020a05687101d500b0012b0239ef00mr3534738oad.85.1664319253520;
+        Tue, 27 Sep 2022 15:54:13 -0700 (PDT)
 Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id v186-20020aca61c3000000b00350c5d946casm1188965oib.4.2022.09.27.15.54.11
+        by smtp.gmail.com with ESMTPSA id v186-20020aca61c3000000b00350c5d946casm1188965oib.4.2022.09.27.15.54.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 15:54:11 -0700 (PDT)
+        Tue, 27 Sep 2022 15:54:13 -0700 (PDT)
 From:   William Breathitt Gray <william.gray@linaro.org>
 To:     gregkh@linuxfoundation.org
-Cc:     linux-iio@vger.kernel.org,
+Cc:     linux-iio@vger.kernel.org, Julien Panis <jpanis@baylibre.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         William Breathitt Gray <william.gray@linaro.org>
-Subject: [PATCH 07/12] counter: Consolidate Counter extension sysfs attribute creation
-Date:   Tue, 27 Sep 2022 18:53:41 -0400
-Message-Id: <0469c3ae3fbccbca908993c78d94f221761a6a3a.1664318353.git.william.gray@linaro.org>
+Subject: [PATCH 09/12] dt-bindings: counter: add ti,am62-ecap-capture.yaml
+Date:   Tue, 27 Sep 2022 18:53:43 -0400
+Message-Id: <33c27451f61b3a01d886da5e6bf6456088956439.1664318353.git.william.gray@linaro.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <cover.1664318353.git.william.gray@linaro.org>
 References: <cover.1664318353.git.william.gray@linaro.org>
@@ -64,168 +65,86 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Counter extensions are handled for the Device, Counts, and Signals. The
-code loops through each Counter extension and creates the expected sysfs
-attributes. This patch consolidates that code into functions to reduce
-redundancy and make the intention of the code clearer.
+From: Julien Panis <jpanis@baylibre.com>
 
-Link: https://lore.kernel.org/r/6f2121cf52073028c119dbf981a8b72f3eb625d2.1664204990.git.william.gray@linaro.org/
+This commit adds a YAML binding for TI ECAP used in capture operating mode.
+
+Signed-off-by: Julien Panis <jpanis@baylibre.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220923142437.271328-2-jpanis@baylibre.com/
 Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
 ---
- drivers/counter/counter-sysfs.c | 98 ++++++++++++++++-----------------
- 1 file changed, 49 insertions(+), 49 deletions(-)
+ .../counter/ti,am62-ecap-capture.yaml         | 61 +++++++++++++++++++
+ 1 file changed, 61 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/counter/ti,am62-ecap-capture.yaml
 
-diff --git a/drivers/counter/counter-sysfs.c b/drivers/counter/counter-sysfs.c
-index e5dd36e1a45f..b393da402e0b 100644
---- a/drivers/counter/counter-sysfs.c
-+++ b/drivers/counter/counter-sysfs.c
-@@ -592,6 +592,46 @@ static int counter_comp_id_attr_create(struct device *const dev,
- 	return 0;
- }
- 
-+static int counter_ext_attrs_create(struct device *const dev,
-+				    struct counter_attribute_group *const group,
-+				    const struct counter_comp *const ext,
-+				    const enum counter_scope scope,
-+				    void *const parent, const size_t id)
-+{
-+	int err;
+diff --git a/Documentation/devicetree/bindings/counter/ti,am62-ecap-capture.yaml b/Documentation/devicetree/bindings/counter/ti,am62-ecap-capture.yaml
+new file mode 100644
+index 000000000000..4e0b2d2b303e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/counter/ti,am62-ecap-capture.yaml
+@@ -0,0 +1,61 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/counter/ti,am62-ecap-capture.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	/* Create main extension attribute */
-+	err = counter_attr_create(dev, group, ext, scope, parent);
-+	if (err < 0)
-+		return err;
++title: Texas Instruments Enhanced Capture (eCAP) Module
 +
-+	/* Create extension id attribute */
-+	return counter_comp_id_attr_create(dev, group, ext->name, id);
-+}
++maintainers:
++  - Julien Panis <jpanis@baylibre.com>
 +
-+static int counter_sysfs_exts_add(struct device *const dev,
-+				  struct counter_attribute_group *const group,
-+				  const struct counter_comp *const exts,
-+				  const size_t num_ext,
-+				  const enum counter_scope scope,
-+				  void *const parent)
-+{
-+	size_t i;
-+	const struct counter_comp *ext;
-+	int err;
++description: |
++  The eCAP module resources can be used to capture timestamps
++  on input signal events (falling/rising edges).
 +
-+	/* Create attributes for each extension */
-+	for (i = 0; i < num_ext; i++) {
-+		ext = &exts[i];
-+		err = counter_ext_attrs_create(dev, group, ext, scope, parent,
-+					       i);
-+		if (err < 0)
-+			return err;
-+	}
++properties:
++  compatible:
++    const: ti,am62-ecap-capture
 +
-+	return 0;
-+}
++  reg:
++    maxItems: 1
 +
- static struct counter_comp counter_signal_comp = {
- 	.type = COUNTER_COMP_SIGNAL_LEVEL,
- 	.name = "signal",
-@@ -605,8 +645,6 @@ static int counter_signal_attrs_create(struct counter_device *const counter,
- 	struct device *const dev = &counter->dev;
- 	int err;
- 	struct counter_comp comp;
--	size_t i;
--	struct counter_comp *ext;
- 
- 	/* Create main Signal attribute */
- 	comp = counter_signal_comp;
-@@ -620,21 +658,9 @@ static int counter_signal_attrs_create(struct counter_device *const counter,
- 	if (err < 0)
- 		return err;
- 
--	/* Create an attribute for each extension */
--	for (i = 0; i < signal->num_ext; i++) {
--		ext = &signal->ext[i];
--
--		err = counter_attr_create(dev, cattr_group, ext, scope, signal);
--		if (err < 0)
--			return err;
--
--		err = counter_comp_id_attr_create(dev, cattr_group, ext->name,
--						  i);
--		if (err < 0)
--			return err;
--	}
--
--	return 0;
-+	/* Add Signal extensions */
-+	return counter_sysfs_exts_add(dev, cattr_group, signal->ext,
-+				      signal->num_ext, scope, signal);
- }
- 
- static int counter_sysfs_signals_add(struct counter_device *const counter,
-@@ -719,8 +745,6 @@ static int counter_count_attrs_create(struct counter_device *const counter,
- 	struct device *const dev = &counter->dev;
- 	int err;
- 	struct counter_comp comp;
--	size_t i;
--	struct counter_comp *ext;
- 
- 	/* Create main Count attribute */
- 	comp = counter_count_comp;
-@@ -743,21 +767,9 @@ static int counter_count_attrs_create(struct counter_device *const counter,
- 	if (err < 0)
- 		return err;
- 
--	/* Create an attribute for each extension */
--	for (i = 0; i < count->num_ext; i++) {
--		ext = &count->ext[i];
--
--		err = counter_attr_create(dev, cattr_group, ext, scope, count);
--		if (err < 0)
--			return err;
--
--		err = counter_comp_id_attr_create(dev, cattr_group, ext->name,
--						  i);
--		if (err < 0)
--			return err;
--	}
--
--	return 0;
-+	/* Add Count extensions */
-+	return counter_sysfs_exts_add(dev, cattr_group, count->ext,
-+				      count->num_ext, scope, count);
- }
- 
- static int counter_sysfs_counts_add(struct counter_device *const counter,
-@@ -850,8 +862,6 @@ static int counter_sysfs_attr_add(struct counter_device *const counter,
- 	const enum counter_scope scope = COUNTER_SCOPE_DEVICE;
- 	struct device *const dev = &counter->dev;
- 	int err;
--	size_t i;
--	struct counter_comp *ext;
- 
- 	/* Add Signals sysfs attributes */
- 	err = counter_sysfs_signals_add(counter, cattr_group);
-@@ -888,19 +898,9 @@ static int counter_sysfs_attr_add(struct counter_device *const counter,
- 	if (err < 0)
- 		return err;
- 
--	/* Create an attribute for each extension */
--	for (i = 0; i < counter->num_ext; i++) {
--		ext = &counter->ext[i];
--
--		err = counter_attr_create(dev, cattr_group, ext, scope, NULL);
--		if (err < 0)
--			return err;
--
--		err = counter_comp_id_attr_create(dev, cattr_group, ext->name,
--						  i);
--		if (err < 0)
--			return err;
--	}
-+	/* Add device extensions */
-+	return counter_sysfs_exts_add(dev, cattr_group, counter->ext,
-+				      counter->num_ext, scope, NULL);
- 
- 	return 0;
- }
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    const: fck
++
++  power-domains:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/soc/ti,sci_pm_domain.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        capture@23100000 { /* eCAP in capture mode on am62x */
++            compatible = "ti,am62-ecap-capture";
++            reg = <0x00 0x23100000 0x00 0x100>;
++            interrupts = <GIC_SPI 113 IRQ_TYPE_EDGE_RISING>;
++            power-domains = <&k3_pds 51 TI_SCI_PD_EXCLUSIVE>;
++            clocks = <&k3_clks 51 0>;
++            clock-names = "fck";
++        };
++    };
 -- 
 2.37.3
 
