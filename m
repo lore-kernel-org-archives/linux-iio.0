@@ -2,44 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74AC5C04A95
-	for <linux-iio@archiver.kernel.org>; Wed, 28 Sep 2022 16:43:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB62C32771
+	for <linux-iio@archiver.kernel.org>; Wed, 28 Sep 2022 16:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234388AbiI1Qny (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 28 Sep 2022 12:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52462 "EHLO
+        id S234466AbiI1QoD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 28 Sep 2022 12:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234443AbiI1Qna (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Sep 2022 12:43:30 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED6BE8DB4;
-        Wed, 28 Sep 2022 09:43:18 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28SG4hp5005109;
-        Wed, 28 Sep 2022 18:42:56 +0200
+        with ESMTP id S234469AbiI1Qnc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Sep 2022 12:43:32 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13ECE952C;
+        Wed, 28 Sep 2022 09:43:20 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28SGQFUm020655;
+        Wed, 28 Sep 2022 18:42:57 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=selector1;
- bh=iyz5w+TWRIOyUqxHw7BoijPFfbfPlmmExF0v8d2qvpU=;
- b=oNdailhRN0kKKUE7CdtbnEjwZDcGMsuCPh7CJ5ah/trDpD+AG2lmaNB0DJqVhF6If94F
- NuGWhIiqWtPlm0BgxUvDGtVVk5FLkWGCLrtcoXOrdIPK2FJa8GvF8lMEv+P3fw9N5STH
- I2vbPEaASVW2TzbPUmLyXd404sYLy6L6iV3zKNsyr0iVpYqCYGRITVT1ID+n7Hoec/ei
- X9m+U+gyMfMLytkImPC9kzRzud3IFEA/i3rXlQ75z8miOrajS6TiYOOpe8k83GIjaJ/L
- 7s41Qk+yLEo/jOYVQMdRYVr4XpxdCFw31gbWB4SBVNgHvsbZe/QGMjWBm48tgkLlDObn 3A== 
+ bh=sfe+c3z4CBqQvUGfg0kmIxD0Kl5h3efDT5pi0QvUkhA=;
+ b=otNgfxPQeWIQMEaJ7qBmPpmS3bSgAaoLJUH2jlPLWBITBq8sKj9VbAOV/ttn2Oqmnpto
+ XnDrpKETjIUI/r1d5TTSABy+Fx4FjMxDzqnoczpYpBEEQI4SZaOe6ocYBbwLTi5sXSs/
+ 6WXNqSEmHdmONsB4G5U37LH+0NGorw+UtjvuIKvEBNqBw+/io8cCQ2aO6Km1nE3ujgr7
+ JXAqZsEAhG8FiT4/O1ernkm5tK2ycYejfAlyV2eEcD/cX6yYf0Jxn5UhklmwaXpZ4K3Y
+ v6Lbut2jkgPjuMwgTxiaPEYj358NtDasKmujh2Gx7dpqXLG9jPZ1cvtlTQzDcIhqrm0i tw== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3jsrsjtp71-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3jsqamj8cx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 28 Sep 2022 18:42:56 +0200
+        Wed, 28 Sep 2022 18:42:57 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E7B3B10002A;
-        Wed, 28 Sep 2022 18:42:54 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 0FF3710002A;
+        Wed, 28 Sep 2022 18:42:56 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E10AA23C6B4;
-        Wed, 28 Sep 2022 18:42:54 +0200 (CEST)
-Received: from localhost (10.75.127.119) by SHFDAG1NODE1.st.com (10.75.129.69)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0ABF923C6B4;
+        Wed, 28 Sep 2022 18:42:56 +0200 (CEST)
+Received: from localhost (10.75.127.47) by SHFDAG1NODE1.st.com (10.75.129.69)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.31; Wed, 28 Sep
- 2022 18:42:54 +0200
+ 2022 18:42:55 +0200
 From:   Olivier Moysan <olivier.moysan@foss.st.com>
 To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
@@ -55,17 +55,17 @@ To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
 CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>
-Subject: [PATCH 5/8] ARM: dts: stm32: add adc support to stm32mp13
-Date:   Wed, 28 Sep 2022 18:41:11 +0200
-Message-ID: <20220928164114.48339-6-olivier.moysan@foss.st.com>
+Subject: [PATCH 7/8] ARM: dts: stm32: add dummy vdd_adc regulator on stm32mp135f-dk
+Date:   Wed, 28 Sep 2022 18:41:13 +0200
+Message-ID: <20220928164114.48339-8-olivier.moysan@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220928164114.48339-1-olivier.moysan@foss.st.com>
 References: <20220928164114.48339-1-olivier.moysan@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.119]
-X-ClientProxiedBy: GPXDAG2NODE4.st.com (10.75.127.68) To SHFDAG1NODE1.st.com
+X-Originating-IP: [10.75.127.47]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
  (10.75.129.69)
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
@@ -74,123 +74,39 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add ADC1 and ADC2 support to STM32MP13 SoC family.
+Add a dummy fixed regulator vdd-adc for STM32 ADC,
+on STM32MP135F-DK board, while SCMI regulators are not available.
+This patch will have to be removed when SCMI regulator support
+is added to STM32MP13.
 
-The STM32MP131 provides only ADC2, while other STM32MP13 SoCs provide
-both ADC1 and ADC2.
-
-Internal channels support limitations:
-- VREFINT internal channel requires calibration data from OTP memory.
-  The nvmem properties used to access OTP are not defined for time being,
-  as OTP support is not yet enabled.
-
-- VBAT internal channel is not defined by default in SoC DT, and
-  has be defined in board DT when needed, instead. This avoids unwanted
-  current consumption on battery, when ADC conversions are performed
-  on any other channels.
+This patch intends to allow ADC enabling on STM32MP13.
+With this patch the ADC can probe but it cannot return
+valid conversion data, as it's regulator is not actually enabled.
 
 Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
 ---
- arch/arm/boot/dts/stm32mp131.dtsi | 43 +++++++++++++++++++++++++++++++
- arch/arm/boot/dts/stm32mp133.dtsi | 31 ++++++++++++++++++++++
- 2 files changed, 74 insertions(+)
+ arch/arm/boot/dts/stm32mp135f-dk.dts | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm/boot/dts/stm32mp131.dtsi b/arch/arm/boot/dts/stm32mp131.dtsi
-index 3a921db23e9f..5e46234f60f2 100644
---- a/arch/arm/boot/dts/stm32mp131.dtsi
-+++ b/arch/arm/boot/dts/stm32mp131.dtsi
-@@ -153,6 +153,49 @@ dmamux1: dma-router@48002000 {
- 			dma-channels = <16>;
- 		};
+diff --git a/arch/arm/boot/dts/stm32mp135f-dk.dts b/arch/arm/boot/dts/stm32mp135f-dk.dts
+index e6b8ffd332c7..95068231ed57 100644
+--- a/arch/arm/boot/dts/stm32mp135f-dk.dts
++++ b/arch/arm/boot/dts/stm32mp135f-dk.dts
+@@ -66,6 +66,14 @@ vdd_sd: vdd-sd {
+ 		regulator-max-microvolt = <2900000>;
+ 		regulator-always-on;
+ 	};
++
++	vdd_adc: vdd-adc {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd_adc";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
++	};
+ };
  
-+		adc_2: adc@48004000 {
-+			compatible = "st,stm32mp13-adc-core";
-+			reg = <0x48004000 0x400>;
-+			interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc ADC2>, <&rcc ADC2_K>;
-+			clock-names = "bus", "adc";
-+			interrupt-controller;
-+			#interrupt-cells = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+
-+			adc2: adc@0 {
-+				compatible = "st,stm32mp13-adc";
-+				#io-channel-cells = <1>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				reg = <0x0>;
-+				interrupt-parent = <&adc_2>;
-+				interrupts = <0>;
-+				dmas = <&dmamux1 10 0x400 0x80000001>;
-+				dma-names = "rx";
-+				status = "disabled";
-+
-+				channel@13 {
-+					reg = <13>;
-+					label = "vrefint";
-+				};
-+				channel@14 {
-+					reg = <14>;
-+					label = "vddcore";
-+				};
-+				channel@16 {
-+					reg = <16>;
-+					label = "vddcpu";
-+				};
-+				channel@17 {
-+					reg = <17>;
-+					label = "vddq_ddr";
-+				};
-+			};
-+		};
-+
- 		rcc: rcc@50000000 {
- 			compatible = "st,stm32mp13-rcc", "syscon";
- 			reg = <0x50000000 0x1000>;
-diff --git a/arch/arm/boot/dts/stm32mp133.dtsi b/arch/arm/boot/dts/stm32mp133.dtsi
-index 531c263c9f46..6bc702fe43af 100644
---- a/arch/arm/boot/dts/stm32mp133.dtsi
-+++ b/arch/arm/boot/dts/stm32mp133.dtsi
-@@ -8,6 +8,37 @@
- 
- / {
- 	soc {
-+		adc_1: adc@48003000 {
-+			compatible = "st,stm32mp13-adc-core";
-+			reg = <0x48003000 0x400>;
-+			interrupts = <GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc ADC1>, <&rcc ADC1_K>;
-+			clock-names = "bus", "adc";
-+			interrupt-controller;
-+			#interrupt-cells = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+
-+			adc1: adc@0 {
-+				compatible = "st,stm32mp13-adc";
-+				#io-channel-cells = <1>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				reg = <0x0>;
-+				interrupt-parent = <&adc_1>;
-+				interrupts = <0>;
-+				dmas = <&dmamux1 9 0x400 0x80000001>;
-+				dma-names = "rx";
-+				status = "disabled";
-+
-+				channel@18 {
-+					reg = <18>;
-+					label = "vrefint";
-+				};
-+			};
-+		};
-+
- 		m_can1: can@4400e000 {
- 			compatible = "bosch,m_can";
- 			reg = <0x4400e000 0x400>, <0x44011000 0x1400>;
+ &iwdg2 {
 -- 
 2.25.1
 
