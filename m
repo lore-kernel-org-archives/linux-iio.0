@@ -2,44 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23752C32771
-	for <linux-iio@archiver.kernel.org>; Wed, 28 Sep 2022 16:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 115B8C04A95
+	for <linux-iio@archiver.kernel.org>; Wed, 28 Sep 2022 16:43:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234164AbiI1QnE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S234173AbiI1QnE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 28 Sep 2022 12:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50868 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234117AbiI1Qmu (ORCPT
+        with ESMTP id S234132AbiI1Qmu (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Sep 2022 12:42:50 -0400
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290B8E7C1E;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E4CE7C1C;
         Wed, 28 Sep 2022 09:42:42 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28SBedYs027518;
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28SGQFUd020655;
         Wed, 28 Sep 2022 18:41:54 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=TWtwkhpFfFIsRQnbF1+FDZ/TyYsZdJ0xXvFMnYZtWh4=;
- b=AMTiuhhgrsUA/ODhYqEcs4k55U6dksgKZD/xoL4iJxffxNJdgviOzQac2o5uNr+DW2Ek
- /d7PulFDZaWzIRkYZaZDQa4HhPe9nTHiz//0ndsvmacflyjgbgIr5fshL5VyxyFEjaFA
- zusgBR9TomnnKzU7MYo9dSz1aZRkTzWu2KOWBI7zUa/GpCPobwKE1UBega5rjsSh/J77
- h7eKM8+IkhawuNvk9wjG2VxyIjaBtnXmLf95db6SO0+J1pH9PJhC42CsSvK/YYYi3GFs
- DKtQ1dLKO3sWUeel8Hvwb99pCfxferHoWiGB2kBP5FOUIV7frJbg6fVLeW8fWMye8REn RQ== 
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=8lFpwLfBQhp/XHXOjmu6ATzSxtmoz+37E9iy2AZS3+E=;
+ b=UOJtE9FmesbLBtzsQTw0MiOp5z554TUi5DyKrFC6wvq5h3DnVPmSQ0V8OtPpsnjtY5HN
+ +09G5ghyaeJbHF8nWBnKPDXRIGyNRFVmuo9tAnfctHlwYxktJe9U3bcj8+K8Kp9J28XY
+ bRz5QcbJxtj8cpMqdQANKUWW+JJav2d2klKr3WphRvkr6fmN/qOKqMf2ya2U1HEgf0Fu
+ 2bVPBtbs+F+kMEj3UIqoVk5R1s9C+xiU/5WBmCpIajl7i2xmz7FpLl1zqycbEjhymg5Q
+ 6Wo+WiZdhPqLiiQRkwW8jkN6tivUBkwz03TwvOr2O6dWCzxyhIzL6tckFUxoyYepac3f gw== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3jss82hw7m-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3jsqamj87a-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 28 Sep 2022 18:41:54 +0200
+        Wed, 28 Sep 2022 18:41:53 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 2C15B100038;
-        Wed, 28 Sep 2022 18:41:53 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1B90010002A;
+        Wed, 28 Sep 2022 18:41:51 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 23DA323C6B4;
-        Wed, 28 Sep 2022 18:41:53 +0200 (CEST)
-Received: from localhost (10.75.127.45) by SHFDAG1NODE1.st.com (10.75.129.69)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id EAA0D23C6B2;
+        Wed, 28 Sep 2022 18:41:51 +0200 (CEST)
+Received: from localhost (10.75.127.116) by SHFDAG1NODE1.st.com (10.75.129.69)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.31; Wed, 28 Sep
- 2022 18:41:52 +0200
+ 2022 18:41:51 +0200
 From:   Olivier Moysan <olivier.moysan@foss.st.com>
 To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
@@ -55,17 +55,15 @@ To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
 CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>
-Subject: [PATCH 2/8] dt-bindings: iio: adc: stm32-adc: add stm32mp13 compatibles
-Date:   Wed, 28 Sep 2022 18:41:08 +0200
-Message-ID: <20220928164114.48339-3-olivier.moysan@foss.st.com>
+Subject: [PATCH 0/8] iio: stm32-adc: add support of adc for stm32mp13
+Date:   Wed, 28 Sep 2022 18:41:06 +0200
+Message-ID: <20220928164114.48339-1-olivier.moysan@foss.st.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220928164114.48339-1-olivier.moysan@foss.st.com>
-References: <20220928164114.48339-1-olivier.moysan@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+X-Originating-IP: [10.75.127.116]
+X-ClientProxiedBy: GPXDAG2NODE6.st.com (10.75.127.70) To SHFDAG1NODE1.st.com
  (10.75.129.69)
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
@@ -74,160 +72,44 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add st,stm32mp13-adc-core and st,stm32mp13-adc compatibles
-to support STM32MPU13 SoC.
-
-On STM32MP13x, each ADC peripheral has a single ADC block.
+On STM32MP13 SoCs, each ADC peripheral has a single ADC block.
 These ADC peripherals, ADC1 and ADC2, are fully independent.
+The STM32MP131 SoC provides only ADC2, while other STM32MP13x
+SoCs provide both ADC1 and ADC2.
 
-Main characteristics of STM32MP13x ADC:
-- One interrupt line per ADC
-- 6 to 12 bits resolution
-- 19 channels
+The STM32MP13 ADC features and characteristics are slightly
+different from STM32MP15 ADC ones, requiring a specific support
+in the driver.
 
-ADC2 instance supports two extra internal channels VDDCPU and VDDQ_DDR.
-Add "vddcpu" and "vddq_ddr" internal channels names to the reserved
-labels list.
+This patchset enables the ADC peripheral on STM32MP135F-DK board.
 
-Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
----
- .../bindings/iio/adc/st,stm32-adc.yaml        | 68 ++++++++++++++++++-
- 1 file changed, 65 insertions(+), 3 deletions(-)
+On STM32MP135F-DK board the ADC is connected to VDDA voltage
+provided by the PMIC LOD1 supply, which has to be enabled through
+SCMI regulator framework.
+This serie introduces a fixed regulator to allow ADC probing,
+while SCMI regulators support is not available. This does
+not ensure ADC regulator enabling however.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
-index fa8da42cb1e6..05265f381fde 100644
---- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
-@@ -27,6 +27,7 @@ properties:
-       - st,stm32f4-adc-core
-       - st,stm32h7-adc-core
-       - st,stm32mp1-adc-core
-+      - st,stm32mp13-adc-core
- 
-   reg:
-     maxItems: 1
-@@ -37,6 +38,7 @@ properties:
-         - stm32f4 and stm32h7 share a common ADC interrupt line.
-         - stm32mp1 has two separate interrupt lines, one for each ADC within
-           ADC block.
-+        - stm32mp13 has an interrupt line per ADC block.
-     minItems: 1
-     maxItems: 2
- 
-@@ -180,6 +182,33 @@ allOf:
-           maximum: 36000000
-           default: 36000000
- 
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: st,stm32mp13-adc-core
-+
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 1
-+          maxItems: 2
-+
-+        clock-names:
-+          items:
-+            - const: bus
-+            - const: adc
-+          minItems: 1
-+
-+        interrupts:
-+          items:
-+            - description: ADC interrupt line
-+
-+        st,max-clk-rate-hz:
-+          minimum: 150000
-+          maximum: 75000000
-+          default: 75000000
-+
- additionalProperties: false
- 
- required:
-@@ -208,6 +237,7 @@ patternProperties:
-           - st,stm32f4-adc
-           - st,stm32h7-adc
-           - st,stm32mp1-adc
-+          - st,stm32mp13-adc
- 
-       reg:
-         description: |
-@@ -229,7 +259,7 @@ patternProperties:
-       interrupts:
-         description: |
-           IRQ Line for the ADC instance. Valid values are:
--            - 0 for adc@0
-+            - 0 for adc@0 (single adc for stm32mp13)
-             - 1 for adc@100
-             - 2 for adc@200 (stm32f4 only)
-         maxItems: 1
-@@ -250,13 +280,14 @@ patternProperties:
-       assigned-resolution-bits:
-         description: |
-           Resolution (bits) to use for conversions:
--            - can be 6, 8, 10 or 12 on stm32f4
-+            - can be 6, 8, 10 or 12 on stm32f4 and stm32mp13
-             - can be 8, 10, 12, 14 or 16 on stm32h7 and stm32mp1
- 
-       st,adc-channels:
-         description: |
-           List of single-ended channels muxed for this ADC. It can have up to:
-             - 16 channels, numbered from 0 to 15 (for in0..in15) on stm32f4
-+            - 19 channels, numbered from 0 to 18 (for in0..in18) on stm32mp13.
-             - 20 channels, numbered from 0 to 19 (for in0..in19) on stm32h7 and
-               stm32mp1.
-         $ref: /schemas/types.yaml#/definitions/uint32-array
-@@ -322,7 +353,7 @@ patternProperties:
-           label:
-             description: |
-               Unique name to identify which channel this is.
--              Reserved label names "vddcore", "vrefint" and "vbat"
-+              Reserved label names "vddcore", "vddcpu", "vddq_ddr", "vrefint" and "vbat"
-               are used to identify internal channels with matching names.
- 
-           diff-channels:
-@@ -419,6 +450,37 @@ patternProperties:
-               items:
-                 minimum: 40
- 
-+
-+      - if:
-+          properties:
-+            compatible:
-+              contains:
-+                const: st,stm32mp13-adc
-+
-+        then:
-+          properties:
-+            reg:
-+              const: 0x0
-+
-+            interrupts:
-+              const: 0
-+
-+            assigned-resolution-bits:
-+              enum: [6, 8, 10, 12]
-+              default: 12
-+
-+            st,adc-channels:
-+              minItems: 1
-+              maxItems: 19
-+              items:
-+                minimum: 0
-+                maximum: 18
-+
-+            st,min-sample-time-nsecs:
-+              minItems: 1
-+              maxItems: 19
-+              items:
-+                minimum: 40
-     additionalProperties: false
- 
-     required:
+Olivier Moysan (8):
+  iio: adc: stm32-adc: fix channel sampling time init
+  dt-bindings: iio: adc: stm32-adc: add stm32mp13 compatibles
+  iio: adc: stm32-adc: add stm32mp13 support
+  iio: adc: stm32: manage min sampling time on all internal channels
+  ARM: dts: stm32: add adc support to stm32mp13
+  ARM: dts: stm32: add adc pins muxing on stm32mp135f-dk
+  ARM: dts: stm32: add dummy vdd_adc regulator on stm32mp135f-dk
+  ARM: dts: stm32: add adc support on stm32mp135f-dk
+
+ .../bindings/iio/adc/st,stm32-adc.yaml        |  68 ++++-
+ arch/arm/boot/dts/stm32mp13-pinctrl.dtsi      |   7 +
+ arch/arm/boot/dts/stm32mp131.dtsi             |  43 +++
+ arch/arm/boot/dts/stm32mp133.dtsi             |  31 +++
+ arch/arm/boot/dts/stm32mp135f-dk.dts          |  34 +++
+ drivers/iio/adc/stm32-adc-core.c              |  21 ++
+ drivers/iio/adc/stm32-adc-core.h              |  32 +++
+ drivers/iio/adc/stm32-adc.c                   | 249 +++++++++++++++---
+ 8 files changed, 442 insertions(+), 43 deletions(-)
+
 -- 
 2.25.1
 
