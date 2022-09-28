@@ -2,146 +2,123 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADEDC54EE9
-	for <linux-iio@archiver.kernel.org>; Wed, 28 Sep 2022 16:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F524C04A95
+	for <linux-iio@archiver.kernel.org>; Wed, 28 Sep 2022 16:43:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234065AbiI1QXv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 28 Sep 2022 12:23:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52498 "EHLO
+        id S233739AbiI1QnC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 28 Sep 2022 12:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234554AbiI1QXS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Sep 2022 12:23:18 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8BA56B85;
-        Wed, 28 Sep 2022 09:23:10 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id d42so21249634lfv.0;
-        Wed, 28 Sep 2022 09:23:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=ENny02jrZKVbgPfzbkbRE4ZovlzNI+xmygHZLGPqIBs=;
-        b=ZtknbgmU/wmbcYwSVkoJB+W1EHC/7KVOArUns8X67T/KOCkbeed1buC3ysC9Phfwfi
-         ifQ9jpg5aQLgZQEQvWcamMuhilITQTXz4qnEAuPQoouDK+5gcyTD0NinNArywTuVVGki
-         bnoCGDAX32g12eoedEj2Q5wE4jQ0Wzl+ZICavftNxBx0GTr6VAGnXkIQQnEqgPlN9h5F
-         PL1x61LC9+KI06GHyaPnwnfoPUlD/dkp6kSg/4uPADRgMrZfDv1Nt93sFjswxM8h6E+p
-         0LF0GiJ6bcvKD8phn8SNduNvjHAK5McCCqZmZbtc1WY+Dx3rJgQZNcGtCoCMhaysAb59
-         gLyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=ENny02jrZKVbgPfzbkbRE4ZovlzNI+xmygHZLGPqIBs=;
-        b=QpMQUlu+Sjhh/W357+iACLr+yq9Rq02OAIpVprcaNtjJGoasA44NISGIzq7rgSnrSv
-         G+0muW/VGrIYsTuNdWpSDJiYJ8t6MTPpxUHrIRwNlQ4cGU9gmIXSvhRQ77KIuz2OwSa7
-         8QpdEm7jD/a0/7EkfrGOXV+vgL1D/7r32R4y7eZnAxBb6QbDn7QVIbagGMdbbxzCTdBd
-         9JaWgfW0mTqC33jhqMatTSNVW5N620Z3TcafsEcnXSEBdlLiDQ1Iw2WTh9DLJbkbB8V5
-         W2jt7Tcb9ZkEt2xp2s71zofFNMdFPiooWXWFF/WLUeq2UW688TiZfYAHzwZoMIaulKk6
-         vS9g==
-X-Gm-Message-State: ACrzQf1UQ5sdkU1Elp/Q8wNXRZgp4vouWYbWNFNcRlnjiIMxAoCDBk1R
-        NF1eCYceGpkr0AVwMMHi03A=
-X-Google-Smtp-Source: AMsMyM5gtxklHbrdm1xdQqDlFiUiLhPp7YuJAm3I62QCBKtAMamqNsiIC8L5zDr5KDF8j5icQVK0sA==
-X-Received: by 2002:a05:6512:104f:b0:4a1:b0e9:dd25 with SMTP id c15-20020a056512104f00b004a1b0e9dd25mr9371959lfb.454.1664382188690;
-        Wed, 28 Sep 2022 09:23:08 -0700 (PDT)
-Received: from ?IPV6:2001:14ba:16f3:4a00::1? (dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::1])
-        by smtp.gmail.com with ESMTPSA id u20-20020a197914000000b0049ade93ad24sm511834lfc.156.2022.09.28.09.23.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Sep 2022 09:23:07 -0700 (PDT)
-Message-ID: <e3abc0a9-ad5b-f6ef-8cba-0b4c6c8325c0@gmail.com>
-Date:   Wed, 28 Sep 2022 19:23:06 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [RFC PATCH 4/5] iio: accel: Support Kionix/ROHM KX022A
- accelerometer
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S234316AbiI1Qms (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Sep 2022 12:42:48 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F19CE7221;
+        Wed, 28 Sep 2022 09:42:40 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28SG4hov005109;
+        Wed, 28 Sep 2022 18:41:54 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=tKBMS7X9LgoNsX57OncGM9Oh7BG8J3G7bUbLiaKVg4E=;
+ b=vMrrMHeTZnZspoOIztfKoVt2msPCRmxw1JHFJzf16uxFmJb81ggY5XjjMk7z2pom6lX8
+ hQm90yLRhNMIj5RLoonaVtWgzSMuuEGmZTbGF3j5oaIZCxerGX89TL1Auw4zQJyZzBXZ
+ oSS4N47tuiZXZTnlOt7oHcy9QkVaKsC4PrxQatpQKbL3Ded9x4VA2SEEkBFgsVRPlyh9
+ m/+guXVT5185jU/A/Y3uML54DcMMjz0RIaunhtpvzvoK2sEUN5fDrspGGTUJuZrssEid
+ S1Rx2cAHqS/GJjiGPDgWyzeAfXYsTyZ1U60T40ayWqU0DW5WwuEensPzyeChYI9Ll2Tv 0g== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3jsrsjtp26-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 28 Sep 2022 18:41:54 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 907B4100034;
+        Wed, 28 Sep 2022 18:41:52 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 87D3E23C6B3;
+        Wed, 28 Sep 2022 18:41:52 +0200 (CEST)
+Received: from localhost (10.75.127.119) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.31; Wed, 28 Sep
+ 2022 18:41:52 +0200
+From:   Olivier Moysan <olivier.moysan@foss.st.com>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        Jagath Jog J <jagathjog1996@gmail.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Mutanen, Mikko" <Mikko.Mutanen@fi.rohmeurope.com>,
-        "Haikola, Heikki" <Heikki.Haikola@fi.rohmeurope.com>
-References: <cover.1663760018.git.mazziesaccount@gmail.com>
- <fe1088cebb0de70bcb99af517004c1816b696825.1663760018.git.mazziesaccount@gmail.com>
- <20220922180339.30138141@jic23-huawei>
- <3eea7954-3faf-3fc9-7507-c318488c5524@gmail.com>
- <YzRU9aRNReonSqbg@smile.fi.intel.com>
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <YzRU9aRNReonSqbg@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        <nuno.sa@analog.com>, Olivier Moysan <olivier.moysan@foss.st.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Yannick Brosseau <yannick.brosseau@gmail.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+Subject: [PATCH 1/8] iio: adc: stm32-adc: fix channel sampling time init
+Date:   Wed, 28 Sep 2022 18:41:07 +0200
+Message-ID: <20220928164114.48339-2-olivier.moysan@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220928164114.48339-1-olivier.moysan@foss.st.com>
+References: <20220928164114.48339-1-olivier.moysan@foss.st.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.119]
+X-ClientProxiedBy: GPXDAG2NODE4.st.com (10.75.127.68) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-28_07,2022-09-28_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Andy,
+Fix channel init for ADC generic channel bindings.
+In generic channel initialization, stm32_adc_smpr_init() is called
+to initialize channel sampling time. The "st,min-sample-time-ns"
+property is an optional property. If it is not defined,
+stm32_adc_smpr_init() is currently skipped. However stm32_adc_smpr_init()
+must always be called, to force a minimum sampling time for
+the internal channels, as the minimum sampling time is known.
+Make stm32_adc_smpr_init() call unconditional.
 
-On 9/28/22 17:06, Andy Shevchenko wrote:
-> On Wed, Sep 28, 2022 at 02:14:14PM +0300, Matti Vaittinen wrote:
->> On 9/22/22 20:03, Jonathan Cameron wrote:
->>> On Wed, 21 Sep 2022 14:45:35 +0300
-> 
-> ...
-> 
->>>> +		dev_err(dev, "no regmap\n");
->>>
->>> Use dev_err_probe() for all dev_err() stuff in probe paths.
->>> It ends up cleaner and we don't care about the tiny overhead
->>> of checking for deferred.
->>
->> This one bothers me a bit. It just does not feel correct to pass -EINVAL for
->> the dev_err_probe() so the dev_err_probe() can check if -EINVAL !=
->> -EPROBE_DEFER. I do understand perfectly well the consistent use of
->> dev_err_probe() for all cases where we get an error-code from a function and
->> return it - but using dev_err_probe() when we hard-code the return value in
->> code calling the dev_err_probe() does not feel like "the right thing to do"
->> (tm).
->>
->> Eg, I agree that
->> return dev_err_probe(dev, ret, "bar");
->> is nice even if we know the function that gave us the "ret" never requests
->> defer (as that can change some day).
->>
->> However, I don't like issuing:
->> return dev_err_probe(dev, -EINVAL, "bar");
-> 
-> This case specifically was added into documentation by 7065f92255bb ("driver
-> core: Clarify that dev_err_probe() is OK even w/out -EPROBE_DEFER").
+Fixes: 796e5d0b1e9b ("iio: adc: stm32-adc: use generic binding for sample-time")
 
-Yes. And this is exactly what I meant with:
- >> Eg, I agree that
- >> return dev_err_probe(dev, ret, "bar");
- >> is nice even if we know the function that gave us the "ret" never 
-requests
- >> defer
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+---
+ drivers/iio/adc/stm32-adc.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-There is still (in my opinion) a significant difference if we call:
- >> return dev_err_probe(dev, -EINVAL, "bar");
-
-- where we really hard-code the -EINVAL as a parameter to the 
-dev_err_probe()
-
->> Well, please let me know if you think the dev_err_probe() should be used
->> even in cases where we hard code the return to something...
-> 
-> And this should be, of course, maintainer's decision.
-
-Ultimately, yes.
-
-Best Regards
-	--Matti
-
+diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+index 6256977eb7f7..3cda529f081d 100644
+--- a/drivers/iio/adc/stm32-adc.c
++++ b/drivers/iio/adc/stm32-adc.c
+@@ -2086,18 +2086,19 @@ static int stm32_adc_generic_chan_init(struct iio_dev *indio_dev,
+ 		stm32_adc_chan_init_one(indio_dev, &channels[scan_index], val,
+ 					vin[1], scan_index, differential);
+ 
++		val = 0;
+ 		ret = fwnode_property_read_u32(child, "st,min-sample-time-ns", &val);
+ 		/* st,min-sample-time-ns is optional */
+-		if (!ret) {
+-			stm32_adc_smpr_init(adc, channels[scan_index].channel, val);
+-			if (differential)
+-				stm32_adc_smpr_init(adc, vin[1], val);
+-		} else if (ret != -EINVAL) {
++		if (ret && ret != -EINVAL) {
+ 			dev_err(&indio_dev->dev, "Invalid st,min-sample-time-ns property %d\n",
+ 				ret);
+ 			goto err;
+ 		}
+ 
++		stm32_adc_smpr_init(adc, channels[scan_index].channel, val);
++		if (differential)
++			stm32_adc_smpr_init(adc, vin[1], val);
++
+ 		scan_index++;
+ 	}
+ 
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+2.25.1
 
-~~ When things go utterly wrong vim users can always type :help! ~~
