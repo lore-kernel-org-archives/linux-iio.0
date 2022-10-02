@@ -2,138 +2,88 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F82C433FE
-	for <linux-iio@archiver.kernel.org>; Sun,  2 Oct 2022 12:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C51EFC433F5
+	for <linux-iio@archiver.kernel.org>; Sun,  2 Oct 2022 12:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbiJBMbJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 2 Oct 2022 08:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
+        id S229594AbiJBMr6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 2 Oct 2022 08:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbiJBMay (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Oct 2022 08:30:54 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC5D481CB
-        for <linux-iio@vger.kernel.org>; Sun,  2 Oct 2022 05:30:51 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id g9so1754972qvo.12
-        for <linux-iio@vger.kernel.org>; Sun, 02 Oct 2022 05:30:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=R1c3R5rE0U0o8lHQihkxq4pyXx/vqIJRQ9pdL4TPGeY=;
-        b=q4n8XxxUt6ZKmpbA6nWE3aV4vUPZFTlzkQXrihTZXM15Y1M4GdJ19gXV8jmb0q+w28
-         cwDGe8r8VKC5TDpp41PM7csGe/LBCUodovD+WpeU4xELOzPKGNxJz9OyAc6zphF62rsP
-         /7ISHTQyJVqocqmLbGNkheDsd3s2d/yisZQUvIXzY+dziHVT9ArxsR/27xUVMPE4TFyg
-         PrEy/8/0JWy/oFsi6IQG6vDr4toEY2Dx8WFMzA6lulj2VUC+c0nF3zKhmWIQcCKdUSY5
-         Io2ndqxlGamkBud1APehCRfofCR8iCDMIwAD7aJ+rHj87zE/HTGlyg3cvzxbNYaQE9MJ
-         KCmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=R1c3R5rE0U0o8lHQihkxq4pyXx/vqIJRQ9pdL4TPGeY=;
-        b=bDrriDJhyqbNwolJXT0CtsYL+gCnL5iR++D7FZQg3o9V9LO2t4JGgu4YW0p7pndW8Q
-         LOafS+/I2Q0Tp9j+Rh3WYqNP+OfoKd6JgNvoFStPhhRbZu900RImgdcWHpGR7Z4nKRAw
-         qTazE5xyK2XnBBpk9/8dumD/N8COxIsjtM8GA7oW2b4pkMwHnW4If8KNY2np5UU1ohXE
-         KNejcvWuOFy2TC7hcwzeA5Yt4Jxap1nqQudby5Z/iCWreUMndcfhb4pPkEEZ+45MRI7Z
-         oKRxaBWmrs/DMttRsSiFasHeFuWYdaKtJUwFUlVfmxYFhZnGH8/0hx2FIVXbdHxPXOop
-         5HRQ==
-X-Gm-Message-State: ACrzQf0FiW6TVyDXtbvM5zCQ79XT7lFXOkTPBUQlMdhlwwlWQ6v6q5tg
-        H2Tjq9RvK2+YNXdY1nExs0IjWA==
-X-Google-Smtp-Source: AMsMyM4H8QnSwlW6IcVx+JUwbRpqVlqLyMGDkTYuAaWwkqrQcnp4IgDSeK1kvYftUEuREMmNOnCdXg==
-X-Received: by 2002:a05:6214:5018:b0:4b1:718c:26e3 with SMTP id jo24-20020a056214501800b004b1718c26e3mr7386970qvb.19.1664713850363;
-        Sun, 02 Oct 2022 05:30:50 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id bq36-20020a05620a46a400b006bb29d932e1sm7679700qkb.105.2022.10.02.05.30.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Oct 2022 05:30:49 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org,
-        William Breathitt Gray <william.gray@linaro.org>,
-        kernel test robot <lkp@intel.com>,
-        Julien Panis <jpanis@baylibre.com>
-Subject: [PATCH] counter: Reduce DEFINE_COUNTER_ARRAY_POLARITY() to defining counter_array
-Date:   Sun,  2 Oct 2022 08:30:08 -0400
-Message-Id: <20221002123008.57922-1-william.gray@linaro.org>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S229688AbiJBMr4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Oct 2022 08:47:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 046E733E26
+        for <linux-iio@vger.kernel.org>; Sun,  2 Oct 2022 05:47:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F4AA60EB4
+        for <linux-iio@vger.kernel.org>; Sun,  2 Oct 2022 12:47:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 555A3C433D7;
+        Sun,  2 Oct 2022 12:47:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664714873;
+        bh=tNGsrXvxA2ude5tw4gu9SwBY7ETOpo3LKLm/HyndaBE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cjmMp1NwZun+U59B9DrjO+TdZFm8GoFIa7VUZ1OhG40eHR40F14/cyMwshC0xR8L6
+         7DkREltCWppTZ5q26D7NJ8k4se4oaecj6U3o7H2NcQNTJ1uVL143Qtkvuf2rZFXd17
+         DCmhS3NUXGBgiJZhj+tLWw8huiQUp+h8DLXGhtDI/DecuFzWzL4OFHvF/5GQfjKg2B
+         qlJ2ZXd/5CpVUbheyc+5xbSCb/MkbusGRpW8Gxd9SSQqDYOktYo4FUt9onHzEwsDu+
+         sNV1VhcPWF+PElHLAfVNbhq9PYwGAE0FzK6mcTJLdCYVlTxjQdEjpBfxYaWSkrOepf
+         N1dMmLZBcyfRg==
+Date:   Sun, 2 Oct 2022 13:48:10 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     <linux-iio@vger.kernel.org>, <peda@axentia.se>, <lars@metafoo.de>,
+        <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH -next] iio: multiplexer: Switch to use dev_err_probe()
+ helper
+Message-ID: <20221002134810.02d1c9ed@jic23-huawei>
+In-Reply-To: <20220927064841.319291-1-yangyingliang@huawei.com>
+References: <20220927064841.319291-1-yangyingliang@huawei.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-A spare warning was reported for drivers/counter/ti-ecap-capture.c::
+On Tue, 27 Sep 2022 14:48:41 +0800
+Yang Yingliang <yangyingliang@huawei.com> wrote:
 
-    sparse warnings: (new ones prefixed by >>)
-    >> drivers/counter/ti-ecap-capture.c:380:8: sparse: sparse: symbol 'ecap_cnt_pol_array' was not declared. Should it be static?
+> In the probe path, dev_err() can be replaced with dev_err_probe()
+> which will check if error code is -EPROBE_DEFER and prints the
+> error name. It also sets the defer probe reason which can be
+> checked later through debugfs. It's more simple in error path.
+> 
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Applied to the togreg branch of iio.git. Now 6.2 material so I won't push
+that branch out until I can rebase on 6.1-rc1
 
-    vim +/ecap_cnt_pol_array +380 drivers/counter/ti-ecap-capture.c
+Jonathan
 
-       379
-     > 380	static DEFINE_COUNTER_ARRAY_POLARITY(ecap_cnt_pol_array, ecap_cnt_pol_avail, ECAP_NB_CEVT);
-       381
-
-The first argument to the DEFINE_COUNTER_ARRAY_POLARITY() macro is a
-token serving as the symbol name in the definition of a new
-struct counter_array structure. However, this macro actually expands to
-two statements::
-
-    #define DEFINE_COUNTER_ARRAY_POLARITY(_name, _enums, _length) \
-            DEFINE_COUNTER_AVAILABLE(_name##_available, _enums); \
-            struct counter_array _name = { \
-                    .type = COUNTER_COMP_SIGNAL_POLARITY, \
-                    .avail = &(_name##_available), \
-                    .length = (_length), \
-            }
-
-Because of this, the "static" on line 380 only applies to the first
-statement. This patch splits out the DEFINE_COUNTER_AVAILABLE() line
-and leaves DEFINE_COUNTER_ARRAY_POLARITY() as a simple structure
-definition to avoid issues like this.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/all/202210020619.NQbyomII-lkp@intel.com/
-Cc: Julien Panis <jpanis@baylibre.com>
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
----
- drivers/counter/ti-ecap-capture.c | 3 ++-
- include/linux/counter.h           | 5 ++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/counter/ti-ecap-capture.c b/drivers/counter/ti-ecap-capture.c
-index af10de30aba5..b8dbf0212a8e 100644
---- a/drivers/counter/ti-ecap-capture.c
-+++ b/drivers/counter/ti-ecap-capture.c
-@@ -377,7 +377,8 @@ static const enum counter_signal_polarity ecap_cnt_pol_avail[] = {
- 	COUNTER_SIGNAL_POLARITY_NEGATIVE,
- };
- 
--static DEFINE_COUNTER_ARRAY_POLARITY(ecap_cnt_pol_array, ecap_cnt_pol_avail, ECAP_NB_CEVT);
-+static DEFINE_COUNTER_AVAILABLE(ecap_cnt_pol_available, ecap_cnt_pol_avail);
-+static DEFINE_COUNTER_ARRAY_POLARITY(ecap_cnt_pol_array, ecap_cnt_pol_available, ECAP_NB_CEVT);
- 
- static struct counter_comp ecap_cnt_signal_ext[] = {
- 	COUNTER_COMP_ARRAY_POLARITY(ecap_cnt_pol_read, ecap_cnt_pol_write, ecap_cnt_pol_array),
-diff --git a/include/linux/counter.h b/include/linux/counter.h
-index c41fa602ed28..b63746637de2 100644
---- a/include/linux/counter.h
-+++ b/include/linux/counter.h
-@@ -542,11 +542,10 @@ struct counter_array {
- #define DEFINE_COUNTER_ARRAY_CAPTURE(_name, _length) \
- 	DEFINE_COUNTER_ARRAY_U64(_name, _length)
- 
--#define DEFINE_COUNTER_ARRAY_POLARITY(_name, _enums, _length) \
--	DEFINE_COUNTER_AVAILABLE(_name##_available, _enums); \
-+#define DEFINE_COUNTER_ARRAY_POLARITY(_name, _available, _length) \
- 	struct counter_array _name = { \
- 		.type = COUNTER_COMP_SIGNAL_POLARITY, \
--		.avail = &(_name##_available), \
-+		.avail = &(_available), \
- 		.length = (_length), \
- 	}
- 
--- 
-2.37.3
+> ---
+>  drivers/iio/multiplexer/iio-mux.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iio/multiplexer/iio-mux.c b/drivers/iio/multiplexer/iio-mux.c
+> index 93558fddfa9b..edd8c69f6d2e 100644
+> --- a/drivers/iio/multiplexer/iio-mux.c
+> +++ b/drivers/iio/multiplexer/iio-mux.c
+> @@ -416,11 +416,9 @@ static int mux_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	mux->control = devm_mux_control_get(dev, NULL);
+> -	if (IS_ERR(mux->control)) {
+> -		if (PTR_ERR(mux->control) != -EPROBE_DEFER)
+> -			dev_err(dev, "failed to get control-mux\n");
+> -		return PTR_ERR(mux->control);
+> -	}
+> +	if (IS_ERR(mux->control))
+> +		return dev_err_probe(dev, PTR_ERR(mux->control),
+> +				     "failed to get control-mux\n");
+>  
+>  	i = 0;
+>  	for (state = 0; state < all_children; state++) {
 
