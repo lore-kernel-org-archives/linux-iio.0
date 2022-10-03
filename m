@@ -2,43 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 901BEC4332F
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Oct 2022 09:25:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 007BFC433F5
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Oct 2022 09:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbiJCJZi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 3 Oct 2022 05:25:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54316 "EHLO
+        id S230482AbiJCJZv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 3 Oct 2022 05:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231139AbiJCJZe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Oct 2022 05:25:34 -0400
+        with ESMTP id S230515AbiJCJZm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Oct 2022 05:25:42 -0400
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A1320195;
-        Mon,  3 Oct 2022 02:25:33 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2937dEdd024570;
-        Mon, 3 Oct 2022 05:25:30 -0400
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 450512FFCB;
+        Mon,  3 Oct 2022 02:25:41 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2939OT2L005490;
+        Mon, 3 Oct 2022 05:25:38 -0400
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3jxjf6tf09-1
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3jxfd6u3mh-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 03 Oct 2022 05:25:29 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 2939PSYg007856
+        Mon, 03 Oct 2022 05:25:38 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 2939PbFJ007865
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 3 Oct 2022 05:25:28 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+        Mon, 3 Oct 2022 05:25:37 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 3 Oct 2022 05:25:27 -0400
+ 15.2.986.14; Mon, 3 Oct 2022 05:25:36 -0400
 Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 3 Oct 2022 05:25:27 -0400
+ 15.2.986.14; Mon, 3 Oct 2022 05:25:36 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 3 Oct 2022 05:25:27 -0400
+ Transport; Mon, 3 Oct 2022 05:25:36 -0400
 Received: from IST-LT-39247.ad.analog.com (IST-LT-39247.ad.analog.com [10.25.16.10])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 2939PFdX012843;
-        Mon, 3 Oct 2022 05:25:18 -0400
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 2939PFdZ012843;
+        Mon, 3 Oct 2022 05:25:26 -0400
 From:   Ibrahim Tilki <Ibrahim.Tilki@analog.com>
 To:     <jic23@kernel.org>
 CC:     Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
@@ -46,94 +46,220 @@ CC:     Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
         <Nurettin.Bolucu@analog.com>, <robh+dt@kernel.org>,
         <krzysztof.kozlowski+dt@linaro.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH v7 0/3] iio: adc: add max11410 adc driver
-Date:   Mon, 3 Oct 2022 12:24:57 +0300
-Message-ID: <20221003092500.296-1-Ibrahim.Tilki@analog.com>
+Subject: [PATCH v7 2/3] dt-bindings: iio: adc: add adi,max11410.yaml
+Date:   Mon, 3 Oct 2022 12:24:59 +0300
+Message-ID: <20221003092500.296-3-Ibrahim.Tilki@analog.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20221003092500.296-1-Ibrahim.Tilki@analog.com>
+References: <20221003092500.296-1-Ibrahim.Tilki@analog.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: -eIytX7cyKwD6AR_9r-KrDNROruhamL9
-X-Proofpoint-ORIG-GUID: -eIytX7cyKwD6AR_9r-KrDNROruhamL9
+X-Proofpoint-GUID: ZBZ5BW7ZLRDhUhWD8YwiTaecyu_lMqhB
+X-Proofpoint-ORIG-GUID: ZBZ5BW7ZLRDhUhWD8YwiTaecyu_lMqhB
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
  definitions=2022-10-03_02,2022-09-29_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- bulkscore=0 mlxscore=0 priorityscore=1501 spamscore=0 adultscore=0
- impostorscore=0 lowpriorityscore=0 phishscore=0 suspectscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ impostorscore=0 phishscore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0
+ priorityscore=1501 mlxscore=0 mlxlogscore=999 clxscore=1015 spamscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2209130000 definitions=main-2210030056
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Adding devicetree binding documentation for max11410 adc.
 
-Note: No sign-off tag for David as he was unreachable when the initial patch was sent.
-
-Changelog:
-since v7:
-  - add asm-generic/unaligned.h header (reported by kernel test robot)
-  - dtbinding: specify 2 items for interrupt-names
-  - dtbinding: reorder required block
-
-since v6:
-  - don't require avdd supply if not needed
-
-since v5:
-  - allow user to specify both interrupt pins
-  - keep irq info in max11410_state struct and use irq by name
-  - get irqs by fwnode_get_irq_byname
-  - don't allocate trigger when no irq supplied
-  - fix deadlock condition in write_raw
-  - minor style fixes
-  - fix devicetree binding errors reported by dt_binding_check
-  - convert module license to GPL as suggested by checkpatch
-
-since v4:
-  - add in_voltage_filter2_notch_{center,en} attrs for sinc4 filter
-  - add ABI documentation for filter sysfs
-  - check interrupt-names property for configuring gpio of max11410
-  - remove hardwaregain property
-  - add scale_available property for channes using PGA
-  - separate vref regulator error -ENODEV from other errors
-  - don't register trigger if no irq specified
-  - style fixes
-
-since v3:
-  - prefix defines with MAX11410_
-  - group vref regulators
-  - use builtin iio_validate_scan_mask_onehot
-  - validate iio trigger
-  - move scan data into state struct
-  - require vrefn regulator in DT if used by any channel
-  - don't require irq for triggered buffer
-  - remove filter sysfs attr and ABI documentation
-  - add in_voltage_filter[0-1]_notch_{center,en} attrs
-
-since v2:
-  - remove bit position shifting, use field_prep instead
-  - reduce the amount of reg writes in max11410_configure_channel
-  - add error checking in max11410_parse_channels
-  - remove some unneeded blank lines and minor style fixes
-  - remove scan data assignment in max11410_trigger_handler
-
-
-Ibrahim Tilki (3):
-  iio: adc: add max11410 adc driver
-  dt-bindings: iio: adc: add adi,max11410.yaml
-  Documentation: ABI: testing: add max11410 doc
-
- .../ABI/testing/sysfs-bus-iio-adc-max11410    |   13 +
- .../bindings/iio/adc/adi,max11410.yaml        |  176 +++
- drivers/iio/adc/Kconfig                       |   13 +
- drivers/iio/adc/Makefile                      |    1 +
- drivers/iio/adc/max11410.c                    | 1050 +++++++++++++++++
- 5 files changed, 1253 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-max11410
+Signed-off-by: Ibrahim Tilki <Ibrahim.Tilki@analog.com>
+---
+ .../bindings/iio/adc/adi,max11410.yaml        | 176 ++++++++++++++++++
+ 1 file changed, 176 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,max11410.yaml
- create mode 100644 drivers/iio/adc/max11410.c
 
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,max11410.yaml b/Documentation/devicetree/bindings/iio/adc/adi,max11410.yaml
+new file mode 100644
+index 0000000000..821776629e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/adi,max11410.yaml
+@@ -0,0 +1,176 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2022 Analog Devices Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/adi,max11410.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices MAX11410 ADC device driver
++
++maintainers:
++  - Ibrahim Tilki <Ibrahim.Tilki@analog.com>
++
++description: |
++  Bindings for the Analog Devices MAX11410 ADC device. Datasheet can be
++  found here:
++    https://datasheets.maximintegrated.com/en/ds/MAX11410.pdf
++
++properties:
++  compatible:
++    enum:
++      - adi,max11410
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    minItems: 1
++    maxItems: 2
++
++  interrupt-names:
++    description: Name of the gpio pin of max11410 used for IRQ
++    minItems: 1
++    items:
++      - enum: [gpio0, gpio1]
++      - const: gpio1
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  avdd-supply:
++    description: Optional avdd supply. Used as reference when no explicit reference supplied.
++
++  vref0p-supply:
++    description: vref0p supply can be used as reference for conversion.
++
++  vref1p-supply:
++    description: vref1p supply can be used as reference for conversion.
++
++  vref2p-supply:
++    description: vref2p supply can be used as reference for conversion.
++
++  vref0n-supply:
++    description: vref0n supply can be used as reference for conversion.
++
++  vref1n-supply:
++    description: vref1n supply can be used as reference for conversion.
++
++  vref2n-supply:
++    description: vref2n supply can be used as reference for conversion.
++
++  spi-max-frequency:
++    maximum: 8000000
++
++patternProperties:
++  "^channel(@[0-9])?$":
++    $ref: "adc.yaml"
++    type: object
++    description: Represents the external channels which are connected to the ADC.
++
++    properties:
++      reg:
++        description: The channel number in single-ended mode.
++        minimum: 0
++        maximum: 9
++
++      adi,reference:
++        description: |
++          Select the reference source to use when converting on
++          the specific channel. Valid values are:
++          0: VREF0P/VREF0N
++          1: VREF1P/VREF1N
++          2: VREF2P/VREF2N
++          3: AVDD/AGND
++          4: VREF0P/AGND
++          5: VREF1P/AGND
++          6: VREF2P/AGND
++          If this field is left empty, AVDD/AGND is selected.
++        $ref: /schemas/types.yaml#/definitions/uint32
++        enum: [0, 1, 2, 3, 4, 5, 6]
++        default: 3
++
++      adi,input-mode:
++        description: |
++          Select signal path of input channels. Valid values are:
++          0: Buffered, low-power, unity-gain path (default)
++          1: Bypass path
++          2: PGA path
++        $ref: /schemas/types.yaml#/definitions/uint32
++        enum: [0, 1, 2]
++        default: 0
++
++      diff-channels: true
++
++      bipolar: true
++
++      settling-time-us: true
++
++      adi,buffered-vrefp:
++        description: Enable buffered mode for positive reference.
++        type: boolean
++
++      adi,buffered-vrefn:
++        description: Enable buffered mode for negative reference.
++        type: boolean
++
++    required:
++      - reg
++
++    additionalProperties: false
++
++required:
++  - compatible
++  - reg
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@0 {
++            reg = <0>;
++            compatible = "adi,max11410";
++            spi-max-frequency = <8000000>;
++
++            interrupt-parent = <&gpio>;
++            interrupts = <25 2>;
++            interrupt-names = "gpio1";
++
++            avdd-supply = <&adc_avdd>;
++
++            vref1p-supply = <&adc_vref1p>;
++            vref1n-supply = <&adc_vref1n>;
++
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            channel@0 {
++                reg = <0>;
++            };
++
++            channel@1 {
++                reg = <1>;
++                diff-channels = <2 3>;
++                adi,reference = <1>;
++                bipolar;
++                settling-time-us = <100000>;
++            };
++
++            channel@2 {
++                reg = <2>;
++                diff-channels = <7 9>;
++                adi,reference = <5>;
++                adi,input-mode = <2>;
++                settling-time-us = <50000>;
++            };
++        };
++    };
 -- 
 2.25.1
 
