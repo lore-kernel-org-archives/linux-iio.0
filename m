@@ -2,154 +2,200 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 810A7C4332F
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Oct 2022 08:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB262C433FE
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Oct 2022 08:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229524AbiJCIR2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 3 Oct 2022 04:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
+        id S231660AbiJCIhQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 3 Oct 2022 04:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbiJCIRH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Oct 2022 04:17:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B357697A;
-        Mon,  3 Oct 2022 00:52:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6828DB80DFA;
-        Mon,  3 Oct 2022 07:38:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8850C433C1;
-        Mon,  3 Oct 2022 07:38:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664782707;
-        bh=FMDhul54hBYZQNvlhI+0jeQ0A7mo8ydCvb98f+w5/tk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qC/Zb5U+/jHtIErjFIKbjqnjDcQLpGQ/tPS0CHeha5N2hizQpMJqK2bVyz9DEt/8y
-         3lzB67Ezb/Oxogf7vMwoXpNYaca8yLrMSwfWPOHUA0zjvJ02TdOJRzaRyyrIrysmCE
-         qF3IWzh516DSH/1ocyrZFWzaq00P3BcoW1ljSobzh24bvxNGqAZf2a5tQhvmyHI7Vs
-         fCOqxa8cN1n5FepDwgI8QgL2aKuBxVg2VfbIF9Z41fdGEPhYLyqApXDDo1xbkhJGTC
-         p0Xaq/RM8wOZHOJA1UqynUyDXg/OOuAG5KzB2M1soRfmCw2pDe7U9T2GdnBN6Nls1u
-         ZI5k4VIlRa1Ag==
-Date:   Mon, 3 Oct 2022 08:38:19 +0100
-From:   Lee Jones <lee@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Rob Herring <robh@kernel.org>, ChiaEn Wu <peterwu.pub@gmail.com>,
-        pavel@ucw.cz, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, lars@metafoo.de,
-        andriy.shevchenko@linux.intel.com, chiaen_wu@richtek.com,
-        alice_chen@richtek.com, cy_huang@richtek.com,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        with ESMTP id S229908AbiJCIgv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Oct 2022 04:36:51 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B77AEE13;
+        Mon,  3 Oct 2022 01:10:06 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id j16so15467357lfg.1;
+        Mon, 03 Oct 2022 01:10:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date;
+        bh=c0YyeUojy1jbeCZ2/7r3YgN/g1XESLH2vjvNlGUsJKw=;
+        b=LdFHIt0zUAjh3H7rheITvmy7LWOUL0dCkwyGSmp/8iPWlwthEVrWAiaPryTwyiqzuw
+         a3lokmpUSA4dhqav4vFyeLd/g7nqpBVD4O1yM+nrWq5r7cF5yr134JmBIFBEBsz30xWe
+         vj55VTL/xGLLmEYBwqjnkMHCmA13LdF2kRkoPB9NqlSF7vspZu/bA4TOo/XyZx7VJTWB
+         q4j4Xcxq0kOXVik+kViRKpX1OHJbpla01W0CBmlL40xAxTFY6Bei5Ju8G22WAv8GUubA
+         tW5lmtBuSphFTse3r72m7QQ01RiizP9x1IzEPWE4V/fmFyW2XKybYNhTqdk+SgCx3ZfR
+         G12w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=c0YyeUojy1jbeCZ2/7r3YgN/g1XESLH2vjvNlGUsJKw=;
+        b=S6Hm+Inuxrxc6vfJjzcTKuiFRg7y7zGzUKmrQg9IOzn/RqPdn3ze3ZE8EnGHGLMYBJ
+         tt0UxeK68d+jiWXmCaU4dQAZ9zG1XDv5hsyjqH6Y19z1DY7HzF5GQJ/IG/FdtKQk/nam
+         8uU1D+/18YutXGujEEpC5ImkdnDmxM/4qfP0E9QkBv92h2V6hcurhidE7HxMPK6gEU9L
+         7nKbn/7dRLpBKDdu5QOEDCaSSFdEyl9JnoCMTXWHqo/87FD8z3eU5i3LmmvPYAq3PEm8
+         G76vusMXkapb+midlMBbk+Ib5QxXs1ZQUuRyoVQm30b5EiybXOzUPP2Vx5EPLCmE/aQJ
+         7WaA==
+X-Gm-Message-State: ACrzQf08L1FJk4dfG7yNrsAoPh39jDnYJa4Lg4F8TRAaK9q1tDroksCA
+        g2I5dg1Jyh3an3imGrkRJPs=
+X-Google-Smtp-Source: AMsMyM4w/Ky5VFLFmELVHCsaLO1XIDKk2TKBlWRSHy002zjVdSF8UTaBCYQvdkrze6qxyd9FfuRQfA==
+X-Received: by 2002:a05:6512:66:b0:4a2:3c36:8c3d with SMTP id i6-20020a056512006600b004a23c368c3dmr1399015lfo.687.1664784605012;
+        Mon, 03 Oct 2022 01:10:05 -0700 (PDT)
+Received: from dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi (dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::1])
+        by smtp.gmail.com with ESMTPSA id f5-20020a056512228500b0049c86ca95bfsm1358912lfu.52.2022.10.03.01.10.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Oct 2022 01:10:04 -0700 (PDT)
+Date:   Mon, 3 Oct 2022 11:09:51 +0300
+From:   Matti Vaittinen <mazziesaccount@gmail.com>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Mihail Chindris <mihail.chindris@analog.com>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, szunichen@gmail.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v12 3/5] iio: adc: mt6370: Add MediaTek MT6370 support
-Message-ID: <YzqRa4bF3onhHPva@google.com>
-References: <cover.1663926551.git.chiaen_wu@richtek.com>
- <9bf36f09bc5f002f2b09b7cc26edccf109516465.1663926551.git.chiaen_wu@richtek.com>
- <20220924155525.5663bed8@jic23-huawei>
- <YzFY5FI0PrZqdAiZ@google.com>
- <CAL_JsqKKJGtacbzGqCupFniSGha610L1cay2V+AK8vehTA=F=g@mail.gmail.com>
- <YzQSnuwPjzJIgsYq@google.com>
- <20220929163418.GA2270491-robh@kernel.org>
- <YzXbJM31s0P0nLD5@google.com>
- <20221001181117.7b3f3297@jic23-huawei>
+        chrome-platform@lists.linux.dev
+Subject: [PATCH v3 00/10] iio: Fix unsafe buffer attributes
+Message-ID: <cover.1664782676.git.mazziesaccount@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="t/4fi5Jmm2ZTy01t"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221001181117.7b3f3297@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 01 Oct 2022, Jonathan Cameron wrote:
 
-> On Thu, 29 Sep 2022 18:51:32 +0100
-> Lee Jones <lee@kernel.org> wrote:
-> 
-> > On Thu, 29 Sep 2022, Rob Herring wrote:
-> > 
-> > > On Wed, Sep 28, 2022 at 10:23:42AM +0100, Lee Jones wrote:  
-> > > > On Mon, 26 Sep 2022, Rob Herring wrote:
-> > > >   
-> > > > > On Mon, Sep 26, 2022 at 2:46 AM Lee Jones <lee@kernel.org> wrote:  
-> > > > > >
-> > > > > > On Sat, 24 Sep 2022, Jonathan Cameron wrote:
-> > > > > >  
-> > > > > > > On Fri, 23 Sep 2022 10:51:24 +0800
-> > > > > > > ChiaEn Wu <peterwu.pub@gmail.com> wrote:
-> > > > > > >  
-> > > > > > > > From: ChiaEn Wu <chiaen_wu@richtek.com>
-> > > > > > > >
-> > > > > > > > MediaTek MT6370 is a SubPMIC consisting of a single cell battery charger
-> > > > > > > > with ADC monitoring, RGB LEDs, dual channel flashlight, WLED backlight
-> > > > > > > > driver, display bias voltage supply, one general purpose LDO, and the
-> > > > > > > > USB Type-C & PD controller complies with the latest USB Type-C and PD
-> > > > > > > > standards.
-> > > > > > > >
-> > > > > > > > Add support for the MT6370 ADC driver for system monitoring, including
-> > > > > > > > charger current, voltage, and temperature.
-> > > > > > > >
-> > > > > > > > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> > > > > > > > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > > > > > > > Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > > > > > > > Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>  
-> > > > > > >
-> > > > > > > This will have to either wait for next cycle, or go through mfd because
-> > > > > > > of the dt-bindings include which is in the mfd tree.
-> > > > > > >
-> > > > > > > Please make those dependencies clear in new versions.  
-> > > > > >
-> > > > > > If the bindings come together in -next, then subsequently in Mainline,
-> > > > > > it shouldn't really matter.  
-> > > > > 
-> > > > > Except that the bindings haven't come together and at this point may
-> > > > > not for 6.1. linux-next has been warning for weeks because the child
-> > > > > device schemas haven't been applied. I've said it before, all the
-> > > > > schemas for MFD devices need to be applied together. Or at least the
-> > > > > MFD schema needs to get applied last.
-> > > > > 
-> > > > > Furthermore, subsequent versions of this don't get tested and we end
-> > > > > up with more warnings[1].
-> > > > > 
-> > > > > It's only your IIO tree that the DT  
-> > > > > > tooling with complain about, right?  
-> > > > > 
-> > > > > And the MFD tree...
-> > > > > 
-> > > > > Please apply the LED bindings (patches 1 and 2) so we can get the
-> > > > > existing warnings fixed and address any new warnings.  
-> > > > 
-> > > > Who usually applies LED bindings?  Looks as though they're good to go.  
-> > > 
-> > > Pavel. The issue would be I don't know if the driver side is ready and 
-> > > those usually go together. Other than my complaining here, how's he 
-> > > supposed to know that the bindings at least need to be applied?
-> > > 
-> > > Again, the process here is not working. I've said before, all the 
-> > > bindings for an MFD need to go via 1 tree. You obviously don't agree, so 
-> > > propose something. The current process of no coordination doesn't work.  
-> > 
-> > The solution would be for someone to create succinct immutable branches, like
-> > I do for real code.  If someone would be happy to do that, I'd be more than
-> > happy to pull from them.
-> > 
-> > I go to the effort of creating them to prevent actual build breakages,
-> > however doing so to keep a documentation helper script happy is a step
-> > too far for me personally, sorry.
-> > 
-> 
-> In this case the bindings include is included from the driver - not just the
-> binding.  Obviously there are dances to get around that by using the values
-> and replacing in following cycle, but that's not the case here!
+--t/4fi5Jmm2ZTy01t
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The paragraphs above to not pertain to the use of shared include
-files.  Obviously that would be a good case for the use of IBs.
+IIO The iio_triggered_buffer_setup_ext() has been changed to expect that
+all attributes given in buffer_attrs array are device-attributes. This
+expectation has not been forced by the API and not all existing users
+were checked. Some drivers do register attributes created by
+IIO_CONST_ATTR().
 
--- 
-Lee Jones [李琼斯]
+The added attribute "wrapping" does not copy the pointer to stored
+string constant and when the sysfs file is read the kernel will access
+to invalid address.
+
+First 4 patches in the series aim to address both the drivers using
+IIO_CONST_ATTR(). These patches should be backportable. Please note that
+these patches have not been tested in the HW so testing/reviewing is
+highly appreciated.
+
+Following 4 (patches 5 ... 9) contain a minor simplification adding a
+macro for omitting open-coding of dummy attribute show functions.
+
+I am not super happy about the new macro IIO_STATIC_CONST_DEVICE_ATTR()
+which unconditionally creates a static function and a static struct
+iio_dev_attr. OTOH, I do believe static function + static struct
+iio_dev_attr should be the right thing to do for majority of use cases.
+
+The last patch in the series (patch 10) aims to change the function
+signatures so that similar issues would be avoided in the future.
+
+Here we also change the struct iio_buffer to have array of pointers to
+iio_dev_attr in order to avoid yet another copying in side the
+iio_triggered_buffer_setup_ext(). This change appeared to be somewhat
+intrusive - and as I lack the hardware to do thorough testing I added
+the request for testing tag here. Especially testing of adi-axi-adc
+would be highly appreciated as it is using the
+industrialio-buffer-dmaengine.
+
+Changelog v3:
+  - Split the series to allow easier backport and review. This also
+    allows merging the smaller fixes with less of a risk for crashing
+    and burning everything :)
+
+Changelog v2:
+  - fix also the cros_ec_sensors_core.c
+  - fix also the industrialio-buffer-dmaengine.c
+  - add RFT + this cover-letter.
+
+--
+
+
+Matti Vaittinen (10):
+  iio: adxl367: Fix unsafe buffer attributes
+  iio: adxl372: Fix unsafe buffer attributes
+  iio: bmc150-accel-core: Fix unsafe buffer attributes
+  iio: at91-sama5d2_adc: Fix unsafe buffer attributes
+  iio: Add IIO_STATIC_CONST_DEVICE_ATTR
+  iio: adxl367: Use IIO_STATIC_CONST_DEVICE_ATTR()
+  iio: adxl372: Use IIO_STATIC_CONST_DEVICE_ATTR()
+  iio: bmc150-accel-core: Use IIO_STATIC_CONST_DEVICE_ATTR()
+  iio: at91-sama5d2_adc: Use IIO_STATIC_CONST_DEVICE_ATTR()
+  iio: Don't silently expect attribute types
+
+ drivers/iio/accel/adxl367.c                    | 16 ++++++++--------
+ drivers/iio/accel/adxl372.c                    | 16 ++++++++--------
+ drivers/iio/accel/bmc150-accel-core.c          | 18 +++++++++---------
+ drivers/iio/adc/at91-sama5d2_adc.c             | 16 ++++++++--------
+ .../iio/buffer/industrialio-buffer-dmaengine.c |  4 ++--
+ .../iio/buffer/industrialio-triggered-buffer.c |  4 ++--
+ drivers/iio/buffer/kfifo_buf.c                 |  2 +-
+ .../cros_ec_sensors/cros_ec_sensors_core.c     |  6 +++---
+ .../common/hid-sensors/hid-sensor-trigger.c    |  8 ++++----
+ drivers/iio/industrialio-buffer.c              | 11 +++++++----
+ include/linux/iio/buffer_impl.h                |  2 +-
+ include/linux/iio/kfifo_buf.h                  |  3 ++-
+ include/linux/iio/sysfs.h                      | 11 +++++++++++
+ include/linux/iio/triggered_buffer.h           |  6 +++---
+ 14 files changed, 69 insertions(+), 54 deletions(-)
+
+
+base-commit: f76349cf41451c5c42a99f18a9163377e4b364ff
+--=20
+2.37.3
+
+
+--=20
+Matti Vaittinen, Linux device drivers
+ROHM Semiconductors, Finland SWDC
+Kiviharjunlenkki 1E
+90220 OULU
+FINLAND
+
+~~~ "I don't think so," said Rene Descartes. Just then he vanished ~~~
+Simon says - in Latin please.
+~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
+Thanks to Simon Glass for the translation =3D]=20
+
+--t/4fi5Jmm2ZTy01t
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmM6mMIACgkQeFA3/03a
+ocWpdAgAyy6b0J6xt2mjtw7DX1VuVjI6cvnBict6lYVhU9CAqbWuSqEhgKMHwS3d
+u3Jt/eKGOozOBJMqhVkvV1cq4RtDqWyRzp2iuOFXw8Ud2oJCViiSuNTCdplodQvq
+K8XrCSM0xdkSGaeA3HXmjZ/JpSYglA+jXABexWmwc/PdFmhH7V+y6DXQaC/bAoFa
+tRcaS99EOnS0OpDkMqp/WjwR6Te2GimUfb0wDz29oWQZd3KENrtBxCyuxFu5TOJB
+MzsR4J9b+IyJ7VTnfU0mLWjTYKx5bhl1SvONulJQnJfVHPVVPWuVwx9/yNlQ8KKS
+VhLUslqRJwAxvqz47n9s2NRQMGB/IQ==
+=ypCI
+-----END PGP SIGNATURE-----
+
+--t/4fi5Jmm2ZTy01t--
