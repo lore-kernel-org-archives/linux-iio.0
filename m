@@ -2,44 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A2F4C4332F
-	for <linux-iio@archiver.kernel.org>; Wed,  5 Oct 2022 13:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E202C43217
+	for <linux-iio@archiver.kernel.org>; Wed,  5 Oct 2022 13:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230110AbiJENiH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 5 Oct 2022 09:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43224 "EHLO
+        id S229928AbiJENiJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 5 Oct 2022 09:38:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiJENh4 (ORCPT
+        with ESMTP id S230157AbiJENh4 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Oct 2022 09:37:56 -0400
 Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F2A7B1E3;
-        Wed,  5 Oct 2022 06:37:49 -0700 (PDT)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 295DRWRg022274;
-        Wed, 5 Oct 2022 15:37:14 +0200
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664687B1ED;
+        Wed,  5 Oct 2022 06:37:50 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 295Cmxqt029934;
+        Wed, 5 Oct 2022 15:37:12 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=selector1;
- bh=Tvv4XSpFVhRAUHCiQIXFXmpFW58v1bKVTxE9iPBGlaM=;
- b=pPHEEwQuO6S0yjxFQ1gOGINfAQBxJppOLxrMwQeE0drSeOs4mk9RhrSZWoUThb3QqQJ+
- shXDp+T3KZojQPq4+jBPE0YBRyM206O9QMqMlgPsnUZx5MyFXUMPDUfYmC9aR51DidQq
- 1RcXeogoPYjrkZrcHzN6ijWBOI8gSPcP8x77auPE62OX0hf9ajtfEWqBPTFkB/DucM6h
- vKlH7X7E/znaoc14XMyyxDOt1RLoLfU3cw7InMzaLVVG4Tu2+7QJHO5555qu/BmCtsVW
- Fq0+FzET3EpUr6fYhGX1siRhIeeK8F+thohketkq+rdPPTyadc31JNhe9GqYNmph6iiA Eg== 
+ bh=iyz5w+TWRIOyUqxHw7BoijPFfbfPlmmExF0v8d2qvpU=;
+ b=7UPKnGQBk9rWR/6ZEJKcu3rLU8gjedooxo+bHdaaLiHW1+ZWnAjdA+Av0vv3oMbGYELJ
+ o2xn3SeJc5bD6DFdjyms8ohRayPN4gsFYNjxLZ41TnUmRakr30iM0ywV6HmOLyQjvjcG
+ gYNDnr3/MULyseCFFCO4W8wDCQ0VgVLdgCZO7Y3BqTG4/oquDu2E1DfzKLFubZ7Q+jDR
+ OkdDm3xSfD7KDtZSCdaveaU/gmaviMVtxR9jIWZ0dPhfkSxqZ5Yb4EyqNIpZFLHtVdLa
+ DFKjrFBYai2FnNGj0Z+2ANxnjoU3Dym6cnS/blIifGSsjmDY9euOd0NKAsjBftIhIo0/ Dw== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3jxapc7s4m-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3k16ds1w60-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 05 Oct 2022 15:37:14 +0200
+        Wed, 05 Oct 2022 15:37:12 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5C7B210003E;
-        Wed,  5 Oct 2022 15:37:09 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 41E21100039;
+        Wed,  5 Oct 2022 15:37:07 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5805A22A6C4;
-        Wed,  5 Oct 2022 15:37:09 +0200 (CEST)
-Received: from localhost (10.75.127.118) by SHFDAG1NODE1.st.com (10.75.129.69)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3CA2B22A6C3;
+        Wed,  5 Oct 2022 15:37:07 +0200 (CEST)
+Received: from localhost (10.75.127.116) by SHFDAG1NODE1.st.com (10.75.129.69)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.31; Wed, 5 Oct
- 2022 15:37:09 +0200
+ 2022 15:37:06 +0200
 From:   Olivier Moysan <olivier.moysan@foss.st.com>
 To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
@@ -55,16 +55,16 @@ To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
 CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>
-Subject: [PATCH v2 8/8] ARM: dts: stm32: add adc support on stm32mp135f-dk
-Date:   Wed, 5 Oct 2022 15:31:20 +0200
-Message-ID: <20221005133120.50483-9-olivier.moysan@foss.st.com>
+Subject: [PATCH v2 5/8] ARM: dts: stm32: add adc support to stm32mp13
+Date:   Wed, 5 Oct 2022 15:31:17 +0200
+Message-ID: <20221005133120.50483-6-olivier.moysan@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221005133120.50483-1-olivier.moysan@foss.st.com>
 References: <20221005133120.50483-1-olivier.moysan@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.118]
+X-Originating-IP: [10.75.127.116]
 X-ClientProxiedBy: GPXDAG2NODE5.st.com (10.75.127.69) To SHFDAG1NODE1.st.com
  (10.75.129.69)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -74,51 +74,123 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Configure ADC support on stm32mp135f-dk. ADC can be used for
-USB Type-C CC1 & CC2 pins wired to in6 & in12.
+Add ADC1 and ADC2 support to STM32MP13 SoC family.
+
+The STM32MP131 provides only ADC2, while other STM32MP13 SoCs provide
+both ADC1 and ADC2.
+
+Internal channels support limitations:
+- VREFINT internal channel requires calibration data from OTP memory.
+  The nvmem properties used to access OTP are not defined for time being,
+  as OTP support is not yet enabled.
+
+- VBAT internal channel is not defined by default in SoC DT, and
+  has be defined in board DT when needed, instead. This avoids unwanted
+  current consumption on battery, when ADC conversions are performed
+  on any other channels.
 
 Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
 ---
- arch/arm/boot/dts/stm32mp135f-dk.dts | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ arch/arm/boot/dts/stm32mp131.dtsi | 43 +++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/stm32mp133.dtsi | 31 ++++++++++++++++++++++
+ 2 files changed, 74 insertions(+)
 
-diff --git a/arch/arm/boot/dts/stm32mp135f-dk.dts b/arch/arm/boot/dts/stm32mp135f-dk.dts
-index 95068231ed57..5b7630a2452e 100644
---- a/arch/arm/boot/dts/stm32mp135f-dk.dts
-+++ b/arch/arm/boot/dts/stm32mp135f-dk.dts
-@@ -76,6 +76,32 @@ vdd_adc: vdd-adc {
- 	};
- };
+diff --git a/arch/arm/boot/dts/stm32mp131.dtsi b/arch/arm/boot/dts/stm32mp131.dtsi
+index 3a921db23e9f..5e46234f60f2 100644
+--- a/arch/arm/boot/dts/stm32mp131.dtsi
++++ b/arch/arm/boot/dts/stm32mp131.dtsi
+@@ -153,6 +153,49 @@ dmamux1: dma-router@48002000 {
+ 			dma-channels = <16>;
+ 		};
  
-+&adc_1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&adc1_usb_cc_pins_a>;
-+	vdda-supply = <&vdd_adc>;
-+	vref-supply = <&vdd_adc>;
-+	status = "okay";
++		adc_2: adc@48004000 {
++			compatible = "st,stm32mp13-adc-core";
++			reg = <0x48004000 0x400>;
++			interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&rcc ADC2>, <&rcc ADC2_K>;
++			clock-names = "bus", "adc";
++			interrupt-controller;
++			#interrupt-cells = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++			status = "disabled";
 +
-+	adc1: adc@0 {
-+		status = "okay";
-+		/*
-+		 * Type-C USB_PWR_CC1 & USB_PWR_CC2 on in6 & in12.
-+		 * Use at least 5 * RC time, e.g. 5 * (Rp + Rd) * C:
-+		 * 5 * (5.1 + 47kOhms) * 5pF => 1.3us.
-+		 * Use arbitrary margin here (e.g. 5us).
-+		 */
-+		channel@6 {
-+			reg = <6>;
-+			st,min-sample-time-ns = <5000>;
-+		};
-+		channel@12 {
-+			reg = <12>;
-+			st,min-sample-time-ns = <5000>;
-+		};
-+	};
-+};
++			adc2: adc@0 {
++				compatible = "st,stm32mp13-adc";
++				#io-channel-cells = <1>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				reg = <0x0>;
++				interrupt-parent = <&adc_2>;
++				interrupts = <0>;
++				dmas = <&dmamux1 10 0x400 0x80000001>;
++				dma-names = "rx";
++				status = "disabled";
 +
- &iwdg2 {
- 	timeout-sec = <32>;
- 	status = "okay";
++				channel@13 {
++					reg = <13>;
++					label = "vrefint";
++				};
++				channel@14 {
++					reg = <14>;
++					label = "vddcore";
++				};
++				channel@16 {
++					reg = <16>;
++					label = "vddcpu";
++				};
++				channel@17 {
++					reg = <17>;
++					label = "vddq_ddr";
++				};
++			};
++		};
++
+ 		rcc: rcc@50000000 {
+ 			compatible = "st,stm32mp13-rcc", "syscon";
+ 			reg = <0x50000000 0x1000>;
+diff --git a/arch/arm/boot/dts/stm32mp133.dtsi b/arch/arm/boot/dts/stm32mp133.dtsi
+index 531c263c9f46..6bc702fe43af 100644
+--- a/arch/arm/boot/dts/stm32mp133.dtsi
++++ b/arch/arm/boot/dts/stm32mp133.dtsi
+@@ -8,6 +8,37 @@
+ 
+ / {
+ 	soc {
++		adc_1: adc@48003000 {
++			compatible = "st,stm32mp13-adc-core";
++			reg = <0x48003000 0x400>;
++			interrupts = <GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&rcc ADC1>, <&rcc ADC1_K>;
++			clock-names = "bus", "adc";
++			interrupt-controller;
++			#interrupt-cells = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++			status = "disabled";
++
++			adc1: adc@0 {
++				compatible = "st,stm32mp13-adc";
++				#io-channel-cells = <1>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				reg = <0x0>;
++				interrupt-parent = <&adc_1>;
++				interrupts = <0>;
++				dmas = <&dmamux1 9 0x400 0x80000001>;
++				dma-names = "rx";
++				status = "disabled";
++
++				channel@18 {
++					reg = <18>;
++					label = "vrefint";
++				};
++			};
++		};
++
+ 		m_can1: can@4400e000 {
+ 			compatible = "bosch,m_can";
+ 			reg = <0x4400e000 0x400>, <0x44011000 0x1400>;
 -- 
 2.25.1
 
