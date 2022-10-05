@@ -2,132 +2,123 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E93C8C433FE
-	for <linux-iio@archiver.kernel.org>; Wed,  5 Oct 2022 14:56:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F005FC433FE
+	for <linux-iio@archiver.kernel.org>; Wed,  5 Oct 2022 16:15:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbiJEO44 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 5 Oct 2022 10:56:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48638 "EHLO
+        id S230343AbiJEQPY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 5 Oct 2022 12:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbiJEO4x (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Oct 2022 10:56:53 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D30644A;
-        Wed,  5 Oct 2022 07:56:52 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id a25so1070752qtw.10;
-        Wed, 05 Oct 2022 07:56:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VL0rszw+X7VH9Vs2enoudeRpBA9RJgrDEJBIgJDq1Ms=;
-        b=BBHGKXQ/s4dOW1mA1++ZBqxzDyAiMLmeKzCtMSr/doDO7E11bceDzRdNLmsi9LE5Oq
-         qwEPuiYF6Mr4AKw18d4eTre2AUrjbToWoT4Q/TG81YvRgKKrclhtkwyAyzRVEnz1HQn0
-         VuRh6OQeauJiB2ZGy9nUMT2ZhLghHTNi+KtWvYkruNPoqnUrkdCZkd4hB4fu6z10ABJe
-         d9Ra7Z6w08KOopAibqTsO7uRjcSb1nqb8CMJc9UjSrV+ODJJ820ElsmOB3PJK2DekGgy
-         l3u1zxgDE26i+GgM5Qt2HMkXJw/BFKCPZQiEMFYnneREGCCGUO6an33YBPMU6NKxgfQX
-         6kGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VL0rszw+X7VH9Vs2enoudeRpBA9RJgrDEJBIgJDq1Ms=;
-        b=z94kpWxItuAEdCteYNRTdLYHZhgRr6v8eG113GjW1DfnhUVRAY5pA8LLntoiiLG0tw
-         32nGEjxfwTnKfj1aGlgfvFqoZI+bxYss6r8SM4H8PwN4bm4rPc0nNjcOeEtJp0SBTJfQ
-         cKKH+CgPZ6AvQB5ZXQMnrQw7xze0jBJ0XqUKmlcQyWbGDLVvbrb8p6CCLkFunoLzW4KG
-         xyRFkyF5RtzFrEYttE1lgIcCZ8RaMoZ9GbTljmyRFSqv/LFuk41yJ35MxX2gXsHDB6jF
-         WRqWrdxihzBBaF/MyKMCFedvvFZi+EZeyok6ppwUbTwkaxrc+v4XYOFoWmNRPMz2Y9mB
-         WZZA==
-X-Gm-Message-State: ACrzQf1tQUOTYcxJAbT0gy8Ej4+rMxqcBXvo3hzUeDbu4U26kEAiYcUq
-        3mDLEAGwhXwtZwdRVI027QdtnVD++GFyCrx5zD4=
-X-Google-Smtp-Source: AMsMyM4vVpwYW06RqZEG0YuRwm5ipuue7su59HIMb3pS7vj47CR5mMNY0KOZKzJlEodWLd10zi+UF1IaVTPJ3uisQlo=
-X-Received: by 2002:ac8:5e07:0:b0:35c:e7fd:1e94 with SMTP id
- h7-20020ac85e07000000b0035ce7fd1e94mr24098816qtx.384.1664981811333; Wed, 05
- Oct 2022 07:56:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <20221005133120.50483-1-olivier.moysan@foss.st.com> <20221005133120.50483-4-olivier.moysan@foss.st.com>
-In-Reply-To: <20221005133120.50483-4-olivier.moysan@foss.st.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 5 Oct 2022 17:56:15 +0300
-Message-ID: <CAHp75VffeeP+_nX86faEbnJFH51kGA2fUcJgqp1_U8EsbRrD9w@mail.gmail.com>
-Subject: Re: [PATCH v2 3/8] iio: adc: stm32-adc: add stm32mp13 support
-To:     Olivier Moysan <olivier.moysan@foss.st.com>
-Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        with ESMTP id S230018AbiJEQPX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Oct 2022 12:15:23 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597EB3BC5D;
+        Wed,  5 Oct 2022 09:15:19 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 295C19xd004643;
+        Wed, 5 Oct 2022 18:14:48 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=TaWebwaZTPXBsGFZGjCec27i6YbGFvojp105icGATgA=;
+ b=8Uj7UhktbOmuMf79opOV/xYhqzCcbWq45+ieN084Q/YTLkEG9TaTMgzgnz6/E0Yhwfg0
+ 9rkGbKD29DrssyrMNowh4lR0aEGo3PJV/SiUNZHyMLq7bH2uCdWpbpKWuTbzosWP5Rn6
+ rLW6prHRp56kvehv/l6CUbRORNPK9Ny7ks0YjwjenIzk7Nsr72LrfujjUAZvEF4hnw66
+ HSO8GQTBj5vST0F+e4hPckpTEXXqoopEScPImI7h2aHx/6VyfqsJ92nzzww5Tpgi5DX8
+ lQcAFDqefT0DNjJ3ZJrfgfPfoEKaJDATEdvQNMq9wiDTzvSgaNcmt6ASWeNlPZg7B/I0 qQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3jxaym8q3h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 05 Oct 2022 18:14:48 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6759810002A;
+        Wed,  5 Oct 2022 18:14:43 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 61BCF235F12;
+        Wed,  5 Oct 2022 18:14:43 +0200 (CEST)
+Received: from localhost (10.75.127.116) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.31; Wed, 5 Oct
+ 2022 18:14:43 +0200
+From:   Olivier Moysan <olivier.moysan@foss.st.com>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
         Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        nuno.sa@analog.com, Paul Cercueil <paul@crapouillou.net>,
+        <nuno.sa@analog.com>, Olivier Moysan <olivier.moysan@foss.st.com>,
+        Paul Cercueil <paul@crapouillou.net>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Wan Jiabing <wanjiabing@vivo.com>,
-        Yannick Brosseau <yannick.brosseau@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Yannick Brosseau <yannick.brosseau@gmail.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+Subject: [PATCH v3 1/8] iio: adc: stm32-adc: fix channel sampling time init
+Date:   Wed, 5 Oct 2022 18:14:17 +0200
+Message-ID: <20221005161424.4537-2-olivier.moysan@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20221005161424.4537-1-olivier.moysan@foss.st.com>
+References: <20221005161424.4537-1-olivier.moysan@foss.st.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.116]
+X-ClientProxiedBy: GPXDAG2NODE5.st.com (10.75.127.69) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-10-05_03,2022-10-05_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Oct 5, 2022 at 4:36 PM Olivier Moysan
-<olivier.moysan@foss.st.com> wrote:
->
-> Add STM32 ADC support for STM32MP13x SOCs family.
->
-> On STM32MP13x, each ADC peripheral has a single ADC block.
-> These ADC peripherals, ADC1 and ADC2, are fully independent.
-> This introduces changes in common registers handling.
->
-> Some features such as boost mode, channel preselection and
-> linear calibration are not supported by the STM32MP13x ADC.
-> Add diversity management for these features.
->
-> The STM32MP13x ADC introduces registers and bitfield variants
-> on existing features such as calibration factors and internal
-> channels. Add register diversity management.
->
-> Add also support of new internal channels VDDCPU and VDDQ_DDR.
+Fix channel init for ADC generic channel bindings.
+In generic channel initialization, stm32_adc_smpr_init() is called
+to initialize channel sampling time. The "st,min-sample-time-ns"
+property is an optional property. If it is not defined,
+stm32_adc_smpr_init() is currently skipped.
+However stm32_adc_smpr_init() must always be called,
+to force a minimum sampling time for the internal channels,
+as the minimum sampling time is known.
+Make stm32_adc_smpr_init() call unconditional.
 
-for new
+Fixes: 796e5d0b1e9b ("iio: adc: stm32-adc: use generic binding for sample-time")
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+---
+ drivers/iio/adc/stm32-adc.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-I have a d=C3=A9j=C3=A0-vu that I have pointed out all these...
+diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+index 6256977eb7f7..3cda529f081d 100644
+--- a/drivers/iio/adc/stm32-adc.c
++++ b/drivers/iio/adc/stm32-adc.c
+@@ -2086,18 +2086,19 @@ static int stm32_adc_generic_chan_init(struct iio_dev *indio_dev,
+ 		stm32_adc_chan_init_one(indio_dev, &channels[scan_index], val,
+ 					vin[1], scan_index, differential);
+ 
++		val = 0;
+ 		ret = fwnode_property_read_u32(child, "st,min-sample-time-ns", &val);
+ 		/* st,min-sample-time-ns is optional */
+-		if (!ret) {
+-			stm32_adc_smpr_init(adc, channels[scan_index].channel, val);
+-			if (differential)
+-				stm32_adc_smpr_init(adc, vin[1], val);
+-		} else if (ret != -EINVAL) {
++		if (ret && ret != -EINVAL) {
+ 			dev_err(&indio_dev->dev, "Invalid st,min-sample-time-ns property %d\n",
+ 				ret);
+ 			goto err;
+ 		}
+ 
++		stm32_adc_smpr_init(adc, channels[scan_index].channel, val);
++		if (differential)
++			stm32_adc_smpr_init(adc, vin[1], val);
++
+ 		scan_index++;
+ 	}
+ 
+-- 
+2.25.1
 
-...
-
->         struct stm32_adc *adc =3D iio_priv(indio_dev);
->         int ret;
-> -       u32 val;
-> +       u32 val, msk =3D STM32H7_ADCALDIF;
-
-It's better to split and reorder like
-
-       struct stm32_adc *adc =3D iio_priv(indio_dev);
-       u32 msk =3D STM32H7_ADCALDIF;
-       u32 val;
-       int ret;
-
-...
-
->  static const struct of_device_id stm32_adc_of_match[] =3D {
->         { .compatible =3D "st,stm32f4-adc", .data =3D (void *)&stm32f4_ad=
-c_cfg },
->         { .compatible =3D "st,stm32h7-adc", .data =3D (void *)&stm32h7_ad=
-c_cfg },
->         { .compatible =3D "st,stm32mp1-adc", .data =3D (void *)&stm32mp1_=
-adc_cfg },
-
-> +       { .compatible =3D "st,stm32mp13-adc",
-> +         .data =3D (void *)&stm32mp13_adc_cfg },
-
-For the sake of consistent style I would put this on a single line.
-
->         {},
->  };
-
-
---=20
-With Best Regards,
-Andy Shevchenko
