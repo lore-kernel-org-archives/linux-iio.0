@@ -2,246 +2,117 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39BEDC433F5
-	for <linux-iio@archiver.kernel.org>; Sun,  9 Oct 2022 17:37:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE3C1C433F5
+	for <linux-iio@archiver.kernel.org>; Sun,  9 Oct 2022 17:38:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiJIRhk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 9 Oct 2022 13:37:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
+        id S229923AbiJIRil (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 9 Oct 2022 13:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229965AbiJIRhi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2022 13:37:38 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE03A29C90;
-        Sun,  9 Oct 2022 10:37:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1665337056; x=1696873056;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=/bS9EuXzTvdWITntg7bxDrCvG53j3Owo6te+hpo9OzE=;
-  b=dEs+l2KgdO2/44/JKWXWi+0LrEBfd4FFVcn4OmgPTV797AmjCfWfvxWK
-   ONOF0cWxZ6ia5O7mrllN4Kgb7eak/W7UL5/3deYnMKAA9m3uzvQ9vVkSO
-   FnJBI89oXhog5TITNqAEbJfeO6EMYbXR/3w3RVdMe3F3XN5yLG9xBZLl8
-   8r1lcRPRN0zkSlcbS3zhGmKVaYIBtg7VrwLJhZEmEsupmxxvsFTl2cC6N
-   ycTct4AlX20IA0N966TRfXjSAtbMpMMsCqglTH54+dnQ1Z0FshUCGU/rF
-   kf2MDHH0jUpItHBLLjgZfOF0ZyD0balq6NeBadTTPvL/YlB0VD1spbAHM
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10495"; a="304067496"
-X-IronPort-AV: E=Sophos;i="5.95,172,1661842800"; 
-   d="scan'208";a="304067496"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2022 10:37:36 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10495"; a="628040116"
-X-IronPort-AV: E=Sophos;i="5.95,172,1661842800"; 
-   d="scan'208";a="628040116"
-Received: from unknown (HELO rajath-NUC10i7FNH..) ([10.223.165.55])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2022 10:37:34 -0700
-From:   Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
-To:     jic23@kernel.org, lars@metafoo.de
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rajat.khandelwal@intel.com,
-        Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
-Subject: [PATCH v5] iio: pressure: mpl115: Implementing low power mode by shutdown gpio
-Date:   Mon, 10 Oct 2022 23:07:20 +0530
-Message-Id: <20221010173720.568916-1-rajat.khandelwal@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229590AbiJIRik (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2022 13:38:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2760F2983E;
+        Sun,  9 Oct 2022 10:38:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1729B80D86;
+        Sun,  9 Oct 2022 17:38:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25840C433D6;
+        Sun,  9 Oct 2022 17:38:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1665337116;
+        bh=vG5xxQ1IE0ZAYCWj1ElLNJKIb8J8PN1GvB54lauAKwE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bh2yMMhMkI8SEUwxNLcyHdG5SEy7DEiJOwrPI/O0VSoAfJdlKTHLQUrDG/7yk1G/G
+         Xj2AH+M2R1JNlSupbQhiYl9J4vJHp+9jz4ruLZ6ALoFNEHmQXlvIMEZtE0ImGLlLai
+         CvtReFwAYXxqF+o6TpnODLqgnjGAUq8SMelY5b0A+tFrFy4cfJ4BJ0JLWay733ZxxJ
+         6tLWwp0P8eZfSVYQbfnhsDsw2eJM7xEvpSLxlHoUyJt4aVea/sJmcHHJQZfUm/E2U1
+         ezKAY2tGKI0HKj7Fpo81SvEtgb1HgS+Az+b0WBPuCQNcM7cbd27yR8hp0hufwkb5Hn
+         y9o4OVdp09DZw==
+Date:   Sun, 9 Oct 2022 18:38:54 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>
+Cc:     Claudiu.Beznea@microchip.com, matti.vaittinen@fi.rohmeurope.com,
+        lars@metafoo.de, Michael.Hennerich@analog.com,
+        cosmin.tanislav@analog.com, Eugen.Hristev@microchip.com,
+        Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com,
+        bleung@chromium.org, groeck@chromium.org,
+        alexandru.ardelean@analog.com, nathan@kernel.org,
+        miquel.raynal@bootlin.com, linmq006@gmail.com,
+        u.kleine-koenig@pengutronix.de, paul@crapouillou.net,
+        mihail.chindris@analog.com, gwendal@chromium.org,
+        andriy.shevchenko@linux.intel.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        chrome-platform@lists.linux.dev
+Subject: Re: [RFT PATCH v3 10/10] iio: Don't silently expect attribute types
+Message-ID: <20221009183854.690e2780@jic23-huawei>
+In-Reply-To: <8ef99012-4959-a674-13c1-186b9c1c2cd4@gmail.com>
+References: <cover.1664782676.git.mazziesaccount@gmail.com>
+        <63f54787a684eb1232f1c5d275a09c786987fe4a.1664782676.git.mazziesaccount@gmail.com>
+        <c163203c-d87b-7e71-f582-964a99e37efb@microchip.com>
+        <8ef99012-4959-a674-13c1-186b9c1c2cd4@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-MPL115 supports shutdown gpio which can be used to set the state
-to low power mode. Power from all internal circuits and
-registers is removed. This is done by pulling the SHDN pin to low.
-This patch enables runtime PM on MPL115 to increase power savings.
+On Thu, 6 Oct 2022 15:53:52 +0300
+Matti Vaittinen <mazziesaccount@gmail.com> wrote:
 
-According to spec., a wakeup time period of ~5 ms exists between
-waking up and actually communicating with the device. This is
-implemented using sleep delay.
+> Hi Claudiu,
+> 
+> On 10/6/22 11:35, Claudiu.Beznea@microchip.com wrote:
+> > On 03.10.2022 11:13, Matti Vaittinen wrote:  
+> >> The iio_triggered_buffer_setup_ext() and the
+> >> devm_iio_kfifo_buffer_setup_ext() were changed by
+> >> commit 15097c7a1adc ("iio: buffer: wrap all buffer attributes into iio_dev_attr")
+> >> to silently expect that all attributes given in buffer_attrs array are
+> >> device-attributes. This expectation was not forced by the API - and some
+> >> drivers did register attributes created by IIO_CONST_ATTR().
+> >>
+> >> When using IIO_CONST_ATTRs the added attribute "wrapping" does not copy
+> >> the pointer to stored string constant and when the sysfs file is read the
+> >> kernel will access to invalid location.
+> >>
+> >> Change the function signatures to expect an array of iio_dev_attrs to
+> >> avoid similar errors in the future.
+> >>
+> >> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>  
+> > 
+> > Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> > 
+> > on SAMA5D2
+> >   
+> 
+> Thanks a ton for the testing! I do _really_ appreciate it :) I am now 
+> slightly more confident regarding the fix here - and a lot more 
+> confident that we do have an actual bug (as you explained in the reply 
+> to the first RFT) :)
 
-Signed-off-by: Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
----
+You analysis was sound, so I've long been convinced ;)
 
-v5:
-1. Removing build error by exporting EXPORT_NS_RUNTIME_DEV_PM_OPS
-2. Using runtime PM for low power mode and not forcing shutdown pin
-3. Changing patch comment
-4. Increasing autosuspend timeout to 2 sec to make the driver more
-responsive to user
+Anyhow, one more coming through...
+AD4130 v9 patch had same issue and so will also need updating with this
+patch if it lands before yours.
 
- drivers/iio/pressure/mpl115.c     | 61 ++++++++++++++++++++++++++++++-
- drivers/iio/pressure/mpl115.h     |  5 +++
- drivers/iio/pressure/mpl115_i2c.c |  1 +
- drivers/iio/pressure/mpl115_spi.c |  1 +
- 4 files changed, 67 insertions(+), 1 deletion(-)
+Other than that static macro being ugly (which I can't improve on!)
+all looks good to me, but I'll let it sit a while longer. If nothing
+else I want to rebase the fixes-togreg tree on rc1 before putting the first
+part of this series on top of it then letting them soak in next for
+a few days,
 
-diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
-index 5bf5b9abe6f1..ec7527161844 100644
---- a/drivers/iio/pressure/mpl115.c
-+++ b/drivers/iio/pressure/mpl115.c
-@@ -4,12 +4,13 @@
-  *
-  * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
-  *
-- * TODO: shutdown pin
-+ * TODO: synchronization with system suspend
-  */
- 
- #include <linux/module.h>
- #include <linux/iio/iio.h>
- #include <linux/delay.h>
-+#include <linux/gpio/consumer.h>
- 
- #include "mpl115.h"
- 
-@@ -27,6 +28,7 @@ struct mpl115_data {
- 	s16 a0;
- 	s16 b1, b2;
- 	s16 c12;
-+	struct gpio_desc *shutdown;
- 	const struct mpl115_ops *ops;
- };
- 
-@@ -102,16 +104,24 @@ static int mpl115_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_PROCESSED:
-+		pm_runtime_get_sync(data->dev);
- 		ret = mpl115_comp_pressure(data, val, val2);
- 		if (ret < 0)
- 			return ret;
-+		pm_runtime_mark_last_busy(data->dev);
-+		pm_runtime_put_autosuspend(data->dev);
-+
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_CHAN_INFO_RAW:
-+		pm_runtime_get_sync(data->dev);
- 		/* temperature -5.35 C / LSB, 472 LSB is 25 C */
- 		ret = mpl115_read_temp(data);
- 		if (ret < 0)
- 			return ret;
-+		pm_runtime_mark_last_busy(data->dev);
-+		pm_runtime_put_autosuspend(data->dev);
- 		*val = ret >> 6;
-+
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_OFFSET:
- 		*val = -605;
-@@ -168,6 +178,8 @@ int mpl115_probe(struct device *dev, const char *name,
- 	if (ret)
- 		return ret;
- 
-+	dev_set_drvdata(dev, indio_dev);
-+
- 	ret = data->ops->read(data->dev, MPL115_A0);
- 	if (ret < 0)
- 		return ret;
-@@ -185,10 +193,58 @@ int mpl115_probe(struct device *dev, const char *name,
- 		return ret;
- 	data->c12 = ret;
- 
-+	data->shutdown = devm_gpiod_get_optional(dev, "shutdown",
-+						 GPIOD_OUT_LOW);
-+	if (IS_ERR(data->shutdown))
-+		return dev_err_probe(dev, PTR_ERR(data->shutdown),
-+				     "cannot get shutdown gpio\n");
-+
-+	if (data->shutdown) {
-+		/* Enable runtime PM */
-+		pm_runtime_get_noresume(dev);
-+		pm_runtime_set_active(dev);
-+		pm_runtime_enable(dev);
-+
-+		/*
-+		 * As the device takes 3 ms to come up with a fresh
-+		 * reading after power-on and 5 ms to actually power-on,
-+		 * do not shut it down unnecessarily. Set autosuspend to
-+		 * 2000 ms.
-+		 */
-+		pm_runtime_set_autosuspend_delay(dev, 2000);
-+		pm_runtime_use_autosuspend(dev);
-+		pm_runtime_put(dev);
-+
-+		dev_dbg(dev, "low-power mode enabled");
-+	} else
-+		dev_dbg(dev, "low-power mode disabled");
-+
- 	return devm_iio_device_register(dev, indio_dev);
- }
- EXPORT_SYMBOL_NS_GPL(mpl115_probe, IIO_MPL115);
- 
-+static int mpl115_runtime_suspend(struct device *dev)
-+{
-+	struct mpl115_data *data = iio_priv(dev_get_drvdata(dev));
-+
-+	gpiod_set_value(data->shutdown, 1);
-+
-+	return 0;
-+}
-+
-+static int mpl115_runtime_resume(struct device *dev)
-+{
-+	struct mpl115_data *data = iio_priv(dev_get_drvdata(dev));
-+
-+	gpiod_set_value(data->shutdown, 0);
-+	usleep_range(5000, 6000);
-+
-+	return 0;
-+}
-+
-+EXPORT_NS_RUNTIME_DEV_PM_OPS(mpl115_dev_pm_ops, mpl115_runtime_suspend,
-+			  mpl115_runtime_resume, NULL, IIO_MPL115);
-+
- MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
- MODULE_DESCRIPTION("Freescale MPL115 pressure/temperature driver");
- MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/pressure/mpl115.h b/drivers/iio/pressure/mpl115.h
-index 57d55eb8e661..78a0068a17bb 100644
---- a/drivers/iio/pressure/mpl115.h
-+++ b/drivers/iio/pressure/mpl115.h
-@@ -6,6 +6,8 @@
-  * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
-  */
- 
-+#include <linux/pm_runtime.h>
-+
- #ifndef _MPL115_H_
- #define _MPL115_H_
- 
-@@ -18,4 +20,7 @@ struct mpl115_ops {
- int mpl115_probe(struct device *dev, const char *name,
- 			const struct mpl115_ops *ops);
- 
-+/*PM ops */
-+extern const struct dev_pm_ops mpl115_dev_pm_ops;
-+
- #endif
-diff --git a/drivers/iio/pressure/mpl115_i2c.c b/drivers/iio/pressure/mpl115_i2c.c
-index 099ab1c6832c..555bda1146fb 100644
---- a/drivers/iio/pressure/mpl115_i2c.c
-+++ b/drivers/iio/pressure/mpl115_i2c.c
-@@ -53,6 +53,7 @@ MODULE_DEVICE_TABLE(i2c, mpl115_i2c_id);
- static struct i2c_driver mpl115_i2c_driver = {
- 	.driver = {
- 		.name	= "mpl115",
-+		.pm = pm_ptr(&mpl115_dev_pm_ops),
- 	},
- 	.probe = mpl115_i2c_probe,
- 	.id_table = mpl115_i2c_id,
-diff --git a/drivers/iio/pressure/mpl115_spi.c b/drivers/iio/pressure/mpl115_spi.c
-index 7feec87e2704..58d218fd90dc 100644
---- a/drivers/iio/pressure/mpl115_spi.c
-+++ b/drivers/iio/pressure/mpl115_spi.c
-@@ -92,6 +92,7 @@ MODULE_DEVICE_TABLE(spi, mpl115_spi_ids);
- static struct spi_driver mpl115_spi_driver = {
- 	.driver = {
- 		.name   = "mpl115",
-+		.pm = pm_ptr(&mpl115_dev_pm_ops),
- 	},
- 	.probe = mpl115_spi_probe,
- 	.id_table = mpl115_spi_ids,
--- 
-2.34.1
+Thanks,
+
+Jonathan
+
+
+> 
+> Yours
+> 	-- Matti
+> 
 
