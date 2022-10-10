@@ -2,197 +2,246 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03516C4332F
-	for <linux-iio@archiver.kernel.org>; Sun,  9 Oct 2022 17:31:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39BEDC433F5
+	for <linux-iio@archiver.kernel.org>; Sun,  9 Oct 2022 17:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229728AbiJIRbG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 9 Oct 2022 13:31:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35292 "EHLO
+        id S229935AbiJIRhk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 9 Oct 2022 13:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiJIRbF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2022 13:31:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1A326101;
-        Sun,  9 Oct 2022 10:31:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1450360C4A;
-        Sun,  9 Oct 2022 17:31:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B644C433D6;
-        Sun,  9 Oct 2022 17:30:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665336660;
-        bh=lHOq+nhq7Hp77w4T///rC2xW72VGawOL6xd7vtJQlN0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GHvvucP1xSlokkqHZPk3WssWQUgA/SeR///G3fysUjZgPT4zyvM9EEqPZ0b/UsNbO
-         ZMgGQ5YdngJXy30x8JLuPJxvQQ7kD44ZVIjCsLRsQgLYEbxwgjADirQDiHAb+8nh8w
-         aESvuHAtXNiULImZeUDeoe/3Pa5Yrft7qfTDsz5bdGYVghWOHnEGfdYfiEw9C7u43+
-         lq8V7cjT6m507x6EkWrIDcG0beVDywyLXmyD0uXd2AVy6diyhGfRWMix7cYzvDRNnL
-         0TtZkhWahGRjuD9IUe7HbwBPmuo/crq5NSbGCQ7qBn8PyblwGNA8uZA58RMqGbBMq8
-         WYFPHJYKjKk4A==
-Date:   Sun, 9 Oct 2022 18:31:22 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v9 2/2] iio: adc: ad4130: add AD4130 driver
-Message-ID: <20221009183122.0de740e0@jic23-huawei>
-In-Reply-To: <20221006140737.12396-3-cosmin.tanislav@analog.com>
-References: <20221006140737.12396-1-cosmin.tanislav@analog.com>
-        <20221006140737.12396-3-cosmin.tanislav@analog.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        with ESMTP id S229965AbiJIRhi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2022 13:37:38 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE03A29C90;
+        Sun,  9 Oct 2022 10:37:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1665337056; x=1696873056;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/bS9EuXzTvdWITntg7bxDrCvG53j3Owo6te+hpo9OzE=;
+  b=dEs+l2KgdO2/44/JKWXWi+0LrEBfd4FFVcn4OmgPTV797AmjCfWfvxWK
+   ONOF0cWxZ6ia5O7mrllN4Kgb7eak/W7UL5/3deYnMKAA9m3uzvQ9vVkSO
+   FnJBI89oXhog5TITNqAEbJfeO6EMYbXR/3w3RVdMe3F3XN5yLG9xBZLl8
+   8r1lcRPRN0zkSlcbS3zhGmKVaYIBtg7VrwLJhZEmEsupmxxvsFTl2cC6N
+   ycTct4AlX20IA0N966TRfXjSAtbMpMMsCqglTH54+dnQ1Z0FshUCGU/rF
+   kf2MDHH0jUpItHBLLjgZfOF0ZyD0balq6NeBadTTPvL/YlB0VD1spbAHM
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10495"; a="304067496"
+X-IronPort-AV: E=Sophos;i="5.95,172,1661842800"; 
+   d="scan'208";a="304067496"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2022 10:37:36 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10495"; a="628040116"
+X-IronPort-AV: E=Sophos;i="5.95,172,1661842800"; 
+   d="scan'208";a="628040116"
+Received: from unknown (HELO rajath-NUC10i7FNH..) ([10.223.165.55])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2022 10:37:34 -0700
+From:   Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
+To:     jic23@kernel.org, lars@metafoo.de
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rajat.khandelwal@intel.com,
+        Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
+Subject: [PATCH v5] iio: pressure: mpl115: Implementing low power mode by shutdown gpio
+Date:   Mon, 10 Oct 2022 23:07:20 +0530
+Message-Id: <20221010173720.568916-1-rajat.khandelwal@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu,  6 Oct 2022 17:07:37 +0300
-Cosmin Tanislav <demonsingur@gmail.com> wrote:
+MPL115 supports shutdown gpio which can be used to set the state
+to low power mode. Power from all internal circuits and
+registers is removed. This is done by pulling the SHDN pin to low.
+This patch enables runtime PM on MPL115 to increase power savings.
 
-> AD4130-8 is an ultra-low power, high precision, measurement solution for
-> low bandwidth battery operated applications.
-> 
-> The fully integrated AFE (Analog Front-End) includes a multiplexer for up
-> to 16 single-ended or 8 differential inputs, PGA (Programmable Gain
-> Amplifier), 24-bit Sigma-Delta ADC, on-chip reference and oscillator,
-> selectable filter options, smart sequencer, sensor biasing and excitation
-> options, diagnostics, and a FIFO buffer.
-> 
-> Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Hi Cosmin,
+According to spec., a wakeup time period of ~5 ms exists between
+waking up and actually communicating with the device. This is
+implemented using sleep delay.
 
-I've cropped down (mostly) to the clock changes.
-A few minor things in there + this looks like it would suffer from the issue
-with IIO_CONST_ATTR() not being handled correctly for buffer attributes.
+Signed-off-by: Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
+---
 
-Jonathan
+v5:
+1. Removing build error by exporting EXPORT_NS_RUNTIME_DEV_PM_OPS
+2. Using runtime PM for low power mode and not forcing shutdown pin
+3. Changing patch comment
+4. Increasing autosuspend timeout to 2 sec to make the driver more
+responsive to user
 
+ drivers/iio/pressure/mpl115.c     | 61 ++++++++++++++++++++++++++++++-
+ drivers/iio/pressure/mpl115.h     |  5 +++
+ drivers/iio/pressure/mpl115_i2c.c |  1 +
+ drivers/iio/pressure/mpl115_spi.c |  1 +
+ 4 files changed, 67 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
+index 5bf5b9abe6f1..ec7527161844 100644
+--- a/drivers/iio/pressure/mpl115.c
++++ b/drivers/iio/pressure/mpl115.c
+@@ -4,12 +4,13 @@
+  *
+  * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
+  *
+- * TODO: shutdown pin
++ * TODO: synchronization with system suspend
+  */
+ 
+ #include <linux/module.h>
+ #include <linux/iio/iio.h>
+ #include <linux/delay.h>
++#include <linux/gpio/consumer.h>
+ 
+ #include "mpl115.h"
+ 
+@@ -27,6 +28,7 @@ struct mpl115_data {
+ 	s16 a0;
+ 	s16 b1, b2;
+ 	s16 c12;
++	struct gpio_desc *shutdown;
+ 	const struct mpl115_ops *ops;
+ };
+ 
+@@ -102,16 +104,24 @@ static int mpl115_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_PROCESSED:
++		pm_runtime_get_sync(data->dev);
+ 		ret = mpl115_comp_pressure(data, val, val2);
+ 		if (ret < 0)
+ 			return ret;
++		pm_runtime_mark_last_busy(data->dev);
++		pm_runtime_put_autosuspend(data->dev);
++
+ 		return IIO_VAL_INT_PLUS_MICRO;
+ 	case IIO_CHAN_INFO_RAW:
++		pm_runtime_get_sync(data->dev);
+ 		/* temperature -5.35 C / LSB, 472 LSB is 25 C */
+ 		ret = mpl115_read_temp(data);
+ 		if (ret < 0)
+ 			return ret;
++		pm_runtime_mark_last_busy(data->dev);
++		pm_runtime_put_autosuspend(data->dev);
+ 		*val = ret >> 6;
++
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_OFFSET:
+ 		*val = -605;
+@@ -168,6 +178,8 @@ int mpl115_probe(struct device *dev, const char *name,
+ 	if (ret)
+ 		return ret;
+ 
++	dev_set_drvdata(dev, indio_dev);
++
+ 	ret = data->ops->read(data->dev, MPL115_A0);
+ 	if (ret < 0)
+ 		return ret;
+@@ -185,10 +193,58 @@ int mpl115_probe(struct device *dev, const char *name,
+ 		return ret;
+ 	data->c12 = ret;
+ 
++	data->shutdown = devm_gpiod_get_optional(dev, "shutdown",
++						 GPIOD_OUT_LOW);
++	if (IS_ERR(data->shutdown))
++		return dev_err_probe(dev, PTR_ERR(data->shutdown),
++				     "cannot get shutdown gpio\n");
++
++	if (data->shutdown) {
++		/* Enable runtime PM */
++		pm_runtime_get_noresume(dev);
++		pm_runtime_set_active(dev);
++		pm_runtime_enable(dev);
++
++		/*
++		 * As the device takes 3 ms to come up with a fresh
++		 * reading after power-on and 5 ms to actually power-on,
++		 * do not shut it down unnecessarily. Set autosuspend to
++		 * 2000 ms.
++		 */
++		pm_runtime_set_autosuspend_delay(dev, 2000);
++		pm_runtime_use_autosuspend(dev);
++		pm_runtime_put(dev);
++
++		dev_dbg(dev, "low-power mode enabled");
++	} else
++		dev_dbg(dev, "low-power mode disabled");
++
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+ EXPORT_SYMBOL_NS_GPL(mpl115_probe, IIO_MPL115);
+ 
++static int mpl115_runtime_suspend(struct device *dev)
++{
++	struct mpl115_data *data = iio_priv(dev_get_drvdata(dev));
++
++	gpiod_set_value(data->shutdown, 1);
++
++	return 0;
++}
++
++static int mpl115_runtime_resume(struct device *dev)
++{
++	struct mpl115_data *data = iio_priv(dev_get_drvdata(dev));
++
++	gpiod_set_value(data->shutdown, 0);
++	usleep_range(5000, 6000);
++
++	return 0;
++}
++
++EXPORT_NS_RUNTIME_DEV_PM_OPS(mpl115_dev_pm_ops, mpl115_runtime_suspend,
++			  mpl115_runtime_resume, NULL, IIO_MPL115);
++
+ MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
+ MODULE_DESCRIPTION("Freescale MPL115 pressure/temperature driver");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/iio/pressure/mpl115.h b/drivers/iio/pressure/mpl115.h
+index 57d55eb8e661..78a0068a17bb 100644
+--- a/drivers/iio/pressure/mpl115.h
++++ b/drivers/iio/pressure/mpl115.h
+@@ -6,6 +6,8 @@
+  * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
+  */
+ 
++#include <linux/pm_runtime.h>
++
+ #ifndef _MPL115_H_
+ #define _MPL115_H_
+ 
+@@ -18,4 +20,7 @@ struct mpl115_ops {
+ int mpl115_probe(struct device *dev, const char *name,
+ 			const struct mpl115_ops *ops);
+ 
++/*PM ops */
++extern const struct dev_pm_ops mpl115_dev_pm_ops;
++
+ #endif
+diff --git a/drivers/iio/pressure/mpl115_i2c.c b/drivers/iio/pressure/mpl115_i2c.c
+index 099ab1c6832c..555bda1146fb 100644
+--- a/drivers/iio/pressure/mpl115_i2c.c
++++ b/drivers/iio/pressure/mpl115_i2c.c
+@@ -53,6 +53,7 @@ MODULE_DEVICE_TABLE(i2c, mpl115_i2c_id);
+ static struct i2c_driver mpl115_i2c_driver = {
+ 	.driver = {
+ 		.name	= "mpl115",
++		.pm = pm_ptr(&mpl115_dev_pm_ops),
+ 	},
+ 	.probe = mpl115_i2c_probe,
+ 	.id_table = mpl115_i2c_id,
+diff --git a/drivers/iio/pressure/mpl115_spi.c b/drivers/iio/pressure/mpl115_spi.c
+index 7feec87e2704..58d218fd90dc 100644
+--- a/drivers/iio/pressure/mpl115_spi.c
++++ b/drivers/iio/pressure/mpl115_spi.c
+@@ -92,6 +92,7 @@ MODULE_DEVICE_TABLE(spi, mpl115_spi_ids);
+ static struct spi_driver mpl115_spi_driver = {
+ 	.driver = {
+ 		.name   = "mpl115",
++		.pm = pm_ptr(&mpl115_dev_pm_ops),
+ 	},
+ 	.probe = mpl115_spi_probe,
+ 	.id_table = mpl115_spi_ids,
+-- 
+2.34.1
 
-> +static IIO_CONST_ATTR(hwfifo_watermark_min, "1");
-> +static IIO_CONST_ATTR(hwfifo_watermark_max, __stringify(AD4130_FIFO_SIZE));
-
-These look like they'd suffer from same problem 
-https://lore.kernel.org/all/cover.1664782676.git.mazziesaccount@gmail.com/
-tackles.  Short term fix is don't use IIO_CONST_ATTR for buffer attributes.
-
-
-> +static IIO_DEVICE_ATTR_RO(hwfifo_watermark, 0);
-> +static IIO_DEVICE_ATTR_RO(hwfifo_enabled, 0);
-> +
-> +static const struct attribute *ad4130_fifo_attributes[] = {
-> +	&iio_const_attr_hwfifo_watermark_min.dev_attr.attr,
-> +	&iio_const_attr_hwfifo_watermark_max.dev_attr.attr,
-> +	&iio_dev_attr_hwfifo_watermark.dev_attr.attr,
-> +	&iio_dev_attr_hwfifo_enabled.dev_attr.attr,
-> +	NULL
-> +};
-
-
-> +static void ad4130_clk_disable_unprepare(void *clk)
-> +{
-> +	clk_disable_unprepare(clk);
-> +}
-> +
-> +static int ad4130_set_mclk_sel(struct ad4130_state *st,
-> +			       enum ad4130_mclk_sel mclk_sel)
-> +{
-> +	return regmap_update_bits(st->regmap, AD4130_ADC_CONTROL_REG,
-> +				 AD4130_ADC_CONTROL_MCLK_SEL_MASK,
-> +				 FIELD_PREP(AD4130_ADC_CONTROL_MCLK_SEL_MASK,
-> +					    mclk_sel));
-> +}
-> +
-> +static unsigned long ad4130_int_clk_recalc_rate(struct clk_hw *hw,
-> +						unsigned long parent_rate)
-> +{
-> +	return AD4130_MCLK_FREQ_76_8KHZ;
-> +}
-> +
-> +static int ad4130_int_clk_is_enabled(struct clk_hw *hw)
-> +{
-> +	struct ad4130_state *st = container_of(hw, struct ad4130_state, int_clk_hw);
-> +
-> +	return st->mclk_sel == AD4130_MCLK_76_8KHZ_OUT;
-> +}
-> +
-> +static int ad4130_int_clk_prepare(struct clk_hw *hw)
-> +{
-> +	struct ad4130_state *st = container_of(hw, struct ad4130_state, int_clk_hw);
-> +	int ret;
-> +
-> +	ret = ad4130_set_mclk_sel(st, AD4130_MCLK_76_8KHZ_OUT);
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->mclk_sel = AD4130_MCLK_76_8KHZ_OUT;
-> +
-> +	return 0;
-> +}
-> +
-> +static void ad4130_int_clk_unprepare(struct clk_hw *hw)
-> +{
-> +	struct ad4130_state *st = container_of(hw, struct ad4130_state, int_clk_hw);
-> +	int ret;
-> +
-> +	ret = ad4130_set_mclk_sel(st, AD4130_MCLK_76_8KHZ);
-> +	if (ret)
-> +		return;
-> +
-> +	st->mclk_sel = AD4130_MCLK_76_8KHZ;
-> +}
-> +
-> +static const struct clk_ops ad4130_int_clk_ops = {
-> +	.recalc_rate = ad4130_int_clk_recalc_rate,
-> +	.is_enabled = ad4130_int_clk_is_enabled,
-> +	.prepare = ad4130_int_clk_prepare,
-> +	.unprepare = ad4130_int_clk_unprepare,
-> +};
-> +
-> +static int ad4130_setup_int_clk(struct ad4130_state *st)
-> +{
-> +	struct device *dev = &st->spi->dev;
-> +	struct device_node *of_node = dev->of_node;
-
-Hmm. There goes our careful use of generic firmware properties.
-I guess there still isn't much we can do about that for clks
-so at least it's contained to this one function.
-
-Also is this code safe to of_node == NULL?
-
-> +	struct clk_init_data init;
-> +	const char *clk_name;
-> +	struct clk *clk;
-> +
-> +	if (st->int_pin_sel == AD4130_INT_PIN_CLK ||
-> +	    st->mclk_sel != AD4130_MCLK_76_8KHZ)
-> +		return 0;
-> +
-> +	clk_name = of_node->name;
-> +	of_property_read_string(of_node, "clock-output-names", &clk_name);
-
-Probably want to check success of that read before using it.
-I'd also expect that these to be optional + doesn't he dt binding need
-updating to add this stuff?
-
-
-> +
-> +	init.name = clk_name;
-> +	init.ops = &ad4130_int_clk_ops;
-> +
-> +	st->int_clk_hw.init = &init;
-> +	clk = devm_clk_register(dev, &st->int_clk_hw);
-> +	if (IS_ERR(clk))
-> +		return PTR_ERR(clk);
-> +
-> +	return of_clk_add_provider(of_node, of_clk_src_simple_get, clk);
-> +}
-> +
