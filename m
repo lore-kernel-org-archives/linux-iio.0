@@ -2,98 +2,90 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B6A0C433F5
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Oct 2022 19:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CB0BC433F5
+	for <linux-iio@archiver.kernel.org>; Tue, 11 Oct 2022 01:52:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229514AbiJJTrE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 Oct 2022 15:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
+        id S229663AbiJKBwR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 10 Oct 2022 21:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiJJTrC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Oct 2022 15:47:02 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A27C5245F;
-        Mon, 10 Oct 2022 12:47:00 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id f9so14381144ljk.12;
-        Mon, 10 Oct 2022 12:47:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=rAk45lvdMHJqkvDklkuRT7/4DO0ZDJi7M0Bz6hxlLqo=;
-        b=PGnRVNt2Qlo/0D8HazGQTpRYD4WY+6Vu8rT8pxLldsfanDXUuPpz4iwGSB9mg9G8WS
-         wORr6RAWEoDE0iUvjPIYrK+IzP4o0TfrErmVlgsPdUHZZhv3SjPmJB3HfJXO8KNhra0A
-         uzPX6jIbBtPEBU+KtxAQ0UPWQuzecH6i0lJ0rzhQKFhIW1FsIqmPc6+OtrQIEF9CBJSc
-         BValavp+JJV9Dc8+tn5kTSbVapo8dKW/mk7/ItruRTiQQipRJFFEbfpcfVKSeOXePCom
-         IhA5fsxEJ1WVqdJmCf4GJ8ZCeoFXS7+5MirP43VB21slbwX0hqWB0TGudQnX7w7UL5Hm
-         egOQ==
+        with ESMTP id S229625AbiJKBwQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Oct 2022 21:52:16 -0400
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52F4C80493;
+        Mon, 10 Oct 2022 18:52:14 -0700 (PDT)
+Received: by mail-oi1-f179.google.com with SMTP id x188so5510213oig.5;
+        Mon, 10 Oct 2022 18:52:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=rAk45lvdMHJqkvDklkuRT7/4DO0ZDJi7M0Bz6hxlLqo=;
-        b=VTYjiMWpjz0VO69pL3L7+X9XLeFq0xZxwB2rYiQ9t1pDrhORXlkd1D4D3nkIHMDl+W
-         8yGJyk93iC7NJukD4r+Udpv6DnnWfLK5G3G3U+zQnXAitgKRH5pkpS72HWWZPTEurKdH
-         hFqQl/4WjrfIAqovd2y1g9x+YUEYmQvbJ6UHXLn3Q18s5JFJMvs5ll2HnDQ9iQtEYoiO
-         7yIg/cmkH1ysF3pWprqF/EvBnJqqXAwE0eJskOfrNk/hfZrj2ecyD/ltdvRzXYR2rv4P
-         AuS1Ic6qwMj+5TW9Bh7PKQC1rdbE7bN4mbk5Fqe/kojikXMH/dJ0cJpIuTV4IenfRqbv
-         D1qQ==
-X-Gm-Message-State: ACrzQf14/0XGR/uXh4V4iwCNyHa60BuNtOOxlwY7ZPnAnF5od/8PGbOv
-        W5rCs2DnU60lajZDNhDI4GA=
-X-Google-Smtp-Source: AMsMyM4qxSQM+MdqG9uy9SuTj6+lBSRBInXcCXGqVKWqQw0Q40m4PpNUN1t3XJ+NjDn3jHUKOvebbw==
-X-Received: by 2002:a2e:a884:0:b0:25d:d8a2:d18c with SMTP id m4-20020a2ea884000000b0025dd8a2d18cmr6911644ljq.305.1665431218817;
-        Mon, 10 Oct 2022 12:46:58 -0700 (PDT)
-Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
-        by smtp.gmail.com with ESMTPSA id v19-20020a05651203b300b0048af397c827sm1525780lfp.218.2022.10.10.12.46.57
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=QxUwxjok5J3VmLzpGxMGRLt6oXkHZSszcCJv2zshnl8=;
+        b=jLKlp4FyCdPOtRw33ADu+JpKeSj0N2y98wCXffpsHUER+JByj4u8YiUTeOFHDq+FGS
+         dG7KjWvGRtWZsXp6gdCTp1dPCtc+v41CXJplXQRITZTnKHjEbgB+vMboMV7TnaU9zO1C
+         WUNupJmFWJ7I0U7dhjyZ42bRqYGRo685OUzjwMfl2lIH2qQ4n2ZnOQiR41Y95sbr/UIv
+         TurBWfQy1CvtObMQWwQyVfU//s5mg0qvUF3eW79tXHbMtEShjSpSrMuvrrzTpG9GlF2P
+         SJ4akdfdDanHc02AWS+lq0zFzB9iYwA+iIikQnzEyZiMGhZde+DQO9PhRtF1fARfjh6K
+         SCFA==
+X-Gm-Message-State: ACrzQf2dChK7+WRo6Ai9JoryJP0YUCqRPX3EEVVLL91e3vyLhdd6R5Ia
+        1UbY9Wdzt7rynuKK3wtcqg==
+X-Google-Smtp-Source: AMsMyM6TxutXI/EVb4pA1SbAB9gms8A/ZiuL8AN8F37e2xCxhzLGaK0HMBxnfdPRP72QOEo+XQbK1A==
+X-Received: by 2002:a05:6808:1141:b0:354:9a79:2f4f with SMTP id u1-20020a056808114100b003549a792f4fmr2662146oiu.85.1665453133558;
+        Mon, 10 Oct 2022 18:52:13 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id j18-20020a4ad192000000b004805c328971sm3235447oor.42.2022.10.10.18.52.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Oct 2022 12:46:58 -0700 (PDT)
-From:   Marcus Folkesson <marcus.folkesson@gmail.com>
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: mcp3911: mask out device ID in debug prints
-Date:   Mon, 10 Oct 2022 21:46:54 +0200
-Message-Id: <20221010194654.676525-1-marcus.folkesson@gmail.com>
-X-Mailer: git-send-email 2.37.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 10 Oct 2022 18:52:13 -0700 (PDT)
+Received: (nullmailer pid 1703338 invoked by uid 1000);
+        Tue, 11 Oct 2022 01:52:12 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        ihkose@gmail.com, devicetree@vger.kernel.org,
+        rajat.khandelwal@intel.com, lars@metafoo.de, jic23@kernel.org,
+        linux-iio@vger.kernel.org, robh+dt@kernel.org
+In-Reply-To: <20221011182437.662719-1-rajat.khandelwal@linux.intel.com>
+References: <20221011182437.662719-1-rajat.khandelwal@linux.intel.com>
+Message-Id: <166545307700.1702218.811193663081885499.robh@kernel.org>
+Subject: Re: [PATCH] Change the I2C slave address for ds4422/4424 to its correct value
+Date:   Mon, 10 Oct 2022 20:52:12 -0500
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The Device ID should not be included when printing register.
+On Tue, 11 Oct 2022 23:54:37 +0530, Rajat Khandelwal wrote:
+> The datasheet states that the slave address for the device is 0x20
+> when the pins A0 and A1 are ground. The DT binding has been using
+> 0x10 as the value and I think it should be 0x20 as per datasheet.
+> 
+> Let me know if I am wrong about this.
+> 
+> Signed-off-by: Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
+> ---
+>  Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
----
- drivers/iio/adc/mcp3911.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
-index 2c1af11a621f..a71df9f3ab29 100644
---- a/drivers/iio/adc/mcp3911.c
-+++ b/drivers/iio/adc/mcp3911.c
-@@ -59,6 +59,7 @@
- 
- #define MCP3911_REG_READ(reg, id)	((((reg) << 1) | ((id) << 6) | (1 << 0)) & 0xff)
- #define MCP3911_REG_WRITE(reg, id)	((((reg) << 1) | ((id) << 6) | (0 << 0)) & 0xff)
-+#define MCP3911_REG_MASK		GENMASK(4, 1)
- 
- #define MCP3911_NUM_CHANNELS		2
- #define MCP3911_NUM_SCALES		6
-@@ -94,8 +95,8 @@ static int mcp3911_read(struct mcp3911 *adc, u8 reg, u32 *val, u8 len)
- 
- 	be32_to_cpus(val);
- 	*val >>= ((4 - len) * 8);
--	dev_dbg(&adc->spi->dev, "reading 0x%x from register 0x%x\n", *val,
--		reg >> 1);
-+	dev_dbg(&adc->spi->dev, "reading 0x%x from register 0x%lx\n", *val,
-+		FIELD_GET(MCP3911_REG_MASK, reg));
- 	return ret;
- }
- 
--- 
-2.37.1
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/iio/dac/maxim,ds4424.example.dts:22.20-26.15: Warning (i2c_bus_reg): /example-0/i2c/dac@10: I2C bus unit address format error, expected "20"
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
