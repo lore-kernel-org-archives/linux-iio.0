@@ -2,44 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A6A6C43217
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Oct 2022 14:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C61C4332F
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Oct 2022 14:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229882AbiJLOYC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Oct 2022 10:24:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51822 "EHLO
+        id S229961AbiJLOYK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Oct 2022 10:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229918AbiJLOX6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Oct 2022 10:23:58 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA81D38FE;
-        Wed, 12 Oct 2022 07:23:55 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29CAd0eb013878;
-        Wed, 12 Oct 2022 16:23:34 +0200
+        with ESMTP id S229846AbiJLOYB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Oct 2022 10:24:01 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30CFFD38E8;
+        Wed, 12 Oct 2022 07:23:59 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29CAd9fT022459;
+        Wed, 12 Oct 2022 16:23:10 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=e2at5cECV3lmB6YhVf0LWjp6cb4WKD3ere/W0YhLlM0=;
- b=kyGyJREASfcq6DxrIVNDnu7zdMgKTf5qc7zWI9uJaNR3fNR12uZa1YHyNWQxmFAgRCJC
- DXgbhnHpp71W4d3IAhdpePzbj2mzMYy70Xbr5NuCCkR9DqXe5BWPX1kdk4KiosrhyS8e
- a1Q4iP/F8JcbD2/oFTnsLP6tKKpZTebYfN676zCixOs1O96HQNsaUJY0nHwCkrIClnua
- Rr/U9uHUKTkza/LOZKzWEsdme/FRUXepLYA10XYKylktKYcwP37iw3r2PiwVwec7/Jyi
- nWS1/BV6F3U/N24dFOlS4yLLN0f9C0ipjOBIOiwP51ikDTe1cEoqQLO9BahPg1cdFWIN Kg== 
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=TWtwkhpFfFIsRQnbF1+FDZ/TyYsZdJ0xXvFMnYZtWh4=;
+ b=bYXjjXDXl2KXculUmKwRFTf4jnmXpkYbqaXTYTWWaKxJtOrDqr6wEbS1TMjIPv7bq+we
+ h9DjfnF2YgRbKBGqVCUeiXTkatXAKhdifdShknOvfzIEnKse9eY3MwYoTI1p/s/nWhaY
+ iM5hkL6kqAOAekisSALuTAZxldFq+T4QGOa1IjVNNvGe9ZHTBnVcUtWkeadkiZ0Bcp+I
+ r5R7KTQm4BWCVaGg+h6vVstCiP2WJ2sBHmJXNFpsikGuX5euTsTlVEwv2huuVlgy0Wo5
+ vBGPqS2l4WglcsmEvkJ7lZoOG1ldiH0iFo7C+H23cndaAMD7B3yLZQdAAU8HkbUgKTQL KA== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3k31gq3kby-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3k5tmaj1pj-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Oct 2022 16:23:34 +0200
+        Wed, 12 Oct 2022 16:23:10 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C463810002A;
-        Wed, 12 Oct 2022 16:23:04 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 201AA10003A;
+        Wed, 12 Oct 2022 16:23:06 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id BE95222F7D7;
-        Wed, 12 Oct 2022 16:23:04 +0200 (CEST)
-Received: from localhost (10.75.127.45) by SHFDAG1NODE1.st.com (10.75.129.69)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 1B05F22F7D7;
+        Wed, 12 Oct 2022 16:23:06 +0200 (CEST)
+Received: from localhost (10.75.127.116) by SHFDAG1NODE1.st.com (10.75.129.69)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.31; Wed, 12 Oct
- 2022 16:23:04 +0200
+ 2022 16:23:05 +0200
 From:   Olivier Moysan <olivier.moysan@foss.st.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -53,15 +53,17 @@ CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <devicetree@vger.kernel.org>
-Subject: [PATCH v4 0/8] iio: stm32-adc: add support of adc for stm32mp13
-Date:   Wed, 12 Oct 2022 16:21:57 +0200
-Message-ID: <20221012142205.13041-1-olivier.moysan@foss.st.com>
+Subject: [PATCH v4 2/8] dt-bindings: iio: adc: stm32-adc: add stm32mp13 compatibles
+Date:   Wed, 12 Oct 2022 16:21:59 +0200
+Message-ID: <20221012142205.13041-3-olivier.moysan@foss.st.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20221012142205.13041-1-olivier.moysan@foss.st.com>
+References: <20221012142205.13041-1-olivier.moysan@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+X-Originating-IP: [10.75.127.116]
+X-ClientProxiedBy: GPXDAG2NODE6.st.com (10.75.127.70) To SHFDAG1NODE1.st.com
  (10.75.129.69)
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
@@ -70,58 +72,160 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On STM32MP13 SoCs, each ADC peripheral has a single ADC block.
+Add st,stm32mp13-adc-core and st,stm32mp13-adc compatibles
+to support STM32MPU13 SoC.
+
+On STM32MP13x, each ADC peripheral has a single ADC block.
 These ADC peripherals, ADC1 and ADC2, are fully independent.
-The STM32MP131 SoC provides only ADC2, while other STM32MP13x
-SoCs provide both ADC1 and ADC2.
 
-The STM32MP13 ADC features and characteristics are slightly
-different from STM32MP15 ADC ones, requiring a specific support
-in the driver.
+Main characteristics of STM32MP13x ADC:
+- One interrupt line per ADC
+- 6 to 12 bits resolution
+- 19 channels
 
-This patchset enables the ADC peripheral on STM32MP135F-DK board.
+ADC2 instance supports two extra internal channels VDDCPU and VDDQ_DDR.
+Add "vddcpu" and "vddq_ddr" internal channels names to the reserved
+labels list.
 
-On STM32MP135F-DK board the ADC is connected to VDDA voltage
-provided by the PMIC LOD1 supply, which has to be enabled through
-SCMI regulator framework.
-This serie introduces a fixed regulator to allow ADC probing,
-while SCMI regulators support is not available. This does
-not ensure ADC regulator enabling however.
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+---
+ .../bindings/iio/adc/st,stm32-adc.yaml        | 68 ++++++++++++++++++-
+ 1 file changed, 65 insertions(+), 3 deletions(-)
 
-Changes in v4:
-- reformat patch 1 commit message
-- reorder adc1 node
-
-v3:
-- Remove blank line in tag block
-- Use HZ_PER_MHZ unit for max frequency definition
-- Coding style updates
-
-v2:
-- Rework commit message length
-- Add missing spaces
-- Remove useless defines
-
-Olivier Moysan (8):
-  iio: adc: stm32-adc: fix channel sampling time init
-  dt-bindings: iio: adc: stm32-adc: add stm32mp13 compatibles
-  iio: adc: stm32-adc: add stm32mp13 support
-  iio: adc: stm32: manage min sampling time on all internal channels
-  ARM: dts: stm32: add adc support to stm32mp13
-  ARM: dts: stm32: add adc pins muxing on stm32mp135f-dk
-  ARM: dts: stm32: add dummy vdd_adc regulator on stm32mp135f-dk
-  ARM: dts: stm32: add adc support on stm32mp135f-dk
-
- .../bindings/iio/adc/st,stm32-adc.yaml        |  68 ++++-
- arch/arm/boot/dts/stm32mp13-pinctrl.dtsi      |   7 +
- arch/arm/boot/dts/stm32mp131.dtsi             |  43 +++
- arch/arm/boot/dts/stm32mp133.dtsi             |  31 +++
- arch/arm/boot/dts/stm32mp135f-dk.dts          |  33 +++
- drivers/iio/adc/stm32-adc-core.c              |  30 ++-
- drivers/iio/adc/stm32-adc-core.h              |  30 +++
- drivers/iio/adc/stm32-adc.c                   | 247 +++++++++++++++---
- 8 files changed, 443 insertions(+), 46 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+index fa8da42cb1e6..05265f381fde 100644
+--- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+@@ -27,6 +27,7 @@ properties:
+       - st,stm32f4-adc-core
+       - st,stm32h7-adc-core
+       - st,stm32mp1-adc-core
++      - st,stm32mp13-adc-core
+ 
+   reg:
+     maxItems: 1
+@@ -37,6 +38,7 @@ properties:
+         - stm32f4 and stm32h7 share a common ADC interrupt line.
+         - stm32mp1 has two separate interrupt lines, one for each ADC within
+           ADC block.
++        - stm32mp13 has an interrupt line per ADC block.
+     minItems: 1
+     maxItems: 2
+ 
+@@ -180,6 +182,33 @@ allOf:
+           maximum: 36000000
+           default: 36000000
+ 
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: st,stm32mp13-adc-core
++
++    then:
++      properties:
++        clocks:
++          minItems: 1
++          maxItems: 2
++
++        clock-names:
++          items:
++            - const: bus
++            - const: adc
++          minItems: 1
++
++        interrupts:
++          items:
++            - description: ADC interrupt line
++
++        st,max-clk-rate-hz:
++          minimum: 150000
++          maximum: 75000000
++          default: 75000000
++
+ additionalProperties: false
+ 
+ required:
+@@ -208,6 +237,7 @@ patternProperties:
+           - st,stm32f4-adc
+           - st,stm32h7-adc
+           - st,stm32mp1-adc
++          - st,stm32mp13-adc
+ 
+       reg:
+         description: |
+@@ -229,7 +259,7 @@ patternProperties:
+       interrupts:
+         description: |
+           IRQ Line for the ADC instance. Valid values are:
+-            - 0 for adc@0
++            - 0 for adc@0 (single adc for stm32mp13)
+             - 1 for adc@100
+             - 2 for adc@200 (stm32f4 only)
+         maxItems: 1
+@@ -250,13 +280,14 @@ patternProperties:
+       assigned-resolution-bits:
+         description: |
+           Resolution (bits) to use for conversions:
+-            - can be 6, 8, 10 or 12 on stm32f4
++            - can be 6, 8, 10 or 12 on stm32f4 and stm32mp13
+             - can be 8, 10, 12, 14 or 16 on stm32h7 and stm32mp1
+ 
+       st,adc-channels:
+         description: |
+           List of single-ended channels muxed for this ADC. It can have up to:
+             - 16 channels, numbered from 0 to 15 (for in0..in15) on stm32f4
++            - 19 channels, numbered from 0 to 18 (for in0..in18) on stm32mp13.
+             - 20 channels, numbered from 0 to 19 (for in0..in19) on stm32h7 and
+               stm32mp1.
+         $ref: /schemas/types.yaml#/definitions/uint32-array
+@@ -322,7 +353,7 @@ patternProperties:
+           label:
+             description: |
+               Unique name to identify which channel this is.
+-              Reserved label names "vddcore", "vrefint" and "vbat"
++              Reserved label names "vddcore", "vddcpu", "vddq_ddr", "vrefint" and "vbat"
+               are used to identify internal channels with matching names.
+ 
+           diff-channels:
+@@ -419,6 +450,37 @@ patternProperties:
+               items:
+                 minimum: 40
+ 
++
++      - if:
++          properties:
++            compatible:
++              contains:
++                const: st,stm32mp13-adc
++
++        then:
++          properties:
++            reg:
++              const: 0x0
++
++            interrupts:
++              const: 0
++
++            assigned-resolution-bits:
++              enum: [6, 8, 10, 12]
++              default: 12
++
++            st,adc-channels:
++              minItems: 1
++              maxItems: 19
++              items:
++                minimum: 0
++                maximum: 18
++
++            st,min-sample-time-nsecs:
++              minItems: 1
++              maxItems: 19
++              items:
++                minimum: 40
+     additionalProperties: false
+ 
+     required:
 -- 
 2.25.1
 
