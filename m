@@ -2,43 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B7CCC4332F
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Oct 2022 15:17:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D5CFC433FE
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Oct 2022 15:17:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229897AbiJLPQ7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S229599AbiJLPQ7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 12 Oct 2022 11:16:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40390 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbiJLPQp (ORCPT
+        with ESMTP id S229934AbiJLPQp (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Oct 2022 11:16:45 -0400
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4046DD8B3
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2903DD892
         for <linux-iio@vger.kernel.org>; Wed, 12 Oct 2022 08:16:39 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29CDvmWG010798;
-        Wed, 12 Oct 2022 11:15:48 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29CEa37s032678;
+        Wed, 12 Oct 2022 11:15:43 -0400
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3k3325xu46-1
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3k3645e141-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Oct 2022 11:15:47 -0400
+        Wed, 12 Oct 2022 11:15:42 -0400
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 29CFFkrJ049233
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 29CFFfWt049221
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 12 Oct 2022 11:15:46 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+        Wed, 12 Oct 2022 11:15:41 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
  ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Wed, 12 Oct 2022 11:15:45 -0400
+ 15.2.986.14; Wed, 12 Oct 2022 11:15:41 -0400
 Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Wed, 12 Oct 2022 11:15:45 -0400
+ 15.2.986.14; Wed, 12 Oct 2022 11:15:40 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 12 Oct 2022 11:15:45 -0400
+ Transport; Wed, 12 Oct 2022 11:15:40 -0400
 Received: from nsa.ad.analog.com ([10.44.3.62])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 29CFEund022095;
-        Wed, 12 Oct 2022 11:15:35 -0400
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 29CFEunc022095;
+        Wed, 12 Oct 2022 11:15:29 -0400
 From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
 To:     <linux-arm-kernel@lists.infradead.org>,
         <linux-iio@vger.kernel.org>, <linux-amlogic@lists.infradead.org>,
@@ -71,9 +71,9 @@ CC:     Chen-Yu Tsai <wens@csie.org>,
         Orson Zhai <orsonzhai@gmail.com>,
         "Shawn Guo" <shawnguo@kernel.org>,
         Kevin Hilman <khilman@baylibre.com>
-Subject: [PATCH v3 2/4] iio: health: max30100: do not use internal iio_dev lock
-Date:   Wed, 12 Oct 2022 17:16:18 +0200
-Message-ID: <20221012151620.1725215-3-nuno.sa@analog.com>
+Subject: [PATCH v3 1/4] iio: core: introduce iio_device_{claim|release}_buffer_mode() APIs
+Date:   Wed, 12 Oct 2022 17:16:17 +0200
+Message-ID: <20221012151620.1725215-2-nuno.sa@analog.com>
 X-Mailer: git-send-email 2.38.0
 In-Reply-To: <20221012151620.1725215-1-nuno.sa@analog.com>
 References: <20221012151620.1725215-1-nuno.sa@analog.com>
@@ -81,64 +81,94 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: nM1f-X8TjScKJQm23JxZD5qneviuxiXN
-X-Proofpoint-ORIG-GUID: nM1f-X8TjScKJQm23JxZD5qneviuxiXN
+X-Proofpoint-GUID: 8l2VOtgy2CDwMw-gbeV9x-u9BpQMGK02
+X-Proofpoint-ORIG-GUID: 8l2VOtgy2CDwMw-gbeV9x-u9BpQMGK02
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2022-10-12_07,2022-10-12_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 spamscore=0
- suspectscore=0 mlxscore=0 clxscore=1015 priorityscore=1501 impostorscore=0
- malwarescore=0 phishscore=0 mlxlogscore=940 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ lowpriorityscore=0 phishscore=0 mlxlogscore=999 priorityscore=1501
+ spamscore=0 suspectscore=0 impostorscore=0 malwarescore=0 bulkscore=0
+ mlxscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2209130000 definitions=main-2210120100
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The pattern used in this device does not quite fit in the
-iio_device_claim_direct_mode() typical usage. In this case,
-iio_buffer_enabled() was being used not to prevent the raw access but to
-allow it. Hence, let's make use of the new
-iio_device_claim_buffer_mode() API to make sure we stay in buffered mode
-during the complete read.
-
-Note that we are shadowing the error code returned by
-iio_device_claim_buffer_mode() so that we keep the original one
-(-EAGAIN). The reason is that some userspace stack might already be
-relying on this particular code so that we are not taking chances and
-leave it alone.
+These APIs are analogous to iio_device_claim_direct_mode() and
+iio_device_release_direct_mode() but, as the name suggests, with the
+logic flipped. While this looks odd enough, it will have at least two
+users (in following changes) and it will be important to move the iio
+mlock to the private struct.
 
 Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/health/max30100.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/iio/industrialio-core.c | 38 +++++++++++++++++++++++++++++++++
+ include/linux/iio/iio.h         |  2 ++
+ 2 files changed, 40 insertions(+)
 
-diff --git a/drivers/iio/health/max30100.c b/drivers/iio/health/max30100.c
-index 2cca5e0519f8..6ac49901c9da 100644
---- a/drivers/iio/health/max30100.c
-+++ b/drivers/iio/health/max30100.c
-@@ -387,18 +387,15 @@ static int max30100_read_raw(struct iio_dev *indio_dev,
- 		 * Temperature reading can only be acquired while engine
- 		 * is running
- 		 */
--		mutex_lock(&indio_dev->mlock);
--
--		if (!iio_buffer_enabled(indio_dev))
-+		if (iio_device_claim_buffer_mode(indio_dev)) {
- 			ret = -EAGAIN;
--		else {
-+		} else {
- 			ret = max30100_get_temp(data, val);
- 			if (!ret)
- 				ret = IIO_VAL_INT;
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 151ff3993354..cf80f81e4665 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -2083,6 +2083,44 @@ void iio_device_release_direct_mode(struct iio_dev *indio_dev)
+ }
+ EXPORT_SYMBOL_GPL(iio_device_release_direct_mode);
  
-+			iio_device_release_buffer_mode(indio_dev);
- 		}
--
--		mutex_unlock(&indio_dev->mlock);
- 		break;
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = 1;  /* 0.0625 */
++/**
++ * iio_device_claim_buffer_mode - Keep device in buffer mode
++ * @indio_dev:	the iio_dev associated with the device
++ *
++ * If the device is in buffer mode it is guaranteed to stay
++ * that way until iio_device_release_buffer_mode() is called.
++ *
++ * Use with iio_device_release_buffer_mode()
++ *
++ * Returns: 0 on success, -EBUSY on failure
++ */
++int iio_device_claim_buffer_mode(struct iio_dev *indio_dev)
++{
++	mutex_lock(&indio_dev->mlock);
++
++	if (iio_buffer_enabled(indio_dev))
++		return 0;
++
++	mutex_unlock(&indio_dev->mlock);
++	return -EBUSY;
++}
++EXPORT_SYMBOL_GPL(iio_device_claim_buffer_mode);
++
++/**
++ * iio_device_release_buffer_mode - releases claim on buffer mode
++ * @indio_dev:	the iio_dev associated with the device
++ *
++ * Release the claim. Device is no longer guaranteed to stay
++ * in buffer mode.
++ *
++ * Use with iio_device_claim_buffer_mode()
++ */
++void iio_device_release_buffer_mode(struct iio_dev *indio_dev)
++{
++	mutex_unlock(&indio_dev->mlock);
++}
++EXPORT_SYMBOL_GPL(iio_device_release_buffer_mode);
++
+ /**
+  * iio_device_get_current_mode() - helper function providing read-only access to
+  *				   the opaque @currentmode variable
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index f0ec8a5e5a7a..9d3bd6379eb8 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -629,6 +629,8 @@ int __devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev,
+ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp);
+ int iio_device_claim_direct_mode(struct iio_dev *indio_dev);
+ void iio_device_release_direct_mode(struct iio_dev *indio_dev);
++int iio_device_claim_buffer_mode(struct iio_dev *indio_dev);
++void iio_device_release_buffer_mode(struct iio_dev *indio_dev);
+ 
+ extern struct bus_type iio_bus_type;
+ 
 -- 
 2.38.0
 
