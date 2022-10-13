@@ -2,154 +2,122 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85957C4332F
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Oct 2022 18:46:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492B0C4332F
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Oct 2022 00:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbiJLSqN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Oct 2022 14:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
+        id S232156AbiJMAm3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Oct 2022 20:42:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbiJLSqK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Oct 2022 14:46:10 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBC5C4D87
-        for <linux-iio@vger.kernel.org>; Wed, 12 Oct 2022 11:46:06 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id C548760002;
-        Wed, 12 Oct 2022 18:45:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1665600364;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vjroV19fBqrVrQU0CLeJKAqB9gBI/nfXkE660Q+OVoQ=;
-        b=WYVkIYufTXY2i59Zs82duyRa6C4cpFF6jK4xzAXLthP2FSn8vweqjlValnPomLu6Em910/
-        Fmay9vqO6+I9A+k4XDrbNhb15ys3bnk8Z5OfWXDAeZc8586HaDN9s3Vg/5KkBxRml/p8ov
-        n9dzXpZHVsqWii4Mpo7192R8aN/A5fGB+gpkNQucFwNgXdUY0m1pBsaHT8AeNmaQiKWBRh
-        dpUbGK9LfhI/3O9BM31a6G2QvLAh5HjuqPE1geV++DHDJr2QEJJb7FaRZgYFEqBOH8i55X
-        2+pzbz5cwCJJqoGxfqUcD4h9cz7W6Jxw2eemwiGcasXMndNgevfwf4a/24ZQsA==
-Date:   Wed, 12 Oct 2022 20:45:56 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Cc:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <linux-amlogic@lists.infradead.org>,
-        <linux-rockchip@lists.infradead.org>, <linux-imx@nxp.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Andriy Tryshnivskyy <andriy.tryshnivskyy@opensynergy.com>,
-        Ciprian Regus <ciprian.regus@analog.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Cixi Geng <cixi.geng1@unisoc.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Haibo Chen <haibo.chen@nxp.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Jyoti Bhayana <jbhayana@google.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Boor <florian.boor@kernelconcepts.de>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>
-Subject: Re: [PATCH v3 3/4] iio: health: max30102: do not use internal
- iio_dev lock
-Message-ID: <20221012204556.7648df2e@xps-13>
-In-Reply-To: <20221012151620.1725215-4-nuno.sa@analog.com>
-References: <20221012151620.1725215-1-nuno.sa@analog.com>
-        <20221012151620.1725215-4-nuno.sa@analog.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S232159AbiJMAmO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Oct 2022 20:42:14 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AA6107CFF
+        for <linux-iio@vger.kernel.org>; Wed, 12 Oct 2022 17:33:20 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-1321a1e94b3so654097fac.1
+        for <linux-iio@vger.kernel.org>; Wed, 12 Oct 2022 17:33:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=qKk00GZ788naBGTxoT5GM72rM2lKT+rrPq0Zst2EeZk=;
+        b=R0vTmFqSXzH7GlHiD/WdG8Fg/fzkiLCENmLCoeZIFYsFDCg9qNK6UZyeufN9Enm5tK
+         VtJ+DY0v0kKovOyZ1Y9u4o8RAkHjijLbeLmP+o3NHj8x6krSZ9Bv5RfK016Hz9XWK2ol
+         0hipL9pepUV7SO7rzMd41iECRnTZLJfT8sohvCy/Irt+8bTFCVFWYaxidnr0xQwEoFbT
+         NY7QZvdGGs7a6J3csxQEd71LZuCzvGIy9vtIiTUQG/CkK1N1aq+UG9vicUr9BV6HIYZX
+         ZFMI0hV+U+b1iymFxpleXGNpyD7MmiBUJONQao5MR9JhUpq4iMM8HY9kkUFAhIwre6kV
+         fJKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qKk00GZ788naBGTxoT5GM72rM2lKT+rrPq0Zst2EeZk=;
+        b=ZOYPEXSqTVmKb9G1sVOhqlB1RPc2UqX3+oeRbY9iBDmKdh9fJkVVZRvMjChWmodgt8
+         LrT0qyZIyVePmpgydwWvyUmR8O6MvVFrukfJFjGYDjdOlMiuGq+tOzduMD7dbPeYvD8R
+         Iawv/tghP5afIurYgIJ4I9THNUgbnVQGxow/uAI12NbmR9tXq3K8eThhaBLMqStrbP83
+         YFxJDghC5AGD9HJUdH/tM64SB3dOs1qVLLJWxQrvsv1ZYfU95JVLxsstqBv267R6Mg+X
+         kEKlMKFOZatsy7cwWVwJkF+Q0FKi/tnKzpyykZ7q1szBLdx7OYOuVwTmgfg6/5u8S708
+         YAwA==
+X-Gm-Message-State: ACrzQf0YN4xp2E5h2fead9Wdb1eTZX/FKY3bgCKAY3igSaoT5CcRQueQ
+        C9GAyqQeyiZ90VAGMMA3trltSPoXH4ZgkQ==
+X-Google-Smtp-Source: AMsMyM6r0jgBppwpsnKdoP6avayVNk2JuobRx5dg9qTljduaWYK6GJTGUF6rtzxoZoRHc39ZOFdNKQ==
+X-Received: by 2002:a05:6808:ec4:b0:354:475a:c101 with SMTP id q4-20020a0568080ec400b00354475ac101mr3425156oiv.56.1665620643659;
+        Wed, 12 Oct 2022 17:24:03 -0700 (PDT)
+Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id r4-20020a05683001c400b00661946468c6sm4975880ota.31.2022.10.12.17.24.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Oct 2022 17:24:03 -0700 (PDT)
+Date:   Wed, 12 Oct 2022 20:24:00 -0400
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>, Lee Jones <lee@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH v3 4/4] counter: Add RZ/G2L MTU3 counter driver
+Message-ID: <Y0daoGTQJM7mo1/U@fedora>
+References: <20221006135717.1748560-1-biju.das.jz@bp.renesas.com>
+ <20221006135717.1748560-5-biju.das.jz@bp.renesas.com>
+ <Y0DUQTMd2TpFTnZS@fedora>
+ <OS0PR01MB5922B6980F38873D494B3937865E9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <Y0VsWdrpoAhM2jK3@fedora>
+ <OS0PR01MB592280D15AF243C0A5FA93CD86239@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <OS0PR01MB5922DDC46213E925988C2C9686239@OS0PR01MB5922.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="SqBc1oHt8iHqXeCa"
+Content-Disposition: inline
+In-Reply-To: <OS0PR01MB5922DDC46213E925988C2C9686239@OS0PR01MB5922.jpnprd01.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Nuno,
 
-nuno.sa@analog.com wrote on Wed, 12 Oct 2022 17:16:19 +0200:
+--SqBc1oHt8iHqXeCa
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> The pattern used in this device does not quite fit in the
-> iio_device_claim_direct_mode() typical usage. In this case, we want to
-> know if we are in buffered mode or not to know if the device is powered
-> (buffer mode) or not. And depending on that max30102_get_temp() will
-> power on the device if needed. Hence, in order to keep the same
-> functionality, we try to:
+On Tue, Oct 11, 2022 at 05:55:50PM +0000, Biju Das wrote:
+> > > > > Looks like something different is done when ceiling is set to 0.
+> > > > > Would you explain what's happening in this case and why it's
+> > > > > different that then else case below; in other words, what's the
+> > > > > difference between RZ_MTU3_TCR_CCLR_NONE and
+> > > RZ_MTU3_TCR_CCLR_TGRA?
+> > > >
+> > > > RZ_MTU3_TCR_CCLR_TGRA --> for triggering counter count using Z-
+> > Phase
+> > > signal.
+> > > > RZ_MTU3_TCR_CCLR_NONE --> No clearing.
+> > >
+> > > Does the Z-Phase signal trigger a reset of the counter count back to
+> > > the ceiling value?
+> >=20
+> > No, It resets to 0.
 >=20
-> 1. Claim Buffered mode;
-> 2: If 1) succeeds call max30102_get_temp() without powering on the
->    device;
-> 3: Release Buffered mode;
-> 4: If 1) fails, Claim Direct mode;
-> 5: If 4) succeeds call max30102_get_temp() with powering on the device;
-> 6: Release Direct mode;
-> 7: If 4) fails, goto to 1) and try again.
->=20
-> This dance between buffered and direct mode is not particularly pretty
-> (as well as the loop introduced by the goto statement) but it does allow
-> us to get rid of the mlock usage while keeping the same behavior.
+> It reset to 0 for forward counting
+> and resets to U16_MAX or U32_MAX for backword counting
 
-What about adding a TODO comment saying something like: "this comes
-from static analysis and helped dropping mlock access, but someone with
-the device needs to figure out if we can simplify this dance"? Because
-the reason behind all this is that we don't want to risk breaking the
-driver, but perhaps a simpler approach would work, right?
+So when counting backwards, will the value reset to the ceiling value
+when it passes 0?
 
->=20
-> Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-> ---
->  drivers/iio/health/max30102.c | 19 +++++++++++++++----
->  1 file changed, 15 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/iio/health/max30102.c
-> b/drivers/iio/health/max30102.c index 437298a29f2d..66df4aaa31a7
-> 100644 --- a/drivers/iio/health/max30102.c
-> +++ b/drivers/iio/health/max30102.c
-> @@ -477,12 +477,23 @@ static int max30102_read_raw(struct iio_dev
-> *indio_dev,
->  		 * Temperature reading can only be acquired when not
-> in
->  		 * shutdown; leave shutdown briefly when buffer not
-> running */
-> -		mutex_lock(&indio_dev->mlock);
-> -		if (!iio_buffer_enabled(indio_dev))
-> +any_mode_retry:
-> +		if (iio_device_claim_buffer_mode(indio_dev)) {
-> +			/*
-> +			 * This one is a *bit* hacky. If we cannot
-> claim buffer
-> +			 * mode, then try direct mode so that we
-> make sure
-> +			 * things cannot concurrently change. And we
-> just keep
-> +			 * trying until we get one of the modes...
-> +			 */
-> +			if (iio_device_claim_direct_mode(indio_dev))
-> +				goto any_mode_retry;
-> +
->  			ret =3D max30102_get_temp(data, val, true);
-> -		else
-> +			iio_device_release_direct_mode(indio_dev);
-> +		} else {
->  			ret =3D max30102_get_temp(data, val, false);
-> -		mutex_unlock(&indio_dev->mlock);
-> +			iio_device_release_buffer_mode(indio_dev);
-> +		}
->  		if (ret)
->  			return ret;
-> =20
+William Breathitt Gray
 
+--SqBc1oHt8iHqXeCa
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks,
-Miqu=C3=A8l
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCY0daoAAKCRC1SFbKvhIj
+Kw+6AQD8Olun4md/v+SivFJKnHrGwUlm2lGVYLpvgzcUSvjLBgD9FEOJYC9CnFSg
+92ucwlWAtepEnfFNv8/uFnwBPDPvGgU=
+=VZzI
+-----END PGP SIGNATURE-----
+
+--SqBc1oHt8iHqXeCa--
