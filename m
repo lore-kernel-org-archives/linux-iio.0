@@ -2,157 +2,165 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C28CCC433FE
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Oct 2022 07:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1017C4332F
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Oct 2022 09:40:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbiJNHYr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 14 Oct 2022 03:24:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49024 "EHLO
+        id S229782AbiJNJk1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 14 Oct 2022 05:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229957AbiJNHYn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Oct 2022 03:24:43 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1958D63A7
-        for <linux-iio@vger.kernel.org>; Fri, 14 Oct 2022 00:24:41 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id jr1so3197191qtb.0
-        for <linux-iio@vger.kernel.org>; Fri, 14 Oct 2022 00:24:41 -0700 (PDT)
+        with ESMTP id S229852AbiJNJk0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Oct 2022 05:40:26 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AE9C1D8E;
+        Fri, 14 Oct 2022 02:40:23 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29E9U23c009410;
+        Fri, 14 Oct 2022 09:40:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : mime-version; s=corp-2022-7-12;
+ bh=DbrLc+wefOXhluJ4aEeV4kjFtJGc9xNf4FTNHUIwoo8=;
+ b=DkGaPiBVz+NyXmz5ANkkNoqULkJrO8gWZG9iAFT4NAwOaOlDG77TPglTq+faxrSSXLpQ
+ 1qZ4maS/5Gwkszr3aWmvh/Bsrge77bOEjPTTdbfbynMwKd0z3AyqY52VbDwNOgez/zSd
+ iGPKqmHpcmS0hvEyKVzzlfYrcWRonAEFcoaSy929+MK0gQHuquYetgVVVrCcs33kwjCL
+ Qxp8Lf6ZUbCY89K0/IA8NR8SyUpkAFKOWTxSduZjrWpcLO4lavyqvehERfb3yOpbpCg3
+ vurpcKN7D9Dlw0kmEDqmMdcyegXi6XjhbvzulsoMd7+Bk4/FevZX6J5esS+89ZBYsIe1 eA== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3k6mswj9kk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 Oct 2022 09:40:02 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 29E85np0013567;
+        Fri, 14 Oct 2022 09:40:01 GMT
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2047.outbound.protection.outlook.com [104.47.57.47])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3k2yndne08-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 Oct 2022 09:40:01 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l/47a9D9/XtW1wlPqF7UxFHyRS3kfsguemgYfkBWdzQ1qsV8pNCp93bcTfB2phHH0ykiW4rALQ3KLkTY/07oi1ZU5G4E0trZePHyKXDcwRLf6Wf2lILouxFPSZaGPzhdezB+KNCG8gmcq9MS6jewJJFQaoh6XIgGHQ/jUjLTwhCyq2y24msbJiVGjvPgqYsjCoHnWHxX6JP3ZlWsIzD+8BIgT8tJy7vhNQkXPE5zS3eqxRE/15hlLZenpewMvmiZvVrq8dQbLYAIpeY8bdoueDNiJ83hhaFnOfmgP1PhXdE4MYHSByuvWU+Xqz3CBpg8n4aI1C+Af66j+6lclYrAMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DbrLc+wefOXhluJ4aEeV4kjFtJGc9xNf4FTNHUIwoo8=;
+ b=lKcxDiMDV5IhIGOL1T7Dnx13KplTxqbgOrAy8e3PQqGQg7/krRQzZrWwm87rRkkYBFcqUlQOY5RtPkdhNUP550dEk8SeDWsvLKjESm8VQyJklJy8IKg9+ROzEjnqLJ4v7yFYtCn5IyGPAKVGCp+4L0xUSc0YjO2Cvms/9xfG4t15Fh9sp592SN6ds5Q5hsgu/qj93Y8optCmzHzoOdmk2gKdshD5h7D2XvDU6foMtzz1CW7NmP+3NBk2c7e+/P208NnzJfONuCg+TuV9M2naAQKh1a+1FPestPy4GoRsWp+lsJW/I4ziNCAxWgr8tMZpLoSbcoSV9FrIW2b48qaL6w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=guXsNvunppVc9WWPiCDXMbZ55lmfscZRL3+k5ViV9No=;
-        b=oUsQIAOiDc9y41fuV+L7s+WM/p3Q61/2Dnxn688nE2CqTH0uCcstpSKfByFHA78F+d
-         l0Jd7Ibdy+zlNJ9yeUlf4hH/SWERQ8sQgro+Og9GEKOHGUQngTHQ2WK1apmXfj7luXjT
-         +kDSCGhGu+zDLhPTLA9zgsCRFVk2Jed+lW1baX+/+Td8OV+U/F63Cbdca8Ppv0QdLpuB
-         n5suh65nbDD7VRWarfniOC/sOA0qSy/BV5iFa2tYc7Y56cWhnzmR41oa3Qb97AhZknUD
-         wwmf8rEcni44ROfAJYeoJEOLJi6og1jxgMl2806+/aVLr5UpujCp42rxsno34UPDECIT
-         TWIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=guXsNvunppVc9WWPiCDXMbZ55lmfscZRL3+k5ViV9No=;
-        b=YidGXiKpiCJBxAW9hhxEz7WZ7oHeEv0XCHobMp9KHANxD2PM3qyW6pYB9qsr/+tKEw
-         5G+qzHFv3LWpnN8kSrLUfucuTZ+uDK8GyFK9inNSUEY3IIx9vj0BqnLjggEhnym2NGL5
-         bg+WFjzYxZlWuqgUzWx+b6gz9dwL9ZGoDHP+CKUMBAEwkHINEYjbR+qgFh5wKpMqzWFA
-         QCmU+o10SeVZ1Qq5gsQA16frk1fnjZBqC/yTpLf9WHc2nYroYQLJP1AMbDL+ZLiQjbsX
-         DQ6ply7J5oAz2uULqaAdURoFNIxNi1jBaPSyQEMU0LjhGUZkHksTd5TRGB69QbE2urBi
-         vyGw==
-X-Gm-Message-State: ACrzQf1+cCiyScFwbLvTvIJqegkvzgtE80LxV4g7SkPd/ON44x8db5uO
-        gmqXZHa1a8syadp4r8MVlt4=
-X-Google-Smtp-Source: AMsMyM7gMIH996fPil0I2eH6kEfzrcR7fJOfL5qMY+5BrnG0S7Swr4k4YGgxRpFyQLhQYDs/Z/bWVw==
-X-Received: by 2002:ac8:5cc3:0:b0:35c:e1b3:78c5 with SMTP id s3-20020ac85cc3000000b0035ce1b378c5mr3078874qta.228.1665732280128;
-        Fri, 14 Oct 2022 00:24:40 -0700 (PDT)
-Received: from p200300f6ef036f005de6a4d0d791ed01.dip0.t-ipconnect.de (p200300f6ef036f005de6a4d0d791ed01.dip0.t-ipconnect.de. [2003:f6:ef03:6f00:5de6:a4d0:d791:ed01])
-        by smtp.gmail.com with ESMTPSA id bs10-20020a05620a470a00b006b615cd8c13sm1711743qkb.106.2022.10.14.00.24.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Oct 2022 00:24:39 -0700 (PDT)
-Message-ID: <fccf3f41b32e881eb79ee78852fa40a62b134c00.camel@gmail.com>
-Subject: Re: [PATCH v3 3/4] iio: health: max30102: do not use internal
- iio_dev lock
-From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-        linux-amlogic@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-imx@nxp.com,
-        Chen-Yu Tsai <wens@csie.org>,
-        Andriy Tryshnivskyy <andriy.tryshnivskyy@opensynergy.com>,
-        Ciprian Regus <ciprian.regus@analog.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Cixi Geng <cixi.geng1@unisoc.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Haibo Chen <haibo.chen@nxp.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Jyoti Bhayana <jbhayana@google.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Boor <florian.boor@kernelconcepts.de>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>
-Date:   Fri, 14 Oct 2022 09:25:59 +0200
-In-Reply-To: <20221012204556.7648df2e@xps-13>
-References: <20221012151620.1725215-1-nuno.sa@analog.com>
-         <20221012151620.1725215-4-nuno.sa@analog.com>
-         <20221012204556.7648df2e@xps-13>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DbrLc+wefOXhluJ4aEeV4kjFtJGc9xNf4FTNHUIwoo8=;
+ b=iZJDNTLJ5u9hBdEtQZO/s8jBRACA8ZNXSitkbc0HIGESAcNQM/TyFuy41gtp/L+lGy8DQh5NuTXuo3pxIWsY9l+GO2o/oMXOnOo85GFCRVr57LGx90s/HIlloUAqOrgu/AqgXOPR1zU5/pbUpk/GqcT4t/rzwQuT/E7A/YJYhSU=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by CO1PR10MB4531.namprd10.prod.outlook.com
+ (2603:10b6:303:6c::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5709.21; Fri, 14 Oct
+ 2022 09:39:59 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::1b8e:540e:10f0:9aec]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::1b8e:540e:10f0:9aec%4]) with mapi id 15.20.5676.031; Fri, 14 Oct 2022
+ 09:39:59 +0000
+Date:   Fri, 14 Oct 2022 12:39:52 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Andrea Merello <andrea.merello@iit.it>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH] iio: imu: bno055: uninitialized variable bug in
+ bno055_trigger_handler()
+Message-ID: <Y0kuaO9PQkSQja+A@kili>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-ClientProxiedBy: ZR0P278CA0060.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:21::11) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2365:EE_|CO1PR10MB4531:EE_
+X-MS-Office365-Filtering-Correlation-Id: ddda4ebb-4171-46f7-47d4-08daadc80f36
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ja5Ppm1Cp2ZuRL7X0+MDIc+7ChCvS64zMfWjggrsW1/Gyl16YN87htT01I3kE2SbrU0aio4uhTXNkWKQuXpO/DKRUNqG7mR5MkVUYjkKcB90VKlmovvBdmJkzvy5aoUHaxIcVso0bNCR72tpTeeJHq/o28Kykx+7PpdHIXlHmYmW+ekjQ31VdiZWN3m5QzzgqoOxJ97VjbuyfcIDdMoP+IUV0a1hhhhGp6JyPZ8GktMGXJ4txB5fX6L65KbUCaC3wl9Tbo/2oxYLma9ZseXBGSdioYgw0PAdySwzgSc5sAJc3Sy7P03njDJblvZkrHotlE0ygyXjRhUNOIjDVQFH3VCZyKEMKKIn2UyPBl1DYcB5qm1JSHip447DfYyOKwSlcB6Km7IiKRVEAX2uTIBvdyLXRuJz33ny8KZYsm49HWESfxjWIHOdavnqAChXlkXdsM00/BRAhGkPPE936JzOXIWHKJsKxNjNoeGzmaWjtNXSiDd9aFTjBEpW6mjn2LM2tevM6gioEQLnNucHKrle9khxIuWSQWThHtOpJ/R0OxJnsMs0DPEfa45PCy9OsGwcMAwSBMsMebHo3QojIv0YX5ktK03soM+8fohwvypnfqPD/pV/pX7YrdVdYEddh5lfnqfV7QABGVWYYzgUJxC57XDT+YQY9v6c3K0heM21nrMNSIBVEpRVjmDtHpZkSc6wPpZIz9+cIujWZGypml1h4aSSahWc9rCBJbYHY8Hc33V07/xqp4oM2aqQNxpbesKQ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(39860400002)(136003)(366004)(346002)(376002)(396003)(451199015)(86362001)(2906002)(4744005)(38100700002)(5660300002)(186003)(9686003)(478600001)(66476007)(66946007)(33716001)(66556008)(316002)(26005)(6666004)(8676002)(8936002)(44832011)(6512007)(41300700001)(4326008)(6486002)(110136005)(6506007)(83380400001)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?It3E1I2ZQTUeVjiIxPrQf6MeH4dXW/+PBVmGgYJC0u4ti8/LsYxH7BKwtQvJ?=
+ =?us-ascii?Q?C9HY0EVMw8v6mjtYtlRWNayXzzH/pw1oQ5sjTCWUuMQ6MMJB+H887Tyfgu0N?=
+ =?us-ascii?Q?mhZzZuX5gOodeNWTWFp003WbUbIGe4JBhbNZcJ6y69IZviaZtvsp97UergjA?=
+ =?us-ascii?Q?sTJOcVeoWVdHag28SwBn558Sn+0+kLXaUxInrOa3ZPV+5XkSZzLb2MKuLV4l?=
+ =?us-ascii?Q?dVBtOoAE4XsQKedQojzJTVX9Z7a8B6dvPTh5/8igy/bI/scKg11r2X6BT6LI?=
+ =?us-ascii?Q?BYd4qb15J/VHYmh/dL6UoX75ADLiCgp0tNifKLDD9EOEukHe2qpKz7WgFsNp?=
+ =?us-ascii?Q?VR66koQ6Rh1ol1ltZD78ASCrg3A8RRG9bx64VZ0x9joYJBEIzHAMSLEp6X0d?=
+ =?us-ascii?Q?7THB8A0uL1aido4Yv/Mj8HIgqWpH5iu1s7LdwCsE4Uuqc0PO47xma+DNvM8Y?=
+ =?us-ascii?Q?L5i8BWkAW1XMtTcLqf18Wz0TeZiT3UZV5HV0z8c+6PGo8gB0xC4BPfF33tcv?=
+ =?us-ascii?Q?DVkyxHVK19nMut++vZ2NDJSQ8tkYXX30Ipf2/xwChju/sLnP7SYYNUOUj9Cu?=
+ =?us-ascii?Q?lEzb+pKngHFrcN3z9ItPUWVaef/veNo2mRwjAjOHDoWBy4n9rN0LfN5x+3uY?=
+ =?us-ascii?Q?X7OqVUvZtUXYJ7PNsFRvdSoeSnpX+8r8BBm1jccNGtifmXTsAVrqZbuXIsLC?=
+ =?us-ascii?Q?QgslSEE7jT0VlA5i8SV+pRR3mif4b+MQLB4lAvURc/QIu6WUvTciLJQn184p?=
+ =?us-ascii?Q?kPdlzOnu8Co9VwWqWHFN9oVTZZYDseaumfOrP/j+MkwxbNFQcQwOqH1M1Xtl?=
+ =?us-ascii?Q?lxDUObRncKJ3oxxDpduwrBVS/svyhr/fu6GqUV/i0kU/L/4dSFXPNKQRzgdU?=
+ =?us-ascii?Q?m0rq8T1zheoX3JYKvGQbUaekMMiVClMbrEkWjzAqxRimPR/CMWZNcYrqbb0B?=
+ =?us-ascii?Q?2z9xL3fAiWK9lYPy+tGt3naVCvUajO88PmN19i9zrOvm6A+UvV6288gRyboi?=
+ =?us-ascii?Q?u7bjPmftFyPKu0wxvccit9MBmiI2gdQBFzwBWe69ZSAic4TO9crLt+LChXsV?=
+ =?us-ascii?Q?yJDqOC/7jScqzrGr6VVRd0zYmRErZmIO1in2nySuIaZmtwcp7cPX5QOMsNPO?=
+ =?us-ascii?Q?g1la8A1txdTP4SKkPePhgcQ7CPkuL8V75ECQschMmrSKooPPVtSnPmIjE+Tw?=
+ =?us-ascii?Q?uCEXhTwaHL+8lTVlMTyGqs9j1z2ECLvGf4SZfSrEv1qr+cRU4thrBp7qyltY?=
+ =?us-ascii?Q?KhJXN9vQxAhz5Gt5LiU31mLALf/8yYCWetS3XBEWs2746jQ14yFyKSeOPpni?=
+ =?us-ascii?Q?PPPODEexst2XO6AFJSe5pEEwYr9l+Ho3jDHfkKuqNPRTpnVk2olRG8ARC7bt?=
+ =?us-ascii?Q?MOcXKAiYtQWfKRDSxWtKw3zpOVTR7R597HV+nSgZoRew/JkQfISq8h94hRxe?=
+ =?us-ascii?Q?ZXP1dKOK00yCSGLmDmNDIW+uBSNnFKsTlpqEFMPAev0MPoeaAjB0WiEaiNl4?=
+ =?us-ascii?Q?uyPw/FWMMa0rld4HqtieM+B+hYZfRsJICgqDlJDZluk6B/h8AeoQ9aWwWLhB?=
+ =?us-ascii?Q?mv2BYEdhbrYOot67PoPVFuwYT5PyPSePGu6WWj0MM22/gRzWQJ3Nkm3jXqKD?=
+ =?us-ascii?Q?QA=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ddda4ebb-4171-46f7-47d4-08daadc80f36
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2022 09:39:59.1469
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WpeRHBxAo+FcwCPRSrikiHvyiyq0eZ6/7o5UKISlUTZYDCW8BbzqmbhQIfLDqIcZoKOHeJStCcGEhYX5tS9VginyxT5bLIxcmjkfac5YKXU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4531
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-14_05,2022-10-13_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 bulkscore=0
+ malwarescore=0 suspectscore=0 mlxscore=0 adultscore=0 phishscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210140055
+X-Proofpoint-ORIG-GUID: zENKAqVMuaCfQj_P8V6UG9JJwLlITxnJ
+X-Proofpoint-GUID: zENKAqVMuaCfQj_P8V6UG9JJwLlITxnJ
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 2022-10-12 at 20:45 +0200, Miquel Raynal wrote:
-> Hi Nuno,
->=20
-> nuno.sa@analog.com=C2=A0wrote on Wed, 12 Oct 2022 17:16:19 +0200:
->=20
-> > The pattern used in this device does not quite fit in the
-> > iio_device_claim_direct_mode() typical usage. In this case, we want
-> > to
-> > know if we are in buffered mode or not to know if the device is
-> > powered
-> > (buffer mode) or not. And depending on that max30102_get_temp()
-> > will
-> > power on the device if needed. Hence, in order to keep the same
-> > functionality, we try to:
-> >=20
-> > 1. Claim Buffered mode;
-> > 2: If 1) succeeds call max30102_get_temp() without powering on the
-> > =C2=A0=C2=A0 device;
-> > 3: Release Buffered mode;
-> > 4: If 1) fails, Claim Direct mode;
-> > 5: If 4) succeeds call max30102_get_temp() with powering on the
-> > device;
-> > 6: Release Direct mode;
-> > 7: If 4) fails, goto to 1) and try again.
-> >=20
-> > This dance between buffered and direct mode is not particularly
-> > pretty
-> > (as well as the loop introduced by the goto statement) but it does
-> > allow
-> > us to get rid of the mlock usage while keeping the same behavior.
->=20
-> What about adding a TODO comment saying something like: "this comes
-> from static analysis and helped dropping mlock access, but someone
-> with
-> the device needs to figure out if we can simplify this dance"?
-> Because
-> the reason behind all this is that we don't want to risk breaking the
-> driver, but perhaps a simpler approach would work, right?
->=20
+This bug is basically harmless, although it will trigger a runtime warning
+if you use KMSan.  On the first iteration through the loop, the
+"best_delta" variable is uninitialized so re-order the condition to
+prevent reading uninitialized memory.
 
-Hi Miquel,
+Fixes: 4aefe1c2bd0c ("iio: imu: add Bosch Sensortec BNO055 core driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/iio/imu/bno055/bno055.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-AFAIU, either the device is powered (when buffer mode enabled) and we
-can do the reading or it's not and we need to power it on/off
-"manually" while making sure we don't race against enable/disabling
-buffers. This "dance" is needed mainly to make sure that we grab
-'mlock' one way or another... The other way would be to use some
-specific device lock together with a flag (as discussed) but as
-discussed with Jonathan we decided to go down this road... So,
-honestly, I don't really see the necessity of "marking" this code with
-a TODO but of course if someone comes in with something simpler, great
-:).
-
-Anyways, as I said, I'm not really keen in spinning a new version to
-add this comment so I will defer the decision to Jonathan :) =20
-
-Thanks for the help!
-- Nuno S=C3=A1
+diff --git a/drivers/iio/imu/bno055/bno055.c b/drivers/iio/imu/bno055/bno055.c
+index 307557a609e3..52744dd98e65 100644
+--- a/drivers/iio/imu/bno055/bno055.c
++++ b/drivers/iio/imu/bno055/bno055.c
+@@ -632,7 +632,7 @@ static int bno055_set_regmask(struct bno055_priv *priv, int val, int val2,
+ 			return -EINVAL;
+ 		}
+ 		delta = abs(tbl_val - req_val);
+-		if (delta < best_delta || first) {
++		if (first || delta < best_delta) {
+ 			best_delta = delta;
+ 			hwval = i;
+ 			first = false;
+-- 
+2.35.1
 
