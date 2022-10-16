@@ -2,119 +2,125 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 402E5C433FE
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Oct 2022 16:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8278EC4332F
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Oct 2022 17:10:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229648AbiJPQlR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 16 Oct 2022 12:41:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44974 "EHLO
+        id S229749AbiJPRKP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 16 Oct 2022 13:10:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbiJPQlQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Oct 2022 12:41:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 110AD32B96;
-        Sun, 16 Oct 2022 09:41:16 -0700 (PDT)
+        with ESMTP id S230084AbiJPRKD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Oct 2022 13:10:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E86248F1
+        for <linux-iio@vger.kernel.org>; Sun, 16 Oct 2022 10:09:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CCDB60C33;
-        Sun, 16 Oct 2022 16:41:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB3A0C433C1;
-        Sun, 16 Oct 2022 16:41:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13DF4B80D41
+        for <linux-iio@vger.kernel.org>; Sun, 16 Oct 2022 17:09:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E422BC433D6;
+        Sun, 16 Oct 2022 17:09:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665938475;
-        bh=t8ofXfKPglvkpGcnpXI37W717YDPlstC6EYBYH4PA1s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hsUC7SeTWc0K2Kws4CZjjmrAMpPxS/wB3+76UgG2uKumQwD7M0H9MF8rM/K9XlGVv
-         sZA3uV63nhu56nWZU1hbRy2n9uLb769DOFrVIzzf9eF1/YCL3Pcdx7Pcz+IRDzuLtl
-         sCe4ei8G0Z4jpjposDtd43RRL5orLAJyprS5KOq1EVPtJ+M7JWezvvGB2oxjB06zmB
-         Q6irutQgyiDsgv797aIJn11bYEmzRh0Fbo536hlPs3Lw7gpCo1l6IKs7rWTM+KYJwZ
-         GKV7iqKKuA2p7zuXJlJTebLtmzY0vio0xdOfkSXz3pWXvlrL+3y2LPO7SLdorQzI7N
-         hf7D1CmO1c+fA==
-Date:   Sun, 16 Oct 2022 17:41:41 +0100
+        s=k20201202; t=1665940172;
+        bh=oYhj+l2sg4gIFpJawaeeru5wkinVX/YuP3hnhwyO2tw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nTiHkApKX+XkdK86Wjp4rR/a9nhSF+3FHaSbtv7YqNNwdzg+qY3ZOG0D9zHrK6sSm
+         WyjSUBML9jZ+rEoiQBSlWRFfGi1e8zWfx1r0rx3MIGJJq8VhksfaFLsvQUybqz32r+
+         enJ1jOe9dgzZcZoL+nIuq4FHSuU8Zis9ZemfIBT267LphK7JF3K4iHOHGRQbMSsImI
+         MMfuyZjguA2yo2IMTCdLju8ndos38d9Cuo5gTybALV0J9r0/7kLoTxdN1Ddm3qS1CN
+         XtSjRbv47T13cMzQxDZuTLN63irSj4kpzim8MIQ2s4B9RCyrKGEDikBm1SVHBVIlB2
+         LmPm2jJ1q5VmA==
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     =?UTF-8?B?TcOlcnRlbg==?= Lindahl <marten.lindahl@axis.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-pm@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <kernel@axis.com>
-Subject: Re: [PATCH 0/2] Synchronize PM runtime enable state with parent
-Message-ID: <20221016174141.0abc281d@jic23-huawei>
-In-Reply-To: <20220929144618.1086985-1-marten.lindahl@axis.com>
-References: <20220929144618.1086985-1-marten.lindahl@axis.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+To:     linux-iio@vger.kernel.org
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 3/5] iio: adc: cc10001: Use devm_clk_get_enabled() to avoid boilerplate.
+Date:   Sun, 16 Oct 2022 18:09:48 +0100
+Message-Id: <20221016170950.387751-4-jic23@kernel.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20221016170950.387751-1-jic23@kernel.org>
+References: <20221016170950.387751-1-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 29 Sep 2022 16:46:16 +0200
-M=C3=A5rten Lindahl <marten.lindahl@axis.com> wrote:
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-> Hi!
->=20
-> A device that creates a child character device with cdev_device_add by
-> default creates a PM sysfs group with power attributes for userspace
-> control. This means that the power attributes monitors the child device
-> only and thus does not reflect the parent device PM runtime behavior.
->=20
-> But as the PM runtime framework (rpm_suspend/rpm_resume) operates not
-> only on a single device that has been enabled for runtime PM, but also
-> on its parent, it should be possible to synchronize the child and the
-> parent so that the power attribute monitoring reflects the child and
-> the parent as one.
->=20
-> As an example, if an i2c_client device registers an iio_device, the
-> iio_device will create sysfs power/attribute nodes for userspace
-> control. But if the dev_pm_ops with resume/suspend callbacks is
-> attached to the struct i2c_driver.driver.pm, the PM runtime needs to be
-> enabled for the i2c_client device and not for the child iio_device.
->=20
-> In this case PM runtime can be enabled for the i2c_client device and
-> suspend/resume callbacks will be triggered, but the child sysfs power
-> attributes will be visible but marked as 'unsupported' and can not be
-> used for control or monitoring. This can be confusing as the sysfs
-> device node presents the i2c_client and the iio_device as one device.
->=20
-> A solution to this is to enable runtime PM not only for the i2c_device
-> but for the iio_device child also. As there already exists a link from
-> the child to its parent and both are enabled, all sysfs
-> control/monitoring now reflects both devices, which from a userspace
-> perspective makes more sense.
->=20
-> These patches [1] adds a function to the PM runtime framework to
-> synchronize the PM runtime enable state of a device with its parent,
-> and [2] applies it to an iio device, where the described issue exists.
+As this driver just enables clock in probe() and disables in remove()
+we can use this new function to replace boilerplate and simplify
+error paths.
 
-Hi M=C3=A5rten,
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ drivers/iio/adc/cc10001_adc.c | 18 ++++--------------
+ 1 file changed, 4 insertions(+), 14 deletions(-)
 
-This seems sensible to me. With hindsight we should have probably
-disabled the pm interface for IIO devices. It's a fun question on=20
-whether we could do so now without 'breaking' some user.  Obviously
-the users wouldn't work today, for the reasons you point out, but
-that doesn't mean some program isn't relying on the files being there.
-
-Anyhow, I'm looking forward to input from others on this.
-
-Jonathan
-
-
-=20
->=20
-> Kind regards
-> M=C3=A5rten Lindahl
->=20
-> M=C3=A5rten Lindahl (2):
->   PM: runtime: Synchronize PM runtime enable state with parent
->   iio: light: vcnl4000: Incorporate iio_device with PM runtime
->=20
->  drivers/base/power/runtime.c | 18 ++++++++++++++++++
->  drivers/iio/light/vcnl4000.c |  1 +
->  include/linux/pm_runtime.h   |  2 ++
->  3 files changed, 21 insertions(+)
->=20
+diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
+index 4f42ceb40ded..332f0e06369f 100644
+--- a/drivers/iio/adc/cc10001_adc.c
++++ b/drivers/iio/adc/cc10001_adc.c
+@@ -352,23 +352,16 @@ static int cc10001_adc_probe(struct platform_device *pdev)
+ 	if (IS_ERR(adc_dev->reg_base))
+ 		return PTR_ERR(adc_dev->reg_base);
+ 
+-	adc_dev->adc_clk = devm_clk_get(dev, "adc");
++	adc_dev->adc_clk = devm_clk_get_enabled(dev, "adc");
+ 	if (IS_ERR(adc_dev->adc_clk)) {
+ 		dev_err(dev, "failed to get the clock\n");
+ 		return PTR_ERR(adc_dev->adc_clk);
+ 	}
+ 
+-	ret = clk_prepare_enable(adc_dev->adc_clk);
+-	if (ret) {
+-		dev_err(dev, "failed to enable the clock\n");
+-		return ret;
+-	}
+-
+ 	adc_clk_rate = clk_get_rate(adc_dev->adc_clk);
+ 	if (!adc_clk_rate) {
+-		ret = -EINVAL;
+ 		dev_err(dev, "null clock rate!\n");
+-		goto err_disable_clk;
++		return -EINVAL;
+ 	}
+ 
+ 	adc_dev->eoc_delay_ns = NSEC_PER_SEC / adc_clk_rate;
+@@ -385,14 +378,14 @@ static int cc10001_adc_probe(struct platform_device *pdev)
+ 	/* Setup the ADC channels available on the device */
+ 	ret = cc10001_adc_channel_init(indio_dev, channel_map);
+ 	if (ret < 0)
+-		goto err_disable_clk;
++		return ret;
+ 
+ 	mutex_init(&adc_dev->lock);
+ 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+ 					 &cc10001_adc_trigger_h, NULL);
+ 	if (ret < 0)
+-		goto err_disable_clk;
++		return ret;
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0)
+@@ -404,8 +397,6 @@ static int cc10001_adc_probe(struct platform_device *pdev)
+ 
+ err_cleanup_buffer:
+ 	iio_triggered_buffer_cleanup(indio_dev);
+-err_disable_clk:
+-	clk_disable_unprepare(adc_dev->adc_clk);
+ 	return ret;
+ }
+ 
+@@ -417,7 +408,6 @@ static int cc10001_adc_remove(struct platform_device *pdev)
+ 	cc10001_adc_power_down(adc_dev);
+ 	iio_device_unregister(indio_dev);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+-	clk_disable_unprepare(adc_dev->adc_clk);
+ 
+ 	return 0;
+ }
+-- 
+2.37.2
 
