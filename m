@@ -2,44 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B1EC4332F
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Oct 2022 17:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B359C4332F
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Oct 2022 17:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230143AbiJPRK1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 16 Oct 2022 13:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53824 "EHLO
+        id S230221AbiJPRKb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 16 Oct 2022 13:10:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229983AbiJPRKO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Oct 2022 13:10:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CBF3121F
-        for <linux-iio@vger.kernel.org>; Sun, 16 Oct 2022 10:10:08 -0700 (PDT)
+        with ESMTP id S230053AbiJPRKR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Oct 2022 13:10:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E4A10FC7
+        for <linux-iio@vger.kernel.org>; Sun, 16 Oct 2022 10:10:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94451B80D44
-        for <linux-iio@vger.kernel.org>; Sun, 16 Oct 2022 17:09:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 919E4C433D7;
-        Sun, 16 Oct 2022 17:09:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B7CBB80D2B
+        for <linux-iio@vger.kernel.org>; Sun, 16 Oct 2022 17:09:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3DDCC433D7;
+        Sun, 16 Oct 2022 17:09:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665940175;
-        bh=OLtfYai7gFMwNSnBiWGLmqeLgGk5N+D5CRtvVtWILBQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q6IPmDO8e0Clr+DCQ0WwLJZgvoegv3AWibf9KiLSc5JT5Rf7PeWzKHY6/NKFNUWZC
-         QCbLz8Ip5X1sI9uT2JJtm1rIyItWndpN/anepyKfCtzbVdnCev2War4jIUIaFUPZnw
-         7k0vPkXFuesrMQJcxconqPuGRQxR6ruB6Q/67hHhsByNQsPcRVlS8O1oj01fdI2dOm
-         Zpv1HdEwTFxR7Ckaw6D32EdINnI1liZYhDg9WP9C4bMGNV+MPQJrDPc5UF21kS4sEu
-         fAdw95zBy3BmN7rX48+sHMX80mR9aRcQOmz3O/uwhGuGCf8ZE9KSkkHe+GyJyNnGpB
-         CHaWo6V3UbbKA==
+        s=k20201202; t=1665940168;
+        bh=Fz75YTOMmwiCYQOS4LbO75iZ8wC5dP72cwi1ZTjmTSc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=D5DXl/6708gwJtaqg/mv/MweAZipGKLApxRRTEVBVxnrWDeLCKSIMIbSo46XRewZP
+         GffRsA0SWDMEkm4REnp0KhQNOOXJN0S+qQjbYHr6Kbao6Es4QbRPIykrt1muNV/Mor
+         LPQAxLenXjsrOWNybapIjDSHjORiKJ/6P+ngnT6XqaQ02b9jlo0D62eJ8YLqDegKDC
+         iW5v7/jnVe0+ln6hWfPcjLeyBRfelYIofaBcKZkGSHjMn64GzmhWbErMN5YFqAC/PI
+         whMkegcpp8X0xmGXe6IupN+Fx7IuqVEJndE3eS0gnZYGApowW1QSgSf1mFxm5Bg6Fs
+         WXm7sBi1V6sCg==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5/5] iio: adc: cc10001: Switch remaining IIO calls in probe to devm_ forms.
-Date:   Sun, 16 Oct 2022 18:09:50 +0100
-Message-Id: <20221016170950.387751-6-jic23@kernel.org>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Phani Movva <Phani.Movva@imgtec.com>,
+        Naidu Tellapati <naidu.tellapati@imgtec.com>
+Subject: [PATCH 0/5] iio: adc: cc10001: Devm conversion
+Date:   Sun, 16 Oct 2022 18:09:45 +0100
+Message-Id: <20221016170950.387751-1-jic23@kernel.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221016170950.387751-1-jic23@kernel.org>
-References: <20221016170950.387751-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -48,64 +48,29 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-As everything else is now handled by devm managed releases the
-triggered buffer setup and IIO device registration can also be
-moved over to their devm forms allowing dropping of remove().
+A very simple example of how using devm_ managed calls for everything
+can reduce complexity error handling and removal ordering in a driver.
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
----
- drivers/iio/adc/cc10001_adc.c | 28 +++-------------------------
- 1 file changed, 3 insertions(+), 25 deletions(-)
+Note I don't have one of these to test so if anyone has a chance to do
+so or give these a quick look at that would be much appreciated.
+Note this is a fairly old driver, so relative unlikely original authors
+still have access.
 
-diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
-index b0daaec7ff16..ab71004ea8f1 100644
---- a/drivers/iio/adc/cc10001_adc.c
-+++ b/drivers/iio/adc/cc10001_adc.c
-@@ -390,33 +390,12 @@ static int cc10001_adc_probe(struct platform_device *pdev)
- 
- 	mutex_init(&adc_dev->lock);
- 
--	ret = iio_triggered_buffer_setup(indio_dev, NULL,
--					 &cc10001_adc_trigger_h, NULL);
-+	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
-+					      &cc10001_adc_trigger_h, NULL);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = iio_device_register(indio_dev);
--	if (ret < 0)
--		goto err_cleanup_buffer;
--
--	platform_set_drvdata(pdev, indio_dev);
--
--	return 0;
--
--err_cleanup_buffer:
--	iio_triggered_buffer_cleanup(indio_dev);
--	return ret;
--}
--
--static int cc10001_adc_remove(struct platform_device *pdev)
--{
--	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
--
--	iio_device_unregister(indio_dev);
--	iio_triggered_buffer_cleanup(indio_dev);
--
--	return 0;
-+	return devm_iio_device_register(dev, indio_dev);
- }
- 
- static const struct of_device_id cc10001_adc_dt_ids[] = {
-@@ -431,7 +410,6 @@ static struct platform_driver cc10001_adc_driver = {
- 		.of_match_table = cc10001_adc_dt_ids,
- 	},
- 	.probe	= cc10001_adc_probe,
--	.remove	= cc10001_adc_remove,
- };
- module_platform_driver(cc10001_adc_driver);
- 
+Cc: Phani Movva <Phani.Movva@imgtec.com>
+Cc: Naidu Tellapati <naidu.tellapati@imgtec.com>
+
+Jonathan Cameron (5):
+  iio: adc: cc10001: Add local struct device *dev variable to avoid
+    repitition
+  iio: adc: cc10001: Add devm_add_action_or_reset() to disable
+    regulator.
+  iio: adc: cc10001: Use devm_clk_get_enabled() to avoid boilerplate.
+  iio: adc: cc10001: Use devm_ to call device power down.
+  iio: adc: cc10001: Switch remaining IIO calls in probe to devm_ forms.
+
+ drivers/iio/adc/cc10001_adc.c | 89 +++++++++++++----------------------
+ 1 file changed, 34 insertions(+), 55 deletions(-)
+
 -- 
 2.37.2
 
