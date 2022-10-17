@@ -2,58 +2,60 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBEB6C433FE
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Oct 2022 06:26:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C47C433FE
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Oct 2022 06:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229903AbiJQG0Y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Oct 2022 02:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
+        id S229660AbiJQGaU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Oct 2022 02:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230036AbiJQG0U (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2022 02:26:20 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80D952DD7
-        for <linux-iio@vger.kernel.org>; Sun, 16 Oct 2022 23:26:19 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id o12so7498219lfq.9
-        for <linux-iio@vger.kernel.org>; Sun, 16 Oct 2022 23:26:19 -0700 (PDT)
+        with ESMTP id S229837AbiJQGaT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2022 02:30:19 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFDAB3134E
+        for <linux-iio@vger.kernel.org>; Sun, 16 Oct 2022 23:30:15 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id b2so15988228lfp.6
+        for <linux-iio@vger.kernel.org>; Sun, 16 Oct 2022 23:30:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cLlSjPOha0bRMNkyaEpt0McUjrdBOn8HnBMEtPT32xU=;
-        b=oSGLmEeIfL4I+ADVX6x38lsxM77Ey4SCm+gU7Gea3s0AdfJViCfKsVuUJWI/6uax+c
-         5vvktZ0CyybhY7gq5B6anvNyVSW40+6F8HewFtAWW4AIImlhFFfU0P7IMtcP3ceUgin2
-         K+kAbI/kZO7Yxrb8JqY9l9A2sfKKcBfn71qS6HXWmWTv2wtlYUIw7DLYpp5nr3rUt9pt
-         mcazkfJLnCm3Nhjk06zEW4oe4Uh4b34InSJX9omczgGYPTzWq/Zv6PxcDkzYZmcx9+RO
-         Eh3IvO+ZHY3drxBJn/CnqVQqwcYvd8MoxWw/mSmjeM4W2ZG34E5tBuP6zfThbpvGRA3w
-         9ohg==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=b09P+MxFZecGyxS3ZeNm5VKWma2gzdq3aWfTA35sKf4=;
+        b=Upw3iMknJuuqgRJX2Taz1CWUYYh47ZMf87RKclrbkTAfm3zFwcwmpMaj1PO2SvCeRU
+         hbHK1T+L47f3gIsuJOh3uClXStyceIbpxudAG54v2bq8SHdzGARs+BXRrq4i5fDu2x5m
+         VnC+6pNV9PKNiw723Kwgu8MxNsH0z8lfYYt2hv2gKNedhpJtVrMstthBkqV3E7x4T9P7
+         EVLiTGlTzQYvY5rvzP1cP1WqkwzuEQKUdYsQtQ3CY+BVsi0YYo/3Uqg1eHuQBcQL6AeT
+         8452PLTmHp2x5r4zxoDGXQyIM3cI7p0U+lt9beP171Tkrfc4g1E6v2jTIuJYyPhdgVwJ
+         Pw7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cLlSjPOha0bRMNkyaEpt0McUjrdBOn8HnBMEtPT32xU=;
-        b=e7dyGn8w8Q1G1xNaQXVExI3L7odXdtBA6L0qLIHUDIm6TxWnyPXif6ofYix3IY1Sci
-         l34GPuPzZPqm6nq7EZTwG6ukIkS6klbuu7KfLDE13YL2UiizYUTT2dD7do65ehrVwZOb
-         sr2n1ScaFFKFCvoeMgZiP2CZeQxY1I9zgTwcMFEzYwVpt1rrUv8CM/zGSiuu9tZLgOxz
-         ncimaujA0f3QZBB88s/PgqxZjbCo6QjkltrdjNk7kDrDRZbXTYK6RQ690bqaBQyG/VUb
-         hWl1ppXdoHsez+9bst9Fgu1TNRGhYaxuBvOo7cBb7GWRkB3dltntPWEysZb8V9zbYlg7
-         4pcA==
-X-Gm-Message-State: ACrzQf3PFdaXkjh17r9wul2lD02scrBLdKQqQn6TurS+L/HyIW1A/cNA
-        XaDmbVW6BPeMmSP0tl9uxX4=
-X-Google-Smtp-Source: AMsMyM6p0SMaenddt8fZenUOdJW8e45Ekhvl7QAV3AaQg1cP9ixHpcsoS35hjz6Z0RnSbBiF7ZeZMQ==
-X-Received: by 2002:a05:6512:1287:b0:4a2:a897:aa5f with SMTP id u7-20020a056512128700b004a2a897aa5fmr3714554lfs.612.1665987978168;
-        Sun, 16 Oct 2022 23:26:18 -0700 (PDT)
+        bh=b09P+MxFZecGyxS3ZeNm5VKWma2gzdq3aWfTA35sKf4=;
+        b=JUOute0IvY7o8YNZlsDzNZPakuQwOSfadsOKGuy5G4fGiif43LO1FlqlwEXO22FDv4
+         JmNLJVcvXlFFY7luq4r6wMuGB7JTBSFmyd49QBoZrS2eHQUrzaI3I05/2k+Q4GmY7us5
+         kN23zTyrjVy98EeEBMaFUtJ0Bk0owaLLlrULqkTnqiiT4FHGChPVfPXpEQFFTsWZbiCF
+         sQRp9p5/JEWgGRUIkhqcvkccpSJNFAQYXcLmWUIkFt/LbzuBZki2rfR0362M0mibWWWx
+         adn1nQX1norqQaZLzM4G5kHP1AFtnKxlajq6Qxcc5Mipqm7no6W0kOCogEhcyTiXmMOC
+         3UsQ==
+X-Gm-Message-State: ACrzQf0WfhiLr9+YwBcLYPhqo3NLl2oujARHFTAOWufn46Jyhr+xRuI8
+        WFaXcaYIMehr/Si0Ann3GX4=
+X-Google-Smtp-Source: AMsMyM7yP3MRYessBmblfOzL/R4wN9yer9VLwjwW//N2c7GnYWJi7S/2aL9zEhdZv+Zp7KrkmHJmgg==
+X-Received: by 2002:a05:6512:318d:b0:4a2:515c:6195 with SMTP id i13-20020a056512318d00b004a2515c6195mr3148369lfe.249.1665988213842;
+        Sun, 16 Oct 2022 23:30:13 -0700 (PDT)
 Received: from ?IPV6:2001:14ba:16f3:4a00::4? (dc75zzyyyyyyyyyyyyycy-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::4])
-        by smtp.gmail.com with ESMTPSA id t14-20020a056512208e00b004971a83f839sm1313507lfr.39.2022.10.16.23.26.16
+        by smtp.gmail.com with ESMTPSA id s12-20020a056512214c00b0048b3926351bsm1308631lfr.56.2022.10.16.23.30.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 16 Oct 2022 23:26:17 -0700 (PDT)
-Message-ID: <e4dbfb4d-cd92-f72f-caf0-4eece7678de7@gmail.com>
-Date:   Mon, 17 Oct 2022 09:26:15 +0300
+        Sun, 16 Oct 2022 23:30:13 -0700 (PDT)
+Message-ID: <b6427817-6b44-c3c6-1e6d-4472e3eb066a@gmail.com>
+Date:   Mon, 17 Oct 2022 09:30:01 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.3.0
+Subject: Re: [PATCH 14/14] iio: pressure: ms5611: Switch to fully devm_
+ managed registration.
 Content-Language: en-US
 To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
@@ -71,11 +73,9 @@ Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
         Tomasz Duszynski <tduszyns@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
 References: <20221016163409.320197-1-jic23@kernel.org>
- <20221016163409.320197-14-jic23@kernel.org>
+ <20221016163409.320197-15-jic23@kernel.org>
 From:   Matti Vaittinen <mazziesaccount@gmail.com>
-Subject: Re: [PATCH 13/14] iio: pressure: ms5611: Use
- devm_regulator_get_enable()
-In-Reply-To: <20221016163409.320197-14-jic23@kernel.org>
+In-Reply-To: <20221016163409.320197-15-jic23@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -85,40 +85,26 @@ X-Mailing-List: linux-iio@vger.kernel.org
 On 10/16/22 19:34, Jonathan Cameron wrote:
 > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> This driver only turns the power on at probe and off via a custom
-> devm_add_action_or_reset() callback.
+> All the remaining calls in probe() have devm_ equivalents so
+> switching to those allows the remove() callbacks to be deleted.
+> No functional change.
 
-I think this one did not use devm_add_action_or_reset()
+Right :) So please ignore my last comment in the patch 13/14 :) The one 
+concerning the commit message is still valid though :)
 
-> The new devm_regulator_get_enable()
-> replaces this boilerplate code. Some additional refactoring to drop
-> now unnecessary unwinding after this change.
 > 
 > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > Cc: Tomasz Duszynski <tduszyns@gmail.com>
-> ---
->   drivers/iio/pressure/ms5611.h      |  3 ---
->   drivers/iio/pressure/ms5611_core.c | 32 +++++-------------------------
->   2 files changed, 5 insertions(+), 30 deletions(-)
-> 
 
-// snip
-
-> @@ -477,7 +456,6 @@ void ms5611_remove(struct iio_dev *indio_dev)
->   {
->   	iio_device_unregister(indio_dev);
->   	iio_triggered_buffer_cleanup(indio_dev);
-> -	ms5611_fini(indio_dev);
->   }
->   EXPORT_SYMBOL_NS(ms5611_remove, IIO_MS5611);
-
-Just a thought but maybe the whole remove() could be done using devm()? 
-(As far as I can say the current flow works. AFAICS the devm unwinding 
-is done after the remove() has been ran. But perhaps it would be cleaner 
-if the remove() would not need to be exported at all.)
-
-With, or without the remove() removed, if commit description is fixed:
 Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
+
+> ---
+>   drivers/iio/pressure/ms5611.h      |  1 -
+>   drivers/iio/pressure/ms5611_core.c | 17 +++--------------
+>   drivers/iio/pressure/ms5611_i2c.c  |  6 ------
+>   drivers/iio/pressure/ms5611_spi.c  |  6 ------
+>   4 files changed, 3 insertions(+), 27 deletions(-)
+> 
 
 -- 
 Matti Vaittinen
