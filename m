@@ -2,146 +2,294 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 953FBC43217
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Oct 2022 23:20:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0252C433FE
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Oct 2022 23:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229514AbiJQXUc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Oct 2022 19:20:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46984 "EHLO
+        id S230467AbiJQX1H (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Oct 2022 19:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230112AbiJQXUa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2022 19:20:30 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B4A5FDFD;
-        Mon, 17 Oct 2022 16:20:27 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id g1so19931505lfu.12;
-        Mon, 17 Oct 2022 16:20:27 -0700 (PDT)
+        with ESMTP id S230309AbiJQX1F (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2022 19:27:05 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D027B1CE
+        for <linux-iio@vger.kernel.org>; Mon, 17 Oct 2022 16:26:57 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id m6so7700351qkm.4
+        for <linux-iio@vger.kernel.org>; Mon, 17 Oct 2022 16:26:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :references:from:to:cc:subject:date:message-id:reply-to;
-        bh=hPjgbmyufVQcQ6EQc4g+TbLptg1Ow4K6/gfkQdTeaBk=;
-        b=B6/s8a/izQ/nkmMWEUBSlIGceBkIBbBxCyoJTZIZiQ0RsBeQpu80tBqNYIL6+R0eo4
-         kO7PHZUKpbPz32g5uarTU10cBEqaYSR7oy8OCNyYfyMzL0RDWirFs7ZGZPtjwXDezgNK
-         yF+Aamf5c4G7Tuf2Gs1fq+lbqkuZz9i7b7dC8WvOLXV0B1uqiL5DKnRphq34xw31RkKe
-         VzGu/Vn4LF7mOtoQ/8q+TYY8C5KoGgWLMNwXOQK6dT4clhITPAgRnuVOdKGJCP/7ji+n
-         ma5WEj2lBjg3tlq+dkpen1j0SSl/TVaoW38fSOgE3GfkV1x1DF65kOtMNR2poiBYNUn4
-         2jYw==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4W8JXVxkfTvJKUrbyhKtZjIBoib4NhTlgPSyqKyLEr8=;
+        b=G+vsnlgbO5Pa03zpyP7hN0gD4R+Fexe6SltgkEhVExXDjsPDXhr7uCs1sT9C3d4ycS
+         76gBD+JCpcWxbpn38i7o6FEmjrM6T5SC3hA1dHBvDyENasXZZ06JhUe2G6gCWPgMsnP7
+         QC7HzgTvExFQs1Q+lpcyHm6L6XoBgcTL2KqQ5r4JT6K0QJsF6L4S4wnCJuXe3SuIcKE/
+         jWpUX0GF7fOAU45VaJbohmL7r8ucrQC3GIkYuy6Vi348yhipMY2XcrTOJ2sTOY+iGzqc
+         ht2Vcrv7PxVrpLHZ6Iq5arwH1RuQEO36Gf2Y7VpG/Rhrv3KpyK0hyDfgbUNLkb85j3kv
+         Q/pA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :references:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hPjgbmyufVQcQ6EQc4g+TbLptg1Ow4K6/gfkQdTeaBk=;
-        b=bt3hsB9PX4uquSPRIkTswhzSpvcR69Gw1cno6DmWLeFOS2gjodH1EyyYm6mNeE1/Iy
-         LnPQh7JTPrHweKnlYhfhKkb/ANSAuxWEmZDcj829zRFVBoTMz+f4L0iGoJbYGjx2S9EB
-         T76AV3SuM2dt5Jf5V0r43V5I5FsemJ/Nus5WY7zKATrCJB7h3KNJErmYh6iY4Zu61qwQ
-         oBhlYDlhewObOrYFvUYk8b2I7Jh40lCRnapprXYjDPKTGveXf0ibIMjjCUf93yoLzZAr
-         LNjmoPKpL6XbNsEyeCqQUw1rMPQaqEP91hOur4/nLECf9YUrm1pzm+YejyN/L3/jrS3A
-         4kcg==
-X-Gm-Message-State: ACrzQf0Fj4XOnucFxZkCYDJNwVm1QoLP/0D4m/mQ8lWEecNjP9ux7se0
-        LbC1PMsMNn+xwcT87KxRdZTTkBobCTtyZA==
-X-Google-Smtp-Source: AMsMyM4pCX+WNfC/CXNNsawWuYBaaZwuLJ/RgrcmgBhzoQzrC1lLwHLEE9fH6Fy3w2jJM3+OHQ32FQ==
-X-Received: by 2002:a05:6000:184e:b0:22e:4612:496d with SMTP id c14-20020a056000184e00b0022e4612496dmr56928wri.91.1666047969456;
-        Mon, 17 Oct 2022 16:06:09 -0700 (PDT)
-Received: from localhost (94.197.37.182.threembb.co.uk. [94.197.37.182])
-        by smtp.gmail.com with ESMTPSA id v2-20020a5d4b02000000b0022ed6ff3a96sm9371634wrq.39.2022.10.17.16.06.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Oct 2022 16:06:08 -0700 (PDT)
-References: <20221016234335.904212-1-aidanmacdonald.0x0@gmail.com>
- <20221017184419.62d365c1@jic23-huawei>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        wens@csie.org, lee.jones@linaro.org, sre@kernel.org,
-        lgirdwood@gmail.com, broonie@kernel.org, lars@metafoo.de,
-        andy.shevchenko@gmail.com, linus.walleij@linaro.org, brgl@bgdev.pl,
-        michael@walle.cc, samuel@sholland.org, linux-iio@vger.kernel.org,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 00/13] Add support for AXP192 PMIC
-Date:   Mon, 17 Oct 2022 23:21:32 +0100
-In-reply-to: <20221017184419.62d365c1@jic23-huawei>
-Message-ID: <LYfRwE3pxZfgZBDC6gwvsSrHWqcSQXHK@localhost>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=4W8JXVxkfTvJKUrbyhKtZjIBoib4NhTlgPSyqKyLEr8=;
+        b=5IragfjmxhaqIZG+uO9Qt2+4ZxNnZd6+2aLeaUrsGV2FbZZZd87YzLRUc+1Nvcs4pU
+         bvsGq8MNwqvQS9MkJ5vMFHG7r6yJz5t81U/QAQw7nV6kNGGM9/pbFis2Nz5FF4EMTRdb
+         UcWs+gQ1woci7rOKp3wv8c1NAyrxaqiZDIQ49kx3gXuF484Y2EVAgKK50tzLFKxXwWyY
+         vKmHMwt27KgfEpRIVvo1XHm8jb1QTvWgcPMxq9FArKDubb7oXEF0WeLoy+Kgx/pPIGiH
+         B1HTezhujnSjhV3+jrBpSUWe8MtIkcCBXk18CiA/OKcJZ2eYhnFZgEalDMhx1rC9snyT
+         B5bg==
+X-Gm-Message-State: ACrzQf2zKVlIxutkv/GJBEQnD5IekzN7KSeCUrgppJV431lLTT0E9IjG
+        fZV8WcPAEsvvfEbXmvnJMXLSwQ==
+X-Google-Smtp-Source: AMsMyM4vOBjMwiJtKPS5R4xR7f2wRxpBaUMOkumfB03fAChrdM7d0lETEUVWtQIdGvSvtygV5f0tQA==
+X-Received: by 2002:a05:620a:f12:b0:6cf:bf70:9ee4 with SMTP id v18-20020a05620a0f1200b006cfbf709ee4mr35523qkl.608.1666049216422;
+        Mon, 17 Oct 2022 16:26:56 -0700 (PDT)
+Received: from [192.168.10.124] (pool-72-83-177-149.washdc.east.verizon.net. [72.83.177.149])
+        by smtp.gmail.com with ESMTPSA id y2-20020a05620a0e0200b006ee8874f5d8sm899100qkm.28.2022.10.17.16.26.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Oct 2022 16:26:55 -0700 (PDT)
+Message-ID: <78d1d7df-a153-37f6-57c8-289c5ab4b981@linaro.org>
+Date:   Mon, 17 Oct 2022 19:26:54 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH 2/3] dt-bindings: iio: temperature: ltc2983: support more
+ parts
+Content-Language: en-US
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+References: <20221014123724.1401011-1-demonsingur@gmail.com>
+ <20221014123724.1401011-3-demonsingur@gmail.com>
+ <28c88be7-a416-3612-3e13-5346a6e92565@linaro.org>
+ <df784d20-0464-ad08-178a-1639d313489b@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <df784d20-0464-ad08-178a-1639d313489b@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-
-Jonathan Cameron <jic23@kernel.org> writes:
-
-> On Mon, 17 Oct 2022 00:43:22 +0100
-> Aidan MacDonald <aidanmacdonald.0x0@gmail.com> wrote:
->
->> This series adds support for the AXP192 PMIC to the AXP20x MFD driver
->> framework, including support for regulators, ADCs, and AC/USB/battery
->> power supplies.
+On 17/10/2022 02:53, Cosmin Tanislav wrote:
+> 
+> 
+> On 10/17/22 04:59, Krzysztof Kozlowski wrote:
+>> On 14/10/2022 08:37, Cosmin Tanislav wrote:
+>>> From: Cosmin Tanislav <cosmin.tanislav@analog.com>
+>>>
+>>> Add support for the following parts:
+>>>   * LTC2984
+>>>   * LTC2986
+>>>   * LTM2985
+>>>
+>>> The LTC2984 is a variant of the LTC2983 with EEPROM.
+>>> The LTC2986 is a variant of the LTC2983 with only 10 channels,
+>>> EEPROM and support for active analog temperature sensors.
+>>> The LTM2985 is software-compatible with the LTC2986.
+>>>
+>>> Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
+>>> ---
+>>>   .../bindings/iio/temperature/adi,ltc2983.yaml | 63 +++++++++++++++++--
+>>>   1 file changed, 59 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
+>>> index 722781aa4697..c33ab524fb64 100644
+>>> --- a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
+>>> +++ b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
+>>> @@ -4,19 +4,27 @@
+>>>   $id: http://devicetree.org/schemas/iio/temperature/adi,ltc2983.yaml#
+>>>   $schema: http://devicetree.org/meta-schemas/core.yaml#
+>>>   
+>>> -title: Analog Devices LTC2983 Multi-sensor Temperature system
+>>> +title: Analog Devices LTC2983, LTC2986, LTM2985 Multi-sensor Temperature system
+>>>   
+>>>   maintainers:
+>>>     - Nuno Sá <nuno.sa@analog.com>
+>>>   
+>>>   description: |
+>>> -  Analog Devices LTC2983 Multi-Sensor Digital Temperature Measurement System
+>>> +  Analog Devices LTC2983, LTC2984, LTC2986, LTM2985 Multi-Sensor Digital
+>>> +  Temperature Measurement Systems
+>>> +
+>>>     https://www.analog.com/media/en/technical-documentation/data-sheets/2983fc.pdf
+>>> +  https://www.analog.com/media/en/technical-documentation/data-sheets/2984fb.pdf
+>>> +  https://www.analog.com/media/en/technical-documentation/data-sheets/29861fa.pdf
+>>> +  https://www.analog.com/media/en/technical-documentation/data-sheets/ltm2985.pdf
+>>>   
+>>>   properties:
+>>>     compatible:
+>>>       enum:
+>>>         - adi,ltc2983
+>>> +      - adi,ltc2984
+>>> +      - adi,ltc2986
+>>> +      - adi,ltm2985
+>>>   
+>>>     reg:
+>>>       maxItems: 1
+>>> @@ -26,7 +34,7 @@ properties:
+>>>   
+>>>     adi,mux-delay-config-us:
+>>>       description:
+>>> -      The LTC2983 performs 2 or 3 internal conversion cycles per temperature
+>>> +      The device performs 2 or 3 internal conversion cycles per temperature
+>>>         result. Each conversion cycle is performed with different excitation and
+>>>         input multiplexer configurations. Prior to each conversion, these
+>>>         excitation circuits and input switch configurations are changed and an
+>>> @@ -145,7 +153,7 @@ patternProperties:
+>>>         adi,three-conversion-cycles:
+>>>           description:
+>>>             Boolean property which set's three conversion cycles removing
+>>> -          parasitic resistance effects between the LTC2983 and the diode.
+>>> +          parasitic resistance effects between the device and the diode.
+>>>           type: boolean
+>>>   
+>>>         adi,average-on:
+>>> @@ -353,6 +361,41 @@ patternProperties:
+>>>           description: Boolean property which set's the adc as single-ended.
+>>>           type: boolean
+>>>   
+>>> +  "^temp@":
 >>
->> v6 is a resend of v5 from July -- the patches haven't changed at all
->> but I've rebased them on the latest git master branch.
->
-> Hi Aidan,
->
-> Lee has recently expressed that he keen to take as much of these sorts
-> of series as possible via the various subsystem trees.
->
-> As such, it is useful to call out in the cover letter of such a series
-> if this can be done.  For example, patch 9 (last IIO one) can't be
-> applied without defines in patch 6 (I think).  Thus I'm assuming Lee
-> will do an immutable branch with at least those patches on it.
->
-> Perhaps worth expressing if that is also the case for the power
-> and regulator subsystem patches?
->
-> Thanks,
->
-> Jonathan
-
-Yep, the IIO, regulator, and power subsystem patches all depend on
-the MFD patch. Specifically, patches 6, 9, and 10 depend on patch 5.
-I can't get rid of this dependency because the variant ID (AXP192_ID)
-has to be defined centrally in the MFD patch.
-
-The axp20x_battery patches (last three of the whole series) don't
-depend on the variant ID or other defines, so they could be taken
-independently through the power subsystem.
-
-Even though the IIO cleanups (7 and 8) don't depend on anything else
-I imagine it'd cause problems to take those via IIO because patch 9
-depends on them.
-
-IOW: Lee probably needs to take patches 5-10.
-
-- Aidan
-
+>> There is already a property for thermocouple. Isn't a thermocouple a
+>> temperature sensor? IOW, why new property is needed?
 >>
->> Aidan MacDonald (13):
->>   dt-bindings: mfd: add bindings for AXP192 MFD device
->>   dt-bindings: iio: adc: axp209: Add AXP192 compatible
->>   dt-bindings: power: supply: axp20x: Add AXP192 compatible
->>   dt-bindings: power: axp20x-battery: Add AXP192 compatible
->>   mfd: axp20x: Add support for AXP192
->>   regulator: axp20x: Add support for AXP192
->>   iio: adc: axp20x_adc: Minor code cleanups
->>   iio: adc: axp20x_adc: Replace adc_en2 flag with adc_en2_mask field
->>   iio: adc: axp20x_adc: Add support for AXP192
->>   power: supply: axp20x_usb_power: Add support for AXP192
->>   power: axp20x_battery: Add constant charge current table
->>   power: axp20x_battery: Support battery status without fuel gauge
->>   power: axp20x_battery: Add support for AXP192
+> This node is needed for active analog temperature sensors.
+> It has fewer options than the thermocouple, as it only supports
+> a table to map from voltage to temperature and specifying whether
+> the measurement is differential or single-ended.
+> 
+> If you did as much as glimpsed at the datasheet you would have
+> understood.
+
+We receive a lot of bindings to review. If I glimpse through every
+datasheet, when would I work?
+
+Instead of expecting reviewer to dive into datasheets for this one
+particular sensor, make it explicit in commit msg.
+
+> 
+>>> +    type: object
+>>> +    description:
+>>> +      Represents a channel which is being used as an active analog temperature
+>>> +      sensor.
+>>> +
+>>> +    properties:
+>>> +      adi,sensor-type:
+>>> +        description:
+>>> +          Identifies the sensor as an active analog temperature sensor.
+>>> +        $ref: /schemas/types.yaml#/definitions/uint32
+>>> +        const: 31
+>>> +
+>>> +      adi,single-ended:
+>>> +        description: Boolean property which sets the sensor as single-ended.
 >>
->>  .../bindings/iio/adc/x-powers,axp209-adc.yaml |  18 +
->>  .../bindings/mfd/x-powers,axp152.yaml         |   1 +
->>  .../x-powers,axp20x-battery-power-supply.yaml |   1 +
->>  .../x-powers,axp20x-usb-power-supply.yaml     |   1 +
->>  drivers/iio/adc/axp20x_adc.c                  | 356 ++++++++++++++++--
->>  drivers/mfd/axp20x-i2c.c                      |   2 +
->>  drivers/mfd/axp20x.c                          | 141 +++++++
->>  drivers/power/supply/axp20x_battery.c         | 142 ++++++-
->>  drivers/power/supply/axp20x_usb_power.c       |  84 ++++-
->>  drivers/regulator/axp20x-regulator.c          | 100 ++++-
->>  include/linux/mfd/axp20x.h                    |  84 +++++
->>  11 files changed, 856 insertions(+), 74 deletions(-)
+>> Drop "Boolean property which sets" - it's obvious from the type.
 >>
+> 
+> That's how the rest of the file is written.
+
+Not really an argument... You can correct the other pieces in separate
+patch.
+
+> 
+>>
+>>
+>>> +        type: boolean
+>>> +
+>>> +      adi,custom-temp:
+>>> +        description:
+>>> +          This is a table, where each entry should be a pair of
+>>
+>> "This is a table" - obvious from the type.
+>>
+> 
+> That's how the rest of the file is written.
+> 
+>>> +          voltage(mv)-temperature(K). The entries must be given in nv and uK
+>>
+>> mv-K or nv-uK? Confusing...
+> 
+> That's how the rest of the file is written.
+
+The same.
+
+> 
+> The chip uses mv-K, but the binding specifies nv-uK, the driver
+> translates it into the appropriate unit.
+
+It does not matter here, what the driver is doing. Use only one unit
+here, matching the DTS.
+
+> 
+>>
+>>> +          so that, the original values must be multiplied by 1000000. For
+>>> +          more details look at table 71 and 72.
+>>
+>> There is no table 71 in the bindings... It seems you pasted it from
+>> somewhere.
+>>
+> 
+> It's pretty obvious that "Table" in a binding refers to the datasheet.
+
+There are multiple datasheets and how would I know to which one this refers?
+
+> But if you meant datasheet, not binding, you're looking at the wrong
+> datasheet then.
+> Also, that's how the rest of the file is written.
+
+Not really an argument... Poor examples like to spread, it's an effort
+to drop them.
+
+> 
+>>> +          Note should be signed, but dtc doesn't currently maintain the
+>>> +          sign.
+>>
+>> What do you mean? "Maintain" as allow or keep when building FDT?  What's
+>> the problem of using negative numbers here and why it should be part of
+>> bindings?
+>>
+> 
+> You're really clueless, I'll let you figure it out on your own.
+
+Yes, I am clueless and that's not the way how the review conversation
+should look like.
+
+NAK.
+
+> Also, that's how the rest of the file is written.
+> 
+>>> +        $ref: /schemas/types.yaml#/definitions/uint64-matrix
+>>> +        minItems: 3
+>>> +        maxItems: 64
+>>> +        items:
+>>> +          minItems: 2
+>>> +          maxItems: 2
+>>
+>> Instead describe the items with "description" (and maybe constraints)
+>> like here:
+>>
+>> https://elixir.bootlin.com/linux/v5.19/source/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml#L278
+>>
+> 
+> That's how the rest of the file is written.
+> If you really want to use something different, you can submit a
+> patch later and fix the whole binding however you want.
+
+Nope. I expect the new pieces to be correct, not incorrect because
+"there is already poor pattern, so I will do the same".
+
+If inconsistency bothers you, anyone can fix it in following up patch.
+Also you.
+
+Best regards,
+Krzysztof
+
