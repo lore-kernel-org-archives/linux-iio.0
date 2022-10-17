@@ -2,110 +2,146 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D9FC433FE
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Oct 2022 23:06:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 953FBC43217
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Oct 2022 23:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231308AbiJQXG1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Oct 2022 19:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
+        id S229514AbiJQXUc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Oct 2022 19:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231494AbiJQXGF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2022 19:06:05 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5A082D15
-        for <linux-iio@vger.kernel.org>; Mon, 17 Oct 2022 16:05:59 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id g130so13792658oia.13
-        for <linux-iio@vger.kernel.org>; Mon, 17 Oct 2022 16:05:59 -0700 (PDT)
+        with ESMTP id S230112AbiJQXUa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2022 19:20:30 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B4A5FDFD;
+        Mon, 17 Oct 2022 16:20:27 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id g1so19931505lfu.12;
+        Mon, 17 Oct 2022 16:20:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mRhFUpYDdCFXzNwAeX9AE7YYnZJr4Skf+DX1YAOCRLg=;
-        b=xMvsAi0Eo3zOIT8ell55VEjTlo+HS97JnBKRZNLn82hZTB6oniQgcrhZLwdzPjqG2Q
-         w+u/RjCnh89e57Wqt8eJjrkD2A0qPYv0hZIM3EGfyV8s960v9cNYafgvv6qh9neNtKTc
-         EMPHg9A0MAvUNljU8JqeEP9ZsNxdeAGoSFxosR7LhWuEXHnbi3km4I311VYlP8v2917w
-         7iyDO05m7U136+uTIFTMvYEreZ2s7go6FOaJnr3WTSL19jfh641sx7YKKWgZtkOUBrfV
-         kI1dzzV7V27yPR4rL5IkA75p/IcAutVHH7+MyzfbmV9099dZaxHhopfyZchoGKLbsLqh
-         FpwA==
+        d=gmail.com; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :references:from:to:cc:subject:date:message-id:reply-to;
+        bh=hPjgbmyufVQcQ6EQc4g+TbLptg1Ow4K6/gfkQdTeaBk=;
+        b=B6/s8a/izQ/nkmMWEUBSlIGceBkIBbBxCyoJTZIZiQ0RsBeQpu80tBqNYIL6+R0eo4
+         kO7PHZUKpbPz32g5uarTU10cBEqaYSR7oy8OCNyYfyMzL0RDWirFs7ZGZPtjwXDezgNK
+         yF+Aamf5c4G7Tuf2Gs1fq+lbqkuZz9i7b7dC8WvOLXV0B1uqiL5DKnRphq34xw31RkKe
+         VzGu/Vn4LF7mOtoQ/8q+TYY8C5KoGgWLMNwXOQK6dT4clhITPAgRnuVOdKGJCP/7ji+n
+         ma5WEj2lBjg3tlq+dkpen1j0SSl/TVaoW38fSOgE3GfkV1x1DF65kOtMNR2poiBYNUn4
+         2jYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mRhFUpYDdCFXzNwAeX9AE7YYnZJr4Skf+DX1YAOCRLg=;
-        b=vbFfnW19+YREdjX2ivYjH2X124W6YwO7xR69I+X9ZQ/GQbzs+Ah7CCwJsX9J4jowra
-         N7gN7Bzl8ixk0HDk1/WFAzhgC/Z1Zt0PG1D6F66OkuEEB6wVvv24mA2mWytj2ZOwSI+3
-         R3EdIZfRNDZhpA3B6gCe2A59bSZ085WCUUuvcQBCbRMVWS2ZaR9vIsAvdVWbHvhwp5v4
-         9RxH8xySw5uvIN2OigryzsL2AoTtNKyA2kNDXg5EMLMoxGJ9qtUa0J6Nv1gt9aA3xjnr
-         425o6TlC2sigKyCWycO3yJOrlcYBzx5xrXun9JaM4MC19GQWuSuIN0LGWVuhclJBhG7D
-         GKDA==
-X-Gm-Message-State: ACrzQf1CWKcfC2FF+yYfaHcZZcC9acDoBa1auzV/nR4+jNMbLn4AYPAN
-        3CeyNLphhSGaGSyU4pBG3719xlHYKMFTlw==
-X-Google-Smtp-Source: AMsMyM6cqHriRGkDbm992oZ034RWQDGZH5WSC4pPMkbP+JDpZrYLU1+CZ2v3uqnhKeozDCGO7pWvkQ==
-X-Received: by 2002:aca:5d09:0:b0:354:cca5:920b with SMTP id r9-20020aca5d09000000b00354cca5920bmr14603211oib.197.1666047759744;
-        Mon, 17 Oct 2022 16:02:39 -0700 (PDT)
-Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id n132-20020aca408a000000b00342eade43d4sm4843120oia.13.2022.10.17.16.02.37
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :references:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hPjgbmyufVQcQ6EQc4g+TbLptg1Ow4K6/gfkQdTeaBk=;
+        b=bt3hsB9PX4uquSPRIkTswhzSpvcR69Gw1cno6DmWLeFOS2gjodH1EyyYm6mNeE1/Iy
+         LnPQh7JTPrHweKnlYhfhKkb/ANSAuxWEmZDcj829zRFVBoTMz+f4L0iGoJbYGjx2S9EB
+         T76AV3SuM2dt5Jf5V0r43V5I5FsemJ/Nus5WY7zKATrCJB7h3KNJErmYh6iY4Zu61qwQ
+         oBhlYDlhewObOrYFvUYk8b2I7Jh40lCRnapprXYjDPKTGveXf0ibIMjjCUf93yoLzZAr
+         LNjmoPKpL6XbNsEyeCqQUw1rMPQaqEP91hOur4/nLECf9YUrm1pzm+YejyN/L3/jrS3A
+         4kcg==
+X-Gm-Message-State: ACrzQf0Fj4XOnucFxZkCYDJNwVm1QoLP/0D4m/mQ8lWEecNjP9ux7se0
+        LbC1PMsMNn+xwcT87KxRdZTTkBobCTtyZA==
+X-Google-Smtp-Source: AMsMyM4pCX+WNfC/CXNNsawWuYBaaZwuLJ/RgrcmgBhzoQzrC1lLwHLEE9fH6Fy3w2jJM3+OHQ32FQ==
+X-Received: by 2002:a05:6000:184e:b0:22e:4612:496d with SMTP id c14-20020a056000184e00b0022e4612496dmr56928wri.91.1666047969456;
+        Mon, 17 Oct 2022 16:06:09 -0700 (PDT)
+Received: from localhost (94.197.37.182.threembb.co.uk. [94.197.37.182])
+        by smtp.gmail.com with ESMTPSA id v2-20020a5d4b02000000b0022ed6ff3a96sm9371634wrq.39.2022.10.17.16.06.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Oct 2022 16:02:38 -0700 (PDT)
-Date:   Mon, 17 Oct 2022 19:02:36 -0400
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>, Lee Jones <lee@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH v4 3/4] mfd: Add RZ/G2L MTU3 counter driver
-Message-ID: <Y03fDFm/utBG7r2Q@fedora>
-References: <20221010145222.1047748-1-biju.das.jz@bp.renesas.com>
- <20221010145222.1047748-4-biju.das.jz@bp.renesas.com>
- <Y02FksmG22a03bcS@fedora>
- <OS0PR01MB5922E7C67CB923D67BBEFCFB86299@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+        Mon, 17 Oct 2022 16:06:08 -0700 (PDT)
+References: <20221016234335.904212-1-aidanmacdonald.0x0@gmail.com>
+ <20221017184419.62d365c1@jic23-huawei>
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        wens@csie.org, lee.jones@linaro.org, sre@kernel.org,
+        lgirdwood@gmail.com, broonie@kernel.org, lars@metafoo.de,
+        andy.shevchenko@gmail.com, linus.walleij@linaro.org, brgl@bgdev.pl,
+        michael@walle.cc, samuel@sholland.org, linux-iio@vger.kernel.org,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 00/13] Add support for AXP192 PMIC
+Date:   Mon, 17 Oct 2022 23:21:32 +0100
+In-reply-to: <20221017184419.62d365c1@jic23-huawei>
+Message-ID: <LYfRwE3pxZfgZBDC6gwvsSrHWqcSQXHK@localhost>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="N98NDNZBzOgh8Wpa"
-Content-Disposition: inline
-In-Reply-To: <OS0PR01MB5922E7C67CB923D67BBEFCFB86299@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 
---N98NDNZBzOgh8Wpa
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Jonathan Cameron <jic23@kernel.org> writes:
 
-On Mon, Oct 17, 2022 at 07:58:54PM +0000, Biju Das wrote:
-> > Is my understanding correct here? Is the selection between
-> > MTCLKA/MTCLKB and MTCLKC/MTCLKD done in software, and should we expose
-> > it in sysfs?
->=20
-> Yes, we need to expose this to sysfs. Is it same as phase mode?
-> Can you please provide an example, if possible how to handle this?
->=20
-> Cheers,
-> Biju
+> On Mon, 17 Oct 2022 00:43:22 +0100
+> Aidan MacDonald <aidanmacdonald.0x0@gmail.com> wrote:
+>
+>> This series adds support for the AXP192 PMIC to the AXP20x MFD driver
+>> framework, including support for regulators, ADCs, and AC/USB/battery
+>> power supplies.
+>>
+>> v6 is a resend of v5 from July -- the patches haven't changed at all
+>> but I've rebased them on the latest git master branch.
+>
+> Hi Aidan,
+>
+> Lee has recently expressed that he keen to take as much of these sorts
+> of series as possible via the various subsystem trees.
+>
+> As such, it is useful to call out in the cover letter of such a series
+> if this can be done.  For example, patch 9 (last IIO one) can't be
+> applied without defines in patch 6 (I think).  Thus I'm assuming Lee
+> will do an immutable branch with at least those patches on it.
+>
+> Perhaps worth expressing if that is also the case for the power
+> and regulator subsystem patches?
+>
+> Thanks,
+>
+> Jonathan
 
-Tentatively, I think you can handle it the same way as the phase
-counting mode by creating a new Counter device extension; the code
-should be pretty similar except the name you give it will be different.
+Yep, the IIO, regulator, and power subsystem patches all depend on
+the MFD patch. Specifically, patches 6, 9, and 10 depend on patch 5.
+I can't get rid of this dependency because the variant ID (AXP192_ID)
+has to be defined centrally in the MFD patch.
 
-William Breathitt Gray
+The axp20x_battery patches (last three of the whole series) don't
+depend on the variant ID or other defines, so they could be taken
+independently through the power subsystem.
 
---N98NDNZBzOgh8Wpa
-Content-Type: application/pgp-signature; name="signature.asc"
+Even though the IIO cleanups (7 and 8) don't depend on anything else
+I imagine it'd cause problems to take those via IIO because patch 9
+depends on them.
 
------BEGIN PGP SIGNATURE-----
+IOW: Lee probably needs to take patches 5-10.
 
-iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCY03fDAAKCRC1SFbKvhIj
-KxIWAP96AVG3wSZ9A5wZU6E0JP/Z7nTuDVkKXIMgkVsiveHm5gEA861hPJZKaNQ2
-N5DLWQ4PWN4UzeHP72jkxpEOxwc8AAA=
-=KcpX
------END PGP SIGNATURE-----
+- Aidan
 
---N98NDNZBzOgh8Wpa--
+>>
+>> Aidan MacDonald (13):
+>>   dt-bindings: mfd: add bindings for AXP192 MFD device
+>>   dt-bindings: iio: adc: axp209: Add AXP192 compatible
+>>   dt-bindings: power: supply: axp20x: Add AXP192 compatible
+>>   dt-bindings: power: axp20x-battery: Add AXP192 compatible
+>>   mfd: axp20x: Add support for AXP192
+>>   regulator: axp20x: Add support for AXP192
+>>   iio: adc: axp20x_adc: Minor code cleanups
+>>   iio: adc: axp20x_adc: Replace adc_en2 flag with adc_en2_mask field
+>>   iio: adc: axp20x_adc: Add support for AXP192
+>>   power: supply: axp20x_usb_power: Add support for AXP192
+>>   power: axp20x_battery: Add constant charge current table
+>>   power: axp20x_battery: Support battery status without fuel gauge
+>>   power: axp20x_battery: Add support for AXP192
+>>
+>>  .../bindings/iio/adc/x-powers,axp209-adc.yaml |  18 +
+>>  .../bindings/mfd/x-powers,axp152.yaml         |   1 +
+>>  .../x-powers,axp20x-battery-power-supply.yaml |   1 +
+>>  .../x-powers,axp20x-usb-power-supply.yaml     |   1 +
+>>  drivers/iio/adc/axp20x_adc.c                  | 356 ++++++++++++++++--
+>>  drivers/mfd/axp20x-i2c.c                      |   2 +
+>>  drivers/mfd/axp20x.c                          | 141 +++++++
+>>  drivers/power/supply/axp20x_battery.c         | 142 ++++++-
+>>  drivers/power/supply/axp20x_usb_power.c       |  84 ++++-
+>>  drivers/regulator/axp20x-regulator.c          | 100 ++++-
+>>  include/linux/mfd/axp20x.h                    |  84 +++++
+>>  11 files changed, 856 insertions(+), 74 deletions(-)
+>>
