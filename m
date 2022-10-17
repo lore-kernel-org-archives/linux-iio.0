@@ -2,75 +2,126 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB5CC433FE
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Oct 2022 07:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8655BC433FE
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Oct 2022 09:24:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbiJQHXg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Oct 2022 03:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
+        id S231217AbiJQJYd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Oct 2022 05:24:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230103AbiJQHXf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2022 03:23:35 -0400
-X-Greylist: delayed 1259 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 17 Oct 2022 00:23:30 PDT
-Received: from msg-1.mailo.com (msg-1.mailo.com [213.182.54.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2570A59734;
-        Mon, 17 Oct 2022 00:23:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailo.com; s=mailo;
-        t=1665990123; bh=v1WmIdGEdjb/NRA9IbpdRDnvrh6PU598P+2FFcf0eoI=;
-        h=X-EA-Auth:Date:From:To:Cc:Subject:Message-ID:MIME-Version:
-         Content-Type;
-        b=GXEOablkpD9tab0iyR+Nqti3uRljRoWtutJWpTPoK5n3UP8pzswBj/GHpOns/gmy9
-         y7rJFEl2rGNl0q7iOKJbZJyVzy/XuVyX+23ajS0sOzqVDtUFzX4QbFCEqG1bENXcWn
-         KrsQvARRQrnFoXikbJl3nlSqaEroCpePbIzaVibY=
-Received: by b-5.in.mailobj.net [192.168.90.15] with ESMTP
-        via [213.182.55.206]
-        Mon, 17 Oct 2022 09:02:03 +0200 (CEST)
-X-EA-Auth: PgaBZF2EQagjeQgatbitFuEP2vpDjYeqY00rZfLXzUDuULgmxrv3GX32xIOsdaW/FUVjM2UB0rTenzLna3v6qSx8wD8sNT2m
-Date:   Mon, 17 Oct 2022 12:02:30 +0530
-From:   Deepak R Varma <drv@mailo.com>
-To:     outreachy@lists.linux.dev, lars@metafoo.de,
-        Michael.Hennerich@analog.com, jic23@kernel.org,
-        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     kumarpraveen@linux.microsoft.com, saurabh.truth@gmail.com
-Subject: [PATCH] staging: iio: frequency: ad9834: merge unnecessary split
- lines
-Message-ID: <Y0z2/qFe3kW96MTs@debian-BULLSEYE-live-builder-AMD64>
+        with ESMTP id S231313AbiJQJYR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2022 05:24:17 -0400
+Received: from first.geanix.com (first.geanix.com [116.203.34.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08C614D16
+        for <linux-iio@vger.kernel.org>; Mon, 17 Oct 2022 02:24:01 -0700 (PDT)
+Received: from Seans-MBP.hadsten (_gateway [172.25.0.1])
+        by first.geanix.com (Postfix) with ESMTPSA id B8A0D5798E;
+        Mon, 17 Oct 2022 09:23:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1665998637; bh=gogxN2hF8IfurNMPA15otKPgMEVpeXsj/NmNpszQ74s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=EhAWjQLi6FX88cxkmpQiVp4P/xe6dzQMvRKmGBExXVgcnDHWlv9kFqV5uaIZhSHRz
+         MbPcesXpdV9TTBRURcLYdUMwKY1g9anwbdOnKSLazm+2QDj9UdyhCpbxP6ALpyDPQ7
+         ulm4cVt9mz/EsxTh4Q3yJrMBnN97ln83ZMHUMOfJiAO9k6vj9VJrCvN/o/Uz1cwkfK
+         M/EJNqqfGIa6wQ3c7rUb5zK/imEgvA99ac3qLMOrYRu/hNkINC1Fd5QMMc0wF5Xvkk
+         yaOeM1EaUTt2Wz+NaxysMvXENfoLZihbhZS2i7A5KymTRvNoBqPDUbvz+JDC8V3YYQ
+         gSxMGld6gNkig==
+Date:   Mon, 17 Oct 2022 11:23:56 +0200
+From:   Sean Nyekjaer <sean@geanix.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Jagath Jog J <jagathjog1996@gmail.com>,
+        Dmitry Rokosov <DDRokosov@sberdevices.ru>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Tomasz Duszynski <tduszyns@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 03/14] iio: accel: fxls8962af: Use
+ devm_regulator_get_enable()
+Message-ID: <20221017092356.4h5fmle46slnr62o@Seans-MBP.hadsten>
+References: <20221016163409.320197-1-jic23@kernel.org>
+ <20221016163409.320197-4-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+In-Reply-To: <20221016163409.320197-4-jic23@kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Improve code readability by merging unnecessary split lines that are
-well within the code-style guidelines post merge.
-
-Signed-off-by: Deepak R Varma <drv@mailo.com>
----
- drivers/staging/iio/frequency/ad9834.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-index 2b4267a87e65..285df0e489a6 100644
---- a/drivers/staging/iio/frequency/ad9834.c
-+++ b/drivers/staging/iio/frequency/ad9834.c
-@@ -331,11 +331,9 @@ static IIO_DEV_ATTR_PHASE(0, 1, 0200, NULL, ad9834_write, AD9834_REG_PHASE1);
- static IIO_DEV_ATTR_PHASESYMBOL(0, 0200, NULL, ad9834_write, AD9834_PSEL);
- static IIO_CONST_ATTR_PHASE_SCALE(0, "0.0015339808"); /* 2PI/2^12 rad*/
-
--static IIO_DEV_ATTR_PINCONTROL_EN(0, 0200, NULL,
--	ad9834_write, AD9834_PIN_SW);
-+static IIO_DEV_ATTR_PINCONTROL_EN(0, 0200, NULL, ad9834_write, AD9834_PIN_SW);
- static IIO_DEV_ATTR_OUT_ENABLE(0, 0200, NULL, ad9834_write, AD9834_RESET);
--static IIO_DEV_ATTR_OUTY_ENABLE(0, 1, 0200, NULL,
--	ad9834_write, AD9834_OPBITEN);
-+static IIO_DEV_ATTR_OUTY_ENABLE(0, 1, 0200, NULL, ad9834_write, AD9834_OPBITEN);
- static IIO_DEV_ATTR_OUT_WAVETYPE(0, 0, ad9834_store_wavetype, 0);
- static IIO_DEV_ATTR_OUT_WAVETYPE(0, 1, ad9834_store_wavetype, 1);
-
---
-2.30.2
-
-
+On Sun, Oct 16, 2022 at 05:33:58PM +0100, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> 
+> This driver only turns the power on at probe and off via a custom
+> devm_add_action_or_reset() callback. The new devm_regulator_get_enable()
+> replaces this boilerplate code.
+> 
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Sean Nyekjaer <sean@geanix.com>
+Reviewed-by: Sean Nyekjaer <sean@geanix.com>
+> ---
+>  drivers/iio/accel/fxls8962af-core.c | 24 +++---------------------
+>  1 file changed, 3 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
+> index bf259db281f5..0d672b1469e8 100644
+> --- a/drivers/iio/accel/fxls8962af-core.c
+> +++ b/drivers/iio/accel/fxls8962af-core.c
+> @@ -159,7 +159,6 @@ struct fxls8962af_chip_info {
+>  struct fxls8962af_data {
+>  	struct regmap *regmap;
+>  	const struct fxls8962af_chip_info *chip_info;
+> -	struct regulator *vdd_reg;
+>  	struct {
+>  		__le16 channels[3];
+>  		s64 ts __aligned(8);
+> @@ -1051,13 +1050,6 @@ static irqreturn_t fxls8962af_interrupt(int irq, void *p)
+>  	return IRQ_NONE;
+>  }
+>  
+> -static void fxls8962af_regulator_disable(void *data_ptr)
+> -{
+> -	struct fxls8962af_data *data = data_ptr;
+> -
+> -	regulator_disable(data->vdd_reg);
+> -}
+> -
+>  static void fxls8962af_pm_disable(void *dev_ptr)
+>  {
+>  	struct device *dev = dev_ptr;
+> @@ -1171,20 +1163,10 @@ int fxls8962af_core_probe(struct device *dev, struct regmap *regmap, int irq)
+>  	if (ret)
+>  		return ret;
+>  
+> -	data->vdd_reg = devm_regulator_get(dev, "vdd");
+> -	if (IS_ERR(data->vdd_reg))
+> -		return dev_err_probe(dev, PTR_ERR(data->vdd_reg),
+> -				     "Failed to get vdd regulator\n");
+> -
+> -	ret = regulator_enable(data->vdd_reg);
+> -	if (ret) {
+> -		dev_err(dev, "Failed to enable vdd regulator: %d\n", ret);
+> -		return ret;
+> -	}
+> -
+> -	ret = devm_add_action_or_reset(dev, fxls8962af_regulator_disable, data);
+> +	ret = devm_regulator_get_enable(dev, "vdd");
+>  	if (ret)
+> -		return ret;
+> +		return dev_err_probe(dev, ret,
+> +				     "Failed to get vdd regulator\n");
+>  
+>  	ret = regmap_read(data->regmap, FXLS8962AF_WHO_AM_I, &reg);
+>  	if (ret)
+> -- 
+> 2.37.2
+> 
 
