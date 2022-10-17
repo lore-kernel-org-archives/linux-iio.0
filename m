@@ -2,130 +2,75 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB58C43219
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Oct 2022 07:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB5CC433FE
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Oct 2022 07:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229776AbiJQHTl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Oct 2022 03:19:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39102 "EHLO
+        id S229908AbiJQHXg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Oct 2022 03:23:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229919AbiJQHTk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2022 03:19:40 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D1565D0;
-        Mon, 17 Oct 2022 00:19:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1665991176; x=1697527176;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=UBuvRDypJT++mgXI7DOwGnJFcpVZ/gzflYCezJdbRdo=;
-  b=uym6OB4c1Sk5NO5RwIY51XSS9/CIJ07C5BmaM8Q+VVZUb0IaslrOWhtJ
-   cLoVAuTxp4wl68MPEvd6+pzimQfZvo+YQKjjIts2iPvim2WR8xfCfxJtw
-   P7cMhS2ZgaIXOEoGbAwSQFw6GXzLahEKXrBcLTOIe7fhOONftq3lWsxlS
-   TOoZt35q2tWqT6DHlSVSvGFAoHMNSd5XUn25isoC6DzXNIvdCjtAo60Yq
-   bYxQyfh0e2Z27T2rcfHtYtND17wdKz1Dqc+ksbE4osXF0CBvUvMEXRy9j
-   CV8n82ELrr3QcfXf9mngBFnuaLnaL9/bURic9BB1JWuPWBKvjuvxvyQWM
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.95,190,1661842800"; 
-   d="scan'208";a="182465180"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Oct 2022 00:19:33 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 17 Oct 2022 00:19:33 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Mon, 17 Oct 2022 00:19:26 -0700
-Message-ID: <91250148-67b9-d514-6af0-bfcd719fde53@microchip.com>
-Date:   Mon, 17 Oct 2022 09:19:22 +0200
+        with ESMTP id S230103AbiJQHXf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2022 03:23:35 -0400
+X-Greylist: delayed 1259 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 17 Oct 2022 00:23:30 PDT
+Received: from msg-1.mailo.com (msg-1.mailo.com [213.182.54.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2570A59734;
+        Mon, 17 Oct 2022 00:23:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailo.com; s=mailo;
+        t=1665990123; bh=v1WmIdGEdjb/NRA9IbpdRDnvrh6PU598P+2FFcf0eoI=;
+        h=X-EA-Auth:Date:From:To:Cc:Subject:Message-ID:MIME-Version:
+         Content-Type;
+        b=GXEOablkpD9tab0iyR+Nqti3uRljRoWtutJWpTPoK5n3UP8pzswBj/GHpOns/gmy9
+         y7rJFEl2rGNl0q7iOKJbZJyVzy/XuVyX+23ajS0sOzqVDtUFzX4QbFCEqG1bENXcWn
+         KrsQvARRQrnFoXikbJl3nlSqaEroCpePbIzaVibY=
+Received: by b-5.in.mailobj.net [192.168.90.15] with ESMTP
+        via [213.182.55.206]
+        Mon, 17 Oct 2022 09:02:03 +0200 (CEST)
+X-EA-Auth: PgaBZF2EQagjeQgatbitFuEP2vpDjYeqY00rZfLXzUDuULgmxrv3GX32xIOsdaW/FUVjM2UB0rTenzLna3v6qSx8wD8sNT2m
+Date:   Mon, 17 Oct 2022 12:02:30 +0530
+From:   Deepak R Varma <drv@mailo.com>
+To:     outreachy@lists.linux.dev, lars@metafoo.de,
+        Michael.Hennerich@analog.com, jic23@kernel.org,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc:     kumarpraveen@linux.microsoft.com, saurabh.truth@gmail.com
+Subject: [PATCH] staging: iio: frequency: ad9834: merge unnecessary split
+ lines
+Message-ID: <Y0z2/qFe3kW96MTs@debian-BULLSEYE-live-builder-AMD64>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] dt-bindings: Remove "status" from schema examples, again
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        "David Airlie" <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Nandhini Srikandan <nandhini.srikandan@intel.com>,
-        Rashmi A <rashmi.a@intel.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, Sumit Gupta <sumitg@nvidia.com>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-CC:     <devicetree@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <linux-iio@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-phy@lists.infradead.org>
-References: <20221014205104.2822159-1-robh@kernel.org>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20221014205104.2822159-1-robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 14/10/2022 at 22:51, Rob Herring wrote:
-> There's no reason to have "status" properties in examples. "okay" is the
-> default, and "disabled" turns off some schema checks ('required'
-> specifically).
-> 
-> A meta-schema check for this is pending, so hopefully the last time to
-> fix these.
-> 
-> Fix the indentation in intel,phy-thunderbay-emmc while we're here.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->   .../arm/tegra/nvidia,tegra-ccplex-cluster.yaml    |  1 -
->   .../display/tegra/nvidia,tegra124-dpaux.yaml      |  1 -
->   .../display/tegra/nvidia,tegra186-display.yaml    |  2 --
->   .../bindings/iio/addac/adi,ad74413r.yaml          |  1 -
->   .../devicetree/bindings/net/cdns,macb.yaml        |  1 -
->   .../devicetree/bindings/net/nxp,dwmac-imx.yaml    |  1 -
->   .../bindings/phy/intel,phy-thunderbay-emmc.yaml   | 15 +++++++--------
->   7 files changed, 7 insertions(+), 15 deletions(-)
+Improve code readability by merging unnecessary split lines that are
+well within the code-style guidelines post merge.
 
-[..]
+Signed-off-by: Deepak R Varma <drv@mailo.com>
+---
+ drivers/staging/iio/frequency/ad9834.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Documentation/devicetree/bindings/net/cdns,macb.yaml
-> index 318f4efe7f6f..bef5e0f895be 100644
-> --- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
-> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
-> @@ -203,7 +203,6 @@ examples:
->                       power-domains = <&zynqmp_firmware PD_ETH_1>;
->                       resets = <&zynqmp_reset ZYNQMP_RESET_GEM1>;
->                       reset-names = "gem1_rst";
-> -                    status = "okay";
->                       phy-mode = "sgmii";
->                       phys = <&psgtr 1 PHY_TYPE_SGMII 1 1>;
->                       fixed-link {
+diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+index 2b4267a87e65..285df0e489a6 100644
+--- a/drivers/staging/iio/frequency/ad9834.c
++++ b/drivers/staging/iio/frequency/ad9834.c
+@@ -331,11 +331,9 @@ static IIO_DEV_ATTR_PHASE(0, 1, 0200, NULL, ad9834_write, AD9834_REG_PHASE1);
+ static IIO_DEV_ATTR_PHASESYMBOL(0, 0200, NULL, ad9834_write, AD9834_PSEL);
+ static IIO_CONST_ATTR_PHASE_SCALE(0, "0.0015339808"); /* 2PI/2^12 rad*/
+
+-static IIO_DEV_ATTR_PINCONTROL_EN(0, 0200, NULL,
+-	ad9834_write, AD9834_PIN_SW);
++static IIO_DEV_ATTR_PINCONTROL_EN(0, 0200, NULL, ad9834_write, AD9834_PIN_SW);
+ static IIO_DEV_ATTR_OUT_ENABLE(0, 0200, NULL, ad9834_write, AD9834_RESET);
+-static IIO_DEV_ATTR_OUTY_ENABLE(0, 1, 0200, NULL,
+-	ad9834_write, AD9834_OPBITEN);
++static IIO_DEV_ATTR_OUTY_ENABLE(0, 1, 0200, NULL, ad9834_write, AD9834_OPBITEN);
+ static IIO_DEV_ATTR_OUT_WAVETYPE(0, 0, ad9834_store_wavetype, 0);
+ static IIO_DEV_ATTR_OUT_WAVETYPE(0, 1, ad9834_store_wavetype, 1);
+
+--
+2.30.2
 
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Thanks Rob. Best regards,
-   Nicolas
 
--- 
-Nicolas Ferre
