@@ -2,29 +2,28 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DAFC43217
-	for <linux-iio@archiver.kernel.org>; Wed, 19 Oct 2022 14:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 467D0C433FE
+	for <linux-iio@archiver.kernel.org>; Wed, 19 Oct 2022 14:22:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbiJSOSR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 19 Oct 2022 10:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43182 "EHLO
+        id S233122AbiJSOWd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 19 Oct 2022 10:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231723AbiJSOSA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2022 10:18:00 -0400
+        with ESMTP id S233690AbiJSOWD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2022 10:22:03 -0400
 Received: from dhl.lxnav.com (dhl.lxnav.com [IPv6:2a01:4f8:c010:2f07::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 037A810534E;
-        Wed, 19 Oct 2022 07:00:58 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id B87354075F;
-        Wed, 19 Oct 2022 14:55:05 +0200 (CEST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B39A1BB95A;
+        Wed, 19 Oct 2022 07:05:39 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 2582B4068C;
+        Wed, 19 Oct 2022 14:55:03 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lxnav.com; s=dhl;
-        t=1666184107; h=from:subject:date:message-id:to:cc:mime-version:
-         content-transfer-encoding:in-reply-to:references;
-        bh=tbxh/dg1kBGR8qv4q7dWhiVWhYX5Ix6vXLZzG/XL/Uo=;
-        b=XLHEk3QeyltKS238jCQJpZHaq3jm0Hez3iYBBdx33JXw3DQLK5WICZnmVbcC5gOPOGbmIS
-        7bxCQt97sv9fO2FGoxly4BVil9dro75v7bLC2H42cREVaJUmdJitFOYr9vxatwy06wwVin
-        /NWdHT+91SSH84tb2k/V0C+RhVECzw7VyM6DnBQCpv4s6L1XDPbmNR2M2lh1N4R4qileEx
-        r1YFJ8+bpCE+einx4wbLw4aWf1mnksaJ5vEV4zISpdUt5UzRFjaZWEJJYDhNJ0SPOMK0MK
-        W3NlBch+RruaQ3eJjDCIyrZXmMD2V1Dbqw7XgKcbsokAth96nNBCO+L0z4AJ8g==
+        t=1666184103; h=from:subject:date:message-id:to:cc:mime-version:
+         content-transfer-encoding; bh=t4Yaw2ZLuxRrXeXgMKdBXuSmh/kxDmx/nG04x9JTVpY=;
+        b=jRHmYMffIWRnfbrYiOqE4kr4qmjAgByvauE5ssWejiTP7a6P6B6ll2wjJEIpCZ5RVfYRjJ
+        IVQB5jk1ReSBD+vK9HtY4vqB1hv39FaWRG4UtSefk8bJpa92P5XmOsOv5uPAZp530/zcGm
+        4ZKyox1WtgeC9E0uSmhghMI2X2IvI5DmNJ5nae9r7pTNEqOUQ6UOML6VmFepGOY9V5LdVD
+        WIrR9Ik3ejI3FE9ZdcN8/6Wnrha+8Mp79bT2K7Aycm6j3KOsKqCTLTwwOW/L8XxegRmvm1
+        /G8gUc8C97Nrr1jetQ9GDdVvmNRBNPuYER1DVcqJ3C39QDAGasqQwNWIDVn7rQ==
 From:   Mitja Spes <mitja@lxnav.com>
 To:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
 Cc:     Mitja Spes <mitja@lxnav.com>, Lars-Peter Clausen <lars@metafoo.de>,
@@ -32,11 +31,9 @@ Cc:     Mitja Spes <mitja@lxnav.com>, Lars-Peter Clausen <lars@metafoo.de>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Tomasz Duszynski <tduszyns@gmail.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] iio: pressure: ms5611: changed hardcoded SPI speed to value limited
-Date:   Wed, 19 Oct 2022 14:52:51 +0200
-Message-Id: <20221019125254.952588-2-mitja@lxnav.com>
-In-Reply-To: <20221019125254.952588-1-mitja@lxnav.com>
-References: <20221019125254.952588-1-mitja@lxnav.com>
+Subject: [PATCH 1/3] iio: pressure: ms5611: fixed value compensation bug
+Date:   Wed, 19 Oct 2022 14:52:50 +0200
+Message-Id: <20221019125254.952588-1-mitja@lxnav.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Last-TLS-Session-Version: TLSv1.3
@@ -44,26 +41,162 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Don't hardcode the ms5611 SPI speed, limit it instead.
+When using multiple instances of this driver the compensation PROM was
+overwritten by the last initialized sensor. Now each sensor has own PROM
+storage.
 
 Signed-off-by: Mitja Spes <mitja@lxnav.com>
 ---
- drivers/iio/pressure/ms5611_spi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/pressure/ms5611.h      | 12 +++----
+ drivers/iio/pressure/ms5611_core.c | 51 ++++++++++++++++--------------
+ 2 files changed, 31 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
-index 281b08398720..1b1e863783ec 100644
---- a/drivers/iio/pressure/ms5611_spi.c
-+++ b/drivers/iio/pressure/ms5611_spi.c
-@@ -91,7 +91,7 @@ static int ms5611_spi_probe(struct spi_device *spi)
- 	spi_set_drvdata(spi, indio_dev);
+diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
+index cbc9349c342a..550b75b7186f 100644
+--- a/drivers/iio/pressure/ms5611.h
++++ b/drivers/iio/pressure/ms5611.h
+@@ -25,13 +25,6 @@ enum {
+ 	MS5607,
+ };
  
- 	spi->mode = SPI_MODE_0;
--	spi->max_speed_hz = 20000000;
-+	spi->max_speed_hz = min(spi->max_speed_hz, 20000000U);
- 	spi->bits_per_word = 8;
- 	ret = spi_setup(spi);
- 	if (ret < 0)
+-struct ms5611_chip_info {
+-	u16 prom[MS5611_PROM_WORDS_NB];
+-
+-	int (*temp_and_pressure_compensate)(struct ms5611_chip_info *chip_info,
+-					    s32 *temp, s32 *pressure);
+-};
+-
+ /*
+  * OverSampling Rate descriptor.
+  * Warning: cmd MUST be kept aligned on a word boundary (see
+@@ -50,12 +43,15 @@ struct ms5611_state {
+ 	const struct ms5611_osr *pressure_osr;
+ 	const struct ms5611_osr *temp_osr;
+ 
++	u16 prom[MS5611_PROM_WORDS_NB];
++
+ 	int (*reset)(struct ms5611_state *st);
+ 	int (*read_prom_word)(struct ms5611_state *st, int index, u16 *word);
+ 	int (*read_adc_temp_and_pressure)(struct ms5611_state *st,
+ 					  s32 *temp, s32 *pressure);
+ 
+-	struct ms5611_chip_info *chip_info;
++	int (*compensate_temp_and_pressure)(struct ms5611_state *st, s32 *temp,
++					  s32 *pressure);
+ 	struct regulator *vdd;
+ };
+ 
+diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+index 717521de66c4..c564a1d6cafe 100644
+--- a/drivers/iio/pressure/ms5611_core.c
++++ b/drivers/iio/pressure/ms5611_core.c
+@@ -85,7 +85,7 @@ static int ms5611_read_prom(struct iio_dev *indio_dev)
+ 	struct ms5611_state *st = iio_priv(indio_dev);
+ 
+ 	for (i = 0; i < MS5611_PROM_WORDS_NB; i++) {
+-		ret = st->read_prom_word(st, i, &st->chip_info->prom[i]);
++		ret = st->read_prom_word(st, i, &st->prom[i]);
+ 		if (ret < 0) {
+ 			dev_err(&indio_dev->dev,
+ 				"failed to read prom at %d\n", i);
+@@ -93,7 +93,7 @@ static int ms5611_read_prom(struct iio_dev *indio_dev)
+ 		}
+ 	}
+ 
+-	if (!ms5611_prom_is_valid(st->chip_info->prom, MS5611_PROM_WORDS_NB)) {
++	if (!ms5611_prom_is_valid(st->prom, MS5611_PROM_WORDS_NB)) {
+ 		dev_err(&indio_dev->dev, "PROM integrity check failed\n");
+ 		return -ENODEV;
+ 	}
+@@ -114,21 +114,20 @@ static int ms5611_read_temp_and_pressure(struct iio_dev *indio_dev,
+ 		return ret;
+ 	}
+ 
+-	return st->chip_info->temp_and_pressure_compensate(st->chip_info,
+-							   temp, pressure);
++	return st->compensate_temp_and_pressure(st, temp, pressure);
+ }
+ 
+-static int ms5611_temp_and_pressure_compensate(struct ms5611_chip_info *chip_info,
++static int ms5611_temp_and_pressure_compensate(struct ms5611_state *st,
+ 					       s32 *temp, s32 *pressure)
+ {
+ 	s32 t = *temp, p = *pressure;
+ 	s64 off, sens, dt;
+ 
+-	dt = t - (chip_info->prom[5] << 8);
+-	off = ((s64)chip_info->prom[2] << 16) + ((chip_info->prom[4] * dt) >> 7);
+-	sens = ((s64)chip_info->prom[1] << 15) + ((chip_info->prom[3] * dt) >> 8);
++	dt = t - (st->prom[5] << 8);
++	off = ((s64)st->prom[2] << 16) + ((st->prom[4] * dt) >> 7);
++	sens = ((s64)st->prom[1] << 15) + ((st->prom[3] * dt) >> 8);
+ 
+-	t = 2000 + ((chip_info->prom[6] * dt) >> 23);
++	t = 2000 + ((st->prom[6] * dt) >> 23);
+ 	if (t < 2000) {
+ 		s64 off2, sens2, t2;
+ 
+@@ -154,17 +153,17 @@ static int ms5611_temp_and_pressure_compensate(struct ms5611_chip_info *chip_inf
+ 	return 0;
+ }
+ 
+-static int ms5607_temp_and_pressure_compensate(struct ms5611_chip_info *chip_info,
++static int ms5607_temp_and_pressure_compensate(struct ms5611_state *st,
+ 					       s32 *temp, s32 *pressure)
+ {
+ 	s32 t = *temp, p = *pressure;
+ 	s64 off, sens, dt;
+ 
+-	dt = t - (chip_info->prom[5] << 8);
+-	off = ((s64)chip_info->prom[2] << 17) + ((chip_info->prom[4] * dt) >> 6);
+-	sens = ((s64)chip_info->prom[1] << 16) + ((chip_info->prom[3] * dt) >> 7);
++	dt = t - (st->prom[5] << 8);
++	off = ((s64)st->prom[2] << 17) + ((st->prom[4] * dt) >> 6);
++	sens = ((s64)st->prom[1] << 16) + ((st->prom[3] * dt) >> 7);
+ 
+-	t = 2000 + ((chip_info->prom[6] * dt) >> 23);
++	t = 2000 + ((st->prom[6] * dt) >> 23);
+ 	if (t < 2000) {
+ 		s64 off2, sens2, t2, tmp;
+ 
+@@ -342,15 +341,6 @@ static int ms5611_write_raw(struct iio_dev *indio_dev,
+ 
+ static const unsigned long ms5611_scan_masks[] = {0x3, 0};
+ 
+-static struct ms5611_chip_info chip_info_tbl[] = {
+-	[MS5611] = {
+-		.temp_and_pressure_compensate = ms5611_temp_and_pressure_compensate,
+-	},
+-	[MS5607] = {
+-		.temp_and_pressure_compensate = ms5607_temp_and_pressure_compensate,
+-	}
+-};
+-
+ static const struct iio_chan_spec ms5611_channels[] = {
+ 	{
+ 		.type = IIO_PRESSURE,
+@@ -433,7 +423,20 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
+ 	struct ms5611_state *st = iio_priv(indio_dev);
+ 
+ 	mutex_init(&st->lock);
+-	st->chip_info = &chip_info_tbl[type];
++
++	switch (type) {
++	case MS5611:
++		st->compensate_temp_and_pressure =
++			ms5611_temp_and_pressure_compensate;
++		break;
++	case MS5607:
++		st->compensate_temp_and_pressure =
++			ms5607_temp_and_pressure_compensate;
++		break;
++	default:
++		return -EINVAL;
++	}
++
+ 	st->temp_osr =
+ 		&ms5611_avail_temp_osr[ARRAY_SIZE(ms5611_avail_temp_osr) - 1];
+ 	st->pressure_osr =
 -- 
 2.34.1
 
