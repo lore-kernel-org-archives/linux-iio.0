@@ -2,100 +2,82 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7FEDC433FE
-	for <linux-iio@archiver.kernel.org>; Thu, 20 Oct 2022 12:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C64C433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 20 Oct 2022 12:36:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229795AbiJTMFP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 20 Oct 2022 08:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38376 "EHLO
+        id S229958AbiJTMgT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 20 Oct 2022 08:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229933AbiJTMFE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2022 08:05:04 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E565C63872;
-        Thu, 20 Oct 2022 05:05:01 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id j4so33225261lfk.0;
-        Thu, 20 Oct 2022 05:05:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=sSrur7D+PK8q9+Hgf4xggsdAi1Y/zt1lX+qrzO3kT7A=;
-        b=JHJx/H7JiRnUidOe2qcDt41THeT9FCFb1QiDfuyvVPmdXnOMgKUp54QdNFKuI1dCXc
-         AR5SZvsyvMehMkHLA0IjVyGGbT9b5SOxCCSXyI0KdffG5q/KdLDH/T+kfSozodSLwAqJ
-         3TYBsfxTayq02Z3k8CgdM/GoKhmYJR1z27+o9NWf3XOM6ezwx3idc0K/9dMKTeq9OB04
-         7TjRERJoivHnxe+WcdwAKZEU5STs59l4CVJOjL+7RJEweofSU7t83yEBiFCTprbdgpU3
-         /HbamfHOFwiH2DBzNSo1FnzYeH0b0UGMokLbOpv3Wi3jQPfWRXNV156GLFxtG2HV6Zw9
-         E7ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sSrur7D+PK8q9+Hgf4xggsdAi1Y/zt1lX+qrzO3kT7A=;
-        b=mF/a/Lb8T6VaZFYohji8jraGEB+/HyZBvVtIHHOuOMOvo27OTUZM69nZE2N8cAd1S6
-         clyzubnQ8q1RcEuvevXNbEWz39q9qFqIcV0oZzqyiq+Q0U/YJtgxBBXryqbsIe5d5Whx
-         KEnhMeCFZry98P06En4pXCcN90nzXGXdIioyFhw+WOc9yxDLPfpYXZT/nSzWzKBUjOnn
-         e71uWscmab38Pqu7Vrmrul3S3hotyS5Rk/LdWQuS2/JFOxi+xGKICZDaLz80Ov5mKTmj
-         9Yy/oqLu5x9FeKkjlHsWbtl3bxXWfTJlUzSbSXkVJpjz/I69N43PcdYq38PuwiyF7tY1
-         en2w==
-X-Gm-Message-State: ACrzQf3eXcJxtU3TS04uWh+HjtldlDvOHHMW3PqNbU4kZIC0FnCopk9s
-        cEzrnnTWRBsOdqenUwEWrig=
-X-Google-Smtp-Source: AMsMyM5AcquzM4nQE3dxkt4JR/xX2RRff6AmdX8xB/8zPG2jTtq/BLkM6xMC4FA49CP0J9bJHyMxJg==
-X-Received: by 2002:a05:6512:12c8:b0:4a2:cc20:d51b with SMTP id p8-20020a05651212c800b004a2cc20d51bmr4758797lfg.474.1666267500042;
-        Thu, 20 Oct 2022 05:05:00 -0700 (PDT)
-Received: from ?IPV6:2001:14ba:16f3:4a00::4? (dc75zzyyyyyyyyyyyyycy-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::4])
-        by smtp.gmail.com with ESMTPSA id a11-20020a056512200b00b00497feee98basm2684311lfb.274.2022.10.20.05.04.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Oct 2022 05:04:58 -0700 (PDT)
-Message-ID: <8ac6e29a-8604-e6b0-cb33-e475e57296ac@gmail.com>
-Date:   Thu, 20 Oct 2022 15:04:57 +0300
+        with ESMTP id S229767AbiJTMgS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2022 08:36:18 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6D217EF01
+        for <linux-iio@vger.kernel.org>; Thu, 20 Oct 2022 05:35:49 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MtRln2dVVzmVF7;
+        Thu, 20 Oct 2022 20:31:01 +0800 (CST)
+Received: from kwepemm600014.china.huawei.com (7.193.23.54) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 20 Oct 2022 20:35:39 +0800
+Received: from huawei.com (10.90.53.225) by kwepemm600014.china.huawei.com
+ (7.193.23.54) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 20 Oct
+ 2022 20:35:39 +0800
+From:   Zhang Qilong <zhangqilong3@huawei.com>
+To:     <jic23@kernel.org>, <lars@metafoo.de>, <wens@csie.org>,
+        <jernej.skrabec@gmail.com>, <samuel@sholland.org>
+CC:     <linux-iio@vger.kernel.org>, <linux-sunxi@lists.linux.dev>
+Subject: [PATCH v2 1/2] iio: adc: sun4i-gpadc-iio: Fix PM disable depth imbalance in sun4i_gpadc_probe()
+Date:   Thu, 20 Oct 2022 20:40:44 +0800
+Message-ID: <20221020124045.77678-2-zhangqilong3@huawei.com>
+X-Mailer: git-send-email 2.26.0.106.g9fadedd
+In-Reply-To: <20221020124045.77678-1-zhangqilong3@huawei.com>
+References: <20221020124045.77678-1-zhangqilong3@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH v3 0/3] iio: Support ROHM/Kionix kx022a
-Content-Language: en-US
-To:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Dmitry Rokosov <DDRokosov@sberdevices.ru>,
-        Jagath Jog J <jagathjog1996@gmail.com>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1666263249.git.mazziesaccount@gmail.com>
- <7d8660c4-2f4c-b91e-4e1e-b2dee5cc058f@gmail.com>
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <7d8660c4-2f4c-b91e-4e1e-b2dee5cc058f@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.90.53.225]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600014.china.huawei.com (7.193.23.54)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 10/20/22 14:54, Matti Vaittinen wrote:
-> On 10/20/22 14:35, Matti Vaittinen wrote:
->> Add initial support for ROHM/Kionix kx022a accelerometer
->>
-> Sorry folks! I don't know what happened with my format-patch :(
+The pm_runtime_enable will increase power disable depth.
+Thus a pairing decrement is needed on the error handling
+path to keep it balanced according to context. In addtion,
+the iio_map_array path has potentially been called.
 
-And now I see it. -EINVALID_USER. I typoed the --base and used 
---base=v6.0-rc1 not --base=v6.1-rc1
+We fix it by gotoing err_map when thermal_zone register
+failed.
 
-Sorry once again - I hope I didn't kill your build scripts / inboxes :(
+Fixes: b0a242894f11 ("iio: adc: sun4i-gpadc-iio: register in the thermal after registering in pm")
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+---
+v2:
+- revert iio_map_array if it's necessary when thermal_zone
+  register failed.
+---
+ drivers/iio/adc/sun4i-gpadc-iio.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Yours
-	-- Matti
-
+diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+index a6ade70dedf8..d2535dd28af8 100644
+--- a/drivers/iio/adc/sun4i-gpadc-iio.c
++++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+@@ -648,7 +648,8 @@ static int sun4i_gpadc_probe(struct platform_device *pdev)
+ 			dev_err(&pdev->dev,
+ 				"could not register thermal sensor: %ld\n",
+ 				PTR_ERR(info->tzd));
+-			return PTR_ERR(info->tzd);
++			ret = PTR_ERR(info->tzd);
++			goto err_map;
+ 		}
+ 	}
+ 
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
-
-~~ When things go utterly wrong vim users can always type :help! ~~
+2.25.1
 
