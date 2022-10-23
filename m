@@ -2,158 +2,87 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0693AC433FE
-	for <linux-iio@archiver.kernel.org>; Sun, 23 Oct 2022 13:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F25B4C433FE
+	for <linux-iio@archiver.kernel.org>; Sun, 23 Oct 2022 13:23:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230060AbiJWNC5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 23 Oct 2022 09:02:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54578 "EHLO
+        id S230431AbiJWNX2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 23 Oct 2022 09:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230304AbiJWNCz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2022 09:02:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0FF70E62
-        for <linux-iio@vger.kernel.org>; Sun, 23 Oct 2022 06:02:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE6AF60DFD
-        for <linux-iio@vger.kernel.org>; Sun, 23 Oct 2022 13:02:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79898C433D6;
-        Sun, 23 Oct 2022 13:02:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666530173;
-        bh=arCYzP7tVYanF/qwh+Tdl2nT132u6js9dQkky3unc3o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oL0EhtblIkYyLw3C1T4RlV7KBNwzkzAHDA9kzvDtCNF+UPJGVGwY6j6VIf/c5wfmr
-         vgzzIxNJk/BoJvdnZ3qdLquW4bICUe24h4PDTXG+z3P6ddV3rkWSJ4dt6bZjrx/9Tv
-         sw1Dy24Vk9bWPQ4+sxLXCSlJ5dle5OnHB14WjMkfTjnwG/mj7NGM3cCWVh+MHUzJbn
-         6rXNJGUz3HWdJoLoaqW9l35Fh8udcGAEV91z0xIXRz4gBPn+E4zZ3kLJ2bhXOjJtk6
-         1BwvJD7Kl6jR63tVwc1sMwgxuBF5BTOtcbfnhsnn5F4iQ6D7V6PvQxp6LbNiKJEejS
-         6CUJv8++PG9cw==
-Date:   Sun, 23 Oct 2022 14:03:26 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Matti Vaittinen <mazziesaccount@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        "Tanislav, Cosmin" <Cosmin.Tanislav@analog.com>,
-        Jagath Jog J <jagathjog1996@gmail.com>,
-        Sean Nyekjaer <sean@geanix.com>,
-        Dmitry Rokosov <DDRokosov@sberdevices.ru>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Tomasz Duszynski <tduszyns@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 00/14] IIO: More devm_regulator[_bulk]_get_enable()
- users
-Message-ID: <20221023140326.19f7d5ea@jic23-huawei>
-In-Reply-To: <SJ0PR03MB6778419C9CE3DC0C5DF33BDF99299@SJ0PR03MB6778.namprd03.prod.outlook.com>
-References: <20221016163409.320197-1-jic23@kernel.org>
-        <SJ0PR03MB6778419C9CE3DC0C5DF33BDF99299@SJ0PR03MB6778.namprd03.prod.outlook.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        with ESMTP id S229961AbiJWNX1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2022 09:23:27 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB876F562
+        for <linux-iio@vger.kernel.org>; Sun, 23 Oct 2022 06:23:26 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1omawX-0006qL-Vo; Sun, 23 Oct 2022 15:23:10 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1omawW-000ygX-SM; Sun, 23 Oct 2022 15:23:08 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1omawV-00A3Qv-WD; Sun, 23 Oct 2022 15:23:08 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Paul Cercueil <paul@crapouillou.net>,
+        linux-iio@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH 06/23] iio: accel: da311: Convert to i2c's .probe_new()
+Date:   Sun, 23 Oct 2022 15:22:45 +0200
+Message-Id: <20221023132302.911644-7-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20221023132302.911644-1-u.kleine-koenig@pengutronix.de>
+References: <20221023132302.911644-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-Developer-Signature: v=1; a=openpgp-sha256; l=965; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=BpfBvxhBRHzlFTrrj+ZF3PINXXACbjnYtz2zh8D5noo=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjVT9SziiOeiZRFnT/5x1KTQ2eIhka2Cn6h9J3nmlc h7abQpeJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY1U/UgAKCRDB/BR4rcrsCdpJB/ 0aTBAg6u9dWs6anDyPVlm63/6Uzp/jcXQjgIydqqPf5YNxigFG1OWhrV5GOfZrMCbW8Wu1Wm+NSBJd oLf+iHZHbloGCJ+lRZIMXc6Hx0/2icg5OqLmOlMSFfu8zO5QouIQbtIVHeCE14kneU9S9q0CXm2euw FuZJzy92R7+SjyMtZGx6aUqbmq/00iOMNDaadpkfbSLhWZpovrS0OrWbL6OCa0P5Wc/trmBaSRxMuu msYF2d/Hp+z6tRxwUZGLnyQgtKUDOkmIpm/DUV/55OsPE8ikvWadfNTJJs7m44s8cywveajFHmqx9d yAyJiejQoy0WQGXtLRCcT4hwrOY0lF
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 17 Oct 2022 11:27:18 +0000
-"Sa, Nuno" <Nuno.Sa@analog.com> wrote:
+The probe function doesn't make use of the i2c_device_id * parameter so it
+can be trivially converted.
 
-> > -----Original Message-----
-> > From: Jonathan Cameron <jic23@kernel.org>
-> > Sent: Sunday, October 16, 2022 6:34 PM
-> > To: linux-iio@vger.kernel.org
-> > Cc: Matti Vaittinen <mazziesaccount@gmail.com>; Matti Vaittinen
-> > <matti.vaittinen@fi.rohmeurope.com>; Tanislav, Cosmin
-> > <Cosmin.Tanislav@analog.com>; Jagath Jog J <jagathjog1996@gmail.com>;
-> > Sean Nyekjaer <sean@geanix.com>; Dmitry Rokosov
-> > <DDRokosov@sberdevices.ru>; Linus Walleij <linus.walleij@linaro.org>;
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com>; Hennerich,
-> > Michael <Michael.Hennerich@analog.com>; Lorenzo Bianconi
-> > <lorenzo@kernel.org>; Martyn Welch <martyn.welch@collabora.com>;
-> > Gwendal Grignou <gwendal@chromium.org>; Stephen Boyd
-> > <swboyd@chromium.org>; Tomasz Duszynski <tduszyns@gmail.com>;
-> > Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > Subject: [PATCH 00/14] IIO: More devm_regulator[_bulk]_get_enable()
-> > users
-> >=20
-> > [External]
-> >=20
-> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> >=20
-> > Also one general devm conversion that was too easy to ignore after
-> > dealing with the regulators.
-> >=20
-> > These new macros allow dropping of some boilerplate.  They are not
-> > useful in many cases in IIO because they do not expose the
-> > struct regulator, however for simple drivers that just turn the power
-> > on at probe() they ensure that it is turned off again at remove.
-> >=20
-> > Jonathan Cameron (14):
-> >   iio: accel: adxl367: Use devm_regulator_bulk_get_enable()
-> >   iio: accel: bma400: Use devm_regulator_bulk_get_enable()
-> >   iio: accel: fxls8962af: Use devm_regulator_get_enable()
-> >   iio: accel: kxcjk-1013: Use devm_regulator_bulk_get_enable()
-> >   iio: accel: msa311: Use devm_regulator_get_enable()
-> >   iio: cdc: ad7150: Use devm_regulator_get_enable()
-> >   iio: st_sensors: core and lsm9ds0 switch to
-> >     devm_regulator_bulk_get_enable()
-> >   iio: frequency: ad9523: Use devm_regulator_get_enable()
-> >   iio: humidity: hts211: Use devm_regulator_get_enable()
-> >   iio: light: ltr501: Use devm_regulator_bulk_get_enable()
-> >   iio: light: noa1305: Use devm_regulator_get_enable()
-> >   iio: proximity: sx_common: Use devm_regulator_bulk_get_enable()
-> >   iio: pressure: ms5611: Use devm_regulator_get_enable()
-> >   iio: pressure: ms5611: Switch to fully devm_ managed registration.
-> >=20
-> >  drivers/iio/accel/adxl367.c                   | 28 ++------
-> >  drivers/iio/accel/bma400.h                    |  4 --
-> >  drivers/iio/accel/bma400_core.c               | 29 ++-------
-> >  drivers/iio/accel/fxls8962af-core.c           | 24 +------
-> >  drivers/iio/accel/kxcjk-1013.c                | 25 ++-----
-> >  drivers/iio/accel/msa311.c                    | 21 +-----
-> >  drivers/iio/cdc/ad7150.c                      | 18 +----
-> >  .../iio/common/st_sensors/st_sensors_core.c   | 39 ++---------
-> >  drivers/iio/frequency/ad9523.c                | 22 +------
-> >  drivers/iio/humidity/hts221.h                 |  2 -
-> >  drivers/iio/humidity/hts221_core.c            | 27 ++------
-> >  drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_core.c  | 65 ++-----------------
-> >  drivers/iio/light/ltr501.c                    | 27 ++------
-> >  drivers/iio/light/noa1305.c                   | 26 +-------
-> >  drivers/iio/pressure/ms5611.h                 |  4 --
-> >  drivers/iio/pressure/ms5611_core.c            | 49 +++-----------
-> >  drivers/iio/pressure/ms5611_i2c.c             |  6 --
-> >  drivers/iio/pressure/ms5611_spi.c             |  6 --
-> >  drivers/iio/proximity/sx_common.c             | 23 +------
-> >  drivers/iio/proximity/sx_common.h             |  2 -
-> >  include/linux/iio/common/st_sensors.h         |  4 --
-> >  21 files changed, 57 insertions(+), 394 deletions(-)
-> >=20
-> > --
-> > 2.37.2 =20
->=20
-> For all patches but patch 13/14,
->=20
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
->=20
-> For that one, you can add my tag after addressing Matti's comment.
-Tweaked the patch description on that one. The other comment is covered
-in patch 14 as Matti observed in response to that one.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/iio/accel/da311.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Applied to the togreg branch of iio.git and pushed out as testing.
-
-Thanks,
-
-Jonathan
-
->=20
-> - Nuno S=C3=A1
+diff --git a/drivers/iio/accel/da311.c b/drivers/iio/accel/da311.c
+index ec4e29d260f7..080335fa2ad6 100644
+--- a/drivers/iio/accel/da311.c
++++ b/drivers/iio/accel/da311.c
+@@ -217,8 +217,7 @@ static void da311_disable(void *client)
+ 	da311_enable(client, false);
+ }
+ 
+-static int da311_probe(struct i2c_client *client,
+-			const struct i2c_device_id *id)
++static int da311_probe(struct i2c_client *client)
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev;
+@@ -279,7 +278,7 @@ static struct i2c_driver da311_driver = {
+ 		.name = "da311",
+ 		.pm = pm_sleep_ptr(&da311_pm_ops),
+ 	},
+-	.probe		= da311_probe,
++	.probe_new	= da311_probe,
+ 	.id_table	= da311_i2c_id,
+ };
+ 
+-- 
+2.37.2
 
