@@ -2,47 +2,48 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 307F0ECAAA1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2635FA373D
 	for <linux-iio@archiver.kernel.org>; Sun, 23 Oct 2022 13:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230492AbiJWNXj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 23 Oct 2022 09:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51982 "EHLO
+        id S230468AbiJWNXk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 23 Oct 2022 09:23:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230472AbiJWNXc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2022 09:23:32 -0400
+        with ESMTP id S230482AbiJWNXd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2022 09:23:33 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428367173E
-        for <linux-iio@vger.kernel.org>; Sun, 23 Oct 2022 06:23:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D786FA04
+        for <linux-iio@vger.kernel.org>; Sun, 23 Oct 2022 06:23:32 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1omawX-0006qG-Vn; Sun, 23 Oct 2022 15:23:10 +0200
+        id 1omawd-0006rm-1W; Sun, 23 Oct 2022 15:23:15 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1omawV-000ygD-Tg; Sun, 23 Oct 2022 15:23:07 +0200
+        id 1omawY-000yhB-K7; Sun, 23 Oct 2022 15:23:10 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1omawU-00A3Qe-WB; Sun, 23 Oct 2022 15:23:07 +0200
+        id 1omawX-00A3RQ-AU; Sun, 23 Oct 2022 15:23:09 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-iio@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH 01/23] iio: accel: adxl367: Convert to i2c's .probe_new()
-Date:   Sun, 23 Oct 2022 15:22:40 +0200
-Message-Id: <20221023132302.911644-2-u.kleine-koenig@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        linux-iio@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH 13/23] iio: accel: mma7455: Convert to i2c's .probe_new
+Date:   Sun, 23 Oct 2022 15:22:52 +0200
+Message-Id: <20221023132302.911644-14-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221023132302.911644-1-u.kleine-koenig@pengutronix.de>
 References: <20221023132302.911644-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1071; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=nWmLzYKzE7R8Q3GvuNL7ihDfXgv5MnRVXj6oD/1j3f8=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjVT9BOYnJF+OtrhIWZjiOMeBOvs3AQOy9HZA44BJX mYeCrrqJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY1U/QQAKCRDB/BR4rcrsCSEdB/ 0RhunkJZLseqfB4UPhFaFYApg2QamMXcNXR5DyBq1LDRNSfVYpkO4wBHXxkvZzi/B6O5OBJebgbpUy MA9HrOr/5PpYiJhleICFfijdYCJHoiw4HMJcPwxuyZ7HXUDHQRBECgRoUGHEVMM5PS2feAN76X09Kn D6vkj7Fwi+YxaFxVtFgpPicprSnPkie/itCtOtdXWyfQWcFJPbM/+f09eTCvLXBLpCYix52/FftorG 6tXMQBEFwTdqy8pw90tcRSF+tyHDcHWsmsMCS+zv9bzYQkPzXVdj1JJxql/Zn91Yvju3mbxOSl+zIh fZRwdkI0ep1ky2o0UhbcU60EkvJJyY
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2009; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=6AZK09z5aZbKSiicqPfRwz2zib92fXlB3DHpRQg0zzg=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjVT9paC8w1zjzusj2KpheVQfoNr2ycOMpyczWIwfh rvr6ZEmJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY1U/aQAKCRDB/BR4rcrsCXg+B/ 998ppriBIjg5xgd7F0aAUr3jSgGBLWpYmGjPs9K+RmWlOCxtViPKrLd+oJ+C14/SL1xnYsEyysCdvK BmQJLv+Xbt94h9W+48v604k7grc2dRXYrxv09F0H3YSt/XySFH21+nKef0gqKx7VmcdGGKGrwJMS3Y qU6WTEQDgRx6tfhHtERGt7yzPFs2qC2QhFrtPi0FycomgQ0OFx+mAPbvCDOqcdt+bfxHGIytcKzeML 4dMi0i9fho6nPQf9NzpkZLdQ7cFai0TeInhYZaEIVkp1ACS9cg8bwF8UXzRU+wQJkNyYMT2HMkaSTm Iafs+uEtMGQOgvZxQyfNf8jNBMiR8v
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -53,37 +54,66 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The probe function doesn't make use of the i2c_device_id * parameter so it
-can be trivially converted.
+.probe_new() doesn't get the i2c_device_id * parameter, so determine
+that explicitly in .probe(). The device_id array has to move up for that
+to work.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/accel/adxl367_i2c.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Alternatively it would be possible to just pass i2c->name to
+mma7455_core_probe(). That's a simpler patch but that changes things
+in case id == NULL, so I didn't do that here even though it might be
+considered an improvement.
+---
+ drivers/iio/accel/mma7455_i2c.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iio/accel/adxl367_i2c.c b/drivers/iio/accel/adxl367_i2c.c
-index 3606efa25835..070aad724abd 100644
---- a/drivers/iio/accel/adxl367_i2c.c
-+++ b/drivers/iio/accel/adxl367_i2c.c
-@@ -41,8 +41,7 @@ static const struct adxl367_ops adxl367_i2c_ops = {
- 	.read_fifo = adxl367_i2c_read_fifo,
- };
+diff --git a/drivers/iio/accel/mma7455_i2c.c b/drivers/iio/accel/mma7455_i2c.c
+index c63b321b01cd..9518bd81f9e5 100644
+--- a/drivers/iio/accel/mma7455_i2c.c
++++ b/drivers/iio/accel/mma7455_i2c.c
+@@ -10,9 +10,16 @@
  
--static int adxl367_i2c_probe(struct i2c_client *client,
+ #include "mma7455.h"
+ 
+-static int mma7455_i2c_probe(struct i2c_client *i2c,
 -			     const struct i2c_device_id *id)
-+static int adxl367_i2c_probe(struct i2c_client *client)
++static const struct i2c_device_id mma7455_i2c_ids[] = {
++	{ "mma7455", 0 },
++	{ "mma7456", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, mma7455_i2c_ids);
++
++static int mma7455_i2c_probe(struct i2c_client *i2c)
  {
- 	struct adxl367_i2c_state *st;
++	const struct i2c_device_id *id = i2c_match_id(mma7455_i2c_ids, i2c);
  	struct regmap *regmap;
-@@ -78,7 +77,7 @@ static struct i2c_driver adxl367_i2c_driver = {
- 		.name = "adxl367_i2c",
- 		.of_match_table = adxl367_of_match,
- 	},
--	.probe = adxl367_i2c_probe,
-+	.probe_new = adxl367_i2c_probe,
- 	.id_table = adxl367_i2c_id,
- };
+ 	const char *name = NULL;
  
+@@ -31,13 +38,6 @@ static void mma7455_i2c_remove(struct i2c_client *i2c)
+ 	mma7455_core_remove(&i2c->dev);
+ }
+ 
+-static const struct i2c_device_id mma7455_i2c_ids[] = {
+-	{ "mma7455", 0 },
+-	{ "mma7456", 0 },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(i2c, mma7455_i2c_ids);
+-
+ static const struct of_device_id mma7455_of_match[] = {
+ 	{ .compatible = "fsl,mma7455" },
+ 	{ .compatible = "fsl,mma7456" },
+@@ -46,7 +46,7 @@ static const struct of_device_id mma7455_of_match[] = {
+ MODULE_DEVICE_TABLE(of, mma7455_of_match);
+ 
+ static struct i2c_driver mma7455_i2c_driver = {
+-	.probe = mma7455_i2c_probe,
++	.probe_new = mma7455_i2c_probe,
+ 	.remove = mma7455_i2c_remove,
+ 	.id_table = mma7455_i2c_ids,
+ 	.driver = {
 -- 
 2.37.2
 
