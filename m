@@ -2,46 +2,48 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 589EEFA373F
-	for <linux-iio@archiver.kernel.org>; Sun, 23 Oct 2022 13:23:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50944ECAAA1
+	for <linux-iio@archiver.kernel.org>; Sun, 23 Oct 2022 13:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230476AbiJWNXh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S230457AbiJWNXh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sun, 23 Oct 2022 09:23:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51958 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230457AbiJWNXa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2022 09:23:30 -0400
+        with ESMTP id S230468AbiJWNXc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2022 09:23:32 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D976FC4A
-        for <linux-iio@vger.kernel.org>; Sun, 23 Oct 2022 06:23:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFDC6F27A
+        for <linux-iio@vger.kernel.org>; Sun, 23 Oct 2022 06:23:31 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1omawX-0006qH-Vo; Sun, 23 Oct 2022 15:23:10 +0200
+        id 1omawZ-0006ri-5K; Sun, 23 Oct 2022 15:23:11 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1omawW-000ygH-4u; Sun, 23 Oct 2022 15:23:08 +0200
+        id 1omawY-000yh7-E5; Sun, 23 Oct 2022 15:23:10 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1omawV-00A3Qk-DM; Sun, 23 Oct 2022 15:23:07 +0200
+        id 1omawX-00A3RT-Hb; Sun, 23 Oct 2022 15:23:09 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Wolfram Sang <wsa@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 03/23] iio: accel: bma400: Convert to i2c's .probe_new
-Date:   Sun, 23 Oct 2022 15:22:42 +0200
-Message-Id: <20221023132302.911644-4-u.kleine-koenig@pengutronix.de>
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, linux-iio@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH 14/23] iio: accel: mma7660: Convert to i2c's .probe_new()
+Date:   Sun, 23 Oct 2022 15:22:53 +0200
+Message-Id: <20221023132302.911644-15-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221023132302.911644-1-u.kleine-koenig@pengutronix.de>
 References: <20221023132302.911644-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1717; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=LFfCPOIAMk+cTROD/thqfLSzOM/JB9AegkaUfckA+jY=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjVT9IZLkBQIYChZWJldf7a7/KlVJ8XEKyYnuPe2++ n8S+mCSJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY1U/SAAKCRDB/BR4rcrsCfInB/ 9/c0s4rOpEarUjTJmCgIU5xNDbFXNFOlHqBWD2lUVfgTBbetEcisosqLXb9wvyKSwM6HW46RTtHIa7 uAYUvJ7As/b8aCvorj6iA3RQBPplHbVsxXklYycOTT6MdrFZOxgaFPR0pfmqmiFY67nP4Dv61zSfDk RmsR32gff6itS9YbYff0YqYLiNfWUMwZ8dynD3SJ7PQB4oyWhszsjnMGBrTH5EzKbdNcRM5PkxyhYZ KhMKeD/r8ZzQBDCV4TIUKVJzwI5ZofaYxXTUab/irEAkaXAavc0KDHPsWRZtemPmNHDmo3makPxURY JwQYyjmRc7quqUWmxtZpgxH4IoVwVI
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1050; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=CRtotGYhzACBZ+4+U7YqIeeEW/cmInGqjuAg4qsRL84=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjVT9seXj0XA8dj30QiRlGizm58qR30LGbV1dVjhvJ PD4H3nSJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY1U/bAAKCRDB/BR4rcrsCUesB/ kByEGpIlkah2ddYttAXPFolHnJYl7vKCbJC6gKjnmTmFBzA3SGBsnl/BZ2tTfxWZ23/q3SFtfeTqQJ sj2y91LBL03dO1TZtAKTb7elOnKoGYqREMcuUJaXDhxhl4VujAJQhJj7mTeXf6odp3tlHox/U7NIht Yw02SwrbfgWKWQlt03jtPqgL3aSssEpt4J7D9q9158vpz4TT57VN26sePFfknJoRmDY4otyuf9rCrb MfWOjn4rso/zUZomZXUPvqFlRZdcul/cqNLooJgnMnqbhD/3j+61NoPsYVBe/VIZdX8/Jl4f73ldPE 3DHjWfJ+9Rdikd9ZS7nYJeozJBQtTd
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,60 +54,37 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-.probe_new() doesn't get the i2c_device_id * parameter, so determine
-that explicitly in .probe(). The device_id array has to move up for that
-to work.
+The probe function doesn't make use of the i2c_device_id * parameter so it
+can be trivially converted.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/accel/bma400_i2c.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/iio/accel/mma7660.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/accel/bma400_i2c.c b/drivers/iio/accel/bma400_i2c.c
-index 1ba2a982ea73..cf7a830d6baf 100644
---- a/drivers/iio/accel/bma400_i2c.c
-+++ b/drivers/iio/accel/bma400_i2c.c
-@@ -13,10 +13,16 @@
- 
- #include "bma400.h"
- 
--static int bma400_i2c_probe(struct i2c_client *client,
--			    const struct i2c_device_id *id)
-+static const struct i2c_device_id bma400_i2c_ids[] = {
-+	{ "bma400", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, bma400_i2c_ids);
-+
-+static int bma400_i2c_probe(struct i2c_client *client)
- {
- 	struct regmap *regmap;
-+	const struct i2c_device_id *id = i2c_match_id(bma400_i2c_ids, client);
- 
- 	regmap = devm_regmap_init_i2c(client, &bma400_regmap_config);
- 	if (IS_ERR(regmap)) {
-@@ -27,12 +33,6 @@ static int bma400_i2c_probe(struct i2c_client *client,
- 	return bma400_probe(&client->dev, regmap, client->irq, id->name);
- }
- 
--static const struct i2c_device_id bma400_i2c_ids[] = {
--	{ "bma400", 0 },
--	{ }
--};
--MODULE_DEVICE_TABLE(i2c, bma400_i2c_ids);
--
- static const struct of_device_id bma400_of_i2c_match[] = {
- 	{ .compatible = "bosch,bma400" },
- 	{ }
-@@ -44,7 +44,7 @@ static struct i2c_driver bma400_i2c_driver = {
- 		.name = "bma400",
- 		.of_match_table = bma400_of_i2c_match,
- 	},
--	.probe    = bma400_i2c_probe,
-+	.probe_new = bma400_i2c_probe,
- 	.id_table = bma400_i2c_ids,
+diff --git a/drivers/iio/accel/mma7660.c b/drivers/iio/accel/mma7660.c
+index 85829990bbad..b279ca4dcdc0 100644
+--- a/drivers/iio/accel/mma7660.c
++++ b/drivers/iio/accel/mma7660.c
+@@ -169,8 +169,7 @@ static const struct iio_info mma7660_info = {
+ 	.attrs			= &mma7660_attribute_group,
  };
  
+-static int mma7660_probe(struct i2c_client *client,
+-			const struct i2c_device_id *id)
++static int mma7660_probe(struct i2c_client *client)
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev;
+@@ -267,7 +266,7 @@ static struct i2c_driver mma7660_driver = {
+ 		.of_match_table = mma7660_of_match,
+ 		.acpi_match_table = mma7660_acpi_id,
+ 	},
+-	.probe		= mma7660_probe,
++	.probe_new	= mma7660_probe,
+ 	.remove		= mma7660_remove,
+ 	.id_table	= mma7660_i2c_id,
+ };
 -- 
 2.37.2
 
