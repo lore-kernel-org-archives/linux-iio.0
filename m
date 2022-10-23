@@ -2,45 +2,45 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C2CFA373D
-	for <linux-iio@archiver.kernel.org>; Sun, 23 Oct 2022 13:23:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 675D8C433FE
+	for <linux-iio@archiver.kernel.org>; Sun, 23 Oct 2022 13:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230216AbiJWNX3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 23 Oct 2022 09:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51902 "EHLO
+        id S230459AbiJWNXb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 23 Oct 2022 09:23:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230415AbiJWNX2 (ORCPT
+        with ESMTP id S230421AbiJWNX2 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2022 09:23:28 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F336FA04
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F2D6FC4A
         for <linux-iio@vger.kernel.org>; Sun, 23 Oct 2022 06:23:27 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1omawb-00070y-Gk; Sun, 23 Oct 2022 15:23:13 +0200
+        id 1omawb-00071e-E6; Sun, 23 Oct 2022 15:23:13 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1omawa-000yhj-9g; Sun, 23 Oct 2022 15:23:12 +0200
+        id 1omawa-000yhm-Fs; Sun, 23 Oct 2022 15:23:12 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1omawZ-00A3Rx-6I; Sun, 23 Oct 2022 15:23:11 +0200
+        id 1omawY-00A3Rm-Jh; Sun, 23 Oct 2022 15:23:10 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Wolfram Sang <wsa@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 22/23] iio: accel: st_magn: Convert to i2c's .probe_new()
-Date:   Sun, 23 Oct 2022 15:23:01 +0200
-Message-Id: <20221023132302.911644-23-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 19/23] iio: accel: mxc6255: Convert to i2c's .probe_new()
+Date:   Sun, 23 Oct 2022 15:22:58 +0200
+Message-Id: <20221023132302.911644-20-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221023132302.911644-1-u.kleine-koenig@pengutronix.de>
 References: <20221023132302.911644-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1170; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=bzEQORsV7CC8iq735P333ifpo8EwBAep5rQS6r3vJy4=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjVT+aGWOillPaMKPZlK6RuIR3iOqfQUoVexsfRg4P 7SWV39KJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY1U/mgAKCRDB/BR4rcrsCelNB/ 95Z2PFFFsHU8IR4uT4upY7UPd42/sB01eRxCgTwkuUkWmtmKfKTR1p7udH7MQn0I6/036Yxeez8xtW m6r7T/D6NXSAIwRECqb5J0qsgx4rA2efCT6GCNAn1PKz9lIPwuol6km6I1qImiJ079ieGTqKnawSwO MquKfJ8/2FKopP/ImdqQmR5BohbBsa5CRJGdMT1seHK1opwMQ00qpIo+wt9nXkDCq3di10J5JXmEzs FjxFmVG9CRjwrKfrz2I7M50nUdjthN5HBEaflAaj7TYlobmhxnuZIpf7trqzq9yYLVvFL3UH76KUBt /5I9elgWxV7tA76y9aD1OQfQfghAKd
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1059; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=Y7ce1pV7EnM1dRLT3xI6AVuwYLbTY0ewHvg0g9pegL0=; b=owGbwMvMwMV48I9IxdpTbzgZT6slMSSH2k8wuizdxNoqdK5PSjP75/nNztnMXyx/sygfUnkru/4r x8rbnYzGLAyMXAyyYoosdUVaYhMk1vy3K1nCDTOIlQlkCgMXpwBMZPV89v9lZwwumEgZ1Cw9e3Rx4W vJlxHJnmZPVn6UKf+/6OkMRem8fMnkrl/vqnpyHzpo/T2R7qAr+76F48rnMPVZN/ufRD7fGnT6vL33 1ZLia4lC0480fXTh13jnIfnzM/v3jMW+szwK+h6US2S9PlXTqZ8Raap+TdnodNW9r0KSooFFvc28T8 L/B7wQW5aWIXhoGR/vwiy1hLlWsQ8zUpaxbPCapVuo8eRi2a7E3n1iJ/ya3CNfFkboiXolmIq8C/qn mvxj1evV++rU3OP4Hqa9sjZ7Idr9wllWLVEj1c9W7d0W/fi7p27FJObue7DT07I7pvVl0c8mizqrGH afmflbZ20Q1RF4+tc4/ryufaYdAA==
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -56,32 +56,32 @@ can be trivially converted.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/magnetometer/st_magn_i2c.c | 5 ++---
+ drivers/iio/accel/mxc6255.c | 5 ++---
  1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
-index c5d8c303db4e..b4098d3b3813 100644
---- a/drivers/iio/magnetometer/st_magn_i2c.c
-+++ b/drivers/iio/magnetometer/st_magn_i2c.c
-@@ -54,8 +54,7 @@ static const struct of_device_id st_magn_of_match[] = {
+diff --git a/drivers/iio/accel/mxc6255.c b/drivers/iio/accel/mxc6255.c
+index 9aeeadc420d3..aa2e660545f8 100644
+--- a/drivers/iio/accel/mxc6255.c
++++ b/drivers/iio/accel/mxc6255.c
+@@ -113,8 +113,7 @@ static const struct regmap_config mxc6255_regmap_config = {
+ 	.readable_reg = mxc6255_is_readable_reg,
  };
- MODULE_DEVICE_TABLE(of, st_magn_of_match);
  
--static int st_magn_i2c_probe(struct i2c_client *client,
--			     const struct i2c_device_id *id)
-+static int st_magn_i2c_probe(struct i2c_client *client)
+-static int mxc6255_probe(struct i2c_client *client,
+-			 const struct i2c_device_id *id)
++static int mxc6255_probe(struct i2c_client *client)
  {
- 	const struct st_sensor_settings *settings;
- 	struct st_sensor_data *mdata;
-@@ -107,7 +106,7 @@ static struct i2c_driver st_magn_driver = {
- 		.name = "st-magn-i2c",
- 		.of_match_table = st_magn_of_match,
+ 	struct mxc6255_data *data;
+ 	struct iio_dev *indio_dev;
+@@ -184,7 +183,7 @@ static struct i2c_driver mxc6255_driver = {
+ 		.name = MXC6255_DRV_NAME,
+ 		.acpi_match_table = ACPI_PTR(mxc6255_acpi_match),
  	},
--	.probe = st_magn_i2c_probe,
-+	.probe_new = st_magn_i2c_probe,
- 	.id_table = st_magn_id_table,
+-	.probe		= mxc6255_probe,
++	.probe_new	= mxc6255_probe,
+ 	.id_table	= mxc6255_id,
  };
- module_i2c_driver(st_magn_driver);
+ 
 -- 
 2.37.2
 
