@@ -2,48 +2,46 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C501CFA3741
-	for <linux-iio@archiver.kernel.org>; Sun, 23 Oct 2022 13:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7A8ECAAA1
+	for <linux-iio@archiver.kernel.org>; Sun, 23 Oct 2022 13:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230453AbiJWNXg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S230379AbiJWNXg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sun, 23 Oct 2022 09:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230379AbiJWNXb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2022 09:23:31 -0400
+        with ESMTP id S230456AbiJWNXa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2022 09:23:30 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEBA71726
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04C736FC51
         for <linux-iio@vger.kernel.org>; Sun, 23 Oct 2022 06:23:30 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1omawb-000700-97; Sun, 23 Oct 2022 15:23:13 +0200
+        id 1omawX-0006qJ-Vo; Sun, 23 Oct 2022 15:23:10 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1omawa-000yhc-0N; Sun, 23 Oct 2022 15:23:12 +0200
+        id 1omawW-000ygP-Io; Sun, 23 Oct 2022 15:23:08 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1omawY-00A3Rq-Oz; Sun, 23 Oct 2022 15:23:10 +0200
+        id 1omawV-00A3Qh-6X; Sun, 23 Oct 2022 15:23:07 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Jean Delvare <jdelvare@suse.de>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Peter Rosin <peda@axentia.se>, linux-iio@vger.kernel.org,
+To:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-iio@vger.kernel.org,
         kernel@pengutronix.de
-Subject: [PATCH 20/23] iio: accel: stk8312: Convert to i2c's .probe_new()
-Date:   Sun, 23 Oct 2022 15:22:59 +0200
-Message-Id: <20221023132302.911644-21-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 02/23] iio: accel: adxl372: Convert to i2c's .probe_new
+Date:   Sun, 23 Oct 2022 15:22:41 +0200
+Message-Id: <20221023132302.911644-3-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221023132302.911644-1-u.kleine-koenig@pengutronix.de>
 References: <20221023132302.911644-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1108; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=PM5/Dm1kk3LHWe/wcBSCpCscaBmSwFmVDkwGKTWOvGs=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjVT+TcbfQtmHVte2w/m+Bc3FsUb7w6uIhoUPVpK0U Q7uByraJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY1U/kwAKCRDB/BR4rcrsCRe6CA CWUGy1/Tq3fuUZm3x1NlAjvieRH0fqKwMwppdqHCCKD6YhCFAdHHF2ttYPqq3scezWnZ9NzE9YoBFC fp/Q5cgqEzmMbpduV8NCPq0ZS36OOpH4Hh8E7OL2D9i2mFGn/ja0Fj6YltIlxdzYlEt0CuzFCi1SXm XZ1iZYFQwkqU+oH/SZo6XN0bRMflZxTkoOtUsYp7biGo07gdZkXpms8FP1INI+ZMhVcSqDb5xuhERN X+5KXTCPdLh4/02EnyH4SwNeiHJG88rdc6CIrUi8eI3hw/c3GGBZUFyl9lGko4FXc1Q/vbyLlOSRkY cFe4YgSshUv8hIVjOq+lj4uVcmVeEt
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1760; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=jhwmHl4KehWAQNkUqeCSBfJJ0hRVOmxjhfMDDNXfRbI=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjVT9EOsEr6zhCa/Z7YivkPrtQ6BsnxeXSdmJ2tU2X m0srv+eJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY1U/RAAKCRDB/BR4rcrsCUV5CA CdtYAJtL6vMnbJNLli5SSmCYYPHdWZ6NLVEWHPbVUk2aFXuPYhzisktbI5tG5rLkz+SrPqDgsXIXy7 3wiUDTyAdSly6UssvsKi6HRV8FgVL7KbEwZm4T3YfDtbBYRGVdKaJhwZ9L3mePuSUrI74XOlNInEY5 JkOxU8K2Za5fYyN5tvq+oMlsS02F1xvpulUOYlnsT/vlF2hrfRUZoOGhMeUeNsyqfiI9jOHi+6A1dN fBBRMR21VLRKqvYhkxZSXne30JB/FQwGDlnrmKlxhSyKypZ7QPCNUaIBRHww8rET+/8tZcmEyCyyKK L9VYGNq2BSTr/KLTV32A2asxEuoYC5
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -54,37 +52,59 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The probe function doesn't make use of the i2c_device_id * parameter so it
-can be trivially converted.
+.probe_new() doesn't get the i2c_device_id * parameter, so determine
+that explicitly in .probe(). The device_id array has to move up for that
+to work.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/accel/stk8312.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/iio/accel/adxl372_i2c.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
-index 7b1d6fb692b3..68f680db7505 100644
---- a/drivers/iio/accel/stk8312.c
-+++ b/drivers/iio/accel/stk8312.c
-@@ -498,8 +498,7 @@ static const struct iio_buffer_setup_ops stk8312_buffer_setup_ops = {
- 	.postdisable = stk8312_buffer_postdisable,
+diff --git a/drivers/iio/accel/adxl372_i2c.c b/drivers/iio/accel/adxl372_i2c.c
+index 4efb70a5fe40..5a21c1bcf2d8 100644
+--- a/drivers/iio/accel/adxl372_i2c.c
++++ b/drivers/iio/accel/adxl372_i2c.c
+@@ -18,9 +18,15 @@ static const struct regmap_config adxl372_regmap_config = {
+ 	.readable_noinc_reg = adxl372_readable_noinc_reg,
  };
  
--static int stk8312_probe(struct i2c_client *client,
--			 const struct i2c_device_id *id)
-+static int stk8312_probe(struct i2c_client *client)
+-static int adxl372_i2c_probe(struct i2c_client *client,
+-			     const struct i2c_device_id *id)
++static const struct i2c_device_id adxl372_i2c_id[] = {
++	{ "adxl372", 0 },
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, adxl372_i2c_id);
++
++static int adxl372_i2c_probe(struct i2c_client *client)
  {
++	const struct i2c_device_id *id = i2c_match_id(adxl372_i2c_id, client);
+ 	struct regmap *regmap;
+ 	unsigned int regval;
  	int ret;
- 	struct iio_dev *indio_dev;
-@@ -645,7 +644,7 @@ static struct i2c_driver stk8312_driver = {
- 		.name = STK8312_DRIVER_NAME,
- 		.pm = pm_sleep_ptr(&stk8312_pm_ops),
+@@ -41,12 +47,6 @@ static int adxl372_i2c_probe(struct i2c_client *client,
+ 	return adxl372_probe(&client->dev, regmap, client->irq, id->name);
+ }
+ 
+-static const struct i2c_device_id adxl372_i2c_id[] = {
+-	{ "adxl372", 0 },
+-	{}
+-};
+-MODULE_DEVICE_TABLE(i2c, adxl372_i2c_id);
+-
+ static const struct of_device_id adxl372_of_match[] = {
+ 	{ .compatible = "adi,adxl372" },
+ 	{ }
+@@ -58,7 +58,7 @@ static struct i2c_driver adxl372_i2c_driver = {
+ 		.name = "adxl372_i2c",
+ 		.of_match_table = adxl372_of_match,
  	},
--	.probe =            stk8312_probe,
-+	.probe_new =        stk8312_probe,
- 	.remove =           stk8312_remove,
- 	.id_table =         stk8312_i2c_id,
+-	.probe = adxl372_i2c_probe,
++	.probe_new = adxl372_i2c_probe,
+ 	.id_table = adxl372_i2c_id,
  };
+ 
 -- 
 2.37.2
 
