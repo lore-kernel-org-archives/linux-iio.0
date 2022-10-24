@@ -2,114 +2,180 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DE4ECAAA1
-	for <linux-iio@archiver.kernel.org>; Mon, 24 Oct 2022 17:47:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A924C38A2D
+	for <linux-iio@archiver.kernel.org>; Mon, 24 Oct 2022 18:06:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232697AbiJXRr3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 24 Oct 2022 13:47:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41612 "EHLO
+        id S230016AbiJXSGQ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 24 Oct 2022 14:06:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229886AbiJXRrE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Oct 2022 13:47:04 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D1C14DF2B;
-        Mon, 24 Oct 2022 09:23:09 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id kt23so700696ejc.7;
-        Mon, 24 Oct 2022 09:23:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hP8b5SS/NsW2nMLW/xSwPyyreIz/0UJMi8FgJ7xYbiY=;
-        b=dNM2IXi+yYy6NnfdJ0TWhvuVgBAl+4pS8y/Xs7eHyDthyelxiOrwCJ2MEm484pEee7
-         FsCzK0hK4j9dQJQdUC/VItm1G6DklEZV6krCcMu9ShYPfsnZ8IfGLVvUH57PgzTVG1Rk
-         2h9QjlQwGsn4TEIRl7DUjsnnxEUa3zzEFPq072nA8G233sfQb8AaFSk/VSIFJjnMH0DV
-         HKi4BtKavXvMJ0YqKZwwhMTETchk9k8FeINrfelCyow4ZD/KQJvhor1AeHMOvYuEiCSg
-         6yr6i+0zGKEAc8z7igya8o7OuyAJjzoW/q0GkyJmU8nJ72KzKK0gl1N/5t+4wxbTNY2b
-         WgPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hP8b5SS/NsW2nMLW/xSwPyyreIz/0UJMi8FgJ7xYbiY=;
-        b=RT8w61t2q03P51m/PigJPdBxZNfN/t6IMWUjy6ifyk06qqQs70zQ1vyekO5KNJLjaj
-         Oy5XyxGDMisbx7PEZJF1OnvJNv3KkHNJjzYk/SS4L1NrKi/sCyu3AkAnh8JqhZV8q4Y7
-         CLfb42QO04yJSfc37XLyybPnH46gguOz3S4y74SO/wTSw8UhktflVvAa5Dtlq4kXpbNQ
-         SkkeledsAMbSWfWmQQoyzkLoz9zHan/wA4NsFrt7cHL19bYXeLY89CRXMYghb5UKhUaP
-         aIunXrpLKoylXKCMrJ0SYd4u6Bnvzpmk4srW+U2+iDEMtzXxNImZV2A+PxWF9Ut5IBu5
-         yEzg==
-X-Gm-Message-State: ACrzQf0r8d0ZtDzde59nskMfLss/8wH5h1JVhruCXxmQBpl5I1g+WJsb
-        9k7AZuXwr2+K3Ml9ASBvcvVsmUD8Y1o=
-X-Google-Smtp-Source: AMsMyM7Cg1lEvF1ex7ag4vTHjVpCu9JynpVIzJ3mjmVZwbfOJxh18CRJCEfRbJb7+Z8sToY2Hx7afg==
-X-Received: by 2002:a2e:a7c5:0:b0:26f:c304:a16f with SMTP id x5-20020a2ea7c5000000b0026fc304a16fmr12556208ljp.47.1666620974864;
-        Mon, 24 Oct 2022 07:16:14 -0700 (PDT)
-Received: from ?IPV6:2001:14ba:16f3:4a00::2? (dc75zzyyyyyyyyyyyyyby-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::2])
-        by smtp.gmail.com with ESMTPSA id 11-20020ac24d4b000000b00492dc29be7bsm4544141lfp.227.2022.10.24.07.16.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Oct 2022 07:16:14 -0700 (PDT)
-Message-ID: <4e6d331b-0cc3-de9b-9fa2-96981f594c83@gmail.com>
-Date:   Mon, 24 Oct 2022 17:16:12 +0300
+        with ESMTP id S231473AbiJXSFj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Oct 2022 14:05:39 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342261C8D5D;
+        Mon, 24 Oct 2022 09:46:14 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Mx18P3FFdz67xWY;
+        Tue, 25 Oct 2022 00:42:45 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.31; Mon, 24 Oct 2022 18:44:37 +0200
+Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 24 Oct
+ 2022 17:44:36 +0100
+Date:   Mon, 24 Oct 2022 17:44:35 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+Subject: Re: [PATCH v2 3/5] dt-bindings: iio: temperature: ltc2983: refine
+Message-ID: <20221024174435.00003489@huawei.com>
+In-Reply-To: <5cfc6dbb2a324746ece4f6cc0e633ccedfce2c54.camel@gmail.com>
+References: <20221020090257.1717053-1-demonsingur@gmail.com>
+        <20221020090257.1717053-4-demonsingur@gmail.com>
+        <20221023135124.1fdeab5e@jic23-huawei>
+        <5cfc6dbb2a324746ece4f6cc0e633ccedfce2c54.camel@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH v4 2/3] iio: accel: Support Kionix/ROHM KX022A
- accelerometer
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     DDRokosov@sberdevices.ru, andriy.shevchenko@linux.intel.com,
-        demonsingur@gmail.com, devicetree@vger.kernel.org,
-        jagathjog1996@gmail.com, jic23@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, lars@metafoo.de,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        matti.vaittinen@fi.rohmeurope.com, nikita.yoush@cogentembedded.com,
-        robh+dt@kernel.org
-References: <cover.1666350457.git.mazziesaccount@gmail.com>
- <7baf3dd482ab1db0d8a3676d6d5d3e4ab7f3cf9d.1666350457.git.mazziesaccount@gmail.com>
- <3ad8b485-9007-f7e9-f52a-d5644a688bcf@wanadoo.fr>
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <3ad8b485-9007-f7e9-f52a-d5644a688bcf@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Thanks for the review Christophe,
+On Sun, 23 Oct 2022 15:46:13 +0200
+Nuno Sá <noname.nuno@gmail.com> wrote:
 
-On 10/24/22 16:34, Christophe JAILLET wrote:
-> Le 21/10/2022 Ã  13:22, Matti Vaittinen a Ã©critÂ :
->> KX022A is a 3-axis accelerometer from ROHM/Kionix. The sensor features
->> include variable ODRs, I2C and SPI control, FIFO/LIFO with watermark IRQ,
->> tap/motion detection, wake-up & back-to-sleep events, four acceleration
->> ranges (2, 4, 8 and 16g), and probably some other cool features.
->>
->> Add support for the basic accelerometer features such as getting the
->> acceleration data via IIO. (raw reads, triggered buffer [data-ready] or
->> using the WMI IRQ).
->>
->> Important things to be added include the double-tap, motion
->> detection and wake-up as well as the runtime power management.
->>
->> Signed-off-by: Matti Vaittinen 
->> <mazziesaccount-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->>
->> ---
+> On Sun, 2022-10-23 at 13:51 +0100, Jonathan Cameron wrote:
+> > On Thu, 20 Oct 2022 12:02:55 +0300
+> > Cosmin Tanislav <demonsingur@gmail.com> wrote:
+> >   
+> > > From: Cosmin Tanislav <cosmin.tanislav@analog.com>
+> > > 
+> > >  * make sure addresses are represented as hex
+> > >  * add note about wrong unit value for adi,mux-delay-config-us
+> > >  * simplify descriptions
+> > >  * add descriptions for the items of custom sensor tables
+> > >  * add default property values where applicable
+> > >  * use conditionals to extend minimum reg value
+> > >    for single ended sensors
+> > >  * remove " around phandle schema $ref
+> > >  * remove label from example and use generic temperature
+> > >    sensor name
+> > > 
+> > > Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>  
+> > 
+> > Hi Cosmin,
+> > 
+> > Just one question inline from me (other than the build bot report
+> > that I'll
+> > assume you'll fix for v3).
+> > 
+> > Otherwise looks like a nice cleanup to me.
+> > 
+> > I wonder a bit on whether it is worth splitting up, but that would be
+> > rather messy to actually do so will leave that to the dt experts to
+> > comment
+> > on.
+> > 
+> > Jonathan
+> > 
+> >   
+> > > ---
+> > >  .../bindings/iio/temperature/adi,ltc2983.yaml | 309 +++++++++++---
+> > > ----
+> > >  1 file changed, 182 insertions(+), 127 deletions(-)
+> > > 
+> > > diff --git
+> > > a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yam
+> > > l
+> > > b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yam
+> > > l
+> > > index 722781aa4697..3e97ec841fd6 100644
+> > > ---
+> > > a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yam
+> > > l
+> > > +++
+> > > b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yam
+> > > l
+> > > @@ -26,25 +26,25 @@ properties:
+> > >  
+> > >    adi,mux-delay-config-us:
+> > >      description:
+> > > -      The LTC2983 performs 2 or 3 internal conversion cycles per
+> > > temperature
+> > > -      result. Each conversion cycle is performed with different
+> > > excitation and
+> > > -      input multiplexer configurations. Prior to each conversion,
+> > > these
+> > > -      excitation circuits and input switch configurations are
+> > > changed and an
+> > > -      internal 1ms delay ensures settling prior to the conversion
+> > > cycle in most
+> > > -      cases. An extra delay can be configured using this property.
+> > > The value is
+> > > -      rounded to nearest 100us.
+> > > +      Extra delay prior to each conversion, in addition to the
+> > > internal 1ms
+> > > +      delay, for the multiplexer to switch input configurations
+> > > and
+> > > +      excitation values.
+> > > +
+> > > +      This property is supposed to be in microseconds, but to
+> > > maintain
+> > > +      compatibility, this value will be multiplied by 100 before
+> > > usage.  
+> > 
+> > This new text has me a little confused.  Previously we talked
+> > rounding, now it
+> > is saying the value is multiplied (which would make it definitely not
+> > in micro
+> > secs!)..  So are we papering over a driver bug here?
+> > 
+> >   
 > 
-> Hi, should there be a v5:
+> Hi Jonathan,
+> 
+> Let me try to make this one clear as it was my mess...
+> 
+> The multiplication is done internally by the device. I messed up in
+> this one as this value is clearly not in us but it is the raw value.
+> So, tecnically, there's nothing wrong in the driver as it just reads
+> this property and directly writes it. But of course this is misleading
+> and wrong from the bindings point of view.
+> 
+> That said, me and Cosmin did spoke about just having this property
+> 'deprecated' and add a new one (the driver would need to be changed
+> accordingly) - no idea also about a new name for it :)
+> 
+> But for this round, Cosmin decided to have this stated on the
+> description and see what you and dt maintainers had to say about it and
+> if making it 'deprecated' is the way to go (or something else).
 
-I did already send out the v5 shortly before your review. If I need to 
-send v6 I'll apply your suggestions.
+Deprecating and replacing with something right definitely seems like
+correct option to me.  Naming always fun though when we already used the
+most obvious name ;)
 
+Thanks for the explanation.
 
-Yours
-	-- Matti
+Jonathan
 
--- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
-
-~~ When things go utterly wrong vim users can always type :help! ~~
+> 
+> - Nuno Sá
+> 
 
