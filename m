@@ -2,270 +2,129 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 613BDECAAA1
-	for <linux-iio@archiver.kernel.org>; Mon, 24 Oct 2022 10:22:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31BABC38A2D
+	for <linux-iio@archiver.kernel.org>; Mon, 24 Oct 2022 10:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbiJXKWj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 24 Oct 2022 06:22:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
+        id S229535AbiJXKkT convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 24 Oct 2022 06:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbiJXKWi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Oct 2022 06:22:38 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B65057DC4
-        for <linux-iio@vger.kernel.org>; Mon, 24 Oct 2022 03:22:37 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id a15so7443125ljb.7
-        for <linux-iio@vger.kernel.org>; Mon, 24 Oct 2022 03:22:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=melexis.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HA6qy786JkRhakLWTf9Vd5z8poyqlUHoYYUsjIZqQ6o=;
-        b=Q5B3x7xVG4WfCbUDdBJVsjzxZnXLpnlCY6oXKK6rQph3Z1w/iJArZM4KUGJNzuckRA
-         Jp23/aNvgQJvT7FaFaT6dO1z43XZXGPR+ulqVHGNtnz+/OzRmH+PLEEOY0e5+vroRC2V
-         QD4g9XpYvBr8+xAWZrHikpIBs0daiYspZh0UGLK17E+1eycg2gYeGoBWaYZED5ZdQ9x5
-         VM4fzfyIbCJcwniJkk/byWZLT4N8bnjRlsp2XsEAIi6M/7GpRMItXSKiqKBTApPoyK0D
-         8fy3SsepM+jNJ+34XeKvp/VeqHF8H8LqeW3VTCyWzdQcSrgJQWXkn4InSlFnZeOnQJNc
-         lNjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HA6qy786JkRhakLWTf9Vd5z8poyqlUHoYYUsjIZqQ6o=;
-        b=cJbomXB+DdwciPO/xRSJTRuYi5HslQtU7OFm7ApJoOLy9WenwwrWPjyEJ8+nSC/FuQ
-         WfnBoa1fhAyZ7k1GlbZTR9e6c9a3in9TYNHp7g9z6gfhu+LAHImr86RYSN1jsusCfGnK
-         kuD7SE6hBtq00pepJKMrbAmVwogl10tWYhN31Zdx9XSyy6pYnQ8KUH1aEu9ox6Lzdfca
-         qxhhFZSTAB4q6msvgxcS4jPbxKcvwmr+PY+xdSjlJTatW0H0FvyIz5LOReDAbUR8ZrZG
-         dhpCpbOH7DyQew5W5vpqZWPNmUpHCMsqbBooVGdA9FUR2l+7655QnzL7v6qV7PQYNG+p
-         kK9g==
-X-Gm-Message-State: ACrzQf1As9iPUf3OCpAxx0Vo0uzjNNrIPbl28XOWTwDo2eBlVVHOOgxw
-        3SVgX3ECHqkZHrczEYv7ZCFqxjN7ziJ8BNKr
-X-Google-Smtp-Source: AMsMyM4d3vuFf5OWtsoSGTIfWThj6gZsYQRMGIlmm8kp00Zvx4WJBH4lkN+auWB+7ZjbbT3gGJZZhw==
-X-Received: by 2002:a17:906:c08c:b0:78d:b8ce:c28f with SMTP id f12-20020a170906c08c00b0078db8cec28fmr26295343ejz.437.1666606944871;
-        Mon, 24 Oct 2022 03:22:24 -0700 (PDT)
-Received: from localhost.localdomain (ptr-4xh0y3w0d7spjutrgwc.18120a2.ip6.access.telenet.be. [2a02:1810:a44c:8f00:d731:196c:34e4:734c])
-        by smtp.gmail.com with ESMTPSA id 18-20020a170906211200b0078ddb518a90sm15207695ejt.223.2022.10.24.03.22.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Oct 2022 03:22:24 -0700 (PDT)
-From:   Crt Mori <cmo@melexis.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Crt Mori <cmo@melexis.com>
-Subject: [PATCH v3] iio: temperature: mlx90632 Style alignment for the driver
-Date:   Mon, 24 Oct 2022 12:22:05 +0200
-Message-Id: <d59aad00891c1a64e044a0f5bc7d40e42d47e9c7.1666606912.git.cmo@melexis.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229730AbiJXKkQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Oct 2022 06:40:16 -0400
+Received: from relay.hostedemail.com (smtprelay0013.hostedemail.com [216.40.44.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE033B463;
+        Mon, 24 Oct 2022 03:40:11 -0700 (PDT)
+Received: from omf03.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay06.hostedemail.com (Postfix) with ESMTP id 51226AB064;
+        Mon, 24 Oct 2022 10:40:09 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf03.hostedemail.com (Postfix) with ESMTPA id E2CF96000A;
+        Mon, 24 Oct 2022 10:40:03 +0000 (UTC)
+Message-ID: <6b9b7f9d835a271312bd5955d96b83bd14c9e6fa.camel@perches.com>
+Subject: Re: [PATCH v4 3/3] MAINTAINERS: Add KX022A maintainer entry
+From:   Joe Perches <joe@perches.com>
+To:     "Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com>,
+        Matti Vaittinen <mazziesaccount@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dmitry Rokosov <DDRokosov@sberdevices.ru>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        Jagath Jog J <jagathjog1996@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date:   Mon, 24 Oct 2022 03:40:01 -0700
+In-Reply-To: <0c1471c0-b6b0-7b2b-62af-d3221edeeac4@fi.rohmeurope.com>
+References: <cover.1666350457.git.mazziesaccount@gmail.com>
+         <db45c0ee76c3205b9253cb2200a79119c2f2b946.1666350457.git.mazziesaccount@gmail.com>
+         <92c3f72e60bc99bf4a21da259b4d78c1bdca447d.camel@perches.com>
+         <0c1471c0-b6b0-7b2b-62af-d3221edeeac4@fi.rohmeurope.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Stat-Signature: r4mtm9zbjpfjaacgghcjpwpq8aruqopy
+X-Rspamd-Server: rspamout08
+X-Rspamd-Queue-Id: E2CF96000A
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+NCoWF+QkD4EYH2wNG31bmSVo7//aomnU=
+X-HE-Tag: 1666608003-170265
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Changing and aligning the overall style of the driver with the recent
-reviews. There is no functional change, only type generalization and
-moving to the reverse Christmas tree for variable declarations.
+On Mon, 2022-10-24 at 07:24 +0000, Vaittinen, Matti wrote:
+> Hi Joe,
+> 
+> On 10/24/22 09:52, Joe Perches wrote:
+> > On Fri, 2022-10-21 at 14:23 +0300, Matti Vaittinen wrote:
+> > > Add maintainer entry for ROHM/Kionix KX022A accelerometer sensor driver.
+> > > 
+> > > Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> > > ---
+> > >   MAINTAINERS | 5 +++++
+> > >   1 file changed, 5 insertions(+)
+> > > 
+> > > diff --git a/MAINTAINERS b/MAINTAINERS
+> > > index cf0f18502372..3ab9c5f97dfe 100644
+> > > --- a/MAINTAINERS
+> > > +++ b/MAINTAINERS
+> > > @@ -11435,6 +11435,11 @@ F:	drivers/mfd/khadas-mcu.c
+> > >   F:	include/linux/mfd/khadas-mcu.h
+> > >   F:	drivers/thermal/khadas_mcu_fan.c
+> > >   
+> > > +KIONIX/ROHM KX022A ACCELEROMETER
+> > > +R:	Matti Vaittinen <mazziesaccount@gmail.com>
+> > > +S:	Supported
+> > > +F:	drivers/iio/accel/kionix-kx022a*
+> > 
+> > How is this "S: Supported" without an M: maintainer?
+> 
+> I am currently paid to work with the Kionix/ROHM upstream drivers. Hence 
+> I add 'S:' to ones I am looking after.
+> 
+> The ideology why I have 'R' and not 'M' is summarized by my earlier patch:
+> 
+>  >> I can also add myself as a maintainer instead of a reviewer if it better
+>  >> suits iio maintainer. I however don't plan setting up my own public
+>  >> repository and hope the further patches will be merged via IIO tree.
+>  >>
+>  >> So, as Geert once explained to me - In that case the difference between
+>  >> me as a maintainer vs. a reviewer would be only really relevant to the
+>  >> subsystem (in this case IIO) maintainer. The subsystem maintainer who
+>  >> merges patches is allowed to take in changes acked by downstream
+>  >> maintainer w/o obligation to do thorough review. (Downstream 
+> maintainer is
+>  >> to be blamed if things explode :]). If ack is given by a reviewer, then
+>  >> the subsystem maintainer has the full responsibility and should always
+>  >> do the review. Or - this is how I remember our discussion went - feel
+>  >> free to correct me if I am wrong :] In any case - please let me know if
+>  >> you'd rather see M: not R: in front of my name for the kx022a.
+> 
+> This seemed to be fine with Jonathan:
+> 
+> https://lore.kernel.org/all/87ac9a5e-b5ba-82f3-c00c-75d5e6f01597@gmail.com/
+> 
+> I've also written a longer version of this in an LinkedIn article:
+> https://www.linkedin.com/pulse/should-you-linux-kernel-maintainer-matti-vaittinen/
+> 
+> (I enjoy writing small stories. So doing an occasional small LinkedIn 
+> articles on working with the upstream is kind of an hobby for me.)
+> 
+> Anyways, I don't see a contradiction with 'S + R' compared to 'S + M'. 
+> Well, please educate me if I am wrong :]
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Crt Mori <cmo@melexis.com>
----
- drivers/iio/temperature/mlx90632.c | 65 +++++++++++++++++-------------
- 1 file changed, 36 insertions(+), 29 deletions(-)
+The subsystem is one thing, someone outside of KIONIX/ROHM may be
+supporting the subsystem.  If this _particular_ driver is "supported"
+there should be an individual listed as its actual maintainer, not
+just a person that might review submitted patches.
 
-diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
-index 224db7513baa..a17fe5f4967a 100644
---- a/drivers/iio/temperature/mlx90632.c
-+++ b/drivers/iio/temperature/mlx90632.c
-@@ -219,11 +219,11 @@ static const struct regmap_config mlx90632_regmap = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static s32 mlx90632_pwr_set_sleep_step(struct regmap *regmap)
-+static int mlx90632_pwr_set_sleep_step(struct regmap *regmap)
- {
- 	struct mlx90632_data *data =
- 		iio_priv(dev_get_drvdata(regmap_get_device(regmap)));
--	s32 ret;
-+	int ret;
- 
- 	if (data->powerstatus == MLX90632_PWR_STATUS_SLEEP_STEP)
- 		return 0;
-@@ -234,14 +234,14 @@ static s32 mlx90632_pwr_set_sleep_step(struct regmap *regmap)
- 		return ret;
- 
- 	data->powerstatus = MLX90632_PWR_STATUS_SLEEP_STEP;
--	return ret;
-+	return 0;
- }
- 
--static s32 mlx90632_pwr_continuous(struct regmap *regmap)
-+static int mlx90632_pwr_continuous(struct regmap *regmap)
- {
- 	struct mlx90632_data *data =
- 		iio_priv(dev_get_drvdata(regmap_get_device(regmap)));
--	s32 ret;
-+	int ret;
- 
- 	if (data->powerstatus == MLX90632_PWR_STATUS_CONTINUOUS)
- 		return 0;
-@@ -252,7 +252,7 @@ static s32 mlx90632_pwr_continuous(struct regmap *regmap)
- 		return ret;
- 
- 	data->powerstatus = MLX90632_PWR_STATUS_CONTINUOUS;
--	return ret;
-+	return 0;
- }
- 
- /**
-@@ -444,8 +444,8 @@ static int mlx90632_channel_new_select(int perform_ret, uint8_t *channel_new,
- static int mlx90632_read_ambient_raw(struct regmap *regmap,
- 				     s16 *ambient_new_raw, s16 *ambient_old_raw)
- {
--	int ret;
- 	unsigned int read_tmp;
-+	int ret;
- 
- 	ret = regmap_read(regmap, MLX90632_RAM_3(1), &read_tmp);
- 	if (ret < 0)
-@@ -464,11 +464,11 @@ static int mlx90632_read_object_raw(struct regmap *regmap,
- 				    int perform_measurement_ret,
- 				    s16 *object_new_raw, s16 *object_old_raw)
- {
--	int ret;
- 	unsigned int read_tmp;
--	s16 read;
--	u8 channel = 0;
- 	u8 channel_old = 0;
-+	u8 channel = 0;
-+	s16 read;
-+	int ret;
- 
- 	ret = mlx90632_channel_new_select(perform_measurement_ret, &channel,
- 					  &channel_old);
-@@ -503,7 +503,8 @@ static int mlx90632_read_all_channel(struct mlx90632_data *data,
- 				     s16 *ambient_new_raw, s16 *ambient_old_raw,
- 				     s16 *object_new_raw, s16 *object_old_raw)
- {
--	s32 ret, measurement;
-+	s32 measurement;
-+	int ret;
- 
- 	mutex_lock(&data->lock);
- 	ret = mlx90632_set_meas_type(data, MLX90632_MTYP_MEDICAL);
-@@ -512,24 +513,24 @@ static int mlx90632_read_all_channel(struct mlx90632_data *data,
- 
- 	switch (data->powerstatus) {
- 	case MLX90632_PWR_STATUS_CONTINUOUS:
--		measurement = mlx90632_perform_measurement(data);
--		if (measurement < 0) {
--			ret = measurement;
-+		ret = mlx90632_perform_measurement(data);
-+		if (ret < 0)
- 			goto read_unlock;
--		}
-+
- 		break;
- 	case MLX90632_PWR_STATUS_SLEEP_STEP:
--		measurement = mlx90632_perform_measurement_burst(data);
--		if (measurement < 0) {
--			ret = measurement;
-+		ret = mlx90632_perform_measurement_burst(data);
-+		if (ret < 0)
- 			goto read_unlock;
--		}
-+
- 		break;
- 	default:
- 		ret = -EOPNOTSUPP;
- 		goto read_unlock;
- 	}
- 
-+	measurement = ret; /* If we came here ret holds the measurement position */
-+
- 	ret = mlx90632_read_ambient_raw(data->regmap, ambient_new_raw,
- 					ambient_old_raw);
- 	if (ret < 0)
-@@ -615,15 +616,21 @@ static int mlx90632_read_all_channel_extended(struct mlx90632_data *data, s16 *o
- 	if (ret < 0)
- 		goto read_unlock;
- 
--	if (data->powerstatus == MLX90632_PWR_STATUS_CONTINUOUS) {
-+	switch (data->powerstatus) {
-+	case MLX90632_PWR_STATUS_CONTINUOUS:
- 		ret = read_poll_timeout(mlx90632_perform_measurement, meas, meas == 19,
- 					50000, 800000, false, data);
- 		if (ret)
- 			goto read_unlock;
--	} else if (data->powerstatus == MLX90632_PWR_STATUS_SLEEP_STEP) {
-+		break;
-+	case MLX90632_PWR_STATUS_SLEEP_STEP:
- 		ret = mlx90632_perform_measurement_burst(data);
- 		if (ret < 0)
- 			goto read_unlock;
-+		break;
-+	default:
-+		ret = -EOPNOTSUPP;
-+		goto read_unlock;
- 	}
- 
- 	ret = mlx90632_read_object_raw_extended(data->regmap, object_new_raw);
-@@ -640,9 +647,9 @@ static int mlx90632_read_all_channel_extended(struct mlx90632_data *data, s16 *o
- static int mlx90632_read_ee_register(struct regmap *regmap, u16 reg_lsb,
- 				     s32 *reg_value)
- {
--	s32 ret;
- 	unsigned int read;
- 	u32 value;
-+	int ret;
- 
- 	ret = regmap_read(regmap, reg_lsb, &read);
- 	if (ret < 0)
-@@ -806,12 +813,12 @@ static s32 mlx90632_calc_temp_object_extended(s64 object, s64 ambient, s64 refle
- 
- static int mlx90632_calc_object_dsp105(struct mlx90632_data *data, int *val)
- {
--	s32 ret;
-+	s16 ambient_new_raw, ambient_old_raw, object_new_raw, object_old_raw;
- 	s32 Ea, Eb, Fa, Fb, Ga;
- 	unsigned int read_tmp;
--	s16 Ha, Hb, Gb, Ka;
--	s16 ambient_new_raw, ambient_old_raw, object_new_raw, object_old_raw;
- 	s64 object, ambient;
-+	s16 Ha, Hb, Gb, Ka;
-+	int ret;
- 
- 	ret = mlx90632_read_ee_register(data->regmap, MLX90632_EE_Ea, &Ea);
- 	if (ret < 0)
-@@ -885,11 +892,11 @@ static int mlx90632_calc_object_dsp105(struct mlx90632_data *data, int *val)
- 
- static int mlx90632_calc_ambient_dsp105(struct mlx90632_data *data, int *val)
- {
--	s32 ret;
-+	s16 ambient_new_raw, ambient_old_raw;
- 	unsigned int read_tmp;
- 	s32 PT, PR, PG, PO;
-+	int ret;
- 	s16 Gb;
--	s16 ambient_new_raw, ambient_old_raw;
- 
- 	ret = mlx90632_read_ee_register(data->regmap, MLX90632_EE_P_R, &PR);
- 	if (ret < 0)
-@@ -1164,11 +1171,11 @@ static int mlx90632_enable_regulator(struct mlx90632_data *data)
- static int mlx90632_probe(struct i2c_client *client,
- 			  const struct i2c_device_id *id)
- {
--	struct iio_dev *indio_dev;
- 	struct mlx90632_data *mlx90632;
-+	struct iio_dev *indio_dev;
- 	struct regmap *regmap;
--	int ret;
- 	unsigned int read;
-+	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*mlx90632));
- 	if (!indio_dev) {
--- 
-2.34.1
+	S: *Status*, one of the following:
+	   Supported:	Someone is actually paid to look after this.
+	   Maintained:	Someone actually looks after it.
 
+"this" is this particular driver, not any subsystem "above" it.
