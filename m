@@ -2,91 +2,104 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE1C4ECAAA1
-	for <linux-iio@archiver.kernel.org>; Mon, 24 Oct 2022 14:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 851FFC38A2D
+	for <linux-iio@archiver.kernel.org>; Mon, 24 Oct 2022 14:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237079AbiJXOkO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 24 Oct 2022 10:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46646 "EHLO
+        id S230402AbiJXOxF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 24 Oct 2022 10:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237092AbiJXOj5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Oct 2022 10:39:57 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185BEE8C69;
-        Mon, 24 Oct 2022 06:16:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666617398; x=1698153398;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=i00GfMBGo+8nKhE87k5JlumL05fovx1i9hoEI/ba9LM=;
-  b=h19U4VU+yumsETNbhBJUvGGL+FZq2WHdUyRw49qcJOP5mOlfKLA5axlT
-   YvQMxvxl3VS3jNRNifk6c6dDuCnldpkXiAhk7+kKwqSgRrBfB8G+6xI9U
-   fnP3PJa+8J0LrLuOyvITMCD4CmjpX9rLSAfmN2I0GlnZZvAELY8K2eCZF
-   jasQ+Odv+xueH/O658C5wnPhxC/lwpsfWSUpCBvK4EC9VAL+WMgcMZqWh
-   9knrtZgAtDAMx3ML2kMl/Ay+TtdmxQs7i0V5WFmniGr9Q64QlrKiCLGDb
-   d49CvED1zlsW5fF9ye29IW8J00wyE7MAzeuyf0sVMq1QB+Dee1n12N/9B
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10509"; a="309094377"
-X-IronPort-AV: E=Sophos;i="5.95,209,1661842800"; 
-   d="scan'208";a="309094377"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 05:55:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10509"; a="664529813"
-X-IronPort-AV: E=Sophos;i="5.95,209,1661842800"; 
-   d="scan'208";a="664529813"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001.jf.intel.com with ESMTP; 24 Oct 2022 05:54:58 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1omwym-001RiT-2D;
-        Mon, 24 Oct 2022 15:54:56 +0300
-Date:   Mon, 24 Oct 2022 15:54:56 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Matti Vaittinen <mazziesaccount@gmail.com>
-Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Dmitry Rokosov <DDRokosov@sberdevices.ru>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        Jagath Jog J <jagathjog1996@gmail.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/3] iio: accel: Support Kionix/ROHM KX022A
- accelerometer
-Message-ID: <Y1aLIPkefcCZberw@smile.fi.intel.com>
-References: <cover.1666614295.git.mazziesaccount@gmail.com>
- <758b00d6aea0a6431a5a3a78d557d449c113b21e.1666614295.git.mazziesaccount@gmail.com>
+        with ESMTP id S232289AbiJXOwf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Oct 2022 10:52:35 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB299B85F;
+        Mon, 24 Oct 2022 06:30:34 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id z97so31227603ede.8;
+        Mon, 24 Oct 2022 06:30:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gTwWNDn2qdNJbRVw9L9jOeKIRCjIta4CaBA+HcX1eOI=;
+        b=V17lr0h3FpW9kjI2vkyNoAG1BIIuwTrC1r3tH3a3LeHFAHee+isiudTIbWz79ZqNoI
+         odLWavTFfLHYvyGRDGWd8ZbU4Xqxoujfk5TbzR8DZ+iC1s9zLik0AETTqbK62Pb3FKLQ
+         RShfOIXH1rabvPyR9XT6mPJaWRQ9U585B6idhb/q1Byi9DmU4+a2y+Pp0qIPsrb2e7xc
+         HiSutZmWDLk9satKX+6DifC31ADBejDiABipsWuCq52awmCeW/xwCsd4hAv98FILj2So
+         DWcNOx0wRUiYMSKz9gq27gvgQHVpVhbG1J7ZQ7BmYJsvPnLqIjE9gMGZoSG2Vmy+gUGh
+         fdhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=gTwWNDn2qdNJbRVw9L9jOeKIRCjIta4CaBA+HcX1eOI=;
+        b=rPrxWbVrc7MCd+heYMg6vLZ7jh0sjd00CqW68RaCnbiyWMjoQMo5ASkF0gleBvO7xi
+         KFhPW1FaKK0V9yO+ZsWo0p/9lD8EPcU/KkdZRrFSrzEmQTEtA19R7SR4TnVxcHFOf7ke
+         hxRDVPTdI+EZPBrP1gcERAjKzncCFJ/8vFVzDUqzhfB0GV/jvdZRCJ1yWHmSHfcVbgob
+         i5OinmUcOELACBwHEz1+NN4HrNYaDOhMuG827Xcchzj1U5u8wo8I9ttT0cO/hlbRy5rB
+         P02Uh/Gql3HK4wt6si6K+0NQ9Q4mc2he5pxCzy+B9MnNqxuWr3dhJc8QebsNm31tkh85
+         Tk+Q==
+X-Gm-Message-State: ACrzQf3FlnwWYU9nHZYPh0efEF49mwtaTbwkE1aq0j0ROGK2hK0wyGC0
+        eHYzlkPXEeuZuS2Q/VgTxGHBGuWY4yc=
+X-Google-Smtp-Source: AMsMyM4wuoEeSV6p6sCOVKCcYuUj083c9dZQhKjdqPnK6b7c+25sRkz071I2gCQiO64qQxU+P/ztIQ==
+X-Received: by 2002:a05:6402:2687:b0:45d:3a94:348f with SMTP id w7-20020a056402268700b0045d3a94348fmr30638576edd.48.1666618084665;
+        Mon, 24 Oct 2022 06:28:04 -0700 (PDT)
+Received: from discovery.. (p5dcfeede.dip0.t-ipconnect.de. [93.207.238.222])
+        by smtp.gmail.com with ESMTPSA id l20-20020a056402231400b00457c5637578sm18243818eda.63.2022.10.24.06.28.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Oct 2022 06:28:04 -0700 (PDT)
+From:   Saravanan Sekar <sravanhome@gmail.com>
+To:     sre@kernel.org, lee.jones@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, jic23@kernel.org,
+        lars@metafoo.de, andy.shevchenko@gmail.com
+Cc:     linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, Saravanan Sekar <sravanhome@gmail.com>
+Subject: [PATCH v4 3/8] iio: adc: mp2629: restrict input voltage mask for mp2629
+Date:   Mon, 24 Oct 2022 15:27:52 +0200
+Message-Id: <20221024132757.3345400-4-sravanhome@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20221024132757.3345400-1-sravanhome@gmail.com>
+References: <20221024132757.3345400-1-sravanhome@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <758b00d6aea0a6431a5a3a78d557d449c113b21e.1666614295.git.mazziesaccount@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Oct 24, 2022 at 03:40:29PM +0300, Matti Vaittinen wrote:
-> KX022A is a 3-axis accelerometer from ROHM/Kionix. The sensor features
-> include variable ODRs, I2C and SPI control, FIFO/LIFO with watermark IRQ,
-> tap/motion detection, wake-up & back-to-sleep events, four acceleration
-> ranges (2, 4, 8 and 16g), and probably some other cool features.
-> 
-> Add support for the basic accelerometer features such as getting the
-> acceleration data via IIO. (raw reads, triggered buffer [data-ready] or
-> using the WMI IRQ).
-> 
-> Important things to be added include the double-tap, motion
-> detection and wake-up as well as the runtime power management.
+Add support for mp2733 which is updated version of mp2629
+with a higher range of input voltage.
 
-I think I gave you my tag, no?
+Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
+ drivers/iio/adc/mp2629_adc.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iio/adc/mp2629_adc.c b/drivers/iio/adc/mp2629_adc.c
+index f7af9af1665d..0f297072b8aa 100644
+--- a/drivers/iio/adc/mp2629_adc.c
++++ b/drivers/iio/adc/mp2629_adc.c
+@@ -65,6 +65,7 @@ static int mp2629_read_raw(struct iio_dev *indio_dev,
+ 			int *val, int *val2, long mask)
+ {
+ 	struct mp2629_adc *info = iio_priv(indio_dev);
++	struct mp2629_data *ddata = dev_get_drvdata(info->dev);
+ 	unsigned int rval;
+ 	int ret;
+ 
+@@ -74,8 +75,10 @@ static int mp2629_read_raw(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			return ret;
+ 
+-		if (chan->channel == MP2629_INPUT_VOLT)
++		if (chan->channel == MP2629_INPUT_VOLT &&
++		    ddata->chip_id == CHIP_ID_MP2629)
+ 			rval &= GENMASK(6, 0);
++
+ 		*val = rval;
+ 		return IIO_VAL_INT;
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.32.0
 
