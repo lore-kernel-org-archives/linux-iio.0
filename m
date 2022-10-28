@@ -2,103 +2,120 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC39C38A02
-	for <linux-iio@archiver.kernel.org>; Fri, 28 Oct 2022 13:58:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB4DFA3741
+	for <linux-iio@archiver.kernel.org>; Fri, 28 Oct 2022 14:06:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230209AbiJ1N6G (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 28 Oct 2022 09:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33192 "EHLO
+        id S231265AbiJ1OGE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 28 Oct 2022 10:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230253AbiJ1N6D (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 28 Oct 2022 09:58:03 -0400
-X-Greylist: delayed 904 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 28 Oct 2022 06:58:01 PDT
-Received: from sender4-op-o11.zoho.com (sender4-op-o11.zoho.com [136.143.188.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 853D51DC0A7
-        for <linux-iio@vger.kernel.org>; Fri, 28 Oct 2022 06:58:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1666964565; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=Gd06fh5uJT94PD6DiH7jQD3L5iONUdOykkWc6sGXN5Y3XBtKScRM9715a9HR/LuABotZDZbMRqvdD4T3k5UtSiSxbOqd6IQA+loyQiM4wDmJ/j1hvKdYIjSrtSzH+CnDR/KZpcTICz2CJWWGjrlcpYHorI/BXzGIGF8pxf3ynYg=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1666964565; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=yzXH4QioP+retWboLDmFMYnNsxEgOfAhafDDmBwUWRQ=; 
-        b=JEj0E9Du+zisdX4Mh04GQYvb6cykof3oyvNZlOHnl5kUAwhEgPlO2rrvVS2slMtvSNE5b912CcL4rgwHX81RNrZHYYvhPzpkTFQ8zJA78EkZSKvN+3tGzDEqGgzbApl2lsTHaKHDUQgvIgQXM6+51GWVw+wkZ3MDl75h8f1UPMY=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=dlrobertson.com;
-        spf=pass  smtp.mailfrom=dan@dlrobertson.com;
-        dmarc=pass header.from=<dan@dlrobertson.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1666964565;
-        s=zoho; d=dlrobertson.com; i=dan@dlrobertson.com;
-        h=Date:Date:From:From:To:To:Cc:Cc:Subject:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To:Message-Id:Reply-To;
-        bh=yzXH4QioP+retWboLDmFMYnNsxEgOfAhafDDmBwUWRQ=;
-        b=EQXnKVZ07gf1ZZv/lyzqSX9emZYo4B8QR99jC3eOdf5DHbPsFOJ3nIQhL/XUzucN
-        LxZrAg/zxQZPCcFIgMbX/9Ay3KGorSoYIeUmcWd3MMj3pqeuOOZkdLAXKVRAdEhzDS8
-        REbJfWu23boWTva0p9UpySD2IQSWnEGyjN/m317Y=
-Received: from dlrobertson.com (pool-108-28-201-96.washdc.fios.verizon.net [108.28.201.96]) by mx.zohomail.com
-        with SMTPS id 1666964563045800.2838128436016; Fri, 28 Oct 2022 06:42:43 -0700 (PDT)
-Date:   Fri, 28 Oct 2022 13:07:47 +0000
-From:   Dan Robertson <dan@dlrobertson.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH] iio: accel: bma400: Ensure VDDIO is enable defore
- reading the chip ID.
-Message-ID: <Y1vUI9ppqVkoEuuv@dlrobertson.com>
-References: <20221002144133.3771029-1-jic23@kernel.org>
+        with ESMTP id S231299AbiJ1OF4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 28 Oct 2022 10:05:56 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445251D5869;
+        Fri, 28 Oct 2022 07:05:55 -0700 (PDT)
+Received: from mercury (unknown [37.84.150.129])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sre)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 85B346602925;
+        Fri, 28 Oct 2022 15:05:53 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1666965953;
+        bh=ZKWOJrdPclNKs3XXHSb+DRfOCLdcNJAvkWIYYQjz6uk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AhWvOXJogvEpW0qPuuxRy1WbfW4T5zOb4qok+o8llbMOxu0lnt5T+nf/1uHNs1iJD
+         ZzelAFRwj55TSj8tgnnCw8elDiaKlVlLT2WeYjNLViOZWv92by44/k4RKAZbYGpNDm
+         zDn4KyNon3T2gwvmYduow7wlrcn75oU5iYUt3OVqQH9DfkDJtPoGTjMgokjzXIDasW
+         t+G3CZ0YnDbatO9J4BQfF+37fGJojZ2X/rueFmDe8kw7nh2K2fJyajTS82M3dSccLE
+         TQrKnBo0+CdR5Fg6GLR+YmO4rqZ/Nm7C8PCiAW2OTVJ5EohCaFRcZyMkVfKBc6K88v
+         UQPi0h9WNygjQ==
+Received: by mercury (Postfix, from userid 1000)
+        id 2D0D810607E8; Fri, 28 Oct 2022 16:05:51 +0200 (CEST)
+Date:   Fri, 28 Oct 2022 16:05:51 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     saravanan sekar <sravanhome@gmail.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>, lee.jones@linaro.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        jic23@kernel.org, lars@metafoo.de, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v4 6/8] power: supply: fix failed to get iio channel by
+ device name
+Message-ID: <20221028140551.cerlozkr4ixj772z@mercury.elektranox.org>
+References: <20221024132757.3345400-1-sravanhome@gmail.com>
+ <20221024132757.3345400-7-sravanhome@gmail.com>
+ <CAHp75VcvZ9drkFfbpVJFz0UWQvOMgAu3+JmV4HvOG3dPKDoN5w@mail.gmail.com>
+ <049e0cf3-49b9-ed25-c595-06de22117f1a@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="nzSwB/NAjeTXSfkK"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="oae75tq66mg3uoqn"
 Content-Disposition: inline
-In-Reply-To: <20221002144133.3771029-1-jic23@kernel.org>
-X-Zoho-Virus-Status: 1
-X-ZohoMailClient: External
+In-Reply-To: <049e0cf3-49b9-ed25-c595-06de22117f1a@gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 
---nzSwB/NAjeTXSfkK
+--oae75tq66mg3uoqn
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Oct 02, 2022 at 03:41:33PM +0100, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Hi,
+
+On Mon, Oct 24, 2022 at 04:02:21PM +0200, saravanan sekar wrote:
+> On 24/10/22 15:49, Andy Shevchenko wrote:
+> > On Mon, Oct 24, 2022 at 4:28 PM Saravanan Sekar <sravanhome@gmail.com> =
+wrote:
+> > >=20
+> > > The mfd cell devices name populated on sysfs entry is dynamically der=
+ived
+> > > from an auto instance which introduced a regression. As a result
+> > > mpc2629_charger driver failed to get adc channel because of iio consu=
+mer
+> > > name mismatch with the sysfs.
+> > >=20
+> > > /sys/class/i2c-adapter/i2c-1/mp2629_adc.0.auto/
+> > > /sys/class/i2c-adapter/i2c-1/mp2629_charger.1.auto/
+> > >=20
+> > > Fixes: 466a62d7642f(mfd: core: Make a best effort attempt to match de=
+vices)
+> >=20
+> > Wrong Fixes tag format, moreover the fixes should be grouped at the
+> > beginning of the series, so it will be visible and splittable based on
+> > this property.
 >=20
-> The regulator enables were after the check on the chip variant, which was
-> very unlikely to return a correct value when not powered.
-> Presumably all the device anyone is testing on have a regulator that
-> is already powered up when this code runs for reasons beyond the scope
-> of this driver. Move the read call down a few lines.
+> Thanks for quick review Andy, I will correct fixes tag format and group a=
+ll
+> the fixes beginning of series in v5.
 >=20
-> Fixes: 3cf7ded15e40 ("iio: accel: bma400: basic regulator support")
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Thanks,
+> Saravanan
 
-Reviewed-by: Dan Robertson <dan@dlrobertson.com>
+Also the patch subject has incorrect prefix. It should be "mfd:"
+instead of "power: supply:".
 
-Thanks for catching this!
+-- Sebastian
 
-Cheers,
-
- - Dan
-
---nzSwB/NAjeTXSfkK
+--oae75tq66mg3uoqn
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEF5dO2RaKc5C+SCJ9RcSmUsR+QqUFAmNb1CMACgkQRcSmUsR+
-QqXKQRAAs4Vi84aLazoo/5gRUor4a/f78V6ETn8ecYLKZZe9LIbtnIU+ndqRhLkx
-OMBAEopreXZTEsPtZ/iM/5mpZzcnnbrsNSSCPhWMPeMqD0JgDzAofZ2he7QxnPmC
-9la8g1Dur9WkuisfGhiPOC2+PsYo+zQexsnT+TS4tCE8uKJe7bu67QEGjVyiEBkd
-dPJNllVG0vOQoIUUnQjPwYNaxYbjqtVrW/3ku1hUxIgrg1XAz8RD9FiAhI8LgHx3
-e+6sNTuHDBwzxA4Mv/PnzdCtjGWOeVkDMRKA/VUbLZFC1wkp9JFLtx3nZPc9Gg6E
-Hj4SoIEnLM0IXf0CevuuNGzd42pKBdytlC52qSl8Xl9ZMysKf0+vWRBOjvD4PnWG
-g42SKri6edyVpQFYl2KWsycYuKLpENpj7z/YGS1sUdtLNpnseYYQxfryRiXqZWOz
-DzHb5doVENzaNFcFk6Ac0MlQRxmtzI3IlBqEdjMVJ46BJVuVYOOCih67mcT2C9Gd
-j8bmmRVEcp6glQqupu4f30AOopyy1opLtgT7q+vNJlUi/iiEG8IqYN86wBX5N/SK
-4FmOBfFTgSvJbmpG2liXtir5HVMd+5hvet0J28BaRY8iLAjowkZAjlUkCBrzEHvP
-S49H0wPLxb+0Z0EyBWkgXOAbYPFnvBNpvZVQP6FCVpD5C0x0du0=
-=DrFv
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmNb4bsACgkQ2O7X88g7
++pq2EQ//XBXjtJ09TZDmfNp+pWsRRw9og5GmYViAnjmcMbpqHBtlJbQa3AnSsvF+
+fRxJDnJCRXgw9uja/oS3aIBak9h0ugT9d/9URUWlErsETlqfMlYxABGg8SCkoeZq
+ThHprYkjoiApva3fOrhCciua7nmjZ2urWKjVMQgGghtcgjSzk6FojrocS+GElsQu
+882iUjtFrxX2lQit3+1dROiQxF9VBbt+19P9aeBbw83sHhirvW23XxgwsQxTkqNb
+o7sys5nBzudRC0hwgvhvyg4pkB7NkTkIQKDgXpXhEmrt7DsKwhyixJg6+1eOEmlr
+mg47yxQJbAqosvuLqv0hCR0H5reQ09nJf4vqCn/FJUqlXigiJwOJRspYeH66L77R
+zfGNeihOn8LWMWNLeuelym1T2j+XBPjYjiDhQor11+z/KXJrgwjBanPhr7zsQfTJ
+mPThE1vnchfD92MEW/L3IC28W8wsgZ4IzZNZsGc3c0kAXxY2okXy1vS2QdZx6zvG
+rUbbhhQcEJn5mjuqaPwuNQ3jHf5HlLVyLoEGY9Dj1yd52lEfiCg5ZtsoPJ57U/kl
+doLnF1jeWK93HzsyrA65CD/QY9mO5OOpZRIdKenb3szIDeSRtf8SSx3eHsaOLf6A
+lm8jlSYyrDE25CDeMSW/UboEXxTY4iIFmu6VsNebCp1fKnlPfro=
+=rGEa
 -----END PGP SIGNATURE-----
 
---nzSwB/NAjeTXSfkK--
+--oae75tq66mg3uoqn--
