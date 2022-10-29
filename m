@@ -2,84 +2,94 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72718C38A02
-	for <linux-iio@archiver.kernel.org>; Sat, 29 Oct 2022 07:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C0A8FA3744
+	for <linux-iio@archiver.kernel.org>; Sat, 29 Oct 2022 09:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbiJ2Hvr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 29 Oct 2022 03:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
+        id S229689AbiJ2JaJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 29 Oct 2022 05:30:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229619AbiJ2Hvq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 29 Oct 2022 03:51:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD731726A0;
-        Sat, 29 Oct 2022 00:51:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5728260CF2;
-        Sat, 29 Oct 2022 07:51:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5613DC433D6;
-        Sat, 29 Oct 2022 07:51:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1667029904;
-        bh=IVYCEUyFNGvt9P7E4kn2YygjCjJ8FPO0YNOwwJNd4Rc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NAoV7eUB1tTRPhFcdphtmUuG851jzTwwnizNydu/GTOP2TWWHCf5K0b99J9gfHqRB
-         DCtN5/RunER84XlIqozB/bSgRywWxlCM+9WJtlJS6BZzdZg0FJSF8w691ts3yqRjPk
-         b1Lvp4A9mNtFHQAmELkv++afpX77794kgLSTYCeA=
-Date:   Sat, 29 Oct 2022 09:52:40 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Deepak R Varma <drv@mailo.com>
-Cc:     outreachy@lists.linux.dev, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: ad5933: Use div64_ul instead of do_div
-Message-ID: <Y1zbyJPF+YUY6xIh@kroah.com>
-References: <Y1r4EaDvEipzhaaf@ubunlion>
+        with ESMTP id S229491AbiJ2JaI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 29 Oct 2022 05:30:08 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329D957BE2;
+        Sat, 29 Oct 2022 02:30:06 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id y16so9389003wrt.12;
+        Sat, 29 Oct 2022 02:30:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xkjjo7UhHr68UQkDQLmeDc/rzOhg5k2ugSo/6Bh7PsU=;
+        b=quUqf6BNp5UZzyhdM5eQZ4d0L+clKrLdmEM2GHHs+ljP/NUkaE9aqMDWfyYj8AMMBX
+         u13V0EmOiGjmeWy0+rDgbYXLdNq98g4BwtPgn7Eg2EuRUCuu1KAxCuqFuO+//vyKZXcR
+         0MPFAn12KAoSgw1bmBAzVGLWeBnlwFe65RNuimv1PfBQYwxcF7vGAAtN/fnPqO2WYyDg
+         F8IPZRvDsg25EnzLKxlLapcBQhjUtDBPci3w0GKVUsXQTXM4UmNXDTDwU2REFDLwWQmQ
+         cNuk6IQVyZMpPg/tKYHLhHtQv0F+D2Xye54b8jhapzXIXcReZofOAIjaTI6shEji4hm/
+         1ORA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=xkjjo7UhHr68UQkDQLmeDc/rzOhg5k2ugSo/6Bh7PsU=;
+        b=dhlNCX4GKYPS9O4+H9awhP4yRzIGSV7vw4saMh/jzI7NCrAg1cjVWcMQmyQke+uiRK
+         P63v4+o+U7bEjvKL6AmiP1VxA3ywREcVPX+zKQm8lB0L9X+Rr4gQaoQ3tFiRNrlnc3R5
+         xNBBPKESy18SeTZElYIYDf/6YhP+t7K6GPoM1OaL7glwrK/aLpeHN3o2OJN0T+A8Obli
+         xLuJh4IMSHGOF8BS+6dK731BsqI5aKljk/339szeUaiMqrMPUionMlfAwNI/xwEAMciF
+         ZxQwlZ0efWhw4gtIL0nZKZj+FlCfUB12t9J+ycYAkbQyI5SlP2UuEzP/nY41X6ZpqGav
+         7PBw==
+X-Gm-Message-State: ACrzQf19KK4as4Djj2JJJrMaik//ewZZzlLOAYX/7Hg2QtjcbvfZmj4M
+        A/qUtwE9FG/s14P8tV2FKGa6nQH32wqfmw==
+X-Google-Smtp-Source: AMsMyM5e6xOzMTR5x/GZs6j7ZXh31p17gFPI/5vbXO9YBLPcQuN3jfxvhA2NJA90nCfVseQTkkhM2w==
+X-Received: by 2002:a05:6000:1a85:b0:230:f67b:da03 with SMTP id f5-20020a0560001a8500b00230f67bda03mr2011312wry.296.1667035804661;
+        Sat, 29 Oct 2022 02:30:04 -0700 (PDT)
+Received: from discovery.. (p5b3f76b5.dip0.t-ipconnect.de. [91.63.118.181])
+        by smtp.gmail.com with ESMTPSA id f7-20020adff987000000b0022e6178bd84sm1068187wrr.8.2022.10.29.02.30.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 Oct 2022 02:30:04 -0700 (PDT)
+From:   Saravanan Sekar <sravanhome@gmail.com>
+To:     sre@kernel.org, lee.jones@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, jic23@kernel.org,
+        lars@metafoo.de, andy.shevchenko@gmail.com
+Cc:     linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, Saravanan Sekar <sravanhome@gmail.com>
+Subject: [PATCH v5 1/8] iio: adc: mp2629: fix wrong comparison of channel
+Date:   Sat, 29 Oct 2022 11:29:53 +0200
+Message-Id: <20221029093000.45451-2-sravanhome@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20221029093000.45451-1-sravanhome@gmail.com>
+References: <20221029093000.45451-1-sravanhome@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y1r4EaDvEipzhaaf@ubunlion>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Oct 28, 2022 at 02:58:49AM +0530, Deepak R Varma wrote:
-> do_div() does a 64-by-32 division. Here the divisor is an unsigned long
-> which on some platforms is 64 bit wide. So use div64_ul instead of do_div
-> to avoid a possible truncation. Issue was identified using the
-> coccicheck tool.
-> 
-> Signed-off-by: Deepak R Varma <drv@mailo.com>
-> ---
->  drivers/staging/iio/impedance-analyzer/ad5933.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index f177b20f0f2d..730bb31a20d8 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -196,7 +196,7 @@ static int ad5933_set_freq(struct ad5933_state *st,
->  	} dat;
-> 
->  	freqreg = (u64)freq * (u64)(1 << 27);
-> -	do_div(freqreg, st->mclk_hz / 4);
-> +	freqreg = div64_ul(freqreg, st->mclk_hz / 4);
-> 
->  	switch (reg) {
->  	case AD5933_REG_FREQ_START:
-> --
-> 2.34.1
+Input voltage channel enum is compared against iio address instead
+of the channel.
 
-No, this isn't ok, please read the mailing list archives for why these
-changes are not going to be accepted:
-	https://lore.kernel.org/r/e2ec77060cc84a33b49d5fd11d7867f6@AcuMS.aculab.com
+Fixes: 7abd9fb64682 ("iio: adc: mp2629: Add support for mp2629 ADC driver")
+Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
+ drivers/iio/adc/mp2629_adc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Please always at least look at the archives of the past few weeks as to
-if changes like this are able to be accepted or not.
+diff --git a/drivers/iio/adc/mp2629_adc.c b/drivers/iio/adc/mp2629_adc.c
+index 30a31f185d08..f7af9af1665d 100644
+--- a/drivers/iio/adc/mp2629_adc.c
++++ b/drivers/iio/adc/mp2629_adc.c
+@@ -74,7 +74,7 @@ static int mp2629_read_raw(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			return ret;
+ 
+-		if (chan->address == MP2629_INPUT_VOLT)
++		if (chan->channel == MP2629_INPUT_VOLT)
+ 			rval &= GENMASK(6, 0);
+ 		*val = rval;
+ 		return IIO_VAL_INT;
+-- 
+2.32.0
 
-thanks,
-
-greg k-h
