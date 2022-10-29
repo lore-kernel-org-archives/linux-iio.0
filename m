@@ -2,62 +2,62 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 529F2FA374E
-	for <linux-iio@archiver.kernel.org>; Sat, 29 Oct 2022 09:30:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC3AFA3745
+	for <linux-iio@archiver.kernel.org>; Sat, 29 Oct 2022 09:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229816AbiJ2JaN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 29 Oct 2022 05:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53174 "EHLO
+        id S229482AbiJ2JaP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 29 Oct 2022 05:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbiJ2JaK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 29 Oct 2022 05:30:10 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2E158169;
-        Sat, 29 Oct 2022 02:30:08 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id bp11so9412882wrb.9;
-        Sat, 29 Oct 2022 02:30:07 -0700 (PDT)
+        with ESMTP id S229782AbiJ2JaM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 29 Oct 2022 05:30:12 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB6B5B065;
+        Sat, 29 Oct 2022 02:30:11 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id k8so9451790wrh.1;
+        Sat, 29 Oct 2022 02:30:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=QpsqUmkgwpxZ/VajIIb/0zX7NJyKUT5sNbfK2Me1e70=;
-        b=gBhyZYf4MEHBZbUCcbcAX5qPx+1ALqys/p/WikBYGuqVwCiNBh6Ha62Ayyp1kxFCGR
-         V/IxcDIeHGJ8yp63Pg+4yqKNbDXx+kE0dgBCt/YreCij3Txpev9iCsFRfODtNjkZOuCZ
-         /0oTrZK8GSVo/AT2FXKaghyXQDQB9bVgYlp0+bj4tYvdiY6Ygeh8U9DD7St4xDsAnWBe
-         22eI8v5lPk5zqF8ahcbM9YrXPUy6WSAddalWf1ZYMM7D8fXmTBfoMYD7rycQgElG8Xag
-         HCYka6q5MOdA5sp30IJ29sx0iXCrTUJpM3tpNCJlxd8F05SX+RQu/DrKqZRTRI72kQiO
-         jrLw==
+        bh=9aX0cSt9m4+Cq/f1RJLWS1kmL6VQUel6+uX1gQMvMUk=;
+        b=dmr+VZFxGybIUj2z2AntKwOIXFPJF+0kLb37xpb2ClxzIf4VbSzZd3yCrCD95ZHuhu
+         LXhPOifD/LsBtJ3gWWVulxskurW4AljDMjSWxHICi2JVl651461JrsabhkHJu0uodJmY
+         f8OggObxxrAh5zLGWTbaNfex1M0QHk1bDVJK/Kjg+Ehz2c5x4qPNhC1eUMpSIAnAEyz5
+         VHReQ7W24HxNblIkhGVlds4rylc/zU/kB0XqyHt0s/35Ov4FK1VXMzM4TUQ7du6lR0oW
+         cQfG/vvZJesqYYWlbRGZZIFqVsWn3/6nQ3epLH+9gTjcW8frNF21Oi2tjEtaSswL2UkI
+         ebkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=QpsqUmkgwpxZ/VajIIb/0zX7NJyKUT5sNbfK2Me1e70=;
-        b=3JYm3pX/yGe1Z627A8vYs7uInGaNUXCTHlPeCqlKvA/J4s6fqA9VCdMkhpM+uD75HP
-         gbqYgW1ebLInSYdnWJfPmAonC/eDhe/xeugZGPPN2HNPiWtCZyAbtTfnxu8ESVMl3NX9
-         LRvxVI25Fhn5gxoDOgSVuE/JILb6tP3WRf5xRo/MVsrDSBt5LzbpZBtj2zz7LrCU4PCK
-         EfmpZwkgUIGJ6fERhTxSkZvhDN0qduK2VyEbHqc5JJX7Zb40SN25Rc/Y58xnQKaehMz8
-         Q7xN88bh2YVIdktItx+s7qAxpDfmlfzl+8vEEPwZMM6d5tJg6ys4FBsZNpaooPesX+Y6
-         IsKA==
-X-Gm-Message-State: ACrzQf2zhkoMgzEvs44Vqo0bsdthshDYk2i8cLqcZ5AsRyMugYd0ylGo
-        0Afn77bcx1Mpc+9WgnMN+So=
-X-Google-Smtp-Source: AMsMyM5U4VXpUFXYQ7mnJB0yZC0RjNlWxY0OoI4rSzqmTtGHDrVYf17r5Jr8rrZq6DM4X0fCkjEsYg==
-X-Received: by 2002:a5d:6d89:0:b0:236:7d7d:1e79 with SMTP id l9-20020a5d6d89000000b002367d7d1e79mr1972329wrs.673.1667035806663;
-        Sat, 29 Oct 2022 02:30:06 -0700 (PDT)
+        bh=9aX0cSt9m4+Cq/f1RJLWS1kmL6VQUel6+uX1gQMvMUk=;
+        b=aKMUHxTdLpNuQURmnEUV5ug/5ze44qKtzUX0S6wceiUVTGZaZ4oCe7I7kDKJSfWSou
+         51hZVzzzo/xSCuoMBaCaNWwtfhCBpHTjCHr6PbYFWs71bueltZJGr9jAKFrQq6sfeFx3
+         ix9q9CfJdy6FiSsF5WeF2V/DtI+IcUaChjb9v0aRyhR1OAnylo/96lvi9TzRdDwD1h3H
+         pinasmCTOw+Irj2CMWQTMX2SgQYItH2XvdpCnF4rhCxUZ2c/90qUrziTIMPmT1YhaDAs
+         tIkbL6Cqh7E4wbPj/Nnjxo37UddMMsiDCLklmpmL585e7cWFVI+JpmYo7CR33yy6531B
+         XWQA==
+X-Gm-Message-State: ACrzQf35Pvl0AAkmBDapZn25aw49jYbVqgCxuVbReiiU61jw8GONEwBp
+        iS8Yg45MDqrW0F9ZUkY6xQg=
+X-Google-Smtp-Source: AMsMyM6B1H6rKpGvxcPczA+Ys/6D3oEasxUh7PBv4MEZ0Mo40/Bvl5vbvzL680lqsl4uP/I3q68Q2w==
+X-Received: by 2002:a5d:47ce:0:b0:236:76de:726c with SMTP id o14-20020a5d47ce000000b0023676de726cmr1978167wrc.510.1667035809542;
+        Sat, 29 Oct 2022 02:30:09 -0700 (PDT)
 Received: from discovery.. (p5b3f76b5.dip0.t-ipconnect.de. [91.63.118.181])
-        by smtp.gmail.com with ESMTPSA id f7-20020adff987000000b0022e6178bd84sm1068187wrr.8.2022.10.29.02.30.06
+        by smtp.gmail.com with ESMTPSA id f7-20020adff987000000b0022e6178bd84sm1068187wrr.8.2022.10.29.02.30.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Oct 2022 02:30:06 -0700 (PDT)
+        Sat, 29 Oct 2022 02:30:09 -0700 (PDT)
 From:   Saravanan Sekar <sravanhome@gmail.com>
 To:     sre@kernel.org, lee.jones@linaro.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, jic23@kernel.org,
         lars@metafoo.de, andy.shevchenko@gmail.com
 Cc:     linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-iio@vger.kernel.org, Saravanan Sekar <sravanhome@gmail.com>
-Subject: [PATCH v5 3/8] iio: adc: mp2629: fix potential array out of bound access
-Date:   Sat, 29 Oct 2022 11:29:55 +0200
-Message-Id: <20221029093000.45451-4-sravanhome@gmail.com>
+Subject: [PATCH v5 6/8] iio: adc: mp2629: restrict input voltage mask for mp2629
+Date:   Sat, 29 Oct 2022 11:29:58 +0200
+Message-Id: <20221029093000.45451-7-sravanhome@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20221029093000.45451-1-sravanhome@gmail.com>
 References: <20221029093000.45451-1-sravanhome@gmail.com>
@@ -67,29 +67,39 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add sentinel at end of maps to avoid potential array out of
-bound access in iio core.
+Add support for mp2733 which is updated version of mp2629
+with a higher range of input voltage.
 
-Fixes: 7abd9fb6468 ("iio: adc: mp2629: Add support for mp2629 ADC driver")
 Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/iio/adc/mp2629_adc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/adc/mp2629_adc.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/mp2629_adc.c b/drivers/iio/adc/mp2629_adc.c
-index f7af9af1665d..88e947f300cf 100644
+index 88e947f300cf..18290e176e1e 100644
 --- a/drivers/iio/adc/mp2629_adc.c
 +++ b/drivers/iio/adc/mp2629_adc.c
-@@ -57,7 +57,8 @@ static struct iio_map mp2629_adc_maps[] = {
- 	MP2629_MAP(SYSTEM_VOLT, "system-volt"),
- 	MP2629_MAP(INPUT_VOLT, "input-volt"),
- 	MP2629_MAP(BATT_CURRENT, "batt-current"),
--	MP2629_MAP(INPUT_CURRENT, "input-current")
-+	MP2629_MAP(INPUT_CURRENT, "input-current"),
-+	{ }
- };
+@@ -66,6 +66,7 @@ static int mp2629_read_raw(struct iio_dev *indio_dev,
+ 			int *val, int *val2, long mask)
+ {
+ 	struct mp2629_adc *info = iio_priv(indio_dev);
++	struct mp2629_data *ddata = dev_get_drvdata(info->dev);
+ 	unsigned int rval;
+ 	int ret;
  
- static int mp2629_read_raw(struct iio_dev *indio_dev,
+@@ -75,8 +76,10 @@ static int mp2629_read_raw(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			return ret;
+ 
+-		if (chan->channel == MP2629_INPUT_VOLT)
++		if (chan->channel == MP2629_INPUT_VOLT &&
++		    ddata->chip_id == CHIP_ID_MP2629)
+ 			rval &= GENMASK(6, 0);
++
+ 		*val = rval;
+ 		return IIO_VAL_INT;
+ 
 -- 
 2.32.0
 
