@@ -2,159 +2,92 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBB3CC433FE
-	for <linux-iio@archiver.kernel.org>; Fri,  4 Nov 2022 11:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F95C4332F
+	for <linux-iio@archiver.kernel.org>; Fri,  4 Nov 2022 11:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229812AbiKDLGz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 4 Nov 2022 07:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42190 "EHLO
+        id S230164AbiKDLLm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 4 Nov 2022 07:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbiKDLGx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 4 Nov 2022 07:06:53 -0400
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C003C299
-        for <linux-iio@vger.kernel.org>; Fri,  4 Nov 2022 04:06:52 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.153])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4N3d7B1lRYzlX0M
-        for <linux-iio@vger.kernel.org>; Fri,  4 Nov 2022 19:04:38 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.102.38])
-        by APP4 (Coremail) with SMTP id gCh0CgC3E+ZK8mRjEDHOAg--.13860S4;
-        Fri, 04 Nov 2022 19:06:51 +0800 (CST)
-From:   Wei Yongjun <weiyongjun@huaweicloud.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Crt Mori <cmo@melexis.com>,
-        Peter Rosin <peda@axentia.se>, Petr Machata <petrm@nvidia.com>,
-        "Andrew F. Davis" <afd@ti.com>
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>, linux-iio@vger.kernel.org
-Subject: [PATCH] iio: health: afe4404: Fix oob read in afe4404_[read|write]_raw
-Date:   Fri,  4 Nov 2022 11:28:23 +0000
-Message-Id: <20221104112823.346738-1-weiyongjun@huaweicloud.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229493AbiKDLLl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 4 Nov 2022 07:11:41 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2C11BE87
+        for <linux-iio@vger.kernel.org>; Fri,  4 Nov 2022 04:11:41 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id x15so2789732qtv.9
+        for <linux-iio@vger.kernel.org>; Fri, 04 Nov 2022 04:11:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=aCfF76cWVdUMn779XzXWl2TjPsxcGswT1hZBK98HZeg=;
+        b=ICGvrrNmipnz5hvg4dMm6HPZr0+ep30JNGb6OnMhXNHu6yJyfzVRnaq8/qXCN5mH7s
+         I/3L8x5T4/fsi6a0Cztont/eWihmfbLB78Q4FIh22ieFf4oEjFEKBhHkm5i4evODpvPj
+         CtZq4TG+ZUCGYzfx3/Io9yRw2tkTXSNzVYbKO5blS3a/NyzrKEYo6HNXQIws5d/Ow++F
+         tkXsslIDX46B3KXJqKlW5aItW/K9CjaWRKyC1tzlDHl6XSGOtV7qMThjedR/cYI4y4b2
+         4i0s6L+5UfXAjJ5lSirbM7oZQ23Z9eobvHAKlhD+HFJtAVlOqAz7luqoE8/NLeFavnb5
+         d73Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=aCfF76cWVdUMn779XzXWl2TjPsxcGswT1hZBK98HZeg=;
+        b=eGHTYKUc4oBtNzRC+94Um64mDXgwn6SmSrr1D4rXx4Y4e7FASr3xCmy0Qar5RN8Z++
+         ubJ7WkrFFmwxwQLxXDN+WBhdSO1EdqF+PWZbaEA7w0dveF5PZ2KIxXUSTbOKZ+Pm3LEr
+         fs5x5TSyjxycDRQvFoHM/gsz/CCTJ7GhTdzoRC3RDNQE4Q7+b4HYXRQ4lrNXTeepW0SW
+         DULIa7ARuiqIacsA7XWKV+mfJTG1G6QRwDXHwxrdaLzi+GqUs43PwMCBrfycAXFd/8Ri
+         cH4VE+QZlBVygg1qH2M3W/4i9Enme79OejQ/YFvPo1dGsHVsG9XvCqSFXIffRoW3zrG6
+         QVKw==
+X-Gm-Message-State: ACrzQf19i12f1D4YCJB8lrweJsfqLKFnWkxSoBO+EHHEJTJUuzf/aKme
+        S0qwdEJse8fjlE744ry6fRw=
+X-Google-Smtp-Source: AMsMyM5i/kMUA8THk1R+8ib/MpuBVZirfBbs1jHgEYPIIOvjL00zqIf3+CBdiDBdZ7YUVrCv0TJQVw==
+X-Received: by 2002:a05:622a:424e:b0:3a5:6af6:133f with SMTP id cq14-20020a05622a424e00b003a56af6133fmr902652qtb.161.1667560300292;
+        Fri, 04 Nov 2022 04:11:40 -0700 (PDT)
+Received: from p200300f6ef036f005de6a4d0d791ed01.dip0.t-ipconnect.de (p200300f6ef036f005de6a4d0d791ed01.dip0.t-ipconnect.de. [2003:f6:ef03:6f00:5de6:a4d0:d791:ed01])
+        by smtp.gmail.com with ESMTPSA id u23-20020ac87517000000b0039a372fbaa5sm2226162qtq.69.2022.11.04.04.11.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Nov 2022 04:11:39 -0700 (PDT)
+Message-ID: <d46af04a6bd6373286a18a6f71aebd2c6aafd93a.camel@gmail.com>
+Subject: Re: [PATCH -next] iio: core: fix missing mutex_unlock() in
+ iio_device_claim_buffer_mode()
+From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Peng Wu <wupeng58@huawei.com>
+Cc:     jic23@kernel.org, lars@metafoo.de, nuno.sa@analog.com,
+        linux-iio@vger.kernel.org, liwei391@huawei.com
+Date:   Fri, 04 Nov 2022 12:13:06 +0100
+In-Reply-To: <CAHp75Vd_h3Avyafefg0fj-2BMCqvAH4U3Fd3biTptMMZdo_c2g@mail.gmail.com>
+References: <20221104090307.17734-1-wupeng58@huawei.com>
+         <CAHp75Vd_h3Avyafefg0fj-2BMCqvAH4U3Fd3biTptMMZdo_c2g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: gCh0CgC3E+ZK8mRjEDHOAg--.13860S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxAr1kZFWrXF18Xr1DKF17ZFb_yoWrGrWDpr
-        yfAFW5WF4Ut3s8CrsrZF4DWFyFv3sIg3WIqFyaka4j9w15ZFnIkrWxKa4jvr1rCryvywn7
-        XFnaqrZ5Zr15WaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUgGb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7Cj
-        xVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I
-        0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
-        x7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
-        0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Y
-        z7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zV
-        AF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4l
-        IxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVW8JVW3Jw
-        CI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnI
-        WIevJa73UjIFyTuYvjxUOyCJDUUUU
-X-CM-SenderInfo: 5zhl50pqjm3046kxt4xhlfz01xgou0bp/
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+On Fri, 2022-11-04 at 11:54 +0200, Andy Shevchenko wrote:
+> On Fri, Nov 4, 2022 at 11:05 AM Peng Wu <wupeng58@huawei.com> wrote:
+> >=20
+> > In the success path of iio_device_claim_buffer_mode(),
+> > mutex_unlock()
+> > should be called before return.
+>=20
+> Please, understand how the code works.
+> NAK.
+>=20
+> Nuno, perhaps we need to put a comment inside the function to explain
+> this?
+>=20
 
-KASAN report out-of-bounds read as follows:
+Hmm... I guess we can do that but, honestly, the docs in the function
+should be pretty straight. Maybe saying that it's supposed to work as
+iio_device_claim_direct_mode() would help (as that one is familiar)...
 
-BUG: KASAN: global-out-of-bounds in afe4404_read_raw+0x2ce/0x380 [afe4404]
-Read of size 4 at addr ffffffffc00e4658 by task cat/278
+Alternatively, having sparse annotations could also make it more easy
+to understand the intent.
 
-CPU: 1 PID: 278 Comm: cat Tainted: G
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
-Call Trace:
- <TASK>
- afe4404_read_raw+0x2ce/0x380 [afe4404]
- iio_read_channel_info+0x249/0x2e0 [industrialio]
- dev_attr_show+0x4b/0xa0 drivers/base/core.c:2195
- sysfs_kf_seq_show+0x1ec/0x390 fs/sysfs/file.c:59
- seq_read_iter+0x48d/0x10b0 fs/seq_file.c:230
- kernfs_fop_read_iter+0x4e6/0x710 fs/kernfs/file.c:275
- call_read_iter include/linux/fs.h:2153 [inline]
- new_sync_read fs/read_write.c:389 [inline]
- vfs_read+0x5f2/0x890 fs/read_write.c:470
- ksys_read+0x106/0x220 fs/read_write.c:613
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x38/0xa0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x72/0xdc
-RIP: 0033:0x7fe9c5ef6992
- </TASK>
-
-The buggy address belongs to the variable:
- afe4404_channel_leds+0x18/0xffffffffffffe9c0 [afe4404]
-
-This issue can be reproduce by singe command:
-
- $ cat /sys/bus/i2c/devices/0-0058/iio\:device0/in_intensity6_raw
-
-The array size of afe4404_channel_leds and afe4404_channel_offdacs
-are less than channels, so access with chan->address cause OOB read
-in afe4404_[read|write]_raw. Fix it by moving access before use them.
-
-Fixes: b36e8257641a ("iio: health/afe440x: Use regmap fields")
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
- drivers/iio/health/afe4404.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
-index 8fca787b2524..defd38c00fbe 100644
---- a/drivers/iio/health/afe4404.c
-+++ b/drivers/iio/health/afe4404.c
-@@ -251,8 +251,8 @@ static int afe4404_read_raw(struct iio_dev *indio_dev,
- {
- 	struct afe4404_data *afe = iio_priv(indio_dev);
- 	unsigned int value_reg = afe4404_channel_values[chan->address];
--	unsigned int led_field = afe4404_channel_leds[chan->address];
--	unsigned int offdac_field = afe4404_channel_offdacs[chan->address];
-+	unsigned int led_field;
-+	unsigned int offdac_field;
- 	int ret;
- 
- 	switch (chan->type) {
-@@ -264,6 +264,7 @@ static int afe4404_read_raw(struct iio_dev *indio_dev,
- 				return ret;
- 			return IIO_VAL_INT;
- 		case IIO_CHAN_INFO_OFFSET:
-+			offdac_field = afe4404_channel_offdacs[chan->address];
- 			ret = regmap_field_read(afe->fields[offdac_field], val);
- 			if (ret)
- 				return ret;
-@@ -273,6 +274,7 @@ static int afe4404_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CURRENT:
- 		switch (mask) {
- 		case IIO_CHAN_INFO_RAW:
-+			led_field = afe4404_channel_leds[chan->address];
- 			ret = regmap_field_read(afe->fields[led_field], val);
- 			if (ret)
- 				return ret;
-@@ -295,19 +297,21 @@ static int afe4404_write_raw(struct iio_dev *indio_dev,
- 			     int val, int val2, long mask)
- {
- 	struct afe4404_data *afe = iio_priv(indio_dev);
--	unsigned int led_field = afe4404_channel_leds[chan->address];
--	unsigned int offdac_field = afe4404_channel_offdacs[chan->address];
-+	unsigned int led_field;
-+	unsigned int offdac_field;
- 
- 	switch (chan->type) {
- 	case IIO_INTENSITY:
- 		switch (mask) {
- 		case IIO_CHAN_INFO_OFFSET:
-+			offdac_field = afe4404_channel_offdacs[chan->address];
- 			return regmap_field_write(afe->fields[offdac_field], val);
- 		}
- 		break;
- 	case IIO_CURRENT:
- 		switch (mask) {
- 		case IIO_CHAN_INFO_RAW:
-+			led_field = afe4404_channel_leds[chan->address];
- 			return regmap_field_write(afe->fields[led_field], val);
- 		}
- 		break;
--- 
-2.34.1
-
+- Nuno S=C3=A1
