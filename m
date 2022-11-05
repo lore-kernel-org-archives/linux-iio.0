@@ -2,62 +2,67 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A915C4332F
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Nov 2022 10:34:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 180A0C433FE
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Nov 2022 12:51:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229493AbiKEKeC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Nov 2022 06:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42764 "EHLO
+        id S229540AbiKEMvY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Nov 2022 08:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiKEKeB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Nov 2022 06:34:01 -0400
+        with ESMTP id S229493AbiKEMvX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Nov 2022 08:51:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B17922AE38
-        for <linux-iio@vger.kernel.org>; Sat,  5 Nov 2022 03:34:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E46E26130
+        for <linux-iio@vger.kernel.org>; Sat,  5 Nov 2022 05:51:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FE2CB81CD0
-        for <linux-iio@vger.kernel.org>; Sat,  5 Nov 2022 10:33:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4C2FC433C1;
-        Sat,  5 Nov 2022 10:33:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1667644438;
-        bh=vMYnruqEdgWjNnd6vRwSLtRSM8OKwWWHoVOZOJFV+EA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d0WDKpyaKG4xdTHSTTWLOoizIrqQ8m6pZq6M8wbCv2GDlP/Ll2ucA9NAOt0G9Z5v6
-         Sbj7b/Ky3776ATHH4k6lmqEz3Aww0O/P3JCvwQUDEmZagbN2uCtdWnidmmtO8GXA+7
-         wU8ulp93MtBDU2ZzDPYE5ZgfYewfngqcZaH602Rs=
-Date:   Sat, 5 Nov 2022 11:33:55 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PULL] 2nd set of IIO fixes for 6.1
-Message-ID: <Y2Y8E68DhSGRy+xo@kroah.com>
-References: <20221103211016.1ddd0e9b@jic23-huawei>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 331D7B80B64
+        for <linux-iio@vger.kernel.org>; Sat,  5 Nov 2022 12:51:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25058C433D6;
+        Sat,  5 Nov 2022 12:51:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667652679;
+        bh=Ed1uVF0foRnsII5hW95mdFur0KrIkcTLvmc8JFsOwvE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=TvgJnpxoTccEiVIJmLZuySjPUp0RFyQH6OMy5j9Zc+5cIO57Q2ePAJHll+ur6R3du
+         412wQa41q7MwJr2RF1Ph629qIgSTOW3iDSIQm1sDOCoQagYNN7+FmaOMOQAK5GGair
+         NzYpyyylrcZKCOze2M9XrQJgZLT5rf3y3cWiyRSEAgiUgflT6uhpzhUIIKMWMJwDHq
+         3UAcvcEotSCo9RcC8E3ZENaRz/JxRrjS/tY+rR+2VGTOwhl5Yq1cruJkIndxio8O79
+         xmhL9hGSra48NQ4qxEf9wd4ZBz0CIxYnuBRoZJx3ZONfd4VwozWI1g31i+ZVvjNL9s
+         uT5pUdWv05F0w==
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org, Crt Mori <cmo@melexis.com>
+Cc:     coverity-bot <keescook@chromium.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 0/2] iio: mlx90632: Minor fixes
+Date:   Sat,  5 Nov 2022 12:51:06 +0000
+Message-Id: <20221105125108.383193-1-jic23@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221103211016.1ddd0e9b@jic23-huawei>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Nov 03, 2022 at 09:10:16PM +0000, Jonathan Cameron wrote:
-> The following changes since commit d76308f03ee1574b0deffde45604252a51c77f6d:
-> 
->   Revert "coresight: cti: Fix hang in cti_disable_hw()" (2022-10-24 08:33:45 +0200)
-> 
-> are available in the Git repository at:
-> 
->   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-6.1b
-> 
-> for you to fetch changes up to 7c919b619bcc68158921b1bd968f0e704549bbb6:
-> 
->   tools: iio: iio_generic_buffer: Fix read size (2022-11-01 08:48:13 +0000)
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Pulled and pushed out.
+A couple of minor fixes.  The devm_ error handling was a coverity report.
+Static was a warning I'd missed originally but saw in build whilst testing
+the above.
 
-thanks,
+Crt, could you give these a quick look (+tag ideally) then I'll get them
+on the tree so the issue is fixed in Linux next before I send Greg a pull
+request.
 
-greg k-h
+Jonathan Cameron (2):
+  iio: temperature: mlx90632: Add error handling for
+    devm_pm_runtime_enable()
+  iio: temperature: mlx90632: Add missing static marking on devm_pm_ops
+
+ drivers/iio/temperature/mlx90632.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+-- 
+2.38.1
+
