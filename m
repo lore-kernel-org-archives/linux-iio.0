@@ -2,57 +2,69 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC60AC43217
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Nov 2022 09:52:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4478CC433FE
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Nov 2022 10:36:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231497AbiKGJwZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Nov 2022 04:52:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44586 "EHLO
+        id S230379AbiKGKgn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Nov 2022 05:36:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231859AbiKGJwY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Nov 2022 04:52:24 -0500
-X-Greylist: delayed 1800 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Nov 2022 01:52:24 PST
-Received: from mail.lokoho.com (mail.lokoho.com [217.61.105.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF8E6578
-        for <linux-iio@vger.kernel.org>; Mon,  7 Nov 2022 01:52:24 -0800 (PST)
-Received: by mail.lokoho.com (Postfix, from userid 1001)
-        id 4069982A0F; Mon,  7 Nov 2022 09:15:41 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=lokoho.com; s=mail;
-        t=1667812545; bh=Z0N5VlX9/JlryGOL5I747Le9USomZJCRNNGRT3LbbKc=;
-        h=Date:From:To:Subject:From;
-        b=H7eTdEeHz+e7+Viv1tR33Fb1cqRPQrDSTGDPeSxaSHnqb8O69aHFQjKLtPBEmS3fL
-         CVnNXCYdunWV9/qsgz4nLyLFnQsJovkmnWS4K3cYxXe6xFKSf7pcrjaF6khaJvmTYN
-         jvXA/Q6uNFXOHwvFJTr3JeLfGqdjFDV9jdi/Quy/3FQM/OcaMAIAEvnK7pQaOGPgno
-         DXbXYsQMa1kAhndiUApvPTke7Db5YWhI3eKQjlRQzQkDzlmVV/QaE8aKe/ptzO0QxB
-         /xvrF6Xsp6O/PQAHvNX9PVjwMd8zEg4uLGDkncCTndI6wDZQwfmnoyd7s1a0dh0gbl
-         z1Nh776+RLUZw==
-Received: by mail.lokoho.com for <linux-iio@vger.kernel.org>; Mon,  7 Nov 2022 09:15:37 GMT
-Message-ID: <20221107074500-0.1.23.5lza.0.fm8pchlsd3@lokoho.com>
-Date:   Mon,  7 Nov 2022 09:15:37 GMT
-From:   "Adam Charachuta" <adam.charachuta@lokoho.com>
-To:     <linux-iio@vger.kernel.org>
-Subject: =?UTF-8?Q?S=C5=82owa_kluczowe_do_wypozycjonowania?=
-X-Mailer: mail.lokoho.com
+        with ESMTP id S231249AbiKGKgm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Nov 2022 05:36:42 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 342DFF49
+        for <linux-iio@vger.kernel.org>; Mon,  7 Nov 2022 02:36:41 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 24A4223A;
+        Mon,  7 Nov 2022 02:36:47 -0800 (PST)
+Received: from bogus (unknown [10.57.6.137])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EA9943F534;
+        Mon,  7 Nov 2022 02:36:39 -0800 (PST)
+Date:   Mon, 7 Nov 2022 10:36:36 +0000
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     =?utf-8?Q?M=C3=A5rten?= Lindahl <marten.lindahl@axis.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org, kernel@axis.com
+Subject: Re: [PATCH] iio: light: vcnl4000: Don't create sysfs PM nodes for
+ child
+Message-ID: <20221107103636.bua6xd5tghuisddb@bogus>
+References: <20221101122151.221029-1-marten.lindahl@axis.com>
+ <20221106152307.4bfb4e49@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221106152307.4bfb4e49@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Dzie=C5=84 dobry,
+On Sun, Nov 06, 2022 at 03:23:07PM +0000, Jonathan Cameron wrote:
+> On Tue, 1 Nov 2022 13:21:51 +0100
+> Mårten Lindahl <marten.lindahl@axis.com> wrote:
+> 
+> > PM runtime is enabled for the parent i2c device, but it is disabled for
+> > the iio child device and remains so in this driver. But as the child
+> > sysfs PM directory is created by default by iio_device_register =>
+> > cdev_device_add => dpm_sysfs_add it doesn't bring any value exposing it
+> > since it won't give any usable data for the user.
+> > 
+> > Tell dpm_sysfs to not create the PM directory for the iio device.
+> > 
+> > Signed-off-by: Mårten Lindahl <marten.lindahl@axis.com>
+> 
+> Ah this one..  +CC Sudeep who I am sure has considered such changes in other
+> similar cases (he did the original ones that mean this infastructure exists).
+>
 
-zapozna=C5=82em si=C4=99 z Pa=C5=84stwa ofert=C4=85 i z przyjemno=C5=9Bci=
-=C4=85 przyznaj=C4=99, =C5=BCe przyci=C4=85ga uwag=C4=99 i zach=C4=99ca d=
-o dalszych rozm=C3=B3w.=20
+Yes it was added for cache devices which are child devices of CPU devices via
+Commit 85945c28b5a8 ("PM / core: Add support to skip power management in device/driver model")
 
-Pomy=C5=9Bla=C5=82em, =C5=BCe mo=C5=BCe m=C3=B3g=C5=82bym mie=C4=87 sw=C3=
-=B3j wk=C5=82ad w Pa=C5=84stwa rozw=C3=B3j i pom=C3=B3c dotrze=C4=87 z t=C4=
-=85 ofert=C4=85 do wi=C4=99kszego grona odbiorc=C3=B3w. Pozycjonuj=C4=99 =
-strony www, dzi=C4=99ki czemu generuj=C4=85 =C5=9Bwietny ruch w sieci.
+Since CPU and its children are power managed quite differently(via cpuidle
+or cpu hotplug), the new API(device_set_pm_not_required) fits the usecase
+there well. I am not sure about this IIO usecase.
 
-Mo=C5=BCemy porozmawia=C4=87 w najbli=C5=BCszym czasie?
-
-
-Pozdrawiam
-Adam Charachuta
+-- 
+Regards,
+Sudeep
