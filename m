@@ -2,78 +2,102 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 207BAC433FE
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Nov 2022 09:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A51EC43219
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Nov 2022 09:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231704AbiKGJNb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Nov 2022 04:13:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41492 "EHLO
+        id S231710AbiKGJQt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Nov 2022 04:16:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231697AbiKGJNT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Nov 2022 04:13:19 -0500
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CA617059
-        for <linux-iio@vger.kernel.org>; Mon,  7 Nov 2022 01:13:18 -0800 (PST)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 2A78nXVJ095133;
-        Mon, 7 Nov 2022 16:49:33 +0800 (GMT-8)
-        (envelope-from billy_tsai@aspeedtech.com)
-Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Nov
- 2022 17:13:03 +0800
-From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <joel@jms.id.au>,
-        <andrew@aj.id.au>, <billy_tsai@aspeedtech.com>,
-        <linmq006@gmail.com>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
-Subject: [v2 2/2] dt-bindings: iio: adc: Remove the property "aspeed,trim-data-valid"
-Date:   Mon, 7 Nov 2022 17:15:06 +0800
-Message-ID: <20221107091506.28630-2-billy_tsai@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221107091506.28630-1-billy_tsai@aspeedtech.com>
-References: <20221107091506.28630-1-billy_tsai@aspeedtech.com>
+        with ESMTP id S231723AbiKGJQf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Nov 2022 04:16:35 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A81912D1B
+        for <linux-iio@vger.kernel.org>; Mon,  7 Nov 2022 01:16:34 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id f37so15865494lfv.8
+        for <linux-iio@vger.kernel.org>; Mon, 07 Nov 2022 01:16:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ee9rRE2EZYR3AFslDfAa5vqk35kYdBztnuAgp9P1svM=;
+        b=rLgN8Ab0FHYbqyHfhx61S13OglQV0IxcL7oh3Q2DBIZpIffz/Sd22ckP2kXKhUWdoD
+         XvrViZQmsTqi88VTF76St/XTn4YOdfkVFy5KKxKwnLTMQOjcTmoq8VR0FA+Xs2zANdP3
+         uLffjmEj/GWzqAs9SLlrGU/opeVKi69yxnPhm545g7nJbioLzKGdmfMC0bdtU3cNLSCk
+         a4T+Bk+uJUJKNk037idWb8jzsGZRaIlvfDF09tEqF/KG7mUN3b7m0jw4jEI6SaghYjBb
+         ZvmvKp53XDqFo6SK4VuyIQsHh3B0qvWgJvurbkZ5lrnMxKVpRrLvHPb6hY/Vn7F1SBVe
+         kbKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ee9rRE2EZYR3AFslDfAa5vqk35kYdBztnuAgp9P1svM=;
+        b=upCPovcN90PzDPatTsYyv/3SUD4nxfWbNktSh6AwKAr0Hc05Lr5Us5nVCnGIQLudof
+         pgcWgYnovN9SSgYOT/NKrsaB3gA7dAU4p+qYE0N0HdUb6vkeZHR74d/K+fozuSNb8saw
+         4oMHlcHds7tD59N+D08O34WHffQt9c/5q3xY8idTgoM3/s6I1yRxk/NzQk2XAJ0ui2hf
+         KZd0h/MLKJVJNAjFe++yD3j2NTQGtOJeMVBwku1Q0z11ahaM42XblcFIDFO1ZzwoR9gN
+         LZv1mJaPZg/Ge3RpqSomvOBoRATwqoO9MK3crnZzIZtG9Q8RYmHEprjofSCPPU/CkeG7
+         FKTg==
+X-Gm-Message-State: ACrzQf0EzdZUzzP/r6Ai6KZnQigDMEvvjt1UO/7RinLRiqc4hhJfyyiE
+        VOFbJ/1enN1Pya/zDEwT5rXVdA==
+X-Google-Smtp-Source: AMsMyM640xZfzovEVbRzAzA3JwN3fsqXmGXCqtuz5rmj/QtkLofAuR/i6wzcJkcTdHZb+Jm513To6A==
+X-Received: by 2002:a05:6512:b21:b0:4ae:391c:e655 with SMTP id w33-20020a0565120b2100b004ae391ce655mr16423127lfu.45.1667812592555;
+        Mon, 07 Nov 2022 01:16:32 -0800 (PST)
+Received: from [192.168.0.20] (088156142199.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.199])
+        by smtp.gmail.com with ESMTPSA id t20-20020a2e8e74000000b0027755f52a94sm1129600ljk.80.2022.11.07.01.16.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Nov 2022 01:16:32 -0800 (PST)
+Message-ID: <9ddc0bc9-c5cf-6c94-d15e-77a7a7e2b7f1@linaro.org>
+Date:   Mon, 7 Nov 2022 10:16:31 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.149]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 2A78nXVJ095133
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [v2 2/2] dt-bindings: iio: adc: Remove the property
+ "aspeed,trim-data-valid"
+Content-Language: en-US
+To:     Billy Tsai <billy_tsai@aspeedtech.com>, jic23@kernel.org,
+        lars@metafoo.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, joel@jms.id.au, andrew@aj.id.au,
+        linmq006@gmail.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+References: <20221107091506.28630-1-billy_tsai@aspeedtech.com>
+ <20221107091506.28630-2-billy_tsai@aspeedtech.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221107091506.28630-2-billy_tsai@aspeedtech.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The valid of the trimming data will use the otp default value as a
-criterion.
+On 07/11/2022 10:15, Billy Tsai wrote:
+> The valid of the trimming data will use the otp default value as a
+> criterion.
+> 
+> Fixes: 2bdb2f00a895 ("dt-bindings: iio: adc: Add ast2600-adc bindings")
 
-Fixes: 2bdb2f00a895 ("dt-bindings: iio: adc: Add ast2600-adc bindings")
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
----
- .../devicetree/bindings/iio/adc/aspeed,ast2600-adc.yaml    | 7 -------
- 1 file changed, 7 deletions(-)
+If this is a fix, you need to describe the bug.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/aspeed,ast2600-adc.yaml b/Documentation/devicetree/bindings/iio/adc/aspeed,ast2600-adc.yaml
-index b283c8ca2bbf..5c08d8b6e995 100644
---- a/Documentation/devicetree/bindings/iio/adc/aspeed,ast2600-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/aspeed,ast2600-adc.yaml
-@@ -62,13 +62,6 @@ properties:
-     description:
-       Inform the driver that last channel will be used to sensor battery.
- 
--  aspeed,trim-data-valid:
--    type: boolean
--    description: |
--      The ADC reference voltage can be calibrated to obtain the trimming
--      data which will be stored in otp. This property informs the driver that
--      the data store in the otp is valid.
--
- required:
-   - compatible
-   - reg
--- 
-2.25.1
+> Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+
+This is a friendly reminder during the review process.
+
+It looks like you received a tag and forgot to add it.
+
+If you do not know the process, here is a short explanation:
+Please add Acked-by/Reviewed-by/Tested-by tags when posting new
+versions. However, there's no need to repost patches *only* to add the
+tags. The upstream maintainer will do that for acks received on the
+version they apply.
+
+https://elixir.bootlin.com/linux/v5.17/source/Documentation/process/submitting-patches.rst#L540
+
+If a tag was not added on purpose, please state why and what changed.
+
+
+Best regards,
+Krzysztof
 
