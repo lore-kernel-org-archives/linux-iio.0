@@ -2,95 +2,75 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF0CDC43217
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Nov 2022 14:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66785C433FE
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Nov 2022 15:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234266AbiKHO1d (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Nov 2022 09:27:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
+        id S233702AbiKHPMZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Nov 2022 10:12:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234519AbiKHO0z (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Nov 2022 09:26:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB6654B21;
-        Tue,  8 Nov 2022 06:25:47 -0800 (PST)
+        with ESMTP id S233925AbiKHPMX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Nov 2022 10:12:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB764D5DF;
+        Tue,  8 Nov 2022 07:12:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2B5BB81ADB;
-        Tue,  8 Nov 2022 14:25:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DED6C433C1;
-        Tue,  8 Nov 2022 14:25:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667917544;
-        bh=h+OS/eZgJV0ZrEr+BmOb2Klmpo3eKv9LYWIpJROuFGc=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F21D615F0;
+        Tue,  8 Nov 2022 15:12:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F0A4C433D6;
+        Tue,  8 Nov 2022 15:12:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1667920341;
+        bh=dY6YcVEKd8/kTJ0bxrcHw4OlBXje9C80yhXhEcnFW7o=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RHcUzAeQY1Qwi5CovXPIcX3MfxTd7xPUidAtjdD8jYyOrgusaZ6+EhH76mxf6wpKD
-         pGhXPpk6Tm9nU10yR5gv27xqD5LdnRkoH7U1xGpoUeCIwLId1QcrIF45sZoi1xc5oc
-         1WTvKZ2hZv0kpMdA+zxwNTUpPafgf8N8Vpyahct42uow1fsYuIgbOVdk7j/gTkB8lG
-         qOMRX+k2a/JhQtPKLqFkFrmFk8g1IiV0fixJ/irlifzkjdzwsV3C3vVMwnHwNZ09c+
-         bEZzqSbPWgAozKi5IfDWnti98NozxlQPr0JRlcachFjnbXx4PznTfHXYFONl2NbmsJ
-         eQQE1dhsAltcw==
-Date:   Tue, 8 Nov 2022 15:25:40 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     jic23@kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Subject: Re: [PATCH 2/2] dt-bindings: iio: imu: st_lsm6dsx: add lsm6dsv16x
- device bindings
-Message-ID: <Y2pm5HpHu+O1cl4n@localhost.localdomain>
-References: <cover.1667745215.git.lorenzo@kernel.org>
- <8d10a63ec6abd22863ab25addd8c2f578dbc9cd9.1667745215.git.lorenzo@kernel.org>
- <a464ae19-3b18-3a34-9706-151b1512057b@linaro.org>
+        b=Nv6VmbiwMcOdoVuhP5Uf/6AWhaG3U/FMGv3WOoIuv6kXMukzQzotu69aIFPIfDI1L
+         Xry70c5bCNViipvtbaOA4VIhYGHxEXhROppgaswjmi2BZY4+KOnb0gMvL+pamUQZa6
+         FgDJu6Tj16AWP6EJKDz6R9cQgpRC3Bmh8iK6zwXs=
+Date:   Tue, 8 Nov 2022 16:12:17 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Deepak R Varma <drv@mailo.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: meter: use min() for comparison and
+ assignment
+Message-ID: <Y2px0THYSMaU4gyZ@kroah.com>
+References: <Y2iFGA3A1w+XMlYU@qemulion>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="wTnk1G2BRa0HT9Ms"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a464ae19-3b18-3a34-9706-151b1512057b@linaro.org>
+In-Reply-To: <Y2iFGA3A1w+XMlYU@qemulion>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Mon, Nov 07, 2022 at 09:40:00AM +0530, Deepak R Varma wrote:
+> Simplify code by using recommended min helper macro for logical
+> evaluation and value assignment. This issue is identified by
+> coccicheck using the minmax.cocci file.
+> 
+> Signed-off-by: Deepak R Varma <drv@mailo.com>
+> ---
+>  drivers/staging/iio/meter/ade7854-i2c.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/staging/iio/meter/ade7854-i2c.c b/drivers/staging/iio/meter/ade7854-i2c.c
+> index a9a06e8dda51..a6ce7b24cc8f 100644
+> --- a/drivers/staging/iio/meter/ade7854-i2c.c
+> +++ b/drivers/staging/iio/meter/ade7854-i2c.c
+> @@ -61,7 +61,7 @@ static int ade7854_i2c_write_reg(struct device *dev,
+>  unlock:
+>  	mutex_unlock(&st->buf_lock);
+> 
+> -	return ret < 0 ? ret : 0;
+> +	return min(ret, 0);
 
---wTnk1G2BRa0HT9Ms
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+As others have said, this isn't ok, and I hate ? : usage, so if you
+want, spell that out please.
 
-> On 06/11/2022 15:36, Lorenzo Bianconi wrote:
-> > Add device bindings for lsm6dsv16x IMU sensor.
->=20
-> Drop redundant, second "device bindings" in subject.  So the subject
-> should be (also with different prefix):
+thanks,
 
-ack
-
->=20
-> dt-bindings: iio: imu:: st,lsm6dsx.yaml: add lsm6dsv16x
->=20
-> With subject fixes:
->=20
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->=20
-> Best regards,
-> Krzysztof
->=20
-
-@Jonathan: do you want me send v2 or are you going to take care of it?
-
-Regards,
-Lorenzo
-
---wTnk1G2BRa0HT9Ms
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY2pm4QAKCRA6cBh0uS2t
-rE2vAP9BE6X9wPoL+D+iHzKiPQ1cakg+w07uzTgSIT+3k/eriAD6AsdaLY8NEAsf
-ZlSKLVLQPO6rI87pdP8w0DLe6vzLLwo=
-=Uv2j
------END PGP SIGNATURE-----
-
---wTnk1G2BRa0HT9Ms--
+greg k-h
