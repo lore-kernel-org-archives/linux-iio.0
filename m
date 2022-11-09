@@ -2,183 +2,422 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A6EC4321E
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Nov 2022 09:07:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00523C4332F
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Nov 2022 13:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233259AbiKHJG7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Nov 2022 04:06:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59634 "EHLO
+        id S234405AbiKHNkj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Nov 2022 08:40:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233654AbiKHJGv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Nov 2022 04:06:51 -0500
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423281D665;
-        Tue,  8 Nov 2022 01:06:50 -0800 (PST)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5A4366602339;
-        Tue,  8 Nov 2022 09:06:47 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1667898408;
-        bh=ueI+2JlJ8usQR2qw2C5uUQ8cXmpDFvzCuDuDhHJLK6k=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Cdl0yXa75sc5uC9OZZNK8dJnq9kBEwkNsoj/Xag2CA0BWHRCUKt4WkSQMHUQ845GQ
-         saCu/BmwHKUDjX7dn4NleewUVVhHWtTsR8WSm5WXIfxx2xOUoxwp70wTprD5nYUmo5
-         5BJ0TWZqFPHIn4b3mG5h7SGb4ECS+0OMpVq+TJ1cLXqEdgshDQgaYE2P5ALSeD4xP5
-         zTaVLgDl2apypZen3F4dFpFNCUUGqR8WlZeAO95Iv3UDSAUsP0xnf/SuKzkYV6SACG
-         sHlvSzh5tLzdSkKXc6tSR6WEabp5Rkoh+6NZf6Qa82pTabMR+oE+Zz59tLNSjjBH4N
-         8aZJaOk6t1UcA==
-Message-ID: <b99a3071-0982-a1bd-f3b9-14e2a8fdd904@collabora.com>
-Date:   Tue, 8 Nov 2022 10:06:45 +0100
+        with ESMTP id S234076AbiKHNkY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Nov 2022 08:40:24 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FB24FFA9;
+        Tue,  8 Nov 2022 05:40:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667914823; x=1699450823;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=mCrWiUUgRyQzKOt7u1k2+4v/CDZHlfBbvsBIQUniH0Y=;
+  b=Xw8uPR98boJ4dpAyO6VgIcmO/nRQWWILZkkbehV8+HpfvlImiqFyfn9y
+   EjTc0RRieookPpg/N7sS0bniVLLszqzVNBQ6fN4CoN2o0XI3R5wB3IRoV
+   sKO/bSaE90UAb1MnM6YWzJjxKKeaHqhCjmuCt3f6M4vViwf/LWxlf74bV
+   eSVfdeBeUtGD/DbVuOadWESbzZGTABdmklli2DmXu61fhJrSLMDVyttBy
+   qy+QRjDIUFtMW4KJE3K/9Gz4S5rMgemduNTPF5a5NqiwuL50C4ERCvwGB
+   PIxXRLhpuUbRSwTlB6wDIgN5mfDWV+yfsM5tvihE0DMktNunpHslJpF4l
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="396988770"
+X-IronPort-AV: E=Sophos;i="5.96,147,1665471600"; 
+   d="scan'208";a="396988770"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2022 05:40:22 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="811242719"
+X-IronPort-AV: E=Sophos;i="5.96,147,1665471600"; 
+   d="scan'208";a="811242719"
+Received: from unknown (HELO rajath-NUC10i7FNH..) ([10.223.165.88])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2022 05:40:19 -0800
+From:   Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
+To:     jic23@kernel.org, lars@metafoo.de
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        jdelvare@suse.com, linux@roeck-us.net, linux-hwmon@vger.kernel.org,
+        rajat.khandelwal@intel.com,
+        Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
+Subject: [PATCH v8] iio: temperature: Add driver support for Maxim MAX30208
+Date:   Wed,  9 Nov 2022 19:10:05 +0530
+Message-Id: <20221109134005.714233-1-rajat.khandelwal@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [PATCH 8/9] arm64: dts: qcom: Add DTS for MSM8976 and MSM8956
- SoCs
-Content-Language: en-US
-To:     Bjorn Andersson <andersson@kernel.org>
-Cc:     agross@kernel.org, konrad.dybcio@somainline.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lee@kernel.org, ulf.hansson@linaro.org,
-        srinivas.kandagatla@linaro.org, jic23@kernel.org, lars@metafoo.de,
-        keescook@chromium.org, tony.luck@intel.com, gpiccoli@igalia.com,
-        bhupesh.sharma@linaro.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-hardening@vger.kernel.org, marijn.suijten@somainline.org,
-        kernel@collabora.com, luca@z3ntu.xyz, a39.skl@gmail.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>
-References: <20221104172122.252761-1-angelogioacchino.delregno@collabora.com>
- <20221104172122.252761-9-angelogioacchino.delregno@collabora.com>
- <20221108045508.hnnwt22m6ceg5u4y@builder.lan>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20221108045508.hnnwt22m6ceg5u4y@builder.lan>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Il 08/11/22 05:55, Bjorn Andersson ha scritto:
-> On Fri, Nov 04, 2022 at 06:21:21PM +0100, AngeloGioacchino Del Regno wrote:
->> From: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
->>
->> This commit adds device trees for MSM8956 and MSM8976 SoCs.
->> They are *almost* identical, with minor differences, such as
->> MSM8956 having two A72 cores less.
->>
->> However, there is a bug in Sony Loire bootloader that requires presence
->> of all 8 cores in the cpu{} node, so these will not be deleted.
->>
->> Co-developed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
->> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
->> Co-developed-by: Marijn Suijten <marijn.suijten@somainline.org>
->> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
->> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
->> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Maxim MAX30208 is a digital temperature sensor with 0.1°C accuracy.
 
-Hello,
+Add support for max30208 driver in iio subsystem.
+Datasheet: https://datasheets.maximintegrated.com/en/ds/MAX30208.pdf
 
-Thanks to everyone for the feedback!
-I'll send a new version this Friday, according to the received reviews.
+Signed-off-by: Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
+---
 
-In the meanwhile, a few answers will follow, check below.
+v8:
+1. Returning time out if conversion fails to happen
+2. Setting rollover bit to '1' to allow FIFO overwriting
+3. Dropping ACPI_PTR
 
->> ---
->>   arch/arm64/boot/dts/qcom/msm8956.dtsi |   18 +
->>   arch/arm64/boot/dts/qcom/msm8976.dtsi | 1208 +++++++++++++++++++++++++
->>   2 files changed, 1226 insertions(+)
->>   create mode 100644 arch/arm64/boot/dts/qcom/msm8956.dtsi
->>   create mode 100644 arch/arm64/boot/dts/qcom/msm8976.dtsi
->>
+v7:
+1. Dropped GPIOs use for now
+2. Driver name string directly used
+3. Mutex lock description added
+4. Removed noisy errors and only kept errors on larger code blocks
+5. dev_warn -> dev_err for temperature conversion failure
+6. Improvised the logic of popping out values
+7. Fixed line breaks
+8. module_i2c_driver
 
-..snip..
+v6: Converted usleep_range to msleep as delay is quite large
 
->> +		cpu-map {
->> +			cluster0 {
->> +				core0 {
->> +					cpu = <&CPU0>;
->> +				};
->> +
->> +				core1 {
->> +					cpu = <&CPU1>;
->> +				};
->> +
->> +				core2 {
->> +					cpu = <&CPU2>;
->> +				};
->> +
->> +				core3 {
->> +					cpu = <&CPU3>;
->> +				};
->> +			};
->> +
->> +			cluster1 {
-> 
-> Are you sure that the two clusters should be expressed separately in the
-> cpu-map?
-> 
+v5:
+1. Fixed comment position in max30208_request
+2. Use of local u8 variable to build register values
+3. Using u8 instead of s8 in data_count
+4. Removed global MAX30208_RES_MILLICELCIUS
+5. Removed 'comma' on NULL terminators
 
-This SoC has two clusters with split L2 cache, can shutdown one cluster CPU, or
-the L2 cache for one cluster, or one entire cluster, hence can also manage idle
-states on a per-cluster basis.
+v4: Version comments go below line separator of signed-off-by
 
-Also, as per bindings/cpu/cpu-topology.txt - I am here describing the hierarchy
-of CPUs in MSM8976, containing one "little" cluster, composed of four slower CPU
-cores and its own L2 cache slice, and one "big" cluster, composed of four (8976)
-or two (8956) faster CPU cores and its own L2 cache slice.
+v3: Release the mutex lock after error gets returned
 
-That said, I am sure that the two clusters shall be expressed separately.
+v2:
+1. Removed TODO
+2. Removed unnecessary blank spaces
+3. Corrected MC->MILLICELCIUS
+4. Comments added wherever required
+5. dev_err on i2c fails
+6. Rearranged some flows
+7. Removed PROCESSED
+8. int error return on gpio setup
+9. device_register at the end of probe
+10. Return on unsuccessful reset
+11. acpi_match_table and of_match_table added
+12. Minor quirks
 
-Am I underestimating and/or ignoring anything?
+ MAINTAINERS                        |   6 +
+ drivers/iio/temperature/Kconfig    |  10 ++
+ drivers/iio/temperature/Makefile   |   1 +
+ drivers/iio/temperature/max30208.c | 251 +++++++++++++++++++++++++++++
+ 4 files changed, 268 insertions(+)
+ create mode 100644 drivers/iio/temperature/max30208.c
 
->> +				core0 {
->> +					cpu = <&CPU4>;
->> +				};
->> +
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f1390b8270b2..7f1fd2e31b94 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12373,6 +12373,12 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/regulator/maxim,max20086.yaml
+ F:	drivers/regulator/max20086-regulator.c
+ 
++MAXIM MAX30208 TEMPERATURE SENSOR DRIVER
++M:	Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	drivers/iio/temperature/max30208.c
++
+ MAXIM MAX77650 PMIC MFD DRIVER
+ M:	Bartosz Golaszewski <brgl@bgdev.pl>
+ L:	linux-kernel@vger.kernel.org
+diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+index e8ed849e3b76..ed384f33e0c7 100644
+--- a/drivers/iio/temperature/Kconfig
++++ b/drivers/iio/temperature/Kconfig
+@@ -128,6 +128,16 @@ config TSYS02D
+ 	  This driver can also be built as a module. If so, the module will
+ 	  be called tsys02d.
+ 
++config MAX30208
++	tristate "Maxim MAX30208 digital temperature sensor"
++	depends on I2C
++	help
++	  If you say yes here you get support for Maxim MAX30208
++	  digital temperature sensor connected via I2C.
++
++	  This driver can also be built as a module. If so, the module
++	  will be called max30208.
++
+ config MAX31856
+ 	tristate "MAX31856 thermocouple sensor"
+ 	depends on SPI
+diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
+index dd08e562ffe0..dfec8c6d3019 100644
+--- a/drivers/iio/temperature/Makefile
++++ b/drivers/iio/temperature/Makefile
+@@ -7,6 +7,7 @@ obj-$(CONFIG_IQS620AT_TEMP) += iqs620at-temp.o
+ obj-$(CONFIG_LTC2983) += ltc2983.o
+ obj-$(CONFIG_HID_SENSOR_TEMP) += hid-sensor-temperature.o
+ obj-$(CONFIG_MAXIM_THERMOCOUPLE) += maxim_thermocouple.o
++obj-$(CONFIG_MAX30208) += max30208.o
+ obj-$(CONFIG_MAX31856) += max31856.o
+ obj-$(CONFIG_MAX31865) += max31865.o
+ obj-$(CONFIG_MLX90614) += mlx90614.o
+diff --git a/drivers/iio/temperature/max30208.c b/drivers/iio/temperature/max30208.c
+new file mode 100644
+index 000000000000..1f8d76e0bc95
+--- /dev/null
++++ b/drivers/iio/temperature/max30208.c
+@@ -0,0 +1,251 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++/*
++ * Copyright (c) Rajat Khandelwal <rajat.khandelwal@linux.intel.com>
++ *
++ * Maxim MAX30208 digital temperature sensor with 0.1°C accuracy
++ * (7-bit I2C slave address (0x50 - 0x53))
++ */
++
++#include <linux/bitops.h>
++#include <linux/delay.h>
++#include <linux/iio/iio.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/types.h>
++
++#define MAX30208_STATUS			0x00
++#define MAX30208_STATUS_TEMP_RDY	BIT(0)
++#define MAX30208_INT_ENABLE		0x01
++#define MAX30208_INT_ENABLE_TEMP_RDY	BIT(0)
++
++#define MAX30208_FIFO_OVF_CNTR		0x06
++#define MAX30208_FIFO_DATA_CNTR		0x07
++#define MAX30208_FIFO_DATA		0x08
++
++#define MAX30208_SYSTEM_CTRL		0x0c
++#define MAX30208_SYSTEM_CTRL_RESET	0x01
++
++#define MAX30208_TEMP_SENSOR_SETUP	0x14
++#define MAX30208_TEMP_SENSOR_SETUP_CONV	BIT(0)
++
++#define MAX30208_FIFO_CONFIG		0x0a
++#define MAX30208_FIFO_CONFIG_RO		BIT(1)
++
++struct max30208_data {
++	struct i2c_client *client;
++	struct iio_dev *indio_dev;
++	struct mutex lock; /* Lock to prevent concurrent reads of temperature readings */
++};
++
++static const struct iio_chan_spec max30208_channels[] = {
++	{
++		.type = IIO_TEMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
++	},
++};
++
++/**
++ * max30208_request() - Request a reading
++ * @data: Struct comprising member elements of the device
++ *
++ * Requests a reading from the device and waits until the conversion is ready.
++ */
++static int max30208_request(struct max30208_data *data)
++{
++	/*
++	 * Sensor can take up to 500 ms to respond so execute a total of
++	 * 10 retries to give the device sufficient time.
++	 */
++	int retries = 10;
++	u8 regval;
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, MAX30208_TEMP_SENSOR_SETUP);
++	if (ret < 0)
++		return ret;
++
++	regval = ret | MAX30208_TEMP_SENSOR_SETUP_CONV;
++
++	ret = i2c_smbus_write_byte_data(data->client, MAX30208_TEMP_SENSOR_SETUP, regval);
++	if (ret)
++		return ret;
++
++	while (retries--) {
++		ret = i2c_smbus_read_byte_data(data->client, MAX30208_STATUS);
++		if (ret < 0)
++			return ret;
++
++		if (ret & MAX30208_STATUS_TEMP_RDY)
++			return 0;
++
++		msleep(50);
++	}
++	dev_err(&data->client->dev, "Temperature conversion failed\n");
++
++	return -ETIMEDOUT;
++}
++
++static int max30208_update_temp(struct max30208_data *data)
++{
++	u8 data_count;
++	int ret;
++
++	mutex_lock(&data->lock);
++
++	ret = max30208_request(data);
++	if (ret)
++		goto unlock;
++
++	ret = i2c_smbus_read_byte_data(data->client, MAX30208_FIFO_OVF_CNTR);
++	if (ret < 0)
++		goto unlock;
++	else if (!ret) {
++		ret = i2c_smbus_read_byte_data(data->client, MAX30208_FIFO_DATA_CNTR);
++		if (ret < 0)
++			goto unlock;
++	}
++
++	data_count = ret;
++
++	while (data_count) {
++		ret = i2c_smbus_read_word_swapped(data->client, MAX30208_FIFO_DATA);
++		if (ret < 0)
++			goto unlock;
++
++		data_count--;
++	}
++
++unlock:
++	mutex_unlock(&data->lock);
++	return ret;
++}
++
++/**
++ * max30208_config_setup() - Set up FIFO configuration register
++ * @data: Struct comprising member elements of the device
++ *
++ * Sets the rollover bit to '1' to enable overwriting FIFO during overflow.
++ */
++static int max30208_config_setup(struct max30208_data *data)
++{
++	u8 regval;
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, MAX30208_FIFO_CONFIG);
++	if (ret < 0)
++		return ret;
++
++	regval = ret | MAX30208_FIFO_CONFIG_RO;
++
++	ret = i2c_smbus_write_byte_data(data->client, MAX30208_FIFO_CONFIG, regval);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static int max30208_read(struct iio_dev *indio_dev,
++			 struct iio_chan_spec const *chan,
++			 int *val, int *val2, long mask)
++{
++	struct max30208_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = max30208_update_temp(data);
++		if (ret < 0)
++			return ret;
++
++		*val = sign_extend32(ret, 15);
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*val = 5;
++		return IIO_VAL_INT;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info max30208_info = {
++	.read_raw = max30208_read,
++};
++
++static int max30208_probe(struct i2c_client *i2c)
++{
++	struct device *dev = &i2c->dev;
++	struct max30208_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	data->client = i2c;
++	mutex_init(&data->lock);
++
++	indio_dev->name = "max30208";
++	indio_dev->channels = max30208_channels;
++	indio_dev->num_channels = ARRAY_SIZE(max30208_channels);
++	indio_dev->info = &max30208_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = i2c_smbus_write_byte_data(data->client, MAX30208_SYSTEM_CTRL,
++					MAX30208_SYSTEM_CTRL_RESET);
++	if (ret) {
++		dev_err(dev, "Failure in performing reset\n");
++		return ret;
++	}
++
++	msleep(50);
++
++	ret = max30208_config_setup(data);
++	if (ret)
++		return ret;
++
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret) {
++		dev_err(dev, "Failed to register IIO device\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct i2c_device_id max30208_id_table[] = {
++	{ "max30208" },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, max30208_id_table);
++
++static const struct acpi_device_id max30208_acpi_match[] = {
++	{ "MAX30208" },
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, max30208_acpi_match);
++
++static const struct of_device_id max30208_of_match[] = {
++	{ .compatible = "maxim,max30208" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, max30208_of_match);
++
++static struct i2c_driver max30208_driver = {
++	.driver = {
++		.name = "max30208",
++		.of_match_table = max30208_of_match,
++		.acpi_match_table = max30208_acpi_match,
++	},
++	.probe_new = max30208_probe,
++	.id_table = max30208_id_table,
++};
++module_i2c_driver(max30208_driver);
++
++MODULE_AUTHOR("Rajat Khandelwal <rajat.khandelwal@linux.intel.com>");
++MODULE_DESCRIPTION("Maxim MAX30208 digital temperature sensor");
++MODULE_LICENSE("GPL");
+-- 
+2.34.1
 
-..snip..
-
->> +
->> +	reserved-memory {
->> +		#address-cells = <2>;
->> +		#size-cells = <2>;
->> +		ranges;
->> +
->> +		cont_splash_mem: memory@83000000 {
-> 
-> memory is "reserved", please use specific node names for these regions.
-> 
-
-Agreed.
-
->> +			reg = <0x0 0x83000000 0x0 0x2800000>;
->> +		};
-> [..]
->> +		apcs: syscon@b011000 {
->> +			compatible = "syscon";
-> 
-> Why not use qcom,msm8976-apcs-kpss-global here?
-> 
-
-There's no reason not to use the suggested compatible. I'm sorry for the miss.
-
->> +			reg = <0x0b011000 0x1000>;
->> +		};
-> [..]
->> +
->> +		imem: imem@8600000 {
->> +			compatible = "simple-mfd";
-> 
-> sram/qcom,imem.yaml please.
-> 
-
-Will do on v2.
-
-Regards,
-Angelo
