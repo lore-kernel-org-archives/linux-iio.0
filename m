@@ -2,137 +2,146 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A643AC4332F
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Nov 2022 13:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 423ECC4332F
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Nov 2022 14:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230494AbiKJN3s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Nov 2022 08:29:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49428 "EHLO
+        id S230238AbiKJOp6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Nov 2022 09:45:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230526AbiKJN3o (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Nov 2022 08:29:44 -0500
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB992B1A2
-        for <linux-iio@vger.kernel.org>; Thu, 10 Nov 2022 05:29:37 -0800 (PST)
-Received: by mail-qv1-xf2e.google.com with SMTP id x13so1344309qvn.6
-        for <linux-iio@vger.kernel.org>; Thu, 10 Nov 2022 05:29:37 -0800 (PST)
+        with ESMTP id S230442AbiKJOp5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Nov 2022 09:45:57 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658665802F
+        for <linux-iio@vger.kernel.org>; Thu, 10 Nov 2022 06:45:56 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id 130so2334478pfu.8
+        for <linux-iio@vger.kernel.org>; Thu, 10 Nov 2022 06:45:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=EdhP8BcDkdu4NYZf2t0eCebWK07n0XJPuIalbtX9Hyg=;
-        b=lnANyr3Ti2FkxxiAeDVj0aN7J3CiHmuEuPMhfaSOHlFRXrPLPk4ZGnMpOfXl0hQuIL
-         j54348+RAEgPviVpy9lOq9Vp+ppBrl1+fotarDQwdEPPAYfqPwTm6WRv2xrZiAt0q3gn
-         thR6zDxFIcFnv+XEvceEu1EW+wopZ7vmY5P6A=
+        d=vixtechnology.com; s=google;
+        h=content-transfer-encoding:content-language:in-reply-to:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=P9x9mcXLURShJST1wNvTGAqFBywrHCpm5rFlPhpTc+w=;
+        b=GMbNXOtEWrHeewrlkFYFD+3pQBUsAd1MAKYqoKPaYbxhnXlOBCtOFquMsaLnS2Ppa7
+         6Py8ZsaBTsN5eIlfr6j+4lH3J4Bgcmq3WcEvnyLbeHzGf0b5HK/mmH2BcVRXNbUxxFDH
+         yTQl9sl9+SOVVApNy2FJP7G4eX7NzaJiDH2ws=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EdhP8BcDkdu4NYZf2t0eCebWK07n0XJPuIalbtX9Hyg=;
-        b=rpXyhTxhNRQChRe4DBj+nhGi8Ea0GAVQVbDIKMt0Cy3zO1Is+/6dPq8DdL3SFudciN
-         PaIFceGJ6xz65zg7aOYqZzB/cBGEBghEqC9FtsqKc9qIlijpsCmopW6lialgJ/1DzaYj
-         3C59Lpn29aam29ZMdBqzJ79LnANYjQAVv/j3E9zfOirl3/gTD8atIUIIF9AA33TzGGtz
-         3EQdhPrc/vQtIUS8GG97N7t225usprJ9L0+U3p4ZHN51VLHRb7ngm3r7QrPO+Kx3MfsH
-         UjpOp+7UEhzWeU7Tv42kerAlYrNzf45GIXo5NOz0YqL2uJLlagb3HsATTCOFBPn7bNvK
-         hWOA==
-X-Gm-Message-State: ACrzQf3/a6eC0l1Ft8m5WI7C2QWN3Ffn8fjcylxhXPdJpXWx/aEusk94
-        /94gvxQPAgkS7h+E6W2M2/Y6oiJz9kB0NbWEWS/+sw==
-X-Google-Smtp-Source: AMsMyM6yikR7uCCO8X2hhqL4WAmquMxf1rpejO6f7BuzsIoecYsi8cW2uJnj5ZMmzeZ7mdS98P6K8ez1qbKLbsb/zjA=
-X-Received: by 2002:a05:6214:62e:b0:4bb:7f43:1fd5 with SMTP id
- a14-20020a056214062e00b004bb7f431fd5mr58602950qvx.112.1668086976813; Thu, 10
- Nov 2022 05:29:36 -0800 (PST)
+        h=content-transfer-encoding:content-language:in-reply-to:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=P9x9mcXLURShJST1wNvTGAqFBywrHCpm5rFlPhpTc+w=;
+        b=xmU++NxDgXYl0pDxCbE1B/j8kMaP37boX2gG/mGcAZvW19bUNqwG0/WZsIJbBmBDHS
+         hpk/cAvm5+fvt39j+izzgYkXvVe//YoZqy/7DqMXC7zR6Xf7NEL8Dxtzgrxat/jjX9eN
+         6pVGZfhSEiHzQ2vH8l6FTusODOKdNTtdwzYWv5Ia/XKr+STMhllRiSTd3Gcqi2/EVDYD
+         /f2AX8I2VIx+660eaJxQ/wHctLaKJAW2Sgkoyo8RAKpVLl9Hwm2zVmL0jTO6lXwDpHXP
+         Ip6UZAjpoMBeDzK5tJTzeIw0qWTtrF9D2gOsPE2DhPdyrDnX++2Fjd1boH0Q5j6TTtMC
+         YZnQ==
+X-Gm-Message-State: ACrzQf34pTbWbTY2K/381QeqFbOmTmXohecUQdLC+zXXKTmVpozqf95N
+        MOOPrbOu1uzvnysfIJyrE3O6YiA/jHwZf8nGsD6uqV3vLsjspaRHjYumBFmiji/KAxuVi6VfJ1b
+        n4RFeN/BMDKca
+X-Google-Smtp-Source: AMsMyM6I/k3FZUgvktdtEam/Lh8YsIC7clRwn3QTxwUOfPvYwqgdXnSJlJfRZbMs4yGNHXTdO6DPHQ==
+X-Received: by 2002:a63:1a60:0:b0:43c:9bcd:6c37 with SMTP id a32-20020a631a60000000b0043c9bcd6c37mr54232921pgm.125.1668091555699;
+        Thu, 10 Nov 2022 06:45:55 -0800 (PST)
+Received: from [192.168.1.110] (106-68-237-135.tpgi.com.au. [106.68.237.135])
+        by smtp.gmail.com with ESMTPSA id q8-20020a17090311c800b00186b5c1a715sm8737029plh.182.2022.11.10.06.45.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Nov 2022 06:45:55 -0800 (PST)
+Message-ID: <b6ac2692-3152-dfc4-5388-7986042970f0@vixtechnology.com>
+Date:   Thu, 10 Nov 2022 22:45:49 +0800
 MIME-Version: 1.0
-References: <20221110101241.10576-1-subhajit.ghosh@vixtechnology.com>
-In-Reply-To: <20221110101241.10576-1-subhajit.ghosh@vixtechnology.com>
-From:   Matt Ranostay <matt.ranostay@konsulko.com>
-Date:   Thu, 10 Nov 2022 21:29:25 +0800
-Message-ID: <CAJCx=g=qRd+WaCLOHwnEjg1Myg4Ng=PK0sxcGgEG9VT+VpondA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
 Subject: Re: [PATCH] iio: light: apds9960: Fix iio_event_spec structures
-To:     Subhajit Ghosh <subhajit.ghosh@vixtechnology.com>
+To:     Matt Ranostay <matt.ranostay@konsulko.com>
 Cc:     jic23@kernel.org, lars@metafoo.de, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org
+References: <20221110101241.10576-1-subhajit.ghosh@vixtechnology.com>
+ <CAJCx=g=qRd+WaCLOHwnEjg1Myg4Ng=PK0sxcGgEG9VT+VpondA@mail.gmail.com>
+From:   Subhajit Ghosh <subhajit.ghosh@vixtechnology.com>
+In-Reply-To: <CAJCx=g=qRd+WaCLOHwnEjg1Myg4Ng=PK0sxcGgEG9VT+VpondA@mail.gmail.com>
+Content-Language: en-US
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Nov 10, 2022 at 6:13 PM Subhajit Ghosh
-<subhajit.ghosh@vixtechnology.com> wrote:
->
-> There is only one interrupt enable option for both ALS low and high
-> thresholds, and one for both Proximity low and high thresholds.
->
-> Signed-off-by: Subhajit Ghosh <subhajit.ghosh@vixtechnology.com>
-> ---
->  drivers/iio/light/apds9960.c | 20 ++++++++++++--------
->  1 file changed, 12 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
-> index 4141c0fa7bc4..df9ccbcf0ffe 100644
-> --- a/drivers/iio/light/apds9960.c
-> +++ b/drivers/iio/light/apds9960.c
-> @@ -223,14 +223,16 @@ static const struct iio_event_spec apds9960_pxs_event_spec[] = {
->         {
->                 .type = IIO_EV_TYPE_THRESH,
->                 .dir = IIO_EV_DIR_RISING,
-> -               .mask_separate = BIT(IIO_EV_INFO_VALUE) |
-> -                       BIT(IIO_EV_INFO_ENABLE),
-> +               .mask_separate = BIT(IIO_EV_INFO_VALUE),
 
-Probably more concise to use the following, and you won't need to add
-an additional item to the structs.
+>>                 .type =3D IIO_EV_TYPE_THRESH,
+>>                 .dir =3D IIO_EV_DIR_RISING,
+>> -               .mask_separate =3D BIT(IIO_EV_INFO_VALUE) |
+>> -                       BIT(IIO_EV_INFO_ENABLE),
+>> +               .mask_separate =3D BIT(IIO_EV_INFO_VALUE),
+>=20
+> Probably more concise to use the following, and you won't need to add
+> an additional item to the structs.
+>=20
+>    .mask_separate =3D BIT(IIO_EV_INFO_VALUE),
+>    .mask_shared_by_type =3D BIT(IIO_EV_INFO_ENABLE),
+>=20
 
-   .mask_separate = BIT(IIO_EV_INFO_VALUE),
-   .mask_shared_by_type = BIT(IIO_EV_INFO_ENABLE),
+Above is the first thing I tried.
 
->         },
->         {
->                 .type = IIO_EV_TYPE_THRESH,
->                 .dir = IIO_EV_DIR_FALLING,
-> -               .mask_separate = BIT(IIO_EV_INFO_VALUE) |
-> -                       BIT(IIO_EV_INFO_ENABLE),
-> +               .mask_separate = BIT(IIO_EV_INFO_VALUE),
-> +       },
-> +       {
-> +               .type = IIO_EV_TYPE_THRESH,
-> +               .mask_separate = BIT(IIO_EV_INFO_ENABLE),
+Current implementation:
 
-Same here.
+root@stm32mp1:~# ls -1 /sys/bus/iio/devices/iio:device0/events/
+in_intensity_clear_thresh_falling_en
+in_intensity_clear_thresh_falling_value
+in_intensity_clear_thresh_rising_en
+in_intensity_clear_thresh_rising_value
 
-- Matt
+in_proximity_thresh_falling_en
+in_proximity_thresh_falling_value
+in_proximity_thresh_rising_en
+in_proximity_thresh_rising_value
 
->         },
->  };
->
-> @@ -238,14 +240,16 @@ static const struct iio_event_spec apds9960_als_event_spec[] = {
->         {
->                 .type = IIO_EV_TYPE_THRESH,
->                 .dir = IIO_EV_DIR_RISING,
-> -               .mask_separate = BIT(IIO_EV_INFO_VALUE) |
-> -                       BIT(IIO_EV_INFO_ENABLE),
-> +               .mask_separate = BIT(IIO_EV_INFO_VALUE),
->         },
->         {
->                 .type = IIO_EV_TYPE_THRESH,
->                 .dir = IIO_EV_DIR_FALLING,
-> -               .mask_separate = BIT(IIO_EV_INFO_VALUE) |
-> -                       BIT(IIO_EV_INFO_ENABLE),
-> +               .mask_separate = BIT(IIO_EV_INFO_VALUE),
-> +       },
-> +       {
-> +               .type = IIO_EV_TYPE_THRESH,
-> +               .mask_separate = BIT(IIO_EV_INFO_ENABLE),
->         },
->  };
->
-> --
-> 2.34.1
->
->
-> --
-> This email is confidential. If you have received this email in error please
-> notify us immediately by return email and delete this email and any
-> attachments. Vix accepts no liability for any damage caused by this email
-> or any attachments due to viruses, interference, interception, corruption
-> or unauthorised access.
+
+First method (Which you are suggesting):
+.mask_separate =3D BIT(IIO_EV_INFO_VALUE),
+.mask_shared_by_type =3D BIT(IIO_EV_INFO_ENABLE),
+
+root@stm32mp1:~# ls -1 /sys/bus/iio/devices/iio:device0/events/
+in_intensity_clear_thresh_falling_value
+in_intensity_clear_thresh_rising_value
+in_intensity_thresh_falling_en
+in_intensity_thresh_rising_en
+
+The above says all channels with with the type IIO_INTENSITY has
+the same enable but we require this particular channel (in_intensity_clear)
+regardless of direction to have the same enable.
+Using mask_shared_by_dir and mask_shared_by_all does not provide the logica=
+l
+attribute name.=20
+
+
+This patch provides the below:
+
+root@stm32mp1:~# ls -1 /sys/bus/iio/devices/iio:device0/events/
+in_intensity_clear_thresh_either_en
+in_intensity_clear_thresh_falling_value
+in_intensity_clear_thresh_rising_value
+
+in_proximity_thresh_either_en
+in_proximity_thresh_falling_value
+in_proximity_thresh_rising_value
+
+Verified using iio_event_monitor:
+
+root@stm32mp1:~# ./iio_event_monitor /dev/iio:device0
+Event: time: 1647143384807582753, type: proximity, channel: 0, evtype: thre=
+sh, direction: either
+
+
+Regards
+Subhajit Ghosh
+
+--=20
+This email is confidential. If you have received this email in error please=
+=20
+notify=C2=A0us immediately by return email and delete this email and any=20
+attachments.=C2=A0Vix accepts no liability for any damage caused by this em=
+ail=20
+or any attachments due=C2=A0to viruses, interference, interception, corrupt=
+ion=20
+or unauthorised access.
