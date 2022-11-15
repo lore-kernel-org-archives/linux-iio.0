@@ -2,89 +2,124 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F12CC43217
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Nov 2022 09:55:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 180FAC4332F
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Nov 2022 09:55:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229617AbiKOJzZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Nov 2022 04:55:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46294 "EHLO
+        id S237940AbiKOJz2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Nov 2022 04:55:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbiKOJzX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2022 04:55:23 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1DD365F9
-        for <linux-iio@vger.kernel.org>; Tue, 15 Nov 2022 01:55:21 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id s8so6462142lfc.8
-        for <linux-iio@vger.kernel.org>; Tue, 15 Nov 2022 01:55:21 -0800 (PST)
+        with ESMTP id S232525AbiKOJz0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2022 04:55:26 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E814055AA
+        for <linux-iio@vger.kernel.org>; Tue, 15 Nov 2022 01:55:25 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id a29so23598376lfj.9
+        for <linux-iio@vger.kernel.org>; Tue, 15 Nov 2022 01:55:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rasmusvillemoes.dk; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6f4zxcZ/5nPMHcfGpObgAYnAA7vWPHzrHK0NitDUTLM=;
-        b=OeubwhbxdIfz0aEAv9BRbLsIfviL7qSKBjc1sG8maAgoYTDIE7ICssPLrxtswLYJUB
-         ujRxKu0QnkecST1Z4OR6oV6S70fNkY2EgOlqJV46E6FnOtKjV8IoXvOD+CpZy0zODqjv
-         4JmzFJWCphcuwg5/qBlfRxGF3B1pGSsJ2nS4w=
+        bh=JFlivsWSV6gGZ5OdvJQQ5Tn1kiYEgUjLp6Dm1aK7LCc=;
+        b=eB62TXKbmv90jFuho+MH8RtJRleXtoV19wJ7lGofTJHZeRStYtOauYc9z0Yeset8ya
+         Y6D0LaESdNpj4/uAX0bCSzGjpzNCbsoq9SE+agzNE33PM4yRUwBJgLsA6FjL6u38WcGm
+         gW/l9cNOxVi9KzPWqCMhvurVobFyld3FNuY0o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=6f4zxcZ/5nPMHcfGpObgAYnAA7vWPHzrHK0NitDUTLM=;
-        b=xyU9ycojudACeJxlzgZPmfxNJf0KrsJfjlP6KXE6cxr3eMoHwqz2foFGbFZwbGmY/r
-         Fey+7fHxWt8/J8Sjz5T6+WezezzwUz9j9OSy5JiqRxX5UaOH63PaOUk1i/mx386Yv6Zb
-         JzRpGQybWqYfObmWHtkTncViCBVAOFQkWQ/3GvTtxL7/fuVfOglNi/sgoAMUaO0qrIsO
-         GD7KG9HCu+3teSCP44hxCKu4r4TV/7IQmaQjOh9ZwNmuWO3TwoVwQbgXSZKKP3CJdNz4
-         RfoU/uLdkGReU7oNaKDiVnBITV1CzK1VAi62Ianuv7Sw0DI8g9dYEBecc1CEcHjBLjll
-         MCbQ==
-X-Gm-Message-State: ANoB5plKPOyd5xVk65p7bKCtf6Fv24SK94CMiuf0DGCRFfedPB82hABG
-        h90nIWs93Ti9Ng5I4VMPOn7gdg==
-X-Google-Smtp-Source: AA0mqf4B1dGT4gH+hEp8hRtblF49bEkY0uTVTCvQ1FPRbPOe8PvqPHIW1e35lJ181gViqsxSnV45Gw==
-X-Received: by 2002:a19:645e:0:b0:4a9:e27a:1cfa with SMTP id b30-20020a19645e000000b004a9e27a1cfamr5177422lfj.147.1668506120064;
-        Tue, 15 Nov 2022 01:55:20 -0800 (PST)
+        bh=JFlivsWSV6gGZ5OdvJQQ5Tn1kiYEgUjLp6Dm1aK7LCc=;
+        b=WDZ1bizhRp9B0D5WiOIbXF98OeQytG/2mr+Al/JldtVjMqIf4AxBhMHkgI+UolyhnU
+         KdDuxm5iR3l/DGKza99j7w6EFT7trvA9toma2b4KATJP3q7w7dC4/OHZFxlr21RIyqvc
+         wlsBFuOoTeU2Djlw1FAdvFbjPu0LwZrz9zfRbkrZsTPh5GSddlWe3I1jUZYbj8maMxyY
+         pCXAYyDlXAeeBIskp6fIVWGLcChZVCcdQsaw6W7DtZPoRPojsnTY51NgY7F231i5yc/G
+         X2EQQTjkGZuDGdrnHO8uYMuCBjGFBrmi9Vf1NQx/l5e+f+AfWWivBcJyRIVq/s7vOjAw
+         0WUg==
+X-Gm-Message-State: ANoB5pkeeDAzIfYe5tcJ5n7wcAppOQgKDGXrUGrJTtCuNZ5lrfLmpDlT
+        G8fpUi0UEwgdJd739TSgdl/gBQ==
+X-Google-Smtp-Source: AA0mqf5Y95D8tO/xmcrREUli7jPVrLMM/oPDXhwa8i/q0SQclJU1quPMKFYiHLjliXfnoxZtB3jWJw==
+X-Received: by 2002:ac2:44d9:0:b0:4a6:fa2a:275b with SMTP id d25-20020ac244d9000000b004a6fa2a275bmr5384240lfm.87.1668506124311;
+        Tue, 15 Nov 2022 01:55:24 -0800 (PST)
 Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id q3-20020a19f203000000b00493014c3d7csm2148598lfh.309.2022.11.15.01.55.19
+        by smtp.gmail.com with ESMTPSA id q3-20020a19f203000000b00493014c3d7csm2148598lfh.309.2022.11.15.01.55.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Nov 2022 01:55:19 -0800 (PST)
+        Tue, 15 Nov 2022 01:55:23 -0800 (PST)
 From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
 To:     Rob Herring <robh+dt@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Jonathan Cameron <jic23@kernel.org>
 Cc:     devicetree@vger.kernel.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH v2 0/3] iio: addac: ad74413r: add spi device id table, support reset gpio
-Date:   Tue, 15 Nov 2022 10:55:14 +0100
-Message-Id: <20221115095517.1008632-1-linux@rasmusvillemoes.dk>
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 3/3] iio: addac: ad74413r: add support for reset-gpio
+Date:   Tue, 15 Nov 2022 10:55:17 +0100
+Message-Id: <20221115095517.1008632-4-linux@rasmusvillemoes.dk>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221111143921.742194-1-linux@rasmusvillemoes.dk>
+In-Reply-To: <20221115095517.1008632-1-linux@rasmusvillemoes.dk>
 References: <20221111143921.742194-1-linux@rasmusvillemoes.dk>
+ <20221115095517.1008632-1-linux@rasmusvillemoes.dk>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fix a run-time warning from the SPI core by providing a spi_device_id
-table, and add binding and driver support for a reset gpio.
+We have a board where the reset pin of the ad74412 is connected to a
+gpio, but also pulled low (i.e., asserted) by default. Hence to get
+the chip out of reset, the driver needs to know about that gpio and
+deassert the reset signal before attempting to communicate with the
+chip.
 
-v2:
-- drop the two patches related to refin-supply
-- fall back to getting device data from the spi_device_id entry
-- update the example in the binding with a reset-gpios entry
-- fix a style nit
+When a reset-gpio is given in device tree, use that instead of the
+software reset. According to the data sheet, the two methods are
+functionally equivalent.
 
-Rasmus Villemoes (3):
-  iio: addac: ad74413r: add spi_device_id table
-  dt-bindings: iio: ad74413r: add optional reset-gpios
-  iio: addac: ad74413r: add support for reset-gpio
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+---
+ drivers/iio/addac/ad74413r.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
- .../bindings/iio/addac/adi,ad74413r.yaml      |  4 +++
- drivers/iio/addac/ad74413r.c                  | 29 +++++++++++++++++++
- 2 files changed, 33 insertions(+)
-
+diff --git a/drivers/iio/addac/ad74413r.c b/drivers/iio/addac/ad74413r.c
+index a157f2247a50..313c279173f2 100644
+--- a/drivers/iio/addac/ad74413r.c
++++ b/drivers/iio/addac/ad74413r.c
+@@ -71,6 +71,7 @@ struct ad74413r_state {
+ 	struct regmap			*regmap;
+ 	struct device			*dev;
+ 	struct iio_trigger		*trig;
++	struct gpio_desc		*reset_gpio;
+ 
+ 	size_t			adc_active_channels;
+ 	struct spi_message	adc_samples_msg;
+@@ -393,6 +394,13 @@ static int ad74413r_reset(struct ad74413r_state *st)
+ {
+ 	int ret;
+ 
++	if (st->reset_gpio) {
++		gpiod_set_value_cansleep(st->reset_gpio, 1);
++		fsleep(50);
++		gpiod_set_value_cansleep(st->reset_gpio, 0);
++		return 0;
++	}
++
+ 	ret = regmap_write(st->regmap, AD74413R_REG_CMD_KEY,
+ 			   AD74413R_CMD_KEY_RESET1);
+ 	if (ret)
+@@ -1322,6 +1330,10 @@ static int ad74413r_probe(struct spi_device *spi)
+ 	if (IS_ERR(st->regmap))
+ 		return PTR_ERR(st->regmap);
+ 
++	st->reset_gpio = devm_gpiod_get_optional(st->dev, "reset", GPIOD_OUT_LOW);
++	if (IS_ERR(st->reset_gpio))
++		return PTR_ERR(st->reset_gpio);
++
+ 	st->refin_reg = devm_regulator_get(st->dev, "refin");
+ 	if (IS_ERR(st->refin_reg))
+ 		return dev_err_probe(st->dev, PTR_ERR(st->refin_reg),
 -- 
 2.37.2
 
