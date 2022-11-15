@@ -2,332 +2,208 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7806C433FE
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Nov 2022 10:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E5E3C4332F
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Nov 2022 10:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238043AbiKOKfQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Nov 2022 05:35:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51284 "EHLO
+        id S232058AbiKOKij (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Nov 2022 05:38:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238381AbiKOKfI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2022 05:35:08 -0500
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12C3BE14;
-        Tue, 15 Nov 2022 02:35:05 -0800 (PST)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AF9uUSd007385;
-        Tue, 15 Nov 2022 11:34:38 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=HLBKIxDJ1tRcZyoNfttTGe1qEPeSc6nSh3foOBB6cro=;
- b=GEbuPTCGYHmarJUuEhB0UaqkGXC+SDLn8pi9BKJFsxHbT2//1u/a+0JcfVR2e5LLFWNP
- WJy/QVQK9jy7XaLDZUo9BeKJC+PSB2wvReUPBDpSBJkjwNNqYsm79yx7158JU1TV9mv/
- /j7t7QXGuLe5PSO+yS55p7hOzCPE9YKCUOQUVXPzu8k5rC35iAYer6joMmutMUyz4sNM
- qszdo3mSKajgb0UiRkVZSn6qc9jeX4lzJP3t5Tl5slaa12T4IdQaZ3g7Ovgw9ABaFHFO
- 5a7yAjoIsLgyMnPnT71kPNBtKJHBg4DNdUpmektkpVdfLO63/3oIPYctYH5SgJXYeD7t DQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ktq2ynedw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Nov 2022 11:34:38 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1B614100034;
-        Tue, 15 Nov 2022 11:34:32 +0100 (CET)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 13A9A21A206;
-        Tue, 15 Nov 2022 11:34:32 +0100 (CET)
-Received: from localhost (10.201.20.178) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.32; Tue, 15 Nov
- 2022 11:34:31 +0100
-From:   Olivier Moysan <olivier.moysan@foss.st.com>
-To:     <fabrice.gasnier@foss.st.com>, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     Olivier Moysan <olivier.moysan@foss.st.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/3] iio: adc: stm32-adc: smart calibration support
-Date:   Tue, 15 Nov 2022 11:31:21 +0100
-Message-ID: <20221115103124.70074-2-olivier.moysan@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221115103124.70074-1-olivier.moysan@foss.st.com>
-References: <20221115103124.70074-1-olivier.moysan@foss.st.com>
+        with ESMTP id S229817AbiKOKii (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2022 05:38:38 -0500
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2127.outbound.protection.outlook.com [40.107.114.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CF76563;
+        Tue, 15 Nov 2022 02:38:35 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G/7YrVNyqbpQRcOQd4k71dcPUaInrUX9BI2TThEKjyEzvXTTGRymZYxTrrpom0RLQOrHhKuTATarr4belF++kdEfZzL8CqlUk/JKhikB10b9G6cs2SGA5Y7uVfGD+mKEsB2jLLymd3jMaaBdXj9xvhicbRu3q1PGnVwoSGjjX4f9RW3sEypgg7OiZg8qEldZxfj8pfBgOi8JuyCLAKUr7IWtX3Ba/0gxnSjmW6/TdFhN386jiqPJX5K0OK6Z/LgwNbhoFPHhTSljTfnErXqilcioJJbkgmURt+VhkVTBOo1scxTAQIPn93V/n2udUriaMK43reCae8k6H18WRg7w8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gQkeCFOKBx7bOOHKIJKPOboJRt2apNWeTINDglPtnVo=;
+ b=cjZfO0Of8scuXkw8okvYZwA1eZQ6rNiiWpUfIujIZEN0H+PW0hR9k9CRwNlNogEsWDKbwk5E6ogFaaFTixXTNfhIWDBCXJn3jVRfzRSuzfyyYaEHmTdQVRL5vRFTAvCAhilZYS8N5hqROkCcOQdpMi+cVSskvs99DtAPpZaCbnus7P5c6xDQL1sJFZNJdUlORlFLY5DR+k6znqXO/LtmpYvmo4tGAtsBNRto2/yQHx7Fr1UVkGPsixT5+hOXNo7abUMwg9V3ZZ8jyulkhlhZ7y7yhNguDcYIZgKbk6eh7IzayRRpHA59gHNPsh+TsdVL+l35WF7mbPTGAk/cT1Os0w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gQkeCFOKBx7bOOHKIJKPOboJRt2apNWeTINDglPtnVo=;
+ b=fMAyLfHUrEn8wuyCMUa5QHGeVr3gzMSwiVGZ++w7bWkjiZU3r0zrxcVi+ZWZP9HlTyAelaevh6GBnBhd6iIzKANn6q0oLJjunTjJkvzKuqXZ5oMgN7kxSHrCW4pgOulS39En7dRh9c5uplxVygKPIKnxks7ADMg3RX4GaEP/dQI=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by TYWPR01MB8728.jpnprd01.prod.outlook.com (2603:1096:400:16d::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Tue, 15 Nov
+ 2022 10:38:32 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::5b24:f581:85bd:6ce2]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::5b24:f581:85bd:6ce2%3]) with mapi id 15.20.5813.018; Tue, 15 Nov 2022
+ 10:38:32 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     William Breathitt Gray <william.gray@linaro.org>
+CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH v6 4/5] counter: Add Renesas RZ/G2L MTU3a counter driver
+Thread-Topic: [PATCH v6 4/5] counter: Add Renesas RZ/G2L MTU3a counter driver
+Thread-Index: AQHY94Oe/bXNEYoN9kCntehmCzyhdK49yIiAgABAWdCAAKsZ0IAAuUyAgABft8A=
+Date:   Tue, 15 Nov 2022 10:38:32 +0000
+Message-ID: <OS0PR01MB59228EEA7D3ECFCA83B0679386049@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20221113171545.282457-1-biju.das.jz@bp.renesas.com>
+ <20221113171545.282457-5-biju.das.jz@bp.renesas.com>
+ <Y3G6Qe0KMdo2PgaG@fedora>
+ <OS0PR01MB5922B01D5E579426608BBA9386059@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <TYCPR01MB59337BB8E20273468F38560E86059@TYCPR01MB5933.jpnprd01.prod.outlook.com>
+ <Y3MbM0RtaAKUIyWM@fedora>
+In-Reply-To: <Y3MbM0RtaAKUIyWM@fedora>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: OS0PR01MB5922:EE_|TYWPR01MB8728:EE_
+x-ms-office365-filtering-correlation-id: 5cf7f422-b1e6-4bb6-a36c-08dac6f58ad4
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +0LMh5/xziS32zbBrGpXUH9myakX9vSHzhNhvgBj5fFFhKqEqa/9cAFQjcQVu9hzzq5vRys2Vj75ABePhnxjwvr7pf9aWcba8xZlUVMRJ29AU7iGua38/MNCTQ9I60tyEfLp3ghwkbgezVkhIFfeGeL7N9FwB2AhfXpnE37j3jYaQNFzSJrCHnwhCoVAQBWMLLNvnrADERzu2yJnJdgIZH/0SOku61AlU2EX3hvtkGVwIG94KePcVjZv8QIc3k+PDhBsfORbEMGiZjiCl+6LcO4IIeQPTw9E3vIMgSJQD8o1/FCNF8ZGaNlNWukcUff3uyrc2Ha1a3iBMcLplVgUTzv/xpBsnuTO6E6eQCRCFtIL4oFVkFiN4HB/kOj3V9vqre33QWUdT2Xuy1gg4BMoQgye/7XCmIozFl9AVsApiw20/PUrOt9xQyEU54yK/l5gHIoXPQWFQbQq222WifregM5frAv9MnzqQZDC6TZhNwwgkp3VWgBKqxF7WFUhCb5JcFk+Zccs1duqaGsj9E/NWcjeTPjdSROQViF1x/j1kr7Y5lFH9hb7RbkPdP5+nfBWg7kUFVQ90nfJ0sViAFks8+0mWseP58RaexSQBhR9baHInRWCJOLZK3cLIIHBCg6OYZXdecQlgy9WtImS1swncDo26Qe5wgOmBe7TBgTHZStw9kfaTKAAclWFzwFQfP94qkwCTbsRJwj2pY+FtLIPH6D9bjZRY8UioWjtQq4Rdi5k1B0jkghxlPvkoJlVtKAnWSufLen+946F6SsXEDZiyWk4/VCJSkV3DraDE+fUzLQ=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(39860400002)(346002)(136003)(396003)(451199015)(53546011)(316002)(7696005)(6506007)(6916009)(54906003)(55016003)(86362001)(41300700001)(33656002)(5660300002)(2906002)(8936002)(52536014)(186003)(38070700005)(8676002)(4326008)(66446008)(122000001)(38100700002)(66476007)(83380400001)(66946007)(64756008)(26005)(66556008)(76116006)(9686003)(71200400001)(478600001)(32563001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?/Bp37ektthquSgKyEMYxt6YgQYJ2JDZ+RVTjpcXm/oEmuM9NNbAh16aAC1Ma?=
+ =?us-ascii?Q?Po5Vhv2ofG36+CP6q/qx/e7Cw34ZwqkJJ1d0JADi2heqBmXWCMy9B07q7prK?=
+ =?us-ascii?Q?j1+8+UyAb3XwWX0Pb86KIKOuE3kFADRITalI1CDl7Y2o5CF8iBg1Qs1AmUHW?=
+ =?us-ascii?Q?mcaDOtJTdPxa8Cu3c2XhhSAmYikUvKwmcpF0P9fA3gsy7MbyFL9dWSM1kuzl?=
+ =?us-ascii?Q?+MojkMABz/fy5V/l9nivGlEoevI5KNIr4HlsqQ5qyNnCg8SkpQaU+SvQoOAI?=
+ =?us-ascii?Q?hDkze45G49YHYudEufMcS7EoiJB+GPWecOGXAPJitQOTG1yLzMxxEHpVa4/V?=
+ =?us-ascii?Q?66mP6uappm+Bn0K7pWQmHlFydj4yXtNxOfFmkXhwmXbDDRBy6f4NXTw4sZz8?=
+ =?us-ascii?Q?4D7vd8xLoArBOBAUhrzWlFUShWlSKK0FaIFvj+2WFhR8pXDfEPH5A4sKKC+l?=
+ =?us-ascii?Q?rhgnvkj9xDO5biX1XoK3+5zAmkLWyRHjHgY/Uk+KWx2tU5ly9zQ9ccWHzzTg?=
+ =?us-ascii?Q?ueac9mX7k/cAXYtVMFnIZWJ4QKHBkawmUblBk1PtH1gxwSmtgktNksbjH0MJ?=
+ =?us-ascii?Q?M16rkDXB+2yG2UcfZRo5NRH3+q2KwEl6dZ/nb5hMB7wDPXN38dy1TgzEDOo9?=
+ =?us-ascii?Q?qegoKCpQ6HWnokoEm0/LRBXSwTpSWvRDHxBW+Sf6naAir85Vvoegit20ZstG?=
+ =?us-ascii?Q?JenXssX0WDwxQCA1UISJ8oIDSIHNXf4qGU8b5SCY58CvaDN5qHlJmIvFE1pB?=
+ =?us-ascii?Q?WJststaS9FE/2X5cVwA7gtdIDRHB3DhxpoqWV75vK2zRagQdKW/eTbYUBmic?=
+ =?us-ascii?Q?zXHyBjjUVKI0CmiNIehI70nEDnYmSoucsrNZQj831y6Z6QloQJuM8h/NP/Ma?=
+ =?us-ascii?Q?WVZX2sjiuNCNGgAk0IgGGcjQQCN2SlD0oP5ufRGy+V3gcvTOuAKIFw7iYu8m?=
+ =?us-ascii?Q?Xg6I9mJQOc2bQoFGt/Ty9yithit5uJtM4j9FoFVt5ETVfuJyk9hQWrfgGXXV?=
+ =?us-ascii?Q?UK83hbs+WWDecAn51za2SKmixHoovwmd8mzEGERuOS2dOooORi8INK3flM9K?=
+ =?us-ascii?Q?1ztx/PFAbN98Byf7KH/6vNc9fI7O9snHLiWdTrSv75hYnPuWkCZwWoZdHIol?=
+ =?us-ascii?Q?i12abhEu3bCuGUmsnUHxaswi7+IElQIAxMSI6i9TpB7q4XXJ0dl6BO5fg9bE?=
+ =?us-ascii?Q?VDBuMd7T/RthypvxocJuCzPGKdFCWKrah0jK4wE3MK4E0RFg8EaczoqNY3sp?=
+ =?us-ascii?Q?mRiDBLbqrD6nWyWZVX/WHA/yuCPC5NQxLhKo2QpE6J6fyR3RPwvLuDWOWgFI?=
+ =?us-ascii?Q?VP8Ln+lrKyAmXZKRL5ugJM0NLwy2jYXU53uAk6nY6WE9JakyBBoEYAnRyDZE?=
+ =?us-ascii?Q?MskzZA4uHS9Ac2iQbBhI3OdE6ipBjsLo8eXR2Jinu4f7/uMXbaiZY/ubFssz?=
+ =?us-ascii?Q?6YjNmxWcsFoR8+EtwblBUgD2anULA3TFiZq5SsL6Dt0uuzWeT0/kxs2YapVR?=
+ =?us-ascii?Q?60tHr0YnC/tv1WrHN9rsCfBTApZxUaVujMpcUjEwHPjqamAPFdaw3LQYLj1N?=
+ =?us-ascii?Q?aFS4xlVQKbrARhrRqeVp8wjVWRLMDXqQlNICPxJsr1EP0P20mJO/9rHlxKj7?=
+ =?us-ascii?Q?AQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.201.20.178]
-X-ClientProxiedBy: EQNCAS1NODE4.st.com (10.75.129.82) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-15_05,2022-11-15_01,2022-06-22_01
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5cf7f422-b1e6-4bb6-a36c-08dac6f58ad4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Nov 2022 10:38:32.4356
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 18k+924Cyp6SpjTcVLekiGcVrWSAhzqpcHlaQv7I8pCpbtpnE8fHv2/CpCvRqZiZ5bxnEHJfBC532sbHlopozvtXM6zzuQaS1bi5g7jWYf4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB8728
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add smart calibration support for STM32MP1.
-- STM32MP15x: both linear & offset calibration are supported
-- STM32MP13x: Only offset calibration is supported
+Hi William Breathitt Gray,
 
-Linear calibration:
-Linear calibration is SoC dependent and does not change over time
-so it can be done only once.
-Linear calibration may have already been done in u-boot.
-Skip calibration execution if calibration data are already available.
-Save calibration factors in private data and restore them from private
-data on next ADC start.
+Thanks for the feedback.
 
-Offset calibration:
-This calibration may vary over time, depending on temperature or voltage.
-Run offset single-ended and differential calibration on each ADC start,
-as it is not time consuming. This calibration do not need to be saved.
-So, remove calfact_s and calfact_d value and bitfields that are no
-longer used.
+> -----Original Message-----
+> From: William Breathitt Gray <william.gray@linaro.org>
+> Sent: 15 November 2022 04:53
+> To: Biju Das <biju.das.jz@bp.renesas.com>
+> Cc: linux-iio@vger.kernel.org; Geert Uytterhoeven
+> <geert+renesas@glider.be>; Chris Paterson
+> <Chris.Paterson2@renesas.com>; Prabhakar Mahadev Lad
+> <prabhakar.mahadev-lad.rj@bp.renesas.com>; linux-renesas-
+> soc@vger.kernel.org
+> Subject: Re: [PATCH v6 4/5] counter: Add Renesas RZ/G2L MTU3a counter
+> driver
+>=20
+> On Mon, Nov 14, 2022 at 05:52:11PM +0000, Biju Das wrote:
+> > > > > +static int rz_mtu3_initialize_counter(struct counter_device
+> > > > > +*counter, int id) {
+> > > > > +	struct rz_mtu3_cnt *const priv =3D counter_priv(counter);
+> > > > > +	struct rz_mtu3_channel *ch1 =3D priv->ch;
+> > > > > +	struct rz_mtu3_channel *ch2 =3D ch1 + 1;
+> > > >
+> > > > No need to complicate this, just use priv->ch[0], priv->ch[1],
+> and
+> > > > priv->ch[id]. Same advice applies to the other functions as
+> well.
+> > >
+> > > I get below error when I use array susbscripts. "*ch1 =3D priv-
+> >ch[0];"
+> >
+> > > drivers/counter/rz-mtu3-cnt.c:291:32: error: incompatible types
+> when
+> > > initialising type 'struct rz_mtu3_channel *' using type 'struct
+> > > rz_mtu3_channel'
+> > >   291 |  struct rz_mtu3_channel *ch1 =3D priv->ch[0];
+> > >
+> >
+> > I could use "*ch1 =3D &priv->ch[0];" please let me know is it ok?
+> >
+> > Cheers,
+> > Biju
+>=20
+> Hi Biju,
+>=20
+> I meant to use the array subscripts inline (e.g. priv-
+> >ch[id].function).
+> However, I can see the benefit of using the ch1 and ch2 local
+> variables, so perhaps something like this would be clearer to read:
+>=20
+>     struct rz_mtu3_chanel *const ch =3D priv->ch;
+>     struct rz_mtu3_chanel *const ch1 =3D &ch[0];
+>     struct rz_mtu3_chanel *const ch2 =3D &ch[1];
+>     ...
+>     case RZ_MTU3_16_BIT_MTU1_CH:
+>     case RZ_MTU3_16_BIT_MTU2_CH:
+>             if (ch[id].function !=3D RZ_MTU3_NORMAL) {
+>     ...
 
-Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
----
- drivers/iio/adc/stm32-adc-core.h |   1 +
- drivers/iio/adc/stm32-adc.c      | 108 +++++++++++++++----------------
- 2 files changed, 53 insertions(+), 56 deletions(-)
 
-diff --git a/drivers/iio/adc/stm32-adc-core.h b/drivers/iio/adc/stm32-adc-core.h
-index 9d6dfa1c03fa..73b2c2e91c08 100644
---- a/drivers/iio/adc/stm32-adc-core.h
-+++ b/drivers/iio/adc/stm32-adc-core.h
-@@ -142,6 +142,7 @@
- #define STM32H7_LINCALRDYW3		BIT(24)
- #define STM32H7_LINCALRDYW2		BIT(23)
- #define STM32H7_LINCALRDYW1		BIT(22)
-+#define STM32H7_LINCALRDYW_MASK		GENMASK(27, 22)
- #define STM32H7_ADCALLIN		BIT(16)
- #define STM32H7_BOOST			BIT(8)
- #define STM32H7_ADSTP			BIT(4)
-diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-index 8d03d21a33d6..2b2b55eb130e 100644
---- a/drivers/iio/adc/stm32-adc.c
-+++ b/drivers/iio/adc/stm32-adc.c
-@@ -119,16 +119,12 @@ struct stm32_adc_trig_info {
- 
- /**
-  * struct stm32_adc_calib - optional adc calibration data
-- * @calfact_s: Calibration offset for single ended channels
-- * @calfact_d: Calibration offset in differential
-  * @lincalfact: Linearity calibration factor
-- * @calibrated: Indicates calibration status
-+ * @lincal_saved: Indicates that linear calibration factors are saved
-  */
- struct stm32_adc_calib {
--	u32			calfact_s;
--	u32			calfact_d;
- 	u32			lincalfact[STM32H7_LINCALFACT_NUM];
--	bool			calibrated;
-+	bool			lincal_saved;
- };
- 
- /**
-@@ -165,8 +161,6 @@ struct stm32_adc_vrefint {
-  * @extsel:		trigger selection register & bitfield
-  * @res:		resolution selection register & bitfield
-  * @difsel:		differential mode selection register & bitfield
-- * @calfact_s:		single-ended calibration factors register & bitfield
-- * @calfact_d:		differential calibration factors register & bitfield
-  * @smpr:		smpr1 & smpr2 registers offset array
-  * @smp_bits:		smpr1 & smpr2 index and bitfields
-  * @or_vddcore:		option register & vddcore bitfield
-@@ -186,8 +180,6 @@ struct stm32_adc_regspec {
- 	const struct stm32_adc_regs extsel;
- 	const struct stm32_adc_regs res;
- 	const struct stm32_adc_regs difsel;
--	const struct stm32_adc_regs calfact_s;
--	const struct stm32_adc_regs calfact_d;
- 	const u32 smpr[2];
- 	const struct stm32_adc_regs *smp_bits;
- 	const struct stm32_adc_regs or_vddcore;
-@@ -525,10 +517,6 @@ static const struct stm32_adc_regspec stm32h7_adc_regspec = {
- 		    STM32H7_EXTSEL_SHIFT },
- 	.res = { STM32H7_ADC_CFGR, STM32H7_RES_MASK, STM32H7_RES_SHIFT },
- 	.difsel = { STM32H7_ADC_DIFSEL, STM32H7_DIFSEL_MASK},
--	.calfact_s = { STM32H7_ADC_CALFACT, STM32H7_CALFACT_S_MASK,
--		       STM32H7_CALFACT_S_SHIFT },
--	.calfact_d = { STM32H7_ADC_CALFACT, STM32H7_CALFACT_D_MASK,
--		       STM32H7_CALFACT_D_SHIFT },
- 	.smpr = { STM32H7_ADC_SMPR1, STM32H7_ADC_SMPR2 },
- 	.smp_bits = stm32h7_smp_bits,
- };
-@@ -550,10 +538,6 @@ static const struct stm32_adc_regspec stm32mp13_adc_regspec = {
- 		    STM32H7_EXTSEL_SHIFT },
- 	.res = { STM32H7_ADC_CFGR, STM32MP13_RES_MASK, STM32MP13_RES_SHIFT },
- 	.difsel = { STM32MP13_ADC_DIFSEL, STM32MP13_DIFSEL_MASK},
--	.calfact_s = { STM32MP13_ADC_CALFACT, STM32MP13_CALFACT_S_MASK,
--		       STM32MP13_CALFACT_S_SHIFT },
--	.calfact_d = { STM32MP13_ADC_CALFACT, STM32MP13_CALFACT_D_MASK,
--		       STM32MP13_CALFACT_D_SHIFT },
- 	.smpr = { STM32H7_ADC_SMPR1, STM32H7_ADC_SMPR2 },
- 	.smp_bits = stm32h7_smp_bits,
- 	.or_vddcore = { STM32MP13_ADC2_OR, STM32MP13_OP0 },
-@@ -575,10 +559,6 @@ static const struct stm32_adc_regspec stm32mp1_adc_regspec = {
- 		    STM32H7_EXTSEL_SHIFT },
- 	.res = { STM32H7_ADC_CFGR, STM32H7_RES_MASK, STM32H7_RES_SHIFT },
- 	.difsel = { STM32H7_ADC_DIFSEL, STM32H7_DIFSEL_MASK},
--	.calfact_s = { STM32H7_ADC_CALFACT, STM32H7_CALFACT_S_MASK,
--		       STM32H7_CALFACT_S_SHIFT },
--	.calfact_d = { STM32H7_ADC_CALFACT, STM32H7_CALFACT_D_MASK,
--		       STM32H7_CALFACT_D_SHIFT },
- 	.smpr = { STM32H7_ADC_SMPR1, STM32H7_ADC_SMPR2 },
- 	.smp_bits = stm32h7_smp_bits,
- 	.or_vddcore = { STM32MP1_ADC2_OR, STM32MP1_VDDCOREEN },
-@@ -1000,9 +980,6 @@ static int stm32h7_adc_read_selfcalib(struct iio_dev *indio_dev)
- 	int i, ret;
- 	u32 lincalrdyw_mask, val;
- 
--	if (!adc->cfg->has_linearcal)
--		goto skip_linearcal;
--
- 	/* Read linearity calibration */
- 	lincalrdyw_mask = STM32H7_LINCALRDYW6;
- 	for (i = STM32H7_LINCALFACT_NUM - 1; i >= 0; i--) {
-@@ -1024,15 +1001,7 @@ static int stm32h7_adc_read_selfcalib(struct iio_dev *indio_dev)
- 
- 		lincalrdyw_mask >>= 1;
- 	}
--
--skip_linearcal:
--	/* Read offset calibration */
--	val = stm32_adc_readl(adc, adc->cfg->regs->calfact_s.reg);
--	adc->cal.calfact_s = (val & adc->cfg->regs->calfact_s.mask);
--	adc->cal.calfact_s >>= adc->cfg->regs->calfact_s.shift;
--	adc->cal.calfact_d = (val & adc->cfg->regs->calfact_d.mask);
--	adc->cal.calfact_d >>= adc->cfg->regs->calfact_d.shift;
--	adc->cal.calibrated = true;
-+	adc->cal.lincal_saved = true;
- 
- 	return 0;
- }
-@@ -1048,13 +1017,6 @@ static int stm32h7_adc_restore_selfcalib(struct iio_dev *indio_dev)
- 	int i, ret;
- 	u32 lincalrdyw_mask, val;
- 
--	val = (adc->cal.calfact_s << adc->cfg->regs->calfact_s.shift) |
--		(adc->cal.calfact_d << adc->cfg->regs->calfact_d.shift);
--	stm32_adc_writel(adc, adc->cfg->regs->calfact_s.reg, val);
--
--	if (!adc->cfg->has_linearcal)
--		return 0;
--
- 	lincalrdyw_mask = STM32H7_LINCALRDYW6;
- 	for (i = STM32H7_LINCALFACT_NUM - 1; i >= 0; i--) {
- 		/*
-@@ -1116,19 +1078,20 @@ static int stm32h7_adc_restore_selfcalib(struct iio_dev *indio_dev)
- /**
-  * stm32h7_adc_selfcalib() - Procedure to calibrate ADC
-  * @indio_dev: IIO device instance
-+ * @do_lincal: linear calibration request flag
-  * Note: Must be called once ADC is out of power down.
-+ *
-+ * Run offset calibration unconditionally.
-+ * Run linear calibration if requested & supported.
-  */
--static int stm32h7_adc_selfcalib(struct iio_dev *indio_dev)
-+static int stm32h7_adc_selfcalib(struct iio_dev *indio_dev, int do_lincal)
- {
- 	struct stm32_adc *adc = iio_priv(indio_dev);
- 	int ret;
- 	u32 msk = STM32H7_ADCALDIF;
- 	u32 val;
- 
--	if (adc->cal.calibrated)
--		return true;
--
--	if (adc->cfg->has_linearcal)
-+	if (adc->cfg->has_linearcal && do_lincal)
- 		msk |= STM32H7_ADCALLIN;
- 	/* ADC must be disabled for calibration */
- 	stm32h7_adc_disable(indio_dev);
-@@ -1172,6 +1135,33 @@ static int stm32h7_adc_selfcalib(struct iio_dev *indio_dev)
- 	return ret;
- }
- 
-+/**
-+ * stm32h7_adc_check_selfcalib() - Check linear calibration status
-+ * @indio_dev: IIO device instance
-+ *
-+ * Used to check if linear calibration has been done.
-+ * Return true if linear calibration factors are already saved in private data
-+ * or if a linear calibration has been done at boot stage.
-+ */
-+static int stm32h7_adc_check_selfcalib(struct iio_dev *indio_dev)
+OK, I have added below inline function which simplifies the code
+in each function. Is it ok?
+
+For eg:
+
++static inline struct rz_mtu3_channel *
++rz_mtu3_get_ch(struct counter_device *counter, int id)
 +{
-+	struct stm32_adc *adc = iio_priv(indio_dev);
-+	u32 val;
++       struct rz_mtu3_cnt *const priv =3D counter_priv(counter);
++       const size_t ch_id =3D RZ_MTU3_GET_HW_CH(id);
 +
-+	if (adc->cal.lincal_saved)
-+		return true;
-+
-+	/*
-+	 * Check if linear calibration factors are available in ADC registers,
-+	 * by checking that all LINCALRDYWx bits are set.
-+	 */
-+	val = stm32_adc_readl(adc, STM32H7_ADC_CR) & STM32H7_LINCALRDYW_MASK;
-+	if (val == STM32H7_LINCALRDYW_MASK)
-+		return true;
-+
-+	return false;
++       return &priv->ch[ch_id];
 +}
-+
- /**
-  * stm32h7_adc_prepare() - Leave power down mode to enable ADC.
-  * @indio_dev: IIO device instance
-@@ -1186,16 +1176,20 @@ static int stm32h7_adc_selfcalib(struct iio_dev *indio_dev)
- static int stm32h7_adc_prepare(struct iio_dev *indio_dev)
- {
- 	struct stm32_adc *adc = iio_priv(indio_dev);
--	int calib, ret;
-+	int lincal_done = false;
-+	int ret;
- 
- 	ret = stm32h7_adc_exit_pwr_down(indio_dev);
- 	if (ret)
- 		return ret;
- 
--	ret = stm32h7_adc_selfcalib(indio_dev);
-+	if (adc->cfg->has_linearcal)
-+		lincal_done = stm32h7_adc_check_selfcalib(indio_dev);
-+
-+	/* Always run offset calibration. Run linear calibration only once */
-+	ret = stm32h7_adc_selfcalib(indio_dev, !lincal_done);
- 	if (ret < 0)
- 		goto pwr_dwn;
--	calib = ret;
- 
- 	stm32_adc_int_ch_enable(indio_dev);
- 
-@@ -1205,13 +1199,15 @@ static int stm32h7_adc_prepare(struct iio_dev *indio_dev)
- 	if (ret)
- 		goto ch_disable;
- 
--	/* Either restore or read calibration result for future reference */
--	if (calib)
--		ret = stm32h7_adc_restore_selfcalib(indio_dev);
--	else
--		ret = stm32h7_adc_read_selfcalib(indio_dev);
--	if (ret)
--		goto disable;
-+	if (adc->cfg->has_linearcal) {
-+		if (!adc->cal.lincal_saved)
-+			ret = stm32h7_adc_read_selfcalib(indio_dev);
-+		else
-+			ret = stm32h7_adc_restore_selfcalib(indio_dev);
-+
-+		if (ret)
-+			goto disable;
-+	}
- 
- 	if (adc->cfg->has_presel)
- 		stm32_adc_writel(adc, STM32H7_ADC_PCSEL, adc->pcsel);
--- 
-2.25.1
 
+
+@@ -154,11 +163,10 @@ static int rz_mtu3_count_function_read(struct counter=
+_device *counter,
+                                       struct counter_count *count,
+                                       enum counter_function *function)
+ {
+-       struct rz_mtu3_cnt *const priv =3D counter_priv(counter);
+-       const size_t ch_id =3D RZ_MTU3_GET_HW_CH(count->id);
++       struct rz_mtu3_channel *const ch =3D rz_mtu3_get_ch(counter, count-=
+>id);
+
+
+Cheers,
+Biju
