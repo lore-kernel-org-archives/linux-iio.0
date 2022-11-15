@@ -2,179 +2,103 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 053A5C4332F
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Nov 2022 08:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDAFEC4167B
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Nov 2022 09:55:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232380AbiKOIVV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Nov 2022 03:21:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43706 "EHLO
+        id S236156AbiKOJz0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Nov 2022 04:55:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232569AbiKOIVU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2022 03:21:20 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5774220BDA
-        for <linux-iio@vger.kernel.org>; Tue, 15 Nov 2022 00:21:17 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id d20so16495526ljc.12
-        for <linux-iio@vger.kernel.org>; Tue, 15 Nov 2022 00:21:17 -0800 (PST)
+        with ESMTP id S230047AbiKOJzZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2022 04:55:25 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF401131
+        for <linux-iio@vger.kernel.org>; Tue, 15 Nov 2022 01:55:24 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id a29so23598324lfj.9
+        for <linux-iio@vger.kernel.org>; Tue, 15 Nov 2022 01:55:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2oDeh8QPxwlUfystIUxy6bEGhHBIAnKFjrido9RSvwE=;
-        b=c1HICuTpLc/CJJlN2iLUwWJYZutv4qlcQPvKUsicIFFtc2gVyTT9zwF59wROLbDdWt
-         qldUP/isckTjSFFCLthOuDd0t9R5GV2RssusE4Vw1sKpHiJ+ZMcpUSyqwmgRnDlq6a5j
-         SOHvgoEF4FarS0ajtd66emH1irmL8vSLm+Xr2ERJE1YHliHwDokscuFUt67ZyQUsMC3t
-         oplgajD2alyXEfSpmMygPATluzDC6XYHCbg2J40ubRoKoiCPFIaHGiWnXXgrlWiOPkvy
-         JuvLqMKz3GygXYhlZ9OatWezZusIGTU34tHQLg3Cxq64dbqmLIcPY+GxLKKc4BOtzsEq
-         DhNQ==
+        d=rasmusvillemoes.dk; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Rh6bYHIsyDNDTnfvzoAbdszZSJH6gLxzazLnOaj70HA=;
+        b=bSZZJfROZutTxt3595+PfI4ZhtPwBIahanBafiFrPMZPMBHP1Cmv8o6Il/aM2Xp+o/
+         o71uuAgm14aS6XGge20gAPleiOmWMKad0YaGMNaqXiWzT4y/Xf8ixcz9bpPQbdBHjN/D
+         29DWsynBrQj9W/80laRWbTMtubp/CHC/kaToM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2oDeh8QPxwlUfystIUxy6bEGhHBIAnKFjrido9RSvwE=;
-        b=1BUCFBKuo53EuhO0sybZPZxb54s5DgSLLMD9nPHPxxZzdDbKh8f0MLudtWFfjnIcTi
-         ptyhXKxIo+lA/CtRdk+dLWlaxf4lbHgYYXqnamqvaOC8C49lG0eETOWRdIzhPp61piJA
-         SuSXowUVSM9i1cEkb2JEdx7ozkOKK0bTfz2fLvmMNj6pJHncrSOltTHr2HSvnsmOdoYs
-         wUDRDH2N1jhcitdcDRs5kx6QwwCoI4eEHtcAyvnY2HmvGmLP8PKXySSKyv8qvVcWNmXN
-         qL14MyQmpUcUdshciWtus6nckOuVOC0hmHFe2BK55sEun/NJg6I9rCJygYjWfR7sclZk
-         AzEg==
-X-Gm-Message-State: ANoB5pk/KwnxALXvaZASbFNPtwj3a9j6bHEYzG1NFaNn0qVui5y/lw7O
-        hF3Ngzbbt96MWwZlPchV1/Nhbw7L8+A03rDg
-X-Google-Smtp-Source: AA0mqf5QslyE4xNjZT7wN5MLzXeAm1YVoAXp5J/x2SV75kjGSZBz4SBR9jnS8uSCGypyJ6Xe8Zzwrw==
-X-Received: by 2002:a2e:2d09:0:b0:277:72a:41a5 with SMTP id t9-20020a2e2d09000000b00277072a41a5mr5953499ljt.352.1668500475698;
-        Tue, 15 Nov 2022 00:21:15 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id r5-20020a2e8e25000000b0026e059a3455sm2392490ljk.51.2022.11.15.00.21.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Nov 2022 00:21:15 -0800 (PST)
-Message-ID: <acd7227f-102e-898b-beaa-b323285aa82d@linaro.org>
-Date:   Tue, 15 Nov 2022 09:21:13 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH 1/2] dt-bindings: iio: magnetometer: add ti tmag5273
- documentation file
-To:     Gerald Loacker <gerald.loacker@wolfvision.net>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Rh6bYHIsyDNDTnfvzoAbdszZSJH6gLxzazLnOaj70HA=;
+        b=d86JsSzC2Xwz0IuzzLw2ROk0PntMhuqYbDZ6gISy7EzdM1srnRP2gLJmgE1GahUN26
+         E5DqEjbN/9VUCt34BX8yr7pAwpdsUdrITuqTtr+JzR1/FA7QZX0vuYwQq9M4xr2Qp4Y+
+         nhowLaVatG+gUOwTr04FE6u9QR0YzuKIJJaRWwYNEDOvERpK1souOYr2v2fX4ZF77VBO
+         +LTYvqbPh8C+XLqE1wRRoCvFFdshfikATvMZVrJpTuTf5jhvo7kv/3f8OnIhb/ALk/cc
+         RxLy2KrPAsiUVnJ0gRj8vMIRnn4xaFlfLXisVH72lxCbU7GdTDrBB5LTwYKzmqsEEyGN
+         jmaA==
+X-Gm-Message-State: ANoB5pl2geXbPeZmEC7s6KQygNwk/G8Cv+k6BPXnm46IVTXTTbyNYiVw
+        YyBpUYvU6UjqED3/GUvqv1DIpg==
+X-Google-Smtp-Source: AA0mqf4IpDdOzB7uHmqouFHDhpeTZ4WG8GgpzIbAK3v260DQIYB187asu3q1m+4TmytYyTGWKJjh+A==
+X-Received: by 2002:ac2:4f0e:0:b0:4b4:9193:1caf with SMTP id k14-20020ac24f0e000000b004b491931cafmr3920173lfr.300.1668506122988;
+        Tue, 15 Nov 2022 01:55:22 -0800 (PST)
+Received: from prevas-ravi.prevas.se ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id q3-20020a19f203000000b00493014c3d7csm2148598lfh.309.2022.11.15.01.55.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 01:55:22 -0800 (PST)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     Rob Herring <robh+dt@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Jakob Hauser <jahau@rocketmail.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>
-References: <20221115073718.2377311-1-gerald.loacker@wolfvision.net>
- <20221115073718.2377311-2-gerald.loacker@wolfvision.net>
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221115073718.2377311-2-gerald.loacker@wolfvision.net>
-Content-Type: text/plain; charset=UTF-8
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     devicetree@vger.kernel.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/3] dt-bindings: iio: ad74413r: add optional reset-gpios
+Date:   Tue, 15 Nov 2022 10:55:16 +0100
+Message-Id: <20221115095517.1008632-3-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20221115095517.1008632-1-linux@rasmusvillemoes.dk>
+References: <20221111143921.742194-1-linux@rasmusvillemoes.dk>
+ <20221115095517.1008632-1-linux@rasmusvillemoes.dk>
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 15/11/2022 08:37, Gerald Loacker wrote:
-> Add bindings documentation file for TI TMAG5273.
+The ad74412 and ad74413 devices have an active-low reset pin. Add a
+binding allowing one to specify a gpio tied to that.
 
-Subject - drop "documentation file".
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+---
+ Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-> 
-> Signed-off-by: Gerald Loacker <gerald.loacker@wolfvision.net>
-> ---
->  .../iio/magnetometer/ti,tmag5273.yaml         | 72 +++++++++++++++++++
->  MAINTAINERS                                   |  6 ++
->  2 files changed, 78 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ti,tmag5273.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ti,tmag5273.yaml b/Documentation/devicetree/bindings/iio/magnetometer/ti,tmag5273.yaml
-> new file mode 100644
-> index 000000000000..2f5b0a4d2f40
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/magnetometer/ti,tmag5273.yaml
-> @@ -0,0 +1,72 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/magnetometer/ti,tmag5273.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: TI TMAG5273 Low-Power Linear 3D Hall-Effect Sensor
-> +
-> +maintainers:
-> +  - Gerald Loacker <gerald.loacker@wolfvision.net>
-> +
-> +description:
-> +  The TI TMAG5273 is a low-power linear 3D Hall-effect sensor. This device
-> +  integrates three independent Hall-effect sensors in the X, Y, and Z axes.
-> +  The device has an integrated temperature sensor available. The TMAG5273
-> +  can be configured through the I2C interface to enable any combination of
-> +  magnetic axes and temperature measurements. An integrated angle calculation
-> +  engine (CORDIC) provides full 360° angular position information for both
-> +  on-axis and off-axis angle measurement topologies. The angle calculation is
-> +  performed using two user-selected magnetic axes.
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: '^magnetometer@[0-9a-f]+$'
-
-Device schemas do not need to enforce the names.
-
-> +
-> +  compatible:
-> +    const: ti,tmag5273
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  "#io-channel-cells":
-> +    const: 1
-> +
-> +  ti,angle-enable:
-
-ti,angle-measurement
-
-> +    description:
-> +      Enables angle measurement in the selected plane.
-> +      0 = OFF
-> +      1 = X-Y (default)
-> +      2 = Y-Z
-> +      3 = X-Z
-
-Why not strings which are easier for humans? off/x-y/y-z/x-z? How anyone
-reading DTS can remember what is "3" in this and in thousands of other
-devices?
-
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    minimum: 0
-> +    maximum: 3
-
-default: 1
-
-> +
-> +  vcc-supply:
-> +    description:
-> +      A regulator providing 1.7 V to 3.6 V supply voltage on the VCC pin,
-> +      typically 3.3 V.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vcc-supply
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c-0 {
-
-Just: i2c
-
-
-Best regards,
-Krzysztof
+diff --git a/Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml b/Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml
+index 03bb90a7f4f8..62f446dbc3d8 100644
+--- a/Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml
++++ b/Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml
+@@ -51,6 +51,9 @@ properties:
+       Shunt (sense) resistor value in micro-Ohms.
+     default: 100000000
+ 
++  reset-gpios:
++    maxItems: 1
++
+ required:
+   - compatible
+   - reg
+@@ -129,6 +132,7 @@ examples:
+         interrupts = <26 IRQ_TYPE_EDGE_FALLING>;
+ 
+         refin-supply = <&ad74413r_refin>;
++        reset-gpios = <&gpio2 6 GPIO_ACTIVE_LOW>;
+ 
+         channel@0 {
+           reg = <0>;
+-- 
+2.37.2
 
