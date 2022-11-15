@@ -2,86 +2,132 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E604C4332F
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Nov 2022 02:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D17E1C4332F
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Nov 2022 04:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231908AbiKOCj4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Nov 2022 21:39:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35314 "EHLO
+        id S232135AbiKOExN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Nov 2022 23:53:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231993AbiKOCjy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Nov 2022 21:39:54 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0069819C23
-        for <linux-iio@vger.kernel.org>; Mon, 14 Nov 2022 18:39:50 -0800 (PST)
-Received: from kwepemi500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NB9N621zRzHvwD;
-        Tue, 15 Nov 2022 10:38:30 +0800 (CST)
-Received: from huawei.com (10.175.103.91) by kwepemi500024.china.huawei.com
- (7.221.188.100) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 15 Nov
- 2022 10:38:59 +0800
-From:   Zeng Heng <zengheng4@huawei.com>
-To:     <alexandru.ardelean@analog.com>, <lars@metafoo.de>,
-        <jic23@kernel.org>
-CC:     <linux-iio@vger.kernel.org>, <liwei391@huawei.com>,
-        <zengheng4@huawei.com>
-Subject: [PATCH] iio: fix memory leak in iio_device_register_eventset()
-Date:   Tue, 15 Nov 2022 10:37:12 +0800
-Message-ID: <20221115023712.3726854-1-zengheng4@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S232118AbiKOExM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Nov 2022 23:53:12 -0500
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C608D1582E
+        for <linux-iio@vger.kernel.org>; Mon, 14 Nov 2022 20:53:11 -0800 (PST)
+Received: by mail-qv1-xf2d.google.com with SMTP id n18so9145935qvt.11
+        for <linux-iio@vger.kernel.org>; Mon, 14 Nov 2022 20:53:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=dE17wy+SeYs2xM9LBeuUvdStoy3eddyUrqKb9lN6yDo=;
+        b=Fqc84XKgNKomtnYMDVsfBaOL3NX67s05OjZ/wsj6yurW/sMwc8o0fODxAlfiB9MQYi
+         YBrRd6ecgpmXOaa4CYx/wSAVUdGBuBzQrTnt2lm346ZPlY8YEkL4egF29Vh7WhlvVFET
+         qIHgMhCeh4MH0A9rYIsq1ee75icThcfJKq4zrpDKPiPY1qYWczBxi5B7iRMFEX77mMqs
+         aAgQD5pbj+UTcHJSvglAUcwPvObhQDa4RbgkZS6Ejp4mD1T3zK9Q7Ah3UK0Z82iHuUAT
+         zskLc9WNNpTu11tq4cX5tdTpJUSLJswfy2TQj5MaKuKBI2E4A60p1VZqO91Q9yZuvfW1
+         kDsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dE17wy+SeYs2xM9LBeuUvdStoy3eddyUrqKb9lN6yDo=;
+        b=sUG5nfkTq2CCLNglXWaonqGYMczwYzyOBOHwmzyVI28v0EGpKKIhp+CAxIyj+t+XmK
+         JWLJr94Z/6d96wm1bPDsf5UmuynvjsDCWAp0D8NsXpXOfAikRbxPVuNd/lPVheSi205L
+         mZupi5eFK4fLFvOrbsRClU3xTb7u5KLbsZDeIEXVlaeZLttnj150XvVndDH7coU0rfSQ
+         ny693cJD3snQpO9CKKF25T/TTALmpUWI0F6g5VmHXPY+b9vYS8QwjyK+/wXoG+MXMjy2
+         0gtLTms4zOgUtD1FwBnII1CIcTBE75d90jY/jxDSaelqCCaYGidkXhQpedOXQme3bEJT
+         sV7A==
+X-Gm-Message-State: ANoB5pnRJcKt/eXPI9QxTKgRIb4sBpUH89ZcAqfGbFo4auE7mMrNji8c
+        WHGgrNo91kkTIXuAurGY8yAfSHU1/f72sg==
+X-Google-Smtp-Source: AA0mqf6/e7ldRDGoaFL9dYzYgnSFOk0uxJG0oyKaxtK0cI3qj4f/mFZUw2bwjKaPjCx1il8AUUpVtg==
+X-Received: by 2002:a0c:fec3:0:b0:4bb:a904:7d51 with SMTP id z3-20020a0cfec3000000b004bba9047d51mr15271324qvs.14.1668487990928;
+        Mon, 14 Nov 2022 20:53:10 -0800 (PST)
+Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id bs13-20020a05620a470d00b006b61b2cb1d2sm7798445qkb.46.2022.11.14.20.53.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Nov 2022 20:53:09 -0800 (PST)
+Date:   Mon, 14 Nov 2022 23:53:07 -0500
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH v6 4/5] counter: Add Renesas RZ/G2L MTU3a counter driver
+Message-ID: <Y3MbM0RtaAKUIyWM@fedora>
+References: <20221113171545.282457-1-biju.das.jz@bp.renesas.com>
+ <20221113171545.282457-5-biju.das.jz@bp.renesas.com>
+ <Y3G6Qe0KMdo2PgaG@fedora>
+ <OS0PR01MB5922B01D5E579426608BBA9386059@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <TYCPR01MB59337BB8E20273468F38560E86059@TYCPR01MB5933.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemi500024.china.huawei.com (7.221.188.100)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="o3Yo1PD6gJC8vbLW"
+Content-Disposition: inline
+In-Reply-To: <TYCPR01MB59337BB8E20273468F38560E86059@TYCPR01MB5933.jpnprd01.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-When iio_device_register_sysfs_group() returns failed,
-iio_device_register_eventset() needs to free attrs array.
 
-Otherwise, kmemleak would scan & report memory leak as below:
+--o3Yo1PD6gJC8vbLW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-unreferenced object 0xffff88810a1cc3c0 (size 32):
-  comm "100-i2c-vcnl302", pid 728, jiffies 4295052307 (age 156.027s)
-  backtrace:
-    __kmalloc+0x46/0x1b0
-    iio_device_register_eventset at drivers/iio/industrialio-event.c:541
-    __iio_device_register at drivers/iio/industrialio-core.c:1959
-    __devm_iio_device_register at drivers/iio/industrialio-core.c:2040
+On Mon, Nov 14, 2022 at 05:52:11PM +0000, Biju Das wrote:
+> > > > +static int rz_mtu3_initialize_counter(struct counter_device
+> > > > +*counter, int id) {
+> > > > +	struct rz_mtu3_cnt *const priv =3D counter_priv(counter);
+> > > > +	struct rz_mtu3_channel *ch1 =3D priv->ch;
+> > > > +	struct rz_mtu3_channel *ch2 =3D ch1 + 1;
+> > >
+> > > No need to complicate this, just use priv->ch[0], priv->ch[1], and
+> > > priv->ch[id]. Same advice applies to the other functions as well.
+> >=20
+> > I get below error when I use array susbscripts. "*ch1 =3D priv->ch[0];"
+>=20
+> > drivers/counter/rz-mtu3-cnt.c:291:32: error: incompatible types when
+> > initialising type 'struct rz_mtu3_channel *' using type 'struct
+> > rz_mtu3_channel'
+> >   291 |  struct rz_mtu3_channel *ch1 =3D priv->ch[0];
+> >=20
+>=20
+> I could use "*ch1 =3D &priv->ch[0];" please let me know is it ok?
+>=20
+> Cheers,
+> Biju
 
-Fixes: 32f171724e5c ("iio: core: rework iio device group creation")
-Signed-off-by: Zeng Heng <zengheng4@huawei.com>
----
- drivers/iio/industrialio-event.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Hi Biju,
 
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index 3d78da2531a9..727e2ef66aa4 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -556,7 +556,7 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
- 
- 	ret = iio_device_register_sysfs_group(indio_dev, &ev_int->group);
- 	if (ret)
--		goto error_free_setup_event_lines;
-+		goto error_free_group_attrs;
- 
- 	ev_int->ioctl_handler.ioctl = iio_event_ioctl;
- 	iio_device_ioctl_handler_register(&iio_dev_opaque->indio_dev,
-@@ -564,6 +564,8 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
- 
- 	return 0;
- 
-+error_free_group_attrs:
-+	kfree(ev_int->group.attrs);
- error_free_setup_event_lines:
- 	iio_free_chan_devattr_list(&ev_int->dev_attr_list);
- 	kfree(ev_int);
--- 
-2.25.1
+I meant to use the array subscripts inline (e.g. priv->ch[id].function).
+However, I can see the benefit of using the ch1 and ch2 local variables,
+so perhaps something like this would be clearer to read:
 
+    struct rz_mtu3_chanel *const ch =3D priv->ch;
+    struct rz_mtu3_chanel *const ch1 =3D &ch[0];
+    struct rz_mtu3_chanel *const ch2 =3D &ch[1];
+    ...
+    case RZ_MTU3_16_BIT_MTU1_CH:
+    case RZ_MTU3_16_BIT_MTU2_CH:
+            if (ch[id].function !=3D RZ_MTU3_NORMAL) {
+    ...
+
+William Breathitt Gray
+
+--o3Yo1PD6gJC8vbLW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCY3MbMwAKCRC1SFbKvhIj
+KzhIAQDQ4bmBcHzQIzO+vQBjfTenBivm9lKVWO49m20n55whsQD/ciUVMhrn+2Ng
+eU4PmjjzcWy/3PXdyK/wS83FKf/QEAw=
+=dbCG
+-----END PGP SIGNATURE-----
+
+--o3Yo1PD6gJC8vbLW--
