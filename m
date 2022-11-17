@@ -2,193 +2,413 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A14C4332F
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Nov 2022 23:43:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E639C433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Nov 2022 23:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234380AbiKQXny (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 17 Nov 2022 18:43:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
+        id S240656AbiKQXoQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 17 Nov 2022 18:44:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240412AbiKQXnm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Nov 2022 18:43:42 -0500
+        with ESMTP id S240442AbiKQXnn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Nov 2022 18:43:43 -0500
 Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CD3BA446
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B65CBC9E
         for <linux-iio@vger.kernel.org>; Thu, 17 Nov 2022 15:43:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net; s=s31663417;
-        t=1668728607; bh=SBPi6rC4HYka5zDnNBrOrmm3M7oLCjGw6JXOetO9axc=;
+        t=1668728607; bh=ai5UiNsV7FiIEdXOfAcFEua4IHE3CLfMJ3MgziZRV6Q=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Avbe71iwLkN14ehSSxASzbTXKyntKhTaQPLY8WK6CC92A0TyeezMbJSNbcDwvQGu0
-         5iaSNcchaq0julE9JaMixa/kqcCNEpl1v700CCdwKSuniEwkOd7YFGuBRO6juZHXEK
-         LaKvQHcMD/ZsvWj9kMjZuO+Dhe3gM7CW6lZimAzjBYL62GyJ6zfEChjecsoSEUPdFY
-         3mS1JWe5aaZlli9+IYKpbJYGAaZ8b8vkYVklDwKaSSbm+FWZRIS/9Pw1nVBP/F88rJ
-         Ap2fM5yVAwA0tL6PDjqhfyxEYskWu2vwoRH6Neb9M5it29Dof2oDf+aDxUnC1d5CBX
-         q7WJegIYVPl7Q==
+        b=CM1wXFSo6WCfwZV67/cCYE7PDNs6IUAUFy7QY6Vni97DSrwCQWIM2/2QRUscAvEZl
+         janqupW87/RCEGV2ALgUx0R5tPNuwKY36tGTb/x+WkTYz1Le/e/zbW5/OyoeVqtF3q
+         Ezkcv1WyNwW/3rxJ3rjkYUqGqK+VGg4teNyjcYpXxqM4kRh4ZhDuAq/ng94NtN2+JA
+         a2E+2+Zt34/+A6Fe+l6ZSMYFAhCkJyGlmJAsmUGR3TGDjDFFu9+ke5+HahX/VLHaYR
+         wdP+oxt/O5k1VQWRB4Dd82F2b8cH2tIyI/px+5kQ/xLgG06AqI0tPj1ri4RTqtf5qB
+         5UVQ3bMEFH1Zg==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from localhost.localdomain ([95.223.45.31]) by mail.gmx.net
  (mrgmx004 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1M7sDg-1oqsaT2kh0-0055Ny; Fri, 18 Nov 2022 00:43:27 +0100
+ 1MhlGk-1pQUaU3UoK-00druC; Fri, 18 Nov 2022 00:43:26 +0100
 From:   Philipp Jungkamp <p.jungkamp@gmx.net>
 To:     Jiri Kosina <jikos@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
         Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Cc:     linux-iio@vger.kernel.org, Philipp Jungkamp <p.jungkamp@gmx.net>
-Subject: [PATCH v2 4/4] IIO: hid-sensor-prox: Use generic usage
-Date:   Fri, 18 Nov 2022 00:43:02 +0100
-Message-Id: <20221117234302.3875-4-p.jungkamp@gmx.net>
+Subject: [PATCH v2 1/4] HID: hid-sensor-custom: Allow more custom iio sensors
+Date:   Fri, 18 Nov 2022 00:42:59 +0100
+Message-Id: <20221117234302.3875-1-p.jungkamp@gmx.net>
 X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221117234302.3875-1-p.jungkamp@gmx.net>
+In-Reply-To: <20221117150508.00002704@Huawei.com>
 References: <20221117150508.00002704@Huawei.com>
- <20221117234302.3875-1-p.jungkamp@gmx.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:JVm1vb18Tzaza31T2V6SyxPMTsNS+ggPW3YQjv2JuPbB1oKiu2h
- GwGr/vub19bgJO7v7NfXXZtjotuBSXndcJEBJilXX3+GI62TLqbKs3Ow6p+LZ4uKRhHqPcu
- UmIebIargp3MHaww6lkZUU1enqRihEVD3u5LJNEyLjWldh6cBdSGiBCtKHNvZ6HcKMH4DsE
- rAIWMolv0KauG0BpWxwzQ==
-UI-OutboundReport: notjunk:1;M01:P0:ebtB5lg9GBA=;Lym7N47TWXi0xaTg9tioz+ndGiO
- OdMuw0JS4F+Nsmqz5d91/hyB6dQ8M3ywB4FqL0mDUeuSYqvpaLpbBeqzZvfO1uR9w+ZuxIz1S
- XNMRoY1L074aLsFizDldItHMyKaySoDTQ1nwRYZBi9L2DfE4sb4q1e7ZUGy+QkrKz4OKsU6im
- rEur22AnXNhaQKz8pYdFyfUCj+J6BixTA+trwRb4H7209xITu27zC/uRxynXKixSgAiXBBnf5
- WaCFLFanqoj1c/HCVSsjWxnbkN1iyRMGSUCCDiM+lx2tJwwSQM04SHJ6RJPX4S2P5KBbInJhH
- /+s3x8en1kZn2xvJZ38/kEkcf4jIcxgTbHk5meCd2x44uNmF8Ca4x30HPCmvOXhjyat8dovh7
- R2QKdumqvcuZkIkkN908FayzsAo03CH9qPXtc0/Ole0GtXIfgPng2oz3h1pmAEz9VzuRfDfri
- zPYhBoXpDPJuVEF65PgKIcgMHUY9Il6YHh8J+LOlOktKL21fF5GOtENPrNWHgxsDnrzJ7gxd7
- pVuYSISUz3m+uNmoWtIsbJlIFGQ0nqkTAvjGYztdFDoPToQ6XsojAjmDtsixTG92yvanT0NrL
- 9yLnVPwmIk8IPoJ4wTp0cSduxjMSvfXg0ASNI93Iia3P4t9UUUUbkwIphN7Tw+bLem9c9oEBT
- ZPsx6Z3TnTrZ3fj0iX5Cyr5BjFIas8kYLoBu4/m2GpbDkhYZjs6QOXwN2eUFe6hX2l05Pnt6h
- NhiBZW3paAJzdooAdUxbntvlSClDNlsZ5RCEqu+uwJLsmvhN9kOs9TuOmiToMEVQeHRWFk71B
- tDPMy32hEWFgj+b/UPgViR4DdKEA2e/Cteud8xhQx8Z2sgX8NoWH3uEXEsLXWgOJDNEZNdiJy
- YlzdFOXT+pTCzH1LwA3kA7O9xfsSFN0BqbAvnewEzrPJFlJ8hbk85d6pDKolo/FIQw8cxrRey
- g9Xj69knJhlfmIiPvM0OyP6Za9A=
+X-Provags-ID: V03:K1:IFPdek38SeVXmEN4QKBCNos3T1mniBtocUfXf6RrbRxKF/LtSit
+ M4QeL9LlhNm0b4+3/rQdQHcQvuiAZmtfLQhoAhiunUAXLr/KuOm2Lil7Xqy8UQCom9LLMm6
+ QHTqcqGq5qC6EeOx21DA07mec/au0cNZiV2mWo23SVHyFCBov//KvcGIwsBdgbRK0X3+JXC
+ U8ugdKulo1iUiu1XUUwuA==
+UI-OutboundReport: notjunk:1;M01:P0:WcJzogOkqrc=;zVBbIlOhc5RA7sUAWrZ5t6s2RTj
+ QTjlNT3KzEaMJrWDifELJ+gR3No19/Z3tA/r9X5xT1035FjP2Bmlpo8cegwRVkmC127PjvzOS
+ yuXi64NZfvOdHQNJySfT4TdDczfKsNvjTTMECksuZqKZuf4Ielk4jzCbkWenzZmuCRLwIOZp4
+ ccaiHax747AI3RRjQmD2ZJAFsRDga+CCTECsSkpu6ogzyx61gPyFUlYo3+etS5EKJYUi6Hiq1
+ 2l9x6NOYP1i7slsLh8NPbRG+WA+bAovuIWBPfX9woEAcsQtPbFmkM63Qqpj1yVXrSvu7ycjpr
+ G7PVpXU3UPd+fXvBSy18rHVuLx/frsmwf5p76Mf9epln0cjVTHwXNeJzADBQsX8Q+un2EYeiu
+ PstMImN3svY5R991ry5/bK1qbJwqFY36gotggIjPHs1QI6WkuvJXhufIktZPT0RyylRWht5k3
+ 5ohNcLyV7uoyAbU3InaAIOEqSHsDT8il+acgdyuGh0JZTnmlsCwSvC/2rEBx0XoEzc98KvXxl
+ cM5AwhqKCDH6Gw/H8zxFpFo+fupHjoNsXAPDYxQJ7wgrutESruBPyrkaKP1HsjyVOCO1eNtyj
+ 328Ar9Jhs/FG/C4APFehVBID/FL56psLbMfAFh6SMFUUPOQy10+hO4jwfnz6T8mShWmeiXQ1B
+ 3Di2yzzTU9YUqea2MBFp0VdkH2MZP7zcIfETa5iboQdFq3L2H6ya1/K5zZednQy4fosiSbFmI
+ 6wXUb3dlfjOJE5MWsq2XIOdo2c3/OttA1Q8piPQdKbYDttwYC43vYl/VS/5msP758j80Sr8pj
+ dBcN9/wIVXORh9pZWRhHypab53/JvktAFP6IUAFI7GyVh8USBrptZyxq8c11YpWLAK1h+w28t
+ 7SRq5m1jfcVj4nGbEXe8TwUI/X60+oX0SfeqUM6dKGLMd2NR/Nx6CI78gKBTyTzcFP8ZH4VXw
+ OPVcvj7gLO+vkV5oMZuoX1Y4m4s=
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use a generic 'hsdev->usage' instead of the HID_USAGE_SENSOR_PROX to
-allow this driver to drive the Lenvo custom proximity sensor, which is
-registered under a 'custom' usage and not HID_USAGE_SENSOR_PROX.
+The known LUID table for established/known custom HID sensors was
+limited to sensors with "INTEL" as manufacturer. But some vendors such
+as Lenovo also include fairly standard iio sensors (e.g. ambient light)
+in their custom sensors.
 
-Add the Lenovo Intelligent Sensing Solution (LISS) human presence sensor
-to the platform device ids.
+Expand the known custom sensors table by a tag used for the platform
+device name and match sensors based on the LUID as well as optionally
+on model and manufacturer properties.
+Introduce sensors from Lenovo's "Intelligent Sensing Solution" on the
+Lenovo Yoga 9 14IAP7 as an example.
 
 Signed-off-by: Philipp Jungkamp <p.jungkamp@gmx.net>
 =2D--
-Lines are shorter and the switch statement for raw_len is cleaner.
+Hello,
 
- drivers/iio/light/hid-sensor-prox.c | 37 ++++++++++++++++++-----------
- 1 file changed, 23 insertions(+), 14 deletions(-)
+here's a short summary of changes compared to v1:
 
-diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-s=
-ensor-prox.c
-index f10fa2abfe72..a47591e1bad9 100644
-=2D-- a/drivers/iio/light/hid-sensor-prox.c
-+++ b/drivers/iio/light/hid-sensor-prox.c
-@@ -61,6 +61,7 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- 			      long mask)
- {
- 	struct prox_state *prox_state =3D iio_priv(indio_dev);
-+	struct hid_sensor_hub_device *hsdev;
- 	int report_id =3D -1;
- 	u32 address;
- 	int ret_type;
-@@ -75,6 +76,7 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- 			report_id =3D prox_state->prox_attr.report_id;
- 			min =3D prox_state->prox_attr.logical_minimum;
- 			address =3D HID_USAGE_SENSOR_HUMAN_PRESENCE;
-+			hsdev =3D prox_state->common_attributes.hsdev;
- 			break;
- 		default:
- 			report_id =3D -1;
-@@ -84,11 +86,8 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- 			hid_sensor_power_state(&prox_state->common_attributes,
- 						true);
- 			*val =3D sensor_hub_input_attr_get_raw_value(
--				prox_state->common_attributes.hsdev,
--				HID_USAGE_SENSOR_PROX, address,
--				report_id,
--				SENSOR_HUB_SYNC,
--				min < 0);
-+				hsdev, hsdev->usage, address, report_id,
-+				SENSOR_HUB_SYNC, min < 0);
- 			hid_sensor_power_state(&prox_state->common_attributes,
- 						false);
- 		} else {
-@@ -191,10 +190,16 @@ static int prox_capture_sample(struct hid_sensor_hub=
-_device *hsdev,
+ Added an additional commit which adds the LISS entries to the known
+ custom sensors.
 
- 	switch (usage_id) {
- 	case HID_USAGE_SENSOR_HUMAN_PRESENCE:
--		prox_state->human_presence =3D *(u32 *)raw_data;
--		ret =3D 0;
--		break;
--	default:
-+		switch (raw_len) {
-+		case 1:
-+			prox_state->human_presence =3D *(u8 *)raw_data;
-+			return 0;
-+		case 4:
-+			prox_state->human_presence =3D *(u32 *)raw_data;
-+			return 0;
-+		default:
-+			break;
-+		}
- 		break;
+ Removed all unnecessary linebreaks from modified function calls and staye=
+d
+ below the 80 columns.
+
+ Revisited the matching logic and removed the explicit error codes
+ in favor of bools and forwarding the inner error.
+
+ I noticed that the strange ENODATA return code was already redundant with
+ the **known out parameter. So I removed it.
+
+Regards,
+Philipp Jungkamp
+
+ drivers/hid/hid-sensor-custom.c | 211 +++++++++++++++++++++-----------
+ include/linux/hid-sensor-ids.h  |   1 +
+ 2 files changed, 142 insertions(+), 70 deletions(-)
+
+diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-cust=
+om.c
+index 32c2306e240d..89e56913c92e 100644
+=2D-- a/drivers/hid/hid-sensor-custom.c
++++ b/drivers/hid/hid-sensor-custom.c
+@@ -5,6 +5,7 @@
+  */
+
+ #include <linux/ctype.h>
++#include <linux/dmi.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/init.h>
+@@ -750,114 +751,184 @@ static void hid_sensor_custom_dev_if_remove(struct=
+ hid_sensor_custom
+
+ }
+
+-/* luid defined in FW (e.g. ISH).  Maybe used to identify sensor. */
+-static const char *const known_sensor_luid[] =3D { "020B000000000000" };
++/*
++ * Match a known custom sensor.
++ * tag and luid is mandatory.
++ */
++struct hid_sensor_custom_match {
++	const char *tag;
++	const char *luid;
++	const char *model;
++	const char *manufacturer;
++	bool check_dmi;
++	struct dmi_system_id dmi;
++};
+
+-static int get_luid_table_index(unsigned char *usage_str)
+-{
+-	int i;
++/*
++ * Custom sensor properties used for matching.
++ */
++struct hid_sensor_custom_properties {
++	u16 serial_num[HID_CUSTOM_MAX_FEATURE_BYTES];
++	u16 model[HID_CUSTOM_MAX_FEATURE_BYTES];
++	u16 manufacturer[HID_CUSTOM_MAX_FEATURE_BYTES];
++};
++
++static const struct hid_sensor_custom_match hid_sensor_custom_known_table=
+[] =3D {
++	/*
++	 * Intel Integrated Sensor Hub (ISH)
++	 */
++	{	/* Intel ISH hinge */
++		.tag =3D "INT",
++		.luid =3D "020B000000000000",
++		.manufacturer =3D "INTEL",
++	},
++	{}
++};
+
+-	for (i =3D 0; i < ARRAY_SIZE(known_sensor_luid); i++) {
+-		if (!strncmp(usage_str, known_sensor_luid[i],
+-			     strlen(known_sensor_luid[i])))
+-			return i;
++static bool hid_sensor_custom_prop_match_str(const u16 *prop, const char =
+*match,
++					     size_t count)
++{
++	while (count-- && *prop && *match) {
++		if (*prop & 0xFF00 ||
++		    *match !=3D (char) *prop)
++			return false;
++		prop++;
++		match++;
  	}
 
-@@ -244,7 +249,7 @@ static int hid_prox_probe(struct platform_device *pdev=
-)
- 	prox_state->common_attributes.hsdev =3D hsdev;
- 	prox_state->common_attributes.pdev =3D pdev;
+-	return -ENODEV;
++	return (count =3D=3D -1) || *prop =3D=3D (u16)*match;
+ }
 
--	ret =3D hid_sensor_parse_common_attributes(hsdev, HID_USAGE_SENSOR_PROX,
-+	ret =3D hid_sensor_parse_common_attributes(hsdev, hsdev->usage,
- 					&prox_state->common_attributes,
- 					prox_sensitivity_addresses,
- 					ARRAY_SIZE(prox_sensitivity_addresses));
-@@ -262,7 +267,7 @@ static int hid_prox_probe(struct platform_device *pdev=
-)
+-static int get_known_custom_sensor_index(struct hid_sensor_hub_device *hs=
+dev)
++static bool hid_sensor_custom_get_prop(struct hid_sensor_hub_device *hsde=
+v,
++				      u32 prop_usage_id, size_t prop_size,
++				      u16 *prop)
+ {
+-	struct hid_sensor_hub_attribute_info sensor_manufacturer =3D { 0 };
+-	struct hid_sensor_hub_attribute_info sensor_luid_info =3D { 0 };
++	struct hid_sensor_hub_attribute_info prop_attr =3D { 0 };
+ 	int report_size;
+ 	int ret;
+-	static u16 w_buf[HID_CUSTOM_MAX_FEATURE_BYTES];
+-	static char buf[HID_CUSTOM_MAX_FEATURE_BYTES];
+-	int i;
 
- 	ret =3D prox_parse_report(pdev, hsdev,
- 				(struct iio_chan_spec *)indio_dev->channels,
--				HID_USAGE_SENSOR_PROX, prox_state);
-+				hsdev->usage, prox_state);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to setup attributes\n");
+-	memset(w_buf, 0, sizeof(w_buf));
+-	memset(buf, 0, sizeof(buf));
++	memset(prop, 0, prop_size);
+
+-	/* get manufacturer info */
+-	ret =3D sensor_hub_input_get_attribute_info(hsdev,
+-			HID_FEATURE_REPORT, hsdev->usage,
+-			HID_USAGE_SENSOR_PROP_MANUFACTURER, &sensor_manufacturer);
++	ret =3D sensor_hub_input_get_attribute_info(hsdev, HID_FEATURE_REPORT,
++						  hsdev->usage, prop_usage_id,
++						  &prop_attr);
+ 	if (ret < 0)
+-		return ret;
++		return 0;
+
+-	report_size =3D
+-		sensor_hub_get_feature(hsdev, sensor_manufacturer.report_id,
+-				       sensor_manufacturer.index, sizeof(w_buf),
+-				       w_buf);
++	report_size =3D sensor_hub_get_feature(hsdev, prop_attr.report_id,
++					     prop_attr.index, prop_size, prop);
+ 	if (report_size <=3D 0) {
+ 		hid_err(hsdev->hdev,
+-			"Failed to get sensor manufacturer info %d\n",
++			"Failed to get sensor property %08x %d\n",
++			prop_usage_id,
+ 			report_size);
+-		return -ENODEV;
++		return report_size;
+ 	}
+
+-	/* convert from wide char to char */
+-	for (i =3D 0; i < ARRAY_SIZE(buf) - 1 && w_buf[i]; i++)
+-		buf[i] =3D (char)w_buf[i];
++	return 0;
++}
++
++static bool
++hid_sensor_custom_do_match(struct hid_sensor_hub_device *hsdev,
++			   const struct hid_sensor_custom_match *match,
++			   const struct hid_sensor_custom_properties *prop)
++{
++	struct dmi_system_id dmi[] =3D { match->dmi, { 0 } };
++
++	if (!hid_sensor_custom_prop_match_str(prop->serial_num, "LUID:", 5) ||
++	    !hid_sensor_custom_prop_match_str(prop->serial_num + 5, match->luid,
++					      HID_CUSTOM_MAX_FEATURE_BYTES - 5))
++		return false;
++
++	if (match->model &&
++	    !hid_sensor_custom_prop_match_str(prop->model, match->model,
++					      HID_CUSTOM_MAX_FEATURE_BYTES))
++		return false;
+
+-	/* ensure it's ISH sensor */
+-	if (strncmp(buf, "INTEL", strlen("INTEL")))
+-		return -ENODEV;
++	if (match->manufacturer &&
++	    !hid_sensor_custom_prop_match_str(prop->manufacturer, match->manufac=
+turer,
++					      HID_CUSTOM_MAX_FEATURE_BYTES))
++		return false;
+
+-	memset(w_buf, 0, sizeof(w_buf));
+-	memset(buf, 0, sizeof(buf));
++	if (match->check_dmi && !dmi_check_system(dmi))
++		return false;
+
+-	/* get real usage id */
+-	ret =3D sensor_hub_input_get_attribute_info(hsdev,
+-			HID_FEATURE_REPORT, hsdev->usage,
+-			HID_USAGE_SENSOR_PROP_SERIAL_NUM, &sensor_luid_info);
++	return true;
++}
++
++static int
++hid_sensor_custom_properties_get(struct hid_sensor_hub_device *hsdev,
++				 struct hid_sensor_custom_properties *prop)
++{
++	int ret;
++
++	ret =3D hid_sensor_custom_get_prop(hsdev,
++					 HID_USAGE_SENSOR_PROP_SERIAL_NUM,
++					 HID_CUSTOM_MAX_FEATURE_BYTES,
++					 prop->serial_num);
+ 	if (ret < 0)
  		return ret;
-@@ -291,8 +296,8 @@ static int hid_prox_probe(struct platform_device *pdev=
-)
- 	prox_state->callbacks.send_event =3D prox_proc_event;
- 	prox_state->callbacks.capture_sample =3D prox_capture_sample;
- 	prox_state->callbacks.pdev =3D pdev;
--	ret =3D sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_PROX,
--					&prox_state->callbacks);
-+	ret =3D sensor_hub_register_callback(hsdev, hsdev->usage,
-+					   &prox_state->callbacks);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "callback reg failed\n");
- 		goto error_iio_unreg;
-@@ -314,7 +319,7 @@ static int hid_prox_remove(struct platform_device *pde=
-v)
- 	struct iio_dev *indio_dev =3D platform_get_drvdata(pdev);
- 	struct prox_state *prox_state =3D iio_priv(indio_dev);
 
--	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_PROX);
-+	sensor_hub_remove_callback(hsdev, hsdev->usage);
- 	iio_device_unregister(indio_dev);
- 	hid_sensor_remove_trigger(indio_dev, &prox_state->common_attributes);
+-	report_size =3D sensor_hub_get_feature(hsdev, sensor_luid_info.report_id=
+,
+-					     sensor_luid_info.index, sizeof(w_buf),
+-					     w_buf);
+-	if (report_size <=3D 0) {
+-		hid_err(hsdev->hdev, "Failed to get real usage info %d\n",
+-			report_size);
+-		return -ENODEV;
+-	}
++	ret =3D hid_sensor_custom_get_prop(hsdev,
++					 HID_USAGE_SENSOR_PROP_MODEL,
++					 HID_CUSTOM_MAX_FEATURE_BYTES,
++					 prop->model);
++	if (ret < 0)
++		return ret;
 
-@@ -326,6 +331,10 @@ static const struct platform_device_id hid_prox_ids[]=
- =3D {
- 		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
- 		.name =3D "HID-SENSOR-200011",
- 	},
-+	{
-+		/* Format: HID-SENSOR-tag-usage_id_in_hex_lowercase */
-+		.name =3D "HID-SENSOR-LISS-0226",
-+	},
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(platform, hid_prox_ids);
+-	/* convert from wide char to char */
+-	for (i =3D 0; i < ARRAY_SIZE(buf) - 1 && w_buf[i]; i++)
+-		buf[i] =3D (char)w_buf[i];
++	ret =3D hid_sensor_custom_get_prop(hsdev,
++					 HID_USAGE_SENSOR_PROP_MANUFACTURER,
++					 HID_CUSTOM_MAX_FEATURE_BYTES,
++					 prop->manufacturer);
++	if (ret < 0)
++		return ret;
+
+-	if (strlen(buf) !=3D strlen(known_sensor_luid[0]) + 5) {
+-		hid_err(hsdev->hdev,
+-			"%s luid length not match %zu !=3D (%zu + 5)\n", __func__,
+-			strlen(buf), strlen(known_sensor_luid[0]));
+-		return -ENODEV;
++	return 0;
++}
++
++static int
++hid_sensor_custom_get_known(struct hid_sensor_hub_device *hsdev,
++			    const struct hid_sensor_custom_match **known)
++{
++	int ret;
++	const struct hid_sensor_custom_match *match =3D
++		hid_sensor_custom_known_table;
++	struct hid_sensor_custom_properties prop;
++
++	ret =3D hid_sensor_custom_properties_get(hsdev, &prop);
++	if (ret < 0)
++		return ret;
++
++	while (match->tag) {
++		if (hid_sensor_custom_do_match(hsdev, match, &prop)) {
++			*known =3D match;
++			return 0;
++		}
++		match++;
+ 	}
+
+-	/* get table index with luid (not matching 'LUID: ' in luid) */
+-	return get_luid_table_index(&buf[5]);
++	*known =3D NULL;
++	return 0;
+ }
+
+ static struct platform_device *
+ hid_sensor_register_platform_device(struct platform_device *pdev,
+ 				    struct hid_sensor_hub_device *hsdev,
+-				    int index)
++				    const struct hid_sensor_custom_match *match)
+ {
+-	char real_usage[HID_SENSOR_USAGE_LENGTH] =3D { 0 };
++	char real_usage[HID_SENSOR_USAGE_LENGTH];
+ 	struct platform_device *custom_pdev;
+ 	const char *dev_name;
+ 	char *c;
+
+-	/* copy real usage id */
+-	memcpy(real_usage, known_sensor_luid[index], 4);
++	memcpy(real_usage, match->luid, 4);
++	real_usage[4] =3D '\0';
+
+-	/* usage id are all lowcase */
+ 	for (c =3D real_usage; *c !=3D '\0'; c++)
+ 		*c =3D tolower(*c);
+
+-	/* HID-SENSOR-INT-REAL_USAGE_ID */
+-	dev_name =3D kasprintf(GFP_KERNEL, "HID-SENSOR-INT-%s", real_usage);
++	dev_name =3D kasprintf(GFP_KERNEL, "HID-SENSOR-%s-%s",
++			     match->tag, real_usage);
+ 	if (!dev_name)
+ 		return ERR_PTR(-ENOMEM);
+
+@@ -873,7 +944,7 @@ static int hid_sensor_custom_probe(struct platform_dev=
+ice *pdev)
+ 	struct hid_sensor_custom *sensor_inst;
+ 	struct hid_sensor_hub_device *hsdev =3D pdev->dev.platform_data;
+ 	int ret;
+-	int index;
++	const struct hid_sensor_custom_match *match =3D NULL;
+
+ 	sensor_inst =3D devm_kzalloc(&pdev->dev, sizeof(*sensor_inst),
+ 				   GFP_KERNEL);
+@@ -888,10 +959,10 @@ static int hid_sensor_custom_probe(struct platform_d=
+evice *pdev)
+ 	mutex_init(&sensor_inst->mutex);
+ 	platform_set_drvdata(pdev, sensor_inst);
+
+-	index =3D get_known_custom_sensor_index(hsdev);
+-	if (index >=3D 0 && index < ARRAY_SIZE(known_sensor_luid)) {
++	ret =3D hid_sensor_custom_get_known(hsdev, &match);
++	if (!ret && match) {
+ 		sensor_inst->custom_pdev =3D
+-			hid_sensor_register_platform_device(pdev, hsdev, index);
++			hid_sensor_register_platform_device(pdev, hsdev, match);
+
+ 		ret =3D PTR_ERR_OR_ZERO(sensor_inst->custom_pdev);
+ 		if (ret) {
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids=
+.h
+index ac631159403a..13b1e65fbdcc 100644
+=2D-- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -132,6 +132,7 @@
+ #define HID_USAGE_SENSOR_PROP_FRIENDLY_NAME			0x200301
+ #define HID_USAGE_SENSOR_PROP_SERIAL_NUM			0x200307
+ #define HID_USAGE_SENSOR_PROP_MANUFACTURER			0x200305
++#define HID_USAGE_SENSOR_PROP_MODEL				0x200306
+ #define HID_USAGE_SENSOR_PROP_REPORT_INTERVAL			0x20030E
+ #define HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS			0x20030F
+ #define HID_USAGE_SENSOR_PROP_SENSITIVITY_RANGE_PCT		0x200310
 =2D-
 2.38.1
 
