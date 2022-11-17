@@ -2,145 +2,114 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9EDDC41535
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Nov 2022 21:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A3A0C433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Nov 2022 23:43:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240485AbiKQVJo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 17 Nov 2022 16:09:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50532 "EHLO
+        id S240329AbiKQXnu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 17 Nov 2022 18:43:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240624AbiKQVJZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Nov 2022 16:09:25 -0500
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCA87722F;
-        Thu, 17 Nov 2022 13:08:04 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 4969620007;
-        Thu, 17 Nov 2022 21:07:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1668719281;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=72JrUM6NacHh18cxNPJTokOPFIy2MlvUmUZu6AVg77s=;
-        b=kQ3WnKEHtW817TTGo/51w1BLV9fElm+d4PRny19l0Xo5WVvRKUWbYa4RLUCeb4hzAu+blU
-        gN78c5WiYd88yo78Tac1K8UgLdjF8sGEUg2eG4K4KIGZ2aSd/NCisT3pEqKgpi8MG9t8wo
-        Mhed7VoKwoPF1Ad6rnk8zscQKUda7EVdabBo89uHsVUfKLNbVRCzBabKqvqOG3TKdkeI5N
-        elXTmNOrt8pOHvUy7n2mYZBmGVFue71mi4Gp0X7blRdSkQQj+FNRIx2l1Hm3E/1dFZjljQ
-        ITXz8XlIez/SUSB6b7UDZFkg18YUByW5VovCJRgF+828mYPwuo2FHFq7f7zwSg==
-Date:   Thu, 17 Nov 2022 22:07:56 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-watchdog@vger.kernel.org
-Subject: Re: [RFC PATCH 1/9] dt-bindings: drop redundant part of title of
- shared bindings
-Message-ID: <20221117220756.7a1bf734@xps-13>
-In-Reply-To: <20221117123850.368213-2-krzysztof.kozlowski@linaro.org>
-References: <20221117123850.368213-1-krzysztof.kozlowski@linaro.org>
-        <20221117123850.368213-2-krzysztof.kozlowski@linaro.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S240364AbiKQXnm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Nov 2022 18:43:42 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA6F7A451
+        for <linux-iio@vger.kernel.org>; Thu, 17 Nov 2022 15:43:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net; s=s31663417;
+        t=1668728607; bh=OrLBMed6ZHmDPzSPtZqNsBpkm0DKoQGZyE9AcMIGK2Q=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Uv9uZWuiiefC0BMFPEz1F7KNx4cz7EZPfDsnDIpqVhqP9iLfyPinzI4eQrsoaXONl
+         DqvgM5y5tvvv83pDqXHZxusirjRcKkAb1nmcLARE0gNZMvzZeb/pdhH60dxYaTJsEj
+         yOAeupFuO4357sOjaSX2gAqkhv3HrGaifiY+Rr33+F5SWTj/7zOUbW+3EbH1+8N/kB
+         4bXYc3wH3lktG9Oh3SFAlFNmNxGXtv43lfrJRAgTbAwiVU1wmjQN7HiKi4buLacdIQ
+         qRjSfVmj8GhPjMg4pzJbL4Wel3Jnxa/ZvoUvQVpkozZX30456iPqgD8ACN8xQtLtvV
+         nyz9r80PxPhWQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from localhost.localdomain ([95.223.45.31]) by mail.gmx.net
+ (mrgmx004 [212.227.17.190]) with ESMTPSA (Nemesis) id
+ 1MbAcs-1pX5EN0Po8-00bduS; Fri, 18 Nov 2022 00:43:27 +0100
+From:   Philipp Jungkamp <p.jungkamp@gmx.net>
+To:     Jiri Kosina <jikos@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, Philipp Jungkamp <p.jungkamp@gmx.net>
+Subject: [PATCH v2 2/4] HID: hid-sensor-custom: Add LISS custom sensors
+Date:   Fri, 18 Nov 2022 00:43:00 +0100
+Message-Id: <20221117234302.3875-2-p.jungkamp@gmx.net>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221117234302.3875-1-p.jungkamp@gmx.net>
+References: <20221117150508.00002704@Huawei.com>
+ <20221117234302.3875-1-p.jungkamp@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:ONBvvDKhoEtO14roUmTVNN2fiXj6vwxKug90caj1PDqBFWqfz2z
+ idAlYpLyEhwjF2NU/LmGTtjYwhxp7nM7Na3IVDaK8tVd7EhcTdScx1+IpI92eI9aDqgDhCJ
+ pTcyB9kCQGcgSIWVdQM/lfastulvnUybt1MXjXICbH4hUOzyZ2yojexa6OSV1fpNoR3U39m
+ NMH0Lnq9j/RL5afq9p7Qw==
+UI-OutboundReport: notjunk:1;M01:P0:bBYOZbcKTIU=;IB049hPRiBatN94fvs6XdAfniN2
+ f8/DGK0gHoEWpHRZuKCilZDJoESXzjsZ/6N65+4J8hpzzOOoquwZtSxIu3xiJclFUPVtAxzwx
+ xva8OLOK0HXRBoBZp+yRnOusvFngfOIlOWzgLiNuokT1CjK3JfuGA5jVt8swbboQJxgytgOzu
+ UK/hlWsHVnj9CEc7/NIrcspCmXumEV7oEFK54Xy4Dyi127XnhPRZQsErryTLDE3l0cxUGWeWK
+ nilpQIWi/gBFRMxuWpND5qK/jDygbHZ2B5p7IGdZ2N/ajMvSnae81wRKUzZWgoPBeEGZCq94R
+ STy/G8spdlUrBoIeEpvefQ5WvbdffhxtAvTQqayr3qazsuX7r7XV/6jxUcMAxYjevcXfl4+1C
+ 4FCzloJbF6kowh4sau37XXmI1e8BmmC9N7FnA0Ebks86T7rE5vSJPiPQkYXzzR+aj5wt/gebA
+ HuEju+n6dCILveWYZHnr+x9mUW0obxw5Yra4IJ6x9josNlgiigSi+8WEF14oCpY/oC1MbAcGY
+ eVZMY6cwIHc1FuWIOMfspSniBCcW2GUc/j2ODYURp+pXaTcN42LOQx3FJGVf02/aE4vKuBa4Y
+ cOOdvYmDAmkAkfcPXHKh/5ncYkQo1jctvXQCit+EUUeT4ieeO2MsASwQsMXMojaYqEHQ7Czj0
+ +GPcXjeJ01Wr/TgbUeJ6ZDpnR0zEAGG44KFNl+QemZsKy6wfBAp6KhiwU59p1ciVvwpPOsxM3
+ EFEaTE54AhOtOk/p8ir3Xl3UKWRtLHCkVNnk9gF9pxMMW8yqK/pIM7L+7nUvt1pNzvr+wqJ1E
+ V4SJS5pa+SeTLWp71Ey2gr+i0CopWAiIeQDjo6X7uFX6SoDHPvCD9aQA8Y25DBC1X0QUtqyIU
+ BmFLLRrP0XsJD7UPY1C+xGjRyVnvt96pw47NQZEAoq7hYdR/WZt4UFOAzUOlEg1g7+JTFlJPU
+ 7JWcBw==
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Krzysztof,
+Add the Lenovo Intelligent Sensing Solution (LISS) custom sensors to the
+known custom sensors.
+=2D--
+Here is the requested noop commit that changes the device ids for the know=
+n
+LISS sensors.
 
-krzysztof.kozlowski@linaro.org wrote on Thu, 17 Nov 2022 13:38:42 +0100:
+ drivers/hid/hid-sensor-custom.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-> The Devicetree bindings document does not have to say in the title that
-> it is a "binding", but instead just describe the hardware.  For shared
-> (re-usable) schemas, name them all as "common properties".
->=20
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  Documentation/devicetree/bindings/clock/qcom,gcc.yaml         | 2 +-
->  Documentation/devicetree/bindings/dma/dma-common.yaml         | 2 +-
->  Documentation/devicetree/bindings/dma/dma-controller.yaml     | 4 ++--
->  Documentation/devicetree/bindings/dma/dma-router.yaml         | 4 ++--
->  Documentation/devicetree/bindings/iio/adc/adc.yaml            | 2 +-
->  .../devicetree/bindings/media/video-interface-devices.yaml    | 2 +-
->  Documentation/devicetree/bindings/media/video-interfaces.yaml | 2 +-
->  Documentation/devicetree/bindings/mmc/mmc-controller.yaml     | 2 +-
->  Documentation/devicetree/bindings/mtd/nand-chip.yaml          | 2 +-
->  Documentation/devicetree/bindings/mtd/nand-controller.yaml    | 2 +-
->  .../bindings/net/bluetooth/bluetooth-controller.yaml          | 2 +-
->  Documentation/devicetree/bindings/net/can/can-controller.yaml | 2 +-
->  .../devicetree/bindings/net/ethernet-controller.yaml          | 2 +-
->  Documentation/devicetree/bindings/net/ethernet-phy.yaml       | 2 +-
->  Documentation/devicetree/bindings/net/mdio.yaml               | 2 +-
->  Documentation/devicetree/bindings/opp/opp-v2-base.yaml        | 2 +-
->  .../devicetree/bindings/power/reset/restart-handler.yaml      | 2 +-
->  Documentation/devicetree/bindings/rtc/rtc.yaml                | 2 +-
->  .../devicetree/bindings/soundwire/soundwire-controller.yaml   | 2 +-
->  Documentation/devicetree/bindings/spi/spi-controller.yaml     | 2 +-
->  Documentation/devicetree/bindings/watchdog/watchdog.yaml      | 2 +-
->  21 files changed, 23 insertions(+), 23 deletions(-)
->=20
+diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-cust=
+om.c
+index 89e56913c92e..85db14406b23 100644
+=2D-- a/drivers/hid/hid-sensor-custom.c
++++ b/drivers/hid/hid-sensor-custom.c
+@@ -782,6 +782,29 @@ static const struct hid_sensor_custom_match hid_senso=
+r_custom_known_table[] =3D {
+ 		.luid =3D "020B000000000000",
+ 		.manufacturer =3D "INTEL",
+ 	},
++	/*
++	 * Lenovo Intelligent Sensing Solution (LISS)
++	 */
++	{	/* ambient light */
++		.tag =3D "LISS",
++		.luid =3D "0041010200000082",
++		.model =3D "STK3X3X Sensor",
++		.manufacturer =3D "Vendor 258",
++		.check_dmi =3D true,
++		.dmi.matches =3D {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		}
++	},
++	{	/* human presence */
++		.tag =3D "LISS",
++		.luid =3D "0226000171AC0081",
++		.model =3D "VL53L1_HOD Sensor",
++		.manufacturer =3D "ST_MICRO",
++		.check_dmi =3D true,
++		.dmi.matches =3D {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		}
++	},
+ 	{}
+ };
 
-[...]
+=2D-
+2.38.1
 
-> diff --git a/Documentation/devicetree/bindings/mtd/nand-chip.yaml b/Docum=
-entation/devicetree/bindings/mtd/nand-chip.yaml
-> index 97ac3a3fbb52..20b195ef9b70 100644
-> --- a/Documentation/devicetree/bindings/mtd/nand-chip.yaml
-> +++ b/Documentation/devicetree/bindings/mtd/nand-chip.yaml
-> @@ -4,7 +4,7 @@
->  $id: http://devicetree.org/schemas/mtd/nand-chip.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: NAND Chip and NAND Controller Generic Binding
-> +title: NAND Chip and NAND Controller common properties
-
-I only see this now but the title should be
-
-	"NAND chip common properties"
-
-> =20
->  maintainers:
->    - Miquel Raynal <miquel.raynal@bootlin.com>
-> diff --git a/Documentation/devicetree/bindings/mtd/nand-controller.yaml b=
-/Documentation/devicetree/bindings/mtd/nand-controller.yaml
-> index 359a015d4e5a..a004efc42842 100644
-> --- a/Documentation/devicetree/bindings/mtd/nand-controller.yaml
-> +++ b/Documentation/devicetree/bindings/mtd/nand-controller.yaml
-> @@ -4,7 +4,7 @@
->  $id: http://devicetree.org/schemas/mtd/nand-controller.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: NAND Chip and NAND Controller Generic Binding
-> +title: NAND Chip and NAND Controller common properties
-
-And here just "NAND controller..."
-
-Of course the original purpose of your series is more to clean those
-titles rather than fixing them and if you disagree I am fine doing it
-myself aside, but if you could at the same time make the title more
-accurate that would be perfect.
-
-Either ways:
-
-Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
-
-Cheers,
-Miqu=C3=A8l
