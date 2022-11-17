@@ -2,220 +2,161 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A58F4C433FE
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Nov 2022 23:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 011E7C4332F
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Nov 2022 08:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbiKPXUw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Nov 2022 18:20:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50186 "EHLO
+        id S239471AbiKQIJh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 17 Nov 2022 03:09:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234221AbiKPXUt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Nov 2022 18:20:49 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC0967138
-        for <linux-iio@vger.kernel.org>; Wed, 16 Nov 2022 15:20:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net; s=s31663417;
-        t=1668640837; bh=TcO94Z8nJH9mtnQDt0N40k7lEnO2Vze6eUJiZsgph7E=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=ILaYqu5ezMtYvGcJ9y05fk/TGIn81KXml/obiFQ35BMaxkS3wDeRpiQEp7ulwtZ1s
-         QXM0WG5PZ7JXnUPHtvpyUb1XehHQpkrmSDeLR4LPXJklT3iL3MOYy/ynu5rVfaC2Q6
-         RXVfWlLe3GHqCysLTAdEtCy694RZo2wznGtc5ZUKvO88OWXqS+po1KSi+swrFK5OOw
-         vUS7Oq4qFQ6r/ZyHQXq8Px4NdSLZ6VTQkTwvYOXIgeatKFPnXVBmTF/7FnONmz6wI2
-         6AHSxlwRuHKwxMvISkDb4QXrd355gODd+AqqxgEPSczpwPYgOu7/dh04LeYnAg0f4+
-         TRL1oh2f1/VZA==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from localhost.localdomain ([95.223.44.107]) by mail.gmx.net
- (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1N1wlv-1p6DN619z7-012JBV; Thu, 17 Nov 2022 00:20:37 +0100
-From:   Philipp Jungkamp <p.jungkamp@gmx.net>
-To:     Jiri Kosina <jikos@kernel.org>,
+        with ESMTP id S239427AbiKQIJf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Nov 2022 03:09:35 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B312EF5D;
+        Thu, 17 Nov 2022 00:09:34 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id n21so3092549ejb.9;
+        Thu, 17 Nov 2022 00:09:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mHrJvt3/b8ocan2zs8qQMEVGwjMHNUAgBUCFjsp+mQU=;
+        b=q6Ltg4dpREcxyfJavgtB+RA8ZfmfQ4JEzspKSga1zTZpdWBtTYw/PrLDcopwEV4FGj
+         Drbc6DGQUUqRlEupRZftUgDSNNO0DiOChwpvDEsESsjp56RYErBOtTjZ07giHSgHlMqs
+         HxuKwhVq2oEcccxRdT4Snia3+LYhHHhWrF/Lx4weg0Yurn/T3t9JQvT6CeHP6CX3aep0
+         xa4nVjllgJM7Ul47b+3VEQc6QkEBK2to9TFzcls4jlikhE+MplV5jAbsTtBMk6maIbue
+         cvy+e6Mz+gFiVf2tqOkBNQ3wEKrgQLWvg9gwpAfvP5cEd7ZCacNP8bJCmA8bEeEgGAdU
+         hOMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mHrJvt3/b8ocan2zs8qQMEVGwjMHNUAgBUCFjsp+mQU=;
+        b=UiJKP4htdEklEyjCcLjn96Y/CsRnV69NycoAw8lF5P5aI8y7oWrxZfrGSmhDH6hkkd
+         IAZnCwwREd6G87jNk6qVVcDFARCCEQne8KHP7ZpEaZ+XSb34/0y8NdW3SNJNmesgVnni
+         Zg9F60+S351QO1AUj70+eCieG+lhoY+yG7FbMtDG9gGYg7OqAA88vthjngCiccHu+iHe
+         xtsC7RlsCSrBa2o/erii1Nz1Paa4BfvnLqA6d0OSDTyMcY7sLrjqtHFmqNX3ke/iZLWU
+         wVmVJQg08DlKJPG9aPl4OP2L98NsSgOI+4ZyXWChiJ7UX1w4OJgPE1CJi013gFaOMXKD
+         9LWg==
+X-Gm-Message-State: ANoB5plNT6QP9KM4pkZp4DjxIX0iT+rk9zX5/KSY5V3NfuaJ0ZX3iHze
+        MqIhCUZ38Mo05fwnf5dZ2p4=
+X-Google-Smtp-Source: AA0mqf7qvFJyguNi0DLyioIgn6dzOu97NdlD5KPXZuhgSEiaIfKNodRZtnNM2FPzVVDdtjO9XRwNUg==
+X-Received: by 2002:a17:907:9190:b0:78a:52bb:d904 with SMTP id bp16-20020a170907919000b0078a52bbd904mr1159731ejb.630.1668672572594;
+        Thu, 17 Nov 2022 00:09:32 -0800 (PST)
+Received: from localhost.localdomain ([5.2.194.157])
+        by smtp.gmail.com with ESMTPSA id la18-20020a170907781200b00770880dfc4fsm42192ejc.29.2022.11.17.00.09.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Nov 2022 00:09:32 -0800 (PST)
+From:   Cosmin Tanislav <demonsingur@gmail.com>
+X-Google-Original-From: Cosmin Tanislav <cosmin.tanislav@analog.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, Philipp Jungkamp <p.jungkamp@gmx.net>
-Subject: [PATCH 3/3] IIO: hid-sensor-prox: Use generic usage
-Date:   Thu, 17 Nov 2022 00:19:47 +0100
-Message-Id: <20221116231947.18031-3-p.jungkamp@gmx.net>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/2] AD74115
+Date:   Thu, 17 Nov 2022 10:09:14 +0200
+Message-Id: <20221117080916.411766-1-cosmin.tanislav@analog.com>
 X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221116231947.18031-1-p.jungkamp@gmx.net>
-References: <b1980cb048a77428971ddfc3bde238b66c540a1f.camel@gmx.net>
- <20221116231947.18031-1-p.jungkamp@gmx.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:9wBR7jrC/Lf3Jjt57h1uXycSpVR2VuTVgxZMAv4Lljxl614fODW
- hKlO+Zv7IoM981o+EXoqeEQ7SarA7EJ9jshNicJ+VW78+OOCxnrSjzduCrIbmEb+tawBjrW
- ZIXIqiekm2xVmhPzpMNHoBAw5ruRgaE9JxcWY/GcmYQX/y+WsWjt6HiWdD+IjxOf6srOZto
- Wzrssu1h1M+J7K7Fjfoig==
-UI-OutboundReport: notjunk:1;M01:P0:gHhA4aHBoM4=;KyHzld/pT3aApvLSA4T8vGFm8N3
- 1eXk4ShNwSKUd0MV6ze5BfNlkk8HFIjVHiwLHcX40PCOMTOEiuej34cKCca5QWG+Zv4L+s+eL
- sVv1GlYwxYmLuJ+X7G98M4htlhmbM/V8tInciiZAFoFQeIqaFwz4DihX73G/OzpJAFk8SjfqR
- jjT0Zv0CenHG8VbNo0RSb0UVy0Pm7TXIp+Hcmr/3YbhkVdtbtyD7LK0ij/x50t2sm84Z6Zkir
- y7X3z9YdFPm2FOlvbh3x7csiUbkjbzUZ2xZZ9dPAolUP2UGjOAnCQRnddQTdvrPyFl69I2s5e
- TBhb91PHIO1whf5Bo+hAfuGb7n4c9kDBJRVAMKqumcIcHR5X9ppm4+/ZvSYET6EEMWm0emPVy
- yXjZ2z7GZvmwpAxAkOYLMx0TxeBy5kLtC30QIHqRGK0TAIx/d7kpwbF8LLTggYzNIBc4s6S03
- PtsCl6T6lDyeftmWeOdg0q7JpA/oYMRl9OPKnEHKZ0Cg6k7Su1IMWCrnmXJ3K8RQsbtq4uabS
- qPI1hhxlhq+lTAf4M+dGXs/g55lUs3esqYAEwd7xW0IBjiVq+6laqDWJ6i1NVfChWftdxccsr
- UA5se87CLD/po13iyTzKHqGPeyFc0hxkVZxgazk1ZPuS/nEUSsKIb348Jof3NwJxODVZe8dHP
- Cbj2AT/d2/5XtSygShNqPfHU9Xud0i+YTy5rDsxbOqxsaBXzAJV/8k54Mx0vhE4SfBfW6J/VZ
- 9eIhxlX8qlgc0pa1zohgp6heA/52KpsQo1UE6m0AUd0l0At+7sgcs/2yWKruaLn8wu5SY/GI0
- WVTxCZh6WNyt4HLCF7HZ6mq3fKIPpTumGoU+wR+VGgi6AXfWQmpqMtJVJGBzbsT2Atd4EUhBQ
- iw4TK+ey0qPfykH1yOHqLd9V5HMz3yfrTvhMY0juIB8PNZ9nvY9Ox/qsOCZzZ8ga6rZqpRWlc
- ic/yjg==
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use a generic 'hsdev->usage' instead of the HID_USAGE_SENSOR_PROX to
-allow this driver to drive the Lenvo custom proximity sensor, which is
-registered under a 'custom' usage and not HID_USAGE_SENSOR_PROX.
+The AD74115H is a single-channel, software-configurable, input and
+output device for industrial control applications. The AD74115H
+provides a wide range of use cases, integrated on a single chip.
 
-Check for raw_len to accomodate the ReportSize(8) field used on the
-Lenovo Yoga 9 14IAP7.
+These use cases include analog output, analog input, digital output,
+digital input, resistance temperature detector (RTD), and thermocouple
+measurement capability. The AD74115H also has an integrated HART modem.
 
-Add the Lenovo Intelligent Sensing Solution (LISS) human presence sensor
-to the platform device ids.
+A serial peripheral interface (SPI) is used to handle all communications
+to the device, including communications with the HART modem. The digital
+input and digital outputs can be accessed via the SPI or the
+general-purpose input and output (GPIO) pins to support higher
+speed data rates.
 
-Signed-off-by: Philipp Jungkamp <p.jungkamp@gmx.net>
-=2D--
- drivers/hid/hid-sensor-custom.c     | 10 ++++++++
- drivers/iio/light/hid-sensor-prox.c | 39 +++++++++++++++++++++--------
- 2 files changed, 38 insertions(+), 11 deletions(-)
+The device features a 16-bit, sigma-delta analog-to-digital converter
+(ADC) and a 14-bit digital-to-analog converter (DAC).
+The AD74115H contains a high accuracy 2.5 V on-chip reference that can
+be used as the DAC and ADC reference.
 
-diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-cust=
-om.c
-index 124493b8abaf..ec49dc80f074 100644
-=2D-- a/drivers/hid/hid-sensor-custom.c
-+++ b/drivers/hid/hid-sensor-custom.c
-@@ -795,6 +795,16 @@ static const struct hid_sensor_custom_match hid_senso=
-r_custom_known_table[] =3D {
- 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
- 		}
- 	},
-+	{	/* human presence */
-+		.tag =3D "LISS",
-+		.luid =3D "0226000171AC0081",
-+		.model =3D "VL53L1_HOD Sensor",
-+		.manufacturer =3D "ST_MICRO",
-+		.check_dmi =3D true,
-+		.dmi.matches =3D {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+		}
-+	},
- 	{}
- };
+V2 -> V3:
+ * dt-bindings: remove address and size cells specifiers
+ * dt-bindings: additionalProperties -> unevaluatedProperties
+ * dt-bindings: remove pipe where not needed
+ * dt-bindings: use required for adi,digital-input-sink-range-high: true
+ * do not uselessly store poll time
+ * fix ad74115_adc_gain capitalization
+ * inline ad74115_channels_map[st->ch_func] access
+ * keep consistent table naming
+ * remove aldo1v8 regulator
+ * spell out low-power
+ * split up resistance offset and scale into separate function
+ * use adc_rdy name for irq
+ * use microvolt for conv2 range
+ * use unsigned int for ad74115_adc_conv_mul
+ * use unsigned int for ad74115_adc_gain
+ * wrap module_driver call less
 
-diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-s=
-ensor-prox.c
-index f10fa2abfe72..cca6b75c44d5 100644
-=2D-- a/drivers/iio/light/hid-sensor-prox.c
-+++ b/drivers/iio/light/hid-sensor-prox.c
-@@ -61,6 +61,7 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- 			      long mask)
- {
- 	struct prox_state *prox_state =3D iio_priv(indio_dev);
-+	struct hid_sensor_hub_device *hsdev;
- 	int report_id =3D -1;
- 	u32 address;
- 	int ret_type;
-@@ -75,6 +76,7 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- 			report_id =3D prox_state->prox_attr.report_id;
- 			min =3D prox_state->prox_attr.logical_minimum;
- 			address =3D HID_USAGE_SENSOR_HUMAN_PRESENCE;
-+			hsdev =3D prox_state->common_attributes.hsdev;
- 			break;
- 		default:
- 			report_id =3D -1;
-@@ -84,8 +86,9 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- 			hid_sensor_power_state(&prox_state->common_attributes,
- 						true);
- 			*val =3D sensor_hub_input_attr_get_raw_value(
--				prox_state->common_attributes.hsdev,
--				HID_USAGE_SENSOR_PROX, address,
-+				hsdev,
-+				hsdev->usage,
-+				address,
- 				report_id,
- 				SENSOR_HUB_SYNC,
- 				min < 0);
-@@ -191,10 +194,16 @@ static int prox_capture_sample(struct hid_sensor_hub=
-_device *hsdev,
+V1 -> V2:
+ * dt-bindings: add spi peripheral allOf
+ * dt-bindings: remove cs-gpios
+ * dt-bindings: remove refin supply from example
+ * dt-bindings: remove status
+ * sort includes
+ * ad74115_parse_fw_prop -> ad74115_apply_fw_prop
+ * ad74115_setup_{comp,}_gc -> ad74115_setup_{comp,}_gpio_chip
+ * gpiod_get_optional -> devm_gpiod_get_optional
+ * add support for reset-gpios
+ * add support for running without an interrupt
+ * fix comma after terminating member
+ * fix order of rate and range masks
+ * fix reset pin wait time and out of reset time
+ * fix rtd mode reading
+ * pass chan spec only where needed
+ * remove -en suffix
+ * remove default 0 values
+ * remove diag support
+ * remove unecessary prop storage
+ * reorder switch cases to match enum
+ * set burnout enable bit based on burnout current
+ * set default value for props
+ * simplify dac hart slew usage
+ * simplify prop value validation
+ * use bool for 4 wire rtd mode
+ * use bool for burnout current polarity
+ * use bool for dac sc current limit
+ * use bool for debounce mode
+ * use bool for din sink range
+ * use bool for din threshold mode
+ * use devm_regulator_bulk_get_enable
+ * use IIO_VAL_FRACTIONAL for resistance offset
+ * use struct assignment for gpiochip
+ * warn on empty prop mask
 
- 	switch (usage_id) {
- 	case HID_USAGE_SENSOR_HUMAN_PRESENCE:
--		prox_state->human_presence =3D *(u32 *)raw_data;
--		ret =3D 0;
--		break;
--	default:
-+		switch (raw_len) {
-+		case 1:
-+			prox_state->human_presence =3D *(u8 *)raw_data;
-+			ret =3D 0;
-+			break;
-+		case 4:
-+			prox_state->human_presence =3D *(u32 *)raw_data;
-+			ret =3D 0;
-+			break;
-+		}
- 		break;
- 	}
+Cosmin Tanislav (2):
+  dt-bindings: iio: addac: add AD74115
+  iio: addac: add AD74115 driver
 
-@@ -244,7 +253,8 @@ static int hid_prox_probe(struct platform_device *pdev=
-)
- 	prox_state->common_attributes.hsdev =3D hsdev;
- 	prox_state->common_attributes.pdev =3D pdev;
+ .../bindings/iio/addac/adi,ad74115.yaml       |  373 ++++
+ MAINTAINERS                                   |    8 +
+ drivers/iio/addac/Kconfig                     |   14 +
+ drivers/iio/addac/Makefile                    |    1 +
+ drivers/iio/addac/ad74115.c                   | 1947 +++++++++++++++++
+ 5 files changed, 2343 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
+ create mode 100644 drivers/iio/addac/ad74115.c
 
--	ret =3D hid_sensor_parse_common_attributes(hsdev, HID_USAGE_SENSOR_PROX,
-+	ret =3D hid_sensor_parse_common_attributes(hsdev,
-+					hsdev->usage,
- 					&prox_state->common_attributes,
- 					prox_sensitivity_addresses,
- 					ARRAY_SIZE(prox_sensitivity_addresses));
-@@ -262,7 +272,8 @@ static int hid_prox_probe(struct platform_device *pdev=
-)
-
- 	ret =3D prox_parse_report(pdev, hsdev,
- 				(struct iio_chan_spec *)indio_dev->channels,
--				HID_USAGE_SENSOR_PROX, prox_state);
-+				hsdev->usage,
-+				prox_state);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to setup attributes\n");
- 		return ret;
-@@ -291,8 +302,9 @@ static int hid_prox_probe(struct platform_device *pdev=
-)
- 	prox_state->callbacks.send_event =3D prox_proc_event;
- 	prox_state->callbacks.capture_sample =3D prox_capture_sample;
- 	prox_state->callbacks.pdev =3D pdev;
--	ret =3D sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_PROX,
--					&prox_state->callbacks);
-+	ret =3D sensor_hub_register_callback(hsdev,
-+					   hsdev->usage,
-+					   &prox_state->callbacks);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "callback reg failed\n");
- 		goto error_iio_unreg;
-@@ -314,7 +326,8 @@ static int hid_prox_remove(struct platform_device *pde=
-v)
- 	struct iio_dev *indio_dev =3D platform_get_drvdata(pdev);
- 	struct prox_state *prox_state =3D iio_priv(indio_dev);
-
--	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_PROX);
-+	sensor_hub_remove_callback(hsdev,
-+				   hsdev->usage);
- 	iio_device_unregister(indio_dev);
- 	hid_sensor_remove_trigger(indio_dev, &prox_state->common_attributes);
-
-@@ -326,6 +339,10 @@ static const struct platform_device_id hid_prox_ids[]=
- =3D {
- 		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
- 		.name =3D "HID-SENSOR-200011",
- 	},
-+	{
-+		/* Format: HID-SENSOR-tag-usage_id_in_hex_lowercase */
-+		.name =3D "HID-SENSOR-LISS-0226",
-+	},
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(platform, hid_prox_ids);
-=2D-
+-- 
 2.38.1
 
