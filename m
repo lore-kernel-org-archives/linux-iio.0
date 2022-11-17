@@ -2,103 +2,105 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2582C4332F
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Nov 2022 09:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2AC9C433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Nov 2022 12:12:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234734AbiKQJCA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 17 Nov 2022 04:02:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58792 "EHLO
+        id S240101AbiKQMMW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 17 Nov 2022 07:12:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239439AbiKQJB5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Nov 2022 04:01:57 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6187559149;
-        Thu, 17 Nov 2022 01:01:56 -0800 (PST)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AH7n6nY003733;
-        Thu, 17 Nov 2022 04:01:51 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3kwgw4rg03-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Nov 2022 04:01:50 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 2AH91nBH004105
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 17 Nov 2022 04:01:49 -0500
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 17 Nov 2022 04:01:48 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 17 Nov 2022 04:01:48 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Thu, 17 Nov 2022 04:01:48 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.121])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 2AH91dQM020374;
-        Thu, 17 Nov 2022 04:01:41 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH] drivers: iio: dac: ad5592r: add gpio_chip names
-Date:   Thu, 17 Nov 2022 11:01:30 +0200
-Message-ID: <20221117090130.51702-1-antoniu.miclaus@analog.com>
+        with ESMTP id S240057AbiKQMMR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Nov 2022 07:12:17 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84FF70A25;
+        Thu, 17 Nov 2022 04:12:08 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id c1so2462225lfi.7;
+        Thu, 17 Nov 2022 04:12:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=QQBF037ir2neveiNV9S6vlyKu6iA0W4yp3JG1tCgnsw=;
+        b=nqaE219F+qHantJ2wcuOZFpENWvGmMilEgyGcDx7+OT+HAA1VrtIQuvvPCxdENNXSg
+         V6iZ9bMLJETYKbrcGDMdcaKN4XDaRbqnXK2HaqMkH5Q3HjO3LykFSpWdIqmn5UBz+zjg
+         IYjt7kLYj0uzoFrnPzHfdIEIrJyfgF2muqtvIfm5OE7oJ02lRkRIuf84Mck1k5AdGfcP
+         eIB8XU9JR5qf8WqU2wePk4Iii6kRZibVOc+127OSZwjcQp6SRF+Wg9o9qB+EGQ7LdPYa
+         6P7d9U8pMD2MUlLLSXRQkYK1KlP9jFZChY7ufykp5SIMNBs+XC09d0kRYMYcKljT4d9O
+         9dTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QQBF037ir2neveiNV9S6vlyKu6iA0W4yp3JG1tCgnsw=;
+        b=tCBsFYK6p8bujaDeDjUFsTYGArNfxOUDUKw/Pr1MDyhefWgxHoYJUcsK+zDeIuB1tV
+         l1msD8Bx1iH2SI8ibZFmyDQnqpMdneFR+NIqhaNHpqShOA1c+AdGr4SkG2rZonTKGzrN
+         9vXOZKmhuQ6dA9ZqyGEWTIuabMWRmlg/ak2PtgzrDurIRKWe8eV/9cQ0fvR/VGWW2w6i
+         u3JEm/6SdMLL25DrJnvGNMuX6Fj032fHnkivr2WhF+LxhCSleikMdfRMP27ldeImHXBb
+         Vlgx3AIeuowoplLcdn3mV0jWgxdHJ4CRxDHIrmUOSzFoiPTglMXOUqYLC/u28DRxAfRi
+         BTCg==
+X-Gm-Message-State: ANoB5pkY+7txYX24C+2iklSnDR/MMdM772pI6TTVhR7q2D58Y+8HM59K
+        eTRkHOw7QeXkt2yrQHPikfk=
+X-Google-Smtp-Source: AA0mqf4/fz/K800a0L5v7/Eol2BK62BY1Fz4+97vDkmJ60jOyYh7jfpCi74lNDNbYWQmNB6paKFo7A==
+X-Received: by 2002:a05:6512:2a8c:b0:4ac:102e:5ca5 with SMTP id dt12-20020a0565122a8c00b004ac102e5ca5mr895163lfb.236.1668687127135;
+        Thu, 17 Nov 2022 04:12:07 -0800 (PST)
+Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id a4-20020a056512200400b004a01105eea2sm120808lfb.150.2022.11.17.04.12.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Nov 2022 04:12:06 -0800 (PST)
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Jiri Kosina <jikos@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v2] HID: hid-sensor-custom: set fixed size for custom attributes
+Date:   Thu, 17 Nov 2022 13:13:26 +0100
+Message-Id: <20221117121326.5621-1-marcus.folkesson@gmail.com>
 X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: jZc6A2xlq7rdUNNqwykqQIO3WcUtfw65
-X-Proofpoint-ORIG-GUID: jZc6A2xlq7rdUNNqwykqQIO3WcUtfw65
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-17_04,2022-11-16_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 malwarescore=0
- impostorscore=0 suspectscore=0 phishscore=0 lowpriorityscore=0 spamscore=0
- mlxscore=0 mlxlogscore=999 priorityscore=1501 clxscore=1015 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
- definitions=main-2211170068
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add array of explicit gpio names for the `gpiochip` structure of
-ad5592r, mainly for debug purposes.
+This is no bugfix (so no Fixes: tag is necessary) as it is
+taken care of in hid_sensor_custom_add_attributes().
 
-Since the gpios are configurable via the dts, generic names are
-used.
+The motivation for this patch is that:
+hid_sensor_custom_field.attr_name and
+hid_sensor_custom_field.attrs
+has the size of HID_CUSTOM_TOTAL_ATTRS and used in same context.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+We compare against HID_CUSTOM_TOTAL_ATTRS when
+looping through hid_custom_attrs.
+
+We will silent the smatch error:
+hid_sensor_custom_add_attributes() error: buffer overflow
+'hid_custom_attrs' 8 <= 10
+
+Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/dac/ad5592r-base.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/hid/hid-sensor-custom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ad5592r-base.c b/drivers/iio/dac/ad5592r-base.c
-index 7a9b5fc1e579..076bc9ecfb49 100644
---- a/drivers/iio/dac/ad5592r-base.c
-+++ b/drivers/iio/dac/ad5592r-base.c
-@@ -124,6 +124,10 @@ static int ad5592r_gpio_request(struct gpio_chip *chip, unsigned offset)
- 	return 0;
- }
+diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-custom.c
+index 32c2306e240d..602465ad2745 100644
+--- a/drivers/hid/hid-sensor-custom.c
++++ b/drivers/hid/hid-sensor-custom.c
+@@ -62,7 +62,7 @@ struct hid_sensor_sample {
+ 	u32 raw_len;
+ } __packed;
  
-+static const char * const ad5592r_gpio_names[] = {
-+	"GPIO0", "GPIO1", "GPIO2", "GPIO3", "GPIO4", "GPIO5", "GPIO6", "GPIO7",
-+};
-+
- static int ad5592r_gpio_init(struct ad5592r_state *st)
- {
- 	if (!st->gpio_map)
-@@ -140,6 +144,7 @@ static int ad5592r_gpio_init(struct ad5592r_state *st)
- 	st->gpiochip.set = ad5592r_gpio_set;
- 	st->gpiochip.request = ad5592r_gpio_request;
- 	st->gpiochip.owner = THIS_MODULE;
-+	st->gpiochip.names = ad5592r_gpio_names;
- 
- 	mutex_init(&st->gpio_lock);
- 
+-static struct attribute hid_custom_attrs[] = {
++static struct attribute hid_custom_attrs[HID_CUSTOM_TOTAL_ATTRS] = {
+ 	{.name = "name", .mode = S_IRUGO},
+ 	{.name = "units", .mode = S_IRUGO},
+ 	{.name = "unit-expo", .mode = S_IRUGO},
 -- 
 2.38.1
 
