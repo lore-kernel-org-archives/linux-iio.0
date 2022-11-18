@@ -2,45 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44F27C43219
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 22:52:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 175BAC4332F
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 22:52:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234467AbiKRWw3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Nov 2022 17:52:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50984 "EHLO
+        id S233927AbiKRWwc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Nov 2022 17:52:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234305AbiKRWwE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 17:52:04 -0500
+        with ESMTP id S232191AbiKRWwI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 17:52:08 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B601CBBDC0
-        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 14:47:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0142BBDC6
+        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 14:47:26 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA88-0000dt-6P; Fri, 18 Nov 2022 23:46:40 +0100
+        id 1owA8G-00018M-BD; Fri, 18 Nov 2022 23:46:48 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA83-0058Hi-FY; Fri, 18 Nov 2022 23:46:36 +0100
+        id 1owA8C-0058L3-1g; Fri, 18 Nov 2022 23:46:44 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA82-00Hb2z-FV; Fri, 18 Nov 2022 23:46:34 +0100
+        id 1owA8C-00Hb5u-58; Fri, 18 Nov 2022 23:46:44 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
         Grant Likely <grant.likely@linaro.org>,
         Wolfram Sang <wsa@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>
+        Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-i2c@vger.kernel.org, kernel@pengutronix.de,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 125/606] iio: light: isl29018: Convert to i2c's .probe_new()
-Date:   Fri, 18 Nov 2022 23:37:39 +0100
-Message-Id: <20221118224540.619276-126-uwe@kleine-koenig.org>
+Subject: [PATCH 170/606] iio: pressure: hp206c: Convert to i2c's .probe_new()
+Date:   Fri, 18 Nov 2022 23:38:24 +0100
+Message-Id: <20221118224540.619276-171-uwe@kleine-koenig.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
 References: <20221118224540.619276-1-uwe@kleine-koenig.org>
@@ -62,34 +61,34 @@ that explicitly in the probe function.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/light/isl29018.c | 6 +++---
+ drivers/iio/pressure/hp206c.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/light/isl29018.c b/drivers/iio/light/isl29018.c
-index b36f8b7ca68e..141845fb47f9 100644
---- a/drivers/iio/light/isl29018.c
-+++ b/drivers/iio/light/isl29018.c
-@@ -711,9 +711,9 @@ static void isl29018_disable_regulator_action(void *_data)
- 		pr_err("failed to disable isl29018's VCC regulator!\n");
- }
+diff --git a/drivers/iio/pressure/hp206c.c b/drivers/iio/pressure/hp206c.c
+index 986b7a59712e..b6d2ff464341 100644
+--- a/drivers/iio/pressure/hp206c.c
++++ b/drivers/iio/pressure/hp206c.c
+@@ -352,9 +352,9 @@ static const struct iio_info hp206c_info = {
+ 	.write_raw = hp206c_write_raw,
+ };
  
--static int isl29018_probe(struct i2c_client *client,
--			  const struct i2c_device_id *id)
-+static int isl29018_probe(struct i2c_client *client)
+-static int hp206c_probe(struct i2c_client *client,
+-			const struct i2c_device_id *id)
++static int hp206c_probe(struct i2c_client *client)
  {
 +	const struct i2c_device_id *id = i2c_client_get_device_id(client);
- 	struct isl29018_chip *chip;
  	struct iio_dev *indio_dev;
- 	int err;
-@@ -865,7 +865,7 @@ static struct i2c_driver isl29018_driver = {
- 			.pm = pm_sleep_ptr(&isl29018_pm_ops),
- 			.of_match_table = isl29018_of_match,
- 		    },
--	.probe	 = isl29018_probe,
-+	.probe_new = isl29018_probe,
- 	.id_table = isl29018_id,
- };
- module_i2c_driver(isl29018_driver);
+ 	struct hp206c_data *data;
+ 	int ret;
+@@ -409,7 +409,7 @@ MODULE_DEVICE_TABLE(acpi, hp206c_acpi_match);
+ #endif
+ 
+ static struct i2c_driver hp206c_driver = {
+-	.probe = hp206c_probe,
++	.probe_new = hp206c_probe,
+ 	.id_table = hp206c_id,
+ 	.driver = {
+ 		.name = "hp206c",
 -- 
 2.38.1
 
