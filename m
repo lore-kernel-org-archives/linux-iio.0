@@ -2,44 +2,46 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E77A3C4321E
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 23:22:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4CA3C43219
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 23:22:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231215AbiKRXWs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Nov 2022 18:22:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57912 "EHLO
+        id S232318AbiKRXWv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Nov 2022 18:22:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235461AbiKRXVb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 18:21:31 -0500
+        with ESMTP id S235493AbiKRXVw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 18:21:52 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1CC6D953
-        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 15:12:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A788C6D969
+        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 15:12:59 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA8F-00013a-3f; Fri, 18 Nov 2022 23:46:47 +0100
+        id 1owA8B-0000pO-CL; Fri, 18 Nov 2022 23:46:43 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA8A-0058KW-ND; Fri, 18 Nov 2022 23:46:43 +0100
+        id 1owA86-0058Iv-Nn; Fri, 18 Nov 2022 23:46:39 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA8A-00Hb5S-Eh; Fri, 18 Nov 2022 23:46:42 +0100
+        id 1owA86-00Hb4E-Ir; Fri, 18 Nov 2022 23:46:38 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
         Grant Likely <grant.likely@linaro.org>,
         Wolfram Sang <wsa@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>
+        Jonathan Cameron <jic23@kernel.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     linux-i2c@vger.kernel.org, kernel@pengutronix.de,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 163/606] iio: potentiometer: tpl0102: Convert to i2c's .probe_new()
-Date:   Fri, 18 Nov 2022 23:38:17 +0100
-Message-Id: <20221118224540.619276-164-uwe@kleine-koenig.org>
+Subject: [PATCH 145/606] iio: light: tsl2772: Convert to i2c's .probe_new()
+Date:   Fri, 18 Nov 2022 23:37:59 +0100
+Message-Id: <20221118224540.619276-146-uwe@kleine-koenig.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
 References: <20221118224540.619276-1-uwe@kleine-koenig.org>
@@ -61,34 +63,34 @@ that explicitly in the probe function.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/potentiometer/tpl0102.c | 6 +++---
+ drivers/iio/light/tsl2772.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/potentiometer/tpl0102.c b/drivers/iio/potentiometer/tpl0102.c
-index d996dc367fb7..a3465b413b0c 100644
---- a/drivers/iio/potentiometer/tpl0102.c
-+++ b/drivers/iio/potentiometer/tpl0102.c
-@@ -120,9 +120,9 @@ static const struct iio_info tpl0102_info = {
- 	.write_raw = tpl0102_write_raw,
- };
- 
--static int tpl0102_probe(struct i2c_client *client,
--			 const struct i2c_device_id *id)
-+static int tpl0102_probe(struct i2c_client *client)
- {
-+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
- 	struct device *dev = &client->dev;
- 	struct tpl0102_data *data;
- 	struct iio_dev *indio_dev;
-@@ -161,7 +161,7 @@ static struct i2c_driver tpl0102_driver = {
- 	.driver = {
- 		.name = "tpl0102",
+diff --git a/drivers/iio/light/tsl2772.c b/drivers/iio/light/tsl2772.c
+index dd9051f1cc1a..ad50baa0202c 100644
+--- a/drivers/iio/light/tsl2772.c
++++ b/drivers/iio/light/tsl2772.c
+@@ -1750,9 +1750,9 @@ static const struct tsl2772_chip_info tsl2772_chip_info_tbl[] = {
  	},
--	.probe = tpl0102_probe,
-+	.probe_new = tpl0102_probe,
- 	.id_table = tpl0102_id,
  };
  
+-static int tsl2772_probe(struct i2c_client *clientp,
+-			 const struct i2c_device_id *id)
++static int tsl2772_probe(struct i2c_client *clientp)
+ {
++	const struct i2c_device_id *id = i2c_client_get_device_id(clientp);
+ 	struct iio_dev *indio_dev;
+ 	struct tsl2772_chip *chip;
+ 	int ret;
+@@ -1931,7 +1931,7 @@ static struct i2c_driver tsl2772_driver = {
+ 		.pm = &tsl2772_pm_ops,
+ 	},
+ 	.id_table = tsl2772_idtable,
+-	.probe = tsl2772_probe,
++	.probe_new = tsl2772_probe,
+ };
+ 
+ module_i2c_driver(tsl2772_driver);
 -- 
 2.38.1
 
