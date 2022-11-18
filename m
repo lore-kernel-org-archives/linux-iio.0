@@ -2,47 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E18C433FE
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 22:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE08C433FE
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 22:49:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233470AbiKRWtT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Nov 2022 17:49:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36994 "EHLO
+        id S233496AbiKRWt2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Nov 2022 17:49:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232784AbiKRWrj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 17:47:39 -0500
+        with ESMTP id S232853AbiKRWrq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 17:47:46 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D74A0B961B
-        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 14:46:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6D5A3168
+        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 14:46:48 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA7r-0007wb-FG; Fri, 18 Nov 2022 23:46:23 +0100
+        id 1owA7w-0008Hw-TT; Fri, 18 Nov 2022 23:46:28 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA7o-0058CA-FT; Fri, 18 Nov 2022 23:46:21 +0100
+        id 1owA7s-0058DU-K2; Fri, 18 Nov 2022 23:46:25 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA7n-00HayU-DN; Fri, 18 Nov 2022 23:46:19 +0100
+        id 1owA7q-00HazX-Ve; Fri, 18 Nov 2022 23:46:22 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
         Grant Likely <grant.likely@linaro.org>,
         Wolfram Sang <wsa@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?utf-8?q?Marek_Beh=C3=BAn?= <kabel@kernel.org>,
-        Crt Mori <cmo@melexis.com>, Miaoqian Lin <linmq006@gmail.com>
+        Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-i2c@vger.kernel.org, kernel@pengutronix.de,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 057/606] iio: accel: mma9551: Convert to i2c's .probe_new()
-Date:   Fri, 18 Nov 2022 23:36:31 +0100
-Message-Id: <20221118224540.619276-58-uwe@kleine-koenig.org>
+Subject: [PATCH 073/606] iio: chemical: ams-iaq-core: Convert to i2c's .probe_new()
+Date:   Fri, 18 Nov 2022 23:36:47 +0100
+Message-Id: <20221118224540.619276-74-uwe@kleine-koenig.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
 References: <20221118224540.619276-1-uwe@kleine-koenig.org>
@@ -59,39 +56,37 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-.probe_new() doesn't get the i2c_device_id * parameter, so determine
-that explicitly in the probe function.
+The probe function doesn't make use of the i2c_device_id * parameter so it
+can be trivially converted.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/accel/mma9551.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/chemical/ams-iaq-core.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
-index f7a793f4a8e3..aa4f5842859e 100644
---- a/drivers/iio/accel/mma9551.c
-+++ b/drivers/iio/accel/mma9551.c
-@@ -446,9 +446,9 @@ static const char *mma9551_match_acpi_device(struct device *dev)
- 	return dev_name(dev);
- }
- 
--static int mma9551_probe(struct i2c_client *client,
--			 const struct i2c_device_id *id)
-+static int mma9551_probe(struct i2c_client *client)
- {
-+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
- 	struct mma9551_data *data;
- 	struct iio_dev *indio_dev;
- 	const char *name = NULL;
-@@ -607,7 +607,7 @@ static struct i2c_driver mma9551_driver = {
- 		   .acpi_match_table = ACPI_PTR(mma9551_acpi_match),
- 		   .pm = pm_ptr(&mma9551_pm_ops),
- 		   },
--	.probe = mma9551_probe,
-+	.probe_new = mma9551_probe,
- 	.remove = mma9551_remove,
- 	.id_table = mma9551_id,
+diff --git a/drivers/iio/chemical/ams-iaq-core.c b/drivers/iio/chemical/ams-iaq-core.c
+index 97be3669c554..0a0fbcdd4469 100644
+--- a/drivers/iio/chemical/ams-iaq-core.c
++++ b/drivers/iio/chemical/ams-iaq-core.c
+@@ -135,8 +135,7 @@ static const struct iio_info ams_iaqcore_info = {
+ 	.read_raw	= ams_iaqcore_read_raw,
  };
+ 
+-static int ams_iaqcore_probe(struct i2c_client *client,
+-			     const struct i2c_device_id *id)
++static int ams_iaqcore_probe(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct ams_iaqcore_data *data;
+@@ -180,7 +179,7 @@ static struct i2c_driver ams_iaqcore_driver = {
+ 		.name	= "ams-iaq-core",
+ 		.of_match_table = ams_iaqcore_dt_ids,
+ 	},
+-	.probe = ams_iaqcore_probe,
++	.probe_new = ams_iaqcore_probe,
+ 	.id_table = ams_iaqcore_id,
+ };
+ module_i2c_driver(ams_iaqcore_driver);
 -- 
 2.38.1
 
