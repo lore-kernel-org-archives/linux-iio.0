@@ -2,176 +2,136 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 566F3C4332F
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Nov 2022 23:49:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D3F3C43219
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 08:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233679AbiKQXtL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 17 Nov 2022 18:49:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
+        id S241421AbiKRI2e (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Nov 2022 03:28:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235022AbiKQXtJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Nov 2022 18:49:09 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E79532EE
-        for <linux-iio@vger.kernel.org>; Thu, 17 Nov 2022 15:49:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net; s=s31663417;
-        t=1668728938; bh=zIOolA9952zV+6SNTVjguhB5zc/PxoGHuNoxiOEklMc=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=CYaQrexCPWkvB4K7HCCUV70u0D3YqgBR9ePeefEWUt/a2lX3vobK2PxB18atbEDQx
-         9XnSlvoTQxI3BFMTpJMMzytIIicsLhpwg6AM/4HQqUf2pqxL6efeYmKswjQiu8ic3N
-         6+14lR8hOleqczgYTEgKUyjhPDCEG+5IMCU/rt7cS/SFje49BOjbbckNxCvG7MEVOt
-         SMdzaOISqzHi5uiIXSTCTZ4R0oz75Cynnx9X95/Cj3GpbjLsaP1F79DQNUqmI6W2IN
-         HpEmuE6gIZfPj5F6VYNHUTCGZdy4kCNX5/PomFj9Szrdo3XxQ7j1tNOz7CkqRCat1E
-         xPchfsxStDi0g==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from localhost.localdomain ([95.223.45.31]) by mail.gmx.net
- (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1MybGh-1pACJj2Eyj-00z1HI; Fri, 18 Nov 2022 00:48:58 +0100
-From:   Philipp Jungkamp <p.jungkamp@gmx.net>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, Philipp Jungkamp <p.jungkamp@gmx.net>
-Subject: [PATCH v3 3/4] IIO: hid-sensor-als: Use generic usage
-Date:   Fri, 18 Nov 2022 00:48:23 +0100
-Message-Id: <20221117234824.6227-3-p.jungkamp@gmx.net>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221117234824.6227-1-p.jungkamp@gmx.net>
-References: <20221117150508.00002704@Huawei.com>
- <20221117234824.6227-1-p.jungkamp@gmx.net>
+        with ESMTP id S232404AbiKRI23 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 03:28:29 -0500
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9393FB97
+        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 00:28:24 -0800 (PST)
+Received: by mail-lj1-x229.google.com with SMTP id x21so5856451ljg.10
+        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 00:28:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=MrA5CDs46lQZm6VaAVmPmV1Nyk9XIySNq9lvhXdo7k8=;
+        b=yIT6wd8Tn/4EigMdSev3RTx1dShvONUZ1o2LJic5y3UzW8LgMuG7uFp80Y8Mw7p+2i
+         u+Hx+MWiciMmXSYnrFx98cxa4sbmSAURAUt99p8E3r2tMmF0ygoLGxcFQPJrif3jPMLj
+         y0DxRVohO6j383Jju+uqZkJFVPAKCT7G1d+SNz0aRrDl59ec+iH3SvLunNJnRAN3fFHp
+         uj/yuz8SV/cGRRKi6lGP5BHU+Y9YeVlbn5zwGo+B4clkg1nQfYqsfFdJXz60NiVE7C5x
+         xoWYk/DHjlYtipany3Ms311spap+ZgR86DO9tnSirVslPkUYj7drcMZpd/Ds56w7qUSX
+         eO2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=MrA5CDs46lQZm6VaAVmPmV1Nyk9XIySNq9lvhXdo7k8=;
+        b=R8cnoVdeA472QD9M4M22Jnj4CL9xzKw+vQzYRAMo9XkKWg2f3NcwQoRvWq2G06D0to
+         CCmr2IZPSMQSc49lqc6WH9fqsu+ijoRpyGqYBC2s6fnKm+UTRaoF/IdFVL+hMKQTmSA0
+         QfsjnNL6nOJDnu7XUrdoCxq/Oz6sIPRe4ED9JQgzMfBtJqksuxiIiMHB2PboeLvl+nyN
+         pbbmQEsPk14fPt00YN01s6z/g3wBb3EadOewWs12EtwS/X0yA+8Dih9+rSbzZUXqko8n
+         S8VwBho5HSrqwImCHG6RpUtetg7cFLk8WkuCr1TaO4SuiE/I66yB8w8osiuqJLF4HS2J
+         b/5Q==
+X-Gm-Message-State: ANoB5pm2RTZsWlEJVlx+ayPCNX4mxx0K7athXiqtIf/m8xRn2FRfTLOb
+        Nur/1FIgKShOvdqFsj4VHx0Fog==
+X-Google-Smtp-Source: AA0mqf4FSTsj7jWLGFDuUM1KolU0pAAAlYx7n+VRF6tfHUnjgf3Tz4kJo9qfndGCbN01BGn3foVCSQ==
+X-Received: by 2002:a2e:9052:0:b0:26e:eeb:f9cf with SMTP id n18-20020a2e9052000000b0026e0eebf9cfmr2211769ljg.480.1668760070041;
+        Fri, 18 Nov 2022 00:27:50 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id g27-20020a2eb0db000000b0026bf0d71b1esm573326ljl.93.2022.11.18.00.27.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Nov 2022 00:27:49 -0800 (PST)
+Message-ID: <06ac1c86-22f7-97ff-bf59-6fb0994dfcc5@linaro.org>
+Date:   Fri, 18 Nov 2022 09:27:47 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:B+Lw3Kwaq4T7WZF5qjT0PDZusoXKQWzpeLqJv+wKjWrRyglIep+
- v7sv9Jg+zuYrbV+EBIG1rgmmesi96KLIjsv2hVF/KkhKcFf9x1KDW9AN0EVCWloZydkRiQL
- 3ix8iOI2MivV6Y0v+fTFfDLdVylJV2Y5KrbsDICIfR/3nUnyA99ZvR0683dhseVgqLfmRsE
- OMMEwxBA+Zwhxp9CqbvVQ==
-UI-OutboundReport: notjunk:1;M01:P0:DYjvMxMyr5Q=;Wn0xAxIj0+QMZhFRsk8RHl73DzT
- dlWZcp+8DBmhIvJHTF7+ZyJxpU+t1JvWtsFYv7C9u9+SjSTmRu36CNZrfV1axwIRthB6ns07s
- YpeFFvY7UKE7eBMIBgSQIDCZI1JE8uk4oaXmCG3FpcdBodC0oezKx5NvujNXPektiD0cyQQjk
- 1Cj40ELLKf2ccnFUzYh7Csvl9PJwYpsW3uu2/H2mSe0D66gXtaCz382gswK1EzZHNjn6vOJ9O
- 5+9DYzr3ou52OIq2/RVbVmyfAjPOTOF09NBMRCxEVWHSna3PZqsdkJcLVMqsJt2tGqUDmNJ+G
- yoNcrO9dA0/hGCga8HWqiUHYDFGMRTcgahZ0YdRzMs8X73d874Hn2BaOcWH+LcdimDJEZ7122
- vEuNkppsZZ38Dc8z2QtvBal+S/nDv8tTkJzSIVVivCNIiRo6hlkJxK49Tj48bxSqJ/nci5ISq
- Res09snEEUU4Iet2V7SrcJI5v0SzG+feTu078seLEhrlL0LzsJqKfQ6C8eMIKSywpl+EacFP5
- hU0PRW0Jp9ecpzCs9zFzYqS/xenuop+hf1an0frOzWq497/3fy0WLmgDmiFBtdfEACuP4mUmE
- k2HrpfEkWQZWbacmUC/v1EeRuMWx/EPmJXY8nFzumpjzKbT8KyGx1H9+5Ay+XV3t5880E5S6E
- QMrOoR5QoVSSAxlGarMp3Vw1UnBt4BDodkd9Tx4evgNs9Ii0knpo7JZPH2VPNaDK4ZBTnH/Bm
- qRG9Ul7l60dIuVoHvHC6hGQDcrVvLcMfiy2zosRRHYQCh5df+UZf3r9X0kmpudqQQen3MeYzn
- 2O9IqrFN3sx9opGHwm9PtRqMg3wku7LDIGbCgdSP0BSpjHnY8244NUCev/ZsWBhkTtsNKtaeu
- LeHcBeQMB8IF1pSwy9dHRK1TIltBgNae4M97hMxdr/wJFXyly9RFrM3GUdj671u1NqBbfp3fi
- Dp5DfO/VysfrNVHJdETqHJD79Uo=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [RFC PATCH 1/9] dt-bindings: drop redundant part of title of
+ shared bindings
+Content-Language: en-US
+To:     Conor Dooley <conor@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-watchdog@vger.kernel.org
+References: <20221117123850.368213-1-krzysztof.kozlowski@linaro.org>
+ <20221117123850.368213-2-krzysztof.kozlowski@linaro.org>
+ <Y3Z0w6JH1f5zgwvW@spud>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <Y3Z0w6JH1f5zgwvW@spud>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use a generic 'hsdev->usage' instead of the HID_USAGE_SENSOR_ALS to
-allow this driver to drive the Lenovo custom ambient light sensor,
-which is registered under a 'custom' usage and not HID_USAGE_SENSOR_ALS.
+On 17/11/2022 18:52, Conor Dooley wrote:
+> On Thu, Nov 17, 2022 at 01:38:42PM +0100, Krzysztof Kozlowski wrote:
+>> The Devicetree bindings document does not have to say in the title that
+>> it is a "binding", but instead just describe the hardware.  For shared
+>> (re-usable) schemas, name them all as "common properties".
+> 
+> 
+>> diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc.yaml
+>> index 1ab416c83c8d..d2de3d128b73 100644
+>> --- a/Documentation/devicetree/bindings/clock/qcom,gcc.yaml
+>> +++ b/Documentation/devicetree/bindings/clock/qcom,gcc.yaml
+>> @@ -4,7 +4,7 @@
+>>  $id: http://devicetree.org/schemas/clock/qcom,gcc.yaml#
+>>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>>  
+>> -title: Qualcomm Global Clock & Reset Controller Common Bindings
+>> +title: Qualcomm Global Clock & Reset Controller common parts
+>>  
+>>  maintainers:
+>>    - Stephen Boyd <sboyd@kernel.org>
+> 
+> 
+>> diff --git a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
+>> index cf9c2f7bddc2..20ac432dc683 100644
+>> --- a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
+>> +++ b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
+>> @@ -4,7 +4,7 @@
+>>  $id: http://devicetree.org/schemas/opp/opp-v2-base.yaml#
+>>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>>  
+>> -title: Generic OPP (Operating Performance Points) Common Binding
+>> +title: Generic OPP (Operating Performance Points) common parts
+>>  
+>>  maintainers:
+>>    - Viresh Kumar <viresh.kumar@linaro.org>
+> 
+> Hey Krzysztof,
+> 
+> Hopefully I've not overlooked something obvious, but it wasnt noted in
+> the commit message - how come these two are "parts" rather than
+> "properties"? The opp one at least don't seem to have much more than
+> properties and patterProperties in it.
 
-Add the Lenovo Intelligent Sensing Solution (LISS) ambient light sensor
-to the platform device ids.
+They should be properties, will fix in v2.
 
-Signed-off-by: Philipp Jungkamp <p.jungkamp@gmx.net>
-=2D--
-Less unnecessary line breaks in function calls.
 
- drivers/iio/light/hid-sensor-als.c | 27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-se=
-nsor-als.c
-index 5a1a625d8d16..eb1aedad7edc 100644
-=2D-- a/drivers/iio/light/hid-sensor-als.c
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -86,6 +86,7 @@ static int als_read_raw(struct iio_dev *indio_dev,
- 			      long mask)
- {
- 	struct als_state *als_state =3D iio_priv(indio_dev);
-+	struct hid_sensor_hub_device *hsdev =3D als_state->common_attributes.hsd=
-ev;
- 	int report_id =3D -1;
- 	u32 address;
- 	int ret_type;
-@@ -110,11 +111,8 @@ static int als_read_raw(struct iio_dev *indio_dev,
- 			hid_sensor_power_state(&als_state->common_attributes,
- 						true);
- 			*val =3D sensor_hub_input_attr_get_raw_value(
--					als_state->common_attributes.hsdev,
--					HID_USAGE_SENSOR_ALS, address,
--					report_id,
--					SENSOR_HUB_SYNC,
--					min < 0);
-+					hsdev, hsdev->usage, address, report_id,
-+					SENSOR_HUB_SYNC, min < 0);
- 			hid_sensor_power_state(&als_state->common_attributes,
- 						false);
- 		} else {
-@@ -259,9 +257,7 @@ static int als_parse_report(struct platform_device *pd=
-ev,
- 	dev_dbg(&pdev->dev, "als %x:%x\n", st->als_illum.index,
- 			st->als_illum.report_id);
-
--	st->scale_precision =3D hid_sensor_format_scale(
--				HID_USAGE_SENSOR_ALS,
--				&st->als_illum,
-+	st->scale_precision =3D hid_sensor_format_scale(usage_id, &st->als_illum=
-,
- 				&st->scale_pre_decml, &st->scale_post_decml);
-
- 	return ret;
-@@ -285,7 +281,8 @@ static int hid_als_probe(struct platform_device *pdev)
- 	als_state->common_attributes.hsdev =3D hsdev;
- 	als_state->common_attributes.pdev =3D pdev;
-
--	ret =3D hid_sensor_parse_common_attributes(hsdev, HID_USAGE_SENSOR_ALS,
-+	ret =3D hid_sensor_parse_common_attributes(hsdev,
-+					hsdev->usage,
- 					&als_state->common_attributes,
- 					als_sensitivity_addresses,
- 					ARRAY_SIZE(als_sensitivity_addresses));
-@@ -303,7 +300,8 @@ static int hid_als_probe(struct platform_device *pdev)
-
- 	ret =3D als_parse_report(pdev, hsdev,
- 			       (struct iio_chan_spec *)indio_dev->channels,
--			       HID_USAGE_SENSOR_ALS, als_state);
-+			       hsdev->usage,
-+			       als_state);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to setup attributes\n");
- 		return ret;
-@@ -333,8 +331,7 @@ static int hid_als_probe(struct platform_device *pdev)
- 	als_state->callbacks.send_event =3D als_proc_event;
- 	als_state->callbacks.capture_sample =3D als_capture_sample;
- 	als_state->callbacks.pdev =3D pdev;
--	ret =3D sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_ALS,
--					&als_state->callbacks);
-+	ret =3D sensor_hub_register_callback(hsdev, hsdev->usage, &als_state->ca=
-llbacks);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "callback reg failed\n");
- 		goto error_iio_unreg;
-@@ -356,7 +353,7 @@ static int hid_als_remove(struct platform_device *pdev=
-)
- 	struct iio_dev *indio_dev =3D platform_get_drvdata(pdev);
- 	struct als_state *als_state =3D iio_priv(indio_dev);
-
--	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_ALS);
-+	sensor_hub_remove_callback(hsdev, hsdev->usage);
- 	iio_device_unregister(indio_dev);
- 	hid_sensor_remove_trigger(indio_dev, &als_state->common_attributes);
-
-@@ -368,6 +365,10 @@ static const struct platform_device_id hid_als_ids[] =
-=3D {
- 		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
- 		.name =3D "HID-SENSOR-200041",
- 	},
-+	{
-+		/* Format: HID-SENSOR-custom_sensor_tag-usage_id_in_hex_lowercase */
-+		.name =3D "HID-SENSOR-LISS-0041",
-+	},
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(platform, hid_als_ids);
-=2D-
-2.38.1
+Best regards,
+Krzysztof
 
