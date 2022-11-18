@@ -2,47 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE8EC4167D
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 22:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABE0C4332F
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 22:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234311AbiKRWwF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S233840AbiKRWwF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 18 Nov 2022 17:52:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36752 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233106AbiKRWv1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 17:51:27 -0500
+        with ESMTP id S232623AbiKRWv2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 17:51:28 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E73BB450
-        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 14:47:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1653FB54F7
+        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 14:47:11 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA80-0008UY-9E; Fri, 18 Nov 2022 23:46:32 +0100
+        id 1owA88-0000eB-8O; Fri, 18 Nov 2022 23:46:40 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA7v-0058Ee-Bq; Fri, 18 Nov 2022 23:46:28 +0100
+        id 1owA83-0058Hm-IW; Fri, 18 Nov 2022 23:46:36 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA7v-00Hb0p-ET; Fri, 18 Nov 2022 23:46:27 +0100
+        id 1owA83-00Hb3G-FT; Fri, 18 Nov 2022 23:46:35 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
         Grant Likely <grant.likely@linaro.org>,
         Wolfram Sang <wsa@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Adrien Grassein <adrien.grassein@gmail.com>
+        Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-i2c@vger.kernel.org, kernel@pengutronix.de,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 093/606] iio: gyro: bmg160_i2c: Convert to i2c's .probe_new()
-Date:   Fri, 18 Nov 2022 23:37:07 +0100
-Message-Id: <20221118224540.619276-94-uwe@kleine-koenig.org>
+Subject: [PATCH 130/606] iio: light: lv0104cs: Convert to i2c's .probe_new()
+Date:   Fri, 18 Nov 2022 23:37:44 +0100
+Message-Id: <20221118224540.619276-131-uwe@kleine-koenig.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
 References: <20221118224540.619276-1-uwe@kleine-koenig.org>
@@ -59,39 +56,37 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-.probe_new() doesn't get the i2c_device_id * parameter, so determine
-that explicitly in the probe function.
+The probe function doesn't make use of the i2c_device_id * parameter so it
+can be trivially converted.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/gyro/bmg160_i2c.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/light/lv0104cs.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/gyro/bmg160_i2c.c b/drivers/iio/gyro/bmg160_i2c.c
-index 908ccc385254..2b019ee5b2eb 100644
---- a/drivers/iio/gyro/bmg160_i2c.c
-+++ b/drivers/iio/gyro/bmg160_i2c.c
-@@ -13,9 +13,9 @@ static const struct regmap_config bmg160_regmap_i2c_conf = {
- 	.max_register = 0x3f
- };
- 
--static int bmg160_i2c_probe(struct i2c_client *client,
--			    const struct i2c_device_id *id)
-+static int bmg160_i2c_probe(struct i2c_client *client)
- {
-+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
- 	struct regmap *regmap;
- 	const char *name = NULL;
- 
-@@ -70,7 +70,7 @@ static struct i2c_driver bmg160_i2c_driver = {
- 		.of_match_table = bmg160_of_match,
- 		.pm	= &bmg160_pm_ops,
+diff --git a/drivers/iio/light/lv0104cs.c b/drivers/iio/light/lv0104cs.c
+index c2aef88f4e63..c041fa0faa5d 100644
+--- a/drivers/iio/light/lv0104cs.c
++++ b/drivers/iio/light/lv0104cs.c
+@@ -474,8 +474,7 @@ static const struct iio_chan_spec lv0104cs_channels[] = {
  	},
--	.probe		= bmg160_i2c_probe,
-+	.probe_new	= bmg160_i2c_probe,
- 	.remove		= bmg160_i2c_remove,
- 	.id_table	= bmg160_i2c_id,
  };
+ 
+-static int lv0104cs_probe(struct i2c_client *client,
+-				const struct i2c_device_id *id)
++static int lv0104cs_probe(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct lv0104cs_private *lv0104cs;
+@@ -521,7 +520,7 @@ static struct i2c_driver lv0104cs_i2c_driver = {
+ 		.name	= "lv0104cs",
+ 	},
+ 	.id_table	= lv0104cs_id,
+-	.probe		= lv0104cs_probe,
++	.probe_new	= lv0104cs_probe,
+ };
+ module_i2c_driver(lv0104cs_i2c_driver);
+ 
 -- 
 2.38.1
 
