@@ -2,45 +2,48 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3CE1C352A1
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 23:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C5FC3E8A8
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 23:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235933AbiKRXd2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Nov 2022 18:33:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52812 "EHLO
+        id S236001AbiKRXd3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Nov 2022 18:33:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235957AbiKRXbj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 18:31:39 -0500
+        with ESMTP id S236444AbiKRXdA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 18:33:00 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E8678B0C
-        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 15:18:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986E08FE59
+        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 15:20:56 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA82-0000DJ-Oq; Fri, 18 Nov 2022 23:46:34 +0100
+        id 1owA8A-0000m9-Fd; Fri, 18 Nov 2022 23:46:42 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA7x-0058Fk-MA; Fri, 18 Nov 2022 23:46:30 +0100
+        id 1owA85-0058Ib-Og; Fri, 18 Nov 2022 23:46:38 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA7x-00Hb1b-Ta; Fri, 18 Nov 2022 23:46:29 +0100
+        id 1owA85-00Hb3w-Id; Fri, 18 Nov 2022 23:46:37 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
         Grant Likely <grant.likely@linaro.org>,
         Wolfram Sang <wsa@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
+        Adrien Grassein <adrien.grassein@gmail.com>,
+        Benjamin Mugnier <benjamin.mugnier@foss.st.com>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Arnaud Ferraris <arnaud.ferraris@collabora.com>
 Cc:     linux-i2c@vger.kernel.org, kernel@pengutronix.de,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 104/606] iio: humidity: htu21: Convert to i2c's .probe_new()
-Date:   Fri, 18 Nov 2022 23:37:18 +0100
-Message-Id: <20221118224540.619276-105-uwe@kleine-koenig.org>
+Subject: [PATCH 140/606] iio: light: stk3310: Convert to i2c's .probe_new()
+Date:   Fri, 18 Nov 2022 23:37:54 +0100
+Message-Id: <20221118224540.619276-141-uwe@kleine-koenig.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
 References: <20221118224540.619276-1-uwe@kleine-koenig.org>
@@ -57,39 +60,37 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-.probe_new() doesn't get the i2c_device_id * parameter, so determine
-that explicitly in the probe function.
+The probe function doesn't make use of the i2c_device_id * parameter so it
+can be trivially converted.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/humidity/htu21.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/light/stk3310.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/humidity/htu21.c b/drivers/iio/humidity/htu21.c
-index fd9e2565f8a2..8411a9f3e828 100644
---- a/drivers/iio/humidity/htu21.c
-+++ b/drivers/iio/humidity/htu21.c
-@@ -177,9 +177,9 @@ static const struct iio_info htu21_info = {
- 	.attrs = &htu21_attribute_group,
- };
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index 7b8e0da6aabc..48ae6ff0015e 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -586,8 +586,7 @@ static irqreturn_t stk3310_irq_event_handler(int irq, void *private)
+ 	return IRQ_HANDLED;
+ }
  
--static int htu21_probe(struct i2c_client *client,
--		       const struct i2c_device_id *id)
-+static int htu21_probe(struct i2c_client *client)
+-static int stk3310_probe(struct i2c_client *client,
+-			 const struct i2c_device_id *id)
++static int stk3310_probe(struct i2c_client *client)
  {
-+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
- 	struct ms_ht_dev *dev_data;
- 	struct iio_dev *indio_dev;
  	int ret;
-@@ -244,7 +244,7 @@ static const struct of_device_id htu21_of_match[] = {
- MODULE_DEVICE_TABLE(of, htu21_of_match);
- 
- static struct i2c_driver htu21_driver = {
--	.probe = htu21_probe,
-+	.probe_new = htu21_probe,
- 	.id_table = htu21_id,
- 	.driver = {
- 		   .name = "htu21",
+ 	struct iio_dev *indio_dev;
+@@ -715,7 +714,7 @@ static struct i2c_driver stk3310_driver = {
+ 		.pm = pm_sleep_ptr(&stk3310_pm_ops),
+ 		.acpi_match_table = ACPI_PTR(stk3310_acpi_id),
+ 	},
+-	.probe =            stk3310_probe,
++	.probe_new =        stk3310_probe,
+ 	.remove =           stk3310_remove,
+ 	.id_table =         stk3310_i2c_id,
+ };
 -- 
 2.38.1
 
