@@ -2,44 +2,45 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9D4C4321E
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 22:52:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8E5DC4332F
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 22:52:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233995AbiKRWwC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Nov 2022 17:52:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37156 "EHLO
+        id S234277AbiKRWwD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Nov 2022 17:52:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233536AbiKRWvU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 17:51:20 -0500
+        with ESMTP id S234045AbiKRWv1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 17:51:27 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1EF0B54FE
-        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 14:47:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373D7B9BAF
+        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 14:47:10 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA85-0000RM-Eo; Fri, 18 Nov 2022 23:46:37 +0100
+        id 1owA8D-0000yQ-JF; Fri, 18 Nov 2022 23:46:45 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA80-0058Ge-LX; Fri, 18 Nov 2022 23:46:33 +0100
+        id 1owA89-0058K0-4C; Fri, 18 Nov 2022 23:46:42 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA7z-00Hb28-L4; Fri, 18 Nov 2022 23:46:31 +0100
+        id 1owA89-00Hb57-9x; Fri, 18 Nov 2022 23:46:41 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
         Grant Likely <grant.likely@linaro.org>,
         Wolfram Sang <wsa@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>
+        Jonathan Cameron <jic23@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>
 Cc:     linux-i2c@vger.kernel.org, kernel@pengutronix.de,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 112/606] iio: light: adjd_s311: Convert to i2c's .probe_new()
-Date:   Fri, 18 Nov 2022 23:37:26 +0100
-Message-Id: <20221118224540.619276-113-uwe@kleine-koenig.org>
+Subject: [PATCH 158/606] iio: magnetometer: mmc35240: Convert to i2c's .probe_new()
+Date:   Fri, 18 Nov 2022 23:38:12 +0100
+Message-Id: <20221118224540.619276-159-uwe@kleine-koenig.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
 References: <20221118224540.619276-1-uwe@kleine-koenig.org>
@@ -61,32 +62,32 @@ can be trivially converted.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/light/adjd_s311.c | 5 ++---
+ drivers/iio/magnetometer/mmc35240.c | 5 ++---
  1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/light/adjd_s311.c b/drivers/iio/light/adjd_s311.c
-index 6b33975c8d73..210a90f44c53 100644
---- a/drivers/iio/light/adjd_s311.c
-+++ b/drivers/iio/light/adjd_s311.c
-@@ -233,8 +233,7 @@ static const struct iio_info adjd_s311_info = {
- 	.write_raw = adjd_s311_write_raw,
+diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
+index 186edfcda0b7..756dadbad106 100644
+--- a/drivers/iio/magnetometer/mmc35240.c
++++ b/drivers/iio/magnetometer/mmc35240.c
+@@ -481,8 +481,7 @@ static const struct regmap_config mmc35240_regmap_config = {
+ 	.num_reg_defaults = ARRAY_SIZE(mmc35240_reg_defaults),
  };
  
--static int adjd_s311_probe(struct i2c_client *client,
--			   const struct i2c_device_id *id)
-+static int adjd_s311_probe(struct i2c_client *client)
+-static int mmc35240_probe(struct i2c_client *client,
+-			  const struct i2c_device_id *id)
++static int mmc35240_probe(struct i2c_client *client)
  {
- 	struct adjd_s311_data *data;
+ 	struct mmc35240_data *data;
  	struct iio_dev *indio_dev;
-@@ -271,7 +270,7 @@ static struct i2c_driver adjd_s311_driver = {
- 	.driver = {
- 		.name	= ADJD_S311_DRV_NAME,
+@@ -576,7 +575,7 @@ static struct i2c_driver mmc35240_driver = {
+ 		.pm = pm_sleep_ptr(&mmc35240_pm_ops),
+ 		.acpi_match_table = ACPI_PTR(mmc35240_acpi_match),
  	},
--	.probe		= adjd_s311_probe,
-+	.probe_new	= adjd_s311_probe,
- 	.id_table	= adjd_s311_id,
+-	.probe		= mmc35240_probe,
++	.probe_new	= mmc35240_probe,
+ 	.id_table	= mmc35240_id,
  };
- module_i2c_driver(adjd_s311_driver);
+ 
 -- 
 2.38.1
 
