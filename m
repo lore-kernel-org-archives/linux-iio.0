@@ -2,103 +2,94 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82DB4C4332F
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 23:33:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC4E3C4167E
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 23:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236087AbiKRXdb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Nov 2022 18:33:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51360 "EHLO
+        id S236061AbiKRXdc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Nov 2022 18:33:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236484AbiKRXdF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 18:33:05 -0500
-X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Nov 2022 15:21:12 PST
-Received: from ixit.cz (ip-89-177-23-149.bb.vodafone.cz [89.177.23.149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F6425D3;
-        Fri, 18 Nov 2022 15:21:12 -0800 (PST)
-Received: from [10.0.0.163] (_gateway [10.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ixit.cz (Postfix) with ESMTPSA id BB27723094;
-        Sat, 19 Nov 2022 00:05:35 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
-        t=1668812735;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FUkjlDNArKjjQ8kJZjGwzF/3HUFx7XOdaVbyxfCWcUE=;
-        b=b1swgfixVG0FdjL+U8GaKKbsNZMUrJWDHjsK/Rd2P3cz8KUyn/0pnKUrjBI0SXjYmdYrR0
-        2V+F79kEOoejoa6HrzAYl6/NKzo9gM7FkNlDMBo+Mmo62KzWCavXK/xDSaYZYotmG5MGqY
-        Rb/FwxzNF/ZFkzIl8/uwNGQIXOoDtTo=
-Message-ID: <0ff119d8-958b-4978-83c7-e066b8e0cab9@ixit.cz>
-Date:   Sat, 19 Nov 2022 00:05:35 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:104.0) Gecko/20100101
- Thunderbird/104.0
-Subject: Re: [PATCH 114/606] iio: light: al3010: Convert to i2c's .probe_new()
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <uwe@kleine-koenig.org>,
-        Angel Iglesias <ang.iglesiasg@gmail.com>,
+        with ESMTP id S236089AbiKRXbv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 18:31:51 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342362EF52
+        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 15:19:28 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1owA7y-0008Ny-3p; Fri, 18 Nov 2022 23:46:30 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1owA7t-0058Dv-UJ; Fri, 18 Nov 2022 23:46:26 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1owA7t-00Hb0D-Bx; Fri, 18 Nov 2022 23:46:25 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
+To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
         Grant Likely <grant.likely@linaro.org>,
         Wolfram Sang <wsa@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>
-Cc:     linux-i2c@vger.kernel.org, kernel@pengutronix.de,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-i2c@vger.kernel.org, kernel@pengutronix.de,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 084/606] iio: dac: ad5446: Convert to i2c's .probe_new()
+Date:   Fri, 18 Nov 2022 23:36:58 +0100
+Message-Id: <20221118224540.619276-85-uwe@kleine-koenig.org>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
 References: <20221118224540.619276-1-uwe@kleine-koenig.org>
- <20221118224540.619276-115-uwe@kleine-koenig.org>
-Content-Language: en-US
-From:   David Heidelberg <david@ixit.cz>
-In-Reply-To: <20221118224540.619276-115-uwe@kleine-koenig.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Thank you!
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Reviewed-by: David Heidelberg <david@ixit.cz>
+.probe_new() doesn't get the i2c_device_id * parameter, so determine
+that explicitly in the probe function.
 
-On 18/11/2022 23:37, Uwe Kleine-König wrote:
-> From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
->
-> The probe function doesn't make use of the i2c_device_id * parameter so it
-> can be trivially converted.
->
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> ---
->   drivers/iio/light/al3010.c | 5 ++---
->   1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iio/light/al3010.c b/drivers/iio/light/al3010.c
-> index ce5363845b22..69cc723e2ac4 100644
-> --- a/drivers/iio/light/al3010.c
-> +++ b/drivers/iio/light/al3010.c
-> @@ -164,8 +164,7 @@ static const struct iio_info al3010_info = {
->   	.attrs		= &al3010_attribute_group,
->   };
->   
-> -static int al3010_probe(struct i2c_client *client,
-> -			const struct i2c_device_id *id)
-> +static int al3010_probe(struct i2c_client *client)
->   {
->   	struct al3010_data *data;
->   	struct iio_dev *indio_dev;
-> @@ -230,7 +229,7 @@ static struct i2c_driver al3010_driver = {
->   		.of_match_table = al3010_of_match,
->   		.pm = pm_sleep_ptr(&al3010_pm_ops),
->   	},
-> -	.probe		= al3010_probe,
-> +	.probe_new	= al3010_probe,
->   	.id_table	= al3010_id,
->   };
->   module_i2c_driver(al3010_driver);
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/iio/dac/ad5446.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
+index 7324065d3782..aa3130b33456 100644
+--- a/drivers/iio/dac/ad5446.c
++++ b/drivers/iio/dac/ad5446.c
+@@ -568,9 +568,9 @@ static const struct ad5446_chip_info ad5446_i2c_chip_info[] = {
+ 	},
+ };
+ 
+-static int ad5446_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int ad5446_i2c_probe(struct i2c_client *i2c)
+ {
++	const struct i2c_device_id *id = i2c_client_get_device_id(i2c);
+ 	return ad5446_probe(&i2c->dev, id->name,
+ 		&ad5446_i2c_chip_info[id->driver_data]);
+ }
+@@ -595,7 +595,7 @@ static struct i2c_driver ad5446_i2c_driver = {
+ 	.driver = {
+ 		   .name = "ad5446",
+ 	},
+-	.probe = ad5446_i2c_probe,
++	.probe_new = ad5446_i2c_probe,
+ 	.remove = ad5446_i2c_remove,
+ 	.id_table = ad5446_i2c_ids,
+ };
 -- 
-David Heidelberg
-Consultant Software Engineer
+2.38.1
 
