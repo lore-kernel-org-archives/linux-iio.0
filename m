@@ -2,46 +2,47 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0860DC43217
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 22:53:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE85C4321E
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 22:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234666AbiKRWxv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Nov 2022 17:53:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51518 "EHLO
+        id S234258AbiKRWyx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Nov 2022 17:54:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234209AbiKRWxS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 17:53:18 -0500
+        with ESMTP id S234686AbiKRWyH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 17:54:07 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 735CBBE24A
-        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 14:47:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D82BE875
+        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 14:48:03 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA8E-00012E-NE; Fri, 18 Nov 2022 23:46:46 +0100
+        id 1owA8B-0000ql-LE; Fri, 18 Nov 2022 23:46:43 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA8A-0058KM-7B; Fri, 18 Nov 2022 23:46:43 +0100
+        id 1owA87-0058J6-2W; Fri, 18 Nov 2022 23:46:40 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA89-00Hb5J-VC; Fri, 18 Nov 2022 23:46:41 +0100
+        id 1owA85-00Hb43-Uy; Fri, 18 Nov 2022 23:46:37 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
         Grant Likely <grant.likely@linaro.org>,
         Wolfram Sang <wsa@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
-        Jagath Jog J <jagathjog1996@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
+        Jean Delvare <jdelvare@suse.de>,
+        =?utf-8?q?Marek_Beh=C3=BAn?= <kabel@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>
 Cc:     linux-i2c@vger.kernel.org, kernel@pengutronix.de,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 161/606] iio: potentiometer: ds1803: Convert to i2c's .probe_new()
-Date:   Fri, 18 Nov 2022 23:38:15 +0100
-Message-Id: <20221118224540.619276-162-uwe@kleine-koenig.org>
+Subject: [PATCH 142/606] iio: light: tcs3472: Convert to i2c's .probe_new()
+Date:   Fri, 18 Nov 2022 23:37:56 +0100
+Message-Id: <20221118224540.619276-143-uwe@kleine-koenig.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
 References: <20221118224540.619276-1-uwe@kleine-koenig.org>
@@ -58,38 +59,37 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-.probe_new() doesn't get the i2c_device_id * parameter, so determine
-that explicitly in the probe function.
+The probe function doesn't make use of the i2c_device_id * parameter so it
+can be trivially converted.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/potentiometer/ds1803.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/iio/light/tcs3472.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/potentiometer/ds1803.c b/drivers/iio/potentiometer/ds1803.c
-index 5c212ed7a931..0b5e475807cb 100644
---- a/drivers/iio/potentiometer/ds1803.c
-+++ b/drivers/iio/potentiometer/ds1803.c
-@@ -202,8 +202,9 @@ static const struct iio_info ds1803_info = {
- 	.read_avail = ds1803_read_avail,
+diff --git a/drivers/iio/light/tcs3472.c b/drivers/iio/light/tcs3472.c
+index db17fec634be..6187c5487916 100644
+--- a/drivers/iio/light/tcs3472.c
++++ b/drivers/iio/light/tcs3472.c
+@@ -442,8 +442,7 @@ static const struct iio_info tcs3472_info = {
+ 	.attrs = &tcs3472_attribute_group,
  };
  
--static int ds1803_probe(struct i2c_client *client, const struct i2c_device_id *id)
-+static int ds1803_probe(struct i2c_client *client)
+-static int tcs3472_probe(struct i2c_client *client,
+-			   const struct i2c_device_id *id)
++static int tcs3472_probe(struct i2c_client *client)
  {
-+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
- 	struct device *dev = &client->dev;
- 	struct ds1803_data *data;
+ 	struct tcs3472_data *data;
  	struct iio_dev *indio_dev;
-@@ -251,7 +252,7 @@ static struct i2c_driver ds1803_driver = {
- 		.name	= "ds1803",
- 		.of_match_table = ds1803_dt_ids,
+@@ -610,7 +609,7 @@ static struct i2c_driver tcs3472_driver = {
+ 		.name	= TCS3472_DRV_NAME,
+ 		.pm	= pm_sleep_ptr(&tcs3472_pm_ops),
  	},
--	.probe		= ds1803_probe,
-+	.probe_new	= ds1803_probe,
- 	.id_table	= ds1803_id,
+-	.probe		= tcs3472_probe,
++	.probe_new	= tcs3472_probe,
+ 	.remove		= tcs3472_remove,
+ 	.id_table	= tcs3472_id,
  };
- 
 -- 
 2.38.1
 
