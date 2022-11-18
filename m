@@ -2,30 +2,30 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94FB1C43217
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 22:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 262DBC4332F
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Nov 2022 22:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233846AbiKRWvc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Nov 2022 17:51:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37616 "EHLO
+        id S233851AbiKRWvm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Nov 2022 17:51:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233854AbiKRWua (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 17:50:30 -0500
+        with ESMTP id S232516AbiKRWui (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2022 17:50:38 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D32EB54E2
-        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 14:47:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F246AB97F5
+        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 14:47:02 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA80-0008W1-TP; Fri, 18 Nov 2022 23:46:32 +0100
+        id 1owA82-0000FX-Gx; Fri, 18 Nov 2022 23:46:34 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA7v-0058Ew-Pt; Fri, 18 Nov 2022 23:46:28 +0100
+        id 1owA7y-0058Ft-33; Fri, 18 Nov 2022 23:46:31 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1owA7w-00Hb13-3Z; Fri, 18 Nov 2022 23:46:28 +0100
+        id 1owA7y-00Hb1k-Bg; Fri, 18 Nov 2022 23:46:30 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
@@ -37,9 +37,9 @@ Cc:     linux-i2c@vger.kernel.org, kernel@pengutronix.de,
         <u.kleine-koenig@pengutronix.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 096/606] iio: gyro: st_gyro_i2c: Convert to i2c's .probe_new()
-Date:   Fri, 18 Nov 2022 23:37:10 +0100
-Message-Id: <20221118224540.619276-97-uwe@kleine-koenig.org>
+Subject: [PATCH 106/606] iio: humidity: si7020: Convert to i2c's .probe_new()
+Date:   Fri, 18 Nov 2022 23:37:20 +0100
+Message-Id: <20221118224540.619276-107-uwe@kleine-koenig.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
 References: <20221118224540.619276-1-uwe@kleine-koenig.org>
@@ -61,32 +61,32 @@ can be trivially converted.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/gyro/st_gyro_i2c.c | 5 ++---
+ drivers/iio/humidity/si7020.c | 5 ++---
  1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
-index 8c7af42b6558..797a1c6a0402 100644
---- a/drivers/iio/gyro/st_gyro_i2c.c
-+++ b/drivers/iio/gyro/st_gyro_i2c.c
-@@ -58,8 +58,7 @@ static const struct of_device_id st_gyro_of_match[] = {
+diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
+index ab6537f136ba..3e50592e8e68 100644
+--- a/drivers/iio/humidity/si7020.c
++++ b/drivers/iio/humidity/si7020.c
+@@ -103,8 +103,7 @@ static const struct iio_info si7020_info = {
+ 	.read_raw = si7020_read_raw,
  };
- MODULE_DEVICE_TABLE(of, st_gyro_of_match);
  
--static int st_gyro_i2c_probe(struct i2c_client *client,
--			     const struct i2c_device_id *id)
-+static int st_gyro_i2c_probe(struct i2c_client *client)
+-static int si7020_probe(struct i2c_client *client,
+-			const struct i2c_device_id *id)
++static int si7020_probe(struct i2c_client *client)
  {
- 	const struct st_sensor_settings *settings;
- 	struct st_sensor_data *gdata;
-@@ -112,7 +111,7 @@ static struct i2c_driver st_gyro_driver = {
- 		.name = "st-gyro-i2c",
- 		.of_match_table = st_gyro_of_match,
+ 	struct iio_dev *indio_dev;
+ 	struct i2c_client **data;
+@@ -156,7 +155,7 @@ static struct i2c_driver si7020_driver = {
+ 		.name = "si7020",
+ 		.of_match_table = si7020_dt_ids,
  	},
--	.probe = st_gyro_i2c_probe,
-+	.probe_new = st_gyro_i2c_probe,
- 	.id_table = st_gyro_id_table,
+-	.probe		= si7020_probe,
++	.probe_new	= si7020_probe,
+ 	.id_table	= si7020_id,
  };
- module_i2c_driver(st_gyro_driver);
+ 
 -- 
 2.38.1
 
