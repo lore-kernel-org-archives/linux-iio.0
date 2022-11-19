@@ -2,119 +2,102 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF5CC433FE
-	for <linux-iio@archiver.kernel.org>; Sat, 19 Nov 2022 05:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA5EC4332F
+	for <linux-iio@archiver.kernel.org>; Sat, 19 Nov 2022 06:50:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231877AbiKSFrc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 19 Nov 2022 00:47:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35268 "EHLO
+        id S230244AbiKSGu3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 19 Nov 2022 01:50:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231666AbiKSFrb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Nov 2022 00:47:31 -0500
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B845286FF8
-        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 21:47:29 -0800 (PST)
-Received: by mail-qk1-x729.google.com with SMTP id x21so4906985qkj.0
-        for <linux-iio@vger.kernel.org>; Fri, 18 Nov 2022 21:47:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZZOXhgkj3BopNzHd9HsbJwnz5C6DaHXuD1+BUUU30d0=;
-        b=VyQfX5pAcud5ba/28F0SzDxhF7cb02KWv+OU80Mj5NQyQRhPMOTEYkjas2OtlFXlSW
-         IjkptHLmG7RwqyX06+OmZ5G2a/B3Mz156vrmXlwPFVfT6lSjgDybR/T8V5YGt2DAa0T+
-         xzGvOLMHPjXU1C3JdSOWs0Lvytm9RJDPtDWsY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ZZOXhgkj3BopNzHd9HsbJwnz5C6DaHXuD1+BUUU30d0=;
-        b=jfJaRjRuWdHl+zcL1YYniQ9/H9etcHjKrFBjOHHAmYAlZlE6X+fGpW4Trttntw4w/r
-         dpy0pgufve531Sg/OUp0Ey6hcubXft25LM4fjDgjRscKQZjAf0Xhjt8IRdu22Z4MJBYm
-         2/4L4jvKva2hkHZ6GQdJ7QfIpTwBDStVnn5uyVfcJvq2VUwIe+JJ4iQ4sGsqFxHnfjrl
-         oJLdreW68fD6+IDAAeu2HMu/TfaBndqzZn6xl1KLmKI3YKb4m52bKk3ggfP97T+Avror
-         E6TivVtZYfBFseTU5GQwSOcqUAD6qSs+zy0oDOu/5oyDBVQyrDYBUaDco0WR/BE5wLEd
-         xrRA==
-X-Gm-Message-State: ANoB5pmL22piqeVRRuiV2Zqwj+5IgnRh1feMNYdl85UlxcAAXwmBglgV
-        +iEhty3ctAeWNw2I7n/+gLcHWQjwc34RZjeiVtl8OQ==
-X-Google-Smtp-Source: AA0mqf61Jw3oVURSobA8PIqKUHyViovO3OTBuBgHFmFoKe8IEwgWeJJXCRhckxcj91YaBcoDZc6THxy9ow+YD5jQwyg=
-X-Received: by 2002:a05:620a:3d9:b0:6fa:5091:7ac8 with SMTP id
- r25-20020a05620a03d900b006fa50917ac8mr8592215qkm.372.1668836848820; Fri, 18
- Nov 2022 21:47:28 -0800 (PST)
+        with ESMTP id S231847AbiKSGuU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Nov 2022 01:50:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C7D9193C3;
+        Fri, 18 Nov 2022 22:50:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14FB6B82716;
+        Sat, 19 Nov 2022 06:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 86E7AC433B5;
+        Sat, 19 Nov 2022 06:50:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668840616;
+        bh=J6A2zN+GaxubPoA4pynMpJ9aRQjTm1qSEAaKvZV9V00=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=d+WNCYrodp79kOfNGIXr5PvvIs5GCF6E/TB0CDa2g+OZEp77Ua/U5QlZvwsWMDrK4
+         OlLD/U4jjbYyhWaiA4rct4JoYkz9IWVscixQD26JhUaXY3yUQEg8Y11+kSP0F7KpB8
+         zMZfwDOJzrlQ9jze8VoIW1mJ3xn1MyS9umDxW8U4aWjYwb6wOYhonyX7dPSQGn//c3
+         ES9sycuBVsgfSKQQ6UBEnGpryiRSmirdvQs2tXppPiSbnayeSEWB/Bx525GuMc+yZz
+         4Kon/n6VmXCwbfBd8TB8yHub9wkc/uggzN+T8rGWKeov06QFTXG5sVNeaRlrWw+yQP
+         EzUp1tL6honhQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 64E94E524E4;
+        Sat, 19 Nov 2022 06:50:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20221118224540.619276-1-uwe@kleine-koenig.org> <20221118224540.619276-118-uwe@kleine-koenig.org>
-In-Reply-To: <20221118224540.619276-118-uwe@kleine-koenig.org>
-From:   Matt Ranostay <matt.ranostay@konsulko.com>
-Date:   Sat, 19 Nov 2022 13:47:17 +0800
-Message-ID: <CAJCx=g=WS=GeEMZ6U_Yk+JAnjYQ95mYk3rk9tB_dskoPxGNq0A@mail.gmail.com>
-Subject: Re: [PATCH 117/606] iio: light: apds9960: Convert to i2c's .probe_new()
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe@kleine-koenig.org>
-Cc:     Angel Iglesias <ang.iglesiasg@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Grant Likely <grant.likely@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        =?UTF-8?Q?Alejandro_Concepci=C3=B3n_Rodr=C3=ADguez?= 
-        <asconcepcion@acoro.eu>, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Subhajit Ghosh <subhajit.ghosh@vixtechnology.com>,
-        linux-i2c@vger.kernel.org, kernel@pengutronix.de,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 000/606] i2c: Complete conversion to i2c_probe_new
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <166884061640.19423.12726268813615488480.git-patchwork-notify@kernel.org>
+Date:   Sat, 19 Nov 2022 06:50:16 +0000
+References: <20221118224540.619276-1-uwe@kleine-koenig.org>
+In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
+To:     =?utf-8?q?Uwe_Kleine-K=C3=B6nig_=3Cuwe=40kleine-koenig=2Eorg=3E?=@ci.codeaurora.org
+Cc:     ang.iglesiasg@gmail.com, lee.jones@linaro.org,
+        grant.likely@linaro.org, wsa@kernel.org, linux-i2c@vger.kernel.org,
+        kernel@pengutronix.de, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-gpio@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-leds@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-media@vger.kernel.org, patches@opensource.cirrus.com,
+        linux-actions@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, alsa-devel@alsa-project.org,
+        linux-omap@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, chrome-platform@lists.linux.dev,
+        linux-pm@vger.kernel.org, kernel@puri.sm,
+        linux-pwm@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Nov 19, 2022 at 6:46 AM Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.or=
-g> wrote:
->
-> From: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
->
-> The probe function doesn't make use of the i2c_device_id * parameter so i=
-t
-> can be trivially converted.
->
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+Hello:
 
-Looks good to me.
+This patch was applied to chrome-platform/linux.git (for-next)
+by Tzung-Bi Shih <tzungbi@kernel.org>:
 
-Acked-by: Matt Ranostay <matt.ranostay@konsulko.com>
+On Fri, 18 Nov 2022 23:35:34 +0100 you wrote:
+> Hello,
+> 
+> since commit b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new()
+> call-back type") from 2016 there is a "temporary" alternative probe
+> callback for i2c drivers.
+> 
+> This series completes all drivers to this new callback (unless I missed
+> something). It's based on current next/master.
+> A part of the patches depend on commit 662233731d66 ("i2c: core:
+> Introduce i2c_client_get_device_id helper function"), there is a branch that
+> you can pull into your tree to get it:
+> 
+> [...]
 
-> ---
->  drivers/iio/light/apds9960.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
-> index a585ce0c122f..cc5974a95bd3 100644
-> --- a/drivers/iio/light/apds9960.c
-> +++ b/drivers/iio/light/apds9960.c
-> @@ -988,8 +988,7 @@ static int apds9960_chip_init(struct apds9960_data *d=
-ata)
->         return apds9960_set_powermode(data, 1);
->  }
->
-> -static int apds9960_probe(struct i2c_client *client,
-> -                         const struct i2c_device_id *id)
-> +static int apds9960_probe(struct i2c_client *client)
->  {
->         struct apds9960_data *data;
->         struct iio_dev *indio_dev;
-> @@ -1132,7 +1131,7 @@ static struct i2c_driver apds9960_driver =3D {
->                 .pm     =3D &apds9960_pm_ops,
->                 .acpi_match_table =3D apds9960_acpi_match,
->         },
-> -       .probe          =3D apds9960_probe,
-> +       .probe_new      =3D apds9960_probe,
->         .remove         =3D apds9960_remove,
->         .id_table       =3D apds9960_id,
->  };
-> --
-> 2.38.1
->
+Here is the summary with links:
+  - [512/606] platform/chrome: cros_ec: Convert to i2c's .probe_new()
+    https://git.kernel.org/chrome-platform/c/f9e510dc92df
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
