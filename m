@@ -2,102 +2,91 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C16EC433FE
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Nov 2022 18:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB66AC433FE
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Nov 2022 19:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229782AbiKUS4R (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 21 Nov 2022 13:56:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58446 "EHLO
+        id S231642AbiKUTzq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 21 Nov 2022 14:55:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbiKUS4N (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Nov 2022 13:56:13 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27185B9730;
-        Mon, 21 Nov 2022 10:56:13 -0800 (PST)
+        with ESMTP id S231708AbiKUTzh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Nov 2022 14:55:37 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 223A3627C8
+        for <linux-iio@vger.kernel.org>; Mon, 21 Nov 2022 11:55:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669056973; x=1700592973;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2uktFm8U+CZEc9QqoQd5IBG0VetVrj/pdFPw5Za1xU8=;
-  b=Pq5SxbflvqVh0Z2VKUqxz8Sj3A4D+IMNr02tN7csaxUBSjhNwEot+Hih
-   dJEAGpWqyNpLUKhs/iv3rmCvbFSg/7W+inX4SnREFHa5ULw6tm4cHAONO
-   I20VJ1UNaINF/1gHNOMIw0oqONMrbo6wznntrwBppg94TVwJlG3myeRP5
-   3G6iLdCnHdKPmnYDFzTpo7eDwxSlIOyhLtN/mPVM29Bk+QvJyfsXBf0XW
-   CjP3rUe3KnNBKGep1N/jPLmBWhGvDq1fUT7vTWq/SHHRueG1hV+xWPxu6
-   kHuvF4bvVqlUQh3Ocp+n8XSLAEDPqvlR4yhi/uR+A5/5SlFTrz9GSZHsP
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="315459480"
+  t=1669060537; x=1700596537;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qzc8IeErEOyQD7m6+QzjHvzoH3uqPE+LKVXdLyYNaHk=;
+  b=eytbGRUp3iArELto8ElyUkT1me3KiTkWBLxY+MvODb+eYZ4DkUIO9B1j
+   6v01ibRClbzOjNCDM3HRqjfehPUHo15LWEoqC+x5eo/nIc/21hWPzdG9n
+   92nTY845tCzYdEL2EwolFvigdYsrfBAfUsLCz1/Am/nfxOIUL6GJeXf+0
+   YYf7syhT/rSXFZT4WBSQldinOnu++26i53fAslSPLajG9DaP9LVaLH7op
+   D1mN3HgsJgrVvEZjK4OLae3Rv8xzZuhhVZDzq1ox5Bhfdw210eGZcCgP7
+   7ie/wxkJ8JinaUTEA6w67TIAWjxvrDGARgTdZZ0nnS/GFs4fsRzXQfY/3
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="301196845"
 X-IronPort-AV: E=Sophos;i="5.96,182,1665471600"; 
-   d="scan'208";a="315459480"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2022 10:56:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="709916954"
+   d="scan'208";a="301196845"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2022 11:55:36 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="672215540"
 X-IronPort-AV: E=Sophos;i="5.96,182,1665471600"; 
-   d="scan'208";a="709916954"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004.fm.intel.com with ESMTP; 21 Nov 2022 10:56:09 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oxBxf-00FQqh-2c;
-        Mon, 21 Nov 2022 20:56:07 +0200
-Date:   Mon, 21 Nov 2022 20:56:07 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Gerald Loacker <gerald.loacker@wolfvision.net>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Jakob Hauser <jahau@rocketmail.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>
-Subject: Re: [PATCH v2 2/2] iio: magnetometer: add ti tmag5273 driver
-Message-ID: <Y3vJx6YBB2qRD8R9@smile.fi.intel.com>
-References: <20221121123542.1322367-1-gerald.loacker@wolfvision.net>
- <20221121123542.1322367-3-gerald.loacker@wolfvision.net>
- <Y3uFWH5GV/x7UDcP@smile.fi.intel.com>
- <96a632c2-7ac1-7b9d-0cb0-9874ae21a8eb@wolfvision.net>
- <Y3vGNVZcSuILCHxW@smile.fi.intel.com>
+   d="scan'208";a="672215540"
+Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2022 11:55:36 -0800
+Message-ID: <b3d6e375a8c36b7dc7e7ebb5c05e4f4376b4b6f8.camel@linux.intel.com>
+Subject: Re: [PATCH v3 3/4] IIO: hid-sensor-als: Use generic usage
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     Jiri Kosina <jikos@kernel.org>
+Cc:     Philipp Jungkamp <p.jungkamp@gmx.net>,
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Date:   Mon, 21 Nov 2022 11:55:36 -0800
+In-Reply-To: <nycvar.YFH.7.76.2211211858160.6045@cbobk.fhfr.pm>
+References: <20221117150508.00002704@Huawei.com>
+         <20221117234824.6227-1-p.jungkamp@gmx.net>
+         <20221117234824.6227-3-p.jungkamp@gmx.net>
+         <499ca4a6bbebb458a1132e36462f97121ccb96d3.camel@linux.intel.com>
+         <nycvar.YFH.7.76.2211211858160.6045@cbobk.fhfr.pm>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y3vGNVZcSuILCHxW@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 08:40:53PM +0200, Andy Shevchenko wrote:
-> On Mon, Nov 21, 2022 at 06:24:18PM +0100, Gerald Loacker wrote:
-> > Am 21.11.2022 um 15:04 schrieb Andy Shevchenko:
-> > > On Mon, Nov 21, 2022 at 01:35:42PM +0100, Gerald Loacker wrote:
-
-...
-
-> > >> +		snprintf(data->name, sizeof(data->name), "tmag5273x%1u",
+On Mon, 2022-11-21 at 18:59 +0100, Jiri Kosina wrote:
+> On Fri, 18 Nov 2022, srinivas pandruvada wrote:
+> 
+> > > Use a generic 'hsdev->usage' instead of the HID_USAGE_SENSOR_ALS
+> > > to
+> > > allow this driver to drive the Lenovo custom ambient light
+> > > sensor,
+> > > which is registered under a 'custom' usage and not
+> > > HID_USAGE_SENSOR_ALS.
 > > > 
-> > > There is a difference between %1u and %.1u. And I believe you wanted the
-> > > latter, but...
-> > 
-> > %1u works fine for me. Can you point me to the documentation for %.1u?
+> > > Add the Lenovo Intelligent Sensing Solution (LISS) ambient light
+> > > sensor
+> > > to the platform device ids.
+> > > 
+> > > Signed-off-by: Philipp Jungkamp <p.jungkamp@gmx.net>
+> > Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 > 
-> man printf(3)
+> Is my understanding correct that this Ack is valid for patches 1,2
+> and 3 
+> (and not for 4) from the series?
+
+Not for the series, I have some comments on others except 2.
+So waiting for response.
+
+Thanks,
+Srinivas
+
 > 
-> It was a surprise to me that many developers don't know the difference here.
-> The %NNNNu defines the _minimum_ digits to print, while the %.NNNu defines
-> the _exact_ amount of digits to print (NNN -- a number).
+> Thanks,
 > 
-> > >> +			 data->version);
-
-Even me trapped to this one more time :-)
-
-The above is only applies to the strings and floats. So in your case it has no
-difference.
-
--- 
-With Best Regards,
-Andy Shevchenko
 
 
