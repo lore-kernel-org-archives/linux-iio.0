@@ -2,46 +2,50 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B739CC4332F
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Nov 2022 08:28:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 347C4C433FE
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Nov 2022 08:28:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232796AbiKVI2r (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 22 Nov 2022 03:28:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33248 "EHLO
+        id S232802AbiKVI2s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 22 Nov 2022 03:28:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232772AbiKVI2l (ORCPT
+        with ESMTP id S232771AbiKVI2l (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Nov 2022 03:28:41 -0500
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2392A278;
-        Tue, 22 Nov 2022 00:28:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6D827DDF;
+        Tue, 22 Nov 2022 00:28:39 -0800 (PST)
 Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AM7ffdH017045;
+        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AM7ffdG017045;
         Tue, 22 Nov 2022 03:28:38 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3m0q23he4a-1
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3m0q23he47-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Nov 2022 03:28:38 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 2AM8SbSD046750
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
         Tue, 22 Nov 2022 03:28:37 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 22 Nov
- 2022 03:28:36 -0500
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 2AM8Saii028641
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 22 Nov 2022 03:28:36 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 22 Nov 2022 03:28:35 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 22 Nov 2022 03:28:35 -0500
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 22 Nov 2022 03:28:36 -0500
+ Transport; Tue, 22 Nov 2022 03:28:35 -0500
 Received: from rbolboac.ad.analog.com ([10.48.65.139])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 2AM8SFce016751;
-        Tue, 22 Nov 2022 03:28:32 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 2AM8SFcc016751;
+        Tue, 22 Nov 2022 03:28:29 -0500
 From:   Ramona Bolboaca <ramona.bolboaca@analog.com>
 To:     <jic23@kernel.org>, <nuno.sa@analog.com>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     Ramona Bolboaca <ramona.bolboaca@analog.com>
-Subject: [PATCH v6 8/9] staging: iio: accel: adis16240: Call '__adis_initial_startup()'
-Date:   Tue, 22 Nov 2022 10:27:56 +0200
-Message-ID: <20221122082757.449452-9-ramona.bolboaca@analog.com>
+Subject: [PATCH v6 6/9] iio: imu: adis16400: Call '__adis_initial_startup()' in probe
+Date:   Tue, 22 Nov 2022 10:27:54 +0200
+Message-ID: <20221122082757.449452-7-ramona.bolboaca@analog.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221122082757.449452-1-ramona.bolboaca@analog.com>
 References: <20221122082757.449452-1-ramona.bolboaca@analog.com>
@@ -49,8 +53,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: kJEx912ThKY2xQ4yihXBddAwesFe9_Us
-X-Proofpoint-ORIG-GUID: kJEx912ThKY2xQ4yihXBddAwesFe9_Us
+X-Proofpoint-GUID: GmjEh4rxLOkkNUJ2ZlgLjN4UHn34I9db
+X-Proofpoint-ORIG-GUID: GmjEh4rxLOkkNUJ2ZlgLjN4UHn34I9db
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2022-11-22_04,2022-11-18_01,2022-06-22_01
@@ -64,25 +68,25 @@ List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 Call '__adis_initial_startup()' instead of its locked variant in
-'adis16240_probe()'.
+'adis16400_probe()'.
 The locks are not needed at this point.
 
 Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
 Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/staging/iio/accel/adis16240.c | 2 +-
+ drivers/iio/imu/adis16400.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/iio/accel/adis16240.c b/drivers/staging/iio/accel/adis16240.c
-index bca857eef92e..337492785f04 100644
---- a/drivers/staging/iio/accel/adis16240.c
-+++ b/drivers/staging/iio/accel/adis16240.c
-@@ -414,7 +414,7 @@ static int adis16240_probe(struct spi_device *spi)
- 		return ret;
+diff --git a/drivers/iio/imu/adis16400.c b/drivers/iio/imu/adis16400.c
+index 17bb0c40a149..c02fc35dceb4 100644
+--- a/drivers/iio/imu/adis16400.c
++++ b/drivers/iio/imu/adis16400.c
+@@ -445,7 +445,7 @@ static int adis16400_initial_setup(struct iio_dev *indio_dev)
+ 	st->adis.spi->mode = SPI_MODE_3;
+ 	spi_setup(st->adis.spi);
  
- 	/* Get the device into a sane initial state */
--	ret = adis_initial_startup(st);
-+	ret = __adis_initial_startup(st);
+-	ret = adis_initial_startup(&st->adis);
++	ret = __adis_initial_startup(&st->adis);
  	if (ret)
  		return ret;
  
