@@ -2,105 +2,123 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACEFC3A59F
-	for <linux-iio@archiver.kernel.org>; Wed, 23 Nov 2022 13:57:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45643C433FE
+	for <linux-iio@archiver.kernel.org>; Wed, 23 Nov 2022 14:40:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236723AbiKWN5l (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 23 Nov 2022 08:57:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
+        id S237905AbiKWOkh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 23 Nov 2022 09:40:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236767AbiKWN4v (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Nov 2022 08:56:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBB3101F;
-        Wed, 23 Nov 2022 05:51:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED9E961CEC;
-        Wed, 23 Nov 2022 13:51:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B70F3C433D6;
-        Wed, 23 Nov 2022 13:51:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669211504;
-        bh=yn6IQg9xUUV9CgWL40Zq6y52rg1mn5sa8oD03o5v7Xs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UKfpNKKUztgIyNLf4JyG/Wh9x1SnC70ZZ6CMkTeLD14mkOzGlAm4+qghDz9TTaJEY
-         oavU1DO373ElaIHQhIEpVZi9OKHf+AB7y5AZ3a0QM4K6Mda5mlxZI6uj77Y+34o3+z
-         tC1+zaqNCkF1IRGWjNnvY9xTloZLlUjIwvwDNzzHVs6iAjJgjo18LVCElB+Z+suDGy
-         RWQBO44v5C47KQUPl5LJXsrQ6VqWTj1W9The96h2CM4sfIP1b0DOy3ZhTq1Wp6bXDL
-         C50DRWElKcd6PEaRVrgU5hEWY/A3MmvIZ+aqD+I2bHVUKaydHWSJ+FVF1rDhM8vyJp
-         Av8NqbWSqNyRA==
-Date:   Wed, 23 Nov 2022 13:51:32 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-watchdog@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 1/9] dt-bindings: drop redundant part of title of
- shared bindings
-Message-ID: <Y34lZFSBEwuI6G+a@sirena.org.uk>
-References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
- <20221121110615.97962-2-krzysztof.kozlowski@linaro.org>
+        with ESMTP id S237570AbiKWOkd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Nov 2022 09:40:33 -0500
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C47A42F7E
+        for <linux-iio@vger.kernel.org>; Wed, 23 Nov 2022 06:40:31 -0800 (PST)
+Received: by mail-qk1-x72f.google.com with SMTP id z1so12520677qkl.9
+        for <linux-iio@vger.kernel.org>; Wed, 23 Nov 2022 06:40:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Kz0LuQHYwR1IVYCnxnd6r23v7LzIiHX/ImxeAU/8TJU=;
+        b=e4uJ8SZmd27oXyqnenMSBkCujFM8krETeCDV1SNB714vs/5368IIzrdTppiYRYYBeA
+         Dedarg1r757+xNiNE94WxWKdW1LpFsBFQGS0n664AtH1M4tFzF/rzF6MEsd7NWeGs84o
+         dSyK2JSYTq2cwlALHnwKkGYGqnM+7GVKbCko3twE9b6rdT1gKNDnnPxH4lNx3HDaAZ4Q
+         5eigcz6HADLpQ2uQS/rDbGRFxdi4NiPNfEZo1osyLl3Zu+0CN10IRDmNbPU51/J9S3os
+         LG9iKBDLnm/L17WTu+R007fedMLxZIS+lLM1juWpNhuTNY9UKTM/bEPRJHWEIbjy6ywz
+         OYKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Kz0LuQHYwR1IVYCnxnd6r23v7LzIiHX/ImxeAU/8TJU=;
+        b=OGzHliLMFmL8SIkd2wtU6x676Eq/12/5R4nuZkvNKLU0MH7hdOlBig7i0URneW2DGv
+         KdOo6ajJnpq83mLmpBNO6pNgL90q4g0xQotKa54zEeKg+ByuhKGBz3a4Vzen4+E6ef+S
+         1ZXc1tdTUGgS2ZIin2WbJptOZmxw7qbgItgFZfNOO5ZVFJDygewJaYFXQ5rEqhtwb8Jz
+         zeNUyYZdOXGZfAqg1alyQznoOwHWgMKhoq686B23wlo2fp2/f5eWpklTRE4oj4x+1HZ/
+         n3saZAwUQuUNZn3xI+7MXYkl5RSdOTECSc8DKS7IQcof/AdMPG0GLXHN083BGQw3yz+B
+         5BRg==
+X-Gm-Message-State: ANoB5pldsO96tTa5vodfoxyRzMBx06wUWjs/N3fVfZ9pSvr1yozOmya+
+        Ru/ceJRc71aR+OwtJX3X61kk4g==
+X-Google-Smtp-Source: AA0mqf6f0MDPV/iuxooMGg51/bf6XxMqtUg/KS/WCIylcctIF7X6pHS1ru7KSKKhkZxwGrIuUW1xEg==
+X-Received: by 2002:a37:94c6:0:b0:6fa:2ff9:e9ca with SMTP id w189-20020a3794c6000000b006fa2ff9e9camr10506670qkd.29.1669214430309;
+        Wed, 23 Nov 2022 06:40:30 -0800 (PST)
+Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id m125-20020a378a83000000b006cbc6e1478csm11642208qkd.57.2022.11.23.06.40.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Nov 2022 06:40:29 -0800 (PST)
+Date:   Tue, 22 Nov 2022 02:27:50 -0500
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc:     jic23@kernel.org, alexandre.torgue@foss.st.com,
+        olivier.moysan@foss.st.com, linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] counter: stm32-lptimer-cnt: fix the check on arr and cmp
+ registers update
+Message-ID: <Y3x59hNekCDuOFXT@fedora>
+References: <20221123133609.465614-1-fabrice.gasnier@foss.st.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="sez8m7aAndejrS5d"
+        protocol="application/pgp-signature"; boundary="0mgwEUJf1fyfHdJ1"
 Content-Disposition: inline
-In-Reply-To: <20221121110615.97962-2-krzysztof.kozlowski@linaro.org>
-X-Cookie: I'm rated PG-34!!
+In-Reply-To: <20221123133609.465614-1-fabrice.gasnier@foss.st.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 
---sez8m7aAndejrS5d
+--0mgwEUJf1fyfHdJ1
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 21, 2022 at 12:06:07PM +0100, Krzysztof Kozlowski wrote:
-> The Devicetree bindings document does not have to say in the title that
-> it is a "binding", but instead just describe the hardware.  For shared
-> (re-usable) schemas, name them all as "common properties".
+On Wed, Nov 23, 2022 at 02:36:09PM +0100, Fabrice Gasnier wrote:
+> The ARR (auto reload register) and CMP (compare) registers are
+> successively written. The status bits to check the update of these
+> registers are polled together with regmap_read_poll_timeout().
+> The condition to end the loop may become true, even if one of the register
+> isn't correctly updated.
+> So ensure both status bits are set before clearing them.
+>=20
+> Fixes: d8958824cf07 ("iio: counter: Add support for STM32 LPTimer")
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+> ---
+>  drivers/counter/stm32-lptimer-cnt.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-=
+lptimer-cnt.c
+> index d6b80b6dfc28..8439755559b2 100644
+> --- a/drivers/counter/stm32-lptimer-cnt.c
+> +++ b/drivers/counter/stm32-lptimer-cnt.c
+> @@ -69,7 +69,7 @@ static int stm32_lptim_set_enable_state(struct stm32_lp=
+tim_cnt *priv,
+> =20
+>  	/* ensure CMP & ARR registers are properly written */
+>  	ret =3D regmap_read_poll_timeout(priv->regmap, STM32_LPTIM_ISR, val,
+> -				       (val & STM32_LPTIM_CMPOK_ARROK),
+> +				       (val & STM32_LPTIM_CMPOK_ARROK) =3D=3D STM32_LPTIM_CMPOK_ARRO=
+K,
 
-Acked-by: Mark Brown <broonie@kernel.org>
+This is a reasonable fix, but I don't like seeing so much happening in
+an argument list -- it's easy to misunderstand what's going on which can
+lead to further bugs the future. Pull out this condition to a dedicated
+bool variable with a comment explaining why we need the equivalence
+check (i.e. to ensure both status bits are set and not just one).
 
---sez8m7aAndejrS5d
+William Breathitt Gray
+
+--0mgwEUJf1fyfHdJ1
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmN+JWMACgkQJNaLcl1U
-h9CJ0gf/ajSRpLgN3RoHR7wLxFr99y5vWRywVoOaKU+lLq3UY2O6a9ssY8wOblzx
-J9LbUP4Acep2fofTZCX1Ks2sTUHXNBB95SaeCwpSD/MX2HltHr0QvTGh8Lc9EfRf
-f4l/ayjov4DbVsOJ019O7MKSgyuKezLb6Rj/5S38OrqdREbbzDoFe2ah8rSxpA8m
-OQPEsY4eAbVfELEo/JQ86QYXN8gT6p3qA0+8IxDb0D+iLi3JCIz3GTrn+ZCudWRS
-DkbD00vhGbeEaAbI/ufYp/KUWT0wfIoONENSAdGhmGMd+deqbmOt1Ryt+YoEt49j
-pRMeSDCxuBZIpBjQfw7H+5ofOT8jsg==
-=hoZL
+iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCY3x59gAKCRC1SFbKvhIj
+K6m4AQDYJtNkjZVyUJNcrrWZaOlUfodLz2Yx1BuFjg5YDeGpZAEA7CMFKO+r2JFh
+jyelDpd6Evs3sxh1gwWAWDB4cv5E1gk=
+=eIOy
 -----END PGP SIGNATURE-----
 
---sez8m7aAndejrS5d--
+--0mgwEUJf1fyfHdJ1--
