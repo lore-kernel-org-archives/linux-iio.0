@@ -2,109 +2,110 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C331C4332F
-	for <linux-iio@archiver.kernel.org>; Wed, 23 Nov 2022 12:46:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63437C4332F
+	for <linux-iio@archiver.kernel.org>; Wed, 23 Nov 2022 13:22:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237798AbiKWMqo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 23 Nov 2022 07:46:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47732 "EHLO
+        id S238622AbiKWNWv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 23 Nov 2022 08:22:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237808AbiKWMpu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Nov 2022 07:45:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BDE3286F9;
-        Wed, 23 Nov 2022 04:42:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDADB61C55;
-        Wed, 23 Nov 2022 12:42:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9335AC433B5;
-        Wed, 23 Nov 2022 12:42:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669207367;
-        bh=HQnziATy9GXeouqLcZTi0GRYACLnIQvqj6pEI65EoMw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=saS32qREy/Ra3DmyLdcbQxG1oa81pwa3rGqr/iHx//e2z72uQ/bE0vRAdhUD9WN/U
-         sqqVmHerj34EjANgD96yxunvDygUXnEMpnnsBb94Tsq/XQMeynmzIdrxqxaJdZ5E/N
-         oKq1XdcEN6tX2uCtmJfDcxjpb7rZ4n1mAE7Yra4b0ivIeTuy1Fw2C5vwsxrx51JMU/
-         hHhdwtMlUB1DEQQ5puzIaksoiF1teKYxjXLdYAGtOMNu6Lq+80WtQoBTBKncw3/D0m
-         XK+EYwS6PCgx3qoZu2jc/gSHMyhlqC6K2siwZuKbywBuJCMmoVTK7kPwmdSmgRdwJ1
-         RYlP8enqlD3ig==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Matti Vaittinen <mazziesaccount@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, jic23@kernel.org,
-        linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 05/31] tools: iio: iio_generic_buffer: Fix read size
-Date:   Wed, 23 Nov 2022 07:42:06 -0500
-Message-Id: <20221123124234.265396-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221123124234.265396-1-sashal@kernel.org>
-References: <20221123124234.265396-1-sashal@kernel.org>
+        with ESMTP id S238638AbiKWNWY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Nov 2022 08:22:24 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E78A93FB8B
+        for <linux-iio@vger.kernel.org>; Wed, 23 Nov 2022 05:01:34 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id l8so21259806ljh.13
+        for <linux-iio@vger.kernel.org>; Wed, 23 Nov 2022 05:01:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Rp9LQRHK4UZG+xUfLLMwYJtuh3wPrpxN6Fnd2UjWdQg=;
+        b=YqKW4WZ12w3737HpIKaIbSfRqSmPKWir3XDrW/zdqOV9JGrfgldRSUQjiOR4mpwLZL
+         CO+CHVIHt2qkz75r4PuT1YifKI/ufwNk5CLMVXDEnjYh7zYOibvXOFRLqK+eOY4JqvRa
+         eylk3gfX+g7syMCZg6KdhAncldUPL6p8UKHWvE8a+SpBROLKURnbhyQ76keSjsPLxvFr
+         euPLS7vpgu8v9MlgyjPLinBvTgoSYUbjCGPFxWH5zBqhxO9NI3+MV1+oW06cV5+DmYTU
+         2Wxron4/P1HDYbINnL2S67EKIlSDaeuH8ldHoqSH2es4ghAFTlCTrCpmNhgR2wRM3yw0
+         WEWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Rp9LQRHK4UZG+xUfLLMwYJtuh3wPrpxN6Fnd2UjWdQg=;
+        b=YRCwlraTDQQorgqohY4U7sAVmC+IJmIP5j22P8u78H4Po4tCBiYU6rVRQtthLRaTbw
+         HD+LQWcZxGtxjt67OYfT1J1J7o6VR6u+/Oel/NLFSoBcYopo54d96GGyhKsg8Pl+hKll
+         I2p9o40/kZ3OuP5nMf/hEEJR93KXhJz7W2ff4/YaZ8bKPbc48Hm+kbbuVJ6YY6vYFLmk
+         XIBHFWBPHaMcmbnWR1RgD7+BhsMUAmGo1ci6Devkz9BQTGPUwfmcuo89XoYfo2/foaEO
+         PzazTxvIr2ZmwC1W1t0tsBAwaPrUXo3RpjSRWOrfrskqaxUusCobPAKpiHnpXX/y2KyZ
+         jIyg==
+X-Gm-Message-State: ANoB5pnL/0idFMoM/uzECp7eIJoR1dy5q9gfn1vgiTh5GLhNtpLRBSwY
+        wG8xwLS1FBtQ/tzYM2lSS9qK2g==
+X-Google-Smtp-Source: AA0mqf5DGm4ZvktT4NR9WyAWpPuHSnlNUVoErSOEdsb9pP81a5SYi+qylXXNjUQBbNtecR/QIXyT/g==
+X-Received: by 2002:a2e:a90b:0:b0:277:794:ae09 with SMTP id j11-20020a2ea90b000000b002770794ae09mr8806647ljq.286.1669208492340;
+        Wed, 23 Nov 2022 05:01:32 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id p7-20020a2eb987000000b002796fb63dbdsm534480ljp.13.2022.11.23.05.01.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Nov 2022 05:01:31 -0800 (PST)
+Message-ID: <4d62d7e9-5454-4d1c-b3bb-4ba1fd7a31d6@linaro.org>
+Date:   Wed, 23 Nov 2022 14:01:30 +0100
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v5] dt-bindings: iio: adc: ad7923: adjust documentation
+Content-Language: en-US
+To:     Edmund Berenson <edmund.berenson@emlix.com>
+Cc:     Lukasz Zemla <Lukasz.Zemla@woodward.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20221122161437.18937-1-edmund.berenson@emlix.com>
+ <c96d84e9-44d0-a389-429d-91d8a7d747b5@linaro.org>
+ <20221123113224.5vxs2zmxf7z2bmvm@emlix.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221123113224.5vxs2zmxf7z2bmvm@emlix.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Matti Vaittinen <mazziesaccount@gmail.com>
+On 23/11/2022 12:32, Edmund Berenson wrote:
+> On Wed, Nov 23, 2022 at 11:42:40AM +0100, Krzysztof Kozlowski wrote:
+>> On 22/11/2022 17:14, Edmund Berenson wrote:
+>>> - The ad7927 is fully compatible with ad7928 driver, add
+>>> documentation for device.
+>>> - ad7923 and ad7924 are treated the same in the driver, show
+>>> the relationship in the documentation.
+>>>
+>>> Suggested-by: Lukasz Zemla <Lukasz.Zemla@woodward.com>
+>>> Signed-off-by: Edmund Berenson <edmund.berenson@emlix.com>
+>>> ---
+>>>  .../bindings/iio/adc/adi,ad7923.yaml          | 26 ++++++++++++-------
+>>>  1 file changed, 17 insertions(+), 9 deletions(-)
+>>>
+>>
+>> 1. This is a v5, what are the changes?
+>>
+> The original idea was adding the compatible string into driver itself,
+> then it was suggested that I have a fallback compatible to 7928 as the
+> hardware versions are treated the same in the driver. After that it was
+> suggested to add deprecated flag to standalone compatibility, but doing
+> so I didn't want to add compatibility on driver side just to mark it
+> deprecated in the documentation, so I dropped driver side changes.
+> Finally I had some issues getting the documentation syntax into an
+> acceptable form, mainly const vs enum listing of compatibility stings.
 
-[ Upstream commit 7c919b619bcc68158921b1bd968f0e704549bbb6 ]
+That's a bit too long for a changelog. Keep it short but still
+descriptive. Anyway - this must be in the changelog place, so after ---
 
-When noevents is true and small buffer is used the allocated memory for
-holding the data may be smaller than the hard-coded 64 bytes. This can
-cause the iio_generic_buffer to crash.
 
-Following was recorded on beagle bone black with v6.0 kernel and the
-digit fix patch:
-https://lore.kernel.org/all/Y0f+tKCz+ZAIoroQ@dc75zzyyyyyyyyyyyyycy-3.rev.dnainternet.fi/
-using valgrind;
-
-==339== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
-==339== Command: /iio_generic_buffer -n kx022-accel -T0 -e -l 10 -a -w 2000000
-==339== Parent PID: 307
-==339==
-==339== Syscall param read(buf) points to unaddressable byte(s)
-==339==    at 0x496BFA4: read (read.c:26)
-==339==    by 0x11699: main (iio_generic_buffer.c:724)
-==339==  Address 0x4ab3518 is 0 bytes after a block of size 160 alloc'd
-==339==    at 0x4864B70: malloc (vg_replace_malloc.c:381)
-==339==    by 0x115BB: main (iio_generic_buffer.c:677)
-
-Fix this by always using the same size for reading as was used for
-data storage allocation.
-
-Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-Link: https://lore.kernel.org/r/Y0kMh0t5qUXJw3nQ@dc75zzyyyyyyyyyyyyycy-3.rev.dnainternet.fi
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/iio/iio_generic_buffer.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-index 2491c54a5e4f..f8deae4e26a1 100644
---- a/tools/iio/iio_generic_buffer.c
-+++ b/tools/iio/iio_generic_buffer.c
-@@ -715,12 +715,12 @@ int main(int argc, char **argv)
- 				continue;
- 			}
- 
--			toread = buf_len;
- 		} else {
- 			usleep(timedelay);
--			toread = 64;
- 		}
- 
-+		toread = buf_len;
-+
- 		read_size = read(buf_fd, data, toread * scan_size);
- 		if (read_size < 0) {
- 			if (errno == EAGAIN) {
--- 
-2.35.1
+Best regards,
+Krzysztof
 
