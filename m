@@ -2,129 +2,122 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF96C43219
-	for <linux-iio@archiver.kernel.org>; Thu, 24 Nov 2022 21:45:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A50C433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 24 Nov 2022 23:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229472AbiKXVpZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 24 Nov 2022 16:45:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45268 "EHLO
+        id S229576AbiKXXjW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 24 Nov 2022 18:39:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiKXVpY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2022 16:45:24 -0500
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA2270A37;
-        Thu, 24 Nov 2022 13:45:23 -0800 (PST)
-Received: from mercury (unknown [185.209.196.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id C66DA6602B47;
-        Thu, 24 Nov 2022 21:45:21 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1669326321;
-        bh=rqgJu1oO5oPP9Saq2aP3EVhh6iBrbYAer2nSFnD1yFg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=b5ZL3gYpW2AaVUC9FX721XxDdtAa9Yi3jDn1mUPG9a6c2Pm3+xdBt69RkJZMJ/nWg
-         7xdSGxDDZpe/GJUMkyFzgmohlKDeJFci3AWoNtHo3vSC0VoU/Mkvx5I6lzlUFyVStc
-         8pmce4XqFjy/+rjylV6xJWmP/OFZVMJ+3jmY4PcBbdt+F3h2Ufgp6w3llTppYJzJyJ
-         RBdf2KeP4IjcmIt2kA7vOlFv4z12KgpjbUvZOvbrxvpvinKIkC6yLg0HgJy161BZSI
-         Rj2LP6fiaWui7+m1kATl58M3KRYPgK90RfHC6/5uGtWQbLfxfbGv21gk6tpXonn7Qc
-         H7TSdWkpwgSPQ==
-Received: by mercury (Postfix, from userid 1000)
-        id 3713C106092D; Thu, 24 Nov 2022 22:45:19 +0100 (CET)
-Date:   Thu, 24 Nov 2022 22:45:19 +0100
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Saravanan Sekar <sravanhome@gmail.com>
-Cc:     lee@kernel.org, jic23@kernel.org, lars@metafoo.de,
-        andy.shevchenko@gmail.com, linux-pm@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v6 2/7] power: supply: fix wrong interpretation of
- register value
-Message-ID: <20221124214519.nqpeuvu62k7eh7ix@mercury.elektranox.org>
-References: <20221123175425.564042-1-sravanhome@gmail.com>
- <20221123175425.564042-3-sravanhome@gmail.com>
+        with ESMTP id S229502AbiKXXjV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2022 18:39:21 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F928114
+        for <linux-iio@vger.kernel.org>; Thu, 24 Nov 2022 15:39:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net; s=s31663417;
+        t=1669333151; bh=+8OOqYEUTsfi8H6g215fSm9TUlssi2B+nqbTWLIQ4As=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=h+a+sshScMqdvnQJIjJLjHzclCdMPrusNIthVENPKDiMbmCVZLG93Qn0PMuTlzgF0
+         2O8pEP4Q7fKL3/pgbendoxEJG9qsB1hKC6CO3jd52mrsanB+ZrGd1SuURoV7QZO9QL
+         6bCGhyAp5MVioRmnFKViHezmCbnt4n8hDar+U4y4NsQeRz5XZy5q1ljtqZNTfOGvyL
+         tWY2Me2x32ok1lgCLlR5m3eapRctnEP6DwZddbT2AVwTmu5PWLeFP299/ZuG+ycPpb
+         QDqb7RBGxs0YM2HYV29shEASs1Cnqi7cEnDwx5KPVq0/hng6/I9FugWF/nY8GisxCc
+         u8sJ45K07m8/Q==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from localhost.localdomain ([95.223.45.67]) by mail.gmx.net
+ (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
+ 1MacOQ-1oS3C11pFa-00c6e5; Fri, 25 Nov 2022 00:39:11 +0100
+From:   Philipp Jungkamp <p.jungkamp@gmx.net>
+To:     Jiri Kosina <jikos@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, Philipp Jungkamp <p.jungkamp@gmx.net>
+Subject: [PATCH v4 2/4] HID: hid-sensor-custom: Add LISS custom sensors
+Date:   Fri, 25 Nov 2022 00:38:39 +0100
+Message-Id: <20221124233841.3103-3-p.jungkamp@gmx.net>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221124233841.3103-1-p.jungkamp@gmx.net>
+References: <20221124233841.3103-1-p.jungkamp@gmx.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="xp3w4xuc3bonw7au"
-Content-Disposition: inline
-In-Reply-To: <20221123175425.564042-3-sravanhome@gmail.com>
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:YZqrFCYAp0YlLltYKPVCXgace1TkEdx1kP6ZZw2DdmFQMyrGsb0
+ 5gR2B1YCs28lenrFq/T7n8cEHi2GcoFvoNPl3dkS0fRKFrxQ9GQskv/lvX1tcVJv3xAoaHy
+ 2tYLEhVwJdLHt4xGcSfj6vRGWVeiBELhxCTVcba3nnQUULmtJ1i84v67+H+ItrjSHl64QxT
+ yId2h1hdNN9QJ1Abjn8lw==
+UI-OutboundReport: notjunk:1;M01:P0:bb9et17/9HM=;+Vov9dJBSznBgmMh/l+ePkFO+Me
+ J+jRz/Z5JUuiHddSHiheS7WEdGd+RL7Vo4farfrYLidHB4PHwU6R/lxtzyLELBE4YYDdYkWdk
+ UsCu2gjsYek/Q7XO0xhP1tICp/s5j7x6K/ZffsFTc0JSoA51piId8IyYgCRb4d3w2PgcCKZ9k
+ XzJMaGV00Sy7WVFAcPZQr78Fb9tMg+XAFN2R2+bPOsE4DrQYqEY0P9+tMVxvW2gyNyTBurU11
+ MDHVFO7LpXwjWrpoQNrv41vFUqFNkKcPfiPsSEcmjaDSsNPML4yu3oGoEnyF6eUX7AYSyqr3e
+ DZECzz1L3TXZIq0Pn7pACbTWDibr1LKELTI7MM/L+okH9B222NviYTSrDtSMd0AKb8+KPUIqb
+ r4L1AaR2MZT6X/MiWYxNw/UDqCHSZ1BIItdsmdJzRlZo6ie2PBxnlomDOM5xDK5Gkn7YLerbV
+ CmA9D72VCmo6Hr+4Kj3eFlwEVmkciFzdfWhGK2aZDVRDXUXp5NZVDQxiN0gIQDEW7AgW3++ap
+ wUi+IvWgD5l2zhZyjxakfSHPeN8EmLDgl8syOM4SIdjqSTIP9x6SowjqYYMl4QnrUjIWrShY4
+ tsu96Usnxmse7T6e8RToQdyulKQPryOPykVUfLTFM9/HT9EKCg0gXodm/RX1i+nqfLzMfOIAc
+ 1idrCFd0lx5DcHYGVjZDh2mnkhFmq4tHNKhnazT3KUy6VmEJvos0jufKTdUkpl0wR3k1tx0Tb
+ oXD+qK0312RprmEFCFhI3r7O9/+RzXKGSzI3flbusVs0OW4PyB8Qr4SBeZ7J7YAeI/TlpfXYC
+ zPs0mLhldZVEjCbHdusC8EtkZMqnsE6t8G/DOAIySX6+jYTM9ZI3ls3v8V+Su4zLZGSj3/rjS
+ 3RZYvV0NtGqVDlS+P42bk6O7O4rXa1catUmDxvCiImz+noMjfjIxlCA1ocOu77DoMaUz9480P
+ bcKz0FbpjUJtSy+bW79rJB2qBSw=
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Add the Lenovo Intelligent Sensing Solution (LISS) custom sensors to the
+known custom sensors.
 
---xp3w4xuc3bonw7au
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Philipp Jungkamp <p.jungkamp@gmx.net>
+=2D--
 
-Hi,
+v2:
+- Create this 'noop' patch that just adds the LISS sensors to the custom
+  sensor match table.
 
-On Wed, Nov 23, 2022 at 06:54:20PM +0100, Saravanan Sekar wrote:
-> Fix the switch cases to match the register value.
->=20
-> Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
-> ---
+v3:
+- Add missing 'Signed-Off-By'
 
-Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+v4:
+- No change.
 
--- Sebastian
+ drivers/hid/hid-sensor-custom.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
->  drivers/power/supply/mp2629_charger.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/power/supply/mp2629_charger.c b/drivers/power/supply=
-/mp2629_charger.c
-> index bf9c27b463a8..46d620bd23b9 100644
-> --- a/drivers/power/supply/mp2629_charger.c
-> +++ b/drivers/power/supply/mp2629_charger.c
-> @@ -284,10 +284,10 @@ static int mp2629_charger_battery_get_prop(struct p=
-ower_supply *psy,
->  			val->intval =3D POWER_SUPPLY_STATUS_DISCHARGING;
->  			break;
->  		case 0x01:
-> -		case 0x10:
-> +		case 0x02:
->  			val->intval =3D POWER_SUPPLY_STATUS_CHARGING;
->  			break;
-> -		case 0x11:
-> +		case 0x03:
->  			val->intval =3D POWER_SUPPLY_STATUS_FULL;
->  		}
->  		break;
-> @@ -305,7 +305,7 @@ static int mp2629_charger_battery_get_prop(struct pow=
-er_supply *psy,
->  		case 0x01:
->  			val->intval =3D POWER_SUPPLY_CHARGE_TYPE_TRICKLE;
->  			break;
-> -		case 0x10:
-> +		case 0x02:
->  			val->intval =3D POWER_SUPPLY_CHARGE_TYPE_STANDARD;
->  			break;
->  		default:
-> --=20
-> 2.34.1
->=20
+diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-cust=
+om.c
+index 734c6bde68fe..7c6e2e795753 100644
+=2D-- a/drivers/hid/hid-sensor-custom.c
++++ b/drivers/hid/hid-sensor-custom.c
+@@ -782,6 +782,29 @@ static const struct hid_sensor_custom_match hid_senso=
+r_custom_known_table[] =3D {
+ 		.luid =3D "020B000000000000",
+ 		.manufacturer =3D "INTEL",
+ 	},
++	/*
++	 * Lenovo Intelligent Sensing Solution (LISS)
++	 */
++	{	/* ambient light */
++		.tag =3D "LISS",
++		.luid =3D "0041010200000082",
++		.model =3D "STK3X3X Sensor",
++		.manufacturer =3D "Vendor 258",
++		.check_dmi =3D true,
++		.dmi.matches =3D {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		}
++	},
++	{	/* human presence */
++		.tag =3D "LISS",
++		.luid =3D "0226000171AC0081",
++		.model =3D "VL53L1_HOD Sensor",
++		.manufacturer =3D "ST_MICRO",
++		.check_dmi =3D true,
++		.dmi.matches =3D {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		}
++	},
+ 	{}
+ };
 
---xp3w4xuc3bonw7au
-Content-Type: application/pgp-signature; name="signature.asc"
+=2D-
+2.38.1
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmN/5eoACgkQ2O7X88g7
-+prFExAAggQla4auvPk4vg3Q5ROt9eHIzhS5N9Rqeg50InU+1TLxSLAtO3pbf1cw
-9hnpCl5WS52qCkZ5thdM9eH7dwL7+xJJoZZn9J2yEsFLR3I+n3Fws6y98ZQe8Qgj
-XxGVda9Jx/tb/7UWSSZEhoeSYItBdghG4sqFgm7Cw4vPLzAL6qQfBMKVmignLjl/
-I0qGwV9mHxAPuQQDjX2fEftIEK3qLMzab5j0N4qW8rZiNavvKhdlSM+pmvFk2MDe
-jsHtaE6WcwTVV/+JMUQb65kr8v2j68OP1t+5DbhJDJ1U2LRawEk4MI9dNZjiXQpL
-X9eRzC4ndxGDDAyqcqY4tI5hjOUVdPeAkJaVB6xk+DMR9tWd1ew0fRLYZ/3HI3Bi
-oJe88c9xSpppoEbuY5MmAsPskwmVhwpsT9laAZPZg2xxNN7NAqCsiYZ11dyltCmL
-+g+HHKO9Wds9Crkgmyjh8i26QCcCDlLqQqCvrGoVtqTriLr8q2uQTFO86hTiYKbT
-LgdAfZMbvK0O9HnyBTHgdxYriN1cmS7GmZM0IvWqwYAfYQBGmwUO4WH7QHVqC9Rn
-fVnMR7UkrX4OhAWXBx2B2WmnxZcLDbWJITvpeTNyLMepCFAQixQcoKStYrZKxJdN
-Y3mhw+NxglEhpqbh3CQdFi+Xg9kY5T4G6wq8c3/g29P6BvowpzI=
-=q1yh
------END PGP SIGNATURE-----
-
---xp3w4xuc3bonw7au--
