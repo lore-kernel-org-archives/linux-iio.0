@@ -2,406 +2,169 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3023C4321E
-	for <linux-iio@archiver.kernel.org>; Thu, 24 Nov 2022 23:39:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C0BC4332F
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Nov 2022 08:35:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiKXXjY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 24 Nov 2022 18:39:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41306 "EHLO
+        id S229495AbiKYIfr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 25 Nov 2022 03:35:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbiKXXjX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2022 18:39:23 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C066C114
-        for <linux-iio@vger.kernel.org>; Thu, 24 Nov 2022 15:39:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net; s=s31663417;
-        t=1669333151; bh=0jrerNMb+e60kdB7M2+lqvJIkDKfWYsOH8tEzrP3zmE=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=irXDHmkUkrwMLYojK0KbXAaqQcnXs7R4Cl4oewjaX4TVBkSgI0H8UQxKYHLkH0uUI
-         DOvU39yWbNlE/9t3+zIqKVz7KBuUz+DPO54lBATeyZ4mLanuIqaIM1BZTDgrpqvzrC
-         sYcoRDihJpxhBpCWMb+dKBtzS1hpsnM0bKHkT5B+DjXHCvmSXNyUXFgKHK0+0smAYB
-         kMNu1VIpaQMKMmofA2hfJrga7yrMJX6Zow4o5KGQssWP5y53Sw5wSEVubas6FfgeoG
-         9D2zlqwdY3kU8JLCVqW+v/55RRYwtU5+qZiigdp+FY9/J2MuuGR4I04+pmKgZ0+5Vl
-         Ae6sKhuAVza0g==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from localhost.localdomain ([95.223.45.67]) by mail.gmx.net
- (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
- 1Mwwdf-1ooPYq0Zop-00yQsm; Fri, 25 Nov 2022 00:39:11 +0100
-From:   Philipp Jungkamp <p.jungkamp@gmx.net>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, Philipp Jungkamp <p.jungkamp@gmx.net>
-Subject: [PATCH v4 1/4] HID: hid-sensor-custom: Allow more custom iio sensors
-Date:   Fri, 25 Nov 2022 00:38:38 +0100
-Message-Id: <20221124233841.3103-2-p.jungkamp@gmx.net>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221124233841.3103-1-p.jungkamp@gmx.net>
-References: <20221124233841.3103-1-p.jungkamp@gmx.net>
+        with ESMTP id S229476AbiKYIfq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Nov 2022 03:35:46 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70054.outbound.protection.outlook.com [40.107.7.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558C52D77C;
+        Fri, 25 Nov 2022 00:35:45 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ieVMgcGLle5tz3KMgRN8W+CUKdYkh3Pa4t9TLKqYVbvc9tH6EMSiGEMOxbVHSDlinluFWr+B2dUj+AKaSQN/0yzJcuLXbyqso+dvZYHABIvKRtt41qOV4P3yE+HVwpNca0Ozx0DmysQpTKtft087H9a8Spl7V5M34VuUX0KXkLJN5F6bDCP92bpwwEnwFWpSOIW7h6HrSF6jrOoospckADHdBcJlFYTgXOKXabYXM5NJ0Ulk0PC9q36bWJFK0hgAsgnNRV5IUvoEpTCDoqurfAoM8ZNLAnEK0zZ2g1Dqov4zT0j9eOMW3wWe+gYbCDtowP32t2hjl142FJCjWFU/WQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=enM1US8FMpahncww/4bcNY1n7RfIGiPeMREMTRqyki4=;
+ b=GxWS39FlX0voFdNxYxZtyDbMrMaz/cFuFIsw4UX6P4VlxzsPsxg8+QLAcbzWQmt3K9+dxG4cUQ/HuD4gLMdgjnuirFU2n4I1NKRaXhYECjBoVTHIhM/5/t7qb9QvYr0wUMP1aa2T1Syjjm9yIWNMPIK8mYaRD7kFLcEdS8E75UrF+hXMyt0ZSUOWeo2LK/xFw9IAwz89q/BHNDs4/L3PWyCdf0UONaWqBY0X4tln0Gm9BiqZrUf0/u3EFt+nyggvel1i9lWkdeePAZ0BuruOijlByT0flyTreVtRcGU8xxnCpkk2R8Lileyxe1ON2rq3mDjhRAkFRD7q6y0xdDFazQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=wolfvision.net; dmarc=pass action=none
+ header.from=wolfvision.net; dkim=pass header.d=wolfvision.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfvision.net;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=enM1US8FMpahncww/4bcNY1n7RfIGiPeMREMTRqyki4=;
+ b=yfvBFqlR1P8m2x8+zRgpq1CsQK+sxZCAuJOQ28IllgIF0/3Qj2nFQ6aEq0w1N1Pcc6zkeUjbFI1WS69FfYLkbf9YgZStLRWCTNhXDMItKmFqWxI3xr6mpcpj1o9rySuIfHZARQF63txVWd0EqfpNHvnP2qvKYa3IpigTvaOGfxI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=wolfvision.net;
+Received: from VI1PR08MB4544.eurprd08.prod.outlook.com (2603:10a6:803:100::13)
+ by PAXPR08MB6751.eurprd08.prod.outlook.com (2603:10a6:102:136::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.5; Fri, 25 Nov
+ 2022 08:35:42 +0000
+Received: from VI1PR08MB4544.eurprd08.prod.outlook.com
+ ([fe80::bcc7:bc51:bf44:1454]) by VI1PR08MB4544.eurprd08.prod.outlook.com
+ ([fe80::bcc7:bc51:bf44:1454%6]) with mapi id 15.20.5857.019; Fri, 25 Nov 2022
+ 08:35:41 +0000
+From:   Gerald Loacker <gerald.loacker@wolfvision.net>
+To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jakob Hauser <jahau@rocketmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Gerald Loacker <gerald.loacker@wolfvision.net>
+Subject: [PATCH v2 0/3] add ti tmag5273 driver
+Date:   Fri, 25 Nov 2022 09:35:23 +0100
+Message-Id: <20221125083526.2422900-1-gerald.loacker@wolfvision.net>
+X-Mailer: git-send-email 2.37.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: VI1PR0501CA0011.eurprd05.prod.outlook.com
+ (2603:10a6:800:92::21) To VI1PR08MB4544.eurprd08.prod.outlook.com
+ (2603:10a6:803:100::13)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:2vLAn9dx+ltvboXjwMBpxnZcHaoIP0ntkNx9HI4p1jOYtBbHyjk
- 9jex34BSEty/BDBWrSzAIFyXOIjtgYE9hbALHbfmveATjvuphsfnvoGfClpVI4Unfelj83C
- 3VqxVnpnnkP51v1kInsj7u/uWkcjbdGlnB2QWBgMP34d0mpKTQVJakmUheyC5ZQ/N2TBdBB
- NmP6tZ6+hn1KpRB0xDHmg==
-UI-OutboundReport: notjunk:1;M01:P0:zn6TvUUtObA=;XtwIw3EqbgTT5SQ6RJSO9LeNwTl
- pvnuA79eDt9DJNQrIaJaOgNA35DGZgh9dCtbiNbzHo/Ox3ubhyDMCTIO8d7lbAkP38Agaf8nm
- cgnNHSogSAGMJuHdxOWudLdk2hbZcienCoS1L9yXx3wugF2Bv7LG26o8nmyzPnBg5VMsOrXJP
- 4B4exyiEUr7m9DUQ3ybX/TjdM8MBHknCduZWAXCSh0ZRc7Bv+s9uaXPyTMUNLtLx/p9FA+FdE
- fCheTLAuoCSuP19eK6LI35GI0RYpV9vmtWT5Z3JRmiH+5xXBSH54xymdIBvI3IIvWr/BLWrKe
- 3V7q5dIpK149Hbj39lVCdC+mbU3O2muPPAttaX3/5/WXN+EmV6xKUYWJzN9CHroT+h/ealTRD
- +FftlKpbG7QgeH1Zl1gtR1UgX4+5kCqr/Wce+zP2lrwj+/IMWkBeUezW1iWu8+ZDsunZi0ytV
- a1nmU2pddglp90rXBWHrFiG4p05QXLM+MAFGZyqaoKwbnUweTKADFDG/7y2qmHkcPkjJOhUAc
- 2MTPy3ApJFETw6VDCrF/GJGU5H7PW9b8hfloQSGZSkc4fxHTPLQYuqpfECiboOpeVD3FM5D+C
- MxU5ApXdhV9+OqYYoNFu6YYjxOEojmgxBFjerN7H9t36kzaZFLq2gxo/iunqoQCD+jhxnmHnz
- yQ1x2KgqABjRRXUF6DXYFUrqej71D3kI9RHeAqfuwEXJ65ASiBB8HV3TBBSL+GVFVp0MnqEgt
- 07dRsFwj7A7ag740fvxhmK/1je3slg1xbUSvibDwtYie3hgf3hnCfUWXua6RFEI53BCcbw/oQ
- 7FWI0s9jKD1MBPLOR0ryOQ6xiNtErWerUBuo8K0Dp4R9gWXN6yWNaj5OGOdFH1wqvJ0s8Ik/F
- e8gJ7++nwjaLRv72RPHlJeWt5yy5oFLHyQgaiw344b8RAReUREu5lWGmYPl4lm18safbl0kKA
- P8hV5g==
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR08MB4544:EE_|PAXPR08MB6751:EE_
+X-MS-Office365-Filtering-Correlation-Id: d4b2a8e9-187c-4c25-607c-08dacec0098a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CmbcjmVc/UihwpGzJllzUcNdWcmOpMMDIohpXZdaljyFbfgdwznjVk5gvY+lguNSm4G2qQ4q1P+0kO2QinCjcXJgwjtMUG3yE25a91XUyrzMGghk09Sz5y03ZxzpQML3r92dJ2gVJ0g7hEfoJbUYxoj+0eE9VvYCfujGI0BfIkS7Ut1SjFlT+kcGOC+82cu643QYPcq5NgWiIdXKPlWVJNTNfLfYE9+dcW+dLKTCGjFsDs7EUjpaIbDg3f9mhmBx8OToOVBP6TqofCcPSwtakwRplszruv2ZJhZ7K+ERspR17+FvrS1UVvJXAPRDeEY0jsKnMprYC6HbsTxtvsGtlkNtREc26NCaQ2Ip9sOSix9lALrMmE1kwFYTxtvVSLXce73RXEvhYCvL/mCDEknFpY6e1EuCWo+0McP/RBBYUMRWYGQAznysKQiVKu3VttG1zQmb8s7zkznTNSB/7fPU35FqdIZiEqSRRac1/pu0whcyE25JH7bRJ4RaiU4+O50MRiUWl+rtt7Nl6G98pCMBq7K+RDPYN0ZTv3Z0XE0KbtPM9CS5k6HuY8RDKj0RpeILneAet8zsHrqKW7zvYevcnPd6KWDj1fFaTTvZHHqAqTVG6LTN7l4lKdr0mLOv2SKmIC47fI5AKG5c1ZUTN2W8PDrBiRKku++CqmMy1MC7s64OUUFkF4bOFBdslADcUc8s
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR08MB4544.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(376002)(136003)(396003)(39840400004)(451199015)(478600001)(6486002)(186003)(44832011)(7416002)(41300700001)(2616005)(1076003)(316002)(54906003)(38100700002)(38350700002)(36756003)(6506007)(6666004)(107886003)(52116002)(26005)(6512007)(86362001)(4326008)(66946007)(66556008)(8676002)(66476007)(5660300002)(8936002)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TnaQrHY3j7KJl+VKeVc5kerRYvsUUlb2I/olnD5y2RlZJbqQK0WpHHHVmfzL?=
+ =?us-ascii?Q?3YXhH/nS3plMn1ftJwhAKLZ57mB845nNZ4hbb5aUUK19x1Wzmz5q5Pe1B5bi?=
+ =?us-ascii?Q?yS0/8a993dHu8LTGdlpK9T7Tn9u56hJcQT3Z/0xoAfH5Riz80Dj6oSTE78Ak?=
+ =?us-ascii?Q?/NZ4Az3rjgym8ezIzgVuhnHzuQzYsv8LPAoAk8P2EY1SbXvqdoDW9qqZ19qv?=
+ =?us-ascii?Q?YUCGUL27b4XLJdKyKRio5lAzAfBeH/ua/rOPO6kJ5ywVBDBWOuGJ1iHaH1SF?=
+ =?us-ascii?Q?hM74CT17zUQOKZ8uvOjnFG3AIjjSNn3m3PHcPHXs7MIRuDlx9Xfx14fVBSRq?=
+ =?us-ascii?Q?/GI7fY4bAopfxTYnsXmDSPgEN/f4PWTd9gSO8dWnMSUDI6jq5cLJVzyFWeog?=
+ =?us-ascii?Q?Lth2xEFyLxYMhPf9h2ABaw9jPoBUcjfJjrRh6ch8mbYOIcRBRfXCXFfuyddn?=
+ =?us-ascii?Q?sDk3R+DMr7Ex3KXCfIhR+l4r5BKHP3dq/lRzRqiE8sBBMWw5kb+/5fCVz/Xe?=
+ =?us-ascii?Q?iFHLBu/9zQAuxzmCCfB8h+DCynHk6rxKl07wsooB5TPDodfJtP8Fsg3ZAzAo?=
+ =?us-ascii?Q?UiXlxm4oMA0xmvfGJlk6+Gii9iGDK7+9YW0PLpk2tkORQ5GVZORNYPQ+Wm3S?=
+ =?us-ascii?Q?muR+685qBSHpuG4DuombssDJ2l5GHXm6AeyVFMPYufNyIpk1k/U3tqg6yt5p?=
+ =?us-ascii?Q?ZResm2tpS6esLEC02DKXHDczLb0BjTL7gaphsL6KMDFrc5bZiWCWRyUGvbdK?=
+ =?us-ascii?Q?tTd3g6UMRS8K+z5ImV+ivJg131vwLzXKTrTSjnXkKcIDtBbvNOKc2y3BJDNW?=
+ =?us-ascii?Q?kC6m0lzfwalLTgVod5th6VI1HVS1lT69b9frGjP/cS8HzXoJxHrhSU72N66t?=
+ =?us-ascii?Q?csXc+CxrQZIgz5nYOFX8K9Xy0I/K0vc75JGDnSeuLtdao169h7aJGB7dlAOQ?=
+ =?us-ascii?Q?Xk177x66BtA5dMje9EEGQgGMDAHMBXI48pvzrnU2qsp4xnk+oDApo/XPvQxy?=
+ =?us-ascii?Q?3iL8rfan7ziDGqXpoD4xYDGz214qATkzdpchkaMAAIZCy0E/9YA5R7ZRnsGS?=
+ =?us-ascii?Q?eoSDuLx/vdyu3AMnT8tcE1CVarRVKaqGdsm+AX7K7zB5sQGOOqWzwZY11bT6?=
+ =?us-ascii?Q?5XTYmY5EiESjMJSLTBSNMaRoXoSF1ugTa8p0SgMgSri+W3K774sDXCjfhO/6?=
+ =?us-ascii?Q?9l5zZGaWlvwpgTH7s/qSHWc/Uejfrc8LxwFCyeiDpPBpe3GK9bnF3Hkurm/Y?=
+ =?us-ascii?Q?5IJ7uKgMcRFKSAxUgRoAep/VPMR3l7Ez+GUpEo4b/w7dXfZry5LYoCxvehq8?=
+ =?us-ascii?Q?J24Wy3YUNoaQW1EnE80yveOH7IPx4sS2tgU0NsjhpfqwmEKHpez5EcJ2KEcj?=
+ =?us-ascii?Q?S8F5O+gbfX+UI0FpCD0ZJ3gR9I8a4QGNSmwCDwwe0aF3b4EtkI3EMjkpLqM5?=
+ =?us-ascii?Q?ERWJqXjXv/44Uo1dMwBs1K4BRozZToawsycyi/XMbgj9zgM8fc50ILjnNfBx?=
+ =?us-ascii?Q?pTzlCf/fcNAXfMCU4TA+EJP5Ctmbpm79a3YXWE30M/eOYlpMVsI4B8RcysOF?=
+ =?us-ascii?Q?YxRLu2jdIf4rME0X0klrh4RVTFH3VEm0xvG78ARcbOOGFpKjZIl5Gv81+Tae?=
+ =?us-ascii?Q?JA=3D=3D?=
+X-OriginatorOrg: wolfvision.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: d4b2a8e9-187c-4c25-607c-08dacec0098a
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR08MB4544.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2022 08:35:41.7015
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: e94ec9da-9183-471e-83b3-51baa8eb804f
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GCBvPSNErAYpgszn/TgIoYoNPghhuFFvUmLSqD9e86P3LJG6MMHyjYfTvcO3CJr/m3VYe4kxcM1QDoFabJJ0Ma8Z5QqhPxCg5E8JOhD84V8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR08MB6751
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The known LUID table for established/known custom HID sensors was
-limited to sensors with "INTEL" as manufacturer. But some vendors such
-as Lenovo also include fairly standard iio sensors (e.g. ambient light)
-in their custom sensors.
+Hi all,
 
-Expand the known custom sensors table by a tag used for the platform
-device name and match sensors based on the LUID as well as optionally
-on model and manufacturer properties.
+This patch set adds support for the TI TMAG5273 Low-Power Linear 3D Hall-
+Effect Sensor. Additionally to temperature and magnetic X, Y and Z-axes the
+angle and magnitude are reported. The sensor is operating in continuous
+measurement mode and changes to sleep mode if not used for 5 seconds.
 
-Signed-off-by: Philipp Jungkamp <p.jungkamp@gmx.net>
-=2D--
+Tests were done on a ROCK3 Model A board using the TMAG5273 evaluation
+module.
 
-v2:
-- Remove unnecessary comments.
-- Change return type of functions to bool. (introduced an error, fixed in =
-v4)
-- Swallows return value of a function. (fixed in v4)
+Changes in v3:
+ - Added structs for iio types to iio.h. Using these structs for iio type
+   arrays such as IIO_AVAIL_LIST makes the code more readable than just
+   using (int *). It was suggested by Andy Shevchenko to move these structs
+   to the iio headers to avoid different approaches.
+ - dt-bindings: dropped quotes from strings
+ - Added include <linux/bitfield.h>
+   | Reported-by: kernel test robot <lkp@intel.com> 
+ - Added include <linux/bits.h>
+ - Removed <asm/unaligned.h>
+ - Added missing "static const" for tmag5273_avg_table
+ - Documented Device ID
+ - Fixed index of tmag5273_scale definition
+ - Clarify TMAG5273_MAG_CH_EN_X_Y_Z as an index
+ - Removed unnecessary print
+ - Introduced tmag5273_write_scale() and tmag5273_write_osr() helper
+   functions
+ - Use of match_string()
+ - Format
 
-v3:
-- No change.
+Changes in v2:
+ Thanks to Krzysztof, Andy and Jonathan for your detailed review and
+ explanations on the first version. This patch includes all your
+ suggestions and some additional cleanup in the probe function.
 
-v4:
-- Fix return value and error codes on property query.
-- Document and ignore return values for queries of optionally matched
-  properties.
-- Don't modify *known in _get_known, return error when not matched.
-- Remove comment on newly added sensors from commit message.
+Gerald Loacker (3):
+  iio: add struct declarations for iio types
+  dt-bindings: iio: magnetometer: add ti tmag5273 documentation file
+  iio: magnetometer: add ti tmag5273 driver
 
+ .../iio/magnetometer/ti,tmag5273.yaml         |  75 ++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/magnetometer/Kconfig              |  12 +
+ drivers/iio/magnetometer/Makefile             |   2 +
+ drivers/iio/magnetometer/tmag5273.c           | 736 ++++++++++++++++++
+ include/linux/iio/iio.h                       |  15 +
+ 6 files changed, 847 insertions(+)
+ create mode 100644 .../bindings/iio/magnetometer/ti,tmag5273.yaml
+ create mode 100644 drivers/iio/magnetometer/tmag5273.c
 
- drivers/hid/hid-sensor-custom.c | 210 +++++++++++++++++++++-----------
- include/linux/hid-sensor-ids.h  |   1 +
- 2 files changed, 139 insertions(+), 72 deletions(-)
-
-diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-cust=
-om.c
-index 32c2306e240d..734c6bde68fe 100644
-=2D-- a/drivers/hid/hid-sensor-custom.c
-+++ b/drivers/hid/hid-sensor-custom.c
-@@ -5,6 +5,7 @@
-  */
-
- #include <linux/ctype.h>
-+#include <linux/dmi.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/init.h>
-@@ -750,114 +751,179 @@ static void hid_sensor_custom_dev_if_remove(struct=
- hid_sensor_custom
-
- }
-
--/* luid defined in FW (e.g. ISH).  Maybe used to identify sensor. */
--static const char *const known_sensor_luid[] =3D { "020B000000000000" };
-+/*
-+ * Match a known custom sensor.
-+ * tag and luid is mandatory.
-+ */
-+struct hid_sensor_custom_match {
-+	const char *tag;
-+	const char *luid;
-+	const char *model;
-+	const char *manufacturer;
-+	bool check_dmi;
-+	struct dmi_system_id dmi;
-+};
-
--static int get_luid_table_index(unsigned char *usage_str)
--{
--	int i;
-+/*
-+ * Custom sensor properties used for matching.
-+ */
-+struct hid_sensor_custom_properties {
-+	u16 serial_num[HID_CUSTOM_MAX_FEATURE_BYTES];
-+	u16 model[HID_CUSTOM_MAX_FEATURE_BYTES];
-+	u16 manufacturer[HID_CUSTOM_MAX_FEATURE_BYTES];
-+};
-
--	for (i =3D 0; i < ARRAY_SIZE(known_sensor_luid); i++) {
--		if (!strncmp(usage_str, known_sensor_luid[i],
--			     strlen(known_sensor_luid[i])))
--			return i;
-+static const struct hid_sensor_custom_match hid_sensor_custom_known_table=
-[] =3D {
-+	/*
-+	 * Intel Integrated Sensor Hub (ISH)
-+	 */
-+	{	/* Intel ISH hinge */
-+		.tag =3D "INT",
-+		.luid =3D "020B000000000000",
-+		.manufacturer =3D "INTEL",
-+	},
-+	{}
-+};
-+
-+static bool hid_sensor_custom_prop_match_str(const u16 *prop, const char =
-*match,
-+					     size_t count)
-+{
-+	while (count-- && *prop && *match) {
-+		if (*prop !=3D (u16) *match)
-+			return false;
-+		prop++;
-+		match++;
- 	}
-
--	return -ENODEV;
-+	return (count =3D=3D -1) || *prop =3D=3D (u16)*match;
- }
-
--static int get_known_custom_sensor_index(struct hid_sensor_hub_device *hs=
-dev)
-+static int hid_sensor_custom_get_prop(struct hid_sensor_hub_device *hsdev=
-,
-+				      u32 prop_usage_id, size_t prop_size,
-+				      u16 *prop)
- {
--	struct hid_sensor_hub_attribute_info sensor_manufacturer =3D { 0 };
--	struct hid_sensor_hub_attribute_info sensor_luid_info =3D { 0 };
--	int report_size;
-+	struct hid_sensor_hub_attribute_info prop_attr =3D { 0 };
- 	int ret;
--	static u16 w_buf[HID_CUSTOM_MAX_FEATURE_BYTES];
--	static char buf[HID_CUSTOM_MAX_FEATURE_BYTES];
--	int i;
-
--	memset(w_buf, 0, sizeof(w_buf));
--	memset(buf, 0, sizeof(buf));
-+	memset(prop, 0, prop_size);
-
--	/* get manufacturer info */
--	ret =3D sensor_hub_input_get_attribute_info(hsdev,
--			HID_FEATURE_REPORT, hsdev->usage,
--			HID_USAGE_SENSOR_PROP_MANUFACTURER, &sensor_manufacturer);
-+	ret =3D sensor_hub_input_get_attribute_info(hsdev, HID_FEATURE_REPORT,
-+						  hsdev->usage, prop_usage_id,
-+						  &prop_attr);
- 	if (ret < 0)
- 		return ret;
-
--	report_size =3D
--		sensor_hub_get_feature(hsdev, sensor_manufacturer.report_id,
--				       sensor_manufacturer.index, sizeof(w_buf),
--				       w_buf);
--	if (report_size <=3D 0) {
--		hid_err(hsdev->hdev,
--			"Failed to get sensor manufacturer info %d\n",
--			report_size);
--		return -ENODEV;
-+	ret =3D sensor_hub_get_feature(hsdev, prop_attr.report_id,
-+				     prop_attr.index, prop_size, prop);
-+	if (ret < 0) {
-+		hid_err(hsdev->hdev, "Failed to get sensor property %08x %d\n",
-+			prop_usage_id, ret);
-+		return ret;
- 	}
-
--	/* convert from wide char to char */
--	for (i =3D 0; i < ARRAY_SIZE(buf) - 1 && w_buf[i]; i++)
--		buf[i] =3D (char)w_buf[i];
-+	return 0;
-+}
-+
-+static bool
-+hid_sensor_custom_do_match(struct hid_sensor_hub_device *hsdev,
-+			   const struct hid_sensor_custom_match *match,
-+			   const struct hid_sensor_custom_properties *prop)
-+{
-+	struct dmi_system_id dmi[] =3D { match->dmi, { 0 } };
-+
-+	if (!hid_sensor_custom_prop_match_str(prop->serial_num, "LUID:", 5) ||
-+	    !hid_sensor_custom_prop_match_str(prop->serial_num + 5, match->luid,
-+					      HID_CUSTOM_MAX_FEATURE_BYTES - 5))
-+		return false;
-+
-+	if (match->model &&
-+	    !hid_sensor_custom_prop_match_str(prop->model, match->model,
-+					      HID_CUSTOM_MAX_FEATURE_BYTES))
-+		return false;
-+
-+	if (match->manufacturer &&
-+	    !hid_sensor_custom_prop_match_str(prop->manufacturer, match->manufac=
-turer,
-+					      HID_CUSTOM_MAX_FEATURE_BYTES))
-+		return false;
-
--	/* ensure it's ISH sensor */
--	if (strncmp(buf, "INTEL", strlen("INTEL")))
--		return -ENODEV;
-+	if (match->check_dmi && !dmi_check_system(dmi))
-+		return false;
-
--	memset(w_buf, 0, sizeof(w_buf));
--	memset(buf, 0, sizeof(buf));
-+	return true;
-+}
-
--	/* get real usage id */
--	ret =3D sensor_hub_input_get_attribute_info(hsdev,
--			HID_FEATURE_REPORT, hsdev->usage,
--			HID_USAGE_SENSOR_PROP_SERIAL_NUM, &sensor_luid_info);
-+static int
-+hid_sensor_custom_properties_get(struct hid_sensor_hub_device *hsdev,
-+				 struct hid_sensor_custom_properties *prop)
-+{
-+	int ret;
-+
-+	ret =3D hid_sensor_custom_get_prop(hsdev,
-+					 HID_USAGE_SENSOR_PROP_SERIAL_NUM,
-+					 HID_CUSTOM_MAX_FEATURE_BYTES,
-+					 prop->serial_num);
- 	if (ret < 0)
- 		return ret;
-
--	report_size =3D sensor_hub_get_feature(hsdev, sensor_luid_info.report_id=
-,
--					     sensor_luid_info.index, sizeof(w_buf),
--					     w_buf);
--	if (report_size <=3D 0) {
--		hid_err(hsdev->hdev, "Failed to get real usage info %d\n",
--			report_size);
--		return -ENODEV;
--	}
-+	/*
-+	 * Ignore errors on the following model and manufacturer properties.
-+	 * Because these are optional, it is not an error if they are missing.
-+	 */
-+
-+	hid_sensor_custom_get_prop(hsdev, HID_USAGE_SENSOR_PROP_MODEL,
-+				   HID_CUSTOM_MAX_FEATURE_BYTES,
-+				   prop->model);
-
--	/* convert from wide char to char */
--	for (i =3D 0; i < ARRAY_SIZE(buf) - 1 && w_buf[i]; i++)
--		buf[i] =3D (char)w_buf[i];
-+	hid_sensor_custom_get_prop(hsdev, HID_USAGE_SENSOR_PROP_MANUFACTURER,
-+				   HID_CUSTOM_MAX_FEATURE_BYTES,
-+				   prop->manufacturer);
-
--	if (strlen(buf) !=3D strlen(known_sensor_luid[0]) + 5) {
--		hid_err(hsdev->hdev,
--			"%s luid length not match %zu !=3D (%zu + 5)\n", __func__,
--			strlen(buf), strlen(known_sensor_luid[0]));
--		return -ENODEV;
-+	return 0;
-+}
-+
-+static int
-+hid_sensor_custom_get_known(struct hid_sensor_hub_device *hsdev,
-+			    const struct hid_sensor_custom_match **known)
-+{
-+	int ret;
-+	const struct hid_sensor_custom_match *match =3D
-+		hid_sensor_custom_known_table;
-+	struct hid_sensor_custom_properties prop;
-+
-+	ret =3D hid_sensor_custom_properties_get(hsdev, &prop);
-+	if (ret < 0)
-+		return ret;
-+
-+	while (match->tag) {
-+		if (hid_sensor_custom_do_match(hsdev, match, &prop)) {
-+			*known =3D match;
-+			return 0;
-+		}
-+		match++;
- 	}
-
--	/* get table index with luid (not matching 'LUID: ' in luid) */
--	return get_luid_table_index(&buf[5]);
-+	return -ENODATA;
- }
-
- static struct platform_device *
- hid_sensor_register_platform_device(struct platform_device *pdev,
- 				    struct hid_sensor_hub_device *hsdev,
--				    int index)
-+				    const struct hid_sensor_custom_match *match)
- {
--	char real_usage[HID_SENSOR_USAGE_LENGTH] =3D { 0 };
-+	char real_usage[HID_SENSOR_USAGE_LENGTH];
- 	struct platform_device *custom_pdev;
- 	const char *dev_name;
- 	char *c;
-
--	/* copy real usage id */
--	memcpy(real_usage, known_sensor_luid[index], 4);
-+	memcpy(real_usage, match->luid, 4);
-
- 	/* usage id are all lowcase */
- 	for (c =3D real_usage; *c !=3D '\0'; c++)
- 		*c =3D tolower(*c);
-
--	/* HID-SENSOR-INT-REAL_USAGE_ID */
--	dev_name =3D kasprintf(GFP_KERNEL, "HID-SENSOR-INT-%s", real_usage);
-+	/* HID-SENSOR-TAG-REAL_USAGE_ID */
-+	dev_name =3D kasprintf(GFP_KERNEL, "HID-SENSOR-%s-%s",
-+			     match->tag, real_usage);
- 	if (!dev_name)
- 		return ERR_PTR(-ENOMEM);
-
-@@ -873,7 +939,7 @@ static int hid_sensor_custom_probe(struct platform_dev=
-ice *pdev)
- 	struct hid_sensor_custom *sensor_inst;
- 	struct hid_sensor_hub_device *hsdev =3D pdev->dev.platform_data;
- 	int ret;
--	int index;
-+	const struct hid_sensor_custom_match *match;
-
- 	sensor_inst =3D devm_kzalloc(&pdev->dev, sizeof(*sensor_inst),
- 				   GFP_KERNEL);
-@@ -888,10 +954,10 @@ static int hid_sensor_custom_probe(struct platform_d=
-evice *pdev)
- 	mutex_init(&sensor_inst->mutex);
- 	platform_set_drvdata(pdev, sensor_inst);
-
--	index =3D get_known_custom_sensor_index(hsdev);
--	if (index >=3D 0 && index < ARRAY_SIZE(known_sensor_luid)) {
-+	ret =3D hid_sensor_custom_get_known(hsdev, &match);
-+	if (!ret) {
- 		sensor_inst->custom_pdev =3D
--			hid_sensor_register_platform_device(pdev, hsdev, index);
-+			hid_sensor_register_platform_device(pdev, hsdev, match);
-
- 		ret =3D PTR_ERR_OR_ZERO(sensor_inst->custom_pdev);
- 		if (ret) {
-diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids=
-.h
-index ac631159403a..13b1e65fbdcc 100644
-=2D-- a/include/linux/hid-sensor-ids.h
-+++ b/include/linux/hid-sensor-ids.h
-@@ -132,6 +132,7 @@
- #define HID_USAGE_SENSOR_PROP_FRIENDLY_NAME			0x200301
- #define HID_USAGE_SENSOR_PROP_SERIAL_NUM			0x200307
- #define HID_USAGE_SENSOR_PROP_MANUFACTURER			0x200305
-+#define HID_USAGE_SENSOR_PROP_MODEL				0x200306
- #define HID_USAGE_SENSOR_PROP_REPORT_INTERVAL			0x20030E
- #define HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS			0x20030F
- #define HID_USAGE_SENSOR_PROP_SENSITIVITY_RANGE_PCT		0x200310
-=2D-
-2.38.1
+-- 
+2.37.2
 
