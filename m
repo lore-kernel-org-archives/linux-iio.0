@@ -2,121 +2,173 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F8BCC43217
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Nov 2022 17:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A77C46467
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Nov 2022 18:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbiK0RdM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Nov 2022 12:33:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53086 "EHLO
+        id S229586AbiK0SBy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 27 Nov 2022 13:01:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbiK0RdJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Nov 2022 12:33:09 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E5BB7ED
-        for <linux-iio@vger.kernel.org>; Sun, 27 Nov 2022 09:33:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669570386; x=1701106386;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5JEfA3+1ln7mVa4ihT+X6W6imSzvKjUcBCBMu3iGTkg=;
-  b=Z8hyEN7+PDs3bZZJtRnoCM5ekzWWu5JNXA3raS06sYt5KnYAB660eHMV
-   CasO/I+rojQX+MVC89TqV6fYK6MTWK/MKB2d/kPZs5J9TC0yFhRrhNUdt
-   BAf34MHzWtud2OA1uudwh/XcFmV0UI4Lubf+qkiR/+YnIgm7XQ5RDUVN9
-   CUuh7aw7fVIwMd0bYuMaK0eIkTf/8IlRxpZcT85KSxBuOiqZIEAxkSCS+
-   W9c1waxTI8dLshcH7lp0ob/CKOH/cWvEZ4b+hs9PPe7HhwRbe89bNAQKo
-   vn1Vxua0uIaSha2CgSeHO6m4bQJB12BMiXfd+8sc2TMkG7KN8YZ8bq3hU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="378943980"
-X-IronPort-AV: E=Sophos;i="5.96,198,1665471600"; 
-   d="scan'208";a="378943980"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 09:33:05 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="749107894"
-X-IronPort-AV: E=Sophos;i="5.96,198,1665471600"; 
-   d="scan'208";a="749107894"
-Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 09:33:05 -0800
-Message-ID: <623f2206647e69199c64064c48eb8bf03afb99da.camel@linux.intel.com>
-Subject: Re: [PATCH v4 0/4] IIO: More HID custom sensors
-From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     Philipp Jungkamp <p.jungkamp@gmx.net>,
-        Jiri Kosina <jikos@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org
-Date:   Sun, 27 Nov 2022 09:33:04 -0800
-In-Reply-To: <20221124233841.3103-1-p.jungkamp@gmx.net>
-References: <20221124233841.3103-1-p.jungkamp@gmx.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        with ESMTP id S229450AbiK0SBx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Nov 2022 13:01:53 -0500
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2EEB2656;
+        Sun, 27 Nov 2022 10:01:51 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id F325532005BC;
+        Sun, 27 Nov 2022 13:01:48 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Sun, 27 Nov 2022 13:01:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1669572108; x=
+        1669658508; bh=/S8xgN1TqDhST2WRf1W/rFD7HHYhr22aZHBwksUlEbQ=; b=C
+        xbMrL5UPdgRpk+w+VKjmn3yb1Git5FXiGMrkEU6y0HFwrv/MxnFidJkzoypah3Ce
+        b7wIvaMTys4yRnhuzFiKP/2U/bfxbwbcPAtWy/EVRkBCyslI8jn5PCRkN/EL6HNU
+        lVS9ZLkfdgTtIPGAwTnvHUfHvjut3UZARctmEmxLIfSYC8yjNq4WPZuXIH2V24zS
+        6BpxnBDF72n7QB1tp6d5vjE4DbCOX9ebjHhAlH9pputIdE6zKv2TpEdBKQuVbf6D
+        0q0NrteFGbmik96XqvDgE7QE2VL7CMlIBH3vKhRFZcAbENP3lysmoJqD8AI5sMDi
+        ggqGgERjyaRfJCDB5zPig==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1669572108; x=
+        1669658508; bh=/S8xgN1TqDhST2WRf1W/rFD7HHYhr22aZHBwksUlEbQ=; b=f
+        LQy8J/EddQ81AylhUKYRHohUR9NVjNfUqSllgBUqpT6d/GKFnKid05C8VD41MC6U
+        rTivicwc3OIbGjr8Hpo1SyeekoWGefs44baUdQz05KeX1H7KW8AtTYxa+VwebIiP
+        gzcjFhP3A+tFC7lYnSWNI13FuRdy9HY3IRqQ98ghwrluMnhDAg6VlxdxIGLvyFJR
+        nxpLVJR8qemZbUzcUs7z96DTPu7Dt2fu0cPUCjN94p6BtOHakQGHPNaRYMkrR7uO
+        XlJMAj1PJC9jj5vx/csm8xCJfnSP8BKeblvaO5oFbeK/KlyVbHf8R+Vntv3LTS8E
+        bw4qFeYs22oiWKKEPzGHg==
+X-ME-Sender: <xms:C6aDY2DkbQvatQBmm83JvESkYUkSTJl4HxJ-kDLENKoIqSpmnHR7Pw>
+    <xme:C6aDYwiZbqmrPJVc_n_9U5Zi27GIyGRg-cnOt3xjZIv484kXJlQ9oFT81ZvBzhSZn
+    3CIr1eo11tzzS--bw>
+X-ME-Received: <xmr:C6aDY5mwVHxIAu1aPd42y3H7YQUlwu0xSB4jniCtIu_44QoQgRlz4RynGVrxOQXc5p8wicUoltqsn_2qR5M31DfcZFdPrLnb-Hk_5EyPA3hm8scrFzyEzbdJBA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrjedtgddutdekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepkfffgggfvfevfhfhufgjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpeegteekvefhgefhgfeigeejffejvdeihedvfefgtedvjeeiudet
+    teeihfffgfeugfenucffohhmrghinhepuggvvhhitggvthhrvggvrdhorhhgnecuvehluh
+    hsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehs
+    hhholhhlrghnugdrohhrgh
+X-ME-Proxy: <xmx:DKaDY0wTqMaMWa2epKUnN1uwLfTMppA5b9lFPgiKxU3_cwGS3g9qzA>
+    <xmx:DKaDY7RDOoUWeDfpqZ2x9fMGc8_2at52JPpoT5oMRt2Fxnucia0SSg>
+    <xmx:DKaDY_YneRVbm9it-gqiwpnxW8Yxo_SBRhmOI0iDX41ehbI0CRwiFA>
+    <xmx:DKaDY6EhnemRf9VZ2CqTZS-qN3bq-AgA4iq0mqIPHuMyZa6Lthmo3A>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 27 Nov 2022 13:01:47 -0500 (EST)
+Message-ID: <b68807e9-3907-9f9a-8eee-b7f24be3c78f@sholland.org>
+Date:   Sun, 27 Nov 2022 12:01:30 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux ppc64le; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.3
+Content-Language: en-US
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20221125220903.8632-1-samuel@sholland.org>
+ <e4be94a3-cdfc-cdf8-5d69-0eef480033f9@linaro.org>
+ <20221127174219.34d0406c@jic23-huawei>
+From:   Samuel Holland <samuel@sholland.org>
+Subject: Re: [PATCH] dt-bindings: iio: adc: ti,adc081c: Document the binding
+In-Reply-To: <20221127174219.34d0406c@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 2022-11-25 at 00:38 +0100, Philipp Jungkamp wrote:
-> Hello,
+On 11/27/22 11:42, Jonathan Cameron wrote:
+> On Sun, 27 Nov 2022 13:51:19 +0100
+> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 > 
-> I'm sorry for the confusion caused by me sending revisions as replies.
-> I've now addresses the points raised. As I'm unfamiliar with mailing
-> lists
-> any recommendation on making the process more seamless is welcome.
+>> On 25/11/2022 23:09, Samuel Holland wrote:
+>>> Linux has a driver for these ADCs at drivers/iio/adc/ti-adc081c.c, but
+>>> the compatible strings were undocumented. Add a binding for them. The
+>>> hardware has an alert interrupt output, but existing ti,adc081c users
+>>> do not provide the 'interrupts' property, so leave it as optional.
+>>>
+>>> Signed-off-by: Samuel Holland <samuel@sholland.org>
+>>> ---
+>>>
+>>>  .../bindings/iio/adc/ti,adc081c.yaml          | 55 +++++++++++++++++++
+>>>  1 file changed, 55 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,adc081c.yaml
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,adc081c.yaml b/Documentation/devicetree/bindings/iio/adc/ti,adc081c.yaml
+>>> new file mode 100644
+>>> index 000000000000..caaad777580c
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/iio/adc/ti,adc081c.yaml
+>>> @@ -0,0 +1,55 @@
+>>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>>> +%YAML 1.2
+>>> +---
+>>> +$id: http://devicetree.org/schemas/iio/adc/ti,adc081c.yaml#
+>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>> +
+>>> +title: TI Single-channel I2C ADCs
+>>> +
+>>> +maintainers:
+>>> +  - Jonathan Cameron <jic23@kernel.org>
+>>> +  - Lars-Peter Clausen <lars@metafoo.de>
+>>> +
+>>> +description: |
+>>> +  Single-channel ADC supporting 8, 10, or 12-bit samples and high/low alerts.
+>>> +
+>>> +properties:
+>>> +  compatible:
+>>> +    enum:
+>>> +      - ti,adc081c
+>>> +      - ti,adc101c
+>>> +      - ti,adc121c
+>>> +
+>>> +  reg:
+>>> +    maxItems: 1
+>>> +
+>>> +  interrupts:
+>>> +    maxItems: 1
+>>> +
+>>> +  vref-supply:
+>>> +    description:
+>>> +      Regulator for the combined power supply and voltage reference
+>>> +
+>>> +  "#io-channel-cells":
+>>> +    const: 1
+>>> +
+>>> +required:
+>>> +  - compatible
+>>> +  - reg  
+>>
+>> Why not requiring io-channel-cells? If it is an IIO ADC provider, you
+>> need the cells, right?
 > 
-> Thank you for your time!
+> Only if anyone is using it as a provider.  If it's purely being used via
+> IIO then there are no consumers registered.
 > 
+> So historically I've left it up to those defining the binding to decide if
+> they think #io-channel-cells should be required or optional.
+> 
+> It gets a bit non obvious with some of the more complex special ADCs on whether
+> they will ever be consumed.  This one is generic, so quite likely it will be.
 
-For the series
+I kept #io-channel-cells optional because there are already a handful of
+boards using ti,adc081c without it.
 
-Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+On the board I am adding (Clockwork DevTerm), the ADC is used a
+temperature sensor for a thermal printer. So whether or not the ADC is
+used as an OF provider depends on how the printer driver gets implemented.
 
-
-> v2:
-> - Patch 1/4:
->   - Remove unnecessary comments.
->   - Change return type of functions to bool. (introduced an error,
-> fixed in v4)
->   - Swallows return value of a function. (fixed in v4)
-> - Patch 2/4:
->   - Create this 'noop' patch that just adds the LISS sensors to the
-> custom
->     sensor match table.
-> - Patch 3/4:
->   - Remove some unnecessary newlines in function calls.
-> - Patch 4/4:
->   - Allow for 1 byte human presence reports.
-> 
-> v3:
-> - Patch 2/4
->   - Add missing 'Signed-Off-By'
-> 
-> v4:
-> - Patch 1/4:
->   - Fix return value and error codes on property query.
->   - Document and ignore return values for queries of optionally matched
->     properties.
->   - Don't modify *known in _get_known, return error when not matched.
->   - Remove comment on newly added sensors from commit message.
-> - Patch 4/4:
->   - Clean up switch statement.
-> 
-> Regards,
-> Philipp Jungkamp
-> 
-> Philipp Jungkamp (4):
->   HID: hid-sensor-custom: Allow more custom iio sensors
->   HID: hid-sensor-custom: Add LISS custom sensors
->   IIO: hid-sensor-als: Use generic usage
->   IIO: hid-sensor-prox: Use generic usage
-> 
->  drivers/hid/hid-sensor-custom.c     | 233 +++++++++++++++++++---------
->  drivers/iio/light/hid-sensor-als.c  |  27 ++--
->  drivers/iio/light/hid-sensor-prox.c |  37 +++--
->  include/linux/hid-sensor-ids.h      |   1 +
->  4 files changed, 199 insertions(+), 99 deletions(-)
-> 
-> --
-> 2.38.1
-> 
-
+Regards,
+Samuel
 
