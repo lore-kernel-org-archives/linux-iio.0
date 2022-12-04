@@ -2,117 +2,84 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D32DC4321E
-	for <linux-iio@archiver.kernel.org>; Sun,  4 Dec 2022 15:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F268C4321E
+	for <linux-iio@archiver.kernel.org>; Sun,  4 Dec 2022 18:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230138AbiLDPoL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 4 Dec 2022 10:44:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52026 "EHLO
+        id S230036AbiLDSCp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 4 Dec 2022 13:02:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbiLDPoK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Dec 2022 10:44:10 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAC7A1BA
-        for <linux-iio@vger.kernel.org>; Sun,  4 Dec 2022 07:44:09 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id l67so11721414ybl.1
-        for <linux-iio@vger.kernel.org>; Sun, 04 Dec 2022 07:44:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Krqz0gztCgfshA/5BVbNzvghLRKl8impaiGjHsH2Zy4=;
-        b=pph5OCBwEmWrbf6VaobaKj1L9oT8lMiq4kIl4kHEEQggsonvIHM9fj0pIIyPqOjuTB
-         yOt/e8ISmr60iMONl0nnA//fw6P7WmM317GsJ64vezzFYU2xgDyNyQkZ6Jjdl8scah12
-         b6RdBuCoSiTPZj5ZK9FpD8Moec/e+jgL97RKLaec1qeY11cdDyavNTkanykmWiRxMwuT
-         amy40hpDqkXOvJt+k+nSEpDr2kfUqNWwJ1Mz7p8WZdEqkFujVBgCkBYdoatISl1tzGsI
-         uF0lyfBTM5QwQ5bMNuKanBOxMFTIsX7rOi2/OLE2jpiky3+YsFCRACzOhO79P4GaBIX3
-         Rm3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Krqz0gztCgfshA/5BVbNzvghLRKl8impaiGjHsH2Zy4=;
-        b=dDTIGGRh8ZVogdKJVIztouKRs06ZAPrqVd1jrF/yM5gXBR2hyvpwR1JD54SC6Uys9P
-         9n6kFm1zyJ6cOoMQTJZXy3oEfEPdAQEHu//ZkuYSsNXaxO4El4esFS8tkrHEzqoBYw2I
-         2itMgQCUBH1k7fWmPzdXadoOErYCJGvdmSSLofQBoIDNI5JbyJbvu53hTtTvSsw1TRmY
-         okdga2rJHD8AopgDh21p8Z/FZvSrSVtLb14zZCLeg2YCz3qUrmc1UVxjO2b7M/u9xM2y
-         zqzAgTwniN1ZQsUhnEEjffXYgFCOV1ol0PSrWRKeNqasMuV7NYvYKs40trvKpsLryozV
-         ZYGg==
-X-Gm-Message-State: ANoB5plkqBjbrhLUvD+CexWCm1KOat8CyuOLGNYaCEQwnwFq4S2BLB5N
-        TXj6TOMvTzRutj8Pmx55KG8/R4LMW/v85L3ESn6f5Q==
-X-Google-Smtp-Source: AA0mqf4w63L6rotcuUr/RKWrLsu/hmBo1nAUaAZch8Huvbe0yTiNcxIaHxsbDQC+TBGNiSY54CZpZkwoVdNrfQFkT+U=
-X-Received: by 2002:a25:8c9:0:b0:6f8:9c91:4503 with SMTP id
- 192-20020a2508c9000000b006f89c914503mr24861496ybi.15.1670168648603; Sun, 04
- Dec 2022 07:44:08 -0800 (PST)
+        with ESMTP id S230042AbiLDSCo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Dec 2022 13:02:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D996260
+        for <linux-iio@vger.kernel.org>; Sun,  4 Dec 2022 10:02:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D325C60EE2
+        for <linux-iio@vger.kernel.org>; Sun,  4 Dec 2022 18:02:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5213EC433C1;
+        Sun,  4 Dec 2022 18:02:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670176962;
+        bh=JllFXrxOL4eg4+4ZLFYSnmRNiuGS/DtFHhKIN5HQxdU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ad31qGNWwCC5PdWgIh4xGxP/XO5zb8CAykEPD+iHdZ1AATR15gY15/O/IQvNtgdX0
+         b/4g2vlpXLWMxHAHkwkWTadjlUfazaw/uDD3ql0DNl1+ErKDHDAA2pAqmWm7SFJKJ9
+         HmFYr5UJ/Uqaf6KwWuY/OyUEWA5ACtilX5Y8cVRRljx6TQUmCMXtqbF9Bgc53j7TMY
+         5ETWrstR7vjNwZanqm6MbasR4EgfByiTBhnGR6WQTQytl0XlAd5KZjy4nmuY3qt+TY
+         B13WmKdxT9XyMkEadjmV3YJmNvzsOYhisRBXZP2LjvpTxPvHg2+VS9mOW0TdZPOYJJ
+         N3foeuctwRr5g==
+Date:   Sun, 4 Dec 2022 18:15:26 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>
+Cc:     linux-iio@vger.kernel.org,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Jagath Jog J <jagathjog1996@gmail.com>,
+        Sean Nyekjaer <sean@geanix.com>,
+        Dmitry Rokosov <DDRokosov@sberdevices.ru>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Tomasz Duszynski <tduszyns@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 02/14] iio: accel: bma400: Use
+ devm_regulator_bulk_get_enable()
+Message-ID: <20221204181526.7c173bd2@jic23-huawei>
+In-Reply-To: <2dcc9735-ea2d-a796-5ab4-d1928a346908@gmail.com>
+References: <20221016163409.320197-1-jic23@kernel.org>
+        <20221016163409.320197-3-jic23@kernel.org>
+        <2dcc9735-ea2d-a796-5ab4-d1928a346908@gmail.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20221204061555.1355453-1-dmitry.baryshkov@linaro.org>
- <20221204061555.1355453-4-dmitry.baryshkov@linaro.org> <20221204153736.610c49ed@jic23-huawei>
-In-Reply-To: <20221204153736.610c49ed@jic23-huawei>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Sun, 4 Dec 2022 17:43:57 +0200
-Message-ID: <CAA8EJpqeSF25y3K3gk0Z=q19==byKOqR4NbR78e=1D28o8yp9A@mail.gmail.com>
-Subject: Re: [PATCH v2 3/4] dt-bindings: iio: adc: qcom,pm8018-adc: allow
- specifying MPP channels
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     devicetree@vger.kernel.org, Lee Jones <lee@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        linux-arm-msm@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
-        linux-leds@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 4 Dec 2022 at 17:24, Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Sun,  4 Dec 2022 08:15:54 +0200
-> Dmitry Baryshkov <dmitry.baryshkov@linaro.org> wrote:
->
-> > Several ADC channels are bound to the Multi Purpose Pins (MPPs). Allow
-> > specifying such channels using the mppN device node (as used on apq8060
-> > dragonboard).
-> >
-> > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
->
-> So I understand this more, why do the node names have to have anything to
-> do with the particular pin? I'm assuming the reg value provides that
-> relationship.
+On Mon, 17 Oct 2022 08:27:29 +0300
+Matti Vaittinen <mazziesaccount@gmail.com> wrote:
 
-Yes, the reg provides this relationship. If I understand correctly,
-the dts authors (see arch/arm/boot/dts/qcom-apq8060-dragonboard.dts)
-wanted to point out that these channels are connected to MPP pins
-rather than raw adc channels (e.g. vcoin, vbat, etc).
+> On 10/16/22 19:33, Jonathan Cameron wrote:
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > 
+> > This driver only turns the power on at probe and off via a custom
+> > devm_add_action_or_reset() callback. The new
+> > devm_regulator_bulk_get_enable() replaces this boilerplate code.
+> > 
+> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > Cc: Jagath Jog J <jagathjog1996@gmail.com>  
+> 
+> Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> 
+Now applied this one with slight fuzz due to the fix on ordering that crossed
+with this.
 
->
-> > ---
-> >  Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml
-> > index d186b713d6a7..fee30e6ddd62 100644
-> > --- a/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml
-> > @@ -64,7 +64,7 @@ required:
-> >    - adc-channel@f
-> >
-> >  patternProperties:
-> > -  "^(adc-channel@)[0-9a-f]$":
-> > +  "^(adc-channel|mpp[0-9]+)@[0-9a-f]$":
-> >      type: object
-> >      description: |
-> >        ADC channel specific configuration.
->
-
-
--- 
-With best wishes
-Dmitry
+Jonathan
