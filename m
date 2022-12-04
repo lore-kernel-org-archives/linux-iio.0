@@ -2,52 +2,53 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01228C3A5A7
-	for <linux-iio@archiver.kernel.org>; Sun,  4 Dec 2022 06:16:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE04DC63706
+	for <linux-iio@archiver.kernel.org>; Sun,  4 Dec 2022 06:16:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229862AbiLDGQA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 4 Dec 2022 01:16:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57942 "EHLO
+        id S229916AbiLDGQC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 4 Dec 2022 01:16:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbiLDGP7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Dec 2022 01:15:59 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107811AD88
-        for <linux-iio@vger.kernel.org>; Sat,  3 Dec 2022 22:15:58 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id z24so9992980ljn.4
-        for <linux-iio@vger.kernel.org>; Sat, 03 Dec 2022 22:15:57 -0800 (PST)
+        with ESMTP id S229811AbiLDGQB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Dec 2022 01:16:01 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE091AF02
+        for <linux-iio@vger.kernel.org>; Sat,  3 Dec 2022 22:15:59 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id 1so149091lfz.4
+        for <linux-iio@vger.kernel.org>; Sat, 03 Dec 2022 22:15:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=vvehFUDvmlwbe0bLOZWtJlblAYTrgpn+Xb3UZ8w37ns=;
-        b=oFKZwFPq2sFRHO88iwMuefuNNHQDKZ449Z7MB/ubmAj4d40k7KWf4mdsv6cS+/bc+Q
-         U1axE/MjHpWgG6xs1n9MEuKKHMUUbiOw/+9RPkFTY2qKSE72a4YLzZdPjzbTsseSjkch
-         0hX3q8eFuaYbH4R3naoJcds82rhJpeOJYEZNXZGfmijnHOiqujI1nxXCNv2gbYiZUNtE
-         nk5yDjQ3I9altrwHGvavmJIPCYMYXl5rYypUUp1NuwJ3d0BL8UWiS6FgjdIepYFTFs9g
-         nMVR4fH6hVSViTwcpa0PW44uB/b11aWOYms251k4jhRd9hEx7CSKDJ9GlKdK2WUC1El9
-         AxRA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=df6YVGFXrCQjdb7F1t0OqSwRQMoyoPVorXWJgB9N0Gw=;
+        b=ip0pRH9ZgyCCxqIea5mb94IYYnGOATrUp2fK757B19FVfbS1aRtv3knxji/ow4gjsu
+         2gn//JvgXUxLfkXpnvrOzzVll6JeAV7BsSNpFiNg1pFcu5PCmPFcyJqK+8t1VW5bzjW/
+         Q6BFaM6dsfWq6Q/BukGylhHurGWv2IDbOkmxam+7COfDjV9uqtqzkcPEDQaqKaJSqhqg
+         SdoOpD5qd2mo5uiM+3L0tj9Hg/OJ76Zi2wvQ6eOaH9yrafCgiYX5nMBzUbQoduNGmoRu
+         e54vuTcXPkm7PXJJCCzI5PUUq/fBb6ehp0RJmPBOzz4KCmNhXbMewOSf3Uzm7j8zTUGc
+         fTjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vvehFUDvmlwbe0bLOZWtJlblAYTrgpn+Xb3UZ8w37ns=;
-        b=HvFAR3APlAG+Q7xOZYe+gLu7PP3wU78/ftGajCdauy62yXpG3e6WQK9Uo35Hrdu7/L
-         kMxYwqssycBwgpFT85WYEujNmmI8aeh73KJHTlOwabD/yxoIlQqVPc8qNvqmK6MAjEdk
-         riswVMfMdmdHIxcza+6XIBngDqXWKsHK5nBk914k8XnyFZyLU84v1GWWygx9dlOYyaer
-         EQPXzNE8fOqJ6hSsl30T2MhQhJHuS2l3sDjKaeP5wdgYWl+QOBmrTADJLiopbwpN4QKg
-         UZgpofbRvO8qy1Fyiwe8ZJGF6KDAeuhmVah8YzrDyN8MJQQT/BYcJpIS9i38IH9pjtEd
-         DisQ==
-X-Gm-Message-State: ANoB5pnIegXyuy9m2ic4RotHiIYEkMePJ4k+AkVQBv1UBrGq2itRyG7T
-        0tzyaPdkFGOSrz/t+ih5Y1GcHw==
-X-Google-Smtp-Source: AA0mqf54caa7v+m0jl8ZO1ZC99ocLHSUkpP2NT27/UzSJUdcd2pn7cLhl2mxOKsWYSr6l0QV47pDsA==
-X-Received: by 2002:a2e:a224:0:b0:277:309:f1ad with SMTP id i4-20020a2ea224000000b002770309f1admr18563059ljm.244.1670134556412;
-        Sat, 03 Dec 2022 22:15:56 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=df6YVGFXrCQjdb7F1t0OqSwRQMoyoPVorXWJgB9N0Gw=;
+        b=F/cS950D0ZrFlYOOQDtILJFgHQNfkrXPLMRAyWbdFQsJSCS6ZUlG+ZbHm6MjPGZ/0y
+         94ui8r+JFGBPwn2WuL9nvX2b6xdXrDCWXkv5VJaiWue7Z5HKObJwU2NY8sUaA2zEvNEt
+         821S86XyBdNfIqs09ApnO4G+GYlasI9EOE35m3KXMCfy0Fxn+TrfcxSzWxn623bjxQgj
+         rBeFZeczc4l4POtj5jxXkZignXXuw8SRTwSlpA9ZSX4W2c3vv6xxkd0DPkt8spIIdYGh
+         lh2mudW4a+KxFBeNt5i79vlIBLyEMPGvmW2/C1NJ+STy6LEKQrw+EDrs/m9RVg7hmF63
+         BzoQ==
+X-Gm-Message-State: ANoB5plXukrE+i7X7eJ3RKvh930yH4LM6aexqcyAC/hNyvJ2Fy+B1iVv
+        BHrcxpnbeqyOLtPrjiEJ+ce/8g==
+X-Google-Smtp-Source: AA0mqf7Q11sUZj4PtTwSu2gOGi5ajLI7WTGG2j9xoeuIlSuV7Vf6qURJIhlxKXEZxE70ARLycROp5A==
+X-Received: by 2002:a05:6512:22c5:b0:4b5:5880:8359 with SMTP id g5-20020a05651222c500b004b558808359mr2148586lfu.425.1670134558191;
+        Sat, 03 Dec 2022 22:15:58 -0800 (PST)
 Received: from eriador.lan ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id l12-20020a056512110c00b0047f7722b73csm1650725lfg.142.2022.12.03.22.15.55
+        by smtp.gmail.com with ESMTPSA id l12-20020a056512110c00b0047f7722b73csm1650725lfg.142.2022.12.03.22.15.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 03 Dec 2022 22:15:56 -0800 (PST)
+        Sat, 03 Dec 2022 22:15:57 -0800 (PST)
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 To:     devicetree@vger.kernel.org, Lee Jones <lee@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -61,39 +62,69 @@ Cc:     Andy Gross <agross@kernel.org>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         linux-input@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
         linux-leds@vger.kernel.org
-Subject: [PATCH v2 0/4] dt-bindings: add missing subdevices to qcom-pm8xxx schema
-Date:   Sun,  4 Dec 2022 08:15:51 +0200
-Message-Id: <20221204061555.1355453-1-dmitry.baryshkov@linaro.org>
+Subject: [PATCH v2 2/4] dt-bindings: mfd: qcom-pm8xxx: add missing child nodes
+Date:   Sun,  4 Dec 2022 08:15:53 +0200
+Message-Id: <20221204061555.1355453-3-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20221204061555.1355453-1-dmitry.baryshkov@linaro.org>
+References: <20221204061555.1355453-1-dmitry.baryshkov@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Update the DT bindings of the Qualcomm PMIC devices sitting on the SSBI
-bus.
+Add gpio, keypad, led, mpps, pwrkey, vibrator and xoadc as possible
+child nodes of qcom,pm8xxx, referencing existint schema files.
 
-Changes since v1:
-- Rebased on top of [1]
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+ .../devicetree/bindings/mfd/qcom-pm8xxx.yaml  | 26 ++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
-[1]: https://lore.kernel.org/all/20221201131505.42292-1-krzysztof.kozlowski@linaro.org/
-
-Dmitry Baryshkov (4):
-  dt-bindings: input: qcom,pm8921-keypad: convert to YAML format
-  dt-bindings: mfd: qcom-pm8xxx: add missing child nodes
-  dt-bindings: iio: adc: qcom,pm8018-adc: allow specifying MPP channels
-  dt-bindings: leds: Add 'cm3605' to 'linux,default-trigger'
-
- .../bindings/iio/adc/qcom,pm8018-adc.yaml     |  2 +-
- .../bindings/input/qcom,pm8921-keypad.yaml    | 93 +++++++++++++++++++
- .../bindings/input/qcom,pm8xxx-keypad.txt     | 90 ------------------
- .../devicetree/bindings/leds/common.yaml      |  1 +
- .../devicetree/bindings/mfd/qcom-pm8xxx.yaml  | 26 +++++-
- 5 files changed, 120 insertions(+), 92 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/input/qcom,pm8921-keypad.yaml
- delete mode 100644 Documentation/devicetree/bindings/input/qcom,pm8xxx-keypad.txt
-
+diff --git a/Documentation/devicetree/bindings/mfd/qcom-pm8xxx.yaml b/Documentation/devicetree/bindings/mfd/qcom-pm8xxx.yaml
+index 9acad9d326eb..7fe3875a5996 100644
+--- a/Documentation/devicetree/bindings/mfd/qcom-pm8xxx.yaml
++++ b/Documentation/devicetree/bindings/mfd/qcom-pm8xxx.yaml
+@@ -43,13 +43,37 @@ properties:
+   interrupt-controller: true
+ 
+ patternProperties:
++  "gpio@[0-9a-f]+$":
++    type: object
++    $ref: /schemas/pinctrl/qcom,pmic-gpio.yaml#
++
++  "keypad@[0-9a-f]+$":
++    type: object
++    $ref: /schemas/input/qcom,pm8921-keypad.yaml#
++
+   "led@[0-9a-f]+$":
+     type: object
+     $ref: /schemas/leds/qcom,pm8058-led.yaml#
+ 
++  "mpps@[0-9a-f]+$":
++    type: object
++    $ref: /schemas/pinctrl/qcom,pmic-mpp.yaml#
++
++  "pwrkey@[0-9a-f]+$":
++    type: object
++    $ref: /schemas/input/qcom,pm8921-pwrkey.yaml#
++
+   "rtc@[0-9a-f]+$":
+     type: object
+-    $ref: "../rtc/qcom-pm8xxx-rtc.yaml"
++    $ref: /schemas/rtc/qcom-pm8xxx-rtc.yaml#
++
++  "vibrator@[0-9a-f]+$":
++    type: object
++    $ref: /schemas/input/qcom,pm8xxx-vib.yaml#
++
++  "xoadc@[0-9a-f]+$":
++    type: object
++    $ref: /schemas/iio/adc/qcom,pm8018-adc.yaml#
+ 
+ required:
+   - compatible
 -- 
 2.35.1
 
