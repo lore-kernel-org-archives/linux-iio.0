@@ -2,194 +2,117 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE6E4C4321E
-	for <linux-iio@archiver.kernel.org>; Sun,  4 Dec 2022 15:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D32DC4321E
+	for <linux-iio@archiver.kernel.org>; Sun,  4 Dec 2022 15:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229973AbiLDPkg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 4 Dec 2022 10:40:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49938 "EHLO
+        id S230138AbiLDPoL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 4 Dec 2022 10:44:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbiLDPkg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Dec 2022 10:40:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F77911175;
-        Sun,  4 Dec 2022 07:40:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDB2EB80813;
-        Sun,  4 Dec 2022 15:40:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5423BC433C1;
-        Sun,  4 Dec 2022 15:40:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670168432;
-        bh=XivmGAMo4bgBcXNnSUPwpz9h0TTHV89rfEJTsZENORA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NQ7bmo4QMWxLIgcWGnjZBay9XfrlWS8fqH+oMgWkxSCzi89OBg/+Ufuslov8baNbI
-         W1e2XRndmQgMjPshFlO/4JxaC29AFvFQk1ABZva5OgRPOtQwYEKnNps7mEBtsSrVlp
-         98fZ6QWPBmn7KwjwLBMkNrcuqIpnYfBJkKelTS8JLBjgqvQ+LaQZm9H7B0LF4kcXa5
-         E/s2GYjdatMw565/p/3nGeN2Twoy9mSKS53L9HsVcVsQ3wDpOlpBhMWi73S1i63CnP
-         xLJ7gYzyKz8tNCo0butOgN705X8H2o69YkAqdc2pBDZ26sPFj2VgZv/SVlMVIBLV5u
-         t99ACQigBwh1Q==
-Date:   Sun, 4 Dec 2022 15:53:17 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cai Huoqing <cai.huoqing@linux.dev>
-Cc:     Bough Chen <haibo.chen@nxp.com>, Frank Li <frank.li@nxp.com>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "imx@lists.linux.dev" <imx@lists.linux.dev>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>
-Subject: Re: [PATCH v2 1/1] iio: imx8qxp-adc: fix irq flood when call
- imx8qxp_adc_read_raw()
-Message-ID: <20221204155317.5b568fd6@jic23-huawei>
-In-Reply-To: <20221202090554.GA10754@chq-T47>
-References: <20221201140110.2653501-1-Frank.Li@nxp.com>
-        <DB7PR04MB401084C620570D234A535EE990179@DB7PR04MB4010.eurprd04.prod.outlook.com>
-        <20221202090554.GA10754@chq-T47>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        with ESMTP id S229753AbiLDPoK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Dec 2022 10:44:10 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAC7A1BA
+        for <linux-iio@vger.kernel.org>; Sun,  4 Dec 2022 07:44:09 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id l67so11721414ybl.1
+        for <linux-iio@vger.kernel.org>; Sun, 04 Dec 2022 07:44:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Krqz0gztCgfshA/5BVbNzvghLRKl8impaiGjHsH2Zy4=;
+        b=pph5OCBwEmWrbf6VaobaKj1L9oT8lMiq4kIl4kHEEQggsonvIHM9fj0pIIyPqOjuTB
+         yOt/e8ISmr60iMONl0nnA//fw6P7WmM317GsJ64vezzFYU2xgDyNyQkZ6Jjdl8scah12
+         b6RdBuCoSiTPZj5ZK9FpD8Moec/e+jgL97RKLaec1qeY11cdDyavNTkanykmWiRxMwuT
+         amy40hpDqkXOvJt+k+nSEpDr2kfUqNWwJ1Mz7p8WZdEqkFujVBgCkBYdoatISl1tzGsI
+         uF0lyfBTM5QwQ5bMNuKanBOxMFTIsX7rOi2/OLE2jpiky3+YsFCRACzOhO79P4GaBIX3
+         Rm3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Krqz0gztCgfshA/5BVbNzvghLRKl8impaiGjHsH2Zy4=;
+        b=dDTIGGRh8ZVogdKJVIztouKRs06ZAPrqVd1jrF/yM5gXBR2hyvpwR1JD54SC6Uys9P
+         9n6kFm1zyJ6cOoMQTJZXy3oEfEPdAQEHu//ZkuYSsNXaxO4El4esFS8tkrHEzqoBYw2I
+         2itMgQCUBH1k7fWmPzdXadoOErYCJGvdmSSLofQBoIDNI5JbyJbvu53hTtTvSsw1TRmY
+         okdga2rJHD8AopgDh21p8Z/FZvSrSVtLb14zZCLeg2YCz3qUrmc1UVxjO2b7M/u9xM2y
+         zqzAgTwniN1ZQsUhnEEjffXYgFCOV1ol0PSrWRKeNqasMuV7NYvYKs40trvKpsLryozV
+         ZYGg==
+X-Gm-Message-State: ANoB5plkqBjbrhLUvD+CexWCm1KOat8CyuOLGNYaCEQwnwFq4S2BLB5N
+        TXj6TOMvTzRutj8Pmx55KG8/R4LMW/v85L3ESn6f5Q==
+X-Google-Smtp-Source: AA0mqf4w63L6rotcuUr/RKWrLsu/hmBo1nAUaAZch8Huvbe0yTiNcxIaHxsbDQC+TBGNiSY54CZpZkwoVdNrfQFkT+U=
+X-Received: by 2002:a25:8c9:0:b0:6f8:9c91:4503 with SMTP id
+ 192-20020a2508c9000000b006f89c914503mr24861496ybi.15.1670168648603; Sun, 04
+ Dec 2022 07:44:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20221204061555.1355453-1-dmitry.baryshkov@linaro.org>
+ <20221204061555.1355453-4-dmitry.baryshkov@linaro.org> <20221204153736.610c49ed@jic23-huawei>
+In-Reply-To: <20221204153736.610c49ed@jic23-huawei>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Sun, 4 Dec 2022 17:43:57 +0200
+Message-ID: <CAA8EJpqeSF25y3K3gk0Z=q19==byKOqR4NbR78e=1D28o8yp9A@mail.gmail.com>
+Subject: Re: [PATCH v2 3/4] dt-bindings: iio: adc: qcom,pm8018-adc: allow
+ specifying MPP channels
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     devicetree@vger.kernel.org, Lee Jones <lee@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        linux-arm-msm@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-input@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        linux-leds@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 2 Dec 2022 17:05:54 +0800
-Cai Huoqing <cai.huoqing@linux.dev> wrote:
+On Sun, 4 Dec 2022 at 17:24, Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Sun,  4 Dec 2022 08:15:54 +0200
+> Dmitry Baryshkov <dmitry.baryshkov@linaro.org> wrote:
+>
+> > Several ADC channels are bound to the Multi Purpose Pins (MPPs). Allow
+> > specifying such channels using the mppN device node (as used on apq8060
+> > dragonboard).
+> >
+> > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+>
+> So I understand this more, why do the node names have to have anything to
+> do with the particular pin? I'm assuming the reg value provides that
+> relationship.
 
-> On 02 12=E6=9C=88 22 03:23:55, Bough Chen wrote:
-> > > -----Original Message-----
-> > > From: Frank Li <frank.li@nxp.com>
-> > > Sent: 2022=E5=B9=B412=E6=9C=881=E6=97=A5 22:01
-> > > To: Bough Chen <haibo.chen@nxp.com>
-> > > Cc: cai.huoqing@linux.dev; festevam@gmail.com; Frank Li <frank.li@nxp=
-.com>;
-> > > imx@lists.linux.dev; jic23@kernel.org; kernel@pengutronix.de;
-> > > lars@metafoo.de; linux-arm-kernel@lists.infradead.org;
-> > > linux-iio@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>;
-> > > linux-kernel@vger.kernel.org; s.hauer@pengutronix.de; shawnguo@kernel=
-.org
-> > > Subject: [PATCH v2 1/1] iio: imx8qxp-adc: fix irq flood when call
-> > > imx8qxp_adc_read_raw()
-> > >=20
-> > > irq flood happen when run
-> > >     cat /sys/bus/iio/devices/iio:device0/in_voltage1_raw
-> > >=20
-> > > imx8qxp_adc_read_raw()
-> > > {
-> > > 	...
-> > > 	enable irq
-> > > 	/* adc start */
-> > > 	writel(1, adc->regs + IMX8QXP_ADR_ADC_SWTRIG);
-> > > 	^^^^ trigger irq flood.
-> > > 	wait_for_completion_interruptible_timeout();
-> > > 	readl(adc->regs + IMX8QXP_ADR_ADC_RESFIFO);
-> > > 	^^^^ clear irq here.
-> > > 	...
-> > > }
-> > >=20
-> > > There is only FIFO watermark interrupt at this ADC controller.
-> > > IRQ line will be assert until software read data from FIFO.
-> > > So IRQ flood happen during wait_for_completion_interruptible_timeout(=
-).
-> > >=20
-> > > Move FIFO read into irq handle to avoid irq flood.
-> > >=20
-> > > Fixes: 1e23dcaa1a9f ("iio: imx8qxp-adc: Add driver support for NXP IM=
-X8QXP
-> > > ADC")
-> > > Cc: stable@vger.kernel.org
-> > >=20
-> > > Signed-off-by: Frank Li <Frank.Li@nxp.com> =20
-> >=20
-> > Thanks for the quick fix. The total read count in irq handler is fifo_c=
-ount which is read from register, this is reasonable.
-> >=20
-> > Reviewed-by: Haibo Chen <haibo.chen@nxp.com> =20
-> The same, thanks.
-> Reviewed-by: Cai Huoqing <cai.huoqing@linux.dev>
+Yes, the reg provides this relationship. If I understand correctly,
+the dts authors (see arch/arm/boot/dts/qcom-apq8060-dragonboard.dts)
+wanted to point out that these channels are connected to MPP pins
+rather than raw adc channels (e.g. vcoin, vbat, etc).
 
-I briefly wondered if it would be better to return the newest value,
-but given it's not obvious and they will be close together in this case,
-I'm fine with this.
+>
+> > ---
+> >  Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml
+> > index d186b713d6a7..fee30e6ddd62 100644
+> > --- a/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml
+> > +++ b/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml
+> > @@ -64,7 +64,7 @@ required:
+> >    - adc-channel@f
+> >
+> >  patternProperties:
+> > -  "^(adc-channel@)[0-9a-f]$":
+> > +  "^(adc-channel|mpp[0-9]+)@[0-9a-f]$":
+> >      type: object
+> >      description: |
+> >        ADC channel specific configuration.
+>
 
-Applied to the fixes-togreg branch of iio.git and marked for
-stable inclusion.  Note I'm unlikely to send a pull request until after rc1=
- now
-so this will take a few weeks to land upstream.
 
-Thanks,
-
-Jonathan
-
-> >=20
-> > Best Regards
-> > Haibo Chen =20
-> > > ---
-> > > Change from v1 to v2
-> > >  - move complete() after read fifo
-> > >=20
-> > >=20
-> > >  drivers/iio/adc/imx8qxp-adc.c | 11 +++++++++--
-> > >  1 file changed, 9 insertions(+), 2 deletions(-)
-> > >=20
-> > > diff --git a/drivers/iio/adc/imx8qxp-adc.c b/drivers/iio/adc/imx8qxp-=
-adc.c index
-> > > 36777b827165..f5a0fc9e64c5 100644
-> > > --- a/drivers/iio/adc/imx8qxp-adc.c
-> > > +++ b/drivers/iio/adc/imx8qxp-adc.c
-> > > @@ -86,6 +86,8 @@
-> > >=20
-> > >  #define IMX8QXP_ADC_TIMEOUT		msecs_to_jiffies(100)
-> > >=20
-> > > +#define IMX8QXP_ADC_MAX_FIFO_SIZE		16
-> > > +
-> > >  struct imx8qxp_adc {
-> > >  	struct device *dev;
-> > >  	void __iomem *regs;
-> > > @@ -95,6 +97,7 @@ struct imx8qxp_adc {
-> > >  	/* Serialise ADC channel reads */
-> > >  	struct mutex lock;
-> > >  	struct completion completion;
-> > > +	u32 fifo[IMX8QXP_ADC_MAX_FIFO_SIZE];
-> > >  };
-> > >=20
-> > >  #define IMX8QXP_ADC_CHAN(_idx) {				\
-> > > @@ -238,8 +241,7 @@ static int imx8qxp_adc_read_raw(struct iio_dev
-> > > *indio_dev,
-> > >  			return ret;
-> > >  		}
-> > >=20
-> > > -		*val =3D FIELD_GET(IMX8QXP_ADC_RESFIFO_VAL_MASK,
-> > > -				 readl(adc->regs + IMX8QXP_ADR_ADC_RESFIFO));
-> > > +		*val =3D adc->fifo[0];
-> > >=20
-> > >  		mutex_unlock(&adc->lock);
-> > >  		return IIO_VAL_INT;
-> > > @@ -265,10 +267,15 @@ static irqreturn_t imx8qxp_adc_isr(int irq, void
-> > > *dev_id)  {
-> > >  	struct imx8qxp_adc *adc =3D dev_id;
-> > >  	u32 fifo_count;
-> > > +	int i;
-> > >=20
-> > >  	fifo_count =3D FIELD_GET(IMX8QXP_ADC_FCTRL_FCOUNT_MASK,
-> > >  			       readl(adc->regs + IMX8QXP_ADR_ADC_FCTRL));
-> > >=20
-> > > +	for (i =3D 0; i < fifo_count; i++)
-> > > +		adc->fifo[i] =3D FIELD_GET(IMX8QXP_ADC_RESFIFO_VAL_MASK,
-> > > +				readl_relaxed(adc->regs + IMX8QXP_ADR_ADC_RESFIFO));
-> > > +
-> > >  	if (fifo_count)
-> > >  		complete(&adc->completion);
-> > >=20
-> > > --
-> > > 2.34.1 =20
-> >  =20
-
+-- 
+With best wishes
+Dmitry
