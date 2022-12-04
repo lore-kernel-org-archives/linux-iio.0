@@ -2,46 +2,47 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E53C4321E
-	for <linux-iio@archiver.kernel.org>; Sun,  4 Dec 2022 15:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F3EC4321E
+	for <linux-iio@archiver.kernel.org>; Sun,  4 Dec 2022 15:31:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbiLDP3L (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 4 Dec 2022 10:29:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44184 "EHLO
+        id S230050AbiLDPbb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 4 Dec 2022 10:31:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbiLDP3K (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Dec 2022 10:29:10 -0500
+        with ESMTP id S230035AbiLDPba (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Dec 2022 10:31:30 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD5614D27;
-        Sun,  4 Dec 2022 07:29:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302B315A22;
+        Sun,  4 Dec 2022 07:31:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2692DB8075D;
-        Sun,  4 Dec 2022 15:29:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6711EC433C1;
-        Sun,  4 Dec 2022 15:29:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D69B6B80184;
+        Sun,  4 Dec 2022 15:31:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21C05C433D6;
+        Sun,  4 Dec 2022 15:31:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670167746;
-        bh=+4UWp3q3T8/z7j3IT3NJBs3BVLIHV3S8FeXV9XhEXcg=;
+        s=k20201202; t=1670167886;
+        bh=HBg8TSFzV0yz0mWLK3W3gMprxAOJN/By4+fDpc0t1Es=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oCxNzFArpSesYBXlBvPnI1v6ofzIW7TJOoWYwzorGkcbMl1/PWRyNVFwKYwa5ckEb
-         fXhm7wv8RaLGEMPVLKSN9JGB5NxriBFTybAX0AObXCpntkOKfJtytsN8S+hfD0ORub
-         VhWRBNSflQdrqG03Wu9ixVtvnTAKg4BSqj5C2MwuIM/YwIFPu6WfKrzg9kEQucK1H/
-         r5qNowpiz72CvvP6sdhIC9MWkwq4oWQLAGbIipryC6LZPFNGBciTxB9WmNKhtymdIP
-         hTsYunpRuYpx3mJr5CJDph7bXxLrPhE4i6Jag9UtLQGK/3bJjIkTHTONttLP+WgGKB
-         TSIYE48yNuilQ==
-Date:   Sun, 4 Dec 2022 15:41:52 +0000
+        b=OY4ShmAR1vD/rSuVE221e/Rrq4iGpgxBvheFV5WpepelePy5q8VJ45V14YnyyKPBL
+         PJ74/z2mkyfdpRH8r+CLLQiMrFonf4sBl1g8H4Y/0IBNeiTK2kplEBHSjdKLNWumXL
+         qxhBdKR4vzXy9P3Qr2PhvYLnv97dYfquDiwHNKCvPvAmoizt36cWwdy9GGU7KZ/2hO
+         Wh6YsNE4HhOj4Bv9nYxSOBmWLljm53D2Z74sQN7KdRteKsMYd8d9/hV4bqfs/BWYqA
+         OXNR1Gw36llNlpFfsoXqzeiM3cV5zX4HfKcW8zYIbLFleIX8r+2HHKsQ/DQd31c1y4
+         dXDBs3Pmpg//A==
+Date:   Sun, 4 Dec 2022 15:44:12 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andreas Kemnade <andreas@kemnade.info>
-Cc:     lars@metafoo.de, jiasheng@iscas.ac.cn, paul@crapouillou.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH] iio:adc:twl6030: Enable measurements of VUSB, VBAT and
- others
-Message-ID: <20221204154152.5f7948b9@jic23-huawei>
-In-Reply-To: <20221201181635.3522962-1-andreas@kemnade.info>
-References: <20221201181635.3522962-1-andreas@kemnade.info>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Fabio Estevam <festevam@gmail.com>, lars@metafoo.de,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: dac: ad5686: Add an entry for
+ AD5337
+Message-ID: <20221204154412.4bae1e5c@jic23-huawei>
+In-Reply-To: <0b2f414d-57a0-a427-3421-1ba8331459d9@linaro.org>
+References: <20221130182632.3856675-1-festevam@gmail.com>
+        <0b2f414d-57a0-a427-3421-1ba8331459d9@linaro.org>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -50,74 +51,32 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu,  1 Dec 2022 19:16:35 +0100
-Andreas Kemnade <andreas@kemnade.info> wrote:
+On Thu, 1 Dec 2022 11:39:38 +0100
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
-> Some inputs need to be wired up to produce proper measurements,
-> without this change only near zero values are reported.
+> On 30/11/2022 19:26, Fabio Estevam wrote:
+> > AD5337 belongs to the same family as the AD5338.
+> > 
+> > The difference is that the AD5337 has 8-bit resolution instead of 10-bit.
+> > 
+> > Add a compatible entry for AD5337.
+> > 
+> > Signed-off-by: Fabio Estevam <festevam@gmail.com>  
 > 
-> Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
+> 
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Sounds like a fix to me.  If so, Fixes tag?
+Series applied. Note this is now 6.3 material unless we end up with an rc9 for
+some reason (which is very unlikely).
+Until I can rebase the tree on rc1 this will just be pushed out as testing
+for 0-day etc to poke at.
 
-Anything in here we should be turning off again if the driver is removed 
-or toggling on suspend? If not, other than the space below this looks fine to me.
+Thanks,
 
 Jonathan
 
-> ---
->  drivers/iio/adc/twl6030-gpadc.c | 32 ++++++++++++++++++++++++++++++++
->  1 file changed, 32 insertions(+)
 > 
-> diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
-> index f53e8558b560c..40438e5b49702 100644
-> --- a/drivers/iio/adc/twl6030-gpadc.c
-> +++ b/drivers/iio/adc/twl6030-gpadc.c
-> @@ -57,6 +57,18 @@
->  #define TWL6030_GPADCS				BIT(1)
->  #define TWL6030_GPADCR				BIT(0)
->  
-> +#define USB_VBUS_CTRL_SET			0x04
-> +#define USB_ID_CTRL_SET				0x06
-> +
-> +#define TWL6030_MISC1				0xE4
-> +#define VBUS_MEAS				0x01
-> +#define ID_MEAS					0x01
-> +
-> +#define VAC_MEAS                0x04
-> +#define VBAT_MEAS               0x02
-> +#define BB_MEAS                 0x01
-> +
-I'm always of the view one blank line is enough! I'll tidy this up whilst applying.
-> +
->  /**
->   * struct twl6030_chnl_calib - channel calibration
->   * @gain:		slope coefficient for ideal curve
-> @@ -927,6 +939,26 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
->  		return ret;
->  	}
->  
-> +	ret = twl_i2c_write_u8(TWL_MODULE_USB, VBUS_MEAS, USB_VBUS_CTRL_SET);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to wire up inputs\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = twl_i2c_write_u8(TWL_MODULE_USB, ID_MEAS, USB_ID_CTRL_SET);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to wire up inputs\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = twl_i2c_write_u8(TWL6030_MODULE_ID0,
-> +				VBAT_MEAS | BB_MEAS | BB_MEAS,
-> +				TWL6030_MISC1);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to wire up inputs\n");
-> +		return ret;
-> +	}
-> +
->  	indio_dev->name = DRIVER_NAME;
->  	indio_dev->info = &twl6030_gpadc_iio_info;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
+> Best regards,
+> Krzysztof
+> 
 
