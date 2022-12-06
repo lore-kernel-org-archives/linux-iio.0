@@ -2,48 +2,49 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF9B2C636F9
-	for <linux-iio@archiver.kernel.org>; Tue,  6 Dec 2022 18:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A595DC352A1
+	for <linux-iio@archiver.kernel.org>; Tue,  6 Dec 2022 18:22:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230095AbiLFSVU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 6 Dec 2022 13:21:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34396 "EHLO
+        id S229737AbiLFSWG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 6 Dec 2022 13:22:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbiLFSUO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Dec 2022 13:20:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8F9B4AA;
-        Tue,  6 Dec 2022 10:20:10 -0800 (PST)
+        with ESMTP id S230011AbiLFSU5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Dec 2022 13:20:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671D73FB91;
+        Tue,  6 Dec 2022 10:20:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76E44B81B32;
-        Tue,  6 Dec 2022 18:20:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75A08C43143;
-        Tue,  6 Dec 2022 18:20:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F17261847;
+        Tue,  6 Dec 2022 18:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AB8CC433D6;
+        Tue,  6 Dec 2022 18:20:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670350806;
-        bh=YTFPQTx/YrLchW/aZDupJW4/hX85sZqlpGLQlhNNLLU=;
+        s=k20201202; t=1670350809;
+        bh=NUnCXBA5tmAt67OQMSbJVz2MMAaif1ZMSY00dzogGhA=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=MvEe/hknFqdvcLrCjmFXzJTUtplFCf2YZ45f+y+1rzgntxjc9M5xsSgQQYU3ki42R
-         Fueb7CvmFRSpoyrUPjJm5PIlbc9llNfzxqhlcq464VWZfor191SSLv3gtVN23cCr5M
-         ccMSocX73pg8NCDi+c0FJGaWdh9rjSA5RJm4Tcofnpfy0IC5VRGi+bx+gAzdLp0bKT
-         SZ+1iUw0x2q8R+kmUJb+S2YBbGKS4/a97W1qYdAxP3dxjrMS6SmTNAi2s8xYAFZtMH
-         IzQlk0bXP03NT0lgapvc9tovY7cGqoeCLlLrDUu3+eaCleDn6ZMuXtRt3LmYCHRUz/
-         oS23Tip7kbhmw==
+        b=XjwxXHPBh5CS1W9BPSpSTa8NPyUxmz25A1zZRAOK/SjFT/ITk8zhLpugxNVgti1b5
+         ZbfHBNW2oOPk4yZM/xhZS/ogZrOcS05LYEHS0HOjYseYSdSB99o1osp+YI9KApigtR
+         WuvkRyIl6BAlIJaak4vrlBVVKgmeT/4v7VacbNjndjIFoSUBZ+9lMYxQQx4qc2w/ab
+         g5Gc+542X0yobLbLU53yIaiK4Tiv9/X3n6bkVKfdG9KiFzuxIB9ucdtTgOGa1qyOc0
+         ftRQlqHZ5lrT2hBgcyL9ViyyAcb//1QbC7m1Y9wUSrYfRORww6AH3yXs5u5sktbUhX
+         EqIIXH333cchA==
 From:   Bjorn Andersson <andersson@kernel.org>
 To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        devicetree@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Andy Gross <agross@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: qcom,spmi-vadc: simplify compatible enum
-Date:   Tue,  6 Dec 2022 12:19:11 -0600
-Message-Id: <167035076359.3155086.2312319219959247926.b4-ty@kernel.org>
+Subject: Re: [PATCH] dt-bindings: iio: adc: qcom,spmi-vadc: fix PM8350 define
+Date:   Tue,  6 Dec 2022 12:19:15 -0600
+Message-Id: <167035076359.3155086.292698735801299718.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20221027143411.277980-1-krzysztof.kozlowski@linaro.org>
-References: <20221027143411.277980-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221117121307.264550-1-krzysztof.kozlowski@linaro.org>
+References: <20221117121307.264550-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -51,17 +52,18 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 27 Oct 2022 10:34:10 -0400, Krzysztof Kozlowski wrote:
-> The second compatible item in oneOf is just an enum, not a list.
+On Thu, 17 Nov 2022 13:13:07 +0100, Krzysztof Kozlowski wrote:
+> The defines from include/dt-bindings/iio/qcom,spmi-adc7-pm8350.h were
+> changed to take sid argument:
+> 
+>   Error: Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.example.dts:99.28-29 syntax error
 > 
 > 
 
 Applied, thanks!
 
-[1/2] dt-bindings: iio: adc: qcom,spmi-vadc: simplify compatible enum
-      (no commit info)
-[2/2] dt-bindings: iio: adc: qcom,spmi-vadc: extend example
-      commit: 74e903461b178faa5d0873254b77ee18fca5d059
+[1/1] dt-bindings: iio: adc: qcom,spmi-vadc: fix PM8350 define
+      commit: 51f7be212ae6c9c09e77d17468fe26485f79836d
 
 Best regards,
 -- 
