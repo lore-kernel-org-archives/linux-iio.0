@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DF2C4708D
-	for <linux-iio@archiver.kernel.org>; Wed,  7 Dec 2022 19:04:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DC4CC352A1
+	for <linux-iio@archiver.kernel.org>; Wed,  7 Dec 2022 19:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229822AbiLGTEL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 7 Dec 2022 14:04:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33824 "EHLO
+        id S229854AbiLGTEY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 7 Dec 2022 14:04:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229788AbiLGTEE (ORCPT
+        with ESMTP id S229791AbiLGTEE (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Dec 2022 14:04:04 -0500
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE2FC70614;
-        Wed,  7 Dec 2022 11:04:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A73470616;
+        Wed,  7 Dec 2022 11:04:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670439842; x=1701975842;
+  t=1670439843; x=1701975843;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=5GwPuobCpJ0+heyq5ckbm6iaVU06rI+4xJ6yg8SuKhM=;
-  b=RjrNYgy9SLTW0HJweCLS77U6R2DvngqMnAwbyEUdHv4gxzoAoetqOpdG
-   U+h4q787M/pv56x8O2S0J+NUn7w/LjqrS2PQm+0pYspgSYnmJrBU0/IHS
-   Kxkv2PFrcGrr8b7mQFxM2LkiYdaoDlxBrjpjTPzR72nQXyTYtIkwkK6mZ
-   v5VD1EvPYq1OLi5qhRrqqmudgP+RiPGi9yePb7YvD4+qMjneNeRalH6G2
-   zc9ngan3BdT1ctL4qAs/Bq3COnOwWjJzbEBLG3fTma+5FjnU4o8GQsoMT
-   qtRMACKBD8DWR72wyglY6lqsLpllGnhKEdxXHLdjT9RMaEHiqjrF2xJzb
+  bh=pgSWEefpffGm7xw97UuMKoDF6VmW2ivy1224gocEp4U=;
+  b=gqdFOQFNPNFK+0am7/MNlQ0RAXfxIeZr6dMEIqsCUYEEhk+Az/okP7aU
+   hWaO/2D4cclnFq9BOxizvopuqOE+KCfKCffYrKP5q6Z2Rg7BBIxWr9tIZ
+   EyUrqji/fMEqrC8HD/C8ey38xqr4cfpRW5KkUXvGYh/yuvHAVEk4+A6Xv
+   XlH87ksMiGuvadPmyDXX1mI/87Hv18uI+/1PWZFsgD3aiUHXduKboTiJn
+   MQ1Q5yN/KV6pOGFZKLgBcg84rSfVWRruhPPlp6yjZnJXCp+gj4kh4jJng
+   Wz+r3cSoPieZBHFbXabs+SqI7wYp5JY8KSnfbJbA1Mrei+8Mc13oAww9o
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="315690226"
+X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="315690234"
 X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
-   d="scan'208";a="315690226"
+   d="scan'208";a="315690234"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 11:03:43 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 11:03:45 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="821060668"
+X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="821060671"
 X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
-   d="scan'208";a="821060668"
+   d="scan'208";a="821060671"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 07 Dec 2022 11:03:40 -0800
+  by orsmga005.jf.intel.com with ESMTP; 07 Dec 2022 11:03:43 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 0E46D184; Wed,  7 Dec 2022 21:04:09 +0200 (EET)
+        id 2FFA954F; Wed,  7 Dec 2022 21:04:09 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Ferry Toth <ftoth@exalondelft.nl>
-Subject: [PATCH v1 05/11] iio: light: tsl2563: Drop unused defintion(s)
-Date:   Wed,  7 Dec 2022 21:03:42 +0200
-Message-Id: <20221207190348.9347-5-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 07/11] iio: light: tsl2563: Drop legacy platform data code
+Date:   Wed,  7 Dec 2022 21:03:44 +0200
+Message-Id: <20221207190348.9347-7-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221207190348.9347-1-andriy.shevchenko@linux.intel.com>
 References: <20221207190348.9347-1-andriy.shevchenko@linux.intel.com>
@@ -58,59 +58,70 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The CALIB_FRAC() is defined and might had been used in
-tsl2563_calib_from_sysfs(). But let's just move a comment
-from it to the latter function.
-
-CLAIB_FRAC_HALF is used in a single place, i.e. in
-tsl2563_calib_to_sysfs(). So, let's just inline it there.
-
-While at it, switch to use DIV_ROUND_CLOSEST().
+There is no in-kernel user for legacy platform data.
+Otherwise, a new one can use software nodes instead.
+Hence, drop legacy platform data code.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Tested-by: Ferry Toth <ftoth@exalondelft.nl>
 ---
- drivers/iio/light/tsl2563.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/iio/light/tsl2563.c           | 12 ++----------
+ include/linux/platform_data/tsl2563.h |  9 ---------
+ 2 files changed, 2 insertions(+), 19 deletions(-)
+ delete mode 100644 include/linux/platform_data/tsl2563.h
 
 diff --git a/drivers/iio/light/tsl2563.c b/drivers/iio/light/tsl2563.c
-index 3b60d8000351..bdd40a5df53d 100644
+index cce044556293..ed193a3da91e 100644
 --- a/drivers/iio/light/tsl2563.c
 +++ b/drivers/iio/light/tsl2563.c
-@@ -19,6 +19,7 @@
- #include <linux/interrupt.h>
- #include <linux/irq.h>
- #include <linux/sched.h>
-+#include <linux/math.h>
- #include <linux/mutex.h>
- #include <linux/delay.h>
- #include <linux/pm.h>
-@@ -38,10 +39,6 @@
+@@ -29,7 +29,6 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/events.h>
+-#include <linux/platform_data/tsl2563.h>
  
- /* Bits used for fraction in calibration coefficients.*/
- #define CALIB_FRAC_BITS		10
--/* 0.5 in CALIB_FRAC_BITS precision */
--#define CALIB_FRAC_HALF		BIT(CALIB_FRAC_BITS - 1)
--/* Make a fraction from a number n that was multiplied with b. */
--#define CALIB_FRAC(n, b)	(((n) << CALIB_FRAC_BITS) / (b))
- /* Decimal 10^(digits in sysfs presentation) */
- #define CALIB_BASE_SYSFS	1000
+ /* Use this many bits for fraction part. */
+ #define ADC_FRAC_BITS		14
+@@ -698,7 +697,6 @@ static int tsl2563_probe(struct i2c_client *client)
+ 	struct device *dev = &client->dev;
+ 	struct iio_dev *indio_dev;
+ 	struct tsl2563_chip *chip;
+-	struct tsl2563_platform_data *pdata = client->dev.platform_data;
+ 	unsigned long irq_flags;
+ 	u8 id = 0;
+ 	int err;
+@@ -730,14 +728,8 @@ static int tsl2563_probe(struct i2c_client *client)
+ 	chip->calib0 = tsl2563_calib_from_sysfs(CALIB_BASE_SYSFS);
+ 	chip->calib1 = tsl2563_calib_from_sysfs(CALIB_BASE_SYSFS);
  
-@@ -360,12 +357,12 @@ static int tsl2563_get_adc(struct tsl2563_chip *chip)
+-	if (pdata) {
+-		chip->cover_comp_gain = pdata->cover_comp_gain;
+-	} else {
+-		err = device_property_read_u32(&client->dev, "amstaos,cover-comp-gain",
+-					       &chip->cover_comp_gain);
+-		if (err)
+-			chip->cover_comp_gain = 1;
+-	}
++	chip->cover_comp_gain = 1;
++	device_property_read_u32(dev, "amstaos,cover-comp-gain", &chip->cover_comp_gain);
  
- static inline int tsl2563_calib_to_sysfs(u32 calib)
- {
--	return (int) (((calib * CALIB_BASE_SYSFS) +
--		       CALIB_FRAC_HALF) >> CALIB_FRAC_BITS);
-+	return (int)DIV_ROUND_CLOSEST(calib * CALIB_BASE_SYSFS, BIT(CALIB_FRAC_BITS));
- }
- 
- static inline u32 tsl2563_calib_from_sysfs(int value)
- {
-+	/* Make a fraction from a number n that was multiplied with b. */
- 	return (((u32) value) << CALIB_FRAC_BITS) / CALIB_BASE_SYSFS;
- }
- 
+ 	dev_info(&client->dev, "model %d, rev. %d\n", id >> 4, id & 0x0f);
+ 	indio_dev->name = client->name;
+diff --git a/include/linux/platform_data/tsl2563.h b/include/linux/platform_data/tsl2563.h
+deleted file mode 100644
+index 9cf9309c3f24..000000000000
+--- a/include/linux/platform_data/tsl2563.h
++++ /dev/null
+@@ -1,9 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef __LINUX_TSL2563_H
+-#define __LINUX_TSL2563_H
+-
+-struct tsl2563_platform_data {
+-	int cover_comp_gain;
+-};
+-
+-#endif /* __LINUX_TSL2563_H */
 -- 
 2.35.1
 
