@@ -2,94 +2,121 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6841C4708D
-	for <linux-iio@archiver.kernel.org>; Wed,  7 Dec 2022 19:04:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4214C63709
+	for <linux-iio@archiver.kernel.org>; Wed,  7 Dec 2022 19:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229470AbiLGTEZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 7 Dec 2022 14:04:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33842 "EHLO
+        id S229722AbiLGTcZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 7 Dec 2022 14:32:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiLGTEF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Dec 2022 14:04:05 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37657061D;
-        Wed,  7 Dec 2022 11:04:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670439843; x=1701975843;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wl+VpQy08drr9NBqnU3E1h7fc0Jv5M6iFmv/BRcElOA=;
-  b=Fg/8AxSXzNF2zOdNj4duFvxkvCcie9CAakBxUIG6oifZ6u1rJv66fh6Z
-   oKGlVRpL7mNXG4GTnTyQSOgyElGISQ8u1zrRoZL7ed/ATmUM38I/2f3zM
-   JxyCgrXO0YVYiHGP/U30nmdjURFRZoWcMzH2Qizkl9SZwznJTU9vWfH+u
-   JIbGOxSNi9fyJHBbB0mrI5XmctxxkX9vU0wZqNrGQVZ5fxHgYMBSErdUg
-   u42Kx7YlXLVzNNLoox3tlHyRvYWbj6Y3btgykzovJmWmP3ZpyQ1ERdFvY
-   uUw0Vw9ga/8K/xnhKIWqNgceRffnrsdLuK2HYVKjjrgtXwmqouF1+rAH2
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="315690243"
-X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
-   d="scan'208";a="315690243"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 11:03:46 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="821060673"
-X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
-   d="scan'208";a="821060673"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 07 Dec 2022 11:03:44 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 4BC1A6CE; Wed,  7 Dec 2022 21:04:09 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S229576AbiLGTcY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Dec 2022 14:32:24 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE3C663DC;
+        Wed,  7 Dec 2022 11:32:23 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id q1so17241586pgl.11;
+        Wed, 07 Dec 2022 11:32:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=CJ93t0qOhK77peLQli38loBDZSZoHQBfLCudn8XKKkU=;
+        b=SXJMcwQ/DX/x1scl/JInhAOMSXhTgG6NMqn0+f7F4uJvfw1ENl1Owc16iAdMtuKYZV
+         +eUJ6MG53Lh01wqJMd6+BBLGW+ASLyrTILLY/k8fcy3T1q3c0G2guTpUxDEZ+Cw7xiwq
+         5nv71OjcKpcKe1o8yphT4VWCfosowXpVq8F5taWYUqk/X0jcJiSsHJEcfPvqzh70Md7I
+         pVJu4/p2YnToPdRxt7oQFXliv+t6JQHRnhBtkIWmA1PpDjP5ebiwdFx3ie9dbI1oq7T/
+         fVANQn9sC5L4Sogum8Mi1HJ4qls2Do89SgYD/trpNdfJjBuDX56pZV6W0HB7hvxFRpoE
+         /x9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=CJ93t0qOhK77peLQli38loBDZSZoHQBfLCudn8XKKkU=;
+        b=P/NlZFRX/34uBIbzxctF94PRLIi1Lhstjs0drm2pHdGq6XsJCSmHYjqb7Tk0zWQRQT
+         zx9K4QMQigwFTLGy0Dp37knnEKH5ugtZTFh7vX432b6fdZPGFGGnWaI0VrlHNHJDXp9k
+         iECYCjLd87GWaNZ027FFQpGQ2TSvP4VVQsB83LSsDiNUWNwUom5vpspaDezPPPRlMvrz
+         5uXiWnTeeL6uItSLepU6q90MMc+f8xUHgIpDkB0sOp7IrlJiyjaKAB0ivDNMl9ChQE4r
+         Z93PQHaZ4PmY+/x1eE4oGzpCMIbfPKNp7nHI/OrARjLM95am1DFfeOo2bl8Z+WQtadAp
+         bJJw==
+X-Gm-Message-State: ANoB5pnPX0XBgM92mEpTOzNX2Z9jyWraiLuVjeiDmt5CWDkJpquJWHO2
+        5ajb+r3D+VY+fzzORthd/d4=
+X-Google-Smtp-Source: AA0mqf5S9Wbej7daA71TN/mdshSxOTWOgPe3L9BDEC6euYukOmVdhOpbd6Jrdw3mr8NfWxb0vDjJEQ==
+X-Received: by 2002:a62:1b05:0:b0:576:91fa:8ed0 with SMTP id b5-20020a621b05000000b0057691fa8ed0mr22190841pfb.15.1670441543186;
+        Wed, 07 Dec 2022 11:32:23 -0800 (PST)
+Received: from google.com ([2620:15c:9d:2:7a61:38c7:d37a:7f43])
+        by smtp.gmail.com with ESMTPSA id l16-20020a170903121000b0018157b415dbsm15089573plh.63.2022.12.07.11.32.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 11:32:22 -0800 (PST)
+Date:   Wed, 7 Dec 2022 11:32:19 -0800
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        devicetree@vger.kernel.org, Lee Jones <lee@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        linux-arm-msm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Ferry Toth <ftoth@exalondelft.nl>
-Subject: [PATCH v1 09/11] iio: light: tsl2563: Use dev_get_drvdata() directly in PM callbacks
-Date:   Wed,  7 Dec 2022 21:03:46 +0200
-Message-Id: <20221207190348.9347-9-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221207190348.9347-1-andriy.shevchenko@linux.intel.com>
-References: <20221207190348.9347-1-andriy.shevchenko@linux.intel.com>
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        Pavel Machek <pavel@ucw.cz>, linux-leds@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] dt-bindings: input: qcom,pm8921-keypad: convert
+ to YAML format
+Message-ID: <Y5DqQywrM6WjqwWA@google.com>
+References: <20221204061555.1355453-1-dmitry.baryshkov@linaro.org>
+ <20221204061555.1355453-2-dmitry.baryshkov@linaro.org>
+ <20221205220433.GA2684995-robh@kernel.org>
+ <E5C1A37F-5758-4026-9412-F13760C465D0@linaro.org>
+ <20221207170753.GA2402110-robh@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221207170753.GA2402110-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-PM callbacks take struct device pointer as a parameter, use
-dev_get_drvdata() to retrieve it instead of unneeded double
-loop of referencing via i2c_get_clientdata(to_i2c_client(dev)).
+On Wed, Dec 07, 2022 at 11:07:53AM -0600, Rob Herring wrote:
+> On Tue, Dec 06, 2022 at 05:20:16AM +0200, Dmitry Baryshkov wrote:
+> > 6 декабря 2022 г. 00:04:33 GMT+02:00, Rob Herring <robh@kernel.org> пишет:
+> > >On Sun, Dec 04, 2022 at 08:15:52AM +0200, Dmitry Baryshkov wrote:
+> > >> Convert the bindings for the keypad subdevices of Qualcomm PM8921 and
+> > >> PM8058 PMICs from text to YAML format.
+> > >> 
+> > >> While doing the conversion also change linux,keypad-no-autorepeat
+> > >> property to linux,input-no-autorepeat. The former property was never
+> > >> used by DT and was never handled by the driver.
+> > >
+> > >Changing from the documented one to one some drivers use. I guess 
+> > >that's a slight improvement. Please see this discussion[1]. 
+> > 
+> > Well, the problem is that the documentation is misleading. The driver 
+> > doesn't handle the documented property, so we should change either 
+> > the driver, or the docs. Which change is the preferred one?
+> 
+> The preference is autorepeat is not the default and setting 
+> 'autorepeat' enables it. You can't really change that unless you don't 
+> really need autorepeat by default. I can't see why it would be 
+> needed for the power button, but I haven't looked what else you have.
+> 
+> Of all the no autorepeat options, I prefer 'linux,no-autorepeat' as I 
+> find 'input' or 'keypad' redundant. But Dmitry T. didn't think it should 
+> be a common property at the time.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Ferry Toth <ftoth@exalondelft.nl>
----
- drivers/iio/light/tsl2563.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Right, I would prefer for new bindings we used assertive "autorepeat",
+instead of negating "no-autorepeat". However here we are dealing with
+existing binding.
 
-diff --git a/drivers/iio/light/tsl2563.c b/drivers/iio/light/tsl2563.c
-index c5814545fd19..f92190fadffd 100644
---- a/drivers/iio/light/tsl2563.c
-+++ b/drivers/iio/light/tsl2563.c
-@@ -795,7 +795,7 @@ static void tsl2563_remove(struct i2c_client *client)
- 
- static int tsl2563_suspend(struct device *dev)
- {
--	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct tsl2563_chip *chip = iio_priv(indio_dev);
- 	int ret;
- 
-@@ -814,7 +814,7 @@ static int tsl2563_suspend(struct device *dev)
- 
- static int tsl2563_resume(struct device *dev)
- {
--	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct tsl2563_chip *chip = iio_priv(indio_dev);
- 	int ret;
- 
+The issue is complicated with the driver using one option, binding
+specifying another, and existing in-kernel DTSes not using any and thus
+activating autorepeat as the default driver behavior.
+
+Do we have an idea if there are out-of-tree users of this? If we are
+reasonable sure there are not we could converge on the standard
+"autorepeat" property.
+
 -- 
-2.35.1
-
+Dmitry
