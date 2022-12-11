@@ -2,96 +2,103 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E3FC4332F
-	for <linux-iio@archiver.kernel.org>; Sun, 11 Dec 2022 13:33:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA61C4332F
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Dec 2022 13:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbiLKNdE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 11 Dec 2022 08:33:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60442 "EHLO
+        id S229879AbiLKNeW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 11 Dec 2022 08:34:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229845AbiLKNdD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 11 Dec 2022 08:33:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EADE5FFE
-        for <linux-iio@vger.kernel.org>; Sun, 11 Dec 2022 05:33:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91583B80884
-        for <linux-iio@vger.kernel.org>; Sun, 11 Dec 2022 13:33:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C05DEC433EF;
-        Sun, 11 Dec 2022 13:32:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670765579;
-        bh=M0HdFPp060+cDMdsmkRxRK4XFnUezItobODgaktC33o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kthCWsqd/48ykmRDofgBdLshLHXDxclnC82EceYV3sGILIysr2XdQt73IcyGvM/gk
-         olBHBE4j2Wvwv7nyl5ZOrN8zNKj63ngSb0RljR6A1Zdae4uohrOYZWMofmHMqjibn4
-         jYfBo4/3K2IuVXMiN7Bry6VURvDDMmWrp6QCHrgLSVGxLb1AR4veIjEoDa+LwFqvVW
-         xb5B2b+8YhKUYnQWxZLOqhwNaK9BbWI1aRxnNNOqsWkCE8LzCgnxEvE4pWPXp2rexf
-         r23+8h0JtypI113L1HT7LUrk0sOBpcX8grt5+0qQkiVtuMVvNkruT9izU//F3bmB4n
-         P3mxtBbPJzmRA==
-Date:   Sun, 11 Dec 2022 13:45:53 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     carlos.song@nxp.com
-Cc:     lars@metafoo.de, rjones@gateworks.com, Jonathan.Cameron@huawei.com,
-        haibo.chen@nxp.com, linux-imx@nxp.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 3/7] iio: imu: fxos8700: fix incompete ACCEL and MAGN
- channels readback
-Message-ID: <20221211134553.3616ffad@jic23-huawei>
-In-Reply-To: <20221208071911.2405922-4-carlos.song@nxp.com>
-References: <20221208071911.2405922-1-carlos.song@nxp.com>
-        <20221208071911.2405922-4-carlos.song@nxp.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-pc-linux-gnu)
+        with ESMTP id S229845AbiLKNeV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 11 Dec 2022 08:34:21 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E5826F0;
+        Sun, 11 Dec 2022 05:34:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670765658; x=1702301658;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MwllUDJ4axGeJynb2FjYv02NOCKfwgtmyrW5PnmJ0S0=;
+  b=Gl3YrCZvjnXsa/GqOEGgYoD67OckBXKnz/qvxt2xdF6CrfeaQjGDi0pM
+   sStUoEnprdQkYDCGS7+aJ48I4kxBYrerJPOI+qCX0MYn2Wcg1FEojdlRp
+   Gz7kklY57PepQN8yuA0AL4ID8NfT8t01F9f/T58nsfsKiz2SlV48WushY
+   pQoBoKvK4aY2ux7TbpZlkLfFnueP2SqGjYgMgkk9i5qEgLkYBQnhjSlSD
+   cCHYX6tiy9eNIoEZhLMbDN0SXVTA+EG8lJjQu3aBJ6A0ma58vPtdtW7Ht
+   TIvhUgfe685RIWlY6T/aExCceO6fswSyYgH2fEx66bbq6K9f3MskYpLB5
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10558"; a="382006497"
+X-IronPort-AV: E=Sophos;i="5.96,236,1665471600"; 
+   d="scan'208";a="382006497"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2022 05:34:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10558"; a="711390779"
+X-IronPort-AV: E=Sophos;i="5.96,236,1665471600"; 
+   d="scan'208";a="711390779"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga008.fm.intel.com with ESMTP; 11 Dec 2022 05:34:13 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1p4MT5-0080RS-0M;
+        Sun, 11 Dec 2022 15:34:11 +0200
+Date:   Sun, 11 Dec 2022 15:34:10 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Okan Sahin <okan.sahin@analog.com>, outreachy@lists.linux.dev,
+        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Caleb Connolly <caleb.connolly@linaro.org>,
+        Ramona Bolboaca <ramona.bolboaca@analog.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Manish Narani <manish.narani@xilinx.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 0/5] staging: drivers: mfd: Add MAX77541 MFD and related
+ device drivers
+Message-ID: <Y5XcUtNInUJl98JP@smile.fi.intel.com>
+References: <20221207090906.5896-1-okan.sahin@analog.com>
+ <Y5B0btPjY6nHhYRm@smile.fi.intel.com>
+ <20221211122043.424e095d@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221211122043.424e095d@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu,  8 Dec 2022 15:19:07 +0800
-carlos.song@nxp.com wrote:
-
-> From: Carlos Song <carlos.song@nxp.com>
+On Sun, Dec 11, 2022 at 12:20:43PM +0000, Jonathan Cameron wrote:
+> On Wed, 7 Dec 2022 13:09:34 +0200
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > On Wed, Dec 07, 2022 at 12:08:39PM +0300, Okan Sahin wrote:
+> > > This patchset adds mfd, regulator and adc driver and related bindings.The patches 
+> > > are required to be applied in sequence.  
+> > 
+> > You have an indentation / wrapping issues in the above text.
+> > 
+> > Nevertheless, why staging? What does it mean?
 > 
-> The length of ACCEL and MAGN 3-aix channels output data is 6 byte
-> individually. However block only read 3 bytes data into buffer from
-> ACCEL or MAGN output data registers every time. It causes an incompete
-> ACCEL and MAGN channels readback.
-> 
-> Set correct value count for regmap_bulk_read to get 6 bytes ACCEL and
-> MAGN channels readback.
-> 
-> Fixes: 84e5ddd5c46e ("iio: imu: Add support for the FXOS8700 IMU")
-> Signed-off-by: Carlos Song <carlos.song@nxp.com>
-Please spell check patch descriptions.  Anyhow, tidied that up whilst
-applying.
+> The main reason to go via staging is because a driver is sitting out
+> of tree and it is useful to bring it in on the basis that it can then be
+> cleaned up in tree before moving out of staging.
 
-Applied to the fixes-togreg branch of iio.git and marked for stable
-inclusion.
+But files are not in staging. Me being confused.
 
-Thanks,
+> For a relatively small driver like this, that's hard to argue.  Just
+> clean it up in response to review feedback and then we can take it
+> directly into relevant subsystems in the main tree.
 
-Jonathan
+-- 
+With Best Regards,
+Andy Shevchenko
 
-> ---
-> Changes for V2:
-> - Reserve the global DMA safe buffer
-> - Use sizeof(data->buf) instead of hardcoded FXOS8700_DATA_BUF_SIZE
-> - Rework commit log
-> 
-> diff --git a/drivers/iio/imu/fxos8700_core.c b/drivers/iio/imu/fxos8700_core.c
-> index 977eb7dc7dbd..b62bc92bbacc 100644
-> --- a/drivers/iio/imu/fxos8700_core.c
-> +++ b/drivers/iio/imu/fxos8700_core.c
-> @@ -414,7 +414,7 @@ static int fxos8700_get_data(struct fxos8700_data *data, int chan_type,
->  
->  	/* Block read 6 bytes of device output registers to avoid data loss */
->  	ret = regmap_bulk_read(data->regmap, base, data->buf,
-> -			       FXOS8700_DATA_BUF_SIZE);
-> +			       sizeof(data->buf));
->  	if (ret)
->  		return ret;
->  
 
