@@ -2,89 +2,141 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02ECDC4332F
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Dec 2022 12:02:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EEADC4332F
+	for <linux-iio@archiver.kernel.org>; Wed, 14 Dec 2022 13:58:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237595AbiLNMCw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 14 Dec 2022 07:02:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34792 "EHLO
+        id S238500AbiLNN6r (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 14 Dec 2022 08:58:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237495AbiLNMCb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Dec 2022 07:02:31 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3061F26ABB;
-        Wed, 14 Dec 2022 04:01:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1671019310; x=1702555310;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2nnC8hqhsbGCXjQ/5cko/ZVY7VIV0k35M+A/Vnl8B3w=;
-  b=fhNyrVPbEFKrRMp2RoCJvRp3F/E8tWRkg0iZFFd0g0DkkYtJyteaDhr7
-   cJN4HGsG8uqaZMybH2rmV7cRCdzadSoDHknmhC+ZegB5V3cTkttlMy6IL
-   w8ptZy2pNovCmhk5nza/B0V5Nz5Eb4c6F01NGzoNAPCEC401VXh2ZO6vy
-   s69QoHlTUuEqOSDYfGoyLZbidTzQc1ZhJTs1QvY/efJqXQOxQlzpIICc3
-   PVCmcPqJV/6v/+zSF6qrnPsmgpT1Nr21YRCGXYFvK8KiXnRM0JiLR+1fV
-   e/2Eqn6iujPPgiv3ODX6oEXhPeE8CRvZi4yAcWQ0rOqqVU3naMByJfRlU
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10560"; a="320243481"
-X-IronPort-AV: E=Sophos;i="5.96,244,1665471600"; 
-   d="scan'208";a="320243481"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2022 04:01:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10560"; a="626708582"
-X-IronPort-AV: E=Sophos;i="5.96,244,1665471600"; 
-   d="scan'208";a="626708582"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 14 Dec 2022 04:01:34 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 35AC4F4; Wed, 14 Dec 2022 14:02:03 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v1 2/2] iio: adc: ti-adc128s052: Sort headers
-Date:   Wed, 14 Dec 2022 14:02:02 +0200
-Message-Id: <20221214120202.4658-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221214120202.4658-1-andriy.shevchenko@linux.intel.com>
-References: <20221214120202.4658-1-andriy.shevchenko@linux.intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        with ESMTP id S238314AbiLNN6q (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Dec 2022 08:58:46 -0500
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E715C2018D;
+        Wed, 14 Dec 2022 05:58:43 -0800 (PST)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 8BE0F20180D;
+        Wed, 14 Dec 2022 14:58:42 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 53EF0201082;
+        Wed, 14 Dec 2022 14:58:42 +0100 (CET)
+Received: from local (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id B67BA1820F59;
+        Wed, 14 Dec 2022 21:58:40 +0800 (+08)
+From:   haibo.chen@nxp.com
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de
+Cc:     festevam@gmail.com, linux-imx@nxp.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        haibo.chen@nxp.com
+Subject: [PATCH v2 2/3] dt-bindings: iio: adc: Add binding documentation for NXP IMX93 ADC
+Date:   Wed, 14 Dec 2022 21:35:38 +0800
+Message-Id: <1671024939-29322-2-git-send-email-haibo.chen@nxp.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1671024939-29322-1-git-send-email-haibo.chen@nxp.com>
+References: <1671024939-29322-1-git-send-email-haibo.chen@nxp.com>
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Sort the headers in alphabetic order in order to ease
-the maintenance for this part.
+From: Haibo Chen <haibo.chen@nxp.com>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+The IMX93 SoC has a new ADC IP, so add binding documentation
+for NXP IMX93 ADC.
+
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
 ---
- drivers/iio/adc/ti-adc128s052.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ .../bindings/iio/adc/nxp,imx93-adc.yaml       | 79 +++++++++++++++++++
+ 1 file changed, 79 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml
 
-diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
-index 7c4e8025861c..a003264ca835 100644
---- a/drivers/iio/adc/ti-adc128s052.c
-+++ b/drivers/iio/adc/ti-adc128s052.c
-@@ -11,12 +11,12 @@
- 
- #include <linux/bits.h>
- #include <linux/err.h>
--#include <linux/spi/spi.h>
--#include <linux/module.h>
--#include <linux/mod_devicetable.h>
- #include <linux/iio/iio.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
- #include <linux/property.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/spi/spi.h>
- 
- #include <asm/unaligned.h>
- 
+diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml
+new file mode 100644
+index 000000000000..229bb79e255c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml
+@@ -0,0 +1,79 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/nxp,imx93-adc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NXP iMX93 ADC bindings
++
++maintainers:
++  - Haibo Chen <haibo.chen@nxp.com>
++
++description:
++  The ADC on iMX93 is a 8-channel 12-bit 1MS/s ADC with 4 channels
++  connected to pins. it support normal and inject mode, include
++  One-Shot and Scan (continuous) conversions. Programmable DMA
++  enables for each channel  Also this ADC contain alternate analog
++  watchdog thresholds, select threshold through input ports. And
++  also has Self-test logic and Software-initiated calibration.
++
++properties:
++  compatible:
++    const: nxp,imx93-adc
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    description:
++      line 0 for WDGnL (watchdog threshold) interrupt requests.
++      line 1 for WDGnH (watchdog threshold) interrupt requests.
++      line 2 for normal conversion, include EOC (End of Conversion)
++      interrupt request, ECH (End of Chain) interrupt request,
++      JEOC (End of Injected Conversion mode) interrupt request
++      and JECH (End of injected Chain) interrupt request.
++      line 3 for Self-testing Interrupts.
++    maxItems: 4
++
++  clocks:
++    maxItems: 1
++
++  vref-supply:
++    description:
++      The reference voltage which used to establish channel scaling.
++
++  "#io-channel-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++  - vref-supply
++  - "#io-channel-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/clock/imx93-clock.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    soc {
++        #address-cells = <1>;
++        #size-cells = <1>;
++        adc@44530000 {
++            compatible = "nxp,imx93-adc";
++            reg = <0x44530000 0x10000>;
++            interrupts = <GIC_SPI 217 IRQ_TYPE_LEVEL_HIGH>,
++                         <GIC_SPI 218 IRQ_TYPE_LEVEL_HIGH>,
++                         <GIC_SPI 219 IRQ_TYPE_LEVEL_HIGH>,
++                         <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>;
++            clocks = <&clk IMX93_CLK_ADC1_GATE>;
++            clock-names = "ipg";
++            vref-supply = <&reg_vref_1v8>;
++        };
++    };
++...
 -- 
-2.35.1
+2.34.1
 
