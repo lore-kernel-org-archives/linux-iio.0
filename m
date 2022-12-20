@@ -2,153 +2,92 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4667C10F1B
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Dec 2022 17:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D761C10F1E
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Dec 2022 10:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232301AbiLSRga (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 19 Dec 2022 12:36:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57024 "EHLO
+        id S229746AbiLTKyr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 20 Dec 2022 05:54:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232054AbiLSRg2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Dec 2022 12:36:28 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D43DFC3;
-        Mon, 19 Dec 2022 09:36:25 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id t17so23365445eju.1;
-        Mon, 19 Dec 2022 09:36:25 -0800 (PST)
+        with ESMTP id S232897AbiLTKyn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Dec 2022 05:54:43 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817F0186D0
+        for <linux-iio@vger.kernel.org>; Tue, 20 Dec 2022 02:54:41 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id g13so1312555lfv.7
+        for <linux-iio@vger.kernel.org>; Tue, 20 Dec 2022 02:54:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=1SUx4YxBJbW2R7ovNPCFyF9xOKCwgY1o0HqXnE9Kzl8=;
-        b=jpTtdQNQM3Yxi5Nf6/+5xf+/rghnp2f7NhMX2DtUaLELb6WakVq7gWsYPlbsyiL6PS
-         ChAupK2HDu3Y9LU1fN+yCe7pPeTrG61BQaGyW/jDQx/+HHN2bMbWxoVxYZqfyiJwlfWa
-         Y4h7iJvv4QIFpOoVyXIX19weZKsj9Cb6tADl7LQNqkD4T1wSYxbYS5HeqVefq90eA+ER
-         /Nk7kAHpjjpXbjqGM1KRD1sSDI3O/5MLQ40SbYxa/HDE5seoG5uLTOmMSb71JLg2mGZZ
-         lGDUyB1i+XE6M5lJ2ttLvYFNOBmrvQLtRzaDCIzMNHrNHSn16xwD0q8i2hUE+HNnuXoQ
-         nFdQ==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=F0ytT4haaRKS+4+AS2PJdurU/Qf/a13nitxBHh9cBLs=;
+        b=MNeWldNkH/aisAvBoQN+9XmJgLi2MKWpxH3caNhECyQj0gJSkhQFGD1rNToJTjEkSR
+         T7CmCqhWY3s7XdfcV5jae5mO2/gP+ibsER5NeGEA6LD8atNXKwXKihH6tFshJcnnyAho
+         JDJE0qs5JDLcO/V4sGY019Vin5czcbX+g12WgmxxQKWIXhhYFMxv4EWXVTU8l3eXsVUK
+         QBreFv3j+bWt0Sv5juILb+U4fvhg6F71neqp8ipG34fdOtaqMJeyEEgZJaICMiUZoq7G
+         GbrkwlqqS/9heFJivFgLt88Ie/d6e/+o9IbcifCBF/u7qbYs/hcx2cSIk/muMQGS2qBZ
+         UW9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1SUx4YxBJbW2R7ovNPCFyF9xOKCwgY1o0HqXnE9Kzl8=;
-        b=YERg/skqtZRdVhdfylcvfskjnwjGUQvv9PSwd7qowJI62Lc9NcjAZDeA90VXI9I6qY
-         MDUuF/aPtvl80wmc5eIb7fN2q9frm8A36B9fBDvZ+d27jx6uDTJI6OzTPVayv2SSjVDB
-         aoYrZxVU/4g+/7CHrCbOYViu4BGdQTl+xlXFtxfPHU+EB3CNAPslno1wHzpF+tB7li+B
-         gAK7/Bki9nneYYkxxz3Jw6qhi/KAWVAV2Vmkg5zPjk/js8Yrd2iNzTeb3eiLdNR4D219
-         6j5fJzGL84VVHK9c62V7hOCPDIJ4LnFkvfimXMJbKaGzV3jBT3wNAfKExxDcqIiBsBX1
-         Ayxg==
-X-Gm-Message-State: ANoB5pncn9EfYDx9YC2czQGwNeZvTN+PKMbd4r8YPCazeuTtLFhGsaVS
-        QX1Vt63HKm88U03i2bgOxqzUcNSF6HC9GQ==
-X-Google-Smtp-Source: AA0mqf5IeWagWC7vwl63uutw6mzJKidMwPtteo4m7qSQQpMtuhJ7rCJKW2KVN5qNXPj0ETrQq1lqfA==
-X-Received: by 2002:a17:906:f6d7:b0:7c0:bf7c:19f4 with SMTP id jo23-20020a170906f6d700b007c0bf7c19f4mr36417779ejb.74.1671471384471;
-        Mon, 19 Dec 2022 09:36:24 -0800 (PST)
-Received: from localhost ([2a02:1210:8629:800:82ee:73ff:feb8:99e3])
-        by smtp.gmail.com with UTF8SMTPSA id 17-20020a170906211100b007bb32e2d6f5sm4574859ejt.207.2022.12.19.09.36.23
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=F0ytT4haaRKS+4+AS2PJdurU/Qf/a13nitxBHh9cBLs=;
+        b=PuQ7psPxKaQYLXqiLJKP+i6yQ31lLko1s5TTS7+rGxkONCAonspSyU6a88IKy2ZDgB
+         MsobaxDCr9/E+DWYBhoS1NBXScYUMiLSuXJHec95fUhOjPf+Ib8JZpA//Iv9VAF3RJwS
+         vT5pWypmNn0dny/ZqG5E4jyFl26D5G062uypCOy6IQQosmA7xFjY8Ktupgi32Tmxqhqh
+         wc9+csTWLKyikt4zCByx8VAu3lWv3aPzs9/bQ42G8hkasqwkaISKf0myWZYJBZwr+2cO
+         RJtYegT97Ybwk1i2fpKKr0K3UzaSVJ1YzzvqdKM2DNFL7zcH0TkAcZuPDYNF2BGHsaDc
+         Hfkw==
+X-Gm-Message-State: ANoB5pmX85PU7ONURl1bI+dX/S8v4pcNVI9u9q7FiKnr+PrDMNFwwiwy
+        mLL3I29fRwKST5mVvcBtRMnkqA==
+X-Google-Smtp-Source: AA0mqf6iPj+SI+zpVr4GGyQp8KSkc6m6aLEeHQgVs1O3HWcL0nKvcGb5wj1hWeZr8EK2QcmA9HAh/w==
+X-Received: by 2002:a05:6512:2286:b0:4b5:5bcc:cbcd with SMTP id f6-20020a056512228600b004b55bcccbcdmr16970972lfu.0.1671533679932;
+        Tue, 20 Dec 2022 02:54:39 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id r21-20020ac24d15000000b004b5853f0fc6sm1401292lfi.246.2022.12.20.02.54.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Dec 2022 09:36:24 -0800 (PST)
-From:   Alexander Sverdlin <alexander.sverdlin@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Hartley Sweeten <hsweeten@visionengravers.com>,
+        Tue, 20 Dec 2022 02:54:39 -0800 (PST)
+Message-ID: <b7dbf45f-8707-7e4c-63ec-c42a299803aa@linaro.org>
+Date:   Tue, 20 Dec 2022 11:54:38 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: ep93xx: Add
+ cirrus,ep9301-adc description
+Content-Language: en-US
+To:     Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        linux-iio@vger.kernel.org
+Cc:     Hartley Sweeten <hsweeten@visionengravers.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/2] dt-bindings: iio: adc: ep93xx: Add cirrus,ep9301-adc description
-Date:   Mon, 19 Dec 2022 18:36:17 +0100
-Message-Id: <20221219173618.1030415-1-alexander.sverdlin@gmail.com>
-X-Mailer: git-send-email 2.39.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20221219173618.1030415-1-alexander.sverdlin@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221219173618.1030415-1-alexander.sverdlin@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add device tree bindings for Cirrus Logic EP9301/EP9302 internal SoCs' ADC
-block.
+On 19/12/2022 18:36, Alexander Sverdlin wrote:
+> Add device tree bindings for Cirrus Logic EP9301/EP9302 internal SoCs' ADC
+> block.
+> 
+> Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+> ---
+> Changelog:
+> v2: removed clock-names property, soc node and include as Krzysztof suggested
+> 
 
-Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
----
-Changelog:
-v2: removed clock-names property, soc node and include as Krzysztof suggested
 
- .../bindings/iio/adc/cirrus,ep9301-adc.yaml   | 47 +++++++++++++++++++
- MAINTAINERS                                   |  2 +
- 2 files changed, 49 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/cirrus,ep9301-adc.yaml
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/cirrus,ep9301-adc.yaml b/Documentation/devicetree/bindings/iio/adc/cirrus,ep9301-adc.yaml
-new file mode 100644
-index 000000000000..6d4fb3e1d2a2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/cirrus,ep9301-adc.yaml
-@@ -0,0 +1,47 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/cirrus,ep9301-adc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Cirrus Logic EP930x internal ADC
-+
-+description: |
-+  Cirrus Logic EP9301/EP9302 SoCs' internal ADC block.
-+
-+  User's manual:
-+  https://cdn.embeddedts.com/resource-attachments/ts-7000_ep9301-ug.pdf
-+
-+maintainers:
-+  - Alexander Sverdlin <alexander.sverdlin@gmail.com>
-+
-+properties:
-+  compatible:
-+    const: cirrus,ep9301-adc
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    adc: adc@80900000 {
-+        compatible = "cirrus,ep9301-adc";
-+        reg = <0x80900000 0x28>;
-+        clocks = <&syscon 24>;
-+        interrupt-parent = <&vic1>;
-+        interrupts = <30>;
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 69565ac0c224..4a914d5bc2e6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2027,8 +2027,10 @@ M:	Hartley Sweeten <hsweeten@visionengravers.com>
- M:	Alexander Sverdlin <alexander.sverdlin@gmail.com>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/adc/cirrus,ep9301-adc.yaml
- F:	arch/arm/mach-ep93xx/
- F:	arch/arm/mach-ep93xx/include/mach/
-+F:	drivers/iio/adc/ep93xx_adc.c
- 
- ARM/CLKDEV SUPPORT
- M:	Russell King <linux@armlinux.org.uk>
--- 
-2.39.0
+Best regards,
+Krzysztof
 
