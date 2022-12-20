@@ -2,69 +2,115 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DE0C4167B
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Dec 2022 14:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E220C4332F
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Dec 2022 15:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233746AbiLTO00 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 20 Dec 2022 09:26:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
+        id S233955AbiLTPCg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 20 Dec 2022 10:02:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233879AbiLTO0V (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Dec 2022 09:26:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1925719027
-        for <linux-iio@vger.kernel.org>; Tue, 20 Dec 2022 06:26:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A36961477
-        for <linux-iio@vger.kernel.org>; Tue, 20 Dec 2022 14:26:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC896C433D2;
-        Tue, 20 Dec 2022 14:26:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671546377;
-        bh=tYBxYQPxmjWyfIQV69lN1LLorJx1grvusxR//M+3ORw=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=Vfdcn9HHGZ3dUyEEFF+O0SKWhdvRPK1RS6C9hHZUd+4gSUoEarG3TbWQBPRIwyw1n
-         g5BF8cXyyYMlgoPbNNYQzuvdChY73G8DjjhrnZjWlLstHQ+gqAFu8MN1bYLcC/nhD/
-         yi1bJlkWEFGkPv9XiCDjk0Z+FxLzyu61MJQmKye0KRw1SJqRZesmSC47/XIGa+9sQ8
-         Uami0DLeUgeI4SQ9aJioxs3wKTWByk56/FsuiBiosI59zzenE6v1ZcTCzYWcAR5nW+
-         o+dZikQghcxKwOJH2vMNWr1colUtid94V+C3Hd8B8nv1SrnxXYiTaYY3Z/1tctrc2h
-         9SASts4+01BLw==
-Date:   Tue, 20 Dec 2022 15:26:18 +0100 (CET)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-cc:     Philipp Jungkamp <p.jungkamp@gmx.net>,
-        srinivas pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4 0/4] IIO: More HID custom sensors
-In-Reply-To: <20221215162152.0000693f@Huawei.com>
-Message-ID: <nycvar.YFH.7.76.2212201525010.9000@cbobk.fhfr.pm>
-References: <20221124233841.3103-1-p.jungkamp@gmx.net> <623f2206647e69199c64064c48eb8bf03afb99da.camel@linux.intel.com> <cc35bdc25daedb32dbb5949f99559485a7f83080.camel@gmx.net> <nycvar.YFH.7.76.2212141819340.9000@cbobk.fhfr.pm>
- <20221215162152.0000693f@Huawei.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        with ESMTP id S229684AbiLTPCf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Dec 2022 10:02:35 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85C11CB20
+        for <linux-iio@vger.kernel.org>; Tue, 20 Dec 2022 07:02:33 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1p7e8P-00017E-Sn; Tue, 20 Dec 2022 16:02:26 +0100
+Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1p7e8P-000arZ-6L; Tue, 20 Dec 2022 16:02:25 +0100
+Received: from mfe by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1p7e8O-007br9-58; Tue, 20 Dec 2022 16:02:24 +0100
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     puranjay12@gmail.com, jic23@kernel.org, lars@metafoo.de,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH 4/4] iio: temperature: tmp117: cosmetic alignment cleanup
+Date:   Tue, 20 Dec 2022 16:02:22 +0100
+Message-Id: <20221220150222.1813729-5-m.felsch@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20221220150222.1813729-1-m.felsch@pengutronix.de>
+References: <20221220150222.1813729-1-m.felsch@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 15 Dec 2022, Jonathan Cameron wrote:
+Align the code correctly if possible and align the channel bit mask to
+make it easier to read.
 
-> Probably more sensible if you pick it up through hid.git given the 
-> balance of changes.
-> 
-> If you can make an immutable branch even better on the off chance anything else
-> comes up that hits few lines changed in the IIO drivers.  I'd only pull that
-> into IIO if we needed to though (and I would be surprised if we do!)
+Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
+---
+ drivers/iio/temperature/tmp117.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-This is now in hid.git#for-6.3/hid-sensor and we can branch an immutable 
-branch off it if needed (and if there are any hid-sensor patches coming on 
-top later).
-
-Thanks,
-
+diff --git a/drivers/iio/temperature/tmp117.c b/drivers/iio/temperature/tmp117.c
+index 468dafa6fa8e..df0ee1231975 100644
+--- a/drivers/iio/temperature/tmp117.c
++++ b/drivers/iio/temperature/tmp117.c
+@@ -42,8 +42,8 @@ struct tmp117_data {
+ };
+ 
+ static int tmp117_read_raw(struct iio_dev *indio_dev,
+-		struct iio_chan_spec const *channel, int *val,
+-		int *val2, long mask)
++			   struct iio_chan_spec const *channel, int *val,
++			   int *val2, long mask)
+ {
+ 	struct tmp117_data *data = iio_priv(indio_dev);
+ 	s32 ret;
+@@ -51,7 +51,7 @@ static int tmp117_read_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		ret = i2c_smbus_read_word_swapped(data->client,
+-						TMP117_REG_TEMP);
++						  TMP117_REG_TEMP);
+ 		if (ret < 0)
+ 			return ret;
+ 		*val = sign_extend32(ret, 15);
+@@ -59,7 +59,7 @@ static int tmp117_read_raw(struct iio_dev *indio_dev,
+ 
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		ret = i2c_smbus_read_word_swapped(data->client,
+-					TMP117_REG_TEMP_OFFSET);
++						  TMP117_REG_TEMP_OFFSET);
+ 		if (ret < 0)
+ 			return ret;
+ 		*val = sign_extend32(ret, 15);
+@@ -81,9 +81,8 @@ static int tmp117_read_raw(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
+-static int tmp117_write_raw(struct iio_dev *indio_dev,
+-		struct iio_chan_spec const *channel, int val,
+-		int val2, long mask)
++static int tmp117_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec
++			    const *channel, int val, int val2, long mask)
+ {
+ 	struct tmp117_data *data = iio_priv(indio_dev);
+ 	s16 off;
+@@ -106,7 +105,9 @@ static const struct iio_chan_spec tmp117_channels[] = {
+ 	{
+ 		.type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-			BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_SCALE),
++				      BIT(IIO_CHAN_INFO_CALIBBIAS) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++	},
+ };
+ 
+ static const struct iio_chan_spec tmp116_channels[] = {
 -- 
-Jiri Kosina
-SUSE Labs
+2.30.2
 
