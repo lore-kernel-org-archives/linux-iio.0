@@ -2,115 +2,160 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA962C4332F
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Dec 2022 17:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE7CC4332F
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Dec 2022 17:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231523AbiLWRDm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 23 Dec 2022 12:03:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57450 "EHLO
+        id S231793AbiLWRNh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 23 Dec 2022 12:13:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbiLWRDl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Dec 2022 12:03:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248151743C;
-        Fri, 23 Dec 2022 09:03:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8D5DB8203D;
-        Fri, 23 Dec 2022 17:03:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA0CFC433EF;
-        Fri, 23 Dec 2022 17:03:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671815018;
-        bh=rWHD3WKFWP45wAXsJsLtw98sfGpFSD5wdqfd/D3fzcA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PgPzlXteKY+CpuE+Unx4LXlFp1wFsWGCIosQeENZaCrjQF8WuDVVAOyLdS5kKovA8
-         +UmL12FsCKz1S/9B+Efb9O1HWji8aLI5GrAYtMA1xP78T/0bx0XrqXN73p97qJsh+U
-         W8ErpVNHBtqI5CpsXzCV83GNtYcU2Fm9QV0OndxuiXWOI84c81Brqp5oBz84OXlqCY
-         0N+zUqEKaTH7AKLzeBizoZ4Opl5Knf2dBYqkLAHsYCdOf4Srlggi5KSg9cyxbYn0T4
-         WFfz/oFv5Ra2ABXxqYAI7fmHhaFdsw9jsBCAh9xrsCIqaTdw5W3CxyyvTGelFG7gb+
-         /0nXYC3Ezs4vA==
-Date:   Fri, 23 Dec 2022 17:16:47 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Marco Felsch <m.felsch@pengutronix.de>
+        with ESMTP id S231276AbiLWRNg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Dec 2022 12:13:36 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE924EE02
+        for <linux-iio@vger.kernel.org>; Fri, 23 Dec 2022 09:13:35 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1p8lbo-0008Ut-Ch; Fri, 23 Dec 2022 18:13:24 +0100
+Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1p8lbn-0002rU-Jx; Fri, 23 Dec 2022 18:13:23 +0100
+Date:   Fri, 23 Dec 2022 18:13:23 +0100
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     puranjay12@gmail.com, lars@metafoo.de, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH v2 3/4] iio: temperature: tmp117: add TI TMP116 support
-Message-ID: <20221223171647.43a6153e@jic23-huawei>
-In-Reply-To: <20221223161359.wla6l5kd5gddloid@pengutronix.de>
+Subject: Re: [PATCH v2 2/4] dt-bindings: iio: ti,tmp117: add binding for the
+ TMP116
+Message-ID: <20221223171323.qhuhq42tivcdllvq@pengutronix.de>
 References: <20221221092801.1977499-1-m.felsch@pengutronix.de>
-        <20221221092801.1977499-4-m.felsch@pengutronix.de>
-        <20221223151056.4f7d4b7e@jic23-huawei>
-        <20221223150728.34d5agqr4ruixjbu@pengutronix.de>
-        <20221223153929.3fbad6b2@jic23-huawei>
-        <20221223161359.wla6l5kd5gddloid@pengutronix.de>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-pc-linux-gnu)
+ <20221221092801.1977499-3-m.felsch@pengutronix.de>
+ <20221223150803.37e2939d@jic23-huawei>
+ <20221223150338.iqpnp6z3m35eb5hz@pengutronix.de>
+ <20221223153729.3353a315@jic23-huawei>
+ <20221223161051.3c6lvmly7tsjh4eu@pengutronix.de>
+ <20221223171458.7bc18893@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221223171458.7bc18893@jic23-huawei>
+User-Agent: NeoMutt/20180716
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 23 Dec 2022 17:13:59 +0100
-Marco Felsch <m.felsch@pengutronix.de> wrote:
+Hi Jonathan,
 
-> On 22-12-23, Jonathan Cameron wrote:
+On 22-12-23, Jonathan Cameron wrote:
+> On Fri, 23 Dec 2022 17:10:51 +0100
+> Marco Felsch <m.felsch@pengutronix.de> wrote:
 > 
-> ...
-> 
-> > > > > @@ -118,27 +127,28 @@ static int tmp117_identify(struct i2c_client *client)
-> > > > >  	int dev_id;
-> > > > >  
-> > > > >  	dev_id = i2c_smbus_read_word_swapped(client, TMP117_REG_DEVICE_ID);
-> > > > > -	if (dev_id < 0)    
-> > > > 
-> > > > Keep this handling of the smbus read returning an error.
-> > > > Otherwise, you end up replacing the error code with -ENODEV rather than
-> > > > returning what actually happened.
-> > > > 
-> > > > 	if (dev_id < 0)
-> > > > 		return dev_id;    
-> > > 
-> > > You're right, I will change this thanks.
+> > On 22-12-23, Jonathan Cameron wrote:
+> > > On Fri, 23 Dec 2022 16:03:38 +0100
+> > > Marco Felsch <m.felsch@pengutronix.de> wrote:
 > > >   
-> > > > 	switch (dev_id) {
-> > > > ...
-> > > >     
-> > > > > +	switch (dev_id) {
-> > > > > +	case TMP116_DEVICE_ID:
-> > > > > +	case TMP117_DEVICE_ID:
-> > > > >  		return dev_id;
-> > > > > -	if (dev_id != TMP117_DEVICE_ID) {
-> > > > > -		dev_err(&client->dev, "TMP117 not found\n");
-> > > > > +	default:
-> > > > > +		dev_err(&client->dev, "TMP116/117 not found\n");
-> > > > >  		return -ENODEV;  
-> >
-> > As per the other branch of this thread.  This isn't an error.
-> > If we want fallback compatibles to work in their role of allowing
-> > for newer devices that are actually compatible, the most we should
-> > do here is warn.
+> > > > On 22-12-23, Jonathan Cameron wrote:  
+> > > > > On Wed, 21 Dec 2022 10:27:59 +0100
+> > > > > Marco Felsch <m.felsch@pengutronix.de> wrote:
+> > > > >     
+> > > > > > The TMP116 is the predecessor of the TMP117.
+> > > > > > 
+> > > > > > Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>    
+> > > > > I'm not sure this is introducing a valid fallback. The driver changes
+> > > > > imply some things the tmp117 driver supports, that this device
+> > > > > does not. A fallback compatible would mean that a new DT
+> > > > > with an old kernel would load the tmp117 against a tmp116 and
+> > > > > expect it to fully work.    
+> > > > 
+> > > > Since driver does all the detection an update of the bindings isn't
+> > > > really necessary. It is just to have a compatible already in place in
+> > > > case there a things we can't detected during runtime. This flow is
+> > > > common for a lot of SoC drivers. The fallback will be used as long as
+> > > > possible and once a specific feature can't be detected only via the
+> > > > binding, the driver adds the new binding to it of_compatible.  
+> > > 
+> > > That's true going forwards and for drivers that introduce a shared
+> > > generic compatible alongside the initial binding. It can't be easily
+> > > retrofit.
+> > > 
+> > > Fallback compatible is also to allow this to work with old kernels  
 > > 
-> > Say a new tmp117b device is released. It's fully backwards compatible
-> > with the exception of an ID - or supports only new features + backwards
-> > compatibility then that would have a fallback to tmp117 and we need
-> > it to work.  
+> > What this small series does is adding the support for the chip. So the
+> > support starts with the kernel version which includes these patches. Why
+> > do you assume that one expect to have a proper support with an older
+> > kernel? I fully get the point that driver needs to deal with older
+> > device-tree's but having using a newer device-tree's (fw) on older
+> > kernels and expecting that older kernels does support the chip is a bit
+> > odd to me.
 > 
-> This isn't part of this patchset and IMHO implementing something which
-> may happen in the future is not the way we should go.
+> Probably need the DT maintainers to offer the opinion on this as we
+> disagree on how fallback compatibles are supposed to work.
+> I'll accept whatever they say on this point (I've been persuaded
+> into a more relaxed stance in the past on this).
 
-I held a similar view, but the response I got from the DT maintainers was
-that a driver should not reject a DTS that says it is compatible based
-on an unknown ID - because it prevents that case of an old kernel working
-absolutely fine with a completely compatible newer part.
+Me too :) and if it is your way I can go with it by adding a new ID. I
+just wanna know how to handle this.
 
-Jonathan
+> Allowing a new DTS file to work with old kernels is one of the advantages of
+> fallback compatibles.
 
+I never used and thought about it that way.
 
+> On many devices there is no coupling between the two and there
+> shouldn't need to be one. So in this case the device is not compatible
+> and we should not imply that it is.
+
+No there should be no coupling, this is my understandig as well.
+
+> > > - which it doesn't because the kernel driver
+> > > a) rejects non tmp117 ids (we should fix that by just warning instead 
+> > > if the ID isn't what we expect. It would be good to factor that out
+> > > as a separate patch that we can backport)
+> > > 
+> > > b) assumes the tmp116 (after above fixed) supports things it doesn't.
+> > > 
+> > > So it's not a valid use of a fallback compatible.   
+> > 
+> > I added the compatible sring only to have it in place for the future. I
+> > really didn't have to do that at all since the detection can be done
+> > during runtime and the only compatible would be tmp117. So sorry but I
+> > don't get your point here.
 > 
-> Regards,
->   Marco
+> Fallback compatibles have multiple purposes. One of them, which should work
+> is to allow a kernel that only support tmp117 to work with a DTS that says
+> it is a tmp116 with fallback to tmp117. That's not true here, so there
+> should not be a fallback.
+> 
+> > 
+> > > A driver can't rely on matching device IDs it didn't previously know
+> > > about. It sees tmp116 compatible and thinks it knows how to handle the
+> > > device, which it doesn't. This might lead to some very grumpy people
+> > > not understanding why their old kernel doesn't work.  
+> > 
+> > Why do you think that people think that the driver have to support a
+> > device based on the compatible? I saw device-trees with nodes not
+> > matching any kernel driver since the device-tree is just the firmware
+> > descibing the hardware. If I got Krzysztof correctly people have to
+> > check the driver implementation for the according support since the
+> > bindings can be used by other projects as well and are not limited to
+> > the linux-kernel.
+> 
+> My understanding is that supporting new compatible parts on old kernels
+> is one of the reasons fall back compatibles exist (as well as the case
+> you mention of not modifying a driver until we hit something that requires
+> it) If that doesn't work, then the driver is broken - which is why I suggest
+> we fix that.  However in this case the part is not compatible
+> so the fallback should not be there. You should just add the ID to the
+> driver given you are modifying it to support the part anyway.
 
+Let's see what the dt-maintainers say :)
+
+Regards,
+  Marco
