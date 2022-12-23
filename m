@@ -2,102 +2,79 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3692C4332F
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Dec 2022 17:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1E1C4167B
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Dec 2022 17:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232707AbiLWRcO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 23 Dec 2022 12:32:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39266 "EHLO
+        id S232428AbiLWR40 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 23 Dec 2022 12:56:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232790AbiLWRcN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Dec 2022 12:32:13 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1EFBC10
-        for <linux-iio@vger.kernel.org>; Fri, 23 Dec 2022 09:32:12 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1p8lty-0001rb-NJ; Fri, 23 Dec 2022 18:32:10 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1p8ltx-001Glq-PB; Fri, 23 Dec 2022 18:32:09 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1p8ltx-007PMn-2D; Fri, 23 Dec 2022 18:32:09 +0100
-Date:   Fri, 23 Dec 2022 18:32:05 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+        with ESMTP id S230489AbiLWR4Z (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Dec 2022 12:56:25 -0500
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4311C1BEA9;
+        Fri, 23 Dec 2022 09:56:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=5tyPCZzSf4fJF+O4ymtoHkWVf8rcASMcDBrCq5a8OMQ=; b=zEDelKH6Vhu+vv0S4WXkVMCVqi
+        73AmPD/hDUGQQXoPo3EbZvvu2XqCYPfaXaIys3k4qDmPfOljTx30+o2voz3zLy/bIo+S+cw13WQbC
+        vgb1jRdBDv2Mq5ocaw63REvfUA5SY7ahu9lB0gRGAriIztYi4GxiG9ndT8Ey54ZrIcBg=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:48998 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1p8mHI-0003Bs-3Y; Fri, 23 Dec 2022 12:56:16 -0500
+Date:   Fri, 23 Dec 2022 12:56:15 -0500
+From:   Hugo Villeneuve <hugo@hugovil.com>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org,
-        Robert Eshleman <bobbyeshleman@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>, kernel@pengutronix.de
-Subject: Re: [PATCH] iio: light: max44009: Convert to i2c's .probe_new()
-Message-ID: <20221223173205.7csw74ie3cfvwygf@pengutronix.de>
-References: <20221222145429.614781-1-u.kleine-koenig@pengutronix.de>
- <20221223140415.36064aed@jic23-huawei>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="jf3s2bkxl3yrdhlr"
-Content-Disposition: inline
-In-Reply-To: <20221223140415.36064aed@jic23-huawei>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        hvilleneuve@dimonoff.com, lars@metafoo.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <20221223125615.4932b8ac2a8d0cf82b4807e8@hugovil.com>
+In-Reply-To: <20221223140908.3b4a5458@jic23-huawei>
+References: <20221222203610.2571287-1-hugo@hugovil.com>
+        <20221222203610.2571287-4-hugo@hugovil.com>
+        <01a5f912-10d2-d5fe-023e-e2e6613ac03b@linaro.org>
+        <20221223140908.3b4a5458@jic23-huawei>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH v1 3/3] dt-bindings: iio: adc: add ADS7924
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Fri, 23 Dec 2022 14:09:08 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
---jf3s2bkxl3yrdhlr
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> > 
+> > > +    description:
+> > > +      Child nodes needed for each channel that the platform uses.  
+> > 
+> > I cannot understand this sentence at all. Instead describe the hardware
+> > you are here representing. What's this?
+> 
+> Needs rewording, but basically - "Which pins are connected to anything?"
 
-On Fri, Dec 23, 2022 at 02:04:15PM +0000, Jonathan Cameron wrote:
-> On Thu, 22 Dec 2022 15:54:29 +0100
-> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> wrote:
->=20
-> > The probe function doesn't make use of the i2c_device_id * parameter so
-> > it can be trivially converted.
-> >=20
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > ---
-> > Hello,
-> >=20
-> > since the series that mass converted drivers to probe_new this driver
-> > was added with the old probe prototype. Fix is accordingly.
->=20
-> Nope, this driver has been there since 2019.  It's the one that I failed
-> to pick up your patch for originally.  I have it queued up for the coming
-> cycle, but not pushed out for next yet because I want to rebase my tree
-> on rc1 first.
+Hi Jonathan and Krzysztof,
+when writing this driver a few months ago, I used as a starting point the C source file and the YAML file of the TI ADS1015 driver.
 
-Ah, ok. I care little about the details if the driver is fixed in the
-end.
+I cannot say that I fully understand the sentence myself :) So I will reword it.
 
-Best regards and thanks and merry chrismas (if you happen to celebrate
-it)
-Uwe
+I will also take care of the other dt-bindings comments for version 2.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Thank you for your feedback.
 
---jf3s2bkxl3yrdhlr
-Content-Type: application/pgp-signature; name="signature.asc"
+Hugo V.
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmOl5hMACgkQwfwUeK3K
-7Amo8Af7BQDbijOnPHnmYv0XTuNrkeN8c+s5GMraBQ7D5KaCGzvOYQ/oD/80XSqE
-S7JttlqSYgU8+wkKbOC/skQjzXs/vhfYi45XQpmQA36JRwmm2asWGwr0X8fe0SSF
-S6vNmBajkOxjfFg0O6UdmNhPIcVRcCkeCFS+pWEfcgKYuKZri3xgFIqWw4mVK/Vl
-8pySzvpZUXhKHYw51jg5+7NYKu4EJLnprwFiXH+LH+sR+Uy88x5Yobbk6IEnf6Tj
-Fexog0oU8b4iclnT4NNCDUxJN5161CPyh0TLdugdAvGiojN6JYV2CV6MiiW7fQmT
-QdgpKRDqFgt18q8zFSyAwbI6Ml43+w==
-=rqIs
------END PGP SIGNATURE-----
-
---jf3s2bkxl3yrdhlr--
+-- 
+Hugo Villeneuve <hugo@hugovil.com>
