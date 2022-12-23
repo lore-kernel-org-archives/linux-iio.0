@@ -2,160 +2,143 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE7CC4332F
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Dec 2022 17:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B658BC4167B
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Dec 2022 17:14:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231793AbiLWRNh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 23 Dec 2022 12:13:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
+        id S231794AbiLWROF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 23 Dec 2022 12:14:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231276AbiLWRNg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Dec 2022 12:13:36 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE924EE02
-        for <linux-iio@vger.kernel.org>; Fri, 23 Dec 2022 09:13:35 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1p8lbo-0008Ut-Ch; Fri, 23 Dec 2022 18:13:24 +0100
-Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1p8lbn-0002rU-Jx; Fri, 23 Dec 2022 18:13:23 +0100
-Date:   Fri, 23 Dec 2022 18:13:23 +0100
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     puranjay12@gmail.com, lars@metafoo.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH v2 2/4] dt-bindings: iio: ti,tmp117: add binding for the
- TMP116
-Message-ID: <20221223171323.qhuhq42tivcdllvq@pengutronix.de>
-References: <20221221092801.1977499-1-m.felsch@pengutronix.de>
- <20221221092801.1977499-3-m.felsch@pengutronix.de>
- <20221223150803.37e2939d@jic23-huawei>
- <20221223150338.iqpnp6z3m35eb5hz@pengutronix.de>
- <20221223153729.3353a315@jic23-huawei>
- <20221223161051.3c6lvmly7tsjh4eu@pengutronix.de>
- <20221223171458.7bc18893@jic23-huawei>
+        with ESMTP id S231607AbiLWROE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Dec 2022 12:14:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 811EDEE02;
+        Fri, 23 Dec 2022 09:14:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E52C0B820E4;
+        Fri, 23 Dec 2022 17:14:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AF59C433D2;
+        Fri, 23 Dec 2022 17:13:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671815640;
+        bh=dwEik7RgM7nCQvfwXXmf5xrglwz239U9WH7gWpBC7yw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ixxJr1pXq53Gv4z5od6qWG/RvB6G8oUpHXXZx62Tj8l5XM3sukHV6iWnncM3p0rGI
+         87h1sQGa53NNH3RLIgz68spLbLfuhPOAW2VVAAJVuXVn/HPbXjviCr0XL6RsNhYpmi
+         o2iwZrg4tcDdCOFI7bocZqkwR9LLW2Fi4sdI5P/qG2P7b6NI0gMdfQ7WKQEeUrRkDW
+         HbQ54s8iGmHPYqv9GXf62cNuUe9Iux2PJhYYK9kYsUxnmjIXtSAFMek7Jibbgsv9Ut
+         v0pFwo561dqcwaT0p5x21b1r0ltwf681XsX6DhSkfawJ2OtuDxrklErmcUx88VZd7U
+         0Rxvn4/bSqrtA==
+Date:   Fri, 23 Dec 2022 17:27:08 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Han Xu <han.xu@nxp.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Sean Nyekjaer <sean@geanix.com>,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Clark Wang <xiaoning.wang@nxp.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, imx@lists.linux.dev
+Subject: Re: [PATCH v3 1/4] iio: accel: add fxls8974cf support
+Message-ID: <20221223172708.6bb84943@jic23-huawei>
+In-Reply-To: <20221213171536.1880089-2-han.xu@nxp.com>
+References: <20221213171536.1880089-1-han.xu@nxp.com>
+        <20221213171536.1880089-2-han.xu@nxp.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221223171458.7bc18893@jic23-huawei>
-User-Agent: NeoMutt/20180716
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+On Tue, 13 Dec 2022 11:15:32 -0600
+Han Xu <han.xu@nxp.com> wrote:
 
-On 22-12-23, Jonathan Cameron wrote:
-> On Fri, 23 Dec 2022 17:10:51 +0100
-> Marco Felsch <m.felsch@pengutronix.de> wrote:
+> From: Haibo Chen <haibo.chen@nxp.com>
 > 
-> > On 22-12-23, Jonathan Cameron wrote:
-> > > On Fri, 23 Dec 2022 16:03:38 +0100
-> > > Marco Felsch <m.felsch@pengutronix.de> wrote:
-> > >   
-> > > > On 22-12-23, Jonathan Cameron wrote:  
-> > > > > On Wed, 21 Dec 2022 10:27:59 +0100
-> > > > > Marco Felsch <m.felsch@pengutronix.de> wrote:
-> > > > >     
-> > > > > > The TMP116 is the predecessor of the TMP117.
-> > > > > > 
-> > > > > > Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>    
-> > > > > I'm not sure this is introducing a valid fallback. The driver changes
-> > > > > imply some things the tmp117 driver supports, that this device
-> > > > > does not. A fallback compatible would mean that a new DT
-> > > > > with an old kernel would load the tmp117 against a tmp116 and
-> > > > > expect it to fully work.    
-> > > > 
-> > > > Since driver does all the detection an update of the bindings isn't
-> > > > really necessary. It is just to have a compatible already in place in
-> > > > case there a things we can't detected during runtime. This flow is
-> > > > common for a lot of SoC drivers. The fallback will be used as long as
-> > > > possible and once a specific feature can't be detected only via the
-> > > > binding, the driver adds the new binding to it of_compatible.  
-> > > 
-> > > That's true going forwards and for drivers that introduce a shared
-> > > generic compatible alongside the initial binding. It can't be easily
-> > > retrofit.
-> > > 
-> > > Fallback compatible is also to allow this to work with old kernels  
-> > 
-> > What this small series does is adding the support for the chip. So the
-> > support starts with the kernel version which includes these patches. Why
-> > do you assume that one expect to have a proper support with an older
-> > kernel? I fully get the point that driver needs to deal with older
-> > device-tree's but having using a newer device-tree's (fw) on older
-> > kernels and expecting that older kernels does support the chip is a bit
-> > odd to me.
+> FXLS8974CF is similar with FXLS8962AF, the only difference is the
+> device id change to 0x86.
 > 
-> Probably need the DT maintainers to offer the opinion on this as we
-> disagree on how fallback compatibles are supposed to work.
-> I'll accept whatever they say on this point (I've been persuaded
-> into a more relaxed stance in the past on this).
+> Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+> Reviewed-by: Clark Wang <xiaoning.wang@nxp.com>
+As per the discussion on bindings, we should establish
+1) Is this driver going to support devices that have different channel descriptions
+   If not - rip that support out as it is misleading.
+2) Drop the error return if we don't match IDs.  Assume that it is infact yet another
+   compatible part and use whatever it was said to be compatible with.
+   If they are all compatible, just use the first element for this - things
+   get more complex if there are multiple sets of compatible parts.
 
-Me too :) and if it is your way I can go with it by adding a new ID. I
-just wanna know how to handle this.
+either way, we should drop the driver_data in fxls8962af_id[] as it's not used
+anyway and that will avoid the complexity of the dt binding discussion.
 
-> Allowing a new DTS file to work with old kernels is one of the advantages of
-> fallback compatibles.
-
-I never used and thought about it that way.
-
-> On many devices there is no coupling between the two and there
-> shouldn't need to be one. So in this case the device is not compatible
-> and we should not imply that it is.
-
-No there should be no coupling, this is my understandig as well.
-
-> > > - which it doesn't because the kernel driver
-> > > a) rejects non tmp117 ids (we should fix that by just warning instead 
-> > > if the ID isn't what we expect. It would be good to factor that out
-> > > as a separate patch that we can backport)
-> > > 
-> > > b) assumes the tmp116 (after above fixed) supports things it doesn't.
-> > > 
-> > > So it's not a valid use of a fallback compatible.   
-> > 
-> > I added the compatible sring only to have it in place for the future. I
-> > really didn't have to do that at all since the detection can be done
-> > during runtime and the only compatible would be tmp117. So sorry but I
-> > don't get your point here.
+> ---
+>  drivers/iio/accel/fxls8962af-core.c | 7 +++++++
+>  drivers/iio/accel/fxls8962af-i2c.c  | 2 ++
+>  drivers/iio/accel/fxls8962af.h      | 1 +
+>  3 files changed, 10 insertions(+)
 > 
-> Fallback compatibles have multiple purposes. One of them, which should work
-> is to allow a kernel that only support tmp117 to work with a DTS that says
-> it is a tmp116 with fallback to tmp117. That's not true here, so there
-> should not be a fallback.
-> 
-> > 
-> > > A driver can't rely on matching device IDs it didn't previously know
-> > > about. It sees tmp116 compatible and thinks it knows how to handle the
-> > > device, which it doesn't. This might lead to some very grumpy people
-> > > not understanding why their old kernel doesn't work.  
-> > 
-> > Why do you think that people think that the driver have to support a
-> > device based on the compatible? I saw device-trees with nodes not
-> > matching any kernel driver since the device-tree is just the firmware
-> > descibing the hardware. If I got Krzysztof correctly people have to
-> > check the driver implementation for the according support since the
-> > bindings can be used by other projects as well and are not limited to
-> > the linux-kernel.
-> 
-> My understanding is that supporting new compatible parts on old kernels
-> is one of the reasons fall back compatibles exist (as well as the case
-> you mention of not modifying a driver until we hit something that requires
-> it) If that doesn't work, then the driver is broken - which is why I suggest
-> we fix that.  However in this case the part is not compatible
-> so the fallback should not be there. You should just add the ID to the
-> driver given you are modifying it to support the part anyway.
+> diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
+> index 0d672b1469e8..98811e4e16bb 100644
+> --- a/drivers/iio/accel/fxls8962af-core.c
+> +++ b/drivers/iio/accel/fxls8962af-core.c
+> @@ -126,6 +126,7 @@
+>  
+>  #define FXLS8962AF_DEVICE_ID			0x62
+>  #define FXLS8964AF_DEVICE_ID			0x84
+> +#define FXLS8974CF_DEVICE_ID			0x86
+>  
+>  /* Raw temp channel offset */
+>  #define FXLS8962AF_TEMP_CENTER_VAL		25
+> @@ -764,6 +765,12 @@ static const struct fxls8962af_chip_info fxls_chip_info_table[] = {
+>  		.channels = fxls8962af_channels,
+>  		.num_channels = ARRAY_SIZE(fxls8962af_channels),
+>  	},
+> +	[fxls8974cf] = {
+> +		.chip_id = FXLS8974CF_DEVICE_ID,
+> +		.name = "fxls8974cf",
+> +		.channels = fxls8962af_channels,
+> +		.num_channels = ARRAY_SIZE(fxls8962af_channels),
+> +	},
+>  };
+>  
+>  static const struct iio_info fxls8962af_info = {
+> diff --git a/drivers/iio/accel/fxls8962af-i2c.c b/drivers/iio/accel/fxls8962af-i2c.c
+> index 22640eaebac7..17dd56756ff9 100644
+> --- a/drivers/iio/accel/fxls8962af-i2c.c
+> +++ b/drivers/iio/accel/fxls8962af-i2c.c
+> @@ -30,6 +30,7 @@ static int fxls8962af_probe(struct i2c_client *client)
+>  static const struct i2c_device_id fxls8962af_id[] = {
+>  	{ "fxls8962af", fxls8962af },
+>  	{ "fxls8964af", fxls8964af },
+> +	{ "fxls8974cf", fxls8974cf },
+>  	{}
+>  };
+>  MODULE_DEVICE_TABLE(i2c, fxls8962af_id);
+> @@ -37,6 +38,7 @@ MODULE_DEVICE_TABLE(i2c, fxls8962af_id);
+>  static const struct of_device_id fxls8962af_of_match[] = {
+>  	{ .compatible = "nxp,fxls8962af" },
+>  	{ .compatible = "nxp,fxls8964af" },
+> +	{ .compatible = "nxp,fxls8974cf" },
+>  	{}
+>  };
+>  MODULE_DEVICE_TABLE(of, fxls8962af_of_match);
+> diff --git a/drivers/iio/accel/fxls8962af.h b/drivers/iio/accel/fxls8962af.h
+> index 9cbe98c3ba9a..45c7e57412e0 100644
+> --- a/drivers/iio/accel/fxls8962af.h
+> +++ b/drivers/iio/accel/fxls8962af.h
+> @@ -11,6 +11,7 @@ struct device;
+>  enum {
+>  	fxls8962af,
+>  	fxls8964af,
+> +	fxls8974cf,
+>  };
+>  
+>  int fxls8962af_core_probe(struct device *dev, struct regmap *regmap, int irq);
 
-Let's see what the dt-maintainers say :)
-
-Regards,
-  Marco
