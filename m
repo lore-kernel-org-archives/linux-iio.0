@@ -2,219 +2,106 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2E2C3DA79
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Dec 2022 16:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B06C3DA79
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Dec 2022 16:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231314AbiLWQWx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 23 Dec 2022 11:22:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42212 "EHLO
+        id S230334AbiLWQYE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 23 Dec 2022 11:24:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231329AbiLWQWv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Dec 2022 11:22:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A73E1A387;
-        Fri, 23 Dec 2022 08:22:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C577B820DF;
-        Fri, 23 Dec 2022 16:22:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D15A1C433F0;
-        Fri, 23 Dec 2022 16:22:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671812567;
-        bh=cI6gsgyw80j7PlxiMoBthl/oRYVl1bFpipihI/1mBKM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=n6k0ieXkwb/0mclWdVOXCB8uWgBxaUEr2yJo9yP3+H3HoqXjdgbm3zWQkkdJslAgy
-         7+6GEsExPbCD+oeHCoPA5QxUCVO5ETQJHXg6JyWKBto+pAg/SGfqcx0kAYNz5YXW91
-         4z6AmuTAifmZpjNo+4qoEKHcRbfZjZXR1H0YfKA/JwwxZfISyjTOgvY0SsBTrNNjyZ
-         M8mhOI0iMK87MLVsWIOt6CI0ntP4vQqCzSfkGRoSO+568jmutg/AH0cwAbETAOKWZW
-         z/g/Ac8rUe4qVZK9l0bjSrwWgo4pU0hS3OyWgyVVtqvKq5OgK6xf7z6nXYE59P8k5J
-         hjIWWnuiIBI0g==
-Date:   Fri, 23 Dec 2022 16:35:56 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     haibo.chen@nxp.com
-Cc:     lars@metafoo.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] iio: adc: add imx93 adc support
-Message-ID: <20221223163556.6db4e603@jic23-huawei>
-In-Reply-To: <20221219101336.3929570-2-haibo.chen@nxp.com>
-References: <20221219101336.3929570-1-haibo.chen@nxp.com>
-        <20221219101336.3929570-2-haibo.chen@nxp.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-pc-linux-gnu)
+        with ESMTP id S230423AbiLWQYA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Dec 2022 11:24:00 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D55B7F7
+        for <linux-iio@vger.kernel.org>; Fri, 23 Dec 2022 08:23:58 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id p36so7608902lfa.12
+        for <linux-iio@vger.kernel.org>; Fri, 23 Dec 2022 08:23:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=LqbPtdN4Ga8jmbf4cA7qcYGgPp+8Cr3OAzvWEvWWVNE=;
+        b=DTAu3kbsyBh6Rh8zBfqvr9pLjcOwfpVYU9Lt8Nfb+3RVpCQEG9VhJAagxg8t2ijg+f
+         cGMkATIRp3sKr7poAgSxOiwzpmnC7lnxtDPXmJvc9VmXqX4dbtiwBwWRqYUe+vzfiq8p
+         8osWt36RqOR7CnXs3rsmZdqswoQ1rRt4QXEvVG7eCXTKjXGQ79AiV+DSk7+Hz5CqkYyH
+         B/jAcRENWk20wVjesXLrMb5lqU+GbslxqFdxfnoF7+zJ02YiiEXGQDGNV9wGd7JlbSgn
+         CkwC+75RL76/51nrCnTv3seo1nbJqiGorEnrBdPYGkyR1wUCfIU39dHEfgGvVhEqWDzS
+         ZKrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=LqbPtdN4Ga8jmbf4cA7qcYGgPp+8Cr3OAzvWEvWWVNE=;
+        b=5nRgKjqNrcahFNM8wI5TdbqV0+fqG0CfoRq2/2/8RTrRk0ElxE9gENaq/N5ANtN8OF
+         IOeNm/BYPORtaIi10F4hGhQRuF1AC77vOm/1hv9tOC7aIp+sSlIXXNAHwbvdehV0xC58
+         BIVOEK3wcgK/1RkZXNg7q9K5hkoECnRIeOQOv0Eii492Ob09EANy0hDMKd3D9f2qUNvL
+         0+Y5P7atQDPVw4joF/ZmfcFjvkTglZuLgHgS3aZF901do+dWPal2JiXVm1uCK5fuwJTq
+         SWfwjM0XbC5Fzvil01F4wmWtkMyrDcH92MifTOEyUSZbnM35na+6O2uOOwqDQQgH8HVq
+         WKbg==
+X-Gm-Message-State: AFqh2kqzDsOp0PITk1adbLvOiPZqEL0FvJNFvCQcfEB9WaaXyJpHYCat
+        uSFzea1Wq/tQg4aZ1VkoUS/Ckw==
+X-Google-Smtp-Source: AMrXdXsFDMYXg8JXISUy+Ue5UM8tHDF0Ayo8BBFfVXP0vcTdZYfoO4mJpcorsXJtcTOjF/YVeZXyIg==
+X-Received: by 2002:a19:8c4e:0:b0:4b5:78e1:8924 with SMTP id i14-20020a198c4e000000b004b578e18924mr2673159lfj.19.1671812637234;
+        Fri, 23 Dec 2022 08:23:57 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id j11-20020ac253ab000000b004b585157b62sm573801lfh.258.2022.12.23.08.23.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 Dec 2022 08:23:56 -0800 (PST)
+Message-ID: <70b0b66a-550d-5b40-47d8-73dce197a2dd@linaro.org>
+Date:   Fri, 23 Dec 2022 17:23:55 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH] dt-bindings: iio: adc: max1238: Fix a typo in the
+ description
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Fabio Estevam <festevam@denx.de>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+References: <20221216004015.2902966-1-festevam@denx.de>
+ <e7b95521-9a2d-7c0f-a379-b32d4aaf1031@linaro.org>
+ <20221223160405.32ba9716@jic23-huawei>
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221223160405.32ba9716@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 19 Dec 2022 18:13:34 +0800
-haibo.chen@nxp.com wrote:
-
-> From: Haibo Chen <haibo.chen@nxp.com>
+On 23/12/2022 17:04, Jonathan Cameron wrote:
+> On Fri, 16 Dec 2022 12:30:42 +0100
+> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 > 
-> The ADC in i.mx93 is a total new ADC IP, add a driver to support
-> this ADC.
+>> On 16/12/2022 01:40, Fabio Estevam wrote:
+>>> Fix a typo in the description, where "interface" is spelled incorrectly.
+>>>
+>>> Signed-off-by: Fabio Estevam <festevam@denx.de>
+>>> ---
+>>>  Documentation/devicetree/bindings/iio/adc/maxim,max1238.yaml | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max1238.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max1238.yaml
+>>> index 50bcd72ac9d6..60d7b34e3286 100644
+>>> --- a/Documentation/devicetree/bindings/iio/adc/maxim,max1238.yaml
+>>> +++ b/Documentation/devicetree/bindings/iio/adc/maxim,max1238.yaml  
+>>
+>> While fixing such, fix also max1363 in the same patch. Or maybe even
+>> more files (but then usually split per maintainer).
 > 
-> Currently, only support one shot normal conversion triggered by
-> software. For other mode, will add in future.
-> 
-> Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-Hi Haibo,
+> Absolutely agree that it would be good to fix the other instances.
+> Still, I'm not going to not take the one fix in front of me today
+> whilst waiting on that ;)
 
-A few minor things inline. Otherwise looks good to me.
+It's also quite a churn to do reviews/commits/applies for such trivial
+(without functional impact) stuff per each commit... but if that's okay
+with you, let it be. I sent one for max1363.
 
-Thanks,
+More commits towards next LWN stats :)
 
-Jonathan
-
-> ---
-> diff --git a/drivers/iio/adc/imx93_adc.c b/drivers/iio/adc/imx93_adc.c
-> new file mode 100644
-> index 000000000000..3ea16a70e746
-> --- /dev/null
-> +++ b/drivers/iio/adc/imx93_adc.c
-> @@ -0,0 +1,474 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * NXP i.MX93 ADC driver
-> + *
-> + * Copyright 2022 NXP
-> + */
-> +
-
-...
-
-> +/* ADC bit shift */
-> +#define IMX93_ADC_MCR_MODE_MASK			BIT(29)
-> +#define IMX93_ADC_MCR_NSTART_MASK		BIT(24)
-> +#define IMX93_ADC_MCR_CALSTART_MASK		BIT(14)
-> +#define IMX93_ADC_MCR_ADCLKSE_MASK		BIT(8)
-> +#define IMX93_ADC_MCR_PWDN_MASK			BIT(0)
-> +#define IMX93_ADC_MSR_CALFAIL_MASK		BIT(30)
-> +#define IMX93_ADC_MSR_CALBUSY_MASK		BIT(29)
-> +#define IMX93_ADC_MSR_ADCSTATUS_MASK		GENMASK(2, 0)
-> +#define IMX93_ADC_ISR_ECH_MASK			BIT(0)
-> +#define IMX93_ADC_ISR_EOC_MASK			BIT(1)
-> +#define IMX93_ADC_ISR_EOC_ECH_MASK		(IMX93_ADC_ISR_EOC_MASK | \
-> +						 IMX93_ADC_ISR_ECH_MASK)
-> +#define IMX93_ADC_IMR_JEOC_MASK			BIT(3)
-> +#define IMX93_ADC_IMR_JECH_MASK			BIT(2)
-> +#define IMX93_ADC_IMR_EOC_MASK			BIT(1)
-> +#define IMX93_ADC_IMR_ECH_MASK			BIT(0)
-> +#define IMX93_ADC_PCDR_CDATA_MASK		GENMASK(11, 0)
-> +
-> +/* ADC status */
-Are these field values? If so I'd like the naming to indicate
-which field and which register etc. It might end up a bit
-long, but it makes it clear the value is matched with
-where we are getting it from.
-
-> +#define IMX93_ADC_IDLE			0
-> +#define IMX93_ADC_POWER_DOWN		1
-> +#define IMX93_ADC_WAIT_STATE		2
-> +#define IMX93_ADC_BUSY_IN_CALIBRATION	3
-> +#define IMX93_ADC_SAMPLE		4
-> +#define IMX93_ADC_CONVERSION		6
-> +
-> +#define IMX93_ADC_TIMEOUT		msecs_to_jiffies(100)
-
-
-> +static int imx93_adc_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	struct imx93_adc *adc = iio_priv(indio_dev);
-> +	struct device *dev = adc->dev;
-> +	long ret;
-> +	u32 vref_uv;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		pm_runtime_get_sync(dev);
-> +		mutex_lock(&adc->lock);
-> +		ret = imx93_adc_read_channel_conversion(adc, chan->channel, val);
-> +		mutex_unlock(&adc->lock);
-> +		pm_runtime_mark_last_busy(dev);
-> +		pm_runtime_put_sync_autosuspend(dev);
-> +		if (ret > 0)
-> +			return IIO_VAL_INT;
-> +		else
-> +			return ret;
-Prefer the error out of line. Makes for slightly easier reviewing as it
-is the more common pattern.
-
-		if (ret < 0)
-			return ret;
-
-		return IIO_VAL_INT;
-
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = vref_uv = regulator_get_voltage(adc->vref);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = vref_uv / 1000;
-> +		*val2 = 12;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = clk_get_rate(adc->ipg_clk);
-> +		return IIO_VAL_INT;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
-
-> +
-> +static int imx93_adc_probe(struct platform_device *pdev)
-> +{
-
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
-> +
-> +	init_completion(&adc->completion);
-> +
-> +	indio_dev->name = IMX93_ADC_DRIVER_NAME;
-I'd rather see the string here than use a define. There is no strong
-reason that this should be the driver name - so I don' want to have
-to go look at the define to check it contains "imx93" which I'd expect
-to see here.
-
-> +
-> +static int imx93_adc_remove(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct imx93_adc *adc = iio_priv(indio_dev);
-> +	struct device *dev = adc->dev;
-> +
-> +	/* adc power down need clock on */
-> +	pm_runtime_get_sync(dev);
-> +	imx93_adc_power_down(adc);
-> +
-> +	pm_runtime_disable(dev);
-> +	pm_runtime_put_noidle(dev);
-> +	iio_device_unregister(indio_dev);
-
-You don't remove the userspace interfaces until this iio_device_unregister()
-call.  Having turned the power off before this point is probably not a good idea.
-you should be fine moving the imx93_adc_power_down() after this point.
-Hopefully that should reflect any equivalent handling order in probe()
-(I haven't checked!)
-
-
-> +	free_irq(adc->irq, adc);
-> +	clk_disable_unprepare(adc->ipg_clk);
-> +	regulator_disable(adc->vref);
-> +
-> +	return 0;
-> +}
-> +
-
+Best regards,
+Krzysztof
 
