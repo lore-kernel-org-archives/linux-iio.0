@@ -2,39 +2,39 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4077C5479D
-	for <linux-iio@archiver.kernel.org>; Fri,  6 Jan 2023 10:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98DB1C3DA7A
+	for <linux-iio@archiver.kernel.org>; Fri,  6 Jan 2023 10:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232094AbjAFKYH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 6 Jan 2023 05:24:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60482 "EHLO
+        id S230164AbjAFK32 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 6 Jan 2023 05:29:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231514AbjAFKYA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 6 Jan 2023 05:24:00 -0500
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995336B5A9;
-        Fri,  6 Jan 2023 02:23:58 -0800 (PST)
+        with ESMTP id S232696AbjAFK3H (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 6 Jan 2023 05:29:07 -0500
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3918714B2
+        for <linux-iio@vger.kernel.org>; Fri,  6 Jan 2023 02:26:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1673000634;
     s=strato-dkim-0002; d=gerhold.net;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=vJ3Lg60sYJz8VxK7VMdeBvnb8ZCw4NP60AO5g6T6W0U=;
-    b=T2QWihr7tw4eRz+tqMQ0Jw4xfpzY2LUQwWG3UEvH/akCUqIxxeVgH7pa6IrDSIv7Ps
-    HxYCiXVvkCoiJ4adY3WdXr8LBDD3jr4Wn59Db9Log0LPraVIUMojdsifqbz3KFUzB6P9
-    V0NlqaUsmgKMF5zOpPtMzzSR7pbQG/76jyVae7lCTpn2DBrOjM9W25poC7TUjRkpBZDL
-    kbcmWhd3B3JkpY9tToETnJIjU1tksmhFHOcTYH+ELriQzniwhmndaQ0yefk8iwaVeyar
-    bsEJenDBFhgOl3twuwrrhkIqBNM/CaxiuaPOwpmEdwlKcIIiGVz8RK8r0T08tOKbSkL9
-    kkHw==
+    bh=09It2ljYBaazxm0zebfnB7EPOA3jETp7tGfj4blzItc=;
+    b=ZCjW09kC0YESVNMCPBYGp9ExZdb6ehQGPiYDp9DDj5m2E7nRabU0zWKA/6SkEXiJkg
+    Y/NyZBo10zL5v4J/uVlsabP3DY0Egx7DDox805cfa+dT4JOu/C0phZr28q6KL4thVxh5
+    O1TiZzTT5L7KNRf1Bf+jLGagxwqW+LQ2ZOwoX9f6ezmXTcGp9Y3YwDZdKi51Zk07Pfxu
+    OcmB7pvv6gF4+U8CtSgf0wItszEJZmciS9tWBaaaBMqvi5Wm4ow/Yi7bYlZAl2ZtSqi5
+    +yTu9QhSE5iCUTsan2dwbH5B30M/MvWMQUtngJTUbJuMQg1o9eFmB/rQ5gwnDlTTrdNL
+    d9YQ==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXTbAOHjRHIRvweFeMkcg="
-X-RZG-CLASS-ID: mo01
+X-RZG-CLASS-ID: mo02
 Received: from droid..
     by smtp.strato.de (RZmta 48.2.1 DYNA|AUTH)
-    with ESMTPSA id Yce349z06ANrqz6
+    with ESMTPSA id Yce349z06ANsqz8
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Fri, 6 Jan 2023 11:23:53 +0100 (CET)
+    Fri, 6 Jan 2023 11:23:54 +0100 (CET)
 From:   Stephan Gerhold <stephan@gerhold.net>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -45,9 +45,9 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht,
         Stephan Gerhold <stephan@gerhold.net>
-Subject: [PATCH 1/3] dt-bindings: iio: st-sensors: Add LSM303C accelerometer+magnetometer
-Date:   Fri,  6 Jan 2023 11:22:37 +0100
-Message-Id: <20230106102239.9647-2-stephan@gerhold.net>
+Subject: [PATCH 3/3] iio: magnetometer: st_magn: Add LSM303C
+Date:   Fri,  6 Jan 2023 11:22:39 +0100
+Message-Id: <20230106102239.9647-4-stephan@gerhold.net>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230106102239.9647-1-stephan@gerhold.net>
 References: <20230106102239.9647-1-stephan@gerhold.net>
@@ -57,38 +57,102 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ST LSM303C [1] is a accelerometer and magnetometer combo sensor
-compatible with the existing ST sensor bindings. Accelerometer and
-magnetometer are exposed through separate I2C/SPI devices, so document
-separate compatibles with -accel and -magn suffix.
-
-[1]: https://www.st.com/resource/en/datasheet/lsm303c.pdf
+The magnetometer part of ST LSM303C is similar (perhaps even identical)
+to the already supported standalone LIS3MDL magnetometer, so just
+add the new st,lsm303c-magn compatible for the existing definitions.
 
 Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
 ---
- Documentation/devicetree/bindings/iio/st,st-sensors.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/magnetometer/Kconfig        | 2 +-
+ drivers/iio/magnetometer/st_magn.h      | 1 +
+ drivers/iio/magnetometer/st_magn_core.c | 1 +
+ drivers/iio/magnetometer/st_magn_i2c.c  | 5 +++++
+ drivers/iio/magnetometer/st_magn_spi.c  | 5 +++++
+ 5 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-index 250439b13152..c6201976378f 100644
---- a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-+++ b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-@@ -39,6 +39,7 @@ properties:
-           - st,lis3lv02dl-accel
-           - st,lng2dm-accel
-           - st,lsm303agr-accel
-+          - st,lsm303c-accel
-           - st,lsm303dl-accel
-           - st,lsm303dlh-accel
-           - st,lsm303dlhc-accel
-@@ -66,6 +67,7 @@ properties:
-           - st,lis2mdl
-           - st,lis3mdl-magn
-           - st,lsm303agr-magn
-+          - st,lsm303c-magn
-           - st,lsm303dlh-magn
-           - st,lsm303dlhc-magn
-           - st,lsm303dlm-magn
+diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+index 467819335588..38532d840f2a 100644
+--- a/drivers/iio/magnetometer/Kconfig
++++ b/drivers/iio/magnetometer/Kconfig
+@@ -119,7 +119,7 @@ config IIO_ST_MAGN_3AXIS
+ 	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
+ 	help
+ 	  Say yes here to build support for STMicroelectronics magnetometers:
+-	  LSM303DLHC, LSM303DLM, LIS3MDL.
++	  LSM303C, LSM303DLHC, LSM303DLM, LIS3MDL.
+ 
+ 	  Also need to enable at least one of I2C and SPI interface drivers
+ 	  below.
+diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
+index 785b7f7b8b06..89945984d966 100644
+--- a/drivers/iio/magnetometer/st_magn.h
++++ b/drivers/iio/magnetometer/st_magn.h
+@@ -22,6 +22,7 @@
+ #define LIS2MDL_MAGN_DEV_NAME		"lis2mdl"
+ #define LSM9DS1_MAGN_DEV_NAME		"lsm9ds1_magn"
+ #define IIS2MDC_MAGN_DEV_NAME		"iis2mdc"
++#define LSM303C_MAGN_DEV_NAME		"lsm303c_magn"
+ 
+ #ifdef CONFIG_IIO_BUFFER
+ int st_magn_allocate_ring(struct iio_dev *indio_dev);
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index e2fd233b3626..8faa7409d9e1 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -305,6 +305,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+ 		.sensors_supported = {
+ 			[0] = LIS3MDL_MAGN_DEV_NAME,
+ 			[1] = LSM9DS1_MAGN_DEV_NAME,
++			[2] = LSM303C_MAGN_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_magn_2_16bit_channels,
+ 		.odr = {
+diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
+index b4098d3b3813..cc0e0e94b129 100644
+--- a/drivers/iio/magnetometer/st_magn_i2c.c
++++ b/drivers/iio/magnetometer/st_magn_i2c.c
+@@ -50,6 +50,10 @@ static const struct of_device_id st_magn_of_match[] = {
+ 		.compatible = "st,iis2mdc",
+ 		.data = IIS2MDC_MAGN_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lsm303c-magn",
++		.data = LSM303C_MAGN_DEV_NAME,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, st_magn_of_match);
+@@ -97,6 +101,7 @@ static const struct i2c_device_id st_magn_id_table[] = {
+ 	{ LIS2MDL_MAGN_DEV_NAME },
+ 	{ LSM9DS1_MAGN_DEV_NAME },
+ 	{ IIS2MDC_MAGN_DEV_NAME },
++	{ LSM303C_MAGN_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, st_magn_id_table);
+diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
+index 6ddc4318564a..f203e1f87eec 100644
+--- a/drivers/iio/magnetometer/st_magn_spi.c
++++ b/drivers/iio/magnetometer/st_magn_spi.c
+@@ -45,6 +45,10 @@ static const struct of_device_id st_magn_of_match[] = {
+ 		.compatible = "st,iis2mdc",
+ 		.data = IIS2MDC_MAGN_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lsm303c-magn",
++		.data = LSM303C_MAGN_DEV_NAME,
++	},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, st_magn_of_match);
+@@ -89,6 +93,7 @@ static const struct spi_device_id st_magn_id_table[] = {
+ 	{ LIS2MDL_MAGN_DEV_NAME },
+ 	{ LSM9DS1_MAGN_DEV_NAME },
+ 	{ IIS2MDC_MAGN_DEV_NAME },
++	{ LSM303C_MAGN_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(spi, st_magn_id_table);
 -- 
 2.39.0
 
