@@ -2,84 +2,91 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A824C54EBD
-	for <linux-iio@archiver.kernel.org>; Fri,  6 Jan 2023 10:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C77EC4708D
+	for <linux-iio@archiver.kernel.org>; Fri,  6 Jan 2023 12:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232149AbjAFK33 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 6 Jan 2023 05:29:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38610 "EHLO
+        id S232478AbjAFMfJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 6 Jan 2023 07:35:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233443AbjAFK3K (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 6 Jan 2023 05:29:10 -0500
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA12077ADB
-        for <linux-iio@vger.kernel.org>; Fri,  6 Jan 2023 02:27:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1673000633;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
-    bh=xXWN0JLNNWC5aqdxD0XTD77v4zFe1nWhTAQPGVQl0mc=;
-    b=Crkfh+w8xTNgwRhC1g+uzLJ2978goN0Tvh6d5qOHVp+NNw/+SAX4sz1Um1z2CUSNLn
-    SCtMzvKH4BSK59ubavQ9M2ONVZF/KUfqFKRaP0LSliS2wpDIsBuvfxFO0AOr32PnHMV9
-    JFsdFdt5eTzD2eipEvbVGLYqukOT/VmsuL93DeASxQTQFOJjj53qZ1s33TTO9FBZkFik
-    7hXzd0rFYiNfSXtTrhukAmXufI26OFMU9h2RlAO1/iZN2FW6H7A9Cd8Ik0ze2Rwhyz1r
-    Jzq4uLILjpNdTkvZsh+OBbMzgRbE4fU9Iqndt6/DpbRmN8VgwUD3mrcBqKCMvE5As2h3
-    AE1g==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXTbAOHjRHIRvweFeMkcg="
-X-RZG-CLASS-ID: mo00
-Received: from droid..
-    by smtp.strato.de (RZmta 48.2.1 DYNA|AUTH)
-    with ESMTPSA id Yce349z06ANrqz5
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Fri, 6 Jan 2023 11:23:53 +0100 (CET)
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Jonathan Cameron <jic23@kernel.org>
+        with ESMTP id S229935AbjAFMfI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 6 Jan 2023 07:35:08 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C4268781
+        for <linux-iio@vger.kernel.org>; Fri,  6 Jan 2023 04:35:07 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id z16so1160395wrw.1
+        for <linux-iio@vger.kernel.org>; Fri, 06 Jan 2023 04:35:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FHJJcmxoQF6RmTS7KWkeAydRQ3hH8J9+bPjwO9oOfwg=;
+        b=LB6/Kj6LBjCWiINiSHkE4K1udV2q1085XdI2d7bQqOz3baZb+Vk/P8IOOhfjDlXdm5
+         8QMM2X/fDDeG7CFJGUIDVPtIXnavSCh30zKyeJ2p0g/tW//f4G1zqSLwP9dAN6MvJtKe
+         OTWvMykFDOcYj+RWrINucrVWceVsdgMcy/wNKh7+z3YSjOFodK/bpjqhKk5gZCSD+jSJ
+         4U1X9ci4ye4XqPAJIJH+HOR9EKppiplvcxKoP3UU4CWY3mAmZdSgTBr+VNNwy/uakEJX
+         mGG9zZQ7jLJWxUL6+ls1kBTR69wCuhwMXFvvPktmO2oluXAbebh3S7OgmQ7ZpdOW8ZsR
+         w/oQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FHJJcmxoQF6RmTS7KWkeAydRQ3hH8J9+bPjwO9oOfwg=;
+        b=tFibje0pQijXFMizq2g8RJyCF1kO2LsoJTQp9A5ap5yk0Dsp0SukiYdDXkoXGWR8ex
+         b9Wii6ddaM28CocRt2AplRGTl3FR71vhrC3H+0sfpyHNKzSfi5LnzvL9x1Fii9e9YW7z
+         WtcO2g6lQgeryJRNtdPVOZrwEdvf+RICV6dHiKKhPFG1ijEVQGcImgjogNfkeKiatEZk
+         9k71T5Nf957jvvM8wJU6jgIIO5dtFzFSQS5EhZnHO9G+zfpLdPKhjbOT2d1K7Ki5bCyO
+         1fVkn+KVdzHC2rrRQA60f0eB+gysKFz6SG6nzDL2MUx5CyXAZ1r2xzn6YPbc0KJgFI0I
+         3zUQ==
+X-Gm-Message-State: AFqh2krc2NBor2NatXJ5ES2yc4v55HA0YRNf4jb+FvHDjE02D723xZsB
+        uqwpVflklcRdRWCIWf4kSOdBhg==
+X-Google-Smtp-Source: AMrXdXtq7EH+BbYvHh9s5O5NWIhpRY4i2EWNgdfO058HgwYDQMqoMoiaCYmZffGJxaURD+tY5GeA4A==
+X-Received: by 2002:a5d:560a:0:b0:27b:45ba:3b47 with SMTP id l10-20020a5d560a000000b0027b45ba3b47mr26535909wrv.57.1673008505734;
+        Fri, 06 Jan 2023 04:35:05 -0800 (PST)
+Received: from [192.168.1.102] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id j14-20020adfea4e000000b0027f4a7efc54sm1102338wrn.15.2023.01.06.04.35.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Jan 2023 04:35:05 -0800 (PST)
+Message-ID: <41525097-7703-c6fc-c265-00dc588dde87@linaro.org>
+Date:   Fri, 6 Jan 2023 13:35:04 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 1/3] dt-bindings: iio: st-sensors: Add LSM303C
+ accelerometer+magnetometer
+Content-Language: en-US
+To:     Stephan Gerhold <stephan@gerhold.net>,
+        Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Denis Ciocca <denis.ciocca@st.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Stephan Gerhold <stephan@gerhold.net>
-Subject: [PATCH 0/3] iio: st-sensors: Add LSM303C accelerometer+magnetometer
-Date:   Fri,  6 Jan 2023 11:22:36 +0100
-Message-Id: <20230106102239.9647-1-stephan@gerhold.net>
-X-Mailer: git-send-email 2.39.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        ~postmarketos/upstreaming@lists.sr.ht
+References: <20230106102239.9647-1-stephan@gerhold.net>
+ <20230106102239.9647-2-stephan@gerhold.net>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230106102239.9647-2-stephan@gerhold.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support for the ST LSM303C [1] accelerometer and magnetometer combo 
-sensor in st_accel and st_magn. LSM303C seems to be more or less
-a combination of LIS2HH12 as accelerometer and LIS3MDL as magnetometer
-so this series just adds two new compatibles for the two sensors that 
-are already supported.
+On 06/01/2023 11:22, Stephan Gerhold wrote:
+> The ST LSM303C [1] is a accelerometer and magnetometer combo sensor
+> compatible with the existing ST sensor bindings. Accelerometer and
+> magnetometer are exposed through separate I2C/SPI devices, so document
+> separate compatibles with -accel and -magn suffix.
+> 
+> [1]: https://www.st.com/resource/en/datasheet/lsm303c.pdf
 
-[1]: https://www.st.com/resource/en/datasheet/lsm303c.pdf
 
-Stephan Gerhold (3):
-  dt-bindings: iio: st-sensors: Add LSM303C accelerometer+magnetometer
-  iio: accel: st_accel: Add LSM303C
-  iio: magnetometer: st_magn: Add LSM303C
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
- Documentation/devicetree/bindings/iio/st,st-sensors.yaml | 2 ++
- drivers/iio/accel/Kconfig                                | 2 +-
- drivers/iio/accel/st_accel.h                             | 1 +
- drivers/iio/accel/st_accel_core.c                        | 1 +
- drivers/iio/accel/st_accel_i2c.c                         | 5 +++++
- drivers/iio/accel/st_accel_spi.c                         | 5 +++++
- drivers/iio/magnetometer/Kconfig                         | 2 +-
- drivers/iio/magnetometer/st_magn.h                       | 1 +
- drivers/iio/magnetometer/st_magn_core.c                  | 1 +
- drivers/iio/magnetometer/st_magn_i2c.c                   | 5 +++++
- drivers/iio/magnetometer/st_magn_spi.c                   | 5 +++++
- 11 files changed, 28 insertions(+), 2 deletions(-)
-
--- 
-2.39.0
+Best regards,
+Krzysztof
 
