@@ -2,91 +2,107 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C77EC4708D
-	for <linux-iio@archiver.kernel.org>; Fri,  6 Jan 2023 12:35:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4AA3C3DA7A
+	for <linux-iio@archiver.kernel.org>; Fri,  6 Jan 2023 15:39:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232478AbjAFMfJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 6 Jan 2023 07:35:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60520 "EHLO
+        id S235052AbjAFPjz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 6 Jan 2023 10:39:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbjAFMfI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 6 Jan 2023 07:35:08 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C4268781
-        for <linux-iio@vger.kernel.org>; Fri,  6 Jan 2023 04:35:07 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id z16so1160395wrw.1
-        for <linux-iio@vger.kernel.org>; Fri, 06 Jan 2023 04:35:07 -0800 (PST)
+        with ESMTP id S230294AbjAFPjx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 6 Jan 2023 10:39:53 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F0877ACC
+        for <linux-iio@vger.kernel.org>; Fri,  6 Jan 2023 07:39:51 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id ud5so4279542ejc.4
+        for <linux-iio@vger.kernel.org>; Fri, 06 Jan 2023 07:39:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FHJJcmxoQF6RmTS7KWkeAydRQ3hH8J9+bPjwO9oOfwg=;
-        b=LB6/Kj6LBjCWiINiSHkE4K1udV2q1085XdI2d7bQqOz3baZb+Vk/P8IOOhfjDlXdm5
-         8QMM2X/fDDeG7CFJGUIDVPtIXnavSCh30zKyeJ2p0g/tW//f4G1zqSLwP9dAN6MvJtKe
-         OTWvMykFDOcYj+RWrINucrVWceVsdgMcy/wNKh7+z3YSjOFodK/bpjqhKk5gZCSD+jSJ
-         4U1X9ci4ye4XqPAJIJH+HOR9EKppiplvcxKoP3UU4CWY3mAmZdSgTBr+VNNwy/uakEJX
-         mGG9zZQ7jLJWxUL6+ls1kBTR69wCuhwMXFvvPktmO2oluXAbebh3S7OgmQ7ZpdOW8ZsR
-         w/oQ==
+        d=fairphone.com; s=fair;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=NpkG2iR0UwWdydoahMJc9hyZ5gZYg9PaDSDM09B2by8=;
+        b=hAXkKOvRnZeyOHvhWhrsKr+W9+QkGEcmw7NHYO0rLBGVHP/4Tm+JVMd8eBRKLMaAJT
+         KJpveSZmD19bTLd8kM5JGxm5gG1WwIqD2jMEggSDyAPkJDdtIFbnQSwIzZNyNoKvg+HZ
+         ceef176g3aG4BL1TFlLNh80cpEVuY6bWtUEP8ZXjY1XSxE7Rm0pnd9PhqYEBE0KhSyqy
+         DBwlnNsId2bH5uromjldB2xxI+Mf6fjcGINxNjQWztfudoFk1fOMhVn0zErpdM6pl4ba
+         xKW1rGgppefIhvZfqp/c5oOC+CPvWFQsd8fAfGNqrwXK8T5XY1taEQlKmo64sG75aajQ
+         VmyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FHJJcmxoQF6RmTS7KWkeAydRQ3hH8J9+bPjwO9oOfwg=;
-        b=tFibje0pQijXFMizq2g8RJyCF1kO2LsoJTQp9A5ap5yk0Dsp0SukiYdDXkoXGWR8ex
-         b9Wii6ddaM28CocRt2AplRGTl3FR71vhrC3H+0sfpyHNKzSfi5LnzvL9x1Fii9e9YW7z
-         WtcO2g6lQgeryJRNtdPVOZrwEdvf+RICV6dHiKKhPFG1ijEVQGcImgjogNfkeKiatEZk
-         9k71T5Nf957jvvM8wJU6jgIIO5dtFzFSQS5EhZnHO9G+zfpLdPKhjbOT2d1K7Ki5bCyO
-         1fVkn+KVdzHC2rrRQA60f0eB+gysKFz6SG6nzDL2MUx5CyXAZ1r2xzn6YPbc0KJgFI0I
-         3zUQ==
-X-Gm-Message-State: AFqh2krc2NBor2NatXJ5ES2yc4v55HA0YRNf4jb+FvHDjE02D723xZsB
-        uqwpVflklcRdRWCIWf4kSOdBhg==
-X-Google-Smtp-Source: AMrXdXtq7EH+BbYvHh9s5O5NWIhpRY4i2EWNgdfO058HgwYDQMqoMoiaCYmZffGJxaURD+tY5GeA4A==
-X-Received: by 2002:a5d:560a:0:b0:27b:45ba:3b47 with SMTP id l10-20020a5d560a000000b0027b45ba3b47mr26535909wrv.57.1673008505734;
-        Fri, 06 Jan 2023 04:35:05 -0800 (PST)
-Received: from [192.168.1.102] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id j14-20020adfea4e000000b0027f4a7efc54sm1102338wrn.15.2023.01.06.04.35.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Jan 2023 04:35:05 -0800 (PST)
-Message-ID: <41525097-7703-c6fc-c265-00dc588dde87@linaro.org>
-Date:   Fri, 6 Jan 2023 13:35:04 +0100
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=NpkG2iR0UwWdydoahMJc9hyZ5gZYg9PaDSDM09B2by8=;
+        b=aM+tac27mI1FTxxALl6IC7BCH2k3R8W5O7606lK22Vhumo6JiA1jKKyrfD7+l0bNsr
+         anYoAVV4KpCobzk/hSli72KwZzPoIryAsNnUOgvFlC/9uPum0CMOTtIRwnSEkrFrT7HN
+         hBSAIT4Q1iq+pYaVENlJ5ocPWFupTm/hsomhuI2+T1jzlKcWDJdixZz9LwscP1huGxva
+         0hMTu7zwvUEmmHd0r8FRb3zBgHVl9Stny0jQ2ZmjZAga655kgZgdWyLzbApUOMkCU3IU
+         cTCoYcF/p3pv1h+8qKA6OZZHn+Jm9wbVr3hCgEL3/Dth0U9qdhV+R+Yj7kfvEVeAMf+n
+         XRkA==
+X-Gm-Message-State: AFqh2kosJxHVQK8Tnsf/uj/9Q3qPBZ1P1YfrN2zDMpoGukCHnCUm2ehq
+        9Vo1+3T6PF6fNJeFLpGe1+vXkA==
+X-Google-Smtp-Source: AMrXdXtCz2VxsduHFn7Iu/9+O5xy6oPKtf5ciiIpoxGaBNjyjW6LzJn4v6l+97kvsAcLckwVhP9ZCg==
+X-Received: by 2002:a17:907:a08d:b0:7c0:dac7:36d8 with SMTP id hu13-20020a170907a08d00b007c0dac736d8mr49899341ejc.10.1673019590109;
+        Fri, 06 Jan 2023 07:39:50 -0800 (PST)
+Received: from [10.0.0.3] (217-149-174-217.nat.highway.telekom.at. [217.149.174.217])
+        by smtp.gmail.com with ESMTPSA id gx8-20020a170906f1c800b007aed2057eacsm496235ejb.221.2023.01.06.07.39.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Jan 2023 07:39:49 -0800 (PST)
+From:   Luca Weiss <luca.weiss@fairphone.com>
+Subject: [PATCH 0/2] Support ADC5_BAT_ID_100K_PU and use on PM7250b
+Date:   Fri, 06 Jan 2023 16:39:41 +0100
+Message-Id: <20230106-pm7250b-bat_id-v1-0-82ca8f2db741@fairphone.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH 1/3] dt-bindings: iio: st-sensors: Add LSM303C
- accelerometer+magnetometer
-Content-Language: en-US
-To:     Stephan Gerhold <stephan@gerhold.net>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Denis Ciocca <denis.ciocca@st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht
-References: <20230106102239.9647-1-stephan@gerhold.net>
- <20230106102239.9647-2-stephan@gerhold.net>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230106102239.9647-2-stephan@gerhold.net>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAL1AuGMC/x2NWwqDMBAAryL77cImxRR6FRHJY60LGiXRUhDv3
+ qWfMzDMBZWLcIVXc0Hhj1TZsoJpG4izz29GScpgyT7IkMN9fdqOAgZ/jJLQUEfRTi6RcaBR8JUx
+ FJ/jrFk+l0XlXniS7//SD/f9A0KVect1AAAA
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Luca Weiss <luca.weiss@fairphone.com>
+X-Mailer: b4 0.11.2
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 06/01/2023 11:22, Stephan Gerhold wrote:
-> The ST LSM303C [1] is a accelerometer and magnetometer combo sensor
-> compatible with the existing ST sensor bindings. Accelerometer and
-> magnetometer are exposed through separate I2C/SPI devices, so document
-> separate compatibles with -accel and -magn suffix.
-> 
-> [1]: https://www.st.com/resource/en/datasheet/lsm303c.pdf
+Add the bat_id channel to vadc driver and add channel to pm7250b dts.
 
+To: Andy Gross <agross@kernel.org>
+To: Bjorn Andersson <andersson@kernel.org>
+To: Konrad Dybcio <konrad.dybcio@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+To: Rob Herring <robh+dt@kernel.org>
+To: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: ~postmarketos/upstreaming@lists.sr.ht
+Cc: phone-devel@vger.kernel.org
+Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+Luca Weiss (2):
+      iio: adc: qcom-spmi-adc5: define ADC5_BAT_ID_100K_PU channel
+      arm64: dts: qcom: pm7250b: Add BAT_ID vadc channel
+
+ arch/arm64/boot/dts/qcom/pm7250b.dtsi | 8 ++++++++
+ drivers/iio/adc/qcom-spmi-adc5.c      | 2 ++
+ 2 files changed, 10 insertions(+)
+---
+base-commit: 88603b6dc419445847923fcb7fe5080067a30f98
+change-id: 20230106-pm7250b-bat_id-1050c2f6d016
 
 Best regards,
-Krzysztof
-
+-- 
+Luca Weiss <luca.weiss@fairphone.com>
