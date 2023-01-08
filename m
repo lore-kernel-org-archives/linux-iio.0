@@ -2,105 +2,75 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82716C53210
-	for <linux-iio@archiver.kernel.org>; Sun,  8 Jan 2023 11:59:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59714C53210
+	for <linux-iio@archiver.kernel.org>; Sun,  8 Jan 2023 12:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230400AbjAHL7F (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 Jan 2023 06:59:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50968 "EHLO
+        id S231272AbjAHMAA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 Jan 2023 07:00:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjAHL7E (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Jan 2023 06:59:04 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99059F000
-        for <linux-iio@vger.kernel.org>; Sun,  8 Jan 2023 03:59:03 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id s25so6086968lji.2
-        for <linux-iio@vger.kernel.org>; Sun, 08 Jan 2023 03:59:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=YVxT2RdagP7AWEwWMUOaF45uDjcQyD/F4ZR4OQsnm+I=;
-        b=HNGFu3RB/dRZ50PlvJGvbCKsAVdRFghHdt7jGg6zNcE/JfcmtC5UWXd8b0jim3jWV2
-         djbQVrTyOG2mchp5xzgRvq/yjZFpMBB4or2yrfe15vPJOYP+ZfutKms6qUi/v5kNsS0A
-         crErkc6AVoJ/z36DFzig97QthEDy+hyMWXEcG37BQNpn4UleaxWTptxkBmRdHeb8Zs73
-         uHRjZMUK/jTweW1BNV0FJqmqMwB273/jfnU88lqL7Rl/QlmTCD7DUhMyr+G7TV/A4xm/
-         i3R/kWB6B45mG1L3JsP8Kv4fIvaJm+/Co28MPk9uhd/GHRxIRP0IJS2AmNaGoCh5BLCO
-         KWKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=YVxT2RdagP7AWEwWMUOaF45uDjcQyD/F4ZR4OQsnm+I=;
-        b=EsTNRqqnXtj+WqwL1G7O85rT8ISfxqQXyLICWzEtM6bQPOpS6aT7C9Ai8m2CRbEt3f
-         pIGKtmNVCo17MXGzN3gz7oMDZRnMQ5Iu0MFW42rlWsJYQ+yuSYWDcyHnnwk90/0mN9F6
-         GiwwzYrKE1o1upRjucWAPVpnSZ1rVPI45Mk+2KFRlymwZm3op5q4+vgRltzJycNE4omg
-         cp2iAXUHHkolM9/YEJFXBoFHc3NnfQqGpXuKZn8d8yF+lEeI/2wWuMgkSxPQZB8WuYQj
-         LUrNBkJhUx/MYlRvDhkIfkfom1O+orNB25Kgc8ZmJMFs7cmf77PMGUI/iGv4ACL+jmn2
-         s8WQ==
-X-Gm-Message-State: AFqh2ko0Dnyb9nNuwpzJUUgOZTZjwNaFgR7d5B5dl9R1dHQX9H4walYq
-        LDlD9h2E0LhlNKwMXnslwvZz9ebL8wshqp4Zhsiqd2sImK9DJDdH
-X-Google-Smtp-Source: AMrXdXtlgXyqjxcRg9JXA+yGF+TeZDerpRFnrEO3eDmG4VrhhmvQS99gvCdu7yhZkRE6wOnvN2dSDFP6v6FoLdamvqk=
-X-Received: by 2002:a2e:7a0d:0:b0:27f:d911:acf9 with SMTP id
- v13-20020a2e7a0d000000b0027fd911acf9mr1471308ljc.23.1673179141707; Sun, 08
- Jan 2023 03:59:01 -0800 (PST)
+        with ESMTP id S229483AbjAHL77 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Jan 2023 06:59:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A35DEE3B;
+        Sun,  8 Jan 2023 03:59:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D642FB801C1;
+        Sun,  8 Jan 2023 11:59:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9548BC433D2;
+        Sun,  8 Jan 2023 11:59:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673179195;
+        bh=n9qaVCDzfZFhHJOQk59pKEdS/j+mHkgVmtKThVkVBZA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rTiDGlJ6cGQtwt6fvojOOEWgwdnZJwugIonw01B80UkfGPr6Ee8yWrFvF9NAji6ym
+         k0mDRuRSFjqtMjQzxLPhQVPMPE4EK3xpvhzjq43MSkmLdJcBJz+nrMNDibplkk4x+K
+         zslcHqiKWP9ehniW0tSanmBfS3AXQq2d4cnKfMqjF37f5cSs+rjEWAEUEyGJhmMFdG
+         h5PWlirCPtN6S09iI5Bqmd/aQbQNpZhtMuGfJXLGLwieJ9vzf3HxI9U3RqfVzwNt0Z
+         GuM0jsQqbzZ4iSXY8CQAAdZpF1dqjzzgeq9uNdDNZ1iZGd1v18VuXSDRW/+Q3kRB/z
+         SS/NRJLNB3XuA==
+Date:   Sun, 8 Jan 2023 12:13:23 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v2 0/3] iio: adc: ti-adc128s052: Some refactorings
+Message-ID: <20230108121323.0118abe3@jic23-huawei>
+In-Reply-To: <20230102173450.29882-1-andriy.shevchenko@linux.intel.com>
+References: <20230102173450.29882-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20230108074750.443705-1-pbrobinson@gmail.com> <20230108074750.443705-3-pbrobinson@gmail.com>
- <20230108113046.461ec222@jic23-huawei>
-In-Reply-To: <20230108113046.461ec222@jic23-huawei>
-From:   Peter Robinson <pbrobinson@gmail.com>
-Date:   Sun, 8 Jan 2023 11:58:50 +0000
-Message-ID: <CALeDE9M3jLKbGoLCfyBVACJpuHwkiBPO9rrdggTBoQGuKLd1gA@mail.gmail.com>
-Subject: Re: [PATCH 3/4] counter: FTM quad: Depend on the Layerscape SoC
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     William Breathitt Gray <william.gray@linaro.org>,
-        linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Jan 8, 2023 at 11:17 AM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Sun,  8 Jan 2023 07:47:49 +0000
-> Peter Robinson <pbrobinson@gmail.com> wrote:
->
-> > At the moment only the Freescale LS1021A is the only HW that
-> > supports this IP block so add an appropriate dependency and
-> > compile test.
-> >
-> > Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
->
-> Ah I see you had deliberately not put COMPILE_TEST for the x86
-> one - fair enough I guess.
->
-> For this one, the IP is fairly generic and I think appears on other
-> chips - not sure they are supported by Linux however.  Maybe it's
-> fine to limit it like this for now and see if anyone shouts...
+On Mon,  2 Jan 2023 19:34:47 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-It's currently only referenced in arch/arm/boot/dts/ls1021a.dtsi and I
-don't have access to all the Layerscape docs to verify the IP, no
-doubt there's others but they may need other changes for different IP
-revs etc hence why I specified that one.
+> Refactor driver to use newest API and drop ACPI_PTR() which is rather
+> useless.
+Applied.
 
-> Jonathan
->
->
-> > ---
-> >  drivers/counter/Kconfig | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
-> > index 011e6af840fc..ef78386ccd2e 100644
-> > --- a/drivers/counter/Kconfig
-> > +++ b/drivers/counter/Kconfig
-> > @@ -31,6 +31,7 @@ config 104_QUAD_8
-> >
-> >  config FTM_QUADDEC
-> >       tristate "Flex Timer Module Quadrature decoder driver"
-> > +     depends on SOC_LS1021A || COMPILE_TEST
-> >       depends on HAS_IOMEM && OF
-> >       help
-> >         Select this option to enable the Flex Timer Quadrature decoder
->
+Thanks,
+
+Jonathan
+
+> 
+> Changelog v2:
+> - united two previously sent series into a single one
+> - dropped for now the endianess patch
+> - fixed compilation issues (Jonathan, LKP)
+> 
+> Andy Shevchenko (3):
+>   iio: adc: ti-adc128s052: Switch to use spi_get_device_match_data()
+>   iio: adc: ti-adc128s052: Drop anti-pattern of ACPI_PTR() use
+>   iio: adc: ti-adc128s052: Sort headers
+> 
+>  drivers/iio/adc/ti-adc128s052.c | 54 +++++++++++++++------------------
+>  1 file changed, 24 insertions(+), 30 deletions(-)
+> 
+
