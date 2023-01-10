@@ -2,44 +2,46 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C03A4C54EBE
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Jan 2023 16:01:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBD5C46467
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Jan 2023 16:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233014AbjAJQBo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 Jan 2023 11:01:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
+        id S234732AbjAJQCT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 Jan 2023 11:02:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232701AbjAJQBn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Jan 2023 11:01:43 -0500
+        with ESMTP id S233423AbjAJQBq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Jan 2023 11:01:46 -0500
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F2530573;
-        Tue, 10 Jan 2023 08:01:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B034532EAA;
+        Tue, 10 Jan 2023 08:01:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
-        :From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date
-        :Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-        References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
-        List-Owner:List-Archive; bh=miFsq10evK2AUsR0ohqfQseYfNauPyzSoumO+BvoMYU=; b=F
-        X8J+peFwvKS3vlVoXjARlbrVFsqvE/tfKJcHv/QlPGisWjZ3u87JcuLU5ydkOQqPkNzUSlPxE83Qs
-        ZbVNYXcnqbIWlNMiRlUM+vFbUOpmVwwbblgpF0RM4CEL/dotGu+GLceUuozy3aKoQiLW4ST26MDtL
-        eSMypOEg1jGZ+DVg=;
+        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:References:
+        In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=oTVB50/ici0YMYyKRDs/Lka/kYpfalQ+g+Tk/bkfMeo=; b=e2hdwprMphZ5yovZO8ivKPBSb0
+        irIkiV4DRkzH55hV0D5wp8rPfsbKdEPQjs9dUWSYe1whDrFDmnOzfLBcQigmnIG6AklQ2iZ3OB8cB
+        JQq6507u6F0+St7VUerbcGzN+JoLVSXsa/4ESfgto5mIGmWb/+2kqcgyP+rz20gFNbKA=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:41140 helo=pettiford.lan)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1pFH48-0007oY-UB; Tue, 10 Jan 2023 11:01:33 -0500
+        id 1pFH4C-0007oY-Gw; Tue, 10 Jan 2023 11:01:37 -0500
 From:   Hugo Villeneuve <hugo@hugovil.com>
 To:     hvilleneuve@dimonoff.com, jic23@kernel.org, lars@metafoo.de,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, hugo@hugovil.com
-Date:   Tue, 10 Jan 2023 11:01:22 -0500
-Message-Id: <20230110160124.3853593-1-hugo@hugovil.com>
+Date:   Tue, 10 Jan 2023 11:01:24 -0500
+Message-Id: <20230110160124.3853593-3-hugo@hugovil.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230110160124.3853593-1-hugo@hugovil.com>
+References: <20230110160124.3853593-1-hugo@hugovil.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH v2 0/2] iio: adc: ti-ads7924: add Texas Instruments ADS7924 driver
+Subject: [PATCH v2 2/2] dt-bindings: iio: adc: add Texas Instruments ADS7924
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
@@ -48,61 +50,125 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Hello,
-this patch series adds the driver for the Texas Instruments ADS7924.
+Add device tree bindings document for the Texas Instruments ADS7924
+ADC.
 
-The Texas Instruments ADS7924 is a 4 channels, 12-bit analog to
-digital converter (ADC) with an I2C interface.
-
-Patch 1 contains the driver for the ADS7924.
-
-Patch 2 add the dt-bindings for the ADS7924.
-
-I have tested the driver using the Texas Instruments ADS7924EVM board connected
-to a Variscite Symphony EVK with a IMX8MN NANO SOM:
-  - Tested reset pin Ok
-  - Tested regulator setup Ok
-  - Tested reading sysfs in_voltage_scale Ok
-  - Tested reading sysfs in_voltageX_raw (x=0 to 3) Ok
-
-Thank you.
-
-Link: [v1] https://lore.kernel.org/linux-iio/20221222203610.2571287-1-hugo@hugovil.com/#t
-
-Changes for V2:
-- Dropped patch "iio: adc: Kconfig: add SPI interface mention to AD7924
-  description"
-- Fixed comments style
-- Removed unused defines/variables/etc related to buffered support (no buffered
-  support for the moment).
-- Convert of-specific code to use the generic firmware property accessors in
-  include/linux/property.h.
-- Use FIELD_GET / FIELD_PREP for bit operations/defines
-- Simplified conversion result registers definitions/usage.
-- Now using mutex lock/unlock only for INFO_RAW switch branch
-- Use dev_err_probe() in all return paths of ads7924_probe()
-- Removed ads7924_remove() after adding callbacks with
-  devm_add_action_or_reset().
-- Change iio_device_register() to devm_iio_device_register().
-- Add the legacy i2c_device_id table
-- DT bindings: reorder entries, fix indentation,improve comments, add interrupt
-  line
-
-Hugo Villeneuve (2):
-  iio: adc: ti-ads7924: add Texas Instruments ADS7924 driver
-  dt-bindings: iio: adc: add Texas Instruments ADS7924
-
- .../bindings/iio/adc/ti,ads7924.yaml          | 104 ++++
- MAINTAINERS                                   |   7 +
- drivers/iio/adc/Kconfig                       |  11 +
- drivers/iio/adc/Makefile                      |   1 +
- drivers/iio/adc/ti-ads7924.c                  | 492 ++++++++++++++++++
- 5 files changed, 615 insertions(+)
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
+ .../bindings/iio/adc/ti,ads7924.yaml          | 104 ++++++++++++++++++
+ 1 file changed, 104 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads7924.yaml
- create mode 100644 drivers/iio/adc/ti-ads7924.c
 
-
-base-commit: bfcae956d9b50ea0e221cefc171604c569017d7e
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads7924.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads7924.yaml
+new file mode 100644
+index 000000000000..a9d3e8778d11
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/ti,ads7924.yaml
+@@ -0,0 +1,104 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/ti,ads7924.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: TI ADS7924 4 channels 12 bits I2C analog to digital converter
++
++maintainers:
++  - Hugo Villeneuve <hvilleneuve@dimonoff.com>
++
++description: |
++  Texas Instruments ADS7924 4 channels 12 bits I2C analog to digital converter
++
++  Specifications:
++    https://www.ti.com/lit/gpn/ads7924
++
++properties:
++  compatible:
++    const: ti,ads7924
++
++  reg:
++    maxItems: 1
++
++  vref-supply:
++    description:
++      The regulator supply for the ADC reference voltage (AVDD)
++
++  reset-gpios:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++  "#io-channel-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - vref-supply
++  - "#address-cells"
++  - "#size-cells"
++
++patternProperties:
++  "^channel@[0-3]+$":
++    $ref: "adc.yaml"
++    type: object
++    description: |
++      Represents the external channels which are connected to the ADC.
++
++    properties:
++      reg:
++        description: |
++          The channel number. It can have up to 4 channels numbered from 0 to 3.
++        items:
++          - minimum: 0
++            maximum: 3
++
++    required:
++      - reg
++
++    additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@48 {
++            compatible = "ti,ads7924";
++            reg = <0x48>;
++            vref-supply = <&ads7924_reg>;
++            reset-gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
++            interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
++            interrupt-parent = <&gpio>;
++            #address-cells = <1>;
++            #size-cells = <0>;
++            channel@0 {
++                reg = <0>;
++                label = "CH0";
++            };
++            channel@1 {
++                reg = <1>;
++                label = "CH1";
++            };
++            channel@2 {
++                reg = <2>;
++                label = "CH2";
++            };
++            channel@3 {
++                reg = <3>;
++                label = "CH3";
++            };
++        };
++    };
++...
 -- 
 2.30.2
 
