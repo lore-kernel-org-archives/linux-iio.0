@@ -2,179 +2,125 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAC6C67871
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Jan 2023 17:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7F3C677F1
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Jan 2023 17:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230359AbjAORGm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 15 Jan 2023 12:06:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51394 "EHLO
+        id S231329AbjAOR0d (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 15 Jan 2023 12:26:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231449AbjAORGk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 15 Jan 2023 12:06:40 -0500
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4FC10413;
-        Sun, 15 Jan 2023 09:06:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:References:
-        In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=W6+yCBLLMVgz4FbrS35e81eiB5ss3bZSZeySW1g652E=; b=crd8CJEUiXpIgKuijkuePFF18K
-        ldL2fpWHqpS3m3chp+pzXBumYIpsiBfLvhz8Osp7YAPyF3u6Wlc/sM9wDiV7mCcIYACD6dMkfVWEU
-        QXMVhDZr93oVTrW8q0zAFEs+2oaRre9nty2ohSbxTK7zNawrjmU2H0+EYhY3IVMwNjjY=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:41198 helo=pettiford.lan)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1pH6Sl-0008Cy-LM; Sun, 15 Jan 2023 12:06:32 -0500
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     hvilleneuve@dimonoff.com, jic23@kernel.org, lars@metafoo.de,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hugo@hugovil.com
-Date:   Sun, 15 Jan 2023 12:06:23 -0500
-Message-Id: <20230115170623.3680647-3-hugo@hugovil.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230115170623.3680647-1-hugo@hugovil.com>
-References: <20230115170623.3680647-1-hugo@hugovil.com>
+        with ESMTP id S231229AbjAOR02 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 15 Jan 2023 12:26:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2775565BD;
+        Sun, 15 Jan 2023 09:26:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEADAB80B8E;
+        Sun, 15 Jan 2023 17:26:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39B49C433EF;
+        Sun, 15 Jan 2023 17:26:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673803583;
+        bh=DSpVFRa2HLy8rOXPFLzlM+mV4wBVdBIHObvDcFyf1wE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=quVuOysr24tZytXvBI1G2t2g0KGz+FNM2JXpaKtEqtRiQKSYgkIQ8baXT1YHO5+Tr
+         kSqJrfsDDu3OpniFlikAA8vcfqLt3OEiLYGTwmaOPMk6KqHpwTyzKhFSaB+xjpAFMy
+         rRC7oTuDR/dkjmYppm7Q3w/Exq65iR5BX9giGzgCv59lXvWXsgDwQaUvq+8f4lpv3k
+         csWSlprt5Pyoy6DjzA/WOPMMGTEosbFp1R7YHp/pjd5RQRaG2bEWWWmizuLU/9H/3e
+         CcM/npI8gUuOD/QwiFgO7lRX9WdWwe0/3SnAYADVuWlIAoDNVz376UE9zAFCp7c7z8
+         qn7VBlWsS5S6Q==
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org,
+        Angelo Dureghello <angelo.dureghello@timesys.com>,
+        devicetree@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH] dt-bindings: iio: dac: Maxim max5522 DAC
+Date:   Sun, 15 Jan 2023 17:39:58 +0000
+Message-Id: <20230115173958.134201-1-jic23@kernel.org>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH v4 2/2] dt-bindings: iio: adc: add Texas Instruments ADS7924
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Add device tree bindings document for the Texas Instruments ADS7924
-ADC.
+Add binding Doc for this SPI DAC.
 
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+The driver was perviously posted but was missing the DT binding document.
+https://lore.kernel.org/all/20221106165928.223318-1-angelo.dureghello@timesys.com/
+
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Angelo Dureghello <angelo.dureghello@timesys.com>
+
 ---
- .../bindings/iio/adc/ti,ads7924.yaml          | 110 ++++++++++++++++++
- 1 file changed, 110 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads7924.yaml
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads7924.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads7924.yaml
+As it has been a few months and I don't want to end up not taking the driver
+simply because it lacked this simple binding doc, I've written one.
+
+ .../bindings/iio/dac/maxim,max5522.yaml       | 49 +++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/dac/maxim,max5522.yaml b/Documentation/devicetree/bindings/iio/dac/maxim,max5522.yaml
 new file mode 100644
-index 000000000000..0d8d06afed8b
+index 000000000000..24830f56c501
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti,ads7924.yaml
-@@ -0,0 +1,110 @@
++++ b/Documentation/devicetree/bindings/iio/dac/maxim,max5522.yaml
+@@ -0,0 +1,49 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/ti,ads7924.yaml#
++$id: http://devicetree.org/schemas/iio/dac/maxim,max5522.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: TI ADS7924 4 channels 12 bits I2C analog to digital converter
++title: Maxim Integrated MAX5522 Dual 10-bit Voltage-Output SPI DACs
 +
 +maintainers:
-+  - Hugo Villeneuve <hvilleneuve@dimonoff.com>
++  - Angelo Dureghello <angelo.dureghello@timesys.com>
++  - Jonathan Cameron <jic23@kernel.org>
 +
 +description: |
-+  Texas Instruments ADS7924 4 channels 12 bits I2C analog to digital converter
-+
-+  Specifications:
-+    https://www.ti.com/lit/gpn/ads7924
++  Datasheet available at:
++  https://www.analog.com/en/products/max5522.html
 +
 +properties:
 +  compatible:
-+    const: ti,ads7924
++    const: maxim,max5522
 +
 +  reg:
 +    maxItems: 1
 +
-+  vref-supply:
-+    description:
-+      The regulator supply for the ADC reference voltage (AVDD)
-+
-+  reset-gpios:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+patternProperties:
-+  "^channel@[0-3]+$":
-+    $ref: adc.yaml
-+
-+    description: |
-+      Represents the external channels which are connected to the ADC.
-+
-+    properties:
-+      reg:
-+        description: |
-+          The channel number. It can have up to 4 channels numbered from 0 to 3.
-+        items:
-+          - minimum: 0
-+            maximum: 3
-+
-+      label: true
-+
-+    required:
-+      - reg
-+
-+    additionalProperties: false
-+
-+additionalProperties: false
++  vdd-supply: true
++  vrefin-supply: true
 +
 +required:
 +  - compatible
 +  - reg
-+  - vref-supply
-+  - "#address-cells"
-+  - "#size-cells"
++  - vrefin-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+    i2c {
++    spi {
 +        #address-cells = <1>;
 +        #size-cells = <0>;
 +
-+        adc@48 {
-+            compatible = "ti,ads7924";
-+            reg = <0x48>;
-+            vref-supply = <&ads7924_reg>;
-+            reset-gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
-+            interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
-+            interrupt-parent = <&gpio>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+            channel@0 {
-+                reg = <0>;
-+                label = "CH0";
-+            };
-+            channel@1 {
-+                reg = <1>;
-+                label = "CH1";
-+            };
-+            channel@2 {
-+                reg = <2>;
-+                label = "CH2";
-+            };
-+            channel@3 {
-+                reg = <3>;
-+                label = "CH3";
-+            };
++        dac@0 {
++            compatible = "maxim,max5522";
++            reg = <0>;
++            vrefin-supply = <&vref>;
 +        };
 +    };
 +...
 -- 
-2.30.2
+2.39.0
 
