@@ -2,82 +2,115 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C89A9C54EBE
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Jan 2023 13:11:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F90C54EBE
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Jan 2023 13:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbjAPNLU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 16 Jan 2023 08:11:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57538 "EHLO
+        id S229721AbjAPNUY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 16 Jan 2023 08:20:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231511AbjAPNLD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Jan 2023 08:11:03 -0500
-Received: from frolo.macqel.be (smtp2.macqel.be [109.135.2.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 39CE223C5A
-        for <linux-iio@vger.kernel.org>; Mon, 16 Jan 2023 05:08:46 -0800 (PST)
-Received: by frolo.macqel.be (Postfix, from userid 1000)
-        id 64538DF00AC; Mon, 16 Jan 2023 14:07:45 +0100 (CET)
-From:   Philippe De Muyter <Philippe.DeMuyter@macq.eu>
-To:     lorenzo@kernel.org, linux-iio@vger.kernel.org
-Cc:     Philippe De Muyter <phdm@macqel.be>
-Subject: [PATCH v2 1/2] iio: imu: st_lsm6dsx: fix naming of 'struct iio_info' in st_lsm6dsx_shub.c.
-Date:   Mon, 16 Jan 2023 14:07:13 +0100
-Message-Id: <1673874434-30750-2-git-send-email-Philippe.DeMuyter@macq.eu>
-X-Mailer: git-send-email 1.7.10.4
-In-Reply-To: <1673874434-30750-1-git-send-email-Philippe.DeMuyter@macq.eu>
+        with ESMTP id S230325AbjAPNUF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Jan 2023 08:20:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E3E1EFFC
+        for <linux-iio@vger.kernel.org>; Mon, 16 Jan 2023 05:19:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23D3B60FAA
+        for <linux-iio@vger.kernel.org>; Mon, 16 Jan 2023 13:19:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 308CDC433EF;
+        Mon, 16 Jan 2023 13:19:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673875171;
+        bh=Mp8TAjq633+3BxLiporCJS8PTNVc/gTIIpz6Ov6bWtE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IAKZvInVOFsrMgW7UPRCvvP766sLFmps+ClDb2DFpGwook23puIeA3YmhruQ9Gibv
+         azpd+2btbJg3vV50rtboJ/di0e5+gFjx3MZiTwtVXgeJJhkmCNS3RrAS5bj+BfLI+Y
+         56YHaiaabeRf4x52NaGqkhECz4MyH626JSWyQR2tVsoYqVTVMxLe/GwiOxiChSEPZ7
+         +b6fFsTvZkLKr0mAE/afWzCgQqbu4DMz58FdrGVJXRgtsOaRLr635Fhn400lHisELP
+         y0hCe8O6BfBOMsTmX3Xc+y86ni0QgKE0VmrfsZb5hezWgtaNZ14/CdlWLnptYiZYGr
+         TmS0Zh9pX4spg==
+Date:   Mon, 16 Jan 2023 14:19:27 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Philippe De Muyter <Philippe.DeMuyter@macq.eu>
+Cc:     linux-iio@vger.kernel.org, Philippe De Muyter <phdm@macqel.be>
+Subject: Re: [PATCH v2 2/2] iio: imu: st_lsm6dsx: add 'mount_matrix' sysfs
+ entry to gyro channel.
+Message-ID: <Y8VO38sQ80l0BBch@lore-desk>
 References: <1673874434-30750-1-git-send-email-Philippe.DeMuyter@macq.eu>
+ <1673874434-30750-3-git-send-email-Philippe.DeMuyter@macq.eu>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="C4cnZN8jqttA8C2i"
+Content-Disposition: inline
+In-Reply-To: <1673874434-30750-3-git-send-email-Philippe.DeMuyter@macq.eu>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Philippe De Muyter <phdm@macqel.be>
 
-We need the name 'st_lsm6dsx_ext_info' for the actual 'iio_chan_spec_ext_info'.
-Rename the 'st_lsm6dsx_ext_info' in st_lsm6dsx_shub.c to 'st_lsm6dsx_shub_info'.
-For consistency, replace also 'ext' by 'shub' in 'st_lsm6dsx_ext_attributes'
-and 'st_lsm6dsx_ext_attribute_group'.
+--C4cnZN8jqttA8C2i
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Philippe De Muyter <phdm@macqel.be>
----
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+> From: Philippe De Muyter <phdm@macqel.be>
+>=20
+> Signed-off-by: Philippe De Muyter <phdm@macqel.be>
+> ---
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>=20
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-index f2b64b4956a3..c1b444520d2a 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-@@ -704,18 +704,18 @@ static ssize_t st_lsm6dsx_shub_scale_avail(struct device *dev,
- static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(st_lsm6dsx_shub_sampling_freq_avail);
- static IIO_DEVICE_ATTR(in_scale_available, 0444,
- 		       st_lsm6dsx_shub_scale_avail, NULL, 0);
--static struct attribute *st_lsm6dsx_ext_attributes[] = {
-+static struct attribute *st_lsm6dsx_shub_attributes[] = {
- 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
- 	&iio_dev_attr_in_scale_available.dev_attr.attr,
- 	NULL,
- };
- 
--static const struct attribute_group st_lsm6dsx_ext_attribute_group = {
--	.attrs = st_lsm6dsx_ext_attributes,
-+static const struct attribute_group st_lsm6dsx_shub_attribute_group = {
-+	.attrs = st_lsm6dsx_shub_attributes,
- };
- 
--static const struct iio_info st_lsm6dsx_ext_info = {
--	.attrs = &st_lsm6dsx_ext_attribute_group,
-+static const struct iio_info st_lsm6dsx_shub_info = {
-+	.attrs = &st_lsm6dsx_shub_attribute_group,
- 	.read_raw = st_lsm6dsx_shub_read_raw,
- 	.write_raw = st_lsm6dsx_shub_write_raw,
- 	.hwfifo_set_watermark = st_lsm6dsx_set_watermark,
-@@ -737,7 +737,7 @@ st_lsm6dsx_shub_alloc_iiodev(struct st_lsm6dsx_hw *hw,
- 		return NULL;
- 
- 	iio_dev->modes = INDIO_DIRECT_MODE;
--	iio_dev->info = &st_lsm6dsx_ext_info;
-+	iio_dev->info = &st_lsm6dsx_shub_info;
- 
- 	sensor = iio_priv(iio_dev);
- 	sensor->id = id;
--- 
-2.31.1
+Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st=
+_lsm6dsx/st_lsm6dsx.h
+> index 5b6f195748fc..499fcf8875b4 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> @@ -93,7 +93,7 @@ enum st_lsm6dsx_hw_id {
+>  		.endianness =3D IIO_LE,					\
+>  	},								\
+>  	.event_spec =3D &st_lsm6dsx_event,				\
+> -	.ext_info =3D st_lsm6dsx_accel_ext_info,				\
+> +	.ext_info =3D st_lsm6dsx_ext_info,				\
+>  	.num_event_specs =3D 1,						\
+>  }
+> =20
+> @@ -113,6 +113,7 @@ enum st_lsm6dsx_hw_id {
+>  		.storagebits =3D 16,					\
+>  		.endianness =3D IIO_LE,					\
+>  	},								\
+> +	.ext_info =3D st_lsm6dsx_ext_info,				\
+>  }
+> =20
+>  struct st_lsm6dsx_reg {
+> @@ -528,7 +529,7 @@ st_lsm6dsx_device_set_enable(struct st_lsm6dsx_sensor=
+ *sensor, bool enable)
+>  }
+> =20
+>  static const
+> -struct iio_chan_spec_ext_info __maybe_unused st_lsm6dsx_accel_ext_info[]=
+ =3D {
+> +struct iio_chan_spec_ext_info __maybe_unused st_lsm6dsx_ext_info[] =3D {
+>  	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, st_lsm6dsx_get_mount_matrix),
+>  	{ }
+>  };
+> --=20
+> 2.31.1
+>=20
+
+--C4cnZN8jqttA8C2i
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY8VO3wAKCRA6cBh0uS2t
+rIUJAPwPsgXzT9CfKHeN1ZDHPv+6dBgDy9Oo0j/s098pAEbR4gD/caUWfxTQtukh
+kZbrw/BDx7PT+6GPgDX+/pWRSWbzfQE=
+=/KXU
+-----END PGP SIGNATURE-----
+
+--C4cnZN8jqttA8C2i--
