@@ -2,25 +2,24 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F5AC67871
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Jan 2023 22:10:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95022C54EBE
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Jan 2023 22:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235079AbjAPWKg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 16 Jan 2023 17:10:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
+        id S235138AbjAPWKe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 16 Jan 2023 17:10:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235036AbjAPWKH (ORCPT
+        with ESMTP id S235037AbjAPWKH (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Jan 2023 17:10:07 -0500
-X-Greylist: delayed 3072 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 Jan 2023 14:10:01 PST
-Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [IPv6:2001:4b7a:2000:18::169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D6A2A15C
+Received: from relay06.th.seeweb.it (relay06.th.seeweb.it [IPv6:2001:4b7a:2000:18::167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9802A9A4
         for <linux-iio@vger.kernel.org>; Mon, 16 Jan 2023 14:10:01 -0800 (PST)
 Received: from localhost.localdomain (94-211-6-86.cable.dynamic.v4.ziggo.nl [94.211.6.86])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 1EF3D3F251;
-        Mon, 16 Jan 2023 23:09:58 +0100 (CET)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 102FC3F260;
+        Mon, 16 Jan 2023 23:10:00 +0100 (CET)
 From:   Marijn Suijten <marijn.suijten@somainline.org>
 To:     phone-devel@vger.kernel.org, Andy Gross <agross@kernel.org>,
         Bjorn Andersson <andersson@kernel.org>,
@@ -35,49 +34,54 @@ Cc:     ~postmarketos/upstreaming@lists.sr.ht,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v2 0/5] iio: adc: qcom-spmi-vadc: Propagate fw node label to userspace
-Date:   Mon, 16 Jan 2023 23:09:04 +0100
-Message-Id: <20230116220909.196926-1-marijn.suijten@somainline.org>
+Subject: [RFC PATCH v2 3/5] iio: adc: qcom-spmi-adc5: Fall back to datasheet_name instead of fwnode name
+Date:   Mon, 16 Jan 2023 23:09:07 +0100
+Message-Id: <20230116220909.196926-4-marijn.suijten@somainline.org>
 X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230116220909.196926-1-marijn.suijten@somainline.org>
+References: <20230116220909.196926-1-marijn.suijten@somainline.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Implement read_label in qcom-spmi-vadc to see DT-specified label names
-in userspace.  At the same time clear up some documentation around
-extend_name to promote read_label, and normalize similar code in
-qcom-spmi-adc5.
+Since the migration to fwnode_get_name in commit 4f47a236a23d ("iio:
+adc: qcom-spmi-adc5: convert to device properties") the resulting
+adc5_channel_prop::channel_name (renamed from datasheet_name in the
+previous patch) - which is propagated into iio_chan_spec::extend_name -
+was containing the DT node name including @xx suffix if a "label"
+property is not present, while adc5_channels::datasheet_name was thus
+far set by the macros but always remained unread.  Put it to use instead
+of using a confusing name containing @xx in sysfs filenames (again, when
+"label" is not set).
 
-Changes since v1:
-- qcom-spmi-vadc: Use read_label instead of extend_name;
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+---
 
-New since v1:
-- core: Point users of extend_name field to read_label callback
-- qcom-spmi-adc5: Use datasheet_name string literal for
-  iio_chan_spec::datasheet_name;
-- qcom-spmi-adc5: Fall back to datasheet_name instead of
-  fwnode_get_name() for iio_chan_spec::extend_name (gets rid of @xx in
-  sysfs filenames and labels);
-- qcom-spmi-adc5: Remove unnecessary datasheet_name NULL check.
+Note that for this to make sense a successor to "arm64: dts: qcom: Use
+labels with generic node names for ADC channels" [1] will have to land,
+otherwise most channels that currently pull datasheet_name/extend_name
+from DT fall back to datasheet_name hardcoded in this driver.
 
-v1: https://lore.kernel.org/linux-arm-msm/20221106193018.270106-1-marijn.suijten@somainline.org/
+[1]: https://lore.kernel.org/linux-arm-msm/20221209215308.1781047-1-marijn.suijten@somainline.org/
 
-Marijn Suijten (5):
-  iio: core: Point users of extend_name field to read_label callback
-  iio: adc: qcom-spmi-adc5: Use driver datasheet_name instead of DT
-    label
-  iio: adc: qcom-spmi-adc5: Fall back to datasheet_name instead of
-    fwnode name
-  iio: adc: qcom-spmi-adc5: Remove unnecessary datasheet_name NULL check
-  iio: adc: qcom-spmi-vadc: Propagate fw node label to userspace
+ drivers/iio/adc/qcom-spmi-adc5.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/iio/adc/qcom-spmi-adc5.c | 15 +++++++--------
- drivers/iio/adc/qcom-spmi-vadc.c | 19 ++++++++++++++++++-
- include/linux/iio/iio.h          |  3 +++
- 3 files changed, 28 insertions(+), 9 deletions(-)
-
---
+diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
+index 26144a086fac..01aafd9df6c6 100644
+--- a/drivers/iio/adc/qcom-spmi-adc5.c
++++ b/drivers/iio/adc/qcom-spmi-adc5.c
+@@ -661,7 +661,7 @@ static int adc5_get_fw_channel_data(struct adc5_chip *adc,
+ 
+ 	ret = fwnode_property_read_string(fwnode, "label", &channel_name);
+ 	if (ret)
+-		channel_name = name;
++		channel_name = data->adc_chans[chan].datasheet_name;
+ 
+ 	prop->channel_name = channel_name;
+ 
+-- 
 2.39.0
 
