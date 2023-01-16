@@ -2,186 +2,127 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F0FC46467
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Jan 2023 21:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 458F1C54EBE
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Jan 2023 22:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233746AbjAPVS4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 16 Jan 2023 16:18:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60110 "EHLO
+        id S234911AbjAPWK1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 16 Jan 2023 17:10:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234266AbjAPVSw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Jan 2023 16:18:52 -0500
-Received: from relay03.th.seeweb.it (relay03.th.seeweb.it [5.144.164.164])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F5A1F5C7
-        for <linux-iio@vger.kernel.org>; Mon, 16 Jan 2023 13:18:50 -0800 (PST)
-Received: from SoMainline.org (94-211-6-86.cable.dynamic.v4.ziggo.nl [94.211.6.86])
+        with ESMTP id S235068AbjAPWKK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Jan 2023 17:10:10 -0500
+Received: from relay06.th.seeweb.it (relay06.th.seeweb.it [5.144.164.167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834A52B0A1
+        for <linux-iio@vger.kernel.org>; Mon, 16 Jan 2023 14:10:03 -0800 (PST)
+Received: from localhost.localdomain (94-211-6-86.cable.dynamic.v4.ziggo.nl [94.211.6.86])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 4D9B31F8F3;
-        Mon, 16 Jan 2023 22:18:47 +0100 (CET)
-Date:   Mon, 16 Jan 2023 22:18:46 +0100
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 5BB483F279;
+        Mon, 16 Jan 2023 23:10:01 +0100 (CET)
 From:   Marijn Suijten <marijn.suijten@somainline.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+To:     phone-devel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@somainline.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
         Martin Botka <martin.botka@somainline.org>,
         Jami Kettunen <jami.kettunen@somainline.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-        Luca Weiss <luca@z3ntu.xyz>, linux-arm-msm@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [RFC PATCH] iio: adc: qcom-spmi-vadc: Propagate fw node
- name/label to extend_name
-Message-ID: <20230116211846.qe52ysw53qswvogw@SoMainline.org>
-Mail-Followup-To: Marijn Suijten <marijn.suijten@somainline.org>,
-        Jonathan Cameron <jic23@kernel.org>, phone-devel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Martin Botka <martin.botka@somainline.org>,
-        Jami Kettunen <jami.kettunen@somainline.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-        Luca Weiss <luca@z3ntu.xyz>, linux-arm-msm@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-References: <20221106193018.270106-1-marijn.suijten@somainline.org>
- <20221106202445.fkobsyc3mohmzqod@SoMainline.org>
- <20221112162719.0ac87998@jic23-huawei>
- <20221130205414.6m4rfufc25hfzxmf@SoMainline.org>
- <20221203170656.7b65142b@jic23-huawei>
- <20221221223432.si2aasbleiicayfl@SoMainline.org>
- <20221223174445.7c607ebc@jic23-huawei>
+        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [RFC PATCH v2 5/5] iio: adc: qcom-spmi-vadc: Propagate fw node label to userspace
+Date:   Mon, 16 Jan 2023 23:09:09 +0100
+Message-Id: <20230116220909.196926-6-marijn.suijten@somainline.org>
+X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230116220909.196926-1-marijn.suijten@somainline.org>
+References: <20230116220909.196926-1-marijn.suijten@somainline.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221223174445.7c607ebc@jic23-huawei>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 2022-12-23 17:44:45, Jonathan Cameron wrote:
+Set the read_label() callback to return a friendly name provided in DT
+(firmware), in order to make in_{therm,voltage}X_label attributes show
+up in sysfs for userspace to consume a channel name.  This is
+particularly useful for custom thermistors being attached to otherwise
+generically named GPIOs, where the name is known by the board DT.
 
-<snip>
+If the channel name isn't set in DT, use the datasheet_name hardcoded in
+the driver instead.
 
-> > As in, as long as we don't touch extend_name which would affect sysfs
-> > names, changing the label returned by read_label is fine? 
-> 
-> Sticky corner, but I think we should be fine doing so on basis of changing
-> ABI we don't think anyone will notice. In lots of cases the label is effected
-> by DTS files that may change under the kernel anyway so hopefully no one is
-> relying on the value too much *crossed fingers*
+Note that this doesn't fall back to fwnode_get_name() as that provides
+suboptimally readable names, with an @xx address suffix from board DT.
 
-Not sure I'd go as far as implementing read_label in adc5 (just queued
-that up locally for vadc though and it's simple) only to get around
-extend_name, but we could do so.  That still leaves @xx in the filename
-and makes for general inconsistency when read_label (returned label name
-from sysfs) and extend_name (filename in sysfs) use different codepaths
-to determine their value.
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+---
+ drivers/iio/adc/qcom-spmi-vadc.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-> > And changing
-> > datasheet_name to only ever use the datasheet_name provided by the
-> > driver and never the name provided in DTS is also okay?
-> 
-> datasheet_name is internal to kernel only so can definitely change that
-> as long as we don't have any upstream users (I'm fairly sure there aren't any)
+diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+index bcff0f62b70e..f5c6f1f27b2c 100644
+--- a/drivers/iio/adc/qcom-spmi-vadc.c
++++ b/drivers/iio/adc/qcom-spmi-vadc.c
+@@ -84,6 +84,7 @@
+  *	that is an average of multiple measurements.
+  * @scale_fn_type: Represents the scaling function to convert voltage
+  *	physical units desired by the client for the channel.
++ * @channel_name: Channel name used in device tree.
+  */
+ struct vadc_channel_prop {
+ 	unsigned int channel;
+@@ -93,6 +94,7 @@ struct vadc_channel_prop {
+ 	unsigned int hw_settle_time;
+ 	unsigned int avg_samples;
+ 	enum vadc_scale_fn_type scale_fn_type;
++	const char *channel_name;
+ };
+ 
+ /**
+@@ -495,8 +497,18 @@ static int vadc_fwnode_xlate(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
++static int vadc_read_label(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan, char *label)
++{
++	struct vadc_priv *vadc = iio_priv(indio_dev);
++	const char *name = vadc->chan_props[chan->address].channel_name;
++
++	return sysfs_emit(label, "%s\n", name);
++}
++
+ static const struct iio_info vadc_info = {
+ 	.read_raw = vadc_read_raw,
++	.read_label = vadc_read_label,
+ 	.fwnode_xlate = vadc_fwnode_xlate,
+ };
+ 
+@@ -652,7 +664,7 @@ static int vadc_get_fw_channel_data(struct device *dev,
+ 				    struct vadc_channel_prop *prop,
+ 				    struct fwnode_handle *fwnode)
+ {
+-	const char *name = fwnode_get_name(fwnode);
++	const char *name = fwnode_get_name(fwnode), *label;
+ 	u32 chan, value, varr[2];
+ 	int ret;
+ 
+@@ -667,6 +679,11 @@ static int vadc_get_fw_channel_data(struct device *dev,
+ 		return -EINVAL;
+ 	}
+ 
++	ret = fwnode_property_read_string(fwnode, "label", &label);
++	if (ret)
++		label = vadc_chans[chan].datasheet_name;
++	prop->channel_name = label;
++
+ 	/* the channel has DT description */
+ 	prop->channel = chan;
+ 
+-- 
+2.39.0
 
-Ack, queued up for RFC v2.
-
-> > I am unfortunately completely unfamiliar with iio_map, and hope it
-> > doesn't distract too much from trying to add label files to QCom's SPMI
-> > VADC driver :)
-> 
-> Just think of it as the board file way of doing equivalent of what we have
-> to set up IIO consumers in DT. It's also used in driver that hard code
-> relationships with their consumers - not including this one so we should
-> be fine.
-
-Guess QCOM is all DT, so this shouldn't matter.
-
-<snip>
-
-> > > Ok. May make sense to use the datasheet name if noting better provided
-> > > for the label.  Assuming the datasheet names are them selves somewhat
-> > > useful information for a user.  
-> > 
-> > They're generated from the macro (hence capitalized) in VADC, manually
-> > written in ADC5.  Would it make sense to add handwritten string
-> > literals for this?
-> 
-> Not sure. I've rather lost track of where we are on this.
-
-I'll send a v2 RFC shortly with what we've accumulated thus far, and
-will make sure to mention this.  In short, in qcom-spmi-vadc.c there is:
-
-    .datasheet_name = __stringify(_dname),
-
-Which gives us a full-caps DIE_TEMP, for example, instead of a more
-friendly "die_temp" string literal in qcom-spmi-adc5.c.  Not a
-requirement for my patches, this should all go in separate bits.
-
-<snip>
-
-> > Feed into read_label when no label was otherwise provided in DTS, but
-> > always feed into iio_chan_spec::datasheet_name since we discussed that
-> > this should represent the name of the part (e.g. PMIC), not the board
-> > and way in which it consumes the channel.
-> 
-> Should be the name of the pin on the part, but otherwise agreed.
-
-Ack, I think that's what we have in the qcom-spmi-vadc/adc5 drivers
-currently.
-
-<snip>
-
-> I hate it when we break ABI and don't notice, precisely because it then
-> becomes guessing game on which one people might be relying on.
-> 
-> Let's take the view it is the older one without the @xx? 
-> So strip that off as a fix that we backport.
-
-I was intending to send a patch that falls back to
-adc5_channels::datasheet_name when no label is supplied (and ignoring
-fwnode_name for use in extend_name altogether) but that's breaking ABI
-in a slightly different way... and depends on my "arm64: dts: qcom: Use
-labels with generic node names for ADC channels" [1] RFC being resent
-and actually landing.
-
-[1]: https://lore.kernel.org/linux-arm-msm/20221209215308.1781047-1-marijn.suijten@somainline.org/
-
-Will probably be shot down but I'll give it a try anyway.
-
-<snip>
-
-> I agree that a cross reference for that 'other' use of extend_name
-> would make sense and that it can be overridden.  Though the override is
-> kind of the common case, if you are looking at extend_name docs you
-> are presumably in the case where such docs would help.
-> Patches for docs welcome :) 
-
-I'll see what I can add :)
-
-> > Regardless of that VADC/ADC5 do some _really confusing_ things, passing
-> > strings around in various weird ways (or not), and it took some time to
-> > keep the various similar structs apart :)
-> 
-> I'm feeling a bit guilty I never noticed this insanity at the time.
-> I blame my younger self.
-
-Don't worry, we live and learn; just ABI (for something I doubt anyone
-uses / cares about...) biting us every once in a while.
-
-> Have a good break if you are having one.
-
-Hope you had a good one; mine was filled with hardly any free time for
-hobbies like the mainline kernel :)
-
-- Marijn
