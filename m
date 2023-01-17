@@ -2,106 +2,108 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A3EFC3DA78
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Jan 2023 21:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A8FC38159
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Jan 2023 23:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229537AbjAQVev (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Jan 2023 16:34:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
+        id S229489AbjAQXIo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Jan 2023 18:08:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbjAQVbk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Jan 2023 16:31:40 -0500
-Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0BB58999;
-        Tue, 17 Jan 2023 11:57:25 -0800 (PST)
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-12c8312131fso33200695fac.4;
-        Tue, 17 Jan 2023 11:57:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WoQ1Ujnm/vZWONGjo7EJYTRd9zE4o9AG/5l154hNW+Y=;
-        b=nxaZklT82ZHMQ5DyC+GUFan+usFVL7TEGBKGoACetZC9STI+05e7f49rPbkTd/OZY4
-         1N6LRfSpBk7qfBjOCFd2L7xx3rRWA2B6WTsmxIKS07OnhSCRrEajyhP5DShvNc3Ui7UD
-         fP/DxdABwUw+vvW2zfLGM+XktEvgRMkyLY+qiwMi7znCI2OnbqGIKVeubbtBy065GOh4
-         ABPUFhdjMac0N2NynPNYNnWJgWmqd+efprqgj4SK5fdcU4unGggj83S3vjl9Pe5Hy46G
-         5ZLrJKMykfaky6rTT2A6yV0DarIUflEuGWNQMMSJrlmXT16vEB+rvtY2D1iJ8T3cU2gS
-         2KIQ==
-X-Gm-Message-State: AFqh2kpnDNMFgkrD3ONsJOerTeRXO4QqOE68BEoxx3OUy5VcNRv11oFN
-        /rUO/9d9aP6h0cVcQuzf4Q==
-X-Google-Smtp-Source: AMrXdXsWU+wMIMJZJ0i92BSHODRi1mci32oCzZVAgx/IGlmoFNzIN6Vsk3DXaRLgbmBP86jPqZIr8w==
-X-Received: by 2002:a05:6870:588c:b0:15f:6de0:b74 with SMTP id be12-20020a056870588c00b0015f6de00b74mr1595745oab.19.1673985444692;
-        Tue, 17 Jan 2023 11:57:24 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id q187-20020a4a4bc4000000b004a3c359fdaesm15462457ooa.30.2023.01.17.11.57.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jan 2023 11:57:24 -0800 (PST)
-Received: (nullmailer pid 3536600 invoked by uid 1000);
-        Tue, 17 Jan 2023 19:57:23 -0000
-Date:   Tue, 17 Jan 2023 13:57:23 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?Q?Micha=C5=82?= Grzelak <mchl.grzlk@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, cosmin.tanislav@analog.com,
-        jic23@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: iio: addac: adi,74115: Add missing maxItems
-Message-ID: <20230117195723.GA3527095-robh@kernel.org>
-References: <20230115022558.145076-1-mchl.grzlk@gmail.com>
+        with ESMTP id S229872AbjAQXHq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Jan 2023 18:07:46 -0500
+Received: from m-r2.th.seeweb.it (m-r2.th.seeweb.it [IPv6:2001:4b7a:2000:18::171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 127AE44BC8;
+        Tue, 17 Jan 2023 14:42:56 -0800 (PST)
+Received: from SoMainline.org (94-211-6-86.cable.dynamic.v4.ziggo.nl [94.211.6.86])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id DF99E3F428;
+        Tue, 17 Jan 2023 23:42:53 +0100 (CET)
+Date:   Tue, 17 Jan 2023 23:42:51 +0100
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+        openbmc@lists.ozlabs.org, linux-imx@nxp.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-iio@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        chrome-platform@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-arm-msm@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Haibo Chen <haibo.chen@nxp.com>
+Subject: Re: [PATCH v3 12/15] iio: adc: qcom-spmi-adc5: convert to device
+ properties
+Message-ID: <20230117224251.wzxexdlfe5ydzjw5@SoMainline.org>
+References: <20220715122903.332535-1-nuno.sa@analog.com>
+ <20220715122903.332535-13-nuno.sa@analog.com>
+ <20220806192048.0ca41cc5@jic23-huawei>
+ <20230116204452.il4gase2szipeexz@SoMainline.org>
+ <CAHp75VdX9sFgn9STyzwcDCK1KYbU00ejFNcEP3FVnLk5J=Pktg@mail.gmail.com>
+ <CAHp75VdTftm1BE21rH1HVHiwUye-0Dvc66uCK2LE2qF4_zA6hg@mail.gmail.com>
+ <CAHp75VdyCA7mQdm--kg=hUbmQqX4-jfFMHgLxref5mNSM1vnMA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230115022558.145076-1-mchl.grzlk@gmail.com>
+In-Reply-To: <CAHp75VdyCA7mQdm--kg=hUbmQqX4-jfFMHgLxref5mNSM1vnMA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Jan 15, 2023 at 03:25:58AM +0100, Michał Grzelak wrote:
-> Running 'make dt_binding_check' gives following warnings:
-> iio/addac/adi,ad74115.example.dtb:
-> addac@0: adi,conv2-range-microvolt: 'oneOf' conditional failed, one must
-> be fixed:
->         4282967296 is not one of [-2500000, 0]
->         4282967296 is not one of [-12000000, 0]
->         -2500000 was expected
->         -104000 was expected
->         625000 was expected
+On 2023-01-17 11:40:42, Andy Shevchenko wrote:
+<snip>
+> > > > This CC just surfaced in my inbox while searching for our current
+> > > > discussion around missing labels in qcom-spmi-vadc - and on the side a
+> > > > userspace @xx label name ABI break (in qcom-spmi-adc5) caused by this
+> > > > patch's fwnode_get_name change - we could've caught it if I had not
+> > > > accidentally marked it as read and/or forgot about it.  My apologies.
+> > >
+> > > Does the following addition to the top of the
+> > > adc5_get_fw_channel_data() fix the issue?
+> > >
+> > > +       name = devm_kasprintf(adc->dev, GFP_KERNEL, "%pfwP", fwnode);
+> > > +       if (!name)
+> > > +               return -ENOMEM;
+> >
+> > Okay, it probably the same, so it might need additional code to
+> >
+> > + name[strchrnul(name, '@') - name] = '\0';
 > 
-> addac@0: Unevaluated properties are not allowed
-> ('adi,conv2-range-microvolt' was unexpected)
->         From schema: iio/addac/adi,ad74115.yaml
+> I have just sent a formal patch, please test on top of non-working kernel.
 
-I think your dtschema version is out of date. I don't see this issue. 
-The issue has to do with signed types and there have been some fixes 
-related to them.
+I would've preferred to fix this in the same way as qcom-spmi-vadc by
+implementing read_label instead and basing it on the DT label or driver
+string literals instead [1], but dropping extend_name (hence changing
+sysfs filenames once again) would be considered an ABI break.
 
-> As every property with standard suffix has inferred type of array of
-> cells, adi,conv2-range-microvolt is required by meta-schemas/cell.yaml
-> to have maxItems >= 2. Fix these errors by setting maxItems to 2.
+I've instead gone for a similar change that also ignores the node name
+in favour of falling back to the driver string literal (if no "label"
+property is available) while retaining extend_label [3] and the -
+however ugly they are - sysfs filenames, but that'll likely get rejected
+as strictly being an ABI break as well, not in the least because DT
+needs to be patched up [3] for it to work out.
 
-The meta-schemas have nothing to do with warnings in examples. It's like 
-this: meta-schemas check schemas check examples
+I'll at least test your patch when getting back to one of these devices.
 
-> 
-> Signed-off-by: Michał Grzelak <mchl.grzlk@gmail.com>
-> ---
->  Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml b/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
-> index 72d2e910f206..cdeb04184f5a 100644
-> --- a/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
-> +++ b/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
-> @@ -87,6 +87,7 @@ properties:
->  
->    adi,conv2-range-microvolt:
->      description: Conversion range for ADC conversion 2.
-> +    maxItems: 2
->      oneOf:
->        - items:
->            - enum: [-2500000, 0]
-> -- 
-> 2.37.3
-> 
+- Marijn
+
+[1]: https://lore.kernel.org/linux-arm-msm/20230116220909.196926-6-marijn.suijten@somainline.org/
+[2]: https://lore.kernel.org/linux-arm-msm/20230116220909.196926-4-marijn.suijten@somainline.org/
+[3]: https://lore.kernel.org/linux-arm-msm/20221209215308.1781047-1-marijn.suijten@somainline.org/
