@@ -2,171 +2,335 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B14C54E76
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Jan 2023 17:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E43C54E76
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Jan 2023 20:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235100AbjAQRVg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Jan 2023 12:21:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48574 "EHLO
+        id S233110AbjAQUJW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Jan 2023 15:09:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235039AbjAQRVH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Jan 2023 12:21:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911F9367D7
-        for <linux-iio@vger.kernel.org>; Tue, 17 Jan 2023 09:19:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673975964;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ewfumNS1FYmWl7FUU1gFFTcCMXASO4AeNvtcvaqR0WA=;
-        b=LCuKVllbKS2QAuiOijQhQ3+W02AyvMXsVqR8beV70QT1P9cgG0w5p1ZmxyRjMLEGScRTsH
-        nN0kyzhvCzxTOv/UKC32jkc7BPYYTBnyXndTzXWBfOGSNFBs9cn2T6Pl5M1I3DHz19LHt8
-        nZs3SKTeexdo3ZjjGZ1PTR4KWj1P9y0=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-465-ovkxQ9wuPhKajL-H5LSG1g-1; Tue, 17 Jan 2023 12:19:23 -0500
-X-MC-Unique: ovkxQ9wuPhKajL-H5LSG1g-1
-Received: by mail-ej1-f70.google.com with SMTP id qb2-20020a1709077e8200b00842b790008fso22429520ejc.21
-        for <linux-iio@vger.kernel.org>; Tue, 17 Jan 2023 09:19:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ewfumNS1FYmWl7FUU1gFFTcCMXASO4AeNvtcvaqR0WA=;
-        b=Y/mWnwrYI+LaUYq1flSzL4qiSxX+nyDsmMjm499Y+Aw7zpkQ/EzroX/orEpBXLAo+v
-         DVlj2HCjJqvnhbyaULfNjHTiSlhDgsnxpxXeXQbVjbI7IHB6TICL0dJT4o2e9nAMOQV/
-         M6BfHzJiv7JBLj29lwz45Vs2/utXEbfOMRhFSR9MZ8GUkaPX4tfhhOsZp2V+CKR2afBg
-         GDLjvGfqgzEcf+p2yzKIzUxsZd1XBG+urbobzmxQ/drBdIlDiyJ4OP6Y7aIqDO0Fh8rn
-         94OTMzqTGt+Dz6A16YO95bPfRDnRh+aSn2+HMgUCv7vnT2P9XF4snqXlz0rie99bJRhZ
-         /kGA==
-X-Gm-Message-State: AFqh2kpfUEioUphAYj6RhPY1GgVuUVIBwF8V3zO0LmFwVfsBJ01+SzMl
-        5KGRI5AcSRBV7D2AGjFHWLf2u/o/nODJuziWZeay+dlZj6yRGPbAIUB92TlMJeaEpnA3Kj2zsLF
-        YBL75nQMo/0jpwQ1rkkQh
-X-Received: by 2002:a17:906:4684:b0:86f:b99c:ac8d with SMTP id a4-20020a170906468400b0086fb99cac8dmr3783652ejr.44.1673975960610;
-        Tue, 17 Jan 2023 09:19:20 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXtAZJ8m8Lta0dHgrvmfc7q8aPjIVicIKus68iWmBIaT/AmiMxP7pYPNDX7CjgN5HodtbJTYdg==
-X-Received: by 2002:a17:906:4684:b0:86f:b99c:ac8d with SMTP id a4-20020a170906468400b0086fb99cac8dmr3783645ejr.44.1673975960446;
-        Tue, 17 Jan 2023 09:19:20 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c32:7800:5bfa:a036:83f0:f9ec? (2001-1c00-0c32-7800-5bfa-a036-83f0-f9ec.cable.dynamic.v6.ziggo.nl. [2001:1c00:c32:7800:5bfa:a036:83f0:f9ec])
-        by smtp.gmail.com with ESMTPSA id hq15-20020a1709073f0f00b0084c4b87a69csm13425121ejc.153.2023.01.17.09.19.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Jan 2023 09:19:19 -0800 (PST)
-Message-ID: <5c95d25b-ff26-053b-efc8-5f6fd979c7e2@redhat.com>
-Date:   Tue, 17 Jan 2023 18:19:19 +0100
+        with ESMTP id S234067AbjAQUHO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Jan 2023 15:07:14 -0500
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5550C46D7F
+        for <linux-iio@vger.kernel.org>; Tue, 17 Jan 2023 11:00:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1673982026;
+  x=1705518026;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=dHH9T+lTlvszF/h/7EbtIRUggJMtqeajLkeifWusHXo=;
+  b=XumiOwuPt6HxHCD1kIt4nt0OrZYeS0t7AqWuRlz19tmSdTUDWte6AxRg
+   miOAktzhLJrOwG5i9Em+nCfcGR6hw4sneSHmE34JtTyDeF/tvGzwU/1CZ
+   Rd6/mGQV8qAgUcLa5ceuxwpq7rOclS2DBbNY7eo5qm2lQwK1bN744vRRz
+   cDBXP85c8JKnUqpcv4AJRT4cLq0oYEzgsnbdQ1flLZQ9BXTia7nIhAHQa
+   1Cz+ieMFMkEc+c+wGSryXhkSB26V6LLeuUVWHP9SxJTaySQG9Akra6pAZ
+   OnVugmWyyGfUXbhVdC3BY8J1P5o1SKDQS/i2RnHEu9zYqnZ5x/EX9yzdZ
+   Q==;
+From:   =?UTF-8?q?M=C3=A5rten=20Lindahl?= <marten.lindahl@axis.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        <linux-iio@vger.kernel.org>, <kernel@axis.com>,
+        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <marten.lindahl@axis.com>
+Subject: [PATCH v5 1/3] iio: light: vcnl4000: Prepare for more generic setup
+Date:   Tue, 17 Jan 2023 20:00:15 +0100
+Message-ID: <20230117190017.3789181-2-marten.lindahl@axis.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230117190017.3789181-1-marten.lindahl@axis.com>
+References: <20230117190017.3789181-1-marten.lindahl@axis.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH] iio: light: cm32181: Fix PM support on system with 2 I2C
- resources
-Content-Language: en-US, nl
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        ktsai@capellamicro.com, jic23@kernel.org, lars@metafoo.de
-Cc:     Wahaj <wahajaved@protonmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230117160951.282581-1-kai.heng.feng@canonical.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20230117160951.282581-1-kai.heng.feng@canonical.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+In order to allow the chip_spec array reference the function pointers
+for interrupts, the code for these functions need to be moved above the
+chip_spec array.
 
-On 1/17/23 17:09, Kai-Heng Feng wrote:
-> Commit c1e62062ff54 ("iio: light: cm32181: Handle CM3218 ACPI devices
-> with 2 I2C resources") creates a second client for the actual I2C
-> address, but the "struct device" passed to PM ops is the first client
-> that can't talk to the sensor.
-> 
-> That means the I2C transfers in both suspend and resume routines can
-> fail and blocking the whole suspend process.
-> 
-> Instead of using the first client for I2C transfer, store the cm32181
-> private struct on both cases so the PM ops can get the correct I2C
-> client to perfrom suspend and resume.
-> 
-> Fixes: 68c1b3dd5c48 ("iio: light: cm32181: Add PM support")
-> Tested-by: Wahaj <wahajaved@protonmail.com>
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+This is a prestep to support a more generic setup of interrupts.
 
-Thank you for this fix. I had looking into this on my todo list,
-since I have been seeing some bug reports about this too.
+Signed-off-by: Mårten Lindahl <marten.lindahl@axis.com>
+---
+ drivers/iio/light/vcnl4000.c | 256 +++++++++++++++++------------------
+ 1 file changed, 128 insertions(+), 128 deletions(-)
 
-One remark inline:
-
-> ---
->  drivers/iio/light/cm32181.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-> index 001055d097509..0f319c891353c 100644
-> --- a/drivers/iio/light/cm32181.c
-> +++ b/drivers/iio/light/cm32181.c
-> @@ -440,6 +440,8 @@ static int cm32181_probe(struct i2c_client *client)
->  	if (!indio_dev)
->  		return -ENOMEM;
->  
-> +	i2c_set_clientdata(client, indio_dev);
-> +
-
-Why move this up, the suspend/resume callbacks cannot run until
-probe() completes, so no need for this change.
-
->  	/*
->  	 * Some ACPI systems list 2 I2C resources for the CM3218 sensor, the
->  	 * SMBus Alert Response Address (ARA, 0x0c) and the actual I2C address.
-> @@ -458,9 +460,9 @@ static int cm32181_probe(struct i2c_client *client)
->  		client = i2c_acpi_new_device(dev, 1, &board_info);
->  		if (IS_ERR(client))
->  			return PTR_ERR(client);
-> -	}
->  
-> -	i2c_set_clientdata(client, indio_dev);
-> +		i2c_set_clientdata(client, indio_dev);
-> +	}
-
-And moving it inside the if block here (instead of just dropping it)
-is also weird. I guess you meant to just delete it since you moved it up.
-
->  
->  	cm32181 = iio_priv(indio_dev);
->  	cm32181->client = client;
-
-Also note that the ->client used in suspend/resume now is not set until
-here, so moving the i2c_set_clientdata() up really does not do anything.
-
-I beleive it would be best to just these 2 hunks from the patch and
-only keep the changes to the suspend/resume callbacks.
-
-Regards,
-
-Hans
-
-
-> @@ -490,7 +492,8 @@ static int cm32181_probe(struct i2c_client *client)
->  
->  static int cm32181_suspend(struct device *dev)
->  {
-> -	struct i2c_client *client = to_i2c_client(dev);
-> +	struct cm32181_chip *cm32181 = iio_priv(dev_get_drvdata(dev));
-> +	struct i2c_client *client = cm32181->client;
->  
->  	return i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
->  					 CM32181_CMD_ALS_DISABLE);
-> @@ -498,8 +501,8 @@ static int cm32181_suspend(struct device *dev)
->  
->  static int cm32181_resume(struct device *dev)
->  {
-> -	struct i2c_client *client = to_i2c_client(dev);
->  	struct cm32181_chip *cm32181 = iio_priv(dev_get_drvdata(dev));
-> +	struct i2c_client *client = cm32181->client;
->  
->  	return i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
->  					 cm32181->conf_regs[CM32181_REG_ADDR_CMD]);
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index cc1a2062e76d..11b54b57e592 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -887,6 +887,134 @@ static ssize_t vcnl4000_read_near_level(struct iio_dev *indio_dev,
+ 	return sprintf(buf, "%u\n", data->near_level);
+ }
+ 
++static irqreturn_t vcnl4010_irq_thread(int irq, void *p)
++{
++	struct iio_dev *indio_dev = p;
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++	unsigned long isr;
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, VCNL4010_ISR);
++	if (ret < 0)
++		goto end;
++
++	isr = ret;
++
++	if (isr & VCNL4010_INT_THR) {
++		if (test_bit(VCNL4010_INT_THR_LOW, &isr)) {
++			iio_push_event(indio_dev,
++				       IIO_UNMOD_EVENT_CODE(
++					       IIO_PROXIMITY,
++					       1,
++					       IIO_EV_TYPE_THRESH,
++					       IIO_EV_DIR_FALLING),
++				       iio_get_time_ns(indio_dev));
++		}
++
++		if (test_bit(VCNL4010_INT_THR_HIGH, &isr)) {
++			iio_push_event(indio_dev,
++				       IIO_UNMOD_EVENT_CODE(
++					       IIO_PROXIMITY,
++					       1,
++					       IIO_EV_TYPE_THRESH,
++					       IIO_EV_DIR_RISING),
++				       iio_get_time_ns(indio_dev));
++		}
++
++		i2c_smbus_write_byte_data(data->client, VCNL4010_ISR,
++					  isr & VCNL4010_INT_THR);
++	}
++
++	if (isr & VCNL4010_INT_DRDY && iio_buffer_enabled(indio_dev))
++		iio_trigger_poll_chained(indio_dev->trig);
++
++end:
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t vcnl4010_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++	const unsigned long *active_scan_mask = indio_dev->active_scan_mask;
++	u16 buffer[8] __aligned(8) = {0}; /* 1x16-bit + naturally aligned ts */
++	bool data_read = false;
++	unsigned long isr;
++	int val = 0;
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, VCNL4010_ISR);
++	if (ret < 0)
++		goto end;
++
++	isr = ret;
++
++	if (test_bit(0, active_scan_mask)) {
++		if (test_bit(VCNL4010_INT_PROXIMITY, &isr)) {
++			ret = vcnl4000_read_data(data,
++						 VCNL4000_PS_RESULT_HI,
++						 &val);
++			if (ret < 0)
++				goto end;
++
++			buffer[0] = val;
++			data_read = true;
++		}
++	}
++
++	ret = i2c_smbus_write_byte_data(data->client, VCNL4010_ISR,
++					isr & VCNL4010_INT_DRDY);
++	if (ret < 0)
++		goto end;
++
++	if (!data_read)
++		goto end;
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
++					   iio_get_time_ns(indio_dev));
++
++end:
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++}
++
++static int vcnl4010_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++	int ret;
++	int cmd;
++
++	/* Do not enable the buffer if we are already capturing events. */
++	if (vcnl4010_is_in_periodic_mode(data))
++		return -EBUSY;
++
++	ret = i2c_smbus_write_byte_data(data->client, VCNL4010_INT_CTRL,
++					VCNL4010_INT_PROX_EN);
++	if (ret < 0)
++		return ret;
++
++	cmd = VCNL4000_SELF_TIMED_EN | VCNL4000_PROX_EN;
++	return i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND, cmd);
++}
++
++static int vcnl4010_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, VCNL4010_INT_CTRL, 0);
++	if (ret < 0)
++		return ret;
++
++	return i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND, 0);
++}
++
++static const struct iio_buffer_setup_ops vcnl4010_buffer_ops = {
++	.postenable = &vcnl4010_buffer_postenable,
++	.predisable = &vcnl4010_buffer_predisable,
++};
++
+ static const struct iio_chan_spec_ext_info vcnl4000_ext_info[] = {
+ 	{
+ 		.name = "nearlevel",
+@@ -1030,134 +1158,6 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+ 	},
+ };
+ 
+-static irqreturn_t vcnl4010_irq_thread(int irq, void *p)
+-{
+-	struct iio_dev *indio_dev = p;
+-	struct vcnl4000_data *data = iio_priv(indio_dev);
+-	unsigned long isr;
+-	int ret;
+-
+-	ret = i2c_smbus_read_byte_data(data->client, VCNL4010_ISR);
+-	if (ret < 0)
+-		goto end;
+-
+-	isr = ret;
+-
+-	if (isr & VCNL4010_INT_THR) {
+-		if (test_bit(VCNL4010_INT_THR_LOW, &isr)) {
+-			iio_push_event(indio_dev,
+-				       IIO_UNMOD_EVENT_CODE(
+-					       IIO_PROXIMITY,
+-					       1,
+-					       IIO_EV_TYPE_THRESH,
+-					       IIO_EV_DIR_FALLING),
+-				       iio_get_time_ns(indio_dev));
+-		}
+-
+-		if (test_bit(VCNL4010_INT_THR_HIGH, &isr)) {
+-			iio_push_event(indio_dev,
+-				       IIO_UNMOD_EVENT_CODE(
+-					       IIO_PROXIMITY,
+-					       1,
+-					       IIO_EV_TYPE_THRESH,
+-					       IIO_EV_DIR_RISING),
+-				       iio_get_time_ns(indio_dev));
+-		}
+-
+-		i2c_smbus_write_byte_data(data->client, VCNL4010_ISR,
+-					  isr & VCNL4010_INT_THR);
+-	}
+-
+-	if (isr & VCNL4010_INT_DRDY && iio_buffer_enabled(indio_dev))
+-		iio_trigger_poll_chained(indio_dev->trig);
+-
+-end:
+-	return IRQ_HANDLED;
+-}
+-
+-static irqreturn_t vcnl4010_trigger_handler(int irq, void *p)
+-{
+-	struct iio_poll_func *pf = p;
+-	struct iio_dev *indio_dev = pf->indio_dev;
+-	struct vcnl4000_data *data = iio_priv(indio_dev);
+-	const unsigned long *active_scan_mask = indio_dev->active_scan_mask;
+-	u16 buffer[8] __aligned(8) = {0}; /* 1x16-bit + naturally aligned ts */
+-	bool data_read = false;
+-	unsigned long isr;
+-	int val = 0;
+-	int ret;
+-
+-	ret = i2c_smbus_read_byte_data(data->client, VCNL4010_ISR);
+-	if (ret < 0)
+-		goto end;
+-
+-	isr = ret;
+-
+-	if (test_bit(0, active_scan_mask)) {
+-		if (test_bit(VCNL4010_INT_PROXIMITY, &isr)) {
+-			ret = vcnl4000_read_data(data,
+-						 VCNL4000_PS_RESULT_HI,
+-						 &val);
+-			if (ret < 0)
+-				goto end;
+-
+-			buffer[0] = val;
+-			data_read = true;
+-		}
+-	}
+-
+-	ret = i2c_smbus_write_byte_data(data->client, VCNL4010_ISR,
+-					isr & VCNL4010_INT_DRDY);
+-	if (ret < 0)
+-		goto end;
+-
+-	if (!data_read)
+-		goto end;
+-
+-	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
+-					   iio_get_time_ns(indio_dev));
+-
+-end:
+-	iio_trigger_notify_done(indio_dev->trig);
+-	return IRQ_HANDLED;
+-}
+-
+-static int vcnl4010_buffer_postenable(struct iio_dev *indio_dev)
+-{
+-	struct vcnl4000_data *data = iio_priv(indio_dev);
+-	int ret;
+-	int cmd;
+-
+-	/* Do not enable the buffer if we are already capturing events. */
+-	if (vcnl4010_is_in_periodic_mode(data))
+-		return -EBUSY;
+-
+-	ret = i2c_smbus_write_byte_data(data->client, VCNL4010_INT_CTRL,
+-					VCNL4010_INT_PROX_EN);
+-	if (ret < 0)
+-		return ret;
+-
+-	cmd = VCNL4000_SELF_TIMED_EN | VCNL4000_PROX_EN;
+-	return i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND, cmd);
+-}
+-
+-static int vcnl4010_buffer_predisable(struct iio_dev *indio_dev)
+-{
+-	struct vcnl4000_data *data = iio_priv(indio_dev);
+-	int ret;
+-
+-	ret = i2c_smbus_write_byte_data(data->client, VCNL4010_INT_CTRL, 0);
+-	if (ret < 0)
+-		return ret;
+-
+-	return i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND, 0);
+-}
+-
+-static const struct iio_buffer_setup_ops vcnl4010_buffer_ops = {
+-	.postenable = &vcnl4010_buffer_postenable,
+-	.predisable = &vcnl4010_buffer_predisable,
+-};
+-
+ static const struct iio_trigger_ops vcnl4010_trigger_ops = {
+ 	.validate_device = iio_trigger_validate_own_device,
+ };
+-- 
+2.30.2
 
