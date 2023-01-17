@@ -2,154 +2,106 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5DEDC677F1
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Jan 2023 20:11:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A3EFC3DA78
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Jan 2023 21:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232113AbjAQULA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Jan 2023 15:11:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
+        id S229537AbjAQVev (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Jan 2023 16:34:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234118AbjAQUHO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Jan 2023 15:07:14 -0500
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55E1149946
-        for <linux-iio@vger.kernel.org>; Tue, 17 Jan 2023 11:00:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1673982025;
-  x=1705518025;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2cE/D7/AWHle2fL6cEQmyRZO5FHW0lV6AazzdzK/LRU=;
-  b=QpjfCYoaCnnkKhDpcA5GXFJ5Z9qX/WmmR0VjenzTyx8nlQA2+DLc5WS1
-   5TWI5AFYw720NUubFuzuo8ikfRTW9ezplfkEOuDYsU+i6wvAn3Kv4g0Cj
-   9yu+9HOHMdl6jOujRtsgFMvtnaj/FmLLWsjqiFWMCtSqqCX/6gK9/5tb/
-   kPjESH38t3ltu+rpQ4CdnvsRxq4YDSEyt8S77WfPTwEyie/XGKpxQInDE
-   o5MDd1skkS51isgFSL3gldMDGpSidUt+b+ADwdBpctmVNQyahRIxNczQ5
-   AlW0c/C+Kq8DWqIoKmuJJZOof/5FxLueHoGUXJBJu7xunn5GM+pglG4L2
-   g==;
-From:   =?UTF-8?q?M=C3=A5rten=20Lindahl?= <marten.lindahl@axis.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        <linux-iio@vger.kernel.org>, <kernel@axis.com>,
-        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <marten.lindahl@axis.com>
-Subject: [PATCH v5 2/3] iio: light: vcnl4000: Make irq handling more generic
-Date:   Tue, 17 Jan 2023 20:00:16 +0100
-Message-ID: <20230117190017.3789181-3-marten.lindahl@axis.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230117190017.3789181-1-marten.lindahl@axis.com>
-References: <20230117190017.3789181-1-marten.lindahl@axis.com>
+        with ESMTP id S229774AbjAQVbk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Jan 2023 16:31:40 -0500
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0BB58999;
+        Tue, 17 Jan 2023 11:57:25 -0800 (PST)
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-12c8312131fso33200695fac.4;
+        Tue, 17 Jan 2023 11:57:25 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=WoQ1Ujnm/vZWONGjo7EJYTRd9zE4o9AG/5l154hNW+Y=;
+        b=nxaZklT82ZHMQ5DyC+GUFan+usFVL7TEGBKGoACetZC9STI+05e7f49rPbkTd/OZY4
+         1N6LRfSpBk7qfBjOCFd2L7xx3rRWA2B6WTsmxIKS07OnhSCRrEajyhP5DShvNc3Ui7UD
+         fP/DxdABwUw+vvW2zfLGM+XktEvgRMkyLY+qiwMi7znCI2OnbqGIKVeubbtBy065GOh4
+         ABPUFhdjMac0N2NynPNYNnWJgWmqd+efprqgj4SK5fdcU4unGggj83S3vjl9Pe5Hy46G
+         5ZLrJKMykfaky6rTT2A6yV0DarIUflEuGWNQMMSJrlmXT16vEB+rvtY2D1iJ8T3cU2gS
+         2KIQ==
+X-Gm-Message-State: AFqh2kpnDNMFgkrD3ONsJOerTeRXO4QqOE68BEoxx3OUy5VcNRv11oFN
+        /rUO/9d9aP6h0cVcQuzf4Q==
+X-Google-Smtp-Source: AMrXdXsWU+wMIMJZJ0i92BSHODRi1mci32oCzZVAgx/IGlmoFNzIN6Vsk3DXaRLgbmBP86jPqZIr8w==
+X-Received: by 2002:a05:6870:588c:b0:15f:6de0:b74 with SMTP id be12-20020a056870588c00b0015f6de00b74mr1595745oab.19.1673985444692;
+        Tue, 17 Jan 2023 11:57:24 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id q187-20020a4a4bc4000000b004a3c359fdaesm15462457ooa.30.2023.01.17.11.57.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Jan 2023 11:57:24 -0800 (PST)
+Received: (nullmailer pid 3536600 invoked by uid 1000);
+        Tue, 17 Jan 2023 19:57:23 -0000
+Date:   Tue, 17 Jan 2023 13:57:23 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     =?utf-8?Q?Micha=C5=82?= Grzelak <mchl.grzlk@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, lars@metafoo.de,
+        Michael.Hennerich@analog.com, cosmin.tanislav@analog.com,
+        jic23@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: addac: adi,74115: Add missing maxItems
+Message-ID: <20230117195723.GA3527095-robh@kernel.org>
+References: <20230115022558.145076-1-mchl.grzlk@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230115022558.145076-1-mchl.grzlk@gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This driver supports 4 chips, by which only one (vcnl4010) handles
-interrupts and has support for triggered buffer. The setup of these
-functions is hardcoded for vcnl4010 inside the generic vcnl4000_probe,
-and thus ignores the chip specific configuration structure where all
-other chip specific functions are specified.
+On Sun, Jan 15, 2023 at 03:25:58AM +0100, Michał Grzelak wrote:
+> Running 'make dt_binding_check' gives following warnings:
+> iio/addac/adi,ad74115.example.dtb:
+> addac@0: adi,conv2-range-microvolt: 'oneOf' conditional failed, one must
+> be fixed:
+>         4282967296 is not one of [-2500000, 0]
+>         4282967296 is not one of [-12000000, 0]
+>         -2500000 was expected
+>         -104000 was expected
+>         625000 was expected
+> 
+> addac@0: Unevaluated properties are not allowed
+> ('adi,conv2-range-microvolt' was unexpected)
+>         From schema: iio/addac/adi,ad74115.yaml
 
-This complicates adding interrupt handler and triggered buffer support
-to chips which may have support for it.
+I think your dtschema version is out of date. I don't see this issue. 
+The issue has to do with signed types and there have been some fixes 
+related to them.
 
-Add members for irq threads and iio_buffer_setup_ops to the generic
-vcnl4000_chip_spec struct, so that instead of checking a chip specific
-boolean irq support, we check for a chip specific triggered buffer
-handler, and/or a chip specific irq thread handler.
+> As every property with standard suffix has inferred type of array of
+> cells, adi,conv2-range-microvolt is required by meta-schemas/cell.yaml
+> to have maxItems >= 2. Fix these errors by setting maxItems to 2.
 
-Signed-off-by: Mårten Lindahl <marten.lindahl@axis.com>
----
- drivers/iio/light/vcnl4000.c | 24 ++++++++++++++----------
- 1 file changed, 14 insertions(+), 10 deletions(-)
+The meta-schemas have nothing to do with warnings in examples. It's like 
+this: meta-schemas check schemas check examples
 
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index 11b54b57e592..b2f60f3f8d44 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -150,11 +150,13 @@ struct vcnl4000_chip_spec {
- 	struct iio_chan_spec const *channels;
- 	const int num_channels;
- 	const struct iio_info *info;
--	bool irq_support;
-+	const struct iio_buffer_setup_ops *buffer_setup_ops;
- 	int (*init)(struct vcnl4000_data *data);
- 	int (*measure_light)(struct vcnl4000_data *data, int *val);
- 	int (*measure_proximity)(struct vcnl4000_data *data, int *val);
- 	int (*set_power_state)(struct vcnl4000_data *data, bool on);
-+	irqreturn_t (*irq_thread)(int irq, void *priv);
-+	irqreturn_t (*trig_buffer_func)(int irq, void *priv);
- };
- 
- static const struct i2c_device_id vcnl4000_id[] = {
-@@ -1121,7 +1123,6 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
- 		.channels = vcnl4000_channels,
- 		.num_channels = ARRAY_SIZE(vcnl4000_channels),
- 		.info = &vcnl4000_info,
--		.irq_support = false,
- 	},
- 	[VCNL4010] = {
- 		.prod = "VCNL4010/4020",
-@@ -1132,7 +1133,9 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
- 		.channels = vcnl4010_channels,
- 		.num_channels = ARRAY_SIZE(vcnl4010_channels),
- 		.info = &vcnl4010_info,
--		.irq_support = true,
-+		.irq_thread = vcnl4010_irq_thread,
-+		.trig_buffer_func = vcnl4010_trigger_handler,
-+		.buffer_setup_ops = &vcnl4010_buffer_ops,
- 	},
- 	[VCNL4040] = {
- 		.prod = "VCNL4040",
-@@ -1143,7 +1146,6 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
- 		.channels = vcnl4040_channels,
- 		.num_channels = ARRAY_SIZE(vcnl4040_channels),
- 		.info = &vcnl4040_info,
--		.irq_support = false,
- 	},
- 	[VCNL4200] = {
- 		.prod = "VCNL4200",
-@@ -1154,7 +1156,6 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
- 		.channels = vcnl4000_channels,
- 		.num_channels = ARRAY_SIZE(vcnl4000_channels),
- 		.info = &vcnl4000_info,
--		.irq_support = false,
- 	},
- };
- 
-@@ -1214,22 +1215,25 @@ static int vcnl4000_probe(struct i2c_client *client)
- 	indio_dev->name = VCNL4000_DRV_NAME;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
--	if (client->irq && data->chip_spec->irq_support) {
-+	if (data->chip_spec->trig_buffer_func &&
-+	    data->chip_spec->buffer_setup_ops) {
- 		ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev,
- 						      NULL,
--						      vcnl4010_trigger_handler,
--						      &vcnl4010_buffer_ops);
-+						      data->chip_spec->trig_buffer_func,
-+						      data->chip_spec->buffer_setup_ops);
- 		if (ret < 0) {
- 			dev_err(&client->dev,
- 				"unable to setup iio triggered buffer\n");
- 			return ret;
- 		}
-+	}
- 
-+	if (client->irq && data->chip_spec->irq_thread) {
- 		ret = devm_request_threaded_irq(&client->dev, client->irq,
--						NULL, vcnl4010_irq_thread,
-+						NULL, data->chip_spec->irq_thread,
- 						IRQF_TRIGGER_FALLING |
- 						IRQF_ONESHOT,
--						"vcnl4010_irq",
-+						"vcnl4000_irq",
- 						indio_dev);
- 		if (ret < 0) {
- 			dev_err(&client->dev, "irq request failed\n");
--- 
-2.30.2
-
+> 
+> Signed-off-by: Michał Grzelak <mchl.grzlk@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml b/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
+> index 72d2e910f206..cdeb04184f5a 100644
+> --- a/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
+> +++ b/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
+> @@ -87,6 +87,7 @@ properties:
+>  
+>    adi,conv2-range-microvolt:
+>      description: Conversion range for ADC conversion 2.
+> +    maxItems: 2
+>      oneOf:
+>        - items:
+>            - enum: [-2500000, 0]
+> -- 
+> 2.37.3
+> 
