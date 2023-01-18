@@ -2,119 +2,198 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE24C38159
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Jan 2023 08:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB3EEC004D4
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Jan 2023 08:59:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbjARIVd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Jan 2023 03:21:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41630 "EHLO
+        id S229928AbjARI7p (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Jan 2023 03:59:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbjARIUv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Jan 2023 03:20:51 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE6839287;
-        Tue, 17 Jan 2023 23:48:12 -0800 (PST)
+        with ESMTP id S229960AbjARI6j (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Jan 2023 03:58:39 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2174830FE;
+        Wed, 18 Jan 2023 00:16:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674028092; x=1705564092;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=V0/TXsQQWmEebWydvXYOMJFyW5Ah/NfVrzP/l74ZXew=;
-  b=TLGw42hmOomx4Kgw8pFfOylDAVbHoWz5bDL5iKv5qoDNSI8ncjiiK1Pc
-   szgNu0PsfXTs2V+FGZ3XD+uKFXyp11NbUcADRJoGUWSrFh3lq6PJHRe5i
-   Va3spuHAGPNNfHo01axByiqgzLn+g7NhX0fDIA9dwALx2P2MNKY3n1ITT
-   tWysx8HzU+rBXDHtiS4JKsUpPVtG0Ps1KfAn2zxNVm0X0R9YysyHsr8SI
-   ZttQwaDU2XkOzbEBZcgfQlRx1RCMmwPFGEVCqb2anXqpa7ssEr/xKZVVc
-   mi0TNi1kjov7FLyfcEK97gLUZ1x1WpXaWbHFXpsj+/84Dqb7NK+5YcfOn
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10593"; a="312800645"
+  t=1674029785; x=1705565785;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CKWlSVG3dqnPnAUFE6fQ5nT8l9dHU1tiOB4s5k2oa6k=;
+  b=OcCUN875IwHcZYuXlAr5iAsmbEaXzuBtevZaRRZQAVWFluVXJxxWPZmi
+   5sYyrkwPB8lp4S91zYxEeXKgpsVeo6WdbrsPyeHsEF49caLHjPEcHRWC7
+   QRYulXclQ1R0F3AG1TolWFGMoVLUH/dqFDTVZ5qdc1eRv6t+U3PywRPXe
+   TsidG8wBDyKM6EdOfatTfWSNf3ptePpTgslW3MEPkd/46rHnRV8xc+2mM
+   2KI4Mn+B0Spfvbv4yR/VUYYEWKTkuRGASpVQm81vjUJAH8khbA+vHMY2t
+   DKnl39zutuF+Mo53MJkmipLn24qDC+xeDYzgY8VbY9l9Wceo+WlRUMsya
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10593"; a="304609429"
 X-IronPort-AV: E=Sophos;i="5.97,224,1669104000"; 
-   d="scan'208";a="312800645"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2023 23:48:10 -0800
+   d="scan'208";a="304609429"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2023 00:16:23 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10593"; a="637171941"
+X-IronPort-AV: E=McAfee;i="6500,9779,10593"; a="661623777"
 X-IronPort-AV: E=Sophos;i="5.97,224,1669104000"; 
-   d="scan'208";a="637171941"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 17 Jan 2023 23:48:07 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id ECF4B256; Wed, 18 Jan 2023 09:48:42 +0200 (EET)
+   d="scan'208";a="661623777"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga007.fm.intel.com with ESMTP; 18 Jan 2023 00:16:19 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pI3cH-00B0bA-17;
+        Wed, 18 Jan 2023 10:16:17 +0200
+Date:   Wed, 18 Jan 2023 10:16:17 +0200
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+To:     Okan Sahin <okan.sahin@analog.com>
+Cc:     Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/2] iio: core: Replace iio_sysfs_match_string_with_gaps() by __sysfs_match_string()
-Date:   Wed, 18 Jan 2023 09:48:27 +0200
-Message-Id: <20230118074828.66155-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.39.0
+        Caleb Connolly <caleb.connolly@linaro.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Ramona Bolboaca <ramona.bolboaca@analog.com>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 1/5] drivers: mfd: Add ADI MAX77541/MAX77540 PMIC
+ Support
+Message-ID: <Y8eq0GtVZfVdNKYn@smile.fi.intel.com>
+References: <20230118063822.14521-1-okan.sahin@analog.com>
+ <20230118063822.14521-2-okan.sahin@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230118063822.14521-2-okan.sahin@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-None of the current users is using gaps in the list of the items.
-No need to have a specific function for that, just replace it by
-library available __sysfs_match_string().
+On Wed, Jan 18, 2023 at 09:38:08AM +0300, Okan Sahin wrote:
+> MFD driver for MAX77541/MAX77540 to enable its sub
+> devices.
+> 
+> The MAX77541 is a multi-function devices. It includes
+> buck converter and ADC.
+> 
+> The MAX77540 is a high-efficiency buck converter
+> with two 3A switching phases.
+> 
+> They have same regmap except for ADC part of MAX77541.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/industrialio-core.c | 32 +-------------------------------
- 1 file changed, 1 insertion(+), 31 deletions(-)
+...
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 52e690f031cb..26e357f14db8 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -205,36 +205,6 @@ bool iio_buffer_enabled(struct iio_dev *indio_dev)
- }
- EXPORT_SYMBOL_GPL(iio_buffer_enabled);
- 
--/**
-- * iio_sysfs_match_string_with_gaps - matches given string in an array with gaps
-- * @array: array of strings
-- * @n: number of strings in the array
-- * @str: string to match with
-- *
-- * Returns index of @str in the @array or -EINVAL, similar to match_string().
-- * Uses sysfs_streq instead of strcmp for matching.
-- *
-- * This routine will look for a string in an array of strings.
-- * The search will continue until the element is found or the n-th element
-- * is reached, regardless of any NULL elements in the array.
-- */
--static int iio_sysfs_match_string_with_gaps(const char * const *array, size_t n,
--					    const char *str)
--{
--	const char *item;
--	int index;
--
--	for (index = 0; index < n; index++) {
--		item = array[index];
--		if (!item)
--			continue;
--		if (sysfs_streq(item, str))
--			return index;
--	}
--
--	return -EINVAL;
--}
--
- #if defined(CONFIG_DEBUG_FS)
- /*
-  * There's also a CONFIG_DEBUG_FS guard in include/linux/iio/iio.h for
-@@ -569,7 +539,7 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
- 	if (!e->set)
- 		return -EINVAL;
- 
--	ret = iio_sysfs_match_string_with_gaps(e->items, e->num_items, buf);
-+	ret = __sysfs_match_string(e->items, e->num_items, buf);
- 	if (ret < 0)
- 		return ret;
- 
+> +/*
+> + * Copyright (c) 2022 Analog Devices, Inc.
+
+Happy New Year!
+
+> + * Mfd core driver for the MAX77540 and MAX77541
+
+MFD
+
+> + */
+
+...
+
+> +	ret = devm_regmap_add_irq_chip(dev, max77541->regmap, irq,
+> +				       IRQF_ONESHOT | IRQF_SHARED, 0,
+> +				       &max77541_buck_irq_chip,
+> +				       &max77541->irq_buck);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (max77541->id == MAX77541) {
+> +		ret = devm_regmap_add_irq_chip(dev, max77541->regmap, irq,
+> +					       IRQF_ONESHOT | IRQF_SHARED, 0,
+> +					       &max77541_adc_irq_chip,
+> +					       &max77541->irq_adc);
+> +		if (ret)
+> +			return ret;
+> +	}
+
+> +	return ret;
+
+return 0;
+
+...
+
+> +		return devm_mfd_add_devices(dev, -1, max77540_devs,
+
+PLATFORM_DEVID_NONE ?
+
+> +					    ARRAY_SIZE(max77540_devs),
+> +					    NULL, 0, NULL);
+
+...
+
+> +		return devm_mfd_add_devices(dev, -1, max77541_devs,
+
+Ditto.
+
+> +					    ARRAY_SIZE(max77541_devs),
+> +					    NULL, 0, NULL);
+
+...
+
+> +static int max77541_i2c_probe(struct i2c_client *client,
+> +			      const struct i2c_device_id *id)
+
+No id, please. I.o.w. you should use ->probe_new().
+
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct max77541 *max77541;
+> +	const void *match;
+> +
+> +	max77541 = devm_kzalloc(&client->dev, sizeof(*max77541), GFP_KERNEL);
+> +	if (!max77541)
+> +		return -ENOMEM;
+> +
+> +	i2c_set_clientdata(client, max77541);
+> +	max77541->i2c = client;
+> +
+> +	match = device_get_match_data(dev);
+> +	if (match)
+> +		max77541->id = (enum max7754x_ids)match;
+
+This is dangerous if your enum has 0 as a valid value.
+Instead, use pointers in the driver_data, like
+
+	&chip_info chip[MAX77540]
+
+> +	else if (id)
+> +		max77541->id = id->driver_data;
+
+> +	else
+
+It's better to check the ID range here.
+Or since the change recommended above, check for NULL.
+
+> +		return -ENODEV;
+> +
+> +	max77541->chip = &chip[max77541->id];
+> +
+> +	max77541->regmap = devm_regmap_init_i2c(client,
+> +						&max77541_regmap_config);
+> +	if (IS_ERR(max77541->regmap))
+> +		return dev_err_probe(dev, PTR_ERR(max77541->regmap),
+> +				     "Failed to allocate register map\n");
+> +
+> +	return max77541_pmic_setup(dev);
+> +}
+
+...
+
+> +/*BITS OF REGISTERS*/
+
+Missing spaces.
+
 -- 
-2.39.0
+With Best Regards,
+Andy Shevchenko
+
 
