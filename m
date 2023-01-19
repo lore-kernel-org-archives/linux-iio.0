@@ -2,98 +2,75 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 742C8C00A5A
-	for <linux-iio@archiver.kernel.org>; Thu, 19 Jan 2023 15:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF897C004D4
+	for <linux-iio@archiver.kernel.org>; Thu, 19 Jan 2023 15:08:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbjASPHT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 19 Jan 2023 10:07:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49192 "EHLO
+        id S229689AbjASPIc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 19 Jan 2023 10:08:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbjASPHR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Jan 2023 10:07:17 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E85283C3;
-        Thu, 19 Jan 2023 07:07:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674140836; x=1705676836;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=woLpKP+4ChVEfynHbF9D8nFvbiL39hwbIGHk3XoR4Gw=;
-  b=P3XB6ijeBykCSvn+da2M8r5Xp3hkFg7vGPBURpK6l/LkMQwMgx9JZfal
-   Gmthfjh66/HrXTEvZUhaWzQmSwFosLj7KYWwUWqEmh7lLMVSdEysCAhcp
-   4sA3UzeGnH2bG5b2Own50M2SCf6F8fvzSPFYEAPbBL8tOrIzGdG4u9mpT
-   2HiIqe3Mnt/3DjD6MSbHFu+ab3UiADDCEYmxCzybFlizRaMIv4XR0FCMc
-   tkq8+htKft2HrAX0T7pLSQUlCR3XaMl5Zz45UtTyUzMotntaKMa5ikBtt
-   Op24KrbXvoJ0Tme7i8HV2OnfYVOMwzqRJHbMxOD9Q79l1SaVbn/ATjspl
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="325349196"
-X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
-   d="scan'208";a="325349196"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 07:06:22 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="610090966"
-X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
-   d="scan'208";a="610090966"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003.jf.intel.com with ESMTP; 19 Jan 2023 07:06:18 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pIWUa-00Bil1-1G;
-        Thu, 19 Jan 2023 17:06:16 +0200
-Date:   Thu, 19 Jan 2023 17:06:16 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lee Jones <lee@kernel.org>
-Cc:     Okan Sahin <okan.sahin@analog.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Caleb Connolly <caleb.connolly@linaro.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Ramona Bolboaca <ramona.bolboaca@analog.com>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        with ESMTP id S229575AbjASPIb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Jan 2023 10:08:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F3AA2D147;
+        Thu, 19 Jan 2023 07:08:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F0FD61C40;
+        Thu, 19 Jan 2023 15:08:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDCA1C433D2;
+        Thu, 19 Jan 2023 15:08:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674140908;
+        bh=gWg8R9h32+YanBxUrwFptR8qDXzcix128ZijjGUPXE8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mvK3Qp86sII9omRQ4/aay2babUNA9v1MIJZRUV9u1rbIV4KoVcJX4Hfca98s02BrI
+         iUklylOMQRJQpNLJGzSeX6ltjSHcZSqfB+kvt7UajQmRCAqbX0Easa5XxsEwDk5wl/
+         S5MYRv3bpqgRPpt4C+WNt6AGozO17xej5Il4ILP+nAOSdOyjEEr49rIja2muhF64yV
+         TqPTZfwvGnH7CGDnPaLkejVqcMtw4f8atkZAO5FV1kzMmbwUFOiFcZ5VrZ3/0mRqCA
+         8pz0ZgZ1NLOp/Z/AzScVH0WMKwNwJZG9Lc+QYqogVdOOqsrgAuwJk5HhZM70fNT2ar
+         //uv4wgIQdDDQ==
+Date:   Thu, 19 Jan 2023 15:08:23 +0000
+From:   Lee Jones <lee@kernel.org>
+To:     Saravanan Sekar <sravanhome@gmail.com>
+Cc:     sre@kernel.org, jic23@kernel.org, lars@metafoo.de,
+        andy.shevchenko@gmail.com, linux-pm@vger.kernel.org,
         linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 1/5] drivers: mfd: Add ADI MAX77541/MAX77540 PMIC
- Support
-Message-ID: <Y8lcaAFMaUaMTE2m@smile.fi.intel.com>
-References: <20230118063822.14521-1-okan.sahin@analog.com>
- <20230118063822.14521-2-okan.sahin@analog.com>
- <Y8eq0GtVZfVdNKYn@smile.fi.intel.com>
- <Y8lTUegNjFZrXh1o@google.com>
+Subject: Re: [PATCH v6 4/7] mfd: mp2629: Add support for mps mp2733 battery
+ charger
+Message-ID: <Y8lc52I7A9TkWpMa@google.com>
+References: <20221123175425.564042-1-sravanhome@gmail.com>
+ <20221123175425.564042-5-sravanhome@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Y8lTUegNjFZrXh1o@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221123175425.564042-5-sravanhome@gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Jan 19, 2023 at 02:27:29PM +0000, Lee Jones wrote:
-> On Wed, 18 Jan 2023, Andy Shevchenko wrote:
-> > On Wed, Jan 18, 2023 at 09:38:08AM +0300, Okan Sahin wrote:
+MP2733, MP2629, MPS, Battery Charge Management? 
 
-...
+On Wed, 23 Nov 2022, Saravanan Sekar wrote:
 
-> > > +/*
-> > > + * Copyright (c) 2022 Analog Devices, Inc.
-> > 
-> > Happy New Year!
+> mp2733 is updated version of mp2629 battery charge management
+> device for single-cell Li-ion or Li-polymer battery. Additionally
+> supports USB fast-charge and higher range of input voltage.
 > 
-> If the code hasn't changed greatly since the Copyright, there is no
-> requirement to update the date.
+> Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> ---
+>  drivers/mfd/mp2629.c       | 1 +
+>  include/linux/mfd/mp2629.h | 1 +
+>  2 files changed, 2 insertions(+)
 
-It would have made sense if we have/had seen that code in the past.
-And since it's a v3 I think this is the case.
+Once the above has been fixed, please add my:
+
+For my own reference (apply this as-is to your sign-off block):
+
+Acked-for-MFD-by: Lee Jones <lee@kernel.org>
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Lee Jones [李琼斯]
