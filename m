@@ -2,127 +2,139 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 743FDC00A5A
-	for <linux-iio@archiver.kernel.org>; Thu, 19 Jan 2023 15:06:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 203E3C004D4
+	for <linux-iio@archiver.kernel.org>; Thu, 19 Jan 2023 15:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229615AbjASPGT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 19 Jan 2023 10:06:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48160 "EHLO
+        id S230057AbjASPGj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 19 Jan 2023 10:06:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbjASPGS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Jan 2023 10:06:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D492B83C3;
-        Thu, 19 Jan 2023 07:06:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F75461C1E;
-        Thu, 19 Jan 2023 15:06:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF0BDC433EF;
-        Thu, 19 Jan 2023 15:06:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674140776;
-        bh=ed/d1Vc476vyDl5PAf6BZKDeh52LAXW4QTKCR29Wwos=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=G+qBScBy5NjwE5b+jFH2oJR4GBZxRf3rwDsZDXzMUG2u4Z2TKPAlcej+oJ8Tt8CLC
-         dUshQoe7+t30T5JtUpSjXsy9Wr25/iGgjBIdZUSlncyhzLq2ZO8YXYOCUOYDTo/aD2
-         VxbXCMMACZURN6ojxDnP4V2Uwuv/1lXWKpKDhKy4MjzhSc/xhdtVm2R/qig/ml6A3W
-         R6Sye8BvYGnBvqMXx6OZE1oEdjF782aSwWp4nqFkZKtvjGHS0QWiH+utpz45h5JFQ1
-         O7gjpD6Vb2yxR8jdIlDTc5uOETRdmJvlLdyPCS3EtpwEuuzV+Xyl23qf5ek6Qmp2+1
-         9dYHPohTlge2A==
-Date:   Thu, 19 Jan 2023 15:06:11 +0000
-From:   Lee Jones <lee@kernel.org>
-To:     Saravanan Sekar <sravanhome@gmail.com>
-Cc:     sre@kernel.org, jic23@kernel.org, lars@metafoo.de,
-        andy.shevchenko@gmail.com, linux-pm@vger.kernel.org,
+        with ESMTP id S229724AbjASPGe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Jan 2023 10:06:34 -0500
+Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC95F7EFA
+        for <linux-iio@vger.kernel.org>; Thu, 19 Jan 2023 07:06:31 -0800 (PST)
+Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-15f83e0fc63so2778994fac.11
+        for <linux-iio@vger.kernel.org>; Thu, 19 Jan 2023 07:06:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=aVjqzLXD5QPwyyUmo7QN3xQRrSsniKZQ8j72Zl2FHQw=;
+        b=YiNTNpJPOc3Wmuzb/3Q7pqQvbd2ZzWNfpj1VHR5N6kEfkttYP4/b3o9OJHSC2Zw10c
+         qWkVxCuhihmj9mAEBn6X8FAlqN0l1xea8gwUWzIV/fBJrLTzIurLRIXWE8ldLKbTfIzV
+         YedwMN7kxJg3rGYKleFEoTZDK4UAkeU4NlE9tDxPLiyQBEOxCR/uth+gnHkZ+F8nwdrI
+         nYQab/n7EYjrry107uTxFNbLNsZPGryqq5eoXPeMeq4D2jkDMbNIp+F7LNpZMR3KsbkU
+         hhBqNLoBFFRUAJOrl4A1z9VlUkKiF/iCi9YAGxHYeovCRwUTdcYl2CR/G+KnFlXKNJQ3
+         X7Mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aVjqzLXD5QPwyyUmo7QN3xQRrSsniKZQ8j72Zl2FHQw=;
+        b=pK9SLTFVBI0NBr/HsEUTTlN4szs3odYzeKjRazjqMesC4bzLhKUF6nwV2V/T0rutCE
+         s8z+i2/sV5Cec3jKMZc9F3IWGNIqPIWHLE+O4KivnKcO6FC28/bpe67MHc+SqkY1zH1h
+         1kHOb3060m7wyAkMSHSju7b6qDJqAdiRzy/bVa0mBkJUYb1GCjMhT9ZB3BcCbb3v/Duq
+         q2FmH2WEa/MAwiepqnKrCdbmSjB1pTU7skzMgA3NLmqI/ElOSVvaoOvNZdW8+Dk1I0NA
+         ZEq7NVcQZQCo9pK6xrN77SdhUEQxDG3zYB3u0THxVjmChFXmXxhf55cvkflLxxgrzCPm
+         u1CA==
+X-Gm-Message-State: AFqh2koWrvgUpDbVruPplMwoBKre66TSebRdl6XwiJnEtza96URjCqvK
+        omepALYffQ4MyAOPkK0XeaHVFQ==
+X-Google-Smtp-Source: AMrXdXucZxz1FDxgj5PVd3AbYAdQyG0hqb56jvZef36HSYU6QkTBEpd/gQuWajjxF8/6y/dyE3gZLg==
+X-Received: by 2002:a05:6358:d08a:b0:ed:1bdb:777c with SMTP id jc10-20020a056358d08a00b000ed1bdb777cmr314869rwb.16.1674140790941;
+        Thu, 19 Jan 2023 07:06:30 -0800 (PST)
+Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id e124-20020a37b582000000b0070495934152sm23767138qkf.48.2023.01.19.07.06.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Jan 2023 07:06:30 -0800 (PST)
+Date:   Thu, 19 Jan 2023 10:06:27 -0500
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     Lee Jones <lee@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Okan Sahin <okan.sahin@analog.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Caleb Connolly <caleb.connolly@linaro.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Ramona Bolboaca <ramona.bolboaca@analog.com>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-iio@vger.kernel.org
-Subject: Re: [PATCH v6 3/7] mfd: mp2629: introduce chip id machanism to
- distinguish chip
-Message-ID: <Y8lcY/hhDSEw9Mt3@google.com>
-References: <20221123175425.564042-1-sravanhome@gmail.com>
- <20221123175425.564042-4-sravanhome@gmail.com>
+Subject: Re: [PATCH v3 1/5] drivers: mfd: Add ADI MAX77541/MAX77540 PMIC
+ Support
+Message-ID: <Y8lcc/Bi82efYsgp@fedora>
+References: <20230118063822.14521-1-okan.sahin@analog.com>
+ <20230118063822.14521-2-okan.sahin@analog.com>
+ <Y8eq0GtVZfVdNKYn@smile.fi.intel.com>
+ <Y8lTUegNjFZrXh1o@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="I2QLmuidwBEKOGja"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221123175425.564042-4-sravanhome@gmail.com>
+In-Reply-To: <Y8lTUegNjFZrXh1o@google.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-"Use DT API to pass through chip ID"
 
-On Wed, 23 Nov 2022, Saravanan Sekar wrote:
+--I2QLmuidwBEKOGja
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Introduce chip id machanism to distinguish chip
+On Thu, Jan 19, 2023 at 02:27:29PM +0000, Lee Jones wrote:
+> On Wed, 18 Jan 2023, Andy Shevchenko wrote:
+>=20
+> > On Wed, Jan 18, 2023 at 09:38:08AM +0300, Okan Sahin wrote:
+> > > MFD driver for MAX77541/MAX77540 to enable its sub
+> > > devices.
+> > >=20
+> > > The MAX77541 is a multi-function devices. It includes
+> > > buck converter and ADC.
+> > >=20
+> > > The MAX77540 is a high-efficiency buck converter
+> > > with two 3A switching phases.
+> > >=20
+> > > They have same regmap except for ADC part of MAX77541.
+> >=20
+> > ...
+> >=20
+> > > +/*
+> > > + * Copyright (c) 2022 Analog Devices, Inc.
+> >=20
+> > Happy New Year!
+>=20
+> If the code hasn't changed greatly since the Copyright, there is no
+> requirement to update the date.
 
-Please be more imaginative than simply repeating the subject line.
+Actually a date isn't necessary at all. In fact, by the Berne Convention
+copyright protection exists the moment a work is completed, so you could
+even argue a copyright notice is unnecessary and the SPDX line alone is
+sufficient. However, I would say there is a practical benefit in a
+copyright notice identifying the primary authors to make ownership
+clear.
 
-Also: "ID"
- 
-> Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> ---
->  drivers/mfd/mp2629.c       | 4 +++-
->  include/linux/mfd/mp2629.h | 5 +++++
->  2 files changed, 8 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/mfd/mp2629.c b/drivers/mfd/mp2629.c
-> index f4c5aa06f38c..a3fc02ad5ec1 100644
-> --- a/drivers/mfd/mp2629.c
-> +++ b/drivers/mfd/mp2629.c
-> @@ -13,6 +13,7 @@
->  #include <linux/mfd/mp2629.h>
->  #include <linux/module.h>
->  #include <linux/platform_device.h>
-> +#include <linux/property.h>
->  #include <linux/regmap.h>
->  #include <linux/slab.h>
->  
-> @@ -43,6 +44,7 @@ static int mp2629_probe(struct i2c_client *client)
->  		return -ENOMEM;
->  
->  	ddata->dev = &client->dev;
-> +	ddata->chip_id = (uintptr_t)device_get_match_data(&client->dev);
->  	i2c_set_clientdata(client, ddata);
->  
->  	ddata->regmap = devm_regmap_init_i2c(client, &mp2629_regmap_config);
-> @@ -60,7 +62,7 @@ static int mp2629_probe(struct i2c_client *client)
->  }
->  
->  static const struct of_device_id mp2629_of_match[] = {
-> -	{ .compatible = "mps,mp2629"},
-> +	{ .compatible = "mps,mp2629", .data = (void *)CHIP_ID_MP2629 },
+For the curious, this LF blog post gives some reasons about why
+copyright notices may be better left simple:
+https://www.linuxfoundation.org/blog/blog/copyright-notices-in-open-source-=
+software-projects
 
+William Breathitt Gray
 
-Is this value something you can ask the H/W for?
+--I2QLmuidwBEKOGja
+Content-Type: application/pgp-signature; name="signature.asc"
 
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, mp2629_of_match);
-> diff --git a/include/linux/mfd/mp2629.h b/include/linux/mfd/mp2629.h
-> index 89b706900b57..072c8181b48b 100644
-> --- a/include/linux/mfd/mp2629.h
-> +++ b/include/linux/mfd/mp2629.h
-> @@ -9,9 +9,14 @@
->  #include <linux/device.h>
->  #include <linux/regmap.h>
->  
-> +enum mp2xx_chip_id {
-> +	CHIP_ID_MP2629,
-> +};
-> +
->  struct mp2629_data {
->  	struct device *dev;
->  	struct regmap *regmap;
-> +	enum mp2xx_chip_id chip_id;
->  };
->  
->  enum mp2629_adc_chan {
-> -- 
-> 2.34.1
-> 
+-----BEGIN PGP SIGNATURE-----
 
--- 
-Lee Jones [李琼斯]
+iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCY8lccwAKCRC1SFbKvhIj
+K3PUAQCdO9/weT+3alL6hyrXG+ESPtB1UsaqnZ6jvNSPMLYDEgEAgPsVq0EKZ1HR
+UXMsXWyhGX8hEq02NozqbFBkbpL29ww=
+=nL1A
+-----END PGP SIGNATURE-----
+
+--I2QLmuidwBEKOGja--
