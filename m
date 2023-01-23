@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC1BBC54EAA
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Jan 2023 21:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1472CC54EED
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Jan 2023 21:04:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232821AbjAWVEZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 23 Jan 2023 16:04:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
+        id S232699AbjAWVEd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 23 Jan 2023 16:04:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232719AbjAWVEY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 23 Jan 2023 16:04:24 -0500
+        with ESMTP id S232564AbjAWVEb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 23 Jan 2023 16:04:31 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2151A360AF;
-        Mon, 23 Jan 2023 13:04:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E34838653;
+        Mon, 23 Jan 2023 13:04:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA84E61092;
-        Mon, 23 Jan 2023 21:04:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71F7BC4339C;
-        Mon, 23 Jan 2023 21:04:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD0C9610A2;
+        Mon, 23 Jan 2023 21:04:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C3C0C4339C;
+        Mon, 23 Jan 2023 21:04:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674507862;
-        bh=CVVF40aIqyqHuHo5QkyM/mqnSUoD6khV2a9bfpLNjLk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mfc5nGdhbTQHKS96aFAAYhGHqgGQtHEQwGNQCfoW1bECCUUvMIAag+B3WjF/5/zV5
-         Xlp+vJ120UbeyNBOxUKEYKmOQqmqB1zymvNx4+QZWz4a8BNVXC+PDOKLN6TpJIRQaM
-         wQ3O4JgzqS4j9o3GCZawgUVfH9QP7SkS+j0RrD3FBD3wzmWosm6FLdz/DofYem8f8V
-         o1fiq59l/h1noYlTNB6H64wX9YJOufPBjdWgF/X0uQg2GmBJqxqhPLcojG+M4CAqAm
-         mOKVqWrgwtCKjkZWUebvaWP5PSlV8LYDP3Oi4f4iOXNacfFidSqA+QPi8FQvC8cKJA
-         zZYVAa6fpkrow==
+        s=k20201202; t=1674507868;
+        bh=LbJlhf7egiClJvLuB5vqS0R+pxqtjvxQgKBOfISnhYc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uitf8mPQ+K4JCogfdxzmGEwlBMft1Zp3tO3jCoVFu9grMReohLIqdz9YcjYz3FEPZ
+         GyephBOyIhDGzZgCkcyuLgIjeuhfLkvtuMrTtxdx/zzWkDZ61bSfHnD7kV1etwFYSJ
+         s2I3kM+JKK4ANNLZeFJyY0Q3arknEZYVsff3PcUQvxhblqPubVea1VsZMt9fHKlPap
+         y+j4VS5IMT7YrciCppM0rhX2QDcoP1wx8xZ7bjIcXIBNlvsIGouHhtpoS88W6zH4B+
+         rfv2Jv3mtOm0n1L6rWtifncZY5nLbrGNX1yLCX/PPMeUV4+29BWPS3qocX4aOh8JR5
+         hJu29kurY0arA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org
 Cc:     Rob Herring <robh+dt@kernel.org>,
@@ -39,10 +39,12 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Barry Song <baohua@kernel.org>
-Subject: [PATCH 00/12] staging: iio: accel: adis16203 Inclinometer cleanup and graduation
-Date:   Mon, 23 Jan 2023 21:17:46 +0000
-Message-Id: <20230123211758.563383-1-jic23@kernel.org>
+Subject: [PATCH 03/12] staging: iio: accel: adis16203: Rename incli channel registers
+Date:   Mon, 23 Jan 2023 21:17:49 +0000
+Message-Id: <20230123211758.563383-4-jic23@kernel.org>
 X-Mailer: git-send-email 2.39.1
+In-Reply-To: <20230123211758.563383-1-jic23@kernel.org>
+References: <20230123211758.563383-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -51,53 +53,44 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Whilst taking a look at what we still have in staging, I noticed that this
-driver was (probably) only still there due to the need to define some ABI
-for the odd 180 degree offset channel (same as the other channel
-minus 180 degrees).
+This device has two such channels that are effectively reading the
+same thing, just with a 180 degree offset.  First rename them
+(later we will drop one of them as it is easier to apply an offset
+in software).
 
-Rather than leaving the driver in staging for ever, let us just drop that
-channel and move on. The rest of the series is trivial driver cleanup.
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ drivers/staging/iio/accel/adis16203.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Note this is only build tested, so would be great if people can take
-a good look.  If anyone happens to have one of these that would be even
-better (they are still marked for production use more than 12 years after
-the driver was submitted).
-
-There are lots of features we could support if anyone wanted to, but
-it should be functional for basic channel reading without the bells
-and whistles.  I've tried to incorporate the relevant device tree bindings
-however (multiple interrupt lines, supplies and reset gpio).
-
-Cc: Barry Song <baohua@kernel.org>
-(mostly for comedy value, not expecting you to remember the driver :)
-
-Jonathan Cameron (12):
-  staging: iio: accel: adis16203: More conventional header ordering
-  staging: iio: accel: adis16203: Drop excessive register comments
-  staging: iio: accel: adis16203: Rename incli channel registers
-  staging: iio: accel: adis16203: Drop the 180 degree offset channel
-  staging: iio: accel: adis16203: Simplify handling of calibbias
-  staging: iio: accel: adis16203: Drop driver name define
-  staging: iio: accel: adis16203: Make units explicit in name of delay
-    define
-  staging: iio: accel: adis16203: Trivial whitespace cleanup
-  staging: iio: accel: adis16203: Drop setting drvdata as nothing gets
-    it
-  staging: iio: accel: adis16203: Trivial style cleanup
-  staging: iio: accel: adis16203: Move out of staging
-  dt-bindings: iio: accel: Add ADIS16203 Inclinometer
-
- .../bindings/iio/accel/adi,adis16203.yaml     |  59 +++++
- drivers/iio/accel/Kconfig                     |  12 +
- drivers/iio/accel/Makefile                    |   1 +
- drivers/{staging => }/iio/accel/adis16203.c   | 212 ++++++------------
- drivers/staging/iio/accel/Kconfig             |  12 -
- drivers/staging/iio/accel/Makefile            |   1 -
- 6 files changed, 136 insertions(+), 161 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adis16203.yaml
- rename drivers/{staging => }/iio/accel/adis16203.c (51%)
-
+diff --git a/drivers/staging/iio/accel/adis16203.c b/drivers/staging/iio/accel/adis16203.c
+index 60117aaf56d4..8e5d1d2ea8e9 100644
+--- a/drivers/staging/iio/accel/adis16203.c
++++ b/drivers/staging/iio/accel/adis16203.c
+@@ -19,8 +19,8 @@
+ #define ADIS16203_SUPPLY_OUT     0x02
+ #define ADIS16203_AUX_ADC        0x08
+ #define ADIS16203_TEMP_OUT       0x0A
+-#define ADIS16203_XINCL_OUT      0x0C
+-#define ADIS16203_YINCL_OUT      0x0E
++#define ADIS16203_INCL_OUT       0x0C
++#define ADIS16203_INCL_OUT_180   0x0E
+ #define ADIS16203_INCL_NULL      0x18
+ #define ADIS16203_ALM_MAG1       0x20
+ #define ADIS16203_ALM_MAG2       0x22
+@@ -138,10 +138,10 @@ static int adis16203_read_raw(struct iio_dev *indio_dev,
+ static const struct iio_chan_spec adis16203_channels[] = {
+ 	ADIS_SUPPLY_CHAN(ADIS16203_SUPPLY_OUT, ADIS16203_SCAN_SUPPLY, 0, 12),
+ 	ADIS_AUX_ADC_CHAN(ADIS16203_AUX_ADC, ADIS16203_SCAN_AUX_ADC, 0, 12),
+-	ADIS_INCLI_CHAN(X, ADIS16203_XINCL_OUT, ADIS16203_SCAN_INCLI_X,
++	ADIS_INCLI_CHAN(X, ADIS16203_INCL_OUT, ADIS16203_SCAN_INCLI_X,
+ 			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
+ 	/* Fixme: Not what it appears to be - see data sheet */
+-	ADIS_INCLI_CHAN(Y, ADIS16203_YINCL_OUT, ADIS16203_SCAN_INCLI_Y,
++	ADIS_INCLI_CHAN(Y, ADIS16203_INCL_OUT_180, ADIS16203_SCAN_INCLI_Y,
+ 			0, 0, 14),
+ 	ADIS_TEMP_CHAN(ADIS16203_TEMP_OUT, ADIS16203_SCAN_TEMP, 0, 12),
+ 	IIO_CHAN_SOFT_TIMESTAMP(5),
 -- 
 2.39.1
 
