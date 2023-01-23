@@ -2,134 +2,88 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14BA5C54EAA
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Jan 2023 20:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41528C54EED
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Jan 2023 21:04:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231674AbjAWUrI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 23 Jan 2023 15:47:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47168 "EHLO
+        id S231758AbjAWVE1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 23 Jan 2023 16:04:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbjAWUrH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 23 Jan 2023 15:47:07 -0500
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FAB330D8;
-        Mon, 23 Jan 2023 12:47:07 -0800 (PST)
-Received: by mail-oi1-f172.google.com with SMTP id o66so11495743oia.6;
-        Mon, 23 Jan 2023 12:47:07 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+xLghjk06txc21TL6jUAE/A4E0QaZ29dI9auCG3vhDo=;
-        b=oTEcqczFiN5jxg/P7GcqsCUG+E4uilhYhyih43N+zQeTUegrU/X/UIED8NW1+m6GSL
-         6ys7T4K+hTLrMAYOqVNv4UwVOFegnKpOJ00DD8Y988aWRIXwtvDg+cvT3kaYg4XVRDvu
-         nunmchn65qGxqs6V8FJ1/G8oNKco3Somf3WQkr6mNgb+RmAchPLjHyPe3LB7RqafX/J0
-         NiMuaWbw9Khso4CA4Vmo7a5q9XKoIsBkQ9kBbW42bujezOJeda0rkBt72JorALYXUrAb
-         WrewJPvO2s3KieujwJzGQ4Ni0RQyf4ZIEQ/mMLA1IDwRoqXIPYUO91Gj5v6g0auqmqZi
-         7eHg==
-X-Gm-Message-State: AFqh2kqK0SUp3+h6u4AZ8hp4KHEcRyItfGAXnVzOSVdpe24hcslZpSnI
-        WIB8DJBEprTZuKdYJHE9sA==
-X-Google-Smtp-Source: AMrXdXs0GdZyBepqCdjPw6vuhi4kiXTC6MdsciMg0KU1dm35ma/15bsTbV/dQtJ+tboBuLEeFGalFQ==
-X-Received: by 2002:aca:6205:0:b0:365:648:3a5d with SMTP id w5-20020aca6205000000b0036506483a5dmr12623568oib.42.1674506826206;
-        Mon, 23 Jan 2023 12:47:06 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id i11-20020aca2b0b000000b00369a721732asm155293oik.41.2023.01.23.12.47.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 12:47:05 -0800 (PST)
-Received: (nullmailer pid 2494593 invoked by uid 1000);
-        Mon, 23 Jan 2023 20:47:03 -0000
-Date:   Mon, 23 Jan 2023 14:47:03 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S232888AbjAWVE0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 23 Jan 2023 16:04:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCB130B10;
+        Mon, 23 Jan 2023 13:04:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE5876104A;
+        Mon, 23 Jan 2023 21:04:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80B80C433EF;
+        Mon, 23 Jan 2023 21:04:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674507864;
+        bh=48D1qji7MQQv0UQXB018g3Ske4Yx09paEJnj8pvmczs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DwXPKOQkhmry9nwtI/DNz93nrhgCbj64gR7CFIYUc0QO6UCyOeR2nD7349ozTwG/p
+         n9cZ3ZH6IaK7az7Zdd7QhzjVxStfwoR8uZvMG+xsWVCGkvWOjiEfVWxzi7ouEAOzPk
+         o0ozEl61ceFvnALdx9hhtN1xoiZax/PCU0oRnlWG+WFUYjqDj+WfPu9pvUtxdU9WCZ
+         xt+RX+kHtVoP4kS3YJMq22zD1pXH4s/R9Y9k0q658eiF9zTfYmW4v5nfhgVx3grzCP
+         vt1hUVmqmgRcAsbl0Zi1C65zfadERK3cXkplkeOC7gCJ7xZAP0GbVRVgKlpmwc/cSF
+         6a8FhO6EHrvtQ==
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lucas Stankus <lucas.p.stankus@gmail.com>,
-        Puranjay Mohan <puranjay12@gmail.com>,
-        Dmitry Rokosov <ddrokosov@sberdevices.ru>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-        Renato Lui Geh <renatogeh@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Andreas Klinger <ak@it-klinger.de>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
-        Nishant Malpani <nish.malpani25@gmail.com>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Dragos Bogdan <dragos.bogdan@analog.com>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Robert Yang <decatf@gmail.com>,
-        Sean Nyekjaer <sean@geanix.com>,
-        Artur Rojek <contact@artur-rojek.eu>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Philippe Reynes <tremyfr@yahoo.fr>,
-        Alexandru Lazar <alazar@startmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Caleb Connolly <caleb.connolly@linaro.org>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Stefan Agner <stefan@agner.ch>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Harald Geyer <harald@ccbib.org>,
-        Eugene Zaikonnikov <ez@norophonic.com>,
-        Phil Reid <preid@electromag.com.au>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Sankar Velliangiri <navin@linumiz.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        chrome-platform@lists.linux.dev
-Subject: Re: [PATCH 5/5] dt-bindings: iio: cleanup examples - indentation
-Message-ID: <20230123204703.GA2479312-robh@kernel.org>
-References: <20230118184413.395820-1-krzysztof.kozlowski@linaro.org>
- <20230118184413.395820-5-krzysztof.kozlowski@linaro.org>
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Barry Song <baohua@kernel.org>
+Subject: [PATCH 01/12] staging: iio: accel: adis16203: More conventional header ordering
+Date:   Mon, 23 Jan 2023 21:17:47 +0000
+Message-Id: <20230123211758.563383-2-jic23@kernel.org>
+X-Mailer: git-send-email 2.39.1
+In-Reply-To: <20230123211758.563383-1-jic23@kernel.org>
+References: <20230123211758.563383-1-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230118184413.395820-5-krzysztof.kozlowski@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Jan 18, 2023 at 07:44:13PM +0100, Krzysztof Kozlowski wrote:
-> Use 4-space indentation (for cases when it is neither 4 not 2 space).
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[...]
+A common practice in IIO drivers it to have the headers in
+alphabetical order with the exception of the more specific IIO
+headers which come in their own block at the end.
 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml
-> index 1d965124c488..04b12146959e 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml
-> @@ -120,5 +120,5 @@ examples:
->          adi,rejection-60-Hz-enable;
->          adi,buffer-enable;
->          adi,burnout-currents-enable;
-> -        };
-> +      };
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ drivers/staging/iio/accel/adis16203.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-Indentation needs adjusting.
+diff --git a/drivers/staging/iio/accel/adis16203.c b/drivers/staging/iio/accel/adis16203.c
+index c0e4c9266b5f..dd02ceb00d40 100644
+--- a/drivers/staging/iio/accel/adis16203.c
++++ b/drivers/staging/iio/accel/adis16203.c
+@@ -6,14 +6,13 @@
+  */
+ 
+ #include <linux/device.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/imu/adis.h>
+-
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/spi/spi.h>
+ 
++#include <linux/iio/iio.h>
++#include <linux/iio/imu/adis.h>
++
+ #define ADIS16203_STARTUP_DELAY 220 /* ms */
+ 
+ /* Flash memory write count */
+-- 
+2.39.1
 
-Otherwise,
-
-Acked-by: Rob Herring <robh@kernel.org>
