@@ -2,118 +2,90 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 512E8C54EAA
-	for <linux-iio@archiver.kernel.org>; Fri, 27 Jan 2023 09:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA0DC54EAA
+	for <linux-iio@archiver.kernel.org>; Fri, 27 Jan 2023 15:02:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231908AbjA0JJx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 27 Jan 2023 04:09:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55676 "EHLO
+        id S234017AbjA0PCC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 27 Jan 2023 10:02:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbjA0JJw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jan 2023 04:09:52 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BD14C10;
-        Fri, 27 Jan 2023 01:09:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674810591; x=1706346591;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=eQ/IZzkS2NRxWmaI8adOA3mfHkoHdtOg1+kSMHdnbcg=;
-  b=c9LRvu5u5uyKb3kvO5pfm+BZt2RSUTbZJDAWH9ITH4x2lik+ZSYrhQ8R
-   Cbw3RNNPIEOGS0ZbzDBZoBpkaqAMEJQJbblKLpoTBRoq35XahQrjxk+Rc
-   6RaXWzUy6l2ek4OF3jjw7xVNawYM2950YR+1FdQ2m74LTJUlZ/mez0/8X
-   2K0td5atJeRCZRmRtA+jMeTojhLb7HigYMQ6FgAWfA+5fU0jOFXXvx8X4
-   gnwAOcl6OggJo5kWV7nbUlN+vEg+C/I+NK6CKgdPNt6IENTMD/JwO77SB
-   fuBBuEL22YdB7ABBcTygijeECNUoWQuoFWpUP+Py57S4ig68QBu/o3IQv
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10602"; a="325721265"
-X-IronPort-AV: E=Sophos;i="5.97,250,1669104000"; 
-   d="scan'208";a="325721265"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2023 01:09:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10602"; a="787156569"
-X-IronPort-AV: E=Sophos;i="5.97,250,1669104000"; 
-   d="scan'208";a="787156569"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004.jf.intel.com with ESMTP; 27 Jan 2023 01:09:47 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pLKjx-00Ft8c-1f;
-        Fri, 27 Jan 2023 11:09:45 +0200
-Date:   Fri, 27 Jan 2023 11:09:45 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Markuss Broks <markuss.broks@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Zhigang Shi <Zhigang.Shi@liteon.com>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Paul Gazzillo <paul@pgazz.com>,
-        Shreeya Patel <shreeya.patel@collabora.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: light: Add support for AMS TCS3490 light sensor
-Message-ID: <Y9OU2e6YMIUTtto0@smile.fi.intel.com>
-References: <20230123231028.26073-1-markuss.broks@gmail.com>
- <20230123231028.26073-3-markuss.broks@gmail.com>
- <Y8+xamtH/U4vK75e@smile.fi.intel.com>
- <a782a0d9-c47e-4328-774f-6bef78161d81@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a782a0d9-c47e-4328-774f-6bef78161d81@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        with ESMTP id S233716AbjA0PB6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jan 2023 10:01:58 -0500
+X-Greylist: delayed 967 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 27 Jan 2023 07:01:57 PST
+Received: from mx0a-00176a03.pphosted.com (mx0b-00176a03.pphosted.com [67.231.157.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13E8757B7;
+        Fri, 27 Jan 2023 07:01:57 -0800 (PST)
+Received: from pps.filterd (m0048299.ppops.net [127.0.0.1])
+        by m0048299.ppops.net-00176a03. (8.17.1.19/8.17.1.19) with ESMTP id 30R6j4FF008620;
+        Fri, 27 Jan 2023 07:57:19 -0500
+From:   Ian Ray <ian.ray@ge.com>
+To:     lars@metafoo.de, Michael.Hennerich@analog.com
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        ian.ray@ge.com
+Subject: [PATCH] drivers: iio: adc: ltc2497: fix LSB shift
+Date:   Fri, 27 Jan 2023 14:57:14 +0200
+Message-Id: <20230127125714.44608-1-ian.ray@ge.com>
+X-Mailer: git-send-email 2.10.1
+X-Proofpoint-ORIG-GUID: ZhqMomqWbtzWC2O6rSYnrsrZc8VQYowq
+X-Proofpoint-GUID: ZhqMomqWbtzWC2O6rSYnrsrZc8VQYowq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-27_08,2023-01-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 lowpriorityscore=0
+ bulkscore=0 impostorscore=0 mlxscore=0 phishscore=0 priorityscore=1501
+ clxscore=1011 suspectscore=0 malwarescore=0 spamscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2301270122
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Jan 26, 2023 at 05:54:56PM +0200, Markuss Broks wrote:
-> On 1/24/23 12:22, Andy Shevchenko wrote:
-> > On Tue, Jan 24, 2023 at 01:10:25AM +0200, Markuss Broks wrote:
+Correct the "sub_lsb" shift for both ltc2497 and ltc2499.
 
-First of all, I assume you agree on the comments you left unanswered,
-so we will expect them all being addressed in the next version. Is it
-correct perception?
+An earlier version of the code shifted by 14 but this was a consequence
+of reading three bytes into a __be32 buffer and using be32_to_cpu(), so
+eight extra bits needed to be skipped.  Now we use get_unaligned_be24()
+and thus the additional skip is wrong.
 
-...
+Fixes 2187cfe ("drivers: iio: adc: ltc2497: LTC2499 support")
+Signed-off-by: Ian Ray <ian.ray@ge.com>
+---
+ drivers/iio/adc/ltc2497.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-> > > +static const struct regmap_config tcs3490_regmap_config = {
-> > > +	.reg_bits	= 8,
-> > > +	.val_bits	= 8,
-> > Seems you are using regmap internal serialization, but does it guarantee the
-> > serialization on the transaction level? Or why is it not a problem?
-> Well, other drivers seem to have it this way too.
-
-They all may be buggy, unclear, or hardware there doesn't require transaction
-level locks. It means we have to avoid cargo cult.
-
-> I don't really understand
-> why it should be a problem, could you please clarify?
-
-Because one should distinguish IO with register vs. IO transaction.
-Imaging two threads which do an IO:
-
-	CPU0					CPU1
-						read REG2
-						update value
-	read REG1
-						write REG2
-	update value
-	write REG1
-
-If in our hypothetical example the writing to REG2 has a side effect on
-the values in REG1, we are doomed.
-
-You have to check all possible scenarios and tell if it's a problem or not with
-the certain hardware. According to the result, add a corresponding comment to
-the code and, if required, change the locking scheme.
-
-> > > +};
-
+diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
+index 17370c5..ec198c6 100644
+--- a/drivers/iio/adc/ltc2497.c
++++ b/drivers/iio/adc/ltc2497.c
+@@ -28,7 +28,6 @@ struct ltc2497_driverdata {
+ 	struct ltc2497core_driverdata common_ddata;
+ 	struct i2c_client *client;
+ 	u32 recv_size;
+-	u32 sub_lsb;
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+@@ -65,10 +64,10 @@ static int ltc2497_result_and_measure(struct ltc2497core_driverdata *ddata,
+ 		 * equivalent to a sign extension.
+ 		 */
+ 		if (st->recv_size == 3) {
+-			*val = (get_unaligned_be24(st->data.d8) >> st->sub_lsb)
++			*val = (get_unaligned_be24(st->data.d8) >> 6)
+ 				- BIT(ddata->chip_info->resolution + 1);
+ 		} else {
+-			*val = (be32_to_cpu(st->data.d32) >> st->sub_lsb)
++			*val = (be32_to_cpu(st->data.d32) >> 6)
+ 				- BIT(ddata->chip_info->resolution + 1);
+ 		}
+ 
+@@ -122,7 +121,6 @@ static int ltc2497_probe(struct i2c_client *client)
+ 	st->common_ddata.chip_info = chip_info;
+ 
+ 	resolution = chip_info->resolution;
+-	st->sub_lsb = 31 - (resolution + 1);
+ 	st->recv_size = BITS_TO_BYTES(resolution) + 1;
+ 
+ 	return ltc2497core_probe(dev, indio_dev);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.10.1
 
