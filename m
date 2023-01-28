@@ -2,46 +2,46 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D3AC38142
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Jan 2023 17:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE04C27C76
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Jan 2023 17:46:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234354AbjA1R2j (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Jan 2023 12:28:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32936 "EHLO
+        id S231442AbjA1Rqn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Jan 2023 12:46:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234073AbjA1R2i (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Jan 2023 12:28:38 -0500
+        with ESMTP id S230096AbjA1Rqm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Jan 2023 12:46:42 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1E6233ED;
-        Sat, 28 Jan 2023 09:28:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4749E869D;
+        Sat, 28 Jan 2023 09:46:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB63EB806A0;
-        Sat, 28 Jan 2023 17:28:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22D90C433EF;
-        Sat, 28 Jan 2023 17:28:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1D75B80B84;
+        Sat, 28 Jan 2023 17:46:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F632C433D2;
+        Sat, 28 Jan 2023 17:46:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674926914;
-        bh=eavz0MMuJlAPnvVE2PM75ag4JmsVT4sDhzf+WOsIp5A=;
+        s=k20201202; t=1674927998;
+        bh=0R15xDhUHxZm1GRhQ1Or408b9q0z8ZJYYQso4uUb2Gw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rVUEWtnJMQHVpfW8Ei9Fh2DQaEiQAZuhqrqvsQWUaFf7LdHSueNoiEOsvRSM3k0yC
-         tDLyoMC/1U7Ty92YgazIIP6wgpMwd2ZUyBoE+3uzl3/KpJe2f+rUjGUejO5H4obGif
-         lP9emKC++TH/dZ8lzOTb3aZTB4eJW7yowot1GdqU2CZUYKRreARkyDMNOqzJsMfX5F
-         wjPQapNH4DqjtavHVXDk1qg/g0uLB5gVnpWi+2s1kmwQE7h1Pd/R+44RIvZLiXGatP
-         dLs17QN9ZhhGW8qTh2xRI2y1DkJqtfn5IG2Fh+amzvboHUlz4r86ZrYTflO2+Lvl8L
-         8rUSDi+UPrBxQ==
-Date:   Sat, 28 Jan 2023 17:42:27 +0000
+        b=fbl8AmxUCHOMI1LzXcgu0qNUny7ZUxSOTpK/Sy4cP+46WOdwp66rzE5YDnnKTbwn4
+         vmsWsnlHwU9ikdBhb49AXJnHqwUlsX3kMksHC8/F05ZssyuyMP/cwJONDZHRpWT+15
+         Hw3F4IbFzV3il20ziYUe0ck6dL0sGbZjJGCN88sp7HgVhjTi1VogKF0bSmZSzDdNLm
+         lPc9H03v9POjMk/6Qu4QCNy0hL1AfiiCutfQ6/mb4QAyHTbdq4C0x8A0mOpggRhK5y
+         xZz78cLU5m+p4yX4zSSBQQ05w1OXGrOYp5LBca0ILNtFz+FruzzNSrCS+Srvp+HwQI
+         FylVTwQhFpqKw==
+Date:   Sat, 28 Jan 2023 18:00:32 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc:     error27@gmail.com, Lars-Peter Clausen <lars@metafoo.de>,
-        Irina Tirdea <irina.tirdea@intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: mma9551_core: Prevent uninitialized
- variable in mma9551_read_config_word()
-Message-ID: <20230128174227.7c240576@jic23-huawei>
-In-Reply-To: <20230126153610.3586243-1-harshit.m.mogalapalli@oracle.com>
-References: <20230126153610.3586243-1-harshit.m.mogalapalli@oracle.com>
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+Cc:     Ian Ray <ian.ray@ge.com>, <lars@metafoo.de>,
+        <Michael.Hennerich@analog.com>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] drivers: iio: adc: ltc2497: fix LSB shift
+Message-ID: <20230128180032.2905cee7@jic23-huawei>
+In-Reply-To: <20230127174756.00007299@Huawei.com>
+References: <20230127125714.44608-1-ian.ray@ge.com>
+        <20230127174756.00007299@Huawei.com>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -50,52 +50,106 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 26 Jan 2023 07:36:09 -0800
-Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com> wrote:
+On Fri, 27 Jan 2023 17:47:56 +0000
+Jonathan Cameron <Jonathan.Cameron@Huawei.com> wrote:
 
-> Smatch Warns:
-> drivers/iio/accel/mma9551_core.c:299
-> 	mma9551_read_config_word() error: uninitialized symbol 'v'.
+> On Fri, 27 Jan 2023 14:57:14 +0200
+> Ian Ray <ian.ray@ge.com> wrote:
 > 
-> When (offset >= 1 << 12) is true mma9551_transfer() will return -EINVAL
-> without 'v' being initialized, so check for the error and return.
+> > Correct the "sub_lsb" shift for both ltc2497 and ltc2499.  
+
+I dropped the ltc2499 mention here as that one seems to be unaffected
+by this patch (beyond as a simplification)
+
 > 
-> Fixes: 40cb761306d6 ("iio: add driver for Freescale MMA9553")
-> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+> Hi Iain, Thanks for the patch.
+> 
+> > 
+> > An earlier version of the code shifted by 14 but this was a consequence
+> > of reading three bytes into a __be32 buffer and using be32_to_cpu(), so
+> > eight extra bits needed to be skipped.  Now we use get_unaligned_be24()
+> > and thus the additional skip is wrong.
+> > 
+> > Fixes 2187cfe ("drivers: iio: adc: ltc2497: LTC2499 support")  
+> 
+> This isn't in standard Fixes tag format.  If nothing else comes
+> up I'll fix up whilst applying.
+> 
+> > Signed-off-by: Ian Ray <ian.ray@ge.com>
 
-Similar to previous.  It's tidying up an inelegant bit of code, but no
-actual bug due to checks at the caller.  Hence I've dropped the fixes
-tag and added a note to the commit description for anyone considering backporting.
+Fix looks good to me.  (I noted my reasoning below on basis someone might
+find it useful) 
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-0-day to take a look at it and see if we missed anything.
+Applied to the fixes-togreg branch of iio.git with fixes tag fixed and
+marked for stable.
+
+Please take a look at:
+https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=fixes-togreg&id=6327a930ab7bfa1ab33bcdffd5f5f4b1e7131504
+to check I didn't mess anything up.
 
 Thanks,
 
 Jonathan
 
-> ---
-> This is detected using static analysis.
-> ---
->  drivers/iio/accel/mma9551_core.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+
+> > ---
+> >  drivers/iio/adc/ltc2497.c | 6 ++----
+> >  1 file changed, 2 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
+> > index 17370c5..ec198c6 100644
+> > --- a/drivers/iio/adc/ltc2497.c
+> > +++ b/drivers/iio/adc/ltc2497.c
+> > @@ -28,7 +28,6 @@ struct ltc2497_driverdata {
+> >  	struct ltc2497core_driverdata common_ddata;
+> >  	struct i2c_client *client;
+> >  	u32 recv_size;
+> > -	u32 sub_lsb;
+> >  	/*
+> >  	 * DMA (thus cache coherency maintenance) may require the
+> >  	 * transfer buffers to live in their own cache lines.
+> > @@ -65,10 +64,10 @@ static int ltc2497_result_and_measure(struct ltc2497core_driverdata *ddata,
+> >  		 * equivalent to a sign extension.
+> >  		 */
+> >  		if (st->recv_size == 3) {
+> > -			*val = (get_unaligned_be24(st->data.d8) >> st->sub_lsb)
+> > +			*val = (get_unaligned_be24(st->data.d8) >> 6)
+Prior to the buggy patch.
+
+1) Read into top 3 bytes of BE32 which corresponds to 8 bits high.
+2) Shift by 14.
+
+Before this patch
+1) Read only 3 bytes
+2) shift by  (31 - (resolution + 1) where resolution is 16 so shift by 14.
+Indeed bug.
+
+After this patch.
+1) Read 3 bytes
+2) shift by 6 
+
+Matches original behaviour - fix is correct.
+
+
+> >  				- BIT(ddata->chip_info->resolution + 1);
+> >  		} else {
+> > -			*val = (be32_to_cpu(st->data.d32) >> st->sub_lsb)
+> > +			*val = (be32_to_cpu(st->data.d32) >> 6)
+
+Prior to this patch
+sub_lsb = 31 - (resolution + 1) where in this case resolution is 24
+31 - 25 = 6 so this change is a noop change, so this is good.
+
+> >  				- BIT(ddata->chip_info->resolution + 1);
+> >  		}
+> >  
+> > @@ -122,7 +121,6 @@ static int ltc2497_probe(struct i2c_client *client)
+> >  	st->common_ddata.chip_info = chip_info;
+> >  
+> >  	resolution = chip_info->resolution;
+> > -	st->sub_lsb = 31 - (resolution + 1);
+> >  	st->recv_size = BITS_TO_BYTES(resolution) + 1;
+> >  
+> >  	return ltc2497core_probe(dev, indio_dev);  
 > 
-> diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
-> index 64ca7d7a9673..75eee7f7303a 100644
-> --- a/drivers/iio/accel/mma9551_core.c
-> +++ b/drivers/iio/accel/mma9551_core.c
-> @@ -296,9 +296,12 @@ int mma9551_read_config_word(struct i2c_client *client, u8 app_id,
->  
->  	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_CONFIG,
->  			       reg, NULL, 0, (u8 *)&v, 2);
-> +	if (ret < 0)
-> +		return ret;
-> +
->  	*val = be16_to_cpu(v);
->  
-> -	return ret;
-> +	return 0;
->  }
->  EXPORT_SYMBOL_NS(mma9551_read_config_word, IIO_MMA9551);
->  
 
