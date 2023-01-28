@@ -2,90 +2,105 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A04C27C76
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Jan 2023 17:48:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB118C27C76
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Jan 2023 17:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234039AbjA1Rsc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Jan 2023 12:48:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
+        id S229619AbjA1Rtg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Jan 2023 12:49:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233821AbjA1Rsb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Jan 2023 12:48:31 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364492685C;
-        Sat, 28 Jan 2023 09:48:25 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id nn18-20020a17090b38d200b0022bfb584987so7579402pjb.2;
-        Sat, 28 Jan 2023 09:48:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=o1a0nON81Vqi2t30WHic39B+aumBPspp0d/jfvNL9dc=;
-        b=MGBqkepfVKOtAlZtIokn9KSI0NGw08OeO+5UxM8+KBwiovyVuRBY/k9KOH3cyA8m/B
-         2yl6Au0l/ROzQdzOv5y9MLx65O5rK1sXgdxoMJdVphTnDqe4VOcIUkq2Ht81oki8HZeO
-         spy2YpigeKEil3qygmUccvPdh44xoVBHEbjZxSpNbIpOdvf1E6EQ6UxzGAUBlEIlS3go
-         SkZ3eudKQFmhmrGNGUOwpxs2JOsBbsD6vZw03Rs4KQttl+3pooheMJuTRMGg/khKfS3R
-         kjBV0cD8ToB1uLIaPIoLcAf99NH2iKyM9zzDHKcsycEkINYWsZA+NLtzlC5FlEOzRM0p
-         pGrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=o1a0nON81Vqi2t30WHic39B+aumBPspp0d/jfvNL9dc=;
-        b=MLrqu8d+5InyLLJCgGRUvvEe7behxN+Zgp/gjW5/MDy6iHrfKlWT6v4PE0+UHxrqKJ
-         DsPvBln8lkACWtf/ayK1M1rqBcyrO/NrFB+x/xIz6+B5T/B2UNE+QcA3o2EbaVg5HAEC
-         CyRh7DuKtjt7gUVHTtelNuNZ245r7OndcqNpns0x1lgTNKbeibRXeHLAenmHc0uBN5Do
-         zAd9y4yazI0Z8sigjL2uV4UkO2eDrbjpzIJMV4fIhRHfI5MBJ1jKR0gd3gvO8t4m4iBg
-         pksUTjuye9dVGMRJTArgiD+k1RixmsrAHx9qZkcPkUV66ahUsM7H57qtnok4m/bnC+Vj
-         S5eQ==
-X-Gm-Message-State: AO0yUKV8mbnkNYb3fVVlwInnJl3aldsejhGZOSR8/2ZTwUnDjd80NPQe
-        ejjM+BkV/9dWJZSOZfDVlVU=
-X-Google-Smtp-Source: AK7set9pbXN/gSvxI1jitERaEWEHF9Q+7R3Ax5jOF81xVOFRXNa8vjo7CsVNsyKHxCiZFjzOJNXzQw==
-X-Received: by 2002:a17:90b:4a4a:b0:22c:7ea2:8a36 with SMTP id lb10-20020a17090b4a4a00b0022c7ea28a36mr1064003pjb.44.1674928104461;
-        Sat, 28 Jan 2023 09:48:24 -0800 (PST)
-Received: from yoga ([2400:1f00:13:5a92:26fc:538b:9071:69e8])
-        by smtp.gmail.com with ESMTPSA id d14-20020a17090a498e00b00229ff1fd7e0sm6933895pjh.14.2023.01.28.09.48.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Jan 2023 09:48:24 -0800 (PST)
-Date:   Sat, 28 Jan 2023 23:18:17 +0530
-From:   Anup Sharma <anupnewsmail@gmail.com>
-To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        broonie@kernel.org, lgirdwood@gmail.com
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        anupnewsmail@gmail.com
-Subject: [PATCH] iio: adc: Fix indentation error by adding extra spaces
-Message-ID: <Y9Vf4Tp8JKvy+y0u@yoga>
+        with ESMTP id S230354AbjA1Rtf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Jan 2023 12:49:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1CCD222E2;
+        Sat, 28 Jan 2023 09:49:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 378E3B80B84;
+        Sat, 28 Jan 2023 17:49:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 144C1C433D2;
+        Sat, 28 Jan 2023 17:49:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674928171;
+        bh=8/SXHapVGxNXSE5DLgHD93D+IWGE00UMyYXEVCQ2ZbQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eMKRK0tl5+DdixmtVJ4tkjbNXZv3DFFaTC6GpQyjSl/6CXPDWoBU1EHI0wT8ox5Ow
+         SvUUW91FRQPUSU837Dukbaeqh+VgcKF0wrd2f75/azG8UY2PlTWrLAKSm3C2ZnHvEG
+         ds+g9Z6IM0pTsQmQYWR2v7APKu60mGoe/S/TKYZOm/PzTl0GetFhDIxnfTwfP1f+jL
+         XIhdtPkNGzDV5Z3MM65rHzabHdps/c7BMDntqUFt6ToLSuc9VUGFedO7Vs5AH9qLdI
+         B3RiOYEgl8STSwqDPqhxQS9+Fa9zTOjRrSmEqXhDRh4ggCEgO30OUC5cRuUe4M5nGK
+         u/gmucSduI6Mg==
+Date:   Sat, 28 Jan 2023 18:03:25 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] drivers: iio: dac: ad5592r: add gpio_chip names
+Message-ID: <20230128180325.0d7bd0b7@jic23-huawei>
+In-Reply-To: <20221123204832.3e514378@jic23-huawei>
+References: <20221117090130.51702-1-antoniu.miclaus@analog.com>
+        <20221123204832.3e514378@jic23-huawei>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Added extra spaces before statements to fix
-following indentation warnings reported by checkpatch.pl.
+On Wed, 23 Nov 2022 20:48:32 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-WARNING: Statements should start on a tabstop
-+           return 0;
+> On Thu, 17 Nov 2022 11:01:30 +0200
+> Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+> 
+> > Add array of explicit gpio names for the `gpiochip` structure of
+> > ad5592r, mainly for debug purposes.  
+> Can you give an example of when this is more useful than the offset?
+> (which I'm assuming is also available when debugging?)
+> 
+> Jonathan
 
-Signed-off-by: Anup Sharma <anupnewsmail@gmail.com>
----
- drivers/iio/adc/ad7291.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This one is still outstanding in patchwork.
 
-diff --git a/drivers/iio/adc/ad7291.c b/drivers/iio/adc/ad7291.c
-index e9129dac762f..fa5807ebe6d2 100644
---- a/drivers/iio/adc/ad7291.c
-+++ b/drivers/iio/adc/ad7291.c
-@@ -179,7 +179,7 @@ static unsigned int ad7291_threshold_reg(const struct iio_chan_spec *chan,
- 		offset = AD7291_VOLTAGE_OFFSET;
- 		break;
- 	default:
--	    return 0;
-+		return 0;
- 	}
- 
- 	switch (info) {
--- 
-2.34.1
+Antoniu, if you want this to be applied please address the question above.
+
+Thanks,
+
+Jonathan
+
+> 
+> > 
+> > Since the gpios are configurable via the dts, generic names are
+> > used.
+> > 
+> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> > ---
+> >  drivers/iio/dac/ad5592r-base.c | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> > 
+> > diff --git a/drivers/iio/dac/ad5592r-base.c b/drivers/iio/dac/ad5592r-base.c
+> > index 7a9b5fc1e579..076bc9ecfb49 100644
+> > --- a/drivers/iio/dac/ad5592r-base.c
+> > +++ b/drivers/iio/dac/ad5592r-base.c
+> > @@ -124,6 +124,10 @@ static int ad5592r_gpio_request(struct gpio_chip *chip, unsigned offset)
+> >  	return 0;
+> >  }
+> >  
+> > +static const char * const ad5592r_gpio_names[] = {
+> > +	"GPIO0", "GPIO1", "GPIO2", "GPIO3", "GPIO4", "GPIO5", "GPIO6", "GPIO7",
+> > +};
+> > +
+> >  static int ad5592r_gpio_init(struct ad5592r_state *st)
+> >  {
+> >  	if (!st->gpio_map)
+> > @@ -140,6 +144,7 @@ static int ad5592r_gpio_init(struct ad5592r_state *st)
+> >  	st->gpiochip.set = ad5592r_gpio_set;
+> >  	st->gpiochip.request = ad5592r_gpio_request;
+> >  	st->gpiochip.owner = THIS_MODULE;
+> > +	st->gpiochip.names = ad5592r_gpio_names;
+> >  
+> >  	mutex_init(&st->gpio_lock);
+> >    
+> 
 
