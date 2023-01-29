@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F947C636CC
-	for <linux-iio@archiver.kernel.org>; Sun, 29 Jan 2023 15:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2FF1C05027
+	for <linux-iio@archiver.kernel.org>; Sun, 29 Jan 2023 15:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229878AbjA2Pma (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 29 Jan 2023 10:42:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
+        id S234670AbjA2Pmc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 29 Jan 2023 10:42:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235091AbjA2Pm3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jan 2023 10:42:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F329B1CACC;
-        Sun, 29 Jan 2023 07:42:26 -0800 (PST)
+        with ESMTP id S234460AbjA2Pmb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jan 2023 10:42:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B101E5E1;
+        Sun, 29 Jan 2023 07:42:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94D12B80C98;
-        Sun, 29 Jan 2023 15:42:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8D3FC433A8;
-        Sun, 29 Jan 2023 15:42:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7640F60C7B;
+        Sun, 29 Jan 2023 15:42:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B113C4339B;
+        Sun, 29 Jan 2023 15:42:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675006944;
-        bh=xNFqaSt6sAiqcpyDJBbIK/2JCT49tj09BjUpYSsTMco=;
+        s=k20201202; t=1675006947;
+        bh=B+qp4Bg0ckQ1EeHpNrnKDGWpfd3LdqaTfOttRJJrPgs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B9VyOX4E+PCVSoEm6qiHGvlbtWJvNw0Cd36RVFez4SH7PDpTx3QJdZZMXq/lQLY/g
-         vI3ZZn0PfYahsYmMjS+PNG3+mMIMTtA6uosaUUXl3p91j7xSMSxmTL8uyh5FmIQnFv
-         ++6Xhi8M+B37zbh3RZ8qrViJAovnt8b9kDJ6FTTBHsrGpaQijhShZM8AkPE++DQsvp
-         Sqm4Dl8Qqds47irMeMamodBGtkjYg8OHMjd7JlGntgB9Z3x5iTkY6PXPzzcsq3g6I8
-         BgSXHHI0CKjTXHz5B+iWaMNbCeiGJN4iAqOiVoLArqtD1Cihu5SKe9XCWhOFToiR2/
-         pqlW6d4Uymlxw==
+        b=gw2cpz8cUznyUiTq/isJhbZVtjY6KQzmLO9Wh84cVX6BJFppxCQT4PgPLRnwxsPdm
+         OirxL9UBYIkBhA2aOwOj5Hkc54jV84+15CbjqRFDepZZQbLqM+Y5WkZ2QNyNoxbsK+
+         o/JRQPFxKD44/01a6ASuVlrMI7Ak0dBqNzmzg3EKg03QtW8c3xy9aiIrfJ+QiBy831
+         VczPM08lCR72WYWYGzT5fscJr7kYI3sM2pzpJ4aImqLlGfg9miR1IQmobjysWtmjuP
+         6ZhIp5jmBAWstvPCU85yzFDvS5A7ulaezApa2un3cVbflPJZU5ogAPzi75DPQm6CJ9
+         SFj02B9o7J3BA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org
 Cc:     Rob Herring <robh+dt@kernel.org>,
@@ -38,9 +38,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 07/12] staging: iio: accel: adis16203: Make units explicit in name of delay define
-Date:   Sun, 29 Jan 2023 15:55:57 +0000
-Message-Id: <20230129155602.740743-8-jic23@kernel.org>
+Subject: [PATCH v2 09/12] staging: iio: accel: adis16203: Drop setting drvdata as nothing gets it
+Date:   Sun, 29 Jan 2023 15:55:59 +0000
+Message-Id: <20230129155602.740743-10-jic23@kernel.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230129155602.740743-1-jic23@kernel.org>
 References: <20230129155602.740743-1-jic23@kernel.org>
@@ -52,39 +52,27 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-A postfix of _MS avoids the need for a comment that might bit rot.
+As commented, it is only useful for .remove() which doesn't exist, so
+drop setting it and the comment.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/staging/iio/accel/adis16203.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/staging/iio/accel/adis16203.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/drivers/staging/iio/accel/adis16203.c b/drivers/staging/iio/accel/adis16203.c
-index 25342717539b..271e560c41c0 100644
+index 20e9c9eb9436..9915b73454d2 100644
 --- a/drivers/staging/iio/accel/adis16203.c
 +++ b/drivers/staging/iio/accel/adis16203.c
-@@ -14,7 +14,7 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/imu/adis.h>
+@@ -187,8 +187,6 @@ static int adis16203_probe(struct spi_device *spi)
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 	st = iio_priv(indio_dev);
+-	/* this is only used for removal purposes */
+-	spi_set_drvdata(spi, indio_dev);
  
--#define ADIS16203_STARTUP_DELAY 220 /* ms */
-+#define ADIS16203_STARTUP_DELAY_MS		220
- 
- #define ADIS16203_FLASH_CNT      0x00
- #define ADIS16203_SUPPLY_OUT     0x02
-@@ -156,9 +156,9 @@ static const char * const adis16203_status_error_msgs[] = {
- };
- 
- static const struct adis_timeout adis16203_timeouts = {
--	.reset_ms = ADIS16203_STARTUP_DELAY,
--	.sw_reset_ms = ADIS16203_STARTUP_DELAY,
--	.self_test_ms = ADIS16203_STARTUP_DELAY
-+	.reset_ms = ADIS16203_STARTUP_DELAY_MS,
-+	.sw_reset_ms = ADIS16203_STARTUP_DELAY_MS,
-+	.self_test_ms = ADIS16203_STARTUP_DELAY_MS
- };
- 
- static const struct adis_data adis16203_data = {
+ 	indio_dev->name = "adis16203";
+ 	indio_dev->channels = adis16203_channels;
 -- 
 2.39.1
 
