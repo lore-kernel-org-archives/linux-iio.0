@@ -2,173 +2,269 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B2FC61D97
-	for <linux-iio@archiver.kernel.org>; Sun, 29 Jan 2023 18:47:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0367BC54EAA
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Jan 2023 03:37:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230220AbjA2Srk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 29 Jan 2023 13:47:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48282 "EHLO
+        id S229614AbjA3Dhi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 29 Jan 2023 22:37:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbjA2Srj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jan 2023 13:47:39 -0500
-X-Greylist: delayed 2498 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 29 Jan 2023 10:47:07 PST
-Received: from mx.flying-snail.de (mx.flying-snail.de [IPv6:2a06:1c40:3::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EACE206A7;
-        Sun, 29 Jan 2023 10:47:07 -0800 (PST)
-Received: from [2a02:908:1b0:8800:2ff:ffff:fe11:2236] (helo=mondbasis.internal.flying-snail.de)
-        by mx.flying-snail.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <pelzi@flying-snail.de>)
-        id 1pMC3S-000nCh-MC; Sun, 29 Jan 2023 19:05:26 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=feldner-bv.de; s=s1; h=Content-Type:MIME-Version:Message-ID:Subject:Cc:To:
-        From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References;
-        bh=2Ah3M2XYpBYD33vznQiby+cj6OhHC3L8o5U3S39YtlU=; b=o0duPuddPQgsHoe5+BV1gDXjzV
-        Sa04Me2rSAxmHP7q4vXwng99ZYMS6wVm47INK+POULYfmxC2Sm3AMqX0UTKRmxHUGRd9QxewTDuYt
-        KGi6tUJiF6n1hy9C3MCp4/TbgeoKkxfQ6rwwZXzQmYSit4TtYXg8x+GModfRMwDJq+VUs8/3EIuvH
-        v3kbGw47owUsdIfkP9/c9kColyzA/VWEcdoVMcqsClBXT5e5aF7Nqj2zwJhwBFVnjA+LkbnCt05kL
-        XbK0wgSFY0ndU4hvKwaQr3Nx3dJwpFBr5xSxWbNS+23sfBak0RJo3QRu264wwLxafSWqXwFtGwyEL
-        eOl8owYw==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=flying-snail.de; s=s1; h=Content-Type:MIME-Version:Message-ID:Subject:Cc:To
-        :From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References;
-        bh=2Ah3M2XYpBYD33vznQiby+cj6OhHC3L8o5U3S39YtlU=; b=mMeZ9l87VHB4RS7IEcuTjopjvF
-        r1lFDDgRHxSPZIUbtDAmd8epSCGJHrB46bO+1wi1dbfL5pJCapWufgv8BdEvNa+owVfXZIS4QP0gY
-        v75Q+D0UHICHf3qvCwhtwYi1H3xOwX0dRlMH2k4AcrMBFhB2K346Wd9+TETSs8uoU4I1HDtlpq+To
-        6gDuYRfrAEI2PRJuHm9OHuTG3lGFcow5D1ls3F+6aldA4aohljW2PZIb9G4DuJHP7iRN4R4eSGSVL
-        8jQ3ywtVpBY/3gGENrPWnsvt86Jmhzy2VjIZqJqNwKC5ncbUYx5CbHSvUVXsMdft3admedqRZyou4
-        w2txzg9w==;
-Received: from [2a02:908:1b0:8800:1400:2ed0:5344:b031] (helo=debian-qemu)
-        by mondbasis.internal.flying-snail.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <pelzi@flying-snail.de>)
-        id 1pMC3P-000U3k-Rp; Sun, 29 Jan 2023 19:05:25 +0100
-Date:   Sun, 29 Jan 2023 19:05:23 +0100
-From:   Andreas Feldner <pelzi@flying-snail.de>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: dht11: Read bit stream from IRQ on falling edges only
-Message-ID: <Y9a0RZ+inWs44Kn8@debian-qemu.internal.flying-snail.de>
+        with ESMTP id S229476AbjA3Dhh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jan 2023 22:37:37 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3621FEB40;
+        Sun, 29 Jan 2023 19:37:36 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id rm7-20020a17090b3ec700b0022c05558d22so9814317pjb.5;
+        Sun, 29 Jan 2023 19:37:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=NXqXYjD1ZvFNcnaBmmR5zBeMKcNb5aKnHvmtBgR3H1k=;
+        b=dXNzowh8Dgy5iQpyz+7aSOt+prfDhicqSCNyzgR7zUdzR44JZXeiQuE1KUJYeG+WDs
+         EP6a53I8BXEz0vP6SRIVfElyPgB2gKkgqbw0nQd05auysYi29939px4Y1rcIDMNbsmMH
+         CQZVG5WTvxH3cXvj/PpI/qoi0CIs9TYkgm700BKsXSRi/6G/geK/8bYQa5KPLSORqy8O
+         PNM01aiUvuIrQRyoTbnObiS/4Dvf8G9sXfLwgDkc1a1PxBQ80rU8Rm2315Pa46Jig91R
+         BRqYGKu49CNKiQjS93+dNk3xgD/teqAV5iplrcGm7+kWxBNzC2Xf7yT9x2R0ego54rAJ
+         kB1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=NXqXYjD1ZvFNcnaBmmR5zBeMKcNb5aKnHvmtBgR3H1k=;
+        b=lwPu1KmOzG3lPUh+EQXH7mr+vQ7LakSwKgVZCaIcVVxxbflYcVlk5TOIG0mHjKds6r
+         iM+e79qkf2fsC2U8jM8aE2juxAE/wcFTnTkcjSRk6y2ImntILR8QsXYPxRRFNW7R2siQ
+         MjTh+hlT+gcaD82p2opiQ2NLaBWD9mSmuM0uNCi8i8ttwrvfSKFb4GTf3x+puGisrM4H
+         AcTVm95S5GOwzKo5dgE+M/cro7A8KqDWBn2kp4W3lAf2G4qFPf4lyK21uzrIH3j9gCEh
+         kzbbsravmH3sVwvs6zxzaFyjt+JgYRBxJOdmibYTIIlQEf3iitvVmmRtJTBLaml36Nxo
+         VrDw==
+X-Gm-Message-State: AFqh2kq238ZMqdePLFEI43VVIlH+Z8lnnHiDP0DxYTGh08Kk5aax2KuT
+        fSvBsyBxOGM1P406XHooblbNDmAGOMNCepZGyCvmUn+yNFc=
+X-Google-Smtp-Source: AMrXdXuczfeRGC3HWaWmrHbYn2jWubUXzkdOzV2R/l6iW3+KFh1Va7WFLwLpzu07DD88Xq1HeH9Y2jYbYOIl9aGH8UU=
+X-Received: by 2002:a17:90a:138a:b0:22b:ba09:cb1a with SMTP id
+ i10-20020a17090a138a00b0022bba09cb1amr4519867pja.188.1675049855267; Sun, 29
+ Jan 2023 19:37:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <167493679618.4533.12181720504943588640.reportbug@debian-duet>
+ <Y9WGmBc9HG4Tx9gf@eldamar.lan> <CAMxBKG1670TFuV3nHP7Yk8s6H+oBF7iiyiB-b=PvKv9hcH22xQ@mail.gmail.com>
+ <20230129182441.082f29d0@jic23-huawei> <CAMxBKG0tyLSpaDPGBXsJbqgHSG9rH6owtSJsLw_ekmTA3Kyvdw@mail.gmail.com>
+In-Reply-To: <CAMxBKG0tyLSpaDPGBXsJbqgHSG9rH6owtSJsLw_ekmTA3Kyvdw@mail.gmail.com>
+From:   Darrell Kavanagh <darrell.kavanagh@gmail.com>
+Date:   Mon, 30 Jan 2023 03:37:23 +0000
+Message-ID: <CAMxBKG3zL_yvw=dHK+Gqd3EHWzvJmiLHVvKnf6UsYbMgcS6nrg@mail.gmail.com>
+Subject: Fwd: Bug#1029850: linux: Driver not loaded for ST Microelectronics
+ LSM6DS3TR-C accelerometer (acpi:SMO8B30:SMO8B30:)
+To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Currently, IRQs for both falling and raising edges of the GPIO
-line connected to the DHT11 device are requested. However, the
-low states do not carry information, it is possible to determine
-0 and 1 bits from the timing of two adjacent falling edges as
-well.
+Forwarding because original html messages were rejected by the server...
 
-Doing so does no longer requires to read the GPIO line value
-within the IRQ handler, plus halves the number of IRQs to be
-handled at all.
+---------- Forwarded message ---------
+From: Darrell Kavanagh <darrell.kavanagh@gmail.com>
+Date: Mon, 30 Jan 2023 at 02:52
+Subject: Re: Bug#1029850: linux: Driver not loaded for ST
+Microelectronics LSM6DS3TR-C accelerometer (acpi:SMO8B30:SMO8B30:)
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: <lorenzo@kernel.org>, <lars@metafoo.de>,
+<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+<carnil@debian.org>
 
-Signed-off-by: Andreas Feldner <pelzi@flying-snail.de>
----
- drivers/iio/humidity/dht11.c | 28 +++++++++++-----------------
- 1 file changed, 11 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-index c97e25448772..d1cd053c5dd4 100644
---- a/drivers/iio/humidity/dht11.c
-+++ b/drivers/iio/humidity/dht11.c
-@@ -30,13 +30,13 @@
- 
- #define DHT11_DATA_VALID_TIME	2000000000  /* 2s in ns */
- 
--#define DHT11_EDGES_PREAMBLE 2
-+#define DHT11_EDGES_PREAMBLE 1
- #define DHT11_BITS_PER_READ 40
- /*
-  * Note that when reading the sensor actually 84 edges are detected, but
-  * since the last edge is not significant, we only store 83:
-  */
--#define DHT11_EDGES_PER_READ (2 * DHT11_BITS_PER_READ + \
-+#define DHT11_EDGES_PER_READ (DHT11_BITS_PER_READ + \
- 			      DHT11_EDGES_PREAMBLE + 1)
- 
- /*
-@@ -46,6 +46,7 @@
-  * 1-bit: 68-75uS -- typically 70uS (AM2302)
-  * The acutal timings also depend on the properties of the cable, with
-  * longer cables typically making pulses shorter.
-+ * Low time is constant 50uS.
-  *
-  * Our decoding depends on the time resolution of the system:
-  * timeres > 34uS ... don't know what a 1-tick pulse is
-@@ -63,7 +64,8 @@
- #define DHT11_START_TRANSMISSION_MIN	18000  /* us */
- #define DHT11_START_TRANSMISSION_MAX	20000  /* us */
- #define DHT11_MIN_TIMERES	34000  /* ns */
--#define DHT11_THRESHOLD		49000  /* ns */
-+#define DHT11_LOW		50000  /* ns */
-+#define DHT11_THRESHOLD		(49000 + DHT11_LOW)  /* ns */
- #define DHT11_AMBIG_LOW		23000  /* ns */
- #define DHT11_AMBIG_HIGH	30000  /* ns */
- 
-@@ -83,7 +85,7 @@ struct dht11 {
- 
- 	/* num_edges: -1 means "no transmission in progress" */
- 	int				num_edges;
--	struct {s64 ts; int value; }	edges[DHT11_EDGES_PER_READ];
-+	struct {s64 ts; }	edges[DHT11_EDGES_PER_READ];
- };
- 
- #ifdef CONFIG_DYNAMIC_DEBUG
-@@ -99,7 +101,7 @@ static void dht11_edges_print(struct dht11 *dht11)
- 	for (i = 1; i < dht11->num_edges; ++i) {
- 		dev_dbg(dht11->dev, "%d: %lld ns %s\n", i,
- 			dht11->edges[i].ts - dht11->edges[i - 1].ts,
--			dht11->edges[i - 1].value ? "high" : "low");
-+			"falling");
- 	}
- }
- #endif /* CONFIG_DYNAMIC_DEBUG */
-@@ -125,14 +127,8 @@ static int dht11_decode(struct dht11 *dht11, int offset)
- 	unsigned char temp_int, temp_dec, hum_int, hum_dec, checksum;
- 
- 	for (i = 0; i < DHT11_BITS_PER_READ; ++i) {
--		t = dht11->edges[offset + 2 * i + 2].ts -
--			dht11->edges[offset + 2 * i + 1].ts;
--		if (!dht11->edges[offset + 2 * i + 1].value) {
--			dev_dbg(dht11->dev,
--				"lost synchronisation at edge %d\n",
--				offset + 2 * i + 1);
--			return -EIO;
--		}
-+		t = dht11->edges[offset + i + 1].ts -
-+		    dht11->edges[offset + i].ts;
- 		bits[i] = t > DHT11_THRESHOLD;
- 	}
- 
-@@ -174,9 +170,7 @@ static irqreturn_t dht11_handle_irq(int irq, void *data)
- 	struct dht11 *dht11 = iio_priv(iio);
- 
- 	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
--		dht11->edges[dht11->num_edges].ts = ktime_get_boottime_ns();
--		dht11->edges[dht11->num_edges++].value =
--						gpiod_get_value(dht11->gpiod);
-+		dht11->edges[dht11->num_edges++].ts = ktime_get_boottime_ns();
- 
- 		if (dht11->num_edges >= DHT11_EDGES_PER_READ)
- 			complete(&dht11->completion);
-@@ -224,7 +218,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
- 			goto err;
- 
- 		ret = request_irq(dht11->irq, dht11_handle_irq,
--				  IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-+				  IRQF_TRIGGER_FALLING,
- 				  iio_dev->name, iio_dev);
- 		if (ret)
- 			goto err;
--- 
-2.30.2
+Hi Jonathan,
 
+Thank you. The driver has evolved quite a bit in 6.2 (I read somewhere
+that 6.2 includes some i2c enhancements), but I adapted your changes
+to fit my Debian 6.1 kernel and it works. Two IIO devices are created
+in sysfs, iio-sensor-proxy.service starts up and automatic screen
+rotation in Gnome just works.
+
+To get the modules to load on boot, I made a small change to your code
+in st_lsm6dsx_i2c to add the acpi alias to modules.alias:
+
+adding a null element to st_lsm6dsx_i2c_acpi_match:
+    static const struct acpi_device_id st_lsm6dsx_i2c_acpi_match[] = {
+         { "SMO8B30", ST_LSM6DS3TRC_ID, },
+         { },
+    };
+then:
+   MODULE_DEVICE_TABLE(acpi, st_lsm6dsx_i2c_acpi_match);
+
+
+dmesg shows:
+
+[ 7366.120208] st_lsm6dsx_i2c i2c-SMO8B30:00: supply vdd not found,
+using dummy regulator
+[ 7366.120260] st_lsm6dsx_i2c i2c-SMO8B30:00: supply vddio not found,
+using dummy regulator
+[ 7366.650839] st_lsm6dsx_i2c i2c-SMO8B30:00: mounting matrix not
+found: using identity...
+
+Is this a problem?
+
+Thanks again.
+
+Darrell
+
+
+On Sun, 29 Jan 2023 at 18:10, Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Sun, 29 Jan 2023 17:03:51 +0000
+> Darrell Kavanagh <darrell.kavanagh@gmail.com> wrote:
+>
+> > Hi,
+> >
+> > I raised this bug in Debian, and have been asked to raise it upstream and
+> > was given your addresses to do so. Will this email be OK, or should I raise
+> > it in a bug tracking system somewhere?
+>
+> Email is the right option.
+>
+> >
+> > Many thanks,
+> > Darrell
+> >
+> >
+> >
+> >
+> > ---------- Forwarded message ---------
+> > From: Salvatore Bonaccorso <carnil@debian.org>
+> > Date: Sat, 28 Jan 2023 at 20:33
+> > Subject: Re: Bug#1029850: linux: Driver not loaded for ST Microelectronics
+> > LSM6DS3TR-C accelerometer (acpi:SMO8B30:SMO8B30:)
+> > To: Darrell Kavanagh <darrell.kavanagh@gmail.com>, <1029850@bugs.debian.org>
+> >
+> >
+> > Hi Darrell,
+> >
+> > On Sat, Jan 28, 2023 at 08:13:16PM +0000, Darrell Kavanagh wrote:
+> > > Package: src:linux
+> > > Version: 6.1.4-1
+> > > Severity: normal
+> > > File: linux
+> > > X-Debbugs-Cc: darrell.kavanagh@gmail.com
+> > >
+> > > Dear Maintainer,
+> > >
+> > > This is a convertable touchscreen tablet/laptop. The rotation sensor
+> > device
+> > > ST Microelectronics LSM6DS3TR-C does not work. It is detected via ACPI
+> > and the
+> > > sysfs trees are created at
+> > devices/pci0000:00/0000:00:17.1/i2c_designware.3/i2c-4/i2c-SMO8B30:00
+> > > and devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A08:00/device:3c/SMO8B30:00 with
+> > > symlinks bus/acpi/devices/SMO8B30:00 and bus/i2c/devices/i2c-SMO8B30:00,
+> > but
+> > > no driver is loaded.
+>
+> At least this is using the ST PNP ID which is better than average
+> (long story!)
+>
+> The driver in question (ultimately drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+> does not currently have an ACPI support.  It should be straight forwards
+> to add though the driver first needs converting to use
+> device_get_match_data() with appropriate fallback so that it will match on
+> ACPI, OF or original spi_device_id tables
+>
+> Completely untested but something like the following
+> (the offset in the enum is needed to allow us to tell if we got a result when
+> calling device_get_match_data() as it returns NULL on failure IIRC)
+>
+> I'm not sure how sucessful the driver will be at finding any interrupts etc, but
+> it may get you basic functionality.
+>
+> Good luck and others more familiar with the driver may well tell me what I forgot
+> when hacking the below ;)
+>
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> index 499fcf8875b4..2617ce236ddc 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> @@ -39,7 +39,7 @@
+>  #define ST_ISM330IS_DEV_NAME   "ism330is"
+>
+>  enum st_lsm6dsx_hw_id {
+> -       ST_LSM6DS3_ID,
+> +       ST_LSM6DS3_ID = 1,
+>         ST_LSM6DS3H_ID,
+>         ST_LSM6DSL_ID,
+>         ST_LSM6DSM_ID,
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+> index df5f60925260..ecfceb2fb3db 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+> @@ -23,10 +23,15 @@ static const struct regmap_config st_lsm6dsx_i2c_regmap_config = {
+>
+>  static int st_lsm6dsx_i2c_probe(struct i2c_client *client)
+>  {
+> -       const struct i2c_device_id *id = i2c_client_get_device_id(client);
+> -       int hw_id = id->driver_data;
+> +       int hw_id;
+>         struct regmap *regmap;
+>
+> +       hw_id = (kernel_ulong_t)device_get_match_data(&client->dev);
+> +       if (!hw_id)
+> +               hw_id = i2c_client_get_device_id(client)->driver_data;
+> +       if (!hw_id)
+> +               return -EINVAL;
+> +
+>         regmap = devm_regmap_init_i2c(client, &st_lsm6dsx_i2c_regmap_config);
+>         if (IS_ERR(regmap)) {
+>                 dev_err(&client->dev, "Failed to register i2c regmap %ld\n", PTR_ERR(regmap));
+> @@ -129,6 +134,10 @@ static const struct of_device_id st_lsm6dsx_i2c_of_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
+>
+> +static const struct acpi_device_id st_lsm6dsx_i2c_acpi_match[] = {
+> +       { "SMO8B30", ST_LSM6DS3TRC_ID, },
+> +};
+> +
+>  static const struct i2c_device_id st_lsm6dsx_i2c_id_table[] = {
+>         { ST_LSM6DS3_DEV_NAME, ST_LSM6DS3_ID },
+>         { ST_LSM6DS3H_DEV_NAME, ST_LSM6DS3H_ID },
+> @@ -161,6 +170,7 @@ static struct i2c_driver st_lsm6dsx_driver = {
+>                 .name = "st_lsm6dsx_i2c",
+>                 .pm = pm_sleep_ptr(&st_lsm6dsx_pm_ops),
+>                 .of_match_table = st_lsm6dsx_i2c_of_match,
+> +               .acpi_match_table = st_lsm6dsx_i2c_acpi_match,
+>         },
+>         .probe_new = st_lsm6dsx_i2c_probe,
+>         .id_table = st_lsm6dsx_i2c_id_table,
+>
+>
+> > >
+> > > The device is identifying itself to the kernel with PNP id SMO8B30:
+> > > physical_node:
+> > >       modalias=acpi:SMO8B30:SMO8B30:
+> > >       name=SMO8B30:00
+> > >       uevent=MODALIAS=acpi:SMO8B30:SMO8B30:
+> > >       waiting_for_supplier=0
+> > > firmware_node:
+> > >       hid=SMO8B30
+> > >       modalias=acpi:SMO8B30:SMO8B30:
+> > >       path=\_SB_.PCI0.I2C5.DEV_
+> > >       status=15
+> > >       uevent=MODALIAS=acpi:SMO8B30:SMO8B30:
+> > >       uid=0
+> > >
+> > > The kernel module for the appropriate driver (st_lsm6dsx_i2c) is not
+> > loaded on boot.
+> > > Modprobing it does not associate it with the device, as I would expect as
+> > > the module does not provide an alias for the above acpi/pnp id.
+> >
+> > Can you report this issue upstream? Gues to reach out are according to
+> > get_maintainers.pl script:
+> >
+> > Lorenzo Bianconi <lorenzo@kernel.org> (maintainer:ST LSM6DSx IMU IIO DRIVER)
+> > Jonathan Cameron <jic23@kernel.org> (maintainer:IIO SUBSYSTEM AND DRIVERS)
+> > Lars-Peter Clausen <lars@metafoo.de> (reviewer:IIO SUBSYSTEM AND DRIVERS)
+> > linux-iio@vger.kernel.org (open list:ST LSM6DSx IMU IIO DRIVER)
+> > linux-kernel@vger.kernel.org (open list)
+> >
+> > Please keep us in the loop.
+> >
+> > Regards,
+> > Salvatore
+>
