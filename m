@@ -2,94 +2,135 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE91FC54EAA
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Jan 2023 19:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93150C636D3
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Jan 2023 19:56:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237828AbjA3Tlf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 30 Jan 2023 14:41:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37574 "EHLO
+        id S230340AbjA3T4e (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 30 Jan 2023 14:56:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230062AbjA3Tlf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Jan 2023 14:41:35 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7CC45893
-        for <linux-iio@vger.kernel.org>; Mon, 30 Jan 2023 11:41:34 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id d30so20654341lfv.8
-        for <linux-iio@vger.kernel.org>; Mon, 30 Jan 2023 11:41:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:user-agent:from:references
-         :in-reply-to:mime-version:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=5mw0wIhoPstMNc40mijloxvXEEALqiMl1EzY+MVPBe4=;
-        b=Ck8ICKpHAuZhrKp22Gpt5J/EXv9DExRl5uoqHrnTUu8Vvj6UggiLJ8snNs3ZQSqsLk
-         ykfDY23pEp4Q039eOF9Jdp8LUvfo7B4DGYxv8m0brqKlADvFn+MWM07558wcqsX+Iur0
-         HobcRrcf4uJv+jbkKXL8LUqvmngzy1XGCK42g=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:user-agent:from:references
-         :in-reply-to:mime-version:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5mw0wIhoPstMNc40mijloxvXEEALqiMl1EzY+MVPBe4=;
-        b=f205KbsC8fyTpZdCa7G9zYtIEoQT8/fhi3yhL+XcrkqBRI6ovEFCM4HKgUGJfFXR9J
-         KHWHaMFK2NcVelZGFSAUMLOl4H7mD+NmhryQhlBRon3IaMY36CaZnjVmHnMe8rkBXWah
-         IF+2H96dh6ofQkJX7cOBNDDE9U+q6zgBxnHYoU0Diir28DUkZrcbIXppvoN+dJHrNAXL
-         DW/zH8B7JvKx6/nQ0i1knZBd0LPohxaTT/Atn4a4D+L1mCDuauTOL2aNAbRi/yE8o8xX
-         B7fZccn+sdgH6ElZscw4MRqyW+EavfzhkUd4KVF1sYTOpZpQRyQf5VsWpdkHWZ0PG8Sa
-         nrkw==
-X-Gm-Message-State: AO0yUKXBdwhmKRnD9JmxZLG1BwodmfouRR9W1d3h+RABtRL6kyYf2t0/
-        MSzuPTaPT0Vn5rYfz5vMa/gu+RLRA5b+uDXHnP6o7/vLnpw30g==
-X-Google-Smtp-Source: AK7set+VuTLKVTk+mRqfU+AFnmWKGVjfYl3rY5slLWfs7xEWyBBz73NrNG/XTy5IkneP5n+nQ49NZN1qqw9vDMSn+Y0=
-X-Received: by 2002:ac2:4c99:0:b0:4d8:7552:2c19 with SMTP id
- d25-20020ac24c99000000b004d875522c19mr296060lfl.34.1675107692607; Mon, 30 Jan
- 2023 11:41:32 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 30 Jan 2023 11:41:31 -0800
+        with ESMTP id S230062AbjA3T4d (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Jan 2023 14:56:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB284ED3
+        for <linux-iio@vger.kernel.org>; Mon, 30 Jan 2023 11:56:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EEC26123D
+        for <linux-iio@vger.kernel.org>; Mon, 30 Jan 2023 19:56:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AB55C4339B;
+        Mon, 30 Jan 2023 19:56:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675108591;
+        bh=qgPC1npyzm5QkOkTgqQ4tUF+yuO02D7WEJE+oGHzYa4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bfcGdCiVCCwIZ7dfkev/Z25yjFbEdxIUUIGFcIVigcvcyoS+G+mPqmzeJt5UO5pw1
+         HkK2D037xjTR1a0BQ34YlgnQW9jd+X6b5CxshYypH862NFgodWpau+yCpy7iEdDGgt
+         P2Ic91SBhxhdf34uGsG/aefGzWYJ2AY6wCss7qoxskHSXsf+WWLwFpJE6AWeVNWKOL
+         7uXQaT6apUqHEwOXZLxxoW0wldzFO6wMnIOHC2ecL7/MIu1EkW97t1ik/s9ynjV5QA
+         TPf0UzQbq+k6lUtrKspQdBKAc+ppoIs09k6iHalXzafetEENgl++yGxZFrZq/fGHin
+         BZxx3U2++kYpQ==
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org,
+        Darrell Kavanagh <darrell.kavanagh@gmail.com>
+Cc:     lorenzo@kernel.org, carnil@debian.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 0/2] iio: imu: lsx6dsx: support SMO8B30 ACPI ID.
+Date:   Mon, 30 Jan 2023 20:10:16 +0000
+Message-Id: <20230130201018.981024-1-jic23@kernel.org>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-In-Reply-To: <20230129003753.1980309-1-gwendal@chromium.org>
-References: <20230129003753.1980309-1-gwendal@chromium.org>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Mon, 30 Jan 2023 11:41:31 -0800
-Message-ID: <CAE-0n510nBDOdWXH43qhRtVsQOCPCbkeP1wCr2LvGXbbXyg5yg@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: proximity: sx_common: Add old register mapping
-To:     Gwendal Grignou <gwendal@chromium.org>, jic23@kernel.org
-Cc:     linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Quoting Gwendal Grignou (2023-01-28 16:37:53)
-> Older firmwares still send sensor configuration using a list of
-> registers with opaque values defined during sensor tuning.
-> sx9234 and sx9360 sensor on ACPI based devices are concerned.
-> More schema to configure the sensors will be needed to support devices
-> designed for windows, like Samsung Galaxy Book2.
->
-> Support schema is: "<_HID>.<register_name>". For instance
-> "STH9324,reg_adv_ctrl2" in:
->
->     Scope (\_SB.PCI0.I2C2)
->     {
->         Device (SX28)
->         {
->             Name (_HID, "STH9324")  // _HID: Hardware ID
-> ...
->             Name (_DSD, Package (0x02)  // _DSD: Device-Specific Data
->             {
->                 ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301") /*
-> Device Properties for _DSD */,
->                 Package (0x3F)
->                 {
-> ...
->                     Package (0x02)
->                     {
->                         "STH9324,reg_adv_ctrl2",
->                         Zero
->                     },`
->
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> ---
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Darrell Kavanagh reported a failure to load the driver on his device
+(for future reference, what was it?)
+
+DSDT blob as follows.
+
+  Scope (_SB.PCI0.I2C5)
+    {
+        Device (DEV)
+        {
+            Name (_HID, EisaId ("SMO8B30"))  // _HID: Hardware ID
+            Name (_CID, EisaId ("SMO8B30"))  // _CID: Compatible ID
+            Name (_UID, Zero)  // _UID: Unique ID
+            Method (_CRS, 0, NotSerialized)  // _CRS: Current Resource Settings
+            {
+                Name (RBUF, ResourceTemplate ()
+                {
+                    I2cSerialBusV2 (0x006A, ControllerInitiated, 0x00061A80,
+                        AddressingMode7Bit, "\\_SB.PCI0.I2C5",
+                        0x00, ResourceConsumer, , Exclusive,
+                        )
+                })
+                Return (RBUF) /* \_SB_.PCI0.I2C5.DEV_._CRS.RBUF */
+            }
+
+            Method (ROTM, 0, NotSerialized)
+            {
+                Name (RBUF, Package (0x03)
+                {
+                    "0 -1 0",
+                    "1 0 0",
+                    "0 0 1"
+                })
+                Return (RBUF) /* \_SB_.PCI0.I2C5.DEV_.ROTM.RBUF */
+            }
+
+            Method (PRIM, 0, NotSerialized)
+            {
+                Name (RBUF, Buffer (One)
+                {
+                     0x01                                             // .
+                })
+                Return (RBUF) /* \_SB_.PCI0.I2C5.DEV_.PRIM.RBUF */
+            }
+
+            Method (_STA, 0, NotSerialized)  // _STA: Status
+            {
+                If ((GAVT == 0x6A))
+                {
+                    Return (0x0F)
+                }
+                Else
+                {
+                    Return (Zero)
+                }
+            }
+
+            Method (CALS, 1, NotSerialized)
+            {
+                Local0 = Arg0
+                If (((Local0 == Zero) || (Local0 == Ones)))
+                {
+                    Local0 = BAC1 /* \BAC1 */
+                    Return (Local0)
+                }
+                Else
+                {
+                    BAC1 = Local0
+                    BACS = Local0
+                    BSCA (0xB0)
+                }
+            }
+        }
+    }
+
+Jonathan Cameron (2):
+  iio: imu: lsm6dsx: Support SMO8B30 ACPI ID for LSM6DS3TR-C
+  iio: imu: lsm6dsx: Add ACPI mount matrix retrieval
+
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  2 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 65 +++++++++++++++++++-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c  | 16 ++++-
+ 3 files changed, 77 insertions(+), 6 deletions(-)
+
+-- 
+2.39.1
+
