@@ -2,24 +2,24 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A88BAC6379F
-	for <linux-iio@archiver.kernel.org>; Wed,  1 Feb 2023 20:45:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC7D0C6379F
+	for <linux-iio@archiver.kernel.org>; Wed,  1 Feb 2023 20:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230404AbjBAUp1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 1 Feb 2023 15:45:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53850 "EHLO
+        id S231252AbjBAUpc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 1 Feb 2023 15:45:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230174AbjBAUpT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 1 Feb 2023 15:45:19 -0500
-Received: from relay03.th.seeweb.it (relay03.th.seeweb.it [5.144.164.164])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411E579635;
-        Wed,  1 Feb 2023 12:44:58 -0800 (PST)
+        with ESMTP id S230366AbjBAUp1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 1 Feb 2023 15:45:27 -0500
+Received: from relay04.th.seeweb.it (relay04.th.seeweb.it [5.144.164.165])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FFB7B7A9;
+        Wed,  1 Feb 2023 12:45:02 -0800 (PST)
 Received: from localhost.localdomain (94-211-6-86.cable.dynamic.v4.ziggo.nl [94.211.6.86])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id F3DC62038A;
-        Wed,  1 Feb 2023 21:44:55 +0100 (CET)
+        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id A2EF920396;
+        Wed,  1 Feb 2023 21:45:00 +0100 (CET)
 From:   Marijn Suijten <marijn.suijten@somainline.org>
 To:     phone-devel@vger.kernel.org
 Cc:     ~postmarketos/upstreaming@lists.sr.ht,
@@ -38,10 +38,12 @@ Cc:     ~postmarketos/upstreaming@lists.sr.ht,
         Manivannan Sadhasivam <mani@kernel.org>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH v3 0/3] arm64: dts: qcom: Use labels with generic node names for ADC channels
-Date:   Wed,  1 Feb 2023 21:44:44 +0100
-Message-Id: <20230201204447.542385-1-marijn.suijten@somainline.org>
+Subject: [PATCH v3 3/3] dt-bindings: iio: adc: Require generic adc-chan name for channel nodes
+Date:   Wed,  1 Feb 2023 21:44:47 +0100
+Message-Id: <20230201204447.542385-4-marijn.suijten@somainline.org>
 X-Mailer: git-send-email 2.39.1
+In-Reply-To: <20230201204447.542385-1-marijn.suijten@somainline.org>
+References: <20230201204447.542385-1-marijn.suijten@somainline.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -61,57 +63,81 @@ label hardcoded in the driver [2] instead.
 [1]: https://lore.kernel.org/linux-arm-msm/20221106193018.270106-1-marijn.suijten@somainline.org/T/#u
 [2]: https://lore.kernel.org/linux-arm-msm/20230116220909.196926-4-marijn.suijten@somainline.org/
 
-Changes since v2:
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+---
+ .../bindings/iio/adc/qcom,spmi-vadc.yaml         | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-- Reorder DT changes before dt-bindings changes;
-- Update adc-chan generic node name in tm5 example bindings.
-
-v2: https://lore.kernel.org/linux-arm-msm/20230119212632.185881-1-marijn.suijten@somainline.org/T/#u
-
-Changes since v1:
-- Require adc-chan name in dt-bindings;
-- Replace more node names with adc-chan and a descriptive label, that
-  were found by running dtbs_check on adjusted bindings;
-- sm8250-mtp.dts: Fix accidental adc-chan2 node name with pa_therm
-  label, which should have been adc-chan with pa_therm2 label.
-
-v1: https://lore.kernel.org/linux-arm-msm/20221209215308.1781047-1-marijn.suijten@somainline.org/
-
-Marijn Suijten (3):
-  arm64: dts: qcom: Use labels with generic node names for ADC channels
-  dt-bindings: thermal: qcom-spmi-adc-tm5: Use generic ADC node name
-  dt-bindings: iio: adc: Require generic adc-chan name for channel nodes
-
- .../bindings/iio/adc/qcom,spmi-vadc.yaml      | 16 ++++----
- .../bindings/thermal/qcom-spmi-adc-tm5.yaml   |  9 +++--
- arch/arm64/boot/dts/qcom/pm6125.dtsi          | 18 ++++++---
- arch/arm64/boot/dts/qcom/pm660.dtsi           | 33 ++++++++++------
- arch/arm64/boot/dts/qcom/pm8150.dtsi          |  6 +--
- arch/arm64/boot/dts/qcom/pm8150b.dtsi         |  8 ++--
- arch/arm64/boot/dts/qcom/pm8150l.dtsi         |  6 +--
- arch/arm64/boot/dts/qcom/pm8950.dtsi          | 39 ++++++++++++-------
- arch/arm64/boot/dts/qcom/pmm8155au_1.dtsi     |  6 +--
- arch/arm64/boot/dts/qcom/pmm8155au_2.dtsi     |  6 +--
- arch/arm64/boot/dts/qcom/pmp8074.dtsi         | 27 ++++++++-----
- arch/arm64/boot/dts/qcom/pms405.dtsi          | 21 ++++++----
- arch/arm64/boot/dts/qcom/qrb5165-rb5.dts      | 15 ++++---
- .../dts/qcom/sc7180-trogdor-coachz-r1.dts     |  4 +-
- .../boot/dts/qcom/sc7180-trogdor-coachz.dtsi  |  3 +-
- .../dts/qcom/sc7180-trogdor-homestar.dtsi     |  3 +-
- .../boot/dts/qcom/sc7180-trogdor-lazor.dtsi   |  2 +-
- .../dts/qcom/sc7180-trogdor-pompom-r1.dts     |  2 +-
- .../dts/qcom/sc7180-trogdor-pompom-r2.dts     |  2 +-
- .../boot/dts/qcom/sc7180-trogdor-pompom.dtsi  |  3 +-
- .../dts/qcom/sc7180-trogdor-wormdingler.dtsi  |  3 +-
- arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi  |  3 +-
- arch/arm64/boot/dts/qcom/sc7280-idp.dts       |  2 +-
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi      |  2 +-
- arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi    |  4 +-
- .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    | 39 ++++++++++++-------
- .../qcom/sm6125-sony-xperia-seine-pdx201.dts  | 15 ++++---
- arch/arm64/boot/dts/qcom/sm8250-mtp.dts       | 21 ++++++----
- 28 files changed, 202 insertions(+), 116 deletions(-)
-
---
+diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
+index bd6e0d6f6e0c..9b1a60fe7599 100644
+--- a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
+@@ -54,7 +54,7 @@ required:
+   - '#io-channel-cells'
+ 
+ patternProperties:
+-  "^.*@[0-9a-f]+$":
++  "^adc-chan@[0-9a-f]+$":
+     type: object
+     additionalProperties: false
+     description: |
+@@ -148,7 +148,7 @@ allOf:
+ 
+     then:
+       patternProperties:
+-        "^.*@[0-9a-f]+$":
++        "^adc-chan@[0-9a-f]+$":
+           properties:
+             qcom,decimation:
+               enum: [ 512, 1024, 2048, 4096 ]
+@@ -171,7 +171,7 @@ allOf:
+ 
+     then:
+       patternProperties:
+-        "^.*@[0-9a-f]+$":
++        "^adc-chan@[0-9a-f]+$":
+           properties:
+             qcom,decimation:
+               enum: [ 256, 512, 1024 ]
+@@ -194,7 +194,7 @@ allOf:
+ 
+     then:
+       patternProperties:
+-        "^.*@[0-9a-f]+$":
++        "^adc-chan@[0-9a-f]+$":
+           properties:
+             qcom,decimation:
+               enum: [ 250, 420, 840 ]
+@@ -217,7 +217,7 @@ allOf:
+ 
+     then:
+       patternProperties:
+-        "^.*@[0-9a-f]+$":
++        "^adc-chan@[0-9a-f]+$":
+           properties:
+             qcom,decimation:
+               enum: [ 85, 340, 1360 ]
+@@ -292,16 +292,18 @@ examples:
+             #io-channel-cells = <1>;
+ 
+             /* Other properties are omitted */
+-            xo-therm@44 {
++            adc-chan@44 {
+                 reg = <PMK8350_ADC7_AMUX_THM1_100K_PU>;
+                 qcom,ratiometric;
+                 qcom,hw-settle-time = <200>;
++                label = "xo_therm";
+             };
+ 
+-            conn-therm@47 {
++            adc-chan@47 {
+                 reg = <PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
+                 qcom,ratiometric;
+                 qcom,hw-settle-time = <200>;
++                label = "conn_therm";
+             };
+         };
+     };
+-- 
 2.39.1
 
