@@ -2,178 +2,151 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11CDDC05027
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Feb 2023 11:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58CAEC05027
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Feb 2023 12:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229936AbjBFLy5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Feb 2023 06:54:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34362 "EHLO
+        id S229936AbjBFMdi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Feb 2023 07:33:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbjBFLyy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Feb 2023 06:54:54 -0500
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0B61448A;
-        Mon,  6 Feb 2023 03:54:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1675684493; x=1707220493;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=lis3l5zmiwseEfKMd6n3wB7+kL79DdnDESv5iBtuvlg=;
-  b=ldfHT85lb4fvGa/cnacFMyc1FZUUvpGIyUQTN6EC+eUT9noi5/fKHB7/
-   M5BZITaxG4QwH4IkewLz7++qSTVrhanv78jxmydo0VKeg0QVTPyTGCZ+e
-   lqfIg2GT94tsr46HvtvVl0bgBuo5iyruFJeSqNsG6z6YkpkfDnU9/8aky
-   7RYsY4p6a/OrrBN3sv2MGDRAgFdQt/Tyzk24uRmnFiFJAZ912oNxsJDVK
-   W+MvtvdH73XOYVJwy0opLXAg//f/KkcGGDJrQlrOFRLhhhERPnTXvzPnl
-   lHnXt01zPsHDISLDoSouPJNWimxMmI+3JO1OnRdRkX3mDZP3T0ieMBHDl
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.97,276,1669071600"; 
-   d="scan'208";a="28889043"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 06 Feb 2023 12:54:50 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Mon, 06 Feb 2023 12:54:51 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Mon, 06 Feb 2023 12:54:51 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1675684491; x=1707220491;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=lis3l5zmiwseEfKMd6n3wB7+kL79DdnDESv5iBtuvlg=;
-  b=Ivw1UsC6U+znm/d+OjC/oOSKWApTkwhBHF1Xa9Q0GZbwzZvRxKETlPR3
-   3XbPZ1QtgZ6to+9Z8zv7iPic61Mm2Db5RNFshLwAXepbBmPC7bVm3uy2t
-   YkRI7c9ItiBljzN7yphSDXuNFP8U1X8gDX8/L8JuvD+7KDBwNHN7p42pz
-   861xbQjgFIZAuguTxaZwFzwRWKpUZTZWZBzbM236pBMxHki/TnCVlL1e6
-   ZPT/fNDSf4OVnOHRNrEudZkahKLDnQOUJ/jBFWDEpEfrwxUosWVBKN6iG
-   NfuPhuPhyiM1Z80X9Tr067xeUgTdjN+uSV/WE9hpTtSCKmleUxfqlm26U
-   A==;
-X-IronPort-AV: E=Sophos;i="5.97,276,1669071600"; 
-   d="scan'208";a="28889041"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 06 Feb 2023 12:54:50 +0100
-Received: from steina-w.localnet (unknown [10.123.53.21])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        with ESMTP id S229764AbjBFMdi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Feb 2023 07:33:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C2D1F902
+        for <linux-iio@vger.kernel.org>; Mon,  6 Feb 2023 04:33:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 41641280056;
-        Mon,  6 Feb 2023 12:54:50 +0100 (CET)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Marco Felsch <m.felsch@pengutronix.de>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Haibo Chen <haibo.chen@nxp.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 1/1] dt-bindings: iio: adc: add missing vref-supply
-Date:   Mon, 06 Feb 2023 12:54:47 +0100
-Message-ID: <3215933.aeNJFYEL58@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <20230204001333.ywrkty3an3cbuq33@pengutronix.de>
-References: <20230131101323.606931-1-alexander.stein@ew.tq-group.com> <3214924.aeNJFYEL58@steina-w> <20230204001333.ywrkty3an3cbuq33@pengutronix.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CF9060EC5
+        for <linux-iio@vger.kernel.org>; Mon,  6 Feb 2023 12:33:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60A05C433EF;
+        Mon,  6 Feb 2023 12:33:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675686815;
+        bh=Spqv92wIsl6CjBIOcDmAGb1/zbMC2RRliapwtLVcY1A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fOVVJ7613zQP5TFvumxyI6nkFApZlJFcKh7dq28pTS2nkOuzWlIOK2G5uyO0/p+TA
+         sgptx+orUJzLbFKqSVTnx1RoMn/Roid0WklEbGkisf4atIQ5BcEIbuQh+FA1kQQsY8
+         FByPWdCohDcogrO6xa69olpJpMxSkmv7v9XVjDlqYcK8+EwPwo84SbxGTDueMhKdql
+         n37jyPhKDxxOEk0nL3buKpLJDBzS4lDAnfr+76PKku/07JQr5Mh8Hmp7AiW52jXjgW
+         pY7E9UZct3FDzUZ/WqCLBWx8+ho9RH1d7sv2A8Qt++Kc4/NPeEI5YSCPgUBKEgmrji
+         8V58EDcHDEvZg==
+Date:   Mon, 6 Feb 2023 10:58:08 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Philippe De Muyter <phdm@macq.eu>, linux-iio@vger.kernel.org
+Subject: Re: st_lsm6dsx : first two values of ism330dlc_gyro are wrong
+Message-ID: <Y+DPMBFHo9UxU+fK@lore-desk>
+References: <20230205101223.GA10729@frolo.macqel>
+ <20230205141342.10dbc447@jic23-huawei>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="IzsUbq36T+9gtgP9"
+Content-Disposition: inline
+In-Reply-To: <20230205141342.10dbc447@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Marco,
 
-Am Samstag, 4. Februar 2023, 01:13:33 CET schrieb Marco Felsch:
-> HI Alexander,
-> 
-> On 23-02-03, Alexander Stein wrote:
-> > Am Freitag, 3. Februar 2023, 15:12:17 CET schrieb Marco Felsch:
-> > > Hi,
-> > > 
-> > > On 23-02-03, Alexander Stein wrote:
-> > > 
-> > > ...
-> > > 
-> > > > > > > > > +  vref-supply:
-> > > > > > > > > +    description: External ADC reference voltage supply on
-> > > > > > > > > VREFH
-> > > > > > > > > pad.
-> > > > > > > > 
-> > > > > > > > Please add it to the list of required properties, we can
-> > > > > > > > remove it
-> > > > > > > > as
-> > > > > > > > soon as the driver has support for the internal reference
-> > > > > > > > voltages.
-> > > > > > > 
-> > > > > > > I was thinking in doing so before as well. But DT describes the
-> > > > > > > hardware, and this ADC apparently would be functioning without a
-> > > > > > > reference voltage on that pad, using a different one. What the
-> > > > > > > driver
-> > > > > > > actual does is a different matter.>
-> > > > > > 
-> > > > > > I have also thought about it first but than I checked the RM which
-> > > > > > says
-> > > > > > that "multi-reference selection" is chip dependent.
-> > > > 
-> > > > Nice for pointing this out. I wasn't aware that there are differences.
-> > > > 
-> > > > > Oh goody. So is it detectable?
-> > > > 
-> > > > That's my problem. I didn't find any source of information which chips
-> > > > do
-> > > > support multiple references and which don't.
-> > > > Marco, do you have some information on this?
-> > > 
-> > > You can download the RM from the NXP website but you need an account for
-> > > it:
-> > > https://www.nxp.com/products/processors-and-microcontrollers/arm-process
-> > > ors/
-> > > i-mx-applications-processors/i-mx-8-applications-processors/i-mx-8-fami
-> > > ly-ar
-> > > m-cortex-a53-cortex-a72-virtualization-vision-3d-graphics-4k-video:i.MX
-> > > 8
-> > > 
-> > > Or is this the wrong model? The naming scheme is quite confusing to me.
-> > 
-> > That's i.MX8 (imx8qm), the bindings are for i.MX8X (imx8qxp/imx8dxp). But
-> > I
-> > assume the ADC is similar/identical.
-> > 
-> > > > > If we are going to stick to a single compatible rather than adding
-> > > > > them
-> > > > > for
-> > > > > the variants with and without this feature, should probably add a
-> > > > > note
-> > > > > at
-> > > > > least to say it is required for some parts.
-> > > > 
-> > > > That's a good idea. I'm okay with that, until there is more
-> > > > information
-> > > > available.
-> > > 
-> > > According the RM there is a bit which can be read: Multi Vref
-> > > Implemented (MVI).
-> > 
-> > Ah, nice. So there is a hardware feature. From the RM I have available it
-> > is set for both imx8qm and imx8qxp. Given that I will not mark this as
-> > required, but add a comment regarding this feature bit.
-> 
-> Can you check the comments about the refsel please? Since this is the
-> important part.  Since the RM above states that this bit will indicate a
-> multiref device but it can also the case that, you have a chip with just
-> on ref selection option (external). I can't check this since I don't
-> have the RM for this. @NXP can you give us more information please?
+--IzsUbq36T+9gtgP9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I would assume if MVI is 0 REFSEL should be considered reserved.
-Both imx8qm and imx8qxp have MVI set, even imx1170 has this bit set. So I am 
-not aware of any SoC with MVI not being set.
+> On Sun, 5 Feb 2023 11:12:23 +0100
+> Philippe De Muyter <phdm@macq.eu> wrote:
+>=20
+> > Hello Lorenzo and list,
+> >=20
+> > I use the imu/st_lsm6dsx (i2c) driver to drive a ism330dlc imu.
+> >=20
+> > Every time I start a new acquisition of gyro values, the first two
+> > values read are wrong, as can be see here :
+> >=20
+> >  $ sudo ./iio_generic_buffer -n ism330dlc_gyro -g -c 10 -a
+> >  iio device number being used is 1
+> >  trigger-less mode selected
+> >  No channels are enabled, enabling all channels
+> >  Enabling: in_anglvel_z_en
+> >  Enabling: in_timestamp_en
+> >  Enabling: in_anglvel_y_en
+> >  Enabling: in_anglvel_x_en
+> >  -0.138924 -0.915246 0.470628 1675591514696125669
+> >  -0.012699 -0.362151 0.143208 1675591514772675669
+> >  0.001989 -0.076500 0.035190 1675591514849250669
+> >  0.002295 -0.076194 0.035343 1675591514925825669
+> >  0.002142 -0.076041 0.035343 1675591515002400669
+> >  0.001989 -0.076041 0.035343 1675591515078975669
+> >  0.001836 -0.076347 0.035649 1675591515155525669
+> >  0.001836 -0.076500 0.035649 1675591515232075669
+> >  0.001989 -0.076500 0.035649 1675591515308625669
+> >  0.001989 -0.076347 0.035649 1675591515385200669
+> >  Disabling: in_anglvel_z_en
+> >  Disabling: in_timestamp_en
+> >  Disabling: in_anglvel_y_en
+> >  Disabling: in_anglvel_x_en
+> >  $
+> >=20
+> > Is that a normal behaviour for a gyro in that family or is it be caused
+> > by a software or hardware bug ?
+>=20
+> So, some random thoughts on what might be going on...
+> 1) Stale data in the fifo.  Could you run this experiment twice whilst be=
+ing
+>    careful not to move the device between the runs.  If we still see the =
+wrong
+>    values at the start then it's not that...
 
-Best regards,
-Alexander
+When the device is powered-down we set the FIFO in bypass mode and in-flight
+samples are discarded.
 
+>=20
+> 2) Device takes a little whilst to stabilize. Possibly this is down to the
+>    low pass filters requiring a few samples before they deliver stable ou=
+tput.
+>    From a quick glance I don't think we provide any userspace control of =
+those
+>    filters and I think LPR1 is left in default state of disabled.
 
+I would say this issue is related to the "Accelerometer and gyroscope
+turn-on/off time" (section 3.9 in the sensor application note).
 
+https://www.st.com/resource/en/application_note/an5125-ism330dlc-3d-acceler=
+ometer-and-3d-gyroscope-with-digital-output-for-industrial-applications-stm=
+icroelectronics.pdf
+
+@Jonathan: do you think we should discard these sample in the driver or in =
+the
+user-space app? I would say this can be a general issue. What do you think?
+
+Regards,
+Lorenzo
+
+>=20
+> You could try messing with the sampling frequency as that may affect the =
+number
+> of bad samples you see and give us more of a clue (it affects lpf2 direct=
+ly).
+>=20
+> Jonathan
+>=20
+> >=20
+> > Best regards
+> >=20
+> > Philippe
+> >=20
+>=20
+
+--IzsUbq36T+9gtgP9
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY+DPMAAKCRA6cBh0uS2t
+rEFIAP4otQkDSDitEcHMRmYOB/xSUhdIR3Yfn95d/FC3bPhkYQEAzQPMhY8k6WmR
+Ubiw9wuO9b45FCGgma3SgGqFl0Kgww8=
+=exbI
+-----END PGP SIGNATURE-----
+
+--IzsUbq36T+9gtgP9--
