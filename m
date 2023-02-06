@@ -2,134 +2,124 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 779D3C61DA4
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Feb 2023 09:53:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA070C61DA4
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Feb 2023 11:12:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbjBFJxL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Feb 2023 04:53:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46694 "EHLO
+        id S229903AbjBFLMF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Feb 2023 06:12:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229750AbjBFJwr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Feb 2023 04:52:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C4E61CAE6
-        for <linux-iio@vger.kernel.org>; Mon,  6 Feb 2023 01:52:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675677119;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=owEYQNcSgjMplel5oj3hjxZa5dZAvDaBXhOMUtOhUoc=;
-        b=QBAgqzR1BC9eLNdUssnJ2W18sk1oNDHd3+TyAbaOOF4PHlttVlswVJu8vGPolXDB19I13Z
-        JYIsIzKlRb1efml+uSLj56aHTlwxJntOhgn7AgBtJFXeY8KyhOzm2VYjnSDukXSz8gK6yF
-        h3j/EkeYL/hOGLi+sFoJaqtV5z3aDbI=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-274-NObgEnzvNEmFMc9hdrLu-Q-1; Mon, 06 Feb 2023 04:51:58 -0500
-X-MC-Unique: NObgEnzvNEmFMc9hdrLu-Q-1
-Received: by mail-ej1-f69.google.com with SMTP id ud13-20020a170907c60d00b0088d773d11d6so8277279ejc.17
-        for <linux-iio@vger.kernel.org>; Mon, 06 Feb 2023 01:51:57 -0800 (PST)
+        with ESMTP id S229617AbjBFLME (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Feb 2023 06:12:04 -0500
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD911E1C9
+        for <linux-iio@vger.kernel.org>; Mon,  6 Feb 2023 03:12:03 -0800 (PST)
+Received: by mail-qt1-x831.google.com with SMTP id 5so2341744qtp.9
+        for <linux-iio@vger.kernel.org>; Mon, 06 Feb 2023 03:12:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=uuWlom21gSPm5ulvciUgX0oLJd2zF3JgkvZVYvO1nTU=;
+        b=PxNDo2qrHxoKyZOZ5BdkTauioHkaECJljAhHU+RYr+8fCoN3c/SJPaablsQX9+TmL0
+         S3Azm0QVHeAwaj7D2gI7Xp6XuhUX8r00hGi9kR6Rw6E3+rPP/OWV0a/ypCcs/tTvMiqf
+         JgAcTffPc/dwude7rUbZpD1DNykXmmUTbdX3Cj6aNSRQLzKXJtLa9qInlMD0ISPobBqZ
+         JBSmC82R6d26ggDg0inT7mtkg1m3TyAiJnmqXOAbNClLOKiDV/MRsUf398D2OTUfo/79
+         bBGOCH0GMhywuUjzGJHIgGzaXIIhejCOli4Ui++lh1zIkjR1QY/v/Xo1v2TtzCYjleV9
+         qSpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=owEYQNcSgjMplel5oj3hjxZa5dZAvDaBXhOMUtOhUoc=;
-        b=QRWiMOCUYV4zvbdxRYb7AS7GrPEDwM9JkW7g0zFBtBBWmLLHgGHZOIXsnc1AaVjT5L
-         Enuzo72+bxLDcbYfD6GVOYoyAEjByXkHax3ykooQ8nE1YbjAAJHMpA+TLUrK0v/vYVaU
-         mFzrzUSJ1madNq2T7r8aCJk68xxVLsg/uChsSdU/5NYZfTx8/p7EfsErBAByJi0rBr7w
-         yoTB6tzw9ijM1vBzSVqUFnTJSGdq1/WhV1Lv5FR6ySrLB9IPk5E/bslIOVNnwdupCjN6
-         0Lb6OnRjtRfYtrrM6vLhNtAwH1WcS7N8H0aOOjB2fQ8cQHxsfedbFiU8UojrdYkr5oiq
-         IcXg==
-X-Gm-Message-State: AO0yUKXebDyoSmU1iF7Qa9xJPmlZ4GqIuZ9p0vuKgJNzO7vTCEU8Uher
-        hsVu/TpsTLMDURLZVTNZ/JG+BM30LOlggFXbTzDvf9NsjC20bYNVElWmRhgdqBbRdhpQUXxexdm
-        751bAn8EW9KbCdwsJ2DD+
-X-Received: by 2002:a50:9341:0:b0:4aa:a76a:c428 with SMTP id n1-20020a509341000000b004aaa76ac428mr5601488eda.6.1675677116591;
-        Mon, 06 Feb 2023 01:51:56 -0800 (PST)
-X-Google-Smtp-Source: AK7set8R7YfE5UxluqXarKoSjZxXBOJ+bTscBS5IqBZTYnjBUWkFkaKqIphqD14gAJ07SG61fBF/pg==
-X-Received: by 2002:a50:9341:0:b0:4aa:a76a:c428 with SMTP id n1-20020a509341000000b004aaa76ac428mr5601481eda.6.1675677116426;
-        Mon, 06 Feb 2023 01:51:56 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c32:7800:5bfa:a036:83f0:f9ec? (2001-1c00-0c32-7800-5bfa-a036-83f0-f9ec.cable.dynamic.v6.ziggo.nl. [2001:1c00:c32:7800:5bfa:a036:83f0:f9ec])
-        by smtp.gmail.com with ESMTPSA id c5-20020a50d645000000b004aaa656887esm2167221edj.96.2023.02.06.01.51.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Feb 2023 01:51:56 -0800 (PST)
-Message-ID: <2d5dc77a-4c57-cad5-3fb5-6dc999d3954d@redhat.com>
-Date:   Mon, 6 Feb 2023 10:51:55 +0100
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=uuWlom21gSPm5ulvciUgX0oLJd2zF3JgkvZVYvO1nTU=;
+        b=DeznumPMoWKk+6OxpH5g2RE7FEBTJ/GCTvLMFZ7s7/IrZjsKiGsXyXmdvMo7TftDEF
+         s2KtCj/0UHsU/3+w/dy3hkcGYDeRIHW1/2vonDgBUk7KMx/FA7vewPIOfcWmwMSPPLmp
+         HNoG1aVduXmUWZJwe5xFW0kZ9zqeT9cv17Ml5VzHcm8TBQAC1IA4cEanyi7ilp4Z/ILs
+         JX+7ZGClHeYyiwnilX2IcHUY/rtQe7rPQplKxH9lTuNh25hZeJjeqOD2/4F/lA350c8n
+         UJrYWDvPjQMFiW5k/aV5sessRo33QpGLVNvhYqDMmp9PoEokQKMxICUHh00gkmjvGQVP
+         dPWg==
+X-Gm-Message-State: AO0yUKVvi7mkfi/0+i0g68oNuQ5xlx84au+BUGVX9Ra+sxvjNVuDr3lA
+        BBBqs6+Q0rcadZaiKWzE0w8=
+X-Google-Smtp-Source: AK7set96FgdJtyDp3U/XfXHyzPobp+jN66PBojCZdu0zvVKlny8J4qSUHLwZu+o5sVnxofkNhSizEQ==
+X-Received: by 2002:a05:622a:84:b0:3b9:bf43:fccd with SMTP id o4-20020a05622a008400b003b9bf43fccdmr33497876qtw.10.1675681922462;
+        Mon, 06 Feb 2023 03:12:02 -0800 (PST)
+Received: from p200300f6ef051400929cfbafc6907690.dip0.t-ipconnect.de (p200300f6ef051400929cfbafc6907690.dip0.t-ipconnect.de. [2003:f6:ef05:1400:929c:fbaf:c690:7690])
+        by smtp.gmail.com with ESMTPSA id b13-20020ac801cd000000b003a6a19ee4f0sm7052048qtg.33.2023.02.06.03.12.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Feb 2023 03:12:02 -0800 (PST)
+Message-ID: <e619b7ba249457a542f04a198133e4ba9255d16c.camel@gmail.com>
+Subject: Re: [PATCH] iio: adc: ad7791: fix IRQ flags
+From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Date:   Mon, 06 Feb 2023 12:13:50 +0100
+In-Reply-To: <e60e97d614a03c5a6e1e86b330a3d3ae47d3d220.camel@gmail.com>
+References: <20230120124645.819910-1-nuno.sa@analog.com>
+         <20230121165852.5a302778@jic23-huawei>
+         <e60e97d614a03c5a6e1e86b330a3d3ae47d3d220.camel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH] iio: light: cm32181: Unregister second I2C client if
- present
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        ktsai@capellamicro.com, jic23@kernel.org, lars@metafoo.de
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230206063616.981225-1-kai.heng.feng@canonical.com>
-Content-Language: en-US, nl
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20230206063616.981225-1-kai.heng.feng@canonical.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+On Mon, 2023-01-30 at 10:01 +0100, Nuno S=C3=A1 wrote:
+> On Sat, 2023-01-21 at 16:58 +0000, Jonathan Cameron wrote:
+> > On Fri, 20 Jan 2023 13:46:45 +0100
+> > Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
+> >=20
+> > > The interrupt is triggered on the falling edge rather than being
+> > > a
+> > > level
+> > > low interrupt.
+> > >=20
+> > > Fixes: da4d3d6bb9f6 ("iio: adc: ad-sigma-delta: Allow custom IRQ
+> > > flags")
+> > > Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+> >=20
+> > What are the symptoms of this?=C2=A0 Given the ad_sigma_delta.c irq
+> > handler
+> > disables the interrupt until after the data read is done (at which
+> > point the
+> > level is presumably high again), I don't immediately see why the
+> > change
+> > here has any impact - either we trigger on the fall, or on the fact
+> > it
+> > has become low..
+> >=20
+> >=20
+>=20
+> Honestly I did not checked this in any HW. This was just by
+> inspecting
+> the datasheet and confirming that the LOW IRQ is not coherent with
+> what
+> we have in other sigma delta ADCs.
+>=20
+> However, after some git blaming, I found this [1] which shows that
+> this
+> might be an issue...
+>=20
+> Hmm, maybe makes sense to add a link to the bellow patch in the
+> commit
+> description...
+> =C2=A0
+> [1]:
+> https://lore.kernel.org/linux-iio/20200113102653.20900-3-alexandru.tachic=
+i@analog.com
+> /
+>=20
+> - Nuno S=C3=A1
 
-On 2/6/23 07:36, Kai-Heng Feng wrote:
-> If a second client that talks to the actual I2C address was created in
-> probe(), there should be a corresponding cleanup in remove() to avoid
-> leakage.
-> 
-> So if the "client" is not the same one used by I2C core, unregister it
-> accordingly.
-> 
-> Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=2152281
-> Fixes: c1e62062ff54 ("iio: light: cm32181: Handle CM3218 ACPI devices with 2 I2C resources")
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Hi Jonathan,
 
-Thank you for fixing this, patch looks good to me:
+Anything that I should do in this one? As I did not tested it, it might
+not be a real issue but I still think the patch is good even though it
+might not deserve a Fixes tag...
 
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-
-Regards,
-
-Hans
-
-
-
-
-> ---
->  drivers/iio/light/cm32181.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-> index b1674a5bfa368..37439e103d273 100644
-> --- a/drivers/iio/light/cm32181.c
-> +++ b/drivers/iio/light/cm32181.c
-> @@ -488,6 +488,15 @@ static int cm32181_probe(struct i2c_client *client)
->  	return 0;
->  }
->  
-> +static void cm32181_remove(struct i2c_client *client)
-> +{
-> +	struct cm32181_chip *cm32181 = iio_priv(i2c_get_clientdata(client));
-> +
-> +	/* Unregister the dummy client */
-> +	if (cm32181->client != client)
-> +		i2c_unregister_device(cm32181->client);
-> +}
-> +
->  static int cm32181_suspend(struct device *dev)
->  {
->  	struct cm32181_chip *cm32181 = iio_priv(dev_get_drvdata(dev));
-> @@ -531,6 +540,7 @@ static struct i2c_driver cm32181_driver = {
->  		.pm = pm_sleep_ptr(&cm32181_pm_ops),
->  	},
->  	.probe_new	= cm32181_probe,
-> +	.remove		= cm32181_remove,
->  };
->  
->  module_i2c_driver(cm32181_driver);
-
+- Nuno S=C3=A1
