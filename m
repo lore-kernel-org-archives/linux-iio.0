@@ -2,25 +2,25 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0250BC61DA4
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Feb 2023 20:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C211C636D7
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Feb 2023 20:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229830AbjBPUi6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Feb 2023 15:38:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52974 "EHLO
+        id S229591AbjBPUjE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Feb 2023 15:39:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbjBPUi5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Feb 2023 15:38:57 -0500
+        with ESMTP id S229556AbjBPUjC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Feb 2023 15:39:02 -0500
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D003B1ADE1;
-        Thu, 16 Feb 2023 12:38:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7398F27D5F;
+        Thu, 16 Feb 2023 12:39:01 -0800 (PST)
 X-IronPort-AV: E=Sophos;i="5.97,302,1669042800"; 
-   d="scan'208";a="153127615"
+   d="scan'208";a="153127628"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 17 Feb 2023 05:38:52 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 17 Feb 2023 05:39:00 +0900
 Received: from localhost.localdomain (unknown [10.226.93.2])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id DD5A040121CC;
-        Fri, 17 Feb 2023 05:38:48 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 4AFB240121CC;
+        Fri, 17 Feb 2023 05:38:57 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     William Breathitt Gray <william.gray@linaro.org>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>, linux-iio@vger.kernel.org,
@@ -33,105 +33,51 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>, linux-iio@vger.kernel.org,
         Chris Paterson <chris.paterson2@renesas.com>,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v13 3/6] Documentation: ABI: sysfs-bus-counter: add cascade_counts_enable and external_input_phase_clock_select
-Date:   Thu, 16 Feb 2023 20:38:27 +0000
-Message-Id: <20230216203830.196632-4-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v13 5/6] MAINTAINERS: Add entries for Renesas RZ/G2L MTU3a counter driver
+Date:   Thu, 16 Feb 2023 20:38:29 +0000
+Message-Id: <20230216203830.196632-6-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230216203830.196632-1-biju.das.jz@bp.renesas.com>
 References: <20230216203830.196632-1-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This commit adds cascade_counts_enable and external_input_phase_
-clock_select items to counter ABI file.
-(e.g. for Renesas MTU3 hardware used for phase counting).
+Add the MAINTAINERS entries for the Renesas RZ/G2L MTU3a counter
+driver.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: William Breathitt Gray <william.gray@linaro.org>
 ---
 v12->v13:
- * Updated kernel version from 6.3->6.4 as it is too late.
-v11->v12:
- * No change
-v10->v11:
  * No change.
-v9->v10:
- * Added Rb tag from William Breathitt Gray
-v8->v9:
- * Added available blocks for external_input_phase_clock_select_available
- * Removed the "This attribute" from the external_input_phase_clock_select
-   description, and capitalize the word "counter" from description.
- * Removed the "This attribute" from the cascade_counts_enable description,
-   and capitalize "counts" and "counter"
- * Moved these device-level configuration blocks to top of the file.
-v7->v8:
- * Replaced cascade_enable->cascade_counts_enable
- * Updated commit header and description
- * Added external_input_phase_clock_select_available entry for driver-
-   specific enum attribute and created a new entry block for it.
- * Add a line stating cascade_counts_enable is a boolean attribute.
- * Added missing 'component_id' suffix.
-v6->v7:
- * Replaced long_word_access_ctrl_mode->cascade_enable
- * Updated Kernel version
-v5->v6:
- * No change
-v5:
- * New patch
+v11->v12:
+ * No change.
 ---
- Documentation/ABI/testing/sysfs-bus-counter | 32 +++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ MAINTAINERS | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-counter b/Documentation/ABI/testing/sysfs-bus-counter
-index ff83320b4255..1417c4272c6c 100644
---- a/Documentation/ABI/testing/sysfs-bus-counter
-+++ b/Documentation/ABI/testing/sysfs-bus-counter
-@@ -1,3 +1,33 @@
-+What:		/sys/bus/counter/devices/counterX/cascade_counts_enable
-+KernelVersion:	6.4
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Indicates the cascading of Counts on Counter X.
-+
-+		Valid attribute values are boolean.
-+
-+What:		/sys/bus/counter/devices/counterX/external_input_phase_clock_select
-+KernelVersion:	6.4
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Selects the external clock pin for phase counting mode of
-+		Counter X.
-+
-+		MTCLKA-MTCLKB:
-+			MTCLKA and MTCLKB pins are selected for the external
-+			phase clock.
-+
-+		MTCLKC-MTCLKD:
-+			MTCLKC and MTCLKD pins are selected for the external
-+			phase clock.
-+
-+What:		/sys/bus/counter/devices/counterX/external_input_phase_clock_select_available
-+KernelVersion:  6.4
-+Contact:        linux-iio@vger.kernel.org
-+Description:
-+                Discrete set of available values for the respective device
-+                configuration are listed in this file.
-+
- What:		/sys/bus/counter/devices/counterX/countY/count
- KernelVersion:	5.2
- Contact:	linux-iio@vger.kernel.org
-@@ -215,6 +245,8 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		This attribute indicates the number of overflows of count Y.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index be167c695c64..62caf5d7d0fe 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17841,6 +17841,14 @@ S:	Supported
+ F:	Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
+ F:	drivers/iio/adc/rzg2l_adc.c
  
-+What:		/sys/bus/counter/devices/counterX/cascade_counts_enable_component_id
-+What:		/sys/bus/counter/devices/counterX/external_input_phase_clock_select_component_id
- What:		/sys/bus/counter/devices/counterX/countY/capture_component_id
- What:		/sys/bus/counter/devices/counterX/countY/ceiling_component_id
- What:		/sys/bus/counter/devices/counterX/countY/floor_component_id
++RENESAS RZ/G2L MTU3a COUNTER DRIVER
++M:	Biju Das <biju.das.jz@bp.renesas.com>
++L:	linux-iio@vger.kernel.org
++L:	linux-renesas-soc@vger.kernel.org
++S:	Supported
++F:	Documentation/devicetree/bindings/timer/renesas,rz-mtu3.yaml
++F:	drivers/counter/rz-mtu3-cnt.c
++
+ RENESAS RZ/N1 A5PSW SWITCH DRIVER
+ M:	Clément Léger <clement.leger@bootlin.com>
+ L:	linux-renesas-soc@vger.kernel.org
 -- 
 2.25.1
 
