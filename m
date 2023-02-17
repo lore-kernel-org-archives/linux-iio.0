@@ -2,172 +2,121 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 058ECC636D4
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Feb 2023 05:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB0FC636D4
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Feb 2023 09:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229531AbjBQF42 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 17 Feb 2023 00:56:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53908 "EHLO
+        id S229768AbjBQJgg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 17 Feb 2023 04:36:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbjBQF41 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Feb 2023 00:56:27 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9A8AE
-        for <linux-iio@vger.kernel.org>; Thu, 16 Feb 2023 21:56:26 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id y14so5829ljq.10
-        for <linux-iio@vger.kernel.org>; Thu, 16 Feb 2023 21:56:26 -0800 (PST)
+        with ESMTP id S229491AbjBQJgf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Feb 2023 04:36:35 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF76E5CF34
+        for <linux-iio@vger.kernel.org>; Fri, 17 Feb 2023 01:36:33 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id h14so2276504edz.10
+        for <linux-iio@vger.kernel.org>; Fri, 17 Feb 2023 01:36:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tlP5p8fHpwKYBipI5+tkTEH45tKbGnNGJwA3ezZ1NO8=;
-        b=nL6l+HyR2OydzvgVg2LWaTzXcUhxMoxqEJm+brOHHc6nEHof21SEW5/qh3NTPuPqks
-         w03XeC8EFBujghlZtZw0MzDAuMwaCtb4LeGB/JhH3LxjxreLVyZNfYDga+2BjrHUpZb2
-         be5dAHSAJzhfPOT3wB4RGeFDhldEo/nsUwPxeJOx3z570fL4pHhiOn/Y8mT85QLLQCCb
-         o1jVRfgrdokPiU/7dpX+dBoBHP3Fj4B7c+FlnWcO96/s7BBRrhdMQgzBeuzwD0d8HAni
-         FUy0bEsbBWLQBeYYNeEpY7XvgSgOnAJa09md5Q2vz4t4OhDTBVgzbUIRdCKUchlRZ9NO
-         YUPA==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GU0ICBhpvnQYr6wSJpl7PgiO+1zQ6Jplz+XKZNYyw0c=;
+        b=DQi0iGzW90bwPBJVFlzQmcJJhx5znA03K1p+knmQUUlEtnu+cUEONtEytRXelJfgeK
+         aSw9Hr8gCUQYmamBbTKihG6X+4GfOOcLhkQ0lFAhkUBbGa/yYlVbitwV/xbLvgMM/xZe
+         2HJa9hCNKcLI/wEr1evCCyVMndGIMb1kV9xOAXTbPKShe2sngMOq511hsusO6vPKetVd
+         xLyWtlMn+xCC+Fsv1bxl4MSSoKDRKzjVMZH/p1Wvflhc5CuLMLuvOlWeyZ/F0IUToHfG
+         0xBU9GyAtmIoj3nMdW/VouGfjiujtuzj56yzLCTOSjBS5w/A6y8FB9uHx/VWf9z4T3UD
+         zPgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=tlP5p8fHpwKYBipI5+tkTEH45tKbGnNGJwA3ezZ1NO8=;
-        b=UZ4GQfKbIXjgH1BZjLPYhLj+quahLiag7GSa+SuNgI35EJjdfbz6UjDL3LRHfaW5Ae
-         Iqtp2UdtmZ9JJGPry3nQAPYoUftzS5J+ua1KAfuO+5ljM+Ajy63Jkx7ZMibSIWR1zv2Y
-         2IxVLi4X/Z+KHm9osN87cebMRAKcRWTONKEdcmzz9h1caipV/F3fqKR88c6PvC5s7wb6
-         e9LpqVsmSv5d/b8aw0au/i9MeIp6FeI2mGcJAeNj8LhGjx6pReGI8oTSThhv0gyRyHXw
-         mpSmBkJK/jAWAYqJ2IdevCca1BRJN/Tiz5QRtLBeTCD4+Z0mM5VF5so6zXnWQV4uhilT
-         p+qQ==
-X-Gm-Message-State: AO0yUKWJhlSoum/gm23WVbQmtQ4wIrEJJQDfsEUQcWJg9m6fjqfHnHGV
-        eeXECIurPHcih5aaHf/cKN0=
-X-Google-Smtp-Source: AK7set96+EX5PTadb+eWrlB3pwRAoXTptRm0AV1nOwJ9AT76B9ifpP/C29EIBlhK8O3K5SKUS1p3BQ==
-X-Received: by 2002:a2e:9cd0:0:b0:28f:ae45:2021 with SMTP id g16-20020a2e9cd0000000b0028fae452021mr3224644ljj.42.1676613384321;
-        Thu, 16 Feb 2023 21:56:24 -0800 (PST)
-Received: from ?IPV6:2001:14ba:16f3:4a00::1? (dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::1])
-        by smtp.gmail.com with ESMTPSA id w12-20020a19c50c000000b004db297957e8sm567045lfe.305.2023.02.16.21.56.23
+        bh=GU0ICBhpvnQYr6wSJpl7PgiO+1zQ6Jplz+XKZNYyw0c=;
+        b=v24e8HAu+tsmZXnYBFF96t0kjdqcoBxqPzrP1/BDgL+mCtEukPSCl+nbwujZCX4JM1
+         m5tAI2ieoLpkpd9Eg77ij3G0SbsNkxys+1uNcstQpglvszCZta3gM1Jm0sRmcn/rM1ZV
+         n9jQ0kiB3G6KjxpC45E+Fm6OSWRyxQ41wISQMuh/qTTuL4UXJnUyOiw9DPWHM1XdcE2+
+         MyrGKUuRz8IHU15f0Eb8sJcNdybz6QvAXmKwhStdevrTz+1Cvf4hiEbgecQwBTs67VSA
+         c0Az3diwbmBENhEX2/Ibv259dPQT/5I3BezZcqys1kuQ6d6nHDvxUSFL7wqrxYkaMdQ4
+         /fhw==
+X-Gm-Message-State: AO0yUKU48mekDlz7P/dhA9U6cV+7khTFfjuVztpVebR2sWbJyDWjGhFa
+        nmXhG3dGdxrNrG1IyRBpB4avhw==
+X-Google-Smtp-Source: AK7set9WHvq2QzcES6AFBaP4hqU6AoTt2UahTFoQ9xlX2MDkwiMB/ijltt6IwZBxvOkoU7k1QYT6rw==
+X-Received: by 2002:a17:906:1cc7:b0:8af:5752:691f with SMTP id i7-20020a1709061cc700b008af5752691fmr9156715ejh.76.1676626592480;
+        Fri, 17 Feb 2023 01:36:32 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id jy2-20020a170907762200b008787134a939sm1934404ejc.18.2023.02.17.01.36.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Feb 2023 21:56:23 -0800 (PST)
-Message-ID: <de389f14-0c63-86ae-6718-e91fc9818fc6@gmail.com>
-Date:   Fri, 17 Feb 2023 07:56:22 +0200
+        Fri, 17 Feb 2023 01:36:32 -0800 (PST)
+Message-ID: <cec5a521-bf3a-7cd3-4516-4f4a1b9e1661@linaro.org>
+Date:   Fri, 17 Feb 2023 10:36:30 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
-To:     Mehdi Djait <mehdi.djait.k@gmail.com>, jic23@kernel.org,
-        lars@metafoo.de
-Cc:     linux-iio@vger.kernel.org
-References: <Y+6QoBLh1k82cJVN@carbian>
-Content-Language: en-US, en-GB
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-Subject: Re: Questions: iio: accel: kionix-kx022a: timestamp when using the
- data-rdy trigger?
-In-Reply-To: <Y+6QoBLh1k82cJVN@carbian>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: Add driver for TI ADS1100 and
+ ADS1000
+Content-Language: en-US
+To:     Mike Looijmans <mike.looijmans@topic.nl>,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org
+References: <20230217093128.8344-1-mike.looijmans@topic.nl>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230217093128.8344-1-mike.looijmans@topic.nl>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Mehdi,
+On 17/02/2023 10:31, Mike Looijmans wrote:
+> The ADS1100 is a 16-bit ADC (at 8 samples per second).
+> The ADS1000 is similar, but has a fixed data rate.
 
-On 2/16/23 22:22, Mehdi Djait wrote:
-> Hi all,
+Subject: Drop "driver for"
+
 > 
-> DISCLAIMER: I'm new to kernel development.
+> Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
 > 
-> I'm currently working on extending the kionix-kx022a driver to support
-> kionix-kx132.
-
-Thanks for working with this :) Support for the kx132, kx122 etc. is 
-very welcome!
-
-> My question is about the timestamp pushed in the trigger
-> handler. The kionix-kx022a supports both FIFO and triggered buffer
-> mode, for my questions the triggered buffer mode is used.
+> ---
 > 
-> Before asking the question: I tried to read every documentation
-> available, the kernel code and I found the Threads [1] [2] [3]
+>  .../bindings/iio/adc/ti,ads1100.yaml          | 37 +++++++++++++++++++
+>  1 file changed, 37 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads1100.yaml
 > 
-> To better explain my question here are the two relevant setup functions:
-> A.  devm_iio_triggered_buffer_setup_ext(dev, idev,
->                                          &iio_pollfunc_store_time,
->                                          kx022a_trigger_handler,
->                                          IIO_BUFFER_DIRECTION_IN,
->                                          &kx022a_buffer_ops,
->                                          kx022a_fifo_attributes)
-> 
-> B. devm_request_threaded_irq(data->dev, irq, kx022a_irq_handler,
->                               &kx022a_irq_thread_handler,
->                               IRQF_ONESHOT, name, idev);
-> 
-> 
-> And here are the relevant steps after an IRQ occurs :
-> 1. IRQ context --> kx022a_irq_handler() --> gets the current timestamp
-> with "data->timestamp = iio_get_time_ns(idev);" and returns
-> IRQ_WAKE_THREAD
-> 
-> 2. kx022a_irq_thread_handler() -> checks that the trigger is enabled
-> --> iio_trigger_poll_chained() --> handle_nested_irq(): which will only
-> call the bottom half of the pollfuncs
+> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1100.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1100.yaml
+> new file mode 100644
+> index 000000000000..ad30af8453a1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1100.yaml
+> @@ -0,0 +1,37 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/ti,ads1100.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: TI ADS1100/ADS1000 single channel I2C analog to digital converter
+> +
+> +maintainers:
+> +  - Mike Looijmans <mike.looijmans@topic.nl>
+> +
+> +description: |
+> +  Datasheet at: https://www.ti.com/lit/gpn/ads1100
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - ti,ads1100
+> +      - ti,ads1000
 
-I don't get the kx022a at my hands until next week to test this, but it 
-seems to me your reasoning is right. iio_pollfunc_store_time() is 
-probably not called. I just wonder why I didn't see zero timestamps when 
-testing this. (OTOH, I had somewhat peculiar IRQ handling at first - 
-maybe I broke this along the way).
+Does not look like you tested the bindings. Please run `make
+dt_binding_check` (see
+Documentation/devicetree/bindings/writing-schema.rst for instructions).
 
-> 3. kx022a_trigger_handler() --> iio_push_to_buffers_with_timestamp(idev,
-> data->buffer, pf->timestamp)
-> 
-> 
-> My questions are:
-> Question 1: Is iio_push_to_buffers_with_timestamp(idev, data->buffer,
-> data->timestamp) instead of "pf->timestamp" better in the
-> trigger_handler ?
-
-I don't see any "technical reasons" why it would be better. I think it 
-is more standard looking though - but seems like it is plain wrong here 
-as you pointed out.
-
-> I was first concerned that it would be racy with the
-> irq_handler, but the IRQF_ONESHOT flag is used, which means that the irq
-> line is disabled until the threaded handler has been run, i.e. until
-> kx022a_trigger_handler runs and retruns IRQ_HANDLED (right?).
-
-Yes. This is the purpose of IRQF_ONESHOT. (Well, AFAICS the IRQs are 
-re-enabled even if some other value is returned unless the IRQ_NONE is 
-returned repeatedly).
-
-> Question 2: If the change proposed in question 1 is wrong, would this
-> one be better iio_push_to_buffers_with_timestamp(idev, data->buffer,
-> iio_get_time_ns(idev)). There is some delay between the IRQ occuring
-> and trigger_handler being called but that is better than getting all 0
-> timestamps like suggested in [2]
-
-Please, use the data->timestamp as you suggested.
-
-> I hope that I'm understating this correctly or at least not totally
-> off :) If yes, I will send a patch.
-
-Thanks Mehdi! I think this was a great catch! Maybe - while at it - you 
-could also send a patch adding a small kerneldoc to the 
-iio_trigger_poll_chained() mentioning this particular issue. Yes, I 
-guess it should be obvious just by reading the function name *_chained() 
-- but I did fall on this trap (and according to your reference [2] so 
-has someone else).
-
-> [1] https://lore.kernel.org/linux-iio/4FDB33CD.2090805@metafoo.de/
-> [2] https://lore.kernel.org/linux-iio/20201205182659.7cd23d5b@archlinux/
-> [3] https://lore.kernel.org/linux-iio/20220126191606.00003f37@Huawei.com/
-
-Yours,
-	-- Matti
-
--- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
-
-~~ When things go utterly wrong vim users can always type :help! ~~
+Best regards,
+Krzysztof
 
