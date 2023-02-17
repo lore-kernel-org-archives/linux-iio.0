@@ -2,120 +2,124 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE3AC64ED9
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Feb 2023 09:37:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6562C05027
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Feb 2023 09:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230059AbjBQJhb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 17 Feb 2023 04:37:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60204 "EHLO
+        id S229796AbjBQJ7f (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 17 Feb 2023 04:59:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229970AbjBQJh3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Feb 2023 04:37:29 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E724561876
-        for <linux-iio@vger.kernel.org>; Fri, 17 Feb 2023 01:37:28 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1pSxB5-0006h9-G7; Fri, 17 Feb 2023 10:37:15 +0100
-Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1pSxB3-005YBQ-5a; Fri, 17 Feb 2023 10:37:14 +0100
-Received: from mfe by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1pSxB3-007wJs-Lz; Fri, 17 Feb 2023 10:37:13 +0100
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     puranjay12@gmail.com, jic23@kernel.org, lars@metafoo.de,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH v3 4/4] iio: temperature: tmp117: cosmetic alignment cleanup
-Date:   Fri, 17 Feb 2023 10:37:11 +0100
-Message-Id: <20230217093711.1891564-5-m.felsch@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230217093711.1891564-1-m.felsch@pengutronix.de>
-References: <20230217093711.1891564-1-m.felsch@pengutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+        with ESMTP id S229724AbjBQJ7Z (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Feb 2023 04:59:25 -0500
+X-Greylist: delayed 1649 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 17 Feb 2023 01:59:16 PST
+Received: from spamfilter04.delta.nl (spamfilter04.delta.nl [217.102.255.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC615DE1B;
+        Fri, 17 Feb 2023 01:59:16 -0800 (PST)
+Received: from host-ubmmyvj.static.zeelandnet.nl ([217.102.255.198] helo=mail.zeelandnet.nl)
+        by spamfilter04.delta.nl with esmtp (Exim 4.92)
+        (envelope-from <mike.looijmans@topic.nl>)
+        id 1pSx5g-0002F2-96; Fri, 17 Feb 2023 10:31:57 +0100
+X-Sender-IP: 204.168.188.16
+Received: from phenom.domain_not_set.invalid (016-188-168-204.dynamic.caiway.nl [204.168.188.16])
+        (Authenticated sender: glasveze@delta.nl)
+        by mail.zeelandnet.nl (Postfix) with ESMTPA;
+        Fri, 17 Feb 2023 10:31:28 +0100 (CET)
+From:   Mike Looijmans <mike.looijmans@topic.nl>
+To:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org
+Cc:     Mike Looijmans <mike.looijmans@topic.nl>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: iio: adc: Add driver for TI ADS1100 and ADS1000
+Date:   Fri, 17 Feb 2023 10:31:27 +0100
+Message-Id: <20230217093128.8344-1-mike.looijmans@topic.nl>
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: 217.102.255.198
+X-DELTA-Domain: zeelandnet.nl
+X-DELTA-Username: 217.102.255.198
+Authentication-Results: delta.nl; auth=pass smtp.auth=217.102.255.198@zeelandnet.nl
+X-DELTA-Outgoing-Class: ham
+X-DELTA-Outgoing-Evidence: Combined (0.04)
+X-Recommended-Action: accept
+X-Filter-ID: Pt3MvcO5N4iKaDQ5O6lkdGlMVN6RH8bjRMzItlySaT/JtpJ85U5oQJKJbxIe8gTePUtbdvnXkggZ
+ 3YnVId/Y5jcf0yeVQAvfjHznO7+bT5xzeemUa7CfwmLuWRw6Ruql9Wrt/oF2ofKYeezPZTW+uL/H
+ seNZtCKdSRRS0Op9pfwEIJgF/Accv4lLtE4TWYNIjgZ0d6t6F7vRFkkblm+Z5L7uq2AYbiB7eX7C
+ A0Ee9FXnLqvnkE9k+JY3j0cID29DoODujL6FEsNqPMBZcb5VIYa36rQUNKpqI1Q4bofNkWUu8fTD
+ ZLzKN6k+QrhjNGJv3vMX8kxfmgvnPiAPWmoBuxmBwTME+9GFGInGiou45HNmtfv+FqJdBAzMzmkl
+ 3RebQxyzcaJWgnTP1X4liYqSLtlnibl3vcBqVmvQB4A18adDnQKevvKDWdWJ/wxJwe8KAVXirbLu
+ Jjy3NtnGWLbnBD5wBOYayDY3tUZW3y7uaAiYA/VUAhdIJZFus1IsgsCDrtkUVrXMjRtSszqFofHQ
+ kL+CgfasVEKELzhStrT89iLQPrbYmyedRWSaH5Jq+f9dFu3a+YmrU6Iy71ckAFY+TtvrQQT37tVB
+ F8TuA2zDxdadd1WxHO/mLVgwAb47uaav6rkstLAf90f4v3S1FulD9czOuJQrulh5Fko3Tg7NaUQc
+ YIYdvv9xV5Ex49z0ZSNkjgZ0d6t6F7vRFkkblm+Z5MW9qS2/3RCT5H9A6khsXlWGs9HjdrlYbXkZ
+ KU5GQmOJZsmqX57B1EDhkm+xMEreF4WyYiqdZEM01eRU4ONdoVEFBfQHNmmYaIBwRgEu+hlkUryY
+ cSJLFEwVd01VIyXuC84PLa7Kvs1vJgz+jb+KUZ4ZI4crFqIiLO9pmeAxg3M8BMj+y2IddO0/FlXY
+ D8b+M8bPMsyA7EJ+U7NdS2YrNZ05xOYqJ9Tq2b0GjLr7lMbCJ9uFCwxUz+7mzjTsriXxHrjdWiOx
+ jT+Uoc44sbCX7JxqjLaXu1AD0YHYM/EUhlEfE6TG2ORqQuRwhOvtgDJH0WotQdu7BL5WjlV6WURt
+ Nxb4RqrqGwDerCVKfZxBaa6lpe1/5cEtgGt7CHfC+dbEjaN+/GAFlUDQdIxEvZe3STQUwRm7JL7H
+ UFLEjZ4tI2w6weBlgtnhN6vUJqrLQEcK+vPvzy/hTW1WrcVDSDSSDu0wxuDU9J+Dmr/6e4fImcm4
+ 9R/2gMGq0KWAzmMf+ibVDqLZPzE7W9Cqnhlc7GZSDtYOqFKIG2trlPUTQYEjbgmVnZqbKIaNWdFw
+ SHKOTj4XQZ8i4WqksVTtjhZSepuHki+xkgmaS1TA/Dv/4AHP2EFtNptbHtgZAQM3rG32ibSwsxBN
+ fS19KOA46lF/j0xwFgg=
+X-Report-Abuse-To: spam@spamfilter03.delta.nl
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Align the code correctly if possible and align the channel bit mask to
-make it easier to read.
+The ADS1100 is a 16-bit ADC (at 8 samples per second).
+The ADS1000 is similar, but has a fixed data rate.
 
-Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
+Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
+
 ---
-v3:
-- no changes
-v2:
-- no changes
 
- drivers/iio/temperature/tmp117.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ .../bindings/iio/adc/ti,ads1100.yaml          | 37 +++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads1100.yaml
 
-diff --git a/drivers/iio/temperature/tmp117.c b/drivers/iio/temperature/tmp117.c
-index 728538fbaf9ba..8fe87b37a0aca 100644
---- a/drivers/iio/temperature/tmp117.c
-+++ b/drivers/iio/temperature/tmp117.c
-@@ -42,8 +42,8 @@ struct tmp117_data {
- };
- 
- static int tmp117_read_raw(struct iio_dev *indio_dev,
--		struct iio_chan_spec const *channel, int *val,
--		int *val2, long mask)
-+			   struct iio_chan_spec const *channel, int *val,
-+			   int *val2, long mask)
- {
- 	struct tmp117_data *data = iio_priv(indio_dev);
- 	s32 ret;
-@@ -51,7 +51,7 @@ static int tmp117_read_raw(struct iio_dev *indio_dev,
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 		ret = i2c_smbus_read_word_swapped(data->client,
--						TMP117_REG_TEMP);
-+						  TMP117_REG_TEMP);
- 		if (ret < 0)
- 			return ret;
- 		*val = sign_extend32(ret, 15);
-@@ -59,7 +59,7 @@ static int tmp117_read_raw(struct iio_dev *indio_dev,
- 
- 	case IIO_CHAN_INFO_CALIBBIAS:
- 		ret = i2c_smbus_read_word_swapped(data->client,
--					TMP117_REG_TEMP_OFFSET);
-+						  TMP117_REG_TEMP_OFFSET);
- 		if (ret < 0)
- 			return ret;
- 		*val = sign_extend32(ret, 15);
-@@ -81,9 +81,8 @@ static int tmp117_read_raw(struct iio_dev *indio_dev,
- 	}
- }
- 
--static int tmp117_write_raw(struct iio_dev *indio_dev,
--		struct iio_chan_spec const *channel, int val,
--		int val2, long mask)
-+static int tmp117_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec
-+			    const *channel, int val, int val2, long mask)
- {
- 	struct tmp117_data *data = iio_priv(indio_dev);
- 	s16 off;
-@@ -106,7 +105,9 @@ static const struct iio_chan_spec tmp117_channels[] = {
- 	{
- 		.type = IIO_TEMP,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--			BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_SCALE),
-+				      BIT(IIO_CHAN_INFO_CALIBBIAS) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+	},
- };
- 
- static const struct iio_chan_spec tmp116_channels[] = {
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1100.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1100.yaml
+new file mode 100644
+index 000000000000..ad30af8453a1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1100.yaml
+@@ -0,0 +1,37 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/ti,ads1100.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: TI ADS1100/ADS1000 single channel I2C analog to digital converter
++
++maintainers:
++  - Mike Looijmans <mike.looijmans@topic.nl>
++
++description: |
++  Datasheet at: https://www.ti.com/lit/gpn/ads1100
++
++properties:
++  compatible:
++    enum:
++      - ti,ads1100
++      - ti,ads1000
++
++required:
++  - compatible
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@49 {
++            compatible = "ti,ads1100";
++            reg = <0x49>;
++        };
++    };
++...
 -- 
-2.30.2
+2.17.1
 
