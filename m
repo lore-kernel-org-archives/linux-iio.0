@@ -2,105 +2,255 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68AFBC61DA4
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Feb 2023 13:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5243C636CC
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Feb 2023 13:42:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbjBRNcx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 18 Feb 2023 08:32:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
+        id S229763AbjBRNmI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Feb 2023 08:42:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbjBRNcw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Feb 2023 08:32:52 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F4F5588
-        for <linux-iio@vger.kernel.org>; Sat, 18 Feb 2023 05:32:50 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id i28so2279745eda.8
-        for <linux-iio@vger.kernel.org>; Sat, 18 Feb 2023 05:32:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=QIEEk4KJoTaBudftvkYoc1XT4Mo1J1RHSkysR/5EjWI=;
-        b=Np5X4Psle7/1uT0Z8HjaewDHbGwRVO83LrHNx968u0y5/PRfGc1c3WET59ARISXGKi
-         E/aHuUUr+t3RwYnSB+mMVB5mZjkKZNuCBRL+870U1Pxg7d6BxXiHIWM8Ic54UMl5xv7u
-         ULj8cU1y9VMKDjnubVrKN7yHwXduU2A9pUyuH35iuS5Wt1406SU7/9gToDc+uVCxHheU
-         0ASKFG9kEWF0EK7yZYZs9Xo1rNwhWEP19xGPFZ5jnyx6NP9LEuxFuSIM3xjYGwtwK3dk
-         6jv/tlNUAvuwo0C9zW/KPsWGuH+Y5V/XMMJDIjuVbG1MFrgpgcEoHWoq2sJbcCuNaZcR
-         4rvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QIEEk4KJoTaBudftvkYoc1XT4Mo1J1RHSkysR/5EjWI=;
-        b=knZL3jOZspJ+VTAG/IdqttbqdDXnLM6g/qk4lLHloxGmyS/IeFWaWNCDeNxPUNoVBO
-         g3B2etM9T9LFAEDI9wBFkgGcj2DWjmtPHCRui6ESZpzPLgPM4gZ0gVQqL3EF/uIb+t/P
-         EvaP0uaZm6XmZADJE8D5wb9Pa8zC5aDodjfJmx65vblahRm0apFQMN481lf1LryYcGJC
-         qoSgHEyYZjTOlqnZCsLlsp9M03QnHtUJegAWcbDdko2HYpvoWgCwZDEQFkLw9Y7Z6KQS
-         /IoEtcOcRBvmv8+foJ5H2miLGSRctxtzzkzBnyg/dK3l06ys1WoG4K7fFh6cZnovLVy3
-         POhQ==
-X-Gm-Message-State: AO0yUKUVLyrqa3+qhDWSgxc4TT9N8NjgdnE3Gl6Yaxu/JIm8sy329M5c
-        xiagVFdqptpGM+PvTT46Xf4=
-X-Google-Smtp-Source: AK7set+42g12QE4wN6SPwkidxqRsvVLcJo5UIBcXegbCaLWlUff/YgVTe3h5Qa1dhmpx527BUS7r8A==
-X-Received: by 2002:a17:906:198f:b0:8b1:77bf:5b9f with SMTP id g15-20020a170906198f00b008b177bf5b9fmr6593908ejd.13.1676727169369;
-        Sat, 18 Feb 2023 05:32:49 -0800 (PST)
-Received: from carbian (dynamic-2a01-0c23-5c09-8a00-f386-7b22-bb9a-becb.c23.pool.telefonica.de. [2a01:c23:5c09:8a00:f386:7b22:bb9a:becb])
-        by smtp.gmail.com with ESMTPSA id k15-20020a170906680f00b008b3c138f3b4sm1843687ejr.0.2023.02.18.05.32.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Feb 2023 05:32:48 -0800 (PST)
-Date:   Sat, 18 Feb 2023 14:32:46 +0100
-From:   Mehdi Djait <mehdi.djait.k@gmail.com>
-To:     Matti Vaittinen <mazziesaccount@gmail.com>
-Cc:     jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 0/1] iio: accel: kionix-kx022a: Timestamp minor fix
-Message-ID: <Y/DTfoFMkPQeZODL@carbian>
-References: <cover.1676661174.git.mehdi.djait.k@gmail.com>
- <44a866e5-61ae-3373-10f5-c21efeec7f53@gmail.com>
+        with ESMTP id S229489AbjBRNmH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Feb 2023 08:42:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A0719696
+        for <linux-iio@vger.kernel.org>; Sat, 18 Feb 2023 05:42:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F3C9B801BD
+        for <linux-iio@vger.kernel.org>; Sat, 18 Feb 2023 13:42:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E551C433EF;
+        Sat, 18 Feb 2023 13:42:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676727722;
+        bh=gNovSJnF0dKpxefyTfVwKvtB3ICPYFoCHK2ZbBf47ys=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IMSr9rdJVnwmGOeZPJg2fijneUCrRdQ4BSmQWCTHuXHJWCHFYtg8WrIQ9zXR/dnyL
+         DjP6LQcoNBiPByZDEMd69R/55J3+CEmt8+rCv49ZMo3yuIDA3ggyj0VKMPh9cSJ1Wk
+         cn8HQIwzGApdvBndQKCs0NYM3QxklfATy9r8UK5F9VWSw4qyIbcJZleAn0eE5qG9Kc
+         iANBSJGDYQbx5MZ6Lw+MKBrvt8/cRgs2V1x2hk75UTLmitOjP0UMAm9JPhlKVWwAHF
+         9e1aNLh7O4tW4NFpsNgEcEQEFRkTS0lnIIoHQpnDt1i2sdzUOIDdiea12wiqmhfYJI
+         7VRo4vCMYnMjA==
+Date:   Sat, 18 Feb 2023 13:56:22 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     phdm@macq.eu, linux-iio@vger.kernel.org,
+        lorenzo.bianconi@redhat.com
+Subject: Re: [PATCH] iio: imu: st_lsm6dsx: discard samples during filters
+ settling time
+Message-ID: <20230218135622.6c5d4569@jic23-huawei>
+In-Reply-To: <1228b9ed2060b99d0df0f5549a37c8b520ea5429.1675867224.git.lorenzo@kernel.org>
+References: <1228b9ed2060b99d0df0f5549a37c8b520ea5429.1675867224.git.lorenzo@kernel.org>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <44a866e5-61ae-3373-10f5-c21efeec7f53@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Matti,
+On Wed,  8 Feb 2023 15:42:31 +0100
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-On Fri, Feb 17, 2023 at 10:04:30PM +0200, Matti Vaittinen wrote:
-> Thanks again Mehdi. It's great to have this fixed :)
+> During digital filters settling time the driver is expected to drop
+> samples since they can be corrupted. Introduce the capability to drop
+> a given number of samples according to the configured ODR.
+> Add the sample_to_discard data for LSM6DSM sensor.
 > 
-> On 2/17/23 21:19, Mehdi Djait wrote:
-> > As discussed in [1] here is a patch to get the timestamp in the
-> > trigger handler from the driver's private data
-> > 
-> > [1] https://lore.kernel.org/linux-iio/Y+%2FLpcc0Wa2VGsGO@carbian/T/#mec923c14d1324ffabfa88dde225eeb227005b48f
-> > 
-> 
-> By the way, I don't think a cover-letter is required for single patches. You
-> can usually put the relevant information in the commit message.
-> Additionally, if there is some questions, suggestions or other relevant bits
-> you wish to say - but don't want to include in commit logs - you can usually
-> place them in the patch mail directly after the first
-> "---"
-> 
-> Eg:
-> 
-> <commit message>
-> <Signed-off-by and other tags>
-> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+
+Is this only necessary for the particular sensor you have provided
+values for?  Or is it more general?
+
+I think the code will currently just set the number of samples to discard
+to 0 for other cases (as no value set for those sensor types).
+That's fine if 0 is definitely the right value for those other sensors.
+
+Thanks,
+
+Jonathan
+
+
 > ---
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h       | 11 ++++
+>  .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 58 +++++++++++++++----
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c  | 18 ++++++
+>  3 files changed, 77 insertions(+), 10 deletions(-)
 > 
-> Here we can add a note / request if required.
-> 
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> index 499fcf8875b4..8e119d78730b 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> @@ -137,6 +137,13 @@ struct st_lsm6dsx_odr_table_entry {
+>  	int odr_len;
+>  };
+>  
+> +struct st_lsm6dsx_samples_to_discard {
+> +	struct {
+> +		u32 milli_hz;
+> +		u16 samples;
+> +	} val[ST_LSM6DSX_ODR_LIST_SIZE];
+> +};
+> +
+>  struct st_lsm6dsx_fs {
+>  	u32 gain;
+>  	u8 val;
+> @@ -291,6 +298,7 @@ struct st_lsm6dsx_ext_dev_settings {
+>   * @irq_config: interrupts related registers.
+>   * @drdy_mask: register info for data-ready mask (addr + mask).
+>   * @odr_table: Hw sensors odr table (Hz + val).
+> + * @samples_to_discard: Number of samples to discard for filters settling time.
+>   * @fs_table: Hw sensors gain table (gain + val).
+>   * @decimator: List of decimator register info (addr + mask).
+>   * @batch: List of FIFO batching register info (addr + mask).
+> @@ -323,6 +331,7 @@ struct st_lsm6dsx_settings {
+>  	} irq_config;
+>  	struct st_lsm6dsx_reg drdy_mask;
+>  	struct st_lsm6dsx_odr_table_entry odr_table[2];
+> +	struct st_lsm6dsx_samples_to_discard samples_to_discard[2];
+>  	struct st_lsm6dsx_fs_table_entry fs_table[2];
+>  	struct st_lsm6dsx_reg decimator[ST_LSM6DSX_MAX_ID];
+>  	struct st_lsm6dsx_reg batch[ST_LSM6DSX_MAX_ID];
+> @@ -353,6 +362,7 @@ enum st_lsm6dsx_fifo_mode {
+>   * @hw: Pointer to instance of struct st_lsm6dsx_hw.
+>   * @gain: Configured sensor sensitivity.
+>   * @odr: Output data rate of the sensor [Hz].
+> + * @samples_to_discard: Number of samples to discard for filters settling time.
+>   * @watermark: Sensor watermark level.
+>   * @decimator: Sensor decimation factor.
+>   * @sip: Number of samples in a given pattern.
+> @@ -367,6 +377,7 @@ struct st_lsm6dsx_sensor {
+>  	u32 gain;
+>  	u32 odr;
+>  
+> +	u16 samples_to_discard;
+>  	u16 watermark;
+>  	u8 decimator;
+>  	u8 sip;
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> index 7dd5205aea5b..c1059a79f5ff 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> @@ -457,17 +457,29 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
+>  			}
+>  
+>  			if (gyro_sip > 0 && !(sip % gyro_sensor->decimator)) {
+> -				iio_push_to_buffers_with_timestamp(
+> -					hw->iio_devs[ST_LSM6DSX_ID_GYRO],
+> -					&hw->scan[ST_LSM6DSX_ID_GYRO],
+> -					gyro_sensor->ts_ref + ts);
+> +				/* We need to discards gyro samples during
 
-Yes, that's why I sent a cover-letter, I wanted to include relevant bits
-but not in the commit message (a reference to the discussion). 
+Trivial but wrong comment syntax. If that's all that comes up I'll fix it here
+and in other instances below when applying.
 
-I should have sent the patch --in-reply-to the thread with the discussion 
-anyway. 
+> +				 * filters settling time
+> +				 */
+> +				if (gyro_sensor->samples_to_discard > 0)
+> +					gyro_sensor->samples_to_discard--;
+> +				else
+> +					iio_push_to_buffers_with_timestamp(
+> +						hw->iio_devs[ST_LSM6DSX_ID_GYRO],
+> +						&hw->scan[ST_LSM6DSX_ID_GYRO],
+> +						gyro_sensor->ts_ref + ts);
+>  				gyro_sip--;
+>  			}
+>  			if (acc_sip > 0 && !(sip % acc_sensor->decimator)) {
+> -				iio_push_to_buffers_with_timestamp(
+> -					hw->iio_devs[ST_LSM6DSX_ID_ACC],
+> -					&hw->scan[ST_LSM6DSX_ID_ACC],
+> -					acc_sensor->ts_ref + ts);
+> +				/* We need to discards accel samples during
+> +				 * filters settling time
+> +				 */
+> +				if (acc_sensor->samples_to_discard > 0)
+> +					acc_sensor->samples_to_discard--;
+> +				else
+> +					iio_push_to_buffers_with_timestamp(
+> +						hw->iio_devs[ST_LSM6DSX_ID_ACC],
+> +						&hw->scan[ST_LSM6DSX_ID_ACC],
+> +						acc_sensor->ts_ref + ts);
+>  				acc_sip--;
+>  			}
+>  			if (ext_sip > 0 && !(sip % ext_sensor->decimator)) {
+> @@ -541,8 +553,12 @@ st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
+>  	}
+>  
+>  	sensor = iio_priv(iio_dev);
+> -	iio_push_to_buffers_with_timestamp(iio_dev, data,
+> -					   ts + sensor->ts_ref);
+> +	/* We need to discards gyro samples during filters settling time */
+> +	if (sensor->samples_to_discard > 0)
+> +		sensor->samples_to_discard--;
+> +	else
+> +		iio_push_to_buffers_with_timestamp(iio_dev, data,
+> +						   ts + sensor->ts_ref);
+>  
+>  	return 0;
+>  }
+> @@ -654,6 +670,25 @@ int st_lsm6dsx_flush_fifo(struct st_lsm6dsx_hw *hw)
+>  	return err;
+>  }
+>  
+> +static void
+> +st_lsm6dsx_update_samples_to_discard(struct st_lsm6dsx_sensor *sensor)
+> +{
+> +	const struct st_lsm6dsx_samples_to_discard *data;
+> +	int i;
+> +
+> +	if (sensor->id != ST_LSM6DSX_ID_GYRO &&
+> +	    sensor->id != ST_LSM6DSX_ID_ACC)
+> +		return;
+> +
+> +	data = &sensor->hw->settings->samples_to_discard[sensor->id];
+> +	for (i = 0; i < ST_LSM6DSX_ODR_LIST_SIZE; i++) {
+> +		if (data->val[i].milli_hz == sensor->odr) {
+> +			sensor->samples_to_discard = data->val[i].samples;
+> +			return;
+> +		}
+> +	}
+> +}
+> +
+>  int st_lsm6dsx_update_fifo(struct st_lsm6dsx_sensor *sensor, bool enable)
+>  {
+>  	struct st_lsm6dsx_hw *hw = sensor->hw;
+> @@ -673,6 +708,9 @@ int st_lsm6dsx_update_fifo(struct st_lsm6dsx_sensor *sensor, bool enable)
+>  			goto out;
+>  	}
+>  
+> +	if (enable)
+> +		st_lsm6dsx_update_samples_to_discard(sensor);
+> +
+>  	err = st_lsm6dsx_device_set_enable(sensor, enable);
+>  	if (err < 0)
+>  		goto out;
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> index 3f6060c64f32..966df6ffe874 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> @@ -634,6 +634,24 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+>  				.fs_len = 4,
+>  			},
+>  		},
+> +		.samples_to_discard = {
+> +			[ST_LSM6DSX_ID_ACC] = {
+> +				.val[0] = {  12500, 1 },
+> +				.val[1] = {  26000, 1 },
+> +				.val[2] = {  52000, 1 },
+> +				.val[3] = { 104000, 2 },
+> +				.val[4] = { 208000, 2 },
+> +				.val[5] = { 416000, 2 },
+> +			},
+> +			[ST_LSM6DSX_ID_GYRO] = {
+> +				.val[0] = {  12500,  2 },
+> +				.val[1] = {  26000,  5 },
+> +				.val[2] = {  52000,  7 },
+> +				.val[3] = { 104000, 12 },
+> +				.val[4] = { 208000, 20 },
+> +				.val[5] = { 416000, 36 },
+> +			},
+> +		},
+>  		.irq_config = {
+>  			.irq1 = {
+>  				.addr = 0x0d,
 
-Thank you for the help :) 
-
---
-Kind Regards
-Mehdi Djait
