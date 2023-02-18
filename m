@@ -2,117 +2,94 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5F3C05027
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Feb 2023 20:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 204D3C6379F
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Feb 2023 13:17:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229508AbjBQUEf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 17 Feb 2023 15:04:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40276 "EHLO
+        id S229780AbjBRNRt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Feb 2023 08:17:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjBQUEe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Feb 2023 15:04:34 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CAB5F263
-        for <linux-iio@vger.kernel.org>; Fri, 17 Feb 2023 12:04:33 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id bi36so2839031lfb.6
-        for <linux-iio@vger.kernel.org>; Fri, 17 Feb 2023 12:04:33 -0800 (PST)
+        with ESMTP id S229770AbjBRNRq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Feb 2023 08:17:46 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252EB18150
+        for <linux-iio@vger.kernel.org>; Sat, 18 Feb 2023 05:17:45 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id cn9so2387898edb.7
+        for <linux-iio@vger.kernel.org>; Sat, 18 Feb 2023 05:17:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NNe/6RtjnIqNBvb/+e7bnLoljPPbwRbLvk6KdCsdqLY=;
-        b=c+9HtUxW5qx2tQCLDLzUpBv5bEasejAi6WlXWKzQVMRSthXQsA8LlepiHyjIsf4CxD
-         yAtOEmKyNGmAszxA/AGDNCXL8LZEL7tilKwirvX+ekhTiSYMVffOk3w9jCgjZH4ueA7P
-         9jX6lWBE3b1bzHj0q7k1apl1WbkY7yumWKYvI60Dh7/XosZ13wHBNjeabBBb+UqTyeJd
-         hjmwg9/AbKT+axluGZxaKUv1BgOuTT4u68/OCVjREp6EsSBcwvkDKazMcEDp2h30KXdR
-         VFFgm8htwkYZ05wILEigBxpjg6bpBqDkdi/7K6z70HgB4pSxhxR2puOqhgAmKIE3z2wv
-         RJRA==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=/LyTq5v0SXCZCIE1ciOy01CE2/2q/D/C08ZbNlkG6R0=;
+        b=K3T4b/OX6/fGvgyAaPi6luiIMYn4i/I5JCHUCJ1apxRMFwLki8gfUKh8aFkAtUyv49
+         h074cR6ph/d9EjUP2RiH9VAEZuZxf0yB2IUQuVPcC0DKgkvuZQyFh5MreH2nxT8DN/Cq
+         4xsN6p3+HIYeL08NrJkBjptmbgqdWRc3+6SJuPoDMpc4nccnZF7+wWbW1vk/fc9FRAzs
+         GKMLhjeGwCNouClsQZDad5pIFla/IvtD8oe74695xkkSIMR4soBBQfopfau6g5ZYtfo9
+         tpaTUhyxevFANUvOlUosoHdMWMePbb2/n4+C/G/XTTmrbLO+kfw6kObb1+2eKVVl1PfA
+         GtOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NNe/6RtjnIqNBvb/+e7bnLoljPPbwRbLvk6KdCsdqLY=;
-        b=Z9l74bWRy3duCBt5WEA3ydfUJkuVpLd2gf1aVXqhkgfWLE/iVJ4ue4fEhoNAVlXlav
-         ywAcLC14ErdFseW4Duxr4hd83bUqQEStIdJrc6KGlj8KzvOxuSJFdoAd1cczlhqPXxUT
-         YZYVk1OOeNln7r0WJ08fihAA2JcrsLjaT2+lKAB6s9seNnKvkE8Iwe0VlyMp1rylZ8xQ
-         hHnGV6FvWukqaGwj0/X1cMffcAScKP4hmWC/0gf0v7P7PCGuORTWCyZGmxqPXF0ecksG
-         omYlIG/ueGKxoht1H3b+fP9NwghGrL+oHpgFXvNe75J/QU8Fz+HSTEcF9zEW0et3smR+
-         LH6Q==
-X-Gm-Message-State: AO0yUKV2mMHZdP/SN5XJS2H89RQNN5WPsa+RXmto7YhTAoDiYUiwwv7/
-        Ew/FLeWd6/DfaMF8oGsXHpQ=
-X-Google-Smtp-Source: AK7set/tL1JUp5scM5TBxROIl/FGs+4d205amL/IGqTX4KSc5Moe1qa6MbJH30Uaz6OoFHZdGDK6uw==
-X-Received: by 2002:ac2:4c97:0:b0:4db:2021:a3e1 with SMTP id d23-20020ac24c97000000b004db2021a3e1mr832873lfl.43.1676664271355;
-        Fri, 17 Feb 2023 12:04:31 -0800 (PST)
-Received: from ?IPV6:2001:14ba:16f3:4a00::1? (dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::1])
-        by smtp.gmail.com with ESMTPSA id w7-20020a05651203c700b004a764f9d653sm769981lfp.242.2023.02.17.12.04.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Feb 2023 12:04:30 -0800 (PST)
-Message-ID: <44a866e5-61ae-3373-10f5-c21efeec7f53@gmail.com>
-Date:   Fri, 17 Feb 2023 22:04:30 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Content-Language: en-US, en-GB
-To:     Mehdi Djait <mehdi.djait.k@gmail.com>, jic23@kernel.org
-Cc:     linux-iio@vger.kernel.org, lars@metafoo.de
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/LyTq5v0SXCZCIE1ciOy01CE2/2q/D/C08ZbNlkG6R0=;
+        b=KNp4yZ8yLN1QqLdYHlZ/GZJUF5mAvqcSvRWkwmXNXhbR9qK6IdsjneWF2cwSWPO6G/
+         4K+B3PqeRbagKT4zP6QJXfxncfofur6VdwG3yLxm0pmJ9FC20htaxg2U2SkBj1hHShn9
+         KHRPnyP5eREPPg24xeyU2u11gPfKPRukmHG4WRLl3LHianCrOn6ReZlKc7fCpeK0VxJB
+         t6nmYaziG991mus+4pRXkXgAYAQKdTOhvfa2+AVhrYHmuyABe0ZIVegSNSVOrSWbOcXT
+         TWHTj/WwEM4uM97H2OqBihrjIUVEtMNQyG7wGXc/1bSnlmPXI0fP2Z+mjqKIMxTkpZk6
+         MI9w==
+X-Gm-Message-State: AO0yUKU5MyzSyY7EP7kruLxRq17hsiHKLAgAgZqzpEAvwzskEUNIftwA
+        TKTXC0MYlYDvXDf2l4X8lxA=
+X-Google-Smtp-Source: AK7set8Bem4VjOcrAhke/EPLw0WT1q0bFDpuCExG7fIC/JfVrGBe8X/2P3iaQ2DRcqpr0lxdcUDkXA==
+X-Received: by 2002:a17:907:764c:b0:88e:e498:109b with SMTP id kj12-20020a170907764c00b0088ee498109bmr3522454ejc.5.1676726263542;
+        Sat, 18 Feb 2023 05:17:43 -0800 (PST)
+Received: from carbian (dynamic-2a01-0c23-5c09-8a00-f386-7b22-bb9a-becb.c23.pool.telefonica.de. [2a01:c23:5c09:8a00:f386:7b22:bb9a:becb])
+        by smtp.gmail.com with ESMTPSA id jz19-20020a17090775f300b008b17cc28d3dsm2481178ejc.20.2023.02.18.05.17.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Feb 2023 05:17:42 -0800 (PST)
+Date:   Sat, 18 Feb 2023 14:17:40 +0100
+From:   Mehdi Djait <mehdi.djait.k@gmail.com>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>
+Cc:     jic23@kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/1] iio: accel: kionix-kx022a: Get the timestamp from
+ the driver's private data in the trigger_handler
+Message-ID: <Y/DP9G7gngMoGnAF@carbian>
 References: <cover.1676661174.git.mehdi.djait.k@gmail.com>
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-Subject: Re: [PATCH 0/1] iio: accel: kionix-kx022a: Timestamp minor fix
-In-Reply-To: <cover.1676661174.git.mehdi.djait.k@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <d81610c45af55b1c5eab5d0597f71650ff908203.1676661174.git.mehdi.djait.k@gmail.com>
+ <1a565f66-7e2a-9ec5-441a-d33ef420cfab@gmail.com>
+ <aba1ea66-b5cc-d43e-b1e6-5d5101da5e9a@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aba1ea66-b5cc-d43e-b1e6-5d5101da5e9a@gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Thanks again Mehdi. It's great to have this fixed :)
+Hi Matti,
 
-On 2/17/23 21:19, Mehdi Djait wrote:
-> As discussed in [1] here is a patch to get the timestamp in the
-> trigger handler from the driver's private data
+On Fri, Feb 17, 2023 at 09:55:33PM +0200, Matti Vaittinen wrote:
+> On 2/17/23 21:52, Matti Vaittinen wrote:
+> > On 2/17/23 21:19, Mehdi Djait wrote:
+> > > The trigger_handler gets called from the IRQ thread handler using
+> > > iio_trigger_poll_chained() which will only call the bottom half of the
+> > > pollfunc and therefore pf->timestamp will not get set.
+> > > 
+> > > Use instead the timestamp from the driver's private data which is always
+> > > set in the IRQ handler.
+> > > 
+> > > Signed-off-by: Mehdi Djait <mehdi.djait.k@gmail.com>
+> > 
+> > Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> > 
 > 
-> [1] https://lore.kernel.org/linux-iio/Y+%2FLpcc0Wa2VGsGO@carbian/T/#mec923c14d1324ffabfa88dde225eeb227005b48f
-> 
-
-By the way, I don't think a cover-letter is required for single patches. 
-You can usually put the relevant information in the commit message. 
-Additionally, if there is some questions, suggestions or other relevant 
-bits you wish to say - but don't want to include in commit logs - you 
-can usually place them in the patch mail directly after the first
-"---"
-
-Eg:
-
-<commit message>
-<Signed-off-by and other tags>
-
----
-
-Here we can add a note / request if required.
-
-  drivers/iio/accel/kionix-kx022a.c | 2 +-
-  1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/accel/kionix-kx022a.c 
-b/drivers/iio/accel/kionix-kx022a.c
-index f866859855cd..1c3a72380fb8 100644
---- a/drivers/iio/accel/kionix-kx022a.c
-+++ b/drivers/iio/accel/kionix-kx022a.c
-
-> Mehdi Djait (1):
->    iio: accel: kionix-kx022a: Get the timestamp from the driver's private
->      data in the trigger_handler
-> 
->   drivers/iio/accel/kionix-kx022a.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> Oh. I just noticed there is no Fixes tag. It'd be good to have one as it
+> usually helps fixes like this being back-ported to stable.
 > 
 
--- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+I will add the Fixes tag and send the patch again.
 
-~~ When things go utterly wrong vim users can always type :help! ~~
-
+--
+Kind Regards
+Mehdi Djait
