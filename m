@@ -2,38 +2,38 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72795C64ED9
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37BD3C636CC
 	for <linux-iio@archiver.kernel.org>; Mon, 20 Feb 2023 12:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231564AbjBTM0t (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 Feb 2023 07:26:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45894 "EHLO
+        id S229596AbjBTM0s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Feb 2023 07:26:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231733AbjBTM0n (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Feb 2023 07:26:43 -0500
+        with ESMTP id S232120AbjBTM0o (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Feb 2023 07:26:44 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA421C59F
-        for <linux-iio@vger.kernel.org>; Mon, 20 Feb 2023 04:26:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539281C5A7
+        for <linux-iio@vger.kernel.org>; Mon, 20 Feb 2023 04:26:06 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mfe@pengutronix.de>)
-        id 1pU5Ex-0003Ep-7G; Mon, 20 Feb 2023 13:25:55 +0100
+        id 1pU5Ex-0003ED-3r; Mon, 20 Feb 2023 13:25:55 +0100
 Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <mfe@pengutronix.de>)
-        id 1pU5Ev-006GFc-BC; Mon, 20 Feb 2023 13:25:54 +0100
+        id 1pU5Eu-006GFW-Tr; Mon, 20 Feb 2023 13:25:54 +0100
 Received: from mfe by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <mfe@pengutronix.de>)
-        id 1pU5Eu-003sk0-TC; Mon, 20 Feb 2023 13:25:52 +0100
+        id 1pU5Eu-003skD-VR; Mon, 20 Feb 2023 13:25:52 +0100
 From:   Marco Felsch <m.felsch@pengutronix.de>
 To:     puranjay12@gmail.com, jic23@kernel.org, lars@metafoo.de,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         kernel@pengutronix.de
-Subject: [PATCH v4 1/5] dt-bindings: iio: ti,tmp117: fix documentation link
-Date:   Mon, 20 Feb 2023 13:25:48 +0100
-Message-Id: <20230220122552.925216-2-m.felsch@pengutronix.de>
+Subject: [PATCH v4 5/5] iio: temperature: tmp117: cosmetic alignment cleanup
+Date:   Mon, 20 Feb 2023 13:25:52 +0100
+Message-Id: <20230220122552.925216-6-m.felsch@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230220122552.925216-1-m.felsch@pengutronix.de>
 References: <20230220122552.925216-1-m.felsch@pengutronix.de>
@@ -47,35 +47,77 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fix the broken link to point to the correct homepage.
+Align the code correctly if possible and align the channel bit mask to
+make it easier to read.
 
-Fixes: 5e713b25d137 ("dt-bindings: iio: temperature: Add DT bindings for TMP117")
 Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
 v4:
 - no changes
 v3:
 - no changes
 v2:
-- added Krzysztof ack
+- no changes
 
- .../devicetree/bindings/iio/temperature/ti,tmp117.yaml          | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/temperature/tmp117.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-index 347bc16a4671b..8d1ec4d39b28c 100644
---- a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-+++ b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-@@ -9,7 +9,7 @@ title: "TI TMP117 - Digital temperature sensor with integrated NV memory"
- description: |
-     TI TMP117 - Digital temperature sensor with integrated NV memory that supports
-     I2C interface.
--      https://www.ti.com/lit/gpn/tmp1
-+      https://www.ti.com/lit/gpn/tmp117
+diff --git a/drivers/iio/temperature/tmp117.c b/drivers/iio/temperature/tmp117.c
+index 4915aceb66ee2..5bc68c6392ff6 100644
+--- a/drivers/iio/temperature/tmp117.c
++++ b/drivers/iio/temperature/tmp117.c
+@@ -43,8 +43,8 @@ struct tmp117_data {
+ };
  
- maintainers:
-   - Puranjay Mohan <puranjay12@gmail.com>
+ static int tmp117_read_raw(struct iio_dev *indio_dev,
+-		struct iio_chan_spec const *channel, int *val,
+-		int *val2, long mask)
++			   struct iio_chan_spec const *channel, int *val,
++			   int *val2, long mask)
+ {
+ 	struct tmp117_data *data = iio_priv(indio_dev);
+ 	s32 ret;
+@@ -52,7 +52,7 @@ static int tmp117_read_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		ret = i2c_smbus_read_word_swapped(data->client,
+-						TMP117_REG_TEMP);
++						  TMP117_REG_TEMP);
+ 		if (ret < 0)
+ 			return ret;
+ 		*val = sign_extend32(ret, 15);
+@@ -60,7 +60,7 @@ static int tmp117_read_raw(struct iio_dev *indio_dev,
+ 
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		ret = i2c_smbus_read_word_swapped(data->client,
+-					TMP117_REG_TEMP_OFFSET);
++						  TMP117_REG_TEMP_OFFSET);
+ 		if (ret < 0)
+ 			return ret;
+ 		*val = sign_extend32(ret, 15);
+@@ -82,9 +82,8 @@ static int tmp117_read_raw(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
+-static int tmp117_write_raw(struct iio_dev *indio_dev,
+-		struct iio_chan_spec const *channel, int val,
+-		int val2, long mask)
++static int tmp117_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec
++			    const *channel, int val, int val2, long mask)
+ {
+ 	struct tmp117_data *data = iio_priv(indio_dev);
+ 	s16 off;
+@@ -107,7 +106,9 @@ static const struct iio_chan_spec tmp117_channels[] = {
+ 	{
+ 		.type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-			BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_SCALE),
++				      BIT(IIO_CHAN_INFO_CALIBBIAS) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++	},
+ };
+ 
+ static const struct iio_chan_spec tmp116_channels[] = {
 -- 
 2.30.2
 
