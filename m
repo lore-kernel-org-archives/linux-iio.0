@@ -2,82 +2,79 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4903CC64ED8
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Feb 2023 21:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 902F2C64ED8
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Feb 2023 22:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229613AbjB0VMt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 27 Feb 2023 16:12:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49458 "EHLO
+        id S229847AbjB0Wu1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 27 Feb 2023 17:50:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbjB0VMr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Feb 2023 16:12:47 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDF02687A
-        for <linux-iio@vger.kernel.org>; Mon, 27 Feb 2023 13:12:42 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1pWknQ-00050E-Vo; Mon, 27 Feb 2023 22:12:33 +0100
-Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1pWknQ-000hzX-4p; Mon, 27 Feb 2023 22:12:32 +0100
-Received: from mfe by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1pWknP-000jX0-9r; Mon, 27 Feb 2023 22:12:31 +0100
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     puranjay12@gmail.com, jic23@kernel.org, lars@metafoo.de,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH v5 1/5] dt-bindings: iio: ti,tmp117: fix documentation link
-Date:   Mon, 27 Feb 2023 22:12:26 +0100
-Message-Id: <20230227211230.165073-2-m.felsch@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230227211230.165073-1-m.felsch@pengutronix.de>
-References: <20230227211230.165073-1-m.felsch@pengutronix.de>
+        with ESMTP id S229876AbjB0WuX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Feb 2023 17:50:23 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FD729143;
+        Mon, 27 Feb 2023 14:50:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677538211; x=1709074211;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=A+Ha+ND5XRehgc+ZqYZINluNko4KIow1fu2x1wXOwBs=;
+  b=WMrRzuYWodQhi6CMNwxpmvFGhto4qqr+uJajPzffjDqTG/utI7zxBXAR
+   bISBLLqo6bxPoSNBWnzvbO0WcZkha97RlRyXAEsIdehrZrbeNS9jWqkh1
+   eUV9JhG8NYDdqBFChqh9E9eOj0rhm6CspbQp2meEKjJDa0x8FZRT5jfUE
+   g6D0OQJUDtvfgSe4YqR9/i39lpJLyZHLcJIm7y4oZbxsrLrJBMNzsmwn8
+   n5ykOSKtzppfvBQSx9l6QNey7GoS+IophstaD051vZq0shdd7hfLniZDl
+   7sOmKLi/P7I16a0vjfy+77DIVSbdRHy4c10WKxUppu0Z1ZDPFqtaGLx/5
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="331462883"
+X-IronPort-AV: E=Sophos;i="5.98,220,1673942400"; 
+   d="scan'208";a="331462883"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 14:50:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="673905178"
+X-IronPort-AV: E=Sophos;i="5.98,220,1673942400"; 
+   d="scan'208";a="673905178"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga002.jf.intel.com with ESMTP; 27 Feb 2023 14:50:08 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pWmJq-00D21r-3C;
+        Tue, 28 Feb 2023 00:50:06 +0200
+Date:   Tue, 28 Feb 2023 00:50:06 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Mehdi Djait <mehdi.djait.k@gmail.com>
+Cc:     jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: Improve the kernel-doc of iio_trigger_poll
+Message-ID: <Y/0znth++tPsptKs@smile.fi.intel.com>
+References: <cover.1677520155.git.mehdi.djait.k@gmail.com>
+ <219496d4d21755937a40c2c7dfbeca64660c9258.1677520155.git.mehdi.djait.k@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <219496d4d21755937a40c2c7dfbeca64660c9258.1677520155.git.mehdi.djait.k@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fix the broken link to point to the correct homepage.
+On Mon, Feb 27, 2023 at 07:00:38PM +0100, Mehdi Djait wrote:
+> Move the kernel-doc of the function to industrialio-trigger.c
+> Add a note on the context where the function is expected to be called.
 
-Fixes: 5e713b25d137 ("dt-bindings: iio: temperature: Add DT bindings for TMP117")
-Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
-v5:
-- no changes
-v4:
-- no changes
-v3:
-- no changes
-v2:
-- added Krzysztof ack
+...
 
- .../devicetree/bindings/iio/temperature/ti,tmp117.yaml          | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> + * This function needs to be called from an interrupt context.
 
-diff --git a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-index 347bc16a4671b..8d1ec4d39b28c 100644
---- a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-+++ b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-@@ -9,7 +9,7 @@ title: "TI TMP117 - Digital temperature sensor with integrated NV memory"
- description: |
-     TI TMP117 - Digital temperature sensor with integrated NV memory that supports
-     I2C interface.
--      https://www.ti.com/lit/gpn/tmp1
-+      https://www.ti.com/lit/gpn/tmp117
- 
- maintainers:
-   - Puranjay Mohan <puranjay12@gmail.com>
+> - * Typically called in relevant hardware interrupt handler.
+
+These are not equivalent. Can you explain in the commit message why we move
+from hardware to any interrupt context?
+
 -- 
-2.30.2
+With Best Regards,
+Andy Shevchenko
+
 
