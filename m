@@ -2,44 +2,43 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C63F3C7EE37
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Feb 2023 09:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2D3C64ED6
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Feb 2023 09:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230183AbjB1JFf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Feb 2023 04:05:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47212 "EHLO
+        id S229756AbjB1JGx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Feb 2023 04:06:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230232AbjB1JFe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Feb 2023 04:05:34 -0500
+        with ESMTP id S229612AbjB1JGx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Feb 2023 04:06:53 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D3DE392
-        for <linux-iio@vger.kernel.org>; Tue, 28 Feb 2023 01:05:32 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725DD168B2
+        for <linux-iio@vger.kernel.org>; Tue, 28 Feb 2023 01:06:51 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mfe@pengutronix.de>)
-        id 1pWvvF-0002s9-Lk; Tue, 28 Feb 2023 10:05:21 +0100
-Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        id 1pWvwV-0003ZI-C3; Tue, 28 Feb 2023 10:06:39 +0100
+Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <mfe@pengutronix.de>)
-        id 1pWvvE-000poH-Jd; Tue, 28 Feb 2023 10:05:20 +0100
-Received: from mfe by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1pWvvD-002DrL-Es; Tue, 28 Feb 2023 10:05:19 +0100
+        id 1pWvwT-00073Y-Ib; Tue, 28 Feb 2023 10:06:37 +0100
+Date:   Tue, 28 Feb 2023 10:06:37 +0100
 From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     puranjay12@gmail.com, jic23@kernel.org, lars@metafoo.de,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH v6 2/5] iio: temperature: tmp117: improve fallback capabilities
-Date:   Tue, 28 Feb 2023 10:05:15 +0100
-Message-Id: <20230228090518.529811-3-m.felsch@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230228090518.529811-1-m.felsch@pengutronix.de>
-References: <20230228090518.529811-1-m.felsch@pengutronix.de>
+To:     kernel test robot <lkp@intel.com>
+Cc:     puranjay12@gmail.com, jic23@kernel.org, lars@metafoo.de,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH v5 4/5] iio: temperature: tmp117: add TI TMP116 support
+Message-ID: <20230228090637.es46f2tjvmikmdlw@pengutronix.de>
+References: <20230227211230.165073-5-m.felsch@pengutronix.de>
+ <202302280821.OXqGp2Tq-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202302280821.OXqGp2Tq-lkp@intel.com>
+User-Agent: NeoMutt/20180716
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
 X-SA-Exim-Mail-From: mfe@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
@@ -47,129 +46,77 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Don't error if the device-id found don't match the device-id for the
-TMP117 sensor since other TMPxxx might be compatible to the TMP117. The
-fallback mechanism tries to gather the required information from the
-of_device_id or from the i2c_client information.
+On 23-02-28, kernel test robot wrote:
+> Hi Marco,
+> 
+> Thank you for the patch! Yet something to improve:
 
-The commit also prepares the driver for adding new devices more easily
-by making use of switch-case at the relevant parts.
+Argh.. I didn't noticed that since I repaired it within the last
+commit... I have send a v6 which fixes this.
 
-Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
----
-v6:
-- no changes
-v5:
-- identify: make use of v6.2 available i2c_client_get_device_id()
-- identify: adapt dev_err() message
-- probe: keep ret variable
-v4:
-- new patch to implement possible fallback (Jonathan)
+Regards,
+  Marco
 
- drivers/iio/temperature/tmp117.c | 44 ++++++++++++++++++++++++--------
- 1 file changed, 34 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iio/temperature/tmp117.c b/drivers/iio/temperature/tmp117.c
-index f9b8f2b570f6b..8a3992d9ee937 100644
---- a/drivers/iio/temperature/tmp117.c
-+++ b/drivers/iio/temperature/tmp117.c
-@@ -16,6 +16,7 @@
- #include <linux/types.h>
- #include <linux/kernel.h>
- #include <linux/limits.h>
-+#include <linux/property.h>
- 
- #include <linux/iio/iio.h>
- 
-@@ -115,23 +116,40 @@ static const struct iio_info tmp117_info = {
- 
- static int tmp117_identify(struct i2c_client *client)
- {
-+	const struct i2c_device_id *id;
-+	unsigned long match_data;
- 	int dev_id;
- 
- 	dev_id = i2c_smbus_read_word_swapped(client, TMP117_REG_DEVICE_ID);
- 	if (dev_id < 0)
- 		return dev_id;
--	if (dev_id != TMP117_DEVICE_ID) {
--		dev_err(&client->dev, "TMP117 not found\n");
--		return -ENODEV;
-+
-+	switch (dev_id) {
-+	case TMP117_DEVICE_ID:
-+		return dev_id;
- 	}
--	return 0;
-+
-+	dev_info(&client->dev, "Unknown device id (0x%x), use fallback compatible\n",
-+		 dev_id);
-+
-+	match_data = (uintptr_t)device_get_match_data(&client->dev);
-+	if (match_data)
-+		return match_data;
-+
-+	id = i2c_client_get_device_id(client);
-+	if (id)
-+		return id->driver_data;
-+
-+	dev_err(&client->dev, "Failed to identify unsupported device\n");
-+
-+	return -ENODEV;
- }
- 
- static int tmp117_probe(struct i2c_client *client)
- {
- 	struct tmp117_data *data;
- 	struct iio_dev *indio_dev;
--	int ret;
-+	int ret, dev_id;
- 
- 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
- 		return -EOPNOTSUPP;
-@@ -140,6 +158,8 @@ static int tmp117_probe(struct i2c_client *client)
- 	if (ret < 0)
- 		return ret;
- 
-+	dev_id = ret;
-+
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
-@@ -148,24 +168,28 @@ static int tmp117_probe(struct i2c_client *client)
- 	data->client = client;
- 	data->calibbias = 0;
- 
--	indio_dev->name = "tmp117";
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &tmp117_info;
- 
--	indio_dev->channels = tmp117_channels;
--	indio_dev->num_channels = ARRAY_SIZE(tmp117_channels);
-+	switch (dev_id) {
-+	case TMP117_DEVICE_ID:
-+		indio_dev->channels = tmp117_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(tmp117_channels);
-+		indio_dev->name = "tmp117";
-+		break;
-+	}
- 
- 	return devm_iio_device_register(&client->dev, indio_dev);
- }
- 
- static const struct of_device_id tmp117_of_match[] = {
--	{ .compatible = "ti,tmp117", },
-+	{ .compatible = "ti,tmp117", .data = (void *)TMP117_DEVICE_ID },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, tmp117_of_match);
- 
- static const struct i2c_device_id tmp117_id[] = {
--	{ "tmp117", 0 },
-+	{ "tmp117", TMP117_DEVICE_ID },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, tmp117_id);
--- 
-2.30.2
-
+> 
+> [auto build test ERROR on v6.2]
+> [cannot apply to jic23-iio/togreg linus/master]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> 
+> url:    https://github.com/intel-lab-lkp/linux/commits/Marco-Felsch/dt-bindings-iio-ti-tmp117-fix-documentation-link/20230228-051305
+> patch link:    https://lore.kernel.org/r/20230227211230.165073-5-m.felsch%40pengutronix.de
+> patch subject: [PATCH v5 4/5] iio: temperature: tmp117: add TI TMP116 support
+> config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20230228/202302280821.OXqGp2Tq-lkp@intel.com/config)
+> compiler: powerpc-linux-gcc (GCC) 12.1.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/intel-lab-lkp/linux/commit/424113d7fdc257200d20da2991242a4050c04cb3
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review Marco-Felsch/dt-bindings-iio-ti-tmp117-fix-documentation-link/20230228-051305
+>         git checkout 424113d7fdc257200d20da2991242a4050c04cb3
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc olddefconfig
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/iio/
+> 
+> If you fix the issue, kindly add following tag where applicable
+> | Reported-by: kernel test robot <lkp@intel.com>
+> | Link: https://lore.kernel.org/oe-kbuild-all/202302280821.OXqGp2Tq-lkp@intel.com/
+> 
+> All errors (new ones prefixed by >>):
+> 
+> >> drivers/iio/temperature/tmp117.c:111:2: error: expected '}' before ';' token
+>      111 | };
+>          |  ^
+>    drivers/iio/temperature/tmp117.c:106:55: note: to match this '{'
+>      106 | static const struct iio_chan_spec tmp117_channels[] = {
+>          |                                                       ^
+>    drivers/iio/temperature/tmp117.c:106:35: warning: 'tmp117_channels' defined but not used [-Wunused-const-variable=]
+>      106 | static const struct iio_chan_spec tmp117_channels[] = {
+>          |                                   ^~~~~~~~~~~~~~~
+>    drivers/iio/temperature/tmp117.c:85:12: warning: 'tmp117_write_raw' defined but not used [-Wunused-function]
+>       85 | static int tmp117_write_raw(struct iio_dev *indio_dev,
+>          |            ^~~~~~~~~~~~~~~~
+>    drivers/iio/temperature/tmp117.c:45:12: warning: 'tmp117_read_raw' defined but not used [-Wunused-function]
+>       45 | static int tmp117_read_raw(struct iio_dev *indio_dev,
+>          |            ^~~~~~~~~~~~~~~
+> 
+> 
+> vim +111 drivers/iio/temperature/tmp117.c
+> 
+>    105	
+>    106	static const struct iio_chan_spec tmp117_channels[] = {
+>    107		{
+>    108			.type = IIO_TEMP,
+>    109			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+>    110				BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_SCALE),
+>  > 111	};
+>    112	
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests
+> 
