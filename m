@@ -2,114 +2,105 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 632E3C6FA8E
-	for <linux-iio@archiver.kernel.org>; Thu,  2 Mar 2023 13:20:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D47C678D4
+	for <linux-iio@archiver.kernel.org>; Thu,  2 Mar 2023 13:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbjCBNUt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 2 Mar 2023 08:20:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51690 "EHLO
+        id S229546AbjCBNtk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 2 Mar 2023 08:49:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbjCBNUs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Mar 2023 08:20:48 -0500
-Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9938A3BDAE;
-        Thu,  2 Mar 2023 05:20:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-        s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=cF077q4Xpw478KVACo7Jr3CUZM3qv0sxeoqom2mWqIk=; b=LYxkdKM+9zq1I3A5p6OrWl7lWE
-        daNMhairBSdwrPWH5v4m6eUKwv2Fw8ksgQSrJGpzAo6eHRoMShewzeKnmruklBFEtTgL5idb8hagD
-        fbWNzMS2UqT9VERrvb3waHq04X6hcfm7diKGpN6hThWY9wjETaINSxPigEm2rtrF7zXznQf8TBUFC
-        aa5Ac3tNWm/89NLU+doo+Ine5//pQ1Vr3UZS2F5zgGF/sS/02kN35UheHELliaY/qmd0JwM67isQG
-        2CT09Z/W2AdAg2YlTilBv8PT3yJYLGvM3Fe3D3L99nqBppHq7OrFN8g7xVgheXZphtZhgxV8bBBqs
-        p+/aI9jQ==;
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www381.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <lars@metafoo.de>)
-        id 1pXirU-000Ned-Ak; Thu, 02 Mar 2023 14:20:44 +0100
-Received: from [2604:5500:c0e5:eb00:da5e:d3ff:feff:933b]
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1pXirT-0002Yt-ON; Thu, 02 Mar 2023 14:20:43 +0100
-Message-ID: <b635b91e-1dcc-71ba-95d1-1f87a20dbaf2@metafoo.de>
-Date:   Thu, 2 Mar 2023 05:20:38 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH v3 2/2] iio: adc: Add TI ADS1100 and ADS1000
-Content-Language: en-US
-From:   Lars-Peter Clausen <lars@metafoo.de>
-To:     Mike Looijmans <mike.looijmans@topic.nl>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Caleb Connolly <caleb.connolly@linaro.org>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+        with ESMTP id S229922AbjCBNta (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Mar 2023 08:49:30 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DAB6166D5
+        for <linux-iio@vger.kernel.org>; Thu,  2 Mar 2023 05:49:27 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id j17so17622170ljq.11
+        for <linux-iio@vger.kernel.org>; Thu, 02 Mar 2023 05:49:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DFDandIs/wWW0RZ0s4trhSYP6hO5Cu+0LMuOOdJjn54=;
+        b=fXbfjLWD5wow0IgUIsNvtmgvsgvdaB+VuwBS8lvjPc9Lx2VeB4mNsRb9vqa/bnJYay
+         SbpWcIAMNi27+vEfM8hjGIha5uuKybpDkJyt5r8v06Oj6Xa0HVL/2JuQ60O7B1bcSc5f
+         cplg3BMrFPEGJ7q+C70RFKNoVB0FgDZUn99JM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=DFDandIs/wWW0RZ0s4trhSYP6hO5Cu+0LMuOOdJjn54=;
+        b=c+pvyjYPt7LaXs3cxNmpQwkHWgOYK+2siPLjiUg6tlY8hVWnnkfJLhDqTKrW/x2wzU
+         qEqnT8DhHUXx6ikg0bHjVttclgkuJ4zPGNZ8/R2E++61Ma81cMHOHDbXxSF8ceIAO9mm
+         MNbuszoA2BeGTkOkLt9YOs2dUx7RNml7f7b3VFVJ8F4nLnw7wjS9d9I0fVYnfHObuEnb
+         Q4Ju49hyJdRABB9zVG9n7rLVGNycov6XgeH0UNARSuWAWrF3Q0hw+nh0W7sYSksNQ94O
+         5d/G6OLgCstIZSCa6ypzRnzryl+BZks4bXie9qHbXT2YlCuHacZg6FxgFkCl0yT2qXct
+         ejTQ==
+X-Gm-Message-State: AO0yUKULXfqoOXaI+qwZQI3j989IC65LjHsWs6bO3q3fWipTXVlyCCmM
+        U7cJE8WB2aIdT63sZ5NockfYDw==
+X-Google-Smtp-Source: AK7set+rPBpimAvdVXmPhPHeTOmkunGsxjRFqhQJkRhWtDUaTFnVVjkkOLQHCXKF7WgltoOLCkJf3Q==
+X-Received: by 2002:a2e:90d6:0:b0:295:c333:2a24 with SMTP id o22-20020a2e90d6000000b00295c3332a24mr3176109ljg.19.1677764965697;
+        Thu, 02 Mar 2023 05:49:25 -0800 (PST)
+Received: from prevas-ravi.prevas.se ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id s16-20020ac25ff0000000b004cb3e97bff8sm2139088lfg.284.2023.03.02.05.49.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Mar 2023 05:49:25 -0800 (PST)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        Ramona Bolboaca <ramona.bolboaca@analog.com>,
-        William Breathitt Gray <william.gray@linaro.org>,
-        linux-kernel@vger.kernel.org
-References: <20230228063151.17598-1-mike.looijmans@topic.nl>
- <20230228063151.17598-2-mike.looijmans@topic.nl>
- <Y/9vez/fzLD5dRVF@smile.fi.intel.com>
- <1b153bce-a66a-45ee-a5c6-963ea6fb1c82.949ef384-8293-46b8-903f-40a477c056ae.0685d97e-4a28-499e-a9e3-3bafec126832@emailsignatures365.codetwo.com>
- <a2ba706f-888b-0a72-03a5-cbf761dfaf19@topic.nl>
- <87bc192e-45ae-9480-5e84-8fe0adfc12e7@metafoo.de>
-In-Reply-To: <87bc192e-45ae-9480-5e84-8fe0adfc12e7@metafoo.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     devicetree@vger.kernel.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: iio: ad74413r: allow setting sink current for digital input
+Date:   Thu,  2 Mar 2023 14:49:20 +0100
+Message-Id: <20230302134922.1120217-2-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20230302134922.1120217-1-linux@rasmusvillemoes.dk>
+References: <20230302134922.1120217-1-linux@rasmusvillemoes.dk>
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.103.8/26828/Thu Mar  2 07:36:42 2023)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 3/2/23 05:16, Lars-Peter Clausen wrote:
-> On 3/1/23 23:49, Mike Looijmans wrote:
->>
->>
->>> ...
->>> ...
->>>
->>>> +static int ads1100_runtime_suspend(struct device *dev)
->>>> +{
->>>> +    struct iio_dev *indio_dev = 
->>>> i2c_get_clientdata(to_i2c_client(dev));
->>>> +    struct ads1100_data *data = iio_priv(indio_dev);
->>>> +
->>>> +    ads1100_set_config_bits(data, ADS1100_CFG_SC, 
->>>> ADS1100_SINGLESHOT);
->>>> +    regulator_disable(data->reg_vdd);
->>> Wrong devm / non-devm ordering.
->>
->> Don't understand your remark, can you explain further please?
->>
->> devm / non-devm ordering would be related to the "probe" function. As 
->> far as I can tell, I'm not allocating resources after the devm calls. 
->> And the "remove" is empty.
->
-> Strictly speaking we need to unregister the IIO device before 
-> disabling the regulator, otherwise there is a small window where the 
-> IIO device still exists, but doesn't work anymore. This is a very 
-> theoretical scenario though.
->
-> You are lucky :) There is a new function 
-> `devm_regulator_get_enable()`[1], which will manage the 
-> regulator_disable() for you. Using that will also reduce the 
-> boilerplate in `probe()` a bit
->
-> - Lars
->
-> [1] https://lwn.net/Articles/904383/
->
-Sorry, just saw that Andy's comment was on the suspend() function, not 
-remove(). In that case there is of course no need for any devm things. 
-But still a good idea to use `devm_regulator_get_enable()` in probe for 
-the boiler plate.
+Depending on the actual hardware wired up to a digital input channel,
+it may be necessary to configure the ad74413r to sink a small
+current. For example, in the case of a simple mechanical switch, the
+charge on the external 68 nF capacitor (cf. the data sheet's Figure
+34) will keep the channel as reading high even after the switch is
+turned off again.
+
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+---
+ .../devicetree/bindings/iio/addac/adi,ad74413r.yaml    | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml b/Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml
+index 9eb3ecc8bbc8..fcae300182f7 100644
+--- a/Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml
++++ b/Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml
+@@ -101,6 +101,16 @@ patternProperties:
+           When not configured as a comparator, the GPO will be treated as an
+           output-only GPIO.
+ 
++      drive-strength-microamp:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description: |
++          For channels configured as digital input, this configures the sink
++          current.
++        minimum: 0
++        maximum: 1800
++        default: 0
++        multipleOf: 120
++
+     required:
+       - reg
+ 
+-- 
+2.37.2
 
