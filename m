@@ -2,164 +2,106 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F189C678D4
-	for <linux-iio@archiver.kernel.org>; Thu,  2 Mar 2023 14:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B20C678D4
+	for <linux-iio@archiver.kernel.org>; Thu,  2 Mar 2023 14:25:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbjCBOXW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 2 Mar 2023 09:23:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43738 "EHLO
+        id S229468AbjCBOZG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 2 Mar 2023 09:25:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbjCBOXW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Mar 2023 09:23:22 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62D4193FE;
-        Thu,  2 Mar 2023 06:23:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677767000; x=1709303000;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=1xUvPOheqw1hT95eEnqs5hbaLI/RpHD0dWMUlZ70aOY=;
-  b=j8afqEY5GUIpkClBzFDQ9NTT4ZtEE0Dmgs8FGR+I9epNqV/xL+wOz9Se
-   mOppjAPOgqGVGqP1B/+sfUw+V2YYb8u17e2BJDFfaZR+fpN0tJccuPXr9
-   Qed4xeUQuWpB8vRj/+4HIkWpgqLGiaAAkkNkq5x6vf8O/Ut8VOrEA15v8
-   EbxNKQB8qHxIF+KTpm/MpEz9iMn4wV+vaxvG61MTAx0D+qC8Lc11qHLyW
-   +k+C3RyTMLsyDmNpaydNGLJ7H1zDjE2t4TobnUVMMiDlSmdYzp1AfmDfR
-   HulvUF406gzh7CDgZsWPXG9mCIFJOjY+M3xa+8lUekovXdjPSStOfepm+
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="362324884"
-X-IronPort-AV: E=Sophos;i="5.98,227,1673942400"; 
-   d="scan'208";a="362324884"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 06:23:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="677230474"
-X-IronPort-AV: E=Sophos;i="5.98,227,1673942400"; 
-   d="scan'208";a="677230474"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga007.fm.intel.com with ESMTP; 02 Mar 2023 06:23:17 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pXjpz-00ENdZ-0o;
-        Thu, 02 Mar 2023 16:23:15 +0200
-Date:   Thu, 2 Mar 2023 16:23:14 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mike Looijmans <mike.looijmans@topic.nl>
-Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Caleb Connolly <caleb.connolly@linaro.org>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Ramona Bolboaca <ramona.bolboaca@analog.com>,
-        William Breathitt Gray <william.gray@linaro.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: adc: Add TI ADS1100 and ADS1000
-Message-ID: <ZACxUpzCtlrMehrA@smile.fi.intel.com>
-References: <20230228063151.17598-1-mike.looijmans@topic.nl>
- <20230228063151.17598-2-mike.looijmans@topic.nl>
- <Y/9vez/fzLD5dRVF@smile.fi.intel.com>
- <1b153bce-a66a-45ee-a5c6-963ea6fb1c82.949ef384-8293-46b8-903f-40a477c056ae.0685d97e-4a28-499e-a9e3-3bafec126832@emailsignatures365.codetwo.com>
- <a2ba706f-888b-0a72-03a5-cbf761dfaf19@topic.nl>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+        with ESMTP id S229552AbjCBOZF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Mar 2023 09:25:05 -0500
+Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com [209.85.217.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36CCA37548;
+        Thu,  2 Mar 2023 06:25:01 -0800 (PST)
+Received: by mail-vs1-f50.google.com with SMTP id s1so22537052vsk.5;
+        Thu, 02 Mar 2023 06:25:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=8wDVKoxnSqfBIh2KA9I69m23GfuDCaWRKYYk9CbtV28=;
+        b=s965aUpIY1lbFNd9bzIr6F2lcdwZ1KNwXBG0x7nMUGvm8oKNl00CKi6bu11HLr7zhH
+         ycVEN0MBWYDNvTiLfpcykrYwNtcIBexEoqPQta3CREOZG8gQsN7IGy1gZy/Q89d1JK4Q
+         8ZOOYYtXSI/K0uSBIVI7Ane4XFAp0yAT6O5e0LSdBemxKtj1Wk0wS4z+TNW0/PYwwy7O
+         JU9PxiLgQbw0Cw5f+Np53HSOTRh5DNLOE3tpuLzzKE6rvuMk6F6iU6IsBk91FhN47qZY
+         PRgllyYcr64WHyOWPzCwwjn0lGaRxLUR53HzktU04SZI4kxZb9Att9GmnI7uTvcHhOH5
+         WIoQ==
+X-Gm-Message-State: AO0yUKXMvc+QpMjsthyzK5dgr7hlcOpPCBzgyMzPp0EJ6sJfYqJGWGO8
+        2jsSzfoDJy86z7UfsrAKNc3LvFum76Bo
+X-Google-Smtp-Source: AK7set8DcBKW2UHTl1N3Sx8zSZmipJcIPDcIoj4LHB6kl8FBAn53qpN6vh65KHTjOPO0RDA1pWLv/A==
+X-Received: by 2002:a67:e3ac:0:b0:412:4d64:8c00 with SMTP id j12-20020a67e3ac000000b004124d648c00mr4442928vsm.15.1677767100159;
+        Thu, 02 Mar 2023 06:25:00 -0800 (PST)
+Received: from robh_at_kernel.org ([209.91.220.210])
+        by smtp.gmail.com with ESMTPSA id t5-20020a675f05000000b0041f5ee512d7sm1681653vsb.3.2023.03.02.06.24.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Mar 2023 06:24:59 -0800 (PST)
+Received: (nullmailer pid 427877 invoked by uid 1000);
+        Thu, 02 Mar 2023 14:24:58 -0000
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <a2ba706f-888b-0a72-03a5-cbf761dfaf19@topic.nl>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+MIME-Version: 1.0
+From:   Rob Herring <robh@kernel.org>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+In-Reply-To: <20230302134922.1120217-2-linux@rasmusvillemoes.dk>
+References: <20230302134922.1120217-1-linux@rasmusvillemoes.dk>
+ <20230302134922.1120217-2-linux@rasmusvillemoes.dk>
+Message-Id: <167776666863.418220.8691645201749142592.robh@kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: ad74413r: allow setting sink
+ current for digital input
+Date:   Thu, 02 Mar 2023 08:24:58 -0600
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Mar 02, 2023 at 08:49:22AM +0100, Mike Looijmans wrote:
-> On 01-03-2023 16:30, Andy Shevchenko wrote:
-> > On Tue, Feb 28, 2023 at 07:31:51AM +0100, Mike Looijmans wrote:
 
-...
-
-> > > +	/* Shift result to compensate for bit resolution vs. sample rate */
-> > > +	value <<= 16 - ads1100_data_bits(data);
-> > > +	*val = sign_extend32(value, 15);
-> > Why not simply
-> > 
-> > 	*val = sign_extend32(value, ads1100_data_bits(data) - 1);
-> > 
-> > ?
+On Thu, 02 Mar 2023 14:49:20 +0100, Rasmus Villemoes wrote:
+> Depending on the actual hardware wired up to a digital input channel,
+> it may be necessary to configure the ad74413r to sink a small
+> current. For example, in the case of a simple mechanical switch, the
+> charge on the external 68 nF capacitor (cf. the data sheet's Figure
+> 34) will keep the channel as reading high even after the switch is
+> turned off again.
 > 
-> As discussed with  Jonathan Cameron, the register is right-justified and the
-> number of bits depend on the data rate. Rather than having the "scale"
-> change when the sample rate changes, we chose to adjust the sample result so
-> it's always left-justified.
-
-Hmm... OK, but it adds unneeded code I think.
-
-...
-
-> > > +	for (i = 0; i < 4; i++) {
-> > > +		if (BIT(i) == gain) {
-> > ffs()/__ffs() (look at the documentation for the difference and use proper one).
+> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> ---
+>  .../devicetree/bindings/iio/addac/adi,ad74413r.yaml    | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
-> Thought of it, but I'd rather have it return EINVAL for attempting to set
-> the analog gain to "7" (0nly 1,2,4,8 allowed).
 
-I'm not sure what you are implying.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-You have open coded something that has already to be a function which on some
-architectures become a single assembly instruction.
+yamllint warnings/errors:
 
-That said, drop your for-loop if-cond and use one of the proposed directly.
-Then you may compare the result to what ever you want to be a limit and return
-whatever error code you want to.
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml: patternProperties:^channel@[0-3]$:properties:drive-strength-microamp: '$ref' should not be valid under {'const': '$ref'}
+	hint: Standard unit suffix properties don't need a type $ref
+	from schema $id: http://devicetree.org/meta-schemas/core.yaml#
 
-...
+doc reference errors (make refcheckdocs):
 
-> > > +	for (i = 0; i < size; ++i) {
-> > Why pre-increment?
-> 
-> Spent too much time with other coding guidelines, missed this one... Will
-> change.
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230302134922.1120217-2-linux@rasmusvillemoes.dk
 
-I don't remember that's in coding guidelines, but it's standard practice in the
-Linux kernel project. Yeah, we have a few hundreds of the pre-increments, but
-reasons may be quite different for those.
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
 
-...
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-> > > +	int millivolts = regulator_get_voltage(data->reg_vdd) / 1000;
-> > units.h?
-> 
-> Should I write:
-> 
-> regulator_get_voltage(data->reg_vdd) / (MICROS / MILLIS);
-> 
-> I doubt that improves readability.
+pip3 install dtschema --upgrade
 
-Yeah, it should be something like MICROVOLT_PER_MILLIVOLT.
-But it's not defined yet.
-
-...
-
-> > > +static int ads1100_runtime_suspend(struct device *dev)
-> > > +{
-> > > +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> > > +	struct ads1100_data *data = iio_priv(indio_dev);
-> > > +
-> > > +	ads1100_set_config_bits(data, ADS1100_CFG_SC, ADS1100_SINGLESHOT);
-> > > +	regulator_disable(data->reg_vdd);
-> > Wrong devm / non-devm ordering.
-> 
-> Don't understand your remark, can you explain further please?
-> 
-> devm / non-devm ordering would be related to the "probe" function. As far as
-> I can tell, I'm not allocating resources after the devm calls. And the
-> "remove" is empty.
-
-Ah, it's my mistake, I misread it as ->remove().
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
