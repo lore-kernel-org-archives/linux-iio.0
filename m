@@ -2,47 +2,47 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C7EC61DA4
-	for <linux-iio@archiver.kernel.org>; Fri,  3 Mar 2023 22:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50569C678D5
+	for <linux-iio@archiver.kernel.org>; Fri,  3 Mar 2023 22:05:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233545AbjCCWDM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 3 Mar 2023 17:03:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
+        id S233400AbjCCWFo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 3 Mar 2023 17:05:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233546AbjCCWCi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Mar 2023 17:02:38 -0500
+        with ESMTP id S233748AbjCCWE7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Mar 2023 17:04:59 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9484512056;
-        Fri,  3 Mar 2023 13:53:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E955848F2;
+        Fri,  3 Mar 2023 13:55:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7DDBB81A3A;
-        Fri,  3 Mar 2023 21:49:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E858EC433EF;
-        Fri,  3 Mar 2023 21:49:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8354B81A27;
+        Fri,  3 Mar 2023 21:47:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2632C433A4;
+        Fri,  3 Mar 2023 21:47:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677880190;
-        bh=k5XWIl5XB4f65o6A0XZFfzI5aSXS0CJa1Wdvb80QDis=;
+        s=k20201202; t=1677880054;
+        bh=RX2HojgIGJFon60lL8yY3xWnDo08Bn8qPy9+rxyyRmc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IX/3Ywp1T1+8WL3aeF40MQEkhgYDco/e/vix+XgwXoT/R7BJSi4mT6iymKqRV/J7u
-         phdq0xYmQMdLQ/SjeC2anWDwf1WtHXOAyw2R4drpWXoU64EpREy6cbjbOVHKxGkOZ3
-         HS/PYV8uq6x8lLd3LXi+zTTv6t5gBXyNbLeuo7OIlCCGUbGHKFbwQNnzJ/1Qfv+CXe
-         POnWuBzXRUvoVWvIYq+0k7y78Br9buhUny6Qsj38nTjm2fejkNKNz7DZ9xcEfClCLl
-         H0/PhBJGZ55fLl1IDlfMsRusuI5pnsUT33xWm1Nx5XCnF/yTfrqTMSpx6MLRYxBxH3
-         BnciNfxXEju+Q==
+        b=q3QZWn1+Ue6pvlsmhyd0DYrs+F8rykHrMt1SlrgasCBkKT2wq2zM3zF0s2s1TRkYU
+         6nVAcBJlQmq5Vxb5kFprxoVDmE1bvf71H0TuCxNpLRvxEif/d7ueDn7SrvIgIADZYD
+         9CDDRabAFwFNPoRfokc2C4iaC+eME43nsBfd89DOkmaeN0IDGJE3FHpEuhayjqsDY6
+         lxm7EmsK2cAvxvgy23BiaADgu458jZ3pTW785PpVNqAULl7xnyoUqK8pP1nDDrH30O
+         ascPvNgHpykAHyIs7TFfLNErij+Ar7HdP2LAUKV2tkLx44tSguiK24xJjw9x7SPV54
+         H380mfBBJWwXw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+Cc:     Yulong Zhang <yulong.zhang@metoak.net>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, jic23@kernel.org,
         linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 06/11] iio: accel: mma9551_core: Prevent uninitialized variable in mma9551_read_status_word()
-Date:   Fri,  3 Mar 2023 16:49:32 -0500
-Message-Id: <20230303214938.1454767-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 13/30] tools/iio/iio_utils:fix memory leak
+Date:   Fri,  3 Mar 2023 16:46:58 -0500
+Message-Id: <20230303214715.1452256-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230303214938.1454767-1-sashal@kernel.org>
-References: <20230303214938.1454767-1-sashal@kernel.org>
+In-Reply-To: <20230303214715.1452256-1-sashal@kernel.org>
+References: <20230303214715.1452256-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,45 +51,152 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+From: Yulong Zhang <yulong.zhang@metoak.net>
 
-[ Upstream commit e56d2c34ce9dc122b1a618172ec0e05e50adb9e9 ]
+[ Upstream commit f2edf0c819a4823cd6c288801ce737e8d4fcde06 ]
 
-Smatch Warns: drivers/iio/accel/mma9551_core.c:357
-	mma9551_read_status_word() error: uninitialized symbol 'v'.
+1. fopen sysfs without fclose.
+2. asprintf filename without free.
+3. if asprintf return error,do not need to free the buffer.
 
-When (offset >= 1 << 12) is true mma9551_transfer() will return -EINVAL
-without 'v' being initialized, so check for the error and return.
-
-Note: Not a bug as such because the caller checks return value and
-doesn't not use this parameter in the problem case.
-
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Link: https://lore.kernel.org/r/20230126152147.3585874-1-harshit.m.mogalapalli@oracle.com
+Signed-off-by: Yulong Zhang <yulong.zhang@metoak.net>
+Link: https://lore.kernel.org/r/20230117025147.69890-1-yulong.zhang@metoak.net
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/accel/mma9551_core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ tools/iio/iio_utils.c | 23 ++++++-----------------
+ 1 file changed, 6 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
-index c34c5ce8123b0..b4bbc83be4310 100644
---- a/drivers/iio/accel/mma9551_core.c
-+++ b/drivers/iio/accel/mma9551_core.c
-@@ -362,9 +362,12 @@ int mma9551_read_status_word(struct i2c_client *client, u8 app_id,
+diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+index d66b18c54606a..48360994c2a13 100644
+--- a/tools/iio/iio_utils.c
++++ b/tools/iio/iio_utils.c
+@@ -262,6 +262,7 @@ int iioutils_get_param_float(float *output, const char *param_name,
+ 			if (fscanf(sysfsfp, "%f", output) != 1)
+ 				ret = errno ? -errno : -ENODATA;
  
- 	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
- 			       reg, NULL, 0, (u8 *)&v, 2);
-+	if (ret < 0)
-+		return ret;
-+
- 	*val = be16_to_cpu(v);
++			fclose(sysfsfp);
+ 			break;
+ 		}
+ error_free_filename:
+@@ -342,9 +343,9 @@ int build_channel_array(const char *device_dir,
+ 			}
  
--	return ret;
-+	return 0;
- }
- EXPORT_SYMBOL(mma9551_read_status_word);
+ 			sysfsfp = fopen(filename, "r");
++			free(filename);
+ 			if (!sysfsfp) {
+ 				ret = -errno;
+-				free(filename);
+ 				goto error_close_dir;
+ 			}
  
+@@ -354,7 +355,6 @@ int build_channel_array(const char *device_dir,
+ 				if (fclose(sysfsfp))
+ 					perror("build_channel_array(): Failed to close file");
+ 
+-				free(filename);
+ 				goto error_close_dir;
+ 			}
+ 			if (ret == 1)
+@@ -362,11 +362,9 @@ int build_channel_array(const char *device_dir,
+ 
+ 			if (fclose(sysfsfp)) {
+ 				ret = -errno;
+-				free(filename);
+ 				goto error_close_dir;
+ 			}
+ 
+-			free(filename);
+ 		}
+ 
+ 	*ci_array = malloc(sizeof(**ci_array) * (*counter));
+@@ -392,9 +390,9 @@ int build_channel_array(const char *device_dir,
+ 			}
+ 
+ 			sysfsfp = fopen(filename, "r");
++			free(filename);
+ 			if (!sysfsfp) {
+ 				ret = -errno;
+-				free(filename);
+ 				count--;
+ 				goto error_cleanup_array;
+ 			}
+@@ -402,20 +400,17 @@ int build_channel_array(const char *device_dir,
+ 			errno = 0;
+ 			if (fscanf(sysfsfp, "%i", &current_enabled) != 1) {
+ 				ret = errno ? -errno : -ENODATA;
+-				free(filename);
+ 				count--;
+ 				goto error_cleanup_array;
+ 			}
+ 
+ 			if (fclose(sysfsfp)) {
+ 				ret = -errno;
+-				free(filename);
+ 				count--;
+ 				goto error_cleanup_array;
+ 			}
+ 
+ 			if (!current_enabled) {
+-				free(filename);
+ 				count--;
+ 				continue;
+ 			}
+@@ -426,7 +421,6 @@ int build_channel_array(const char *device_dir,
+ 						strlen(ent->d_name) -
+ 						strlen("_en"));
+ 			if (!current->name) {
+-				free(filename);
+ 				ret = -ENOMEM;
+ 				count--;
+ 				goto error_cleanup_array;
+@@ -436,7 +430,6 @@ int build_channel_array(const char *device_dir,
+ 			ret = iioutils_break_up_name(current->name,
+ 						     &current->generic_name);
+ 			if (ret) {
+-				free(filename);
+ 				free(current->name);
+ 				count--;
+ 				goto error_cleanup_array;
+@@ -447,17 +440,16 @@ int build_channel_array(const char *device_dir,
+ 				       scan_el_dir,
+ 				       current->name);
+ 			if (ret < 0) {
+-				free(filename);
+ 				ret = -ENOMEM;
+ 				goto error_cleanup_array;
+ 			}
+ 
+ 			sysfsfp = fopen(filename, "r");
++			free(filename);
+ 			if (!sysfsfp) {
+ 				ret = -errno;
+-				fprintf(stderr, "failed to open %s\n",
+-					filename);
+-				free(filename);
++				fprintf(stderr, "failed to open %s/%s_index\n",
++					scan_el_dir, current->name);
+ 				goto error_cleanup_array;
+ 			}
+ 
+@@ -467,17 +459,14 @@ int build_channel_array(const char *device_dir,
+ 				if (fclose(sysfsfp))
+ 					perror("build_channel_array(): Failed to close file");
+ 
+-				free(filename);
+ 				goto error_cleanup_array;
+ 			}
+ 
+ 			if (fclose(sysfsfp)) {
+ 				ret = -errno;
+-				free(filename);
+ 				goto error_cleanup_array;
+ 			}
+ 
+-			free(filename);
+ 			/* Find the scale */
+ 			ret = iioutils_get_param_float(&current->scale,
+ 						       "scale",
 -- 
 2.39.2
 
