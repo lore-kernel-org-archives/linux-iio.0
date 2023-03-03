@@ -2,313 +2,504 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C51DFC64EC4
-	for <linux-iio@archiver.kernel.org>; Fri,  3 Mar 2023 07:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 802D3C678D4
+	for <linux-iio@archiver.kernel.org>; Fri,  3 Mar 2023 09:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbjCCHye (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 3 Mar 2023 02:54:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
+        id S229506AbjCCJR6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 3 Mar 2023 04:17:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbjCCHyc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Mar 2023 02:54:32 -0500
-Received: from DEU01-FR2-obe.outbound.protection.outlook.com (mail-fr2deu01on2126.outbound.protection.outlook.com [40.107.135.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6315C4609A;
-        Thu,  2 Mar 2023 23:54:27 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ndw2Cqu6jKX7LWSTcUGqVgZiOT/h+f0CcS71kp0POh9IMoIeqhQZlDej4RnwiLsrY0pP3Nzi0uYkqymt+IDYSFzYhJKOn00AYtwluCY2kGG2wsDgUwM6oseLXmS/XCYwhDRDRkUfOyWoTA+ApsKvYwdlQeRPJhUl3s2fcPFEAopJOc55Q9SZQ6JiLQUctezpC7N6z7vllDjVFrFstwu60iSuioK/xe35+e/UYVvghACDLHVEKo07EF66JEmNPRKSe8n4iBAYwB4xKYuszQEX3G2hKG5bt7WRZ+dJc32s8lzfbSFI683qr0XxrDYoVfjifp2KpazLkcQ5SSJipxT89A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Az/e5eIHLAYeSKQvRP5v3t8mn7j4wSQHRw+cYmZ6Ckw=;
- b=e4O5MgaAw1PKDWwXcqQ1aYqOmgqssXoAB8eU0EnbioOAqbzHhCpPCxB7l+pVqI5f8NAojXTEobpD6yM+XqMatH5G/Cik7XS4n114uyryWm+qApisvMrspfep7V8s8sfpRPW1zymI30u9Ljyd7bIV/GYHi5Jh7ePR+NNSZ4n2JEZzFqTW2dINGkix3E7bDgLaRF/vIfOOfohoo+VghpoVc8XaITNu+UAbqElBLMOyBSexZFpaCRcNgxGTGj6yPq656a4oHGCXH0UQpym9nCSz6fonq0LkqTMbfRbomTJP47wN+ASJMQJmcjxm7aLpGV2IXk80G6vWc9b+k1w666qGLQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fi.rohmeurope.com; dmarc=pass action=none
- header.from=fi.rohmeurope.com; dkim=pass header.d=fi.rohmeurope.com; arc=none
+        with ESMTP id S229447AbjCCJR5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Mar 2023 04:17:57 -0500
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FFB03AB8;
+        Fri,  3 Mar 2023 01:17:55 -0800 (PST)
+Received: by mail-lj1-x229.google.com with SMTP id h3so1621081lja.12;
+        Fri, 03 Mar 2023 01:17:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=rohmsemiconductor.onmicrosoft.com;
- s=selector2-rohmsemiconductor-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Az/e5eIHLAYeSKQvRP5v3t8mn7j4wSQHRw+cYmZ6Ckw=;
- b=F3rfy7QyENPkMITyc9GoDimBFoBbfi4Y394UGp6FLt4ayjc9IZZe/zS909KZCx7eJsB/oj0Ci+3um6IRX8AEYRm0G/8LUE1PzAb4cZdg+Jf58mM1lWf5TMHhdl8UxoWGg/tj5rzrh8WI/XNGmOeUv9VThD5ELytTlDnxNO4HpG8=
-Received: from BEZP281MB2454.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:59::10)
- by FR2P281MB1512.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:8f::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.19; Fri, 3 Mar
- 2023 07:54:22 +0000
-Received: from BEZP281MB2454.DEUP281.PROD.OUTLOOK.COM
- ([fe80::f504:16e7:71d4:2fd8]) by BEZP281MB2454.DEUP281.PROD.OUTLOOK.COM
- ([fe80::f504:16e7:71d4:2fd8%5]) with mapi id 15.20.6156.019; Fri, 3 Mar 2023
- 07:54:22 +0000
-From:   "Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Matti Vaittinen <mazziesaccount@gmail.com>
-CC:     Jonathan Cameron <jic23@kernel.org>,
+        d=gmail.com; s=20210112; t=1677835074;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jsujOaTvbx1uJDKm5VJBpE5kqbWhozdbtYBWb6N9/lA=;
+        b=eQYBjjNBWN2LCA7upktM5xk4hC/FLuD2pjE+qo5OT5m+01jV9Kgyw5wDZFEU8LH2sY
+         w/itO5ND3eFZNaEIrsiJa9CjiKfcYcnGbgfXT1Hn+driDlvxhIzbxySvpPo9YdvSnMMp
+         3mKHgWuLaDIQ7xVympB8P1Vg8/FwxNmI5AZaVfQWvZFLXpsG4cjA2jFGzCrZI1w8ROmM
+         FhxQVH9G0JxGK1G8/BycslJb1dwqeAQYNaGISe2V11rOgeQailaUKS04lNEN5yl1XfKL
+         JPsAN4dvcIjqjaEfc33XOglbppgmMSm4/mPDjHpeDseQkcsVgAC69GUmE+hAb2hEBJSF
+         UQ4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677835074;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jsujOaTvbx1uJDKm5VJBpE5kqbWhozdbtYBWb6N9/lA=;
+        b=YzPag+/uERcnCKudAdurc+ck47vKkmvUkOMDGRMCogMSXFvHQiolECR29WjEb1nCNk
+         OCz0WjeQ5b720A1Tax/eF8E9yqt3lr74GMPSqT4LOqmBhzu/vyhPKmJcb31G/v6+Qlo2
+         9cg3XvoatJ/NetGV9sy+bDC1ASuj5DRn73kDO0AHMoz5gyI+uL2bpMmGO1K5PtIvBXjL
+         1ps1/PJp5GwJAOaxQ2Wwontyza1FjZUDLGD6Ij26Qt0osYehQCKTLrnvQ+5QD7YF5DgS
+         S2DKmtDM81/6pZVaZS+UdxfW/G7Hnvii2n0UNncS47qZRU1KqhyWDfve2z+xMdWVAlPN
+         oaWg==
+X-Gm-Message-State: AO0yUKXh4cTy9cPg82rtX0dWY89bFrYqj0G4XSmxz0+7v9n9fqYCGyCh
+        42D8z7Qsa64N86euHAuRtnTpu/Ti23w=
+X-Google-Smtp-Source: AK7set8odoOHKaEPawiJfNtUnZJ6Ia6/PhbxRDbbmlwRZ3FKg0jQ2u3xcc//fukDAzL75J5PJqpmYg==
+X-Received: by 2002:a2e:2a46:0:b0:293:4b60:419c with SMTP id q67-20020a2e2a46000000b002934b60419cmr256791ljq.18.1677835073648;
+        Fri, 03 Mar 2023 01:17:53 -0800 (PST)
+Received: from ?IPV6:2001:14ba:16f3:4a00::1? (dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::1])
+        by smtp.gmail.com with ESMTPSA id y1-20020a2e7d01000000b00295728289dasm214689ljc.79.2023.03.03.01.17.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Mar 2023 01:17:53 -0800 (PST)
+Message-ID: <ae769902-4bb5-a970-be1e-05b26f4c770c@gmail.com>
+Date:   Fri, 3 Mar 2023 11:17:52 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Content-Language: en-US, en-GB
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Paul Gazzillo <paul@pgazz.com>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Shreeya Patel <shreeya.patel@collabora.com>,
         Zhigang Shi <Zhigang.Shi@liteon.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v2 2/6] iio: light: Add gain-time-scale helpers
-Thread-Topic: [PATCH v2 2/6] iio: light: Add gain-time-scale helpers
-Thread-Index: AQHZTPXh4wyEP/STAU6pVe8dzbgoCa7nluKAgAEZ7IA=
-Date:   Fri, 3 Mar 2023 07:54:22 +0000
-Message-ID: <7e537200-37ab-f6e6-c4e0-c3997128c01b@fi.rohmeurope.com>
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 References: <cover.1677750859.git.mazziesaccount@gmail.com>
- <9895826669118a1aa1db3f85c2610fa759426c33.1677750859.git.mazziesaccount@gmail.com>
- <ZAC7L8NQYgBcBTCF@smile.fi.intel.com>
-In-Reply-To: <ZAC7L8NQYgBcBTCF@smile.fi.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=fi.rohmeurope.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BEZP281MB2454:EE_|FR2P281MB1512:EE_
-x-ms-office365-filtering-correlation-id: 8610c831-cfbb-44d2-94c1-08db1bbc804a
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lvfpJq8RapBBRvW7qx06Jlm+i3E4L6Jzb5aAORA1MkzbHizzEg3dUpst8ghXuCeGmIDXw5bSQU/JvBGJiBVSUMEbNeGs9dLQ+QWWPT9QN/MDivY7w25sU9Q4xpQ5iD2rWNdB01XdGpLcajURZib6TdzoXnIhboqk20N2BtrnKiEkLp41RQq64dixkKrMWl/ZmSmFyr+sAnr5P4i/fy+6JNWOZJCNropyxARAp1P/ArlB8D/fiODU+zMEIY0yp5P8SNrGg0Yw8ww/yrkyAMrUJuPi59x6CDtKOcAlk5PmceVXHm7W9tuR4OFqCtiBIL6aI9HPIy6dYp0ACmsfZ2lYaFQ6DTFLff6XkgEikYGvMeLPmcYlGGBcS4Z+3xb1oFQ0CUOfCA7PkLZwpfdcReEAYmKlP1/HFDSgzC8CQx7BeAiFfCj0y/PS4eg0G3AmOhY2yyYdt8tDMPWxZNNPONqB0thK4dbi5WzT8/tPDk8Cijb3cQCkIOplkWGzGejqZypbAh+vJpePT7j//xc53GttGDNv7ALFKPd93kGlGn7OT92EYy9xbQCKKUBHTDBBD6KmTUzqDIMTEVCo56hClekzSJeWnUrT4DfkEYacYPRgXxc/AZIUH3o0MuVni4nI7+QtHkzeUzkYdn/FWGho/b/E4mHF9Vatpodd7pEx714cyESO04JFE9Qr9AwpvempqHraf+vIgs1aUf5R61IAxvgEMk+DlpegGL5NbZc2A3pyUu97rW21jwsayRjz2Jl5SlzS85iSeJlXaucxgRFxFEXwAC+333bSm1BAnRIpH+5guE8=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BEZP281MB2454.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39840400004)(366004)(376002)(396003)(346002)(451199018)(83380400001)(31686004)(31696002)(38100700002)(122000001)(8936002)(71200400001)(478600001)(7416002)(5660300002)(86362001)(38070700005)(6506007)(2616005)(6512007)(53546011)(6486002)(186003)(66946007)(66556008)(66476007)(66446008)(8676002)(76116006)(64756008)(2906002)(41300700001)(316002)(110136005)(4326008)(54906003)(91956017)(341764005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?VWZBM1FpQWlmMHRQb2p4dElMSjRkb1ZWUllOVG8xSHhYaXVyMWljSDNUV0dF?=
- =?utf-8?B?S1JNV2dXeWNwZDBOOEJoMXV5Yk84TThLT2pmV3RWeFg4SDJSV09rc2wvQTZS?=
- =?utf-8?B?S3hxOU5aLzF5d3hiR3JmNmI1RnNsUVlXZ2VDbG9ubHhJWkF5Z1JCRGFMMTBv?=
- =?utf-8?B?ZVBlVUN3c2QzSFp3UStpUG40RmgxN0p1dk9QQmgwWUxETXAxRkg0bzdxcUdY?=
- =?utf-8?B?TnlsbUJPZnVpb2dOOUo4VDUzT2c2NnF6aWVqVTR2MzQrUW1BaWFRZS8vWGFk?=
- =?utf-8?B?UHUxSG01NDgzSUl4UlZYNU9aWGFGcGpWbnc2V3B5WXdhUGNXVHU4MVg0Nm16?=
- =?utf-8?B?eSsraWQyZE1QM3duNm1VNXdMemFhTXFXNWxzV1lDdFlacWZPZjVCUFRYYVor?=
- =?utf-8?B?ejg5NENKU09Pbkg5bTZJU056dCs5MWZXK2JvYXprMGRSM1hLZ0QrcHIyUWFH?=
- =?utf-8?B?NkFSSnZtSjY4dXVuYnJlSmhoNVZjZm1SMVppSXNXNmZiMFhFbzBLSGxjYVJO?=
- =?utf-8?B?aGJaVnY1ZFMzZUcrbEJCSXNwNFFmTkU5cE8wbGpYV0tOKzJJRlo5S2N6dDRU?=
- =?utf-8?B?Z05jaTRiaThTY0hYNko1d1lNNk9GN011MGlibHd1YVZmK3ZKbWJ3VVFJQUZw?=
- =?utf-8?B?bStkMzVmdkxaWFZNUUlPS2l0c1N1dFVTSDJDWFo5eVF6VmR3SWhCRkl4YWZw?=
- =?utf-8?B?ajhMUWhtdEk3Qk5EMUxOUGxyNlRNYXhLUXVCTnNER2JzTlBuSHhoVExMN0xH?=
- =?utf-8?B?a0tVOUdvOU01Z0FYNzNTZnVWQXhvWDdIVHlwdE5yRjF2RklDUEZpZi9ySzBY?=
- =?utf-8?B?N2dKTUMvazZIT1l0SC9SS1ZRVnRGYjV6Qk55K2tWRDhwd3laVzBMR2NqNU51?=
- =?utf-8?B?eHAzdFhUSjVTdHd1dVdqWTZYeDMzSjJrY2lqOFJFSEwxMTNra2FXVFMwY1dI?=
- =?utf-8?B?REYxcUF5QjBDUlNhckVnUzV5UjZ4V21DdXdJNHBlME9EanhlTHJCWlhsY1Vl?=
- =?utf-8?B?b2hpNU1NaGJlaXluZU9tRks4S3BhSFNheWttWm1yTUh6QVNabFZJTzdGK3Fq?=
- =?utf-8?B?eElKS3FhZTZLd2xGa3BLcXJpOTJ2c0YyZDRaUU1GdEpLR0l0SUVyMTc2MTN1?=
- =?utf-8?B?cGt5UEQxQ2JHUnZkeDBlSnVFa1BRaldlK2FVMDV1WGh0MEM0M0Z5ME5yZEFS?=
- =?utf-8?B?eUJ3WmEyYzQ5dmVJTXRiSmdrNUVkaFBwZCtpeUZlSUc2bXduNjdBcWVMV3p3?=
- =?utf-8?B?UGNlUGRDNGwxUzl2d21EZlNmT2tHc2puNlc5NXptbXM0WklNMUg3ekl4YkE1?=
- =?utf-8?B?dWdkYkdXcHhiZWg1QWFwQThEMy84Uk0yekRSZDEyNHgyNzZyemRWSElOMjVQ?=
- =?utf-8?B?M1J3WGFnZzhGbkVjR1dERWdVQmhwZmJRZnp1YWZUaFVtOFBvZG8wbW9UZkgy?=
- =?utf-8?B?L2wyVE9kRmNFaTRhTjQvNm1oREF2RUQ4THNIb3d0MWUzelRRN2s2aXZLMmc4?=
- =?utf-8?B?L3kyWEV3V044S2F1YXJIRDBnVHZYT2ZHYnIzVysrcTdPQzdDTDBrdDFuWFlZ?=
- =?utf-8?B?azdQQkREQVZGV0RKb1pHZzZ1c0J0bHY2YmxDWXlTQWE2d3AwR2JFQTA4amZK?=
- =?utf-8?B?VEdiU1k5VitZZENiRFJvZXk4OVRHWHdMV0IxcFpYTmxBRnNpWmVlbTZFODFa?=
- =?utf-8?B?czlyeThmWmlHWVprUURzeDhlNDBvKzZiSi9sUTdmVVFxZ0lXTC9qdDdEbm1V?=
- =?utf-8?B?QTRVbXo4VzJJZTFLWWFnakRtbXI3RUpXdjFUSXNxZnZPUGJKMGNZeDZMVXly?=
- =?utf-8?B?STM3b21VcHJyQ0QwS2ExM2poZXM0YU9oY1JGbnZrNmF2aVNhQVdHVStCN1dH?=
- =?utf-8?B?V2RGZ1p4N1B5RUt3R2RFSExiUWE4eGk2Wko3SUlPMDF3Wi82ZEdhaFpQeisx?=
- =?utf-8?B?M3AxNGluU2c3T2QrWVFncTBkOEMyRng4YVkzVzYwRmNzSHNLMHN3YXV6bGFw?=
- =?utf-8?B?Zlkzcjk2dS91bHUyQ282Y1JtTlVuNVBmcUs0emxLbzJEQzlnTnNmUWgxUEZW?=
- =?utf-8?B?UVdsYUx4L0s3TWpXU0xrZUFRY3E4OWQ3cmljZ0xXRnluMkZyQUJSRU5kaUZ3?=
- =?utf-8?B?Mjl1eEFKNlF1ajdtcGlvR2tEWkZiaEhDUG1pcnArTHNRSm8zaVB2NG5TdnRq?=
- =?utf-8?Q?ePZXWYrWfVjwK55Q3snPAlM=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <06C623B8188A4D4C96190BB16D44D91D@DEUP281.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: fi.rohmeurope.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BEZP281MB2454.DEUP281.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8610c831-cfbb-44d2-94c1-08db1bbc804a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Mar 2023 07:54:22.2761
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b24d4f96-5b40-44b1-ac2e-2ed7fdbde1c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KgkMTQpdnfVppIKraf3uYF4QkphDxEP+9urzDqugDMCR45YmHzHwgnnrM0uCri+nN11RJS5I9er0gUsFXMOr4l7dGEaSkpk37ktBZ5Vq8pqS++T5xkbCiv8DPRw3YwMw
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR2P281MB1512
+ <874d59be98703bb58a98fea72138de5b94d71a52.1677750859.git.mazziesaccount@gmail.com>
+ <ZADCEPc1ZKczhEpE@smile.fi.intel.com>
+From:   Matti Vaittinen <mazziesaccount@gmail.com>
+Subject: Re: [PATCH v2 5/6] iio: light: ROHM BU27034 Ambient Light Sensor
+In-Reply-To: <ZADCEPc1ZKczhEpE@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-VGhhbmtzIGZvciB0aGUgcmV2aWV3IEFuZHksDQoNCk9uIDMvMi8yMyAxNzowNSwgQW5keSBTaGV2
-Y2hlbmtvIHdyb3RlOg0KPiBPbiBUaHUsIE1hciAwMiwgMjAyMyBhdCAxMjo1Nzo1NFBNICswMjAw
-LCBNYXR0aSBWYWl0dGluZW4gd3JvdGU6DQo+PiBTb21lIGxpZ2h0IHNlbnNvcnMgY2FuIGFkanVz
-dCBib3RoIHRoZSBIVy1nYWluIGFuZCBpbnRlZ3JhdGlvbiB0aW1lLg0KPj4gVGhlcmUgYXJlIGNh
-c2VzIHdoZXJlIGFkanVzdGluZyB0aGUgaW50ZWdyYXRpb24gdGltZSBoYXMgc2ltaWxhciBpbXBh
-Y3QNCj4+IHRvIHRoZSBzY2FsZSBvZiB0aGUgcmVwb3J0ZWQgdmFsdWVzIGFzIGdhaW4gc2V0dGlu
-ZyBoYXMuDQo+Pg0KPj4gSUlPIHVzZXJzIGRvIHR5cGljYWxseSBleHBlY3QgdG8gaGFuZGxlIHNj
-YWxlIGJ5IGEgc2luZ2xlIHdyaXRhYmxlICdzY2FsZScNCj4+IGVudHJ5LiBEcml2ZXIgc2hvdWxk
-IHRoZW4gYWRqdXN0IHRoZSBnYWluL3RpbWUgYWNjb3JkaW5nbHkuDQo+Pg0KPj4gSXQgaG93ZXZl
-ciBpcyBkaWZmaWN1bHQgZm9yIGEgZHJpdmVyIHRvIGtub3cgd2hldGhlciBpdCBzaG91bGQgY2hh
-bmdlDQo+PiBnYWluIG9yIGludGVncmF0aW9uIHRpbWUgdG8gbWVldCB0aGUgcmVxdWVzdGVkIHNj
-YWxlLiBVc3VhbGx5IGl0IGlzDQo+PiBwcmVmZXJyZWQgdG8gaGF2ZSBsb25nZXIgaW50ZWdyYXRp
-b24gdGltZSB3aGljaCB1c3VhbGx5IGltcHJvdmVzDQo+PiBhY2N1cmFjeSwgYnV0IHRoZXJlIG1h
-eSBiZSB1c2UtY2FzZXMgd2hlcmUgbG9uZyBtZWFzdXJlbWVudCB0aW1lcyBjYW4gYmUNCj4+IGFu
-IGlzc3VlLiBUaHVzIGl0IGNhbiBiZSBwcmVmZXJhYmxlIHRvIGFsbG93IGFsc28gY2hhbmdpbmcg
-dGhlDQo+PiBpbnRlZ3JhdGlvbiB0aW1lIC0gYnV0IG1pdGlnYXRlIHRoZSBzY2FsZSBpbXBhY3Qg
-YnkgYWxzbyBjaGFuZ2luZyB0aGUgZ2Fpbg0KPj4gdW5kZXJuZWF0aC4gRWcsIGlmIGludGVncmF0
-aW9uIHRpbWUgY2hhbmdlIGRvdWJsZXMgdGhlIG1lYXN1cmVkIHZhbHVlcywNCj4+IHRoZSBkcml2
-ZXIgY2FuIHJlZHVjZSB0aGUgSFctZ2FpbiB0byBoYWxmLg0KPj4NCj4+IFRoZSB0aGVvcnkgb2Yg
-dGhlIGNvbXB1dGF0aW9ucyBvZiBnYWluLXRpbWUtc2NhbGUgaXMgc2ltcGxlLiBIb3dldmVyLA0K
-Pj4gc29tZSBwZW9wbGUgKHVuZGVyc2lnbmVkKSBnb3QgdGhhdCBpbXBsZW1lbnRlZCB3cm9uZyBm
-b3IgbW9yZSB0aGFuIG9uY2UuDQo+Pg0KPj4gQWRkIHNvbWUgZ2Fpbi10aW1lLXNjYWxlIGhlbHBl
-cnMgaW4gb3JkZXIgdG8gbm90IGR1YmxpY2F0ZSBlcnJvcnMgaW4gYWxsDQo+PiBkcml2ZXJzIG5l
-ZWRpbmcgdGhlc2UgY29tcHV0YXRpb25zLg0KPiANCj4gLi4uDQo+IA0KPj4gKy8qDQo+IA0KPiBJ
-cyBpdCBpbnRlbnRpb25hbGx5IF9ub3RfIGEga2VybmVsIGRvYz8NCg0KeWVzLg0KDQo+PiArICog
-aWlvX2d0c19nZXRfZ2FpbiAtIENvbnZlcnQgc2NhbGUgdG8gdG90YWwgZ2Fpbg0KPiANCj4+ICsg
-KiBJbnRlcm5hbCBoZWxwZXIgZm9yIGNvbnZlcnRpbmcgc2NhbGUgdG8gdG90YWwgZ2Fpbi4NCj4g
-DQo+IE90aGVyd2lzZSB0aGlzIGxpbmUgc2hvdWxkIGdvIGFmdGVyIHRoZSBmaWVsZHMsIEkgcmVt
-ZW1iZXIga2VybmVsIGRvYyB3YXJuaW5ncw0KPiBvbiB0aGUgc2ltaWxhciBjYXNlcy4NCj4gDQo+
-PiArICogQG1heDoJTWF4aW11bSBsaW5lYXJpemVkIHNjYWxlLiBBcyBhbiBleGFtcGxlLCB3aGVu
-IHNjYWxlIGlzIGNyZXRlZCBpbg0KPiANCj4gY3JldGVkPw0KPiANCj4gSUlSQyBJIGFscmVhZHkg
-cG9pbnRlZCBvdXQgdG8gdGhlIHZlcnkgc2FtZSBtaXN0YWtlIGluIHlvdXIgY29kZSBpbiB0aGUg
-cGFzdA0KPiAoc29ycnksIGlmIG15IG1lbW9yeSBkb2Vzbid0IHNlcnZlIG1lIHdlbGwpLg0KDQpJ
-IERvbid0IHRoaW5rIHlvdSBoYXZlIHByZXZpb3VzbHkgcmV2aWV3ZWQgdGhpcyBwYXRjaC4NCg0K
-Pj4gK3sNCj4+ICsJaW50IHRtcCA9IDE7DQo+PiArDQo+PiArCWlmIChzY2FsZSA+IG1heCB8fCAh
-c2NhbGUpDQo+PiArCQlyZXR1cm4gLUVJTlZBTDsNCj4+ICsNCj4+ICsJaWYgKFU2NF9NQVggLSBt
-YXggPCBzY2FsZSkgew0KPj4gKwkJLyogUmlzayBvZiBvdmVyZmxvdyAqLw0KPj4gKwkJaWYgKG1h
-eCAtIHNjYWxlIDwgc2NhbGUpDQo+PiArCQkJcmV0dXJuIDE7DQo+IA0KPj4gKwkJd2hpbGUgKG1h
-eCAtIHNjYWxlID4gc2NhbGUgKiAodTY0KSB0bXApDQo+IA0KPiBTcGFjZSBpcyBub3QgcmVxdWly
-ZWQgYWZ0ZXIgY2FzdGluZy4NCj4gDQo+PiArCQkJdG1wKys7DQo+PiArDQo+PiArCQlyZXR1cm4g
-dG1wICsgMTsNCj4gDQo+IFdvbmRlcmluZyB3aHkgeW91IGNhbid0IHNpbXBsaWZ5IHRoaXMgdG8N
-Cj4gDQo+IAkJbWF4IC09IHNjYWxlOw0KPiAJCXRtcCsrOw0KPiANCg0KU29ycnksIGJ1dCBJIGRv
-bid0IGZvbGxvdy4gQ2FuIHlvdSBwbGVhc2Ugc2hvdyBtZSB0aGUgY29tcGxldGUgDQpzdWdnZXN0
-aW9uPyBFeGFjdGx5IHdoYXQgc2hvdWxkIGJlIHJlcGxhY2VkIGJ5IHRoZToNCiA+IAkJbWF4IC09
-IHNjYWxlOw0KID4gCQl0bXArKzsNCg0KDQo+PiArCX0NCj4+ICsNCj4+ICsJd2hpbGUgKG1heCA+
-IHNjYWxlICogKHU2NCkgdG1wKQ0KPj4gKwkJdG1wKys7DQo+PiArDQo+PiArCXJldHVybiB0bXA7
-DQo+PiArfQ0KDQo+PiArLyoNCj4+ICsgKiBnYWluX2dldF9zY2FsZV9mcmFjdGlvbiAtIGdldCB0
-aGUgZ2FpbiBvciB0aW1lIGJhc2VkIG9uIHNjYWxlIGFuZCBrbm93biBvbmUNCj4+ICsgKg0KPj4g
-KyAqIEludGVybmFsIGhlbHBlciBmb3IgY29tcHV0aW5nIHVua25vd24gZnJhY3Rpb24gb2YgdG90
-YWwgZ2Fpbi4NCj4+ICsgKiBDb21wdXRlIGVpdGhlciBnYWluIG9yIHRpbWUgYmFzZWQgb24gc2Nh
-bGUgYW5kIGVpdGhlciB0aGUgZ2FpbiBvciB0aW1lDQo+PiArICogZGVwZW5kaW5nIG9uIHdoaWNo
-IG9uZSBpcyBrbm93bi4NCj4+ICsgKg0KPj4gKyAqIEBtYXg6CU1heGltdW0gbGluZWFyaXplZCBz
-Y2FsZS4gQXMgYW4gZXhhbXBsZSwgd2hlbiBzY2FsZSBpcyBjcmV0ZWQgaW4NCj4gDQo+IGNyZXRl
-ZD8NCj4gDQo+IElzIGl0IG1pc3Rha2VubHkgc3RvcmVkIGluIHlvdXIgc3BlbGxjaGVjayBkYXRh
-YmFzZT8gT3IgaXMgaXQgc2ltcGx5DQo+IGNvcHknbidwYXN0ZSB0eXBvPw0KDQpUeXBvLg0KDQo+
-PiArICoJCW1hZ25pdHVkZSBvZiBOQU5PcyBhbmQgbWF4IHNjYWxlIGlzIDY0LjEgLSBUaGUgbGlu
-ZWFyaXplZA0KPj4gKyAqCQlzY2FsZSBpcyA2NCAxMDAgMDAwIDAwMC4NCj4+ICsgKiBAc2NhbGU6
-CUxpbmVhcml6ZWQgc2NhbGUgdG8gY29tcHV0ZSB0aGUgZ2Fpbi90aW1lIGZvci4NCj4+ICsgKiBA
-a25vd246CUVpdGhlciBpbnRlZ3JhdGlvbiB0aW1lIG9yIGdhaW4gZGVwZW5kaW5nIG9uIHdoaWNo
-IG9uZSBpcyBrbm93bg0KPj4gKyAqIEB1bmtub3duOglQb2ludGVyIHRvIHZhcmlhYmxlIHdoZXJl
-IHRoZSBjb21wdXRlZCBnYWluL3RpbWUgaXMgc3RvcmVkDQo+PiArICoNCj4+ICsgKiBSZXR1cm46
-CTAgb24gc3VjY2Vzcw0KPj4gKyAqLw0KPiANCj4+ICtFWFBPUlRfU1lNQk9MX0dQTChpaW9faW5p
-dF9paW9fZ3RzKTsNCj4gDQo+IEkgaGF2ZW4ndCBub3RpY2VkIGlmIHlvdSBwdXQgdGhlc2UgYWxs
-IGV4cG9ydHMgaW50byBhIHByb3BlciBuYW1lc3BhY2UuDQo+IElmIG5vLCBwbGVhc2UgZG8uDQoN
-CkkgaGF2ZW4ndC4gQW5kIGluIG1hbnkgY2FzZXMgSSBhY3R1YWxseSBzZWUgdmVyeSBsaXR0bGUg
-dG8gbm8gdmFsdWUgaW4gDQpkb2luZyBzbyBhcyBjb2xsaXNpb25zIGFyZSB1bmxpa2VseSB3aGVu
-IHN5bWJvbHMgYXJlIGFwcHJvcHJpYXRlbHkgcHJlZml4ZWQuDQoNCkFueXdheXMsIGl0IHNlZW1z
-IHRoZSBJSU8gdXNlcyBuYW1lc3BhY2VzIHNvIGxldCdzIHBsYXkgYWxvbmcuIEFueSBnb29kIA0K
-c3VnZ2VzdGlvbnMgZm9yIGEgbmFtZT8NCg0KPiAuLi4NCj4gDQo+PiArCWFsbF9nYWlucyA9IGtj
-YWxsb2MoZ3RzLT5udW1faXRpbWUgKiBndHMtPm51bV9od2dhaW4sIHNpemVvZihpbnQpLA0KPiAN
-Cj4gU29tZXRoaW5nIGZyb20gb3ZlcmZsb3cuaCBpcyB2ZXJ5IHN1aXRhYmxlIGhlcmUuDQo+IA0K
-Pj4gKwkJCSAgICBHRlBfS0VSTkVMKTsNCj4+ICsJaWYgKCFhbGxfZ2FpbnMpDQo+PiArCQlyZXR1
-cm4gLUVOT01FTTsNCj4gDQo+IC4uLg0KPiANCj4+ICsJbWVtY3B5KGFsbF9nYWlucywgZ2FpbnNb
-Z3RzLT5udW1faXRpbWUgLSAxXSwgZ3RzLT5udW1faHdnYWluICogc2l6ZW9mKGludCkpOw0KPiAN
-Cj4gTWF5YmUgaXQncyBiZXR0ZXIgdG8gaGF2ZSBhIHRlbXBvcmFyeSB3aGljaCB3aWxsIGJlIGNh
-bGN1bGF0ZWQgYXMgYXJyYXlfc2l6ZSgpDQo+IGZvciBhbGxvY2F0aW9uIGFuZCByZXVzZWQgaGVy
-ZT8gDQoNCkdvb2Qgc3VnZ2VzdGlvbiwgdGhhbmtzLg0KDQo+IC4uLg0KPiANCj4+ICsJZm9yIChp
-ID0gZ3RzLT5udW1faXRpbWUgLSAyOyBpID49IDA7IGktLSkNCj4gDQo+IFllYWgsIGlmIHlvdSBw
-dXQgdGhpcyBpbnRvIHRlbXBvcmFyeSwgbGlrZQ0KPiANCj4gCWkgPSBndHMtPm51bV9pdGltZSAt
-IDE7DQo+IA0KPiB0aGlzIGJlY29tZXMNCj4gDQo+IAl3aGlsZSAoaS0tKSB7DQo+IA0KDQpJIHBy
-ZWZlciBmb3IoKS4gSXQgbG9va3MgY2xlYXJlciB0byBtZS4uLg0KDQogPiBOb3RlLCB5b3UgbWF5
-IHJlLXVzZSB0aGF0IGkgKG1heWJlIHJlbmFtZWQgdG8gc29tZXRoaW5nIGJldHRlciBpbiB0aGUg
-DQptZW1jcHkoKQ0KID4gYWJvdmUgYXMgd2VsbCkuDQoNCi4uLmJ1dCB0aGlzIG1ha2VzIHNlbnNl
-IHNvIE9rLg0KDQo+IE5vdGUsIHlvdSBtaXNzZWQge30gZm9yIGJldHRlciByZWFkaW5nLg0KDQpE
-aWRuJ3QgbWlzcyBpdCBidXQgbGVmdCBpdCBvdXQgaW50ZW50aW9uYWxseS4ge30gZG9lcyBub3Qg
-aGVscCBtZSBhcyANCmluZGVudGlhdGlvbiBtYWtlcyBpdCBjbGVhci4gQ2FuIGFkZCBvbmUgZm9y
-IHlvdSB0aG91Z2guDQoNCj4gDQo+PiArCQlmb3IgKGogPSAwOyBqIDwgZ3RzLT5udW1faHdnYWlu
-OyBqKyspIHsNCj4+ICsJCQlpbnQgY2FuZGlkYXRlID0gZ2FpbnNbaV1bal07DQo+PiArCQkJaW50
-IGNoazsNCj4+ICsNCj4+ICsJCQlpZiAoY2FuZGlkYXRlID4gYWxsX2dhaW5zW25ld19pZHggLSAx
-XSkgew0KPj4gKwkJCQlhbGxfZ2FpbnNbbmV3X2lkeF0gPSBjYW5kaWRhdGU7DQo+PiArCQkJCW5l
-d19pZHgrKzsNCj4+ICsNCj4+ICsJCQkJY29udGludWU7DQo+PiArCQkJfQ0KPj4gKwkJCWZvciAo
-Y2hrID0gMDsgY2hrIDwgbmV3X2lkeDsgY2hrKyspDQo+PiArCQkJCWlmIChjYW5kaWRhdGUgPD0g
-YWxsX2dhaW5zW2Noa10pDQo+PiArCQkJCQlicmVhazsNCj4+ICsNCj4+ICsJCQlpZiAoY2FuZGlk
-YXRlID09IGFsbF9nYWluc1tjaGtdKQ0KPj4gKwkJCQljb250aW51ZTsNCj4+ICsNCj4+ICsJCQlt
-ZW1tb3ZlKCZhbGxfZ2FpbnNbY2hrICsgMV0sICZhbGxfZ2FpbnNbY2hrXSwNCj4+ICsJCQkJKG5l
-d19pZHggLSBjaGspICogc2l6ZW9mKGludCkpOw0KPj4gKwkJCWFsbF9nYWluc1tjaGtdID0gY2Fu
-ZGlkYXRlOw0KPj4gKwkJCW5ld19pZHgrKzsNCj4+ICsJCX0NCj4gDQo+IC4uLg0KPiANCj4+ICsJ
-Z3RzLT5hdmFpbF9hbGxfc2NhbGVzX3RhYmxlID0ga2NhbGxvYyhndHMtPm51bV9hdmFpbF9hbGxf
-c2NhbGVzLA0KPj4gKwkJCQkJICAgICAgMiAqIHNpemVvZihpbnQpLCBHRlBfS0VSTkVMKTsNCj4+
-ICsJaWYgKCFndHMtPmF2YWlsX2FsbF9zY2FsZXNfdGFibGUpDQo+PiArCQlyZXQgPSAtRU5PTUVN
-Ow0KPj4gKwllbHNlDQo+PiArCQlmb3IgKGkgPSAwOyAhcmV0ICYmIGkgPCBndHMtPm51bV9hdmFp
-bF9hbGxfc2NhbGVzOyBpKyspDQo+IA0KPiBNdWNoIGVhc2llciB0byByZWFkIGlmIHlvdSBtb3Zl
-IHRoaXMuLi4NCj4gDQo+PiArCQkJcmV0ID0gaWlvX2d0c190b3RhbF9nYWluX3RvX3NjYWxlKGd0
-cywgYWxsX2dhaW5zW2ldLA0KPj4gKwkJCQkJJmd0cy0+YXZhaWxfYWxsX3NjYWxlc190YWJsZVtp
-ICogMl0sDQo+PiArCQkJCQkmZ3RzLT5hdmFpbF9hbGxfc2NhbGVzX3RhYmxlW2kgKiAyICsgMV0p
-Ow0KPiANCj4gLi4uaGVyZSBhcw0KPiANCj4gCQlpZiAocmV0KQ0KPiAJCQlicmVhazsNCg0KSSB0
-aGluayB0aGUgIXJldCBpbiBsb29wIGNvbmRpdGlvbiBpcyBvYnZpb3VzLiBBZGRpbmcgYnJlYWsg
-YW5kIGJyYWNrZXRzIA0Kd291bGQgbm90IGltcHJvdmUgdGhpcy4NCg0KPiANCj4+ICsJa2ZyZWUo
-YWxsX2dhaW5zKTsNCj4+ICsJaWYgKHJldCAmJiBndHMtPmF2YWlsX2FsbF9zY2FsZXNfdGFibGUp
-DQo+PiArCQlrZnJlZShndHMtPmF2YWlsX2FsbF9zY2FsZXNfdGFibGUpOw0KPj4gKw0KPj4gKwly
-ZXR1cm4gcmV0Ow0KPiANCj4gQnV0IFdvdWxkbid0IGJlIGJldHRlciB0byB1c2UgZ290byBsYWJl
-bHM/DQoNCkkgZG9uJ3Qgc2VlIGJlbmVmaXQgaW4gdGhpcyBjYXNlLiBIYW5kbGluZyByZXR1cm4g
-dmFsdWUgYW5kIGdvdG8gd291bGQgDQpyZXF1aXJlIGJyYWNrZXRzLiBUaGUgY3VycmVudCBvbmUg
-aXMgbXVjaCBzaW1wbGVyIGZvciBtZS4gSSBhbSBqdXN0IA0KY29uc2lkZXJpbmcgZHJvcHBpbmcg
-dGhhdCAnZWxzZScgd2hpY2ggaXMgbm90IG5lZWRlZC4NCg0KPiAuLi4NCj4gDQo+PiArCXdoaWxl
-IChpKSB7DQo+IA0KPiBJbnN0ZWFkIG9mIGRvaW5nIHN0YW5kYXJkDQo+IA0KPiAJd2hpbGUgKGkt
-LSkgew0KPiANCj4+ICsJCS8qDQo+PiArCQkgKiBJdCBkb2VzIG5vdCBtYXR0ZXIgaWYgaSd0aCBh
-bGxvYyB3YXMgbm90IHN1Y2Nlc2Z1bGwgYXMNCj4+ICsJCSAqIGtmcmVlKE5VTEwpIGlzIHNhZmUu
-DQo+PiArCQkgKi8NCj4gDQo+IFlvdSBhZGQgdGhpcyBjb21tZW50LCAuLi4NCj4gDQo+PiArCQlr
-ZnJlZShwZXJfdGltZV9nYWluc1tpXSk7DQo+PiArCQlrZnJlZShwZXJfdGltZV9zY2FsZXNbaV0p
-Ow0KPiANCj4gLi4uYW4gYWRkaXRpb25hbCBsb29wLCAuLi4NCg0KVGhlIGNvbW1lbnQgaXMgdGhl
-cmUgdG8gZXhwbGFpbiB3aGF0IEkgdGhpbmsgeW91IG1pc3NlZC4gV2UgaGF2ZSB0d28gDQphcnJh
-eXMgdGhlcmUuIFdlIGRvbid0IGtub3cgd2hldGhlciB0aGUgYWxsb2NhdGlvbiBvZiBmaXJzdCBv
-bmUgd2FzIA0Kc3VjY2Vzc2Z1bCBzbyB3ZSB0cnkgZnJlZWluZyBib3RoLg0KDQo+IA0KPj4gKw0K
-Pj4gKwkJaS0tOw0KPiANCj4gLi4uYW5kIGEgbGluZSBvZiBjb2RlLg0KPiANCj4+ICsJfQ0KPiAN
-Cj4gV2h5Pw0KDQpCZWNhdXNlLCBhcyB0aGUgY29tbWVudCBzYXlzLCBpdCBkb2VzIG5vdCBtYXR0
-ZXIgaWYgYWxsb2NhdGlvbiB3YXMgDQpzdWNjZXNmdWxsLiBrZnJlZShOVUxMKSBpcyBzYWZlLg0K
-DQo+IA0KPj4gKwlmb3IgKGkgPSBndHMtPm51bV9pdGltZSAtIDE7IGkgPj0gMDsgaS0tKSB7DQo+
-IA0KPiAJaSA9IGd0cy0+bnVtX2l0aW1lOw0KPiANCj4gCXdoaWxlIChpLS0pIHsNCg0KSSBwcmVm
-ZXIgZm9yKCkgd2hlbiBpbml0aWFsaXppbmcgYSB2YXJpYWJsZSBpcyBuZWVkZWQuIEZ1cnRoZXJt
-b3JlLCANCmhhdmluZyB2YXItLSBvciAtLXZhciBpbiBhIGNvbmRpdGlvbiBpcyBsZXNzIGNsZWFy
-Lg0KDQo+IA0KPj4gKwkJaW50IG5ldyA9IGd0cy0+aXRpbWVfdGFibGVbaV0udGltZV91czsNCj4+
-ICsNCj4+ICsJCWlmICh0aW1lc1tpZHhdIDwgbmV3KSB7DQo+PiArCQkJdGltZXNbaWR4KytdID0g
-bmV3Ow0KPj4gKwkJCWNvbnRpbnVlOw0KPj4gKwkJfQ0KPj4gKw0KPj4gKwkJZm9yIChqID0gMDsg
-aiA8PSBpZHg7IGorKykgew0KPj4gKwkJCWlmICh0aW1lc1tqXSA+IG5ldykgew0KPj4gKwkJCQlt
-ZW1tb3ZlKCZ0aW1lc1tqICsgMV0sICZ0aW1lc1tqXSwgKGlkeCAtIGopICogc2l6ZW9mKGludCkp
-Ow0KPj4gKwkJCQl0aW1lc1tqXSA9IG5ldzsNCj4+ICsJCQkJaWR4Kys7DQo+PiArCQkJfQ0KPj4g
-KwkJfQ0KPj4gKwl9DQo+IA0KPiAuLi4NCj4gDQo+PiArdm9pZCBpaW9fZ3RzX3B1cmdlX2F2YWls
-X3RpbWVfdGFibGUoc3RydWN0IGlpb19ndHMgKmd0cykNCj4+ICt7DQo+PiArCWlmIChndHMtPm51
-bV9hdmFpbF90aW1lX3RhYmxlcykgew0KPiANCj4gCWlmICghLi4uKQ0KPiAJCXJldHVybjsNCg0K
-RG9lcyBub3QgaW1wcm92ZSB0aGlzIGFzIHdlIG9ubHkgaGF2ZSBqdXN0IG9uZSBzbWFsbCBjb25k
-aXRpb25hbCBibG9jayANCm9mIGNvZGUgd2hpY2ggd2UgZWl0aGVyIGV4ZWN1dGUgb3Igbm90LiBJ
-dCBpcyBjbGVhciBhdCBhIGdsYW5jZS4gV291bGQgDQptYWtlIHNlbnNlIGlmIHdlIGhhZCBsb25n
-ZXIgZnVuY3Rpb24uDQoNCj4+ICsJCWtmcmVlKGd0cy0+YXZhaWxfdGltZV90YWJsZXMpOw0KPj4g
-KwkJZ3RzLT5hdmFpbF90aW1lX3RhYmxlcyA9IE5VTEw7DQo+PiArCQlndHMtPm51bV9hdmFpbF90
-aW1lX3RhYmxlcyA9IDA7DQo+PiArCX0NCj4+ICt9DQo+IA0KPiAuLi4NCj4gDQo+PiArCQkJaWYg
-KCFkaWZmKSB7DQo+IA0KPiBXaHkgbm90IHBvc2l0aXZlIGNvbmRpdGlvbmFsPw0KDQpCZWNhdXNl
-ICFkaWZmIGlzIGEgc3BlY2lhbCBjb25kaXRpb24gYW5kIHdlIGNoZWNrIGV4cGxpY2l0bHkgZm9y
-IGl0Lg0KDQo+IA0KPiAJCQlpZiAoZGlmZikgew0KPiAJCQkJLi4uDQo+IAkJCX0gZWxzZSB7DQo+
-IAkJCQkuLi4NCj4gCQkJfQ0KPiANCj4+ICsJCQkJZGlmZiA9IGdhaW4gLSBndHMtPmh3Z2Fpbl90
-YWJsZVtpXS5nYWluOw0KPj4gKwkJCQliZXN0ID0gaTsNCj4+ICsJCQl9IGVsc2Ugew0KPj4gKwkJ
-CQlpbnQgdG1wID0gZ2FpbiAtIGd0cy0+aHdnYWluX3RhYmxlW2ldLmdhaW47DQo+PiArDQo+PiAr
-CQkJCWlmICh0bXAgPCBkaWZmKSB7DQo+PiArCQkJCQlkaWZmID0gdG1wOw0KPj4gKwkJCQkJYmVz
-dCA9IGk7DQo+PiArCQkJCX0NCj4+ICsJCQl9DQo+IA0KPiAuLi4NCj4gDQo+PiArCXJldCA9IGdh
-aW5fZ2V0X3NjYWxlX2ZyYWN0aW9uKGd0cy0+bWF4X3NjYWxlLCBzY2FsZV9saW5lYXIsIG11bCwg
-Z2Fpbik7DQo+IA0KPj4gKw0KPiANCj4gUmVkdW5kYW50IGJsYW5rIGxpbmUuDQoNClRoYW5rcy4N
-Cg0KPiANCj4+ICsJaWYgKHJldCB8fCAhaWlvX2d0c192YWxpZF9nYWluKGd0cywgKmdhaW4pKQ0K
-PiANCj4gV2h5IGVycm9yIGNvZGUgaXMgc2hhZG93ZWQ/DQoNCk5vdCBzdXJlIHdoYXQgSSB0aG91
-Z2h0IG9mLiBDb3VsZCBoYXZlIGJlZW4gYmVjYXVzZSAtRUlOVkFMIGlzIGluIGFueSANCmNhc2Ug
-dGhlIG9ubHkgZXJyb3IgSSBjYW4gdGhpbmsgb2YuIEJ1dCB5ZXMsIGl0IGlzIGJldHRlciB0byBu
-b3QgDQonc2hhZG93JyB0aGUgcmV0dXJuIHZhbHVlIGZyb20gZ2Fpbl9nZXRfc2NhbGVfZnJhY3Rp
-b24oKTsgU28sIHRoYW5rcy4NCg0KPiANCj4+ICsJCXJldHVybiAtRUlOVkFMOw0KPj4gKw0KPiAN
-Cj4gLi4uDQo+IA0KPj4gKwlyZXQgPSBpaW9fZ3RzX2dldF9zY2FsZV9saW5lYXIoZ3RzLCBvbGRf
-Z2FpbiwgaXRpbWVfb2xkLT50aW1lX3VzLA0KPj4gKwkJCQkgICAgICAgJnNjYWxlKTsNCj4gDQo+
-IFNpbmdsZSBsaW5lIGlmIGZpbmUuDQoNCkkgbGlrZSB0byAobW9zdGx5KSBrZWVwIHRoZSA4MC1j
-b2x1bW4gbGltaXQuIEhlbHBzIG1lIHRvIGZpdCB0aHJlZSANCmVkaXRvciB3aW5kb3dzIG5leHQg
-dG8gZWFjaC1vdGhlcnMgb24gbXkgbGFwdG9wIHNjcmVlbi4NCg0KPj4gKwlpZiAocmV0KQ0KPj4g
-KwkJcmV0dXJuIHJldDsNCj4+ICsNCj4+ICsJcmV0ID0gZ2Fpbl9nZXRfc2NhbGVfZnJhY3Rpb24o
-Z3RzLT5tYXhfc2NhbGUsIHNjYWxlLCBpdGltZV9uZXctPm11bCwNCj4+ICsJCQkJICAgICAgbmV3
-X2dhaW4pOw0KPiANCj4gRGl0dG8uDQo+IA0KPj4gKwlpZiAocmV0KQ0KPj4gKwkJcmV0dXJuIC1F
-SU5WQUw7DQo+IA0KPiAuLi4NCj4gDQo+PiArI2lmbmRlZiBfX0dBSU5fVElNRV9TQ0FMRV9IRUxQ
-RVJfXw0KPj4gKyNkZWZpbmUgX19HQUlOX1RJTUVfU0NBTEVfSEVMUEVSX18NCj4gDQo+IF9fSUlP
-Xy4uLiA/DQoNCldlbGwgc3BvdHRlZC4gVGhhbmtzLiBJIHJlbmFtZWQgdGhlIGZpbGUgYW5kIGZv
-cmdvdCB0aGUgb2xkIGd1YXJkaWFuLg0KDQpCeSB0aGUgd2F5LCBJIHdpbGwgYmUgb25saW5lIG9u
-bHkgb2NjYXNpb25hbGx5IGR1cmluZyB0aGUgbmV4dCB3ZWVrLiBTbyANCnBsZWFzZSBkb24ndCB0
-aGluayBJIGlnbm9yZSByZXZpZXdzIGlmIHlvdSBkb24ndCBoZWFyIG9mIG1lLg0KDQpCZXN0IFJl
-Z2FyZHMsDQoJLS0gTWF0dGkNCg0KLS0gDQpNYXR0aSBWYWl0dGluZW4NCkxpbnV4IGtlcm5lbCBk
-ZXZlbG9wZXIgYXQgUk9ITSBTZW1pY29uZHVjdG9ycw0KT3VsdSBGaW5sYW5kDQoNCn5+IFdoZW4g
-dGhpbmdzIGdvIHV0dGVybHkgd3JvbmcgdmltIHVzZXJzIGNhbiBhbHdheXMgdHlwZSA6aGVscCEg
-fn4NCg0K
+Hi Andy,
+
+Thanks again for the review. Some nice catches there.
+
+On 3/2/23 17:34, Andy Shevchenko wrote:
+> On Thu, Mar 02, 2023 at 12:58:59PM +0200, Matti Vaittinen wrote:
+>> ROHM BU27034 is an ambient light sesnor with 3 channels and 3 photo diodes
+>> capable of detecting a very wide range of illuminance. Typical application
+>> is adjusting LCD and backlight power of TVs and mobile phones.
+>>
+>> Add initial  support for the ROHM BU27034 ambient light sensor.
+>>
+>> NOTE:
+>> 	- Driver exposes 4 channels. One IIO_LIGHT channel providing the
+>> 	  calculated lux values based on measured data from diodes #0 and
+>> 	  #1. Additionally 3 IIO_INTENSITY channels are emitting the raw
+>> 	  register data from all diodes for more intense user-space
+>> 	  computations.
+>> 	- Sensor has adjustible GAIN values ranging from 1x to 4096x.
+>> 	- Sensor has adjustible measurement times 5, 55, 100, 200 and
+>> 	  400 mS. Driver does not support 5 mS which has special
+>> 	  limitations.
+>> 	- Driver exposes standard 'scale' adjustment which is
+>> 	  implemented by:
+>> 		1) Trying to adjust only the GAIN
+>> 		2) If GAIN adjustment only can't provide requested
+>> 		   scale, adjusting both the time and the gain is
+>> 		   attempted.
+>> 	- Driver exposes writable INT_TIME property which can be used
+>> 	  for adjusting the measurement time. Time adjustment will also
+>> 	  cause the driver to adjust the GAIN so that the overall scale
+>> 	  is not changed.
+>> 	- Runtime PM is not implemented.
+>> 	- Driver starts the measurement on the background when it is
+>> 	  probed. This improves the respnse time to read-requests
+>> 	  compared to starting the read only when data is requested.
+>> 	  When the most accurate 400 mS measurement time is used, data reads
+>> 	  would last quite long if measurement was started only on
+>> 	  demand. This, however, is not appealing for users who would
+>> 	  prefere power saving over measurement response time.
+> 
+> ...
+> 
+>> +config ROHM_BU27034
+>> +	tristate "ROHM BU27034 ambient light sensor"
+> 
+>> +	depends on I2C
+> 
+> How? I do not see a such.
+
+I have assumed we need this because:
+
+We select REGMAP_I2C which depends on I2C.
+What happens if I2C=n and we select REGMAP_I2C? I may be wrong but I 
+guess the I2C stays 'n' while REGMAP_I2C becomes y/m (?) I think that 
+would be unfortunate - but I can't claim I am confident with how config 
+dependencies are handled. I can drop this depends on if you're sure 
+that's not a problem.
+
+>> +	select REGMAP_I2C
+>> +	select IIO_GTS_HELPER
+>> +	help
+>> +	  Enable support for the ROHM BU27034 ambient light sensor. ROHM BU27034
+>> +	  is an ambient light sesnor with 3 channels and 3 photo diodes capable
+>> +	  of detecting a very wide range of illuminance.
+>> +	  Typical application is adjusting LCD and backlight power of TVs and
+>> +	  mobile phones.
+> 
+> Module name?
+
+I am having a deja-vu.
+https://lore.kernel.org/all/10c4663b-dd65-a545-786d-10aed6e6e5e9@fi.rohmeurope.com/
+
+Module name is completely irrelevant when selecting a kernel configuration.
+
+> ...
+> 
+>>   obj-$(CONFIG_OPT3001)		+= opt3001.o
+>>   obj-$(CONFIG_PA12203001)	+= pa12203001.o
+> 
+>> +obj-$(CONFIG_ROHM_BU27034)	+= rohm-bu27034.o
+> 
+> If you see, most of the components are without vendor prefix, why rohm is
+> special? Like you are expecting the very same filename for something else?
+
+No. I don't.
+
+Using the vendor prefix in _file name_ was suggested to me by Lee 
+already a few years ago. And I am actually grateful he did. I've found 
+that _very_ useful as it simplifies finding the files I am looking for. 
+What comes to the config option name, being able to easily search for 
+the configs by vendor name has also been helpful.
+
+> ...
+> 
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/kfifo_buf.h>
+> 
+> Sorted?
+
+Sure, thanks.
+
+> 
+> ...
+> 
+>> +#define BU27034_REG_DATA0_LO		0x50
+>> +#define BU27034_REG_DATA1_LO		0x52
+>> +#define BU27034_REG_DATA2_LO		0x54
+> 
+> I would drop _LO in all these
+> 
+>> +#define BU27034_REG_DATA2_HI		0x55
+> 
+> and rename somehow this to something like _END / _MAX (similar to the fields.
+> Perhaps you would need _START / _MIN above.
+
+I don't think this would improve anything. The _LO / _HI are descriptive 
+as we have only two registers for each channel, _LO and _HI being more 
+or less standard abbreviations for low and high.
+
+> ...
+> 
+>> +/*
+>> + * Available scales with gain 1x - 4096x, timings 55, 100, 200, 400 mS
+>> + * Time impacts to gain: 1x, 2x, 4x, 8x.
+>> + *
+>> + * => Max total gain is HWGAIN * gain by integration time (8 * 4096) = 32768
+>> + *
+>> + * Using NANO precision for scale we must use scale 64x corresponding gain 1x
+>> + * to avoid precision loss. (32x would result scale 976 562.5(nanos).
+>> + */
+>> +#define BU27034_SCALE_1X	64
+>> +
+>> +#define BU27034_GSEL_1X		0x00
+>> +#define BU27034_GSEL_4X		0x08
+>> +#define BU27034_GSEL_16X	0x0a
+>> +#define BU27034_GSEL_32X	0x0b
+>> +#define BU27034_GSEL_64X	0x0c
+>> +#define BU27034_GSEL_256X	0x18
+>> +#define BU27034_GSEL_512X	0x19
+>> +#define BU27034_GSEL_1024X	0x1a
+>> +#define BU27034_GSEL_2048X	0x1b
+>> +#define BU27034_GSEL_4096X	0x1c
+> 
+> Shouldn't the values be in plain decimal?
+
+Why?
+
+> Otherwise I would like to understand bit mapping inside these hex values.
+
+I like having register values in hex. It makes it obvious they don't 
+necessarily directly match any 'real world' human-readable values.
+
+> ...
+> 
+>> +	.indexed = 1							\
+> 
+> + Comma at the end.
+
+ok.
+
+> 
+> ...
+> 
+>> +	static const int reg[] = {
+>> +		[BU27034_CHAN_DATA0] = BU27034_REG_MODE_CONTROL2,
+>> +		[BU27034_CHAN_DATA1] = BU27034_REG_MODE_CONTROL3,
+>> +		[BU27034_CHAN_DATA2] = BU27034_REG_MODE_CONTROL2
+> 
+> Ditto.
+
+ok.
+
+> 
+>> +	};
+> 
+> ...
+> 
+>> +	struct bu27034_gain_check gains[3] = {
+>> +		{ .chan = BU27034_CHAN_DATA0, },
+>> +		{ .chan = BU27034_CHAN_DATA1, },
+> 
+> Inner commas are not needed.
+> 
+>> +		{ .chan = BU27034_CHAN_DATA2 }
+> 
+> But here the outer one is good to have.
+> 
+>> +	};
+> 
+
+ok
+
+> ...
+> 
+>> +	if (chan == BU27034_CHAN_ALS) {
+>> +		if (val == 0 && val2 == 1000)
+>> +			return 0;
+>> +		else
+> 
+> Redundant 'else'
+
+Thanks for pointing out the unnecessary else. Killing it makes this nicer.
+
+
+>. And probably here is better to use standard pattern for
+> "checking for error first".
+
+I prefer to check for this one specific exactly supported case for ALS 
+channel. Cheking for 'all other possibilities but what we are expecting' 
+would be counter intuitive.
+
+> 
+>> +			return -EINVAL;
+>> +	}
+> 
+> ...
+> 
+>> +		if (helper64 < 0xFFFFFFFFFFFFFLLU) {
+> 
+> Perhaps this needs a definition.
+
+I like seeing the value here. It makes this less obfuscating. Comment 
+makes the purpose obvious so adding a define would not really give any 
+extra advantage.
+
+>> +			helper64 *= gain0;
+>> +			do_div(helper64, ch0);
+>> +		} else {
+>> +			do_div(helper64, ch0);
+>> +			helper64 *= gain0;
+>> +		}
+> 
+> 
+>> +	/* Same overflow check here */
+> 
+> Why not a helper function?
+
+I actually was thinking of it - but the check is smallish, only done 
+twice and felt a tad too specific to warrant own function. I am not 
+really against adding a function if you feel strongly about this :)
+
+> 
+>> +	if (helper64 < 0xFFFFFFFFFFFFFLLU) {
+>> +		helper64 *= gain0;
+>> +		do_div(helper64, helper);
+>> +	} else {
+>> +		do_div(helper64, helper);
+>> +		helper64 *= gain0;
+>> +	}
+> 
+> ...
+> 
+>> +	return (val & BU27034_MASK_VALID);
+> 
+> Unneeded parentheses.
+
+ok.
+
+> 
+> ...
+> 
+>> +retry:
+>> +	/* Get new value from sensor if data is ready */
+>> +	if (bu27034_has_valid_sample(data)) {
+>> +		ret = regmap_bulk_read(data->regmap, BU27034_REG_DATA0_LO,
+>> +				       res, size);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		bu27034_invalidate_read_data(data);
+>> +	} else {
+>> +		/* No new data in sensor. Wait and retry */
+>> +		msleep(25);
+>> +
+>> +		goto retry;
+> 
+> There is no way out. What might go wrong?
+
+Beyond hanging the user process? :)
+
+I think you have a point here. I'll add a timeout.
+
+> 
+>> +	}
+> 
+> ...
+> 
+>> +	ret = bu27034_get_int_time(data);
+> 
+> _get_int_time_us() ? (Looking at the below code)
+> 
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	msleep(ret / 1000);
+> 
+> ...
+> 
+>> +	 * Avoid div by zeroi. Not using max() as the data may not be in
+> 
+> zeroi?
+> 
+> ...
+> 
+>> +	if (!res[0])
+> 
+> Positive conditional?
+
+No. Again, we check for the very specific case where res has all bits 
+zeroed. Inverse condition is counter intuitive.
+
+> 
+>> +		ch0 = 1;
+>> +	else
+>> +		ch0 = le16_to_cpu(res[0]);
+>> +
+>> +	if (!res[1])
+>> +		ch1 = 1;
+> 
+> Ditto.
+> 
+>> +	else
+>> +		ch1 = le16_to_cpu(res[1]);
+> 
+> But why not to read and convert first and then check.
+
+Because conversion is not needed if channel data is zero.
+
+> This at least will
+> correctly compare 0 to the LE16 0 (yes, it's the same for 0, but strictly
+> speaking the bits order of lvalue and rvalue is different).
+
+and hence we check for !res[0]
+
+> 
+> ...
+> 
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_INT_TIME:
+>> +		return iio_gts_avail_times(&data->gts, vals, type, length);
+>> +	case IIO_CHAN_INFO_SCALE:
+>> +		return iio_gts_all_avail_scales(&data->gts, vals, type, length);
+>> +	default:
+>> +		break;
+>> +	}
+>> +
+>> +	return -EINVAL;
+> 
+> You may do it from default case.
+> 
+
+I think we have discussed this one in the past too. I like having return 
+at the end of a non void function.
+
+> ...
+> 
+>> +	ret = regmap_read_poll_timeout(data->regmap, BU27034_REG_MODE_CONTROL4,
+>> +				       val, (val & BU27034_MASK_VALID),
+> 
+> Redundant parentheses.
+
+ok
+
+> 
+>> +				       BU27034_DATA_WAIT_TIME_US,
+>> +				       BU27034_TOTAL_DATA_WAIT_TIME_US);
+>> +	if (ret) {
+>> +		dev_err(data->dev, "data polling %s\n",
+>> +			!(val & BU27034_MASK_VALID) ? "timeout" : "fail");
+> 
+> Why not positive conditional in ternary?
+
+Because I check this for a specific case: "Was it a timeout?" - not for 
+unspecified "Was it something else but timeout?"
+
+> 
+>> +		return ret;
+>> +	}
+> 
+> ...
+> 
+>> +	fwnode = dev_fwnode(dev);
+>> +	if (!fwnode)
+>> +		return -ENODEV;
+> 
+> So, you deliberately disable a possibility to instantiate this from user space,
+> why?
+
+Thanks! (And Sorry. Jonathan pointed this out to me already in the RFC.) 
+I thought I already fixed this.
+
+> 
+> ...
+> 
+>> +	ret = devm_iio_kfifo_buffer_setup(dev, idev, &bu27034_buffer_ops);
+>> +
+>> +	ret = devm_iio_device_register(dev, idev);
+> 
+> Don't you find something strange in between?
+
+Thanks!
+
+> 
+>> +	if (ret < 0)
+>> +		return dev_err_probe(dev, ret,
+>> +				     "Unable to register iio device\n");
+> 
+> ...
+> 
+>> +	{ .compatible = "rohm,bu27034", },
+> 
+> Inner comma is not needed.
+
+ok
+
+
+
+
+-- 
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
+
+~~ When things go utterly wrong vim users can always type :help! ~~
+
