@@ -2,21 +2,21 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A51C6FA99
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 17:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D57C64EC4
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 18:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230515AbjCFR4e (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Mar 2023 12:56:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51070 "EHLO
+        id S230043AbjCFSUM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Mar 2023 13:20:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230519AbjCFRzw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 12:55:52 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1DBF6C69D;
-        Mon,  6 Mar 2023 09:55:26 -0800 (PST)
+        with ESMTP id S230028AbjCFSUL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 13:20:11 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44ACA65060;
+        Mon,  6 Mar 2023 10:19:35 -0800 (PST)
 Received: from stefanw-SCHENKER ([37.4.248.41]) by mrelayeu.kundenserver.de
  (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1M3lkT-1pYxZQ0Hqd-000tYL; Mon, 06 Mar 2023 18:23:15 +0100
+ 1M4b5s-1pXaex3NmY-001j20; Mon, 06 Mar 2023 18:23:17 +0100
 From:   Stefan Wahren <stefan.wahren@i2se.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -33,58 +33,86 @@ Cc:     linux-imx@nxp.com, Li Yang <leoyang.li@nxp.com>,
         linux-arm-kernel@lists.infradead.org,
         Stefan Wahren <stefan.wahren@chargebyte.com>,
         Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH 4/8] dt-bindings: iio: st-sensors: Add IIS328DQ accelerometer
-Date:   Mon,  6 Mar 2023 18:22:45 +0100
-Message-Id: <20230306172249.74003-5-stefan.wahren@i2se.com>
+Subject: [PATCH 8/8] ARM: imx_v6_v7_defconfig: Enable Tarragon peripheral drivers
+Date:   Mon,  6 Mar 2023 18:22:49 +0100
+Message-Id: <20230306172249.74003-9-stefan.wahren@i2se.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230306172249.74003-1-stefan.wahren@i2se.com>
 References: <20230306172249.74003-1-stefan.wahren@i2se.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:wQRPex7XRzipPrnANRDADxZJE2vb54rgHl+nepAI703ge7CdZAd
- wBQQEv8D5RoFYWvTcdUDp8/wxCc0OVffAnl6LIf8bIjT/OQ5+j2PMyqSTNjOpeqI0rL6+23
- 2oT0eaxJKFcb5uHJtU9XR1Or0NwKNLIyEGEO7mgrjLURo94lhq0Aj+oKQK50DaIlPh8reIr
- 1RHw7cZPZfig5/B+kzmEw==
-UI-OutboundReport: notjunk:1;M01:P0:2YqeGNcQlRk=;a94tKlFdzg5LskCYLPpEIORYcKC
- kL9C6+b+gaX6+UtOZo/99wzXNvOcOgdJLaY0dvKYKdCra0hXdCPXgNPm+RRP1yl6jv7Itxdak
- W+EYcPsV2TN5awziJF5rkGJmQeeSh0JYqaymw71cy+ryB2SsHuhbdK3AOR+WaMNCbb065wydw
- 86xYJuxk0DxP+XV43l35RSp8PbXxYIYv/7zrA0s8yNbAT3AQq7uP+/YlIdnSJ2cT+7QIcELiG
- a2uO+/yxGHDTQbjCydpQTBPMF623YdWTmzfz5gUS44BaxXTKlkabS3MYa1N8jTvDapW2qUKN8
- tfHqpieNYdhKcZzTAJVOwyJnkBRobjS2WRF67ERcUly7o7SVUVKKZX1oLl4Q35XaTwTAgnxyO
- uthCYxIunbI0fObJLhLgSsfRYlci1LfrA0GsBkwyxNwN7y8PNFncKHqNsbKK5vpWhnabFVK0S
- PubYnsMMI0Rp0couUyiGlkJG6fBIud25S49vs3cmS9ujuPnkguwWhdqjse1Ud6RrOjpgIFyma
- Rj0ElM/fypebhnWruXVy7any23KcAS8VBVDkgo4ez1oq3ULn4BcfkO4FyEv4Z0AQE8uT42dRc
- pbiTPyBlWF/F80rjy86T8VEjRSfyQm/zYJju+zXMD+Hdj9k6Y2mmMkRBUTCI7Ytzzq603Ulih
- n7dsAaIvZRStHwrXXRw4SEYacAYXwV8WYFPf9zGtiFiKDmFSkb3FVoPeR88HYf/iRy7/CAHHP
- CDAKlzXtfbCEgx73d2Sg0ZW+fqvX+6C1x91CvjR/e3Y0xoM9lOXF5A=
+X-Provags-ID: V03:K1:apHcp3EmZDFHmusTpF0RTcwoyJeqPvigk6+aX2bNJECC+tUgQ/N
+ KUbP1kVDBGdaW8jNnatNLV01ny0L8kAQblGyGQ1ONpnD8q2kEPfIupcKhRxrLgNvYFFEpba
+ bkBoeW7BaH8TJc+K47y+GOiQncB3rqNB+tuM1iVk6uezW8MUDzfmiKnScEvr6uOC0UwMNVP
+ PnufDfoFk2bjgy2s0myfg==
+UI-OutboundReport: notjunk:1;M01:P0:hKyuCjYBI5M=;F/yIEsps5KSIm0JL7ke3vh9+MHx
+ LH4FkprnFkIoE/lCUjPQMNVdrqpKdZobg3lSHLFgW/nfTyHljGRDMT2P9DhxD7ruxLDhgeYJo
+ U2fygasVoZpuXFXOtm8UWJ6rvAx5qbgIxwYsXeEebthyk79TKnj3ssKS4erjY8UZrR9f4fjge
+ QVeRafE1bi3il98lfE76m6g7UAtxr+JzuMfbFLMqUZXQwgebkonZ2XPoWc/Dfuz+08cnuNyeD
+ qnEtZ4nEQQEHrnKeyJ0tDr191q/32/iI6Fveh2f4o8OEXUA9eEfPdXxOYn4qv+Gpf1Kkrpkal
+ K6h1ZvHUAomP7GBAj4NZaSvAEqhdAbl8+gwh5ByZ/GwevzUcdMXQV2spLycoFykkre3WyqRoo
+ NiYMM8lopCkEJqFeyKqvWPB0v0m8HA3EgWIgRSOnCIKnObpEfe+LZY4mrByUULWvBCpg1uOKs
+ Fl1AQCzm9l5TrwAt1mIEfBKf5YVm15LRtZ9j/XIAeirvCC6HOXT4K7xJ4XS8h9PCd+Udi6/uq
+ F34Ws5C9eR1YRaflHXWU+SIHgYADgy1fyMM3274HVHJIjvocrG3pKDCZRBQTXgeP26QoeMU3l
+ nJdwHfkCCm+/aQYGV91bZ+t+pdmcqC+qxrNQLkvcCutIC3efKjKdQbFXPFpFmvdBloh91foRN
+ 31K1J5He527eOv/W9unz7giwjIP5rc0mLUZcJbJzlg==
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Stefan Wahren <stefan.wahren@chargebyte.com>
 
-The ST IIS328DQ is an accelerometer sensor compatible with
-the existing ST sensor binding.
+We need to enable some drivers in order to use the following peripherals
+of Tarragon:
+  * QCA7000/7005 Powerline chip
+  * One-Wire Master DS2484 with external thermal sensors
+  * external 4 pin PWM fan
+  * ST IIS328DQ I2C accelerometer
 
-Link: https://lore.kernel.org/linux-iio/2bac9ecf-9d2e-967e-9020-1c950487d781@i2se.com/
 Signed-off-by: Stefan Wahren <stefan.wahren@chargebyte.com>
 Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 ---
- Documentation/devicetree/bindings/iio/st,st-sensors.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/configs/imx_v6_v7_defconfig | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-index c6201976378f..247700537aa8 100644
---- a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-+++ b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-@@ -25,6 +25,7 @@ properties:
-       - description: STMicroelectronics Accelerometers
-         enum:
-           - st,h3lis331dl-accel
-+          - st,iis328dq
-           - st,lis2de12
-           - st,lis2dw12
-           - st,lis2hh12
+diff --git a/arch/arm/configs/imx_v6_v7_defconfig b/arch/arm/configs/imx_v6_v7_defconfig
+index 6dc6fed12af8..c854b03fabf2 100644
+--- a/arch/arm/configs/imx_v6_v7_defconfig
++++ b/arch/arm/configs/imx_v6_v7_defconfig
+@@ -128,6 +128,7 @@ CONFIG_CS89x0_PLATFORM=y
+ # CONFIG_NET_VENDOR_MICREL is not set
+ # CONFIG_NET_VENDOR_MICROCHIP is not set
+ # CONFIG_NET_VENDOR_NATSEMI is not set
++CONFIG_QCA7000_SPI=m
+ # CONFIG_NET_VENDOR_SEEQ is not set
+ CONFIG_SMC91X=y
+ CONFIG_SMC911X=y
+@@ -215,6 +216,9 @@ CONFIG_GPIO_PCA953X=y
+ CONFIG_GPIO_PCF857X=y
+ CONFIG_GPIO_STMPE=y
+ CONFIG_GPIO_74X164=y
++CONFIG_W1=m
++CONFIG_W1_MASTER_DS2482=m
++CONFIG_W1_SLAVE_THERM=m
+ CONFIG_POWER_RESET=y
+ CONFIG_POWER_RESET_SYSCON=y
+ CONFIG_POWER_RESET_SYSCON_POWEROFF=y
+@@ -223,6 +227,7 @@ CONFIG_RN5T618_POWER=m
+ CONFIG_SENSORS_MC13783_ADC=y
+ CONFIG_SENSORS_GPIO_FAN=y
+ CONFIG_SENSORS_IIO_HWMON=y
++CONFIG_SENSORS_PWM_FAN=y
+ CONFIG_SENSORS_SY7636A=y
+ CONFIG_THERMAL_STATISTICS=y
+ CONFIG_THERMAL_WRITABLE_TRIPS=y
+@@ -403,6 +408,7 @@ CONFIG_CLK_IMX8MQ=y
+ CONFIG_SOC_IMX8M=y
+ CONFIG_EXTCON_USB_GPIO=y
+ CONFIG_IIO=y
++CONFIG_IIO_ST_ACCEL_3AXIS=m
+ CONFIG_MMA8452=y
+ CONFIG_IMX7D_ADC=y
+ CONFIG_RN5T618_ADC=y
 -- 
 2.34.1
 
