@@ -2,21 +2,21 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71BE5C6FA99
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 17:25:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4685DC6FD1B
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 17:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229558AbjCFRY6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Mar 2023 12:24:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53230 "EHLO
+        id S229755AbjCFRZA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Mar 2023 12:25:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230117AbjCFRYn (ORCPT
+        with ESMTP id S230118AbjCFRYn (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 12:24:43 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31B319BB;
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E329F5652E;
         Mon,  6 Mar 2023 09:24:14 -0800 (PST)
 Received: from stefanw-SCHENKER ([37.4.248.41]) by mrelayeu.kundenserver.de
  (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MCbR7-1phj0q3Nit-009jEz; Mon, 06 Mar 2023 18:23:15 +0100
+ 1MfYDO-1qFC5C1a8W-00g1vq; Mon, 06 Mar 2023 18:23:14 +0100
 From:   Stefan Wahren <stefan.wahren@i2se.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -33,118 +33,57 @@ Cc:     linux-imx@nxp.com, Li Yang <leoyang.li@nxp.com>,
         linux-arm-kernel@lists.infradead.org,
         Stefan Wahren <stefan.wahren@chargebyte.com>,
         Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH 5/8] iio: accel: add support for IIS328DQ variant
-Date:   Mon,  6 Mar 2023 18:22:46 +0100
-Message-Id: <20230306172249.74003-6-stefan.wahren@i2se.com>
+Subject: [PATCH 3/8] w1: ds2482: add i2c id for ds2484
+Date:   Mon,  6 Mar 2023 18:22:44 +0100
+Message-Id: <20230306172249.74003-4-stefan.wahren@i2se.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230306172249.74003-1-stefan.wahren@i2se.com>
 References: <20230306172249.74003-1-stefan.wahren@i2se.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:8pOSVs5pr3qo5I8gRJ4mnb4mzsthHgbkNTMbUsy+rAaH8Tcqei4
- 1nJJeYoOAlsnTs5CYx7U1BlLvzhb8SGehE1/OZn5fRLsm9jU7byYi5dcZ1jyaoaxkBZd9IX
- NTz7ElNVj2hIwUyMvNtjnSUwD5Mv7zp5Bs1Z4R96niKL6ZS5TiZ+mKuPzUecb38L5hShpV1
- G9g7EXMnmqV+QmXt86snA==
-UI-OutboundReport: notjunk:1;M01:P0:fM4cGhjX5pQ=;mYVjZZF4EHnRj4w9nP3pgwXdpQo
- Uu4UFtqJ0Z4bLWHJXbmPytqy+ZKE9PjjuQceU78q38Le8d7IBTY4FqbAmSsiUJCWw95FX67Uu
- k1sSLcuA988IPrv/sVwaWInbnb9FlnpYsrMAsducYLcSbSXywXfV2SHR5l5btL1/kUMEFZRfL
- gzbLun9b77TJ43q99SwbNnSdbrwAmHtVaRXnxuzENv6hQnyPFVGUwdYsQshPSlEimuxrW7zoT
- M4wSc72OHiDvK96uc2jVH3V4dR1jTMvJiuUjyv9UwC9B8OetEsDJ4dccJBR7qioi7VjLkBKs/
- xrN5mZPPFDXLO/8T3xE9TUxxxRLvn0NIlBCcrXDxm99bRioftulHqhMr8ROdJN+3FvUik9jQ1
- 3rQYQruPeoWnig2Ko97ykVaeJRy9Zu9JS3871qVabbnfqJjQnHlSQwJ6wuSYx/klTGOJtT6qp
- rohdMEC48DeUb5ImxmpafLOIgA8PsDzeWCD9kRxdOsdnppOrgMJ8axVN2zlp8E+hSuO9izGro
- fPBKAISUdP6CcCPjGn6E5JXyeGMqA+r3pYvBr2TLGIPN15cJHWlOHebnnCOLYP9e8FthgVunV
- gME1geY/bYGTiRF04z02WNMpud89Tpw3/aOwGxr9I4Hp/FIV3Q+adjohlkGfsUR30tN20sMQ6
- ohriQqezf6Ssj3TCNuf1nwtkVAoCr0Z14dSlWUO2Kg==
+X-Provags-ID: V03:K1:FpRTpt2ZzY6mienThTEbNRfHWBNdsZCyFr8kQjvCTI+RpIK2Uwa
+ bnunZRwMmRHkOJxcVfa/1K6T4N0nJojbL4G8dF+v9dhYAX7gEj+4BQrOEQQnqs/7QZZLXdp
+ m9eiMTBOWwcZ4/8bpDI4HF5dfcn+KrCIQxrE7HzqYo6SQo0Yjwt5d/ilrrCi0hpgqS9+BQJ
+ f3hyNkJPRL1xpa8bEVriw==
+UI-OutboundReport: notjunk:1;M01:P0:Ia63qqu8ctE=;jrIe9L5aIyXvRzwzWne8iCjw4aU
+ YhUqVmPr5iqvpuP3nwi9a/o1yNPb3wlOhqsNSOvADOChVvsBNn/w6NXN8MZ5o7edDCR9D+Soo
+ q4DH+bK5IWVay2tUMc2qm48bOImDtvG/q8tnSI+fIzI/3B+wZYBXGnUaa1U0+fzrPhjzexSjx
+ ttomjOHibxbjeGuTOSJSj/LyUC06vUUs5Do2W1ujEanU/4MBBtz3hjXWK6n++YIch1YYlFx2G
+ wIgt+7uwfvrmxUVUVl3sHIhJCXnLGtP4KrssOciPkr3zyF7592JDSeF6inFn+Jy/EOQ0ItxMf
+ zUrqAHFRzsXQt5N6yCJvvjF9IjmE+ml9gwtOMYzSs1hS4UZSPIVO5Q6N8ysFLWt3/Xi8nV/qj
+ jFQDmyaATHEQd11Jgg9CkDb7TmkbdqLnS7fEyzGR4ZBzRyBMOuqo+OiKbhT9kv3qQIp8jPe9P
+ 9IfEtwmDpqbzZ5oPGvhpPpi9UqRoQVxcA+mh4J2Jl/io0d/YXEDLrTzzsnBLGYHYyZdhbIDYH
+ 7QFWTzQc2+yZ4xFuXgYSRL0M08HzhrOSkI6BID2AlFsSgBTkohEA1hx08acbX4ob6KYrDBVmD
+ TvWnhB89uDVHJR9Wi3wWd57J8GDyerfT/kjr6McdABQD2ApdO/IyWtBnMNQhZbXsIrGzjYw9k
+ rW2eGs8GSSyUccWDCelRyhl/yMwWmLC5geTt8NghuQ==
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Stefan Wahren <stefan.wahren@chargebyte.com>
 
-Add support for ST IIS328DQ accelerometer to the st_accel framework.
-The chip is compatible to the LIS331DL.
+The DS2484 is very similar to the DS2482-100, but also supports a
+pin-controlled power-saving sleep mode.
 
-Link: https://www.st.com/resource/en/datasheet/iis328dq.pdf
+Link: https://www.analog.com/media/en/technical-documentation/data-sheets/DS2484.pdf
 Signed-off-by: Stefan Wahren <stefan.wahren@chargebyte.com>
 Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 ---
- drivers/iio/accel/st_accel.h      | 1 +
- drivers/iio/accel/st_accel_core.c | 1 +
- drivers/iio/accel/st_accel_i2c.c  | 5 +++++
- drivers/iio/accel/st_accel_spi.c  | 5 +++++
- 4 files changed, 12 insertions(+)
+ drivers/w1/masters/ds2482.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-index 56ed0c776d4a..e7525615712b 100644
---- a/drivers/iio/accel/st_accel.h
-+++ b/drivers/iio/accel/st_accel.h
-@@ -39,6 +39,7 @@
- #define LIS302DL_ACCEL_DEV_NAME		"lis302dl"
- #define LSM303C_ACCEL_DEV_NAME		"lsm303c_accel"
- #define SC7A20_ACCEL_DEV_NAME		"sc7a20"
-+#define IIS328DQ_ACCEL_DEV_NAME		"iis328dq"
- 
- 
- #ifdef CONFIG_IIO_BUFFER
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 6b8562f684d5..5f7d81b44b1d 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -517,6 +517,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
- 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = H3LIS331DL_ACCEL_DEV_NAME,
-+			[1] = IIS328DQ_ACCEL_DEV_NAME,
- 		},
- 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
- 		.odr = {
-diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-index 3f02fd5d5946..fb9e2d6f4210 100644
---- a/drivers/iio/accel/st_accel_i2c.c
-+++ b/drivers/iio/accel/st_accel_i2c.c
-@@ -119,6 +119,10 @@ static const struct of_device_id st_accel_of_match[] = {
- 		.compatible = "silan,sc7a20",
- 		.data = SC7A20_ACCEL_DEV_NAME,
- 	},
-+	{
-+		.compatible = "st,iis328dq",
-+		.data = IIS328DQ_ACCEL_DEV_NAME,
-+	},
- 	{},
+diff --git a/drivers/w1/masters/ds2482.c b/drivers/w1/masters/ds2482.c
+index 62c44616d8a9..6f6df686e9ad 100644
+--- a/drivers/w1/masters/ds2482.c
++++ b/drivers/w1/masters/ds2482.c
+@@ -545,6 +545,7 @@ static void ds2482_remove(struct i2c_client *client)
+  */
+ static const struct i2c_device_id ds2482_id[] = {
+ 	{ "ds2482", 0 },
++	{ "ds2484", 0 },
+ 	{ }
  };
- MODULE_DEVICE_TABLE(of, st_accel_of_match);
-@@ -157,6 +161,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
- 	{ LIS302DL_ACCEL_DEV_NAME },
- 	{ LSM303C_ACCEL_DEV_NAME },
- 	{ SC7A20_ACCEL_DEV_NAME },
-+	{ IIS328DQ_ACCEL_DEV_NAME },
- 	{},
- };
- MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
-diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
-index 5740dc1820bd..f72a24f45322 100644
---- a/drivers/iio/accel/st_accel_spi.c
-+++ b/drivers/iio/accel/st_accel_spi.c
-@@ -100,6 +100,10 @@ static const struct of_device_id st_accel_of_match[] = {
- 		.compatible = "st,lsm303c-accel",
- 		.data = LSM303C_ACCEL_DEV_NAME,
- 	},
-+	{
-+		.compatible = "st,iis328dq",
-+		.data = IIS328DQ_ACCEL_DEV_NAME,
-+	},
- 	{}
- };
- MODULE_DEVICE_TABLE(of, st_accel_of_match);
-@@ -157,6 +161,7 @@ static const struct spi_device_id st_accel_id_table[] = {
- 	{ LIS3DE_ACCEL_DEV_NAME },
- 	{ LIS302DL_ACCEL_DEV_NAME },
- 	{ LSM303C_ACCEL_DEV_NAME },
-+	{ IIS328DQ_ACCEL_DEV_NAME },
- 	{},
- };
- MODULE_DEVICE_TABLE(spi, st_accel_id_table);
+ MODULE_DEVICE_TABLE(i2c, ds2482_id);
 -- 
 2.34.1
 
