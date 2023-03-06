@@ -2,138 +2,92 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11715C64EC4
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 18:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B82DDC61DA4
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 18:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbjCFS0g convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Mar 2023 13:26:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48062 "EHLO
+        id S229662AbjCFSm1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Mar 2023 13:42:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbjCFS0d (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 13:26:33 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00BC174A47;
-        Mon,  6 Mar 2023 10:26:03 -0800 (PST)
-Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PVkTq6Jy8z6J7Kr;
-        Tue,  7 Mar 2023 00:26:07 +0800 (CST)
-Received: from localhost (10.202.227.76) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Mon, 6 Mar
- 2023 16:26:33 +0000
-Date:   Mon, 6 Mar 2023 16:26:32 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     <Marius.Cristea@microchip.com>
-CC:     <jic23@kernel.org>, <krzk@kernel.org>,
-        <devicetree@vger.kernel.org>, <lars@metafoo.de>,
-        <linux-iio@vger.kernel.org>, <robh+dt@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 1/2] dt-bindings: iio: adc: adding dt-bindings for
- PAC193X
-Message-ID: <20230306162632.00005edd@Huawei.com>
-In-Reply-To: <2f1a14522a7a8d46e3b037a285af4c3dd9b17cbc.camel@microchip.com>
-References: <20230220123232.413029-1-marius.cristea@microchip.com>
-        <20230220123232.413029-2-marius.cristea@microchip.com>
-        <c38afa67-d24f-0390-f18a-81bee15b7eca@kernel.org>
-        <20230225171723.15e822ec@jic23-huawei>
-        <2f1a14522a7a8d46e3b037a285af4c3dd9b17cbc.camel@microchip.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
+        with ESMTP id S229572AbjCFSm1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 13:42:27 -0500
+X-Greylist: delayed 70956 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Mar 2023 10:42:25 PST
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C4419F10;
+        Mon,  6 Mar 2023 10:42:25 -0800 (PST)
+Received: from stefanw-SCHENKER ([37.4.248.41]) by mrelayeu.kundenserver.de
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1MwQOx-1qPPlc3CFB-00sJUB; Mon, 06 Mar 2023 18:23:13 +0100
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Evgeniy Polyakov <zbr@ioremap.net>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>
+Cc:     linux-imx@nxp.com, Li Yang <leoyang.li@nxp.com>,
+        Denis Ciocca <denis.ciocca@st.com>, soc@kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Stefan Wahren <stefan.wahren@chargebyte.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Steffen Trumtrar <s.trumtrar@pengutronix.de>
+Subject: [PATCH 2/8] dt-bindings: Add DS2482/DS2484 as trivial device
+Date:   Mon,  6 Mar 2023 18:22:43 +0100
+Message-Id: <20230306172249.74003-3-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230306172249.74003-1-stefan.wahren@i2se.com>
+References: <20230306172249.74003-1-stefan.wahren@i2se.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [10.202.227.76]
-X-ClientProxiedBy: lhrpeml500006.china.huawei.com (7.191.161.198) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:v9b3X29P5y5UzsVy968V/rYnVligG5hrFWkTJJqhBc6P5bT3Hja
+ OuJPC/hzzWeTbBSD6bVfxc2xfZNPCsPVvB3GUm6EzyQKFycjQ6ahADYR8CgKuITfSNegaSc
+ bfHwfIDqWwyRjrzR5noOlUhehCWJT1xr76Y3fEHvVU5sWM5CTva0mjGpAr+IjcRURV5W07b
+ h0FNhZltncbKSnCIt8lvg==
+UI-OutboundReport: notjunk:1;M01:P0:VPi6kVUezQ4=;gd1VCBrFoI/zU+yY2h3th6frxa6
+ 6sheqrKOU9blES4E7NFYv4dNd+4XKHbebl8CShiUHnDefHXzxexJhEQAhj2YX40nOdIojKZBf
+ c2M5UJLcFECm1LozP54NYa/7fW3lOqdGRp2HgxZTMhgcHSjtqJcm7jipz3qaZoeBrogRO2aZF
+ vlmU79g7dDbCdvUHoXxb3o/6DethJACFAyANs8hNAw4enfQO47xqWB6K0m6gdnMzeJUWIVwWc
+ DeN5ML6NobLd7FOcph6JJX9xEZYUQ2sv0n2z2ZhAXqJuScnrhDvOWIsZF2eAId4VvvVinHCbW
+ 8SAnDQ3sWX1xcTkFblyNpZSa0X/dCWPNQqV1T8k/vIVclEgImCJdB+vE+ZS3BQjE1zb5m7Vz3
+ Rw4naWEwwmCQTbb/09KYBg6T+qbJlmY9j4c6f4l6r5nQfRBtwfLPfX2pMRTFd9U/w+2JacHKy
+ gkcoykaUBHrdjEcdzqTztk4EHHodIEAG3M0U1r9deaCG4adYLGRIXiFmmWNPuPA/Ra8WwJyKo
+ EwWxFGFqBgC31cydV5epc5A35P5BkhEowABZD8LkKVJRx38ioAD/OMRkfnHlT0BHEkqFqJ0C6
+ TK+OpvvV6OIIVxptRmI5rFsexuEeoEWYxqxqlClvN4dziwwHAPptDejYUYI8C1w3uywm03cdg
+ RogqUFCYAwGS923+QNAoxht+6IdxQ+0tZEbTFR0p2A==
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 6 Mar 2023 13:53:27 +0000
-<Marius.Cristea@microchip.com> wrote:
+From: Stefan Wahren <stefan.wahren@chargebyte.com>
 
-> Hi Jonathan,
-> 
->    Thank you so much! I'm happy to contribute to IIO.
-> 
-> I will remove some section because I agree with the propose solution.
-> For the rest I will comment below..
-> 
-> 
-> 
-> On Sat, 2023-02-25 at 17:17 +0000, Jonathan Cameron wrote:
-> > > > +
-> > > > +  microchip,samp-rate:
-> > > > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > > > +    description: Sampling rate for all device's channels.  
-> > > 
-> > > What are the units? rate is usually in hz, which should be
-> > > expressed in
-> > > unit suffix (property name)]  
-> > 
-> > It's unusual for sampling rate to be a property of the hardware and
-> > hence
-> > suitable for DT binding. Normally we make this a userspace control
-> > instead.
-> > If there is a reason for doing it from DT, that wants to be mentioned
-> > here.
-> >   
-> 
-> Here I could change it into the datarate (as in
-> iio/adc/ti,ads1015.yaml). The units are samples per second. My
-> intention was to be alingned with the datasheet.
-> 
-> My intention was to let the user configure the sample rate as soon as
-> posile during the startup (the PAC device's own power consumtion will
-> increase with the sampling rate - default the chip will start with the
-> maximum samples per second).
+Both chips are I2C to 1-wire bridges.
 
-Feel free to have the driver set it to the minimum frequency unconditionally
-in probe.
+Signed-off-by: Stefan Wahren <stefan.wahren@chargebyte.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+---
+ Documentation/devicetree/bindings/trivial-devices.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-> 
-> 
-> >   
-> 
-> >   
-> > >   
-> > > > +
-> > > > +      microchip,bi-directional:
-> > > > +        description: Whether the channel is bi-directional.  
-> > > 
-> > > Describe here what is a "bi-directional" channel for ADC... Maybe
-> > > it is
-> > > obvious, maybe not. For me it is not and none of other devices have
-> > > it.
-> > >   
-> > From datasheet this seems to be a novel description of whether the
-> > ADC
-> > is measuring just positive or allows for negative voltage as well
-> > (i.e.
-> > the current through the shut resistor is going on the other
-> > direction).
-> > Can we relate this to a biopolar / unipolar decision on a simple
-> > voltage ADC?
-> > For that we have standard DT bindings in iio/adc/adc.yaml
-> >   
-> 
-> Yes, the PAC device can measure voltages as unipolar or bipolar but
-> also current as unidirectional or bidirectional (we are measuring the
-> voltage across a shunt resistor). We are also reporting power and is
-> not a "usual" thing to report power as unipolar or bipolar. Bi-
-> directional power makes more sens if you are thinking to monitor a
-> charge discharge cycle for a battery pack.
-
-I'm still a little confused. If you are bipolar and hence can measure
-postive and negative voltage between two pins, how is that different
-to bidirectional? Other than for bidirection we are talking current
-rather than voltage.
-
-> 
-> 
-> 
-> Thanks,
-> Marius
+diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+index 6f482a254a1d..9b7b24989359 100644
+--- a/Documentation/devicetree/bindings/trivial-devices.yaml
++++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+@@ -183,6 +183,10 @@ properties:
+           - maxim,ds1803-050
+             # 100 kOhm digital potentiometer with I2C interface
+           - maxim,ds1803-100
++            # I2C to 1-wire bridge
++          - maxim,ds2482
++            # I2C to 1-wire bridge
++          - maxim,ds2484
+             # 10 kOhm digital potentiometer with I2C interface
+           - maxim,ds3502
+             # Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
+-- 
+2.34.1
 
