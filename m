@@ -2,21 +2,21 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7041FC64EC4
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 17:25:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0358C61DA4
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 17:25:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229543AbjCFRZC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Mar 2023 12:25:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53278 "EHLO
+        id S229571AbjCFRZ1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Mar 2023 12:25:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230161AbjCFRYp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 12:24:45 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837083A82;
-        Mon,  6 Mar 2023 09:24:15 -0800 (PST)
+        with ESMTP id S229618AbjCFRZ0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 12:25:26 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C5D449E;
+        Mon,  6 Mar 2023 09:24:48 -0800 (PST)
 Received: from stefanw-SCHENKER ([37.4.248.41]) by mrelayeu.kundenserver.de
  (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1N3KY0-1qYSBu0EqI-010Jxc; Mon, 06 Mar 2023 18:23:12 +0100
+ 1M1Hi8-1patW21u94-002pUa; Mon, 06 Mar 2023 18:23:16 +0100
 From:   Stefan Wahren <stefan.wahren@i2se.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -31,92 +31,65 @@ Cc:     linux-imx@nxp.com, Li Yang <leoyang.li@nxp.com>,
         Denis Ciocca <denis.ciocca@st.com>, soc@kernel.org,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
+        Stefan Wahren <stefan.wahren@chargebyte.com>,
         Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH 0/8] ARM: dts: imx6ull: Add chargebyte Tarragon support
-Date:   Mon,  6 Mar 2023 18:22:41 +0100
-Message-Id: <20230306172249.74003-1-stefan.wahren@i2se.com>
+Subject: [PATCH 6/8] dt-bindings: ARM: fsl: Add chargebyte Tarragon
+Date:   Mon,  6 Mar 2023 18:22:47 +0100
+Message-Id: <20230306172249.74003-7-stefan.wahren@i2se.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230306172249.74003-1-stefan.wahren@i2se.com>
+References: <20230306172249.74003-1-stefan.wahren@i2se.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:7X3G3jIfDeolQi6iDz99jJ77T1hJ6MIzBoLP/VTGvpwuL7H+am6
- i4jpzJZ+tJ1+9IJ0NWg9+L9a/eL+NIdTe6xSEUVZqrHjGaIqrCndO/l7+gMKBo5pXdqjbfI
- SvadKtkiC6z51w9fjaukEJYchDbTKMR4lQtsvJ1OsLxJkD9T/MXw3JTywK89H8qeDRw5J7l
- WrZDBj+iqz/RhEAfMPo2g==
-UI-OutboundReport: notjunk:1;M01:P0:biCDQeY6+Jo=;1X6prIbhiEw2GYPBvslN2bHlYBP
- GkhTcJQIw+3yCzCEaDo6uwutJkOSOpar09JxGwC8XVzd4r3yAEPOYT2u/EUtJ3jzv5fpBWFa8
- qohA47qvUI9g/sb572uWSP8wHkuNJZmL3GS0VkLtQniXLC0cQ4IglHJiGExdD45qzy0Ydhsmv
- iU71YHrv/R8jCMvpOZ9hDP8n9UfqW8FSI23XCsJaB0AWSXImmSy1SwW3mAimIEW4D7cU8OZwA
- GsfmYH4vfpr9vDS4jUDYUifzSNp/r3jwCXcGgGHSMhNW9huSAX6Rf9La4aosYKuAGWpXPXl0P
- HdpDYMOgFOk+Qvte9kGxtO2FrOxTV84fQeAE6ye89s4jz4P8JScBtXvjrkw7n6/cZFq/dzUoY
- W6WDtZVtbpMfJdLGKiKntnuqu3hzX76h00YpEojAEwLU9Woxi31+Z+xyfNR+mRhVjlf0gO++W
- jOiugNjVpBE6W+7p7kk2QMwuNB2DMc1NeLm4Q+0+DW0KucZ/oK+EhNi1xPNVFd+8PehIpVqmp
- RGpabjmpit1hA9jSlzfrn+zmm+XCd7mwyjUAjTLhWE+EG63BzDyAFp3ihOb72vXMa99HRyeR+
- 2lxPhFTqnvfWcvlRNuIsMyTSE2sbH3IVP4dxlj90Lu3T+CpETlyEkb7X6vPuLK+SUZgIPCI7o
- zFdRifosFGflTS276kmmbH2e3oSdrmBscYbv1DgGtw==
+X-Provags-ID: V03:K1:FS/4/qcr5NmZKckgW7zlmnMsGwEvDOoLosNndOZo3iPI/pUGk5L
+ QRBdr6KZmgoIW21oww7AAIE2OvP4G2ExcMY9W4491dIo1EMS3benQ7yyBgj1Suva+NhZ1d0
+ v8299dgBPrWoYSRACET5FUw8SY70yRyxEJIOKsly4Y4EdQukfhOa7pKC0466BuQjNHVo/rx
+ /AU7xZrNXSCgM56GxotpA==
+UI-OutboundReport: notjunk:1;M01:P0:Bc659OuMOwQ=;Llz3lIdtaaCgD/S7kK8AmYMlU9g
+ k+bQtZ5WRG7M3lgoC3gXA7wzm1awcgSDE0DPP1Gw4vSdpD/Io6FVIEJ1y9l2Bu9m1w17RQte+
+ /DtiBfLumTSPt0dMWFK4m77MS/w+l12BrQffsMwmXojC8hl8Pi98ApQuj+SvtBzKx4mQ1JHw9
+ IGdP0YllM3pZUpxb3YjQ5As2cx3K3p6mOPSW+pKq9/IiNNWn4vSRdi1JIxo87gc/68G2vb4T3
+ wxmf0KbaXG2tzQKSjltamqFBDDK8JR8j6f+dauJYSHP8CaGFZiPj42hCVgvj/PkmXScR5BeBK
+ sFRz2J3yUO4lxtT3CRCP9b4YU1T+/ms1HkZeKr43K8TZanS/rf63BQ92n0Q0U47MCQjIIbfhM
+ ISawMOuJS5ZfjDEQyZ3O3gn0QqXnGtdMCWRtPKSstX9BHgfIjaDby6QP6VWvewhOKc+vACrkS
+ biTNQ0gjIvfkgCS2JzzhKf8WfwWeE6BqZfEZc0OghPDstiSxaLr1XmwWIscFLotTmoumzGD9F
+ 3eUTmH3Y0Tb9QDnFhg02r5+qWSMlc63Zyi5UiMHjil1N5OsRHcYYGyHZVLL4NFiBHDHXsGCfr
+ B1UdPljx85r8JMWDQYDMJ2nOJyd3QgKAPq6+SdSmMG0LZ6FgqvH6tYm0bqQ64vQuKQVbZTjDm
+ lNFdQYvyGGxCBzALV3CR6I15F1XzpNVECVNhqvo4Tw==
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This series adds the support for chargebyte Tarragon, which is an Electrical
-Vehicle Supply Equipment (EVSE) for AC charging stations
-(according to IEC 61851, ISO 15118).
+From: Stefan Wahren <stefan.wahren@chargebyte.com>
 
-The Tarragon board is based on an i.MX6ULL SoC and is available in
-4 variants (Master, Slave, SlaveXT, Micro), which provide more or
-less peripherals.
+This adds the compatibles for the chargebyte Tarragon boards.
 
-Supported features:
-  * 512 MB DDR RAM
-  * eMMC
-  * Debug UART
-  * 100 Mbit Ethernet
-  * USB 2.0 Host interface
-  * Powerline communication (QCA700x)
-  * 2x RS485
-  * Digital in- and outputs (12 V)
-  * One-Wire master for external temp sensors
-  * 2x relay outputs
-  * 2x motor interfaces
-  
-The Tarragon hardware is bundled with a charging stack under the name Charge Control C: 
-https://chargebyte.com/products/charging-station-communication/charge-control-c
+Signed-off-by: Stefan Wahren <stefan.wahren@chargebyte.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ Documentation/devicetree/bindings/arm/fsl.yaml | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-This series is rebased on top of:
-https://git.kernel.org/pub/scm/linux/kernel/git/shawnguo/linux.git?h=for-next
-
-Stefan Wahren (8):
-  dt-bindings: vendor-prefixes: add chargebyte
-  dt-bindings: Add DS2482/DS2484 as trivial device
-  w1: ds2482: add i2c id for ds2484
-  dt-bindings: iio: st-sensors: Add IIS328DQ accelerometer
-  iio: accel: add support for IIS328DQ variant
-  dt-bindings: ARM: fsl: Add chargebyte Tarragon
-  ARM: dts: imx6ull: Add chargebyte Tarragon support
-  ARM: imx_v6_v7_defconfig: Enable Tarragon peripheral drivers
-
- .../devicetree/bindings/arm/fsl.yaml          |   9 +
- .../bindings/iio/st,st-sensors.yaml           |   1 +
- .../devicetree/bindings/trivial-devices.yaml  |   4 +
- .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
- arch/arm/boot/dts/Makefile                    |   4 +
- .../arm/boot/dts/imx6ull-tarragon-common.dtsi | 858 ++++++++++++++++++
- arch/arm/boot/dts/imx6ull-tarragon-master.dts |  82 ++
- arch/arm/boot/dts/imx6ull-tarragon-micro.dts  |  10 +
- arch/arm/boot/dts/imx6ull-tarragon-slave.dts  |  32 +
- .../arm/boot/dts/imx6ull-tarragon-slavext.dts |  64 ++
- arch/arm/configs/imx_v6_v7_defconfig          |   6 +
- drivers/iio/accel/st_accel.h                  |   1 +
- drivers/iio/accel/st_accel_core.c             |   1 +
- drivers/iio/accel/st_accel_i2c.c              |   5 +
- drivers/iio/accel/st_accel_spi.c              |   5 +
- drivers/w1/masters/ds2482.c                   |   1 +
- 16 files changed, 1085 insertions(+)
- create mode 100644 arch/arm/boot/dts/imx6ull-tarragon-common.dtsi
- create mode 100644 arch/arm/boot/dts/imx6ull-tarragon-master.dts
- create mode 100644 arch/arm/boot/dts/imx6ull-tarragon-micro.dts
- create mode 100644 arch/arm/boot/dts/imx6ull-tarragon-slave.dts
- create mode 100644 arch/arm/boot/dts/imx6ull-tarragon-slavext.dts
-
+diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
+index dece3e9ba7fd..2b430e20a7a6 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.yaml
++++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+@@ -781,6 +781,15 @@ properties:
+           - const: tq,imx6ull-tqma6ull2l      # MCIMX6Y2, LGA SoM variant
+           - const: fsl,imx6ull
+ 
++      - description: chargebyte Tarragon Boards
++        items:
++          - enum:
++              - chargebyte,imx6ull-tarragon-master
++              - chargebyte,imx6ull-tarragon-micro
++              - chargebyte,imx6ull-tarragon-slave
++              - chargebyte,imx6ull-tarragon-slavext
++          - const: fsl,imx6ull
++
+       - description: i.MX6ULZ based Boards
+         items:
+           - enum:
 -- 
 2.34.1
 
