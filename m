@@ -2,103 +2,89 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F9AC64EC4
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 17:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A51C6FA99
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 17:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229519AbjCFRi5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Mar 2023 12:38:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49686 "EHLO
+        id S230515AbjCFR4e (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Mar 2023 12:56:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbjCFRi4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 12:38:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 278DA66D28;
-        Mon,  6 Mar 2023 09:38:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FA866102A;
-        Mon,  6 Mar 2023 16:09:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4EC0C433EF;
-        Mon,  6 Mar 2023 16:09:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678118944;
-        bh=+uB7D1gwrBQ8/0Era4Cxa/LZ06zO3DpKV4QfZb0Dfug=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=bbJqmerTmVbHwb+bJzKgtxIiT+sVvc/Zs7PuTNgBt9hsoaa9uM1MKDPSa5FPt7Wva
-         YoZ6q1ThDQ764DoX6GExQ8WxY39xTy1yk2qHe9Of6HC/KyrVjOp0PpMjSNrENXfOay
-         5kx4n69Jv4NdDEENm77Jy205wOT4RS0GD20pHAqTOHqYdOQRzsira9uoDTS78+X9gv
-         8P3dI2elnyk3j5FOeTEoRYmdzTLvkNaF2K/IvhL2Y3zxuNNjHqQP/LWEEVgZiFLPkH
-         0szMqP4+dD9YHGgG4STS3XZt/cLakker2p5Q5sevSOeceKIzSKz6VhmyygACvoCqEm
-         aF4NHHE5OnTKg==
-Message-ID: <6247adab-2004-5159-69ca-9e1dd30f4c38@kernel.org>
-Date:   Mon, 6 Mar 2023 17:09:00 +0100
+        with ESMTP id S230519AbjCFRzw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 12:55:52 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1DBF6C69D;
+        Mon,  6 Mar 2023 09:55:26 -0800 (PST)
+Received: from stefanw-SCHENKER ([37.4.248.41]) by mrelayeu.kundenserver.de
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1M3lkT-1pYxZQ0Hqd-000tYL; Mon, 06 Mar 2023 18:23:15 +0100
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Evgeniy Polyakov <zbr@ioremap.net>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>
+Cc:     linux-imx@nxp.com, Li Yang <leoyang.li@nxp.com>,
+        Denis Ciocca <denis.ciocca@st.com>, soc@kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Stefan Wahren <stefan.wahren@chargebyte.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>
+Subject: [PATCH 4/8] dt-bindings: iio: st-sensors: Add IIS328DQ accelerometer
+Date:   Mon,  6 Mar 2023 18:22:45 +0100
+Message-Id: <20230306172249.74003-5-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230306172249.74003-1-stefan.wahren@i2se.com>
+References: <20230306172249.74003-1-stefan.wahren@i2se.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v1 1/2] dt-bindings: iio: adc: adding dt-bindings for
- PAC193X
-Content-Language: en-US
-To:     Marius.Cristea@microchip.com, jic23@kernel.org
-Cc:     devicetree@vger.kernel.org, lars@metafoo.de,
-        linux-iio@vger.kernel.org, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230220123232.413029-1-marius.cristea@microchip.com>
- <20230220123232.413029-2-marius.cristea@microchip.com>
- <c38afa67-d24f-0390-f18a-81bee15b7eca@kernel.org>
- <20230225171723.15e822ec@jic23-huawei>
- <2f1a14522a7a8d46e3b037a285af4c3dd9b17cbc.camel@microchip.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <2f1a14522a7a8d46e3b037a285af4c3dd9b17cbc.camel@microchip.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:wQRPex7XRzipPrnANRDADxZJE2vb54rgHl+nepAI703ge7CdZAd
+ wBQQEv8D5RoFYWvTcdUDp8/wxCc0OVffAnl6LIf8bIjT/OQ5+j2PMyqSTNjOpeqI0rL6+23
+ 2oT0eaxJKFcb5uHJtU9XR1Or0NwKNLIyEGEO7mgrjLURo94lhq0Aj+oKQK50DaIlPh8reIr
+ 1RHw7cZPZfig5/B+kzmEw==
+UI-OutboundReport: notjunk:1;M01:P0:2YqeGNcQlRk=;a94tKlFdzg5LskCYLPpEIORYcKC
+ kL9C6+b+gaX6+UtOZo/99wzXNvOcOgdJLaY0dvKYKdCra0hXdCPXgNPm+RRP1yl6jv7Itxdak
+ W+EYcPsV2TN5awziJF5rkGJmQeeSh0JYqaymw71cy+ryB2SsHuhbdK3AOR+WaMNCbb065wydw
+ 86xYJuxk0DxP+XV43l35RSp8PbXxYIYv/7zrA0s8yNbAT3AQq7uP+/YlIdnSJ2cT+7QIcELiG
+ a2uO+/yxGHDTQbjCydpQTBPMF623YdWTmzfz5gUS44BaxXTKlkabS3MYa1N8jTvDapW2qUKN8
+ tfHqpieNYdhKcZzTAJVOwyJnkBRobjS2WRF67ERcUly7o7SVUVKKZX1oLl4Q35XaTwTAgnxyO
+ uthCYxIunbI0fObJLhLgSsfRYlci1LfrA0GsBkwyxNwN7y8PNFncKHqNsbKK5vpWhnabFVK0S
+ PubYnsMMI0Rp0couUyiGlkJG6fBIud25S49vs3cmS9ujuPnkguwWhdqjse1Ud6RrOjpgIFyma
+ Rj0ElM/fypebhnWruXVy7any23KcAS8VBVDkgo4ez1oq3ULn4BcfkO4FyEv4Z0AQE8uT42dRc
+ pbiTPyBlWF/F80rjy86T8VEjRSfyQm/zYJju+zXMD+Hdj9k6Y2mmMkRBUTCI7Ytzzq603Ulih
+ n7dsAaIvZRStHwrXXRw4SEYacAYXwV8WYFPf9zGtiFiKDmFSkb3FVoPeR88HYf/iRy7/CAHHP
+ CDAKlzXtfbCEgx73d2Sg0ZW+fqvX+6C1x91CvjR/e3Y0xoM9lOXF5A=
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 06/03/2023 14:53, Marius.Cristea@microchip.com wrote:
-> 
-> Hi Jonathan,
-> 
->    Thank you so much! I'm happy to contribute to IIO.
-> 
-> I will remove some section because I agree with the propose solution.
-> For the rest I will comment below..
-> 
-> 
-> 
-> On Sat, 2023-02-25 at 17:17 +0000, Jonathan Cameron wrote:
->>>> +
->>>> +  microchip,samp-rate:
->>>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>>> +    description: Sampling rate for all device's channels.
->>>
->>> What are the units? rate is usually in hz, which should be
->>> expressed in
->>> unit suffix (property name)]
->>
->> It's unusual for sampling rate to be a property of the hardware and
->> hence
->> suitable for DT binding. Normally we make this a userspace control
->> instead.
->> If there is a reason for doing it from DT, that wants to be mentioned
->> here.
->>
-> 
-> Here I could change it into the datarate (as in
-> iio/adc/ti,ads1015.yaml). The units are samples per second. My
-> intention was to be alingned with the datasheet.
-> 
-> My intention was to let the user configure the sample rate as soon as
-> posile during the startup (the PAC device's own power consumtion will
-> increase with the sampling rate - default the chip will start with the
-> maximum samples per second).
+From: Stefan Wahren <stefan.wahren@chargebyte.com>
 
-Then maybe the default should be just lowest rate and user will adjust
-it further? Since this is user-space knob, why this should be even
-configurable per board?
+The ST IIS328DQ is an accelerometer sensor compatible with
+the existing ST sensor binding.
 
+Link: https://lore.kernel.org/linux-iio/2bac9ecf-9d2e-967e-9020-1c950487d781@i2se.com/
+Signed-off-by: Stefan Wahren <stefan.wahren@chargebyte.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ Documentation/devicetree/bindings/iio/st,st-sensors.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Best regards,
-Krzysztof
+diff --git a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+index c6201976378f..247700537aa8 100644
+--- a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
++++ b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+@@ -25,6 +25,7 @@ properties:
+       - description: STMicroelectronics Accelerometers
+         enum:
+           - st,h3lis331dl-accel
++          - st,iis328dq
+           - st,lis2de12
+           - st,lis2dw12
+           - st,lis2hh12
+-- 
+2.34.1
 
