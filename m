@@ -2,21 +2,21 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4685DC6FD1B
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 17:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D52C6FA99
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 17:25:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229755AbjCFRZA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Mar 2023 12:25:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        id S229780AbjCFRZB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Mar 2023 12:25:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230118AbjCFRYn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 12:24:43 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E329F5652E;
-        Mon,  6 Mar 2023 09:24:14 -0800 (PST)
+        with ESMTP id S230187AbjCFRYp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 12:24:45 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B65E64AB4;
+        Mon,  6 Mar 2023 09:24:16 -0800 (PST)
 Received: from stefanw-SCHENKER ([37.4.248.41]) by mrelayeu.kundenserver.de
  (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MfYDO-1qFC5C1a8W-00g1vq; Mon, 06 Mar 2023 18:23:14 +0100
+ 1MEFrX-1phB3609X3-00AHTH; Mon, 06 Mar 2023 18:23:13 +0100
 From:   Stefan Wahren <stefan.wahren@i2se.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -33,57 +33,58 @@ Cc:     linux-imx@nxp.com, Li Yang <leoyang.li@nxp.com>,
         linux-arm-kernel@lists.infradead.org,
         Stefan Wahren <stefan.wahren@chargebyte.com>,
         Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH 3/8] w1: ds2482: add i2c id for ds2484
-Date:   Mon,  6 Mar 2023 18:22:44 +0100
-Message-Id: <20230306172249.74003-4-stefan.wahren@i2se.com>
+Subject: [PATCH 1/8] dt-bindings: vendor-prefixes: add chargebyte
+Date:   Mon,  6 Mar 2023 18:22:42 +0100
+Message-Id: <20230306172249.74003-2-stefan.wahren@i2se.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230306172249.74003-1-stefan.wahren@i2se.com>
 References: <20230306172249.74003-1-stefan.wahren@i2se.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:FpRTpt2ZzY6mienThTEbNRfHWBNdsZCyFr8kQjvCTI+RpIK2Uwa
- bnunZRwMmRHkOJxcVfa/1K6T4N0nJojbL4G8dF+v9dhYAX7gEj+4BQrOEQQnqs/7QZZLXdp
- m9eiMTBOWwcZ4/8bpDI4HF5dfcn+KrCIQxrE7HzqYo6SQo0Yjwt5d/ilrrCi0hpgqS9+BQJ
- f3hyNkJPRL1xpa8bEVriw==
-UI-OutboundReport: notjunk:1;M01:P0:Ia63qqu8ctE=;jrIe9L5aIyXvRzwzWne8iCjw4aU
- YhUqVmPr5iqvpuP3nwi9a/o1yNPb3wlOhqsNSOvADOChVvsBNn/w6NXN8MZ5o7edDCR9D+Soo
- q4DH+bK5IWVay2tUMc2qm48bOImDtvG/q8tnSI+fIzI/3B+wZYBXGnUaa1U0+fzrPhjzexSjx
- ttomjOHibxbjeGuTOSJSj/LyUC06vUUs5Do2W1ujEanU/4MBBtz3hjXWK6n++YIch1YYlFx2G
- wIgt+7uwfvrmxUVUVl3sHIhJCXnLGtP4KrssOciPkr3zyF7592JDSeF6inFn+Jy/EOQ0ItxMf
- zUrqAHFRzsXQt5N6yCJvvjF9IjmE+ml9gwtOMYzSs1hS4UZSPIVO5Q6N8ysFLWt3/Xi8nV/qj
- jFQDmyaATHEQd11Jgg9CkDb7TmkbdqLnS7fEyzGR4ZBzRyBMOuqo+OiKbhT9kv3qQIp8jPe9P
- 9IfEtwmDpqbzZ5oPGvhpPpi9UqRoQVxcA+mh4J2Jl/io0d/YXEDLrTzzsnBLGYHYyZdhbIDYH
- 7QFWTzQc2+yZ4xFuXgYSRL0M08HzhrOSkI6BID2AlFsSgBTkohEA1hx08acbX4ob6KYrDBVmD
- TvWnhB89uDVHJR9Wi3wWd57J8GDyerfT/kjr6McdABQD2ApdO/IyWtBnMNQhZbXsIrGzjYw9k
- rW2eGs8GSSyUccWDCelRyhl/yMwWmLC5geTt8NghuQ==
+X-Provags-ID: V03:K1:GmRbHadQVwqC+mg7raRvcxSwI16pBkcDjYkmfckT06Qp86+EKtq
+ U79lbWonJTVU4EBP9bZ0OZllQyqlCpueGZSzYg8XHWk0L8t6PVjXH25qBdM/eirWQS0Sq2/
+ fQj9WVUUU1Nta5jp/TgFGzbBO2+qa5k+tnGZaz6A+2/YGGvggne7OudC6az/Up96ACb0tgd
+ hBJSfLO6USTz00bj/gieg==
+UI-OutboundReport: notjunk:1;M01:P0:FFLhCtfCQ+g=;2BI/JPFHJO1I4fmNlDsInaPHhmq
+ a+Xv4yedotMvzF3pR0q/2bA6asJbb/9jUF/PE/f1iHG1aAyAoJaWxOPtBL8o5clyR5YdZeyF+
+ GEhWx5/faMTsTv0kYD9GSZLlxSIbDiLn1ZkF294sLNZLkk2EgwbnjgdOWaieoOVINrLhHHkiR
+ NLvwwty2D78ryaFqcuRIYaKBjufJP5NMp4att9dAwnbRIwnIEGism507B3XURxu5Rs5zpQ0Eu
+ azvWuTi6EjSjqYDqfFHFJW/L8Ys24qrRyn0DpivwyIYYP1FbDSLxYFFCHDQUdbBrCSdbFUBMJ
+ MrWwbqQppUvVUutYGiumpeXq5AWNnVfnNy6bTnZMEFe5zZNn/8RHrR9CfEoED9E1L80ETCI6R
+ shMXD4UIba0GZLhQSGkFWdroNxyTcDi7+f1+LiaOFcbgrdbSXX8p4u/1SUqTxi9UAz9HsYoV6
+ W+nvuVuQYTiegt6UMJkYii4tdYsZ0lZg/3IOEI0WT09jncael5E9hNtLPuHT9B1kmL4S/CYl9
+ G/TXORFleI25isdfLc32mgasV+SGwqv625xH7KC9vRGKgANI43QUEHnDVt3mBM0WuL27BJcJw
+ NXDgq5PztfYGzHasNF6Q3w9EBbIUxmQcNSI4QPNAanP4hL9Jen3ZXjSDguM83SzEU+wUNfFLQ
+ Hkh4Ruwln/zNBwWBFWoudEAKF6kee9TUSS83mRtB1Q==
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Stefan Wahren <stefan.wahren@chargebyte.com>
 
-The DS2484 is very similar to the DS2482-100, but also supports a
-pin-controlled power-saving sleep mode.
+chargebyte supplies hardware and software products for all
+aspects of charging communication.
+https://chargebyte.com/
 
-Link: https://www.analog.com/media/en/technical-documentation/data-sheets/DS2484.pdf
 Signed-off-by: Stefan Wahren <stefan.wahren@chargebyte.com>
 Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 ---
- drivers/w1/masters/ds2482.c | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/w1/masters/ds2482.c b/drivers/w1/masters/ds2482.c
-index 62c44616d8a9..6f6df686e9ad 100644
---- a/drivers/w1/masters/ds2482.c
-+++ b/drivers/w1/masters/ds2482.c
-@@ -545,6 +545,7 @@ static void ds2482_remove(struct i2c_client *client)
-  */
- static const struct i2c_device_id ds2482_id[] = {
- 	{ "ds2482", 0 },
-+	{ "ds2484", 0 },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, ds2482_id);
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index ed64e06ecca4..b8d8fa1d1fd6 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -240,6 +240,8 @@ patternProperties:
+     description: CellWise Microelectronics Co., Ltd
+   "^ceva,.*":
+     description: Ceva, Inc.
++  "^chargebyte,.*":
++    description: chargebyte GmbH
+   "^checkpoint,.*":
+     description: Check Point Software Technologies Ltd.
+   "^chefree,.*":
 -- 
 2.34.1
 
