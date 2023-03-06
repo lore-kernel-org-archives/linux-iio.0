@@ -2,117 +2,138 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D57C64EC4
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 18:20:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11715C64EC4
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Mar 2023 18:26:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230043AbjCFSUM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Mar 2023 13:20:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36668 "EHLO
+        id S230002AbjCFS0g convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Mar 2023 13:26:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230028AbjCFSUL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 13:20:11 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44ACA65060;
-        Mon,  6 Mar 2023 10:19:35 -0800 (PST)
-Received: from stefanw-SCHENKER ([37.4.248.41]) by mrelayeu.kundenserver.de
- (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1M4b5s-1pXaex3NmY-001j20; Mon, 06 Mar 2023 18:23:17 +0100
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Evgeniy Polyakov <zbr@ioremap.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>
-Cc:     linux-imx@nxp.com, Li Yang <leoyang.li@nxp.com>,
-        Denis Ciocca <denis.ciocca@st.com>, soc@kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Stefan Wahren <stefan.wahren@chargebyte.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH 8/8] ARM: imx_v6_v7_defconfig: Enable Tarragon peripheral drivers
-Date:   Mon,  6 Mar 2023 18:22:49 +0100
-Message-Id: <20230306172249.74003-9-stefan.wahren@i2se.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230306172249.74003-1-stefan.wahren@i2se.com>
-References: <20230306172249.74003-1-stefan.wahren@i2se.com>
+        with ESMTP id S230096AbjCFS0d (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2023 13:26:33 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00BC174A47;
+        Mon,  6 Mar 2023 10:26:03 -0800 (PST)
+Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PVkTq6Jy8z6J7Kr;
+        Tue,  7 Mar 2023 00:26:07 +0800 (CST)
+Received: from localhost (10.202.227.76) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Mon, 6 Mar
+ 2023 16:26:33 +0000
+Date:   Mon, 6 Mar 2023 16:26:32 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     <Marius.Cristea@microchip.com>
+CC:     <jic23@kernel.org>, <krzk@kernel.org>,
+        <devicetree@vger.kernel.org>, <lars@metafoo.de>,
+        <linux-iio@vger.kernel.org>, <robh+dt@kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 1/2] dt-bindings: iio: adc: adding dt-bindings for
+ PAC193X
+Message-ID: <20230306162632.00005edd@Huawei.com>
+In-Reply-To: <2f1a14522a7a8d46e3b037a285af4c3dd9b17cbc.camel@microchip.com>
+References: <20230220123232.413029-1-marius.cristea@microchip.com>
+        <20230220123232.413029-2-marius.cristea@microchip.com>
+        <c38afa67-d24f-0390-f18a-81bee15b7eca@kernel.org>
+        <20230225171723.15e822ec@jic23-huawei>
+        <2f1a14522a7a8d46e3b037a285af4c3dd9b17cbc.camel@microchip.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:apHcp3EmZDFHmusTpF0RTcwoyJeqPvigk6+aX2bNJECC+tUgQ/N
- KUbP1kVDBGdaW8jNnatNLV01ny0L8kAQblGyGQ1ONpnD8q2kEPfIupcKhRxrLgNvYFFEpba
- bkBoeW7BaH8TJc+K47y+GOiQncB3rqNB+tuM1iVk6uezW8MUDzfmiKnScEvr6uOC0UwMNVP
- PnufDfoFk2bjgy2s0myfg==
-UI-OutboundReport: notjunk:1;M01:P0:hKyuCjYBI5M=;F/yIEsps5KSIm0JL7ke3vh9+MHx
- LH4FkprnFkIoE/lCUjPQMNVdrqpKdZobg3lSHLFgW/nfTyHljGRDMT2P9DhxD7ruxLDhgeYJo
- U2fygasVoZpuXFXOtm8UWJ6rvAx5qbgIxwYsXeEebthyk79TKnj3ssKS4erjY8UZrR9f4fjge
- QVeRafE1bi3il98lfE76m6g7UAtxr+JzuMfbFLMqUZXQwgebkonZ2XPoWc/Dfuz+08cnuNyeD
- qnEtZ4nEQQEHrnKeyJ0tDr191q/32/iI6Fveh2f4o8OEXUA9eEfPdXxOYn4qv+Gpf1Kkrpkal
- K6h1ZvHUAomP7GBAj4NZaSvAEqhdAbl8+gwh5ByZ/GwevzUcdMXQV2spLycoFykkre3WyqRoo
- NiYMM8lopCkEJqFeyKqvWPB0v0m8HA3EgWIgRSOnCIKnObpEfe+LZY4mrByUULWvBCpg1uOKs
- Fl1AQCzm9l5TrwAt1mIEfBKf5YVm15LRtZ9j/XIAeirvCC6HOXT4K7xJ4XS8h9PCd+Udi6/uq
- F34Ws5C9eR1YRaflHXWU+SIHgYADgy1fyMM3274HVHJIjvocrG3pKDCZRBQTXgeP26QoeMU3l
- nJdwHfkCCm+/aQYGV91bZ+t+pdmcqC+qxrNQLkvcCutIC3efKjKdQbFXPFpFmvdBloh91foRN
- 31K1J5He527eOv/W9unz7giwjIP5rc0mLUZcJbJzlg==
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [10.202.227.76]
+X-ClientProxiedBy: lhrpeml500006.china.huawei.com (7.191.161.198) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@chargebyte.com>
+On Mon, 6 Mar 2023 13:53:27 +0000
+<Marius.Cristea@microchip.com> wrote:
 
-We need to enable some drivers in order to use the following peripherals
-of Tarragon:
-  * QCA7000/7005 Powerline chip
-  * One-Wire Master DS2484 with external thermal sensors
-  * external 4 pin PWM fan
-  * ST IIS328DQ I2C accelerometer
+> Hi Jonathan,
+> 
+>    Thank you so much! I'm happy to contribute to IIO.
+> 
+> I will remove some section because I agree with the propose solution.
+> For the rest I will comment below..
+> 
+> 
+> 
+> On Sat, 2023-02-25 at 17:17 +0000, Jonathan Cameron wrote:
+> > > > +
+> > > > +  microchip,samp-rate:
+> > > > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > > > +    description: Sampling rate for all device's channels.  
+> > > 
+> > > What are the units? rate is usually in hz, which should be
+> > > expressed in
+> > > unit suffix (property name)]  
+> > 
+> > It's unusual for sampling rate to be a property of the hardware and
+> > hence
+> > suitable for DT binding. Normally we make this a userspace control
+> > instead.
+> > If there is a reason for doing it from DT, that wants to be mentioned
+> > here.
+> >   
+> 
+> Here I could change it into the datarate (as in
+> iio/adc/ti,ads1015.yaml). The units are samples per second. My
+> intention was to be alingned with the datasheet.
+> 
+> My intention was to let the user configure the sample rate as soon as
+> posile during the startup (the PAC device's own power consumtion will
+> increase with the sampling rate - default the chip will start with the
+> maximum samples per second).
 
-Signed-off-by: Stefan Wahren <stefan.wahren@chargebyte.com>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- arch/arm/configs/imx_v6_v7_defconfig | 6 ++++++
- 1 file changed, 6 insertions(+)
+Feel free to have the driver set it to the minimum frequency unconditionally
+in probe.
 
-diff --git a/arch/arm/configs/imx_v6_v7_defconfig b/arch/arm/configs/imx_v6_v7_defconfig
-index 6dc6fed12af8..c854b03fabf2 100644
---- a/arch/arm/configs/imx_v6_v7_defconfig
-+++ b/arch/arm/configs/imx_v6_v7_defconfig
-@@ -128,6 +128,7 @@ CONFIG_CS89x0_PLATFORM=y
- # CONFIG_NET_VENDOR_MICREL is not set
- # CONFIG_NET_VENDOR_MICROCHIP is not set
- # CONFIG_NET_VENDOR_NATSEMI is not set
-+CONFIG_QCA7000_SPI=m
- # CONFIG_NET_VENDOR_SEEQ is not set
- CONFIG_SMC91X=y
- CONFIG_SMC911X=y
-@@ -215,6 +216,9 @@ CONFIG_GPIO_PCA953X=y
- CONFIG_GPIO_PCF857X=y
- CONFIG_GPIO_STMPE=y
- CONFIG_GPIO_74X164=y
-+CONFIG_W1=m
-+CONFIG_W1_MASTER_DS2482=m
-+CONFIG_W1_SLAVE_THERM=m
- CONFIG_POWER_RESET=y
- CONFIG_POWER_RESET_SYSCON=y
- CONFIG_POWER_RESET_SYSCON_POWEROFF=y
-@@ -223,6 +227,7 @@ CONFIG_RN5T618_POWER=m
- CONFIG_SENSORS_MC13783_ADC=y
- CONFIG_SENSORS_GPIO_FAN=y
- CONFIG_SENSORS_IIO_HWMON=y
-+CONFIG_SENSORS_PWM_FAN=y
- CONFIG_SENSORS_SY7636A=y
- CONFIG_THERMAL_STATISTICS=y
- CONFIG_THERMAL_WRITABLE_TRIPS=y
-@@ -403,6 +408,7 @@ CONFIG_CLK_IMX8MQ=y
- CONFIG_SOC_IMX8M=y
- CONFIG_EXTCON_USB_GPIO=y
- CONFIG_IIO=y
-+CONFIG_IIO_ST_ACCEL_3AXIS=m
- CONFIG_MMA8452=y
- CONFIG_IMX7D_ADC=y
- CONFIG_RN5T618_ADC=y
--- 
-2.34.1
+> 
+> 
+> >   
+> 
+> >   
+> > >   
+> > > > +
+> > > > +      microchip,bi-directional:
+> > > > +        description: Whether the channel is bi-directional.  
+> > > 
+> > > Describe here what is a "bi-directional" channel for ADC... Maybe
+> > > it is
+> > > obvious, maybe not. For me it is not and none of other devices have
+> > > it.
+> > >   
+> > From datasheet this seems to be a novel description of whether the
+> > ADC
+> > is measuring just positive or allows for negative voltage as well
+> > (i.e.
+> > the current through the shut resistor is going on the other
+> > direction).
+> > Can we relate this to a biopolar / unipolar decision on a simple
+> > voltage ADC?
+> > For that we have standard DT bindings in iio/adc/adc.yaml
+> >   
+> 
+> Yes, the PAC device can measure voltages as unipolar or bipolar but
+> also current as unidirectional or bidirectional (we are measuring the
+> voltage across a shunt resistor). We are also reporting power and is
+> not a "usual" thing to report power as unipolar or bipolar. Bi-
+> directional power makes more sens if you are thinking to monitor a
+> charge discharge cycle for a battery pack.
+
+I'm still a little confused. If you are bipolar and hence can measure
+postive and negative voltage between two pins, how is that different
+to bidirectional? Other than for bidirection we are talking current
+rather than voltage.
+
+> 
+> 
+> 
+> Thanks,
+> Marius
 
