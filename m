@@ -2,478 +2,319 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75945C678D5
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Mar 2023 12:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A40C6FD1B
+	for <linux-iio@archiver.kernel.org>; Tue,  7 Mar 2023 17:31:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbjCGMx0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Mar 2023 07:53:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
+        id S231676AbjCGRbW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Mar 2023 12:31:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbjCGMxO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Mar 2023 07:53:14 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56E1197;
-        Tue,  7 Mar 2023 04:53:06 -0800 (PST)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 327BNJxZ022574;
-        Tue, 7 Mar 2023 06:33:37 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3p415c8t9u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Mar 2023 06:33:36 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 327BXYJv032141
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 7 Mar 2023 06:33:34 -0500
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 7 Mar 2023 06:33:33 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 7 Mar 2023 06:33:33 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 7 Mar 2023 06:33:33 -0500
-Received: from okan.localdomain (IST-LT-43126.ad.analog.com [10.25.36.20])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 327BSiLu011140;
-        Tue, 7 Mar 2023 06:33:17 -0500
-From:   Okan Sahin <okan.sahin@analog.com>
-To:     <okan.sahin@analog.com>
-CC:     Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        with ESMTP id S231627AbjCGRbC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Mar 2023 12:31:02 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F3594766;
+        Tue,  7 Mar 2023 09:26:22 -0800 (PST)
+Received: from [192.168.1.141] ([37.4.248.41]) by mrelayeu.kundenserver.de
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1Mf0FY-1qEyER18xu-00gZxI; Tue, 07 Mar 2023 18:25:25 +0100
+Message-ID: <a2a39419-86e9-2dff-644a-391248b51a0e@i2se.com>
+Date:   Tue, 7 Mar 2023 18:25:23 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH 7/8] ARM: dts: imx6ull: Add chargebyte Tarragon support
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Caleb Connolly <caleb.connolly@linaro.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Ramona Bolboaca <ramona.bolboaca@analog.com>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        "Ibrahim Tilki" <Ibrahim.Tilki@analog.com>,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        Haibo Chen <haibo.chen@nxp.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: [PATCH v6 5/5]  mfd: max77541: Add ADI MAX77541/MAX77540 PMIC Support
-Date:   Tue, 7 Mar 2023 14:28:15 +0300
-Message-ID: <20230307112835.81886-6-okan.sahin@analog.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230307112835.81886-1-okan.sahin@analog.com>
-References: <20230307112835.81886-1-okan.sahin@analog.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: Yic_YnHfVSl-EUe08CG9sqFUz24o2g-V
-X-Proofpoint-ORIG-GUID: Yic_YnHfVSl-EUe08CG9sqFUz24o2g-V
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-07_06,2023-03-07_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- spamscore=0 malwarescore=0 clxscore=1011 suspectscore=0 phishscore=0
- priorityscore=1501 bulkscore=0 impostorscore=0 mlxlogscore=998 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2303070104
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Evgeniy Polyakov <zbr@ioremap.net>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>
+Cc:     linux-imx@nxp.com, Li Yang <leoyang.li@nxp.com>,
+        Denis Ciocca <denis.ciocca@st.com>, soc@kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Stefan Wahren <stefan.wahren@chargebyte.com>
+References: <20230306172249.74003-1-stefan.wahren@i2se.com>
+ <20230306172249.74003-8-stefan.wahren@i2se.com>
+ <d77c2938-bcef-4586-77b5-1cb93b113eb5@linaro.org>
+Content-Language: en-US
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <d77c2938-bcef-4586-77b5-1cb93b113eb5@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:RsDQrIo2ZQR3Aq166ZFWN07AvwnhS8DDvMRDPETRCZhn/+TB7ii
+ 6kZVydNHo2h6howXdFkNg6ncj8kI5RJl94Ct85BJ2uei8Q074aI9mmECdz4W4boTT6vpx5h
+ XeJRJyRpCblEQE7qrGC04LErqLO/0eTnw7iRRYTNy4Wb6qcKr/qGVooH+UG4Rjo84Dxh5C/
+ 3TvgWVRwv1VQEWhCgSgLg==
+UI-OutboundReport: notjunk:1;M01:P0:ekZsYtJg+Sw=;16NcdWSP67Kqrg6684a4vhOYYdr
+ l4rKFy6hs00kdbrPE1TX+V7+qgfHqpX2VMlL7GvN1C4OcjzK39BVGt6rIAaI+Frd0s1BC30Es
+ pkCyWnN/F+3yAP+IPYLGHpSwpRfvLx962pon6dB3bmZhK002itpGEtgW4CUGBvYdMgv+jJ07+
+ qCKKYYgVQ17w6TZE5O9BK0ecsWqFvrDUubW5i9BmG6eFWWIQXWzAxQ0AmHQ6n56Yc3eNT/KoA
+ nymj5cLb/Zfjg2ndwylq5bC3VKwlI/vyUYXW9tUYqMmHYTHlHrQ4cVtL8K73z/gEVZUDTB3no
+ SXT4oWV1tY94olO7i6XNiY5ZLiJEuwjsaIiURd1NAeRbcH4G7ZPQoV0lku/eR9jWhCqIxQFJS
+ 3kTQQUQUmzldeokjZ630Bkf/oVS/R+YzkaHUPZNALbFdamJR6+6Pr+en32croiZ2dPD+Qpd/v
+ a1YTwAnSgyydKqiLzR9YybV2/KpNWx+XeWMI4REhCzBHx3lfaU5lz2M1zvJDLXiFWD0wo82a+
+ Vzrhm6Jan6EoSBVwLY9c6q8VxjtP3syuwy3qbeWXez8QQh1jyR96l4zQMv3dR2kV5COQZniQw
+ Bubl9k7f2VSyIQyLIHKsBNPBOQULnD7Rqjz/RnTdbJjDcTC4f+UjxrKpAlp0Oxkw8qel4nAMj
+ 0fixENq35Kt5TfiUrZ7r+DPLM6AiqZBiYtLhrCvCdg==
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-MFD driver for MAX77541/MAX77540 to enable its sub
-devices.
+Hi Krzysztof,
 
-The MAX77541 is a multi-function devices. It includes
-buck converter and ADC.
+Am 07.03.23 um 09:30 schrieb Krzysztof Kozlowski:
+> On 06/03/2023 18:22, Stefan Wahren wrote:
+>> From: Stefan Wahren <stefan.wahren@chargebyte.com>
+>>
+>> This adds the support for chargebyte Tarragon, which is an Electrical
+>> Vehicle Supply Equipment (EVSE) for AC charging stations
+>> (according to IEC 61851, ISO 15118).
+>>
+>> The Tarragon board is based on an i.MX6ULL SoC and is available in
+>> 4 variants (Master, Slave, SlaveXT, Micro), which provide more or
+>> less peripherals.
+>>
+>> Supported features:
+>>    * 512 MB DDR RAM
+>>    * eMMC
+>>    * Debug UART
+>>    * 100 Mbit Ethernet
+>>    * USB 2.0 Host interface
+>>    * Powerline communication (QCA700x)
+>>    * 2x RS485
+>>    * Digital in- and outputs (12 V)
+>>    * One-Wire master for external temp sensors
+>>    * 2x relay outputs
+>>    * 2x motor interfaces
+>>
+>> Link: https://chargebyte.com/products/charging-station-communication/charge-control-c
+>> Signed-off-by: Stefan Wahren <stefan.wahren@chargebyte.com>
+>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+>> ---
+>>   arch/arm/boot/dts/Makefile                    |   4 +
+>>   .../arm/boot/dts/imx6ull-tarragon-common.dtsi | 858 ++++++++++++++++++
+>>   arch/arm/boot/dts/imx6ull-tarragon-master.dts |  82 ++
+>>   arch/arm/boot/dts/imx6ull-tarragon-micro.dts  |  10 +
+>>   arch/arm/boot/dts/imx6ull-tarragon-slave.dts  |  32 +
+>>   .../arm/boot/dts/imx6ull-tarragon-slavext.dts |  64 ++
+>>   6 files changed, 1050 insertions(+)
+>>   create mode 100644 arch/arm/boot/dts/imx6ull-tarragon-common.dtsi
+>>   create mode 100644 arch/arm/boot/dts/imx6ull-tarragon-master.dts
+>>   create mode 100644 arch/arm/boot/dts/imx6ull-tarragon-micro.dts
+>>   create mode 100644 arch/arm/boot/dts/imx6ull-tarragon-slave.dts
+>>   create mode 100644 arch/arm/boot/dts/imx6ull-tarragon-slavext.dts
+>>
+>> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+>> index efe4152e5846..aae52a6380bc 100644
+>> --- a/arch/arm/boot/dts/Makefile
+>> +++ b/arch/arm/boot/dts/Makefile
+>> @@ -755,6 +755,10 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
+>>   	imx6ull-phytec-segin-lc-rdk-nand.dtb \
+>>   	imx6ull-phytec-tauri-emmc.dtb \
+>>   	imx6ull-phytec-tauri-nand.dtb \
+>> +	imx6ull-tarragon-master.dtb \
+>> +	imx6ull-tarragon-micro.dtb \
+>> +	imx6ull-tarragon-slave.dtb \
+>> +	imx6ull-tarragon-slavext.dtb \
+>>   	imx6ull-tqma6ull2-mba6ulx.dtb \
+>>   	imx6ull-tqma6ull2l-mba6ulx.dtb \
+>>   	imx6ulz-14x14-evk.dtb \
+>> diff --git a/arch/arm/boot/dts/imx6ull-tarragon-common.dtsi b/arch/arm/boot/dts/imx6ull-tarragon-common.dtsi
+>> new file mode 100644
+>> index 000000000000..1099dd688e80
+>> --- /dev/null
+>> +++ b/arch/arm/boot/dts/imx6ull-tarragon-common.dtsi
+>> @@ -0,0 +1,858 @@
+>> +// SPDX-License-Identifier: GPL-2.0 OR MIT
+>> +//
+>> +// Copyright (C) 2023 chargebyte GmbH
+>> +
+>> +/dts-v1/;
+>> +
+>> +#include <dt-bindings/input/input.h>
+>> +#include <dt-bindings/leds/common.h>
+>> +#include <dt-bindings/pwm/pwm.h>
+>> +#include "imx6ull.dtsi"
+>> +
+>> +/ {
+>> +	aliases {
+>> +		mmc0 = &usdhc2; /* eMMC */
+>> +	};
+>> +
+>> +	chosen {
+>> +		stdout-path = &uart4;
+>> +	};
+>> +
+>> +	memory@80000000 {
+>> +		device_type = "memory";
+>> +		reg = <0x80000000 0x20000000>;
+>> +	};
+>> +
+>> +	emmc_pwrseq: emmc-pwrseq {
+>> +		compatible = "mmc-pwrseq-emmc";
+>> +		pinctrl-0 = <&pinctrl_emmc_rst>;
+>> +		pinctrl-names = "default";
+>> +		reset-gpios = <&gpio4 10 GPIO_ACTIVE_LOW>;
+>> +	};
+>> +
+>> +	reg_dcdc_3v3: regulator-dcdc-3v3 {
+>> +		compatible = "regulator-fixed";
+>> +		regulator-name = "dcdc-3v3";
+>> +		regulator-min-microvolt = <3300000>;
+>> +		regulator-max-microvolt = <3300000>;
+>> +		regulator-boot-on;
+>> +		regulator-always-on;
+>> +	};
+>> +
+>> +	reg_1v8: regulator-1v8 {
+>> +		compatible = "regulator-fixed";
+>> +		regulator-name = "ldo-1v8";
+>> +		regulator-min-microvolt = <1800000>;
+>> +		regulator-max-microvolt = <1800000>;
+>> +		regulator-boot-on;
+>> +		regulator-always-on;
+>> +	};
+>> +
+>> +	leds {
+>> +		compatible = "gpio-leds";
+>> +		pinctrl-names = "default";
+>> +		pinctrl-0 = <&pinctrl_status_leds>;
+>> +
+>> +		led1 {
+> Does not look like you tested the DTS against bindings. Please run `make
+> dtbs_check` (see Documentation/devicetree/bindings/writing-schema.rst
+> for instructions).
 
-The MAX77540 is a high-efficiency buck converter
-with two 3A switching phases.
+I ran make dtbs_check before sending this series. All of these issues in 
+the included dtsi files makes it hard to spot DTS specific issues. This 
+is the output of make dtbs_check:
 
-They have same regmap except for ADC part of MAX77541.
+   DTC_CHK arch/arm/boot/dts/imx6ull-tarragon-master.dtb
+/home/stefanw/mainline/arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+nand-controller@1806000: #size-cells:0:0: 0 was expected
+     From schema: 
+/home/stefanw/mainline/Documentation/devicetree/bindings/mtd/nand-controller.yaml
+/home/stefanw/mainline/arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+nand-controller@1806000: #size-cells:0:0: 0 was expected
+     From schema: 
+/home/stefanw/mainline/Documentation/devicetree/bindings/mtd/gpmi-nand.yaml
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/spba-bus@2000000/spi@200c000/ethernet@0: failed to 
+match any schema with compatible: ['qca,qca7000']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/spba-bus@2000000/spi@2014000/ethernet@0: failed to 
+match any schema with compatible: ['qca,qca7000']
+/home/stefanw/mainline/arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+serial@2018000: Unevaluated properties are not allowed ('clock-names', 
+'clocks' were unexpected)
+     From schema: 
+/home/stefanw/mainline/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+/home/stefanw/mainline/arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+serial@2020000: Unevaluated properties are not allowed ('clock-names', 
+'clocks' were unexpected)
+     From schema: 
+/home/stefanw/mainline/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/spba-bus@2000000/asrc@2034000: failed to match any 
+schema with compatible: ['fsl,imx6ul-asrc', 'fsl,imx53-asrc']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/spba-bus@2000000/asrc@2034000: failed to match any 
+schema with compatible: ['fsl,imx6ul-asrc', 'fsl,imx53-asrc']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/tsc@2040000: failed to match any schema with 
+compatible: ['fsl,imx6ul-tsc']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/anatop@20c8000: failed to match any schema with 
+compatible: ['fsl,imx6ul-anatop', 'fsl,imx6q-anatop', 'syscon', 
+'simple-mfd']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/anatop@20c8000: failed to match any schema with 
+compatible: ['fsl,imx6ul-anatop', 'fsl,imx6q-anatop', 'syscon', 
+'simple-mfd']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/usbphy@20c9000: failed to match any schema with 
+compatible: ['fsl,imx6ul-usbphy', 'fsl,imx23-usbphy']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/usbphy@20c9000: failed to match any schema with 
+compatible: ['fsl,imx6ul-usbphy', 'fsl,imx23-usbphy']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/usbphy@20ca000: failed to match any schema with 
+compatible: ['fsl,imx6ul-usbphy', 'fsl,imx23-usbphy']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/usbphy@20ca000: failed to match any schema with 
+compatible: ['fsl,imx6ul-usbphy', 'fsl,imx23-usbphy']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/snvs@20cc000: failed to match any schema with 
+compatible: ['fsl,sec-v4.0-mon', 'syscon', 'simple-mfd']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/snvs@20cc000/snvs-rtc-lp: failed to match any schema 
+with compatible: ['fsl,sec-v4.0-mon-rtc-lp']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/snvs@20cc000/snvs-powerkey: failed to match any schema 
+with compatible: ['fsl,sec-v4.0-pwrkey']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/pinctrl@20e0000: failed to match any schema with 
+compatible: ['fsl,imx6ul-iomuxc']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/iomuxc-gpr@20e4000: failed to match any schema with 
+compatible: ['fsl,imx6ul-iomuxc-gpr', 'fsl,imx6q-iomuxc-gpr', 'syscon']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2000000/iomuxc-gpr@20e4000: failed to match any schema with 
+compatible: ['fsl,imx6ul-iomuxc-gpr', 'fsl,imx6q-iomuxc-gpr', 'syscon']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2100000/usb@2184000: failed to match any schema with 
+compatible: ['fsl,imx6ul-usb', 'fsl,imx27-usb']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2100000/usb@2184000: failed to match any schema with 
+compatible: ['fsl,imx6ul-usb', 'fsl,imx27-usb']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2100000/usb@2184200: failed to match any schema with 
+compatible: ['fsl,imx6ul-usb', 'fsl,imx27-usb']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2100000/usb@2184200: failed to match any schema with 
+compatible: ['fsl,imx6ul-usb', 'fsl,imx27-usb']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2100000/usbmisc@2184800: failed to match any schema with 
+compatible: ['fsl,imx6ul-usbmisc', 'fsl,imx6q-usbmisc']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2100000/usbmisc@2184800: failed to match any schema with 
+compatible: ['fsl,imx6ul-usbmisc', 'fsl,imx6q-usbmisc']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2100000/weim@21b8000: failed to match any schema with 
+compatible: ['fsl,imx6ul-weim', 'fsl,imx6q-weim']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2100000/weim@21b8000: failed to match any schema with 
+compatible: ['fsl,imx6ul-weim', 'fsl,imx6q-weim']
+/home/stefanw/mainline/arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+serial@21f0000: Unevaluated properties are not allowed ('clock-names', 
+'clocks' were unexpected)
+     From schema: 
+/home/stefanw/mainline/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+/home/stefanw/mainline/arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+serial@21f4000: Unevaluated properties are not allowed ('clock-names', 
+'clocks' were unexpected)
+     From schema: 
+/home/stefanw/mainline/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+/home/stefanw/mainline/arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+serial@21fc000: Unevaluated properties are not allowed ('clock-names', 
+'clocks' were unexpected)
+     From schema: 
+/home/stefanw/mainline/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: 
+/soc/bus@2200000/iomuxc-snvs@2290000: failed to match any schema with 
+compatible: ['fsl,imx6ull-iomuxc-snvs']
+arch/arm/boot/dts/imx6ull-tarragon-master.dtb: /pwm-fan: failed to match 
+any schema with compatible: ['pwm-fan']
 
-Signed-off-by: Okan Sahin <okan.sahin@analog.com>
----
- drivers/mfd/Kconfig          |  13 ++
- drivers/mfd/Makefile         |   1 +
- drivers/mfd/max77541.c       | 224 +++++++++++++++++++++++++++++++++++
- include/linux/mfd/max77541.h |  97 +++++++++++++++
- 4 files changed, 335 insertions(+)
- create mode 100644 drivers/mfd/max77541.c
- create mode 100644 include/linux/mfd/max77541.h
+Can you please point me, what is wrong or did you refer just to the 
+deprecated "label" property which doesn't throw a warning in my case?
 
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index fcc141e067b9..de89245ce1cb 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -777,6 +777,19 @@ config MFD_MAX14577
- 	  additional drivers must be enabled in order to use the functionality
- 	  of the device.
- 
-+config MFD_MAX77541
-+	tristate "Analog Devices MAX77541/77540 PMIC Support"
-+	depends on I2C=y
-+	select MFD_CORE
-+	select REGMAP_I2C
-+	select REGMAP_IRQ
-+	help
-+	  Say yes here to add support for Analog Devices MAX77541 and
-+	  MAX77540 Power Management ICs. This driver provides
-+	  common support for accessing the device; additional drivers
-+	  must be enabled in order to use the functionality of the device.
-+	  There are regulators and adc.
-+
- config MFD_MAX77620
- 	bool "Maxim Semiconductor MAX77620 and MAX20024 PMIC Support"
- 	depends on I2C=y
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index 2f6c89d1e277..1c8540ddead6 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -151,6 +151,7 @@ obj-$(CONFIG_MFD_DA9063)	+= da9063.o
- obj-$(CONFIG_MFD_DA9150)	+= da9150-core.o
- 
- obj-$(CONFIG_MFD_MAX14577)	+= max14577.o
-+obj-$(CONFIG_MFD_MAX77541)	+= max77541.o
- obj-$(CONFIG_MFD_MAX77620)	+= max77620.o
- obj-$(CONFIG_MFD_MAX77650)	+= max77650.o
- obj-$(CONFIG_MFD_MAX77686)	+= max77686.o
-diff --git a/drivers/mfd/max77541.c b/drivers/mfd/max77541.c
-new file mode 100644
-index 000000000000..18a08d64fb6f
---- /dev/null
-+++ b/drivers/mfd/max77541.c
-@@ -0,0 +1,224 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (c) 2022 Analog Devices, Inc.
-+ * Driver for the MAX77540 and MAX77541
-+ */
-+
-+#include <linux/i2c.h>
-+#include <linux/interrupt.h>
-+#include <linux/mfd/core.h>
-+#include <linux/mfd/max77541.h>
-+#include <linux/property.h>
-+#include <linux/regmap.h>
-+
-+static const struct regmap_config max77541_regmap_config = {
-+	.reg_bits   = 8,
-+	.val_bits   = 8,
-+};
-+
-+static const struct regmap_irq max77541_src_irqs[] = {
-+	{ .mask = MAX77541_BIT_INT_SRC_TOPSYS },
-+	{ .mask = MAX77541_BIT_INT_SRC_BUCK },
-+};
-+
-+static const struct regmap_irq_chip max77541_src_irq_chip = {
-+	.name		= "max77541-src",
-+	.status_base	= MAX77541_REG_INT_SRC,
-+	.mask_base	= MAX77541_REG_INT_SRC_M,
-+	.num_regs	= 1,
-+	.irqs		= max77541_src_irqs,
-+	.num_irqs       = ARRAY_SIZE(max77541_src_irqs),
-+};
-+
-+static const struct regmap_irq max77541_topsys_irqs[] = {
-+	{ .mask = MAX77541_BIT_TOPSYS_INT_TJ_120C },
-+	{ .mask = MAX77541_BIT_TOPSYS_INT_TJ_140C },
-+	{ .mask = MAX77541_BIT_TOPSYS_INT_TSHDN },
-+	{ .mask = MAX77541_BIT_TOPSYS_INT_UVLO },
-+	{ .mask = MAX77541_BIT_TOPSYS_INT_ALT_SWO },
-+	{ .mask = MAX77541_BIT_TOPSYS_INT_EXT_FREQ_DET },
-+};
-+
-+static const struct regmap_irq_chip max77541_topsys_irq_chip = {
-+	.name		= "max77541-topsys",
-+	.status_base	= MAX77541_REG_TOPSYS_INT,
-+	.mask_base	= MAX77541_REG_TOPSYS_INT_M,
-+	.num_regs	= 1,
-+	.irqs		= max77541_topsys_irqs,
-+	.num_irqs	= ARRAY_SIZE(max77541_topsys_irqs),
-+};
-+
-+static const struct regmap_irq max77541_buck_irqs[] = {
-+	{ .mask = MAX77541_BIT_BUCK_INT_M1_POK_FLT },
-+	{ .mask = MAX77541_BIT_BUCK_INT_M2_POK_FLT },
-+	{ .mask = MAX77541_BIT_BUCK_INT_M1_SCFLT },
-+	{ .mask = MAX77541_BIT_BUCK_INT_M2_SCFLT },
-+};
-+
-+static const struct regmap_irq_chip max77541_buck_irq_chip = {
-+	.name		= "max77541-buck",
-+	.status_base	= MAX77541_REG_BUCK_INT,
-+	.mask_base	= MAX77541_REG_BUCK_INT_M,
-+	.num_regs	= 1,
-+	.irqs		= max77541_buck_irqs,
-+	.num_irqs	= ARRAY_SIZE(max77541_buck_irqs),
-+};
-+
-+static const struct regmap_irq max77541_adc_irqs[] = {
-+	{ .mask = MAX77541_BIT_ADC_INT_CH1_I },
-+	{ .mask = MAX77541_BIT_ADC_INT_CH2_I },
-+	{ .mask = MAX77541_BIT_ADC_INT_CH3_I },
-+	{ .mask = MAX77541_BIT_ADC_INT_CH6_I },
-+};
-+
-+static const struct regmap_irq_chip max77541_adc_irq_chip = {
-+	.name		= "max77541-adc",
-+	.status_base	= MAX77541_REG_ADC_INT,
-+	.mask_base	= MAX77541_REG_ADC_INT_M,
-+	.num_regs	= 1,
-+	.irqs		= max77541_adc_irqs,
-+	.num_irqs	= ARRAY_SIZE(max77541_adc_irqs),
-+};
-+
-+static const struct mfd_cell max77540_devs[] = {
-+	MFD_CELL_OF("max77540-regulator", NULL, NULL, 0, 0, NULL),
-+};
-+
-+static const struct mfd_cell max77541_devs[] = {
-+	MFD_CELL_OF("max77541-regulator", NULL, NULL, 0, 0, NULL),
-+	MFD_CELL_OF("max77541-adc", NULL, NULL, 0, 0, NULL),
-+};
-+
-+static const struct chip_info chip[] = {
-+	[MAX77540] = {
-+		.id = MAX77540,
-+		.n_devs = ARRAY_SIZE(max77540_devs),
-+		.devs = max77540_devs,
-+	},
-+	[MAX77541] = {
-+		.id = MAX77541,
-+		.n_devs = ARRAY_SIZE(max77541_devs),
-+		.devs = max77541_devs,
-+	},
-+};
-+
-+static int max77541_pmic_irq_init(struct device *dev)
-+{
-+	struct max77541 *max77541 = dev_get_drvdata(dev);
-+	int irq = max77541->i2c->irq;
-+	int ret;
-+
-+	ret = devm_regmap_add_irq_chip(dev, max77541->regmap, irq,
-+				       IRQF_ONESHOT | IRQF_SHARED, 0,
-+				       &max77541_src_irq_chip,
-+				       &max77541->irq_data);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_regmap_add_irq_chip(dev, max77541->regmap, irq,
-+				       IRQF_ONESHOT | IRQF_SHARED, 0,
-+				       &max77541_topsys_irq_chip,
-+				       &max77541->irq_topsys);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_regmap_add_irq_chip(dev, max77541->regmap, irq,
-+				       IRQF_ONESHOT | IRQF_SHARED, 0,
-+				       &max77541_buck_irq_chip,
-+				       &max77541->irq_buck);
-+	if (ret)
-+		return ret;
-+
-+	if (max77541->chip->id == MAX77541) {
-+		ret = devm_regmap_add_irq_chip(dev, max77541->regmap, irq,
-+					       IRQF_ONESHOT | IRQF_SHARED, 0,
-+					       &max77541_adc_irq_chip,
-+					       &max77541->irq_adc);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int max77541_pmic_setup(struct device *dev)
-+{
-+	struct max77541 *max77541 = dev_get_drvdata(dev);
-+	int ret;
-+
-+	ret = max77541_pmic_irq_init(dev);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to initialize IRQ\n");
-+
-+	ret = device_init_wakeup(dev, true);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Unable to init wakeup\n");
-+
-+	return devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE,
-+				    max77541->chip->devs,
-+				    max77541->chip->n_devs,
-+				    NULL, 0, NULL);
-+}
-+
-+static int max77541_probe(struct i2c_client *client)
-+{
-+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
-+	struct device *dev = &client->dev;
-+	struct max77541 *max77541;
-+
-+	max77541 = devm_kzalloc(dev, sizeof(*max77541), GFP_KERNEL);
-+	if (!max77541)
-+		return -ENOMEM;
-+
-+	i2c_set_clientdata(client, max77541);
-+	max77541->i2c = client;
-+
-+	max77541->chip  = device_get_match_data(dev);
-+	if (!max77541->chip)
-+		max77541->chip  = (struct chip_info *)id->driver_data;
-+
-+	if (!max77541->chip)
-+		return -EINVAL;
-+
-+	max77541->regmap = devm_regmap_init_i2c(client,
-+						&max77541_regmap_config);
-+	if (IS_ERR(max77541->regmap))
-+		return dev_err_probe(dev, PTR_ERR(max77541->regmap),
-+				     "Failed to allocate register map\n");
-+
-+	return max77541_pmic_setup(dev);
-+}
-+
-+static const struct of_device_id max77541_of_id[] = {
-+	{
-+		.compatible = "adi,max77540",
-+		.data = &chip[MAX77540],
-+	},
-+	{
-+		.compatible = "adi,max77541",
-+		.data = &chip[MAX77541],
-+	},
-+	{ /* sentinel */  }
-+};
-+MODULE_DEVICE_TABLE(of, max77541_of_id);
-+
-+static const struct i2c_device_id max77541_id[] = {
-+	{ "max77540", (kernel_ulong_t)&chip[MAX77540] },
-+	{ "max77541", (kernel_ulong_t)&chip[MAX77541] },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, max77541_id);
-+
-+static struct i2c_driver max77541_driver = {
-+	.driver = {
-+		.name = "max77541",
-+		.of_match_table = max77541_of_id,
-+	},
-+	.probe_new = max77541_probe,
-+	.id_table = max77541_id,
-+};
-+module_i2c_driver(max77541_driver);
-+
-+MODULE_DESCRIPTION("MAX7740/MAX7741 Driver");
-+MODULE_AUTHOR("Okan Sahin <okan.sahin@analog.com>");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/mfd/max77541.h b/include/linux/mfd/max77541.h
-new file mode 100644
-index 000000000000..f3b489207a7f
---- /dev/null
-+++ b/include/linux/mfd/max77541.h
-@@ -0,0 +1,97 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+
-+#ifndef __MFD_MAX77541_H
-+#define __MFD_MAX77541_H
-+
-+#include <linux/bits.h>
-+#include <linux/types.h>
-+
-+/* REGISTERS */
-+#define MAX77541_REG_INT_SRC                    0x00
-+#define MAX77541_REG_INT_SRC_M                  0x01
-+
-+#define MAX77541_BIT_INT_SRC_TOPSYS             BIT(0)
-+#define MAX77541_BIT_INT_SRC_BUCK               BIT(1)
-+
-+#define MAX77541_REG_TOPSYS_INT                 0x02
-+#define MAX77541_REG_TOPSYS_INT_M               0x03
-+
-+#define MAX77541_BIT_TOPSYS_INT_TJ_120C         BIT(0)
-+#define MAX77541_BIT_TOPSYS_INT_TJ_140C         BIT(1)
-+#define MAX77541_BIT_TOPSYS_INT_TSHDN           BIT(2)
-+#define MAX77541_BIT_TOPSYS_INT_UVLO            BIT(3)
-+#define MAX77541_BIT_TOPSYS_INT_ALT_SWO         BIT(4)
-+#define MAX77541_BIT_TOPSYS_INT_EXT_FREQ_DET    BIT(5)
-+
-+/* REGULATORS */
-+#define MAX77541_REG_BUCK_INT                   0x20
-+#define MAX77541_REG_BUCK_INT_M                 0x21
-+
-+#define MAX77541_BIT_BUCK_INT_M1_POK_FLT        BIT(0)
-+#define MAX77541_BIT_BUCK_INT_M2_POK_FLT        BIT(1)
-+#define MAX77541_BIT_BUCK_INT_M1_SCFLT          BIT(4)
-+#define MAX77541_BIT_BUCK_INT_M2_SCFLT          BIT(5)
-+
-+#define MAX77541_REG_EN_CTRL                    0x0B
-+
-+#define MAX77541_BIT_M1_EN                      BIT(0)
-+#define MAX77541_BIT_M2_EN                      BIT(1)
-+
-+#define MAX77541_REG_M1_VOUT                    0x23
-+#define MAX77541_REG_M2_VOUT                    0x33
-+
-+#define MAX77541_BITS_MX_VOUT                   GENMASK(7, 0)
-+
-+#define MAX77541_REG_M1_CFG1                    0x25
-+#define MAX77541_REG_M2_CFG1                    0x35
-+
-+#define MAX77541_BITS_MX_CFG1_RNG               GENMASK(7, 6)
-+
-+/* ADC */
-+#define MAX77541_REG_ADC_INT                    0x70
-+#define MAX77541_REG_ADC_INT_M                  0x71
-+
-+#define MAX77541_BIT_ADC_INT_CH1_I              BIT(0)
-+#define MAX77541_BIT_ADC_INT_CH2_I              BIT(1)
-+#define MAX77541_BIT_ADC_INT_CH3_I              BIT(2)
-+#define MAX77541_BIT_ADC_INT_CH6_I              BIT(5)
-+
-+#define MAX77541_REG_ADC_DATA_CH1               0x72
-+#define MAX77541_REG_ADC_DATA_CH2               0x73
-+#define MAX77541_REG_ADC_DATA_CH3               0x74
-+#define MAX77541_REG_ADC_DATA_CH6               0x77
-+
-+/* INTERRUPT MASKS*/
-+#define MAX77541_REG_INT_SRC_MASK               0x00
-+#define MAX77541_REG_TOPSYS_INT_MASK            0x00
-+#define MAX77541_REG_BUCK_INT_MASK              0x00
-+
-+#define MAX77541_MAX_REGULATORS 2
-+
-+enum max7754x_ids {
-+	MAX77540,
-+	MAX77541,
-+};
-+
-+struct chip_info {
-+	enum max7754x_ids id;
-+	int n_devs;
-+	const struct mfd_cell *devs;
-+};
-+
-+struct regmap;
-+struct regmap_irq_chip_data;
-+struct i2c_client;
-+
-+struct max77541 {
-+	struct i2c_client *i2c;
-+	struct regmap *regmap;
-+	const struct chip_info *chip;
-+
-+	struct regmap_irq_chip_data *irq_data;
-+	struct regmap_irq_chip_data *irq_buck;
-+	struct regmap_irq_chip_data *irq_topsys;
-+	struct regmap_irq_chip_data *irq_adc;
-+};
-+
-+#endif /* __MFD_MAX77541_H */
--- 
-2.30.2
+Did i missed a parameter?
+
+Best regards
 
