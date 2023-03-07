@@ -2,631 +2,478 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A1DC678D4
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Mar 2023 12:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75945C678D5
+	for <linux-iio@archiver.kernel.org>; Tue,  7 Mar 2023 12:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231442AbjCGMYz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Mar 2023 07:24:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44080 "EHLO
+        id S229759AbjCGMx0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Mar 2023 07:53:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231428AbjCGMYy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Mar 2023 07:24:54 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37E9437F31;
-        Tue,  7 Mar 2023 04:24:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678191892; x=1709727892;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gcu+E5qYJfV98BPM+GFa1LRfbtFr1k5858cQIYjQGko=;
-  b=TUR6ASt+84aq0tYeJnUDZR03gs0+GcG8G/ysCJ1b7e6dA789Hym9fnsT
-   6H+W5oWOVxmM07FLikUnLKdact5dltjx+4sGj4EUpaCnNTVatYj0q7rn6
-   0zwpkmjEa/78UJVKdvfQgG8okP2sR/SoV2DzLKY91WEAvtBn69EFQrZgd
-   YOBsxalRYoHa2fAXCwz9eDgrjsLZC6owndQY8GWw2y0FtYEvjztPgri0j
-   wvMMgbPrx9jTjhQfUxSdOKtxFpUVikUL/wPktbdv8hPr5/ETLq7fzuvqK
-   CYz0WoiAF0eV4UDad+Yb/zUp31MyB5CddLxeNUoYObE2906nU2qklS4Oq
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="319667810"
-X-IronPort-AV: E=Sophos;i="5.98,240,1673942400"; 
-   d="scan'208";a="319667810"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 04:24:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="819745083"
-X-IronPort-AV: E=Sophos;i="5.98,240,1673942400"; 
-   d="scan'208";a="819745083"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga001.fm.intel.com with ESMTP; 07 Mar 2023 04:24:46 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pZWN2-00Guew-2p;
-        Tue, 07 Mar 2023 14:24:44 +0200
-Date:   Tue, 7 Mar 2023 14:24:44 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mike Looijmans <mike.looijmans@topic.nl>
-Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Caleb Connolly <caleb.connolly@linaro.org>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+        with ESMTP id S229767AbjCGMxO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Mar 2023 07:53:14 -0500
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56E1197;
+        Tue,  7 Mar 2023 04:53:06 -0800 (PST)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 327BNJxZ022574;
+        Tue, 7 Mar 2023 06:33:37 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3p415c8t9u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Mar 2023 06:33:36 -0500
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 327BXYJv032141
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 7 Mar 2023 06:33:34 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 7 Mar 2023 06:33:33 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 7 Mar 2023 06:33:33 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 7 Mar 2023 06:33:33 -0500
+Received: from okan.localdomain (IST-LT-43126.ad.analog.com [10.25.36.20])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 327BSiLu011140;
+        Tue, 7 Mar 2023 06:33:17 -0500
+From:   Okan Sahin <okan.sahin@analog.com>
+To:     <okan.sahin@analog.com>
+CC:     Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Caleb Connolly <caleb.connolly@linaro.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Ramona Bolboaca <ramona.bolboaca@analog.com>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        "Ibrahim Tilki" <Ibrahim.Tilki@analog.com>,
         William Breathitt Gray <william.gray@linaro.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] iio: adc: Add TI ADS1100 and ADS1000
-Message-ID: <ZActDOEsT+tNMfZ1@smile.fi.intel.com>
-References: <20230307065535.7927-1-mike.looijmans@topic.nl>
- <1b153bce-a66a-45ee-a5c6-963ea6fb1c82.949ef384-8293-46b8-903f-40a477c056ae.812861c4-ffbd-402e-bb22-77232c1fbafb@emailsignatures365.codetwo.com>
- <20230307065535.7927-2-mike.looijmans@topic.nl>
+        Arnd Bergmann <arnd@arndb.de>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        Haibo Chen <haibo.chen@nxp.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: [PATCH v6 5/5]  mfd: max77541: Add ADI MAX77541/MAX77540 PMIC Support
+Date:   Tue, 7 Mar 2023 14:28:15 +0300
+Message-ID: <20230307112835.81886-6-okan.sahin@analog.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230307112835.81886-1-okan.sahin@analog.com>
+References: <20230307112835.81886-1-okan.sahin@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230307065535.7927-2-mike.looijmans@topic.nl>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: Yic_YnHfVSl-EUe08CG9sqFUz24o2g-V
+X-Proofpoint-ORIG-GUID: Yic_YnHfVSl-EUe08CG9sqFUz24o2g-V
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-07_06,2023-03-07_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ spamscore=0 malwarescore=0 clxscore=1011 suspectscore=0 phishscore=0
+ priorityscore=1501 bulkscore=0 impostorscore=0 mlxlogscore=998 mlxscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2303070104
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Mar 07, 2023 at 07:55:34AM +0100, Mike Looijmans wrote:
-> The ADS1100 is a 16-bit ADC (at 8 samples per second).
-> The ADS1000 is similar, but has a fixed data rate.
+MFD driver for MAX77541/MAX77540 to enable its sub
+devices.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+The MAX77541 is a multi-function devices. It includes
+buck converter and ADC.
 
-But see below.
+The MAX77540 is a high-efficiency buck converter
+with two 3A switching phases.
 
-> Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
-> 
-> ---
-> 
-> Changes in v5:
-> Use scripts/Lindent to auto-format
-> Use DIV_ROUNDUP_CLOSEST in gain calculation
-> 
-> Changes in v4:
-> Use post-increment
-> Formatting fixes (commas, indents, empty line)
-> Use 'ffs' and explain gain formula
-> Use dev_set_drvdata/dev_get_drvdata for pm_ methods
-> Use units.h for micro-to-milli conversion
-> 
-> Changes in v3:
-> Add #include linux/bitfield.h and linux/bits.h
-> 
-> Changes in v2:
-> Remove "driver for" from title
-> Use proper PM_RUNTIME macros
-> Fix indents
-> Use dev_err_probe()
-> Unsigned index and post-increment
-> Use GENMASK and FIELD_GET
-> remove ads1100_set_conv_mode
-> remove Kconfig BUFFER dependencies
-> remove unused #include
-> Set SCALE instead of HARDWAREGAIN
-> Use devm_add_action_or_reset
-> 
->  drivers/iio/adc/Kconfig      |  10 +
->  drivers/iio/adc/Makefile     |   1 +
->  drivers/iio/adc/ti-ads1100.c | 444 +++++++++++++++++++++++++++++++++++
->  3 files changed, 455 insertions(+)
->  create mode 100644 drivers/iio/adc/ti-ads1100.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 63f80d747cbd..257efb25a92e 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -1207,6 +1207,16 @@ config TI_ADS1015
->  	  This driver can also be built as a module. If so, the module will be
->  	  called ti-ads1015.
->  
-> +config TI_ADS1100
-> +	tristate "Texas Instruments ADS1100 and ADS1000 ADC"
-> +	depends on I2C
-> +	help
-> +	  If you say yes here you get support for Texas Instruments ADS1100 and
-> +	  ADS1000 ADC chips.
-> +
-> +	  This driver can also be built as a module. If so, the module will be
-> +	  called ti-ads1100.
-> +
->  config TI_ADS7950
->  	tristate "Texas Instruments ADS7950 ADC driver"
->  	depends on SPI && GPIOLIB
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 4ef41a7dfac6..61ef600fab99 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -107,6 +107,7 @@ obj-$(CONFIG_TI_ADC108S102) += ti-adc108s102.o
->  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
->  obj-$(CONFIG_TI_ADC161S626) += ti-adc161s626.o
->  obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
-> +obj-$(CONFIG_TI_ADS1100) += ti-ads1100.o
->  obj-$(CONFIG_TI_ADS7950) += ti-ads7950.o
->  obj-$(CONFIG_TI_ADS8344) += ti-ads8344.o
->  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
-> diff --git a/drivers/iio/adc/ti-ads1100.c b/drivers/iio/adc/ti-ads1100.c
-> new file mode 100644
-> index 000000000000..ce386c18618f
-> --- /dev/null
-> +++ b/drivers/iio/adc/ti-ads1100.c
-> @@ -0,0 +1,444 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * ADS1100 - Texas Instruments Analog-to-Digital Converter
-> + *
-> + * Copyright (c) 2023, Topic Embedded Products
-> + *
-> + * Datasheet: https://www.ti.com/lit/gpn/ads1100
-> + * IIO driver for ADS1100 and ADS1000 ADC 16-bit I2C
-> + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/delay.h>
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/i2c.h>
-> +#include <linux/mutex.h>
-> +#include <linux/property.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/units.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/types.h>
-> +
-> +/* The ADS1100 has a single byte config register */
-> +
-> +/* Conversion in progress bit */
-> +#define ADS1100_CFG_ST_BSY	BIT(7)
-> +/* Single conversion bit */
-> +#define ADS1100_CFG_SC		BIT(4)
-> +/* Data rate */
-> +#define ADS1100_DR_MASK		GENMASK(3, 2)
-> +/* Gain */
-> +#define ADS1100_PGA_MASK	GENMASK(1, 0)
-> +
-> +#define ADS1100_CONTINUOUS	0
-> +#define	ADS1100_SINGLESHOT	ADS1100_CFG_SC
-> +
-> +#define ADS1100_SLEEP_DELAY_MS	2000
-> +
-> +static const int ads1100_data_rate[] = { 128, 32, 16, 8 };
-> +static const int ads1100_data_rate_bits[] = { 12, 14, 15, 16 };
-> +
-> +struct ads1100_data {
-> +	struct i2c_client *client;
-> +	struct regulator *reg_vdd;
-> +	struct mutex lock;
-> +	int scale_avail[2 * 4]; /* 4 gain settings */
-> +	u8 config;
-> +	bool supports_data_rate; /* Only the ADS1100 can select the rate */
-> +};
-> +
-> +static const struct iio_chan_spec ads1100_channel = {
-> +	.type = IIO_VOLTAGE,
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +	.info_mask_shared_by_all =
-> +	    BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> +	.info_mask_shared_by_all_available =
-> +	    BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> +	.scan_type = {
-> +		      .sign = 's',
-> +		      .realbits = 16,
-> +		      .storagebits = 16,
-> +		      .endianness = IIO_CPU,
-> +		       },
-> +	.datasheet_name = "AIN",
-> +};
-> +
-> +static int ads1100_set_config_bits(struct ads1100_data *data, u8 mask, u8 value)
-> +{
-> +	int ret;
-> +	u8 config = (data->config & ~mask) | (value & mask);
-> +
-> +	if (data->config == config)
-> +		return 0;	/* Already done */
-> +
-> +	ret = i2c_master_send(data->client, &config, 1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->config = config;
-> +	return 0;
-> +};
-> +
-> +static int ads1100_data_bits(struct ads1100_data *data)
-> +{
-> +	return ads1100_data_rate_bits[FIELD_GET(ADS1100_DR_MASK, data->config)];
-> +}
-> +
-> +static int ads1100_get_adc_result(struct ads1100_data *data, int chan, int *val)
-> +{
-> +	int ret;
-> +	__be16 buffer;
-> +	s16 value;
-> +
-> +	if (chan != 0)
-> +		return -EINVAL;
-> +
-> +	ret = pm_runtime_resume_and_get(&data->client->dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
-> +
-> +	pm_runtime_mark_last_busy(&data->client->dev);
-> +	pm_runtime_put_autosuspend(&data->client->dev);
-> +
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	/* Value is always 16-bit 2's complement */
-> +	value = be16_to_cpu(buffer);
-> +
-> +	/* Shift result to compensate for bit resolution vs. sample rate */
-> +	value <<= 16 - ads1100_data_bits(data);
-> +
-> +	*val = sign_extend32(value, 15);
-> +
-> +	return 0;
-> +}
-> +
-> +static int ads1100_set_scale(struct ads1100_data *data, int val, int val2)
-> +{
-> +	int microvolts;
-> +	int gain;
-> +
-> +	/* With Vdd between 2.7 and 5V, the scale is always below 1 */
-> +	if (val)
-> +		return -EINVAL;
-> +
-> +	if (!val2)
-> +		return -EINVAL;
-> +
-> +	microvolts = regulator_get_voltage(data->reg_vdd);
-> +	/*
-> +	 * val2 is in 'micro' units, n = val2 / 1000000
-> +	 * result must be millivolts, d = microvolts / 1000
-> +	 * the full-scale value is d/n, corresponds to 2^15,
-> +	 * hence the gain = (d / n) >> 15, factoring out the 1000 and moving the
-> +	 * bitshift so everything fits in 32-bits yields this formula.
-> +	 */
-> +	gain = DIV_ROUND_CLOSEST(microvolts, BIT(15)) * MILLI / val2;
-> +	if (gain < BIT(0) || gain > BIT(3))
-> +		return -EINVAL;
-> +
-> +	ads1100_set_config_bits(data, ADS1100_PGA_MASK, ffs(gain) - 1);
-> +	return 0;
-> +}
-> +
-> +static int ads1100_set_data_rate(struct ads1100_data *data, int chan, int rate)
-> +{
-> +	unsigned int i;
-> +	unsigned int size;
-> +
-> +	size = data->supports_data_rate ? ARRAY_SIZE(ads1100_data_rate) : 1;
-> +	for (i = 0; i < size; i++) {
-> +		if (ads1100_data_rate[i] == rate)
-> +			return ads1100_set_config_bits(data, ADS1100_DR_MASK,
+They have same regmap except for ADC part of MAX77541.
 
-> +						       FIELD_PREP
-> +						       (ADS1100_DR_MASK, i));
+Signed-off-by: Okan Sahin <okan.sahin@analog.com>
+---
+ drivers/mfd/Kconfig          |  13 ++
+ drivers/mfd/Makefile         |   1 +
+ drivers/mfd/max77541.c       | 224 +++++++++++++++++++++++++++++++++++
+ include/linux/mfd/max77541.h |  97 +++++++++++++++
+ 4 files changed, 335 insertions(+)
+ create mode 100644 drivers/mfd/max77541.c
+ create mode 100644 include/linux/mfd/max77541.h
 
-This is better on a single line.
-
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int ads1100_get_vdd_millivolts(struct ads1100_data *data)
-> +{
-> +	return regulator_get_voltage(data->reg_vdd) / (MICRO / MILLI);
-> +}
-> +
-> +static void ads1100_calc_scale_avail(struct ads1100_data *data)
-> +{
-> +	int millivolts = ads1100_get_vdd_millivolts(data);
-> +	unsigned int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(data->scale_avail) / 2; i++) {
-> +		data->scale_avail[i * 2 + 0] = millivolts;
-> +		data->scale_avail[i * 2 + 1] = 15 + i;
-> +	}
-> +}
-> +
-> +static int ads1100_read_avail(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      const int **vals, int *type, int *length,
-> +			      long mask)
-> +{
-> +	struct ads1100_data *data = iio_priv(indio_dev);
-> +
-> +	if (chan->type != IIO_VOLTAGE)
-> +		return -EINVAL;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*type = IIO_VAL_INT;
-> +		*vals = ads1100_data_rate;
-> +		if (data->supports_data_rate)
-> +			*length = ARRAY_SIZE(ads1100_data_rate);
-> +		else
-> +			*length = 1;
-> +		return IIO_AVAIL_LIST;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*type = IIO_VAL_FRACTIONAL_LOG2;
-> +		*vals = data->scale_avail;
-> +		*length = ARRAY_SIZE(data->scale_avail);
-> +		return IIO_AVAIL_LIST;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int ads1100_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan, int *val,
-> +			    int *val2, long mask)
-> +{
-> +	int ret;
-> +	struct ads1100_data *data = iio_priv(indio_dev);
-> +
-> +	mutex_lock(&data->lock);
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = iio_device_claim_direct_mode(indio_dev);
-> +		if (ret)
-> +			break;
-> +
-> +		ret = ads1100_get_adc_result(data, chan->address, val);
-> +		if (ret >= 0)
-> +			ret = IIO_VAL_INT;
-> +		iio_device_release_direct_mode(indio_dev);
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* full-scale is the supply voltage in millivolts */
-> +		*val = ads1100_get_vdd_millivolts(data);
-> +		*val2 = 15 + FIELD_GET(ADS1100_PGA_MASK, data->config);
-> +		ret = IIO_VAL_FRACTIONAL_LOG2;
-> +		break;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = ads1100_data_rate[FIELD_GET(ADS1100_DR_MASK,
-> +						   data->config)];
-> +		ret = IIO_VAL_INT;
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ads1100_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan, int val,
-> +			     int val2, long mask)
-> +{
-> +	struct ads1100_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = ads1100_set_scale(data, val, val2);
-> +		break;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = ads1100_set_data_rate(data, chan->address, val);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_info ads1100_info = {
-> +	.read_avail = ads1100_read_avail,
-> +	.read_raw = ads1100_read_raw,
-> +	.write_raw = ads1100_write_raw,
-> +};
-> +
-> +static int ads1100_setup(struct ads1100_data *data)
-> +{
-> +	int ret;
-> +	u8 buffer[3];
-> +
-> +	/* Setup continuous sampling mode at 8sps */
-> +	buffer[0] = ADS1100_DR_MASK | ADS1100_CONTINUOUS;
-> +	ret = i2c_master_send(data->client, buffer, 1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_master_recv(data->client, buffer, sizeof(buffer));
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Config register returned in third byte, strip away the busy status */
-> +	data->config = buffer[2] & ~ADS1100_CFG_ST_BSY;
-> +
-> +	/* Detect the sample rate capability by checking the DR bits */
-> +	data->supports_data_rate = FIELD_GET(ADS1100_DR_MASK, buffer[2]) != 0;
-> +
-> +	return 0;
-> +}
-> +
-> +static void ads1100_reg_disable(void *reg)
-> +{
-> +	regulator_disable(reg);
-> +}
-> +
-> +static void ads1100_disable_continuous(void *data)
-> +{
-> +	ads1100_set_config_bits(data, ADS1100_CFG_SC, ADS1100_SINGLESHOT);
-> +}
-> +
-> +static int ads1100_probe(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct ads1100_data *data;
-> +	struct device *dev = &client->dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	dev_set_drvdata(dev, data);
-> +	data->client = client;
-> +	mutex_init(&data->lock);
-> +
-> +	indio_dev->name = "ads1100";
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = &ads1100_channel;
-> +	indio_dev->num_channels = 1;
-> +	indio_dev->info = &ads1100_info;
-> +
-> +	data->reg_vdd = devm_regulator_get(dev, "vdd");
-> +	if (IS_ERR(data->reg_vdd))
-> +		return dev_err_probe(dev, PTR_ERR(data->reg_vdd),
-> +				     "Failed to get vdd regulator\n");
-> +
-> +	ret = regulator_enable(data->reg_vdd);
-> +	if (ret < 0)
-> +		return dev_err_probe(dev, PTR_ERR(data->reg_vdd),
-> +				     "Failed to enable vdd regulator\n");
-> +
-> +	ret = devm_add_action_or_reset(dev, ads1100_reg_disable, data->reg_vdd);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ads1100_setup(data);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret,
-> +				     "Failed to communicate with device\n");
-> +
-> +	ret = devm_add_action_or_reset(dev, ads1100_disable_continuous, data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ads1100_calc_scale_avail(data);
-> +
-> +	pm_runtime_set_autosuspend_delay(dev, ADS1100_SLEEP_DELAY_MS);
-> +	pm_runtime_use_autosuspend(dev);
-> +	pm_runtime_set_active(dev);
-> +	ret = devm_pm_runtime_enable(dev);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to enable pm_runtime\n");
-> +
-> +	ret = devm_iio_device_register(dev, indio_dev);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret,
-> +				     "Failed to register IIO device\n");
-> +
-> +	return 0;
-> +}
-> +
-> +static int ads1100_runtime_suspend(struct device *dev)
-> +{
-> +	struct ads1100_data *data = dev_get_drvdata(dev);
-> +
-> +	ads1100_set_config_bits(data, ADS1100_CFG_SC, ADS1100_SINGLESHOT);
-> +	regulator_disable(data->reg_vdd);
-> +
-> +	return 0;
-> +}
-> +
-> +static int ads1100_runtime_resume(struct device *dev)
-> +{
-> +	struct ads1100_data *data = dev_get_drvdata(dev);
-> +	int ret;
-> +
-> +	ret = regulator_enable(data->reg_vdd);
-> +	if (ret) {
-> +		dev_err(&data->client->dev, "Failed to enable Vdd\n");
-> +		return ret;
-> +	}
-> +
-> +	/*
-> +	 * We'll always change the mode bit in the config register, so there is
-> +	 * no need here to "force" a write to the config register. If the device
-> +	 * has been power-cycled, we'll re-write its config register now.
-> +	 */
-> +	return ads1100_set_config_bits(data, ADS1100_CFG_SC,
-> +				       ADS1100_CONTINUOUS);
-> +}
-> +
-> +static DEFINE_RUNTIME_DEV_PM_OPS(ads1100_pm_ops,
-> +				 ads1100_runtime_suspend,
-> +				 ads1100_runtime_resume,
-> +				 NULL);
-> +
-> +static const struct i2c_device_id ads1100_id[] = {
-> +	{ "ads1100" },
-> +	{ "ads1000" },
-> +	{ }
-> +};
-> +
-> +MODULE_DEVICE_TABLE(i2c, ads1100_id);
-> +
-> +static const struct of_device_id ads1100_of_match[] = {
-> +	{.compatible = "ti,ads1100" },
-> +	{.compatible = "ti,ads1000" },
-> +	{ }
-> +};
-> +
-> +MODULE_DEVICE_TABLE(of, ads1100_of_match);
-> +
-> +static struct i2c_driver ads1100_driver = {
-> +	.driver = {
-> +		   .name = "ads1100",
-> +		   .of_match_table = ads1100_of_match,
-> +		   .pm = pm_ptr(&ads1100_pm_ops),
-> +		    },
-> +	.probe_new = ads1100_probe,
-> +	.id_table = ads1100_id,
-> +};
-> +
-> +module_i2c_driver(ads1100_driver);
-> +
-> +MODULE_AUTHOR("Mike Looijmans <mike.looijmans@topic.nl>");
-> +MODULE_DESCRIPTION("Texas Instruments ADS1100 ADC driver");
-> +MODULE_LICENSE("GPL");
-> -- 
-> 2.17.1
-> 
-> 
-> Met vriendelijke groet / kind regards,
-> 
-> Mike Looijmans
-> System Expert
-> 
-> 
-> TOPIC Embedded Products B.V.
-> Materiaalweg 4, 5681 RJ Best
-> The Netherlands
-> 
-> T: +31 (0) 499 33 69 69
-> E: mike.looijmans@topicproducts.com
-> W: www.topic.nl
-> 
-> Please consider the environment before printing this e-mail
-
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index fcc141e067b9..de89245ce1cb 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -777,6 +777,19 @@ config MFD_MAX14577
+ 	  additional drivers must be enabled in order to use the functionality
+ 	  of the device.
+ 
++config MFD_MAX77541
++	tristate "Analog Devices MAX77541/77540 PMIC Support"
++	depends on I2C=y
++	select MFD_CORE
++	select REGMAP_I2C
++	select REGMAP_IRQ
++	help
++	  Say yes here to add support for Analog Devices MAX77541 and
++	  MAX77540 Power Management ICs. This driver provides
++	  common support for accessing the device; additional drivers
++	  must be enabled in order to use the functionality of the device.
++	  There are regulators and adc.
++
+ config MFD_MAX77620
+ 	bool "Maxim Semiconductor MAX77620 and MAX20024 PMIC Support"
+ 	depends on I2C=y
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 2f6c89d1e277..1c8540ddead6 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -151,6 +151,7 @@ obj-$(CONFIG_MFD_DA9063)	+= da9063.o
+ obj-$(CONFIG_MFD_DA9150)	+= da9150-core.o
+ 
+ obj-$(CONFIG_MFD_MAX14577)	+= max14577.o
++obj-$(CONFIG_MFD_MAX77541)	+= max77541.o
+ obj-$(CONFIG_MFD_MAX77620)	+= max77620.o
+ obj-$(CONFIG_MFD_MAX77650)	+= max77650.o
+ obj-$(CONFIG_MFD_MAX77686)	+= max77686.o
+diff --git a/drivers/mfd/max77541.c b/drivers/mfd/max77541.c
+new file mode 100644
+index 000000000000..18a08d64fb6f
+--- /dev/null
++++ b/drivers/mfd/max77541.c
+@@ -0,0 +1,224 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (c) 2022 Analog Devices, Inc.
++ * Driver for the MAX77540 and MAX77541
++ */
++
++#include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/mfd/core.h>
++#include <linux/mfd/max77541.h>
++#include <linux/property.h>
++#include <linux/regmap.h>
++
++static const struct regmap_config max77541_regmap_config = {
++	.reg_bits   = 8,
++	.val_bits   = 8,
++};
++
++static const struct regmap_irq max77541_src_irqs[] = {
++	{ .mask = MAX77541_BIT_INT_SRC_TOPSYS },
++	{ .mask = MAX77541_BIT_INT_SRC_BUCK },
++};
++
++static const struct regmap_irq_chip max77541_src_irq_chip = {
++	.name		= "max77541-src",
++	.status_base	= MAX77541_REG_INT_SRC,
++	.mask_base	= MAX77541_REG_INT_SRC_M,
++	.num_regs	= 1,
++	.irqs		= max77541_src_irqs,
++	.num_irqs       = ARRAY_SIZE(max77541_src_irqs),
++};
++
++static const struct regmap_irq max77541_topsys_irqs[] = {
++	{ .mask = MAX77541_BIT_TOPSYS_INT_TJ_120C },
++	{ .mask = MAX77541_BIT_TOPSYS_INT_TJ_140C },
++	{ .mask = MAX77541_BIT_TOPSYS_INT_TSHDN },
++	{ .mask = MAX77541_BIT_TOPSYS_INT_UVLO },
++	{ .mask = MAX77541_BIT_TOPSYS_INT_ALT_SWO },
++	{ .mask = MAX77541_BIT_TOPSYS_INT_EXT_FREQ_DET },
++};
++
++static const struct regmap_irq_chip max77541_topsys_irq_chip = {
++	.name		= "max77541-topsys",
++	.status_base	= MAX77541_REG_TOPSYS_INT,
++	.mask_base	= MAX77541_REG_TOPSYS_INT_M,
++	.num_regs	= 1,
++	.irqs		= max77541_topsys_irqs,
++	.num_irqs	= ARRAY_SIZE(max77541_topsys_irqs),
++};
++
++static const struct regmap_irq max77541_buck_irqs[] = {
++	{ .mask = MAX77541_BIT_BUCK_INT_M1_POK_FLT },
++	{ .mask = MAX77541_BIT_BUCK_INT_M2_POK_FLT },
++	{ .mask = MAX77541_BIT_BUCK_INT_M1_SCFLT },
++	{ .mask = MAX77541_BIT_BUCK_INT_M2_SCFLT },
++};
++
++static const struct regmap_irq_chip max77541_buck_irq_chip = {
++	.name		= "max77541-buck",
++	.status_base	= MAX77541_REG_BUCK_INT,
++	.mask_base	= MAX77541_REG_BUCK_INT_M,
++	.num_regs	= 1,
++	.irqs		= max77541_buck_irqs,
++	.num_irqs	= ARRAY_SIZE(max77541_buck_irqs),
++};
++
++static const struct regmap_irq max77541_adc_irqs[] = {
++	{ .mask = MAX77541_BIT_ADC_INT_CH1_I },
++	{ .mask = MAX77541_BIT_ADC_INT_CH2_I },
++	{ .mask = MAX77541_BIT_ADC_INT_CH3_I },
++	{ .mask = MAX77541_BIT_ADC_INT_CH6_I },
++};
++
++static const struct regmap_irq_chip max77541_adc_irq_chip = {
++	.name		= "max77541-adc",
++	.status_base	= MAX77541_REG_ADC_INT,
++	.mask_base	= MAX77541_REG_ADC_INT_M,
++	.num_regs	= 1,
++	.irqs		= max77541_adc_irqs,
++	.num_irqs	= ARRAY_SIZE(max77541_adc_irqs),
++};
++
++static const struct mfd_cell max77540_devs[] = {
++	MFD_CELL_OF("max77540-regulator", NULL, NULL, 0, 0, NULL),
++};
++
++static const struct mfd_cell max77541_devs[] = {
++	MFD_CELL_OF("max77541-regulator", NULL, NULL, 0, 0, NULL),
++	MFD_CELL_OF("max77541-adc", NULL, NULL, 0, 0, NULL),
++};
++
++static const struct chip_info chip[] = {
++	[MAX77540] = {
++		.id = MAX77540,
++		.n_devs = ARRAY_SIZE(max77540_devs),
++		.devs = max77540_devs,
++	},
++	[MAX77541] = {
++		.id = MAX77541,
++		.n_devs = ARRAY_SIZE(max77541_devs),
++		.devs = max77541_devs,
++	},
++};
++
++static int max77541_pmic_irq_init(struct device *dev)
++{
++	struct max77541 *max77541 = dev_get_drvdata(dev);
++	int irq = max77541->i2c->irq;
++	int ret;
++
++	ret = devm_regmap_add_irq_chip(dev, max77541->regmap, irq,
++				       IRQF_ONESHOT | IRQF_SHARED, 0,
++				       &max77541_src_irq_chip,
++				       &max77541->irq_data);
++	if (ret)
++		return ret;
++
++	ret = devm_regmap_add_irq_chip(dev, max77541->regmap, irq,
++				       IRQF_ONESHOT | IRQF_SHARED, 0,
++				       &max77541_topsys_irq_chip,
++				       &max77541->irq_topsys);
++	if (ret)
++		return ret;
++
++	ret = devm_regmap_add_irq_chip(dev, max77541->regmap, irq,
++				       IRQF_ONESHOT | IRQF_SHARED, 0,
++				       &max77541_buck_irq_chip,
++				       &max77541->irq_buck);
++	if (ret)
++		return ret;
++
++	if (max77541->chip->id == MAX77541) {
++		ret = devm_regmap_add_irq_chip(dev, max77541->regmap, irq,
++					       IRQF_ONESHOT | IRQF_SHARED, 0,
++					       &max77541_adc_irq_chip,
++					       &max77541->irq_adc);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int max77541_pmic_setup(struct device *dev)
++{
++	struct max77541 *max77541 = dev_get_drvdata(dev);
++	int ret;
++
++	ret = max77541_pmic_irq_init(dev);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to initialize IRQ\n");
++
++	ret = device_init_wakeup(dev, true);
++	if (ret)
++		return dev_err_probe(dev, ret, "Unable to init wakeup\n");
++
++	return devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE,
++				    max77541->chip->devs,
++				    max77541->chip->n_devs,
++				    NULL, 0, NULL);
++}
++
++static int max77541_probe(struct i2c_client *client)
++{
++	const struct i2c_device_id *id = i2c_client_get_device_id(client);
++	struct device *dev = &client->dev;
++	struct max77541 *max77541;
++
++	max77541 = devm_kzalloc(dev, sizeof(*max77541), GFP_KERNEL);
++	if (!max77541)
++		return -ENOMEM;
++
++	i2c_set_clientdata(client, max77541);
++	max77541->i2c = client;
++
++	max77541->chip  = device_get_match_data(dev);
++	if (!max77541->chip)
++		max77541->chip  = (struct chip_info *)id->driver_data;
++
++	if (!max77541->chip)
++		return -EINVAL;
++
++	max77541->regmap = devm_regmap_init_i2c(client,
++						&max77541_regmap_config);
++	if (IS_ERR(max77541->regmap))
++		return dev_err_probe(dev, PTR_ERR(max77541->regmap),
++				     "Failed to allocate register map\n");
++
++	return max77541_pmic_setup(dev);
++}
++
++static const struct of_device_id max77541_of_id[] = {
++	{
++		.compatible = "adi,max77540",
++		.data = &chip[MAX77540],
++	},
++	{
++		.compatible = "adi,max77541",
++		.data = &chip[MAX77541],
++	},
++	{ /* sentinel */  }
++};
++MODULE_DEVICE_TABLE(of, max77541_of_id);
++
++static const struct i2c_device_id max77541_id[] = {
++	{ "max77540", (kernel_ulong_t)&chip[MAX77540] },
++	{ "max77541", (kernel_ulong_t)&chip[MAX77541] },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, max77541_id);
++
++static struct i2c_driver max77541_driver = {
++	.driver = {
++		.name = "max77541",
++		.of_match_table = max77541_of_id,
++	},
++	.probe_new = max77541_probe,
++	.id_table = max77541_id,
++};
++module_i2c_driver(max77541_driver);
++
++MODULE_DESCRIPTION("MAX7740/MAX7741 Driver");
++MODULE_AUTHOR("Okan Sahin <okan.sahin@analog.com>");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/mfd/max77541.h b/include/linux/mfd/max77541.h
+new file mode 100644
+index 000000000000..f3b489207a7f
+--- /dev/null
++++ b/include/linux/mfd/max77541.h
+@@ -0,0 +1,97 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++
++#ifndef __MFD_MAX77541_H
++#define __MFD_MAX77541_H
++
++#include <linux/bits.h>
++#include <linux/types.h>
++
++/* REGISTERS */
++#define MAX77541_REG_INT_SRC                    0x00
++#define MAX77541_REG_INT_SRC_M                  0x01
++
++#define MAX77541_BIT_INT_SRC_TOPSYS             BIT(0)
++#define MAX77541_BIT_INT_SRC_BUCK               BIT(1)
++
++#define MAX77541_REG_TOPSYS_INT                 0x02
++#define MAX77541_REG_TOPSYS_INT_M               0x03
++
++#define MAX77541_BIT_TOPSYS_INT_TJ_120C         BIT(0)
++#define MAX77541_BIT_TOPSYS_INT_TJ_140C         BIT(1)
++#define MAX77541_BIT_TOPSYS_INT_TSHDN           BIT(2)
++#define MAX77541_BIT_TOPSYS_INT_UVLO            BIT(3)
++#define MAX77541_BIT_TOPSYS_INT_ALT_SWO         BIT(4)
++#define MAX77541_BIT_TOPSYS_INT_EXT_FREQ_DET    BIT(5)
++
++/* REGULATORS */
++#define MAX77541_REG_BUCK_INT                   0x20
++#define MAX77541_REG_BUCK_INT_M                 0x21
++
++#define MAX77541_BIT_BUCK_INT_M1_POK_FLT        BIT(0)
++#define MAX77541_BIT_BUCK_INT_M2_POK_FLT        BIT(1)
++#define MAX77541_BIT_BUCK_INT_M1_SCFLT          BIT(4)
++#define MAX77541_BIT_BUCK_INT_M2_SCFLT          BIT(5)
++
++#define MAX77541_REG_EN_CTRL                    0x0B
++
++#define MAX77541_BIT_M1_EN                      BIT(0)
++#define MAX77541_BIT_M2_EN                      BIT(1)
++
++#define MAX77541_REG_M1_VOUT                    0x23
++#define MAX77541_REG_M2_VOUT                    0x33
++
++#define MAX77541_BITS_MX_VOUT                   GENMASK(7, 0)
++
++#define MAX77541_REG_M1_CFG1                    0x25
++#define MAX77541_REG_M2_CFG1                    0x35
++
++#define MAX77541_BITS_MX_CFG1_RNG               GENMASK(7, 6)
++
++/* ADC */
++#define MAX77541_REG_ADC_INT                    0x70
++#define MAX77541_REG_ADC_INT_M                  0x71
++
++#define MAX77541_BIT_ADC_INT_CH1_I              BIT(0)
++#define MAX77541_BIT_ADC_INT_CH2_I              BIT(1)
++#define MAX77541_BIT_ADC_INT_CH3_I              BIT(2)
++#define MAX77541_BIT_ADC_INT_CH6_I              BIT(5)
++
++#define MAX77541_REG_ADC_DATA_CH1               0x72
++#define MAX77541_REG_ADC_DATA_CH2               0x73
++#define MAX77541_REG_ADC_DATA_CH3               0x74
++#define MAX77541_REG_ADC_DATA_CH6               0x77
++
++/* INTERRUPT MASKS*/
++#define MAX77541_REG_INT_SRC_MASK               0x00
++#define MAX77541_REG_TOPSYS_INT_MASK            0x00
++#define MAX77541_REG_BUCK_INT_MASK              0x00
++
++#define MAX77541_MAX_REGULATORS 2
++
++enum max7754x_ids {
++	MAX77540,
++	MAX77541,
++};
++
++struct chip_info {
++	enum max7754x_ids id;
++	int n_devs;
++	const struct mfd_cell *devs;
++};
++
++struct regmap;
++struct regmap_irq_chip_data;
++struct i2c_client;
++
++struct max77541 {
++	struct i2c_client *i2c;
++	struct regmap *regmap;
++	const struct chip_info *chip;
++
++	struct regmap_irq_chip_data *irq_data;
++	struct regmap_irq_chip_data *irq_buck;
++	struct regmap_irq_chip_data *irq_topsys;
++	struct regmap_irq_chip_data *irq_adc;
++};
++
++#endif /* __MFD_MAX77541_H */
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.30.2
 
