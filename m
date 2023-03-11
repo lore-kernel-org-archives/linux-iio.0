@@ -2,110 +2,104 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 503FDC6FD19
-	for <linux-iio@archiver.kernel.org>; Sat, 11 Mar 2023 00:56:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56EDDC74A44
+	for <linux-iio@archiver.kernel.org>; Sat, 11 Mar 2023 11:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbjCKA4E (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 10 Mar 2023 19:56:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50366 "EHLO
+        id S229933AbjCKLRU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 11 Mar 2023 06:17:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231795AbjCKAzS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 10 Mar 2023 19:55:18 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0339912B94D;
-        Fri, 10 Mar 2023 16:53:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net; s=s31663417;
-        t=1678496005; i=p.jungkamp@gmx.net;
-        bh=qMpEJq9/VDvSbq1BxRMreV5rXJDYdI69qmniBXaW75w=;
-        h=X-UI-Sender-Class:Subject:From:To:Cc:Date:In-Reply-To:References;
-        b=iPM1hIpLIhXNQTTlyUBg7uUZMyo5kc55l9ZcYRu+TRQ1SNYhiPd/vbFtQ9WyMmm+O
-         Kmka98vWWOSes3mzkAupeu8v0qkbIDznC4wDJzi2UW1nLq+GKsj94kS3+yBLHBYfTC
-         A5qePmK1uhpZmv2QqTATN4xYHP7AFu3cKEJ+v1ndyZBUNkZscIxgO4OVqe2q8QQxA9
-         3GqDOs/dTvfBVeaMPBkOuFWIgKsHQZuXdkUHS9zCAomiXRi7LeB66VrjTtk43siZgp
-         oOdNYM7xEj2TOTxSg/a3ZGZKcU5l5KrWB/5TJ61wbQAJfC61V91QKjaefdoL1bNd6w
-         36JYFtZhKwPVw==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.178.149] ([93.238.84.250]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MlNp7-1qHKRs0eKr-00lo4I; Sat, 11
- Mar 2023 01:53:25 +0100
-Message-ID: <b9dab02783e5eeaa74b291d4394150689e7c7b8a.camel@gmx.net>
-Subject: Re: [PATCH] Fix buffer overrun in HID-SENSOR name.
-From:   Philipp Jungkamp <p.jungkamp@gmx.net>
-To:     Todd Brandt <todd.e.brandt@intel.com>, linux-input@vger.kernel.org,
+        with ESMTP id S230111AbjCKLQi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Mar 2023 06:16:38 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D795A6D6
+        for <linux-iio@vger.kernel.org>; Sat, 11 Mar 2023 03:15:30 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id g10so1863905eda.1
+        for <linux-iio@vger.kernel.org>; Sat, 11 Mar 2023 03:15:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678533304;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QkQ93ugInkPpe3EPUwb7aGvfZMjL9q8ZpB0fY5f8jKo=;
+        b=XQHEU5fAyON0vwZZc62gyPq4Sy+fd+RyFUbsV4vy1brKHUhuicHAAM3ykR8/lJxA5M
+         FeQU2hHzfyYWr+daojlvdYgOSdiy85KzmPs2hATdnOO1LedgyLGlbbqmAZ4LmExBU4Zo
+         vzqvIlza0evLN1j79EANAnwcvF0fCLHWDV20rc04T8OdnqTjSCTcr5baGT1yHqtVr1Ru
+         tQ/wmkUCX24MvH3wssfFeQ0xdIRThGWUyEFI3MH68a9MtdWkNHyjVLjLgeQBjk/j3fOG
+         kXWvgLEnNm9DYJV/2vHOgu/pXy4I0s9QwC72bTd0ncn4sMRpEu8+XWWjtTS9ldp/N/Fx
+         9VUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678533304;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QkQ93ugInkPpe3EPUwb7aGvfZMjL9q8ZpB0fY5f8jKo=;
+        b=TuOrhYxsPdVYnfMeDMevfxT9S61FbGsoQYgWbFaU+aFD4K+lTkDayyrzPe9hch/EFT
+         XLn7W8kGa6d6+laHK8QG3yYbJbiEpzK+aWHw7TsDdDH+i+bOektcNe33Fp/FDTeW9NOb
+         REzeC4HjulQfmf+1AYVDCNITTlgfMbtn/sJ+dnsynI09CBAWAWD7alFQR+kQiuon6Z51
+         wCMwJ2RsTf6OHD0REoYazSZWZFh9tkCpGUIyjOHgdb3TfOonLOC/aofgfm/biPaAy+ST
+         Bh0mIbkVEDlkA6a79GAPAuwxfKrGPtHOnn/ZYBZ3gZTt8+jAri7fArRPKUK9I8JsCmvK
+         yx3A==
+X-Gm-Message-State: AO0yUKXoWa/r5dqH1GAaU44RqH4AP9SLOW9AJwYXbQmsMWxibRXBJLML
+        osIaNkIUVW9PsdWyoN6+7jUWyw==
+X-Google-Smtp-Source: AK7set+z4zxyOf7CpZVLt0gglQ5DB998s3uuWJhfpQFzYH02HmfMrZpH5iRqWTeANabxmkeP7ronfA==
+X-Received: by 2002:a17:907:6f12:b0:8f3:9ee9:f1bc with SMTP id sy18-20020a1709076f1200b008f39ee9f1bcmr5368673ejc.13.1678533304460;
+        Sat, 11 Mar 2023 03:15:04 -0800 (PST)
+Received: from krzk-bin.. ([2a02:810d:15c0:828:fa97:2d7c:bdd7:e1b])
+        by smtp.gmail.com with ESMTPSA id lc22-20020a170906dff600b00922b009fc79sm223427ejc.164.2023.03.11.03.15.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Mar 2023 03:15:04 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Marek Vasut <marek.vasut@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Robert Eshleman <bobbyeshleman@gmail.com>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     todd.e.brandt@linux.intel.com, srinivas.pandruvada@linux.intel.com,
-        jic23@kernel.org, jikos@kernel.org
-Date:   Sat, 11 Mar 2023 01:53:22 +0100
-In-Reply-To: <20230310235414.12467-1-todd.e.brandt@intel.com>
-References: <20230310235414.12467-1-todd.e.brandt@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 4/4] iio: proximity: sx9500: Mark ACPI and OF related data as maybe unused
+Date:   Sat, 11 Mar 2023 12:14:57 +0100
+Message-Id: <20230311111457.251475-4-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230311111457.251475-1-krzysztof.kozlowski@linaro.org>
+References: <20230311111457.251475-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-X-Provags-ID: V03:K1:UFBI+T9+hsbH1HXtKgbA99vW4viypL7GZykNMrSy9AtQFwvxKkD
- jH/PUmPhuFJS7uRjqwAY6Eaa92tFaJ09P9UObRKk2LFccjOo72wp6BYyMPCaiTtvYMv5GUQ
- 4CcuNtK5a3pzvCa4LlviZ/3MFv4dZgurw9ovLWgJ5YdXycAWVSLzgk5nsG2dY5omWScuQXr
- GfzhLGoVXdWb6QiY4MrTw==
-UI-OutboundReport: notjunk:1;M01:P0:KvHxAsUbBT0=;Bs55vAzkdWdYKlzJpu8nVHXaUJW
- ZmWPk/lfKyqOffe4NQ3ZDyMMHIGbzVCOldAagid+/9S7cbSO087Y4IeHKjWdl1tob0X6ZAg80
- EnqmJJD7lNYdztwLjb/JCVOkl7z/LLXs8qn8WxG6nInNqB4TV3w76uZfjHAMCIv4nDjOJv+HK
- pQ/Zhe7nVIppINpmSfyEeAJsgiTrDcOy2zEO0VRIZ2iocfBz7ZB6APGVkVHXhrIOZnCJp4g+n
- 9IfQ95CrZRHH1sM6S3PrAc/HuuN56fULuLvM7m09vLTdi8dafounb8LKP8bRzD/Oyx268wvLo
- iP0HxIKNzG2+cnEevKzckSw9HfFD4A7Wl1FIiKECO/QeTl3x9AeU1KOVC0zscvu6JFAVDMwYx
- Hfj4lNhVpF5NwiYDJIM8l/iMuV3mUwxSUhXyM4b34F5sJIWyr6Ll1sLZ4lYe/2lsu+jfposmz
- STDXEoFGu922RIJ6yDhCgA24xkv2GEzZsDT38V9Foc9/EcgQyFmtZqYr3fXi8D97iTxe9byFC
- M5eUoabcaCoeFpaMGLZvWSJd/qzb8N2crbUCAYpOxhlDlKl8cgI7ViucPJxFr/Emqx10yIAkS
- gYd4fPQcc8SEmvauj0cY8xCkCvraa2VfTyEk29bFLWgwSek62TcjlSb980ZhZ4R4OSsESxheo
- N4HAAvayy0gOIoDDaE2MQbDRUmOjxmWES7SU40ryjjb5mrvWoq6kjST5UaYCtUCHOKgrBlHrG
- KPKZiEorVMuuHXooTI5/BsoCLFI7oIeaaN5vcrMTYqBKp18nvYNBVmF1fhXmijySYVxUCA2zl
- strD7ygUhiZMzVFuHkMK+XLg6bedoetHeHjQYpLdatg3qJjszdI6S5RcUrNw9YPZ7NwoZ/Okg
- soutaLWjvnMaM6N4NkV42vJAvnaDh4l5/2tZH0GFCmu4jdiFonUtY6KZylxiEoJZrSJjrdfEU
- dnwRFQ==
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is exactly the fix I proposed. Thank you for testing and properly
-submitting it.
+The driver can be compile tested with !CONFIG_OF or !CONFIG_ACPI making
+certain data unused:
 
-Regards,
-Philipp Jungkamp
+  drivers/iio/proximity/sx9500.c:1039:34: error: ‘sx9500_of_match’ defined but not used [-Werror=unused-const-variable=]
 
-On Fri, 2023-03-10 at 15:54 -0800, Todd Brandt wrote:
-> Philipp Jungkamp created this fix, I'm simply submitting it. I've
-> verified it fixes bugzilla issue 217169.
->=20
-> Reported-and-tested-by: Todd Brandt <todd.e.brandt@linux.intel.com>
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=3D217169
-> Signed-off-by: Todd Brandt <todd.e.brandt@intel.com>
-> ---
-> =C2=A0drivers/hid/hid-sensor-custom.c | 2 +-
-> =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-
-> sensor-custom.c
-> index 3e3f89e01d81..d85398721659 100644
-> --- a/drivers/hid/hid-sensor-custom.c
-> +++ b/drivers/hid/hid-sensor-custom.c
-> @@ -940,7 +940,7 @@ hid_sensor_register_platform_device(struct
-> platform_device *pdev,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct hid_=
-sensor_hub_device
-> *hsdev,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struc=
-t
-> hid_sensor_custom_match *match)
-> =C2=A0{
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0char real_usage[HID_SENSOR_USA=
-GE_LENGTH];
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0char real_usage[HID_SENSOR_USA=
-GE_LENGTH] =3D { 0 };
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct platform_device *c=
-ustom_pdev;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0const char *dev_name;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0char *c;
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ drivers/iio/proximity/sx9500.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+index 8794e75e5bf9..840db1953998 100644
+--- a/drivers/iio/proximity/sx9500.c
++++ b/drivers/iio/proximity/sx9500.c
+@@ -1036,13 +1036,13 @@ static const struct acpi_device_id sx9500_acpi_match[] = {
+ };
+ MODULE_DEVICE_TABLE(acpi, sx9500_acpi_match);
+ 
+-static const struct of_device_id sx9500_of_match[] = {
++static const struct of_device_id sx9500_of_match[] __maybe_unused = {
+ 	{ .compatible = "semtech,sx9500", },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, sx9500_of_match);
+ 
+-static const struct i2c_device_id sx9500_id[] = {
++static const struct i2c_device_id sx9500_id[] __maybe_unused = {
+ 	{"sx9500", 0},
+ 	{ },
+ };
+-- 
+2.34.1
 
