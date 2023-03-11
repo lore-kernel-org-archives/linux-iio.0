@@ -2,117 +2,113 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B6A6C7618B
-	for <linux-iio@archiver.kernel.org>; Sat, 11 Mar 2023 19:02:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F2FCC61DA4
+	for <linux-iio@archiver.kernel.org>; Sat, 11 Mar 2023 19:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229914AbjCKTCL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 11 Mar 2023 14:02:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39126 "EHLO
+        id S229934AbjCKTFS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 11 Mar 2023 14:05:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbjCKTCI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Mar 2023 14:02:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6955E64B2D;
-        Sat, 11 Mar 2023 11:02:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07DD160DD8;
-        Sat, 11 Mar 2023 19:02:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0275CC433D2;
-        Sat, 11 Mar 2023 19:02:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678561325;
-        bh=aRIPsVzahV4VaJZIFCg+vIsGtMpis+9um6e1rA2rVAc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=C+j+kZCat2117EEqGxts5x3SZZDixNF9zpT2XnUIqEHZlQp95CM5+y+uSy1rZnrE1
-         Z/5gClmxlQofaa+n3mg9HcR4EZkWWPqoZSw/O/554J+0IgZHlDPN/oiL5/NASKz+1R
-         MFXulOEzEx/yj6yNox+iX7rbqnBDm5bX8hv2I3ehoJGRUymVe/JnuxTL9IFraOjjHe
-         erWoFcsMZ8kYZgesrgeUpJn6cQkp5KEJBI3NYirUQ4TPh/bLhgersK/6HE6XT3gkvz
-         MokA7pKp+QEam/lKA3eAkmGzlSfdOKf0cw3bIoVKw7uuF1I1miQdoOI4J1eN3iBazj
-         U6LBsN4CXyI5Q==
-Date:   Sat, 11 Mar 2023 19:02:08 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     James Clark <james.clark@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux@roeck-us.net,
-        michal.simek@amd.com, Jonathan Corbet <corbet@lwn.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] devres: Provide krealloc_array
-Message-ID: <20230311190208.7eca8c12@jic23-huawei>
-In-Reply-To: <20230309150334.216760-2-james.clark@arm.com>
-References: <20230309150334.216760-1-james.clark@arm.com>
-        <20230309150334.216760-2-james.clark@arm.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
+        with ESMTP id S229839AbjCKTFR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Mar 2023 14:05:17 -0500
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79ED64232
+        for <linux-iio@vger.kernel.org>; Sat, 11 Mar 2023 11:05:15 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id c3so9350699qtc.8
+        for <linux-iio@vger.kernel.org>; Sat, 11 Mar 2023 11:05:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678561515;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Rbfswi8F0tvm4TB1oEfjIUGvqcw32tOuUkfi+zA3fKw=;
+        b=isog/hOcdR0ifh9gwT9ytZpi/1TJ1sGvjtWA9jWbewn5sb1LhFPYqwjJanA1Ruy9/r
+         rtD1Ojyzd+2xcZw9IZ1a26aAkJ8Y3RdOuxJM1nDSMgl6VEVYhNrh7u8ojRu2+TOywzrv
+         8uiqP4Bbr3AUhO5xncn1Ba39xuUG82QSlpR/Yq1SM+gZQkrfWqaKsn67x8VhWJ5xwDHJ
+         aKD/3wFnYvMERio00Tq28Op3kwiOwtzNveqHeQNzPf/A+6wjAZcogh9Tm9xtw8FqNe5Q
+         yNb2lWpyGYz4sW6ZO+d6jPm3EsAcjBIYFpd6qD/A32k0oUaMKc8MVxz2/tjdfsZTm9jG
+         Ueqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678561515;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Rbfswi8F0tvm4TB1oEfjIUGvqcw32tOuUkfi+zA3fKw=;
+        b=VrDNVOTZ0rDgcCYe/WPH85ZsIlBl/XLROYrUu87rwqc/tT11oovJaLIhK7OkjgMN4R
+         hBBb1E7genk56tz2V1WAejgRtfYxbgCq4hL0iqa3r5r3wAblw5xkZ7fNIzA5a7aioDYf
+         3O/FmeFCmJOxTk7aK7NRm8cYP+TWr8l9bATcAK3hWS+7h9fnH1HIE3SLS1PCaxsOXqL0
+         BN6L8XJWmJ20/2/LhhGkd/Y2ldkYkus6Rh8M6rp+3rAifCZaZuhtPawbCIrpMD65nw9i
+         NRKjQN4SzAsLa3KchHte29KoEMu7HzwaOSW6Nj7TgIzf+mVRBhyk7cP3V4LH8ERepdy9
+         7BWw==
+X-Gm-Message-State: AO0yUKVjtwTEsxn8h7CT2lG9wFdtEUBvyzm67OQ9CuAw92fSrIQ69pB7
+        ILW2F0Bxpon9DF89B5bSkx+iVw==
+X-Google-Smtp-Source: AK7set8yXHbkrDKo9BiVAsqxPSADoxC9ajohxwr6pGdGG8Vk74ehqQzfvnlYxcWaedXAo35janM3nQ==
+X-Received: by 2002:a05:622a:83:b0:3bf:da69:6107 with SMTP id o3-20020a05622a008300b003bfda696107mr48730811qtw.67.1678561514875;
+        Sat, 11 Mar 2023 11:05:14 -0800 (PST)
+Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id w23-20020a05620a0e9700b0073bacce6ad7sm2184377qkm.82.2023.03.11.11.05.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Mar 2023 11:05:14 -0800 (PST)
+Date:   Sat, 11 Mar 2023 14:05:12 -0500
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v2] iio: dac: cio-dac: Migrate to the regmap API
+Message-ID: <ZAzQ6LyfllSjN16j@fedora>
+References: <20230311140218.74920-1-william.gray@linaro.org>
+ <20230311185719.7af38a8a@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gdSAI13kS9LQ1z0A"
+Content-Disposition: inline
+In-Reply-To: <20230311185719.7af38a8a@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu,  9 Mar 2023 15:03:30 +0000
-James Clark <james.clark@arm.com> wrote:
 
-> There is no krealloc_array equivalent in devres. Users would have to
-> do their own multiplication overflow check so provide one.
-> 
-> Signed-off-by: James Clark <james.clark@arm.com>
+--gdSAI13kS9LQ1z0A
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Trivial comment inline, but otherwise seems reasonable to me.
+On Sat, Mar 11, 2023 at 06:57:19PM +0000, Jonathan Cameron wrote:
+> On Sat, 11 Mar 2023 09:02:18 -0500
+> William Breathitt Gray <william.gray@linaro.org> wrote:
+> > diff --git a/drivers/iio/dac/cio-dac.c b/drivers/iio/dac/cio-dac.c
+> > index 791dd999cf29..759833a6bd29 100644
+> > --- a/drivers/iio/dac/cio-dac.c
+> > +++ b/drivers/iio/dac/cio-dac.c
+> > @@ -6,16 +6,15 @@
+> >   * This driver supports the following Measurement Computing devices: C=
+IO-DAC16,
+> >   * CIO-DAC06, and PC104-DAC06.
+> >   */
+> > -#include <linux/bitops.h>
+> > +#include <linux/bits.h>
+>=20
+> I'm not immediately spotting why this change is part of the regmap
+> conversion.
+>=20
+> It may well make sense, but if unrelated, should probably be in a differe=
+nt patch.
 
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+No you're right, this is an unrelated cleanup that I should probably
+have pulled out to its own dedicated patch. If there is a need for a v3,
+I'll split this off and submit it separately.
 
-> ---
->  Documentation/driver-api/driver-model/devres.rst |  1 +
->  include/linux/device.h                           | 10 ++++++++++
->  2 files changed, 11 insertions(+)
-> 
-> diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
-> index 4249eb4239e0..8be086b3f829 100644
-> --- a/Documentation/driver-api/driver-model/devres.rst
-> +++ b/Documentation/driver-api/driver-model/devres.rst
-> @@ -364,6 +364,7 @@ MEM
->    devm_kmalloc_array()
->    devm_kmemdup()
->    devm_krealloc()
-> +  devm_krealloc_array()
->    devm_kstrdup()
->    devm_kstrdup_const()
->    devm_kvasprintf()
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index 1508e637bb26..0dd5956c8516 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -223,6 +223,16 @@ static inline void *devm_kcalloc(struct device *dev,
->  {
->  	return devm_kmalloc_array(dev, n, size, flags | __GFP_ZERO);
->  }
-> +static inline __realloc_size(3, 4) void * __must_check
-> +devm_krealloc_array(struct device *dev, void *p, size_t new_n, size_t new_size, gfp_t flags)
-> +{
-> +	size_t bytes;
-> +
-> +	if (unlikely(check_mul_overflow(new_n, new_size, &bytes)))
-> +		return NULL;
+William Breathitt Gray
 
-For consistency with krealloc_array and other stuff in device.h that is
-of similar 'shape' add a blank line here.
+--gdSAI13kS9LQ1z0A
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> +	return devm_krealloc(dev, p, bytes, flags);
-> +}
-> +
->  void devm_kfree(struct device *dev, const void *p);
->  char *devm_kstrdup(struct device *dev, const char *s, gfp_t gfp) __malloc;
->  const char *devm_kstrdup_const(struct device *dev, const char *s, gfp_t gfp);
+-----BEGIN PGP SIGNATURE-----
 
+iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZAzQ6AAKCRC1SFbKvhIj
+KxfEAQC3HNpmFWAkWMGkhGrkKmzcQxNcUC1NNFwA3SJHUyAqDgEAlgvrzVmYbfQY
+dx/LDVo9zCyk6h39l2Ys4VwxSnM5Fg4=
+=OXGt
+-----END PGP SIGNATURE-----
+
+--gdSAI13kS9LQ1z0A--
