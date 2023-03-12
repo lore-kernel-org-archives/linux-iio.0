@@ -2,103 +2,123 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 479D2C6FD19
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Mar 2023 16:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B328BC6FD19
+	for <linux-iio@archiver.kernel.org>; Sun, 12 Mar 2023 16:23:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbjCLQWV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 12 Mar 2023 12:22:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
+        id S230141AbjCLQX2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 12 Mar 2023 12:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229844AbjCLQWU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 12 Mar 2023 12:22:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C477E3A6;
-        Sun, 12 Mar 2023 09:21:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF1FEB80D0D;
-        Sun, 12 Mar 2023 16:20:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A96AC433D2;
-        Sun, 12 Mar 2023 16:20:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678638046;
-        bh=yb3LFvkQPvsuWr8mjLWiq2v1N0sLSdr/C/2q8szkUuk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ObASvZK/bp8yDTZpOqHEBtcuBkIXLyPMnq9c1zeehHttiOUiv6ngbEFjYE65z4c09
-         R9ofGe4AA64JQWMztxfGYZHYb5JlnImOMarKjuIyfczrqu+NU/XhoirHSFFbTWRnza
-         ndSRY95l/VDlYMSQgPLL3sLP3Pgry1BAYz6ehVj9GDZadfswY/rOuDutDhsEGEK79g
-         ayJqdpayZsK3t1M82XIUe7j71GrpUGPnt+nJxprV02w+0j3HudOn5L0rdr8R0bAR7Y
-         mdsrR2xYxVrYKTo1FO5O3gZxE3LAyq7k0AV4Jud1wSeVwYY121QCu80HCGNs5y2C5Y
-         QmMsRzbR1GbLQ==
-Date:   Sun, 12 Mar 2023 16:20:52 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Robert Eshleman <bobbyeshleman@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] iio: dac: ad5755: mark OF related data as maybe
- unused
-Message-ID: <20230312162034.040d0edb@jic23-huawei>
-In-Reply-To: <20230312153429.371702-1-krzysztof.kozlowski@linaro.org>
-References: <20230312153429.371702-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
+        with ESMTP id S230237AbjCLQXZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 12 Mar 2023 12:23:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC201D91B
+        for <linux-iio@vger.kernel.org>; Sun, 12 Mar 2023 09:22:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678638060;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=q4/iPsVRBPkg6AepawVnMg1wwRgKOLDi6FjhOobj1H0=;
+        b=fenYV8AbC4PvBf2tf8BqYAUphAwh7yu85DxG/L6J7xTsVAxoA118l+1U77TQ3yIS+j/ztu
+        w3zEcoWx28PGRW2GOrGmxvaS5jVhdStKZdhwN67p9QbNEhr4AXMSxJzNd0obCuWRQ50bw2
+        HzJhuxHNayI4ayG2GpBgVA8yRquuSzg=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-662-Sy8gUGY6NdOLWKuSTt90uA-1; Sun, 12 Mar 2023 12:17:47 -0400
+X-MC-Unique: Sy8gUGY6NdOLWKuSTt90uA-1
+Received: by mail-qt1-f198.google.com with SMTP id g13-20020ac8124d000000b003bfba5d76a3so5680358qtj.15
+        for <linux-iio@vger.kernel.org>; Sun, 12 Mar 2023 09:17:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678637866;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=q4/iPsVRBPkg6AepawVnMg1wwRgKOLDi6FjhOobj1H0=;
+        b=T2OzJ01FPvylgAeQrjvItOz2bIsIAgH9XLsHsdj01C3h8B2FgMxaz2YFOEctGwCnvr
+         O5bEIzDzSkRIMaSprS4VozhcNCDvJSSz5RJBS5mH+LUCoy5hYEGtBFG4pOjUJKuloBn8
+         uW8EKS5WC8O2Q2dIThf1OMqRxTNOORVeCro6VQNtag/BKLdngFji26UZdqbxEmkFLM70
+         yC2nDWtVYXQqo5iuHV8ZDnlNXfbjb5azkgpb5NwNP3bwxnSTaJAAKM/UPUaE9XMIWSRF
+         ie+KxGKR1tUOFhSn0+jbdK6P933WmJJ1c1GUX2S3+NA3j7jaOXkis3vG5pEEkWTboBy1
+         szsQ==
+X-Gm-Message-State: AO0yUKUBbVXd3hG7pWyxsX7IVEulrzqfTLLC8meWjYTrETgG8lnRNG+1
+        FwruiYHmMgVED/A3ixgzDmLjIbqxDYMUfpvmZ3/twSshMs+oouQrXjg0KFoYXNwNHjGviG6yBqK
+        MhG+u6J6SUlio92Yno0If
+X-Received: by 2002:a05:622a:1811:b0:3bf:b70c:cb02 with SMTP id t17-20020a05622a181100b003bfb70ccb02mr56462028qtc.61.1678637866662;
+        Sun, 12 Mar 2023 09:17:46 -0700 (PDT)
+X-Google-Smtp-Source: AK7set/zwEcGLiorbWwvzcLRN7QE8tQwzoIcsH7hK+o/zR3XjwOjx605byBFLnz8cxnvcIf7BNPJ8w==
+X-Received: by 2002:a05:622a:1811:b0:3bf:b70c:cb02 with SMTP id t17-20020a05622a181100b003bfb70ccb02mr56462004qtc.61.1678637866429;
+        Sun, 12 Mar 2023 09:17:46 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id g1-20020ac84801000000b003b7e8c04d2esm3815120qtq.64.2023.03.12.09.17.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Mar 2023 09:17:46 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     jic23@kernel.org, lars@metafoo.de, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, fabrice.gasnier@foss.st.com,
+        olivier.moysan@foss.st.com, andy.shevchenko@gmail.com,
+        yannick.brosseau@gmail.com, nuno.sa@analog.com
+Cc:     linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] iio: adc: stm32-adc: set some stm32-adc.c variables storage-class-specifier to static
+Date:   Sun, 12 Mar 2023 12:17:33 -0400
+Message-Id: <20230312161733.470617-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 12 Mar 2023 16:34:27 +0100
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+smatch reports several warnings
+drivers/iio/adc/stm32-adc.c:2591:20: warning:
+  symbol 'stm32_adc_min_ts_h7' was not declared. Should it be static?
+drivers/iio/adc/stm32-adc.c:2610:20: warning:
+  symbol 'stm32_adc_min_ts_mp1' was not declared. Should it be static?
+drivers/iio/adc/stm32-adc.c:2630:20: warning:
+  symbol 'stm32_adc_min_ts_mp13' was not declared. Should it be static?
 
-> The driver can be compile tested with !CONFIG_OF making certain data
-> unused (of_device_id is not used for device matching):
->=20
->   drivers/iio/dac/ad5755.c:865:34: error: =E2=80=98ad5755_of_match=E2=80=
-=99 defined but not used [-Werror=3Dunused-const-variable=3D]
->=20
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->=20
-> ---
->=20
-> Changes since v1:
-> 1. None.
->=20
-> Although Jonathan expressed need of changes here, they are a bit too
-> invasive for me thus I am resending it only for completeness.
-> I understand therefore that patch might not be accepted.
+These variables are only used in stm32-adc.c, so they should be static
 
-Hi Krzysztof,
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/iio/adc/stm32-adc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-I'll leave it unapplied for now on basis I might get time in near future
-to do the more major refactor I'd like to see (and hack some testing togeth=
-er
-for it).  If that looks unlikely I may pick this up later.
-
-It'll sit in patchwork until then making me feel guilty :)
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/dac/ad5755.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
-> index beadfa938d2d..a6dc8a0bfc29 100644
-> --- a/drivers/iio/dac/ad5755.c
-> +++ b/drivers/iio/dac/ad5755.c
-> @@ -862,7 +862,7 @@ static const struct spi_device_id ad5755_id[] =3D {
->  };
->  MODULE_DEVICE_TABLE(spi, ad5755_id);
-> =20
-> -static const struct of_device_id ad5755_of_match[] =3D {
-> +static const struct of_device_id ad5755_of_match[] __maybe_unused =3D {
->  	{ .compatible =3D "adi,ad5755" },
->  	{ .compatible =3D "adi,ad5755-1" },
->  	{ .compatible =3D "adi,ad5757" },
+diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+index 45d4e79f8e55..1aadb2ad2cab 100644
+--- a/drivers/iio/adc/stm32-adc.c
++++ b/drivers/iio/adc/stm32-adc.c
+@@ -2588,7 +2588,7 @@ static const struct stm32_adc_cfg stm32f4_adc_cfg = {
+ 	.irq_clear = stm32f4_adc_irq_clear,
+ };
+ 
+-const unsigned int stm32_adc_min_ts_h7[] = { 0, 0, 0, 4300, 9000 };
++static const unsigned int stm32_adc_min_ts_h7[] = { 0, 0, 0, 4300, 9000 };
+ static_assert(ARRAY_SIZE(stm32_adc_min_ts_h7) == STM32_ADC_INT_CH_NB);
+ 
+ static const struct stm32_adc_cfg stm32h7_adc_cfg = {
+@@ -2607,7 +2607,7 @@ static const struct stm32_adc_cfg stm32h7_adc_cfg = {
+ 	.ts_int_ch = stm32_adc_min_ts_h7,
+ };
+ 
+-const unsigned int stm32_adc_min_ts_mp1[] = { 100, 100, 100, 4300, 9800 };
++static const unsigned int stm32_adc_min_ts_mp1[] = { 100, 100, 100, 4300, 9800 };
+ static_assert(ARRAY_SIZE(stm32_adc_min_ts_mp1) == STM32_ADC_INT_CH_NB);
+ 
+ static const struct stm32_adc_cfg stm32mp1_adc_cfg = {
+@@ -2627,7 +2627,7 @@ static const struct stm32_adc_cfg stm32mp1_adc_cfg = {
+ 	.ts_int_ch = stm32_adc_min_ts_mp1,
+ };
+ 
+-const unsigned int stm32_adc_min_ts_mp13[] = { 100, 0, 0, 4300, 9800 };
++static const unsigned int stm32_adc_min_ts_mp13[] = { 100, 0, 0, 4300, 9800 };
+ static_assert(ARRAY_SIZE(stm32_adc_min_ts_mp13) == STM32_ADC_INT_CH_NB);
+ 
+ static const struct stm32_adc_cfg stm32mp13_adc_cfg = {
+-- 
+2.27.0
 
