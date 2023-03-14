@@ -2,67 +2,59 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15466C77B70
-	for <linux-iio@archiver.kernel.org>; Tue, 14 Mar 2023 12:15:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35DECC6FD1C
+	for <linux-iio@archiver.kernel.org>; Tue, 14 Mar 2023 12:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231845AbjCNMPK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 14 Mar 2023 08:15:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55024 "EHLO
+        id S229684AbjCNMmz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 14 Mar 2023 08:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231875AbjCNMOm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Mar 2023 08:14:42 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C14321ABD0;
-        Tue, 14 Mar 2023 05:13:25 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32EBWq7d011994;
-        Tue, 14 Mar 2023 12:12:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=c1nBZ/Aty4yn3eI9JXVx2oMkWiRKzUI1i4sNGxx8scs=;
- b=ClwPTJpZ1oHQFNDJI3aetoSqmC08t2/rweqN72xKZp+qKBHAktfNIbPN+zUpCQdbzDK8
- eQl8NIwsoAZJH2eqkmwZF7yYRgiJiMbhEtinD1Kl24XdHIft2XpPadsdG47e/pCfVRcL
- TW0OQU7ybeUV4EWJM2oStJsSFlr9b945MTTrAKLZaXmgjPCn5sjhvFJSAnNOe5maDvXW
- q3ldHESzn41eagst/R2CpHRlP1hxUhh1/YgRC/hdsB1VouxUgdSitgIFmkiVPcIz5H/g
- Efri20chwBkBcZKXmpEDAqx3pCtmidHC2nwqYISdkjzwMzn1c5XA6MMrY7cvjDtG7v3T hg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3papkwkk2s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Mar 2023 12:12:33 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32EBUc7m030892;
-        Tue, 14 Mar 2023 12:12:32 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3papkwkk1g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Mar 2023 12:12:32 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32E81qgG028609;
-        Tue, 14 Mar 2023 12:12:29 GMT
-Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
-        by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3p8h96msmk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Mar 2023 12:12:29 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-        by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32ECCRJ639059786
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Mar 2023 12:12:27 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CFFBF2007B;
-        Tue, 14 Mar 2023 12:12:24 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5AE122007D;
-        Tue, 14 Mar 2023 12:12:24 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
-        Tue, 14 Mar 2023 12:12:24 +0000 (GMT)
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        William Breathitt Gray <william.gray@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        with ESMTP id S231157AbjCNMmj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Mar 2023 08:42:39 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073B29DE3B
+        for <linux-iio@vger.kernel.org>; Tue, 14 Mar 2023 05:42:17 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id y3so10565628qvn.4
+        for <linux-iio@vger.kernel.org>; Tue, 14 Mar 2023 05:42:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678797733;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=HYpnkGI54FPJWgehk8vQdkx13aLmQ4B3x8mczSXyAME=;
+        b=osjmOZDeLraLaarKa9V5mcSCp9hbIycNSD3yHTrjFhUyAYwdI1i7rMQiTrjR8cZ2od
+         0DMbmVnXrMNIJoTWaAQrUVapDWE16HpaRHW3cDzBL1on/DXPlAxsO5znqfmOcqHhMtCP
+         qAEWrdxd7QOS/ZQt4PvraSz2ldWHbMpFboa33RXOLH0Wtmg+NZ1raVLGDf0O4VB1Apb1
+         35AU5D4D2f1unChLmGMBcpHiSDIspARM9gKzXhRUvKOx+Ftk/dt2ALPrtKUoJmaQ5tTf
+         GLtXhviZ13qrSPoyNAl9RqfE3pncOkLTwxQSXheV2cpuxYUmw6BRKYbyxezyNgn8iaNU
+         8BjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678797733;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HYpnkGI54FPJWgehk8vQdkx13aLmQ4B3x8mczSXyAME=;
+        b=KzJ+wJKANkanTt5EP1CP8JkMw49gstK6U6B+xOrn6HYdPlJNsgq4B8VDW6oNO0FhVB
+         lFiLYOA1rbE4KApt0tRSxkhxV6yD/y85+zAis5d71uUpWeO45nXdxFksu7JVFeuMkwo2
+         yCbS7qAvMNn6hanE2tGCqaCOp+hBcT0OlvxEgZrexWXEjCHzoyFh/3ULUBJDwcQrWVVs
+         5kbtP2Rxpg517TSd253hVmnzcIb2QPfbdTPD6cNWWm/DNI0iAf4gm7ag3zB7LfnZkpnA
+         Q+2VDT73VXxJT/mOglMWXDzfEmn9FdUrwUWTzP1C6omj+ihoJ4iYAMqGVic0SOo0gAHy
+         P2+A==
+X-Gm-Message-State: AO0yUKWYQXt9oWZNPG6pFcvJhKf/vkmw3ob2Rs1ImnwlUMLgM/psHhA2
+        dZB7NwK3YGJ5FGy8S37BCHfyoA==
+X-Google-Smtp-Source: AK7set9Af5VZ1Oq6MUayK61t3uF8OJyuB9sTGKaVgTfwB7rrZERwp8s4R3FQPjGwsyhnuo2IFnfaaw==
+X-Received: by 2002:a05:622a:174c:b0:3d3:d291:61b with SMTP id l12-20020a05622a174c00b003d3d291061bmr444136qtk.53.1678797733394;
+        Tue, 14 Mar 2023 05:42:13 -0700 (PDT)
+Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id s3-20020a37a903000000b00743838d9f49sm1708198qke.12.2023.03.14.05.42.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Mar 2023 05:42:02 -0700 (PDT)
+Date:   Tue, 14 Mar 2023 08:41:59 -0400
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Alan Stern <stern@rowland.harvard.edu>,
@@ -74,51 +66,66 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
         linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
         linux-iio@vger.kernel.org
-Subject: [PATCH v3 05/38] counter: add HAS_IOPORT dependencies
-Date:   Tue, 14 Mar 2023 13:11:43 +0100
-Message-Id: <20230314121216.413434-6-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20230314121216.413434-1-schnelle@linux.ibm.com>
+Subject: Re: [PATCH v3 05/38] counter: add HAS_IOPORT dependencies
+Message-ID: <ZBBrl4v9L8Zw+AsN@fedora>
 References: <20230314121216.413434-1-schnelle@linux.ibm.com>
+ <20230314121216.413434-6-schnelle@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 9gz5GJ9jebM606j3CdIIornp3R6Yv1um
-X-Proofpoint-ORIG-GUID: lpth_ukeJ7Kr9Nthm27d9x389IjR2lH7
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-14_06,2023-03-14_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
- impostorscore=0 mlxscore=0 lowpriorityscore=0 mlxlogscore=999
- suspectscore=0 priorityscore=1501 bulkscore=0 phishscore=0 clxscore=1011
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2303140103
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="QfXKkWYR1v/wDFbl"
+Content-Disposition: inline
+In-Reply-To: <20230314121216.413434-6-schnelle@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-not being declared. We thus need to add HAS_IOPORT as dependency for
-those drivers using them.
 
-Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- drivers/counter/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+--QfXKkWYR1v/wDFbl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
-index b5ba8fb02cf7..1cae5097217e 100644
---- a/drivers/counter/Kconfig
-+++ b/drivers/counter/Kconfig
-@@ -15,6 +15,7 @@ if COUNTER
- config 104_QUAD_8
- 	tristate "ACCES 104-QUAD-8 driver"
- 	depends on (PC104 && X86) || COMPILE_TEST
-+	depends on HAS_IOPORT
- 	select ISA_BUS_API
- 	help
- 	  Say yes here to build support for the ACCES 104-QUAD-8 quadrature
--- 
-2.37.2
+On Tue, Mar 14, 2023 at 01:11:43PM +0100, Niklas Schnelle wrote:
+> In a future patch HAS_IOPORT=3Dn will result in inb()/outb() and friends
+> not being declared. We thus need to add HAS_IOPORT as dependency for
+> those drivers using them.
+>=20
+> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
+>  drivers/counter/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
+> index b5ba8fb02cf7..1cae5097217e 100644
+> --- a/drivers/counter/Kconfig
+> +++ b/drivers/counter/Kconfig
+> @@ -15,6 +15,7 @@ if COUNTER
+>  config 104_QUAD_8
+>  	tristate "ACCES 104-QUAD-8 driver"
+>  	depends on (PC104 && X86) || COMPILE_TEST
+> +	depends on HAS_IOPORT
+>  	select ISA_BUS_API
+>  	help
+>  	  Say yes here to build support for the ACCES 104-QUAD-8 quadrature
+> --=20
+> 2.37.2
 
+Is HAS_IOPORT needed because this driver uses devm_ioport_map()? The
+inb()/outb() functions and such are not used in this driver, so would it
+suffice to depend on HAS_IOPORT_MAP instead?
+
+William Breathitt Gray
+
+--QfXKkWYR1v/wDFbl
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZBBrlwAKCRC1SFbKvhIj
+K3ITAQCwcVYfGAF7Mb2JIBQNeuQ8Hzcy2QcEujfYu0xORFfokwD/dkgs7hwz2zMe
+11UPcZMJuttibJDA+MhtxUzdy4+OrQQ=
+=yKTg
+-----END PGP SIGNATURE-----
+
+--QfXKkWYR1v/wDFbl--
