@@ -2,53 +2,95 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30BEAC6FD1F
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Mar 2023 08:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B10FC7618D
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Mar 2023 12:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231132AbjCPIq2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Mar 2023 04:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38252 "EHLO
+        id S229985AbjCPMuA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Mar 2023 08:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbjCPIqW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Mar 2023 04:46:22 -0400
-Received: from mail.paretdee.com (mail.paretdee.com [141.95.17.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65B2B5B78
-        for <linux-iio@vger.kernel.org>; Thu, 16 Mar 2023 01:46:14 -0700 (PDT)
-Received: by mail.paretdee.com (Postfix, from userid 1002)
-        id 91404A2BAB; Thu, 16 Mar 2023 08:45:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=paretdee.com; s=mail;
-        t=1678956373; bh=FLMIyM7qOCOVEMp1o/ltkgnLeuU0ZBlT9xWiZMBZ7Ag=;
-        h=Date:From:To:Subject:From;
-        b=kOJAnN711hYkP1gW6Ps/1kjLchj8nktnUu7MVP4ASw4IWwFTCF7cKzfyxx2GAcnmi
-         Ftu4H5zgt1UDMg16j7l8CRVN+vkwu4ycAmLFueYnXB0jkFXbjs2jhTWWEYvYagqFp+
-         i7GwM2f/HQC9JXvu5gEqs7Ndg3QuRZ6+ROQjfRhRspFaSHGDC8aaCT5mBf9nXw8lsO
-         wcUiFdv0FwcwjFpoPB7IVojvJYTcWYFDIvxWXn0GFBfkKjQE3TY+eyZucUgDhzV3Qx
-         ZVUjCbnvE3+RS7Gmy9sTD8fHRt9LvApOBCcglGuAdB0Okmt0h7hLGWhxX441SpSTpN
-         HFXVP5e50EZtw==
-Received: by mail.paretdee.com for <linux-iio@vger.kernel.org>; Thu, 16 Mar 2023 08:45:39 GMT
-Message-ID: <20230316074500-0.1.5h.cmsj.0.92zxv1hat2@paretdee.com>
-Date:   Thu, 16 Mar 2023 08:45:39 GMT
-From:   "Zbynek Spacek" <zbynek.spacek@paretdee.com>
-To:     <linux-iio@vger.kernel.org>
-Subject: Rubber Molded
-X-Mailer: mail.paretdee.com
+        with ESMTP id S229659AbjCPMt6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Mar 2023 08:49:58 -0400
+X-Greylist: delayed 402 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Mar 2023 05:49:55 PDT
+Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [5.144.164.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C633E38007
+        for <linux-iio@vger.kernel.org>; Thu, 16 Mar 2023 05:49:55 -0700 (PDT)
+Received: from SoMainline.org (D57D4C6E.static.ziggozakelijk.nl [213.125.76.110])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 62ABA40287;
+        Thu, 16 Mar 2023 13:43:09 +0100 (CET)
+Date:   Thu, 16 Mar 2023 13:43:07 +0100
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Rob Herring <robh@kernel.org>, phone-devel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] dt-bindings: thermal: qcom-spmi-adc-tm5: Use
+ generic ADC node name
+Message-ID: <20230316124307.pzuvbacsmjdootfx@SoMainline.org>
+References: <20230201204447.542385-1-marijn.suijten@somainline.org>
+ <20230201204447.542385-3-marijn.suijten@somainline.org>
+ <20230203212501.GA908601-robh@kernel.org>
+ <20230205150645.549ff062@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230205150645.549ff062@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Good morning,
+On 2023-02-05 15:06:45, Jonathan Cameron wrote:
+> On Fri, 3 Feb 2023 15:25:01 -0600
+> Rob Herring <robh@kernel.org> wrote:
+> 
+> > On Wed, Feb 01, 2023 at 09:44:46PM +0100, Marijn Suijten wrote:
+> > > Update the example to reflect a future requirement for the generic
+> > > adc-chan node name on ADC channel nodes, while conveying the board name
+> > > of the channel in a label instead.  
+> > 
+> > I don't think we've defined 'adc-chan' as THE generic name. Looks like 
+> > we have:
+> > 
+> > adc-chan
+> > adc-channel
+> > channel
+> > 
+> > 'channel' is the most common (except for QCom).
+> Good spot.
+> 
+> We also have that defined as the channel name in 
+> bindings/iio/adc.yaml
 
-we can offer unbeatable conditions for the supply of various silicone com=
-pounds and rubbers, liquid silicone rubber (LSR).
+Good point, let's match adc.yaml and use 'channel' instead.  I'll
+respin this series with thas, as well as rebasing on -next to solve
+conflicts with 8013295662f5 ("arm64: dts: qcom: sc8280xp: Add label
+property to vadc channel nodes"): supposedly that DT originally relied
+on the `@XX` suffix bug :)
 
-In our assortment you will also find cross-linking agents, stabilizers, d=
-yes and individual silicone mixtures that we will develop for your needs.
+> Now this particular binding doesn't use anything from that
+> generic binding (other than trivial use of reg) but better to be
+> consistent with it than not!
 
-Do you want to know what we can offer you?
+Should it inherit the common binding, or was it omitted for a reason?
 
-
-Best regards
-Zbynek Spacek
+- Marijn
