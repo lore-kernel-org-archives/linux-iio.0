@@ -2,52 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE75FC74A5B
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Mar 2023 15:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C89E2C7618A
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Mar 2023 15:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbjCRPAI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 18 Mar 2023 11:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
+        id S229677AbjCRPAJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Mar 2023 11:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbjCRPAG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Mar 2023 11:00:06 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84FE2528A
-        for <linux-iio@vger.kernel.org>; Sat, 18 Mar 2023 08:00:03 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id ek9so8638942qtb.10
-        for <linux-iio@vger.kernel.org>; Sat, 18 Mar 2023 08:00:03 -0700 (PDT)
+        with ESMTP id S229570AbjCRPAI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Mar 2023 11:00:08 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAF31A660
+        for <linux-iio@vger.kernel.org>; Sat, 18 Mar 2023 08:00:05 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id m6so5267105qvq.0
+        for <linux-iio@vger.kernel.org>; Sat, 18 Mar 2023 08:00:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679151603;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=0O2Se05WZykb6gnl2tgkCz0qj3TrHgbValu61eHs1Ig=;
-        b=f1H3d6rT8sOXwm8g5R2YhTL5c6LGovcedBeMAXNfaa0gdFKC+ddWlepsEY5T0+7KS1
-         ZOhYfeyHEmtkcUn+DnZl72OWv0CYuxCndrWZSqeSN+2b73ladCEqw7xpAd+QNkLAzwGp
-         yrJZePsSofZvzjAyzVK9vqdaqohQl0ZAl9zKxSYHfDBaPeCJOKrXHYlrjrQyn6+ET8Vz
-         /68JLo2HE8U20FCK/kj2xjHBQ9nkq3P/Cy0bxeqcoeEwfqETlyyL0mI2Pvq9ToDDfBqK
-         a6ZITvdLt0PAs6fPgTv64fV2Y45x+sOcH8vtfIfPNyAPjEkBUUU6nh63aBdmZG2U+Wug
-         UnJQ==
+        d=linaro.org; s=google; t=1679151605;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UsQYvSyu4jE6lask5SYWYAq4ElRHC2rwYckfb3oqNdE=;
+        b=wr5DjoR+6RGWJ3uHk+BSybCSScobbiyf6OuH5vJ7BRuOHoeOnJPzXwBooDTH2JcZou
+         TFSWAcjlmy9WI1QZDh9wDKMRWmbJhTSy0vfJy0CmSMgO+7b00j+D+ElR4LmZ0dvojUv+
+         qN4WfwwKgbWurm1crHs+ysoEZ/u8miJqVaLyFqmyA31m7GHTvD06/iMwDRO1CY2j7q5L
+         T6bDmApVJAl1auQjGdlLI/oPnTk0mtEyxKFnbj5P2QjLkxnkvtP8/CcgskXoA0hmCzEL
+         ezKzkcZcaK+c+yG6LfcovRP7HRfXBGqDPGPQWJzULIlR0ID/Ya+cRkphyt1xC1mNn1lw
+         ad1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679151603;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0O2Se05WZykb6gnl2tgkCz0qj3TrHgbValu61eHs1Ig=;
-        b=rGu64faOwAXoiactFfXDXmX9H9krHyYA10HevREUpYaI3WzpTkLb0U9ihxJr0F58t2
-         sLqlKAJGK1zBF7xgH2MVcGlL5Kc84gauLesaVLMLMmpWYCPC4RsxlhRyQ8v5G3aMuQVH
-         xrpbmI9Z6XHQyTfF4TuN9fDuRSVQYZimqGeXayI1ca8vzujNmCMGciLVyRONKUVYmAE3
-         DO13RGl4FrMBBlRu2GpyWGyL5WVTNRsXOpe73mOdVSpMEM5YbKg8U7NVqYahGfZKbf8n
-         JA8NcWTYg1QsDANKG+Pu8V1C++QlESecIYuz2JNmMgcYcWKsm38siXmrnwanjuvKk7ja
-         VTPQ==
-X-Gm-Message-State: AO0yUKXtWNpk1Ys0maJ4aWTCk2Dv78R2Pl0fR+GzEWvwsMnL5CfDwhjd
-        KIzLpy5HnVaFWGEo8q+VLiTky8EbrHniDpzXH+o=
-X-Google-Smtp-Source: AK7set80/4ii9N8RbVKZ/Jx8z5jCS6iho/1z5zvzCd4CEPc3rQ4iSkcD42pxAoO5p+QgvaZ8MIA2kA==
-X-Received: by 2002:a05:622a:1106:b0:3dd:eed:93b3 with SMTP id e6-20020a05622a110600b003dd0eed93b3mr3557058qty.46.1679151602759;
-        Sat, 18 Mar 2023 08:00:02 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679151605;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UsQYvSyu4jE6lask5SYWYAq4ElRHC2rwYckfb3oqNdE=;
+        b=Vl1WU5rVaCAi1AqwOE1x8l/WeequvvbYt2d9jHqoBWf/TrY5ckmBDBXCgVYsiXUfsM
+         ppBbmYxLM3iUFVSaK2TcZftR07vW53Y7BPPQ+GGWcPhfvGMbehtjkjReH+KNpPhqyvSh
+         RZbNksUxRUUF7F1msA2yM/K6NJZsvSJpns6SCz42e8L0WLcM7Z7rATgIswsfmQKYw+fi
+         4J6JTzbAl8/iNP4IP/UktqhOt8gffSQRbbbrKgmKPERkXv/07tzK8Qqyl1BPAZ71QD3u
+         cwThdl8ZgZPAk+UySBd5F+6Q+yQcpHVJX+wuQVq2ku51A96Zm6mQmql2aeDMl3Yz903g
+         YWJA==
+X-Gm-Message-State: AO0yUKX4QKT5rpDO4nSdYb4eS8vYt8iAcatMjyUzgp921yMkzOw5PffK
+        lLr1ePw/nHU0UQ3lpoazcbt0TawEbFYbe1AShpU=
+X-Google-Smtp-Source: AK7set8rBT6kFz0Qf3+xdNmfCbabiaft7H5JcwzQCk4AwdBUdI+d4/kiIwOOQjCmpLcd6cNWbgJhUA==
+X-Received: by 2002:ad4:5fce:0:b0:579:5dbc:ab8b with SMTP id jq14-20020ad45fce000000b005795dbcab8bmr44111231qvb.52.1679151604641;
+        Sat, 18 Mar 2023 08:00:04 -0700 (PDT)
 Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id f67-20020a37d246000000b00745daadd210sm3709162qkj.71.2023.03.18.08.00.01
+        by smtp.gmail.com with ESMTPSA id f67-20020a37d246000000b00745daadd210sm3709162qkj.71.2023.03.18.08.00.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Mar 2023 08:00:02 -0700 (PDT)
+        Sat, 18 Mar 2023 08:00:04 -0700 (PDT)
 From:   William Breathitt Gray <william.gray@linaro.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>,
@@ -56,59 +57,64 @@ Cc:     Johannes Berg <johannes.berg@intel.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         linux-kernel@vger.kernel.org,
         William Breathitt Gray <william.gray@linaro.org>
-Subject: [PATCH 0/4] Refactor 104-quad-8 to match device operations
-Date:   Sat, 18 Mar 2023 10:59:47 -0400
-Message-Id: <cover.1679149542.git.william.gray@linaro.org>
+Subject: [PATCH 2/4] bitfield: Introduce the FIELD_MODIFY() macro
+Date:   Sat, 18 Mar 2023 10:59:49 -0400
+Message-Id: <1c1492558c1a72b64bb26f7a44c4e69fff0e6b44.1679149543.git.william.gray@linaro.org>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <cover.1679149542.git.william.gray@linaro.org>
+References: <cover.1679149542.git.william.gray@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The 104-quad-8 driver was initially introduced to the IIO subsystem
-where it didn't quite fit with the existing paradigm [0]; these
-differences eventually led to the creation of the Counter subsystem[1].
-As a result of its awkward beginnings, the design of the 104-quad-8
-driver was structured around maintaining abstract state buffers that
-would eventually be converted to match the actual device registers
-states on-the-fly as needed.
+It is a common code pattern to modify a bitfield by masking the field
+and performing a bitwise OR with the respective FIELD_PREP. Wrap such a
+task into a macro by introducing FIELD_MODIFY() which modifies the field
+specified by a mask from a bitfield by putting a val in the field.
 
-The original design approach for the 104-quad-8 driver was neither
-efficient nor easy to troubleshoot, but it did allow us to focus on
-implementing and supporting necessary APIs for the nascent Counter
-subsystem. Now that development for the 104-quad-8 driver has shifted
-to maintenance, it is a good time to refactor and clean up the code to
-match closer to what is actually happening on the device. This patchset
-is an attempt to rectify the situation as such.
+Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+---
+ include/linux/bitfield.h | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-The primary change is a transition from maintaining individual
-configuration states independently, to storing buffers of the device
-register configurations. To that end, the bitfield API is leveraged to
-access and retrieve field states. Modifying bitfields is a common code
-pattern so a FIELD_MODIFY macro is introduced to facililate such.
-Finally some helper functions are introduced to abstract the handling of
-the PR, FLAG, and PSC registers.
-
-Modifying a buffer state in-place is a common pattern, so should we also
-consider adding a field_replace() function similar to bitmap_replace()?
-
-[0] https://lore.kernel.org/r/b43e2942b763b87afc85bfa9fe36e5695cba4c44.1475079578.git.vilhelm.gray@gmail.com/
-[1] https://lore.kernel.org/r/cover.1554184734.git.vilhelm.gray@gmail.com/
-
-William Breathitt Gray (4):
-  counter: 104-quad-8: Utilize bitfield access macros
-  bitfield: Introduce the FIELD_MODIFY() macro
-  counter: 104-quad-8: Refactor to buffer states for CMR, IOR, and IDR
-  counter: 104-quad-8: Utilize helper functions to handle PR, FLAG and
-    PSC
-
- drivers/counter/104-quad-8.c | 526 ++++++++++++++++++-----------------
- include/linux/bitfield.h     |  18 +-
- 2 files changed, 283 insertions(+), 261 deletions(-)
-
-
-base-commit: 00f4bc5184c19cb33f468f1ea409d70d19f8f502
+diff --git a/include/linux/bitfield.h b/include/linux/bitfield.h
+index ebfa12f69501..b06a98f0a87f 100644
+--- a/include/linux/bitfield.h
++++ b/include/linux/bitfield.h
+@@ -38,8 +38,7 @@
+  *	  FIELD_PREP(REG_FIELD_D, 0x40);
+  *
+  * Modify:
+- *  reg &= ~REG_FIELD_C;
+- *  reg |= FIELD_PREP(REG_FIELD_C, c);
++ *  reg = FIELD_MODIFY(REG_FIELD_C, reg, c);
+  */
+ 
+ #define __bf_shf(x) (__builtin_ffsll(x) - 1)
+@@ -155,6 +154,21 @@
+ 		(typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask));	\
+ 	})
+ 
++/**
++ * FIELD_MODIFY() - modify a bitfield element
++ * @_mask: shifted mask defining the field's length and position
++ * @_reg:  value of entire bitfield
++ * @_val:  value to put in the field
++ *
++ * FIELD_MODIFY() modifies the field specified by @_mask from the
++ * bitfield passed in as @_reg by putting @val in the field.
++ */
++#define FIELD_MODIFY(_mask, _reg, _val)						\
++	({									\
++		__BF_FIELD_CHECK(_mask, _reg, _val, "FIELD_MODIFY: ");		\
++		(typeof(_mask))(((_reg) & ~(_mask)) | FIELD_PREP(_mask, _val));	\
++	})
++
+ extern void __compiletime_error("value doesn't fit into mask")
+ __field_overflow(void);
+ extern void __compiletime_error("bad bitfield mask")
 -- 
 2.39.2
 
