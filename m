@@ -2,53 +2,50 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F418DC7618B
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Mar 2023 15:34:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 334AAC74A5B
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Mar 2023 15:53:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229862AbjCRPeD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 18 Mar 2023 11:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52674 "EHLO
+        id S229478AbjCRPxf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Mar 2023 11:53:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229779AbjCRPeD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Mar 2023 11:34:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9B425BAE;
-        Sat, 18 Mar 2023 08:34:02 -0700 (PDT)
+        with ESMTP id S229842AbjCRPxZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Mar 2023 11:53:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06032B2BE;
+        Sat, 18 Mar 2023 08:53:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB34860EAE;
-        Sat, 18 Mar 2023 15:34:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3436C433EF;
-        Sat, 18 Mar 2023 15:33:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A802B8074D;
+        Sat, 18 Mar 2023 15:53:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F873C433EF;
+        Sat, 18 Mar 2023 15:53:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679153641;
-        bh=Kt8CaawG0MpSdZ26UOh9SvS3bT30FK58COF6HsU3+Jk=;
+        s=k20201202; t=1679154793;
+        bh=VIC8yNIF5gb8H4Ss/veeFWQBDBzRAUYMI7xaHoyLXNI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JuzGuPUZ2yaltpUX++JHiZdYu//rZwH2Pw2DoLxBWoyo3+RRfHWgHJ1IE+Q3qJN00
-         dw4/q2c3q+qAcWQwXcQQQ8eRCe+I9GBqjdtPg2RTBnf+vh2UN3DcG3WQR4CeX/FMwo
-         7IEuj/soJSkM5ho/gJtvtyhSd0tlR3q26dJjJGvwlYbrz7jS82NXJYioZYdn2INUWg
-         HJ5Bcp4mJXRqRArLC3h1kotAkOsIaVC6V6JgF/kSdQ92LSvHZjxL+9x6Nw/2kTkqqV
-         UGLMAPKPbH+6QGeOOub3vpaCylvwqrk7wItsfGKND3uwYm5bam1y9o3j5e9/SQh332
-         5EsK8kUL9z2cg==
-Date:   Sat, 18 Mar 2023 15:48:53 +0000
+        b=g1/XvBucTyM/JnLrfOELRPJPtmSKDTeJRTmatUDoM8fO5ATOgavaQY5wFYWEQvfIA
+         y3u/5DCZkGN5iwFbY0zdAdIpTfKsnrIOH1pyg37/TjWwZDWHKaFj9in0Wtkrgt7ZUB
+         99oHWm5JpQdMJEDxltGQAhcec+9YW/9CgKfZE9oMMPY0ZD1uXVTeQP/MHBQY2Zxru4
+         xQXfUhh0HJmv81l4sk1Z3ke6MbFrfmV8T6bjH/p6ZA+uPJtVwx1QmqL84btdWaFf+G
+         WfrHYefnyf5jQsf8ak0j3jsUlJUIGYh9E9nw2aMvytKDgvhLd2rw8l7+iemGfhdgeP
+         YqlHISFdlZTCQ==
+Date:   Sat, 18 Mar 2023 16:08:06 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Kasumov Ruslan <xhxgldhlpfy@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andi Shyti <andi.shyti@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org,
-        Kasumov Ruslan <s02210418@gse.cs.msu.ru>
-Subject: Re: [PATCH v2] iio: adc: qcom-pm8xxx-xoadc: Remove useless
- condition in pm8xxx_xoadc_parse_channel()
-Message-ID: <20230318154853.0c91e055@jic23-huawei>
-In-Reply-To: <20230315135114.22684-1-xhxgldhlpfy@gmail.com>
-References: <20230314193709.15208-1-xhxgldhlpfy@gmail.com>
-        <20230315135114.22684-1-xhxgldhlpfy@gmail.com>
+To:     <Claudiu.Beznea@microchip.com>
+Cc:     <chengziqiu@hust.edu.cn>, <eugen.hristev@collabora.com>,
+        <lars@metafoo.de>, <Nicolas.Ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <dzm91@hust.edu.cn>,
+        <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] iio: adc: at91-sama5d2_adc: remove dead code in
+ `at91_adc_probe`
+Message-ID: <20230318160806.7943aba4@jic23-huawei>
+In-Reply-To: <f1afaf48-e884-4902-8cff-41da234df9e9@microchip.com>
+References: <20230314070130.60581-1-chengziqiu@hust.edu.cn>
+        <f1afaf48-e884-4902-8cff-41da234df9e9@microchip.com>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,49 +54,56 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 15 Mar 2023 16:51:14 +0300
-Kasumov Ruslan <xhxgldhlpfy@gmail.com> wrote:
+On Tue, 14 Mar 2023 10:12:23 +0000
+<Claudiu.Beznea@microchip.com> wrote:
 
-> The left side of the loop condition never becomes false.
-> hwchan cannot be NULL, because it points to elements of the
-> hw_channels array that takes one of 4 predefined values:
-> pm8018_xoadc_channels, pm8038_xoadc_channels,
-> pm8058_xoadc_channels, pm8921_xoadc_channels.
+> On 14.03.2023 09:01, Cheng Ziqiu wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> >   
+> >>From the comment of platform_get_irq, it only returns non-zero IRQ  
+> > number and negative error number, other than zero.
+> > 
+> > Fix this by removing the if condition.
+> > 
+> > Signed-off-by: Cheng Ziqiu <chengziqiu@hust.edu.cn>
+> > Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>  
 > 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
-> 
-> Reviewed-by: Andi Shyti <andi.shyti@kernel.org>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Kasumov Ruslan <s02210418@gse.cs.msu.ru>
-
-We could file this under the category of (overly) paranoid checking that
-he variant structure has the hw_channels set, but given there are only 4 instances
-of that it is (as you have done) easy to check.
-
-So fair enough to drop this check.
-
-Applied.
+> Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing for 0-day to
+take a look at it.
 
 Thanks,
 
 Jonathan
 
-> ---
-> v2: Removed "Fixes" tag as Andi Shyti <andi.shyti@kernel.org> suggested.
->  drivers/iio/adc/qcom-pm8xxx-xoadc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-> index eb424496ee1d..64a3aeb6261c 100644
-> --- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-> +++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-> @@ -758,7 +758,7 @@ static int pm8xxx_xoadc_parse_channel(struct device *dev,
->  	/* Find the right channel setting */
->  	chid = 0;
->  	hwchan = &hw_channels[0];
-> -	while (hwchan && hwchan->datasheet_name) {
-> +	while (hwchan->datasheet_name) {
->  		if (hwchan->pre_scale_mux == pre_scale_mux &&
->  		    hwchan->amux_channel == amux_channel)
->  			break;
+> 
+> > ---
+> > v2->v3: Change subject to make it regular.
+> > v1->v2: Change commit message from SoB to Reviewed-by.
+> >  drivers/iio/adc/at91-sama5d2_adc.c | 6 +-----
+> >  1 file changed, 1 insertion(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+> > index 50d02e5fc6fc..168399092590 100644
+> > --- a/drivers/iio/adc/at91-sama5d2_adc.c
+> > +++ b/drivers/iio/adc/at91-sama5d2_adc.c
+> > @@ -2400,12 +2400,8 @@ static int at91_adc_probe(struct platform_device *pdev)
+> >         st->dma_st.phys_addr = res->start;
+> > 
+> >         st->irq = platform_get_irq(pdev, 0);
+> > -       if (st->irq <= 0) {
+> > -               if (!st->irq)
+> > -                       st->irq = -ENXIO;
+> > -
+> > +       if (st->irq < 0)
+> >                 return st->irq;
+> > -       }
+> > 
+> >         st->per_clk = devm_clk_get(&pdev->dev, "adc_clk");
+> >         if (IS_ERR(st->per_clk))
+> > --
+> > 2.34.1
+> >   
+> 
 
