@@ -2,116 +2,91 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06661C74A5B
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Mar 2023 17:17:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CEC1C61DA4
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Mar 2023 13:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbjCQRRX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 17 Mar 2023 13:17:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38720 "EHLO
+        id S229517AbjCRN2G (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Mar 2023 09:28:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229813AbjCQRRW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Mar 2023 13:17:22 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FCA4C48A8;
-        Fri, 17 Mar 2023 10:17:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679073439; x=1710609439;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=i7Um5WgX0/Ow2OiYnXCvKojE79q9wI7ohWbytUP/Llc=;
-  b=mUgpyvmczhsTdb5mLmKFGvuIUCGKr8fBLAVGKjNrR4yDa69StWDoEf5I
-   DXPIPPOkh4Is0KDLGCR7x/5lPpeo9gHaWphhgm56dfJm6FCiYjvaWMXBc
-   3mgWtFdIIiTcsHLSaHJsUnh4rN5ru63F7cjZgIZ5PXT3cjJgv1cVjgGaU
-   WZVATTu8wBTxQqRhV0Pk/Ezjmx1SPXP1a60f4/icuRCQokS+U5cRG7jjX
-   gmduxuT8E9IBVxO8vObNfObYxMgb2M8U9AOOQ7dfivwz9fQw9RxJO5ExV
-   We7IL9RCu4opc6UoeuFaahhjhMuqXBQYiUFrvZ+0yDF9oxTGhemAQiFCi
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10652"; a="318718293"
-X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="318718293"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 10:17:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10652"; a="712817421"
-X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="712817421"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 17 Mar 2023 10:17:15 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pdDhb-0009VG-0Q;
-        Fri, 17 Mar 2023 17:17:15 +0000
-Date:   Sat, 18 Mar 2023 01:16:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Matti Vaittinen <mazziesaccount@gmail.com>
-Cc:     oe-kbuild-all@lists.linux.dev, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Beguin <liambeguin@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4 5/8] iio: test: test gain-time-scale helpers
-Message-ID: <202303180046.bcS0xv8j-lkp@intel.com>
-References: <31cf5765078b2d808d9e66eb623cde70ee6478ac.1679062529.git.mazziesaccount@gmail.com>
+        with ESMTP id S229478AbjCRN2F (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Mar 2023 09:28:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E857EB70;
+        Sat, 18 Mar 2023 06:28:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8EAEBB81256;
+        Sat, 18 Mar 2023 13:28:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E902C4339B;
+        Sat, 18 Mar 2023 13:27:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679146080;
+        bh=psfrA5p2uM2bG6uslEqzGHJfqnkRsqqP4wOcTu2JuI0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XVvjldRum0mYqqLg3J0njpE/2CJ+rInCUxKd3dKe+NIm/l1c3lmj46yXdaC6hO0yB
+         v6v0abyyKxUe0ot56XTpset+L6e1iIAX9PsJoyJzIG4GAAQhTt2psIf/ifHU9fbRQm
+         AGKaivvYd4Pao2KOIU26LgX8qqJA7EXdZQKBPzWH4wT9qCI4riipRUkQJMxg/y03uG
+         BAijyOIXEn0a5pnjpR7D/8vGIgcdYrzAG8SLlR514wGZdkC3sSL3v6pg9RsP4SeTJv
+         TrQ6oP8MIPazxYREfyV9WG26l8Z9hb6YyhChAetdVfKK3qu98fo+ocHYHL8SgEHIw8
+         1uD5GeMGMbizA==
+Date:   Sat, 18 Mar 2023 09:27:56 -0400
+From:   William Breathitt Gray <wbg@kernel.org>
+To:     William Breathitt Gray <william.gray@linaro.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jic23@kernel.org, lars@metafoo.de, stable@vger.kernel.org
+Subject: Re: [PATCH 6.1,6.2,6.3 v3 1/6] counter: 104-quad-8: Fix race
+ condition between FLAG and CNTR reads
+Message-ID: <ZBW8XN71fYwJe6rW@ishi>
+References: <20230312231554.134858-1-william.gray@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="+wDaARczjHaj/9wJ"
 Content-Disposition: inline
-In-Reply-To: <31cf5765078b2d808d9e66eb623cde70ee6478ac.1679062529.git.mazziesaccount@gmail.com>
+In-Reply-To: <20230312231554.134858-1-william.gray@linaro.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Matti,
 
-I love your patch! Yet something to improve:
+--+wDaARczjHaj/9wJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[auto build test ERROR on eeac8ede17557680855031c6f305ece2378af326]
+On Sun, Mar 12, 2023 at 07:15:49PM -0400, William Breathitt Gray wrote:
+> The Counter (CNTR) register is 24 bits wide, but we can have an
+> effective 25-bit count value by setting bit 24 to the XOR of the Borrow
+> flag and Carry flag. The flags can be read from the FLAG register, but a
+> race condition exists: the Borrow flag and Carry flag are instantaneous
+> and could change by the time the count value is read from the CNTR
+> register.
+>=20
+> Since the race condition could result in an incorrect 25-bit count
+> value, remove support for 25-bit count values from this driver;
+> hard-coded maximum count values are replaced by a LS7267_CNTR_MAX define
+> for consistency and clarity.
+>=20
+> Fixes: 28e5d3bb0325 ("iio: 104-quad-8: Add IIO support for the ACCES 104-=
+QUAD-8")
+> Cc: <stable@vger.kernel.org> # 6.1.x
+> Cc: <stable@vger.kernel.org> # 6.2.x
+> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Matti-Vaittinen/drm-tests-helpers-rename-generic-helpers/20230317-224949
-base:   eeac8ede17557680855031c6f305ece2378af326
-patch link:    https://lore.kernel.org/r/31cf5765078b2d808d9e66eb623cde70ee6478ac.1679062529.git.mazziesaccount%40gmail.com
-patch subject: [PATCH v4 5/8] iio: test: test gain-time-scale helpers
-config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20230318/202303180046.bcS0xv8j-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/37a2c62820ca249a8d3ab9f1b80eaa71e0d5749b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Matti-Vaittinen/drm-tests-helpers-rename-generic-helpers/20230317-224949
-        git checkout 37a2c62820ca249a8d3ab9f1b80eaa71e0d5749b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash drivers/base/test/ drivers/iio/test/
+Applied to counter-fixes.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202303180046.bcS0xv8j-lkp@intel.com/
+William Breathitt Gray
 
-All errors (new ones prefixed by >>):
+--+wDaARczjHaj/9wJ
+Content-Type: application/pgp-signature; name="signature.asc"
 
->> drivers/iio/test/iio-test-gts.c:7:10: fatal error: kunit/platform_device.h: No such file or directory
-       7 | #include <kunit/platform_device.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
---
->> drivers/base/test/test_kunit_device.c:11:10: fatal error: kunit/platform_device.h: No such file or directory
-      11 | #include <kunit/platform_device.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
+-----BEGIN PGP SIGNATURE-----
 
+iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZBW8XAAKCRC1SFbKvhIj
+K3KAAP9w7bhPNGq7bLugVAL4kGTJV/4p+qiDV2F5A/IX3elolgD8DG1UjgHl24Fc
+AMX6rxI+muLu7Rag/fABBAakHSLxyAM=
+=ZPSs
+-----END PGP SIGNATURE-----
 
-vim +7 drivers/iio/test/iio-test-gts.c
-
-   > 7	#include <kunit/platform_device.h>
-     8	#include <kunit/test.h>
-     9	#include <linux/iio/iio-gts-helper.h>
-    10	#include <linux/iio/types.h>
-    11	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+--+wDaARczjHaj/9wJ--
