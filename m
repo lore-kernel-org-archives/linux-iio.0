@@ -2,91 +2,134 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D41C74A5B
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Mar 2023 15:55:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5A2C61DA4
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Mar 2023 16:12:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbjCRPzt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 18 Mar 2023 11:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48052 "EHLO
+        id S229488AbjCRQMI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Mar 2023 12:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbjCRPzs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Mar 2023 11:55:48 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7517DD51C;
-        Sat, 18 Mar 2023 08:55:46 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id fd5so31339968edb.7;
-        Sat, 18 Mar 2023 08:55:46 -0700 (PDT)
+        with ESMTP id S229640AbjCRQMI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Mar 2023 12:12:08 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E4D1EFD8;
+        Sat, 18 Mar 2023 09:12:07 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id z21so31513110edb.4;
+        Sat, 18 Mar 2023 09:12:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679154945;
+        d=gmail.com; s=20210112; t=1679155925;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=G3UO8wzFd4aDziiIRlbrp66em8AxKDsXrNqmK59j0eU=;
-        b=T1kpCmA2VnCK8TwDDuxgKqbAw4Ap11fR0DgIXgLOtdaI2KiQ4Yof1xVDuZpWdl8eRB
-         EKn1tC5AlGXEGkLYVNnv2bXOHljJUl1FTPpu1xW60bnPuLB0u7m/cD2Ii3+Kymv/OKmR
-         GvMfH+vVXgw8w2POChIHOIURVGwXrerXVbyBpsHjglIrHmBPcFX9BGZ4opPujmNBLX3w
-         n9XGh7nNZx2KcYSvXs4ocPzKZmX3KMuQ3hXoyLDsqkeB2gRY/IbRZ+ntmW2MwQwQetZ3
-         uOLXwSGQzdwP4OB0GLzZGJUN2wt/cQ8UUWSt+/3UaUaCVjkHX/popBj3OyTNzrebnj32
-         xerw==
+        bh=yDOQo2oi01br/hq0Q8teN7ROHv1Pi/RknnKhbHvLQ04=;
+        b=hgLbXmJrfSUpdCdlq6mrDkRiNsJXXXMhNzi5UYUskhpvkA+Yh+E9aeaZkC8yOvi+3h
+         kg65zIGj0l7lRcQE7Qf6v+hwZS5RRolgfPdTURBNAIl2dy0nwfkVceX9auXIEblK2AOg
+         EBE4uIhP2YYzi5P/cxP50uZXgYgZOF9Lz3chIT19djjPU3Br+Fz+ZjGA0pFi2W6uIAKV
+         nINcdCNJqacxep5u8UXUkGZLw20rEXzMF3X/sI5EnxzogM94ioqWzwMIE2qC1uf7PCft
+         qha8VN3HoNk+C5WDM/jASK62mnRWcAZGg7GVaB+bYnb0Q3G9rbDmjYokTGfw7/YMTWn4
+         tA5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679154945;
+        d=1e100.net; s=20210112; t=1679155925;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=G3UO8wzFd4aDziiIRlbrp66em8AxKDsXrNqmK59j0eU=;
-        b=0yDWVMVCKxvjfZ3WzXm67DIPWvkqjGEelzRcZW0s861LmZ1ECkEgS3/glNABr5KZmI
-         sbL3rWj40335JT1IbZrEfSBqnEufouHPARt/frk8ehEZ/EsS4ievMbOSy3s0LRQBvhAP
-         xu7J0lqta0NLG+aFm1Ccar9f062KpD6wua8zUKUPx+gePSGfvekgU6ArhBLQ1mo8V0vn
-         fYWKUggHkiY51+FP9iJf46OJbL9QRCfQ+HPcFW3KZ9n8HEyqBGsSyxjejVjpRdW+sIkz
-         fs+Ht5VQPsVXOCbv67cJtr1tWmJreYFOaEo+3jKurXiSIlN46MtnDYmKjCeVFuxxucFC
-         N5QQ==
-X-Gm-Message-State: AO0yUKXG87ubvJi0VaP51NVznlDNBHtRvGNV9reRyhfjGMr9YxvAjQay
-        KwPg7FYD574Ns/WmO1m24m3FKS1VlRA=
-X-Google-Smtp-Source: AK7set8s/BKHh9Uy1ISUENON8/STQ03PR59ZEiKoxmPNVkM2ouU8+2AmaFxMMFxU04SWFW0g+zf3VA==
-X-Received: by 2002:a17:906:6886:b0:924:d90a:6f97 with SMTP id n6-20020a170906688600b00924d90a6f97mr2891041ejr.13.1679154944901;
-        Sat, 18 Mar 2023 08:55:44 -0700 (PDT)
+        bh=yDOQo2oi01br/hq0Q8teN7ROHv1Pi/RknnKhbHvLQ04=;
+        b=M3iXfAE7olpNIi+bY1J9ziOEQeE4BYw9c9XqPu7a9JYyV1AHvK53ASLM1r8bRce5X/
+         Scg/X3FT9MhIPfZxXcXYFhnaW+V7bR3aXWSbYgmelKj3wpb4DY3sJsdDEoiiEYSnljgI
+         T2CjQO9pdYN+26TWJratdKFIAl46tC4x4GbvJb1M1mTW48KX9evWhQuEKpAYcdQVNcNb
+         uHZaqy8nzZNdUJV0NJPPM48Xd7OBrxmP2iv427eOnRu4uQoOpRA6QkHHeeNPpSMW3vqZ
+         9b0vKHhM9SPaPXAbnGUJsCqeKBVIdsF3e4GpsEeQWqziwWj6DYIOsSzVCDV6rXf8kfVz
+         75pA==
+X-Gm-Message-State: AO0yUKUiLjhKihIDSA9D4/e1ee1vu2409NMe+Gctwyz5GLS8c7KmW2FY
+        F9uG/OQ8FUJbep76LeFqitg=
+X-Google-Smtp-Source: AK7set/rc+rM+znYsJq2SQJj4XR4rOcdBb+eKAHgbkBpmBxGOghVKizBEcTMViBwFihuJpYQgtBQVw==
+X-Received: by 2002:a17:906:b1d6:b0:8b1:3467:d71b with SMTP id bv22-20020a170906b1d600b008b13467d71bmr3432056ejb.48.1679155925482;
+        Sat, 18 Mar 2023 09:12:05 -0700 (PDT)
 Received: from carbian ([2a02:8109:aa3f:ead8::a9c0])
-        by smtp.gmail.com with ESMTPSA id b7-20020a1709063f8700b008eddbd46d7esm2308886ejj.31.2023.03.18.08.55.44
+        by smtp.gmail.com with ESMTPSA id g19-20020a17090613d300b00931db712768sm2130526ejc.4.2023.03.18.09.12.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Mar 2023 08:55:44 -0700 (PDT)
-Date:   Sat, 18 Mar 2023 16:55:42 +0100
+        Sat, 18 Mar 2023 09:12:05 -0700 (PDT)
+Date:   Sat, 18 Mar 2023 17:12:03 +0100
 From:   Mehdi Djait <mehdi.djait.k@gmail.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     jic23@kernel.org, mazziesaccount@gmail.com,
         krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 0/3] iio: accel: Add support for Kionix/ROHM KX132
- accelerometer
-Message-ID: <ZBXe/uHMg9WapRgX@carbian>
+Subject: Re: [PATCH 2/3] iio: accel: kionix-kx022a: Add chip_info structure
+Message-ID: <ZBXi05HpZSHYs2wm@carbian>
 References: <cover.1679009443.git.mehdi.djait.k@gmail.com>
- <ZBRYFb7iGSRsRvgT@smile.fi.intel.com>
+ <3ddca10a4c03c3a64afb831cc9dd1e01fe89d305.1679009443.git.mehdi.djait.k@gmail.com>
+ <ZBRXzymSWZaRDyhq@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZBRYFb7iGSRsRvgT@smile.fi.intel.com>
+In-Reply-To: <ZBRXzymSWZaRDyhq@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Andy, 
+Hi Andy,
 
-On Fri, Mar 17, 2023 at 02:07:49PM +0200, Andy Shevchenko wrote:
-> On Fri, Mar 17, 2023 at 12:48:34AM +0100, Mehdi Djait wrote:
-> > KX132 accelerometer is a sensor which:
-> > 	- supports G-ranges of (+/-) 2, 4, 8, and 16G
-> > 	- can be connected to I2C or SPI
-> > 	- has internal HW FIFO buffer
-> > 	- supports various ODRs (output data rates)
-> > 
-> > The KX132 accelerometer is very similair to the KX022A. 
-> > One key difference is number of bits to report the number of data bytes that 
-> > have been stored in the sample buffer: 8 bits for KX022A vs 10 bits for KX132.
-> > 
-> > A complete list of differences is listed in [1]
-> > [1] https://kionixfs.azureedge.net/en/document/AN112-Transitioning-to-KX132-1211-Accelerometer.pdf1
+On Fri, Mar 17, 2023 at 02:06:39PM +0200, Andy Shevchenko wrote:
+> On Fri, Mar 17, 2023 at 12:48:36AM +0100, Mehdi Djait wrote:
+> > Refactor the kx022a driver implementation to make it more
+> > generic and extensible.
+> > Add the chip_info structure will to the driver's private
+> > data to hold all the device specific infos.
+> > Move the enum, struct and constants definitions to the header
+> > file.
 > 
-> Is it really the first version of this contribution?
+> Please, compile and test before sending.
+
+My bad, I ignored the warnings... 
+I will fix it.
+
 > 
-Yes this is my first series for the KX132 Support. 
+> ...
+> 
+> >  	.driver = {
+> > -		.name   = "kx022a-spi",
+> > +		.name	= "kx022a-spi",
+> >  		.of_match_table = kx022a_of_match,
+> >  	},
+> 
+> What was changed here?
+
+Nothing. I will fix it
+
+> 
+> ...
+> 
+> > -	.id_table = kx022a_id,
+> > +	.id_table = kx022a_spi_id,
+> 
+> Why do we need this change?
+> 
+
+For consistency:
+i2c: .id_table = kx022a_i2c_id,
+spi: .id_table = kx022a_spi_id,
+
+> ...
+> 
+> > -	name = devm_kasprintf(data->dev, GFP_KERNEL, "%s-kx022a",
+> > +	name = devm_kasprintf(data->dev, GFP_KERNEL, "%s-accel",
+> >  			      dev_name(data->dev));
+> 
+> Shouldn't you use the name from chip info?
+
+I can use the name from chip info. 
+dev_name(data->dev) is the original implementation
+
+> 
+> ...
+> 
+> > +#define KX_MASK_BRES16			    BIT(6)
+> > +
+> > +
+> 
+> One blank line is enough.
+
+I will change it in v2
 
 --
 Kind Regards
