@@ -2,45 +2,46 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA730C6FD1F
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Mar 2023 15:22:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CED83C7618A
+	for <linux-iio@archiver.kernel.org>; Sun, 19 Mar 2023 15:40:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230298AbjCSPWd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Mar 2023 11:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58030 "EHLO
+        id S230085AbjCSPkB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 Mar 2023 11:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbjCSPWc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Mar 2023 11:22:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3590822006;
-        Sun, 19 Mar 2023 08:22:30 -0700 (PDT)
+        with ESMTP id S229472AbjCSPkA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Mar 2023 11:40:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC671115B;
+        Sun, 19 Mar 2023 08:39:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1D51B80BE8;
-        Sun, 19 Mar 2023 15:22:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B885C433EF;
-        Sun, 19 Mar 2023 15:22:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4642D610A4;
+        Sun, 19 Mar 2023 15:39:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 699AEC433D2;
+        Sun, 19 Mar 2023 15:39:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679239347;
-        bh=hTRqeLTVCKIVZQ35MSCsugL9JXMjOSPwKA3wkXaV3a0=;
+        s=k20201202; t=1679240397;
+        bh=QT/ENZzeITH/GmdHuf2zyuTiJNVRErIxf7sbSW3a7yk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ekl5fwVG3X73dGj3DAN1avWo0IVXZJ9Ru4Ck5e7Cdmnm+ioAPdDvaLueRjxZGukoH
-         9GvrFqh/opXrN3ID3CoLh4teTMdFtHM3OpnPDUuFPUU3SQDE4bHsElzai2V74KSINg
-         +qZb0xKrxsA1ZdD0hcSeM5YaFLN+v/ePx3Nb+E66ot6lsDg7HddY0D0u0rt0KYNJo1
-         yTZqO1+yX4IW5t3Pm1tslXArOCjNDt/5DcqooGBKfOEHEPW8kbA0+WRDAMGbWyg2Q0
-         +S4ZSKMzrx0pD/5asRM7mrAuIiHF+a40TBHcBASfLRzIBF8LBb6vBIjly0L9G4XLAQ
-         UPKMn5lqBz8kg==
-Date:   Sun, 19 Mar 2023 15:37:21 +0000
+        b=RXvhCL6UV6OpRj/zl9wgTAa5EAgWpViFyDz4XG0RaTY126gnOsXE8pjvUQ7o6aZ6l
+         LGPaG8FPl5CjuFkiG9Vh6DEVKtbVd+B8JRp/zxM4l0i4Bgk+uPu45olp4+rQTSAj1H
+         EszgSt4OPdAfYqsYJkl/sJdTNQQv/nKO0HJhw2PqrwI6unSNo6uBw1Fewn6LS4sV1l
+         7YgM6dxGkNsnyZyhDjuQalpFfh8l/OdIwr5ea8zaZM8kVORCSwHS3MpiL2rgM9mjv3
+         zbI+cXzvco+UkvATU3hV3VUfD6lvIvMIXDF+H5rVU9Xps0dCujac/wUKbVaNtYHVBz
+         /CtaHRSCG+Kow==
+Date:   Sun, 19 Mar 2023 15:54:51 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     William Breathitt Gray <william.gray@linaro.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: addac: stx104: Replace bitops.h header inclusion
- with bits.h
-Message-ID: <20230319153721.55f1e723@jic23-huawei>
-In-Reply-To: <20230318185503.341914-1-william.gray@linaro.org>
-References: <20230318185503.341914-1-william.gray@linaro.org>
+To:     Mehdi Djait <mehdi.djait.k@gmail.com>
+Cc:     mazziesaccount@gmail.com, krzysztof.kozlowski+dt@linaro.org,
+        andriy.shevchenko@linux.intel.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: iio: Add KX132 accelerometer
+Message-ID: <20230319155451.0207118a@jic23-huawei>
+In-Reply-To: <d677b957164930c3d2fee900117795b25b85c3fa.1679009443.git.mehdi.djait.k@gmail.com>
+References: <cover.1679009443.git.mehdi.djait.k@gmail.com>
+        <d677b957164930c3d2fee900117795b25b85c3fa.1679009443.git.mehdi.djait.k@gmail.com>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -49,40 +50,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 18 Mar 2023 14:55:03 -0400
-William Breathitt Gray <william.gray@linaro.org> wrote:
+On Fri, 17 Mar 2023 00:48:35 +0100
+Mehdi Djait <mehdi.djait.k@gmail.com> wrote:
 
-> The <linux/bitops.h> header is included in the stx104 driver so that we
-> can use the BIT() macro. This macro is actually defined in the
-> <linux/bits.h> header, so replace the <linux/bitops.h> header inclusion
-> with <linux/bits.h>.
+> Extend the kionix,kx022a.yaml file to support the
+> kx132 device
 > 
-> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+> Signed-off-by: Mehdi Djait <mehdi.djait.k@gmail.com>
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for all the normal reasons.
+Pins and power supplies etc all look the same to me so indeed seems that
+you have covered all that is needed.  One small comment inline
+and I think Matti's point about more specific compatibles probably
+needs to be taken into account if there are known variants.
 
-Thanks,
-
-Jonathan
+Kionix has done this for a long time. I remember that fun with the
+kxsd9 lots of years back - that had lots of subtle variants.
 
 > ---
->  drivers/iio/addac/stx104.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  .../bindings/iio/accel/kionix,kx022a.yaml           | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/iio/addac/stx104.c b/drivers/iio/addac/stx104.c
-> index 48a91a95e597..e45b70aa5bb7 100644
-> --- a/drivers/iio/addac/stx104.c
-> +++ b/drivers/iio/addac/stx104.c
-> @@ -3,7 +3,7 @@
->   * IIO driver for the Apex Embedded Systems STX104
->   * Copyright (C) 2016 William Breathitt Gray
->   */
-> -#include <linux/bitops.h>
-> +#include <linux/bits.h>
->  #include <linux/device.h>
->  #include <linux/errno.h>
->  #include <linux/gpio/driver.h>
-> 
-> base-commit: 87a1ff66a0e57d9022665d24793f31fc54de182d
+> diff --git a/Documentation/devicetree/bindings/iio/accel/kionix,kx022a.yaml b/Documentation/devicetree/bindings/iio/accel/kionix,kx022a.yaml
+> index 986df1a6ff0a..ac1e27402d5e 100644
+> --- a/Documentation/devicetree/bindings/iio/accel/kionix,kx022a.yaml
+> +++ b/Documentation/devicetree/bindings/iio/accel/kionix,kx022a.yaml
+> @@ -4,19 +4,22 @@
+>  $id: http://devicetree.org/schemas/iio/accel/kionix,kx022a.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  
+> -title: ROHM/Kionix KX022A Accelerometer
+> +title: ROHM/Kionix KX022A and KX132 Accelerometers
+>  
+>  maintainers:
+>    - Matti Vaittinen <mazziesaccount@gmail.com>
+>  
+>  description: |
+> -  KX022A is a 3-axis accelerometer supporting +/- 2G, 4G, 8G and 16G ranges,
+> -  output data-rates from 0.78Hz to 1600Hz and a hardware-fifo buffering.
+> -  KX022A can be accessed either via I2C or SPI.
+> +  KX022A and KX132 are 3-axis accelerometers supporting +/- 2G, 4G, 8G and
+> +  16G ranges, output data-rates from 0.78Hz to 1600Hz and a hardware-fifo
+
+This may be one of those 'there are many versions' of the chip issues, but
+the random datasheet I got via digikey (kionix website was slow and I'm
+impatient) has max as 25600Hz for the KX132-1211.
+
+No particular reason the sampling rates need to be in this description so
+if they are different I'd just remove the mention or just say
+"variable output data-rates"
+
+> +  buffering.
+> +  KX022A and KX132 can be accessed either via I2C or SPI.
+>  
+>  properties:
+>    compatible:
+> -    const: kionix,kx022a
+> +    enum:
+> +      - kionix,kx022a
+> +      - kionix,kx132
+>  
+>    reg:
+>      maxItems: 1
 
