@@ -2,216 +2,165 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A64C6FD1F
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Mar 2023 15:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E11C6FD1F
+	for <linux-iio@archiver.kernel.org>; Sun, 19 Mar 2023 15:59:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229768AbjCSPvL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Mar 2023 11:51:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58472 "EHLO
+        id S230335AbjCSP7h (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 Mar 2023 11:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbjCSPvK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Mar 2023 11:51:10 -0400
-X-Greylist: delayed 176 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 19 Mar 2023 08:51:08 PDT
-Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D5A18B15
-        for <linux-iio@vger.kernel.org>; Sun, 19 Mar 2023 08:51:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1679240705; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=lYES3QlF3QmrXZYcdoDCPhNWQdSqgrKzVJbPyPgMJkqa+9Fnmd/EC3fBFiuwkwTrgo
-    brVJOQlxo+JYx6HDas+DlXD9AxPpohDZdg8b4+8a8k02BC+aKGbgv2PswgnbYB0gb3TD
-    xZK9yXU63j36KI//Vi7rl2r00m5oI+/WXYngYQY9FHT33Yjge2sRAFTdxMD6+T1E4do4
-    LcxxcQDdJWkYnNGu5F1ASAFzYfwLK+PR+ReF5fHoNUYLA84EBUQ1AJ/rX/3pndsrSriz
-    OUXyslMEbJZyhBCfepF5okiOf2EFHOvZFEPCQ2unk+zrTXt/KrYCrJ2CfWTLMMMEi1dj
-    TrPg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1679240705;
-    s=strato-dkim-0002; d=strato.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=9wQs119PXqsvkmTqga6J7BT0j7oJCOBDr6Npuah27t4=;
-    b=HlSFXCMUHYA5Bj4kE9RrwHKxhJ/h/pLnyFglNZYNqXs2367KtjxdjybE8UxYcHnm6c
-    HG4U2FP5nVznDQTJTC5XhujEnLyMlJcj1yOSvPxBR7+Ma8kXweV9t1pVn/sTI9k5R1pj
-    iDpmH7odbPUgwh+CVwwYIxSV/wNlITml8iIFprUyd1qXDsEvvpmBhHD8/alNdozAeNDP
-    yk1swfv8HM4pmJgHqfeJTvRwbyD5Q2UrhDFbOjeHCP52wqtZf1MHRNIBMC9Oj7fvbQ7b
-    KuBml7UWrNiFZ9+rIand82i3mJxS4KPOCCmUwTdjHIVIcs9xycQKT0Ps0/Mi2eP9eEf+
-    zb4w==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo00
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1679240704;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=9wQs119PXqsvkmTqga6J7BT0j7oJCOBDr6Npuah27t4=;
-    b=W1DndjcWUKeGrKdri+7ffA6mu+nzNh9OnRN3fbFlrHmqPGBaCT2TTNWHVzZUB1CbE8
-    OaCIVHIgwU5TuhUFhN8hG/gRtumrZtAQksPoTv0KgHHA/Jtx76IbCZGVAaOKJfzW7W4s
-    CHwsTXsftVZWBqBIW0AvecJZDAApNZm+3JPmxoz6nDEBjMOpgH9uPcaVtmPTwIsBpxBG
-    jIcBS897DDoJfA7xG/QPU3QiR8TYRUgk6igVHPHJ/ZWC92TPU1wanx60deICJE+/aINq
-    ifxUJdgAwb1VRc7B5R3eDU1G3XIjNDD2lNIMhlrG592omJ1QK+/AEcGtAWpMQkqPJ1he
-    4Yvw==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj5Apz9PSN6LgsXcGZjDY="
-Received: from imac.fritz.box
-    by smtp.strato.de (RZmta 49.3.1 DYNA|AUTH)
-    with ESMTPSA id R24ce1z2JFj4Cbc
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Sun, 19 Mar 2023 16:45:04 +0100 (CET)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [PATCH] iio: adc: palmas_gpadc: fix NULL dereference on rmmod
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <20230319153203.54a40887@jic23-huawei>
-Date:   Sun, 19 Mar 2023 16:45:03 +0100
-Cc:     =?utf-8?Q?Patrik_Dahlstr=C3=B6m?= <risca@dalakolonin.se>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org,
-        linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>,
-        Pradeep Goudagunta <pgoudagunta@nvidia.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <5EE49843-DF4D-427F-A628-80D657D643E6@goldelico.com>
-References: <20230313205029.1881745-1-risca@dalakolonin.se>
- <20230318163033.161d6fd5@jic23-huawei>
- <20230318192253.GB3605556@dalakolonin.se>
- <20230319153203.54a40887@jic23-huawei>
+        with ESMTP id S229759AbjCSP7f (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Mar 2023 11:59:35 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D790D18168;
+        Sun, 19 Mar 2023 08:59:32 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id o8so12162891lfo.0;
+        Sun, 19 Mar 2023 08:59:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679241571;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=IBp/WRjAiZQoToeK2pVl3jtCRBo/LJe2aiZPKWGyDaI=;
+        b=C8Q/6M2fVtoVsmBICZ8J5XA4ep5Hh6BgP0WCkq6pQ6KMKSFUi9WtqzFu/w9xtXNt50
+         HF9ev/bwoFQ5gQni7+RnGPhCYNgaYAbbibLL31Uwfe+SzShqc0MMkSNGHh3pD05pPHkA
+         Htk/91fIH3ugey3pNMwGOA2muO5P8W4JN18tBPusK9NzmOixC/xS5sutMfoQ3C4dK9x5
+         dlu85/2GTBqvYpAY9utTVubbUlpW2YRkpXPI507ZvDj85TJRr3wafsm7GIv6OKltB++2
+         YyE+CvlTsgezz7E2iJ3j3kB1nIzAlwhaOkDzjOsqStfdqB9Zg9F+pB1V/XrrZJBn1Yiy
+         82Bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679241571;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=IBp/WRjAiZQoToeK2pVl3jtCRBo/LJe2aiZPKWGyDaI=;
+        b=000yRndxAHt9AjystflM2xn1fDvXTjtRn0MYRgFLfCvfF07FLymGhAc5BKp/OVe4G1
+         k+dXV85OvhF2xG0vJBHSNODp74+Nb4gAomLMaRodaJrdnJZVI/OUgCrX7oHUsGgput8I
+         DuUIP+RlvXggC9HeKBVcYA+YXGW40Tso+DyWsE4GRDct/DspG+cDEx0pWQaosF6D4QnP
+         JKZaR5G/9Y60KuEXrO1iTzSrgaIIK+yi2iiqkniHBHD9cZkXT6wR0XXE21zyaUz3DnnA
+         XFB8FiEbmGMGQUYLJqnBZEttqn/ydXv0LebEmh1T9aWjosKhL8ZugZrItZJIHj/275gT
+         rgyA==
+X-Gm-Message-State: AO0yUKWHLBJcbUHQrs0xkeRuU+TaDNGIfI4IH+WQj+KXq3b0ZZy8IZwM
+        k7s9NHMaF/s0tryxokWYogU=
+X-Google-Smtp-Source: AK7set+l3ymAkJ8GPkq+iPE6s6/jgP3Wko4abzbJca7t8erhrNheJ36JbKKIVbsGB+LjJEsPwJIPPQ==
+X-Received: by 2002:ac2:5383:0:b0:4c0:91d0:e7ab with SMTP id g3-20020ac25383000000b004c091d0e7abmr5975607lfh.28.1679241570912;
+        Sun, 19 Mar 2023 08:59:30 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:16f3:4a00::1? (dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::1])
+        by smtp.gmail.com with ESMTPSA id w24-20020ac24438000000b004e81edf146fsm1301255lfl.209.2023.03.19.08.59.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 19 Mar 2023 08:59:30 -0700 (PDT)
+Message-ID: <c52fb080-49ce-8eec-5c8c-efebd27417af@gmail.com>
+Date:   Sun, 19 Mar 2023 17:59:20 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v2 5/6] iio: light: ROHM BU27034 Ambient Light Sensor
+Content-Language: en-US, en-GB
 To:     Jonathan Cameron <jic23@kernel.org>
-X-Mailer: Apple Mail (2.3445.104.21)
+Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Paul Gazzillo <paul@pgazz.com>,
+        Zhigang Shi <Zhigang.Shi@liteon.com>,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+References: <cover.1677750859.git.mazziesaccount@gmail.com>
+ <874d59be98703bb58a98fea72138de5b94d71a52.1677750859.git.mazziesaccount@gmail.com>
+ <20230304201720.2d554f07@jic23-huawei>
+ <c16d372f-a122-16d6-ad08-1fbffb01d9ff@gmail.com>
+ <20230312153655.052d5730@jic23-huawei>
+ <1b55adf6-32ce-1fd3-78cf-b2011f023eac@gmail.com>
+ <20230318165436.480f1a9a@jic23-huawei>
+From:   Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20230318165436.480f1a9a@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi there,
+On 3/18/23 18:54, Jonathan Cameron wrote:
+> On Mon, 13 Mar 2023 11:39:06 +0200
+> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+> 
+>> On 3/12/23 17:36, Jonathan Cameron wrote:
+>>> On Sun, 5 Mar 2023 14:22:51 +0200
+>>> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+>>>    
+>>>> On 3/4/23 22:17, Jonathan Cameron wrote:
+>>>>> On Thu, 2 Mar 2023 12:58:59 +0200
+>>>>> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+>>>>>       
+>>
+>> // snip
+>>
+>>>>>> +static const struct iio_chan_spec bu27034_channels[] = {
+>>>>>> +	{
+>>>>>> +		.type = IIO_LIGHT,
+>>>>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+>>>>>> +				      BIT(IIO_CHAN_INFO_SCALE),
+>>>>>
+>>>>> What is this scale for?
+>>>>
+>>>> The scale is to inform users that we return data using milli lux.
+>>>>   
+>>>>> Given the channel is computed from various different inputs, is there a
+>>>>> clear definition of how it is scaled?  What does a write to it mean?
+>>>>
+>>>> Nothing. writing anything else but milli lux scale fails with -EINVAL.
+>>>>
+>>>> I guess I am doing something in an unusual way here :) Do you have a
+>>>> suggestion for me?
+>>>
+>>> Return data in lux?
+>>
+>> That's what I did originally have. But then I noticed we can get
+>> slightly better accuracy than that. Hence I switched to mLux and added
+>> the scale.
+>>
+>>>   Or return it as INFO_RAW - thus making it clear
+>>> that the reading is not in expected units and a conversion must be
+>>> applied by userspace.  SCALE is not applied to PROCESSED by userspace.
+>>
+>> Ah. This makes sense then. Maybe it would be worth adding a warning to
+>> IIO-core if drivers set both the SCALE and PROCESSED info bits?
+> 
+> Hmm. I'm not sure that we don't have valid users of it even if they
+> are unusual.  We also have some historical messes that do RAW + SCALE +
+> PROCESSED so we can't really have a warning on it.
+> 
+> Warning generally is that the test tools that come with the kernel
+> will give you the wrong reading. :)
+> 
+>>
+>> So, I need to select between the simplicity or better accuracy here? :/
+>> I really hate ending up making choices like this without knowing all the
+>> real use-cases :( And it happens a lot for me. Well, I guess I'll drop
+>> the scale, use luxes and go with the PROCESSED data. My understanding is
+>> that the "thing" with the sensor is a wide-range for wavelengths, not
+>> the accuracy. So, maybe luxes are just good enough - and again, users
+>> needing something more accurate can utilize the raw intensity channels.
+> 
+> Hmm. For the sysfs case you could use VAL_INT_PLUS_MICRO but that doesn't
+> then work well with the buffered path.
+> 
+> It is perfectly valid to just have this as _RAW and keep your _SCALE so
+> that's probably the best option
+> _RAW doesn't have to mean totally raw, it just means userspace is expected
+> to applying a linear conversion to get a reading in the 'base' units for the channel.
 
-> Am 19.03.2023 um 16:32 schrieb Jonathan Cameron <jic23@kernel.org>:
->=20
-> On Sat, 18 Mar 2023 20:22:53 +0100
-> Patrik Dahlstr=C3=B6m <risca@dalakolonin.se> wrote:
->=20
->> On Sat, Mar 18, 2023 at 04:30:33PM +0000, Jonathan Cameron wrote:
->>> On Mon, 13 Mar 2023 21:50:29 +0100
->>> Patrik Dahlstr=C3=B6m <risca@dalakolonin.se> wrote:
->>>=20
->>>> Calling dev_to_iio_dev() on a platform device pointer is undefined =
-and
->>>> will make adc NULL.
->>>>=20
->>>> Signed-off-by: Patrik Dahlstr=C3=B6m <risca@dalakolonin.se> =20
->>>=20
->>> Hi Patrik,
->>>=20
->>> Looks good so applied to the fixes-togreg branch of iio.git.
->>>=20
->>> Whilst we are here, this would be a trivial driver to take fully =
-device
->>> managed.  The only slightly messy bit is that it would need
->>> a devm_add_action_or_reset() + custom callback to handle the
->>> device_wakeup_enable().
->>>=20
->>> On the off chance you can test it I'll send a patch in a few mins.
->>> Note that will depend on this one going up stream first and that
->>> I haven't done more than build test it. =20
->> I got the patch and it looks good, but it will take a few days before =
-I
->> have the time to test it.
->>=20
->> I have some more patches coming for this driver to configure the adc
->> thresholds from userspace,
+Thanks for the insight!
 
-Yes, that is a useful feature.
+I'll return the scale and switch to RAW for v5 :)
 
->> employing the iio channel event subsystem, but
->> they need a bit more work. In particular, to ensure backwards =
-compatibility
->> with the adc_wakeupX_data platform data. However, I don't see this =
-platform
->> data being used by anyone.
->> How important is it to retain support for adc_wakeupX_data?
->=20
-> It's a somewhat unusual feature, so I doubt it was implemented without =
-someone
-> needing it.  However as you observe there is no upstream user.
->=20
-> As it is causing you problems, I'd just rip out the =
-palmas_adc_platform_data
-> completely and see if anyone objects.  You can do that as a standalone =
-patch
-> prior to posting your events stuff if you like.  Or hopefully
-> H. Nikolaus Schaller might be able to give us some background on why
-> that feature is there but not used.
+Yours,
+	-- Matti
 
-I also have no idea.
+-- 
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
-The original author was Pradeep Goudagunta <pgoudagunta@nvidia.com> and =
-I just copied it from
-
-	=
-https://android.googlesource.com/kernel/tegra/+/aaabb2e045f31e5a970109ffda=
-ae900dd403d17e/drivers/staging/iio/adc/palmas_gpadc.c
-
-polished the code and made it compile & work some years ago.
-
-So it may have been useful in a some Tegra Android kernel from 2013. =
-Maybe it is
-for special power management (at least that is how I interpret the =
-"wakeup").
-
-But I found some hint which device it is good for:
-
-	=
-https://lore.kernel.org/all/1379509642-19227-2-git-send-email-ldewangan@nv=
-idia.com/T/
-
-"PALMAS PMIC is used on Dalmore platform."
-
-	=
-https://docs.nvidia.com/gameworks/content/devices/dalmore_devkit_main.htm
-
-And there seems to be an upstream DTS: =
-arch/arm/boot/dts/tegra114-dalmore.dts
-but without gpadc support. That is quite common that upstream DTS are =
-incomplete
-so we can't deduce that there are no users of a feature.
-
-BR,
-Nikolaus
-
->=20
->>>=20
->>> Thanks,
->>>=20
->>> Jonathan =20
->>=20
->> Thank you for going the extra mile :)
->=20
-> No problem.  I jumped on the opportunity to get it tested - takes way =
-longer
-> than writing a little patch like that ;)
->=20
-> Jonathan
->=20
->>>=20
->>>=20
->>>> ---
->>>> drivers/iio/adc/palmas_gpadc.c | 2 +-
->>>> 1 file changed, 1 insertion(+), 1 deletion(-)
->>>>=20
->>>> diff --git a/drivers/iio/adc/palmas_gpadc.c =
-b/drivers/iio/adc/palmas_gpadc.c
->>>> index 61e80bf3d05e..6db6f3bc768a 100644
->>>> --- a/drivers/iio/adc/palmas_gpadc.c
->>>> +++ b/drivers/iio/adc/palmas_gpadc.c
->>>> @@ -638,7 +638,7 @@ static int palmas_gpadc_probe(struct =
-platform_device *pdev)
->>>>=20
->>>> static int palmas_gpadc_remove(struct platform_device *pdev)
->>>> {
->>>> -	struct iio_dev *indio_dev =3D dev_to_iio_dev(&pdev->dev);
->>>> +	struct iio_dev *indio_dev =3D dev_get_drvdata(&pdev->dev);
->>>> 	struct palmas_gpadc *adc =3D iio_priv(indio_dev);
->>>>=20
->>>> 	if (adc->wakeup1_enable || adc->wakeup2_enable) =20
->>>=20
->=20
+~~ When things go utterly wrong vim users can always type :help! ~~
 
