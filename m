@@ -2,100 +2,90 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14568C7618A
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Mar 2023 03:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C004FC76196
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Mar 2023 06:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229924AbjCTD6z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Mar 2023 23:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58852 "EHLO
+        id S229970AbjCTGpt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Mar 2023 02:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbjCTD6y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Mar 2023 23:58:54 -0400
-Received: from 163.com (m12.mail.163.com [220.181.12.214])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 46DCA1F4A8;
-        Sun, 19 Mar 2023 20:58:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
-        Message-ID; bh=ghRA+C90vX1ZYTuZtFlOH1voPfmpFTzjKY619ZT9nyM=; b=f
-        Bs7EogveCzgDJJbsiYMiQQkcJNMCxVkhGEA6jBb3wk66yVdLEUqCzAVjl3k2gnvO
-        VwegpPadYo6rFLSnOUaks9Bciw9EkETgJJaQt6YPrGvfh1151iCu3pCZbQPN56ZT
-        Gc8YC3eftUa+7DNGjQtTBpib+94MG3PB9LR019Lz/c=
-Received: from zyytlz.wz$163.com ( [111.206.145.21] ) by
- ajax-webmail-wmsvr12 (Coremail) ; Mon, 20 Mar 2023 11:41:27 +0800 (CST)
-X-Originating-IP: [111.206.145.21]
-Date:   Mon, 20 Mar 2023 11:41:27 +0800 (CST)
-From:   =?GBK?B?zfXV9w==?= <zyytlz.wz@163.com>
-To:     "Lars-Peter Clausen" <lars@metafoo.de>
-Cc:     "Jonathan Cameron" <jic23@kernel.org>, eugen.hristev@collabora.com,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        claudiu.beznea@microchip.com, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] iio: at91-sama5d2_adc: Fix use after free bug in
- at91_adc_remove due to race condition
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
- Copyright (c) 2002-2023 www.mailtech.cn 163com
-In-Reply-To: <d62ece80-4d88-36a6-9561-fa0f5afc40c1@metafoo.de>
-References: <20230310091239.1440279-1-zyytlz.wz@163.com>
- <20230318173913.19e8a1b1@jic23-huawei>
- <d62ece80-4d88-36a6-9561-fa0f5afc40c1@metafoo.de>
-X-NTES-SC: AL_QuycC/6TvE4j4SKdY+kXn0oRjuY8XsK3v/kl3YNXP5k0vynH/gsFYl9FHVb32ci2LieikDinXz9i2/5fbZt4RoRXKQgTdqlQirHsSO4ZsvUW
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        with ESMTP id S229983AbjCTGps (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2023 02:45:48 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AD010AA4
+        for <linux-iio@vger.kernel.org>; Sun, 19 Mar 2023 23:45:44 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id o12so42490735edb.9
+        for <linux-iio@vger.kernel.org>; Sun, 19 Mar 2023 23:45:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1679294743;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9h2k5rY9/MIISUMDsAkcB/9rQ6L/w1VBt7d6Cxx+iW0=;
+        b=da/RYnL6yCuJmwK7+pgpg/j2haf6iPJdbDSbxywgWea852QazsHrQKzVvG8PPyX74d
+         dXLmH6LW43Y7vkIk3zJlnsrJ0Vv4i0eLikJqXKuH37kB/DrTh1LNggxnXEUMTRS7K7CH
+         A+36JLGHXG3JZDn7KNBR4QpPfBCUKPhZjHLCZqw2rOQTMkCzP/aBU+ULtsA9uxS1LIf8
+         oU3qEllk7DZzca2bzOjxdHbWe229KkX+JntbipT+3juy9ZtANc82k8Jb7x4EDHjaBKV4
+         MuXx6yX4TYzNHL9rzXUcmSaXUKCJqrCFxQzd2WdJWRyXNgIicOMl7JD0N5qsXy5IjEXR
+         hvOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679294743;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9h2k5rY9/MIISUMDsAkcB/9rQ6L/w1VBt7d6Cxx+iW0=;
+        b=P8o/rAA6b1auHJcSicWQGACFjISXay/nshyrHDjgibnO7S6hzQ2EJLx637eEZ38kkd
+         piE69J3dw8Mr/eFdZ+E+3cx6l3+WZkV09vLdo/yUGR1GmIF4W9zlae7UermoQJBV6GIf
+         ZspC/FDMEwZhYtsnwDPe9ExX0bMdFqmXo9z3taiRkslhC+Lj87BkB8qBSAMZfsxRz+CS
+         iWFQQ6oeMG/4ZhK63EF+QFfg5h63izdVinXlrs7oE2u4mKOud5gzqJjw8yUo8BmkrEqY
+         rzU52iyd10kdA8WmrnIaAIdsYxF1L3qvPR/xxQajBAHMb9dkIwUo4pLhR/2jWtu27rgr
+         7msA==
+X-Gm-Message-State: AO0yUKVqWV1/BTa6hVN2SLmIj6b2go1PUot5C6cEaaqbMWXPKuLkNEVW
+        D72wWUrggWaT7CGG/Aiv7z8dkg==
+X-Google-Smtp-Source: AK7set+XPIWCYqgVINSSGXmSDfSrVlKrh3g+MU+ZM9f1h70pqnhPfiexg4txBmRFvryLsDPw4lCM2A==
+X-Received: by 2002:a17:906:3f94:b0:92d:2119:65cf with SMTP id b20-20020a1709063f9400b0092d211965cfmr7519704ejj.74.1679294743470;
+        Sun, 19 Mar 2023 23:45:43 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:4428:8354:afb6:2992? ([2a02:810d:15c0:828:4428:8354:afb6:2992])
+        by smtp.gmail.com with ESMTPSA id t7-20020a1709064f0700b008cda6560404sm3979403eju.193.2023.03.19.23.45.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 19 Mar 2023 23:45:42 -0700 (PDT)
+Message-ID: <57809541-87f4-e8cb-c069-71fbee463718@linaro.org>
+Date:   Mon, 20 Mar 2023 07:45:41 +0100
 MIME-Version: 1.0
-Message-ID: <2fdfc137.4e1c.186fd1b8f5a.Coremail.zyytlz.wz@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: _____wD3qRTn1Rdk1GYSAA--.867W
-X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiXQs3U1WBo93sHAACsq
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 1/2] dt-bindings: iio: Add MCP9600 thermocouple EMF
+ converter
+Content-Language: en-US
+To:     Andrew Hepp <andrew.hepp@ahepp.dev>, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>
+References: <20230319184728.49232-1-andrew.hepp@ahepp.dev>
+ <20230319184728.49232-2-andrew.hepp@ahepp.dev>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230319184728.49232-2-andrew.hepp@ahepp.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-CgoKCgoKCgoKCgoKCgoKCkF0IDIwMjMtMDMtMTkgMDA6MzY6MDQsICJMYXJzLVBldGVyIENsYXVz
-ZW4iIDxsYXJzQG1ldGFmb28uZGU+IHdyb3RlOgo+T24gMy8xOC8yMyAxMDozOSwgSm9uYXRoYW4g
-Q2FtZXJvbiB3cm90ZToKPj4gT24gRnJpLCAxMCBNYXIgMjAyMyAxNzoxMjozOSArMDgwMAo+PiBa
-aGVuZyBXYW5nIDx6eXl0bHoud3pAMTYzLmNvbT4gd3JvdGU6Cj4+Cj4+PiBJbiBhdDkxX2FkY19w
-cm9iZSwgJnN0LT50b3VjaF9zdC53b3JrcSBpcyBib3VuZCB3aXRoCj4+PiBhdDkxX2FkY193b3Jr
-cV9oYW5kbGVyLiBUaGVuIGl0IHdpbGwgYmUgc3RhcnRlZCBieSBpcnEKPj4+IGhhbmRsZXIgYXQ5
-MV9hZGNfdG91Y2hfZGF0YV9oYW5kbGVyCj4+Pgo+Pj4gSWYgd2UgcmVtb3ZlIHRoZSBkcml2ZXIg
-d2hpY2ggd2lsbCBjYWxsIGF0OTFfYWRjX3JlbW92ZQo+Pj4gICAgdG8gbWFrZSBjbGVhbnVwLCB0
-aGVyZSBtYXkgYmUgYSB1bmZpbmlzaGVkIHdvcmsuCj4+Pgo+Pj4gVGhlIHBvc3NpYmxlIHNlcXVl
-bmNlIGlzIGFzIGZvbGxvd3M6Cj4+Pgo+Pj4gRml4IGl0IGJ5IGZpbmlzaGluZyB0aGUgd29yayBi
-ZWZvcmUgY2xlYW51cCBpbiB0aGUgYXQ5MV9hZGNfcmVtb3ZlCj4+Pgo+Pj4gQ1BVMCAgICAgICAg
-ICAgICAgICAgIENQVTEKPj4+Cj4+PiAgICAgICAgICAgICAgICAgICAgICB8YXQ5MV9hZGNfd29y
-a3FfaGFuZGxlcgo+Pj4gYXQ5MV9hZGNfcmVtb3ZlICAgICB8Cj4+PiBpaW9fZGV2aWNlX3VucmVn
-aXN0ZXJ8Cj4+PiBpaW9fZGV2X3JlbGVhc2UgICAgIHwKPj4+IGtmcmVlKGlpb19kZXZfb3BhcXVl
-KTt8Cj4+PiAgICAgICAgICAgICAgICAgICAgICB8Cj4+PiAgICAgICAgICAgICAgICAgICAgICB8
-aWlvX3B1c2hfdG9fYnVmZmVycwo+Pj4gICAgICAgICAgICAgICAgICAgICAgfCZpaW9fZGV2X29w
-YXF1ZS0+YnVmZmVyX2xpc3QKPj4+ICAgICAgICAgICAgICAgICAgICAgIHwvL3VzZQo+Pj4gRml4
-ZXM6IDIzZWMyNzc0ZjFjYyAoImlpbzogYWRjOiBhdDkxLXNhbWE1ZDJfYWRjOiBhZGQgc3VwcG9y
-dCBmb3IgcG9zaXRpb24gYW5kIHByZXNzdXJlIGNoYW5uZWxzIikKPj4+IFNpZ25lZC1vZmYtYnk6
-IFpoZW5nIFdhbmcgPHp5eXRsei53ekAxNjMuY29tPgo+Pj4gLS0tCj4+PiAgIGRyaXZlcnMvaWlv
-L2FkYy9hdDkxLXNhbWE1ZDJfYWRjLmMgfCAyICsrCj4+PiAgIDEgZmlsZSBjaGFuZ2VkLCAyIGlu
-c2VydGlvbnMoKykKPj4+Cj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vYWRjL2F0OTEtc2Ft
-YTVkMl9hZGMuYyBiL2RyaXZlcnMvaWlvL2FkYy9hdDkxLXNhbWE1ZDJfYWRjLmMKPj4+IGluZGV4
-IDUwZDAyZTVmYzZmYy4uMWI5NWQxOGQ5ZTBiIDEwMDY0NAo+Pj4gLS0tIGEvZHJpdmVycy9paW8v
-YWRjL2F0OTEtc2FtYTVkMl9hZGMuYwo+Pj4gKysrIGIvZHJpdmVycy9paW8vYWRjL2F0OTEtc2Ft
-YTVkMl9hZGMuYwo+Pj4gQEAgLTI0OTUsNiArMjQ5NSw4IEBAIHN0YXRpYyBpbnQgYXQ5MV9hZGNf
-cmVtb3ZlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4+PiAgIAlzdHJ1Y3QgaWlvX2Rl
-diAqaW5kaW9fZGV2ID0gcGxhdGZvcm1fZ2V0X2RydmRhdGEocGRldik7Cj4+PiAgIAlzdHJ1Y3Qg
-YXQ5MV9hZGNfc3RhdGUgKnN0ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsKPj4+ICAgCj4+PiArCWRp
-c2FibGVfaXJxX25vc3luYyhzdC0+aXJxKTsKPj4+ICsJY2FuY2VsX3dvcmtfc3luYygmc3QtPnRv
-dWNoX3N0LndvcmtxKTsKPj4gSSdkIGxpa2Ugc29tZSBpbnB1dCBmb3JtIHNvbWVvbmUgbW9yZSBm
-YW1pbGlhciB3aXRoIHRoaXMgZHJpdmVyIHRoYW4gSSBhbS4KPj4KPj4gSW4gcGFydGljdWxhciwg
-d2hpbHN0IGl0IGZpeGVzIHRoZSBidWcgc2VlbiBJJ20gbm90IHN1cmUgd2hhdCB0aGUgbW9zdAo+
-PiBsb2dpY2FsIG9yZGVyaW5nIGZvciB0aGUgZGlzYWJsZSBpcyBvciB0aGUgYmVzdCB3YXkgdG8g
-ZG8gaXQuCj4+Cj4+IEknZCBwcmVmZXIgdG8gc2VlIHRoZSBpcnEgY3V0IG9mZiBhdCBzb3VyY2Ug
-YnkgZGlzYWJsaW5nIGl0IGF0IHRoZSBkZXZpY2UKPj4gZmVhdHVyZSB0aGF0IGlzIGdlbmVyYXRp
-bmcgdGhlIGlycSBmb2xsb3dlZCBieSBjYW5jZWxsaW5nIG9yIHdhaXRpbmcgZm9yCj4+IGNvbXBs
-ZXRpb24gb2YgYW55IGluIGZsaWdodCB3b3JrLgo+VGhlIHVzdWFsbHkgd2F5IHlvdSdkIGRvIHRo
-aXMgYnkgY2FsbGluZyBmcmVlX2lycSgpIGJlZm9yZSB0aGUgCj5jYW5jZWxfd29ya19zeW5jKCku
-CgpIaSwKClRoYW5rIHlvdSBmb3IgeW91ciByZXNwb25zZSBhbmQgZmVlZGJhY2sgb24gbXkgcGF0
-Y2guIEkgYXBwcmVjaWF0ZSB5b3VyIGlucHV0IGFuZCB3b3VsZCBsaWtlIHRvIGFkZHJlc3MgeW91
-ciBjb25jZXJucy4KClJlZ2FyZGluZyB0aGUgYmVzdCB3YXkgdG8gZGlzYWJsZSB0aGUgSVJRLCBJ
-IGFncmVlIHRoYXQgY2FsbGluZyBmcmVlX2lycSgpIGJlZm9yZSBjYW5jZWxfd29ya19zeW5jKCkg
-d291bGQgYmUgYSBiZXR0ZXIgYXBwcm9hY2guIFRoaXMgZW5zdXJlcyB0aGF0IHRoZSBJUlEgaXMg
-Y29tcGxldGVseSBkaXNhYmxlZCBhdCB0aGUgc291cmNlLCBhbmQgYW55IGluLWZsaWdodCB3b3Jr
-IGlzIGZpbmlzaGVkIGJlZm9yZSByZW1vdmluZyB0aGUgZHJpdmVyLiBJIHdpbGwgbWFrZSB0aGlz
-IGNoYW5nZSBpbiB0aGUgcGF0Y2guCgpCZXN0IHJlZ2FyZHMsClpoZW5nIFdhbmcKCj4K
+On 19/03/2023 19:47, Andrew Hepp wrote:
+> Add support for the MCP9600 thermocouple EMF converter.
+> 
+> Datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/MCP960X-Data-Sheet-20005426.pdf
+> Signed-off-by: Andrew Hepp <andrew.hepp@ahepp.dev>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+> Changes for v6:
+> - none
+
+Fix your subject - this is v6, not v1.
+
+You still need to fix build failures for driver...
+
+Best regards,
+Krzysztof
+
