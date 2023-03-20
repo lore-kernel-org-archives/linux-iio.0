@@ -2,133 +2,130 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E74A8C76195
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Mar 2023 15:16:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C97DC7618D
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Mar 2023 15:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232577AbjCTPQz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 Mar 2023 11:16:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46226 "EHLO
+        id S233234AbjCTPkO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Mar 2023 11:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232228AbjCTPQh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2023 11:16:37 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3FE0D30B2D;
-        Mon, 20 Mar 2023 08:11:39 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B4A0106F;
-        Mon, 20 Mar 2023 07:58:14 -0700 (PDT)
-Received: from e127643.arm.com (unknown [10.57.18.95])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4D7023F71E;
-        Mon, 20 Mar 2023 07:57:27 -0700 (PDT)
-From:   James Clark <james.clark@arm.com>
-To:     linux-kernel@vger.kernel.org, linux@roeck-us.net,
-        michal.simek@amd.com, Jonathan.Cameron@huawei.com
-Cc:     James Clark <james.clark@arm.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+        with ESMTP id S233295AbjCTPjq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2023 11:39:46 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C4012581
+        for <linux-iio@vger.kernel.org>; Mon, 20 Mar 2023 08:31:18 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-544787916d9so230311827b3.13
+        for <linux-iio@vger.kernel.org>; Mon, 20 Mar 2023 08:31:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1679326275;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=IdjIm567qkBcR6Zk87uH5J+4skizW7Cn2uLqlnBIrks=;
+        b=hxMkhDzFS4HWReDlRUh9SLZWjk6bX0nr5ikB2yOlyEAyFdpYWCN/Enb8EirYJu00x9
+         pKKwomng7ND7yObX5o6OAwN+Rcng04Zw3Xpg+xWhjq7jsR2Oisd3TfVEVP0T8k5ZyD/m
+         om4t9R8q701NHBN14oCxf4D5Ft4WLWGX0yjih7oR1AEy7Be4SUKll+vFUrVewJ7eYEyN
+         MezvG8VBIcsvKQl3fIBWxj0VPEylka1XPaP3Ufi6nqSzq+ErcmgzAzt4ILBziUwVfwb1
+         8erazUdnjCR1pWHnh2D9b17sJFAy1skVqveQotTFaKFWEVaXzk3cHtp/AWCbQ6e4gmnQ
+         /VNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679326275;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IdjIm567qkBcR6Zk87uH5J+4skizW7Cn2uLqlnBIrks=;
+        b=TWoEDFQWcEh7+vLvsq+JpfxoABS6rexQ+oMXSWwxnx9uM+qEN/nzLdOo6hI/Q9nahm
+         AxtDQdRjXigPHxI5CeL0CGGyRiR6eY/TRi5DyOHMA3qSUao5xuUP4xueSO23zUjyRr2I
+         bOjUTpltz6ofHNbZH2gg0xA+YcVKSKItPIzfrtQwSFJhaDX/PZvNWvYhJODUctDO5NlG
+         cOI5KANO8ABBYvGfIs84VraHTmmjOa1sGccGu9zdEv+Znqh23YqhzRHIAbnJSldjDI3v
+         ZE62NAGacXOAX7wNuK+ZbLeMqdaMx7Kf7QF2/FjBfdf0IWlGwBx8cDUjClqX4IveF0aK
+         tung==
+X-Gm-Message-State: AO0yUKUuMIiS2eH21IjuDHh6zhpA596Nc3VJfsxBj4iL/g4ls733h8wI
+        sO9hJ0q3FlUm5XDdDg3VyZsW8w==
+X-Google-Smtp-Source: AK7set9CmF/trI8O1BIyJ63UJAKQ5IO8hYkR0e7JraXdD+1qJQVOENDxW3WJFg3ivDhu2Vtvb3e5qw==
+X-Received: by 2002:a81:a148:0:b0:541:96c1:495f with SMTP id y69-20020a81a148000000b0054196c1495fmr14818974ywg.18.1679326275188;
+        Mon, 20 Mar 2023 08:31:15 -0700 (PDT)
+Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id s128-20020a37a986000000b00741a984943fsm7585311qke.40.2023.03.20.08.31.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Mar 2023 08:31:10 -0700 (PDT)
+Date:   Mon, 20 Mar 2023 11:31:07 -0400
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v3 3/4] iio: adc: Use devm_krealloc_array
-Date:   Mon, 20 Mar 2023 14:57:08 +0000
-Message-Id: <20230320145710.1120469-4-james.clark@arm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230320145710.1120469-1-james.clark@arm.com>
-References: <20230320145710.1120469-1-james.clark@arm.com>
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/4] counter: 104-quad-8: Utilize helper functions to
+ handle PR, FLAG and PSC
+Message-ID: <ZBh8O5oOL0TB9wzT@fedora>
+References: <cover.1679149542.git.william.gray@linaro.org>
+ <71496f9295e68388ce07f3051bf5882177be83c5.1679149543.git.william.gray@linaro.org>
+ <ZBhRb+v/8+vSwjz6@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="/gEyjofsgQlHKWQq"
+Content-Disposition: inline
+In-Reply-To: <ZBhRb+v/8+vSwjz6@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Now that it exists, use it instead of doing the multiplication and
-checking for overflow manually.
 
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: James Clark <james.clark@arm.com>
----
- drivers/iio/adc/xilinx-ams.c       |  9 +++------
- drivers/iio/adc/xilinx-xadc-core.c | 17 +++++++----------
- 2 files changed, 10 insertions(+), 16 deletions(-)
+--/gEyjofsgQlHKWQq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
-index 34cf336b3490..f0b71a1220e0 100644
---- a/drivers/iio/adc/xilinx-ams.c
-+++ b/drivers/iio/adc/xilinx-ams.c
-@@ -1263,7 +1263,7 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
- 	struct device *dev = indio_dev->dev.parent;
- 	struct fwnode_handle *child = NULL;
- 	struct fwnode_handle *fwnode = dev_fwnode(dev);
--	size_t ams_size, dev_size;
-+	size_t ams_size;
- 	int ret, ch_cnt = 0, i, rising_off, falling_off;
- 	unsigned int num_channels = 0;
- 
-@@ -1320,11 +1320,8 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
- 		}
- 	}
- 
--	dev_size = array_size(sizeof(*dev_channels), num_channels);
--	if (dev_size == SIZE_MAX)
--		return -ENOMEM;
--
--	dev_channels = devm_krealloc(dev, ams_channels, dev_size, GFP_KERNEL);
-+	dev_channels = devm_krealloc_array(dev, ams_channels, num_channels,
-+					   sizeof(*dev_channels), GFP_KERNEL);
- 	if (!dev_channels)
- 		return -ENOMEM;
- 
-diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index 292f2892d223..dba73300f894 100644
---- a/drivers/iio/adc/xilinx-xadc-core.c
-+++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -613,20 +613,17 @@ static int xadc_update_scan_mode(struct iio_dev *indio_dev,
- 	const unsigned long *mask)
- {
- 	struct xadc *xadc = iio_priv(indio_dev);
--	size_t new_size, n;
-+	size_t n;
- 	void *data;
- 
- 	n = bitmap_weight(mask, indio_dev->masklength);
- 
--	if (check_mul_overflow(n, sizeof(*xadc->data), &new_size))
--		return -ENOMEM;
--
--	data = devm_krealloc(indio_dev->dev.parent, xadc->data,
--			     new_size, GFP_KERNEL);
-+	data = devm_krealloc_array(indio_dev->dev.parent, xadc->data,
-+				   n, sizeof(*xadc->data), GFP_KERNEL);
- 	if (!data)
- 		return -ENOMEM;
- 
--	memset(data, 0, new_size);
-+	memset(data, 0, n * sizeof(*xadc->data));
- 	xadc->data = data;
- 
- 	return 0;
-@@ -1281,9 +1278,9 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, unsigned int *conf, int irq)
- 	}
- 
- 	indio_dev->num_channels = num_channels;
--	indio_dev->channels = devm_krealloc(dev, channels,
--					    sizeof(*channels) * num_channels,
--					    GFP_KERNEL);
-+	indio_dev->channels = devm_krealloc_array(dev, channels,
-+						  num_channels, sizeof(*channels),
-+						  GFP_KERNEL);
- 	/* If we can't resize the channels array, just use the original */
- 	if (!indio_dev->channels)
- 		indio_dev->channels = channels;
--- 
-2.34.1
+On Mon, Mar 20, 2023 at 02:28:31PM +0200, Andy Shevchenko wrote:
+> On Sat, Mar 18, 2023 at 10:59:51AM -0400, William Breathitt Gray wrote:
+> > The Preset Register (PR), Flag Register (FLAG), and Filter Clock
+> > Prescaler (PSC) have common usage patterns. Wrap up such usage into
+> > dedicated functions to improve code clarity.
+>=20
+> ...
+>=20
+> > +static void quad8_preset_register_set(struct quad8 *const priv, const =
+size_t id,
+> > +				      const unsigned long preset)
+> > +{
+> > +	struct channel_reg __iomem *const chan =3D priv->reg->channel + id;
+> > +	int i;
+> > +
+> > +	/* Reset Byte Pointer */
+> > +	iowrite8(SELECT_RLD | RESET_BP, &chan->control);
+> > +
+> > +	/* Set Preset Register */
+> > +	for (i =3D 0; i < 3; i++)
+> > +		iowrite8(preset >> (8 * i), &chan->data);
+> > +}
+>=20
+> May we add generic __iowrite8_copy() / __ioread8_copy() instead?
+>=20
+> It seems that even current __ioread32_copy() and __iowrite32_copy() has to
+> be amended to support IO.
+>=20
+> --=20
+> With Best Regards,
+> Andy Shevchenko
 
+Sure, I would use __iowrite8_copy() / __ioread8_copy() for these
+situations if it were available.
+
+Is something equivalent available for the regmap API? I'm planning to
+migrate this driver to the regmap API soon after this patch series is
+merged, so the *_copy() calls would need to migrated as well.
+
+William Breathitt Gray
+
+--/gEyjofsgQlHKWQq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZBh8OwAKCRC1SFbKvhIj
+K+NBAP96JxKPh81zqyRL1AQgZuFfPFCsB8KcMETcK9WYBXfPRgEAvjNWudfdxTqs
+CKrHqQ/dRgxfGdXMfwGXCSRw+YuofQU=
+=/91A
+-----END PGP SIGNATURE-----
+
+--/gEyjofsgQlHKWQq--
