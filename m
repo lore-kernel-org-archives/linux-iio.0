@@ -2,724 +2,113 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 170BEC7618A
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Mar 2023 22:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F31CC7618E
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Mar 2023 03:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230027AbjCSWjp convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Mar 2023 18:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33262 "EHLO
+        id S229446AbjCTDzR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 Mar 2023 23:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229975AbjCSWjm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Mar 2023 18:39:42 -0400
-Received: from ste-pvt-msa1.bahnhof.se (ste-pvt-msa1.bahnhof.se [213.80.101.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E181B553;
-        Sun, 19 Mar 2023 15:39:38 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by ste-pvt-msa1.bahnhof.se (Postfix) with ESMTP id 0F3A63F6C8;
-        Sun, 19 Mar 2023 23:39:37 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at bahnhof.se
-Received: from ste-pvt-msa1.bahnhof.se ([127.0.0.1])
-        by localhost (ste-pvt-msa1.bahnhof.se [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 2of0CKLjTdBz; Sun, 19 Mar 2023 23:39:35 +0100 (CET)
-Received: by ste-pvt-msa1.bahnhof.se (Postfix) with ESMTPA id 9AA8A3F312;
-        Sun, 19 Mar 2023 23:39:35 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by zimbra.dalakolonin.se (Postfix) with ESMTP id EFE9A8EBD9;
-        Sun, 19 Mar 2023 22:39:28 +0000 (UTC)
-Received: from zimbra.dalakolonin.se ([127.0.0.1])
-        by localhost (zimbra.dalakolonin.se [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id PkoJ02eyUkIm; Sun, 19 Mar 2023 22:39:21 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
-        by zimbra.dalakolonin.se (Postfix) with ESMTP id 532BB8EBC7;
-        Sun, 19 Mar 2023 22:39:21 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at dalakolonin.se
-Received: from zimbra.dalakolonin.se ([127.0.0.1])
-        by localhost (zimbra.dalakolonin.se [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 7hh3nitNxso3; Sun, 19 Mar 2023 22:39:20 +0000 (UTC)
-Received: from rack-server-1.dalakolonin.se (unknown [172.17.0.1])
-        by zimbra.dalakolonin.se (Postfix) with ESMTPSA id 5F6EA8EBB5;
-        Sun, 19 Mar 2023 22:39:20 +0000 (UTC)
-From:   =?UTF-8?q?Patrik=20Dahlstr=C3=B6m?= <risca@dalakolonin.se>
-To:     linux-iio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
-        kernel@pyra-handheld.com, pgoudagunta@nvidia.com,
-        hns@goldelico.com, jic23@kernel.org, lars@metafoo.de,
-        =?UTF-8?q?Patrik=20Dahlstr=C3=B6m?= <risca@dalakolonin.se>
-Subject: [PATCH 1/3] iio: adc: palmas_gpadc: add support for iio threshold events
-Date:   Sun, 19 Mar 2023 23:39:06 +0100
-Message-Id: <20230319223908.108540-2-risca@dalakolonin.se>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230319223908.108540-1-risca@dalakolonin.se>
-References: <20230319223908.108540-1-risca@dalakolonin.se>
+        with ESMTP id S229914AbjCTDzO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Mar 2023 23:55:14 -0400
+Received: from 163.com (m12.mail.163.com [220.181.12.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5CC231DBA3;
+        Sun, 19 Mar 2023 20:55:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+        Message-ID; bh=NoZ6Yv3m5eH5XJcKyA2YOme8UsgLpMm+h1N1F+fx0Jg=; b=m
+        1JmAR+SS1nkRLRKRuCvaVNFYLVtAZsmKb+DU64vk7PslFaOAF6FRKFNUJZcObIQ/
+        Abd6seucL0xJrkPA98GbOCUpbW/KigSll9Dt5/FJqKXXtfaHSz2jB9NKFjv15JyK
+        KRDTaUyxLvE+9c0AT7N7lA3El6l4MaGurJuBtY4Lik=
+Received: from zyytlz.wz$163.com ( [111.206.145.21] ) by
+ ajax-webmail-wmsvr12 (Coremail) ; Mon, 20 Mar 2023 11:54:27 +0800 (CST)
+X-Originating-IP: [111.206.145.21]
+Date:   Mon, 20 Mar 2023 11:54:27 +0800 (CST)
+From:   =?GBK?B?zfXV9w==?= <zyytlz.wz@163.com>
+To:     "Jonathan Cameron" <jic23@kernel.org>
+Cc:     eugen.hristev@collabora.com, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        "Lars-Peter Clausen" <lars@metafoo.de>, hackerzheng666@gmail.com,
+        alex000young@gmail.com, 1395428693sheep@gmail.com
+Subject: Re:Re: [PATCH] iio: at91-sama5d2_adc: Fix use after free bug in
+ at91_adc_remove due to race condition
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
+ Copyright (c) 2002-2023 www.mailtech.cn 163com
+In-Reply-To: <20230319152222.0b02fb51@jic23-huawei>
+References: <20230310091239.1440279-1-zyytlz.wz@163.com>
+ <20230318173913.19e8a1b1@jic23-huawei>
+ <d62ece80-4d88-36a6-9561-fa0f5afc40c1@metafoo.de>
+ <20230319152222.0b02fb51@jic23-huawei>
+X-NTES-SC: AL_QuycC/6Tu0wt4SefZ+kXn0oRjuY8XsK3v/kl3YNXP5k0vynH/gsFYl9FHVb32ci2LieikDinXz9i2/5fbZt4RoQ1HuBST22Vvm8uYK7tJP/b
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Message-ID: <275f7404.51b6.186fd27783f.Coremail.zyytlz.wz@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: _____wC3RSXz2BdkPhETAA--.4938W
+X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiXRM4U1WBo+DaWQAAsx
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The palmas gpadc block has support for monitoring up to 2 ADC channels
-and issue an interrupt if they reach past a set threshold. The gpadc
-driver had limited support for this through the adc_wakeup{1,2}_data
-platform data. This however only allow a fixed threshold to be set at
-boot, and would only enable it when entering sleep mode.
-
-This change hooks into the IIO events system and exposes to userspace
-the ability to configure threshold values for each channel individually,
-but only allow up to 2 such thresholds to be enabled at any given time.
-
-The logic around suspend and resume had to be adjusted so that user
-space configuration don't get reset on resume. Instead, any configured
-adc auto wakeup gets enabled during probe.
-
-Enabling a threshold from userspace will overwrite the adc wakeup
-configuration set during probe. Depending on how you look at it, this
-could also mean we allow userspace to update the adc wakeup thresholds.
-
-Signed-off-by: Patrik Dahlström <risca@dalakolonin.se>
----
- drivers/iio/adc/palmas_gpadc.c | 495 +++++++++++++++++++++++++++++----
- 1 file changed, 438 insertions(+), 57 deletions(-)
-
-diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
-index 24d7c096e4b8..84c6e3b66205 100644
---- a/drivers/iio/adc/palmas_gpadc.c
-+++ b/drivers/iio/adc/palmas_gpadc.c
-@@ -20,6 +20,7 @@
- #include <linux/completion.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/iio/events.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/machine.h>
- #include <linux/iio/driver.h>
-@@ -76,6 +77,16 @@ static struct palmas_gpadc_info palmas_gpadc_info[] = {
- 	PALMAS_ADC_INFO(IN15, 0, 0, 0, 0, INVALID, INVALID, true),
- };
- 
-+struct palmas_gpadc_thresholds {
-+	int high_thresh;
-+	int low_thresh;
-+};
-+
-+struct palmas_adc_event {
-+	int channel;
-+	enum iio_event_direction direction;
-+};
-+
- /*
-  * struct palmas_gpadc - the palmas_gpadc structure
-  * @ch0_current:	channel 0 current source setting
-@@ -117,8 +128,30 @@ struct palmas_gpadc {
- 	bool				wakeup2_enable;
- 	int				auto_conversion_period;
- 	struct mutex			lock;
-+	struct palmas_adc_event		event0;
-+	struct palmas_adc_event		event1;
-+	struct palmas_gpadc_thresholds	thresh_data[PALMAS_ADC_CH_MAX];
- };
- 
-+static struct palmas_adc_event *palmas_gpadc_get_event_channel(
-+	struct palmas_gpadc *adc, int adc_chan, enum iio_event_direction dir)
-+{
-+	if (adc_chan == adc->event0.channel && dir == adc->event0.direction)
-+		return &adc->event0;
-+
-+	if (adc_chan == adc->event1.channel && dir == adc->event1.direction)
-+		return &adc->event1;
-+
-+	return NULL;
-+}
-+
-+static bool palmas_gpadc_channel_is_freerunning(struct palmas_gpadc *adc,
-+						int adc_chan)
-+{
-+	return palmas_gpadc_get_event_channel(adc, adc_chan, IIO_EV_DIR_RISING) ||
-+		palmas_gpadc_get_event_channel(adc, adc_chan, IIO_EV_DIR_FALLING);
-+}
-+
- /*
-  * GPADC lock issue in AUTO mode.
-  * Impact: In AUTO mode, GPADC conversion can be locked after disabling AUTO
-@@ -188,11 +221,24 @@ static irqreturn_t palmas_gpadc_irq(int irq, void *data)
- 
- static irqreturn_t palmas_gpadc_irq_auto(int irq, void *data)
- {
--	struct palmas_gpadc *adc = data;
-+	struct iio_dev *indio_dev = data;
-+	struct palmas_gpadc *adc = iio_priv(indio_dev);
-+	struct palmas_adc_event *ev;
- 
- 	dev_dbg(adc->dev, "Threshold interrupt %d occurs\n", irq);
- 	palmas_disable_auto_conversion(adc);
- 
-+	ev = (irq == adc->irq_auto_0) ? &adc->event0 : &adc->event1;
-+	if (ev->channel != -1) {
-+		enum iio_event_direction dir;
-+		u64 code;
-+
-+		dir = ev->direction;
-+		code = IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE, ev->channel,
-+					    IIO_EV_TYPE_THRESH, dir);
-+		iio_push_event(indio_dev, code, iio_get_time_ns(indio_dev));
-+	}
-+
- 	return IRQ_HANDLED;
- }
- 
-@@ -280,6 +326,9 @@ static int palmas_gpadc_read_prepare(struct palmas_gpadc *adc, int adc_chan)
- {
- 	int ret;
- 
-+	if (palmas_gpadc_channel_is_freerunning(adc, adc_chan))
-+		return 0; // ADC already running
-+
- 	ret = palmas_gpadc_enable(adc, adc_chan, true);
- 	if (ret < 0)
- 		return ret;
-@@ -339,28 +388,44 @@ static int palmas_gpadc_start_conversion(struct palmas_gpadc *adc, int adc_chan)
- 	unsigned int val;
- 	int ret;
- 
--	init_completion(&adc->conv_completion);
--	ret = palmas_update_bits(adc->palmas, PALMAS_GPADC_BASE,
--				PALMAS_GPADC_SW_SELECT,
--				PALMAS_GPADC_SW_SELECT_SW_START_CONV0,
--				PALMAS_GPADC_SW_SELECT_SW_START_CONV0);
--	if (ret < 0) {
--		dev_err(adc->dev, "SELECT_SW_START write failed: %d\n", ret);
--		return ret;
--	}
-+	if (palmas_gpadc_channel_is_freerunning(adc, adc_chan)) {
-+		int event = (adc_chan == adc->event0.channel) ? 0 : 1;
-+		unsigned int reg = (event == 0) ?
-+			PALMAS_GPADC_AUTO_CONV0_LSB :
-+			PALMAS_GPADC_AUTO_CONV1_LSB;
- 
--	ret = wait_for_completion_timeout(&adc->conv_completion,
--				PALMAS_ADC_CONVERSION_TIMEOUT);
--	if (ret == 0) {
--		dev_err(adc->dev, "conversion not completed\n");
--		return -ETIMEDOUT;
-+		ret = palmas_bulk_read(adc->palmas, PALMAS_GPADC_BASE,
-+					reg, &val, 2);
-+		if (ret < 0) {
-+			dev_err(adc->dev, "AUTO_CONV%x_LSB read failed: %d\n",
-+				event, ret);
-+			return ret;
-+		}
- 	}
-+	else {
-+		init_completion(&adc->conv_completion);
-+		ret = palmas_update_bits(adc->palmas, PALMAS_GPADC_BASE,
-+					PALMAS_GPADC_SW_SELECT,
-+					PALMAS_GPADC_SW_SELECT_SW_START_CONV0,
-+					PALMAS_GPADC_SW_SELECT_SW_START_CONV0);
-+		if (ret < 0) {
-+			dev_err(adc->dev, "SELECT_SW_START write failed: %d\n", ret);
-+			return ret;
-+		}
- 
--	ret = palmas_bulk_read(adc->palmas, PALMAS_GPADC_BASE,
--				PALMAS_GPADC_SW_CONV0_LSB, &val, 2);
--	if (ret < 0) {
--		dev_err(adc->dev, "SW_CONV0_LSB read failed: %d\n", ret);
--		return ret;
-+		ret = wait_for_completion_timeout(&adc->conv_completion,
-+					PALMAS_ADC_CONVERSION_TIMEOUT);
-+		if (ret == 0) {
-+			dev_err(adc->dev, "conversion not completed\n");
-+			return -ETIMEDOUT;
-+		}
-+
-+		ret = palmas_bulk_read(adc->palmas, PALMAS_GPADC_BASE,
-+					PALMAS_GPADC_SW_CONV0_LSB, &val, 2);
-+		if (ret < 0) {
-+			dev_err(adc->dev, "SW_CONV0_LSB read failed: %d\n", ret);
-+			return ret;
-+		}
- 	}
- 
- 	ret = val & 0xFFF;
-@@ -385,6 +450,80 @@ static int palmas_gpadc_get_calibrated_code(struct palmas_gpadc *adc,
- 	return val;
- }
- 
-+static int palmas_gpadc_get_high_threshold_raw(struct palmas_gpadc *adc,
-+					       struct palmas_adc_event *ev)
-+{
-+	const int INL = 2;
-+	const int adc_chan = ev->channel;
-+	const int orig = adc->thresh_data[adc_chan].high_thresh;
-+	int val = orig;
-+	int gain_drift;
-+	int offset_drift;
-+
-+	if (!val)
-+		return 0;
-+
-+	val = (val * 1000) / adc->adc_info[adc_chan].gain;
-+
-+	if (!adc->adc_info[adc_chan].is_uncalibrated) {
-+		val = (val * adc->adc_info[adc_chan].gain_error +
-+		       adc->adc_info[adc_chan].offset) /
-+			1000;
-+		gain_drift = 1002;
-+		offset_drift = 2;
-+	}
-+	else {
-+		gain_drift = 1022;
-+		offset_drift = 36;
-+	}
-+
-+	// add tolerance to threshold
-+	val = ((val + INL) * gain_drift) / 1000 + offset_drift;
-+
-+	// clamp to max possible value
-+	if (val > 0xFFF)
-+		val = 0xFFF;
-+
-+	return val;
-+}
-+
-+static int palmas_gpadc_get_low_threshold_raw(struct palmas_gpadc *adc,
-+					      struct palmas_adc_event *ev)
-+{
-+	const int INL = 2;
-+	const int adc_chan = ev->channel;
-+	const int orig = adc->thresh_data[adc_chan].low_thresh;
-+	int val = orig;
-+	int gain_drift;
-+	int offset_drift;
-+
-+	if (!val)
-+		return val;
-+
-+	val = (val * 1000) / adc->adc_info[adc_chan].gain;
-+
-+        if (!adc->adc_info[adc_chan].is_uncalibrated) {
-+            val = (val * adc->adc_info[adc_chan].gain_error -
-+		   adc->adc_info[adc_chan].offset) /
-+		    1000;
-+            gain_drift = 998;
-+            offset_drift = 2;
-+        }
-+        else {
-+            gain_drift = 978;
-+            offset_drift = 36;
-+        }
-+
-+	// calculate tolerances
-+	val = ((val - INL) * gain_drift) / 1000 - offset_drift;
-+
-+	// clamp to minimum 0
-+	if (val < 0)
-+		val = 0;
-+
-+	return val;
-+}
-+
- static int palmas_gpadc_read_raw(struct iio_dev *indio_dev,
- 	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
- {
-@@ -431,8 +570,239 @@ static int palmas_gpadc_read_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
-+static int palmas_gpadc_read_event_config(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, enum iio_event_type type,
-+	enum iio_event_direction dir)
-+{
-+	struct palmas_gpadc *adc = iio_priv(indio_dev);
-+	int adc_chan = chan->channel;
-+	int ret = 0;
-+
-+	if (adc_chan > PALMAS_ADC_CH_MAX || type != IIO_EV_TYPE_THRESH)
-+		return -EINVAL;
-+
-+	mutex_lock(&adc->lock);
-+
-+	if (palmas_gpadc_get_event_channel(adc, adc_chan, dir)) {
-+		ret = 1;
-+	}
-+
-+	mutex_unlock(&adc->lock);
-+
-+	return ret;
-+}
-+
-+static void palmas_adc_event_to_wakeup(struct palmas_gpadc *adc,
-+				       struct palmas_adc_event *ev,
-+				       struct palmas_adc_wakeup_property *wakeup)
-+{
-+	wakeup->adc_channel_number = ev->channel;
-+	if (ev->direction == IIO_EV_DIR_RISING) {
-+		wakeup->adc_low_threshold = 0;
-+		wakeup->adc_high_threshold =
-+			palmas_gpadc_get_high_threshold_raw(adc, &adc->event0);
-+	}
-+	else {
-+		wakeup->adc_low_threshold =
-+			palmas_gpadc_get_low_threshold_raw(adc, &adc->event0);
-+		wakeup->adc_high_threshold = 0;
-+	}
-+}
-+
-+static int palmas_adc_wakeup_configure(struct palmas_gpadc *adc);
-+static int palmas_adc_wakeup_reset(struct palmas_gpadc *adc);
-+
-+static int palmas_gpadc_reconfigure_event_channels(struct palmas_gpadc *adc)
-+{
-+	bool was_enabled = adc->wakeup1_enable || adc->wakeup2_enable;
-+	bool enable;
-+
-+	adc->wakeup1_enable = adc->event0.channel == -1 ? false : true;
-+	adc->wakeup2_enable = adc->event1.channel == -1 ? false : true;
-+
-+	enable = adc->wakeup1_enable || adc->wakeup2_enable;
-+	if (!was_enabled && enable)
-+		device_wakeup_enable(adc->dev);
-+	else if (was_enabled && !enable)
-+		device_wakeup_disable(adc->dev);
-+
-+	if (!enable)
-+		return palmas_adc_wakeup_reset(adc);
-+
-+	// adjust levels
-+	if (adc->wakeup1_enable)
-+		palmas_adc_event_to_wakeup(adc, &adc->event0, &adc->wakeup1_data);
-+	if (adc->wakeup2_enable)
-+		palmas_adc_event_to_wakeup(adc, &adc->event1, &adc->wakeup2_data);
-+
-+	return palmas_adc_wakeup_configure(adc);
-+}
-+
-+static int palmas_gpadc_enable_event_config(struct palmas_gpadc *adc,
-+	const struct iio_chan_spec *chan, enum iio_event_direction dir)
-+{
-+	struct palmas_adc_event *ev;
-+	int adc_chan = chan->channel;
-+
-+	if (palmas_gpadc_get_event_channel(adc, adc_chan, dir))
-+		/* already enabled */
-+		return 0;
-+
-+	if (adc->event0.channel == -1)
-+		ev = &adc->event0;
-+	else if (adc->event1.channel == -1) {
-+		/* event0 has to be the lowest channel */
-+		if (adc_chan < adc->event0.channel) {
-+			adc->event1 = adc->event0;
-+			ev = &adc->event0;
-+		}
-+		else
-+			ev = &adc->event1;
-+	}
-+	else /* both AUTO channels already in use */ {
-+		dev_warn(adc->dev, "event0 - %d, event1 - %d\n",
-+			 adc->event0.channel, adc->event1.channel);
-+		return -EBUSY;
-+	}
-+
-+	ev->channel = adc_chan;
-+	ev->direction = dir;
-+
-+	return palmas_gpadc_reconfigure_event_channels(adc);
-+}
-+
-+static int palmas_gpadc_disable_event_config(struct palmas_gpadc *adc,
-+	const struct iio_chan_spec *chan, enum iio_event_direction dir)
-+{
-+	int adc_chan = chan->channel;
-+	struct palmas_adc_event *ev =
-+		palmas_gpadc_get_event_channel(adc, adc_chan, dir);
-+
-+	if (!ev)
-+		return 0;
-+
-+	if (ev == &adc->event0) {
-+		adc->event0 = adc->event1;
-+		ev = &adc->event1;
-+	}
-+
-+	ev->channel = -1;
-+	ev->direction = IIO_EV_DIR_NONE;
-+
-+	return palmas_gpadc_reconfigure_event_channels(adc);
-+}
-+
-+static int palmas_gpadc_write_event_config(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, enum iio_event_type type,
-+	enum iio_event_direction dir, int state)
-+{
-+	struct palmas_gpadc *adc = iio_priv(indio_dev);
-+	int adc_chan = chan->channel;
-+	int ret = 0;
-+
-+	if (adc_chan > PALMAS_ADC_CH_MAX || type != IIO_EV_TYPE_THRESH)
-+		return -EINVAL;
-+
-+	mutex_lock(&adc->lock);
-+
-+	if (state)
-+		ret = palmas_gpadc_enable_event_config(adc, chan, dir);
-+	else
-+		ret = palmas_gpadc_disable_event_config(adc, chan, dir);
-+
-+	mutex_unlock(&adc->lock);
-+
-+	return ret;
-+}
-+
-+static int palmas_gpadc_read_event_value(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, enum iio_event_type type,
-+	enum iio_event_direction dir, enum iio_event_info info, int *val,
-+	int *val2)
-+{
-+	struct palmas_gpadc *adc = iio_priv(indio_dev);
-+	int adc_chan = chan->channel;
-+	int ret = 0;
-+
-+	if (adc_chan > PALMAS_ADC_CH_MAX || type != IIO_EV_TYPE_THRESH)
-+		return -EINVAL;
-+
-+	mutex_lock(&adc->lock);
-+
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		*val = (dir == IIO_EV_DIR_RISING) ?
-+			adc->thresh_data[adc_chan].high_thresh :
-+			adc->thresh_data[adc_chan].low_thresh;
-+		ret = IIO_VAL_INT;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	mutex_unlock(&adc->lock);
-+
-+	return ret;
-+}
-+
-+static int palmas_gpadc_write_event_value(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, enum iio_event_type type,
-+	enum iio_event_direction dir, enum iio_event_info info, int val,
-+	int val2)
-+{
-+	struct palmas_gpadc *adc = iio_priv(indio_dev);
-+	int adc_chan = chan->channel;
-+	int ret = 0;
-+
-+	if (adc_chan > PALMAS_ADC_CH_MAX || type != IIO_EV_TYPE_THRESH)
-+		return -EINVAL;
-+
-+	mutex_lock(&adc->lock);
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		if (val < 0 || val > 0xFFF) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+		if (dir == IIO_EV_DIR_RISING)
-+			adc->thresh_data[adc_chan].high_thresh = val;
-+		else
-+			adc->thresh_data[adc_chan].low_thresh = val;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	if (palmas_gpadc_get_event_channel(adc, adc_chan, dir))
-+		ret = palmas_gpadc_reconfigure_event_channels(adc);
-+
-+	mutex_unlock(&adc->lock);
-+
-+	return ret;
-+}
-+
- static const struct iio_info palmas_gpadc_iio_info = {
- 	.read_raw = palmas_gpadc_read_raw,
-+	.read_event_config = palmas_gpadc_read_event_config,
-+	.write_event_config = palmas_gpadc_write_event_config,
-+	.read_event_value = palmas_gpadc_read_event_value,
-+	.write_event_value = palmas_gpadc_write_event_value,
-+};
-+
-+static const struct iio_event_spec palmas_gpadc_events[] = {
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+				BIT(IIO_EV_INFO_ENABLE),
-+	}, {
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_FALLING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+				BIT(IIO_EV_INFO_ENABLE),
-+	},
- };
- 
- #define PALMAS_ADC_CHAN_IIO(chan, _type, chan_info)	\
-@@ -443,6 +813,8 @@ static const struct iio_info palmas_gpadc_iio_info = {
- 			BIT(chan_info),			\
- 	.indexed = 1,					\
- 	.channel = PALMAS_ADC_CH_##chan,		\
-+	.event_spec = palmas_gpadc_events,		\
-+	.num_event_specs = ARRAY_SIZE(palmas_gpadc_events)	\
- }
- 
- static const struct iio_chan_spec palmas_gpadc_iio_channel[] = {
-@@ -492,9 +864,12 @@ static int palmas_gpadc_get_adc_dt_data(struct platform_device *pdev,
- 	return 0;
- }
- 
--static void palmas_disable_wakeup(void *dev)
-+static void palmas_disable_wakeup(void *data)
- {
--	device_wakeup_disable(dev);
-+	struct palmas_gpadc *adc = data;
-+
-+	if (adc->wakeup1_enable || adc->wakeup2_enable)
-+		device_wakeup_disable(adc->dev);
- }
- 
- static int palmas_gpadc_probe(struct platform_device *pdev)
-@@ -547,36 +922,49 @@ static int palmas_gpadc_probe(struct platform_device *pdev)
- 		return dev_err_probe(adc->dev, ret,
- 				     "request irq %d failed\n", adc->irq);
- 
-+	adc->irq_auto_0 = platform_get_irq(pdev, 1);
-+	if (adc->irq_auto_0 < 0)
-+		return dev_err_probe(adc->dev, adc->irq_auto_0,
-+				     "get auto0 irq failed\n");
-+
-+	ret = devm_request_threaded_irq(&pdev->dev, adc->irq_auto_0, NULL,
-+					palmas_gpadc_irq_auto, IRQF_ONESHOT,
-+					"palmas-adc-auto-0", indio_dev);
-+	if (ret < 0)
-+		return dev_err_probe(adc->dev, ret,
-+				     "request auto0 irq %d failed\n",
-+				     adc->irq_auto_0);
-+
-+	adc->irq_auto_1 = platform_get_irq(pdev, 2);
-+	if (adc->irq_auto_1 < 0)
-+		return dev_err_probe(adc->dev, adc->irq_auto_1,
-+				     "get auto1 irq failed\n");
-+
-+	ret = devm_request_threaded_irq(&pdev->dev, adc->irq_auto_1, NULL,
-+					palmas_gpadc_irq_auto, IRQF_ONESHOT,
-+					"palmas-adc-auto-1", indio_dev);
-+	if (ret < 0)
-+		return dev_err_probe(adc->dev, ret,
-+				     "request auto1 irq %d failed\n",
-+				     adc->irq_auto_1);
-+
- 	if (gpadc_pdata->adc_wakeup1_data) {
- 		memcpy(&adc->wakeup1_data, gpadc_pdata->adc_wakeup1_data,
- 			sizeof(adc->wakeup1_data));
- 		adc->wakeup1_enable = true;
--		adc->irq_auto_0 =  platform_get_irq(pdev, 1);
--		ret = devm_request_threaded_irq(&pdev->dev, adc->irq_auto_0,
--						NULL, palmas_gpadc_irq_auto,
--						IRQF_ONESHOT,
--						"palmas-adc-auto-0", adc);
--		if (ret < 0)
--			return dev_err_probe(adc->dev, ret,
--					     "request auto0 irq %d failed\n",
--					     adc->irq_auto_0);
- 	}
- 
- 	if (gpadc_pdata->adc_wakeup2_data) {
- 		memcpy(&adc->wakeup2_data, gpadc_pdata->adc_wakeup2_data,
- 				sizeof(adc->wakeup2_data));
- 		adc->wakeup2_enable = true;
--		adc->irq_auto_1 =  platform_get_irq(pdev, 2);
--		ret = devm_request_threaded_irq(&pdev->dev, adc->irq_auto_1,
--						NULL, palmas_gpadc_irq_auto,
--						IRQF_ONESHOT,
--						"palmas-adc-auto-1", adc);
--		if (ret < 0)
--			return dev_err_probe(adc->dev, ret,
--					     "request auto1 irq %d failed\n",
--					     adc->irq_auto_1);
- 	}
- 
-+	adc->event0.channel = -1;
-+	adc->event0.direction = IIO_EV_DIR_NONE;
-+	adc->event1.channel = -1;
-+	adc->event1.direction = IIO_EV_DIR_NONE;
-+
- 	/* set the current source 0 (value 0/5/15/20 uA => 0..3) */
- 	if (gpadc_pdata->ch0_current <= 1)
- 		adc->ch0_current = PALMAS_ADC_CH0_CURRENT_SRC_0;
-@@ -610,20 +998,23 @@ static int palmas_gpadc_probe(struct platform_device *pdev)
- 		return dev_err_probe(adc->dev, ret,
- 				     "iio_device_register() failed\n");
- 
--	device_set_wakeup_capable(&pdev->dev, 1);
- 	for (i = 0; i < PALMAS_ADC_CH_MAX; i++) {
- 		if (!(adc->adc_info[i].is_uncalibrated))
- 			palmas_gpadc_calibrate(adc, i);
- 	}
- 
-+	device_set_wakeup_capable(&pdev->dev, 1);
- 	if (adc->wakeup1_enable || adc->wakeup2_enable) {
--		device_wakeup_enable(&pdev->dev);
--		ret = devm_add_action_or_reset(&pdev->dev,
--					       palmas_disable_wakeup,
--					       &pdev->dev);
-+		ret = palmas_adc_wakeup_configure(adc);
- 		if (ret)
- 			return ret;
-+		device_wakeup_enable(&pdev->dev);
- 	}
-+	ret = devm_add_action_or_reset(&pdev->dev,
-+				       palmas_disable_wakeup,
-+				       adc);
-+	if (ret)
-+		return ret;
- 
- 	return 0;
- }
-@@ -755,16 +1146,11 @@ static int palmas_gpadc_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct palmas_gpadc *adc = iio_priv(indio_dev);
--	int wakeup = adc->wakeup1_enable || adc->wakeup2_enable;
- 	int ret;
- 
--	if (!device_may_wakeup(dev) || !wakeup)
-+	if (!device_may_wakeup(dev))
- 		return 0;
- 
--	ret = palmas_adc_wakeup_configure(adc);
--	if (ret < 0)
--		return ret;
--
- 	if (adc->wakeup1_enable)
- 		enable_irq_wake(adc->irq_auto_0);
- 
-@@ -778,16 +1164,11 @@ static int palmas_gpadc_resume(struct device *dev)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct palmas_gpadc *adc = iio_priv(indio_dev);
--	int wakeup = adc->wakeup1_enable || adc->wakeup2_enable;
- 	int ret;
- 
--	if (!device_may_wakeup(dev) || !wakeup)
-+	if (!device_may_wakeup(dev))
- 		return 0;
- 
--	ret = palmas_adc_wakeup_reset(adc);
--	if (ret < 0)
--		return ret;
--
- 	if (adc->wakeup1_enable)
- 		disable_irq_wake(adc->irq_auto_0);
- 
--- 
-2.25.1
-
+CgoKCgoKCgoKCgoKCgoKCkF0IDIwMjMtMDMtMTkgMjI6MjI6MjIsICJKb25hdGhhbiBDYW1lcm9u
+IiA8amljMjNAa2VybmVsLm9yZz4gd3JvdGU6Cj5PbiBTYXQsIDE4IE1hciAyMDIzIDEwOjM2OjA0
+IC0wNzAwCj5MYXJzLVBldGVyIENsYXVzZW4gPGxhcnNAbWV0YWZvby5kZT4gd3JvdGU6Cj4KPj4g
+T24gMy8xOC8yMyAxMDozOSwgSm9uYXRoYW4gQ2FtZXJvbiB3cm90ZToKPj4gPiBPbiBGcmksIDEw
+IE1hciAyMDIzIDE3OjEyOjM5ICswODAwCj4+ID4gWmhlbmcgV2FuZyA8enl5dGx6Lnd6QDE2My5j
+b20+IHdyb3RlOgo+PiA+ICAKPj4gPj4gSW4gYXQ5MV9hZGNfcHJvYmUsICZzdC0+dG91Y2hfc3Qu
+d29ya3EgaXMgYm91bmQgd2l0aAo+PiA+PiBhdDkxX2FkY193b3JrcV9oYW5kbGVyLiBUaGVuIGl0
+IHdpbGwgYmUgc3RhcnRlZCBieSBpcnEKPj4gPj4gaGFuZGxlciBhdDkxX2FkY190b3VjaF9kYXRh
+X2hhbmRsZXIKPj4gPj4KPj4gPj4gSWYgd2UgcmVtb3ZlIHRoZSBkcml2ZXIgd2hpY2ggd2lsbCBj
+YWxsIGF0OTFfYWRjX3JlbW92ZQo+PiA+PiAgICB0byBtYWtlIGNsZWFudXAsIHRoZXJlIG1heSBi
+ZSBhIHVuZmluaXNoZWQgd29yay4KPj4gPj4KPj4gPj4gVGhlIHBvc3NpYmxlIHNlcXVlbmNlIGlz
+IGFzIGZvbGxvd3M6Cj4+ID4+Cj4+ID4+IEZpeCBpdCBieSBmaW5pc2hpbmcgdGhlIHdvcmsgYmVm
+b3JlIGNsZWFudXAgaW4gdGhlIGF0OTFfYWRjX3JlbW92ZQo+PiA+Pgo+PiA+PiBDUFUwICAgICAg
+ICAgICAgICAgICAgQ1BVMQo+PiA+Pgo+PiA+PiAgICAgICAgICAgICAgICAgICAgICB8YXQ5MV9h
+ZGNfd29ya3FfaGFuZGxlcgo+PiA+PiBhdDkxX2FkY19yZW1vdmUgICAgIHwKPj4gPj4gaWlvX2Rl
+dmljZV91bnJlZ2lzdGVyfAo+PiA+PiBpaW9fZGV2X3JlbGVhc2UgICAgIHwKPj4gPj4ga2ZyZWUo
+aWlvX2Rldl9vcGFxdWUpO3wKPj4gPj4gICAgICAgICAgICAgICAgICAgICAgfAo+PiA+PiAgICAg
+ICAgICAgICAgICAgICAgICB8aWlvX3B1c2hfdG9fYnVmZmVycwo+PiA+PiAgICAgICAgICAgICAg
+ICAgICAgICB8Jmlpb19kZXZfb3BhcXVlLT5idWZmZXJfbGlzdAo+PiA+PiAgICAgICAgICAgICAg
+ICAgICAgICB8Ly91c2UKPj4gPj4gRml4ZXM6IDIzZWMyNzc0ZjFjYyAoImlpbzogYWRjOiBhdDkx
+LXNhbWE1ZDJfYWRjOiBhZGQgc3VwcG9ydCBmb3IgcG9zaXRpb24gYW5kIHByZXNzdXJlIGNoYW5u
+ZWxzIikKPj4gPj4gU2lnbmVkLW9mZi1ieTogWmhlbmcgV2FuZyA8enl5dGx6Lnd6QDE2My5jb20+
+Cj4+ID4+IC0tLQo+PiA+PiAgIGRyaXZlcnMvaWlvL2FkYy9hdDkxLXNhbWE1ZDJfYWRjLmMgfCAy
+ICsrCj4+ID4+ICAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKQo+PiA+Pgo+PiA+PiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vYWRjL2F0OTEtc2FtYTVkMl9hZGMuYyBiL2RyaXZlcnMv
+aWlvL2FkYy9hdDkxLXNhbWE1ZDJfYWRjLmMKPj4gPj4gaW5kZXggNTBkMDJlNWZjNmZjLi4xYjk1
+ZDE4ZDllMGIgMTAwNjQ0Cj4+ID4+IC0tLSBhL2RyaXZlcnMvaWlvL2FkYy9hdDkxLXNhbWE1ZDJf
+YWRjLmMKPj4gPj4gKysrIGIvZHJpdmVycy9paW8vYWRjL2F0OTEtc2FtYTVkMl9hZGMuYwo+PiA+
+PiBAQCAtMjQ5NSw2ICsyNDk1LDggQEAgc3RhdGljIGludCBhdDkxX2FkY19yZW1vdmUoc3RydWN0
+IHBsYXRmb3JtX2RldmljZSAqcGRldikKPj4gPj4gICAJc3RydWN0IGlpb19kZXYgKmluZGlvX2Rl
+diA9IHBsYXRmb3JtX2dldF9kcnZkYXRhKHBkZXYpOwo+PiA+PiAgIAlzdHJ1Y3QgYXQ5MV9hZGNf
+c3RhdGUgKnN0ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsKPj4gPj4gICAKPj4gPj4gKwlkaXNhYmxl
+X2lycV9ub3N5bmMoc3QtPmlycSk7Cj4+ID4+ICsJY2FuY2VsX3dvcmtfc3luYygmc3QtPnRvdWNo
+X3N0LndvcmtxKTsgIAo+PiA+IEknZCBsaWtlIHNvbWUgaW5wdXQgZm9ybSBzb21lb25lIG1vcmUg
+ZmFtaWxpYXIgd2l0aCB0aGlzIGRyaXZlciB0aGFuIEkgYW0uCj4+ID4KPj4gPiBJbiBwYXJ0aWN1
+bGFyLCB3aGlsc3QgaXQgZml4ZXMgdGhlIGJ1ZyBzZWVuIEknbSBub3Qgc3VyZSB3aGF0IHRoZSBt
+b3N0Cj4+ID4gbG9naWNhbCBvcmRlcmluZyBmb3IgdGhlIGRpc2FibGUgaXMgb3IgdGhlIGJlc3Qg
+d2F5IHRvIGRvIGl0Lgo+PiA+Cj4+ID4gSSdkIHByZWZlciB0byBzZWUgdGhlIGlycSBjdXQgb2Zm
+IGF0IHNvdXJjZSBieSBkaXNhYmxpbmcgaXQgYXQgdGhlIGRldmljZQo+PiA+IGZlYXR1cmUgdGhh
+dCBpcyBnZW5lcmF0aW5nIHRoZSBpcnEgZm9sbG93ZWQgYnkgY2FuY2VsbGluZyBvciB3YWl0aW5n
+IGZvcgo+PiA+IGNvbXBsZXRpb24gb2YgYW55IGluIGZsaWdodCB3b3JrLiAgCj4+IFRoZSB1c3Vh
+bGx5IHdheSB5b3UnZCBkbyB0aGlzIGJ5IGNhbGxpbmcgZnJlZV9pcnEoKSBiZWZvcmUgdGhlIAo+
+PiBjYW5jZWxfd29ya19zeW5jKCkuCj4KPkknZCBnbyBhIGxpdHRsZSBmdXJ0aGVyIHRoYW4gdGhh
+dCBhbmQgZGlzYWJsZSB0aGUgaW50ZXJydXB0IHNvdXJjZSBhdCB0aGUKPmRldmljZSAoaWYgcG9z
+c2libGUpIHRoZW4gY2FsbCBmcmVlX2lycSgpIHRoZW4gY2FuY2VsX3dvcmtfc3luYygpCj4KPk90
+aGVyd2lzZSB0aGUgZGV2aWNlIGlzIG1lcnJpbHkgbW9uaXRvcmluZyBzb21ldGhpbmcgYW5kIGdl
+bmVyYXRpbmcgaW50ZXJydXB0cwo+dGhhdCB3ZSBkb24ndCBjYXJlIGFib3V0LiAgTWlnaHQgd2Vs
+bCBiZSB3YXN0aW5nIHBvd2VyIGRvaW5nIHRoYXQsIHRob3VnaCBJIGhhdmVuJ3QKPmNoZWNrZWQg
+dGhlIGZsb3cgaW4gdGhpcyBwYXJ0aWN1bGFyIGNhc2UuCgo+CgoKCkRlYXIgTGFycy1QZXRlciBD
+bGF1c2VuLApUaGFuayB5b3UgZm9yIHlvdXIgcmVzcG9uc2UgdG8gbXkgcXVlc3Rpb24uIEkgYXBw
+cmVjaWF0ZSB5b3VyIHN1Z2dlc3Rpb24gdG8gZGlzYWJsZSB0aGUgaW50ZXJydXB0IHNvdXJjZSBh
+dCB0aGUgZGV2aWNlIGJlZm9yZSBjYWxsaW5nIGZyZWVfaXJxKCkgYW5kIGNhbmNlbF93b3JrX3N5
+bmMoKS4gCkhvd2V2ZXIsIEkgYW0gbm90IHN1cmUgd2hpY2ggc3BlY2lmaWMgZnVuY3Rpb24gdG8g
+dXNlIGluIG9yZGVyIHRvIGFjaGlldmUgdGhpcy4gCkNhbiB5b3UgcGxlYXNlIHByb3ZpZGUgbW9y
+ZSBpbmZvcm1hdGlvbiBvbiB3aGljaCBmdW5jdGlvbiB0byB1c2UgYW5kIGhvdyB0byB1c2UgaXQ/
+CgpUaGFuayB5b3UgdmVyeSBtdWNoIGZvciB5b3VyIGhlbHAuCgpCZXN0IHJlZ2FyZHMsClpoZW5n
+IFdhbmcKCj5Kb25hdGhhbgo=
