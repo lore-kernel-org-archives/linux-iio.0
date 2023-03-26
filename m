@@ -2,101 +2,112 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6120AC7619A
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Mar 2023 22:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C7AC74A5B
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Mar 2023 22:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231196AbjCZWGO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S229804AbjCZWGO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sun, 26 Mar 2023 18:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39404 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbjCZWGN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Mar 2023 18:06:13 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5DF5B95
-        for <linux-iio@vger.kernel.org>; Sun, 26 Mar 2023 15:06:11 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id bj20so5028065oib.3
-        for <linux-iio@vger.kernel.org>; Sun, 26 Mar 2023 15:06:11 -0700 (PDT)
+        with ESMTP id S229971AbjCZWGO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Mar 2023 18:06:14 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E310F59FC
+        for <linux-iio@vger.kernel.org>; Sun, 26 Mar 2023 15:06:12 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id w133so5033895oib.1
+        for <linux-iio@vger.kernel.org>; Sun, 26 Mar 2023 15:06:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679868370;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=DXiSJ7wBXq/4T1LMMz36pZlbBBVWNt83xm/Cv55ylqw=;
-        b=wXyTxdMVTS8KjcfegNn8UAkXSQgoOOYwT3LHMhxwRM7GhGPauzAltWsT4Vn1UJm01E
-         o01qVCbHpO41EJENGv/+36M7Xp+jvaXqQTTdxJki1+kzTQoMiEk8orCG5gPCKYa8cVsD
-         WRsSTHbC+n0XOcxmIV04eRMl4H29VdOE2ucGPwEZT/0hUJuBufDH5JYEGxyUNRLKnoN6
-         K390zpudbM178CGuOM0Nve9bjBzzMBE0Fo6q+z0jyP4WsDOAD2BIvKQx6jj0dW/IEoWQ
-         L0N69GT2AMHYia3B5mBNYp7xb8RtXwjaqmU5x8wKvFK1/KuwnXhVatOzjgkDmACIUTJ5
-         wEeQ==
+        d=linaro.org; s=google; t=1679868372;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=loaO9MazuAp1DVUhZlIb/7ufss9jMMJFvpyppI0EIFk=;
+        b=f4waIGO0wk+ia2QrIQraB9qm+2AMXzQn15+LMdi4WaETsVklfHfBJKr0w/A6huXYu+
+         meGFA6u5jsGk4911vY3Nq/Oq6l1Q9MbPJQ87RzZZueYRZ07ESlQ8T9xD1V5NC0rOVRF3
+         WhIuG7AWOedOLIEX0jFC0jbq1VlryyPtLnihoqn8aE5nS/6vxzv4aDqQv/gHX3+catZ8
+         5+2oQvJLoBfYEjCasiUlklNYbu6+uh1xAteNckzgidZ5iwB3E03LciE05evW2ICBDvbU
+         cKD2LPoqseFgjP8WqBDdhEG6Shxrlg0OrQK+CBh8n+1y0k1K9pmiUeNfqcTko8wqRuRQ
+         ivtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679868370;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=DXiSJ7wBXq/4T1LMMz36pZlbBBVWNt83xm/Cv55ylqw=;
-        b=D4YCP20DxTcKPZEzWedTfOMM+CdllCVZ70r/ThNKwmYdurqZg4M4uQMdiAxh5vzshj
-         wbCUkyUtQmZz7Bnm+ZkQQvWhzgbb4c1N7up2nJOiBmZwEzF9y4DPoNJGHAxKYVXbrIYt
-         cxgST6nBiHJZV/DwsBFmxvf3JlHYFVAivo2yBryjDqNeue5i1BLgTADH8kqHLaDJ5A79
-         NiCLcojQSCntUJzXltVD1UFeLm33712p1uKzhqMqMslP1MTN36eZ51gOpD4yMjiUUAay
-         IvyzOvp/PW3bPuTcCjUtlbWrJ5kJYDokA1OLpidPfY4rulM3voPCBlMkyJcM8teL78Jz
-         fsRA==
-X-Gm-Message-State: AO0yUKW3F+iOATz+DktB2KyRbEKSezCUxm/g9nShRoIwzbY8ykDaZr5U
-        DFlu0DxqvDcu9y4nA8h9CkY6fQ==
-X-Google-Smtp-Source: AK7set+9k6nq994o7HQfTsr3tmP7Q1dYPuV+hXUX4tpWmIV2INklxJHhM6IkWLdiaK2gHucyxng9Aw==
-X-Received: by 2002:a54:4d99:0:b0:387:1e85:d1ae with SMTP id y25-20020a544d99000000b003871e85d1aemr4011199oix.18.1679868370301;
-        Sun, 26 Mar 2023 15:06:10 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679868372;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=loaO9MazuAp1DVUhZlIb/7ufss9jMMJFvpyppI0EIFk=;
+        b=8L6lPwSpBYmeMHmBAcE6qZuU+R+CbS/591HVKvisxjj25/Uw/lBjSmOYwIRLSfPkgw
+         0bioWb/FDoMEaO7VBfmcI5P+8lrysS2ip+zWGtunYpFRrFTNn40u1qPnZgtfJbBnWpG3
+         FHSXPSTgStyrTITbnzS5BqI9+w0400e+BcVeV9P+nWjtLiqQLlY8OL77cI5J6XDuH8wY
+         b5S5H5x8s0ZSFnwI18Py0Bww6MZLIdwhc+/VW1YHKIwDxb8onJtwX4kx05GKuDwWeVbH
+         eMjQbkufiYtBXkyrwHlFZ7nVWGO2UeV67ao7AunYMhe51SBukGbBdGtIJ4n0cw/BBbZn
+         UmhA==
+X-Gm-Message-State: AO0yUKVAtA4I3qKfr04FM04B/9tOVYoUJurNwO7qHeylnD/4JEOK8fbI
+        I5Csa5R4B6uuTxMJOjmtCOHXfw==
+X-Google-Smtp-Source: AK7set+j0+fobnBpo2fELSasAymK5YqiEcr1K1e/9GOxHGs9IwRvVOEP/qwZcxgemcz1qeUv4cDzqA==
+X-Received: by 2002:aca:2419:0:b0:388:1867:cd2e with SMTP id n25-20020aca2419000000b003881867cd2emr3863907oic.43.1679868372295;
+        Sun, 26 Mar 2023 15:06:12 -0700 (PDT)
 Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id o187-20020acaf0c4000000b0038476262f65sm10593744oih.33.2023.03.26.15.06.09
+        by smtp.gmail.com with ESMTPSA id o187-20020acaf0c4000000b0038476262f65sm10593744oih.33.2023.03.26.15.06.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Mar 2023 15:06:09 -0700 (PDT)
+        Sun, 26 Mar 2023 15:06:12 -0700 (PDT)
 From:   William Breathitt Gray <william.gray@linaro.org>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         William Breathitt Gray <william.gray@linaro.org>
-Subject: [PATCH v3 0/2] Migrate STX104 to the regmap API
-Date:   Sun, 26 Mar 2023 18:05:56 -0400
-Message-Id: <cover.1679867815.git.william.gray@linaro.org>
+Subject: [PATCH v3 2/2] iio: addac: stx104: Use regmap_read_poll_timeout() for conversion poll
+Date:   Sun, 26 Mar 2023 18:05:58 -0400
+Message-Id: <028dcd8d0de87699294cd2c741d5a0ebb7595bf9.1679867815.git.william.gray@linaro.org>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <cover.1679867815.git.william.gray@linaro.org>
+References: <cover.1679867815.git.william.gray@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Changes in v3:
- - Add STX104_ prefixes to defines to avoid potential name classes
- - Rename SAME_CHANNEL() to STX104_SINGLE_CHANNEL() to convey intention
-   better
- - Utilize u8_encode_bits() to define STX104_SOFTWARE_TRIGGER
- - Adjust to utilize reg_base members in regmap_config structures
- - Fix off-by-one errors in aio_data_wr_ranges[], aio_data_rd_ranges[],
-   and aio_data_regmap_config max_register
- - Inline gpio_config initialization to avoid zeroing it at declaration
- - Add blank lines between register map init blocks for clarity
- - Utilize regmap_read_poll_timeout() for ADC conversion status poll
-Changes in v2:
- - Relocate struct stx104_iio for the sake of a clearer patch diff
- - Replace FIELD_PREP() and FIELD_GET() with u8_encode_bits() and
-   u8_get_bits()
+ADC sample captures take a certain amount of time to complete after
+initiated; this conversion time range can be anywhere from 5 uSec to
+53.68 Seconds depending on the configuration of the Analog Input Frame
+Timer register. When the conversion is in progress, the ADC Status
+register CNV bit is high. Utilize regmap_read_poll_timeout() to poll
+until the ADC conversion is completed (or timeout if more than 53.68
+Seconds passes).
 
-The regmap API supports IO port accessors so we can take advantage of
-regmap abstractions rather than handling access to the device registers
-directly in the driver.
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+---
+ drivers/iio/addac/stx104.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-A patch to utilize regmap_read_poll_timeout() for polling the ADC
-conversion status is included as follow-up to make the git history
-clearer for this change.
-
-William Breathitt Gray (2):
-  iio: addac: stx104: Migrate to the regmap API
-  iio: addac: stx104: Use regmap_read_poll_timeout() for conversion poll
-
- drivers/iio/addac/Kconfig  |   2 +
- drivers/iio/addac/stx104.c | 434 +++++++++++++++++++++----------------
- 2 files changed, 244 insertions(+), 192 deletions(-)
-
-
-base-commit: 46e33707fe95a21aa9896bded0be97285b779509
+diff --git a/drivers/iio/addac/stx104.c b/drivers/iio/addac/stx104.c
+index 17d8b8e22dc3..a804f23b5619 100644
+--- a/drivers/iio/addac/stx104.c
++++ b/drivers/iio/addac/stx104.c
+@@ -202,15 +202,18 @@ static int stx104_read_raw(struct iio_dev *indio_dev,
+ 
+ 		/* trigger ADC sample capture by writing to the 8-bit
+ 		 * Software Strobe Register and wait for completion
++		 * Range is 5 uSec to 53.68 Seconds in steps of 25 nanoseconds.
++		 * The actual Analog Input Frame Timer time interval is calculated as:
++		 * ai_time_frame_ns = ( AIFT + 1 ) * ( 25 nSec ).
++		 * Where 0 <= AIFT <= 2147483648.
+ 		 */
+ 		err = regmap_write(priv->aio_ctl_map, STX104_SOFTWARE_STROBE, 0);
+ 		if (err)
+ 			return err;
+-		do {
+-			err = regmap_read(priv->aio_ctl_map, STX104_ADC_STATUS, &adc_status);
+-			if (err)
+-				return err;
+-		} while (u8_get_bits(adc_status, STX104_CNV));
++		err = regmap_read_poll_timeout(priv->aio_ctl_map, STX104_ADC_STATUS, adc_status,
++					       !u8_get_bits(adc_status, STX104_CNV), 0, 53687092);
++		if (err)
++			return err;
+ 
+ 		err = regmap_read(priv->aio_data_map, STX104_ADC_DATA, &value);
+ 		if (err)
 -- 
 2.39.2
 
