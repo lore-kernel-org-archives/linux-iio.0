@@ -2,56 +2,87 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D2D9C76195
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Mar 2023 07:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C0D1C76195
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Mar 2023 09:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232742AbjC0Hww (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 27 Mar 2023 03:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
+        id S232661AbjC0JER (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 27 Mar 2023 05:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232389AbjC0Hwv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Mar 2023 03:52:51 -0400
-Received: from mail.lokoho.com (mail.lokoho.com [217.61.105.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047C81986
-        for <linux-iio@vger.kernel.org>; Mon, 27 Mar 2023 00:52:51 -0700 (PDT)
-Received: by mail.lokoho.com (Postfix, from userid 1001)
-        id D32AE841EE; Mon, 27 Mar 2023 08:51:42 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=lokoho.com; s=mail;
-        t=1679903544; bh=Z0N5VlX9/JlryGOL5I747Le9USomZJCRNNGRT3LbbKc=;
-        h=Date:From:To:Subject:From;
-        b=eNq0q7SDOksxH8CfxwO5+kSC8s+S9aCavwiuf3lGUy9S33sI7DkW2njhyfAwERzZF
-         h4vhyQILI27uNTwORsR3CkgxENmOq1IEdaDazbzxjFX9RcwUvFsI4su9B2wXG/Knqc
-         caonNuL79z5thq2krjNT3CtNJ6a2TC1jb+GftKPFUfAm4E7LbVnDcsMbg2+lpTxVAW
-         usYig6XKSeJuBJKL90u+pQvgMIwHpFXzDt2y0+pQSt+koF5AppyCCG2WA7N28IMEfF
-         d6W3DdS2Fvh6mNZRY+s0D87Tlfs28S1m1lzUYvTimU8vPOaGaOcCjat0UzKDxRQb1A
-         9+xqDyEG82QwA==
-Received: by mail.lokoho.com for <linux-iio@vger.kernel.org>; Mon, 27 Mar 2023 07:50:50 GMT
-Message-ID: <20230327074501-0.1.4w.1mg3c.0.t0w69ajfm7@lokoho.com>
-Date:   Mon, 27 Mar 2023 07:50:50 GMT
-From:   "Adam Charachuta" <adam.charachuta@lokoho.com>
-To:     <linux-iio@vger.kernel.org>
-Subject: =?UTF-8?Q?S=C5=82owa_kluczowe_do_wypozycjonowania?=
-X-Mailer: mail.lokoho.com
+        with ESMTP id S232614AbjC0JDf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Mar 2023 05:03:35 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB7CA3A8E
+        for <linux-iio@vger.kernel.org>; Mon, 27 Mar 2023 02:01:51 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id mp3-20020a17090b190300b0023fcc8ce113so11124841pjb.4
+        for <linux-iio@vger.kernel.org>; Mon, 27 Mar 2023 02:01:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mechatrax-com.20210112.gappssmtp.com; s=20210112; t=1679907711;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EqsTkBs6N6moVAGndgySpKN2a5Zh6cCjYlIjBQjIbQk=;
+        b=OAspQ+mNtEjnF5DPf+PUklx9ud9YCxl5EO9S3cilH85NbyMHB2szIRjaHvleaGgTiL
+         BxFr0jHL0xvnFXZSr9nMK7wjvlTyCa1TEs01Bt+fHyk+YXzYWTCD+QRnaPLwV9hRuy2j
+         XoURpLFbhnVuC9/u5QOHyJdz/IjunP/+wBFN55W6ds76BKzf87FK1WJFMeJ7W4wsvvKh
+         NGRVDHwf7IJvTArPUppleuFN+nJMZDPwcoyTkXiita73AkMlHzEEGY+P1b+Jx2YeGDKt
+         zmWhuwjBAPp2JJBEjloySXmnSKPIaBmIY4SzFRiViwp1dTGEu4255OGZyfZkAKnO54jl
+         zwLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679907711;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=EqsTkBs6N6moVAGndgySpKN2a5Zh6cCjYlIjBQjIbQk=;
+        b=sbkGu+6qNd2b68AShc00whYRBiPASszGswGPcd4CpzSgc85nhRaaa05EArpv4Z7Wm4
+         wvhnLurW6/U8M3Zc9KRq80iS7a853LtBE31tS5ORQXwmEFZNDwbzWbE93ivIJZoUqHPf
+         7LSECeV30+iSEfqJYpvtW+8MkQxE8Bdsmd8hzzwk72iHleO2R2A7DayTgSdGP97XIVEO
+         NA1wIbRsEaRhVhhTX8Srlp86F7y85or+/auM+Xn1kH+BNmodCKvTkz/NKmI67DjGErez
+         QT6HBdDLIzC/nEYu0d53YJuUHFYV8k6isD7PL5odR0ljEt3in6cBq02Dp3Rf9aYAmBVC
+         zZmA==
+X-Gm-Message-State: AAQBX9cqPeaPROyuAfwegM2fxIXmtc/m9MhiXhXvm/uCEG580v+HipXE
+        +pxQ+9emepCF7QZzqHCM9/JurcXdEBOeGDGnUMo2HQ==
+X-Google-Smtp-Source: AKy350b3PrgzVh7g0IGsxImabv1+jPWAgKuzUjuvlvhyjri3TLAf0eGYOM19z3ngLKMVIHgy/1vmUEksSPGp2ltCKmE=
+X-Received: by 2002:a17:902:8f8c:b0:1a2:1ec5:e11f with SMTP id
+ z12-20020a1709028f8c00b001a21ec5e11fmr3305343plo.6.1679907711300; Mon, 27 Mar
+ 2023 02:01:51 -0700 (PDT)
 MIME-Version: 1.0
+References: <20230306044737.862-1-honda@mechatrax.com> <6e1fe1015235ae7d7eb9ef2526fd64b6d6d628d7.camel@gmail.com>
+ <CA+Tz-SHQxNzx=eS8ex=3Hps0th5bTY+K1qSWrZqWC8ryv+d0RA@mail.gmail.com>
+In-Reply-To: <CA+Tz-SHQxNzx=eS8ex=3Hps0th5bTY+K1qSWrZqWC8ryv+d0RA@mail.gmail.com>
+From:   Masahiro Honda <honda@mechatrax.com>
+Date:   Mon, 27 Mar 2023 18:01:14 +0900
+Message-ID: <CA+Tz-SFbt2RAz3POMRoTHqz+tNyQOn3UsssZV9EvHUhhR+XJbQ@mail.gmail.com>
+Subject: Re: [PATCH] Fix IRQ issue by setting IRQ_DISABLE_UNLAZY flag
+To:     =?UTF-8?B?TnVubyBTw6E=?= <noname.nuno@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Dzie=C5=84 dobry,
+Hi, Nuno
 
-zapozna=C5=82em si=C4=99 z Pa=C5=84stwa ofert=C4=85 i z przyjemno=C5=9Bci=
-=C4=85 przyznaj=C4=99, =C5=BCe przyci=C4=85ga uwag=C4=99 i zach=C4=99ca d=
-o dalszych rozm=C3=B3w.=20
+> On Mon, Mar 6, 2023 at 10:30=E2=80=AFPM Nuno S=C3=A1 <noname.nuno@gmail.c=
+om> wrote:
+> > Another thing that came to my mind is if the data is totally
+> > garbage/wrong or is it just some outstanding sample?
 
-Pomy=C5=9Bla=C5=82em, =C5=BCe mo=C5=BCe m=C3=B3g=C5=82bym mie=C4=87 sw=C3=
-=B3j wk=C5=82ad w Pa=C5=84stwa rozw=C3=B3j i pom=C3=B3c dotrze=C4=87 z t=C4=
-=85 ofert=C4=85 do wi=C4=99kszego grona odbiorc=C3=B3w. Pozycjonuj=C4=99 =
-strony www, dzi=C4=99ki czemu generuj=C4=85 =C5=9Bwietny ruch w sieci.
+I'm sorry for not answering your question. The data is the same as
+the previous conversion even if the input voltage is changed. At this
+time, a logic analyzer shows that the read operation is performed
+immediately after the conversion is performed. The read operation
+returns the previous conversion result because it is performed before
+the completion of the conversion.
 
-Mo=C5=BCemy porozmawia=C4=87 w najbli=C5=BCszym czasie?
+> > Some research on this also seems to point that we should (need?) call
+> > irq_clear_status_flags(irq, IRQ_DISABLE_UNLAZY) when freeing the IRQ.
 
-
-Pozdrawiam
-Adam Charachuta
+I have understood that I need to call irq_clear_status_flags. However,
+I cannot find a code to free the IRQ in ad_sigma_delta.c and other
+Sigma-Delta ADC driver source files. So, I would like to implement
+only irq_set_status_flags.
