@@ -2,52 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2636C76196
-	for <linux-iio@archiver.kernel.org>; Wed, 29 Mar 2023 00:08:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19873C77B6E
+	for <linux-iio@archiver.kernel.org>; Wed, 29 Mar 2023 00:08:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229961AbjC2AIk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Mar 2023 20:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50108 "EHLO
+        id S229984AbjC2AIl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Mar 2023 20:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbjC2AIj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Mar 2023 20:08:39 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFEDD1738
-        for <linux-iio@vger.kernel.org>; Tue, 28 Mar 2023 17:08:36 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id q16so17978426lfe.10
-        for <linux-iio@vger.kernel.org>; Tue, 28 Mar 2023 17:08:36 -0700 (PDT)
+        with ESMTP id S229967AbjC2AIk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Mar 2023 20:08:40 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13AC71720
+        for <linux-iio@vger.kernel.org>; Tue, 28 Mar 2023 17:08:39 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id x17so18010678lfu.5
+        for <linux-iio@vger.kernel.org>; Tue, 28 Mar 2023 17:08:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680048515;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=R6v+NVQCPV1S0g7YrDwjpX8zVJI8HxRYTaWqAbSLfFQ=;
-        b=Rkwvx+kc9LdiXyqq+gK7o4FaQTAHyMJGU2UJ1WYlcqzB5nFM2ByuNgdyF+Q2gVmkwf
-         wgBr0vTFrPxmKQsbhLwQ7/xGL2j+D/oyvr++p98rUE/NXONDro7hNKzXm76EQ8hjKuG3
-         qNls2QgbPJTVX7NR9nIAawYvQf6Gdh3Hi0AtKw1k0ZAfBQpkZPtL3ciJyDpMDQcNyT2e
-         XwJgOAWE4euiNknTTCDu8o5jBIKVik+YnoMlTe1l/gR5EIASoEZwObxOnodLz+PR+BrW
-         6huL3TRKJa15oiS3ojeJTo8Ceceq5RBiwA0Cck++B7WSCxJmbmedVTf04cnPCDnqgpp3
-         WIxQ==
+        d=linaro.org; s=google; t=1680048517;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yb2W4/4EVDefi48oTiv8C33/IEUZH8vy8TmHypAWaU0=;
+        b=D71zo6wc4l+f3y+gZFLoh2BHM3UeR5RrRclnzPDfjITLARSO2qDFzcNKecrvd5WziC
+         iXlQ75kL0eB7p19rmmV5xdPoaQtFuS7omVImgOINtJZA1akomM7qrBvnqvz1uRFZc/sy
+         UzA6gzpC7RfQnGoR3yTKWhNrQjc4NQi0rJBoXSHgg481S6FH/1t2PgcKDS80gmp2bz7j
+         Qcx8gtyK87KBdsc64Tu2/V8tGsNgymwLp4KApJd8PSxOPXXMdTsq1nxeSkE/phFhxp6v
+         sMyz+m1vufjwiasaF5XdxMA2FzzFvuEP4Y2inps2o/3en3TO8tz/OIl2hYDDTrv/nWAE
+         iJLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680048515;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=R6v+NVQCPV1S0g7YrDwjpX8zVJI8HxRYTaWqAbSLfFQ=;
-        b=YPV3kZiZEimLcnbzyybJ3KIGBi3yBmg9PQC2eU3AEs482gls5LsRC9eMijZ9x7pASp
-         WZmSXt7//8LwoSRfKpcuwBcuQ7FlTD7h69KEPcOd/M0rO5AWS51Oi5+L3h5d3f0fyQn/
-         vB1hYVxJHYqrGf26xbs2kTp2zKSt1ZUF/jfzE78ikhh5V7XpGU5p/xS2NWTtSlNgSaV9
-         ZaPWq7nigSXR9DPdiHT1gsKRpYXagW/l9olLera5UE17Xg9lr9xaDvo7O2tXVLFz5Ug1
-         Kj6TV2L4/1dYTzHfmo6UMgYCZVlL9OF/5nOhKPYccxCHiSL1XTwv8N534Oa88RXRxY9/
-         LZcA==
-X-Gm-Message-State: AAQBX9cySlNxtXUSfn4taAqsROYWv80hI2uE7R3XcgHkhr1eFIx2Fymr
-        CGLy6TP4ve1m1BLzpRYQp0cUHA==
-X-Google-Smtp-Source: AKy350Za28zGAfrrbml0T2NM56Ru3yBouMHlRvEj+r1KVgPudhZFpaMuV5kQg+H4u+ELE38DdDft9w==
-X-Received: by 2002:ac2:5d31:0:b0:4e8:5f9d:13d5 with SMTP id i17-20020ac25d31000000b004e85f9d13d5mr5245146lfb.43.1680048515236;
-        Tue, 28 Mar 2023 17:08:35 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680048517;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yb2W4/4EVDefi48oTiv8C33/IEUZH8vy8TmHypAWaU0=;
+        b=VrZxyvQQqaEyinvZYLLA2ifx5vzIlYIOwlLgn+CJzYMJSM2JOSYi55qKBx/C9SSsVa
+         cquQ+ognl6/gKd+udDBLEFyZaP+ruOyTcm5QVCRv/LUTByyEYY383gZhNW0BkoU8tA3p
+         uk9KA57vuSn68MOMedcTjQ06HKP9lodS/AJCaZa8km9bSOrLmRmk4eKRsl55qBua3npB
+         fpDbJqlvV6cOGdHXrtbdB2CGekcogbD6Pi4EA2g+USMMkPtdAnB01cxQtl1nXhODVwlZ
+         m3Nw58prxmEwQcgmfncl39Id06+LT7jG/wHCvTqtwqObwsJYaE3miCuudHUT5Yqkhpiu
+         xtCA==
+X-Gm-Message-State: AAQBX9ctVwsimgdizd0HZoTQ+GVZMqQu/pMTeE7myzRke12hoQRjKihq
+        8ER9ZwLJhpI0bB5wZYaVYsSPQQ==
+X-Google-Smtp-Source: AKy350aIBr3rqQlvliAiN1jzYp9HDRfFkHjmDGfP3F28pzFbbMrEgI/1JAySKwo5byJNqLNGQ9Q0lQ==
+X-Received: by 2002:a05:6512:143:b0:4e9:9f10:b31d with SMTP id m3-20020a056512014300b004e99f10b31dmr5449561lfo.2.1680048517481;
+        Tue, 28 Mar 2023 17:08:37 -0700 (PDT)
 Received: from umbar.unikie.fi ([192.130.178.91])
-        by smtp.gmail.com with ESMTPSA id p21-20020ac246d5000000b004e8011cbaa0sm5238341lfo.111.2023.03.28.17.08.34
+        by smtp.gmail.com with ESMTPSA id p21-20020ac246d5000000b004e8011cbaa0sm5238341lfo.111.2023.03.28.17.08.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Mar 2023 17:08:34 -0700 (PDT)
+        Tue, 28 Mar 2023 17:08:36 -0700 (PDT)
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <andersson@kernel.org>,
@@ -58,54 +59,120 @@ Cc:     linux-arm-msm@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>,
         devicetree@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Subject: [PATCH 0/6] arm64: dts: qcom: sc8280xp: remove duplication in PMIC declarations
-Date:   Wed, 29 Mar 2023 03:08:27 +0300
-Message-Id: <20230329000833.2507594-1-dmitry.baryshkov@linaro.org>
+Subject: [PATCH 2/6] arm64: dts: qcom: pmk8350: rename pon label
+Date:   Wed, 29 Mar 2023 03:08:29 +0300
+Message-Id: <20230329000833.2507594-3-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230329000833.2507594-1-dmitry.baryshkov@linaro.org>
+References: <20230329000833.2507594-1-dmitry.baryshkov@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The sc8280xp platform uses its own copy of PMIC declarations. This can
-easily end up with the issues that are fixed in the main PMIC include
-file, but are not fixed for sc8280xp (and vice versa). For example
-commit c0ee8e0ba5cc ("arm64: dts: qcom: pmk8350: Use the correct PON
-compatible") changed pmk8350 to use "qcom,pmk8350-pon" compat for the
-PON device, while sc8280xp-pmic.dtsi still has the incorrect
-"qcom,pm8998-pon".
+To reduce a possibility of the conflicts, rename pmk8350's pon_pwrkey
+and pon_resin to contain the PMIC name too.
 
-Another example is pm8280_2_temp_alarm device, which uses interrupts
-tied to SID 2, while having SID 3. This can be easily left unnoticed.
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/pmk8350.dtsi                   | 4 ++--
+ arch/arm64/boot/dts/qcom/sm8350-mtp.dts                 | 8 ++++----
+ arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi | 8 ++++----
+ arch/arm64/boot/dts/qcom/sm8450-sony-xperia-nagara.dtsi | 4 ++--
+ 4 files changed, 12 insertions(+), 12 deletions(-)
 
-Employ a small amount of C preprocessor magic to make
-sc8280xp-pmics.dtsi use standard PMIC include files.
-
-Dmitry Baryshkov (6):
-  dt-bindings: iio: qcom,spmi-adc7-pmk8350.h: include sid into defines
-  arm64: dts: qcom: pmk8350: rename pon label
-  arm64: dts: qcom: use main pmk8350.dtsi for sc8280xp platform
-  arm64: dts: qcom: pm8350: include SID into labels
-  arm64: dts: qcom: sc8280xp*: use pm8350.dtsi
-  arm64: dts: qcom: sc8280xp*: use pm8350c.dtsi and pmr735a.dtsi
-
- .../bindings/iio/adc/qcom,spmi-vadc.yaml      |   2 +-
- .../bindings/thermal/qcom-spmi-adc-tm5.yaml   |   4 +-
- arch/arm64/boot/dts/qcom/pm8350.dtsi          |  31 ++-
- arch/arm64/boot/dts/qcom/pmk8350.dtsi         |  13 +-
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi      |   2 +-
- arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi    |   2 +-
- arch/arm64/boot/dts/qcom/sc8280xp-crd.dts     |  24 +-
- .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    |  52 ++---
- arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi  | 210 ++----------------
- .../boot/dts/qcom/sm7225-fairphone-fp4.dts    |   2 +-
- arch/arm64/boot/dts/qcom/sm8350-mtp.dts       |   8 +-
- .../dts/qcom/sm8350-sony-xperia-sagami.dtsi   |  12 +-
- .../dts/qcom/sm8450-sony-xperia-nagara.dtsi   |   8 +-
- .../dt-bindings/iio/qcom,spmi-adc7-pmk8350.h  |  52 ++---
- 14 files changed, 128 insertions(+), 294 deletions(-)
-
+diff --git a/arch/arm64/boot/dts/qcom/pmk8350.dtsi b/arch/arm64/boot/dts/qcom/pmk8350.dtsi
+index f26fb7d32faf..455ffffb5f5c 100644
+--- a/arch/arm64/boot/dts/qcom/pmk8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/pmk8350.dtsi
+@@ -25,14 +25,14 @@ pmk8350_pon: pon@1300 {
+ 			reg = <0x1300>, <0x800>;
+ 			reg-names = "hlos", "pbs";
+ 
+-			pon_pwrkey: pwrkey {
++			pmk8350_pon_pwrkey: pwrkey {
+ 				compatible = "qcom,pmk8350-pwrkey";
+ 				interrupts = <PMK8350_SID 0x13 0x7 IRQ_TYPE_EDGE_BOTH>;
+ 				linux,code = <KEY_POWER>;
+ 				status = "disabled";
+ 			};
+ 
+-			pon_resin: resin {
++			pmk8350_pon_resin: resin {
+ 				compatible = "qcom,pmk8350-resin";
+ 				interrupts = <PMK8350_SID 0x13 0x6 IRQ_TYPE_EDGE_BOTH>;
+ 				status = "disabled";
+diff --git a/arch/arm64/boot/dts/qcom/sm8350-mtp.dts b/arch/arm64/boot/dts/qcom/sm8350-mtp.dts
+index d21d2aacf201..152601832cbc 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350-mtp.dts
++++ b/arch/arm64/boot/dts/qcom/sm8350-mtp.dts
+@@ -285,17 +285,17 @@ &mpss {
+ 	firmware-name = "qcom/sm8350/modem.mbn";
+ };
+ 
+-&pmk8350_rtc {
++&pmk8350_pon_pwrkey {
+ 	status = "okay";
+ };
+ 
+-&pon_pwrkey {
++&pmk8350_pon_resin {
+ 	status = "okay";
++	linux,code = <KEY_VOLUMEDOWN>;
+ };
+ 
+-&pon_resin {
++&pmk8350_rtc {
+ 	status = "okay";
+-	linux,code = <KEY_VOLUMEDOWN>;
+ };
+ 
+ &qupv3_id_0 {
+diff --git a/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi b/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi
+index 89382ad73133..e28f49e31b9f 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi
+@@ -618,17 +618,17 @@ vol_down_n: vol-down-n-state {
+ 	};
+ };
+ 
+-&pmk8350_rtc {
++&pmk8350_pon_pwrkey {
+ 	status = "okay";
+ };
+ 
+-&pon_pwrkey {
++&pmk8350_pon_resin {
+ 	status = "okay";
++	linux,code = <KEY_VOLUMEUP>;
+ };
+ 
+-&pon_resin {
++&pmk8350_rtc {
+ 	status = "okay";
+-	linux,code = <KEY_VOLUMEUP>;
+ };
+ 
+ &qupv3_id_0 {
+diff --git a/arch/arm64/boot/dts/qcom/sm8450-sony-xperia-nagara.dtsi b/arch/arm64/boot/dts/qcom/sm8450-sony-xperia-nagara.dtsi
+index 67538b5a557e..99e9b776b93d 100644
+--- a/arch/arm64/boot/dts/qcom/sm8450-sony-xperia-nagara.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8450-sony-xperia-nagara.dtsi
+@@ -684,11 +684,11 @@ &pmk8350_gpios {
+ 			  "PMK8350_OPTION";
+ };
+ 
+-&pon_pwrkey {
++&pmk8350_pon_pwrkey {
+ 	status = "okay";
+ };
+ 
+-&pon_resin {
++&pmk8350_pon_resin {
+ 	linux,code = <KEY_VOLUMEUP>;
+ 	status = "okay";
+ };
 -- 
 2.30.2
 
