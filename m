@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4EEC6FD18
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E9BC77B75
 	for <linux-iio@archiver.kernel.org>; Wed, 29 Mar 2023 00:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229784AbjC2AIo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Mar 2023 20:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50268 "EHLO
+        id S229983AbjC2AIp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Mar 2023 20:08:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229988AbjC2AIm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Mar 2023 20:08:42 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249151720
+        with ESMTP id S229765AbjC2AIn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Mar 2023 20:08:43 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0DE1738
         for <linux-iio@vger.kernel.org>; Tue, 28 Mar 2023 17:08:41 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id h25so17991643lfv.6
+Received: by mail-lf1-x129.google.com with SMTP id c29so18014787lfv.3
         for <linux-iio@vger.kernel.org>; Tue, 28 Mar 2023 17:08:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680048519;
+        d=linaro.org; s=google; t=1680048521;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Anp0yj4hrP2BGkDafjXptqjvHet/PfY+NJdrlzSWHIQ=;
-        b=J+4nUbY4ebvjmG7lpW5adDKr1N7DvYrWZyxu+9VsO8CNnGCsvW6Ox9ZLGhg2rtGjgX
-         YbUYJ+SScDtvs0Nkp0KDIJQzmbpEouSw9RVdvGYsCqd1wMUUBRtwh1Z7PCCG4bdpfeER
-         asUxDBm8IDTbdx7YDiwmudYI1rlsGdDA49DyJDGeFSA4L0+vDlwAM+YuiHun5diMq9JJ
-         xCOXx4vW/SN4J2ssP8WN6d7Az+0nOUSSFyHfgP8JcyllTJXCAdc2PHf8zHOOnRNsXR3m
-         VdhueqXP9P4dknKBTAK41bbBNoKwSgDWe4XvZXQLe07899ZLMwMlN6mF7WmkeZ/KLnh/
-         Tybg==
+        bh=Ebf7jyLJf0YeFfOywV30tQ3Yu3KMKIOaI0KbggP0I44=;
+        b=fpDNoe37hld0GXJbbw6UMapmDlKUTjH3G/UFe0O+iDb8qFCa4jRRIl2tEqTYLbSUQ7
+         DM1XVGjDgNSbgM+kpz6I2jgFc9DL1CwqBkhem7aEW08WWhaWoVvMT0UMdNZYElI2OwFj
+         Y5vuAL1bzjdJOD1vr7VWWsRSD5Udg7eVKsNnU6inMM5uNnZ4y9+e89HGei/fWjxEDSF7
+         i45XpB3teDhsxzROXVpKCEplzek4ZLkc6eo39hPEAxgcpL2DU4NS6lDfJjbyzdUnUI1I
+         8n/Kp+f5VCRNpX2smqZDlnDxM3FL8RuUnzVD8RQU+bP1WVFjRo2TEt7zQBQ+VjreCZ9L
+         bPfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680048519;
+        d=1e100.net; s=20210112; t=1680048521;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Anp0yj4hrP2BGkDafjXptqjvHet/PfY+NJdrlzSWHIQ=;
-        b=vn6Dqn7SpFwg2F6eRBYOli5nTFYf25/8aR4Zz4MX7UXbfb+eiEAZ0neHc25STU6dJK
-         wdb/s9igu7LVMB7EfsVKiCzrASOUiysJUqCedj3ug8ZJfLi6ZLptLdJXoBBn0eGeSkp3
-         ZQiYW5EBgEL4UyAjY6ATh/fKaogf2TZTWOheFT4u/E5ZixN93pgEbbUYFSIyBazSEAdk
-         05Ym4vYyukDsCV7qYHXM2QGxX2nRrdpJfk/x2LhaUOEhSfecyBIvU0B7xl5seeimPhub
-         gtqhWqcCHIL4MLfYNat0uS4ZcpOglBWfu5iVWMX6bUnLPp6lpj/Jr5UhNOyx8teLOW8h
-         3vaQ==
-X-Gm-Message-State: AAQBX9fzfUNVskSoZc13/8qEj+/65iMQNESqYwKzb3HJT3kzq4M7qYDS
-        ShBVurJNAuXJkp9Ee3HQuFd+7g==
-X-Google-Smtp-Source: AKy350YXr+yiWgQVyLFhE/utxU0M7JhVdvyIcNKMVJDA4DiU4YX4oTa0VPXxvej1pPI6NmUhV4T/Eg==
-X-Received: by 2002:ac2:442a:0:b0:4ea:e68c:91bc with SMTP id w10-20020ac2442a000000b004eae68c91bcmr5421354lfl.18.1680048519533;
-        Tue, 28 Mar 2023 17:08:39 -0700 (PDT)
+        bh=Ebf7jyLJf0YeFfOywV30tQ3Yu3KMKIOaI0KbggP0I44=;
+        b=bBVSLE1DhOVWVcTztTZjfTfj3uRv66JmbogxoQWN+s84qclzXwRZFvlCQfoJxSE/Rs
+         O50JtM4TqD9OPOiYJHsSpl84Q8T0qAuyT4QYQDgI4SN9svIc9hH9Z6m0ZNuSwmmks3xo
+         GiIyDin36SYcWcu75ZzztdjjGJwLfZs3wp6ZuJERCQozJ149Ihm3DI0Gg7oHzvZqE/qX
+         3K5bq/4OLpMP79fkLfruIcV7593VAqTHuN4eMGci7RaHeMNXckxhOgNz1ORx7lx+6qTX
+         WL7ji96J/8lhAYEe+xdt2sc2u7NhrPs5PwfWZpM5givOxS+nSgvHk8SwwriPeVHt4zuR
+         s1hg==
+X-Gm-Message-State: AAQBX9cT32fywuGityhu7DzhdLoAK455sMgTjMv7tvZuoMX3Q1Ffn2z8
+        d/bHBkD9aB2RtoCcd+zT6QjyBE3NZ7EgzYAd8w0=
+X-Google-Smtp-Source: AKy350Y/2LQyLvqfj8TEXfojvFP6bCipVPpkwxs4RmfJABUBSMk7uf2ZuaVRC85iF6aENDARp0e1zA==
+X-Received: by 2002:ac2:5519:0:b0:4de:e802:b7e3 with SMTP id j25-20020ac25519000000b004dee802b7e3mr5071162lfk.19.1680048521127;
+        Tue, 28 Mar 2023 17:08:41 -0700 (PDT)
 Received: from umbar.unikie.fi ([192.130.178.91])
-        by smtp.gmail.com with ESMTPSA id p21-20020ac246d5000000b004e8011cbaa0sm5238341lfo.111.2023.03.28.17.08.38
+        by smtp.gmail.com with ESMTPSA id p21-20020ac246d5000000b004e8011cbaa0sm5238341lfo.111.2023.03.28.17.08.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Mar 2023 17:08:38 -0700 (PDT)
+        Tue, 28 Mar 2023 17:08:40 -0700 (PDT)
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <andersson@kernel.org>,
@@ -59,9 +59,9 @@ Cc:     linux-arm-msm@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>,
         devicetree@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Subject: [PATCH 4/6] arm64: dts: qcom: pm8350: include SID into labels
-Date:   Wed, 29 Mar 2023 03:08:31 +0300
-Message-Id: <20230329000833.2507594-5-dmitry.baryshkov@linaro.org>
+Subject: [PATCH 6/6] arm64: dts: qcom: sc8280xp*: use pm8350c.dtsi and pmr735a.dtsi
+Date:   Wed, 29 Mar 2023 03:08:33 +0300
+Message-Id: <20230329000833.2507594-7-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230329000833.2507594-1-dmitry.baryshkov@linaro.org>
 References: <20230329000833.2507594-1-dmitry.baryshkov@linaro.org>
@@ -71,134 +71,141 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The platform can use several instances of PM8350 PMIC. Include SID into
-all the labels to simplify such platforms configuration.
+Stop duplicating declarations of pm8350c and pmr735a PMICs, use existing
+files to prevent possible future issues.
 
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/pm8350.dtsi          | 31 +++++++++++++------
- .../dts/qcom/sm8350-sony-xperia-sagami.dtsi   |  4 +--
- .../dts/qcom/sm8450-sony-xperia-nagara.dtsi   |  4 +--
- 3 files changed, 26 insertions(+), 13 deletions(-)
+ arch/arm64/boot/dts/qcom/sc8280xp-crd.dts     |  6 +--
+ .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    |  6 +--
+ arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi  | 51 ++-----------------
+ 3 files changed, 11 insertions(+), 52 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/pm8350.dtsi b/arch/arm64/boot/dts/qcom/pm8350.dtsi
-index 2dfeb99300d7..f1ef242760f2 100644
---- a/arch/arm64/boot/dts/qcom/pm8350.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8350.dtsi
-@@ -6,21 +6,30 @@
- #include <dt-bindings/interrupt-controller/irq.h>
- #include <dt-bindings/spmi/spmi.h>
+diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+index 58a14c39633b..aabdacc15aab 100644
+--- a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
++++ b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+@@ -24,7 +24,7 @@ aliases {
  
-+/* (Sadly) this PMIC can be configured to be at different SIDs */
-+#ifndef PM8350_SID
-+	#define PM8350_SID 1
-+#endif
-+
-+#define __LABEL(pmic, sid, name) pmic ## _ ## sid ## _ ## name
-+#define _LABEL(pmic, sid, name) __LABEL(pmic, sid, name)
-+#define LABEL(name) _LABEL(pm8350, PM8350_SID, name)
-+
- / {
- 	thermal-zones {
--		pm8350_thermal: pm8350c-thermal {
-+		LABEL(thermal): pm8350c-thermal {
- 			polling-delay-passive = <100>;
- 			polling-delay = <0>;
--			thermal-sensors = <&pm8350_temp_alarm>;
-+			thermal-sensors = <&LABEL(temp_alarm)>;
+ 	backlight: backlight {
+ 		compatible = "pwm-backlight";
+-		pwms = <&pmc8280c_lpg 3 1000000>;
++		pwms = <&pm8350c_pwm 3 1000000>;
+ 		enable-gpios = <&pm8350_1_gpios 8 GPIO_ACTIVE_HIGH>;
+ 		power-supply = <&vreg_edp_bl>;
  
- 			trips {
--				pm8350_trip0: trip0 {
-+				LABEL(trip0): trip0 {
- 					temperature = <95000>;
- 					hysteresis = <0>;
- 					type = "passive";
- 				};
- 
--				pm8350_crit: pm8350c-crit {
-+				LABEL(crit): pm8350c-crit {
- 					temperature = <115000>;
- 					hysteresis = <0>;
- 					type = "critical";
-@@ -33,25 +42,29 @@ pm8350_crit: pm8350c-crit {
- &spmi_bus {
- 	pm8350: pmic@1 {
- 		compatible = "qcom,pm8350", "qcom,spmi-pmic";
--		reg = <0x1 SPMI_USID>;
-+		reg = <PM8350_SID SPMI_USID>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 
--		pm8350_temp_alarm: temp-alarm@a00 {
-+		LABEL(temp_alarm): temp-alarm@a00 {
- 			compatible = "qcom,spmi-temp-alarm";
- 			reg = <0xa00>;
--			interrupts = <0x1 0xa 0x0 IRQ_TYPE_EDGE_BOTH>;
-+			interrupts = <PM8350_SID 0xa 0x0 IRQ_TYPE_EDGE_BOTH>;
- 			#thermal-sensor-cells = <0>;
- 		};
- 
--		pm8350_gpios: gpio@8800 {
-+		LABEL(gpios): gpio@8800 {
- 			compatible = "qcom,pm8350-gpio", "qcom,spmi-gpio";
- 			reg = <0x8800>;
- 			gpio-controller;
--			gpio-ranges = <&pm8350_gpios 0 0 10>;
-+			gpio-ranges = <&LABEL(gpios) 0 0 10>;
- 			#gpio-cells = <2>;
- 			interrupt-controller;
- 			#interrupt-cells = <2>;
- 		};
- 	};
- };
-+
-+#undef LABEL
-+#undef _LABEL
-+#undef __LABEL
-diff --git a/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi b/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi
-index e28f49e31b9f..5c09b1d8881b 100644
---- a/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi
-@@ -72,7 +72,7 @@ key-camera-snapshot {
- 
- 		key-google-assist {
- 			label = "Google Assistant Key";
--			gpios = <&pm8350_gpios 9 GPIO_ACTIVE_LOW>;
-+			gpios = <&pm8350_1_gpios 9 GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_LEFTMETA>;
- 			debounce-interval = <15>;
- 			linux,can-disable;
-@@ -564,7 +564,7 @@ &mpss {
- 	firmware-name = "qcom/sm8350/Sony/sagami/modem.mbn";
- };
- 
--&pm8350_gpios {
-+&pm8350_1_gpios {
- 	gpio-line-names = "ASSIGN1_THERM", /* GPIO_1 */
- 			  "LCD_ID",
- 			  "SDR_MMW_THERM",
-diff --git a/arch/arm64/boot/dts/qcom/sm8450-sony-xperia-nagara.dtsi b/arch/arm64/boot/dts/qcom/sm8450-sony-xperia-nagara.dtsi
-index 99e9b776b93d..d90e3fedb742 100644
---- a/arch/arm64/boot/dts/qcom/sm8450-sony-xperia-nagara.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8450-sony-xperia-nagara.dtsi
-@@ -56,7 +56,7 @@ key-camera-snapshot {
- 		key-volume-down {
- 			label = "Volume Down";
- 			linux,code = <KEY_VOLUMEDOWN>;
--			gpios = <&pm8350_gpios 6 GPIO_ACTIVE_LOW>;
-+			gpios = <&pm8350_1_gpios 6 GPIO_ACTIVE_LOW>;
- 			debounce-interval = <15>;
- 			linux,can-disable;
- 			wakeup-source;
-@@ -622,7 +622,7 @@ &pcie0_phy {
+@@ -555,7 +555,7 @@ &pcie4_phy {
  	status = "okay";
  };
  
--&pm8350_gpios {
-+&pm8350_1_gpios {
- 	gpio-line-names = "ASSIGN1_THERM", /* GPIO_1 */
- 			  "LCD_ID",
- 			  "SDR_MMW_THERM",
+-&pmc8280c_lpg {
++&pm8350c_pwm {
+ 	status = "okay";
+ };
+ 
+@@ -710,7 +710,7 @@ wwan_sw_en: wwan-sw-en-state {
+ 	};
+ };
+ 
+-&pmc8280c_gpios {
++&pm8350c_gpios {
+ 	edp_bl_pwm: edp-bl-pwm-state {
+ 		pins = "gpio8";
+ 		function = "func1";
+diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+index 023ccb7725ef..7e589e5f6a2e 100644
+--- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
++++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+@@ -54,7 +54,7 @@ wcd938x: audio-codec {
+ 
+ 	backlight: backlight {
+ 		compatible = "pwm-backlight";
+-		pwms = <&pmc8280c_lpg 3 1000000>;
++		pwms = <&pm8350c_pwm 3 1000000>;
+ 		enable-gpios = <&pm8350_1_gpios 8 GPIO_ACTIVE_HIGH>;
+ 		power-supply = <&vreg_edp_bl>;
+ 
+@@ -725,7 +725,7 @@ &pcie4_phy {
+ 	status = "okay";
+ };
+ 
+-&pmc8280c_lpg {
++&pm8350c_pwm {
+ 	status = "okay";
+ };
+ 
+@@ -1172,7 +1172,7 @@ wwan_sw_en: wwan-sw-en-state {
+ 	};
+ };
+ 
+-&pmc8280c_gpios {
++&pm8350c_gpios {
+ 	edp_bl_pwm: edp-bl-pwm-state {
+ 		pins = "gpio8";
+ 		function = "func1";
+diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
+index 505bb8f9a13c..a37fe4b1458c 100644
+--- a/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
+@@ -15,53 +15,12 @@
+ #include "pm8350.dtsi"
+ #undef PM8350_SID
+ 
++/* SID 2 */
++#include "pm8350c.dtsi"
++
+ #define PM8350_SID 3
+ #include "pm8350.dtsi"
+ #undef PM8350_SID
+ 
+-&spmi_bus {
+-	pmc8280c: pmic@2 {
+-		compatible = "qcom,pm8350c", "qcom,spmi-pmic";
+-		reg = <0x2 SPMI_USID>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		pmc8280c_gpios: gpio@8800 {
+-			compatible = "qcom,pm8350c-gpio", "qcom,spmi-gpio";
+-			reg = <0x8800>;
+-			gpio-controller;
+-			gpio-ranges = <&pmc8280c_gpios 0 0 9>;
+-			#gpio-cells = <2>;
+-			interrupt-controller;
+-			#interrupt-cells = <2>;
+-		};
+-
+-		pmc8280c_lpg: pwm {
+-			compatible = "qcom,pm8350c-pwm";
+-
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-
+-			#pwm-cells = <2>;
+-
+-			status = "disabled";
+-		};
+-	};
+-
+-	pmr735a: pmic@4 {
+-		compatible = "qcom,pmr735a", "qcom,spmi-pmic";
+-		reg = <0x4 SPMI_USID>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		pmr735a_gpios: gpio@8800 {
+-			compatible = "qcom,pmr735a-gpio", "qcom,spmi-gpio";
+-			reg = <0x8800>;
+-			gpio-controller;
+-			gpio-ranges = <&pmr735a_gpios 0 0 4>;
+-			#gpio-cells = <2>;
+-			interrupt-controller;
+-			#interrupt-cells = <2>;
+-		};
+-	};
+-};
++/* SID 4 */
++#include "pmr735a.dtsi"
 -- 
 2.30.2
 
