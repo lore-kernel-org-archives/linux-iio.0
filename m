@@ -2,177 +2,102 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E09C76196
-	for <linux-iio@archiver.kernel.org>; Sat,  1 Apr 2023 09:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E33EAC761AF
+	for <linux-iio@archiver.kernel.org>; Sat,  1 Apr 2023 12:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229676AbjDAJmV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 1 Apr 2023 05:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54982 "EHLO
+        id S229770AbjDAMGf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 1 Apr 2023 08:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbjDAJmU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Apr 2023 05:42:20 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B07D503
-        for <linux-iio@vger.kernel.org>; Sat,  1 Apr 2023 02:42:19 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id h17so24701022wrt.8
-        for <linux-iio@vger.kernel.org>; Sat, 01 Apr 2023 02:42:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680342137;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Fu9gPLfW7KtEv2IIXvaOXu6pnvnnIoGSqbS5YRQSMzA=;
-        b=ucK0Cs/61lk20Ig8uaid8/nFHg/p8O1F9ptRB99lJXNPHCCkL6emOD9PdVgrHSPI2+
-         ZS25kl5VhzjR3qpLixn5UWt7LdllMyYcIF/bCdYrXmRRd6Rxocg2l1ZeRzY3aOtcMaWT
-         XHb25UeW++5WBKdRRG8uvByqoqnzCdcKQfvz6RR7Z0Nqm5A4h27XeV6WPB1mbvgiY+2U
-         zp98QeXst9VUm/uZEurKOyiQmTedV24uHTRVGFl67pUqxE89EyvfJa/YUbddEzgK6pYs
-         +hxOkpWzrL+yaiLKIMDnNWcH+19dt4rg1nY0dZq5wvjkWAC3PVfLA/+5C+d5GKUlDdw+
-         XNJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680342137;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Fu9gPLfW7KtEv2IIXvaOXu6pnvnnIoGSqbS5YRQSMzA=;
-        b=7Q713yey1BTznRw5N1feTZSt7sPWBp0hTUB20+QBT75sgQl/H9gBGcrJ67LR4VVf0i
-         BvQGZlas47sFFDF2J3BxiYSXKQTO6C1cRIlWKKyBUa4GrcAsCAB8Sgu9twLw+9PxMAyd
-         M5rk0P7MddBFMxhv7MMRVeK2BJyT7uV808tfUIxBQBf/EoBtg0wd3hxmYxC6IggiF/i4
-         pDesMtUS5lHObD413HLMMF+5JBxGWetOknByPcYC1io+40OAKgJ30kCkJoSK8LmKCsuY
-         NuB9JVBgntbUO58kkG5C945chTdtQDYXrlaBeEoEO7VLPZ7mrNaOt4FddXmIFcSqFlum
-         Boyg==
-X-Gm-Message-State: AAQBX9fJHJDDAKaa7obziiDO0kh95t42UsX096iTNJHJTWDqEFxxs2+7
-        1A3xbVgXjCM04vl0QwRXcdcMsQ==
-X-Google-Smtp-Source: AKy350ZNywWmraefRumCeoc7z8qpk9hbW1aIxktKLZVn7vMJFr6GDtmm5oKw4VPswANZcnL/llP7ow==
-X-Received: by 2002:adf:fd51:0:b0:2ce:adda:f45a with SMTP id h17-20020adffd51000000b002ceaddaf45amr21986074wrs.62.1680342137511;
-        Sat, 01 Apr 2023 02:42:17 -0700 (PDT)
-Received: from [172.50.14.32] (5-226-109-132.static.ip.netia.com.pl. [5.226.109.132])
-        by smtp.gmail.com with ESMTPSA id h14-20020adffd4e000000b002c71a32394dsm4404362wrs.64.2023.04.01.02.42.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 01 Apr 2023 02:42:16 -0700 (PDT)
-Message-ID: <27a1d0f4-3a02-c7fd-36a0-07729a136e20@linaro.org>
-Date:   Sat, 1 Apr 2023 11:42:15 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 1/3] dt-bindings: iio: pressure: Support Honeywell mpr
- sensors
-Content-Language: en-US
+        with ESMTP id S229441AbjDAMGe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Apr 2023 08:06:34 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522A193F7;
+        Sat,  1 Apr 2023 05:06:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680350793; x=1711886793;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=GhN/zLgZPhjtxMWToJxXXsvcAbSsvRGheQVMGCpow7w=;
+  b=bHnXxtjecow8+mruu2cNG0S9yw7pyfRp5OwFbNv8i+HteKW6dSgl8i3x
+   LzgBURD+01a9ktr6zzmyb7tNofDniL9vT5g2BpKoWZ1ZvlE703Z1BmsoJ
+   tK5eymx0Va3op25/a9QECcnAzCTsSuMg1jz4oOEYRKLlYM48U5rbIgGHM
+   wHJFfeCQCnd09EmTIiqiFYbeC8k4N2ylnhqQufOkczXAfk+Y3yyVUbsyA
+   9c8pGJcwamC1RFdHkuU1oZrYD4UHkgKIlr9+doPTEu7jmlIxmuJAX+vdz
+   EARE338GZMbZoFq0E7HPmYbhUq9FPpPCxmA7sVxGiP0VXoi/4ZuRyfUJT
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="427927556"
+X-IronPort-AV: E=Sophos;i="5.98,310,1673942400"; 
+   d="scan'208";a="427927556"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2023 05:06:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="859651603"
+X-IronPort-AV: E=Sophos;i="5.98,310,1673942400"; 
+   d="scan'208";a="859651603"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 01 Apr 2023 05:06:26 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pia01-000MkP-1w;
+        Sat, 01 Apr 2023 12:06:25 +0000
+Date:   Sat, 1 Apr 2023 20:05:35 +0800
+From:   kernel test robot <lkp@intel.com>
 To:     Andreas Klinger <ak@it-klinger.de>, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+Cc:     oe-kbuild-all@lists.linux.dev, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
         Angel Iglesias <ang.iglesiasg@gmail.com>,
         linux-kernel@vger.kernel.org
-References: <ZCf01btsJRXcIOce@arbad>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <ZCf01btsJRXcIOce@arbad>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 2/3] iio: pressure: Honeywell mpr pressure sensor
+Message-ID: <202304011957.pKSWQHyS-lkp@intel.com>
+References: <ZCf085W4XL2PtQf6@arbad>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZCf085W4XL2PtQf6@arbad>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 01/04/2023 11:09, Andreas Klinger wrote:
-> Honeywell mpr is a pressure sensor family. There are many different
-> types with different pressure ranges. The range needs to be set up in
-> the dt. Therefore new properties honeywell,pmin and honeywell,pmax are
-> introduced.
-> 
-> Add dt-bindings.
-> 
-> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
-> ---
->  .../bindings/iio/pressure/honeywell,mpr.yaml  | 74 +++++++++++++++++++
->  1 file changed, 74 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/pressure/honeywell,mpr.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/pressure/honeywell,mpr.yaml b/Documentation/devicetree/bindings/iio/pressure/honeywell,mpr.yaml
-> new file mode 100644
-> index 000000000000..d6fad6f841cf
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/pressure/honeywell,mpr.yaml
-> @@ -0,0 +1,74 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/pressure/honeywell,mpr.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Honeywell mpr pressure sensor
-> +
-> +maintainers:
-> +  - Andreas Klinger <ak@it-klinger.de>
-> +
-> +description: |
-> +  Honeywell pressure sensor of type mpr. This sensor has an I2C and SPI interface. Only the I2C
+Hi Andreas,
 
-Doesn't look wrapped according to Linux coding style (see Coding style).
+I love your patch! Yet something to improve:
 
-> +  interface is implemented.
-> +
-> +  There are many subtypes with different pressure ranges available. Therefore the minimum and
-> +  maximum pressure values of the specific sensor needs to be specified in Pascal.
-> +
-> +  Specifications about the devices can be found at:
-> +    https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/products/sensors/  \
-> +      pressure-sensors/board-mount-pressure-sensors/micropressure-mpr-series/documents/          \
-> +      sps-siot-mpr-series-datasheet-32332628-ciid-172626.pdf
+[auto build test ERROR on jic23-iio/togreg]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Lines are not continued, so drop \
+url:    https://github.com/intel-lab-lkp/linux/commits/Andreas-Klinger/dt-bindings-iio-pressure-Support-Honeywell-mpr-sensors/20230401-171226
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/ZCf085W4XL2PtQf6%40arbad
+patch subject: [PATCH 2/3] iio: pressure: Honeywell mpr pressure sensor
+config: m68k-randconfig-r023-20230401 (https://download.01.org/0day-ci/archive/20230401/202304011957.pKSWQHyS-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/6a49dae45811d8a644c56dc18b6cdbc6ea67df98
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Andreas-Klinger/dt-bindings-iio-pressure-Support-Honeywell-mpr-sensors/20230401-171226
+        git checkout 6a49dae45811d8a644c56dc18b6cdbc6ea67df98
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
 
-> +
-> +properties:
-> +  compatible:
-> +    const: honeywell,mpr
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202304011957.pKSWQHyS-lkp@intel.com/
 
-You need device specific compatible, not some generic one. Rename also
-then the filename (should match the compatible).
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  reset-gpios:
-> +    description:
-> +      Optional GPIO for resetting the device. If not present the device is not resetted.
+>> ERROR: modpost: "__divdi3" [drivers/iio/pressure/mpr.ko] undefined!
 
-Are you sure it is wrapped properly?
-
-> +    maxItems: 1
-> +
-> +  honeywell,pmin:
-> +    description:
-> +      Minimum pressure value the sensor can measure in pascal.
-
-Use standard unit suffix:
-https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/property-units.yaml
-
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +
-> +  honeywell,pmax:
-> +    description:
-> +      Maximum pressure value the sensor can measure in pascal.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-
-Same.
-
-Why these values are suitable for DT? Does it depend on type of sensor
-(thus it is implied from compatible) or on system setup?
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - honeywell,pmin
-> +  - honeywell,pmax
-> +
-
-
-Best regards,
-Krzysztof
-
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
