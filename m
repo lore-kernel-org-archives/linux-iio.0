@@ -2,49 +2,49 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C51C6FD1D
-	for <linux-iio@archiver.kernel.org>; Sat,  1 Apr 2023 13:49:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0946EC76196
+	for <linux-iio@archiver.kernel.org>; Sat,  1 Apr 2023 14:05:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbjDANtw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 1 Apr 2023 09:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37618 "EHLO
+        id S229638AbjDAOFW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 1 Apr 2023 10:05:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230025AbjDANts (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Apr 2023 09:49:48 -0400
+        with ESMTP id S229519AbjDAOFV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Apr 2023 10:05:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3A01C1F9
-        for <linux-iio@vger.kernel.org>; Sat,  1 Apr 2023 06:49:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4790FB45E;
+        Sat,  1 Apr 2023 07:05:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BB6460B5C
-        for <linux-iio@vger.kernel.org>; Sat,  1 Apr 2023 13:49:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87440C433EF;
-        Sat,  1 Apr 2023 13:49:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DEAEA60AD1;
+        Sat,  1 Apr 2023 14:05:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F240DC433D2;
+        Sat,  1 Apr 2023 14:05:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680356987;
-        bh=Bglj6s3hC2A4Jat0iWcKmXuE9VRM7vxUoKqNUIt6jbU=;
+        s=k20201202; t=1680357920;
+        bh=MZ44pijlcbwqZoRd2llf2veubGkW4dMJTr6PLEgL0wY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FSm+hfJpWo8ul/1DnYBxTueeOLd/NMYMH6EEJaOCUqqehZiKxwpJHk+CHJb5Wufyq
-         YrP5YK5XSxelo3mW6RylnbM5JrilmCoadjeoA8hVD/QLQVoSAq/mSQ6ucMKN26nEj3
-         CO4ln81T0tfAqWwwXmV8yN6Y8PHnr5zq20Yhh5UJ9fhfjHkpdLZ+CIyI/lSYGzzV58
-         uMzxuYYx8k1Ha4jG119Da2A+6c4FYh/d1Y6chm7qse61g6C49a6Cl/HwmLy6t8I4AY
-         7dH4pE1YtuzhScKWjNH/+8qX/QeRTGkiCpt4/V5oVaWIhGoBcWpK5vAF8Vg2qsjd8Y
-         kIzzH95oHSnhg==
-Date:   Sat, 1 Apr 2023 15:04:55 +0100
+        b=NqM4nLnKP4gbENhoIgQOGTWfbGeuJSxqlEjtpt7lpmSEqlMKKgrjtINPe1r6mCT5/
+         ZvGhgAcG3krRSPgvEUVYLd2N+XtN0aBY9KqK8vUl421b3aAzPhJIzTDAIkusRLuEoJ
+         dJhERA/0ioZOQki2R8Mvo72rZYIFvPda8jiCGUsAuQZubGPk5zjjf4x4ZAIXBeidm8
+         pxzAFfaVujODZLDbK1glMw0aY2DFfnMWwul3aR/NHwixyNw54mVRgZf9LpLw4Xz2xI
+         nIt6ZLp0c2QWkXU7hTv5UqaymlXLvz8T2QMVp+nFSjSydhPl3qYr/8MqiemhR2Z7NF
+         EIZ6uLm/mQDSg==
+Date:   Sat, 1 Apr 2023 15:20:28 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc:     Sean Nyekjaer <sean@geanix.com>, <lars@metafoo.de>,
-        <alexandre.torgue@foss.st.com>, <nuno.sa@analog.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Olivier Moysan <olivier.moysan@foss.st.com>
-Subject: Re: [Linux-stm32] [PATCH 1/3] iio: adc: stm32-adc: warn if dt uses
- legacy channel config
-Message-ID: <20230401150455.3e426d1e@jic23-huawei>
-In-Reply-To: <56c019d4-832e-17e1-19f8-7d8bd927c1bb@foss.st.com>
-References: <20230327083449.1098174-1-sean@geanix.com>
-        <56c019d4-832e-17e1-19f8-7d8bd927c1bb@foss.st.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Tom Rix <trix@redhat.com>, lars@metafoo.de, nathan@kernel.org,
+        ndesaulniers@google.com, u.kleine-koenig@pengutronix.de,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Chuhong Yuan <hslester96@gmail.com>,
+        Brian Masney <bmasney@redhat.com>,
+        Brian Masney <masneyb@onstation.org>
+Subject: Re: [PATCH] iio: tsl2772: remove unused prox_diode_mask variable
+Message-ID: <20230401152028.30344b48@jic23-huawei>
+In-Reply-To: <ZCGVJOSBjKO3FKD6@smile.fi.intel.com>
+References: <20230327120823.1369700-1-trix@redhat.com>
+        <ZCGVJOSBjKO3FKD6@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -53,64 +53,25 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 30 Mar 2023 17:30:32 +0200
-Fabrice Gasnier <fabrice.gasnier@foss.st.com> wrote:
+On Mon, 27 Mar 2023 16:07:48 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> On 3/27/23 10:34, Sean Nyekjaer wrote:
-> > Since nearly all stm32 dt's are using the legacy adc channel config,
-> > we should warn users about using it.
-> > 
-> > Signed-off-by: Sean Nyekjaer <sean@geanix.com>
-> > ---
-> >  drivers/iio/adc/stm32-adc.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-> > index 1aadb2ad2cab..d8e755d0cc52 100644
-> > --- a/drivers/iio/adc/stm32-adc.c
-> > +++ b/drivers/iio/adc/stm32-adc.c
-> > @@ -1993,6 +1993,8 @@ static int stm32_adc_get_legacy_chan_count(struct iio_dev *indio_dev, struct stm
-> >  	const struct stm32_adc_info *adc_info = adc->cfg->adc_info;
-> >  	int num_channels = 0, ret;
-> >  
-> > +	dev_warn(&indio_dev->dev, "using legacy channel config\n");
-> > +  
+> On Mon, Mar 27, 2023 at 08:08:23AM -0400, Tom Rix wrote:
+> > clang with W=1 reports
+> > drivers/iio/light/tsl2772.c:576:24: error: variable
+> >   'prox_diode_mask' set but not used [-Werror,-Wunused-but-set-variable]
+> >         int i, ret, num_leds, prox_diode_mask;
+> >                               ^
+> > This variable is not used so remove it.  
 > 
-> Hi Sean,
-> 
-> I'd recommend to avoid adding a dev_warn() on a per driver basis, for
-> depreacted DT properties. Still I'm not sure if there's some policy in
-> this area.
-> 
-> IMHO, deprecated properties should be checked by using dt tools
-> (dt_binding_check / dtbs_check or other mean?). But I have no idea if
-> this is going to report warnings and when. Purpose would be to avoid
-> introducing no dts files with these. As commented by Olivier on Patch 3,
-> we've some downstream patches to adopt the generic bindings (not
-> upstream 'yet').
-> 
-> Another downside is regarding backward compatibility. In case an old dtb
-> is used to boot the kernel, as long as there's no functionality loss,
-> I'd advise not to use any warning here. That's a valid use of an old dt.
-> 
-> In all case, thanks for pointing issues (e.g. Patch 2 & 3), regarding
-> this patch, I'd nack adding this warning. Please drop this change if you
-> re-submit or turn this into a dev_dbg().
+> While from the compilation point of view this is a correct fix, I think
+> we need to hear from the author (or interested stakeholders) about this
+> feature. Perhaps it should be enabled / fixed differently.
 > 
 
-Agreed. Better to change to dev_dbg().
+Superficially it looks like this value should have been stored to
+chip->settings.prox_diode
 
-Other two patches look good to me, but will leave a bit more time for others
-to comment before I pick them up.  As a small side note. They are fixes and
-this first patch is not, so they should have been before it in the series
-so I can route them to mainline faster than the non fix.
++CC people who might know...
 
 Jonathan
-
-> Best Regards,
-> Fabrice
-> 
-> >  	ret = device_property_count_u32(dev, "st,adc-channels");
-> >  	if (ret > adc_info->max_channels) {
-> >  		dev_err(&indio_dev->dev, "Bad st,adc-channels?\n");  
-
