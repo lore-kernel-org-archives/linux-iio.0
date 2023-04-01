@@ -2,123 +2,115 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4194DC76196
-	for <linux-iio@archiver.kernel.org>; Sat,  1 Apr 2023 13:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C51C6FD1D
+	for <linux-iio@archiver.kernel.org>; Sat,  1 Apr 2023 13:49:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229889AbjDANn5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 1 Apr 2023 09:43:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35074 "EHLO
+        id S230047AbjDANtw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 1 Apr 2023 09:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbjDANn4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Apr 2023 09:43:56 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB3F1BF5D
-        for <linux-iio@vger.kernel.org>; Sat,  1 Apr 2023 06:43:54 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id n125so30233438ybg.7
-        for <linux-iio@vger.kernel.org>; Sat, 01 Apr 2023 06:43:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680356634;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tP7UpzHOr3tkhr619arFQRlNrfveNlWZwn+YXq6owuk=;
-        b=lBWAZonbtaNgRQcvNRoZwNkSUWGBKIvZtyo98vzy8zpc8cJhMpYhTMnUJ4KzOYX5Ul
-         E3+vkr+HHGM2eiiNCcf+GegpywDRRzirfkRlKaD7KEG8Kh9VfU9wIOJY1BnQKUpyKH/n
-         5XcUsXQ+p3OdSF3/aYoC3XhWOVhyo3X1Y+t6BudhbCTrrGh/eUJRo9aa++G7H7BGEYkU
-         qwABcgSseLVyF0sc3gYPWHn/yKgBBRwakfGAYnt6ZZbI8OUIrLZMTYPF+zdyPNi3pGAS
-         Zcx2IoNWdl71bI6hCtfIfMmTauQoPdwrSa4Z2SjGsWroJwxu6xFF9JNXKC4twR/hSTP6
-         tQMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680356634;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tP7UpzHOr3tkhr619arFQRlNrfveNlWZwn+YXq6owuk=;
-        b=rqmiuZEW4Tyg1l7Fm5Ar/AD8PayZZ5A2yzZRlzM4WlEOe0vndXHVkhmR7EAzXOXCS6
-         0NpyKdk5oJy4wjdrtJGMKxGcTZ5F2iPZL7ZRC/oKGoLVJ5mQwuOJQfj6QuKdrcVN/uod
-         /rXBMWk8a/h2iKotZsIIENN5NDIblhGgK+yaXKFtAlxhvs+tAHhtNOFNID2/vkRtcT3A
-         PAHYWV4TRs/yCkd0gFSnsARraIm3ABfqh98scT6gCf7Nzrdnwl6f5S/EqvXeyaY6z34C
-         +BmiL9EDgKixL0WDaL0u0OxOhVtzl6bfb/NA0yolhB2nYQ4dqAPL7HULZruDiXkOgiZD
-         WybA==
-X-Gm-Message-State: AAQBX9dwU6FegIP/Joy+92X3ml8tfTTlQO3ueeGviD5BcWV4dCWIAqqP
-        OzNSKKcqRRRtCZcCzf1xc3fK5LRCE9/nBsGdfAMxww==
-X-Google-Smtp-Source: AKy350YskRo0KwXK+RPnoX6NndU3tvfL3ndo1tK2qR2YhfdASlwk4sHfJtRTLlpftifhiu34+J7DhA==
-X-Received: by 2002:a25:ad87:0:b0:97d:c4d4:911c with SMTP id z7-20020a25ad87000000b0097dc4d4911cmr32000078ybi.57.1680356634130;
-        Sat, 01 Apr 2023 06:43:54 -0700 (PDT)
-Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id y19-20020a25bb93000000b00b7767ca747bsm1225457ybg.24.2023.04.01.06.43.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Apr 2023 06:43:53 -0700 (PDT)
-Date:   Sat, 1 Apr 2023 09:43:51 -0400
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] iio: addac: stx104: Migrate to the regmap API
-Message-ID: <ZCg1FyfcOvpLrMmH@fedora>
-References: <cover.1679867815.git.william.gray@linaro.org>
- <4ebc1b6b609a086846420954b893e914fd395384.1679867815.git.william.gray@linaro.org>
- <ZCGBIAvr7OQLwNXv@smile.fi.intel.com>
- <20230401145121.1a64a113@jic23-huawei>
+        with ESMTP id S230025AbjDANts (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Apr 2023 09:49:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3A01C1F9
+        for <linux-iio@vger.kernel.org>; Sat,  1 Apr 2023 06:49:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BB6460B5C
+        for <linux-iio@vger.kernel.org>; Sat,  1 Apr 2023 13:49:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87440C433EF;
+        Sat,  1 Apr 2023 13:49:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680356987;
+        bh=Bglj6s3hC2A4Jat0iWcKmXuE9VRM7vxUoKqNUIt6jbU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FSm+hfJpWo8ul/1DnYBxTueeOLd/NMYMH6EEJaOCUqqehZiKxwpJHk+CHJb5Wufyq
+         YrP5YK5XSxelo3mW6RylnbM5JrilmCoadjeoA8hVD/QLQVoSAq/mSQ6ucMKN26nEj3
+         CO4ln81T0tfAqWwwXmV8yN6Y8PHnr5zq20Yhh5UJ9fhfjHkpdLZ+CIyI/lSYGzzV58
+         uMzxuYYx8k1Ha4jG119Da2A+6c4FYh/d1Y6chm7qse61g6C49a6Cl/HwmLy6t8I4AY
+         7dH4pE1YtuzhScKWjNH/+8qX/QeRTGkiCpt4/V5oVaWIhGoBcWpK5vAF8Vg2qsjd8Y
+         kIzzH95oHSnhg==
+Date:   Sat, 1 Apr 2023 15:04:55 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc:     Sean Nyekjaer <sean@geanix.com>, <lars@metafoo.de>,
+        <alexandre.torgue@foss.st.com>, <nuno.sa@analog.com>,
+        <linux-iio@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Olivier Moysan <olivier.moysan@foss.st.com>
+Subject: Re: [Linux-stm32] [PATCH 1/3] iio: adc: stm32-adc: warn if dt uses
+ legacy channel config
+Message-ID: <20230401150455.3e426d1e@jic23-huawei>
+In-Reply-To: <56c019d4-832e-17e1-19f8-7d8bd927c1bb@foss.st.com>
+References: <20230327083449.1098174-1-sean@geanix.com>
+        <56c019d4-832e-17e1-19f8-7d8bd927c1bb@foss.st.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="KbeYdy2842VnTNzT"
-Content-Disposition: inline
-In-Reply-To: <20230401145121.1a64a113@jic23-huawei>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Thu, 30 Mar 2023 17:30:32 +0200
+Fabrice Gasnier <fabrice.gasnier@foss.st.com> wrote:
 
---KbeYdy2842VnTNzT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On 3/27/23 10:34, Sean Nyekjaer wrote:
+> > Since nearly all stm32 dt's are using the legacy adc channel config,
+> > we should warn users about using it.
+> > 
+> > Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+> > ---
+> >  drivers/iio/adc/stm32-adc.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+> > index 1aadb2ad2cab..d8e755d0cc52 100644
+> > --- a/drivers/iio/adc/stm32-adc.c
+> > +++ b/drivers/iio/adc/stm32-adc.c
+> > @@ -1993,6 +1993,8 @@ static int stm32_adc_get_legacy_chan_count(struct iio_dev *indio_dev, struct stm
+> >  	const struct stm32_adc_info *adc_info = adc->cfg->adc_info;
+> >  	int num_channels = 0, ret;
+> >  
+> > +	dev_warn(&indio_dev->dev, "using legacy channel config\n");
+> > +  
+> 
+> Hi Sean,
+> 
+> I'd recommend to avoid adding a dev_warn() on a per driver basis, for
+> depreacted DT properties. Still I'm not sure if there's some policy in
+> this area.
+> 
+> IMHO, deprecated properties should be checked by using dt tools
+> (dt_binding_check / dtbs_check or other mean?). But I have no idea if
+> this is going to report warnings and when. Purpose would be to avoid
+> introducing no dts files with these. As commented by Olivier on Patch 3,
+> we've some downstream patches to adopt the generic bindings (not
+> upstream 'yet').
+> 
+> Another downside is regarding backward compatibility. In case an old dtb
+> is used to boot the kernel, as long as there's no functionality loss,
+> I'd advise not to use any warning here. That's a valid use of an old dt.
+> 
+> In all case, thanks for pointing issues (e.g. Patch 2 & 3), regarding
+> this patch, I'd nack adding this warning. Please drop this change if you
+> re-submit or turn this into a dev_dbg().
+> 
 
-On Sat, Apr 01, 2023 at 02:51:21PM +0100, Jonathan Cameron wrote:
->=20
-> >=20
-> > > +		do {
-> > > +			err =3D regmap_read(priv->aio_ctl_map, STX104_ADC_STATUS, &adc_st=
-atus);
-> > > +			if (err)
-> > > +				return err;
-> > > +		} while (u8_get_bits(adc_status, STX104_CNV)); =20
-> >=20
-> > Hmm... Isn't it a potential infinite loop (e.g., ther hardware / firmwa=
-re
-> > is broken)?
-> >=20
-> > Why not using regmap_read_poll_timeout() (or its atomic variant, depend=
-s on
-> > the case)?
->=20
-> Just to shortcut things as I'm looking at this.
-> That's currently handled in patch 2.  Argument being this is a direct con=
-version
-> of existing code, whereas changing to xxx_poll_timeout() is an improvemen=
-t.
->=20
-> I'm fine with it just being rolled into first patch with a note in the pa=
-tch
-> description though if that works better.
+Agreed. Better to change to dev_dbg().
 
-I'm going to keep it as a separate follow-up patch because introducing a
-timeout is enough of a functional change to risk a regression that
-having it in a dedicated commit makes it easier to revert later if we
-need to.
+Other two patches look good to me, but will leave a bit more time for others
+to comment before I pick them up.  As a small side note. They are fixes and
+this first patch is not, so they should have been before it in the series
+so I can route them to mainline faster than the non fix.
 
-William Breathitt Gray
+Jonathan
 
---KbeYdy2842VnTNzT
-Content-Type: application/pgp-signature; name="signature.asc"
+> Best Regards,
+> Fabrice
+> 
+> >  	ret = device_property_count_u32(dev, "st,adc-channels");
+> >  	if (ret > adc_info->max_channels) {
+> >  		dev_err(&indio_dev->dev, "Bad st,adc-channels?\n");  
 
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZCg1FwAKCRC1SFbKvhIj
-KwfPAQC0qyFGLIKKcxO0aN0oqjFdF6fMtToeQek70VRbNnBA7gEAy9WIVmR1n/LP
-XtuVVyKufI9v+lw3SM0J+9icvaYeLAU=
-=DZ9m
------END PGP SIGNATURE-----
-
---KbeYdy2842VnTNzT--
