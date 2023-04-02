@@ -2,303 +2,119 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20DFEC76196
-	for <linux-iio@archiver.kernel.org>; Sun,  2 Apr 2023 16:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F3AC7619A
+	for <linux-iio@archiver.kernel.org>; Sun,  2 Apr 2023 17:40:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229565AbjDBQqW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 2 Apr 2023 12:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60658 "EHLO
+        id S230113AbjDBRkz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 2 Apr 2023 13:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231179AbjDBQqT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2023 12:46:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E9DFF0A;
-        Sun,  2 Apr 2023 09:46:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F28F0B80ED0;
-        Sun,  2 Apr 2023 16:46:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC1F8C433D2;
-        Sun,  2 Apr 2023 16:46:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680453974;
-        bh=JScdSbLuAeglAAXOasEDFnCC3BNP9i4lO1QkeY31Dfs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GBtcEX+MZOiM8/QH+2MH/kphW1JYP8G1Mbk9bJ9kj6e0pqamzcbtE3tXiXYs8V+pc
-         5UoMSJLJyXLec5RcYvAstZBG79I3LC8Hohq83nQ+Ajvvc0fgi+cjcPUukxmtif5oUl
-         rWwXAqM0624pszMkkT2/L/wbw1fEcgqLXMfsSlfRmrIK6o9r5bf/qk9VaLPybcI3m1
-         4y/gNsJBTP3rx18gQlhSycA5v8JdRlDQcD+BVmVGgUplH/X1y3EApW8pwZYNrMTX1w
-         XPa+RfXp5qdZ45xqW6LH9ZQHj89f1KsinxQFxSSZLznERzntHdnlSDkkVR5Ae0ArSq
-         zuC8Tbv/bWw2Q==
-Date:   Sun, 2 Apr 2023 18:01:23 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Naresh Solanki <naresh.solanki@9elements.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Patrick Rudolph <patrick.rudolph@9elements.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] iio: max597x: Add support for max597x
-Message-ID: <20230402180123.0fc1cfde@jic23-huawei>
-In-Reply-To: <20230328094416.3851801-1-Naresh.Solanki@9elements.com>
-References: <20230328094416.3851801-1-Naresh.Solanki@9elements.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
+        with ESMTP id S229459AbjDBRky (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2023 13:40:54 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519EFCC17
+        for <linux-iio@vger.kernel.org>; Sun,  2 Apr 2023 10:40:52 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-5445009c26bso511622557b3.8
+        for <linux-iio@vger.kernel.org>; Sun, 02 Apr 2023 10:40:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1680457251;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=NJpTsvE1EuL9/USYXCTsI8NfHm4n9LB4JRYujq1u5b8=;
+        b=lIOyUIFZXVU085qpGi3Cz3gY+GJ4NrjN6YPjm6oq9gCAThs3IG45H1VZy/xisolQfc
+         /QqAJZNvEe3cUufI8ec4AwifJnVvZ8pDglYS1mo23C6tTMmNfSCllM5T0816UtUmM74j
+         cnjvM6NZonAR3oyQbksvqoLs1BxXtrS1iA3yX8/G7QO12wfsWjOyj/KWyl613R6RqS+P
+         Afwmo0+nQaOh/iPDwMfPJiYhe1dDQxU9UVqcgYxKSUKsUfqwfjSUHzJ7zwm5ywnhLmtR
+         6R6sBCxkQ4IHzkxFtGQBjeh6H/CFw6liaiKutHmqw2l5sPvBc1KE2UFDhElGBnfnPZfS
+         +YDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680457251;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NJpTsvE1EuL9/USYXCTsI8NfHm4n9LB4JRYujq1u5b8=;
+        b=N+e+tjPHyEg0zya3wdT8TJiTm9vuVjnRSceRfc/3+y9k53HfQk74kD8cGhSJwWKvEW
+         /1HpA4aD6Hdkv31ohjem5BnQj5n3LY6SapSGj6vJo9uH641uVAIWjt0Nz0f91RuIwC8F
+         slrsIjPe5KbV77gq5FeGWdCbrnPghQHTop7jG/eg7+iVlL9SxhuQnjPWIO4qwccC9mbd
+         LJMAgudaU169VHaumVZtHeKswGakUy5gb7LsKYa5HtPr+ONOccCoZY+Wv0G7o1nAG1CW
+         88Cl5ueDsJrVfh4DJwUAXyxhHs84X/R+ofW9sd6CkoHfGrZSsztIFTAq3kTxAkBCTodq
+         Qkyw==
+X-Gm-Message-State: AAQBX9cyuTTPMvGR8xX1FfIvzAUtp2zvzg67DG8kVoBE6EZYrKl0qf9a
+        mbCevfynU5dTHabxmx8h2VcH8w==
+X-Google-Smtp-Source: AKy350Y9pn+fv4dLQtkOD+UCspvVtT89Yf/yzkAotSwBDV23/Hua3fUCMEQ6UFKWB+IuHM+KmJqstQ==
+X-Received: by 2002:a0d:d505:0:b0:541:7193:e136 with SMTP id x5-20020a0dd505000000b005417193e136mr31935308ywd.23.1680457251476;
+        Sun, 02 Apr 2023 10:40:51 -0700 (PDT)
+Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id q65-20020a819944000000b0054601a8399csm2017755ywg.119.2023.04.02.10.40.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 02 Apr 2023 10:40:50 -0700 (PDT)
+Date:   Sun, 2 Apr 2023 10:51:19 -0400
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] iio: addac: stx104: Migrate to the regmap API
+Message-ID: <ZCmWZyEOnfknvSLg@fedora>
+References: <cover.1679867815.git.william.gray@linaro.org>
+ <4ebc1b6b609a086846420954b893e914fd395384.1679867815.git.william.gray@linaro.org>
+ <ZCGBIAvr7OQLwNXv@smile.fi.intel.com>
+ <ZCg6bhkxGKmkMloM@fedora>
+ <20230402174657.55159879@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="yEXAaY2iei/+iClt"
+Content-Disposition: inline
+In-Reply-To: <20230402174657.55159879@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 28 Mar 2023 11:44:14 +0200
-Naresh Solanki <naresh.solanki@9elements.com> wrote:
 
-> From: Patrick Rudolph <patrick.rudolph@9elements.com>
-> 
-> max5970 & max5978 has 10bit ADC for voltage & current
-> monitoring.
-> Use iio framework to expose the same in sysfs.
-> 
-> Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
-> Signed-off-by: Naresh Solanki <Naresh.Solanki@9elements.com>
-> ...
+--yEXAaY2iei/+iClt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
---- not ...
+On Sun, Apr 02, 2023 at 05:46:57PM +0100, Jonathan Cameron wrote:
+>=20
+> > > > +	.wr_table =3D &aio_ctl_wr_table,
+> > > > +	.rd_table =3D &aio_ctl_rd_table,
+> > > > +	.volatile_table =3D &aio_ctl_volatile_table,
+> > > > +	.cache_type =3D REGCACHE_FLAT,
+> > > > +}; =20
+> > >=20
+> > > Do we need regmap lock? =20
+> >=20
+> > I think the regmap lock is opt-out, so I don't think we need to set an
+> > custom lock callback for the regmaps in this driver.
+> >=20
+> > Jonathan, do read_raw() and write_raw() require explicit locking?
+>=20
+> The don't provide their own locking.  Depending on the access pattern the
+> underlying bus locking may be sufficient.  If you have read modify write
+> cycles though you'll want locking at the appropriate level for that
+> which might well be at the level of regmap.
+>=20
+> Jonathan
 
-As I mentioned in my reply to v2 thread (which crossed with this v3)
-I'd like this series to be cc'd to the list and maintainers for Hwmon
-with a cover letter explaining the reasoning for it being an IIO driver
-+ the restrictions that potentially brings.
+If read_raw() can be called concurrently multiple times then we risk
+changing the ADC channel while the analog-to-digital conversion is in
+progress, thus resulting in an incorrect reported value. Looks like
+we'll need an explicit lock for this after all, so I'll create a
+precursor patch addressing that.
 
-A few other comments inline from taking another look.
+William Breathitt Gray
 
-Thanks,
+--yEXAaY2iei/+iClt
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Jonathan
+-----BEGIN PGP SIGNATURE-----
 
+iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZCmWZwAKCRC1SFbKvhIj
+KwOXAQCxIk2C5V1TsQ/IO+hSQKNUJQofrl9yPD5Cj7Hqhm8krAD+LwqxOaNPKZ86
+T4S/v73bD/2MaFkSBaC1sEQcyfSBqA4=
+=jsa1
+-----END PGP SIGNATURE-----
 
-> Changes in V3:
-> - Use bulk read
-> - Remove line split
-> Changes in V2:
-> - Remove fallthrough
-> - Use pdev->dev instead of i2c->dev
-> - Init indio_dev->name based on device type.
-> ---
->  drivers/iio/adc/Kconfig       |  15 ++++
->  drivers/iio/adc/Makefile      |   1 +
->  drivers/iio/adc/max597x-iio.c | 148 ++++++++++++++++++++++++++++++++++
->  3 files changed, 164 insertions(+)
->  create mode 100644 drivers/iio/adc/max597x-iio.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 45af2302be53..69310af5c665 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -735,6 +735,21 @@ config MAX1363
->  	  To compile this driver as a module, choose M here: the module will be
->  	  called max1363.
->  
-> +config MAX597X_IIO
-> +	tristate "Maxim 597x power switch and monitor"
-> +	depends on I2C && OF
-> +	select MFD_MAX597X
-> +	help
-> +	  This driver enables support for the Maxim 5970 & 5978 smart switch
-> +	  and voltage/current monitoring interface using the Industrial I/O
-> +	  (IIO) framework. The Maxim 597x is a power switch and monitor that can
-> +	  provide voltage and current measurements via the I2C bus. Enabling
-> +	  this driver will allow user space applications to read the voltage
-> +	  and current measurements using IIO interfaces.
-> +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called max597x-iio.
-> +
->  config MAX9611
->  	tristate "Maxim max9611/max9612 ADC driver"
->  	depends on I2C
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 36c18177322a..7ec0c2cf7bbb 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -67,6 +67,7 @@ obj-$(CONFIG_MAX11205) += max11205.o
->  obj-$(CONFIG_MAX11410) += max11410.o
->  obj-$(CONFIG_MAX1241) += max1241.o
->  obj-$(CONFIG_MAX1363) += max1363.o
-> +obj-$(CONFIG_MAX597X_IIO) += max597x-iio.o
->  obj-$(CONFIG_MAX9611) += max9611.o
->  obj-$(CONFIG_MCP320X) += mcp320x.o
->  obj-$(CONFIG_MCP3422) += mcp3422.o
-> diff --git a/drivers/iio/adc/max597x-iio.c b/drivers/iio/adc/max597x-iio.c
-> new file mode 100644
-> index 000000000000..f158e49b5a56
-> --- /dev/null
-> +++ b/drivers/iio/adc/max597x-iio.c
-> @@ -0,0 +1,148 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Device driver for IIO in MAX5970 and MAX5978 IC
-> + *
-> + * Copyright (c) 2022 9elements GmbH
-> + *
-> + * Author: Patrick Rudolph <patrick.rudolph@9elements.com>
-> + */
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/mfd/max597x.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
-> +
-> +struct max597x_iio {
-> +	struct regmap *regmap;
-> +	int shunt_micro_ohms[MAX5970_NUM_SWITCHES];
-> +	unsigned int irng[MAX5970_NUM_SWITCHES];
-> +	unsigned int mon_rng[MAX5970_NUM_SWITCHES];
-> +};
-> +
-> +#define MAX597X_ADC_CHANNEL(_idx, _type) {			\
-> +	.type = IIO_ ## _type,					\
-> +	.indexed = 1,						\
-> +	.channel = (_idx),					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-> +			      BIT(IIO_CHAN_INFO_SCALE),		\
-> +	.address = MAX5970_REG_ ## _type ## _L(_idx),		\
-> +}
-> +
-> +static const struct iio_chan_spec max5978_adc_iio_channels[] = {
-> +	MAX597X_ADC_CHANNEL(0, VOLTAGE),
-> +	MAX597X_ADC_CHANNEL(0, CURRENT),
-> +};
-> +
-> +static const struct iio_chan_spec max5970_adc_iio_channels[] = {
-> +	MAX597X_ADC_CHANNEL(0, VOLTAGE),
-> +	MAX597X_ADC_CHANNEL(0, CURRENT),
-> +	MAX597X_ADC_CHANNEL(1, VOLTAGE),
-> +	MAX597X_ADC_CHANNEL(1, CURRENT),
-> +};
-> +
-> +static int max597x_iio_read_raw(struct iio_dev *iio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long info)
-> +{
-> +	int ret;
-> +	struct max597x_iio *data = iio_priv(iio_dev);
-> +	u16 reg_l, reg_h;
-> +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = regmap_bulk_read(data->regmap, chan->address - 1, &reg_l, 2);
-
-This crossed with my reply to the v2 thread.  If reading two separate registers that
-don't directly correspond to a large packed value, read them into an array
-of u8.  Then get the relevant parts from that.
-
-The following use is not endian safe (it won't work on a big endian machine)
-
-> +		if (ret < 0)
-> +			return ret;
-> +		reg_h = reg_l & 0xff;
-> +		reg_l = (reg_l >> 8) & 0xff;
-> +		*val = (reg_h << 2) | (reg_l & 3);
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->address) {
-> +		case MAX5970_REG_CURRENT_L(0):
-> +		case MAX5970_REG_CURRENT_L(1):
-> +			/* in A, convert to mA */
-> +			*val = data->irng[chan->channel] * 1000;
-> +			*val2 = data->shunt_micro_ohms[chan->channel] * ADC_MASK;
-> +			return IIO_VAL_FRACTIONAL;
-> +
-> +		case MAX5970_REG_VOLTAGE_L(0):
-> +		case MAX5970_REG_VOLTAGE_L(1):
-> +			/* in uV, convert to mV */
-> +			*val = data->mon_rng[chan->channel];
-> +			*val2 = ADC_MASK * 1000;
-> +			return IIO_VAL_FRACTIONAL;
-> +		}
-> +
-> +		break;
-> +	}
-> +	return -EINVAL;
-
-I'd prefer this pushed up as a default: in each of the two switch statements.
-Makes it clear to compilers and readers that only listing some case values is
-deliberate.
-
-> +}
-> +
-> +static const struct iio_info max597x_adc_iio_info = {
-> +	.read_raw = &max597x_iio_read_raw,
-> +};
-> +
-> +static int max597x_iio_probe(struct platform_device *pdev)
-> +{
-> +	struct max597x_data *max597x = dev_get_drvdata(pdev->dev.parent);
-> +	struct regmap *regmap = dev_get_regmap(pdev->dev.parent, NULL);
-> +	struct iio_dev *indio_dev;
-> +	struct max597x_iio *priv;
-> +	int ret, i;
-> +
-> +	if (!regmap)
-> +		return -EPROBE_DEFER;
-> +
-> +	if (!max597x || !max597x->num_switches)
-> +		return -EPROBE_DEFER;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*priv));
-> +	if (!indio_dev)
-> +		return dev_err_probe(&pdev->dev, -ENOMEM,
-> +				     "failed to allocate iio device\n");
-> +
-> +	indio_dev->info = &max597x_adc_iio_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	switch (max597x->num_switches) {
-
-Having a value 'num_switches' that maps to a set of enums called _TYPE_ is unusual.
-Perhaps rename it to type.
-
-
-> +	case MAX597x_TYPE_MAX5970:
-> +		indio_dev->channels = max5970_adc_iio_channels;
-> +		indio_dev->num_channels = ARRAY_SIZE(max5970_adc_iio_channels);
-> +		indio_dev->name = "max5970";
-> +		break;
-> +	case MAX597x_TYPE_MAX5978:
-> +		indio_dev->channels = max5978_adc_iio_channels;
-> +		indio_dev->num_channels = ARRAY_SIZE(max5978_adc_iio_channels);
-> +		indio_dev->name = "max5978";
-> +		break;
-> +	}
-> +
-> +	priv = iio_priv(indio_dev);
-> +	priv->regmap = regmap;
-> +	for (i = 0; i < indio_dev->num_channels; i++) {
-> +		priv->irng[i] = max597x->irng[i];
-> +		priv->mon_rng[i] = max597x->mon_rng[i];
-> +		priv->shunt_micro_ohms[i] = max597x->shunt_micro_ohms[i];
-> +	}
-> +
-> +	ret = devm_iio_device_register(&pdev->dev, indio_dev);
-> +	if (ret)
-> +		return dev_err_probe(&pdev->dev, ret, "could not register iio device\n");
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver max597x_iio_driver = {
-> +	.driver = {
-> +		.name = "max597x-iio",
-> +	},
-> +	.probe = max597x_iio_probe,
-> +};
-> +
-> +module_platform_driver(max597x_iio_driver);
-> +
-> +MODULE_AUTHOR("Patrick Rudolph <patrick.rudolph@9elements.com>");
-> +MODULE_DESCRIPTION("MAX5970_hot-swap controller driver");
-> +MODULE_LICENSE("GPL");
-> 
-> base-commit: 368eb79f738a21e16c2bdbcac2444dfa96b01aaa
-
+--yEXAaY2iei/+iClt--
