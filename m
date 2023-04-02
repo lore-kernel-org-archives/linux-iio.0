@@ -2,142 +2,159 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B033C7619A
-	for <linux-iio@archiver.kernel.org>; Sun,  2 Apr 2023 11:55:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A7AC76196
+	for <linux-iio@archiver.kernel.org>; Sun,  2 Apr 2023 16:28:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229503AbjDBLzO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 2 Apr 2023 07:55:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
+        id S230458AbjDBQ2n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 2 Apr 2023 12:28:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbjDBLzN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2023 07:55:13 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1979113F4
-        for <linux-iio@vger.kernel.org>; Sun,  2 Apr 2023 04:55:11 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-544787916d9so501709107b3.13
-        for <linux-iio@vger.kernel.org>; Sun, 02 Apr 2023 04:55:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680436510;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QCb+PvVz9vDjaUXWhXFHA5eliELDec/Jtrdt7VRzzHI=;
-        b=P+CWpB2UIFi7fSl+IhvqqE3HDSFwVgZ3g5oitw7gV4Iw2zlCjzmspx475zX0JXaEv4
-         UBIRKMn+PaS38WH5q/AYJC0FQJWSeYnCOlN4e6pPOYrExnxzxkt/MiNby+G8VC2lSkj2
-         OTIKTgCjCWa7+Rp20UKuhgeme84Pb50kS3qZMeuwIxT+v38Km+/7GZjns44qwrJJYpMD
-         buVJBeMjH3dbBm5Y7jFdGTqw6U4vSSTlgOCttNXMr8+fefXoX1X76agn09SEDCoHbNmL
-         D7j4/To5+q8MPj0hfZQxrB4QT8vYp6IFuMD4Lohk3vLEbcTH+ZT7Ndt6INxABBUJMcBH
-         g+ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680436510;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QCb+PvVz9vDjaUXWhXFHA5eliELDec/Jtrdt7VRzzHI=;
-        b=UWlAeYhQf2WzROHx+NZKGKynn5alD7utFa080uDt6oG5so1CJDZ/4Uz7FP1l2sutcZ
-         mZwq0Q6jxdJpKVGuWmlfOFyNjz1qOlU+nD/UpAmTeDZS1rqVTho2RWTH+HnR6ymyhAfT
-         D5RJJrstNo8l3wBkEmAXcgiDKNZ4ArX6AjevOKjeqo6msLQ1yP/3QZ3RBlfGImkeYexW
-         LI0Lcdsb3Fqex6e93AsnzMBblFFNfixyG6KcAi1Ao35OOKZq5tl46HWMc+HQvu0eoac6
-         vX5BgVaBzEXWRTA6GluTcTs4N0PnHO5aaZDyDtEw7HYcTF7VbuHcJJr5sNAnnkr4pZWb
-         WinA==
-X-Gm-Message-State: AAQBX9cJJ1ZfV5+o7Zf9gUi7jRUtlsZZh8YvBlc4NnqVC8tVhHwDOpnU
-        pc4nTWN+w4J4qyVHIvMXa2CHYLo74X2+9rcv9QpwsQ==
-X-Google-Smtp-Source: AKy350b5CVIF0s9p1uDLO//v8xxaCU59UCLNsAz4bzleOn08Q3r/xLEZFSD+qiYv3wKgQFzHm4Dux3TWxzNRWXM2G7g=
-X-Received: by 2002:a81:7e10:0:b0:52f:184a:da09 with SMTP id
- o16-20020a817e10000000b0052f184ada09mr8060907ywn.2.1680436510167; Sun, 02 Apr
- 2023 04:55:10 -0700 (PDT)
+        with ESMTP id S230246AbjDBQ2n (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2023 12:28:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F46CC38;
+        Sun,  2 Apr 2023 09:28:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B71AB80E8D;
+        Sun,  2 Apr 2023 16:28:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9538DC433EF;
+        Sun,  2 Apr 2023 16:28:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680452919;
+        bh=cuTBAuoULmrxBtyY0st+jaww9kfkYIFHqyfOSXRfx3g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WtXbyvJgxVnQR4eGofeazpC1szyjZW7cMj1/uq0dVaeapUIrHute/RD1pogJez5uA
+         RKjTuHsqwnbkeDU0tWCQJCuT7WvsCe4lZ9RFozZ8mRCV/90nT+Wz4wLiy4ypQ3jqNr
+         xsyRLVQSigcpp3kCuUuuvMc6W/Y9UITbg65MlcL4osQA1Yi6hWCL+Rf+x5G7L5qHpq
+         u0/3hYzDJPuwlhI07lbSsBJ4LZtDLvYlVsQmYaGY37ncXAsbuGoiN0uVfwPo0NNkbZ
+         KmwokFwkxs4V2w3zgOngdaO8E0KOPT7rhylmPJmX4OO89CoelifeuFxQUjZYmNc3EF
+         M/XEPTCC7Pwww==
+Date:   Sun, 2 Apr 2023 17:43:47 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Patrik =?UTF-8?B?RGFobHN0csO2bQ==?= <risca@dalakolonin.se>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        letux-kernel@openphoenux.org, kernel@pyra-handheld.com,
+        pgoudagunta@nvidia.com, hns@goldelico.com, lars@metafoo.de
+Subject: Re: [PATCH 1/3] iio: adc: palmas_gpadc: add support for iio
+ threshold events
+Message-ID: <20230402174347.25e5ff06@jic23-huawei>
+In-Reply-To: <20230401184507.GB2403322@dalakolonin.se>
+References: <20230319223908.108540-1-risca@dalakolonin.se>
+        <20230319223908.108540-2-risca@dalakolonin.se>
+        <20230326175101.0ef2d6ae@jic23-huawei>
+        <20230401184507.GB2403322@dalakolonin.se>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20230401220810.3563708-1-dmitry.baryshkov@linaro.org>
- <20230401220810.3563708-10-dmitry.baryshkov@linaro.org> <127c7d41-b7dc-6c9a-0653-f5bf2a626907@linaro.org>
-In-Reply-To: <127c7d41-b7dc-6c9a-0653-f5bf2a626907@linaro.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Sun, 2 Apr 2023 14:54:59 +0300
-Message-ID: <CAA8EJpqg15KVx+H_29kJO-KfDEN3LFHZCfpfTWM40WMa2PoAXw@mail.gmail.com>
-Subject: Re: [PATCH v2 09/22] arm64: dts: qcom: pmk8350: allow overriding the label
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 2 Apr 2023 at 12:44, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 02/04/2023 00:07, Dmitry Baryshkov wrote:
-> > sc8280xp-pmics.dtsi incorporates a copy of pmk8350, but the dts files
-> > use labels following the markings found in the schematics. Allow
-> > overriding the labels in pmk8350.dtsi.
-> >
-> > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> > ---
-> >  arch/arm64/boot/dts/qcom/pmic-dyn-footer.dtsi | 13 +++++++++
-> >  arch/arm64/boot/dts/qcom/pmic-dyn-header.dtsi | 14 ++++++++++
-> >  arch/arm64/boot/dts/qcom/pmk8350.dtsi         | 28 +++++++++++--------
-> >  3 files changed, 44 insertions(+), 11 deletions(-)
-> >  create mode 100644 arch/arm64/boot/dts/qcom/pmic-dyn-footer.dtsi
-> >  create mode 100644 arch/arm64/boot/dts/qcom/pmic-dyn-header.dtsi
-> >
-> > diff --git a/arch/arm64/boot/dts/qcom/pmic-dyn-footer.dtsi b/arch/arm64/boot/dts/qcom/pmic-dyn-footer.dtsi
-> > new file mode 100644
-> > index 000000000000..1c81269f0783
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/qcom/pmic-dyn-footer.dtsi
-> > @@ -0,0 +1,13 @@
-> > +// SPDX-License-Identifier: BSD-3-Clause
-> > +/*
-> > + * Copyright (c) 2023, Linaro Limited
-> > + */
-> > +
-> > +/* cleanly revert the effects pmic-dyn-header.dtsi */
-> > +
-> > +#undef LABEL
-> > +#undef _LABEL
-> > +#undef __LABEL
->
-> That makes the code less readable.
->
-> > +
-> > +#undef PMIC_SID
-> > +#undef PMIC_LABEL
->
-> And it keeps growing and confusing.
->
-> > diff --git a/arch/arm64/boot/dts/qcom/pmic-dyn-header.dtsi b/arch/arm64/boot/dts/qcom/pmic-dyn-header.dtsi
-> > new file mode 100644
-> > index 000000000000..75f0448568bd
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/qcom/pmic-dyn-header.dtsi
-> > @@ -0,0 +1,14 @@
-> > +// SPDX-License-Identifier: BSD-3-Clause
-> > +/*
-> > + * Copyright (c) 2023, Linaro Limited
-> > + */
-> > +
-> > +/*
-> > + * Preprocessor symbols to assist in describing PMICs which have configurable
-> > + * SID. All effects of this header (or its parameters) must be reverted in
-> > + * pmic-dyn-footer.dtsi.
-> > + */
-> > +
-> > +#define LABEL(name) _LABEL(PMIC_LABEL, name)
-> > +#define _LABEL(pmic, name) __LABEL(pmic, name)
-> > +#define __LABEL(pmic, name) pmic ## _ ## name
->
-> No, defines in DTS should be simple. This makes it ungrepable.
+On Sat, 1 Apr 2023 20:45:07 +0200
+Patrik Dahlstr=C3=B6m <risca@dalakolonin.se> wrote:
 
-I see. I still think that we should remove this duplication. Would you
-prefer for me to define all pmk8350.dtsi labels individually? What
-kind of approach could you possibly propose?
+> On Sun, Mar 26, 2023 at 05:51:01PM +0100, Jonathan Cameron wrote:
+> > On Sun, 19 Mar 2023 23:39:06 +0100
+> > Patrik Dahlstr=C3=B6m <risca@dalakolonin.se> wrote:
+> >  =20
+> > > The palmas gpadc block has support for monitoring up to 2 ADC channels
+> > > and issue an interrupt if they reach past a set threshold. The gpadc
+> > > driver had limited support for this through the adc_wakeup{1,2}_data
+> > > platform data. This however only allow a fixed threshold to be set at
+> > > boot, and would only enable it when entering sleep mode.
+> > >=20
+> > > This change hooks into the IIO events system and exposes to userspace
+> > > the ability to configure threshold values for each channel individual=
+ly,
+> > > but only allow up to 2 such thresholds to be enabled at any given tim=
+e. =20
+> >=20
+> > Add a comment here on what happens if userspace tries to set more than =
+two.
+> > It's not as obvious as you'd think as we have some drivers that use a f=
+ifo
+> > approach so on setting the third event they push the oldest one out. =20
+>=20
+> Will do!
+>=20
+> Is there any preference to any one approach?
 
+Not really.  Userspace should be checking either for an error, or that
+the setup matches what it thinks it configured (after finishing configuring)
+so it should cope with either.
 
--- 
-With best wishes
-Dmitry
+>=20
+> >  =20
+> > >=20
+> > > The logic around suspend and resume had to be adjusted so that user
+> > > space configuration don't get reset on resume. Instead, any configured
+> > > adc auto wakeup gets enabled during probe.
+> > >=20
+> > > Enabling a threshold from userspace will overwrite the adc wakeup
+> > > configuration set during probe. Depending on how you look at it, this
+> > > could also mean we allow userspace to update the adc wakeup threshold=
+s. =20
+> >=20
+> > I'm not sure I read the code right, but can you end up enabling a wakeup
+> > that wasn't previously present?  That seems likely something we should
+> > not be doing after boot.
+> >=20
+> > One option here would be to make it either wakeup is supported, or even=
+ts
+> > are supported.  I suspect no one uses the wakeup anyway so that shouldn=
+'t
+> > matter much (+ you remove it in next patch - do that first and this code
+> > becomes more obvious).
+> >  =20
+>=20
+> My use case is for monitoring a volume wheel connected to one of the ADC
+> inputs of the palmas chip. By off-loading the monitoring to a separate
+> chip, the SoC can go to sleep and only wake up when the wheel is moved.
+>=20
+> It made sense for my use case, but I see your point. IIO events and wakeup
+> triggers should be treated as separate things. I will look into defining
+> the dev_pm_info of the device. Then userspace should be able to control
+> wakeup from /sys/devices/.../power/wakeup.
+>=20
+> However, suspend and resume is a bit flaky on my board so testing might be
+> too. If the board reacts and at least tries to resume should indicate that
+> the code works, no?
+
+That will be fine. Obviously good to debug the other issues with resume tho=
+ugh!
+
+>=20
+> In any case, I will remove the old wakeup code first in v2.
+>=20
+> >=20
+> > A few trivial comments inline. =20
+>=20
+> I will adress them in v2. They all made perfect sense.
+>> > > +	ret =3D devm_add_action_or_reset(&pdev->dev, =20
+> >=20
+> > Add a comment for this to explain why it might need disabling even if
+> > it wasn't enabled above.  I think if you just drop wakeup support in
+> > general that will be fine given we have no known users.
+> >  =20
+>=20
+> I'm one such user.
+Fair enough :)
+
+Jonathan
+
+>=20
+> >  =20
+> > > +				       palmas_disable_wakeup,
+> > > +				       adc);
+> > > +	if (ret)
+> > > +		return ret;
+> > > =20
+> > >  	return 0;
+> > >  } =20
+> >=20
+> >=20
+> >  =20
+
