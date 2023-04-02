@@ -2,119 +2,76 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F3AC7619A
-	for <linux-iio@archiver.kernel.org>; Sun,  2 Apr 2023 17:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5FA5C7619A
+	for <linux-iio@archiver.kernel.org>; Sun,  2 Apr 2023 20:49:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbjDBRkz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 2 Apr 2023 13:40:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53114 "EHLO
+        id S230141AbjDBUtR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 2 Apr 2023 16:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjDBRky (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2023 13:40:54 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519EFCC17
-        for <linux-iio@vger.kernel.org>; Sun,  2 Apr 2023 10:40:52 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-5445009c26bso511622557b3.8
-        for <linux-iio@vger.kernel.org>; Sun, 02 Apr 2023 10:40:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680457251;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=NJpTsvE1EuL9/USYXCTsI8NfHm4n9LB4JRYujq1u5b8=;
-        b=lIOyUIFZXVU085qpGi3Cz3gY+GJ4NrjN6YPjm6oq9gCAThs3IG45H1VZy/xisolQfc
-         /QqAJZNvEe3cUufI8ec4AwifJnVvZ8pDglYS1mo23C6tTMmNfSCllM5T0816UtUmM74j
-         cnjvM6NZonAR3oyQbksvqoLs1BxXtrS1iA3yX8/G7QO12wfsWjOyj/KWyl613R6RqS+P
-         Afwmo0+nQaOh/iPDwMfPJiYhe1dDQxU9UVqcgYxKSUKsUfqwfjSUHzJ7zwm5ywnhLmtR
-         6R6sBCxkQ4IHzkxFtGQBjeh6H/CFw6liaiKutHmqw2l5sPvBc1KE2UFDhElGBnfnPZfS
-         +YDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680457251;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NJpTsvE1EuL9/USYXCTsI8NfHm4n9LB4JRYujq1u5b8=;
-        b=N+e+tjPHyEg0zya3wdT8TJiTm9vuVjnRSceRfc/3+y9k53HfQk74kD8cGhSJwWKvEW
-         /1HpA4aD6Hdkv31ohjem5BnQj5n3LY6SapSGj6vJo9uH641uVAIWjt0Nz0f91RuIwC8F
-         slrsIjPe5KbV77gq5FeGWdCbrnPghQHTop7jG/eg7+iVlL9SxhuQnjPWIO4qwccC9mbd
-         LJMAgudaU169VHaumVZtHeKswGakUy5gb7LsKYa5HtPr+ONOccCoZY+Wv0G7o1nAG1CW
-         88Cl5ueDsJrVfh4DJwUAXyxhHs84X/R+ofW9sd6CkoHfGrZSsztIFTAq3kTxAkBCTodq
-         Qkyw==
-X-Gm-Message-State: AAQBX9cyuTTPMvGR8xX1FfIvzAUtp2zvzg67DG8kVoBE6EZYrKl0qf9a
-        mbCevfynU5dTHabxmx8h2VcH8w==
-X-Google-Smtp-Source: AKy350Y9pn+fv4dLQtkOD+UCspvVtT89Yf/yzkAotSwBDV23/Hua3fUCMEQ6UFKWB+IuHM+KmJqstQ==
-X-Received: by 2002:a0d:d505:0:b0:541:7193:e136 with SMTP id x5-20020a0dd505000000b005417193e136mr31935308ywd.23.1680457251476;
-        Sun, 02 Apr 2023 10:40:51 -0700 (PDT)
-Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id q65-20020a819944000000b0054601a8399csm2017755ywg.119.2023.04.02.10.40.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Apr 2023 10:40:50 -0700 (PDT)
-Date:   Sun, 2 Apr 2023 10:51:19 -0400
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        with ESMTP id S229503AbjDBUtR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2023 16:49:17 -0400
+Received: from smtp.smtpout.orange.fr (smtp-29.smtpout.orange.fr [80.12.242.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5175F30C0
+        for <linux-iio@vger.kernel.org>; Sun,  2 Apr 2023 13:49:15 -0700 (PDT)
+Received: from pop-os.home ([86.243.2.178])
+        by smtp.orange.fr with ESMTPA
+        id j4dRpeQhaB8bjj4dRpk4Bs; Sun, 02 Apr 2023 22:49:12 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 02 Apr 2023 22:49:12 +0200
+X-ME-IP: 86.243.2.178
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] iio: addac: stx104: Migrate to the regmap API
-Message-ID: <ZCmWZyEOnfknvSLg@fedora>
-References: <cover.1679867815.git.william.gray@linaro.org>
- <4ebc1b6b609a086846420954b893e914fd395384.1679867815.git.william.gray@linaro.org>
- <ZCGBIAvr7OQLwNXv@smile.fi.intel.com>
- <ZCg6bhkxGKmkMloM@fedora>
- <20230402174657.55159879@jic23-huawei>
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mike Looijmans <mike.looijmans@topic.nl>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org
+Subject: [PATCH] iio: accel: bmi088: Correctly compute the address of the struct spi_device
+Date:   Sun,  2 Apr 2023 22:49:08 +0200
+Message-Id: <e3dea6f158c936fc3f0186965f4b8edd78241cd6.1680468525.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="yEXAaY2iei/+iClt"
-Content-Disposition: inline
-In-Reply-To: <20230402174657.55159879@jic23-huawei>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+bmi088_regmap_spi_write() is said to be similar to the SPI generic write
+function.
+However, regmap_spi_write() calls to_spi_device() in order to find the
+reference to the "struct spi_device", instead of considering that 'context'
+is already the correct value.
 
---yEXAaY2iei/+iClt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This works because "struct device	dev" is the first entry of
+"struct spi_device".
 
-On Sun, Apr 02, 2023 at 05:46:57PM +0100, Jonathan Cameron wrote:
->=20
-> > > > +	.wr_table =3D &aio_ctl_wr_table,
-> > > > +	.rd_table =3D &aio_ctl_rd_table,
-> > > > +	.volatile_table =3D &aio_ctl_volatile_table,
-> > > > +	.cache_type =3D REGCACHE_FLAT,
-> > > > +}; =20
-> > >=20
-> > > Do we need regmap lock? =20
-> >=20
-> > I think the regmap lock is opt-out, so I don't think we need to set an
-> > custom lock callback for the regmaps in this driver.
-> >=20
-> > Jonathan, do read_raw() and write_raw() require explicit locking?
->=20
-> The don't provide their own locking.  Depending on the access pattern the
-> underlying bus locking may be sufficient.  If you have read modify write
-> cycles though you'll want locking at the appropriate level for that
-> which might well be at the level of regmap.
->=20
-> Jonathan
+Align bmi088_regmap_spi_write() and regmap_spi_write() to be more
+future proof, should "struct spi_device" be shuffled one day.
 
-If read_raw() can be called concurrently multiple times then we risk
-changing the ADC channel while the analog-to-digital conversion is in
-progress, thus resulting in an incorrect reported value. Looks like
-we'll need an explicit lock for this after all, so I'll create a
-precursor patch addressing that.
+Fixes: c19ae6be7555 ("iio: accel: Add support for the Bosch-Sensortec BMI088")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/iio/accel/bmi088-accel-spi.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-William Breathitt Gray
+diff --git a/drivers/iio/accel/bmi088-accel-spi.c b/drivers/iio/accel/bmi088-accel-spi.c
+index ee540edd8412..e3447c277947 100644
+--- a/drivers/iio/accel/bmi088-accel-spi.c
++++ b/drivers/iio/accel/bmi088-accel-spi.c
+@@ -15,7 +15,8 @@
+ 
+ static int bmi088_regmap_spi_write(void *context, const void *data, size_t count)
+ {
+-	struct spi_device *spi = context;
++	struct device *dev = context;
++	struct spi_device *spi = to_spi_device(dev);
+ 
+ 	/* Write register is same as generic SPI */
+ 	return spi_write(spi, data, count);
+-- 
+2.34.1
 
---yEXAaY2iei/+iClt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZCmWZwAKCRC1SFbKvhIj
-KwOXAQCxIk2C5V1TsQ/IO+hSQKNUJQofrl9yPD5Cj7Hqhm8krAD+LwqxOaNPKZ86
-T4S/v73bD/2MaFkSBaC1sEQcyfSBqA4=
-=jsa1
------END PGP SIGNATURE-----
-
---yEXAaY2iei/+iClt--
