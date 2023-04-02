@@ -2,73 +2,112 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA2FCC76196
-	for <linux-iio@archiver.kernel.org>; Sun,  2 Apr 2023 16:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB12C76196
+	for <linux-iio@archiver.kernel.org>; Sun,  2 Apr 2023 16:43:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230379AbjDBQbu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 2 Apr 2023 12:31:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52884 "EHLO
+        id S230494AbjDBQn2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 2 Apr 2023 12:43:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230246AbjDBQbu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2023 12:31:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1A3CC37;
-        Sun,  2 Apr 2023 09:31:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D91B66127C;
-        Sun,  2 Apr 2023 16:31:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03FEBC433EF;
-        Sun,  2 Apr 2023 16:31:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680453108;
-        bh=qJeZ5uDyEeQaZcj4Q81noYNElzTzq/Y3eW1UJP6DIF8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uqQIUBqEnMt25KlGU3fSrHKonEIX2ToZt58RDQj4a3U+scmq69TikS0QNlQI5/OT4
-         rwny0Bw16lLqlbwnQuutBtfE55CQnKp2fJVCpYPIa2Hn71+ZBcI7NQvmtciKVQE3sr
-         r3MyDXnB9BKOO6+wepXSBdGM4XidoMNaPhGa5rXvAOyrfqQYVmQ+n294CpGvHe3Eg2
-         S2mWhetoKMvbgKitlTCPzikANH2sskvAoGC4/xTzEOJCLbdDeDZdJ+CJRg11enE4bZ
-         KeMqkqoid7Flj3fT5EK099ROy6DygZqdfTWFuzUZAxFF2pJheYy8wvrG4yRVT+6Kp3
-         2GHXj9wXhothQ==
-Date:   Sun, 2 Apr 2023 17:46:57 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     William Breathitt Gray <william.gray@linaro.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] iio: addac: stx104: Migrate to the regmap API
-Message-ID: <20230402174657.55159879@jic23-huawei>
-In-Reply-To: <ZCg6bhkxGKmkMloM@fedora>
-References: <cover.1679867815.git.william.gray@linaro.org>
-        <4ebc1b6b609a086846420954b893e914fd395384.1679867815.git.william.gray@linaro.org>
-        <ZCGBIAvr7OQLwNXv@smile.fi.intel.com>
-        <ZCg6bhkxGKmkMloM@fedora>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
+        with ESMTP id S230141AbjDBQn1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2023 12:43:27 -0400
+Received: from pio-pvt-msa3.bahnhof.se (pio-pvt-msa3.bahnhof.se [79.136.2.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5041EB54;
+        Sun,  2 Apr 2023 09:43:22 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by pio-pvt-msa3.bahnhof.se (Postfix) with ESMTP id 3F8483F417;
+        Sun,  2 Apr 2023 18:43:20 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at bahnhof.se
+Authentication-Results: pio-pvt-msa3.bahnhof.se (amavisd-new);
+        dkim=pass (2048-bit key) header.d=dalakolonin.se
+Received: from pio-pvt-msa3.bahnhof.se ([127.0.0.1])
+        by localhost (pio-pvt-msa3.bahnhof.se [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id CtEccJModFEV; Sun,  2 Apr 2023 18:43:19 +0200 (CEST)
+Received: by pio-pvt-msa3.bahnhof.se (Postfix) with ESMTPA id 131903F401;
+        Sun,  2 Apr 2023 18:43:17 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by zimbra.dalakolonin.se (Postfix) with ESMTP id 8B5FE93782;
+        Sun,  2 Apr 2023 16:43:17 +0000 (UTC)
+Received: from zimbra.dalakolonin.se ([127.0.0.1])
+        by localhost (zimbra.dalakolonin.se [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id V3Ezy4A6zUhb; Sun,  2 Apr 2023 16:43:14 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+        by zimbra.dalakolonin.se (Postfix) with ESMTP id D3F909376D;
+        Sun,  2 Apr 2023 16:43:13 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra.dalakolonin.se D3F909376D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dalakolonin.se;
+        s=D374B428-D0A7-11ED-A657-75977B426508; t=1680453793;
+        bh=cgM57hJm5k2oui+gMMCv8ZY471CwtzcndNIPu6989Ds=;
+        h=From:To:Date:Message-Id:MIME-Version;
+        b=mcQyqI7SP0xQ8pJ27+crN8V1MJw2iVrPRhFUnoHUcg9qz4gP3kdPMub7r3XudGyJG
+         rLr9jNtFMELk/97K09AczhdFPhJQ7z7HNGKxj8Z5pn7HEnAXnLazzgANgeX+BhXvlz
+         xWrFivxm8gL8lJz6qyP1J1sIiYF7ML765iKwxxlWKvHOL1VJxYtEtsvloxySLK3mHu
+         X5oG5dmTjXpRWrbCvmxdCuYZmYrbsSEKvNVsS7I52w5vzhvJY+AOEt1U41bN/l0bDI
+         C6oYbiaO/ZbshvLuwQF0qd3Z+gZb8SSPXr+lDymmaH67NNPI9Us/DyGHjVpPomS1mM
+         JGNyCKDIPSS5w==
+X-Virus-Scanned: amavisd-new at dalakolonin.se
+Received: from zimbra.dalakolonin.se ([127.0.0.1])
+        by localhost (zimbra.dalakolonin.se [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id yuFgG64aUGIw; Sun,  2 Apr 2023 16:43:13 +0000 (UTC)
+Received: from rack-server-1.dalakolonin.se (unknown [172.17.0.1])
+        by zimbra.dalakolonin.se (Postfix) with ESMTPSA id 8212393767;
+        Sun,  2 Apr 2023 16:43:13 +0000 (UTC)
+From:   =?UTF-8?q?Patrik=20Dahlstr=C3=B6m?= <risca@dalakolonin.se>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
+        kernel@pyra-handheld.com, pgoudagunta@nvidia.com,
+        hns@goldelico.com, jic23@kernel.org, lars@metafoo.de,
+        linux-omap@vger.kernel.org,
+        =?UTF-8?q?Patrik=20Dahlstr=C3=B6m?= <risca@dalakolonin.se>
+Subject: [PATCH v2 0/7] iio: adc: palmas_gpadc: add iio events
+Date:   Sun,  2 Apr 2023 18:42:40 +0200
+Message-Id: <20230402164247.3089146-1-risca@dalakolonin.se>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+The palmas gpadc block has support for monitoring up to 2 ADC channels
+and issue an interrupt if they reach past a set threshold. This can be
+configured statically with device tree today, but it only gets enabled
+when reaching sleep mode. Also, it doesn't look like anyone is using it.
 
-> > > +	.wr_table = &aio_ctl_wr_table,
-> > > +	.rd_table = &aio_ctl_rd_table,
-> > > +	.volatile_table = &aio_ctl_volatile_table,
-> > > +	.cache_type = REGCACHE_FLAT,
-> > > +};  
-> > 
-> > Do we need regmap lock?  
-> 
-> I think the regmap lock is opt-out, so I don't think we need to set an
-> custom lock callback for the regmaps in this driver.
-> 
-> Jonathan, do read_raw() and write_raw() require explicit locking?
+Instead of this one special case, change the code so userspace can
+configure the ADC channels to their own needs through the iio events
+subsystem. The high and low threshold values can be set for every
+channel, but only 2 thresholds can be enabled at a time. Trying to
+enable more than 2 thresholds will result in an error.
 
-The don't provide their own locking.  Depending on the access pattern the
-underlying bus locking may be sufficient.  If you have read modify write
-cycles though you'll want locking at the appropriate level for that
-which might well be at the level of regmap.
+The configured thresholds will wake up the system from sleep mode if
+wakeup is enabled in /sys/devices/.../power/wakeup.
 
-Jonathan
+The old platform data was removed.
+
+Thresholds, events, and wakeup were tested on omap5-uevm board. It wakes
+up from sleep mode when wakeup is enabled and a threshold is passed. A
+userspace tool for monitoring events and adjusting thresholds can be
+found at [3].
+
+Patrik Dahlstr=C3=B6m (7):
+  iio: adc: palmas: remove adc_wakeupX_data
+  iio: adc: palmas: replace "wakeup" with "event"
+  iio: adc: palmas: use iio_event_direction for threshold polarity
+  iio: adc: palmas: move eventX_enable into palmas_adc_event
+  iio: adc: palmas: always reset events on unload
+  iio: adc: palmas: add support for iio threshold events
+  iio: adc: palmas: don't alter event config on suspend/resume
+
+ drivers/iio/adc/palmas_gpadc.c | 550 +++++++++++++++++++++++++++------
+ include/linux/mfd/palmas.h     |   8 -
+ 2 files changed, 455 insertions(+), 103 deletions(-)
+
+
+base-commit: 37fd83916da2e4cae03d350015c82a67b1b334c4
+prerequisite-patch-id: 9b1f55610800b91b721d042bf7f33b58179237d1
+prerequisite-patch-id: b0418c707db13f514400956596e9ebe91c25bba0
+--=20
+2.25.1
+
