@@ -2,110 +2,84 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF156C76188
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Apr 2023 17:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E840C77B70
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Apr 2023 18:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233149AbjDCR2j (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 3 Apr 2023 13:28:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34168 "EHLO
+        id S232805AbjDCS1j (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 3 Apr 2023 14:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233109AbjDCR2i (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Apr 2023 13:28:38 -0400
-Received: from smtp.smtpout.orange.fr (smtp-30.smtpout.orange.fr [80.12.242.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732CF198A
-        for <linux-iio@vger.kernel.org>; Mon,  3 Apr 2023 10:28:35 -0700 (PDT)
-Received: from [192.168.1.18] ([86.243.2.178])
-        by smtp.orange.fr with ESMTPA
-        id jNynpkUGwB8bjjNyopm0fW; Mon, 03 Apr 2023 19:28:33 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-        s=t20230301; t=1680542913;
-        bh=5Np8023Y6FAt/94NM8u49tVSNsULJ4IHT6grFImpIW4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=as3/9nh1jKYq0g3MGVyo9lUN2uMiXBM0L5xt++SqOqLzzQSfVoVGvMSKBBDUypyRZ
-         E2s4pAePuf/px+rmHV5ViDQ6jBD0Q+EYsj6/F2fgdOG4zCT+qoMwT8wecoMjh+g1M2
-         LrvAgfwDb2vgW1/WR64cZyysmPxae6YitJx74vtmYKwv/VVNAsRuWbasI0dD5zCbQU
-         OK3tOJHGr+d7cZr3chHZPEl5saqEDoRWBSA6SgcqvnWyvykPRo+HnjMsM13MDn3FCf
-         UeelKMtt4ik1qaGAoSfagDQtFr1FnxvnYjuvNyHeuDHtRa7zeV341oGj3c00ZV54jM
-         JRKCVeje8gFyg==
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Mon, 03 Apr 2023 19:28:33 +0200
-X-ME-IP: 86.243.2.178
-Message-ID: <9085c8bb-1419-9381-242f-98d8d5be5e8d@wanadoo.fr>
-Date:   Mon, 3 Apr 2023 19:28:29 +0200
+        with ESMTP id S231411AbjDCS1h (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Apr 2023 14:27:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B7A2139;
+        Mon,  3 Apr 2023 11:27:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8413461D30;
+        Mon,  3 Apr 2023 18:27:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2B65C433D2;
+        Mon,  3 Apr 2023 18:27:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680546454;
+        bh=WCjt2Jv/YW91V4m2oQrs7DJ0U7kfjPlwg2HS+dwFJMU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qTSuFeV/ddExWkrit1fhvuaqyysRalSl+c5u+xVaLct1OfS8y1W9IX7BqLqlZQjPV
+         4UTtK8W5xMYYR6g7E0aJ81X2NTH9ZMsAp4pYFNcyq9+m9VHtCyJhg25c/a7oLSvx25
+         lfUmJ7JOvNC1s3JB7Egsb0K6n8Rd7nIQyKt00Kp4B3noI+vlm89FVFdFu4SOHh7ZoP
+         zsPLddqwka9U+KlUr83K2A88bpd0Bup5rvNNuScRQdqvy9l9S23yFUnU8979SZ3MzI
+         XvCzo+1l+n2AFXVvguS5lnqUOWqDQRn+DoWXZkWXDaeg/1+oqSOzuzdpuLw7n7iSMU
+         7SQQP8B+rjupA==
+Date:   Mon, 3 Apr 2023 19:42:46 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Daniel Matyas <daniel.matyas23@gmail.com>
+Cc:     linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-hwmon@vger.kernel.org
+Subject: Re: Creating a driver for MAX31827 temperature switch
+Message-ID: <20230403194246.10a56b59@jic23-huawei>
+In-Reply-To: <ZCn0KeOQFJclqiAK@daniel-Precision-5530>
+References: <ZCn0KeOQFJclqiAK@daniel-Precision-5530>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v2] iio: accel: bmi088: Correctly compute the address of
- the struct spi_device
-To:     Jonathan.Cameron@huawei.com, jic23@kernel.org, lars@metafoo.de,
-        linus.walleij@linaro.org, mike.looijmans@topic.nl
-Cc:     kernel-janitors@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <8da05ad95015e048e3058f275bd57d382420b46f.1680469082.git.christophe.jaillet@wanadoo.fr>
-Content-Language: fr
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <8da05ad95015e048e3058f275bd57d382420b46f.1680469082.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Le 02/04/2023 à 22:58, Christophe JAILLET a écrit :
-> bmi088_regmap_spi_write() is said to be similar to the SPI generic write
-> function.
-> However, regmap_spi_write() calls to_spi_device() in order to find the
-> reference to the "struct spi_device", instead of considering that 'context'
-> is already the correct value.
+On Mon, 3 Apr 2023 00:31:21 +0300
+Daniel Matyas <daniel.matyas23@gmail.com> wrote:
 
-Just NACK.
-The patch looks just plain wrong.
+> Dear Kernel community,
+> 
+> I am developing an IIO driver for a temperature switch, which communicates through I2C at Analog Devices Inc.
+> 
+> When implementing the event handling for the comparator mode of the device, I faced a problem: I don't know how to differentiate the underTemp event from the overTemp event. To understand better, I suggest you check out the device's data sheet for Address map (page 12), Configuration Register Definition (page 13) and OT/UT Status Bits and ALARM Pin Behavior (page 15) - https://www.analog.com/media/en/technical-documentation/data-sheets/MAX31827-MAX31829.pdf
+> 
+> I had the idea to make 2 channels with the exact same attributes, but with different indexes, so that I can store the overTemp related events on channel 0 and underTemp related events on channel 1. Even so, I don't really feel like this is the right solution. Can anyone give me some advice on this?
 
-Sorry for the noise.
+If it's just a question of over and under temp, I'd imagine these map to two
+different directions of IIO event. You can have one channel with RISING and FALLING
+events on it.
 
-CJ
+e.g.
+https://elixir.bootlin.com/linux/v6.2.9/source/drivers/iio/adc/max1363.c#L451
+
+The place we run into IIO limitations is if you have two events in the same direction
+(warn and critical for example)  When that happens it is almost always a device
+that fits better in hwmon anyway so we've never figured out how to enable this sort
+of thing.  Doesn't seem to apply here though.
+> 
+> Also, I was suggested that I convert my driver from IIO to HWMON. Do you think that this is needed?
+
+No obvious reason why this benefits from being in IIO so I'm agreeing with the others who have
+replied that this looks more suited to hwmon.
+
+Jonathan
 
 
 > 
-> This works because "struct device	dev" is the first entry of
-> "struct spi_device".
-> 
-> Align bmi088_regmap_spi_write() and regmap_spi_write() to be more
-> future proof, should "struct spi_device" be shuffled one day.
-> 
-> Also update bmi088_regmap_spi_read() in the same way.
-> 
-> Fixes: c19ae6be7555 ("iio: accel: Add support for the Bosch-Sensortec BMI088")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet-39ZsbGIQGT5GWvitb5QawA@public.gmane.org>
-> ---
-> v2: do the same for bmi088_regmap_spi_read()
-> ---
->   drivers/iio/accel/bmi088-accel-spi.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bmi088-accel-spi.c b/drivers/iio/accel/bmi088-accel-spi.c
-> index ee540edd8412..79e4b5392312 100644
-> --- a/drivers/iio/accel/bmi088-accel-spi.c
-> +++ b/drivers/iio/accel/bmi088-accel-spi.c
-> @@ -15,7 +15,8 @@
->   
->   static int bmi088_regmap_spi_write(void *context, const void *data, size_t count)
->   {
-> -	struct spi_device *spi = context;
-> +	struct device *dev = context;
-> +	struct spi_device *spi = to_spi_device(dev);
->   
->   	/* Write register is same as generic SPI */
->   	return spi_write(spi, data, count);
-> @@ -24,7 +25,8 @@ static int bmi088_regmap_spi_write(void *context, const void *data, size_t count
->   static int bmi088_regmap_spi_read(void *context, const void *reg,
->   				size_t reg_size, void *val, size_t val_size)
->   {
-> -	struct spi_device *spi = context;
-> +	struct device *dev = context;
-> +	struct spi_device *spi = to_spi_device(dev);
->   	u8 addr[2];
->   
->   	addr[0] = *(u8 *)reg;
+> Yours faithfully,
+> Daniel Matyas
 
