@@ -2,110 +2,200 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C62BC761AF
-	for <linux-iio@archiver.kernel.org>; Wed,  5 Apr 2023 20:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB27C7619A
+	for <linux-iio@archiver.kernel.org>; Wed,  5 Apr 2023 21:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233463AbjDEU3Z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 5 Apr 2023 16:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
+        id S229836AbjDEVW5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 5 Apr 2023 17:22:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234366AbjDEU2b (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Apr 2023 16:28:31 -0400
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F28F7EF4;
-        Wed,  5 Apr 2023 13:27:36 -0700 (PDT)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-177b78067ffso39945997fac.7;
-        Wed, 05 Apr 2023 13:27:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680726456;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+WBV14RF3ai1fds2jyNkKU2Kc0Or0jrKGIWjLAOfy4c=;
-        b=KnDQD5LCkx1ndilaK1qw7VY/YkSs1RLsCALysFaxM+9xmSO72ZICfnCF0ZUdJrsf0+
-         LtDf9zZ0uGx6hO+7TU/6aydM1KGVCp0YFWx4acvnbvJFaOUmaN6FpVZAoC0s3n81PNtf
-         sdUYeu7Nw1dJsIFOKoKNSR+NjczfYYuk5t8dxORNz6s+i0AuD53ytf9CjzF4cEFLjcAu
-         l/XQmsdeKV1byw5D0S9DMEXFJv9pfn98pN6e8rJAHzGmQQlvbAJNG98X0Wocku45vmn4
-         l9laLk0TMMyzvGl26Dfbn8Bc+bgYn1Bpb/LDoS2Oo4jf0sNx+lYaYu8Go8DWLR6uT0v2
-         x9Sw==
-X-Gm-Message-State: AAQBX9c1VuQIcuYpwSJGtE9VHep8obRme42okfGTr6SrAChykug3tSpl
-        SBAiCDagjSnjkM2+ixQfpg==
-X-Google-Smtp-Source: AKy350aiKxsG+dePauZBrcR87GqsUUk+nMQbPX4th5YujgeuvnV5mcO/3hIgE2jvhfcX3KA3u1DgQg==
-X-Received: by 2002:a05:6870:ac07:b0:17a:ae34:12e6 with SMTP id kw7-20020a056870ac0700b0017aae3412e6mr2034130oab.10.1680726456030;
-        Wed, 05 Apr 2023 13:27:36 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id an1-20020a056871b18100b00177c314a358sm6332319oac.22.2023.04.05.13.27.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 13:27:35 -0700 (PDT)
-Received: (nullmailer pid 425894 invoked by uid 1000);
-        Wed, 05 Apr 2023 20:27:17 -0000
-From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 05 Apr 2023 15:27:22 -0500
-Subject: [PATCH v2 08/10] tpm: atmel: Add explicit include for of.h
+        with ESMTP id S229815AbjDEVW4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Apr 2023 17:22:56 -0400
+Received: from pio-pvt-msa1.bahnhof.se (pio-pvt-msa1.bahnhof.se [79.136.2.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C5F659F;
+        Wed,  5 Apr 2023 14:22:54 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by pio-pvt-msa1.bahnhof.se (Postfix) with ESMTP id A01A93F586;
+        Wed,  5 Apr 2023 23:22:52 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at bahnhof.se
+Authentication-Results: pio-pvt-msa1.bahnhof.se (amavisd-new);
+        dkim=pass (2048-bit key) header.d=dalakolonin.se
+Received: from pio-pvt-msa1.bahnhof.se ([127.0.0.1])
+        by localhost (pio-pvt-msa1.bahnhof.se [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id tmvn3NSw37ur; Wed,  5 Apr 2023 23:22:51 +0200 (CEST)
+Received: by pio-pvt-msa1.bahnhof.se (Postfix) with ESMTPA id 9CF373F2DD;
+        Wed,  5 Apr 2023 23:22:51 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by zimbra.dalakolonin.se (Postfix) with ESMTP id 2C4D594DD1;
+        Wed,  5 Apr 2023 21:22:51 +0000 (UTC)
+Received: from zimbra.dalakolonin.se ([127.0.0.1])
+        by localhost (zimbra.dalakolonin.se [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id AxWYc146xV64; Wed,  5 Apr 2023 21:22:48 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+        by zimbra.dalakolonin.se (Postfix) with ESMTP id 62B4394DCB;
+        Wed,  5 Apr 2023 21:22:48 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra.dalakolonin.se 62B4394DCB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dalakolonin.se;
+        s=D374B428-D0A7-11ED-A657-75977B426508; t=1680729768;
+        bh=QpAkz8NzyhCd80cX7C/EMbSMfNw/jsM+n+BufT6T6ZU=;
+        h=From:To:Date:Message-Id:MIME-Version;
+        b=jgWeIePR+F31mf6PsgTwYe1TFFtCnPNBbUyzHlwVCTjx6PSdBV6na5YhqmqJ5VDoa
+         MLa7A0pxYOSgdT0+bPdXlHZ4KjvL9Jr69jo780On1IOdObuXABRPf8r1jyLPexiYpw
+         Vh+jMg82f757l+Z0wZhbpQwL86JWike+LDnx41GjgxI/56VyczzJebUUV/35EbXsw/
+         30tBIEZdKTAJKDmYmaR3AnIwqIh0Y7NQoDONF7nREhkX0/Onnqy6yvtZn/AC+tuLW5
+         tO2pRQeLdNZIb+rbDMJkIjoiucDG+Q1/iWrYE9BrAtUi9j0TDijySADELfi9vYrRcI
+         s3rYPgkZtrG0A==
+X-Virus-Scanned: amavisd-new at dalakolonin.se
+Received: from zimbra.dalakolonin.se ([127.0.0.1])
+        by localhost (zimbra.dalakolonin.se [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 3lQsBSGNDPZ6; Wed,  5 Apr 2023 21:22:47 +0000 (UTC)
+Received: from rack-server-1.dalakolonin.se (unknown [172.17.0.1])
+        by zimbra.dalakolonin.se (Postfix) with ESMTPSA id 7361294DC5;
+        Wed,  5 Apr 2023 21:22:47 +0000 (UTC)
+From:   =?UTF-8?q?Patrik=20Dahlstr=C3=B6m?= <risca@dalakolonin.se>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
+        kernel@pyra-handheld.com, pgoudagunta@nvidia.com,
+        hns@goldelico.com, jic23@kernel.org, lars@metafoo.de,
+        linux-omap@vger.kernel.org,
+        =?UTF-8?q?Patrik=20Dahlstr=C3=B6m?= <risca@dalakolonin.se>
+Subject: [PATCH v3 1/7] iio: adc: palmas: remove adc_wakeupX_data
+Date:   Wed,  5 Apr 2023 23:22:27 +0200
+Message-Id: <20230405212233.4167986-2-risca@dalakolonin.se>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230405212233.4167986-1-risca@dalakolonin.se>
+References: <20230405212233.4167986-1-risca@dalakolonin.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230329-acpi-header-cleanup-v2-8-c902e581923b@kernel.org>
-References: <20230329-acpi-header-cleanup-v2-0-c902e581923b@kernel.org>
-In-Reply-To: <20230329-acpi-header-cleanup-v2-0-c902e581923b@kernel.org>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Marc Zyngier <maz@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-acpi@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Jacob Keller <jacob.e.keller@intel.com>
-X-Mailer: b4 0.13-dev
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-With linux/acpi.h (in linux/tpm.h) no longer implicitly including of.h,
-add an explicit include of of.h to fix the following errors:
+It does not seem to be used by anyone and later patches in this series
+are made simpler by first removing this. There is now a lot of dead code
+that cannot be reached, until later patches revive it. Arguably, this is
+preferred over removing the code only to add it again.
 
-drivers/char/tpm/tpm_atmel.h:50:14: error: implicit declaration of function 'of_find_node_by_name'; did you mean 'bus_find_device_by_name'? [-Werror=implicit-function-declaration]
-drivers/char/tpm/tpm_atmel.h:50:12: error: assignment to 'struct device_node *' from 'int' makes pointer from integer without a cast [-Werror=int-conversion]
-drivers/char/tpm/tpm_atmel.h:55:14: error: implicit declaration of function 'of_device_is_compatible'; did you mean 'fwnode_device_is_compatible'? [-Werror=implicit-function-declaration]
-...
-
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Patrik Dahlstr=C3=B6m <risca@dalakolonin.se>
 ---
-v2: New patch
----
- drivers/char/tpm/tpm_atmel.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/palmas_gpadc.c | 50 ++++------------------------------
+ include/linux/mfd/palmas.h     |  8 ------
+ 2 files changed, 6 insertions(+), 52 deletions(-)
 
-diff --git a/drivers/char/tpm/tpm_atmel.h b/drivers/char/tpm/tpm_atmel.h
-index ba37e77e8af3..7ac3f69dcf0f 100644
---- a/drivers/char/tpm/tpm_atmel.h
-+++ b/drivers/char/tpm/tpm_atmel.h
-@@ -26,7 +26,7 @@ struct tpm_atmel_priv {
- 
- #ifdef CONFIG_PPC64
- 
--#include <asm/prom.h>
-+#include <linux/of.h>
- 
- #define atmel_getb(priv, offset) readb(priv->iobase + offset)
- #define atmel_putb(val, priv, offset) writeb(val, priv->iobase + offset)
-
--- 
-2.39.2
+diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpad=
+c.c
+index 2921186458e0..03af6cd73ec8 100644
+--- a/drivers/iio/adc/palmas_gpadc.c
++++ b/drivers/iio/adc/palmas_gpadc.c
+@@ -76,6 +76,12 @@ static struct palmas_gpadc_info palmas_gpadc_info[] =3D=
+ {
+ 	PALMAS_ADC_INFO(IN15, 0, 0, 0, 0, INVALID, INVALID, true),
+ };
+=20
++struct palmas_adc_wakeup_property {
++	int adc_channel_number;
++	int adc_high_threshold;
++	int adc_low_threshold;
++};
++
+ /*
+  * struct palmas_gpadc - the palmas_gpadc structure
+  * @ch0_current:	channel 0 current source setting
+@@ -493,11 +499,6 @@ static int palmas_gpadc_get_adc_dt_data(struct platf=
+orm_device *pdev,
+ 	return 0;
+ }
+=20
+-static void palmas_disable_wakeup(void *dev)
+-{
+-	device_wakeup_disable(dev);
+-}
+-
+ static int palmas_gpadc_probe(struct platform_device *pdev)
+ {
+ 	struct palmas_gpadc *adc;
+@@ -548,36 +549,6 @@ static int palmas_gpadc_probe(struct platform_device=
+ *pdev)
+ 		return dev_err_probe(adc->dev, ret,
+ 				     "request irq %d failed\n", adc->irq);
+=20
+-	if (gpadc_pdata->adc_wakeup1_data) {
+-		memcpy(&adc->wakeup1_data, gpadc_pdata->adc_wakeup1_data,
+-			sizeof(adc->wakeup1_data));
+-		adc->wakeup1_enable =3D true;
+-		adc->irq_auto_0 =3D  platform_get_irq(pdev, 1);
+-		ret =3D devm_request_threaded_irq(&pdev->dev, adc->irq_auto_0,
+-						NULL, palmas_gpadc_irq_auto,
+-						IRQF_ONESHOT,
+-						"palmas-adc-auto-0", adc);
+-		if (ret < 0)
+-			return dev_err_probe(adc->dev, ret,
+-					     "request auto0 irq %d failed\n",
+-					     adc->irq_auto_0);
+-	}
+-
+-	if (gpadc_pdata->adc_wakeup2_data) {
+-		memcpy(&adc->wakeup2_data, gpadc_pdata->adc_wakeup2_data,
+-				sizeof(adc->wakeup2_data));
+-		adc->wakeup2_enable =3D true;
+-		adc->irq_auto_1 =3D  platform_get_irq(pdev, 2);
+-		ret =3D devm_request_threaded_irq(&pdev->dev, adc->irq_auto_1,
+-						NULL, palmas_gpadc_irq_auto,
+-						IRQF_ONESHOT,
+-						"palmas-adc-auto-1", adc);
+-		if (ret < 0)
+-			return dev_err_probe(adc->dev, ret,
+-					     "request auto1 irq %d failed\n",
+-					     adc->irq_auto_1);
+-	}
+-
+ 	/* set the current source 0 (value 0/5/15/20 uA =3D> 0..3) */
+ 	if (gpadc_pdata->ch0_current <=3D 1)
+ 		adc->ch0_current =3D PALMAS_ADC_CH0_CURRENT_SRC_0;
+@@ -617,15 +588,6 @@ static int palmas_gpadc_probe(struct platform_device=
+ *pdev)
+ 			palmas_gpadc_calibrate(adc, i);
+ 	}
+=20
+-	if (adc->wakeup1_enable || adc->wakeup2_enable) {
+-		device_wakeup_enable(&pdev->dev);
+-		ret =3D devm_add_action_or_reset(&pdev->dev,
+-					       palmas_disable_wakeup,
+-					       &pdev->dev);
+-		if (ret)
+-			return ret;
+-	}
+-
+ 	return 0;
+ }
+=20
+diff --git a/include/linux/mfd/palmas.h b/include/linux/mfd/palmas.h
+index 117d02708439..eda1ffd99c1a 100644
+--- a/include/linux/mfd/palmas.h
++++ b/include/linux/mfd/palmas.h
+@@ -128,12 +128,6 @@ struct palmas_pmic_driver_data {
+ 			    struct regulator_config config);
+ };
+=20
+-struct palmas_adc_wakeup_property {
+-	int adc_channel_number;
+-	int adc_high_threshold;
+-	int adc_low_threshold;
+-};
+-
+ struct palmas_gpadc_platform_data {
+ 	/* Channel 3 current source is only enabled during conversion */
+ 	int ch3_current;	/* 0: off; 1: 10uA; 2: 400uA; 3: 800 uA */
+@@ -152,8 +146,6 @@ struct palmas_gpadc_platform_data {
+ 	int start_polarity;
+=20
+ 	int auto_conversion_period_ms;
+-	struct palmas_adc_wakeup_property *adc_wakeup1_data;
+-	struct palmas_adc_wakeup_property *adc_wakeup2_data;
+ };
+=20
+ struct palmas_reg_init {
+--=20
+2.25.1
 
