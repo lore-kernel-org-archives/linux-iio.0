@@ -2,61 +2,122 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1367EC7618D
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Apr 2023 10:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7EDCC7618D
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Apr 2023 14:42:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236907AbjDFKZK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 6 Apr 2023 06:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50574 "EHLO
+        id S230070AbjDFOmZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 6 Apr 2023 10:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237010AbjDFKZI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Apr 2023 06:25:08 -0400
-Received: from mail.feshiecree.pl (mail.feshiecree.pl [89.40.114.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E54D868F
-        for <linux-iio@vger.kernel.org>; Thu,  6 Apr 2023 03:24:40 -0700 (PDT)
-Received: by mail.feshiecree.pl (Postfix, from userid 1001)
-        id B612D87F55; Thu,  6 Apr 2023 08:51:28 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=feshiecree.pl;
-        s=mail; t=1680767561;
-        bh=hFxZwVw4rIL+JwfEOGI47p+fdoVOAeqVswP6NWoHSHQ=;
-        h=Date:From:To:Subject:From;
-        b=AZA2IRm55qjhqpy8/VJJCYCBpnZnbx8uD34Ltog0oooepKFiBgyTqL2YOSaE617W8
-         wy47DbuUnXwk+RTJcU3JC4tHjfffnoilkUzexLEHKcXa1DsZbQfMuF89aAySiP7Ftf
-         /3crkTa/eYSLW+a/uj7EXC2R8Nx+6/FL6jtD/KrLwr3FFJrwuh4D5T4xCZIC6Dsq60
-         i5ine5eA52rv6980Eq/N+YHa1Yu/LXFrztr3Um4hpcGnDtM+cra9jmOigJ9haw5bwN
-         bgXhpLsph07mOfT3mBTs9g1tkixpF4P7CRJHk1xXFqZyqX48kS12bRH1w7QXjnv6qY
-         gTO+ulU7lk4Bg==
-Received: by mail.feshiecree.pl for <linux-iio@vger.kernel.org>; Thu,  6 Apr 2023 07:50:28 GMT
-Message-ID: <20230406074501-0.1.1v.6urf.0.7drrge7fh6@feshiecree.pl>
-Date:   Thu,  6 Apr 2023 07:50:28 GMT
-From:   "Krystian Wieczorek" <krystian.wieczorek@feshiecree.pl>
-To:     <linux-iio@vger.kernel.org>
-Subject: W sprawie samochodu
-X-Mailer: mail.feshiecree.pl
+        with ESMTP id S239306AbjDFOmF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Apr 2023 10:42:05 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D2DA27D
+        for <linux-iio@vger.kernel.org>; Thu,  6 Apr 2023 07:40:33 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id f14so15650536oiw.10
+        for <linux-iio@vger.kernel.org>; Thu, 06 Apr 2023 07:40:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1680792033;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=haQfQLtIHX3AMbhEtmhPzNtAxG8NcBrSOSgfDzvgaZY=;
+        b=F3Pny9qKyanQubI7PdZw9QaNyLe7fQBOJpafO6/1MP6WO9qK8J764Dz1ugy4uiUt+Y
+         J6DhtffYYSyxZjEqblmuzrAEFhyM7I9h66VXSxGlu8GlU+AGzegBnNH88A9hO+3jneGS
+         n/bmxHJ1Y9s/Q1i7PsIlgY1+DC49LBNpCtZ/CcQqDkSYkY6RckBpnSLH+0cSQkfilidO
+         03fzOTVcyQkou7OrImqXWBRQev3FnX34TMphjc1hUPqEeldktCYsPTI+qM3+b4FgF+gQ
+         Zn7o7M1weH0i1P72NDArqhDujrnobGXt/rxWvAyf9kU7/dHeuaUxn84C3XbbHKnXXEXH
+         8Xjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680792033;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=haQfQLtIHX3AMbhEtmhPzNtAxG8NcBrSOSgfDzvgaZY=;
+        b=ICqccvXa4iR/o2ymO4Ft1gjuM6WNcxXRN2szspVHY2flZFVThJU85ZNdHEpTOQKNPR
+         IUeTrV0RyZtIutnCr449g0B5UWQ0mOExty+2u/OJo4iK80UrO956u/0sT1tAbMScUYPB
+         xYx2QshIYGTUi2Mx6HnL8mg3eA1mARhu7KgmKL44Ai8KA0by409Qq+X1KaoTVKkxXgNo
+         efJ5Xjwz9Es6s8zjfy0B54x06sXMFbOr+f5HWGedvNSfzGVTzs83D2Ecgy3hEBT5QZhf
+         kK4vxrBgAwZzPhzr6lHUNLv7mpcRffEyBMK+F1/ZNoyPr29L+gLRubtxM7ckmF6vLsSG
+         sqJQ==
+X-Gm-Message-State: AAQBX9eYNpLt7GcMKS4ZuFW4azhlo9ESI5x9ZuZqJFLZDixRPO4UdLOD
+        s2D0yDrQrIiDk3tqbvv6sxvGLnYLyujhwwOEW5Iryg==
+X-Google-Smtp-Source: AKy350Z+rx9pS7nPz2tJ11Na3ScH3fQ4x2FkN7YmH1OHKykbJ8eGSxYJ1CdnNtTp3SYGmtJdF0TpdQ==
+X-Received: by 2002:aca:c0c1:0:b0:389:6b33:fe9e with SMTP id q184-20020acac0c1000000b003896b33fe9emr3282758oif.58.1680792032654;
+        Thu, 06 Apr 2023 07:40:32 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id q7-20020acaf207000000b0037d7f4eb7e8sm726209oih.31.2023.04.06.07.40.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Apr 2023 07:40:32 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        William Breathitt Gray <william.gray@linaro.org>
+Subject: [PATCH v5 0/6] Migrate STX104 to the regmap API
+Date:   Thu,  6 Apr 2023 10:40:09 -0400
+Message-Id: <cover.1680790580.git.william.gray@linaro.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Dzie=C5=84 dobry,
+Changes in v5:
+ - Explicitly check for negative val for IIO_CHAN_INFO_RAW case in
+   stx104_write_raw(); this avoids the explicit case previously used
+ - Use U16_MAX rather than hardcoding unsigned 16-bit maximum value
+ - Improve ADC conversion comment format and use proper SI units format
+Changes in v4:
+ - Fix race conditions in stx104_read_raw() and stx104_write_raw() by
+   utilizing a mutex
+ - Improve indentation in stx104_write_raw() by bailing out early if
+   chan->output is false in for the IIO_CHAN_INFO_RAW case
+ - Remove regmap_config max_register lines as superfluous
+ - Utilize BIT() for gain calculation in stx104_read_raw()
+Changes in v3:
+ - Add STX104_ prefixes to defines to avoid potential name classes
+ - Rename SAME_CHANNEL() to STX104_SINGLE_CHANNEL() to convey intention
+   better
+ - Utilize u8_encode_bits() to define STX104_SOFTWARE_TRIGGER
+ - Adjust to utilize reg_base members in regmap_config structures
+ - Fix off-by-one errors in aio_data_wr_ranges[], aio_data_rd_ranges[],
+   and aio_data_regmap_config max_register
+ - Inline gpio_config initialization to avoid zeroing it at declaration
+ - Add blank lines between register map init blocks for clarity
+ - Utilize regmap_read_poll_timeout() for ADC conversion status poll
+Changes in v2:
+ - Relocate struct stx104_iio for the sake of a clearer patch diff
+ - Replace FIELD_PREP() and FIELD_GET() with u8_encode_bits() and
+   u8_get_bits()
 
-chcieliby=C5=9Bmy zapewni=C4=87 Pa=C5=84stwu kompleksowe rozwi=C4=85zania=
-, je=C5=9Bli chodzi o system monitoringu GPS.
+The regmap API supports IO port accessors so we can take advantage of
+regmap abstractions rather than handling access to the device registers
+directly in the driver.
 
-Precyzyjne monitorowanie pojazd=C3=B3w na mapach cyfrowych, =C5=9Bledzeni=
-e ich parametr=C3=B3w eksploatacyjnych w czasie rzeczywistym oraz kontrol=
-a paliwa to kluczowe funkcjonalno=C5=9Bci naszego systemu.=20
+To make the git history cleaner, precursor patches to use a define
+rather than hardcoded limit and to improve indentation in
+stx104_write_raw(), and a follow-up patch to utilize
+regmap_read_poll_timeout() for polling the ADC conversion status are
+included.
 
-Organizowanie pracy pracownik=C3=B3w jest dzi=C4=99ki temu prostsze i bar=
-dziej efektywne, a oszcz=C4=99dno=C5=9Bci i optymalizacja w zakresie pono=
-szonych koszt=C3=B3w, maj=C4=85 dla ka=C5=BCdego przedsi=C4=99biorcy ogro=
-mne znaczenie.
+William Breathitt Gray (6):
+  iio: addac: stx104: Fix race condition for stx104_write_raw()
+  iio: addac: stx104: Fix race condition when converting
+    analog-to-digital
+  iio: addac: stx104: Use define rather than hardcoded limit for write
+    val
+  iio: addac: stx104: Improve indentation in stx104_write_raw()
+  iio: addac: stx104: Migrate to the regmap API
+  iio: addac: stx104: Use regmap_read_poll_timeout() for conversion poll
 
-Dopasujemy nasz=C4=85 ofert=C4=99 do Pa=C5=84stwa oczekiwa=C5=84 i potrze=
-b organizacji. Czy mogliby=C5=9Bmy porozmawia=C4=87 o naszej propozycji?
+ drivers/iio/addac/Kconfig  |   2 +
+ drivers/iio/addac/stx104.c | 460 +++++++++++++++++++++----------------
+ 2 files changed, 264 insertions(+), 198 deletions(-)
 
 
-Pozdrawiam
-Krystian Wieczorek
+base-commit: f73df43e957a6fc705a9bd6d143585bdf1b13365
+-- 
+2.39.2
+
