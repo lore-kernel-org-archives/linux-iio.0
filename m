@@ -2,180 +2,220 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 411C5C76196
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Apr 2023 17:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3246C77B61
+	for <linux-iio@archiver.kernel.org>; Mon, 10 Apr 2023 20:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbjDJRHJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 Apr 2023 13:07:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34758 "EHLO
+        id S229767AbjDJU3e (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 10 Apr 2023 16:29:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230199AbjDJRHJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Apr 2023 13:07:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84AE12125
-        for <linux-iio@vger.kernel.org>; Mon, 10 Apr 2023 10:07:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229698AbjDJU3d (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Apr 2023 16:29:33 -0400
+Received: from relay05.th.seeweb.it (relay05.th.seeweb.it [IPv6:2001:4b7a:2000:18::166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2719171C;
+        Mon, 10 Apr 2023 13:29:31 -0700 (PDT)
+Received: from localhost.localdomain (94-211-6-86.cable.dynamic.v4.ziggo.nl [94.211.6.86])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F53361548
-        for <linux-iio@vger.kernel.org>; Mon, 10 Apr 2023 17:07:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4646CC433EF;
-        Mon, 10 Apr 2023 17:06:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681146420;
-        bh=CjHoIBOuqCgmwVdPHpvh5e8OLGo/zYX54nFI4UVucmA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TlG8jYy3nA2Wo97X2ZJe7G/47xQCquEU8nQaD3aK43lnoEJ30//UfHlJuJom7zzFW
-         y0z+LmvtnMQRNrTzbI3IafALd9ZjFjbrvOckenUxzoMRYrrfedLEsf8ByYIQGqnY6y
-         8jCLzawVkx3nkN93Bc2BrtJ1Y+Sos3lo67oJN98fTJoikwyNMWA2xF10b6W9A1sEZy
-         YSDX0CDWGYjh3YbasBzSzFpJXNxcheV2q7AsnWf57FXIX0T1lQhw0YQNy59qip4Q8r
-         jAIlp1kmw/PYa4QkpybOx1zomAlupFq3+6gfaR5YTunQRjDTpZ6ECzdiMCt5q8gWF8
-         59RlLBefMQVHA==
-Date:   Mon, 10 Apr 2023 18:22:20 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org,
-        Darrell Kavanagh <darrell.kavanagh@gmail.com>
-Cc:     lorenzo@kernel.org, carnil@debian.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 1/2] iio: imu: lsm6dsx: Support SMO8B30 ACPI ID for
- LSM6DS3TR-C
-Message-ID: <20230410182220.62b66260@jic23-huawei>
-In-Reply-To: <20230130201018.981024-2-jic23@kernel.org>
-References: <20230130201018.981024-1-jic23@kernel.org>
-        <20230130201018.981024-2-jic23@kernel.org>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id D964B3FA41;
+        Mon, 10 Apr 2023 22:29:27 +0200 (CEST)
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     phone-devel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: [PATCH v4 1/5] ARM: dts: qcom: Use labels with generic node names for ADC channels
+Date:   Mon, 10 Apr 2023 22:29:13 +0200
+Message-Id: <20230410202917.247666-2-marijn.suijten@somainline.org>
+X-Mailer: git-send-email 2.40.0
+In-Reply-To: <20230410202917.247666-1-marijn.suijten@somainline.org>
+References: <20230410202917.247666-1-marijn.suijten@somainline.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 30 Jan 2023 20:10:17 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+A future bindings update will replace the free-form qcom,spmi-vadc and
+qcom,spmi-adc5 channel node names with the specific name `channel`, to
+be more consistent with how the driver parses the nodes and to match the
+generic node name set in `iio/adc/adc.yaml`.
 
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> ID seen in the wild and it is a valid ST micro ID.
-> An offset of 1 for the device ID enum is needed when adding support for
-> retrieving the ID from device_get_match_data() to allow detection of
-> NULL pointer and fallback to i2c_device_id table.
-> 
-> DSDT chunk cropped for relevant parts.
-> 
->    Scope (_SB.PCI0.I2C5)
->     {
->         Device (DEV)
->         {
->             Name (_HID, EisaId ("SMO8B30"))  // _HID: Hardware ID
->             Name (_CID, EisaId ("SMO8B30"))  // _CID: Compatible ID
->             Name (_UID, Zero)  // _UID: Unique ID
->             Method (_CRS, 0, NotSerialized)  // _CRS: Current Resource Settings
->             {
->                 Name (RBUF, ResourceTemplate ()
->                 {
->                     I2cSerialBusV2 (0x006A, ControllerInitiated, 0x00061A80,
->                         AddressingMode7Bit, "\\_SB.PCI0.I2C5",
->                         0x00, ResourceConsumer, , Exclusive,
->                         )
->                 })
->                 Return (RBUF) /* \_SB_.PCI0.I2C5.DEV_._CRS.RBUF */
->             }
-> 
->             Method (ROTM, 0, NotSerialized)
->             {
->                 Name (RBUF, Package (0x03)
->                 {
->                     "0 -1 0",
->                     "1 0 0",
->                     "0 0 1"
->                 })
->                 Return (RBUF) /* \_SB_.PCI0.I2C5.DEV_.ROTM.RBUF */
->             }
-> ...
-> 
-> Link: https://lore.kernel.org/all/20230129182441.082f29d0@jic23-huawei/
-> Reported-by: Darrell Kavanagh <darrell.kavanagh@gmail.com>
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+---
+ arch/arm/boot/dts/qcom-pm8226.dtsi  | 12 ++++++------
+ arch/arm/boot/dts/qcom-pm8941.dtsi  | 14 +++++++-------
+ arch/arm/boot/dts/qcom-pma8084.dtsi | 12 ++++++------
+ arch/arm/boot/dts/qcom-pmx55.dtsi   |  8 ++++----
+ 4 files changed, 23 insertions(+), 23 deletions(-)
 
-I'd forgotten about these.  Still I have another few
-patches waiting on dependency unwinding so will need to do a second
-pull request later this week (first one will probably be tomorrow).
-
-I've applied this pair and pushed out as testing for 0-day to take
-an initial look at them.
-
-Note I will definitely be rebasing though as need the tree to move
-forwards for the palmas series.
-
-Thanks
-
-Jonathan
-
-> ---
-> 
-> Since initial posting in thread added missing {} to terminate the
-> list of IDs and MODULE_DEVICE_TABLE() so that autoloading of the
-> driver works (thanks Darrell!)
-> 
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h     |  2 +-
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c | 16 ++++++++++++++--
->  2 files changed, 15 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> index 499fcf8875b4..2617ce236ddc 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> @@ -39,7 +39,7 @@
->  #define ST_ISM330IS_DEV_NAME	"ism330is"
->  
->  enum st_lsm6dsx_hw_id {
-> -	ST_LSM6DS3_ID,
-> +	ST_LSM6DS3_ID = 1,
->  	ST_LSM6DS3H_ID,
->  	ST_LSM6DSL_ID,
->  	ST_LSM6DSM_ID,
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> index df5f60925260..8ae5a485ce7d 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> @@ -23,10 +23,15 @@ static const struct regmap_config st_lsm6dsx_i2c_regmap_config = {
->  
->  static int st_lsm6dsx_i2c_probe(struct i2c_client *client)
->  {
-> -	const struct i2c_device_id *id = i2c_client_get_device_id(client);
-> -	int hw_id = id->driver_data;
-> +	int hw_id;
->  	struct regmap *regmap;
->  
-> +	hw_id = (kernel_ulong_t)device_get_match_data(&client->dev);
-> +	if (!hw_id)
-> +		hw_id = i2c_client_get_device_id(client)->driver_data;
-> +	if (!hw_id)
-> +		return -EINVAL;
-> +
->  	regmap = devm_regmap_init_i2c(client, &st_lsm6dsx_i2c_regmap_config);
->  	if (IS_ERR(regmap)) {
->  		dev_err(&client->dev, "Failed to register i2c regmap %ld\n", PTR_ERR(regmap));
-> @@ -129,6 +134,12 @@ static const struct of_device_id st_lsm6dsx_i2c_of_match[] = {
->  };
->  MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
->  
-> +static const struct acpi_device_id st_lsm6dsx_i2c_acpi_match[] = {
-> +	{ "SMO8B30", ST_LSM6DS3TRC_ID, },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(acpi, st_lsm6dsx_i2c_acpi_match);
-> +
->  static const struct i2c_device_id st_lsm6dsx_i2c_id_table[] = {
->  	{ ST_LSM6DS3_DEV_NAME, ST_LSM6DS3_ID },
->  	{ ST_LSM6DS3H_DEV_NAME, ST_LSM6DS3H_ID },
-> @@ -161,6 +172,7 @@ static struct i2c_driver st_lsm6dsx_driver = {
->  		.name = "st_lsm6dsx_i2c",
->  		.pm = pm_sleep_ptr(&st_lsm6dsx_pm_ops),
->  		.of_match_table = st_lsm6dsx_i2c_of_match,
-> +		.acpi_match_table = st_lsm6dsx_i2c_acpi_match,
->  	},
->  	.probe_new = st_lsm6dsx_i2c_probe,
->  	.id_table = st_lsm6dsx_i2c_id_table,
+diff --git a/arch/arm/boot/dts/qcom-pm8226.dtsi b/arch/arm/boot/dts/qcom-pm8226.dtsi
+index 46ba84f86c9f..bcd689a9b2d1 100644
+--- a/arch/arm/boot/dts/qcom-pm8226.dtsi
++++ b/arch/arm/boot/dts/qcom-pm8226.dtsi
+@@ -63,27 +63,27 @@ pm8226_vadc: adc@3100 {
+ 			#size-cells = <0>;
+ 			#io-channel-cells = <1>;
+ 
+-			adc-chan@7 {
++			channel@7 {
+ 				reg = <VADC_VSYS>;
+ 				qcom,pre-scaling = <1 3>;
+ 				label = "vph_pwr";
+ 			};
+-			adc-chan@8 {
++			channel@8 {
+ 				reg = <VADC_DIE_TEMP>;
+ 				label = "die_temp";
+ 			};
+-			adc-chan@9 {
++			channel@9 {
+ 				reg = <VADC_REF_625MV>;
+ 				label = "ref_625mv";
+ 			};
+-			adc-chan@a {
++			channel@a {
+ 				reg = <VADC_REF_1250MV>;
+ 				label = "ref_1250mv";
+ 			};
+-			adc-chan@e {
++			channel@e {
+ 				reg = <VADC_GND_REF>;
+ 			};
+-			adc-chan@f {
++			channel@f {
+ 				reg = <VADC_VDD_VADC>;
+ 			};
+ 		};
+diff --git a/arch/arm/boot/dts/qcom-pm8941.dtsi b/arch/arm/boot/dts/qcom-pm8941.dtsi
+index a821f0368a28..a35300ed1197 100644
+--- a/arch/arm/boot/dts/qcom-pm8941.dtsi
++++ b/arch/arm/boot/dts/qcom-pm8941.dtsi
+@@ -102,31 +102,31 @@ pm8941_vadc: adc@3100 {
+ 			#io-channel-cells = <1>;
+ 
+ 
+-			adc-chan@6 {
++			channel@6 {
+ 				reg = <VADC_VBAT_SNS>;
+ 			};
+ 
+-			adc-chan@8 {
++			channel@8 {
+ 				reg = <VADC_DIE_TEMP>;
+ 			};
+ 
+-			adc-chan@9 {
++			channel@9 {
+ 				reg = <VADC_REF_625MV>;
+ 			};
+ 
+-			adc-chan@a {
++			channel@a {
+ 				reg = <VADC_REF_1250MV>;
+ 			};
+ 
+-			adc-chan@e {
++			channel@e {
+ 				reg = <VADC_GND_REF>;
+ 			};
+ 
+-			adc-chan@f {
++			channel@f {
+ 				reg = <VADC_VDD_VADC>;
+ 			};
+ 
+-			adc-chan@30 {
++			channel@30 {
+ 				reg = <VADC_LR_MUX1_BAT_THERM>;
+ 			};
+ 		};
+diff --git a/arch/arm/boot/dts/qcom-pma8084.dtsi b/arch/arm/boot/dts/qcom-pma8084.dtsi
+index 2dd4c6aa71c9..2985f4805b93 100644
+--- a/arch/arm/boot/dts/qcom-pma8084.dtsi
++++ b/arch/arm/boot/dts/qcom-pma8084.dtsi
+@@ -64,27 +64,27 @@ pma8084_vadc: adc@3100 {
+ 			#size-cells = <0>;
+ 			#io-channel-cells = <1>;
+ 
+-			adc-chan@8 {
++			channel@8 {
+ 				reg = <VADC_DIE_TEMP>;
+ 			};
+ 
+-			adc-chan@9 {
++			channel@9 {
+ 				reg = <VADC_REF_625MV>;
+ 			};
+ 
+-			adc-chan@a {
++			channel@a {
+ 				reg = <VADC_REF_1250MV>;
+ 			};
+ 
+-			adc-chan@c {
++			channel@c {
+ 				reg = <VADC_SPARE1>;
+ 			};
+ 
+-			adc-chan@e {
++			channel@e {
+ 				reg = <VADC_GND_REF>;
+ 			};
+ 
+-			adc-chan@f {
++			channel@f {
+ 				reg = <VADC_VDD_VADC>;
+ 			};
+ 		};
+diff --git a/arch/arm/boot/dts/qcom-pmx55.dtsi b/arch/arm/boot/dts/qcom-pmx55.dtsi
+index e1b869480bbd..da0851173c69 100644
+--- a/arch/arm/boot/dts/qcom-pmx55.dtsi
++++ b/arch/arm/boot/dts/qcom-pmx55.dtsi
+@@ -40,25 +40,25 @@ pmx55_adc: adc@3100 {
+ 			#io-channel-cells = <1>;
+ 			interrupts = <0x8 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
+ 
+-			ref-gnd@0 {
++			channel@0 {
+ 				reg = <ADC5_REF_GND>;
+ 				qcom,pre-scaling = <1 1>;
+ 				label = "ref_gnd";
+ 			};
+ 
+-			vref-1p25@1 {
++			channel@1 {
+ 				reg = <ADC5_1P25VREF>;
+ 				qcom,pre-scaling = <1 1>;
+ 				label = "vref_1p25";
+ 			};
+ 
+-			die-temp@6 {
++			channel@6 {
+ 				reg = <ADC5_DIE_TEMP>;
+ 				qcom,pre-scaling = <1 1>;
+ 				label = "die_temp";
+ 			};
+ 
+-			chg-temp@9 {
++			channel@9 {
+ 				reg = <ADC5_CHG_TEMP>;
+ 				qcom,pre-scaling = <1 1>;
+ 				label = "chg_temp";
+-- 
+2.40.0
 
