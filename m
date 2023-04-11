@@ -2,137 +2,188 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 612A0C76196
-	for <linux-iio@archiver.kernel.org>; Tue, 11 Apr 2023 15:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1650C76196
+	for <linux-iio@archiver.kernel.org>; Tue, 11 Apr 2023 17:19:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230387AbjDKPwj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 11 Apr 2023 11:52:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40102 "EHLO
+        id S230009AbjDKRTW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 11 Apr 2023 13:19:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230358AbjDKPwi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Apr 2023 11:52:38 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C63E5251
-        for <linux-iio@vger.kernel.org>; Tue, 11 Apr 2023 08:52:36 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id y69so15547463ybe.2
-        for <linux-iio@vger.kernel.org>; Tue, 11 Apr 2023 08:52:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681228355; x=1683820355;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YVnzCMuG8yOr6jsr0GEp0cpvdQzZRFZZBcpuklzVomM=;
-        b=MP3/MBQD+/KeXIGk4Kq2i951jxW+nIqkXxpC4/5Ve3x6RHWDhUhRiLM5bhHVzAz46J
-         LFwbUIMhG2IhEDlG6Bp9RQgJvMtkye5PzZldbGZQr83UyNzvyAGjI9GGIpKwkLGnk8Mf
-         CdkJ7zJAWpyapByQSRGQuo/SKPvlSNySk6iZx5Lj9bZdfVe0xLA5YGLtJYlgS5NnJm5v
-         Ms4LeTJoxunl2EvuENwyZtsEqQRqF4PkpNd9nbQLBsV/jE/muQ5JsmgmvjIqBPT+iuHP
-         2e4YxRUUIUkWKgSUKkgkPCiOn1ZVvVdNlEVI0AVljrjWP8g+8TTBwpiaq78o4KOsRrEV
-         cNIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681228355; x=1683820355;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=YVnzCMuG8yOr6jsr0GEp0cpvdQzZRFZZBcpuklzVomM=;
-        b=ck3DR3VTGOO8xaij60wYHodZW4To6I0zR8X1YTdyuCKgnT/jrF/MnqE7bVZZ9Bx/nw
-         c+W/SM/+wlZYBe1QPGnNgHieMkJFiGQVB96C/I+KyDOzBLpuzTeyXLDgAemZH+E5YqX0
-         hCSrdk71nn63l1Jgq9coDQlqRI1tmqJETH8YJ0Qx+wbfz9GUk5xc1xtzzeeaRP3lS14r
-         xA2rCya+wTqAypplALBUYJMxgivlvjTv9AetrO5mkuAcpg1JulMz4M5VZvdbZyyx4iTu
-         A5z5ezYNz8YbmOzTxk67rFiPu+P0nIgl3dxxul5CKma/dR27Wte6Fr1qVEQBul7mi1mO
-         Ro7w==
-X-Gm-Message-State: AAQBX9fkXlMVNfGRUbs2Kb5qZ+LW99GEYV9nf5Vs3dbn33Ci1Ma9i4IR
-        RkBiNFXHMKv9PQqRHHYwXRnCPA==
-X-Google-Smtp-Source: AKy350a2r0p6xSocXox5/NbH6U0w0MyqWWZVnRpVrTTXIQZjimC9nR1mrVSwDRzh9GaQCiZHx2TSIQ==
-X-Received: by 2002:a25:ab0a:0:b0:b72:245f:4411 with SMTP id u10-20020a25ab0a000000b00b72245f4411mr2396336ybi.46.1681228355448;
-        Tue, 11 Apr 2023 08:52:35 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id i13-20020a056902068d00b00b7767ca749fsm3683390ybt.60.2023.04.11.08.52.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Apr 2023 08:52:35 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
-        William Breathitt Gray <william.gray@linaro.org>,
-        stable@vger.kernel.org
-Subject: [RESEND PATCH 5.15 v3 5/5] counter: 104-quad-8: Fix race condition between FLAG and CNTR reads
-Date:   Tue, 11 Apr 2023 11:52:20 -0400
-Message-Id: <20230411155220.9754-5-william.gray@linaro.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230411155220.9754-1-william.gray@linaro.org>
-References: <20230411155220.9754-1-william.gray@linaro.org>
+        with ESMTP id S229919AbjDKRTT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Apr 2023 13:19:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FC410FA
+        for <linux-iio@vger.kernel.org>; Tue, 11 Apr 2023 10:19:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49B5D624C6
+        for <linux-iio@vger.kernel.org>; Tue, 11 Apr 2023 17:18:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86544C433D2;
+        Tue, 11 Apr 2023 17:18:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681233529;
+        bh=EC5PTCkjKA8JJ4kkGh/REz01Lo22fZyP4lPj6bSdQ2o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=G1GON77nnbNKw7gPd4yqNx1z6ckzz19mMH6jw1sAZZsu82Rlxn0lJRvYMS0nZXAw6
+         eTmQBZ88FisXphsVvtN8pa8Nbd7luKfMJ0KCS9tUgIwp3y5bpLDOeIQGzr8sbf5D9u
+         4Ke7Th+ygDMVAtmSeiGq3n4SzzwOl3GAQChKHlNFMQ86Il3JmMjin38LsUkEhOuqUJ
+         eV/j4+qPqOvgTNCX0JSYqyuPe26q1YsqtcajFuNpLz4olDw+dyrKo3ZHlbPGI52E3U
+         4xWz22d2id3ajLQECeh4/gZ71nExaLn9KUseM7gjSAePCmxcUipH+7767Pyu04FDkD
+         1vTW6YR53vNEw==
+Date:   Tue, 11 Apr 2023 18:34:10 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org,
+        Darrell Kavanagh <darrell.kavanagh@gmail.com>
+Cc:     lorenzo@kernel.org, carnil@debian.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 2/2] iio: imu: lsm6dsx: Add ACPI mount matrix retrieval
+Message-ID: <20230411183410.289214e5@jic23-huawei>
+In-Reply-To: <20230130201018.981024-3-jic23@kernel.org>
+References: <20230130201018.981024-1-jic23@kernel.org>
+        <20230130201018.981024-3-jic23@kernel.org>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-commit 4aa3b75c74603c3374877d5fd18ad9cc3a9a62ed upstream.
+On Mon, 30 Jan 2023 20:10:18 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-The Counter (CNTR) register is 24 bits wide, but we can have an
-effective 25-bit count value by setting bit 24 to the XOR of the Borrow
-flag and Carry flag. The flags can be read from the FLAG register, but a
-race condition exists: the Borrow flag and Carry flag are instantaneous
-and could change by the time the count value is read from the CNTR
-register.
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> 
+> DSDT ROTM method seen in the wild with SMO8B30 _HID.
+> Making assumption it is similar to that used for bmc150 plus
+> information from Darrell that the rotation is out by 90 degrees at boot.
+> 
+> Method (ROTM, 0, NotSerialized)
+> {
+>     Name (RBUF, Package (0x03)
+>     {
+>         "0 -1 0",
+>         "1 0 0",
+>         "0 0 1"
+>     })
+>     Return (RBUF) /* \_SB_.PCI0.I2C5.DEV_.ROTM.RBUF */
+> }
+> 
+> Reported-by: Darrell Kavanagh <darrell.kavanagh@gmail.com>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Since the race condition could result in an incorrect 25-bit count
-value, remove support for 25-bit count values from this driver.
+Not my best work. 0-day pointed out a few things.
 
-Fixes: 28e5d3bb0325 ("iio: 104-quad-8: Add IIO support for the ACCES 104-QUAD-8")
-Cc: <stable@vger.kernel.org> # 5.15.x
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
----
- drivers/counter/104-quad-8.c | 18 +++---------------
- 1 file changed, 3 insertions(+), 15 deletions(-)
+> 
+> ---
+> Untested.  Fingers crossed.
+> 
+> We could factor this out if it keeps turning up.  The bmc150 varient
+> is more complex as multiple method IDs exist depending on the configuration.
+> 
+> ---
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 65 +++++++++++++++++++-
+>  1 file changed, 62 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> index 3f6060c64f32..3c2d67f8d9b7 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> @@ -56,6 +56,7 @@
+>  
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+> +#include <linux/acpi.h>
+>  #include <linux/delay.h>
+>  #include <linux/iio/events.h>
+>  #include <linux/iio/iio.h>
+> @@ -2602,6 +2603,61 @@ static int st_lsm6dsx_init_regulators(struct device *dev)
+>  	return 0;
+>  }
+>  
+> +static bool lsm6dsx_get_acpi_mount_matrix(struct device *dev,
+int not bool.
 
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 0caa60537b..643aae0c9f 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -61,10 +61,6 @@ struct quad8 {
- #define QUAD8_REG_CHAN_OP 0x11
- #define QUAD8_REG_INDEX_INPUT_LEVELS 0x16
- #define QUAD8_DIFF_ENCODER_CABLE_STATUS 0x17
--/* Borrow Toggle flip-flop */
--#define QUAD8_FLAG_BT BIT(0)
--/* Carry Toggle flip-flop */
--#define QUAD8_FLAG_CT BIT(1)
- /* Error flag */
- #define QUAD8_FLAG_E BIT(4)
- /* Up/Down flag */
-@@ -121,17 +117,9 @@ static int quad8_count_read(struct counter_device *counter,
- {
- 	struct quad8 *const priv = counter->priv;
- 	const int base_offset = priv->base + 2 * count->id;
--	unsigned int flags;
--	unsigned int borrow;
--	unsigned int carry;
- 	int i;
- 
--	flags = inb(base_offset + 1);
--	borrow = flags & QUAD8_FLAG_BT;
--	carry = !!(flags & QUAD8_FLAG_CT);
--
--	/* Borrow XOR Carry effectively doubles count range */
--	*val = (unsigned long)(borrow ^ carry) << 24;
-+	*val = 0;
- 
- 	mutex_lock(&priv->lock);
- 
-@@ -699,8 +687,8 @@ static ssize_t quad8_count_ceiling_read(struct counter_device *counter,
- 
- 	mutex_unlock(&priv->lock);
- 
--	/* By default 0x1FFFFFF (25 bits unsigned) is maximum count */
--	return sprintf(buf, "33554431\n");
-+	/* By default 0xFFFFFF (24 bits unsigned) is maximum count */
-+	return sprintf(buf, "16777215\n");
- }
- 
- static ssize_t quad8_count_ceiling_write(struct counter_device *counter,
+Also needs ifdef CONFIG_ACPI protections as some of the acpi functions are not stubbed out.
 
-base-commit: d86dfc4d95cd218246b10ca7adf22c8626547599
--- 
-2.39.2
+I've tweaked those two things and pushed out again.
+If there is anything else I'll probably drop this patch and come back to it
+next cycle.
+
+
+
+> +					  struct iio_mount_matrix *orientation)
+> +{
+> +	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
+> +	struct acpi_device *adev = ACPI_COMPANION(dev);
+> +	union acpi_object *obj, *elements;
+> +	acpi_status status;
+> +	int i, j, val[3];
+> +	char *str;
+> +
+> +	if (!has_acpi_companion(dev))
+> +		return -EINVAL;
+> +
+> +	if (!acpi_has_method(adev->handle, "ROTM"))
+> +		return -EINVAL;
+> +
+> +	status = acpi_evaluate_object(adev->handle, "ROTM", NULL, &buffer);
+> +	if (ACPI_FAILURE(status)) {
+> +		dev_warn(dev, "Failed to get ACPI mount matrix: %d\n", status);
+> +		return -EINVAL;
+> +	}
+> +
+> +	obj = buffer.pointer;
+> +	if (obj->type != ACPI_TYPE_PACKAGE || obj->package.count != 3)
+> +		goto unknown_format;
+> +
+> +	elements = obj->package.elements;
+> +	for (i = 0; i < 3; i++) {
+> +		if (elements[i].type != ACPI_TYPE_STRING)
+> +			goto unknown_format;
+> +
+> +		str = elements[i].string.pointer;
+> +		if (sscanf(str, "%d %d %d", &val[0], &val[1], &val[2]) != 3)
+> +			goto unknown_format;
+> +
+> +		for (j = 0; j < 3; j++) {
+> +			switch (val[j]) {
+> +			case -1: str = "-1"; break;
+> +			case 0:  str = "0";  break;
+> +			case 1:  str = "1";  break;
+> +			default: goto unknown_format;
+> +			}
+> +			orientation->rotation[i * 3 + j] = str;
+> +		}
+> +	}
+> +
+> +	kfree(buffer.pointer);
+> +	return 0;
+> +
+> +unknown_format:
+> +	dev_warn(dev, "Unknown ACPI mount matrix format, ignoring\n");
+> +	kfree(buffer.pointer);
+> +	return -EINVAL;
+> +}
+> +
+>  int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id,
+>  		     struct regmap *regmap)
+>  {
+> @@ -2676,9 +2732,12 @@ int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id,
+>  			return err;
+>  	}
+>  
+> -	err = iio_read_mount_matrix(hw->dev, &hw->orientation);
+> -	if (err)
+> -		return err;
+> +	err = lsm6dsx_get_acpi_mount_matrix(hw->dev, &hw->orientation);
+> +	if (err) {
+> +		err = iio_read_mount_matrix(hw->dev, &hw->orientation);
+> +		if (err)
+> +			return err;
+> +	}
+>  
+>  	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
+>  		if (!hw->iio_devs[i])
 
