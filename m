@@ -2,142 +2,169 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34277C77B6E
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Apr 2023 12:30:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24069C7619A
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Apr 2023 13:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231560AbjDLM37 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Apr 2023 08:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41408 "EHLO
+        id S229828AbjDLNEJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Apr 2023 09:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbjDLM3t (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Apr 2023 08:29:49 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC9E72B1;
-        Wed, 12 Apr 2023 05:29:12 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id q26so2275942lfe.9;
-        Wed, 12 Apr 2023 05:29:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681302551;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=siCdH4i793Fr0Wj+21nPqmHI0RDFnIElDQrnU73xJYE=;
-        b=VQeCgQHI1EcjcFspsDA0zh1lWNC/OCP9F8kU/YlAwXgU5fTRTIXy7bmnnl4+N7zA+p
-         6IA34k911R6zsbWb73+5Z4Q/6GHydO4fCAqHpV0/Vpq3c7U5RY1EGSlvGUR7Td3fpzwi
-         TSD63KOFu/GsWRmacMpazKGJzQxEX64GgltaFsMgj3n+2RrUATCwS252Xo1Cz3H0i7S6
-         X888/cR9bclHvDmJjkuF7XVHguwYS+fBrPjh0zUvagF0HYfVVHO58kbujExExX8VuoJS
-         CLTAZq0aEhmDsLfXXuzLoph0kIexzAwKXQ+Vce3NidURTMIYEBGNE65nAtIIOHuEFPWX
-         4phg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681302551;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=siCdH4i793Fr0Wj+21nPqmHI0RDFnIElDQrnU73xJYE=;
-        b=q2BUy0mMUhev7NcibrK6zz0D7cQtZuwjYE0nedHdDrh6oIA2U9nfi1QCNSAfLQ0CiI
-         P490+4BDmL+Ukf/hD8awsZSgtK0YCoKpRIvUj99fLz1bMbWY0L2Rj1eiMYfKP2vwdIm9
-         GfVZT5s2xfG87vb9OVQy8CWthbVXf00G1G5cBHFOIq0LGQZGZkrY2HYgSSWR3Dlqumpy
-         5itpweHUXno53HXitFyFJ6J9BD4xpAoKnLLq55yn4t0cJWe5WKo669Xxc4uZnkGuT1py
-         dzYGL1VdQOINiIANz3oy7zZiUp7QBLterlUhTzLVgB+pQzXqPPONmZ6cYKanlaqWMH1B
-         j7QQ==
-X-Gm-Message-State: AAQBX9c8OTWAspTe3e9++XDqmYQe857n1KjV1VAz5sYqe4aRskDuLvv3
-        jayQ/BTqk6U9ZYulWU8gdJ0=
-X-Google-Smtp-Source: AKy350YoQXSzO91Dyj+lPCb5tSWpcCDLY/OAJLAUkM8P1zlP2mEfymzfXSK3UmKtyEid6KjzXadmhw==
-X-Received: by 2002:a05:6512:203:b0:4e9:d158:d56b with SMTP id a3-20020a056512020300b004e9d158d56bmr512162lfo.62.1681302550783;
-        Wed, 12 Apr 2023 05:29:10 -0700 (PDT)
-Received: from dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi (dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::1])
-        by smtp.gmail.com with ESMTPSA id n12-20020a19550c000000b004e7d6eb9cbfsm2973522lfe.190.2023.04.12.05.29.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Apr 2023 05:29:10 -0700 (PDT)
-Date:   Wed, 12 Apr 2023 15:29:01 +0300
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-To:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S229792AbjDLNEI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Apr 2023 09:04:08 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7215468E;
+        Wed, 12 Apr 2023 06:04:04 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33C7u5EY002846;
+        Wed, 12 Apr 2023 07:15:44 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3pu248y0kf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 12 Apr 2023 07:15:43 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 33CBFgxY011946
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 12 Apr 2023 07:15:42 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 12 Apr
+ 2023 07:15:41 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Wed, 12 Apr 2023 07:15:41 -0400
+Received: from okan.localdomain ([10.158.19.61])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 33CBD6Dt007710;
+        Wed, 12 Apr 2023 07:15:24 -0400
+From:   Okan Sahin <okan.sahin@analog.com>
+To:     <okan.sahin@analog.com>
+CC:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Matti Vaittinen <mazziesaccount@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] iio: bu27034: Fix integration time units
-Message-ID: <a3bc95f4a16f876925cfc157aaf5d78f3dbc513d.1681301472.git.mazziesaccount@gmail.com>
-References: <cover.1681301472.git.mazziesaccount@gmail.com>
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Ramona Bolboaca <ramona.bolboaca@analog.com>,
+        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        Caleb Connolly <caleb.connolly@linaro.org>,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        =?UTF-8?q?Leonard=20G=C3=B6hrs?= <l.goehrs@pengutronix.de>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>
+Subject: [PATCH v7 4/5] dt-bindings: mfd: max77541: Add ADI MAX77541/MAX77540
+Date:   Wed, 12 Apr 2023 14:12:45 +0300
+Message-ID: <20230412111256.40013-5-okan.sahin@analog.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230412111256.40013-1-okan.sahin@analog.com>
+References: <20230412111256.40013-1-okan.sahin@analog.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="vA0ECADkg+SHgofM"
-Content-Disposition: inline
-In-Reply-To: <cover.1681301472.git.mazziesaccount@gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: 9vgMoALRQFoZilUGsFMFhYSANBwCRZxz
+X-Proofpoint-GUID: 9vgMoALRQFoZilUGsFMFhYSANBwCRZxz
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-12_03,2023-04-12_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ bulkscore=0 priorityscore=1501 mlxlogscore=997 adultscore=0 suspectscore=0
+ spamscore=0 malwarescore=0 lowpriorityscore=0 impostorscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2304120099
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Add ADI MAX77541/MAX77540 devicetree document.
 
---vA0ECADkg+SHgofM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-The integration time was presented by BU27034 in micro seconds. The ABI
-documentation says this should be in seconds.
-
-Fix integration time to be in seconds.
-
-Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Signed-off-by: Okan Sahin <okan.sahin@analog.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/iio/light/rohm-bu27034.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ .../devicetree/bindings/mfd/adi,max77541.yaml | 68 +++++++++++++++++++
+ 1 file changed, 68 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/adi,max77541.yaml
 
-diff --git a/drivers/iio/light/rohm-bu27034.c b/drivers/iio/light/rohm-bu27=
-034.c
-index e486dcf35eba..6044db52abfa 100644
---- a/drivers/iio/light/rohm-bu27034.c
-+++ b/drivers/iio/light/rohm-bu27034.c
-@@ -1171,7 +1171,7 @@ static int bu27034_read_raw(struct iio_dev *idev,
- 		if (*val < 0)
- 			return *val;
-=20
--		return IIO_VAL_INT;
-+		return IIO_VAL_INT_MICRO;
-=20
- 	case IIO_CHAN_INFO_SCALE:
- 		return bu27034_get_scale(data, chan->channel, val, val2);
-@@ -1229,7 +1229,10 @@ static int bu27034_write_raw(struct iio_dev *idev,
- 		ret =3D bu27034_set_scale(data, chan->channel, val, val2);
- 		break;
- 	case IIO_CHAN_INFO_INT_TIME:
--		ret =3D bu27034_try_set_int_time(data, val);
-+		if (val)
-+			return -EINVAL;
+diff --git a/Documentation/devicetree/bindings/mfd/adi,max77541.yaml b/Documentation/devicetree/bindings/mfd/adi,max77541.yaml
+new file mode 100644
+index 000000000000..c7895b2c38c9
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/adi,max77541.yaml
+@@ -0,0 +1,68 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/adi,max77541.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+		ret =3D bu27034_try_set_int_time(data, val2);
- 		break;
- 	default:
- 		ret =3D -EINVAL;
---=20
-2.39.2
++title: MAX77540/MAX77541 PMIC from ADI
++
++maintainers:
++  - Okan Sahin <okan.sahin@analog.com>
++
++description: |
++  MAX77540 is a Power Management IC with 2 buck regulators.
++
++  MAX77541 is a Power Management IC with 2 buck regulators and 1 ADC.
++
++properties:
++  compatible:
++    enum:
++      - adi,max77540
++      - adi,max77541
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  regulators:
++    $ref: /schemas/regulator/adi,max77541-regulator.yaml#
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        pmic@69 {
++            compatible = "adi,max77541";
++            reg = <0x69>;
++            interrupt-parent = <&gpio>;
++            interrupts = <16 IRQ_TYPE_EDGE_FALLING>;
++
++            regulators {
++                buck1 {
++                    regulator-min-microvolt = <500000>;
++                    regulator-max-microvolt = <5200000>;
++                    regulator-boot-on;
++                    regulator-always-on;
++                };
++                buck2 {
++                    regulator-min-microvolt = <500000>;
++                    regulator-max-microvolt = <5200000>;
++                    regulator-boot-on;
++                    regulator-always-on;
++                };
++            };
++        };
++    };
+-- 
+2.30.2
 
-
---=20
-Matti Vaittinen, Linux device drivers
-ROHM Semiconductors, Finland SWDC
-Kiviharjunlenkki 1E
-90220 OULU
-FINLAND
-
-~~~ "I don't think so," said Rene Descartes. Just then he vanished ~~~
-Simon says - in Latin please.
-~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
-Thanks to Simon Glass for the translation =3D]=20
-
---vA0ECADkg+SHgofM
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmQ2pA0ACgkQeFA3/03a
-ocWH3wf8DaSDIHX7rDqA/ad9esTevVATPHgoYuabnwMXKq3CotOxP94wplRCTiG8
-dT0MOD/b+l91++exduQfwxMEgvsQ0U0RMdfyJxF7NYamj0fJanyl49piWjpTi8G2
-8wGg/+6sRJ/ZOcYWxpKoKgbwVh8PaCF/8FMTBf0SeWsfdpH3CYlq3S5RBUqDKpG4
-6AT6S6iK5TgxEX8B2m9sUoHs0NyvswA/EIaGtYlQ4blDeZMLvsi+ETpDdWV/H5Vi
-fXkxWizLQg0rLiz6vm8azwPPbFImAmKyDd14zItcaDcvtyhkUVSU1lZWN2gz4mSX
-TzX6xozVJENpSgZRitq9c5roJjbBKQ==
-=x8/X
------END PGP SIGNATURE-----
-
---vA0ECADkg+SHgofM--
