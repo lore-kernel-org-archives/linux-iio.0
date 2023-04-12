@@ -2,169 +2,193 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24069C7619A
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Apr 2023 13:04:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A0BC77B6E
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Apr 2023 13:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbjDLNEJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Apr 2023 09:04:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57002 "EHLO
+        id S229978AbjDLNiG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Apr 2023 09:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229792AbjDLNEI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Apr 2023 09:04:08 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7215468E;
-        Wed, 12 Apr 2023 06:04:04 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33C7u5EY002846;
-        Wed, 12 Apr 2023 07:15:44 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3pu248y0kf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Apr 2023 07:15:43 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 33CBFgxY011946
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 12 Apr 2023 07:15:42 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 12 Apr
- 2023 07:15:41 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 12 Apr 2023 07:15:41 -0400
-Received: from okan.localdomain ([10.158.19.61])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 33CBD6Dt007710;
-        Wed, 12 Apr 2023 07:15:24 -0400
-From:   Okan Sahin <okan.sahin@analog.com>
-To:     <okan.sahin@analog.com>
-CC:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S229523AbjDLNiE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Apr 2023 09:38:04 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719491709;
+        Wed, 12 Apr 2023 06:38:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681306682; x=1712842682;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=pnUjDJ/xUCsHQjHZB7cPemWJJbBm5AuX1hvD8ONxtnY=;
+  b=BdkbXRm6HE3LEU7IkzTiyAOuUWq64mFlkicXZOFDUDqfw2AbzjIRlldq
+   R5OcaMj/05R1c0mCwLLMl9AoGdXq8oa/6+hL5+cxQfkKpQouGlg6gk/bg
+   icttqWGOlAo0UKLFb655agU+YiIldiURQ3Uyamou0IbQB701iRAndcTco
+   kEaY7Qqe2Fzwh7Jk66AW3DI+1SQ/sz87gUpdZlIWBsuq42B01K8YOQCgt
+   2RHiKBc5m5DCdCej3lvR8m9cMY5Ig4NyDO78CrTCZ9D2xvmv92wDbpvdJ
+   7LBWi/P8bZJIIV8dLlXnDVPUcxeiiTv2vRJr9oGrO2ENQQyUlqPTaV+bI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="323520851"
+X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
+   d="scan'208";a="323520851"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 06:38:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="1018745687"
+X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
+   d="scan'208";a="1018745687"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga005.fm.intel.com with ESMTP; 12 Apr 2023 06:37:58 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pmafc-00FxVI-2F;
+        Wed, 12 Apr 2023 16:37:56 +0300
+Date:   Wed, 12 Apr 2023 16:37:56 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        Ramona Bolboaca <ramona.bolboaca@analog.com>,
-        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        Caleb Connolly <caleb.connolly@linaro.org>,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        =?UTF-8?q?Leonard=20G=C3=B6hrs?= <l.goehrs@pengutronix.de>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: [PATCH v7 4/5] dt-bindings: mfd: max77541: Add ADI MAX77541/MAX77540
-Date:   Wed, 12 Apr 2023 14:12:45 +0300
-Message-ID: <20230412111256.40013-5-okan.sahin@analog.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230412111256.40013-1-okan.sahin@analog.com>
-References: <20230412111256.40013-1-okan.sahin@analog.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        Paul Gazzillo <paul@pgazz.com>,
+        Zhigang Shi <Zhigang.Shi@liteon.com>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Subject: Re: [RFC PATCH 2/2] iio: light: Add support for APDS9306 Light Sensor
+Message-ID: <ZDa0NIot/4aRJ0pI@smile.fi.intel.com>
+References: <20230411011203.5013-1-subhajit.ghosh@tweaklogic.com>
+ <20230411011203.5013-3-subhajit.ghosh@tweaklogic.com>
+ <ZDVWB9xV9Cdbwyqd@smile.fi.intel.com>
+ <ab1d9746-4d23-efcc-0ee1-d2b8c634becd@tweaklogic.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: 9vgMoALRQFoZilUGsFMFhYSANBwCRZxz
-X-Proofpoint-GUID: 9vgMoALRQFoZilUGsFMFhYSANBwCRZxz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-12_03,2023-04-12_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- bulkscore=0 priorityscore=1501 mlxlogscore=997 adultscore=0 suspectscore=0
- spamscore=0 malwarescore=0 lowpriorityscore=0 impostorscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303200000 definitions=main-2304120099
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ab1d9746-4d23-efcc-0ee1-d2b8c634becd@tweaklogic.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add ADI MAX77541/MAX77540 devicetree document.
+On Wed, Apr 12, 2023 at 12:29:15PM +0800, Subhajit Ghosh wrote:
 
-Signed-off-by: Okan Sahin <okan.sahin@analog.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../devicetree/bindings/mfd/adi,max77541.yaml | 68 +++++++++++++++++++
- 1 file changed, 68 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/adi,max77541.yaml
+...
 
-diff --git a/Documentation/devicetree/bindings/mfd/adi,max77541.yaml b/Documentation/devicetree/bindings/mfd/adi,max77541.yaml
-new file mode 100644
-index 000000000000..c7895b2c38c9
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/adi,max77541.yaml
-@@ -0,0 +1,68 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/adi,max77541.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MAX77540/MAX77541 PMIC from ADI
-+
-+maintainers:
-+  - Okan Sahin <okan.sahin@analog.com>
-+
-+description: |
-+  MAX77540 is a Power Management IC with 2 buck regulators.
-+
-+  MAX77541 is a Power Management IC with 2 buck regulators and 1 ADC.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,max77540
-+      - adi,max77541
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  regulators:
-+    $ref: /schemas/regulator/adi,max77541-regulator.yaml#
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        pmic@69 {
-+            compatible = "adi,max77541";
-+            reg = <0x69>;
-+            interrupt-parent = <&gpio>;
-+            interrupts = <16 IRQ_TYPE_EDGE_FALLING>;
-+
-+            regulators {
-+                buck1 {
-+                    regulator-min-microvolt = <500000>;
-+                    regulator-max-microvolt = <5200000>;
-+                    regulator-boot-on;
-+                    regulator-always-on;
-+                };
-+                buck2 {
-+                    regulator-min-microvolt = <500000>;
-+                    regulator-max-microvolt = <5200000>;
-+                    regulator-boot-on;
-+                    regulator-always-on;
-+                };
-+            };
-+        };
-+    };
+> > > +static const struct regmap_config apds9306_regmap = {
+> > > +	.name = "apds9306_regmap",
+> > > +	.reg_bits = 8,
+> > > +	.val_bits = 8,
+> > > +	.rd_table = &apds9306_readable_table,
+> > > +	.wr_table = &apds9306_writable_table,
+> > > +	.volatile_table = &apds9306_volatile_table,
+> > > +	.precious_table = &apds9306_precious_table,
+> > > +	.max_register = APDS9306_ALS_THRES_VAR,
+> > > +	.cache_type = REGCACHE_RBTREE,
+> > 
+> > Do you need an internal regmap lock? If so, why?
+> For event interface - interrupt enable, adaptive interrupt enable,
+> upper and lower threshold values, selection of clear or als
+> channels for interrupt, the mutex in the driver's private data structure
+> is not used.
+> I thought to use the regmap's internal locking mechanism for
+> mutual exclusion as the values are directly written to or read from
+> the device registers form the write_event(), read_event(),
+> write_event_config() and read_event_config().
+> What do you think?
+
+I didn't get. If you have a sequence of registers to be read/write/modified/etc
+in IRQ handler and/or elsewhere and at the same time in IRQ or elsewhere you
+have even a single IO access to the hardware you have to be sure that the IO
+ordering has no side effects. regmap API does not guarantee that. It only works
+on a simple read/write/modify of a _single_ register, or a coupled group of
+registers (like bulk ops), if your case is sparse, you on your own and probably
+lucky enough not to have an issue during the testing. So, take your time and
+think more about what you are doing in the driver and what locking schema
+should take place.
+
+...
+
+> > > +static int apds9306_power_state(struct apds9306_data *data,
+> > > +		enum apds9306_power_states state)
+> > > +{
+> > > +	int ret;
+> > > +
+> > > +	/* Reset not included as it causes ugly I2C bus error */
+> > > +	switch (state) {
+> > > +	case standby:
+> > > +		return regmap_field_write(data->regfield_en, 0);
+> > > +	case active:
+> > > +		ret = regmap_field_write(data->regfield_en, 1);
+> > > +		if (ret)
+> > > +			return ret;
+> > > +		/* 5ms wake up time */
+> > > +		usleep_range(5000, 10000);
+> > > +		break;
+> > > +	default:
+> > > +		return -EINVAL;
+> > > +	}
+> > 
+> > > +	return 0;
+> > 
+> > Move that to a single user of this line inside the switch-case.
+> Sorry, I did not get you. Can you please elaborate?
+
+The user of this return is only one case in the switch. Instead of breaking
+the switch-case, just move this return statement to there.
+
+...
+
+> > > +	struct device *dev = &data->client->dev;
+> > 
+> > Why data contains I²C client pointer, what for?
+> I copied the implementation. It will be re-implemented.
+
+I mean, how client pointer is used in comparison to the plain pointer to the
+generic device object.
+
+...
+
+> > > +		while (retries--) {
+> > > +			ret = regmap_read(data->regmap, APDS9306_MAIN_STATUS,
+> > > +					&status);
+> > > +			if (ret) {
+> > > +				dev_err(dev, "read status failed: %d\n", ret);
+> > > +				return ret;
+> > > +			}
+> > > +			if (status & APDS9306_ALS_DATA_STAT_MASK)
+> > > +				break;
+> > > +			/*
+> > > +			 * In case of continuous one-shot read from userspace,
+> > > +			 * new data is available after sampling period.
+> > > +			 * Delays are in the range of 25ms to 2secs.
+> > > +			 */
+> > > +			fsleep(delay);
+> > > +		}
+> > 
+> > regmap_read_poll_timeout().
+> According to the regmap_read_poll_timeout() documentation, the maximum time
+> to sleep between reads should be less than ~20ms as it uses usleep_range().
+> 
+> If userspace is doing continuous reads, then data is available after sampling
+> period (25ms to 2sec) or integration time (3.125ms to 400ms) whichever is
+> greater.
+> 
+> The runtime_suspend() function is called after 5 seconds, so the device is
+> still active and running.
+> 
+> If the ALS data bit is not set in status reg, it is efficient to sleep for
+> one sampling period rather than continuously checking the status reg
+> within ~20ms if we use regmap_read_poll_timeout().
+> 
+> Do you have any suggestions?
+
+Yes, Use proposed API. It takes _two_ timeout parameters, one of which is the
+same as your delay. You may actually resplit it by multiplying retries and
+decreasing delay to satisfy the regmap_read_poll_timeout() recommendation.
+
 -- 
-2.30.2
+With Best Regards,
+Andy Shevchenko
+
 
