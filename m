@@ -2,46 +2,49 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6639AC7619A
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Apr 2023 12:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1539CC77B71
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Apr 2023 12:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbjDLMBz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Apr 2023 08:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43358 "EHLO
+        id S229720AbjDLMXI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Apr 2023 08:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231207AbjDLMBy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Apr 2023 08:01:54 -0400
+        with ESMTP id S229604AbjDLMXH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Apr 2023 08:23:07 -0400
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329BE8A51;
-        Wed, 12 Apr 2023 05:01:12 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33CAl9rR011901;
-        Wed, 12 Apr 2023 07:14:19 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3pu568660b-1
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A916730EE;
+        Wed, 12 Apr 2023 05:23:01 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33C7u5EU002846;
+        Wed, 12 Apr 2023 07:15:22 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3pu248y0j2-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Apr 2023 07:14:18 -0400
+        Wed, 12 Apr 2023 07:15:22 -0400
+Received: from m0167088.ppops.net (m0167088.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 33CBAOTv015431;
+        Wed, 12 Apr 2023 07:15:22 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3pu248y0hy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 12 Apr 2023 07:15:21 -0400
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 33CBEHkL011772
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 33CBFKsD011891
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 12 Apr 2023 07:14:17 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Wed, 12 Apr 2023 07:14:16 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Wed, 12 Apr 2023 07:14:16 -0400
+        Wed, 12 Apr 2023 07:15:20 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 12 Apr
+ 2023 07:15:19 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 12 Apr 2023 07:14:16 -0400
+ Transport; Wed, 12 Apr 2023 07:15:17 -0400
 Received: from okan.localdomain ([10.158.19.61])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 33CBD6Dq007710;
-        Wed, 12 Apr 2023 07:13:54 -0400
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 33CBD6Ds007710;
+        Wed, 12 Apr 2023 07:14:48 -0400
 From:   Okan Sahin <okan.sahin@analog.com>
 To:     <okan.sahin@analog.com>
-CC:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+CC:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
@@ -50,19 +53,21 @@ CC:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Cosmin Tanislav <demonsingur@gmail.com>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        =?UTF-8?q?Leonard=20G=C3=B6hrs?= <l.goehrs@pengutronix.de>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        "Ibrahim Tilki" <Ibrahim.Tilki@analog.com>,
+        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Ramona Bolboaca <ramona.bolboaca@analog.com>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        "William Breathitt Gray" <william.gray@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Haibo Chen <haibo.chen@nxp.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: [PATCH v7 1/5] dt-bindings: regulator: max77541: Add ADI MAX77541/MAX77540 Regulator
-Date:   Wed, 12 Apr 2023 14:12:42 +0300
-Message-ID: <20230412111256.40013-2-okan.sahin@analog.com>
+        Caleb Connolly <caleb.connolly@linaro.org>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Haibo Chen <haibo.chen@nxp.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: [PATCH v7 3/5] iio: adc: max77541: Add ADI MAX77541 ADC Support
+Date:   Wed, 12 Apr 2023 14:12:44 +0300
+Message-ID: <20230412111256.40013-4-okan.sahin@analog.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230412111256.40013-1-okan.sahin@analog.com>
 References: <20230412111256.40013-1-okan.sahin@analog.com>
@@ -70,73 +75,266 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: uMl-vrkMTyECWnugPItD9M3h0srhXpHG
-X-Proofpoint-ORIG-GUID: uMl-vrkMTyECWnugPItD9M3h0srhXpHG
+X-Proofpoint-ORIG-GUID: 0i3YrcZW_hgAkp0bs3hcTFczbCGyG667
+X-Proofpoint-GUID: nbhesWWNJllfVaI3bu5oygyEWRT1VOi-
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-04-12_03,2023-04-12_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
- mlxlogscore=999 lowpriorityscore=0 phishscore=0 spamscore=0 suspectscore=0
- priorityscore=1501 mlxscore=0 malwarescore=0 clxscore=1015 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303200000
- definitions=main-2304120099
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ bulkscore=0 priorityscore=1501 mlxlogscore=999 adultscore=0 suspectscore=0
+ spamscore=0 malwarescore=0 lowpriorityscore=0 impostorscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2304120099
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add ADI MAX77541/MAX77540 Regulator devicetree document.
+The MAX77541 has an 8-bit Successive Approximation Register (SAR) ADC
+with four multiplexers for supporting the telemetry feature.
 
 Signed-off-by: Okan Sahin <okan.sahin@analog.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- .../regulator/adi,max77541-regulator.yaml     | 38 +++++++++++++++++++
- 1 file changed, 38 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/regulator/adi,max77541-regulator.yaml
+ drivers/iio/adc/Kconfig        |  11 ++
+ drivers/iio/adc/Makefile       |   1 +
+ drivers/iio/adc/max77541-adc.c | 194 +++++++++++++++++++++++++++++++++
+ 3 files changed, 206 insertions(+)
+ create mode 100644 drivers/iio/adc/max77541-adc.c
 
-diff --git a/Documentation/devicetree/bindings/regulator/adi,max77541-regulator.yaml b/Documentation/devicetree/bindings/regulator/adi,max77541-regulator.yaml
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 45af2302be53..518e7bd453aa 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -735,6 +735,17 @@ config MAX1363
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called max1363.
+ 
++config MAX77541_ADC
++	tristate "Analog Devices MAX77541 ADC driver"
++	depends on MFD_MAX77541
++	help
++	  This driver controls a Analog Devices MAX77541 ADC
++	  via I2C bus. This device has one adc. Say yes here to build
++	  support for Analog Devices MAX77541 ADC interface.
++
++	  To compile this driver as a module, choose M here:
++	  the module will be called max77541-adc.
++
+ config MAX9611
+ 	tristate "Maxim max9611/max9612 ADC driver"
+ 	depends on I2C
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 36c18177322a..f8433b560c3b 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -67,6 +67,7 @@ obj-$(CONFIG_MAX11205) += max11205.o
+ obj-$(CONFIG_MAX11410) += max11410.o
+ obj-$(CONFIG_MAX1241) += max1241.o
+ obj-$(CONFIG_MAX1363) += max1363.o
++obj-$(CONFIG_MAX77541_ADC) += max77541-adc.o
+ obj-$(CONFIG_MAX9611) += max9611.o
+ obj-$(CONFIG_MCP320X) += mcp320x.o
+ obj-$(CONFIG_MCP3422) += mcp3422.o
+diff --git a/drivers/iio/adc/max77541-adc.c b/drivers/iio/adc/max77541-adc.c
 new file mode 100644
-index 000000000000..9e36d5467b56
+index 000000000000..21d024bde16b
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/regulator/adi,max77541-regulator.yaml
-@@ -0,0 +1,38 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/regulator/adi,max77541-regulator.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/drivers/iio/adc/max77541-adc.c
+@@ -0,0 +1,194 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (c) 2022 Analog Devices, Inc.
++ * ADI MAX77541 ADC Driver with IIO interface
++ */
 +
-+title: Buck Converter for MAX77540/MAX77541
++#include <linux/bitfield.h>
++#include <linux/iio/iio.h>
++#include <linux/mod_devicetable.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/units.h>
 +
-+maintainers:
-+  - Okan Sahin <okan.sahin@analog.com>
++#include <linux/mfd/max77541.h>
 +
-+description: |
-+  This is a part of device tree bindings for ADI MAX77540/MAX77541
++enum max77541_adc_range {
++	LOW_RANGE,
++	MID_RANGE,
++	HIGH_RANGE,
++};
 +
-+  The buck converter is represented as a sub-node of the PMIC node on the device tree.
++enum max77541_adc_channel {
++	MAX77541_ADC_VSYS_V,
++	MAX77541_ADC_VOUT1_V,
++	MAX77541_ADC_VOUT2_V,
++	MAX77541_ADC_TEMP,
++};
 +
-+  The device has two buck regulators.
-+  See also Documentation/devicetree/bindings/mfd/adi,max77541.yaml for
-+  additional information and example.
++static int max77541_adc_offset(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       int *val, int *val2)
++{
++	switch (chan->channel) {
++	case MAX77541_ADC_TEMP:
++		*val = DIV_ROUND_CLOSEST(ABSOLUTE_ZERO_MILLICELSIUS, 1725);
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++}
 +
-+patternProperties:
-+  "^buck[12]$":
-+    type: object
-+    $ref: regulator.yaml#
-+    additionalProperties: false
-+    description: |
-+      Buck regulator.
++static int max77541_adc_scale(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      int *val, int *val2)
++{
++	struct regmap **regmap = iio_priv(indio_dev);
++	unsigned int reg_val;
++	int ret;
 +
-+    properties:
-+      regulator-name: true
-+      regulator-always-on: true
-+      regulator-boot-on: true
-+      regulator-min-microvolt:
-+        minimum: 300000
-+      regulator-max-microvolt:
-+        maximum: 5200000
++	switch (chan->channel) {
++	case MAX77541_ADC_VSYS_V:
++		*val = 25;
++		return IIO_VAL_INT;
++	case MAX77541_ADC_VOUT1_V:
++	case MAX77541_ADC_VOUT2_V:
++		ret = regmap_read(*regmap, MAX77541_REG_M2_CFG1, &reg_val);
++		if (ret)
++			return ret;
 +
-+additionalProperties: false
++		reg_val = FIELD_GET(MAX77541_BITS_MX_CFG1_RNG, reg_val);
++		switch (reg_val) {
++		case LOW_RANGE:
++			*val = 6;
++			*val2 = 250000;
++			break;
++		case MID_RANGE:
++			*val = 12;
++			*val2 = 500000;
++			break;
++		case HIGH_RANGE:
++			*val = 25;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++
++		return IIO_VAL_INT_PLUS_MICRO;
++	case MAX77541_ADC_TEMP:
++		*val = 1725;
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int max77541_adc_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val)
++{
++	struct regmap **regmap = iio_priv(indio_dev);
++	int ret;
++
++	ret = regmap_read(*regmap, chan->address, val);
++	if (ret)
++		return ret;
++
++	return IIO_VAL_INT;
++}
++
++#define MAX77541_ADC_CHANNEL_V(_channel, _name, _type, _reg) \
++	{							\
++		.type = _type,					\
++		.indexed = 1,					\
++		.channel = _channel,				\
++		.address = _reg,				\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
++				      BIT(IIO_CHAN_INFO_SCALE), \
++		.datasheet_name = _name,			\
++	}
++
++#define MAX77541_ADC_CHANNEL_TEMP(_channel, _name, _type, _reg) \
++	{							\
++		.type = _type,					\
++		.indexed = 1,					\
++		.channel = _channel,				\
++		.address = _reg,				\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
++				      BIT(IIO_CHAN_INFO_SCALE) |\
++				      BIT(IIO_CHAN_INFO_OFFSET),\
++		.datasheet_name = _name,			\
++	}
++
++static const struct iio_chan_spec max77541_adc_channels[] = {
++	MAX77541_ADC_CHANNEL_V(MAX77541_ADC_VSYS_V, "vsys_v", IIO_VOLTAGE,
++			       MAX77541_REG_ADC_DATA_CH1),
++	MAX77541_ADC_CHANNEL_V(MAX77541_ADC_VOUT1_V, "vout1_v", IIO_VOLTAGE,
++			       MAX77541_REG_ADC_DATA_CH2),
++	MAX77541_ADC_CHANNEL_V(MAX77541_ADC_VOUT2_V, "vout2_v", IIO_VOLTAGE,
++			       MAX77541_REG_ADC_DATA_CH3),
++	MAX77541_ADC_CHANNEL_TEMP(MAX77541_ADC_TEMP, "temp", IIO_TEMP,
++				  MAX77541_REG_ADC_DATA_CH6),
++};
++
++static int max77541_adc_read_raw(struct iio_dev *indio_dev,
++				 struct iio_chan_spec const *chan,
++				 int *val, int *val2, long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_OFFSET:
++		return max77541_adc_offset(indio_dev, chan, val, val2);
++	case IIO_CHAN_INFO_SCALE:
++		return max77541_adc_scale(indio_dev, chan, val, val2);
++	case IIO_CHAN_INFO_RAW:
++		return max77541_adc_raw(indio_dev, chan, val);
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info max77541_adc_info = {
++	.read_raw = max77541_adc_read_raw,
++};
++
++static int max77541_adc_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct iio_dev *indio_dev;
++	struct regmap **regmap;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*regmap));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	regmap = iio_priv(indio_dev);
++
++	*regmap = dev_get_regmap(dev->parent, NULL);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	indio_dev->name = "max77541";
++	indio_dev->info = &max77541_adc_info;
++	indio_dev->channels = max77541_adc_channels;
++	indio_dev->num_channels = ARRAY_SIZE(max77541_adc_channels);
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static const struct platform_device_id max77541_adc_platform_id[] = {
++	{ "max77541-adc" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(platform, max77541_adc_platform_id);
++
++static struct platform_driver max77541_adc_driver = {
++	.driver = {
++		.name = "max77541-adc",
++	},
++	.probe = max77541_adc_probe,
++	.id_table = max77541_adc_platform_id,
++};
++module_platform_driver(max77541_adc_driver);
++
++MODULE_AUTHOR("Okan Sahin <Okan.Sahin@analog.com>");
++MODULE_DESCRIPTION("MAX77541 ADC driver");
++MODULE_LICENSE("GPL");
 -- 
 2.30.2
 
