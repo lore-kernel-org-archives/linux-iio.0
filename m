@@ -2,106 +2,118 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A2BC77B6E
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Apr 2023 21:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81124C77B76
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Apr 2023 23:18:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229567AbjDMVXw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 13 Apr 2023 17:23:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
+        id S230416AbjDMXSR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 13 Apr 2023 19:18:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbjDMVXw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Apr 2023 17:23:52 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317D249D1
-        for <linux-iio@vger.kernel.org>; Thu, 13 Apr 2023 14:23:51 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pn4Py-0004rB-4n; Thu, 13 Apr 2023 23:23:46 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pn4Pu-00B3Td-SR; Thu, 13 Apr 2023 23:23:42 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pn4Pu-00CzGq-3G; Thu, 13 Apr 2023 23:23:42 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc:     Olivier Moysan <olivier.moysan@foss.st.com>,
-        linux-iio@vger.kernel.org, Lee Jones <lee@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2] counter: stm32-timer-cnt: Reset TIM_TISEL to its default value in probe
-Date:   Thu, 13 Apr 2023 23:23:39 +0200
-Message-Id: <20230413212339.3611722-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S229820AbjDMXSR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Apr 2023 19:18:17 -0400
+Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C908BE1;
+        Thu, 13 Apr 2023 16:18:15 -0700 (PDT)
+Received: from [192.168.178.23] (unknown [62.108.10.64])
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 24979D0C50;
+        Thu, 13 Apr 2023 23:18:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=z3ntu.xyz; s=z3ntu;
+        t=1681427894; bh=4Q57cOxz+lYlEwmm+I38ufedAPx45aCnfTXWfnz7tmk=;
+        h=From:Date:Subject:References:In-Reply-To:To:Cc;
+        b=f7MmPelu/Wcs3poFCFUUu097g5/9nFwaDFVTgboDcju6vZdRrKVGG9m9gJnjgvbeZ
+         uJPFt2bPIJd4j9eMdhzrZT+ic2amVkoK8G73P9taVa3Ltab9jLJaNKlZE2YNa/esEe
+         JUxPDoOyOYgox8zDypDP7fbzGlTENRL9DdA+Cx90=
+From:   Luca Weiss <luca@z3ntu.xyz>
+Date:   Fri, 14 Apr 2023 01:17:48 +0200
+Subject: [PATCH 4/8] leds: qcom-lpg: Add support for PMI632 LPG
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1841; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=vxtaBmxwNsBkr9CdtdCf+mVLWRBggCM6EPnGO9VbZeY=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkOHLZP6hHl9jieHDPCcxLcjQxJ/8Ne4sNwuePK TlBhuZ4IxyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZDhy2QAKCRCPgPtYfRL+ Tr6DB/4tCTTgUX3YN1QgGIcU6A0L0zrWPI1weshKJPCTfVssBBfSkNNltw6R4oGgeyTytC/KvRR B1g+lOIxVkWzJJjTrgJth/kIJBddPzXIl6RyLxna/0Yan0+cr3enI0HaNwgOLQsQBSdFUoKzIwa gV6SFTAoB9RfTuXoWXz6wYCsodwZHOMdMrjLdq54ivczK+Uco86JTA8QGaShoROWnhU8gFo5xB1 1pZRzOt1g+OOLQ/A8LN8nFOUsPJkFDwsNgyoLuMPU9fsrrpNFFhBFiZmUMzUad2c00WuxpIwjm2 NZwXX1xo1R+oEvZYObv5E50hyEYQPfhYm165gP5OaKV7QBSd
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230414-pmi632-v1-4-fe94dc414832@z3ntu.xyz>
+References: <20230414-pmi632-v1-0-fe94dc414832@z3ntu.xyz>
+In-Reply-To: <20230414-pmi632-v1-0-fe94dc414832@z3ntu.xyz>
+To:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-iio@vger.kernel.org,
+        Luca Weiss <luca@z3ntu.xyz>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1771; i=luca@z3ntu.xyz;
+ h=from:subject:message-id; bh=4Q57cOxz+lYlEwmm+I38ufedAPx45aCnfTXWfnz7tmk=;
+ b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBkOI2w4ji/JSdN8pwMAx9rdvdxYBMkGFfcSN6T+
+ RbXbb6fs16JAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZDiNsAAKCRBy2EO4nU3X
+ Vu5xEACAExu0wzlBGq2iCUgTIGmn2DnQNk7ea59TuiJ2A0KhXIDascR0hbVtdKLJbEV1YNR813D
+ FcuEOBioCmY+yMNpnm0RvBnbM1GMQH98Q4vCyxc79RD5itEFQAMmezyjlrohgBRXctoZxFrc9K4
+ FxWyf267gY2rOYEmplFo6bUD+qNfnzDySEV1K0a/6Y/RLHzt8vh7YwS7I7R/6O5xY6m+eiYDxSE
+ VGsNAfd965WGdmXhCrrAI/VmrC6A7gwgKs01Xm7f4qulWROck+O6UwIi/AqD8DnO6AYvD9bYoGV
+ rnf3J7ZvymqNX2ab21zlEZFNAoB18i4Ni57gV28Wijfaif1CFTeLM2NCX3zYYImtnlzGxwZkBKB
+ ZTaclMDPVEgYHAkMVVHPwm0skb5Wu8r6yd4gaRhPbqJnwO31CKqyp5K36tONqEcKKgo1E9TofiE
+ +FsHqY4QhoF1hw6OoPW9UguFDekvst6yR55tpGhfShND4HHTGgQqKtUr/MuD2x8sYUYq3+TCPxa
+ rDNXprHv9j9gvem0nggjUiMcq6fidHdXdE6ReBdk6AwK+hn3MMWQgBT3k1tXN2uIS637eCWwv8n
+ 1S8rlmTTXLn/C7qilIcv9VNkEHSgiQr73X3s5vXgxyjc1kxUU8RRttmujZuH1UqPOlxdNa2Tbzf
+ EJPEzySAQu1fyQQ==
+X-Developer-Key: i=luca@z3ntu.xyz; a=openpgp;
+ fpr=BD04DA24C971B8D587B2B8D7FAF69CF6CD2D02CD
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The driver assumes that the input selection register (TIM_TISEL) is at
-its reset default value. Usually this is the case, but the bootloader
-might have modified it.
+The PMI632 PMIC contains 5 PWM channels, 3 of which can be used for
+LEDs.
 
-This bases on a similar patch submitted by Olivier Moysan for pwm-stm32.
+For the LED pattern it doesn't have LUT like other PMICs but uses SDAM
+instead. This is not currently implemented in the driver but since LPG
+works fine without it, add support for the PMIC now.
 
-Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
 ---
-Changes since (implicit) v1 sent with Message-Id:
-20230412153709.3557323-1-u.kleine-koenig@pengutronix.de .
+ drivers/leds/rgb/leds-qcom-lpg.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
- - Only reset TIM_TISEL as suggested by Fabrice
- - Add Fabrice's Review tag
-
- drivers/counter/stm32-timer-cnt.c | 3 +++
- include/linux/mfd/stm32-timers.h  | 1 +
- 2 files changed, 4 insertions(+)
-
-diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
-index 9bf20a5d6bda..6206d2dc3d47 100644
---- a/drivers/counter/stm32-timer-cnt.c
-+++ b/drivers/counter/stm32-timer-cnt.c
-@@ -342,6 +342,9 @@ static int stm32_timer_cnt_probe(struct platform_device *pdev)
+diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-qcom-lpg.c
+index 67f48f222109..51763ecb8c1e 100644
+--- a/drivers/leds/rgb/leds-qcom-lpg.c
++++ b/drivers/leds/rgb/leds-qcom-lpg.c
+@@ -1353,6 +1353,20 @@ static const struct lpg_data pm8994_lpg_data = {
+ 	},
+ };
  
- 	platform_set_drvdata(pdev, priv);
- 
-+	/* Reset input selector to its default input */
-+	regmap_write(priv->regmap, TIM_TISEL, 0x0);
++/* PMI632 uses SDAM instead of LUT for pattern */
++static const struct lpg_data pmi632_lpg_data = {
++	.triled_base = 0xd000,
 +
- 	/* Register Counter device */
- 	ret = devm_counter_add(dev, counter);
- 	if (ret < 0)
-diff --git a/include/linux/mfd/stm32-timers.h b/include/linux/mfd/stm32-timers.h
-index 5f5c43fd69dd..1b94325febb3 100644
---- a/include/linux/mfd/stm32-timers.h
-+++ b/include/linux/mfd/stm32-timers.h
-@@ -31,6 +31,7 @@
- #define TIM_BDTR	0x44	/* Break and Dead-Time Reg */
- #define TIM_DCR		0x48	/* DMA control register    */
- #define TIM_DMAR	0x4C	/* DMA register for transfer */
-+#define TIM_TISEL	0x68	/* Input Selection         */
- 
- #define TIM_CR1_CEN	BIT(0)	/* Counter Enable	   */
- #define TIM_CR1_DIR	BIT(4)  /* Counter Direction	   */
++	.num_channels = 5,
++	.channels = (const struct lpg_channel_data[]) {
++		{ .base = 0xb300, .triled_mask = BIT(7) },
++		{ .base = 0xb400, .triled_mask = BIT(6) },
++		{ .base = 0xb500, .triled_mask = BIT(5) },
++		{ .base = 0xb600 },
++		{ .base = 0xb700 },
++	},
++};
++
+ static const struct lpg_data pmi8994_lpg_data = {
+ 	.lut_base = 0xb000,
+ 	.lut_size = 24,
+@@ -1436,6 +1450,7 @@ static const struct of_device_id lpg_of_table[] = {
+ 	{ .compatible = "qcom,pm8916-pwm", .data = &pm8916_pwm_data },
+ 	{ .compatible = "qcom,pm8941-lpg", .data = &pm8941_lpg_data },
+ 	{ .compatible = "qcom,pm8994-lpg", .data = &pm8994_lpg_data },
++	{ .compatible = "qcom,pmi632-lpg", .data = &pmi632_lpg_data },
+ 	{ .compatible = "qcom,pmi8994-lpg", .data = &pmi8994_lpg_data },
+ 	{ .compatible = "qcom,pmi8998-lpg", .data = &pmi8998_lpg_data },
+ 	{ .compatible = "qcom,pmc8180c-lpg", .data = &pm8150l_lpg_data },
 
-base-commit: fe15c26ee26efa11741a7b632e9f23b01aca4cc6
 -- 
-2.39.2
+2.40.0
 
