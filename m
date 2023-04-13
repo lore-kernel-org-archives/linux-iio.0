@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E055EC77B79
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Apr 2023 23:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB05AC77B7D
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Apr 2023 23:18:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230265AbjDMXSY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 13 Apr 2023 19:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
+        id S231176AbjDMXSZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 13 Apr 2023 19:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230496AbjDMXST (ORCPT
+        with ESMTP id S230495AbjDMXST (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Apr 2023 19:18:19 -0400
 Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A2BE1;
-        Thu, 13 Apr 2023 16:18:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0BE1BE;
+        Thu, 13 Apr 2023 16:18:17 -0700 (PDT)
 Received: from [192.168.178.23] (unknown [62.108.10.64])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 4364BD0C54;
-        Thu, 13 Apr 2023 23:18:15 +0000 (UTC)
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 6862BD0C51;
+        Thu, 13 Apr 2023 23:18:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1681427895; bh=w9CMcpt8FL5D9w8gvtXVGIn+tTYwLetgcp8M0Diuyuc=;
+        t=1681427894; bh=FCBw8XDNRhE4YdMQX9/OeTPh8F87PXGZsKt/roj2lZA=;
         h=From:Date:Subject:References:In-Reply-To:To:Cc;
-        b=GA3IvBxpJAo6GKEnnPNYlKRFUkbIsQmunIxLvJ75WuHm2ku1FsOaOjRJkljxzDczc
-         KZt+DnRj5QkC8FdVou9jI55Hxnb5+mRT7+CQJmgMRSLb685c84gCM67ewZJ2FMhkwX
-         KfNHfnqpak4Sp7t/Dx/NrdpBdH7NfoRmrKD5BA9s=
+        b=ElRyy3/eGjLjnPL9epuoPuvJamXadHbyXW9hsax22PdmfysDyA4OxOi48PZfQZhXE
+         oTseleVrDue0VWBqM3etXSHC9KoUhgMl6lrUwynII7N4fbIHDfZoCYsFq9bI4CjPSG
+         o/tN0hkw7IeHbPRjUxMZsQ0nA1J8Twuv1v8rqOok=
 From:   Luca Weiss <luca@z3ntu.xyz>
-Date:   Fri, 14 Apr 2023 01:17:52 +0200
-Subject: [PATCH 8/8] arm64: dts: qcom: sdm632-fairphone-fp3: Add
- notification LED
+Date:   Fri, 14 Apr 2023 01:17:49 +0200
+Subject: [PATCH 5/8] dt-bindings: iio: adc: qcom,spmi-vadc: Allow 1/16 for
+ pre-scaling
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230414-pmi632-v1-8-fe94dc414832@z3ntu.xyz>
+Message-Id: <20230414-pmi632-v1-5-fe94dc414832@z3ntu.xyz>
 References: <20230414-pmi632-v1-0-fe94dc414832@z3ntu.xyz>
 In-Reply-To: <20230414-pmi632-v1-0-fe94dc414832@z3ntu.xyz>
 To:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
@@ -49,83 +49,47 @@ Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-leds@vger.kernel.org, linux-iio@vger.kernel.org,
         Luca Weiss <luca@z3ntu.xyz>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1288; i=luca@z3ntu.xyz;
- h=from:subject:message-id; bh=w9CMcpt8FL5D9w8gvtXVGIn+tTYwLetgcp8M0Diuyuc=;
- b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBkOI20vqSS20Hu+GzwUyPjrcf5yFn3OwoDcK3SW
- sCaPClRAjWJAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZDiNtAAKCRBy2EO4nU3X
- VvGHEACde5l9XMhZEVg2BizwgTL7EgMa+l/mV+OnlBR0T1B8F5Z/mOM9azW5C1zJDKjzalN1uwT
- 2mRnvm6OhVPvbtxZei4j2QtPattb1X3aPgz3mqtN+vplnMx+gaAk7XK/0Hq2J9vRyNfmgWhzzC0
- mV7gbGAHpnxPDjfnqIsX7rqfMPV4ZAP+ealRuPv/fo+H2tVzQC8UhgmX0ZBjHTDCWZDtWaiSkFz
- P7A2MqaHylCGawKs3U6rf1URhYIIM7EwWGkOcClWAyNPSb/oefqPUu6LYe5+wzzikG2b5zCsW46
- a4I0s1OblXvu7CMETCM6DJ91OAMgN6Qip+cjRnUYW6oiBvkMve5y0u7FkwSN3iwTALZ7L3JtW/g
- YnEIickkiqu5R2JKvM4UJZHfgQXIVdKJNHirhUKFNxPsXYFzO/ohvWPhjKG0r+ymUyVqbYm6MpO
- XsVEzCGwnIOBitQEYnAyhyIwb5vINMLDSTR5f4bMgxaShAFQHu4Ht+7ofZouyhsEayoihq8C1yJ
- zZ0CBwEZYb9xUOOpQSqvWFqJqZqr4pRW+kL6zCTeJsSupgfXLApStp10r//gnLVSFPIS1TmP04s
- Hoa/fMA0zklHXUqdNQb3sBUSUJOFcEijJGc85k8us+qxKaQGRlanda3yuZrI+utIkUFVxJXs9Ia
- UZvTK1LJCYvXaVg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=907; i=luca@z3ntu.xyz;
+ h=from:subject:message-id; bh=FCBw8XDNRhE4YdMQX9/OeTPh8F87PXGZsKt/roj2lZA=;
+ b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBkOI2xbIPcdKZh9IQXKUO+TxGTsdPhQSARWauW8
+ Ej3E04fojKJAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZDiNsQAKCRBy2EO4nU3X
+ Vi8ZD/9dRAJu9zCMylW34QTtL3TnwNl+kPTu/AcQwhYsqwJ/R6JlAVQ1yYk/jFOjpm7Li26+4AH
+ BuVTQk/Rnc9lLE82C3GhZuW3juTiTOcGAzrANhaYVB/qoVmxmnAmYwypxV7nvSF6i+eeNpM07rk
+ GCNHvQ8q2TPLSse+oFNk2vU5IEnXiCHIDbvvXRe/Ua/jWF21DCRiqDHw1n82BbIJhZu/BBwNtsU
+ kd690cgY/5sYpdvvNrTl6Av31+XZbnjSm5WXKG9Wy27USIQHRhHMNipm/fLVTcBmYgx4Ktz+QQq
+ 7nRDKLG4vNSQi/sqTK6DfG0r6NBvPK+XGJwyOGRonC76oSPf9SOwBUSOfzSke9Vbdzjn+KRoFoM
+ hVyf1dAUgjMHYX7SrbJDAzAMpX4lFeGo/24z+hFf5YcDNlmgStiV8Y8t0+fWed97BRanni93HfT
+ KJy2ywoxzng7sUW8SonyAXGSL/R4Bd/70stichwVYGXVsySlT0c6ui2t8XdAKJkdGfLkFvAmat7
+ TIbFIA2EOoyNUkYqj+yw6/VLdQZ6b2vFsnf8m8EUEJwz28wGYWTA/KEv/Z48nkrQiRdIC6wV0Iv
+ WaqRNBUZbEt0aCTZLgt1Je0BlnO6I4yDeDgNDCc0xuPTw+KzKUl1e/cgauUzu5EeIYA5DeVw9eK
+ wB+viIhCkaZoyqQ==
 X-Developer-Key: i=luca@z3ntu.xyz; a=openpgp;
  fpr=BD04DA24C971B8D587B2B8D7FAF69CF6CD2D02CD
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The phone features a notification LED connected to the pmi632. Configure
-the RGB led found on it.
+The channel ADC5_USB_IN_V_16 is using 1/16 pre-scaling on at least
+pm7250b and pmi632. Allow that in the schema.
 
 Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
 ---
- arch/arm64/boot/dts/qcom/sdm632-fairphone-fp3.dts | 29 +++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm632-fairphone-fp3.dts b/arch/arm64/boot/dts/qcom/sdm632-fairphone-fp3.dts
-index 70e683b7e4fc..301eca9a4f31 100644
---- a/arch/arm64/boot/dts/qcom/sdm632-fairphone-fp3.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm632-fairphone-fp3.dts
-@@ -4,8 +4,10 @@
-  */
- /dts-v1/;
- 
-+#include <dt-bindings/leds/common.h>
- #include "sdm632.dtsi"
- #include "pm8953.dtsi"
-+#include "pmi632.dtsi"
- 
- / {
- 	model = "Fairphone 3";
-@@ -83,6 +85,33 @@ &pm8953_resin {
- 	linux,code = <KEY_VOLUMEDOWN>;
- };
- 
-+&pmi632_lpg {
-+	status = "okay";
-+
-+	multi-led {
-+		color = <LED_COLOR_ID_RGB>;
-+		function = LED_FUNCTION_STATUS;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		led@1 {
-+			reg = <1>;
-+			color = <LED_COLOR_ID_RED>;
-+		};
-+
-+		led@2 {
-+			reg = <2>;
-+			color = <LED_COLOR_ID_GREEN>;
-+		};
-+
-+		led@3 {
-+			reg = <3>;
-+			color = <LED_COLOR_ID_BLUE>;
-+		};
-+	};
-+};
-+
- &sdhc_1 {
- 	status = "okay";
- 	vmmc-supply = <&pm8953_l8>;
+diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
+index bd6e0d6f6e0c..365aa3528a87 100644
+--- a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
+@@ -101,7 +101,7 @@ patternProperties:
+         oneOf:
+           - items:
+               - const: 1
+-              - enum: [ 1, 3, 4, 6, 20, 8, 10 ]
++              - enum: [ 1, 3, 4, 6, 20, 8, 10, 16 ]
+           - items:
+               - const: 10
+               - const: 81
 
 -- 
 2.40.0
