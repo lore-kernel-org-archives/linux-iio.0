@@ -2,41 +2,63 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DE5C7EE22
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Apr 2023 23:19:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D253C77B61
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Apr 2023 23:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231199AbjDMXTa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 13 Apr 2023 19:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
+        id S230344AbjDMX1Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 13 Apr 2023 19:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230284AbjDMXT1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Apr 2023 19:19:27 -0400
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E1155A6;
-        Thu, 13 Apr 2023 16:18:59 -0700 (PDT)
-Received: from [192.168.178.23] (unknown [62.108.10.64])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id B60B6D0C52;
-        Thu, 13 Apr 2023 23:18:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1681427894; bh=mdBEwzgyTkn6OiQX8yDfJw3X7WbLKTich7Ekd7KwYOQ=;
-        h=From:Date:Subject:References:In-Reply-To:To:Cc;
-        b=ZGXKb5o2sU/8p9Z8YCDFMolWXSq8U9QaY4cOG3qFRfYEv/kZQ9nYG3eYbqPEpgpuQ
-         CvYLyE3xNIaL5dRs4Zdj9ZZpOuMMVJ7D7fkJD66wFhBfukpGqZI/8hMAh8vvanKlwT
-         ArPE5iLgeWQCx/uZ+trpn2TuOJQn9yqBC63CM70c=
-From:   Luca Weiss <luca@z3ntu.xyz>
-Date:   Fri, 14 Apr 2023 01:17:50 +0200
-Subject: [PATCH 6/8] dt-bindings: mfd: qcom-spmi-pmic: Add PMI632
- compatible
+        with ESMTP id S230110AbjDMX1P (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Apr 2023 19:27:15 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0630F1BFD
+        for <linux-iio@vger.kernel.org>; Thu, 13 Apr 2023 16:27:13 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id d7so32336628lfj.3
+        for <linux-iio@vger.kernel.org>; Thu, 13 Apr 2023 16:27:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1681428431; x=1684020431;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=LDZlals2AhM6iFKk8CuFKyiuev/5cgFhIr68WCwH9Qo=;
+        b=Wv6hVcCngoI35x88x7bwLf/VHBqa8jRQpvAI3yzbpWLWGL9UoyeFwRGxV9FV92oOQf
+         v94C6X4mKZUm3CcstLNi9ir9eAYOmkshxd03gi9FD+cdrdCNbiehGRbH5r/s6ViYl5aM
+         GmlJM70V9rvj6kl9JluEc5RDAtBVj/r7zvMfnTSq08L4JUvJI68ADJS2L4Xnys0IlkzF
+         pfMMgB7f7dDiJ0MX3gOe8UF99eaM8cpvLd2wcMgzdcce0cmG1nywFzaB8hZrrNXTQPsI
+         kLwyM/viNBaCgTU4mAtFY4/RpO+Vhk54vnMdayCtXV+4SKGSl5l94A92VIuyPy4Pw/3t
+         s8uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681428431; x=1684020431;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=LDZlals2AhM6iFKk8CuFKyiuev/5cgFhIr68WCwH9Qo=;
+        b=AnksUPPLZ4uV3DBgGqW+ysCeie8O4QXIqbEMXWSsvWCWQLmtUzA0QbgE+zyysjFxCi
+         RjXaiOCYYX+Mp4BcmZOwP3OH3yrJkxrHgXbHerBHiIeDYCpO8WgCenBCrDFD22w1dF7R
+         8+lNGrxHRO3qFWQFAIso9ijPtEPnlqscuEZivTvhVF3zaK7+SjmcQIyTKxZAPHultUjB
+         OeTYqnLpX+yndm5kTyYhnq1ybCfq/fZk9Gp/mbLM69hd/nI0gl9jIIunzFwDqj29J1jS
+         +mw6huXuO4d4U28HRdol54IYOz88FA/TNNHGJLfisgwiLzmR9l7L7PdBcvhmtEVC0paZ
+         Kmfg==
+X-Gm-Message-State: AAQBX9efgJEvUHcr9CC1FLoec0kqNPseieZhEqFX4RMeT2er7cIdUbcs
+        fqnWSAmzORsjVEiDQ+ZPpWAblA==
+X-Google-Smtp-Source: AKy350b+mUzgp9QuG6LU3b7Pc2Qk3aIajq0NjsAmWUs0GH6DglNwGwqV4f2yaceMx2dzjVeW89B1WA==
+X-Received: by 2002:a19:740e:0:b0:4eb:c3c:fb19 with SMTP id v14-20020a19740e000000b004eb0c3cfb19mr1305137lfe.30.1681428431243;
+        Thu, 13 Apr 2023 16:27:11 -0700 (PDT)
+Received: from [192.168.1.101] (abyl123.neoplus.adsl.tpnet.pl. [83.9.31.123])
+        by smtp.gmail.com with ESMTPSA id p18-20020a19f012000000b004edb103db3csm194817lfc.274.2023.04.13.16.27.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Apr 2023 16:27:10 -0700 (PDT)
+Message-ID: <fb3c0ce6-046d-35e7-9feb-85f5059ec6b2@linaro.org>
+Date:   Fri, 14 Apr 2023 01:27:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230414-pmi632-v1-6-fe94dc414832@z3ntu.xyz>
-References: <20230414-pmi632-v1-0-fe94dc414832@z3ntu.xyz>
-In-Reply-To: <20230414-pmi632-v1-0-fe94dc414832@z3ntu.xyz>
-To:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH 2/8] pinctrl: qcom: spmi-gpio: Add PMI632 support
+Content-Language: en-US
+To:     Luca Weiss <luca@z3ntu.xyz>, ~postmarketos/upstreaming@lists.sr.ht,
+        phone-devel@vger.kernel.org, Andy Gross <agross@kernel.org>,
         Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
         Linus Walleij <linus.walleij@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -46,49 +68,55 @@ To:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
         Stephen Boyd <sboyd@kernel.org>
 Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-iio@vger.kernel.org,
-        Luca Weiss <luca@z3ntu.xyz>
-X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=755; i=luca@z3ntu.xyz;
- h=from:subject:message-id; bh=mdBEwzgyTkn6OiQX8yDfJw3X7WbLKTich7Ekd7KwYOQ=;
- b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBkOI2yhdXz4/nLXnly1oi2QAFdZkaZqnwTAd9iT
- E0Jdt42JP6JAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZDiNsgAKCRBy2EO4nU3X
- VmBCD/9Mxlr5zAlia3YXc8pS+dgsVr+lV0fcGqktZARJ8Ry26mAHBFpuW7gHwCKBRZlR6r3gT3v
- MolU2FyfQjQj9gOkd2FH3zTg9mFh7gGjhbsJH9h4ZlVsHhTQPiUe4xX0mXZZpjyGXf7kaRITeSc
- 3oeUuKQAxsfLNLD4F2fr9yy3zYB3qQZSPtViPm986bUf+/6xA+8eyJNZC1yGsYkGTR/9j7PSWER
- DU5wjA2catOtgSuT6iuFuseAXFpEkzfXYB9Xt5LtUBu8bXiTrQvnJ/cgxR1ooTk1B31vKoctSiZ
- H7oigK70Xrn0KUVPxdbg/BlfsUgeMErFy0N5zDnTh4WXgJ6qJ1tim/jq238kHajW7IgMXvhrPAk
- hALCjYCtsTpUyyDakb110WdMqrnX7LIb7qShjrBBISaVXcNGP/6/vOR5gRqRWzDxkTlkK+gDrKW
- c1QVX2/bLTQZaWqEt35n5lA/cwX5/5TS0S+8VjV3cVFBMIPXlOqjxFZ/XhNUg51lzdGVJBggkOL
- wxY9Q4qSWW2/Aa5bHFSq8lve0EodZKBLyUBGqa7e1UvpMh8Rwyao/xX44O8NqrYpCSfhSeg4q+e
- ZgkLENAT1cB2o2VSvSKXzraBFsasmPI2yUGxoC337s5JdXutX1PbWVzDXDEV6oarfkCo6RDQXCV
- fED8X7FH0LoO9Rg==
-X-Developer-Key: i=luca@z3ntu.xyz; a=openpgp;
- fpr=BD04DA24C971B8D587B2B8D7FAF69CF6CD2D02CD
+        linux-leds@vger.kernel.org, linux-iio@vger.kernel.org
+References: <20230414-pmi632-v1-0-fe94dc414832@z3ntu.xyz>
+ <20230414-pmi632-v1-2-fe94dc414832@z3ntu.xyz>
+From:   Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <20230414-pmi632-v1-2-fe94dc414832@z3ntu.xyz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Document support for the pmi632, often found with the sdm632 SoC.
 
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
----
- Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml b/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
-index 84620ebc1efe..09e7195c622b 100644
---- a/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
-+++ b/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
-@@ -71,6 +71,7 @@ properties:
-           - qcom,pm8998
-           - qcom,pma8084
-           - qcom,pmd9635
-+          - qcom,pmi632
-           - qcom,pmi8950
-           - qcom,pmi8962
-           - qcom,pmi8994
+On 14.04.2023 01:17, Luca Weiss wrote:
+> Add support for the 8 GPIOs found on PMI632.
+> 
+> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+> ---
+As I've started doing more and more lately, I'll hijack this
+patch to discuss the general approach..
 
--- 
-2.40.0
+I have a feeling that you'll get some comments about
+this match list growing, especially since the driver data
+is already filled in dt (gpio-ranges).. perhaps we can improve
+this..
 
+Especially considering the "qcom,spmi-gpio" fallback is there
+(unless we care about 2015 DTs like 0804308fdd3c) that are
+unlikely to still work nowadays. Old DTs also used interrupts=<>
+to list out all the GPIOs (among the other SPMI fluff) individually
+(see e.g. 5f540fb4821a).
+
+Krzysztof, WDYT? Would it be worth taking all of that old junk into
+account, or should we keep it as-is?
+
+Konrad
+>  drivers/pinctrl/qcom/pinctrl-spmi-gpio.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
+> index ea3485344f06..40cab13e5a83 100644
+> --- a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
+> +++ b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
+> @@ -1232,6 +1232,7 @@ static const struct of_device_id pmic_gpio_of_match[] = {
+>  	{ .compatible = "qcom,pm8994-gpio", .data = (void *) 22 },
+>  	{ .compatible = "qcom,pm8998-gpio", .data = (void *) 26 },
+>  	{ .compatible = "qcom,pma8084-gpio", .data = (void *) 22 },
+> +	{ .compatible = "qcom,pmi632-gpio", .data = (void *) 8 },
+>  	{ .compatible = "qcom,pmi8950-gpio", .data = (void *) 2 },
+>  	{ .compatible = "qcom,pmi8994-gpio", .data = (void *) 10 },
+>  	{ .compatible = "qcom,pmi8998-gpio", .data = (void *) 14 },
+> 
