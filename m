@@ -2,82 +2,89 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0111DC77B71
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Apr 2023 02:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4980FC77B6C
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Apr 2023 02:43:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231414AbjDMCll (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Apr 2023 22:41:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35756 "EHLO
+        id S231386AbjDMCno (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Apr 2023 22:43:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231408AbjDMClY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Apr 2023 22:41:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D529E7ECA;
-        Wed, 12 Apr 2023 19:39:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S230368AbjDMCnb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Apr 2023 22:43:31 -0400
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050:0:465::201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3474AF03;
+        Wed, 12 Apr 2023 19:41:47 -0700 (PDT)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:b231:465::2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D211B63AAB;
-        Thu, 13 Apr 2023 02:38:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90836C433EF;
-        Thu, 13 Apr 2023 02:38:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681353501;
-        bh=XGuQua3qFkKXR113AHzPtaUgmD0Q6HpJpVp/TOacGUs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=nGiA99xhQgizLZeRU/VcMhAjymzMwrM84tXXx8mgCequHl/a+4+z5doWxDeZivgyk
-         Ip6ue6H5P6O1Dgpwo4Ah9fTGN9dlzOCEf0OXtiepEFr58LDMXGykpX2p3kBx25hkmR
-         MqyoFr1oQXoRzIcxBACZgyVPqcBc41kgBM17uqA43yOgtaAZU4+JCw/Fw9G1L1u+7Q
-         xae2XYuJBFFfv069DZUbEGHPNm2iJhy8KGpkh9piKp5+IK4R7LyQ8J+ktt2c/2Hu1M
-         0Ac4W0ruIc+kYgbTmyw336GN2iLTsoBIIcda2iLtClQg27hcFFXAw49DZH3kqOiYZb
-         BoP/DWjzRWECw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Patrik=20Dahlstr=C3=B6m?= <risca@dalakolonin.se>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, jic23@kernel.org,
-        linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14] iio: adc: palmas_gpadc: fix NULL dereference on rmmod
-Date:   Wed, 12 Apr 2023 22:38:16 -0400
-Message-Id: <20230413023818.75139-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4PxkN13ffqz9sRG;
+        Thu, 13 Apr 2023 04:40:49 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mariushoch.de;
+        s=MBO0001; t=1681353649;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ezPGoQ6QPL9E3+YlJ6ixpTBZV0SadJ4wrscpZIJ3NMk=;
+        b=NyFJO2x81VdMnZ+DugaH+lK+f35Pg97wfEP3JY+AJanFWEtkKEeL4nwgBm1HEVpEkT50sN
+        dxncQNfgFptAz3tDVVi6/acxdIIu7jfhaH8N/2FfmUqTGqCPErejCAB+0ltM9EBWy11FSP
+        y+Z63ukRa5Daun5VEqIPTyq2nvlFiaGeD84M+hJl3NrUkWC0AAMYY0QmnKCK9Lc3tfG2b+
+        l2mZOBfzM6cfM0BD8ZLnnQTs8YgsBQAVvcsvaNi/fSTrmiARDap5UyRZuGSbEQn8+CJC3p
+        U3/FV+VYtrZb6oCguTtbWxMV0xXBFnGHO5YBGN4Ru7CZWPKzBsxmbzBRaxBxuw==
+From:   Marius Hoch <mail@mariushoch.de>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Marius Hoch <mail@mariushoch.de>
+Subject: [PATCH v2 1/6] iio: accel: st_accel: Add LSM303D
+Date:   Thu, 13 Apr 2023 04:40:08 +0200
+Message-Id: <20230413024013.450165-2-mail@mariushoch.de>
+In-Reply-To: <20230413024013.450165-1-mail@mariushoch.de>
+References: <20230413024013.450165-1-mail@mariushoch.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 4PxkN13ffqz9sRG
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Patrik Dahlström <risca@dalakolonin.se>
+The lsm303d has the same register mapping as the lsm9ds0,
+thus we can just re-use that.
 
-[ Upstream commit 49f76c499d38bf67803438eee88c8300d0f6ce09 ]
+Tested on a Lenovo Yoga Tablet 2 1051-F.
 
-Calling dev_to_iio_dev() on a platform device pointer is undefined and
-will make adc NULL.
-
-Signed-off-by: Patrik Dahlström <risca@dalakolonin.se>
-Link: https://lore.kernel.org/r/20230313205029.1881745-1-risca@dalakolonin.se
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Marius Hoch <mail@mariushoch.de>
 ---
- drivers/iio/adc/palmas_gpadc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/accel/st_accel_core.c     | 1 +
+ include/linux/iio/common/st_sensors.h | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
-index f5218461ae255..f422df4daadcb 100644
---- a/drivers/iio/adc/palmas_gpadc.c
-+++ b/drivers/iio/adc/palmas_gpadc.c
-@@ -634,7 +634,7 @@ static int palmas_gpadc_probe(struct platform_device *pdev)
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 6b8562f684d5..1628b177d0ed 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -1006,6 +1006,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+ 		.sensors_supported = {
+ 			[0] = LSM9DS0_IMU_DEV_NAME,
++			[1] = LSM303D_IMU_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_accel_16bit_channels,
+ 		.odr = {
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index f5f3ee57bc70..607c3a89a647 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -22,6 +22,7 @@
+ #include <linux/platform_data/st_sensors_pdata.h>
  
- static int palmas_gpadc_remove(struct platform_device *pdev)
- {
--	struct iio_dev *indio_dev = dev_to_iio_dev(&pdev->dev);
-+	struct iio_dev *indio_dev = dev_get_drvdata(&pdev->dev);
- 	struct palmas_gpadc *adc = iio_priv(indio_dev);
+ #define LSM9DS0_IMU_DEV_NAME		"lsm9ds0"
++#define LSM303D_IMU_DEV_NAME		"lsm303d"
  
- 	if (adc->wakeup1_enable || adc->wakeup2_enable)
+ /*
+  * Buffer size max case: 2bytes per channel, 3 channels in total +
 -- 
 2.39.2
 
