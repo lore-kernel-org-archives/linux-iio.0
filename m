@@ -2,36 +2,36 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC38EC77B73
-	for <linux-iio@archiver.kernel.org>; Sat, 15 Apr 2023 23:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2112C77B71
+	for <linux-iio@archiver.kernel.org>; Sat, 15 Apr 2023 23:12:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230091AbjDOXMM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 15 Apr 2023 19:12:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45742 "EHLO
+        id S230103AbjDOXMO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 15 Apr 2023 19:12:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229904AbjDOXMK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Apr 2023 19:12:10 -0400
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050:0:465::201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C375359B;
-        Sat, 15 Apr 2023 16:12:07 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:b231:465::1])
+        with ESMTP id S230021AbjDOXMO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Apr 2023 19:12:14 -0400
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050:0:465::101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A396FD8;
+        Sat, 15 Apr 2023 16:12:12 -0700 (PDT)
+Received: from smtp1.mailbox.org (unknown [10.196.197.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4PzTbm0LpZz9sQy;
-        Sun, 16 Apr 2023 01:12:04 +0200 (CEST)
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4PzTbs1M44z9t5J;
+        Sun, 16 Apr 2023 01:12:09 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mariushoch.de;
-        s=MBO0001; t=1681600324;
+        s=MBO0001; t=1681600329;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ezPGoQ6QPL9E3+YlJ6ixpTBZV0SadJ4wrscpZIJ3NMk=;
-        b=CDAGgUhvg3l9geNDUw5GbBPdgY8QoBh914E/43fM3Vj9Pxm0aGZ+Bi1pjyg6Ej0JLcbIDM
-        aza0H6MMs3m8Zv0/UiHGdxGFOeGChq0YGGm00/e5cG6oeIpCurHIml4hOhla83MxA5CEkr
-        AZC/dmM2MDQLLGsIBRz1G+lJAjR3OiSvOiVHsALDq14d5h5XL9atWZCjVJ34t10CrVJ/Sr
-        nMj+SnxsUJckiNOFF6RXOOyG/AAnu6n/vZYuc8SfraRnxRSWqlz2YjSYagU+/PpcC5tBtJ
-        V/Bpvuxw1knJLfqIpj/IkI85OhUnISyTdKUD7G0uvkZ+UbQV7sg4CcpqZPUZwg==
+        bh=1WwL9O2qJHa3oAVrL3RtZPgGuUcuaz3nWHKZHdcckfE=;
+        b=t8cnwrEDXGqyObXq8Ob/gBnWBO/8SjRfyoSAYDWozunBkZTRgy2fI5AlwY2vSrUh0vYiYy
+        7KhlPdTs3JWS8BfXbWA/S2FMs5CnBp/5WkAnhXjxS2Fbw7F3EViP/DhY9S+DC5fuLJoqi3
+        o5ATap13cpZ07IPihn0W33cBmkdJSEBl1MvP7cxfB2pmiNazrsEHuBq2VSsBuveNxDUC9+
+        VsJp0pWHUKvlHbppMI4B0YDK1IPU+aadSizYqZo3jl6+Aciu1cXkmrylkkrRWxXrwOUH2j
+        cGWUh14rfzKRD6VraM3hIkSTy7BHGgwa2zvwVBzbW3V+zf/Q0HFDAY3iWMeTiw==
 From:   Marius Hoch <mail@mariushoch.de>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -43,53 +43,77 @@ To:     Jonathan Cameron <jic23@kernel.org>,
         linux-kernel@vger.kernel.org
 Cc:     Hans de Goede <hdegoede@redhat.com>,
         Marius Hoch <mail@mariushoch.de>
-Subject: [PATCH v3 1/6] iio: accel: st_accel: Add LSM303D
-Date:   Sun, 16 Apr 2023 01:11:25 +0200
-Message-Id: <20230415231130.115094-2-mail@mariushoch.de>
+Subject: [PATCH v3 4/6] iio: st_sensors: Add ACPI support for lsm303d to the LSM9DS0 IMU driver
+Date:   Sun, 16 Apr 2023 01:11:28 +0200
+Message-Id: <20230415231130.115094-5-mail@mariushoch.de>
 In-Reply-To: <20230415231130.115094-1-mail@mariushoch.de>
 References: <20230415231130.115094-1-mail@mariushoch.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 4PzTbm0LpZz9sQy
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The lsm303d has the same register mapping as the lsm9ds0,
-thus we can just re-use that.
-
-Tested on a Lenovo Yoga Tablet 2 1051-F.
+The lsm303d can be found as ACCL0001 on various Lenovo devices,
+including the Lenovo Yoga Tablet 2 1051-F, where I tested this
+patch.
 
 Signed-off-by: Marius Hoch <mail@mariushoch.de>
 ---
- drivers/iio/accel/st_accel_core.c     | 1 +
- include/linux/iio/common/st_sensors.h | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_i2c.c | 7 +++++++
+ drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_spi.c | 7 +++++++
+ 2 files changed, 14 insertions(+)
 
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 6b8562f684d5..1628b177d0ed 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -1006,6 +1006,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
- 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LSM9DS0_IMU_DEV_NAME,
-+			[1] = LSM303D_IMU_DEV_NAME,
- 		},
- 		.ch = (struct iio_chan_spec *)st_accel_16bit_channels,
- 		.odr = {
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index f5f3ee57bc70..607c3a89a647 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -22,6 +22,7 @@
- #include <linux/platform_data/st_sensors_pdata.h>
+diff --git a/drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_i2c.c b/drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_i2c.c
+index 64fa77d302e2..52f1ea6c457f 100644
+--- a/drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_i2c.c
++++ b/drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_i2c.c
+@@ -37,6 +37,12 @@ static const struct i2c_device_id st_lsm9ds0_id_table[] = {
+ };
+ MODULE_DEVICE_TABLE(i2c, st_lsm9ds0_id_table);
  
- #define LSM9DS0_IMU_DEV_NAME		"lsm9ds0"
-+#define LSM303D_IMU_DEV_NAME		"lsm303d"
++static const struct acpi_device_id st_lsm9ds0_acpi_match[] = {
++	{"ACCL0001", (kernel_ulong_t)LSM303D_IMU_DEV_NAME},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, st_lsm9ds0_acpi_match);
++
+ static const struct regmap_config st_lsm9ds0_regmap_config = {
+ 	.reg_bits	= 8,
+ 	.val_bits	= 8,
+@@ -73,6 +79,7 @@ static struct i2c_driver st_lsm9ds0_driver = {
+ 	.driver = {
+ 		.name = "st-lsm9ds0-i2c",
+ 		.of_match_table = st_lsm9ds0_of_match,
++		.acpi_match_table = st_lsm9ds0_acpi_match,
+ 	},
+ 	.probe_new = st_lsm9ds0_i2c_probe,
+ 	.id_table = st_lsm9ds0_id_table,
+diff --git a/drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_spi.c b/drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_spi.c
+index 997b5ff792be..55f3738193af 100644
+--- a/drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_spi.c
++++ b/drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_spi.c
+@@ -37,6 +37,12 @@ static const struct spi_device_id st_lsm9ds0_id_table[] = {
+ };
+ MODULE_DEVICE_TABLE(spi, st_lsm9ds0_id_table);
  
- /*
-  * Buffer size max case: 2bytes per channel, 3 channels in total +
++static const struct acpi_device_id st_lsm9ds0_acpi_match[] = {
++	{"ACCL0001", (kernel_ulong_t)LSM303D_IMU_DEV_NAME},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, st_lsm9ds0_acpi_match);
++
+ static const struct regmap_config st_lsm9ds0_regmap_config = {
+ 	.reg_bits	= 8,
+ 	.val_bits	= 8,
+@@ -72,6 +78,7 @@ static struct spi_driver st_lsm9ds0_driver = {
+ 	.driver = {
+ 		.name = "st-lsm9ds0-spi",
+ 		.of_match_table = st_lsm9ds0_of_match,
++		.acpi_match_table = st_lsm9ds0_acpi_match,
+ 	},
+ 	.probe = st_lsm9ds0_spi_probe,
+ 	.id_table = st_lsm9ds0_id_table,
 -- 
 2.39.2
 
