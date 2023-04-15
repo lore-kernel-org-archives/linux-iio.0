@@ -2,36 +2,35 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BADFBC77B70
-	for <linux-iio@archiver.kernel.org>; Sat, 15 Apr 2023 23:12:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC301C77B76
+	for <linux-iio@archiver.kernel.org>; Sat, 15 Apr 2023 23:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbjDOXML (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 15 Apr 2023 19:12:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
+        id S230046AbjDOXMM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 15 Apr 2023 19:12:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbjDOXMK (ORCPT
+        with ESMTP id S229908AbjDOXMK (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Apr 2023 19:12:10 -0400
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050:0:465::202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507C3D8;
-        Sat, 15 Apr 2023 16:12:09 -0700 (PDT)
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050:0:465::201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A008A35B1;
+        Sat, 15 Apr 2023 16:12:07 -0700 (PDT)
 Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:b231:465::1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4PzTbn6F4Qz9t4h;
-        Sun, 16 Apr 2023 01:12:05 +0200 (CEST)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4PzTbk1lsxz9sZW;
+        Sun, 16 Apr 2023 01:12:02 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mariushoch.de;
-        s=MBO0001; t=1681600325;
+        s=MBO0001; t=1681600322;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aaBdxoh2tTQE/D7UbYD1GfSy8FZRjzStnfxmiQyyUCU=;
-        b=NQW5ku21w7BMbgJTUa80Ynbqp9OYOavkA84NeF+zHMi4NI/V2JyL85JW1nqS9++ECVkNdQ
-        iH6apcmiAHqXV10IpdotW1T7FOE3jHmVT0fOzkowmicWhd+3Y0yBN1x0HTMdWPzEVc5BdB
-        svV0qGXn9/qg9Wm8BDEOcP+ktAeM3f7ty5rIn8p0WzN41YECFr4alK5NwBwKp7akTldDP3
-        jNhiz2Kt1oQxOlNkz5VWJtPy6ulXTZvJy6xfqhsxeMBr7Ba0tgzsWNd5hB3ClvZAs078aO
-        ITegTcZoyfkQPNj0yRguIBh/v68S/j4jc4XoCP4v5N9xT/vmewub4eutQM5Qtw==
+         content-transfer-encoding:content-transfer-encoding;
+        bh=TZOlclxLbG2/RAYSbmsgQ6MptuuAsr8C7mcJ+W6XUuE=;
+        b=xCZAav4Zv47a/bdLN8Lwykx1oKrxT1xGyovb3GDJr500pVHqpTnGzTv7wLC0wRJSdhgy3P
+        KuzaYimg9Q9QF0yAP/gw/P1+tZOomLRIGzWNtHk/tYtN6W7429xDndQWTBySiU9GN4Wg+v
+        hvLkMI/XWCadhtrAU+na+49rFOn2tFEFiNSSkNsr7WTLxc5fwdFOoYmeBMFsTs4nPuOhGr
+        +VftiJkzjG8mxAGemmns+CaQeb2XFNNrSZwQtVeXYB7gVoyC+Kn6eu5NCEeiNC0n4/Bc4t
+        syTt1jmWmzWA779pwevXStR1Dkfq0v4RLMj9oAl+lnsttT9uALvu9y/v0rJnVA==
 From:   Marius Hoch <mail@mariushoch.de>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -43,40 +42,51 @@ To:     Jonathan Cameron <jic23@kernel.org>,
         linux-kernel@vger.kernel.org
 Cc:     Hans de Goede <hdegoede@redhat.com>,
         Marius Hoch <mail@mariushoch.de>
-Subject: [PATCH v3 2/6] iio: magnetometer: st_accel: Add LSM303D
-Date:   Sun, 16 Apr 2023 01:11:26 +0200
-Message-Id: <20230415231130.115094-3-mail@mariushoch.de>
-In-Reply-To: <20230415231130.115094-1-mail@mariushoch.de>
-References: <20230415231130.115094-1-mail@mariushoch.de>
+Subject: [PATCH v3 0/6] iio: st_sensors: Add lsm303d support
+Date:   Sun, 16 Apr 2023 01:11:24 +0200
+Message-Id: <20230415231130.115094-1-mail@mariushoch.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 4PzTbn6F4Qz9t4h
+X-Rspamd-Queue-Id: 4PzTbk1lsxz9sZW
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The lsm303d has the same register mapping as the lsm9ds0,
-thus we can just re-use that.
+Hi!
 
-Tested on a Lenovo Yoga Tablet 2 1051-F.
+This patch series adds support for the LSM303D accelerometer and
+magnetometer. As the LSM303D is basically, as far as I can tell,
+the LSM9DS0 without gyroscope, we can easily re-use its definitions.
 
-Signed-off-by: Marius Hoch <mail@mariushoch.de>
----
- drivers/iio/magnetometer/st_magn_core.c | 1 +
- 1 file changed, 1 insertion(+)
+This was tested on a Lenovo Yoga Tablet 2 1051-F.
 
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index 8faa7409d9e1..6cc0dfd31821 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -427,6 +427,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
- 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LSM9DS0_IMU_DEV_NAME,
-+			[1] = LSM303D_IMU_DEV_NAME,
- 		},
- 		.ch = (struct iio_chan_spec *)st_magn_4_16bit_channels,
- 		.odr = {
+Cheers,
+Marius
+
+Changes in v3:
+Simplified the ACPI tables in the LSM9DS0 IMU driver, per Jonathan Cameron.
+
+Marius Hoch (6):
+  iio: accel: st_accel: Add LSM303D
+  iio: magnetometer: st_accel: Add LSM303D
+  iio: st_sensors: Add lsm303d support to the LSM9DS0 IMU driver
+  iio: st_sensors: Add ACPI support for lsm303d to the LSM9DS0 IMU
+    driver
+  iio: Comment that the LSM303D also has the Magnetometer DRDY
+  dt-bindings: iio: st-sensors: Add LSM303D accelerometer+magnetometer
+
+ .../devicetree/bindings/iio/st,st-sensors.yaml       |  1 +
+ drivers/iio/accel/st_accel_core.c                    |  1 +
+ drivers/iio/imu/st_lsm9ds0/Kconfig                   |  3 ++-
+ drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_i2c.c          | 12 ++++++++++++
+ drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_spi.c          | 12 ++++++++++++
+ drivers/iio/magnetometer/st_magn_core.c              |  1 +
+ include/linux/iio/common/st_sensors.h                |  1 +
+ include/linux/platform_data/st_sensors_pdata.h       |  2 +-
+ 8 files changed, 31 insertions(+), 2 deletions(-)
+
+
+base-commit: e62252bc55b6d4eddc6c2bdbf95a448180d6a08d
 -- 
 2.39.2
 
