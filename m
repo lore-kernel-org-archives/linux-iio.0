@@ -2,56 +2,81 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3AFC77B70
-	for <linux-iio@archiver.kernel.org>; Sat, 15 Apr 2023 18:25:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BADFBC77B70
+	for <linux-iio@archiver.kernel.org>; Sat, 15 Apr 2023 23:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbjDOSZ3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 15 Apr 2023 14:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33080 "EHLO
+        id S229962AbjDOXML (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 15 Apr 2023 19:12:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229936AbjDOSZ2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Apr 2023 14:25:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CEE448D
-        for <linux-iio@vger.kernel.org>; Sat, 15 Apr 2023 11:25:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229600AbjDOXMK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Apr 2023 19:12:10 -0400
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050:0:465::202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507C3D8;
+        Sat, 15 Apr 2023 16:12:09 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:b231:465::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60BBE615C6
-        for <linux-iio@vger.kernel.org>; Sat, 15 Apr 2023 18:25:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 794C0C433D2;
-        Sat, 15 Apr 2023 18:25:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1681583125;
-        bh=EccXaNidvejIFoqrbxddeoXIRuVKnjy1FQDZVCcbKm4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OzdtSrjCwQkSGNJyiecXi8qJXDCnoRfq7sfbPfNHzgk27Eg3q28dVcv3oO12GaPAT
-         1RcISjI1OgHv8qdJg67OBzcTZGw/1AK6clhALCR9660zbMPCSZUzvb/OW8xOA5eO0B
-         GAL0Mo4lxkLCT7EZW14SVGT7G2w+6qsQiQPT4dQM=
-Date:   Sat, 15 Apr 2023 20:25:22 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PULL] IIO: 2nd set of features for the 6.4 cycle.
-Message-ID: <2023041512-overripe-lid-2dfb@gregkh>
-References: <20230415185027.60a34106@jic23-huawei>
+        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4PzTbn6F4Qz9t4h;
+        Sun, 16 Apr 2023 01:12:05 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mariushoch.de;
+        s=MBO0001; t=1681600325;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aaBdxoh2tTQE/D7UbYD1GfSy8FZRjzStnfxmiQyyUCU=;
+        b=NQW5ku21w7BMbgJTUa80Ynbqp9OYOavkA84NeF+zHMi4NI/V2JyL85JW1nqS9++ECVkNdQ
+        iH6apcmiAHqXV10IpdotW1T7FOE3jHmVT0fOzkowmicWhd+3Y0yBN1x0HTMdWPzEVc5BdB
+        svV0qGXn9/qg9Wm8BDEOcP+ktAeM3f7ty5rIn8p0WzN41YECFr4alK5NwBwKp7akTldDP3
+        jNhiz2Kt1oQxOlNkz5VWJtPy6ulXTZvJy6xfqhsxeMBr7Ba0tgzsWNd5hB3ClvZAs078aO
+        ITegTcZoyfkQPNj0yRguIBh/v68S/j4jc4XoCP4v5N9xT/vmewub4eutQM5Qtw==
+From:   Marius Hoch <mail@mariushoch.de>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Marius Hoch <mail@mariushoch.de>
+Subject: [PATCH v3 2/6] iio: magnetometer: st_accel: Add LSM303D
+Date:   Sun, 16 Apr 2023 01:11:26 +0200
+Message-Id: <20230415231130.115094-3-mail@mariushoch.de>
+In-Reply-To: <20230415231130.115094-1-mail@mariushoch.de>
+References: <20230415231130.115094-1-mail@mariushoch.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230415185027.60a34106@jic23-huawei>
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 4PzTbn6F4Qz9t4h
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Apr 15, 2023 at 06:50:27PM +0100, Jonathan Cameron wrote:
-> The following changes since commit fba51482b6c0a6743b441bd57d53be11beb35a9b:
-> 
->   Merge tag 'iio-for-6.4a' of https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into char-misc-next (2023-04-12 09:45:34 +0200)
-> 
-> are available in the Git repository at:
-> 
->   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-6.4b
+The lsm303d has the same register mapping as the lsm9ds0,
+thus we can just re-use that.
 
-Pulled and pushed out, thanks.
+Tested on a Lenovo Yoga Tablet 2 1051-F.
 
-greg k-h
+Signed-off-by: Marius Hoch <mail@mariushoch.de>
+---
+ drivers/iio/magnetometer/st_magn_core.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index 8faa7409d9e1..6cc0dfd31821 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -427,6 +427,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+ 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+ 		.sensors_supported = {
+ 			[0] = LSM9DS0_IMU_DEV_NAME,
++			[1] = LSM303D_IMU_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_magn_4_16bit_channels,
+ 		.odr = {
+-- 
+2.39.2
+
