@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC28C77B73
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Apr 2023 17:37:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16692C77B73
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Apr 2023 17:37:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbjDPRhS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 16 Apr 2023 13:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48924 "EHLO
+        id S229925AbjDPRh0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 16 Apr 2023 13:37:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229756AbjDPRhR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Apr 2023 13:37:17 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F2061997
-        for <linux-iio@vger.kernel.org>; Sun, 16 Apr 2023 10:37:14 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id ds7-20020a0568306c0700b006a5cea70c02so1511131otb.8
-        for <linux-iio@vger.kernel.org>; Sun, 16 Apr 2023 10:37:14 -0700 (PDT)
+        with ESMTP id S229810AbjDPRhS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Apr 2023 13:37:18 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A463730C5
+        for <linux-iio@vger.kernel.org>; Sun, 16 Apr 2023 10:37:16 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id 63-20020a9d0345000000b006a5e01360fdso595724otv.10
+        for <linux-iio@vger.kernel.org>; Sun, 16 Apr 2023 10:37:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681666634; x=1684258634;
+        d=linaro.org; s=google; t=1681666635; x=1684258635;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=TgquomgyP0WZyeGCpXObZcjAgp90Y+i6L1TXkVWXpcs=;
-        b=QPqANpsm3jroLq3O4KhPOVS9egch92T+Q7A6k9KkBqnQZVDcoRLxLiRd8XWWrRHMJ4
-         FeF9VpbuV7OIkBqkxlYXG0bMmF1tsY6teF6NBR+dfByQsz50EeQQyWx/AmaW5Uou1WF5
-         JhTjE9M/SRkw1Cu+hoVpaUG52ohXbJn/CQVRAgWCqNC1IZK37Y2dyMn+Jd9MUT94W/KH
-         3wQKJG0Z1s/i0vfYXfvlxQ8qNOT2Q5TYu3r1qCrhVZ4Ur++j8v3zkzQjqd9aBNjV+SP0
-         CzfsYSvCX6dKJgRKGeo7uhPQ30Q61X3PQqVXjY4P6ictFiu/rRfIbIk4UsZRQAEj/pj1
-         ZC9Q==
+        bh=FYx0k5ihhJlPtRpOo4XGHOU5FikMHitAj1rgNIt8olI=;
+        b=iJhar42nZCrIRo6hBBOzAXGE/XF9O0Jp6LT+eXOaVDiIO5i/yATOcjPIAHJtvdJ2Rc
+         0flialZCD7rELafUN208dVRAsB48TeALBtAcqVlpfZD0mcM7AUWtzDqm5vchixm355ry
+         SZN7c0zOA9AqLgOk+Ag6hoQXvv9UhJgnl5MAhUgaezn3tNDTOK+KBRrTdYb+Riu5c4uF
+         09T3u/xfKj1C4WfTmIrkICPhIKXRHe+UQHz58sVBsX1Oo9kySjWkZ/32KewjyROxZT1I
+         oEvtgOlBtdCoKQrJt8ruiAPAKg1agDb8JXaTiTLZ4/rpdGZtYBeaeqkD8G5QSlpxdPG9
+         4MIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681666634; x=1684258634;
+        d=1e100.net; s=20221208; t=1681666635; x=1684258635;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=TgquomgyP0WZyeGCpXObZcjAgp90Y+i6L1TXkVWXpcs=;
-        b=Qu/ScAss7GYaAUN8cg6caLvIuAVnFXZqJPm/kK7wLj6FxKMuBCeTQCKY9h0ydtnf1n
-         LdikmCJT3ufadFng+tL6JWqEJzZYwVjPwpX7I6dmWncIDgzQDTo2qbs6LmOb3BO9jlQn
-         XGJXOeleD44+l5livxaS/UUs36w0lPizxftDa3PEexWvHWMDwOMqeuUrdV66ZVC+3xUb
-         pzrkrhS/brO8Qpn1My+KsfeUMwPKzFjUQVB3IYTVJHjKaPH/DC8LbDJoydOJaitmk5fV
-         2a8MZwDEQp/QU3KRYihO0mg8r1WWeQHQsJyCZayaP8TGeClfmGQAJjO2toYNIVLubXRT
-         6iOA==
-X-Gm-Message-State: AAQBX9fmrrHZQBG/Jy/MWZFNOxpsrxXRXPMBTV37Ylcr1DSg+iZSPmaN
-        iim4t+QjJFyAV+WBfQXSBTqzmw==
-X-Google-Smtp-Source: AKy350Zqw4AfNPKxXRpBIKW7ovLSAiQsfhmJvZ6on/UwMoiVcy500AHeH6TZsk1x+M7SeKE6+sUHLw==
-X-Received: by 2002:a9d:65d7:0:b0:6a5:ea63:b9f4 with SMTP id z23-20020a9d65d7000000b006a5ea63b9f4mr225369oth.15.1681666633646;
-        Sun, 16 Apr 2023 10:37:13 -0700 (PDT)
+        bh=FYx0k5ihhJlPtRpOo4XGHOU5FikMHitAj1rgNIt8olI=;
+        b=HVi7biSiHBHTzuTRHSfZP9rrcYbPiK9NQ/XsNNnNoXf7wMaSrkk8m8T78AFPizBHYf
+         7YPF5hjfSq7mdErPrXnTeWE1m5nlSTvKYl06dWfQ8Vb5jKmN/hWc/qBv0znBcbu2h0lh
+         6C7bpZnWo+a8seFM7w+DfqFLLMy9SP/1HXLjujvnod3II2E8+l0SCmlc1o8ffFCQ1o2y
+         iJymRZ6+l0mz0f3mpsq9Wwgczg+2YMQmsuxwGlWBf3TfV6MapmDIkKLK1vt/tO1Iluhx
+         uZ6TY4iAGu/386szhvAKbSa+CPC2TqPXaNs4acoCdiJwnwt9y91wQ0ZLedFvbT5xCZUl
+         klUA==
+X-Gm-Message-State: AAQBX9eBTzvzb+P1+xAl2kjzViP7PVUNzUnuKmEBJFX/nYKdfGq2MHrp
+        oUvhUO2q/PBZXW4n4urV848tBg==
+X-Google-Smtp-Source: AKy350a7UU1lbYnc9sEjdYX046H6Scr3HtpydUxLMudV1BMQbviJTEylyNcUf9a9pGCGVi4RdY1beQ==
+X-Received: by 2002:a05:6830:1614:b0:6a4:25d5:83f8 with SMTP id g20-20020a056830161400b006a425d583f8mr5467237otr.20.1681666635775;
+        Sun, 16 Apr 2023 10:37:15 -0700 (PDT)
 Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id v16-20020a05683011d000b0069457b86060sm3771038otq.47.2023.04.16.10.37.12
+        by smtp.gmail.com with ESMTPSA id v16-20020a05683011d000b0069457b86060sm3771038otq.47.2023.04.16.10.37.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Apr 2023 10:37:13 -0700 (PDT)
+        Sun, 16 Apr 2023 10:37:15 -0700 (PDT)
 From:   William Breathitt Gray <william.gray@linaro.org>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Bartosz Golaszewski <brgl@bgdev.pl>,
@@ -56,9 +56,9 @@ To:     Linus Walleij <linus.walleij@linaro.org>,
 Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
         William Breathitt Gray <william.gray@linaro.org>
-Subject: [PATCH 1/3] counter: i8254: Introduce the Intel 8254 interface library module
-Date:   Sun, 16 Apr 2023 13:36:53 -0400
-Message-Id: <f6fe32c2db9525d816ab1a01f45abad56c081652.1681665189.git.william.gray@linaro.org>
+Subject: [PATCH 3/3] iio: addac: stx104: Add 8254 Counter/Timer support
+Date:   Sun, 16 Apr 2023 13:36:55 -0400
+Message-Id: <45d35b6f6e8d51df788b2bc85c456bfd45476b1a.1681665189.git.william.gray@linaro.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1681665189.git.william.gray@linaro.org>
 References: <cover.1681665189.git.william.gray@linaro.org>
@@ -68,673 +68,164 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Exposes consumer library functions providing support for interfaces
-compatible with the venerable Intel 8254 Programmable Interval Timer
-(PIT).
-
-The Intel 8254 PIT first appeared in the early 1980s and was used
-initially in IBM PC compatibles. The popularity of the original Intel
-825x family of chips led to many subsequent variants and clones of the
-interface in various chips and integrated circuits. Although still
-popular, interfaces compatible with the Intel 8254 PIT are nowdays
-typically found embedded in larger VLSI processing chips and FPGA
-components rather than as discrete ICs.
-
-A CONFIG_I8254 Kconfig option is introduced by this patch. Modules
-wanting access to these i8254 library functions should select this
-Kconfig option, and import the I8254 symbol namespace.
+The STX104 features an 8254 Counter/Timer chip providing three
+counter/timers which can be used for frequency measurement, frequency
+output, pulse width modulation, pulse width measurement, event count,
+etc. The STX104 provides a register bank selection to bank select
+between the 8254 Bank and the Indexed Register Array Bank; the Indexed
+Register Array is not utilized by this driver, so the 8254 Bank is
+selected unconditionally.
 
 Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
 ---
- Documentation/ABI/testing/sysfs-bus-counter |  54 +++
- MAINTAINERS                                 |   7 +
- drivers/counter/Kconfig                     |  15 +
- drivers/counter/Makefile                    |   1 +
- drivers/counter/counter-sysfs.c             |   8 +-
- drivers/counter/i8254.c                     | 447 ++++++++++++++++++++
- include/linux/i8254.h                       |  21 +
- include/uapi/linux/counter.h                |   6 +
- 8 files changed, 558 insertions(+), 1 deletion(-)
- create mode 100644 drivers/counter/i8254.c
- create mode 100644 include/linux/i8254.h
+ drivers/iio/addac/Kconfig  |  1 +
+ drivers/iio/addac/stx104.c | 61 ++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 60 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-counter b/Documentation/ABI/testing/sysfs-bus-counter
-index ff83320b4255..6e0946e826d8 100644
---- a/Documentation/ABI/testing/sysfs-bus-counter
-+++ b/Documentation/ABI/testing/sysfs-bus-counter
-@@ -60,6 +60,60 @@ Description:
- 			counter does not freeze at the boundary points, but
- 			counts continuously throughout.
+diff --git a/drivers/iio/addac/Kconfig b/drivers/iio/addac/Kconfig
+index 877f9124803c..b2623881f0ec 100644
+--- a/drivers/iio/addac/Kconfig
++++ b/drivers/iio/addac/Kconfig
+@@ -38,6 +38,7 @@ config STX104
+ 	select REGMAP_MMIO
+ 	select GPIOLIB
+ 	select GPIO_REGMAP
++	select I8254
+ 	help
+ 	  Say yes here to build support for the Apex Embedded Systems STX104
+ 	  integrated analog PC/104 card.
+diff --git a/drivers/iio/addac/stx104.c b/drivers/iio/addac/stx104.c
+index d1f7ce033b46..6946a65512ca 100644
+--- a/drivers/iio/addac/stx104.c
++++ b/drivers/iio/addac/stx104.c
+@@ -8,6 +8,7 @@
+ #include <linux/device.h>
+ #include <linux/err.h>
+ #include <linux/gpio/regmap.h>
++#include <linux/i8254.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/types.h>
+ #include <linux/isa.h>
+@@ -55,6 +56,7 @@ MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
+ #define STX104_ADC_STATUS (STX104_AIO_BASE + 0x8)
+ #define STX104_ADC_CONTROL (STX104_AIO_BASE + 0x9)
+ #define STX104_ADC_CONFIGURATION (STX104_AIO_BASE + 0x11)
++#define STX104_I8254_BASE (STX104_AIO_BASE + 0x12)
  
-+		interrupt on terminal count:
-+			The output signal is initially low, and will remain low
-+			until the counter reaches zero. The output signal then
-+			goes high and remains high until a new preset value is
-+			set.
-+
-+		hardware retriggerable one-shot:
-+			The output signal is initially high. The output signal
-+			will go low by a trigger input signal, and will remain
-+			low until the counter reaches zero. The output will then
-+			go high and remain high until the next trigger. A
-+			trigger results in loading the counter to the preset
-+			value and setting the output signal low, thus starting
-+			the one-shot pulse.
-+
-+		rate generator:
-+			The output signal is initially high. When the counter
-+			has decremented to 1, the output signal goes low for one
-+			clock pulse. The output signal then goes high again, the
-+			counter is reloaded to the preset value, and the process
-+			repeats in a periodic manner as such.
-+
-+		square wave mode:
-+			The output signal is initially high.
-+
-+			If the initial count is even, the counter is decremented
-+			by two on succeeding clock pulses. When the count
-+			expires, the output signal changes value and the
-+			counter is reloaded to the preset value. The process
-+			repeats in periodic manner as such.
-+
-+			If the initial count is odd, the initial count minus one
-+			(an even number) is loaded and then is decremented by
-+			two on succeeding clock pulses. One clock pulse after
-+			the count expires, the output signal goes low and the
-+			counter is reloaded to the preset value minus one.
-+			Succeeding clock pulses decrement the count by two. When
-+			the count expires, the output goes high again and the
-+			counter is reloaded to the preset value minus one. The
-+			process repeats in a periodic manner as such.
-+
-+		software triggered strobe:
-+			The output signal is initially high. When the count
-+			expires, the output will go low for one clock pulse and
-+			then go high again. The counting sequence is "triggered"
-+			by setting the preset value.
-+
-+		hardware triggered strobe:
-+			The output signal is initially high. Counting is started
-+			by a trigger input signal. When the count expires, the
-+			output signal will go low for one clock pulse and then
-+			go high again. A trigger results in loading the counter
-+			to the preset value.
-+
- What:		/sys/bus/counter/devices/counterX/countY/count_mode_available
- What:		/sys/bus/counter/devices/counterX/countY/error_noise_available
- What:		/sys/bus/counter/devices/counterX/countY/function_available
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 90abe83c02f3..ac170417e1c9 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10170,6 +10170,13 @@ L:	linux-fbdev@vger.kernel.org
- S:	Maintained
- F:	drivers/video/fbdev/i810/
- 
-+INTEL 8254 COUNTER DRIVER
-+M:	William Breathitt Gray <william.gray@linaro.org>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	drivers/counter/i8254.c
-+F:	include/linux/i8254.h
-+
- INTEL 8255 GPIO DRIVER
- M:	William Breathitt Gray <william.gray@linaro.org>
- L:	linux-gpio@vger.kernel.org
-diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
-index b5ba8fb02cf7..5a711811819b 100644
---- a/drivers/counter/Kconfig
-+++ b/drivers/counter/Kconfig
-@@ -10,6 +10,21 @@ menuconfig COUNTER
- 	  interface. You only need to enable this, if you also want to enable
- 	  one or more of the counter device drivers below.
- 
-+config I8254
-+	tristate
-+	select COUNTER
-+	select REGMAP
-+	help
-+	  Enables support for the i8254 interface library functions. The i8254
-+	  interface library provides functions to facilitate communication with
-+	  interfaces compatible with the venerable Intel 8254 Programmable
-+	  Interval Timer (PIT). The Intel 825x family of chips was first
-+	  released in the early 1980s but compatible interfaces are nowadays
-+	  typically found embedded in larger VLSI processing chips and FPGA
-+	  components.
-+
-+	  If built as a module its name will be i8254.
-+
- if COUNTER
- 
- config 104_QUAD_8
-diff --git a/drivers/counter/Makefile b/drivers/counter/Makefile
-index b9a369e0d4fc..395c17ddc37a 100644
---- a/drivers/counter/Makefile
-+++ b/drivers/counter/Makefile
-@@ -6,6 +6,7 @@
- obj-$(CONFIG_COUNTER) += counter.o
- counter-y := counter-core.o counter-sysfs.o counter-chrdev.o
- 
-+obj-$(CONFIG_I8254)		+= i8254.o
- obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
- obj-$(CONFIG_INTERRUPT_CNT)		+= interrupt-cnt.o
- obj-$(CONFIG_STM32_TIMER_CNT)	+= stm32-timer-cnt.o
-diff --git a/drivers/counter/counter-sysfs.c b/drivers/counter/counter-sysfs.c
-index b9efe66f9f8d..42c523343d32 100644
---- a/drivers/counter/counter-sysfs.c
-+++ b/drivers/counter/counter-sysfs.c
-@@ -88,7 +88,13 @@ static const char *const counter_count_mode_str[] = {
- 	[COUNTER_COUNT_MODE_NORMAL] = "normal",
- 	[COUNTER_COUNT_MODE_RANGE_LIMIT] = "range limit",
- 	[COUNTER_COUNT_MODE_NON_RECYCLE] = "non-recycle",
--	[COUNTER_COUNT_MODE_MODULO_N] = "modulo-n"
-+	[COUNTER_COUNT_MODE_MODULO_N] = "modulo-n",
-+	[COUNTER_COUNT_MODE_INTERRUPT_ON_TERMINAL_COUNT] = "interrupt on terminal count",
-+	[COUNTER_COUNT_MODE_HARDWARE_RETRIGGERABLE_ONESHOT] = "hardware retriggerable one-shot",
-+	[COUNTER_COUNT_MODE_RATE_GENERATOR] = "rate generator",
-+	[COUNTER_COUNT_MODE_SQUARE_WAVE_MODE] = "square wave mode",
-+	[COUNTER_COUNT_MODE_SOFTWARE_TRIGGERED_STROBE] = "software triggered strobe",
-+	[COUNTER_COUNT_MODE_HARDWARE_TRIGGERED_STROBE] = "hardware triggered strobe",
+ #define STX104_AIO_DATA_STRIDE 2
+ #define STX104_DAC_OFFSET(_channel) (STX104_DAC_BASE + STX104_AIO_DATA_STRIDE * (_channel))
+@@ -77,6 +79,7 @@ MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
+ /* ADC Configuration */
+ #define STX104_GAIN GENMASK(1, 0)
+ #define STX104_ADBU BIT(2)
++#define STX104_RBK GENMASK(7, 4)
+ #define STX104_BIPOLAR 0
+ #define STX104_GAIN_X1 0
+ #define STX104_GAIN_X2 1
+@@ -168,6 +171,32 @@ static const struct regmap_config dio_regmap_config = {
+ 	.io_port = true,
  };
  
- static const char *const counter_signal_polarity_str[] = {
-diff --git a/drivers/counter/i8254.c b/drivers/counter/i8254.c
-new file mode 100644
-index 000000000000..c41e4fdc9601
---- /dev/null
-+++ b/drivers/counter/i8254.c
-@@ -0,0 +1,447 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Intel 8254 Programmable Interval Timer
-+ * Copyright (C) William Breathitt Gray
-+ */
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/counter.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/export.h>
-+#include <linux/i8254.h>
-+#include <linux/limits.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/regmap.h>
-+
-+#include <asm/unaligned.h>
-+
-+#define I8254_COUNTER_REG(_counter) (_counter)
-+#define I8254_CONTROL_REG 0x3
-+
-+#define I8254_SC GENMASK(7, 6)
-+#define I8254_RW GENMASK(5, 4)
-+#define I8254_M GENMASK(3, 1)
-+#define I8254_CONTROL(_sc, _rw, _m) \
-+	(u8_encode_bits(_sc, I8254_SC) | u8_encode_bits(_rw, I8254_RW) | \
-+	 u8_encode_bits(_m, I8254_M))
-+
-+#define I8254_RW_TWO_BYTE 0x3
-+#define I8254_MODE_INTERRUPT_ON_TERMINAL_COUNT 0
-+#define I8254_MODE_HARDWARE_RETRIGGERABLE_ONESHOT 1
-+#define I8254_MODE_RATE_GENERATOR 2
-+#define I8254_MODE_SQUARE_WAVE_MODE 3
-+#define I8254_MODE_SOFTWARE_TRIGGERED_STROBE 4
-+#define I8254_MODE_HARDWARE_TRIGGERED_STROBE 5
-+
-+#define I8254_COUNTER_LATCH(_counter) I8254_CONTROL(_counter, 0x0, 0x0)
-+#define I8254_PROGRAM_COUNTER(_counter, _mode) I8254_CONTROL(_counter, I8254_RW_TWO_BYTE, _mode)
-+
-+#define I8254_NUM_COUNTERS 3
-+
-+/**
-+ * struct i8254 - I8254 device private data structure
-+ * @lock:	synchronization lock to prevent I/O race conditions
-+ * @preset:	array of Counter Register states
-+ * @out_mode:	array of mode configuration states
-+ * @map:	Regmap for the device
-+ */
-+struct i8254 {
-+	struct mutex lock;
-+	u16 preset[I8254_NUM_COUNTERS];
-+	u8 out_mode[I8254_NUM_COUNTERS];
-+	struct regmap *map;
++static const struct regmap_range pit_wr_ranges[] = {
++	regmap_reg_range(0x0, 0x3),
++};
++static const struct regmap_range pit_rd_ranges[] = {
++	regmap_reg_range(0x0, 0x2),
++};
++static const struct regmap_access_table pit_wr_table = {
++	.yes_ranges = pit_wr_ranges,
++	.n_yes_ranges = ARRAY_SIZE(pit_wr_ranges),
++};
++static const struct regmap_access_table pit_rd_table = {
++	.yes_ranges = pit_rd_ranges,
++	.n_yes_ranges = ARRAY_SIZE(pit_rd_ranges),
 +};
 +
-+static int i8254_count_read(struct counter_device *const counter, struct counter_count *const count,
-+			    u64 *const val)
-+{
-+	struct i8254 *const priv = counter_priv(counter);
-+	int ret;
-+	u8 value[2];
-+
-+	mutex_lock(&priv->lock);
-+
-+	ret = regmap_write(priv->map, I8254_CONTROL_REG, I8254_COUNTER_LATCH(count->id));
-+	if (ret) {
-+		mutex_unlock(&priv->lock);
-+		return ret;
-+	}
-+	ret = regmap_noinc_read(priv->map, I8254_COUNTER_REG(count->id), value, sizeof(value));
-+	if (ret) {
-+		mutex_unlock(&priv->lock);
-+		return ret;
-+	}
-+
-+	mutex_unlock(&priv->lock);
-+
-+	*val = get_unaligned_le16(value);
-+
-+	return ret;
-+}
-+
-+static int i8254_function_read(struct counter_device *const counter,
-+			       struct counter_count *const count,
-+			       enum counter_function *const function)
-+{
-+	*function = COUNTER_FUNCTION_DECREASE;
-+	return 0;
-+}
-+
-+#define I8254_SYNAPSES_PER_COUNT 2
-+#define I8254_SIGNAL_ID_CLK 0
-+#define I8254_SIGNAL_ID_GATE 1
-+
-+static int i8254_action_read(struct counter_device *const counter,
-+			     struct counter_count *const count,
-+			     struct counter_synapse *const synapse,
-+			     enum counter_synapse_action *const action)
-+{
-+	struct i8254 *const priv = counter_priv(counter);
-+
-+	switch (synapse->signal->id % I8254_SYNAPSES_PER_COUNT) {
-+	case I8254_SIGNAL_ID_CLK:
-+		*action = COUNTER_SYNAPSE_ACTION_FALLING_EDGE;
-+		return 0;
-+	case I8254_SIGNAL_ID_GATE:
-+		switch (priv->out_mode[count->id]) {
-+		case I8254_MODE_HARDWARE_RETRIGGERABLE_ONESHOT:
-+		case I8254_MODE_RATE_GENERATOR:
-+		case I8254_MODE_SQUARE_WAVE_MODE:
-+		case I8254_MODE_HARDWARE_TRIGGERED_STROBE:
-+			*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
-+			return 0;
-+		default:
-+			*action = COUNTER_SYNAPSE_ACTION_NONE;
-+			return 0;
-+		}
-+	default:
-+		/* should never reach this path */
-+		return -EINVAL;
-+	}
-+}
-+
-+static int i8254_count_ceiling_read(struct counter_device *const counter,
-+				    struct counter_count *const count, u64 *const ceiling)
-+{
-+	struct i8254 *const priv = counter_priv(counter);
-+
-+	mutex_lock(&priv->lock);
-+
-+	switch (priv->out_mode[count->id]) {
-+	case I8254_MODE_RATE_GENERATOR:
-+		/* Rate Generator decrements 0 by one and the counter "wraps around" */
-+		*ceiling = (priv->preset[count->id] == 0) ? U16_MAX : priv->preset[count->id];
-+		break;
-+	case I8254_MODE_SQUARE_WAVE_MODE:
-+		if (priv->preset[count->id] % 2)
-+			*ceiling = priv->preset[count->id] - 1;
-+		else if (priv->preset[count->id] == 0)
-+			/* Square Wave Mode decrements 0 by two and the counter "wraps around" */
-+			*ceiling = U16_MAX - 1;
-+		else
-+			*ceiling = priv->preset[count->id];
-+		break;
-+	default:
-+		*ceiling = U16_MAX;
-+		break;
-+	}
-+
-+	mutex_unlock(&priv->lock);
-+
-+	return 0;
-+}
-+
-+static int i8254_count_mode_read(struct counter_device *const counter,
-+				 struct counter_count *const count,
-+				 enum counter_count_mode *const count_mode)
-+{
-+	const struct i8254 *const priv = counter_priv(counter);
-+
-+	switch (priv->out_mode[count->id]) {
-+	case I8254_MODE_INTERRUPT_ON_TERMINAL_COUNT:
-+		*count_mode = COUNTER_COUNT_MODE_INTERRUPT_ON_TERMINAL_COUNT;
-+		return 0;
-+	case I8254_MODE_HARDWARE_RETRIGGERABLE_ONESHOT:
-+		*count_mode = COUNTER_COUNT_MODE_HARDWARE_RETRIGGERABLE_ONESHOT;
-+		return 0;
-+	case I8254_MODE_RATE_GENERATOR:
-+		*count_mode = COUNTER_COUNT_MODE_RATE_GENERATOR;
-+		return 0;
-+	case I8254_MODE_SQUARE_WAVE_MODE:
-+		*count_mode = COUNTER_COUNT_MODE_SQUARE_WAVE_MODE;
-+		return 0;
-+	case I8254_MODE_SOFTWARE_TRIGGERED_STROBE:
-+		*count_mode = COUNTER_COUNT_MODE_SOFTWARE_TRIGGERED_STROBE;
-+		return 0;
-+	case I8254_MODE_HARDWARE_TRIGGERED_STROBE:
-+		*count_mode = COUNTER_COUNT_MODE_HARDWARE_TRIGGERED_STROBE;
-+		return 0;
-+	default:
-+		/* should never reach this path */
-+		return -EINVAL;
-+	}
-+}
-+
-+static int i8254_count_mode_write(struct counter_device *const counter,
-+				  struct counter_count *const count,
-+				  const enum counter_count_mode count_mode)
-+{
-+	struct i8254 *const priv = counter_priv(counter);
-+	u8 out_mode;
-+	int ret;
-+
-+	switch (count_mode) {
-+	case COUNTER_COUNT_MODE_INTERRUPT_ON_TERMINAL_COUNT:
-+		out_mode = I8254_MODE_INTERRUPT_ON_TERMINAL_COUNT;
-+		break;
-+	case COUNTER_COUNT_MODE_HARDWARE_RETRIGGERABLE_ONESHOT:
-+		out_mode = I8254_MODE_HARDWARE_RETRIGGERABLE_ONESHOT;
-+		break;
-+	case COUNTER_COUNT_MODE_RATE_GENERATOR:
-+		out_mode = I8254_MODE_RATE_GENERATOR;
-+		break;
-+	case COUNTER_COUNT_MODE_SQUARE_WAVE_MODE:
-+		out_mode = I8254_MODE_SQUARE_WAVE_MODE;
-+		break;
-+	case COUNTER_COUNT_MODE_SOFTWARE_TRIGGERED_STROBE:
-+		out_mode = I8254_MODE_SOFTWARE_TRIGGERED_STROBE;
-+		break;
-+	case COUNTER_COUNT_MODE_HARDWARE_TRIGGERED_STROBE:
-+		out_mode = I8254_MODE_HARDWARE_TRIGGERED_STROBE;
-+		break;
-+	default:
-+		/* should never reach this path */
-+		return -EINVAL;
-+	}
-+
-+	mutex_lock(&priv->lock);
-+
-+	/* Counter Register is cleared when the counter is programmed */
-+	priv->preset[count->id] = 0;
-+	priv->out_mode[count->id] = out_mode;
-+	ret = regmap_write(priv->map, I8254_CONTROL_REG,
-+			   I8254_PROGRAM_COUNTER(count->id, out_mode));
-+
-+	mutex_unlock(&priv->lock);
-+
-+	return ret;
-+}
-+
-+static int i8254_count_floor_read(struct counter_device *const counter,
-+				  struct counter_count *const count, u64 *const floor)
-+{
-+	struct i8254 *const priv = counter_priv(counter);
-+
-+	mutex_lock(&priv->lock);
-+
-+	switch (priv->out_mode[count->id]) {
-+	case I8254_MODE_RATE_GENERATOR:
-+		/* counter is always reloaded after 1, but 0 is a possible reload value */
-+		*floor = (priv->preset[count->id] == 0) ? 0 : 1;
-+		break;
-+	case I8254_MODE_SQUARE_WAVE_MODE:
-+		/* counter is always reloaded after 2 for even preset values */
-+		*floor = (priv->preset[count->id] % 2 || priv->preset[count->id] == 0) ? 0 : 2;
-+		break;
-+	default:
-+		*floor = 0;
-+		break;
-+	}
-+
-+	mutex_unlock(&priv->lock);
-+
-+	return 0;
-+}
-+
-+static int i8254_count_preset_read(struct counter_device *const counter,
-+				   struct counter_count *const count, u64 *const preset)
-+{
-+	const struct i8254 *const priv = counter_priv(counter);
-+
-+	*preset = priv->preset[count->id];
-+
-+	return 0;
-+}
-+
-+static int i8254_count_preset_write(struct counter_device *const counter,
-+				    struct counter_count *const count, const u64 preset)
-+{
-+	struct i8254 *const priv = counter_priv(counter);
-+	int ret;
-+	u8 value[2];
-+
-+	if (preset > U16_MAX)
-+		return -ERANGE;
-+
-+	mutex_lock(&priv->lock);
-+
-+	if (priv->out_mode[count->id] == I8254_MODE_RATE_GENERATOR ||
-+	    priv->out_mode[count->id] == I8254_MODE_SQUARE_WAVE_MODE) {
-+		if (preset == 1) {
-+			mutex_unlock(&priv->lock);
-+			return -EINVAL;
-+		}
-+	}
-+
-+	priv->preset[count->id] = preset;
-+
-+	put_unaligned_le16(preset, value);
-+	ret = regmap_noinc_write(priv->map, I8254_COUNTER_REG(count->id), value, 2);
-+
-+	mutex_unlock(&priv->lock);
-+
-+	return ret;
-+}
-+
-+static int i8254_init_hw(struct regmap *const map)
-+{
-+	unsigned long i;
-+	int ret;
-+
-+	for (i = 0; i < I8254_NUM_COUNTERS; i++) {
-+		/* Initialize each counter to Mode 0 */
-+		ret = regmap_write(map, I8254_CONTROL_REG,
-+				   I8254_PROGRAM_COUNTER(i, I8254_MODE_INTERRUPT_ON_TERMINAL_COUNT));
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct counter_ops i8254_ops = {
-+	.count_read = i8254_count_read,
-+	.function_read = i8254_function_read,
-+	.action_read = i8254_action_read,
++static const struct regmap_config pit_regmap_config = {
++	.name = "i8254",
++	.reg_bits = 8,
++	.reg_stride = 1,
++	.reg_base = STX104_I8254_BASE,
++	.val_bits = 8,
++	.io_port = true,
++	.wr_table = &pit_wr_table,
++	.rd_table = &pit_rd_table,
 +};
 +
-+#define I8254_SIGNAL(_id, _name) {		\
-+	.id = (_id),				\
-+	.name = (_name),			\
-+}
-+
-+static struct counter_signal i8254_signals[] = {
-+	I8254_SIGNAL(0, "CLK 0"), I8254_SIGNAL(1, "GATE 0"),
-+	I8254_SIGNAL(2, "CLK 1"), I8254_SIGNAL(3, "GATE 1"),
-+	I8254_SIGNAL(4, "CLK 2"), I8254_SIGNAL(5, "GATE 2"),
-+};
-+
-+static const enum counter_synapse_action i8254_clk_actions[] = {
-+	COUNTER_SYNAPSE_ACTION_FALLING_EDGE,
-+};
-+static const enum counter_synapse_action i8254_gate_actions[] = {
-+	COUNTER_SYNAPSE_ACTION_NONE,
-+	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
-+};
-+
-+#define I8254_SYNAPSES_BASE(_id) ((_id) * I8254_SYNAPSES_PER_COUNT)
-+#define I8254_SYNAPSE_CLK(_id) {					\
-+	.actions_list	= i8254_clk_actions,				\
-+	.num_actions	= ARRAY_SIZE(i8254_clk_actions),		\
-+	.signal		= &i8254_signals[I8254_SYNAPSES_BASE(_id) + 0],	\
-+}
-+#define I8254_SYNAPSE_GATE(_id) {					\
-+	.actions_list	= i8254_gate_actions,				\
-+	.num_actions	= ARRAY_SIZE(i8254_gate_actions),		\
-+	.signal		= &i8254_signals[I8254_SYNAPSES_BASE(_id) + 1],	\
-+}
-+
-+static struct counter_synapse i8254_synapses[] = {
-+	I8254_SYNAPSE_CLK(0), I8254_SYNAPSE_GATE(0),
-+	I8254_SYNAPSE_CLK(1), I8254_SYNAPSE_GATE(1),
-+	I8254_SYNAPSE_CLK(2), I8254_SYNAPSE_GATE(2),
-+};
-+
-+static const enum counter_function i8254_functions_list[] = {
-+	COUNTER_FUNCTION_DECREASE,
-+};
-+
-+static const enum counter_count_mode i8254_count_modes[] = {
-+	COUNTER_COUNT_MODE_INTERRUPT_ON_TERMINAL_COUNT,
-+	COUNTER_COUNT_MODE_HARDWARE_RETRIGGERABLE_ONESHOT,
-+	COUNTER_COUNT_MODE_RATE_GENERATOR,
-+	COUNTER_COUNT_MODE_SQUARE_WAVE_MODE,
-+	COUNTER_COUNT_MODE_SOFTWARE_TRIGGERED_STROBE,
-+	COUNTER_COUNT_MODE_HARDWARE_TRIGGERED_STROBE,
-+};
-+
-+static DEFINE_COUNTER_AVAILABLE(i8254_count_modes_available, i8254_count_modes);
-+
-+static struct counter_comp i8254_count_ext[] = {
-+	COUNTER_COMP_CEILING(i8254_count_ceiling_read, NULL),
-+	COUNTER_COMP_COUNT_MODE(i8254_count_mode_read, i8254_count_mode_write,
-+				i8254_count_modes_available),
-+	COUNTER_COMP_FLOOR(i8254_count_floor_read, NULL),
-+	COUNTER_COMP_PRESET(i8254_count_preset_read, i8254_count_preset_write),
-+};
-+
-+#define I8254_COUNT(_id, _name) {				\
-+	.id = (_id),						\
-+	.name = (_name),					\
-+	.functions_list = i8254_functions_list,			\
-+	.num_functions = ARRAY_SIZE(i8254_functions_list),	\
-+	.synapses = &i8254_synapses[I8254_SYNAPSES_BASE(_id)],	\
-+	.num_synapses =	I8254_SYNAPSES_PER_COUNT,		\
-+	.ext = i8254_count_ext,					\
-+	.num_ext = ARRAY_SIZE(i8254_count_ext)			\
-+}
-+
-+static struct counter_count i8254_counts[I8254_NUM_COUNTERS] = {
-+	I8254_COUNT(0, "Counter 0"), I8254_COUNT(1, "Counter 1"), I8254_COUNT(2, "Counter 2"),
-+};
-+
-+/**
-+ * devm_i8254_regmap_register - Register an i8254 Counter device
-+ * @dev: device that is registering this i8254 Counter device
-+ * @config: configuration for i8254_regmap_config
-+ *
-+ * Registers an Intel 8254 Programmable Interval Timer Counter device. Returns 0 on success and
-+ * negative error number on failure.
-+ */
-+int devm_i8254_regmap_register(struct device *const dev,
-+			       const struct i8254_regmap_config *const config)
+ static int stx104_read_raw(struct iio_dev *indio_dev,
+ 	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
+ {
+@@ -339,6 +368,21 @@ static const char *stx104_names[STX104_NGPIO] = {
+ 	"DIN0", "DIN1", "DIN2", "DIN3", "DOUT0", "DOUT1", "DOUT2", "DOUT3"
+ };
+ 
++static int bank_select_i8254(struct regmap *map)
 +{
-+	struct counter_device *counter;
-+	struct i8254 *priv;
++	const u8 select_i8254[] = { 0x3, 0xB, 0xA };
++	size_t i;
 +	int err;
 +
-+	if (!config->parent)
-+		return -EINVAL;
++	for (i = 0; i < ARRAY_SIZE(select_i8254); i++) {
++		err = regmap_write_bits(map, STX104_ADC_CONFIGURATION, STX104_RBK, select_i8254[i]);
++		if (err)
++			return err;
++	}
 +
-+	if (!config->map)
-+		return -EINVAL;
++	return 0;
++}
 +
-+	counter = devm_counter_alloc(dev, sizeof(*priv));
-+	if (!counter)
-+		return -ENOMEM;
-+	priv = counter_priv(counter);
-+	priv->map = config->map;
+ static int stx104_init_hw(struct stx104_iio *const priv)
+ {
+ 	int err;
+@@ -361,7 +405,7 @@ static int stx104_init_hw(struct stx104_iio *const priv)
+ 	if (err)
+ 		return err;
+ 
+-	return 0;
++	return bank_select_i8254(priv->aio_ctl_map);
+ }
+ 
+ static int stx104_probe(struct device *dev, unsigned int id)
+@@ -369,6 +413,7 @@ static int stx104_probe(struct device *dev, unsigned int id)
+ 	struct iio_dev *indio_dev;
+ 	struct stx104_iio *priv;
+ 	struct gpio_regmap_config gpio_config;
++	struct i8254_regmap_config pit_config;
+ 	void __iomem *stx104_base;
+ 	struct regmap *aio_ctl_map;
+ 	struct regmap *aio_data_map;
+@@ -406,6 +451,11 @@ static int stx104_probe(struct device *dev, unsigned int id)
+ 		return dev_err_probe(dev, PTR_ERR(dio_map),
+ 				     "Unable to initialize dio register map\n");
+ 
++	pit_config.map = devm_regmap_init_mmio(dev, stx104_base, &pit_regmap_config);
++	if (IS_ERR(pit_config.map))
++		return dev_err_probe(dev, PTR_ERR(pit_config.map),
++				     "Unable to initialize i8254 register map\n");
 +
-+	counter->name = dev_name(config->parent);
-+	counter->parent = config->parent;
-+	counter->ops = &i8254_ops;
-+	counter->counts = i8254_counts;
-+	counter->num_counts = ARRAY_SIZE(i8254_counts);
-+	counter->signals = i8254_signals;
-+	counter->num_signals = ARRAY_SIZE(i8254_signals);
-+
-+	mutex_init(&priv->lock);
-+
-+	err = i8254_init_hw(priv->map);
+ 	priv = iio_priv(indio_dev);
+ 	priv->aio_ctl_map = aio_ctl_map;
+ 	priv->aio_data_map = aio_data_map;
+@@ -449,7 +499,13 @@ static int stx104_probe(struct device *dev, unsigned int id)
+ 		.drvdata = dio_map,
+ 	};
+ 
+-	return PTR_ERR_OR_ZERO(devm_gpio_regmap_register(dev, &gpio_config));
++	err = PTR_ERR_OR_ZERO(devm_gpio_regmap_register(dev, &gpio_config));
 +	if (err)
 +		return err;
 +
-+	err = devm_counter_add(dev, counter);
-+	if (err < 0)
-+		return dev_err_probe(dev, err, "Failed to add counter\n");
++	pit_config.parent = dev;
 +
-+	return 0;
-+}
-+EXPORT_SYMBOL_NS_GPL(devm_i8254_regmap_register, I8254);
-+
-+MODULE_AUTHOR("William Breathitt Gray");
-+MODULE_DESCRIPTION("Intel 8254 Programmable Interval Timer");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS(COUNTER);
-diff --git a/include/linux/i8254.h b/include/linux/i8254.h
-new file mode 100644
-index 000000000000..a675c309232b
---- /dev/null
-+++ b/include/linux/i8254.h
-@@ -0,0 +1,21 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) William Breathitt Gray */
-+#ifndef _I8254_H_
-+#define _I8254_H_
-+
-+struct device;
-+struct regmap;
-+
-+/**
-+ * struct i8254_regmap_config - Configuration for the register map of an i8254
-+ * @parent:	parent device
-+ * @map:	regmap for the i8254
-+ */
-+struct i8254_regmap_config {
-+	struct device *parent;
-+	struct regmap *map;
-+};
-+
-+int devm_i8254_regmap_register(struct device *dev, const struct i8254_regmap_config *config);
-+
-+#endif /* _I8254_H_ */
-diff --git a/include/uapi/linux/counter.h b/include/uapi/linux/counter.h
-index 8ab12d731e3b..fc248ef00e86 100644
---- a/include/uapi/linux/counter.h
-+++ b/include/uapi/linux/counter.h
-@@ -127,6 +127,12 @@ enum counter_count_mode {
- 	COUNTER_COUNT_MODE_RANGE_LIMIT,
- 	COUNTER_COUNT_MODE_NON_RECYCLE,
- 	COUNTER_COUNT_MODE_MODULO_N,
-+	COUNTER_COUNT_MODE_INTERRUPT_ON_TERMINAL_COUNT,
-+	COUNTER_COUNT_MODE_HARDWARE_RETRIGGERABLE_ONESHOT,
-+	COUNTER_COUNT_MODE_RATE_GENERATOR,
-+	COUNTER_COUNT_MODE_SQUARE_WAVE_MODE,
-+	COUNTER_COUNT_MODE_SOFTWARE_TRIGGERED_STROBE,
-+	COUNTER_COUNT_MODE_HARDWARE_TRIGGERED_STROBE,
- };
++	return devm_i8254_regmap_register(dev, &pit_config);
+ }
  
- /* Count function values */
+ static struct isa_driver stx104_driver = {
+@@ -464,3 +520,4 @@ module_isa_driver(stx104_driver, num_stx104);
+ MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
+ MODULE_DESCRIPTION("Apex Embedded Systems STX104 IIO driver");
+ MODULE_LICENSE("GPL v2");
++MODULE_IMPORT_NS(I8254);
 -- 
 2.39.2
 
