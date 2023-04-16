@@ -2,307 +2,178 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C09C77B73
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Apr 2023 17:37:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F23C4C77B76
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Apr 2023 20:20:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229951AbjDPRha (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 16 Apr 2023 13:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49054 "EHLO
+        id S229695AbjDPUUo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 16 Apr 2023 16:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229878AbjDPRhU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Apr 2023 13:37:20 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695C51993
-        for <linux-iio@vger.kernel.org>; Sun, 16 Apr 2023 10:37:15 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-187b51ed66fso7889007fac.6
-        for <linux-iio@vger.kernel.org>; Sun, 16 Apr 2023 10:37:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681666634; x=1684258634;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ovjpqll5VtxwQ43jHcnr9VfA0Tx2SudA3gLydKeL8iA=;
-        b=toTOi3KK0WwdxwEz161rRxKt1N3ife6KkjV6ipBonTRWqIRzrqWKAceLzOvs+NrXSG
-         BFJ+p3SQjc9zXLgCT/2zp9sD9Dl0imo2TiRjHi+dvmIiBrkLOeO5KsLqtFln40wjTws9
-         xJ+rVZe08xfAZHSkbR8e+h5yYILFQISQHGescFZ4/0VU6xxjQn5Ioc8ky0nIMhMhlc8M
-         e1jT2rwZLYajfNipzXivNOLg+yKLTY/7FiDJAxBZEsRp/WZqLg35fVGbuG+F463Q2kTa
-         RH5p7eY3vXPfKIlHE9C2Ctv9ml7jRkzqhiHBwUValcCDo4TkNQ+XhE8396V2cZCE8z3R
-         NZRA==
+        with ESMTP id S229565AbjDPUUn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Apr 2023 16:20:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCE526B5
+        for <linux-iio@vger.kernel.org>; Sun, 16 Apr 2023 13:19:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681676395;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=E4VfgdWy79fScFpHd8ztN3EfNO1Bs6qzR+h66uHi/sM=;
+        b=i5AxEbG0cSngHWhXf5C2ZjZqVTKNboqSncT57H8g5NdtgMKUVT3/6bhd/YaABYS5rVM4F3
+        CTAm+Lew6LLkA/7keh6bqNnATBV9ENVw+aEdwesRfQKdBMq23qGg08fVVi1MKEmmLbfP4K
+        JFNDWX9xrAdn1gjm7J0p34RioamNom0=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-378-g-RBdeKwPxGA7TdQ49DU8g-1; Sun, 16 Apr 2023 16:19:53 -0400
+X-MC-Unique: g-RBdeKwPxGA7TdQ49DU8g-1
+Received: by mail-ej1-f71.google.com with SMTP id a640c23a62f3a-94f0dd11762so58658266b.1
+        for <linux-iio@vger.kernel.org>; Sun, 16 Apr 2023 13:19:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681666634; x=1684258634;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Ovjpqll5VtxwQ43jHcnr9VfA0Tx2SudA3gLydKeL8iA=;
-        b=jW5Whq0WeusaMWcAkKcTXVyE9xaXeN8qS1QhMz/+ewsamP3+XNc1wHJ29sENfd8RHv
-         PoTvDkjkhUCb3rPX82LWV41obSDo659ORB8B43SiMx9ecWZa7EfKohuU5MD4m8V2GxBN
-         PBiKImwsrjV0jCIjMDhO2wBJY7pjw7j0SJ/VS4NJabbFbwOTYVonveZROyG1s5rGdsad
-         j43bcTdXWu0NDCFnNvjG+vNXNdI7xPqp0TdCB2KG7kWyHk2i/AIxWFO3kL+gfMzYIBaG
-         Xd/OITaBMJBkb6/8OBraczMMnBmJ3WZQZuHXcqE2C2t0/CdFje2cQdgxdfxRiHZ9UluK
-         70lw==
-X-Gm-Message-State: AAQBX9dXtJi5HBB19Cg5dS7Tajj1wUzrmw4XRFHMnsEBShpOT2bSHZB5
-        fq1LLmFg0W6Rp/y7CSnoPLgoog==
-X-Google-Smtp-Source: AKy350aSdE+LuSaYAENfJG/+XewuCXMdlMCcps0AFD4jIm4N7m1rl+D7VpiA3Utl6XKQO1KpB+mp3w==
-X-Received: by 2002:a05:6870:20f:b0:187:c4ee:f527 with SMTP id j15-20020a056870020f00b00187c4eef527mr3000506oad.0.1681666634733;
-        Sun, 16 Apr 2023 10:37:14 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id v16-20020a05683011d000b0069457b86060sm3771038otq.47.2023.04.16.10.37.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Apr 2023 10:37:14 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        William Breathitt Gray <william.gray@linaro.org>
-Subject: [PATCH 2/3] gpio: 104-dio-48e: Add Counter/Timer support
-Date:   Sun, 16 Apr 2023 13:36:54 -0400
-Message-Id: <dc4d0d5ca6ea28eda18815df114ecb21226cb345.1681665189.git.william.gray@linaro.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <cover.1681665189.git.william.gray@linaro.org>
-References: <cover.1681665189.git.william.gray@linaro.org>
+        d=1e100.net; s=20221208; t=1681676392; x=1684268392;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=E4VfgdWy79fScFpHd8ztN3EfNO1Bs6qzR+h66uHi/sM=;
+        b=j8qKpg/br4w6ewbCnaRSY02fiA0rT9NiGpYe3L/shYFF63OnqQqlqJSj4J9J/XC7MX
+         33QRlqtgTje9566PBx9T5l8kbHwSLvX+vsGDZLK+i3S2QQA55nVprxR99cyZ5a4fTzwC
+         B1qwm8TfgiIE95mojTuFQBFecKlHykUYOuT5vIbvyrpbLSesXAhQVPlw7t3k78yFChyf
+         APVD5Yv0qJlnAjBf/oJduMrAyTg7i/2GlFywKs7RcyfYELiCQCqgb0vPiR4FEmkXYgJS
+         CfWUCs3FSgoFXMvaOMH3rZXpbaahJkf/PQmYY5+0b4eVcNOruS/l5qN0O0CTRqKjKr9t
+         Zn/w==
+X-Gm-Message-State: AAQBX9e6t2/uN43iLO9SvVwmEU51QEcBB1rHc0SypNJR/nsjFY1K7bV2
+        KRA2i53gH1x4AYynTGAp8nUSnqRDk8/KH5lfrkPibKXskOPGEm5zVImKFwfS+FnmADrMp7JaACQ
+        5eMyzLa2hh22NhMlK7bCj
+X-Received: by 2002:aa7:d814:0:b0:506:9701:8436 with SMTP id v20-20020aa7d814000000b0050697018436mr3928486edq.16.1681676392497;
+        Sun, 16 Apr 2023 13:19:52 -0700 (PDT)
+X-Google-Smtp-Source: AKy350b+Rx8aYCm1+2MZmFymKF7qHzMlh5iqmEBr7hABMtGp1cN0/0bG3sAD9IZSP+SnHgtLZmAN+Q==
+X-Received: by 2002:aa7:d814:0:b0:506:9701:8436 with SMTP id v20-20020aa7d814000000b0050697018436mr3928477edq.16.1681676392105;
+        Sun, 16 Apr 2023 13:19:52 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c32:7800:5bfa:a036:83f0:f9ec? (2001-1c00-0c32-7800-5bfa-a036-83f0-f9ec.cable.dynamic.v6.ziggo.nl. [2001:1c00:c32:7800:5bfa:a036:83f0:f9ec])
+        by smtp.gmail.com with ESMTPSA id y2-20020aa7ccc2000000b004c2158e87e6sm4878686edt.97.2023.04.16.13.19.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 16 Apr 2023 13:19:51 -0700 (PDT)
+Message-ID: <3eb3de24-41b4-9566-9b11-a12d21904793@redhat.com>
+Date:   Sun, 16 Apr 2023 22:19:50 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v3 0/6] iio: st_sensors: Add lsm303d support
+To:     Marius Hoch <mail@mariushoch.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230415231130.115094-1-mail@mariushoch.de>
+Content-Language: en-US, nl
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20230415231130.115094-1-mail@mariushoch.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The 104-DIO-48E features an 8254 Counter/Timer chip providing three
-counter/timers which can be used for frequency measurement, frequency
-output, pulse width modulation, pulse width measurement, event count,
-etc. The counter/timers use the same addresses as PPI 0 (addresses 0x0
-to 0x3), so a raw_spinlock_t is used to synchronize operations between
-the two regmap mappings to prevent clobbering.
+Hi Marius,
 
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
----
- drivers/gpio/Kconfig            |   1 +
- drivers/gpio/gpio-104-dio-48e.c | 127 ++++++++++++++++++++++++++++----
- 2 files changed, 112 insertions(+), 16 deletions(-)
+On 4/16/23 01:11, Marius Hoch wrote:
+> Hi!
+> 
+> This patch series adds support for the LSM303D accelerometer and
+> magnetometer. As the LSM303D is basically, as far as I can tell,
+> the LSM9DS0 without gyroscope, we can easily re-use its definitions.
+> 
+> This was tested on a Lenovo Yoga Tablet 2 1051-F.
 
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index badbe0582318..1fcc1245f954 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -840,6 +840,7 @@ config GPIO_104_DIO_48E
- 	select REGMAP_IRQ
- 	select GPIOLIB_IRQCHIP
- 	select GPIO_I8255
-+	select I8254
- 	help
- 	  Enables GPIO support for the ACCES 104-DIO-48E series (104-DIO-48E,
- 	  104-DIO-24E). The base port addresses for the devices may be
-diff --git a/drivers/gpio/gpio-104-dio-48e.c b/drivers/gpio/gpio-104-dio-48e.c
-index 000a56d5f1d7..2df33650cbf4 100644
---- a/drivers/gpio/gpio-104-dio-48e.c
-+++ b/drivers/gpio/gpio-104-dio-48e.c
-@@ -9,6 +9,7 @@
- #include <linux/bits.h>
- #include <linux/device.h>
- #include <linux/err.h>
-+#include <linux/i8254.h>
- #include <linux/ioport.h>
- #include <linux/irq.h>
- #include <linux/isa.h>
-@@ -16,6 +17,7 @@
- #include <linux/module.h>
- #include <linux/moduleparam.h>
- #include <linux/regmap.h>
-+#include <linux/spinlock.h>
- #include <linux/types.h>
- 
- #include "gpio-i8255.h"
-@@ -37,6 +39,8 @@ MODULE_PARM_DESC(irq, "ACCES 104-DIO-48E interrupt line numbers");
- 
- #define DIO48E_ENABLE_INTERRUPT 0xB
- #define DIO48E_DISABLE_INTERRUPT DIO48E_ENABLE_INTERRUPT
-+#define DIO48E_ENABLE_COUNTER_TIMER_ADDRESSING 0xD
-+#define DIO48E_DISABLE_COUNTER_TIMER_ADDRESSING DIO48E_ENABLE_COUNTER_TIMER_ADDRESSING
- #define DIO48E_CLEAR_INTERRUPT 0xF
- 
- #define DIO48E_NUM_PPI 2
-@@ -75,18 +79,20 @@ static const struct regmap_access_table dio48e_precious_table = {
- 	.yes_ranges = dio48e_precious_ranges,
- 	.n_yes_ranges = ARRAY_SIZE(dio48e_precious_ranges),
- };
--static const struct regmap_config dio48e_regmap_config = {
--	.reg_bits = 8,
--	.reg_stride = 1,
--	.val_bits = 8,
--	.io_port = true,
--	.max_register = 0xF,
--	.wr_table = &dio48e_wr_table,
--	.rd_table = &dio48e_rd_table,
--	.volatile_table = &dio48e_volatile_table,
--	.precious_table = &dio48e_precious_table,
--	.cache_type = REGCACHE_FLAT,
--	.use_raw_spinlock = true,
-+
-+static const struct regmap_range pit_wr_ranges[] = {
-+	regmap_reg_range(0x0, 0x3),
-+};
-+static const struct regmap_range pit_rd_ranges[] = {
-+	regmap_reg_range(0x0, 0x2),
-+};
-+static const struct regmap_access_table pit_wr_table = {
-+	.yes_ranges = pit_wr_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(pit_wr_ranges),
-+};
-+static const struct regmap_access_table pit_rd_table = {
-+	.yes_ranges = pit_rd_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(pit_rd_ranges),
- };
- 
- /* only bit 3 on each respective Port C supports interrupts */
-@@ -102,14 +108,56 @@ static const struct regmap_irq dio48e_regmap_irqs[] = {
- 
- /**
-  * struct dio48e_gpio - GPIO device private data structure
-+ * @lock:	synchronization lock to prevent I/O race conditions
-  * @map:	Regmap for the device
-+ * @regs:	virtual mapping for device registers
-+ * @flags:	IRQ flags saved during locking
-  * @irq_mask:	Current IRQ mask state on the device
-  */
- struct dio48e_gpio {
-+	raw_spinlock_t lock;
- 	struct regmap *map;
-+	void __iomem *regs;
-+	unsigned long flags;
- 	unsigned int irq_mask;
- };
- 
-+static void dio48e_regmap_lock(void *lock_arg) __acquires(&dio48egpio->lock)
-+{
-+	struct dio48e_gpio *const dio48egpio = lock_arg;
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&dio48egpio->lock, flags);
-+	dio48egpio->flags = flags;
-+}
-+
-+static void dio48e_regmap_unlock(void *lock_arg) __releases(&dio48egpio->lock)
-+{
-+	struct dio48e_gpio *const dio48egpio = lock_arg;
-+
-+	raw_spin_unlock_irqrestore(&dio48egpio->lock, dio48egpio->flags);
-+}
-+
-+static void pit_regmap_lock(void *lock_arg) __acquires(&dio48egpio->lock)
-+{
-+	struct dio48e_gpio *const dio48egpio = lock_arg;
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&dio48egpio->lock, flags);
-+	dio48egpio->flags = flags;
-+
-+	iowrite8(0x00, dio48egpio->regs + DIO48E_ENABLE_COUNTER_TIMER_ADDRESSING);
-+}
-+
-+static void pit_regmap_unlock(void *lock_arg) __releases(&dio48egpio->lock)
-+{
-+	struct dio48e_gpio *const dio48egpio = lock_arg;
-+
-+	ioread8(dio48egpio->regs + DIO48E_DISABLE_COUNTER_TIMER_ADDRESSING);
-+
-+	raw_spin_unlock_irqrestore(&dio48egpio->lock, dio48egpio->flags);
-+}
-+
- static int dio48e_handle_mask_sync(const int index,
- 				   const unsigned int mask_buf_def,
- 				   const unsigned int mask_buf,
-@@ -176,6 +224,9 @@ static int dio48e_probe(struct device *dev, unsigned int id)
- 	struct i8255_regmap_config config = {};
- 	void __iomem *regs;
- 	struct regmap *map;
-+	struct regmap_config dio48e_regmap_config;
-+	struct regmap_config pit_regmap_config;
-+	struct i8254_regmap_config pit_config;
- 	int err;
- 	struct regmap_irq_chip *chip;
- 	struct dio48e_gpio *dio48egpio;
-@@ -187,21 +238,58 @@ static int dio48e_probe(struct device *dev, unsigned int id)
- 		return -EBUSY;
- 	}
- 
-+	dio48egpio = devm_kzalloc(dev, sizeof(*dio48egpio), GFP_KERNEL);
-+	if (!dio48egpio)
-+		return -ENOMEM;
-+
- 	regs = devm_ioport_map(dev, base[id], DIO48E_EXTENT);
- 	if (!regs)
- 		return -ENOMEM;
- 
-+	dio48egpio->regs = regs;
-+
-+	raw_spin_lock_init(&dio48egpio->lock);
-+
-+	dio48e_regmap_config = (struct regmap_config) {
-+		.reg_bits = 8,
-+		.reg_stride = 1,
-+		.val_bits = 8,
-+		.lock = dio48e_regmap_lock,
-+		.unlock = dio48e_regmap_unlock,
-+		.lock_arg = dio48egpio,
-+		.io_port = true,
-+		.wr_table = &dio48e_wr_table,
-+		.rd_table = &dio48e_rd_table,
-+		.volatile_table = &dio48e_volatile_table,
-+		.precious_table = &dio48e_precious_table,
-+		.cache_type = REGCACHE_FLAT,
-+	};
-+
- 	map = devm_regmap_init_mmio(dev, regs, &dio48e_regmap_config);
- 	if (IS_ERR(map))
- 		return dev_err_probe(dev, PTR_ERR(map),
- 				     "Unable to initialize register map\n");
- 
--	dio48egpio = devm_kzalloc(dev, sizeof(*dio48egpio), GFP_KERNEL);
--	if (!dio48egpio)
--		return -ENOMEM;
--
- 	dio48egpio->map = map;
- 
-+	pit_regmap_config = (struct regmap_config) {
-+		.name = "i8254",
-+		.reg_bits = 8,
-+		.reg_stride = 1,
-+		.val_bits = 8,
-+		.lock = pit_regmap_lock,
-+		.unlock = pit_regmap_unlock,
-+		.lock_arg = dio48egpio,
-+		.io_port = true,
-+		.wr_table = &pit_wr_table,
-+		.rd_table = &pit_rd_table,
-+	};
-+
-+	pit_config.map = devm_regmap_init_mmio(dev, regs, &pit_regmap_config);
-+	if (IS_ERR(pit_config.map))
-+		return dev_err_probe(dev, PTR_ERR(pit_config.map),
-+				     "Unable to initialize i8254 register map\n");
-+
- 	chip = devm_kzalloc(dev, sizeof(*chip), GFP_KERNEL);
- 	if (!chip)
- 		return -ENOMEM;
-@@ -229,6 +317,12 @@ static int dio48e_probe(struct device *dev, unsigned int id)
- 	if (err)
- 		return dev_err_probe(dev, err, "IRQ registration failed\n");
- 
-+	pit_config.parent = dev;
-+
-+	err = devm_i8254_regmap_register(dev, &pit_config);
-+	if (err)
-+		return err;
-+
- 	config.parent = dev;
- 	config.map = map;
- 	config.num_ppi = DIO48E_NUM_PPI;
-@@ -249,3 +343,4 @@ module_isa_driver_with_irq(dio48e_driver, num_dio48e, num_irq);
- MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
- MODULE_DESCRIPTION("ACCES 104-DIO-48E GPIO driver");
- MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(I8254);
--- 
-2.39.2
+Thank you for your work on this. I have had this on my own todo list
+since 2020 at least and I did not realize that Andy already added ST IMU
+support in 2021 so this just needed some extra device-ids :)
+
+I have tested this successfully on the following models:
+
+Lenovo Yoga Tablet 2 851F (Windows version 8")
+
+This version needs an accel-mount-matrix quick in hwdb since it has
+a portrait screen rather then a landscape screen (so 90° rotated):
+https://github.com/systemd/systemd/pull/27295
+Note I've made sure that this quirk only applies to the 851 and not to the 1051.
+
+Lenovo Yoga Tablet 2  830F (Android version 8")
+
+Since the ACPI tables are broken in the Android BIOS these need
+a patch to x86-android-tablets to instantiate the i2c_client
+for the sensor, I'm still finalizing this patch and I'll submit
+it upstream when its finished.
+
+Tested-by: Hans de Goede <hansg@kernel.org>
+
+Regards,
+
+Hans
+
+
+p.s.
+
+1: I noticed that auto-screen rotation using iio-sensor-proxy is quite slow
+so I wrote a patch to fix this :)   :
+https://gitlab.freedesktop.org/hadess/iio-sensor-proxy/-/merge_requests/366
+
+2: There are some other unsupported sensors on these models too,
+perhaps you are interested in adding support for these too?
+
+Here are my personal notes on this:
+ -Light sensor should work with drivers/iio/light/al3320a.c
+  https://github.com/JideTechnology/remixos-kernel/commit/c52d55b4bd907e87b7b115b3943219f3e089a77a
+
+ -MXM1120 HALL sensor, have datasheet, measures angle of kickstand thingie, use
+  for SW_TABLET_MODE. Do a pdx86 driver just for the Tab 2 which checks that the
+  kick stand is out *and* the BT keyboard is paired, in that case report
+  SW_TABLET_MODE=0, in all other cases report SW_TABLET_MODE=1 ??
+  For the commit msg:
+  Datasheet available here: http://haechitech.com/tech-support/
+  Requires creating an account, once you have an account you can immediately download
+  the provided datasheets (or let me know if you want me to email you a copy)
+
+Especially the light sensor should be an easy win and light sensors
+are already supported in e.g. iio-sensor-proxy
+
+
+
+
+
+
+
+
+
+
+> Changes in v3:
+> Simplified the ACPI tables in the LSM9DS0 IMU driver, per Jonathan Cameron.
+> 
+> Marius Hoch (6):
+>   iio: accel: st_accel: Add LSM303D
+>   iio: magnetometer: st_accel: Add LSM303D
+>   iio: st_sensors: Add lsm303d support to the LSM9DS0 IMU driver
+>   iio: st_sensors: Add ACPI support for lsm303d to the LSM9DS0 IMU
+>     driver
+>   iio: Comment that the LSM303D also has the Magnetometer DRDY
+>   dt-bindings: iio: st-sensors: Add LSM303D accelerometer+magnetometer
+> 
+>  .../devicetree/bindings/iio/st,st-sensors.yaml       |  1 +
+>  drivers/iio/accel/st_accel_core.c                    |  1 +
+>  drivers/iio/imu/st_lsm9ds0/Kconfig                   |  3 ++-
+>  drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_i2c.c          | 12 ++++++++++++
+>  drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_spi.c          | 12 ++++++++++++
+>  drivers/iio/magnetometer/st_magn_core.c              |  1 +
+>  include/linux/iio/common/st_sensors.h                |  1 +
+>  include/linux/platform_data/st_sensors_pdata.h       |  2 +-
+>  8 files changed, 31 insertions(+), 2 deletions(-)
+> 
+> 
+> base-commit: e62252bc55b6d4eddc6c2bdbf95a448180d6a08d
 
