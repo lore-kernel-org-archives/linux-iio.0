@@ -2,34 +2,35 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D89C77B75
-	for <linux-iio@archiver.kernel.org>; Tue, 18 Apr 2023 16:44:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 801BCC7EE25
+	for <linux-iio@archiver.kernel.org>; Tue, 18 Apr 2023 16:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232495AbjDRQoQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 18 Apr 2023 12:44:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55986 "EHLO
+        id S232623AbjDRQoS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 18 Apr 2023 12:44:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230445AbjDRQoP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Apr 2023 12:44:15 -0400
+        with ESMTP id S230514AbjDRQoQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Apr 2023 12:44:16 -0400
 Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D2710F2;
-        Tue, 18 Apr 2023 09:44:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD941726;
+        Tue, 18 Apr 2023 09:44:15 -0700 (PDT)
 Received: from [192.168.178.23] (unknown [62.108.10.64])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 4ADABCA65D;
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 0113DCA68E;
         Tue, 18 Apr 2023 16:43:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1681836222; bh=cf8LvtTKNrXgOVqnfPBTTBrobXcm7GixsxPTc9CbZI8=;
+        t=1681836223; bh=u1CBeB9oqqUFBQOBq+X+7/lai41Mv4Q6YL0vIaDk/lA=;
         h=From:Date:Subject:References:In-Reply-To:To:Cc;
-        b=YDpqgryyebKOo21fnxTWC+nCRdpBuErzrEBraHI1qLBIYwfGauslOiJs4u8WoaSZC
-         FvqEDtkNCOfC4+AiWDID9IIK/8XjnkDoZTIqUbd6krN/FY97nkr5lKVPA09pyIqQea
-         2SKm++LAM+o6YXk7GnM94YOxc9k7CmEE9i7PcmE0=
+        b=jcHgu5Hrt0HE6b4Aj5/JAfYiqHx5O2b15i5QpJK8gV4/A+rbEgsWtDWz6JxdCdrJ9
+         F0W8b8FwifLoTpKbv9D4sb3N2A8leU4FoJjlCoK8Y/dK0UfjcfUEgsBVKNd0VXK9Xz
+         SLtK6D3KQJQKrQmvkgE6nHcqCbKfl2ZMyVQgZZYw=
 From:   Luca Weiss <luca@z3ntu.xyz>
-Date:   Tue, 18 Apr 2023 18:43:17 +0200
-Subject: [PATCH v2 1/8] dt-bindings: pinctrl: qcom,pmic-gpio: add PMI632
+Date:   Tue, 18 Apr 2023 18:43:19 +0200
+Subject: [PATCH v2 3/8] dt-bindings: leds: qcom-lpg: Add compatible for
+ PMI632 LPG block
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230414-pmi632-v2-1-98bafa909c36@z3ntu.xyz>
+Message-Id: <20230414-pmi632-v2-3-98bafa909c36@z3ntu.xyz>
 References: <20230414-pmi632-v2-0-98bafa909c36@z3ntu.xyz>
 In-Reply-To: <20230414-pmi632-v2-0-98bafa909c36@z3ntu.xyz>
 To:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
@@ -47,63 +48,50 @@ To:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
 Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-leds@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-doc@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>
+        linux-doc@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1358; i=luca@z3ntu.xyz;
- h=from:subject:message-id; bh=cf8LvtTKNrXgOVqnfPBTTBrobXcm7GixsxPTc9CbZI8=;
- b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBkPsi3SNkpS8d/Eulaj4wZnh0Vn8qnQgZ954mj5
- +KwnBfY12KJAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZD7ItwAKCRBy2EO4nU3X
- VoovD/wLzln3jpbza/IVaQxcgbOH2+0Y3AFysC0yUZYVdkEePlQ1Qt236/z8G4cgwqB/qNBovtD
- /t6JNhmW+b8Oe7z1xG7ylpBwtXv7orb6l6D44xfmckJx1ifbQf57ybSaDUM7QLTBT752ceGPg+O
- GW1AP3skMPHSBpum9O5fhHtOS/u9B5g9N7dObLV6boE35XvExofQdFNvz5LX5MplZVGGWLQX9z9
- fpsMJLaWg9XqBEUZAq+uJydwKfHb+ds1M9jGVK26S9w59BUizCNi4gA1+hCopJJhSELJeiwgbnM
- nwth7Z0/4GTdq90HvQIcipsh7nA2yEZgUjl5DQnbbplbxNMLIJzQCSWARcHPYO231YFOOCflc+A
- kig4tjUPSACivzVLBLVGICxe6rOkJHLZsaNcln6nwusl+N+0e4nMVtfTmerwOB1VW7uJxb03b4g
- 2iB21ANIG/xCjY+JdTQvrRbJXO3fqzmAlGYEwJMDg42Ag2M8NJc+C51KwcA6YZjoc3HMzAiLEaY
- K4BMQOFg4USWURIWyDjNnYrC7jNtFFEZsHJBTggwPHRqKIUQSe4EWKAt08BS3/B3yFDFmoF1uOZ
- nuBCfu+H5fX7eKwpQBZLt35HMHJSK+3VLzn5UqRH6jM8B0HHdaLhe4PNcue83shNiLTa7ACZPip
- bm97szTkULXMUqg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=846; i=luca@z3ntu.xyz;
+ h=from:subject:message-id; bh=u1CBeB9oqqUFBQOBq+X+7/lai41Mv4Q6YL0vIaDk/lA=;
+ b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBkPsi4kAjUlTtFxKwJrfVRmOrub1QmOv1sjYvuO
+ 6UdtvwzY/qJAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZD7IuAAKCRBy2EO4nU3X
+ VnPzEACHYYswejDMm0bO7D5u0DNUD/yxIdqtQnb3/jNBe5zGUvaivZL1BoEbQBRGM/IlrbhEqaC
+ d3CzlCgOwDUxfcnDlRMbCnyH+lBWraP0i6WLmsO/V4y5HbK1SuKXilK73+y1h820StMNel1mUKu
+ ljR/CF/XNsfFUBTDAjOvh04zGBFSMxmttb5FF8OhMYRuahViJN6uQIcov5j9ffmiFxkM7USCb0f
+ R/Yrcgb8syGhVQXDH80JIyEpIkjEVe0HbJGyxPP3vZU+fobaye2JvdzgboN22Dxu5sst+iC+0fu
+ TTy8Pg1OWBhRTXnGgESgu8hGYt0VGtgp8isiTyPzyo7YEeRQF36viNepbBxqeRgXpfnuw5e7Z/1
+ TRcnmpZQMS3NSDf7xL2tNQwM1sILnNjrEPeq+UbEgnsYCvOgXCQNSQGOqJzCC1Uovj+ZoGHtJKB
+ uAVeWKT+Od8nRvzuAL3gV3DEMtbGfEnEHJwek5KCWsuVhEl2VBPTXdVrdCK0MQvPD72XuW3r/AP
+ WUSBhhomZlF6LDred2obnGTd3yndwRVrdmu5c4nn7YbRS+r58/TzP/SUO3OK0BNom1FJsY9p2Bi
+ qKuLKmhefn20NhkOAtZvahewrP+gdGDY8zgZqOnpBPEZbZP+OZuBKcB3p9AU8AG+7cBflLkr04S
+ AJoA15L3gy/gY7w==
 X-Developer-Key: i=luca@z3ntu.xyz; a=openpgp;
  fpr=BD04DA24C971B8D587B2B8D7FAF69CF6CD2D02CD
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Document the 8 GPIOs found on PMI632.
+Document the availability of an LPG configuration for the PMI632 PMIC in
+the Qualcomm Light Pulse Generator driver.
 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
 ---
- Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml
-index 36c6435cfd0a..eaadd5a9a445 100644
---- a/Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml
-@@ -52,6 +52,7 @@ properties:
-           - qcom,pm8994-gpio
-           - qcom,pm8998-gpio
-           - qcom,pma8084-gpio
-+          - qcom,pmi632-gpio
-           - qcom,pmi8950-gpio
-           - qcom,pmi8994-gpio
-           - qcom,pmi8998-gpio
-@@ -174,6 +175,7 @@ allOf:
-               - qcom,pm8350b-gpio
-               - qcom,pm8550ve-gpio
-               - qcom,pm8950-gpio
-+              - qcom,pmi632-gpio
-     then:
-       properties:
-         gpio-line-names:
-@@ -435,6 +437,7 @@ $defs:
-                  - gpio1-gpio22 for pm8994
-                  - gpio1-gpio26 for pm8998
-                  - gpio1-gpio22 for pma8084
-+                 - gpio1-gpio8 for pmi632
-                  - gpio1-gpio2 for pmi8950
-                  - gpio1-gpio10 for pmi8994
-                  - gpio1-gpio4 for pmk8350
+diff --git a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+index 1df837798249..2e4426894bed 100644
+--- a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
++++ b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+@@ -25,6 +25,7 @@ properties:
+       - qcom,pm8941-lpg
+       - qcom,pm8994-lpg
+       - qcom,pmc8180c-lpg
++      - qcom,pmi632-lpg
+       - qcom,pmi8994-lpg
+       - qcom,pmi8998-lpg
+ 
 
 -- 
 2.40.0
