@@ -2,156 +2,97 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A02F6C77B75
-	for <linux-iio@archiver.kernel.org>; Tue, 18 Apr 2023 11:06:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F496C77B75
+	for <linux-iio@archiver.kernel.org>; Tue, 18 Apr 2023 12:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230029AbjDRLGu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 18 Apr 2023 07:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48380 "EHLO
+        id S231599AbjDRMdc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 18 Apr 2023 08:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbjDRLGt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Apr 2023 07:06:49 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 203C02D40;
-        Tue, 18 Apr 2023 04:06:48 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id ud9so71905943ejc.7;
-        Tue, 18 Apr 2023 04:06:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681816006; x=1684408006;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=vu1SBYfLswBC9fPoY3IBP/c1hfDbt9cFF0LwKY1fVBg=;
-        b=WkABlEPp4JNcJ72lxS88u9a6+qKHploQjP8EdCjd19yoOt/tuCyQGJPsIiGFCjoxWZ
-         DLVtfbWOdsUwfqwgi7WCN7tJJFyXQAGGyPsKfI0P+Yl2Wx8PYD/0vS0JNkWIvjXznIkd
-         1ZRa5/H8ajfy+IIjt6A9Mfw4sT7N4R1NeH7GF/+eFI5bG9dQwMiHmkwyroGuXy7uWRNH
-         83ms5zKRG7ccxTyD008AfMXZyvcifMpae1lrvb/W0Cv7KgXoypy+HzDkIpV3Y3N8iUO6
-         dnb5yVRH1P5zmG2AB5jzbhnEZBuBIC1WEh2pE/Os8dfUZHXaF6gKyTg6RBXk6U35JH+F
-         Vyzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681816006; x=1684408006;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vu1SBYfLswBC9fPoY3IBP/c1hfDbt9cFF0LwKY1fVBg=;
-        b=HnG+FGhxzF7kGWUFoNI6ArAoLD5P1fF29ZxFmhR5LNM9NP2hI+zhpgHVmglhfxVsCL
-         k4aXWckMSblgvN8EMkLpY1J6FjLEIGthumcZDs+oeq31hzl8uIcN2wr1xbEiP/QqU8r6
-         MxzpP23YK9381UgBlxXXVjo64O+Kiuj5gH7FMqKLTNNTM9EXbfqGOSRBEJK9axYyzqob
-         rYq903yjAwtxy4t7BEgrsdT5/8b7iQY23ubCdT/euS7Z49OShZCu6pU/vvaLTZwZ8Hyb
-         TA40GM77vyxjlfBeZdqGXsu2pU9MwoJHy1eAkH+K2gTNMtahDNszrrn4xdSg68UAT8i1
-         nXsQ==
-X-Gm-Message-State: AAQBX9du/e6Z1BiVMQhSgO0DLrkjgx2e9pTBcSHPXP25V4dhpayTGUKe
-        Dp8sYstc3S0ALpydarBfapqALsd206y1AdQL
-X-Google-Smtp-Source: AKy350ZX2B40fUVQ9Gt2Uok+rMY44mJj9tFFvJ31wK15bLytE/YOfu6rzdl0c5jFHhL0ehN/ZICjdA==
-X-Received: by 2002:a17:906:a945:b0:932:4255:5902 with SMTP id hh5-20020a170906a94500b0093242555902mr9931532ejb.76.1681816006152;
-        Tue, 18 Apr 2023 04:06:46 -0700 (PDT)
-Received: from ?IPv6:2003:f6:ef05:8700:853c:3ba5:d710:3c1d? (p200300f6ef058700853c3ba5d7103c1d.dip0.t-ipconnect.de. [2003:f6:ef05:8700:853c:3ba5:d710:3c1d])
-        by smtp.gmail.com with ESMTPSA id v16-20020a1709064e9000b0094f663bced2sm3290738eju.33.2023.04.18.04.06.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Apr 2023 04:06:45 -0700 (PDT)
-Message-ID: <5c8f68f0157d9ae66e6d88d648fcfd26e68be307.camel@gmail.com>
-Subject: Re: [PATCH v2] Fix IRQ issue by setting IRQ_DISABLE_UNLAZY flag
-From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To:     Masahiro Honda <honda@mechatrax.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 18 Apr 2023 13:08:54 +0200
-In-Reply-To: <20230414102744.150-1-honda@mechatrax.com>
-References: <20230414102744.150-1-honda@mechatrax.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.46.4 
+        with ESMTP id S231202AbjDRMda (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Apr 2023 08:33:30 -0400
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [80.241.56.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BAA7D323
+        for <linux-iio@vger.kernel.org>; Tue, 18 Apr 2023 05:33:08 -0700 (PDT)
+Received: from smtp102.mailbox.org (unknown [10.196.197.102])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4Q13Gh2K63z9spJ;
+        Tue, 18 Apr 2023 14:32:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mariushoch.de;
+        s=MBO0001; t=1681821164;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ShsOSVROby/3Sl7xjt5XFiFHOABhlE2u7XInM4MT1LY=;
+        b=KZynXrCh3PmHmhCukVLL/WDSwOUuPY0c+bHhFA9qyCpaST+s45NsWETm2R7R06pQqT3SKL
+        wgkItsfkMXwAkIXcoMyZ34XUjcfjMQLidQzPKFiEQpnEYFVDh/OZFC2z1g6cAAk3DXcH/v
+        nhXdnyq56T6t7xQc8pSITQjOzilQ1lgkUUgUAYeowGKnp5Jvu/2jZbrldRfEw9QeZg0G9E
+        9YzNVSeCNquy6bRbkPSsSVd5nx+YhPHhBmW/QQk1EVsTSb85zBeoWmiMQ/kqK5b6UGewuF
+        QvHfABpGqd+xbYqcAT+NBqts1jPfo16INNsl7KY5AJk6rzDLl5TXke/Yd0QVBA==
+Message-ID: <822cff64-f7f8-b998-1b8e-5ada542b86b7@mariushoch.de>
+Date:   Tue, 18 Apr 2023 14:32:42 +0200
 MIME-Version: 1.0
+Subject: Re: [PATCH] iio: accel: st_accel: Fix invalid mount_matrix on devices
+ without ACPI _ONT method
+To:     Hans de Goede <hdegoede@redhat.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+References: <20230416212409.310936-1-hdegoede@redhat.com>
+Content-Language: en-US
+From:   Marius Hoch <mail@mariushoch.de>
+In-Reply-To: <20230416212409.310936-1-hdegoede@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-T24gRnJpLCAyMDIzLTA0LTE0IGF0IDE5OjI3ICswOTAwLCBNYXNhaGlybyBIb25kYSB3cm90ZToK
-PiBUaGUgU2lnbWEtRGVsdGEgQURDcyBzdXBwb3J0ZWQgYnkgdGhpcyBkcml2ZXIgY2FuIHVzZSBT
-RE8gYXMgYW4gaW50ZXJydXB0Cj4gbGluZSB0byBpbmRpY2F0ZSB0aGUgY29tcGxldGlvbiBvZiBh
-IGNvbnZlcnNpb24uIEhvd2V2ZXIsIHNvbWUgZGV2aWNlcwo+IGNhbm5vdCBwcm9wZXJseSBkZXRl
-Y3QgdGhlIGNvbXBsZXRpb24gb2YgYSBjb252ZXJzaW9uIGJ5IGFuIGludGVycnVwdC4KPiBUaGlz
-IGlzIGZvciB0aGUgcmVhc29uIG1lbnRpb25lZCBpbiB0aGUgZm9sbG93aW5nIGNvbW1pdC4KPiAK
-PiBjb21taXQgZTk4NDk3NzdkMGUyICgiZ2VuaXJxOiBBZGQgZmxhZyB0byBmb3JjZSBtYXNrIGlu
-Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGRpc2FibGVfaXJx
-W19ub3N5bmNdKCkiKQo+IAo+IEEgcmVhZCBvcGVyYXRpb24gaXMgcGVyZm9ybWVkIGJ5IGFuIGV4
-dHJhIGludGVycnVwdCBiZWZvcmUgdGhlIGNvbXBsZXRlCj4gY29udmVyc2lvbi4gVGhpcyBwYXRj
-aCBwcm92aWRlcyBhbiBvcHRpb24gdG8gZml4IHRoZSBpc3N1ZSBieSBzZXR0aW5nCj4gSVJRX0RJ
-U0FCTEVfVU5MQVpZIGZsYWcuCj4gCj4gU2lnbmVkLW9mZi1ieTogTWFzYWhpcm8gSG9uZGEgPGhv
-bmRhQG1lY2hhdHJheC5jb20+Cj4gLS0tCj4gdjI6Cj4gwqAtIFJld29yayBjb21taXQgbWVzc2Fn
-ZS4KPiDCoC0gQWRkIGEgbmV3IGVudHJ5IGluIHRoZSBLY29uZmlnLgo+IMKgLSBDYWxsIGlycV9j
-bGVhcl9zdGF0dXNfZmxhZ3MoaXJxLCBJUlFfRElTQUJMRV9VTkxBWlkpIHdoZW4gZnJlZWluZyB0
-aGUgSVJRLgo+IHYxOgo+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LWlpby8yMDIzMDMw
-NjA0NDczNy44NjItMS1ob25kYUBtZWNoYXRyYXguY29tLwo+IAo+IMKgZHJpdmVycy9paW8vYWRj
-L0tjb25maWfCoMKgwqDCoMKgwqDCoMKgwqAgfCAxNCArKysrKysrKysrKysrKwo+IMKgZHJpdmVy
-cy9paW8vYWRjL2FkX3NpZ21hX2RlbHRhLmMgfCAzMSArKysrKysrKysrKysrKysrKysrKysrKysr
-Ky0tLS0tCj4gwqAyIGZpbGVzIGNoYW5nZWQsIDQwIGluc2VydGlvbnMoKyksIDUgZGVsZXRpb25z
-KC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2FkYy9LY29uZmlnIGIvZHJpdmVycy9p
-aW8vYWRjL0tjb25maWcKPiBpbmRleCA0NWFmMjMwMmIuLjc4YWI2ZTJkOCAxMDA2NDQKPiAtLS0g
-YS9kcml2ZXJzL2lpby9hZGMvS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvaWlvL2FkYy9LY29uZmln
-Cj4gQEAgLTIxLDYgKzIxLDIwIEBAIGNvbmZpZyBBRF9TSUdNQV9ERUxUQQo+IMKgwqDCoMKgwqDC
-oMKgwqBzZWxlY3QgSUlPX0JVRkZFUgo+IMKgwqDCoMKgwqDCoMKgwqBzZWxlY3QgSUlPX1RSSUdH
-RVJFRF9CVUZGRVIKPiDCoAo+ICtpZiBBRF9TSUdNQV9ERUxUQQo+ICsKPiArY29uZmlnIEFEX1NJ
-R01BX0RFTFRBX1VTRV9MQVpZX0lSUQo+ICvCoMKgwqDCoMKgwqDCoGJvb2wgIlVzZSBsYXp5IElS
-USBmb3Igc2lnbWEtZGVsdGEgQURDcyIKPiArwqDCoMKgwqDCoMKgwqBkZXBlbmRzIG9uIEFEX1NJ
-R01BX0RFTFRBCj4gK8KgwqDCoMKgwqDCoMKgZGVmYXVsdCBuCj4gK8KgwqDCoMKgwqDCoMKgaGVs
-cAo+ICvCoMKgwqDCoMKgwqDCoMKgIFNvbWUgaW50ZXJydXB0IGNvbnRyb2xsZXJzIGhhdmUgZGF0
-YSByZWFkIHByb2JsZW0gd2l0aCBBRENzIGRlcGVuZHMKPiBvbgo+ICvCoMKgwqDCoMKgwqDCoMKg
-IEFEX1NJR01BX0RFTFRBLgo+ICvCoMKgwqDCoMKgwqDCoMKgIFNheSB5ZXMgaGVyZSB0byBhdm9p
-ZCB0aGUgcHJvYmxlbSBhdCB0aGUgY29zdCBvZiBwZXJmb3JtYW5jZQo+IG92ZXJoZWFkLgo+ICvC
-oMKgwqDCoMKgwqDCoMKgIElmIHVuc3VyZSwgc2F5IE4gKGJ1dCBpdCdzIHNhZmUgdG8gc2F5ICJZ
-IikuCj4gKwo+ICtlbmRpZiAjIGlmIEFEX1NJR01BX0RFTFRBCj4gKwo+IMKgY29uZmlnIEFENDEz
-MAo+IMKgwqDCoMKgwqDCoMKgwqB0cmlzdGF0ZSAiQW5hbG9nIERldmljZSBBRDQxMzAgQURDIERy
-aXZlciIKPiDCoMKgwqDCoMKgwqDCoMKgZGVwZW5kcyBvbiBTUEkKPiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9paW8vYWRjL2FkX3NpZ21hX2RlbHRhLmMKPiBiL2RyaXZlcnMvaWlvL2FkYy9hZF9zaWdt
-YV9kZWx0YS5jCj4gaW5kZXggZDg1NzBmNjIwLi5iOWVhZTFlODAgMTAwNjQ0Cj4gLS0tIGEvZHJp
-dmVycy9paW8vYWRjL2FkX3NpZ21hX2RlbHRhLmMKPiArKysgYi9kcml2ZXJzL2lpby9hZGMvYWRf
-c2lnbWFfZGVsdGEuYwo+IEBAIC01NjUsNiArNTY1LDE2IEBAIGludCBhZF9zZF92YWxpZGF0ZV90
-cmlnZ2VyKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsCj4gc3RydWN0IGlpb190cmlnZ2VyICp0
-cmlnKQo+IMKgfQo+IMKgRVhQT1JUX1NZTUJPTF9OU19HUEwoYWRfc2RfdmFsaWRhdGVfdHJpZ2dl
-ciwgSUlPX0FEX1NJR01BX0RFTFRBKTsKPiDCoAo+ICtzdGF0aWMgdm9pZCBhZF9zZF9mcmVlX2ly
-cSh2b2lkICpzZCkKPiArewo+ICvCoMKgwqDCoMKgwqDCoHN0cnVjdCBhZF9zaWdtYV9kZWx0YSAq
-c2lnbWFfZGVsdGEgPSBzZDsKPiArCj4gKyNpZmRlZiBDT05GSUdfQURfU0lHTUFfREVMVEFfVVNF
-X0xBWllfSVJRCj4gK8KgwqDCoMKgwqDCoMKgaXJxX2NsZWFyX3N0YXR1c19mbGFncyhzaWdtYV9k
-ZWx0YS0+c3BpLT5pcnEsIElSUV9ESVNBQkxFX1VOTEFaWSk7Cj4gKyNlbmRpZgo+ICvCoMKgwqDC
-oMKgwqDCoGZyZWVfaXJxKHNpZ21hX2RlbHRhLT5zcGktPmlycSwgc2lnbWFfZGVsdGEpOwo+ICt9
-Cj4gKwo+IMKgc3RhdGljIGludCBkZXZtX2FkX3NkX3Byb2JlX3RyaWdnZXIoc3RydWN0IGRldmlj
-ZSAqZGV2LCBzdHJ1Y3QgaWlvX2Rldgo+ICppbmRpb19kZXYpCj4gwqB7Cj4gwqDCoMKgwqDCoMKg
-wqDCoHN0cnVjdCBhZF9zaWdtYV9kZWx0YSAqc2lnbWFfZGVsdGEgPQo+IGlpb19kZXZpY2VfZ2V0
-X2RydmRhdGEoaW5kaW9fZGV2KTsKPiBAQCAtNTg0LDExICs1OTQsMjIgQEAgc3RhdGljIGludCBk
-ZXZtX2FkX3NkX3Byb2JlX3RyaWdnZXIoc3RydWN0IGRldmljZSAqZGV2LAo+IHN0cnVjdCBpaW9f
-ZGV2ICppbmRpb19kZQo+IMKgwqDCoMKgwqDCoMKgwqBpbml0X2NvbXBsZXRpb24oJnNpZ21hX2Rl
-bHRhLT5jb21wbGV0aW9uKTsKPiDCoAo+IMKgwqDCoMKgwqDCoMKgwqBzaWdtYV9kZWx0YS0+aXJx
-X2RpcyA9IHRydWU7Cj4gLcKgwqDCoMKgwqDCoMKgcmV0ID0gZGV2bV9yZXF1ZXN0X2lycShkZXYs
-IHNpZ21hX2RlbHRhLT5zcGktPmlycSwKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBhZF9zZF9kYXRhX3JkeV90cmlnX3BvbGwsCj4g
-LcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgc2lnbWFfZGVsdGEtPmluZm8tPmlycV9mbGFncyB8IElSUUZfTk9fQVVUT0VOLAo+IC3CoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlu
-ZGlvX2Rldi0+bmFtZSwKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCBzaWdtYV9kZWx0YSk7Cj4gKyNpZmRlZiBDT05GSUdfQURfU0lH
-TUFfREVMVEFfVVNFX0xBWllfSVJRCj4gK8KgwqDCoMKgwqDCoMKgaXJxX3NldF9zdGF0dXNfZmxh
-Z3Moc2lnbWFfZGVsdGEtPnNwaS0+aXJxLCBJUlFfRElTQUJMRV9VTkxBWlkpOwo+ICsjZW5kaWYK
-PiArwqDCoMKgwqDCoMKgwqByZXQgPSByZXF1ZXN0X2lycShzaWdtYV9kZWx0YS0+c3BpLT5pcnEs
-Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBhZF9z
-ZF9kYXRhX3JkeV90cmlnX3BvbGwsCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCBzaWdtYV9kZWx0YS0+aW5mby0+aXJxX2ZsYWdzIHwgSVJRRl9OT19B
-VVRPRU4sCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCBpbmRpb19kZXYtPm5hbWUsCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCBzaWdtYV9kZWx0YSk7Cj4gK8KgwqDCoMKgwqDCoMKgaWYgKHJldCkgewo+
-ICsjaWZkZWYgQ09ORklHX0FEX1NJR01BX0RFTFRBX1VTRV9MQVpZX0lSUQo+ICvCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqBpcnFfY2xlYXJfc3RhdHVzX2ZsYWdzKHNpZ21hX2RlbHRhLT5z
-cGktPmlycSwKPiBJUlFfRElTQUJMRV9VTkxBWlkpOwoKSSdtIG5vdCByZWFsbHkga2VlbiB3aXRo
-IGhhdmluZyB0aGUgS2NvbmZpZyBvcHRpb24uIEknbSBmYWlybHkgY29udmluY2VkIHRoYXQKdGhp
-cyBtaWdodCBiZSBhIHByb2JsZW0gYWZmZWN0aW5nIGFsbCBzaWdtYSBkZWx0YSBBRENzIGFuZCBl
-dmVuIGlmIHRoZXkgYXJlbid0CmFmZmVjdGVkLCBJIGRvIG5vdCB0aGluayB0aGF0IHNldHRpbmcg
-dGhpcyBJUlEgZmxhZyB3aWxsIGRvIGFueSBhcm0gKG90aGVyIHRoYW4KbGVzcyBlZmZpY2llbmN5
-IG1heWJlKS4KCgpJZiB5b3UgcmVhbGx5IHdhbnQgdG8gYmUgb24gdGhlIHNhZmUgc2lkZSwgd2Ug
-Y291bGQgYWRkIGEgbmV3IGJvb2xlYW4gdG8gJ3N0cnVjdAphZF9zaWdtYV9kZWx0YV9pbmZvJyB0
-aGF0IHdvdWxkIGJlIGVuYWJsZWQgZm9yIHlvdXIgZGV2aWNlIGFuZCB3aGVuIHRydWUsIHRoZQpM
-QVpZIGJpdCBpcyBzZXQuIE9uY2Ugd2UgcHJvdmUgdGhhdCBhbGwgZGV2aWNlcyBtaWdodCBiZSBh
-ZmZlY3RlZCBieSB0aGlzIGlzc3VlLAp3ZSBjb3VsZCByZW1vdmUgdGhlIGJvb2xlYW4gYW5kIG1h
-a2UgaXQgYSBkZWZhdWx0IHNldHRpbmcuCgotIE51bm8gU8OhCg==
+On 16/04/2023 23:24, Hans de Goede wrote:
+> When apply_acpi_orientation() fails, st_accel_common_probe() will fall back
+> to iio_read_mount_matrix(), which checks for a mount-matrix device property
+> and if that is not set falls back to the identity matrix.
+>
+> But when a sensor has no ACPI companion fwnode, or when the ACPI fwnode
+> does not have a "_ONT" method apply_acpi_orientation() was returning 0,
+> causing iio_read_mount_matrix() to never get called resulting in an
+> invalid mount_matrix:
+>
+> [root@fedora ~]# cat /sys/bus/iio/devices/iio\:device0/mount_matrix
+> (null), (null), (null); (null), (null), (null); (null), (null), (null)
+>
+> Fix this by making apply_acpi_orientation() always return an error when
+> it did not set the mount_matrix.
+>
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Tested, with the LSM303D patches applied, on a Lenovo Yoga Tablet 2 1051-F.
+
+Tested-by: Marius Hoch <mail@mariushoch.de>
+
+
+> ---
+>   drivers/iio/accel/st_accel_core.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+> index 1628b177d0ed..f7b823ebc96b 100644
+> --- a/drivers/iio/accel/st_accel_core.c
+> +++ b/drivers/iio/accel/st_accel_core.c
+> @@ -1291,12 +1291,12 @@ static int apply_acpi_orientation(struct iio_dev *indio_dev)
+>   
+>   	adev = ACPI_COMPANION(indio_dev->dev.parent);
+>   	if (!adev)
+> -		return 0;
+> +		return -ENXIO;
+>   
+>   	/* Read _ONT data, which should be a package of 6 integers. */
+>   	status = acpi_evaluate_object(adev->handle, "_ONT", NULL, &buffer);
+>   	if (status == AE_NOT_FOUND) {
+> -		return 0;
+> +		return -ENXIO;
+>   	} else if (ACPI_FAILURE(status)) {
+>   		dev_warn(&indio_dev->dev, "failed to execute _ONT: %d\n",
+>   			 status);
 
