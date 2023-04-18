@@ -2,34 +2,34 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA4FFC7EE32
-	for <linux-iio@archiver.kernel.org>; Tue, 18 Apr 2023 16:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D89C77B75
+	for <linux-iio@archiver.kernel.org>; Tue, 18 Apr 2023 16:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232589AbjDRQnx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 18 Apr 2023 12:43:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55312 "EHLO
+        id S232495AbjDRQoQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 18 Apr 2023 12:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232568AbjDRQnt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Apr 2023 12:43:49 -0400
+        with ESMTP id S230445AbjDRQoP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Apr 2023 12:44:15 -0400
 Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C414740EE;
-        Tue, 18 Apr 2023 09:43:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D2710F2;
+        Tue, 18 Apr 2023 09:44:14 -0700 (PDT)
 Received: from [192.168.178.23] (unknown [62.108.10.64])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id F202ECB3CB;
-        Tue, 18 Apr 2023 16:43:44 +0000 (UTC)
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 4ADABCA65D;
+        Tue, 18 Apr 2023 16:43:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1681836225; bh=vIuKvsLduKbdJuLqS3gE6yL7XCUiBq1e88KkTbfWTJA=;
+        t=1681836222; bh=cf8LvtTKNrXgOVqnfPBTTBrobXcm7GixsxPTc9CbZI8=;
         h=From:Date:Subject:References:In-Reply-To:To:Cc;
-        b=ItGVjgWcNdo/Uswib8zZNt18Zfz4kbVzUdCqBxQ5VGD5vchb9bo68cvDKGviLBb3u
-         H2BX/Z6zBC524zyumfeDRa9e7Roqht+9iRXI8zfkmXi9FCBI0QYf4E83Usn0G6hO/d
-         zu5FkfnhmbS+6mjGkAG92V1oCjiqJWI/4CjASH/s=
+        b=YDpqgryyebKOo21fnxTWC+nCRdpBuErzrEBraHI1qLBIYwfGauslOiJs4u8WoaSZC
+         FvqEDtkNCOfC4+AiWDID9IIK/8XjnkDoZTIqUbd6krN/FY97nkr5lKVPA09pyIqQea
+         2SKm++LAM+o6YXk7GnM94YOxc9k7CmEE9i7PcmE0=
 From:   Luca Weiss <luca@z3ntu.xyz>
-Date:   Tue, 18 Apr 2023 18:43:24 +0200
-Subject: [PATCH v2 8/8] Documentation: leds: Add "rgb:status" path
+Date:   Tue, 18 Apr 2023 18:43:17 +0200
+Subject: [PATCH v2 1/8] dt-bindings: pinctrl: qcom,pmic-gpio: add PMI632
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230414-pmi632-v2-8-98bafa909c36@z3ntu.xyz>
+Message-Id: <20230414-pmi632-v2-1-98bafa909c36@z3ntu.xyz>
 References: <20230414-pmi632-v2-0-98bafa909c36@z3ntu.xyz>
 In-Reply-To: <20230414-pmi632-v2-0-98bafa909c36@z3ntu.xyz>
 To:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
@@ -49,46 +49,61 @@ Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-leds@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-doc@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=728; i=luca@z3ntu.xyz;
- h=from:subject:message-id; bh=vIuKvsLduKbdJuLqS3gE6yL7XCUiBq1e88KkTbfWTJA=;
- b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBkPsi9m5afxit5T1vzibsBn+zy17heWoOlFzh0L
- dsKpRleV7eJAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZD7IvQAKCRBy2EO4nU3X
- Vr2qD/9mYq9OTIzbUKwzqEA/BbJJX5bd0Oe7VKDxIfeNJ40qCYV//lXBjQIJamulELHCBuS0HtO
- jHDFmjksMA3gg1I+A7QmpTLn9TQY5AdnR5Oo+1XRd5O6135LfzAe/AGUaNdTOnzFK/opBAjyXH8
- EY3tBL3M9Rb1nHaa/i4AGL0Md1iEaUs58Z5euTzf1Rp4XNy/VcOtoNRkSKOvDz+JGKn4RSVT/rh
- 2PkgVswxeQVsp5jLe/hha1BdKdsuzn13RwkRt8i8IjIFCVdtNODlo2dVc+KqafCIWBBf1QsW0dP
- gPtDlMVAdUX9KFUy8HbIkFxqwMHspc+fRtbg5G1Oxlo1cx/qCjiraYXLw2E8NSznd41ICyglBYa
- S8rRRLIQyys/1IgsF8o8qNtB/5BcZV4TVCNo5DjMkXSuDNZ/QfyDIcI5W8Lh5HMSn3wrBDPsfAE
- 1dz3tS8V5pgXgXiq0t0x7ZFMAqZUKXWLqZt/uGAnORnSDRzhzciiCm6QYqLq+AbKy7bxVhagyBu
- /Mt4FH78hED1WjSTe2tbCQRSeQ5fUqJB2pWhbC6uenH6PaI6XMMib/ev5cLVaR+cZPskqYBQRc8
- e5wpPamgx7kwA3bP+NJ6Uw82+dC00rCSXhMB0nGzCSeNgc4FNKE3Us4DFdMdQjErFr6C8zj9+WD
- tn5NejdQLbgjE1w==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1358; i=luca@z3ntu.xyz;
+ h=from:subject:message-id; bh=cf8LvtTKNrXgOVqnfPBTTBrobXcm7GixsxPTc9CbZI8=;
+ b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBkPsi3SNkpS8d/Eulaj4wZnh0Vn8qnQgZ954mj5
+ +KwnBfY12KJAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZD7ItwAKCRBy2EO4nU3X
+ VoovD/wLzln3jpbza/IVaQxcgbOH2+0Y3AFysC0yUZYVdkEePlQ1Qt236/z8G4cgwqB/qNBovtD
+ /t6JNhmW+b8Oe7z1xG7ylpBwtXv7orb6l6D44xfmckJx1ifbQf57ybSaDUM7QLTBT752ceGPg+O
+ GW1AP3skMPHSBpum9O5fhHtOS/u9B5g9N7dObLV6boE35XvExofQdFNvz5LX5MplZVGGWLQX9z9
+ fpsMJLaWg9XqBEUZAq+uJydwKfHb+ds1M9jGVK26S9w59BUizCNi4gA1+hCopJJhSELJeiwgbnM
+ nwth7Z0/4GTdq90HvQIcipsh7nA2yEZgUjl5DQnbbplbxNMLIJzQCSWARcHPYO231YFOOCflc+A
+ kig4tjUPSACivzVLBLVGICxe6rOkJHLZsaNcln6nwusl+N+0e4nMVtfTmerwOB1VW7uJxb03b4g
+ 2iB21ANIG/xCjY+JdTQvrRbJXO3fqzmAlGYEwJMDg42Ag2M8NJc+C51KwcA6YZjoc3HMzAiLEaY
+ K4BMQOFg4USWURIWyDjNnYrC7jNtFFEZsHJBTggwPHRqKIUQSe4EWKAt08BS3/B3yFDFmoF1uOZ
+ nuBCfu+H5fX7eKwpQBZLt35HMHJSK+3VLzn5UqRH6jM8B0HHdaLhe4PNcue83shNiLTa7ACZPip
+ bm97szTkULXMUqg==
 X-Developer-Key: i=luca@z3ntu.xyz; a=openpgp;
  fpr=BD04DA24C971B8D587B2B8D7FAF69CF6CD2D02CD
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The path /sys/class/leds/rgb:status is already widely used with the
-qcom-lpg driver and others. Document it.
+Document the 8 GPIOs found on PMI632.
 
 Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
 ---
- Documentation/leds/well-known-leds.txt | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/leds/well-known-leds.txt b/Documentation/leds/well-known-leds.txt
-index 2160382c86be..439d4dac4472 100644
---- a/Documentation/leds/well-known-leds.txt
-+++ b/Documentation/leds/well-known-leds.txt
-@@ -58,6 +58,7 @@ LEDs on notebook body, indicating that sound input / output is muted.
- 
- * System notification
- 
-+Good: "rgb:status"
- Legacy: "status-led:{red,green,blue}" (Motorola Droid 4)
- Legacy: "lp5523:{r,g,b}" (Nokia N900)
- 
+diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml
+index 36c6435cfd0a..eaadd5a9a445 100644
+--- a/Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml
+@@ -52,6 +52,7 @@ properties:
+           - qcom,pm8994-gpio
+           - qcom,pm8998-gpio
+           - qcom,pma8084-gpio
++          - qcom,pmi632-gpio
+           - qcom,pmi8950-gpio
+           - qcom,pmi8994-gpio
+           - qcom,pmi8998-gpio
+@@ -174,6 +175,7 @@ allOf:
+               - qcom,pm8350b-gpio
+               - qcom,pm8550ve-gpio
+               - qcom,pm8950-gpio
++              - qcom,pmi632-gpio
+     then:
+       properties:
+         gpio-line-names:
+@@ -435,6 +437,7 @@ $defs:
+                  - gpio1-gpio22 for pm8994
+                  - gpio1-gpio26 for pm8998
+                  - gpio1-gpio22 for pma8084
++                 - gpio1-gpio8 for pmi632
+                  - gpio1-gpio2 for pmi8950
+                  - gpio1-gpio10 for pmi8994
+                  - gpio1-gpio4 for pmk8350
 
 -- 
 2.40.0
