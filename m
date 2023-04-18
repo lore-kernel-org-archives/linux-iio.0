@@ -2,34 +2,35 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FABDC7EE20
-	for <linux-iio@archiver.kernel.org>; Tue, 18 Apr 2023 16:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E5FDC7EE21
+	for <linux-iio@archiver.kernel.org>; Tue, 18 Apr 2023 16:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232552AbjDRQnr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 18 Apr 2023 12:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
+        id S231367AbjDRQnw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 18 Apr 2023 12:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231296AbjDRQnp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Apr 2023 12:43:45 -0400
+        with ESMTP id S232566AbjDRQnt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Apr 2023 12:43:49 -0400
 Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716E861BA;
-        Tue, 18 Apr 2023 09:43:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0129173F;
+        Tue, 18 Apr 2023 09:43:46 -0700 (PDT)
 Received: from [192.168.178.23] (unknown [62.108.10.64])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 90FE3CA680;
-        Tue, 18 Apr 2023 16:43:42 +0000 (UTC)
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id AAF81CB3AD;
+        Tue, 18 Apr 2023 16:43:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1681836222; bh=IoEHW2vYqFAvOyNYJ41zV5ypb+S+GJlspgvRVAfUAF4=;
+        t=1681836224; bh=w9CMcpt8FL5D9w8gvtXVGIn+tTYwLetgcp8M0Diuyuc=;
         h=From:Date:Subject:References:In-Reply-To:To:Cc;
-        b=lYd3SNAOLT8PrOo8DLK7uRxoYn2XZZmiQUUrTg+cBJjqH26kSZtxKrU1yHu7Ui6yE
-         agP/o9t7y4enm/CE2N1IzEpZopRvBvZWW4NUPjjb2hiYxYSaTYBFKjKk8HO3X4oHIO
-         uqAew62Zh4m2OTgNQcrMm7eduzRino7lB0BA3gqc=
+        b=ZnDSLBBFeLdQ0Gm7dpIBk2y1Bt1WIOZsPvLP3SvHAMWXzOfgOhR/iUJxVdqrnUoWv
+         omVXdNbDtxBqnS8Dray8d+uh4KOSWP6cc9A1BETDpEMVFe38meEhwwxa6sbcOF36KN
+         9v8ILuCt60xYjHmNNQ7T+V3vfNLUFJPhR0fMwa/A=
 From:   Luca Weiss <luca@z3ntu.xyz>
-Date:   Tue, 18 Apr 2023 18:43:18 +0200
-Subject: [PATCH v2 2/8] pinctrl: qcom: spmi-gpio: Add PMI632 support
+Date:   Tue, 18 Apr 2023 18:43:23 +0200
+Subject: [PATCH v2 7/8] arm64: dts: qcom: sdm632-fairphone-fp3: Add
+ notification LED
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230414-pmi632-v2-2-98bafa909c36@z3ntu.xyz>
+Message-Id: <20230414-pmi632-v2-7-98bafa909c36@z3ntu.xyz>
 References: <20230414-pmi632-v2-0-98bafa909c36@z3ntu.xyz>
 In-Reply-To: <20230414-pmi632-v2-0-98bafa909c36@z3ntu.xyz>
 To:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
@@ -49,45 +50,83 @@ Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-leds@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-doc@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=948; i=luca@z3ntu.xyz;
- h=from:subject:message-id; bh=IoEHW2vYqFAvOyNYJ41zV5ypb+S+GJlspgvRVAfUAF4=;
- b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBkPsi3ZwH0Grfw+endy5WJ3r/UqRHoJ8mLZfVi7
- lN5Xi8uc96JAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZD7ItwAKCRBy2EO4nU3X
- VjVHD/9HxZfcF8rVbPKhDaGSuN/MHmVxlIFGMumR7OGITEzxq/DYc/WXw4MbdlkpEq4c5+jSHjB
- PfCltOv0LseH3xNx9bSuxIS5ehhmyixVIUqwkiNjVhiDGEh55FOfotTyK5LNhYFM83Fnbue9fa3
- ujxAOpClYsonNnxt/i32iq3UagojmEtV6rBix8ElGKLrnMuKxCIbznpotSE+Ko4csoIUREpfyWJ
- jeSRuj6auZF93gBJCbByXCTLjXiFNKbUzvxYtVMUpJl52Q3Pi5ekYymv8WTqknJ497uKri3egIc
- pATwppabwhe2qkrYU7yfrtA26AJkK/TytTCIjKBCYDe8UVXMU8PO1+BNbFBjAEgqF/TH9KO9deW
- E5QVoZOQQHYGMJo3DFJHuH9KmYHKqMA5w3I5E+GP1yXTnEAPsIEzJsfLDlPf5ABgUUEd310OQKd
- HMosCYGVgarYyEJENQ2XyIv2EjQk1wro7L/YFaun8srw4/DoL7P/TTbD49//+2+yLIwMGjjZWWP
- FXpbjgNAXtr6APS34Ne77Gkqp+KVHrZKsTrSzNz0i7AgdinweQLGm78YLGAyvMRWQScuEknBO0A
- ek66yjcU4SpZvjaMCLokeRJqRQuKjArc99gfXbyW7k0Hd/jNLIOM5CLOSfxqmOVZU7NPLsMXXc6
- 0IEv5ZOvc3Mvxwg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1288; i=luca@z3ntu.xyz;
+ h=from:subject:message-id; bh=w9CMcpt8FL5D9w8gvtXVGIn+tTYwLetgcp8M0Diuyuc=;
+ b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBkPsi8vYlpY7wKs390Rhf/aagKnfQMiUzXfdHHy
+ 7gQbQcBUF6JAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZD7IvAAKCRBy2EO4nU3X
+ VhIOD/9iI3TQwsiXjbb7iG6g7WlZ5/5asS7XXLBR4yCppvJErjPP6Rt84vrpk95AvNthJlf4mM0
+ BshKczxyS7Fl5mJY/IYwVtvglJcdpiXhKhQFoOTlz1gR2qJCmyJrf0N1Ijlc1urgG2HdH4g+OLl
+ zW4p7rfrfXxo9n8oWMUlpUmCf2dkbw6hq+1KqY92WGIkVzZlrSsoq8Uy38VUNrStzW2ZY3qAmQp
+ dKd4omuTGDd58I2jVA1zfsGEPa8VrwRGaX/BpmxNmrNLtVMBi1wH+T53wiZ/dEnhMB/3EuMhDT7
+ HpbnNeL6JARNTl9uNvJuz7DtTPY2CG0jW6skgUioeClH7Rfyccryh+HWjKAtnoWkgeATPGu5Xbj
+ ZaE8s2DUurjnhgGbJk/KurFSVSnI3AekqP0TzNYhFOSwyjSyfhRhsEFz71nnpksFjVBCr5E5z+R
+ 1wwHKu+sLJroOZw+RM96RTRG18UAi8Q8ophnPYLni1+jeQWK9VNdGIEoo2+8uiJBaidpkz2svjY
+ fk0LTzPnFcKRaBqO7phSPF976KSq4Dh9vVc1/tOIw4w+0T9qglWC5wiSbLBSsTyuW0H3V8IOw2q
+ 1K8Wmym+/7nJTjyWeQPWL25bjyEZmiimMM/h2wZAqObk0O6bcjYpAFe8sFly4j9zIomspgt3N6d
+ /TM9W1RDCD3OhxA==
 X-Developer-Key: i=luca@z3ntu.xyz; a=openpgp;
  fpr=BD04DA24C971B8D587B2B8D7FAF69CF6CD2D02CD
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support for the 8 GPIOs found on PMI632.
+The phone features a notification LED connected to the pmi632. Configure
+the RGB led found on it.
 
 Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
 ---
- drivers/pinctrl/qcom/pinctrl-spmi-gpio.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/qcom/sdm632-fairphone-fp3.dts | 29 +++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-index 0d94175b34f8..43c7857c06a5 100644
---- a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-+++ b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-@@ -1232,6 +1232,7 @@ static const struct of_device_id pmic_gpio_of_match[] = {
- 	{ .compatible = "qcom,pm8994-gpio", .data = (void *) 22 },
- 	{ .compatible = "qcom,pm8998-gpio", .data = (void *) 26 },
- 	{ .compatible = "qcom,pma8084-gpio", .data = (void *) 22 },
-+	{ .compatible = "qcom,pmi632-gpio", .data = (void *) 8 },
- 	{ .compatible = "qcom,pmi8950-gpio", .data = (void *) 2 },
- 	{ .compatible = "qcom,pmi8994-gpio", .data = (void *) 10 },
- 	{ .compatible = "qcom,pmi8998-gpio", .data = (void *) 14 },
+diff --git a/arch/arm64/boot/dts/qcom/sdm632-fairphone-fp3.dts b/arch/arm64/boot/dts/qcom/sdm632-fairphone-fp3.dts
+index 70e683b7e4fc..301eca9a4f31 100644
+--- a/arch/arm64/boot/dts/qcom/sdm632-fairphone-fp3.dts
++++ b/arch/arm64/boot/dts/qcom/sdm632-fairphone-fp3.dts
+@@ -4,8 +4,10 @@
+  */
+ /dts-v1/;
+ 
++#include <dt-bindings/leds/common.h>
+ #include "sdm632.dtsi"
+ #include "pm8953.dtsi"
++#include "pmi632.dtsi"
+ 
+ / {
+ 	model = "Fairphone 3";
+@@ -83,6 +85,33 @@ &pm8953_resin {
+ 	linux,code = <KEY_VOLUMEDOWN>;
+ };
+ 
++&pmi632_lpg {
++	status = "okay";
++
++	multi-led {
++		color = <LED_COLOR_ID_RGB>;
++		function = LED_FUNCTION_STATUS;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		led@1 {
++			reg = <1>;
++			color = <LED_COLOR_ID_RED>;
++		};
++
++		led@2 {
++			reg = <2>;
++			color = <LED_COLOR_ID_GREEN>;
++		};
++
++		led@3 {
++			reg = <3>;
++			color = <LED_COLOR_ID_BLUE>;
++		};
++	};
++};
++
+ &sdhc_1 {
+ 	status = "okay";
+ 	vmmc-supply = <&pm8953_l8>;
 
 -- 
 2.40.0
