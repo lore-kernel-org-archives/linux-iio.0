@@ -2,34 +2,35 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA03C7618E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE261C77B7D
 	for <linux-iio@archiver.kernel.org>; Fri, 21 Apr 2023 13:27:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232207AbjDUN06 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 Apr 2023 09:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46890 "EHLO
+        id S232288AbjDUN07 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 21 Apr 2023 09:26:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230148AbjDUN05 (ORCPT
+        with ESMTP id S231731AbjDUN05 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Apr 2023 09:26:57 -0400
+X-Greylist: delayed 361 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 21 Apr 2023 06:26:56 PDT
 Received: from mxout2.routing.net (mxout2.routing.net [IPv6:2a03:2900:1:a::b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56061C675;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B6BC17C;
         Fri, 21 Apr 2023 06:26:56 -0700 (PDT)
 Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
-        by mxout2.routing.net (Postfix) with ESMTP id 37C5460659;
-        Fri, 21 Apr 2023 13:20:57 +0000 (UTC)
+        by mxout2.routing.net (Postfix) with ESMTP id 7886660518;
+        Fri, 21 Apr 2023 13:20:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1682083257;
+        s=20200217; t=1682083255;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xrmWdssTBgZOrykp/nvNV4GPcLmobxUOfAu5yBCmoZs=;
-        b=rmYesXrOV1tW9rPiprxVCKZWeIwOco4ylGe3KzI65UFoIx25kGWF9brnoWGjxgS1iR1Bcd
-        ZZfgQQcxHlqVGWQy8rtZBDYpWXtdq+JBj2XdNVES3fs2GH1mCUmIz7eQkh2DfCJHlrwER0
-        Nu00aK7bkcyDZiCrFEGHCcJXLxadK60=
+        bh=Ing+04FHy9azxnBKKQYS9GlB1I/nT9NemmbN45zAZMM=;
+        b=lRZMmgZ9DFw3/xJxUm5Z5jLlPJ053LKjmLH+F05gwNMKu4OYyBzXU/kmxcBbEr3H1x0XBO
+        NKKnBUVRVDDUfzZs1gvsfj5dO0k3q7avNXWtKlVO5+5Ph+PsEE2pXjiSAyoNDjquKCnHHI
+        6hPYevKIoGCYQyXb6j2SCIOta0OlqF8=
 Received: from frank-G5.. (fttx-pool-217.61.159.143.bambit.de [217.61.159.143])
-        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 442C410072A;
-        Fri, 21 Apr 2023 13:20:56 +0000 (UTC)
+        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 82DA310072A;
+        Fri, 21 Apr 2023 13:20:54 +0000 (UTC)
 From:   Frank Wunderlich <linux@fw-web.de>
 To:     linux-mediatek@lists.infradead.org
 Cc:     Frank Wunderlich <frank-w@public-files.de>,
@@ -48,54 +49,40 @@ Cc:     Frank Wunderlich <frank-w@public-files.de>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         Daniel Golle <daniel@makrotopia.org>
-Subject: [PATCH v1 4/7] arm64: dts: mt7986: add PWM
-Date:   Fri, 21 Apr 2023 15:20:44 +0200
-Message-Id: <20230421132047.42166-5-linux@fw-web.de>
+Subject: [PATCH v1 2/7] dt-bindings: iio: adc: Add support for MT7986
+Date:   Fri, 21 Apr 2023 15:20:42 +0200
+Message-Id: <20230421132047.42166-3-linux@fw-web.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230421132047.42166-1-linux@fw-web.de>
 References: <20230421132047.42166-1-linux@fw-web.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: bde81c03-93b2-4a40-8fda-fbb03b5859d9
+X-Mail-ID: 53b6faa0-46e6-4992-a972-e498238c0908
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Daniel Golle <daniel@makrotopia.org>
+From: Frank Wunderlich <frank-w@public-files.de>
 
-This adds pwm node to mt7986.
+Add compatible string and specific clock property for mt7986.
 
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
 ---
- arch/arm64/boot/dts/mediatek/mt7986a.dtsi | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ .../devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml      | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-index a38965e23825..a409d5e845c2 100644
---- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-@@ -240,6 +240,20 @@ crypto: crypto@10320000 {
- 			status = "disabled";
- 		};
- 
-+		pwm: pwm@10048000 {
-+			compatible = "mediatek,mt7986-pwm";
-+			reg = <0 0x10048000 0 0x1000>;
-+			#clock-cells = <1>;
-+			#pwm-cells = <2>;
-+			interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&topckgen CLK_TOP_PWM_SEL>,
-+				 <&infracfg CLK_INFRA_PWM_STA>,
-+				 <&infracfg CLK_INFRA_PWM1_CK>,
-+				 <&infracfg CLK_INFRA_PWM2_CK>;
-+			clock-names = "top", "main", "pwm1", "pwm2";
-+			status = "disabled";
-+		};
-+
- 		uart0: serial@11002000 {
- 			compatible = "mediatek,mt7986-uart",
- 				     "mediatek,mt6577-uart";
+diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
+index 7f79a06e76f5..6168b44ea72c 100644
+--- a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
+@@ -26,6 +26,7 @@ properties:
+           - mediatek,mt2712-auxadc
+           - mediatek,mt6765-auxadc
+           - mediatek,mt7622-auxadc
++          - mediatek,mt7986-auxadc
+           - mediatek,mt8173-auxadc
+       - items:
+           - enum:
 -- 
 2.34.1
 
