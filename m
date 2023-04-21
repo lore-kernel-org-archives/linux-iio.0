@@ -2,172 +2,100 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C06C77B76
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Apr 2023 12:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B09C77B75
+	for <linux-iio@archiver.kernel.org>; Fri, 21 Apr 2023 12:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232082AbjDUMmd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 Apr 2023 08:42:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45148 "EHLO
+        id S232085AbjDUMmg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 21 Apr 2023 08:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232135AbjDUMmb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Apr 2023 08:42:31 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA63FD309;
-        Fri, 21 Apr 2023 05:42:01 -0700 (PDT)
-Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPA id 036DE40004;
-        Fri, 21 Apr 2023 12:41:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1682080915;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ecGQES+IctsZxeHGmbZiv99zRKwWx/U6QMun/YsCg54=;
-        b=Y2Uy4aX0fJLJin3UbJuHlp6xKyONaXP+q/4E6traJCaV4jgmMdm3TsvfcgIBmqlsoee0CF
-        zT9VC+AnT8ScfxXu35DaKXKyN6XZvWtUjwQULTMwh1h5C0fRNf2CwmQWLmbfleahnmYjXX
-        SiI8pO1SgPpnwt3yS6RAHsotNbZlJdp3oPLXK5KZudsMH/cQGQy27Yy5X0sWHIZ/BZMdIV
-        h3GITU6Nxe+bCB+QzISMmVKb1l6g/nrEiMkI0RPMX6YxPeQ3ClFV9qjERP4OZmjJCKbKd9
-        DtCX5vjcjqW7EPRdRpqZLWwK6U9FfWcsg03OZmma3d+DiL2V/zpDZMehsrVBvw==
-From:   Herve Codina <herve.codina@bootlin.com>
-To:     Herve Codina <herve.codina@bootlin.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
+        with ESMTP id S232110AbjDUMmf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Apr 2023 08:42:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BEB118C5;
+        Fri, 21 Apr 2023 05:42:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0444F63E9A;
+        Fri, 21 Apr 2023 12:42:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 649D0C433EF;
+        Fri, 21 Apr 2023 12:42:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682080926;
+        bh=1viMKIx6sqkhuLg2xAjcicJimbx0TA+4g/Mnc+kkj3c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BW24TVib54lA9ORge5qtx6oE5Hj4K0FUcHqURggViP0rNx3DKw07WK5sfUU2pLfTo
+         daTK1gAQpA6Nr/MsoJgx+iQ9ufT7JNri4s0aQMOfHntfaefeArkjKsMvjyxMvX5ZkV
+         9YZs4YRKTJdGeVCLIlhrnqK9mODAo2K5zvncMP3jxeqgfSynQXaU5bXmv8UTpIiCp6
+         304dM4VX4jjleJLiVsyrh8vRsVQz2QqXUEbAGg7e+En8MmlOH4vGIBe8jh2UeX9SIq
+         3N4SXgj6JGpOGc3WLzuoTponSdoU6Gk4LVeR6nleFE9/ZeQd7whAuSJO+T6JdVvBhv
+         LPuvlUp3Ox5OQ==
+Date:   Fri, 21 Apr 2023 13:41:57 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Okan Sahin <okan.sahin@analog.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH 2/4] iio: inkern: Add a helper to query an available minimum raw value
-Date:   Fri, 21 Apr 2023 14:41:20 +0200
-Message-Id: <20230421124122.324820-3-herve.codina@bootlin.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230421124122.324820-1-herve.codina@bootlin.com>
-References: <20230421124122.324820-1-herve.codina@bootlin.com>
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Ramona Bolboaca <ramona.bolboaca@analog.com>,
+        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Leonard =?iso-8859-1?Q?G=F6hrs?= <l.goehrs@pengutronix.de>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Caleb Connolly <caleb.connolly@linaro.org>,
+        Haibo Chen <haibo.chen@nxp.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v7 2/5] regulator: max77541: Add ADI MAX77541/MAX77540
+ Regulator Support
+Message-ID: <0f8ffae5-1267-4373-8979-1989318497ec@sirena.org.uk>
+References: <20230412111256.40013-1-okan.sahin@analog.com>
+ <20230412111256.40013-3-okan.sahin@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="1FRzun8VXwn6ZIl1"
+Content-Disposition: inline
+In-Reply-To: <20230412111256.40013-3-okan.sahin@analog.com>
+X-Cookie: Hailing frequencies open, Captain.
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-A helper, iio_read_max_channel_raw() exists to read the available
-maximum raw value of a channel but nothing similar exists to read the
-available minimum raw value.
 
-This new helper, iio_read_min_channel_raw(), fills the hole and can be
-used for reading the available minimum raw value of a channel.
-It is fully based on the existing iio_read_max_channel_raw().
+--1FRzun8VXwn6ZIl1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Signed-off-by: Herve Codina <herve.codina@bootlin.com>
----
- drivers/iio/inkern.c         | 67 ++++++++++++++++++++++++++++++++++++
- include/linux/iio/consumer.h | 11 ++++++
- 2 files changed, 78 insertions(+)
+On Wed, Apr 12, 2023 at 02:12:43PM +0300, Okan Sahin wrote:
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 872fd5c24147..914fc69c718a 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -912,6 +912,73 @@ int iio_read_max_channel_raw(struct iio_channel *chan, int *val)
- }
- EXPORT_SYMBOL_GPL(iio_read_max_channel_raw);
- 
-+static int iio_channel_read_min(struct iio_channel *chan,
-+				int *val, int *val2, int *type,
-+				enum iio_chan_info_enum info)
-+{
-+	int unused;
-+	const int *vals;
-+	int length;
-+	int ret;
-+
-+	if (!val2)
-+		val2 = &unused;
-+
-+	ret = iio_channel_read_avail(chan, &vals, type, &length, info);
-+	switch (ret) {
-+	case IIO_AVAIL_RANGE:
-+		switch (*type) {
-+		case IIO_VAL_INT:
-+			*val = vals[0];
-+			break;
-+		default:
-+			*val = vals[0];
-+			*val2 = vals[1];
-+		}
-+		return 0;
-+
-+	case IIO_AVAIL_LIST:
-+		if (length <= 0)
-+			return -EINVAL;
-+		switch (*type) {
-+		case IIO_VAL_INT:
-+			*val = vals[--length];
-+			while (length) {
-+				if (vals[--length] < *val)
-+					*val = vals[length];
-+			}
-+			break;
-+		default:
-+			/* FIXME: learn about min for other iio values */
-+			return -EINVAL;
-+		}
-+		return 0;
-+
-+	default:
-+		return ret;
-+	}
-+}
-+
-+int iio_read_min_channel_raw(struct iio_channel *chan, int *val)
-+{
-+	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(chan->indio_dev);
-+	int ret;
-+	int type;
-+
-+	mutex_lock(&iio_dev_opaque->info_exist_lock);
-+	if (!chan->indio_dev->info) {
-+		ret = -ENODEV;
-+		goto err_unlock;
-+	}
-+
-+	ret = iio_channel_read_min(chan, val, NULL, &type, IIO_CHAN_INFO_RAW);
-+err_unlock:
-+	mutex_unlock(&iio_dev_opaque->info_exist_lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iio_read_min_channel_raw);
-+
- int iio_get_channel_type(struct iio_channel *chan, enum iio_chan_type *type)
- {
- 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(chan->indio_dev);
-diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-index 6802596b017c..956120d8b5a3 100644
---- a/include/linux/iio/consumer.h
-+++ b/include/linux/iio/consumer.h
-@@ -297,6 +297,17 @@ int iio_write_channel_raw(struct iio_channel *chan, int val);
-  */
- int iio_read_max_channel_raw(struct iio_channel *chan, int *val);
- 
-+/**
-+ * iio_read_min_channel_raw() - read minimum available raw value from a given
-+ *				channel, i.e. the minimum possible value.
-+ * @chan:		The channel being queried.
-+ * @val:		Value read back.
-+ *
-+ * Note raw reads from iio channels are in adc counts and hence
-+ * scale will need to be applied if standard units are required.
-+ */
-+int iio_read_min_channel_raw(struct iio_channel *chan, int *val);
-+
- /**
-  * iio_read_avail_channel_raw() - read available raw values from a given channel
-  * @chan:		The channel being queried.
--- 
-2.39.2
+> Regulator driver for both MAX77541 and MAX77540.
+> The MAX77541 is a high-efficiency step-down converter
+> with two 3A switching phases for single-cell Li+ battery
+> and 5VDC systems.
 
+Reviewed-by: Mark Brown <broonie@kernel.org>
+
+--1FRzun8VXwn6ZIl1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmRChJUACgkQJNaLcl1U
+h9BgwAf9FFeuk/6y+CZ9pA0Rp+BYHqdrTxCmBMSO+UPH2NliQymSV+sHGkDOq02r
+iqh0AK+SAs6dEZmN+Xx6k98CsM6N0m4Rh+fF8cR9O27WOsNH06QSPuDWCLeno1ZA
+H1jKKF6ByRumicUzziIma9kOjA1ufx0AAVfUbdBt1ZCgJeuZv0yWb3d+jAvHOWcH
+lSDTkN7jwo1UjFFowTkH6MzmElS43JdiZ5eXdLYFRJAs4aTv0r4MKQoksckGMt/u
+wOZ8arow4RwJz0f+akvSvyFaOm3F4IoLCf4Hz+gPdVOQIuKX2PKunGluODN63GRI
+wZPgsp5OEw0pWsLo6Ko4eI3K/WgEjw==
+=Ut0n
+-----END PGP SIGNATURE-----
+
+--1FRzun8VXwn6ZIl1--
