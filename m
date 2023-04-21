@@ -2,100 +2,107 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B09C77B75
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Apr 2023 12:42:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09AD4C77B76
+	for <linux-iio@archiver.kernel.org>; Fri, 21 Apr 2023 12:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232085AbjDUMmg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 Apr 2023 08:42:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
+        id S232256AbjDUMmn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 21 Apr 2023 08:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232110AbjDUMmf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Apr 2023 08:42:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BEB118C5;
-        Fri, 21 Apr 2023 05:42:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0444F63E9A;
-        Fri, 21 Apr 2023 12:42:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 649D0C433EF;
-        Fri, 21 Apr 2023 12:42:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682080926;
-        bh=1viMKIx6sqkhuLg2xAjcicJimbx0TA+4g/Mnc+kkj3c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BW24TVib54lA9ORge5qtx6oE5Hj4K0FUcHqURggViP0rNx3DKw07WK5sfUU2pLfTo
-         daTK1gAQpA6Nr/MsoJgx+iQ9ufT7JNri4s0aQMOfHntfaefeArkjKsMvjyxMvX5ZkV
-         9YZs4YRKTJdGeVCLIlhrnqK9mODAo2K5zvncMP3jxeqgfSynQXaU5bXmv8UTpIiCp6
-         304dM4VX4jjleJLiVsyrh8vRsVQz2QqXUEbAGg7e+En8MmlOH4vGIBe8jh2UeX9SIq
-         3N4SXgj6JGpOGc3WLzuoTponSdoU6Gk4LVeR6nleFE9/ZeQd7whAuSJO+T6JdVvBhv
-         LPuvlUp3Ox5OQ==
-Date:   Fri, 21 Apr 2023 13:41:57 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Okan Sahin <okan.sahin@analog.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        with ESMTP id S232109AbjDUMmj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Apr 2023 08:42:39 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17F8902A;
+        Fri, 21 Apr 2023 05:42:12 -0700 (PDT)
+Received: (Authenticated sender: herve.codina@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPA id AFC324000A;
+        Fri, 21 Apr 2023 12:42:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1682080921;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ReUlzkjE4Wu5oxkDFDACc0QGLsw/liPYYYIVObV0csA=;
+        b=EBy4SLN3K1xBNjJvOdgJT6PUfEQL9bFvtJnkKZY46KL21NgKdoRGRLuXY2Ng5RVJCaQUsK
+        GUAjgQdTVTG41iA642TMsVC4zRI8weITdr7eKSHZvuCV1Q5xCkm8Jbl77IjpdbpUulDUiX
+        AsR9HA/raMQtAMUCJOFuJPfaI0RECjhMyOz7Albr5ZYlsRCx1iz32soaxO3gFjAiprgSuv
+        cIxyMyYohgaG33z6C43NJ8liKsqhp27aY2E8che4fAx5gExva8v9hS1l3cwoZzOoA0YZ43
+        4sasYv521gJLU5JtIUz/jn78fj2GCk6QXZiocudJcA47ux7IaLWyQXpxTA88AQ==
+From:   Herve Codina <herve.codina@bootlin.com>
+To:     Herve Codina <herve.codina@bootlin.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Ramona Bolboaca <ramona.bolboaca@analog.com>,
-        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Leonard =?iso-8859-1?Q?G=F6hrs?= <l.goehrs@pengutronix.de>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        Caleb Connolly <caleb.connolly@linaro.org>,
-        Haibo Chen <haibo.chen@nxp.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v7 2/5] regulator: max77541: Add ADI MAX77541/MAX77540
- Regulator Support
-Message-ID: <0f8ffae5-1267-4373-8979-1989318497ec@sirena.org.uk>
-References: <20230412111256.40013-1-okan.sahin@analog.com>
- <20230412111256.40013-3-okan.sahin@analog.com>
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH 3/4] ASoC: soc-dapm.h: Add a helper to build a DAPM widget dynamically
+Date:   Fri, 21 Apr 2023 14:41:21 +0200
+Message-Id: <20230421124122.324820-4-herve.codina@bootlin.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230421124122.324820-1-herve.codina@bootlin.com>
+References: <20230421124122.324820-1-herve.codina@bootlin.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="1FRzun8VXwn6ZIl1"
-Content-Disposition: inline
-In-Reply-To: <20230412111256.40013-3-okan.sahin@analog.com>
-X-Cookie: Hailing frequencies open, Captain.
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+The SND_SOC_DAPM_* helpers family are used to build widgets array in a
+static way.
 
---1FRzun8VXwn6ZIl1
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Introduce SND_SOC_DAPM_WIDGET() in order to use the SND_SOC_DAPM_*
+helpers family in a dynamic way. The different SND_SOC_DAPM_* parameters
+can be computed by the code and the widget can be built based on this
+parameter computation.
+For instance:
+  static int create_widget(char *input_name)
+  {
+	struct snd_soc_dapm_widget widget;
+	char name*;
+	...
+	name = input_name;
+	if (!name)
+		name = "default";
 
-On Wed, Apr 12, 2023 at 02:12:43PM +0300, Okan Sahin wrote:
+	widget = SND_SOC_DAPM_WIDGET(SND_SOC_DAPM_INPUT(name));
+	...
+  }
 
-> Regulator driver for both MAX77541 and MAX77540.
-> The MAX77541 is a high-efficiency step-down converter
-> with two 3A switching phases for single-cell Li+ battery
-> and 5VDC systems.
+Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+---
+ include/sound/soc-dapm.h | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-Reviewed-by: Mark Brown <broonie@kernel.org>
+diff --git a/include/sound/soc-dapm.h b/include/sound/soc-dapm.h
+index 64915ebd641e..d6bb97fba8c9 100644
+--- a/include/sound/soc-dapm.h
++++ b/include/sound/soc-dapm.h
+@@ -276,7 +276,17 @@ struct soc_enum;
+ 	.reg = SND_SOC_NOPM, .event = dapm_pinctrl_event, \
+ 	.event_flags = SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD }
+ 
+-
++/*
++ * Helper to create a widget 'dynamically'
++ * This can be used with any of the SND_SOC_DAPM_* widget helper.
++ * For instance:
++ *  struct snd_soc_dapm_widget widget;
++ *  ...
++ *  widget = SND_SOC_DAPM_WIDGET(SND_SOC_DAPM_INPUT(input_name));
++ */
++#define SND_SOC_DAPM_WIDGET(_widget)({ \
++		struct snd_soc_dapm_widget _w[1] = { _widget }; \
++	_w[0]; })
+ 
+ /* dapm kcontrol types */
+ #define SOC_DAPM_DOUBLE(xname, reg, lshift, rshift, max, invert) \
+-- 
+2.39.2
 
---1FRzun8VXwn6ZIl1
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmRChJUACgkQJNaLcl1U
-h9BgwAf9FFeuk/6y+CZ9pA0Rp+BYHqdrTxCmBMSO+UPH2NliQymSV+sHGkDOq02r
-iqh0AK+SAs6dEZmN+Xx6k98CsM6N0m4Rh+fF8cR9O27WOsNH06QSPuDWCLeno1ZA
-H1jKKF6ByRumicUzziIma9kOjA1ufx0AAVfUbdBt1ZCgJeuZv0yWb3d+jAvHOWcH
-lSDTkN7jwo1UjFFowTkH6MzmElS43JdiZ5eXdLYFRJAs4aTv0r4MKQoksckGMt/u
-wOZ8arow4RwJz0f+akvSvyFaOm3F4IoLCf4Hz+gPdVOQIuKX2PKunGluODN63GRI
-wZPgsp5OEw0pWsLo6Ko4eI3K/WgEjw==
-=Ut0n
------END PGP SIGNATURE-----
-
---1FRzun8VXwn6ZIl1--
