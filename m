@@ -2,105 +2,142 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74FFAC7EE20
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Apr 2023 13:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4B7C77B76
+	for <linux-iio@archiver.kernel.org>; Fri, 21 Apr 2023 13:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232302AbjDUN34 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 Apr 2023 09:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49962 "EHLO
+        id S232065AbjDUNdi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 21 Apr 2023 09:33:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232196AbjDUN3z (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Apr 2023 09:29:55 -0400
-Received: from mxout4.routing.net (mxout4.routing.net [IPv6:2a03:2900:1:a::9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F35E410E0;
-        Fri, 21 Apr 2023 06:29:53 -0700 (PDT)
-Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
-        by mxout4.routing.net (Postfix) with ESMTP id 23B3B10120C;
-        Fri, 21 Apr 2023 13:20:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1682083258;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=t44L4PTrhbK6D0p+6ylhl2O6MzEiiAOATjFq63Zbih0=;
-        b=um3C1eazgsWx7DDRNeT2e+DxzwF4WC8m0/DlYPXzFbgljHNLd6wjLt/WNWOzkIWkwT3KnK
-        eGX6kFXGwRaQuRY1eY0GFUWOtE4VUusjdt1S2pfe5FFwEcIdUYvhysVEcSlne0lt6sWrv1
-        5X1rCnQsMMD31XJKTYTJUoU6gcBYBU8=
-Received: from frank-G5.. (fttx-pool-217.61.159.143.bambit.de [217.61.159.143])
-        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 2A9711007E3;
-        Fri, 21 Apr 2023 13:20:57 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     linux-mediatek@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+        with ESMTP id S231739AbjDUNdh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Apr 2023 09:33:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BCCE6B;
+        Fri, 21 Apr 2023 06:33:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 875D060EB3;
+        Fri, 21 Apr 2023 13:33:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50B0FC433D2;
+        Fri, 21 Apr 2023 13:33:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682084014;
+        bh=3Qm//CBVeUe9SBOSAX18g++Nk/w3euOpimYciN7RDGI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UO8A3bAe91kpm5Dh6H2Nnke+sw0QjxXwJUPxTGWVeP7iFKBzdU59DYBnl8VJEK6Ld
+         aceSBJ9yoZ2yqHNxpD3lHa8PzThHiU4MLFoblRBLD2MOypc9pkuRJrBHqP69c0mbL8
+         gxwRc9JmDlBOvtYM991zXgSJOVZTCinCazh2iKcW3M2h5rNpO0kxU6qCDYpHLyJQtK
+         dOnBvi4R9LS2DKL2gane6a5ToSSOjDyia+/NUFYgTjUGlvTw9oPfy+xi1mzkh7Dil3
+         UslbToe+wuBV0jEyTC00OK+zb5nnFZ0PBRg9Qt2GrJzmeroKO/OPbcm4DTWGT4INx4
+         ChC1pAEwtMh3w==
+Date:   Fri, 21 Apr 2023 14:33:27 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Lee Jones <lee@kernel.org>
+Cc:     Okan Sahin <okan.sahin@analog.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        "Hui.Liu" <hui.liu@mediatek.com>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Lala Lin <lala.lin@mediatek.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Daniel Golle <daniel@makrotopia.org>
-Subject: [PATCH v1 5/7] arm64: dts: mt7986: add PWM to BPI-R3
-Date:   Fri, 21 Apr 2023 15:20:45 +0200
-Message-Id: <20230421132047.42166-6-linux@fw-web.de>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230421132047.42166-1-linux@fw-web.de>
-References: <20230421132047.42166-1-linux@fw-web.de>
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Caleb Connolly <caleb.connolly@linaro.org>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Ramona Bolboaca <ramona.bolboaca@analog.com>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        Haibo Chen <haibo.chen@nxp.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v7 5/5] mfd: max77541: Add ADI MAX77541/MAX77540 PMIC
+ Support
+Message-ID: <82612171-46d7-4d82-a8fc-c7d6a99d57e9@sirena.org.uk>
+References: <20230412111256.40013-1-okan.sahin@analog.com>
+ <20230412111256.40013-6-okan.sahin@analog.com>
+ <20230420103438.GI9904@google.com>
+ <09eb8e4c-3e73-41f0-bf42-8ddf3c4254ec@sirena.org.uk>
+ <20230421073938.GO996918@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Mail-ID: 2a9dabd6-f8f5-4683-b208-d6dbddd4de4e
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="w/lvOMfkBujeu9yC"
+Content-Disposition: inline
+In-Reply-To: <20230421073938.GO996918@google.com>
+X-Cookie: Hailing frequencies open, Captain.
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
 
-Add pwm node and pinctrl to BananaPi R3 devicetree.
+--w/lvOMfkBujeu9yC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
----
- .../boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts   | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+On Fri, Apr 21, 2023 at 08:39:38AM +0100, Lee Jones wrote:
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts b/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts
-index 2b028141f1f7..782519429497 100644
---- a/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts
-@@ -274,6 +274,13 @@ mux {
- 		};
- 	};
- 
-+	pwm_pins: pwm-pins {
-+		mux {
-+			function = "pwm";
-+			groups = "pwm0", "pwm1_0";
-+		};
-+	};
-+
- 	spi_flash_pins: spi-flash-pins {
- 		mux {
- 			function = "spi";
-@@ -344,6 +351,12 @@ mux {
- 	};
- };
- 
-+&pwm {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pwm_pins>;
-+	status = "okay";
-+};
-+
- &spi0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&spi_flash_pins>;
--- 
-2.34.1
+> I'll try anything once!
 
+> Fair warning, I think this is going to massively complicate things.=20
+
+> Either we're going to be left with a situation where child-driver
+> maintainers are scrabbling around looking for previous versions for the
+> MFD pull-request or contributors being forced to wait a full cycle for
+> their dependencies to arrive in the maintainer's base.
+
+If people are resending after the MFD has gone in they really ought to
+be including the pull request in the cover letter, with some combination
+of either referencing the mail or just saying "this depends on the
+signed tag at url+tag", the same way they would for any other dependency.
+
+I can't see how you applying stuff when you can slow things down TBH,
+the MFD bits will be applied faster and either people can pull in a
+shared tag or you can apply more commits on top of the existing core
+driver.
+
+> I'm not sure why simply providing your Ack when you're happy with the
+> driver and forgetting about the set until the pull-request arrives, like
+> we've been doing for nearly a decade now, isn't working for you anymore
+> but I'm mostly sure this method will be a regression.
+
+Like I said I've not been doing that, I've mostly been just applying the
+driver when it's ready.  This might not have been so visible to you
+since it means that the regulator driver doesn't appear in the series by
+the time the MFD settles down.  The whole "Acked-for-MFD" has always
+been a bit confusing TBH, it's not a normal ack ("go ahead and apply
+this, I'm fine with it") so it was never clear what the intention was.
+
+Before I started just applying the drivers there used to be constant
+problems with things like tags going missing (which some of the time is
+the submitter just not carrying them but can also be the result of some
+churn causing them to be deliberately dropped due to changes) or
+forgetting the series as you suggest and then not looking at some other
+very similarly named series that was also getting lots of versions after
+thinking it was one that had been reviewed already.  It was all very
+frustrating.  Not doing the tags until the dependencies have settled
+down means that if it's in my inbox it at least consistently needs some
+kind of attention and that the submitter didn't drop tags or anything so
+I know why there's no tag on it even though the version number is high,
+though it's not ideal either.
+
+--w/lvOMfkBujeu9yC
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmRCkKYACgkQJNaLcl1U
+h9Dpfwf8Dh2GPrH7cGwBbc/TaazUhpmNsJOqTl3322vTv5HohfkjwHZJFvoN0EWH
+r9n3YTcTQY9dv2BFSUNMmv5SBZqzWgJrRopbrKtK43ieuq18tqvLowpyTwFWXb/2
+obkdKaySl0cW2JLEm2XX6S0ZmA+hfL7DF+tAy3iTfu2VyWBGw2hpNRFyIqD5BJrV
+LqIWRwn54+SBYuqeTr9Oxk4VpPtlGkuJs4ZF2l1c3Nho9AkQNNzzAVnwGy9a6tv1
+STJv4eYTnHZGPleSdET9Ne9jHd54863nUUoNunqROn4OR5Qy/dmw+hMTAC7+V0vz
+ofmDSxmMt/kmGlQJe2ZBaMhO7pxSaA==
+=dsIM
+-----END PGP SIGNATURE-----
+
+--w/lvOMfkBujeu9yC--
