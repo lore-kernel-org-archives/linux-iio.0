@@ -2,129 +2,121 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E256C7618E
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Apr 2023 23:20:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F9B8C7618E
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Apr 2023 13:38:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233756AbjDUXUf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 Apr 2023 19:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
+        id S229695AbjDVNil (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Apr 2023 09:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231282AbjDUXUd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Apr 2023 19:20:33 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E031E1706;
-        Fri, 21 Apr 2023 16:20:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682119231; x=1713655231;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+aOGfveR5QxLDNBV2uv6FM0FuGsHyyWTmz3hqDhOUGw=;
-  b=PGKPCRL1IsCNuUwR05mhdFAVAgRcu9WXfFAZcGQd0E33M3t5G/nbP5YA
-   ndOHT2bGsIxVszCHDLyyyy7bNuLW3soFHzu4LyWyQQDKZER899uCsKTBL
-   p5GSBRUxOS5FW2CGyuTBCAwHM2Rfh858FruV1yzEmPZFJujpfyV5dkSDn
-   zW+xled0dFvW7OKWDVumqhx0bR+Cwv0F3uwUVrD+cxGMqHg8wpgC/CptM
-   tpZnFF7//aeToURDcYFMWwGk4Y27m2blBb4W7ee7L4+BFOf6MBcnYrpw+
-   FZW53bDD7zRSojOiSyaJ0Zh3QEDUDteVS+asuD9UPYBA4/7EkQtFHHDyt
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10687"; a="326430844"
-X-IronPort-AV: E=Sophos;i="5.99,216,1677571200"; 
-   d="scan'208";a="326430844"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2023 16:20:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10687"; a="669868629"
-X-IronPort-AV: E=Sophos;i="5.99,216,1677571200"; 
-   d="scan'208";a="669868629"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 21 Apr 2023 16:20:28 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pq03H-000gvK-0A;
-        Fri, 21 Apr 2023 23:20:27 +0000
-Date:   Sat, 22 Apr 2023 07:19:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mehdi Djait <mehdi.djait.k@gmail.com>, jic23@kernel.org,
-        mazziesaccount@gmail.com
-Cc:     oe-kbuild-all@lists.linux.dev, krzysztof.kozlowski+dt@linaro.org,
-        andriy.shevchenko@linux.intel.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Mehdi Djait <mehdi.djait.k@gmail.com>
-Subject: Re: [PATCH v2 5/5] iio: accel: Add support for Kionix/ROHM
- KX132-1211 accelerometer
-Message-ID: <202304220729.FCofPRvH-lkp@intel.com>
-References: <cef09595632a40eff8a0864fea2e0eb6653930a5.1682019544.git.mehdi.djait.k@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cef09595632a40eff8a0864fea2e0eb6653930a5.1682019544.git.mehdi.djait.k@gmail.com>
+        with ESMTP id S229554AbjDVNik (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Apr 2023 09:38:40 -0400
+Received: from hust.edu.cn (mail.hust.edu.cn [202.114.0.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28BA110F0;
+        Sat, 22 Apr 2023 06:38:37 -0700 (PDT)
+Received: from ubuntu.localdomain ([10.12.170.113])
+        (user=jkluo@hust.edu.cn mech=LOGIN bits=0)
+        by mx1.hust.edu.cn  with ESMTP id 33MDYvAe029951-33MDYvAf029951
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Sat, 22 Apr 2023 21:35:08 +0800
+From:   Jiakai Luo <jkluo@hust.edu.cn>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Lee Jones <lee.jones@linaro.org>, Marek Vasut <marex@denx.de>,
+        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Cc:     hust-os-kernel-patches@googlegroups.com,
+        Jiakai Luo <jkluo@hust.edu.cn>, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: adc: mxs-lradc: fix the order of two cleanup operations
+Date:   Sat, 22 Apr 2023 06:34:06 -0700
+Message-Id: <20230422133407.72908-1-jkluo@hust.edu.cn>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20230416132906.4ec56e47@jic23-huawei>
+References: <20230416132906.4ec56e47@jic23-huawei>
+X-FEAS-AUTH-USER: jkluo@hust.edu.cn
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Mehdi,
+Smatch reports:
+drivers/iio/adc/mxs-lradc-adc.c:766 mxs_lradc_adc_probe() warn:
+missing unwind goto?
 
-kernel test robot noticed the following build warnings:
+the order of three init operation:
+1.mxs_lradc_adc_trigger_init
+2.iio_triggered_buffer_setup
+3.mxs_lradc_adc_hw_init
 
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on next-20230421]
-[cannot apply to linus/master v6.3-rc7]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+thus, the order of three cleanup operation should be:
+1.mxs_lradc_adc_hw_stop
+2.iio_triggered_buffer_cleanup
+3.mxs_lradc_adc_trigger_remove
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Mehdi-Djait/dt-bindings-iio-Add-KX132-1211-accelerometer/20230421-042531
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/cef09595632a40eff8a0864fea2e0eb6653930a5.1682019544.git.mehdi.djait.k%40gmail.com
-patch subject: [PATCH v2 5/5] iio: accel: Add support for Kionix/ROHM KX132-1211 accelerometer
-config: mips-randconfig-s031-20230421 (https://download.01.org/0day-ci/archive/20230422/202304220729.FCofPRvH-lkp@intel.com/config)
-compiler: mips64-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/38837f58c549d688da8cb7cfb1aea0bd65a12548
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Mehdi-Djait/dt-bindings-iio-Add-KX132-1211-accelerometer/20230421-042531
-        git checkout 38837f58c549d688da8cb7cfb1aea0bd65a12548
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=mips olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=mips SHELL=/bin/bash drivers/iio/accel/
+we exchange the order of two cleanup operations,
+introducing the following differences:
+1.if mxs_lradc_adc_trigger_init fails, returns directly;
+2.if trigger_init succeeds but iio_triggered_buffer_setup fails,
+goto err_trig and remove the trigger.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202304220729.FCofPRvH-lkp@intel.com/
+In addition, we also reorder the unwind that goes on in the
+remove() callback to match the new ordering.
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/iio/accel/kionix-kx022a.c:698:20: sparse: sparse: invalid assignment: &=
->> drivers/iio/accel/kionix-kx022a.c:698:20: sparse:    left side has type restricted __le16
->> drivers/iio/accel/kionix-kx022a.c:698:20: sparse:    right side has type unsigned short
+Fixes: 6dd112b9f85e ("iio: adc: mxs-lradc: Add support for ADC driver")
+Signed-off-by: Jiakai Luo <jkluo@hust.edu.cn>
+Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>
+---
+The issue is found by static analysis and remains untested.
+---
+ drivers/iio/adc/mxs-lradc-adc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-vim +698 drivers/iio/accel/kionix-kx022a.c
+diff --git a/drivers/iio/adc/mxs-lradc-adc.c b/drivers/iio/adc/mxs-lradc-adc.c
+index bca79a93cbe4..85882509b7d9 100644
+--- a/drivers/iio/adc/mxs-lradc-adc.c
++++ b/drivers/iio/adc/mxs-lradc-adc.c
+@@ -757,13 +757,13 @@ static int mxs_lradc_adc_probe(struct platform_device *pdev)
+ 
+ 	ret = mxs_lradc_adc_trigger_init(iio);
+ 	if (ret)
+-		goto err_trig;
++		return ret;
+ 
+ 	ret = iio_triggered_buffer_setup(iio, &iio_pollfunc_store_time,
+ 					 &mxs_lradc_adc_trigger_handler,
+ 					 &mxs_lradc_adc_buffer_ops);
+ 	if (ret)
+-		return ret;
++		goto err_trig;
+ 
+ 	adc->vref_mv = mxs_lradc_adc_vref_mv[lradc->soc];
+ 
+@@ -801,9 +801,9 @@ static int mxs_lradc_adc_probe(struct platform_device *pdev)
+ 
+ err_dev:
+ 	mxs_lradc_adc_hw_stop(adc);
+-	mxs_lradc_adc_trigger_remove(iio);
+-err_trig:
+ 	iio_triggered_buffer_cleanup(iio);
++err_trig:
++	mxs_lradc_adc_trigger_remove(iio);
+ 	return ret;
+ }
+ 
+@@ -814,8 +814,8 @@ static int mxs_lradc_adc_remove(struct platform_device *pdev)
+ 
+ 	iio_device_unregister(iio);
+ 	mxs_lradc_adc_hw_stop(adc);
+-	mxs_lradc_adc_trigger_remove(iio);
+ 	iio_triggered_buffer_cleanup(iio);
++	mxs_lradc_adc_trigger_remove(iio);
 
-   684	
-   685	static int kx132_get_fifo_bytes(struct kx022a_data *data)
-   686	{
-   687		struct device *dev = regmap_get_device(data->regmap);
-   688		__le16 buf_status;
-   689		int ret, fifo_bytes;
-   690	
-   691		ret = regmap_bulk_read(data->regmap, data->chip_info->buf_status1,
-   692				       &buf_status, sizeof(buf_status));
-   693		if (ret) {
-   694			dev_err(dev, "Error reading buffer status\n");
-   695			return ret;
-   696		}
-   697	
- > 698		buf_status &= data->chip_info->buf_smp_lvl_mask;
-   699		fifo_bytes = le16_to_cpu(buf_status);
-   700	
-   701		return fifo_bytes;
-   702	}
-   703	
-
+ 	return 0;
+ }
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+2.17.1
+
