@@ -2,81 +2,156 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3645C7618E
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Apr 2023 14:36:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5793C7618E
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Apr 2023 16:02:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbjDVOgC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Apr 2023 10:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56254 "EHLO
+        id S229580AbjDVQCe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Apr 2023 12:02:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjDVOgB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Apr 2023 10:36:01 -0400
-Received: from out203-205-251-59.mail.qq.com (out203-205-251-59.mail.qq.com [203.205.251.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8EC10E4;
-        Sat, 22 Apr 2023 07:35:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1682174157;
-        bh=rV+obqBV2YKvr1MLCeqn9cEsCuGUCv/eN8ByCFyFd0o=;
-        h=From:To:Cc:Subject:Date;
-        b=cfipC+FMoS4I0CbQVjfyqkeELQI0ILoPQFJgH6Tui2WJ487VR7r4XZf7VJ25dAIgD
-         5aprOXElaQfofA19ELIoWq3jjPmVtrjicr/BNUNTlogjyq4bmJ89uPBXinuMz+lNSC
-         nSSEe5Btahqb/1SPcU/VWoD6TytPONgdmJWF3oXo=
-Received: from rtoax.. ([111.199.190.121])
-        by newxmesmtplogicsvrszb1-0.qq.com (NewEsmtp) with SMTP
-        id 8F7278F5; Sat, 22 Apr 2023 22:35:55 +0800
-X-QQ-mid: xmsmtpt1682174155tp1m27fmo
-Message-ID: <tencent_3E0341A1C9AC8FCB7915E7D791D117445707@qq.com>
-X-QQ-XMAILINFO: NhUkPfKlCtQw2r08/0nNmetDOkmWKFwsM6519DB8bTZ3b478RMp2L/YWkTkcA7
-         SdN9+kuyCMmR+hdxq99LYQIBh8G3SBJPVAkbG+Xo/BMV/mTpf5fKZ1RLkqjH3gBI4CHT4pI25j7N
-         pBpZnn+4TDkM2O+hPpukG2ZcunHYVRuit4bvMVkm3vplfNUX1TS6HJP5VBKghowY5JrlKpWoZnnO
-         cytYJrkn90M1Jh2ZAc6p33JhMS96Qc/p7PLgnD6fNY13RdX9rCRZzFDVKUwvRmJ+wjftrFrqbDbQ
-         Cdpj2ySLYb2xesJUtC2EySF2NTgobscnTwOdWr0jukv1xAXUXHcAQ38bZdeG7KlLDcJ2cCazUoT8
-         /poCy/7FCZcN7Ul2JHUPPA7G0w9IanT3jT5MX4+18pfyn06IY3ViuSHXE/0PnSTC1wHsV2dwjj5Z
-         XiUsRGedjVTqkJVCytKAIbkEjRr5XB2sw7gvG8m0Krn1lm5jfvTN6FP7CEg2/qdXn7ZX2HDDZ/wC
-         cHrdFxydsRo966SF7DS+ycWTyouJqCaxRGCnDBlFUUeQCHzWozlHp/+PMxBDsm8pcF+5PdxblHDG
-         oV6z3C/AywEeBIoXT9TFoLvUPDx6u4fAuej5an7YD1kDScF7WGzm4Dw29IUnBf/IFeqR5DaGT/BN
-         dOKHrDvlhntBi9KZkxFdSFxCYsHX0F/1gNohrksKR1YOQMCGYNKEBwIIaBJRl8URP6SCkcxllcwp
-         KPch8DM4UBpfhjYw2cKJkDO6HIXDdq+RHF12s4z+7XLNgzkWcLwwsWSvmlK05juOxSHHO2QoQ/g/
-         /cHYoBXkT9mKNRXNCm+xVSpd4LqwKki/dHgFmRF5ZXQf1u09jgt//YLA7HpWRabOoV+cr7rWWF5D
-         tM3Aahq5hLTWDZNWGPBBEfwFS1JhiUQjNaVimC4zNbqjsH0bznTZsR6hrTXiZwfA4JaLxxWxcY6P
-         csCSlYtWqtubXCkcjS0G3XKyfjzCrOUtntci0+ayChesTmlubRvgacsw2NUWOv191R3DP1TBMtu5
-         X6M9OKJA==
-From:   Rong Tao <rtoax@foxmail.com>
-To:     william.gray@linaro.org
-Cc:     Rong Tao <rongtao@cestc.cn>,
-        linux-kernel@vger.kernel.org (open list),
-        linux-iio@vger.kernel.org (open list:COUNTER SUBSYSTEM)
-Subject: [PATCH v2] tools/counter: Add .gitignore
-Date:   Sat, 22 Apr 2023 22:35:53 +0800
-X-OQ-MSGID: <20230422143554.61364-1-rtoax@foxmail.com>
-X-Mailer: git-send-email 2.40.0
+        with ESMTP id S229533AbjDVQCd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Apr 2023 12:02:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B3151736;
+        Sat, 22 Apr 2023 09:02:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EFD1611C1;
+        Sat, 22 Apr 2023 16:02:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C543FC433EF;
+        Sat, 22 Apr 2023 16:02:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682179351;
+        bh=PoumuO8WQwaap5HmG8pUFcuCsPm1QbWRabiXoQhhiFw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GfcXZ350PyHfmCKruGAr1cbbVQm6ouJBElpPWHRMs/48iKCGdS/SsXAErj6MZnwuZ
+         aUG1WKCnkkqlbKOTikhQhwOjaQtN+OP/fn8Cz4YJapnZZnIU7EelWLfpPCuAHUP3su
+         uyky8tEmMK5k3uZuwb6Zt/motVVHEE7QQ8xLERT4BLZAU7Wn7VBZcViJCcD02OayvM
+         NNw7vIhy/eWJ78QL9TZ/F8RlQnMp5EqkofRMR1pHSKvKM/TkpFqkbSWI1N57glnnCX
+         iHH1pKjYX3fNm6YJYkphKYg7IRRN5gRRbKABK9ck+TKGJDkAV9PQZuP036T4OUSLdl
+         3U75eCPr7Riwg==
+Date:   Sat, 22 Apr 2023 17:18:07 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Herve Codina <herve.codina@bootlin.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v3 1/3] dt-bindings: iio: potentiometer: Add the Renesas
+ X9250 potentiometers
+Message-ID: <20230422171807.510d7fa3@jic23-huawei>
+In-Reply-To: <20230421085245.302169-2-herve.codina@bootlin.com>
+References: <20230421085245.302169-1-herve.codina@bootlin.com>
+        <20230421085245.302169-2-herve.codina@bootlin.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Rong Tao <rongtao@cestc.cn>
+On Fri, 21 Apr 2023 10:52:43 +0200
+Herve Codina <herve.codina@bootlin.com> wrote:
 
-Ignore counter_example and include/linux/counter.h.
+> The Renesas X9250 is a quad digitally controlled potentiometers.
+> 
+> Signed-off-by: Herve Codina <herve.codina@bootlin.com>
 
-Signed-off-by: Rong Tao <rongtao@cestc.cn>
----
-v2: Ignore /include/linux/counter.h, instead of /include directory
-v1: https://lore.kernel.org/lkml/tencent_1625E21562D40C91CEE047E82E2BFC524305@qq.com/
----
- tools/counter/.gitignore | 2 ++
- 1 file changed, 2 insertions(+)
- create mode 100644 tools/counter/.gitignore
+Hi Herve,
 
-diff --git a/tools/counter/.gitignore b/tools/counter/.gitignore
-new file mode 100644
-index 000000000000..9fd290d4bf43
---- /dev/null
-+++ b/tools/counter/.gitignore
-@@ -0,0 +1,2 @@
-+/counter_example
-+/include/linux/counter.h
--- 
-2.40.0
+Historically we've been a bit lax in IIO bindings in always making
+sure the per supplies are included.  As a result we frequently get
+them added later and it just makes things messier than they should
+be.
+
+So please add vcc-supply from the start.  V+ and V- are a little trickier.
+I was expecting datasheet to say they should be symmetric about 0 but it
+doesn't. So they could be two independent supplies.
+
+Also make it required as my current understanding is that we should
+do that for supplies that are definitely present even if we could
+rely on the fallback to regulator stubs if they aren't supplied.
+So add the 3 supplies to required as well.
+
+Less of a requirement, but you might want to also provide an optional 
+gpio for the not WP pin on basis someone might wire it up to the host processor.
+
+Beyond the comment Krzystof made on iio.yaml this otherwise looks good to me.
+
+Thanks,
+
+Jonathan
+
+
+
+> ---
+>  .../iio/potentiometer/renesas,x9250.yaml      | 54 +++++++++++++++++++
+>  1 file changed, 54 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/renesas,x9250.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/potentiometer/renesas,x9250.yaml b/Documentation/devicetree/bindings/iio/potentiometer/renesas,x9250.yaml
+> new file mode 100644
+> index 000000000000..dfa36b23eb0d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/potentiometer/renesas,x9250.yaml
+> @@ -0,0 +1,54 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/potentiometer/renesas,x9250.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Renesas X9250 quad potentiometers
+> +
+> +maintainers:
+> +  - Herve Codina <herve.codina@bootlin.com>
+> +
+> +description:
+> +  The Renesas X9250 integrates four digitally controlled potentiometers.
+> +  On each potentiometer, the X9250T has a 100 kOhms total resistance and the
+> +  X9250U has a 50 kOhms total resistance.
+> +
+> +allOf:
+> +  - $ref: /schemas/spi/spi-peripheral-props.yaml
+> +  - $ref: /schemas/iio/iio.yaml
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - renesas,x9250t
+> +      - renesas,x9250u
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  '#io-channel-cells':
+> +    const: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 2000000
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - '#io-channel-cells'
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    spi {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        potentiometer@0 {
+> +            compatible = "renesas,x9250t";
+> +            reg = <0>;
+> +            spi-max-frequency = <2000000>;
+> +            #io-channel-cells = <1>;
+> +        };
+> +    };
 
