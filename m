@@ -2,45 +2,56 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8AF5C77B60
-	for <linux-iio@archiver.kernel.org>; Sun, 30 Apr 2023 16:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14EBDC7EE24
+	for <linux-iio@archiver.kernel.org>; Sun, 30 Apr 2023 17:00:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbjD3Qsn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 30 Apr 2023 12:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35004 "EHLO
+        id S231163AbjD3RAl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 30 Apr 2023 13:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbjD3Qsm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Apr 2023 12:48:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C585170A;
-        Sun, 30 Apr 2023 09:48:41 -0700 (PDT)
+        with ESMTP id S231153AbjD3RAh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Apr 2023 13:00:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6653F3AA0;
+        Sun, 30 Apr 2023 10:00:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D6CC560BB5;
-        Sun, 30 Apr 2023 16:48:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23940C433D2;
-        Sun, 30 Apr 2023 16:48:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B6D360DF5;
+        Sun, 30 Apr 2023 17:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4940C433EF;
+        Sun, 30 Apr 2023 17:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682873320;
-        bh=CdEnRycpTGBamvpmQPy4FWzWBCWU+VEI1Rx4obR2oaQ=;
+        s=k20201202; t=1682874014;
+        bh=vMagLB0T24aEnGIYaVLE/dTFO6A15JIDpqUIewEjwd8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nlA0mh4fVXVBkO4jFy/ES39lJW6RhDhxGZzNpx3Rl8PzKqYOtGhBXNyiUJNFNT+CP
-         pZustGXR3R6JjOqO6oKu5TaDGUAcSISdaAVVmBZxutG4paEfESJ9ZclQKgu3PtFts2
-         1rA/NoZML2SnKziT45N3DUgRj4RGl6awXqeWgFS/joz2Ht7r2duuwL+Tz/IKxVXnUN
-         vgDrphwdZUOJuZt3Jb/d7DNrIcGkFoFGwXGwmLNsNt2T7F/Ba0ovcpnP5ltq8gsk/G
-         QgwrRS5SGJkXPxt3EYDLcUlQd9nutoHA23RMTnNGKwJn3jr6xEgqN58mHQq96xsA9U
-         2AEyqi2dYYVmg==
-Date:   Sun, 30 Apr 2023 18:04:25 +0100
+        b=BXbo5RN40/Wzdi59ooW090ZAmDKYM1vN4r0hPV4FpE4Bs/eOT+VJPa63xtHZQm2PF
+         LT5ItpNJV/9kRyyWFHPq39Xr3Ss0H85s/twuPjRb2yf28jTtnif0C5VN0Wik2uGXp7
+         nJa/dNsDsz0PXm0aHv4lN4+eIXyKWWpvvuWlBy3Wiq3OaGderss5xj3kv5/8WTAqcJ
+         tOK6jUl4LHJFHnnZ/t6G5L4jOz4VbRvdpndwnCKXzZfJ4RiHCs94krXVDgU5tFcwvY
+         wf9Ob628bSd4dnrYVD7naMKMK+CSzz4uQWHawJQPJQCoYRgwN3/07kG9qDi1PjbnT8
+         sVNcaqtw8H+Ww==
+Date:   Sun, 30 Apr 2023 18:15:58 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: palmas: Remove the unneeded include
- <linux/i2c.h>
-Message-ID: <20230430180425.3d24ec12@jic23-huawei>
-In-Reply-To: <9d23cd04d7f99dc8d813584aae5268b57f92fcd8.1682320298.git.christophe.jaillet@wanadoo.fr>
-References: <9d23cd04d7f99dc8d813584aae5268b57f92fcd8.1682320298.git.christophe.jaillet@wanadoo.fr>
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc:     Cai Huoqing <cai.huoqing@linux.dev>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Marco Felsch <m.felsch@pengutronix.de>
+Subject: Re: [PATCH v2 1/1] dt-bindings: iio: imx8qxp-adc: add missing
+ vref-supply
+Message-ID: <20230430181558.7614cbfc@jic23-huawei>
+In-Reply-To: <20230424092312.61746-1-alexander.stein@ew.tq-group.com>
+References: <20230424092312.61746-1-alexander.stein@ew.tq-group.com>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -49,39 +60,61 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 24 Apr 2023 09:11:51 +0200
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
+On Mon, 24 Apr 2023 11:23:12 +0200
+Alexander Stein <alexander.stein@ew.tq-group.com> wrote:
 
-> This driver does not use i2c, so there is no point in including
-> <linux/i2c.h>
+> Although this property is used right now for IIO_CHAN_INFO_SCALE,
+> this ADC has two internal reference voltages, which the driver currently
+> doesn't make use of.
 > 
-> Remove it.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Hard to argue with that logic :)
+> Fixes: db73419d8c06 ("dt-bindings: iio: adc: Add binding documentation for NXP IMX8QXP ADC")
+> Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-I guess some long ago cut and paste..
+Interesting that we are talking her only about vrefh, what about vrefp?
+I guess the assumption is that will be wired to 0V?
 
-Applied,
+The first reference I found didn't seem to imply that was necessarily the
+case. https://www.mouser.com/pdfDocs/IMX8QXPAEC.pdf
 
-Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/adc/palmas_gpadc.c | 1 -
->  1 file changed, 1 deletion(-)
+> Thanks for your inputs. This improved descritpion should make it clear
+> that this property is only about the external reference voltage, not
+> about the optional, internal voltages.
 > 
-> diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
-> index c1c439215aeb..42c519504529 100644
-> --- a/drivers/iio/adc/palmas_gpadc.c
-> +++ b/drivers/iio/adc/palmas_gpadc.c
-> @@ -14,7 +14,6 @@
->  #include <linux/platform_device.h>
->  #include <linux/slab.h>
->  #include <linux/delay.h>
-> -#include <linux/i2c.h>
->  #include <linux/pm.h>
->  #include <linux/mfd/palmas.h>
->  #include <linux/completion.h>
+> Changes in v2:
+> * Improved commit message subject as suggested
+> * Add hint about feature flag regarding multiple, internal, reference
+>   voltages
+> 
+>  .../devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml       | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
+> index 63369ba388e4..878e67054d7c 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
+> @@ -39,6 +39,12 @@ properties:
+>    power-domains:
+>      maxItems: 1
+>  
+> +  vref-supply:
+> +    description: |
+> +      External ADC reference voltage supply on VREFH pad. If VERID[MVI] is
+> +      set, there are additional, internal reference voltages selectable.
+> +      VREFH1 is always from VREFH pad.
+> +
+>    "#io-channel-cells":
+>      const: 1
+>  
+> @@ -72,6 +78,7 @@ examples:
+>              assigned-clocks = <&clk IMX_SC_R_ADC_0>;
+>              assigned-clock-rates = <24000000>;
+>              power-domains = <&pd IMX_SC_R_ADC_0>;
+> +            vref-supply = <&reg_1v8>;
+>              #io-channel-cells = <1>;
+>          };
+>      };
 
