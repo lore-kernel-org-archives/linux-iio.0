@@ -2,168 +2,136 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B951AC77B73
-	for <linux-iio@archiver.kernel.org>; Mon,  1 May 2023 14:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C50C77B73
+	for <linux-iio@archiver.kernel.org>; Mon,  1 May 2023 14:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232621AbjEAOh5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 1 May 2023 10:37:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49422 "EHLO
+        id S231816AbjEAOlJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 1 May 2023 10:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231779AbjEAOh4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 May 2023 10:37:56 -0400
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2057.outbound.protection.outlook.com [40.107.249.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A5910E0;
-        Mon,  1 May 2023 07:37:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iAkK1VMQT9N3E8RKmYMhLANdK9w16ByYkrsSDgho6e/XzB+6xGHzmlDAZjMRprOG+G1dtISsgMjpSILW+REJQkZScHPlegSEfCdUD9e4d96kB6q4IZIFeep5eiY295etphnw3GIS36ZwLjj7B+E64tEFTZrjBoJHJBK+xb4Wr/tM6rZt2Q/EMtC/rIpd2F7toNsTVgbFMUeRU43JiJZq+UbmOovn7FLzB8hL0chH+JzReHv2XDcbOqkQN6Gel9vLtyjZ7oLUkuUqi2GJ+s+/BcbFBEMTq9e2jRrj3twOXEZcAdwDQWW00U1WAS+RCufmqcONI4BAIxw4TL5DMw0ccw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cRzkFSLryx6vxLET7OjXgM6ktwPxSLiDRICD2qGoCc0=;
- b=YevlzZyT0jp319Y58FdFTzxglO9K4lYmA4cApC0coDfe+A9nGj7f0wN4jS2Lsmk5K3HnecxkGAcp3GiWGPQfd52YasfbIDNARkJFsDYQDak8zIY2BVfrWeAe3UjmOPxIU1twhiqnigp+Lmxkk3dXmW9hx0D/oHvqBmv4KHAMEdFKkyt/leeNghKv44jbx04G2+BfkAo24kMXz+KdksGmxBRSIv33WAKK3hVvybLNn10DtSCPB1h6cvxJYpPzzWVQ3Jel0c/O7EzspeRVMgp5bkpwyHTn5xCVpYfpMreI3MSGERnUGzM/cYBJi3Fstgp1J82e+TehbXU5FT2ge/k2zA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cRzkFSLryx6vxLET7OjXgM6ktwPxSLiDRICD2qGoCc0=;
- b=K+b7v4vqO/TSI2E721qsvKuJjmL5pZVhCnfWyiB1iYrS0ab85L2A8iDc8U0t7FeYPYOznmshmWpy1cvygYeUhpj0Cbpp3Xf+ntOtJv/HIiNdLETCIpUABZ+tgeZ2pg3Q/uRz5pMM5HdKBA8EAubX/CWasyLNsUIUNySnru+08U8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM6PR04MB4838.eurprd04.prod.outlook.com (2603:10a6:20b:4::16)
- by PAXPR04MB8670.eurprd04.prod.outlook.com (2603:10a6:102:21d::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30; Mon, 1 May
- 2023 14:36:24 +0000
-Received: from AM6PR04MB4838.eurprd04.prod.outlook.com
- ([fe80::bcdd:75c9:176c:39ed]) by AM6PR04MB4838.eurprd04.prod.outlook.com
- ([fe80::bcdd:75c9:176c:39ed%4]) with mapi id 15.20.6340.027; Mon, 1 May 2023
- 14:36:24 +0000
-From:   Frank Li <Frank.Li@nxp.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Ajay Gupta <ajayg@nvidia.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Parthiban Nallathambi <pn@denx.de>,
-        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Cc:     imx@lists.linux.dev
-Subject: [PATCH v2 1/1] iio: light: vcnl4035: fixed chip ID check
-Date:   Mon,  1 May 2023 10:36:04 -0400
-Message-Id: <20230501143605.1615549-1-Frank.Li@nxp.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BYAPR04CA0026.namprd04.prod.outlook.com
- (2603:10b6:a03:40::39) To AM6PR04MB4838.eurprd04.prod.outlook.com
- (2603:10a6:20b:4::16)
+        with ESMTP id S232655AbjEAOlH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 May 2023 10:41:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AFE797;
+        Mon,  1 May 2023 07:41:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB20760A4B;
+        Mon,  1 May 2023 14:41:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CD1AC4339C;
+        Mon,  1 May 2023 14:40:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682952061;
+        bh=II96033K2OvsJfg6xZbEKR4CP+yge9pQUJpGu7RIYTM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MVSOKMkSr0HyJ2pQUdTklZ5WKpNFSK7m10EdN1yXA89uHepIap2tV5CLxxsWCiEon
+         DdeDzbfUnRtA8OFQ44UjCIQuKUwT9QOhqJvgqScCfL2hBHTiDX8Ha3ObvVtS95eQpU
+         ib2solvE5dCGZH5D5/9VtzeYSFbFGIrfj9V9gQxxMHzU7JIYkEYXyrnJ1oCxE6cep4
+         2W1jHjFcF+p5e/Vwd0TsiR5EeH5y9LsYkEnnL73CvkHIcLDW+n0uQMKBuHmZDm8kWy
+         5tnuZb32Lfe6eFJFIIc7+MNDzgkdv8XIcbCowPYGN2RUDnf6/gmE+isTPw0no9TTbD
+         ViKymV+RBXWow==
+Date:   Mon, 1 May 2023 15:56:45 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Mehdi Djait <mehdi.djait.k@gmail.com>
+Cc:     mazziesaccount@gmail.com, krzysztof.kozlowski+dt@linaro.org,
+        andriy.shevchenko@linux.intel.com, robh+dt@kernel.org,
+        lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 7/7] iio: accel: Add support for Kionix/ROHM
+ KX132-1211 accelerometer
+Message-ID: <20230501155645.435242f0@jic23-huawei>
+In-Reply-To: <593798a44c8ba45f969b86aa29e172d59065958c.1682373451.git.mehdi.djait.k@gmail.com>
+References: <cover.1682373451.git.mehdi.djait.k@gmail.com>
+        <593798a44c8ba45f969b86aa29e172d59065958c.1682373451.git.mehdi.djait.k@gmail.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM6PR04MB4838:EE_|PAXPR04MB8670:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8763d4ec-05dd-44b6-450b-08db4a51705d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Fu9KYLva3krkAO0TWPvcxMwvMhh90VZ484J+uQGPuuJKTb29LzMA6zAsWiOyZTxrsOwRZXa/is734WytfwMsborDXeWHphbAlgpsIOgFtC2RqG9U8HQMxZgYjKhS0jBzYLK27gawg0GM6Mku8tZ8f+BY7w60jxMSGlngJsbQk8TB0bSOcHujt8h37ShaziqPdr2w9ItrwuCZLv9v+JjPSxk/M3bKPbYB7FGboyOXCMRu05sERdzYOGLDCOL1hcYSaFU3nKSh2ZEw+pdvqlD8tZ7Rub928NFKIUFqz9v25Ro+UUEveAeHfeM+qptiKqhJqsc7D/Ba7AORNanlYi2AV13FMz16XMIlj9p0qSbO5P+EMi7ICYDYjhQnawbp/RTEhPwf6oTGIsze1o74M0YipG4WnYD4MdSQdZV/l3spmpv9IwBPFONVD7U8AGoNQJRY4KjZXujmwTg7+j5vV0bmcUcxA6pFq7LzQfAqLrDypuweugjY78EIccdolj5dfjW1raZ/2q6HzJ4bsf4QKwuHPTWWfiPmbUs7A0OXCwWlgm3UQUQ3YFA8MVlWx9CwBIFOYfiQGY/T8JmH2cyo8c/VFD141gQr3D6X+sYIZgZQJm2ym/BAnBMSNOr5P/y0CmEvI8XlftJeXqQS6cM7sh7+Fg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB4838.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(39860400002)(396003)(376002)(366004)(451199021)(2616005)(316002)(6512007)(6506007)(4326008)(8936002)(7416002)(8676002)(86362001)(5660300002)(66946007)(478600001)(26005)(110136005)(41300700001)(83380400001)(186003)(1076003)(2906002)(38350700002)(38100700002)(36756003)(921005)(52116002)(6486002)(66476007)(66556008)(6666004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oHvuJwuHiIiUxbERoMySvN7Ml2wBd3EfOd7KENqONyOkHerkBa1dq0p6Bslo?=
- =?us-ascii?Q?bZlTx/6j3XURNK2ARw9EGayzGxfTHYDMP8XuBve0CgpXUcxhaqMCQ4hX6iQv?=
- =?us-ascii?Q?gBWsndn4wSJY1kMG2PYVV+oBoMSMLINvgCWBtewcZttYeiIFjAo9mEnDS/Uq?=
- =?us-ascii?Q?U8VtJ+oZCbX0bPjjPLrXRK8ovRC2aIq+ZPu6gMIrzq8WDQ8eSC51BEYr2Kzc?=
- =?us-ascii?Q?MoGXorxTfhROc7V1vVewscxWCQUSokqu0TawPNHG+LUFJkboB68I7QaP2Yry?=
- =?us-ascii?Q?oD4q7hzjmRe6KpohFrKaAku8zYIxB1yg4fNPqqQpUwJzIyLhw4Mx/mt15m+7?=
- =?us-ascii?Q?wmyI5utojrs7cEhav7N6zDflUExi//c84MzZTIWk4AddBb1RgJAD0JWFQjTV?=
- =?us-ascii?Q?ZAM1J9znKL0di9Q90787ihJI2FlF/1DToATgl1TjXx9Rh4JBZFYP8CQzMVn9?=
- =?us-ascii?Q?OT41cFmabXM2QaTCqCqtAy0JMjYI0oLX56FKZAkOwkgO7mFbflKChbNcSHa8?=
- =?us-ascii?Q?lyk9sQIQ3AoeaP8450DhoXNjI0XQRSx6AeNNiCAaVLdSSXgvpxUeXFwzMlz3?=
- =?us-ascii?Q?c+SXhZw9KVnQf/B0Gvy3sfq/q8KbKhiZkT9aJ8Hvxe6d0Og4P+FawBpPzqXI?=
- =?us-ascii?Q?4VspjhAdM7a3Gh8LESq43IyQnIA/5rh5YCyqIqCNwLhv3CLRiLFsoBWsSm8d?=
- =?us-ascii?Q?cjtoRF//ZZWpza690rm+xJmL10cikFK+71UHUXwe9uiGADCaMDntN3f+6iPM?=
- =?us-ascii?Q?7zXIU2WvcSo8h4ArVWOA7s5f7OgBCxOaEc4LPDny4ZD2qnr9JqaVQvDZFXJ3?=
- =?us-ascii?Q?jYpnZMuns/vB9Ypg6/IO2qVA6XLU/18K030Owf7V0IWQPnITm0wSY7QF64Fa?=
- =?us-ascii?Q?nPK+hyLt3u6+L7eAt3cvNEAfo5MLnRwQoDMxoXCrKL/ozPJhqeqou+ZlRQyr?=
- =?us-ascii?Q?i/2hCPTYkTAwC8A4yOkq74qvNmAV4V/z2Vjngy9SYaGY7Kl59ss7D8npJilt?=
- =?us-ascii?Q?Yme5MoY0/p3PPpnyX1is3HeApChpZONpNBP+FSrKDZq2CEfLipqtff0bEgS1?=
- =?us-ascii?Q?6pkaXtK6JxtUp3keFVTyR/K7vXPVaetiD2Xm1MdY+Xm7Ca/EGTA2dIYaveTs?=
- =?us-ascii?Q?/V7Dg9RngZEG4sM9bPYuaV1UBAhg8r/CT5Bn0rU+T28ThTL/H/n8TydGpnqg?=
- =?us-ascii?Q?FRstiCL7hFMcPLLxNqy9nA4MonNVCG9/OdTAJfgExEoV7YLtIz821rRrXA0J?=
- =?us-ascii?Q?YCzz1RFkm9/cxC0vG5c2Q7tynqroxEYiiTffwG82OjimkffaSjNNRr3fd8Ui?=
- =?us-ascii?Q?0HjLSxFtLUcjlMlgZ5xUk92ht/ZGfY22ARXY52wEwjUh2nbhOR8c6/ta/Hot?=
- =?us-ascii?Q?2sW4QO+vMQeOQ66d57I0QJEXSaZq/RpE6v5/pNkjhwmiErMZEJX834iG0ad1?=
- =?us-ascii?Q?M4y2iYVRd78AFOFRWHP6xHPj+cqwyOZhWUvcO1nxcnNUCjQJwOZXomCCSw9T?=
- =?us-ascii?Q?K0L11kP8R4c2G7ldnMHq4abck42UcW4FN0sF//aUvWwBnUXwbKAXcHPVw0t/?=
- =?us-ascii?Q?JA73o8QSCxQamMUXZQM=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8763d4ec-05dd-44b6-450b-08db4a51705d
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB4838.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2023 14:36:24.2665
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Q8EIUmvVQfJQpj0IzQlCC//pjkKdYfjybTOB/jDJWwUgHdwhkD835FI1FOR0PmpgnjGe4Z+7YmrKs6jRIO0q+Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8670
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-VCNL4035 register(0xE) ID_L and ID_M define as:
+On Tue, 25 Apr 2023 00:22:27 +0200
+Mehdi Djait <mehdi.djait.k@gmail.com> wrote:
 
- ID_L: 0x80
- ID_H: 7:6 (0:0)
-       5:4 (0:0) slave address = 0x60 (7-bit)
-           (0:1) slave address = 0x51 (7-bit)
-           (1:0) slave address = 0x40 (7-bit)
-           (1:0) slave address = 0x41 (7-bit)
-       3:0 Version code default	(0:0:0:0)
+> Kionix KX132-1211 is a tri-axis 16-bit accelerometer that can support
+> ranges from =C2=B12G to =C2=B116G, digital output through I=C2=B2C/SPI.
+> Add support for basic accelerometer features such as reading acceleration
+> via IIO using raw reads, triggered buffer (data-ready), or the WMI IRQ.
+>=20
+> Datasheet: https://kionixfs.azureedge.net/en/document/KX132-1211-Technica=
+l-Reference-Manual-Rev-5.0.pdf
+> Signed-off-by: Mehdi Djait <mehdi.djait.k@gmail.com>
 
-So just check ID_L.
+Two tiny things inline. =20
 
-Fixes: 55707294c4eb ("iio: light: Add support for vishay vcnl4035")
-Signed-off-by: Frank Li <Frank.Li@nxp.com>
----
-Change from v1 to V2: 
--define VCNL4035_DEV_ID_MASK instead hardcode 0xff
--using FIELD_GET
--update commit message, remove a space line between fixes and signed-off
+> +static int kx132_get_fifo_bytes(struct kx022a_data *data)
+> +{
+> +	struct device *dev =3D regmap_get_device(data->regmap);
+> +	__le16 buf_status;
+> +	int ret, fifo_bytes;
+> +
+> +	ret =3D regmap_bulk_read(data->regmap, data->chip_info->buf_status1,
+> +			       &buf_status, sizeof(buf_status));
+> +	if (ret) {
+> +		dev_err(dev, "Error reading buffer status\n");
+> +		return ret;
+> +	}
+> +
+> +	fifo_bytes =3D le16_to_cpu(buf_status);
+> +	fifo_bytes &=3D data->chip_info->buf_smp_lvl_mask;
 
- drivers/iio/light/vcnl4035.c | 3 +++
- 1 file changed, 3 insertions(+)
+Slight preference for FIELD_GET() as it saves me checking the mask includes
+lowest bits.
 
-diff --git a/drivers/iio/light/vcnl4035.c b/drivers/iio/light/vcnl4035.c
-index 3ed37f6057fb..a23c415fcb7a 100644
---- a/drivers/iio/light/vcnl4035.c
-+++ b/drivers/iio/light/vcnl4035.c
-@@ -8,6 +8,7 @@
-  * TODO: Proximity
-  */
- #include <linux/bitops.h>
-+#include <linux/bitfield.h>
- #include <linux/i2c.h>
- #include <linux/module.h>
- #include <linux/pm_runtime.h>
-@@ -42,6 +43,7 @@
- #define VCNL4035_ALS_PERS_MASK		GENMASK(3, 2)
- #define VCNL4035_INT_ALS_IF_H_MASK	BIT(12)
- #define VCNL4035_INT_ALS_IF_L_MASK	BIT(13)
-+#define VCNL4035_DEV_ID_MASK		GENMASK(7, 0)
- 
- /* Default values */
- #define VCNL4035_MODE_ALS_ENABLE	BIT(0)
-@@ -413,6 +415,7 @@ static int vcnl4035_init(struct vcnl4035_data *data)
- 		return ret;
- 	}
- 
-+	id = FIELD_GET(VCNL4035_DEV_ID_MASK, id);
- 	if (id != VCNL4035_DEV_ID_VAL) {
- 		dev_err(&data->client->dev, "Wrong id, got %x, expected %x\n",
- 			id, VCNL4035_DEV_ID_VAL);
--- 
-2.34.1
+
+> +
+> +	return fifo_bytes;
+> +}
+> +
+>  static int __kx022a_fifo_flush(struct iio_dev *idev, unsigned int sample=
+s,
+>  			       bool irq)
+>  {
+> @@ -1036,6 +1157,32 @@ const struct kx022a_chip_info kx022a_chip_info =3D=
+ {
+>  };
+>  EXPORT_SYMBOL_NS_GPL(kx022a_chip_info, IIO_KX022A);
+> =20
+> +const struct kx022a_chip_info kx132_chip_info =3D {
+> +	.name		  =3D "kx132-1211",
+> +	.regmap_config	  =3D &kx132_regmap_config,
+> +	.channels	  =3D kx132_channels,
+> +	.num_channels	  =3D ARRAY_SIZE(kx132_channels),
+> +	.fifo_length	  =3D KX132_FIFO_LENGTH,
+> +	.who		  =3D KX132_REG_WHO,
+> +	.id		  =3D KX132_ID,
+> +	.cntl		  =3D KX132_REG_CNTL,
+> +	.cntl2		  =3D KX132_REG_CNTL2,
+> +	.odcntl		  =3D KX132_REG_ODCNTL,
+> +	.buf_cntl1	  =3D KX132_REG_BUF_CNTL1,
+> +	.buf_cntl2	  =3D KX132_REG_BUF_CNTL2,
+> +	.buf_clear	  =3D KX132_REG_BUF_CLEAR,
+> +	.buf_status1	  =3D KX132_REG_BUF_STATUS_1,
+> +	.buf_smp_lvl_mask =3D KX132_MASK_BUF_SMP_LVL,
+
+There are some things in here (typically where the define isn't used
+anywhere else) where I think it would be easier to follow if the
+value was listed here.  Masks and IDs for example.=20
+
+> +	.buf_read	  =3D KX132_REG_BUF_READ,
+> +	.inc1		  =3D KX132_REG_INC1,
+> +	.inc4		  =3D KX132_REG_INC4,
+> +	.inc5		  =3D KX132_REG_INC5,
+> +	.inc6		  =3D KX132_REG_INC6,
+> +	.xout_l		  =3D KX132_REG_XOUT_L,
+> +	.get_fifo_bytes	  =3D kx132_get_fifo_bytes,
+> +};
+> +EXPORT_SYMBOL_NS_GPL(kx132_chip_info, IIO_KX022A);
+> +
+>  int kx022a_probe_internal(struct device *dev, const struct kx022a_chip_i=
+nfo *chip_info)
+>  {
+>  	static const char * const regulator_names[] =3D {"io-vdd", "vdd"};
 
