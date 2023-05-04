@@ -2,162 +2,189 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF65C7EE21
-	for <linux-iio@archiver.kernel.org>; Thu,  4 May 2023 07:59:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D09C7EE21
+	for <linux-iio@archiver.kernel.org>; Thu,  4 May 2023 09:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbjEDH7I (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 4 May 2023 03:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41698 "EHLO
+        id S230103AbjEDJP5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 4 May 2023 05:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbjEDH7H (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 4 May 2023 03:59:07 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E124C9D;
-        Thu,  4 May 2023 00:59:04 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id 2adb3069b0e04-4ec8eca56cfso184240e87.0;
-        Thu, 04 May 2023 00:59:04 -0700 (PDT)
+        with ESMTP id S230017AbjEDJPw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 4 May 2023 05:15:52 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C44A4C34;
+        Thu,  4 May 2023 02:15:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683187143; x=1685779143;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=BIF36cvrfg5bPNVRii+KXkGpKFjEd7XgQtb3zlxbdA8=;
-        b=hx0RcCUdcJj3keFiQ1VmBrnDvoeRvWwOQYzCEHTk6t/7pQ1PC6VitbsB+dNluLDljq
-         UWKNKhlOYILAvzzAEbs5AHJnKxsDEY5nHgsQ9a8KSpXhwNv+Zwcmp/zxgc9wZZ2Vmcun
-         UpLbjyJltCgInvRAl+OEltTGfasLlL93JugGSFOT3zivvBwjMBps9XzApFAnjQKmfSaB
-         GS+Lj/WdM+Rh1NyJqXCQQLRXlfjukBwxNBFI1GYcsaNvadAr4DbpnfmMGXZcQ7slEvEi
-         3VnoySHwewC615upD1zc/sCWY11+UwPbOSFeeuGR14my5ZrqeTGV3UM5uPxkb2XHRyfm
-         WIRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683187143; x=1685779143;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BIF36cvrfg5bPNVRii+KXkGpKFjEd7XgQtb3zlxbdA8=;
-        b=XDy/vc3XQdXM/ZCPm2p57tSsfLUMA0YKFiiycuVrqW9p5vw75nHMWpKHY3MPMlXeJA
-         G32GOZMnBMQNPdL93i+eqlEtLzdkWccqCFZ4tbqElxBsbNG9OODFJIbJ1tZhnBsgNAbq
-         AnXE73btmXzoq66RrpiiFVrKSflnC9uFoQFO99OZTBCByjSR5NEOnjGDqWuiiPb0LJvm
-         Y9MUYK7tinLKAxWeuE1sEzQCLJmz4g0uLIuWqClD04DR4AOsj6Q5fXXoGwufYwvNX7S5
-         Pc229zFrmxspsE6FfCRTUlajphxP7auCd2PwQxHdQFkHmUlHSFSEz+JuWLFvcyP9NNSF
-         dITQ==
-X-Gm-Message-State: AC+VfDwlFtHmbLAKP+gLHfrv8NzVl2LFZjnDRgMGGMIzqQ/S7XUJ2F4n
-        iGwRkr1142v7+/5wl1drH04=
-X-Google-Smtp-Source: ACHHUZ7vHsckvIiX6G2UgzDWOaS6ak81jjWn6OJakr1hKU4XopSwB5c5fdUnN15BhMsd/9sPj0AQ9A==
-X-Received: by 2002:ac2:562f:0:b0:4f1:44c0:b08d with SMTP id b15-20020ac2562f000000b004f144c0b08dmr229457lff.29.1683187143097;
-        Thu, 04 May 2023 00:59:03 -0700 (PDT)
-Received: from fedora (62-78-225-252.bb.dnainternet.fi. [62.78.225.252])
-        by smtp.gmail.com with ESMTPSA id y24-20020ac24478000000b004f11e965308sm2214506lfl.20.2023.05.04.00.59.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 May 2023 00:59:02 -0700 (PDT)
-Date:   Thu, 4 May 2023 10:58:52 +0300
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-To:     Matti Vaittinen <mazziesaccount@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
-Cc:     Matti Vaittinen <mazziesaccount@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 3/3] iio: kx022a: Probe asynchronously
-Message-ID: <24cea76c282a28b7a4dba297ab627176f8097907.1683185765.git.mazziesaccount@gmail.com>
-References: <cover.1683185765.git.mazziesaccount@gmail.com>
+  d=axis.com; q=dns/txt; s=axis-central1; t=1683191713;
+  x=1714727713;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=cDIBRX8Ulk8P+kDO+DNb87Xtv4IZjVGMishO+Kq42zY=;
+  b=jIT2IhPJlvu3M9EkOLJWR7aouCqQ37u1w9XQVXLLsxQimczWoBkWQYu3
+   dlR6iJe0IGnOCIYhtnhK3X75tpgLvvGkeMRvKWlP7M81j3jvvRPKh3ZmN
+   XhhIRyFl6qHcdxG7qrwVwePV+tGvUo8/l2dzTHB5qUFc6ScVzD6uH/Ukn
+   7+zhoDbJwEfA5PZgqLkI9cQMcr3bKJCgiPCNHNdnefMJe1YxyY4V1aQyI
+   HHeB5gVP72xvnZjdqdemRPBWV2rNKHNUxTKtBq+ra6pNDn1Reu2UNoYGz
+   2T3vpWKjHh37p+BsSRQ2amhA/P628fxUbrAq8hEtZSf2wuby/GIF4dKQr
+   A==;
+From:   Hermes Zhang <chenhuiz@axis.com>
+To:     <jic23@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <robh+dt@kernel.org>
+CC:     <jmaneyrol@invensense.com>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kernel@axis.com>,
+        Hermes Zhang <chenhuiz@axis.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 1/2] iio: imu: mpu6050: Add support for the ICM 20600 IMU
+Date:   Thu, 4 May 2023 17:14:19 +0800
+Message-ID: <20230504091421.2054451-2-chenhuiz@axis.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230504091421.2054451-1-chenhuiz@axis.com>
+References: <20230504091421.2054451-1-chenhuiz@axis.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="FycCC+x+FedVbcGA"
-Content-Disposition: inline
-In-Reply-To: <cover.1683185765.git.mazziesaccount@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+The Invensense ICM-20600 is a 6-axis MotionTracking device that combines a
+3-axis gyroscope and an 3-axis accelerometer. It is very similar to the
+ICM20602 imu which is already supported by the mpu6050 driver. The main
+difference is that the ICM-20600 has a different WHOAMI value.
 
---FycCC+x+FedVbcGA
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Devices which may take a while to initialize during probe and which have
-no strong reason to probe synchronously can request asynchronous probing
-as default probe strategy. This can speed-up start times on some
-platforms.
-
-The KX022A gets probe delayed for at least two reasons. It enables the
-supply regulator, (which is likely to have ramp-up delay if it was
-disabled) and additionally it delays while the sensor itself is
-initializing.
-
-Changing to asynchronous probing may cause problems. Some of which are
-discussed in:
-https://lore.kernel.org/all/06db017f-e985-4434-8d1d-02ca2100cca0@sirena.org=
-=2Euk/
-
-Enable asynchronous probing for KX022A.
-
-Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-
+Signed-off-by: Hermes Zhang <chenhuiz@axis.com>
 ---
+ drivers/iio/imu/inv_mpu6050/Kconfig        |  4 ++--
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 10 ++++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  |  6 ++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  2 ++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  |  5 +++++
+ 5 files changed, 25 insertions(+), 2 deletions(-)
 
-I am unsure if this change is 100% safe - but I don't immediately see
-the harm. Please let me know if some of you have more experience on
-problems when using asynchronous probing with IIO devices.
----
- drivers/iio/accel/kionix-kx022a-i2c.c | 1 +
- drivers/iio/accel/kionix-kx022a-spi.c | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/drivers/iio/accel/kionix-kx022a-i2c.c b/drivers/iio/accel/kion=
-ix-kx022a-i2c.c
-index e6fd02d931b6..ee982206e5dd 100644
---- a/drivers/iio/accel/kionix-kx022a-i2c.c
-+++ b/drivers/iio/accel/kionix-kx022a-i2c.c
-@@ -40,6 +40,7 @@ static struct i2c_driver kx022a_i2c_driver =3D {
- 	.driver =3D {
- 		.name  =3D "kx022a-i2c",
- 		.of_match_table =3D kx022a_of_match,
-+		.probe_type =3D PROBE_PREFER_ASYNCHRONOUS,
- 	  },
- 	.probe_new    =3D kx022a_i2c_probe,
- };
-diff --git a/drivers/iio/accel/kionix-kx022a-spi.c b/drivers/iio/accel/kion=
-ix-kx022a-spi.c
-index 9cd047f7b346..f45a46899a5f 100644
---- a/drivers/iio/accel/kionix-kx022a-spi.c
-+++ b/drivers/iio/accel/kionix-kx022a-spi.c
-@@ -46,6 +46,7 @@ static struct spi_driver kx022a_spi_driver =3D {
- 	.driver =3D {
- 		.name   =3D "kx022a-spi",
- 		.of_match_table =3D kx022a_of_match,
-+		.probe_type =3D PROBE_PREFER_ASYNCHRONOUS,
+diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
+index 3636b1bc90f1..64dd73dcc4ba 100644
+--- a/drivers/iio/imu/inv_mpu6050/Kconfig
++++ b/drivers/iio/imu/inv_mpu6050/Kconfig
+@@ -16,7 +16,7 @@ config INV_MPU6050_I2C
+ 	select REGMAP_I2C
+ 	help
+ 	  This driver supports the Invensense MPU6050/9150,
+-	  MPU6500/6515/6880/9250/9255, ICM20608(D)/20609/20689, ICM20602/ICM20690
++	  MPU6500/6515/6880/9250/9255, ICM20608(D)/20609/20689, ICM20600/20602/20690
+ 	  and IAM20680 motion tracking devices over I2C.
+ 	  This driver can be built as a module. The module will be called
+ 	  inv-mpu6050-i2c.
+@@ -28,7 +28,7 @@ config INV_MPU6050_SPI
+ 	select REGMAP_SPI
+ 	help
+ 	  This driver supports the Invensense MPU6000,
+-	  MPU6500/6515/6880/9250/9255, ICM20608(D)/20609/20689, ICM20602/ICM20690
++	  MPU6500/6515/6880/9250/9255, ICM20608(D)/20609/20689, ICM20600/20602/20690
+ 	  and IAM20680 motion tracking devices over SPI.
+ 	  This driver can be built as a module. The module will be called
+ 	  inv-mpu6050-spi.
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 8a129120b73d..592a6e60b413 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -244,6 +244,15 @@ static const struct inv_mpu6050_hw hw_info[] = {
+ 		.temp = {INV_ICM20608_TEMP_OFFSET, INV_ICM20608_TEMP_SCALE},
+ 		.startup_time = {INV_MPU6500_GYRO_STARTUP_TIME, INV_MPU6500_ACCEL_STARTUP_TIME},
  	},
- 	.probe =3D kx022a_spi_probe,
- 	.id_table =3D kx022a_id,
---=20
-2.40.0
++	{
++		.whoami = INV_ICM20600_WHOAMI_VALUE,
++		.name = "ICM20600",
++		.reg = &reg_set_icm20602,
++		.config = &chip_config_6500,
++		.fifo_size = 1008,
++		.temp = {INV_ICM20608_TEMP_OFFSET, INV_ICM20608_TEMP_SCALE},
++		.startup_time = {INV_ICM20602_GYRO_STARTUP_TIME, INV_ICM20602_ACCEL_STARTUP_TIME},
++	},
+ 	{
+ 		.whoami = INV_ICM20602_WHOAMI_VALUE,
+ 		.name = "ICM20602",
+@@ -1597,6 +1606,7 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ 		indio_dev->num_channels = ARRAY_SIZE(inv_mpu9250_channels);
+ 		indio_dev->available_scan_masks = inv_mpu9x50_scan_masks;
+ 		break;
++	case INV_ICM20600:
+ 	case INV_ICM20602:
+ 		indio_dev->channels = inv_mpu_channels;
+ 		indio_dev->num_channels = ARRAY_SIZE(inv_mpu_channels);
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+index 2f2da4cb7321..0e39877678df 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -32,6 +32,7 @@ static bool inv_mpu_i2c_aux_bus(struct device *dev)
+ 	case INV_ICM20608D:
+ 	case INV_ICM20609:
+ 	case INV_ICM20689:
++	case INV_ICM20600:
+ 	case INV_ICM20602:
+ 	case INV_IAM20680:
+ 		/* no i2c auxiliary bus on the chip */
+@@ -183,6 +184,7 @@ static const struct i2c_device_id inv_mpu_id[] = {
+ 	{"icm20608d", INV_ICM20608D},
+ 	{"icm20609", INV_ICM20609},
+ 	{"icm20689", INV_ICM20689},
++	{"icm20600", INV_ICM20600},
+ 	{"icm20602", INV_ICM20602},
+ 	{"icm20690", INV_ICM20690},
+ 	{"iam20680", INV_IAM20680},
+@@ -236,6 +238,10 @@ static const struct of_device_id inv_of_match[] = {
+ 		.compatible = "invensense,icm20689",
+ 		.data = (void *)INV_ICM20689
+ 	},
++	{
++		.compatible = "invensense,icm20600",
++		.data = (void *)INV_ICM20600
++	},
+ 	{
+ 		.compatible = "invensense,icm20602",
+ 		.data = (void *)INV_ICM20602
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index 94b54c501ec0..b4ab2c397d0f 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -79,6 +79,7 @@ enum inv_devices {
+ 	INV_ICM20608D,
+ 	INV_ICM20609,
+ 	INV_ICM20689,
++	INV_ICM20600,
+ 	INV_ICM20602,
+ 	INV_ICM20690,
+ 	INV_IAM20680,
+@@ -398,6 +399,7 @@ struct inv_mpu6050_state {
+ #define INV_ICM20608D_WHOAMI_VALUE		0xAE
+ #define INV_ICM20609_WHOAMI_VALUE		0xA6
+ #define INV_ICM20689_WHOAMI_VALUE		0x98
++#define INV_ICM20600_WHOAMI_VALUE		0x11
+ #define INV_ICM20602_WHOAMI_VALUE		0x12
+ #define INV_ICM20690_WHOAMI_VALUE		0x20
+ #define INV_IAM20680_WHOAMI_VALUE		0xA9
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+index 89f46c2f213d..05451ca1580b 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+@@ -76,6 +76,7 @@ static const struct spi_device_id inv_mpu_id[] = {
+ 	{"icm20608d", INV_ICM20608D},
+ 	{"icm20609", INV_ICM20609},
+ 	{"icm20689", INV_ICM20689},
++	{"icm20600", INV_ICM20600},
+ 	{"icm20602", INV_ICM20602},
+ 	{"icm20690", INV_ICM20690},
+ 	{"iam20680", INV_IAM20680},
+@@ -125,6 +126,10 @@ static const struct of_device_id inv_of_match[] = {
+ 		.compatible = "invensense,icm20689",
+ 		.data = (void *)INV_ICM20689
+ 	},
++	{
++		.compatible = "invensense,icm20600",
++		.data = (void *)INV_ICM20600
++	},
+ 	{
+ 		.compatible = "invensense,icm20602",
+ 		.data = (void *)INV_ICM20602
+-- 
+2.30.2
 
-
---=20
-Matti Vaittinen, Linux device drivers
-ROHM Semiconductors, Finland SWDC
-Kiviharjunlenkki 1E
-90220 OULU
-FINLAND
-
-~~~ "I don't think so," said Rene Descartes. Just then he vanished ~~~
-Simon says - in Latin please.
-~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
-Thanks to Simon Glass for the translation =3D]=20
-
---FycCC+x+FedVbcGA
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmRTZbwACgkQeFA3/03a
-ocUX5gf/dm9AQ5QJ2HF+kAHFEBVHLW48wbTnd9/i8cZYGaQ6bSTHmIGBjdrwXmB7
-QA6E4KwjcHHXWzsq4BegyZr7yvNbAcsh0TU2TpqoA7r54w/hSbooeuLZFOPyyqyC
-SfOrBHXwiJPCJW5d1bJROQ9tskJWSpnujTRzH8ZXmwfMm+2rY3qx6k7bRpf8YXtX
-tVFT2aTDzV41p5ZkZ2pTXHMycN4kfDw0vNkZp7EnuUMvO2CdHBABCrbwxwWEhq5U
-TcOMWy8pQzgHv5MPNfGVQIQaEs0HwM1Qm0JjPA7SPGw+4BSPYjKO4URUnyjz2TAI
-L/JlpBALVPI9uns4F/nOAoPXpMLamQ==
-=YPbf
------END PGP SIGNATURE-----
-
---FycCC+x+FedVbcGA--
