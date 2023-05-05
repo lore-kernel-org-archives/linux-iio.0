@@ -2,22 +2,22 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC78C7EE22
-	for <linux-iio@archiver.kernel.org>; Fri,  5 May 2023 13:23:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB76EC7EE23
+	for <linux-iio@archiver.kernel.org>; Fri,  5 May 2023 13:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232475AbjEENXH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 5 May 2023 09:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47072 "EHLO
+        id S232525AbjEEN1a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 5 May 2023 09:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232488AbjEENXE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 5 May 2023 09:23:04 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23757203EB;
-        Fri,  5 May 2023 06:22:56 -0700 (PDT)
+        with ESMTP id S232528AbjEEN1Z (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 5 May 2023 09:27:25 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF6B420767;
+        Fri,  5 May 2023 06:27:21 -0700 (PDT)
 Received: from localhost ([31.220.113.235]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MAfQk-1q5y0W4AXY-00B68k; Fri, 05 May 2023 15:22:41 +0200
-Date:   Fri, 5 May 2023 15:22:40 +0200
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1M8hR1-1pqGgV1Qi9-004gLy; Fri, 05 May 2023 15:21:46 +0200
+Date:   Fri, 5 May 2023 15:21:45 +0200
 From:   Andreas Klinger <ak@it-klinger.de>
 To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <jic23@kernel.org>,
@@ -26,55 +26,157 @@ Cc:     Jonathan Cameron <jic23@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Angel Iglesias <ang.iglesiasg@gmail.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 3/3] MAINTAINERS: Add Honeywell mprls0025pa sensor
-Message-ID: <ZFUDIGl4z9H/tfeA@arbad>
+Subject: [PATCH v4 1/3] dt-bindings: iio: pressure: Support Honeywell
+ mprls0025pa sensor
+Message-ID: <ZFUC6Tsku+aWod/+@arbad>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <ZFUCf059+PSR+3Wb@arbad>
-X-Provags-ID: V03:K1:/fsn1w4SfKbWyG9rqpbeOL1Yf6IVtQ0SC6bOfnJLczQe2vxM9rz
- aARtXyfm5oTFWe4c5xTXmEVFAaKp/lTkl1iZwjROISMM7N4gLsPcUSy/Vo5DquKjaxy/iMX
- 0OFHF9JIdULoe1ATqup7hd9PmR2QotBbF78YVjvFdIE5gwpuJimQ6n9fc1p+7KdAC1T69Va
- GPAcmwTfvn3GGYtpbg9wg==
-UI-OutboundReport: notjunk:1;M01:P0:WCrxDYDJzc0=;yQJjsLP3+3G/RQH7RBrxS4CQp+Y
- WHbE2949Szl/S7DNM/8BjRR/DQ2PBakSHVZy0VEshIAh+vvazaknlj9T6wAiroidzCKKJFlRd
- HlEH1i+QWR42CiVXzPS0Gfx6oMjo5lEvHDh3yq+740PfA+HKuyHvwlb0Pm9DN7KoDsFpxUBbp
- QqwJKGXQ2WtnPP7D1BeAn04q1hTKwLwtwK5zTzFluQ+2xkfTvYq3TbKJFHyUG3hPYXqwGuOaj
- xbYJArzYchlffYSah7PHdaw5RdZReIHdZU13zQwbzrQ1VNcTcPeVZOfRjGS7gUd7oOSbLdLa0
- e9M7g31KGgJY3hNZ74XqUrlwAcnyvadwZ/zS87iah3I6j0828uiZ/cUnwDTZW3z/Hep8t9uK9
- WJZiO2iuMApJl/ht5fWkmZqn6Kg1J8+D85/Sgo18woIx+Dmqi5a7wIntRAZwU0t2uu3oqRCKH
- 5by3Em0zOoAqMIxEP9QAfOq9pA4YS85u20shyCnH0orEim0DVXRI+uA8Lmf8WwCIflEYx8dRT
- FlOY0znvutgglCCo9Xlbgazmu+rx4Ymq3qao+Yx16CZ8jbtiZhOtAaiwjFXCZ8s27rjiTquVn
- HhNhX9a2Jt3b/zP/ix2cYGkTrRtrf0VSU6/8YgJuK7GPxJ4NLMEJDbjvFgxjZm5vEqM3w9lNp
- OGqWnBSXL6IAn/3+9L435f9QiTgsCN3YkpPgZ4knIQ==
+X-Provags-ID: V03:K1:cYa62qAIQtXMQaeBxNgRUZ2mXLjZuRGeyeLNGp6XVBbHQtwLz/T
+ WQb4XaYQE+hnSIOQoUTUz47txwbOrNvHZJgwGO27ihnkb18Sytcf1FKsGQ4D8ZAp2aWkGHF
+ DcwwqkCX/M4l2dFL+gPq+yPf7BQubi16nT3nLJNbcXRtxuy7q/QFCMgEd7sLRXTP7SyOBL1
+ nZ3Ws8W8rp+g2ZmaDGvqQ==
+UI-OutboundReport: notjunk:1;M01:P0:xCr59qoWid0=;xirPOBJiejEOLIPv2MEJwHzwnln
+ kdEj1vs7vyy6lai4N2SVStOfyZMvGqUE46FHBqrxMl6a9XWsx0egKlMTtM+Hx4pbN/JBGFIHL
+ fsEP/fQBKC2KLboCYyMrAoq0mjWQy6mEoE2S4UNgE3KtsQ4FT5It0IVc0IyAbpQW+QBDfS3m1
+ qQdE5XyFWSw7CSe9w/n2jYpR4y9ABAZ1nPA8tc/9LgVpqJ3gMztd9eY0a0YAZ2/2FGn0xNGW/
+ CpSqFnYHzaZ/KUuSCFzmkm5p9M/Op5k95YtQ3ZMjQxshqMPVJK3mLeYo6hbDesKtAH3zlyrGf
+ jHlYzLGorSKOoMH9HGgm9Wq6A8+VlCNDfXFUljtKXVpG/cJ0CWv6uTAQJEmSgKmIEJ6F1bU+s
+ HHffgIi6EIGdKIsgDKLaHTpDhddVc9e9E+sskGASCYLcmdB5ASm3RNO8LoK3458oe8InBfoRw
+ I5qWqwpWRXUcSlHo38JSinm6ySCepMLNJll7LPyBEFkUi4knnKYGBGpwxaM2u+NvQrU9Xoaju
+ r/QE31CImAsz7rWSyONpLjzOF5Jcn3PRGZ54QRXOMBDAEnFhaCfTwW+Vd7yg0Eh5IxJur21W1
+ 2G+EhMSUTGXb5csh0lEOfWBlkBy2EFaTwYnTCflY6e+rK4Eb3TiXm06nkdIJ0ZoqCltKX/nIf
+ WTzE/PIpTCjDaL3pXme26RzDEBKOUVLLNAunrbrr1w==
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add myself as a maintainer for Honeywell mprls0025pa sensor.
+Honeywell mprls0025pa is a pressure sensor series. There are many
+different models with different pressure ranges, units and transfer
+functions.
+
+The range and transfer function need to be set up in the dt. Therefore
+new properties honeywell,pmin-pascal, honeywell,pmax-pascal,
+honeywell,transfer-function are introduced.
+
+Add dt-bindings.
 
 Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 ---
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+ .../iio/pressure/honeywell,mprls0025pa.yaml   | 104 ++++++++++++++++++
+ 1 file changed, 104 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index c6545eb54104..7b68ec3fba88 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9361,6 +9361,13 @@ F:	lib/test_hmm*
- F:	mm/hmm*
- F:	tools/testing/selftests/mm/*hmm*
- 
-+HONEYWELL MPRLS0025PA PRESSURE SENSOR SERIES IIO DRIVER
-+M:	Andreas Klinger <ak@it-klinger.de>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
-+F:	drivers/iio/pressure/mprls0025pa.c
+diff --git a/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml b/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
+new file mode 100644
+index 000000000000..84a61721b597
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
+@@ -0,0 +1,104 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/pressure/honeywell,mprls0025pa.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- HOST AP DRIVER
- M:	Jouni Malinen <j@w1.fi>
- L:	linux-wireless@vger.kernel.org
++title: Honeywell mprls0025pa pressure sensor
++
++maintainers:
++  - Andreas Klinger <ak@it-klinger.de>
++
++description: |
++  Honeywell pressure sensor of model mprls0025pa.
++
++  This sensor has an I2C and SPI interface. Only the I2C interface is
++  implemented.
++
++  There are many models with different pressure ranges available. The vendor
++  calls them "mpr series". All of them have the identical programming model and
++  differ in the pressure range, unit and transfer function.
++
++  To support different models one need to specify the pressure range as well as
++  the transfer function. Pressure range needs to be converted from its unit to
++  pascal.
++
++  The transfer function defines the ranges of numerical values delivered by the
++  sensor. The minimal range value stands for the minimum pressure and the
++  maximum value also for the maximum pressure with linear relation inside the
++  range.
++
++  Specifications about the devices can be found at:
++    https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/
++      products/sensors/pressure-sensors/board-mount-pressure-sensors/
++      micropressure-mpr-series/documents/
++      sps-siot-mpr-series-datasheet-32332628-ciid-172626.pdf
++
++properties:
++  compatible:
++    const: honeywell,mprls0025pa
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  reset-gpios:
++    description:
++      Optional GPIO for resetting the device.
++      If not present the device is not resetted during the probe.
++    maxItems: 1
++
++  honeywell,pmin-pascal:
++    description:
++      Minimum pressure value the sensor can measure in pascal.
++    $ref: /schemas/types.yaml#/definitions/uint32
++
++  honeywell,pmax-pascal:
++    description:
++      Maximum pressure value the sensor can measure in pascal.
++    $ref: /schemas/types.yaml#/definitions/uint32
++
++  honeywell,transfer-function:
++    description:
++      Transfer function which defines the range of valid values delivered by the
++      sensor.
++      1 - A, 10% to 90% of 2^24 (1677722 .. 15099494)
++      2 - B, 2.5% to 22.5% of 2^24 (419430 .. 3774874)
++      3 - C, 20% to 80% of 2^24 (3355443 .. 13421773)
++    $ref: /schemas/types.yaml#/definitions/uint32
++
++  vdd-supply:
++    description: provide VDD power to the sensor.
++
++required:
++  - compatible
++  - honeywell,pmax-pascal
++  - honeywell,pmin-pascal
++  - honeywell,transfer-function
++  - reg
++  - vdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        pressure@18 {
++            compatible = "honeywell,mprls0025pa";
++            reg = <0x18>;
++            reset-gpios = <&gpio3 19 GPIO_ACTIVE_HIGH>;
++            interrupt-parent = <&gpio3>;
++            interrupts = <21 IRQ_TYPE_EDGE_FALLING>;
++            honeywell,pmin-pascal = <0>;
++            honeywell,pmax-pascal = <172369>;
++            honeywell,transfer-function = <1>;
++            vdd-supply = <&vcc_3v3>;
++        };
++    };
 -- 
 2.30.2
