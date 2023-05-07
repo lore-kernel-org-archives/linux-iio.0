@@ -2,114 +2,95 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03236C77B7C
-	for <linux-iio@archiver.kernel.org>; Sun,  7 May 2023 17:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11BBDC77B7D
+	for <linux-iio@archiver.kernel.org>; Sun,  7 May 2023 18:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230433AbjEGRje (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 May 2023 13:39:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60016 "EHLO
+        id S229920AbjEGSrL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 May 2023 14:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231415AbjEGRjb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 May 2023 13:39:31 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F92411571
-        for <linux-iio@vger.kernel.org>; Sun,  7 May 2023 10:39:30 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id a640c23a62f3a-965e4be7541so489039366b.1
-        for <linux-iio@vger.kernel.org>; Sun, 07 May 2023 10:39:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683481168; x=1686073168;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Fmm5K3twSnfjvRXl95GP6fEhhk0gKbIZpn9atiJ/Snw=;
-        b=CwPBinCLIofyk3epCVgKgKfO53ghgPMzBdbJwR5ZB+86/yKvQlEZmGPlX3CzqzWmLL
-         b0mlvCvIt/uOHrL+evHUh8IsPPj07dkjwcspXHnBhLYKeU4bualuyXfUXYqD7UA5xDQy
-         T2VIdujQOOYfWfR7HlCnDd/qauTJhz9Tkh9rITIrPYQlwk24qpltWjCENKr8Jjl1p/ZI
-         k6Uv9WlRi0V9r8Lo3kuE9rpfhjg2aef2MsCLKbOR7c5FKvOnZKbg6MYVI3WObJ/2stGA
-         SxacU8OYAM+TXyg5XV/0qKzjXwN0sG7lZQldJD+x6i+YE7ktd0XXxzEGnL5TnAVP4+4G
-         2GXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683481168; x=1686073168;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Fmm5K3twSnfjvRXl95GP6fEhhk0gKbIZpn9atiJ/Snw=;
-        b=XaBvRO0Gzm8yFprnRFnkQVCfSiUZkQj1TNxUzhNBmeMNoNkUbl3H9HhR7pOrYaL+Qa
-         SeN+GubFRyxzN+wqk/DQN2ZLKoAoUOmNUw2x41vPRRfBEmynu17/WQ/oapvHAUrktYxk
-         RlSdhzfy1w5DRN6fhkJayS8fJT13Wb9dzBb2A0Sg7gL9jvGbsF2+ZAUlpJAYsCOeXGz+
-         Urpf0SEUmXxwAOR9zMwwEP3iaGwPiHJpnbcjr3nuna5M0QOTdbFT57s5rBFdZxa1beHL
-         kv0G4ioGp/qDxyCswniJpLe4X8e/1Pb0F/3FmbhftUwy4zmLKHdMFYkH7nJtkQ0eIsXs
-         9BTA==
-X-Gm-Message-State: AC+VfDxZqzMJEgos617ZM7mfLAyL2P/BXuzWOgp6lMtJfrFsQe7K8aTG
-        5u/Y3KETnREyIvqed4u8c9jf4Q==
-X-Google-Smtp-Source: ACHHUZ7PR0FDVgBhOkmOCM+AZxWT8KIlI8Y/m9OAoqRSqctbKxwBEQrJfGg2XDvdwoBGMa6ANXB4hA==
-X-Received: by 2002:a17:907:9454:b0:953:291a:6705 with SMTP id dl20-20020a170907945400b00953291a6705mr6561472ejc.17.1683481168684;
-        Sun, 07 May 2023 10:39:28 -0700 (PDT)
-Received: from krzk-bin.. ([2a02:810d:15c0:828:1757:b51a:9965:e81])
-        by smtp.gmail.com with ESMTPSA id gz6-20020a170907a04600b0094a90d3e385sm3912065ejc.30.2023.05.07.10.39.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 May 2023 10:39:28 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        with ESMTP id S229797AbjEGSrK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 May 2023 14:47:10 -0400
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D768111559;
+        Sun,  7 May 2023 11:47:08 -0700 (PDT)
+Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 901758214D;
+        Sun,  7 May 2023 20:47:06 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1683485226;
+        bh=GCRKoa2++/RqvdPzk51SBf+p+Y15cT//ZipLZHhFTlI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=svtbIjb0jADa+0VEBBllSBQMDgWjDmYhLIzkpdDMXWoaVKnFCyKO4hvUx07XlFDzB
+         CSz2YVGo12wxTI79gI0hV/FCdWc67BOwCuKY+BGudnBkcomBWLdd1LQNNh8obkBtbn
+         KWdPtTDwLilF6v79n1chlbLMoBYxn+HhPBhyJDvZiHC3UVZwuRp48jp6XRtp7TPJGh
+         UHn/anvaR7sk+5Gl7g0CCYP4X/jnDXqUGo2tpHlZfqwEI3Qzs6Y4jecdHzyyRgExaQ
+         U+yY7+RrgHsoCrzmdUgJpL/I+B6zw84Tj5mkuPxKZjupkfMWUjk5fxtwM+V+RChayG
+         DuBnApf/GZOGw==
+From:   Marek Vasut <marex@denx.de>
+To:     linux-iio@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>, Crt Mori <cmo@melexis.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Daniel Campello <campello@chromium.org>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 3/3] dt-bindings: iio: semtech,sx9324: reference common schema for label
-Date:   Sun,  7 May 2023 19:39:23 +0200
-Message-Id: <20230507173923.263741-3-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230507173923.263741-1-krzysztof.kozlowski@linaro.org>
-References: <20230507173923.263741-1-krzysztof.kozlowski@linaro.org>
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH v2 2/5] iio: mlx90614: Sort headers
+Date:   Sun,  7 May 2023 20:46:46 +0200
+Message-Id: <20230507184649.39290-2-marex@denx.de>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230507184649.39290-1-marex@denx.de>
+References: <20230507184649.39290-1-marex@denx.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Reference iio.yaml schema from dtschema to allow already used
-label property:
+Sort the headers alphabetically. No functional change.
 
-  sc7180-trogdor-pazquel360-lte.dtb: proximity@28: 'label' does not match any of the regexes: 'pinctrl-[0-9]+'
-
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+Signed-off-by: Marek Vasut <marex@denx.de>
 ---
-
-Patch for dtschema:
-https://lore.kernel.org/linux-devicetree/20230507171219.232216-1-krzk@kernel.org/T/#u
+Cc: Crt Mori <cmo@melexis.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Marek Vasut <marex@denx.de>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: devicetree@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
 ---
- .../devicetree/bindings/iio/proximity/semtech,sx9324.yaml    | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+V2: New patch
+---
+ drivers/iio/temperature/mlx90614.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
-index b3aa2ebf9661..48f221463166 100644
---- a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
-+++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
-@@ -13,6 +13,9 @@ maintainers:
- description: |
-   Semtech's SX9324 proximity sensor.
+diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+index 909fadb623491..bd92b24918253 100644
+--- a/drivers/iio/temperature/mlx90614.c
++++ b/drivers/iio/temperature/mlx90614.c
+@@ -19,12 +19,12 @@
+  * the "wakeup" GPIO is not given, power management will be disabled.
+  */
  
-+allOf:
-+  - $ref: /schemas/iio/iio.yaml#
-+
- properties:
-   compatible:
-     const: semtech,sx9324
-@@ -167,7 +170,7 @@ required:
-   - reg
-   - "#io-channel-cells"
++#include <linux/delay.h>
+ #include <linux/err.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/i2c.h>
+-#include <linux/module.h>
+-#include <linux/delay.h>
+ #include <linux/jiffies.h>
+-#include <linux/gpio/consumer.h>
++#include <linux/module.h>
+ #include <linux/pm_runtime.h>
  
--additionalProperties: false
-+unevaluatedProperties: false
- 
- examples:
-   - |
+ #include <linux/iio/iio.h>
 -- 
-2.34.1
+2.39.2
 
