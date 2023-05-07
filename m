@@ -2,322 +2,149 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5533EC77B7C
-	for <linux-iio@archiver.kernel.org>; Sun,  7 May 2023 14:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D01DC77B7D
+	for <linux-iio@archiver.kernel.org>; Sun,  7 May 2023 14:45:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231415AbjEGOiq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 May 2023 10:38:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43298 "EHLO
+        id S230231AbjEGOpN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 May 2023 10:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjEGOio (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 May 2023 10:38:44 -0400
+        with ESMTP id S229472AbjEGOpM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 May 2023 10:45:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EB213C12;
-        Sun,  7 May 2023 07:38:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0A611D89;
+        Sun,  7 May 2023 07:45:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C457A60EA4;
-        Sun,  7 May 2023 14:38:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF649C433EF;
-        Sun,  7 May 2023 14:38:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5151760FF9;
+        Sun,  7 May 2023 14:45:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84C5BC433EF;
+        Sun,  7 May 2023 14:45:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1683470322;
-        bh=YdVovzlI+Oo3QHlBZtEyFh8kvZoU+pkM8tBPRt02jks=;
+        s=k20201202; t=1683470710;
+        bh=f3AxfwqEtAr5VZd9yHfGJdkHrsRn7CJ/CJ1thpUvEUQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YJ3H+1zPq8b+DCR++/HsW5CGYJEvyV/RwHILrP0cKsv+mXYs/f2/9xVGGEoG2WfqJ
-         4jRNx13o8iARGtagquqGnkCOzV6UZ3h5c8/NT8PAdiutZgZE+4LLVDZCKJVrgYHWJF
-         OyCnj6p1JCR2dG3dkMMjchvw9VoxcqdOhvOtPPWoW9I+GMoYTfDo5pydAflQ9IIPsL
-         dEmYEdZCPhRzARTxNOASjhU8nA35Bizl6gEKYMlkbuiU0E/X2EMNrPcwXfV7STUKSH
-         5L+WuNxefbJ5eSouUA1HYcaCOMBlrmWjfTidktK9CJZhuBUk7DCG1hqe+saRHiimxk
-         L1IkebqIjWHEw==
-Date:   Sun, 7 May 2023 15:54:34 +0100
+        b=Od2gsyxzXbSQBBRpPLRVAiujAEjY/fkZGyHrC+o2g1bK2ZrxBCI7+By+b7y4r3PU6
+         fdWMl6QYhI8CUytNTl+AQGblExCMj1v0+5D7ZlzyEitLGUFCak6TlrrUi5qQ/1U1WJ
+         P9+Z6rx00FpS8ojUjvzv6CTitQUzqPndbZ3sOxivw+iYkKQeWyEO6nW1HRDW78D2oW
+         lUJDA6EvG1gC3q53C9kkyK5ejsV5Hhvku97cym7N4/5eupfkfllYrtitijlwAj5nbJ
+         ZbNeXYAYNJn1vkjhtBNvUQF+QOJWtFJ66oqBc1WExFGWkwz1c03WSU1/da2VPLrcV9
+         PB1GXJ85b1aPA==
+Date:   Sun, 7 May 2023 16:01:04 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Matti Vaittinen <mazziesaccount@gmail.com>
-Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+To:     Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
+Cc:     Masahiro Honda <honda@mechatrax.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Shreeya Patel <shreeya.patel@collabora.com>,
-        Zhigang Shi <Zhigang.Shi@liteon.com>,
-        Paul Gazzillo <paul@pgazz.com>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 4/5] iio: light: ROHM BU27008 color sensor
-Message-ID: <20230507155434.3d05daa5@jic23-huawei>
-In-Reply-To: <6d1e37f95dd039d9c96a992b1855fd193bdded40.1683105758.git.mazziesaccount@gmail.com>
-References: <cover.1683105758.git.mazziesaccount@gmail.com>
-        <6d1e37f95dd039d9c96a992b1855fd193bdded40.1683105758.git.mazziesaccount@gmail.com>
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] Fix IRQ issue by setting IRQ_DISABLE_UNLAZY flag
+Message-ID: <20230507160104.1d6e8bb8@jic23-huawei>
+In-Reply-To: <f83adfd4df5cd23176721087a4fcd9a0225c3483.camel@gmail.com>
+References: <20230502102930.773-1-honda@mechatrax.com>
+        <f83adfd4df5cd23176721087a4fcd9a0225c3483.camel@gmail.com>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 3 May 2023 12:50:14 +0300
-Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+On Wed, 03 May 2023 10:09:28 +0200
+Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
 
-> The ROHM BU27008 is a sensor with 5 photodiodes (red, green, blue, clear
-> and IR) with four configurable channels. Red and green being always
-> available and two out of the rest three (blue, clear, IR) can be
-> selected to be simultaneously measured. Typical application is adjusting
-> LCD backlight of TVs, mobile phones and tablet PCs.
-> 
-> Add initial support for the ROHM BU27008 color sensor.
->  - raw_read() of RGB and clear channels
->  - triggered buffer w/ DRDY interrtupt
-> 
-> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-> 
-Mostly stuff that you asked about in response to earlier version but
-which I hadn't replied to until today.
+Patch title should be something like the following so it's easy to see what
+is affected when looking at a long list of patches.
 
-Upshot, don't need the manual irq handling in here.
-
-Whilst you aren't setting IRQF_ONESHOT for the pollfunc side of the trigger
-(the downstream IRQ / IRQ thread) the IIO utility functions are.
-
-Jonathan
+iio: adc: ad_sigma_delta: Fix IRQ issue by setting IRQ_DISABLE_UNLAZY flag.
 
 
-> diff --git a/drivers/iio/light/rohm-bu27008.c b/drivers/iio/light/rohm-bu27008.c
-> new file mode 100644
-> index 000000000000..c04d845062ba
-> --- /dev/null
-> +++ b/drivers/iio/light/rohm-bu27008.c
-> @@ -0,0 +1,993 @@
-...
+> On Tue, 2023-05-02 at 19:29 +0900, Masahiro Honda wrote:
+> > The Sigma-Delta ADCs supported by this driver can use SDO as an interru=
+pt
+> > line to indicate the completion of a conversion. However, some devices
+> > cannot properly detect the completion of a conversion by an interrupt.
+> > This is for the reason mentioned in the following commit.
+> >=20
+> > commit e9849777d0e2 ("genirq: Add flag to force mask in
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 disable_irq[_nosy=
+nc]()")
+> >=20
+> > A read operation is performed by an extra interrupt before the completi=
+on
+> > of a conversion. This patch fixes the issue by setting IRQ_DISABLE_UNLA=
+ZY
+> > flag.
+> >=20
+> > Signed-off-by: Masahiro Honda <honda@mechatrax.com>
+> > --- =20
+>=20
+> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 
+Fixes tag?  We'll want to know how far to backport this.  I assume it's
+limited by the above commit as these drivers are older than that.=20
 
-> +
-> +static int bu27008_read_raw(struct iio_dev *idev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val, int *val2, long mask)
-> +{
-> +	struct bu27008_data *data = iio_priv(idev);
-> +	int busy, ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +	{
-> +		busy = iio_device_claim_direct_mode(idev);
-> +		if (busy)
-> +			return -EBUSY;
-> +
-> +		mutex_lock(&data->mutex);
-> +		ret = bu27008_read_one(data, idev, chan, val, val2);
-> +		mutex_unlock(&data->mutex);
-> +
-> +		iio_device_release_direct_mode(idev);
-> +
-> +		return ret;
-> +	}
-Why {}? 
+I'm also not totally sure what this 'looks like' for a user.  What happens?
+Fail to read, wrong value, lock up or something else?  It would be helpful
+to include that information in case anyone else runs into this.
 
-I guess there was a local variable, but isn't any more?
+Actual change looks right to me.
 
-
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = bu27008_get_scale(data, chan->scan_index == BU27008_IR,
-> +					val, val2);
-> +		if (ret)
-> +			return ret;
-> +
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		ret = bu27008_get_int_time_us(data);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		*val = 0;
-> +		*val2 = ret;
-> +
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
-
-> +
-> +static int bu27008_write_raw(struct iio_dev *idev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	struct bu27008_data *data = iio_priv(idev);
-> +	int ret;
-> +
-> +	/*
-> +	 * Do not allow changing scale when measurement is ongoing as doing so
-> +	 * could make values in the buffer inconsistent.
-> +	 */
-> +	ret = iio_device_claim_direct_mode(idev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = bu27008_set_scale(data, chan, val, val2);
-> +		break;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		if (val)
-> +			ret = -EINVAL;
-Slight preference for
-		if (val) {
-			ret = -EINVAL;
-			break;
-		}
-
-		ret = bu27008....
-		break;
-
-so that the error path is out of line of the main flow.
-
-Ever so slightly helps people follow this stuff if they are reading 'a lot'
-of code (every little helps!). I have to look closer at anything other than
-an obvious direct break / goto / return on error paths to make sure nothing
-else snuck in that shouldn't be there.
-
-
-> +		else
-> +			ret = bu27008_try_set_int_time(data, val2);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
-> +	iio_device_release_direct_mode(idev);
-> +
-> +	return ret;
-> +}
-
-
-> +static irqreturn_t bu27008_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *idev = pf->indio_dev;
-> +	struct bu27008_data *data = iio_priv(idev);
-> +	struct {
-> +		__le16 chan[BU27008_NUM_HW_CHANS];
-> +		s64 ts __aligned(8);
-> +	} raw;
-> +	int ret, dummy;
-> +
-> +	memset(&raw, 0, sizeof(raw));
-> +
-> +	/*
-> +	 * After some measurements, it seems reading the
-> +	 * BU27008_REG_MODE_CONTROL3 debounces the IRQ line
-> +	 */
-> +	ret = regmap_read(data->regmap, BU27008_REG_MODE_CONTROL3, &dummy);
-> +	if (ret < 0)
-> +		goto err_read;
-> +
-> +	ret = regmap_bulk_read(data->regmap, BU27008_REG_DATA0_LO, &raw.chan,
-> +			       sizeof(raw.chan));
-> +	if (ret < 0)
-> +		goto err_read;
-> +
-> +	iio_push_to_buffers_with_timestamp(idev, &raw, pf->timestamp);
-> +err_read:
-> +	iio_trigger_notify_done(idev->trig);
-> +
-> +	enable_irq(data->irq);
-
-As below. This shouldn't be needed (and if it was it should be in the
-reenable path that is ultimately a result of that notify_done above and
-some reference counting fun).
-
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int bu27008_buffer_preenable(struct iio_dev *idev)
-> +{
-> +	struct bu27008_data *data = iio_priv(idev);
-> +	int chan_sel, ret;
-> +
-> +	/* Configure channel selection */
-> +	if (test_bit(BU27008_BLUE, idev->active_scan_mask)) {
-> +		if (test_bit(BU27008_CLEAR, idev->active_scan_mask))
-> +			chan_sel = BU27008_BLUE2_CLEAR3;
-> +		else
-> +			chan_sel = BU27008_BLUE2_IR3;
-> +	} else {
-> +		chan_sel = BU27008_CLEAR2_IR3;
-> +	}
-> +
-> +	chan_sel = FIELD_PREP(BU27008_MASK_CHAN_SEL, chan_sel);
-> +
-> +	ret = regmap_update_bits(data->regmap, BU27008_REG_MODE_CONTROL3,
-> +				 BU27008_MASK_CHAN_SEL, chan_sel);
-> +	if (ret)
-> +		return ret;
-
-Hmm. I'd missed this before but. This is in the wrong place really
-(though it probably doesn't make much difference), stuff related to
-enabling particular channels should be in iio_info->update_scan_mode()
-
-It's arguable that the actual measurement mode setting might come
-in the postenable callback (after the update_scan_mode() call which
-in turn follows the preenable callback).
-
-All these callbacks have become a bit blurry over time as we end
-up with devices that need to do nasty thing in one place.  In this
-particular case it's pretty simple though, so nicer to move
-the scan mask stuff to the callback that is given the active_scan
-mask as a parameter.
-
-> +
-> +	return bu27008_meas_set(data, BU27008_MEAS_EN);
-> +}
-> +
-> +static int bu27008_buffer_postdisable(struct iio_dev *idev)
-> +{
-> +	struct bu27008_data *data = iio_priv(idev);
-> +
-> +	return bu27008_meas_set(data, BU27008_MEAS_DIS);
-> +}
-> +
-> +static const struct iio_buffer_setup_ops bu27008_buffer_ops = {
-> +	.preenable = bu27008_buffer_preenable,
-> +	.postdisable = bu27008_buffer_postdisable,
-> +};
-> +
-> +static irqreturn_t bu27008_data_rdy_poll(int irq, void *private)
-> +{
-> +	/*
-> +	 * The BU27008 keeps IRQ asserted until we read the VALID bit from
-> +	 * a register. We need to keep the IRQ disabled until this
-> +	 */
-> +	disable_irq_nosync(irq);
-
-As per my late reply to your question on this, shouldn't be needed
-as IRQF_ONESHOT is ultimately set for the interrupts nested below this
-so they'll get the resulting queuing on the threads which is fine.
-
-Note if this were needed, you might want to provide the reenable callback
-for the trigger to do the irq reenabling and to implement that correctly
-against some race conditions, that might need to do another read of the
-register.  That handles weird ordering conditions where another consumer
-of the trigger is enabled before the device acting as a consumer has
-it's own buffer enabled.
-
-Anyhow, I don't think it's relevant here and you shouldn't need this unless
-I've miss understood / remembered how all that interrupt logic is working.
+Thanks,
 
 Jonathan
 
 
-> +	iio_trigger_poll(private);
-> +
-> +	return IRQ_HANDLED;
-> +}
-
+>=20
+> > v4:
+> > =C2=A0- Remove the callback.
+> > v3:
+> > https://lore.kernel.org/linux-iio/20230420102316.757-1-honda@mechatrax.=
+com/
+> > =C2=A0- Remove the Kconfig option.
+> > v2:
+> > https://lore.kernel.org/linux-iio/20230414102744.150-1-honda@mechatrax.=
+com/
+> > =C2=A0- Rework commit message.
+> > =C2=A0- Add a new entry in the Kconfig.
+> > =C2=A0- Call irq_clear_status_flags(irq, IRQ_DISABLE_UNLAZY) when freei=
+ng the IRQ.
+> > v1:
+> > https://lore.kernel.org/linux-iio/20230306044737.862-1-honda@mechatrax.=
+com/
+> >=20
+> > =C2=A0drivers/iio/adc/ad_sigma_delta.c | 4 ++++
+> > =C2=A01 file changed, 4 insertions(+)
+> >=20
+> > diff --git a/drivers/iio/adc/ad_sigma_delta.c
+> > b/drivers/iio/adc/ad_sigma_delta.c
+> > index d8570f6207..7e21928707 100644
+> > --- a/drivers/iio/adc/ad_sigma_delta.c
+> > +++ b/drivers/iio/adc/ad_sigma_delta.c
+> > @@ -584,6 +584,10 @@ static int devm_ad_sd_probe_trigger(struct device =
+*dev,
+> > struct iio_dev *indio_de
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0init_completion(&sigma_=
+delta->completion);
+> > =C2=A0
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0sigma_delta->irq_dis =
+=3D true;
+> > +
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* the IRQ core clears IRQ_D=
+ISABLE_UNLAZY flag when freeing an IRQ */
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0irq_set_status_flags(sigma_d=
+elta->spi->irq, IRQ_DISABLE_UNLAZY);
+> > +
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ret =3D devm_request_ir=
+q(dev, sigma_delta->spi->irq,
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ad_sd_data_rdy_trig_poll,
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sigma_delta->info->irq_flags | IRQF_NO=
+_AUTOEN, =20
+>=20
 
