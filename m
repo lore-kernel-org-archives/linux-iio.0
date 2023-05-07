@@ -2,216 +2,105 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7794AC77B7C
-	for <linux-iio@archiver.kernel.org>; Sun,  7 May 2023 14:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27947C7EE24
+	for <linux-iio@archiver.kernel.org>; Sun,  7 May 2023 15:43:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbjEGO5D (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 May 2023 10:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49390 "EHLO
+        id S229797AbjEGPnW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 May 2023 11:43:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbjEGO5C (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 May 2023 10:57:02 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06E53A80;
-        Sun,  7 May 2023 07:56:59 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-50bceaf07b8so6897519a12.3;
-        Sun, 07 May 2023 07:56:59 -0700 (PDT)
+        with ESMTP id S229781AbjEGPnV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 May 2023 11:43:21 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6A7132A6
+        for <linux-iio@vger.kernel.org>; Sun,  7 May 2023 08:43:19 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id 2adb3069b0e04-4eed764a10cso3998055e87.0
+        for <linux-iio@vger.kernel.org>; Sun, 07 May 2023 08:43:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683471418; x=1686063418;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=W963wxv9DpcswAJzjNkJzwD3eg9G189aTAyjNcouCSk=;
-        b=btxMPhJC7e5MUVebZDt7VLwlknIpicMhLyXV5iwzelFWoKa4UtjFZAPd9sN1UvlHOX
-         q4Gr1cArbtqI7dI1nFVCP/AXamwjtayRBdC5cORFPh4ikEgOGw8FlRexSuzENf/llnaq
-         42GgWQy/vF3atBgNBMRkSnpT0aePFMsKXFI0ZfRnGBiveW5p57GIrGFsgins+eHIZ0Mn
-         RkrhHRdLCkAPOZZX7fnP/KiQJLBmweTBSvyAeEGKACA8T8N9WfoLbjaMr0smMKZQpQvl
-         k+AGL3shBcy2uEp6CIdxzLt+DN0biK6v8Sgfj42lPLzVNwVp9ZcV4JxxsID2AsdPFLTo
-         tLZw==
+        d=linaro.org; s=google; t=1683474198; x=1686066198;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6fr2hGT93hwoVDFpT4bMl3C3u2Y9uTIfICyFQ19Ymcs=;
+        b=S4WbRtV/yws6OmSwy5J3YrByyqF/zD6ZZDGyBEas1XKrBvApLMbaPxjJlMoJ1oaHBx
+         Sapx8GwmWrL+PhI+Lix2ULUzGA6fdoU4mvtDAf5IXapt6OzxOr27f3U5n6KgpBh3ZYU7
+         YK2QNN54DLFYzfnMukK8DVZawKvfXXo7n1eTr1ptdPelLgD4NkSIwzM5rgd7HTkd7rdn
+         E+KS9QSWimQRcmlqzPlTnI+iCv+gMRytUVB9u4gyP7calKjL/N93rM2G5bZX9Sg6WX4G
+         YZdHBPYBNJesiYI5NYr6DTcF/qPda9P3amyiM2scY81cJKuzvVwjbaBTyd0EWJ5tDSxf
+         gtrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683471418; x=1686063418;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        d=1e100.net; s=20221208; t=1683474198; x=1686066198;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=W963wxv9DpcswAJzjNkJzwD3eg9G189aTAyjNcouCSk=;
-        b=DZiKSGEQ7X1SG7UW05SydvXfb+Kifs+izQbbTqycbUGIL9a0ecFeYtFp92DotU1JFf
-         3xloRBVzeF3unKWDLXxEnAbvMMK2GeSz4hF0V/JnAd5Gr91eNNcWJlZDk/vXVTelMHU6
-         K4iheiShZ4x+PJdR6fhp5FiwftvaYJ+LrxN8yP4o5X2fL0paQQC3VeB59wA/lPNeqSL8
-         Zq20Agz7EMG9+GfNs1/+CSVlFgYoJAzMAjvw1BZ3X7mne3lEP8zXmeghDJLqr+Tm43qa
-         eSU9xMZuSmATjkPdtlo8ybVH54Yn3EbNWH4aY+wR6uJ/MsnshxlqgyodoYi/xrNcsyXq
-         nbaw==
-X-Gm-Message-State: AC+VfDzwwzB50xREK17EVvj4Kc5+svbFA+XhML3HcEGVygaMEb+RlSHA
-        Cl1+8fapo4R9dAw4Q33Bh5c=
-X-Google-Smtp-Source: ACHHUZ6TT4qgGldoB0g81wuj5xfzguUGluprAsQRfPvshBanuMVyPjWNqezbtCQ5J6RXKobrDfdbBQ==
-X-Received: by 2002:a17:907:3fa6:b0:966:6035:c81e with SMTP id hr38-20020a1709073fa600b009666035c81emr728831ejc.52.1683471417886;
-        Sun, 07 May 2023 07:56:57 -0700 (PDT)
-Received: from carbian ([2a02:8109:aa3f:ead8::5908])
-        by smtp.gmail.com with ESMTPSA id q20-20020aa7cc14000000b0050c0d651fb1sm3488800edt.75.2023.05.07.07.56.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 May 2023 07:56:57 -0700 (PDT)
-Date:   Sun, 7 May 2023 16:56:55 +0200
-From:   Mehdi Djait <mehdi.djait.k@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     mazziesaccount@gmail.com, krzysztof.kozlowski+dt@linaro.org,
-        andriy.shevchenko@linux.intel.com, robh+dt@kernel.org,
-        lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 7/7] iio: accel: Add support for Kionix/ROHM
- KX132-1211 accelerometer
-Message-ID: <ZFe8N8EhNTOkLO0c@carbian>
-References: <cover.1682373451.git.mehdi.djait.k@gmail.com>
- <593798a44c8ba45f969b86aa29e172d59065958c.1682373451.git.mehdi.djait.k@gmail.com>
- <20230501155645.435242f0@jic23-huawei>
- <ZFVG1cyY/Ge/nXOh@carbian>
- <20230506174651.5c5740d9@jic23-huawei>
+        bh=6fr2hGT93hwoVDFpT4bMl3C3u2Y9uTIfICyFQ19Ymcs=;
+        b=IG90sQJyCCsaWVVrdj9uiOFkV9fyqL1g9+1y7LbRaT1ipjjeAScocPZC9oB+p+4wy2
+         s50tOdA2jdGu2fQA7RNy+PhkQX3lL6L7cDn65fT2MlsAdq8k39SYz2L5BKd3/QVLCFVG
+         mGL4U+4wZEXkT1qXnJI55Ja1B6MxeYAxrLmM4Z5Phv2LyCaIoQSOsYqyK2r2QJ1Sshkm
+         JCsYxQev6YuStfWs1QnrhalHaORYzXjvBJjxQ5NQE/OlmmHjWKJT0MGAyjNahuHtlifk
+         pGsmyYPd4Tkeu+wvjPGFeA8iYGwautfSAUmIaRM9+fUBUQCMFkcepP21wJf/W4vVRUc+
+         /qvA==
+X-Gm-Message-State: AC+VfDz+z1xe3HATtvaqqiTPenV4Fr6aA/ApN5PNG6SCBR4sdTABNdn0
+        Q/1Nld9Lrt1UAx+AWaIDDU5RZA==
+X-Google-Smtp-Source: ACHHUZ7JwMKlF16an5fKAAhKtWGc3XJ/p+7XO2tbUyGsNJ3hOPNiI2RbyXln+FYT7cYlhi/hsXylDg==
+X-Received: by 2002:ac2:568d:0:b0:4ef:f4ef:a1cc with SMTP id 13-20020ac2568d000000b004eff4efa1ccmr2026719lfr.14.1683474197789;
+        Sun, 07 May 2023 08:43:17 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:a0db:1f00::8a5? (dzdqv0yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::8a5])
+        by smtp.gmail.com with ESMTPSA id q2-20020ac25fc2000000b004b55ddeb7e3sm1012158lfg.309.2023.05.07.08.43.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 07 May 2023 08:43:17 -0700 (PDT)
+Message-ID: <55538c42-b348-71ab-4aff-7cccfb14f8ab@linaro.org>
+Date:   Sun, 7 May 2023 18:43:16 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230506174651.5c5740d9@jic23-huawei>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH RESEND v3 5/5] iio: adc: qcom-spmi-vadc: Propagate fw node
+ label to userspace
+Content-Language: en-GB
+To:     Marijn Suijten <marijn.suijten@somainline.org>,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+References: <20230502-iio-adc-propagate-fw-node-label-v3-0-6be5db6e6b5a@somainline.org>
+ <20230502-iio-adc-propagate-fw-node-label-v3-5-6be5db6e6b5a@somainline.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20230502-iio-adc-propagate-fw-node-label-v3-5-6be5db6e6b5a@somainline.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello Jonathan,
-
-On Sat, May 06, 2023 at 05:46:51PM +0100, Jonathan Cameron wrote:
-> On Fri, 5 May 2023 20:11:33 +0200
-> Mehdi Djait <mehdi.djait.k@gmail.com> wrote:
+On 02/05/2023 02:17, Marijn Suijten wrote:
+> Set the read_label() callback to return a friendly name provided in DT
+> (firmware), in order to make in_{therm,voltage}X_label attributes show
+> up in sysfs for userspace to consume a channel name.  This is
+> particularly useful for custom thermistors being attached to otherwise
+> generically named GPIOs, where the name is known by the board DT.
 > 
-> > Hello Jonathan,
-> > 
-> > On Mon, May 01, 2023 at 03:56:45PM +0100, Jonathan Cameron wrote:
-> > > On Tue, 25 Apr 2023 00:22:27 +0200
-> > > Mehdi Djait <mehdi.djait.k@gmail.com> wrote:
-> > >   
-> > > > Kionix KX132-1211 is a tri-axis 16-bit accelerometer that can support
-> > > > ranges from ±2G to ±16G, digital output through I²C/SPI.
-> > > > Add support for basic accelerometer features such as reading acceleration
-> > > > via IIO using raw reads, triggered buffer (data-ready), or the WMI IRQ.
-> > > > 
-> > > > Datasheet: https://kionixfs.azureedge.net/en/document/KX132-1211-Technical-Reference-Manual-Rev-5.0.pdf
-> > > > Signed-off-by: Mehdi Djait <mehdi.djait.k@gmail.com>  
-> > > 
-> > > Two tiny things inline.  
-> > >   
-> > > > +static int kx132_get_fifo_bytes(struct kx022a_data *data)
-> > > > +{
-> > > > +	struct device *dev = regmap_get_device(data->regmap);
-> > > > +	__le16 buf_status;
-> > > > +	int ret, fifo_bytes;
-> > > > +
-> > > > +	ret = regmap_bulk_read(data->regmap, data->chip_info->buf_status1,
-> > > > +			       &buf_status, sizeof(buf_status));
-> > > > +	if (ret) {
-> > > > +		dev_err(dev, "Error reading buffer status\n");
-> > > > +		return ret;
-> > > > +	}
-> > > > +
-> > > > +	fifo_bytes = le16_to_cpu(buf_status);
-> > > > +	fifo_bytes &= data->chip_info->buf_smp_lvl_mask;  
-> > > 
-> > > Slight preference for FIELD_GET() as it saves me checking the mask includes
-> > > lowest bits.  
-> > 
-> > This will mean I have the remove the chip_info member buf_smp_lvl_mask
-> > and use KX132_MASK_BUF_SMP_LVL directly because otherwise the
-> > __builtin_constant_p function will cause an error when building. 
-> > Check: https://elixir.bootlin.com/linux/latest/source/include/linux/bitfield.h#L65
-> > 
-> > I can change it to FIELD_GET() if you want to.
+> If the channel name isn't set in DT, use the datasheet_name hardcoded in
+> the driver instead.
 > 
-> Good point.  You could use le16_get_bits() though which I'm fairly sure will take
-> a variable just fine.
+> Note that this doesn't fall back to fwnode_get_name() as that provides
+> suboptimally readable names, with an @xx address suffix from board DT.
 > 
+> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+> ---
+>   drivers/iio/adc/qcom-spmi-vadc.c | 19 ++++++++++++++++++-
+>   1 file changed, 18 insertions(+), 1 deletion(-)
 
-I don't think it will work. 
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-From the commit log introducing the {type}_get_bits to <linux/bitfield.h>
-"    Field specification must be a constant; __builtin_constant_p() doesn't
-    have to be true for it, but compiler must be able to evaluate it at
-    build time.  If it cannot or if the value does not encode any bitfield,
-    the build will fail. "
+-- 
+With best wishes
+Dmitry
 
-Actually Geert Uytterhoeven tried to solve excatly this issue, but it
-seems that the patch was not accepted. 
-Check: https://lore.kernel.org/linux-iio/3a54a6703879d10f08cf0275a2a69297ebd2b1d4.1637592133.git.geert+renesas@glider.be/
-
-
-So which solution would be the best:
-
-1. Use directly KX132_MASK_BUF_SMP_LVL, the only reason I was trying to
-avoid this was to make this function generic enough for other chip
-variants
-
-2. Copy the field_get() definition from drivers/clk/at91 or from the commit
-of Geert and use it in this driver
-
-3. leave it as it is ? 
-
-4. another solution ?
-
-> >
-> > > 
-> > >   
-> > > > +
-> > > > +	return fifo_bytes;
-> > > > +}
-> > > > +
-> > > >  static int __kx022a_fifo_flush(struct iio_dev *idev, unsigned int samples,
-> > > >  			       bool irq)
-> > > >  {
-> > > > @@ -1036,6 +1157,32 @@ const struct kx022a_chip_info kx022a_chip_info = {
-> > > >  };
-> > > >  EXPORT_SYMBOL_NS_GPL(kx022a_chip_info, IIO_KX022A);
-> > > >  
-> > > > +const struct kx022a_chip_info kx132_chip_info = {
-> > > > +	.name		  = "kx132-1211",
-> > > > +	.regmap_config	  = &kx132_regmap_config,
-> > > > +	.channels	  = kx132_channels,
-> > > > +	.num_channels	  = ARRAY_SIZE(kx132_channels),
-> > > > +	.fifo_length	  = KX132_FIFO_LENGTH,
-> > > > +	.who		  = KX132_REG_WHO,
-> > > > +	.id		  = KX132_ID,
-> > > > +	.cntl		  = KX132_REG_CNTL,
-> > > > +	.cntl2		  = KX132_REG_CNTL2,
-> > > > +	.odcntl		  = KX132_REG_ODCNTL,
-> > > > +	.buf_cntl1	  = KX132_REG_BUF_CNTL1,
-> > > > +	.buf_cntl2	  = KX132_REG_BUF_CNTL2,
-> > > > +	.buf_clear	  = KX132_REG_BUF_CLEAR,
-> > > > +	.buf_status1	  = KX132_REG_BUF_STATUS_1,
-> > > > +	.buf_smp_lvl_mask = KX132_MASK_BUF_SMP_LVL,  
-> > > 
-> > > There are some things in here (typically where the define isn't used
-> > > anywhere else) where I think it would be easier to follow if the
-> > > value was listed here.  Masks and IDs for example. 
-> > >   
-> > 
-> > After removing buf_smp_lvl_mask, which members will be easier to understand (besides id) ? 
-> 
-> I haven't gone through them.  Length seems an obvious one.  It's a number not a magic value.
-> Register addresses might also be simpler if they aren't used elsewhere.
-> 
-> Not really about understanding just about a define that adds nothing if all we do is
-> assign it to a variable of the same name.
-
-Do you have a strong opinion about this ? 
-
-I would really prefer to leave it like this, for the following reasons:
-
-1. If I directly use values here, I have to do it also in the previous
-patch where I introduce the chip_info for the kx022a -> this means I
-will have defines in the h file which are not used at all -> the defines should
-be deleted -> the patch will get unnecessarily bigger. I received
-multiple comments about removing unnecessary changes and reducing of the
-patch size when possible.
-
-2. Consistency: having all the defines in one place really seems to be
-better for understanding IMO. I find the mix of values and defines in 
-the chip-info a bit confusing, e.g., I will use the direct value for 
-KX132_REG_CNTL but not for KX132_REG_CNTL2 because KX132_REG_CNTL2 is
-referenced in a regmap_range. 
-
---
-Kind Regards
-Mehdi Djait
