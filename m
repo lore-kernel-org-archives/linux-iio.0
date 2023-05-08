@@ -2,40 +2,40 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06B6AC77B7F
-	for <linux-iio@archiver.kernel.org>; Mon,  8 May 2023 07:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69955C77B75
+	for <linux-iio@archiver.kernel.org>; Mon,  8 May 2023 07:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233299AbjEHHKR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 8 May 2023 03:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
+        id S233110AbjEHHKf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 8 May 2023 03:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233445AbjEHHJ7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 May 2023 03:09:59 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8360E1A10E;
-        Mon,  8 May 2023 00:09:40 -0700 (PDT)
+        with ESMTP id S233137AbjEHHKM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 May 2023 03:10:12 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE601A130;
+        Mon,  8 May 2023 00:09:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1683529781;
-  x=1715065781;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1683529800;
+  x=1715065800;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+ZIMG+VC7U/b5stae5MoVgLWcjpmm9w30NPXlGFnKrA=;
-  b=TJ2lX0HrfhqV9WG8hpjkCttYA5HLAYs5nRCtQ+ics0ZAL8+5qLbSq0LB
-   MeE4Zk+chuaw3I6JX5+QdY1zKTd9HBRL0KyIzsvBu9OWyj9DeHA8DLxrf
-   6Hn8Sr8Z7yiQsY801tPyLC3lKyw50DAqcC9b89k+4qucbMyOxWabg7yYK
-   NylhDwoflp7NQhL20O2YAkqN51fB3b8zGe4XPpnrQL/3hZz74aXnbvFlX
-   63jTlNmlvwkn/IAhpsFaqxCnoSUttNr2XGU9MVWH0oz/gWu0vjkCKOCqT
-   7uc0l9kr/CuHqbgTfQtz0YSJF/cgbut3LAnI/WQmcuHgzxtm5oyn5J49h
-   Q==;
+  bh=hZ7xUmwwGYnij1OoqnwNTbOyyoPTefkk7jA9Vn+5Wq8=;
+  b=GG0B1i6GMo+tgbs7SPlqMu9+X0TsVNZrPElFT2uEu75Xo5ZSLxZrNJFr
+   VnPNFUkOp9XnG/UDIdLLHHVUIIYunCcCRHyL/pI1pMnhz6kvXBi+3ZB4n
+   n2pSt+m4iNKAYKfiZW+eoUwVnBkZeuQrW8mS+CCHasx1pB2YulMWWiOW2
+   Ygdtfj5QP5/eFnNX49j/dBqqvrwAA4DnEqlO3m7tT0RE4NCQ3/nq4/Mqd
+   VEzlUi3rhpFOC4WmTYg349TgRL/ft4GLnfBFR6HBh/UoI59EjagATaoJl
+   zInu955jcvQwVlC3fiuWrzvUR7a8+y1Y6bseqXMV6TE8zU6KhS5g0Wc3c
+   w==;
 From:   Astrid Rost <astrid.rost@axis.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 CC:     <kernel@axis.com>, Astrid Rost <astridr@axis.com>,
         Astrid Rost <astrid.rost@axis.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1 3/7] iio: light: vcnl4000: Add als_it for vcnl4040/4200
-Date:   Mon, 8 May 2023 09:09:21 +0200
-Message-ID: <20230508070925.2123265-4-astrid.rost@axis.com>
+Subject: [PATCH v1 5/7] iio: light: vcnl4000: Add debounce count for vcnl4040/4200
+Date:   Mon, 8 May 2023 09:09:23 +0200
+Message-ID: <20230508070925.2123265-6-astrid.rost@axis.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230508070925.2123265-1-astrid.rost@axis.com>
 References: <20230508070925.2123265-1-astrid.rost@axis.com>
@@ -46,99 +46,74 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add illumination integration time for vcnl4040 and vcnl4200.
-Add read/write attribute for illumination integration time and read
-attribute for available integration times.
+Add read/write attribute for proximity and illumination debounce-count
+and read attribute for available debounce-counts.
+The debounce-count is set in the interrupt persistence flags
+(PS_PERS and ALS_PERS). An interrupt will not be asserted if the raw
+value is not over (or lower) than the threshold for the set
+continued refresh times.
+This is supported for vcnl4040 vcnl4200.
 
 Signed-off-by: Astrid Rost <astrid.rost@axis.com>
 ---
- drivers/iio/light/vcnl4000.c | 140 ++++++++++++++++++++++++++++++++---
- 1 file changed, 129 insertions(+), 11 deletions(-)
+ drivers/iio/light/vcnl4000.c | 156 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 152 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index e14475070ac3..65b42da9ffa8 100644
+index ae06a697fbff..5c6359d1e0ba 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -80,6 +80,7 @@
- #define VCNL4000_SELF_TIMED_EN	BIT(0) /* start self-timed measurement */
- 
+@@ -84,8 +84,10 @@
  #define VCNL4040_ALS_CONF_ALS_SHUTDOWN	BIT(0)
-+#define VCNL4040_ALS_CONF_IT		GENMASK(7, 6) /* Ambient integration time */
+ #define VCNL4040_ALS_CONF_IT		GENMASK(7, 6) /* Ambient integration time */
+ #define VCNL4040_ALS_CONF_INT_EN	BIT(1) /* Ambient light Interrupt enable */
++#define VCNL4040_ALS_CONF_PERS	GENMASK(3, 2) /* Ambient interrupt persistence setting */
  #define VCNL4040_PS_CONF1_PS_SHUTDOWN	BIT(0)
  #define VCNL4040_PS_CONF2_PS_IT	GENMASK(3, 1) /* Proximity integration time */
++#define VCNL4040_CONF1_PS_PERS	GENMASK(5, 4) /* Proximity interrupt persistence setting */
  #define VCNL4040_PS_CONF2_PS_INT	GENMASK(9, 8) /* Proximity interrupt mode */
-@@ -133,6 +134,20 @@ static const int vcnl4200_ps_it_times[][2] = {
- 	{0, 864},
+ #define VCNL4040_PS_IF_AWAY		BIT(8) /* Proximity event cross low threshold */
+ #define VCNL4040_PS_IF_CLOSE		BIT(9) /* Proximity event cross high threshold */
+@@ -153,6 +155,9 @@ static const int vcnl4200_als_it_times[][2] = {
+ 	{0, 400000},
  };
  
-+static const int vcnl4040_als_it_times[][2] = {
-+	{0, 80000},
-+	{0, 160000},
-+	{0, 320000},
-+	{0, 640000},
-+};
-+
-+static const int vcnl4200_als_it_times[][2] = {
-+	{0, 50000},
-+	{0, 100000},
-+	{0, 200000},
-+	{0, 400000},
-+};
++static const int vcnl4040_als_debounce_count[] = {1, 2, 4, 8};
++static const int vcnl4040_ps_debounce_count[] = {1, 2, 3, 4};
 +
  #define VCNL4000_SLEEP_DELAY_MS	2000 /* before we enter pm_runtime_suspend */
  
  enum vcnl4000_device_ids {
-@@ -506,6 +521,80 @@ static int vcnl4000_set_pm_runtime_state(struct vcnl4000_data *data, bool on)
+@@ -675,6 +680,106 @@ static ssize_t vcnl4040_write_ps_it(struct vcnl4000_data *data, int val)
  	return ret;
  }
  
-+static int vcnl4040_read_als_it(struct vcnl4000_data *data, int *val, int *val2)
++static ssize_t vcnl4040_read_als_debounce_count(struct vcnl4000_data *data, int *val)
 +{
 +	int ret;
-+	const int(*als_it_times)[][2];
-+	int size;
-+
-+	if (data->id == VCNL4200) {
-+		als_it_times = &vcnl4200_als_it_times;
-+		size = ARRAY_SIZE(vcnl4200_als_it_times);
-+	} else {
-+		als_it_times = &vcnl4040_als_it_times;
-+		size = ARRAY_SIZE(vcnl4040_als_it_times);
-+	}
 +
 +	ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
 +	if (ret < 0)
 +		return ret;
 +
-+	ret = FIELD_GET(VCNL4040_ALS_CONF_IT, ret);
++	ret = FIELD_GET(VCNL4040_ALS_CONF_PERS, ret);
 +
-+	if (ret >= size)
++	if (ret >= ARRAY_SIZE(vcnl4200_als_it_times))
 +		return -EINVAL;
 +
-+	*val = (*als_it_times)[ret][0];
-+	*val2 = (*als_it_times)[ret][1];
++	*val = vcnl4040_als_debounce_count[ret];
 +
-+	return 0;
++	return ret;
 +}
 +
-+static ssize_t vcnl4040_write_als_it(struct vcnl4000_data *data, int val)
++static ssize_t vcnl4040_write_als_debounce_count(struct vcnl4000_data *data, int val)
 +{
 +	unsigned int i;
 +	int ret, index = -1;
 +	u16 regval;
-+	const int(*als_it_times)[][2];
-+	int size;
 +
-+	if (data->id == VCNL4200) {
-+		als_it_times = &vcnl4200_als_it_times;
-+		size = ARRAY_SIZE(vcnl4200_als_it_times);
-+	} else {
-+		als_it_times = &vcnl4040_als_it_times;
-+		size = ARRAY_SIZE(vcnl4040_als_it_times);
-+	}
-+
-+	for (i = 0; i < size; i++) {
-+		if (val == (*als_it_times)[i][1]) {
++	for (i = 0; i < ARRAY_SIZE(vcnl4040_als_debounce_count); i++) {
++		if (val == vcnl4040_als_debounce_count[i]) {
 +			index = i;
 +			break;
 +		}
@@ -147,17 +122,14 @@ index e14475070ac3..65b42da9ffa8 100644
 +	if (index < 0)
 +		return -EINVAL;
 +
-+	data->vcnl4200_al.sampling_rate = ktime_set(0, val * 1200000);
-+	data->al_scale = 12000000000 / val;
-+
 +	mutex_lock(&data->vcnl4000_lock);
 +
 +	ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
 +	if (ret < 0)
 +		goto out;
 +
-+	regval = (ret & ~VCNL4040_ALS_CONF_IT) |
-+	    FIELD_PREP(VCNL4040_ALS_CONF_IT, index);
++	regval = (ret & ~VCNL4040_ALS_CONF_PERS) |
++	    FIELD_PREP(VCNL4040_ALS_CONF_PERS, index);
 +	ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF,
 +					regval);
 +
@@ -166,90 +138,143 @@ index e14475070ac3..65b42da9ffa8 100644
 +	return ret;
 +}
 +
- static int vcnl4040_read_ps_it(struct vcnl4000_data *data, int *val, int *val2)
- {
- 	int ret;
-@@ -616,9 +705,16 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
- 		*val2 = data->al_scale;
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_CHAN_INFO_INT_TIME:
--		if (chan->type != IIO_PROXIMITY)
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			ret = vcnl4040_read_als_it(data, val, val2);
++static ssize_t vcnl4040_read_ps_debounce_count(struct vcnl4000_data *data, int *val)
++{
++	int ret;
++
++	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
++	if (ret < 0)
++		return ret;
++
++	ret = FIELD_GET(VCNL4040_CONF1_PS_PERS, ret);
++
++	if (ret >= ARRAY_SIZE(vcnl4200_ps_it_times))
++		return -EINVAL;
++
++	*val = vcnl4040_ps_debounce_count[ret];
++
++	return ret;
++}
++
++static ssize_t vcnl4040_write_ps_debounce_count(struct vcnl4000_data *data, int val)
++{
++	unsigned int i;
++	int ret, index = -1;
++	u16 regval;
++
++	for (i = 0; i < ARRAY_SIZE(vcnl4040_ps_debounce_count); i++) {
++		if (val == vcnl4040_ps_debounce_count[i]) {
++			index = i;
 +			break;
-+		case IIO_PROXIMITY:
-+			ret = vcnl4040_read_ps_it(data, val, val2);
-+			break;
-+		default:
- 			return -EINVAL;
--		ret = vcnl4040_read_ps_it(data, val, val2);
 +		}
++	}
++
++	if (index < 0)
++		return -EINVAL;
++
++	mutex_lock(&data->vcnl4000_lock);
++
++	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
++	if (ret < 0)
++		goto out;
++
++	regval = (ret & ~VCNL4040_CONF1_PS_PERS) |
++	    FIELD_PREP(VCNL4040_CONF1_PS_PERS, index);
++	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1,
++					regval);
++
++out:
++	mutex_unlock(&data->vcnl4000_lock);
++	return ret;
++}
++
+ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
+ 				struct iio_chan_spec const *chan,
+ 				int *val, int *val2, long mask)
+@@ -725,6 +830,21 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
  		if (ret < 0)
  			return ret;
  		return IIO_VAL_INT_PLUS_MICRO;
-@@ -637,9 +733,14 @@ static int vcnl4040_write_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_INT_TIME:
- 		if (val != 0)
- 			return -EINVAL;
--		if (chan->type != IIO_PROXIMITY)
++	case IIO_CHAN_INFO_DEBOUNCE_COUNT:
 +		switch (chan->type) {
 +		case IIO_LIGHT:
-+			return vcnl4040_write_als_it(data, val2);
++			ret = vcnl4040_read_als_debounce_count(data, val);
++			break;
 +		case IIO_PROXIMITY:
-+			return vcnl4040_write_ps_it(data, val2);
++			ret = vcnl4040_read_ps_debounce_count(data, val);
++			break;
 +		default:
++			return -EINVAL;
++		}
++		if (ret < 0)
++			return ret;
++		return IIO_VAL_INT;
++
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -748,6 +868,15 @@ static int vcnl4040_write_raw(struct iio_dev *indio_dev,
+ 		default:
  			return -EINVAL;
--		return vcnl4040_write_ps_it(data, val2);
+ 		}
++	case IIO_CHAN_INFO_DEBOUNCE_COUNT:
++		switch (chan->type) {
++		case IIO_LIGHT:
++			return vcnl4040_write_als_debounce_count(data, val);
++		case IIO_PROXIMITY:
++			return vcnl4040_write_ps_debounce_count(data, val);
++		default:
++			return -EINVAL;
 +		}
  	default:
  		return -EINVAL;
  	}
-@@ -654,12 +755,27 @@ static int vcnl4040_read_avail(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_INT_TIME:
--		if (data->id == VCNL4200) {
--			*vals = (int *)vcnl4200_ps_it_times;
--			*length = 2 * ARRAY_SIZE(vcnl4200_ps_it_times);
--		} else {
--			*vals = (int *)vcnl4040_ps_it_times;
--			*length = 2 * ARRAY_SIZE(vcnl4040_ps_it_times);
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			if (data->id == VCNL4200) {
-+				*vals = (int *)vcnl4200_als_it_times;
-+				*length = 2 * ARRAY_SIZE(vcnl4200_als_it_times);
-+			} else {
-+				*vals = (int *)vcnl4040_als_it_times;
-+				*length = 2 * ARRAY_SIZE(vcnl4040_als_it_times);
-+			}
-+			break;
-+		case IIO_PROXIMITY:
-+			if (data->id == VCNL4200) {
-+				*vals = (int *)vcnl4200_ps_it_times;
-+				*length = 2 * ARRAY_SIZE(vcnl4200_ps_it_times);
-+			} else {
-+				*vals = (int *)vcnl4040_ps_it_times;
-+				*length = 2 * ARRAY_SIZE(vcnl4040_ps_it_times);
-+			}
-+			break;
-+		default:
-+			return -EINVAL;
+@@ -786,6 +915,21 @@ static int vcnl4040_read_avail(struct iio_dev *indio_dev,
  		}
  		*type = IIO_VAL_INT_PLUS_MICRO;
  		return IIO_AVAIL_LIST;
-@@ -1289,7 +1405,9 @@ static const struct iio_chan_spec vcnl4040_channels[] = {
- 	{
++	case IIO_CHAN_INFO_DEBOUNCE_COUNT:
++		switch (chan->type) {
++		case IIO_LIGHT:
++			*vals = (int *)vcnl4040_als_debounce_count;
++			*length = ARRAY_SIZE(vcnl4040_als_debounce_count);
++			break;
++		case IIO_PROXIMITY:
++			*vals = (int *)vcnl4040_ps_debounce_count;
++			*length = ARRAY_SIZE(vcnl4040_ps_debounce_count);
++			break;
++		default:
++			return -EINVAL;
++		}
++		*type = IIO_VAL_INT;
++		return IIO_AVAIL_LIST;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -1499,15 +1643,19 @@ static const struct iio_chan_spec vcnl4040_channels[] = {
  		.type = IIO_LIGHT,
  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--			BIT(IIO_CHAN_INFO_SCALE),
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_INT_TIME),
-+		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME),
+ 			BIT(IIO_CHAN_INFO_SCALE) |
+-			BIT(IIO_CHAN_INFO_INT_TIME),
+-		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME),
++			BIT(IIO_CHAN_INFO_INT_TIME) |
++			BIT(IIO_CHAN_INFO_DEBOUNCE_COUNT),
++		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME) |
++			BIT(IIO_CHAN_INFO_DEBOUNCE_COUNT),
+ 		.event_spec = vcnl4000_event_spec,
+ 		.num_event_specs = ARRAY_SIZE(vcnl4000_event_spec),
  	}, {
  		.type = IIO_PROXIMITY,
  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-			BIT(IIO_CHAN_INFO_INT_TIME),
+-		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME),
++			BIT(IIO_CHAN_INFO_INT_TIME) |
++			BIT(IIO_CHAN_INFO_DEBOUNCE_COUNT),
++		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME) |
++			BIT(IIO_CHAN_INFO_DEBOUNCE_COUNT),
+ 		.ext_info = vcnl4000_ext_info,
+ 		.event_spec = vcnl4040_event_spec,
+ 		.num_event_specs = ARRAY_SIZE(vcnl4040_event_spec),
 -- 
 2.30.2
 
