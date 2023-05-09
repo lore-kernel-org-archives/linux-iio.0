@@ -2,63 +2,100 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 961CDC7EE24
-	for <linux-iio@archiver.kernel.org>; Tue,  9 May 2023 13:58:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23487C77B7C
+	for <linux-iio@archiver.kernel.org>; Tue,  9 May 2023 14:02:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235396AbjEIN6Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 May 2023 09:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43158 "EHLO
+        id S235665AbjEIOCK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 May 2023 10:02:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235650AbjEIN6P (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 May 2023 09:58:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783122D78;
-        Tue,  9 May 2023 06:58:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D40F645EA;
-        Tue,  9 May 2023 13:58:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAC32C4339E;
-        Tue,  9 May 2023 13:58:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1683640693;
-        bh=hKYOb1Y6uVSCJFo5Pe7rnYRyoRJeFAculEqB99V3fG8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EUDdRjUwCMStnBHKNgEoctZUg/8V/fPvnUrT8oHNoPqhxUIQihZMdi2rJXfqvFxDY
-         RaMbBhsVwgqTrRRfAeExMJ31+99qfUudMjrsVsufel85UGlw1NFk3HeFfrH1EezaUd
-         qt+QVZw6HO8PZosSm2CRPrhiU3mKsgvhveus3mSI=
-Date:   Tue, 9 May 2023 15:58:10 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        INV Git Commit <INV.git-commit@tdk.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH] iio: imu: inv_icm42600: fix timestamp reset
-Message-ID: <2023050924-vegan-snooper-cddc@gregkh>
-References: <20230503204410.165035-1-inv.git-commit@tdk.com>
- <20230506191017.659b5196@jic23-huawei>
- <FR3P281MB175745F6D7149F6D9F488496CE769@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
+        with ESMTP id S229550AbjEIOCJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 May 2023 10:02:09 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50CDA30E8;
+        Tue,  9 May 2023 07:01:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1683640919;
+  x=1715176919;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=2V+NUhnYRzHcs/qPV372ooVdqlg/MRqyc6ldidCg9bY=;
+  b=cnx4hZNk3RLw+BNyLhSOE8tqUSVh/j/WkCDZdqZjsxr3rmbCGd+cXg4W
+   iDvgZFZJX5K8bIAFniiwUX9Tf+bQhLpMgHVZxB+DAzCGi41tntoFgWtrc
+   KH23HCEF3pIJRNoEHNk7uTrwpCKxYuwx3zE0QfeL3yq5n9/VMp62nYL5q
+   hABKss+YF2eXu3NXfy4i37MlHx/NU7ul3j3ZNrM6K6H6FDZ7JxCoHBfvW
+   YzfUOT6R87I67L2glh5DWMh/hfYFuZUdbRU8qHUuIeXL97+hcYbMLq8xu
+   y0NJ7lUJytIi3Sx9l0vQrn+3VGuPz4CO91QqARa+4CT8w05PlHkEhVCef
+   Q==;
+From:   Astrid Rost <astrid.rost@axis.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+CC:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@axis.com>, Astrid Rost <astrid.rost@axis.com>
+Subject: [PATCH v2 1/7] iio: light: vcnl4000: Add proximity irq for vcnl4200
+Date:   Tue, 9 May 2023 16:01:47 +0200
+Message-ID: <20230509140153.3279288-2-astrid.rost@axis.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230509140153.3279288-1-astrid.rost@axis.com>
+References: <20230509140153.3279288-1-astrid.rost@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <FR3P281MB175745F6D7149F6D9F488496CE769@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, May 09, 2023 at 10:27:31AM +0000, Jean-Baptiste Maneyrol wrote:
-> Hi Jonathan,
-> 
-> the signed off is for the email address we are using for sending email to the mailing list.
+Add proximity interrupt support for vcnl4200 (similar to vcnl4040).
+Add support to configure proximity sensor interrupts and threshold
+limits. If an interrupt is detected an event will be pushed to the
+event interface.
 
-Please read the documentation for what Signed-off-by: means, it is NOT
-for email aliases, it is a legal statement.
+Signed-off-by: Astrid Rost <astrid.rost@axis.com>
+---
+ drivers/iio/light/vcnl4000.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-Please remove it when you resend.
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index 56d3963d3d66..13568454baff 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -65,6 +65,7 @@
+ #define VCNL4200_PS_DATA	0x08 /* Proximity data */
+ #define VCNL4200_AL_DATA	0x09 /* Ambient light data */
+ #define VCNL4040_INT_FLAGS	0x0b /* Interrupt register */
++#define VCNL4200_INT_FLAGS	0x0d /* Interrupt register */
+ #define VCNL4200_DEV_ID		0x0e /* Device ID, slave address and version */
+ 
+ #define VCNL4040_DEV_ID		0x0c /* Device ID and version */
+@@ -1004,8 +1005,14 @@ static irqreturn_t vcnl4040_irq_thread(int irq, void *p)
+ 	struct iio_dev *indio_dev = p;
+ 	struct vcnl4000_data *data = iio_priv(indio_dev);
+ 	int ret;
++	int reg;
+ 
+-	ret = i2c_smbus_read_word_data(data->client, VCNL4040_INT_FLAGS);
++	if (data->id == VCNL4200)
++		reg = VCNL4200_INT_FLAGS;
++	else
++		reg = VCNL4040_INT_FLAGS;
++
++	ret = i2c_smbus_read_word_data(data->client, reg);
+ 	if (ret < 0)
+ 		return IRQ_HANDLED;
+ 
+@@ -1321,9 +1328,10 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+ 		.measure_light = vcnl4200_measure_light,
+ 		.measure_proximity = vcnl4200_measure_proximity,
+ 		.set_power_state = vcnl4200_set_power_state,
+-		.channels = vcnl4000_channels,
++		.channels = vcnl4040_channels,
+ 		.num_channels = ARRAY_SIZE(vcnl4000_channels),
+-		.info = &vcnl4000_info,
++		.info = &vcnl4040_info,
++		.irq_thread = vcnl4040_irq_thread,
+ 	},
+ };
+ 
+-- 
+2.30.2
 
-thanks,
-
-greg k-h
