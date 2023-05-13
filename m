@@ -2,85 +2,92 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A1FC77B7F
-	for <linux-iio@archiver.kernel.org>; Sat, 13 May 2023 18:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E70BC77B7F
+	for <linux-iio@archiver.kernel.org>; Sat, 13 May 2023 18:34:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229799AbjEMSb2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 13 May 2023 14:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59560 "EHLO
+        id S232258AbjEMSeg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 13 May 2023 14:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbjEMSb1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 13 May 2023 14:31:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8038D1BC2
-        for <linux-iio@vger.kernel.org>; Sat, 13 May 2023 11:31:26 -0700 (PDT)
+        with ESMTP id S229506AbjEMSec (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 13 May 2023 14:34:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 355B81FDA;
+        Sat, 13 May 2023 11:34:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14D7260FD4
-        for <linux-iio@vger.kernel.org>; Sat, 13 May 2023 18:31:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C828FC433EF;
-        Sat, 13 May 2023 18:31:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D4FC61D6D;
+        Sat, 13 May 2023 18:34:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4039C433EF;
+        Sat, 13 May 2023 18:34:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1684002685;
-        bh=2xVoTsiMdwT+i8D1dcE0onp7Ad+7AxYx40NgMhwzOq8=;
+        s=k20201202; t=1684002871;
+        bh=1G6HrXzM7Id2ujGj9Oq8Pmzskf+4RRUT5zQBHJ8W0gw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=F4D4efWtasa3hYEHa0Q2XS6G4Az1yo1nEntMNMiY6wckAKQXZXnPHM4L8YH6oPjOu
-         r2vn805Sn2rVZtbAPlYSZ1XOJl9DN4960FiVptin5N7O9CChPX0BVRMsTbShXv6Jzi
-         Hw4oshw0llBrNaZOtwl1T4IVklqLJxeJQvY/SO2uucpKFhXZjRkigXLaUBwFphR5Yo
-         /Lr9l45+J/WQRHTTIIuNL1PQa4XUebYWaJ5RkKT0swzTR4ut/Ke6TXWKtWvR6ByJRS
-         41ay5yo3FAaQzMx3x9Z1paM+GKR/xgnpMKPwr+6zk+ZjqzVjdAWAzV5NHtc5P5AZdx
-         NlMrnNyktGD/g==
-Date:   Sat, 13 May 2023 19:47:26 +0100
+        b=caQnOqYsRwRdfuYAs/4x6koWVCac4R4fM8w3ZQCCG3q7t0WBUMAxfqq5BTrK2FMSZ
+         PngBF46Dn0+8zqFiC7mz83QgX26+4PgpqCW/4wewTb/6rurIrS4h1AuSaP591NfZtx
+         l1cEgVItGt5cbgQIxSwx06AMere1SDLrm1ROk5fY2hqjFODQpb5+e65uxiuj/YbD8a
+         azAG8aRxU4zOc0m6eYvgEwN1cMl1cxq1DTFw379J0CE1IvmdZKz/w/8lBcvanQ3obC
+         Db2uCOLaBFdyQ1dRXT9jKLDW2+4OGdaXTvo9Egd1qauK1/E9HEat9bX5y3i3rlsbMT
+         DUd88t1ZWQyDA==
+Date:   Sat, 13 May 2023 19:50:30 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Marek Vasut <marex@denx.de>, linux-iio@vger.kernel.org,
-        Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Benjamin Mugnier <benjamin.mugnier@foss.st.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Anup Sharma <anupnewsmail@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Maximilian Luz <luzmaximilian@gmail.com>
-Subject: Re: [PATCH] iio: dac: mcp4725: Fix i2c_master_send() return value
- handling
-Message-ID: <20230513194726.56083288@jic23-huawei>
-In-Reply-To: <20230511061521.ri6gnymsasnrpde2@pengutronix.de>
-References: <20230511004330.206942-1-marex@denx.de>
-        <20230511061521.ri6gnymsasnrpde2@pengutronix.de>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Peter Meerwald <pmeerw@pmeerw.net>, broonie@kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: temperature: Add DT bindings for
+ TMP006
+Message-ID: <20230513195030.57b7939e@jic23-huawei>
+In-Reply-To: <4d18eb55-a44c-4033-93cd-35c02cb179b3@linaro.org>
+References: <ZFvo2TIiPiMFlbXC@yoga>
+        <fc104fdd-3894-aa94-12dc-4c73b26d4159@linaro.org>
+        <ZF08pzGPyReL1uAf@yoga>
+        <4d18eb55-a44c-4033-93cd-35c02cb179b3@linaro.org>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 11 May 2023 08:15:21 +0200
-Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> wrote:
+On Fri, 12 May 2023 08:28:29 +0200
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
-> On Thu, May 11, 2023 at 02:43:30AM +0200, Marek Vasut wrote:
-> > The i2c_master_send() returns number of sent bytes on success,
-> > or negative on error. The suspend/resume callbacks expect zero
-> > on success and non-zero on error. Adapt the return value of the
-> > i2c_master_send() to the expectation of the suspend and resume
-> > callbacks, including proper validation of the return value.
-> >=20
-> > Fixes: cf35ad61aca2 ("iio: add mcp4725 I2C DAC driver")
-> > Signed-off-by: Marek Vasut <marex@denx.de> =20
->=20
-> Makes sense,
->=20
-> Reviewed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> On 11/05/2023 21:06, Anup Sharma wrote:
+> > On Thu, May 11, 2023 at 11:28:50AM +0200, Krzysztof Kozlowski wrote:  
+> >> On 10/05/2023 20:56, Anup Sharma wrote:  
+> >>> Add devicetree binding document for TMP006, IR thermopile sensor.  
+> >>
+> >> Why? Where is any user of this? DTS? Driver?
+> >>  
+> > 
+> > The support for TMP006 is available at driver/iio/temperature  
+> 
+> There is no such compatible in the kernel. If you add OF support, you
+> should change the driver.
 
-Applied to the fixes-togreg branch of iio.git and marked for
-stable inclusion
+(Very) old driver, so it uses the fallback method that i2c provides to bind to
+the compatible with the vendor id dropped via i2c_device_id entry.
+
+Having said that, I'd also prefer the addition of an explicit of_device_id table.
+As there is only one supported device in this driver should be trivial.
 
 Thanks,
 
 Jonathan
 
->=20
-> Best regards
-> Uwe
->=20
+
+> 
+> 
+> Best regards,
+> Krzysztof
+> 
 
