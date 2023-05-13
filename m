@@ -2,156 +2,110 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6413AC77B7C
-	for <linux-iio@archiver.kernel.org>; Fri, 12 May 2023 07:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75AFAC7EE25
+	for <linux-iio@archiver.kernel.org>; Sat, 13 May 2023 11:09:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240024AbjELHya (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 12 May 2023 03:54:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
+        id S237734AbjEMLJS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 13 May 2023 07:09:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240351AbjELHyJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 May 2023 03:54:09 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03907100CE;
-        Fri, 12 May 2023 00:53:51 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id 38308e7fff4ca-2ac8091351eso101835801fa.2;
-        Fri, 12 May 2023 00:53:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683878025; x=1686470025;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UamIyRZFBw0Clb1Qm1i1FDtoVxcrvBBxLqTrmWJ4kUM=;
-        b=D8Nfc850hE+XcwHJJnodIg9lQCxPABMpNE8TbL4p2gx6vCBNNWMD8mRzuXKu3uG2lT
-         f4r2EKd8yuMjEtM6VavfoemsphC2bhF5K4RGoWXRQLyl+niVwqjfRlnGj6ZxvDLQuncQ
-         qa5oK5QtZQ3gOOAEiDNccDJpahMSkHZa3c0BQ/UGwVl5sYXQnFpKp64dJoKuNwhdSy//
-         7yQIpoMWbISAjtGPlOR3pO/7Yv8cKtNV8jZP8rAxer3yrSlgXHbyDJYI5Png6/rPcBkn
-         GYP3I0sgq5Als22F3lvCfZ0c5Iqgbzo2Fi5pe84Maoq2Oek4A9xuMWa5c1a9vttTHb/r
-         Qf0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683878025; x=1686470025;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UamIyRZFBw0Clb1Qm1i1FDtoVxcrvBBxLqTrmWJ4kUM=;
-        b=HrgYkHBmww4Wmkxj06QpYj7knbbg9ZYiQUwxaop5usWRqoa+VJmjqyAVunvYct4K/I
-         XxVivNqhQ55cPtZ857MS5LG6Cv5v6DaYNCQmAITsVebAyjfGfGGle9arHfZ8l0D3vAKr
-         7UqMOLl1TUZ4urDueCAF809eY0PkdhFpU4mEGewTHmJ329sYxFCXBzjoL0QcgB3Imyaq
-         Qq7IHQf9KEAmAo4Ela1SPt61xsfC/HhgxTvC821LhawwN8FmrsMS4A3Pkurp8xjXl5wz
-         M02VLvAvWWAY41va9RpXvaS+i2KBcj/OlRmx5uIjyXLk0pdP5H8hzaO9YWnGJXYjzLfQ
-         OYXg==
-X-Gm-Message-State: AC+VfDxqBjiH+NirDAgTP93jOucNerRmUf+B9Radpshy3xeX+QLFm6LY
-        Xr3SfdBfiBi3qn6yiGhfXgc=
-X-Google-Smtp-Source: ACHHUZ5tTAE/td2qUR/2Oxfo7q0tt4popK4haev3B//DkXySakT8sBeWAwj/t8s7JKOp5UNIAK2d7A==
-X-Received: by 2002:a2e:3211:0:b0:2a8:ba15:eb6f with SMTP id y17-20020a2e3211000000b002a8ba15eb6fmr3979864ljy.6.1683878024857;
-        Fri, 12 May 2023 00:53:44 -0700 (PDT)
-Received: from fedora (62-78-225-252.bb.dnainternet.fi. [62.78.225.252])
-        by smtp.gmail.com with ESMTPSA id z12-20020a19f70c000000b004db3d57c3a8sm1383610lfe.96.2023.05.12.00.53.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 May 2023 00:53:44 -0700 (PDT)
-Date:   Fri, 12 May 2023 10:53:41 +0300
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-To:     Matti Vaittinen <mazziesaccount@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Matti Vaittinen <mazziesaccount@gmail.com>,
+        with ESMTP id S233804AbjEMLJR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 13 May 2023 07:09:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F3440E3;
+        Sat, 13 May 2023 04:09:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87CD760B73;
+        Sat, 13 May 2023 11:09:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E93D2C433D2;
+        Sat, 13 May 2023 11:09:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1683976154;
+        bh=uXFoiR1SWFtZOtGgV5o4WxStrNeNIyIJxeYxRx+a7hQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=t5xMjIXx3kXmI5AGZ+OV2hLCDwdg5B4Io7eigd84X5cC9TCmNGEWkD3eFWtpwqfsN
+         IHavtVhWBzvBtYoyMy8qruC3SpuVVoE0fQfF6XwMuzTWqNzIjRYD2Numx1NTD5MZTQ
+         PubhhDESdtazxWt29zBxdGxLLKnhefo0yeOXkqkw=
+Date:   Sat, 13 May 2023 20:04:40 +0900
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux@roeck-us.net,
+        michal.simek@amd.com, Jonathan.Cameron@huawei.com,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jean Delvare <jdelvare@suse.com>,
+        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Akhil R <akhilrajeev@nvidia.com>, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: [PATCH v3 3/3] iio: kx022a fix irq getting
-Message-ID: <b45b4b638db109c6078d243252df3a7b0485f7d5.1683875389.git.mazziesaccount@gmail.com>
-References: <cover.1683875389.git.mazziesaccount@gmail.com>
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v4 1/4] devres: Provide krealloc_array
+Message-ID: <2023051340-sinuous-darkroom-2497@gregkh>
+References: <20230509094942.396150-1-james.clark@arm.com>
+ <20230509094942.396150-2-james.clark@arm.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="6Xa8OXPmvG4fszxi"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1683875389.git.mazziesaccount@gmail.com>
+In-Reply-To: <20230509094942.396150-2-james.clark@arm.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Tue, May 09, 2023 at 10:49:38AM +0100, James Clark wrote:
+> There is no krealloc_array equivalent in devres. Users would have to
+> do their own multiplication overflow check so provide one.
+> 
+> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Signed-off-by: James Clark <james.clark@arm.com>
+> ---
+>  Documentation/driver-api/driver-model/devres.rst |  1 +
+>  include/linux/device.h                           | 11 +++++++++++
+>  2 files changed, 12 insertions(+)
+> 
+> diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
+> index 4249eb4239e0..8be086b3f829 100644
+> --- a/Documentation/driver-api/driver-model/devres.rst
+> +++ b/Documentation/driver-api/driver-model/devres.rst
+> @@ -364,6 +364,7 @@ MEM
+>    devm_kmalloc_array()
+>    devm_kmemdup()
+>    devm_krealloc()
+> +  devm_krealloc_array()
+>    devm_kstrdup()
+>    devm_kstrdup_const()
+>    devm_kvasprintf()
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 472dd24d4823..58f4f5948edb 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -223,6 +223,17 @@ static inline void *devm_kcalloc(struct device *dev,
+>  {
+>  	return devm_kmalloc_array(dev, n, size, flags | __GFP_ZERO);
+>  }
+> +static inline __realloc_size(3, 4) void * __must_check
 
---6Xa8OXPmvG4fszxi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Shouldn't you have a blank line before this one?
 
-The fwnode_irq_get_byname() was returning 0 at device-tree mapping
-error. If this occurred, the KX022A driver did abort the probe but
-errorneously directly returned the return value from
-fwnode_irq_get_byname() from probe. In case of a device-tree mapping
-error this indicated success.
+> +devm_krealloc_array(struct device *dev, void *p, size_t new_n, size_t new_size, gfp_t flags)
+> +{
+> +	size_t bytes;
+> +
+> +	if (unlikely(check_mul_overflow(new_n, new_size, &bytes)))
+> +		return NULL;
+> +
+> +	return devm_krealloc(dev, p, bytes, flags);
+> +}
 
-The fwnode_irq_get_byname() has since been fixed to not return zero on
-error so the check for fwnode_irq_get_byname() can be relaxed to only
-treat negative values as errors. This will also do decent fix even when
-backported to branches where fwnode_irq_get_byname() can still return
-zero on error because KX022A probe should later fail at IRQ requesting
-and a prober error handling should follow.
+I dislike how we have to keep copying the "real" functions (i.e.
+krealloc_array) into something like this, but I can't think of a better
+way to do it.
 
-Relax the return value check for fwnode_irq_get_byname() to only treat
-negative values as errors.
+thanks,
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <error27@gmail.com>
-Closes: https://lore.kernel.org/r/202305110245.MFxC9bUj-lkp@intel.com/
-Link: https://lore.kernel.org/r/202305110245.MFxC9bUj-lkp@intel.com/
-Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-Fixes: 7c1d1677b322 ("iio: accel: Support Kionix/ROHM KX022A accelerometer")
----
- drivers/iio/accel/kionix-kx022a.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-k=
-x022a.c
-index f98393d74666..b8636fa8eaeb 100644
---- a/drivers/iio/accel/kionix-kx022a.c
-+++ b/drivers/iio/accel/kionix-kx022a.c
-@@ -1048,7 +1048,7 @@ int kx022a_probe_internal(struct device *dev)
- 		data->ien_reg =3D KX022A_REG_INC4;
- 	} else {
- 		irq =3D fwnode_irq_get_byname(fwnode, "INT2");
--		if (irq <=3D 0)
-+		if (irq < 0)
- 			return dev_err_probe(dev, irq, "No suitable IRQ\n");
-=20
- 		data->inc_reg =3D KX022A_REG_INC5;
---=20
-2.40.1
-
-
---=20
-Matti Vaittinen, Linux device drivers
-ROHM Semiconductors, Finland SWDC
-Kiviharjunlenkki 1E
-90220 OULU
-FINLAND
-
-~~~ "I don't think so," said Rene Descartes. Just then he vanished ~~~
-Simon says - in Latin please.
-~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
-Thanks to Simon Glass for the translation =3D]=20
-
---6Xa8OXPmvG4fszxi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmRd8IQACgkQeFA3/03a
-ocVELQf+L8qn+fDoOikmGkAkEd5YHCTzMA0lR7U4izBd2okzfB0yNHNScFafCv75
-YA5yeTb8IIoUsUwyigjEZ6cNFAaIStnhTbX4zjTekhrD5NVDvWwA2coqpheAlpCc
-k3jyi+W1JftnH/z1CTpDZp2jQBn7Bounm5l+ZE/H41qGVdWsSB5upcMmfKllzpl+
-yWU+vqJu+PhRefmisl+YHVhd91/olg4V3L/etM31Qf3GoNpZMvWfPKmFwkjoz/q3
-x1X9TwTXfKi1bY1QFxWiS8MmQIogsYpm64iJF4LzuYGQl8OkP/GZ66m9kXCTcM8l
-3ChtzSsZ84w2Ha0WiW0MwjUUIxGQtA==
-=Cws9
------END PGP SIGNATURE-----
-
---6Xa8OXPmvG4fszxi--
+greg k-h
