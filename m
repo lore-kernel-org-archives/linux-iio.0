@@ -2,106 +2,88 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E779C77B7A
-	for <linux-iio@archiver.kernel.org>; Sat, 13 May 2023 18:35:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1968C7EE24
+	for <linux-iio@archiver.kernel.org>; Sat, 13 May 2023 18:35:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230443AbjEMSfJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 13 May 2023 14:35:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32922 "EHLO
+        id S229834AbjEMSf4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 13 May 2023 14:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbjEMSfH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 13 May 2023 14:35:07 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0FE01FCB
-        for <linux-iio@vger.kernel.org>; Sat, 13 May 2023 11:35:05 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-96622bca286so1702814966b.1
-        for <linux-iio@vger.kernel.org>; Sat, 13 May 2023 11:35:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1684002904; x=1686594904;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=gdtpFQqstRJ3vQRASjBOgJ5qnuinsCRYsDOrfHec77Y=;
-        b=qA/3CS9xhwjPEF75DF/vWV+L5BA6D15IADzPvrMDxWZBO2zZBXgwHiwlvrybq5C+au
-         9GhKNd6wvSbEQim/ecxv07dIb+yxxo/BX2WwYvWYZPEOIFdEPE07y8EB+0k5QPi/e1nG
-         XIe20Y/gk62SGhLaFXvlIOWdar4csSSxuDuozWRe6hbZuyvxOlzz6Amga3dBOXFtu6vv
-         UUP8ufqLOHsF9jguVFR1sDJTFSvfuCrOHx6kCXo6j/tMgZg2+DqML7w+ZQ6Tk6kS03Mv
-         9dhtN2680J1LQxXQ7IKU86yhyccYxHrFrJvtzeVcRc6MVUYVJn4p8r0hpF+Mwu8gkkPz
-         hgIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684002904; x=1686594904;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gdtpFQqstRJ3vQRASjBOgJ5qnuinsCRYsDOrfHec77Y=;
-        b=cUKIHZltWuu03z3lx3uoOm0NJ0AgSuSPb54li2cfQSjy9pzOqNcrBmI0fTNhBpvaj0
-         hvWeLarGPWUYdRaoD9foWieqA6gflpSOrp/VVqtCYBsAnS/YnDYWTjNLA+XwFny9IheV
-         rkYX+3dd6n1BxLd/0aiW1yVd363ZODWIL2IEQX9utA95l/TW+s+H1/IXqS8GcpwqW/u5
-         JUu0hr9d4ctBIkpz9wfdu7vu8qg+CaMEcbae9l/m7ca/L+PIAFeTX0C2bMmuvLFL46lk
-         RryS9y37xCmBOEAC6joo+cArwtZVVVAWX+67i0LLS9E1rCVyIBOw54LZ5l5qHMwqvTa2
-         1ntQ==
-X-Gm-Message-State: AC+VfDyR/W/lMFvSoRtpb9KH62LuQzmHHMH9fX3hBxYj05G0o9+aJVVT
-        EAQvtA4KCeI9NUr0gF7WdzBQ5Q==
-X-Google-Smtp-Source: ACHHUZ7lS3yHb3bOhLpg+8//bcoESb9TvvyfZpFniFz/1SOnr+tYtsNn3cQnvoT7TpDTZTrqzgSo0w==
-X-Received: by 2002:a17:907:1c03:b0:94e:4489:f24d with SMTP id nc3-20020a1709071c0300b0094e4489f24dmr27661968ejc.61.1684002904485;
-        Sat, 13 May 2023 11:35:04 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:ba68:e5c9:694e:c6e4? ([2a02:810d:15c0:828:ba68:e5c9:694e:c6e4])
-        by smtp.gmail.com with ESMTPSA id v9-20020a170906380900b0094e1344ddfdsm6998534ejc.34.2023.05.13.11.35.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 May 2023 11:35:03 -0700 (PDT)
-Message-ID: <ccbf7ae3-5d52-070a-ba19-3ff54e6161e8@linaro.org>
-Date:   Sat, 13 May 2023 20:35:02 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH] dt-bindings: iio: temperature: Add DT bindings for TMP006
-Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Anup Sharma <anupnewsmail@gmail.com>,
+        with ESMTP id S229449AbjEMSfz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 13 May 2023 14:35:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC6BF1FDA;
+        Sat, 13 May 2023 11:35:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A04261D73;
+        Sat, 13 May 2023 18:35:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F321DC433EF;
+        Sat, 13 May 2023 18:35:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1684002953;
+        bh=aE6/G/mkb//NAFug7MlXvXjKE/9qdYbo/KUKaSfLiX0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BWwxNNujZXEhmeJ+jNAqooMyDnIW3G851vzW4BT9kb6NiI7cmoYG0aguVFTeUJmH7
+         drCDnpNMZ227iHZ/+rR+CgTWivXBv6eqFmn7kXHMJWFfGETVBF3/viNYaNF38Cjfkw
+         kgjUT/qgyMUw6CgTCDSNYqPenzNjqi/E+vIUKcNU9i1nR5kzX1KEQ9dIe1kMb9+GC3
+         1lU2zuKmEZlauYwbrO8JqkbHgOMSjSkJpBzqovQpf95jJY49zmodKyY/BZORUyLNMY
+         8vRQCczdkJdRXWO31CEB3DB25qCjQ6WADfEm6cB2QESBxC6uo+oIO4wTdomke7U0cn
+         2NKoakOYogdwA==
+Date:   Sat, 13 May 2023 19:51:54 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Marek Vasut <marek.vasut+renesas@mailbox.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Peter Meerwald <pmeerw@pmeerw.net>, broonie@kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <ZFvo2TIiPiMFlbXC@yoga>
- <fc104fdd-3894-aa94-12dc-4c73b26d4159@linaro.org> <ZF08pzGPyReL1uAf@yoga>
- <4d18eb55-a44c-4033-93cd-35c02cb179b3@linaro.org>
- <20230513195030.57b7939e@jic23-huawei>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230513195030.57b7939e@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
+        Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: adc: renesas,rcar-gyroadc: Fix
+ adi,ad7476 compatible value
+Message-ID: <20230513195154.27ef5757@jic23-huawei>
+In-Reply-To: <6b328a3f52657c20759f3a5bb2fe033d47644ba8.1683635404.git.geert+renesas@glider.be>
+References: <6b328a3f52657c20759f3a5bb2fe033d47644ba8.1683635404.git.geert+renesas@glider.be>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 13/05/2023 20:50, Jonathan Cameron wrote:
-> On Fri, 12 May 2023 08:28:29 +0200
-> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
-> 
->> On 11/05/2023 21:06, Anup Sharma wrote:
->>> On Thu, May 11, 2023 at 11:28:50AM +0200, Krzysztof Kozlowski wrote:  
->>>> On 10/05/2023 20:56, Anup Sharma wrote:  
->>>>> Add devicetree binding document for TMP006, IR thermopile sensor.  
->>>>
->>>> Why? Where is any user of this? DTS? Driver?
->>>>  
->>>
->>> The support for TMP006 is available at driver/iio/temperature  
->>
->> There is no such compatible in the kernel. If you add OF support, you
->> should change the driver.
-> 
-> (Very) old driver, so it uses the fallback method that i2c provides to bind to
-> the compatible with the vendor id dropped via i2c_device_id entry.
+On Tue,  9 May 2023 14:34:22 +0200
+Geert Uytterhoeven <geert+renesas@glider.be> wrote:
 
-Yeah, I know it works... but is very confusing :)
-
+> The conversion to json-schema accidentally dropped the "ad" part prefix
+> from the compatible value.
 > 
-> Having said that, I'd also prefer the addition of an explicit of_device_id table.
-> As there is only one supported device in this driver should be trivial.
-Best regards,
-Krzysztof
+> Fixes: 8c41245872e206ec ("dt-bindings:iio:adc:renesas,rcar-gyroadc: txt to yaml conversion.")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+oops.
+
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  .../devicetree/bindings/iio/adc/renesas,rcar-gyroadc.yaml       | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/renesas,rcar-gyroadc.yaml b/Documentation/devicetree/bindings/iio/adc/renesas,rcar-gyroadc.yaml
+> index 1c7aee5ed3e0bfb2..36dff3250ea76fe5 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/renesas,rcar-gyroadc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/renesas,rcar-gyroadc.yaml
+> @@ -90,7 +90,7 @@ patternProperties:
+>              of the MAX chips to the GyroADC, while MISO line of each Maxim
+>              ADC connects to a shared input pin of the GyroADC.
+>          enum:
+> -          - adi,7476
+> +          - adi,ad7476
+>            - fujitsu,mb88101a
+>            - maxim,max1162
+>            - maxim,max11100
 
