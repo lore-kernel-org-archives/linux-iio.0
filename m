@@ -2,126 +2,108 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA16C77B7A
-	for <linux-iio@archiver.kernel.org>; Sat, 13 May 2023 18:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7195AC77B7A
+	for <linux-iio@archiver.kernel.org>; Sat, 13 May 2023 18:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233538AbjEMSHw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 13 May 2023 14:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46932 "EHLO
+        id S230006AbjEMSLZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 13 May 2023 14:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235216AbjEMSHj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 13 May 2023 14:07:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38181171E;
-        Sat, 13 May 2023 11:07:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C855661B84;
-        Sat, 13 May 2023 18:07:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F4ACC433EF;
-        Sat, 13 May 2023 18:07:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1684001232;
-        bh=/F+5Gn4t4lhKm49bYUfuuizxiZujuf++3EirSVYEsXU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=b9qYkrJWk2lZsb5SYLDaoYSVpNUJ1fMmsf7fR7kroIK6WBv4gz/NPwznAfAWRGDRK
-         1FmKeYWWWbUud95CWbYs8emvEA4LRTaMdCOgA0IpAm+jsN1ZHoLqX1SADMrFFbxbqZ
-         92wY4QH5jtY1fgXR41mYHx0Gznqg3a7nljGZk+7zwyrbGckYIWXt+WoQENcPxVPXui
-         Ds30n0qO/5CPvLhJgX1OF20gtRrOm5iXVl7GuRa+W9iNBhJb0ywXgF7C2Uuay6Uoyq
-         F4JBFO3IHdf0m+EKM3Eycrtb6vVkaIfeYZp96tWbblEkmPF4oj9nX/pleOp0vFV1wG
-         7xuWY+XA1+Pmw==
-Date:   Sat, 13 May 2023 19:23:13 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Matti Vaittinen <mazziesaccount@gmail.com>
-Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: bu27034: Ensure reset is written
-Message-ID: <20230513192313.57e1dd21@jic23-huawei>
-In-Reply-To: <ZFjWhbfuN5XcKty+@fedora>
-References: <ZFjWhbfuN5XcKty+@fedora>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
+        with ESMTP id S231137AbjEMSLJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 13 May 2023 14:11:09 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85BF5B88
+        for <linux-iio@vger.kernel.org>; Sat, 13 May 2023 11:10:43 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-50be0d835aaso19771615a12.3
+        for <linux-iio@vger.kernel.org>; Sat, 13 May 2023 11:10:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1684001442; x=1686593442;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=asRLFK82ncBJ7EVq/Dhl1nUHlScwu3SdKHKnttIsNYI=;
+        b=XmRywTsS7onQO/3tHnBX2wyc89syRYvSX+xFqr275wpbwv8IZEPbyhhRURubwBpqXV
+         4HEo8lvd3EASN8hUPKSGQTP2O4D1zrkCdrMgC2UsnnHjvm26LVb5a5c4R/1VVBd01RLQ
+         6npHwWs4GWuRUY9DvCHoSqy0tXqD2bGwhVbjjNsjd1/HZNXdGquihPBZdD6akmkywnIN
+         GeXA+jg3ikKDwAD90Ldg1axNDQhnxsZcSsQGW3fFtXUB2rDGHcia4ig+XyJP8MWKjMrx
+         DO8UibPa/n7WWcqN8RfZ6vU7w8MFqc8hHUY0AHgJcy7bn9FvFzCdRY4poufUHdc92sF7
+         x8IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684001442; x=1686593442;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=asRLFK82ncBJ7EVq/Dhl1nUHlScwu3SdKHKnttIsNYI=;
+        b=Z8LNidDJsEUNg+t9pjOpqIN7ZG9cBN7FRCTIWCbrjHLDs5NSUyUPjjzerWBlruEDu8
+         LDrQrVmcub5ELOQwMNYXzp7M211naoWF+2OxZJaBP1XssZwRgNJO7Gm8JqN02YEJ9/SB
+         MAAdT2kB/DbR9oJwZphIwrGUrLArP9IZ0GwNKLJFYkANlCXR8CKhY17Q+QN6JvO9WwQ9
+         3QZsbCbE6IgoxYovIIHsLcg3F24Ca4KoY+eew/R/toQvUtE99Vf89wfAt6Oq80JinHMs
+         cw6AsI5emfkyGaW+DbdEVaukLOdTW5xTEe5pisGU0kwy4iQx4eu9TkchO5ZnwR8JYG4T
+         CX3Q==
+X-Gm-Message-State: AC+VfDyaiPnFMEoFRXrmMqlXuw1VqXSbfCOnirfrudr5jVS+FHVbcHUg
+        WSsUaKCMe9gW4BMCy2Al0koW3Q==
+X-Google-Smtp-Source: ACHHUZ4PSooit252IModjMMxOmb6oJFwPUivZyt7UuYW0HsmJinDs36UhBfIbLv1Q09qUZG09GYEdg==
+X-Received: by 2002:a17:907:360a:b0:960:7643:c973 with SMTP id bk10-20020a170907360a00b009607643c973mr24289620ejc.66.1684001441875;
+        Sat, 13 May 2023 11:10:41 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:ba68:e5c9:694e:c6e4? ([2a02:810d:15c0:828:ba68:e5c9:694e:c6e4])
+        by smtp.gmail.com with ESMTPSA id k10-20020a1709063fca00b00965f4171642sm6908597ejj.125.2023.05.13.11.10.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 13 May 2023 11:10:41 -0700 (PDT)
+Message-ID: <b179185a-0aa8-e58c-4fe0-4b83396ef30e@linaro.org>
+Date:   Sat, 13 May 2023 20:10:40 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH 1/3] dt-bindings: iio: st,lsm6dsx: reference common schema
+ for mount-matrix
+Content-Language: en-US
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Conor Dooley <conor@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Daniel Campello <campello@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230507173923.263741-1-krzysztof.kozlowski@linaro.org>
+ <20230507-brutishly-underhand-48c2949eb46c@spud>
+ <20230513191355.28cdbb23@jic23-huawei>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230513191355.28cdbb23@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 8 May 2023 14:01:25 +0300
-Matti Vaittinen <mazziesaccount@gmail.com> wrote:
-
-> The reset bit must be always written to the hardware no matter what value
-> is in a cache or register. Ensure this by using regmap_write_bits()
-> instead of the regmap_update_bits(). Furthermore, the SWRESET bit may be
-> self-clearing, so mark the SYSTEM_CONTROL register volatile to guarantee
-> we do also read the right state - should we ever need to read it.
+On 13/05/2023 20:13, Jonathan Cameron wrote:
+> On Sun, 7 May 2023 22:06:56 +0100
+> Conor Dooley <conor@kernel.org> wrote:
 > 
-> Finally, writing the SWRESET bit will restore the default register
-> values. This can cause register cache to be outdated if there are any
-> register values cached.
+>> On Sun, May 07, 2023 at 07:39:21PM +0200, Krzysztof Kozlowski wrote:
+>>> Reference iio.yaml schema from dtschema to allow already used
+>>> mount-matrix property:
+>>>
+>>>   msm8953-xiaomi-daisy.dtb: imu@6a: Unevaluated properties are not allowed ('mount-matrix' was unexpected)
+>>>
+>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>  
+>>
+>> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+>>
+>> Thanks,
+>> Conor.
 > 
-> Rebuild register cache after SWRESET and use regmap_update_bits() when
-> performing the reset.
+> Krzysztof,
 > 
-> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-> Fixes: e52afbd61039 ("iio: light: ROHM BU27034 Ambient Light Sensor")
+> These look fine to me, but I guess I should wait for the
+> dt-schema patch to land before taking them?
 
-Still unclear to me if we should treat the register as volatile as hitting
-relevant bits causes a reset of the whole device anyway, but meh, it doesn't
-cause any problems and it's your driver.
+You can grab first patch independently. #2 and #3 should indeed wait a
+bit for Rob's ack. They do not have any conflicts but they will fix
+nothing without dtschema patch.
 
-Applied to the fixes-togreg branch of iio.git
-
-Thanks,
-
-Jonathan
-
-> 
-> ---
-> v3: Combined patches:
-> ("iio: bu27034: Ensure reset is written")
-> https://lore.kernel.org/lkml/ZFIw%2FKdApZe1euN8@fedora/
-> ("iio: bu27034: Reinit regmap cache after reset")
-> https://lore.kernel.org/lkml/ZFM7lE4ZuDrUTspH@fedora/
-> ---
->  drivers/iio/light/rohm-bu27034.c | 12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/light/rohm-bu27034.c b/drivers/iio/light/rohm-bu27034.c
-> index 25c9b79574a5..f85194fda6b0 100644
-> --- a/drivers/iio/light/rohm-bu27034.c
-> +++ b/drivers/iio/light/rohm-bu27034.c
-> @@ -231,6 +231,9 @@ struct bu27034_result {
->  
->  static const struct regmap_range bu27034_volatile_ranges[] = {
->  	{
-> +		.range_min = BU27034_REG_SYSTEM_CONTROL,
-> +		.range_max = BU27034_REG_SYSTEM_CONTROL,
-> +	}, {
->  		.range_min = BU27034_REG_MODE_CONTROL4,
->  		.range_max = BU27034_REG_MODE_CONTROL4,
->  	}, {
-> @@ -1272,12 +1275,19 @@ static int bu27034_chip_init(struct bu27034_data *data)
->  	int ret, sel;
->  
->  	/* Reset */
-> -	ret = regmap_update_bits(data->regmap, BU27034_REG_SYSTEM_CONTROL,
-> +	ret = regmap_write_bits(data->regmap, BU27034_REG_SYSTEM_CONTROL,
->  			   BU27034_MASK_SW_RESET, BU27034_MASK_SW_RESET);
->  	if (ret)
->  		return dev_err_probe(data->dev, ret, "Sensor reset failed\n");
->  
->  	msleep(1);
-> +
-> +	ret = regmap_reinit_cache(data->regmap, &bu27034_regmap);
-> +	if (ret) {
-> +		dev_err(data->dev, "Failed to reinit reg cache\n");
-> +		return ret;
-> +	}
-> +
->  	/*
->  	 * Read integration time here to ensure it is in regmap cache. We do
->  	 * this to speed-up the int-time acquisition in the start of the buffer
+Best regards,
+Krzysztof
 
