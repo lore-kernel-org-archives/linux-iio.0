@@ -2,211 +2,111 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 517D9C77B7F
-	for <linux-iio@archiver.kernel.org>; Wed, 17 May 2023 15:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01652C77B7F
+	for <linux-iio@archiver.kernel.org>; Wed, 17 May 2023 16:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231679AbjEQPOX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 17 May 2023 11:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43888 "EHLO
+        id S229599AbjEQQr7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 17 May 2023 12:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231715AbjEQPOV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 17 May 2023 11:14:21 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5024FCA;
-        Wed, 17 May 2023 08:14:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1684336461;
-  x=1715872461;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+L8KNBB0D7gd1reEDAmOyPhDEtIdrQZ5N7CUW+dNFx8=;
-  b=W5kRHMDWaH4BU3uty34SsO9YgfLOXfBLQFN6pSf6t63SykEbEb4QEOsB
-   u2VY+ZPqXpLz41BIajRNJ2TdyD3swcrc5BIA/rIkkOVfj50Kq+DmkCKaZ
-   ILVxdxTpI6v7gcCA5oTRjLxugpsIB3rubi4FBnn29Tx3TQzuFQ7Sun8Md
-   TiHOV38AHvLIRhyTek9OjyRT+YcLDd+lWV/hBUrWKV67o2pHUjbLmfRKf
-   TIpsjnnTeLpYrXKpVqBmp5M0nhw42E40mdOJrkCImezaMyjl3Hd/Vo7Mz
-   uLloL+07UQ2PrOQHq8MKiP9dME3dYYYU5qwDDxFSIER+UXmoPpsD5B4gs
-   w==;
-From:   Astrid Rost <astrid.rost@axis.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-CC:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel@axis.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Mathieu Othacehe <m.othacehe@gmail.com>,
-        Astrid Rost <astrid.rost@axis.com>
-Subject: [PATCH v3 6/7] iio: light: vcnl4000: Add oversampling_ratio for 4040/4200
-Date:   Wed, 17 May 2023 17:14:05 +0200
-Message-ID: <20230517151406.368219-7-astrid.rost@axis.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230517151406.368219-1-astrid.rost@axis.com>
-References: <20230517151406.368219-1-astrid.rost@axis.com>
+        with ESMTP id S229457AbjEQQr5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 17 May 2023 12:47:57 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28CDE59DC;
+        Wed, 17 May 2023 09:47:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684342076; x=1715878076;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3aGbiMN0V+5yc6Amt+Y7GgCQxqWtHVXzMieUoBpl1Y0=;
+  b=NwujApARbS7z1+LSFfGoME6jThv38EVEpbFbdRsSmpRq/iKKAQs2HeIZ
+   jJlEWubv7r4iGiwuTLAoRvQDvWLxJqRj7o/J9WXzngQy4EoBJsBFjI9fP
+   rjdNxavDWXW5CtSU2AU4CXvE46E1VGSbPUVKcaIhu2AllfO55IQEvDp/c
+   klRU9gK1V50fBPsHNXAkzXK9LcKuGS9MjHnNCNR+7Wku7Z6T6iqyuvMCF
+   kWe+DgG5JMjPI14pnwIsQ3G4My6eP10PKejM0RsYy3mD463l6zeQWwYre
+   5r1AdcPFAxjCiiWSiu3Qu9/g1ujYOThj1fqnHQWKXQuQni50baQfZV707
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10713"; a="351834340"
+X-IronPort-AV: E=Sophos;i="5.99,282,1677571200"; 
+   d="scan'208";a="351834340"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2023 09:47:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10713"; a="948338934"
+X-IronPort-AV: E=Sophos;i="5.99,282,1677571200"; 
+   d="scan'208";a="948338934"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga006.fm.intel.com with ESMTP; 17 May 2023 09:47:38 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pzKJL-0008UB-36;
+        Wed, 17 May 2023 19:47:35 +0300
+Date:   Wed, 17 May 2023 19:47:35 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>
+Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Andreas Klinger <ak@it-klinger.de>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Wolfram Sang <wsa@kernel.org>,
+        Akhil R <akhilrajeev@nvidia.com>, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        netdev@vger.kernel.org, openbmc@lists.ozlabs.org,
+        linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org
+Subject: Re: [PATCH v4 2/7] iio: mb1232: relax return value check for IRQ get
+Message-ID: <ZGUFJ5LRCzW2V0a1@smile.fi.intel.com>
+References: <cover.1684220962.git.mazziesaccount@gmail.com>
+ <429804dac3b1ea55dd233d1e2fdf94240e2f2b93.1684220962.git.mazziesaccount@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <429804dac3b1ea55dd233d1e2fdf94240e2f2b93.1684220962.git.mazziesaccount@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add the proximity multi pulse (PS_MPS) as oversampling_ratio.
-Instead of one single pulse per every defined time frame,
-one can program 2, 4, or even 8 pulses. This leads to a
-longer IRED on-time for each proximity measurement value, which
-also results in a higher detection range.
+On Tue, May 16, 2023 at 10:12:41AM +0300, Matti Vaittinen wrote:
+> fwnode_irq_get() was changed to not return 0 anymore.
+> 
+> Drop check for return value 0.
 
-Add read/write attribute for proximity oversampling-ratio and read
-attribute for available oversampling-ratio.
-This is supported for vcnl4040 and vcnl4200.
+...
 
-Signed-off-by: Astrid Rost <astrid.rost@axis.com>
----
- drivers/iio/light/vcnl4000.c | 83 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 83 insertions(+)
+> -	if (data->irqnr <= 0) {
+> +	if (data->irqnr < 0) {
+>  		/* usage of interrupt is optional */
+>  		data->irqnr = -1;
+>  	} else {
 
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index a0b99f82f8c4..631ed6aa26b2 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -60,6 +60,7 @@
- 
- #define VCNL4200_AL_CONF	0x00 /* Ambient light configuration */
- #define VCNL4200_PS_CONF1	0x03 /* Proximity configuration */
-+#define VCNL4200_PS_CONF3	0x04 /* Proximity configuration */
- #define VCNL4040_PS_THDL_LM	0x06 /* Proximity threshold low */
- #define VCNL4040_PS_THDH_LM	0x07 /* Proximity threshold high */
- #define VCNL4040_ALS_THDL_LM	0x02 /* Ambient light threshold low */
-@@ -89,6 +90,7 @@
- #define VCNL4040_PS_CONF2_PS_IT	GENMASK(3, 1) /* Proximity integration time */
- #define VCNL4040_CONF1_PS_PERS	GENMASK(5, 4) /* Proximity interrupt persistence setting */
- #define VCNL4040_PS_CONF2_PS_INT	GENMASK(9, 8) /* Proximity interrupt mode */
-+#define VCNL4040_PS_CONF3_MPS		GENMASK(6, 5) /* Proximity multi pulse number */
- #define VCNL4040_PS_IF_AWAY		BIT(8) /* Proximity event cross low threshold */
- #define VCNL4040_PS_IF_CLOSE		BIT(9) /* Proximity event cross high threshold */
- #define VCNL4040_ALS_RISING		BIT(12) /* Ambient Light cross high threshold */
-@@ -156,6 +158,7 @@ static const int vcnl4200_als_it_times[][2] = {
- };
- static const int vcnl4040_als_persistence[] = {1, 2, 4, 8};
- static const int vcnl4040_ps_persistence[] = {1, 2, 3, 4};
-+static const int vcnl4040_ps_oversampling_ratio[] = {1, 2, 4, 8};
- 
- #define VCNL4000_SLEEP_DELAY_MS	2000 /* before we enter pm_runtime_suspend */
- 
-@@ -778,6 +781,55 @@ static ssize_t vcnl4040_write_ps_period(struct vcnl4000_data *data, int val, int
- 	return ret;
- }
- 
-+static ssize_t vcnl4040_read_ps_oversampling_ratio(struct vcnl4000_data *data, int *val)
-+{
-+	int ret;
-+
-+	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF3);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = FIELD_GET(VCNL4040_PS_CONF3_MPS, ret);
-+
-+	if (ret >= ARRAY_SIZE(vcnl4040_ps_oversampling_ratio))
-+		return -EINVAL;
-+
-+	*val = vcnl4040_ps_oversampling_ratio[ret];
-+
-+	return ret;
-+}
-+
-+static ssize_t vcnl4040_write_ps_oversampling_ratio(struct vcnl4000_data *data, int val)
-+{
-+	unsigned int i;
-+	int ret, index = -1;
-+	u16 regval;
-+
-+	for (i = 0; i < ARRAY_SIZE(vcnl4040_ps_oversampling_ratio); i++) {
-+		if (val == vcnl4040_ps_oversampling_ratio[i]) {
-+			index = i;
-+			break;
-+		}
-+	}
-+
-+	if (index < 0)
-+		return -EINVAL;
-+
-+	mutex_lock(&data->vcnl4000_lock);
-+
-+	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF3);
-+	if (ret < 0)
-+		goto out;
-+
-+	regval = (ret & ~VCNL4040_PS_CONF3_MPS) |
-+	    FIELD_PREP(VCNL4040_PS_CONF3_MPS, index);
-+	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF3,
-+					regval);
-+
-+out:
-+	mutex_unlock(&data->vcnl4000_lock);
-+	return ret;
-+}
- 
- static int vcnl4000_read_raw(struct iio_dev *indio_dev,
- 				struct iio_chan_spec const *chan,
-@@ -829,6 +881,17 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
- 		if (ret < 0)
- 			return ret;
- 		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		switch (chan->type) {
-+		case IIO_PROXIMITY:
-+			ret = vcnl4040_read_ps_oversampling_ratio(data, val);
-+			if (ret < 0)
-+				return ret;
-+			return IIO_VAL_INT;
-+		default:
-+			return -EINVAL;
-+		}
-+
- 	default:
- 		return -EINVAL;
- 	}
-@@ -852,6 +915,13 @@ static int vcnl4040_write_raw(struct iio_dev *indio_dev,
- 		default:
- 			return -EINVAL;
- 		}
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		switch (chan->type) {
-+		case IIO_PROXIMITY:
-+			return vcnl4040_write_ps_oversampling_ratio(data, val);
-+		default:
-+			return -EINVAL;
-+		}
- 	default:
- 		return -EINVAL;
- 	}
-@@ -881,6 +951,16 @@ static int vcnl4040_read_avail(struct iio_dev *indio_dev,
- 		}
- 		*type = IIO_VAL_INT_PLUS_MICRO;
- 		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		switch (chan->type) {
-+		case IIO_PROXIMITY:
-+			*vals = (int *)vcnl4040_ps_oversampling_ratio;
-+			*length = ARRAY_SIZE(vcnl4040_ps_oversampling_ratio);
-+			*type = IIO_VAL_INT;
-+			return IIO_AVAIL_LIST;
-+		default:
-+			return -EINVAL;
-+		}
- 	default:
- 		return -EINVAL;
- 	}
-@@ -1649,6 +1729,9 @@ static const struct iio_chan_spec vcnl4040_channels[] = {
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 			BIT(IIO_CHAN_INFO_INT_TIME),
- 		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME),
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
-+		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME) |
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
- 		.ext_info = vcnl4000_ext_info,
- 		.event_spec = vcnl4040_event_spec,
- 		.num_event_specs = ARRAY_SIZE(vcnl4040_event_spec),
+
+After this change I'm not sure we need this branch at all, I mean that -errn is
+equal to -1 in the code (but needs to be checked for silly checks like == -1).
+
+Hence
+
+Entire excerpt can be replaced with
+
+	if (data->irqnr > 0) {
+
 -- 
-2.30.2
+With Best Regards,
+Andy Shevchenko
+
 
