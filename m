@@ -2,30 +2,30 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F04C7EE23
-	for <linux-iio@archiver.kernel.org>; Wed, 17 May 2023 15:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 517D9C77B7F
+	for <linux-iio@archiver.kernel.org>; Wed, 17 May 2023 15:14:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231738AbjEQPOX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S231679AbjEQPOX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 17 May 2023 11:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43952 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231577AbjEQPOV (ORCPT
+        with ESMTP id S231715AbjEQPOV (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 17 May 2023 11:14:21 -0400
 Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBE6FD;
-        Wed, 17 May 2023 08:14:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5024FCA;
+        Wed, 17 May 2023 08:14:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1684336459;
-  x=1715872459;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1684336461;
+  x=1715872461;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=zrkmYjY4y+8B7rrTIhm0Btn+QGlvMqEV6LBvcSnT3nI=;
-  b=WSq78ZYp6l5p7zN1H02IyCZqzp1FdFmEk4Q624iGLiX8lRetxs2oYCUK
-   9xoOfNgvvlAZIG+9OJuqWOXGZxbux9qcxrdtedjaRqOjpeCIcl5SAE6pK
-   msCb9V/N3zSXnyV8jNYXCfe0zidgHLn63nwfUXe9RfVsEKt9dbiZfeH5x
-   TMsOFdbSKqYryLBgJ7O2qdWGsRo2wxvbYCnvRBT1ED/77ZOPkbDg2U/l1
-   6IqaAE8bH2HEx8XwWRPw8Jrb0VgTm8I0mAl+tVum7kuxgu83VVO93i+4D
-   VfsNLb+D7AgGmhaKJ77irPeDk2sC10pcJhuUCcSJ9ljpRAmxCGT6QfnP9
+  bh=+L8KNBB0D7gd1reEDAmOyPhDEtIdrQZ5N7CUW+dNFx8=;
+  b=W5kRHMDWaH4BU3uty34SsO9YgfLOXfBLQFN6pSf6t63SykEbEb4QEOsB
+   u2VY+ZPqXpLz41BIajRNJ2TdyD3swcrc5BIA/rIkkOVfj50Kq+DmkCKaZ
+   ILVxdxTpI6v7gcCA5oTRjLxugpsIB3rubi4FBnn29Tx3TQzuFQ7Sun8Md
+   TiHOV38AHvLIRhyTek9OjyRT+YcLDd+lWV/hBUrWKV67o2pHUjbLmfRKf
+   TIpsjnnTeLpYrXKpVqBmp5M0nhw42E40mdOJrkCImezaMyjl3Hd/Vo7Mz
+   uLloL+07UQ2PrOQHq8MKiP9dME3dYYYU5qwDDxFSIER+UXmoPpsD5B4gs
    w==;
 From:   Astrid Rost <astrid.rost@axis.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
@@ -36,111 +36,92 @@ CC:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <u.kleine-koenig@pengutronix.de>,
         Mathieu Othacehe <m.othacehe@gmail.com>,
         Astrid Rost <astrid.rost@axis.com>
-Subject: [PATCH v3 3/7] iio: light: vcnl4000: Add als_it for vcnl4040/4200
-Date:   Wed, 17 May 2023 17:14:02 +0200
-Message-ID: <20230517151406.368219-4-astrid.rost@axis.com>
+Subject: [PATCH v3 6/7] iio: light: vcnl4000: Add oversampling_ratio for 4040/4200
+Date:   Wed, 17 May 2023 17:14:05 +0200
+Message-ID: <20230517151406.368219-7-astrid.rost@axis.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230517151406.368219-1-astrid.rost@axis.com>
 References: <20230517151406.368219-1-astrid.rost@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add illuminance integration time for vcnl4040 and vcnl4200.
-Add read/write attribute for illuminance integration time and read
-attribute for available integration times.
-Set scale and sampling rate according to the integration time.
+Add the proximity multi pulse (PS_MPS) as oversampling_ratio.
+Instead of one single pulse per every defined time frame,
+one can program 2, 4, or even 8 pulses. This leads to a
+longer IRED on-time for each proximity measurement value, which
+also results in a higher detection range.
+
+Add read/write attribute for proximity oversampling-ratio and read
+attribute for available oversampling-ratio.
+This is supported for vcnl4040 and vcnl4200.
 
 Signed-off-by: Astrid Rost <astrid.rost@axis.com>
 ---
- drivers/iio/light/vcnl4000.c | 121 ++++++++++++++++++++++++++++++++---
- 1 file changed, 113 insertions(+), 8 deletions(-)
+ drivers/iio/light/vcnl4000.c | 83 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 83 insertions(+)
 
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index ba558606d74b..8508fb197e2e 100644
+index a0b99f82f8c4..631ed6aa26b2 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -80,6 +80,7 @@
- #define VCNL4000_SELF_TIMED_EN	BIT(0) /* start self-timed measurement */
+@@ -60,6 +60,7 @@
  
- #define VCNL4040_ALS_CONF_ALS_SHUTDOWN	BIT(0)
-+#define VCNL4040_ALS_CONF_IT		GENMASK(7, 6) /* Ambient integration time */
- #define VCNL4040_PS_CONF1_PS_SHUTDOWN	BIT(0)
+ #define VCNL4200_AL_CONF	0x00 /* Ambient light configuration */
+ #define VCNL4200_PS_CONF1	0x03 /* Proximity configuration */
++#define VCNL4200_PS_CONF3	0x04 /* Proximity configuration */
+ #define VCNL4040_PS_THDL_LM	0x06 /* Proximity threshold low */
+ #define VCNL4040_PS_THDH_LM	0x07 /* Proximity threshold high */
+ #define VCNL4040_ALS_THDL_LM	0x02 /* Ambient light threshold low */
+@@ -89,6 +90,7 @@
  #define VCNL4040_PS_CONF2_PS_IT	GENMASK(3, 1) /* Proximity integration time */
+ #define VCNL4040_CONF1_PS_PERS	GENMASK(5, 4) /* Proximity interrupt persistence setting */
  #define VCNL4040_PS_CONF2_PS_INT	GENMASK(9, 8) /* Proximity interrupt mode */
-@@ -133,6 +134,20 @@ static const int vcnl4200_ps_it_times[][2] = {
- 	{0, 864},
++#define VCNL4040_PS_CONF3_MPS		GENMASK(6, 5) /* Proximity multi pulse number */
+ #define VCNL4040_PS_IF_AWAY		BIT(8) /* Proximity event cross low threshold */
+ #define VCNL4040_PS_IF_CLOSE		BIT(9) /* Proximity event cross high threshold */
+ #define VCNL4040_ALS_RISING		BIT(12) /* Ambient Light cross high threshold */
+@@ -156,6 +158,7 @@ static const int vcnl4200_als_it_times[][2] = {
  };
+ static const int vcnl4040_als_persistence[] = {1, 2, 4, 8};
+ static const int vcnl4040_ps_persistence[] = {1, 2, 3, 4};
++static const int vcnl4040_ps_oversampling_ratio[] = {1, 2, 4, 8};
  
-+static const int vcnl4040_als_it_times[][2] = {
-+	{0, 80000},
-+	{0, 160000},
-+	{0, 320000},
-+	{0, 640000},
-+};
-+
-+static const int vcnl4200_als_it_times[][2] = {
-+	{0, 50000},
-+	{0, 100000},
-+	{0, 200000},
-+	{0, 400000},
-+};
-+
  #define VCNL4000_SLEEP_DELAY_MS	2000 /* before we enter pm_runtime_suspend */
  
- enum vcnl4000_device_ids {
-@@ -177,6 +192,8 @@ struct vcnl4000_chip_spec {
- 	u8 int_reg;
- 	const int(*ps_it_times)[][2];
- 	const int num_ps_it_times;
-+	const int(*als_it_times)[][2];
-+	const int num_als_it_times;
- };
- 
- static const struct i2c_device_id vcnl4000_id[] = {
-@@ -337,7 +354,7 @@ static int vcnl4200_init(struct vcnl4000_data *data)
- 		data->vcnl4200_al.sampling_rate = ktime_set(0, 96000 * 1000);
- 		/* Default wait time is 5ms, add 20% tolerance. */
- 		data->vcnl4200_ps.sampling_rate = ktime_set(0, 6000 * 1000);
--		data->al_scale = 120000;
-+		data->al_scale = 100000;
- 		break;
- 	}
- 	mutex_init(&data->vcnl4200_al.lock);
-@@ -509,6 +526,65 @@ static int vcnl4000_set_pm_runtime_state(struct vcnl4000_data *data, bool on)
+@@ -778,6 +781,55 @@ static ssize_t vcnl4040_write_ps_period(struct vcnl4000_data *data, int val, int
  	return ret;
  }
  
-+static int vcnl4040_read_als_it(struct vcnl4000_data *data, int *val, int *val2)
++static ssize_t vcnl4040_read_ps_oversampling_ratio(struct vcnl4000_data *data, int *val)
 +{
 +	int ret;
 +
-+	ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
++	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF3);
 +	if (ret < 0)
 +		return ret;
 +
-+	ret = FIELD_GET(VCNL4040_ALS_CONF_IT, ret);
++	ret = FIELD_GET(VCNL4040_PS_CONF3_MPS, ret);
 +
-+	if (ret >= data->chip_spec->num_als_it_times)
++	if (ret >= ARRAY_SIZE(vcnl4040_ps_oversampling_ratio))
 +		return -EINVAL;
 +
-+	*val = (*data->chip_spec->als_it_times)[ret][0];
-+	*val2 = (*data->chip_spec->als_it_times)[ret][1];
++	*val = vcnl4040_ps_oversampling_ratio[ret];
 +
-+	return 0;
++	return ret;
 +}
 +
-+static ssize_t vcnl4040_write_als_it(struct vcnl4000_data *data, int val)
++static ssize_t vcnl4040_write_ps_oversampling_ratio(struct vcnl4000_data *data, int val)
 +{
 +	unsigned int i;
 +	int ret, index = -1;
 +	u16 regval;
 +
-+	for (i = 0; i < data->chip_spec->num_als_it_times; i++) {
-+		if (val == (*data->chip_spec->als_it_times)[i][1]) {
++	for (i = 0; i < ARRAY_SIZE(vcnl4040_ps_oversampling_ratio); i++) {
++		if (val == vcnl4040_ps_oversampling_ratio[i]) {
 +			index = i;
 +			break;
 +		}
@@ -149,121 +130,83 @@ index ba558606d74b..8508fb197e2e 100644
 +	if (index < 0)
 +		return -EINVAL;
 +
-+	data->vcnl4200_al.sampling_rate = ktime_set(0, val * 1200000);
-+	if (data->id == VCNL4200)
-+		/* 24000 µlux/step * 50000 µs / val  */
-+		data->al_scale = div_u64(1200000000, val);
-+	else
-+		/* 100000 µlux/step * 80000 µs / val */
-+		data->al_scale = div_u64(8000000000, val);
-+
 +	mutex_lock(&data->vcnl4000_lock);
 +
-+	ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
++	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF3);
 +	if (ret < 0)
 +		goto out;
 +
-+	regval = (ret & ~VCNL4040_ALS_CONF_IT) |
-+	    FIELD_PREP(VCNL4040_ALS_CONF_IT, index);
-+	ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF,
++	regval = (ret & ~VCNL4040_PS_CONF3_MPS) |
++	    FIELD_PREP(VCNL4040_PS_CONF3_MPS, index);
++	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF3,
 +					regval);
 +
 +out:
 +	mutex_unlock(&data->vcnl4000_lock);
 +	return ret;
 +}
-+
- static int vcnl4040_read_ps_it(struct vcnl4000_data *data, int *val, int *val2)
- {
- 	int ret;
-@@ -600,9 +676,16 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
- 		*val2 = data->al_scale;
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_CHAN_INFO_INT_TIME:
--		if (chan->type != IIO_PROXIMITY)
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			ret = vcnl4040_read_als_it(data, val, val2);
-+			break;
-+		case IIO_PROXIMITY:
-+			ret = vcnl4040_read_ps_it(data, val, val2);
-+			break;
-+		default:
- 			return -EINVAL;
--		ret = vcnl4040_read_ps_it(data, val, val2);
-+		}
+ 
+ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
+ 				struct iio_chan_spec const *chan,
+@@ -829,6 +881,17 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
  		if (ret < 0)
  			return ret;
  		return IIO_VAL_INT_PLUS_MICRO;
-@@ -621,9 +704,14 @@ static int vcnl4040_write_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_INT_TIME:
- 		if (val != 0)
- 			return -EINVAL;
--		if (chan->type != IIO_PROXIMITY)
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
 +		switch (chan->type) {
-+		case IIO_LIGHT:
-+			return vcnl4040_write_als_it(data, val2);
 +		case IIO_PROXIMITY:
-+			return vcnl4040_write_ps_it(data, val2);
++			ret = vcnl4040_read_ps_oversampling_ratio(data, val);
++			if (ret < 0)
++				return ret;
++			return IIO_VAL_INT;
 +		default:
++			return -EINVAL;
++		}
++
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -852,6 +915,13 @@ static int vcnl4040_write_raw(struct iio_dev *indio_dev,
+ 		default:
  			return -EINVAL;
--		return vcnl4040_write_ps_it(data, val2);
+ 		}
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		switch (chan->type) {
++		case IIO_PROXIMITY:
++			return vcnl4040_write_ps_oversampling_ratio(data, val);
++		default:
++			return -EINVAL;
 +		}
  	default:
  		return -EINVAL;
  	}
-@@ -638,9 +726,20 @@ static int vcnl4040_read_avail(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_INT_TIME:
--		*vals = (int *)(*data->chip_spec->ps_it_times);
-+
+@@ -881,6 +951,16 @@ static int vcnl4040_read_avail(struct iio_dev *indio_dev,
+ 		}
+ 		*type = IIO_VAL_INT_PLUS_MICRO;
+ 		return IIO_AVAIL_LIST;
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
 +		switch (chan->type) {
-+		case IIO_LIGHT:
-+			*vals = (int *)(*data->chip_spec->als_it_times);
-+			*length = 2 * data->chip_spec->num_als_it_times;
-+			break;
 +		case IIO_PROXIMITY:
-+			*vals = (int *)(*data->chip_spec->ps_it_times);
-+			*length = 2 * data->chip_spec->num_ps_it_times;
-+			break;
++			*vals = (int *)vcnl4040_ps_oversampling_ratio;
++			*length = ARRAY_SIZE(vcnl4040_ps_oversampling_ratio);
++			*type = IIO_VAL_INT;
++			return IIO_AVAIL_LIST;
 +		default:
 +			return -EINVAL;
 +		}
- 		*type = IIO_VAL_INT_PLUS_MICRO;
--		*length = 2 * data->chip_spec->num_ps_it_times;
- 		return IIO_AVAIL_LIST;
  	default:
  		return -EINVAL;
-@@ -1262,7 +1361,9 @@ static const struct iio_chan_spec vcnl4040_channels[] = {
- 	{
- 		.type = IIO_LIGHT,
+ 	}
+@@ -1649,6 +1729,9 @@ static const struct iio_chan_spec vcnl4040_channels[] = {
  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--			BIT(IIO_CHAN_INFO_SCALE),
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_INT_TIME),
-+		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME),
- 	}, {
- 		.type = IIO_PROXIMITY,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-@@ -1335,6 +1436,8 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
- 		.int_reg = VCNL4040_INT_FLAGS,
- 		.ps_it_times = &vcnl4040_ps_it_times,
- 		.num_ps_it_times = ARRAY_SIZE(vcnl4040_ps_it_times),
-+		.als_it_times = &vcnl4200_als_it_times,
-+		.num_als_it_times = ARRAY_SIZE(vcnl4200_als_it_times),
- 	},
- 	[VCNL4200] = {
- 		.prod = "VCNL4200",
-@@ -1349,6 +1452,8 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
- 		.int_reg = VCNL4200_INT_FLAGS,
- 		.ps_it_times = &vcnl4200_ps_it_times,
- 		.num_ps_it_times = ARRAY_SIZE(vcnl4200_ps_it_times),
-+		.als_it_times = &vcnl4200_als_it_times,
-+		.num_als_it_times = ARRAY_SIZE(vcnl4200_als_it_times),
- 	},
- };
- 
+ 			BIT(IIO_CHAN_INFO_INT_TIME),
+ 		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME),
++			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
++		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME) |
++			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+ 		.ext_info = vcnl4000_ext_info,
+ 		.event_spec = vcnl4040_event_spec,
+ 		.num_event_specs = ARRAY_SIZE(vcnl4040_event_spec),
 -- 
 2.30.2
 
