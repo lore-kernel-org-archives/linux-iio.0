@@ -2,31 +2,31 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0EC2C77B75
-	for <linux-iio@archiver.kernel.org>; Mon, 22 May 2023 14:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A0F1C7EE2D
+	for <linux-iio@archiver.kernel.org>; Mon, 22 May 2023 14:26:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233615AbjEVO0b (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 May 2023 10:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
+        id S233906AbjEVO0c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 May 2023 10:26:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbjEVO0a (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 May 2023 10:26:30 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3B8A9;
-        Mon, 22 May 2023 07:26:28 -0700 (PDT)
+        with ESMTP id S233665AbjEVO0b (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 May 2023 10:26:31 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA712AF;
+        Mon, 22 May 2023 07:26:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1684765588;
-  x=1716301588;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=TIezkU+fVhbGLiEyRq/icCgR1qWidT7f5ic8tmGSzO4=;
-  b=YEgGNyfY6YN20rC27LJfbLp9cF0udjHEKZSDmhjg4mQewFMwUBfZdIb0
-   ff9eEsazuyF64+O6VjCkThpGppupdsMdaBHzE8oo9c066kM2jE/GqCsIJ
-   s6eihOztGlYfhkoTnNBZ32vFG6L/QPS7458FT7F+qTetOUibGumSupk2V
-   iSDNc8Hb8NdQJwCXLktQyR0yAkrjsGOuwzgy2ty1YacDp7k2Fnajx6wyS
-   Kbjnr0I3TW1SUkMCxbJ3ymvXBL0egM6Tm6o2XGwk9TcxWwh1nsUz2pFG+
-   WQTdN1ZTd3UEYGPomPZ7pJklmgjMjuVvkQjdjilgzdjfSwXumXREMsDxD
-   w==;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1684765590;
+  x=1716301590;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nPJZvf+/HriZuPuzDeT53J79ab0ddtq6m2RdQuOV6Ms=;
+  b=cgEFusxNqGOQk2+tATcdnOsfw+wUd+2r/d0z0YdhRyfXbGRvakIa4pbN
+   bf6G7bOmKwb7nh9bxrZ49etjxK69WzNPD482sIjcpWfUY/ZZ1BLiy4XDT
+   iPhPetXVpX9CVa2XuQWDlWA7Psr/wvNnkNqpUCh2oCeXdm+R9VpGxt4l7
+   hfpz/ZhmSxjZrrcP3NYmn1E/kucKUC3qJ5KOjfelM2gcCfPAzjx2KKDrB
+   Es6r3Z3oXVxWy3QTxQ0MRPfjfxCIejapaFVeLgumadB2E1nd2MNnNVsbv
+   3/EIq/cxNGGijHItpqjDP59QB1Mvhe5cTyeqnpUcWIjJidbQWDMMNYNY/
+   A==;
 From:   Astrid Rost <astrid.rost@axis.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
@@ -36,76 +36,127 @@ CC:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <u.kleine-koenig@pengutronix.de>,
         Mathieu Othacehe <m.othacehe@gmail.com>,
         Astrid Rost <astrid.rost@axis.com>
-Subject: [PATCH v4 0/7] iio: light: vcnl4000: Add features for vncl4040/4200
-Date:   Mon, 22 May 2023 16:26:14 +0200
-Message-ID: <20230522142621.1680563-1-astrid.rost@axis.com>
+Subject: [PATCH v4 2/7] iio: light: vcnl4000: Add proximity ps_it for vcnl4200
+Date:   Mon, 22 May 2023 16:26:16 +0200
+Message-ID: <20230522142621.1680563-3-astrid.rost@axis.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230522142621.1680563-1-astrid.rost@axis.com>
+References: <20230522142621.1680563-1-astrid.rost@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add a more complete support for vncl4040 and vcnl4200, which allows to
-change the distance of proximity detection and interrupt support for the
-illuminance sensor.
+Add ps_it attributes for vcnl4200 (similar to vcnl4040).
+Add read/write attribute for proximity integration time.
+Read attribute for available proximity integration times.
+Change sampling rate depending on integration time.
 
-Proximity functionality:
-  - Interrupt support (new on vcnl4200).
+Signed-off-by: Astrid Rost <astrid.rost@axis.com>
+---
+ drivers/iio/light/vcnl4000.c | 33 ++++++++++++++++++++++++++-------
+ 1 file changed, 26 insertions(+), 7 deletions(-)
 
-Proximity reduce the amount of interrupts:
-  - Adaptable integration time (new on vcnl4200) - the sampling rate
-    changes according to this value.
-  - Period - interrupt is asserted if the value is above or
-    below a certain threshold.
-
-Proximity change the activity distance:
-  - Oversampling ratio - Amount of LED pulses per measured raw value.
-  - Calibration bias - LED current calibration of the sensor.
-
-Illuminance functionality:
-  - Interrupt support.
-
-Illuminance reduce the amount of interrupts:
-  - Adaptable integration time - the sampling rate and scale changes
-    according to this value.
-  - Period – interrupt is asserted if the value is above or
-    below a certain threshold.
-
-changes v2:
-- [PATCH v2 3/7] Fixed calculation of al_scale.
-  Fix the value of vcnl4040 according to the data-sheet.
-  Use div_u64 for the division.
-scription for the branch
-
-changes v3:
-- [PATCH v3 1-3/7] Add differences between the chips as variables in
-  chip-spec.
-- [PATCH v3 4/7] Changed commit message.
-- [PATCH v3 5/7] Use period instead of debounce time. This causes some
-  calculations as the period is a time and the chip allows to set a certain
-  amount of measurements above/below the threshold, before throwing an
-  interrupt.
-- [PATCH v3 6/7] Changed commit message.
-
-changes v4:
-- [PATCH v3 1-3/7] Fix setting correct als_it for vcnl4040.
-- [PATCH v3 5/7] Use MICRO macro.
-  Fix values greater than 1 s for the proximity period.
-
-Astrid Rost (7):
-  [PATCH v4 1/7] iio: light: vcnl4000: Add proximity irq for vcnl4200
-  [PATCH v4 2/7] iio: light: vcnl4000: Add proximity ps_it for vcnl4200
-  [PATCH v4 3/7] iio: light: vcnl4000: Add als_it for vcnl4040/4200
-  [PATCH v4 4/7] iio: light: vcnl4000: add illuminance irq vcnl4040/4200
-  [PATCH v4 5/7] iio: light: vcnl4000: Add period for vcnl4040/4200
-  [PATCH v4 6/7] iio: light: vcnl4000: Add oversampling_ratio for 4040/4200
-  [PATCH v4 7/7] iio: light: vcnl4000: Add calibration bias for 4040/4200
-
- drivers/iio/light/vcnl4000.c | 721 +++++++++++++++++++++++++++++++----
- 1 file changed, 653 insertions(+), 68 deletions(-)
-
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index 565b9c9ea470..086a493fb6e5 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -124,6 +124,15 @@ static const int vcnl4040_ps_it_times[][2] = {
+ 	{0, 800},
+ };
+ 
++static const int vcnl4200_ps_it_times[][2] = {
++	{0, 96},
++	{0, 144},
++	{0, 192},
++	{0, 384},
++	{0, 768},
++	{0, 864},
++};
++
+ #define VCNL4000_SLEEP_DELAY_MS	2000 /* before we enter pm_runtime_suspend */
+ 
+ enum vcnl4000_device_ids {
+@@ -166,6 +175,8 @@ struct vcnl4000_chip_spec {
+ 	irqreturn_t (*irq_thread)(int irq, void *priv);
+ 	irqreturn_t (*trig_buffer_func)(int irq, void *priv);
+ 	u8 int_reg;
++	const int(*ps_it_times)[][2];
++	const int num_ps_it_times;
+ };
+ 
+ static const struct i2c_device_id vcnl4000_id[] = {
+@@ -508,11 +519,11 @@ static int vcnl4040_read_ps_it(struct vcnl4000_data *data, int *val, int *val2)
+ 
+ 	ret = FIELD_GET(VCNL4040_PS_CONF2_PS_IT, ret);
+ 
+-	if (ret >= ARRAY_SIZE(vcnl4040_ps_it_times))
++	if (ret >= data->chip_spec->num_ps_it_times)
+ 		return -EINVAL;
+ 
+-	*val = vcnl4040_ps_it_times[ret][0];
+-	*val2 = vcnl4040_ps_it_times[ret][1];
++	*val = (*data->chip_spec->ps_it_times)[ret][0];
++	*val2 = (*data->chip_spec->ps_it_times)[ret][1];
+ 
+ 	return 0;
+ }
+@@ -523,8 +534,8 @@ static ssize_t vcnl4040_write_ps_it(struct vcnl4000_data *data, int val)
+ 	int ret, index = -1;
+ 	u16 regval;
+ 
+-	for (i = 0; i < ARRAY_SIZE(vcnl4040_ps_it_times); i++) {
+-		if (val == vcnl4040_ps_it_times[i][1]) {
++	for (i = 0; i < data->chip_spec->num_ps_it_times; i++) {
++		if (val == (*data->chip_spec->ps_it_times)[i][1]) {
+ 			index = i;
+ 			break;
+ 		}
+@@ -533,6 +544,8 @@ static ssize_t vcnl4040_write_ps_it(struct vcnl4000_data *data, int val)
+ 	if (index < 0)
+ 		return -EINVAL;
+ 
++	data->vcnl4200_ps.sampling_rate = ktime_set(0, val * 60000);
++
+ 	mutex_lock(&data->vcnl4000_lock);
+ 
+ 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
+@@ -620,11 +633,13 @@ static int vcnl4040_read_avail(struct iio_dev *indio_dev,
+ 			       const int **vals, int *type, int *length,
+ 			       long mask)
+ {
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_INT_TIME:
+-		*vals = (int *)vcnl4040_ps_it_times;
++		*vals = (int *)(*data->chip_spec->ps_it_times);
+ 		*type = IIO_VAL_INT_PLUS_MICRO;
+-		*length = 2 * ARRAY_SIZE(vcnl4040_ps_it_times);
++		*length = 2 * data->chip_spec->num_ps_it_times;
+ 		return IIO_AVAIL_LIST;
+ 	default:
+ 		return -EINVAL;
+@@ -1317,6 +1332,8 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+ 		.info = &vcnl4040_info,
+ 		.irq_thread = vcnl4040_irq_thread,
+ 		.int_reg = VCNL4040_INT_FLAGS,
++		.ps_it_times = &vcnl4040_ps_it_times,
++		.num_ps_it_times = ARRAY_SIZE(vcnl4040_ps_it_times),
+ 	},
+ 	[VCNL4200] = {
+ 		.prod = "VCNL4200",
+@@ -1329,6 +1346,8 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+ 		.info = &vcnl4040_info,
+ 		.irq_thread = vcnl4040_irq_thread,
+ 		.int_reg = VCNL4200_INT_FLAGS,
++		.ps_it_times = &vcnl4200_ps_it_times,
++		.num_ps_it_times = ARRAY_SIZE(vcnl4200_ps_it_times),
+ 	},
+ };
+ 
 -- 
 2.30.2
 
