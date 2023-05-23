@@ -2,255 +2,136 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE24C7EE26
-	for <linux-iio@archiver.kernel.org>; Tue, 23 May 2023 20:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99992C7EE29
+	for <linux-iio@archiver.kernel.org>; Tue, 23 May 2023 23:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238590AbjEWUmj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 May 2023 16:42:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40194 "EHLO
+        id S238579AbjEWXZH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 23 May 2023 19:25:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238431AbjEWUmh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 May 2023 16:42:37 -0400
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197DA185;
-        Tue, 23 May 2023 13:42:22 -0700 (PDT)
-Received: from [192.168.122.1] (84-115-214-73.cable.dynamic.surfer.at [84.115.214.73])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id C4414CFBBB;
-        Tue, 23 May 2023 20:41:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1684874500; bh=HFBWsBkYn2DBr6AAVznAZpdgrKhwcQeGU1Uuc9j2Tyo=;
-        h=From:Date:Subject:References:In-Reply-To:To:Cc;
-        b=aB8Kt7UZQxO2zuc5lflRIrvIhssI9kLblxslBjA+RN7je3JmR/UiM2ESFLmFIYKgC
-         BLrv3dXaEU4K6q35fSHwZQaOx5A+q4OcMPDttVs/wDBEFbp3jgR3DXTRBIFeDpYiFp
-         Q55sOyBTMP7p92bDwE5yE5VRrAfJSPx674LhSiK0=
-From:   Luca Weiss <luca@z3ntu.xyz>
-Date:   Tue, 23 May 2023 22:41:28 +0200
-Subject: [PATCH v3 1/3] arm64: dts: qcom: Add PMI632 PMIC
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230414-pmi632-v3-1-079d2cada699@z3ntu.xyz>
-References: <20230414-pmi632-v3-0-079d2cada699@z3ntu.xyz>
-In-Reply-To: <20230414-pmi632-v3-0-079d2cada699@z3ntu.xyz>
-To:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        with ESMTP id S238529AbjEWXZE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 May 2023 19:25:04 -0400
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2113.outbound.protection.outlook.com [40.107.114.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A071BF;
+        Tue, 23 May 2023 16:24:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZthFyqXmlIZELmhiTbzMdvkXctB6Sds9N3Q673/eg9hho2jpOBmkdzYDSLT08JhTTU42mMni07/0bYzi6SWjWZeP4qhfMsQuAmTZhH4BEMMmhzo2EYLajt6ebs2WECJHAz0a6daPQ+ldSqoIHmliJMLWeHxnJT5F90OmAe1F8WBy5j0Kgn8GbPJWsAkQvN+vcqPwtwtm/Qnei/XvivpqxaH1UX/x/Vzt4l6SAPsfuVpOFunTJSztMBJ7o9yzUjpMKcJLJdH+TomZJMk66i2h39GqM63qr0pByXQ/NE8Wous1eHQVbQfw0jNSZdwCacjKwWNZNIEl7N9Y1GEdrbiwuA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=e3ujJ2CwOV0bl6stQWR9eX5JT2hC/BR550BciKT3h0o=;
+ b=bBDCJbGb55MWhb3OWEIVJU3TzO49AL1Ynyp4+pgtj3w3b7PRjIWJG3E2d/m1+tHEITjLZ7Lfk4blqNdFGg3+xCUkFhERxRcqv19/nDTAPeFGYdAmqtOqEEaVDelqmeIwvbCXYaEm/N+r4+VDIfYQe8+sZIuRjcbmOQR4Nttr1dvAxZxHy2H1niGk06pn8BzDk1prHEr76TCidVgvgPQnXODWyxszDC/BCFI+OuGSRlB6LldXRvaHHE76vB3TElA/IMl7r9z6tiWbOJBjTAcLBA0kkQFiIYbOfvswX8eY8C0XMZaRQBXt8Ckw/BUr4MHeGrhwwFLqqXwdayZvfMgYSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e3ujJ2CwOV0bl6stQWR9eX5JT2hC/BR550BciKT3h0o=;
+ b=P9G4luXVJ5UALxc1hT4J51Jeycj1smWXTOPCHpXc/wQNi9OI9oPqvR9jzSSy/qG9yBNr0gdxo7jLar18B6a1fG+ROMRQTBwoB12wFafGL4inzmZN2DRTQCHXdvMfXJYPGRm4EjeLZzM0Ij66Z1N720YOi7AFbzc96PQrGs0MK8M=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+Received: from OS3PR01MB8426.jpnprd01.prod.outlook.com (2603:1096:604:194::10)
+ by OS3PR01MB7993.jpnprd01.prod.outlook.com (2603:1096:604:162::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.29; Tue, 23 May
+ 2023 23:24:35 +0000
+Received: from OS3PR01MB8426.jpnprd01.prod.outlook.com
+ ([fe80::91e7:a94f:9f75:d840]) by OS3PR01MB8426.jpnprd01.prod.outlook.com
+ ([fe80::91e7:a94f:9f75:d840%6]) with mapi id 15.20.6433.015; Tue, 23 May 2023
+ 23:24:34 +0000
+Message-ID: <87o7ma7hsj.wl-kuninori.morimoto.gx@renesas.com>
+From:   Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+To:     Herve Codina <herve.codina@bootlin.com>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Conor Dooley <conor+dt@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-doc@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>
-X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4065; i=luca@z3ntu.xyz;
- h=from:subject:message-id; bh=HFBWsBkYn2DBr6AAVznAZpdgrKhwcQeGU1Uuc9j2Tyo=;
- b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBkbST/jPJnNPzcCOq8KElAPLGfrMhiVGRehOhpa
- HyCVST7TWmJAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZG0k/wAKCRBy2EO4nU3X
- VuKyEACpa+TDToJSB3k9vfbSK0mPOS3p3K4/3lzzuNN/GV4sTKmlgw9l3FnApTzXZm0Lg8k3kPx
- eKqAuXb+sf44JFE/6kMRiMFo9brJspUqov02Rl6vbWrz6vfQcVoNC6c9IbmoH2/Q0A+0hGWOGFm
- uO6xdHOKGHaVgUXTzCpCGFcD/EJkXW0a8Vv2k2MmjCUWmoMdFAGd05mvNa6UpU9aIwCghwNLJpn
- VBhg50eaZB7yxxxGFnJb3RuS/78a/A5jb9ikk8B0VrBxVNIWFvmpCC9eEF7oLbh+4N5kaAWhjRV
- hv1UwMvya+ToF2xICEAxPVpQPWzZcr/5PRFVs+krJWfVOntEmxGXWnj1p4+q5pmR+xVtAc3w22t
- RcQDXcaVvsIsXhLoogPBxeDGNTdaScPySQNkkm6qx+FuUKxLauklx301AuYk/RRJIVeW+hCwrxI
- mHHAY+Csy+fYIWkUz6EpiJZ4Any8p63jU2nJ4jvyFYkVXwmIVkL5wNdq1qTiKM0daaQS/SwLVtf
- FOSbthPM9Ra2O/Ddi/Uddba8MNire+o0u2pqTI8O8V8a8IZCE1oen8ZoVwscZfQB0u+1qi7tkSZ
- dzTAerS9gmuQjXJn1GDpXnwrpSmiPM8rEk9uWhwD2RAEayuTkJghYQTgHdPgloNsznHREEMg0fx
- l5xdQP2ofIyuP/Q==
-X-Developer-Key: i=luca@z3ntu.xyz; a=openpgp;
- fpr=BD04DA24C971B8D587B2B8D7FAF69CF6CD2D02CD
+        linux-iio@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 8/9] ASoC: simple-card: Add missing of_node_put() in case of error
+In-Reply-To: <20230523151223.109551-9-herve.codina@bootlin.com>
+References: <20230523151223.109551-1-herve.codina@bootlin.com>
+        <20230523151223.109551-9-herve.codina@bootlin.com>
+User-Agent: Wanderlust/2.15.9 Emacs/27.1 Mule/6.0
+Content-Type: text/plain; charset=US-ASCII
+Date:   Tue, 23 May 2023 23:24:34 +0000
+X-ClientProxiedBy: TYCPR01CA0114.jpnprd01.prod.outlook.com
+ (2603:1096:405:4::30) To OS3PR01MB8426.jpnprd01.prod.outlook.com
+ (2603:1096:604:194::10)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: OS3PR01MB8426:EE_|OS3PR01MB7993:EE_
+X-MS-Office365-Filtering-Correlation-Id: 32b776fd-0b7a-4fd8-6634-08db5be4de6e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EEneGWa2XKY+1qPNfgs7COoq/EsIlvB3+LA9+zw9aVfmc1AR/UUUIs4cyspbQ/q0btbkjBYcf3kEGLUV+85gX/LTh/xQEckCe4lTgI59wrlK0w/LT8aDkY+/8u43Yd+Xm6j0CjXxcsISu8SFGXT+C0L+GQdDKO/1SSu7WVAUbU9ofZkIKZlfajhWj8oJqFZK3LIag7Ue00Jn0EUIXczQ3OQe95XmmbQFg2PgFzB/1SdJWMm0aJEo69yETqZcld6tYZ8O0ysi8vX4De9fpKkBPyH6eS85GWiC5qPs0EhGc+3hBDDyq2aR3h+x8Zs2BLsl4C0u0GeYrSzd0un1BGS/GtsBX/8KUXkjhvDovGjr5KVH3UiZ2J0dGvniThiAQ20FHn8YUXAeUhNFzY4O/Ndk9YmCjrnw0Ufh4xNvftdCmzXb/HNCG1YLA5mJldViN17vDl/tnNnU5K1DBpD7N7BCAr1D03bBJvl+fSxxTz/1QUrCS3t9cSmEqu8azykAlhZ2Ga2LQgWu1tzk3CYacYbFTROACVjCo+UJNs6NVmRYzrxtvjeGnBiqIwLBAcBg4dI4KzLh1sFESwTx4Xa4hx1JBhUYEAiTUW8TGVZ+wrEemT9tZ+2TI9d6fGc+LCgAkQsK
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB8426.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(136003)(376002)(366004)(39860400002)(451199021)(2906002)(41300700001)(316002)(4326008)(6916009)(66556008)(66476007)(66946007)(8676002)(8936002)(7416002)(5660300002)(558084003)(36756003)(86362001)(38350700002)(38100700002)(2616005)(6512007)(6506007)(26005)(186003)(6486002)(52116002)(478600001)(54906003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?y9JVDBj1Q5KqYn6QQvKBX7SNc73te29R0/n3DFXJC4e8lovzWLLar2uYHq9E?=
+ =?us-ascii?Q?YMmxzaZi7RS9v0jD0q9qE/LXEVgn4q3JtjCwjewWg/lqTxFloZYEKPnNxYAm?=
+ =?us-ascii?Q?d2F3v6OWou0QFp6cpmHmK38Ds6loRLv/7tukBVyX5SyAi9Ix55UZWLil0Cw+?=
+ =?us-ascii?Q?UjuCLnSrASYVSbifaP92yzrvs/3WT/Or5+FYulI3qdiYFMSpYakLAHKDxXgU?=
+ =?us-ascii?Q?RgmH2awNKp63ax1zZXBoDlfkvr/67mIF6qlpgZsfqrTXJxXgiPPE+IriaU3m?=
+ =?us-ascii?Q?RdMIBQg7RhZ4+jjs1dKdNt9RK5zL+cOoHGZX1e4r89MoHvVfcOjxgx2TTKyW?=
+ =?us-ascii?Q?dc+2xzIi0pnUSsJkgKlyrdI+G24CWEFP+HEfPQFxuVavazVPMmK17hc9Zdrp?=
+ =?us-ascii?Q?2bJQ9s93cBCFEv/10DF+cdsCdgSo8/pXyFw5rdY3xKdCaJhprNnSMUAzacS7?=
+ =?us-ascii?Q?jatXTp2pyx56D24EAosb1yLbtmZw/VIdq3MPE97Ln1/TQLQ1eatIDmZwg3p4?=
+ =?us-ascii?Q?KoEq5ANGSDpPas2mdY+p52q7TWGIcLK5DQ4csHd3v2xMJs2GcCsFlofL/o5M?=
+ =?us-ascii?Q?nT/64Rq9vEcVZJVlpFGUXg4ll9eDjny40ukLuISpJD7mU1tc6qrO0LI83PUW?=
+ =?us-ascii?Q?xUl7QVBC7BTnFCYzoY3vn8qbHr53N0e58rq+/coC7D0ZbdjGoDYBK+26JtrB?=
+ =?us-ascii?Q?KjkLZNzfQbsuKLxC5r8b/zUmQ9NZw80mRibP7vLC6duz2L+BqQ9NFRPMORxp?=
+ =?us-ascii?Q?Yc1LVvBQhkoOq/r90xTDwg9buYPdBm00PlyIHG/Fksy5Akj8of25MKzJoTMy?=
+ =?us-ascii?Q?FPxSWi/0e7FxZ4JN+Fa2h7O/7sLfqRsT67G82G4qc21MOIYr+8u1dpsGADO2?=
+ =?us-ascii?Q?A7HD/xEa0PbxLQW9MfprntlHF6QQ1ck2CZ1FXkFAZQG5JDcZ0XLMW5JMCSCR?=
+ =?us-ascii?Q?peT67y2+tT7CDJUDheXGvf6UGprXBldhcE0GpcNEn0hwoz/M0v80U+deGj7W?=
+ =?us-ascii?Q?/PcZ3XFpXys8PJX3U6c2Y5bY0xY2x+Y888LyDBOPu37U+3Esqm3XplVCyFFI?=
+ =?us-ascii?Q?4jh9eNl0XXUArWM73Tt+ZXXtO+wjCeAQa7k36QysuH1Tiw3eUCFsn7DgcNT/?=
+ =?us-ascii?Q?Pm5jG34ihgnLHv5aSrnEjS60hBJZK6bHEQF7Xe6Kk7L59/Hb4GX8ikbebMIU?=
+ =?us-ascii?Q?NS4Y5I4+LeqjEhpCdjy4sJ5Brv0ZefmRnE5wWj6qe/ZJqAAZtcvFQgK6fwSP?=
+ =?us-ascii?Q?xrQjpaqom7KtoXNfPj8mJYubbJmlymemYwQBPOwTcZ44PtL/Q2xg+Ry6JaLt?=
+ =?us-ascii?Q?4lB8wWUfUluQXmZzZ8tvp819FflhlYEcKPbNFwmSG8Tp28A1y755q7lV4Glr?=
+ =?us-ascii?Q?TUrvlyZpuO/BbDPhn5LEEefp3IFeOqZ1DVQlQh0lQPGrOkINzhNukhyD2pv8?=
+ =?us-ascii?Q?b7EjeTgACeKQ3M/kaP6BsdjxiclLWxODhOgyGGUr3G5ZcPYWl7FIm2wgRQvM?=
+ =?us-ascii?Q?n5n4X6nmyYassuFTy+lg/bBFVVoW44XIfiuj5n476mF4/y+SYS4A7QubCITy?=
+ =?us-ascii?Q?ECOOEs7Z77L8H6T9GRLYkN8CTW1oqs8wCP0PAV8QcWnWVB/S58kWKe8ljI6J?=
+ =?us-ascii?Q?Rn2uIhePP1iI3VF46vj96cM=3D?=
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 32b776fd-0b7a-4fd8-6634-08db5be4de6e
+X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB8426.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2023 23:24:34.7610
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4/JczdHsbdLXdcIHnXohekdCaJommI9t0oxGgVIhTSFxBbjKk8IFr8yfF8dwZLe3P6FzxxmbZ+Mpc3fVXeLEoQg44aiM5AjKOn4imelUxXYtR9ykk6DNu9Hd4CPkFg1v
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3PR01MB7993
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The PMI632, commonly found on SoCs with SDM632 has various standard
-functions like ADC, GPIOs, LPG and more.
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+Hi
+
+> In the error path, a of_node_put() for platform is missing.
+> Just add it.
+> 
+> Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+> ---
+
+Acked-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+
+Thank you for your help !!
+
+Best regards
 ---
- arch/arm64/boot/dts/qcom/pmi632.dtsi | 165 +++++++++++++++++++++++++++++++++++
- 1 file changed, 165 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/pmi632.dtsi b/arch/arm64/boot/dts/qcom/pmi632.dtsi
-new file mode 100644
-index 000000000000..4eb79e0ce40a
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/pmi632.dtsi
-@@ -0,0 +1,165 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+/*
-+ * Copyright (C) 2023 Luca Weiss <luca@z3ntu.xyz>
-+ */
-+
-+#include <dt-bindings/iio/qcom,spmi-vadc.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/spmi/spmi.h>
-+
-+/ {
-+	thermal-zones {
-+		pmi632-thermal {
-+			polling-delay-passive = <100>;
-+			polling-delay = <0>;
-+
-+			thermal-sensors = <&pmi632_temp>;
-+
-+			trips {
-+				trip0 {
-+					temperature = <95000>;
-+					hysteresis = <0>;
-+					type = "passive";
-+				};
-+
-+				trip1 {
-+					temperature = <115000>;
-+					hysteresis = <0>;
-+					type = "hot";
-+				};
-+
-+				trip2 {
-+					temperature = <125000>;
-+					hysteresis = <0>;
-+					type = "critical";
-+				};
-+			};
-+		};
-+	};
-+};
-+
-+&spmi_bus {
-+	pmic@2 {
-+		compatible = "qcom,pmi632", "qcom,spmi-pmic";
-+		reg = <0x2 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		pmi632_temp: temp-alarm@2400 {
-+			compatible = "qcom,spmi-temp-alarm";
-+			reg = <0x2400>;
-+			interrupts = <0x2 0x24 0x0 IRQ_TYPE_EDGE_BOTH>;
-+			#thermal-sensor-cells = <0>;
-+		};
-+
-+		pmi632_adc: adc@3100 {
-+			compatible = "qcom,spmi-adc5";
-+			reg = <0x3100>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			#io-channel-cells = <1>;
-+			interrupts = <0x2 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
-+
-+			channel@0 {
-+				reg = <ADC5_REF_GND>;
-+				qcom,pre-scaling = <1 1>;
-+				label = "ref_gnd";
-+			};
-+
-+			channel@1 {
-+				reg = <ADC5_1P25VREF>;
-+				qcom,pre-scaling = <1 1>;
-+				label = "vref_1p25";
-+			};
-+
-+			channel@6 {
-+				reg = <ADC5_DIE_TEMP>;
-+				qcom,pre-scaling = <1 1>;
-+				label = "die_temp";
-+			};
-+
-+			channel@7 {
-+				reg = <ADC5_USB_IN_I>;
-+				qcom,pre-scaling = <1 1>;
-+				label = "usb_in_i_uv";
-+			};
-+
-+			channel@8 {
-+				reg = <ADC5_USB_IN_V_16>;
-+				qcom,pre-scaling = <1 16>;
-+				label = "usb_in_v_div_16";
-+			};
-+
-+			channel@9 {
-+				reg = <ADC5_CHG_TEMP>;
-+				qcom,pre-scaling = <1 1>;
-+				label = "chg_temp";
-+			};
-+
-+			channel@4b {
-+				reg = <ADC5_BAT_ID_100K_PU>;
-+				qcom,hw-settle-time = <200>;
-+				qcom,pre-scaling = <1 1>;
-+				qcom,ratiometric;
-+				label = "bat_id";
-+			};
-+
-+			channel@83 {
-+				reg = <ADC5_VPH_PWR>;
-+				qcom,pre-scaling = <1 3>;
-+				label = "vph_pwr";
-+			};
-+
-+			channel@84 {
-+				reg = <ADC5_VBAT_SNS>;
-+				qcom,pre-scaling = <1 3>;
-+				label = "vbat_sns";
-+			};
-+		};
-+
-+		pmi632_adc_tm: adc-tm@3500 {
-+			compatible = "qcom,spmi-adc-tm5";
-+			reg = <0x3500>;
-+			interrupts = <0x2 0x35 0x0 IRQ_TYPE_EDGE_RISING>;
-+			#thermal-sensor-cells = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		pmi632_sdam_7: nvram@b600 {
-+			compatible = "qcom,spmi-sdam";
-+			reg = <0xb600>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0 0xb600 0x100>;
-+		};
-+
-+		pmi632_gpios: gpio@c000 {
-+			compatible = "qcom,pmi632-gpio", "qcom,spmi-gpio";
-+			reg = <0xc000>;
-+			gpio-controller;
-+			gpio-ranges = <&pmi632_gpios 0 0 8>;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
-+	};
-+
-+	pmic@3 {
-+		compatible = "qcom,pmi632", "qcom,spmi-pmic";
-+		reg = <0x3 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		pmi632_lpg: pwm {
-+			compatible = "qcom,pmi632-lpg";
-+
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			#pwm-cells = <2>;
-+
-+			status = "disabled";
-+		};
-+	};
-+};
-
--- 
-2.40.1
-
+Kuninori Morimoto
