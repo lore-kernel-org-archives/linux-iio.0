@@ -2,56 +2,96 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1546DC77B7C
-	for <linux-iio@archiver.kernel.org>; Sun, 28 May 2023 19:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A1AC77B7C
+	for <linux-iio@archiver.kernel.org>; Sun, 28 May 2023 19:06:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbjE1TFT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 28 May 2023 15:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60208 "EHLO
+        id S229628AbjE1TGY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 28 May 2023 15:06:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbjE1TFS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 May 2023 15:05:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02206C4
-        for <linux-iio@vger.kernel.org>; Sun, 28 May 2023 12:05:17 -0700 (PDT)
+        with ESMTP id S229566AbjE1TGX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 May 2023 15:06:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00B9A0;
+        Sun, 28 May 2023 12:06:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88F29618C5
-        for <linux-iio@vger.kernel.org>; Sun, 28 May 2023 19:05:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 842DFC433A4;
-        Sun, 28 May 2023 19:05:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1685300717;
-        bh=a92p2VDbTvaTkbP5pCP7jp8gqsCGylVmJwMzCS48/sE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=b7pGXFl06d/UZsx6vXmVTuR4fm+KH3ElfsLiBwLfDuQBvDdpaW1qRLV8Q41G5eirI
-         z3M5DKhKA7E+I/Mgz9pcrswTkfikLhhMlaBeC2ScZ073J9xQciBWVNhrOq4unPI2pS
-         YbwZwynEPXj25w+zHKieyvQqYEFjVTh/vKOHc5Xc=
-Date:   Sun, 28 May 2023 20:04:40 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PULL] 1st set of IIO fixes for the 6.4 cycle.
-Message-ID: <2023052832-contact-reunite-4a85@gregkh>
-References: <20230528200811.11b15e04@jic23-huawei>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36E2D618CE;
+        Sun, 28 May 2023 19:06:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 612FDC433EF;
+        Sun, 28 May 2023 19:06:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1685300781;
+        bh=OIuqp59lUf40kaYvD5eE2Yil+YmjWeHlLRKmLGFOo0E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fRe9TjHnppIgO9QmpzpjnIcadDMEMRiXdLsyWUsFe+g+1jafeQ9n0OOZYbUXyGiGV
+         6L/FJqOUiRCpdyYk7HPUZXAIiky+LOQUF4T+gcA8vHs+vyj7K8lnabgN75OhXHH/k5
+         tvECNpOdoSyKOFAQqYLMzGu+pNTxlX7D4ghfWlqgUSCE2W5gbFFYkGTQjK29yw0LZ3
+         4JjnCUBJ3PcTSZHRdaW+XpYoxnHwFjImPgRA/Ji/UPVx/RRvb0/rSVDVwGsXgBniCj
+         6uiwjS+azB15JTSiW6qQkx3jt4keDRpTCxvfJoPS7kSuWDCXR3NfMh44kHQNOHGYez
+         hE7ZVWXu62h4A==
+Date:   Sun, 28 May 2023 20:22:39 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Conor Dooley <conor@kernel.org>
+Cc:     Anup Sharma <anupnewsmail@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        u.kleine-koenig@pengutronix.de, andriy.shevchenko@linux.intel.com,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/2] Add dt-binding support for ti tmp006
+Message-ID: <20230528202239.6aebd407@jic23-huawei>
+In-Reply-To: <20230520-context-emblaze-2456dbeb2414@spud>
+References: <cover.1684579603.git.anupnewsmail@gmail.com>
+        <20230520162002.7aba7c04@jic23-huawei>
+        <20230520-context-emblaze-2456dbeb2414@spud>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230528200811.11b15e04@jic23-huawei>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, May 28, 2023 at 08:08:11PM +0100, Jonathan Cameron wrote:
-> The following changes since commit ac9a78681b921877518763ba0e89202254349d1b:
-> 
->   Linux 6.4-rc1 (2023-05-07 13:34:35 -0700)
-> 
-> are available in the Git repository at:
-> 
->   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-6.4a
+On Sat, 20 May 2023 23:32:03 +0100
+Conor Dooley <conor@kernel.org> wrote:
 
-Pulled and pushed out, thanks.
+> On Sat, May 20, 2023 at 04:20:02PM +0100, Jonathan Cameron wrote:
+> > On Sat, 20 May 2023 16:21:50 +0530
+> > Anup Sharma <anupnewsmail@gmail.com> wrote:
+> >   
+> > > These patches introduce device tree binding support and
+> > > add an of_device_id table entry to the driver.
+> > > 
+> > > Changes in v2:
+> > > 	- Keep the exsisting MODULE_DEVICE_TABLE entry.
+> > > 	- Removed the inner comma in of_device_id.
+> > > 	- Order the included header to improve code organization.
+> > > 	- Adding missing semicolon to fix syntax error detected
+> > > 	  using dt_binding_check.
+> > > 	  
+> > LGTM - I'll leave them a little while though for others to comment before
+> > picking them up.  
+> 
+> It may be a wee bit before you here from Krzysztof, but the binding
+> check issues have been fixed, as have the things he pointed out in the
+> original submission AFAICT.
+> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+> 
 
-greg k-h
+Thanks!
+
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to have their fun.
+
+Thanks,
+
+Jonathan
+
+> Thanks,
+> Conor.
+
