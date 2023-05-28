@@ -2,337 +2,138 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 151F9C7EE23
-	for <linux-iio@archiver.kernel.org>; Sun, 28 May 2023 22:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C7C4C7EE23
+	for <linux-iio@archiver.kernel.org>; Sun, 28 May 2023 22:35:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229679AbjE1W2y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 28 May 2023 18:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49502 "EHLO
+        id S229645AbjE1Wfv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 28 May 2023 18:35:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbjE1W2y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 May 2023 18:28:54 -0400
-Received: from fgw22-7.mail.saunalahti.fi (fgw22-7.mail.saunalahti.fi [62.142.5.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC40BB
-        for <linux-iio@vger.kernel.org>; Sun, 28 May 2023 15:28:51 -0700 (PDT)
+        with ESMTP id S229597AbjE1Wfu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 May 2023 18:35:50 -0400
+Received: from fgw23-7.mail.saunalahti.fi (fgw23-7.mail.saunalahti.fi [62.142.5.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824ABB9
+        for <linux-iio@vger.kernel.org>; Sun, 28 May 2023 15:35:49 -0700 (PDT)
 Received: from localhost (88-113-26-95.elisa-laajakaista.fi [88.113.26.95])
-        by fgw22.mail.saunalahti.fi (Halon) with ESMTP
-        id 0366b633-fda7-11ed-a9de-005056bdf889;
-        Mon, 29 May 2023 01:28:48 +0300 (EEST)
+        by fgw23.mail.saunalahti.fi (Halon) with ESMTP
+        id fd17a03d-fda7-11ed-b972-005056bdfda7;
+        Mon, 29 May 2023 01:35:47 +0300 (EEST)
 From:   andy.shevchenko@gmail.com
-Date:   Mon, 29 May 2023 01:28:47 +0300
-To:     Andreas Klinger <ak@it-klinger.de>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
+Date:   Mon, 29 May 2023 01:35:46 +0300
+To:     Herve Codina <herve.codina@bootlin.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Angel Iglesias <ang.iglesiasg@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/3] iio: pressure: Honeywell mprls0025pa pressure
- sensor
-Message-ID: <ZHPVn4xzErSZfqVy@surfacebook>
-References: <ZGNpZM137jF5yzie@arbad>
- <ZGNp3SqyOJeEcLsj@arbad>
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v4 2/3] iio: potentiometer: Add support for the Renesas
+ X9250 potentiometers
+Message-ID: <ZHPXQiD7GlBhBiCx@surfacebook>
+References: <20230509160852.158101-1-herve.codina@bootlin.com>
+ <20230509160852.158101-3-herve.codina@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZGNp3SqyOJeEcLsj@arbad>
+In-Reply-To: <20230509160852.158101-3-herve.codina@bootlin.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Tue, May 16, 2023 at 01:32:45PM +0200, Andreas Klinger kirjoitti:
-> Honeywell mprls0025pa is a series of pressure sensors.
-> 
-> Add initial I2C support.
-> 
-> Note:
-> - IIO buffered mode is supported
-> - SPI mode is not supported
+Tue, May 09, 2023 at 06:08:51PM +0200, Herve Codina kirjoitti:
+> The Renesas X9250 integrates four digitally controlled potentiometers.
+> On each potentiometer, the X9250T has a 100 kOhms total resistance and
+> the X9250U has a 50 kOhms total resistance.
 
 ...
 
-> + * Data sheet:
+> +/*
 
-Datasheet
+> + *
 
-> + *  https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/
-> + *    products/sensors/pressure-sensors/board-mount-pressure-sensors/
-> + *    micropressure-mpr-series/documents/
-> + *    sps-siot-mpr-series-datasheet-32332628-ciid-172626.pdf
+Redundant blank line.
 
-Is it URL? Can we have it clickable, i.e. unwrapped?
+> + * x9250.c  --  Renesas X9250 potentiometers IIO driver
 
-...
+Please, no filename in the file itself. It adds an additional burden in case
+the module will be renamed in the future.
 
-Missing bits.h
+> + * Copyright 2023 CS GROUP France
+> + *
+> + * Author: Herve Codina <herve.codina@bootlin.com>
+> + */
 
 > +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/i2c.h>
-> +#include <linux/math64.h>
-> +#include <linux/mod_devicetable.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/limits.h>
 > +#include <linux/module.h>
-> +#include <linux/property.h>
-> +#include <linux/units.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/slab.h>
+> +#include <linux/spi/spi.h>
 
 ...
 
-> +/*
-> + * support _RAW sysfs interface:
+> +	return spi_write_then_read(x9250->spi, txbuf, ARRAY_SIZE(txbuf), NULL, 0);
 
-Support
-
-> + *
-> + * Calculation formula from the datasheet:
-> + * pressure = (press_cnt - outputmin) * scale + pmin
-> + * with:
-> + * * pressure	- measured pressure in Pascal
-> + * * press_cnt	- raw value read from sensor
-> + * * pmin	- minimum pressure range value of sensor (data->pmin)
-> + * * pmax	- maximum pressure range value of sensor (data->pmax)
-> + * * outputmin	- minimum numerical range raw value delivered by sensor
-> + *						(mpr_func_spec.output_min)
-> + * * outputmax	- maximum numerical range raw value delivered by sensor
-> + *						(mpr_func_spec.output_max)
-> + * * scale	- (pmax - pmin) / (outputmax - outputmin)
-> + *
-> + * formula of the userspace:
-> + * pressure = (raw + offset) * scale
-> + *
-> + * Values given to the userspace in sysfs interface:
-> + * * raw	- press_cnt
-> + * * offset	- (-1 * outputmin) - pmin / scale
-> + *                note: With all sensors from the datasheet pmin = 0
-> + *                which reduces the offset to (-1 * outputmin)
-> + */
+sizeof() suffice.
 
 ...
 
-> +/*
-> + * transfer function A: 10%   to 90%   of 2^24
-> + * transfer function B:  2.5% to 22.5% of 2^24
-> + * transfer function C: 20%   to 80%   of 2^24
-> + */
-
-Kernel doc?
-
-> +enum mpr_func_id {
-> +	MPR_FUNCTION_A,
-> +	MPR_FUNCTION_B,
-> +	MPR_FUNCTION_C,
-> +};
-
-...
-
-> +struct mpr_func_spec {
-> +	u32			output_min;
-> +	u32			output_max;
-> +};
-
-Can the linear_range.h be used for this?
-
-...
-
-> +struct mpr_data {
-> +	struct i2c_client	*client;
-> +	struct mutex		lock;		/*
-> +						 * access to device during read
-> +						 */
-> +	u32			pmin;		/* minimal pressure in pascal */
-> +	u32			pmax;		/* maximal pressure in pascal */
-> +	enum mpr_func_id	function;	/* transfer function */
-> +	u32			outmin;		/*
-> +						 * minimal numerical range raw
-> +						 * value from sensor
-> +						 */
-> +	u32			outmax;		/*
-> +						 * maximal numerical range raw
-> +						 * value from sensor
-> +						 */
-> +	int                     scale;          /* int part of scale */
-> +	int                     scale2;         /* nano part of scale */
-> +	int                     offset;         /* int part of offset */
-> +	int                     offset2;        /* nano part of offset */
-> +	struct gpio_desc	*gpiod_reset;	/* reset */
-> +	int			irq;		/*
-> +						 * end of conversion irq;
-> +						 * used to distinguish between
-> +						 * irq mode and reading in a
-> +						 * loop until data is ready
-> +						 */
-> +	struct completion	completion;	/* handshake from irq to read */
-> +	struct mpr_chan		chan;		/*
-> +						 * channel values for buffered
-> +						 * mode
-> +						 */
-
-Why not kernel doc?
-
-> +};
-
-...
-
-> +static void mpr_reset(struct mpr_data *data)
-> +{
-> +	if (data->gpiod_reset) {
-
-Actually this dups gpiod_*() checks, so only needed by udelay(). 
-
-> +		gpiod_set_value(data->gpiod_reset, 0);
-> +		udelay(10);
-> +		gpiod_set_value(data->gpiod_reset, 1);
-
-Why not sleeping for all of them?
-
-> +	}
-> +}
-
-...
-
-> +	if (ret != sizeof(wdata)) {
-> +		dev_err(dev, "received size doesn't fit - ret: %d / %u\n", ret,
-> +							(u32)sizeof(wdata));
-
-Casting? Use proper specifier, i.e. %zu.
-
-> +		return -EIO;
-> +	}
-
-...
-
-> +		/* wait until status indicates data is ready */
-> +		for (i = 0; i < nloops; i++) {
-> +			/*
-> +			 * datasheet only says to wait at least 5 ms for the
-
-Datasheet
-
-> +			 * data but leave the maximum response time open
-> +			 * --> let's try it nloops (10) times which seems to be
-> +			 *     quite long
-> +			 */
-> +			usleep_range(5000, 10000);
-> +			status = i2c_smbus_read_byte(data->client);
-> +			if (status < 0) {
-> +				dev_err(dev,
-> +					"error while reading, status: %d\n",
-> +					status);
-> +				return status;
-> +			}
-> +			if (!(status & MPR_I2C_BUSY))
-> +				break;
-> +		}
-> +		if (i == nloops) {
-> +			dev_err(dev, "timeout while reading\n");
-> +			return -ETIMEDOUT;
-> +		}
-
-iopoll.h provides a macro for this. Reduces codebase a lot in this case.
-
-> +	}
-
-...
-
-> +		dev_err(dev, "received size doesn't fit - ret: %d / %u\n", ret,
-> +							(u32)sizeof(buf));
-
-Use proper specifier.
-
-...
-
-> +	if (buf[0] & MPR_I2C_BUSY) {
-> +		/*
-> +		 * it should never be the case that status still indicates
-> +		 * business
-> +		 */
-> +		dev_err(dev, "data still not ready: %08x\n", buf[0]);
-
-Why 8? Is the buffer is of 32-bit values?
-
-> +		return -ETIMEDOUT;
-> +	}
-
-...
-
-> +err:
-
-err_unlock:
-
-> +	mutex_unlock(&data->lock);
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +	return IRQ_HANDLED;
-
-...
-
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return dev_err_probe(dev, -ENOMEM, "couldn't get iio_dev\n");
-
--ENOMEM shouldn't be without error message, we will get one in that case.
-
-...
-
-> +	if (dev_fwnode(dev)) {
-
-Why not simply use defaults?
-
-> +		ret = device_property_read_u32(dev, "honeywell,pmin-pascal",
-> +								&data->pmin);
-> +		if (ret)
-> +			return dev_err_probe(dev, ret,
-> +				"honeywell,pmin-pascal could not be read\n");
-> +		ret = device_property_read_u32(dev, "honeywell,pmax-pascal",
-> +								&data->pmax);
-> +		if (ret)
-> +			return dev_err_probe(dev, ret,
-> +				"honeywell,pmax-pascal could not be read\n");
-> +		ret = device_property_read_u32(dev,
-> +				"honeywell,transfer-function", &data->function);
-> +		if (ret)
-> +			return dev_err_probe(dev, ret,
-> +				"honeywell,transfer-function could not be read\n");
-> +		if (data->function > MPR_FUNCTION_C)
-> +			return dev_err_probe(dev, -EINVAL,
-
--ERANGE ?
-
-> +				"honeywell,transfer-function %d invalid\n",
-> +								data->function);
-> +	} else {
-> +		/* when loaded as i2c device we need to use default values */
-> +		dev_notice(dev, "firmware node not found; using defaults\n");
-> +		data->pmin = 0;
-> +		data->pmax = 172369; /* 25 psi */
-> +		data->function = MPR_FUNCTION_A;
-> +	}
-
-...
-
-> +	/*
-> +	 * multiply with NANO before dividing by scale and later divide by NANO
-
-Multiply
-
-> +	 * again.
-> +	 */
-
-...
-
-> +	if (ret)
-> +		return dev_err_probe(dev, ret,
-> +					"iio triggered buffer setup failed\n");
-
-One line?
-
-...
-
-> +	if (ret)
-> +		return dev_err_probe(dev, ret,
-> +					"unable to register iio device\n");
+> +	return spi_write_then_read(x9250->spi, txbuf, ARRAY_SIZE(txbuf), val, 1);
 
 Ditto.
+
+...
+
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = x9250_read8(x9250, X9250_CMD_RD_WCR(ch), &v);
+> +		if (ret)
+> +			return ret;
+> +		*val = v;
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 1000 * x9250->cfg->kohms;
+> +		*val2 = U8_MAX;
+> +		return IIO_VAL_FRACTIONAL;
+> +	}
+
+> +	return -EINVAL;
+
+Just make it part of default: case.
+
+...
+
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		*length = ARRAY_SIZE(range);
+> +		*vals = range;
+> +		*type = IIO_VAL_INT;
+> +		return IIO_AVAIL_RANGE;
+> +	}
+> +
+> +	return -EINVAL;
+
+Same.
+
+...
+
+> +	if (val > U8_MAX || val < 0)
+> +		return -EINVAL;
+
+ERANGE ?
+
+...
+
+> +
+
+Redundant blank line.
+
+> +module_spi_driver(x9250_spi_driver);
 
 -- 
 With Best Regards,
