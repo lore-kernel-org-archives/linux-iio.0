@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E17C7EE31
-	for <linux-iio@archiver.kernel.org>; Mon, 29 May 2023 06:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 994A8C7EE29
+	for <linux-iio@archiver.kernel.org>; Mon, 29 May 2023 06:25:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231475AbjE2GZA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 29 May 2023 02:25:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51962 "EHLO
+        id S231598AbjE2GZB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 29 May 2023 02:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231438AbjE2GYv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 May 2023 02:24:51 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EEF3EC;
-        Sun, 28 May 2023 23:24:22 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id 2adb3069b0e04-4f4f89f71b8so1195419e87.3;
-        Sun, 28 May 2023 23:24:22 -0700 (PDT)
+        with ESMTP id S231600AbjE2GYR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 May 2023 02:24:17 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B270B120;
+        Sun, 28 May 2023 23:23:45 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id 38308e7fff4ca-2af189d323fso45624371fa.1;
+        Sun, 28 May 2023 23:23:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685341457; x=1687933457;
+        d=gmail.com; s=20221208; t=1685341424; x=1687933424;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=gMGKMQ5heIZqIPqdt41yF6tIdWNRsHLiOnUodPGYbyg=;
-        b=pxhc4f3yCvamPD7Ifu2P05204ThyP/GqLYqkRq9erG7F4i888mn2SRGiMB4/jXDDJs
-         mMtR2pdV5Iu319rSLAotcbz3Nvl0JZDSH9LA+kB30vDyQTsSsuUGMtPj93W4q87S+4pC
-         E0HrnmuZEbxpo0J4V/nCB2I+BjSfaQ9S4zbdQlgkdbbUF3KQQcncex3ETuLc/wWposG+
-         xhgTCu7pFYi+LN6Zp2K5n36EDGKluVAMhJZMA1G/xxf9Ex2gyz9uUQJXb7neWn0VuMMC
-         QaGVz6c4ONzIPiPLnG2o/OIiJ6GBbu/YiHLN6UjmAohe0ekLfI5qAwIqWdiWc1XuABIc
-         eCWQ==
+        bh=w2htrHoUb05zFmZyVZPES7QukPQYRc3jomIeB/klZj4=;
+        b=IxHCLBEQHZEy3VFtdTPnx9aH/KeZUSVVV6J2ZxIGnbc6vzCFZcXnJRaiNvV9bp87IR
+         zPdIC7pG2Has+iX4gz80yNYcIrsYEkyozPgr13tiiEdLJrXVqkgfgyWW/OPQhzawhhPk
+         PDS2T7BMLVOup6Qy3jduIa7Vkxg2OIusXmz9zzSJCDP7enxn9lPJ0EdZ+FQTqaER86Gg
+         nIcVREeVCpEmUL3H330jO9BSlBUdDtFL9zE7gu+ZWhHgglTA1g2wdxxSVlWnDO6vn1QO
+         UglBZjC0xm17V+cKrFTP6Vi0XFSEPvBxGy30o/IGNL9ET8y8mVDX/7F3XJUXbrYspHmH
+         uMsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685341457; x=1687933457;
+        d=1e100.net; s=20221208; t=1685341424; x=1687933424;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gMGKMQ5heIZqIPqdt41yF6tIdWNRsHLiOnUodPGYbyg=;
-        b=RTVL6ZcX8FQ0Nf+AIYVa2OKO0v3QDJUVkj2GxFOnVjhu4JeS1LuGEjFNs/Pj8qRwFR
-         YVH7qVfSR/z1O0/92bDJBxLu3Aw9bB6ZFzO+UltzUJIJ38Ye7ADjbqKXSz502EvRlOXE
-         hIiuYHr/WmE8iqw3SCBwrt3Mhr2NuU60hxRtp+U8UkV3hh/2YXNtkTpHUYNfPMaBTFQC
-         PSFKQJ1SSDvGfA50x0MQVgAabjdW/v/apufpOJH5NtTTHZpzHcG1ccX8XvOFWJorccV9
-         MHVA5+Cosh+ab7X0l+Y2YioimPLt/VBgnh0lREAEeVdxirQCeWXJABdxxmEbKfe5EyAl
-         SgYg==
-X-Gm-Message-State: AC+VfDzsl0zjX3MYspWHszLPt7CmpUFW79sSHUDfBQxntWG6TaOK3y3y
-        PiUPRHASyTlLSqqd0ZIZq7c=
-X-Google-Smtp-Source: ACHHUZ7Zh6z2ke5UbYWZOvOrsExI7SxqLEdFdCNeOv4MdD+rb76OPi6JznRKt4oahaSfgpjTXZ1yTw==
-X-Received: by 2002:ac2:4855:0:b0:4f3:b6b8:dabb with SMTP id 21-20020ac24855000000b004f3b6b8dabbmr3311641lfy.13.1685341456877;
-        Sun, 28 May 2023 23:24:16 -0700 (PDT)
+        bh=w2htrHoUb05zFmZyVZPES7QukPQYRc3jomIeB/klZj4=;
+        b=BX5k2U9SKMCqUw9vNIn8AdG+MYuPjQvXSPV6k52yS2DE376XomO+EjaFZaPyeyjr7M
+         hMMzlJ9yeMhUCPIJq5E3EcC2H32az6nEJKnjZMXTD6TL82znKi6epe91cyDitX6BcwTD
+         hZqEnL//TyTxsg/B77kIbCNJ2iyyOPi1KkygbRB4+VkVnUhCneVEoyu+InZIGWNi0Mnz
+         9SbxmKuTkQwUp0JSiOVotROuMSLcpeXoe/HLVdhYRKtHY8NtfTUQX9lVcTmMJq++G7Sc
+         KqVEKakzj7ya0a+aVp4jqFlDAhXchAQQ1URnP64cy566onp04eWhw/ghw6g5YMk4cAf2
+         F2MQ==
+X-Gm-Message-State: AC+VfDzm/5gW1xM6Et83hAv2SzqRlXxi30x2urYXeOa3TSzSZJJ+/ZiB
+        YDRMTVig22aMTroT1V8GpUA=
+X-Google-Smtp-Source: ACHHUZ5EsZDMvzcaTCxKwN7I1InRz+1d3odGsFjAUNoMY0h8dmEoco0VfBem50IfM5IWIoLSRPDWqg==
+X-Received: by 2002:a05:6512:2302:b0:4ed:c64a:4aa8 with SMTP id o2-20020a056512230200b004edc64a4aa8mr2821216lfu.6.1685341423888;
+        Sun, 28 May 2023 23:23:43 -0700 (PDT)
 Received: from fedora (62-78-225-252.bb.dnainternet.fi. [62.78.225.252])
-        by smtp.gmail.com with ESMTPSA id w9-20020ac24429000000b004f4ce1d4df6sm1844987lfl.47.2023.05.28.23.24.15
+        by smtp.gmail.com with ESMTPSA id v3-20020a056512048300b004eb0c18efc2sm1833053lfq.221.2023.05.28.23.23.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 May 2023 23:24:16 -0700 (PDT)
-Date:   Mon, 29 May 2023 09:24:12 +0300
+        Sun, 28 May 2023 23:23:43 -0700 (PDT)
+Date:   Mon, 29 May 2023 09:23:39 +0300
 From:   Matti Vaittinen <mazziesaccount@gmail.com>
 To:     Matti Vaittinen <mazziesaccount@gmail.com>,
         Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
@@ -77,13 +77,12 @@ Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-iio@vger.kernel.org, netdev@vger.kernel.org,
         openbmc@lists.ozlabs.org, linux-gpio@vger.kernel.org,
         linux-mips@vger.kernel.org
-Subject: [PATCH v7 7/9] i2c: i2c-smbus: fwnode_irq_get_byname() return value
- fix
-Message-ID: <73a0af48bffe99a9d4b94b1f986258021eea6182.1685340157.git.mazziesaccount@gmail.com>
+Subject: [PATCH v7 5/9] pinctrl: ingenic: relax return value check for IRQ get
+Message-ID: <2b52e5dcdcc50e2f932184b5816e5f7ce678210a.1685340157.git.mazziesaccount@gmail.com>
 References: <cover.1685340157.git.mazziesaccount@gmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="I7qKH4leGOxrES6S"
+        protocol="application/pgp-signature"; boundary="RQYH1ecUNFtPH4cO"
 Content-Disposition: inline
 In-Reply-To: <cover.1685340157.git.mazziesaccount@gmail.com>
 Precedence: bulk
@@ -91,56 +90,48 @@ List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 
---I7qKH4leGOxrES6S
+--RQYH1ecUNFtPH4cO
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-The fwnode_irq_get_byname() was changed to not return 0 upon failure so
-return value check can be adjusted to reflect the change.
+fwnode_irq_get[_byname]() were changed to not return 0 anymore.
 
-Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Drop check for return value 0.
+
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
 ---
 Revision history:
-v5 =3D>:
  - No changes
-v4 =3D> v5:
- - Added back after this was accidentally dropped at v4.
 
-Depends on the mentioned return value change which is in patch 1/N. The
-return value change does also cause a functional change here. Eg. when
-IRQ mapping fails, the fwnode_irq_get_byname() no longer returns zero.
-This will cause also the probe here to return nonzero failure. I guess
-this is desired behaviour - but I would appreciate any confirmation.
+Please note, I took Linus' reply to v4 cover-letter as ack && added the
+tag. Please let me know if this was not Ok.
 
-Please, see also previous discussion here:
-https://lore.kernel.org/all/fbd52f5f5253b382b8d7b3e8046134de29f965b8.166671=
-0197.git.mazziesaccount@gmail.com/
-
-Another suggestion has been to drop the check altogether. I am slightly
-reluctant on doing that unless it gets confirmed that is the "right
-thing to do".
+The first patch of the series changes the fwnode_irq_get() so this depends
+on the first patch of the series and should not be applied alone.
 ---
- drivers/i2c/i2c-smbus.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/pinctrl-ingenic.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/i2c/i2c-smbus.c b/drivers/i2c/i2c-smbus.c
-index 138c3f5e0093..893fe7cd3e41 100644
---- a/drivers/i2c/i2c-smbus.c
-+++ b/drivers/i2c/i2c-smbus.c
-@@ -129,7 +129,7 @@ static int smbalert_probe(struct i2c_client *ara)
- 	} else {
- 		irq =3D fwnode_irq_get_byname(dev_fwnode(adapter->dev.parent),
- 					    "smbus_alert");
--		if (irq <=3D 0)
-+		if (irq < 0)
- 			return irq;
- 	}
+diff --git a/drivers/pinctrl/pinctrl-ingenic.c b/drivers/pinctrl/pinctrl-in=
+genic.c
+index 2f220a47b749..86e71ad703a5 100644
+--- a/drivers/pinctrl/pinctrl-ingenic.c
++++ b/drivers/pinctrl/pinctrl-ingenic.c
+@@ -4201,8 +4201,6 @@ static int __init ingenic_gpio_probe(struct ingenic_p=
+inctrl *jzpc,
+ 	err =3D fwnode_irq_get(fwnode, 0);
+ 	if (err < 0)
+ 		return err;
+-	if (!err)
+-		return -EINVAL;
+ 	jzgc->irq =3D err;
 =20
+ 	girq =3D &jzgc->gc.irq;
 --=20
 2.40.1
 
@@ -157,19 +148,19 @@ Simon says - in Latin please.
 ~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
 Thanks to Simon Glass for the translation =3D]=20
 
---I7qKH4leGOxrES6S
+--RQYH1ecUNFtPH4cO
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmR0RQwACgkQeFA3/03a
-ocW6cAgAkc2IQ4oT3YwVX8CdTPI4OMUX/+qJD/12QGLgIlLmpI7lTZvNlcxHq4Y6
-1dB05vHijMtOdx5sM/m8HEC2kKnGihOH8yphwjfzjY6tDll9TAlERxBqdRv+R4QD
-hwMfMnuThrWSHdapSRT66awvr664s7RNzwrO4F6aOn5ZpHxhwXiS9zhDN7ZFOht2
-ahl9F1+ddkNs1GpitdycHV6H3m1f+XQEqrKXwnngtD+0qszeCiiR2KgzCH8Z1Fk4
-84Y9g0p39Te9UcE7ey52/eIvV4M/xeI5hPITY4B6hSb+1ctK71pqITUDmxgaFvqV
-XV00SLsoGzTqK7m8Kt5j8cFYAkoMMQ==
-=+h1W
+iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmR0ROsACgkQeFA3/03a
+ocU8vAgAvYKAgRXg4MbPgzQs85PpQLmD3+uJCoxGK0n/DgiV9a4WIzyFLx1gLVmL
+1ThzJ9G/Bd6DKF2GK4la1Jwevx9WTi/VwOzwyUZS/9D/3XuXP2YJ8xSME1DWO7mc
+SglYisrGyU7Z7xpkdMF8RYQPOEYAo0AboMKpvLnQrUNqONt76pZTsfgwqd12F7nc
+kBWaaShy8GycuttI69xWwYbmNym38lRicAXq5Tsvl+R/Kw5J5teLREbpg/8olt7I
+W4kr8VlLBWD+ISAFmsLhxZFRtm0c9NjhXNU4SC0ryIjSN0Sxdu7YHo9BhPdnQd0h
+w7xGT/p55vZWXAZ0SPKP5Qb/nI0JZw==
+=oXpg
 -----END PGP SIGNATURE-----
 
---I7qKH4leGOxrES6S--
+--RQYH1ecUNFtPH4cO--
