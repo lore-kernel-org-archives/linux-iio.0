@@ -2,115 +2,115 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B6E8C77B7E
-	for <linux-iio@archiver.kernel.org>; Mon, 29 May 2023 20:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E11C7EE23
+	for <linux-iio@archiver.kernel.org>; Mon, 29 May 2023 23:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbjE2Uwn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 29 May 2023 16:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
+        id S229650AbjE2XdF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 29 May 2023 19:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjE2Uwm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 May 2023 16:52:42 -0400
-Received: from mxout2.routing.net (mxout2.routing.net [IPv6:2a03:2900:1:a::b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC97C7;
-        Mon, 29 May 2023 13:52:41 -0700 (PDT)
-Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
-        by mxout2.routing.net (Postfix) with ESMTP id 54B9C5FBD8;
-        Mon, 29 May 2023 20:43:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1685393014;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cDhjjWLFoezZAi/uvwan8VYbJJegbs/FI4UlVYsQEcA=;
-        b=WzpP0SHn+OnZOkihcA/BoupceBtWe7QqKIQ1D4yILwJwnZxeZcAmBZO9N0brpsAL1vaMCo
-        VNekBSXfHtErz5nvHTaLb9pym86CweVfQgVfiqCV7LQ3knRalaBMX45ijUVX9qdAiUOQ4d
-        qYLV5hTKoPjFYsGqnTTBJAUHQM38Z2w=
-Received: from frank-G5.. (fttx-pool-217.61.156.2.bambit.de [217.61.156.2])
-        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 6A3D6100AD7;
-        Mon, 29 May 2023 20:43:33 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     linux-mediatek@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        "Hui.Liu" <hui.liu@mediatek.com>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Lala Lin <lala.lin@mediatek.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Daniel Golle <daniel@makrotopia.org>
-Subject: [PATCH v2 3/4] arm64: dts: mt7986: add thermal-zones
-Date:   Mon, 29 May 2023 22:42:57 +0200
-Message-Id: <20230529204258.65238-4-linux@fw-web.de>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230529204258.65238-1-linux@fw-web.de>
-References: <20230529204258.65238-1-linux@fw-web.de>
+        with ESMTP id S229461AbjE2XdF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 May 2023 19:33:05 -0400
+Received: from fgw23-7.mail.saunalahti.fi (fgw23-7.mail.saunalahti.fi [62.142.5.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E99A9B5
+        for <linux-iio@vger.kernel.org>; Mon, 29 May 2023 16:33:03 -0700 (PDT)
+Received: from localhost (88-113-26-95.elisa-laajakaista.fi [88.113.26.95])
+        by fgw23.mail.saunalahti.fi (Halon) with ESMTP
+        id 2552c16e-fe79-11ed-b972-005056bdfda7;
+        Tue, 30 May 2023 02:33:00 +0300 (EEST)
+From:   andy.shevchenko@gmail.com
+Date:   Tue, 30 May 2023 02:32:58 +0300
+To:     George Stark <gnstark@sberdevices.ru>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "neil.armstrong@linaro.org" <neil.armstrong@linaro.org>,
+        "khilman@baylibre.com" <khilman@baylibre.com>,
+        "jbrunet@baylibre.com" <jbrunet@baylibre.com>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "nuno.sa@analog.com" <nuno.sa@analog.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-amlogic@lists.infradead.org" 
+        <linux-amlogic@lists.infradead.org>, kernel <kernel@sberdevices.ru>
+Subject: Re: [PATCH v2] meson saradc: add iio device attrib to switch channel
+ 7 mux
+Message-ID: <ZHU2Khf84nbLW7Gg@surfacebook>
+References: <20230527214854.126517-1-gnstark@sberdevices.ru>
+ <ZHMxDHPBWQOJSuaZ@smile.fi.intel.com>
+ <9df82b13-7594-a8f0-f27e-87bce5a38b74@sberdevices.ru>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: 1e0afbdd-08cb-4eec-9e6e-32b2db403961
+In-Reply-To: <9df82b13-7594-a8f0-f27e-87bce5a38b74@sberdevices.ru>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Daniel Golle <daniel@makrotopia.org>
+Mon, May 29, 2023 at 01:31:40AM +0300, George Stark kirjoitti:
+> On 5/28/23 13:46, Andy Shevchenko wrote:
+> > On Sun, May 28, 2023 at 12:48:54AM +0300, George Stark wrote:
 
-Add thermal-zones to mt7986 devicetree.
+...
 
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
----
-changes in v2:
-- drop top 2 thermal trips as suggested by matthias
----
- arch/arm64/boot/dts/mediatek/mt7986a.dtsi | 28 +++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+> > > +	if (index >= ARRAY_SIZE(chan7_vol))
+> > > +		index = ARRAY_SIZE(chan7_vol) - 1;
+> > I think this is incorrect and prone to error in the future in case this array
+> > will be extended. What I would expect is to return something like "unknown".
+> 
+> I agree this part is unclean. Actually the register's last 3 (out of 8)
+> possible values are stand for the same mux input "ch7_input". So
+> theoretically we can read from register a value out of array bounds. There
+> should be a comment at least.
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-index a409d5e845c2..a059fcdaa8b7 100644
---- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-@@ -603,4 +603,32 @@ wifi: wifi@18000000 {
- 			memory-region = <&wmcpu_emi>;
- 		};
- 	};
-+
-+	thermal-zones {
-+		cpu_thermal: cpu-thermal {
-+			polling-delay-passive = <1000>;
-+			polling-delay = <1000>;
-+			thermal-sensors = <&thermal 0>;
-+
-+			trips {
-+				cpu_trip_active_high: active-high {
-+					temperature = <115000>;
-+					hysteresis = <2000>;
-+					type = "active";
-+				};
-+
-+				cpu_trip_active_low: active-low {
-+					temperature = <85000>;
-+					hysteresis = <2000>;
-+					type = "active";
-+				};
-+
-+				cpu_trip_passive: passive {
-+					temperature = <40000>;
-+					hysteresis = <2000>;
-+					type = "passive";
-+				};
-+			};
-+		};
-+	};
- };
+You can add there in the array to extend it up to 8 entries, so it will be
+clear. And for the rest you will return unknown / unsupported / etc.
+
+...
+
+> > > +static const char * const chan7_vol[] = {
+> > > +	"gnd",
+> > > +	"vdd/4",
+> > > +	"vdd/2",
+> > > +	"vdd*3/4",
+> > > +	"vdd",
+> > > +	"ch7_input",
+> > > +};
+
+> About the question of naming mux inputs from the other letter (vdd/2 vs
+> 0.5Vdd etc).
+> While I fully agree with you that point is better than slash but mixing
+> letter cases... should we?
+
+What's wrong with that?
+
+> e.g. this is how iio_info output looks like now:
+> ...
+>             voltage7:  (input)
+>             3 channel-specific attributes found:
+>                 attr  0: mean_raw value: 0
+>                 attr  1: raw value: 1
+>                 attr  2: scale value: 0.439453125
+>         4 device-specific attributes found:
+>                 attr  0: chan7_mux value: gnd
+>                 attr  1: chan7_mux_available value: gnd vdd/4 vdd/2 vdd*3/4
+> vdd ch7_input
+>                 attr  2: current_timestamp_clock value: realtime
+> 
+>                 attr  3: waiting_for_supplier value: 0
+> 
+> or naming with Jonathan's approach
+> /sys/devices/platform/soc/fe000000.bus/fe002c00.adc/iio:device0/in_voltage_0.5vdd_raw
+
+See the alternative I proposed is to have _ delimiter. But that might make
+parsing a bit harder in user space.
+
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
