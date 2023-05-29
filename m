@@ -2,34 +2,35 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DD5C77B7A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA76C7EE2E
 	for <linux-iio@archiver.kernel.org>; Mon, 29 May 2023 20:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbjE2Ut4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 29 May 2023 16:49:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54878 "EHLO
+        id S229459AbjE2Ut5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 29 May 2023 16:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjE2Utz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 May 2023 16:49:55 -0400
-Received: from mxout4.routing.net (mxout4.routing.net [IPv6:2a03:2900:1:a::9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A93DD9
-        for <linux-iio@vger.kernel.org>; Mon, 29 May 2023 13:49:54 -0700 (PDT)
+        with ESMTP id S229636AbjE2Ut4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 May 2023 16:49:56 -0400
+X-Greylist: delayed 379 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 29 May 2023 13:49:53 PDT
+Received: from mxout1.routing.net (mxout1.routing.net [IPv6:2a03:2900:1:a::a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC40EC7
+        for <linux-iio@vger.kernel.org>; Mon, 29 May 2023 13:49:53 -0700 (PDT)
 Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
-        by mxout4.routing.net (Postfix) with ESMTP id ADD441005E9;
-        Mon, 29 May 2023 20:43:32 +0000 (UTC)
+        by mxout1.routing.net (Postfix) with ESMTP id 695513FC7F;
+        Mon, 29 May 2023 20:43:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1685393012;
+        s=20200217; t=1685393015;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/UhVQK7t+HosSVy3q0W/MQmzaLul2qg9td8dQYWmD0k=;
-        b=BR1ELm0lTE3YGEG0DQRxvZAaxdI24SK7OtZgNG9O471K5TJQF/KKId68A3wUnZyBpe6Ai6
-        klpuc/f5L6nRPJFTk0M9mViM8330O3X2Wog18JST5c5Ud4OCILQcOiHOf9s/2BqymHOcj0
-        trrK64xgMn/d4X9+VRSEkQVOJNdrBw0=
+        bh=NiNTNWADcq8Wf9sTDfcLcaA78qUAbBkS8piCK+YIth4=;
+        b=X7uCk1A5RWowtoLg5C28QXGgBuPhnlgquA0AlaMFd43ibD+ZUiiExwvswPC2MKv8xwn93/
+        lYdNhnN/6uXhuWKKJ1g57S9tFrJvZcprKeOWolnq3tU34kfnUUp1wV3Es+/nhVbwQv8nsJ
+        lqZPUaqmWk5su9LXSJu66RUD+Zv4PZg=
 Received: from frank-G5.. (fttx-pool-217.61.156.2.bambit.de [217.61.156.2])
-        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id B9450100AD7;
-        Mon, 29 May 2023 20:43:31 +0000 (UTC)
+        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 4483E1006D1;
+        Mon, 29 May 2023 20:43:34 +0000 (UTC)
 From:   Frank Wunderlich <linux@fw-web.de>
 To:     linux-mediatek@lists.infradead.org
 Cc:     Frank Wunderlich <frank-w@public-files.de>,
@@ -47,43 +48,82 @@ Cc:     Frank Wunderlich <frank-w@public-files.de>,
         Lala Lin <lala.lin@mediatek.com>, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        Daniel Golle <daniel@makrotopia.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 1/4] dt-bindings: nvmem: mediatek: efuse: add support for mt7986
-Date:   Mon, 29 May 2023 22:42:55 +0200
-Message-Id: <20230529204258.65238-2-linux@fw-web.de>
+        Daniel Golle <daniel@makrotopia.org>
+Subject: [PATCH v2 4/4] arm64: dts: mt7986: add pwm-fan and cooling-maps to BPI-R3 dts
+Date:   Mon, 29 May 2023 22:42:58 +0200
+Message-Id: <20230529204258.65238-5-linux@fw-web.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230529204258.65238-1-linux@fw-web.de>
 References: <20230529204258.65238-1-linux@fw-web.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: 43c692b0-9847-4de0-bc01-d0ed8cf8e474
+X-Mail-ID: b1d02627-873f-44dd-a92e-df7ed1a9bf87
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+From: Daniel Golle <daniel@makrotopia.org>
 
-Add compatible string for mt7986 SoC.
+Add pwm-fan and cooling-maps to BananaPi-R3 devicetree.
 
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
- Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml | 1 +
- 1 file changed, 1 insertion(+)
+this is based on Patch from openwrt. as my PWM-fan seems to need 5v pwm
+signal and r3 only provides 3v3 on 3pin-socket it does not work for me.
+---
+ .../dts/mediatek/mt7986a-bananapi-bpi-r3.dts  | 31 +++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
-index d16d42fb98b6..7ec2988b597e 100644
---- a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
-+++ b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
-@@ -27,6 +27,7 @@ properties:
-           - enum:
-               - mediatek,mt7622-efuse
-               - mediatek,mt7623-efuse
-+              - mediatek,mt7986-efuse
-               - mediatek,mt8173-efuse
-               - mediatek,mt8183-efuse
-               - mediatek,mt8186-efuse
+diff --git a/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts b/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts
+index 782519429497..29c018bbf29d 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts
+@@ -37,6 +37,15 @@ dcin: regulator-12vd {
+ 		regulator-always-on;
+ 	};
+ 
++	fan: pwm-fan {
++		compatible = "pwm-fan";
++		#cooling-cells = <2>;
++		/* cooling level (0, 1, 2) - pwm inverted */
++		cooling-levels = <255 96 0>;
++		pwms = <&pwm 0 10000 0>;
++		status = "okay";
++	};
++
+ 	gpio-keys {
+ 		compatible = "gpio-keys";
+ 
+@@ -132,6 +141,28 @@ sfp2: sfp-2 {
+ 	};
+ };
+ 
++&cpu_thermal {
++	cooling-maps {
++		cpu-active-high {
++			/* active: set fan to cooling level 2 */
++			cooling-device = <&fan 2 2>;
++			trip = <&cpu_trip_active_high>;
++		};
++
++		cpu-active-low {
++			/* active: set fan to cooling level 1 */
++			cooling-device = <&fan 1 1>;
++			trip = <&cpu_trip_active_low>;
++		};
++
++		cpu-passive {
++			/* passive: set fan to cooling level 0 */
++			cooling-device = <&fan 0 0>;
++			trip = <&cpu_trip_passive>;
++		};
++	};
++};
++
+ &crypto {
+ 	status = "okay";
+ };
 -- 
 2.34.1
 
