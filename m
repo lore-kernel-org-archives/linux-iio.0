@@ -2,108 +2,108 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A39C7EE23
-	for <linux-iio@archiver.kernel.org>; Sun,  4 Jun 2023 11:20:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63693C77B73
+	for <linux-iio@archiver.kernel.org>; Sun,  4 Jun 2023 11:33:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230237AbjFDLUW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 4 Jun 2023 07:20:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33086 "EHLO
+        id S231162AbjFDLdD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 4 Jun 2023 07:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbjFDLUV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Jun 2023 07:20:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665B2D2;
-        Sun,  4 Jun 2023 04:20:20 -0700 (PDT)
+        with ESMTP id S229462AbjFDLdD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Jun 2023 07:33:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC79DA;
+        Sun,  4 Jun 2023 04:33:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0144860C22;
-        Sun,  4 Jun 2023 11:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E40EFC433EF;
-        Sun,  4 Jun 2023 11:20:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04A3361134;
+        Sun,  4 Jun 2023 11:33:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B0EC433EF;
+        Sun,  4 Jun 2023 11:32:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1685877619;
-        bh=OsT04YCHMN5MqW4NW2NAHo0FOaoVoBBMNab3Jjr9zlM=;
+        s=k20201202; t=1685878381;
+        bh=xvMJ3ehOlg6D/nr4URcRAcKPQ4ful8e1IqWXQ7fGVTU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KYq6RQ//h7A8/skmKmA3ol1phPbS39NKta5uWZH1E7E390eihXtXR0CX5p2XjLtaz
-         W6/DwZOWtj6B6OmeFecr2hpB9YEUoeT6ThSSW7G/VL2uXqOXzVrZDDTKheASH2/mIT
-         L3CVS0gOKJtI8lLJplLJ6aY2d4m7vNxKmOy5DS70k/feykKPYANTmmeuEBooUPXtiO
-         IL5WlO2/P2xL8wmfDpDZBiYpnbADydbbc16AkrjuafYKjV1oPJx/PVvHQ9roVcQyYe
-         BCGFgJiIgGIGGu5irpg0bE/upDylVNXsuDasnrHB4L5zJ73vLBP5qWZLYE5Ewvgnr/
-         3ewTjkf8pGUcA==
-Date:   Sun, 4 Jun 2023 12:20:15 +0100
+        b=A/bfpTrs/Szu+hLTZ7Srx57g028noNj6jn2mk6mZA+NjjpagxNvNfPmX6tzwExgOa
+         uXyrJ45DOOym/aafOG9FrP0gJiqKRIvPX3byCqrjlepCWAbOdeEGghRLYX7vHclWEz
+         AU4RNnM+796Y2GLLgf7NAgY3He7zmg8x+xuuhhHuf3nLgCACmZVDM5/s9G485+sbr1
+         ILmEPZD3JTl+rkgNBC2FsmoEpVrc7UUhrgDh2TEDScyI1Ii3LzpCjwt92Rez/uhsXp
+         EpOPaiJzJSbvlYJqgSBe8swgm9TREs1WCKvxMUB5zzVAw682CjSw6KB5Gw93ipr8MZ
+         yiF1aVE8xQskA==
+Date:   Sun, 4 Jun 2023 12:32:56 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     andy.shevchenko@gmail.com
-Cc:     Astrid Rost <astrid.rost@axis.com>,
+To:     fl.scratchpad@gmail.com
+Cc:     Alexandru Tachici <alexandru.tachici@analog.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@axis.com,
-        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Mathieu Othacehe <m.othacehe@gmail.com>
-Subject: Re: [PATCH v5 0/7] iio: light: vcnl4000: Add features for
- vncl4040/4200
-Message-ID: <20230604122015.38e7b8a5@jic23-huawei>
-In-Reply-To: <ZHtGAn8ZF_fhgNQn@surfacebook>
-References: <20230530142405.1679146-1-astrid.rost@axis.com>
-        <ZHtGAn8ZF_fhgNQn@surfacebook>
+        Nuno Sa <nuno.sa@analog.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v3 1/5] iio: adc: ad7192: Fix null ad7192_state pointer
+ access
+Message-ID: <20230604123256.6cf470bc@jic23-huawei>
+In-Reply-To: <20230530075311.400686-2-fl.scratchpad@gmail.com>
+References: <20230530075311.400686-1-fl.scratchpad@gmail.com>
+        <20230530075311.400686-2-fl.scratchpad@gmail.com>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 3 Jun 2023 16:54:10 +0300
-andy.shevchenko@gmail.com wrote:
+On Tue, 30 May 2023 09:53:07 +0200
+fl.scratchpad@gmail.com wrote:
 
-> Tue, May 30, 2023 at 04:23:58PM +0200, Astrid Rost kirjoitti:
-> > Add a more complete support for vncl4040 and vcnl4200, which allows to
-> > change the distance of proximity detection and interrupt support for the
-> > illuminance sensor.
-> >=20
-> > Proximity functionality:
-> >   - Interrupt support (new on vcnl4200).
-> >=20
-> > Proximity reduce the amount of interrupts:
-> >   - Adaptable integration time (new on vcnl4200) - the sampling rate
-> >     changes according to this value.
-> >   - Period - interrupt is asserted if the value is above or
-> >     below a certain threshold.
-> >=20
-> > Proximity change the activity distance:
-> >   - Oversampling ratio - Amount of LED pulses per measured raw value.
-> >   - Calibration bias - LED current calibration of the sensor.
-> >=20
-> > Illuminance functionality:
-> >   - Interrupt support.
-> >=20
-> > Illuminance reduce the amount of interrupts:
-> >   - Adaptable integration time - the sampling rate and scale changes
-> >     according to this value.
-> >   - Period =E2=80=93 interrupt is asserted if the value is above or
-> >     below a certain threshold. =20
->=20
-> It's a good work, thank you for doing it!
->=20
-> But it has a lot of small style and inconsistent issues. They are not maj=
-or
-> per se, but since there is more than 3, it makes sense to address. Also c=
-heck
-> if you can split your patches to two or three where it makes sense.
->=20
+> From: Fabrizio Lamarque <fl.scratchpad@gmail.com>
+> 
+> Pointer to indio_dev structure is obtained via spi_get_drvdata() at
+> the beginning of function ad7192_setup(), but the spi->dev->driver_data
+> member is not initialized, hence a NULL pointer is returned.
+> 
+> Fix by changing ad7192_setup() signature to take pointer to struct
+> iio_dev, and get ad7192_state pointer via st = iio_priv(indio_dev);
+> 
+> Fixes: bd5dcdeb3fd0 ("iio: adc: ad7192: convert to device-managed functions")
+> Signed-off-by: Fabrizio Lamarque <fl.scratchpad@gmail.com>
+> Reviewed-by: Nuno Sa <nuno.sa@analog.com>
+I'll pick those of this series up that everyone seems happy with.
 
-FWIW nothing to add from me.  Agree with Andy that we are down to style
-things that would be good to tidy up before applying these.
-
-Adding levels to switch nests always makes for ugly diffs so I fully agree
-with Andy that, though trivial, it is probably better to do those in two st=
-eps
-for ease of review.  If there is just one in a patch then meh, we can proba=
-bly
-cope with the extra thinking required to review them , but where it happens
-several times it's worth making reviewer's lives that little bit easier!
+Applied to the fixes-togreg branch of iio.git
+Thanks,
 
 Jonathan
+
+> ---
+>  drivers/iio/adc/ad7192.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
+> index 55a6ab591016..94a9cf34a255 100644
+> --- a/drivers/iio/adc/ad7192.c
+> +++ b/drivers/iio/adc/ad7192.c
+> @@ -380,9 +380,9 @@ static int ad7192_of_clock_select(struct ad7192_state *st)
+>  	return clock_sel;
+>  }
+>  
+> -static int ad7192_setup(struct ad7192_state *st, struct device_node *np)
+> +static int ad7192_setup(struct iio_dev *indio_dev, struct device_node *np)
+>  {
+> -	struct iio_dev *indio_dev = spi_get_drvdata(st->sd.spi);
+> +	struct ad7192_state *st = iio_priv(indio_dev);
+>  	bool rej60_en, refin2_en;
+>  	bool buf_en, bipolar, burnout_curr_en;
+>  	unsigned long long scale_uv;
+> @@ -1073,7 +1073,7 @@ static int ad7192_probe(struct spi_device *spi)
+>  		}
+>  	}
+>  
+> -	ret = ad7192_setup(st, spi->dev.of_node);
+> +	ret = ad7192_setup(indio_dev, spi->dev.of_node);
+>  	if (ret)
+>  		return ret;
+>  
 
