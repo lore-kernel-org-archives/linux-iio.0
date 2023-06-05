@@ -2,158 +2,167 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 199D9C7EE2D
-	for <linux-iio@archiver.kernel.org>; Mon,  5 Jun 2023 13:09:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C53C7EE23
+	for <linux-iio@archiver.kernel.org>; Mon,  5 Jun 2023 13:30:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233871AbjFENJ0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 5 Jun 2023 09:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57070 "EHLO
+        id S232820AbjFENa3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 5 Jun 2023 09:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233517AbjFENJZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Jun 2023 09:09:25 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161F6D2;
-        Mon,  5 Jun 2023 06:09:23 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 355D6rL2025508;
-        Mon, 5 Jun 2023 09:09:08 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3r02e4a3v0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 05 Jun 2023 09:08:42 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 355D8dWI022871
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 5 Jun 2023 09:08:39 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 5 Jun 2023
- 09:08:38 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 5 Jun 2023 09:08:38 -0400
-Received: from kimedia-VirtualBox.ad.analog.com (KPALLER2-L02.ad.analog.com [10.116.242.24])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 355D8IfU010470;
-        Mon, 5 Jun 2023 09:08:29 -0400
-From:   Kim Seer Paller <kimseer.paller@analog.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>,
-        <krzysztof.kozlowski@linaro.org>
-CC:     <broonie@kernel.org>, <lgirdwood@gmail.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kimseer.paller@analog.com>
-Subject: [PATCH v2 1/2] dt-bindings:iio:adc: add max14001
-Date:   Mon, 5 Jun 2023 21:07:54 +0800
-Message-ID: <20230605130755.92642-2-kimseer.paller@analog.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230605130755.92642-1-kimseer.paller@analog.com>
-References: <20230605130755.92642-1-kimseer.paller@analog.com>
+        with ESMTP id S231786AbjFENa3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Jun 2023 09:30:29 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02CCDB
+        for <linux-iio@vger.kernel.org>; Mon,  5 Jun 2023 06:30:26 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id a640c23a62f3a-970056276acso719450466b.2
+        for <linux-iio@vger.kernel.org>; Mon, 05 Jun 2023 06:30:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1685971825; x=1688563825;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9N5Xum37PH3vElfoq/xGvR9YZMDWuqhfk9rvQ3s9Xng=;
+        b=WdhpqM0AVCM3qyL0GHgdrSJHtQhv1PYh0NuDYa4ZCEiDtaijwlFzvkEHWi/3VlhjdU
+         btXvk1eLR5ACz3wBP6FtATWyGtH0hWrzBmTXNf1i/H+hjq54ZKVI40ZG4GKA+ylp1UU0
+         5sBp1GISdALWrJCvvJC3ddKC28RmCFWfB+WSAhCYZbGX3zjZ2e4LOArzttsSQ4n7yev7
+         u2U9PgOS/tVKnjsOqO+CEEvT/+npO5U6sxSJw5ghxcKJ93DbEFF7ESWzSp85O7oIma8s
+         FED4y/yGiQrkzOcKtI4+b6H9LPIwhN0z9nf1HcZpZPCpG+fy7MWN01lcONr1qdyNLcrQ
+         dLeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685971825; x=1688563825;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9N5Xum37PH3vElfoq/xGvR9YZMDWuqhfk9rvQ3s9Xng=;
+        b=krPTeH6fxegunGI75O+l5vqccV4lcFAFu/bBMsn0pWI8XHZt3xWwAxkmwc9ylu9ELS
+         H+PQZYj8bzTHResqORl0bwY3XGb4RbrYX/Zk3ukrMnhEyP81mRthBONauCLtQD1G8nWM
+         hemnmH50DpN13bgwq/pj+Qd6fRZBYMirfRKUF79FwoZCmwP1NaZI5nn73vCRP5VH7X5L
+         zf3DQ3tlEqH4Tf7F+rcouPdsGrD+/XsmWSIEiSY/GNUtULr8rkpS12FNNFJ51ltNakIp
+         fLyPNqm4NJQhKCcZIuVW5MY5nkvfYWvFKJYha1/mxbmgvC43FxZ4V+ulMWJGGZEgTApz
+         UQLg==
+X-Gm-Message-State: AC+VfDzBJSdUqGOknc19IsPeHgFVd9R2pSoBHnNwO6qznY8x/QAECsp/
+        Q6ArzZasqZxqjoAD/JD2kEoceg==
+X-Google-Smtp-Source: ACHHUZ4Gpp6OQI4Q9MUi+CX2e4d01C6u1eJpgaFumPADq7T+YbaLI4ng+LDVm1/HcaHHXRQ8fKRuUQ==
+X-Received: by 2002:a17:907:169f:b0:975:bbc:1e33 with SMTP id hc31-20020a170907169f00b009750bbc1e33mr5771040ejc.31.1685971825276;
+        Mon, 05 Jun 2023 06:30:25 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id i15-20020a170906a28f00b00968242f8c37sm4235348ejz.50.2023.06.05.06.30.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 Jun 2023 06:30:24 -0700 (PDT)
+Message-ID: <56137e35-3eac-41db-5f4f-b1a140df08f5@linaro.org>
+Date:   Mon, 5 Jun 2023 15:30:22 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: EIG6Z0D3ZdDlRR-YkeQzw1gnpWL1bOc5
-X-Proofpoint-GUID: EIG6Z0D3ZdDlRR-YkeQzw1gnpWL1bOc5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-06-03_08,2023-06-02_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=999
- adultscore=0 impostorscore=0 spamscore=0 priorityscore=1501 bulkscore=0
- lowpriorityscore=0 clxscore=1015 phishscore=0 malwarescore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2304280000 definitions=main-2306050115
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH v2 1/2] dt-bindings:iio:adc: add max14001
+To:     Kim Seer Paller <kimseer.paller@analog.com>, jic23@kernel.org,
+        lars@metafoo.de
+Cc:     broonie@kernel.org, lgirdwood@gmail.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230605130755.92642-1-kimseer.paller@analog.com>
+ <20230605130755.92642-2-kimseer.paller@analog.com>
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230605130755.92642-2-kimseer.paller@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The MAX14001 is configurable, isolated 10-bit ADCs for multi-range
-binary inputs.
+On 05/06/2023 15:07, Kim Seer Paller wrote:
+> The MAX14001 is configurable, isolated 10-bit ADCs for multi-range
+> binary inputs.
+> 
+> Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
 
-Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
----
- .../bindings/iio/adc/adi,max14001.yaml        | 55 +++++++++++++++++++
- MAINTAINERS                                   |  7 +++
- 2 files changed, 62 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml
+Please use scripts/get_maintainers.pl to get a list of necessary people
+and lists to CC.  It might happen, that command when run on an older
+kernel, gives you outdated entries.  Therefore please be sure you base
+your patches on recent Linux kernel.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml b/Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml
-new file mode 100644
-index 000000000..1b17f5dc0
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml
-@@ -0,0 +1,55 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+# Copyright 2023 Analog Devices Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/adi,max14001.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices MAX14001 ADC
-+
-+maintainers:
-+  - Kim Seer Paller <kimseer.paller@analog.com>
-+
-+description: |
-+    Single channel 10 bit ADC with SPI interface. Datasheet
-+    can be found here:
-+      https://www.analog.com/media/en/technical-documentation/data-sheets/MAX14001-MAX14002.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,max14001
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 5000000
-+
-+  vref-supply:
-+    description: Voltage reference to establish input scaling.
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+required:
-+  - compatible
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        status = "okay";
-+
-+        adc@0 {
-+            compatible = "adi,max14001";
-+            reg = <0>;
-+            spi-max-frequency = <5000000>;
-+            vref-supply = <&vref_reg>;
-+        };
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 0e64787aa..766847ad2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12573,6 +12573,13 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/sound/max9860.txt
- F:	sound/soc/codecs/max9860.*
- 
-+MAX14001 IIO ADC DRIVER
-+M:	Kim Seer Paller <kimseer.paller@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/dac/adi,max14001.yaml
-+
- MAXBOTIX ULTRASONIC RANGER IIO DRIVER
- M:	Andreas Klinger <ak@it-klinger.de>
- L:	linux-iio@vger.kernel.org
--- 
-2.34.1
+You missed at least DT list (maybe more), so this won't be tested.
+Please resend and include all necessary entries.
+
+Subject - ignored comments.
+
+This is a friendly reminder during the review process.
+
+It seems my previous comments were not fully addressed. Maybe my
+feedback got lost between the quotes, maybe you just forgot to apply it.
+Please go back to the previous discussion and either implement all
+requested changes or keep discussing them.
+
+Thank you.
+
+> ---
+>  .../bindings/iio/adc/adi,max14001.yaml        | 55 +++++++++++++++++++
+>  MAINTAINERS                                   |  7 +++
+>  2 files changed, 62 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml b/Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml
+> new file mode 100644
+> index 000000000..1b17f5dc0
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml
+> @@ -0,0 +1,55 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +# Copyright 2023 Analog Devices Inc.
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/adi,max14001.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analog Devices MAX14001 ADC
+> +
+> +maintainers:
+> +  - Kim Seer Paller <kimseer.paller@analog.com>
+> +
+> +description: |
+> +    Single channel 10 bit ADC with SPI interface. Datasheet
+> +    can be found here:
+> +      https://www.analog.com/media/en/technical-documentation/data-sheets/MAX14001-MAX14002.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,max14001
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 5000000
+> +
+> +  vref-supply:
+> +    description: Voltage reference to establish input scaling.
+> +
+> +allOf:
+> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+
+Place it like other bindings, so after required or before properties.
+
+Anyway, what happened with all the properties you had here and should be
+switched to generic ones?
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    spi {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        status = "okay";
+
+Really... You did not respond to my feedback, so sending uncorrected
+version feels like being ignored. :(
+
+Best regards,
+Krzysztof
 
