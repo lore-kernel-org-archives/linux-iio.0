@@ -2,68 +2,84 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FC0C77B73
-	for <linux-iio@archiver.kernel.org>; Tue,  6 Jun 2023 10:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F67EC77B73
+	for <linux-iio@archiver.kernel.org>; Tue,  6 Jun 2023 10:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229827AbjFFKDr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 6 Jun 2023 06:03:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
+        id S234732AbjFFKaf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 6 Jun 2023 06:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236165AbjFFKDo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Jun 2023 06:03:44 -0400
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C9D121
-        for <linux-iio@vger.kernel.org>; Tue,  6 Jun 2023 03:03:43 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed30:a3e8:6562:a823:d832])
-        by xavier.telenet-ops.be with bizsmtp
-        id 5m3h2A0011Tjf1k01m3hbX; Tue, 06 Jun 2023 12:03:41 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtp (Exim 4.95)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1q6TX6-005Jhm-3M;
-        Tue, 06 Jun 2023 12:03:40 +0200
-Received: from geert by rox.of.borg with local (Exim 4.95)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1q6TXQ-00Bjv3-ST;
-        Tue, 06 Jun 2023 12:03:40 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] dt-bindings: iio: afe: voltage-divider: Spelling s/curcuit/circuit/
-Date:   Tue,  6 Jun 2023 12:03:39 +0200
-Message-Id: <a8597e54b55dedc51025fe3073d25ef0d659d0dc.1686045793.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S236651AbjFFKaU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Jun 2023 06:30:20 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE87B10C6
+        for <linux-iio@vger.kernel.org>; Tue,  6 Jun 2023 03:30:16 -0700 (PDT)
+Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Qb6B54P8mz67hvQ;
+        Tue,  6 Jun 2023 18:27:57 +0800 (CST)
+Received: from localhost (10.202.227.76) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Tue, 6 Jun
+ 2023 11:30:14 +0100
+Date:   Tue, 6 Jun 2023 11:30:13 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     David Schiller <david.schiller@jku.at>
+CC:     <linux-iio@vger.kernel.org>
+Subject: Re: Questions about ad5933 driver
+Message-ID: <20230606113013.00000530@Huawei.com>
+In-Reply-To: <3e5653d1aec953e8aba8c00d073cd033a9f7a873.camel@jku.at>
+References: <3e5653d1aec953e8aba8c00d073cd033a9f7a873.camel@jku.at>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.227.76]
+X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fix a misspelling of "circuit".
+On Tue, 6 Jun 2023 10:46:14 +0200
+David Schiller <david.schiller@jku.at> wrote:
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Hi!
+> 
+> I attempted to use the ad5933 impedance analyzer driver in combination
+> with libiio.
+> 
+> Trying to enumerate the local devices with "iio_info" leads to an error,
+> which I traced down to the naming of the in_voltage_{real,imag}_* sysfs
+> scan_elements nodes. The name modifiers "real" and "imag" are not valid
+> sysfs symbols, it seems.
+> The driver is in the staging directory, so I don't know if it has to
+> conform to the general IIO sysfs ABI.
 
-diff --git a/Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml b/Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml
-index df2589f214e18b50..dddf97b50549f001 100644
---- a/Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml
-+++ b/Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml
-@@ -13,7 +13,7 @@ description: |
-   When an io-channel measures the midpoint of a voltage divider, the
-   interesting voltage is often the voltage over the full resistance
-   of the divider. This binding describes the voltage divider in such
--  a curcuit.
-+  a circuit.
- 
-     Vin ----.
-             |
--- 
-2.34.1
+It 'should' but it doesn't which is part of the reason it's still in staging
+after all these years.
+
+> 
+> I worked around this by patching libiio, but I don't know if that's the
+> correct approach.
+
+Ideally clean up the driver.  If you are willing that would be great, if not
+would you be able to test changes made by someone else?  You are first person
+in years that I know has one! :)  I can't remember how far this driver is
+from being ready to move out of staging, but I can probably find some time
+to do a thorough review of that in next few weeks.
+
+That may require extra ABI definitions possibly including the real and imag
+modifiers at which point your patch to libiio would be correct.
+
+Jonathan
+
+> 
+> What do you think?
+> 
+> Best regards
+> David
+> 
+> 
 
