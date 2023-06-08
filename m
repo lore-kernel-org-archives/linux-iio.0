@@ -2,146 +2,67 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76146C83005
-	for <linux-iio@archiver.kernel.org>; Fri,  9 Jun 2023 17:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B090C87FDE
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Jun 2023 00:30:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230174AbjFIRmE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 9 Jun 2023 13:42:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
+        id S232498AbjFJAal convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 9 Jun 2023 20:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230499AbjFIRmD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Jun 2023 13:42:03 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0B93AAC;
-        Fri,  9 Jun 2023 10:41:54 -0700 (PDT)
-Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Qd7fs2PVYz6J6ks;
-        Sat, 10 Jun 2023 01:41:25 +0800 (CST)
-Received: from localhost (10.126.170.42) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Fri, 9 Jun
- 2023 18:41:52 +0100
-Date:   Fri, 9 Jun 2023 18:41:49 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Conor Dooley <conor@kernel.org>,
-        <marius.cristea@microchip.com>, <lars@metafoo.de>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: adding MCP3564 ADC
-Message-ID: <20230609184149.00002766@Huawei.com>
-In-Reply-To: <20230608193443.GA3261675-robh@kernel.org>
-References: <20230519160145.44208-1-marius.cristea@microchip.com>
-        <20230519160145.44208-2-marius.cristea@microchip.com>
-        <20230519-variably-direction-cfa9a034e844@spud>
-        <20230520161753.28a8c128@jic23-huawei>
-        <20230608193443.GA3261675-robh@kernel.org>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
+        with ESMTP id S232532AbjFJAak (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Jun 2023 20:30:40 -0400
+X-Greylist: delayed 1005 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 09 Jun 2023 17:30:38 PDT
+Received: from es.pcb.gov.my (es.pcb.gov.my [202.75.7.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C722C3A96
+        for <linux-iio@vger.kernel.org>; Fri,  9 Jun 2023 17:30:38 -0700 (PDT)
+X-ASG-Debug-ID: 1686355445-1488a971bf06aa000f-m6Iepj
+Received: from mail.pcb.gov.my (mail.pcb.gov.my [10.28.173.47]) by es.pcb.gov.my with ESMTP id 0lDd7WOYXSHlY8Bi for <linux-iio@vger.kernel.org>; Sat, 10 Jun 2023 08:13:06 +0800 (+08)
+X-Barracuda-Envelope-From: herdayu@pcb.gov.my
+Received: from [193.169.254.61] (193.169.254.61) by EXCHANGE01.BPA.pcb.gov.my
+ (10.28.173.47) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2; Fri, 9 Jun 2023
+ 01:18:54 +0800
+Reply-To: <alicewalt63@gmail.com>
+X-Barracuda-Effective-Source-IP: UNKNOWN[193.169.254.61]
+X-Barracuda-Apparent-Source-IP: 193.169.254.61
+From:   Alice Walton <herdayu@pcb.gov.my>
+To:     <linux-iio@vger.kernel.org>
+Subject: =?UTF-8?B?xI1lc3RpdGFt?=
+Date:   Thu, 8 Jun 2023 10:18:47 -0700
+X-ASG-Orig-Subj: =?UTF-8?B?xI1lc3RpdGFt?=
+Message-ID: <20230608101847.A36B81065A07D638@pcb.gov.my>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.170.42]
-X-ClientProxiedBy: lhrpeml100006.china.huawei.com (7.191.160.224) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+X-ClientProxiedBy: EXCHANGE01.BPA.pcb.gov.my (10.28.173.47) To
+ EXCHANGE01.BPA.pcb.gov.my (10.28.173.47)
+X-Barracuda-Connect: mail.pcb.gov.my[10.28.173.47]
+X-Barracuda-Start-Time: 1686355966
+X-Barracuda-URL: https://10.28.173.25:443/cgi-mod/mark.cgi
+X-Barracuda-License: Expired
+X-Barracuda-BRTS-Status: 1
+X-Virus-Scanned: by bsmtpd at pcb.gov.my
+X-Barracuda-Scan-Msg-Size: 570
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 8 Jun 2023 13:34:43 -0600
-Rob Herring <robh@kernel.org> wrote:
+čestitam,
 
-> On Sat, May 20, 2023 at 04:17:53PM +0100, Jonathan Cameron wrote:
-> > On Fri, 19 May 2023 19:29:15 +0100
-> > Conor Dooley <conor@kernel.org> wrote:
-> >   
-> > > Hey Marius,
-> > > 
-> > > On Fri, May 19, 2023 at 07:01:44PM +0300, marius.cristea@microchip.com wrote:  
-> > > > From: Marius Cristea <marius.cristea@microchip.com>
-> > > > 
-> > > > This is the device tree schema for iio driver for
-> > > > Microchip family of 153.6 ksps, Low-Noise 16/24-Bit
-> > > > Delta-Sigma ADCs with an SPI interface.    
-> > > 
-> > > Just one quick process bit, please try to CC all of the maintainers
-> > > listed by get_maintainer.pl - you unfortunately managed to miss 2 of the
-> > > 3 dt-binding maintainers :/ Perhaps you ran get_maintainer.pl using our
-> > > vendor tree?
-> > >   
-> > > > Signed-off-by: Marius Cristea <marius.cristea@microchip.com>
-> > > > ---    
-> > >   
-> > > > +  vref-supply:
-> > > > +    description:
-> > > > +      Some devices have a specific reference voltage supplied on a different
-> > > > +      pin to the other supplies. Needed to be able to establish channel scaling
-> > > > +      unless there is also an internal reference available (e.g. mcp3564r)    
-> > > 
-> > > Should this be marked as a required property for the non-r devices that
-> > > do not have an internal reference?
-> > >   
-> > > > +  microchip,hw-device-address:    
-> > > 
-> > > Hopefully Rob or Jonathan etc can chime in as to whether a common
-> > > property exists for this type of thing...
-> > >   
-> > Nope. This is a new one for me - there are devices that work on a daisy chain
-> > principle but I think this one works by encoding stuff in the actual message
-> > which is unusual for SPI.  
-> 
-> Not something I've seen either.
-> 
-> >   
-> > > > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > > > +    minimum: 0
-> > > > +    maximum: 3
-> > > > +    description:
-> > > > +      The address is set on a per-device basis by fuses in the factory,
-> > > > +      configured on request. If not requested, the fuses are set for 0x1.
-> > > > +      The device address is part of the device markings to avoid
-> > > > +      potential confusion. This address is coded on two bits, so four possible
-> > > > +      addresses are available when multiple devices are present on the same
-> > > > +      SPI bus with only one Chip Select line for all devices.    
-> 
-> What's this going to look like with more than one device? It would need 
-> to be incorporated into 'reg' and the unit-address to work. Something 
-> like this is 
-> 
-> spi {
->   device0@0 {
->     reg = <0>;
->     microchip,hw-device-address = <0>;
->   };
-> 
->   device1@0 {
->     reg = <0>;
->     microchip,hw-device-address = <1>;
->   };
-> };
-> 
-> That should throw warnings because you have 2 nodes at the same address 
-> which is not good practice.
-> 
-> I think you need a spi mux in here with the mux addresses being the 
-> microchip,hw-device-address values.
+      Vaša e-pošta osvojila je 5.000.000,00 USD od strane Alice 
+Walton 2023 humanitarnog programa podrške donacijama. 
+Kontaktirajte nas za više pojedinosti o tome kako možete 
+zatražiti svoj donacijski fond.
 
-Something that looked like an spi-mux would be cute I'm not sure how
-easy it would be to make it work given need to modify the messages
-(rather sending extra ones before and after with a different chip select).
+Hvala i Bog blagoslovio
+Zaklada Alice Walton
+=========================================
+Congratulation,
 
-It would be nice if it were somewhat generic - so binding included which
-bits would be replaced with the 'chip select' for the spi controller that
-represents the mux.
+     Your email has won $5,000,000.00 USD by Alice Walton 2023 
+humanitarian donation support program. Contact us for more 
+details on how you can claim your donation fund.
 
-Jonathan
-
-
-> 
-> Rob
-> 
-
+Thanks And God Bless
+Alice Walton Foundation
