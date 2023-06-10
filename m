@@ -2,67 +2,91 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B090C87FDE
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Jun 2023 00:30:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4711C7EE2F
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Jun 2023 12:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232498AbjFJAal convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 9 Jun 2023 20:30:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
+        id S231290AbjFJMWX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 10 Jun 2023 08:22:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232532AbjFJAak (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Jun 2023 20:30:40 -0400
-X-Greylist: delayed 1005 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 09 Jun 2023 17:30:38 PDT
-Received: from es.pcb.gov.my (es.pcb.gov.my [202.75.7.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C722C3A96
-        for <linux-iio@vger.kernel.org>; Fri,  9 Jun 2023 17:30:38 -0700 (PDT)
-X-ASG-Debug-ID: 1686355445-1488a971bf06aa000f-m6Iepj
-Received: from mail.pcb.gov.my (mail.pcb.gov.my [10.28.173.47]) by es.pcb.gov.my with ESMTP id 0lDd7WOYXSHlY8Bi for <linux-iio@vger.kernel.org>; Sat, 10 Jun 2023 08:13:06 +0800 (+08)
-X-Barracuda-Envelope-From: herdayu@pcb.gov.my
-Received: from [193.169.254.61] (193.169.254.61) by EXCHANGE01.BPA.pcb.gov.my
- (10.28.173.47) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2; Fri, 9 Jun 2023
- 01:18:54 +0800
-Reply-To: <alicewalt63@gmail.com>
-X-Barracuda-Effective-Source-IP: UNKNOWN[193.169.254.61]
-X-Barracuda-Apparent-Source-IP: 193.169.254.61
-From:   Alice Walton <herdayu@pcb.gov.my>
-To:     <linux-iio@vger.kernel.org>
-Subject: =?UTF-8?B?xI1lc3RpdGFt?=
-Date:   Thu, 8 Jun 2023 10:18:47 -0700
-X-ASG-Orig-Subj: =?UTF-8?B?xI1lc3RpdGFt?=
-Message-ID: <20230608101847.A36B81065A07D638@pcb.gov.my>
+        with ESMTP id S229483AbjFJMWW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jun 2023 08:22:22 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2598A30D0;
+        Sat, 10 Jun 2023 05:22:21 -0700 (PDT)
+Received: from localhost.localdomain (unknown [IPv6:2405:201:0:21ea:e49:10dd:40c0:e842])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: shreeya)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 04D486606EB4;
+        Sat, 10 Jun 2023 13:22:15 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1686399738;
+        bh=aOlIGXvrIXsEwyA7cJuJAjyJJNiBEdnDaaOrXAikU34=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EVRx8kEF7+KXet3WFC4qQ1wwywt0YV3J9P3Hqjfoi/7qaxHduSOnwB9mySWPtfPDO
+         5vsBnd9ot/wjiwT1Tsb2H0XkRWYvC/10VyN8G6zGBJl0XWSWwae8kyn9jIeatxnSkq
+         3LahgJ4wTCmESUeBlGueACQU8rqWEHegSZk+yvARNHvUFSnKdoLUKihgxm63IqmO4A
+         nq0iX4dHr1yKkcjsMLLhAoQqftnWT1uIaEJLyiPm3Cy7+Rc5o7/RAkmpdkLGobgxuv
+         e/4oGPRLZveEYbRCE4Xhw+EFmMe7KATOQprMfZ2ADyie5W99+LCnV4y3izQcvCzhy7
+         py11SKh/dDGpQ==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        heiko@sntech.de, sebastian.reichel@collabora.com
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, gustavo.padovan@collabora.com,
+        serge.broslavsky@collabora.com,
+        Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH] dt-bindings: iio: rockchip: Fix 'oneOf' condition failed warning
+Date:   Sat, 10 Jun 2023 17:52:00 +0530
+Message-Id: <20230610122200.161741-1-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-X-ClientProxiedBy: EXCHANGE01.BPA.pcb.gov.my (10.28.173.47) To
- EXCHANGE01.BPA.pcb.gov.my (10.28.173.47)
-X-Barracuda-Connect: mail.pcb.gov.my[10.28.173.47]
-X-Barracuda-Start-Time: 1686355966
-X-Barracuda-URL: https://10.28.173.25:443/cgi-mod/mark.cgi
-X-Barracuda-License: Expired
-X-Barracuda-BRTS-Status: 1
-X-Virus-Scanned: by bsmtpd at pcb.gov.my
-X-Barracuda-Scan-Msg-Size: 570
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-čestitam,
+Fix the dtbs_check warning for 'oneOf' condition failure.
 
-      Vaša e-pošta osvojila je 5.000.000,00 USD od strane Alice 
-Walton 2023 humanitarnog programa podrške donacijama. 
-Kontaktirajte nas za više pojedinosti o tome kako možete 
-zatražiti svoj donacijski fond.
+DTC_CHK arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dtb
+/home/shreeya/linux/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dtb:
+	saradc@fec10000: compatible: 'oneOf' conditional failed,
+	one must be fixed:
+	['rockchip,rk3588-saradc'] is too short
+	'rockchip,saradc' was expected
+	'rockchip,rk3066-tsadc' was expected
+	'rockchip,rk3399-saradc' was expected
 
-Hvala i Bog blagoslovio
-Zaklada Alice Walton
-=========================================
-Congratulation,
+Fixes: 2daf2ae9793d ("dt-bindings: iio: adc: Add rockchip,rk3588-saradc string")
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+---
+ Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-     Your email has won $5,000,000.00 USD by Alice Walton 2023 
-humanitarian donation support program. Contact us for more 
-details on how you can claim your donation fund.
+diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
+index 11c27ea451c8..aa24b841393c 100644
+--- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
+@@ -15,13 +15,13 @@ properties:
+       - const: rockchip,saradc
+       - const: rockchip,rk3066-tsadc
+       - const: rockchip,rk3399-saradc
++      - const: rockchip,rk3588-saradc
+       - items:
+           - enum:
+               - rockchip,px30-saradc
+               - rockchip,rk3308-saradc
+               - rockchip,rk3328-saradc
+               - rockchip,rk3568-saradc
+-              - rockchip,rk3588-saradc
+               - rockchip,rv1108-saradc
+               - rockchip,rv1126-saradc
+           - const: rockchip,rk3399-saradc
+-- 
+2.30.2
 
-Thanks And God Bless
-Alice Walton Foundation
