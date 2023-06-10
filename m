@@ -2,108 +2,95 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE35C7EE2F
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Jun 2023 17:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B26BC7EE29
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Jun 2023 17:25:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229677AbjFJRLw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 10 Jun 2023 13:11:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58558 "EHLO
+        id S230363AbjFJRZu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 10 Jun 2023 13:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbjFJRLv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jun 2023 13:11:51 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84C8359D;
-        Sat, 10 Jun 2023 10:11:46 -0700 (PDT)
-Received: from mercury (unknown [185.254.75.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        with ESMTP id S230502AbjFJRZm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jun 2023 13:25:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33E13C28;
+        Sat, 10 Jun 2023 10:25:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 4ABC76606EF5;
-        Sat, 10 Jun 2023 18:11:45 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1686417105;
-        bh=GTCoI9gVT5Q9hQF9AbMQI6UBua8tpLElPPWw24KdOG4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PGnFPCSfquUqM+8KZiBnsFAYM9sr/+eCoL0ROcsNmS8mH9h/lAU4jHZWmmt4pultw
-         ZgT1P6a7SMYjaCa+Vfb9crZHLkwdVqKh7+uHn0QUgsft+owcEgvqCbln3PXXnc7iyH
-         KaeJ17DtpKZHM5zo65zSmmmZSula50dyNyQ7cAFY9N8tlLEpeOiXAEZJQ04f6oJjDF
-         X1TrzTgxQ6szCz1dByT2ANBCC6minjOKZdVBGJ4dA/gR7evMGHIz86wrZwS28nqTuk
-         HP4Y239iqAHblPTUEYhIMj139HH9ICqfYxG507uJVtfvOUH+IA4SuEzbABA8SmFVZ0
-         Gw9NFYglIL/5Q==
-Received: by mercury (Postfix, from userid 1000)
-        id AF4A81060921; Sat, 10 Jun 2023 19:11:42 +0200 (CEST)
-Date:   Sat, 10 Jun 2023 19:11:42 +0200
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Shreeya Patel <shreeya.patel@collabora.com>, jic23@kernel.org,
-        lars@metafoo.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        heiko@sntech.de, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com, gustavo.padovan@collabora.com,
-        serge.broslavsky@collabora.com
-Subject: Re: [PATCH v2] dt-bindings: iio: rockchip: Fix 'oneOf' condition
- failed warning
-Message-ID: <20230610171142.dsezim4gcxr2b65u@mercury.elektranox.org>
-References: <20230610143601.173307-1-shreeya.patel@collabora.com>
- <c5243179-9baf-59ce-b979-c596dcf6692b@linaro.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6043D611A5;
+        Sat, 10 Jun 2023 17:25:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8287AC433D2;
+        Sat, 10 Jun 2023 17:25:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1686417930;
+        bh=SUXyLetcsujdlo5pQE552oUdGTnYIgJFY687Q3f9Czk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ayx4ORGmpoB6u++xfd8iYOTdlQMqKADWLvxH28w+h4qleg9Pwv5UI+tLUayd9ed/1
+         ViwoaSfkMTRGqxRWUB/IPL0GL9HXxr1E++oBO/qDBmErE7+tmxIy1XomNn9BdDCYCg
+         hcqY09npfj2xMxiY5BwtH+gw2+dh92e3I4ge2tOmdwLV0lw23xJ1ZpIF5YnS26xx1b
+         jM95o49uA3IkYFs9xhiMuvwIWj4Dk+lqfNV0YvUdEOw7BTQs2Wdoyh5GPKuXwrNd5I
+         yO6C8YVriec1aNlUdWlDnzfSG7h4w0Per4KuAKArjZ7kY9yreAj9DfVMl3V27gNfxS
+         QHj4WidYxmmPA==
+Date:   Sat, 10 Jun 2023 18:42:06 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [dt-schema PATCH] schemas: iio: add label
+Message-ID: <20230610184206.4a4c3da8@jic23-huawei>
+In-Reply-To: <168624795645.3178290.5235314768802159315.robh@kernel.org>
+References: <20230507171219.232216-1-krzk@kernel.org>
+        <168624795645.3178290.5235314768802159315.robh@kernel.org>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="f23o6klw7upsg4lg"
-Content-Disposition: inline
-In-Reply-To: <c5243179-9baf-59ce-b979-c596dcf6692b@linaro.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Thu, 8 Jun 2023 12:13:55 -0600
+Rob Herring <robh@kernel.org> wrote:
 
---f23o6klw7upsg4lg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On Sun, 07 May 2023 19:12:19 +0200, Krzysztof Kozlowski wrote:
+> > Linux IIO core code parses label property which is already used in
+> > several IIO devices.
+> > 
+> > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> > ---
+> >  dtschema/schemas/iio/iio.yaml | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >   
+> 
+> Applied, thanks!
+> 
 
-Hi,
+I'm guessing you already know this but I hit it during testing.
+dtschema/main + ruamel.yaml 0.17.24 and later seem to be broken. It installs
+fine but...
 
-On Sat, Jun 10, 2023 at 06:30:57PM +0200, Krzysztof Kozlowski wrote:
-> On 10/06/2023 16:36, Shreeya Patel wrote:
-> > rk3588-saradc isn't compatible with the rk3399-saradc variant,
-> > hence, fix the following dtbs_check warning for 'oneOf' condition
-> > failure.
->=20
-> Are you sure it isn't compatible? According to your driver it is and
-> this change is not enough.
+AttributeError: module 'ruamel.yaml' has no attribute 'YAML'                                                                                              
+$ /usr/bin/dt-doc-validate                                                                                                  
+Traceback (most recent call last):                                                                                                                        
+  File "/usr/bin/dt-doc-validate", line 4, in <module>                                                                                                    
+    __import__('pkg_resources').run_script('dtschema==2023.5.dev6+g4ddf315.d20230610', 'dt-doc-validate')                                                 
+  File "/usr/lib/python3.11/site-packages/pkg_resources/__init__.py", line 720, in run_script                                                             
+    self.require(requires)[0].run_script(script_name, ns)                                                                                                 
+  File "/usr/lib/python3.11/site-packages/pkg_resources/__init__.py", line 1559, in run_script                                                            
+    exec(code, namespace, namespace)                                                                                                                      
+  File "/usr/lib/python3.11/site-packages/dtschema-2023.5.dev6+g4ddf315.d20230610-py3.11.egg/EGG-INFO/scripts/dt-doc-validate", line 16, in <module>      
+    import dtschema                                                                                                                                       
+  File "/usr/lib/python3.11/site-packages/dtschema-2023.5.dev6+g4ddf315.d20230610-py3.11.egg/dtschema/__init__.py", line 1, in <module>                   
+    from dtschema.lib import (                                                                                                                            
+  File "/usr/lib/python3.11/site-packages/dtschema-2023.5.dev6+g4ddf315.d20230610-py3.11.egg/dtschema/lib.py", line 35, in <module>                       
+    rtyaml = ruamel.yaml.YAML(typ='rt')   
 
-The driver changes are still in the iio testing branch and not yet
-in linux-next. RK3588 ADC is not compatible with previous
-generations. It's trivial to see in Shreeya's driver patch:
+I've worked around this by setting a max version at 0.17.
+Only change in ruamel.yaml between those is:
+https://sourceforge.net/p/ruamel-yaml/code/ci/4309006902d2453399588f4ddccfb3fc460e1eba/
 
-https://lore.kernel.org/all/20230603185340.13838-3-shreeya.patel@collabora.=
-com/
+My python is terrible so I'm not looking into this further.
 
-Greetings,
-
--- Sebastian
-
---f23o6klw7upsg4lg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmSErsoACgkQ2O7X88g7
-+pqdjA//fAN5NUk3NyyvjLVVAu3DIUPDIWnYahETYGCTp+c7Q5aVJ/ba/AifbEZ4
-r8EWHcqU6T6WwnWXsgTyEQrp22wmLpwR90TR6fMo2Coz6cGGh+z/fqYsQ6ndk0iF
-T2BcviSUpJ/Pcm7TPYMNrFVYp2r4Tik2cdJiTFpRkKMxGrv0A6XZ+/6Ulf59DaGT
-rU/tFrDr97nM/2uLEjdsWM249QmW6tV9qB9VpkHj5HSmwIuZkOe3tbTXvvUMxBj6
-qvq1VU8eKPbz30stpqJDsB/alqbQDmbMiv8A/mqEQKWqDEgWf1GjG1mTXraql+sB
-2BojWwTJOFNxlQGHXSn9l6aL7f+G1s4do5kf5ObxTViyfG48kjrbWtZxg7n9ZZaw
-fjJcMo+HRRIb+ywPjKpDGucgz9rb9o4W3OJn6Lh4koMUWZzQJR8CCFNgNHn8Z8Nr
-DNo+JNyhqCNwJb+pzXCGDY5gW/gdRtN+6pyTRzpx76AQpWGEa5yDy1DoT2mwNKLG
-bGw15HT6hG/oTS4sktYTreUU9bi1kcgHHQ0URTYrZeltyriUJDFMD90WGpJvogeM
-HiDVtwRcgaS2LCSs51nAxJRcdn+XuXHzpDDz2W3/EN7JotqnZibjo3A7t0LcR2rm
-k+89jth4jbuN1sKPjFIXV/adwv3Mf7N9H6KjX+nNuyO2B0/fo5c=
-=jpmA
------END PGP SIGNATURE-----
-
---f23o6klw7upsg4lg--
+Jonathan
