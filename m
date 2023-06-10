@@ -2,101 +2,80 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0253EC7EE2F
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Jun 2023 17:34:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B90C7EE29
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Jun 2023 17:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbjFJRea (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 10 Jun 2023 13:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36414 "EHLO
+        id S229729AbjFJRh5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 10 Jun 2023 13:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbjFJRe3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jun 2023 13:34:29 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8E63592
-        for <linux-iio@vger.kernel.org>; Sat, 10 Jun 2023 10:34:27 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-5147e40bbbbso4326447a12.3
-        for <linux-iio@vger.kernel.org>; Sat, 10 Jun 2023 10:34:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1686418466; x=1689010466;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KDwuS8ivDaXoqweaWeaVy3Yc3d6wso3xwv2Ixdl0prg=;
-        b=x090GQhA4ZtVMlRRaeiyoF+aOZ9q0QqxGwFB2WJ4C6NkF48xzs3saVX7RdJIbeNSUg
-         1EsjysURbpivR9Ykn1fQwHgyA/bBbxYmTQcWHupdnq+yw2QBhVZ5Wzckc7rto4jgeVpO
-         gooStXFAkOeHT08lVH61GCuNaBIAFkxRL2RRarBYCPBLKcGdPe0CrBuBCfUVUXP+Je0d
-         cxA5bmHkmv53AsKHs2/qIS0RxlLDSdu8zw5af+JzdoZp4lvS0oqXyhTzenH9m8BEL7QN
-         ejT0ot0x1Ys8nYIdg5CcAFiq67W1gTHRwWoLlecEhlLomuYs4Uc5Q6BmNGZPZWO00cK8
-         5spA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686418466; x=1689010466;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KDwuS8ivDaXoqweaWeaVy3Yc3d6wso3xwv2Ixdl0prg=;
-        b=jIps4WuxHfqxUAMpC43mUhLEcxe6Y6LGnbpsiFw5+bQg7WJlRXxKhhmgv2LeY1Br19
-         LHwJPd4zFLjhh3sdjZYJkVQpWxmAK0IPAHuazoyGKFd/a1wlgOzDENS8Y9Ujnud/uZzp
-         qBQCy/z0hJsMUSS3H4qFyfjgwk6YBNUkWmWXxIP7IZhAGSDa8gMi88/DDM08AiU8C3FO
-         JowY5jg7nOduEoAL+yG1PmNWsESPXBhpvVQIxVOikWr82XZEf8zAWdNoSeJTcvDVLDyK
-         gxOQXQI4DLqWYEYJYur2Mb3VR/RNgyXMHu4ViwxjW5qSmdHaWCh4Ue8fjo5qh2wyeJKi
-         7ppQ==
-X-Gm-Message-State: AC+VfDyYxqrQ4JOPJFTtmNdQohqLvcCsMmANu2fiERmd+2ReraQ/OE0P
-        ojH7VsgNUhoX+HdeD2bl5d9qBQ==
-X-Google-Smtp-Source: ACHHUZ4QLwPV4AAHZ1nnSvlebkLfLm6hTSfz7V3skL2ZlTi3k9c5gDLsQvctQyiunCRRfDDndPgBLA==
-X-Received: by 2002:a17:906:4786:b0:94f:694e:b953 with SMTP id cw6-20020a170906478600b0094f694eb953mr4758757ejc.59.1686418466379;
-        Sat, 10 Jun 2023 10:34:26 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id g8-20020a170906348800b00977cfa6ff46sm2788903ejb.103.2023.06.10.10.34.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 10 Jun 2023 10:34:25 -0700 (PDT)
-Message-ID: <153ea7d7-25d5-8782-a622-ae512134161c@linaro.org>
-Date:   Sat, 10 Jun 2023 19:34:23 +0200
+        with ESMTP id S229450AbjFJRh4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jun 2023 13:37:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D36FB358E;
+        Sat, 10 Jun 2023 10:37:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70B0C61789;
+        Sat, 10 Jun 2023 17:37:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D868C433EF;
+        Sat, 10 Jun 2023 17:37:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1686418674;
+        bh=sDbXjydUZcplomPk5Q6/w1NDK3IqB8vVcujoG66l0qw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KTm0Fu+hZnhe/254F+GzfqJjduxSNDiIggUtbFtvKyNmj3lQNh2TOhnLR4pFGSOtc
+         lRyNBpElGc0lCpqur71czcShU3SnBWb65i14NRxoAhWfQnW7Ef4EaWjKNuP+IE8kPV
+         PBql1LCv8F5ofmdDZDVkwsY7Pm6zsqVi+wc+4JpHm1DQnW19nNmCfpkJd8QZIC+bWh
+         45WSn5rW4kZglotdC8RR7O1wHR9zAH5iC1OZfNUbmGOr/rmx/uRlOnGtlMfos9NTLV
+         r9E7sO2AVj8y+/I8WZNHkxN9dKuxrKztdcvEba/f/JeqDtqZvB5sNCtrOUA1mCZ8zt
+         5z+yzsHqTFXrQ==
+Date:   Sat, 10 Jun 2023 18:54:30 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Peter Rosin <peda@axentia.se>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: afe: voltage-divider: Spelling
+ s/curcuit/circuit/
+Message-ID: <20230610185430.228f977f@jic23-huawei>
+In-Reply-To: <f5e1ea82-75b7-8164-f82a-5ad6054ccb5e@axentia.se>
+References: <a8597e54b55dedc51025fe3073d25ef0d659d0dc.1686045793.git.geert+renesas@glider.be>
+        <f5e1ea82-75b7-8164-f82a-5ad6054ccb5e@axentia.se>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.2
-Subject: Re: [PATCH v2] dt-bindings: iio: rockchip: Fix 'oneOf' condition
- failed warning
-Content-Language: en-US
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc:     Shreeya Patel <shreeya.patel@collabora.com>, jic23@kernel.org,
-        lars@metafoo.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        heiko@sntech.de, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com, gustavo.padovan@collabora.com,
-        serge.broslavsky@collabora.com
-References: <20230610143601.173307-1-shreeya.patel@collabora.com>
- <c5243179-9baf-59ce-b979-c596dcf6692b@linaro.org>
- <20230610171142.dsezim4gcxr2b65u@mercury.elektranox.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230610171142.dsezim4gcxr2b65u@mercury.elektranox.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 10/06/2023 19:11, Sebastian Reichel wrote:
-> Hi,
-> 
-> On Sat, Jun 10, 2023 at 06:30:57PM +0200, Krzysztof Kozlowski wrote:
->> On 10/06/2023 16:36, Shreeya Patel wrote:
->>> rk3588-saradc isn't compatible with the rk3399-saradc variant,
->>> hence, fix the following dtbs_check warning for 'oneOf' condition
->>> failure.
->>
->> Are you sure it isn't compatible? According to your driver it is and
->> this change is not enough.
-> 
-> The driver changes are still in the iio testing branch and not yet
-> in linux-next. RK3588 ADC is not compatible with previous
-> generations. It's trivial to see in Shreeya's driver patch:
-> 
-> https://lore.kernel.org/all/20230603185340.13838-3-shreeya.patel@collabora.com/
+On Tue, 6 Jun 2023 12:38:35 +0200
+Peter Rosin <peda@axentia.se> wrote:
 
-I was checking the next. It's fine then.
+> Hi!
+> 
+> 2023-06-06 at 12:03, Geert Uytterhoeven wrote:
+> > Fix a misspelling of "circuit".
+> > 
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>  
+> 
+> Acked-by: Peter Rosin <peda@axentia.se>
 
-Best regards,
-Krzysztof
+Applied to the togreg branch of iio.git
+
+Thanks,
+
+Jonathan
+
+> 
+> Cheers,
+> Peter
+> 
+> > -  a curcuit.
+> > +  a circuit.  
 
