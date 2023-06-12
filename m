@@ -2,90 +2,132 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25861C88CB4
-	for <linux-iio@archiver.kernel.org>; Mon, 12 Jun 2023 14:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50FF4C88CB2
+	for <linux-iio@archiver.kernel.org>; Mon, 12 Jun 2023 14:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238100AbjFLORf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 12 Jun 2023 10:17:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55284 "EHLO
+        id S238252AbjFLOY0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 12 Jun 2023 10:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237401AbjFLORS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Jun 2023 10:17:18 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057C33589;
-        Mon, 12 Jun 2023 07:15:10 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id 5614622812f47-38c35975545so2627015b6e.1;
-        Mon, 12 Jun 2023 07:15:09 -0700 (PDT)
+        with ESMTP id S238385AbjFLOYD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Jun 2023 10:24:03 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F332950;
+        Mon, 12 Jun 2023 07:22:23 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id a640c23a62f3a-977e0fbd742so645855166b.2;
+        Mon, 12 Jun 2023 07:22:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686579298; x=1689171298;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tOx6mer2Y0xFwAlHeK7VBbHx/09765NLkewrCj3zx+Y=;
-        b=Xm4+EAzsXGukgRlA9uQ7SswMSO6ou4ZbhpL0ZIA/gSytMrnxLjaA+b+tOB21QRGS0Q
-         0onrjdR/+2Ce5Q7cwkUDbwf/nnkzIZeuJuY5kF+a0vcFRw3xp4PPbo3ao0SrL53rfJOp
-         avC0oy/PoRms5aLTAiolXBPBlPLqfgt3gdlMDf4WERKme13KnaraXObCgqyAFYOJvsgw
-         MsSWJc4G0ZlNFr1PF0pHuLplPiesuyoLh9bYkY7u7HFYKUVafmgT4XQseqHNkzYIKf0O
-         3uHnrglgzdUQeKq6qFdTo7fRN6zE7kSdPRClbfZi7gJuLb8iEhkZaZ09P2LYBBLjZd8N
-         S9Dg==
+        d=gmail.com; s=20221208; t=1686579738; x=1689171738;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=sx560Di9qmHMvf8XH62YvKC4b96faxuZR68X3dA6VOY=;
+        b=lTKBMptM2GI6gMgLSYWZmTk77BFlkMlYC/Sznsl3xba2zWifkTuGy2PUaMoEe+KKqY
+         wtHiikuqKurOzdhU/Pzk07x302bx1UPBKWNvVQnrZv9+g4yG6HB+ojZi8zu/VFKAy7Nv
+         17pyXS/c7oB93clINn5bgrqhr0u8DrufCoiBZoMVD6fKiEn6H4yxtmZga8Rp6RKQ4ZEU
+         88Da5/pefTEXbuu4j9V4uya7y7Y+W3Hu2poUUGjCttkFhfV+m8vDwXUaeom1+TiDQVGn
+         HJujgR294E+IJOoXqs4z2W0/Dsr0GWaeeWerL8GKoLlRHwPRoztGes6U6HALh61NDIFA
+         Jjaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686579298; x=1689171298;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tOx6mer2Y0xFwAlHeK7VBbHx/09765NLkewrCj3zx+Y=;
-        b=WA2cKTl3ufP2+Su0xN6tD/iDKMpuIfyUATGi2WqvREKN8GNLWART379wtT/iLMY+bk
-         90AE0yNXIKx+cccmfn5g4ohJkowpgCg5QSi2J5K/FGkWJ/mv1663BgwDulxk0CtMbUxJ
-         IptTQP9uaG9jikwj43GQvLFgnGaUUsYiDcye3wEq65o2xnSzlEolw9Ach18rfVCkyQ88
-         LahEygiDQ332LE+FL0y/DsK3nVoFVoZ2UGIoa94BpWORjKK8Eih+Vjq2yTSbpst/rnhY
-         CRYj1j+pbs14OjWVVcAU93UNISKqRCgYBHuVJb8FH1S+znjHTT0Ayiac4yLV1L2YIdpq
-         IIqg==
-X-Gm-Message-State: AC+VfDzNf6G/RxzY1uBDOI8vrclaxZoP6m9RSoWanBBAOU3qCrgKkGg9
-        V2r/vLBwiZkrf00291DM19GV0nxhQS9ZdaLYAog=
-X-Google-Smtp-Source: ACHHUZ6Oh7TNKalmakidfKCbkahmgvWW5tzHcVOkdNDnRMGrUcsnGhx4I0KYX7WHaFzH9cmlzGiLEvmvQfcHdSyQeQw=
-X-Received: by 2002:a05:6808:1506:b0:39a:acfe:4659 with SMTP id
- u6-20020a056808150600b0039aacfe4659mr5139127oiw.17.1686579297921; Mon, 12 Jun
- 2023 07:14:57 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1686579738; x=1689171738;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=sx560Di9qmHMvf8XH62YvKC4b96faxuZR68X3dA6VOY=;
+        b=QquSdZgqDPyVuQCJQIZTdVlVpVuhdJObVeNiKWRx6RWDY6tkaKV0bpMROE8UgLoItu
+         k3RdH5bNksPBblPb1rQq+k0zZVdtDjOXH+qavXfwIsO8JrF22Aaddgu0FZ0KknoX04TU
+         pMcsb5d6FqeNb1nWcBr79VgLhQHxvTNRfc1fNOg4vSyAeBeuSd9w/IDNHJNEBGFMGtG6
+         ljB7LzTpSXNPMceVqcCPb01G9HWfOYMstvg8lbFCIkkON0TfJ60o/9LZ8osF4fGt4zFe
+         gLWVSPl/Xr/I/f5AxBXPzaeZFCyXZGRY4rdUR8zMu2bcnuXEjaDIj0O7us48HFzLxiJr
+         5mGQ==
+X-Gm-Message-State: AC+VfDwRbLfa6iPAPuLg7DQLjlf3NCr9NiBtfkGLRTRqrbFaimoy0Bmz
+        HNfil+Osoc2lPP7+tafG3mM=
+X-Google-Smtp-Source: ACHHUZ65aF++UurkDgYkPRUcDi8fvtSFKsr2H/VoBqT6EYQpgt+u1QrsYJw8m0ujcJKjH73iBvRRFA==
+X-Received: by 2002:a17:907:2688:b0:967:a127:7e79 with SMTP id bn8-20020a170907268800b00967a1277e79mr9415715ejc.28.1686579738218;
+        Mon, 12 Jun 2023 07:22:18 -0700 (PDT)
+Received: from localhost.localdomain ([2a02:8109:aa3f:ead8::d8a0])
+        by smtp.gmail.com with ESMTPSA id i8-20020a17090671c800b009659fa6eeddsm5262528ejk.196.2023.06.12.07.22.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Jun 2023 07:22:17 -0700 (PDT)
+From:   Mehdi Djait <mehdi.djait.k@gmail.com>
+To:     jic23@kernel.org, mazziesaccount@gmail.com
+Cc:     krzysztof.kozlowski+dt@linaro.org,
+        andriy.shevchenko@linux.intel.com, robh+dt@kernel.org,
+        lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Mehdi Djait <mehdi.djait.k@gmail.com>
+Subject: [PATCH v5 0/7] iio: accel: Add support for Kionix/ROHM KX132-1211 accelerometer
+Date:   Mon, 12 Jun 2023 16:22:03 +0200
+Message-Id: <cover.1686578553.git.mehdi.djait.k@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20230612122926.107333-1-herve.codina@bootlin.com> <20230612122926.107333-9-herve.codina@bootlin.com>
-In-Reply-To: <20230612122926.107333-9-herve.codina@bootlin.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 12 Jun 2023 17:14:22 +0300
-Message-ID: <CAHp75VcQzo2mUmqbBtZzCX3EarSHYx6ZfPm6BR_n7Uv_tGBK1A@mail.gmail.com>
-Subject: Re: [PATCH v3 08/12] iio: inkern: Replace a FIXME comment by a TODO one
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Jun 12, 2023 at 3:30=E2=80=AFPM Herve Codina <herve.codina@bootlin.=
-com> wrote:
->
-> This FIXME comment is more a TODO one.
-> It is a note when someone will need for this currently unsupported case.
+Hello everyone,
 
-> Change from FIXME to TODO.
+Version 5 for adding support for the kx132-1211 accelerometer
 
-Suggested-by: Jonathan ... ?
+KX132-1211 accelerometer is a sensor which:
+	- supports G-ranges of (+/-) 2, 4, 8, and 16G
+	- can be connected to I2C or SPI
+	- has internal HW FIFO buffer
+	- supports various ODRs (output data rates)
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+The KX132-1211 accelerometer is very similar to the KX022A. 
+One key difference is number of bits to report the number of data bytes that 
+have been stored in the buffer: 8 bits for KX022A vs 10 bits for
+KX132-1211.
 
---=20
-With Best Regards,
-Andy Shevchenko
+Changes in v5:
+- moved the "kfree" call to match the reverse of what happens in 
+  kx022a_fifo_enable() as suggested by Matti and Jonathan
+- used min_t, checked for availability of chip_info and moved the
+  position of u16 buf_smp_lvl_mask as suggested by Andy
+- introduced buf_smp_lvl_mask in Patch 7 as suggested by Jonathan
+
+Changes in v4:
+- moved the allocation of the fifo_buffer to kx022a_fifo_enable and
+  kx022a_fifo_disable
+- some fixes to the regmap ranges of kx132-1211 
+
+Changes in v3:
+- added two new patches by separating the addition of the 
+  i2c_device_id table and the removal of blank lines from other
+  unrelated changes
+- fixes a warning detected by the kernel test robot
+- made all the changes related the chip_info in one patch
+
+Changes in v2:
+- added a new patch for warning when the device_id match fails in the
+  probe function
+- added a new patch for the function that retrieves the number of bytes
+  in the buffer
+- added a change to the Kconfig file in the patch adding the support
+  for the kx132-1211
+- various fixes and modifications listed under each patch
+
+Mehdi Djait (7):
+  dt-bindings: iio: Add KX132-1211 accelerometer
+  iio: accel: kionix-kx022a: Remove blank lines
+  iio: accel: kionix-kx022a: Warn on failed matches and assume
+    compatibility
+  iio: accel: kionix-kx022a: Add an i2c_device_id table
+  iio: accel: kionix-kx022a: Refactor driver and add chip_info structure
+  iio: accel: kionix-kx022a: Add a function to retrieve number of bytes
+    in buffer
+  iio: accel: Add support for Kionix/ROHM KX132-1211 accelerometer
+
+ .../bindings/iio/accel/kionix,kx022a.yaml     |  12 +-
+ drivers/iio/accel/Kconfig                     |   8 +-
+ drivers/iio/accel/kionix-kx022a-i2c.c         |  24 +-
+ drivers/iio/accel/kionix-kx022a-spi.c         |  13 +-
+ drivers/iio/accel/kionix-kx022a.c             | 312 ++++++++++++++----
+ drivers/iio/accel/kionix-kx022a.h             | 110 +++++-
+ 6 files changed, 404 insertions(+), 75 deletions(-)
+
+-- 
+2.30.2
+
