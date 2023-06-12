@@ -2,31 +2,31 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C34C87FE2
-	for <linux-iio@archiver.kernel.org>; Mon, 12 Jun 2023 12:30:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CBE2C7EE45
+	for <linux-iio@archiver.kernel.org>; Mon, 12 Jun 2023 12:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233445AbjFLMaE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 12 Jun 2023 08:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52706 "EHLO
+        id S233658AbjFLMaG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 12 Jun 2023 08:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233368AbjFLMaA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Jun 2023 08:30:00 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4DBB1B5;
-        Mon, 12 Jun 2023 05:29:58 -0700 (PDT)
+        with ESMTP id S233344AbjFLMaD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Jun 2023 08:30:03 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92FA98;
+        Mon, 12 Jun 2023 05:30:01 -0700 (PDT)
 X-GND-Sasl: herve.codina@bootlin.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1686572996;
+        t=1686573000;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=GyTXVmL/5teIh8xuYTUUi3ltQcCGVDf6AcEbfADS6og=;
-        b=m7Yo3Y33pJyi/cO3Gg3QivkXe8dWTGsvjD3U63TB9g5auQDEc8OIP9MCTy608VHN0uR9Q2
-        pU3cMeCs/2rkt0Pgng7Z4nQqYSpiKBcyiQZU1hXKRJOAUJ7SanYw+liM4kWSx8CKzn40ke
-        N+Mw3vIyJ2B4ePLk4xmgCvWqfbrfoFE59sPDdsu+m1Uj9rL2DCZjeetdW7wC/iKRuXkfgv
-        WV0N1Og0uU6Xy2RvURKTrA+8+WLiKkAtYVHo7HoIpV3lUUC9eEQ0QNYH2WkQhJAZEE+T7i
-        aWpTazZbZoRJzCoEH8P46aQH6Gl1sEUYi9LzwPYVpmREEAOiasq9FwXeGMqCjw==
+        bh=fxihK5WvOxWe3kLHHpt2g1PiNniemigSf5773LJSuNI=;
+        b=C8wzreCDiLenUXn7Nb6eOorDJJoB3hl00Lr0jwbMl1swMv5DC73t/KbiZ5RSaU1smiXbpB
+        SYGduS0pAUP4IVMsmy4gdjr0gqVLR5leEB9u+Ii0rGmz08o6Gn3wZpGDofnXXC97b1FnO6
+        jOJzc4sBnHMPyKlcJrYmXnI6X9XLzyTsQ6H0X82U/j/dnsYanuuHAYLyb2NGwRXqiiHdwY
+        1Pe28U2Bjgav0LDJRQhur5BSIep73UQzt1ImOzXwwDzmm2U2GdPwtccKjIqx9qZK2vFFOY
+        2jZbdZmLk0qITHHJEmpUTvUdzLSn8kylw09vCD4I4rrmsjEZJseDv1vUTMG16A==
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
@@ -44,8 +44,9 @@ X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPA id 5269C240007;
-        Mon, 12 Jun 2023 12:29:55 +0000 (UTC)
+X-GND-Sasl: herve.codina@bootlin.com
+Received: by mail.gandi.net (Postfix) with ESMTPA id 4E632240018;
+        Mon, 12 Jun 2023 12:29:58 +0000 (UTC)
 From:   Herve Codina <herve.codina@bootlin.com>
 To:     Herve Codina <herve.codina@bootlin.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
@@ -62,10 +63,11 @@ To:     Herve Codina <herve.codina@bootlin.com>,
 Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v3 01/12] ASoC: dt-bindings: Add audio-iio-aux
-Date:   Mon, 12 Jun 2023 14:29:15 +0200
-Message-Id: <20230612122926.107333-2-herve.codina@bootlin.com>
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v3 03/12] iio: inkern: Check error explicitly in iio_channel_read_max()
+Date:   Mon, 12 Jun 2023 14:29:17 +0200
+Message-Id: <20230612122926.107333-4-herve.codina@bootlin.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230612122926.107333-1-herve.codina@bootlin.com>
 References: <20230612122926.107333-1-herve.codina@bootlin.com>
@@ -75,89 +77,42 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Industrial I/O devices can be present in the audio path.
-These devices needs to be viewed as audio components in order to be
-fully integrated in the audio path.
+The current implementation returns the error code as part of the
+default switch case.
+This can lead to returning an incorrect positive value in case of
+iio_avail_type enum entries evolution.
 
-audio-iio-aux allows to consider these Industrial I/O devices as
-auxliary audio devices.
+In order to avoid this case, be more strict in error checking.
 
 Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- .../bindings/sound/audio-iio-aux.yaml         | 64 +++++++++++++++++++
- 1 file changed, 64 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/audio-iio-aux.yaml
+ drivers/iio/inkern.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/sound/audio-iio-aux.yaml b/Documentation/devicetree/bindings/sound/audio-iio-aux.yaml
-new file mode 100644
-index 000000000000..d3cc1ea4a175
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/audio-iio-aux.yaml
-@@ -0,0 +1,64 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/audio-iio-aux.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 872fd5c24147..f738db9a0c04 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -858,6 +858,9 @@ static int iio_channel_read_max(struct iio_channel *chan,
+ 		val2 = &unused;
+ 
+ 	ret = iio_channel_read_avail(chan, &vals, type, &length, info);
++	if (ret < 0)
++		return ret;
 +
-+title: Audio IIO auxiliary
-+
-+maintainers:
-+  - Herve Codina <herve.codina@bootlin.com>
-+
-+description:
-+  Auxiliary device based on Industrial I/O device channels
-+
-+allOf:
-+  - $ref: dai-common.yaml#
-+
-+properties:
-+  compatible:
-+    const: audio-iio-aux
-+
-+  io-channels:
-+    description:
-+      Industrial I/O device channels used
-+
-+  io-channel-names:
-+    description:
-+      Industrial I/O channel names related to io-channels.
-+      These names are used to provides sound controls, widgets and routes names.
-+
-+  snd-control-invert-range:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    description: |
-+      A list of 0/1 flags defining whether or not the related channel is
-+      inverted
-+    items:
-+      enum: [0, 1]
-+      default: 0
-+      description: |
-+        Invert the sound control value compared to the IIO channel raw value.
-+          - 1: The related sound control value is inverted meaning that the
-+               minimum sound control value correspond to the maximum IIO channel
-+               raw value and the maximum sound control value correspond to the
-+               minimum IIO channel raw value.
-+          - 0: The related sound control value is not inverted meaning that the
-+               minimum (resp maximum) sound control value correspond to the
-+               minimum (resp maximum) IIO channel raw value.
-+
-+required:
-+  - compatible
-+  - io-channels
-+  - io-channel-names
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    iio-aux {
-+        compatible = "audio-iio-aux";
-+        io-channels = <&iio 0>, <&iio 1>, <&iio 2>, <&iio 3>;
-+        io-channel-names = "CH0", "CH1", "CH2", "CH3";
-+        /* Invert CH1 and CH2 */
-+        snd-control-invert-range = <0 1 1 0>;
-+    };
+ 	switch (ret) {
+ 	case IIO_AVAIL_RANGE:
+ 		switch (*type) {
+@@ -888,7 +891,7 @@ static int iio_channel_read_max(struct iio_channel *chan,
+ 		return 0;
+ 
+ 	default:
+-		return ret;
++		return -EINVAL;
+ 	}
+ }
+ 
 -- 
 2.40.1
 
