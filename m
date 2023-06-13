@@ -2,129 +2,170 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54744C77B7A
-	for <linux-iio@archiver.kernel.org>; Tue, 13 Jun 2023 09:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19235C77B7A
+	for <linux-iio@archiver.kernel.org>; Tue, 13 Jun 2023 09:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240690AbjFMJei (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 13 Jun 2023 05:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53124 "EHLO
+        id S241247AbjFMJeq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 13 Jun 2023 05:34:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241658AbjFMJed (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Jun 2023 05:34:33 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C801BCA;
-        Tue, 13 Jun 2023 02:34:15 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id 2adb3069b0e04-4f4b2bc1565so6372006e87.2;
-        Tue, 13 Jun 2023 02:34:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686648854; x=1689240854;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=SI49UstF2jkqD+DpH6qugdgtBXMbQkzgdhY+CZM7jKo=;
-        b=E6wTmSUmuSLyYXVY06AbW+gkoUoi8+YJSx5oSFxyCKql/BMGC1N547DstkfcR82Caf
-         gq1TEbwuu8nziv+PAYJmUuYy1cOZXt7ay+m0nR7pWyBCOr1KysRG7onmLsmQUQLREWhM
-         TjW06Dq9wh3Zb0jiFmFfMMxw/aRbQodZr72V7ZiY/X+e2++8qd6n/wyIVSb4LdLRB/7q
-         EY4PW3Xj/OOlZap8H6yEEYkcMAMC8KKvPsJ+U6wVL/BsvK0JoWLENLnbgOuAOeTafTKN
-         tY/k7/p6rfw2m4hDpAR5RLpNBnGxw3P954d3gcZQzTITMEQVXR/k2PVQMgoCGgOratEr
-         KaEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686648854; x=1689240854;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SI49UstF2jkqD+DpH6qugdgtBXMbQkzgdhY+CZM7jKo=;
-        b=T8xBkrbHiLBFK+8bK07LRjc9CtuySWLB+xPPzlm58vylps8Cg9bODLbonezzAYhLVU
-         89/C2UFMpcWckRv7/UzFpMkjbaQfv7hhuWpkOe5LsMOHrOhNPyelyEvB8IcXJBfVLM4z
-         b1YKuAPQRoD8UnLC/1BfOp7SU631LxvXyOW6yx9kNuAWdjIsQvoImEYaJKgGua6dY/Qd
-         SUvIylUYq/bY8igPYD3LbZFQ/KdnuMeeS8yH6G1/ogDVDwV3fWY13Hl8qFrjmhRuHMCz
-         V4vPVCqStH/azn6/o/8DMB13g9XmxJwE2F025I+kghE8a5VuzmutRbxp4jNVLi6Ue+5j
-         muig==
-X-Gm-Message-State: AC+VfDz0w/x25a/JF+O73+ElVd6HzQ5n3bZ/dwWT0ma9SZRw7kHfXpwD
-        Bh1dZfdy0I5yKolxH6xNJgzk7CXCFdY=
-X-Google-Smtp-Source: ACHHUZ6buwOOEOn1cuVzDD32SNqalgsSEg+/8VZ6NZuI7yv5rfNv248k8jhtWQaGwKrka8bHSY+OzA==
-X-Received: by 2002:a19:ca07:0:b0:4f5:1ca1:30d9 with SMTP id a7-20020a19ca07000000b004f51ca130d9mr5002227lfg.68.1686648853762;
-        Tue, 13 Jun 2023 02:34:13 -0700 (PDT)
-Received: from dc78bmyyyyyyyyyyyyyyt-3.rev.dnainternet.fi (dc78bmyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f8:1500::1])
-        by smtp.gmail.com with ESMTPSA id a2-20020ac25202000000b004f60d782681sm1710195lfl.221.2023.06.13.02.34.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 02:34:12 -0700 (PDT)
-Date:   Tue, 13 Jun 2023 12:34:03 +0300
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-To:     Matti Vaittinen <mazziesaccount@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
-Cc:     Matti Vaittinen <mazziesaccount@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] ROHM BUxxx light sensor fixes
-Message-ID: <cover.1686648422.git.mazziesaccount@gmail.com>
+        with ESMTP id S241920AbjFMJef (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Jun 2023 05:34:35 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE24310DC;
+        Tue, 13 Jun 2023 02:34:31 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35D91Hi5031989;
+        Tue, 13 Jun 2023 05:34:16 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3r4k168qvf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 13 Jun 2023 05:34:16 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 35D9YFdh058751
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 13 Jun 2023 05:34:15 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 13 Jun 2023 05:34:14 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 13 Jun 2023 05:34:13 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 13 Jun 2023 05:34:13 -0400
+Received: from kimedia-VirtualBox.ad.analog.com (KPALLER2-L02.ad.analog.com [10.116.242.24])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 35D9XuF6020837;
+        Tue, 13 Jun 2023 05:33:58 -0400
+From:   Kim Seer Paller <kimseer.paller@analog.com>
+CC:     <jic23@kernel.org>, <lars@metafoo.de>, <lgirdwood@gmail.com>,
+        <broonie@kernel.org>, <Michael.Hennerich@analog.com>,
+        <andy.shevchenko@gmail.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <robh@kernel.org>, <kimseer.paller@analog.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v5 1/2] dt-bindings: iio: adc: add max14001
+Date:   Tue, 13 Jun 2023 17:33:45 +0800
+Message-ID: <20230613093346.60781-1-kimseer.paller@analog.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="KyaEh1lrFoOCl5qI"
-Content-Disposition: inline
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: MaGNQD53Fd1HGp2x2uZbZfwLC4S-8Ean
+X-Proofpoint-ORIG-GUID: MaGNQD53Fd1HGp2x2uZbZfwLC4S-8Ean
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-06-13_04,2023-06-12_02,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 phishscore=0 mlxlogscore=999 spamscore=0 mlxscore=0
+ lowpriorityscore=0 impostorscore=0 bulkscore=0 clxscore=1011
+ suspectscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2305260000 definitions=main-2306130084
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+The MAX14001 is a configurable, isolated 10-bit ADC for multi-range
+binary inputs.
 
---KyaEh1lrFoOCl5qI
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reported-by: Rob Herring <robh@kernel.org>
+Closes: https://lore.kernel.org/all/168663709022.652608.11756645774505315189.robh@kernel.org/
+---
+V3 -> V5: Added spaces between prefixes in subject. Fixed MAINTAINERS reference.
 
-A couple of fixes to newly introduced light sensor drivers.
+ .../bindings/iio/adc/adi,max14001.yaml        | 54 +++++++++++++++++++
+ MAINTAINERS                                   |  7 +++
+ 2 files changed, 61 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml
 
-The patch 1/N "iio: light: bu27034: Fix scale format" should be applied
-as a fix because the bu27034 is already merged upstream. Please note
-that there are already a few fixes to bu27034 in fixes-togreg.
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml b/Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml
+new file mode 100644
+index 000000000000..9d03c611fca3
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml
+@@ -0,0 +1,54 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2023 Analog Devices Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/adi,max14001.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices MAX14001 ADC
++
++maintainers:
++  - Kim Seer Paller <kimseer.paller@analog.com>
++
++description: |
++    Single channel 10 bit ADC with SPI interface. Datasheet
++    can be found here:
++      https://www.analog.com/media/en/technical-documentation/data-sheets/MAX14001-MAX14002.pdf
++
++properties:
++  compatible:
++    enum:
++      - adi,max14001
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 5000000
++
++  vref-supply:
++    description: Voltage reference to establish input scaling.
++
++required:
++  - compatible
++  - reg
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@0 {
++            compatible = "adi,max14001";
++            reg = <0>;
++            spi-max-frequency = <5000000>;
++            vref-supply = <&vref_reg>;
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f794002a192e..dcea2c31f920 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12670,6 +12670,13 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/sound/max9860.txt
+ F:	sound/soc/codecs/max9860.*
+ 
++MAX14001 IIO ADC DRIVER
++M:	Kim Seer Paller <kimseer.paller@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/adc/adi,max14001.yaml
++
+ MAXBOTIX ULTRASONIC RANGER IIO DRIVER
+ M:	Andreas Klinger <ak@it-klinger.de>
+ L:	linux-iio@vger.kernel.org
 
-The patches 2/N and 3/N can be taken in as "new features" because the
-bu27008 has not yet been merged upstream.
+base-commit: 6f449d52b90fdd927fcf9df0388701de6d5381c6
+-- 
+2.34.1
 
-Please, let me know if you want me to split the series and rebase the
-bu27034 fix on top of the fixes-togreg (or some other base).
-
-
-
-Matti Vaittinen (3):
-  iio: light: bu27034: Fix scale format
-  iio: light: bu27008: Fix scale format
-  iio: light: bu27008: Fix intensity data type
-
- drivers/iio/light/rohm-bu27008.c | 22 +++++++++++++++++++---
- drivers/iio/light/rohm-bu27034.c | 22 +++++++++++++++++++---
- 2 files changed, 38 insertions(+), 6 deletions(-)
-
-
-base-commit: 0cf9a77e80fa48e4392e408f8660e93c080cb78d
---=20
-2.40.1
-
-
---=20
-Matti Vaittinen, Linux device drivers
-ROHM Semiconductors, Finland SWDC
-Kiviharjunlenkki 1E
-90220 OULU
-FINLAND
-
-~~~ "I don't think so," said Rene Descartes. Just then he vanished ~~~
-Simon says - in Latin please.
-~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
-Thanks to Simon Glass for the translation =3D]=20
-
---KyaEh1lrFoOCl5qI
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmSIOAYACgkQeFA3/03a
-ocUMQAf+MBZ/bMOncmQYYWBXPO8uALO76RO9HirirWDqpmUd/GmrjKKTlkjv9nHm
-3ha/o819PHKqI6QgVvaA16Z9LdVLv8usGEsO0ASTiGcK9YlmMYuOjJ7WWWz2jSf+
-TY0GQ2DrqP7XbCFemz84R7FKIczK3qNDd5B1aOmuJaqTj3iGqx+k/16rppYrz7Yw
-kP1Zr5N5cF2eklo9sDkCQz2K1UF401PiaZBjk4nDpaYd4L6AfXtKIpXnPVKDWodJ
-Xwe+ssW7n/0RXcQPHmebRaw4C5IzZMd1E+uWi71zi97zWssM5Cn/I5Py0IFykpcp
-ohgEUPVBNo+ZYZzif6lIVohtIQEcwg==
-=gnOC
------END PGP SIGNATURE-----
-
---KyaEh1lrFoOCl5qI--
