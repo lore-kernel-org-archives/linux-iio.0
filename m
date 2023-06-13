@@ -2,90 +2,129 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D346CC77B7A
-	for <linux-iio@archiver.kernel.org>; Tue, 13 Jun 2023 08:46:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54744C77B7A
+	for <linux-iio@archiver.kernel.org>; Tue, 13 Jun 2023 09:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232700AbjFMIqe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 13 Jun 2023 04:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54686 "EHLO
+        id S240690AbjFMJei (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 13 Jun 2023 05:34:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233159AbjFMIqe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Jun 2023 04:46:34 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F947BB;
-        Tue, 13 Jun 2023 01:46:33 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id 4fb4d7f45d1cf-5187a752745so135702a12.2;
-        Tue, 13 Jun 2023 01:46:33 -0700 (PDT)
+        with ESMTP id S241658AbjFMJed (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Jun 2023 05:34:33 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C801BCA;
+        Tue, 13 Jun 2023 02:34:15 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id 2adb3069b0e04-4f4b2bc1565so6372006e87.2;
+        Tue, 13 Jun 2023 02:34:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686645992; x=1689237992;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Gm3y3c9SC3WmG+sMuJQnvI8NH+hyxGs194qjs9xteCc=;
-        b=Mn2kGGs1rTyCzkMgpLy+Xc88RqGBJ/oUyUx4w6UQlWaMTJVqubTjLtLTVD2gv4OTAf
-         r0f2TstyXNFKwviLkDCct2IRpHr5BglY+kyd29KUrQFpFFPm82wvOW2VjpHy4QxbVPUG
-         lGlS3CznR92r5MGs5fr6L7xM7jkr9wefQiML3t0ID6cfp8gmuinyQMG28sb/ugULIvRi
-         ZjLF8PpggMt6dadO5O58LE2PMDxb8+tCMQgCh9UrXrFFXRAvf1eGl1slZBd48USEHWun
-         JVxSZTxQRUjzUYiSStAXDbUABq+FarvYLdB/Idc5n66mP61rBZg3mMmanc7X+MXnTPoP
-         fE+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686645992; x=1689237992;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+        d=gmail.com; s=20221208; t=1686648854; x=1689240854;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=Gm3y3c9SC3WmG+sMuJQnvI8NH+hyxGs194qjs9xteCc=;
-        b=A9YR3lHO0glo3ERg1RSgSzUKaD5SmbhbWXh2huFOxImCIPZxtfsLmv3/cWGP3Exa9X
-         6wld2iqgblPxmx60LExSrkCRwkBpAap96AF+r2YL2JNPT+/asA7KsNPtEEO73ASwp49m
-         H9IM+nLBXuP2iX2942/vtqF6LEqskzFSQPMydCFQDbkFsEP3EqAgs1VyEnvI/wIBGkt3
-         VCrpEZ07XHQlBrQvGzsWJffgyyHR1sqNNnCw4zEAI6u7fCmaKJR/PNhKDD4t+VfL56mh
-         Mv0H5nbtkUc3MDUV3dWpb+rxS+cLdO9KfvHz8ZZFf/DncWq94QS3UFtEWjgNqDhbsRQg
-         IulA==
-X-Gm-Message-State: AC+VfDxPWz9R8ZCgtxyqNKIUYu8RIDF0YEpgXepkZsUrer4rgxdMwqpO
-        8q4Xsx1jyylr5pDrzXWrJGw=
-X-Google-Smtp-Source: ACHHUZ7kGoeSl5kX6/T2sHXdzDUX1Ixt8nh3bCz6EFLdtg477+/Qg1jhrmYmcSQffYMsIc8ZNM0SIA==
-X-Received: by 2002:aa7:d402:0:b0:516:4394:243b with SMTP id z2-20020aa7d402000000b005164394243bmr7426738edq.23.1686645991406;
-        Tue, 13 Jun 2023 01:46:31 -0700 (PDT)
-Received: from ?IPv6:2001:a61:35be:1401:2331:c532:1717:d48c? ([2001:a61:35be:1401:2331:c532:1717:d48c])
-        by smtp.gmail.com with ESMTPSA id m9-20020aa7c489000000b0051422f31b1bsm6025034edq.63.2023.06.13.01.46.30
+        bh=SI49UstF2jkqD+DpH6qugdgtBXMbQkzgdhY+CZM7jKo=;
+        b=E6wTmSUmuSLyYXVY06AbW+gkoUoi8+YJSx5oSFxyCKql/BMGC1N547DstkfcR82Caf
+         gq1TEbwuu8nziv+PAYJmUuYy1cOZXt7ay+m0nR7pWyBCOr1KysRG7onmLsmQUQLREWhM
+         TjW06Dq9wh3Zb0jiFmFfMMxw/aRbQodZr72V7ZiY/X+e2++8qd6n/wyIVSb4LdLRB/7q
+         EY4PW3Xj/OOlZap8H6yEEYkcMAMC8KKvPsJ+U6wVL/BsvK0JoWLENLnbgOuAOeTafTKN
+         tY/k7/p6rfw2m4hDpAR5RLpNBnGxw3P954d3gcZQzTITMEQVXR/k2PVQMgoCGgOratEr
+         KaEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686648854; x=1689240854;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SI49UstF2jkqD+DpH6qugdgtBXMbQkzgdhY+CZM7jKo=;
+        b=T8xBkrbHiLBFK+8bK07LRjc9CtuySWLB+xPPzlm58vylps8Cg9bODLbonezzAYhLVU
+         89/C2UFMpcWckRv7/UzFpMkjbaQfv7hhuWpkOe5LsMOHrOhNPyelyEvB8IcXJBfVLM4z
+         b1YKuAPQRoD8UnLC/1BfOp7SU631LxvXyOW6yx9kNuAWdjIsQvoImEYaJKgGua6dY/Qd
+         SUvIylUYq/bY8igPYD3LbZFQ/KdnuMeeS8yH6G1/ogDVDwV3fWY13Hl8qFrjmhRuHMCz
+         V4vPVCqStH/azn6/o/8DMB13g9XmxJwE2F025I+kghE8a5VuzmutRbxp4jNVLi6Ue+5j
+         muig==
+X-Gm-Message-State: AC+VfDz0w/x25a/JF+O73+ElVd6HzQ5n3bZ/dwWT0ma9SZRw7kHfXpwD
+        Bh1dZfdy0I5yKolxH6xNJgzk7CXCFdY=
+X-Google-Smtp-Source: ACHHUZ6buwOOEOn1cuVzDD32SNqalgsSEg+/8VZ6NZuI7yv5rfNv248k8jhtWQaGwKrka8bHSY+OzA==
+X-Received: by 2002:a19:ca07:0:b0:4f5:1ca1:30d9 with SMTP id a7-20020a19ca07000000b004f51ca130d9mr5002227lfg.68.1686648853762;
+        Tue, 13 Jun 2023 02:34:13 -0700 (PDT)
+Received: from dc78bmyyyyyyyyyyyyyyt-3.rev.dnainternet.fi (dc78bmyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f8:1500::1])
+        by smtp.gmail.com with ESMTPSA id a2-20020ac25202000000b004f60d782681sm1710195lfl.221.2023.06.13.02.34.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 01:46:31 -0700 (PDT)
-Message-ID: <0ee291f54c38b9c88c9fd5bac15f7421663c7276.camel@gmail.com>
-Subject: Re: [PATCH v1] iio: ado: ad7192: Add error check and more debug log
-From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To:     Markus Burri <markus.burri@mt.com>, linux-kernel@vger.kernel.org
-Cc:     Alexandru Tachici <alexandru.tachici@analog.com>,
+        Tue, 13 Jun 2023 02:34:12 -0700 (PDT)
+Date:   Tue, 13 Jun 2023 12:34:03 +0300
+From:   Matti Vaittinen <mazziesaccount@gmail.com>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+Cc:     Matti Vaittinen <mazziesaccount@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Date:   Tue, 13 Jun 2023 10:46:30 +0200
-In-Reply-To: <b38cb68185b078fe346727b6dceb17967a56c18a.camel@gmail.com>
-References: <20230613054250.472897-1-markus.burri@mt.com>
-         <b38cb68185b078fe346727b6dceb17967a56c18a.camel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.2 (3.48.2-1.fc38) 
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] ROHM BUxxx light sensor fixes
+Message-ID: <cover.1686648422.git.mazziesaccount@gmail.com>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="KyaEh1lrFoOCl5qI"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 2023-06-13 at 10:19 +0200, Nuno S=C3=A1 wrote:
-> On Tue, 2023-06-13 at 07:42 +0200, Markus Burri wrote:
-> > Print read and expected device ID as debug warning.
-> > Add error check for ad_sd_init() result.
-> >=20
-> > Signed-off-by: Markus Burri <markus.burri@mt.com>
-> > ---
->=20
-> You have unrelated changes but they are easy enough to go in same patch
-> (at least for me). Hence:
->=20
 
-Actually, consider my tag valid after fixing the typo you have in the commi=
-t
-message...
+--KyaEh1lrFoOCl5qI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Reviewed-by: Nuno Sa <nuno.sa@analog.com>
->=20
->=20
+A couple of fixes to newly introduced light sensor drivers.
 
+The patch 1/N "iio: light: bu27034: Fix scale format" should be applied
+as a fix because the bu27034 is already merged upstream. Please note
+that there are already a few fixes to bu27034 in fixes-togreg.
+
+The patches 2/N and 3/N can be taken in as "new features" because the
+bu27008 has not yet been merged upstream.
+
+Please, let me know if you want me to split the series and rebase the
+bu27034 fix on top of the fixes-togreg (or some other base).
+
+
+
+Matti Vaittinen (3):
+  iio: light: bu27034: Fix scale format
+  iio: light: bu27008: Fix scale format
+  iio: light: bu27008: Fix intensity data type
+
+ drivers/iio/light/rohm-bu27008.c | 22 +++++++++++++++++++---
+ drivers/iio/light/rohm-bu27034.c | 22 +++++++++++++++++++---
+ 2 files changed, 38 insertions(+), 6 deletions(-)
+
+
+base-commit: 0cf9a77e80fa48e4392e408f8660e93c080cb78d
+--=20
+2.40.1
+
+
+--=20
+Matti Vaittinen, Linux device drivers
+ROHM Semiconductors, Finland SWDC
+Kiviharjunlenkki 1E
+90220 OULU
+FINLAND
+
+~~~ "I don't think so," said Rene Descartes. Just then he vanished ~~~
+Simon says - in Latin please.
+~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
+Thanks to Simon Glass for the translation =3D]=20
+
+--KyaEh1lrFoOCl5qI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmSIOAYACgkQeFA3/03a
+ocUMQAf+MBZ/bMOncmQYYWBXPO8uALO76RO9HirirWDqpmUd/GmrjKKTlkjv9nHm
+3ha/o819PHKqI6QgVvaA16Z9LdVLv8usGEsO0ASTiGcK9YlmMYuOjJ7WWWz2jSf+
+TY0GQ2DrqP7XbCFemz84R7FKIczK3qNDd5B1aOmuJaqTj3iGqx+k/16rppYrz7Yw
+kP1Zr5N5cF2eklo9sDkCQz2K1UF401PiaZBjk4nDpaYd4L6AfXtKIpXnPVKDWodJ
+Xwe+ssW7n/0RXcQPHmebRaw4C5IzZMd1E+uWi71zi97zWssM5Cn/I5Py0IFykpcp
+ohgEUPVBNo+ZYZzif6lIVohtIQEcwg==
+=gnOC
+-----END PGP SIGNATURE-----
+
+--KyaEh1lrFoOCl5qI--
