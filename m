@@ -2,144 +2,162 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94720EB64D9
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Jun 2023 07:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9997CEB64DA
+	for <linux-iio@archiver.kernel.org>; Wed, 14 Jun 2023 07:49:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235344AbjFNHbJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 14 Jun 2023 03:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48582 "EHLO
+        id S242668AbjFNHtc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 14 Jun 2023 03:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234661AbjFNHbI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Jun 2023 03:31:08 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2136.outbound.protection.outlook.com [40.107.22.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8C998;
-        Wed, 14 Jun 2023 00:31:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OeEqgj7FiwFgNlRCl63yunja26e9nPh4tvg3i9+JhewkT+t7cJsATotbZJl1gd4hq/AZUqxt1pqMQ0aJDdxslFPGenOOxmH2yjC8vkcfGzK3lVkt3uBbLXjuMNLye0HcYGVfY5d3TGJmYBK3r1Wj/dfnjOVQt7eoiXPiSeia+Jiby4y/XsJwn7b9c+KwuAYK6uxdjgARtQp40wb8W0hdgsD5PvsDfrJYTzjAB89Ytw8/h/4l4hy74e7rJmhnO7CIb4Vu776UWiIqg5BKziu5Qvdaj/6Aen8iGd9c9xsEUvQrSgCRPnn6Ol6KmrDnuffBu12UzJCfVntq62S7dKxdIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=763gNq6HC+K4L927KHAwojvCPYeNSfj/w1ElciVOHeQ=;
- b=IHAzKZgg6aCFxGD33cqojgDFv5yQGfWhTkG0PQxV8te27gjxXtVpnX5v1x4S8FjfqXG5RfCMV7iXYMAgZ+y6M0JEObQOlyKRa+9hnC3/WV5Tj7fL9OL4OW9ziP6Sdc1L5XLuwKoYwVeVTKD4+RDd1ZTB0MNhYJhQcD+LbnBco5KzLh3kZQh0tirNW7CS/FiMJk9dyP2FwRL90+Xs8dV9kTTNqoEnM/X2DU6DDZ74Y3H98Oq2zm9jScQFBeTqwe6IRBqUdFamagmynN5pQX/WM/Xj/Q5P/o9u/2lsY/rxUZDREU/qyCnsZJYmwilKaFLOzQ52uZ5XfP85Io9NBnTTbg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mt.com; dmarc=pass action=none header.from=mt.com; dkim=pass
- header.d=mt.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mt.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=763gNq6HC+K4L927KHAwojvCPYeNSfj/w1ElciVOHeQ=;
- b=qlVFP4RnQuRzq1U5+xAw8vSr8NqDnMb4NqY6VQRdfSvZZUfDMMi5+biLBtTmKsZ81U34xcL7tfqs2XULNyCZ/pBXnhQyki6HDoH+WQmayGFcdQy/Rpg13t4485WE/TX0OxAd8dsWvpvXWMdVaein/gPXzduHSC0IXmm1ChCtJRvoKT7U15h5MlP4HEdxcLuvfPrMzItfKdbXXdLHrz7nLLWEQzpFKu82chId6+wwlQg9CVVrDcc1qdSBJU22Izz/4sZuOaPuNLtUjXj6x+MSb17vRTC884x9rAFVAmMgS91PM7ME2lkWEcJSPtw60CdNpA9m4u9ZR4+821dpgBtaPw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=mt.com;
-Received: from PA4PR03MB7488.eurprd03.prod.outlook.com (2603:10a6:102:bc::11)
- by AS1PR03MB8238.eurprd03.prod.outlook.com (2603:10a6:20b:471::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.37; Wed, 14 Jun
- 2023 07:31:00 +0000
-Received: from PA4PR03MB7488.eurprd03.prod.outlook.com
- ([fe80::fce6:c9d6:1685:4973]) by PA4PR03MB7488.eurprd03.prod.outlook.com
- ([fe80::fce6:c9d6:1685:4973%7]) with mapi id 15.20.6477.037; Wed, 14 Jun 2023
- 07:31:00 +0000
-From:   Markus Burri <markus.burri@mt.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Markus Burri <markus.burri@mt.com>,
+        with ESMTP id S234103AbjFNHtb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Jun 2023 03:49:31 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145F310DA;
+        Wed, 14 Jun 2023 00:49:29 -0700 (PDT)
+X-GND-Sasl: herve.codina@bootlin.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1686728968;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GyTXVmL/5teIh8xuYTUUi3ltQcCGVDf6AcEbfADS6og=;
+        b=TRiogZYVcJY4TPV0AG3+ydZ67VsDompUurAfaNpaYziqsXa+4y2hRwXbjRLvghlvEH9Fyl
+        GCFvM5EeYxA5dArn1NaACEBreYajq63EQqCDEZXwTx+N+Dbg43YwzSPS9XQkhjjtVj6kFt
+        5P64v/pLVZEuVKhyniNvkVSFd2GqVQhKnOZuJRqa9WbKT7+5Jdp/gfuHObc3NCO7omT1dU
+        WiqibqqX8ylvbRDB+bnr+ChlhxXwHBXSPiBs85KNuAr/YY43PFlIPdlhBY1SHiObTxst2N
+        DDsZzfsFe7n+baW96/e56HLqdiFo0OwdAEfowrlH5/LhcJJW9KKXZWYfAwWsuQ==
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+Received: by mail.gandi.net (Postfix) with ESMTPA id 879101C0008;
+        Wed, 14 Jun 2023 07:49:27 +0000 (UTC)
+From:   Herve Codina <herve.codina@bootlin.com>
+To:     Herve Codina <herve.codina@bootlin.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH v3] iio: ado: ad7192: Add error check and more debug log
-Date:   Wed, 14 Jun 2023 09:30:33 +0200
-Message-Id: <20230614073033.2497318-1-markus.burri@mt.com>
-X-Mailer: git-send-email 2.39.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: FR2P281CA0142.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:98::8) To PA4PR03MB7488.eurprd03.prod.outlook.com
- (2603:10a6:102:bc::11)
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH v4 01/13] ASoC: dt-bindings: Add audio-iio-aux
+Date:   Wed, 14 Jun 2023 09:48:52 +0200
+Message-Id: <20230614074904.29085-2-herve.codina@bootlin.com>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230614074904.29085-1-herve.codina@bootlin.com>
+References: <20230614074904.29085-1-herve.codina@bootlin.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PA4PR03MB7488:EE_|AS1PR03MB8238:EE_
-X-MS-Office365-Filtering-Correlation-Id: 81224b9a-a8af-4a1c-733c-08db6ca94d42
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: q7XQTZRJE/s1MeVUJsnElmaefmlXJVTb7P2FcE3lafW4Uq1+0d4Jcz1G+77+WnAHD3CIOIA8eXkdkECi52Tb73Y7TTRyqxLigjT9oZYxoMdwSeua3ZMLk6xGFrqh3R2bbCyo0BS9TZ4eSJjTViHVEIIB4fyQbVzOConGkR8BIkNXzv/MeglpAIBlFAlNiEh6Usk7X/ws4CswVgQSn7iSiYTxfKBGdokf1ivBlsl9/pP3Cu0d45BX7GHZJseLGYpXCx1DMHiK/fCPhqoszpHBLjjb9Pi4bbsrYkD/EjRy5ef/aS/rsVEmHIsNTZBYbVC0HQvq04tSkXVlErohy4/qxIAhAH4lAjeibNosTlf3CROKeiJWwF/vBfiin6u5UdOa251hF28SWyfE9N4pRVUOJ/SaFcg00/sXQlW1iOuzYRBj3Q71X7WS7Sgo4da6EiKek6uuRsQYk8nIEucxmQ3/O2n609hQaWr5SsuX+2qjKuX9pUlVdNCTWysC/KHJ8yusdMd9Hu8J50P341mRyVvA8vZhEurSUvNYO34xhUfYqWjSYA4biWeTCrDczl1FhT9SXdYGp96nC81orVHJq276sAcmQo94T6N1Py8E0SlrE6W/lTauWrRj4HHg1hcCJcFU
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR03MB7488.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(39860400002)(346002)(376002)(366004)(396003)(451199021)(8676002)(8936002)(2906002)(5660300002)(316002)(66476007)(66556008)(66946007)(4326008)(6916009)(38100700002)(83380400001)(54906003)(41300700001)(2616005)(36756003)(38350700002)(478600001)(186003)(6512007)(6506007)(1076003)(26005)(6666004)(52116002)(6486002)(44832011)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6DrXQiP7BZMNjHp18bCsYS31EB7joYuB7R3rUCc5hCRhTRWADmOvUIhERB/v?=
- =?us-ascii?Q?RLNPsJ1ojkx1UyE0IFbsTxQI4emuSBBqf2g2ytq7uFvcV92BkcZ4+IIdcpen?=
- =?us-ascii?Q?TRj3SOqWjCWiGUlZ2Y/92Z1H/Mgr4Xq/cjZa/l0k93U9PvNxSK3DIq0uJCEK?=
- =?us-ascii?Q?/16Z+PRaf9CH5Q/I8X6/3dA9MAMJY7SMUwDs1wIYjTG9Jt2wRipwk0EfmQKD?=
- =?us-ascii?Q?+lwWUvn2NFqX9vkHhdCB4UXXP7s+yz1tw1wumXJkp5fHXPfp3bFHZav7iVAa?=
- =?us-ascii?Q?+9A/jQSm0ZV+XW1U66mPjNUWNelt7vjtn8Rzm8yKpUQrSZGe0gw069CVigj5?=
- =?us-ascii?Q?Olys30oOHEs+yDjzgqLUnkzjlL8NDRNn+UHMBe7UWoCEfmjFm19aXsxfNTws?=
- =?us-ascii?Q?qlVx++b8WYgU1bZSjIRr8j6QKT0EBALJob759R3JtXL2Zmw6u3Y8TPixwjwj?=
- =?us-ascii?Q?objKdsCd1/4iR3vgizS+66hLPPGdnfTkNfAFKiWFPZvjkL3/HzJDIiW1havy?=
- =?us-ascii?Q?gGQO+5ksbUHwAJdyA85EU2hGifOh58QOBY55DcvULeEhtR60PmqAtiNJ9dUL?=
- =?us-ascii?Q?6DSLSDrg0BhAd4gs9ClrAtc/DFz9kI7A/Pg9q9LQfFDNpF6uDStHJs3FLuzb?=
- =?us-ascii?Q?P/eom2+hXQ4DykXZG/Qvg6WZn5PdHvKfZj1xHL9W3frNVCSlSS3fNn5xNIdU?=
- =?us-ascii?Q?ltoskomCsBNvc2LlWXN/jf0EGmsqAMZDuQUDKF/k8ci56Luoh7ucvZMgp9Ad?=
- =?us-ascii?Q?27k6iu8V9VtWn+GzqOa5kC0T8cA6g8wELXczJExWmx81D/97Z3tHaT3mQKUN?=
- =?us-ascii?Q?Xic7SbQQBOyz3wVup5XQMW73BWv8yOYHl1hceCUOEuDwAR2n/LZBQGykp7yZ?=
- =?us-ascii?Q?0yY4C57aG+hfrMR4p1sLnwXBv+eMkdzKxnjJSazdu+P7XIbwHB1HWdKs/GCx?=
- =?us-ascii?Q?7JlxPjTbD8OGSPqnQky6P7k8eZsKg65K+4efg+cPGyH4v1CkFROytiU4RfWE?=
- =?us-ascii?Q?fhIePWd9MMSltbst6FrNKw18Tb4enJ2xa25Z+iLfqD5KQek9O3mFBBZJ+kng?=
- =?us-ascii?Q?7dOwNLa1pq2LN3QnHEg6hu6Bey/RJLuBkmtavB92rD1XLHfSAzcsI/5osoH6?=
- =?us-ascii?Q?H8Whyf48FL0pyjfgFv9K0gMASXEtcWRAHOyDK6a9msEjXulGVchII7juyI+3?=
- =?us-ascii?Q?yUCZMpMzDKdU5/DI8j7/MqoPS6BF9R9s+7Docb6bCTp+nPUyphXEb1JA8QeP?=
- =?us-ascii?Q?7o6yYI17ROzdXC/bEDkNnfX1oiGnyfV06BpZgjTZpZTXPsF5X+JIX4HagzVj?=
- =?us-ascii?Q?dLgfWtLCM/BvgCAlovxTzAmF0/JPpjQh5QpFiWMtGrVr+YX4WNQwHK9dgxfZ?=
- =?us-ascii?Q?v+9UiGOLeM9Mu9MZ9snncLMo3V9E9x0uH3PoFqdvsnXoO6tJrZ/Sk0CuJRNV?=
- =?us-ascii?Q?ZD2Ij7/jP9zWdEf62qaiN1eE3N1Zcoc+OpmqIaeDM3dv8kYtYj0FY/Bw+GIw?=
- =?us-ascii?Q?QaYj5m68ImR8nN5e95FM8D/sAJBxub9b0qWfHQNc5/keEs64Ya0Dv7deq24b?=
- =?us-ascii?Q?8ZSNYKNQeKRB+AXjhKgW1p+kZ6RpCU2t9BwyoNag?=
-X-OriginatorOrg: mt.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81224b9a-a8af-4a1c-733c-08db6ca94d42
-X-MS-Exchange-CrossTenant-AuthSource: PA4PR03MB7488.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2023 07:31:00.5393
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fb4c0aee-6cd2-482f-a1a5-717e7c02496b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YFSmtRHjLGNT0/bfJB9ARUGc6q4s/8tcnE8YSE2rgE+RMZ9j41G3zsrodOm+P6zwga3XHUk0thoHofwBwVslHg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR03MB8238
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Print read and expected device ID as debug warning.
-Add error check for ad_sd_init() result.
+Industrial I/O devices can be present in the audio path.
+These devices needs to be viewed as audio components in order to be
+fully integrated in the audio path.
 
-Signed-off-by: Markus Burri <markus.burri@mt.com>
+audio-iio-aux allows to consider these Industrial I/O devices as
+auxliary audio devices.
+
+Signed-off-by: Herve Codina <herve.codina@bootlin.com>
 ---
- drivers/iio/adc/ad7192.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ .../bindings/sound/audio-iio-aux.yaml         | 64 +++++++++++++++++++
+ 1 file changed, 64 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/sound/audio-iio-aux.yaml
 
-diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
-index d71977b..220c3b7 100644
---- a/drivers/iio/adc/ad7192.c
-+++ b/drivers/iio/adc/ad7192.c
-@@ -403,8 +403,8 @@ static int ad7192_setup(struct ad7192_state *st, struct device_node *np)
- 	id &= AD7192_ID_MASK;
- 
- 	if (id != st->chip_info->chip_id)
--		dev_warn(&st->sd.spi->dev, "device ID query failed (0x%X)\n",
--			 id);
-+		dev_warn(&st->sd.spi->dev, "device ID query failed (0x%X != 0x%X)\n",
-+			 id, st->chip_info->chip_id);
- 
- 	st->mode = AD7192_MODE_SEL(AD7192_MODE_IDLE) |
- 		AD7192_MODE_CLKSRC(st->clock_sel) |
-@@ -1049,7 +1049,9 @@ static int ad7192_probe(struct spi_device *spi)
- 	else
- 		indio_dev->info = &ad7192_info;
- 
--	ad_sd_init(&st->sd, indio_dev, spi, &ad7192_sigma_delta_info);
-+	ret = ad_sd_init(&st->sd, indio_dev, spi, &ad7192_sigma_delta_info);
-+	if (ret)
-+		return ret;
- 
- 	ret = devm_ad_sd_setup_buffer_and_trigger(&spi->dev, indio_dev);
- 	if (ret)
+diff --git a/Documentation/devicetree/bindings/sound/audio-iio-aux.yaml b/Documentation/devicetree/bindings/sound/audio-iio-aux.yaml
+new file mode 100644
+index 000000000000..d3cc1ea4a175
+--- /dev/null
++++ b/Documentation/devicetree/bindings/sound/audio-iio-aux.yaml
+@@ -0,0 +1,64 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/sound/audio-iio-aux.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Audio IIO auxiliary
++
++maintainers:
++  - Herve Codina <herve.codina@bootlin.com>
++
++description:
++  Auxiliary device based on Industrial I/O device channels
++
++allOf:
++  - $ref: dai-common.yaml#
++
++properties:
++  compatible:
++    const: audio-iio-aux
++
++  io-channels:
++    description:
++      Industrial I/O device channels used
++
++  io-channel-names:
++    description:
++      Industrial I/O channel names related to io-channels.
++      These names are used to provides sound controls, widgets and routes names.
++
++  snd-control-invert-range:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    description: |
++      A list of 0/1 flags defining whether or not the related channel is
++      inverted
++    items:
++      enum: [0, 1]
++      default: 0
++      description: |
++        Invert the sound control value compared to the IIO channel raw value.
++          - 1: The related sound control value is inverted meaning that the
++               minimum sound control value correspond to the maximum IIO channel
++               raw value and the maximum sound control value correspond to the
++               minimum IIO channel raw value.
++          - 0: The related sound control value is not inverted meaning that the
++               minimum (resp maximum) sound control value correspond to the
++               minimum (resp maximum) IIO channel raw value.
++
++required:
++  - compatible
++  - io-channels
++  - io-channel-names
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    iio-aux {
++        compatible = "audio-iio-aux";
++        io-channels = <&iio 0>, <&iio 1>, <&iio 2>, <&iio 3>;
++        io-channel-names = "CH0", "CH1", "CH2", "CH3";
++        /* Invert CH1 and CH2 */
++        snd-control-invert-range = <0 1 1 0>;
++    };
 -- 
-2.39.2
+2.40.1
 
