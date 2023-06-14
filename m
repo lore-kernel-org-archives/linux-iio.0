@@ -2,31 +2,31 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 008F1EB64DD
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Jun 2023 07:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C5D8C001DD
+	for <linux-iio@archiver.kernel.org>; Wed, 14 Jun 2023 07:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243458AbjFNHto (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 14 Jun 2023 03:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
+        id S243453AbjFNHtn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 14 Jun 2023 03:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243418AbjFNHtk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Jun 2023 03:49:40 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843561BD3;
-        Wed, 14 Jun 2023 00:49:38 -0700 (PDT)
+        with ESMTP id S243354AbjFNHtj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Jun 2023 03:49:39 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E09E1BC5;
+        Wed, 14 Jun 2023 00:49:37 -0700 (PDT)
 X-GND-Sasl: herve.codina@bootlin.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1686728977;
+        t=1686728975;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Rzmy5x36UQziYjAPabzh5lphW3Kccq4ZHak60d12f5I=;
-        b=DSRl4nuHXuZgfSS2Ds8n+UfmxugurH8K4PA9gnuXlRxZnU4k7lwVKtS3OgfPGpOB85ZRFM
-        dg5e66FHSujixPnNmg/iKV/azzlwQIvDnSDBHgRGjFND6CTQcC7IgLVP1vxdKRpTfsUluN
-        aJv21pSsvlRgSwgtSKetSTvcABnpNo4A1HxJnUNWsfUVP5nBMdm4rYyQ7B5yVO45Y8TKf+
-        NSX4vAehWjcocIwyzdgKB7smfpWu4LqPIMZfFjVcAoMUKbZYajF9ms6e+bG+Gd6dZ2zbSj
-        dlCHyAv2ubFmDXlx7hnJTkfWOimsoqrjhM/AyxyN95jElRZ5dSfn6G1bucGJMA==
+        bh=FkQZxmbGPKkjmBtgt+Imn8A43/IEec3F3481+44qF+k=;
+        b=Ujb6byVz6xAJtqKOMKEQtjG3xe6iIYKPGrHEfXRwBlClFYHJ/p+0jTKy02C1Q286OKL/SZ
+        ILQgzNF6pej6fg81ryl6Q9t7iU3DB77LvHCbuhsMSoUn06yUmqk3PdXmIZnfYTKJ/sGuly
+        S/2POfPSxQuIqoIxdQaEsQUGWCkMeOrCoCnXJ+lA17w+kAx8Q3F2yjiV4xqpAXr9NTzgsY
+        f6OVZo+5oe8+/bpa0OTdRsWxdr1+Ixp2XSxJyTTpX3+dQO4eo2ZgsTtef/2M+6tYn1DxbM
+        DZOAvrlDeqtksY9eu9cDE5iYn35vzntW0WdqKbHIC5j69PHIloHsvZFoFM2kjw==
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
@@ -44,8 +44,8 @@ X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPA id 0007D1C000A;
-        Wed, 14 Jun 2023 07:49:35 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPA id 9A1301C000D;
+        Wed, 14 Jun 2023 07:49:34 +0000 (UTC)
 From:   Herve Codina <herve.codina@bootlin.com>
 To:     Herve Codina <herve.codina@bootlin.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
@@ -63,9 +63,9 @@ Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v4 06/13] iio: inkern: Fix headers inclusion order
-Date:   Wed, 14 Jun 2023 09:48:57 +0200
-Message-Id: <20230614074904.29085-7-herve.codina@bootlin.com>
+Subject: [PATCH v4 05/13] iio: inkern: Remove the 'unused' variable usage in iio_channel_read_max()
+Date:   Wed, 14 Jun 2023 09:48:56 +0200
+Message-Id: <20230614074904.29085-6-herve.codina@bootlin.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230614074904.29085-1-herve.codina@bootlin.com>
 References: <20230614074904.29085-1-herve.codina@bootlin.com>
@@ -75,29 +75,47 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Sort headers inclusion in alphabetic order.
+The code uses a local variable to initialize a null pointer in order to
+avoid accessing this null pointer later on.
+
+Simply removed the 'unused' variable and check for the null pointer just
+before accessing it.
 
 Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/iio/inkern.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/inkern.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index ce537b4ca6ca..71d0424383b6 100644
+index f738db9a0c04..ce537b4ca6ca 100644
 --- a/drivers/iio/inkern.c
 +++ b/drivers/iio/inkern.c
-@@ -5,9 +5,9 @@
-  */
- #include <linux/err.h>
- #include <linux/export.h>
-+#include <linux/mutex.h>
- #include <linux/property.h>
- #include <linux/slab.h>
--#include <linux/mutex.h>
+@@ -849,14 +849,10 @@ static int iio_channel_read_max(struct iio_channel *chan,
+ 				int *val, int *val2, int *type,
+ 				enum iio_chan_info_enum info)
+ {
+-	int unused;
+ 	const int *vals;
+ 	int length;
+ 	int ret;
  
- #include <linux/iio/iio.h>
- #include <linux/iio/iio-opaque.h>
+-	if (!val2)
+-		val2 = &unused;
+-
+ 	ret = iio_channel_read_avail(chan, &vals, type, &length, info);
+ 	if (ret < 0)
+ 		return ret;
+@@ -869,7 +865,8 @@ static int iio_channel_read_max(struct iio_channel *chan,
+ 			break;
+ 		default:
+ 			*val = vals[4];
+-			*val2 = vals[5];
++			if (val2)
++				*val2 = vals[5];
+ 		}
+ 		return 0;
+ 
 -- 
 2.40.1
 
