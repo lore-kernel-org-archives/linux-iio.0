@@ -2,63 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E99EB64D9
-	for <linux-iio@archiver.kernel.org>; Thu, 15 Jun 2023 13:52:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 577AAEB64DB
+	for <linux-iio@archiver.kernel.org>; Thu, 15 Jun 2023 15:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239612AbjFONwR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 15 Jun 2023 09:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
+        id S1344001AbjFOP0o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 15 Jun 2023 11:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240810AbjFONwQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Jun 2023 09:52:16 -0400
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B270E1BDB;
-        Thu, 15 Jun 2023 06:52:09 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id 6a1803df08f44-5ed99ebe076so28045276d6.2;
-        Thu, 15 Jun 2023 06:52:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686837129; x=1689429129;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RTISzDzB0vgzRtUm+XOEwGTMkJ6kple5Xm92txPcOLI=;
-        b=RZs0H0colKUY6LS5gf+N4I7AdqC+9xX4y/bW1RwfN8MKvImH+r1v1PQZOrCjrU5nDt
-         FsUk19iGS4qcdIpaKZBzfFzR90IEsZjP/cmgrWjolhyNxJIjCNveCNZt5MBpOU6tmDR+
-         +lKN+lRE7dBIjY+mEzP6T6/JzM1D6LKxM0hknfDMhsLHyLi59tSfMVeO2QADLNAmbJBA
-         prgMVlzi1fUMkU5k9DAMfS7U60GbueV0mN084FuSbM5Fs11usiozcJdhfNJ/QaSQF9od
-         tStbo7OYeHdy+A81I+BiQVRSrQaWoEASjqWMpT/A2DIg2Nowe1MxBxKkdvOhs07UtdaH
-         SxRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686837129; x=1689429129;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RTISzDzB0vgzRtUm+XOEwGTMkJ6kple5Xm92txPcOLI=;
-        b=OrilFSMvkc52fG0Umcp6evpEpvvv8LA7Q7i65Mz+5xBKi+QUn2LmKCR4oglDjW4NCp
-         FLw3XFzg9hhM6ULoLwGIe+xNRc54TYTJ6S63JAcb2dpGWkzLsWAIA7idx0Re3JwUiO1c
-         775dpY+IIQvTr4Gr3qqFVchvuYeRUJ8MGIdmHcgbCBdkWQambCW8xxfEWhZ9VuawWgGD
-         F9NxHAzzGDwRO3RvryVxfUl6pKr+jBWj1OhCZoCeaLrY/pojYwWI8vCZDM/BANE8PKFr
-         +qzSBzcNZbl2fRAwzQ69AwUKFZAqXtBRkXyOsM8pBtDucgmicE4EudXRID35KqwalyfE
-         oxIg==
-X-Gm-Message-State: AC+VfDzohLOvSwjid3+JM1wCvrHKbLu2dtUnF33Km5EwxMQkBsk+coYy
-        FuJhe07UksAIGQwRu2Vdh0+Ztdu5EoM5FIpN3Yow4DzllKCGpQ==
-X-Google-Smtp-Source: ACHHUZ7wjjBG8VxmyvEb3k5iTRCIsao8mEEup0Ly3jqvyGSn+EjEgNrTRbdDIWOSsKwflUDuWQFak/maSvKiVTp6mqQ=
-X-Received: by 2002:ad4:5de3:0:b0:62f:ea09:7088 with SMTP id
- jn3-20020ad45de3000000b0062fea097088mr3600822qvb.27.1686837128707; Thu, 15
- Jun 2023 06:52:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230614074904.29085-1-herve.codina@bootlin.com>
- <20230614074904.29085-8-herve.codina@bootlin.com> <CAHp75Vcur=H_2mBm5Ztuvd7Jnvmr6+tvCbEkFtmaVLsEjXr8NQ@mail.gmail.com>
- <20230614114214.1371485e@bootlin.com> <CAHp75VcmW2StPqb_LtKFyNyJ2+jz3c19zNRDiSuGs06Bseq04w@mail.gmail.com>
- <20230614223418.0d7e355d@bootlin.com> <CAHp75VfFyDzr4qHNssXZ8RLy0gxMWdjBgac4JLd7grRLEG-vyw@mail.gmail.com>
- <20230615113512.07967677@bootlin.com>
-In-Reply-To: <20230615113512.07967677@bootlin.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 15 Jun 2023 16:51:32 +0300
-Message-ID: <CAHp75Vf2aR1x-Nf2+uUySyGH-p12YbP2Z=Ezbspqg==pCpRbOg@mail.gmail.com>
-Subject: Re: [PATCH v4 07/13] minmax: Introduce {min,max}_array()
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        with ESMTP id S1345182AbjFOP0k (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Jun 2023 11:26:40 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D1E26A2;
+        Thu, 15 Jun 2023 08:26:38 -0700 (PDT)
+X-GND-Sasl: herve.codina@bootlin.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1686842797;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GyTXVmL/5teIh8xuYTUUi3ltQcCGVDf6AcEbfADS6og=;
+        b=hEsTxs4FYerXIh5EHWoQI0TmMEDx3dymBWYlPvN7qpgqMdrnMMFZFdm769O7M5RLmQr0TF
+        cRf0g9gXPRGnaxOdrgoB3o3BMg4ApnEWCx8cR+y4SYzXz71U1AIBFTlmvpb81ifqwLgKRM
+        Gxla0V3y744JELfZso8AtVer/OPRePbaEqaqzrUF3dY3AnR0CpuPGj2uXypOTJA7Y048zI
+        gOSpAiNnC2xXhYW1NKyhQIBDxurSZbBv/w2qLdXoFBS8QIjCng0RiJfRQfaKYkyubOuE+d
+        FR+z63B08sfCZW1ULYalGYslK1C3kCpImmPBpnqpa6K1kA3w1USE9PzdWEO+TA==
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+X-GND-Sasl: herve.codina@bootlin.com
+Received: by mail.gandi.net (Postfix) with ESMTPA id 3E4FCFF807;
+        Thu, 15 Jun 2023 15:26:36 +0000 (UTC)
+From:   Herve Codina <herve.codina@bootlin.com>
+To:     Herve Codina <herve.codina@bootlin.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -68,126 +58,106 @@ Cc:     Liam Girdwood <lgirdwood@gmail.com>,
         Jaroslav Kysela <perex@perex.cz>,
         Takashi Iwai <tiwai@suse.com>,
         Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: [PATCH v5 01/13] ASoC: dt-bindings: Add audio-iio-aux
+Date:   Thu, 15 Jun 2023 17:26:19 +0200
+Message-Id: <20230615152631.224529-2-herve.codina@bootlin.com>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230615152631.224529-1-herve.codina@bootlin.com>
+References: <20230615152631.224529-1-herve.codina@bootlin.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Jun 15, 2023 at 12:35=E2=80=AFPM Herve Codina <herve.codina@bootlin=
-.com> wrote:
-> On Thu, 15 Jun 2023 01:05:40 +0300
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+Industrial I/O devices can be present in the audio path.
+These devices needs to be viewed as audio components in order to be
+fully integrated in the audio path.
 
-...
+audio-iio-aux allows to consider these Industrial I/O devices as
+auxliary audio devices.
 
-> Did the job using _Generic().
+Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+---
+ .../bindings/sound/audio-iio-aux.yaml         | 64 +++++++++++++++++++
+ 1 file changed, 64 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/sound/audio-iio-aux.yaml
 
-Cool! Keep my tag for that version and thank you for pursuing the
-implementation that works for everybody.
+diff --git a/Documentation/devicetree/bindings/sound/audio-iio-aux.yaml b/Documentation/devicetree/bindings/sound/audio-iio-aux.yaml
+new file mode 100644
+index 000000000000..d3cc1ea4a175
+--- /dev/null
++++ b/Documentation/devicetree/bindings/sound/audio-iio-aux.yaml
+@@ -0,0 +1,64 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/sound/audio-iio-aux.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Audio IIO auxiliary
++
++maintainers:
++  - Herve Codina <herve.codina@bootlin.com>
++
++description:
++  Auxiliary device based on Industrial I/O device channels
++
++allOf:
++  - $ref: dai-common.yaml#
++
++properties:
++  compatible:
++    const: audio-iio-aux
++
++  io-channels:
++    description:
++      Industrial I/O device channels used
++
++  io-channel-names:
++    description:
++      Industrial I/O channel names related to io-channels.
++      These names are used to provides sound controls, widgets and routes names.
++
++  snd-control-invert-range:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    description: |
++      A list of 0/1 flags defining whether or not the related channel is
++      inverted
++    items:
++      enum: [0, 1]
++      default: 0
++      description: |
++        Invert the sound control value compared to the IIO channel raw value.
++          - 1: The related sound control value is inverted meaning that the
++               minimum sound control value correspond to the maximum IIO channel
++               raw value and the maximum sound control value correspond to the
++               minimum IIO channel raw value.
++          - 0: The related sound control value is not inverted meaning that the
++               minimum (resp maximum) sound control value correspond to the
++               minimum (resp maximum) IIO channel raw value.
++
++required:
++  - compatible
++  - io-channels
++  - io-channel-names
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    iio-aux {
++        compatible = "audio-iio-aux";
++        io-channels = <&iio 0>, <&iio 1>, <&iio 2>, <&iio 3>;
++        io-channel-names = "CH0", "CH1", "CH2", "CH3";
++        /* Invert CH1 and CH2 */
++        snd-control-invert-range = <0 1 1 0>;
++    };
+-- 
+2.40.1
 
-> This lead to:
-> --- 8< ---
-> /*
->  * Remove a const qualifier
-
-...from integer types
-
->  * _Generic(foo, type-name: association, ..., default: association) perfo=
-rms a
->  * comparison against the foo type (not the qualified type).
->  * Do not use the const keyword in the type-name as it will not match the
->  * unqualified type of foo.
->  */
-> #define __unconst_type_cases(type)              \
-
-__unconst_integer_type_cases() ?
-
->         unsigned type:  (unsigned type)0,       \
->         signed type:    (signed type)0
->
->
-
-Single blank line is enough.
-
-> #define __unconst_typeof(x) typeof(                     \
-
-__unconst_integer_typeof() ?
-
->         _Generic((x),                                   \
->                 char: (char)0,                          \
->                 __unconst_type_cases(char),             \
->                 __unconst_type_cases(short),            \
->                 __unconst_type_cases(int),              \
->                 __unconst_type_cases(long),             \
->                 __unconst_type_cases(long long),        \
->                 default: (x)))
->
-> /*
->  * Do not check the array parameter using __must_be_array().
->  * In the following legit use-case where the "array" passed is a simple p=
-ointer,
->  * __must_be_array() will return a failure.
->  * --- 8< ---
->  * int *buff
->  * ...
->  * min =3D min_array(buff, nb_items);
->  * --- 8< ---
->  *
->  * The first typeof(&(array)[0]) is needed in order to support arrays of =
-both
->  * 'int *buff' and 'int buf[N]' types.
->  *
->  * The array can be an array of const items.
->  * typeof() keeps the const qualifier. Use __unconst_typeof() in order to
->  * discard the const qualifier for the __element variable.
->  */
-> #define __minmax_array(op, array, len) ({                               \
->         typeof(&(array)[0]) __array =3D (array);                         =
- \
->         typeof(len) __len =3D (len);                                     =
- \
->         __unconst_typeof(__array[0]) __element =3D __array[--__len];     =
- \
->         while (__len--)                                                 \
->                 __element =3D op(__element, __array[__len]);             =
- \
->         __element; })
->
-> /**
->  * min_array - return minimum of values present in an array
->  * @array: array
->  * @len: array length
->  *
->  * Note that @len must not be zero (empty array).
->  */
-> #define min_array(array, len) __minmax_array(min, array, len)
->
-> /**
->  * max_array - return maximum of values present in an array
->  * @array: array
->  * @len: array length
->  *
->  * Note that @len must not be zero (empty array).
->  */
-> #define max_array(array, len) __minmax_array(max, array, len)
-> --- 8< ---
->
-> Do you think it looks good ?
-
-Yes!
-
-> For, the KUnit tests, I agree, it would be nice to have something.
-> I need some more substantial work to implement and run the test in KUnit
-> and the first task will be learning the KUnit test system.
-> I will do that but out of this series.
-
-Thank you, it's fine with me.
-
---=20
-With Best Regards,
-Andy Shevchenko
