@@ -2,31 +2,31 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED1AC04E69
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FBBC04FE0
 	for <linux-iio@archiver.kernel.org>; Thu, 15 Jun 2023 15:27:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345065AbjFOP1U (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 15 Jun 2023 11:27:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57392 "EHLO
+        id S1345198AbjFOP1W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 15 Jun 2023 11:27:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345185AbjFOP0v (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Jun 2023 11:26:51 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624EB196;
-        Thu, 15 Jun 2023 08:26:50 -0700 (PDT)
+        with ESMTP id S1345190AbjFOP0z (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Jun 2023 11:26:55 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91872E69;
+        Thu, 15 Jun 2023 08:26:53 -0700 (PDT)
 X-GND-Sasl: herve.codina@bootlin.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1686842809;
+        t=1686842812;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=LumG9lQbCoaqWnFFIaPRrig8474uJ6glW5VjjTMChr8=;
-        b=C0+ccOGHKHKM70Ug0wQ6ZwGEeenn6Xz/MyH1DNCkFHQKamD2rS7kEXbScP4gRuSPnF5pL+
-        oWPaOm9gZ9wLz+92W/rhWYqiMKlDL3/hI1DwYQKnTNVl6mYn6/1W0YFlILdzVIeGnyYLNT
-        gm7+zOqIa8uPNz9NjvceT5vrKuf49Xhawb1gYqFbK+xg0kw499OZuvMU/uIqodplYlWbe+
-        wWLzx0L9gLaCJmeuLc01AzWKo6A/t1xvX3UOnyCJWbVC/1FAU2D0uOGnDWLI7jWhB5iApe
-        L67YVgIZxnRQ5mPjTqwpE3ME6jyu3ogVkEGMpdmEpMDGAP5/rjt/L81QGfPpXA==
+        bh=OfbhcnemGEJph7h7ZRnFSR85EJfyp+xZYW7NxXSGgNI=;
+        b=Mg6xXkJi8G6WmMT9d+qeGtB9SHO7STKuHosMBnUkSGClKxXOPdyTz5uJsUss8l9fkVhfDB
+        Riyud3yba/JPBWoDj8sGBQl6l0w3ToxVRz24cl3d7mNHOALPB1CTNEEV2Qqs7O7JFKgk3k
+        iWrOE75URdVvsMQqhbcSR2k/wkSSQvEkSSR4eTO+AC/oA6LuWUHdMAW6xRf4gyA9QBIe+s
+        vHEDPcmpVVXFn8r5SSTtVcFMZW3rHysWDEqZofWOHetJeK9LJfBqe+WPJtxmSwqEDuXhU3
+        lZdqL6lwX/8xXryF4P+DLZIjqR2qYET1/2+EKQAo6tyHaiqT5Qm2Cm1K8Zvf7w==
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
@@ -44,8 +44,8 @@ X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPA id 9E4D3FF807;
-        Thu, 15 Jun 2023 15:26:47 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPA id C52BAFF806;
+        Thu, 15 Jun 2023 15:26:50 +0000 (UTC)
 From:   Herve Codina <herve.codina@bootlin.com>
 To:     Herve Codina <herve.codina@bootlin.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
@@ -63,9 +63,9 @@ Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v5 08/13] iio: inkern: Use max_array() to get the maximum value from an array
-Date:   Thu, 15 Jun 2023 17:26:26 +0200
-Message-Id: <20230615152631.224529-9-herve.codina@bootlin.com>
+Subject: [PATCH v5 10/13] iio: inkern: Add a helper to query an available minimum raw value
+Date:   Thu, 15 Jun 2023 17:26:28 +0200
+Message-Id: <20230615152631.224529-11-herve.codina@bootlin.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230615152631.224529-1-herve.codina@bootlin.com>
 References: <20230615152631.224529-1-herve.codina@bootlin.com>
@@ -75,40 +75,118 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use max_array() to get the maximum value from an array instead of a
-custom local loop.
+A helper, iio_read_max_channel_raw() exists to read the available
+maximum raw value of a channel but nothing similar exists to read the
+available minimum raw value.
+
+This new helper, iio_read_min_channel_raw(), fills the hole and can be
+used for reading the available minimum raw value of a channel.
+It is fully based on the existing iio_read_max_channel_raw().
 
 Signed-off-by: Herve Codina <herve.codina@bootlin.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/iio/inkern.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/iio/inkern.c         | 63 ++++++++++++++++++++++++++++++++++++
+ include/linux/iio/consumer.h | 12 +++++++
+ 2 files changed, 75 insertions(+)
 
 diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 71d0424383b6..8bfd91f74101 100644
+index 19ddd77adb11..7a1f6713318a 100644
 --- a/drivers/iio/inkern.c
 +++ b/drivers/iio/inkern.c
-@@ -5,6 +5,7 @@
+@@ -909,6 +909,69 @@ int iio_read_max_channel_raw(struct iio_channel *chan, int *val)
+ }
+ EXPORT_SYMBOL_GPL(iio_read_max_channel_raw);
+ 
++static int iio_channel_read_min(struct iio_channel *chan,
++				int *val, int *val2, int *type,
++				enum iio_chan_info_enum info)
++{
++	const int *vals;
++	int length;
++	int ret;
++
++	ret = iio_channel_read_avail(chan, &vals, type, &length, info);
++	if (ret < 0)
++		return ret;
++
++	switch (ret) {
++	case IIO_AVAIL_RANGE:
++		switch (*type) {
++		case IIO_VAL_INT:
++			*val = vals[0];
++			break;
++		default:
++			*val = vals[0];
++			if (val2)
++				*val2 = vals[1];
++		}
++		return 0;
++
++	case IIO_AVAIL_LIST:
++		if (length <= 0)
++			return -EINVAL;
++		switch (*type) {
++		case IIO_VAL_INT:
++			*val = min_array(vals, length);
++			break;
++		default:
++			/* TODO: learn about min for other iio values */
++			return -EINVAL;
++		}
++		return 0;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++int iio_read_min_channel_raw(struct iio_channel *chan, int *val)
++{
++	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(chan->indio_dev);
++	int ret;
++	int type;
++
++	mutex_lock(&iio_dev_opaque->info_exist_lock);
++	if (!chan->indio_dev->info) {
++		ret = -ENODEV;
++		goto err_unlock;
++	}
++
++	ret = iio_channel_read_min(chan, val, NULL, &type, IIO_CHAN_INFO_RAW);
++err_unlock:
++	mutex_unlock(&iio_dev_opaque->info_exist_lock);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iio_read_min_channel_raw);
++
+ int iio_get_channel_type(struct iio_channel *chan, enum iio_chan_type *type)
+ {
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(chan->indio_dev);
+diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+index f536820b9cf2..e9910b41d48e 100644
+--- a/include/linux/iio/consumer.h
++++ b/include/linux/iio/consumer.h
+@@ -301,6 +301,18 @@ int iio_write_channel_raw(struct iio_channel *chan, int val);
   */
- #include <linux/err.h>
- #include <linux/export.h>
-+#include <linux/minmax.h>
- #include <linux/mutex.h>
- #include <linux/property.h>
- #include <linux/slab.h>
-@@ -875,11 +876,7 @@ static int iio_channel_read_max(struct iio_channel *chan,
- 			return -EINVAL;
- 		switch (*type) {
- 		case IIO_VAL_INT:
--			*val = vals[--length];
--			while (length) {
--				if (vals[--length] > *val)
--					*val = vals[length];
--			}
-+			*val = max_array(vals, length);
- 			break;
- 		default:
- 			/* FIXME: learn about max for other iio values */
+ int iio_read_max_channel_raw(struct iio_channel *chan, int *val);
+ 
++/**
++ * iio_read_min_channel_raw() - read minimum available raw value from a given
++ *				channel, i.e. the minimum possible value.
++ * @chan:		The channel being queried.
++ * @val:		Value read back.
++ *
++ * Note, if standard units are required, raw reads from iio channels
++ * need the offset (default 0) and scale (default 1) to be applied
++ * as (raw + offset) * scale.
++ */
++int iio_read_min_channel_raw(struct iio_channel *chan, int *val);
++
+ /**
+  * iio_read_avail_channel_raw() - read available raw values from a given channel
+  * @chan:		The channel being queried.
 -- 
 2.40.1
 
