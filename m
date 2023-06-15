@@ -2,31 +2,31 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D84FFC001DE
-	for <linux-iio@archiver.kernel.org>; Thu, 15 Jun 2023 15:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C02C04A6A
+	for <linux-iio@archiver.kernel.org>; Thu, 15 Jun 2023 15:27:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344937AbjFOP1T (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 15 Jun 2023 11:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57380 "EHLO
+        id S1345191AbjFOP1V (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 15 Jun 2023 11:27:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345178AbjFOP0u (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Jun 2023 11:26:50 -0400
+        with ESMTP id S1345188AbjFOP0x (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Jun 2023 11:26:53 -0400
 Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8376E69;
-        Thu, 15 Jun 2023 08:26:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0988813E;
+        Thu, 15 Jun 2023 08:26:51 -0700 (PDT)
 X-GND-Sasl: herve.codina@bootlin.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1686842807;
+        t=1686842810;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KvU8ZFxyfZKV+6P7AuATlkHtw3Ni6ol9j6yJo+Wq6as=;
-        b=gSVlOJoXENawBNZO9Y85VfX5SMHoBy0URfunSBWmGPz24SHA3JnQmvTXbEBf4m36Zi0iNu
-        D9KjdJ5IvwftgPQNnmQCnZ/u2dZSjxfC8lFQiVdkqTHUBwYKPVFJTt8++Z6m/FEpy8AIeH
-        9LJh3ilhX09pffu02QobJRaVH3nBJMGzdVxXAdgmCQS5RgfRK4y36ZG/nbSc+YGk183Tl1
-        YOegPKxjPMaEUJHi++5RHuiKDr6UFpCh26Te0TzF/yRo4azFD+Aln1ddAP2La3WI6lK2Ql
-        wrfZe/YrT0ZXoDcfdM1UeX3GQro2Lm78vPmlMgVS5YoFUrnTVy6im48toe8g8Q==
+        bh=YnpK8aRuMvnC0Ke7Gmvf/IJzrUVS+kKViuz7i3kW6rw=;
+        b=GrzUTB4Ms1R/yqUOktJimCglbYJw7y2SlJeIBpYQ8rcmPZcYb9s9Osp58fj+mLBrqLEAwF
+        yueMq/4hRn+Sc64jr/R4EkcV3kReKZP4Q7onPs4c7r/iQidiTFARIHB6C2rNP//0nU7rFt
+        zClN9mKjjBMMvgZnNgI2tOvJhfqBMAzhNeBinkHWfrFcLtFKaYETgsssRgK3Ez3VYJFT2J
+        51LZTW2FRvCl+g+HxljyjJMgAQWeH0ulapIoWyyax/E36Oft0VfBju721b+vMnr8/YXvnn
+        r4johgdvKhq/Br7gyokdTssJLnkl3V5oE6MXp8W9DEYWSIml+rxlUb+kI0/pqA==
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
@@ -44,8 +44,9 @@ X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
 X-GND-Sasl: herve.codina@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPA id 0391BFF814;
-        Thu, 15 Jun 2023 15:26:45 +0000 (UTC)
+X-GND-Sasl: herve.codina@bootlin.com
+Received: by mail.gandi.net (Postfix) with ESMTPA id 4B0C6FF80D;
+        Thu, 15 Jun 2023 15:26:49 +0000 (UTC)
 From:   Herve Codina <herve.codina@bootlin.com>
 To:     Herve Codina <herve.codina@bootlin.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
@@ -62,10 +63,11 @@ To:     Herve Codina <herve.codina@bootlin.com>,
 Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v5 07/13] minmax: Introduce {min,max}_array()
-Date:   Thu, 15 Jun 2023 17:26:25 +0200
-Message-Id: <20230615152631.224529-8-herve.codina@bootlin.com>
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v5 09/13] iio: inkern: Replace a FIXME comment by a TODO one
+Date:   Thu, 15 Jun 2023 17:26:27 +0200
+Message-Id: <20230615152631.224529-10-herve.codina@bootlin.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230615152631.224529-1-herve.codina@bootlin.com>
 References: <20230615152631.224529-1-herve.codina@bootlin.com>
@@ -75,90 +77,31 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Introduce min_array() (resp max_array()) in order to get the
-minimal (resp maximum) of values present in an array.
+This FIXME comment is more a TODO one.
+It is a note when someone will need for this currently unsupported case.
+
+Change from FIXME to TODO.
 
 Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+Suggested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- include/linux/minmax.h | 64 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 64 insertions(+)
+ drivers/iio/inkern.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/minmax.h b/include/linux/minmax.h
-index 396df1121bff..1672985b02a3 100644
---- a/include/linux/minmax.h
-+++ b/include/linux/minmax.h
-@@ -133,6 +133,70 @@
-  */
- #define max_t(type, x, y)	__careful_cmp((type)(x), (type)(y), >)
- 
-+/*
-+ * Remove a const qualifier from integer types
-+ * _Generic(foo, type-name: association, ..., default: association) performs a
-+ * comparison against the foo type (not the qualified type).
-+ * Do not use the const keyword in the type-name as it will not match the
-+ * unqualified type of foo.
-+ */
-+#define __unconst_integer_type_cases(type)	\
-+	unsigned type:  (unsigned type)0,	\
-+	signed type:    (signed type)0
-+
-+#define __unconst_integer_typeof(x) typeof(			\
-+	_Generic((x),						\
-+		char: (char)0,					\
-+		__unconst_integer_type_cases(char),		\
-+		__unconst_integer_type_cases(short),		\
-+		__unconst_integer_type_cases(int),		\
-+		__unconst_integer_type_cases(long),		\
-+		__unconst_integer_type_cases(long long),	\
-+		default: (x)))
-+
-+/*
-+ * Do not check the array parameter using __must_be_array().
-+ * In the following legit use-case where the "array" passed is a simple pointer,
-+ * __must_be_array() will return a failure.
-+ * --- 8< ---
-+ * int *buff
-+ * ...
-+ * min = min_array(buff, nb_items);
-+ * --- 8< ---
-+ *
-+ * The first typeof(&(array)[0]) is needed in order to support arrays of both
-+ * 'int *buff' and 'int buf[N]' types.
-+ *
-+ * The array can be an array of const items.
-+ * typeof() keeps the const qualifier. Use __unconst_typeof() in order to
-+ * discard the const qualifier for the __element variable.
-+ */
-+#define __minmax_array(op, array, len) ({				\
-+	typeof(&(array)[0]) __array = (array);				\
-+	typeof(len) __len = (len);					\
-+	__unconst_integer_typeof(__array[0]) __element = __array[--__len]; \
-+	while (__len--)							\
-+		__element = op(__element, __array[__len]);		\
-+	__element; })
-+
-+/**
-+ * min_array - return minimum of values present in an array
-+ * @array: array
-+ * @len: array length
-+ *
-+ * Note that @len must not be zero (empty array).
-+ */
-+#define min_array(array, len) __minmax_array(min, array, len)
-+
-+/**
-+ * max_array - return maximum of values present in an array
-+ * @array: array
-+ * @len: array length
-+ *
-+ * Note that @len must not be zero (empty array).
-+ */
-+#define max_array(array, len) __minmax_array(max, array, len)
-+
- /**
-  * clamp_t - return a value clamped to a given range using a given type
-  * @type: the type of variable to use
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 8bfd91f74101..19ddd77adb11 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -879,7 +879,7 @@ static int iio_channel_read_max(struct iio_channel *chan,
+ 			*val = max_array(vals, length);
+ 			break;
+ 		default:
+-			/* FIXME: learn about max for other iio values */
++			/* TODO: learn about max for other iio values */
+ 			return -EINVAL;
+ 		}
+ 		return 0;
 -- 
 2.40.1
 
