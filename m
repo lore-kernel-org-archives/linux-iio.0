@@ -2,127 +2,154 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A30EB64DA
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Jun 2023 15:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01254EB64D9
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Jun 2023 15:50:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232009AbjFSPoo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 19 Jun 2023 11:44:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47062 "EHLO
+        id S231785AbjFSPuh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 19 Jun 2023 11:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232040AbjFSPom (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jun 2023 11:44:42 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABC7139;
-        Mon, 19 Jun 2023 08:44:39 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id 2adb3069b0e04-4f849605df4so4660599e87.3;
-        Mon, 19 Jun 2023 08:44:39 -0700 (PDT)
+        with ESMTP id S231696AbjFSPug (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jun 2023 11:50:36 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A5EA4;
+        Mon, 19 Jun 2023 08:50:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1687189477; x=1689781477;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=A2xW1pdD4hh2VGs4Mpg9cKE/j/pXz/wg2o6KnZsreRQ=;
-        b=SXi9EuYemDFlDxp0BqouWi1+qLw4f2dj8Wiuwrapoqielba8KLGExvIZVg831z4yh3
-         n9YHgewmBi/vaHWDfDGSKEpC72HxQIzH8PcrDpN3EpQZvZMqRoHVJ7V8WC0h071yrRd/
-         yjJ1KFmUABIwfoo0Cwrw7pSyffKMlHGB0qgS1k8qkXTXKQ+OBnZ0SQ8rnR2diuoSUD5B
-         fWhRAyGZkSnFTAsdlUAwXFnx2UYjxddxGfSfNnLGrO2nqRd1bq9WNetJYb+RsWW85ED2
-         zjFc46hV/eGrfqKuG/LfBj6tpbAUcdzezYY8RJOCeJSfHi2CKqHwiHBukPmYhJlnsQkq
-         VzPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687189477; x=1689781477;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=A2xW1pdD4hh2VGs4Mpg9cKE/j/pXz/wg2o6KnZsreRQ=;
-        b=MtUoM+Wx+hSzrmuAmsFL+oOWlx+VH7XN/amXwRWmPVAGIsiyxw6LXAkI2bzlgJGgCM
-         jJJp5VIbifkadjU+u14gUs3KcGX2l09lmEu4RaXYOdnJF7XX5Bif3VxdmyA/rf3eYXx7
-         s5izV7VC35fTcoIwQy5/t18ppm8AY9KL7KbNwrkuZNXLi7OpqLHBc/q7iksmyo+xM+dS
-         jz0HTj8kueOuIhQ26NY+RRv123yIS1ILl77QT8tb+JEI3nfe7VoYhaecvTTs/THwjoSu
-         ei1ylaw88vW5iw4/eaRubSftp7AO4Y+3HM7acoXj5FgXokya0bMfc0aqQTDP/Ipw3bOI
-         RlWg==
-X-Gm-Message-State: AC+VfDy6L886+rUJ/K71cai3qLQTwJEe+K5lus5Aqo5Nbti5A9xsnFVU
-        fi76KZjv6qRD4AAfGr2GMkdONQvAZXuDgf7s
-X-Google-Smtp-Source: ACHHUZ6fyzgyF6IaPo1cFaZ/Jbu3BHrWZiNQ4Ii9axwoUxhdnuwBR6cJW7DJpqJrgj7c7vZ8IZ/jdQ==
-X-Received: by 2002:a19:505b:0:b0:4f8:5af4:73ef with SMTP id z27-20020a19505b000000b004f85af473efmr4062285lfj.28.1687189477519;
-        Mon, 19 Jun 2023 08:44:37 -0700 (PDT)
-Received: from user-PC.. ([178.134.198.138])
-        by smtp.gmail.com with ESMTPSA id f11-20020a19ae0b000000b004f85e53250bsm1207144lfc.191.2023.06.19.08.44.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jun 2023 08:44:37 -0700 (PDT)
-From:   Maksim Kiselev <bigunclemax@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     Maksim Kiselev <bigunclemax@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Ramona Bolboaca <ramona.bolboaca@analog.com>,
-        =?UTF-8?q?Leonard=20G=C3=B6hrs?= <l.goehrs@pengutronix.de>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Maxime Ripard <mripard@kernel.org>,
-        Quentin Schulz <quentin.schulz@free-electrons.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: [PATCH v8 4/4] riscv: dts: allwinner: d1: Add GPADC node
-Date:   Mon, 19 Jun 2023 18:42:27 +0300
-Message-Id: <20230619154252.3951913-5-bigunclemax@gmail.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230619154252.3951913-1-bigunclemax@gmail.com>
-References: <20230619154252.3951913-1-bigunclemax@gmail.com>
+  d=axis.com; q=dns/txt; s=axis-central1; t=1687189835;
+  x=1718725835;
+  h=references:from:to:cc:subject:date:in-reply-to:
+   message-id:mime-version;
+  bh=jV18MHlcdS/4W3J35UCUnXhAnFfGk9RQbYDuqUPQ4r8=;
+  b=TSLn6bEzHoHeP1JS2TVLwYHfJxfbNYg0w8Q9Va4bVKHagwvmaML4E6o9
+   UXOJwU0NkbLTjvUjvpHq9KRVe50mcc8AM7zUF+imF5dUNtgxr0VYLYsUM
+   cIRowHYKCN+k5m+TjiNXgzpv4//kDu5Erton5xmPi3tDEU6bURCdJgwk2
+   qhJcNrcAyQHdjEzUIquc70FgpaUTR1p/f8gh0fX9qqYag261Xv9rGYZ5t
+   JKVZgIxD4CM0zHHH8BEsD4Ke105FGG1wFLGATyt73UpLj9jOwkFEh3JTt
+   plDptDQasvwrB2a+Dx1rckaSjZXeucpAKcxC51uNwaxiiqNM7PsMvviux
+   Q==;
+References: <cover.1686926857.git.waqarh@axis.com>
+ <d2d8f34c09a2ba0504eaba4f451412de41db2f37.1686926857.git.waqarh@axis.com>
+ <682cf4f8-ba1b-d74a-c744-6aa484c1acd5@metafoo.de>
+User-agent: a.out
+From:   Waqar Hameed <waqar.hameed@axis.com>
+To:     Lars-Peter Clausen <lars@metafoo.de>
+CC:     Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
+        <kernel@axis.com>, <linux-kernel@vger.kernel.org>,
+        <kernel@lists.axis.com>
+Subject: Re: [PATCH 2/2] iio: Add driver for Murata IRS-D200
+Date:   Mon, 19 Jun 2023 13:21:51 +0200
+In-Reply-To: <682cf4f8-ba1b-d74a-c744-6aa484c1acd5@metafoo.de>
+Message-ID: <pndsfan1mev.fsf@axis.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.0.5.60]
+X-ClientProxiedBy: se-mail02w.axis.com (10.20.40.8) To se-mail01w.axis.com
+ (10.20.40.7)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch adds declaration of the general purpose ADC for D1
-and T113s SoCs.
+On Fri, Jun 16, 2023 at 18:37 -0700 Lars-Peter Clausen <lars@metafoo.de> wrote:
 
-Signed-off-by: Maksim Kiselev <bigunclemax@gmail.com>
----
- arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+> On 6/16/23 08:10, Waqar Hameed wrote:
+>> Murata IRS-D200 is a PIR sensor for human detection. It has support for
+>> raw data measurements and detection event notification.
+>>
+>> Add a driver with support for triggered buffer and events. Map the
+>> various settings to the `iio` framework, e.g. threshold values, sampling
+>> frequency, filter frequencies etc.
+>>
+>> Signed-off-by: Waqar Hameed <waqar.hameed@axis.com>
+>
+> Looks very good, small minor comments.
 
-diff --git a/arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi b/arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi
-index 922e8e0e2c09..cb353d5805cb 100644
---- a/arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi
-+++ b/arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi
-@@ -138,6 +138,16 @@ ccu: clock-controller@2001000 {
- 			#reset-cells = <1>;
- 		};
- 
-+		gpadc: adc@2009000 {
-+			compatible = "allwinner,sun20i-d1-gpadc";
-+			reg = <0x2009000 0x400>;
-+			clocks = <&ccu CLK_BUS_GPADC>;
-+			resets = <&ccu RST_BUS_GPADC>;
-+			interrupts = <SOC_PERIPHERAL_IRQ(57) IRQ_TYPE_LEVEL_HIGH>;
-+			status = "disabled";
-+			#io-channel-cells = <1>;
-+		};
-+
- 		dmic: dmic@2031000 {
- 			compatible = "allwinner,sun20i-d1-dmic",
- 				     "allwinner,sun50i-h6-dmic";
--- 
-2.39.2
+Thanks!
 
+[...]
+
+>> index 000000000000..699801d60295
+>> --- /dev/null
+>> +++ b/drivers/iio/proximity/irsd200.c
+>> @@ -0,0 +1,1051 @@
+>> [...]
+>> +/*
+>> + * The upper 4 bits in register IRS_REG_COUNT value is the upper count value
+>> + * (exceeding upper threshold value). The lower 4 is the lower count value
+>> + * (exceeding lower threshold value).
+>> + */
+>> +#define IRS_UPPER_COUNT(count)	(count >> 4)
+>> +#define IRS_LOWER_COUNT(count)	(count & GENMASK(3, 0))
+>
+> Usually we add parenthesis around macro arguments to avoid issues in case the
+> argument is a non-singular expression.
+
+Of course! Will use `FIELD_GET()` as Jonathan suggests.
+
+>> [...]
+>>
+>> +static int irsd200_read_data(struct irsd200_data *data, s16 *val)
+>> +{
+>> +	unsigned int tmpval;
+>> +	int ret;
+>> +
+>> +	ret = regmap_read(data->regmap, IRS_REG_DATA_HI, &tmpval);
+>> +	if (ret < 0) {
+>> +		dev_err(data->dev, "Could not read hi data (%d)\n", ret);
+>> +		return ret;
+>> +	}
+>> +
+>> +	*val = (s16)(tmpval << 8);
+>> +
+>> +	ret = regmap_read(data->regmap, IRS_REG_DATA_LO, &tmpval);
+>> +	if (ret < 0) {
+>> +		dev_err(data->dev, "Could not read lo data (%d)\n", ret);
+>> +		return ret;
+>> +	}
+> Is there a way to bulk read those registers in one go to avoid inconsistent data
+> if they change while being read?
+
+Yes, will use `regmap_bulk_read()`.
+
+>> +	*val |= tmpval;
+>> +
+>> +	return 0;
+>> +}
+>> [...]
+>> +static int irsd200_write_raw(struct iio_dev *indio_dev,
+>> +			     struct iio_chan_spec const *chan, int val,
+>> +			     int val2, long mask)
+>> +{
+>> +	struct irsd200_data *data = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		ret = irsd200_write_data_rate(data, val);
+>> +		return ret;
+> Maybe just `return irsd200_write_data_rate(...)`
+
+Of course! (Remnant from a refactorization... Sorry!)
+
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +}
+>> +
+>>
+>> [...]
+>> +static int irsd200_probe(struct i2c_client *client)
+>> +{
+>> +	struct iio_trigger *trigger;
+>> +	struct irsd200_data *data;
+>> +	struct iio_dev *indio_dev;
+>> +	struct regmap *regmap;
+>> +	size_t i;
+>> +	int ret;
+>> +
+>> +	regmap = devm_regmap_init_i2c(client, &irsd200_regmap_config);
+>> +	if (IS_ERR(regmap)) {
+>> +		dev_err(&client->dev, "Could not initialize regmap\n");
+> dev_err_probe() is the more modern variant for error reporting in the probe
+> function. Same for all the other dev_err() in this function.
+
+Alright, I'll change to `dev_err_probe()`.
