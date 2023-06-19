@@ -2,92 +2,152 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05AC1EB64D9
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Jun 2023 11:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D23BEB64D9
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Jun 2023 14:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230323AbjFSLaa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 19 Jun 2023 07:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49622 "EHLO
+        id S232135AbjFSONR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 19 Jun 2023 10:13:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229954AbjFSLa3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jun 2023 07:30:29 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A50310F3
-        for <linux-iio@vger.kernel.org>; Mon, 19 Jun 2023 04:29:57 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id a640c23a62f3a-982a88ca610so400570666b.2
-        for <linux-iio@vger.kernel.org>; Mon, 19 Jun 2023 04:29:57 -0700 (PDT)
+        with ESMTP id S232134AbjFSONQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jun 2023 10:13:16 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC298E
+        for <linux-iio@vger.kernel.org>; Mon, 19 Jun 2023 07:13:14 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id 4fb4d7f45d1cf-510d6b939bfso5038364a12.0
+        for <linux-iio@vger.kernel.org>; Mon, 19 Jun 2023 07:13:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1687174183; x=1689766183;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=y0b3K6wMFTNOqwQ0pN9Qbjkbd6YMHXdpJVSfbzbME+o=;
-        b=xAZsAhT9XBb2axZvJJB/ULopxk5VfhMeBiQ7fS5IKPGLdeXXWvkV9vr3+R2jk+C0tv
-         jyKvLxLNUWqVIeAMePFye66NeAM4KzneMd2DNb7U57HZtW9VG29UqxRwUpXqG1Z78byL
-         zdW0VBhV8W9h1XQ1Hd+c5lQQsgVD1XxJyw3MJ1tV6EYF4ISmJj9fS7aIi3Q2pgX9OM5Z
-         IT3BXXmrKboUBAbJcBZpVA33Dxe70cstBDJjkHD58gQJJMVdIfGHBzKf7WcwtEjcCAkb
-         l1uaxzZhrB8r7NmnYD7MT56WegCYPZxuTY/HW3OTr38j5Hrl8jhJloxuJt1YvKSvQpMK
-         ebEQ==
+        d=pqrs.dk; s=google; t=1687183992; x=1689775992;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=iZZvuUg/XJppy1RQPzIvzHMS06C+pQD8xRtk2Ai4foU=;
+        b=NzscS+z2Afd9uBqEqkAty/34jFNErBTkXTRKILnq/lKMpEqiZbRbWzWVArRQJQqj56
+         SRmVzl84OC9RaUWQaUC9/NmY9QhHVkue5RGZNwtIHglAR7SDY2CEl1fGL3DyGSx9Khbi
+         plEhh5etCtzE9e4LLmRUykkqB2NTEd9TdVByizZbvak7sIDlnuLL5fwlTMDOsmerKOIh
+         Hi6Jqjb2qtPQSPZfg8W+ZaLBJvGJ7+77hfwtQUPegXtGhyIfHaa6t27MugkPR1j28ixD
+         2Sy1IdhonaqvuFbnE99ON0SQlXojXihSnWa28PA7CNxj4wR5YE9UzjFQC5EiZLo425HB
+         ckEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687174183; x=1689766183;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=y0b3K6wMFTNOqwQ0pN9Qbjkbd6YMHXdpJVSfbzbME+o=;
-        b=jnCiGNgEdvZaZ5toMf1CUU42ksA4TDdxdu4VYgiS5Y3NwKEMP5vQKgXOmixKkpVQ+r
-         HgQKiinIoFLFgqsNT1hYopPL+XIV8C4ua7bAinPrBagPqTGR76WuWFAAKS8jGUBBlQN7
-         ZYX5cxmg3mC28n5co25i/BCgLlTARUjW7tUi03osjvyTIJ930O//omg4iHFpYo02vgSg
-         Sn6yq49ae4UswZB1CVUXG7j57UdEdIX5aRqq4RgKIsBdsoZdQzsiQ7iS2nCaukZsj4nU
-         k1TS3Xj2R2sCJjiC6yFgnvSifAOVyNjxiVZPrL9gWNacL2m0CLVIJ20I8/hnATV51gme
-         iDJA==
-X-Gm-Message-State: AC+VfDwRVgPfgjqFaFnnJomCTr8T5JB92QVGOhsN/ZOrlHb9gty5ylu2
-        JSD5nO32C/dy38eBER/3MqYU2w==
-X-Google-Smtp-Source: ACHHUZ6WFouwYfH5BNhHUgF4MGOqLFUkcN5gjighatzA0G29gC3yrUTKzrMz6I/mAFIrkGxk1K0wFA==
-X-Received: by 2002:a17:907:3da3:b0:987:2db5:ad26 with SMTP id he35-20020a1709073da300b009872db5ad26mr5390514ejc.25.1687174183283;
-        Mon, 19 Jun 2023 04:29:43 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id w18-20020a17090633d200b009875f08c213sm3351409eja.181.2023.06.19.04.29.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Jun 2023 04:29:42 -0700 (PDT)
-Message-ID: <00ef5b07-3c1a-40d2-0858-5aaf3c8d073c@linaro.org>
-Date:   Mon, 19 Jun 2023 13:29:40 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH 1/2] dt-bindings: iio: proximity: Add bindings for Murata
- IRS-D200
-To:     Waqar Hameed <waqar.hameed@axis.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        d=1e100.net; s=20221208; t=1687183992; x=1689775992;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=iZZvuUg/XJppy1RQPzIvzHMS06C+pQD8xRtk2Ai4foU=;
+        b=RqURnKm3c9Eg4uFY6U3lwfXldooXzhDCfPaMLhBUe2LovcKuOMo0kGBrcgw3jQKYsZ
+         SyzhIObUOeDyhbOZdXApOoiP9B1+ybThDdHNcLjgaSM1Asap3NPoEC3m+uZ86Oi9hK7f
+         scQNw7s2v+xRwe1OOrGmHWoDMvkiZMQw+2KCkH6XC/xeUbDho6F6iqSJKQJTi9/Cja3+
+         Qn8ar1Ub1ms9MjeFIVnFhRnipAbPcuNN6tejzPvkYHJtI8vruPQmIw/9eKC4Y/snQvmh
+         SZf+nBgFC+lnu4rpB3zRhOvztaki1vzdH0PpVeR/MnO5NCO4TDdUkAXOduMhFDNgicxc
+         lung==
+X-Gm-Message-State: AC+VfDx3GainA9bFC433eotBTM4W6YlqGgZEayjxcJxSfdSVNky7xhwl
+        S51J9zGzjTDhUGv5tIUsaifJOA==
+X-Google-Smtp-Source: ACHHUZ5cAAjNf4xsxv8uDi3DvjzpJ43DHxy310s4QeIFunCXApaRQRFdekzGFVZP+e7+2P0C9IUBfA==
+X-Received: by 2002:a05:6402:545:b0:51a:5abc:668d with SMTP id i5-20020a056402054500b0051a5abc668dmr1987364edx.3.1687183992326;
+        Mon, 19 Jun 2023 07:13:12 -0700 (PDT)
+Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id m1-20020aa7d341000000b0051a44a5636asm2788489edr.44.2023.06.19.07.13.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Jun 2023 07:13:12 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@axis.com
-References: <cover.1686926857.git.waqarh@axis.com>
- <9487391b0565434761055b39ba04900bd839580a.1686926857.git.waqarh@axis.com>
- <07a6766e-7e2b-22fa-6f20-3a8ab7019635@linaro.org> <pnd1qi73dbu.fsf@axis.com>
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <pnd1qi73dbu.fsf@axis.com>
+        Marc Titinger <mtitinger@baylibre.com>
+Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: ina2xx: avoid NULL pointer dereference on OF device match
+Date:   Mon, 19 Jun 2023 16:12:39 +0200
+Message-Id: <20230619141239.2257392-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.40.0
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 19/06/2023 12:40, Waqar Hameed wrote:
->> Node names should be generic. See also explanation and list of examples
->> in DT specification:
->> https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
->>
->> so I guess: proximity@?
-> 
-> On that list there is "temperature-sensor". Would it make sense then to
-> call it "proximity-sensor"?
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-Choose whatever is the most popular in existing Linux sources.
+The affected lines were resulting in a NULL pointer dereference on our
+platform because the device tree contained the following list of
+compatible strings:
 
-Best regards,
-Krzysztof
+    power-sensor@40 {
+        compatible = "ti,ina232", "ti,ina231";
+        ...
+    };
+
+Since the driver doesn't declare a compatible string "ti,ina232", the OF
+matching succeeds on "ti,ina231". But the I2C device ID info is
+populated via the first compatible string, cf. modalias population in
+of_i2c_get_board_info(). Since there is no "ina232" entry in the legacy
+I2C device ID table either, the struct i2c_device_id *id pointer in the
+probe function is NULL.
+
+Fix this by using the already populated type variable instead, which
+points to the proper driver data. Since the name is also wanted, add a
+generic one to the ina2xx_config table.
+
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+Fixes: c43a102e67db ("iio: ina2xx: add support for TI INA2xx Power Monitors")
+---
+ drivers/iio/adc/ina2xx-adc.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+index 213526c1592f..aea83f369437 100644
+--- a/drivers/iio/adc/ina2xx-adc.c
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -124,6 +124,7 @@ static const struct regmap_config ina2xx_regmap_config = {
+ enum ina2xx_ids { ina219, ina226 };
+ 
+ struct ina2xx_config {
++	const char *name;
+ 	u16 config_default;
+ 	int calibration_value;
+ 	int shunt_voltage_lsb;	/* nV */
+@@ -155,6 +156,7 @@ struct ina2xx_chip_info {
+ 
+ static const struct ina2xx_config ina2xx_config[] = {
+ 	[ina219] = {
++		.name = "ina219",
+ 		.config_default = INA219_CONFIG_DEFAULT,
+ 		.calibration_value = 4096,
+ 		.shunt_voltage_lsb = 10000,
+@@ -164,6 +166,7 @@ static const struct ina2xx_config ina2xx_config[] = {
+ 		.chip_id = ina219,
+ 	},
+ 	[ina226] = {
++		.name = "ina226",
+ 		.config_default = INA226_CONFIG_DEFAULT,
+ 		.calibration_value = 2048,
+ 		.shunt_voltage_lsb = 2500,
+@@ -996,7 +999,7 @@ static int ina2xx_probe(struct i2c_client *client)
+ 	/* Patch the current config register with default. */
+ 	val = chip->config->config_default;
+ 
+-	if (id->driver_data == ina226) {
++	if (type == ina226) {
+ 		ina226_set_average(chip, INA226_DEFAULT_AVG, &val);
+ 		ina226_set_int_time_vbus(chip, INA226_DEFAULT_IT, &val);
+ 		ina226_set_int_time_vshunt(chip, INA226_DEFAULT_IT, &val);
+@@ -1015,7 +1018,7 @@ static int ina2xx_probe(struct i2c_client *client)
+ 	}
+ 
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-	if (id->driver_data == ina226) {
++	if (type == ina226) {
+ 		indio_dev->channels = ina226_channels;
+ 		indio_dev->num_channels = ARRAY_SIZE(ina226_channels);
+ 		indio_dev->info = &ina226_info;
+@@ -1024,7 +1027,7 @@ static int ina2xx_probe(struct i2c_client *client)
+ 		indio_dev->num_channels = ARRAY_SIZE(ina219_channels);
+ 		indio_dev->info = &ina219_info;
+ 	}
+-	indio_dev->name = id->name;
++	indio_dev->name = id ? id->name : chip->config->name;
+ 
+ 	ret = devm_iio_kfifo_buffer_setup(&client->dev, indio_dev,
+ 					  &ina2xx_setup_ops);
+-- 
+2.40.0
 
