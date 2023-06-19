@@ -2,152 +2,158 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D23BEB64D9
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Jun 2023 14:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDBEEEB64DB
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Jun 2023 15:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232135AbjFSONR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 19 Jun 2023 10:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
+        id S231330AbjFSPnH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 19 Jun 2023 11:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232134AbjFSONQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jun 2023 10:13:16 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC298E
-        for <linux-iio@vger.kernel.org>; Mon, 19 Jun 2023 07:13:14 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id 4fb4d7f45d1cf-510d6b939bfso5038364a12.0
-        for <linux-iio@vger.kernel.org>; Mon, 19 Jun 2023 07:13:13 -0700 (PDT)
+        with ESMTP id S231130AbjFSPnG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jun 2023 11:43:06 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F21A83;
+        Mon, 19 Jun 2023 08:43:05 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id 2adb3069b0e04-4f004cc54f4so4781381e87.3;
+        Mon, 19 Jun 2023 08:43:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pqrs.dk; s=google; t=1687183992; x=1689775992;
+        d=gmail.com; s=20221208; t=1687189383; x=1689781383;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=iZZvuUg/XJppy1RQPzIvzHMS06C+pQD8xRtk2Ai4foU=;
-        b=NzscS+z2Afd9uBqEqkAty/34jFNErBTkXTRKILnq/lKMpEqiZbRbWzWVArRQJQqj56
-         SRmVzl84OC9RaUWQaUC9/NmY9QhHVkue5RGZNwtIHglAR7SDY2CEl1fGL3DyGSx9Khbi
-         plEhh5etCtzE9e4LLmRUykkqB2NTEd9TdVByizZbvak7sIDlnuLL5fwlTMDOsmerKOIh
-         Hi6Jqjb2qtPQSPZfg8W+ZaLBJvGJ7+77hfwtQUPegXtGhyIfHaa6t27MugkPR1j28ixD
-         2Sy1IdhonaqvuFbnE99ON0SQlXojXihSnWa28PA7CNxj4wR5YE9UzjFQC5EiZLo425HB
-         ckEg==
+        bh=ONxNNZw/qmdwlne5gEPTK3bLBdHTya93hQkUoKWnPqE=;
+        b=QzFQD0kW5M7hiQP0BvScCgizwq82HavcztJnTml/MMDEMrA9ytHqYflCzsjgHLoBA7
+         ro+hTf+n4XIV7mQz9+v8jVS3NAzHV+/pkvfpG+AuiWc39fiOwvxSVd1dJwVVqE83OggC
+         sBlYxFgc2S0pgTfFhe01MLcf9FkfMdcKpCXxtf03TkWsiS3v6IR1ERBMjXJjd+zb0j/7
+         0otLD1Eyh6wu90VrPmoGsAVCZ2P+7LCFexg3EYF6RqqoX4qWcE5sPv35JoxYmy47rvdk
+         /6MsgPCeVmKMt2KI3Beju3sisLU9oEwamwt6pp1WoUQHb0w9mDEFhBlxaSogONGIJRWt
+         YEiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687183992; x=1689775992;
+        d=1e100.net; s=20221208; t=1687189383; x=1689781383;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=iZZvuUg/XJppy1RQPzIvzHMS06C+pQD8xRtk2Ai4foU=;
-        b=RqURnKm3c9Eg4uFY6U3lwfXldooXzhDCfPaMLhBUe2LovcKuOMo0kGBrcgw3jQKYsZ
-         SyzhIObUOeDyhbOZdXApOoiP9B1+ybThDdHNcLjgaSM1Asap3NPoEC3m+uZ86Oi9hK7f
-         scQNw7s2v+xRwe1OOrGmHWoDMvkiZMQw+2KCkH6XC/xeUbDho6F6iqSJKQJTi9/Cja3+
-         Qn8ar1Ub1ms9MjeFIVnFhRnipAbPcuNN6tejzPvkYHJtI8vruPQmIw/9eKC4Y/snQvmh
-         SZf+nBgFC+lnu4rpB3zRhOvztaki1vzdH0PpVeR/MnO5NCO4TDdUkAXOduMhFDNgicxc
-         lung==
-X-Gm-Message-State: AC+VfDx3GainA9bFC433eotBTM4W6YlqGgZEayjxcJxSfdSVNky7xhwl
-        S51J9zGzjTDhUGv5tIUsaifJOA==
-X-Google-Smtp-Source: ACHHUZ5cAAjNf4xsxv8uDi3DvjzpJ43DHxy310s4QeIFunCXApaRQRFdekzGFVZP+e7+2P0C9IUBfA==
-X-Received: by 2002:a05:6402:545:b0:51a:5abc:668d with SMTP id i5-20020a056402054500b0051a5abc668dmr1987364edx.3.1687183992326;
-        Mon, 19 Jun 2023 07:13:12 -0700 (PDT)
-Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id m1-20020aa7d341000000b0051a44a5636asm2788489edr.44.2023.06.19.07.13.11
+        bh=ONxNNZw/qmdwlne5gEPTK3bLBdHTya93hQkUoKWnPqE=;
+        b=ELNlZMIC1mPP2bpJ57elj+J0zbNgqAz1cN0+YUnPXrrlk4mU4gMW3odgS5NeEDFo0+
+         QJ0PDB3sn+Rvf93BFeuygkhJ3WWj8T0V+S2Ad5T7tNp/pKuwaD4LaBOyAnaBoi6Xwj3c
+         Z0j+0U1K5Epxb93rwJV7sb7xkYsJubIQwKX51y2x/NIpTR+ooGXCixULu9E1ZcDsVePY
+         yJ8gDA3LPnceKWNGsKWnPn1gv8woirXFlszsOIX5zkkGGAgx2GwRCWSeixYwxPr8UhjB
+         apEViEbmFQqtYVgObnKT+sKKWFF7E+i8OD6fsOv7BG5ZxOK1nacqvhBylIMtKAOaMNGV
+         UVyA==
+X-Gm-Message-State: AC+VfDzXv1A2q1HDbh+DDWsDnDajBmiC5hlc8R8UoL7Bx0TIPyEKjLCP
+        i76EZIGa+rhC1j2LewNByDg7DD+2u7coaXjJ
+X-Google-Smtp-Source: ACHHUZ4yL4aD+qEJZ0h0+bGI3YNOliImTCvoONhBTFNNWCuE57QQWU4tZRBQX1lukt9ksOQnP13AQg==
+X-Received: by 2002:a19:e04d:0:b0:4e8:4abf:f19d with SMTP id g13-20020a19e04d000000b004e84abff19dmr5744863lfj.15.1687189382656;
+        Mon, 19 Jun 2023 08:43:02 -0700 (PDT)
+Received: from user-PC.. ([178.134.198.138])
+        by smtp.gmail.com with ESMTPSA id f11-20020a19ae0b000000b004f85e53250bsm1207144lfc.191.2023.06.19.08.42.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jun 2023 07:13:12 -0700 (PDT)
-From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
-To:     Jonathan Cameron <jic23@kernel.org>,
+        Mon, 19 Jun 2023 08:43:02 -0700 (PDT)
+From:   Maksim Kiselev <bigunclemax@gmail.com>
+To:     linux-iio@vger.kernel.org
+Cc:     Maksim Kiselev <bigunclemax@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Marc Titinger <mtitinger@baylibre.com>
-Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: ina2xx: avoid NULL pointer dereference on OF device match
-Date:   Mon, 19 Jun 2023 16:12:39 +0200
-Message-Id: <20230619141239.2257392-1-alvin@pqrs.dk>
-X-Mailer: git-send-email 2.40.0
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        =?UTF-8?q?Leonard=20G=C3=B6hrs?= <l.goehrs@pengutronix.de>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Ramona Bolboaca <ramona.bolboaca@analog.com>,
+        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>,
+        Maxime Ripard <mripard@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: [PATCH v8 0/4] Add support for Allwinner GPADC on D1/T113s/R329/T507 SoCs
+Date:   Mon, 19 Jun 2023 18:42:23 +0300
+Message-Id: <20230619154252.3951913-1-bigunclemax@gmail.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+This series adds support for general purpose ADC (GPADC) on new
+Allwinner's SoCs, such as D1, T113s, T507 and R329. The implemented driver
+provides basic functionality for getting ADC channels data.
 
-The affected lines were resulting in a NULL pointer dereference on our
-platform because the device tree contained the following list of
-compatible strings:
+Change History:
+v8:
+- Added patch that changes Kconfig description for previous Allwinner GPADC
+- Changed Kconfig description for this GPADC driver
+- Fixed 'reg' range for gpadc node in 'sunxi-d1s-t113.dtsi'
 
-    power-sensor@40 {
-        compatible = "ti,ina232", "ti,ina231";
-        ...
-    };
+v7:
+- Fixed typo in DT bindings property
 
-Since the driver doesn't declare a compatible string "ti,ina232", the OF
-matching succeeds on "ti,ina231". But the I2C device ID info is
-populated via the first compatible string, cf. modalias population in
-of_i2c_get_board_info(). Since there is no "ina232" entry in the legacy
-I2C device ID table either, the struct i2c_device_id *id pointer in the
-probe function is NULL.
+v6:
+- Fixed DT bindings regexp for channel properties
+- Dropped checking the max number of channels from the drivers code
+  (This is redundant as we raly on DT bindings check)
 
-Fix this by using the already populated type variable instead, which
-points to the proper driver data. Since the name is also wanted, add a
-generic one to the ina2xx_config table.
+v5:
+- Fixed DT bindings properties for child nodes
 
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Fixes: c43a102e67db ("iio: ina2xx: add support for TI INA2xx Power Monitors")
----
- drivers/iio/adc/ina2xx-adc.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+v4:
+- Fixed DT bindings warnings
+- Used GENMASK to clear the irq register
+- Minor formatting fixes
 
-diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index 213526c1592f..aea83f369437 100644
---- a/drivers/iio/adc/ina2xx-adc.c
-+++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -124,6 +124,7 @@ static const struct regmap_config ina2xx_regmap_config = {
- enum ina2xx_ids { ina219, ina226 };
- 
- struct ina2xx_config {
-+	const char *name;
- 	u16 config_default;
- 	int calibration_value;
- 	int shunt_voltage_lsb;	/* nV */
-@@ -155,6 +156,7 @@ struct ina2xx_chip_info {
- 
- static const struct ina2xx_config ina2xx_config[] = {
- 	[ina219] = {
-+		.name = "ina219",
- 		.config_default = INA219_CONFIG_DEFAULT,
- 		.calibration_value = 4096,
- 		.shunt_voltage_lsb = 10000,
-@@ -164,6 +166,7 @@ static const struct ina2xx_config ina2xx_config[] = {
- 		.chip_id = ina219,
- 	},
- 	[ina226] = {
-+		.name = "ina226",
- 		.config_default = INA226_CONFIG_DEFAULT,
- 		.calibration_value = 2048,
- 		.shunt_voltage_lsb = 2500,
-@@ -996,7 +999,7 @@ static int ina2xx_probe(struct i2c_client *client)
- 	/* Patch the current config register with default. */
- 	val = chip->config->config_default;
- 
--	if (id->driver_data == ina226) {
-+	if (type == ina226) {
- 		ina226_set_average(chip, INA226_DEFAULT_AVG, &val);
- 		ina226_set_int_time_vbus(chip, INA226_DEFAULT_IT, &val);
- 		ina226_set_int_time_vshunt(chip, INA226_DEFAULT_IT, &val);
-@@ -1015,7 +1018,7 @@ static int ina2xx_probe(struct i2c_client *client)
- 	}
- 
- 	indio_dev->modes = INDIO_DIRECT_MODE;
--	if (id->driver_data == ina226) {
-+	if (type == ina226) {
- 		indio_dev->channels = ina226_channels;
- 		indio_dev->num_channels = ARRAY_SIZE(ina226_channels);
- 		indio_dev->info = &ina226_info;
-@@ -1024,7 +1027,7 @@ static int ina2xx_probe(struct i2c_client *client)
- 		indio_dev->num_channels = ARRAY_SIZE(ina219_channels);
- 		indio_dev->info = &ina219_info;
- 	}
--	indio_dev->name = id->name;
-+	indio_dev->name = id ? id->name : chip->config->name;
- 
- 	ret = devm_iio_kfifo_buffer_setup(&client->dev, indio_dev,
- 					  &ina2xx_setup_ops);
+v3:
+- Added DT bindings dual license, fixed property order and example formatting
+- Added explanations comments for timeout and mutex
+- Dropped unnecessary regmap and used readl/writel instead
+- Added error message about getting channel number
+- Renamed labels and variables to make them self-explanatory
+
+v2:
+- Added lastch flag to avoid addition work for already selected channel
+- Added reset assertion on module remove
+- Added dynamic channel allocation and dropped iio_chan_spec arrays
+- Changed IIO_CHAN_INFO_SCALE type to FRACTIONAL_LOG2
+- Dropped separate compatible strings and configs for T113s and R329
+- Fixed includes
+- Fixed Kconfig description
+- Removed duplicate probe error messages
+- Used FIELD_PREP for bit setup
+
+v1:
+- Initial version
+
+Maksim Kiselev (4):
+  iio: adc: Kconfig change description for Allwinner GPADC
+  iio: adc: Add Allwinner D1/T113s/R329/T507 SoCs GPADC
+  dt-bindings: iio: adc: Add Allwinner D1/T113s/R329/T507 SoCs GPADC
+  riscv: dts: allwinner: d1: Add GPADC node
+
+ .../iio/adc/allwinner,sun20i-d1-gpadc.yaml    |  91 ++++++
+ .../boot/dts/allwinner/sunxi-d1s-t113.dtsi    |  10 +
+ drivers/iio/adc/Kconfig                       |  12 +-
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/sun20i-gpadc-iio.c            | 276 ++++++++++++++++++
+ 5 files changed, 389 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
+ create mode 100644 drivers/iio/adc/sun20i-gpadc-iio.c
+
 -- 
-2.40.0
+2.39.2
 
