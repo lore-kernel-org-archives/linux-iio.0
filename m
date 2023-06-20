@@ -2,98 +2,130 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B683EB64D7
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Jun 2023 13:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD423EB64DB
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Jun 2023 14:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232575AbjFTN36 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 20 Jun 2023 09:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33900 "EHLO
+        id S232912AbjFTOEP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 20 Jun 2023 10:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233058AbjFTN3x (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jun 2023 09:29:53 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5793C187
-        for <linux-iio@vger.kernel.org>; Tue, 20 Jun 2023 06:29:52 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id ffacd0b85a97d-31122c346f4so5216085f8f.3
-        for <linux-iio@vger.kernel.org>; Tue, 20 Jun 2023 06:29:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1687267791; x=1689859791;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=gWrMoQPOsfdbXahuo0wOAVZIQAu1IlrQkW9ZVz4aRA0=;
-        b=glprJFDNQbXHT0agNC/POBD/5HM2VqnSceAfS7P3A+GNFxjOkUcs7S5r90SL+idNkq
-         HoZJHsS4JP5YW674u0jp1idJ5SpXZI0GwD0EbFArunUFErYsO2k3JT91FaP04mhSUWMd
-         ArOAFfVA7tX3Bq85ynqesYRH9Jc674CxRO6WxtF8r26Gkla+HyzbopzzhhnFqFg0tzqR
-         W/wwCTYPsxfpgUC2lTJ48WHNnuO+g59oxKwf3yy37jx+BztGpdKaYtsX0gu9IlycgkUx
-         X5nt1OOxJhI2wvXGjgtk5y6EwaMWRRw/hn8DZFytfvOSuds0POU6grHpjr8NiOSwA9nU
-         b2wQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687267791; x=1689859791;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gWrMoQPOsfdbXahuo0wOAVZIQAu1IlrQkW9ZVz4aRA0=;
-        b=IVkRkiPb8+dwyKxuvOZgOmTcmPTY5U4B13fBkjN4+OTaiZV7nF5WBtcx4TKuVqX0aY
-         EqgyhtDOmOYlBgMjtfI5mLdCJBuQf505JKhQAShWNrrO85BR4D6nr/EjV+KpE7VHyMvS
-         YkMfCThtO49LNVbiO2Yc0qhxUOdBKtYcW8Wus4Hq/yV6yhoQ2OIm6gZDt80Nt2dk1fUC
-         zqMhY7xxF9PTaeUHtwrkK22h8CaAo7C+2Lb1fdDaNPMcqdrwAZtzZKVQGcPtWdSRQZzk
-         TPkq1BIF2xR47N73UL5RxAAKLsKT1EskaBuH0N7Dofd1p0dO6W1rmryW8W8yWad/GLFW
-         Uz2Q==
-X-Gm-Message-State: AC+VfDzNUDx3oPU1wYgXIcPnFc8jQ0I5/puVgzYjJ3JpEvKutdYDcYIB
-        aiW7nRYXMQ7fNw2SnoLOCsMkpw==
-X-Google-Smtp-Source: ACHHUZ5BrKxZy+zUHtFd9PrqBn9xqMrRAkTqMlRoZKdsCHfV0+f7w3W6uHfoVlYLQJoZrngZ+kXFRg==
-X-Received: by 2002:a5d:4390:0:b0:311:1f6d:ddc5 with SMTP id i16-20020a5d4390000000b003111f6dddc5mr9727569wrq.24.1687267790790;
-        Tue, 20 Jun 2023 06:29:50 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id z5-20020adfd0c5000000b0030796e103a1sm2068294wrh.5.2023.06.20.06.29.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Jun 2023 06:29:50 -0700 (PDT)
-Message-ID: <027a0d86-704e-32e3-63eb-ee610daf194e@linaro.org>
-Date:   Tue, 20 Jun 2023 15:29:48 +0200
+        with ESMTP id S232894AbjFTOEP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jun 2023 10:04:15 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2BFA4;
+        Tue, 20 Jun 2023 07:04:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687269854; x=1718805854;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ca7/yI4TqjzgeDR9K0z3MtWXnd6TYta8YQAkAFDWepg=;
+  b=S2icewdk8aOdfcL/GVg0Xvpx8VYG9nWKfDxbmAG+HBPq99L0ncoBuZdb
+   K/oxb/e/ojcQLKpb22aXztZhwhO21rYubkd7nuiX9G7LwaRURogj73CP1
+   2hQhmhTU/Kl1WoZuuOS/2pIs4ScE6nt/5KP5viyUfL/+u1y041bYfhdkP
+   Mml9Shm45dxUEDbG8sLw47/DOTFv2C/lFmdsFOmixHgoOO3QG4LDCLPg/
+   eavAvk9lFYsTQRf79VYswSmHUwY8ZANfszu+Esg7p7OmbTM3+wbKczoZm
+   U1DlQs98zeGx60x6wuh7FYHf6ivRbGJwykFnwdt2ikzTFlcJesjgTU9/y
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10747"; a="339478198"
+X-IronPort-AV: E=Sophos;i="6.00,257,1681196400"; 
+   d="scan'208";a="339478198"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2023 07:03:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10747"; a="784078298"
+X-IronPort-AV: E=Sophos;i="6.00,257,1681196400"; 
+   d="scan'208";a="784078298"
+Received: from mylly.fi.intel.com (HELO [10.237.72.161]) ([10.237.72.161])
+  by fmsmga004.fm.intel.com with ESMTP; 20 Jun 2023 07:03:54 -0700
+Message-ID: <32ddaa7b-53a8-d61f-d526-b545bd561337@linux.intel.com>
+Date:   Tue, 20 Jun 2023 17:03:53 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH v7 1/2] dt-bindings: iio: adc: add max14001
+ Firefox/102.0 Thunderbird/102.12.0
+Subject: Re: [PATCH 1/3] counter: i8254: Introduce the Intel 8254 interface
+ library module
 Content-Language: en-US
-To:     Kim Seer Paller <kimseer.paller@analog.com>
-Cc:     jic23@kernel.org, lars@metafoo.de, lgirdwood@gmail.com,
-        broonie@kernel.org, Michael.Hennerich@analog.com,
-        andy.shevchenko@gmail.com, robh@kernel.org, conor+dt@kernel.org,
+To:     William Breathitt Gray <wbg@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20230620132641.256307-1-kimseer.paller@analog.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230620132641.256307-1-kimseer.paller@analog.com>
-Content-Type: text/plain; charset=UTF-8
+        linux-gpio@vger.kernel.org, andy.shevchenko@gmail.com,
+        William Breathitt Gray <william.gray@linaro.org>
+References: <cover.1681665189.git.william.gray@linaro.org>
+ <f6fe32c2db9525d816ab1a01f45abad56c081652.1681665189.git.william.gray@linaro.org>
+ <ZIHpGUWZ8wE7tkJP@ishi>
+From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
+In-Reply-To: <ZIHpGUWZ8wE7tkJP@ishi>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 20/06/2023 15:26, Kim Seer Paller wrote:
-> The MAX14001 is a configurable, isolated 10-bit ADC for multi-range
-> binary inputs.
+Hi
+
+On 6/8/23 17:43, William Breathitt Gray wrote:
+> On Sun, Apr 16, 2023 at 01:36:53PM -0400, William Breathitt Gray wrote:
+>> Exposes consumer library functions providing support for interfaces
+>> compatible with the venerable Intel 8254 Programmable Interval Timer
+>> (PIT).
+>>
+>> The Intel 8254 PIT first appeared in the early 1980s and was used
+>> initially in IBM PC compatibles. The popularity of the original Intel
+>> 825x family of chips led to many subsequent variants and clones of the
+>> interface in various chips and integrated circuits. Although still
+>> popular, interfaces compatible with the Intel 8254 PIT are nowdays
+>> typically found embedded in larger VLSI processing chips and FPGA
+>> components rather than as discrete ICs.
+>>
+>> A CONFIG_I8254 Kconfig option is introduced by this patch. Modules
+>> wanting access to these i8254 library functions should select this
+>> Kconfig option, and import the I8254 symbol namespace.
+>>
+>> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
 > 
-> Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
-> ---
-> V6 -> V7: No changes.
+> I've queued this patch to the counter-next branch of my Counter tree.
+> 
+> Jonathan, Bart, I've created an immutable branch with just this patch
+> for you to pull which should allow you each to merge the other patch in
+> this patchset for your respective tree.
+> 
+I noticed this patch cause in linux-next "Counter support" submenu to 
+disappear and its menu entries are listed directly in "Device Drivers" menu.
 
-This is a friendly reminder during the review process.
+Then I wonder why the CONFIG_I8254 has the help text defined since 
+drivers should select it.
 
-It looks like you received a tag and forgot to add it.
+Or was the idea something like below?
 
-If you do not know the process, here is a short explanation:
-Please add Acked-by/Reviewed-by/Tested-by tags when posting new
-versions. However, there's no need to repost patches *only* to add the
-tags. The upstream maintainer will do that for acks received on the
-version they apply.
+diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
+index bca21df51168..80631b5b0fc6 100644
+--- a/drivers/counter/Kconfig
++++ b/drivers/counter/Kconfig
+@@ -10,9 +10,10 @@ menuconfig COUNTER
+           interface. You only need to enable this, if you also want to 
+enable
+           one or more of the counter device drivers below.
 
-https://elixir.bootlin.com/linux/v5.17/source/Documentation/process/submitting-patches.rst#L540
++if COUNTER
++
+  config I8254
+-       tristate
+-       select COUNTER
++       tristate "i8254 interface library"
+         select REGMAP
+         help
+           Enables support for the i8254 interface library functions. 
+The i8254
+@@ -25,8 +26,6 @@ config I8254
 
-If a tag was not added on purpose, please state why and what changed.\
+           If built as a module its name will be i8254.
 
-
-Best regards,
-Krzysztof
-
+-if COUNTER
+-
+  config 104_QUAD_8
+         tristate "ACCES 104-QUAD-8 driver"
+         depends on (PC104 && X86) || COMPILE_TEST
