@@ -2,174 +2,150 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6267EB64DB
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Jun 2023 14:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A82EB64DC
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Jun 2023 15:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233352AbjFTOkN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 20 Jun 2023 10:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47228 "EHLO
+        id S232958AbjFTPQy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 20 Jun 2023 11:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233389AbjFTOkB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jun 2023 10:40:01 -0400
-Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E75173E
-        for <linux-iio@vger.kernel.org>; Tue, 20 Jun 2023 07:39:45 -0700 (PDT)
-Received: by mail-vk1-xa2f.google.com with SMTP id 71dfb90a1353d-45a0ee1c411so1180204e0c.0
-        for <linux-iio@vger.kernel.org>; Tue, 20 Jun 2023 07:39:44 -0700 (PDT)
+        with ESMTP id S233766AbjFTPQ3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jun 2023 11:16:29 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD4A2682;
+        Tue, 20 Jun 2023 08:15:56 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-986d8332f50so570923066b.0;
+        Tue, 20 Jun 2023 08:15:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1687271980; x=1689863980;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+b4wcWVHeA19pd6y6fqWTIC5LoXJqCFk+0Tw0j4g+R4=;
-        b=WyVqURcKcIYpMyLO2NU//B5H951+Vn108apEVN+kctGGLNIejqck8XEXeekwBy6h+U
-         ZvHAMW0nujNWw+uOkX07IHxCGJgywLypQcF3XpU5kHSnplkCKegVQ7MElmzKxIp/Er3/
-         uGOlKcNdPNKcNncAMeQv9KOGta0bkhFEhfzBNQ0WlcJBY+zziAnJRFf+o3ET6EHoH+Dj
-         oUiKrLove5CHdNrPWzqdYTtZmGTaeG1beKHjmtjJVd3kbVoWkV9qpvSvFopEqMk7g+z7
-         xQHaXQpJY156xEesIaPnu9EmCJjH9ANqUj0cNnZupmlrQNNCcMWum1GZxZilvS/S0VCT
-         fj0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687271980; x=1689863980;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1687274154; x=1689866154;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+b4wcWVHeA19pd6y6fqWTIC5LoXJqCFk+0Tw0j4g+R4=;
-        b=G7nYNdaz1xvUNZj53ekSSINCOyNkaaPqAPr2xYiuCa7FU0P278yNLWMI1tDkLe4CNP
-         UY5rcPWaINpjJC736JZuCqi61s3C36T2Ufy6fYPAafIdGVqTkK6qx3ckqIDriDhS9Yfs
-         ndxYktwSM7DFRb564R57Y9m1is2P2hu3fduA232sIMPpQY9xR1zFgCLxbgBhjdx2aDkh
-         3HYVQKDS8D+VahXuExETbBJLbIskdZdTqwpHthzaMV82MKoqxL/mOq2M9e212QvsBeak
-         JZEyU88b/cehaZm7htdtIYsxRVpK5mhQT+uMkkiWUtrOqRcN3usjwkZCy/TKWHtSvW1F
-         qGMQ==
-X-Gm-Message-State: AC+VfDxraB/gg+pjjz9rNCVRAeVg+hhjgfQfZwRFAFpTCVfGskPkY5DF
-        i+TPtlXr/0HC8SUqhNYMDfHJ6w==
-X-Google-Smtp-Source: ACHHUZ4mrGP6SAvz5CEBdiFvOJBKfyMRK5l9BvTXSU6LnVUYYPiIBH3lsx0FcRsMaKW0P/idAPRr2A==
-X-Received: by 2002:a1f:3f02:0:b0:471:2aa6:41f4 with SMTP id m2-20020a1f3f02000000b004712aa641f4mr2747781vka.7.1687271980303;
-        Tue, 20 Jun 2023 07:39:40 -0700 (PDT)
-Received: from fedora (072-189-067-006.res.spectrum.com. [72.189.67.6])
-        by smtp.gmail.com with ESMTPSA id h85-20020a1f9e58000000b0045ae1b37251sm335202vke.35.2023.06.20.07.39.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jun 2023 07:39:39 -0700 (PDT)
-Date:   Mon, 12 Jun 2023 01:14:03 -0400
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Cc:     William Breathitt Gray <wbg@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, andy.shevchenko@gmail.com
-Subject: Re: [PATCH 1/3] counter: i8254: Introduce the Intel 8254 interface
- library module
-Message-ID: <ZIapmzFJ0Bz7Bofj@fedora>
-References: <cover.1681665189.git.william.gray@linaro.org>
- <f6fe32c2db9525d816ab1a01f45abad56c081652.1681665189.git.william.gray@linaro.org>
- <ZIHpGUWZ8wE7tkJP@ishi>
- <32ddaa7b-53a8-d61f-d526-b545bd561337@linux.intel.com>
+        bh=R4Kq1I196iP4lZi3ISIkw776HYiqmA+o0cxAPhM15Go=;
+        b=b8dwpCP5mTlZb2Z5quNWb3Xk5Lb4ZFqB56ArCu4H35U6JqtjYedTgL9chdCMHSYZgT
+         1cOUe+09GickZtnE0JA7ELRNQsKty8aZXLrjitNkJBH8tMzh2qxd9PY1qObnUYZhP4hv
+         cjnoHlNuRlXay9XPug0Mmd7HTG1xcFj3dFry+hS8F/rQNPNBbrO5euKut+YLlxX0vzO8
+         FmtWqzi+JEx6UTPF/wrO6qxiwn/uJT7PBY0GCQ+Mw9EUm92a6vRHUaGusjQDQf7kv0N2
+         4vZwWStZk0JOu15qU1oKo4JAaPPr9RMeKqw+rQA/V8/kJtnK9kquseputV+RIQjYjcf+
+         Zx+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687274154; x=1689866154;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=R4Kq1I196iP4lZi3ISIkw776HYiqmA+o0cxAPhM15Go=;
+        b=TFv+AVR2yL3SqRB5oQFWQcf099vcg5TxkruZJ/4uHUIAOPNxF2C7fifAb3LoNSZCPO
+         yt1LQ/4A7ma9lxrBoqiRNNzP1lhj8nPC0qeoAiJx+pIkT43hl94Q2k4ONb5Xco5JuIX8
+         DgOrYnEvl/yxRjfj+opoHs9MXJ/SCPuk14tlDXeFq8ikY0N8aJvd6kxEPBJBI1QcR4vh
+         TKXWk+5r62uMyh8Zq+zLo7bvFBL9U0/YMUKc34QvVwphRXjWlLeXbQ1ffjbFvb6x61yQ
+         HWJO/3G295hwcIIpChYQ79cQNweJcRai8jLwnXi50qglVtz6W1TdLPo1Ff3m/+xfP8BV
+         CIkg==
+X-Gm-Message-State: AC+VfDwz3Zr8L1b5W2ZOFyT9XI0InqtiEW8xC+s2+BlTcMKP5xgmK6HF
+        s5d5ufoUEdW2/sOZamLQqtxA44UldnbX0lHaZ5o=
+X-Google-Smtp-Source: ACHHUZ7zVdF44u8WGxoDTuzM5o+pFRLnIIzjKMLxgEqG+GT0G40mJh40pf2CGhYMPzoAUr39Z4dHXjP3Iu+npMaXu8M=
+X-Received: by 2002:a17:907:9812:b0:96a:1c2a:5a38 with SMTP id
+ ji18-20020a170907981200b0096a1c2a5a38mr11776524ejc.11.1687274154360; Tue, 20
+ Jun 2023 08:15:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="f1xoCXDbZXT2QnXa"
-Content-Disposition: inline
-In-Reply-To: <32ddaa7b-53a8-d61f-d526-b545bd561337@linux.intel.com>
+References: <20230620132641.256307-1-kimseer.paller@analog.com> <20230620132641.256307-2-kimseer.paller@analog.com>
+In-Reply-To: <20230620132641.256307-2-kimseer.paller@analog.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 20 Jun 2023 18:15:17 +0300
+Message-ID: <CAHp75VdR9W8U9VmP5WZntzB9qW3fM6qy1Q2-yeBSAG5PJimkaw@mail.gmail.com>
+Subject: Re: [PATCH v7 2/2] iio: adc: max14001: New driver
+To:     Kim Seer Paller <kimseer.paller@analog.com>
+Cc:     jic23@kernel.org, lars@metafoo.de, lgirdwood@gmail.com,
+        broonie@kernel.org, Michael.Hennerich@analog.com, robh@kernel.org,
+        krzysztof.kozlowski@linaro.org, conor+dt@kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Tue, Jun 20, 2023 at 4:27=E2=80=AFPM Kim Seer Paller
+<kimseer.paller@analog.com> wrote:
+>
+> The MAX14001 is configurable, isolated 10-bit ADCs for multi-range
+> binary inputs.
 
---f1xoCXDbZXT2QnXa
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+...
 
-On Tue, Jun 20, 2023 at 05:03:53PM +0300, Jarkko Nikula wrote:
-> Hi
->=20
-> On 6/8/23 17:43, William Breathitt Gray wrote:
-> > On Sun, Apr 16, 2023 at 01:36:53PM -0400, William Breathitt Gray wrote:
-> > > Exposes consumer library functions providing support for interfaces
-> > > compatible with the venerable Intel 8254 Programmable Interval Timer
-> > > (PIT).
-> > >=20
-> > > The Intel 8254 PIT first appeared in the early 1980s and was used
-> > > initially in IBM PC compatibles. The popularity of the original Intel
-> > > 825x family of chips led to many subsequent variants and clones of the
-> > > interface in various chips and integrated circuits. Although still
-> > > popular, interfaces compatible with the Intel 8254 PIT are nowdays
-> > > typically found embedded in larger VLSI processing chips and FPGA
-> > > components rather than as discrete ICs.
-> > >=20
-> > > A CONFIG_I8254 Kconfig option is introduced by this patch. Modules
-> > > wanting access to these i8254 library functions should select this
-> > > Kconfig option, and import the I8254 symbol namespace.
-> > >=20
-> > > Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
-> >=20
-> > I've queued this patch to the counter-next branch of my Counter tree.
-> >=20
-> > Jonathan, Bart, I've created an immutable branch with just this patch
-> > for you to pull which should allow you each to merge the other patch in
-> > this patchset for your respective tree.
-> >=20
-> I noticed this patch cause in linux-next "Counter support" submenu to
-> disappear and its menu entries are listed directly in "Device Drivers" me=
-nu.
->=20
-> Then I wonder why the CONFIG_I8254 has the help text defined since drivers
-> should select it.
->=20
-> Or was the idea something like below?
->=20
-> diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
-> index bca21df51168..80631b5b0fc6 100644
-> --- a/drivers/counter/Kconfig
-> +++ b/drivers/counter/Kconfig
-> @@ -10,9 +10,10 @@ menuconfig COUNTER
->           interface. You only need to enable this, if you also want to
-> enable
->           one or more of the counter device drivers below.
->=20
-> +if COUNTER
+> +       /*
+> +        * Align received data from the receive buffer, reversing and reo=
+rdering
+> +        * it to match the expected MSB-first format.
+> +        */
+> +       *data =3D (__force u16)(be16_to_cpu(bitrev16(st->spi_rx_buffer)))=
+ &
+> +                                                       MAX14001_DATA_MAS=
+K;
+
+Using __force in the C files is somehow stinky.
+
+...
+
+> +       /*
+> +        * Convert transmit buffer to big-endian format and reverse trans=
+mit
+> +        * buffer to align with the LSB-first input on SDI port.
+> +        */
+> +       st->spi_tx_buffer =3D (__force u16)(cpu_to_be16(bitrev16(
+
+You have a different type of spi_tx_buffer than u16, don't you?
+
+> +                               FIELD_PREP(MAX14001_ADDR_MASK, reg_addr) =
+|
+> +                               FIELD_PREP(MAX14001_SET_WRITE_BIT, 1) |
+> +                               FIELD_PREP(MAX14001_DATA_MASK, data))));
+
+...
+
+> +       vref =3D devm_regulator_get_optional(dev, "vref");
+> +       if (IS_ERR(vref)) {
+> +               if (PTR_ERR(vref) !=3D -ENODEV)
+> +                       return dev_err_probe(dev, PTR_ERR(vref),
+> +                                            "Failed to get vref regulato=
+r");
 > +
->  config I8254
-> -       tristate
-> -       select COUNTER
-> +       tristate "i8254 interface library"
->         select REGMAP
->         help
->           Enables support for the i8254 interface library functions. The
-> i8254
-> @@ -25,8 +26,6 @@ config I8254
->=20
->           If built as a module its name will be i8254.
->=20
-> -if COUNTER
-> -
->  config 104_QUAD_8
->         tristate "ACCES 104-QUAD-8 driver"
->         depends on (PC104 && X86) || COMPILE_TEST
+> +               /* internal reference */
+> +               st->vref_mv =3D 1250;
+> +       } else {
+> +               ret =3D regulator_enable(vref);
+> +               if (ret)
+> +                       return dev_err_probe(dev, ret,
+> +                                       "Failed to enable vref regulators=
+\n");
+> +
+> +               ret =3D devm_add_action_or_reset(dev, max14001_regulator_=
+disable,
+> +                                              vref);
+> +               if (ret)
+> +                       return ret;
+> +
+> +               ret =3D regulator_get_voltage(vref);
+> +               if (ret < 0)
+> +                       return dev_err_probe(dev, ret,
+> +                                            "Failed to get vref\n");
+> +
+> +               st->vref_mv =3D ret / 1000;
+> +
+> +               /* select external voltage reference source for the ADC *=
+/
+> +               ret =3D max14001_reg_update(st, MAX14001_CFG,
+> +                                         MAX14001_CFG_EXRF, 1);
+> +               if (ret < 0)
+> +                       return ret;
+> +       }
 
-Hi Jarkko,
+Now, looking at this code I'm wondering if we may have something like
+devm_regulator_get_enable_and_voltage_optional()
 
-Thank you for pointing that out, the config I8254 entry should have been
-added above the menuconfig COUNTER entry instead of below it; if you
-move it you should notice the "Counter support" submenu items go back to
-normal. The intention is for consumer drivers to select I8254 when they
-use the library. The I8254 module doesn't do anything on its own so
-that's why it's hidden in the menu (the help description is there for
-the sake of reviewers). I'll submit a patch soon fixing this.
+But it's another story.
 
-Thanks,
 
-William Breathitt Gray
-
---f1xoCXDbZXT2QnXa
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZIapmwAKCRC1SFbKvhIj
-K1zWAQDgvHN1klZit98Ym3Y7KgZ+qH4fGB67KXhG98BdzqfzbQD6Aq8xOLSBhW5w
-jPLruPTNw6CugIkfrTtSbt09dOp19Ac=
-=4vwM
------END PGP SIGNATURE-----
-
---f1xoCXDbZXT2QnXa--
+--=20
+With Best Regards,
+Andy Shevchenko
