@@ -2,34 +2,34 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEF4AEB64D7
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Jun 2023 06:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D00EB64DD
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Jun 2023 06:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230148AbjFUG1i (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 21 Jun 2023 02:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58636 "EHLO
+        id S230255AbjFUG1k (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 21 Jun 2023 02:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229673AbjFUG1h (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jun 2023 02:27:37 -0400
+        with ESMTP id S230252AbjFUG1i (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jun 2023 02:27:38 -0400
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A29F1A3;
-        Tue, 20 Jun 2023 23:27:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C4D1B4;
+        Tue, 20 Jun 2023 23:27:37 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id CCFDA5FD5E;
-        Wed, 21 Jun 2023 09:27:29 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id C4C645FD60;
+        Wed, 21 Jun 2023 09:27:35 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1687328849;
-        bh=N2HRZnWuvFjvEElOdblUUvxZovm+tssABjlPdSEQ1WM=;
+        s=mail; t=1687328855;
+        bh=YQ2V6XFLUgswbRr9qW2w1qbMLzV+8NemKwLTVnCTW20=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=hN0tzJhH2qasFeA6SfHCf7pXBx6CYdMSBhCmy3P2KWknggaeJYEhHsLStd1QZ6uls
-         YlY7D3nEDd/VBXC4oaqaC4hN6ZtxqT870i0f2l47VtClnpoM2O+oliKdQAH9kfDZ+I
-         AHuNX+my6yiqGCW+fcztAMD3crBuEVtHciXbn0FLtRxVLqa/KJPtHPmwSuEGJ1lVQ5
-         2q3raK2F5PpUC7gP9mY4RR9YSCMKsO8UxBfIbPDOXbw2gz8rcGjpiA4wQFw+gXLj+5
-         JpypYdP8j2Ie/V3Jc6InZDvPPD0+E7XMOfilMQmTya6/6hOA5efRk6EEs+bNWysrqM
-         m32OameZJ3d3w==
+        b=P0RFbgc1pyUJ+agr3Fgq7ek7/svzYSn2J7N/OS6uTcZg3B2a3hwDtBp3UxcU8q6C/
+         l9pVg5ImyYIR9AAxNXQXS52aA+jUJdlXNTYIZBOtshfy00OCyYV4EdqmHBkW/G3Swy
+         IukM5IA8dgn1ha9uNv8TsLQ2RHNYvG+CnaDCe67Aqe6XzFvoqnwweXrd/KDLccrrv1
+         l8WPnwsu/9F9vQMyukKr0DfRSSZFL12ixfY8TTAHdEt7GxfowuUmjuH7/vHQoRki59
+         kLrG/ffRzaJEwQm0zAhP7YWY3rSEpmd5+6P1UvHswnO+gD3xszicSOy1ZB+NBVDjre
+         vuVpuXmi3CRmA==
 Received: from p-i-exch-sc-m01.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Wed, 21 Jun 2023 09:27:27 +0300 (MSK)
+        Wed, 21 Jun 2023 09:27:35 +0300 (MSK)
 From:   George Stark <gnstark@sberdevices.ru>
 To:     <jic23@kernel.org>, <lars@metafoo.de>, <neil.armstrong@linaro.org>,
         <khilman@baylibre.com>, <jbrunet@baylibre.com>,
@@ -41,10 +41,12 @@ CC:     <linux-iio@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-amlogic@lists.infradead.org>, <kernel@sberdevices.ru>,
         George Stark <GNStark@sberdevices.ru>
-Subject: [PATCH v1 0/3] meson saradc: add iio channels to read channel 7 mux inputs
-Date:   Wed, 21 Jun 2023 09:26:07 +0300
-Message-ID: <20230621062715.455652-1-gnstark@sberdevices.ru>
+Subject: [PATCH v1 2/3] meson saradc: add channel labels
+Date:   Wed, 21 Jun 2023 09:26:09 +0300
+Message-ID: <20230621062715.455652-3-gnstark@sberdevices.ru>
 X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230621062715.455652-1-gnstark@sberdevices.ru>
+References: <20230621062715.455652-1-gnstark@sberdevices.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -62,28 +64,38 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: George Stark <GNStark@sberdevices.ru>
+patch adds channel attribute 'label' with channel name
 
-In meson saradc channel7 is connected to muxer which allows to measure
-inner sources like Vdd, GND, several Vdd dividers. This patch series
-adds independent iio channel (with label) for every chan7 mux input.
-Mux switch is handled transparent for clients.
-This functionality can help debug\test\calibrate adc.
-This code is relevant for all supported amlogic soc families
+Signed-off-by: George Stark <GNStark@sberdevices.ru>
+---
+ drivers/iio/adc/meson_saradc.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-This patch series was created after discussion [1], [2]
-
-[1] https://lore.kernel.org/lkml/20230524000111.14370-1-gnstark@sberdevices.ru/
-[2] https://lore.kernel.org/lkml/20230527214854.126517-1-gnstark@sberdevices.ru/
-
-George Stark (3):
-  meson saradc: code refactoring
-  meson saradc: add channel labels
-  meson saradc: support reading from channel7 mux inputs
-
- drivers/iio/adc/meson_saradc.c | 165 +++++++++++++++++++++++----------
- 1 file changed, 115 insertions(+), 50 deletions(-)
-
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index 42f0389e123d..66d6f527122c 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -1044,8 +1044,20 @@ static int meson_sar_adc_calib(struct iio_dev *indio_dev)
+ 	return ret;
+ }
+ 
++static int read_label(struct iio_dev *indio_dev,
++		      struct iio_chan_spec const *chan,
++		      char *label)
++{
++	if (chan->type == IIO_TEMP)
++		return sprintf(label, "%s\n", "temp-sensor");
++	if (chan->type == IIO_VOLTAGE)
++		return sprintf(label, "channel-%d\n", chan->channel);
++	return 0;
++}
++
+ static const struct iio_info meson_sar_adc_iio_info = {
+ 	.read_raw = meson_sar_adc_iio_info_read_raw,
++	.read_label = read_label,
+ };
+ 
+ static const struct meson_sar_adc_param meson_sar_adc_meson8_param = {
 -- 
 2.38.4
 
