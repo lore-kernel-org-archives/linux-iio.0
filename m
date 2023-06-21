@@ -2,47 +2,47 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70724EB64D8
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Jun 2023 14:09:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB78EB64D7
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Jun 2023 14:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232474AbjFUOJM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 21 Jun 2023 10:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55990 "EHLO
+        id S232810AbjFUOL2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 21 Jun 2023 10:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231348AbjFUOJA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jun 2023 10:09:00 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B50E21989;
-        Wed, 21 Jun 2023 07:08:59 -0700 (PDT)
+        with ESMTP id S232813AbjFUOLL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jun 2023 10:11:11 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B932122;
+        Wed, 21 Jun 2023 07:10:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687356539; x=1718892539;
+  t=1687356646; x=1718892646;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=rPx+5YqJGhmcle9gXLDQG0ptIvu0NgL4FLwZd8hjZ50=;
-  b=VH2Bi6mnG775MSV7eblQ/NauPQTwgriK4z2evZ199plaliH8tbjhx4Ba
-   d5jsZqNvbyH1QGh51uhg0b7T/OwO0vLWNaYjDzQ/RL1b1fU+6yFLqJqHT
-   8L6+PQALg75sDNz6T71ZjEYj2zi+VGQFU9Ig6CHN4D+ib9G21R0WaCFpJ
-   ogBacIf9vqnscgNZTqXu1ssTdmtGk1ZlhZ/zOO0C7tCd0EVs68lyZ749C
-   v86i19qLEALQIe09peThZDqnvI14hxCYzjAJqYP2KKNyUPoD8EWUQbA+d
-   ZnOsGV0krv103PMGKihzADqOjt4LvsXA/w97P6OB4Ta/vvUPe35zsfJzA
+  bh=ouC2uUhcHNQmb+8A8CRknY0+a4vXftp/tDcG/6xIf3k=;
+  b=cqouId86rn07+PZad4CF7TXoV9I0PrINz+6v1D3N9dgZbLNAN6MTaqmN
+   yvIR8a08ZW/rnGhw+YMjvOqLejUyKfCFymtAQq/d4ZwqRERdwH19LDT4f
+   uv//9Qyd7T3jg538txcr5uYD2eqRDNjWPNSlb4E0H4X2pb6/Rp9acdViF
+   /lC23SRMaN5hMWk0KkX0dm4Y225U2AUviR3h3F3YI2VJTq9ajbs6yzKoX
+   bGE2fTOuL5aBjhRdk9swr2YF3JdYa5FgNDsgfoLMjANXXnlfb/yjkgagT
+   IHWkvCCnZZvLMS3ZQ0lRKwN7e0Nr14bfpDhq/qwy0oT5STfZyQtRPHpNg
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10748"; a="360196828"
+X-IronPort-AV: E=McAfee;i="6600,9927,10748"; a="389693891"
 X-IronPort-AV: E=Sophos;i="6.00,260,1681196400"; 
-   d="scan'208";a="360196828"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2023 07:08:51 -0700
+   d="scan'208";a="389693891"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2023 07:10:45 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10748"; a="961207162"
+X-IronPort-AV: E=McAfee;i="6600,9927,10748"; a="691868682"
 X-IronPort-AV: E=Sophos;i="6.00,260,1681196400"; 
-   d="scan'208";a="961207162"
+   d="scan'208";a="691868682"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga006.fm.intel.com with ESMTP; 21 Jun 2023 07:08:47 -0700
+  by orsmga006.jf.intel.com with ESMTP; 21 Jun 2023 07:10:41 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qByVp-005VwL-2X;
-        Wed, 21 Jun 2023 17:08:45 +0300
-Date:   Wed, 21 Jun 2023 17:08:45 +0300
+        id 1qByXf-005Vxe-2e;
+        Wed, 21 Jun 2023 17:10:39 +0300
+Date:   Wed, 21 Jun 2023 17:10:39 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     George Stark <gnstark@sberdevices.ru>
 Cc:     jic23@kernel.org, lars@metafoo.de, neil.armstrong@linaro.org,
@@ -51,32 +51,35 @@ Cc:     jic23@kernel.org, lars@metafoo.de, neil.armstrong@linaro.org,
         linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
         kernel@sberdevices.ru
-Subject: Re: [PATCH v1 1/3] meson saradc: code refactoring
-Message-ID: <ZJMEbbVaUoxSay5i@smile.fi.intel.com>
+Subject: Re: [PATCH v1 0/3] meson saradc: add iio channels to read channel 7
+ mux inputs
+Message-ID: <ZJME39cOHsKkJu2Y@smile.fi.intel.com>
 References: <20230621062715.455652-1-gnstark@sberdevices.ru>
- <20230621062715.455652-2-gnstark@sberdevices.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230621062715.455652-2-gnstark@sberdevices.ru>
+In-Reply-To: <20230621062715.455652-1-gnstark@sberdevices.ru>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Jun 21, 2023 at 09:26:08AM +0300, George Stark wrote:
-> - remove channel array double definition
-> - add channel index enum
-> - move enums declaration before variables declaration
-> - move meson_sar_adc_set_chan7_mux routine upper
+On Wed, Jun 21, 2023 at 09:26:07AM +0300, George Stark wrote:
+> From: George Stark <GNStark@sberdevices.ru>
+> 
+> In meson saradc channel7 is connected to muxer which allows to measure
+> inner sources like Vdd, GND, several Vdd dividers. This patch series
+> adds independent iio channel (with label) for every chan7 mux input.
+> Mux switch is handled transparent for clients.
+> This functionality can help debug\test\calibrate adc.
+> This code is relevant for all supported amlogic soc families
 
-4 patches then?
+Code wise looks good to me, some remarks about commit messages and comments.
 
-...
-
-> +	// last item is temp channel
-
-Is C++ comment style is used in the entire file?
+> This patch series was created after discussion [1], [2]
+> 
+> [1] https://lore.kernel.org/lkml/20230524000111.14370-1-gnstark@sberdevices.ru/
+> [2] https://lore.kernel.org/lkml/20230527214854.126517-1-gnstark@sberdevices.ru/
 
 -- 
 With Best Regards,
