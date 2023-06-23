@@ -2,64 +2,55 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27C81EB64DD
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Jun 2023 14:12:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DBACEB64DD
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Jun 2023 14:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231840AbjFWOL7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 23 Jun 2023 10:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
+        id S231572AbjFWONG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 23 Jun 2023 10:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231874AbjFWOL5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Jun 2023 10:11:57 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F36442135;
-        Fri, 23 Jun 2023 07:11:52 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35NDEZCt004204;
-        Fri, 23 Jun 2023 16:11:27 +0200
+        with ESMTP id S231567AbjFWOND (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Jun 2023 10:13:03 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0CAE2693;
+        Fri, 23 Jun 2023 07:12:43 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35NCr2cB032061;
+        Fri, 23 Jun 2023 16:12:30 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=zLkUeXmL+Ow+eXO/4Kk5UPFmY47fOCK359xSbjwsIEE=;
- b=Qdu1MOMXtdPoz1WyVmRnGhYiRajVMKK2eslEUyO/ReiXGux03z/2GGzN3/JDCRRexU1y
- 83rTc+q/qijDOsaLFHWkH2LkSraGiCGIfRJw6TFPXPDByFxiT8YgaBLhBm4+6Dh2liT9
- Xkzn4Szdf7jnfwMlwzLyolY2DZE0+0k+XHitFhcor2bMXcix3W8G7W890BeBoHbECXc2
- 9g9iFqf7tOBmOCGE02uT/AKsquR1hvQHjX0blJ82xmnmLCNmnQABETIFm4hdBkqoVPaF
- +a9F+53jfxfykTE/AR2PmtJjPOK/KAADLGp8r0aPK8s7lP4EMHl1kxngDO9faO559ivu 4Q== 
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=9PABWGQzflpyBNsQSau8KnwnhehmoSEGW4CUo0AjJHs=;
+ b=IUC8QEWF/lS7xcMDiXz3ODE3yD1qrOE6Rg6Cl5AWg1GZ4Lb6Eg5IdbXJnWRy0AY28ETc
+ HzUZvvNIxa2wMFD/rL40JI30lFcA0+EvDrfZM/yPaFOhNAnuRnIpGD0UL1VZ1mY2Ijgt
+ AEqdjCg48y55lg/Rh4kKGJbv6VPKrVYKgOWGXKHfidXkyNMw4lkc9Frhj0mBjco4zgLr
+ eXlfRnwOEsXccAfp616cKjC8MCW1y8x6G2OHWbC1zW/H944niyyV+tF5TkYJHvaGHE5X
+ z0Y5NQTrZ/kHWyydNYxHrtlRnozYFhZC0EulHsg8ZkyAJ4AiMKSNc2a8UijMk+OVaU0q eA== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3rdc3w0ddf-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3rd6mab0fx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 23 Jun 2023 16:11:27 +0200
+        Fri, 23 Jun 2023 16:12:30 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 51C9A10002A;
-        Fri, 23 Jun 2023 16:11:25 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4B95A10007B;
+        Fri, 23 Jun 2023 16:12:30 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 472DD22AFEC;
-        Fri, 23 Jun 2023 16:11:25 +0200 (CEST)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 443EA22D16C;
+        Fri, 23 Jun 2023 16:12:30 +0200 (CEST)
 Received: from localhost (10.252.5.198) by SHFDAG1NODE1.st.com (10.75.129.69)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Fri, 23 Jun
- 2023 16:11:25 +0200
+ 2023 16:12:30 +0200
 From:   Olivier Moysan <olivier.moysan@foss.st.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
 CC:     Olivier Moysan <olivier.moysan@foss.st.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: [RFC PATCH 0/7] iio: add iio backend device type
-Date:   Fri, 23 Jun 2023 16:09:36 +0200
-Message-ID: <20230623140944.2613002-1-olivier.moysan@foss.st.com>
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [RFC PATCH 5/7] iio: adc: sd_adc_modulator: change to iio backend device
+Date:   Fri, 23 Jun 2023 16:09:41 +0200
+Message-ID: <20230623140944.2613002-6-olivier.moysan@foss.st.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230623140944.2613002-1-olivier.moysan@foss.st.com>
+References: <20230623140944.2613002-1-olivier.moysan@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -73,121 +64,105 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This RFC re-opens an old discussion regarding channel scaling
-management in STM32 DFSDM driver [1]
+Register the SD modulator as an IIO backend device instead of
+a standard IIO device.
 
-The DFSDM is a peripheral provided by the STM32MP1x SoC family.
-One objective is also to prepare the introduction of its successor in
-the STM32MP12x SoC family: the MDF (Multi-function Digital Filter).
-The MDF driver will have the same requirements as the DFSDM regarding
-channel scaling management. So, the solution proposed here will apply
-also for the future MDF driver.
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+---
+ drivers/iio/adc/sd_adc_modulator.c | 65 ++++++++++++++++++++----------
+ 1 file changed, 44 insertions(+), 21 deletions(-)
 
-[1]
-https://patchwork.kernel.org/project/linux-iio/patch/20200204101008.11411-5-olivier.moysan@st.com/
-
-As a short reminder of our previous discussion, the two main options
-emerging were the following ones:
-
-- Option1: Use the DFSDM as an hardware accelerator and expose the
-scaled channels on SD modulator side.
-Drawbak: this solution is leading to an very complex datapath, especially
-for scan mode.
-
-- Option2: Introduce a new IIO device type (so-called backend)
-Retrieve scaling information from SD modulator scaling to expose a single
-IIO device on DFSDM side. This solution is derivated from rcar-gyroadc
-example, but with a more standard approach.
-This was discussed in 
-https://lore.kernel.org/lkml/20210919191414.09270f4e@jic23-huawei/
-
-The patchset proposed in this RFC implements option2 (backend) solution.
-These patches provide a minimal API implemented as a template.
-The intented use of this API is illustrated through the DFSDM channel
-scaling support basic implementation.
-
-For sake of simplicity I did not include the related DT binding
-in this serie. 
-
-Below are some use case examples.
-
-* DFSDM with SD modulator backend:
-  -------------------------------
-This use case corresponds to the example implemented in this RFC.
-The channel attributes are retrieved from backend by the dfsdm, and
-the resulting scaling is exposed through DFSDM IIO device sysfs
-
-- Single channel:
-+-------------+  ch attr   +--------+  sysfs (compound scaling)
-| sd0 backend | ---------> | dfsdm0 | -------------------------->
-+-------------+            +--------+
-
-- Scan mode:
-+-------------+  ch attr   +-------------+  sysfs (compound scaling)
-| sd1 backend | ---------> |   dfsdm1    | -------------------------->
-+-------------+            +-------------+
-                             ^
-                             |
-+-------------+  ch attr     |
-| sd2 backend |--------------+
-+-------------+
-
-
-* Voltage divider in front of an adc:
-  ----------------------------------
-By way of example, here is a comparison on scaling management with
-a iio-rescale device, and how it could be managed with a backend device.
-
-- iio-rescale implementation
-Scaling is exposed both on ADC and iio-rescale IIO devices.
-On iio-rescale device we get the compound scaling
-
-+---------------------------+  ch attr   +------+  sysfs
-|     iio-rescale (div)     | <--------- | adc0 | ------->
-+---------------------------+            +------+
-  |
-  | sysfs (compound scaling)
-  v
-
-- Backend implementation:
-Compound scaling is exposed on ADC IIO device.
-No scaling exposed on backend device
-
-+---------------+  ch attr   +------+  sysfs (compound scaling)
-| backend (div) | ---------> | adc0 | -------------------------->
-+---------------+            +------+
-
-
-* Cascaded backends:
-  -----------------
-Backends may be cascaded to allow computation of the whole chain scaling
-This is not part of this RFC, but it is identified as a potential
-future use case.
-
-+---------------+  attr   +-------------+  attr   +--------+  sysfs
-| backend (div) | ------> | sd0 backend | ------> | dfsdm0 | ------->
-+---------------+         +-------------+         +--------+
-
-Olivier Moysan (7):
-  iio: introduce iio backend device
-  of: property: add device link support for io-backends
-  iio: adc: stm32-dfsdm: manage dfsdm as a channel provider
-  iio: adc: stm32-dfsdm: adopt generic channel bindings
-  iio: adc: sd_adc_modulator: change to iio backend device
-  iio: adc: stm32-dfsdm: add scaling support to dfsdm
-  ARM: dts: stm32: add dfsdm iio suppport
-
- arch/arm/boot/dts/stm32mp157c-ev1.dts |  62 +++++++++
- drivers/iio/Makefile                  |   2 +
- drivers/iio/adc/sd_adc_modulator.c    |  92 +++++++++++---
- drivers/iio/adc/stm32-dfsdm-adc.c     | 176 ++++++++++++++++----------
- drivers/iio/industrialio-backend.c    |  59 +++++++++
- drivers/of/property.c                 |   2 +
- include/linux/iio/backend.h           |  29 +++++
- 7 files changed, 336 insertions(+), 86 deletions(-)
- create mode 100644 drivers/iio/industrialio-backend.c
- create mode 100644 include/linux/iio/backend.h
-
+diff --git a/drivers/iio/adc/sd_adc_modulator.c b/drivers/iio/adc/sd_adc_modulator.c
+index 327cc2097f6c..61246a52dc79 100644
+--- a/drivers/iio/adc/sd_adc_modulator.c
++++ b/drivers/iio/adc/sd_adc_modulator.c
+@@ -7,42 +7,65 @@
+  */
+ 
+ #include <linux/iio/iio.h>
++#include <linux/iio/backend.h>
+ #include <linux/iio/triggered_buffer.h>
+ #include <linux/module.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/platform_device.h>
+ 
+-static const struct iio_info iio_sd_mod_iio_info;
++struct iio_sd_mod_priv {
++};
+ 
+-static const struct iio_chan_spec iio_sd_mod_ch = {
+-	.type = IIO_VOLTAGE,
+-	.indexed = 1,
+-	.scan_type = {
+-		.sign = 'u',
+-		.realbits = 1,
+-		.shift = 0,
+-	},
++static int sd_mod_enable(struct iio_backend *backend)
++{
++	struct iio_sd_mod_priv *priv = backend->priv;
++
++	/* PM resume */
++
++	return 0;
++};
++
++static int sd_mod_disable(struct iio_backend *backend)
++{
++	struct iio_sd_mod_priv *priv = backend->priv;
++
++	/* PM suspend */
++
++	return 0;
++};
++
++static int sd_mod_read(struct iio_backend *backend, int *val, int *val2, long mask)
++{
++	struct iio_sd_mod_priv *priv = backend->priv;
++
++	switch (mask) {
++		/* Process channel info */
++	}
++
++	return -EINVAL;
++};
++
++static const struct iio_backend_ops sd_mod_ops = {
++	.enable = sd_mod_enable,
++	.disable = sd_mod_disable,
++	.read_raw = sd_mod_read,
+ };
+ 
+ static int iio_sd_mod_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+-	struct iio_dev *iio;
+-
+-	iio = devm_iio_device_alloc(dev, 0);
+-	if (!iio)
+-		return -ENOMEM;
++	struct iio_backend *backend;
++	struct iio_sd_mod_priv *priv;
++	int ret;
+ 
+-	iio->name = dev_name(dev);
+-	iio->info = &iio_sd_mod_iio_info;
+-	iio->modes = INDIO_BUFFER_HARDWARE;
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+ 
+-	iio->num_channels = 1;
+-	iio->channels = &iio_sd_mod_ch;
++	backend = iio_backend_alloc(dev);
+ 
+-	platform_set_drvdata(pdev, iio);
++	backend->priv = priv;
++	backend->ops = &sd_mod_ops;
+ 
+-	return devm_iio_device_register(&pdev->dev, iio);
++	return iio_backend_register(backend);
+ }
+ 
+ static const struct of_device_id sd_adc_of_match[] = {
 -- 
 2.25.1
 
