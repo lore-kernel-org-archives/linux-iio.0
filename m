@@ -2,57 +2,58 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A3E7EB64D7
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Jun 2023 14:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35348C001B0
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Jun 2023 14:14:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231169AbjFWONJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 23 Jun 2023 10:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45914 "EHLO
+        id S230426AbjFWOOE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 23 Jun 2023 10:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231869AbjFWONF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Jun 2023 10:13:05 -0400
+        with ESMTP id S231715AbjFWON7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Jun 2023 10:13:59 -0400
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8394272D;
-        Fri, 23 Jun 2023 07:12:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D752139;
+        Fri, 23 Jun 2023 07:13:49 -0700 (PDT)
 Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35NDXeut001402;
-        Fri, 23 Jun 2023 16:12:32 +0200
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35NDXevK001402;
+        Fri, 23 Jun 2023 16:13:31 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=selector1;
- bh=zWeERQz/umawvNfauQRCYpJNgkVDbRQhq4vkQIqOrW0=;
- b=4I2JF4dcZS+xt6zKozxonoFMR+pj+PxiROH7Kgek/YJA/U+PIryy4ExR294IKWlyLm3k
- HSQWJyYdAbKU0mkoHlMRNZ4y0DdnBpqEGe33IMdFv9a48FVwId03Y4cDicB1lGzhQHkX
- gxVF7gMYK5sAriXmraRhZVuwVA3Nao9cb29REuVOXxarGqrvZR49FCDnjwr4I22Izh0M
- dAsiTGoNkPVnf/7mmRZyFpnRwAIvJoI0g+W6iX6LZ+UaI8Q3vGorGEfmwGxrsZzyC5Ae
- DYtS1gGngtnji16lSOJplCiJ4n5wKAJpYqBM9r4YGZdUFMFrOFIJ3W+Wp9REETO3w9Fn nA== 
+ bh=TepZ7nQFBI2aQe+ZWfC+VWWrhNbF7JAtvbWR1OD4MEw=;
+ b=XSzD767QiA4+XrUM+CeodbLmWZ42xmPDz5NUwXu8OJehCwk1Nh8QTTt2outH5q2jmEYX
+ 1MGDcX1qiAJjRTigiVvO3FAy3gkiSbQkzi8ekyNwuks3CAwZy0woCzjwZ7X9a7zltc7D
+ Fswt38FWScvziU4ne+PSdnEv2kgdhhnqQixf00MDNCtOpApodQeJx0/WHwXKsL81yiCK
+ WkyRbjHZ79sJkPFrUoKhqdt5XBe+jcw8Fj1p/S2scvb4ZPcdgbZjLd+PD4yOAyRzOmaN
+ P7Wq7gMH01zdndVZm6Rd0K4HVBYKzZEXlsNj2eBt/9yPkgZQYvA2jYkKYpIpVt3MJEIn yw== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3rd1t6vb2w-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3rd1t6vbe2-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 23 Jun 2023 16:12:32 +0200
+        Fri, 23 Jun 2023 16:13:31 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7BA9F100075;
-        Fri, 23 Jun 2023 16:12:29 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 425DB100075;
+        Fri, 23 Jun 2023 16:13:31 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7495822D16B;
-        Fri, 23 Jun 2023 16:12:29 +0200 (CEST)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 349E122D170;
+        Fri, 23 Jun 2023 16:13:31 +0200 (CEST)
 Received: from localhost (10.252.5.198) by SHFDAG1NODE1.st.com (10.75.129.69)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Fri, 23 Jun
- 2023 16:12:29 +0200
+ 2023 16:13:30 +0200
 From:   Olivier Moysan <olivier.moysan@foss.st.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
 CC:     Olivier Moysan <olivier.moysan@foss.st.com>,
-        <linux-iio@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [RFC PATCH 4/7] iio: adc: stm32-dfsdm: adopt generic channel bindings
-Date:   Fri, 23 Jun 2023 16:09:40 +0200
-Message-ID: <20230623140944.2613002-5-olivier.moysan@foss.st.com>
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [RFC PATCH 6/7] iio: adc: stm32-dfsdm: add scaling support to dfsdm
+Date:   Fri, 23 Jun 2023 16:09:42 +0200
+Message-ID: <20230623140944.2613002-7-olivier.moysan@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230623140944.2613002-1-olivier.moysan@foss.st.com>
 References: <20230623140944.2613002-1-olivier.moysan@foss.st.com>
@@ -69,199 +70,237 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Adopt the generic channel bindings to ease the configuration
-of the DFSDM channels as consumers of the SD modulator backend device.
-Also adopt unified device property API in the same patch for this RFC.
+Add scaling support to STM32 DFSDM.
 
 Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
 ---
- drivers/iio/adc/stm32-dfsdm-adc.c | 93 ++++++++++++++++---------------
- 1 file changed, 49 insertions(+), 44 deletions(-)
+ drivers/iio/adc/sd_adc_modulator.c | 31 ++++++++++++++-
+ drivers/iio/adc/stm32-dfsdm-adc.c  | 64 ++++++++++++++++++++++++++++--
+ 2 files changed, 91 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/iio/adc/sd_adc_modulator.c b/drivers/iio/adc/sd_adc_modulator.c
+index 61246a52dc79..749c46da9c72 100644
+--- a/drivers/iio/adc/sd_adc_modulator.c
++++ b/drivers/iio/adc/sd_adc_modulator.c
+@@ -12,15 +12,23 @@
+ #include <linux/module.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/platform_device.h>
++#include <linux/regulator/consumer.h>
+ 
+ struct iio_sd_mod_priv {
++	struct regulator *vref;
++	int vref_mv;
+ };
+ 
+ static int sd_mod_enable(struct iio_backend *backend)
+ {
+ 	struct iio_sd_mod_priv *priv = backend->priv;
++	int ret;
+ 
+ 	/* PM resume */
++	ret = regulator_enable(priv->vref);
++
++	ret = regulator_get_voltage(priv->vref);
++	priv->vref_mv = ret / 1000;
+ 
+ 	return 0;
+ };
+@@ -30,6 +38,7 @@ static int sd_mod_disable(struct iio_backend *backend)
+ 	struct iio_sd_mod_priv *priv = backend->priv;
+ 
+ 	/* PM suspend */
++	regulator_disable(priv->vref);
+ 
+ 	return 0;
+ };
+@@ -39,7 +48,15 @@ static int sd_mod_read(struct iio_backend *backend, int *val, int *val2, long ma
+ 	struct iio_sd_mod_priv *priv = backend->priv;
+ 
+ 	switch (mask) {
+-		/* Process channel info */
++	case IIO_CHAN_INFO_SCALE:
++		*val = priv->vref_mv;
++		*val2 = 0;
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_OFFSET:
++		*val = 0;
++		*val2 = 0;
++		return IIO_VAL_INT;
+ 	}
+ 
+ 	return -EINVAL;
+@@ -54,12 +71,24 @@ static const struct iio_backend_ops sd_mod_ops = {
+ static int iio_sd_mod_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
++	struct regulator *vref;
+ 	struct iio_backend *backend;
+ 	struct iio_sd_mod_priv *priv;
+ 	int ret;
+ 
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+ 
++	vref = devm_regulator_get_optional(dev, "vref");
++	if (IS_ERR(vref)) {
++		ret = PTR_ERR(vref);
++		if (ret != -ENODEV) {
++			if (ret != -EPROBE_DEFER)
++				dev_err(dev, "vref get failed, %d\n", ret);
++			return ret;
++		}
++	}
++	priv->vref = vref;
++
+ 	backend = iio_backend_alloc(dev);
+ 
+ 	backend->priv = priv;
 diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
-index 20756d496c52..2e76497cee51 100644
+index 2e76497cee51..468d72ab079d 100644
 --- a/drivers/iio/adc/stm32-dfsdm-adc.c
 +++ b/drivers/iio/adc/stm32-dfsdm-adc.c
-@@ -595,45 +595,35 @@ static int stm32_dfsdm_filter_configure(struct iio_dev *indio_dev,
+@@ -9,6 +9,7 @@
+ #include <linux/dmaengine.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/iio/adc/stm32-dfsdm-adc.h>
++#include <linux/iio/backend.h>
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/hw-consumer.h>
+ #include <linux/iio/sysfs.h>
+@@ -76,6 +77,7 @@ struct stm32_dfsdm_adc {
  
- static int stm32_dfsdm_channel_parse_of(struct stm32_dfsdm *dfsdm,
- 					struct iio_dev *indio_dev,
-+					struct fwnode_handle *node,
+ 	/* ADC specific */
+ 	unsigned int oversamp;
++	struct iio_backend **backend;
+ 	struct completion completion;
+ 	u32 *buffer;
+ 
+@@ -599,6 +601,8 @@ static int stm32_dfsdm_channel_parse_of(struct stm32_dfsdm *dfsdm,
  					struct iio_chan_spec *ch)
  {
  	struct stm32_dfsdm_channel *df_ch;
++	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
++	struct iio_backend *backend;
  	const char *of_str;
--	int chan_idx = ch->scan_index;
  	int ret, val;
  
--	ret = of_property_read_u32_index(indio_dev->dev.of_node,
--					 "st,adc-channels", chan_idx,
--					 &ch->channel);
-+	ret = fwnode_property_read_u32(node, "reg", &ch->channel);
- 	if (ret < 0) {
--		dev_err(&indio_dev->dev,
--			" Error parsing 'st,adc-channels' for idx %d\n",
--			chan_idx);
-+		dev_err(&indio_dev->dev, "Missing channel index %d\n", ret);
- 		return ret;
- 	}
- 	if (ch->channel >= dfsdm->num_chs) {
--		dev_err(&indio_dev->dev,
--			" Error bad channel number %d (max = %d)\n",
-+		dev_err(&indio_dev->dev, " Error bad channel number %d (max = %d)\n",
- 			ch->channel, dfsdm->num_chs);
- 		return -EINVAL;
- 	}
- 
--	ret = of_property_read_string_index(indio_dev->dev.of_node,
--					    "st,adc-channel-names", chan_idx,
--					    &ch->datasheet_name);
-+	ret = fwnode_property_read_string(node, "label", &ch->datasheet_name);
- 	if (ret < 0) {
- 		dev_err(&indio_dev->dev,
--			" Error parsing 'st,adc-channel-names' for idx %d\n",
--			chan_idx);
-+			" Error parsing 'label' for idx %d\n", ch->channel);
- 		return ret;
- 	}
- 
- 	df_ch =  &dfsdm->ch_list[ch->channel];
- 	df_ch->id = ch->channel;
- 
--	ret = of_property_read_string_index(indio_dev->dev.of_node,
--					    "st,adc-channel-types", chan_idx,
--					    &of_str);
-+	ret = fwnode_property_read_string(node, "st,adc-channel-types", &of_str);
- 	if (!ret) {
- 		val = stm32_dfsdm_str2val(of_str, stm32_dfsdm_chan_type);
- 		if (val < 0)
-@@ -643,9 +633,7 @@ static int stm32_dfsdm_channel_parse_of(struct stm32_dfsdm *dfsdm,
- 	}
- 	df_ch->type = val;
- 
--	ret = of_property_read_string_index(indio_dev->dev.of_node,
--					    "st,adc-channel-clk-src", chan_idx,
--					    &of_str);
-+	ret = fwnode_property_read_string(node, "st,adc-channel-clk-src", &of_str);
- 	if (!ret) {
- 		val = stm32_dfsdm_str2val(of_str, stm32_dfsdm_chan_src);
- 		if (val < 0)
-@@ -655,10 +643,8 @@ static int stm32_dfsdm_channel_parse_of(struct stm32_dfsdm *dfsdm,
- 	}
- 	df_ch->src = val;
- 
--	ret = of_property_read_u32_index(indio_dev->dev.of_node,
--					 "st,adc-alt-channel", chan_idx,
--					 &df_ch->alt_si);
--	if (ret < 0)
-+	ret = fwnode_property_read_u32(node, "st,adc-alt-channel", &df_ch->alt_si);
-+	if (ret != -EINVAL)
+@@ -647,6 +651,9 @@ static int stm32_dfsdm_channel_parse_of(struct stm32_dfsdm *dfsdm,
+ 	if (ret != -EINVAL)
  		df_ch->alt_si = 0;
  
++	backend = iio_backend_get(node->dev);
++	adc->backend[df_ch->id] = backend;
++
  	return 0;
-@@ -1353,14 +1339,17 @@ static int stm32_dfsdm_dma_request(struct device *dev,
  }
  
- static int stm32_dfsdm_adc_chan_init_one(struct iio_dev *indio_dev,
-+					 struct fwnode_handle *child,
- 					 struct iio_chan_spec *ch)
+@@ -1090,7 +1097,7 @@ static int stm32_dfsdm_single_conv(struct iio_dev *indio_dev,
  {
  	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
- 	int ret;
+ 	long timeout;
+-	int ret;
++	int ret, idx = chan->scan_index;
  
--	ret = stm32_dfsdm_channel_parse_of(adc->dfsdm, indio_dev, ch);
--	if (ret < 0)
-+	ret = stm32_dfsdm_channel_parse_of(adc->dfsdm, indio_dev, child, ch);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev, "Failed to parse channel %d\n", ch->scan_index);
- 		return ret;
-+	}
+ 	reinit_completion(&adc->completion);
  
- 	ch->type = IIO_VOLTAGE;
- 	ch->indexed = 1;
-@@ -1386,6 +1375,31 @@ static int stm32_dfsdm_adc_chan_init_one(struct iio_dev *indio_dev,
- 					  &adc->dfsdm->ch_list[ch->channel]);
- }
- 
-+static int stm32_dfsdm_generic_chan_init(struct iio_dev *indio_dev, struct stm32_dfsdm_adc *adc,
-+					 struct iio_chan_spec *channels)
-+{
-+	struct fwnode_handle *child;
-+	int chan_idx = 0, ret;
-+
-+	device_for_each_child_node(&indio_dev->dev, child) {
-+		channels[chan_idx].scan_index = chan_idx;
-+		ret = stm32_dfsdm_adc_chan_init_one(indio_dev, child, &channels[chan_idx]);
-+		if (ret < 0) {
-+			dev_err(&indio_dev->dev, "Channels init failed\n");
-+			goto err;
-+		}
-+
-+		chan_idx++;
-+	}
-+
-+	return chan_idx;
-+
-+err:
-+	fwnode_handle_put(child);
-+
-+	return ret;
-+}
-+
- static int stm32_dfsdm_audio_init(struct device *dev, struct iio_dev *indio_dev)
- {
- 	struct iio_chan_spec *ch;
-@@ -1399,7 +1413,7 @@ static int stm32_dfsdm_audio_init(struct device *dev, struct iio_dev *indio_dev)
- 
- 	ch->scan_index = 0;
- 
--	ret = stm32_dfsdm_adc_chan_init_one(indio_dev, ch);
-+	stm32_dfsdm_generic_chan_init(indio_dev, adc, ch);
- 	if (ret < 0) {
- 		dev_err(&indio_dev->dev, "Channels init failed\n");
- 		return ret;
-@@ -1421,33 +1435,24 @@ static int stm32_dfsdm_adc_init(struct device *dev, struct iio_dev *indio_dev)
- 	struct iio_chan_spec *ch;
- 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
- 	int num_ch;
--	int ret, chan_idx;
-+	int ret;
- 
- 	adc->oversamp = DFSDM_DEFAULT_OVERSAMPLING;
- 	ret = stm32_dfsdm_compute_all_osrs(indio_dev, adc->oversamp);
+@@ -1100,6 +1107,8 @@ static int stm32_dfsdm_single_conv(struct iio_dev *indio_dev,
  	if (ret < 0)
  		return ret;
  
--	num_ch = of_property_count_u32_elems(indio_dev->dev.of_node,
--					     "st,adc-channels");
--	if (num_ch < 0 || num_ch > adc->dfsdm->num_chs) {
--		dev_err(&indio_dev->dev, "Bad st,adc-channels\n");
--		return num_ch < 0 ? num_ch : -EINVAL;
--	}
-+	num_ch = device_get_child_node_count(&indio_dev->dev);
-+	if (!num_ch)
-+		return -EINVAL;
++	adc->backend[idx]->ops->enable(adc->backend[idx]);
++
+ 	ret = regmap_update_bits(adc->dfsdm->regmap, DFSDM_CR2(adc->fl_id),
+ 				 DFSDM_CR2_REOCIE_MASK, DFSDM_CR2_REOCIE(1));
+ 	if (ret < 0)
+@@ -1133,6 +1142,8 @@ static int stm32_dfsdm_single_conv(struct iio_dev *indio_dev,
+ 	stm32_dfsdm_process_data(adc, res);
  
--	ch = devm_kcalloc(&indio_dev->dev, num_ch, sizeof(*ch),
--			  GFP_KERNEL);
-+	ch = devm_kcalloc(&indio_dev->dev, num_ch, sizeof(*ch), GFP_KERNEL);
- 	if (!ch)
- 		return -ENOMEM;
+ stop_dfsdm:
++	adc->backend[idx]->ops->disable(adc->backend[idx]);
++
+ 	stm32_dfsdm_stop_dfsdm(adc->dfsdm);
  
--	for (chan_idx = 0; chan_idx < num_ch; chan_idx++) {
--		ch[chan_idx].scan_index = chan_idx;
--		ret = stm32_dfsdm_adc_chan_init_one(indio_dev, &ch[chan_idx]);
--		if (ret < 0) {
--			dev_err(&indio_dev->dev, "Channels init failed\n");
--			return ret;
--		}
--	}
-+	stm32_dfsdm_generic_chan_init(indio_dev, adc, ch);
-+	if (ret < 0)
-+		return ret;
+ 	return ret;
+@@ -1197,7 +1208,14 @@ static int stm32_dfsdm_read_raw(struct iio_dev *indio_dev,
+ 				int *val2, long mask)
+ {
+ 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
+-	int ret;
++
++	struct stm32_dfsdm_filter *fl = &adc->dfsdm->fl_list[adc->fl_id];
++	struct stm32_dfsdm_filter_osr *flo = &fl->flo[fl->fast];
++	u32 max = flo->max << (flo->lshift - chan->scan_type.shift);
++	int ret, idx = chan->scan_index;
++
++	if (flo->lshift < chan->scan_type.shift)
++		max = flo->max >> (chan->scan_type.shift - flo->lshift);
  
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -1231,6 +1249,41 @@ static int stm32_dfsdm_read_raw(struct iio_dev *indio_dev,
+ 		*val = adc->sample_freq;
+ 
+ 		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		/*
++		 * Scale is expressed in mV.
++		 * When fast mode is disabled, actual resolution may be lower
++		 * than 2^n, where n=realbits-1.
++		 * This leads to underestimating input voltage. To
++		 * compensate this deviation, the voltage reference can be
++		 * corrected with a factor = realbits resolution / actual max
++		 */
++		adc->backend[idx]->ops->read_raw(adc->backend[idx], val, val2, mask);
++
++		*val = div_u64((u64)*val * (u64)BIT(DFSDM_DATA_RES - 1), max);
++		*val2 = chan->scan_type.realbits;
++		if (chan->differential)
++			*val *= 2;
++		return IIO_VAL_FRACTIONAL_LOG2;
++
++	case IIO_CHAN_INFO_OFFSET:
++		/*
++		 * DFSDM output data are in the range [-2^n,2^n-1],
++		 * with n=realbits-1.
++		 * - Differential modulator:
++		 * Offset correspond to SD modulator offset.
++		 * - Single ended modulator:
++		 * Input is in [0V,Vref] range, where 0V corresponds to -2^n.
++		 * Add 2^n to offset. (i.e. middle of input range)
++		 * offset = offset(sd) * vref / res(sd) * max / vref.
++		 */
++		adc->backend[idx]->ops->read_raw(adc->backend[idx], val, val2, mask);
++
++		*val = div_u64((u64)max * *val, BIT(*val2 - 1));
++		if (chan->differential)
++			*val += max;
++		return IIO_VAL_INT;
+ 	}
+ 
+ 	return -EINVAL;
+@@ -1358,7 +1411,10 @@ static int stm32_dfsdm_adc_chan_init_one(struct iio_dev *indio_dev,
+ 	 * IIO_CHAN_INFO_RAW: used to compute regular conversion
+ 	 * IIO_CHAN_INFO_OVERSAMPLING_RATIO: used to set oversampling
+ 	 */
+-	ch->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
++	ch->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				 BIT(IIO_CHAN_INFO_SCALE) |
++				 BIT(IIO_CHAN_INFO_OFFSET);
++
+ 	ch->info_mask_shared_by_all = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO) |
+ 					BIT(IIO_CHAN_INFO_SAMP_FREQ);
+ 
+@@ -1454,6 +1510,8 @@ static int stm32_dfsdm_adc_init(struct device *dev, struct iio_dev *indio_dev)
+ 	if (ret < 0)
+ 		return ret;
+ 
++	adc->backend = devm_kzalloc(&indio_dev->dev, sizeof(*adc->backend) * num_ch, GFP_KERNEL);
++
  	indio_dev->num_channels = num_ch;
  	indio_dev->channels = ch;
+ 
 -- 
 2.25.1
 
