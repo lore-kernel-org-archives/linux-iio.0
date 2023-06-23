@@ -2,34 +2,34 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1163BEB64DD
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D23C001B3
 	for <linux-iio@archiver.kernel.org>; Fri, 23 Jun 2023 02:24:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231137AbjFWCX7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 22 Jun 2023 22:23:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44680 "EHLO
+        id S231144AbjFWCYA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 22 Jun 2023 22:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230355AbjFWCX6 (ORCPT
+        with ESMTP id S230423AbjFWCX6 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Jun 2023 22:23:58 -0400
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CE41BC1;
-        Thu, 22 Jun 2023 19:23:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394BE2136;
+        Thu, 22 Jun 2023 19:23:56 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id D6FCE5FD25;
-        Fri, 23 Jun 2023 05:23:49 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id 81B195FD28;
+        Fri, 23 Jun 2023 05:23:54 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1687487029;
-        bh=LSrYU9Za3aez8EGwCKmAePmxhFcW4UYhK9sMcYhgfkg=;
+        s=mail; t=1687487034;
+        bh=xJtb2PxI0po9bYawG64NHJS7+zf3ZJH0TBfB5YdKzHY=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=EQi9Aw6+t23MHwjeQar8O0FWuOMHEnCzaUQidDb9YTt3HUkgFfZnb6hxTtWmPBZeX
-         sGkFA1+t5fIr9CnVj9GdZTTREtt64oCsLUfurdf4yY+zg2oXfYVdg2068VpBbjQZEX
-         Ph74+kLp3IBFYLDh1HjwQzBG6dolzuu7s1+ZibVPczRS92u6frNvx+bXNI1I8i4L7Z
-         isbuhPBikYFJ21rbl41Ebprxlwiz0Kti/j0diu52gN0mdDXoHPNFFVZXJAZ0AArlOE
-         6HmUYvgMhfRBkPCTE3oMwBkjeVIbamFnLXaEHm6Yq1TqXDHv8wDRM1xoJT0Hecy9CY
-         iqoinOYJPYwgw==
+        b=bRX+++1zU1HV0IKkDfv0xOuRU+k1BLIBZe+MGgmJ+N/JDnCju1VqjIBgTMULDJmFU
+         8mBlLVrl8ZaOMIgDjBT0LX1YyFPllOqcIch3Ms5MqCVTWAVquKk1HeTFMpj8/dRPBS
+         JH23tbqSBVSBWsu+39m404IllChX1E8fnfmDwqPq8e2t8pK4Frf9c46XVHC0zUPNrs
+         ZnUed4CBwvaKITRjhjA2RwOLWqxmksCf2CuBLa+uNFRYN5rqGQJaVli2gOzWSbFtMN
+         5kku/rKn/WTzGBq5wa6XC3LP4USU/wfR/7wiRu+AkUXo+UBEniQg021JYTIKgVmPo9
+         2TTDL0Ln/wCPA==
 Received: from p-i-exch-sc-m01.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Fri, 23 Jun 2023 05:23:49 +0300 (MSK)
+        Fri, 23 Jun 2023 05:23:54 +0300 (MSK)
 From:   George Stark <gnstark@sberdevices.ru>
 To:     <jic23@kernel.org>, <lars@metafoo.de>, <neil.armstrong@linaro.org>,
         <khilman@baylibre.com>, <jbrunet@baylibre.com>,
@@ -41,9 +41,9 @@ CC:     <linux-iio@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-amlogic@lists.infradead.org>, <kernel@sberdevices.ru>,
         George Stark <GNStark@sberdevices.ru>
-Subject: [PATCH v2 1/6] meson saradc: move enums declaration before variables declaration
-Date:   Fri, 23 Jun 2023 05:20:09 +0300
-Message-ID: <20230623022334.791026-2-gnstark@sberdevices.ru>
+Subject: [PATCH v2 4/6] meson saradc: add enum for iio channel array indexes
+Date:   Fri, 23 Jun 2023 05:20:12 +0300
+Message-ID: <20230623022334.791026-5-gnstark@sberdevices.ru>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230623022334.791026-1-gnstark@sberdevices.ru>
 References: <20230623022334.791026-1-gnstark@sberdevices.ru>
@@ -64,75 +64,73 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Move enums declaration before variables declaration.
+Add enum for iio channel array indexes.
 
 Signed-off-by: George Stark <GNStark@sberdevices.ru>
 ---
- drivers/iio/adc/meson_saradc.c | 44 +++++++++++++++++-----------------
- 1 file changed, 22 insertions(+), 22 deletions(-)
+ drivers/iio/adc/meson_saradc.c | 34 +++++++++++++++++++++++-----------
+ 1 file changed, 23 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index 18937a262af6..af38d95bd504 100644
+index ffd4de950a63..7ef006650982 100644
 --- a/drivers/iio/adc/meson_saradc.c
 +++ b/drivers/iio/adc/meson_saradc.c
-@@ -202,6 +202,28 @@
- 	.datasheet_name = "TEMP_SENSOR",				\
- }
+@@ -223,16 +223,28 @@ enum meson_sar_adc_chan7_mux_sel {
+ 	CHAN7_MUX_CH7_INPUT = 0x7,
+ };
  
-+enum meson_sar_adc_avg_mode {
-+	NO_AVERAGING = 0x0,
-+	MEAN_AVERAGING = 0x1,
-+	MEDIAN_AVERAGING = 0x2,
-+};
-+
-+enum meson_sar_adc_num_samples {
-+	ONE_SAMPLE = 0x0,
-+	TWO_SAMPLES = 0x1,
-+	FOUR_SAMPLES = 0x2,
-+	EIGHT_SAMPLES = 0x3,
-+};
-+
-+enum meson_sar_adc_chan7_mux_sel {
-+	CHAN7_MUX_VSS = 0x0,
-+	CHAN7_MUX_VDD_DIV4 = 0x1,
-+	CHAN7_MUX_VDD_DIV2 = 0x2,
-+	CHAN7_MUX_VDD_MUL3_DIV4 = 0x3,
-+	CHAN7_MUX_VDD = 0x4,
-+	CHAN7_MUX_CH7_INPUT = 0x7,
++enum meson_sar_adc_channel_index {
++	INDEX_CHAN_0,
++	INDEX_CHAN_1,
++	INDEX_CHAN_2,
++	INDEX_CHAN_3,
++	INDEX_CHAN_4,
++	INDEX_CHAN_5,
++	INDEX_CHAN_6,
++	INDEX_CHAN_7,
++	INDEX_CHAN_SOFT_TIMESTAMP,
 +};
 +
  static const struct iio_chan_spec meson_sar_adc_iio_channels[] = {
- 	MESON_SAR_ADC_CHAN(0),
- 	MESON_SAR_ADC_CHAN(1),
-@@ -227,28 +249,6 @@ static const struct iio_chan_spec meson_sar_adc_and_temp_iio_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(9),
+-	MESON_SAR_ADC_CHAN(0),
+-	MESON_SAR_ADC_CHAN(1),
+-	MESON_SAR_ADC_CHAN(2),
+-	MESON_SAR_ADC_CHAN(3),
+-	MESON_SAR_ADC_CHAN(4),
+-	MESON_SAR_ADC_CHAN(5),
+-	MESON_SAR_ADC_CHAN(6),
+-	MESON_SAR_ADC_CHAN(7),
+-	IIO_CHAN_SOFT_TIMESTAMP(8),
++	MESON_SAR_ADC_CHAN(INDEX_CHAN_0),
++	MESON_SAR_ADC_CHAN(INDEX_CHAN_1),
++	MESON_SAR_ADC_CHAN(INDEX_CHAN_2),
++	MESON_SAR_ADC_CHAN(INDEX_CHAN_3),
++	MESON_SAR_ADC_CHAN(INDEX_CHAN_4),
++	MESON_SAR_ADC_CHAN(INDEX_CHAN_5),
++	MESON_SAR_ADC_CHAN(INDEX_CHAN_6),
++	MESON_SAR_ADC_CHAN(INDEX_CHAN_7),
++	IIO_CHAN_SOFT_TIMESTAMP(INDEX_CHAN_SOFT_TIMESTAMP),
+ 	MESON_SAR_ADC_TEMP_CHAN(), /* must be the last item */
  };
  
--enum meson_sar_adc_avg_mode {
--	NO_AVERAGING = 0x0,
--	MEAN_AVERAGING = 0x1,
--	MEDIAN_AVERAGING = 0x2,
--};
--
--enum meson_sar_adc_num_samples {
--	ONE_SAMPLE = 0x0,
--	TWO_SAMPLES = 0x1,
--	FOUR_SAMPLES = 0x2,
--	EIGHT_SAMPLES = 0x3,
--};
--
--enum meson_sar_adc_chan7_mux_sel {
--	CHAN7_MUX_VSS = 0x0,
--	CHAN7_MUX_VDD_DIV4 = 0x1,
--	CHAN7_MUX_VDD_DIV2 = 0x2,
--	CHAN7_MUX_VDD_MUL3_DIV4 = 0x3,
--	CHAN7_MUX_VDD = 0x4,
--	CHAN7_MUX_CH7_INPUT = 0x7,
--};
--
- struct meson_sar_adc_param {
- 	bool					has_bl30_integration;
- 	unsigned long				clock_rate;
+@@ -1003,7 +1015,7 @@ static int meson_sar_adc_calib(struct iio_dev *indio_dev)
+ 	meson_sar_adc_set_chan7_mux(indio_dev, CHAN7_MUX_VDD_DIV4);
+ 	usleep_range(10, 20);
+ 	ret = meson_sar_adc_get_sample(indio_dev,
+-				       &indio_dev->channels[7],
++				       &indio_dev->channels[INDEX_CHAN_7],
+ 				       MEAN_AVERAGING, EIGHT_SAMPLES, &value0);
+ 	if (ret < 0)
+ 		goto out;
+@@ -1011,7 +1023,7 @@ static int meson_sar_adc_calib(struct iio_dev *indio_dev)
+ 	meson_sar_adc_set_chan7_mux(indio_dev, CHAN7_MUX_VDD_MUL3_DIV4);
+ 	usleep_range(10, 20);
+ 	ret = meson_sar_adc_get_sample(indio_dev,
+-				       &indio_dev->channels[7],
++				       &indio_dev->channels[INDEX_CHAN_7],
+ 				       MEAN_AVERAGING, EIGHT_SAMPLES, &value1);
+ 	if (ret < 0)
+ 		goto out;
 -- 
 2.38.4
 
