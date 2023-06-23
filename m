@@ -2,34 +2,34 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2170CEB64DC
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Jun 2023 02:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BFFCC0015E
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Jun 2023 02:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230481AbjFWCX7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 22 Jun 2023 22:23:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44682 "EHLO
+        id S229871AbjFWCYB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 22 Jun 2023 22:24:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230380AbjFWCX6 (ORCPT
+        with ESMTP id S230407AbjFWCX6 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Jun 2023 22:23:58 -0400
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8609A1BCA;
-        Thu, 22 Jun 2023 19:23:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164AE2135;
+        Thu, 22 Jun 2023 19:23:56 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 7B5075FD1D;
-        Fri, 23 Jun 2023 05:23:49 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id 5F7A65FD27;
+        Fri, 23 Jun 2023 05:23:54 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1687487029;
-        bh=4DyGjQMn+es+mH1vT9Y4V2O51Aluf6NSHZpaGh0GwY0=;
+        s=mail; t=1687487034;
+        bh=xNSHkYYB8/LbeA0+r7XGd/32WotV9MdYNPXVJkH92yU=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=egT3vADQODLoHOyyZ7SxtoiA1XgL2C/KMR5zVFMcaEaTfO4kFaAkoA+ALrH6oHxGg
-         W17FPY1cf4laxvuSLq9c5q07U8rN2aZ66N4KNth0rYJzv2FZOFXfSupVfpEAehAV31
-         uFx/aD3TMZiLU5BgbyeXVdQwSRzM3+dqrsSs2QqZl8IX4WGg+Qj1o++u9flm1SXphH
-         Opg0V4lG0Yy8DOttA/pscRjTHJ7rxAVebIYT3Gm20IKCwyB/nkhfpnz1I2Mm2b9Cvk
-         licMT//odGa2Hr3RZw9qQTva8meYMwHIkqZWH+FLKZG9NVM5Bclhj9GVzKG+SPIGzC
-         4XA7/1SA95mZg==
+        b=lfi4idW2RP2iu9BEegqhGovm8etD0Wx6LaaRwxwsBbi63WHmdk/Hx21WZRpymJg/D
+         sFtp/N1nu5ICdl/vMcPJcvYZwYMM7Z7oPwOp6IQcro2xUB0GioQNbTarpIUrViOsAa
+         KFsLw2A2DxWadmVEPCaQbjDaNpUEUrmmF5LMsoDl6cyT6dZ+HazCUauzyGQ88XEFHD
+         Q7GIzC/Z7Tjua3hPpoPMjv3LwPKm9sj3iEWI739VfIzBhPvFrH7OMRKo+yoVizZh98
+         o9RwRPNr11i2iX0xxscxtCySVkj8eNhGE6cUtm9vVS+hpvITEKRKXO7v7jUsEpstLv
+         u7Z6pqVSnB8UQ==
 Received: from p-i-exch-sc-m01.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Fri, 23 Jun 2023 05:23:46 +0300 (MSK)
+        Fri, 23 Jun 2023 05:23:54 +0300 (MSK)
 From:   George Stark <gnstark@sberdevices.ru>
 To:     <jic23@kernel.org>, <lars@metafoo.de>, <neil.armstrong@linaro.org>,
         <khilman@baylibre.com>, <jbrunet@baylibre.com>,
@@ -41,10 +41,12 @@ CC:     <linux-iio@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-amlogic@lists.infradead.org>, <kernel@sberdevices.ru>,
         George Stark <GNStark@sberdevices.ru>
-Subject: [PATCH v2 0/6] meson saradc: add iio channels to read channel 7 mux inputs
-Date:   Fri, 23 Jun 2023 05:20:08 +0300
-Message-ID: <20230623022334.791026-1-gnstark@sberdevices.ru>
+Subject: [PATCH v2 3/6] meson saradc: unite iio channel array definitions
+Date:   Fri, 23 Jun 2023 05:20:11 +0300
+Message-ID: <20230623022334.791026-4-gnstark@sberdevices.ru>
 X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230623022334.791026-1-gnstark@sberdevices.ru>
+References: <20230623022334.791026-1-gnstark@sberdevices.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -62,29 +64,71 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: George Stark <GNStark@sberdevices.ru>
+Instead of having several similar channel arrays which are different
+only by one item unite the arrays and put the unique item in the end.
 
-Hello Andy
+Signed-off-by: George Stark <GNStark@sberdevices.ru>
+---
+ drivers/iio/adc/meson_saradc.c | 31 +++++++------------------------
+ 1 file changed, 7 insertions(+), 24 deletions(-)
 
-Thanks for review.
-
-Changelog:
-v1->v2:
-split refactoring patch [1] into 4 smaller patches, fix comment style
-
-[1] https://lore.kernel.org/lkml/20230621062715.455652-2-gnstark@sberdevices.ru/
-
-George Stark (6):
-  meson saradc: move enums declaration before variables declaration
-  meson saradc: move meson_sar_adc_set_chan7_mux routine upper
-  meson saradc: unite iio channel array definitions
-  meson saradc: add enum for iio channel array indexes
-  meson saradc: add channel labels
-  meson saradc: support reading from channel7 mux inputs
-
- drivers/iio/adc/meson_saradc.c | 164 +++++++++++++++++++++++----------
- 1 file changed, 114 insertions(+), 50 deletions(-)
-
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index 6e69b40b3309..ffd4de950a63 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -189,9 +189,8 @@
+ 	.datasheet_name = "SAR_ADC_CH"#_chan,				\
+ }
+ 
+-#define MESON_SAR_ADC_TEMP_CHAN(_chan) {				\
++#define MESON_SAR_ADC_TEMP_CHAN() {					\
+ 	.type = IIO_TEMP,						\
+-	.channel = _chan,						\
+ 	.address = MESON_SAR_ADC_VOLTAGE_AND_TEMP_CHANNEL,		\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
+ 				BIT(IIO_CHAN_INFO_AVERAGE_RAW),		\
+@@ -234,19 +233,7 @@ static const struct iio_chan_spec meson_sar_adc_iio_channels[] = {
+ 	MESON_SAR_ADC_CHAN(6),
+ 	MESON_SAR_ADC_CHAN(7),
+ 	IIO_CHAN_SOFT_TIMESTAMP(8),
+-};
+-
+-static const struct iio_chan_spec meson_sar_adc_and_temp_iio_channels[] = {
+-	MESON_SAR_ADC_CHAN(0),
+-	MESON_SAR_ADC_CHAN(1),
+-	MESON_SAR_ADC_CHAN(2),
+-	MESON_SAR_ADC_CHAN(3),
+-	MESON_SAR_ADC_CHAN(4),
+-	MESON_SAR_ADC_CHAN(5),
+-	MESON_SAR_ADC_CHAN(6),
+-	MESON_SAR_ADC_CHAN(7),
+-	MESON_SAR_ADC_TEMP_CHAN(8),
+-	IIO_CHAN_SOFT_TIMESTAMP(9),
++	MESON_SAR_ADC_TEMP_CHAN(), /* must be the last item */
+ };
+ 
+ struct meson_sar_adc_param {
+@@ -1242,15 +1229,11 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
+ 			return ret;
+ 	}
+ 
+-	if (priv->temperature_sensor_calibrated) {
+-		indio_dev->channels = meson_sar_adc_and_temp_iio_channels;
+-		indio_dev->num_channels =
+-			ARRAY_SIZE(meson_sar_adc_and_temp_iio_channels);
+-	} else {
+-		indio_dev->channels = meson_sar_adc_iio_channels;
+-		indio_dev->num_channels =
+-			ARRAY_SIZE(meson_sar_adc_iio_channels);
+-	}
++	indio_dev->channels = meson_sar_adc_iio_channels;
++	indio_dev->num_channels = ARRAY_SIZE(meson_sar_adc_iio_channels);
++	/* last item is temp channel */
++	if (!priv->temperature_sensor_calibrated)
++		indio_dev->num_channels--;
+ 
+ 	ret = meson_sar_adc_init(indio_dev);
+ 	if (ret)
 -- 
 2.38.4
 
