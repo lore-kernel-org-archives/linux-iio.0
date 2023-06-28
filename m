@@ -2,135 +2,121 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16479EB64DC
-	for <linux-iio@archiver.kernel.org>; Tue, 27 Jun 2023 23:19:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2607EB64DA
+	for <linux-iio@archiver.kernel.org>; Wed, 28 Jun 2023 10:12:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbjF0XTK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 27 Jun 2023 19:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41548 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229748AbjF0XTJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 27 Jun 2023 19:19:09 -0400
-Received: from mx1.sberdevices.ru (mx2.sberdevices.ru [45.89.224.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55751BEF;
-        Tue, 27 Jun 2023 16:19:06 -0700 (PDT)
-Received: from p-infra-ksmg-sc-msk02 (localhost [127.0.0.1])
-        by mx1.sberdevices.ru (Postfix) with ESMTP id 14E9D120006;
-        Wed, 28 Jun 2023 01:40:32 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru 14E9D120006
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1687905632;
-        bh=rc3qX8KRQTMzSGALx1FQDUphrLTDt4aHKYVi/7eAovo=;
-        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:From;
-        b=RiCvJHIQcUHyD3+08SlE+wff9SKwWNrVUEcTebeiiBCKgiBImZhpVA8/z+rhDvDJB
-         Omn712+V3UtH0zMfFMBNoXQSNROiKOEmLER0NG82SrchtYXfCIw2V8Q/MwVsKMDiNL
-         C0HTeU/qkKUQQGJQGUHgOzyFoWfFbax4IYEQWEp2FAGtjwt5rQHqc/esznBU/m/qcT
-         HB2QGgXAjETU+VitQD5mtV/amUcxZHrcjVERE8YKadPUpn4/lD8jqqoZr/8rpZIOD/
-         qHaSytlb6W2iNxyaMW9TAlQEyyYtvfBLubOBZv/8H1u8IiUfjfHVwf2Qu9INe6M+ej
-         tqiJ8slg47o4w==
-Received: from p-i-exch-sc-m01.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1.sberdevices.ru (Postfix) with ESMTPS;
-        Wed, 28 Jun 2023 01:40:30 +0300 (MSK)
-Received: from localhost.localdomain (100.64.160.123) by
- p-i-exch-sc-m01.sberdevices.ru (172.16.192.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.30; Wed, 28 Jun 2023 01:39:34 +0300
-From:   George Stark <gnstark@sberdevices.ru>
-To:     <jic23@kernel.org>, <lars@metafoo.de>, <neil.armstrong@linaro.org>,
-        <khilman@baylibre.com>, <jbrunet@baylibre.com>,
-        <martin.blumenstingl@googlemail.com>,
-        <andriy.shevchenko@linux.intel.com>, <nuno.sa@analog.com>,
-        <gnstark@sberdevices.ru>
-CC:     <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-amlogic@lists.infradead.org>, <kernel@sberdevices.ru>,
-        George Stark <GNStark@sberdevices.ru>
-Subject: [PATCH v3 2/5] meson saradc: move meson_sar_adc_set_chan7_mux routine upper
-Date:   Wed, 28 Jun 2023 01:37:15 +0300
-Message-ID: <20230627224017.1724097-3-gnstark@sberdevices.ru>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230627224017.1724097-1-gnstark@sberdevices.ru>
+        id S230423AbjF1KMB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 28 Jun 2023 06:12:01 -0400
+Received: from mga06b.intel.com ([134.134.136.31]:18087 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231166AbjF1KGI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 28 Jun 2023 06:06:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687946768; x=1719482768;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=D9/HaLrYlCtEllZMLsE+qnE2OoNhKXG87x9IvttFtFM=;
+  b=XFXbIRdVNZn0eBZ5+Wjv5zAL/SsMaYwsS+Bc0y10MwZo/U9A9H9ZVuQd
+   kfmtBysihWZIxujQQ9Xu6dm153YNE+Nb7zDreHZxCnqh7OAsSrwosjjhJ
+   jpYZGJNs8l9b5bGV9qAn6e0kf5oFTIst5kQ1qzHwFefCoo47RBrxqD9Kh
+   zKVyZ5qPI/e5THdq4KU4rxJNkjT/GnF14dQTrVhciaaxI04yc2Ja2RyQz
+   oglPjWrxQyiHmYXqn+Z8zTLVDws0mOMsPmh2zRbm8INebHwBjui6PE7CI
+   VKvaP7ROSjbtTpNX68tt9nqPwdlH4DL6TcVFEYqyjR3rDATE/bbjD2lV8
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10754"; a="425476475"
+X-IronPort-AV: E=Sophos;i="6.01,165,1684825200"; 
+   d="scan'208";a="425476475"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2023 03:06:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10754"; a="963538182"
+X-IronPort-AV: E=Sophos;i="6.01,165,1684825200"; 
+   d="scan'208";a="963538182"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga006.fm.intel.com with ESMTP; 28 Jun 2023 03:06:02 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qES3k-000YPx-1a;
+        Wed, 28 Jun 2023 13:06:00 +0300
+Date:   Wed, 28 Jun 2023 13:06:00 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     George Stark <gnstark@sberdevices.ru>
+Cc:     jic23@kernel.org, lars@metafoo.de, neil.armstrong@linaro.org,
+        khilman@baylibre.com, jbrunet@baylibre.com,
+        martin.blumenstingl@googlemail.com, nuno.sa@analog.com,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        kernel@sberdevices.ru
+Subject: Re: [PATCH v3 5/5] meson saradc: support reading from channel 7 mux
+ inputs
+Message-ID: <ZJwGCNA+ZURri24i@smile.fi.intel.com>
 References: <20230627224017.1724097-1-gnstark@sberdevices.ru>
+ <20230627224017.1724097-6-gnstark@sberdevices.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [100.64.160.123]
-X-ClientProxiedBy: p-i-exch-sc-m01.sberdevices.ru (172.16.192.107) To
- p-i-exch-sc-m01.sberdevices.ru (172.16.192.107)
-X-KSMG-Rule-ID: 10
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Lua-Profiles: 178297 [Jun 27 2023]
-X-KSMG-AntiSpam-Version: 5.9.59.0
-X-KSMG-AntiSpam-Envelope-From: GNStark@sberdevices.ru
-X-KSMG-AntiSpam-Rate: 0
-X-KSMG-AntiSpam-Status: not_detected
-X-KSMG-AntiSpam-Method: none
-X-KSMG-AntiSpam-Auth: dkim=none
-X-KSMG-AntiSpam-Info: LuaCore: 517 517 b0056c19d8e10afbb16cb7aad7258dedb0179a79, {Tracking_from_domain_doesnt_match_to}, p-i-exch-sc-m01.sberdevices.ru:7.1.1,5.0.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;sberdevices.ru:7.1.1,5.0.1, FromAlignment: s, {Tracking_white_helo}, ApMailHostAddress: 100.64.160.123
-X-MS-Exchange-Organization-SCL: -1
-X-KSMG-AntiSpam-Interceptor-Info: scan successful
-X-KSMG-AntiPhishing: Clean
-X-KSMG-LinksScanning: Clean
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.0.1.6960, bases: 2023/06/27 18:27:00 #21588965
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230627224017.1724097-6-gnstark@sberdevices.ru>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Move meson_sar_adc_set_chan7_mux routine upper.
+On Wed, Jun 28, 2023 at 01:37:18AM +0300, George Stark wrote:
+> Add iio channel for every channel 7 mux input.
+> Meson saradc channel 7 is connected to a mux that can switch channel
+> input to well-known sources like Vdd, GND and several Vdd dividers.
 
-Signed-off-by: George Stark <GNStark@sberdevices.ru>
----
- drivers/iio/adc/meson_saradc.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+...
 
-diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index af38d95bd504..6e69b40b3309 100644
---- a/drivers/iio/adc/meson_saradc.c
-+++ b/drivers/iio/adc/meson_saradc.c
-@@ -338,6 +338,19 @@ static int meson_sar_adc_wait_busy_clear(struct iio_dev *indio_dev)
- 					       1, 10000);
- }
- 
-+static void meson_sar_adc_set_chan7_mux(struct iio_dev *indio_dev,
-+					enum meson_sar_adc_chan7_mux_sel sel)
-+{
-+	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
-+	u32 regval;
-+
-+	regval = FIELD_PREP(MESON_SAR_ADC_REG3_CTRL_CHAN7_MUX_SEL_MASK, sel);
-+	regmap_update_bits(priv->regmap, MESON_SAR_ADC_REG3,
-+			   MESON_SAR_ADC_REG3_CTRL_CHAN7_MUX_SEL_MASK, regval);
-+
-+	usleep_range(10, 20);
-+}
-+
- static int meson_sar_adc_read_raw_sample(struct iio_dev *indio_dev,
- 					 const struct iio_chan_spec *chan,
- 					 int *val)
-@@ -434,19 +447,6 @@ static void meson_sar_adc_enable_channel(struct iio_dev *indio_dev,
- 	}
- }
- 
--static void meson_sar_adc_set_chan7_mux(struct iio_dev *indio_dev,
--					enum meson_sar_adc_chan7_mux_sel sel)
--{
--	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
--	u32 regval;
--
--	regval = FIELD_PREP(MESON_SAR_ADC_REG3_CTRL_CHAN7_MUX_SEL_MASK, sel);
--	regmap_update_bits(priv->regmap, MESON_SAR_ADC_REG3,
--			   MESON_SAR_ADC_REG3_CTRL_CHAN7_MUX_SEL_MASK, regval);
--
--	usleep_range(10, 20);
--}
--
- static void meson_sar_adc_start_sample_engine(struct iio_dev *indio_dev)
- {
- 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
+> +static enum meson_sar_adc_chan7_mux_sel chan7_mux_values[] = {
+> +	CHAN7_MUX_VSS,
+> +	CHAN7_MUX_VDD_DIV4,
+> +	CHAN7_MUX_VDD_DIV2,
+> +	CHAN7_MUX_VDD_MUL3_DIV4,
+> +	CHAN7_MUX_VDD,
+> +};
+> +
+> +static const char * const chan7_mux_names[] = {
+> +	"gnd",
+> +	"0.25vdd",
+> +	"0.5vdd",
+> +	"0.75vdd",
+> +	"vdd",
+
+For the sake of robustness you can assign like this
+
+	[CHAN7_MUX_VDD_DIV2] = "0.5vdd",
+
+>  };
+
+...
+
+> -	if (chan->type == IIO_VOLTAGE)
+> -		return sprintf(label, "channel-%d\n", chan->channel);
+> +	if (chan->type == IIO_VOLTAGE) {
+
+> +		if (chan->channel <= NUM_CHAN_7)
+
+I believe you can get rid of this conditional and make diff less ping-pong-ish,
+  see below.
+
+> +			return sprintf(label, "channel-%d\n", chan->channel);
+> +		if (chan->channel >= NUM_MUX_0_VSS)
+> +			return sprintf(label, "%s\n",
+> +				chan7_mux_names[chan->channel - NUM_MUX_0_VSS]);
+> +	}
+
+
+	if (chan->type == IIO_VOLTAGE && chan->channel >= NUM_MUX_0_VSS)
+		return sprintf(label, "%s\n", chan7_mux_names[chan->channel - NUM_MUX_0_VSS]);
+
+	if (chan->type == IIO_VOLTAGE)
+		return sprintf(label, "channel-%d\n", chan->channel);
+
+
 -- 
-2.38.4
+With Best Regards,
+Andy Shevchenko
+
 
