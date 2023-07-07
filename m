@@ -2,147 +2,107 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9254DC0015E
-	for <linux-iio@archiver.kernel.org>; Fri,  7 Jul 2023 15:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 013E7C0015E
+	for <linux-iio@archiver.kernel.org>; Fri,  7 Jul 2023 15:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232740AbjGGPdp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 7 Jul 2023 11:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
+        id S231962AbjGGPpJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 7 Jul 2023 11:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230443AbjGGPdj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Jul 2023 11:33:39 -0400
-Received: from mx1.sberdevices.ru (mx2.sberdevices.ru [45.89.224.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803D12123;
-        Fri,  7 Jul 2023 08:33:35 -0700 (PDT)
-Received: from p-infra-ksmg-sc-msk02 (localhost [127.0.0.1])
-        by mx1.sberdevices.ru (Postfix) with ESMTP id A0397120010;
-        Fri,  7 Jul 2023 18:33:32 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru A0397120010
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1688744012;
-        bh=GKtM0bSwk3y4gBkptV+v8XDqcrZiJgzslOcrYoAtv4g=;
-        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:From;
-        b=W/Cq9WaeaAXXAZoG/ni/YfrW58kcWRQRFU0JbkcrxG/FLtQe3jOm4CZnU1duCNeQ6
-         AhC5Wg7fuMyWih0PBLFsi6a+RkDLN4i86dsV/HXhfQ4FQ0eIjBemzWVd8kgNRckn7D
-         dYWUvQbv6a8VNl9FYL59Zkigb+GKZLnAy+UqdNusD9F8PvBnT68wB5wqX8QZWV7JDJ
-         /BKCNdj2usNvEbDum2Up63ybTXKtcTkCMVTrL9yaENvcqOl3TPc3OcgPlO+cr9HIy8
-         SjdqWeCoRlAiznHkcK1pANvgi/UDFq9MX9NvbN/rFs2jU3wUtzYFhx/OkjcH4UxTD/
-         fFmFvTScKBSfA==
-Received: from p-i-exch-sc-m01.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1.sberdevices.ru (Postfix) with ESMTPS;
-        Fri,  7 Jul 2023 18:33:32 +0300 (MSK)
-Received: from localhost.localdomain (100.64.160.123) by
- p-i-exch-sc-m01.sberdevices.ru (172.16.192.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.30; Fri, 7 Jul 2023 18:33:15 +0300
-From:   George Stark <gnstark@sberdevices.ru>
-To:     <jic23@kernel.org>, <lars@metafoo.de>, <neil.armstrong@linaro.org>,
-        <khilman@baylibre.com>, <jbrunet@baylibre.com>,
-        <martin.blumenstingl@googlemail.com>,
-        <andriy.shevchenko@linux.intel.com>, <nuno.sa@analog.com>,
-        <gnstark@sberdevices.ru>
-CC:     <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-amlogic@lists.infradead.org>, <kernel@sberdevices.ru>,
-        George Stark <GNStark@sberdevices.ru>
-Subject: [PATCH v4 0/6] iio: adc: meson: add iio channels to read channel 7 mux inputs
-Date:   Fri, 7 Jul 2023 18:27:37 +0300
-Message-ID: <20230707153322.114302-1-gnstark@sberdevices.ru>
-X-Mailer: git-send-email 2.41.0
+        with ESMTP id S229458AbjGGPpI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Jul 2023 11:45:08 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3859F173B;
+        Fri,  7 Jul 2023 08:45:07 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 367CH9mW027393;
+        Fri, 7 Jul 2023 17:44:37 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=UirHfJWJ0M0c3P66CSNWUmzBZIs0e0lzSHowOTIQOxY=;
+ b=R077onV69jpX15gfnwED6gCxOl6yExQaqxA53M7kAUStTuqI6BK8nT5z07EXtUEmHolY
+ riyqdNY+iqw2vdORFsm8Ff3OR9V6cs5mzg/rbN1iDNyCpDtaXAmAKIeIylrkc1PkUjmO
+ hchsdwamHlynmEL1RY40fiFNk47LZKTBA5P1Qhnz+JMV18+Ew+dTtXCkzH1eRGffvA8x
+ wlSz5XaqZE2Y2se0KTE7WNPLGB6T8d3cDevC2/gA7JAHKnptpGkPK72PlMBcPaae7E88
+ vBYPyaIvZL1KHTdsxqUau3JWVd60dpGsiUNHy8ji7tFOVFiy85DSPwi1zOkp0W8r83d2 SA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3rpjjtsepn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 07 Jul 2023 17:44:37 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 39181100050;
+        Fri,  7 Jul 2023 17:44:36 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0FC1C22A6F1;
+        Fri,  7 Jul 2023 17:44:36 +0200 (CEST)
+Received: from [10.201.21.121] (10.201.21.121) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Fri, 7 Jul
+ 2023 17:44:34 +0200
+Message-ID: <c6533f17-6100-5901-7281-256bff5db773@foss.st.com>
+Date:   Fri, 7 Jul 2023 17:44:34 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [100.64.160.123]
-X-ClientProxiedBy: p-i-exch-sc-m01.sberdevices.ru (172.16.192.107) To
- p-i-exch-sc-m01.sberdevices.ru (172.16.192.107)
-X-KSMG-Rule-ID: 10
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Lua-Profiles: 178491 [Jul 07 2023]
-X-KSMG-AntiSpam-Version: 5.9.59.0
-X-KSMG-AntiSpam-Envelope-From: GNStark@sberdevices.ru
-X-KSMG-AntiSpam-Rate: 0
-X-KSMG-AntiSpam-Status: not_detected
-X-KSMG-AntiSpam-Method: none
-X-KSMG-AntiSpam-Auth: dkim=none
-X-KSMG-AntiSpam-Info: LuaCore: 520 520 ccb018a655251011855942a2571029252d3d69a2, {Tracking_uf_ne_domains}, {Tracking_from_domain_doesnt_match_to}, lore.kernel.org:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;sberdevices.ru:5.0.1,7.1.1;p-i-exch-sc-m01.sberdevices.ru:5.0.1,7.1.1;100.64.160.123:7.1.2, FromAlignment: s, {Tracking_white_helo}, ApMailHostAddress: 100.64.160.123
-X-MS-Exchange-Organization-SCL: -1
-X-KSMG-AntiSpam-Interceptor-Info: scan successful
-X-KSMG-AntiPhishing: Clean, bases: 2023/07/07 14:34:00
-X-KSMG-LinksScanning: Clean, bases: 2023/07/07 14:35:00
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.0.1.6960, bases: 2023/07/07 03:24:00 #21575635
-X-KSMG-AntiVirus-Status: Clean, skipped
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH 05/10] firewall: introduce stm32_firewall framework
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <Oleksii_Moisieiev@epam.com>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
+        <jic23@kernel.org>, <olivier.moysan@foss.st.com>,
+        <arnaud.pouliquen@foss.st.com>, <mchehab@kernel.org>,
+        <fabrice.gasnier@foss.st.com>, <andi.shyti@kernel.org>,
+        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <hugues.fruchet@foss.st.com>,
+        <lee@kernel.org>, <will@kernel.org>, <catalin.marinas@arm.com>,
+        <arnd@kernel.org>, <richardcochran@gmail.com>,
+        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
+References: <20230705172759.1610753-1-gatien.chevallier@foss.st.com>
+ <20230705172759.1610753-6-gatien.chevallier@foss.st.com>
+ <2023070748-false-enroll-e5dc@gregkh>
+ <febd65e1-68c7-f9d8-c8a4-3c3e88f15f3e@foss.st.com>
+ <2023070744-superjet-slum-1772@gregkh>
+From:   Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
+In-Reply-To: <2023070744-superjet-slum-1772@gregkh>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.201.21.121]
+X-ClientProxiedBy: SHFCAS1NODE1.st.com (10.75.129.72) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-07-07_10,2023-07-06_02,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: George Stark <GNStark@sberdevices.ru>
 
-Changelog:
 
-v1->v2:
-split refactoring patch [1] into 4 smaller patches, fix comment style
+On 7/7/23 17:10, Greg KH wrote:
+> On Fri, Jul 07, 2023 at 04:00:23PM +0200, Gatien CHEVALLIER wrote:
+>> I'll change to (GPL-2.0-only OR BSD-3-Clause) :)
+> 
+> If you do that, I'll require a lawyer to sign off on it to verify that
+> you all know EXACTLY the work involved in dealing with dual-licensed
+> kernel code.  Sorry, licenses aren't jokes.
 
-[1] https://lore.kernel.org/lkml/20230621062715.455652-2-gnstark@sberdevices.ru/
+I was worried about the interactions with software running on BSD
+license, hence my (poorly written) proposal. Looking back at it
+there's no good reason to use a dual-license here.
+GPL-2.0-only is fine.
 
-v2->v3:
-remove patch 'meson saradc: unite iio channel array definitions' [1] after discussion
-
-patch 'meson saradc: add enum for iio channel array indexes'
-  - change enum items prefix from INDEX_ to NUM_ since name 'channel index' is
-  more relevant to channel array index in iio world and with 2 tables our array index is
-  not always equal to channel number
-  - resolve conflicts after deleting [1]
-  - update commit message, previous patch [2]
-  - return channel number for temp channel. It wasn't used and isn't used currently
-  but may need later
-
-patch meson saradc: support reading from channel 7 mux inputs
-  - resolve conflicts after deleting [1]
-  - update commit message, previous patch [3]
-  - add routine find_channel_by_num to get channel by channel number
-
-[1] https://lore.kernel.org/lkml/20230623022334.791026-4-gnstark@sberdevices.ru/
-[2] https://lore.kernel.org/lkml/20230623022334.791026-5-gnstark@sberdevices.ru/
-[3] https://lore.kernel.org/lkml/20230623022334.791026-7-gnstark@sberdevices.ru/
-
-v3->v4:
-add new patch 'iio: adc: meson: remove unused timestamp channel' [1]
-
-patch 'iio: adc: meson: move enums declaration before'
-	update commit message, previous patch [2]
-patch 'iio: adc: meson: move meson_sar_adc_set_chan7_mux'
-	update commit message, previous patch [3]
-patch 'iio: adc: meson: add enum for iio channel numbers'
-	update commit message, previous patch [4]
-patch 'iio: adc: meson: add channel labels'
-	update commit message, previous patch [5]
-	change sprintf(label, "%s\n", "temp-sensor") to sprintf(label, "temp-sensor\n")
-patch 'iio: adc: meson: support reading from channel 7 mux'
-	rewrite enum meson_sar_adc_chan7_mux_sel definition and
-		read_label routine proposed by Andy [7], previous patch [6]
-
-[1] https://lore.kernel.org/lkml/20230705160413.000062e7@Huawei.com/
-[2] https://lore.kernel.org/lkml/20230627224017.1724097-2-gnstark@sberdevices.ru/
-[3] https://lore.kernel.org/lkml/20230627224017.1724097-3-gnstark@sberdevices.ru/
-[4] https://lore.kernel.org/lkml/20230627224017.1724097-4-gnstark@sberdevices.ru/
-[5] https://lore.kernel.org/lkml/20230627224017.1724097-5-gnstark@sberdevices.ru/
-[6] https://lore.kernel.org/lkml/20230627224017.1724097-6-gnstark@sberdevices.ru/
-[7] https://lore.kernel.org/lkml/ZJwGCNA+ZURri24i@smile.fi.intel.com/
-
-George Stark (6):
-  iio: adc: meson: remove unused timestamp channel
-  iio: adc: meson: move enums declaration before variables declaration
-  iio: adc: meson: move meson_sar_adc_set_chan7_mux routine upper
-  iio: adc: meson: add enum for iio channel numbers
-  iio: adc: meson: add channel labels
-  iio: adc: meson: support reading from channel 7 mux inputs
-
- drivers/iio/adc/meson_saradc.c | 173 +++++++++++++++++++++++++--------
- 1 file changed, 134 insertions(+), 39 deletions(-)
-
--- 
-2.38.4
-
+> 
+> thanks,
+> 
+> greg k-h
