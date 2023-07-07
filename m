@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C36F8C05051
-	for <linux-iio@archiver.kernel.org>; Fri,  7 Jul 2023 12:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C55A8C00528
+	for <linux-iio@archiver.kernel.org>; Fri,  7 Jul 2023 12:30:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232391AbjGGMap (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 7 Jul 2023 08:30:45 -0400
+        id S230007AbjGGMar (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 7 Jul 2023 08:30:47 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232470AbjGGMam (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Jul 2023 08:30:42 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21BE211E
-        for <linux-iio@vger.kernel.org>; Fri,  7 Jul 2023 05:30:34 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id 38308e7fff4ca-2b6fdaf6eefso28032261fa.0
-        for <linux-iio@vger.kernel.org>; Fri, 07 Jul 2023 05:30:34 -0700 (PDT)
+        with ESMTP id S232589AbjGGMao (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Jul 2023 08:30:44 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA3B32680
+        for <linux-iio@vger.kernel.org>; Fri,  7 Jul 2023 05:30:36 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id 38308e7fff4ca-2b6b98ac328so27485011fa.0
+        for <linux-iio@vger.kernel.org>; Fri, 07 Jul 2023 05:30:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1688733033; x=1691325033;
+        d=linaro.org; s=google; t=1688733035; x=1691325035;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EoTvC+FrPkguSl4Zm3LJi2fZKp9GwIiJLIM/2x+q44k=;
-        b=XMQLVDUgOs2zAp/mtYLxOzGQrGh+Aw5UJI2Q3sUibZPDbcZ5xYw3nqyw9GVJb/wOpz
-         MTzitgX8FVLTQb9+BetAsjf4btXJOGj2caP/ID0WDhc2oxsiqLTHeZjOEnhaVYoZCBKM
-         OrERRlbCJPOHEjl2k88eqwvuv3y22+zqrWiYcl2es8tndVFUz0Vj5k0+vBZPUEYWfMy8
-         4DHFDoRSZO72UN8twAneGiG+y7yLb6McBRIJd6DKF9RA+kvEEcG+ERQARlpT3yaQRa6Q
-         UftP1af1HQnHnulKiJoU0fU8G1XIvTBj4wanSD3Q3KbopKW5MNvMmwW9GF4amNFYYe76
-         st8A==
+        bh=yTSBGkbCdTiuLImTC/+Q/VqyS/BNdIlHaPBfQkN8Fbg=;
+        b=X0mHk2nwAm0xIRsxPWOcmqo74FEyr3W9KrBwXBbmVCUzelHpCfL1boyOKefeLb65Bv
+         ULwuwvhMr1F8s0FkXw6VyYHTbQnWvrFcPcPc6N0/xA5CMZGwpZ9WSS42MFAbfA+yw7m7
+         CBkqigP2cyugtdnPoB0tEbfPHmef/hhss0L7u51x7bWHO2dHYCP2D7lCIZeTVUQ5IicA
+         LmjG7PzU/hGl/JDHAZy5204VNiJC01PD73apE6gYM06zSvQx6vJnRDPMJzItm12lWVx1
+         HtSMSzCRWFmN+GWWKv5KFgKTyPWOf3lpPzadPFBxFtws0Ca2UPa/6/ZjeHqIVWNyrYT2
+         yEFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688733033; x=1691325033;
+        d=1e100.net; s=20221208; t=1688733035; x=1691325035;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=EoTvC+FrPkguSl4Zm3LJi2fZKp9GwIiJLIM/2x+q44k=;
-        b=IAjWHFvdlgqK9tYsKo/XJQ38ZWieWyO9EUEmX9Di0a11FH/m9sGknqAsbZc14L10kZ
-         WWeUvUsLQF2Wu4u10y9lbzUDBVhuKUoETUisL7eWaP2gyxBPClUeP3UFP/0Xapahp+DT
-         bQPC8yRFNlpdl9UGZMMFiCFBlAYiHfqpawqsLDDWAaMVtbK3CQr5/F18GJX3yuPM6FGy
-         TbjzZomKSSDvsQzwScSRx8+TotuRENXZGLJLE5TOYAZPRI5Cs/OYmAGdTNgDEUHuHwb2
-         kM3hpxqQLQPOf+Qmu0RJq6XU8cfDtnxtFaKEFQzR0AqtmvWovTz1TA+h8p7LUr/6pV/T
-         B8rg==
-X-Gm-Message-State: ABy/qLbhD8Bh0jIXd4ikGfPkq6HJ5Qkz7f7gaSu4ClEzEVIZvu8n0TIE
-        YIV6DqQ2miifTuv1cNYuOeqmOg==
-X-Google-Smtp-Source: APBJJlGVBuGbHNDcfEk7nBuPYPp7akBZvaYr3NoC9XntND/cnztquHhDIBi80w3XbOqF1UgzrQ6k1g==
-X-Received: by 2002:a2e:8611:0:b0:2b6:9c1d:dea3 with SMTP id a17-20020a2e8611000000b002b69c1ddea3mr3760036lji.2.1688733033256;
-        Fri, 07 Jul 2023 05:30:33 -0700 (PDT)
+        bh=yTSBGkbCdTiuLImTC/+Q/VqyS/BNdIlHaPBfQkN8Fbg=;
+        b=ROhiHsnTD7h9LMu802QTG8DtXD6j4/C4iTxpGRwM7jeDwoslXBtAM7fc4pzJMENli0
+         1zmpl1H1Yp12LyveHBOEenraZlCkZZvOQ7TzOme0dqg7YGafSB+BBGrYTgXYIwX7o9jB
+         /vh0mK9v7osj6QPwPw4nlQHQLrILuF0blChkrvU0hbtTGaY3IflxTCyX3Z9WAZpU54FQ
+         FzUm4DIE5rpgptqNguQPPVuF2XAp+LaRyjJy8LAF6dygXwQqcfCW+v6ffU/glhAieFQ7
+         GQ7o5EnHhvnhCSb+UVhkDEnxQ2ZXCf9LpWg1vi3jDL/UgscXDlQuNfk28yORgiEw2Sv7
+         MbDA==
+X-Gm-Message-State: ABy/qLa3piABEmlQlZXzmhOWqA/kB9RR5aluFyOpI+vh0ZR6fFTNkaVX
+        JCh4JRL9qwvhSecl41iAgmPD+A==
+X-Google-Smtp-Source: APBJJlFy3tzD5h45ARrNTXDkqtUYWCDJ2mAZYtRLy7+eWRoCdJFboNx6hUgnpec6EBha2RvS1liMdQ==
+X-Received: by 2002:a2e:9d04:0:b0:2b6:e8a0:a7f8 with SMTP id t4-20020a2e9d04000000b002b6e8a0a7f8mr3481998lji.31.1688733034716;
+        Fri, 07 Jul 2023 05:30:34 -0700 (PDT)
 Received: from eriador.lan (dzdqv0yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::8a5])
-        by smtp.gmail.com with ESMTPSA id l5-20020a2e8685000000b002b6ee99fff2sm756803lji.34.2023.07.07.05.30.32
+        by smtp.gmail.com with ESMTPSA id l5-20020a2e8685000000b002b6ee99fff2sm756803lji.34.2023.07.07.05.30.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jul 2023 05:30:32 -0700 (PDT)
+        Fri, 07 Jul 2023 05:30:34 -0700 (PDT)
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <andersson@kernel.org>,
@@ -57,12 +57,10 @@ To:     Andy Gross <agross@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org,
-        Neil Armstrong <neil.armstrong@linaro.org>
-Subject: [PATCH v2 6/8] arm64: dts: qcom: sm8450-hdk: remove pmr735b PMIC inclusion
-Date:   Fri,  7 Jul 2023 15:30:25 +0300
-Message-Id: <20230707123027.1510723-7-dmitry.baryshkov@linaro.org>
+        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+Subject: [PATCH v2 8/8] arm64: dts: qcom: sm8450-hdk: add ADC-TM thermal zones
+Date:   Fri,  7 Jul 2023 15:30:27 +0300
+Message-Id: <20230707123027.1510723-9-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230707123027.1510723-1-dmitry.baryshkov@linaro.org>
 References: <20230707123027.1510723-1-dmitry.baryshkov@linaro.org>
@@ -72,28 +70,298 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The 8450-HDK doesn't use PMR735B PMIC. Drop its inclusion to remove the
-warning during the HDK bootup.
+Add thermal zones controlled through the ADC-TM (ADC thermal monitoring)
+PMIC interface. This includes several onboard sensors and the XO thermal
+sensor.
 
-Fixes: 30464456a1ea ("arm64: dts: qcom: sm8450-hdk: add pmic files")
-Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sm8450-hdk.dts | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sm8450-hdk.dts | 244 ++++++++++++++++++++++++
+ 1 file changed, 244 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/sm8450-hdk.dts b/arch/arm64/boot/dts/qcom/sm8450-hdk.dts
-index bc4c125d1832..dabb7e872f38 100644
+index d07e402eaba3..4dfc964a4bb1 100644
 --- a/arch/arm64/boot/dts/qcom/sm8450-hdk.dts
 +++ b/arch/arm64/boot/dts/qcom/sm8450-hdk.dts
-@@ -14,7 +14,6 @@
- #include "pm8450.dtsi"
- #include "pmk8350.dtsi"
- #include "pmr735a.dtsi"
--#include "pmr735b.dtsi"
+@@ -133,6 +133,120 @@ pmic_glink_sbu: endpoint {
+ 		};
+ 	};
  
- / {
- 	model = "Qualcomm Technologies, Inc. SM8450 HDK";
++	thermal-zones {
++		camera-thermal {
++			polling-delay-passive = <250>;
++			polling-delay = <0>;
++			thermal-sensors = <&pmk8350_adc_tm 2>;
++
++			trips {
++				active-config0 {
++					temperature = <75000>;
++					hysteresis = <4000>;
++					type = "passive";
++				};
++			};
++		};
++
++		rear-tof-thermal {
++			polling-delay-passive = <250>;
++			polling-delay = <0>;
++			thermal-sensors = <&pmk8350_adc_tm 5>;
++
++			trips {
++				active-config0 {
++					temperature = <75000>;
++					hysteresis = <4000>;
++					type = "passive";
++				};
++			};
++		};
++
++		skin-msm-thermal {
++			polling-delay-passive = <250>;
++			polling-delay = <0>;
++			thermal-sensors = <&pmk8350_adc_tm 1>;
++
++			trips {
++				active-config0 {
++					temperature = <75000>;
++					hysteresis = <4000>;
++					type = "passive";
++				};
++			};
++		};
++
++		therm1-thermal {
++			polling-delay-passive = <250>;
++			polling-delay = <0>;
++			thermal-sensors = <&pmk8350_adc_tm 3>;
++
++			trips {
++				active-config0 {
++					temperature = <75000>;
++					hysteresis = <4000>;
++					type = "passive";
++				};
++			};
++		};
++
++		therm2-thermal {
++			polling-delay-passive = <250>;
++			polling-delay = <0>;
++			thermal-sensors = <&pmk8350_adc_tm 6>;
++
++			trips {
++				active-config0 {
++					temperature = <75000>;
++					hysteresis = <4000>;
++					type = "passive";
++				};
++			};
++		};
++
++		usb-conn-thermal {
++			polling-delay-passive = <250>;
++			polling-delay = <0>;
++			thermal-sensors = <&pmk8350_adc_tm 7>;
++
++			trips {
++				active-config0 {
++					temperature = <75000>;
++					hysteresis = <4000>;
++					type = "passive";
++				};
++			};
++		};
++
++		wide-rfc-thermal {
++			polling-delay-passive = <250>;
++			polling-delay = <0>;
++			thermal-sensors = <&pmk8350_adc_tm 4>;
++
++			trips {
++				active-config0 {
++					temperature = <75000>;
++					hysteresis = <4000>;
++					type = "passive";
++				};
++			};
++		};
++
++		xo-thermal {
++			polling-delay-passive = <0>;
++			polling-delay = <0>;
++			thermal-sensors = <&pmk8350_adc_tm 0>;
++
++			trips {
++				active-config0 {
++					temperature = <50000>;
++					hysteresis = <4000>;
++					type = "passive";
++				};
++			};
++		};
++	};
++
+ 	vph_pwr: vph-pwr-regulator {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vph_pwr";
+@@ -607,6 +721,66 @@ &pmr735a_temp_alarm {
+ 	io-channel-names = "thermal";
+ };
+ 
++&pmk8350_adc_tm {
++	status = "okay";
++
++	xo-therm@0 {
++		reg = <0>;
++		io-channels = <&pmk8350_vadc PMK8350_ADC7_AMUX_THM1_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++
++	skin-msm-therm@1 {
++		reg = <1>;
++		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++
++	camera-therm@2 {
++		reg = <2>;
++		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++
++	therm1-therm@3 {
++		reg = <3>;
++		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM3_100K_PU(1)>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++
++	wide-rfc-therm@4 {
++		reg = <4>;
++		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++
++	rear-tof-therm@5 {
++		reg = <5>;
++		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM5_100K_PU(1)>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++
++	therm2-therm@6 {
++		reg = <6>;
++		io-channels = <&pmk8350_vadc PM8350_ADC7_GPIO3_100K_PU(1)>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++
++	usb-conn-therm@7 {
++		reg = <7>;
++		io-channels = <&pmk8350_vadc PM8350B_ADC7_AMUX_THM5_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++};
++
+ &pmk8350_vadc {
+ 	status = "okay";
+ 
+@@ -615,20 +789,90 @@ channel@3 {
+ 		label = "pmk8350_die_temp";
+ 	};
+ 
++	channel@44 {
++		reg = <PMK8350_ADC7_AMUX_THM1_100K_PU>;
++		qcom,hw-settle-time = <200>;
++		qcom,ratiometric;
++		label = "pmk8350_xo_therm";
++	};
++
+ 	channel@103 {
+ 		reg = <PM8350_ADC7_DIE_TEMP(1)>;
+ 		label = "pm8350_die_temp";
+ 	};
+ 
++	channel@144 {
++		reg = <PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
++		qcom,hw-settle-time = <200>;
++		qcom,ratiometric;
++		label = "skin_msm_temp";
++	};
++
++	channel@145 {
++		reg = <PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
++		qcom,hw-settle-time = <200>;
++		qcom,ratiometric;
++		label = "camera_temp";
++	};
++
++	channel@146 {
++		reg = <PM8350_ADC7_AMUX_THM3_100K_PU(1)>;
++		qcom,hw-settle-time = <200>;
++		qcom,ratiometric;
++		label = "therm1_temp";
++	};
++
++	channel@147 {
++		reg = <PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
++		qcom,hw-settle-time = <200>;
++		qcom,ratiometric;
++		label = "wide_rfc_temp";
++	};
++
++	channel@148 {
++		reg = <PM8350_ADC7_AMUX_THM5_100K_PU(1)>;
++		qcom,hw-settle-time = <200>;
++		qcom,ratiometric;
++		label = "rear_tof_temp";
++	};
++
++	channel@14c {
++		reg = <PM8350_ADC7_GPIO3_100K_PU(1)>;
++		qcom,hw-settle-time = <200>;
++		qcom,ratiometric;
++		label = "therm2_temp";
++	};
++
+ 	channel@303 {
+ 		reg = <PM8350B_ADC7_DIE_TEMP>;
+ 		label = "pm8350b_die_temp";
+ 	};
+ 
++	channel@348 {
++		reg = <PM8350B_ADC7_AMUX_THM5_100K_PU>;
++		qcom,hw-settle-time = <200>;
++		qcom,ratiometric;
++		label = "usb_conn_temp";
++	};
++
+ 	channel@403 {
+ 		reg = <PMR735A_ADC7_DIE_TEMP>;
+ 		label = "pmr735a_die_temp";
+ 	};
++
++	channel@44a {
++		reg = <PMR735A_ADC7_GPIO1_100K_PU>;
++		qcom,hw-settle-time = <200>;
++		qcom,ratiometric;
++		label = "qtm_w_temp";
++	};
++
++	channel@44b {
++		reg = <PMR735A_ADC7_GPIO2_100K_PU>;
++		qcom,hw-settle-time = <200>;
++		qcom,ratiometric;
++		label = "qtm_n_temp";
++	};
+ };
+ 
+ &remoteproc_adsp {
 -- 
 2.40.1
 
