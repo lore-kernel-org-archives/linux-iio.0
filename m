@@ -2,42 +2,42 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EAD4EB64DC
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Jul 2023 07:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 318DFC04A6A
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Jul 2023 07:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230317AbjGHH3W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 8 Jul 2023 03:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
+        id S231249AbjGHH3o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 8 Jul 2023 03:29:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbjGHH3V (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Jul 2023 03:29:21 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD89710CE;
-        Sat,  8 Jul 2023 00:29:19 -0700 (PDT)
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3687BR1p018966;
-        Sat, 8 Jul 2023 07:28:57 GMT
+        with ESMTP id S229797AbjGHH3n (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Jul 2023 03:29:43 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F4D2125;
+        Sat,  8 Jul 2023 00:29:38 -0700 (PDT)
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36872No5032041;
+        Sat, 8 Jul 2023 07:29:26 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=qcppdkim1;
- bh=fa4crDmWzyhVad6ao5l+sFMQ4oZ2W3OiYCbVgIJlTe4=;
- b=EV/WYKUonpvdsvTuN2H4rqAmeIIV9NTaKqs0eAwdl6EMuduHK412AtdIaCVoAMQeZpUV
- ei+UBUkTelEOKqzYURqaLK+LkPNj/TanoeIgYk2t+I+SvkAJ7pNCyN7/Ra0mFvYmdTGK
- iND2MzNGyW9eVokxGLKQDqI7ter5ggqHY1BDrImqO70XRuItj91ZKLmiRqSvS1dgbxS2
- chRjBuOywcKj+INgyQ1uQiGZq7Cn4NyNRiysaVFxqYzWMWtBnHVGefWujDUaleD/QYRZ
- 8yT7qYqMfztVrSDo4DffVk5WDNioy8oOo96+JDhNi/lTBwPjTILMHwT9DJQ8dJVvZZkJ /w== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3rpyw1r6yu-1
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=qcppdkim1;
+ bh=VmmoJ9c6BEdevnXDrNmLULmLQ+ujIReym3TKv47zGDk=;
+ b=mf6f0pgx3B01wZgfC7oAbpTWYWriU4rovvEQLWs8l13Ty/qJdgZfTdCS8F0D36s7juqc
+ yVJFninYIjBQXIgxWZ+OcHeIvPiumGDUcMz5fjeLZPGdlG2bWLo/si18+DW8m445zR0c
+ lachncEEJylk0BOzBK5VR/0dbtPG2g4O18ftYgjpgYn4oKG3h0j2u1QBoeAiiL8MfB1g
+ E6/izkPVBgadkX+r7gudAr/DYrM9olcxe626OOC/VWVRjTbKPFwOwuonhjsAUVw11lcW
+ at2ZdEVVAHMLi6XfDjTPRu0DH9tLSXrmQhVA3ZZKTnt5TIWlJdc/yWMBqeNOPLmDPgf1 bQ== 
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3rq01dg6f8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 08 Jul 2023 07:28:57 +0000
+        Sat, 08 Jul 2023 07:29:26 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3687Su7V031175
+        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3687TPCg011655
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 8 Jul 2023 07:28:56 GMT
+        Sat, 8 Jul 2023 07:29:25 GMT
 Received: from hu-jprakash-hyd.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.30; Sat, 8 Jul 2023 00:28:50 -0700
+ 15.2.1118.30; Sat, 8 Jul 2023 00:29:18 -0700
 From:   Jishnu Prakash <quic_jprakash@quicinc.com>
 To:     <agross@kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linus.walleij@linaro.org>,
@@ -46,14 +46,22 @@ To:     <agross@kernel.org>, <devicetree@vger.kernel.org>,
         <quic_collinsd@quicinc.com>, <quic_kamalw@quicinc.com>,
         <quic_jestar@quicinc.com>, <marijn.suijten@somainline.org>,
         <andriy.shevchenko@linux.intel.com>,
-        <krzysztof.kozlowski@linaro.org>
-CC:     <linux-iio@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-msm-owner@vger.kernel.org>,
-        Jishnu Prakash <quic_jprakash@quicinc.com>
-Subject: [PATCH 00/11] iio: adc: Add support for QCOM SPMI PMIC5 Gen3 ADC
-Date:   Sat, 8 Jul 2023 12:58:24 +0530
-Message-ID: <20230708072835.3035398-1-quic_jprakash@quicinc.com>
+        <krzysztof.kozlowski@linaro.org>,
+        "Bjorn Andersson" <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        <cros-qcom-dts-watchers@chromium.org>,
+        <linux-arm-msm@vger.kernel.org>
+CC:     <linux-iio@vger.kernel.org>, <linux-arm-msm-owner@vger.kernel.org>,
+        "Jishnu Prakash" <quic_jprakash@quicinc.com>
+Subject: [PATCH 03/11] ARM: dts: qcom: Update devicetree for ADC7 rename for QCOM PMICs
+Date:   Sat, 8 Jul 2023 12:58:27 +0530
+Message-ID: <20230708072835.3035398-4-quic_jprakash@quicinc.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230708072835.3035398-1-quic_jprakash@quicinc.com>
+References: <20230708072835.3035398-1-quic_jprakash@quicinc.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -62,123 +70,359 @@ X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: A6t6Bn8aPGAJguQizCDwB6zn7eyy4FGG
-X-Proofpoint-ORIG-GUID: A6t6Bn8aPGAJguQizCDwB6zn7eyy4FGG
+X-Proofpoint-ORIG-GUID: GSnIKhcTzNz-171yaDpGkFD0-Sg5mHeQ
+X-Proofpoint-GUID: GSnIKhcTzNz-171yaDpGkFD0-Sg5mHeQ
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
  definitions=2023-07-08_04,2023-07-06_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- priorityscore=1501 clxscore=1011 lowpriorityscore=0 adultscore=0
- phishscore=0 mlxlogscore=839 bulkscore=0 malwarescore=0 impostorscore=0
- mlxscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxscore=0
+ priorityscore=1501 clxscore=1011 adultscore=0 mlxlogscore=971
+ malwarescore=0 lowpriorityscore=0 spamscore=0 phishscore=0 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2305260000 definitions=main-2307080065
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-PMIC5 Gen3 has a similar ADC architecture to that on PMIC5 Gen2,
-with all SW communication to ADC going through PMK8550 which
-communicates with other PMICs through PBS. The major difference is
-that the register interface used here is that of an SDAM present on
-PMK8550, rather than a dedicated ADC peripheral. There may be more than one
-SDAM used for ADC5 Gen3. Each ADC SDAM has eight channels, each of which may
-be used for either immediate reads (same functionality as previous PMIC5 and
-PMIC5 Gen2 ADC peripherals) or recurring measurements (same as PMIC5 and PMIC5
-Gen2 ADC_TM functionality). In this case, we have VADC and ADC_TM functionality
-combined into the same driver.
+The name "ADC7" needs to be replaced with the name "ADC5_GEN2"
+everywhere to match the convention used for these ADC peripherals
+on Qualcomm Technologies, Inc. PMICs. Update devicetree files for
+the corresponding name change done in bindings and driver.
 
-Patches 1-5 update the name of the previous generation of PMIC5 ADC peripherals
-from ADC7 to ADC5 Gen2, as this is the correct name and it makes more sense now
-to update it, with the addition of the latest ADC5 Gen3 peripheral support.
+Signed-off-by: Jishnu Prakash <quic_jprakash@quicinc.com>
+---
+ arch/arm64/boot/dts/qcom/pmk8350.dtsi         |  4 +-
+ arch/arm64/boot/dts/qcom/sc7280-idp.dts       |  4 +-
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi      |  4 +-
+ arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi    |  8 ++--
+ .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    | 48 +++++++++----------
+ arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi  |  2 +-
+ .../boot/dts/qcom/sm7225-fairphone-fp4.dts    |  4 +-
+ 7 files changed, 37 insertions(+), 37 deletions(-)
 
-Patches 6 and 7 add bindings and driver support respectively for ADC5 Gen3.
-
-Patches 8-11 are for an additional change, where the QCOM ADC dt-bindings files
-are moved from dt-bindings/iio to dt-bindings/iio/adc folder, as they are
-specifically for ADC devices.
-
-Jishnu Prakash (11):
-  iio: adc: Update bindings for ADC7 name used on QCOM PMICs
-  iio: adc: Update driver files for ADC7 rename for QCOM PMICs
-  ARM: dts: qcom: Update devicetree for ADC7 rename for QCOM PMICs
-  iio: adc: Update bindings to remove support for ADC7 name used on QCOM
-    PMICs
-  iio: adc: qcom-spmi-adc5: remove support for ADC7 compatible string
-  iio: adc: Add QCOM PMIC5 Gen3 ADC bindings
-  iio: adc: Add support for QCOM PMIC5 Gen3 ADC
-  dt-bindings: iio: adc: Copy QCOM ADC bindings files
-  iio: adc: Update QCOM ADC drivers for bindings path change
-  ARM: dts: qcom: Update devicetree for QCOM ADC bindings path change
-  dt-bindings: iio: remove QCOM ADC files from iio folder
-
- .../bindings/iio/adc/qcom,spmi-vadc.yaml      |  131 +-
- .../bindings/thermal/qcom-spmi-adc-tm5.yaml   |   19 +-
- arch/arm64/boot/dts/qcom/pm6125.dtsi          |    2 +-
- arch/arm64/boot/dts/qcom/pm6150.dtsi          |    2 +-
- arch/arm64/boot/dts/qcom/pm6150l.dtsi         |    2 +-
- arch/arm64/boot/dts/qcom/pm660.dtsi           |    2 +-
- arch/arm64/boot/dts/qcom/pm660l.dtsi          |    2 +-
- arch/arm64/boot/dts/qcom/pm7250b.dtsi         |    2 +-
- arch/arm64/boot/dts/qcom/pm8150.dtsi          |    2 +-
- arch/arm64/boot/dts/qcom/pm8150b.dtsi         |    2 +-
- arch/arm64/boot/dts/qcom/pm8150l.dtsi         |    2 +-
- arch/arm64/boot/dts/qcom/pm8916.dtsi          |    2 +-
- arch/arm64/boot/dts/qcom/pm8950.dtsi          |    2 +-
- arch/arm64/boot/dts/qcom/pm8953.dtsi          |    2 +-
- arch/arm64/boot/dts/qcom/pm8994.dtsi          |    2 +-
- arch/arm64/boot/dts/qcom/pm8998.dtsi          |    2 +-
- arch/arm64/boot/dts/qcom/pmi632.dtsi          |    2 +-
- arch/arm64/boot/dts/qcom/pmi8950.dtsi         |    2 +-
- arch/arm64/boot/dts/qcom/pmk8350.dtsi         |    4 +-
- arch/arm64/boot/dts/qcom/pmm8155au_1.dtsi     |    2 +-
- arch/arm64/boot/dts/qcom/pmp8074.dtsi         |    2 +-
- arch/arm64/boot/dts/qcom/pms405.dtsi          |    2 +-
- arch/arm64/boot/dts/qcom/sc7280-idp.dts       |    4 +-
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi      |    4 +-
- arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi    |    8 +-
- .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    |   48 +-
- arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi  |    2 +-
- .../boot/dts/qcom/sm7225-fairphone-fp4.dts    |    4 +-
- drivers/iio/adc/Kconfig                       |   25 +
- drivers/iio/adc/Makefile                      |    1 +
- drivers/iio/adc/qcom-spmi-adc5-gen3.c         | 1193 +++++++++++++++++
- drivers/iio/adc/qcom-spmi-adc5.c              |   93 +-
- drivers/iio/adc/qcom-spmi-vadc.c              |    2 +-
- drivers/iio/adc/qcom-vadc-common.c            |   36 +-
- .../iio/adc/qcom,spmi-adc5-gen2-pm8350.h      |   64 +
- .../iio/adc/qcom,spmi-adc5-gen2-pm8350b.h     |   89 ++
- .../iio/adc/qcom,spmi-adc5-gen2-pmk8350.h     |   47 +
- .../iio/adc/qcom,spmi-adc5-gen2-pmr735a.h     |   29 +
- .../iio/adc/qcom,spmi-adc5-gen2-pmr735b.h     |   28 +
- .../iio/adc/qcom,spmi-adc5-gen3-pm8550.h      |   48 +
- .../iio/adc/qcom,spmi-adc5-gen3-pm8550b.h     |   97 ++
- .../iio/adc/qcom,spmi-adc5-gen3-pm8550vx.h    |   20 +
- .../iio/adc/qcom,spmi-adc5-gen3-pmk8550.h     |   54 +
- .../iio/{ => adc}/qcom,spmi-vadc.h            |  209 ++-
- .../dt-bindings/iio/qcom,spmi-adc7-pm8350.h   |   63 -
- .../dt-bindings/iio/qcom,spmi-adc7-pm8350b.h  |   88 --
- .../dt-bindings/iio/qcom,spmi-adc7-pmk8350.h  |   46 -
- .../dt-bindings/iio/qcom,spmi-adc7-pmr735a.h  |   28 -
- .../dt-bindings/iio/qcom,spmi-adc7-pmr735b.h  |   28 -
- include/linux/iio/adc/qcom-vadc-common.h      |   12 +-
- 50 files changed, 2088 insertions(+), 474 deletions(-)
- create mode 100644 drivers/iio/adc/qcom-spmi-adc5-gen3.c
- create mode 100644 include/dt-bindings/iio/adc/qcom,spmi-adc5-gen2-pm8350.h
- create mode 100644 include/dt-bindings/iio/adc/qcom,spmi-adc5-gen2-pm8350b.h
- create mode 100644 include/dt-bindings/iio/adc/qcom,spmi-adc5-gen2-pmk8350.h
- create mode 100644 include/dt-bindings/iio/adc/qcom,spmi-adc5-gen2-pmr735a.h
- create mode 100644 include/dt-bindings/iio/adc/qcom,spmi-adc5-gen2-pmr735b.h
- create mode 100644 include/dt-bindings/iio/adc/qcom,spmi-adc5-gen3-pm8550.h
- create mode 100644 include/dt-bindings/iio/adc/qcom,spmi-adc5-gen3-pm8550b.h
- create mode 100644 include/dt-bindings/iio/adc/qcom,spmi-adc5-gen3-pm8550vx.h
- create mode 100644 include/dt-bindings/iio/adc/qcom,spmi-adc5-gen3-pmk8550.h
- rename include/dt-bindings/iio/{ => adc}/qcom,spmi-vadc.h (59%)
- delete mode 100644 include/dt-bindings/iio/qcom,spmi-adc7-pm8350.h
- delete mode 100644 include/dt-bindings/iio/qcom,spmi-adc7-pm8350b.h
- delete mode 100644 include/dt-bindings/iio/qcom,spmi-adc7-pmk8350.h
- delete mode 100644 include/dt-bindings/iio/qcom,spmi-adc7-pmr735a.h
- delete mode 100644 include/dt-bindings/iio/qcom,spmi-adc7-pmr735b.h
-
+diff --git a/arch/arm64/boot/dts/qcom/pmk8350.dtsi b/arch/arm64/boot/dts/qcom/pmk8350.dtsi
+index bc6297e7253e..149d2bb43d2d 100644
+--- a/arch/arm64/boot/dts/qcom/pmk8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/pmk8350.dtsi
+@@ -50,7 +50,7 @@ pon_resin: resin {
+ 		};
+ 
+ 		pmk8350_vadc: adc@3100 {
+-			compatible = "qcom,spmi-adc7";
++			compatible = "qcom,spmi-adc5-gen2";
+ 			reg = <0x3100>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -59,7 +59,7 @@ pmk8350_vadc: adc@3100 {
+ 		};
+ 
+ 		pmk8350_adc_tm: adc-tm@3400 {
+-			compatible = "qcom,adc-tm7";
++			compatible = "qcom,spmi-adc-tm5-gen2";
+ 			reg = <0x3400>;
+ 			interrupts = <PMK8350_SID 0x34 0x0 IRQ_TYPE_EDGE_RISING>;
+ 			#address-cells = <1>;
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dts b/arch/arm64/boot/dts/qcom/sc7280-idp.dts
+index 15222e92e3f5..bc65e6c6232f 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dts
+@@ -7,7 +7,7 @@
+ 
+ /dts-v1/;
+ 
+-#include <dt-bindings/iio/qcom,spmi-adc7-pmr735a.h>
++#include <dt-bindings/iio/qcom,spmi-adc5-gen2-pmr735a.h>
+ #include "sc7280-idp.dtsi"
+ #include "pmr735a.dtsi"
+ 
+@@ -74,7 +74,7 @@ &nvme_3v3_regulator {
+ 
+ &pmk8350_vadc {
+ 	pmr735a-die-temp@403 {
+-		reg = <PMR735A_ADC7_DIE_TEMP>;
++		reg = <PMR735A_ADC5_GEN2_DIE_TEMP>;
+ 		label = "pmr735a_die_temp";
+ 		qcom,pre-scaling = <1 1>;
+ 	};
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index 21027042cf13..da413694e230 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -5,7 +5,7 @@
+  * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+  */
+ 
+-#include <dt-bindings/iio/qcom,spmi-adc7-pmk8350.h>
++#include <dt-bindings/iio/qcom,spmi-adc5-gen2-pmk8350.h>
+ #include <dt-bindings/input/linux-event-codes.h>
+ #include "sc7280.dtsi"
+ #include "pm7325.dtsi"
+@@ -433,7 +433,7 @@ &pcie1_phy {
+ 
+ &pmk8350_vadc {
+ 	pmk8350-die-temp@3 {
+-		reg = <PMK8350_ADC7_DIE_TEMP>;
++		reg = <PMK8350_ADC5_GEN2_DIE_TEMP>;
+ 		label = "pmk8350_die_temp";
+ 		qcom,pre-scaling = <1 1>;
+ 	};
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+index 9137db066d9e..ed26bff7432d 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+@@ -11,8 +11,8 @@
+  * Copyright 2022 Google LLC.
+  */
+ 
+-#include <dt-bindings/iio/qcom,spmi-adc7-pmk8350.h>
+-#include <dt-bindings/iio/qcom,spmi-adc7-pmr735a.h>
++#include <dt-bindings/iio/qcom,spmi-adc5-gen2-pmk8350.h>
++#include <dt-bindings/iio/qcom,spmi-adc5-gen2-pmr735a.h>
+ #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+ #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+ 
+@@ -384,13 +384,13 @@ &pm8350c_pwm {
+ 
+ &pmk8350_vadc {
+ 	pmk8350-die-temp@3 {
+-		reg = <PMK8350_ADC7_DIE_TEMP>;
++		reg = <PMK8350_ADC5_GEN2_DIE_TEMP>;
+ 		label = "pmk8350_die_temp";
+ 		qcom,pre-scaling = <1 1>;
+ 	};
+ 
+ 	pmr735a-die-temp@403 {
+-		reg = <PMR735A_ADC7_DIE_TEMP>;
++		reg = <PMR735A_ADC5_GEN2_DIE_TEMP>;
+ 		label = "pmr735a_die_temp";
+ 		qcom,pre-scaling = <1 1>;
+ 	};
+diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+index 7cc3028440b6..cfd5dbbacdcb 100644
+--- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
++++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+@@ -7,9 +7,9 @@
+ /dts-v1/;
+ 
+ #include <dt-bindings/gpio/gpio.h>
+-#include <dt-bindings/iio/qcom,spmi-adc7-pm8350.h>
+-#include <dt-bindings/iio/qcom,spmi-adc7-pmk8350.h>
+-#include <dt-bindings/iio/qcom,spmi-adc7-pmr735a.h>
++#include <dt-bindings/iio/qcom,spmi-adc5-gen2-pm8350.h>
++#include <dt-bindings/iio/qcom,spmi-adc5-gen2-pmk8350.h>
++#include <dt-bindings/iio/qcom,spmi-adc5-gen2-pmr735a.h>
+ #include <dt-bindings/input/gpio-keys.h>
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+@@ -747,7 +747,7 @@ &pmk8280_adc_tm {
+ 
+ 	sys-therm@0 {
+ 		reg = <0>;
+-		io-channels = <&pmk8280_vadc PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
++		io-channels = <&pmk8280_vadc PM8350_ADC5_GEN2_AMUX_THM1_100K_PU(1)>;
+ 		qcom,hw-settle-time-us = <200>;
+ 		qcom,avg-samples = <2>;
+ 		qcom,ratiometric;
+@@ -755,7 +755,7 @@ sys-therm@0 {
+ 
+ 	sys-therm@1 {
+ 		reg = <1>;
+-		io-channels = <&pmk8280_vadc PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
++		io-channels = <&pmk8280_vadc PM8350_ADC5_GEN2_AMUX_THM2_100K_PU(1)>;
+ 		qcom,hw-settle-time-us = <200>;
+ 		qcom,avg-samples = <2>;
+ 		qcom,ratiometric;
+@@ -763,7 +763,7 @@ sys-therm@1 {
+ 
+ 	sys-therm@2 {
+ 		reg = <2>;
+-		io-channels = <&pmk8280_vadc PM8350_ADC7_AMUX_THM3_100K_PU(1)>;
++		io-channels = <&pmk8280_vadc PM8350_ADC5_GEN2_AMUX_THM3_100K_PU(1)>;
+ 		qcom,hw-settle-time-us = <200>;
+ 		qcom,avg-samples = <2>;
+ 		qcom,ratiometric;
+@@ -771,7 +771,7 @@ sys-therm@2 {
+ 
+ 	sys-therm@3 {
+ 		reg = <3>;
+-		io-channels = <&pmk8280_vadc PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
++		io-channels = <&pmk8280_vadc PM8350_ADC5_GEN2_AMUX_THM4_100K_PU(1)>;
+ 		qcom,hw-settle-time-us = <200>;
+ 		qcom,avg-samples = <2>;
+ 		qcom,ratiometric;
+@@ -779,7 +779,7 @@ sys-therm@3 {
+ 
+ 	sys-therm@4 {
+ 		reg = <4>;
+-		io-channels = <&pmk8280_vadc PM8350_ADC7_AMUX_THM1_100K_PU(3)>;
++		io-channels = <&pmk8280_vadc PM8350_ADC5_GEN2_AMUX_THM1_100K_PU(3)>;
+ 		qcom,hw-settle-time-us = <200>;
+ 		qcom,avg-samples = <2>;
+ 		qcom,ratiometric;
+@@ -787,7 +787,7 @@ sys-therm@4 {
+ 
+ 	sys-therm@5 {
+ 		reg = <5>;
+-		io-channels = <&pmk8280_vadc PM8350_ADC7_AMUX_THM2_100K_PU(3)>;
++		io-channels = <&pmk8280_vadc PM8350_ADC5_GEN2_AMUX_THM2_100K_PU(3)>;
+ 		qcom,hw-settle-time-us = <200>;
+ 		qcom,avg-samples = <2>;
+ 		qcom,ratiometric;
+@@ -795,7 +795,7 @@ sys-therm@5 {
+ 
+ 	sys-therm@6 {
+ 		reg = <6>;
+-		io-channels = <&pmk8280_vadc PM8350_ADC7_AMUX_THM3_100K_PU(3)>;
++		io-channels = <&pmk8280_vadc PM8350_ADC5_GEN2_AMUX_THM3_100K_PU(3)>;
+ 		qcom,hw-settle-time-us = <200>;
+ 		qcom,avg-samples = <2>;
+ 		qcom,ratiometric;
+@@ -803,7 +803,7 @@ sys-therm@6 {
+ 
+ 	sys-therm@7 {
+ 		reg = <7>;
+-		io-channels = <&pmk8280_vadc PM8350_ADC7_AMUX_THM4_100K_PU(3)>;
++		io-channels = <&pmk8280_vadc PM8350_ADC5_GEN2_AMUX_THM4_100K_PU(3)>;
+ 		qcom,hw-settle-time-us = <200>;
+ 		qcom,avg-samples = <2>;
+ 		qcom,ratiometric;
+@@ -837,88 +837,88 @@ &pmk8280_vadc {
+ 	status = "okay";
+ 
+ 	pmic-die-temp@3 {
+-		reg = <PMK8350_ADC7_DIE_TEMP>;
++		reg = <PMK8350_ADC5_GEN2_DIE_TEMP>;
+ 		qcom,pre-scaling = <1 1>;
+ 		label = "pmk8350_die_temp";
+ 	};
+ 
+ 	xo-therm@44 {
+-		reg = <PMK8350_ADC7_AMUX_THM1_100K_PU>;
++		reg = <PMK8350_ADC5_GEN2_AMUX_THM1_100K_PU>;
+ 		qcom,hw-settle-time = <200>;
+ 		qcom,ratiometric;
+ 		label = "pmk8350_xo_therm";
+ 	};
+ 
+ 	pmic-die-temp@103 {
+-		reg = <PM8350_ADC7_DIE_TEMP(1)>;
++		reg = <PM8350_ADC5_GEN2_DIE_TEMP(1)>;
+ 		qcom,pre-scaling = <1 1>;
+ 		label = "pmc8280_1_die_temp";
+ 	};
+ 
+ 	sys-therm@144 {
+-		reg = <PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
++		reg = <PM8350_ADC5_GEN2_AMUX_THM1_100K_PU(1)>;
+ 		qcom,hw-settle-time = <200>;
+ 		qcom,ratiometric;
+ 		label = "sys_therm1";
+ 	};
+ 
+ 	sys-therm@145 {
+-		reg = <PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
++		reg = <PM8350_ADC5_GEN2_AMUX_THM2_100K_PU(1)>;
+ 		qcom,hw-settle-time = <200>;
+ 		qcom,ratiometric;
+ 		label = "sys_therm2";
+ 	};
+ 
+ 	sys-therm@146 {
+-		reg = <PM8350_ADC7_AMUX_THM3_100K_PU(1)>;
++		reg = <PM8350_ADC5_GEN2_AMUX_THM3_100K_PU(1)>;
+ 		qcom,hw-settle-time = <200>;
+ 		qcom,ratiometric;
+ 		label = "sys_therm3";
+ 	};
+ 
+ 	sys-therm@147 {
+-		reg = <PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
++		reg = <PM8350_ADC5_GEN2_AMUX_THM4_100K_PU(1)>;
+ 		qcom,hw-settle-time = <200>;
+ 		qcom,ratiometric;
+ 		label = "sys_therm4";
+ 	};
+ 
+ 	pmic-die-temp@303 {
+-		reg = <PM8350_ADC7_DIE_TEMP(3)>;
++		reg = <PM8350_ADC5_GEN2_DIE_TEMP(3)>;
+ 		qcom,pre-scaling = <1 1>;
+ 		label = "pmc8280_2_die_temp";
+ 	};
+ 
+ 	sys-therm@344 {
+-		reg = <PM8350_ADC7_AMUX_THM1_100K_PU(3)>;
++		reg = <PM8350_ADC5_GEN2_AMUX_THM1_100K_PU(3)>;
+ 		qcom,hw-settle-time = <200>;
+ 		qcom,ratiometric;
+ 		label = "sys_therm5";
+ 	};
+ 
+ 	sys-therm@345 {
+-		reg = <PM8350_ADC7_AMUX_THM2_100K_PU(3)>;
++		reg = <PM8350_ADC5_GEN2_AMUX_THM2_100K_PU(3)>;
+ 		qcom,hw-settle-time = <200>;
+ 		qcom,ratiometric;
+ 		label = "sys_therm6";
+ 	};
+ 
+ 	sys-therm@346 {
+-		reg = <PM8350_ADC7_AMUX_THM3_100K_PU(3)>;
++		reg = <PM8350_ADC5_GEN2_AMUX_THM3_100K_PU(3)>;
+ 		qcom,hw-settle-time = <200>;
+ 		qcom,ratiometric;
+ 		label = "sys_therm7";
+ 	};
+ 
+ 	sys-therm@347 {
+-		reg = <PM8350_ADC7_AMUX_THM4_100K_PU(3)>;
++		reg = <PM8350_ADC5_GEN2_AMUX_THM4_100K_PU(3)>;
+ 		qcom,hw-settle-time = <200>;
+ 		qcom,ratiometric;
+ 		label = "sys_therm8";
+ 	};
+ 
+ 	pmic-die-temp@403 {
+-		reg = <PMR735A_ADC7_DIE_TEMP>;
++		reg = <PMR735A_ADC5_GEN2_DIE_TEMP>;
+ 		qcom,pre-scaling = <1 1>;
+ 		label = "pmr735a_die_temp";
+ 	};
+diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
+index a0ba535bb6c9..ae9491adaa6a 100644
+--- a/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
+@@ -78,7 +78,7 @@ pmk8280_pon_resin: resin {
+ 		};
+ 
+ 		pmk8280_vadc: adc@3100 {
+-			compatible = "qcom,spmi-adc7";
++			compatible = "qcom,spmi-adc5-gen2";
+ 			reg = <0x3100>;
+ 			interrupts-extended = <&spmi_bus 0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
+ 			#address-cells = <1>;
+diff --git a/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts b/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
+index e3dc49951523..52119cc1250e 100644
+--- a/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
++++ b/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
+@@ -9,7 +9,7 @@
+ #define PMK8350_SID 6
+ 
+ #include <dt-bindings/gpio/gpio.h>
+-#include <dt-bindings/iio/qcom,spmi-adc7-pmk8350.h>
++#include <dt-bindings/iio/qcom,spmi-adc5-gen2-pmk8350.h>
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/leds/common.h>
+ #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+@@ -517,7 +517,7 @@ &pmk8350_rtc {
+ 
+ &pmk8350_vadc {
+ 	adc-chan@644 {
+-		reg = <PMK8350_ADC7_AMUX_THM1_100K_PU>;
++		reg = <PMK8350_ADC5_GEN2_AMUX_THM1_100K_PU>;
+ 		qcom,ratiometric;
+ 		qcom,hw-settle-time = <200>;
+ 		qcom,pre-scaling = <1 1>;
 -- 
 2.25.1
 
