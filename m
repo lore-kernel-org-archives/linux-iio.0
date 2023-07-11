@@ -2,215 +2,134 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA0DEB64DC
-	for <linux-iio@archiver.kernel.org>; Tue, 11 Jul 2023 10:14:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5AFEEB64DC
+	for <linux-iio@archiver.kernel.org>; Tue, 11 Jul 2023 18:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbjGKKOa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 11 Jul 2023 06:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50170 "EHLO
+        id S231562AbjGKSOQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 11 Jul 2023 14:14:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229939AbjGKKO3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jul 2023 06:14:29 -0400
-Received: from smtp28.bhosted.nl (smtp28.bhosted.nl [IPv6:2a02:9e0:8000::40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCF7136
-        for <linux-iio@vger.kernel.org>; Tue, 11 Jul 2023 03:14:26 -0700 (PDT)
+        with ESMTP id S231646AbjGKSOQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jul 2023 14:14:16 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1B110EF;
+        Tue, 11 Jul 2023 11:14:13 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-314172bac25so5950433f8f.3;
+        Tue, 11 Jul 2023 11:14:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=protonic.nl; s=202111;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc:to:from:
-         from;
-        bh=HKlgnykOnFg9SknTx7FMyWuQFrDaMQk/32MCbOChNI4=;
-        b=T15BVvnEJBkTOo9yT6EHD9ta9Wgkqo3S8+BzK6EcDV/JPnNhgycTl4lqdw2lFYTTtDrAuKF6TQHiu
-         haXXglCr3zTOUH34j/ta0aM4CQGS0AvRaNj9vgqPo7ttHQyF+M7FaiX2YgEKA1way5qcFleAFI1T3c
-         nIDRlGf4dymGL5UAJblFfthVsMmyR2MIqNmdLS82g2MbgSf5oZD37bzuz5kHOTE1lmVS2jnbAlEYmJ
-         Pj+vhUepqEBcqmvRP7ocfUMLnwGvGXXTNYFFk8xIlWxEtbyj7oXToBZNGB22NNmVB7TpiPIoOySRcg
-         GN02bBfmUFYPNFZdlDuv8VB1dcGbsWw==
-X-MSG-ID: b56f306b-1fd3-11ee-9499-0050569d11ae
-From:   Roan van Dijk <roan@protonic.nl>
-To:     jic23@kernel.org
-Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Roan van Dijk <roan@protonic.nl>
-Subject: [PATCH v2] iio: chemical: scd4x: Add pressure compensation
-Date:   Tue, 11 Jul 2023 12:14:19 +0200
-Message-Id: <20230711101419.2065107-1-roan@protonic.nl>
-X-Mailer: git-send-email 2.39.2
+        d=gmail.com; s=20221208; t=1689099252; x=1691691252;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kADj7TkFJka2Bqlkae4pY0x9oLW69mUSF/u4OPIu9zw=;
+        b=SNVpgjSRTHtGVEhHWsNPdWiarBQISqftEQCEevuNc0G5qc6wA70ZMwDItNi5QJ70Lh
+         WQ/yxCzHaCQP3aJ3pHyxeHwl1bizDesfw8/jNROxhaIh96PVDo0ojv5zrpdHqWbcRPLi
+         UIl1Sqy1afzf9t2csa9ICDq3NyYCfhXP+oXpAXpeQ7XijcZ5iztSQ3aSEiNftbWK1yG0
+         FR5v/WYsJqwcRIAiacYa16oeOsxmphNPUIFgbzJl4pI1eK4Y4zZBWj59q2IVB3dT9qRP
+         XomOxRXpy3ZicVH4KLIE/F5V4OStm4RAupaT2pd0yI/E1l4X3AJnkzUAGIwHRpgNg9Xo
+         wB2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689099252; x=1691691252;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=kADj7TkFJka2Bqlkae4pY0x9oLW69mUSF/u4OPIu9zw=;
+        b=A0IHPa1uoLatB9ctbHT79u3378cQu2cQ0Wr1UnKVohuJw1aHmbtdoySQSGOLiIDR1R
+         31w/dSa97OaB6HKW6EfoNrDxQJ5/HajCd/UrIol4z74b2FeW3Ot76CZtP9nAVDJfvT7s
+         LbVKy4SV1ttQDOIC3gMMsAQ9dSSBucHL/bG8wGszqrEiC8Sr61I2mz9A2vRRKORaH7Ql
+         vjKD3AHA/P3rcA4uc544booO0kLUXivbUtS71zOR2RWpRqUl+z4ZU3cAGA0DPHuH4uvX
+         ch88cYwlq5fBkC5LO1rf7vTpLxjCF5dR36GPD5JiK9MTsn8kAawYerwCnyN6p3JD9sFH
+         2xCQ==
+X-Gm-Message-State: ABy/qLYEDQuQ+7VaqF/rwfEBVFVe7e99EKXCbmwghyKsQOctwJxfD+UD
+        1n1h+ZTbZFBFsDTHcCQUjz5HHXr8GgGfeQ==
+X-Google-Smtp-Source: APBJJlE81gCA4q7wctwDy79JVHUy50OZdvk15qWNdOhG/fVz/02t692RpTHodquQlZi07SyIt6jUVw==
+X-Received: by 2002:a5d:4f0c:0:b0:314:1fd7:188b with SMTP id c12-20020a5d4f0c000000b003141fd7188bmr13503587wru.17.1689099252131;
+        Tue, 11 Jul 2023 11:14:12 -0700 (PDT)
+Received: from jernej-laptop.localnet (82-149-1-233.dynamic.telemach.net. [82.149.1.233])
+        by smtp.gmail.com with ESMTPSA id x10-20020adff64a000000b003142e438e8csm2868429wrp.26.2023.07.11.11.14.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jul 2023 11:14:11 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     linux-iio@vger.kernel.org, Maksim Kiselev <bigunclemax@gmail.com>
+Cc:     Maksim Kiselev <bigunclemax@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Leonard =?ISO-8859-1?Q?G=F6hrs?= <l.goehrs@pengutronix.de>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        Ramona Bolboaca <ramona.bolboaca@analog.com>,
+        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>,
+        Maxime Ripard <mripard@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v8 1/4] iio: adc: Kconfig change description for Allwinner GPADC
+Date:   Tue, 11 Jul 2023 20:14:08 +0200
+Message-ID: <2148594.irdbgypaU6@jernej-laptop>
+In-Reply-To: <20230619154252.3951913-2-bigunclemax@gmail.com>
+References: <20230619154252.3951913-1-bigunclemax@gmail.com>
+ <20230619154252.3951913-2-bigunclemax@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch adds pressure compensation to the scd4x driver. The pressure can
-be written to the sensor in hPa. The pressure will be compensated
-internally by the sensor.
+Dne ponedeljek, 19. junij 2023 ob 17:42:24 CEST je Maksim Kiselev napisal(a):
+> This patch adds SoCs names to Allwinner GPADC description to
+> make it more informative.
 
-Signed-off-by: Roan van Dijk <roan@protonic.nl>
----
+Please reword to remove "This patch".
 
-Changes since v2:
- - Fix for kernel test robot errors of uninitialized symbols
- - Changed pressure compensation to output channel instead of a channel
-   with calibbias
- - Pressure can now be compensated during measurements
+> 
+> Fixes: d1caa9905538 ("iio: adc: add support for Allwinner SoCs ADC")
 
- drivers/iio/chemical/scd4x.c | 79 +++++++++++++++++++++++++++++++++---
- 1 file changed, 73 insertions(+), 6 deletions(-)
+I'm fine with the patch in general, but does this really warrant fixes tag?
 
-diff --git a/drivers/iio/chemical/scd4x.c b/drivers/iio/chemical/scd4x.c
-index a4f22d926400..4bb5d215c54c 100644
---- a/drivers/iio/chemical/scd4x.c
-+++ b/drivers/iio/chemical/scd4x.c
-@@ -36,6 +36,8 @@
- #define SCD4X_WRITE_BUF_SIZE 5
- #define SCD4X_FRC_MIN_PPM 0
- #define SCD4X_FRC_MAX_PPM 2000
-+#define SCD4X_PRESSURE_COMP_MIN_MBAR 700
-+#define SCD4X_PRESSURE_COMP_MAX_MBAR 1200
- #define SCD4X_READY_MASK 0x01
- 
- /*Commands SCD4X*/
-@@ -45,6 +47,8 @@ enum scd4x_cmd {
- 	CMD_STOP_MEAS           = 0x3f86,
- 	CMD_SET_TEMP_OFFSET     = 0x241d,
- 	CMD_GET_TEMP_OFFSET     = 0x2318,
-+	CMD_SET_AMB_PRESSURE	= 0xe000,
-+	CMD_GET_AMB_PRESSURE	= 0xe000,
- 	CMD_FRC                 = 0x362f,
- 	CMD_SET_ASC             = 0x2416,
- 	CMD_GET_ASC             = 0x2313,
-@@ -137,7 +141,8 @@ static int scd4x_read(struct scd4x_state *state, enum scd4x_cmd cmd,
- 	 * Measurement needs to be stopped before sending commands.
- 	 * Except for reading measurement and data ready command.
- 	 */
--	if ((cmd != CMD_GET_DATA_READY) && (cmd != CMD_READ_MEAS)) {
-+	if ((cmd != CMD_GET_DATA_READY) && (cmd != CMD_READ_MEAS) &&
-+			(cmd != CMD_GET_AMB_PRESSURE)) {
- 		ret = scd4x_send_command(state, CMD_STOP_MEAS);
- 		if (ret)
- 			return ret;
-@@ -166,7 +171,8 @@ static int scd4x_read(struct scd4x_state *state, enum scd4x_cmd cmd,
- 	}
- 
- 	/* start measurement */
--	if ((cmd != CMD_GET_DATA_READY) && (cmd != CMD_READ_MEAS)) {
-+	if ((cmd != CMD_GET_DATA_READY) && (cmd != CMD_READ_MEAS) &&
-+			(cmd != CMD_GET_AMB_PRESSURE)) {
- 		ret = scd4x_send_command(state, CMD_START_MEAS);
- 		if (ret)
- 			return ret;
-@@ -188,9 +194,11 @@ static int scd4x_write(struct scd4x_state *state, enum scd4x_cmd cmd, uint16_t a
- 	buf[4] = crc;
- 
- 	/* measurement needs to be stopped before sending commands */
--	ret = scd4x_send_command(state, CMD_STOP_MEAS);
--	if (ret)
--		return ret;
-+	if (cmd != CMD_SET_AMB_PRESSURE) {
-+		ret = scd4x_send_command(state, CMD_STOP_MEAS);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	/* execution time */
- 	msleep_interruptible(500);
-@@ -200,7 +208,7 @@ static int scd4x_write(struct scd4x_state *state, enum scd4x_cmd cmd, uint16_t a
- 		return ret;
- 
- 	/* start measurement, except for forced calibration command */
--	if (cmd != CMD_FRC) {
-+	if ((cmd != CMD_FRC) && (cmd != CMD_SET_AMB_PRESSURE)) {
- 		ret = scd4x_send_command(state, CMD_START_MEAS);
- 		if (ret)
- 			return ret;
-@@ -338,6 +346,18 @@ static int scd4x_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-+		if (chan->output) {
-+			mutex_lock(&state->lock);
-+			ret = scd4x_read(state, CMD_GET_AMB_PRESSURE, &tmp, sizeof(tmp));
-+			mutex_unlock(&state->lock);
-+
-+			if (ret)
-+				return ret;
-+
-+			*val = be16_to_cpu(tmp);
-+			return IIO_VAL_INT;
-+		}
-+
- 		ret = iio_device_claim_direct_mode(indio_dev);
- 		if (ret)
- 			return ret;
-@@ -386,6 +406,25 @@ static int scd4x_read_raw(struct iio_dev *indio_dev,
- 	}
- }
- 
-+static const int scd4x_pressure_calibbias_available[] = {
-+	SCD4X_PRESSURE_COMP_MIN_MBAR, 1, SCD4X_PRESSURE_COMP_MAX_MBAR,
-+};
-+
-+static int scd4x_read_avail(struct iio_dev *indio_dev, struct iio_chan_spec const *chan,
-+			    const int **vals, int *type, int *length, long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		*vals = scd4x_pressure_calibbias_available;
-+		*type = IIO_VAL_INT;
-+
-+		return IIO_AVAIL_RANGE;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+
- static int scd4x_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec const *chan,
- 				int val, int val2, long mask)
- {
-@@ -399,6 +438,21 @@ static int scd4x_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec const
- 		mutex_unlock(&state->lock);
- 
- 		return ret;
-+	case IIO_CHAN_INFO_RAW:
-+		switch (chan->type) {
-+		case IIO_PRESSURE:
-+			if (val < SCD4X_PRESSURE_COMP_MIN_MBAR ||
-+			    val > SCD4X_PRESSURE_COMP_MAX_MBAR)
-+				return -EINVAL;
-+
-+			mutex_lock(&state->lock);
-+			ret = scd4x_write(state, CMD_SET_AMB_PRESSURE, val);
-+			mutex_unlock(&state->lock);
-+
-+			return ret;
-+		default:
-+			return -EINVAL;
-+		}
- 	default:
- 		return -EINVAL;
- 	}
-@@ -503,9 +557,22 @@ static const struct iio_info scd4x_info = {
- 	.attrs = &scd4x_attr_group,
- 	.read_raw = scd4x_read_raw,
- 	.write_raw = scd4x_write_raw,
-+	.read_avail = scd4x_read_avail,
- };
- 
- static const struct iio_chan_spec scd4x_channels[] = {
-+	{
-+		/*
-+		 * this channel is special in a sense we are pretending that
-+		 * sensor is able to change measurement chamber pressure but in
-+		 * fact we're just setting pressure compensation value
-+		 */
-+		.type = IIO_PRESSURE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_separate_available = BIT(IIO_CHAN_INFO_RAW),
-+		.output = 1,
-+		.scan_index = -1,
-+	},
- 	{
- 		.type = IIO_CONCENTRATION,
- 		.channel2 = IIO_MOD_CO2,
--- 
-2.39.2
+Best regards,
+Jernej
+
+
+> Signed-off-by: Maksim Kiselev <bigunclemax@gmail.com>
+> ---
+>  drivers/iio/adc/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index eb2b09ef5d5b..d93868684c7b 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -1105,7 +1105,7 @@ config STMPE_ADC
+>  	  built-in ADC block (stmpe811).
+> 
+>  config SUN4I_GPADC
+> -	tristate "Support for the Allwinner SoCs GPADC"
+> +	tristate "Allwinner A10/A13/A31 and similar GPADCs driver"
+>  	depends on IIO
+>  	depends on MFD_SUN4I_GPADC || MACH_SUN8I
+>  	depends on THERMAL || !THERMAL_OF
+
+
+
 
