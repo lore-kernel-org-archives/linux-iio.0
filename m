@@ -2,145 +2,148 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 849ECEB64DC
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Jul 2023 21:10:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33722EB64DC
+	for <linux-iio@archiver.kernel.org>; Tue, 11 Jul 2023 06:55:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231398AbjGJVKN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 Jul 2023 17:10:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36410 "EHLO
+        id S229577AbjGKGzz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 11 Jul 2023 02:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229766AbjGJVKJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Jul 2023 17:10:09 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D800BC
-        for <linux-iio@vger.kernel.org>; Mon, 10 Jul 2023 14:10:08 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id d9443c01a7336-1b89bc52cd1so22076135ad.1
-        for <linux-iio@vger.kernel.org>; Mon, 10 Jul 2023 14:10:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1689023407; x=1691615407;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RxBgucAbBdu0IzJonXBaaKE77FkZJQjZWz7yflbR3Ws=;
-        b=rHgtS9tMj+PbfaQLlrrBQbvkMdvBFt5ZvHKTP+rf8glkYTJzb1ZdarorF6EPAHbVav
-         qJ5XYOFijpSg4tyJtyd2aVpHOgqpwp4VsbxLGWRRVvqZa9SV1lbVd/YtqQ4Oz0GMfkvp
-         9O+YnNsc9l1AT5CwORqAFoa6+HlXIj/Z+Bt3qdb5bsS31jzoy6cCxpiUsBhuaPoaVTGg
-         0u8pY04x0/OOEtP1YqRtPNOBrhyhh8GJ/8fi1LucB2i1M3LYL3hw7MsF2cMM9x2fampG
-         JEFBVPT8J/o2VtrZMIF5WK7UWhR9Y/tr3DvvfeRcC1CTkxgVjr83LA7ZH3FwUJGMcVvL
-         SpsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689023407; x=1691615407;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RxBgucAbBdu0IzJonXBaaKE77FkZJQjZWz7yflbR3Ws=;
-        b=Yq45Z/neHfOUiWJi6joObOKvPd/xnSpjibMbVIxF8d9FPrNqvVYKRLVhgp2d+xJe8D
-         7O6Nii06VlId3EalbQ10cUMMu2KkI6q8EHIzNAyNNvI6WuvPv6h9MCvErw5dvt3vUw3J
-         vg5DGrQLitaV0L29qg1izzGAWK/pXW2+Eoq4oO2uz7C1V9fdZKPI3x6uPBsDuQcFp+2q
-         op9/OcPyGePWIXpqNPadKFghRvKgIBYrGX/cFR7+K05MMKzrejTYigZGDQ3YdAJT4Lcr
-         w1nHx/GGGE/UCjx+XGnY3rUNnaLKRDoECP1ZqzkHQbB35FjThS1MtF4uXnUXQ6msuuhg
-         o0cQ==
-X-Gm-Message-State: ABy/qLbggB+mK+rPmWmP1FVsqok2B3mAnbvyOUG17pjJfvBFFRzEQzJn
-        Nw09566yEcL0tThq0P1qMbZufEUhLkRjicJGAzU=
-X-Google-Smtp-Source: APBJJlFN4CnA+xw8gns+5xtyY+OarOimOqCe+0/1XFT/cP1AmHbHUV+69BPWQLLeu4oeslpGzj/6mQ==
-X-Received: by 2002:a17:903:124a:b0:1a9:40d5:b0ae with SMTP id u10-20020a170903124a00b001a940d5b0aemr12439810plh.12.1689023407417;
-        Mon, 10 Jul 2023 14:10:07 -0700 (PDT)
-Received: from fedora (61-114-134-192.ppp.bbiq.jp. [61.114.134.192])
-        by smtp.gmail.com with ESMTPSA id bg5-20020a1709028e8500b001b6740207d2sm317657plb.215.2023.07.10.14.10.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jul 2023 14:10:06 -0700 (PDT)
-Date:   Sun, 9 Jul 2023 21:07:33 -0400
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     Anh Tuan Phan <tuananhlfc@gmail.com>
-Cc:     linux-kernel-mentees@lists.linuxfoundation.org, rongtao@cestc.cn,
-        ricardo@pardini.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tools/counter: Add checking directory exists for make
- clean
-Message-ID: <ZKtZ1WB9LdszbxU+@fedora>
-References: <362e127d-6018-5fc6-247b-3c729b99d946@gmail.com>
+        with ESMTP id S229458AbjGKGzy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jul 2023 02:55:54 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D376136
+        for <linux-iio@vger.kernel.org>; Mon, 10 Jul 2023 23:55:51 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36B463rQ020334;
+        Tue, 11 Jul 2023 02:55:30 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3rq4q6fygq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 11 Jul 2023 02:55:30 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 36B6tT6m032262
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 11 Jul 2023 02:55:29 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 11 Jul
+ 2023 02:55:28 -0400
+Received: from ASHBMBX8.ad.analog.com ([fe80::5480:da01:e8ae:ffda]) by
+ ASHBMBX8.ad.analog.com ([fe80::5480:da01:e8ae:ffda%9]) with mapi id
+ 15.02.0986.014; Tue, 11 Jul 2023 02:55:28 -0400
+From:   "Paller, Kim Seer" <KimSeer.Paller@analog.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>
+CC:     linux-iio <linux-iio@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: RE: [PATCH v9 2/2] iio: adc: max14001: New driver
+Thread-Topic: [PATCH v9 2/2] iio: adc: max14001: New driver
+Thread-Index: AQHZsubiZVm2aMsLPUi7mLF9xAsvxK+y39eA///AI5CAAHWzAIABAMag
+Date:   Tue, 11 Jul 2023 06:55:28 +0000
+Message-ID: <fe0cd5348f864a6392a7e0e5ca93bec5@analog.com>
+References: <20230710042723.46084-1-kimseer.paller@analog.com>
+ <20230710042723.46084-2-kimseer.paller@analog.com>
+ <CAHp75Vd386P9xM_+wLahp6B_XwYVq1AZxaFQeWvZ2pnk-tFGHA@mail.gmail.com>
+ <11c30a02df784ca78be271fdf9190dad@analog.com>
+ <CAHp75VegvKFUXoJoJnuXstJa_L66M2Ah9yf1aEQ8-ET1QczDtQ@mail.gmail.com>
+In-Reply-To: <CAHp75VegvKFUXoJoJnuXstJa_L66M2Ah9yf1aEQ8-ET1QczDtQ@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-dg-ref: =?utf-8?B?UEcxbGRHRStQR0YwSUc1dFBTSmliMlI1TG5SNGRDSWdjRDBpWXpwY2RYTmxj?=
+ =?utf-8?B?bk5jYTNCaGJHeGxjakpjWVhCd1pHRjBZVnh5YjJGdGFXNW5YREE1WkRnME9X?=
+ =?utf-8?B?STJMVE15WkRNdE5HRTBNQzA0TldWbExUWmlPRFJpWVRJNVpUTTFZbHh0YzJk?=
+ =?utf-8?B?elhHMXpaeTFsT1RFMVpXSTROaTB4Wm1JM0xURXhaV1V0WVdVNE1DMDVPV1Zs?=
+ =?utf-8?B?T1dNMk1HRXhPV1ZjWVcxbExYUmxjM1JjWlRreE5XVmlPRGd0TVdaaU55MHhN?=
+ =?utf-8?B?V1ZsTFdGbE9EQXRPVGxsWlRsak5qQmhNVGxsWW05a2VTNTBlSFFpSUhONlBT?=
+ =?utf-8?B?STBPREEySWlCMFBTSXhNek16TXpVek1qRXlOVFV6TWpFM056Z2lJR2c5SW1S?=
+ =?utf-8?B?UVdGWkxTRFJtTTBOVFFqWlBSelp3Y0VKRlJYaEVNMk5LWXowaUlHbGtQU0lp?=
+ =?utf-8?B?SUdKc1BTSXdJaUJpYnowaU1TSWdZMms5SW1OQlFVRkJSVkpJVlRGU1UxSlZS?=
+ =?utf-8?B?azVEWjFWQlFVVnZRMEZCUTNsdlJ5dHllRXhRV2tGa1YzRk1TbVV4V2xvdmFE?=
+ =?utf-8?B?RmhiM05zTjFac2JpdEZSRUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRklRVUZCUVVSaFFWRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGRlFVRlJRVUpCUVVGQmRtUm9hM2huUVVGQlFVRkJRVUZCUVVGQlFVRkJT?=
+ =?utf-8?B?alJCUVVGQ2FFRkhVVUZoVVVKbVFVaE5RVnBSUW1wQlNGVkJZMmRDYkVGR09F?=
+ =?utf-8?B?RmpRVUo1UVVjNFFXRm5RbXhCUjAxQlpFRkNla0ZHT0VGYVowSm9RVWQzUVdO?=
+ =?utf-8?B?M1FteEJSamhCV21kQ2RrRklUVUZoVVVJd1FVZHJRV1JuUW14QlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVWQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlowRkJRVUZCUVc1blFVRkJSMFZCV2tGQ2NFRkdPRUZqZDBKc1FVZE5RV1JS?=
+ =?utf-8?B?UW5sQlIxVkJXSGRDZDBGSVNVRmlkMEp4UVVkVlFWbDNRakJCU0UxQldIZENN?=
+ =?utf-8?B?RUZIYTBGYVVVSjVRVVJGUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRlJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRMEZCUVVGQlFVTmxRVUZCUVZsUlFtdEJSMnRCV0hkQ2Vr?=
+ =?utf-8?B?RkhWVUZaZDBJeFFVaEpRVnBSUW1aQlNFRkJZMmRDZGtGSGIwRmFVVUpxUVVo?=
+ =?utf-8?B?UlFXTjNRbVpCU0ZGQllWRkNiRUZJU1VGTlowRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZDUVVGQlFVRkJRVUZCUVVsQlFVRkJRVUZCUFQwaUx6NDhMMjFs?=
+ =?utf-8?Q?dGE+?=
+x-dg-rorf: true
+x-originating-ip: [10.116.18.29]
+x-adiruleop-newscl: Rule Triggered
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="RmzhX0RDy1psNxnS"
-Content-Disposition: inline
-In-Reply-To: <362e127d-6018-5fc6-247b-3c729b99d946@gmail.com>
+X-Proofpoint-GUID: 8Cz4kFfBy9HAPC76wECqL_sCHy_BJ6N8
+X-Proofpoint-ORIG-GUID: 8Cz4kFfBy9HAPC76wECqL_sCHy_BJ6N8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-07-11_03,2023-07-06_02,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ phishscore=0 spamscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0
+ impostorscore=0 adultscore=0 lowpriorityscore=0 priorityscore=1501
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2305260000 definitions=main-2307110060
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-
---RmzhX0RDy1psNxnS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Jul 07, 2023 at 09:08:35PM +0700, Anh Tuan Phan wrote:
-> rmdir requires the directory exist so it causes "make -C tools clean"
-> failed if someone only builds other tools but not counter. This commit
-> adds checking the directory exist before doing rmdir.
->=20
-> Signed-off-by: Anh Tuan Phan <tuananhlfc@gmail.com>
-> ---
->  tools/counter/Makefile | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->=20
-> diff --git a/tools/counter/Makefile b/tools/counter/Makefile
-> index a0f4cab71fe5..2907f3b3094b 100644
-> --- a/tools/counter/Makefile
-> +++ b/tools/counter/Makefile
-> @@ -40,7 +40,9 @@ $(OUTPUT)counter_example: $(COUNTER_EXAMPLE)
->  clean:
->  	rm -f $(ALL_PROGRAMS)
->  	rm -rf $(OUTPUT)include/linux/counter.h
-> -	rmdir -p $(OUTPUT)include/linux
-> +	@if [ -d $(OUTPUT)include/linux ]; then \
-> +		rmdir -p $(OUTPUT)include/linux; \
-> +	fi
->  	find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
->=20
->  install: $(ALL_PROGRAMS)
-> --=20
-> 2.34.1
-
-Hi Anh,
-
-Please CC <linux-iio@vger.kernel.org> and <linux-kernel@vger.kernel.org>
-as well in the future so Counter users and developers can become aware
-of relevant patches.
-
-One worry I have with this approach is the possible race condition where
-the check for existence succeeds but the directory is deleted by another
-agent before our rmdir executes. However, I'm not sure how we could
-achieve such behavior atomically to prevent the issue.
-
-One alternative I've considered is perhaps a single find command to
-search for and delete empty directories:
-
-    find $(or $(OUTPUT),.) -type d -empty -delete
-
-But this will delete directories not created by the makefile which I
-consider an unexpected behavior for the user (or at least very rude of
-the script to do).
-
-Perhaps we should delete the directory tree explicitly:
-
-    rm -df $(OUTPUT)include/linux
-    rm -df $(OUTPUT)include
-
-Although we lose the symmetry of rmdir to our previous mkdir, this
-should prevent the race condition issue and succeed whether the
-directories still exist or not.
-
-William Breathitt Gray
-
---RmzhX0RDy1psNxnS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZKtZ1QAKCRC1SFbKvhIj
-K4hDAP9w2c3wZQu+EpvAt5WwqtMUX274NPd/BV+5v07V9USGIgEAwJY9F1i1y9Qr
-pnnk74zbTZhPXXWYTjkMS/oICurGbAw=
-=E0Ch
------END PGP SIGNATURE-----
-
---RmzhX0RDy1psNxnS--
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQW5keSBTaGV2Y2hlbmtv
+IDxhbmR5LnNoZXZjaGVua29AZ21haWwuY29tPg0KPiBTZW50OiBNb25kYXksIEp1bHkgMTAsIDIw
+MjMgNjo1MCBQTQ0KPiBUbzogUGFsbGVyLCBLaW0gU2VlciA8S2ltU2Vlci5QYWxsZXJAYW5hbG9n
+LmNvbT47IEhlbm5lcmljaCwgTWljaGFlbA0KPiA8TWljaGFlbC5IZW5uZXJpY2hAYW5hbG9nLmNv
+bT4NCj4gQ2M6IGxpbnV4LWlpbyA8bGludXgtaWlvQHZnZXIua2VybmVsLm9yZz47IEpvbmF0aGFu
+IENhbWVyb24NCj4gPGppYzIzQGtlcm5lbC5vcmc+OyBMYXJzLVBldGVyIENsYXVzZW4gPGxhcnNA
+bWV0YWZvby5kZT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2OSAyLzJdIGlpbzogYWRjOiBtYXgx
+NDAwMTogTmV3IGRyaXZlcg0KPiANCj4gW0V4dGVybmFsXQ0KPiANCj4gUmV0dXJuIHRvIHRoZSBw
+dWJsaWMgc3BhY2Ugb2YgdGhlIGRpc2N1c3Npb24uDQoNCk9oIGxhdGUgdG8gbm90aWNlLCBJIGhh
+ZCBtaXN0YWtlbmx5IHNldCBteSBlbWFpbCBjbGllbnQgdG8gInF1aWNrIHJlcGx5IiANCmluc3Rl
+YWQgb2YgJ3JlcGx5IHRvIGFsbCcuDQoNCj4gT24gTW9uLCBKdWwgMTAsIDIwMjMgYXQgMTE6MTfi
+gK9BTSBQYWxsZXIsIEtpbSBTZWVyDQo+IDxLaW1TZWVyLlBhbGxlckBhbmFsb2cuY29tPiB3cm90
+ZToNCj4gPiA+IEZyb206IEFuZHkgU2hldmNoZW5rbyA8YW5keS5zaGV2Y2hlbmtvQGdtYWlsLmNv
+bT4NCj4gPiA+IFNlbnQ6IE1vbmRheSwgSnVseSAxMCwgMjAyMyAzOjM3IFBNDQo+ID4gPiBPbiBN
+b24sIEp1bCAxMCwgMjAyMyBhdCA3OjI34oCvQU0gS2ltIFNlZXIgUGFsbGVyDQo+IDxraW1zZWVy
+LnBhbGxlckBhbmFsb2cuY29tPg0KPiA+ID4gd3JvdGU6DQo+IA0KPiAuLi4NCj4gDQo+ID4gPiA+
+IFY4IC0+IFY5OiBDaGFuZ2VkIFNQSSBidWZmZXIgZGF0YSB0eXBlcyB0byBfX2xlMTYsDQo+ID4g
+Pg0KPiA+ID4gV2h5Pw0KPiA+DQo+ID4gQmFzZWQgb24gdGhlIHByZXZpb3VzIGNvbW1lbnRzLCBJ
+IGhhdmUgdGFrZW4gdGhlIF9fbGUxNiBkYXRhIHR5cGUNCj4gPiBpbnRvIGFjY291bnQuIFRoZSBk
+ZXZpY2Ugc2VlbXMgdG8gZnVuY3Rpb24gdGhlIHNhbWUgYXMgdGhlIF9fYmUgZGF0YSB0eXBlLg0K
+PiA+IEkgaGF2ZSBub3QgeWV0IHN1cmUgYnV0IHRlY2huaWNhbGx5IHNwZWFraW5nLCBkbyBJIGhh
+dmUgdG8gcmV0YWluIHRoZSBkYXRhDQo+ID4gdHlwZXMgYXMgX19iZTE2IGJhc2VkIG9uIHRoZSBv
+dmVyYWxsIG9wZXJhdGlvbj8NCj4gDQo+IElmIHRoZSB0eXBlIGlzIF9fYmUsIHRoZSAqYmUqKCkg
+QVBJcyBzaG91bGQgYmUgdXNlZCwgb3RoZXJ3aXNlIF9fbGUgYW5kICpsZSooKS4NCg0KSSBiZWNh
+bWUgYSBsaXR0bGUgY29uZnVzZWQgd2l0aCB0aGUgcHJldmlvdXMgZGlzY3Vzc2lvbnMsIHdpbGwg
+bWFrZSB0aGUgDQpuZWNlc3NhcnkgY2hhbmdlcyBhY2NvcmRpbmdseS4NCg0KPiA+ID4gT2J2aW91
+c2x5IGl0J3MgaW5jb3JyZWN0IG5vdyBldmVuIG1vcmUgdGhhbiBiZWZvcmUuDQo+ID4gPiBUaGUg
+dHlwZXMgYXJlIGRlZmluZWQgYXMgX19sZSwgd2hpbGUgb3BzIGFyZSBhZ2FpbnN0IF9fYmUuDQo+
+ID4NCj4gPiBXb3VsZCBpdCBiZSByaWdodCB0byBpbXBsZW1lbnQgdGhpcyBieSByZXZlcnRpbmcg
+dGhlIHR5cGVzIGJhY2sgdG8gX19iZT8NCj4gPiBXaGF0IG90aGVyIGNvbnNpZGVyYXRpb25zIGNv
+dWxkIHRoZXJlIGJlPw0KPiANCj4gRmlyc3Qgb2YgYWxsLCB5b3UgbmVlZCB0byBkb2N1bWVudCB3
+aGF0IHlvdSBhcmUgZG9pbmcgd2l0aCB0aGVzZSBiaXQNCj4gdHdpZGRsZXJzLiBCYXNlZCBvbiB0
+aGUgY2xlYXIgdW5kZXJzdGFuZGluZyBieSBldmVyeW9uZSB3ZSBjYW4gc3VnZ2VzdA0KPiB3aGF0
+IGRhdGEgdHlwZShzKSBzdWl0cyB0aGUgYmVzdC4NCj4gDQo+IEhlbmNlIGluc3RlYWQgb2YgdjEw
+LCByZXBseSB3aXRoIGEgZHJhZnQgb2YgdGhlIGNvbW1lbnQgaW4gdGhlIGNvZGUgKEkNCj4gaGF2
+ZSBhc2tlZCBiZWZvcmUpIHRoYXQgZXhwbGFpbnMgdGhlc2UgYml0IHR3aWRkbGVycy4NCg0KSW4g
+cGF0Y2ggdjksIHJlZ2FyZGluZyB3aXRoIG15IGJpdCBhcnJhbmdlbWVudCBjb21tZW50cywgaXMg
+aXQgc29tZXdoYXQgY29ycmVjdCANCm9yIGRvIEkgbmVlZCB0byB0b3RhbGx5IHJlcGxhY2UgaXQ/
+IA0KDQpJIGFtIG5vdCB5ZXQgZmFtaWxpYXIgd2l0aCB0aGUgdGVybWlub2xvZ2llcywgc28gSSBo
+b3BlIHlvdSBjYW4gcHJvdmlkZSBzb21lIA0Kc3VnZ2VzdGlvbnMgYW5kIEknbGwgZGVmaW5pdGVs
+eSBzZW5kIHRoZSBkcmFmdCBmaXJzdC4NCg0KVGhhbmtzLA0KS2ltDQoNCg0K
