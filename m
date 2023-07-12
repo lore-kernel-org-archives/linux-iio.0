@@ -2,88 +2,75 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD184EB64DD
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Jul 2023 15:00:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77DD5EB64D9
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Jul 2023 15:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232304AbjGLPAK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Jul 2023 11:00:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
+        id S229561AbjGLP0G (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Jul 2023 11:26:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232331AbjGLPAG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jul 2023 11:00:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2F81FEF;
-        Wed, 12 Jul 2023 07:59:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE27A61830;
-        Wed, 12 Jul 2023 14:59:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D6F0C433CC;
-        Wed, 12 Jul 2023 14:59:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689173970;
-        bh=XSDSo2eH1AfgkPqH7BHPmxIrzico4gDoZXNfNGXJy6M=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=lZRkan4mTpKdCvvBsz/CUFRmG4FgNdpjYLc50I1YXxurW64vUYZYbxYA3at31IR3A
-         X+zhMIpgW1hRHw4EOQeTYjKhM0TK/IqZXfWR047WyZyhYmM8G7WQ3lcQtdVGAfg0T+
-         V//EpVYRPRpqDzlWFuqAplyziEJ6z+4DtmBpFoiuiqxccpm8Dvryqv6U4YQjboMj/U
-         1t5GsodJrwdCZIVAIDmmHhxiEtJYozKtiEXZ2RXX/IM9ZTRWP6UvCaSPGjghikwKJt
-         7C6ofjyGMwa3FYEhu2f7ppYvAru7ZAivHUNNmEmUzKvGh5WQS7My2sqzvek2s9b12U
-         52W+kiKhsRNyA==
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2b703caf344so110418381fa.1;
-        Wed, 12 Jul 2023 07:59:30 -0700 (PDT)
-X-Gm-Message-State: ABy/qLb1uTHk6kSFjt2m4CSAatd/hYG0ikzU3uY/sAY046gI+fDxV+0g
-        25riEPTwuob/Oh6Ou3s1zfGtAw1fJ+S8isphow==
-X-Google-Smtp-Source: APBJJlH5uKlJrU/2bJ6EcKGheFiQh5satiiMPhfSYYXicIC8UkCHmsWM3SC5mMfAcsb2DXj7ekay3N4+o4QFoX/CBD4=
-X-Received: by 2002:a2e:a414:0:b0:2b7:18ff:ba63 with SMTP id
- p20-20020a2ea414000000b002b718ffba63mr10508148ljn.37.1689173968279; Wed, 12
- Jul 2023 07:59:28 -0700 (PDT)
+        with ESMTP id S230236AbjGLP0G (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jul 2023 11:26:06 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5DD1734;
+        Wed, 12 Jul 2023 08:26:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689175565; x=1720711565;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=opv4vWR11AnjxQzJ5kswyd24sS6ZcKGbyA2QSSHiKdI=;
+  b=BxD3RHf/2kRNTrapLmKTo0GKT7PbhfZppDrtXuTKZ8nrQ11gw8DVXnD/
+   DrgbOHiHirEIZwvi5X9w5J0wELodjRLMYZrWiAXF/qyqonNX/Atlw7GlQ
+   6nLGdHBXGWknJCpi94tSHFfoAeAa7UdNrzwtIqp3lJ6lyORH+4Vo4eOOo
+   jPQqGxR3Na1RB66GD/Xb1YTUsinK7m3QiEdzLy17SWgIun+gmnsjoZBVm
+   TZD3WiRca4VUguwf3m89Uc04KjVCd9NwqLfM7D4BOZg2PgsJgaRgifvyM
+   enEVfkmhgiWMYJoCi3eNQ7D3uOCTgNh0Dh9Mwckzppf8e5RR4EUl2X0zx
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="344519100"
+X-IronPort-AV: E=Sophos;i="6.01,200,1684825200"; 
+   d="scan'208";a="344519100"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2023 08:26:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="791662575"
+X-IronPort-AV: E=Sophos;i="6.01,200,1684825200"; 
+   d="scan'208";a="791662575"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004.fm.intel.com with ESMTP; 12 Jul 2023 08:26:02 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qJbj6-002ADD-0r;
+        Wed, 12 Jul 2023 18:26:00 +0300
+Date:   Wed, 12 Jul 2023 18:26:00 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     George Stark <gnstark@sberdevices.ru>
+Cc:     jic23@kernel.org, lars@metafoo.de, neil.armstrong@linaro.org,
+        khilman@baylibre.com, jbrunet@baylibre.com,
+        martin.blumenstingl@googlemail.com, nuno.sa@analog.com,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        kernel@sberdevices.ru
+Subject: Re: [PATCH v5 0/6] iio: adc: meson: add iio channels to read channel
+ 7 mux inputs
+Message-ID: <ZK7GCAgA1gljrxyl@smile.fi.intel.com>
+References: <20230711200141.239025-1-gnstark@sberdevices.ru>
 MIME-Version: 1.0
-References: <20230712080512.94964-1-krzysztof.kozlowski@linaro.org> <168917384908.183505.328888758911691646.robh@kernel.org>
-In-Reply-To: <168917384908.183505.328888758911691646.robh@kernel.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Wed, 12 Jul 2023 08:59:15 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+MNsxnNBdDQJEy5qEraQMTyu_nHHEJNAvWM0bQ8p7Kig@mail.gmail.com>
-Message-ID: <CAL_Jsq+MNsxnNBdDQJEy5qEraQMTyu_nHHEJNAvWM0bQ8p7Kig@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: iio: adi,ad74115: remove ref from -nanoamp
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        devicetree@vger.kernel.org,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        linux-iio@vger.kernel.org, Cosmin Tanislav <demonsingur@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230711200141.239025-1-gnstark@sberdevices.ru>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Jul 12, 2023 at 8:57=E2=80=AFAM Rob Herring <robh@kernel.org> wrote=
-:
->
->
-> On Wed, 12 Jul 2023 10:05:12 +0200, Krzysztof Kozlowski wrote:
-> > dtschema v2023.06 comes with support for properties with -nanoamp
-> > suffix, thus bindings should not have a ref for it:
-> >
-> >   adi,ad74115.yaml: properties:adi,ext1-burnout-current-nanoamp: '$ref'=
- should not be valid under {'const': '$ref'}
-> >
-> > Cc: Cosmin Tanislav <demonsingur@gmail.com>
-> > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> > ---
-> >  Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml | 3 ---
-> >  1 file changed, 3 deletions(-)
-> >
->
-> Acked-by: Rob Herring <robh@kernel.org>
+On Tue, Jul 11, 2023 at 11:00:16PM +0300, George Stark wrote:
+> Changelog:
 
-Jonathan, Please pick this up for 6.5. Or I can if you prefer.
+I gave you a tag, any reason why you haven't applied it to your patches?
 
-Rob
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
