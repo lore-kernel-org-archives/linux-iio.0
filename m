@@ -2,120 +2,132 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8328FEB64DA
-	for <linux-iio@archiver.kernel.org>; Tue, 18 Jul 2023 12:09:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A718EB64DD
+	for <linux-iio@archiver.kernel.org>; Tue, 18 Jul 2023 12:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231224AbjGRMJY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 18 Jul 2023 08:09:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38460 "EHLO
+        id S231708AbjGRMcc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 18 Jul 2023 08:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232398AbjGRMJM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Jul 2023 08:09:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1726170F
-        for <linux-iio@vger.kernel.org>; Tue, 18 Jul 2023 05:07:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1689682048;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=yjWCLI452VH7qr/ipPngolmC3Xdx62iryCFAqOd/N2M=;
-        b=Nlbdy+8zN06sK594K73uXYpF++tnzhbT9AbcNcmJcXg6sTqy4wvnhiTvLKRuE7o+hHiwXr
-        txaeiwFL7gjyeSA9xGxa1yiSK2Oxz4juEGYjXV86QZX/ZUolE0MY2Q3a6Z+yVHlZUC43fB
-        0wVBcq2Kvnc21cbOpiG6RbQVBBuSNgg=
-Received: from mimecast-mx02.redhat.com (66.187.233.73 [66.187.233.73]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-639-Ldm-cCfpM7i3Ho1AXClnvg-1; Tue, 18 Jul 2023 08:07:23 -0400
-X-MC-Unique: Ldm-cCfpM7i3Ho1AXClnvg-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 56D67380391B;
-        Tue, 18 Jul 2023 12:07:23 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.34.131.165])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4A3E14CD0F5;
-        Tue, 18 Jul 2023 12:07:22 +0000 (UTC)
-From:   Milan Zamazal <mzamazal@redhat.com>
-To:     linux-iio@vger.kernel.org
-Cc:     Milan Zamazal <mzamazal@redhat.com>, linux-kernel@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S231767AbjGRMcb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Jul 2023 08:32:31 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B971B10F3;
+        Tue, 18 Jul 2023 05:32:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1689683544;
+  x=1721219544;
+  h=references:from:to:cc:subject:in-reply-to:date:
+   message-id:mime-version;
+  bh=sGKc3f9aEi49syc8A8ZbaYt31rq0mocNyOVaPh8IHJY=;
+  b=cwf4DxQdq2tEpsJ60/15DkvmS+SI3nWfgt8efspret1Ry+/1CMjqY/Lq
+   C29xXdJJweOA8IzGQa60ql0BvR/+ViXoTPp056irzehQRHlXZ8HowJcl2
+   a3KmHBy00Bgy8Stf4sIV4KfsKLqYXOw6l0LtYA4a61vsuQps5I7rh6Xxz
+   3nbPFDZthB7zctF7dOuBkJAUvfp+Vfp4yS2bpF9mwLqWTTXsJV8WHZ571
+   muo+0ayx9Vvk3ew7Ex3cVZGzD2ZWjpEt6+zTwlYubba07Yk3Jl/6cqWxJ
+   Okv6L97uvBaUUGSr8Dl5Lhuou/FHUlx7A6rXSIzmCs6o1HDL+gxL73s66
+   A==;
+References: <cover.1689683411.git.waqar.hameed@axis.com>
+User-agent: a.out
+From:   Waqar Hameed <waqar.hameed@axis.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH] iio: core: Prevent invalid memory access when there is no parent
-Date:   Tue, 18 Jul 2023 14:07:00 +0200
-Message-Id: <20230718120700.132579-1-mzamazal@redhat.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>
+CC:     <kernel@axis.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 1/3] dt-bindings: iio: proximity: Add Murata IRS-D200
+In-Reply-To: <cover.1689683411.git.waqar.hameed@axis.com>
+Date:   Tue, 18 Jul 2023 14:30:11 +0200
+Message-ID: <09975910ea638a9aa893411124bbd2a5c98e45c3.1689683411.git.waqar.hameed@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
+Content-Type: text/plain
+X-Originating-IP: [10.0.5.60]
+X-ClientProxiedBy: se-mail02w.axis.com (10.20.40.8) To se-mail01w.axis.com
+ (10.20.40.7)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Commit 813665564b3d ("iio: core: Convert to use firmware node handle
-instead of OF node") switched the kind of nodes to use for label
-retrieval in device registration.  Probably an unwanted change in that
-commit was that if the device has no parent then NULL pointer is
-accessed.  This is what happens in the stock IIO dummy driver when a
-new entry is created in configfs:
+Murata IRS-D200 is a PIR sensor for human detection. It uses the I2C bus
+for communication with interrupt support. Add devicetree bindings
+requiring the compatible string, I2C slave address (reg), power supply
+and interrupts.
 
-  # mkdir /sys/kernel/config/iio/devices/dummy/foo
-  BUG: kernel NULL pointer dereference, address: 0000000000000278
-  ...
-  ? asm_exc_page_fault+0x22/0x30
-  ? container_offline+0x20/0x20
-  __iio_device_register+0x45/0xc10
-  ? krealloc+0x73/0xa0
-  ? iio_device_attach_buffer+0x31/0xc0
-  ? iio_simple_dummy_configure_buffer+0x20/0x20
-  ? iio_triggered_buffer_setup_ext+0xb4/0x100
-  iio_dummy_probe+0x112/0x190
-  iio_sw_device_create+0xa8/0xd0
-  device_make_group+0xe/0x40
-  configfs_mkdir+0x1a6/0x440
-
-Since there seems to be no reason to make a parent device of an IIO
-dummy device mandatory, let’s prevent the invalid memory access in
-__iio_device_register when the parent device is NULL.  With this
-change, the IIO dummy driver works fine with configfs.
-
-Fixes: 813665564b3d ("iio: core: Convert to use firmware node handle instead of OF node")
-Signed-off-by: Milan Zamazal <mzamazal@redhat.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Waqar Hameed <waqar.hameed@axis.com>
 ---
- drivers/iio/industrialio-core.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ .../iio/proximity/murata,irsd200.yaml         | 60 +++++++++++++++++++
+ 1 file changed, 60 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/murata,irsd200.yaml
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index c117f50d0cf3..229527b3434a 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1888,7 +1888,7 @@ static const struct iio_buffer_setup_ops noop_ring_setup_ops;
- int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
- {
- 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
--	struct fwnode_handle *fwnode;
-+	struct fwnode_handle *fwnode = NULL;
- 	int ret;
- 
- 	if (!indio_dev->info)
-@@ -1899,11 +1899,12 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
- 	/* If the calling driver did not initialize firmware node, do it here */
- 	if (dev_fwnode(&indio_dev->dev))
- 		fwnode = dev_fwnode(&indio_dev->dev);
--	else
-+	else if (indio_dev->dev.parent != NULL)
- 		fwnode = dev_fwnode(indio_dev->dev.parent);
--	device_set_node(&indio_dev->dev, fwnode);
--
--	fwnode_property_read_string(fwnode, "label", &indio_dev->label);
-+	if (fwnode != NULL) {
-+		device_set_node(&indio_dev->dev, fwnode);
-+		fwnode_property_read_string(fwnode, "label", &indio_dev->label);
-+	}
- 
- 	ret = iio_check_unique_scan_index(indio_dev);
- 	if (ret < 0)
+diff --git a/Documentation/devicetree/bindings/iio/proximity/murata,irsd200.yaml b/Documentation/devicetree/bindings/iio/proximity/murata,irsd200.yaml
+new file mode 100644
+index 000000000000..67f5389ece67
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/proximity/murata,irsd200.yaml
+@@ -0,0 +1,60 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/proximity/murata,irsd200.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Murata IRS-D200 PIR sensor
++
++maintainers:
++  - Waqar Hameed <waqar.hameed@axis.com>
++
++description:
++  PIR sensor for human detection.
++
++properties:
++  compatible:
++    const: murata,irsd200
++
++  reg:
++    items:
++      - enum:
++          - 0x48
++          - 0x49
++        description: |
++          When the AD pin is connected to GND, the slave address is 0x48.
++          When the AD pin is connected to VDD, the slave address is 0x49.
++
++  interrupts:
++    maxItems: 1
++    description:
++      Type should be IRQ_TYPE_EDGE_RISING.
++
++  vdd-supply:
++    description:
++      3.3 V supply voltage.
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - vdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        proximity@48 {
++            compatible = "murata,irsd200";
++            reg = <0x48>;
++            interrupts = <24 IRQ_TYPE_EDGE_RISING>;
++            vdd-supply = <&regulator_3v3>;
++        };
++    };
++...
 -- 
-2.40.1
+2.30.2
 
