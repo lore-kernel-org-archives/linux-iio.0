@@ -2,37 +2,37 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F39CEB64DD
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Jul 2023 10:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD4FEB64DC
+	for <linux-iio@archiver.kernel.org>; Fri, 21 Jul 2023 10:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231890AbjGUKYy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S231956AbjGUKYy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 21 Jul 2023 06:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60166 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230384AbjGUKYs (ORCPT
+        with ESMTP id S231617AbjGUKYs (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Jul 2023 06:24:48 -0400
 Received: from mx1.sberdevices.ru (mx1.sberdevices.ru [37.18.73.165])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BBB30FE;
-        Fri, 21 Jul 2023 03:24:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4024730F2;
+        Fri, 21 Jul 2023 03:24:23 -0700 (PDT)
 Received: from p-infra-ksmg-sc-msk01 (localhost [127.0.0.1])
-        by mx1.sberdevices.ru (Postfix) with ESMTP id 710F210000B;
+        by mx1.sberdevices.ru (Postfix) with ESMTP id 2745A100006;
         Fri, 21 Jul 2023 13:24:22 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru 710F210000B
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru 2745A100006
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
         s=mail; t=1689935062;
-        bh=EWUIlxsTDbNkizZTsEpwplf6NYv49AJU87NGu8MEmCk=;
+        bh=tFCW/uaLj61ag756MfONvhXmQcmfZ0nLYjbhS1U4p1g=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:From;
-        b=oajsjVUx8JDqEcZXEXYVq5mcYmbZpxg0SaO/XN0hWUt2aC3QYWZnntz75Vmoit0kK
-         cr6sop1jOhmMFt+rMOh0gI950oYWR+pDKzz+G2MdL/5lWkszX+Fc6pKm6rIlE+24t9
-         84Yew9SKyD39Vqm2AEk9jOqBXVNDDtCZiDEiNCXPvsKYIcUpkJ8VIxUCMzJOq5Tgag
-         snVql/mpBRCzmNoavl3ZwVJX4vNJ0jlNsFUE57kNYp+G3wHn6YtG8sBgo00PqxGaz/
-         JBFJzVVzTwdPedYxPHcD2y1dew65ADVpRFk/0Mx4dUBlNUJIRXZ5f5E4pRDQ27Jqtf
-         +NSrdXTWO0fXQ==
+        b=PaVcMPqScfXEAVZrFPlKf0lqQQndn2hUC5BTeY795uAnVKnxDjDNKAEG5Gwv6gV4L
+         Ssz2b2fhMwUeKYemdRfcGBDvZN9kB6TWbtAjW+LUscKV7WYnlSXt5t5W7VrCDr06TW
+         yHcFjfACklRNPoqkHWV3MieRedCACHtaq5XFKcpVp6fhsSd2iOt4S94BvDWb5SOG5L
+         reO5+WiPu1XJfu8H8LSt0P8k+AYBy9IaOu9wJa2NaNzTKcKyRM5/wWlpk2n1Fw7m78
+         4u62lnRiTF+eZZz3LboFi5Vus0RdCzwVSrCIKEMgMOSi+PznvGXi23jEqxphcBoTkm
+         gqq33is7CILdg==
 Received: from p-i-exch-sc-m01.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         by mx1.sberdevices.ru (Postfix) with ESMTPS;
-        Fri, 21 Jul 2023 13:24:22 +0300 (MSK)
+        Fri, 21 Jul 2023 13:24:21 +0300 (MSK)
 Received: from localhost.localdomain (100.64.160.123) by
  p-i-exch-sc-m01.sberdevices.ru (172.16.192.107) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
@@ -47,12 +47,10 @@ CC:     <linux-iio@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-amlogic@lists.infradead.org>, <kernel@sberdevices.ru>
-Subject: [PATCH v2 2/2] iio: adc: meson: improve error logging at probe stage
-Date:   Fri, 21 Jul 2023 13:23:09 +0300
-Message-ID: <20230721102413.255726-3-gnstark@sberdevices.ru>
+Subject: [PATCH v2 0/2] iio: adc: meson: fix core clock enable/disable moment
+Date:   Fri, 21 Jul 2023 13:23:07 +0300
+Message-ID: <20230721102413.255726-1-gnstark@sberdevices.ru>
 X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230721102413.255726-1-gnstark@sberdevices.ru>
-References: <20230721102413.255726-1-gnstark@sberdevices.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -68,80 +66,84 @@ X-KSMG-AntiSpam-Rate: 0
 X-KSMG-AntiSpam-Status: not_detected
 X-KSMG-AntiSpam-Method: none
 X-KSMG-AntiSpam-Auth: dkim=none
-X-KSMG-AntiSpam-Info: LuaCore: 525 525 723604743bfbdb7e16728748c3fa45e9eba05f7d, {Tracking_from_domain_doesnt_match_to}, 100.64.160.123:7.1.2;p-i-exch-sc-m01.sberdevices.ru:5.0.1,7.1.1;127.0.0.199:7.1.2;sberdevices.ru:5.0.1,7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1, FromAlignment: s, {Tracking_white_helo}, ApMailHostAddress: 100.64.160.123
+X-KSMG-AntiSpam-Info: LuaCore: 525 525 723604743bfbdb7e16728748c3fa45e9eba05f7d, {Tracking_uf_ne_domains}, {Tracking_from_domain_doesnt_match_to}, 100.64.160.123:7.1.2;www.spinics.net:7.1.1;p-i-exch-sc-m01.sberdevices.ru:5.0.1,7.1.1;127.0.0.199:7.1.2;sberdevices.ru:5.0.1,7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1, FromAlignment: s, {Tracking_white_helo}, ApMailHostAddress: 100.64.160.123
 X-MS-Exchange-Organization-SCL: -1
 X-KSMG-AntiSpam-Interceptor-Info: scan successful
-X-KSMG-AntiPhishing: Clean
-X-KSMG-LinksScanning: Clean
+X-KSMG-AntiPhishing: Clean, bases: 2023/07/21 08:11:00
+X-KSMG-LinksScanning: Clean, bases: 2023/07/21 08:13:00
 X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.0.1.6960, bases: 2023/07/21 05:36:00 #21651174
 X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add log messages for errors that may occur at probe stage
+This patch is a part of effort to support meson a1 SoC and make meson saradc driver
+independent from vendor boot code initialization in common.
 
-Signed-off-by: George Stark <gnstark@sberdevices.ru>
----
- drivers/iio/adc/meson_saradc.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+Core clock (passed to adc module thru dts) is supposed to be responsible for entier module
+and should be on before accessing modules' regs.
 
-diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index 8397a5347f32..11b10459a028 100644
---- a/drivers/iio/adc/meson_saradc.c
-+++ b/drivers/iio/adc/meson_saradc.c
-@@ -1046,8 +1046,10 @@ static int meson_sar_adc_hw_enable(struct iio_dev *indio_dev)
- 	u32 regval;
- 
- 	ret = meson_sar_adc_lock(indio_dev);
--	if (ret)
-+	if (ret) {
-+		dev_err(dev, "failed to lock adc\n");
- 		goto err_lock;
-+	}
- 
- 	ret = regulator_enable(priv->vref);
- 	if (ret < 0) {
-@@ -1355,15 +1357,15 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
- 
- 	priv->regmap = devm_regmap_init_mmio(dev, base, priv->param->regmap_config);
- 	if (IS_ERR(priv->regmap))
--		return PTR_ERR(priv->regmap);
-+		return dev_err_probe(dev, PTR_ERR(priv->regmap), "failed to init regmap\n");
- 
- 	irq = irq_of_parse_and_map(dev->of_node, 0);
- 	if (!irq)
--		return -EINVAL;
-+		return dev_err_probe(dev, -EINVAL, "failed to get irq\n");
- 
- 	ret = devm_request_irq(dev, irq, meson_sar_adc_irq, IRQF_SHARED, dev_name(dev), indio_dev);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(dev, ret, "failed to request irq\n");
- 
- 	priv->clkin = devm_clk_get(dev, "clkin");
- 	if (IS_ERR(priv->clkin))
-@@ -1385,7 +1387,7 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
- 	if (!priv->adc_clk) {
- 		ret = meson_sar_adc_clk_init(indio_dev, base);
- 		if (ret)
--			return ret;
-+			return dev_err_probe(dev, ret, "failed to init internal clk\n");
- 	}
- 
- 	priv->vref = devm_regulator_get(dev, "vref");
-@@ -1427,8 +1429,10 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, indio_dev);
- 
- 	ret = iio_device_register(indio_dev);
--	if (ret)
-+	if (ret) {
-+		dev_err_probe(dev, ret, "failed to register iio device\n");
- 		goto err_hw;
-+	}
- 
- 	return 0;
- 
+I've made experiments and here are the results:
+
+on odroid-c1 (meson8) adc regs became readonly with core clock off:
+# disable clock (HHI_GCLK_MPEG0 bit 10)
+devmem 0xc1104140 32 0xBFFA72FF
+devmem 0xc110868C
+0xE3A851FF
+devmem 0xc110868C 32 0xE3A85100
+devmem 0xc110868C
+0xE3A851FF
+# enable clock
+devmem 0xc1104140 32 0xBFFA76FF
+ devmem 0xc110868C
+0xE3A851FF
+devmem 0xc110868C 32 0xE3A85100
+devmem 0xc110868C
+0xE3A85100
+
+on vim3 (a311d) adc regs became readonly with core clock off:
+# disable adc core clock:
+devmem 0xff80004C 32 0xFFFFFEFF
+# the adc register become readonly:
+devmem 0xff80902c
+0x002C2002
+devmem 0xff80902c 32 0x002C2000
+devmem 0xff80902c
+0x002C2002
+
+on a1 adc registers are none-readable-writeable when adc core clock is off:
+devmem 0xfe002c2c
+0x00002003
+# disable clock
+devmem 0xfe00081c 32 0xFFFF9FFF
+devmem 0xfe002c2c
+0x00000000
+# enable clock
+devmem 0xfe00081c 32 0xFFFFFFFF
+devmem 0xfe002c2c
+0x00002003
+
+Changelog:
+
+v1->v2:
+patch 'iio: adc: meson: improve error logging at probe stage'
+	- add fixes tag, previous version [1]
+	- move to devm_clk_get_enabled
+	- return enable/disable core clock calls to suspend \ resume callbacks
+	but did it at the last step and the first step respectively
+
+patch 'iio: adc: meson: improve error logging at probe stage'
+	patch was added to address Jonathan's comment
+
+[1] https://www.spinics.net/lists/linux-iio/msg80369.html
+
+George Stark (2):
+  iio: adc: meson: fix core clock enable/disable moment
+  iio: adc: meson: improve error logging at probe stage
+
+ drivers/iio/adc/meson_saradc.c | 39 +++++++++++++++++++---------------
+ 1 file changed, 22 insertions(+), 17 deletions(-)
+
 -- 
 2.38.4
 
