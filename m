@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 035A3EB64DC
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF1EEB64DD
 	for <linux-iio@archiver.kernel.org>; Fri, 21 Jul 2023 17:00:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231158AbjGURA0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 Jul 2023 13:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53826 "EHLO
+        id S231246AbjGURA2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 21 Jul 2023 13:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230107AbjGURAZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Jul 2023 13:00:25 -0400
+        with ESMTP id S231197AbjGURA0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Jul 2023 13:00:26 -0400
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4475D2D50;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53962D53;
         Fri, 21 Jul 2023 10:00:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1689958822; x=1721494822;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=325fM0IBOgfY/NJbM2dkuOlixnwd7vBQ+WpRaNaNsK8=;
-  b=gxxPMgVVf1JbTpB/O0sLo1UMWeWa/WioPDv+UN2tKOBoHQ/tIM6yS4yB
-   zdG6SvnynUs935J51NsCXczSQqheCWIkdzNruU1etRintTPYQB7RFjD2Q
-   9/VINPXhpFc3WluXAutFQXJmpKRwBm6S7SA61+9oFyyHhcI9CKWwkb++e
-   wxdeWr17cvHLLt7FO5s7AELfe6d90WEaZMMJl3S2NxCkFywJkgUXhBuO8
-   IDOJb8uICqxOcHcNLbl27FAoarj71jaBMRKX5OkQ8GkLwKfS/IHWjvhHn
-   atwRpvXk0itS1JCw8igUnWM8shNiVFBgzzEoHlyP/QRgpeXndZNWUsDZO
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10778"; a="369739478"
+  bh=/foF2WXy3sLwO5FNP6HwLNSDaxhXkIAkyYPFiKkl/9I=;
+  b=dcdysi9UIF59ioef9yEo0G/TLTe/+CJDffBPPt4MdQWp/RFxdQe58pKn
+   nMSK6JnPswZ1cfW6BQx+G5Lgjy9lk+BtEqY2dEnronWTLSabo9EOPYljX
+   5vmsDe1ylNvAWgHGLOREpb026lYoijVd3YBVHdiwIzqva1Qlqbo2PgAKy
+   BUBxnyeq2WhDMz4t7vwDKX2/qJfZgJk9BGSiyUcN1myGNJiz9wjqzts4z
+   60+6/X0VhQqu0IwbCvAQhm61eKFd1yDZ9RJEydfUQ+VwlZv6Qp8t0DzK7
+   73osIS0TyHfCXmymMhOKZTVQEVym2KdTUlEehgaPPLJufj8qVwN8Ky8gw
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10778"; a="369739492"
 X-IronPort-AV: E=Sophos;i="6.01,222,1684825200"; 
-   d="scan'208";a="369739478"
+   d="scan'208";a="369739492"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2023 10:00:20 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10778"; a="754540212"
+X-IronPort-AV: E=McAfee;i="6600,9927,10778"; a="754540217"
 X-IronPort-AV: E=Sophos;i="6.01,222,1684825200"; 
-   d="scan'208";a="754540212"
+   d="scan'208";a="754540217"
 Received: from black.fi.intel.com ([10.237.72.28])
   by orsmga008.jf.intel.com with ESMTP; 21 Jul 2023 10:00:18 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 6E87E604; Fri, 21 Jul 2023 20:00:23 +0300 (EEST)
+        id 8ABF769F; Fri, 21 Jul 2023 20:00:23 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Nuno Sa <nuno.sa@analog.com>
-Subject: [PATCH v2 5/8] iio: core: Get rid of redundant 'else'
-Date:   Fri, 21 Jul 2023 20:00:19 +0300
-Message-Id: <20230721170022.3461-6-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 8/8] iio: core: Improve indentation in a few places
+Date:   Fri, 21 Jul 2023 20:00:22 +0300
+Message-Id: <20230721170022.3461-9-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
 In-Reply-To: <20230721170022.3461-1-andriy.shevchenko@linux.intel.com>
 References: <20230721170022.3461-1-andriy.shevchenko@linux.intel.com>
@@ -58,52 +58,81 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-In the snippets like the following
-
-	if (...)
-		return / goto / break / continue ...;
-	else
-		...
-
-the 'else' is redundant. Get rid of it.
+Improve an indentation in a few places to increase readability.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Reviewed-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/industrialio-core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/industrialio-core.c | 23 ++++++++++-------------
+ 1 file changed, 10 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 78cc67efa490..66cea23df7e0 100644
+index 5c9c68d69fc6..e1293fdbc0ef 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -524,7 +524,7 @@ ssize_t iio_enum_read(struct iio_dev *indio_dev,
- 	i = e->get(indio_dev, chan);
- 	if (i < 0)
- 		return i;
--	else if (i >= e->num_items || !e->items[i])
-+	if (i >= e->num_items || !e->items[i])
- 		return -EINVAL;
+@@ -206,9 +206,9 @@ bool iio_buffer_enabled(struct iio_dev *indio_dev)
+ {
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
  
- 	return sysfs_emit(buf, "%s\n", e->items[i]);
-@@ -1217,7 +1217,7 @@ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
- 					     &iio_dev_opaque->channel_attr_list);
- 		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
- 			continue;
--		else if (ret < 0)
-+		if (ret < 0)
- 			return ret;
- 		attrcount++;
+-	return iio_dev_opaque->currentmode
+-		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE |
+-		   INDIO_BUFFER_SOFTWARE);
++	return iio_dev_opaque->currentmode &
++	       (INDIO_BUFFER_HARDWARE | INDIO_BUFFER_SOFTWARE |
++		INDIO_BUFFER_TRIGGERED);
+ }
+ EXPORT_SYMBOL_GPL(iio_buffer_enabled);
+ 
+@@ -388,8 +388,8 @@ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
  	}
-@@ -1255,7 +1255,7 @@ static int iio_device_add_info_mask_type_avail(struct iio_dev *indio_dev,
- 		kfree(avail_postfix);
- 		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
- 			continue;
--		else if (ret < 0)
-+		if (ret < 0)
- 			return ret;
- 		attrcount++;
- 	}
+ 
+ 	iio_dev_opaque->read_buf_len = snprintf(iio_dev_opaque->read_buf,
+-					      sizeof(iio_dev_opaque->read_buf),
+-					      "0x%X\n", val);
++						sizeof(iio_dev_opaque->read_buf),
++						"0x%X\n", val);
+ 
+ 	return simple_read_from_buffer(userbuf, count, ppos,
+ 				       iio_dev_opaque->read_buf,
+@@ -492,8 +492,7 @@ static ssize_t iio_read_channel_ext_info(struct device *dev,
+ 
+ static ssize_t iio_write_channel_ext_info(struct device *dev,
+ 				     struct device_attribute *attr,
+-				     const char *buf,
+-					 size_t len)
++				     const char *buf, size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+@@ -585,9 +584,9 @@ static int iio_setup_mount_idmatrix(const struct device *dev,
+ ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
+ 			      const struct iio_chan_spec *chan, char *buf)
+ {
+-	const struct iio_mount_matrix *mtx = ((iio_get_mount_matrix_t *)
+-					      priv)(indio_dev, chan);
++	const struct iio_mount_matrix *mtx;
+ 
++	mtx = ((iio_get_mount_matrix_t *)priv)(indio_dev, chan);
+ 	if (IS_ERR(mtx))
+ 		return PTR_ERR(mtx);
+ 
+@@ -1025,14 +1024,12 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
+ 	if (chan->modified && (shared_by == IIO_SEPARATE)) {
+ 		if (chan->extend_name)
+ 			full_postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
+-						 iio_modifier_names[chan
+-								    ->channel2],
++						 iio_modifier_names[chan->channel2],
+ 						 chan->extend_name,
+ 						 postfix);
+ 		else
+ 			full_postfix = kasprintf(GFP_KERNEL, "%s_%s",
+-						 iio_modifier_names[chan
+-								    ->channel2],
++						 iio_modifier_names[chan->channel2],
+ 						 postfix);
+ 	} else {
+ 		if (chan->extend_name == NULL || shared_by != IIO_SEPARATE)
 -- 
 2.40.0.1.gaa8946217a0b
 
