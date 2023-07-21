@@ -2,129 +2,100 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB06EB64DC
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Jul 2023 17:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 718EDC00528
+	for <linux-iio@archiver.kernel.org>; Fri, 21 Jul 2023 17:00:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbjGURAY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 Jul 2023 13:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53762 "EHLO
+        id S231180AbjGURAZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 21 Jul 2023 13:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230471AbjGURAW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Jul 2023 13:00:22 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC29230D4;
-        Fri, 21 Jul 2023 10:00:20 -0700 (PDT)
+        with ESMTP id S230502AbjGURAY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Jul 2023 13:00:24 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F7426A0;
+        Fri, 21 Jul 2023 10:00:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1689958821; x=1721494821;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RBL/WYJF2pgAGN2U87+I/5wNQ/TVlUj5uO/xGqVLkms=;
-  b=VRB7gyB3WP63ltdkJPNxq6+iB0JxF+Egl+YWy/BCtKcDqmezHtU5B9yb
-   87gFMkbH39a7BUAn+SE37O8TyyS39ETbWOSwcSGgoJGO7S+9nQLQWlvHg
-   s5k4w2EmZd/WLjy5umayzOFMmceeRRBZKpxJ+jcZXMc/UpCmCOLCV4uSr
-   z9xln9UMrohsmmvR5JYouvQEUkvh8F59yH5sMYoWYanrL7LGSBTRkbXdI
-   GVPj3HIsNXKGdKa6RCi9Vu4OLJKL8a7DN75vg822kO+E4MqcI1N39SPgu
-   gG2KsNeaP4a8AxVKFYSDHQodsmNVDkg6klsyfw04LRCNv+0340LQPJeto
+  bh=KFTy3k5fjmzvEVapIibfwY9OKXik6UjBLw7ZmKrmWGc=;
+  b=mujet7A7G3cW9RxjpJlxrLBXPxjpvfvbbNyXEUS9B7UDoMPOlJIpwUW3
+   PcLMSKN73OoIPB1yv2tNMiv4ohaH4J9wbufRWLtqyZedbcAm0fkumTmiZ
+   KWICt0RDZFOSx/mVlxFKuFVDhmdQl4NfbZxQH4BqENv2he2Y5pil368K5
+   KeD1yFT1w/7CjthkQh1AOSi51025Ke/nNBy9cdVmhGmTQjYv15xBOPI39
+   eYf2Rp/ToISCDt5xiQdzPbVxtGumbFJevh1phIKmT+nk7MYTcd7Bs7OhE
+   YiNWQgmlckpcCFQFDBgz5QJBBwutxA6c3oeHqXnujyF79eZR8zpavQivx
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10778"; a="369739459"
+X-IronPort-AV: E=McAfee;i="6600,9927,10778"; a="453443965"
 X-IronPort-AV: E=Sophos;i="6.01,222,1684825200"; 
-   d="scan'208";a="369739459"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2023 10:00:17 -0700
+   d="scan'208";a="453443965"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2023 10:00:20 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10778"; a="754540195"
+X-IronPort-AV: E=McAfee;i="6600,9927,10778"; a="675106536"
 X-IronPort-AV: E=Sophos;i="6.01,222,1684825200"; 
-   d="scan'208";a="754540195"
+   d="scan'208";a="675106536"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 21 Jul 2023 10:00:15 -0700
+  by orsmga003.jf.intel.com with ESMTP; 21 Jul 2023 10:00:18 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 2ED1117D; Fri, 21 Jul 2023 20:00:23 +0300 (EEST)
+        id 7D2F866C; Fri, 21 Jul 2023 20:00:23 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Nuno Sa <nuno.sa@analog.com>
-Subject: [PATCH v2 1/8] iio: core: Add opaque_struct_size() helper and use it
-Date:   Fri, 21 Jul 2023 20:00:15 +0300
-Message-Id: <20230721170022.3461-2-andriy.shevchenko@linux.intel.com>
+        Nuno Sa <nuno.sa@analog.com>
+Subject: [PATCH v2 7/8] iio: core: Move initcalls closer to the respective calls
+Date:   Fri, 21 Jul 2023 20:00:21 +0300
+Message-Id: <20230721170022.3461-8-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
 In-Reply-To: <20230721170022.3461-1-andriy.shevchenko@linux.intel.com>
 References: <20230721170022.3461-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Introduce opaque_struct_size() helper, which may be moved
-to overflow.h in the future, and use it in the IIO core.
+Move subsys_initcall() and module_exit() closer to the respective calls.
 
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Reviewed-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/industrialio-core.c | 32 ++++++++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 8 deletions(-)
+ drivers/iio/industrialio-core.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index c117f50d0cf3..6cca86fd0ef9 100644
+index a9b9804097ab..5c9c68d69fc6 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -1617,6 +1617,28 @@ const struct device_type iio_device_type = {
- 	.release = iio_dev_release,
- };
+@@ -354,6 +354,7 @@ static int __init iio_init(void)
+ error_nothing:
+ 	return ret;
+ }
++subsys_initcall(iio_init);
  
-+/**
-+ * opaque_struct_size() - Calculate size of opaque structure with trailing aligned data.
-+ * @p: Pointer to the opaque structure.
-+ * @a: Alignment in bytes before trailing data.
-+ * @s: Data size in bytes (can be 0).
-+ *
-+ * Calculates size of memory needed for structure of @p followed by the aligned data
-+ * of size @s. When @s is 0, the alignment @a is not taken into account and the result
-+ * is an equivalent to sizeof(*(@p)).
-+ *
-+ * Returns: Number of bytes needed or SIZE_MAX on overflow.
-+ */
-+#define opaque_struct_size(p, a, s)	({		\
-+	size_t _psize = sizeof(*(p));			\
-+	size_t _asize = ALIGN(_psize, (a));		\
-+	size_t _ssize = s;				\
-+	_ssize ? size_add(_asize, _ssize) : _psize;	\
-+})
-+
-+#define opaque_struct_data(p, a)			\
-+	((void *)(p) + ALIGN(sizeof(*(p)), (a)))
-+
- /**
-  * iio_device_alloc() - allocate an iio_dev from a driver
-  * @parent:		Parent device.
-@@ -1628,19 +1650,13 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
- 	struct iio_dev *indio_dev;
- 	size_t alloc_size;
+ static void __exit iio_exit(void)
+ {
+@@ -362,6 +363,7 @@ static void __exit iio_exit(void)
+ 	bus_unregister(&iio_bus_type);
+ 	debugfs_remove(iio_debugfs_dentry);
+ }
++module_exit(iio_exit);
  
--	alloc_size = sizeof(struct iio_dev_opaque);
--	if (sizeof_priv) {
--		alloc_size = ALIGN(alloc_size, IIO_DMA_MINALIGN);
--		alloc_size += sizeof_priv;
--	}
+ #if defined(CONFIG_DEBUG_FS)
+ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
+@@ -2118,9 +2120,6 @@ int iio_device_get_current_mode(struct iio_dev *indio_dev)
+ }
+ EXPORT_SYMBOL_GPL(iio_device_get_current_mode);
+ 
+-subsys_initcall(iio_init);
+-module_exit(iio_exit);
 -
-+	alloc_size = opaque_struct_size(iio_dev_opaque, IIO_DMA_MINALIGN, sizeof_priv);
- 	iio_dev_opaque = kzalloc(alloc_size, GFP_KERNEL);
- 	if (!iio_dev_opaque)
- 		return NULL;
- 
- 	indio_dev = &iio_dev_opaque->indio_dev;
--	indio_dev->priv = (char *)iio_dev_opaque +
--		ALIGN(sizeof(struct iio_dev_opaque), IIO_DMA_MINALIGN);
-+	indio_dev->priv = opaque_struct_data(iio_dev_opaque, IIO_DMA_MINALIGN);
- 
- 	indio_dev->dev.parent = parent;
- 	indio_dev->dev.type = &iio_device_type;
+ MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
+ MODULE_DESCRIPTION("Industrial I/O core");
+ MODULE_LICENSE("GPL");
 -- 
 2.40.0.1.gaa8946217a0b
 
