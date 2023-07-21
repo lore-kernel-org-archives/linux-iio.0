@@ -2,214 +2,99 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D430DEB64DD
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Jul 2023 08:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD026EB64DD
+	for <linux-iio@archiver.kernel.org>; Fri, 21 Jul 2023 08:03:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230512AbjGUICF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 Jul 2023 04:02:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49174 "EHLO
+        id S229642AbjGUIDj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 21 Jul 2023 04:03:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230475AbjGUICB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Jul 2023 04:02:01 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90320270A;
-        Fri, 21 Jul 2023 01:01:58 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="6.01,220,1684767600"; 
-   d="scan'208";a="170349238"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 21 Jul 2023 17:01:58 +0900
-Received: from localhost.localdomain (unknown [10.226.92.55])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id C5CF64196E50;
-        Fri, 21 Jul 2023 17:01:55 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v2] iio: potentiometer: mcp4531: Use i2c_get_match_data()
-Date:   Fri, 21 Jul 2023 09:01:53 +0100
-Message-Id: <20230721080153.179274-1-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231241AbjGUIDi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Jul 2023 04:03:38 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7DC2704;
+        Fri, 21 Jul 2023 01:03:37 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id a640c23a62f3a-9939fbb7191so357267366b.0;
+        Fri, 21 Jul 2023 01:03:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1689926615; x=1690531415;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=pFKYG/1VesNPnYJ+2RJdvyya/8SP7ErkfRv3C2Q2jPI=;
+        b=R/L4KNBUiIY6pAG3BlMdjWhYbTWzwWix687+2+VjTMZNlM4lL//UqfFcQhZB/r1RH0
+         BeE9LOjl7GnEWA6CVUuqscuQUz0koPEQcXPCZjx2N7tLRNXJ6UXCwzVpjXIeI7/dQ8XM
+         Uu8lg2DipufmJAOmNSPJFPm85syLn46/UdjtDhJBSF8ADJb7BvW9L5TiZN5d3LUNBMyG
+         usq7yMggmlo8/denLji15I8l7HM6vxulaqEu4tEhrI0x4UaxuzyCMTUXXRFRPFSpjAls
+         dKbEF/t/VYnV7WD1AQMkzbdk9/k3Mk4S3311f0e4w/15seT5adOwioH1zWzAj9RfU+FQ
+         VFwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689926615; x=1690531415;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=pFKYG/1VesNPnYJ+2RJdvyya/8SP7ErkfRv3C2Q2jPI=;
+        b=eJ3OKB3PRe8eHptEzWkH7DhZFBXTmG0bQv3g7YBGuSH2SVhiyjS1MtYwM2Ka7TgQ2K
+         xWhtxBqivHhoWmuv94fW9kLY8SYgprYwBLT+dP5MedeTZfebfon+vAcSl1ygJFdII+aL
+         BgNqhtjHNZy4/AU82mjXChKi0dmOVElYWlQoAfpbOlxtKVloBSqn/VbN74U31ctgBs6g
+         JbTIJ6qqR1t5NfvdKW6IA5lg1SC6JpNMye+vUY5c0fam2OhigotgLsp+gKfmM9f4xbQl
+         VwsGsNWZliwjiCoXMbjMNqrH0FsSLkDB0mhHa1e6WckB6eWyPCAvMhv3/qY3E4rMWv01
+         d7OA==
+X-Gm-Message-State: ABy/qLYe4d9wWlQrozr8tT6ZV6FJaFdL96sNil/zhRXpSE2eKs9p5opX
+        7QId1RTmNTZo3SiMsNIixF8=
+X-Google-Smtp-Source: APBJJlEdzV4/PhSsRy8t+vhzJ4dvEI20DkeDzTmDvMYG15gC+Gh5C8YPehbk/aWURtovn9Bj7z+FKw==
+X-Received: by 2002:a17:907:2bc4:b0:997:e7d0:e26d with SMTP id gv4-20020a1709072bc400b00997e7d0e26dmr1240606ejc.4.1689926615356;
+        Fri, 21 Jul 2023 01:03:35 -0700 (PDT)
+Received: from ?IPv6:2003:f6:ef05:8700:f946:69a3:7954:9ee0? (p200300f6ef058700f94669a379549ee0.dip0.t-ipconnect.de. [2003:f6:ef05:8700:f946:69a3:7954:9ee0])
+        by smtp.gmail.com with ESMTPSA id fy17-20020a170906b7d100b009931a3adf64sm1853775ejb.17.2023.07.21.01.03.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Jul 2023 01:03:34 -0700 (PDT)
+Message-ID: <d65e25da75142b7414cbf082c7f485464b82b6d1.camel@gmail.com>
+Subject: Re: [PATCH v1 0/8] iio: core: A few code cleanups and documentation
+ fixes
+From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Date:   Fri, 21 Jul 2023 10:06:05 +0200
+In-Reply-To: <20230720205324.58702-1-andriy.shevchenko@linux.intel.com>
+References: <20230720205324.58702-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.4 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Replace device_get_match_data() and i2c_match_id() by i2c_get_match
-_data() by making similar I2C and DT-based matching table.
-
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+On Thu, 2023-07-20 at 23:53 +0300, Andy Shevchenko wrote:
+> Just set of almost unrelated to each other cleanups against IIO
+> core implementation.
+>=20
+> The positive LoCs diffstat due to first patch that adds a lot of
+> documentation for the new added macro.
+>=20
+> Andy Shevchenko (8):
+> =C2=A0 iio: core: Add opaque_struct_size() helper and use it
+> =C2=A0 iio: core: Use sysfs_match_string() helper
+> =C2=A0 iio: core: Switch to krealloc_array()
+> =C2=A0 iio: core: Use min() instead of min_t() to make code more robust
+> =C2=A0 iio: core: Get rid of redundant 'else'
+> =C2=A0 iio: core: Fix issues and style of the comments
+> =C2=A0 iio: core: Move initcalls closer to the respective calls
+> =C2=A0 iio: core: Improve indentation in a few places
+>=20
+> =C2=A0drivers/iio/industrialio-core.c | 226 ++++++++++++++++-------------=
 ---
-v1->v2:
- * Added similar similar I2C and DT-based matching table.
- * Dropped error check as all tables have data pointers.
+> =C2=A01 file changed, 115 insertions(+), 111 deletions(-)
+>=20
 
-Note:
- This patch is only compile tested.
----
- drivers/iio/potentiometer/mcp4531.c | 138 ++++++++++++++--------------
- 1 file changed, 70 insertions(+), 68 deletions(-)
+Neat series... Just a few comments on my side and on patch 3 is up to you t=
+o
+take the comments or not.
 
-diff --git a/drivers/iio/potentiometer/mcp4531.c b/drivers/iio/potentiometer/mcp4531.c
-index c513c00c8243..6b251b7acb60 100644
---- a/drivers/iio/potentiometer/mcp4531.c
-+++ b/drivers/iio/potentiometer/mcp4531.c
-@@ -206,72 +206,76 @@ static const struct iio_info mcp4531_info = {
- 	.write_raw = mcp4531_write_raw,
- };
- 
-+#define MCP4531_ID_TABLE(name, cfg) {				\
-+	name, .driver_data = (kernel_ulong_t)&mcp4531_cfg[cfg],	\
-+}
-+
- static const struct i2c_device_id mcp4531_id[] = {
--	{ "mcp4531-502", MCP453x_502 },
--	{ "mcp4531-103", MCP453x_103 },
--	{ "mcp4531-503", MCP453x_503 },
--	{ "mcp4531-104", MCP453x_104 },
--	{ "mcp4532-502", MCP453x_502 },
--	{ "mcp4532-103", MCP453x_103 },
--	{ "mcp4532-503", MCP453x_503 },
--	{ "mcp4532-104", MCP453x_104 },
--	{ "mcp4541-502", MCP454x_502 },
--	{ "mcp4541-103", MCP454x_103 },
--	{ "mcp4541-503", MCP454x_503 },
--	{ "mcp4541-104", MCP454x_104 },
--	{ "mcp4542-502", MCP454x_502 },
--	{ "mcp4542-103", MCP454x_103 },
--	{ "mcp4542-503", MCP454x_503 },
--	{ "mcp4542-104", MCP454x_104 },
--	{ "mcp4551-502", MCP455x_502 },
--	{ "mcp4551-103", MCP455x_103 },
--	{ "mcp4551-503", MCP455x_503 },
--	{ "mcp4551-104", MCP455x_104 },
--	{ "mcp4552-502", MCP455x_502 },
--	{ "mcp4552-103", MCP455x_103 },
--	{ "mcp4552-503", MCP455x_503 },
--	{ "mcp4552-104", MCP455x_104 },
--	{ "mcp4561-502", MCP456x_502 },
--	{ "mcp4561-103", MCP456x_103 },
--	{ "mcp4561-503", MCP456x_503 },
--	{ "mcp4561-104", MCP456x_104 },
--	{ "mcp4562-502", MCP456x_502 },
--	{ "mcp4562-103", MCP456x_103 },
--	{ "mcp4562-503", MCP456x_503 },
--	{ "mcp4562-104", MCP456x_104 },
--	{ "mcp4631-502", MCP463x_502 },
--	{ "mcp4631-103", MCP463x_103 },
--	{ "mcp4631-503", MCP463x_503 },
--	{ "mcp4631-104", MCP463x_104 },
--	{ "mcp4632-502", MCP463x_502 },
--	{ "mcp4632-103", MCP463x_103 },
--	{ "mcp4632-503", MCP463x_503 },
--	{ "mcp4632-104", MCP463x_104 },
--	{ "mcp4641-502", MCP464x_502 },
--	{ "mcp4641-103", MCP464x_103 },
--	{ "mcp4641-503", MCP464x_503 },
--	{ "mcp4641-104", MCP464x_104 },
--	{ "mcp4642-502", MCP464x_502 },
--	{ "mcp4642-103", MCP464x_103 },
--	{ "mcp4642-503", MCP464x_503 },
--	{ "mcp4642-104", MCP464x_104 },
--	{ "mcp4651-502", MCP465x_502 },
--	{ "mcp4651-103", MCP465x_103 },
--	{ "mcp4651-503", MCP465x_503 },
--	{ "mcp4651-104", MCP465x_104 },
--	{ "mcp4652-502", MCP465x_502 },
--	{ "mcp4652-103", MCP465x_103 },
--	{ "mcp4652-503", MCP465x_503 },
--	{ "mcp4652-104", MCP465x_104 },
--	{ "mcp4661-502", MCP466x_502 },
--	{ "mcp4661-103", MCP466x_103 },
--	{ "mcp4661-503", MCP466x_503 },
--	{ "mcp4661-104", MCP466x_104 },
--	{ "mcp4662-502", MCP466x_502 },
--	{ "mcp4662-103", MCP466x_103 },
--	{ "mcp4662-503", MCP466x_503 },
--	{ "mcp4662-104", MCP466x_104 },
--	{}
-+	MCP4531_ID_TABLE("mcp4531-502", MCP453x_502),
-+	MCP4531_ID_TABLE("mcp4531-103", MCP453x_103),
-+	MCP4531_ID_TABLE("mcp4531-503", MCP453x_503),
-+	MCP4531_ID_TABLE("mcp4531-104", MCP453x_104),
-+	MCP4531_ID_TABLE("mcp4532-502", MCP453x_502),
-+	MCP4531_ID_TABLE("mcp4532-103", MCP453x_103),
-+	MCP4531_ID_TABLE("mcp4532-503", MCP453x_503),
-+	MCP4531_ID_TABLE("mcp4532-104", MCP453x_104),
-+	MCP4531_ID_TABLE("mcp4541-502", MCP454x_502),
-+	MCP4531_ID_TABLE("mcp4541-103", MCP454x_103),
-+	MCP4531_ID_TABLE("mcp4541-503", MCP454x_503),
-+	MCP4531_ID_TABLE("mcp4541-104", MCP454x_104),
-+	MCP4531_ID_TABLE("mcp4542-502", MCP454x_502),
-+	MCP4531_ID_TABLE("mcp4542-103", MCP454x_103),
-+	MCP4531_ID_TABLE("mcp4542-503", MCP454x_503),
-+	MCP4531_ID_TABLE("mcp4542-104", MCP454x_104),
-+	MCP4531_ID_TABLE("mcp4551-502", MCP455x_502),
-+	MCP4531_ID_TABLE("mcp4551-103", MCP455x_103),
-+	MCP4531_ID_TABLE("mcp4551-503", MCP455x_503),
-+	MCP4531_ID_TABLE("mcp4551-104", MCP455x_104),
-+	MCP4531_ID_TABLE("mcp4552-502", MCP455x_502),
-+	MCP4531_ID_TABLE("mcp4552-103", MCP455x_103),
-+	MCP4531_ID_TABLE("mcp4552-503", MCP455x_503),
-+	MCP4531_ID_TABLE("mcp4552-104", MCP455x_104),
-+	MCP4531_ID_TABLE("mcp4561-502", MCP456x_502),
-+	MCP4531_ID_TABLE("mcp4561-103", MCP456x_103),
-+	MCP4531_ID_TABLE("mcp4561-503", MCP456x_503),
-+	MCP4531_ID_TABLE("mcp4561-104", MCP456x_104),
-+	MCP4531_ID_TABLE("mcp4562-502", MCP456x_502),
-+	MCP4531_ID_TABLE("mcp4562-103", MCP456x_103),
-+	MCP4531_ID_TABLE("mcp4562-503", MCP456x_503),
-+	MCP4531_ID_TABLE("mcp4562-104", MCP456x_104),
-+	MCP4531_ID_TABLE("mcp4631-502", MCP463x_502),
-+	MCP4531_ID_TABLE("mcp4631-103", MCP463x_103),
-+	MCP4531_ID_TABLE("mcp4631-503", MCP463x_503),
-+	MCP4531_ID_TABLE("mcp4631-104", MCP463x_104),
-+	MCP4531_ID_TABLE("mcp4632-502", MCP463x_502),
-+	MCP4531_ID_TABLE("mcp4632-103", MCP463x_103),
-+	MCP4531_ID_TABLE("mcp4632-503", MCP463x_503),
-+	MCP4531_ID_TABLE("mcp4632-104", MCP463x_104),
-+	MCP4531_ID_TABLE("mcp4641-502", MCP464x_502),
-+	MCP4531_ID_TABLE("mcp4641-103", MCP464x_103),
-+	MCP4531_ID_TABLE("mcp4641-503", MCP464x_503),
-+	MCP4531_ID_TABLE("mcp4641-104", MCP464x_104),
-+	MCP4531_ID_TABLE("mcp4642-502", MCP464x_502),
-+	MCP4531_ID_TABLE("mcp4642-103", MCP464x_103),
-+	MCP4531_ID_TABLE("mcp4642-503", MCP464x_503),
-+	MCP4531_ID_TABLE("mcp4642-104", MCP464x_104),
-+	MCP4531_ID_TABLE("mcp4651-502", MCP465x_502),
-+	MCP4531_ID_TABLE("mcp4651-103", MCP465x_103),
-+	MCP4531_ID_TABLE("mcp4651-503", MCP465x_503),
-+	MCP4531_ID_TABLE("mcp4651-104", MCP465x_104),
-+	MCP4531_ID_TABLE("mcp4652-502", MCP465x_502),
-+	MCP4531_ID_TABLE("mcp4652-103", MCP465x_103),
-+	MCP4531_ID_TABLE("mcp4652-503", MCP465x_503),
-+	MCP4531_ID_TABLE("mcp4652-104", MCP465x_104),
-+	MCP4531_ID_TABLE("mcp4661-502", MCP466x_502),
-+	MCP4531_ID_TABLE("mcp4661-103", MCP466x_103),
-+	MCP4531_ID_TABLE("mcp4661-503", MCP466x_503),
-+	MCP4531_ID_TABLE("mcp4661-104", MCP466x_104),
-+	MCP4531_ID_TABLE("mcp4662-502", MCP466x_502),
-+	MCP4531_ID_TABLE("mcp4662-103", MCP466x_103),
-+	MCP4531_ID_TABLE("mcp4662-503", MCP466x_503),
-+	MCP4531_ID_TABLE("mcp4662-104", MCP466x_104),
-+	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(i2c, mcp4531_id);
- 
-@@ -368,9 +372,7 @@ static int mcp4531_probe(struct i2c_client *client)
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
- 
--	data->cfg = device_get_match_data(dev);
--	if (!data->cfg)
--		data->cfg = &mcp4531_cfg[i2c_match_id(mcp4531_id, client)->driver_data];
-+	data->cfg = i2c_get_match_data(client);
- 
- 	indio_dev->info = &mcp4531_info;
- 	indio_dev->channels = mcp4531_channels;
--- 
-2.25.1
+With my comment addressed on patch 2:
 
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
+=20
