@@ -2,98 +2,66 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92CD0C001DC
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Jul 2023 20:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DEFEB64DD
+	for <linux-iio@archiver.kernel.org>; Fri, 21 Jul 2023 21:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbjGUUsk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 Jul 2023 16:48:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56222 "EHLO
+        id S230051AbjGUVhq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 21 Jul 2023 17:37:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbjGUUsj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Jul 2023 16:48:39 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC4130E2;
-        Fri, 21 Jul 2023 13:48:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=pPiT0nNC4yMJYFJN2WXxCYRGy4DbhNU+d1P34vtAgyk=; b=FWmeRKS65dQdZHKeV7ZDq8W7Zw
-        zIyV0iqawLDivnEwU1jfsv9A/8JBw9ibISpUZju7SR/zTwOClyAxgPJ4kBrbCUVhcvkJjQVSWnVzn
-        A6uPFQvwM88H6feTfA4iJTyj9nzdEHF5j7EvrkvgYueQ6ldjMowTu3HrroOhBK26KmQ5hxfExInc0
-        ExvIxWju8aNE6o2lBrnhwXwE1cztXIJzrURGDXxZZmcSp9NOgpFuOquqTN3OLkAPPakb9jGKPuRkS
-        Dn9T3LCpM8z87Vgxzkm6LvrWpnZLxF7/mbZS/EwgM8PlCdPwGzBNwMxrNa8tKS+oBKeLdfex8YA1i
-        ZJxDl8Pw==;
-Received: from [2601:1c2:980:9ec0::2764]
-        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-        id 1qMx3E-00F5Cu-2a;
-        Fri, 21 Jul 2023 20:48:36 +0000
-Message-ID: <db709099-a2aa-c03f-61bb-6130adfd6f4a@infradead.org>
-Date:   Fri, 21 Jul 2023 13:48:34 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH v2 6/8] iio: core: Fix issues and style of the comments
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S229918AbjGUVhp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Jul 2023 17:37:45 -0400
+Received: from fgw22-7.mail.saunalahti.fi (fgw22-7.mail.saunalahti.fi [62.142.5.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEA010CE
+        for <linux-iio@vger.kernel.org>; Fri, 21 Jul 2023 14:37:41 -0700 (PDT)
+Received: from localhost (88-113-24-87.elisa-laajakaista.fi [88.113.24.87])
+        by fgw22.mail.saunalahti.fi (Halon) with ESMTP
+        id cc4c06f2-280e-11ee-a9de-005056bdf889;
+        Sat, 22 Jul 2023 00:37:32 +0300 (EEST)
+From:   andy.shevchenko@gmail.com
+Date:   Sat, 22 Jul 2023 00:37:31 +0300
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Nuno Sa <nuno.sa@analog.com>
+Subject: Re: [PATCH v2 6/8] iio: core: Fix issues and style of the comments
+Message-ID: <ZLr6m5wHBSLKensj@surfacebook>
 References: <20230721170022.3461-1-andriy.shevchenko@linux.intel.com>
  <20230721170022.3461-7-andriy.shevchenko@linux.intel.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20230721170022.3461-7-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <db709099-a2aa-c03f-61bb-6130adfd6f4a@infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <db709099-a2aa-c03f-61bb-6130adfd6f4a@infradead.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Fri, Jul 21, 2023 at 01:48:34PM -0700, Randy Dunlap kirjoitti:
+> On 7/21/23 10:00, Andy Shevchenko wrote:
 
+...
 
-On 7/21/23 10:00, Andy Shevchenko wrote:
-> The `scripts/kernel-doc -v -none -Wall` reports several issues
-> with the kernel doc in IIO core C file. Update the comments
-> accordingly.
+> > - * Return: 0 for successful release
+> > + * Returns: 0 for successful release.
+
+> As documented in Documentation/doc-guide/kernel-doc.rst:
+>   The return value, if any, should be described in a dedicated section
+>   named ``Return``.
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Nuno Sa <nuno.sa@analog.com>
-> ---
->  drivers/iio/industrialio-core.c | 57 +++++++++++++++++++++------------
->  1 file changed, 37 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 66cea23df7e0..a9b9804097ab 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
+> However, as you (and I) have found, "Returns:" also works as a section name.
 
-> @@ -594,7 +608,7 @@ EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
->   * If device is assigned no mounting matrix property, a default 3x3 identity
->   * matrix will be filled in.
->   *
-> - * Return: 0 if success, or a negative error code on failure.
-> + * Returns: 0 if success, or a negative error code on failure.
->   */
->  int iio_read_mount_matrix(struct device *dev, struct iio_mount_matrix *matrix)
->  {
+Plural allowed for some section(s):
+'\s*(\@[.\w]+|\@\.\.\.|description|context|returns?|notes?|examples?)\s*:([^:].*)?$'
 
-> @@ -1750,7 +1767,7 @@ static int iio_chrdev_open(struct inode *inode, struct file *filp)
->   * @inode:	Inode structure pointer for the char device
->   * @filp:	File structure pointer for the char device
->   *
-> - * Return: 0 for successful release
-> + * Returns: 0 for successful release.
->   */
+> Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
 
-As documented in Documentation/doc-guide/kernel-doc.rst:
-  The return value, if any, should be described in a dedicated section
-  named ``Return``.
+Thank you!
 
-However, as you (and I) have found, "Returns:" also works as a section name.
-
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
-
-Thanks.
 -- 
-~Randy
+With Best Regards,
+Andy Shevchenko
+
+
