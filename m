@@ -2,66 +2,103 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DEFEB64DD
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Jul 2023 21:37:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD5AC41513
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Jul 2023 16:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbjGUVhq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 Jul 2023 17:37:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50208 "EHLO
+        id S229651AbjGVQZ3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Jul 2023 12:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229918AbjGUVhp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Jul 2023 17:37:45 -0400
-Received: from fgw22-7.mail.saunalahti.fi (fgw22-7.mail.saunalahti.fi [62.142.5.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEA010CE
-        for <linux-iio@vger.kernel.org>; Fri, 21 Jul 2023 14:37:41 -0700 (PDT)
-Received: from localhost (88-113-24-87.elisa-laajakaista.fi [88.113.24.87])
-        by fgw22.mail.saunalahti.fi (Halon) with ESMTP
-        id cc4c06f2-280e-11ee-a9de-005056bdf889;
-        Sat, 22 Jul 2023 00:37:32 +0300 (EEST)
-From:   andy.shevchenko@gmail.com
-Date:   Sat, 22 Jul 2023 00:37:31 +0300
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Nuno Sa <nuno.sa@analog.com>
-Subject: Re: [PATCH v2 6/8] iio: core: Fix issues and style of the comments
-Message-ID: <ZLr6m5wHBSLKensj@surfacebook>
-References: <20230721170022.3461-1-andriy.shevchenko@linux.intel.com>
- <20230721170022.3461-7-andriy.shevchenko@linux.intel.com>
- <db709099-a2aa-c03f-61bb-6130adfd6f4a@infradead.org>
+        with ESMTP id S229468AbjGVQZ2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Jul 2023 12:25:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B792699;
+        Sat, 22 Jul 2023 09:25:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1A7960AF7;
+        Sat, 22 Jul 2023 16:25:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76CA0C433C7;
+        Sat, 22 Jul 2023 16:25:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1690043127;
+        bh=FCh6mMfH98pmylSNo+FT45c0lEWjtiwrsQV0G3r1acQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KrGl0mTBGGyq56JkR2vPaAwMwRMontw3bv93Om3qkanmCv7IJzEtiqPckz1SrGfzH
+         WxZj8UtSyKhiDgTmsH78+B0ZRCrBi3Rse+Ulk86yq4T8vbVmXdN1rkpdu2bIWONCD3
+         193G7TD68XoNvSDPGgeTkgtai9u5MAIICs3xPxqrJB6Wl+B96xA+yp3n1BYy7NFZe1
+         uXh9JB309vC75PZNKzk0AsIFIEx6eN6IigFspQzdBj79uka9GDEFLM2WAYxZwL1d9l
+         fUZDXhtpcoIvH0a199tlJdEqFaPGyG1OKZqrJXPhYmiyhBNocPzLwZSK4SQB+jfWCn
+         1pIJDQghfIJVA==
+Date:   Sat, 22 Jul 2023 17:25:21 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Puranjay Mohan <puranjay12@gmail.com>,
+        linux-iio@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH 1/4] iio: accel: adxl355: Simplify probe()
+Message-ID: <20230722172521.3b4e34cf@jic23-huawei>
+In-Reply-To: <20230716175218.130557-2-biju.das.jz@bp.renesas.com>
+References: <20230716175218.130557-1-biju.das.jz@bp.renesas.com>
+        <20230716175218.130557-2-biju.das.jz@bp.renesas.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <db709099-a2aa-c03f-61bb-6130adfd6f4a@infradead.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fri, Jul 21, 2023 at 01:48:34PM -0700, Randy Dunlap kirjoitti:
-> On 7/21/23 10:00, Andy Shevchenko wrote:
+On Sun, 16 Jul 2023 18:52:15 +0100
+Biju Das <biju.das.jz@bp.renesas.com> wrote:
 
-...
-
-> > - * Return: 0 for successful release
-> > + * Returns: 0 for successful release.
-
-> As documented in Documentation/doc-guide/kernel-doc.rst:
->   The return value, if any, should be described in a dedicated section
->   named ``Return``.
+> Simplify the probe() by replacing of_device_get_match_data() and
+> i2c_match_id() by i2c_get_match_data() as we have similar I2C
+> and DT-based matching table.
 > 
-> However, as you (and I) have found, "Returns:" also works as a section name.
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Applied to the togreg branch of iio.git, initially pushed out as testing
+for 0-day to take a look at.
 
-Plural allowed for some section(s):
-'\s*(\@[.\w]+|\@\.\.\.|description|context|returns?|notes?|examples?)\s*:([^:].*)?$'
+Thanks,
 
-> Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+Jonathan
 
-Thank you!
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+> ---
+>  drivers/iio/accel/adxl355_i2c.c | 15 +++------------
+>  1 file changed, 3 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/adxl355_i2c.c b/drivers/iio/accel/adxl355_i2c.c
+> index d5beea61479d..32398cde9608 100644
+> --- a/drivers/iio/accel/adxl355_i2c.c
+> +++ b/drivers/iio/accel/adxl355_i2c.c
+> @@ -24,19 +24,10 @@ static int adxl355_i2c_probe(struct i2c_client *client)
+>  {
+>  	struct regmap *regmap;
+>  	const struct adxl355_chip_info *chip_data;
+> -	const struct i2c_device_id *adxl355;
+>  
+> -	chip_data = device_get_match_data(&client->dev);
+> -	if (!chip_data) {
+> -		adxl355 = to_i2c_driver(client->dev.driver)->id_table;
+> -		if (!adxl355)
+> -			return -EINVAL;
+> -
+> -		chip_data = (void *)i2c_match_id(adxl355, client)->driver_data;
+> -
+> -		if (!chip_data)
+> -			return -EINVAL;
+> -	}
+> +	chip_data = i2c_get_match_data(client);
+> +	if (!chip_data)
+> +		return -ENODEV;
+>  
+>  	regmap = devm_regmap_init_i2c(client, &adxl355_i2c_regmap_config);
+>  	if (IS_ERR(regmap)) {
 
