@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BDA2C001B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB00DC001DE
 	for <linux-iio@archiver.kernel.org>; Mon, 24 Jul 2023 11:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233310AbjGXLCO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S233320AbjGXLCO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 24 Jul 2023 07:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55980 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233314AbjGXLCM (ORCPT
+        with ESMTP id S233315AbjGXLCM (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jul 2023 07:02:12 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FC3188;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C3E19B;
         Mon, 24 Jul 2023 04:02:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1690196528; x=1721732528;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=IctMq3br23eXnIOPxaHEk5MUrLAMEQPmIQZh4PnfpIo=;
-  b=mlGSB5U1X+slgG+DdR5jLJBl4bFi7cZRdP2uwZRvCNTbcfBZxF8aWW1m
-   L+trTPS0m3z/VgXrvGWFYv3HOaYCjk/Je1BlEhexYDWoY6pjVPHOdX+PC
-   vbU+rBV2m0sAvMstF0LZCpMDREKlxdIEc5HDxsG4vF0icbjj9wymm04YF
-   znvRHCaTFJh6vZxRUIL1nJARBwRmK+0JzOet0mzn/oBRDKMifqXo057OS
-   OZKXcv4r5RtF+chN8Kk7bEwucNS2MokkBuUQSWUSGuh4FjUPQEKHZWTI0
-   ZZJ2Pv2NO/7IGKogr0zQpmPDarlm+AyWAWDq5ngPKigfNXV2EWAECOMGW
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="347012823"
+  bh=G3EfKhulqiVD/k8ML7lvWomq7mPN98qxK02WVuePlyA=;
+  b=ncRQdXmnjjJzc0LXweNOENf03qXfGfZL2rSYESTOY1pPDgB33wAVCv30
+   pbaxEntp2iTQfqZkiDhzNRa8hHZhoJVnpB8sdnATGy7tjaqLHTK1XuyVo
+   pBV7E+11MDLOIlWXMmAfpIR3LkbRCoKFIteDNxDcMSYwR1GkULw3jnckt
+   nl82Em75LOEGCz+MduzDWWgnGZBafNAGp34YGyWUT96CR5AS82g7/Vd7R
+   Y3wkWt4jiiqFAf/WXfsatA3nyAX53WtoUcgmPpw1jLMPC2oTYbr9ZR6Ww
+   vRUdUWclG0bKQS/EfklZFUoWWCEHpkiBZcYjwjZIdE349zDc4FGNkMter
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="347012825"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="347012823"
+   d="scan'208";a="347012825"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 04:02:00 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="815775353"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="815775356"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="815775353"
+   d="scan'208";a="815775356"
 Received: from black.fi.intel.com ([10.237.72.28])
   by FMSMGA003.fm.intel.com with ESMTP; 24 Jul 2023 04:01:58 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id BD4FD195; Mon, 24 Jul 2023 14:02:06 +0300 (EEST)
+        id D1E6F2E9; Mon, 24 Jul 2023 14:02:06 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Nuno Sa <nuno.sa@analog.com>
-Subject: [PATCH v3 1/4] iio: core: Use sysfs_match_string() helper
-Date:   Mon, 24 Jul 2023 14:02:01 +0300
-Message-Id: <20230724110204.46285-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 3/4] iio: core: Switch to krealloc_array()
+Date:   Mon, 24 Jul 2023 14:02:03 +0300
+Message-Id: <20230724110204.46285-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
 In-Reply-To: <20230724110204.46285-1-andriy.shevchenko@linux.intel.com>
 References: <20230724110204.46285-1-andriy.shevchenko@linux.intel.com>
@@ -58,124 +58,28 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use sysfs_match_string() helper instead of open coded variant.
+Let the krealloc_array() copy the original data and
+check for a multiplication overflow.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Reviewed-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/industrialio-core.c | 71 +++++++++++++++------------------
- 1 file changed, 32 insertions(+), 39 deletions(-)
+ drivers/iio/industrialio-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 5f337f59330c..b153adc5bc84 100644
+index 118ca6b59504..13d6b6ac5ccf 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -1397,50 +1397,42 @@ static ssize_t label_show(struct device *dev, struct device_attribute *attr,
+@@ -1474,7 +1474,7 @@ int iio_device_register_sysfs_group(struct iio_dev *indio_dev,
+ 	const struct attribute_group **new, **old = iio_dev_opaque->groups;
+ 	unsigned int cnt = iio_dev_opaque->groupcounter;
  
- static DEVICE_ATTR_RO(label);
+-	new = krealloc(old, sizeof(*new) * (cnt + 2), GFP_KERNEL);
++	new = krealloc_array(old, cnt + 2, sizeof(*new), GFP_KERNEL);
+ 	if (!new)
+ 		return -ENOMEM;
  
-+static const char * const clock_names[] = {
-+	[CLOCK_REALTIME]	 	= "realtime",
-+	[CLOCK_MONOTONIC]	 	= "monotonic",
-+	[CLOCK_PROCESS_CPUTIME_ID]	= "process_cputime_id",
-+	[CLOCK_THREAD_CPUTIME_ID]	= "thread_cputime_id",
-+	[CLOCK_MONOTONIC_RAW]	 	= "monotonic_raw",
-+	[CLOCK_REALTIME_COARSE]	 	= "realtime_coarse",
-+	[CLOCK_MONOTONIC_COARSE] 	= "monotonic_coarse",
-+	[CLOCK_BOOTTIME]	 	= "boottime",
-+	[CLOCK_REALTIME_ALARM]		= "realtime_alarm",
-+	[CLOCK_BOOTTIME_ALARM]		= "boottime_alarm",
-+	[CLOCK_SGI_CYCLE]		= "sgi_cycle",
-+	[CLOCK_TAI]		 	= "tai",
-+};
-+
- static ssize_t current_timestamp_clock_show(struct device *dev,
- 					    struct device_attribute *attr,
- 					    char *buf)
- {
- 	const struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	const clockid_t clk = iio_device_get_clock(indio_dev);
--	const char *name;
--	ssize_t sz;
- 
- 	switch (clk) {
- 	case CLOCK_REALTIME:
--		name = "realtime\n";
--		sz = sizeof("realtime\n");
--		break;
- 	case CLOCK_MONOTONIC:
--		name = "monotonic\n";
--		sz = sizeof("monotonic\n");
--		break;
- 	case CLOCK_MONOTONIC_RAW:
--		name = "monotonic_raw\n";
--		sz = sizeof("monotonic_raw\n");
--		break;
- 	case CLOCK_REALTIME_COARSE:
--		name = "realtime_coarse\n";
--		sz = sizeof("realtime_coarse\n");
--		break;
- 	case CLOCK_MONOTONIC_COARSE:
--		name = "monotonic_coarse\n";
--		sz = sizeof("monotonic_coarse\n");
--		break;
- 	case CLOCK_BOOTTIME:
--		name = "boottime\n";
--		sz = sizeof("boottime\n");
--		break;
- 	case CLOCK_TAI:
--		name = "tai\n";
--		sz = sizeof("tai\n");
- 		break;
- 	default:
- 		BUG();
- 	}
- 
--	memcpy(buf, name, sz);
--	return sz;
-+	return sysfs_emit(buf, "%s\n", clock_names[clk]);
- }
- 
- static ssize_t current_timestamp_clock_store(struct device *dev,
-@@ -1450,22 +1442,23 @@ static ssize_t current_timestamp_clock_store(struct device *dev,
- 	clockid_t clk;
- 	int ret;
- 
--	if (sysfs_streq(buf, "realtime"))
--		clk = CLOCK_REALTIME;
--	else if (sysfs_streq(buf, "monotonic"))
--		clk = CLOCK_MONOTONIC;
--	else if (sysfs_streq(buf, "monotonic_raw"))
--		clk = CLOCK_MONOTONIC_RAW;
--	else if (sysfs_streq(buf, "realtime_coarse"))
--		clk = CLOCK_REALTIME_COARSE;
--	else if (sysfs_streq(buf, "monotonic_coarse"))
--		clk = CLOCK_MONOTONIC_COARSE;
--	else if (sysfs_streq(buf, "boottime"))
--		clk = CLOCK_BOOTTIME;
--	else if (sysfs_streq(buf, "tai"))
--		clk = CLOCK_TAI;
--	else
-+	ret = sysfs_match_string(clock_names, buf);
-+	if (ret < 0)
-+		return ret;
-+	clk = ret;
-+
-+	switch (clk) {
-+	case CLOCK_REALTIME:
-+	case CLOCK_MONOTONIC:
-+	case CLOCK_MONOTONIC_RAW:
-+	case CLOCK_REALTIME_COARSE:
-+	case CLOCK_MONOTONIC_COARSE:
-+	case CLOCK_BOOTTIME:
-+	case CLOCK_TAI:
-+		break;
-+	default:
- 		return -EINVAL;
-+	}
- 
- 	ret = iio_device_set_clock(dev_to_iio_dev(dev), clk);
- 	if (ret)
 -- 
 2.40.0.1.gaa8946217a0b
 
