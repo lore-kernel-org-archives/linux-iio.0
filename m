@@ -2,44 +2,92 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E383FC0015E
-	for <linux-iio@archiver.kernel.org>; Mon, 24 Jul 2023 09:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B083C0015E
+	for <linux-iio@archiver.kernel.org>; Mon, 24 Jul 2023 10:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230138AbjGXJoD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 24 Jul 2023 05:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45334 "EHLO
+        id S231778AbjGXKi5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 24 Jul 2023 06:38:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbjGXJoC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jul 2023 05:44:02 -0400
-X-Greylist: delayed 981 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 24 Jul 2023 02:44:01 PDT
-Received: from fluorez-com.cfd (fluorez-com.cfd [107.174.244.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D881A1
-        for <linux-iio@vger.kernel.org>; Mon, 24 Jul 2023 02:44:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=re1; d=fluorez-com.cfd;
- h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:
- Content-Transfer-Encoding; i=info@fluorez-com.cfd;
- bh=LqAKS0rQcqRhfS2AomqosmxOtHjI8TSd2DPxtKmN8Fo=;
- b=W1y/pQJ7jKElRDhNMrKxbZwDlYYfl4tKd9jOj8ofstuVlTGX9SgTZrJ+KJp1xGAYT926MS7DakJa
-   Bewj4By1KxXTaVztxwgnXcC1E0Qyk1uQCTs6+gSHbNNwMqM8xn9MaK052nLdgRIT4VO2fwSxRemG
-   s5rxRGvX+S1o35t9Zo4J6/aF7jJ55Akhf1nKkN24IMmLtjQHsTpW7cwlz/qHD4CkX+bZuiBtruGr
-   JdClGLGkLiofP8LHvARo1G17dprBJAJCIrO+MHYyUCxXHnaCnBSTJ48KI1Zrj3+RYJ/oop0bTnka
-   CmRZBki97Mw12MS1EfDOlW8nIkSPK8g13Fv/2g==
-Reply-To: info@coinloansupport.online
-From:   Coinloan Support Center <info@fluorez-com.cfd>
-To:     linux-iio@vger.kernel.org
-Subject: Low Interest loan opportunity
-Date:   24 Jul 2023 10:47:13 +0200
-Message-ID: <20230724104713.406AF0742356E088@fluorez-com.cfd>
+        with ESMTP id S231847AbjGXKiz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jul 2023 06:38:55 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B60E64;
+        Mon, 24 Jul 2023 03:38:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1690195105; x=1721731105;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=tW+M2N9Q+IxZ0D9H/5OTffwd2d4CE68kUFZWbzqXWTU=;
+  b=S/VhcWPuMCNMc4zdsHM8FQv+vfeWvS0wnSScCbUHaMLZJdEjR1F3Yt9J
+   KKr9tZUkfUW3PQhXXIlv9neuJR65oXPK6/OqfuDXEsaGLMdIVZoBGrnkt
+   dLaklklgLeGY7htJPtA37pjN7uxioSQlpPjzCZQQQNF57hCA2tg2+tJ7V
+   vdUWyZwRS3whf1Qdd9Gj+9jNkI3kg1Ur+nIkCWvwWkyi7i6zi2jPqgwe9
+   iRRUTLHrTRKtsiXT6m9Yw1Szu6rHPPiblKjzg0or/JfBL3+d20flkjwuf
+   f/6kwJpdGJtp7K/9aRw/KYLYsBQNc/PyU+ykF6t9cNqUFx0XLsh5maBXF
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="398308492"
+X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
+   d="scan'208";a="398308492"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 03:37:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="675784266"
+X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
+   d="scan'208";a="675784266"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003.jf.intel.com with ESMTP; 24 Jul 2023 03:37:48 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qNswk-008vQd-2A;
+        Mon, 24 Jul 2023 13:37:46 +0300
+Date:   Mon, 24 Jul 2023 13:37:46 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Nuno Sa <nuno.sa@analog.com>
+Subject: Re: [PATCH v2 3/8] iio: core: Switch to krealloc_array()
+Message-ID: <ZL5UeqLJirqkezyx@smile.fi.intel.com>
+References: <20230721170022.3461-1-andriy.shevchenko@linux.intel.com>
+ <20230721170022.3461-4-andriy.shevchenko@linux.intel.com>
+ <20230722182820.28fb3115@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230722182820.28fb3115@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Are you looking for a loan to either increase your activity or to=20
-carry out a project.=20
-We offer Crypto Loans at 2-7% interest rate with or without a=20
-credit check.
-Please get back to us if you are interested in more details.
+On Sat, Jul 22, 2023 at 06:28:20PM +0100, Jonathan Cameron wrote:
+> On Fri, 21 Jul 2023 20:00:17 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+...
+
+> > +		krealloc_array(attrs, attrcount + 1, sizeof(*attrs), GFP_KERNEL);
+> 
+> 
+> I'm a little lost, but isn't this realloc()ing attrs, which should be provided
+> by drivers as constant if it is set to indio_dev->info->attrs->attrs? 
+> 
+> That seems unlikely to work correctly, but I may well have lost track of the
+> flow and attrs points somewhere else at this point.  I guess it might work
+> as the realloc code will detect it can't resize that array.
+
+Argh!
+
+The attrs are defined without const. So, basically to prevent code like this
+we have to make sure our local variables are defined as const.
+
+I will drop this hunk from the next version, need to think if it makes sense
+to refactor and if so, in which way.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
