@@ -2,77 +2,115 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 100F9C04A6A
-	for <linux-iio@archiver.kernel.org>; Tue, 25 Jul 2023 17:16:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA48C04A6A
+	for <linux-iio@archiver.kernel.org>; Tue, 25 Jul 2023 17:49:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231131AbjGYRQj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 25 Jul 2023 13:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58288 "EHLO
+        id S231542AbjGYRte (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 25 Jul 2023 13:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231799AbjGYRQi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Jul 2023 13:16:38 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2EB5EBC;
-        Tue, 25 Jul 2023 10:16:37 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="6.01,230,1684767600"; 
-   d="scan'208";a="170787532"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 26 Jul 2023 02:16:36 +0900
-Received: from localhost.localdomain (unknown [10.226.92.3])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 1AFB0405617B;
-        Wed, 26 Jul 2023 02:16:33 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Lucas Stankus <lucas.p.stankus@gmail.com>,
-        linux-iio@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v3 2/2] iio: accel: adxl313: Use i2c_get_match_data
-Date:   Tue, 25 Jul 2023 18:16:24 +0100
-Message-Id: <20230725171624.331283-3-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230725171624.331283-1-biju.das.jz@bp.renesas.com>
-References: <20230725171624.331283-1-biju.das.jz@bp.renesas.com>
-MIME-Version: 1.0
+        with ESMTP id S230408AbjGYRtc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Jul 2023 13:49:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA79CF7;
+        Tue, 25 Jul 2023 10:49:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BDA761852;
+        Tue, 25 Jul 2023 17:49:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C4F6C433C8;
+        Tue, 25 Jul 2023 17:49:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1690307369;
+        bh=w7dbONTIy2Co3mAFj/AcsnLbCERRs5c4tblF0g/VRPU=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=qRmvy9rHWcDnpixwhpi8DTuQcPdUyIZr5ZNx9ydG3F5boc73mSyEcLxTRGyRsCrB3
+         vClccnArnxXoaiGAgIdoaS2+TOFRAoqZK63Wk0bXfrXFknhfb+CydSPKk0rOsuu3hH
+         TLEWzXb38mM81F0bbsLAvvpzt0taCiE7A8213w6F+7Ut1V3wYK9UY5byb1RK9gdLLH
+         A8/Iy7F8eWp47Q1Fq/3T9a96ynyIDqiSA2oI0PcsUAwZGhiXzTUnrxDNnd0AH129MP
+         pymfYyEwQoff+K9nqQse31QUqBocLgoqy3MvVJHBF8sdscLUh2TInqE0lKi9416xVB
+         K25mir6FU0ktQ==
+Received: (nullmailer pid 3497934 invoked by uid 1000);
+        Tue, 25 Jul 2023 17:49:25 -0000
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+From:   Rob Herring <robh@kernel.org>
+To:     Gatien Chevallier <gatien.chevallier@foss.st.com>
+Cc:     kuba@kernel.org, will@kernel.org, linux-serial@vger.kernel.org,
+        linux-phy@lists.infradead.org,
+        Oleksii Moisieiev <oleksii_moisieiev@epam.com>,
+        linux-spi@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+        lee@kernel.org, robh+dt@kernel.org, linux-usb@vger.kernel.org,
+        gregkh@linuxfoundation.org, arnaud.pouliquen@foss.st.com,
+        Oleksii_Moisieiev@epam.com, arnd@kernel.org,
+        hugues.fruchet@foss.st.com, ulf.hansson@linaro.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jic23@kernel.org, alexandre.torgue@foss.st.com, pabeni@redhat.com,
+        andi.shyti@kernel.org, netdev@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        edumazet@google.com, vkoul@kernel.org, dmaengine@vger.kernel.org,
+        catalin.marinas@arm.com, herbert@gondor.apana.org.au,
+        fabrice.gasnier@foss.st.com, mchehab@kernel.org,
+        linux-iio@vger.kernel.org, richardcochran@gmail.com,
+        davem@davemloft.net, conor+dt@kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, alsa-devel@alsa-project.org,
+        linux-crypto@vger.kernel.org, linux-i2c@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, olivier.moysan@foss.st.com
+In-Reply-To: <20230725164104.273965-2-gatien.chevallier@foss.st.com>
+References: <20230725164104.273965-1-gatien.chevallier@foss.st.com>
+ <20230725164104.273965-2-gatien.chevallier@foss.st.com>
+Message-Id: <169030736341.3497818.1740404012211043486.robh@kernel.org>
+Subject: Re: [IGNORE][PATCH v2 01/11] dt-bindings: Document common device
+ controller bindings
+Date:   Tue, 25 Jul 2023 11:49:25 -0600
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Replace device_get_match_data() and i2c_match_id() by i2c_get_match
-_data() as we have similar I2C and DT-based matching table.
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-v2->v3:
- * No change.
-v1->v2:
- * Added Rb tag from Geert
- * Removed error check as all tables have data pointers.
- * retained Rb tag as the change is trivial.
----
- drivers/iio/accel/adxl313_i2c.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+On Tue, 25 Jul 2023 18:40:54 +0200, Gatien Chevallier wrote:
+> From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
+> 
+> Introducing of the common device controller bindings for the controller
+> provider and consumer devices. Those bindings are intended to allow
+> divided system on chip into muliple domains, that can be used to
+> configure hardware permissions.
+> 
+> Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
+> ---
+>  .../feature-domain-controller.yaml            | 84 +++++++++++++++++++
+>  1 file changed, 84 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml
+> 
 
-diff --git a/drivers/iio/accel/adxl313_i2c.c b/drivers/iio/accel/adxl313_i2c.c
-index e0a860ab9e58..a4cf0cf2c5aa 100644
---- a/drivers/iio/accel/adxl313_i2c.c
-+++ b/drivers/iio/accel/adxl313_i2c.c
-@@ -65,9 +65,7 @@ static int adxl313_i2c_probe(struct i2c_client *client)
- 	 * Retrieves device specific data as a pointer to a
- 	 * adxl313_chip_info structure
- 	 */
--	chip_data = device_get_match_data(&client->dev);
--	if (!chip_data)
--		chip_data = (const struct adxl313_chip_info *)i2c_match_id(adxl313_i2c_id, client)->driver_data;
-+	chip_data = i2c_get_match_data(client);
- 
- 	regmap = devm_regmap_init_i2c(client,
- 				      &adxl31x_i2c_regmap_config[chip_data->type]);
--- 
-2.25.1
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml: title: 'Generic Domain Controller bindings' should not be valid under {'pattern': '([Bb]inding| [Ss]chema)'}
+	hint: Everything is a binding/schema, no need to say it. Describe what hardware the binding is for.
+	from schema $id: http://devicetree.org/meta-schemas/core.yaml#
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230725164104.273965-2-gatien.chevallier@foss.st.com
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
