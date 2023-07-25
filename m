@@ -2,60 +2,102 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5CC3C001DF
-	for <linux-iio@archiver.kernel.org>; Tue, 25 Jul 2023 08:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBF6EC001DE
+	for <linux-iio@archiver.kernel.org>; Tue, 25 Jul 2023 09:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231829AbjGYI5H (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 25 Jul 2023 04:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40946 "EHLO
+        id S232767AbjGYJEC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 25 Jul 2023 05:04:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231636AbjGYI4s (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Jul 2023 04:56:48 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B6F173D;
-        Tue, 25 Jul 2023 01:56:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1690275401;
-  x=1721811401;
-  h=references:from:to:cc:subject:date:in-reply-to:
-   message-id:mime-version;
-  bh=mbXQf4QZMqamf4di/Lkgjat435aOqhzJnx84Nfjf8CE=;
-  b=ga8AAPdJHFdTqSlKZhSPK0U/KUDp+0nxsFg/6I6QyxNZPHTctPQGFExQ
-   kh6BYiyoiyUn9smQ25VVKnhb70DVqc2tV+AbngvJRNa4xQvQZurglldWE
-   R7CisVJ3wdK08hnN96J7IDmvFRgVATz40trMqEvMntbger9KvtJJdVoap
-   D28RfZyRy2+6WVq+v4+OiJcvamUn61fy/D/8Ta/O3HeKUPEm+0B1L5jO7
-   nTyCHWvlK1XkzPkIk74L2g57druRIE/iSoFOW6+RnYGY3EEHjbQs2evnp
-   RvwOhj75zgQhK8JBfb1S4fbiP+DJhDFdljXNsm1rT2V8Al/oTl+splWBj
-   A==;
-References: <cover.1689753076.git.waqar.hameed@axis.com>
- <d218a1bc75402b5ebd6e12a563f7315f83fe966c.1689753076.git.waqar.hameed@axis.com>
- <20230723132216.3c2f4924@jic23-huawei>
-User-agent: a.out
-From:   Waqar Hameed <waqar.hameed@axis.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     Lars-Peter Clausen <lars@metafoo.de>, <kernel@axis.com>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v4 3/3] iio: Add driver for Murata IRS-D200
-Date:   Tue, 25 Jul 2023 10:53:54 +0200
-In-Reply-To: <20230723132216.3c2f4924@jic23-huawei>
-Message-ID: <pndlef4qshl.fsf@axis.com>
+        with ESMTP id S233006AbjGYJDt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Jul 2023 05:03:49 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B8B1BFD;
+        Tue, 25 Jul 2023 02:03:45 -0700 (PDT)
+Received: from dggpeml500019.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4R99xK2tSRzLnwX;
+        Tue, 25 Jul 2023 17:01:09 +0800 (CST)
+Received: from localhost.localdomain (10.90.76.33) by
+ dggpeml500019.china.huawei.com (7.185.36.137) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Tue, 25 Jul 2023 17:03:43 +0800
+From:   Chenyuan Mi <michenyuan@huawei.com>
+To:     <jic23@kernel.org>
+CC:     <lars@metafoo.de>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH V2] tools: iio: iio_generic_buffer: Fix some integer type and  calculation
+Date:   Tue, 25 Jul 2023 09:24:07 +0000
+Message-ID: <20230725092407.62545-1-michenyuan@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.0.5.60]
-X-ClientProxiedBy: se-mail02w.axis.com (10.20.40.8) To se-mail02w.axis.com
- (10.20.40.8)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.90.76.33]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500019.china.huawei.com (7.185.36.137)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Jul 23, 2023 at 13:22 +0100 Jonathan Cameron <jic23@kernel.org> wrote:
+In function size_from_channelarray(), the return value 'bytes' is defined
+as int type. However, the calcution of 'bytes' in this function is designed
+to use the unsigned int type. So it is necessary to change 'bytes' type to
+unsigned int to avoid integer overflow.
 
-[...]
+The size_from_channelarray() is called in main() function, its return value
+is directly multipled by 'buf_len' and then used as the malloc() parameter.
+The 'buf_len' is completely controllable by user, thus a multiplication
+overflow may occur here. This could allocate an unexpected small area.
 
-> I had some more feedback (see inline) but as it was all very minor, I've
-> made the changes whilst applying.  Let me know if I messed anything up!
->
-> Applied to the togreg branch of iio.git and pushed out as testing for 0-day
-> to see if it can find anything we missed.
+Signed-off-by: Chenyuan Mi <michenyuan@huawei.com>
+---
+ tools/iio/iio_generic_buffer.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-Looks good to me! Thank you very much Jonathan!
+diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
+index f8deae4e26a1..44bbf80f0cfd 100644
+--- a/tools/iio/iio_generic_buffer.c
++++ b/tools/iio/iio_generic_buffer.c
+@@ -51,9 +51,9 @@ enum autochan {
+  * Has the side effect of filling the channels[i].location values used
+  * in processing the buffer output.
+  **/
+-static int size_from_channelarray(struct iio_channel_info *channels, int num_channels)
++static unsigned int size_from_channelarray(struct iio_channel_info *channels, int num_channels)
+ {
+-	int bytes = 0;
++	unsigned int bytes = 0;
+ 	int i = 0;
+ 
+ 	while (i < num_channels) {
+@@ -348,7 +348,7 @@ int main(int argc, char **argv)
+ 	ssize_t read_size;
+ 	int dev_num = -1, trig_num = -1;
+ 	char *buffer_access = NULL;
+-	int scan_size;
++	unsigned int scan_size;
+ 	int noevents = 0;
+ 	int notrigger = 0;
+ 	char *dummy;
+@@ -674,7 +674,16 @@ int main(int argc, char **argv)
+ 	}
+ 
+ 	scan_size = size_from_channelarray(channels, num_channels);
+-	data = malloc(scan_size * buf_len);
++
++	size_t total_buf_len = scan_size * buf_len;
++
++	if (scan_size > 0 && total_buf_len / scan_size != buf_len) {
++		ret = -EFAULT;
++		perror("Integer overflow happened when calculate scan_size * buf_len");
++		goto error;
++	}
++
++	data = malloc(total_buf_len);
+ 	if (!data) {
+ 		ret = -ENOMEM;
+ 		goto error;
+-- 
+2.25.1
+
