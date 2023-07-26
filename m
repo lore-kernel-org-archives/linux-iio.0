@@ -2,308 +2,322 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC75EC001DC
-	for <linux-iio@archiver.kernel.org>; Wed, 26 Jul 2023 09:21:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C9F3C001DE
+	for <linux-iio@archiver.kernel.org>; Wed, 26 Jul 2023 10:19:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231460AbjGZJVl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 26 Jul 2023 05:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43752 "EHLO
+        id S233665AbjGZKT5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 26 Jul 2023 06:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232140AbjGZJVV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Jul 2023 05:21:21 -0400
-X-Greylist: delayed 302 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 26 Jul 2023 02:18:34 PDT
-Received: from es400ra01.iit.it (mx.iit.it [90.147.26.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A553146A2;
-        Wed, 26 Jul 2023 02:18:34 -0700 (PDT)
-Received: from es400ra01.iit.it (127.0.0.1) id ho3ieg0171st; Wed, 26 Jul 2023 11:02:25 +0200 (envelope-from <prvs=15715473c1=Andrea.Merello@iit.it>)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iit.it;
-        s=mx; i=@iit.it; h=Received:Received:From:To:CC:Subject:Date:
-        Message-ID:MIME-Version:Content-Transfer-Encoding:Content-Type;
-        bh=ad45fa4o7e/njwUBzzmSTo2hmRTeshq6XNfP6gDKwKI=; b=T5ZZJW3QObdUk
-        qIdf18x3hOeYSoWYfZN06Ktd/FNnbDyiRdtqHegdMrnC0TXJ+hUe2q8z3JIkibr3
-        8RUy8TEq2RfNFXy8dCEltaLjKc1MEEavO2XGQbOu93hZA2LbA7MluaguWTzOUILm
-        hms5TDatWZh76A3OGp6fHrxs4J/HzI=
-Received: from mail.iit.it ([10.255.8.186])
-        by es400ra01.iit.it ([172.31.0.241]) (SonicWall 10.0.19.7431)
-        with ESMTPS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256)
-        id o202307260902240186944-11; Wed, 26 Jul 2023 11:02:24 +0200
-Received: from NewMoon.iit.local (10.245.73.32) by iitmxwge020.iit.local
- (10.255.8.186) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.27; Wed, 26 Jul
- 2023 11:02:24 +0200
-From:   Andrea Merello <andrea.merello@iit.it>
-To:     <jic23@kernel.org>, <lars@metafoo.de>
-CC:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <andrea.merello@gmail.com>, <mkelly@xevo.com>,
-        <jmaneyrol@invensense.com>, <francesco.diotalevi@iit.it>,
-        Andrea Merello <andrea.merello@iit.it>
-Subject: [RFC] IIO: MPU6050: fix level-triggered IRQ support caused crash
-Date:   Wed, 26 Jul 2023 11:02:12 +0200
-Message-ID: <20230726090212.10641-1-andrea.merello@iit.it>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S233461AbjGZKTy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Jul 2023 06:19:54 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A580DE7;
+        Wed, 26 Jul 2023 03:19:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NUCMZaZfReunmMS88vSsK5G8+TkXa7pEcYjhVcxnbxyOCFihpd9+4xevziSqMon/ooj3W8AOfYsRd/gLsvu4ICGlpHIfK3SuUyFlxS/6vUvp7wr5KQNsnK6pdRZyxEucYcNPnKVtlP+lfKeNPoWxtg/KvNCkLHQXK4PpY6Ag+uG0bVE3o0KzVK8H25N9tAhGvTpE2saDwMRMTMdDnJ3prvJWycr66LJ+5qkp/NpHwbQSq1AvPyWcm/DX89QxWfPFaHZ3IhqWOCW7eylzGIVBBUML6WtEKHAGMjwT6/qMhqDauSVA+qx9OFruyLDga4vJQ5TjuAaxYmlzdzGN4tlNZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dttOZGVpYrvCbiWs7/nwb4n9deqZ+DT6/2Uq4zsMQoU=;
+ b=iOFAxx6fJDEGbmZMIB2PJ4LDVos86ItM0xfaXLRvyNDWFEoecGvpVQPLjXXummRYAb33X2eeiPzZos/0iCvsrjwqZa2bi5uEVYRGOM5pMkkvd0YYdZpobDvSluWXfFYNnqTvWrjMkfYGdEbuzWFfphZRGwo7bYJumUxdcijEatjlqySZ+SE3qouTV+zH7dYGO/Q3G8GFfsRfDoZIe8j//UAKHq/Wnv2hWamyV4ZaNQl+8dhyBPsQvnv3OdVdQcuhA3aZgpK8+DeQR0nd9wLMaNEsfoxIl3HHuHDjhK9m7sB4I9ABtI9awBZTjwFvDbnZw45jqELE10B2vuDx2bwv1A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dttOZGVpYrvCbiWs7/nwb4n9deqZ+DT6/2Uq4zsMQoU=;
+ b=Hd5Y6FlkHYA7fg7PmaINIDT9Ea5LuTrbtIQHG4lX1kxSsYL3zC9lpShsjFTicQ9BkZopNXDVNfN7ZXAjzBo+kYgUmEQxDWZHX8dXQK44b/Vv8tEVjXlM+0rp+ushamUnan94sGUULAWmnKaUr6lHtxAYlkv9i0SUE5swOxSibK8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CO1PR13MB4840.namprd13.prod.outlook.com (2603:10b6:303:f6::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29; Wed, 26 Jul
+ 2023 10:19:46 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::fde7:9821:f2d9:101d]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::fde7:9821:f2d9:101d%7]) with mapi id 15.20.6609.032; Wed, 26 Jul 2023
+ 10:19:46 +0000
+Date:   Wed, 26 Jul 2023 12:19:33 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Gatien Chevallier <gatien.chevallier@foss.st.com>
+Cc:     Oleksii_Moisieiev@epam.com, gregkh@linuxfoundation.org,
+        herbert@gondor.apana.org.au, davem@davemloft.net,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, alexandre.torgue@foss.st.com,
+        vkoul@kernel.org, jic23@kernel.org, olivier.moysan@foss.st.com,
+        arnaud.pouliquen@foss.st.com, mchehab@kernel.org,
+        fabrice.gasnier@foss.st.com, andi.shyti@kernel.org,
+        ulf.hansson@linaro.org, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, hugues.fruchet@foss.st.com, lee@kernel.org,
+        will@kernel.org, catalin.marinas@arm.com, arnd@kernel.org,
+        richardcochran@gmail.com, Frank Rowand <frowand.list@gmail.com>,
+        linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH v2 05/11] firewall: introduce stm32_firewall framework
+Message-ID: <ZMDzNSkRvvVsxUto@corigine.com>
+References: <20230725164104.273965-1-gatien.chevallier@foss.st.com>
+ <20230725164104.273965-6-gatien.chevallier@foss.st.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230725164104.273965-6-gatien.chevallier@foss.st.com>
+X-ClientProxiedBy: AM0PR02CA0127.eurprd02.prod.outlook.com
+ (2603:10a6:20b:28c::24) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.245.73.32]
-X-ClientProxiedBy: iitmxwge020.iit.local (10.255.8.186) To
- iitmxwge020.iit.local (10.255.8.186)
-X-Mlf-DSE-Version: 7194
-X-Mlf-Rules-Version: s20230112191048; ds20230628172248;
-        di20230721161137; ri20160318003319; fs20230724172827
-X-Mlf-Smartnet-Version: 20210917223710
-X-Mlf-Envelope-From: Andrea.Merello@iit.it
-X-Mlf-Version: 10.0.19.7431
-X-Mlf-License: BSV_C_AP_T_R
-X-Mlf-UniqueId: o202307260902240186944
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO1PR13MB4840:EE_
+X-MS-Office365-Filtering-Correlation-Id: a2d3bb4e-9421-4fe4-6b60-08db8dc1d5d0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9oWlcWlNNa2GhLeQt6EP9CIC9qoOGxP+Sm6OUB5ClU+aeESYL+dEPIGxxWnRjkfDFyZ6C9Dzcx4JCnZ6gM1TH/ny6/eTBIkfW1ORRGq/K38lmRsY+mDMJGouuBkjmx4AOi5hI4LJIGIzeJGHVnSR1dkt3NdP/e9hhbbxAqhe9060mkDpleZppEalBAo6Yj0uPTJu3nwIsi2Cd0iprvoYqZDgBV5YsBjFpT1Wtg+AoSI3JnRpAXBgthtSaBECmG09Cow/uuldBpIFTLY2hjNPjYKA+Rc+lNtPD2l8nTLQj0nnKiaVuLlnMSvxSPFMHZ5zpzlASywh6P/A9VK4tIv2pssGes1jwkxJuL+yvZ8WDCisr77Q2N5SXg+wOo+pCf0QmBTS4FAsf6v77zOT8C9jZuFeeDNMAbMOO2keTzwAaogbo7Ly3qj37b14o20KYzV+y6aWcpIWUtgWs7XMNi4nMHBza5rvSL7yvyHRdsExCYLQ4JZUbsZiLcooWsu4A0zpllWyLVW7oLPIse77w5/pVC64hvrmYvnnGTxGAD3/zazwewusACh9VzbPlvvN6UXH7/oppOiRI3wmvpvdDgDAC7U8FJsghf7rODXFdNmuz5I=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39840400004)(376002)(346002)(396003)(136003)(451199021)(6666004)(6486002)(478600001)(83380400001)(6506007)(6512007)(6916009)(66476007)(4326008)(66556008)(66946007)(186003)(2616005)(38100700002)(44832011)(5660300002)(7406005)(7416002)(8936002)(8676002)(2906002)(316002)(41300700001)(66899021)(86362001)(36756003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iSrc3zndfBUC0ftuXazbVfMRd/AA8NsnhpOvULz1VYY5WHbg0UiXYtewsOSo?=
+ =?us-ascii?Q?RQUeozi8wIBSV0VWj3YF+zlfnQ1LmEa1k5wZHQUXg+9PEDCV8KmAQfXHkRkA?=
+ =?us-ascii?Q?cHZVyCIQCfr65vjaR4pD8AITPiHBZ26XulqzAoL2G1CyzhH6Wgn12Jofb3TU?=
+ =?us-ascii?Q?qOtshyCGg517Cjd5UUe0vUq5SS7g05o60JN+vRYkqgp6le1S9HelitwNxC0F?=
+ =?us-ascii?Q?RhUDnkV9xYbOJ4de1oBQlAsWhrgJZt75Uz4eBPslaR2y/vlP45o7olgd3TLh?=
+ =?us-ascii?Q?CaViNt0nlMIxdz2ehecammYekwHK5H4+FSmMdfbKL1GaA3v36qkyshlO+H5L?=
+ =?us-ascii?Q?dcPC7hb03s9THnlDC3zAHdkWaXNS0iOM6ex91NthhaiDP9weRSji3g12WRcH?=
+ =?us-ascii?Q?aB+4xCK7WkNteRC4UCYz36H52RsK907G3i4WFrPNTnQWekRseeKnGWDflZar?=
+ =?us-ascii?Q?OBkBb+Hm2KQgao3z9GTEl+4H4FqZA7pahVRlkcpgE7Ju15bPAADcHglamJqA?=
+ =?us-ascii?Q?vHqhgU3e14k4EyhCW/WaxjvHoS2NQYnPTO64tjF25aIHIsltmbHTwv52zZoa?=
+ =?us-ascii?Q?5fKzsSFIA5CEBal/VE2RHcF8+g6gV+nNYaxmZkxZj7UJA0zUnfe7a7XDqOHU?=
+ =?us-ascii?Q?fp3qfKUh9lA/V8hQnvlhX+/lR/pquQq84fh0nz2guNY2tXH+4LqkmizHFGDR?=
+ =?us-ascii?Q?eeYhFpWMlV4OB7IWH6cOW4KRmd0m4ZJBjAgHrugligEA/3Hi+sFmFZAj50E6?=
+ =?us-ascii?Q?kR5WG0wQV5SYjJksPmWQpcMug3Z6kHPpo+TyDdhEixp98fzwwN6coxl4hKhN?=
+ =?us-ascii?Q?eGYIzZoYKcldWnXgRV5M312FL/dd9gBOWKEhReU151FPK2xblpBpLMrr02U2?=
+ =?us-ascii?Q?aNw0vBNk/rtaIMyvaz+zpbJR0Tdd00HXavSPkQtIggCP0j0Z0vXGcT+Y7g1N?=
+ =?us-ascii?Q?NRwB6vvFwpySdHn+dNEC54rNf8pgCaqUfZaqlci3Sum/LXvXTCRF/7gHzuft?=
+ =?us-ascii?Q?oapefsiOyljdtwxvdmVtj3KkOFFMSXgWdEfXjWue74VzuJqfgyRWDpaO7wV7?=
+ =?us-ascii?Q?LfpX7GKBM9+cgL/yc4drpxCGjq8Ha77ZPwzPgT9bjihD7/uQnQD5ZxShakLN?=
+ =?us-ascii?Q?dwqqzMGN2enl8jfbJNsEUFGhzjBsl3sWdiwap5Hc15iFm1M336CFRLYKniR9?=
+ =?us-ascii?Q?3dETBhVAJdiCz+dnR1clhmrjpyjTuz4/51qi8UqoA58QUJLqHYCbPyntfsaE?=
+ =?us-ascii?Q?xCp3ksAHYx4G9VEEN2eZikTiCEtY/srG9y2rXJPbPvF1pH4Lc1i2Bg/iM1w6?=
+ =?us-ascii?Q?UnMHyVpxFAaeRy5psy11yx01+4fgjxj4AkgRglTmdUQBfW/tt7R/CZldawah?=
+ =?us-ascii?Q?7IgakWIDznrjYdR9/pfFvKrLRO5orDbdZWdU+th/4OAFPne4sH6J74dYfbK0?=
+ =?us-ascii?Q?x4cwqkozpdi0MgAFB3YB+9RPGgayuHpjh35LUJw1FDrs/b4hER7jYSe8ZV/p?=
+ =?us-ascii?Q?XiKNMGBwIOkkS2IfE8ttlwvUDqepsuTuCdKU7glyXcLewhBXtpdcW9YehEoJ?=
+ =?us-ascii?Q?Vyc8KvY2wtR+Bf7mA3rvwtPeqH9xJBgz4lBfuVTLyst8eAa+Lt1op2JSCaRD?=
+ =?us-ascii?Q?Uu1mPd16fy+yvy9biioULHJYeGXjWqwFkvwfhP7bIV/zcNFV3o+ndIJeAONR?=
+ =?us-ascii?Q?Nv3yjQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2d3bb4e-9421-4fe4-6b60-08db8dc1d5d0
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2023 10:19:46.1717
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lr689HA28hCxN0D1Fo6kFJfCcsD7UCd4ibt8xmloW+RtNHUFZYEdPujHl/KSVXnx1tP+KZsLoqJqYw1ij/6N5/VtvbbfVSb6vvsW8Rxr/nI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR13MB4840
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Updating kernel on my board caused crashes while using a MPU6050, more
-specifically when enabling its trigger. This seems due to commit
-5ec6486daa98 ("iio:imu: inv_mpu6050: support more interrupt types").
+On Tue, Jul 25, 2023 at 06:40:58PM +0200, Gatien Chevallier wrote:
+> Introduce a STM32 firewall framework that offers to firewall consumers
+> different firewall services such as the ability to check their access
+> rights against their firewall controller(s).
+> 
+> The STM32 firewall framework offers a generic API for STM32 firewall
+> controllers that is defined in their drivers to best fit the
+> specificity of each firewall.
+> 
+> There are various types of firewalls:
+> -Peripheral firewalls that filter accesses to peripherals
+> -Memory firewalls that filter accesses to memories or memory regions
+> -No type for undefined type of firewall
+> 
+> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
 
-Since the said commit, the MPU6050 driver supports also level-triggered
-interrupts, other than rising-edge interrupts. Unfortunately
-level-triggered interrupts don't work here [0] causing IRQ floods [1],
-Oopses [2] and crashes. This even affected a previously-working setup [3].
+...
 
-I have to say that I'm not honestly completely sure how to interpret my
-Oopses, and that they are also pointing to the I2C controller and to the
-serial tty driver somehow. However I think that there is a real problem
-with the said IIO commit anyway; support for level-triggered IRQs seems
-broken to me due to the following reason:
+> diff --git a/drivers/bus/stm32_firewall.c b/drivers/bus/stm32_firewall.c
 
-The handler for MPU6050 hardware IRQ is iio_trigger_generic_data_rdy_poll()
-which doesn't acknowleges the IRQ (i.e. the IRQ line remains asserted); the
-IRQ is acknowledged only in the bottom half of the IIO softIRQ, registered
-with devm_iio_triggered_buffer_setup(), which is inv_mpu6050_read_fifo().
+...
 
-I think that in this way the hardware IRQ is re-enabled before the IRQ is
-acknowledged to the IMU. When the IRQ is level-triggered, the IRQ line
-remains asserted causing the hardware IRQ handler to be reentered,
-generating a (fake) IRQ storm (while when interrupts are edge-triggered the
-IMU just generate one pulse until acknowledgment, I guess).
+> +int stm32_firewall_populate_bus(struct stm32_firewall_controller *firewall_controller)
+> +{
+> +	struct stm32_firewall *firewalls;
+> +	struct device_node *child;
+> +	struct device *parent;
+> +	unsigned int i;
+> +	int len;
+> +	int err;
+> +
+> +	parent = firewall_controller->dev;
+> +
+> +	dev_dbg(parent, "Populating %s system bus\n", dev_name(firewall_controller->dev));
+> +
+> +	for_each_available_child_of_node(dev_of_node(parent), child) {
+> +		/* The feature-domains property is mandatory for firewall bus devices */
+> +		len = of_count_phandle_with_args(child, "feature-domains", "#feature-domain-cells");
+> +		if (len <= 0)
 
-Just adding IRQF_ONESHOT to the hardware IRQ flags apparently doesn't make
-any difference, because it would just defer the IRQ re-enable to the bottom
-half of the very same (hardware) IRQ handler, while, in my understanding,
-here the interrupt acknowledgment happens in the bottom half of the *soft*
-IRQ, which is another IRQ indeed.
+Coccinelle says that, due to breaking out of a
+for_each_available_child_of_node() loop, a call to of_node_put()
+is needed here
 
-The following PoC patch moves the interrupt status register read (which
-also acknowledges the IRQ) to the bottom half of the *hardware* IRQ
-handler, which now becomes a threaded IRQ with the IRQF_ONESHOT flag.
+> +			return -EINVAL;
+> +
+> +		firewalls = kcalloc(len, sizeof(*firewalls), GFP_KERNEL);
+> +		if (!firewalls)
 
-This seems to work. The softirq handler doesn't hopefully really need to
-look at the interrupt status register because it will give up early anyway
-when it finds no data in the IMU FIFO.
+And here.
 
-I have to say that I'm not really sure this is a good way to fix things;
-possibly someone has advices for a better fix (RFC).
+> +			return -ENOMEM;
+> +
+> +		err = stm32_firewall_get_firewall(child, firewalls, (unsigned int)len);
+> +		if (err) {
+> +			kfree(firewalls);
 
-In case this fix turns out to be not adequate, and no-one has a better one,
-then I'd propose to revert the level-triggered interrupt support (and maybe
-make the probe failing whenever an unsupported IRQ type is requested?).
+And here.
 
-[0] Here I'm on a custom board with a Zynq7000 SoC (IRQ controller supports
-both raising-edge and level IRQ) and an MPU9250 IMU. I've done most work on
-a 5.15 customized kernel, but I've tried also with latest mainline tree and
-I got the same results.
+> +			return err;
+> +		}
+> +
+> +		for (i = 0; i < len; i++) {
+> +			if (firewall_controller->grant_access(firewall_controller,
+> +							      firewalls[i].firewall_id)) {
+> +				/*
+> +				 * Peripheral access not allowed or not defined.
+> +				 * Mark the node as populated so platform bus won't probe it
+> +				 */
+> +				of_node_set_flag(child, OF_POPULATED);
+> +				dev_err(parent, "%s: Device driver will not be probed\n",
+> +					child->full_name);
+> +			}
+> +		}
+> +
+> +		kfree(firewalls);
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(stm32_firewall_populate_bus);
 
-[1]  when running:
+> diff --git a/drivers/bus/stm32_firewall.h b/drivers/bus/stm32_firewall.h
 
-root@arm:/sys/bus/iio/devices/iio:device2/buffer0# echo 1 > enable ; sleep 5; echo 0 > enable
+...
 
-on a 5.15 kernel the system somehow survived, despite Oopses and
-complaints, so I could give a look to /proc/interrupts:
+> +/**
+> + * struct stm32_firewall_controller - Information on firewall controller supplying services
+> + *
+> + * @name			Name of the firewall controller
 
-64:    1119991          0     GIC-0  68 Level     inv_mpu
-65:         55          0  mpu9250-dev2     Edge      mpu9250_consumer2
+kernel-doc complains that name and the other fields of
+struct stm32_firewall_controller are not documented.
+I believe this is because a ':' is needed after the name of
+the parameter (in this case 'name').
 
-The hardware IRQ counted an unreasonably huge number of interrupts, while
-the trigger softirq counted a reasonable number of interrupts.
+ * @name:			Name of the firewall controller
 
-(On a working system i.e. before the blamed commit, or after my patch,
-these two counters count the same number of IRQs)
+Likewise, elsewhere.
 
-[2] Depending by a number of factors (e.g. RT-patch, kernel debug
-configuration options, kernel version) I got some different complaints. The
-following is the one I grabbed from the latest git tree kernel.
-(irq/47-41620000/45 refers to the I2C controller to witch the IMU is
-attached to):
+> + * @dev				Device reference of the firewall controller
+> + * @mmio			Base address of the firewall controller
+> + * @entry			List entry of the firewall controller list
+> + * @type			Type of firewall
+> + * @max_entries			Number of entries covered by the firewall
+> + * @grant_access		Callback used to grant access for a device access against a
+> + *				firewall controller
+> + * @release_access		Callback used to release resources taken by a device when access was
+> + *				granted
+> + * @grant_memory_range_access	Callback used to grant access for a device to a given memory region
+> + */
+> +struct stm32_firewall_controller {
+> +	const char *name;
+> +	struct device *dev;
+> +	void __iomem *mmio;
+> +	struct list_head entry;
+> +	unsigned int type;
+> +	unsigned int max_entries;
+> +
+> +	int (*grant_access)(struct stm32_firewall_controller *ctrl, u32 id);
+> +	void (*release_access)(struct stm32_firewall_controller *ctrl, u32 id);
+> +	int (*grant_memory_range_access)(struct stm32_firewall_controller *ctrl, phys_addr_t paddr,
+> +					 size_t size);
+> +};
+> +
+> +/**
+> + * int stm32_firewall_controller_register - Register a firewall controller to the STM32 firewall
 
-[  250.941155] sched: RT throttling activated
+kernel-doc seems unhappy about the presence of 'int' on this line.
 
-[  275.557147] rcu: INFO: rcu_sched self-detected stall on CPU
-[  275.562749] rcu:     0-....: (26689 ticks this GP) idle=89dc/1/0x40000002 softirq=20591/20592 fqs=6234
-[  275.563143]
-[  275.563148] =============================
-[  275.563152] [ BUG: Invalid wait context ]
-[  275.563156] 6.5.0-rc3+ #17 Not tainted
-[  275.563163] -----------------------------
-[  275.563166] irq/47-41620000/45 is trying to lock:
-[  275.563173] c20ff850 (&port_lock_key){-.-.}-{3:3}, at: cdns_uart_console_write+0x130/0x164
-[  275.563226] other info that might help us debug this:
-[  275.563230] context-{3:3}
-[  275.563235] 4 locks held by irq/47-41620000/45:
-[  275.563242]  #0: c147d510 (rcu_node_0){-.-.}-{2:2}, at: rcu_sched_clock_irq+0x87c/0x12f0
-[  275.563285]  #1: c1416b30 (console_lock){+.+.}-{0:0}, at: vprintk_emit+0x100/0x320
-[  275.563327]  #2: c1416b98 (console_srcu){....}-{0:0}, at: console_flush_all+0x68/0x664
-[  275.563361]  #3: c1416c24 (console_owner){-.-.}-{0:0}, at: console_flush_all+0x1c4/0x664
-[  275.563395] stack backtrace:
-[  275.563399] CPU: 0 PID: 45 Comm: irq/47-41620000 Not tainted 6.5.0-rc3+ #17
-[  275.563412] Hardware name: Xilinx Zynq Platform
-[  275.563420]  unwind_backtrace from show_stack+0x10/0x14
-[  275.563450]  show_stack from dump_stack_lvl+0x68/0x90
-[  275.563474]  dump_stack_lvl from __lock_acquire+0x61c/0x1778
-[  275.563494]  __lock_acquire from lock_acquire+0x1e4/0x368
-[  275.563512]  lock_acquire from _raw_spin_lock_irqsave+0x54/0x68
-[  275.563534]  _raw_spin_lock_irqsave from cdns_uart_console_write+0x130/0x164
-[  275.563564]  cdns_uart_console_write from console_flush_all+0x220/0x664
-[  275.563595]  console_flush_all from console_unlock+0x88/0xd4
-[  275.563624]  console_unlock from vprintk_emit+0x25c/0x320
-[  275.563653]  vprintk_emit from vprintk_default+0x20/0x28
-[  275.563682]  vprintk_default from _printk+0x30/0x54
-[  275.563715]  _printk from print_cpu_stall_info+0x2b0/0x490
-[  275.563742]  print_cpu_stall_info from rcu_sched_clock_irq+0x890/0x12f0
-[  275.563766]  rcu_sched_clock_irq from update_process_times+0x54/0x8c
-[  275.563793]  update_process_times from tick_sched_timer+0x50/0xac
-[  275.563825]  tick_sched_timer from __hrtimer_run_queues+0x2f0/0x598
-[  275.563851]  __hrtimer_run_queues from hrtimer_interrupt+0x130/0x2ac
-[  275.563873]  hrtimer_interrupt from twd_handler+0x30/0x38
-[  275.563897]  twd_handler from handle_percpu_devid_irq+0xb0/0x2b4
-[  275.563928]  handle_percpu_devid_irq from generic_handle_domain_irq+0x24/0x34
-[  275.563950]  generic_handle_domain_irq from gic_handle_irq+0x84/0xac
-[  275.563981]  gic_handle_irq from generic_handle_arch_irq+0x34/0x44
-[  275.564009]  generic_handle_arch_irq from call_with_stack+0x18/0x20
-[  275.564032]  call_with_stack from __irq_svc+0x9c/0xb8
-[  275.564048] Exception stack(0xf0935e48 to 0xf0935e90)
-[  275.564062] 5e40:                   ffffffff ffffffff 00000001 00000403 ef7cb080 00000000
-[  275.564074] 5e60: c1be107c c4b01040 d1377d58 2e465000 c0d4b0d8 f0935ed4 00000000 f0935e98
-[  275.564082] 5e80: c015a054 c015a058 600f0013 ffffffff
-[  275.564089]  __irq_svc from finish_task_switch+0xe4/0x2b4
-[  275.564119]  finish_task_switch from __schedule+0x394/0xd9c
-[  275.564149]  __schedule from schedule+0x60/0xbc
-[  275.564176]  schedule from irq_thread+0xd0/0x238
-[  275.564201]  irq_thread from kthread+0xf4/0x12c
-[  275.564231]  kthread from ret_from_fork+0x14/0x28
-[  275.564251] Exception stack(0xf0935fb0 to 0xf0935ff8)
-[  275.564261] 5fa0:                                     00000000 00000000 00000000 00000000
-[  275.564271] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-[  275.564280] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
-[  275.886419] rcu:              hardirqs   softirqs   csw/system
-[  275.891989] rcu:      number:  2641898          0            0
-[  275.897561] rcu:     cputime:        0          0        12997   ==> 13007(ms)
-[  275.904523] rcu:     (t=26010 jiffies g=36053 q=115 ncpus=2)
-[  275.909924] CPU: 0 PID: 45 Comm: irq/47-41620000 Not tainted 6.5.0-rc3+ #17
-[  275.916891] Hardware name: Xilinx Zynq Platform
-[  275.921413] PC is at finish_task_switch+0xe4/0x2b4
-[  275.926213] LR is at finish_task_switch+0xe0/0x2b4
-[  275.931013] pc : [<c015a058>]    lr : [<c015a054>]    psr: 600f0013
-[  275.937280] sp : f0935e98  ip : 00000000  fp : f0935ed4
-[  275.942505] r10: c0d4b0d8  r9 : 2e465000  r8 : d1377d58
-[  275.947722] r7 : c4b01040  r6 : c1be107c  r5 : 00000000  r4 : ef7cb080
-[  275.954249] r3 : 00000403  r2 : 00000001  r1 : ffffffff  r0 : ffffffff
-[  275.960777] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-[  275.967914] Control: 18c5387d  Table: 04b8404a  DAC: 00000051
-[  275.973661]  finish_task_switch from __schedule+0x394/0xd9c
-[  275.979258]  __schedule from schedule+0x60/0xbc
-[  275.983806]  schedule from irq_thread+0xd0/0x238
-[  275.988442]  irq_thread from kthread+0xf4/0x12c
-[  275.992990]  kthread from ret_from_fork+0x14/0x28
-[  275.997702] Exception stack(0xf0935fb0 to 0xf0935ff8)
-[  276.002757] 5fa0:                                     00000000 00000000 00000000 00000000
-[  276.010936] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-[  276.019110] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+ * stm32_firewall_controller_register - Register a firewall controller to the STM32 firewall
 
-[3] Previously, even if the DT node configured the IRQ as level-triggered,
-the MPU9060 driver changed it to edge-triggered, because it was the only
-supported mode. This made things working in my case. Now with the very same
-DT the IRQ is configured as level (which in principle should be correct)
-but things stopped working indeed.
+Likewise, elsewhere.
 
-Signed-off-by: Andrea Merello <andrea.merello@iit.it>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    | 11 -------
- drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 31 ++++++++++++++++---
- 2 files changed, 26 insertions(+), 16 deletions(-)
+> + *					    framework
+> + * @firewall_controller		Firewall controller to register
+> + *
+> + * Returns 0 in case of success or -ENODEV if no controller was given.
+> + */
+> +int stm32_firewall_controller_register(struct stm32_firewall_controller *firewall_controller);
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-index 45c37525c2f1..b87ca50dc1c1 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-@@ -122,21 +122,10 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
- 	int result;
- 	u16 fifo_count;
- 	s64 timestamp;
--	int int_status;
- 	size_t i, nb;
- 
- 	mutex_lock(&st->lock);
- 
--	/* ack interrupt and check status */
--	result = regmap_read(st->map, st->reg->int_status, &int_status);
--	if (result) {
--		dev_err(regmap_get_device(st->map),
--			"failed to ack interrupt\n");
--		goto flush_fifo;
--	}
--	if (!(int_status & INV_MPU6050_BIT_RAW_DATA_RDY_INT))
--		goto end_session;
--
- 	if (!(st->chip_config.accl_fifo_enable |
- 		st->chip_config.gyro_fifo_enable |
- 		st->chip_config.magn_fifo_enable))
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-index 882546897255..b1384d729ced 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-@@ -217,6 +217,26 @@ static const struct iio_trigger_ops inv_mpu_trigger_ops = {
- 	.set_trigger_state = &inv_mpu_data_rdy_trigger_set_state,
- };
- 
-+irqreturn_t inv_mpu6050_trigger_irq(int irq, void *private)
-+{
-+	struct inv_mpu6050_state *st = private;
-+
-+	iio_trigger_generic_data_rdy_poll(irq, st->trig);
-+	return IRQ_WAKE_THREAD;
-+}
-+
-+irqreturn_t inv_mpu6050_trigger_thread_fn(int irq, void *private)
-+{
-+	struct inv_mpu6050_state *st = private;
-+	int int_status;
-+
-+	mutex_lock(&st->lock);
-+	regmap_read(st->map, st->reg->int_status, &int_status);
-+	mutex_unlock(&st->lock);
-+
-+	return IRQ_HANDLED;
-+}
-+
- int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev, int irq_type)
- {
- 	int ret;
-@@ -229,11 +249,12 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev, int irq_type)
- 	if (!st->trig)
- 		return -ENOMEM;
- 
--	ret = devm_request_irq(&indio_dev->dev, st->irq,
--			       &iio_trigger_generic_data_rdy_poll,
--			       irq_type,
--			       "inv_mpu",
--			       st->trig);
-+	ret = devm_request_threaded_irq(&indio_dev->dev, st->irq,
-+					&inv_mpu6050_trigger_irq,
-+					&inv_mpu6050_trigger_thread_fn,
-+					irq_type | IRQF_ONESHOT,
-+					"inv_mpu",
-+					st);
- 	if (ret)
- 		return ret;
- 
+...
+
+> diff --git a/include/linux/bus/stm32_firewall_device.h b/include/linux/bus/stm32_firewall_device.h
+> new file mode 100644
+> index 000000000000..9bdc4060154c
+> --- /dev/null
+> +++ b/include/linux/bus/stm32_firewall_device.h
+> @@ -0,0 +1,140 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (C) 2023, STMicroelectronics - All Rights Reserved
+> + */
+> +
+> +#ifndef STM32_FIREWALL_DEVICE_H
+> +#define STM32_FIREWALL_DEVICE_H
+> +
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/types.h>
+> +
+> +#define STM32_FIREWALL_MAX_EXTRA_ARGS		5
+> +
+> +/* Opaque reference to stm32_firewall_controller */
+> +struct stm32_firewall_controller;
+> +
+> +/**
+> + * stm32_firewall - Information on a device's firewall. Each device can have more than one firewall.
+
+kernel-doc seems unhappy about the absence of struct on this line.
+
+ * struct stm32_firewall - Information on a device's firewall. Each device can have more than one firewall.
+
+> + *
+> + * @firewall_ctrl		Pointer referencing a firewall controller of the device. It is
+> + *				opaque so a device cannot manipulate the controller's ops or access
+> + *				the controller's data
+> + * @extra_args			Extra arguments that are implementation dependent
+> + * @entry			Name of the firewall entry
+> + * @extra_args_size		Number of extra arguments
+> + * @firewall_id			Firewall ID associated the device for this firewall controller
+> + */
+> +struct stm32_firewall {
+> +	struct stm32_firewall_controller *firewall_ctrl;
+> +	u32 extra_args[STM32_FIREWALL_MAX_EXTRA_ARGS];
+> +	const char *entry;
+> +	size_t extra_args_size;
+> +	u32 firewall_id;
+> +};
+
+...
+
 -- 
-2.17.1
-
+pw-bot: changes-requested
