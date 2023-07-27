@@ -2,146 +2,106 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDAFAC04FE0
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Jul 2023 08:36:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B288C0015E
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Jul 2023 10:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234020AbjG0IgU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 27 Jul 2023 04:36:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43496 "EHLO
+        id S231690AbjG0KLh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 27 Jul 2023 06:11:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234411AbjG0If5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Jul 2023 04:35:57 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 982FF6E8C;
-        Thu, 27 Jul 2023 01:19:22 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="6.01,234,1684767600"; 
-   d="scan'208";a="174688931"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 27 Jul 2023 17:19:05 +0900
-Received: from localhost.localdomain (unknown [10.226.93.33])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 05FF141C9E93;
-        Thu, 27 Jul 2023 17:19:00 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Rob Herring <robh+dt@kernel.org>,
+        with ESMTP id S231274AbjG0KLh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Jul 2023 06:11:37 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E502F136;
+        Thu, 27 Jul 2023 03:11:35 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id 2adb3069b0e04-4fbf09a9139so1324600e87.2;
+        Thu, 27 Jul 2023 03:11:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1690452694; x=1691057494;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=rKG9MVFIRvqoRSnmeWz7npe5982c49Ck/crDS1uk2Vw=;
+        b=LbWCII2zEZy68YDOXP9YLqhGDr5/kGqKvMpMYvSs31jIyfjEQNzwU6R2cCGli3gG0d
+         o564K2jbiNngGgDVcm9E2y8RXvD11EYAIPILWZnJFELKHzbntUFi1JsMPJxGvGvHZyNR
+         F2zWZfestrZeNV9O2NfU7NQp8MEt793m1Hsv3g1V9z7PbTaWQNFdvD+IwE2q0GT6pMQc
+         VAk9c6i3y3i0j18NkXpKJR0m1XC93tPDyK+8tNFmTKNQ7K5597sgxGlbftW4N4zvGYiZ
+         CU5Fzh8C6YeQufGP/V8noKOUOmaGOX0TjdfRJVE7Z4gnEq9RABBk5/SI9oKN3E5jCDfA
+         B3BA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690452694; x=1691057494;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=rKG9MVFIRvqoRSnmeWz7npe5982c49Ck/crDS1uk2Vw=;
+        b=bh9eia6MxAfJmQCmxJIhX23+7TBSom5YmtjP0v+KjO7NgMQqL6DZMZi1GMNkf6pZ3m
+         gl09PuDybYo8rPmdOxc3tmE5y0kMu7l3yJkNd13JL++IQWWDoGmdVgonPTxBPArr2Dj4
+         mZHbt91OpS6ITEGjyNzEDM6nP3WXQt64gZVB1xnUbtB1sLoc+fv6dtGCUnLFU0t/tdlL
+         sZ68EQgUWu5q8/u3KudFsDHrVRbxzLYyb8Q3eDBKh0JU7SQNYZPSrjE8M2uPFMl9+LmY
+         Q5QF2Rolrzd/bkhtmpkEGHHXY3DbDw0FySZTigclewqGouykGfmC7ydwV0c0I2kjkmgi
+         WFiQ==
+X-Gm-Message-State: ABy/qLb1qbca3p+VwmnleYc9FDOAMxgmgE5eGLND5UVgQb2Hsai2yuoL
+        YS1poSSyp3kXCeJskC7tlus=
+X-Google-Smtp-Source: APBJJlGqEvRJigqsWboW+74h7Pzr0x6BnYIJp5NyelgefKNRgrgJPBlxwj+35f1Im6hIEyfaZ5jwpA==
+X-Received: by 2002:a05:6512:2311:b0:4fb:85ad:b6e2 with SMTP id o17-20020a056512231100b004fb85adb6e2mr1493821lfu.50.1690452693851;
+        Thu, 27 Jul 2023 03:11:33 -0700 (PDT)
+Received: from localhost.localdomain (83-233-6-197.cust.bredband2.com. [83.233.6.197])
+        by smtp.gmail.com with ESMTPSA id 3-20020ac24843000000b004fb504b0f32sm243664lfy.69.2023.07.27.03.11.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jul 2023 03:11:32 -0700 (PDT)
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Conor Dooley <conor+dt@kernel.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Pavel Machek <pavel@denx.de>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v3 2/5] dt-bindings: timer: renesas,rz-mtu3: Improve documentation
-Date:   Thu, 27 Jul 2023 09:18:45 +0100
-Message-Id: <20230727081848.100834-3-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230727081848.100834-1-biju.das.jz@bp.renesas.com>
-References: <20230727081848.100834-1-biju.das.jz@bp.renesas.com>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: iio: adc: mcp3911: add support for the whole MCP39xx family
+Date:   Thu, 27 Jul 2023 12:13:17 +0200
+Message-Id: <20230727101318.2764379-1-marcus.folkesson@gmail.com>
+X-Mailer: git-send-email 2.40.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fix the documentation issues pointed by Pavel while backporting
-it to 6.1.y-cip.
- - Replace '32- bit'->'32-bit'
- - Consistently remove '.' at the end of line for the specifications
- - Replace '          (excluding MTU8)'-> '(excluding MTU8)'
+Microchip does have many similar chips, add those to the compatible
+string as the driver support is extended.
 
-Reported-by: Pavel Machek <pavel@denx.de>
-Closes: https://lore.kernel.org/all/ZH79%2FUjgYg+0Ruiu@duo.ucw.cz
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
----
-v2->v3:
- * Updated the link to lore for Closes tag.
-v1->v2:
- * Added Ack by Conor Dooley
----
- .../bindings/timer/renesas,rz-mtu3.yaml       | 28 +++++++++----------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+The new supported chips are:
+  - microchip,mcp3910
+  - microchip,mcp3912
+  - microchip,mcp3913
+  - microchip,mcp3914
+  - microchip,mcp3918
+  - microchip,mcp3919
 
-diff --git a/Documentation/devicetree/bindings/timer/renesas,rz-mtu3.yaml b/Documentation/devicetree/bindings/timer/renesas,rz-mtu3.yaml
-index fbac40b958dd..670a2ebaacdb 100644
---- a/Documentation/devicetree/bindings/timer/renesas,rz-mtu3.yaml
-+++ b/Documentation/devicetree/bindings/timer/renesas,rz-mtu3.yaml
-@@ -11,8 +11,8 @@ maintainers:
+Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+---
+ .../devicetree/bindings/iio/adc/microchip,mcp3911.yaml      | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
+index f7b3fde4115a..06951ec5f5da 100644
+--- a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
+@@ -18,7 +18,13 @@ description: |
+ properties:
+   compatible:
+     enum:
++      - microchip,mcp3910
+       - microchip,mcp3911
++      - microchip,mcp3912
++      - microchip,mcp3913
++      - microchip,mcp3914
++      - microchip,mcp3918
++      - microchip,mcp3919
  
- description: |
-   This hardware block consists of eight 16-bit timer channels and one
--  32- bit timer channel. It supports the following specifications:
--    - Pulse input/output: 28 lines max.
-+  32-bit timer channel. It supports the following specifications:
-+    - Pulse input/output: 28 lines max
-     - Pulse input 3 lines
-     - Count clock 11 clocks for each channel (14 clocks for MTU0, 12 clocks
-       for MTU2, and 10 clocks for MTU5, four clocks for MTU1-MTU2 combination
-@@ -23,11 +23,11 @@ description: |
-         - Input capture function (noise filter setting available)
-         - Counter-clearing operation
-         - Simultaneous writing to multiple timer counters (TCNT)
--          (excluding MTU8).
-+          (excluding MTU8)
-         - Simultaneous clearing on compare match or input capture
--          (excluding MTU8).
-+          (excluding MTU8)
-         - Simultaneous input and output to registers in synchronization with
--          counter operations           (excluding MTU8).
-+          counter operations (excluding MTU8)
-         - Up to 12-phase PWM output in combination with synchronous operation
-           (excluding MTU8)
-     - [MTU0 MTU3, MTU4, MTU6, MTU7, and MTU8]
-@@ -40,26 +40,26 @@ description: |
-     - [MTU3, MTU4, MTU6, and MTU7]
-         - Through interlocked operation of MTU3/4 and MTU6/7, the positive and
-           negative signals in six phases (12 phases in total) can be output in
--          complementary PWM and reset-synchronized PWM operation.
-+          complementary PWM and reset-synchronized PWM operation
-         - In complementary PWM mode, values can be transferred from buffer
-           registers to temporary registers at crests and troughs of the timer-
-           counter values or when the buffer registers (TGRD registers in MTU4
--          and MTU7) are written to.
--        - Double-buffering selectable in complementary PWM mode.
-+          and MTU7) are written to
-+        - Double-buffering selectable in complementary PWM mode
-     - [MTU3 and MTU4]
-         - Through interlocking with MTU0, a mode for driving AC synchronous
-           motors (brushless DC motors) by using complementary PWM output and
-           reset-synchronized PWM output is settable and allows the selection
--          of two types of waveform output (chopping or level).
-+          of two types of waveform output (chopping or level)
-     - [MTU5]
--        - Capable of operation as a dead-time compensation counter.
-+        - Capable of operation as a dead-time compensation counter
-     - [MTU0/MTU5, MTU1, MTU2, and MTU8]
-         - 32-bit phase counting mode specifiable by combining MTU1 and MTU2 and
--          through interlocked operation with MTU0/MTU5 and MTU8.
-+          through interlocked operation with MTU0/MTU5 and MTU8
-     - Interrupt-skipping function
-         - In complementary PWM mode, interrupts on crests and troughs of counter
-           values and triggers to start conversion by the A/D converter can be
--          skipped.
-+          skipped
-     - Interrupt sources: 43 sources.
-     - Buffer operation:
-         - Automatic transfer of register data (transfer from the buffer
-@@ -68,9 +68,9 @@ description: |
-         - A/D converter start triggers can be generated
-         - A/D converter start request delaying function enables A/D converter
-           to be started with any desired timing and to be synchronized with
--          PWM output.
-+          PWM output
-     - Low power consumption function
--        - The MTU3a can be placed in the module-stop state.
-+        - The MTU3a can be placed in the module-stop state
- 
-     There are two phase counting modes. 16-bit phase counting mode in which
-     MTU1 and MTU2 operate independently, and cascade connection 32-bit phase
+   reg:
+     maxItems: 1
 -- 
-2.25.1
+2.40.1
 
