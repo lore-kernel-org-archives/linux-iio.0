@@ -2,269 +2,100 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0078CC001E0
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Jul 2023 15:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B0E0C0015E
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Jul 2023 18:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232274AbjG0PG1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 27 Jul 2023 11:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51538 "EHLO
+        id S231386AbjG0SQs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 27 Jul 2023 14:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234297AbjG0PGZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Jul 2023 11:06:25 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3837530D8;
-        Thu, 27 Jul 2023 08:06:04 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36RBD3Kf020177;
-        Thu, 27 Jul 2023 17:05:44 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=zmIPHW6iVYvOYi7oMUl9xnnwWipA141Ebb8TXiBkQXc=;
- b=6QX4TiYSntWcuysnOPTpYG03Wm8TzRkJ2LtxGD897emCWqelSVFabxXtNYesNFEari5Y
- EPbSbqwllTxW+63FnHlS5Ol410zrPFRa7RRnazGh3VbjNzvWUxYFErLg54IKtooVLh3G
- 56NnH6bT7XIj07WguEpme4jKCNC/Tr9WZXUWMg3L8TuN1Pn+cQsn+QITX3muFVJQBSu0
- Uh+k4nQ8Vhfmo5U7bHDOaFEiwjbmawtCziBNjD7YsjtHwPrj4EFLzmdZPea0ucHk+Ppq
- YqkI82l3qQQa3D/NWP7Sztoc1piiJi2IFDm3n0ZH37fWgvRuIOSg0BHKlj1VDQnkJJrz 7A== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3s3qgy988r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jul 2023 17:05:44 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B36C810002A;
-        Thu, 27 Jul 2023 17:05:43 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id AA361209BA7;
-        Thu, 27 Jul 2023 17:05:43 +0200 (CEST)
-Received: from localhost (10.201.20.178) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Thu, 27 Jul
- 2023 17:05:43 +0200
-From:   Olivier Moysan <olivier.moysan@foss.st.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S231146AbjG0SQr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Jul 2023 14:16:47 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9981230F3
+        for <linux-iio@vger.kernel.org>; Thu, 27 Jul 2023 11:16:43 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1b8b2886364so7957665ad.0
+        for <linux-iio@vger.kernel.org>; Thu, 27 Jul 2023 11:16:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1690481803; x=1691086603;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=o00id9m2n9F2JxQUYUpGzNJ9QgKEFf3N9Px7sXVdTR0=;
+        b=EffzG1vIl3ASGGvDRHFKHvGIUQrQybW6zVP63RMpRqlZB7dYIG7bbnAaTMpNHY14si
+         7Mk/a/fd+eDvflLEMmxBw2ETIzwwSEBLtfurDlo4Ve5dQU7OK6GVtYWmqiSPFOwKVSnb
+         sfv3VzKvaVtzSNtX7DhVOBe6BWapLI/94HOS4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690481803; x=1691086603;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=o00id9m2n9F2JxQUYUpGzNJ9QgKEFf3N9Px7sXVdTR0=;
+        b=l5uJMlgDYK59IQZiLfMzgCdgvxMbcztClw0CSeV3+DBIAJhSzaijK01NbQaIjy5cH6
+         eUkUrrpP7OhfBD1X/Czfq8eKsJcCtPkReub/jwyl2wEuCg995aVfYjHn/pPP8skwcW7u
+         PwSe5O7XQC/09ySsEaaOLs6EMt5BxxNh+N8wgDsuiHMwTj4Zn6A75cGNBHdoo1M2yMPv
+         mtDfd2gtkNQhtIX/N1ALFVkeKkp9yzrXHUIpm/wLtUeJdhKTFlJbWOMscQyLtGOrGqVz
+         GsG5gILKVbVhCgHmshfMB4vV/ASL4aw8kXJ3uqKdJf1MIz6t5S15ii6M5HIlZNsSLhSe
+         nkfg==
+X-Gm-Message-State: ABy/qLbTiWHLxmSMxaRAgBBPVidWtp7LoWqUoBI2jGv44OIgx3s8MPK7
+        ATfa+l31FD7m0+qK5pyMgVoHbhsxD3zoIanwu/E=
+X-Google-Smtp-Source: APBJJlHJ4j8cWXZ1lYYOF6yJUHcaLLzFlkEdmLP3emB4hza9OKGIZtS08iGc76V6KXoIwdelwwon0Q==
+X-Received: by 2002:a17:902:ce88:b0:1b9:ea60:cd8a with SMTP id f8-20020a170902ce8800b001b9ea60cd8amr101108plg.50.1690481803039;
+        Thu, 27 Jul 2023 11:16:43 -0700 (PDT)
+Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id v5-20020a170902b7c500b001bbb8d5166bsm1950665plz.123.2023.07.27.11.16.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jul 2023 11:16:42 -0700 (PDT)
+Date:   Thu, 27 Jul 2023 11:16:41 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     Olivier Moysan <olivier.moysan@foss.st.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [RFC v2 06/11] iio: adc: stm32-dfsdm: adopt generic channel bindings
-Date:   Thu, 27 Jul 2023 17:03:17 +0200
-Message-ID: <20230727150324.1157933-7-olivier.moysan@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230727150324.1157933-1-olivier.moysan@foss.st.com>
-References: <20230727150324.1157933-1-olivier.moysan@foss.st.com>
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Nuno Sa <nuno.sa@analog.com>
+Subject: Re: [PATCH v3 2/4] iio: core: Add opaque_struct_size() helper and
+ use it
+Message-ID: <202307271114.2B9B07C@keescook>
+References: <20230724110204.46285-1-andriy.shevchenko@linux.intel.com>
+ <20230724110204.46285-3-andriy.shevchenko@linux.intel.com>
+ <ZL5cXHAM/y1eg42D@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.201.20.178]
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-07-27_07,2023-07-26_01,2023-05-22_02
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZL5cXHAM/y1eg42D@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Adopt the generic channel bindings to ease the configuration
-of the DFSDM channels as consumers of the SD modulator backend device.
-Also adopt unified device property API in the same patch for this RFC.
+On Mon, Jul 24, 2023 at 02:11:24PM +0300, Andy Shevchenko wrote:
+> On Mon, Jul 24, 2023 at 02:02:02PM +0300, Andy Shevchenko wrote:
+> > Introduce opaque_struct_size() helper, which may be moved
+> > to overflow.h in the future, and use it in the IIO core.
+> > 
+> > Potential users could be (among possible others):
+> > 
+> > 	__spi_alloc_controller() in drivers/spi/spi.c
+> > 	alloc_netdev_mqs in net/core/dev.c
 
-Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
----
- drivers/iio/adc/stm32-dfsdm-adc.c | 93 ++++++++++++++++---------------
- 1 file changed, 49 insertions(+), 44 deletions(-)
+Can you include the specific replacement you're thinking for these? It's
+almost clear to me, but I'm trying to understand the benefit over what's
+already there.
 
-diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
-index 20f7dffcecdd..96f4e0c64cdc 100644
---- a/drivers/iio/adc/stm32-dfsdm-adc.c
-+++ b/drivers/iio/adc/stm32-dfsdm-adc.c
-@@ -596,45 +596,35 @@ static int stm32_dfsdm_filter_configure(struct iio_dev *indio_dev,
- 
- static int stm32_dfsdm_channel_parse_of(struct stm32_dfsdm *dfsdm,
- 					struct iio_dev *indio_dev,
-+					struct fwnode_handle *node,
- 					struct iio_chan_spec *ch)
- {
- 	struct stm32_dfsdm_channel *df_ch;
- 	const char *of_str;
--	int chan_idx = ch->scan_index;
- 	int ret, val;
- 
--	ret = of_property_read_u32_index(indio_dev->dev.of_node,
--					 "st,adc-channels", chan_idx,
--					 &ch->channel);
-+	ret = fwnode_property_read_u32(node, "reg", &ch->channel);
- 	if (ret < 0) {
--		dev_err(&indio_dev->dev,
--			" Error parsing 'st,adc-channels' for idx %d\n",
--			chan_idx);
-+		dev_err(&indio_dev->dev, "Missing channel index %d\n", ret);
- 		return ret;
- 	}
- 	if (ch->channel >= dfsdm->num_chs) {
--		dev_err(&indio_dev->dev,
--			" Error bad channel number %d (max = %d)\n",
-+		dev_err(&indio_dev->dev, " Error bad channel number %d (max = %d)\n",
- 			ch->channel, dfsdm->num_chs);
- 		return -EINVAL;
- 	}
- 
--	ret = of_property_read_string_index(indio_dev->dev.of_node,
--					    "st,adc-channel-names", chan_idx,
--					    &ch->datasheet_name);
-+	ret = fwnode_property_read_string(node, "label", &ch->datasheet_name);
- 	if (ret < 0) {
- 		dev_err(&indio_dev->dev,
--			" Error parsing 'st,adc-channel-names' for idx %d\n",
--			chan_idx);
-+			" Error parsing 'label' for idx %d\n", ch->channel);
- 		return ret;
- 	}
- 
- 	df_ch =  &dfsdm->ch_list[ch->channel];
- 	df_ch->id = ch->channel;
- 
--	ret = of_property_read_string_index(indio_dev->dev.of_node,
--					    "st,adc-channel-types", chan_idx,
--					    &of_str);
-+	ret = fwnode_property_read_string(node, "st,adc-channel-types", &of_str);
- 	if (!ret) {
- 		val = stm32_dfsdm_str2val(of_str, stm32_dfsdm_chan_type);
- 		if (val < 0)
-@@ -644,9 +634,7 @@ static int stm32_dfsdm_channel_parse_of(struct stm32_dfsdm *dfsdm,
- 	}
- 	df_ch->type = val;
- 
--	ret = of_property_read_string_index(indio_dev->dev.of_node,
--					    "st,adc-channel-clk-src", chan_idx,
--					    &of_str);
-+	ret = fwnode_property_read_string(node, "st,adc-channel-clk-src", &of_str);
- 	if (!ret) {
- 		val = stm32_dfsdm_str2val(of_str, stm32_dfsdm_chan_src);
- 		if (val < 0)
-@@ -656,10 +644,8 @@ static int stm32_dfsdm_channel_parse_of(struct stm32_dfsdm *dfsdm,
- 	}
- 	df_ch->src = val;
- 
--	ret = of_property_read_u32_index(indio_dev->dev.of_node,
--					 "st,adc-alt-channel", chan_idx,
--					 &df_ch->alt_si);
--	if (ret < 0)
-+	ret = fwnode_property_read_u32(node, "st,adc-alt-channel", &df_ch->alt_si);
-+	if (ret != -EINVAL)
- 		df_ch->alt_si = 0;
- 
- 	return 0;
-@@ -1354,17 +1340,21 @@ static int stm32_dfsdm_dma_request(struct device *dev,
- }
- 
- static int stm32_dfsdm_adc_chan_init_one(struct iio_dev *indio_dev,
-+					 struct fwnode_handle *child,
- 					 struct iio_chan_spec *ch)
- {
- 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
- 	int ret;
- 
--	ret = stm32_dfsdm_channel_parse_of(adc->dfsdm, indio_dev, ch);
--	if (ret < 0)
-+	ret = stm32_dfsdm_channel_parse_of(adc->dfsdm, indio_dev, child, ch);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev, "Failed to parse channel\n");
- 		return ret;
-+	}
- 
- 	ch->type = IIO_VOLTAGE;
- 	ch->indexed = 1;
-+	ch->scan_index = ch->channel;
- 
- 	/*
- 	 * IIO_CHAN_INFO_RAW: used to compute regular conversion
-@@ -1387,6 +1377,30 @@ static int stm32_dfsdm_adc_chan_init_one(struct iio_dev *indio_dev,
- 					  &adc->dfsdm->ch_list[ch->channel]);
- }
- 
-+static int stm32_dfsdm_generic_chan_init(struct iio_dev *indio_dev, struct stm32_dfsdm_adc *adc,
-+					 struct iio_chan_spec *channels)
-+{
-+	struct fwnode_handle *child;
-+	int chan_idx = 0, ret;
-+
-+	device_for_each_child_node(&indio_dev->dev, child) {
-+		ret = stm32_dfsdm_adc_chan_init_one(indio_dev, child, &channels[chan_idx]);
-+		if (ret < 0) {
-+			dev_err(&indio_dev->dev, "Channels init failed\n");
-+			goto err;
-+		}
-+
-+		chan_idx++;
-+	}
-+
-+	return chan_idx;
-+
-+err:
-+	fwnode_handle_put(child);
-+
-+	return ret;
-+}
-+
- static int stm32_dfsdm_audio_init(struct device *dev, struct iio_dev *indio_dev)
- {
- 	struct iio_chan_spec *ch;
-@@ -1400,7 +1414,7 @@ static int stm32_dfsdm_audio_init(struct device *dev, struct iio_dev *indio_dev)
- 
- 	ch->scan_index = 0;
- 
--	ret = stm32_dfsdm_adc_chan_init_one(indio_dev, ch);
-+	ret = stm32_dfsdm_generic_chan_init(indio_dev, adc, ch);
- 	if (ret < 0) {
- 		dev_err(&indio_dev->dev, "Channels init failed\n");
- 		return ret;
-@@ -1422,33 +1436,24 @@ static int stm32_dfsdm_adc_init(struct device *dev, struct iio_dev *indio_dev)
- 	struct iio_chan_spec *ch;
- 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
- 	int num_ch;
--	int ret, chan_idx;
-+	int ret;
- 
- 	adc->oversamp = DFSDM_DEFAULT_OVERSAMPLING;
- 	ret = stm32_dfsdm_compute_all_osrs(indio_dev, adc->oversamp);
- 	if (ret < 0)
- 		return ret;
- 
--	num_ch = of_property_count_u32_elems(indio_dev->dev.of_node,
--					     "st,adc-channels");
--	if (num_ch < 0 || num_ch > adc->dfsdm->num_chs) {
--		dev_err(&indio_dev->dev, "Bad st,adc-channels\n");
--		return num_ch < 0 ? num_ch : -EINVAL;
--	}
-+	num_ch = device_get_child_node_count(&indio_dev->dev);
-+	if (!num_ch)
-+		return -EINVAL;
- 
--	ch = devm_kcalloc(&indio_dev->dev, num_ch, sizeof(*ch),
--			  GFP_KERNEL);
-+	ch = devm_kcalloc(&indio_dev->dev, num_ch, sizeof(*ch), GFP_KERNEL);
- 	if (!ch)
- 		return -ENOMEM;
- 
--	for (chan_idx = 0; chan_idx < num_ch; chan_idx++) {
--		ch[chan_idx].scan_index = chan_idx;
--		ret = stm32_dfsdm_adc_chan_init_one(indio_dev, &ch[chan_idx]);
--		if (ret < 0) {
--			dev_err(&indio_dev->dev, "Channels init failed\n");
--			return ret;
--		}
--	}
-+	stm32_dfsdm_generic_chan_init(indio_dev, adc, ch);
-+	if (ret < 0)
-+		return ret;
- 
- 	indio_dev->num_channels = num_ch;
- 	indio_dev->channels = ch;
+> 
+> ...
+> 
+> > +#define opaque_struct_size(p, a, s)	size_add(ALIGN(sizeof(*(p)), (a)), (s))
+> 
+> This actually might need something like __safe_aling() which takes care about
+> possible overflow.
+> 
+> Whatever, I want to hear Kees on this.
+
+i.e. if "a" were huge? What would sanity-checking of "a" look like in
+this case? I'm not really sure how to handle a pathological alignment
+request, but I'd agree it'd be nice to handle it. :)
+
+-Kees
+
 -- 
-2.25.1
-
+Kees Cook
