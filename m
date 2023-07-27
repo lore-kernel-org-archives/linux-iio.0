@@ -2,63 +2,54 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E44C001E0
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Jul 2023 15:05:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A98ECC0015E
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Jul 2023 15:06:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234365AbjG0PF1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 27 Jul 2023 11:05:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51018 "EHLO
+        id S233606AbjG0PG0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 27 Jul 2023 11:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234326AbjG0PFV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Jul 2023 11:05:21 -0400
+        with ESMTP id S234050AbjG0PGX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Jul 2023 11:06:23 -0400
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3A5A0;
-        Thu, 27 Jul 2023 08:05:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ABF33A99;
+        Thu, 27 Jul 2023 08:06:02 -0700 (PDT)
 Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36RE3U0q003285;
-        Thu, 27 Jul 2023 17:04:41 +0200
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36RE2Egv003290;
+        Thu, 27 Jul 2023 17:05:47 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=selector1;
- bh=54e2m5OKuocPe4dp4QsV6CEA9XKHKLdL/q4eaLhIrXU=;
- b=MQkN1j5NB6wKg/+mjQuh6n12Igh2DkCf1Mi06ZiIs84zKithAtkes8mIfA7akc6Sf48Y
- UlrRmvQWkx8P2YmSK3KZi5WmYZQMnvwXHT9jvNah+QSwDIjFFYrBnU0juugvuXeyLqW9
- jbPZbo8y10GmxjSSRv3HfzApHzvP2cLBvrD8yfqNAsAxdJfxBQHnkrg4iWZAuC3CKBlG
- 58IezRMAaRQH9C5wkGmOsXCroYDlRu0NEsAUgQKf8hJYWQBcPBaw70/d6zyf5wDD8OZ4
- Qqis3TJmx9ON0UvdcN13Qe5h4DP32foHhA1PQbIcgLn+bqA1kntjBLuJQ1FcScoDZg1c Bw== 
+ bh=Pt5jUqqdSOoqnjMTkcAHM3VXQXCIBKFvR/ivoinfamw=;
+ b=zymx3FJupVczr0LBeD96k642Kl+8JvVTWEb6uyhk5jRRlfIBW/x+Nh70E3455exT2npq
+ 4BQnfQptu3kS6UynsE+t30eo8dIY5JwzxZnU04dmu8kzntl8tV4sE8Ivk3fRyk6jrb96
+ bxXZr3F6b9R1jWz2r4KdooUDAdMdnWeIMQW9NEuz6g3R8fM2mZN/QKB9TzklCmuq5k/z
+ VAwm2vUp6SGttvIwFeCRjiAmuRKg5S8nyk2soBsdjhQpyEsGfkPYpHY8mQS6Oru+lO4f
+ lOqdSYWoqiJMkdyNGwJ9PIq95tbyz8MyxPOcsNClxW/JSUZSkheZJ8y0ZJ2qI740mbmu zg== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3s3nyg9x5f-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3s3nyg9xc8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jul 2023 17:04:41 +0200
+        Thu, 27 Jul 2023 17:05:46 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9F44410002A;
-        Thu, 27 Jul 2023 17:04:39 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6F00410002A;
+        Thu, 27 Jul 2023 17:05:46 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 9751D209BA2;
-        Thu, 27 Jul 2023 17:04:39 +0200 (CEST)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 67EFE209BA7;
+        Thu, 27 Jul 2023 17:05:46 +0200 (CEST)
 Received: from localhost (10.201.20.178) by SHFDAG1NODE1.st.com (10.75.129.69)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Thu, 27 Jul
- 2023 17:04:39 +0200
+ 2023 17:05:46 +0200
 From:   Olivier Moysan <olivier.moysan@foss.st.com>
-To:     Olivier Moysan <olivier.moysan@foss.st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-CC:     <alsa-devel@alsa-project.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [RFC v2 03/11] dt-bindings: iio: stm32-dfsdm-adc: add scaling support
-Date:   Thu, 27 Jul 2023 17:03:14 +0200
-Message-ID: <20230727150324.1157933-4-olivier.moysan@foss.st.com>
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+CC:     Olivier Moysan <olivier.moysan@foss.st.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [RFC v2 08/11] iio: adc: sd modulator: add scale and offset support
+Date:   Thu, 27 Jul 2023 17:03:19 +0200
+Message-ID: <20230727150324.1157933-9-olivier.moysan@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230727150324.1157933-1-olivier.moysan@foss.st.com>
 References: <20230727150324.1157933-1-olivier.moysan@foss.st.com>
@@ -75,277 +66,150 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add scaling support to STM32 DFSDM.
-
-This introduces the following changes:
-- Add ADC generic channel binding and remove support of deprecated
-channel bindings.
-- DFSDM is now implemented as a channel provider, so remove io-channels
-properties.
-- Add iio-backend property to connect DFSDM to an SD modulator.
+Register the SD modulator as an IIO backend device instead of
+a standard IIO device. Expose scale and offset information to
+IIO backend consumer.
 
 Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
 ---
- .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml  | 189 ++++++------------
- 1 file changed, 63 insertions(+), 126 deletions(-)
+ drivers/iio/adc/sd_adc_modulator.c | 106 +++++++++++++++++++++++------
+ 1 file changed, 86 insertions(+), 20 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-index 1970503389aa..128545cedc7f 100644
---- a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-@@ -85,22 +85,14 @@ patternProperties:
-         description: Specifies the DFSDM filter instance used.
-         maxItems: 1
+diff --git a/drivers/iio/adc/sd_adc_modulator.c b/drivers/iio/adc/sd_adc_modulator.c
+index 327cc2097f6c..e77e7884c403 100644
+--- a/drivers/iio/adc/sd_adc_modulator.c
++++ b/drivers/iio/adc/sd_adc_modulator.c
+@@ -6,44 +6,110 @@
+  * Author: Arnaud Pouliquen <arnaud.pouliquen@st.com>.
+  */
  
--      interrupts:
--        maxItems: 1
-+      '#address-cells':
-+        const: 1
++#include <linux/iio/backend.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/triggered_buffer.h>
+ #include <linux/module.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/platform_device.h>
++#include <linux/regulator/consumer.h>
  
--      st,adc-channels:
--        description: |
--          List of single-ended channels muxed for this ADC.
--          On stm32h7 and stm32mp1:
--          - For st,stm32-dfsdm-adc: up to 8 channels numbered from 0 to 7.
--          - For st,stm32-dfsdm-dmic: 1 channel numbered from 0 to 7.
--        $ref: /schemas/types.yaml#/definitions/uint32-array
--        items:
--          minimum: 0
--          maximum: 7
-+      '#size-cells':
-+        const: 0
+-static const struct iio_info iio_sd_mod_iio_info;
++struct iio_sd_mod_priv {
++	struct regulator *vref;
++	int vref_mv;
++};
  
--      st,adc-channel-names:
--        description: List of single-ended channel names.
-+      interrupts:
-+        maxItems: 1
- 
-       st,filter-order:
-         description: |
-@@ -111,39 +103,6 @@ patternProperties:
-         $ref: /schemas/types.yaml#/definitions/uint32
-         maximum: 5
- 
--      "#io-channel-cells":
--        const: 1
--
--      st,adc-channel-types:
--        description: |
--          Single-ended channel input type.
--          - "SPI_R": SPI with data on rising edge (default)
--          - "SPI_F": SPI with data on falling edge
--          - "MANCH_R": manchester codec, rising edge = logic 0, falling edge = logic 1
--          - "MANCH_F": manchester codec, rising edge = logic 1, falling edge = logic 0
--        items:
--          enum: [ SPI_R, SPI_F, MANCH_R, MANCH_F ]
--        $ref: /schemas/types.yaml#/definitions/non-unique-string-array
--
--      st,adc-channel-clk-src:
--        description: |
--          Conversion clock source.
--          - "CLKIN": external SPI clock (CLKIN x)
--          - "CLKOUT": internal SPI clock (CLKOUT) (default)
--          - "CLKOUT_F": internal SPI clock divided by 2 (falling edge).
--          - "CLKOUT_R": internal SPI clock divided by 2 (rising edge).
--        items:
--          enum: [ CLKIN, CLKOUT, CLKOUT_F, CLKOUT_R ]
--        $ref: /schemas/types.yaml#/definitions/non-unique-string-array
--
--      st,adc-alt-channel:
--        description:
--          Must be defined if two sigma delta modulators are
--          connected on same SPI input.
--          If not set, channel n is connected to SPI input n.
--          If set, channel n is connected to SPI input n + 1.
--        type: boolean
--
-       st,filter0-sync:
-         description:
-           Set to 1 to synchronize with DFSDM filter instance 0.
-@@ -157,14 +116,68 @@ patternProperties:
-         items:
-           - const: rx
- 
-+    patternProperties:
-+      "^channel@([0-9]|1[0-9])$":
-+        type: object
-+        $ref: "adc.yaml"
-+        description: Represents the external channels which are connected to the DFSDM.
+-static const struct iio_chan_spec iio_sd_mod_ch = {
+-	.type = IIO_VOLTAGE,
+-	.indexed = 1,
+-	.scan_type = {
+-		.sign = 'u',
+-		.realbits = 1,
+-		.shift = 0,
+-	},
++static int sd_mod_enable(struct iio_backend *backend)
++{
++	struct iio_sd_mod_priv *priv = backend->priv;
++	int ret;
 +
-+        properties:
-+          reg:
-+            items:
-+              minimum: 0
-+              maximum: 19
++	ret = regulator_enable(priv->vref);
++	if (ret) {
++		dev_err(&backend->dev, "Failed to enable regulator: %d\n", ret);
++		return ret;
++	}
 +
-+          label:
-+            description: |
-+              Unique name to identify channel.
++	ret = regulator_get_voltage(priv->vref);
++	priv->vref_mv = ret / 1000;
 +
-+          st,adc-channel-types:
-+            description: |
-+              Single-ended channel input type.
-+              - "SPI_R": SPI with data on rising edge (default)
-+              - "SPI_F": SPI with data on falling edge
-+              - "MANCH_R": manchester codec, rising edge = logic 0, falling edge = logic 1
-+              - "MANCH_F": manchester codec, rising edge = logic 1, falling edge = logic 0
-+            items:
-+              enum: [ SPI_R, SPI_F, MANCH_R, MANCH_F ]
-+            $ref: /schemas/types.yaml#/definitions/non-unique-string-array
++	return 0;
++};
 +
-+          st,adc-channel-clk-src:
-+            description: |
-+              Conversion clock source.
-+              - "CLKIN": external SPI clock (CLKIN x)
-+              - "CLKOUT": internal SPI clock (CLKOUT) (default)
-+              - "CLKOUT_F": internal SPI clock divided by 2 (falling edge).
-+              - "CLKOUT_R": internal SPI clock divided by 2 (rising edge).
-+            items:
-+              enum: [ CLKIN, CLKOUT, CLKOUT_F, CLKOUT_R ]
-+            $ref: /schemas/types.yaml#/definitions/non-unique-string-array
++static int sd_mod_disable(struct iio_backend *backend)
++{
++	struct iio_sd_mod_priv *priv = backend->priv;
 +
-+          st,adc-alt-channel:
-+            description:
-+              Must be defined if two sigma delta modulators are
-+              connected on same SPI input.
-+              If not set, channel n is connected to SPI input n.
-+              If set, channel n is connected to SPI input n + 1.
-+            type: boolean
++	return regulator_disable(priv->vref);
++};
 +
-+          io-backends:
-+            description: |
-+              phandle to an external sigma delta modulator or internal ADC output.
-+            $ref: /schemas/types.yaml#/definitions/phandle
++static int sd_mod_read(struct iio_backend *backend, int *val, int *val2, long mask)
++{
++	struct iio_sd_mod_priv *priv = backend->priv;
 +
-+        required:
-+          - reg
-+          - io-backends
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		*val = priv->vref_mv;
++		*val2 = 0;
++		return IIO_VAL_INT;
 +
-+        additionalProperties: false
++	case IIO_CHAN_INFO_OFFSET:
++		*val = 0;
++		*val2 = 0;
++		return IIO_VAL_INT;
++	}
 +
-     required:
-       - compatible
-       - reg
-       - interrupts
--      - st,adc-channels
--      - st,adc-channel-names
-       - st,filter-order
--      - "#io-channel-cells"
++	return -EINVAL;
++};
++
++static const struct iio_backend_ops sd_mod_ops = {
++	.enable = sd_mod_enable,
++	.disable = sd_mod_disable,
++	.read_raw = sd_mod_read,
+ };
  
-     allOf:
-       - if:
-@@ -175,14 +188,6 @@ patternProperties:
+ static int iio_sd_mod_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+-	struct iio_dev *iio;
++	struct regulator *vref;
++	struct iio_backend *backend;
++	struct iio_sd_mod_priv *priv;
++	int ret;
  
-         then:
-           properties:
--            st,adc-channels:
--              minItems: 1
--              maxItems: 8
--
--            st,adc-channel-names:
--              minItems: 1
--              maxItems: 8
--
-             st,adc-channel-types:
-               minItems: 1
-               maxItems: 8
-@@ -191,14 +196,6 @@ patternProperties:
-               minItems: 1
-               maxItems: 8
+-	iio = devm_iio_device_alloc(dev, 0);
+-	if (!iio)
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
+ 		return -ENOMEM;
  
--            io-channels:
--              description:
--                From common IIO binding. Used to pipe external sigma delta
--                modulator or internal ADC output to DFSDM channel.
--
--          required:
--            - io-channels
--
-       - if:
-           properties:
-             compatible:
-@@ -207,12 +204,6 @@ patternProperties:
+-	iio->name = dev_name(dev);
+-	iio->info = &iio_sd_mod_iio_info;
+-	iio->modes = INDIO_BUFFER_HARDWARE;
++	vref = devm_regulator_get_optional(dev, "vref");
++	if (IS_ERR(vref)) {
++		if (PTR_ERR(vref) != -ENODEV)
++			return dev_err_probe(dev, PTR_ERR(vref), "Failed to get vref\n");
++	} else {
++		priv->vref = vref;
++	}
  
-         then:
-           properties:
--            st,adc-channels:
--              maxItems: 1
--
--            st,adc-channel-names:
--              maxItems: 1
--
-             st,adc-channel-types:
-               maxItems: 1
+-	iio->num_channels = 1;
+-	iio->channels = &iio_sd_mod_ch;
++	backend = iio_backend_alloc(dev);
++	if (!backend) {
++		dev_err(dev, "Failed to allocate sd modulator backend data\n");
++		return -ENOMEM;
++	}
++
++	backend->priv = priv;
++	backend->ops = &sd_mod_ops;
++
++	ret = iio_backend_register(backend);
++	if (ret) {
++		dev_err(dev, "Failed to register backend: %d\n", ret);
++		goto err_free_backend;
++	}
  
-@@ -237,15 +228,9 @@ patternProperties:
-                 "#sound-dai-cells":
-                   const: 0
+-	platform_set_drvdata(pdev, iio);
++	return 0;
  
--                io-channels:
--                  description:
--                    From common IIO binding. Used to pipe external sigma delta
--                    modulator or internal ADC output to DFSDM channel.
--
-               required:
-                 - compatible
-                 - "#sound-dai-cells"
--                - io-channels
+-	return devm_iio_device_register(&pdev->dev, iio);
+-}
++err_free_backend:
++	iio_backend_free(&backend->dev);
++
++	return ret;
++};
  
- allOf:
-   - if:
-@@ -278,52 +263,4 @@ allOf:
-                 minimum: 0
-                 maximum: 5
- 
--examples:
--  - |
--    #include <dt-bindings/interrupt-controller/arm-gic.h>
--    #include <dt-bindings/clock/stm32mp1-clks.h>
--    dfsdm: dfsdm@4400d000 {
--      compatible = "st,stm32mp1-dfsdm";
--      reg = <0x4400d000 0x800>;
--      clocks = <&rcc DFSDM_K>, <&rcc ADFSDM_K>;
--      clock-names = "dfsdm", "audio";
--      #address-cells = <1>;
--      #size-cells = <0>;
--
--      dfsdm0: filter@0 {
--        compatible = "st,stm32-dfsdm-dmic";
--        reg = <0>;
--        interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
--        dmas = <&dmamux1 101 0x400 0x01>;
--        dma-names = "rx";
--        #io-channel-cells = <1>;
--        st,adc-channels = <1>;
--        st,adc-channel-names = "dmic0";
--        st,adc-channel-types = "SPI_R";
--        st,adc-channel-clk-src = "CLKOUT";
--        st,filter-order = <5>;
--
--        asoc_pdm0: dfsdm-dai {
--          compatible = "st,stm32h7-dfsdm-dai";
--          #sound-dai-cells = <0>;
--          io-channels = <&dfsdm0 0>;
--        };
--      };
--
--      dfsdm_pdm1: filter@1 {
--        compatible = "st,stm32-dfsdm-adc";
--        reg = <1>;
--        interrupts = <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>;
--        dmas = <&dmamux1 102 0x400 0x01>;
--        dma-names = "rx";
--        #io-channel-cells = <1>;
--        st,adc-channels = <2 3>;
--        st,adc-channel-names = "in2", "in3";
--        st,adc-channel-types = "SPI_R", "SPI_R";
--        st,adc-channel-clk-src = "CLKOUT_F", "CLKOUT_F";
--        io-channels = <&sd_adc2 &sd_adc3>;
--        st,filter-order = <1>;
--      };
--    };
--
- ...
+ static const struct of_device_id sd_adc_of_match[] = {
+ 	{ .compatible = "sd-modulator" },
 -- 
 2.25.1
 
