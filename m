@@ -2,106 +2,273 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B19C3C04A6A
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Jul 2023 14:28:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E09BC0015E
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Jul 2023 15:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233744AbjG0O26 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 27 Jul 2023 10:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59322 "EHLO
+        id S233385AbjG0PAP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 27 Jul 2023 11:00:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233766AbjG0O24 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Jul 2023 10:28:56 -0400
-Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881602D56
-        for <linux-iio@vger.kernel.org>; Thu, 27 Jul 2023 07:28:52 -0700 (PDT)
-Received: by mail-vk1-xa2c.google.com with SMTP id 71dfb90a1353d-486453928a4so403304e0c.0
-        for <linux-iio@vger.kernel.org>; Thu, 27 Jul 2023 07:28:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1690468131; x=1691072931;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YC7SY/+bNunb7hgJZCzTcmNXxqMMEhbQF6xRKuKDNpw=;
-        b=ZacN3JOxZQux+J+m5sF+n2TETtwlCk755+CC461ARtVyy7JZczhgMj6DBa8h2ynElW
-         PQlT37UW89S/5WfB5+RsgomeM1TeErPtq510yhfDzwmiCqwKU2RgUjauvhzV0/KQZn97
-         k+X8HNy8mcwu0J7LNa268TYEZN+A7OBDARuZ87T0vnfNj9KqyPso0NPvMADjbgtJChTI
-         0NFTIQjSxenk7Dd26U4ny9j3KwXyeRCvboTqkO2VfWRwdw/r5vZEXuf32HDK5BHqxkye
-         oYcqhMqHjN+7PCFFZ/P0h6bimfOPI5s7wBVIPIMUIZPcEvPudNG5bKmkbUi/l91ACdUT
-         Cjaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690468131; x=1691072931;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YC7SY/+bNunb7hgJZCzTcmNXxqMMEhbQF6xRKuKDNpw=;
-        b=QEoYJ4v6qVzrEUDQgnex25z6ErMQ1mHk9hu/z9etn4H91YcGG+qYLu8wKqpXPzUG2z
-         Sh4zcYeCWvOyWQLDC8uhRko5cpMgcyG7roMqc+mfmW5ocAmz3NIpK3fnk7IgE1c2dgbL
-         x8XqFE8/NZtSVy13pcZEPewQVDji4A8Z2jNsQDLhE03mKIxVUTYqbInCeKOsUfnLCVSG
-         CSgrNS+g6X8kyi++3TJ83jXrg2lBD1BpSUxaFNSs/VwtbH9F1W3xcuivS6zOoOekb9wf
-         6M5A5W/yn+2nHOAiiRJxUbWVSr/fZYnaEOtGz7xDDOjUG9vUZNNOVvNKQz7cyqmVLbwK
-         HiDw==
-X-Gm-Message-State: ABy/qLZOuUq2R4QxUudQlubK00PKJcvU+njH+piQEWWB+8tSvM363NX7
-        o9gvM6wt6Mr5qEJUe9rB5KmE8srT98uiJTmhc7F8ZA==
-X-Google-Smtp-Source: APBJJlGlI6fOTKslVHoebjSJJi2OoMt6X2OGoqQHHH4TcWdKra0BlzdXqCTvdkwM+Px4Dr1KGF26pQ==
-X-Received: by 2002:a1f:4985:0:b0:47e:8a9:478c with SMTP id w127-20020a1f4985000000b0047e08a9478cmr1291481vka.16.1690468131542;
-        Thu, 27 Jul 2023 07:28:51 -0700 (PDT)
-Received: from fedora (072-189-067-006.res.spectrum.com. [72.189.67.6])
-        by smtp.gmail.com with ESMTPSA id e4-20020ac5c984000000b00483e3d330ccsm231367vkm.22.2023.07.27.07.28.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jul 2023 07:28:50 -0700 (PDT)
-Date:   Thu, 27 Jul 2023 10:28:48 -0400
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org
-Subject: Re: [RESEND PATCH 2/2] iio: addac: stx104: Add 8254 Counter/Timer
- support
-Message-ID: <ZMJ/INNf6/QuPEWo@fedora>
-References: <cover.1689878150.git.william.gray@linaro.org>
- <c73869c2b26db05303902f80ca86316b155c4832.1689878150.git.william.gray@linaro.org>
+        with ESMTP id S233337AbjG0PAL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Jul 2023 11:00:11 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778F3B6;
+        Thu, 27 Jul 2023 08:00:08 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36RA9Ies027858;
+        Thu, 27 Jul 2023 16:59:47 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=4QX9Z5N4IBM3jR26vAY1wmUBBclNiX7yJiB7oyvXpaY=;
+ b=yP+N/GlBOlK1/ufli5zYvaBrvT7SWuDBVH3qGKysJWdfo0N8rAD/qVecg04R6iy+2E3W
+ r9Mlj7FuQuXXm2I9ZMLnO/40PcE8GD0KC0G9RaS45t2Dt0CI/JFhXbAcoeHvJQygWBBe
+ V7NVsfmePv8NnlalqwtOXyTqBZ9/hnF6hgE6r/a4XRV/hKhHnDcJIblNayU6oKAq0/oq
+ N+rJqY+sB0XIggO2TjgLsX4f/u/JJSXjQiw+4mnXoFWRrvcwOXBMPCYrx4SpSbwAFZGo
+ BYRTugOgCcsrwWYax+6m4YLH6QCPqK5E8jX0N7aB+o6vmykaFBl4sKhM24ticQHWZ4iz KQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3s3kn2b15m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jul 2023 16:59:47 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5FD8910002A;
+        Thu, 27 Jul 2023 16:59:47 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 579CF209721;
+        Thu, 27 Jul 2023 16:59:47 +0200 (CEST)
+Received: from localhost (10.201.20.178) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Thu, 27 Jul
+ 2023 16:59:47 +0200
+From:   Olivier Moysan <olivier.moysan@foss.st.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+CC:     Olivier Moysan <olivier.moysan@foss.st.com>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: [RFC v2 01/11] iio: introduce iio backend device
+Date:   Thu, 27 Jul 2023 16:59:27 +0200
+Message-ID: <20230727145939.1157607-2-olivier.moysan@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230727145939.1157607-1-olivier.moysan@foss.st.com>
+References: <20230727145939.1157607-1-olivier.moysan@foss.st.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="0ipNoh1Dp7smmM10"
-Content-Disposition: inline
-In-Reply-To: <c73869c2b26db05303902f80ca86316b155c4832.1689878150.git.william.gray@linaro.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.201.20.178]
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-07-27_07,2023-07-26_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Add a new device type in IIO framework.
+This backend device does not compute channel attributes and does not expose
+them through sysfs, as done typically in iio-rescale frontend device.
+Instead, it allows to report information applying to channel
+attributes through callbacks. These backend devices can be cascaded
+to represent chained components.
+An IIO device configured as a consumer of a backend device can compute
+the channel attributes of the whole chain.
 
---0ipNoh1Dp7smmM10
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+---
+ drivers/iio/Makefile               |   1 +
+ drivers/iio/industrialio-backend.c | 107 +++++++++++++++++++++++++++++
+ include/linux/iio/backend.h        |  56 +++++++++++++++
+ 3 files changed, 164 insertions(+)
+ create mode 100644 drivers/iio/industrialio-backend.c
+ create mode 100644 include/linux/iio/backend.h
 
-On Thu, Jul 20, 2023 at 02:49:44PM -0400, William Breathitt Gray wrote:
-> The STX104 features an 8254 Counter/Timer chip providing three
-> counter/timers which can be used for frequency measurement, frequency
-> output, pulse width modulation, pulse width measurement, event count,
-> etc. The STX104 provides a register bank selection to bank select
-> between the 8254 Bank and the Indexed Register Array Bank; the Indexed
-> Register Array is not utilized by this driver, so the 8254 Bank is
-> selected unconditionally.
->=20
-> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 9622347a1c1b..9b59c6ab1738 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -5,6 +5,7 @@
+ 
+ obj-$(CONFIG_IIO) += industrialio.o
+ industrialio-y := industrialio-core.o industrialio-event.o inkern.o
++industrialio-$(CONFIG_IIO_BACKEND) += industrialio-backend.o
+ industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+ industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
+ 
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+new file mode 100644
+index 000000000000..7d0625889873
+--- /dev/null
++++ b/drivers/iio/industrialio-backend.c
+@@ -0,0 +1,107 @@
++// SPDX-License-Identifier: GPL-2.0
++/* The industrial I/O core, backend handling functions
++ *
++ */
++
++#include <linux/kernel.h>
++#include <linux/device.h>
++#include <linux/property.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/backend.h>
++
++static DEFINE_IDA(iio_backend_ida);
++
++#define to_iio_backend(_device) container_of((_device), struct iio_backend, dev)
++
++static void iio_backend_release(struct device *device)
++{
++	struct iio_backend *backend = to_iio_backend(device);
++
++	kfree(backend->name);
++	kfree(backend);
++}
++
++static const struct device_type iio_backend_type = {
++	.release = iio_backend_release,
++	.name = "iio_backend_device",
++};
++
++struct iio_backend *iio_backend_alloc(struct device *parent)
++{
++	struct iio_backend *backend;
++
++	backend = devm_kzalloc(parent, sizeof(*backend), GFP_KERNEL);
++
++	backend->dev.parent = parent;
++	backend->dev.type = &iio_backend_type;
++	backend->dev.bus = &iio_bus_type;
++	device_initialize(&backend->dev);
++
++	return backend;
++};
++EXPORT_SYMBOL(iio_backend_alloc);
++
++void iio_backend_free(struct device *dev)
++{
++	if (dev)
++		put_device(dev);
++}
++EXPORT_SYMBOL(iio_backend_free);
++
++int iio_backend_register(struct iio_backend *backend)
++{
++	struct fwnode_handle *fwnode;
++	int id;
++
++	id = ida_alloc(&iio_backend_ida, GFP_KERNEL);
++	if (id < 0)
++		return id;
++	backend->id = id;
++
++	dev_set_name(&backend->dev, "backend%d", backend->id);
++
++	if (dev_fwnode(&backend->dev))
++		fwnode = dev_fwnode(&backend->dev);
++	else
++		fwnode = dev_fwnode(backend->dev.parent);
++	device_set_node(&backend->dev, fwnode);
++
++	return device_add(&backend->dev);
++};
++EXPORT_SYMBOL(iio_backend_register);
++
++void iio_backend_unregister(struct iio_backend *backend)
++{
++	device_del(&backend->dev);
++};
++EXPORT_SYMBOL(iio_backend_unregister);
++
++struct iio_backend *fwnode_iio_backend_get(struct fwnode_handle *fwnode, int index)
++{
++	struct iio_backend *backend;
++	struct fwnode_reference_args iiospec;
++	struct device *bdev;
++	int ret;
++
++	if (index < 0)
++		return ERR_PTR(-EINVAL);
++
++	ret = fwnode_property_get_reference_args(fwnode, "io-backends",
++						 "#io-backend-cells", 0,
++						 index, &iiospec);
++	if (ret)
++		return ERR_PTR(ret);
++
++	bdev = bus_find_device_by_fwnode(&iio_bus_type, iiospec.fwnode);
++	if (!bdev) {
++		fwnode_handle_put(iiospec.fwnode);
++		return ERR_PTR(-EPROBE_DEFER);
++	}
++
++	backend = to_iio_backend(bdev);
++
++	fwnode_handle_put(iiospec.fwnode);
++
++	return backend;
++};
++EXPORT_SYMBOL(fwnode_iio_backend_get);
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+new file mode 100644
+index 000000000000..d90d345a4625
+--- /dev/null
++++ b/include/linux/iio/backend.h
+@@ -0,0 +1,56 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * The industrial I/O core, backend handling functions
++ *
++ * Author: Olivier Moysan <olivier.moysan@foss.st.com>.
++ */
++
++#ifndef _IIO_BACKEND_H_
++#define _IIO_BACKEND_H_
++#include <linux/iio/iio.h>
++
++struct iio_backend_ops;
++struct iio_backend;
++
++/**
++ * struct iio_backend_ops - operations structure for an iio_backend
++ * @enable:	switch on backend
++ * @disable:	switch off backend
++ * @read_raw:	read data from backend
++ **/
++struct iio_backend_ops {
++	int (*enable)(struct iio_backend *backend);
++	int (*disable)(struct iio_backend *backend);
++	int (*read_raw)(struct iio_backend *backend, int *val, int *val2, long mask);
++};
++
++/**
++ * truct iio_backend - industrial I/O backend device
++ * @ops:	operations structure
++ * @module:	owner of this driver module
++ * @id:		unique id number
++ * @name:	unique name
++ * @dev:	associated device
++ * @priv:	private data pointer
++ **/
++struct iio_backend {
++	const struct iio_backend_ops	*ops;
++	struct module			*owner;
++	int				id;
++	const char			*name;
++	struct device			dev;
++	struct list_head		list;
++	void				*priv;
++};
++
++struct iio_backend *iio_backend_alloc(struct device *parent);
++
++void iio_backend_free(struct device *dev);
++
++int iio_backend_register(struct iio_backend *backend);
++
++void iio_backend_unregister(struct iio_backend *backend);
++
++struct iio_backend *fwnode_iio_backend_get(struct fwnode_handle *fwnode, int index);
++
++#endif /* _IIO_BACKEND_H_ */
+-- 
+2.25.1
 
-Apologies Jonathan, I forgot to add you to the address list when I sent
-this patchset. If you would like me to resend it again to you, just let
-me know.
-
-William Breathitt Gray
-
---0ipNoh1Dp7smmM10
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZMJ/IAAKCRC1SFbKvhIj
-K4CjAQDCDv+EPWCIvfvuWN+0W5AQ/F8cDITZTFB1k0Jqy5wFiwD/dWrL1Y38fbUi
-7OJU7kfST2YfGdABMarQlTZzviYwigU=
-=u6KE
------END PGP SIGNATURE-----
-
---0ipNoh1Dp7smmM10--
