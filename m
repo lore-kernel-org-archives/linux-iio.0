@@ -2,166 +2,88 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 358C4C001DE
-	for <linux-iio@archiver.kernel.org>; Mon, 31 Jul 2023 11:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7D5C001DC
+	for <linux-iio@archiver.kernel.org>; Mon, 31 Jul 2023 11:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230387AbjGaLy7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 31 Jul 2023 07:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52884 "EHLO
+        id S229799AbjGaL7l (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 31 Jul 2023 07:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbjGaLy6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Jul 2023 07:54:58 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E41A1A2;
-        Mon, 31 Jul 2023 04:54:57 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 36V812o4020043;
-        Mon, 31 Jul 2023 05:45:26 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3s66qmsr6q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 31 Jul 2023 05:45:24 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 36V9jAZt006529
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 31 Jul 2023 05:45:10 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 31 Jul 2023 05:45:10 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 31 Jul 2023 05:45:09 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 31 Jul 2023 05:45:09 -0400
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.194])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 36V9iwH6024100;
-        Mon, 31 Jul 2023 05:45:01 -0400
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v3 1/2] dt-bindings: iio: admv1013: add vcc regulators
-Date:   Mon, 31 Jul 2023 12:44:54 +0300
-Message-ID: <20230731094455.26742-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.41.0
+        with ESMTP id S229706AbjGaL7k (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Jul 2023 07:59:40 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E11119;
+        Mon, 31 Jul 2023 04:59:39 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-1bbb4bddd5bso2974150fac.2;
+        Mon, 31 Jul 2023 04:59:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1690804779; x=1691409579;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jrnCzJ9Uk8XHCF3A0ESdVfEJBz/p5J2LPDvMeQ7uQnM=;
+        b=MstqOIcavTXASvjjD8SlUwnfgq7+jzoWHJvakFxl/FJJPfbfKxU9NR77wiqvG0QXBX
+         LN6xXBvOMB17NyBP/OYscd/si3AqkaQuyjqLFE3ImdF3HQqmnqyG7cM5TJjpr2ZCDKkQ
+         BEwZNfs3NPzjaGgYnzNvi1Bcjg4koiwLu2GoZPivyJEfEmOREAIJybD+OlIjPlOtbFRd
+         4HnCTMp6+An3sQvwyUBhxRGZngmr1Yi4XzZBG2ERexT09HMUVYB9y3JybDhg57ALBjtc
+         O9yW/ZVgsYMVnvyp4CpET53hcRzopkUh3EFBq7RYWicoDpVbR6Uos+/HCKrraGnJSaqk
+         qhvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690804779; x=1691409579;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jrnCzJ9Uk8XHCF3A0ESdVfEJBz/p5J2LPDvMeQ7uQnM=;
+        b=PbF9Kct1eCW11yO5jOSRaFZHwzzLJYXC3rV8kqx+vfMETM0HRrzY+F0O/NPpBn03e3
+         F326y/329zZ9MzlwjIyylmYvg4v14I52e9VyVrHlSGIR4Sr2MXALP3rw1hy25ZsU0Ztr
+         DDU7aH/Wd8yaEvs1J+s+bfoalv/UK/GCbnXAxU05GLQFzQ1QtvCgbmkGOomS9yGEzeoy
+         cRm9Kd35KlswvuLps0jyniwXKvXzBtEqO2WPSo2Dbn6aMQnSUMbLqX3OvmB126PRTKoK
+         UGB6cZRmDQkpHnaXYSHUpdgAtm/qo2T7aHOy5E6Xa1XMYr3rWbmoE5CncWOuVFYGQOHD
+         tmuA==
+X-Gm-Message-State: ABy/qLbdsHM1lhWPXpl/YEOqKD4+RatWTgdkfcYmFLe2yTBy0GALubEJ
+        zPIdp7tGiWatRvtA7V8pupE=
+X-Google-Smtp-Source: APBJJlG+y/ibdw8Mm0H8nalhBTDE6G3GilRjqns3LDw8oUU8HM9ueMCzQulNIX6CMsPFajgw4pe17w==
+X-Received: by 2002:a05:6870:40c3:b0:1be:ca9e:a65 with SMTP id l3-20020a05687040c300b001beca9e0a65mr5073810oal.58.1690804779004;
+        Mon, 31 Jul 2023 04:59:39 -0700 (PDT)
+Received: from localhost ([2804:30c:927:dd00:76d4:c2a9:4431:27fe])
+        by smtp.gmail.com with ESMTPSA id 125-20020a4a1483000000b005660b585a00sm4233002ood.22.2023.07.31.04.59.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jul 2023 04:59:38 -0700 (PDT)
+Date:   Mon, 31 Jul 2023 08:59:35 -0300
+From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To:     nuno.sa@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com,
+        jic23@kernel.org, lgirdwood@gmail.com, broonie@kernel.org
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: dac: ad3552r: Correct device IDs
+Message-ID: <38b71b347f9c75e926dec55d7ecfa078aedd70c6.1690804520.git.marcelo.schmitt1@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: 8f9O44HCS8gBEhXVZxCx-1iJHq5eLM7e
-X-Proofpoint-ORIG-GUID: 8f9O44HCS8gBEhXVZxCx-1iJHq5eLM7e
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-07-31_03,2023-07-26_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
- adultscore=0 bulkscore=0 priorityscore=1501 clxscore=1015 phishscore=0
- impostorscore=0 malwarescore=0 lowpriorityscore=0 spamscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2306200000 definitions=main-2307310088
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add bindings for the VCC regulators of the ADMV1013 microware
-upconverter.
+Device IDs for AD3542R and AD3552R were swapped.
+Change device ID values so they are correct for each DAC chip.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 ---
-changes in v3:
- - add missing spaces in the commit subject.
- .../bindings/iio/frequency/adi,admv1013.yaml  | 60 +++++++++++++++++++
- 1 file changed, 60 insertions(+)
+ drivers/iio/dac/ad3552r.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,admv1013.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,admv1013.yaml
-index fc813bcb6532..f2eb2287ed9e 100644
---- a/Documentation/devicetree/bindings/iio/frequency/adi,admv1013.yaml
-+++ b/Documentation/devicetree/bindings/iio/frequency/adi,admv1013.yaml
-@@ -39,6 +39,46 @@ properties:
-     description:
-       Analog voltage regulator.
+diff --git a/drivers/iio/dac/ad3552r.c b/drivers/iio/dac/ad3552r.c
+index d5ea1a1be122..a492e8f2fc0f 100644
+--- a/drivers/iio/dac/ad3552r.c
++++ b/drivers/iio/dac/ad3552r.c
+@@ -140,8 +140,8 @@ enum ad3552r_ch_vref_select {
+ };
  
-+  vcc-drv-supply:
-+    description:
-+      RF Driver voltage regulator.
-+
-+  vcc2-drv-supply:
-+    description:
-+      RF predriver voltage regulator.
-+
-+  vcc-vva-supply:
-+    description:
-+      VVA Control Circuit voltage regulator.
-+
-+  vcc-amp1-supply:
-+    description:
-+      RF Amplifier 1 voltage regulator.
-+
-+  vcc-amp2-supply:
-+    description:
-+      RF Amplifier 2 voltage regulator.
-+
-+  vcc-env-supply:
-+    description:
-+      Envelope Detector voltage regulator.
-+
-+  vcc-bg-supply:
-+    description:
-+      Mixer Chip Band Gap Circuit voltage regulator.
-+
-+  vcc-bg2-supply:
-+    description:
-+      VGA Chip Band Gap Circuit voltage regulator.
-+
-+  vcc-mixer-supply:
-+    description:
-+      Mixer voltage regulator.
-+
-+  vcc-quad-supply:
-+    description:
-+      Quadruppler voltage regulator.
-+
-   adi,detector-enable:
-     description:
-       Enable the Envelope Detector available at output pins VENV_P and
-@@ -69,6 +109,16 @@ required:
-   - clocks
-   - clock-names
-   - vcm-supply
-+  - vcc-drv-supply
-+  - vcc2-drv-supply
-+  - vcc-vva-supply
-+  - vcc-amp1-supply
-+  - vcc-amp2-supply
-+  - vcc-env-supply
-+  - vcc-bg-supply
-+  - vcc-bg2-supply
-+  - vcc-mixer-supply
-+  - vcc-quad-supply
+ enum ad3542r_id {
+-	AD3542R_ID = 0x4008,
+-	AD3552R_ID = 0x4009,
++	AD3542R_ID = 0x4009,
++	AD3552R_ID = 0x4008,
+ };
  
- allOf:
-   - $ref: /schemas/spi/spi-peripheral-props.yaml#
-@@ -87,6 +137,16 @@ examples:
-         clocks = <&admv1013_lo>;
-         clock-names = "lo_in";
-         vcm-supply = <&vcm>;
-+        vcc-drv-supply = <&vcc_drv>;
-+        vcc2-drv-supply = <&vcc2_drv>;
-+        vcc-vva-supply = <&vcc_vva>;
-+        vcc-amp1-supply = <&vcc_amp1>;
-+        vcc-amp2-supply = <&vcc_amp2>;
-+        vcc-env-supply = <&vcc_env>;
-+        vcc-bg-supply = <&vcc_bg>;
-+        vcc-bg2-supply = <&vcc_bg2>;
-+        vcc-mixer-supply = <&vcc_mixer>;
-+        vcc-quad-supply = <&vcc_quad>;
-         adi,quad-se-mode = "diff";
-         adi,detector-enable;
-       };
+ enum ad3552r_ch_output_range {
 -- 
-2.41.0
+2.40.1
 
