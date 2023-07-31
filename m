@@ -2,53 +2,52 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B844C001DC
-	for <linux-iio@archiver.kernel.org>; Mon, 31 Jul 2023 11:03:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69462C04FDF
+	for <linux-iio@archiver.kernel.org>; Mon, 31 Jul 2023 11:03:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230222AbjGaLDN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 31 Jul 2023 07:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51560 "EHLO
+        id S230367AbjGaLDO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 31 Jul 2023 07:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232453AbjGaLDG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Jul 2023 07:03:06 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE00EB;
-        Mon, 31 Jul 2023 04:03:05 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id 38308e7fff4ca-2b9b904bb04so66261251fa.1;
-        Mon, 31 Jul 2023 04:03:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1690801383; x=1691406183;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pOfsPdADwq8SeaOVLGoXbhR/yvpsism3LrFhqiy9z/0=;
-        b=NGgK+Ss1tH+8XRHzYUj6iMA2ydeitDSPEbmb469Rwkw27f2iUr4Gex5DIW0eJ6AilF
-         B0L9V4QAy8G99A42tQlNaU7DJwFTLGzop7sz5f3b8RDihpVxxk+Lft1ydRHN57rZdJjq
-         gDvb6xL0jSlqM3pcaEsVCygT9LVdB+Zc+P53fUK8eKitFuLbfXn6n3Jjvx9RuKTYFe10
-         QAew5nQvqQRhhWPfJsSqZwGzBTCnS82EUhIu25WT08mUBt4jOF3M3XiqwSnvnBK6Hvoj
-         DqcE38hNp6OPaoN7P9GGrNOtluS7faBvkYfGYOsHL9GbwFhHns9+H787LCR2yXwyVaxy
-         BFfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690801383; x=1691406183;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pOfsPdADwq8SeaOVLGoXbhR/yvpsism3LrFhqiy9z/0=;
-        b=OhwqoP8EVnUOkLhTe6ElLfq++s774CPuJnX4EW895h/A8Z5Ufv+y7qzEqWidTmBYGj
-         LzRm1U+5sUr+T3cFlvRjEv53boi+ZpQb6ehcCmli+tAHuHW6WPWLfWHokyhFg4pfTnYD
-         VW9y0G8psVkMrBR/rebpSmy6iZ5syR54IjbjEp4cTaSLVrIOp7q7xT2cLtSai0iS1WP0
-         qBJ6G1v2oBNtxGA3sodQjCeS5CfNkLWxTBCjDlILlGs/3RI+BZkLignBPBtILDNXRc1T
-         schlTeb1evTOIyayqqYrUe9RNGoowvlZSN8bYPd0trbsuOcT09wUdo2EGTdIIHtil5TB
-         8Gvg==
-X-Gm-Message-State: ABy/qLbhM4FiFvVYq3m8LzBPdFi34ax/ek5KYNYJ7clA8ahHEccctp8s
-        wpBk6bEn+SwYZDj2A8Gg5RA=
-X-Google-Smtp-Source: APBJJlFR5Chknpd2vgyeFK2PwvZ0Kv4oh4HUHN0mZtCsRWNSlmDAlXwNcA+8fBUo3kBPMZMdaD521Q==
-X-Received: by 2002:a05:651c:21a:b0:2b9:cd3d:4136 with SMTP id y26-20020a05651c021a00b002b9cd3d4136mr6195416ljn.2.1690801383203;
+        with ESMTP id S232367AbjGaLDE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Jul 2023 07:03:04 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210B711B;
         Mon, 31 Jul 2023 04:03:03 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id 2adb3069b0e04-4fe3c7f16bbso494188e87.0;
+        Mon, 31 Jul 2023 04:03:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1690801381; x=1691406181;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=n83TuKNtAFb4aHweh9x4amkqhUIBkeAPvKSvQukr0II=;
+        b=VhKLvpLPA5Zm/laVXQYsAT2V/s1BvK0P63FQcvyabqU8qIVvb4BxJ/Be+ekTsa216S
+         P/kc3Li6gESqr88cwaEUOv/RfauYZ+Zd7stFQYsk0Uvv/8IcQE5PYM6woEnmynHlP9/x
+         M8IobLcsNE3rhRVlSbLo5ETKJefrPatR1z9GgZMKHLrNj42gzW/q2ErkafFsLwbmYDkw
+         A0n//i2hEBSoOqceBqgAHmqvO19I47AybccBWOj3mKo7HXkn3eIre/2S+NAWTKzebjmo
+         qRGgrHPjv8xhb0kIjqW9RxdbAvIK0Zk0HW4RTBmMVHBL21ujuUpNvwUuGxzMBE6h+NYP
+         kXBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690801381; x=1691406181;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=n83TuKNtAFb4aHweh9x4amkqhUIBkeAPvKSvQukr0II=;
+        b=coeqb6KnJBFByVfQxRd6nDCiKnAK/P8YEA90axKXZgrB3K9Xz/oCKKYlUdLNKBr0dr
+         pDvMPppho6bkrPjGmHHspXBQo8VwriEKweY6e92qtzqlHufJ+IQz3BZc0+gerECjcYR6
+         4dFTjtgjhyIk+/zYRuGpNVBKfZy8/illNhroDFBM9nHz8+iANtUSdthjPNdk5wXb0JI3
+         78f2MnK6L75qZsqKU6FoMsnRQ97aLtnnCxKW+paXdTscGURhsxgiyRLegAH9yvJcJBjj
+         13X+QsRgQpFr7lQBnuobpfVIEFnTZ/DPNSPXWvMmq0XRWArhNPDQ8toawxmNcA9MwUQV
+         RTmQ==
+X-Gm-Message-State: ABy/qLYt2lHRIVRiIfjDk9+Ps1A9pU7oDKMJP2MVb8oDH18IfLkPxOgq
+        xVIJVcb7S46ZCsDSL54Vf7g=
+X-Google-Smtp-Source: APBJJlEbxEAKXUayKCuAJsDfWgXRuTJubylT872rt3beMbpU/qcyUHt+etqHbu/iyb6MUQkX058PqQ==
+X-Received: by 2002:a05:651c:120a:b0:2b7:33b9:8809 with SMTP id i10-20020a05651c120a00b002b733b98809mr6243104lja.16.1690801381028;
+        Mon, 31 Jul 2023 04:03:01 -0700 (PDT)
 Received: from xeon.. ([188.163.112.48])
-        by smtp.gmail.com with ESMTPSA id p2-20020a2e8042000000b002b9bf5b071bsm74607ljg.20.2023.07.31.04.03.02
+        by smtp.gmail.com with ESMTPSA id p2-20020a2e8042000000b002b9bf5b071bsm74607ljg.20.2023.07.31.04.02.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jul 2023 04:03:02 -0700 (PDT)
+        Mon, 31 Jul 2023 04:03:00 -0700 (PDT)
 From:   Svyatoslav Ryhel <clamor95@gmail.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -61,120 +60,43 @@ To:     Jonathan Cameron <jic23@kernel.org>,
         Samu Onkalo <samu.p.onkalo@nokia.com>
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 2/2] misc: adps990x: convert to OF
-Date:   Mon, 31 Jul 2023 14:02:39 +0300
-Message-Id: <20230731110239.107086-3-clamor95@gmail.com>
+Subject: [PATCH v1 0/2] Update APDS990x ALS to support device trees
+Date:   Mon, 31 Jul 2023 14:02:37 +0300
+Message-Id: <20230731110239.107086-1-clamor95@gmail.com>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230731110239.107086-1-clamor95@gmail.com>
-References: <20230731110239.107086-1-clamor95@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add ability to use device tree bindings keeping existing setup.
+This patchset is the successor of a wider patch called
+'Update APDS990x ALS to support IIO'. I have decided to divide it into
+two separate patches to ease review and submitting. All suggestions
+from the previous patchset were applied.
 
-Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
----
- drivers/misc/apds990x.c | 55 +++++++++++++++++++++++++++++++++++------
- 1 file changed, 48 insertions(+), 7 deletions(-)
+This part is dedicated to including device tree support into APDS990x.
+APDS990x is a combined ambient light and proximity sensor. ALS and
+proximity functionality are highly connected. From mandatory properties
+required by device (apart of compatible and address on i2c line) are
+two supplies, interrupt, pdrive (LED drive current) and ppcount (the
+number of IR calibration pulses).
 
-diff --git a/drivers/misc/apds990x.c b/drivers/misc/apds990x.c
-index 0024503ea6db..cf56d68c938a 100644
---- a/drivers/misc/apds990x.c
-+++ b/drivers/misc/apds990x.c
-@@ -1051,6 +1051,37 @@ static const struct attribute_group apds990x_attribute_group[] = {
- 	{.attrs = sysfs_attrs_ctrl },
- };
- 
-+static int apds990x_fw_probe(struct i2c_client *client,
-+			     struct apds990x_chip *chip)
-+{
-+	struct apds990x_platform_data *pdata;
-+	u32 ret, val;
-+
-+	pdata = devm_kzalloc(&client->dev, sizeof(*pdata), GFP_KERNEL);
-+	if (!pdata)
-+		return -ENOMEM;
-+
-+	ret = device_property_read_u32(&client->dev, "avago,pdrive", &val);
-+	if (ret)
-+		return dev_err_probe(&client->dev, ret,
-+				     "pdrive property is missing\n");
-+	pdata->pdrive = val;
-+
-+	ret = device_property_read_u32(&client->dev, "avago,ppcount", &val);
-+	if (ret)
-+		return dev_err_probe(&client->dev, ret,
-+				     "ppcount property is missing\n");
-+	pdata->ppcount = val;
-+
-+	chip->pdata = pdata;
-+
-+	/* set regulator names which fit device tree entries */
-+	chip->regs[0].supply = "vdd";
-+	chip->regs[1].supply = "vled";
-+
-+	return 0;
-+}
-+
- static int apds990x_probe(struct i2c_client *client)
- {
- 	struct apds990x_chip *chip;
-@@ -1065,12 +1096,12 @@ static int apds990x_probe(struct i2c_client *client)
- 
- 	init_waitqueue_head(&chip->wait);
- 	mutex_init(&chip->mutex);
--	chip->pdata	= client->dev.platform_data;
- 
--	if (chip->pdata == NULL) {
--		dev_err(&client->dev, "platform data is mandatory\n");
--		err = -EINVAL;
--		goto fail1;
-+	chip->pdata = client->dev.platform_data;
-+	if (!chip->pdata) {
-+		err = apds990x_fw_probe(client, chip);
-+		if (err)
-+			return err;
- 	}
- 
- 	if (chip->pdata->cf.ga == 0) {
-@@ -1111,8 +1142,11 @@ static int apds990x_probe(struct i2c_client *client)
- 	chip->prox_persistence = APDS_DEFAULT_PROX_PERS;
- 	chip->prox_continuous_mode = false;
- 
--	chip->regs[0].supply = reg_vcc;
--	chip->regs[1].supply = reg_vled;
-+	if (!chip->regs[0].supply)
-+		chip->regs[0].supply = reg_vcc;
-+
-+	if (!chip->regs[1].supply)
-+		chip->regs[1].supply = reg_vled;
- 
- 	err = regulator_bulk_get(&client->dev,
- 				 ARRAY_SIZE(chip->regs), chip->regs);
-@@ -1252,6 +1286,12 @@ static int apds990x_runtime_resume(struct device *dev)
- 
- #endif
- 
-+static const struct of_device_id apds990x_match_table[] = {
-+	{ .compatible = "avago,apds990x" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, apds990x_match_table);
-+
- static const struct i2c_device_id apds990x_id[] = {
- 	{"apds990x", 0 },
- 	{}
-@@ -1270,6 +1310,7 @@ static struct i2c_driver apds990x_driver = {
- 	.driver	 = {
- 		.name	= "apds990x",
- 		.pm	= &apds990x_pm_ops,
-+		.of_match_table = apds990x_match_table,
- 	},
- 	.probe_new = apds990x_probe,
- 	.remove	  = apds990x_remove,
+These patches are oriented ONLY on bringing support of device tree into
+driver, pdrive and ppcount are mandatory and datasheet nor driver does
+not provide any reference values.
+
+Namings and compatible properties derive from the original driver name.
+
+Svyatoslav Ryhel (2):
+  dt-bindings: iio: light: add apds990x binding
+  misc: adps990x: convert to OF
+
+ .../bindings/iio/light/avago,apds990x.yaml    | 87 +++++++++++++++++++
+ drivers/misc/apds990x.c                       | 55 ++++++++++--
+ 2 files changed, 135 insertions(+), 7 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/avago,apds990x.yaml
+
 -- 
 2.39.2
 
