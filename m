@@ -2,178 +2,115 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05AB4C001E0
-	for <linux-iio@archiver.kernel.org>; Mon, 31 Jul 2023 11:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FE9C001DF
+	for <linux-iio@archiver.kernel.org>; Mon, 31 Jul 2023 11:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230394AbjGaLDN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 31 Jul 2023 07:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51550 "EHLO
+        id S229843AbjGaLgl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 31 Jul 2023 07:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232433AbjGaLDF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Jul 2023 07:03:05 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB16129;
-        Mon, 31 Jul 2023 04:03:04 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id 38308e7fff4ca-2b9db1de50cso25442301fa.3;
-        Mon, 31 Jul 2023 04:03:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1690801382; x=1691406182;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1VbuOesFY8jgrwRNfOH6TH6GpPlQAQeFgnVpyaXLhy0=;
-        b=NYA+jcorU61v4iXcDDJEPRNT7gO9w1yrLMAr5FWtCaHkz78BGEWVxa4ZY4D6824oH5
-         6VIOJK8OrP0OXoAy9hf8OykiN1DMgfSOThVv+evF9JoZxB1NaLldeZ7oNz0DwEvVJ2TQ
-         o20Gt1Gf7U2Ucz2KiQixp85pX8OivoGyFrdJqnC09eHMA1LliIQ+LgRoSgc9t5aURtqs
-         lVqq5hnaisSRpByj7+gZU8SBi0adebwvb0F16KBAZqotd7jpO6JqpAgYujo3oQ4N3a1V
-         e6QvK/ARiuMwTwqPl4OuRtL05dzjsYiLx14PK0CRHfS7j2dreA3KmpV7mgbHLKXni3SW
-         VrnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690801382; x=1691406182;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1VbuOesFY8jgrwRNfOH6TH6GpPlQAQeFgnVpyaXLhy0=;
-        b=StKyxOvmBr6X8QQYq7j5/kXt1KeVqqbS5rXNN7daAKVm5NRp2qGkiPmL5SBSNRnzHQ
-         RmoeYfOymCi7ZP1aRYeS/3mrLwZoJb3VX+UeOJe9M6c0I4tQg/Byk/BJKK4ZuMr+i/wp
-         i81hn3nSWP2xdGoWnRWvevJAvWEpkFjild1aqYCazjW6qYBt1LMZqpDcVxi0p6dXblZp
-         4PGVeJ517ntRLbgubFi3KN9nERJUup7cH8FHsskIyreo8u0GxNhM+xrLEJ3GXnbrzpxV
-         CC+BpSROqf1Exc8OF0s8lZzV4qLJeSusTpOaHWwPmty00FXtF4ZXKUf3/je7cqyvKLXK
-         kDMQ==
-X-Gm-Message-State: ABy/qLZreHN8y/3VDOT5pKi+XRx9Erj0+8jS3gOpda/AU90u1fsoBR1v
-        +5T4mpq2GslsFzVYf2MYsJ4=
-X-Google-Smtp-Source: APBJJlE9CLief85Q66abBBrZuGY9xYj2+K7h86HSzXoeuo0Pijv+5vETfPXq9VR5K72gnQvF+GFjdQ==
-X-Received: by 2002:a2e:6e14:0:b0:2b9:dfd1:3808 with SMTP id j20-20020a2e6e14000000b002b9dfd13808mr2984934ljc.25.1690801382092;
-        Mon, 31 Jul 2023 04:03:02 -0700 (PDT)
-Received: from xeon.. ([188.163.112.48])
-        by smtp.gmail.com with ESMTPSA id p2-20020a2e8042000000b002b9bf5b071bsm74607ljg.20.2023.07.31.04.03.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jul 2023 04:03:01 -0700 (PDT)
-From:   Svyatoslav Ryhel <clamor95@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Svyatoslav Ryhel <clamor95@gmail.com>,
-        Samu Onkalo <samu.p.onkalo@nokia.com>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/2] dt-bindings: iio: light: add apds990x binding
-Date:   Mon, 31 Jul 2023 14:02:38 +0300
-Message-Id: <20230731110239.107086-2-clamor95@gmail.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230731110239.107086-1-clamor95@gmail.com>
-References: <20230731110239.107086-1-clamor95@gmail.com>
+        with ESMTP id S229735AbjGaLgk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Jul 2023 07:36:40 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD46E57;
+        Mon, 31 Jul 2023 04:36:37 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 36V812o2020043;
+        Mon, 31 Jul 2023 05:45:25 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3s66qmsr6u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jul 2023 05:45:24 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 36V9jDfg006532
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 31 Jul 2023 05:45:13 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 31 Jul
+ 2023 05:45:12 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 31 Jul 2023 05:45:12 -0400
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.194])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 36V9iwH7024100;
+        Mon, 31 Jul 2023 05:45:04 -0400
+From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v3 2/2] drivers: iio: admv1013: add vcc regulators
+Date:   Mon, 31 Jul 2023 12:44:55 +0300
+Message-ID: <20230731094455.26742-2-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230731094455.26742-1-antoniu.miclaus@analog.com>
+References: <20230731094455.26742-1-antoniu.miclaus@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: dUpWPT6YWkYVA-iYC99N3i8Sjb23EmvM
+X-Proofpoint-ORIG-GUID: dUpWPT6YWkYVA-iYC99N3i8Sjb23EmvM
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-07-31_03,2023-07-26_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
+ adultscore=0 bulkscore=0 priorityscore=1501 clxscore=1015 phishscore=0
+ impostorscore=0 malwarescore=0 lowpriorityscore=0 spamscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2306200000 definitions=main-2307310088
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add dt-binding for apds990x ambient light/proximity sensor.
+Add regulators for the VCC supplies of the admv1013.
 
-Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+The patch aims to align the implementation with the current admv1014
+driver where all the VCC supplies are handled as regulators.
+
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- .../bindings/iio/light/avago,apds990x.yaml    | 87 +++++++++++++++++++
- 1 file changed, 87 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/avago,apds990x.yaml
+changes in v3:
+ - add missing spaces in the commit subject.
+ - use dev_err_probe for error handling.
+ -  - use `devm_regulator_bulk_get_enable`
+ drivers/iio/frequency/admv1013.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/light/avago,apds990x.yaml b/Documentation/devicetree/bindings/iio/light/avago,apds990x.yaml
-new file mode 100644
-index 000000000000..89a061643de5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/avago,apds990x.yaml
-@@ -0,0 +1,87 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/light/avago,apds990x.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/iio/frequency/admv1013.c b/drivers/iio/frequency/admv1013.c
+index 9bf8337806fc..cc01fac2dfee 100644
+--- a/drivers/iio/frequency/admv1013.c
++++ b/drivers/iio/frequency/admv1013.c
+@@ -379,6 +379,11 @@ static const struct iio_info admv1013_info = {
+ 	.debugfs_reg_access = &admv1013_reg_access,
+ };
+ 
++static const char * const admv1013_vcc_regs[] = {
++	 "vcc-drv", "vcc2-drv", "vcc-vva", "vcc-amp1", "vcc-amp2",
++	 "vcc-env", "vcc-bg", "vcc-bg2", "vcc-mixer", "vcc-quad"
++};
 +
-+title: Avago APDS990x ambient light and proximity sensor
+ static int admv1013_freq_change(struct notifier_block *nb, unsigned long action, void *data)
+ {
+ 	struct admv1013_state *st = container_of(nb, struct admv1013_state, nb);
+@@ -554,6 +559,15 @@ static int admv1013_properties_parse(struct admv1013_state *st)
+ 		return dev_err_probe(&spi->dev, PTR_ERR(st->reg),
+ 				     "failed to get the common-mode voltage\n");
+ 
++	ret = devm_regulator_bulk_get_enable(&st->spi->dev,
++					     ARRAY_SIZE(admv1013_vcc_regs),
++					     admv1013_vcc_regs);
++	if (ret) {
++		dev_err_probe(&spi->dev, ret,
++			      "Failed to request VCC regulators\n");
++		return ret;
++	}
 +
-+maintainers:
-+  - Samu Onkalo <samu.p.onkalo@nokia.com>
-+
-+description:
-+  APDS990x is a combined ambient light and proximity sensor. ALS and
-+  proximity functionality are highly connected. ALS measurement path
-+  must be running while the proximity functionality is enabled.
-+  Datasheet at https://docs.broadcom.com/doc/AV02-2867EN
-+
-+properties:
-+  compatible:
-+    const: avago,apds990x
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  vdd-supply: true
-+  vled-supply: true
-+
-+  avago,pdrive:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    minimum: 0
-+    maximum: 3
-+    description:
-+      The LED drive current is controlled by a regulated current
-+      sink on the LDR pin. This feature eliminates the need to use
-+      a current limiting resistor to control LED current. The LED
-+      drive current can be configured for 12.5 mA (pdrive = 3),
-+      25 mA (2), 50 mA (1) or 100 mA (0). For higher LED drive
-+      requirements, an external P type transistor can be used to
-+      control the LED current.
-+
-+  avago,ppcount:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    minimum: 1
-+    maximum: 255
-+    description:
-+      The number of LED pulses can be programmed to a value of 1 to
-+      255 pulses as needed. Increasing the number of LED pulses at a
-+      given current will increase the sensor sensitivity. Sensitivity
-+      grows by the square root of the number of pulses. Each pulse
-+      has a 16 mS period.
-+
-+additionalProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - vdd-supply
-+  - vled-supply
-+  - avago,pdrive
-+  - avago,ppcount
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        light-sensor@39 {
-+            compatible = "avago,apds990x";
-+            reg = <0x39>;
-+
-+            interrupt-parent = <&gpio>;
-+            interrupts = <82 IRQ_TYPE_EDGE_RISING>;
-+
-+            vdd-supply = <&vdd_3v0_proxi>;
-+            vled-supply = <&vdd_1v8_sen>;
-+
-+            avago,pdrive = <0>;
-+            avago,ppcount = <3>;
-+        };
-+    };
-+...
+ 	return 0;
+ }
+ 
 -- 
-2.39.2
+2.41.0
 
