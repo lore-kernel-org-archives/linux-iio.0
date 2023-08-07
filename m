@@ -2,64 +2,63 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F927C04A6A
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Aug 2023 14:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93EE1C04A6A
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Aug 2023 14:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232516AbjHGOKa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Aug 2023 10:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
+        id S231536AbjHGOXs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Aug 2023 10:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232102AbjHGOK3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Aug 2023 10:10:29 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD769E;
-        Mon,  7 Aug 2023 07:10:25 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id 38308e7fff4ca-2b9b50be31aso69842461fa.3;
-        Mon, 07 Aug 2023 07:10:25 -0700 (PDT)
+        with ESMTP id S230062AbjHGOXr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Aug 2023 10:23:47 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14329C2;
+        Mon,  7 Aug 2023 07:23:46 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id 4fb4d7f45d1cf-51e429e1eabso6306109a12.2;
+        Mon, 07 Aug 2023 07:23:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691417423; x=1692022223;
+        d=gmail.com; s=20221208; t=1691418224; x=1692023024;
         h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=KCn6b8Y4egX4m+kFsKdxSAcYU2iXuIgvgiEXKk/fp/0=;
-        b=oJ4KDzJY0v4rfA8l+OXaUHjGrU6eM9tIo+Vru04y0dubzkPTojVnDwnVImQ3ymmpNk
-         O2RNGQaz5IpnCUNemSRZwbU1lljIYZClF0Z2oahr22/YIuT8YX52NMeS+973mOrlU82m
-         GWx5936E9GBFTHIzBrg4oMox/nx/RQAqqBiSog6ZbXv7l3Xt0hYE/U2unY2wmh2wqB7t
-         moyBpp4R7x7MWAIMoWt5P2dzOQwrT/iJw782v1d/Llha+OppM1IZTJNnPAfGLaYJTiY5
-         QclEi0IDiVQbeXN/Zn1FRidRozoBtYxODKOBSCaZ+QY5iVlaHIjkysabf8WOyhoQtD6x
-         IliQ==
+         :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mTflw2x77oizGZVYhSaej804cS88CNB3gsQx6H6fr5Q=;
+        b=MqybVASJYhgq/Xq7m+ZAuezyoXZACwS5eBEdQPUIkbzFWAKcsaR+nwVDE4Ooryxw/X
+         mwREGJlS+jpJHArqK77sSl8+aQZg1YkPrODDVeSv+F3K1NXy4kI8nqmTRtilZRDblAZS
+         7vQ8wW8cKqxFC1v/PRSBVdUC3GVJo8ePUMdQC0x7haytzDEIUig6wG7APXEX6E1KCFhi
+         57Wl0+zi7OWXl/og9JFmGNNyHgiiX97ihfR0Vyf0s42SNArubWj31XWWX0iyOc0kkiRM
+         /RloG7Eh6DtmcRUVPynL8/6Ne/ukGE9Ptsnl5xIuTxkgxokwcR+mzV2a3xFvPVSuKzKU
+         RO7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691417423; x=1692022223;
+        d=1e100.net; s=20221208; t=1691418224; x=1692023024;
         h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KCn6b8Y4egX4m+kFsKdxSAcYU2iXuIgvgiEXKk/fp/0=;
-        b=CcWHgzxr9oIJK/f014GWxbwlnkd3U/DP+7e/IAbvHNh/AHyKrineZpVu0rXgosw+zd
-         9hft8tBsr+gjYy0deqLKItl1Z30d64j3P9oD3hUs+zEb5Bt/7KYTQhJgt3kdGnGZjmhA
-         5S0WKxu2lQXkMeqdgRY18zokfgNMx9mvmuN1xfawQvvt5VxnzNtJdw+CQvKMyWN6zic8
-         3xDOJ3Y811fFKZbrHYNvcN2EkfX068csrinv5jJzpYMaXptOq/WzNNsbqa0xlmPlBIfX
-         qQ1YsIyw67thZVv0LAK/9l9gwqDYUbEgMdH/A/pnn2A9HmDAuOGlOYWur/H7VOl2vbO1
-         1Tuw==
-X-Gm-Message-State: AOJu0Yxn1oJ3Go/VMxO+HezU76SbDj6vILvS/0StDMLMe5pB0PoI6eqX
-        q+4iUbcpGWhs27nmkQMFYIc=
-X-Google-Smtp-Source: AGHT+IEw8gtJrH4053Gs3+OKrmHzil5bOmEJj/YkwjBnLmacxmd0J61iDfWXdUZu8kKtgbOuH6cghg==
-X-Received: by 2002:a2e:8e86:0:b0:2ba:2cf8:9334 with SMTP id z6-20020a2e8e86000000b002ba2cf89334mr3548429ljk.19.1691417423023;
-        Mon, 07 Aug 2023 07:10:23 -0700 (PDT)
+         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=mTflw2x77oizGZVYhSaej804cS88CNB3gsQx6H6fr5Q=;
+        b=e/KgK2VRzcPCTlvUqaUNOt0yChFupqz0fofAGx86qZiG8NZ0pJPD2iSXDGRNoVqWgz
+         C1kqaBH5cRGtLzgoDIcu4hQhqcWTFJ4rxRu7iS1KVNdfWJiXUFUpfwodbgmU2DGDwamB
+         lm5P6C6HxMeptwbdW3/KFY0msCNZnPaEDI0XcWgUrtpNdEwkgQmzpAmkSY7AGgwZ78/Z
+         WVZ3zEdkVXz10zMT5zxopjBdqXt5eJCeOPaFvc9N4g/3iCoCB6dty6sDfK+5NSNv3Lk1
+         +DcZUE0qt05kSSN7MrBeuQ/Xll8P3sEtQu32qTxY2iKA9kJGu+T9UPfRHgD1INffS/+s
+         ecyA==
+X-Gm-Message-State: AOJu0YznGBgIk+av8UimTvam0OMrWWAwH1TzvgOelzNCcjW58k9Z6Bdi
+        /SBJZgfVA89Edne7ny6RMek=
+X-Google-Smtp-Source: AGHT+IEdQumEhOAGOcUm1qDuqulTJZk9s7geXGLWSWuBIsER5LzI+EeEObSbLOQn5QYAzVCDQK/ieA==
+X-Received: by 2002:a50:fa8e:0:b0:523:4014:4e81 with SMTP id w14-20020a50fa8e000000b0052340144e81mr226778edr.35.1691418224242;
+        Mon, 07 Aug 2023 07:23:44 -0700 (PDT)
 Received: from ?IPv6:2003:f6:ef09:a500:ffed:38f8:59e7:f38e? (p200300f6ef09a500ffed38f859e7f38e.dip0.t-ipconnect.de. [2003:f6:ef09:a500:ffed:38f8:59e7:f38e])
-        by smtp.gmail.com with ESMTPSA id x4-20020a170906804400b00992ed412c74sm5191566ejw.88.2023.08.07.07.10.22
+        by smtp.gmail.com with ESMTPSA id n18-20020aa7c692000000b005224d15d3dfsm5215809edq.87.2023.08.07.07.23.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Aug 2023 07:10:22 -0700 (PDT)
-Message-ID: <068ce8a2f8111ccc4b6374985dde972548741a9a.camel@gmail.com>
-Subject: Re: [PATCH v4 0/6] iio: Add buffer write() support
+        Mon, 07 Aug 2023 07:23:43 -0700 (PDT)
+Message-ID: <cef38375a5259e7df0111821b112341ed670e682.camel@gmail.com>
+Subject: Re: [PATCH v4 1/3] iio: Add IIO_DELTA_ANGL channel type
 From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To:     Paul Cercueil <paul@crapouillou.net>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 07 Aug 2023 16:12:56 +0200
-In-Reply-To: <20230807112113.47157-1-paul@crapouillou.net>
-References: <20230807112113.47157-1-paul@crapouillou.net>
+To:     Ramona Bolboaca <ramona.bolboaca@analog.com>, jic23@kernel.org,
+        nuno.sa@analog.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 07 Aug 2023 16:26:17 +0200
+In-Reply-To: <20230807111227.374371-2-ramona.bolboaca@analog.com>
+References: <20230807111227.374371-1-ramona.bolboaca@analog.com>
+         <20230807111227.374371-2-ramona.bolboaca@analog.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.48.4 
@@ -68,56 +67,54 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 2023-08-07 at 13:21 +0200, Paul Cercueil wrote:
-> [V3 was: "iio: new DMABUF based API, v3"][1]
+On Mon, 2023-08-07 at 14:12 +0300, Ramona Bolboaca wrote:
+> The delta angle is defined as a piece-wise integration of angular
+> velocity data. The delta angle represents the amount of
+> angular displacement between two consecutive measurements and it
+> is measured in radians.
 >=20
-> Hi Jonathan,
+> In order to track the total angular displacement during a desired
+> period of time, simply sum-up the delta angle samples acquired
+> during that time.
 >=20
-> This is a subset of my patchset that introduced a new interface based on
-> DMABUF objects [1]. It adds write() support to the IIO buffer
-> infrastructure.
+> IIO currently does not offer a suitable channel type for this
+> type of measurements hence this patch adds it.
 >=20
-> The reason it is not the full IIO-DMABUF patchset, is because you
-> requested performance benchmarks - and our current numbers are barely
-> better (~ +10%) than the fileio interface. There is a good reason for
-> that: V3 of the patchset switched from having the IIO core creating the
-> DMABUFs backed by physically contiguous memory, to having the IIO core
-> being a simple DMABUF importer, and having the DMABUFs created
-> externally. We now use the udmabuf driver to create those, and they are
-> allocated from paged memory. While this works perfectly fine, our
-> buffers are now cut in 4 KiB chunks (pages), non-contiguous in memory,
-> which causes the DMA hardware to create an IRQ storm, as it raises an
-> interrupt after each 4 KiB in the worst case scenario.
+> Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
+> ---
+> =C2=A0Documentation/ABI/testing/sysfs-bus-iio | 14 ++++++++++++++
+> =C2=A0drivers/iio/industrialio-core.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 |=C2=A0 1 +
+> =C2=A0include/uapi/linux/iio/types.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 |=C2=A0 1 +
+> =C2=A0tools/iio/iio_event_monitor.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 2 ++
+> =C2=A04 files changed, 18 insertions(+)
 >=20
-> Anyway, this is not directly a problem of the IIO-DMABUF code - but I
-> can't really upstream a shiny new interface that I claim is much faster,
-> without giving numbers.
->=20
-> So while we fix this (either by updating the DMA IP and driver to
-> support scatter-gather, or by hacking something quick to give us
-> physically contiguous DMABUFs just for the benchmark), I thought it
-> would make sense to upstream the few patches of the V3 patchset that are
-> needed for the IIO-DMABUF interface but aren't directly related.
->=20
-> As for write() support, Nuno (Cc'd) said he will work on upstreaming the
-> DAC counterpart of adc/adi-axi-adc.c in the next few weeks, so there
-> will be a user for the buffer write() support. I hope you are okay with
-> this - otherwise, we can just wait until this work is done and submit it
-> all at once.
->=20
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio
+> b/Documentation/ABI/testing/sysfs-bus-iio
+> index a2854dc9a839..32675fa7dc6f 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -279,6 +279,20 @@ Description:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0but should match other such assignments on device).
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0Units after application of scale and offset are m/s=
+^2.
+> =C2=A0
+> +What:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/sys/bu=
+s/iio/devices/iio:deviceX/in_deltaangl_x_raw
+> +What:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/sys/bu=
+s/iio/devices/iio:deviceX/in_deltaangl_y_raw
+> +What:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/sys/bu=
+s/iio/devices/iio:deviceX/in_deltaangl_z_raw
 
-Yeah, I've started that process last week:
+I wonder if we also need to add these to the scan element specific bits? Fr=
+om a
+quick look, it seems not all supported attributes are in there so I'm not s=
+ure
+what's the policy in here :)
 
-https://lore.kernel.org/linux-iio/20230804145342.1600136-1-nuno.sa@analog.c=
-om/
-
-the dac counterpart is actually missing in the RFC (as the goal of the RFC =
-is
-not review those drivers but the framework) but I do state that my plan is =
-to
-have it in the actual series where I actually mention we would need this wo=
-rk
-:).
 
 - Nuno S=C3=A1
-
