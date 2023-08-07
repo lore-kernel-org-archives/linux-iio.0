@@ -2,106 +2,72 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A6F3C04E69
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Aug 2023 14:54:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15387C00528
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Aug 2023 15:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbjHGOyQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Aug 2023 10:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57098 "EHLO
+        id S231143AbjHGPnx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Aug 2023 11:43:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbjHGOyP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Aug 2023 10:54:15 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4522310CB;
-        Mon,  7 Aug 2023 07:54:14 -0700 (PDT)
+        with ESMTP id S231152AbjHGPnw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Aug 2023 11:43:52 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F931E5A;
+        Mon,  7 Aug 2023 08:43:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691420054; x=1722956054;
+  t=1691423030; x=1722959030;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=CyA/irSlGgoAqRyWRxyHWnwM5bPue1oYBQqCe5tRXz4=;
-  b=Y0+l5alrEmwq3obV3hynzOYV/d6KxPfy8yIJvXQsfkrP4VQoHPfTLvfg
-   kammXpHenx7/titxNUy/jykpLH54k7H+NqtdUCiV7Qpkkh9K/HI+4vXVu
-   pFGKRyDgUk1fCN1DHI35BCTrWYSqTDExSd5/eGWxxtCwMvlyLx6bhv6RY
-   kc214SsjtbMT0jNgyKAdsJCJibjfX6JaMt5+DyqCbfJI+6iZJN4Mmz5qv
-   BCAHzSUPFCw08BZBvdGUQ9IvpR9yqI9sWHGzgLE5FmfJHkYv4Mjxoye+N
-   0gKkGTMYGUTpSdljXuzASlQzocniP8KVdcfxsryXkgQXDCbs31EO9kzPp
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="369467931"
+  bh=IRXKJYW2m/j0IMeXZnJtAaORb/wabIJmS21yjRvGoUc=;
+  b=dLEdyE2uQr5z5VbK87Hp8J0IiC+QD7A5Cp3b/qq24pu6mKXcXOrJ1rfF
+   wx6PTlK4Sos7/unB+DXCVmgDzCwZQNvybTK+qUUgyu+0x0+OtUmwISPNx
+   Io0Ic+3hMriHKEm38KP8crwfYUSDpfUD3oAUFhqKXhIFOa/gq/Jo2EfZS
+   kLcJtp4XwooNT4+klwdaFAfjhlLkwd3EYfoymHFuE6mliRHHq0zkJEtTV
+   TmbVvxlNiO8SlSDGxg3+29j9at+/M6su4LCGDSsTGspE5AByUU+AD78FS
+   0FV2HeWHndTyUlu9BtVHspIhJF0GLMEwZ2XtE4kJkNN2gvneWIOSTDFDr
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="350885357"
 X-IronPort-AV: E=Sophos;i="6.01,262,1684825200"; 
-   d="scan'208";a="369467931"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2023 07:54:13 -0700
+   d="scan'208";a="350885357"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2023 08:43:50 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="734108295"
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="731019283"
 X-IronPort-AV: E=Sophos;i="6.01,262,1684825200"; 
-   d="scan'208";a="734108295"
+   d="scan'208";a="731019283"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga007.fm.intel.com with ESMTP; 07 Aug 2023 07:54:09 -0700
+  by orsmga002.jf.intel.com with ESMTP; 07 Aug 2023 08:43:48 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qT1cW-00GD0C-0M;
-        Mon, 07 Aug 2023 17:54:08 +0300
-Date:   Mon, 7 Aug 2023 17:54:07 +0300
+        id 1qT2OY-000K23-2L;
+        Mon, 07 Aug 2023 18:43:46 +0300
+Date:   Mon, 7 Aug 2023 18:43:46 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Andi Shyti <andi.shyti@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH v7 0/4] Extend device_get_match_data() to struct bus_type
-Message-ID: <ZNEFjyAloqlkMWn7@smile.fi.intel.com>
-References: <20230804161728.394920-1-biju.das.jz@bp.renesas.com>
- <20230805174036.129ffbc2@jic23-huawei>
- <OS0PR01MB59220491C7C8AA40BEFAAD82860EA@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <20230806142950.6c409600@jic23-huawei>
+To:     Angel Iglesias <ang.iglesiasg@gmail.com>
+Cc:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: pressure: bmp280: i2c: Rearrange vars in
+ reverse xmas tree order
+Message-ID: <ZNERMrPeftok9LF8@smile.fi.intel.com>
+References: <cover.1691276610.git.ang.iglesiasg@gmail.com>
+ <80c7bf32dee57a4a21e5c623b9adbc5e1175f2de.1691276610.git.ang.iglesiasg@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230806142950.6c409600@jic23-huawei>
+In-Reply-To: <80c7bf32dee57a4a21e5c623b9adbc5e1175f2de.1691276610.git.ang.iglesiasg@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Aug 06, 2023 at 02:29:50PM +0100, Jonathan Cameron wrote:
-> On Sat, 5 Aug 2023 17:42:21 +0000
-> Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > > On Fri,  4 Aug 2023 17:17:24 +0100
-> > > Biju Das <biju.das.jz@bp.renesas.com> wrote:
+On Sun, Aug 06, 2023 at 01:15:02AM +0200, Angel Iglesias wrote:
+> Minor cleanup reordering local variable declarations following reverse
+> christmas tree convention.
 
-...
-
-> > + * Besides the fact that some drivers abuse the device ID driver_data type
-> > + * and claim it to be integer, for the bus specific ID tables the driver_data
-> > + * may be defined as kernel_ulong_t. For these tables 0 is a valid response,
-> > + * but not for this function. It's recommended to convert those either to avoid
-> > + * 0 or use a real pointer to the predefined driver data.
-
-> We still need to maintain consistency across the two tables, which
-> is a stronger requirement than avoiding 0.
-
-True. Any suggestion how to amend the above comment? Because the documentation
-makes sense on its own (may be split from the series?).
-
-> Some drivers already do that by forcing the enum used to start at 1 which
-> doesn't solver the different data types issue.
-
-And some maintainers do not want to see non-enum values in i2c ID table.
-*Shrug*.
+What about other functions there? Are all of them ordered correctly?
 
 -- 
 With Best Regards,
