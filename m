@@ -2,97 +2,92 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD16C41513
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 19:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 163E0C001DB
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 20:29:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234181AbjHHTx6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Aug 2023 15:53:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37392 "EHLO
+        id S230472AbjHHU3m (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Aug 2023 16:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231668AbjHHTxp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 15:53:45 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293AE13945C;
-        Tue,  8 Aug 2023 11:03:59 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id 5b1f17b1804b1-3fe2ba3e260so57075665e9.2;
-        Tue, 08 Aug 2023 11:03:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691517837; x=1692122637;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3PeSe/GO6oNsx5WYr31WDuJ/pxid985m44XnUTfQZDY=;
-        b=raYj3mFjJsVhqvQ2f6HG1Vqk1ialYg9hZ0Sl14PNuTYzOhaWbxr7fsByS81K/vP4zz
-         4zD/2v+WpXJoh3wbm1o7iLY513lrSL/KxTJmqOTsmpoXNyhoXYPTsYMTUohiYtSJxHB1
-         w0UTeruOXN54m6UqHXHpkFZc2XuEv8CxUPQ88Q+ESs0MA502075bcGrTkOMJ4y63uDbQ
-         j/YX070Ud7/NHXUxLUmwolZT6oACdPScPmgT5CuR6iupKcW8l6bMlPexVG/lBBcs8rSj
-         v3gzl8cgYk4/Suob6BnNcgKfRUtwNoLNFVqaLkJr1RN9A35hss37i71N0SMbO4qEMRVG
-         dSew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691517837; x=1692122637;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3PeSe/GO6oNsx5WYr31WDuJ/pxid985m44XnUTfQZDY=;
-        b=I+tuAMHBU4jFpowlJw5VO/TiU5ddNQseIRziiAJbZwV++WGKhCO5KBk/FdE5ZX208b
-         uFu2n2j07YmN599KAR0N06QJsrJHCPwvu7dzNsIx9ZV0KEUgE1slgKArE2FBzplchvfw
-         r9RRjoGVmYxTHpAJxkeLo77mO1KYTNweE2CQUYVN7iR8rK1KXkmllOnYdoz9niiayVuv
-         nkkCHh+hkhj2WMJpFhhXI0Ok7ts4ejiBnez+p1zGSF7aBpibTZfvRa9Zm5pAeI99gYCz
-         3juAj3Z9yYw0uUsvcubLLTyfwtp/duH7cFv11wu3XxxFQfmTGrBFgL+1ysdvWVexr3FA
-         JG9Q==
-X-Gm-Message-State: AOJu0Ywv4navyIZGNheLI0cwtYdJp2+Xwk1epOZEAlLqKqEEB6WKOgwH
-        zCAoD3gOlF3589rSC6n0LLqY7oki6oU=
-X-Google-Smtp-Source: AGHT+IGx8qpA8w2DCmIxsFRx1ZOpbeX44oV+zA8r9kZ2Jq+OZ4V6CmfzvpDQTtZ+ULkzH9Mu8g7QLA==
-X-Received: by 2002:a05:6512:310c:b0:4fb:2c1e:4e03 with SMTP id n12-20020a056512310c00b004fb2c1e4e03mr6752682lfb.32.1691477570248;
-        Mon, 07 Aug 2023 23:52:50 -0700 (PDT)
-Received: from ?IPV6:2001:14ba:16f8:1500::5? (dc78bmyyyyyyyyyyyyyct-3.rev.dnainternet.fi. [2001:14ba:16f8:1500::5])
-        by smtp.gmail.com with ESMTPSA id h25-20020a197019000000b004fe1fc5d0e3sm1752524lfc.206.2023.08.07.23.52.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Aug 2023 23:52:49 -0700 (PDT)
-Message-ID: <8410ca04-71f1-ab16-76b9-0ebe07065a15@gmail.com>
-Date:   Tue, 8 Aug 2023 09:52:48 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH] dt-bindings: iio: rohm,bu27010: add missing vdd-supply to
- example
-Content-Language: en-US, en-GB
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S232941AbjHHU3d (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 16:29:33 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490B31D474;
+        Tue,  8 Aug 2023 10:17:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691515046; x=1723051046;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=zJqEmuXZRFYwNy3i9MPLkKcjIG6qYzI1X7jD3nxkn2c=;
+  b=G3GYYpSZUsVd6h4r0Aa7Asfu6mVcK89Tqc2FXqJ7h5EgT9dBVskoX49s
+   n1cu3u65KdbhhpoTF97Mo6WLoW3fNdKHKIv8WUkiAwg16zHaRTCxYTGbH
+   1IXmCHgwopAMczejc2Y7+Hz9mRe9wf8Xf3UitBsOKaf1DBRrJ4BKxx6Fi
+   GDXMerUH8GFse1DYFkshg1tqmyxmzhKZ71a2nEeS4mEak3bBFnGhQ9rKY
+   3UTojXyvAvlZPn3aHr8/osCvGXGChkOMNnSb9d8Kyk77txXhrJryOu83f
+   VTbo2qqnsi9/AAI/nYh93vd4bF7QI6PrA4+3zBfJZzJLmrWBAC5VTtX/F
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="360970374"
+X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
+   d="scan'208";a="360970374"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 09:24:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="845525001"
+X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
+   d="scan'208";a="845525001"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 08 Aug 2023 09:24:55 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 35C26133; Tue,  8 Aug 2023 19:28:03 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Gerald Loacker <gerald.loacker@wolfvision.net>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230808063223.80431-1-krzysztof.kozlowski@linaro.org>
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <20230808063223.80431-1-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v1 1/6] device property: Use fwnode_property_string_array_count()
+Date:   Tue,  8 Aug 2023 19:27:55 +0300
+Message-Id: <20230808162800.61651-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
+In-Reply-To: <20230808162800.61651-1-andriy.shevchenko@linux.intel.com>
+References: <20230808162800.61651-1-andriy.shevchenko@linux.intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 8/8/23 09:32, Krzysztof Kozlowski wrote:
-> Bindings require vdd-supply but the example DTS was missing one.  This
-> fixes dt_binding_check error:
-> 
->    Documentation/devicetree/bindings/iio/light/rohm,bu27010.example.dtb: light-sensor@38: 'vdd-supply' is a required property
-> 
-> Fixes: ae8c47c51e5c ("dt-bindings: iio: ROHM BU27010 RGBC + flickering sensor")
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Use fwnode_property_string_array_count() instead of open coded variant.
 
-Ah. Added supply to required ones when you pointed out it should be - 
-and obviously didn't fix the example :/
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/base/property.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks a lot for fixing it!
-
-Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
-
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index 8c40abed7852..3bb9505f1631 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -473,7 +473,7 @@ int fwnode_property_match_string(const struct fwnode_handle *fwnode,
+ 	const char **values;
+ 	int nval, ret;
+ 
+-	nval = fwnode_property_read_string_array(fwnode, propname, NULL, 0);
++	nval = fwnode_property_string_array_count(fwnode, propname);
+ 	if (nval < 0)
+ 		return nval;
+ 
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
-
-~~ When things go utterly wrong vim users can always type :help! ~~
+2.40.0.1.gaa8946217a0b
 
