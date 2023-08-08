@@ -2,47 +2,47 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A06EFC41513
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 17:04:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9656AC001DB
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 17:05:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229668AbjHHREl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Aug 2023 13:04:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        id S231229AbjHHRFn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Aug 2023 13:05:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbjHHRD7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 13:03:59 -0400
+        with ESMTP id S231394AbjHHRE5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 13:04:57 -0400
 Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12A519BEC;
-        Tue,  8 Aug 2023 09:01:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AFB11A744;
+        Tue,  8 Aug 2023 09:02:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691510507; x=1723046507;
+  t=1691510527; x=1723046527;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=EHzA/a69zS6IxZZOnKkr5lxAatAYM7/Zegj9a9NxFpQ=;
-  b=L2mTFQQ6xOIsYJ1lu/fsK0ye3PE/grKcdGH/gbEIxeeG12T1h/8g84AQ
-   MykDKsG08iTKj7unI+BO1mDbscBhlxm40lRbPCe/4wUPLZDhVZMnbV1YT
-   1sk+0Qwx5OFLeKYY+LCBwI8j9XoRiX35v5wbnLXm7/N9j6Vz5Vh6OfCpn
-   hVMOwiGkrgNdkGBVl1+2BzPjIcqD89Zx6VckDnVsJyRxxX8wO6O/Y9hTP
-   v4Gx5nGUjea6TLvTRHpRSWmYZZgSKQHDvUmEKaXzI1sz4ftzsASlDsTy+
-   gcBEXCGmUzqsBb/WHsz31pO/Tsckb5kNDWXJDQ8O2O9tV3z64ATcqqiDF
+  bh=XveRea9FANQPUg2+NGfW1ls9tlTN5Z18q/yQQW52Pdg=;
+  b=eLl/B+C6sBC8bNHtExz3HCdThPt5hLYA8yttYiQaKVGc9dfy/1XvdrGs
+   rEfaDAFJyBXWIeFXgLled8Mt6sYQxuCxAgaiDWefQS/efHAXi2xRlgGoQ
+   avBAqH3GDMwnNOMZ3/iGKd4z3kW7t9QF8rbziuaTngdvEpyCqoLJ9tqUR
+   7DV1uuPYGez7wQN74dHO/WrylRuvMmR/MGwiG3DneNTNZj9NxDwOfS1gJ
+   pqZLCnN8xRiaOUXEzzsnOz+6vcTF5HqK/hVLYeHEe6xyAZKAc++vdfHYa
+   7IC4ktsUmotG6zwOY4uAgJvB+ahfic+ke+7yDFvXdsTtsaqdZs/G01gpC
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="373569036"
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="373581385"
 X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="373569036"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 06:26:21 -0700
+   d="scan'208";a="373581385"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 07:13:32 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="1062019916"
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="801337918"
 X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="1062019916"
+   d="scan'208";a="801337918"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga005.fm.intel.com with ESMTP; 08 Aug 2023 06:26:16 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 08 Aug 2023 07:13:28 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qTMj0-009guo-0A;
-        Tue, 08 Aug 2023 16:26:14 +0300
-Date:   Tue, 8 Aug 2023 16:26:13 +0300
+        id 1qTNSg-00BIxZ-0M;
+        Tue, 08 Aug 2023 17:13:26 +0300
+Date:   Tue, 8 Aug 2023 17:13:25 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Marcus Folkesson <marcus.folkesson@gmail.com>
 Cc:     Kent Gustavsson <kent@minoris.se>,
@@ -61,40 +61,88 @@ Cc:     Kent Gustavsson <kent@minoris.se>,
         William Breathitt Gray <william.gray@linaro.org>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: adc: mcp3911: add support for the whole
- MCP39xx family
-Message-ID: <ZNJCdRc5rXGEBVrY@smile.fi.intel.com>
-References: <20230807071831.4152183-1-marcus.folkesson@gmail.com>
- <20230807071831.4152183-2-marcus.folkesson@gmail.com>
- <ZNETcVNsEmvK0KKH@smile.fi.intel.com>
- <ZNHtMBG4yHpgL1kj@gmail.com>
+Subject: Re: [PATCH v4 3/4] iio: adc: mcp3911: fix indentation
+Message-ID: <ZNJNhSLIv/fazbhz@smile.fi.intel.com>
+References: <20230808110432.240773-1-marcus.folkesson@gmail.com>
+ <20230808110432.240773-3-marcus.folkesson@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZNHtMBG4yHpgL1kj@gmail.com>
+In-Reply-To: <20230808110432.240773-3-marcus.folkesson@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Aug 08, 2023 at 09:22:24AM +0200, Marcus Folkesson wrote:
-> On Mon, Aug 07, 2023 at 06:53:21PM +0300, Andy Shevchenko wrote:
-> > On Mon, Aug 07, 2023 at 09:18:31AM +0200, Marcus Folkesson wrote:
+On Tue, Aug 08, 2023 at 01:04:31PM +0200, Marcus Folkesson wrote:
+> The file does not make use of indentation properly.
+> Fix that.
 
 ...
 
-> > > -	ret = mcp3911_config(adc);
-> > > +	ret = device_property_read_u32(&adc->spi->dev, "microchip,device-addr", &adc->dev_addr);
-> > 
-> > Why not spi->dev? Ditto for other uses like this.
-> 
-> After all, I think it is better to stick sith adc->spi-dev to be
-> consistent with the rest of the probe function. Change to spi->dev
-> should probably be a seperate patch.
-> Do you agree?
+>  static int mcp3911_update(struct mcp3911 *adc, u8 reg, u32 mask,
+> -		u32 val, u8 len)
+> +			  u32 val, u8 len)
 
-Make sure you first switch to use shorter form and then add this one.
-In that case I agree.
+Can val be moved to the previous line?
+
+...
+
+>  		if (ret < 0) {
+>  			dev_err(&adc->spi->dev,
+>  				"failed to get vref voltage: %d\n",
+> -			       ret);
+> +				ret);
+>  			return ret;
+
+With
+
+	struct device *dev = &adc->spi->dev;
+
+this becomes
+
+			dev_err(dev, "failed to get vref voltage: %d\n", ret);
+
+and one change less here.
+
+>  		}
+
+...
+
+> -#define MCP3911_CHAN(idx) {					\
+> -		.type = IIO_VOLTAGE,				\
+> -		.indexed = 1,					\
+> -		.channel = idx,					\
+> -		.scan_index = idx,				\
+> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+> -			BIT(IIO_CHAN_INFO_OFFSET) |		\
+> -			BIT(IIO_CHAN_INFO_SCALE),		\
+> -		.info_mask_shared_by_type_available =           \
+> -			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
+> -		.info_mask_separate_available =			\
+> -			BIT(IIO_CHAN_INFO_SCALE),		\
+> -		.scan_type = {					\
+> -			.sign = 's',				\
+> -			.realbits = 24,				\
+> -			.storagebits = 32,			\
+> -			.endianness = IIO_BE,			\
+> -		},						\
+
+>  }
+
+This looks like unneeded churn to me.
+
+...
+
+>  	if (ret < 0) {
+>  		dev_warn(&adc->spi->dev,
+> -				"failed to get conversion data\n");
+> +			 "failed to get conversion data\n");
+>  		goto out;
+>  	}
+
+Same as above with temporary variable for struct device.
 
 -- 
 With Best Regards,
