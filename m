@@ -2,89 +2,94 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A022C001B0
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 16:05:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E835C001B0
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 16:25:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231617AbjHHQFA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Aug 2023 12:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59376 "EHLO
+        id S232559AbjHHQZq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Aug 2023 12:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231620AbjHHQD2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 12:03:28 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2399196
-        for <linux-iio@vger.kernel.org>; Tue,  8 Aug 2023 08:45:02 -0700 (PDT)
-Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4RKxKf4R3nz6J75P;
-        Tue,  8 Aug 2023 23:04:06 +0800 (CST)
-Received: from localhost (10.202.227.76) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Tue, 8 Aug
- 2023 16:07:44 +0100
-Date:   Tue, 8 Aug 2023 16:07:43 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     <linux-iio@vger.kernel.org>, kernel test robot <lkp@intel.com>,
-        "Stefan Windfeldt-Prytz" <stefan.windfeldt-prytz@axis.com>
-Subject: Re: [PATCH] iio: light: opt4001: Fix a wrong array iteration limit
-Message-ID: <20230808160743.00002d91@Huawei.com>
-In-Reply-To: <20230807195043.200767-1-jic23@kernel.org>
-References: <20230807195043.200767-1-jic23@kernel.org>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
+        with ESMTP id S232573AbjHHQYe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 12:24:34 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA91AD15
+        for <linux-iio@vger.kernel.org>; Tue,  8 Aug 2023 08:50:05 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id 4fb4d7f45d1cf-51d95aed33aso7755180a12.3
+        for <linux-iio@vger.kernel.org>; Tue, 08 Aug 2023 08:50:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1691509798; x=1692114598;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=OSNGkojbT+FsqpoKjJ9301dnAVYJ8YQV267IqvAEoPU=;
+        b=xFeUvMqyQ32p/4ipR3PJ4Bp8kQw0JegHzXmTg0rrNdYZPppFvSP5IiWaU1k8OtKmFP
+         hlOywil/QZMGL0f9BR7jYKxWBsHLG+fkJ8/h1zO9iIjipnFc2NgI08bqsIwdlbZb/QsP
+         QDPNNFqVlAA9gk+ovh3XF4Rkduxo2F5o2VTAgp5I/bqLqCIHd02G6JtSdnSFlF92Epf9
+         igkvJmFCWRBe66btKdFY8SZ1QXSLcJ1wql9bqbR8Y2lm6EEYLzPcoLmYNRyLqjrdScAT
+         yfYHYh3wuy7imAAEr/k4eONKizDnnM8KZhWE4rZkG7LWilD8B5qLOylQDNsXUdToHqq6
+         59rA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691509798; x=1692114598;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=OSNGkojbT+FsqpoKjJ9301dnAVYJ8YQV267IqvAEoPU=;
+        b=KLtMIlegoOGX5DIx0Gp9WN83YT+59HUYQda+5XDZ2zSPumZr8Sym7Py1rjJDbg2TOD
+         UnlaM+7PuwWgwOHNrPosZoWhFR3pU3D958F2c5PgVFn82vigXMfmQSpRdQXBuf6UFUX9
+         8J4I6aRqs1BT8TQzf+qkEd5S6ijkCp87sfhhhEg6S5SIA7BD3LSpMMcbmkFFTxLlkxqa
+         HNk8Frg5E8/+XrCxCv8+n5Lzs0GcRsmHVa6uOkhPRlI3P0uT25mRlxq7b01+9tWX1fkA
+         iFhMc8hwknsBZElVLLwSMbG1lQLfL9W2h6l9GFDmoiOundbau7kgIXfPdsRUcYUv5J1Q
+         oEWA==
+X-Gm-Message-State: AOJu0Ywef/aBjCS1HXRAF4iSMApdRK2KwpdudrlFM3gzznvozYmkmIZ0
+        SjiQ5NqLxmk3unDB+7XvcbfG0Y4YYRiKFHcIcDQ=
+X-Google-Smtp-Source: AGHT+IGBUM9Eb5+0TWgDLF8LmOhVhKOR18zw7z8Wucg5zDszfG4kbd1nLl37Ej26nZOXcXHoLMXtdA==
+X-Received: by 2002:a1c:4b0b:0:b0:3fe:2b8c:9f00 with SMTP id y11-20020a1c4b0b000000b003fe2b8c9f00mr8459725wma.24.1691476346737;
+        Mon, 07 Aug 2023 23:32:26 -0700 (PDT)
+Received: from krzk-bin.. ([178.197.222.113])
+        by smtp.gmail.com with ESMTPSA id z22-20020a1c4c16000000b003fbb25da65bsm12705726wmf.30.2023.08.07.23.32.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Aug 2023 23:32:26 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: iio: rohm,bu27010: add missing vdd-supply to example
+Date:   Tue,  8 Aug 2023 08:32:23 +0200
+Message-Id: <20230808063223.80431-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.227.76]
-X-ClientProxiedBy: lhrpeml100001.china.huawei.com (7.191.160.183) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon,  7 Aug 2023 20:50:43 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+Bindings require vdd-supply but the example DTS was missing one.  This
+fixes dt_binding_check error:
 
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> In practice it's unlikely anyone would try to set the integration time
-> to 0 which isn't in the available list and if they did then they would
-> get index 12 which whilst reserved on the device fits in the field.
-> However a compiler might get half way through this reasoning and that
-> might be the cause of
-> 
-> > >> drivers/iio/light/opt4001.c:215:9: error: call to '__compiletime_assert_355' declared with 'error' attribute: FIELD_PREP: value too large for the field  
-> >      215 |         reg |= FIELD_PREP(OPT4001_CTRL_CONV_TIME_MASK, chip->int_time);  
-> 
-> Even if this isn't the cause, it looks like a bug to me.
-> 
-> Fixes: 9a9608418292 ("iio: light: Add support for TI OPT4001 light sensor")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Closes: https://lore.kernel.org/oe-kbuild-all/202308061902.0gVz6bSe-lkp@intel.com/
-> Cc: Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+  Documentation/devicetree/bindings/iio/light/rohm,bu27010.example.dtb: light-sensor@38: 'vdd-supply' is a required property
 
-Oops. Clearly half asleep last night. This is garbage so I'm back to the drawing board
-on what is causing clang to believe int_time can be bigger than 4 bits.
+Fixes: ae8c47c51e5c ("dt-bindings: iio: ROHM BU27010 RGBC + flickering sensor")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/iio/light/rohm,bu27010.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Any suggestions welcome!
-
-> ---
->  drivers/iio/light/opt4001.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/light/opt4001.c b/drivers/iio/light/opt4001.c
-> index 502946bf9f94..83f978706758 100644
-> --- a/drivers/iio/light/opt4001.c
-> +++ b/drivers/iio/light/opt4001.c
-> @@ -137,7 +137,7 @@ static int opt4001_als_time_to_index(const u32 als_integration_time)
->  {
->  	int i;
->  
-> -	for (i = 0; i < ARRAY_SIZE(opt4001_int_time_available); i++) {
-> +	for (i = 0; i < ARRAY_SIZE(opt4001_int_time_available) / 2; i++) {
->  		if (als_integration_time == opt4001_int_time_available[i][1])
->  			return i;
->  	}
+diff --git a/Documentation/devicetree/bindings/iio/light/rohm,bu27010.yaml b/Documentation/devicetree/bindings/iio/light/rohm,bu27010.yaml
+index 8376d64a641a..bed42d5d0d94 100644
+--- a/Documentation/devicetree/bindings/iio/light/rohm,bu27010.yaml
++++ b/Documentation/devicetree/bindings/iio/light/rohm,bu27010.yaml
+@@ -45,5 +45,6 @@ examples:
+       light-sensor@38 {
+         compatible = "rohm,bu27010";
+         reg = <0x38>;
++        vdd-supply = <&vdd>;
+       };
+     };
+-- 
+2.34.1
 
