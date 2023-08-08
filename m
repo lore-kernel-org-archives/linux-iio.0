@@ -2,86 +2,117 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E82C001B0
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 16:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBEB1C07E8A
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 17:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233584AbjHHQvs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Aug 2023 12:51:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40220 "EHLO
+        id S233751AbjHHRBl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Aug 2023 13:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232831AbjHHQu5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 12:50:57 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601F34B8C3;
-        Tue,  8 Aug 2023 08:57:50 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3784Dujk008831;
-        Tue, 8 Aug 2023 03:51:33 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3sbegbh0jb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Aug 2023 03:51:33 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 3787pWCo028425
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 8 Aug 2023 03:51:32 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 8 Aug 2023 03:51:31 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 8 Aug 2023 03:51:31 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 8 Aug 2023 03:51:31 -0400
-Received: from rbolboac.ad.analog.com ([10.48.65.173])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 3787pN8v011820;
-        Tue, 8 Aug 2023 03:51:25 -0400
-From:   Ramona Bolboaca <ramona.bolboaca@analog.com>
-To:     <jic23@kernel.org>, <nuno.sa@analog.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Ramona Bolboaca <ramona.bolboaca@analog.com>
-Subject: [PATCH v5 0/3] Add new channels for adis16475
-Date:   Tue, 8 Aug 2023 10:50:56 +0300
-Message-ID: <20230808075059.645525-1-ramona.bolboaca@analog.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S233754AbjHHRBC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 13:01:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461628690;
+        Tue,  8 Aug 2023 09:00:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C2FD624C3;
+        Tue,  8 Aug 2023 11:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7956BC433C9;
+        Tue,  8 Aug 2023 11:09:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1691492941;
+        bh=t5keYJaEqeaKp0mlDUXsYS276GlhxU47w2DsH4m0WSQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aGfhd3qPUfmNl6GWDoGyXHJhdpsdWij0VZ0SJo3PJM4CLiYU2Eux/iXMmmjm0/xS1
+         j3iCUOwr1aqrioS0wSPNIEEzGYgBy5UObE6GB7CHi+PCSTE/AV+OqEj8VLWe8swVMV
+         a2Si78opzwY+ceZMGZYHlu3LQOhop8JFQc4Y97dj7LjOsJAHGOzSNyEK0Fm9niPPM2
+         /AObOrFinhcL7QulHGNcASebLzL/qGZuWQuqzstnqpi2DhkIkjsupePHs1+K1TFoCJ
+         2f5dFA1g9xcZgRUdVbB0qr1WD+3EJKGzTFyVDE6MTt8c7QMTMGkjY4dEMTWTO5mLeb
+         pZgL3POCeFHlg==
+Date:   Tue, 8 Aug 2023 05:10:04 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "GONG, Ruiqi" <gongruiqi@huaweicloud.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Waqar Hameed <waqar.hameed@axis.com>,
+        Kees Cook <keescook@chromium.org>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        Wang Weiyang <wangweiyang2@huawei.com>,
+        Xiu Jianfeng <xiujianfeng@huawei.com>, gongruiqi1@huawei.com
+Subject: Re: [PATCH RFC] iio: irsd200: fix -Warray-bounds bug in
+ irsd200_trigger_handler
+Message-ID: <ZNIijIoh/famqTDl@work>
+References: <20230808083719.280777-1-gongruiqi@huaweicloud.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: BzuHoXF1zoM8fNM0zrJR4bqW0rCP8ow-
-X-Proofpoint-ORIG-GUID: BzuHoXF1zoM8fNM0zrJR4bqW0rCP8ow-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-08-08_06,2023-08-03_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
- spamscore=0 phishscore=0 adultscore=0 malwarescore=0 lowpriorityscore=0
- mlxlogscore=650 clxscore=1015 impostorscore=0 bulkscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2306200000
- definitions=main-2308080070
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230808083719.280777-1-gongruiqi@huaweicloud.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-changes in v5:
-  patch 1: added documentation for all supported attributes
-  patch 2: added documentation for all supported attributes
-  patch 3: no changes
+On Tue, Aug 08, 2023 at 04:37:19PM +0800, GONG, Ruiqi wrote:
+> From: "GONG, Ruiqi" <gongruiqi1@huawei.com>
+> 
+> When compiling with gcc 13 with -Warray-bounds enabled:
+> 
+> In file included from drivers/iio/proximity/irsd200.c:15:
+> In function ‘iio_push_to_buffers_with_timestamp’,
+>     inlined from ‘irsd200_trigger_handler’ at drivers/iio/proximity/irsd200.c:770:2:
+> ./include/linux/iio/buffer.h:42:46: error: array subscript ‘int64_t {aka long long int}[0]’
+> is partly outside array bounds of ‘s16[1]’ {aka ‘short int[1]’} [-Werror=array-bounds=]
+>    42 |                 ((int64_t *)data)[ts_offset] = timestamp;
+>       |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+> drivers/iio/proximity/irsd200.c: In function ‘irsd200_trigger_handler’:
+> drivers/iio/proximity/irsd200.c:763:13: note: object ‘buf’ of size 2
+>   763 |         s16 buf = 0;
+>       |             ^~~
+> 
+> The problem seems to be that irsd200_trigger_handler() is taking a s16
+> variable as an int64_t buffer. Fix it by extending the buffer to 64 bits.
 
-Ramona Bolboaca (3):
-  iio: Add IIO_DELTA_ANGL channel type
-  iio: Add IIO_DELTA_VELOCITY channel type
-  iio: imu: adis16475.c: Add delta angle and delta velocity channels
+Thanks for working on this!
 
- Documentation/ABI/testing/sysfs-bus-iio |  45 +++++++
- drivers/iio/imu/adis16475.c             | 165 +++++++++++++++++++++---
- drivers/iio/industrialio-core.c         |   2 +
- include/uapi/linux/iio/types.h          |   2 +
- tools/iio/iio_event_monitor.c           |   4 +
- 5 files changed, 199 insertions(+), 19 deletions(-)
+> 
+> Link: https://github.com/KSPP/linux/issues/331
+> Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
 
--- 
-2.34.1
+Acked-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
+--
+Gustavo
+
+> ---
+> 
+> RFC: It's a preliminary patch since I'm not familiar with this hardware.
+> Further comments/reviews are needed about whether this fix is correct,
+> or we should use iio_push_to_buffers() instead of the *_with_timestamp()
+> version.
+> 
+>  drivers/iio/proximity/irsd200.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/proximity/irsd200.c b/drivers/iio/proximity/irsd200.c
+> index 5bd791b46d98..34c479881bdf 100644
+> --- a/drivers/iio/proximity/irsd200.c
+> +++ b/drivers/iio/proximity/irsd200.c
+> @@ -759,10 +759,10 @@ static irqreturn_t irsd200_trigger_handler(int irq, void *pollf)
+>  {
+>  	struct iio_dev *indio_dev = ((struct iio_poll_func *)pollf)->indio_dev;
+>  	struct irsd200_data *data = iio_priv(indio_dev);
+> -	s16 buf = 0;
+> +	int64_t buf = 0;
+>  	int ret;
+>  
+> -	ret = irsd200_read_data(data, &buf);
+> +	ret = irsd200_read_data(data, (s16 *)&buf);
+>  	if (ret)
+>  		goto end;
+>  
+> -- 
+> 2.41.0
+> 
