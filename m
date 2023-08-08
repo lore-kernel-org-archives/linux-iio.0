@@ -2,101 +2,197 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B76FC04FDF
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 18:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66651C001B0
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 19:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231611AbjHHS6F (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Aug 2023 14:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33934 "EHLO
+        id S231852AbjHHTIR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Aug 2023 15:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbjHHS5a (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 14:57:30 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9321D472;
-        Tue,  8 Aug 2023 10:17:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691515044; x=1723051044;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=RaKiTBiaD9BsjOO0Nilkq1si5mCIBl34JpYb7gEASig=;
-  b=HZtdjIDL+H9BaDEXMdrFR+OFQkzcDoZnD3YHFqV71qAAHBwBLIoR8hsA
-   igH1gSne7mn5NHMmNEZzRvceECnD/xAPq3+JKSyIIlE/bxVmfrCbmMw/x
-   w6QdLGqXDMsm+JNnKzP+BKNo6LlDS0js1B0BlrZAiRWjD2iKDvARl/FdT
-   R1zxSyH2NIUI65ASDOMG5UmBJOf1yeUTq7oxveQ7iuyQoRcWc/QpYk10h
-   mlZQiAsSHU5VkLhEM6Igsz1wIWyebpuZOlGbcvmE2MGSWfjPa17Ts6tR4
-   lTPyuiS/uKP/L6PpqkQGoZ+0tbvwLNtnatgW4TvDY+c3Hdd5hRY/sbt7o
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="360970361"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="360970361"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 09:24:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="845525000"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="845525000"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 08 Aug 2023 09:24:54 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 2C1A21B4; Tue,  8 Aug 2023 19:28:02 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gerald Loacker <gerald.loacker@wolfvision.net>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v1 0/6] iio: Introduce and use device_property_match_property_string()
-Date:   Tue,  8 Aug 2023 19:27:54 +0300
-Message-Id: <20230808162800.61651-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
+        with ESMTP id S231995AbjHHTH5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 15:07:57 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03D031C0A;
+        Tue,  8 Aug 2023 09:30:00 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3785lw1Y024740;
+        Tue, 8 Aug 2023 03:51:38 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3s9kb1yvwp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Aug 2023 03:51:38 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 3787pbs8028447
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 8 Aug 2023 03:51:37 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 8 Aug 2023 03:51:36 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 8 Aug 2023 03:51:36 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 8 Aug 2023 03:51:36 -0400
+Received: from rbolboac.ad.analog.com ([10.48.65.173])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 3787pN8x011820;
+        Tue, 8 Aug 2023 03:51:29 -0400
+From:   Ramona Bolboaca <ramona.bolboaca@analog.com>
+To:     <jic23@kernel.org>, <nuno.sa@analog.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Ramona Bolboaca <ramona.bolboaca@analog.com>
+Subject: [PATCH v5 2/3] iio: Add IIO_DELTA_VELOCITY channel type
+Date:   Tue, 8 Aug 2023 10:50:58 +0300
+Message-ID: <20230808075059.645525-3-ramona.bolboaca@analog.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230808075059.645525-1-ramona.bolboaca@analog.com>
+References: <20230808075059.645525-1-ramona.bolboaca@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: gK0YNr61qDXQ4cGrP3A75IUDw1kv_s1s
+X-Proofpoint-ORIG-GUID: gK0YNr61qDXQ4cGrP3A75IUDw1kv_s1s
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-08-08_06,2023-08-03_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ lowpriorityscore=0 malwarescore=0 suspectscore=0 mlxlogscore=999
+ priorityscore=1501 impostorscore=0 phishscore=0 adultscore=0 bulkscore=0
+ mlxscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2306200000 definitions=main-2308080070
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-At least 4 drivers in the kernel are open coding functionality of
-proposed device_property_match_property_string() helper.
+The delta velocity is defined as a piece-wise integration of
+acceleration data. The delta velocity represents the linear velocity
+change between two consecutive measurements and it
+is measured in m / s (meters per second).
 
-There are also more existing users, but I want to limit this to one
-(biggest user so far) subsystem. Hence, assuming Greg KH is okay
-this can be routed via IIO (and again via Greg :-).
+In order to track the total linear velocity change during a desired
+period of time, simply sum-up the delta velocity samples acquired
+during that time.
 
-The +28 statistics in particular due to documentation.
-With more users converted we may actually get rid of some
-lines of code in the future.
+IIO currently does not offer a suitable channel type for this
+type of measurements hence this patch adds it.
 
-Andy Shevchenko (6):
-  device property: Use fwnode_property_string_array_count()
-  device property: Add fwnode_property_match_property_string()
-  iio: frequency: adf4377: Switch to
-    device_property_match_property_string()
-  iio: frequency: admv1014: Switch to
-    device_property_match_property_string()
-  iio: magnetometer: tmag5273: Switch to
-    device_property_match_property_string()
-  iio: proximity: sx9324: Switch to
-    device_property_match_property_string()
+Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 23 +++++++++++++++++++++++
+ drivers/iio/industrialio-core.c         |  1 +
+ include/uapi/linux/iio/types.h          |  1 +
+ tools/iio/iio_event_monitor.c           |  2 ++
+ 4 files changed, 27 insertions(+)
 
- drivers/base/property.c             | 37 ++++++++++++++++++++++++++++-
- drivers/iio/frequency/adf4377.c     | 16 +++++--------
- drivers/iio/frequency/admv1014.c    | 31 ++++++++++--------------
- drivers/iio/magnetometer/tmag5273.c | 10 +++-----
- drivers/iio/proximity/sx9324.c      | 24 ++++++++-----------
- include/linux/property.h            | 12 ++++++++++
- 6 files changed, 79 insertions(+), 51 deletions(-)
-
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 363dd4b09930..59968b745518 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -293,6 +293,21 @@ Description:
+ 		angle samples acquired during that time.
+ 		Units after application of scale and offset are radians.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_deltavelocity_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_deltavelocity_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_deltavelocity_z_raw
++KernelVersion:	6.5
++Contact:	linux-iio@vger.kernel.org
++Description:
++		The linear velocity change between two consecutive samples on x,
++		y or z (may be arbitrarily assigned but should match other such
++		assignments on device).
++		In order to compute the total linear velocity change during a
++		desired period of time, the application should sum-up the delta
++		velocity samples acquired during that time.
++		Units after application of scale and offset are meters per
++		second.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/in_angl_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglY_raw
+ KernelVersion:	4.17
+@@ -476,6 +491,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_countY_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_deltaangl_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_deltavelocity_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_angl_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_x_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_y_scale
+@@ -1350,6 +1366,9 @@ What:		/sys/.../iio:deviceX/bufferY/in_accel_z_en
+ What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_x_en
+ What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_y_en
+ What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_z_en
++What:		/sys/.../iio:deviceX/bufferY/in_deltavelocity_x_en
++What:		/sys/.../iio:deviceX/bufferY/in_deltavelocity_y_en
++What:		/sys/.../iio:deviceX/bufferY/in_deltavelocity_z_en
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_x_en
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_y_en
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_z_en
+@@ -1381,6 +1400,7 @@ Description:
+ 
+ What:		/sys/.../iio:deviceX/bufferY/in_accel_type
+ What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_type
++What:		/sys/.../iio:deviceX/bufferY/in_deltavelocity_type
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_type
+ What:		/sys/.../iio:deviceX/bufferY/in_magn_type
+ What:		/sys/.../iio:deviceX/bufferY/in_incli_type
+@@ -1438,6 +1458,9 @@ What:		/sys/.../iio:deviceX/bufferY/in_accel_z_index
+ What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_x_index
+ What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_y_index
+ What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_z_index
++What:		/sys/.../iio:deviceX/bufferY/in_deltavelocity_x_index
++What:		/sys/.../iio:deviceX/bufferY/in_deltavelocity_y_index
++What:		/sys/.../iio:deviceX/bufferY/in_deltavelocity_z_index
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_x_index
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_y_index
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_z_index
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 2e2fd0be2504..ba694b049629 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -90,6 +90,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_PHASE] = "phase",
+ 	[IIO_MASSCONCENTRATION] = "massconcentration",
+ 	[IIO_DELTA_ANGL] = "deltaangl",
++	[IIO_DELTA_VELOCITY] = "deltavelocity",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 55666a17d311..9a341bd07702 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -48,6 +48,7 @@ enum iio_chan_type {
+ 	IIO_PHASE,
+ 	IIO_MASSCONCENTRATION,
+ 	IIO_DELTA_ANGL,
++	IIO_DELTA_VELOCITY,
+ };
+ 
+ enum iio_modifier {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index 3505450060e6..7e6761612246 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -60,6 +60,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_PHASE] = "phase",
+ 	[IIO_MASSCONCENTRATION] = "massconcentration",
+ 	[IIO_DELTA_ANGL] = "deltaangl",
++	[IIO_DELTA_VELOCITY] = "deltavelocity",
+ };
+ 
+ static const char * const iio_ev_type_text[] = {
+@@ -175,6 +176,7 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_PHASE:
+ 	case IIO_MASSCONCENTRATION:
+ 	case IIO_DELTA_ANGL:
++	case IIO_DELTA_VELOCITY:
+ 		break;
+ 	default:
+ 		return false;
 -- 
-2.40.0.1.gaa8946217a0b
+2.34.1
 
