@@ -2,113 +2,97 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6CA8C04A6A
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 19:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD16C41513
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 19:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233975AbjHHTus (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Aug 2023 15:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37474 "EHLO
+        id S234181AbjHHTx6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Aug 2023 15:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233961AbjHHTu1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 15:50:27 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870F153509;
-        Tue,  8 Aug 2023 09:56:09 -0700 (PDT)
-Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4RKxV54TDFz6GD4v;
-        Tue,  8 Aug 2023 23:11:25 +0800 (CST)
-Received: from localhost (10.202.227.76) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Tue, 8 Aug
- 2023 16:16:20 +0100
-Date:   Tue, 8 Aug 2023 16:16:19 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-CC:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        Andi Shyti <andi.shyti@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org\" <linux-renesas-soc@vger.kernel.org>"@domain.invalid
-Subject: Re: [PATCH v7 0/4] Extend device_get_match_data() to struct
- bus_type
-Message-ID: <20230808161619.00000b92@Huawei.com>
-In-Reply-To: <ZNFV+C1HCIRJpbdC@google.com>
-References: <20230804161728.394920-1-biju.das.jz@bp.renesas.com>
-        <20230805174036.129ffbc2@jic23-huawei>
-        <OS0PR01MB59220491C7C8AA40BEFAAD82860EA@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-        <20230806142950.6c409600@jic23-huawei>
-        <ZNEFjyAloqlkMWn7@smile.fi.intel.com>
-        <ZNFV+C1HCIRJpbdC@google.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
+        with ESMTP id S231668AbjHHTxp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 15:53:45 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293AE13945C;
+        Tue,  8 Aug 2023 11:03:59 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id 5b1f17b1804b1-3fe2ba3e260so57075665e9.2;
+        Tue, 08 Aug 2023 11:03:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1691517837; x=1692122637;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3PeSe/GO6oNsx5WYr31WDuJ/pxid985m44XnUTfQZDY=;
+        b=raYj3mFjJsVhqvQ2f6HG1Vqk1ialYg9hZ0Sl14PNuTYzOhaWbxr7fsByS81K/vP4zz
+         4zD/2v+WpXJoh3wbm1o7iLY513lrSL/KxTJmqOTsmpoXNyhoXYPTsYMTUohiYtSJxHB1
+         w0UTeruOXN54m6UqHXHpkFZc2XuEv8CxUPQ88Q+ESs0MA502075bcGrTkOMJ4y63uDbQ
+         j/YX070Ud7/NHXUxLUmwolZT6oACdPScPmgT5CuR6iupKcW8l6bMlPexVG/lBBcs8rSj
+         v3gzl8cgYk4/Suob6BnNcgKfRUtwNoLNFVqaLkJr1RN9A35hss37i71N0SMbO4qEMRVG
+         dSew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691517837; x=1692122637;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3PeSe/GO6oNsx5WYr31WDuJ/pxid985m44XnUTfQZDY=;
+        b=I+tuAMHBU4jFpowlJw5VO/TiU5ddNQseIRziiAJbZwV++WGKhCO5KBk/FdE5ZX208b
+         uFu2n2j07YmN599KAR0N06QJsrJHCPwvu7dzNsIx9ZV0KEUgE1slgKArE2FBzplchvfw
+         r9RRjoGVmYxTHpAJxkeLo77mO1KYTNweE2CQUYVN7iR8rK1KXkmllOnYdoz9niiayVuv
+         nkkCHh+hkhj2WMJpFhhXI0Ok7ts4ejiBnez+p1zGSF7aBpibTZfvRa9Zm5pAeI99gYCz
+         3juAj3Z9yYw0uUsvcubLLTyfwtp/duH7cFv11wu3XxxFQfmTGrBFgL+1ysdvWVexr3FA
+         JG9Q==
+X-Gm-Message-State: AOJu0Ywv4navyIZGNheLI0cwtYdJp2+Xwk1epOZEAlLqKqEEB6WKOgwH
+        zCAoD3gOlF3589rSC6n0LLqY7oki6oU=
+X-Google-Smtp-Source: AGHT+IGx8qpA8w2DCmIxsFRx1ZOpbeX44oV+zA8r9kZ2Jq+OZ4V6CmfzvpDQTtZ+ULkzH9Mu8g7QLA==
+X-Received: by 2002:a05:6512:310c:b0:4fb:2c1e:4e03 with SMTP id n12-20020a056512310c00b004fb2c1e4e03mr6752682lfb.32.1691477570248;
+        Mon, 07 Aug 2023 23:52:50 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:16f8:1500::5? (dc78bmyyyyyyyyyyyyyct-3.rev.dnainternet.fi. [2001:14ba:16f8:1500::5])
+        by smtp.gmail.com with ESMTPSA id h25-20020a197019000000b004fe1fc5d0e3sm1752524lfc.206.2023.08.07.23.52.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Aug 2023 23:52:49 -0700 (PDT)
+Message-ID: <8410ca04-71f1-ab16-76b9-0ebe07065a15@gmail.com>
+Date:   Tue, 8 Aug 2023 09:52:48 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH] dt-bindings: iio: rohm,bu27010: add missing vdd-supply to
+ example
+Content-Language: en-US, en-GB
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230808063223.80431-1-krzysztof.kozlowski@linaro.org>
+From:   Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20230808063223.80431-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.227.76]
-X-ClientProxiedBy: lhrpeml100001.china.huawei.com (7.191.160.183) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 7 Aug 2023 13:37:12 -0700
-Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
-
-> On Mon, Aug 07, 2023 at 05:54:07PM +0300, Andy Shevchenko wrote:
-> > On Sun, Aug 06, 2023 at 02:29:50PM +0100, Jonathan Cameron wrote:  
-> > > On Sat, 5 Aug 2023 17:42:21 +0000
-> > > Biju Das <biju.das.jz@bp.renesas.com> wrote:  
-> > > > > On Fri,  4 Aug 2023 17:17:24 +0100
-> > > > > Biju Das <biju.das.jz@bp.renesas.com> wrote:  
-> > 
-> > ...
-> >   
-> > > > + * Besides the fact that some drivers abuse the device ID driver_data type
-> > > > + * and claim it to be integer, for the bus specific ID tables the driver_data
-> > > > + * may be defined as kernel_ulong_t. For these tables 0 is a valid response,
-> > > > + * but not for this function. It's recommended to convert those either to avoid
-> > > > + * 0 or use a real pointer to the predefined driver data.  
-> >   
-> > > We still need to maintain consistency across the two tables, which
-> > > is a stronger requirement than avoiding 0.  
-> > 
-> > True. Any suggestion how to amend the above comment? Because the documentation
-> > makes sense on its own (may be split from the series?).
-> >   
-> > > Some drivers already do that by forcing the enum used to start at 1 which
-> > > doesn't solver the different data types issue.  
-> > 
-> > And some maintainers do not want to see non-enum values in i2c ID table.
-> > *Shrug*.  
+On 8/8/23 09:32, Krzysztof Kozlowski wrote:
+> Bindings require vdd-supply but the example DTS was missing one.  This
+> fixes dt_binding_check error:
 > 
-> So in legacy ID lookup path we can safely assume that values below 4096
-> are scalars and return NULL from the new device_get_match_data(). This
-> way current drivers using the values as indices or doing direct
-> comparisons against them can continue doing manual look up and using
-> them as they see fit. And we can convert the drivers at our leisure.
-
-Good idea.  Though I suspect there may still be nasty cases. People have
-been known to put chip ID values in these fields so that they can then
-match them against a who am I register as a 'detect it's the right part' check.
-
-No idea if we have any drivers doing that but if there are hopefully not too many!
-
-Jonathan
-
+>    Documentation/devicetree/bindings/iio/light/rohm,bu27010.example.dtb: light-sensor@38: 'vdd-supply' is a required property
 > 
-> Thanks.
-> 
+> Fixes: ae8c47c51e5c ("dt-bindings: iio: ROHM BU27010 RGBC + flickering sensor")
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Ah. Added supply to required ones when you pointed out it should be - 
+and obviously didn't fix the example :/
+
+Thanks a lot for fixing it!
+
+Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
+
+-- 
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
+
+~~ When things go utterly wrong vim users can always type :help! ~~
 
