@@ -2,61 +2,55 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A9ADC04A6A
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 17:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58079C001B0
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 17:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233808AbjHHRIA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Aug 2023 13:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45798 "EHLO
+        id S234412AbjHHRTk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Aug 2023 13:19:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234107AbjHHRHP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 13:07:15 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3575CE7D;
-        Tue,  8 Aug 2023 09:02:58 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id ffacd0b85a97d-3176a439606so4478539f8f.3;
-        Tue, 08 Aug 2023 09:02:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691510549; x=1692115349;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=N77XCzPazpBok51u5jWouG3TfNUMbwqAhma/4DQhYGI=;
-        b=fIuQVJV7UoBTVdWJIV18mnPWXHYesbhQyN7e1gPr2Z98Zvf+xtUuMZ02EOkHMvwUVS
-         6samL0MKW3KjC9H5VBIyD8L3678pH6Pev7c2xQOs0MsNDPf40E1W2rcvb+oYXcCTZHwS
-         cYdVL4EmpXZ/7NVHFSx76iNrm9VGbTM4TEb6oKiVsokPlGZi/3bE9/1m9aI/tdkulu0S
-         OwawWwWDmyX8sty9mmauYwrSHMgdS5d25gdFB7+NovtwPxo/GaGCujsk9GKPDAT12Z9N
-         jZcft4Ab8C//BQJGzhxg3RWNOXJgoXzQu7kalR3KUcuZ7ZGWpQ8GeYJDZO0q3ze7vP3H
-         aC/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691510549; x=1692115349;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=N77XCzPazpBok51u5jWouG3TfNUMbwqAhma/4DQhYGI=;
-        b=btghqHelNexVgaiBE/LvEspyGU0FxMoj4DtZNxw06tgyiFAwUfwWa30+KYf6UMA0XK
-         3TZp0iPCnWnJblRD8uas3LtA2rxxdGKxLJPTw07HfpNL2HWXgfwu6Sjr9kceSCqGLe0G
-         YEPHaGl0g9PetRbIeOOQMqHlIoH2VOxOAxYf77NOoDPUl4SLOrQOLcsX95FfRePMu9L7
-         ocvBEJhTymWLm2RX5jHt+SpFO0mX2szPI1md5I3h/cg2HNjXZDbcREwrN/2rV9pUGoVw
-         QBpB6rsUO926Bsql5RGZRfYWVE/YK+8fmqyRk8TTe6Z4l0nfG5+z2QoxZp4bPA8jktKk
-         Y83g==
-X-Gm-Message-State: AOJu0YwbcPJLWvJbsQd+pe+5fWtMnVcWXpjbk45GxSN+fPMR86uy7oie
-        b9WIhDpogtfK6Vz1YSGAo/iglRHeTisgsDCe
-X-Google-Smtp-Source: AGHT+IHddoIp15tEHXIqOstY3g61YGw6la8f3OjABPjj0xzPIgAjsx0c+Om7KRMWSdIXjcQ3SJUvPw==
-X-Received: by 2002:a05:6512:31d1:b0:4fe:49d:6ae2 with SMTP id j17-20020a05651231d100b004fe049d6ae2mr9290985lfe.0.1691492568213;
-        Tue, 08 Aug 2023 04:02:48 -0700 (PDT)
-Received: from localhost.localdomain (83-233-6-197.cust.bredband2.com. [83.233.6.197])
-        by smtp.gmail.com with ESMTPSA id q10-20020ac246ea000000b004fbad682ffesm1826587lfo.88.2023.08.08.04.02.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Aug 2023 04:02:47 -0700 (PDT)
-From:   Marcus Folkesson <marcus.folkesson@gmail.com>
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
+        with ESMTP id S233090AbjHHRS5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 13:18:57 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404B88CA7;
+        Tue,  8 Aug 2023 09:07:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691510865; x=1723046865;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=R6UzZPmeddLD5E78VuDAI1PCQFG215xuKvwMFArd0fs=;
+  b=EHy+Hn0ktZWdBtZqAg1pcup75rcH10V0FYUgR7Q8LRrbHTck2yypR142
+   iA8KilkE5OM5+g5korQjyEzmnLd0nkmtG0x4FX/A7MmRSKC8qKiJfRFZ7
+   W5OrQ8lNPG97md6zJNei6K/TWlEb8V+51A8cQl9qcKQSP4rMWZJxxOtz0
+   LnuWjj772+T3AslKe9+P0pqY1OHoI/Dqg4/tpPcKikJqum+BHM2LH9RwI
+   10vpdOlDZ9UjuIqWiTfR9tMdNU4s0ai0d47FMtz0dxkXDsdVv27dnpU2j
+   OQtOglCi6Tob8JfVma99qjeTb5WzkoLRlmSBrh9hrUMgNPVlUa4ewzgfI
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="351138159"
+X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
+   d="scan'208";a="351138159"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 07:23:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="821390354"
+X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
+   d="scan'208";a="821390354"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 Aug 2023 07:23:42 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qTNca-00BeUL-0J;
+        Tue, 08 Aug 2023 17:23:40 +0300
+Date:   Tue, 8 Aug 2023 17:23:39 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc:     Kent Gustavsson <kent@minoris.se>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Conor Dooley <conor+dt@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Cosmin Tanislav <demonsingur@gmail.com>,
         Arnd Bergmann <arnd@arndb.de>,
         ChiYuan Huang <cy_huang@richtek.com>,
@@ -64,64 +58,178 @@ To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
         Ramona Bolboaca <ramona.bolboaca@analog.com>,
         Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
         ChiaEn Wu <chiaen_wu@richtek.com>,
-        William Breathitt Gray <william.gray@linaro.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 1/4] dt-bindings: iio: adc: mcp3911: add support for the whole MCP39xx family
-Date:   Tue,  8 Aug 2023 13:04:29 +0200
-Message-Id: <20230808110432.240773-1-marcus.folkesson@gmail.com>
-X-Mailer: git-send-email 2.40.1
+        William Breathitt Gray <william.gray@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 4/4] iio: adc: mcp3911: add support for the whole
+ MCP39xx family
+Message-ID: <ZNJP6xpOvRJigtMx@smile.fi.intel.com>
+References: <20230808110432.240773-1-marcus.folkesson@gmail.com>
+ <20230808110432.240773-4-marcus.folkesson@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230808110432.240773-4-marcus.folkesson@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Microchip does have many similar chips, add those to the compatible
-string as the driver support is extended.
+On Tue, Aug 08, 2023 at 01:04:32PM +0200, Marcus Folkesson wrote:
+> Microchip does have many similar chips, add support for those.
 
-The new supported chips are:
-  - microchip,mcp3910
-  - microchip,mcp3912
-  - microchip,mcp3913
-  - microchip,mcp3914
-  - microchip,mcp3918
-  - microchip,mcp3919
+...
 
-Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
+>  	help
+> -	  Say yes here to build support for Microchip Technology's MCP3911
+> -	  analog to digital converter.
+> +	  Say yes here to build support for Microchip Technology's MCP3910,
+> +	  MCP3911, MCP3912, MCP3913, MCP3914, MCP3918 and MCP3919
+> +	  analog to digital converters.
 
-Notes:
-    v2:
-        - No changes
-    v3:
-        - No changes
-    v4:
-        - No changes
+For maintenance this can be written as
 
- .../devicetree/bindings/iio/adc/microchip,mcp3911.yaml      | 6 ++++++
- 1 file changed, 6 insertions(+)
+	  Say yes here to build support for one of the following
+	  Microchip Technology's analog to digital converters:
+	    MCP3910, MCP3911, MCP3912, MCP3913, MCP3914,
+	    MCP3918, MCP3919
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
-index f7b3fde4115a..06951ec5f5da 100644
---- a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
-@@ -18,7 +18,13 @@ description: |
- properties:
-   compatible:
-     enum:
-+      - microchip,mcp3910
-       - microchip,mcp3911
-+      - microchip,mcp3912
-+      - microchip,mcp3913
-+      - microchip,mcp3914
-+      - microchip,mcp3918
-+      - microchip,mcp3919
- 
-   reg:
-     maxItems: 1
+>  	  This driver can also be built as a module. If so, the module will be
+>  	  called mcp3911.
+
+...
+
+> +#define MCP3910_OFFCAL(x)		(MCP3910_REG_OFFCAL_CH0 + x * 6)
+
+Inconsistent macro implementation, i.e. you need to use (x).
+
+...
+
+> +static int mcp3910_get_osr(struct mcp3911 *adc, int *val)
+> +{
+> +	int ret, osr;
+
+Strictly speaking osr can't be negative, otherwise it's a UB below.
+
+	u32 osr = FIELD_GET(MCP3910_CONFIG0_OSR, *val);
+	int ret;
+
+and why val is int?
+
+> +	ret = mcp3911_read(adc, MCP3910_REG_CONFIG0, val, 3);
+> +	if (ret)
+> +		return ret;
+> +
+> +	osr = FIELD_GET(MCP3910_CONFIG0_OSR, *val);
+> +	*val = 32 << osr;
+> +	return ret;
+> +}
+
+...
+
+> +static int mcp3910_set_osr(struct mcp3911 *adc, int val)
+> +{
+
+> +	int osr;
+> +
+> +	osr = FIELD_PREP(MCP3910_CONFIG0_OSR, val);
+
+Can be on one line.
+
+> +	return mcp3911_update(adc, MCP3910_REG_CONFIG0,
+> +			      MCP3910_CONFIG0_OSR, osr, 3);
+> +}
+
+...
+
+> +static int mcp3911_set_osr(struct mcp3911 *adc, int val)
+> +static int mcp3911_get_osr(struct mcp3911 *adc, int *val)
+
+As per above comments.
+
+...
+
+> +	if (adc->vref) {
+> +		dev_dbg(&adc->spi->dev, "use external voltage reference\n");
+> +		regval |= FIELD_PREP(MCP3910_CONFIG1_VREFEXT, 1);
+> +	} else {
+
+> +		dev_dbg(&adc->spi->dev,
+> +			"use internal voltage reference (1.2V)\n");
+
+
+As per previous patch comments
+
+		dev_dbg(dev, "use internal voltage reference (1.2V)\n");
+
+> +		regval |= FIELD_PREP(MCP3910_CONFIG1_VREFEXT, 0);
+> +	}
+
+...
+
+> +	if (adc->clki) {
+> +		dev_dbg(&adc->spi->dev, "use external clock as clocksource\n");
+> +		regval |= FIELD_PREP(MCP3910_CONFIG1_CLKEXT, 1);
+> +	} else {
+> +		dev_dbg(&adc->spi->dev,
+> +			"use crystal oscillator as clocksource\n");
+
+Ditto.
+
+> +		regval |= FIELD_PREP(MCP3910_CONFIG1_CLKEXT, 0);
+> +	}
+
+...
+
+> +	if (device_property_read_bool(&adc->spi->dev, "microchip,data-ready-hiz"))
+
+This also becomes shorter.
+
+One trick to make it even shorter:
+
+	if (device_property_present(dev, "microchip,data-ready-hiz"))
+
+> +		regval |= FIELD_PREP(MCP3910_STATUSCOM_DRHIZ, 0);
+> +	else
+> +		regval |= FIELD_PREP(MCP3910_STATUSCOM_DRHIZ, 1);
+
+...
+
+> +	ret = device_property_read_u32(&spi->dev, "microchip,device-addr", &adc->dev_addr);
+
+I would move it after the comment. It will be more visible what we are
+expecting and what the legacy is.
+
+
+> +	/*
+> +	 * Fallback to "device-addr" due to historical mismatch between
+> +	 * dt-bindings and implementation.
+> +	 */
+
+	ret = device_property_read_u32(dev, "microchip,device-addr", &adc->dev_addr);
+
+>  	if (ret)
+> -		return ret;
+> +		device_property_read_u32(&spi->dev, "device-addr", &adc->dev_addr);
+
+> +	if (adc->dev_addr > 3) {
+> +		dev_err(&spi->dev,
+> +			"invalid device address (%i). Must be in range 0-3.\n",
+> +			adc->dev_addr);
+> +		return -EINVAL;
+
+		return dev_err_probe(...);
+
+> +	}
+
+...
+
+> +	dev_dbg(&spi->dev, "use device address %i\n", adc->dev_addr);
+
+Is it useful?
+
 -- 
-2.40.1
+With Best Regards,
+Andy Shevchenko
+
 
