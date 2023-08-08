@@ -2,55 +2,61 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9656AC001DB
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 17:05:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A9ADC04A6A
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 17:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231229AbjHHRFn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Aug 2023 13:05:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52120 "EHLO
+        id S233808AbjHHRIA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Aug 2023 13:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231394AbjHHRE5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 13:04:57 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AFB11A744;
-        Tue,  8 Aug 2023 09:02:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691510527; x=1723046527;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XveRea9FANQPUg2+NGfW1ls9tlTN5Z18q/yQQW52Pdg=;
-  b=eLl/B+C6sBC8bNHtExz3HCdThPt5hLYA8yttYiQaKVGc9dfy/1XvdrGs
-   rEfaDAFJyBXWIeFXgLled8Mt6sYQxuCxAgaiDWefQS/efHAXi2xRlgGoQ
-   avBAqH3GDMwnNOMZ3/iGKd4z3kW7t9QF8rbziuaTngdvEpyCqoLJ9tqUR
-   7DV1uuPYGez7wQN74dHO/WrylRuvMmR/MGwiG3DneNTNZj9NxDwOfS1gJ
-   pqZLCnN8xRiaOUXEzzsnOz+6vcTF5HqK/hVLYeHEe6xyAZKAc++vdfHYa
-   7IC4ktsUmotG6zwOY4uAgJvB+ahfic+ke+7yDFvXdsTtsaqdZs/G01gpC
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="373581385"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="373581385"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 07:13:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="801337918"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="801337918"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004.fm.intel.com with ESMTP; 08 Aug 2023 07:13:28 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qTNSg-00BIxZ-0M;
-        Tue, 08 Aug 2023 17:13:26 +0300
-Date:   Tue, 8 Aug 2023 17:13:25 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>
-Cc:     Kent Gustavsson <kent@minoris.se>,
+        with ESMTP id S234107AbjHHRHP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 13:07:15 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3575CE7D;
+        Tue,  8 Aug 2023 09:02:58 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id ffacd0b85a97d-3176a439606so4478539f8f.3;
+        Tue, 08 Aug 2023 09:02:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1691510549; x=1692115349;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=N77XCzPazpBok51u5jWouG3TfNUMbwqAhma/4DQhYGI=;
+        b=fIuQVJV7UoBTVdWJIV18mnPWXHYesbhQyN7e1gPr2Z98Zvf+xtUuMZ02EOkHMvwUVS
+         6samL0MKW3KjC9H5VBIyD8L3678pH6Pev7c2xQOs0MsNDPf40E1W2rcvb+oYXcCTZHwS
+         cYdVL4EmpXZ/7NVHFSx76iNrm9VGbTM4TEb6oKiVsokPlGZi/3bE9/1m9aI/tdkulu0S
+         OwawWwWDmyX8sty9mmauYwrSHMgdS5d25gdFB7+NovtwPxo/GaGCujsk9GKPDAT12Z9N
+         jZcft4Ab8C//BQJGzhxg3RWNOXJgoXzQu7kalR3KUcuZ7ZGWpQ8GeYJDZO0q3ze7vP3H
+         aC/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691510549; x=1692115349;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=N77XCzPazpBok51u5jWouG3TfNUMbwqAhma/4DQhYGI=;
+        b=btghqHelNexVgaiBE/LvEspyGU0FxMoj4DtZNxw06tgyiFAwUfwWa30+KYf6UMA0XK
+         3TZp0iPCnWnJblRD8uas3LtA2rxxdGKxLJPTw07HfpNL2HWXgfwu6Sjr9kceSCqGLe0G
+         YEPHaGl0g9PetRbIeOOQMqHlIoH2VOxOAxYf77NOoDPUl4SLOrQOLcsX95FfRePMu9L7
+         ocvBEJhTymWLm2RX5jHt+SpFO0mX2szPI1md5I3h/cg2HNjXZDbcREwrN/2rV9pUGoVw
+         QBpB6rsUO926Bsql5RGZRfYWVE/YK+8fmqyRk8TTe6Z4l0nfG5+z2QoxZp4bPA8jktKk
+         Y83g==
+X-Gm-Message-State: AOJu0YwbcPJLWvJbsQd+pe+5fWtMnVcWXpjbk45GxSN+fPMR86uy7oie
+        b9WIhDpogtfK6Vz1YSGAo/iglRHeTisgsDCe
+X-Google-Smtp-Source: AGHT+IHddoIp15tEHXIqOstY3g61YGw6la8f3OjABPjj0xzPIgAjsx0c+Om7KRMWSdIXjcQ3SJUvPw==
+X-Received: by 2002:a05:6512:31d1:b0:4fe:49d:6ae2 with SMTP id j17-20020a05651231d100b004fe049d6ae2mr9290985lfe.0.1691492568213;
+        Tue, 08 Aug 2023 04:02:48 -0700 (PDT)
+Received: from localhost.localdomain (83-233-6-197.cust.bredband2.com. [83.233.6.197])
+        by smtp.gmail.com with ESMTPSA id q10-20020ac246ea000000b004fbad682ffesm1826587lfo.88.2023.08.08.04.02.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Aug 2023 04:02:47 -0700 (PDT)
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Conor Dooley <conor+dt@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Cosmin Tanislav <demonsingur@gmail.com>,
         Arnd Bergmann <arnd@arndb.de>,
         ChiYuan Huang <cy_huang@richtek.com>,
@@ -58,94 +64,64 @@ Cc:     Kent Gustavsson <kent@minoris.se>,
         Ramona Bolboaca <ramona.bolboaca@analog.com>,
         Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
         ChiaEn Wu <chiaen_wu@richtek.com>,
-        William Breathitt Gray <william.gray@linaro.org>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 3/4] iio: adc: mcp3911: fix indentation
-Message-ID: <ZNJNhSLIv/fazbhz@smile.fi.intel.com>
-References: <20230808110432.240773-1-marcus.folkesson@gmail.com>
- <20230808110432.240773-3-marcus.folkesson@gmail.com>
+        William Breathitt Gray <william.gray@linaro.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v4 1/4] dt-bindings: iio: adc: mcp3911: add support for the whole MCP39xx family
+Date:   Tue,  8 Aug 2023 13:04:29 +0200
+Message-Id: <20230808110432.240773-1-marcus.folkesson@gmail.com>
+X-Mailer: git-send-email 2.40.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230808110432.240773-3-marcus.folkesson@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Aug 08, 2023 at 01:04:31PM +0200, Marcus Folkesson wrote:
-> The file does not make use of indentation properly.
-> Fix that.
+Microchip does have many similar chips, add those to the compatible
+string as the driver support is extended.
 
-...
+The new supported chips are:
+  - microchip,mcp3910
+  - microchip,mcp3912
+  - microchip,mcp3913
+  - microchip,mcp3914
+  - microchip,mcp3918
+  - microchip,mcp3919
 
->  static int mcp3911_update(struct mcp3911 *adc, u8 reg, u32 mask,
-> -		u32 val, u8 len)
-> +			  u32 val, u8 len)
+Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
 
-Can val be moved to the previous line?
+Notes:
+    v2:
+        - No changes
+    v3:
+        - No changes
+    v4:
+        - No changes
 
-...
+ .../devicetree/bindings/iio/adc/microchip,mcp3911.yaml      | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
->  		if (ret < 0) {
->  			dev_err(&adc->spi->dev,
->  				"failed to get vref voltage: %d\n",
-> -			       ret);
-> +				ret);
->  			return ret;
-
-With
-
-	struct device *dev = &adc->spi->dev;
-
-this becomes
-
-			dev_err(dev, "failed to get vref voltage: %d\n", ret);
-
-and one change less here.
-
->  		}
-
-...
-
-> -#define MCP3911_CHAN(idx) {					\
-> -		.type = IIO_VOLTAGE,				\
-> -		.indexed = 1,					\
-> -		.channel = idx,					\
-> -		.scan_index = idx,				\
-> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
-> -			BIT(IIO_CHAN_INFO_OFFSET) |		\
-> -			BIT(IIO_CHAN_INFO_SCALE),		\
-> -		.info_mask_shared_by_type_available =           \
-> -			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
-> -		.info_mask_separate_available =			\
-> -			BIT(IIO_CHAN_INFO_SCALE),		\
-> -		.scan_type = {					\
-> -			.sign = 's',				\
-> -			.realbits = 24,				\
-> -			.storagebits = 32,			\
-> -			.endianness = IIO_BE,			\
-> -		},						\
-
->  }
-
-This looks like unneeded churn to me.
-
-...
-
->  	if (ret < 0) {
->  		dev_warn(&adc->spi->dev,
-> -				"failed to get conversion data\n");
-> +			 "failed to get conversion data\n");
->  		goto out;
->  	}
-
-Same as above with temporary variable for struct device.
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
+index f7b3fde4115a..06951ec5f5da 100644
+--- a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
+@@ -18,7 +18,13 @@ description: |
+ properties:
+   compatible:
+     enum:
++      - microchip,mcp3910
+       - microchip,mcp3911
++      - microchip,mcp3912
++      - microchip,mcp3913
++      - microchip,mcp3914
++      - microchip,mcp3918
++      - microchip,mcp3919
+ 
+   reg:
+     maxItems: 1
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.40.1
 
