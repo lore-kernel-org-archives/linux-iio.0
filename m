@@ -2,112 +2,196 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A74C04A6A
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 17:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC11C04A6A
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 17:37:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbjHHRbd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Aug 2023 13:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45236 "EHLO
+        id S231878AbjHHRhS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Aug 2023 13:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230371AbjHHRaz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 13:30:55 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B8C8DCDA;
-        Tue,  8 Aug 2023 09:13:24 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id a640c23a62f3a-99bcc0adab4so849862966b.2;
-        Tue, 08 Aug 2023 09:13:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691511158; x=1692115958;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=urR17NXXORwlJc/4xV0du1ERMO9/hff0y5pQAkxNBf4=;
-        b=OYnOe/MvzzbujQUxN1S0npvgjNC03GtAFcOicE9asTr7vN4yIjwc25N1DAxNt8dver
-         HZHWymiBrLQsmbwVPyt2b1T9Q8axUkAtPLG7Mg7fCfcYpUROYXXoUumAEFsyEn/7rUP8
-         dmVgtZwxVZlUgETSzADUhbgI9JCbRwzerXz0OSlGPQIf70u9ZcZbYmkL4isvH9zBGbMe
-         ZCehQkzQ0mY2UUdDoVVQ07vfmzezqh1wuuc2LWX4unLiv7EaqZwXjst9Uo41vYq15Yhn
-         UYUdCKX2em6d2HahLXKAusHJE46DdBEMh1N8n1T8/H8vkyScBY5a/TpHwWWB0Duj0z/K
-         Dr6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691511158; x=1692115958;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=urR17NXXORwlJc/4xV0du1ERMO9/hff0y5pQAkxNBf4=;
-        b=klRZAQtHkKKfePDsEj+oRlb4IYYFaC9AjKcL3ax+AuyLvsOn/KJdb0UsPZoygKoiro
-         guZuC8fj9KMVRbQyComDqCzzOtMmzcYCIvPD0HtdQUuPxgV6l6Wq+7iIHhrkO32+Uf9p
-         4uUgmmhPtHFakBwODOQUXfICkYFK3xI+O2Dy/exKrw5m5X6YnUsvr9oCUt1Gy1ZvTgee
-         js0ABa8r4b2mSAnoH9ch9YDGxX+NR9ODQ86hfn+3vGZLPgNeDU7/jyTk1v2pQ3FbC7gB
-         3i4p6R8bR94FeQf0Sg4MthrinYyGjoPnOrZ2zY7kieQDSVYVIifKYNipqSyfZVlIoZp+
-         aA6A==
-X-Gm-Message-State: AOJu0YypzN51J+CJ2IoGKeb3/AitUpypWd6Dg7Ko1YfycDikCM0xKXZC
-        3mw8tqK/lIpo2KqTsiL5FhkXANB2KMELQJbR
-X-Google-Smtp-Source: AGHT+IEk2GZHsfbq4NRBC+hd8CRYTMqVTpZAo8FgFYwPwTkChWOvxklnvB8Kw3achB7XNCG4HVqIZQ==
-X-Received: by 2002:a17:906:3009:b0:99c:5623:a2f1 with SMTP id 9-20020a170906300900b0099c5623a2f1mr9683792ejz.48.1691476217677;
-        Mon, 07 Aug 2023 23:30:17 -0700 (PDT)
-Received: from ?IPv6:2003:f6:ef09:a500:ffed:38f8:59e7:f38e? (p200300f6ef09a500ffed38f859e7f38e.dip0.t-ipconnect.de. [2003:f6:ef09:a500:ffed:38f8:59e7:f38e])
-        by smtp.gmail.com with ESMTPSA id y16-20020a170906525000b0099bd046170fsm6136063ejm.104.2023.08.07.23.30.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Aug 2023 23:30:17 -0700 (PDT)
-Message-ID: <2df639c71d3a6e876efddd5ba18c56ca68a4ccaa.camel@gmail.com>
-Subject: Re: [PATCH] iio: admv1013: add mixer_vgate corner cases
-From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To:     Antoniu Miclaus <antoniu.miclaus@analog.com>, jic23@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 08 Aug 2023 08:32:51 +0200
-In-Reply-To: <20230807143806.6954-1-antoniu.miclaus@analog.com>
-References: <20230807143806.6954-1-antoniu.miclaus@analog.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.4 
+        with ESMTP id S234838AbjHHRgW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 13:36:22 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B19BC21;
+        Tue,  8 Aug 2023 09:15:53 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3785lw1X024740;
+        Tue, 8 Aug 2023 03:51:36 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3s9kb1yvwb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Aug 2023 03:51:35 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 3787pYRS028429
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 8 Aug 2023 03:51:34 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 8 Aug 2023 03:51:33 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 8 Aug 2023 03:51:33 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 8 Aug 2023 03:51:33 -0400
+Received: from rbolboac.ad.analog.com ([10.48.65.173])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 3787pN8w011820;
+        Tue, 8 Aug 2023 03:51:28 -0400
+From:   Ramona Bolboaca <ramona.bolboaca@analog.com>
+To:     <jic23@kernel.org>, <nuno.sa@analog.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Ramona Bolboaca <ramona.bolboaca@analog.com>
+Subject: [PATCH v5 1/3] iio: Add IIO_DELTA_ANGL channel type
+Date:   Tue, 8 Aug 2023 10:50:57 +0300
+Message-ID: <20230808075059.645525-2-ramona.bolboaca@analog.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230808075059.645525-1-ramona.bolboaca@analog.com>
+References: <20230808075059.645525-1-ramona.bolboaca@analog.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: QCXNNFfBfNRx1lxItSeiGiisGoIvXKHV
+X-Proofpoint-ORIG-GUID: QCXNNFfBfNRx1lxItSeiGiisGoIvXKHV
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-08-08_06,2023-08-03_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ lowpriorityscore=0 malwarescore=0 suspectscore=0 mlxlogscore=999
+ priorityscore=1501 impostorscore=0 phishscore=0 adultscore=0 bulkscore=0
+ mlxscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2306200000 definitions=main-2308080070
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 2023-08-07 at 17:38 +0300, Antoniu Miclaus wrote:
-> Include the corner cases in the computation of the MIXER_VGATE register
-> value.
->=20
-> According to the datasheet: The MIXER_VGATE values follows the VCM such
-> as, that for a 0V to 1.8V VCM, MIXER_VGATE =3D 23.89 VCM + 81, and for a =
->
-> 1.8V to 2.6V VCM, MIXER_VGATE =3D 23.75 VCM + 1.25.
->=20
-> Fixes: da35a7b526d9 ("iio: frequency: admv1013: add support for ADMV1013"=
-)
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> ---
+The delta angle is defined as a piece-wise integration of angular
+velocity data. The delta angle represents the amount of
+angular displacement between two consecutive measurements and it
+is measured in radians.
 
-Reviewed-by: Nuno Sa <nuno.sa@analog.com>
+In order to track the total angular displacement during a desired
+period of time, simply sum-up the delta angle samples acquired
+during that time.
 
-> =C2=A0drivers/iio/frequency/admv1013.c | 4 ++--
-> =C2=A01 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/iio/frequency/admv1013.c
-> b/drivers/iio/frequency/admv1013.c
-> index 9bf8337806fc..df29f1216b9a 100644
-> --- a/drivers/iio/frequency/admv1013.c
-> +++ b/drivers/iio/frequency/admv1013.c
-> @@ -348,9 +348,9 @@ static int admv1013_update_mixer_vgate(struct
-> admv1013_state *st)
-> =C2=A0
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vcm =3D regulator_get_vol=
-tage(st->reg);
-> =C2=A0
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (vcm < 1800000)
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (vcm <=3D 1800000)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0mixer_vgate =3D (2389 * vcm / 1000000 + 8100) / 100=
-;
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0else if (vcm > 1800000 && vcm =
-< 2600000)
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0else if (vcm > 1800000 && vcm =
-<=3D 2600000)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0mixer_vgate =3D (2375 * vcm / 1000000 + 125) / 100;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0else
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0return -EINVAL;
+IIO currently does not offer a suitable channel type for this
+type of measurements hence this patch adds it.
+
+Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 22 ++++++++++++++++++++++
+ drivers/iio/industrialio-core.c         |  1 +
+ include/uapi/linux/iio/types.h          |  1 +
+ tools/iio/iio_event_monitor.c           |  2 ++
+ 4 files changed, 26 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index a2854dc9a839..363dd4b09930 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -279,6 +279,20 @@ Description:
+ 		but should match other such assignments on device).
+ 		Units after application of scale and offset are m/s^2.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_deltaangl_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_deltaangl_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_deltaangl_z_raw
++KernelVersion:	6.5
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Angular displacement between two consecutive samples on x, y or
++		z (may be arbitrarily assigned but should match other such
++		assignments on device).
++		In order to compute the total angular displacement during a
++		desired period of time, the application should sum-up the delta
++		angle samples acquired during that time.
++		Units after application of scale and offset are radians.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/in_angl_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglY_raw
+ KernelVersion:	4.17
+@@ -461,6 +475,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_countY_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_deltaangl_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_angl_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_x_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_y_scale
+@@ -1332,6 +1347,9 @@ Description:
+ What:		/sys/.../iio:deviceX/bufferY/in_accel_x_en
+ What:		/sys/.../iio:deviceX/bufferY/in_accel_y_en
+ What:		/sys/.../iio:deviceX/bufferY/in_accel_z_en
++What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_x_en
++What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_y_en
++What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_z_en
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_x_en
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_y_en
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_z_en
+@@ -1362,6 +1380,7 @@ Description:
+ 		Scan element control for triggered data capture.
+ 
+ What:		/sys/.../iio:deviceX/bufferY/in_accel_type
++What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_type
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_type
+ What:		/sys/.../iio:deviceX/bufferY/in_magn_type
+ What:		/sys/.../iio:deviceX/bufferY/in_incli_type
+@@ -1416,6 +1435,9 @@ What:		/sys/.../iio:deviceX/bufferY/in_voltage_q_index
+ What:		/sys/.../iio:deviceX/bufferY/in_accel_x_index
+ What:		/sys/.../iio:deviceX/bufferY/in_accel_y_index
+ What:		/sys/.../iio:deviceX/bufferY/in_accel_z_index
++What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_x_index
++What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_y_index
++What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_z_index
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_x_index
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_y_index
+ What:		/sys/.../iio:deviceX/bufferY/in_anglvel_z_index
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index a92b8b6ad647..2e2fd0be2504 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -89,6 +89,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_POSITIONRELATIVE]  = "positionrelative",
+ 	[IIO_PHASE] = "phase",
+ 	[IIO_MASSCONCENTRATION] = "massconcentration",
++	[IIO_DELTA_ANGL] = "deltaangl",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index c79f2f046a0b..55666a17d311 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -47,6 +47,7 @@ enum iio_chan_type {
+ 	IIO_POSITIONRELATIVE,
+ 	IIO_PHASE,
+ 	IIO_MASSCONCENTRATION,
++	IIO_DELTA_ANGL,
+ };
+ 
+ enum iio_modifier {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index 0a5c2bb60030..3505450060e6 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -59,6 +59,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_POSITIONRELATIVE] = "positionrelative",
+ 	[IIO_PHASE] = "phase",
+ 	[IIO_MASSCONCENTRATION] = "massconcentration",
++	[IIO_DELTA_ANGL] = "deltaangl",
+ };
+ 
+ static const char * const iio_ev_type_text[] = {
+@@ -173,6 +174,7 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_POSITIONRELATIVE:
+ 	case IIO_PHASE:
+ 	case IIO_MASSCONCENTRATION:
++	case IIO_DELTA_ANGL:
+ 		break;
+ 	default:
+ 		return false;
+-- 
+2.34.1
 
