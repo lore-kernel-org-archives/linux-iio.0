@@ -2,196 +2,114 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC11C04A6A
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 17:37:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FBC1C04A6A
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Aug 2023 17:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231878AbjHHRhS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Aug 2023 13:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
+        id S235177AbjHHR7A (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Aug 2023 13:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234838AbjHHRgW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 13:36:22 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B19BC21;
-        Tue,  8 Aug 2023 09:15:53 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3785lw1X024740;
-        Tue, 8 Aug 2023 03:51:36 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3s9kb1yvwb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Aug 2023 03:51:35 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 3787pYRS028429
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 8 Aug 2023 03:51:34 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 8 Aug 2023 03:51:33 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 8 Aug 2023 03:51:33 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 8 Aug 2023 03:51:33 -0400
-Received: from rbolboac.ad.analog.com ([10.48.65.173])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 3787pN8w011820;
-        Tue, 8 Aug 2023 03:51:28 -0400
-From:   Ramona Bolboaca <ramona.bolboaca@analog.com>
-To:     <jic23@kernel.org>, <nuno.sa@analog.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Ramona Bolboaca <ramona.bolboaca@analog.com>
-Subject: [PATCH v5 1/3] iio: Add IIO_DELTA_ANGL channel type
-Date:   Tue, 8 Aug 2023 10:50:57 +0300
-Message-ID: <20230808075059.645525-2-ramona.bolboaca@analog.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230808075059.645525-1-ramona.bolboaca@analog.com>
-References: <20230808075059.645525-1-ramona.bolboaca@analog.com>
+        with ESMTP id S229723AbjHHR6i (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2023 13:58:38 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582B32BC8A;
+        Tue,  8 Aug 2023 09:26:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691511991; x=1723047991;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=f91CxPAnd8jYoABhN6Y0bEUrupNGUDodI0gM1y7O31Y=;
+  b=ZCk+nwI71K0P+TdytxIjoUExeLBvf1bcfN4ut8zs73mt1JNZPO6eRUMe
+   bLldGwiSgnAHyJxzUPNe3Mfza4IeJnbVzvtzPDRSnoSFx1XIPbR0HZgi1
+   zW5YZibVjJL/AuTy5vSfoglkpc3rVWviSwYZ2iQqt4sgOigGC6Axgz6Hy
+   ERU0cpFI6nmXEgII45OLJ0TjH6r6RCfC7JmOIoS5OtA3smvSKKC4cQax8
+   OwuKwv4YTQdHPKXYLkcFUizZgp+D2I6KBTmyu8JJeAPyc9pLxBurUJX2H
+   nXaZBSs0pkl6FU6uHxQouVh3fnT5M8/eupOpf+1X66l4apzU670mlRVbY
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="457260946"
+X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
+   d="scan'208";a="457260946"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 09:25:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="821449146"
+X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
+   d="scan'208";a="821449146"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 Aug 2023 09:24:55 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 4E5BDF4D; Tue,  8 Aug 2023 19:28:03 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Gerald Loacker <gerald.loacker@wolfvision.net>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v1 3/6] iio: frequency: adf4377: Switch to device_property_match_property_string()
+Date:   Tue,  8 Aug 2023 19:27:57 +0300
+Message-Id: <20230808162800.61651-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
+In-Reply-To: <20230808162800.61651-1-andriy.shevchenko@linux.intel.com>
+References: <20230808162800.61651-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: QCXNNFfBfNRx1lxItSeiGiisGoIvXKHV
-X-Proofpoint-ORIG-GUID: QCXNNFfBfNRx1lxItSeiGiisGoIvXKHV
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-08-08_06,2023-08-03_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- lowpriorityscore=0 malwarescore=0 suspectscore=0 mlxlogscore=999
- priorityscore=1501 impostorscore=0 phishscore=0 adultscore=0 bulkscore=0
- mlxscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2306200000 definitions=main-2308080070
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The delta angle is defined as a piece-wise integration of angular
-velocity data. The delta angle represents the amount of
-angular displacement between two consecutive measurements and it
-is measured in radians.
+Replace open coded device_property_match_property_string().
 
-In order to track the total angular displacement during a desired
-period of time, simply sum-up the delta angle samples acquired
-during that time.
-
-IIO currently does not offer a suitable channel type for this
-type of measurements hence this patch adds it.
-
-Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 22 ++++++++++++++++++++++
- drivers/iio/industrialio-core.c         |  1 +
- include/uapi/linux/iio/types.h          |  1 +
- tools/iio/iio_event_monitor.c           |  2 ++
- 4 files changed, 26 insertions(+)
+ drivers/iio/frequency/adf4377.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index a2854dc9a839..363dd4b09930 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -279,6 +279,20 @@ Description:
- 		but should match other such assignments on device).
- 		Units after application of scale and offset are m/s^2.
+diff --git a/drivers/iio/frequency/adf4377.c b/drivers/iio/frequency/adf4377.c
+index 26abecbd51e0..9284c13f1abb 100644
+--- a/drivers/iio/frequency/adf4377.c
++++ b/drivers/iio/frequency/adf4377.c
+@@ -870,7 +870,6 @@ static const struct iio_chan_spec adf4377_channels[] = {
+ static int adf4377_properties_parse(struct adf4377_state *st)
+ {
+ 	struct spi_device *spi = st->spi;
+-	const char *str;
+ 	int ret;
  
-+What:		/sys/bus/iio/devices/iio:deviceX/in_deltaangl_x_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_deltaangl_y_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_deltaangl_z_raw
-+KernelVersion:	6.5
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Angular displacement between two consecutive samples on x, y or
-+		z (may be arbitrarily assigned but should match other such
-+		assignments on device).
-+		In order to compute the total angular displacement during a
-+		desired period of time, the application should sum-up the delta
-+		angle samples acquired during that time.
-+		Units after application of scale and offset are radians.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/in_angl_raw
- What:		/sys/bus/iio/devices/iio:deviceX/in_anglY_raw
- KernelVersion:	4.17
-@@ -461,6 +475,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_countY_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_deltaangl_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_angl_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_x_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_y_scale
-@@ -1332,6 +1347,9 @@ Description:
- What:		/sys/.../iio:deviceX/bufferY/in_accel_x_en
- What:		/sys/.../iio:deviceX/bufferY/in_accel_y_en
- What:		/sys/.../iio:deviceX/bufferY/in_accel_z_en
-+What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_x_en
-+What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_y_en
-+What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_z_en
- What:		/sys/.../iio:deviceX/bufferY/in_anglvel_x_en
- What:		/sys/.../iio:deviceX/bufferY/in_anglvel_y_en
- What:		/sys/.../iio:deviceX/bufferY/in_anglvel_z_en
-@@ -1362,6 +1380,7 @@ Description:
- 		Scan element control for triggered data capture.
+ 	st->clkin = devm_clk_get_enabled(&spi->dev, "ref_in");
+@@ -896,16 +895,13 @@ static int adf4377_properties_parse(struct adf4377_state *st)
+ 		return dev_err_probe(&spi->dev, PTR_ERR(st->gpio_enclk2),
+ 				     "failed to get the CE GPIO\n");
  
- What:		/sys/.../iio:deviceX/bufferY/in_accel_type
-+What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_type
- What:		/sys/.../iio:deviceX/bufferY/in_anglvel_type
- What:		/sys/.../iio:deviceX/bufferY/in_magn_type
- What:		/sys/.../iio:deviceX/bufferY/in_incli_type
-@@ -1416,6 +1435,9 @@ What:		/sys/.../iio:deviceX/bufferY/in_voltage_q_index
- What:		/sys/.../iio:deviceX/bufferY/in_accel_x_index
- What:		/sys/.../iio:deviceX/bufferY/in_accel_y_index
- What:		/sys/.../iio:deviceX/bufferY/in_accel_z_index
-+What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_x_index
-+What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_y_index
-+What:		/sys/.../iio:deviceX/bufferY/in_deltaangl_z_index
- What:		/sys/.../iio:deviceX/bufferY/in_anglvel_x_index
- What:		/sys/.../iio:deviceX/bufferY/in_anglvel_y_index
- What:		/sys/.../iio:deviceX/bufferY/in_anglvel_z_index
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index a92b8b6ad647..2e2fd0be2504 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -89,6 +89,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_POSITIONRELATIVE]  = "positionrelative",
- 	[IIO_PHASE] = "phase",
- 	[IIO_MASSCONCENTRATION] = "massconcentration",
-+	[IIO_DELTA_ANGL] = "deltaangl",
- };
+-	ret = device_property_read_string(&spi->dev, "adi,muxout-select", &str);
+-	if (ret) {
+-		st->muxout_select = ADF4377_MUXOUT_HIGH_Z;
+-	} else {
+-		ret = match_string(adf4377_muxout_modes, ARRAY_SIZE(adf4377_muxout_modes), str);
+-		if (ret < 0)
+-			return ret;
+-
++	ret = device_property_match_property_string(&spi->dev, "adi,muxout-select",
++						    adf4377_muxout_modes,
++						    ARRAY_SIZE(adf4377_muxout_modes));
++	if (ret >= 0)
+ 		st->muxout_select = ret;
+-	}
++	else
++		st->muxout_select = ADF4377_MUXOUT_HIGH_Z;
  
- static const char * const iio_modifier_names[] = {
-diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-index c79f2f046a0b..55666a17d311 100644
---- a/include/uapi/linux/iio/types.h
-+++ b/include/uapi/linux/iio/types.h
-@@ -47,6 +47,7 @@ enum iio_chan_type {
- 	IIO_POSITIONRELATIVE,
- 	IIO_PHASE,
- 	IIO_MASSCONCENTRATION,
-+	IIO_DELTA_ANGL,
- };
- 
- enum iio_modifier {
-diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-index 0a5c2bb60030..3505450060e6 100644
---- a/tools/iio/iio_event_monitor.c
-+++ b/tools/iio/iio_event_monitor.c
-@@ -59,6 +59,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_POSITIONRELATIVE] = "positionrelative",
- 	[IIO_PHASE] = "phase",
- 	[IIO_MASSCONCENTRATION] = "massconcentration",
-+	[IIO_DELTA_ANGL] = "deltaangl",
- };
- 
- static const char * const iio_ev_type_text[] = {
-@@ -173,6 +174,7 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_POSITIONRELATIVE:
- 	case IIO_PHASE:
- 	case IIO_MASSCONCENTRATION:
-+	case IIO_DELTA_ANGL:
- 		break;
- 	default:
- 		return false;
+ 	return 0;
+ }
 -- 
-2.34.1
+2.40.0.1.gaa8946217a0b
 
