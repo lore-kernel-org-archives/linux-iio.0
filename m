@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A01FC0015E
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Aug 2023 19:12:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E903C04FDF
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Aug 2023 19:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232250AbjHITMG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S232787AbjHITMG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 9 Aug 2023 15:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49244 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232135AbjHITL4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Aug 2023 15:11:56 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD572697;
-        Wed,  9 Aug 2023 12:11:54 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id ffacd0b85a97d-317c3ac7339so190161f8f.0;
-        Wed, 09 Aug 2023 12:11:53 -0700 (PDT)
+        with ESMTP id S233252AbjHITL7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Aug 2023 15:11:59 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EFC010EC;
+        Wed,  9 Aug 2023 12:11:57 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-3fe2d218eedso939315e9.0;
+        Wed, 09 Aug 2023 12:11:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691608312; x=1692213112;
+        d=gmail.com; s=20221208; t=1691608316; x=1692213116;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+PqilpSUTkskM+irx4vldFIwieHe/2PupeTH8Per9To=;
-        b=F2XvfTVMThkpml7GfTzYiNS5SwGN2I3hdtDs/xhBN+cNW50SAhKj3XK9W0JRnKbbQ5
-         L185/XbGhDAz+kmkf8vV71gU+X00S+3gJAyDgGREGiLu/l8Fw9wGz/EUS+WS595z9wk+
-         pxDAMbogfabBJLZZ2uQdvfX2rg+7jWoHNRVn7EhV7NpY7IIS0y62Y7wbBXrUXwQ7Jtw2
-         uAI3pneGm+EKxCjTc9xBJKDCpGJJ2bV+n3y3vb+Rh+1wG6JMfK4vljyEHEDzqyBxOi8s
-         GROvmK2t/ETeli6wParrzol2jb55LTviB9fwFto8SHqqmPWRiwnCk8YxNHR1kL+emJkt
-         t9hg==
+        bh=3uDePqqh1JbI0eVu6iP8bx2DCZtrWcLofkePNuUdzG4=;
+        b=Cu1Mxwme5j0rBg2KV9UVIw/WIr5x/eEVM3MKKni8/vYUB2/KiH/pyrW4kB/d1LFFv+
+         89zJjZdvrwIUByfLwOJKgTwHby9R6ZED0RxqcKI2i7TzQYYKcqhBq3GUxUTRxXqRrDaV
+         DMinuHD47XdSyIxbS66ChpdLg5mzSU+q+HM0heDYpBnvtF6Z28KZ/Efs6G4AqgybUM/T
+         i9tai2/JF/WY0FU/6D51fiWz70BuKM18Vw6q1zFtWinw9EsHgYgciWEoQCcll+5eLDg8
+         o4ABpyyZuVFa8wOgtGj/wxSJddHGqNC3hMSk4eo/fpyrx0f0ml+840ekZ1mRGHlmGyw5
+         6NuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691608312; x=1692213112;
+        d=1e100.net; s=20221208; t=1691608316; x=1692213116;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=+PqilpSUTkskM+irx4vldFIwieHe/2PupeTH8Per9To=;
-        b=S32ASy43v9wobYDoZoPQl8mUr83yp1G6aGtMVsga5xbrd1nMkPZ4NyYnVZgCfvzkzA
-         hL2GhPy9+BrtUwElUSRm8NjaFmwi3Zc9M/QGlyBsz88V7IFbsxCw/YWgbnwcQK5dEn+D
-         InZ97Ie8jMTLNqivq0ZdsonfJoh1qm6zw156aerG5cjsP7ZZAkblcc4vSZDGgi6Beo9V
-         RgBccwqL8wbOEsspP++h2MLtHZmYSwVXU4CoAHDKC6ALnLjgBjZLqlAVJCNRnB6syoVW
-         pTksycNAzbeCqJlmb7aQ87OUzl2ttpucFigLT1G9KCfRNBqpx/sh2WsmCbbjJrcQ4DzX
-         u81Q==
-X-Gm-Message-State: AOJu0YynXRWdnGerq3XwT148lVp65vogiKo47VJeDXFMwcBXVy4wxWS3
-        uUFThgk9s62Bzg6PU/dGmM8UzW7O5JNtZQ==
-X-Google-Smtp-Source: AGHT+IF60UqYUJQiDa1LYNGiLIpJQT1XrwAaXQSG1bpsQB+7a8mMB3/G4+9TvAoe12CD8DRD4VXgHg==
-X-Received: by 2002:adf:fd44:0:b0:315:a91c:1a8c with SMTP id h4-20020adffd44000000b00315a91c1a8cmr223155wrs.22.1691608312341;
-        Wed, 09 Aug 2023 12:11:52 -0700 (PDT)
+        bh=3uDePqqh1JbI0eVu6iP8bx2DCZtrWcLofkePNuUdzG4=;
+        b=U/7Eq/6pPsb6aS21Mc/FcSF67BUTDYHj/YmImkMsM7ARCIbYUhD7b1oWlsvR2EeSdq
+         QNsPma8/3F+i+gK27wbx6OjxJmCQphy1O4r6PN61RVYSiWqZNzkJCEOAvg5ZLA1Z8Lv7
+         VFm3HECI1RcNYJHCCEWdPzps/EydhZqICUVM9Z762D1umWzHt3cryQbZfz1bddzoQgPX
+         uTf6P7vpD1vCkrL1kbiCLAMRPtF24Sigu6RHw6Bj3L8maiHGKQtVM6xV7KcINxTKwwWt
+         xQUdsav9b3VKNO/RSpIcxaMbxX4amhaWT5NPMfII0PHhywcAWbYU2rc+Uyf2ukPqgCv0
+         ox4Q==
+X-Gm-Message-State: AOJu0Yw1tFhSAzkp4jwQw1xqa0CM0XgQAJpVwjxmL8jni/JHTqFK5ztU
+        CrvoFfRw/6oHSShGIOMg16w=
+X-Google-Smtp-Source: AGHT+IH6Ko59Wb2yv6hMOEJ8L68ItbVQM/vgFbtGqqxxQ5s1bhljzPlMp+on4K3439W5zlTQsO9SmA==
+X-Received: by 2002:a5d:4683:0:b0:317:3f0c:b40e with SMTP id u3-20020a5d4683000000b003173f0cb40emr240404wrq.58.1691608315839;
+        Wed, 09 Aug 2023 12:11:55 -0700 (PDT)
 Received: from localhost.localdomain ([2a01:e0a:bb2:6df0:64ae:3840:3a64:b26a])
-        by smtp.gmail.com with ESMTPSA id f6-20020adfdb46000000b003177074f830sm17582681wrj.59.2023.08.09.12.11.51
+        by smtp.gmail.com with ESMTPSA id f6-20020adfdb46000000b003177074f830sm17582681wrj.59.2023.08.09.12.11.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Aug 2023 12:11:52 -0700 (PDT)
+        Wed, 09 Aug 2023 12:11:55 -0700 (PDT)
 From:   Mehdi Djait <mehdi.djait.k@gmail.com>
 To:     jic23@kernel.org, mazziesaccount@gmail.com
 Cc:     krzysztof.kozlowski+dt@linaro.org,
@@ -56,9 +56,9 @@ Cc:     krzysztof.kozlowski+dt@linaro.org,
         lars@metafoo.de, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         Mehdi Djait <mehdi.djait.k@gmail.com>
-Subject: [PATCH v7 2/7] iio: accel: kionix-kx022a: Remove blank lines
-Date:   Wed,  9 Aug 2023 21:11:33 +0200
-Message-Id: <b1809c807b0638c9a171ac56e99e9773531610be.1691607526.git.mehdi.djait.k@gmail.com>
+Subject: [PATCH v7 4/7] iio: accel: kionix-kx022a: Add an i2c_device_id table
+Date:   Wed,  9 Aug 2023 21:11:35 +0200
+Message-Id: <9950e3963600465e1177a20ad8a93a3927c026ef.1691607526.git.mehdi.djait.k@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1691607526.git.mehdi.djait.k@gmail.com>
 References: <cover.1691607526.git.mehdi.djait.k@gmail.com>
@@ -68,9 +68,9 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Remove blank lines pointed out by the checkpatch script
+Add the missing i2c device id.
 
-Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Acked-by: Matti Vaittinen <mazziesaccount@gmail.com>
 Signed-off-by: Mehdi Djait <mehdi.djait.k@gmail.com>
 ---
 v7:
@@ -79,32 +79,37 @@ v5:
 v4:
 - no changes
 
-v3:
+v3:                                                                             
 - no changes, this patch is introduced in the v2
 
- drivers/iio/accel/kionix-kx022a.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/iio/accel/kionix-kx022a-i2c.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-kx022a.c
-index f98393d74666..ff8aa7b9568e 100644
---- a/drivers/iio/accel/kionix-kx022a.c
-+++ b/drivers/iio/accel/kionix-kx022a.c
-@@ -341,7 +341,6 @@ static int kx022a_turn_on_off_unlocked(struct kx022a_data *data, bool on)
- 		dev_err(data->dev, "Turn %s fail %d\n", str_on_off(on), ret);
- 
- 	return ret;
--
+diff --git a/drivers/iio/accel/kionix-kx022a-i2c.c b/drivers/iio/accel/kionix-kx022a-i2c.c
+index e6fd02d931b6..b5a85ce3a891 100644
+--- a/drivers/iio/accel/kionix-kx022a-i2c.c
++++ b/drivers/iio/accel/kionix-kx022a-i2c.c
+@@ -30,6 +30,12 @@ static int kx022a_i2c_probe(struct i2c_client *i2c)
+ 	return kx022a_probe_internal(dev);
  }
  
- static int kx022a_turn_off_lock(struct kx022a_data *data)
-@@ -1121,7 +1120,6 @@ int kx022a_probe_internal(struct device *dev)
- 	if (ret)
- 		return dev_err_probe(data->dev, ret, "Could not request IRQ\n");
++static const struct i2c_device_id kx022a_i2c_id[] = {
++	{ .name = "kx022a" },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, kx022a_i2c_id);
++
+ static const struct of_device_id kx022a_of_match[] = {
+ 	{ .compatible = "kionix,kx022a", },
+ 	{ }
+@@ -42,6 +48,7 @@ static struct i2c_driver kx022a_i2c_driver = {
+ 		.of_match_table = kx022a_of_match,
+ 	  },
+ 	.probe_new    = kx022a_i2c_probe,
++	.id_table     = kx022a_i2c_id,
+ };
+ module_i2c_driver(kx022a_i2c_driver);
  
--
- 	ret = devm_iio_trigger_register(dev, indio_trig);
- 	if (ret)
- 		return dev_err_probe(data->dev, ret,
 -- 
 2.30.2
 
