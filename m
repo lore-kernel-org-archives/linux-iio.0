@@ -2,58 +2,123 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E4B1C001DE
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Aug 2023 19:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 508EDC04E69
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Aug 2023 15:10:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233755AbjHKTYI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Aug 2023 15:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40498 "EHLO
+        id S234310AbjHJPKT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Aug 2023 11:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbjHKTYI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Aug 2023 15:24:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DECC30DA
-        for <linux-iio@vger.kernel.org>; Fri, 11 Aug 2023 12:24:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3188767948
-        for <linux-iio@vger.kernel.org>; Fri, 11 Aug 2023 19:24:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42672C433C7;
-        Fri, 11 Aug 2023 19:24:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1691781846;
-        bh=Fip9J2WEWJU3yQvO78miWd3Ek2T+Zn32lZN0KTq5A/s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WNFo1LtpDzuIMCcIVr8Jy5xgcgPjupUyxdrQhm3pHann985r903tvJczxGSSUgb4d
-         arYm4zfh148hLfCQXdSrMoMhxQgRLeqBE5iiKU40Xi54sL59+mIjyS90pL5Jygc5bU
-         wc3NsP4FJEm/Bk4Rq1J0GNSPS3+ZPhOHQKt/+iGM=
-Date:   Fri, 11 Aug 2023 21:23:27 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
+        with ESMTP id S232967AbjHJPKS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Aug 2023 11:10:18 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DCB826B7;
+        Thu, 10 Aug 2023 08:10:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691680218; x=1723216218;
+  h=resent-from:resent-date:resent-message-id:resent-to:date:
+   from:to:subject:message-id:references:mime-version:
+   in-reply-to;
+  bh=E3ZMke54mtosCQbG55UwhQh1q58r9W+COrYMi8FksLs=;
+  b=UUi6OmvgurLe6GQUvazqKkcz+DoptSvufz9wAAtoIzlhhdOoULsbq8uz
+   WRkSKSFUzQUXcfnmoCf8rJcElgNicr6fFQkWgYwGzTu0HtNqadmz90o5i
+   VnSWDqwZHgak8bPAqAPXsYIO5o/GeZNo2uvr/MAXk33N0lznUmN1PrTy3
+   6vZj5zX1zoKeFsGxu+5+xmM7enEzYYuhgOSk0ksFjiEb29bbNnRVq314z
+   GGhgn1UNNz9tJFoFONToXifF7rbQjkH6pznpQQs9Grn/Fh8yMFuUrrApI
+   ZOJWO+reoowe8CZ6GvGfQ10F2WmgCIMq3HXgkuaSoAuwWTXcDjJsvuLCV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="351033520"
+X-IronPort-AV: E=Sophos;i="6.01,162,1684825200"; 
+   d="scan'208";a="351033520"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2023 08:09:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="855968836"
+X-IronPort-AV: E=Sophos;i="6.01,162,1684825200"; 
+   d="scan'208";a="855968836"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga004.jf.intel.com with ESMTP; 10 Aug 2023 08:09:12 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1qU7Hi-006DXR-1o;
+        Thu, 10 Aug 2023 18:09:10 +0300
+Date:   Thu, 10 Aug 2023 18:04:58 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PULL] IIO: 1st set of new device support, features and cleanup
- for 6.6
-Message-ID: <2023081118-wound-transpose-00de@gregkh>
-References: <20230809181935.7cbdb77a@jic23-huawei>
+Subject: Re: [PATCH v7 0/4] Extend device_get_match_data() to struct bus_type
+Message-ID: <ZNT8mrh6seDQL3kz@smile.fi.intel.com>
+References: <20230804161728.394920-1-biju.das.jz@bp.renesas.com>
+ <20230805174036.129ffbc2@jic23-huawei>
+ <OS0PR01MB59220491C7C8AA40BEFAAD82860EA@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <20230806142950.6c409600@jic23-huawei>
+ <ZNEFjyAloqlkMWn7@smile.fi.intel.com>
+ <ZNFV+C1HCIRJpbdC@google.com>
+ <ZNIyrG/2h/PeS9Oz@smile.fi.intel.com>
+ <20230809182551.7eca502e@jic23-huawei>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230809181935.7cbdb77a@jic23-huawei>
+In-Reply-To: <20230809182551.7eca502e@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Aug 09, 2023 at 06:19:35PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 06c2afb862f9da8dc5efa4b6076a0e48c3fbaaa5:
-> 
->   Linux 6.5-rc1 (2023-07-09 13:53:13 -0700)
-> 
-> are available in the Git repository at:
-> 
->   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-6.6a
+On Wed, Aug 09, 2023 at 06:25:51PM +0100, Jonathan Cameron wrote:
+> On Tue, 8 Aug 2023 15:18:52 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > On Mon, Aug 07, 2023 at 01:37:12PM -0700, Dmitry Torokhov wrote:
+> > > On Mon, Aug 07, 2023 at 05:54:07PM +0300, Andy Shevchenko wrote:  
+> > > > On Sun, Aug 06, 2023 at 02:29:50PM +0100, Jonathan Cameron wrote:  
+> > > > > On Sat, 5 Aug 2023 17:42:21 +0000
+> > > > > Biju Das <biju.das.jz@bp.renesas.com> wrote:  
+> > > > > > > On Fri,  4 Aug 2023 17:17:24 +0100
+> > > > > > > Biju Das <biju.das.jz@bp.renesas.com> wrote:  
 
-Pulled and pushed out, thanks.
+...
 
-greg k-h
+> > > > > > + * Besides the fact that some drivers abuse the device ID driver_data type
+> > > > > > + * and claim it to be integer, for the bus specific ID tables the driver_data
+> > > > > > + * may be defined as kernel_ulong_t. For these tables 0 is a valid response,
+> > > > > > + * but not for this function. It's recommended to convert those either to avoid
+> > > > > > + * 0 or use a real pointer to the predefined driver data.  
+> > > >   
+> > > > > We still need to maintain consistency across the two tables, which
+> > > > > is a stronger requirement than avoiding 0.  
+> > > > 
+> > > > True. Any suggestion how to amend the above comment? Because the documentation
+> > > > makes sense on its own (may be split from the series?).
+> > > >   
+> > > > > Some drivers already do that by forcing the enum used to start at 1 which
+> > > > > doesn't solver the different data types issue.  
+> > > > 
+> > > > And some maintainers do not want to see non-enum values in i2c ID table.
+> > > > *Shrug*.  
+> > > 
+> > > So in legacy ID lookup path we can safely assume that values below 4096
+> > > are scalars and return NULL from the new device_get_match_data(). This
+> > > way current drivers using the values as indices or doing direct
+> > > comparisons against them can continue doing manual look up and using
+> > > them as they see fit. And we can convert the drivers at our leisure.  
+> > 
+> > It's a good idea, but I believe will be received as hack.
+> > But why not to try? We indeed have an error pointers for the last page
+> > and NULL (which is only up to 16 IIRC) and reserved space in the first
+> > page. To be more robust I would check all enums that are being used
+> > in I2C ID tables for maximum value and if that is less than 16, use
+> > ZERO_OR_NULL_PTR() instead of custom stuff.
+> > 
+> See iio/adc/max1363 example that has 37ish.
+> 
+> Could tidy that one up first and hopefully not find any others that
+> are in subsystems not keen on the move away from enums.
+
+Oh, yep, this needs a treewide audit and fixes around before going further.
+As you said.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
