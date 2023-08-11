@@ -2,245 +2,198 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A81F6C0015E
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Aug 2023 10:07:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2AD7C04A6A
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Aug 2023 10:08:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231894AbjHKKHq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Aug 2023 06:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
+        id S230419AbjHKKIh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Aug 2023 06:08:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbjHKKHp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Aug 2023 06:07:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E38DEA;
-        Fri, 11 Aug 2023 03:07:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D984360F97;
-        Fri, 11 Aug 2023 10:07:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCD18C433C7;
-        Fri, 11 Aug 2023 10:07:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691748463;
-        bh=HHqgty3rovQxNjR0U0Pr3TlDn756khOb1WS3upeemtQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dG84dKM0MxtSx69ZuflemSKTdcdYelrPelyz6J17st9AWk5/kDx3tBkhS+TFoVayl
-         CREee+MKgtB4DPlq9XaVuAaxokPeqwYFq2Unt9l8CIPvltiAaoTQqHBG5dosYIhUTM
-         2LFoAx9e2ofKcz0E6B20O/IoajsfAtfEi7rHrIS/EijQFawJ0elNdny/Xeg7lz43uU
-         l4Xs4bxAm8qaGpkulVGqqYbxhlLyAetqgpNMoZNy9289tR6Jgr+E6YlGBVvBlT7qyt
-         8NG1ENx+dldnPClmRtqSc49txG1aXwOQwEtjdO9wfif35iKL1TOw3MxiWaT7gVBgr+
-         W4+AmkR6Mb6Pg==
-Date:   Fri, 11 Aug 2023 12:07:37 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Mario Tesi <mario.tesi@st.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: lsm6dsx: Support temperature channel
-Message-ID: <ZNYIaagdt7HuRet5@lore-rh-laptop>
-References: <20230811-iio-spacex-lsm6ds0-v1-0-e953a440170d@linaro.org>
- <20230811-iio-spacex-lsm6ds0-v1-1-e953a440170d@linaro.org>
+        with ESMTP id S229719AbjHKKIh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Aug 2023 06:08:37 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16D95E3;
+        Fri, 11 Aug 2023 03:08:32 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 37B6sQmc008644;
+        Fri, 11 Aug 2023 12:07:44 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+        from:to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding:content-type; s=
+        selector1; bh=HR3hURRfNMxwM0MNF+bffvIV/HtWswDGC7r7A8PHRvw=; b=zt
+        dLCCs9Mh95e+0719CFdW3EV6mAoXUpTAZGo8U7JU77UEtgPshTkd0IN7xof5vy8h
+        kjkQa4QYKTYkEHuVDbH+wYpvI10km7WmmIUjupCqYBEMDMvxVcVEql/OUlzpNMIO
+        qKrynGR+MoLX5A061Xf5DV/ClsrEe/vQBunQfbZ0VAMxyelZMIx4vQ/uSTzzvSD+
+        DAqCcbBNaOK28L5vBecTAegcqlqG7oSZwBtAB38H2hyN8Hq9wNk5m98SeERclQA+
+        DTHJtwZ2Z42tb/pQi3iCHs57qffMt2rWWumDM4NevRPVGj5nyT7mPxKZV7LfsVpc
+        MaqpOlbkpJX9JIgX7KKA==
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3sd9jrtyf2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Aug 2023 12:07:43 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id A8031100050;
+        Fri, 11 Aug 2023 12:07:41 +0200 (CEST)
+Received: from Webmail-eu.st.com (eqndag1node4.st.com [10.75.129.133])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 985B02138FD;
+        Fri, 11 Aug 2023 12:07:41 +0200 (CEST)
+Received: from localhost (10.201.21.121) by EQNDAG1NODE4.st.com
+ (10.75.129.133) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Fri, 11 Aug
+ 2023 12:07:41 +0200
+From:   Gatien Chevallier <gatien.chevallier@foss.st.com>
+To:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <alexandre.torgue@foss.st.com>,
+        <vkoul@kernel.org>, <jic23@kernel.org>,
+        <olivier.moysan@foss.st.com>, <arnaud.pouliquen@foss.st.com>,
+        <mchehab@kernel.org>, <fabrice.gasnier@foss.st.com>,
+        <andi.shyti@kernel.org>, <ulf.hansson@linaro.org>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <hugues.fruchet@foss.st.com>, <lee@kernel.org>, <will@kernel.org>,
+        <catalin.marinas@arm.com>, <arnd@kernel.org>,
+        <richardcochran@gmail.com>, Frank Rowand <frowand.list@gmail.com>,
+        <peng.fan@oss.nxp.com>
+CC:     <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        Oleksii Moisieiev <oleksii_moisieiev@epam.com>,
+        Gatien Chevallier <gatien.chevallier@foss.st.com>
+Subject: [IGNORE][PATCH v4 01/11] dt-bindings: Document common device controller bindings
+Date:   Fri, 11 Aug 2023 12:07:21 +0200
+Message-ID: <20230811100731.108145-2-gatien.chevallier@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230811100731.108145-1-gatien.chevallier@foss.st.com>
+References: <20230811100731.108145-1-gatien.chevallier@foss.st.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="b/r7Mr9rznlcEMbf"
-Content-Disposition: inline
-In-Reply-To: <20230811-iio-spacex-lsm6ds0-v1-1-e953a440170d@linaro.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.201.21.121]
+X-ClientProxiedBy: EQNCAS1NODE4.st.com (10.75.129.82) To EQNDAG1NODE4.st.com
+ (10.75.129.133)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-08-10_20,2023-08-10_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
 
---b/r7Mr9rznlcEMbf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Introducing of the common device controller bindings for the controller
+provider and consumer devices. Those bindings are intended to allow
+divided system on chip into multiple domains, that can be used to
+configure hardware permissions.
 
-> The LSM6DSX (possibly other ST IMUs as well) has a temperature
-> channel that can be read out. Modify the lsm6dsx core to
-> accomodate temperature readout: make headspace for three
-> members in the channels and odr_table, support offset and make
-> the available milli_hz frequency resolution optional.
->=20
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-[...]
->  static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] =3D=
- {
->  	{
->  		.reset =3D {
-> @@ -835,6 +840,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_s=
-ensor_settings[] =3D {
->  				.chan =3D st_lsm6dsx_gyro_channels,
->  				.len =3D ARRAY_SIZE(st_lsm6dsx_gyro_channels),
->  			},
-> +			[ST_LSM6DSX_ID_TEMP] =3D {
-> +				.chan =3D st_lsm6dsx_temp_channels,
-> +				.len =3D ARRAY_SIZE(st_lsm6dsx_temp_channels),
-> +			},
->  		},
->  		.drdy_mask =3D {
->  			.addr =3D 0x13,
-> @@ -869,6 +878,15 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_s=
-ensor_settings[] =3D {
->  				.odr_avl[6] =3D { 833000, 0x07 },
->  				.odr_len =3D 7,
->  			},
-> +			[ST_LSM6DSX_ID_TEMP] =3D {
-> +				.reg =3D {
-> +					.addr =3D 0x0A,
-> +					.mask =3D GENMASK(5, 4),
-> +				},
+Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
+[Gatien: Fix typos and YAML error]
+Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
+---
 
-looking at the ISM330DHCX datasheet, the temperature sensor ODR is just 52H=
-z,
-while values in 0x0A register are used only for FIFO decimation, they are n=
-ot
-values you can configure the sensor e.g. for read_one_shot().
+Changes in V4: 
+	Corrected typos and YAML errors	
+	
+ .../feature-domain-controller.yaml            | 84 +++++++++++++++++++
+ 1 file changed, 84 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml
 
-> +				.odr_avl[0] =3D {  26000, 0x02 },
-> +				.odr_avl[1] =3D {  52000, 0x03 },
-> +				.odr_len =3D 2,
-> +			},
->  		},
->  		.fs_table =3D {
->  			[ST_LSM6DSX_ID_ACC] =3D {
-> @@ -937,6 +955,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_s=
-ensor_settings[] =3D {
->  				.addr =3D 0x09,
->  				.mask =3D GENMASK(7, 4),
->  			},
-> +			[ST_LSM6DSX_ID_TEMP] =3D {
-> +				.addr =3D 0x0A,
-> +				.mask =3D GENMASK(5, 4),
-> +			},
->  		},
->  		.fifo_ops =3D {
->  			.update_fifo =3D st_lsm6dsx_update_fifo,
-> @@ -1661,6 +1683,7 @@ st_lsm6dsx_set_odr(struct st_lsm6dsx_sensor *sensor=
-, u32 req_odr)
->  	switch (sensor->id) {
->  	case ST_LSM6DSX_ID_GYRO:
->  		break;
-> +	case ST_LSM6DSX_ID_TEMP:
->  	case ST_LSM6DSX_ID_EXT0:
->  	case ST_LSM6DSX_ID_EXT1:
->  	case ST_LSM6DSX_ID_EXT2:
-> @@ -1800,6 +1823,10 @@ static int st_lsm6dsx_read_raw(struct iio_dev *iio=
-_dev,
->  		*val2 =3D sensor->gain;
->  		ret =3D IIO_VAL_INT_PLUS_NANO;
->  		break;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		*val =3D sensor->offset;
-> +		ret =3D IIO_VAL_INT;
-> +		break;
->  	default:
->  		ret =3D -EINVAL;
->  		break;
-> @@ -2016,9 +2043,11 @@ st_lsm6dsx_sysfs_sampling_frequency_avail(struct d=
-evice *dev,
-> =20
->  	odr_table =3D &sensor->hw->settings->odr_table[sensor->id];
->  	for (i =3D 0; i < odr_table->odr_len; i++)
-> -		len +=3D scnprintf(buf + len, PAGE_SIZE - len, "%d.%03d ",
-> -				 odr_table->odr_avl[i].milli_hz / 1000,
-> -				 odr_table->odr_avl[i].milli_hz % 1000);
-> +		if (odr_table->odr_avl[i].milli_hz) {
-> +			len +=3D scnprintf(buf + len, PAGE_SIZE - len, "%d.%03d ",
-> +					 odr_table->odr_avl[i].milli_hz / 1000,
-> +					 odr_table->odr_avl[i].milli_hz % 1000);
-> +		}
->  	buf[len - 1] =3D '\n';
-> =20
->  	return len;
-> @@ -2106,6 +2135,22 @@ static const struct iio_info st_lsm6dsx_gyro_info =
-=3D {
->  	.write_raw_get_fmt =3D st_lsm6dsx_write_raw_get_fmt,
->  };
-> =20
-> +static struct attribute *st_lsm6dsx_temp_attributes[] =3D {
-> +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group st_lsm6dsx_temp_attribute_group =3D {
-> +	.attrs =3D st_lsm6dsx_temp_attributes,
-> +};
-> +
-> +static const struct iio_info st_lsm6dsx_temp_info =3D {
-> +	.attrs =3D &st_lsm6dsx_temp_attribute_group,
-> +	.read_raw =3D st_lsm6dsx_read_raw,
-> +	.write_raw =3D st_lsm6dsx_write_raw,
-> +	.hwfifo_set_watermark =3D st_lsm6dsx_set_watermark,
-> +};
-> +
->  static int st_lsm6dsx_get_drdy_pin(struct st_lsm6dsx_hw *hw, int *drdy_p=
-in)
->  {
->  	struct device *dev =3D hw->dev;
-> @@ -2379,7 +2424,16 @@ static struct iio_dev *st_lsm6dsx_alloc_iiodev(str=
-uct st_lsm6dsx_hw *hw,
->  	sensor->id =3D id;
->  	sensor->hw =3D hw;
->  	sensor->odr =3D hw->settings->odr_table[id].odr_avl[0].milli_hz;
+diff --git a/Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml b/Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml
+new file mode 100644
+index 000000000000..57217da2d1cf
+--- /dev/null
++++ b/Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml
+@@ -0,0 +1,84 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/feature-controllers/feature-domain-controller.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Generic Domain Controller
++
++maintainers:
++  - Oleksii Moisieiev <oleksii_moisieiev@epam.com>
++
++description: |+
++  Common Feature Domains Controller properties
++
++  Domain controllers allow to divided system on chip into multiple feature
++  domains that can be used to select by who hardware blocks could be accessed.
++  A feature domain could be a cluster of CPUs (or coprocessors), a range of
++  addresses or a group of hardware blocks.
++
++  This device tree bindings can be used to bind feature domain consumer devices
++  with their feature domains provided by feature-domains controllers.
++  Feature omain controller provider can be represened by any node in the
++  device tree and can provide one or more configuration parameters, needed to
++  control parameters of the consumer device. A consumer node can refer to the
++  provider by phandle and a set of phandle arguments, specified by
++  '#feature-domain-cells' property in the device controller provider node.
++
++  Device controllers are typically used to set the permissions of the hardware
++  block. The contents of the feature-domains configuration properties are
++  defined by the binding for the individual feature-domains controller device.
++
++  Each node can be a consumer for the several providers. The first
++  configuration of 'feature-domains' or the one named 'default' is applied
++  before probing the device itself.
++
++# always select the core schema
++select: true
++
++properties:
++  '#feature-domain-cells':
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      Number of cells in a feature-domains controller specifier;
++      Can be any value as specified by device tree binding documentation
++      of a particular provider.
++
++  feature-domain-controller:
++    description:
++      Indicates that the node is feature-domain-controller provider.
++
++  feature-domain-names:
++    $ref: '/schemas/types.yaml#/definitions/string-array'
++    description:
++      A list of feature-domains names, sorted in the same order as
++      feature-domains entries. Consumer drivers will use feature-domain-names
++      to match with existing feature-domains entries.
++
++  feature-domains:
++    $ref: "/schemas/types.yaml#/definitions/phandle-array"
++    description:
++      A list of feature-domains controller specifiers, as defined by the
++      bindings of the feature-domain-controller provider.
++
++additionalProperties: true
++
++examples:
++  - |
++    ctrl0: ctrl@100 {
++        feature-domain-controller;
++        reg = <0x100 0x10>;
++        #feature-domain-cells = <2>;
++    };
++
++    ctrl1: ctrl@110 {
++        feature-domain-controller;
++        reg = <0x110 0x10>;
++        #feature-domain-cells = <3>;
++    };
++
++    foo@0 {
++        reg = <0x0 0x1>;
++        feature-domains = <&ctrl0 1 2>, <&ctrl1 3 4 5>;
++        feature-domain-names = "default", "unbind";
++    };
+-- 
+2.25.1
 
-here ODR should be 52 I guess
-
-> -	sensor->gain =3D hw->settings->fs_table[id].fs_avl[0].gain;
-> +	if (id =3D=3D ST_LSM6DSX_ID_TEMP) {
-> +		/*
-> +		 * The temperature sensor has a fixed scale and offset such
-> +		 * that: temp_C =3D (raw / 256) + 25
-> +		 */
-> +		sensor->gain =3D 3906;
-> +		sensor->offset =3D 25;
-
-
-I was wondering about the 25 costant value since ISM330DHCX ds does not pro=
-vide
-a typical value. Maybe we should provide a way for the user to configure it?
-
-> +	} else {
-> +		sensor->gain =3D hw->settings->fs_table[id].fs_avl[0].gain;
-> +	}
->  	sensor->watermark =3D 1;
-> =20
->  	switch (id) {
-> @@ -2393,6 +2447,11 @@ static struct iio_dev *st_lsm6dsx_alloc_iiodev(str=
-uct st_lsm6dsx_hw *hw,
->  		scnprintf(sensor->name, sizeof(sensor->name), "%s_gyro",
->  			  name);
->  		break;
-> +	case ST_LSM6DSX_ID_TEMP:
-> +		iio_dev->info =3D &st_lsm6dsx_temp_info;
-> +		scnprintf(sensor->name, sizeof(sensor->name), "%s_temp",
-> +			  name);
-
-Regards,
-Lorenzo
-
-> +		break;
->  	default:
->  		return NULL;
->  	}
->=20
-> --=20
-> 2.34.1
->=20
-
---b/r7Mr9rznlcEMbf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZNYIZwAKCRA6cBh0uS2t
-rLRAAP0ZpysPS8KRJhWhSxzNKTu6ZksYK3TsBVCknpWZrVPT8QEAgmjFZ8MSofKv
-Cle6tfNnkqn5BvPKAu7rAUV2qnKM/AI=
-=Sz4h
------END PGP SIGNATURE-----
-
---b/r7Mr9rznlcEMbf--
