@@ -2,47 +2,47 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC56C001B0
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Aug 2023 16:55:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A343C001DE
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Aug 2023 17:07:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238304AbjHOQys (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Aug 2023 12:54:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33430 "EHLO
+        id S238619AbjHORHK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Aug 2023 13:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238627AbjHOQyf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Aug 2023 12:54:35 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC031737;
-        Tue, 15 Aug 2023 09:54:30 -0700 (PDT)
+        with ESMTP id S238627AbjHORGv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Aug 2023 13:06:51 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9B21737;
+        Tue, 15 Aug 2023 10:06:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692118470; x=1723654470;
+  t=1692119210; x=1723655210;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=iwcQcD5rTJK8Op4W6tdanSOrb4DkU58vzN5cdx/6XHE=;
-  b=SRezZ80F4BGhTNC9s80AnoboPdX4iutz6o42lRWIwX0Mq+Hd+2sPFwzg
-   EJmjFzSReyzimFuwMwixIQlzyII3RAtR/yKa6acWh923Y9wLUxGgUnUuU
-   NtWRxaSpsUZ3J8pumGrMLzCBlR3lfSwrHFlNtOYxy8xU1L5ZnLxLkszVQ
-   0PZ1ZiClaWCiOIFbMWBRFP7YF0NK+XTgSVMOhUL3JPGAVl7PPs2tRWg14
-   88PaM5bcgTzolxdRGjezKhU4SinWO9705qBQrlAEOCBcEkiFDrmxRybUb
-   HcYj5g+Rv6ITOpRLUGuhDP+j5D86eWGmm/DT+DeORcBCNpH9WM4ElLOfQ
+  bh=tyH/FWy72AFApPV4vzZzcaIgwH0owqHF2uXm6vPj/8A=;
+  b=gwuP9pEHmxbXRlYCcR/ZoQqsgZX/rUfHeCrAFJrHXhDUotqGGwJJMW7V
+   M+beYXICaHjP/aYj9HJG8r9MSHxKM0Wu+y2N977eiXqVHjGJt/v4eTFQ7
+   Rqrs5Vrg2Kp5tv6bWcuKY9KMly+s4lh3Qdupf1P4vIYdb5449/YxhDpms
+   xo4EqDXfHsTNpW+xbg48Xff6IcqS21YOVDAa4MrX+1f9HhRCkn9VYYnPA
+   egkPrKKfem74n9+ZsraeleVOKngsyhbJCA1wLLC2Ait9GJstmeOiHOCFY
+   /iTGS2LZHa+iNfNhL6N58hW6b20p3/OXWcaZbBrWFirIYdvsS2XorZvrQ
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10803"; a="369805208"
+X-IronPort-AV: E=McAfee;i="6600,9927,10803"; a="438671711"
 X-IronPort-AV: E=Sophos;i="6.01,175,1684825200"; 
-   d="scan'208";a="369805208"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2023 09:54:29 -0700
+   d="scan'208";a="438671711"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2023 10:04:44 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10803"; a="848144826"
+X-IronPort-AV: E=McAfee;i="6600,9927,10803"; a="683728723"
 X-IronPort-AV: E=Sophos;i="6.01,175,1684825200"; 
-   d="scan'208";a="848144826"
+   d="scan'208";a="683728723"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP; 15 Aug 2023 09:54:25 -0700
+  by orsmga003.jf.intel.com with ESMTP; 15 Aug 2023 10:04:39 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qVxJH-00AFxd-0S;
-        Tue, 15 Aug 2023 19:54:23 +0300
-Date:   Tue, 15 Aug 2023 19:54:22 +0300
+        id 1qVxTC-00AbW9-1E;
+        Tue, 15 Aug 2023 20:04:38 +0300
+Date:   Tue, 15 Aug 2023 20:04:37 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Marcus Folkesson <marcus.folkesson@gmail.com>
 Cc:     Kent Gustavsson <kent@minoris.se>,
@@ -61,36 +61,47 @@ Cc:     Kent Gustavsson <kent@minoris.se>,
         William Breathitt Gray <william.gray@linaro.org>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 5/6] iio: adc: mcp3911: avoid ambiguity parameters in
- macros
-Message-ID: <ZNutvoSfe/yNv7fi@smile.fi.intel.com>
+Subject: Re: [PATCH v5 4/6] iio: adc: mcp3911: fix indentation
+Message-ID: <ZNuwJVSJy0Uy0zPN@smile.fi.intel.com>
 References: <20230814121010.184842-1-marcus.folkesson@gmail.com>
- <20230814121010.184842-5-marcus.folkesson@gmail.com>
- <ZNuSJTjOL1sEnVUd@smile.fi.intel.com>
- <ZNush-mJqb8W6fjJ@gmail.com>
+ <20230814121010.184842-4-marcus.folkesson@gmail.com>
+ <ZNuShXfOoaLk8Ua1@smile.fi.intel.com>
+ <ZNuuER3V8etxeu3o@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZNush-mJqb8W6fjJ@gmail.com>
+In-Reply-To: <ZNuuER3V8etxeu3o@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Aug 15, 2023 at 06:49:11PM +0200, Marcus Folkesson wrote:
-> On Tue, Aug 15, 2023 at 05:56:37PM +0300, Andy Shevchenko wrote:
-> > On Mon, Aug 14, 2023 at 02:10:09PM +0200, Marcus Folkesson wrote:
-> > > Name macro parameters after what they represent instead of 'x'.
+On Tue, Aug 15, 2023 at 06:55:45PM +0200, Marcus Folkesson wrote:
+> On Tue, Aug 15, 2023 at 05:58:13PM +0300, Andy Shevchenko wrote:
+> > On Mon, Aug 14, 2023 at 02:10:08PM +0200, Marcus Folkesson wrote:
+> > > The file does not make use of indentation properly.
 > > 
-> > Yes, but it's not my suggestion, what I was talking about is how macro
-> > parameters being treated.
+> > > Fix that.
+> > 
+> > I'm not sure this is anyhow a fix. Yet you may refer to the checkpatch
+> > if it complains.
+> > 
+> > ...
+> > 
+> > This kind of change is preferred to be the last in the series or closer
+> > to the end where no more code changed.
 > 
-> Sorry, I clearly missunderstood what you was aiming for.
-> I will change to (ch) in this patch and keep it consistent in the
-> following.
+> Checkpatch did never complain about the formatting, but I got a few comments
+> during the review process about the formatting, so I went
+> through the whole file to fix it once for all.
+> 
+> I do not think that it has to be the last patch in the series.
+> All following patches has proper indentation.
+> Pretty much the same as the simplification of spi->dev I think.
+> 
+> If there is no strong opinions about it I think I will leave it as is.
 
-Yep. and drop tag with my name in it.
-Thank you!
+I'm not a maintainer of IIO, so let them decide :-)
 
 -- 
 With Best Regards,
