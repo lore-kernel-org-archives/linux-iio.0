@@ -2,97 +2,137 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B59CEC001B0
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Aug 2023 14:05:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A42FCC04A6A
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Aug 2023 14:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235486AbjHOOEv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Aug 2023 10:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
+        id S237679AbjHOOhS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Aug 2023 10:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237508AbjHOOE1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Aug 2023 10:04:27 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C03199A
-        for <linux-iio@vger.kernel.org>; Tue, 15 Aug 2023 07:04:25 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id ffacd0b85a97d-31771bb4869so5058962f8f.0
-        for <linux-iio@vger.kernel.org>; Tue, 15 Aug 2023 07:04:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1692108264; x=1692713064;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=1Kt0D/0mRQreIolmu1hBGOuZHW1/1RKuyPYj9Zm0N6s=;
-        b=SMC442GCemEBCZ7/mhbAiZoYbQlrOMVJSUIxAfyTqvayKZv6V1N8mFuvKcnTY2N3/h
-         0uYw8m8ueZaV8kdWRhVOUQZOSms7Yo3cB6a/X2MxoHYEh4OJUwCQQmy2DNs6wYvXG14a
-         uk9mwmSeYchwZ5EbAs6fjBY6zV4GMudMD97U87DHpFl+foJWy/fgTCYqthgUfrIlrXhX
-         +yZcV41GwyiqRMW4hNaStImc7vkWKGAo6+9clTdsBH8xlzMgFfmwdSl4op0Yard8ZSsl
-         FvtCtktilGibC9yHSwp/sqovGuQIVMyS8TroZaoqM+EmIQmqa2JTzZlBRCOKEnHpNA9Q
-         e3dQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692108264; x=1692713064;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1Kt0D/0mRQreIolmu1hBGOuZHW1/1RKuyPYj9Zm0N6s=;
-        b=JNJmIFHflturJCV7veTWmbrKLfKcb6oHQcRb0DtNrASHguA9myCHombIwAHh0za0NQ
-         jzpPe9dsloyNYNc5Ow2QzNdfBoA92SlTSS06mqqdu0EQJUQEkPFb7CHRE0m6AhP7lRGP
-         t0SgowJv69xtC7hC7oLralKUlE0k7whTqSvWkUdYRLgHKOH80woEoHK3QGsmptFRXuWT
-         W7ZUFg1bgGa2XFBboxbcUyLe+T10b2bwSekhmY0c8YTT1JnfA3aYpI3KBzWkcWP83JaD
-         q4OWGa7N1eCPx0Gje8LPUbWUuI5pGrB9XE7FHkN4eNUDVqlA75eTBvAiNKmmYV54Cl9d
-         dFAQ==
-X-Gm-Message-State: AOJu0Yx4YnGPv7oDKvD+EJ6gItzub8rI6JT/XQ8vGhXyAWQyhsDLTtJM
-        19Lp+V3KN+yxPW1Tt/ZCxLinf1cpyiiI0tIAP+E=
-X-Google-Smtp-Source: AGHT+IFEaEWHbfPxRqBmaj7JYEStaKa2v/AYKLUSsJi0+/geq6vNo0xOD/LDvxNcVz0OdPOUS6zE7g==
-X-Received: by 2002:adf:dec2:0:b0:317:5a99:4549 with SMTP id i2-20020adfdec2000000b003175a994549mr8804116wrn.0.1692108264384;
-        Tue, 15 Aug 2023 07:04:24 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.214.188])
-        by smtp.gmail.com with ESMTPSA id y1-20020a05600c364100b003fbb06af219sm17941603wmq.32.2023.08.15.07.04.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Aug 2023 07:04:23 -0700 (PDT)
-Message-ID: <628ea167-b61b-b8fd-df67-2871f867ad33@linaro.org>
-Date:   Tue, 15 Aug 2023 16:04:22 +0200
+        with ESMTP id S237693AbjHOOgx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Aug 2023 10:36:53 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335B219A4;
+        Tue, 15 Aug 2023 07:36:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692110212; x=1723646212;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=rtgdSA9vcQoHmkbubdnn9solITQI/tTkYq65Mu7X6gY=;
+  b=VhOgHn8V0RoGNFP/BqQ6DUzXDhvKQVzQZyvuRJNbxVLyQ1ICZa7jBEDv
+   RVPtlpN/qt2CTNyt/6ZsFR0ual0ts7GCi5uYkQ24vwExzhgSsiNfWcuyV
+   UNFsfUlxL3VFWGpjilhqMMPSTZze+AcBcUVi7hPtMmeGW+VRUgKdwC1Qk
+   uZ3+/7UgrXgESbtju8/wjl7GGpz4Nn5JRR9AbU8w31XTHMVE0eeqbAuRO
+   FRQF70sQa4JUrzVGUiFpHnZPHRXG/rMZQM0JyMgbIiW863MT4Fzp4yrwn
+   2gsi8Ml2g6A2wnYVPHy26gyYElVm341sf0hwyp3fK3fLyfLQsdA40z+19
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10803"; a="376023162"
+X-IronPort-AV: E=Sophos;i="6.01,174,1684825200"; 
+   d="scan'208";a="376023162"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2023 07:36:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10803"; a="799211216"
+X-IronPort-AV: E=Sophos;i="6.01,174,1684825200"; 
+   d="scan'208";a="799211216"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga008.fm.intel.com with ESMTP; 15 Aug 2023 07:36:44 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qVvA1-005Uej-29;
+        Tue, 15 Aug 2023 17:36:41 +0300
+Date:   Tue, 15 Aug 2023 17:36:41 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc:     Kent Gustavsson <kent@minoris.se>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Ramona Bolboaca <ramona.bolboaca@analog.com>,
+        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        William Breathitt Gray <william.gray@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 2/6] iio: adc: mcp3911: make use of dev_err_probe()
+Message-ID: <ZNuNedpsuPmdfumG@smile.fi.intel.com>
+References: <20230814121010.184842-1-marcus.folkesson@gmail.com>
+ <20230814121010.184842-2-marcus.folkesson@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH 1/2] iio: dac: ad5755: mark OF related data as maybe
- unused
-Content-Language: en-US
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andi Shyti <andi.shyti@kernel.org>
-References: <20230810111933.205619-1-krzysztof.kozlowski@linaro.org>
- <20230811163324.00003b3c@Huawei.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230811163324.00003b3c@Huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230814121010.184842-2-marcus.folkesson@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 11/08/2023 17:33, Jonathan Cameron wrote:
-> On Thu, 10 Aug 2023 13:19:32 +0200
-> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+On Mon, Aug 14, 2023 at 02:10:06PM +0200, Marcus Folkesson wrote:
+> Simplify code by switch to dev_err_probe().
 > 
->> When compile tested with W=1 on x86_64 with driver as built-in:
->>
->>   ad5755.c:866:34: error: unused variable 'ad5755_of_match' [-Werror,-Wunused-const-variable]
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+> ---
 > 
-> I'd rather see the table used as relying on the fallback path via the spi_match_id table
-> is fragile as two tables may not have equivalent entries in the long run.
-> Entry missing in the spi_driver.driver structure.
+> Notes:
+>     v5:
+>         - New patch in this series
 > 
-> Bonus points for adding the match data to the of table and making them all pointers
-> there and in spi_device_id table + using spi_get_device_match_data()
+>  drivers/iio/adc/mcp3911.c | 11 +++--------
+>  1 file changed, 3 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+> index 974c5bd923a6..681248a3ddde 100644
+> --- a/drivers/iio/adc/mcp3911.c
+> +++ b/drivers/iio/adc/mcp3911.c
+> @@ -468,6 +468,7 @@ static int mcp3911_probe(struct spi_device *spi)
+>  {
+>  	struct iio_dev *indio_dev;
+>  	struct mcp3911 *adc;
+> +	struct device *dev = &spi->dev;
+>  	int ret;
 
-... and now I remember that I already sent such patch some time ago and
-you already said this to me. Uh, sorry for sending the same thing again.
-I'll fix it in spare time as you described.
+With preserved reversed xmas tree order (longer line comes first),
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Best regards,
-Krzysztof
+>  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
+> @@ -482,10 +483,7 @@ static int mcp3911_probe(struct spi_device *spi)
+>  		if (PTR_ERR(adc->vref) == -ENODEV) {
+>  			adc->vref = NULL;
+>  		} else {
+> -			dev_err(&adc->spi->dev,
+> -				"failed to get regulator (%ld)\n",
+> -				PTR_ERR(adc->vref));
+> -			return PTR_ERR(adc->vref);
+> +			return dev_err_probe(dev, PTR_ERR(adc->vref), "failed to get regulator\n");
+>  		}
+>  
+>  	} else {
+> @@ -504,10 +502,7 @@ static int mcp3911_probe(struct spi_device *spi)
+>  		if (PTR_ERR(adc->clki) == -ENOENT) {
+>  			adc->clki = NULL;
+>  		} else {
+> -			dev_err(&adc->spi->dev,
+> -				"failed to get adc clk (%ld)\n",
+> -				PTR_ERR(adc->clki));
+> -			return PTR_ERR(adc->clki);
+> +			return dev_err_probe(dev, PTR_ERR(adc->clki), "failed to get adc clk\n");
+>  		}
+>  	}
+>  
+> -- 
+> 2.41.0
+> 
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
