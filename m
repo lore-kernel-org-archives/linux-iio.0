@@ -2,52 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09AFAC2FC18
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28771C2FC20
 	for <linux-iio@archiver.kernel.org>; Thu, 17 Aug 2023 12:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350601AbjHQMDh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 17 Aug 2023 08:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51272 "EHLO
+        id S1350625AbjHQMDj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 17 Aug 2023 08:03:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350611AbjHQMDI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Aug 2023 08:03:08 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730382112;
-        Thu, 17 Aug 2023 05:02:58 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id 38308e7fff4ca-2b9fa64db41so117274041fa.1;
-        Thu, 17 Aug 2023 05:02:58 -0700 (PDT)
+        with ESMTP id S1350630AbjHQMDP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Aug 2023 08:03:15 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477B8273C;
+        Thu, 17 Aug 2023 05:03:06 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id 38308e7fff4ca-2b9d07a8d84so121390431fa.3;
+        Thu, 17 Aug 2023 05:03:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1692273777; x=1692878577;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=AMXrXLc0wj0xEWmwzIdD5Z8/MM23PAnf+hN4LdAZ/e4=;
-        b=JQNPVTCMeMndORrCxRNralYWboNuL5ZNfBSyQPB1jbQtYXd5KX3jK6RSM5hlgfPCxK
-         wxlvmjJWBFIn6WGNK8T5oADEBP+YtWA/91sqxDCWaXfuiaJ5LqK8Kc9SvdZLyrnrkALy
-         y95wwWeRrAautvuGT7qxLDtchK9nlNHLuQMb68T41HJf3lKDEEOKo88oUnOqDawVcopP
-         +0SoNKWAsFrrqMW7dshQn/IncGwrR3HVkUUpB33EiDURD83hN/b2Necj1e1youRIsAiQ
-         BOeM56SVPUZoHsleRZGaiPgZaaJLyFywFxxb2OeoEZz+hSbuWYQ+ZmjeE+/eVxkMlV9B
-         uIJw==
+        d=gmail.com; s=20221208; t=1692273784; x=1692878584;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SdwRwKvnz3Z20+s9tNz6mtV9CNaQwcE4bakky09bUQU=;
+        b=haqmKJNllfHprykmSlGVEYKvCV+U4b0WzYKXVtO0ZJ8iCy5QYVUxWVq31HdDUIz3h1
+         dvWOx0oiJfAI00Pmv/ZeLiLZ9B8FNR4ug1CkubsSBD5PZjXTQ6GrwZapCXw2eFz5tyPN
+         pgzgzQFWyunbdvNt/fg5M1lmccJHvFT/lp1JKHpYNWloX7+UAv92c07Q2sXsMbAuEZOS
+         dYQDcckkKlhp9g8k/uUEpHj7pz6v0W5vbbt1Cmr6XTP+fyO+9IEqFmtUYZCZm/prO0aX
+         hebzWuq+IbU7MR4mfXe0Z70TKbU3XqVXXxy2RDUlp39q634pDIXXiSWrXzEYaY29+mzj
+         Vzdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692273777; x=1692878577;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=AMXrXLc0wj0xEWmwzIdD5Z8/MM23PAnf+hN4LdAZ/e4=;
-        b=L5kAhKCMvbWFhG+Ow7TIoctIVt2Wl+a8cxdmNmUu4niGWt4+7A0Tuyi9tPjBHWB5qC
-         4BnviCrN3HoSPImGnE8VTGCa2d8lnl6okIFerUdj6S4YIcuHMI64H4tQ351qRyCUaHfO
-         RIuRM16kP+HtShF48Z3uIutaq3zFRb1Ew0thKSSaPVXlaQb3EviqdElAXlujsXe0XNn/
-         UOgoQYzC/vngubmm5FI8CtK61yATFFhfF+gUZxa/BN8MjePSnugax/OrNy6P4G52Qags
-         PVsty09xCO9i8NU48fMb70KLdEjN3iX/qpM9Nf+LWcPAowVnOscfjQ2Cv94KQWhX6bYI
-         jqSA==
-X-Gm-Message-State: AOJu0YxFfkudeJw3qmzWKnf8C08247mGhTO/uunQiGlg9MVl8yGw9+7q
-        H+q5K5tKyWtSsbXmaPmD/Js=
-X-Google-Smtp-Source: AGHT+IH0RQjh3vLiZFv8CN6AExeVHERgbftGnQ0xnAQ4Xk7c1MHPKzoDAJy4Yt0HiVkE8p5YcNptqA==
-X-Received: by 2002:a2e:97c8:0:b0:2b9:2e85:2fa0 with SMTP id m8-20020a2e97c8000000b002b92e852fa0mr3854989ljj.15.1692273776384;
-        Thu, 17 Aug 2023 05:02:56 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1692273784; x=1692878584;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SdwRwKvnz3Z20+s9tNz6mtV9CNaQwcE4bakky09bUQU=;
+        b=L26sr+hi3TIzlvbsHxX/gaSMYBxaWpOVu7SP+4uQwITjyOr3Z5Cu/37fyM5Sz0QKAm
+         6BUWan8Vikf0VtkX/ktvtnGpDVU7Uap2rbPUDcY78KD/gTbLIIcOslutW00M31RSfuaz
+         6od1rQkE7FIe5POxGXLfhfH2CH5KS0ms6P2iS1JqGqikFAf5Gc8BC/IX0JGZ2OaQgyt7
+         32PMAc+AKipSrZe1V6+1eM9k6XXqmSolnjA3bzTszhp8XQ12IanJ606oW2gczrYsY8U/
+         nCt4U1+rajTRynmKb3vd2r0xm890XWLIKXhQWOTuwDJreOQYhjXthBlGaGu5xGyKCPVz
+         wyZg==
+X-Gm-Message-State: AOJu0YyxBbHG4wMPBdM9E60gKmlgALiXuvNWNGjEEGJrxKfJaKR8XK7O
+        xd4PIM1DOLIdOnseud0fZbuGAMQoGJbvGsZn
+X-Google-Smtp-Source: AGHT+IFUFbj2Oz9yjX58UklqRWkJ8XBlw1BmWkcFAw/EtvA+pIm8BJbDg3KlcLTucS9jGvyDSuUHVg==
+X-Received: by 2002:a2e:9bd0:0:b0:2b6:e361:4b3c with SMTP id w16-20020a2e9bd0000000b002b6e3614b3cmr3710501ljj.14.1692273784228;
+        Thu, 17 Aug 2023 05:03:04 -0700 (PDT)
 Received: from localhost.localdomain (83-233-6-197.cust.bredband2.com. [83.233.6.197])
-        by smtp.gmail.com with ESMTPSA id t18-20020a2e9d12000000b002b9fec8961bsm3981213lji.123.2023.08.17.05.02.54
+        by smtp.gmail.com with ESMTPSA id t18-20020a2e9d12000000b002b9fec8961bsm3981213lji.123.2023.08.17.05.03.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Aug 2023 05:02:55 -0700 (PDT)
+        Thu, 17 Aug 2023 05:03:02 -0700 (PDT)
 From:   Marcus Folkesson <marcus.folkesson@gmail.com>
 To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
         Kent Gustavsson <kent@minoris.se>,
@@ -66,66 +67,59 @@ To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
         ChiaEn Wu <chiaen_wu@richtek.com>,
         William Breathitt Gray <william.gray@linaro.org>
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v6 1/6] dt-bindings: iio: adc: mcp3911: add support for the whole MCP39xx family
-Date:   Thu, 17 Aug 2023 14:05:13 +0200
-Message-ID: <20230817120518.153728-1-marcus.folkesson@gmail.com>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v6 5/6] iio: adc: mcp3911: avoid ambiguity parameters in macros
+Date:   Thu, 17 Aug 2023 14:05:17 +0200
+Message-ID: <20230817120518.153728-5-marcus.folkesson@gmail.com>
 X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230817120518.153728-1-marcus.folkesson@gmail.com>
+References: <20230817120518.153728-1-marcus.folkesson@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Microchip does have many similar chips, add those to the compatible
-string as the driver support is extended.
-
-The new supported chips are:
-  - microchip,mcp3910
-  - microchip,mcp3912
-  - microchip,mcp3913
-  - microchip,mcp3914
-  - microchip,mcp3918
-  - microchip,mcp3919
+Name macro parameters after what they represent instead of 'x'.
 
 Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
 
 Notes:
-    v2:
-        - No changes
-    v3:
-        - No changes
-    v4:
-        - No changes
     v5:
-        - No changes
+        - New patch in this series
     v6:
-        - No changes
+        - change 'ch' to '(ch)'
 
- .../devicetree/bindings/iio/adc/microchip,mcp3911.yaml      | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iio/adc/mcp3911.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
-index f7b3fde4115a..06951ec5f5da 100644
---- a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
-@@ -18,7 +18,13 @@ description: |
- properties:
-   compatible:
-     enum:
-+      - microchip,mcp3910
-       - microchip,mcp3911
-+      - microchip,mcp3912
-+      - microchip,mcp3913
-+      - microchip,mcp3914
-+      - microchip,mcp3918
-+      - microchip,mcp3919
+diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+index 06c8c5ac7781..9167f0ffa4e3 100644
+--- a/drivers/iio/adc/mcp3911.c
++++ b/drivers/iio/adc/mcp3911.c
+@@ -29,8 +29,8 @@
+ #define MCP3911_REG_MOD			0x06
+ #define MCP3911_REG_PHASE		0x07
+ #define MCP3911_REG_GAIN		0x09
+-#define MCP3911_GAIN_MASK(ch)		(GENMASK(2, 0) << 3 * ch)
+-#define MCP3911_GAIN_VAL(ch, val)      ((val << 3 * ch) & MCP3911_GAIN_MASK(ch))
++#define MCP3911_GAIN_MASK(ch)		(GENMASK(2, 0) << 3 * (ch))
++#define MCP3911_GAIN_VAL(ch, val)      ((val << 3 * (ch)) & MCP3911_GAIN_MASK(ch))
  
-   reg:
-     maxItems: 1
+ #define MCP3911_REG_STATUSCOM		0x0a
+ #define MCP3911_STATUSCOM_DRHIZ		BIT(12)
+@@ -51,8 +51,8 @@
+ #define MCP3911_REG_GAINCAL_CH1		0x17
+ #define MCP3911_REG_VREFCAL		0x1a
+ 
+-#define MCP3911_CHANNEL(x)		(MCP3911_REG_CHANNEL0 + x * 3)
+-#define MCP3911_OFFCAL(x)		(MCP3911_REG_OFFCAL_CH0 + x * 6)
++#define MCP3911_CHANNEL(ch)		(MCP3911_REG_CHANNEL0 + (ch) * 3)
++#define MCP3911_OFFCAL(ch)		(MCP3911_REG_OFFCAL_CH0 + (ch) * 6)
+ 
+ /* Internal voltage reference in mV */
+ #define MCP3911_INT_VREF_MV		1200
 -- 
 2.41.0
 
