@@ -2,126 +2,136 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FC4EB64DD
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Aug 2023 11:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84A55C27C7A
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Aug 2023 12:04:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350450AbjHQLwq convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 17 Aug 2023 07:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
+        id S1350614AbjHQMDi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 17 Aug 2023 08:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350547AbjHQLwS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Aug 2023 07:52:18 -0400
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0634730E5;
-        Thu, 17 Aug 2023 04:51:51 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id 3f1490d57ef6-d6fcffce486so3309147276.3;
-        Thu, 17 Aug 2023 04:51:51 -0700 (PDT)
+        with ESMTP id S1350616AbjHQMDJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Aug 2023 08:03:09 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A2A2708;
+        Thu, 17 Aug 2023 05:03:00 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id 38308e7fff4ca-2b9aa1d3029so118125751fa.2;
+        Thu, 17 Aug 2023 05:03:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1692273779; x=1692878579;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=R5VEfMZdJoR1mNUx2hBXldi+YDCIruL2v0+AL2aEWyQ=;
+        b=JIYjdBuk4ITkBNqK67p6Y8hxOsbSJ7qgLDbQP93zCoXFrB34/W/zh8mj84yfW+eNW5
+         +dIIxD46y5+xF3xucQsw0H+aRLVWlNjNHSfXqmOG72ggAmUZxN2pw1zPw03rjOTTL3y1
+         9IyENWFTD60W9Gl/oaQkJT+lVcpdjA3CkG8EYRqiVsk3uCCgfYQJ6ZK7xHULaZRfTb+I
+         iMU4Z0/zYphjoAjj45Jcj+lc/NRJ/UhdfW/BYFkISSKap/Echme9SBxNX6E8xqKwpW21
+         YgKEbLSUXCxXibQSy6ZdiPFFnLmWL56l/MhHuha4Lu/b1xNxdgeratQZqbC7AndDQ3Fm
+         bYEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692273101; x=1692877901;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1692273779; x=1692878579;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=l6ZtsQjpbvoSFy5V1v25dYKYuqk3BQ0/YcKFrB/U4fE=;
-        b=dUJktsZjTTjwIyZ+hFcLMRN3UxqwpFWmQo7oIID+o7bGEUwJjykj0Tzt3tXMC52FQ8
-         fSHHuFfrR7sYnxrUyq4Hbv/pP65T0mgV9IgggyI4L5SbKB9TSe3Purj7N5ySLf2EBCCi
-         zjXSQ1ReuY7w7GjsUhkrL9SiuyYzCEWRM44lXTHkrROk70GNuDEajwsBhdkxwZalA0CF
-         Pk08y62XrzQJIw9VcKYzWlH0VuZmzo7P87r0a7j7OJM09/I+zM2bYXJkR74HJdTFUNYV
-         8iyGB+pmCvt7khgV1KXEveApQLRd/ZM821VIJEuoPZZJqEK0ou6eVp/8M8MGN9kteFot
-         Sxmg==
-X-Gm-Message-State: AOJu0Yz1Y4V73XWy61ksPpT/dEUarwg2ZhvooEgWCIzmoDOp5wRUfFXm
-        Z0OJEIrAtdsC0Re9KG6ibz+fpBTj0krH7w==
-X-Google-Smtp-Source: AGHT+IF38+dKkFjcVr3N+b28rNv3ZsdlbOQGZXIa4fXjREDwQXQKfmluYft3pjd1T1JeHPW7SAwWCQ==
-X-Received: by 2002:a25:d10c:0:b0:d6b:7f20:22d3 with SMTP id i12-20020a25d10c000000b00d6b7f2022d3mr4640112ybg.57.1692273100849;
-        Thu, 17 Aug 2023 04:51:40 -0700 (PDT)
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
-        by smtp.gmail.com with ESMTPSA id e14-20020a25690e000000b00d682d2d1d62sm169955ybc.51.2023.08.17.04.51.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Aug 2023 04:51:40 -0700 (PDT)
-Received: by mail-yb1-f177.google.com with SMTP id 3f1490d57ef6-d45caf42d73so7387223276.2;
-        Thu, 17 Aug 2023 04:51:40 -0700 (PDT)
-X-Received: by 2002:a25:941:0:b0:d0a:da40:638e with SMTP id
- u1-20020a250941000000b00d0ada40638emr4598174ybm.12.1692273099841; Thu, 17 Aug
- 2023 04:51:39 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230812090418.75020-1-biju.das.jz@bp.renesas.com>
- <ZNsm3efpkYlL4Gki@smile.fi.intel.com> <CAMuHMdVcQ06ydE7uEZ4kqM3A19exR1g+xAGSqiGXJ_KJpZYn-w@mail.gmail.com>
- <ZNusymsNh/zFgHg7@smile.fi.intel.com> <CAMuHMdUVCS_D0SBtDBrLQbAkdt0ZUbMOca+ukdwUtnGqzUr+cA@mail.gmail.com>
- <ZN30yevtrxRrzmS5@smile.fi.intel.com>
-In-Reply-To: <ZN30yevtrxRrzmS5@smile.fi.intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 17 Aug 2023 13:51:27 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVc547yPbstCiaWe9ZEqa91p9XJQd=AEP8d-wgUGZ4HuQ@mail.gmail.com>
-Message-ID: <CAMuHMdVc547yPbstCiaWe9ZEqa91p9XJQd=AEP8d-wgUGZ4HuQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: dac: ti-dac5571: Use i2c_get_match_data()
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        bh=R5VEfMZdJoR1mNUx2hBXldi+YDCIruL2v0+AL2aEWyQ=;
+        b=exgI9L9KOW1Kj7U4Hv5q783lvgVSdPFwtz53Blat9NWm+GRN7GHnisQofCJRmEfJM/
+         LRbUpwmt+3w0Uq30JpVcJQmu9+fII1MajkO5NOSrqQP2DkZKwvD3ICTMYMkJ/cE8ASoa
+         69xxFFrbTrcFGcOcYscmZf8XUDe7vbvrMu8+LR49QY/JPdhEtmaosEcdDLG5zYP3PZxH
+         iEZL9CQVkkW02LUxXPq2zGqPFkF1U4jCVWvwpeJYOXxaxyRRXjCBY406JjY/Ciuw9sZS
+         iMecTVYnoYNF+FSveZkHnDjzwISE/z03T+6iUvjU74yd7G9T59FzPZnRtkWkTHX1+VUy
+         MJfQ==
+X-Gm-Message-State: AOJu0YwgHjgMmQio+3PNNjmqsxMZjWOXJNDdO66KjoUKkMCnlesGGKxV
+        fBBt24ICsMeuZ58uLAqf/tg=
+X-Google-Smtp-Source: AGHT+IHLsuCIsUqk2ijtb3m9YzVWFeMNLRVfvozm2B7rCUwgRey1Y3W0Sgm2mF3myPV8nN9PgXRZKA==
+X-Received: by 2002:a2e:9c44:0:b0:2b6:ccd6:3ec2 with SMTP id t4-20020a2e9c44000000b002b6ccd63ec2mr3565220ljj.36.1692273778470;
+        Thu, 17 Aug 2023 05:02:58 -0700 (PDT)
+Received: from localhost.localdomain (83-233-6-197.cust.bredband2.com. [83.233.6.197])
+        by smtp.gmail.com with ESMTPSA id t18-20020a2e9d12000000b002b9fec8961bsm3981213lji.123.2023.08.17.05.02.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Aug 2023 05:02:57 -0700 (PDT)
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Jean Delvare <jdelvare@suse.de>,
-        Vladimir Oltean <olteanv@gmail.com>, linux-iio@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Ramona Bolboaca <ramona.bolboaca@analog.com>,
+        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        William Breathitt Gray <william.gray@linaro.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v6 2/6] iio: adc: mcp3911: make use of dev_err_probe()
+Date:   Thu, 17 Aug 2023 14:05:14 +0200
+Message-ID: <20230817120518.153728-2-marcus.folkesson@gmail.com>
+X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230817120518.153728-1-marcus.folkesson@gmail.com>
+References: <20230817120518.153728-1-marcus.folkesson@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Andy,
+Simplify code by switch to dev_err_probe().
 
-On Thu, Aug 17, 2023 at 12:22 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-> On Wed, Aug 16, 2023 at 10:16:00AM +0200, Geert Uytterhoeven wrote:
-> > On Tue, Aug 15, 2023 at 6:50 PM Andy Shevchenko
-> > <andriy.shevchenko@linux.intel.com> wrote:
-> > > On Tue, Aug 15, 2023 at 09:29:06AM +0200, Geert Uytterhoeven wrote:
-> > > > On Tue, Aug 15, 2023 at 9:19 AM Andy Shevchenko
-> > > > <andriy.shevchenko@linux.intel.com> wrote:
-> > > > > On Sat, Aug 12, 2023 at 10:04:18AM +0100, Biju Das wrote:
->
-> ...
->
-> > > > > > +     {.compatible = "ti,dac5571", .data = &dac5571_spec[single_8bit] },
-> > > > > > +     {.compatible = "ti,dac6571", .data = &dac5571_spec[single_10bit] },
-> > > > > > +     {.compatible = "ti,dac7571", .data = &dac5571_spec[single_12bit] },
-> > > > > > +     {.compatible = "ti,dac5574", .data = &dac5571_spec[quad_8bit] },
-> > > > > > +     {.compatible = "ti,dac6574", .data = &dac5571_spec[quad_10bit] },
-> > > > > > +     {.compatible = "ti,dac7574", .data = &dac5571_spec[quad_12bit] },
-> > > > > > +     {.compatible = "ti,dac5573", .data = &dac5571_spec[quad_8bit] },
-> > > > > > +     {.compatible = "ti,dac6573", .data = &dac5571_spec[quad_10bit] },
-> > > > > > +     {.compatible = "ti,dac7573", .data = &dac5571_spec[quad_12bit] },
-> > > > > > +     {.compatible = "ti,dac121c081", .data = &dac5571_spec[single_12bit] },
-> > > > >
-> > > > > I would reorder them a bit.
-> > > >
-> > > > Which is safe in this particular case...
-> > > > But not in general, as there might be fall-back compatible values.
-> > >
-> > > You mean the OF ID list must be specifically ordered?! What a nice minefield!
-> > > This has to be fixed somewhere else, surely.
-> >
-> > Seems like it is, cfr. the scoring system in drivers/of/base.c
-> > __of_device_is_compatible().  Sorry for the confusion.
-> >
-> > I still tend to order them in match tables though, from most-specific
-> > to least-specific.
-> >
-> > Note that soc_device_match() (which is used less, fortunately) does
-> > not have such a scoring system, so order does matter there.
->
-> Should be fixed there, because it's a big downside of OF.
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+---
 
-Agreed. Note that it is unrelated to OF.
+Notes:
+    v5:
+        - New patch in this series
+    v6:
+        - fix xmas tree order
 
-Gr{oetje,eeting}s,
+ drivers/iio/adc/mcp3911.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-                        Geert
-
+diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+index 974c5bd923a6..a6612d718bf7 100644
+--- a/drivers/iio/adc/mcp3911.c
++++ b/drivers/iio/adc/mcp3911.c
+@@ -466,6 +466,7 @@ static const struct iio_trigger_ops mcp3911_trigger_ops = {
+ 
+ static int mcp3911_probe(struct spi_device *spi)
+ {
++	struct device *dev = &spi->dev;
+ 	struct iio_dev *indio_dev;
+ 	struct mcp3911 *adc;
+ 	int ret;
+@@ -482,10 +483,7 @@ static int mcp3911_probe(struct spi_device *spi)
+ 		if (PTR_ERR(adc->vref) == -ENODEV) {
+ 			adc->vref = NULL;
+ 		} else {
+-			dev_err(&adc->spi->dev,
+-				"failed to get regulator (%ld)\n",
+-				PTR_ERR(adc->vref));
+-			return PTR_ERR(adc->vref);
++			return dev_err_probe(dev, PTR_ERR(adc->vref), "failed to get regulator\n");
+ 		}
+ 
+ 	} else {
+@@ -504,10 +502,7 @@ static int mcp3911_probe(struct spi_device *spi)
+ 		if (PTR_ERR(adc->clki) == -ENOENT) {
+ 			adc->clki = NULL;
+ 		} else {
+-			dev_err(&adc->spi->dev,
+-				"failed to get adc clk (%ld)\n",
+-				PTR_ERR(adc->clki));
+-			return PTR_ERR(adc->clki);
++			return dev_err_probe(dev, PTR_ERR(adc->clki), "failed to get adc clk\n");
+ 		}
+ 	}
+ 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.41.0
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
