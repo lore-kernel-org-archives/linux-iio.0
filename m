@@ -2,25 +2,25 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B301BEE498F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E15C3EE4991
 	for <linux-iio@archiver.kernel.org>; Fri, 18 Aug 2023 18:24:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352453AbjHRSYJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1379425AbjHRSYJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 18 Aug 2023 14:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36058 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379421AbjHRSX4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Aug 2023 14:23:56 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2AA272D7D;
-        Fri, 18 Aug 2023 11:23:54 -0700 (PDT)
+        with ESMTP id S1379435AbjHRSYD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Aug 2023 14:24:03 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D28452D72;
+        Fri, 18 Aug 2023 11:24:01 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="6.01,183,1684767600"; 
-   d="scan'208";a="176989963"
+   d="scan'208";a="173296407"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 19 Aug 2023 03:23:53 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 19 Aug 2023 03:24:01 +0900
 Received: from localhost.localdomain (unknown [10.226.93.81])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 274874063CA5;
-        Sat, 19 Aug 2023 03:23:49 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id EE0E54063CA5;
+        Sat, 19 Aug 2023 03:23:57 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
@@ -32,31 +32,63 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Rob Herring <robh@kernel.org>, linux-iio@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v2 0/2] Match data improvements for mma8452 driver
-Date:   Fri, 18 Aug 2023 19:23:45 +0100
-Message-Id: <20230818182347.332507-1-biju.das.jz@bp.renesas.com>
+        linux-renesas-soc@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 2/2] iio: accel: mma8452: Sort match tables
+Date:   Fri, 18 Aug 2023 19:23:47 +0100
+Message-Id: <20230818182347.332507-3-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230818182347.332507-1-biju.das.jz@bp.renesas.com>
+References: <20230818182347.332507-1-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch series aims to add match data improvements for mma8452
-driver.
+Sort ID table alphabetically by name and OF table by compatible.
 
-v1->v2:
- * Added Rb tag from Hans de Goede.
- * Added patch#2 for sorting match tables.
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+---
+v2:
+ * New patch.
+---
+ drivers/iio/accel/mma8452.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Biju Das (2):
-  iio: accel: mma8452: Convert enum->pointer for data in the ID table
-  iio: accel: mma8452: Sort match tables
-
- drivers/iio/accel/mma8452.c | 28 +++++++++++-----------------
- 1 file changed, 11 insertions(+), 17 deletions(-)
-
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 5864ad726e97..d3fd0318e47b 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -1535,12 +1535,12 @@ static int mma8452_reset(struct i2c_client *client)
+ }
+ 
+ static const struct of_device_id mma8452_dt_ids[] = {
++	{ .compatible = "fsl,fxls8471", .data = &mma_chip_info_table[fxls8471] },
+ 	{ .compatible = "fsl,mma8451", .data = &mma_chip_info_table[mma8451] },
+ 	{ .compatible = "fsl,mma8452", .data = &mma_chip_info_table[mma8452] },
+ 	{ .compatible = "fsl,mma8453", .data = &mma_chip_info_table[mma8453] },
+ 	{ .compatible = "fsl,mma8652", .data = &mma_chip_info_table[mma8652] },
+ 	{ .compatible = "fsl,mma8653", .data = &mma_chip_info_table[mma8653] },
+-	{ .compatible = "fsl,fxls8471", .data = &mma_chip_info_table[fxls8471] },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, mma8452_dt_ids);
+@@ -1824,12 +1824,12 @@ static const struct dev_pm_ops mma8452_pm_ops = {
+ };
+ 
+ static const struct i2c_device_id mma8452_id[] = {
++	{ "fxls8471", (kernel_ulong_t)&mma_chip_info_table[fxls8471] },
+ 	{ "mma8451", (kernel_ulong_t)&mma_chip_info_table[mma8451] },
+ 	{ "mma8452", (kernel_ulong_t)&mma_chip_info_table[mma8452] },
+ 	{ "mma8453", (kernel_ulong_t)&mma_chip_info_table[mma8453] },
+ 	{ "mma8652", (kernel_ulong_t)&mma_chip_info_table[mma8652] },
+ 	{ "mma8653", (kernel_ulong_t)&mma_chip_info_table[mma8653] },
+-	{ "fxls8471", (kernel_ulong_t)&mma_chip_info_table[fxls8471] },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, mma8452_id);
 -- 
 2.25.1
 
