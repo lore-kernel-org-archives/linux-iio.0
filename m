@@ -2,115 +2,84 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F4BEE4992
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Aug 2023 18:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC148EE498B
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Aug 2023 18:32:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379416AbjHRSYJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Aug 2023 14:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36080 "EHLO
+        id S1379437AbjHRSby (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Aug 2023 14:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379425AbjHRSX7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Aug 2023 14:23:59 -0400
+        with ESMTP id S1379446AbjHRSbf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Aug 2023 14:31:35 -0400
 Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C3922D58;
-        Fri, 18 Aug 2023 11:23:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2497BBF;
+        Fri, 18 Aug 2023 11:31:34 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="6.01,183,1684767600"; 
-   d="scan'208";a="173296403"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 19 Aug 2023 03:23:57 +0900
+   d="scan'208";a="173296643"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 19 Aug 2023 03:31:33 +0900
 Received: from localhost.localdomain (unknown [10.226.93.81])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 0EDD54063CA7;
-        Sat, 19 Aug 2023 03:23:53 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id C4DB3400447D;
+        Sat, 19 Aug 2023 03:31:30 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
-        Mehdi Djait <mehdi.djait.k@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Rob Herring <robh@kernel.org>, linux-iio@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v2 1/2] iio: accel: mma8452: Convert enum->pointer for data in the ID table
-Date:   Fri, 18 Aug 2023 19:23:46 +0100
-Message-Id: <20230818182347.332507-2-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v2] iio: chemical: atlas-ezo-sensor: Simplify probe()
+Date:   Fri, 18 Aug 2023 19:31:28 +0100
+Message-Id: <20230818183128.334233-1-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230818182347.332507-1-biju.das.jz@bp.renesas.com>
-References: <20230818182347.332507-1-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert enum->pointer for data in the ID table, so that device_get_match_data()
-can do match against OF/ACPI/I2C tables, once i2c bus type match support
-added to it.
-
-Replace enum->struct *mma_chip_info for data in the ID table and simplify
-mma8452_probe() by replacing device_get_match_data()->i2c_get_match_data().
+Simplify the probe() by replacing device_get_match_data() and ID lookup
+match by i2c_get_match_data() as we have similar I2C and DT-based matching
+table.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
 v1->v2:
- * Added Rb tag from Hans de Goede.
+ * Dropped the sentence for removing id from commit description.
+ * Added Rb tag from Andy.
 ---
- drivers/iio/accel/mma8452.c | 26 ++++++++++----------------
- 1 file changed, 10 insertions(+), 16 deletions(-)
+ drivers/iio/chemical/atlas-ezo-sensor.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index f42a88711486..5864ad726e97 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1547,7 +1547,6 @@ MODULE_DEVICE_TABLE(of, mma8452_dt_ids);
+diff --git a/drivers/iio/chemical/atlas-ezo-sensor.c b/drivers/iio/chemical/atlas-ezo-sensor.c
+index 8fc926a2d33b..761a853a4d17 100644
+--- a/drivers/iio/chemical/atlas-ezo-sensor.c
++++ b/drivers/iio/chemical/atlas-ezo-sensor.c
+@@ -203,7 +203,6 @@ MODULE_DEVICE_TABLE(of, atlas_ezo_dt_ids);
  
- static int mma8452_probe(struct i2c_client *client)
+ static int atlas_ezo_probe(struct i2c_client *client)
  {
 -	const struct i2c_device_id *id = i2c_client_get_device_id(client);
- 	struct mma8452_data *data;
+ 	const struct atlas_ezo_device *chip;
+ 	struct atlas_ezo_data *data;
  	struct iio_dev *indio_dev;
- 	int ret;
-@@ -1560,15 +1559,10 @@ static int mma8452_probe(struct i2c_client *client)
- 	data->client = client;
- 	mutex_init(&data->lock);
+@@ -212,10 +211,7 @@ static int atlas_ezo_probe(struct i2c_client *client)
+ 	if (!indio_dev)
+ 		return -ENOMEM;
  
--	data->chip_info = device_get_match_data(&client->dev);
--	if (!data->chip_info) {
--		if (id) {
--			data->chip_info = &mma_chip_info_table[id->driver_data];
--		} else {
--			dev_err(&client->dev, "unknown device model\n");
--			return -ENODEV;
--		}
--	}
-+	data->chip_info = i2c_get_match_data(client);
-+	if (!data->chip_info)
-+		return dev_err_probe(&client->dev, -ENODEV,
-+				     "unknown device model\n");
+-	if (dev_fwnode(&client->dev))
+-		chip = device_get_match_data(&client->dev);
+-	else
+-		chip = (const struct atlas_ezo_device *)id->driver_data;
++	chip = i2c_get_match_data(client);
+ 	if (!chip)
+ 		return -EINVAL;
  
- 	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
- 	if (ret)
-@@ -1830,12 +1824,12 @@ static const struct dev_pm_ops mma8452_pm_ops = {
- };
- 
- static const struct i2c_device_id mma8452_id[] = {
--	{ "mma8451", mma8451 },
--	{ "mma8452", mma8452 },
--	{ "mma8453", mma8453 },
--	{ "mma8652", mma8652 },
--	{ "mma8653", mma8653 },
--	{ "fxls8471", fxls8471 },
-+	{ "mma8451", (kernel_ulong_t)&mma_chip_info_table[mma8451] },
-+	{ "mma8452", (kernel_ulong_t)&mma_chip_info_table[mma8452] },
-+	{ "mma8453", (kernel_ulong_t)&mma_chip_info_table[mma8453] },
-+	{ "mma8652", (kernel_ulong_t)&mma_chip_info_table[mma8652] },
-+	{ "mma8653", (kernel_ulong_t)&mma_chip_info_table[mma8653] },
-+	{ "fxls8471", (kernel_ulong_t)&mma_chip_info_table[fxls8471] },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, mma8452_id);
 -- 
 2.25.1
 
