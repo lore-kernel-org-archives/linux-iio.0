@@ -2,287 +2,132 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67457C7EE2F
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Aug 2023 16:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95EA8C71159
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Aug 2023 17:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378837AbjHRQ6s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Aug 2023 12:58:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47732 "EHLO
+        id S1377759AbjHRREm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Aug 2023 13:04:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378845AbjHRQ6T (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Aug 2023 12:58:19 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 957073A8B;
-        Fri, 18 Aug 2023 09:58:16 -0700 (PDT)
+        with ESMTP id S1378911AbjHRREi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Aug 2023 13:04:38 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE9B10C0;
+        Fri, 18 Aug 2023 10:04:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1692377896; x=1723913896;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UxphbyHk/T6UEz7vFFVTPl2Q8laSgxaLvUwE5ctdBPE=;
-  b=ntaD7qTZNm3Mb24CnpCDT+iMxQpa3L9jlLoToijqxZNB0st0cG2SRxFo
-   vbS5tE+lzK0FS+BMoS/cjxmwvexjCasVnpLC+DjENU7/SoD8YfBPjjjSU
-   L9n7kNx/9LWcimPDLmPfRcCotvNZUgc/iUqLlFMTBimReR4iyRiyYbg7X
-   N78JYWsIkExWHT/8HTuUyFgyBNWYPxtpyj/EYw8dyYE/FmcvOH2/uREta
-   /woQhUEgi9Zr/1YEhm6eBp/Iux4jeoUK3deS6xYK/arReUUIIrpkAiCHP
-   7oqLBAZ4Zsj2DZMPiKuB3iI0zORJsR1IqGUXDmHPiDinND5XGJTeS0b2A
-   w==;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692378277; x=1723914277;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=jQpQLbZDv97aKF5UDVT3TwVaSF8Gz3GtlMhp1lfjfBA=;
+  b=SWq1b1HW9Vubl1om7+DIJtkiKLb6yJQkydqhZjvgXfr/obKJZaEO46Vu
+   eOFLGxIDTav7C+ZusFepr7L74KuxFzwCfrnmJaP0oU6hEA3vrhx/jf9w3
+   d5XcVFkWwM6rlmwvu/8chqCcu2YcvtcZeUarnBirIl8BJqr0EE5KAGvfM
+   29Lfa7D35LnugqYEk1EB60uC/6ptBboQ0dToU1qQAFXL1KJrxSAr5LDYu
+   Ks4LPxWqjXF/YOKwGcMAJISQs/uibtwfgqWWncVkDUo3W0KcYlc4GeAFU
+   XxhF1uP2mHFU7H88+SZasKZY0GYeQmVtfS1KSgVziuLETOu1QjDd+JvXB
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10806"; a="376906589"
 X-IronPort-AV: E=Sophos;i="6.01,183,1684825200"; 
-   d="scan'208";a="167165730"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Aug 2023 09:58:14 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 18 Aug 2023 09:58:01 -0700
-Received: from marius-VM.mshome.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Fri, 18 Aug 2023 09:57:58 -0700
-From:   <marius.cristea@microchip.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>, <robh+dt@kernel.org>
-CC:     <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <marius.cristea@microchip.com>
-Subject: [PATCH v4 1/2] dt-bindings: iio: adc: adding MCP3564 ADC
-Date:   Fri, 18 Aug 2023 19:57:49 +0300
-Message-ID: <20230818165750.55406-2-marius.cristea@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230818165750.55406-1-marius.cristea@microchip.com>
-References: <20230818165750.55406-1-marius.cristea@microchip.com>
+   d="scan'208";a="376906589"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2023 10:04:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10806"; a="712074162"
+X-IronPort-AV: E=Sophos;i="6.01,183,1684825200"; 
+   d="scan'208";a="712074162"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006.jf.intel.com with ESMTP; 18 Aug 2023 10:04:32 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qX2th-00H4lp-0o;
+        Fri, 18 Aug 2023 20:04:29 +0300
+Date:   Fri, 18 Aug 2023 20:04:28 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-iio@vger.kernel.org,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH v2 5/5] iio: magnetometer: ak8975: Sort OF table
+Message-ID: <ZN+knFD5pFilfBcT@smile.fi.intel.com>
+References: <20230818075600.24277-1-biju.das.jz@bp.renesas.com>
+ <20230818075600.24277-6-biju.das.jz@bp.renesas.com>
+ <ZN9WVvo+pixspCsw@smile.fi.intel.com>
+ <CAMuHMdX0cnPDNHdUoquGTzZJE-CD81Lor=3q+j36rJyS23mJqw@mail.gmail.com>
+ <ZN+PpLsAayzfgTtb@smile.fi.intel.com>
+ <CAMuHMdXAG8JmOaGzeRd8kgoZqMmG1Qf7PFjZFJiQBXpp9Sa8pg@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+In-Reply-To: <CAMuHMdXAG8JmOaGzeRd8kgoZqMmG1Qf7PFjZFJiQBXpp9Sa8pg@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Marius Cristea <marius.cristea@microchip.com>
+On Fri, Aug 18, 2023 at 05:43:15PM +0200, Geert Uytterhoeven wrote:
+> On Fri, Aug 18, 2023 at 5:35 PM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> > On Fri, Aug 18, 2023 at 04:55:18PM +0200, Geert Uytterhoeven wrote:
+> > > On Fri, Aug 18, 2023 at 1:30 PM Andy Shevchenko
+> > > <andriy.shevchenko@linux.intel.com> wrote:
+> > > > On Fri, Aug 18, 2023 at 08:56:00AM +0100, Biju Das wrote:
+> > > > > Sort OF table alphabetically by compatibles.
+> > > >
+> > > > > Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > > >
+> > > > Wrong, I haven't suggested that. See comment to the previous patch.
+> > > >
+> > > > And this is definitely wrong as Geert explained already why.
+> > > > You need to fix the code that handles the ID table first.
+> > >
+> > > I retracted my own comment:
+> > > https://lore.kernel.org/r/CAMuHMdUVCS_D0SBtDBrLQbAkdt0ZUbMOca+ukdwUtnGqzUr+cA@mail.gmail.com
+> > >
+> > > Upon a second read, I agree my reply
+> > >
+> > >     Seems like it is, cfr. the scoring system in drivers/of/base.c
+> > >
+> > > was confusing, as it was not super clear if it was a response to the
+> > > first or the second line of your comment:
+> > >
+> > >     You mean the OF ID list must be specifically ordered?! What a nice
+> > > minefield!
+> > >     This has to be fixed somewhere else, surely.
+> > >
+> > > Conclusion: there is no issue, the scoring system handles primary
+> > > vs. fallback compatible values, irrespective of ordering.
+> >
+> > Now I'm totally confused. Previously you mentioned a couple of
+> > different APIs — one in OF, one in SoC. AFAIU the second one
+> > still needs to be fixed to follow the logic that OF does.
+> >
+> > My previous understanding was that
+> >   OF code — no issue
+> >   SoC code — the ordering is required to be correct
+> 
+> Correct.
+> 
+> > Can you confirm that there is no issue in that second case?
+> > And if there is none, why did you mention it?
+> 
+> There is still an issue (read: you have to be careful) in the second
+> case, which does not matter here, as this driver does not use
+> soc_device_match().
+> I mentioned soc_device_match() because it is the second popular way
+> to match on OF platforms, but behaves slightly different than
+> of_match_node().
 
-This is the device tree schema for iio driver for
-Microchip family of 153.6 ksps, Low-Noise 16/24-Bit
-Delta-Sigma ADCs with an SPI interface (Microchip's
-MCP3461, MCP3462, MCP3464, MCP3461R, MCP3462R,
-MCP3464R, MCP3561, MCP3562, MCP3564, MCP3561R,
-MCP3562R and MCP3564R analog to digital converters).
+Now it's clear, thanks.
+Biju, please add that to the commit message.
 
-Signed-off-by: Marius Cristea <marius.cristea@microchip.com>
----
- .../bindings/iio/adc/microchip,mcp3564.yaml   | 205 ++++++++++++++++++
- 1 file changed, 205 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-new file mode 100644
-index 000000000000..675319276197
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-@@ -0,0 +1,205 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/microchip,mcp3564.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Microchip MCP346X and MCP356X ADC Family
-+
-+maintainers:
-+  - Marius Cristea <marius.cristea@microchip.com>
-+
-+description: |
-+  Bindings for the Microchip family of 153.6 ksps, Low-Noise 16/24-Bit
-+  Delta-Sigma ADCs with an SPI interface. Datasheet can be found here:
-+  Datasheet for MCP3561, MCP3562, MCP3564 can be found here:
-+    https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP3561-2-4-Family-Data-Sheet-DS20006181C.pdf
-+  Datasheet for MCP3561R, MCP3562R, MCP3564R can be found here:
-+    https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/MCP3561_2_4R-Data-Sheet-DS200006391C.pdf
-+  Datasheet for MCP3461, MCP3462, MCP3464 can be found here:
-+    https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/MCP3461-2-4-Two-Four-Eight-Channel-153.6-ksps-Low-Noise-16-Bit-Delta-Sigma-ADC-Data-Sheet-20006180D.pdf
-+  Datasheet for MCP3461R, MCP3462R, MCP3464R can be found here:
-+    https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/MCP3461-2-4R-Family-Data-Sheet-DS20006404C.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - microchip,mcp3461
-+      - microchip,mcp3462
-+      - microchip,mcp3464
-+      - microchip,mcp3461r
-+      - microchip,mcp3462r
-+      - microchip,mcp3464r
-+      - microchip,mcp3561
-+      - microchip,mcp3562
-+      - microchip,mcp3564
-+      - microchip,mcp3561r
-+      - microchip,mcp3562r
-+      - microchip,mcp3564r
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 20000000
-+
-+  spi-cpha: true
-+
-+  spi-cpol: true
-+
-+  vdd-supply: true
-+
-+  avdd-supply: true
-+
-+  clocks:
-+    description:
-+      Phandle and clock identifier for external sampling clock.
-+      If not specified, the internal crystal oscillator will be used.
-+    maxItems: 1
-+
-+  interrupts:
-+    description: IRQ line of the ADC
-+    maxItems: 1
-+
-+  drive-open-drain:
-+    description:
-+      Whether to drive the IRQ signal as push-pull (default) or open-drain. Note
-+      that the device requires this pin to become "high", otherwise it will stop
-+      converting.
-+    type: boolean
-+
-+  vref-supply:
-+    description:
-+      Some devices have a specific reference voltage supplied on a different
-+      pin to the other supplies. Needed to be able to establish channel scaling
-+      unless there is also an internal reference available (e.g. mcp3564r). In
-+      case of "r" devices (e. g. mcp3564r), if it does not exists the internal
-+      reference will be used.
-+
-+  microchip,hw-device-address:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    minimum: 0
-+    maximum: 3
-+    description:
-+      The address is set on a per-device basis by fuses in the factory,
-+      configured on request. If not requested, the fuses are set for 0x1.
-+      The device address is part of the device markings to avoid
-+      potential confusion. This address is coded on two bits, so four possible
-+      addresses are available when multiple devices are present on the same
-+      SPI bus with only one Chip Select line for all devices.
-+      Each device communication starts by a CS falling edge, followed by the
-+      clocking of the device address (BITS[7:6] - top two bits of COMMAND BYTE
-+      which is first one on the wire).
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+patternProperties:
-+  "^channel@([0-9]|([1-7][0-9]))$":
-+    $ref: adc.yaml
-+    type: object
-+    unevaluatedProperties: false
-+    description: Represents the external channels which are connected to the ADC.
-+
-+    properties:
-+      reg:
-+        description: The channel number in single-ended and differential mode.
-+        minimum: 0
-+        maximum: 79
-+
-+    required:
-+      - reg
-+
-+dependencies:
-+  spi-cpol: [ spi-cpha ]
-+  spi-cpha: [ spi-cpol ]
-+
-+required:
-+  - compatible
-+  - reg
-+  - microchip,hw-device-address
-+  - spi-max-frequency
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+  - # External vref, no internal reference
-+    if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - microchip,mcp3461
-+              - microchip,mcp3462
-+              - microchip,mcp3464
-+              - microchip,mcp3561
-+              - microchip,mcp3562
-+              - microchip,mcp3564
-+    then:
-+      required:
-+        - vref-supply
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        adc@0 {
-+            compatible = "microchip,mcp3564r";
-+            reg = <0>;
-+            vref-supply = <&vref_reg>;
-+            spi-cpha;
-+            spi-cpol;
-+            spi-max-frequency = <10000000>;
-+            microchip,hw-device-address = <1>;
-+
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            channel@0 {
-+                /* CH0 to AGND */
-+                reg = <0>;
-+                label = "CH0";
-+            };
-+
-+            channel@1 {
-+                /* CH1 to AGND */
-+                reg = <1>;
-+                label = "CH1";
-+            };
-+
-+            /* diff-channels */
-+            channel@11 {
-+                reg = <11>;
-+
-+                /* CN0, CN1 */
-+                diff-channels = <0 1>;
-+                label = "CH0_CH1";
-+            };
-+
-+            channel@22 {
-+                reg = <0x22>;
-+
-+                /* CN1, CN2 */
-+                diff-channels = <1 2>;
-+                label = "CH1_CH3";
-+            };
-+
-+            channel@23 {
-+                reg = <0x23>;
-+
-+                /* CN1, CN3 */
-+                diff-channels = <1 3>;
-+                label = "CH1_CH3";
-+            };
-+        };
-+    };
-+...
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
