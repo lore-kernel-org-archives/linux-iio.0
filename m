@@ -2,40 +2,39 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68F83C71148
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Aug 2023 07:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8113C001DE
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Aug 2023 07:57:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358396AbjHRH4w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Aug 2023 03:56:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46770 "EHLO
+        id S1358385AbjHRH5Y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Aug 2023 03:57:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358483AbjHRH4p (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Aug 2023 03:56:45 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB1BD4208;
-        Fri, 18 Aug 2023 00:56:20 -0700 (PDT)
+        with ESMTP id S1358436AbjHRH47 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Aug 2023 03:56:59 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15905E5F;
+        Fri, 18 Aug 2023 00:56:42 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="6.01,182,1684767600"; 
-   d="scan'208";a="173263220"
+   d="scan'208";a="176955343"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 18 Aug 2023 16:56:17 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 18 Aug 2023 16:56:24 +0900
 Received: from localhost.localdomain (unknown [10.226.93.81])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 2660E41BBD56;
-        Fri, 18 Aug 2023 16:56:13 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id C4F7D41BBD56;
+        Fri, 18 Aug 2023 16:56:21 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Albrieux <jonathan.albrieux@gmail.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v2 3/5] dt-bindings: iio: magnetometer: asahi-kasei,ak8975: Drop deprecated enums
-Date:   Fri, 18 Aug 2023 08:55:58 +0100
-Message-Id: <20230818075600.24277-4-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v2 5/5] iio: magnetometer: ak8975: Sort OF table
+Date:   Fri, 18 Aug 2023 08:56:00 +0100
+Message-Id: <20230818075600.24277-6-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230818075600.24277-1-biju.das.jz@bp.renesas.com>
 References: <20230818075600.24277-1-biju.das.jz@bp.renesas.com>
@@ -45,34 +44,31 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Drop deprecated enums from bindings as it is been here for a long time.
+Sort OF table alphabetically by compatibles.
 
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
 v2:
  * New patch
 ---
- .../bindings/iio/magnetometer/asahi-kasei,ak8975.yaml      | 7 -------
- 1 file changed, 7 deletions(-)
+ drivers/iio/magnetometer/ak8975.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8975.yaml b/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8975.yaml
-index 9790f75fc669..ee77558e9800 100644
---- a/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8975.yaml
-+++ b/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8975.yaml
-@@ -18,13 +18,6 @@ properties:
-           - asahi-kasei,ak09911
-           - asahi-kasei,ak09912
-           - asahi-kasei,ak09916
--      - enum:
--          - ak8975
--          - ak8963
--          - ak09911
--          - ak09912
--          - ak09916
--        deprecated: true
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 295b7be5e36d..7cc443a86995 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -1073,8 +1073,8 @@ static const struct i2c_device_id ak8975_id[] = {
+ MODULE_DEVICE_TABLE(i2c, ak8975_id);
  
-   reg:
-     maxItems: 1
+ static const struct of_device_id ak8975_of_match[] = {
+-	{ .compatible = "asahi-kasei,ak8975", .data = &ak_def_array[AK8975] },
+ 	{ .compatible = "asahi-kasei,ak8963", .data = &ak_def_array[AK8963] },
++	{ .compatible = "asahi-kasei,ak8975", .data = &ak_def_array[AK8975] },
+ 	{ .compatible = "asahi-kasei,ak09911", .data = &ak_def_array[AK09911] },
+ 	{ .compatible = "asahi-kasei,ak09912", .data = &ak_def_array[AK09912] },
+ 	{ .compatible = "asahi-kasei,ak09916", .data = &ak_def_array[AK09916] },
 -- 
 2.25.1
 
