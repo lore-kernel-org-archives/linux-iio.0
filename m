@@ -2,101 +2,176 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC385C64EBC
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Aug 2023 21:07:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD0CC001DE
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Aug 2023 07:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355160AbjHQVHG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 17 Aug 2023 17:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
+        id S1358389AbjHRH4w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Aug 2023 03:56:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355200AbjHQVGl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Aug 2023 17:06:41 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6BE3589;
-        Thu, 17 Aug 2023 14:06:39 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id 5b1f17b1804b1-3fe12baec61so2775595e9.2;
-        Thu, 17 Aug 2023 14:06:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1692306398; x=1692911198;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IqBIkDX0Z+QaRubiEpu+YpXhCxIFhx3aowIzGghFpdM=;
-        b=a9jFM/2yeVae9w6AmWNNdM88+MO3GCJ3vIBzJnukg8W6LM+Wflzn4ERq7ieQrDuIcJ
-         kIaWDU4al32zzWltJMpI8hW6uAlDnwk+IsZe/QsittA4Vxqf+Ql8NnptHWEW1PPgsAnf
-         deAyBKzWc+7aJsIVMqAyUvW6AHgOAnyhyiq8xdu1Uwll0RCf2WJRrHoLoNHKat1otROg
-         ZKlJPV2ivYWAtflTpncT29NnXf2I7b/eewLyeCx+y0yUhhQHoW2cCVdZagYiYeSE0KOV
-         IycC/NK0/0BD4uQYNsvvpRlcxZW/jOr684h4+C94cmaP1YG38OYbz+N0bbtHCxjviCUG
-         sr8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692306398; x=1692911198;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=IqBIkDX0Z+QaRubiEpu+YpXhCxIFhx3aowIzGghFpdM=;
-        b=Uu6bavv1Yne4Szv6jZW2OmJuQePQArZxWnC7lYer/ekwooGoN15K687HkuEeIfHKWJ
-         nSQ3f1m7B6/ZKGUk5gIQx+LFfJ9PQ1588PVTM9bBiy2OXQEPLXKtrSxU8UZDej17gSk7
-         kkqrATTeFlPCbo0cYasAWPWjNSBzsmMGOS/sEUB6cZQriiuQWRe7EX9FbQYd9MzjNRmf
-         5uMpwY32GeyiPcFLzwjp0abRmmWVcUqyiGojm4diTEDb9TXBGSEvICBPkhcpiP6DUPOz
-         JHdACVz/zVf1ose4NKi+6wBcIs7S0Y943zIMcUry7/JudSNDqXJ52SCZRS6zLS/wWvAQ
-         nruQ==
-X-Gm-Message-State: AOJu0YwTYQWMs/D4xw2691/1CT5esMa3qPRfeGrKQCco0YSNEoLOq74Q
-        B0OhJfaIV7AbMD65GVMPZqpXMsSp9rY=
-X-Google-Smtp-Source: AGHT+IG7dLLq+oI54NeNQ+YX0Xe9R4Qj4Q2cork8Cci1H0MEiGN2dbyhg9ghDnItmaO7j54yFVlC0Q==
-X-Received: by 2002:a7b:cc1a:0:b0:3fe:795:712a with SMTP id f26-20020a7bcc1a000000b003fe0795712amr619771wmh.27.1692306397649;
-        Thu, 17 Aug 2023 14:06:37 -0700 (PDT)
-Received: from localhost.localdomain (35.red-83-35-63.dynamicip.rima-tde.net. [83.35.63.35])
-        by smtp.gmail.com with ESMTPSA id b15-20020a05600c11cf00b003fe215e4492sm669727wmi.4.2023.08.17.14.06.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Aug 2023 14:06:37 -0700 (PDT)
-From:   Angel Iglesias <ang.iglesiasg@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Angel Iglesias <ang.iglesiasg@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S1358471AbjHRH4n (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Aug 2023 03:56:43 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7ABE3A91;
+        Fri, 18 Aug 2023 00:56:18 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="6.01,182,1684767600"; 
+   d="scan'208";a="176955322"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 18 Aug 2023 16:56:10 +0900
+Received: from localhost.localdomain (unknown [10.226.93.81])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 54CD141BBD56;
+        Fri, 18 Aug 2023 16:56:07 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH 2/2] iio: pressure: bmp280: Add support for BMP390
-Date:   Thu, 17 Aug 2023 23:05:22 +0200
-Message-ID: <a34c72a2027c4b98bd815e8cf01f56d69c5d1386.1692305434.git.ang.iglesiasg@gmail.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <cover.1692305434.git.ang.iglesiasg@gmail.com>
-References: <cover.1692305434.git.ang.iglesiasg@gmail.com>
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v2 1/5] iio: magnetometer: ak8975: Convert enum->pointer for data in the match tables
+Date:   Fri, 18 Aug 2023 08:55:56 +0100
+Message-Id: <20230818075600.24277-2-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230818075600.24277-1-biju.das.jz@bp.renesas.com>
+References: <20230818075600.24277-1-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Adds BMP390 device id to the supported ids on bmp380 sensor family
+Convert enum->pointer for data in the match tables to simplify the probe()
+by replacing device_get_match_data() and i2c_client_get_device_id by
+i2c_get_match_data() as we have similar I2C, ACPI and DT matching table.
 
-Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+---
+v1->v2:
+ * No change
+---
+ drivers/iio/magnetometer/ak8975.c | 75 +++++++++++++------------------
+ 1 file changed, 30 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-index 67941a67e513..f2a63513e7eb 100644
---- a/drivers/iio/pressure/bmp280-core.c
-+++ b/drivers/iio/pressure/bmp280-core.c
-@@ -1225,7 +1225,7 @@ static int bmp380_chip_config(struct bmp280_data *data)
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index eb706d0bf70b..104798549de1 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -813,13 +813,13 @@ static const struct iio_info ak8975_info = {
+ };
  
- static const int bmp380_oversampling_avail[] = { 1, 2, 4, 8, 16, 32 };
- static const int bmp380_iir_filter_coeffs_avail[] = { 1, 2, 4, 8, 16, 32, 64, 128};
--static const int bmp380_chip_ids[] = { BMP380_CHIP_ID };
-+static const int bmp380_chip_ids[] = { BMP380_CHIP_ID, BMP390_CHIP_ID };
+ static const struct acpi_device_id ak_acpi_match[] = {
+-	{"AK8975", AK8975},
+-	{"AK8963", AK8963},
+-	{"INVN6500", AK8963},
+-	{"AK009911", AK09911},
+-	{"AK09911", AK09911},
+-	{"AKM9911", AK09911},
+-	{"AK09912", AK09912},
++	{"AK8975", (kernel_ulong_t)&ak_def_array[AK8975] },
++	{"AK8963", (kernel_ulong_t)&ak_def_array[AK8963] },
++	{"INVN6500", (kernel_ulong_t)&ak_def_array[AK8963] },
++	{"AK009911", (kernel_ulong_t)&ak_def_array[AK09911] },
++	{"AK09911", (kernel_ulong_t)&ak_def_array[AK09911] },
++	{"AKM9911", (kernel_ulong_t)&ak_def_array[AK09911] },
++	{"AK09912", (kernel_ulong_t)&ak_def_array[AK09912] },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
+@@ -883,10 +883,7 @@ static int ak8975_probe(struct i2c_client *client)
+ 	struct iio_dev *indio_dev;
+ 	struct gpio_desc *eoc_gpiod;
+ 	struct gpio_desc *reset_gpiod;
+-	const void *match;
+-	unsigned int i;
+ 	int err;
+-	enum asahi_compass_chipset chipset;
+ 	const char *name = NULL;
  
- const struct bmp280_chip_info bmp380_chip_info = {
- 	.id_reg = BMP380_REG_ID,
-diff --git a/drivers/iio/pressure/bmp280.h b/drivers/iio/pressure/bmp280.h
-index d68745254340..bfb98e3a5596 100644
---- a/drivers/iio/pressure/bmp280.h
-+++ b/drivers/iio/pressure/bmp280.h
-@@ -293,6 +293,7 @@
- #define BMP180_CHIP_ID			0x55
- #define BMP280_CHIP_ID			0x58
- #define BME280_CHIP_ID			0x60
-+#define BMP390_CHIP_ID			0x60
- #define BMP280_SOFT_RESET_VAL		0xB6
+ 	/*
+@@ -928,27 +925,15 @@ static int ak8975_probe(struct i2c_client *client)
+ 		return err;
  
- /* BMP280 register skipped special values */
+ 	/* id will be NULL when enumerated via ACPI */
+-	match = device_get_match_data(&client->dev);
+-	if (match) {
+-		chipset = (uintptr_t)match;
+-		name = dev_name(&client->dev);
+-	} else if (id) {
+-		chipset = (enum asahi_compass_chipset)(id->driver_data);
+-		name = id->name;
+-	} else
+-		return -ENOSYS;
+-
+-	for (i = 0; i < ARRAY_SIZE(ak_def_array); i++)
+-		if (ak_def_array[i].type == chipset)
+-			break;
+-
+-	if (i == ARRAY_SIZE(ak_def_array)) {
+-		dev_err(&client->dev, "AKM device type unsupported: %d\n",
+-			chipset);
++	data->def = i2c_get_match_data(client);
++	if (!data->def)
+ 		return -ENODEV;
+-	}
+ 
+-	data->def = &ak_def_array[i];
++	/* If enumerated via firmware node, fix the ABI */
++	if (dev_fwnode(&client->dev))
++		name = dev_name(&client->dev);
++	else
++		name = id->name;
+ 
+ 	/* Fetch the regulators */
+ 	data->vdd = devm_regulator_get(&client->dev, "vdd");
+@@ -1077,28 +1062,28 @@ static DEFINE_RUNTIME_DEV_PM_OPS(ak8975_dev_pm_ops, ak8975_runtime_suspend,
+ 				 ak8975_runtime_resume, NULL);
+ 
+ static const struct i2c_device_id ak8975_id[] = {
+-	{"ak8975", AK8975},
+-	{"ak8963", AK8963},
+-	{"AK8963", AK8963},
+-	{"ak09911", AK09911},
+-	{"ak09912", AK09912},
+-	{"ak09916", AK09916},
++	{"ak8975", (kernel_ulong_t)&ak_def_array[AK8975] },
++	{"ak8963", (kernel_ulong_t)&ak_def_array[AK8963] },
++	{"AK8963", (kernel_ulong_t)&ak_def_array[AK8963] },
++	{"ak09911", (kernel_ulong_t)&ak_def_array[AK09911] },
++	{"ak09912", (kernel_ulong_t)&ak_def_array[AK09912] },
++	{"ak09916", (kernel_ulong_t)&ak_def_array[AK09916] },
+ 	{}
+ };
+ 
+ MODULE_DEVICE_TABLE(i2c, ak8975_id);
+ 
+ static const struct of_device_id ak8975_of_match[] = {
+-	{ .compatible = "asahi-kasei,ak8975", },
+-	{ .compatible = "ak8975", },
+-	{ .compatible = "asahi-kasei,ak8963", },
+-	{ .compatible = "ak8963", },
+-	{ .compatible = "asahi-kasei,ak09911", },
+-	{ .compatible = "ak09911", },
+-	{ .compatible = "asahi-kasei,ak09912", },
+-	{ .compatible = "ak09912", },
+-	{ .compatible = "asahi-kasei,ak09916", },
+-	{ .compatible = "ak09916", },
++	{ .compatible = "asahi-kasei,ak8975", .data = &ak_def_array[AK8975] },
++	{ .compatible = "ak8975", .data = &ak_def_array[AK8975] },
++	{ .compatible = "asahi-kasei,ak8963", .data = &ak_def_array[AK8963] },
++	{ .compatible = "ak8963", .data = &ak_def_array[AK8963] },
++	{ .compatible = "asahi-kasei,ak09911", .data = &ak_def_array[AK09911] },
++	{ .compatible = "ak09911", .data = &ak_def_array[AK09911] },
++	{ .compatible = "asahi-kasei,ak09912", .data = &ak_def_array[AK09912] },
++	{ .compatible = "ak09912", .data = &ak_def_array[AK09912] },
++	{ .compatible = "asahi-kasei,ak09916", .data = &ak_def_array[AK09916] },
++	{ .compatible = "ak09916", .data = &ak_def_array[AK09916] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, ak8975_of_match);
 -- 
-2.41.0
+2.25.1
 
