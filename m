@@ -2,108 +2,101 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24D4FC7115C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 716BDC77B7C
 	for <linux-iio@archiver.kernel.org>; Fri, 18 Aug 2023 14:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377885AbjHROzs convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
+        id S1377909AbjHROzs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 18 Aug 2023 10:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47598 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377903AbjHROzd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Aug 2023 10:55:33 -0400
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1394430F3;
-        Fri, 18 Aug 2023 07:55:32 -0700 (PDT)
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-58c5642701fso10203337b3.0;
-        Fri, 18 Aug 2023 07:55:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692370531; x=1692975331;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VeY71DU+USysSBndOPqy+YAmfXldU/2lkhsXmsd4vgI=;
-        b=EF2NbQJFAoUjDGmR7fYUmXqulf1vHdDoPXzRCVLWosx4ooVSgkVZIU/ahnj90kUuTG
-         EjUNTVWUYNCy4EmwUNrFlD8oKrQY/aNi0qSuX0hvOfx9cBGS1k0P3Jj2vmmxZdf72pAt
-         e0TI+XIK7ucijeeQOctVBKL3dSuzhxxpJPLiEpaR8dmWXoitUQUjbqsziA6XXViSha54
-         cYj1wkeY2TSIzP69HfnJgxPewRArjcNdKwRflhx3E2YjxLMCr37Hg0w7X2IeEfjEgrzD
-         7Ie4aYRwFp99b+n0vmia938TY6aufLlPiHFTojNKBbca4T9Hj5QJezl+TBBS8L8XXYCx
-         MYog==
-X-Gm-Message-State: AOJu0YzbuC9BbXobN2be6vPQ6uYi2Q2MIjG/B7PQt/uXuxipznhbpjKg
-        Bz8A7voKqFjvqEjlR3MPFBcNnB5gsz+BKNCY
-X-Google-Smtp-Source: AGHT+IEZp8ejNzZzhgTvibPM37whBBg58dEVs+UAQq5/M958vUNmlWw8rjMLeAuXl1ECRdAtXNeCrA==
-X-Received: by 2002:a0d:c985:0:b0:56c:f68f:d824 with SMTP id l127-20020a0dc985000000b0056cf68fd824mr2706131ywd.45.1692370530878;
-        Fri, 18 Aug 2023 07:55:30 -0700 (PDT)
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
-        by smtp.gmail.com with ESMTPSA id l74-20020a0de24d000000b00583d1fa1fccsm542800ywe.0.2023.08.18.07.55.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Aug 2023 07:55:30 -0700 (PDT)
-Received: by mail-yb1-f181.google.com with SMTP id 3f1490d57ef6-d650a22abd7so965912276.3;
-        Fri, 18 Aug 2023 07:55:30 -0700 (PDT)
-X-Received: by 2002:a25:2357:0:b0:d3f:1009:8beb with SMTP id
- j84-20020a252357000000b00d3f10098bebmr2678414ybj.41.1692370529865; Fri, 18
- Aug 2023 07:55:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230818075600.24277-1-biju.das.jz@bp.renesas.com>
- <20230818075600.24277-6-biju.das.jz@bp.renesas.com> <ZN9WVvo+pixspCsw@smile.fi.intel.com>
-In-Reply-To: <ZN9WVvo+pixspCsw@smile.fi.intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 18 Aug 2023 16:55:18 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdX0cnPDNHdUoquGTzZJE-CD81Lor=3q+j36rJyS23mJqw@mail.gmail.com>
-Message-ID: <CAMuHMdX0cnPDNHdUoquGTzZJE-CD81Lor=3q+j36rJyS23mJqw@mail.gmail.com>
-Subject: Re: [PATCH v2 5/5] iio: magnetometer: ak8975: Sort OF table
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S1377885AbjHROzW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Aug 2023 10:55:22 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A56CD;
+        Fri, 18 Aug 2023 07:55:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692370521; x=1723906521;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SSWK8vSsrhVvA90RydFX4rb3pSBPwKMVlvJ9bXY5/Xc=;
+  b=O69mtDeS65+U37ausSsAnOkVUuj0FpUzB5My73p9LEfifWVlgocyE5ee
+   b2PxzsWxGlb0xqMo5ovU3rF+wXOP9U6ZoMslD3Kw1dED1aS0Zn36hPfkX
+   nh+lup1j/rbCYOalKngbqHDLwpHFniSfmZFXjGgr2ePQ49TXU9L5jTIg8
+   U+vGBJj9GriFJL8fuiZ0Z4KIuiFGCIkrBOt9ICj0jjvRJBYKCf4O/2VY3
+   eajxOACa+6NsoHiRcSEoQfSPNM1/B7iGop1zHDeDj/qzV2Q+7qEj3FHkk
+   b9joTNRHKxrQ7KfcU1Oaj4649qMx3LmoL2al6AeBf0HoxhVbLZSpK8xGW
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10806"; a="353421829"
+X-IronPort-AV: E=Sophos;i="6.01,183,1684825200"; 
+   d="scan'208";a="353421829"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2023 07:55:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10806"; a="981680819"
+X-IronPort-AV: E=Sophos;i="6.01,183,1684825200"; 
+   d="scan'208";a="981680819"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga006.fm.intel.com with ESMTP; 18 Aug 2023 07:55:05 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qX0sR-00CkCr-21;
+        Fri, 18 Aug 2023 17:55:03 +0300
+Date:   Fri, 18 Aug 2023 17:55:03 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-iio@vger.kernel.org,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH] iio: adc: max1363: Use i2c_get_match_data()
+Message-ID: <ZN+GR5+NdUqtnM93@smile.fi.intel.com>
+References: <20230812072419.42645-1-biju.das.jz@bp.renesas.com>
+ <ZNslJ44ivDGKR6b1@smile.fi.intel.com>
+ <OS0PR01MB59223B11C14FE29FEE9CF080861BA@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <OS0PR01MB59223B11C14FE29FEE9CF080861BA@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Andy,
+On Fri, Aug 18, 2023 at 02:48:45PM +0000, Biju Das wrote:
+> > On Sat, Aug 12, 2023 at 08:24:19AM +0100, Biju Das wrote:
 
-On Fri, Aug 18, 2023 at 1:30 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-> On Fri, Aug 18, 2023 at 08:56:00AM +0100, Biju Das wrote:
-> > Sort OF table alphabetically by compatibles.
->
-> > Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->
-> Wrong, I haven't suggested that. See comment to the previous patch.
->
-> And this is definitely wrong as Geert explained already why.
-> You need to fix the code that handles the ID table first.
+...
 
-I retracted my own comment:
-https://lore.kernel.org/r/CAMuHMdUVCS_D0SBtDBrLQbAkdt0ZUbMOca+ukdwUtnGqzUr+cA@mail.gmail.com
+> > > +#define MAX1363_ID_TABLE(_name, cfg) {				\
+> > > +	.name = _name,						\
+> > > +	.driver_data = (kernel_ulong_t)&max1363_chip_info_tbl[cfg],	\
+> > > +}
+> > 
+> > Just use them directly, like in 4 lines each instead of a single one.
+> > 
+> > 	{
+> > 		.name = max1361,
+> > 		.driver_data = (kernel_ulong_t)&max1363_chip_info_tbl[max1361]
+> > 	},
+> > 
+> > or this, but it's almost 100 characters.
+> 
+> OK, will create a separate patch for this change.
+> 
+> Worst case, we can drop named fields?? (.name and .driver_data)
 
-Upon a second read, I agree my reply
-
-    Seems like it is, cfr. the scoring system in drivers/of/base.c
-
-was confusing, as it was not super clear if it was a response to the
-first or the second line of your comment:
-
-    You mean the OF ID list must be specifically ordered?! What a nice
-minefield!
-    This has to be fixed somewhere else, surely.
-
-Conclusion: there is no issue, the scoring system handles primary
-vs. fallback compatible values, irrespective of ordering.
-
-Gr{oetje,eeting}s,
-
-                        Geert
+I wouldn't do that as the goal in kernel is to use C99 initialized more
+and not less.
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+With Best Regards,
+Andy Shevchenko
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
