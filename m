@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E19EC83003
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E865EE49A3
 	for <linux-iio@archiver.kernel.org>; Wed, 23 Aug 2023 21:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237424AbjHWVRd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 23 Aug 2023 17:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35840 "EHLO
+        id S237398AbjHWVRc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 23 Aug 2023 17:17:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237822AbjHWVRX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Aug 2023 17:17:23 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF8A10DC;
-        Wed, 23 Aug 2023 14:17:20 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-3fed963273cso1486725e9.1;
-        Wed, 23 Aug 2023 14:17:20 -0700 (PDT)
+        with ESMTP id S237798AbjHWVRU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Aug 2023 17:17:20 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C9F10DD;
+        Wed, 23 Aug 2023 14:17:12 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id ffacd0b85a97d-319e93a1594so5439313f8f.1;
+        Wed, 23 Aug 2023 14:17:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1692825438; x=1693430238;
+        d=gmail.com; s=20221208; t=1692825430; x=1693430230;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=hHSWIR7ua5WAhEqqjqTOsQsAANqNcjB5jXCsCVNmx9M=;
-        b=jiqMPR/AuCL8HmPHQ+IHQDdPTw3EKc5xUstUyvyp1rJZY8mqgGJI8LPs1Y/HfFYNoa
-         4fxiUCKqg/S0s/MGX9UUqeTxcfJtXAMvDoH42ZpqkqU49ZXcDpnlvhc06h/8hTgIN+6E
-         rCArbtgJOUE4SdqdaHz8Oyvhf6NDuh2/Hn4PJaVXSaQL0m6DXEmSMwiDajm5RC5nBy3e
-         AvE7W/L1LfDDT192X/SUpXVDuP3sBkXrPUOuKuvk+WPCcWnFvi0nG7HpkWJNkQIQbxhd
-         WMp2wEZJFanPOxIrc6eaVxM0GZYBZ/9gyt6bf8UfZPylMxYTB4rXFp0sWsNCAiwl6rzl
-         pNJQ==
+        bh=HqvTXQQxpEFsJU9721Xhtm+H9CSOKKaBAgAHD9Eag4c=;
+        b=GDNZg2IdF2a1yMe3yxFxrH/93twg2DTUC6uif9LXW8axkuWGrCBmJJnMfl4w1yq1ZX
+         rVDHizZzvVTpnmCo8LeGDESDUJq0F48DhIyev417cF4uw7A9+IUbzphfeVa6E4+t5nBM
+         S9KdoW8OQ+fMQgeawXElp2K1IqvBlPB94x/91UfOILRiGAYeI4/r8Uu/lv/06O1cL6Uu
+         8nfQx/iN+JkKr1jpAem6Z1gSpD/NgXeS6E+xTtWYbfShr7nNmMaqc8OXtzKZsiuL56zw
+         jvEon//BVXMXcLoYoW68mE0UY/EmpMGExpCg22cnCwwNgVxuja6mCZMonkDoC7RwU92t
+         0pmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692825438; x=1693430238;
+        d=1e100.net; s=20221208; t=1692825430; x=1693430230;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=hHSWIR7ua5WAhEqqjqTOsQsAANqNcjB5jXCsCVNmx9M=;
-        b=E64KpZiIPIlKhfCKkBrB1/xPEUD1wFMtFjU2va0/SBrWVljFmsP0QPSropRNY8m5Ua
-         EPFGytbB5QvhSb5+pRdFlhXHly1R+njYvj9AUF2aTgHh90ZiGvvcmvZ3IokPuWduDtwe
-         mqA9G+GhA6fFFt52k2zJZDEVr27++5Xq6X+163/Q4sK67QehrfPQtJqcvC8M+bWLYVhR
-         wCVwD7TyrRJlWzbwEcl8kdFiV0v60UtRt7Ly5Ml3K7TQsmmk3gFjltmprQ/ToAKJ+VSP
-         wjE3bokV9dNiRTE5s2voR/Lu2usA4kj23Ul0zsLZGCmURvp4nY48DsAm/o+Hcrj23On2
-         ZvPg==
-X-Gm-Message-State: AOJu0Yx3HE4HQ1Bg4hooQu0RTbsEhcy6Bg636hTIg0ypDZX9kaASx2SF
-        vTAYd0q6IoEULOUAn9fNcWs=
-X-Google-Smtp-Source: AGHT+IFY/NCg2lQcBGxkTvP32e4fkARWgw9MNfO8PWS/bCT6ip9qdnIMY9WCL3Wzvslcgk5CGeO9Pg==
-X-Received: by 2002:a5d:4ac2:0:b0:319:70c8:6e90 with SMTP id y2-20020a5d4ac2000000b0031970c86e90mr9927951wrs.24.1692825438520;
-        Wed, 23 Aug 2023 14:17:18 -0700 (PDT)
+        bh=HqvTXQQxpEFsJU9721Xhtm+H9CSOKKaBAgAHD9Eag4c=;
+        b=ZrvJGsWCIjND0QdLJu67wwdZ+105BsCGD/aJPanvw7bFLJm8ZylY4LvBWfv2RZonBl
+         x7apQLTuxq6ZcjM8KoFeXMQVmKLBiu93Gd+C1M7DVCIofCQWQjRknEsURg5+fvS8VXkM
+         KLoir84B4cuFIv8X5tjWtVYPStgslDD+I/hW9Tk1xoFMZZ5PE9tEufWCLHtO4lWdeudH
+         oqwYeL9ITXwajmodDDbZT916G9PEgMBFx1GSrnlj+PA3tP9jRvaSrlBtmJVf47Wyz14p
+         AHYYMoSo/59Akb658Su9szxtCSXWEVTCWp/cTr4rHiskSf2cIwVrdnNaLs3pjBZcPID8
+         ZOCg==
+X-Gm-Message-State: AOJu0YyjMA6YG8Y2ESi+OcQoICypbwawt2dd1DvqPUW3ME0dO7J5z/Rb
+        8RnwpaOP2UpwSEKAXH+xF4k=
+X-Google-Smtp-Source: AGHT+IEddox/bkLvjz6heBTwdc99NNkJXFUpbFi4S2sAhzJJ0YW7W/qMMzBf29U4tQbEzzWF329SCg==
+X-Received: by 2002:adf:dc86:0:b0:317:3d6c:5b27 with SMTP id r6-20020adfdc86000000b003173d6c5b27mr10133611wrj.46.1692825430431;
+        Wed, 23 Aug 2023 14:17:10 -0700 (PDT)
 Received: from localhost.localdomain ([2a01:e0a:bb2:6df0:64ae:3840:3a64:b26a])
-        by smtp.gmail.com with ESMTPSA id p11-20020adfe60b000000b003176c6e87b1sm20193399wrm.81.2023.08.23.14.17.16
+        by smtp.gmail.com with ESMTPSA id p11-20020adfe60b000000b003176c6e87b1sm20193399wrm.81.2023.08.23.14.17.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Aug 2023 14:17:17 -0700 (PDT)
+        Wed, 23 Aug 2023 14:17:09 -0700 (PDT)
 From:   Mehdi Djait <mehdi.djait.k@gmail.com>
 To:     jic23@kernel.org, mazziesaccount@gmail.com
 Cc:     krzysztof.kozlowski+dt@linaro.org,
@@ -56,9 +56,9 @@ Cc:     krzysztof.kozlowski+dt@linaro.org,
         lars@metafoo.de, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         Mehdi Djait <mehdi.djait.k@gmail.com>
-Subject: [PATCH v8 6/7] iio: accel: kionix-kx022a: Add a function to retrieve number of bytes in buffer
-Date:   Wed, 23 Aug 2023 23:16:40 +0200
-Message-Id: <923d01408680f5ac88ca8ee565a990645578ee83.1692824815.git.mehdi.djait.k@gmail.com>
+Subject: [PATCH v8 4/7] iio: accel: kionix-kx022a: Add an i2c_device_id table
+Date:   Wed, 23 Aug 2023 23:16:38 +0200
+Message-Id: <9950e3963600465e1177a20ad8a93a3927c026ef.1692824815.git.mehdi.djait.k@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1692824815.git.mehdi.djait.k@gmail.com>
 References: <cover.1692824815.git.mehdi.djait.k@gmail.com>
@@ -68,126 +68,49 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Since Kionix accelerometers use various numbers of bits to report data, a
-device-specific function is required.
-Implement the function as a callback in the device-specific chip_info structure
+Add the missing i2c device id.
 
-Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Acked-by: Matti Vaittinen <mazziesaccount@gmail.com>
 Signed-off-by: Mehdi Djait <mehdi.djait.k@gmail.com>
 ---
 v8:
 v7:
-- no changes
-
 v6:
-- directly return KX022A_FIFO_MAX_BYTES as suggested by Andy
-
 v5:
-- no changes
-
 v4:
-- removed the comment about "bogus value from i2c"
-- removed regmap_get_device(data->regmap); dev is present in the
-  driver's private data
-
-v3:
 - no changes
 
-v2:
-- separated this change from the chip_info introduction and made it a patch in v2 
-- changed the function from generic implementation for to device-specific one
-- removed blank lines pointed out by checkpatch
-- changed the allocation of the "buffer" array in __kx022a_fifo_flush
+v3:                                                                             
+- no changes, this patch is introduced in the v2
 
- drivers/iio/accel/kionix-kx022a.c | 28 ++++++++++++++++++----------
- drivers/iio/accel/kionix-kx022a.h |  4 ++++
- 2 files changed, 22 insertions(+), 10 deletions(-)
+ drivers/iio/accel/kionix-kx022a-i2c.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-kx022a.c
-index 6bac618c63b4..458859ebc645 100644
---- a/drivers/iio/accel/kionix-kx022a.c
-+++ b/drivers/iio/accel/kionix-kx022a.c
-@@ -596,26 +596,33 @@ static int kx022a_drop_fifo_contents(struct kx022a_data *data)
- 	return regmap_write(data->regmap, data->chip_info->buf_clear, 0x0);
+diff --git a/drivers/iio/accel/kionix-kx022a-i2c.c b/drivers/iio/accel/kionix-kx022a-i2c.c
+index e6fd02d931b6..b5a85ce3a891 100644
+--- a/drivers/iio/accel/kionix-kx022a-i2c.c
++++ b/drivers/iio/accel/kionix-kx022a-i2c.c
+@@ -30,6 +30,12 @@ static int kx022a_i2c_probe(struct i2c_client *i2c)
+ 	return kx022a_probe_internal(dev);
  }
  
-+static int kx022a_get_fifo_bytes(struct kx022a_data *data)
-+{
-+	int ret, fifo_bytes;
++static const struct i2c_device_id kx022a_i2c_id[] = {
++	{ .name = "kx022a" },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, kx022a_i2c_id);
 +
-+	ret = regmap_read(data->regmap, KX022A_REG_BUF_STATUS_1, &fifo_bytes);
-+	if (ret) {
-+		dev_err(data->dev, "Error reading buffer status\n");
-+		return ret;
-+	}
-+
-+	if (fifo_bytes == KX022A_FIFO_FULL_VALUE)
-+		return KX022A_FIFO_MAX_BYTES;
-+
-+	return fifo_bytes;
-+}
-+
- static int __kx022a_fifo_flush(struct iio_dev *idev, unsigned int samples,
- 			       bool irq)
- {
- 	struct kx022a_data *data = iio_priv(idev);
--	struct device *dev = regmap_get_device(data->regmap);
- 	uint64_t sample_period;
- 	int count, fifo_bytes;
- 	bool renable = false;
- 	int64_t tstamp;
- 	int ret, i;
- 
--	ret = regmap_read(data->regmap, KX022A_REG_BUF_STATUS_1, &fifo_bytes);
--	if (ret) {
--		dev_err(dev, "Error reading buffer status\n");
--		return ret;
--	}
--
--	/* Let's not overflow if we for some reason get bogus value from i2c */
--	if (fifo_bytes == KX022A_FIFO_FULL_VALUE)
--		fifo_bytes = KX022A_FIFO_MAX_BYTES;
-+	fifo_bytes = data->chip_info->get_fifo_bytes(data);
- 
- 	if (fifo_bytes % KX022A_FIFO_SAMPLES_SIZE_BYTES)
- 		dev_warn(data->dev, "Bad FIFO alignment. Data may be corrupt\n");
-@@ -1024,6 +1031,7 @@ const struct kx022a_chip_info kx022a_chip_info = {
- 	.inc5		  = KX022A_REG_INC5,
- 	.inc6		  = KX022A_REG_INC6,
- 	.xout_l		  = KX022A_REG_XOUT_L,
-+	.get_fifo_bytes	  = kx022a_get_fifo_bytes,
+ static const struct of_device_id kx022a_of_match[] = {
+ 	{ .compatible = "kionix,kx022a", },
+ 	{ }
+@@ -42,6 +48,7 @@ static struct i2c_driver kx022a_i2c_driver = {
+ 		.of_match_table = kx022a_of_match,
+ 	  },
+ 	.probe_new    = kx022a_i2c_probe,
++	.id_table     = kx022a_i2c_id,
  };
- EXPORT_SYMBOL_NS_GPL(kx022a_chip_info, IIO_KX022A);
+ module_i2c_driver(kx022a_i2c_driver);
  
-diff --git a/drivers/iio/accel/kionix-kx022a.h b/drivers/iio/accel/kionix-kx022a.h
-index 0e5026019213..c9f9aee7e597 100644
---- a/drivers/iio/accel/kionix-kx022a.h
-+++ b/drivers/iio/accel/kionix-kx022a.h
-@@ -76,6 +76,8 @@
- 
- struct device;
- 
-+struct kx022a_data;
-+
- /**
-  * struct kx022a_chip_info - Kionix accelerometer chip specific information
-  *
-@@ -99,6 +101,7 @@ struct device;
-  * @inc5:		interrupt control register 5
-  * @inc6:		interrupt control register 6
-  * @xout_l:		x-axis output least significant byte
-+ * @get_fifo_bytes:	function pointer to get number of bytes in the FIFO buffer
-  */
- struct kx022a_chip_info {
- 	const char *name;
-@@ -121,6 +124,7 @@ struct kx022a_chip_info {
- 	u8 inc5;
- 	u8 inc6;
- 	u8 xout_l;
-+	int (*get_fifo_bytes)(struct kx022a_data *);
- };
- 
- int kx022a_probe_internal(struct device *dev, const struct kx022a_chip_info *chip_info);
 -- 
 2.30.2
 
