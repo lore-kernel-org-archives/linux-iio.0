@@ -2,70 +2,71 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8642C6FA8F
-	for <linux-iio@archiver.kernel.org>; Thu, 24 Aug 2023 11:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82A3CC27C40
+	for <linux-iio@archiver.kernel.org>; Thu, 24 Aug 2023 11:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237087AbjHXLvE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 24 Aug 2023 07:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58782 "EHLO
+        id S230119AbjHXLwk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 24 Aug 2023 07:52:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241240AbjHXLus (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Aug 2023 07:50:48 -0400
+        with ESMTP id S241315AbjHXLwf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Aug 2023 07:52:35 -0400
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A89119B9;
-        Thu, 24 Aug 2023 04:50:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8419F1736;
+        Thu, 24 Aug 2023 04:52:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692877816; x=1724413816;
+  t=1692877953; x=1724413953;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=dKqrsbD6XhE/EpX3DcAkGJl2fulCPG3jh08irYfcRn4=;
-  b=HefHNvPyqnd/kotY0OlHELmSdqx9ZXEEipSPJsZLbMb8IDQOOzaiU+Nj
-   59Wm8PnysB9hgh9cb6l71b6OcepJIMaBeC6g136k5vQ3CnBC/g3XN+8BE
-   YQ8w64GPl94y0o4BEcHBXv9ciwSDnOTi07d54NHx+Scjtv/NSygxGvc8i
-   LeyZE6AGs3yEnoZkUbmMsAczizKr5ymUaaNHQEz4sKWX0D6yluskTuIlU
-   B/joKftRosKHiZDRP1Cvg3UH4tBcxVrPTKeIw6z2IR+C0hpe0lpnM6VH5
-   loMH9qr3WxxSH91+ozlcApD0HWK8inFT7N6WkLY7yJ1juM/LztzyB5Yap
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10811"; a="354745928"
+  bh=hilqaJ+LrQ5N1ZvOthhZhNMYm83EOMsRLikbmeFxTIA=;
+  b=H1/5Kw/Z2Wxvd7y4POvly9r9FsgSytNJAlCjIHlFzbX5OWdVxeDbhdZH
+   6e2xd/Z2KRSitdd7rOM0KHSHgxohnKhqmU57xAFugKdY9Uqa835VeciwS
+   T0cN7TzbrB6ALbqiZAd/EagshqUU4prOM5xFWeI6sawirjCJo7SyxU+3I
+   CvniIB8Waj4HOXk+SgW8GzoJBojkUmL3cXzIEJdFxMJ6zZHE6kOByyt/7
+   Im8vb2kMUh/IkCO6OtI1y1cUP1uTBfPOigvPXqXgpbmn0tKtF/oHFL1ZX
+   S/8rG4WGwRQjbUY4gRUQYn9yyH6oZdzdYxVuJL4s8yAAoLfPka6XyG5bN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10811"; a="354746591"
 X-IronPort-AV: E=Sophos;i="6.01,195,1684825200"; 
-   d="scan'208";a="354745928"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2023 04:49:37 -0700
+   d="scan'208";a="354746591"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2023 04:52:33 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10811"; a="686837234"
+X-IronPort-AV: E=McAfee;i="6600,9927,10811"; a="713942926"
 X-IronPort-AV: E=Sophos;i="6.01,195,1684825200"; 
-   d="scan'208";a="686837234"
+   d="scan'208";a="713942926"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003.jf.intel.com with ESMTP; 24 Aug 2023 04:49:35 -0700
+  by orsmga006.jf.intel.com with ESMTP; 24 Aug 2023 04:52:30 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qZ8qD-001wsA-0P;
-        Thu, 24 Aug 2023 14:49:33 +0300
-Date:   Thu, 24 Aug 2023 14:49:32 +0300
+        id 1qZ8t2-0023Bq-2R;
+        Thu, 24 Aug 2023 14:52:28 +0300
+Date:   Thu, 24 Aug 2023 14:52:28 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Mehdi Djait <mehdi.djait.k@gmail.com>
 Cc:     jic23@kernel.org, mazziesaccount@gmail.com,
         krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
         lars@metafoo.de, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v8 2/7] iio: accel: kionix-kx022a: Remove blank lines
-Message-ID: <ZOdDzNg/H5IvvFIK@smile.fi.intel.com>
+Subject: Re: [PATCH v8 4/7] iio: accel: kionix-kx022a: Add an i2c_device_id
+ table
+Message-ID: <ZOdEfMJC0lGboBbv@smile.fi.intel.com>
 References: <cover.1692824815.git.mehdi.djait.k@gmail.com>
- <b1809c807b0638c9a171ac56e99e9773531610be.1692824815.git.mehdi.djait.k@gmail.com>
+ <9950e3963600465e1177a20ad8a93a3927c026ef.1692824815.git.mehdi.djait.k@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b1809c807b0638c9a171ac56e99e9773531610be.1692824815.git.mehdi.djait.k@gmail.com>
+In-Reply-To: <9950e3963600465e1177a20ad8a93a3927c026ef.1692824815.git.mehdi.djait.k@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Aug 23, 2023 at 11:16:36PM +0200, Mehdi Djait wrote:
-> Remove blank lines pointed out by the checkpatch script
+On Wed, Aug 23, 2023 at 11:16:38PM +0200, Mehdi Djait wrote:
+> Add the missing i2c device id.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+This needs an explanation. Why do we need legacy table, what for?
 
 -- 
 With Best Regards,
