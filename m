@@ -2,25 +2,25 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF1AC3DA66
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AEBDC71133
 	for <linux-iio@archiver.kernel.org>; Fri, 25 Aug 2023 10:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236193AbjHYK6X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 25 Aug 2023 06:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33670 "EHLO
+        id S233689AbjHYK6W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 25 Aug 2023 06:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238537AbjHYK6O (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Aug 2023 06:58:14 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F9D1BCC
-        for <linux-iio@vger.kernel.org>; Fri, 25 Aug 2023 03:58:12 -0700 (PDT)
-Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4RXGzh0wdCztSJ2;
-        Fri, 25 Aug 2023 18:54:24 +0800 (CST)
+        with ESMTP id S236193AbjHYK6L (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Aug 2023 06:58:11 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D67F01BC9
+        for <linux-iio@vger.kernel.org>; Fri, 25 Aug 2023 03:58:08 -0700 (PDT)
+Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4RXH1H0TQ4zVk5T;
+        Fri, 25 Aug 2023 18:55:47 +0800 (CST)
 Received: from huawei.com (10.90.53.73) by kwepemi500008.china.huawei.com
  (7.221.188.139) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.31; Fri, 25 Aug
- 2023 18:58:09 +0800
+ 2023 18:58:05 +0800
 From:   Jinjie Ruan <ruanjinjie@huawei.com>
 To:     <jic23@kernel.org>, <lars@metafoo.de>,
         <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
@@ -32,12 +32,10 @@ To:     <jic23@kernel.org>, <lars@metafoo.de>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>
 CC:     <ruanjinjie@huawei.com>
-Subject: [PATCH -next 3/4] iio: adc: spear_adc: Use devm_clk_get_enabled() helper function
-Date:   Fri, 25 Aug 2023 18:57:45 +0800
-Message-ID: <20230825105746.2999548-4-ruanjinjie@huawei.com>
+Subject: [PATCH -next 0/4] iio: Use devm_clk_get_enabled() helper function
+Date:   Fri, 25 Aug 2023 18:57:42 +0800
+Message-ID: <20230825105746.2999548-1-ruanjinjie@huawei.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230825105746.2999548-1-ruanjinjie@huawei.com>
-References: <20230825105746.2999548-1-ruanjinjie@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -49,91 +47,23 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The devm_clk_get_enabled() helper:
-    - calls devm_clk_get()
-    - calls clk_prepare_enable() and registers what is needed in order to
-      call clk_disable_unprepare() when needed, as a managed resource.
+Commit 7ef9651e9792 ("clk: Provide new devm_clk helpers for prepared
+and enabled clocks") provides a new helper function to prepare and
+enable a clock which keeps prepared (or enabled) during the whole
+lifetime of the driver.
 
-This simplifies the code.
+Jinjie Ruan (4):
+  iio: adc: at91_adc: Use devm_clk_get_enabled() helper function
+  iio: adc: mt6577_auxadc: Use devm_clk_get_enabled() helper function
+  iio: adc: spear_adc: Use devm_clk_get_enabled() helper function
+  iio: frequency: adf4350: Use devm_clk_get_enabled() helper function
 
-Signed-off-by: Jinjie Ruan <ruanjinjie@huawei.com>
----
- drivers/iio/adc/spear_adc.c | 30 +++++++-----------------------
- 1 file changed, 7 insertions(+), 23 deletions(-)
+ drivers/iio/adc/at91_adc.c      | 38 +++++++++------------------------
+ drivers/iio/adc/mt6577_auxadc.c | 17 +++------------
+ drivers/iio/adc/spear_adc.c     | 30 ++++++--------------------
+ drivers/iio/frequency/adf4350.c | 20 +++++------------
+ 4 files changed, 25 insertions(+), 80 deletions(-)
 
-diff --git a/drivers/iio/adc/spear_adc.c b/drivers/iio/adc/spear_adc.c
-index ad54ef798109..cd7708aa95af 100644
---- a/drivers/iio/adc/spear_adc.c
-+++ b/drivers/iio/adc/spear_adc.c
-@@ -297,36 +297,27 @@ static int spear_adc_probe(struct platform_device *pdev)
- 	st->adc_base_spear3xx =
- 		(struct adc_regs_spear3xx __iomem *)st->adc_base_spear6xx;
- 
--	st->clk = devm_clk_get(dev, NULL);
-+	st->clk = devm_clk_get_enabled(dev, NULL);
- 	if (IS_ERR(st->clk)) {
--		dev_err(dev, "failed getting clock\n");
--		return PTR_ERR(st->clk);
--	}
--
--	ret = clk_prepare_enable(st->clk);
--	if (ret) {
- 		dev_err(dev, "failed enabling clock\n");
--		return ret;
-+		return PTR_ERR(st->clk);
- 	}
- 
- 	irq = platform_get_irq(pdev, 0);
--	if (irq < 0) {
--		ret = irq;
--		goto errout2;
--	}
-+	if (irq < 0)
-+		return irq;
- 
- 	ret = devm_request_irq(dev, irq, spear_adc_isr, 0, SPEAR_ADC_MOD_NAME,
- 			       st);
- 	if (ret < 0) {
- 		dev_err(dev, "failed requesting interrupt\n");
--		goto errout2;
-+		return ret;
- 	}
- 
- 	if (of_property_read_u32(np, "sampling-frequency",
- 				 &st->sampling_freq)) {
- 		dev_err(dev, "sampling-frequency missing in DT\n");
--		ret = -EINVAL;
--		goto errout2;
-+		return -EINVAL;
- 	}
- 
- 	/*
-@@ -355,24 +346,17 @@ static int spear_adc_probe(struct platform_device *pdev)
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret)
--		goto errout2;
-+		return ret;
- 
- 	dev_info(dev, "SPEAR ADC driver loaded, IRQ %d\n", irq);
- 
- 	return 0;
--
--errout2:
--	clk_disable_unprepare(st->clk);
--	return ret;
- }
- 
- static int spear_adc_remove(struct platform_device *pdev)
- {
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--	struct spear_adc_state *st = iio_priv(indio_dev);
--
- 	iio_device_unregister(indio_dev);
--	clk_disable_unprepare(st->clk);
- 
- 	return 0;
- }
 -- 
 2.34.1
 
