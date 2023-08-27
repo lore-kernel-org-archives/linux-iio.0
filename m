@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97AC8CA1076
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Aug 2023 13:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49FE8CA107C
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Aug 2023 13:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230190AbjH0N0h (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Aug 2023 09:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54802 "EHLO
+        id S230212AbjH0N0i (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 27 Aug 2023 09:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230191AbjH0N0C (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Aug 2023 09:26:02 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0501AA
-        for <linux-iio@vger.kernel.org>; Sun, 27 Aug 2023 06:25:54 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id 2adb3069b0e04-500aed06ffcso2047928e87.0
-        for <linux-iio@vger.kernel.org>; Sun, 27 Aug 2023 06:25:54 -0700 (PDT)
+        with ESMTP id S230213AbjH0N0F (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Aug 2023 09:26:05 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2351BB
+        for <linux-iio@vger.kernel.org>; Sun, 27 Aug 2023 06:25:57 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id 2adb3069b0e04-4ffa01fc987so3987729e87.1
+        for <linux-iio@vger.kernel.org>; Sun, 27 Aug 2023 06:25:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1693142753; x=1693747553;
+        d=linaro.org; s=google; t=1693142756; x=1693747556;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=MPuoBnKtEFgCdxUoOIFl3Fx3Gw36qHVcIvB+5tSO88E=;
-        b=DWaUa7Dhl82MsB9Ytr6nJl9QQwUpkgoe74Q2cqUqMy5cSY9SCCb2CgZ5PjI01YlLx7
-         XjXgG6aYXICwbxDtMFke2a6OrC22yL5QVCPESIx/gaE9zELB/0Y+OPhFqYEifnLTj22x
-         wciYG+GE7VtSnPgYr6MERt2qpEQm5ll7Ks8lt+ht1P83MLhlCWgy9mtzXFmPWQCyTbNM
-         GoteD5BwNkA3YGvZyS56wkF/exPLoA+cXKcPi//xm8d1EfwhceHWMvOf3oM8YUUKsndX
-         f4w8yw9jEW+Olp32WwW4wnisQOsmmxdL9OLOqgcF0fcauM2U8+OHWdg1oA6NGqdJC9TY
-         yyRA==
+        bh=tzXt286sPhU+yVmzfDKl882XWnXgjzSmy9rWB6wpkCI=;
+        b=rm6AdYylOWN8hX5/ZNUahYlblmlR5Ib41IGJ2Bt50ZwaUxhc0yhd5gsUqgEDzQm7D4
+         2Bwiz1ivug5JGN+C8q+OAuANsEQs7V7a2X89vC73plWanRUe3LH/bPuuGAv9Dbe31hqr
+         /ig+E5sUMfYnGjBo+OUn1ZvyGJMAPpE+tdVCrCu9EfGcBSB+BSZBcKSXE2s6vhVh/Fvf
+         8zv55DFJN6DAI0kq19aKLvEEwdMBRqHvh5kdVm+zXTdP296d5pLEIgenfQ0KqS62EJGQ
+         DlDkpspKrPYTMeLGaPgQAPRyCAATu9CwvH/J/1MquucLoofKdK/ZUbGDgqofRDYRpjFz
+         kMwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693142753; x=1693747553;
+        d=1e100.net; s=20221208; t=1693142756; x=1693747556;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=MPuoBnKtEFgCdxUoOIFl3Fx3Gw36qHVcIvB+5tSO88E=;
-        b=KlSAZ4JDtkNXUOA47IYuddEF79njS5Td/2yIaz4Uo0/ec3B/mXZiBgrc5kE9rRj1op
-         M6858qyAuwMUQ32RfYGq43JnFuBWubfrKNSPFnyJdmticK+7m5qrx/0TdtZrzbdIY1+w
-         3JdBsXyDaKXqw67qMjvWNXPFxTlRlTJd3IjtU3gQ0aBNgY4ZtNpnPiZpfRbDa+kNNM+l
-         Cw9GoXsN4900Q1jUZOzRgWOkFsyRhCsPINIUUcUMY5yaKCj4srY/WIry50BP8Es8xFXd
-         15qlH9sxfT3IzxY4pVGyovJl488RvzOU8bgkUWpxn2DSRf4fYO9zfs/h3kYVXFAhR0xx
-         LKfQ==
-X-Gm-Message-State: AOJu0YyAAR97iorl9x1ETak9PKlGXOgY9ibf6iQzuKHP8vfg0TiP5ng9
-        gJpN/f4Jrebvmo9CYvelvoLCmg==
-X-Google-Smtp-Source: AGHT+IEXejy0nOnu8nGlTyoCLijTGrLd0g228vfG7jt3GiUaGMr966aAb/QTBEkf7tDzv3ZMgo9DiQ==
-X-Received: by 2002:a05:6512:12d6:b0:4fd:f7a8:a9f3 with SMTP id p22-20020a05651212d600b004fdf7a8a9f3mr22413591lfg.38.1693142753248;
-        Sun, 27 Aug 2023 06:25:53 -0700 (PDT)
+        bh=tzXt286sPhU+yVmzfDKl882XWnXgjzSmy9rWB6wpkCI=;
+        b=QBt1AvP4lOWYg69tRt/oa1VBCQxYdvN1gsojUoiD2nhi4ox+Y1yKKKzkec9zhkmNuu
+         QDL/2bevp41UESCJnF4ky8v+uKJG3dSyQMCqsbeyBEim/huClQ0956IygzkBLm9aggq2
+         imk3VTZJCLnJIchFNbK3lW08a5ojPoXgCeKstnZ8Fg2TEIRRNzWY8Ns6sCRnW/UgKe04
+         ZZ7bEE34w5aUaXMjv2/4AH4wtg9EEaCtWue+Z0yoT94YZBXvwvy4wIKSAyp9Jt+7K2sf
+         g2nxsQUVFuAgmEDdOc4N/Qo9EAtZD4O1/eNVc1b22yCOdUSKwScAl23iOJbxIEIEQa7V
+         ODZw==
+X-Gm-Message-State: AOJu0YzG88ehS8kEHmXtf2xkLKVfczgxKURgJx9Z231gUHdFKnrVekOh
+        pHI1s4W9PXyZFbDryafzY77R1A==
+X-Google-Smtp-Source: AGHT+IGazNviFIpfQK9f+Atmuyr77uQaNDyew3nGBGqOk2spz0FokbHTOT1pZ4S922Q3I4zqUf0u1A==
+X-Received: by 2002:a05:6512:3da7:b0:4f6:3ef3:13e8 with SMTP id k39-20020a0565123da700b004f63ef313e8mr8500642lfv.0.1693142756096;
+        Sun, 27 Aug 2023 06:25:56 -0700 (PDT)
 Received: from umbar.unikie.fi ([192.130.178.91])
-        by smtp.gmail.com with ESMTPSA id t9-20020ac243a9000000b004faa2de9877sm1142040lfl.286.2023.08.27.06.25.52
+        by smtp.gmail.com with ESMTPSA id t9-20020ac243a9000000b004faa2de9877sm1142040lfl.286.2023.08.27.06.25.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Aug 2023 06:25:52 -0700 (PDT)
+        Sun, 27 Aug 2023 06:25:55 -0700 (PDT)
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 To:     devicetree@vger.kernel.org, Lee Jones <lee@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -62,9 +62,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         linux-input@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
         linux-leds@vger.kernel.org
-Subject: [PATCH v5 32/37] ARM: dts: qcom: msm8960: drop useless rpm regulators node
-Date:   Sun, 27 Aug 2023 16:25:20 +0300
-Message-Id: <20230827132525.951475-33-dmitry.baryshkov@linaro.org>
+Subject: [PATCH v5 35/37] ARM: dts: qcom: apq8060-dragonboard: rename mpp ADC channels to adc-channel
+Date:   Sun, 27 Aug 2023 16:25:23 +0300
+Message-Id: <20230827132525.951475-36-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230827132525.951475-1-dmitry.baryshkov@linaro.org>
 References: <20230827132525.951475-1-dmitry.baryshkov@linaro.org>
@@ -74,32 +74,52 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The set of regulators available over the RPM requests is not a property
-of the SoC. The only msm8960 board file (qcom-msm8960-cdp) also defines
-this node together with the compatible string. Drop the useless device
-node.
+Use generic `adc-channel@N' node names for board-specific ADC channels
+(routed to MPP pins) to follow the schema.
 
 Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- arch/arm/boot/dts/qcom/qcom-msm8960.dtsi | 4 ----
- 1 file changed, 4 deletions(-)
+ .../arm/boot/dts/qcom/qcom-apq8060-dragonboard.dts | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom/qcom-msm8960.dtsi
-index 774f507fa25a..f420740e068e 100644
---- a/arch/arm/boot/dts/qcom/qcom-msm8960.dtsi
-+++ b/arch/arm/boot/dts/qcom/qcom-msm8960.dtsi
-@@ -200,10 +200,6 @@ rpm: rpm@108000 {
- 				     <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
- 				     <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
- 			interrupt-names = "ack", "err", "wakeup";
--
--			regulators {
--				compatible = "qcom,rpm-pm8921-regulators";
--			};
- 		};
+diff --git a/arch/arm/boot/dts/qcom/qcom-apq8060-dragonboard.dts b/arch/arm/boot/dts/qcom/qcom-apq8060-dragonboard.dts
+index 8b70d4a59c7b..bf2527941917 100644
+--- a/arch/arm/boot/dts/qcom/qcom-apq8060-dragonboard.dts
++++ b/arch/arm/boot/dts/qcom/qcom-apq8060-dragonboard.dts
+@@ -998,23 +998,27 @@ &pm8058_xoadc {
+ 	xoadc-ref-supply = <&pm8058_l18>;
  
- 		acc0: clock-controller@2088000 {
+ 	/* Board-specific channels */
+-	mpp5@5 {
++	adc-channel@5 {
+ 		/* Connected to AOUT of ALS sensor */
+ 		reg = <0x00 0x05>;
+ 	};
+-	mpp6@6 {
++
++	adc-channel@6 {
+ 		/* Connected to test point TP43 */
+ 		reg = <0x00 0x06>;
+ 	};
+-	mpp7@7 {
++
++	adc-channel@7 {
+ 		/* Connected to battery thermistor */
+ 		reg = <0x00 0x07>;
+ 	};
+-	mpp8@8 {
++
++	adc-channel@8 {
+ 		/* Connected to battery ID detector */
+ 		reg = <0x00 0x08>;
+ 	};
+-	mpp9@9 {
++
++	adc-channel@9 {
+ 		/* Connected to XO thermistor */
+ 		reg = <0x00 0x09>;
+ 	};
 -- 
 2.39.2
 
