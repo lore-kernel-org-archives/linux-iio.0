@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B36C83F11
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E33EC83F1D
 	for <linux-iio@archiver.kernel.org>; Sun, 27 Aug 2023 13:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229950AbjH0N0Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Aug 2023 09:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
+        id S229975AbjH0N0R (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 27 Aug 2023 09:26:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229947AbjH0NZk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Aug 2023 09:25:40 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1821B7
-        for <linux-iio@vger.kernel.org>; Sun, 27 Aug 2023 06:25:34 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id 2adb3069b0e04-5008d16cc36so3596011e87.2
-        for <linux-iio@vger.kernel.org>; Sun, 27 Aug 2023 06:25:34 -0700 (PDT)
+        with ESMTP id S229986AbjH0NZm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Aug 2023 09:25:42 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC0CCC8
+        for <linux-iio@vger.kernel.org>; Sun, 27 Aug 2023 06:25:35 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id 2adb3069b0e04-500b6456c7eso568672e87.2
+        for <linux-iio@vger.kernel.org>; Sun, 27 Aug 2023 06:25:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1693142732; x=1693747532;
+        d=linaro.org; s=google; t=1693142734; x=1693747534;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FS4tS46Wt2bF/A6aYMT37LuXJaPlC2jK1TxmIfbaIXc=;
-        b=cCVsb3K3wTfdGYKkLNh1/LCiVvILBc2XhlLJIjiafrrG3xEUf+oUfFd0FAqb9TPZqI
-         MC5gFOtdGOkhHDCIrrawqoN6KSb8RbmKgo/Od0rhkufLjTeENV0j8pKtKSphj+jAMjus
-         FJnysUy5d0dG4K18vfUa42rYIQUvFiunnslZ8S5lv5g26Q2P9SXhWmbnTBZC0XA6vabC
-         zksrLDya3z9Eoe2ea353xcMQZBnuM+t6NmWGGTeqER2egO6dlO3Gnj0r0epa22vPKorn
-         k9z/BJ6ZijRtYsb9U7qE4juFZ/eFQ2L0JbG1Y9/iV0G/zespBnMUtZVthSeWZPeL2CdT
-         VYng==
+        bh=4tXAJeuiQtGgKA8BCw8CS7aa8g2kLTD4bdEBZkP9I3s=;
+        b=daD9ARWCDN16lW/XcIYv2r6Bx2umzwMzHPEBgT0qOz22Tnz5Sgtq4Xsc86D70VJYfN
+         tTIiy0M5/6vOqSMeSVrZ8ydtubDGqhOHmb8mAsBZ2TumgvwYgGmrZW8RbG3QHuA3TgUS
+         3DwKUjXsmfq9Uzd18pVEN3ZzIFbf5RiyHLoZo/5TOiSAmvMCDxlYw2gEyI6y7FsXp9WD
+         X3uxZzHv7ZEdDL9xnv0izdTod/r9TSoJloR/mM1BDDYqHCypgnStcS2Z6h53G8SBOrc9
+         y6ZsYQAPaiA/pCSMq5B/uAbMXANvtnNE0mY6MnSkm3VifQWOPjtpQdXuurIn/gZMUh1k
+         EvNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693142732; x=1693747532;
+        d=1e100.net; s=20221208; t=1693142734; x=1693747534;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=FS4tS46Wt2bF/A6aYMT37LuXJaPlC2jK1TxmIfbaIXc=;
-        b=YL4P7ibOSOymbaixW+qaerqMk9nD01YkPPhF7Pgmrjk5V6vgPYtdlBtYUaLZk7kNJx
-         KAfK/lWkjcjjd745C72hmCk4Fm38Xbl3EKwycPXuj0WtnRrHX4HYBgOJKdZdKaMe286q
-         Rx+xqFHwAbyNs2n/1xoTjXb44snx/9kZ90hA5b/nnwk5we5n3G8ZTdqXIQfizajyeySN
-         qNcKPzeSjBGnFpV65xPQkgxYRj2p4XprsTCjgksii7OqHqxuYJ+XxM4q26zIjextsixw
-         LT7/1peovmTmwP0xTIoMwgehqPxd9EUcvOxpoxa536oOe4WmntAtbKu3KvVcRSnPWFIE
-         wwFg==
-X-Gm-Message-State: AOJu0YxkhVKtOnY0JJjWtADBcMovvSuYZJBdgWFS29yH/+n9GrO4NWFO
-        G9R3Y6k3rvJggBtstATDGdeKMA==
-X-Google-Smtp-Source: AGHT+IFZK+tUrJtz99p54EBnoNcVP69Kr8EdF+9LS0F7pvu+9j+DO77rmoZZV5syR2tVbCjoleJlDQ==
-X-Received: by 2002:a05:6512:3da7:b0:4fb:7cea:882a with SMTP id k39-20020a0565123da700b004fb7cea882amr20200319lfv.3.1693142732738;
-        Sun, 27 Aug 2023 06:25:32 -0700 (PDT)
+        bh=4tXAJeuiQtGgKA8BCw8CS7aa8g2kLTD4bdEBZkP9I3s=;
+        b=dWJ5BlxYdVXV8loSFcAjLldZTYkqKccM7Q29CJA/wj3WjQdaKn1P4WnwH5uy9pceYo
+         tUvDrd1mWqJAQ+RTcNspsjeiYB5Q81/PrGu3dCIzSaAhd5j3oWS+y7Q6ZcREsvzw3GqR
+         1c3GsFfCFpZKswaKW/lL9LNJBKyy+AVFZMFpj5nkkLI5Gn/oDNw9akLVyd3bwdAzh9KH
+         ++pO/X3eTNkddKn3NcrKUSul2HUc3ms98RPjjfTqBoNZsdfWsmpR3oCWfK05/RvT/mFM
+         CoUEf8UKTdeuW/lu2Ub8kJxf3jzJOLNSmDcobKGSPa4wo/gph1PBKD/hfBaSAybFFFkd
+         XHxQ==
+X-Gm-Message-State: AOJu0YzP+wuh7F6k+ZPaA/XlPM1EiYpbKpQxoc3IRcfGg9RyJUumrHwX
+        YAIoGXN3/hE6SPRuPq2wkgFzhQ==
+X-Google-Smtp-Source: AGHT+IEn+KkLkLdfMUFm+FjjFlUdHvav1Gxy+1tdPkPmurwBWkE+Xp2eXUe4+8r72E+jjSvGC0RnwA==
+X-Received: by 2002:a05:6512:7c:b0:500:aed0:cb1b with SMTP id i28-20020a056512007c00b00500aed0cb1bmr2543171lfo.24.1693142734282;
+        Sun, 27 Aug 2023 06:25:34 -0700 (PDT)
 Received: from umbar.unikie.fi ([192.130.178.91])
-        by smtp.gmail.com with ESMTPSA id t9-20020ac243a9000000b004faa2de9877sm1142040lfl.286.2023.08.27.06.25.31
+        by smtp.gmail.com with ESMTPSA id t9-20020ac243a9000000b004faa2de9877sm1142040lfl.286.2023.08.27.06.25.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Aug 2023 06:25:32 -0700 (PDT)
+        Sun, 27 Aug 2023 06:25:33 -0700 (PDT)
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 To:     devicetree@vger.kernel.org, Lee Jones <lee@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -62,9 +62,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         linux-input@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
         linux-leds@vger.kernel.org
-Subject: [PATCH v5 07/37] ARM: dts: qcom: mdm9615-wp8548-mangoh-green: group include clauses
-Date:   Sun, 27 Aug 2023 16:24:55 +0300
-Message-Id: <20230827132525.951475-8-dmitry.baryshkov@linaro.org>
+Subject: [PATCH v5 09/37] ARM: dts: qcom: apq8064: fix PMIC node labels
+Date:   Sun, 27 Aug 2023 16:24:57 +0300
+Message-Id: <20230827132525.951475-10-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230827132525.951475-1-dmitry.baryshkov@linaro.org>
 References: <20230827132525.951475-1-dmitry.baryshkov@linaro.org>
@@ -74,32 +74,78 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Group file inclusion to follow contemporary practice.
+Change PM8921 node labels to start with pm8921_ prefix, following other
+Qualcomm PMIC device nodes.
 
 Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- arch/arm/boot/dts/qcom/qcom-mdm9615-wp8548-mangoh-green.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/qcom/qcom-apq8064.dtsi | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom/qcom-mdm9615-wp8548-mangoh-green.dts b/arch/arm/boot/dts/qcom/qcom-mdm9615-wp8548-mangoh-green.dts
-index b269fdca1460..e3b4b93c3d38 100644
---- a/arch/arm/boot/dts/qcom/qcom-mdm9615-wp8548-mangoh-green.dts
-+++ b/arch/arm/boot/dts/qcom/qcom-mdm9615-wp8548-mangoh-green.dts
-@@ -6,11 +6,11 @@
-  * Author : Neil Armstrong <narmstrong@baylibre.com>
-  */
+diff --git a/arch/arm/boot/dts/qcom/qcom-apq8064.dtsi b/arch/arm/boot/dts/qcom/qcom-apq8064.dtsi
+index 950adb63af70..6514d728b1ec 100644
+--- a/arch/arm/boot/dts/qcom/qcom-apq8064.dtsi
++++ b/arch/arm/boot/dts/qcom/qcom-apq8064.dtsi
+@@ -292,13 +292,13 @@ scm {
+ 	 */
+ 	iio-hwmon {
+ 		compatible = "iio-hwmon";
+-		io-channels = <&xoadc 0x00 0x01>, /* Battery */
+-			    <&xoadc 0x00 0x02>, /* DC in (charger) */
+-			    <&xoadc 0x00 0x04>, /* VPH the main system voltage */
+-			    <&xoadc 0x00 0x0b>, /* Die temperature */
+-			    <&xoadc 0x00 0x0c>, /* Reference voltage 1.25V */
+-			    <&xoadc 0x00 0x0d>, /* Reference voltage 0.625V */
+-			    <&xoadc 0x00 0x0e>; /* Charger temperature */
++		io-channels = <&pm8921_xoadc 0x00 0x01>, /* Battery */
++			      <&pm8921_xoadc 0x00 0x02>, /* DC in (charger) */
++			      <&pm8921_xoadc 0x00 0x04>, /* VPH the main system voltage */
++			      <&pm8921_xoadc 0x00 0x0b>, /* Die temperature */
++			      <&pm8921_xoadc 0x00 0x0c>, /* Reference voltage 1.25V */
++			      <&pm8921_xoadc 0x00 0x0d>, /* Reference voltage 0.625V */
++			      <&pm8921_xoadc 0x00 0x0e>; /* Charger temperature */
+ 	};
  
-+#include <dt-bindings/gpio/gpio.h>
- #include <dt-bindings/input/input.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
+ 	soc: soc {
+@@ -686,7 +686,7 @@ ssbi@500000 {
+ 			reg = <0x00500000 0x1000>;
+ 			qcom,controller-type = "pmic-arbiter";
  
- #include "qcom-mdm9615-wp8548.dtsi"
--#include <dt-bindings/interrupt-controller/irq.h>
--#include <dt-bindings/gpio/gpio.h>
+-			pmicintc: pmic {
++			pm8921: pmic {
+ 				compatible = "qcom,pm8921";
+ 				interrupt-parent = <&tlmm_pinmux>;
+ 				interrupts = <74 8>;
+@@ -721,7 +721,7 @@ pm8921_mpps: mpps@50 {
  
- / {
- 	model = "MangOH Green with WP8548 Module";
+ 				rtc@11d {
+ 					compatible = "qcom,pm8921-rtc";
+-					interrupt-parent = <&pmicintc>;
++					interrupt-parent = <&pm8921>;
+ 					interrupts = <39 1>;
+ 					reg = <0x11d>;
+ 					allow-set-time;
+@@ -730,16 +730,16 @@ rtc@11d {
+ 				pwrkey@1c {
+ 					compatible = "qcom,pm8921-pwrkey";
+ 					reg = <0x1c>;
+-					interrupt-parent = <&pmicintc>;
++					interrupt-parent = <&pm8921>;
+ 					interrupts = <50 1>, <51 1>;
+ 					debounce = <15625>;
+ 					pull-up;
+ 				};
+ 
+-				xoadc: xoadc@197 {
++				pm8921_xoadc: xoadc@197 {
+ 					compatible = "qcom,pm8921-adc";
+ 					reg = <0x197>;
+-					interrupts-extended = <&pmicintc 78 IRQ_TYPE_EDGE_RISING>;
++					interrupts-extended = <&pm8921 78 IRQ_TYPE_EDGE_RISING>;
+ 					#address-cells = <2>;
+ 					#size-cells = <0>;
+ 					#io-channel-cells = <2>;
 -- 
 2.39.2
 
