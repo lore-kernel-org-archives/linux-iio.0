@@ -2,51 +2,45 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4C3C83F12
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Aug 2023 16:26:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0703BC83F11
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Aug 2023 16:40:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232404AbjH1Q0V (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Aug 2023 12:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40130 "EHLO
+        id S230298AbjH1Qj5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Aug 2023 12:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232764AbjH1Q0R (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Aug 2023 12:26:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A331113D;
-        Mon, 28 Aug 2023 09:26:09 -0700 (PDT)
+        with ESMTP id S230457AbjH1QjY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Aug 2023 12:39:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6EC6F9;
+        Mon, 28 Aug 2023 09:39:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3524D63C0B;
-        Mon, 28 Aug 2023 16:26:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB932C433C8;
-        Mon, 28 Aug 2023 16:26:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6528E63869;
+        Mon, 28 Aug 2023 16:39:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18CD3C433C7;
+        Mon, 28 Aug 2023 16:39:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1693239968;
-        bh=OvYV9Htm9mU/km9WRjPlS3QpfQqo2NlyVWl3AqwuPJU=;
+        s=k20201202; t=1693240760;
+        bh=5LJ1v2A62rI8z41UV5q4orZmdPInisKLh5rGtam6KFU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aTMoaOBEQWHyzAdjGZbACBWr/HmrQA3Cvi2aC+eSDpXPaSiqBObYEG2SbNXQPDx06
-         Z0MckpI4yhO7ZQvzeetKjAvcCBRVG+C/PVB0zoG3hxG3iSorC6u6s++e6JH5xL6aS8
-         vS+0PJM3x7SssYr+QWYzODv2NfDKnpTmWBcSHBMR/PrhpkJTQnEBbrirXXFECuqzGC
-         hVwiFZWAG562g2uYskXR1Fm3tzlBfywDsheLV+SFczdKiqj2Bb0zuHevWV9NGZiiXP
-         VZXIzQLAUig2NhbtDdtanQpcTEWMilUJ86LtfR5Xjk80/Lnkcy0VMgizysUi+TUmkW
-         mExTr0JREa3nw==
-Date:   Mon, 28 Aug 2023 17:26:28 +0100
+        b=PgxcobcyCv7ZK1SQHtWPiRZbcyAgyhnB2FASMfMBvMjcxjKGbDrNiBvQOZZ/2/5pS
+         JqaDEG0zEa22adNre6ZfMfS71pRFS9+ggJUG46LDtCMqIZn7ZatDf5OOop2IDuZDq0
+         XfhCFzzq/y3fAzNVHSU89iFXtNCQmglYMRThppcSCwzwmlweTqVYvQZxT4KVU5O0dK
+         WaXfnOKabvmmPbCiEqlrItpjXPWZZnGQK9XrlF+vozz3ezV3o6zXmbQ6g6hqkJqb+0
+         YeJ0UJIJIhogmT6HjB1a1GE4gvZKAyeFICnAkv8ssYzwWD6P1SzIf2+uPDqFkIKcey
+         IThvKg15pieJQ==
+Date:   Mon, 28 Aug 2023 17:39:41 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Puranjay Mohan <puranjay12@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org,
-        Marco Felsch <m.felsch@pengutronix.de>
-Subject: Re: [PATCH] iio: temperature: tmp117: Convert enum->pointer for
- data in the match tables
-Message-ID: <20230828172628.76beca65@jic23-huawei>
-In-Reply-To: <20230812161154.196555-1-biju.das.jz@bp.renesas.com>
-References: <20230812161154.196555-1-biju.das.jz@bp.renesas.com>
+To:     Yue Haibing <yuehaibing@huawei.com>
+Cc:     <lars@metafoo.de>, <jean-baptiste.maneyrol@tdk.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH -next] iio: Remove unused declarations
+Message-ID: <20230828173941.6c2cf470@jic23-huawei>
+In-Reply-To: <20230811095701.35372-1-yuehaibing@huawei.com>
+References: <20230811095701.35372-1-yuehaibing@huawei.com>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -55,175 +49,100 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 12 Aug 2023 17:11:54 +0100
-Biju Das <biju.das.jz@bp.renesas.com> wrote:
+On Fri, 11 Aug 2023 17:57:01 +0800
+Yue Haibing <yuehaibing@huawei.com> wrote:
 
-> Convert enum->pointer for data in the match tables, so that
-> device_get_match_data() can do match against OF/ACPI/I2C tables, once i2c
-> bus type match support added to it.
+> Commit 0f3a8c3f34f7 ("iio: Add support for creating IIO devices via configfs")
+> declared but never implemented iio_sw_device_type_configfs_{un}register().
+> Commit b662f809d410 ("iio: core: Introduce IIO software triggers") declared but
+> never implemented iio_sw_trigger_type_configfs_{un}register().
+> Commit a3e0b51884ee ("iio: accel: add support for FXLS8962AF/FXLS8964AF accelerometers")
+> declared but never implemented fxls8962af_core_remove().
+> Commit 8dedcc3eee3a ("iio: core: centralize ioctl() calls to the main chardev")
+> declared but never implemented iio_device_ioctl().
 > 
-> Add struct tmp11x_info and replace enum->struct *tmp11x_info for data in
-> the match table. Drop tmp117_identify() and simplify tmp117_probe() by
-> replacing device_get_match_data() and id lookup for retrieving data by
-> i2c_get_match_data().
+> Commit d430f3c36ca6 ("iio: imu: inv_mpu6050: Use regmap instead of i2c specific functions")
+> removed inv_mpu6050_write_reg() but not its declaration.
 > 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Signed-off-by: Yue Haibing <yuehaibing@huawei.com>
+Applied to the togreg branch of iio.git but I won't push these out (other than
+as testing) until I can rebase on rc1.
 
-+CC Marco who has been active on this driver recently.
-
-I'll apply it in the meantime, but still very much open to review comments.
+Thanks,
 
 Jonathan
-
 > ---
->  drivers/iio/temperature/tmp117.c | 94 +++++++++++++++-----------------
->  1 file changed, 44 insertions(+), 50 deletions(-)
+>  drivers/iio/accel/fxls8962af.h            | 1 -
+>  drivers/iio/iio_core.h                    | 3 ---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h | 1 -
+>  include/linux/iio/sw_device.h             | 3 ---
+>  include/linux/iio/sw_trigger.h            | 3 ---
+>  5 files changed, 11 deletions(-)
 > 
-> diff --git a/drivers/iio/temperature/tmp117.c b/drivers/iio/temperature/tmp117.c
-> index fc02f491688b..059953015ae7 100644
-> --- a/drivers/iio/temperature/tmp117.c
-> +++ b/drivers/iio/temperature/tmp117.c
-> @@ -42,6 +42,12 @@ struct tmp117_data {
->  	s16 calibbias;
+> diff --git a/drivers/iio/accel/fxls8962af.h b/drivers/iio/accel/fxls8962af.h
+> index 9cbe98c3ba9a..6eaa2803b26f 100644
+> --- a/drivers/iio/accel/fxls8962af.h
+> +++ b/drivers/iio/accel/fxls8962af.h
+> @@ -14,7 +14,6 @@ enum {
 >  };
 >  
-> +struct tmp11x_info {
-> +	const char *name;
-> +	struct iio_chan_spec const *channels;
-> +	int num_channels;
-> +};
-> +
->  static int tmp117_read_raw(struct iio_dev *indio_dev,
->  			   struct iio_chan_spec const *channel, int *val,
->  			   int *val2, long mask)
-> @@ -119,57 +125,54 @@ static const struct iio_chan_spec tmp116_channels[] = {
->  	},
+>  int fxls8962af_core_probe(struct device *dev, struct regmap *regmap, int irq);
+> -int fxls8962af_core_remove(struct device *dev);
+>  
+>  extern const struct dev_pm_ops fxls8962af_pm_ops;
+>  extern const struct regmap_config fxls8962af_i2c_regmap_conf;
+> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+> index 501e286702ef..1a38b1915e7a 100644
+> --- a/drivers/iio/iio_core.h
+> +++ b/drivers/iio/iio_core.h
+> @@ -30,9 +30,6 @@ struct iio_ioctl_handler {
+>  		      unsigned int cmd, unsigned long arg);
 >  };
 >  
-> +static const struct tmp11x_info tmp116_channels_info = {
-> +	.name = "tmp116",
-> +	.channels = tmp116_channels,
-> +	.num_channels = ARRAY_SIZE(tmp116_channels)
-> +};
-> +
-> +static const struct tmp11x_info tmp117_channels_info = {
-> +	.name = "tmp117",
-> +	.channels = tmp117_channels,
-> +	.num_channels = ARRAY_SIZE(tmp117_channels)
-> +};
-> +
->  static const struct iio_info tmp117_info = {
->  	.read_raw = tmp117_read_raw,
->  	.write_raw = tmp117_write_raw,
->  };
->  
-> -static int tmp117_identify(struct i2c_client *client)
-> +static int tmp117_probe(struct i2c_client *client)
->  {
-> -	const struct i2c_device_id *id;
-> -	unsigned long match_data;
-> +	const struct tmp11x_info *match_data;
-> +	struct tmp117_data *data;
-> +	struct iio_dev *indio_dev;
->  	int dev_id;
->  
-> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-> +		return -EOPNOTSUPP;
-> +
->  	dev_id = i2c_smbus_read_word_swapped(client, TMP117_REG_DEVICE_ID);
->  	if (dev_id < 0)
->  		return dev_id;
->  
->  	switch (dev_id) {
->  	case TMP116_DEVICE_ID:
-> +		match_data = &tmp116_channels_info;
-> +		break;
->  	case TMP117_DEVICE_ID:
-> -		return dev_id;
-> +		match_data = &tmp117_channels_info;
-> +		break;
-> +	default:
-> +		dev_info(&client->dev,
-> +			 "Unknown device id (0x%x), use fallback compatible\n",
-> +			 dev_id);
-> +		match_data = i2c_get_match_data(client);
->  	}
->  
-> -	dev_info(&client->dev, "Unknown device id (0x%x), use fallback compatible\n",
-> -		 dev_id);
+> -long iio_device_ioctl(struct iio_dev *indio_dev, struct file *filp,
+> -		      unsigned int cmd, unsigned long arg);
 > -
-> -	match_data = (uintptr_t)device_get_match_data(&client->dev);
-> -	if (match_data)
-> -		return match_data;
-> -
-> -	id = i2c_client_get_device_id(client);
-> -	if (id)
-> -		return id->driver_data;
-> -
-> -	dev_err(&client->dev, "Failed to identify unsupported device\n");
-> -
-> -	return -ENODEV;
-> -}
-> -
-> -static int tmp117_probe(struct i2c_client *client)
-> -{
-> -	struct tmp117_data *data;
-> -	struct iio_dev *indio_dev;
-> -	int ret, dev_id;
-> -
-> -	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-> -		return -EOPNOTSUPP;
-> -
-> -	ret = tmp117_identify(client);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	dev_id = ret;
-> +	if (!match_data)
-> +		return dev_err_probe(&client->dev, -ENODEV,
-> +				     "Failed to identify unsupported device\n");
+>  void iio_device_ioctl_handler_register(struct iio_dev *indio_dev,
+>  				       struct iio_ioctl_handler *h);
+>  void iio_device_ioctl_handler_unregister(struct iio_ioctl_handler *h);
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> index ed5a96e78df0..95f548235de7 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> @@ -464,7 +464,6 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev, int irq_type);
+>  int inv_mpu6050_prepare_fifo(struct inv_mpu6050_state *st, bool enable);
+>  int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en,
+>  			      unsigned int mask);
+> -int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 val);
+>  int inv_mpu_acpi_create_mux_client(struct i2c_client *client);
+>  void inv_mpu_acpi_delete_mux_client(struct i2c_client *client);
+>  int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+> diff --git a/include/linux/iio/sw_device.h b/include/linux/iio/sw_device.h
+> index eff1e6b2595c..0f7fe7b522e3 100644
+> --- a/include/linux/iio/sw_device.h
+> +++ b/include/linux/iio/sw_device.h
+> @@ -51,9 +51,6 @@ void iio_unregister_sw_device_type(struct iio_sw_device_type *dt);
+>  struct iio_sw_device *iio_sw_device_create(const char *, const char *);
+>  void iio_sw_device_destroy(struct iio_sw_device *);
 >  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->  	if (!indio_dev)
-> @@ -181,33 +184,24 @@ static int tmp117_probe(struct i2c_client *client)
+> -int iio_sw_device_type_configfs_register(struct iio_sw_device_type *dt);
+> -void iio_sw_device_type_configfs_unregister(struct iio_sw_device_type *dt);
+> -
+>  static inline
+>  void iio_swd_group_init_type_name(struct iio_sw_device *d,
+>  				  const char *name,
+> diff --git a/include/linux/iio/sw_trigger.h b/include/linux/iio/sw_trigger.h
+> index 47de2443e984..bc77f88df303 100644
+> --- a/include/linux/iio/sw_trigger.h
+> +++ b/include/linux/iio/sw_trigger.h
+> @@ -51,9 +51,6 @@ void iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *tt);
+>  struct iio_sw_trigger *iio_sw_trigger_create(const char *, const char *);
+>  void iio_sw_trigger_destroy(struct iio_sw_trigger *);
 >  
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->info = &tmp117_info;
-> +	indio_dev->channels = match_data->channels;
-> +	indio_dev->num_channels = match_data->num_channels;
-> +	indio_dev->name = match_data->name;
->  
-> -	switch (dev_id) {
-> -	case TMP116_DEVICE_ID:
-> -		indio_dev->channels = tmp116_channels;
-> -		indio_dev->num_channels = ARRAY_SIZE(tmp116_channels);
-> -		indio_dev->name = "tmp116";
-> -		break;
-> -	case TMP117_DEVICE_ID:
-> -		indio_dev->channels = tmp117_channels;
-> -		indio_dev->num_channels = ARRAY_SIZE(tmp117_channels);
-> -		indio_dev->name = "tmp117";
-> -		break;
-> -	}
->  
->  	return devm_iio_device_register(&client->dev, indio_dev);
->  }
->  
->  static const struct of_device_id tmp117_of_match[] = {
-> -	{ .compatible = "ti,tmp116", .data = (void *)TMP116_DEVICE_ID },
-> -	{ .compatible = "ti,tmp117", .data = (void *)TMP117_DEVICE_ID },
-> +	{ .compatible = "ti,tmp116", .data = &tmp116_channels_info },
-> +	{ .compatible = "ti,tmp117", .data = &tmp117_channels_info },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, tmp117_of_match);
->  
->  static const struct i2c_device_id tmp117_id[] = {
-> -	{ "tmp116", TMP116_DEVICE_ID },
-> -	{ "tmp117", TMP117_DEVICE_ID },
-> +	{ "tmp116", (kernel_ulong_t)&tmp116_channels_info },
-> +	{ "tmp117", (kernel_ulong_t)&tmp117_channels_info },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(i2c, tmp117_id);
+> -int iio_sw_trigger_type_configfs_register(struct iio_sw_trigger_type *tt);
+> -void iio_sw_trigger_type_configfs_unregister(struct iio_sw_trigger_type *tt);
+> -
+>  static inline
+>  void iio_swt_group_init_type_name(struct iio_sw_trigger *t,
+>  				  const char *name,
 
