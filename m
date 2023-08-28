@@ -2,168 +2,116 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D0DC83F16
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Aug 2023 06:47:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C5B2C83F11
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Aug 2023 09:44:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229461AbjH1Gqg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Aug 2023 02:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39034 "EHLO
+        id S229848AbjH1JoZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Aug 2023 05:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbjH1GqL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Aug 2023 02:46:11 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1DA10D
-        for <linux-iio@vger.kernel.org>; Sun, 27 Aug 2023 23:46:09 -0700 (PDT)
-Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4RZ1Hx59Kxz1L9G5;
-        Mon, 28 Aug 2023 14:44:29 +0800 (CST)
-Received: from huawei.com (10.90.53.73) by kwepemi500008.china.huawei.com
- (7.221.188.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.31; Mon, 28 Aug
- 2023 14:46:04 +0800
-From:   Jinjie Ruan <ruanjinjie@huawei.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <claudiu.beznea@tuxon.dev>, <yangyingliang@huawei.com>,
-        <robh@kernel.org>, <heiko@sntech.de>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>
-CC:     <ruanjinjie@huawei.com>
-Subject: [PATCH -next v3 2/3] iio: adc: at91_adc: Use devm_clk_get_enabled() helper function
-Date:   Mon, 28 Aug 2023 14:45:45 +0800
-Message-ID: <20230828064546.2383857-3-ruanjinjie@huawei.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230828064546.2383857-1-ruanjinjie@huawei.com>
-References: <20230828064546.2383857-1-ruanjinjie@huawei.com>
+        with ESMTP id S230158AbjH1JoD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Aug 2023 05:44:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D02AA;
+        Mon, 28 Aug 2023 02:44:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D70660B86;
+        Mon, 28 Aug 2023 09:44:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33BE7C433C7;
+        Mon, 28 Aug 2023 09:43:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1693215839;
+        bh=xjAeVP31obttB8Bvi53bbgjrxVQcHlvWuSepU2NlDME=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cugJG4/qmTzGMC+Vw/+V6jdhsSzRJYf5aTW+RzXw16WEBCoNdKtICGoQhshJSlf7T
+         /eRYxRYHMpIBqtR2h8LHiUdBUDfovOX1ikseHoXzTxTZSHz8l8owiHIHNibcZw52ib
+         7aZpQ17gDxL9eELUHU1EA/xD4tCSW8x9aV6/Ayag42oGoYrc9iIsGQzaSm+wEltO0r
+         60XkHU0adZ4Vws8/NX2UcADa71iL6R81R7QWEQjPddvosNAvrE8GvK7YpOdwC8JPSi
+         g9CW5DMZNeXlpmONXxf8SPlFBk89b0udzvfZMlDNGHUU4Y88VMgtUo3iaKJdc9CmRD
+         75vhN5QMpRyAw==
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     bleung@chromium.org, groeck@chromium.org, jic23@kernel.org,
+        lars@metafoo.de
+Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
+        gwendal@chromium.org, linux-iio@vger.kernel.org,
+        dianders@chromium.org, swboyd@chromium.org, stable@vger.kernel.org
+Subject: [PATCH] iio: cros_ec: fix an use-after-free in cros_ec_sensors_push_data()
+Date:   Mon, 28 Aug 2023 17:43:39 +0800
+Message-ID: <20230828094339.1248472-1-tzungbi@kernel.org>
+X-Mailer: git-send-email 2.42.0.rc1.204.g551eb34607-goog
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.90.53.73]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500008.china.huawei.com (7.221.188.139)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The devm_clk_get_enabled() helper:
-    - calls devm_clk_get()
-    - calls clk_prepare_enable() and registers what is needed in order to
-      call clk_disable_unprepare() when needed, as a managed resource.
+cros_ec_sensors_push_data() reads some `indio_dev` states (e.g.
+iio_buffer_enabled() and `indio_dev->active_scan_mask`) without holding
+the `mlock`.
 
-This simplifies the code.
+An use-after-free on `indio_dev->active_scan_mask` was observed.  The
+call trace:
+[...]
+ _find_next_bit
+ cros_ec_sensors_push_data
+ cros_ec_sensorhub_event
+ blocking_notifier_call_chain
+ cros_ec_irq_thread
 
-Signed-off-by: Jinjie Ruan <ruanjinjie@huawei.com>
+It was caused by a race condition: one thread just freed
+`active_scan_mask` at [1]; while another thread tried to access the
+memory at [2].
+
+Fix it by acquiring the `mlock` before accessing the `indio_dev` states.
+
+[1]: https://elixir.bootlin.com/linux/v6.5/source/drivers/iio/industrialio-buffer.c#L1189
+[2]: https://elixir.bootlin.com/linux/v6.5/source/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c#L198
+
+Cc: stable@vger.kernel.org
+Fixes: aa984f1ba4a4 ("iio: cros_ec: Register to cros_ec_sensorhub when EC supports FIFO")
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 ---
-v3:
-- Take the last remove free_irq() and add it to be the first devm managed.
-v2:
-- No change.
----
- drivers/iio/adc/at91_adc.c | 38 +++++++++-----------------------------
- 1 file changed, 9 insertions(+), 29 deletions(-)
+ drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 771ad5c4a131..e5610722ce0b 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -1089,31 +1089,18 @@ static int at91_adc_probe(struct platform_device *pdev)
- 		return ret;
- 	}
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+index b72d39fc2434..a514d0dbafc7 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+@@ -182,17 +182,20 @@ int cros_ec_sensors_push_data(struct iio_dev *indio_dev,
+ 			      s16 *data,
+ 			      s64 timestamp)
+ {
++	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+ 	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+ 	s16 *out;
+ 	s64 delta;
+ 	unsigned int i;
  
--	st->clk = devm_clk_get(&pdev->dev, "adc_clk");
-+	st->clk = devm_clk_get_enabled(&pdev->dev, "adc_clk");
- 	if (IS_ERR(st->clk)) {
--		dev_err(&pdev->dev, "Failed to get the clock.\n");
--		return PTR_ERR(st->clk);
--	}
--
--	ret = clk_prepare_enable(st->clk);
--	if (ret) {
- 		dev_err(&pdev->dev,
- 			"Could not prepare or enable the clock.\n");
--		return ret;
-+		return PTR_ERR(st->clk);
- 	}
- 
--	st->adc_clk = devm_clk_get(&pdev->dev, "adc_op_clk");
-+	st->adc_clk = devm_clk_get_enabled(&pdev->dev, "adc_op_clk");
- 	if (IS_ERR(st->adc_clk)) {
--		dev_err(&pdev->dev, "Failed to get the ADC clock.\n");
--		ret = PTR_ERR(st->adc_clk);
--		goto error_disable_clk;
--	}
--
--	ret = clk_prepare_enable(st->adc_clk);
--	if (ret) {
- 		dev_err(&pdev->dev,
- 			"Could not prepare or enable the ADC clock.\n");
--		goto error_disable_clk;
-+		return PTR_ERR(st->adc_clk);
- 	}
- 
++	mutex_lock(&iio_dev_opaque->mlock);
++
  	/*
-@@ -1132,8 +1119,7 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 	 * Ignore samples if the buffer is not set: it is needed if the ODR is
+ 	 * set but the buffer is not enabled yet.
+ 	 */
+ 	if (!iio_buffer_enabled(indio_dev))
+-		return 0;
++		goto exit;
  
- 	if (!st->startup_time) {
- 		dev_err(&pdev->dev, "No startup time available.\n");
--		ret = -EINVAL;
--		goto error_disable_adc_clk;
-+		return -EINVAL;
- 	}
- 	ticks = (*st->caps->calc_startup_ticks)(st->startup_time, adc_clk_khz);
+ 	out = (s16 *)st->samples;
+ 	for_each_set_bit(i,
+@@ -210,6 +213,8 @@ int cros_ec_sensors_push_data(struct iio_dev *indio_dev,
+ 	iio_push_to_buffers_with_timestamp(indio_dev, st->samples,
+ 					   timestamp + delta);
  
-@@ -1161,7 +1147,7 @@ static int at91_adc_probe(struct platform_device *pdev)
- 	ret = at91_adc_channel_init(idev);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "Couldn't initialize the channels.\n");
--		goto error_disable_adc_clk;
-+		return ret;
- 	}
- 
- 	init_waitqueue_head(&st->wq_data_avail);
-@@ -1176,19 +1162,19 @@ static int at91_adc_probe(struct platform_device *pdev)
- 		ret = at91_adc_buffer_init(idev);
- 		if (ret < 0) {
- 			dev_err(&pdev->dev, "Couldn't initialize the buffer.\n");
--			goto error_disable_adc_clk;
-+			return ret;
- 		}
- 
- 		ret = at91_adc_trigger_init(idev);
- 		if (ret < 0) {
- 			dev_err(&pdev->dev, "Couldn't setup the triggers.\n");
- 			at91_adc_buffer_remove(idev);
--			goto error_disable_adc_clk;
-+			return ret;
- 		}
- 	} else {
- 		ret = at91_ts_register(idev, pdev);
- 		if (ret)
--			goto error_disable_adc_clk;
-+			return ret;
- 
- 		at91_ts_hw_init(idev, adc_clk_khz);
- 	}
-@@ -1208,10 +1194,6 @@ static int at91_adc_probe(struct platform_device *pdev)
- 	} else {
- 		at91_ts_unregister(st);
- 	}
--error_disable_adc_clk:
--	clk_disable_unprepare(st->adc_clk);
--error_disable_clk:
--	clk_disable_unprepare(st->clk);
- 	return ret;
- }
- 
-@@ -1227,8 +1209,6 @@ static int at91_adc_remove(struct platform_device *pdev)
- 	} else {
- 		at91_ts_unregister(st);
- 	}
--	clk_disable_unprepare(st->adc_clk);
--	clk_disable_unprepare(st->clk);
- 
++exit:
++	mutex_unlock(&iio_dev_opaque->mlock);
  	return 0;
  }
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_push_data);
 -- 
-2.34.1
+2.42.0.rc1.204.g551eb34607-goog
 
