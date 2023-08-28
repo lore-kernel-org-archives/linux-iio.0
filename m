@@ -2,49 +2,48 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0694DC83F1E
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Aug 2023 10:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FDAC71153
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Aug 2023 10:55:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231446AbjH1Kea (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Aug 2023 06:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
+        id S232118AbjH1Ky4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Aug 2023 06:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231516AbjH1KeB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Aug 2023 06:34:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4FA9CFA;
-        Mon, 28 Aug 2023 03:33:40 -0700 (PDT)
+        with ESMTP id S232382AbjH1Kyr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Aug 2023 06:54:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31931B4;
+        Mon, 28 Aug 2023 03:54:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B44C263DB4;
-        Mon, 28 Aug 2023 10:33:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7914C433C7;
-        Mon, 28 Aug 2023 10:33:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D25B164546;
+        Mon, 28 Aug 2023 10:53:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42082C433C7;
+        Mon, 28 Aug 2023 10:53:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1693218820;
-        bh=tG5mfpmkIPqN8OZym996RruD3Ro6btaiwud1g/6/6xY=;
+        s=k20201202; t=1693220020;
+        bh=8y/hwaWZhfTwXqVb1vUtDbs/7ky9ROf0YKU/PGn71Ik=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Crj7FBehCfST9kZRvUkQQE7rp2MoPZOaZ4eOwrUBNDD13LYwAOAGXuHuylBpRfKlc
-         /qSjoYVemGZvuYizN347tJmllNdNWsxRrdIlWNs33Ey6+b/OaGJjDDqJwSAFBivtIS
-         K1J4O52OoqCCV7WLC0Yv3lUJBhrbsN1j047nmGp+tEA4EqAmJ9OZDyAyqvbBfP9CS7
-         CLLIubcji5QLIwnnzyhmHtsOfIcCS+yn8Yj/XcO6INyXtIcFJkmPnO0dJtiiujE/An
-         JwRsZs2hQF/x8Mq6vDMuQha9iHkYleJP5ZATf897YEBHhbMDbf6Hday4azCKUrY6KW
-         6PnQ8SLbgX10A==
-Date:   Mon, 28 Aug 2023 11:33:58 +0100
+        b=T5j0eBQntJzwvDlqaqafpNhZ7NtzgrX0MWsTqCHGZrjev7v3zq7XOca3VECjGpfSv
+         onpvEcUK3CciDVTzwrC7ZviuyELHkZFVAlY5GmW5VQtTmG9YkxxAwbrHKAhGvZkygW
+         5OBr0moVPwgUN55bhKJY2waXq4UoXBZ+oW5+zD+TRBtS6zxVfk0/XIdGPBxE8xMi2z
+         NmaT6tY5X8p7Y2ZSAoxI16grs64OHKofyVx48AM9FA5lKG3ZBFw1XeRk72zrkmu+qS
+         xB0Peb0W4VbllxMAyei6n9lpodJ8o4xFB12768L1DPD08ryLzPoXmaTH4sJKJSnfPk
+         +K6bZw9HxMp6g==
+Date:   Mon, 28 Aug 2023 11:53:59 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andreas Kemnade <andreas@kemnade.info>, lars@metafoo.de,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: iio: adc: Add TI TWL603X GPADC
-Message-ID: <20230828113358.3cf6f994@jic23-huawei>
-In-Reply-To: <84388311-c92c-812e-53bd-35daf8821a16@linaro.org>
-References: <20230820123229.530371-1-andreas@kemnade.info>
-        <84388311-c92c-812e-53bd-35daf8821a16@linaro.org>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     bleung@chromium.org, groeck@chromium.org, lars@metafoo.de,
+        chrome-platform@lists.linux.dev, gwendal@chromium.org,
+        linux-iio@vger.kernel.org, dianders@chromium.org,
+        swboyd@chromium.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: cros_ec: fix an use-after-free in
+ cros_ec_sensors_push_data()
+Message-ID: <20230828115359.054dc13a@jic23-huawei>
+In-Reply-To: <20230828094339.1248472-1-tzungbi@kernel.org>
+References: <20230828094339.1248472-1-tzungbi@kernel.org>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -53,84 +52,105 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 20 Aug 2023 22:34:33 +0200
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+On Mon, 28 Aug 2023 17:43:39 +0800
+Tzung-Bi Shih <tzungbi@kernel.org> wrote:
 
-> On 20/08/2023 14:32, Andreas Kemnade wrote:
-> > Document TI TWL603X GPADC devicetree bindings.
-> > A driver is already there, the compatibles are used, but not documented.
-> > 
-> > Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
-> > ---  
+> cros_ec_sensors_push_data() reads some `indio_dev` states (e.g.
+> iio_buffer_enabled() and `indio_dev->active_scan_mask`) without holding
+> the `mlock`.
 > 
-> Please provide changelog after ---.
+> An use-after-free on `indio_dev->active_scan_mask` was observed.  The
+> call trace:
+> [...]
+>  _find_next_bit
+>  cros_ec_sensors_push_data
+>  cros_ec_sensorhub_event
+>  blocking_notifier_call_chain
+>  cros_ec_irq_thread
 > 
+> It was caused by a race condition: one thread just freed
+> `active_scan_mask` at [1]; while another thread tried to access the
+> memory at [2].
 > 
-> >  .../bindings/iio/adc/ti,twl6030-gpadc.yaml    | 45 +++++++++++++++++++
-> >  1 file changed, 45 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,twl6030-gpadc.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/ti,twl6030-gpadc.yaml b/Documentation/devicetree/bindings/iio/adc/ti,twl6030-gpadc.yaml
-> > new file mode 100644
-> > index 000000000000..5b075237bcfd
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/adc/ti,twl6030-gpadc.yaml
-> > @@ -0,0 +1,45 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/adc/ti,twl6030-gpadc.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: GPADC subsystem in the TWL6030 power module
-> > +
-> > +maintainers:
-> > +  - Andreas Kemnade <andreas@kemnade.info>
-> > +
-> > +description:
-> > +  The GPADC subsystem in the TWL603X consists of a 10-bit ADC
-> > +  combined with a 15-input analog multiplexer in the TWL6030 resp. a
-> > +  19-input analog muliplexer in the TWL6032.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - ti,twl6030-gpadc
-> > +      - ti,twl6032-gpadc
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  "#io-channel-cells":
-> > +    const: 1
-> > +
-> > +required:
-> > +  - compatible
-> > +  - interrupts
-> > +  - "#io-channel-cells"
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    twl {  
+> Fix it by acquiring the `mlock` before accessing the `indio_dev` states.
 > 
-> Just skip the twl node. Anyway, the parent device binding should include
-> complete example.
-I tidied that up whilst applying.
+> [1]: https://elixir.bootlin.com/linux/v6.5/source/drivers/iio/industrialio-buffer.c#L1189
+> [2]: https://elixir.bootlin.com/linux/v6.5/source/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c#L198
 > 
-> 
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Applied to the togreg branch of iio.git and pushed out as testing for 0-day
-to poke at it.  I'll be rebasing once rc1 is out so until then I won't
-push this out as a branch linux-next will pick up.
+> Cc: stable@vger.kernel.org
+> Fixes: aa984f1ba4a4 ("iio: cros_ec: Register to cros_ec_sensorhub when EC supports FIFO")
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 
-Thanks,
+Hi.
+
+That's an interesting corner case and the comment above the iio_buffer_enabled() call
+at least lets us know why this happens. A normal driver cannot call
+iio_push_to_buffers_with_timestamp() unless the buffer is enabled
+(and hence active_scan_mask is fixed), but here, for convenience the call is made anyway
+if we race such that iio_buffer_enabled() is called and correct says the buffer is
+enabled, but then immediately after that it is at least briefly disabled.
+
+Now I'm not keen on mlock being touched by a driver because is an internal implementation
+detail.
+
+Can we use iio_device_claim_buffer_mode() here?  I believe that has the right handling
+even though I don't think we've used it to protect iio_push_* before.  Normally it's about
+enforcing we stay in the mode if the read out of a channel needs to be handled differently
+in a read_raw() callback.
+
+if (iio_device_claim_buffer_mode(indio_dev) < 0) {
+	/* Not in buffer mode so fine to drop out - we got -EBUSY*/
+	return 0;
+}
+//Otherwise mlock is held - though that's an implementation detail all we care about is we can't exit buffer mode.
+...
+iio_push_...
+iio_device_release_buffer_mode(indio_dev);
+return 0;
+
+Thanks for the bug report and analysis.
 
 Jonathan
 
+
+
+> ---
+>  drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
 > 
-> Best regards,
-> Krzysztof
-> 
+> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+> index b72d39fc2434..a514d0dbafc7 100644
+> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+> @@ -182,17 +182,20 @@ int cros_ec_sensors_push_data(struct iio_dev *indio_dev,
+>  			      s16 *data,
+>  			      s64 timestamp)
+>  {
+> +	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+>  	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>  	s16 *out;
+>  	s64 delta;
+>  	unsigned int i;
+>  
+> +	mutex_lock(&iio_dev_opaque->mlock);
+> +
+>  	/*
+>  	 * Ignore samples if the buffer is not set: it is needed if the ODR is
+>  	 * set but the buffer is not enabled yet.
+>  	 */
+>  	if (!iio_buffer_enabled(indio_dev))
+> -		return 0;
+> +		goto exit;
+>  
+>  	out = (s16 *)st->samples;
+>  	for_each_set_bit(i,
+> @@ -210,6 +213,8 @@ int cros_ec_sensors_push_data(struct iio_dev *indio_dev,
+>  	iio_push_to_buffers_with_timestamp(indio_dev, st->samples,
+>  					   timestamp + delta);
+>  
+> +exit:
+> +	mutex_unlock(&iio_dev_opaque->mlock);
+>  	return 0;
+>  }
+>  EXPORT_SYMBOL_GPL(cros_ec_sensors_push_data);
 
