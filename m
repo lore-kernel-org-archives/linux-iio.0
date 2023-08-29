@@ -2,481 +2,211 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E8FC71153
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Aug 2023 14:39:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E285C83F14
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Aug 2023 14:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236963AbjH2Oim (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 29 Aug 2023 10:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49310 "EHLO
+        id S235636AbjH2Om6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 29 Aug 2023 10:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237012AbjH2Oi1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Aug 2023 10:38:27 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1A21AE;
-        Tue, 29 Aug 2023 07:38:20 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 37TBwku8022670;
-        Tue, 29 Aug 2023 15:40:57 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding:content-type; s=
-        selector1; bh=cjpw0qMq1w37JRDndUFptdySW5NdRruZOLIYm1872aA=; b=sO
-        iabn6zFkWNuNYqYku/H7W0x2xXHoWpzWtEBlSqBI2B+AHZzveUP3ck8Ljj8pdetl
-        crMUbtvpz+9u2GSH/+vCzUNFjuiLsnJUxCtuRXG/jnY0gjx9AvxeaofXfEj+i39s
-        +awzKc8eky0mgzmxR0KtQqhJVg73Ehb45dKK2s7Ne3JEwdhtBSbx9LJdoSHdFOyl
-        Cpp8GT5bJaqvPS6cIpObFjLD8f5DvYfiIamm6ZsTR2yAeze2QcPS4+uxb/eh9bRB
-        p7Okon5Ntdspf2rejeTkW1+7uNcvjLyylEX+BbOzJQ6aDyLt8X4H+anfknE/F6sP
-        1N0VJ+Y3/WziGBFuxwOg==
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3sq8qwc3jc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 29 Aug 2023 15:40:57 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E10D1100057;
-        Tue, 29 Aug 2023 15:40:56 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D59DD2207DB;
-        Tue, 29 Aug 2023 15:40:56 +0200 (CEST)
-Received: from localhost (10.201.22.39) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Tue, 29 Aug
- 2023 15:40:56 +0200
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-To:     <william.gray@linaro.org>, <lee@kernel.org>
-CC:     <alexandre.torgue@foss.st.com>, <fabrice.gasnier@foss.st.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 3/8] tools/counter: add a flexible watch events tool
-Date:   Tue, 29 Aug 2023 15:40:24 +0200
-Message-ID: <20230829134029.2402868-4-fabrice.gasnier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230829134029.2402868-1-fabrice.gasnier@foss.st.com>
-References: <20230829134029.2402868-1-fabrice.gasnier@foss.st.com>
+        with ESMTP id S237050AbjH2Omi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Aug 2023 10:42:38 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2138.outbound.protection.outlook.com [40.107.113.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5B8CC;
+        Tue, 29 Aug 2023 07:42:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XEOF47Ll8z9v0dO6bee0kIS40T/J9Rlt2uj1zJ/hjWCraVwOW0NrdxPmiUy5aM+wlDAGvRz+CNzIQmoFDl9UDyTck9TNSgBwADacfbcDVx9x3Qvz50brSyFNIQW+jNqmoQYjlPIeeU94iL/XLvuU5arCMjUjOJbOMH+XctduNigCr8+58sYNnMCih+U/21tb1HOWheIw3ubLdu+/Vv1cNmh0pAHKslJ9+rDGSktv1Qh81w58AFIq/gxLpTCHxK10cqpBv/4sys0aG8ZgcwXt4pILtFLuEHXkTlMWji+9/irqcrEOV2K9WzwqclFl1h7j5ggJkUJQRQ9fq+A6S/1I5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8HfmFZfDzjOLdgGNIlpjx6t94QBlzjWfoTk8CHS7bbY=;
+ b=Eau/NoSz+r37v9sPLhs2O8y6KC7APwC0JWHzdefUIE9P8cco2lMaM3YV7NdbxztHFJYOez3ewWdXS/XDfFt2CPkHc/9J8Zzl9it+RxOvGbWAVpIxDIp0Ch3UNKpxaTKwBlRPkP6fKevYD72updrr8/ggL8B2v5bo+xaaqJkl77JY5kS87JMj3iR7uWef9SgU8iFSj0LZDvOP6jYj1EB0ghTrbB4SAFepu50Y2r3cPZW8cCZFjlIPkhRb67rx0s2UFv2fFDwq1z8Iv78pjHKhKv7hSjNl4oAP/UDs8GcBWxfyZTZghEyEOqR7DeuhcvJFkFmFk8HoazhPK4XY7nMU0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8HfmFZfDzjOLdgGNIlpjx6t94QBlzjWfoTk8CHS7bbY=;
+ b=QUIGEIsBrTffCjcwPerTdXch4GCGAx0XKXxD3E+ZTK3gcB4N1dJXmOUTSFHKOgOQIzeWuc4QajPibIqmJdmdA6/JKbD9NskuDJ14az6hbvfIWr8W26PnFdX1NytrzSP75lig1/6Y7dUOmD+WqdsFetPDtF2Mg9gUE4rLBO+DdTw=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by OSZPR01MB8912.jpnprd01.prod.outlook.com (2603:1096:604:159::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.35; Tue, 29 Aug
+ 2023 14:42:32 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::9d23:32f5:9325:3706]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::9d23:32f5:9325:3706%5]) with mapi id 15.20.6745.015; Tue, 29 Aug 2023
+ 14:42:32 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH v2 1/2] iio: dac: ti-dac5571: Use i2c_get_match_data()
+Thread-Topic: [PATCH v2 1/2] iio: dac: ti-dac5571: Use i2c_get_match_data()
+Thread-Index: AQHZ0frrVhmbbAHj+Ei/VbehnAKbwa//x6IAgAGiGAA=
+Date:   Tue, 29 Aug 2023 14:42:32 +0000
+Message-ID: <OS0PR01MB59228C9222CB2A8702FCA67C86E7A@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20230818173907.323640-1-biju.das.jz@bp.renesas.com>
+ <20230818173907.323640-2-biju.das.jz@bp.renesas.com>
+ <20230828134442.GL14596@pendragon.ideasonboard.com>
+In-Reply-To: <20230828134442.GL14596@pendragon.ideasonboard.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: OS0PR01MB5922:EE_|OSZPR01MB8912:EE_
+x-ms-office365-filtering-correlation-id: 4b50945d-05b3-4bcc-c4bf-08dba89e2d4a
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: QhmtrBi71oynB/CH16erfE9mYVpCeewmzsH4u3419As7qUD+p9P8Ov9JPf7Axjy2rOOTjQ6SxDhUaJpN/fnYVedBaPnBQV2NZIbBXXo4HPYWerKr+rgSbbbYncgn4of1hQX7r14o4fO1PR4dZikSN0uy+WNZj2TXjOEvDqYRcdtzVoXTjmOncPc0sYrsR7fXnjEIve2lGLI1TKDb/hJ5nh4jSgkUDeBwM43QH+/7Fu17GnpaTSspfZ4BPEih/5+xf5minzjDtGB+gE98C+4ep5tzWXTYTK7CtozdNhHihQW7B3uoP8UG05k9hiq3wGGdjYQfo016E9ZUcfwnpLemvVXKtNnBzTKXcRyxR3OuCBcCOnJjOlwd8YRtNKxj2EyNAp6YD36RJ6uEA5Y/6oYCI9nucgEXpkrN8XUvUncrCDefTaMqtSkw1I2KbSLUz+Um8ICBGx+Wcx/QDxVgEoc2tdZD+avy6FcSEb/o6JXU1rwN8iorq+yD/d2wszrMfDzvr55Jhpl6p3b7tc8MVeMxdAy3b4z8M4Nn3b+PUme+EK2+853cd/NhITCq/KdrK4vSFOBUiZn+JJ/OHs8uGsMX1HlN5+gfyi+ItI0ItDlpaDD8fdy/ULSZGRYg4TKL+ll5
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(39860400002)(136003)(366004)(396003)(346002)(186009)(451199024)(1800799009)(71200400001)(6506007)(9686003)(7696005)(478600001)(83380400001)(2906002)(76116006)(316002)(64756008)(54906003)(6916009)(66446008)(66946007)(66476007)(8936002)(52536014)(66556008)(5660300002)(41300700001)(8676002)(4326008)(86362001)(33656002)(122000001)(55016003)(38070700005)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Q0xoRVdZTzkvVWhsY2daSTdFS1puYnZpYVpDSnpZdEtJQXMyTHRzNCsxTVV4?=
+ =?utf-8?B?WWF3blV5QzB5MUUwUGxBL2JFdktqZVc5VU50WGxReTBJMm1MZS95d2ZlS3N1?=
+ =?utf-8?B?azhwWG44K255a0hXZmEzaVNmUlEzaklnYmFoc1M2ZVFQRFRwbjJrbnRtR2lI?=
+ =?utf-8?B?V3pCVkxWeTlPcTlka2pmT1dTMlNkQ1U3Zm5pUXR6RHFEZE1GSXp6TmFhWHRY?=
+ =?utf-8?B?RTFIUlNNTTd5SlUxREhiTG05eE5tQXNzYTJxVmRhZlMvMTUxV3g4YThabVVG?=
+ =?utf-8?B?bnpGdHJmNitnN1pTZjJEcDIrN1ltWG1FbFhVSTNoQVo0VzNENTc3NE12Y0xy?=
+ =?utf-8?B?T1VleU1sRCs3RUtrZFlqL0VBKzZUVUlRMDN5cklTcHpXYTR3UHF6S1lmZEc5?=
+ =?utf-8?B?QUlIUFBIQ3hIZXhibDBOUnMzcVQ3dlRHeGFuQ2xxbVIxVG1PdGFFWVhWU1p1?=
+ =?utf-8?B?aDJqYWhRMFdKT2FLTlhDRzREeFNqUGJXOHcvTExETzh4cEFiV2Y1MmdzNWYv?=
+ =?utf-8?B?QWhXWGZGWERyZ2tNclVXY204bS8yNVpyMktTa3dtYTNKR2pBOEV1U010RnZl?=
+ =?utf-8?B?UU5lUCtHSVlCNGNYQ1c0TW56aDF6WmN3Sy9aaW92d1JmOVc2YndiRkJvUGlO?=
+ =?utf-8?B?Wll6VUFyeW84ZDNDVzEwcU1TSThMSzhNRmd1UXdTNGpTVDFsZXEvOUZ4a1Na?=
+ =?utf-8?B?enV3bjVIZ01LNjVxMm9LN2Y5V2JBOE5YU09WcXdoY0dQTzY4cVBqMWxPTXpU?=
+ =?utf-8?B?eFkvVTRsWmhSOXpESjI2RkZxWVpUZHdyQjdtcUUxdi9JdzZPTzJFRGowbzVm?=
+ =?utf-8?B?SGUxdmtKVnhSL2JjcHA0YTJsZmNUeXpKV0FCUGYyb3EyVjhQem9UU3dhRWtY?=
+ =?utf-8?B?Ym1BZVJiOGZPQkFHb0JPSTIzM1YvamNxMmNTQUJRNEpBOTFzUE1EUDJyVDEv?=
+ =?utf-8?B?Y0F5UXFTdndMMTBaNUphRGs2dU1kaGZKMVBSeWNVbTRHVmNGemUzaVMzTzMy?=
+ =?utf-8?B?QzVWZkhFL1RkVE5aVWtjRnBkd2Q2YUxKd2U4NFRubTMrb0Rac0JaSk44bVl6?=
+ =?utf-8?B?bEJkWngxWGsyRndrSVR3aVNOOUxTV0NmZGdoRWtlRFVzdS9Jbldjd09SenVE?=
+ =?utf-8?B?UVZjY25ob1dVTDJHVE5ROXM5Ym11MVNMdXJsZFB6elNNT211amhEWk5Pc3Iz?=
+ =?utf-8?B?bDFuRVhMQnhXdGZiOE51S01HZTB3VGFLZTZWenVibFVkc3JYcS9vZFNVeDdM?=
+ =?utf-8?B?RHRNWEhNRWVrTnRXSHlmeUorSHpoL08wWk5zRnN1S1NJNk9GaFFPQ0F6Wisy?=
+ =?utf-8?B?L203ZkZTMkx6V1g2K3VJVzk1VEw2Rm95eStUQnM5UnFmVmJ0aGJvdmdiRThx?=
+ =?utf-8?B?V015WWN5eWpYTTlHbDR2dzZSVlZvMjdJUmVpZ0U2T1ZkanhWQXNXUkZtVXA0?=
+ =?utf-8?B?a29Ca09oblNuVWJianJKbVJnbnlyNXlSeDc2Y0gzVUN4L2RBc1lvNWd5NG9t?=
+ =?utf-8?B?V245akdQbksrTW9aa1gvMjVkRjlvQ3pxcHk2NVhJUjh2R3hVc0hOaWd6eGp6?=
+ =?utf-8?B?N2ZiL3dXQUxDV3Jvb0NJS1RWSmc5aGszY1dwTUQvSktyekRLRGZVTmFidUVN?=
+ =?utf-8?B?cXZ3dEtSRjhCWWwyM0cwaUVFV2c2akh3bklpRkxVejI4RTNlRHhLVzJYSEpr?=
+ =?utf-8?B?SmNlUWlhOVdtR1BSRjlRbnlnd0FpK3VoUSt2UW1XZDcrK1ZkVlorSmxzMklj?=
+ =?utf-8?B?NGhKZEE2UVVMVWNFYTFRZGttVlcvdk1JR2h4NklOS2pQZDY5Wmhka1ZRd3ZY?=
+ =?utf-8?B?YlVzSm5VTU9zUkpPNWF1a1JiZ1pLajQ3SWJ2M1FuNHF2TUE0aWNmSXNWSjZP?=
+ =?utf-8?B?NFJ0YWgzaVYzRHZLMEJCWWNUWENaRzMvVERVcG5xTzNiUUEyMm10WnlWQ2FC?=
+ =?utf-8?B?TzB2WGRUUjBxL0NNRWJFSERmcDF1REpKSDN3RW1nMXhQUTI4dDRTd2JoeXgr?=
+ =?utf-8?B?SlZZTGh0YWl3cEhwa21mVURiRzJiR2M0V09yTzhna0g3aUlOMENRQmdtR3dG?=
+ =?utf-8?B?aks2ZmJlbytSQjViUVpCTGxrOUt1REl0YjVmTkNneENoZlQ0WUhBb0hIM2M2?=
+ =?utf-8?Q?65WM=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.201.22.39]
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-08-29_10,2023-08-29_01,2023-05-22_02
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b50945d-05b3-4bcc-c4bf-08dba89e2d4a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2023 14:42:32.1198
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zkUjvkcTovhmGc3LZrFv0BdiWLyc8JXNZm0dVI/Y5DvXOGMXTjLcJOGSGx7NBsQOgrLAm3sUmbGWFTgHRSw+wdmjlH9sE/7ZPkYVPOeF6fg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSZPR01MB8912
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This adds a new counter tool to be able to test various watch events.
-A flexible watch array can be populated from command line, each field
-may be tuned with a dedicated command line argument.
-Each argument can be repeated several times: each time it gets repeated,
-a corresponding new watch element is allocated.
-
-It also comes with a simple default watch (to monitor overflows), used
-when no watch parameters are provided.
-
-The print_usage() routine proposes another example, from the command line,
-which generates a 2 elements watch array, to monitor:
-- overflow events
-- capture events, on channel 3, that reads read captured data by
-  specifying the component id (capture3_component_id being 7 here).
-
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
----
- tools/counter/Build                  |   1 +
- tools/counter/Makefile               |   8 +-
- tools/counter/counter_watch_events.c | 348 +++++++++++++++++++++++++++
- 3 files changed, 356 insertions(+), 1 deletion(-)
- create mode 100644 tools/counter/counter_watch_events.c
-
-diff --git a/tools/counter/Build b/tools/counter/Build
-index 33f4a51d715e..4bbadb7ec93a 100644
---- a/tools/counter/Build
-+++ b/tools/counter/Build
-@@ -1 +1,2 @@
- counter_example-y += counter_example.o
-+counter_watch_events-y += counter_watch_events.o
-diff --git a/tools/counter/Makefile b/tools/counter/Makefile
-index b2c2946f44c9..00e211edd768 100644
---- a/tools/counter/Makefile
-+++ b/tools/counter/Makefile
-@@ -14,7 +14,7 @@ MAKEFLAGS += -r
- 
- override CFLAGS += -O2 -Wall -g -D_GNU_SOURCE -I$(OUTPUT)include
- 
--ALL_TARGETS := counter_example
-+ALL_TARGETS := counter_example counter_watch_events
- ALL_PROGRAMS := $(patsubst %,$(OUTPUT)%,$(ALL_TARGETS))
- 
- all: $(ALL_PROGRAMS)
-@@ -31,6 +31,12 @@ $(OUTPUT)include/linux/counter.h: ../../include/uapi/linux/counter.h
- 
- prepare: $(OUTPUT)include/linux/counter.h
- 
-+COUNTER_WATCH_EVENTS := $(OUTPUT)counter_watch_events.o
-+$(COUNTER_WATCH_EVENTS): prepare FORCE
-+	$(Q)$(MAKE) $(build)=counter_watch_events
-+$(OUTPUT)counter_watch_events: $(COUNTER_WATCH_EVENTS)
-+	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@
-+
- COUNTER_EXAMPLE := $(OUTPUT)counter_example.o
- $(COUNTER_EXAMPLE): prepare FORCE
- 	$(Q)$(MAKE) $(build)=counter_example
-diff --git a/tools/counter/counter_watch_events.c b/tools/counter/counter_watch_events.c
-new file mode 100644
-index 000000000000..7f73a1519d8e
---- /dev/null
-+++ b/tools/counter/counter_watch_events.c
-@@ -0,0 +1,348 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Counter - Test various watch events in a userspace application
-+ * inspired by counter_example.c
-+ */
-+
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <getopt.h>
-+#include <linux/counter.h>
-+#include <stdlib.h>
-+#include <stdio.h>
-+#include <string.h>
-+#include <sys/ioctl.h>
-+#include <unistd.h>
-+
-+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
-+
-+static struct counter_watch simple_watch[] = {
-+	{
-+		/* Component data: Count 0 count */
-+		.component.type = COUNTER_COMPONENT_COUNT,
-+		.component.scope = COUNTER_SCOPE_COUNT,
-+		.component.parent = 0,
-+		/* Event type: Index */
-+		.event = COUNTER_EVENT_OVERFLOW_UNDERFLOW,
-+		/* Device event channel 0 */
-+		.channel = 0,
-+	},
-+};
-+
-+static int find_match_or_number_from_array(char *arg, const char * const str[], int sz, __u8 *val)
-+{
-+	unsigned int i;
-+	char *dummy;
-+	unsigned long idx;
-+	int ret;
-+
-+	for (i = 0; i < sz; i++) {
-+		ret = strncmp(arg, str[i], strlen(str[i]));
-+		if (!ret && strlen(str[i]) == strlen(arg)) {
-+			*val = i;
-+			return 0;
-+		}
-+	}
-+
-+	/* fallback to number */
-+	idx = strtoul(optarg, &dummy, 10);
-+	if (!errno) {
-+		if (idx >= sz)
-+			return -EINVAL;
-+		*val = idx;
-+		return 0;
-+	}
-+
-+	return -errno;
-+}
-+
-+static const char * const counter_event_type_name[] = {
-+	"COUNTER_EVENT_OVERFLOW",
-+	"COUNTER_EVENT_UNDERFLOW",
-+	"COUNTER_EVENT_OVERFLOW_UNDERFLOW",
-+	"COUNTER_EVENT_THRESHOLD",
-+	"COUNTER_EVENT_INDEX",
-+	"COUNTER_EVENT_CHANGE_OF_STATE",
-+	"COUNTER_EVENT_CAPTURE",
-+};
-+
-+static int counter_arg_to_event_type(char *arg, __u8 *event)
-+{
-+	return find_match_or_number_from_array(arg, counter_event_type_name,
-+					       ARRAY_SIZE(counter_event_type_name), event);
-+}
-+
-+static const char * const counter_component_type_name[] = {
-+	"COUNTER_COMPONENT_NONE",
-+	"COUNTER_COMPONENT_SIGNAL",
-+	"COUNTER_COMPONENT_COUNT",
-+	"COUNTER_COMPONENT_FUNCTION",
-+	"COUNTER_COMPONENT_SYNAPSE_ACTION",
-+	"COUNTER_COMPONENT_EXTENSION",
-+};
-+
-+static int counter_arg_to_component_type(char *arg, __u8 *type)
-+{
-+	return find_match_or_number_from_array(arg, counter_component_type_name,
-+					       ARRAY_SIZE(counter_component_type_name), type);
-+}
-+
-+static const char * const counter_scope_name[] = {
-+	"COUNTER_SCOPE_DEVICE",
-+	"COUNTER_SCOPE_SIGNAL",
-+	"COUNTER_SCOPE_COUNT",
-+};
-+
-+static int counter_arg_to_scope(char *arg, __u8 *type)
-+{
-+	return find_match_or_number_from_array(arg, counter_scope_name,
-+					       ARRAY_SIZE(counter_scope_name), type);
-+}
-+
-+static void print_usage(void)
-+{
-+	fprintf(stderr, "Usage: counter_watch_events [options]...\n"
-+		"Test various watch events for given counter device\n"
-+		"  --channel -c <n>\n"
-+		"        Set watch.channel\n"
-+		"  --debug -d\n"
-+		"        Prints debug information\n"
-+		"  --event -e <number or counter_event_type string>\n"
-+		"        Sets watch.event\n"
-+		"  --help -h\n"
-+		"        Prints usage\n"
-+		"  --device-num -n <n>\n"
-+		"        Set device number (/dev/counter<n>, default to 0)\n"
-+		"  --id -i <n>\n"
-+		"        Set watch.component.id\n"
-+		"  --loop -l <n>\n"
-+		"        Loop for a number of events (forever if n < 0)\n"
-+		"  --parent -p <n>\n"
-+		"        Set watch.component.parent number\n"
-+		"  --scope -s <number or counter_scope string>\n"
-+		"        Set watch.component.scope\n"
-+		"  --type -t <number or counter_component_type string>\n"
-+		"        Set watch.component.type\n"
-+		"\n"
-+		"Example with two watched events:\n\n"
-+		"counter_watch_events -d \\\n"
-+		"\t-t COUNTER_COMPONENT_COUNT -s COUNTER_SCOPE_COUNT"
-+		" -e COUNTER_EVENT_OVERFLOW_UNDERFLOW -i 0 -c 0 \\\n"
-+		"\t-t COUNTER_COMPONENT_EXTENSION -s COUNTER_SCOPE_COUNT"
-+		" -e COUNTER_EVENT_CAPTURE -i 7 -c 3\n"
-+		);
-+}
-+
-+static void print_watch(struct counter_watch *watch, int nwatch)
-+{
-+	int i;
-+
-+	/* prints the watch array in C-like structure */
-+	printf("watch[%d] = {\n", nwatch);
-+	for (i = 0; i < nwatch; i++) {
-+		printf(" [%d] =\t{\n"
-+		       "\t\t.component.type = %s\n"
-+		       "\t\t.component.scope = %s\n"
-+		       "\t\t.component.parent = %d\n"
-+		       "\t\t.component.id = %d\n"
-+		       "\t\t.event = %s\n"
-+		       "\t\t.channel = %d\n"
-+		       "\t},\n",
-+		       i,
-+		       counter_component_type_name[watch[i].component.type],
-+		       counter_scope_name[watch[i].component.scope],
-+		       watch[i].component.parent,
-+		       watch[i].component.id,
-+		       counter_event_type_name[watch[i].event],
-+		       watch[i].channel);
-+	}
-+	printf("};\n");
-+}
-+
-+static const struct option longopts[] = {
-+	{ "channel",		required_argument, 0, 'c' },
-+	{ "debug",		no_argument,       0, 'd' },
-+	{ "event",		required_argument, 0, 'e' },
-+	{ "help",		no_argument,       0, 'h' },
-+	{ "device-num",		required_argument, 0, 'n' },
-+	{ "id",			required_argument, 0, 'i' },
-+	{ "loop",		required_argument, 0, 'l' },
-+	{ "parent",		required_argument, 0, 'p' },
-+	{ "scope",		required_argument, 0, 's' },
-+	{ "type",		required_argument, 0, 't' },
-+	{ },
-+};
-+
-+int main(int argc, char **argv)
-+{
-+	int c, fd, i, ret;
-+	struct counter_event event_data;
-+	char *device_name = NULL;
-+	int debug = 0, loop = -1;
-+	char *dummy;
-+	int dev_num = 0, nwatch = 0, ncfg[] = {0, 0, 0, 0, 0, 0};
-+	int num_chan = 0, num_evt = 0, num_id = 0, num_p = 0, num_s = 0, num_t = 0;
-+	struct counter_watch *watches;
-+
-+	/*
-+	 * 1st pass: count events configurations number to allocate the watch array.
-+	 * Each watch argument can be repeated several times: each time it gets repeated,
-+	 * a corresponding watch is allocated (and configured) in 2nd pass.
-+	 */
-+	while ((c = getopt_long(argc, argv, "c:de:hn:i:l:p:s:t:", longopts, NULL)) != -1) {
-+		switch (c) {
-+		case 'c':
-+			ncfg[0]++;
-+			break;
-+		case 'e':
-+			ncfg[1]++;
-+			break;
-+		case 'i':
-+			ncfg[2]++;
-+			break;
-+		case 'p':
-+			ncfg[3]++;
-+			break;
-+		case 's':
-+			ncfg[4]++;
-+			break;
-+		case 't':
-+			ncfg[5]++;
-+			break;
-+		};
-+	};
-+
-+	for (i = 0; i < ARRAY_SIZE(ncfg); i++)
-+		if (ncfg[i] > nwatch)
-+			nwatch = ncfg[i];
-+
-+	if (nwatch) {
-+		watches = calloc(nwatch, sizeof(*watches));
-+	} else {
-+		/* default to simple watch example */
-+		watches = simple_watch;
-+		nwatch = ARRAY_SIZE(simple_watch);
-+	}
-+
-+	/* 2nd pass: read arguments to fill in watch array */
-+	optind = 1;
-+	while ((c = getopt_long(argc, argv, "c:de:hn:i:l:p:s:t:", longopts, NULL)) != -1) {
-+		switch (c) {
-+		case 'c':
-+			/* watch.channel */
-+			watches[num_chan].channel = strtoul(optarg, &dummy, 10);
-+			if (errno)
-+				return -errno;
-+			num_chan++;
-+			break;
-+		case 'd':
-+			debug = 1;
-+			break;
-+		case 'e':
-+			/* watch.event */
-+			ret = counter_arg_to_event_type(optarg, &watches[num_evt].event);
-+			if (ret)
-+				return ret;
-+			num_evt++;
-+			break;
-+		case 'h':
-+			print_usage();
-+			return -1;
-+		case 'n':
-+			errno = 0;
-+			dev_num = strtoul(optarg, &dummy, 10);
-+			if (errno)
-+				return -errno;
-+			break;
-+		case 'i':
-+			/* watch.component.id */
-+			watches[num_id].component.id = strtoul(optarg, &dummy, 10);
-+			if (errno)
-+				return -errno;
-+			num_id++;
-+			break;
-+		case 'l':
-+			loop = strtol(optarg, &dummy, 10);
-+			if (errno)
-+				return -errno;
-+			break;
-+		case 'p':
-+			/* watch.component.parent */
-+			watches[num_p].component.parent = strtoul(optarg, &dummy, 10);
-+			if (errno)
-+				return -errno;
-+			num_p++;
-+			break;
-+		case 's':
-+			/* watch.component.scope */
-+			ret = counter_arg_to_scope(optarg, &watches[num_s].component.scope);
-+			if (ret)
-+				return ret;
-+			num_s++;
-+			break;
-+		case 't':
-+			/* watch.component.type */
-+			ret = counter_arg_to_component_type(optarg, &watches[num_t].component.type);
-+			if (ret)
-+				return ret;
-+			num_t++;
-+			break;
-+		}
-+
-+	};
-+
-+	if (debug)
-+		print_watch(watches, nwatch);
-+
-+	ret = asprintf(&device_name, "/dev/counter%d", dev_num);
-+	if (ret < 0)
-+		return -ENOMEM;
-+
-+	if (debug)
-+		printf("Opening %s\n", device_name);
-+
-+	fd = open(device_name, O_RDWR);
-+	if (fd == -1) {
-+		perror("Unable to open counter device");
-+		return 1;
-+	}
-+
-+	for (i = 0; i < nwatch; i++) {
-+		ret = ioctl(fd, COUNTER_ADD_WATCH_IOCTL, watches + i);
-+		if (ret == -1) {
-+			fprintf(stderr, "Error adding watches[%d]: %s\n", i,
-+				strerror(errno));
-+			return 1;
-+		}
-+	}
-+
-+	ret = ioctl(fd, COUNTER_ENABLE_EVENTS_IOCTL);
-+	if (ret == -1) {
-+		perror("Error enabling events");
-+		return 1;
-+	}
-+
-+	for (i = 0; loop <= 0 || i < loop; i++) {
-+		ret = read(fd, &event_data, sizeof(event_data));
-+		if (ret == -1) {
-+			perror("Failed to read event data");
-+			return 1;
-+		}
-+
-+		if (ret != sizeof(event_data)) {
-+			fprintf(stderr, "Failed to read event data\n");
-+			return -EIO;
-+		}
-+
-+		printf("Timestamp: %llu\tData: %llu\t event: %s\tch: %d\n",
-+		       event_data.timestamp, event_data.value,
-+		       counter_event_type_name[event_data.watch.event],
-+		       event_data.watch.channel);
-+
-+		if (event_data.status) {
-+			fprintf(stderr, "Error %d: %s\n", event_data.status,
-+				strerror(event_data.status));
-+		}
-+	}
-+
-+	return 0;
-+}
--- 
-2.25.1
-
+SGkgTGF1cmVudCBQaW5jaGFydCwNCg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHYyIDEvMl0gaWlv
+OiBkYWM6IHRpLWRhYzU1NzE6IFVzZSBpMmNfZ2V0X21hdGNoX2RhdGEoKQ0KPiANCj4gSGkgQmlq
+dSwNCj4gDQo+IFRoYW5rIHlvdSBmb3IgdGhlIHBhdGNoLg0KPiANCj4gT24gRnJpLCBBdWcgMTgs
+IDIwMjMgYXQgMDY6Mzk6MDZQTSArMDEwMCwgQmlqdSBEYXMgd3JvdGU6DQo+ID4gUmVwbGFjZSBk
+ZXZpY2VfZ2V0X21hdGNoX2RhdGEoKSBhbmQgaWQgbG9va3VwIGZvciByZXRyaWV2aW5nIG1hdGNo
+DQo+ID4gZGF0YSBieSBpMmNfZ2V0X21hdGNoX2RhdGEoKSBieSBjb252ZXJ0aW5nIGVudW0tPnBv
+aW50ZXIgZm9yIGRhdGEgaW4NCj4gPiB0aGUgbWF0Y2ggdGFibGUuDQo+ID4NCj4gPiBTaWduZWQt
+b2ZmLWJ5OiBCaWp1IERhcyA8YmlqdS5kYXMuanpAYnAucmVuZXNhcy5jb20+DQo+IA0KPiBUaGUg
+Y2hhbmdlIGxvb2tzIGZpbmUsIGJ1dCBhIGNvbW1pdCBtZXNzYWdlIHRoYXQgZXhwbGFpbnMgd2h5
+IHdvdWxkIGJlDQo+IG5pY2UsIHRoZSBzYW1lIHdheSB5b3UgaGF2ZSBkb25lIHdpdGggYSBzaW1p
+bGFyIG1vZGlmaWNhdGlvbiBpbiBhIERSTQ0KPiBicmlkZ2UgZHJpdmVyLg0KDQpCYXNpY2FsbHks
+IGl0IHNpbXBsaWZpZXMgdGhlIHByb2JlKCkuIEkgd2lsbCBhZGQgdGhpcyBpbmZvLg0KDQpDaGVl
+cnMsDQpCaWp1DQoNCj4gDQo+ID4gLS0tDQo+ID4gdjEtPnYyOg0KPiA+ICAqIE5vIGNoYW5nZS4N
+Cj4gPiAtLS0NCj4gPiAgZHJpdmVycy9paW8vZGFjL3RpLWRhYzU1NzEuYyB8IDQ4DQo+ID4gKysr
+KysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAy
+MSBpbnNlcnRpb25zKCspLCAyNyBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL2lpby9kYWMvdGktZGFjNTU3MS5jDQo+ID4gYi9kcml2ZXJzL2lpby9kYWMvdGktZGFj
+NTU3MS5jIGluZGV4IGJhYjExYjlhZGMyNS4uMmJiM2Y3NjU2OWVlIDEwMDY0NA0KPiA+IC0tLSBh
+L2RyaXZlcnMvaWlvL2RhYy90aS1kYWM1NTcxLmMNCj4gPiArKysgYi9kcml2ZXJzL2lpby9kYWMv
+dGktZGFjNTU3MS5jDQo+ID4gQEAgLTMxMyw3ICszMTMsNiBAQCBzdGF0aWMgaW50IGRhYzU1NzFf
+cHJvYmUoc3RydWN0IGkyY19jbGllbnQgKmNsaWVudCkNCj4gPiAgCWNvbnN0IHN0cnVjdCBkYWM1
+NTcxX3NwZWMgKnNwZWM7DQo+ID4gIAlzdHJ1Y3QgZGFjNTU3MV9kYXRhICpkYXRhOw0KPiA+ICAJ
+c3RydWN0IGlpb19kZXYgKmluZGlvX2RldjsNCj4gPiAtCWVudW0gY2hpcF9pZCBjaGlwX2lkOw0K
+PiA+ICAJaW50IHJldCwgaTsNCj4gPg0KPiA+ICAJaW5kaW9fZGV2ID0gZGV2bV9paW9fZGV2aWNl
+X2FsbG9jKGRldiwgc2l6ZW9mKCpkYXRhKSk7IEBAIC0zMjksMTINCj4gPiArMzI4LDcgQEAgc3Rh
+dGljIGludCBkYWM1NTcxX3Byb2JlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQpDQo+ID4gIAlp
+bmRpb19kZXYtPm1vZGVzID0gSU5ESU9fRElSRUNUX01PREU7DQo+ID4gIAlpbmRpb19kZXYtPmNo
+YW5uZWxzID0gZGFjNTU3MV9jaGFubmVsczsNCj4gPg0KPiA+IC0JaWYgKGRldl9md25vZGUoZGV2
+KSkNCj4gPiAtCQljaGlwX2lkID0gKHVpbnRwdHJfdClkZXZpY2VfZ2V0X21hdGNoX2RhdGEoZGV2
+KTsNCj4gPiAtCWVsc2UNCj4gPiAtCQljaGlwX2lkID0gaWQtPmRyaXZlcl9kYXRhOw0KPiA+IC0N
+Cj4gPiAtCXNwZWMgPSAmZGFjNTU3MV9zcGVjW2NoaXBfaWRdOw0KPiA+ICsJc3BlYyA9IGkyY19n
+ZXRfbWF0Y2hfZGF0YShjbGllbnQpOw0KPiA+DQo+ID4gIAlpbmRpb19kZXYtPm51bV9jaGFubmVs
+cyA9IHNwZWMtPm51bV9jaGFubmVsczsNCj4gPiAgCWRhdGEtPnNwZWMgPSBzcGVjOw0KPiA+IEBA
+IC0zOTIsMzEgKzM4NiwzMSBAQCBzdGF0aWMgdm9pZCBkYWM1NTcxX3JlbW92ZShzdHJ1Y3QgaTJj
+X2NsaWVudA0KPiA+ICppMmMpICB9DQo+ID4NCj4gPiAgc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9k
+ZXZpY2VfaWQgZGFjNTU3MV9vZl9pZFtdID0gew0KPiA+IC0Jey5jb21wYXRpYmxlID0gInRpLGRh
+YzU1NzEiLCAuZGF0YSA9ICh2b2lkICopc2luZ2xlXzhiaXR9LA0KPiA+IC0Jey5jb21wYXRpYmxl
+ID0gInRpLGRhYzY1NzEiLCAuZGF0YSA9ICh2b2lkICopc2luZ2xlXzEwYml0fSwNCj4gPiAtCXsu
+Y29tcGF0aWJsZSA9ICJ0aSxkYWM3NTcxIiwgLmRhdGEgPSAodm9pZCAqKXNpbmdsZV8xMmJpdH0s
+DQo+ID4gLQl7LmNvbXBhdGlibGUgPSAidGksZGFjNTU3NCIsIC5kYXRhID0gKHZvaWQgKilxdWFk
+XzhiaXR9LA0KPiA+IC0Jey5jb21wYXRpYmxlID0gInRpLGRhYzY1NzQiLCAuZGF0YSA9ICh2b2lk
+ICopcXVhZF8xMGJpdH0sDQo+ID4gLQl7LmNvbXBhdGlibGUgPSAidGksZGFjNzU3NCIsIC5kYXRh
+ID0gKHZvaWQgKilxdWFkXzEyYml0fSwNCj4gPiAtCXsuY29tcGF0aWJsZSA9ICJ0aSxkYWM1NTcz
+IiwgLmRhdGEgPSAodm9pZCAqKXF1YWRfOGJpdH0sDQo+ID4gLQl7LmNvbXBhdGlibGUgPSAidGks
+ZGFjNjU3MyIsIC5kYXRhID0gKHZvaWQgKilxdWFkXzEwYml0fSwNCj4gPiAtCXsuY29tcGF0aWJs
+ZSA9ICJ0aSxkYWM3NTczIiwgLmRhdGEgPSAodm9pZCAqKXF1YWRfMTJiaXR9LA0KPiA+IC0Jey5j
+b21wYXRpYmxlID0gInRpLGRhYzEyMWMwODEiLCAuZGF0YSA9ICh2b2lkICopc2luZ2xlXzEyYml0
+fSwNCj4gPiArCXsuY29tcGF0aWJsZSA9ICJ0aSxkYWM1NTcxIiwgLmRhdGEgPSAmZGFjNTU3MV9z
+cGVjW3NpbmdsZV84Yml0XSB9LA0KPiA+ICsJey5jb21wYXRpYmxlID0gInRpLGRhYzY1NzEiLCAu
+ZGF0YSA9ICZkYWM1NTcxX3NwZWNbc2luZ2xlXzEwYml0XSB9LA0KPiA+ICsJey5jb21wYXRpYmxl
+ID0gInRpLGRhYzc1NzEiLCAuZGF0YSA9ICZkYWM1NTcxX3NwZWNbc2luZ2xlXzEyYml0XSB9LA0K
+PiA+ICsJey5jb21wYXRpYmxlID0gInRpLGRhYzU1NzQiLCAuZGF0YSA9ICZkYWM1NTcxX3NwZWNb
+cXVhZF84Yml0XSB9LA0KPiA+ICsJey5jb21wYXRpYmxlID0gInRpLGRhYzY1NzQiLCAuZGF0YSA9
+ICZkYWM1NTcxX3NwZWNbcXVhZF8xMGJpdF0gfSwNCj4gPiArCXsuY29tcGF0aWJsZSA9ICJ0aSxk
+YWM3NTc0IiwgLmRhdGEgPSAmZGFjNTU3MV9zcGVjW3F1YWRfMTJiaXRdIH0sDQo+ID4gKwl7LmNv
+bXBhdGlibGUgPSAidGksZGFjNTU3MyIsIC5kYXRhID0gJmRhYzU1NzFfc3BlY1txdWFkXzhiaXRd
+IH0sDQo+ID4gKwl7LmNvbXBhdGlibGUgPSAidGksZGFjNjU3MyIsIC5kYXRhID0gJmRhYzU1NzFf
+c3BlY1txdWFkXzEwYml0XSB9LA0KPiA+ICsJey5jb21wYXRpYmxlID0gInRpLGRhYzc1NzMiLCAu
+ZGF0YSA9ICZkYWM1NTcxX3NwZWNbcXVhZF8xMmJpdF0gfSwNCj4gPiArCXsuY29tcGF0aWJsZSA9
+ICJ0aSxkYWMxMjFjMDgxIiwgLmRhdGEgPSAmZGFjNTU3MV9zcGVjW3NpbmdsZV8xMmJpdF0NCj4g
+PiArfSwNCj4gPiAgCXt9DQo+ID4gIH07DQo+ID4gIE1PRFVMRV9ERVZJQ0VfVEFCTEUob2YsIGRh
+YzU1NzFfb2ZfaWQpOw0KPiA+DQo+ID4gIHN0YXRpYyBjb25zdCBzdHJ1Y3QgaTJjX2RldmljZV9p
+ZCBkYWM1NTcxX2lkW10gPSB7DQo+ID4gLQl7ImRhYzU1NzEiLCBzaW5nbGVfOGJpdH0sDQo+ID4g
+LQl7ImRhYzY1NzEiLCBzaW5nbGVfMTBiaXR9LA0KPiA+IC0JeyJkYWM3NTcxIiwgc2luZ2xlXzEy
+Yml0fSwNCj4gPiAtCXsiZGFjNTU3NCIsIHF1YWRfOGJpdH0sDQo+ID4gLQl7ImRhYzY1NzQiLCBx
+dWFkXzEwYml0fSwNCj4gPiAtCXsiZGFjNzU3NCIsIHF1YWRfMTJiaXR9LA0KPiA+IC0JeyJkYWM1
+NTczIiwgcXVhZF84Yml0fSwNCj4gPiAtCXsiZGFjNjU3MyIsIHF1YWRfMTBiaXR9LA0KPiA+IC0J
+eyJkYWM3NTczIiwgcXVhZF8xMmJpdH0sDQo+ID4gLQl7ImRhYzEyMWMwODEiLCBzaW5nbGVfMTJi
+aXR9LA0KPiA+ICsJeyJkYWM1NTcxIiwgKGtlcm5lbF91bG9uZ190KSZkYWM1NTcxX3NwZWNbc2lu
+Z2xlXzhiaXRdIH0sDQo+ID4gKwl7ImRhYzY1NzEiLCAoa2VybmVsX3Vsb25nX3QpJmRhYzU1NzFf
+c3BlY1tzaW5nbGVfMTBiaXRdIH0sDQo+ID4gKwl7ImRhYzc1NzEiLCAoa2VybmVsX3Vsb25nX3Qp
+JmRhYzU1NzFfc3BlY1tzaW5nbGVfMTJiaXRdIH0sDQo+ID4gKwl7ImRhYzU1NzQiLCAoa2VybmVs
+X3Vsb25nX3QpJmRhYzU1NzFfc3BlY1txdWFkXzhiaXRdIH0sDQo+ID4gKwl7ImRhYzY1NzQiLCAo
+a2VybmVsX3Vsb25nX3QpJmRhYzU1NzFfc3BlY1txdWFkXzEwYml0XSB9LA0KPiA+ICsJeyJkYWM3
+NTc0IiwgKGtlcm5lbF91bG9uZ190KSZkYWM1NTcxX3NwZWNbcXVhZF8xMmJpdF0gfSwNCj4gPiAr
+CXsiZGFjNTU3MyIsIChrZXJuZWxfdWxvbmdfdCkmZGFjNTU3MV9zcGVjW3F1YWRfOGJpdF0gfSwN
+Cj4gPiArCXsiZGFjNjU3MyIsIChrZXJuZWxfdWxvbmdfdCkmZGFjNTU3MV9zcGVjW3F1YWRfMTBi
+aXRdIH0sDQo+ID4gKwl7ImRhYzc1NzMiLCAoa2VybmVsX3Vsb25nX3QpJmRhYzU1NzFfc3BlY1tx
+dWFkXzEyYml0XSB9LA0KPiA+ICsJeyJkYWMxMjFjMDgxIiwgKGtlcm5lbF91bG9uZ190KSZkYWM1
+NTcxX3NwZWNbc2luZ2xlXzEyYml0XSB9LA0KPiA+ICAJe30NCj4gPiAgfTsNCj4gPiAgTU9EVUxF
+X0RFVklDRV9UQUJMRShpMmMsIGRhYzU1NzFfaWQpOw0KPiANCj4gLS0NCj4gUmVnYXJkcywNCj4g
+DQo+IExhdXJlbnQgUGluY2hhcnQNCg==
