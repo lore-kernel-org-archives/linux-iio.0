@@ -2,249 +2,328 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7727FC6FA8F
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Aug 2023 14:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D583CC71153
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Aug 2023 14:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236759AbjH2OaI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 29 Aug 2023 10:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53210 "EHLO
+        id S234577AbjH2OcQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 29 Aug 2023 10:32:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236776AbjH2O35 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Aug 2023 10:29:57 -0400
-Received: from mx08-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298F3CC;
-        Tue, 29 Aug 2023 07:29:53 -0700 (PDT)
-Received: from pps.filterd (m0369457.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 37TC1taC012172;
-        Tue, 29 Aug 2023 15:42:10 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding:content-type; s=
-        selector1; bh=BOqZ2SyfNpjhUHOPbQ6ZP82OTT/+YcIGQszooI+OKnk=; b=HB
-        hoEjWxS0W31OIt1aLskq2Qml/g1DKnpxjeoRJ4jqO9LsOS2Gk0rHRedARizHMmfN
-        r4QAvJo7/5vtpV1wTpUuWJXviWsDo6vS+cKpmv9cHuXwEPRqfLkmnTugCaizeyjm
-        tST0bw6+8ttIz3i+cJxcozfmoYMNojoshKNnzUiDOzQn0tbOMf30Me34Z0v1g22v
-        hKWkFQMPSSGuNME+4V90PxDe0hv6FFwjE5uoo2DVzfs2HzRuHu7oIdPxOml1Jkff
-        MtIdTaYJ1bI7Jn5ogzA55hqBG1HfMfwnOIJ7ysQZ8CLWrLyWsyfNvFSSRkeUCzkr
-        YFoOkNTVZFi1XeZcSN4A==
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3sqvbha31n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 29 Aug 2023 15:42:09 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5201A10005E;
-        Tue, 29 Aug 2023 15:42:09 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4968722AFFD;
-        Tue, 29 Aug 2023 15:42:09 +0200 (CEST)
-Received: from localhost (10.201.22.39) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Tue, 29 Aug
- 2023 15:42:08 +0200
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-To:     <william.gray@linaro.org>, <lee@kernel.org>
-CC:     <alexandre.torgue@foss.st.com>, <fabrice.gasnier@foss.st.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 6/8] counter: stm32-timer-cnt: introduce clock signal
-Date:   Tue, 29 Aug 2023 15:40:27 +0200
-Message-ID: <20230829134029.2402868-7-fabrice.gasnier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230829134029.2402868-1-fabrice.gasnier@foss.st.com>
-References: <20230829134029.2402868-1-fabrice.gasnier@foss.st.com>
+        with ESMTP id S236134AbjH2Oby (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Aug 2023 10:31:54 -0400
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2130.outbound.protection.outlook.com [40.107.114.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1661FEC;
+        Tue, 29 Aug 2023 07:31:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dw4DyTjpgq7VzLcHbvlGh0ipQwR8XfwBKriBa+3fVtCuq7xSk9ZnazoDwcCfsAayB74GIORZEhewA8sQcJ3q4OSmFcX3cGkxfOUx7Yh75AkhpIRqyehTB+b9QFNcdB2mIHD/kpGu7ecstPFzIMPjc+pvwGmeO2kDVgE7l/gobfGKSiVxtz9+8HWOMSSVhV+tXbWOZa/bCSL4wW0J87p65E9iwlDmHX6c9EgzR17jIpshxGx/Pny5zLkofQ/B+inVtmluwY5eEmU+JYDZYjvstLT/ERLWO6FlC8qsCZpgaQVV+qxyqekgio0HsuiXzXXjdDG699uycgcAuIYP9/mcgw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0Ja1/QiaRaLHP1NcYzoiLrBu3pM3vY08cslKt/fldN4=;
+ b=flZ74/BYqVYd4xWyZvjNc8N08h4SBq3Tu4v1asQrIv6T/3y8dRBB/mK/TX4XdcbsAN8B0q8SgaIK5Q9OPQxodNmUk08KIQuIX72xzHligWA8SNgOB23HMjSUMhUvMwTlqLrVhVPstME4+fxy8mbSg4W0pHoHvX9oklUbj8QbyEwggUpzLJdrzYEuoYTiEUPH3ev6lAdA3uoT610yuKg9wa4WGIxU1aB6upCOwkhpClxOSyeYCdGvxCZXsliytyCzVfhH6nX2DWNFUT6zakM96Ipyh8mh28SadudZduRx4bawvWw5T+2Oy0saUY4ud3bCo0LcrlAN74W5K11Tg52SaA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0Ja1/QiaRaLHP1NcYzoiLrBu3pM3vY08cslKt/fldN4=;
+ b=X5Q6PcAln4Anlv3luNewhp+wtbWcbFD9HLBeXU8MJhNmxmxduZ9esMWUjVpKS3UaB5TM7MpXLSz8b6mqXSDADmKS218X8vlt5AVOYi0KP2YH105Pq/cRBPy11TkMUmS3ORX4Dsty02W26VOwaBZ7GMTKpsVGyXdTs+ObhC1QuAk=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by TY3PR01MB9875.jpnprd01.prod.outlook.com (2603:1096:400:22f::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.18; Tue, 29 Aug
+ 2023 14:31:46 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::9d23:32f5:9325:3706]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::9d23:32f5:9325:3706%5]) with mapi id 15.20.6745.015; Tue, 29 Aug 2023
+ 14:31:46 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH v2] iio: accel: adxl345: Convert enum->pointer for data in
+ match data table
+Thread-Topic: [PATCH v2] iio: accel: adxl345: Convert enum->pointer for data
+ in match data table
+Thread-Index: AQHZ0f+RVC+TghUIq0qBFm0IPCGs26//pxKAgAG/stA=
+Date:   Tue, 29 Aug 2023 14:31:46 +0000
+Message-ID: <OS0PR01MB5922770083CB801AD06FC41986E7A@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20230818181229.329055-1-biju.das.jz@bp.renesas.com>
+ <20230828124817.2622d85a@jic23-huawei>
+In-Reply-To: <20230828124817.2622d85a@jic23-huawei>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: OS0PR01MB5922:EE_|TY3PR01MB9875:EE_
+x-ms-office365-filtering-correlation-id: 841f1299-09d3-4bf2-e986-08dba89cac36
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: dDulna9lAfSlDX/6tGBc72e9n+4SlvuihvoH3j3ghdsSiPl3PONORnvClJjWz//6qmyEIiTgZolYKO9BxdinRDA9/FS6xFSJwyyuJfoDsxY6RZec5YJysCvvZ+ovupKszuebksndtM10LHMLG+iPQX+lEnwrETNW3VmsQOGbDlwlEL5ItitQn7VUsNypcT1/i43Xdo8R7rE9gkb6G8zmWfcZMh0SGXbPxGEQdTUv4LEG5eAnzVscJ3JQZBSJe7bb2HTy7nyUGFscnvqhD2Y9Q0kCOpe4MsNY++FBGgcdZhQieWPO7Fm4wvUB5Xyxa1NWJTwPaZB53WNTCVejXDles5kaPrnriMzOlpgFezHazRhBjprqeQ1vrcK+AR68RXaksXwvTOR6n81f92VHYFyshYErBP3deU1feqUIg1R7FxhUudiP/stF6x16seYUWjZnEqOluyhKJ+XeYUhbVg0W4WXMLJ4XG9q/GOrIaT6Yre6Y6sJ1VPmm0VYtmTWVNBS+mRYVbScltecgCMgd+EgGjw2Zxgpodx+7FAWCudglAJiq2BvzgwYkkZASCrCSVXSVW0MtWTm0a0mdFxhu8exTPEoymegwfsA5Q7NCsFWbk45RcZ5mEAMH1ri4RgDQNvd+
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(376002)(346002)(396003)(366004)(136003)(1800799009)(186009)(451199024)(2906002)(54906003)(76116006)(33656002)(64756008)(66446008)(66476007)(66556008)(66946007)(5660300002)(316002)(6916009)(55016003)(41300700001)(8936002)(4326008)(8676002)(52536014)(71200400001)(6506007)(7696005)(9686003)(38100700002)(38070700005)(122000001)(86362001)(478600001)(83380400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?oBc1XujYIJ/V2XTZqiGMMPQSPRaOj4qSMvpp+ZrhCrNwZ51+PYMqRMtOEL0i?=
+ =?us-ascii?Q?Ze5CLwpfxnfoGRNG+nEA1KpQpQ2Jiy5QVMmkAI/7B8AI5w2RjvJjWgIGXBeb?=
+ =?us-ascii?Q?IC7IkZAxpYbaMlZLXKK9N6n0GM4AWyBNeiCtAygT9LQ6q2TgpgYZVUefv7ec?=
+ =?us-ascii?Q?vg8wyom9bdPhaUwDTvE0HI4OaYICnrFonSEyjYZBxhuQIKtJFo5e5h2Z79zP?=
+ =?us-ascii?Q?cXwya102VPGgDWo+VP+fpeemffrA7ISa/WL+eCXI4Er9E39PGY5s3zuhGn77?=
+ =?us-ascii?Q?R20/4wlFcYBVcDrFsUsUyza9Ri+4Go6eelDMyaMdClaaoELsaUr+lQsR4bh3?=
+ =?us-ascii?Q?t9qwJqOKR0Vg6cOtrvLMdohqYnYnPmUj45ovdBQCkZu5JiujkPeHnzHymc33?=
+ =?us-ascii?Q?fqjSquUxFwAl5UoQzDWD3koUWxYFT3385KL1IgW0p8R3gMWKMXPPZr1YG+em?=
+ =?us-ascii?Q?6vjwcLJSieb1ytMN1xEvClBUuc4nWBvi9P6n7d4i/AqGOt3elqHCtkMokdK3?=
+ =?us-ascii?Q?I0bEZZ0VjIOhoTdCO3Geg4hlCpJAt9zv4Q45ffZGoiNfAI0+y8i2fN1TsM43?=
+ =?us-ascii?Q?Jsd+tw47wnfMlbvrMBgB32uQlDA+L8ysPydXGT2HLdgxFzEVW5DqmV1MrdO2?=
+ =?us-ascii?Q?yf7oq7XcQTckCJkvcT6929S+4l8IdIt+XTBSEW/yiQyiqw+DZz5f5cjAv7Os?=
+ =?us-ascii?Q?eTDiOqg1PG6eq1BX1O+8FUVdGBdDpvRVo6RwCfkpsY3GCdzCPXShxF1Z0wkp?=
+ =?us-ascii?Q?rfbcs9NAM7WslomfBHAYK5UdKealNJeCOiFoRhc7zY/eLrY6IDGd8GxmaeHE?=
+ =?us-ascii?Q?HogmSjz/NSozwAFqE6GBb6uxTq0sng8jk3at4FBDHK/BM58J5xgMq3rn10Ka?=
+ =?us-ascii?Q?aD9mvvczk4vGWOLjFrDttM706+yBRYv5tWc6jHUDCenFdWysZaG5BGo+VGrw?=
+ =?us-ascii?Q?9PNOe5apZsL1o9VADjFGnxiHCUc9aEJiuzZ9IpLEDQrtWNi8eKVdPkx8sAdI?=
+ =?us-ascii?Q?x5cbqrG45Ag8MTdAr0hLPaTeYKS9/JU7Dqk/+D25euUDH2A/njPJT23rXqCY?=
+ =?us-ascii?Q?WrbrlURUmy3tZw34wOEewlBNSuXE/MhAQ7E+ECoNHYjAHKWZ/uxl+mhgTQyB?=
+ =?us-ascii?Q?uX5MTVRTLAHAkfRKOiDBDl18UA3v3coCFFDhVNaBpU+XTD5e2nP9hCQuKXVj?=
+ =?us-ascii?Q?s7HDP7dzk3xyFnjBA/op1d6mSQXPzvUMj/749Gcnt9dsshhSb8n85qb3LgCr?=
+ =?us-ascii?Q?32FAmjSShpm5IQnB3HWIn1fP4niWN2dFnyWuted7fUTlUilufM18BdU9z2LY?=
+ =?us-ascii?Q?nUWxEF2WrPUqhNHRsP+AwfszWrDaSNs3x7p5J51uKDm9l07cjzKJWg5lMDUf?=
+ =?us-ascii?Q?c+zkMf9f7IjIcuRKXJDGMkWLFvrjCY1Xy/9x/lY9QHVr4WEH2SuN6JfbrcGt?=
+ =?us-ascii?Q?/Ui2wsVmZMsAjPndOF2zpHIz03OoUjE6yWdzFxBAzpFUkWskCRRc9FuYo69D?=
+ =?us-ascii?Q?Zu4sLUePvOBwqRqM+CuvbNCf+cA1OfnH1BrO2T1+oEIc3eGxcEhMIaInUE0Z?=
+ =?us-ascii?Q?3eHfk2xiqgacagBsdso=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.201.22.39]
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-08-29_10,2023-08-29_01,2023-05-22_02
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 841f1299-09d3-4bf2-e986-08dba89cac36
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2023 14:31:46.0412
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4MN3ctlZTo4L3/eTzcP1qm+bIkLTybpmvLaT4RxRVopZ++T4cOTkt4XgK9qxIF8v+LjfdvcbHNdOBJKv3HIybFH5AbbBTyK1MPbCn8OM9io=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY3PR01MB9875
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Introduce the internal clock signal, used to count when in simple rising
-function. Define signal ids, to improve readability. Also add the
-"frequency" attribute for the clock signal, and "prescaler" for the
-counter.
+Hi Jonathan Cameron,
 
-Whit this patch, signal action reports consistent state when "increase"
-function is used, and the counting frequency:
-$ echo increase > function
-$ grep -H "" signal*_action
-signal0_action:rising edge
-signal1_action:none
-signal2_action:none
-$ echo 1 > enable
-$ cat count
-25425
-$ cat count
-44439
-$ cat ../signal0/frequency
-208877930
+Thanks for the feedback.
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
----
- drivers/counter/stm32-timer-cnt.c | 84 ++++++++++++++++++++++++++++---
- 1 file changed, 76 insertions(+), 8 deletions(-)
+> Subject: Re: [PATCH v2] iio: accel: adxl345: Convert enum->pointer for da=
+ta
+> in match data table
+>=20
+> On Fri, 18 Aug 2023 19:12:29 +0100
+> Biju Das <biju.das.jz@bp.renesas.com> wrote:
+>=20
+> > Convert enum->pointer for data in match data table, so that
+> > device_get_match_data() can do match against OF/ACPI/I2C tables, once
+> > i2c bus type match support added to it.
+> >
+> > Add struct adxl3x5_chip_info and replace enum->adxl3x5_chip_info in
+> > the match table and simplify adxl345_probe().
+> >
+> > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+>=20
+> Hi Biju.
+>=20
+> The enum is used for very few purposes in this driver.
+> Whilst this patch is a good step in the right direction I'd like to see t=
+he
+> enum go away entirely by adding the remaining chip specific data to the n=
+ew
+> chip_info structure.
+> I think that's just one scale value :)
 
-diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
-index eae851f6db2c..b8d201383a64 100644
---- a/drivers/counter/stm32-timer-cnt.c
-+++ b/drivers/counter/stm32-timer-cnt.c
-@@ -21,6 +21,10 @@
- #define TIM_CCER_MASK	(TIM_CCER_CC1P | TIM_CCER_CC1NP | \
- 			 TIM_CCER_CC2P | TIM_CCER_CC2NP)
- 
-+#define STM32_CLOCK_SIG		0
-+#define STM32_CH1_SIG		1
-+#define STM32_CH2_SIG		2
-+
- struct stm32_timer_regs {
- 	u32 cr1;
- 	u32 cnt;
-@@ -216,11 +220,44 @@ static int stm32_count_enable_write(struct counter_device *counter,
- 	return 0;
- }
- 
-+static int stm32_count_prescaler_read(struct counter_device *counter,
-+				      struct counter_count *count, u64 *prescaler)
-+{
-+	struct stm32_timer_cnt *const priv = counter_priv(counter);
-+	u32 psc;
-+
-+	regmap_read(priv->regmap, TIM_PSC, &psc);
-+
-+	*prescaler = psc + 1;
-+
-+	return 0;
-+}
-+
-+static int stm32_count_prescaler_write(struct counter_device *counter,
-+				       struct counter_count *count, u64 prescaler)
-+{
-+	struct stm32_timer_cnt *const priv = counter_priv(counter);
-+	u32 psc;
-+
-+	if (!prescaler || prescaler > MAX_TIM_PSC + 1)
-+		return -ERANGE;
-+
-+	psc = prescaler - 1;
-+
-+	return regmap_write(priv->regmap, TIM_PSC, psc);
-+}
-+
- static struct counter_comp stm32_count_ext[] = {
- 	COUNTER_COMP_DIRECTION(stm32_count_direction_read),
- 	COUNTER_COMP_ENABLE(stm32_count_enable_read, stm32_count_enable_write),
- 	COUNTER_COMP_CEILING(stm32_count_ceiling_read,
- 			     stm32_count_ceiling_write),
-+	COUNTER_COMP_COUNT_U64("prescaler", stm32_count_prescaler_read,
-+			       stm32_count_prescaler_write),
-+};
-+
-+static const enum counter_synapse_action stm32_clock_synapse_actions[] = {
-+	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
- };
- 
- static const enum counter_synapse_action stm32_synapse_actions[] = {
-@@ -243,25 +280,31 @@ static int stm32_action_read(struct counter_device *counter,
- 	switch (function) {
- 	case COUNTER_FUNCTION_INCREASE:
- 		/* counts on internal clock when CEN=1 */
--		*action = COUNTER_SYNAPSE_ACTION_NONE;
-+		if (synapse->signal->id == STM32_CLOCK_SIG)
-+			*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
-+		else
-+			*action = COUNTER_SYNAPSE_ACTION_NONE;
- 		return 0;
- 	case COUNTER_FUNCTION_QUADRATURE_X2_A:
- 		/* counts up/down on TI1FP1 edge depending on TI2FP2 level */
--		if (synapse->signal->id == count->synapses[0].signal->id)
-+		if (synapse->signal->id == STM32_CH1_SIG)
- 			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
- 		else
- 			*action = COUNTER_SYNAPSE_ACTION_NONE;
- 		return 0;
- 	case COUNTER_FUNCTION_QUADRATURE_X2_B:
- 		/* counts up/down on TI2FP2 edge depending on TI1FP1 level */
--		if (synapse->signal->id == count->synapses[1].signal->id)
-+		if (synapse->signal->id == STM32_CH2_SIG)
- 			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
- 		else
- 			*action = COUNTER_SYNAPSE_ACTION_NONE;
- 		return 0;
- 	case COUNTER_FUNCTION_QUADRATURE_X4:
- 		/* counts up/down on both TI1FP1 and TI2FP2 edges */
--		*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
-+		if (synapse->signal->id == STM32_CH1_SIG || synapse->signal->id == STM32_CH2_SIG)
-+			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
-+		else
-+			*action = COUNTER_SYNAPSE_ACTION_NONE;
- 		return 0;
- 	default:
- 		return -EINVAL;
-@@ -276,27 +319,52 @@ static const struct counter_ops stm32_timer_cnt_ops = {
- 	.action_read = stm32_action_read,
- };
- 
-+static int stm32_count_clk_get_freq(struct counter_device *counter,
-+				    struct counter_signal *signal, u64 *freq)
-+{
-+	struct stm32_timer_cnt *const priv = counter_priv(counter);
-+
-+	*freq = clk_get_rate(priv->clk);
-+
-+	return 0;
-+}
-+
-+static struct counter_comp stm32_count_clock_ext[] = {
-+	COUNTER_COMP_SIGNAL_U64("frequency", stm32_count_clk_get_freq, NULL),
-+};
-+
- static struct counter_signal stm32_signals[] = {
- 	{
--		.id = 0,
-+		.id = STM32_CLOCK_SIG,
-+		.name = "Clock Signal",
-+		.ext = stm32_count_clock_ext,
-+		.num_ext = ARRAY_SIZE(stm32_count_clock_ext),
-+	},
-+	{
-+		.id = STM32_CH1_SIG,
- 		.name = "Channel 1 Quadrature A"
- 	},
- 	{
--		.id = 1,
-+		.id = STM32_CH2_SIG,
- 		.name = "Channel 2 Quadrature B"
- 	}
- };
- 
- static struct counter_synapse stm32_count_synapses[] = {
-+	{
-+		.actions_list = stm32_clock_synapse_actions,
-+		.num_actions = ARRAY_SIZE(stm32_clock_synapse_actions),
-+		.signal = &stm32_signals[STM32_CLOCK_SIG]
-+	},
- 	{
- 		.actions_list = stm32_synapse_actions,
- 		.num_actions = ARRAY_SIZE(stm32_synapse_actions),
--		.signal = &stm32_signals[0]
-+		.signal = &stm32_signals[STM32_CH1_SIG]
- 	},
- 	{
- 		.actions_list = stm32_synapse_actions,
- 		.num_actions = ARRAY_SIZE(stm32_synapse_actions),
--		.signal = &stm32_signals[1]
-+		.signal = &stm32_signals[STM32_CH2_SIG]
- 	}
- };
- 
--- 
-2.25.1
+OK.
+
+>=20
+> Jonathan
+>=20
+> > ---
+> > v1->v2:
+> >  * Replaced EINVAL->ENODEV for invaild chip type.
+> >  * Kept leading commas for adxl345_*_info and adxl375_*_info.
+> >  * Restored switch statement in adxl345_core_probe()
+> > ---
+> >  drivers/iio/accel/adxl345.h      |  5 +++++
+> >  drivers/iio/accel/adxl345_core.c | 16 ++++++----------
+> > drivers/iio/accel/adxl345_i2c.c  | 20 +++++++++++++++-----
+> > drivers/iio/accel/adxl345_spi.c  | 20 +++++++++++++++-----
+> >  4 files changed, 41 insertions(+), 20 deletions(-)
+> >
+> > diff --git a/drivers/iio/accel/adxl345.h b/drivers/iio/accel/adxl345.h
+> > index d7e67cb08538..8df1b7f43cb9 100644
+> > --- a/drivers/iio/accel/adxl345.h
+> > +++ b/drivers/iio/accel/adxl345.h
+> > @@ -13,6 +13,11 @@ enum adxl345_device_type {
+> >  	ADXL375 =3D 2,
+> >  };
+> >
+> > +struct adxl3x5_chip_info {
+> No wild cards in naming. I almost always ends up being a problem in the
+> long run.
+> adxl345_chip_info is fine as it's in the adxl345 file.
+
+OK, will change it.
+
+Cheers,
+Biju
+
+>=20
+> > +	const char *name;
+> > +	unsigned int type;
+> > +};
+> > +
+> >  int adxl345_core_probe(struct device *dev, struct regmap *regmap);
+> >
+> >  #endif /* _ADXL345_H_ */
+> > diff --git a/drivers/iio/accel/adxl345_core.c
+> > b/drivers/iio/accel/adxl345_core.c
+> > index 1919e0089c11..810048099ba9 100644
+> > --- a/drivers/iio/accel/adxl345_core.c
+> > +++ b/drivers/iio/accel/adxl345_core.c
+> > @@ -222,23 +222,19 @@ static void adxl345_powerdown(void *regmap)
+> >
+> >  int adxl345_core_probe(struct device *dev, struct regmap *regmap)  {
+> > -	enum adxl345_device_type type;
+> > +	const struct adxl3x5_chip_info *info;
+> >  	struct adxl345_data *data;
+> >  	struct iio_dev *indio_dev;
+> > -	const char *name;
+> >  	u32 regval;
+> >  	int ret;
+> >
+> > -	type =3D (uintptr_t)device_get_match_data(dev);
+> > -	switch (type) {
+> > +	info =3D device_get_match_data(dev);
+> > +	switch (info->type) {
+> >  	case ADXL345:
+> > -		name =3D "adxl345";
+> > -		break;
+> >  	case ADXL375:
+> > -		name =3D "adxl375";
+> >  		break;
+> >  	default:
+> > -		return -EINVAL;
+> > +		return -ENODEV;
+> >  	}
+> >
+> >  	ret =3D regmap_read(regmap, ADXL345_REG_DEVID, &regval); @@ -255,7
+> > +251,7 @@ int adxl345_core_probe(struct device *dev, struct regmap
+> > *regmap)
+> >
+> >  	data =3D iio_priv(indio_dev);
+> >  	data->regmap =3D regmap;
+> > -	data->type =3D type;
+> > +	data->type =3D info->type;
+> >  	/* Enable full-resolution mode */
+> >  	data->data_range =3D ADXL345_DATA_FORMAT_FULL_RES;
+> >
+> > @@ -264,7 +260,7 @@ int adxl345_core_probe(struct device *dev, struct
+> regmap *regmap)
+> >  	if (ret < 0)
+> >  		return dev_err_probe(dev, ret, "Failed to set data range\n");
+> >
+> > -	indio_dev->name =3D name;
+> > +	indio_dev->name =3D info->name;
+> >  	indio_dev->info =3D &adxl345_info;
+> >  	indio_dev->modes =3D INDIO_DIRECT_MODE;
+> >  	indio_dev->channels =3D adxl345_channels; diff --git
+> > a/drivers/iio/accel/adxl345_i2c.c b/drivers/iio/accel/adxl345_i2c.c
+> > index e47d12f19602..219de556e81a 100644
+> > --- a/drivers/iio/accel/adxl345_i2c.c
+> > +++ b/drivers/iio/accel/adxl345_i2c.c
+> > @@ -30,22 +30,32 @@ static int adxl345_i2c_probe(struct i2c_client
+> *client)
+> >  	return adxl345_core_probe(&client->dev, regmap);  }
+> >
+> > +static const struct adxl3x5_chip_info adxl345_i2c_info =3D {
+> > +	.name =3D "adxl345",
+> > +	.type =3D ADXL345,
+> > +};
+> > +
+> > +static const struct adxl3x5_chip_info adxl375_i2c_info =3D {
+> > +	.name =3D "adxl375",
+> > +	.type =3D ADXL375,
+> > +};
+> > +
+> >  static const struct i2c_device_id adxl345_i2c_id[] =3D {
+> > -	{ "adxl345", ADXL345 },
+> > -	{ "adxl375", ADXL375 },
+> > +	{ "adxl345", (kernel_ulong_t)&adxl345_i2c_info },
+> > +	{ "adxl375", (kernel_ulong_t)&adxl375_i2c_info },
+> >  	{ }
+> >  };
+> >  MODULE_DEVICE_TABLE(i2c, adxl345_i2c_id);
+> >
+> >  static const struct of_device_id adxl345_of_match[] =3D {
+> > -	{ .compatible =3D "adi,adxl345", .data =3D (const void *)ADXL345 },
+> > -	{ .compatible =3D "adi,adxl375", .data =3D (const void *)ADXL375 },
+> > +	{ .compatible =3D "adi,adxl345", .data =3D &adxl345_i2c_info },
+> > +	{ .compatible =3D "adi,adxl375", .data =3D &adxl375_i2c_info },
+> >  	{ }
+> >  };
+> >  MODULE_DEVICE_TABLE(of, adxl345_of_match);
+> >
+> >  static const struct acpi_device_id adxl345_acpi_match[] =3D {
+> > -	{ "ADS0345", ADXL345 },
+> > +	{ "ADS0345", (kernel_ulong_t)&adxl345_i2c_info },
+> >  	{ }
+> >  };
+> >  MODULE_DEVICE_TABLE(acpi, adxl345_acpi_match); diff --git
+> > a/drivers/iio/accel/adxl345_spi.c b/drivers/iio/accel/adxl345_spi.c
+> > index aaade5808657..3acdacc07293 100644
+> > --- a/drivers/iio/accel/adxl345_spi.c
+> > +++ b/drivers/iio/accel/adxl345_spi.c
+> > @@ -36,22 +36,32 @@ static int adxl345_spi_probe(struct spi_device *spi=
+)
+> >  	return adxl345_core_probe(&spi->dev, regmap);  }
+> >
+> > +static const struct adxl3x5_chip_info adxl345_spi_info =3D {
+> > +	.name =3D "adxl345",
+> > +	.type =3D ADXL345,
+> > +};
+> > +
+> > +static const struct adxl3x5_chip_info adxl375_spi_info =3D {
+> > +	.name =3D "adxl375",
+> > +	.type =3D ADXL375,
+> > +};
+> > +
+> >  static const struct spi_device_id adxl345_spi_id[] =3D {
+> > -	{ "adxl345", ADXL345 },
+> > -	{ "adxl375", ADXL375 },
+> > +	{ "adxl345", (kernel_ulong_t)&adxl345_spi_info },
+> > +	{ "adxl375", (kernel_ulong_t)&adxl375_spi_info },
+> >  	{ }
+> >  };
+> >  MODULE_DEVICE_TABLE(spi, adxl345_spi_id);
+> >
+> >  static const struct of_device_id adxl345_of_match[] =3D {
+> > -	{ .compatible =3D "adi,adxl345", .data =3D (const void *)ADXL345 },
+> > -	{ .compatible =3D "adi,adxl375", .data =3D (const void *)ADXL375 },
+> > +	{ .compatible =3D "adi,adxl345", .data =3D &adxl345_spi_info },
+> > +	{ .compatible =3D "adi,adxl375", .data =3D &adxl375_spi_info },
+> >  	{ }
+> >  };
+> >  MODULE_DEVICE_TABLE(of, adxl345_of_match);
+> >
+> >  static const struct acpi_device_id adxl345_acpi_match[] =3D {
+> > -	{ "ADS0345", ADXL345 },
+> > +	{ "ADS0345", (kernel_ulong_t)&adxl345_spi_info },
+> >  	{ }
+> >  };
+> >  MODULE_DEVICE_TABLE(acpi, adxl345_acpi_match);
 
