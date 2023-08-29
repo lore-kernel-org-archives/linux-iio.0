@@ -2,269 +2,481 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C069AC6FA8F
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Aug 2023 14:35:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E8FC71153
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Aug 2023 14:39:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234286AbjH2Of2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 29 Aug 2023 10:35:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51974 "EHLO
+        id S236963AbjH2Oim (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 29 Aug 2023 10:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236959AbjH2OfK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Aug 2023 10:35:10 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2090.outbound.protection.outlook.com [40.107.114.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E8E113
-        for <linux-iio@vger.kernel.org>; Tue, 29 Aug 2023 07:35:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=g3LyEFpc3G3pZQeicIM7FisdVs9hR3RjEADxvZ9YOKDestfDKCy99RFraBEc7E79SRNchttzzTIiEDtGvYdCOLbDd4gjvRlZQvqgYMfc4Sg8I1je1UplryidFblk9xDmnrQiUTw7WEtFLH6rFmMaoqcAl/QnTQRqUb5tP38YHIhipanjPQh7OXd5/fXua9RWWKYmKmA0g+ehN861HFHS6VxJYaMHVaK8bfQW/FLk0O1nxOLgI8BUuQqEKT42/osNSFmLJxKgjGnvVsJn/OV/BAMwQZHshv6Hfa7zveSaVF13fcEA59GMUZjJvVVOMWiZxJB7UGSrTHhnZzRJU+xacA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iAP+vf4/mSfVI0vtelv/fLhRJJtbdE20EXlGsicVhiw=;
- b=IhymzhbaILKh36RkoK7ZNI0imM+aLswzAmL5DeK6nqKxrWP9NKwf/g/5L7uJXYSYdMcfu/B4cXfQm6016LP0zZkmxXctvOBr8OfbOuVDJO5oNyVq52+o5PLF3T0UEwW9sM9NWslWR3jdoZ4Vs4Q+3wZhlDIhOJN5IcMtptBOHLR4l7rkbx2DP1Yrh1V4mgAkN1KoG6C1B/o9RUzhkb1OlMu5qkRA08+yMVhOL6TOZa53OmXkyGlrKa51ILkDWbh8T5ePssTQ4eWeqqypl9AjlqxdtcLgfNtCxUQBR1+51PgCkEc7kh8BvD6DaqrI7QDbW1Z/AbIF3kJypPzBsyWSiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iAP+vf4/mSfVI0vtelv/fLhRJJtbdE20EXlGsicVhiw=;
- b=fIzb1D2cwgezGQBOibWrncVPosQweNR6U04Qpkb1LmV5jmdX3+l/PxJcC4qrqS1JT8goI1MgxEKQLwc9xExSYdFw21H7231cBkAY+8yT6VAMKko213EtXkDrmeeaxtEOUzme9Pdkm2jSGLvruNChHs32wHrYJmYGrqCeMegKDE4=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by TY3PR01MB9875.jpnprd01.prod.outlook.com (2603:1096:400:22f::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.18; Tue, 29 Aug
- 2023 14:35:00 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::9d23:32f5:9325:3706]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::9d23:32f5:9325:3706%5]) with mapi id 15.20.6745.015; Tue, 29 Aug 2023
- 14:35:00 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     Lars-Peter Clausen <lars@metafoo.de>,
-        =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Marek Vasut <marex@denx.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: RE: [PATCH v2 2/2] iio: dac: mcp4725: Use i2c_get_match_data()
-Thread-Topic: [PATCH v2 2/2] iio: dac: mcp4725: Use i2c_get_match_data()
-Thread-Index: AQHZ0fxQPqp/Gyp8q0qiFsmn7366aq//txGAgAGwjMA=
-Date:   Tue, 29 Aug 2023 14:35:00 +0000
-Message-ID: <OS0PR01MB592268F183477E30CC5E04D386E7A@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <20230818174905.324623-1-biju.das.jz@bp.renesas.com>
-        <20230818174905.324623-3-biju.das.jz@bp.renesas.com>
- <20230828134527.412c18cf@jic23-huawei>
-In-Reply-To: <20230828134527.412c18cf@jic23-huawei>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: OS0PR01MB5922:EE_|TY3PR01MB9875:EE_
-x-ms-office365-filtering-correlation-id: d5ce7dbd-4bbb-44b2-c1ae-08dba89d2007
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HpG/vOufIC7ecKQ3oLukxi41h0coGp4Nq9DzjREqvmpYJ5xRrU8hgWR/olrUQpxzpWjmRBP30k7GnaevS9/LsLHRU3o2mZsmbitg7014yce7G3xRU/sN8JHSRSuJg+NSjzpNaHE3EIl6MHSpY47zDdR1Ewleyx42QHJJc6E2xki+q+uoZYC52BXnIsxy1Prq+h8fWrsMe+TAWQRC6l2T1a4CtrTYkeiBFKPe54yNyTHQTgqTnfEEJFaCztta/nIVlOD1GlYRKES4Dp6duQbI2eK3bs1yDFrz2MCyHLGN5OaqJKA83GGWFLhZUvFzeaMFEbBXGqWU17yDlMTZmcK9G0InW8UhCnkBBOVLpJSYDtdfGaUUbrtimKnmbZob+5PsU0IS/W1SM9T9by47X0zcohH2+Q5syoDR7VDxsCH+pr8ZvCzrkh7vc4Yh6xYrNCrzkyxBtTDe/savuTQRDNSIPiiKiMrdxQe2iA2sUcS8srVbFUUz2I6oZ2PzXilzyyEigLlY+q+px42VJscmum6uHS8wuzE4B1eHyEjFucKiU6Szf/gAl2pJh0UANCGoZK23+zK36YlVwmNxsW9+fj18PIMF2lSl9yOzyHELI4h5jOpLKIlR42n+/jhgHV91kguG
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(376002)(346002)(396003)(366004)(136003)(1800799009)(186009)(451199024)(2906002)(54906003)(76116006)(33656002)(64756008)(66446008)(66476007)(66556008)(66946007)(5660300002)(316002)(6916009)(55016003)(41300700001)(8936002)(4326008)(8676002)(52536014)(71200400001)(6506007)(7696005)(9686003)(38100700002)(38070700005)(122000001)(86362001)(478600001)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?KNR6JmlQnMt3Un+BduoEw4hSlLTDqfyX0EOKm1xRs7UneQZyNEX4YyZzSO?=
- =?iso-8859-1?Q?poAszl47/OAmHDDIV4SEvK07KKl+gYWbnNlzsCJ4cizMayn6NWcDhGyS1n?=
- =?iso-8859-1?Q?Z76IWCfR74DQhTtgnIsX+IMReiqm8Ox2cMwoRehV1scN1jgVZEkHjPjpun?=
- =?iso-8859-1?Q?PAvSyX7crQrSj2Ry3g01mm+DlM4u0vpKaJQYNGiyrUxgwe1qFj14BEJQph?=
- =?iso-8859-1?Q?HmkReZvHKOfRavUKz5XYVj4nmj/V2A6WY1Shml+9QL6nAia8NQz1IGgJi8?=
- =?iso-8859-1?Q?do7hzZELbmzEiG7j57xbqHNe+tpfEM4pOF8xtJmXdIHz9Z9d/Il+btw8kX?=
- =?iso-8859-1?Q?tOH1PqCIiSJQwoqtWYb8LodrHx6FF4qNxE24gC9kml31v75q8tXJCnArgB?=
- =?iso-8859-1?Q?BShhcz+jgWNQOCu0xcvEX3Ms8QD8ofbRNmkf1Kvr6nu3kU0YoGR/B1gDm6?=
- =?iso-8859-1?Q?VPWonDU9ekItBS4rotV395F21x66FXx/SwGmR0YH8+XvE2gwtK4IMQCcR/?=
- =?iso-8859-1?Q?aBjwrK7ieWEgzvnh3B3tyXHrTnoumAyXvRvBHx8/uWkOHe3SWn1lS4AcJp?=
- =?iso-8859-1?Q?2iI8Rt+ZQKCkniLIm3ofo3n+BInAAi9bzlyhu/ifqewPAoSW8gKmfrIYDt?=
- =?iso-8859-1?Q?vtl1Istx8Wd3EsIB+18EpSFiDSGg6OLhWbjcGs2fAOf2Sl2osKDv/zefgl?=
- =?iso-8859-1?Q?WjGW1bPNJkT6UbZuoPMy6Teb30AbaqM/lxkaA1pFfE+60QKMhp6cEms4/j?=
- =?iso-8859-1?Q?c+O4iW+JHNN4R3/sNRwC2vBg+MXn6T6R7JtR8jHxZGR+Ehi3Wkuq5pwIbd?=
- =?iso-8859-1?Q?4wPgzAumdbca7FGKCljJ0rTDRzd/jNjBwxovX2m+ObAAam5shoqJn+Xcke?=
- =?iso-8859-1?Q?cTACQ7g5PzMD/mgppOavE8C3fNlRmQ+DjByEMXzkay0YvVSWklzxTWvHK+?=
- =?iso-8859-1?Q?6+nsSJS6jlale9LHHpdtLxXaPDM/LzLDV9PaxD2Nzb9mMO1j4zm7qdIDYX?=
- =?iso-8859-1?Q?wMf5mBDCUtGxKA5TikJBe+SrSlWjSL9U7AdcEg/ymFKaXobfuhzuTzpm29?=
- =?iso-8859-1?Q?xBxy89/ret4r8AzN33Mw1SFICeWMZNQTPNBZieX/Kk00vnNOmNi6KgNCvh?=
- =?iso-8859-1?Q?W2eaB2elSkPtwAK5zanoR46jAOE6TuO+cmjvoib8Uya5YRId2R0HYSw5vN?=
- =?iso-8859-1?Q?nBQFF1/01sZC7BU+Uks0V0A7HwcBuufpaSd6wMcE3s8eTOG/4kge5T7v5R?=
- =?iso-8859-1?Q?XJIUk35vDq7OgwMxLUlJCjWskQhl9Rx/tZfH0H8PuETYTztwqwUV7RCs0U?=
- =?iso-8859-1?Q?CHLd/o6jAa1LyQ/8RZ9bHbgzMrSIMEuNoBpKo0DXHiS+/1d+nvKV0sQx4f?=
- =?iso-8859-1?Q?WooLCVvKP1Vl0p2cP92o0LDUIAcwWm8JtgZaiAkWUX9DvQDNDnEKtQ+nqG?=
- =?iso-8859-1?Q?1mk3DBSDNuyv0tzkbqxcaiv/UbV7YDH5xWZAJWexrz7kOQjOWkNWUtZtnJ?=
- =?iso-8859-1?Q?X8qIb2HXN7w+QW2hzDVNkVytTuXjV6yfntiKyDSWjv4YYqmHMhbbmy1DfU?=
- =?iso-8859-1?Q?RSoWfGoOPanXzM9eyTRXwMKMeHaCVM3CuPcmDRBPMOUJEBdUWRIBFgmCsN?=
- =?iso-8859-1?Q?m3/3ZDFSxcPKo=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S237012AbjH2Oi1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Aug 2023 10:38:27 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1A21AE;
+        Tue, 29 Aug 2023 07:38:20 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 37TBwku8022670;
+        Tue, 29 Aug 2023 15:40:57 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+        from:to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding:content-type; s=
+        selector1; bh=cjpw0qMq1w37JRDndUFptdySW5NdRruZOLIYm1872aA=; b=sO
+        iabn6zFkWNuNYqYku/H7W0x2xXHoWpzWtEBlSqBI2B+AHZzveUP3ck8Ljj8pdetl
+        crMUbtvpz+9u2GSH/+vCzUNFjuiLsnJUxCtuRXG/jnY0gjx9AvxeaofXfEj+i39s
+        +awzKc8eky0mgzmxR0KtQqhJVg73Ehb45dKK2s7Ne3JEwdhtBSbx9LJdoSHdFOyl
+        Cpp8GT5bJaqvPS6cIpObFjLD8f5DvYfiIamm6ZsTR2yAeze2QcPS4+uxb/eh9bRB
+        p7Okon5Ntdspf2rejeTkW1+7uNcvjLyylEX+BbOzJQ6aDyLt8X4H+anfknE/F6sP
+        1N0VJ+Y3/WziGBFuxwOg==
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3sq8qwc3jc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 29 Aug 2023 15:40:57 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E10D1100057;
+        Tue, 29 Aug 2023 15:40:56 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D59DD2207DB;
+        Tue, 29 Aug 2023 15:40:56 +0200 (CEST)
+Received: from localhost (10.201.22.39) by SHFDAG1NODE2.st.com (10.75.129.70)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Tue, 29 Aug
+ 2023 15:40:56 +0200
+From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+To:     <william.gray@linaro.org>, <lee@kernel.org>
+CC:     <alexandre.torgue@foss.st.com>, <fabrice.gasnier@foss.st.com>,
+        <linux-iio@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 3/8] tools/counter: add a flexible watch events tool
+Date:   Tue, 29 Aug 2023 15:40:24 +0200
+Message-ID: <20230829134029.2402868-4-fabrice.gasnier@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230829134029.2402868-1-fabrice.gasnier@foss.st.com>
+References: <20230829134029.2402868-1-fabrice.gasnier@foss.st.com>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5ce7dbd-4bbb-44b2-c1ae-08dba89d2007
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2023 14:35:00.3178
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Re8zyao46+AP4o/VolurwxPT0YNpHVUHZ1WxMReW6fQygVUKzRneEzCSjgfFJQ9p7P06fTH4fnFUt11u7dpbZ8O4Umkyhzb5tZGY7tulFG0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY3PR01MB9875
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.201.22.39]
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
+ definitions=2023-08-29_10,2023-08-29_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan Cameron,
+This adds a new counter tool to be able to test various watch events.
+A flexible watch array can be populated from command line, each field
+may be tuned with a dedicated command line argument.
+Each argument can be repeated several times: each time it gets repeated,
+a corresponding new watch element is allocated.
 
-> Subject: Re: [PATCH v2 2/2] iio: dac: mcp4725: Use i2c_get_match_data()
->=20
-> On Fri, 18 Aug 2023 18:49:05 +0100
-> Biju Das <biju.das.jz@bp.renesas.com> wrote:
->=20
-> > Replace local variable chip_id with struct iio_chan_spec for device
-> > data and use its .ext_info for chip identification. After this replace
-> > device_get_match_data() and id lookup for retrieving match data by
-> > i2c_get_match_data() by converting enum->pointer for data in the match
-> > table.
-> >
-> > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
->=20
-> The use of ext_info on a channel is messy.  Please just define a clearly
-> named flag in chip_info to make it simpler to maintain and extend.
-OK
+It also comes with a simple default watch (to monitor overflows), used
+when no watch parameters are provided.
 
-> Jonathan
->=20
-> > ---
-> > v1->v2:
-> >  * No change.
-> > ---
-> >  drivers/iio/dac/mcp4725.c | 26 ++++++++++++--------------
-> >  1 file changed, 12 insertions(+), 14 deletions(-)
-> >
-> > diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-> > index 33a61f65bc25..f9ce01c4cc53 100644
-> > --- a/drivers/iio/dac/mcp4725.c
-> > +++ b/drivers/iio/dac/mcp4725.c
-> > @@ -386,7 +386,7 @@ static int mcp4725_probe(struct i2c_client *client)
-> >  	struct mcp4725_data *data;
-> >  	struct iio_dev *indio_dev;
-> >  	struct mcp4725_platform_data *pdata, pdata_dt;
-> > -	int chip_id;
-> > +	const struct iio_chan_spec *ch;
-> >  	u8 inbuf[4];
-> >  	u8 pd;
-> >  	u8 ref;
-> > @@ -398,10 +398,8 @@ static int mcp4725_probe(struct i2c_client *client=
-)
-> >  	data =3D iio_priv(indio_dev);
-> >  	i2c_set_clientdata(client, indio_dev);
-> >  	data->client =3D client;
-> > -	if (dev_fwnode(&client->dev))
-> > -		chip_id =3D (uintptr_t)device_get_match_data(&client->dev);
-> > -	else
-> > -		chip_id =3D id->driver_data;
-> > +	ch =3D i2c_get_match_data(client);
-> > +
-> >  	pdata =3D dev_get_platdata(&client->dev);
-> >
-> >  	if (!pdata) {
-> > @@ -414,7 +412,7 @@ static int mcp4725_probe(struct i2c_client *client)
-> >  		pdata =3D &pdata_dt;
-> >  	}
-> >
-> > -	if (chip_id =3D=3D MCP4725 && pdata->use_vref) {
-> > +	if (ch->ext_info =3D=3D mcp4725_ext_info && pdata->use_vref) {
->=20
-> I think this will end up being hard to maintain.
->=20
-> Please define a mcp4725_chip_info structure and put the channels in there
-> + a flag that says if the device in question supports an external
-> reference.
+The print_usage() routine proposes another example, from the command line,
+which generates a 2 elements watch array, to monitor:
+- overflow events
+- capture events, on channel 3, that reads read captured data by
+  specifying the component id (capture3_component_id being 7 here).
 
-Agreed.
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+---
+ tools/counter/Build                  |   1 +
+ tools/counter/Makefile               |   8 +-
+ tools/counter/counter_watch_events.c | 348 +++++++++++++++++++++++++++
+ 3 files changed, 356 insertions(+), 1 deletion(-)
+ create mode 100644 tools/counter/counter_watch_events.c
 
->=20
-> >  		dev_err(&client->dev,
-> >  			"external reference is unavailable on MCP4725");
-> >  		return -EINVAL;
-> > @@ -455,12 +453,12 @@ static int mcp4725_probe(struct i2c_client
-> > *client)
-> >
-> >  	indio_dev->name =3D id->name;
-> >  	indio_dev->info =3D &mcp4725_info;
-> > -	indio_dev->channels =3D &mcp472x_channel[chip_id];
-> > +	indio_dev->channels =3D ch;
-> >  	indio_dev->num_channels =3D 1;
-> >  	indio_dev->modes =3D INDIO_DIRECT_MODE;
-> >
-> >  	/* read current DAC value and settings */
-> > -	err =3D i2c_master_recv(client, inbuf, chip_id =3D=3D MCP4725 ? 3 : 4=
-);
-> > +	err =3D i2c_master_recv(client, inbuf, ch->ext_info =3D=3D
-> > +mcp4725_ext_info ? 3 : 4);
-> >
-> >  	if (err < 0) {
-> >  		dev_err(&client->dev, "failed to read DAC value"); @@ -470,10
-> > +468,10 @@ static int mcp4725_probe(struct i2c_client *client)
-> >  	data->powerdown =3D pd > 0;
-> >  	data->powerdown_mode =3D pd ? pd - 1 : 2; /* largest resistor to gnd =
-*/
-> >  	data->dac_value =3D (inbuf[1] << 4) | (inbuf[2] >> 4);
-> > -	if (chip_id =3D=3D MCP4726)
-> > +	if (ch->ext_info =3D=3D mcp4726_ext_info)
-> >  		ref =3D (inbuf[3] >> 3) & 0x3;
->=20
-> Add a flag to the chip_info structure for whatever we are controlling her=
-e
-> and then have if (info->x_is_supported)
-
-OK.
-
-> 	...
->=20
->=20
-> >
-> > -	if (chip_id =3D=3D MCP4726 && ref !=3D data->ref_mode) {
-> > +	if (ch->ext_info =3D=3D mcp4726_ext_info && ref !=3D data->ref_mode) =
-{
->=20
-> I think this can also use the vref bool I suggest adding above.
-
-OK.
-
-Cheers,
-Biju
->=20
-> >  		dev_info(&client->dev,
-> >  			"voltage reference mode differs (conf: %u, eeprom: %u),
-> setting %u",
-> >  			data->ref_mode, ref, data->ref_mode); @@ -511,8 +509,8
-> @@ static
-> > void mcp4725_remove(struct i2c_client *client)  }
-> >
-> >  static const struct i2c_device_id mcp4725_id[] =3D {
-> > -	{ "mcp4725", MCP4725 },
-> > -	{ "mcp4726", MCP4726 },
-> > +	{ "mcp4725", (kernel_ulong_t)&mcp472x_channel[MCP4725] },
-> > +	{ "mcp4726", (kernel_ulong_t)&mcp472x_channel[MCP4726] },
-> >  	{ }
-> >  };
-> >  MODULE_DEVICE_TABLE(i2c, mcp4725_id); @@ -520,11 +518,11 @@
-> > MODULE_DEVICE_TABLE(i2c, mcp4725_id);  static const struct
-> > of_device_id mcp4725_of_match[] =3D {
-> >  	{
-> >  		.compatible =3D "microchip,mcp4725",
-> > -		.data =3D (void *)MCP4725
-> > +		.data =3D &mcp472x_channel[MCP4725]
-> >  	},
-> >  	{
-> >  		.compatible =3D "microchip,mcp4726",
-> > -		.data =3D (void *)MCP4726
-> > +		.data =3D &mcp472x_channel[MCP4726]
-> >  	},
-> >  	{ }
-> >  };
+diff --git a/tools/counter/Build b/tools/counter/Build
+index 33f4a51d715e..4bbadb7ec93a 100644
+--- a/tools/counter/Build
++++ b/tools/counter/Build
+@@ -1 +1,2 @@
+ counter_example-y += counter_example.o
++counter_watch_events-y += counter_watch_events.o
+diff --git a/tools/counter/Makefile b/tools/counter/Makefile
+index b2c2946f44c9..00e211edd768 100644
+--- a/tools/counter/Makefile
++++ b/tools/counter/Makefile
+@@ -14,7 +14,7 @@ MAKEFLAGS += -r
+ 
+ override CFLAGS += -O2 -Wall -g -D_GNU_SOURCE -I$(OUTPUT)include
+ 
+-ALL_TARGETS := counter_example
++ALL_TARGETS := counter_example counter_watch_events
+ ALL_PROGRAMS := $(patsubst %,$(OUTPUT)%,$(ALL_TARGETS))
+ 
+ all: $(ALL_PROGRAMS)
+@@ -31,6 +31,12 @@ $(OUTPUT)include/linux/counter.h: ../../include/uapi/linux/counter.h
+ 
+ prepare: $(OUTPUT)include/linux/counter.h
+ 
++COUNTER_WATCH_EVENTS := $(OUTPUT)counter_watch_events.o
++$(COUNTER_WATCH_EVENTS): prepare FORCE
++	$(Q)$(MAKE) $(build)=counter_watch_events
++$(OUTPUT)counter_watch_events: $(COUNTER_WATCH_EVENTS)
++	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@
++
+ COUNTER_EXAMPLE := $(OUTPUT)counter_example.o
+ $(COUNTER_EXAMPLE): prepare FORCE
+ 	$(Q)$(MAKE) $(build)=counter_example
+diff --git a/tools/counter/counter_watch_events.c b/tools/counter/counter_watch_events.c
+new file mode 100644
+index 000000000000..7f73a1519d8e
+--- /dev/null
++++ b/tools/counter/counter_watch_events.c
+@@ -0,0 +1,348 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Counter - Test various watch events in a userspace application
++ * inspired by counter_example.c
++ */
++
++#include <errno.h>
++#include <fcntl.h>
++#include <getopt.h>
++#include <linux/counter.h>
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++#include <sys/ioctl.h>
++#include <unistd.h>
++
++#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
++
++static struct counter_watch simple_watch[] = {
++	{
++		/* Component data: Count 0 count */
++		.component.type = COUNTER_COMPONENT_COUNT,
++		.component.scope = COUNTER_SCOPE_COUNT,
++		.component.parent = 0,
++		/* Event type: Index */
++		.event = COUNTER_EVENT_OVERFLOW_UNDERFLOW,
++		/* Device event channel 0 */
++		.channel = 0,
++	},
++};
++
++static int find_match_or_number_from_array(char *arg, const char * const str[], int sz, __u8 *val)
++{
++	unsigned int i;
++	char *dummy;
++	unsigned long idx;
++	int ret;
++
++	for (i = 0; i < sz; i++) {
++		ret = strncmp(arg, str[i], strlen(str[i]));
++		if (!ret && strlen(str[i]) == strlen(arg)) {
++			*val = i;
++			return 0;
++		}
++	}
++
++	/* fallback to number */
++	idx = strtoul(optarg, &dummy, 10);
++	if (!errno) {
++		if (idx >= sz)
++			return -EINVAL;
++		*val = idx;
++		return 0;
++	}
++
++	return -errno;
++}
++
++static const char * const counter_event_type_name[] = {
++	"COUNTER_EVENT_OVERFLOW",
++	"COUNTER_EVENT_UNDERFLOW",
++	"COUNTER_EVENT_OVERFLOW_UNDERFLOW",
++	"COUNTER_EVENT_THRESHOLD",
++	"COUNTER_EVENT_INDEX",
++	"COUNTER_EVENT_CHANGE_OF_STATE",
++	"COUNTER_EVENT_CAPTURE",
++};
++
++static int counter_arg_to_event_type(char *arg, __u8 *event)
++{
++	return find_match_or_number_from_array(arg, counter_event_type_name,
++					       ARRAY_SIZE(counter_event_type_name), event);
++}
++
++static const char * const counter_component_type_name[] = {
++	"COUNTER_COMPONENT_NONE",
++	"COUNTER_COMPONENT_SIGNAL",
++	"COUNTER_COMPONENT_COUNT",
++	"COUNTER_COMPONENT_FUNCTION",
++	"COUNTER_COMPONENT_SYNAPSE_ACTION",
++	"COUNTER_COMPONENT_EXTENSION",
++};
++
++static int counter_arg_to_component_type(char *arg, __u8 *type)
++{
++	return find_match_or_number_from_array(arg, counter_component_type_name,
++					       ARRAY_SIZE(counter_component_type_name), type);
++}
++
++static const char * const counter_scope_name[] = {
++	"COUNTER_SCOPE_DEVICE",
++	"COUNTER_SCOPE_SIGNAL",
++	"COUNTER_SCOPE_COUNT",
++};
++
++static int counter_arg_to_scope(char *arg, __u8 *type)
++{
++	return find_match_or_number_from_array(arg, counter_scope_name,
++					       ARRAY_SIZE(counter_scope_name), type);
++}
++
++static void print_usage(void)
++{
++	fprintf(stderr, "Usage: counter_watch_events [options]...\n"
++		"Test various watch events for given counter device\n"
++		"  --channel -c <n>\n"
++		"        Set watch.channel\n"
++		"  --debug -d\n"
++		"        Prints debug information\n"
++		"  --event -e <number or counter_event_type string>\n"
++		"        Sets watch.event\n"
++		"  --help -h\n"
++		"        Prints usage\n"
++		"  --device-num -n <n>\n"
++		"        Set device number (/dev/counter<n>, default to 0)\n"
++		"  --id -i <n>\n"
++		"        Set watch.component.id\n"
++		"  --loop -l <n>\n"
++		"        Loop for a number of events (forever if n < 0)\n"
++		"  --parent -p <n>\n"
++		"        Set watch.component.parent number\n"
++		"  --scope -s <number or counter_scope string>\n"
++		"        Set watch.component.scope\n"
++		"  --type -t <number or counter_component_type string>\n"
++		"        Set watch.component.type\n"
++		"\n"
++		"Example with two watched events:\n\n"
++		"counter_watch_events -d \\\n"
++		"\t-t COUNTER_COMPONENT_COUNT -s COUNTER_SCOPE_COUNT"
++		" -e COUNTER_EVENT_OVERFLOW_UNDERFLOW -i 0 -c 0 \\\n"
++		"\t-t COUNTER_COMPONENT_EXTENSION -s COUNTER_SCOPE_COUNT"
++		" -e COUNTER_EVENT_CAPTURE -i 7 -c 3\n"
++		);
++}
++
++static void print_watch(struct counter_watch *watch, int nwatch)
++{
++	int i;
++
++	/* prints the watch array in C-like structure */
++	printf("watch[%d] = {\n", nwatch);
++	for (i = 0; i < nwatch; i++) {
++		printf(" [%d] =\t{\n"
++		       "\t\t.component.type = %s\n"
++		       "\t\t.component.scope = %s\n"
++		       "\t\t.component.parent = %d\n"
++		       "\t\t.component.id = %d\n"
++		       "\t\t.event = %s\n"
++		       "\t\t.channel = %d\n"
++		       "\t},\n",
++		       i,
++		       counter_component_type_name[watch[i].component.type],
++		       counter_scope_name[watch[i].component.scope],
++		       watch[i].component.parent,
++		       watch[i].component.id,
++		       counter_event_type_name[watch[i].event],
++		       watch[i].channel);
++	}
++	printf("};\n");
++}
++
++static const struct option longopts[] = {
++	{ "channel",		required_argument, 0, 'c' },
++	{ "debug",		no_argument,       0, 'd' },
++	{ "event",		required_argument, 0, 'e' },
++	{ "help",		no_argument,       0, 'h' },
++	{ "device-num",		required_argument, 0, 'n' },
++	{ "id",			required_argument, 0, 'i' },
++	{ "loop",		required_argument, 0, 'l' },
++	{ "parent",		required_argument, 0, 'p' },
++	{ "scope",		required_argument, 0, 's' },
++	{ "type",		required_argument, 0, 't' },
++	{ },
++};
++
++int main(int argc, char **argv)
++{
++	int c, fd, i, ret;
++	struct counter_event event_data;
++	char *device_name = NULL;
++	int debug = 0, loop = -1;
++	char *dummy;
++	int dev_num = 0, nwatch = 0, ncfg[] = {0, 0, 0, 0, 0, 0};
++	int num_chan = 0, num_evt = 0, num_id = 0, num_p = 0, num_s = 0, num_t = 0;
++	struct counter_watch *watches;
++
++	/*
++	 * 1st pass: count events configurations number to allocate the watch array.
++	 * Each watch argument can be repeated several times: each time it gets repeated,
++	 * a corresponding watch is allocated (and configured) in 2nd pass.
++	 */
++	while ((c = getopt_long(argc, argv, "c:de:hn:i:l:p:s:t:", longopts, NULL)) != -1) {
++		switch (c) {
++		case 'c':
++			ncfg[0]++;
++			break;
++		case 'e':
++			ncfg[1]++;
++			break;
++		case 'i':
++			ncfg[2]++;
++			break;
++		case 'p':
++			ncfg[3]++;
++			break;
++		case 's':
++			ncfg[4]++;
++			break;
++		case 't':
++			ncfg[5]++;
++			break;
++		};
++	};
++
++	for (i = 0; i < ARRAY_SIZE(ncfg); i++)
++		if (ncfg[i] > nwatch)
++			nwatch = ncfg[i];
++
++	if (nwatch) {
++		watches = calloc(nwatch, sizeof(*watches));
++	} else {
++		/* default to simple watch example */
++		watches = simple_watch;
++		nwatch = ARRAY_SIZE(simple_watch);
++	}
++
++	/* 2nd pass: read arguments to fill in watch array */
++	optind = 1;
++	while ((c = getopt_long(argc, argv, "c:de:hn:i:l:p:s:t:", longopts, NULL)) != -1) {
++		switch (c) {
++		case 'c':
++			/* watch.channel */
++			watches[num_chan].channel = strtoul(optarg, &dummy, 10);
++			if (errno)
++				return -errno;
++			num_chan++;
++			break;
++		case 'd':
++			debug = 1;
++			break;
++		case 'e':
++			/* watch.event */
++			ret = counter_arg_to_event_type(optarg, &watches[num_evt].event);
++			if (ret)
++				return ret;
++			num_evt++;
++			break;
++		case 'h':
++			print_usage();
++			return -1;
++		case 'n':
++			errno = 0;
++			dev_num = strtoul(optarg, &dummy, 10);
++			if (errno)
++				return -errno;
++			break;
++		case 'i':
++			/* watch.component.id */
++			watches[num_id].component.id = strtoul(optarg, &dummy, 10);
++			if (errno)
++				return -errno;
++			num_id++;
++			break;
++		case 'l':
++			loop = strtol(optarg, &dummy, 10);
++			if (errno)
++				return -errno;
++			break;
++		case 'p':
++			/* watch.component.parent */
++			watches[num_p].component.parent = strtoul(optarg, &dummy, 10);
++			if (errno)
++				return -errno;
++			num_p++;
++			break;
++		case 's':
++			/* watch.component.scope */
++			ret = counter_arg_to_scope(optarg, &watches[num_s].component.scope);
++			if (ret)
++				return ret;
++			num_s++;
++			break;
++		case 't':
++			/* watch.component.type */
++			ret = counter_arg_to_component_type(optarg, &watches[num_t].component.type);
++			if (ret)
++				return ret;
++			num_t++;
++			break;
++		}
++
++	};
++
++	if (debug)
++		print_watch(watches, nwatch);
++
++	ret = asprintf(&device_name, "/dev/counter%d", dev_num);
++	if (ret < 0)
++		return -ENOMEM;
++
++	if (debug)
++		printf("Opening %s\n", device_name);
++
++	fd = open(device_name, O_RDWR);
++	if (fd == -1) {
++		perror("Unable to open counter device");
++		return 1;
++	}
++
++	for (i = 0; i < nwatch; i++) {
++		ret = ioctl(fd, COUNTER_ADD_WATCH_IOCTL, watches + i);
++		if (ret == -1) {
++			fprintf(stderr, "Error adding watches[%d]: %s\n", i,
++				strerror(errno));
++			return 1;
++		}
++	}
++
++	ret = ioctl(fd, COUNTER_ENABLE_EVENTS_IOCTL);
++	if (ret == -1) {
++		perror("Error enabling events");
++		return 1;
++	}
++
++	for (i = 0; loop <= 0 || i < loop; i++) {
++		ret = read(fd, &event_data, sizeof(event_data));
++		if (ret == -1) {
++			perror("Failed to read event data");
++			return 1;
++		}
++
++		if (ret != sizeof(event_data)) {
++			fprintf(stderr, "Failed to read event data\n");
++			return -EIO;
++		}
++
++		printf("Timestamp: %llu\tData: %llu\t event: %s\tch: %d\n",
++		       event_data.timestamp, event_data.value,
++		       counter_event_type_name[event_data.watch.event],
++		       event_data.watch.channel);
++
++		if (event_data.status) {
++			fprintf(stderr, "Error %d: %s\n", event_data.status,
++				strerror(event_data.status));
++		}
++	}
++
++	return 0;
++}
+-- 
+2.25.1
 
