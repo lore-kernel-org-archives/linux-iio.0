@@ -2,111 +2,287 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 921D6C83F12
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Aug 2023 14:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9187DC6FA8F
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Aug 2023 15:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237121AbjH2O62 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 29 Aug 2023 10:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44478 "EHLO
+        id S230205AbjH2Plt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 29 Aug 2023 11:41:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237149AbjH2O6Q (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Aug 2023 10:58:16 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92594BC;
-        Tue, 29 Aug 2023 07:58:12 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 37TBwgZB019602;
-        Tue, 29 Aug 2023 15:40:56 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding:content-type; s=
-        selector1; bh=YRG7/1LKonbXReVVMUzYv6d5sYbYplVCZHB7ICikVjE=; b=b4
-        TV0rmKjy7gKGpMJIzHDi1cjDRl3JOpB2Gmnc+KCywe+vrB1NrwlHDu8KIFE1rZ2s
-        j3CjqacchVgAdIx9P6TWIoirNcKPdIC8u6ujH23Ppc5YV55TwseKaxBlYtXgVoiV
-        Vxg232uMKYSFDq1hAaC3mA8Xszj0tRe02LF8H5E/ywpf9XTrNP6xe0k5YGbufY/v
-        TqncmDOjC5OV1EbCkk2wojCFSOeEIiqcj2Wf2mDrCw81ETCUfAsbtq/7SYCEkIXs
-        AWNDJ8Dy8XX/mVpSMUFqXHHJPMp/SuuntJgiFqHPEanMvx+Ua/3W6XsZ7DIunjAM
-        s4FlvpxOuKHwQgPt0XTg==
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3sq6tfmchf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 29 Aug 2023 15:40:56 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id DBB7E100057;
-        Tue, 29 Aug 2023 15:40:55 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CBC612207DB;
-        Tue, 29 Aug 2023 15:40:55 +0200 (CEST)
-Received: from localhost (10.201.22.39) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Tue, 29 Aug
- 2023 15:40:54 +0200
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-To:     <william.gray@linaro.org>, <lee@kernel.org>
-CC:     <alexandre.torgue@foss.st.com>, <fabrice.gasnier@foss.st.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/8] counter: chrdev: fix getting array extensions
-Date:   Tue, 29 Aug 2023 15:40:22 +0200
-Message-ID: <20230829134029.2402868-2-fabrice.gasnier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230829134029.2402868-1-fabrice.gasnier@foss.st.com>
-References: <20230829134029.2402868-1-fabrice.gasnier@foss.st.com>
+        with ESMTP id S237360AbjH2Plq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Aug 2023 11:41:46 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA9B1B7;
+        Tue, 29 Aug 2023 08:41:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1693323703; x=1724859703;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=UxphbyHk/T6UEz7vFFVTPl2Q8laSgxaLvUwE5ctdBPE=;
+  b=mMn4FwQMMX6ntpkIS79n4eLZfrUkveq5rMb8JiGVFPDj0txoEzQ/b79j
+   yMBuJ+TBQViKYdhL4+UB38DGW2ekzu9mKpuAexKf6KlzWiXTVtq3rl6/g
+   ozVwXgG/HV7URkdpA+Usdj39XtgFNJKFSmPR08r31XFZdm5JZamrEs+OI
+   fN92OuG22hYWdgHMs3Rq0SwjZRI4vj6ghWFqjqr/m4vqYN02aIrmpe4we
+   qkKEgQpNlTxyY3c3Mi61biD/JVIrHYVnQFAXMofx4r43j1P+O5FGZObsM
+   I3+GVTxrbVcVvypFg5zY51+bkLR0XE690XRzqdoO4Lu4Z+KlMOupcCCBP
+   Q==;
+X-IronPort-AV: E=Sophos;i="6.02,210,1688454000"; 
+   d="scan'208";a="1927373"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Aug 2023 08:41:42 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 29 Aug 2023 08:41:43 -0700
+Received: from marius-VM.mshome.net (10.10.85.11) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Tue, 29 Aug 2023 08:41:40 -0700
+From:   <marius.cristea@microchip.com>
+To:     <jic23@kernel.org>, <lars@metafoo.de>, <robh+dt@kernel.org>
+CC:     <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <marius.cristea@microchip.com>
+Subject: [PATCH v5 1/2] dt-bindings: iio: adc: adding MCP3564 ADC
+Date:   Tue, 29 Aug 2023 18:41:32 +0300
+Message-ID: <20230829154133.40716-2-marius.cristea@microchip.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230829154133.40716-1-marius.cristea@microchip.com>
+References: <20230829154133.40716-1-marius.cristea@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.201.22.39]
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-08-29_10,2023-08-29_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-When trying to watch a component array extension, and the array isn't the
-first extended element, it fails as the type comparison is always done on
-the 1st element. Fix it by indexing the 'ext' array.
+From: Marius Cristea <marius.cristea@microchip.com>
 
-Example on a dummy struct counter_comp:
-static struct counter_comp dummy[] = {
-	COUNTER_COMP_DIRECTION(..),
-	...,
-	COUNTER_COMP_ARRAY_CAPTURE(...),
-};
-static struct counter_count dummy_cnt = {
-	...
-	.ext = dummy,
-	.num_ext = ARRAY_SIZE(dummy),
-}
+This is the device tree schema for iio driver for
+Microchip family of 153.6 ksps, Low-Noise 16/24-Bit
+Delta-Sigma ADCs with an SPI interface (Microchip's
+MCP3461, MCP3462, MCP3464, MCP3461R, MCP3462R,
+MCP3464R, MCP3561, MCP3562, MCP3564, MCP3561R,
+MCP3562R and MCP3564R analog to digital converters).
 
-Currently, counter_get_ext() returns -EINVAL when trying to add a watch
-event on one of the capture array element in such example.
-
-Fixes: d2011be1e22f ("counter: Introduce the COUNTER_COMP_ARRAY component type")
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Signed-off-by: Marius Cristea <marius.cristea@microchip.com>
 ---
- drivers/counter/counter-chrdev.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../bindings/iio/adc/microchip,mcp3564.yaml   | 205 ++++++++++++++++++
+ 1 file changed, 205 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
 
-diff --git a/drivers/counter/counter-chrdev.c b/drivers/counter/counter-chrdev.c
-index 80acdf62794a..afc94d0062b1 100644
---- a/drivers/counter/counter-chrdev.c
-+++ b/drivers/counter/counter-chrdev.c
-@@ -247,8 +247,8 @@ static int counter_get_ext(const struct counter_comp *const ext,
- 		if (*id == component_id)
- 			return 0;
- 
--		if (ext->type == COUNTER_COMP_ARRAY) {
--			element = ext->priv;
-+		if (ext[*ext_idx].type == COUNTER_COMP_ARRAY) {
-+			element = ext[*ext_idx].priv;
- 
- 			if (component_id - *id < element->length)
- 				return 0;
+diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
+new file mode 100644
+index 000000000000..675319276197
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
+@@ -0,0 +1,205 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/microchip,mcp3564.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip MCP346X and MCP356X ADC Family
++
++maintainers:
++  - Marius Cristea <marius.cristea@microchip.com>
++
++description: |
++  Bindings for the Microchip family of 153.6 ksps, Low-Noise 16/24-Bit
++  Delta-Sigma ADCs with an SPI interface. Datasheet can be found here:
++  Datasheet for MCP3561, MCP3562, MCP3564 can be found here:
++    https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP3561-2-4-Family-Data-Sheet-DS20006181C.pdf
++  Datasheet for MCP3561R, MCP3562R, MCP3564R can be found here:
++    https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/MCP3561_2_4R-Data-Sheet-DS200006391C.pdf
++  Datasheet for MCP3461, MCP3462, MCP3464 can be found here:
++    https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/MCP3461-2-4-Two-Four-Eight-Channel-153.6-ksps-Low-Noise-16-Bit-Delta-Sigma-ADC-Data-Sheet-20006180D.pdf
++  Datasheet for MCP3461R, MCP3462R, MCP3464R can be found here:
++    https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/MCP3461-2-4R-Family-Data-Sheet-DS20006404C.pdf
++
++properties:
++  compatible:
++    enum:
++      - microchip,mcp3461
++      - microchip,mcp3462
++      - microchip,mcp3464
++      - microchip,mcp3461r
++      - microchip,mcp3462r
++      - microchip,mcp3464r
++      - microchip,mcp3561
++      - microchip,mcp3562
++      - microchip,mcp3564
++      - microchip,mcp3561r
++      - microchip,mcp3562r
++      - microchip,mcp3564r
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 20000000
++
++  spi-cpha: true
++
++  spi-cpol: true
++
++  vdd-supply: true
++
++  avdd-supply: true
++
++  clocks:
++    description:
++      Phandle and clock identifier for external sampling clock.
++      If not specified, the internal crystal oscillator will be used.
++    maxItems: 1
++
++  interrupts:
++    description: IRQ line of the ADC
++    maxItems: 1
++
++  drive-open-drain:
++    description:
++      Whether to drive the IRQ signal as push-pull (default) or open-drain. Note
++      that the device requires this pin to become "high", otherwise it will stop
++      converting.
++    type: boolean
++
++  vref-supply:
++    description:
++      Some devices have a specific reference voltage supplied on a different
++      pin to the other supplies. Needed to be able to establish channel scaling
++      unless there is also an internal reference available (e.g. mcp3564r). In
++      case of "r" devices (e. g. mcp3564r), if it does not exists the internal
++      reference will be used.
++
++  microchip,hw-device-address:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    minimum: 0
++    maximum: 3
++    description:
++      The address is set on a per-device basis by fuses in the factory,
++      configured on request. If not requested, the fuses are set for 0x1.
++      The device address is part of the device markings to avoid
++      potential confusion. This address is coded on two bits, so four possible
++      addresses are available when multiple devices are present on the same
++      SPI bus with only one Chip Select line for all devices.
++      Each device communication starts by a CS falling edge, followed by the
++      clocking of the device address (BITS[7:6] - top two bits of COMMAND BYTE
++      which is first one on the wire).
++
++  "#io-channel-cells":
++    const: 1
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++patternProperties:
++  "^channel@([0-9]|([1-7][0-9]))$":
++    $ref: adc.yaml
++    type: object
++    unevaluatedProperties: false
++    description: Represents the external channels which are connected to the ADC.
++
++    properties:
++      reg:
++        description: The channel number in single-ended and differential mode.
++        minimum: 0
++        maximum: 79
++
++    required:
++      - reg
++
++dependencies:
++  spi-cpol: [ spi-cpha ]
++  spi-cpha: [ spi-cpol ]
++
++required:
++  - compatible
++  - reg
++  - microchip,hw-device-address
++  - spi-max-frequency
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++  - # External vref, no internal reference
++    if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - microchip,mcp3461
++              - microchip,mcp3462
++              - microchip,mcp3464
++              - microchip,mcp3561
++              - microchip,mcp3562
++              - microchip,mcp3564
++    then:
++      required:
++        - vref-supply
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@0 {
++            compatible = "microchip,mcp3564r";
++            reg = <0>;
++            vref-supply = <&vref_reg>;
++            spi-cpha;
++            spi-cpol;
++            spi-max-frequency = <10000000>;
++            microchip,hw-device-address = <1>;
++
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            channel@0 {
++                /* CH0 to AGND */
++                reg = <0>;
++                label = "CH0";
++            };
++
++            channel@1 {
++                /* CH1 to AGND */
++                reg = <1>;
++                label = "CH1";
++            };
++
++            /* diff-channels */
++            channel@11 {
++                reg = <11>;
++
++                /* CN0, CN1 */
++                diff-channels = <0 1>;
++                label = "CH0_CH1";
++            };
++
++            channel@22 {
++                reg = <0x22>;
++
++                /* CN1, CN2 */
++                diff-channels = <1 2>;
++                label = "CH1_CH3";
++            };
++
++            channel@23 {
++                reg = <0x23>;
++
++                /* CN1, CN3 */
++                diff-channels = <1 3>;
++                label = "CH1_CH3";
++            };
++        };
++    };
++...
 -- 
-2.25.1
+2.34.1
 
