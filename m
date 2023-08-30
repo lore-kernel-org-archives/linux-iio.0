@@ -2,671 +2,174 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D884C83F1C
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Aug 2023 18:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4155CC83F19
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Aug 2023 18:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237678AbjH3Sg0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Aug 2023 14:36:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
+        id S234401AbjH3Sge (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 30 Aug 2023 14:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343810AbjH3RCn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Aug 2023 13:02:43 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E1219A
-        for <linux-iio@vger.kernel.org>; Wed, 30 Aug 2023 10:02:37 -0700 (PDT)
-Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4RbVpf4Wrmz6K5st;
-        Thu, 31 Aug 2023 00:57:46 +0800 (CST)
-Received: from localhost (10.202.227.76) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.31; Wed, 30 Aug
- 2023 18:02:34 +0100
-Date:   Wed, 30 Aug 2023 18:02:34 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Nuno Sa <nuno.sa@analog.com>
-CC:     <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [RFC PATCH 1/3] iio: addac: add new converter framework
-Message-ID: <20230830180234.00007437@Huawei.com>
-In-Reply-To: <20230804145342.1600136-2-nuno.sa@analog.com>
-References: <20230804145342.1600136-1-nuno.sa@analog.com>
-        <20230804145342.1600136-2-nuno.sa@analog.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
+        with ESMTP id S242448AbjH3IdZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Aug 2023 04:33:25 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D24D1AE;
+        Wed, 30 Aug 2023 01:33:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1693384399; x=1724920399;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=bfmrUaSGPf9ipBu9qeBDcmyUnsXpGFOnV0R+qwcKPaA=;
+  b=XW4lGz3gSQ1s7FzBZNWEd6GA0tGQuDadZy5b87n/2dOii0/rrb+iAOtA
+   /IGR6f0U1TlSPJcx8EwwP4gRyI64MRoO8eC2oommLMPXI2TMJ4J77Pvy3
+   WVdfBkATgqXHJZ02OORyiKopUhIJ9PLEbL3WHdwjITC7DT6umSq7RDpYK
+   cABTRX5iExb9+DW4aPWu2y4PRKpqqd6630/+gJdLZ3xWWzcAcp/GgGkwL
+   s3ugaHqdFfTarkz5wvCBvW8NGdQfHx7g6TLxVjgXspNte1ZnEdQj4ndWY
+   t3PisZ8DcYxI7PHLnnGA/AFynOGH4c3e38+LJC4/L8tfOMLyxQcykT9a0
+   A==;
+X-IronPort-AV: E=Sophos;i="6.02,213,1688454000"; 
+   d="scan'208";a="1999082"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2023 01:33:18 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 30 Aug 2023 01:33:14 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
+ Transport; Wed, 30 Aug 2023 01:33:14 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fZ356RW8E47r2UmgD4vQKzRK8RJDZNKL2dqNuMLJo0XDJwGxHZslp/ZRg0H/IsaWip7/zp/73mHVhMzB16T9z9GMi3A9z8aKGjrXzNNGeHcxvPPQh+b4d9oCogaXRzAaHd5pDm5XbajAq5M359FOsUIKmV3shGRIzAUYzId+PP8f63rOqM2tiU1+1UUreV0CcI0MwzN8SpiCOnmG5OlSIPBSAuWM64RAhXjh1dBtR5B2rRvayGaxOWGZPlvApZ5nI5fNyYAfeCxYeQ7ArbYx17SQZ05gdBXoeovyRH9o6YMUXjKdjDIyWW3KFyXk3a0OM0HN3HWzYvs9YJyz+DvGtw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bfmrUaSGPf9ipBu9qeBDcmyUnsXpGFOnV0R+qwcKPaA=;
+ b=HnMaRCJkGxjStGy2J8QIqoiNnUG6y0gu85yHkuH4Eor3Q+IEEiU40xaJdQbho+buvRb5kjkqCVCO0xOT6uVyJa5u45oUgVzcR1ZDAKuzTNlbAU+ehbzpp+KdQXqtn9eG0z+njMUktoVk4h3S58fomI3GxN8w5vYAHVHStVtEEb9sMP5+c1k79AQVc5QnzNxnlRXtGOXTjVkGwjs+DQ6dJjNfN0RFaRQfDbc86zNcRfasTQzcEh/bJQv1dol8QraC0HQ/svaRN8j6fCHuv8ylVBKKv0B86MHaogMMoR/npcccc5UD1UQQx4EsLnpQxaRXDoH4AnEtyl/4nCID/w3mDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bfmrUaSGPf9ipBu9qeBDcmyUnsXpGFOnV0R+qwcKPaA=;
+ b=FzoV9wvCGtgJ7n722k8lAngtJJcTHg2AfNVzpJ0joxTrTbaXP46z+iqRGzHzBwwxWfqfHwU4Vp6XCR5Wwm+CS03e/If1TlderjuI3DFvEf45FvFhU/QnUXhMDF0MXN33r6Nea2hO1TjRM225rb0RMGtUJ+L5XNOTzlr9IeqVMPs=
+Received: from IA1PR11MB6395.namprd11.prod.outlook.com (2603:10b6:208:3ac::14)
+ by CH3PR11MB7896.namprd11.prod.outlook.com (2603:10b6:610:131::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.35; Wed, 30 Aug
+ 2023 08:33:13 +0000
+Received: from IA1PR11MB6395.namprd11.prod.outlook.com
+ ([fe80::6ca0:521:dd8e:b296]) by IA1PR11MB6395.namprd11.prod.outlook.com
+ ([fe80::6ca0:521:dd8e:b296%7]) with mapi id 15.20.6699.034; Wed, 30 Aug 2023
+ 08:33:12 +0000
+From:   <Marius.Cristea@microchip.com>
+To:     <jic23@kernel.org>, <lars@metafoo.de>,
+        <krzysztof.kozlowski@linaro.org>, <robh+dt@kernel.org>
+CC:     <conor+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5 1/2] dt-bindings: iio: adc: adding MCP3564 ADC
+Thread-Topic: [PATCH v5 1/2] dt-bindings: iio: adc: adding MCP3564 ADC
+Thread-Index: AQHZ2o9SDk1SI69KHkCZzOSMXZ1LCbABgmKAgAEBuAA=
+Date:   Wed, 30 Aug 2023 08:33:12 +0000
+Message-ID: <ac2296410c46aac0166252defdf4dd5082c67ebe.camel@microchip.com>
+References: <20230829154133.40716-1-marius.cristea@microchip.com>
+         <20230829154133.40716-2-marius.cristea@microchip.com>
+         <ab0d99ca-54b9-2535-a783-967a3b2443bf@linaro.org>
+In-Reply-To: <ab0d99ca-54b9-2535-a783-967a3b2443bf@linaro.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: IA1PR11MB6395:EE_|CH3PR11MB7896:EE_
+x-ms-office365-filtering-correlation-id: ded832cb-50f5-481f-1727-08dba933bfce
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: uLpELdQwhRWZSe3e9QBG2iFNy0+4s05OJHBz49aCOUNgGACmOJaT0Qd1qNXoAKuajS4e/dwIJSsiOzMnFNY3eebgABmvhA4OtEX6bRoX5I0e9JybM7xPm2bh/xOqvIPYVTFn4ISiB1yLsPa93iQKMgj1V88twoNIWYP7o0sMwcCrtJGJnn7kOw8zlk2Opa2dzMVvVRbZ8yi6H6ty3tTVP48ORMc2PquycP6bCZ4EGfJ/bHTqfN3N9ViS7U7mVMrcVZ2rFIv3KEYIPinShCCHeveFW5yRZTtubdi/aqZtbYrFrLuCTi/36jL4NKebJrlII+eBeJsU+H//N4sM4usYc0qfLewNo73e15EKdenmvDC9kshdpFvMKOFG/jMmRWIxeXOCOJpZFQm8V7BJMsIpiuJ8RvAahXQWD9zx1KNKdizwYb+xFI8W12tKLaef9TdkWf2/c99Qyd0LOm5/DMvgRvAi4WNsZX1f28SVPKzMcjnGkDV3VComBEYzHm9sFfz0tz0vykoGyJ4RGmnaoVL8qbYf1zIiANWOjaq/ydrM0lPUC4zCn72g1af9ONrLeNQkXor/4u8UqnR9BWHxkago36H+9+1qLrmGobU2iXabElcEa69WYIjL7DsdwvftIDOX
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR11MB6395.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(346002)(136003)(376002)(366004)(39860400002)(1800799009)(186009)(451199024)(8936002)(122000001)(91956017)(66946007)(76116006)(478600001)(110136005)(53546011)(6506007)(71200400001)(66556008)(66476007)(64756008)(54906003)(6486002)(66446008)(316002)(38070700005)(38100700002)(41300700001)(6512007)(5660300002)(8676002)(26005)(36756003)(2906002)(2616005)(86362001)(4326008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?a282M3pneCszODJOUFAyWW5RTUR2NkFmdWtkbVNRMGNBTTh1U1RLczYwWE54?=
+ =?utf-8?B?WE8vOTE2Q2hYVlVjczloaDkxKzUwRCtrTXoyNnVZY3cvMGdtUHdlYzZWOVlx?=
+ =?utf-8?B?NmJjZk9XQ0FkYU42bk9FR2kxSTNsZlJjd0puYmpobVNHOGRBclNmL3Z0aTMz?=
+ =?utf-8?B?YWVTaTc1VUNMRVp4bWRsTzRUMXVzbGg2ME9KM00wTlo2Umd3TWlQcU5waWti?=
+ =?utf-8?B?dEpnK0thZ0w0VkxCRWJtTTU5eUxaM1cwdGtQazI0SjBRTDNGSFNpQWVnZlZO?=
+ =?utf-8?B?eWlOSjNOaFJVYlE1QS9ZYnB6TXRwaUJSRktudzFzNHVtYUpqakUxaUs5RjFN?=
+ =?utf-8?B?VjhWamsyQkQ2a1pITWs3TGk2bVE0MldIRjlHajIvd0duQnRaSzJrZ2lJQnEv?=
+ =?utf-8?B?N1N1cFdQTm5RYTJFdjhwTEtQNFNjVy9LRHY1VXpIR1pKbEdXcjZIQkNqWXQ3?=
+ =?utf-8?B?UHJJMEZqeVJnUGFpVGRVdml4aHA0ekhCZjg5U3JUVVpiK24xOVMvSE1wenh4?=
+ =?utf-8?B?MCtmS09aenpFSm8wNWF0NVdSZ0tKaDJVZGtvM0ZPYmJQbnlTV3dITTBSaFBy?=
+ =?utf-8?B?K1dRZzJmYlo3UDRINmpTMFFRS1dObjFDT3g2YnNsd0ZLRmZZR2lyZHhCU0Vy?=
+ =?utf-8?B?RnM5WklETzA5K2syZ0htY1hIeS9zbWxuZUZCQklUVjRZSkpzdXhyemxUUmx6?=
+ =?utf-8?B?YXJmOFJWd0JCYUQ0U3NnRERaRTV3dWhCemsxLzdDdG9KcFJuY2pXcEg1bzlh?=
+ =?utf-8?B?ZHo3ajJTYVdnMjMzNWtHZHpMemhmaVhtTyt0U3FxdHZOOTVPYkR3VWpUWmR4?=
+ =?utf-8?B?ZFo2UVB3Z1Bpb3padnhINm4xNWVTTnRwdUxzS2hob3I3SFgvcExydHFJUTlU?=
+ =?utf-8?B?czJnTWl5eEZOMU96K0hwTEJ6dUl2dVVuZVFyQUJ1eVRIWGpCdDd3R2VzeWEy?=
+ =?utf-8?B?VXVOY2xlblE3aFNGTlpzVytQbm95NmYxd05pMndDQmc3dGY3UituLzdaeDUz?=
+ =?utf-8?B?MytRd3hzYXBhS0c5ZFFORlQrVldFUVVHMEdIS2RITUVPWnBsMzlXVzV3VHVG?=
+ =?utf-8?B?bEJ4b0Zrdmh4Z2V5dXh3OFIyQUJ2Z1J6U1AwNmExZkNURUl0TWcrb3E3ckpG?=
+ =?utf-8?B?RUk4ZTY0ZUtnaENMMlpkbENYMzBoalVYOHQzU3NENHJXMlhQcWxydzIwRXB0?=
+ =?utf-8?B?eHZLRFZJalBKbUZ5RlJ1VGdKRGhIV1RwUVRFNmpuOXNBUE5nMFRsVVN4dWRO?=
+ =?utf-8?B?T2RSYm1iVTg5MzJNUUFwckpQV3RGL1V5N2NsNi9hMTZWcGFuSHJpTEs4WDJK?=
+ =?utf-8?B?RkQ3Z3d1TDFaUHRuNDBCNXVQRGhiWmVnc0dsY0pZWnkxOEZ5TlgxUEc1SE53?=
+ =?utf-8?B?Z2puMmFXQ05VNnJkNlBkajI3bnNSN29ZVm8vTExyOWVPR1hhbnkxUEJKOHhm?=
+ =?utf-8?B?NWd5NWNuOGp6dzRMODA3V01LUkZocjBFNXVONVdrR0pXczlJeGlXeTlYb05F?=
+ =?utf-8?B?cUpOc1RSWkxEZ3IvbVZmTno4a3lSb1JkcHh4MTlkTVgxTVE0U0JjdU1MMzVn?=
+ =?utf-8?B?VVZQWmYyWGZSZlNRcUVtcUxhN2F6c2VGa0swY1FtZUhubVZiWXQ5ZG5OVEhN?=
+ =?utf-8?B?WnJtV25XVDByY3NvMzVFZm1xVGgzTmhvUWw0eHJ5d21oOGs0Z012MHgxbFpS?=
+ =?utf-8?B?Ym5LSi96ZG9SN29LMzRZcEc3ZnFpNFlnOU1HNXNCK2JPUXNHYTJMb200ZHJ2?=
+ =?utf-8?B?QXFLTkJvZnJrWDdYUkhWOGZTamNGZC85Uit3aEQxTDRhUGFOS0pNRmZzV2Jm?=
+ =?utf-8?B?Z21RcUxVMUx0ZGNJRjFxQXJFZ2tudFozSy9mWkdJaGUxSXZWQm80Q2RlS3hy?=
+ =?utf-8?B?REt0UDNCRjRFQkhYNUYyK2pwMmJLVVdwZzgxNkhiemRjbVlVZkJJcVVWUkNn?=
+ =?utf-8?B?RWVDcGRaeEJOazV2SEdtVGhxZFlzNWFrMEFBRUsrSTI4Um1FeUFmQUZDWVll?=
+ =?utf-8?B?UWpSSytxRlNubUdxWCsrMXpaTldJci8yNDk2QnhRV1JjaVhiZmlPVGlCUzln?=
+ =?utf-8?B?MEpqeGpDWGpzajJOeHpXcTlhTkJuV2Mzc0dYcnExd2c1eWxrVlFxeG5ESWpE?=
+ =?utf-8?B?VHdyeFhKTlJTTWlWMEVTSmN1V1duSlBXUHE2alVsRS9FRVErZEZ2NW82aE1Y?=
+ =?utf-8?Q?HXrEvJP8h+RfiTaSRFvPRHc=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <926C283C9292CC478C3EA680EB2148F0@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.227.76]
-X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR11MB6395.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ded832cb-50f5-481f-1727-08dba933bfce
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2023 08:33:12.9341
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: KEhemOki9CS9PH3E2O7K9P/HGcBavForkQXZ+3hjioTBYXUSv21NRJP20cAydqCfsSjan+Lgxxtg8wBG7uKYnmoa7nVRqSeGxdWFLOQPGHY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7896
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 4 Aug 2023 16:53:39 +0200
-Nuno Sa <nuno.sa@analog.com> wrote:
-
-> Signed-off-by: Nuno Sa <nuno.sa@analog.com>
-
-Hi Nuno,
-
-
-One general comment is that you could have stripped this back a fair bit
-for ease of understanding.  At this stage we don't care about things
-like debug or control of test patterns.  Bring those in as extra patches.
-
-I haven't fully gotten my head around the ordering constraints on removal.
-Are there other users of the component framework that have similar problems?
-
-Also, I don't yet understand how a multiple front end, single backend setup
-would work.  Or indeed single front end, multiple backend...  Maybe we don't
-need those cases, but if we want this to be useful beyond adi-axi we
-probably at least want an outline of how they work.
-
-Jonathan
-
-> ---
->  drivers/iio/addac/converter.c       | 547 ++++++++++++++++++++++++++++
->  include/linux/iio/addac/converter.h | 485 ++++++++++++++++++++++++
->  2 files changed, 1032 insertions(+)
->  create mode 100644 drivers/iio/addac/converter.c
->  create mode 100644 include/linux/iio/addac/converter.h
-> 
-> diff --git a/drivers/iio/addac/converter.c b/drivers/iio/addac/converter.c
-> new file mode 100644
-> index 000000000000..31ac704255ad
-> --- /dev/null
-> +++ b/drivers/iio/addac/converter.c
-> @@ -0,0 +1,547 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Framework to handle complex IIO aggregate devices
-> + *
-> + * A note on some of the design expectations with regards to lifetimes and
-> + * devices bringup/removal.
-> + *
-> + * The Framework is using, under the wood, the component API which makes it to
-> + * easy treat a bunch of devices as one aggregate device. This means that the
-> + * complete thing is only brought to live when all the deviced are probed. To do
-
-devices
-
-> + * this, two callbacks are used that should in fact completely replace .probe()
-> + * and .remove(). The formers should only be used the minimum needed. Ideally,
-
-I don't follow the sentence in the middle of the line above.
-
-> + * only to call the functions to add and remove frontend annd backend devices.
-Spell check...
-
-> + *
-> + * It is advised for frontend and backend drivers to use their .remove()
-
-I'd not 'advise' things. I'd say the 'use' them.
-
-> + * callbacks (to use devres API during the frontend and backends initialization).
-> + * See the comment in @converter_frontend_bind().
-> + *
-> + * It is also assumed that converter objects cannot be accessed once one of the
-> + * devices of the aggregate device is removed (effectively bringing the all the
-
-bringing all the devices down
-
-> + * devices down). Based on that assumption, these objects are not refcount which
-
-recounted
-
-> + * means accessing them will likely fail miserably.
-
-I hope that doesn't mean there will be no protection.  I don't mind if nothing works
-but breaking the kernel isn't an option.
-
-> + *
-> + * Copyright (C) 2023 Analog Devices Inc.
-> + */
-> +
-> +#define dev_fmt(fmt) "Converter - " fmt
-> +
-> +#include <linux/component.h>
-> +#include <linux/debugfs.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/iio/addc/converter.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/list.h>
-> +#include <linux/module.h>
-> +#include <linux/property.h>
-> +#include <linux/regmap.h>
-> +
-> +struct converter_backend {
-> +	struct list_head entry;
-> +	struct device *dev;
-> +	const struct converter_ops *ops;
-> +	const char *name;
-> +	void *drvdata;
-> +
-> +	struct regmap *regmap;
-> +	unsigned int cached_reg_addr;
-> +};
-> +
-> +struct converter_frontend {
-> +	struct list_head list;
-> +	const struct frontend_ops *ops;
-> +	struct device *dev;
-> +};
-
-
-
-> +static int converter_bind(struct device *dev, struct device *aggregate,
-> +			  void *data)
-> +{
-> +	struct converter_frontend *frontend = dev_get_drvdata(aggregate);
-> +	struct converter_backend *conv = dev_get_drvdata(dev);
-> +	int ret;
-> +
-> +	ret = conv->ops->backend_init(conv, dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	list_add_tail(&conv->entry, &frontend->list);
-> +
-> +	return 0;
-> +}
-> +
-> +static void converter_unbind(struct device *dev, struct device *aggregate,
-> +			     void *data)
-> +{
-> +	struct converter_backend *conv = dev_get_drvdata(dev);
-> +
-> +	if (conv->ops->backend_close)
-> +		conv->ops->backend_close(conv);
-> +
-> +	/* after this point the converter should not be used anymore */
-> +	converter_set_drvdata(conv, NULL);
-> +}
-> +
-> +static const struct component_ops converter_component_ops = {
-> +	.bind = converter_bind,
-> +	.unbind = converter_unbind,
-> +};
-> +
-> +static int converter_frontend_bind(struct device *dev)
-> +{
-> +	struct converter_frontend *frontend = dev_get_drvdata(dev);
-> +	int ret;
-> +
-> +	ret = component_bind_all(dev, NULL);
-> +	if (ret)
-> +		return ret;
-> +	/*
-> +	 * We open a new group so that we can control when resources are
-> +	 * released and still use device managed (devm_) calls. The expectations
-> +	 * are that on probe, backend resources are allocated first followed by
-> +	 * the frontend resources (where registering the IIO device must happen)
-> +	 * Naturally we want the reverse order on the unbind path and that would
-> +	 * not be possible without opening our own devres group.
-> +
-> +	 * Note that the component API also opens it's own devres group when
-> +	 * calling the .bind() callbacks for both the aggregate device
-> +	 * (our frontend) and each of the components (our backends). On the
-> +	 * unbind path, the aggregate .unbind() function is called
-> +	 * (@converter_frontend_unbind()) which should be responsible to tear
-> +	 * down all the components (effectively releasing all the resources
-> +	 * allocated on each component devres group) and only then the aggregate
-> +	 * devres group is released. Hence, the order we want to maintain for
-> +	 * releasing resources would not be satisfied because backend resources
-> +	 * would be freed first. With our own group, we can control when
-> +	 * releasing the resources and we do it before @component_unbind_all().
-> +	 *
-> +	 * This also relies that internally the component API is releasing each
-> +	 * of the component's devres group. That is likely not to change, but
-> +	 * maybe we should not trust it and also open our own groups for backend
-> +	 * devices?!
-> +	 *
-> +	 * Another very important thing to keep in mind is that this is only
-> +	 * valid if frontend and backend driver's are implementing their
-> +	 * .remove() callback to call @converter_frontend_del() and
-> +	 * @converter_backend_del(). Calling those functions from
-> +	 * devm_add_action* and use devm APIs in .frontend_init() and
-> +	 * .backend_init() is not going to work. Not perfect but still better
-> +	 * than having to tear everything down in .frontend_close() and
-> +	 * .backend_close()
-
-That last bit is nasty and will be non obvious to driver authors.
-
-I wonder if we can come up with some means to make it hard to do.
-
-> +	 */
-> +	if (!devres_open_group(dev, frontend, GFP_KERNEL))
-> +		return -ENOMEM;
-> +
-> +	ret = frontend->ops->frontend_init(frontend, dev);
-> +	if (ret) {
-> +		devres_release_group(dev, frontend);
-> +		return ret;
-> +	}
-> +
-> +	devres_close_group(dev, NULL);
-> +	return 0;
-> +}
-> +
-> +static void converter_frontend_unbind(struct device *dev)
-> +{
-> +	struct converter_frontend *frontend = dev_get_drvdata(dev);
-> +
-> +	if (frontend->ops->frontend_close)
-> +		frontend->ops->frontend_close(frontend);
-> +
-> +	devres_release_group(dev, frontend);
-> +	component_unbind_all(dev, NULL);
-> +	list_del_init(&frontend->list);
-> +}
-> +
-> +static const struct component_master_ops frontend_component_ops = {
-> +	.bind = converter_frontend_bind,
-> +	.unbind = converter_frontend_unbind,
-> +};
-
-
-> diff --git a/include/linux/iio/addac/converter.h b/include/linux/iio/addac/converter.h
-> new file mode 100644
-> index 000000000000..09d9d491b2b8
-> --- /dev/null
-> +++ b/include/linux/iio/addac/converter.h
-> @@ -0,0 +1,485 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +#ifndef _CONVERTER_H
-> +#define _CONVERTER_H
-> +
-> +struct converter_frontend;
-> +struct converter_backend;
-> +struct iio_dev;
-> +struct device;
-> +struct regmap;
-> +
-> +enum converter_test_pattern {
-> +	CONVERTER_PRBS_7,
-> +	CONVERTER_PRBS_15,
-> +	CONVERTER_PRBS_23,
-> +	CONVERTER_PRBS_31,
-> +	CONVERTER_RAMP_NIBBLE,
-> +	CONVERTER_RAMP_16,
-> +	/* vendor specific from 32 */
-> +	CONVERTER_ADI_PRBS_9A = 32,
-> +	CONVERTER_ADI_PRBS_23A,
-> +	CONVERTER_ADI_PRBS_X,
-> +	CONVERTER_TEST_PATTERN_MAX
-> +};
-> +
-> +enum converter_data_type {
-> +	CONVERTER_TWOS_COMPLEMENT,
-> +	CONVERTER_OFFSET_BINARY,
-> +	CONVERTER_DATA_TYPE_MAX
-> +};
-> +
-> +enum converter_edge {
-> +	CONVERTER_RISING_EDGE_SAMPLE,
-> +	CONVERTER_FALLING_EDGE_SAMPLE,
-> +	CONVERTER_EDGE_MAX
-> +};
-> +
-> +struct converter_chan_status {
-> +	bool errors;
-> +};
-> +
-> +/**
-> + * struct converter_data_fmt - Backend data format
-> + * @type:		Data type.
-> + * @sign_extend:	Bool to tell if the data is sign extended.
-> + * @enable:		Enable/Disable the data format module. If disabled,
-> + *			not formatting will happen.
-> + */
-> +struct converter_data_fmt {
-> +	enum converter_data_type type;
-> +	bool sign_extend;
-> +	bool enable;
-> +};
-> +
-> +/**
-> + * struct converter_test_pattern_xlate - Helper struct for test pattern handling
-> + * @pattern:	Pattern to configure.
-> + * @reg_val:	Register value for the pattern to configure.
-> + */
-> +struct converter_test_pattern_xlate {
-> +	enum converter_test_pattern pattern;
-> +	unsigned int reg_val;
-> +};
-> +
-> +/**
-> + * struct converter_ops - Backend supported operations
-> + * @backend_init:	Mandatory function to initialize the backend device. It
-> + *			should be a replacement for .probe() where the latest
-
-just say .probe() again as 'the latest' is a fiddly bit of English
-
-> + *			should only have to care about doing @converter_add().
-> + * @backend_close:	Optional function to tear down the device.
-> + * @enable:		Enable the backend device.
-> + * @disable:		Disable the backend device.
-> + * @data_format_set:	Configure the data format for a specific channel.
-> + * @chan_enable:	Enable one channel.
-> + * @chan_disable:	Disable one channel.
-> + * @iodelay_set:	Controls the IO delay for all the lanes at the interface
-> + *			(where data is actually transferred between frontend and
-> +			backend) level.
-> + * @test_pattern_set:	Set's a test pattern to be transmitted/received by the
-> + *			backend. Typically useful for debug or interface
-> + *			purposes calibration.
-> + */
-> +struct converter_ops {
-> +	int (*backend_init)(struct converter_backend *conv, struct device *dev);
-> +	void (*backend_close)(struct converter_backend *conv);
-> +	int (*enable)(struct converter_backend *conv);
-> +	void (*disable)(struct converter_backend *conv);
-> +	int (*data_format_set)(struct converter_backend *conv,
-> +			       unsigned int chan,
-> +			       const struct converter_data_fmt *data);
-> +	int (*chan_enable)(struct converter_backend *conv, unsigned int chan);
-> +	int (*chan_disable)(struct converter_backend *conv, unsigned int chan);
-> +	int (*iodelay_set)(struct converter_backend *conv,
-> +			   unsigned int num_lanes, unsigned int delay);
-> +	int (*test_pattern_set)(struct converter_backend *conv,
-> +				unsigned int chan,
-> +				enum converter_test_pattern pattern);
-> +	int (*chan_status)(struct converter_backend *conv, unsigned int chan,
-> +			   struct converter_chan_status *status);
-> +	int (*sample_edge_select)(struct converter_backend *conv,
-> +				  enum converter_edge edge);
-> +};
-> +
-> +/**
-> + * struct frontend_ops - Frontend supported operations
-> + * @frontend_init:	Mandatory function to initialize the frontend device. It
-> + *			should be a replacement for .probe() where the latest
-
-As above.
-
-
-> + *			should only have to care about doing @frontend_add().
-> + * @frontend_close:	Optional function to tear down the device.
-> + */
-> +struct frontend_ops {
-> +	int (*frontend_init)(struct converter_frontend *frontend,
-> +			     struct device *dev);
-> +	void (*frontend_close)(struct converter_frontend *frontend);
-> +};
-> +
-> +/**
-> + * converter_test_pattern_xlate() - Helper macro for translatting test patterns
-> + * @pattern:	Pattern to translate.
-> + * @xlate:	List of @struct converter_test_pattern_xlate pairs.
-> + *
-> + * Simple helper to match a supported pattern and get the register value. Should
-> + * only be called by backend devices. Automatically computes the number of
-> + * @xlate entries.
-> + */
-> +#define converter_test_pattern_xlate(pattern, xlate)	\
-> +	__converter_test_pattern_xlate(pattern, xlate, ARRAY_SIZE(xlate));
-> +
-> +#if IS_ENABLED(CONFIG_IIO_CONVERTER)
-
-Why?  I'd expect any driver that uses this framework to be useless without
-it, so we shouldn't need protections. Handle that with Kconfig select / depends
-
-> +
-> +/**
-> + * converter_get_drvdata - Get driver private data
-> + * @conv:	Converter device.
-
-Comments should be next to implementation (I got this wrong in original IIO
-code and still haven't pushed them all down).  One reason is that people often
-change the internals without realizing there is a comment on them in a header
-that also needs updating. Much harder to do that if it's right in front of
-you in the c file.
-
-> + */
-> +void *converter_get_drvdata(const struct converter_backend *conv);
-> +
-> +/**
-> + * converter_set_drvdata - Set driver private data
-> + * @conv:	Converter device.
-> + * @drvdata:	Driver private data.
-> + */
-> +void converter_set_drvdata(struct converter_backend *conv, void *drvdata);
-> +
-> +/**
-> + * converter_set_regmap - Add a regmap object to a converter
-> + * @conv:	Converter device.
-> + * @regmap:	Regmap object.
-> + */
-> +void converter_set_regmap(struct converter_backend *conv,
-> +			  struct regmap *regmap);
-> +
-> +/**
-> + * __converter_test_pattern_xlate - Helper macro for translatting test patterns
-> + * @pattern:	Pattern to translate.
-> + * @xlate:	List of @struct converter_test_pattern_xlate pairs.
-> + * @n_matches:	Number of entries in @xlate.
-> + *
-> + * Simple helper to match a supported pattern and get the register value. Should
-> + * only be called by backend devices.
-> + */
-> +int __converter_test_pattern_xlate(unsigned int pattern,
-> +				   const struct converter_test_pattern_xlate *xlate,
-> +				   int n_matches);
-> +
-> +/**
-> + *
-> + */
-> +int converter_add(struct device *dev, const struct converter_ops *ops);
-> +
-> +/**
-> + * converter_del - Remove the converter device
-> + * @dev:	device to remove from the aggregate
-> + *
-> + * Removes the converter from the aggregate device. This tears down the frontend
-> + * and all the converters.
-> + *
-> + * Ideally, this should be called from the backend driver .remove() callback.
-> + * This means that all the converters (and the frontend) will be tear down before
-> + * running any specific devres cleanup (at the driver core level). What this all
-> + * means is that we can use devm_ apis in @backend_init() and being sure those
-> + * resources will be released after the backend resources and before any devm_*
-> + * used in @probe(). If that is not the case, one should likely not use any
-> + * devm_ API in @backend_init(). That means .backend_close() should be
-> + * provided to do all the necessary cleanups.
-> + */
-> +void converter_del(struct device *dev);
-> +
-> +/**
-> + * converter_enable - Enable the device
-> + * @conv:	Converter device.
-> + *
-> + * Enables the backend device.
-> + *
-> + * RETURNS:
-> + * 0 on success, negative error number on failure.
-> + */
-> +int converter_enable(struct converter_backend *conv);
-> +
-> +/**
-> + * converter_disable - Disable the device
-> + * @conv:	Converter device.
-> + *
-> + * Disables the backend device.
-> + */
-> +void converter_disable(struct converter_backend *conv);
-> +
-> +/**
-> + * converter_test_pattern_set - Set a test pattern
-> + * @conv:	Converter device.
-> + * @chan:	Channel number.
-> + * @pattern:	Pattern to set.
-> + *
-> + * Set's a test pattern to be transmitted/received by the backend. Typically
-> + * useful for debug or interface calibration purposes. A backend driver can
-> + * call the @converter_test_pattern_xlate() helper to validate the pattern
-> + * (given an array of @struct converter_test_pattern_xlate).
-> + *
-> + * Note that some patterns might be frontend specific. I.e, as far as the
-> + * backend is concerned the pattern is valid (from a register point of view) but
-> + * the actual support for the pattern is not implemented in the device for this
-> + * specific frontend. It's up to the frontend to ask for a proper pattern
-> + * (as it should know better).
-> + *
-> + * RETURNS:
-> + * 0 on success, negative error number on failure.
-> + */
-> +int converter_test_pattern_set(struct converter_backend *conv,
-> +			       unsigned int chan,
-> +			       enum converter_test_pattern pattern);
-> +
-> +int converter_chan_status_get(struct converter_backend *conv,
-> +			      unsigned int chan,
-> +			      struct converter_chan_status *status);
-> +
-> +/**
-> + * converter_data_format_set - Configure the data format
-> + * @conv:	Converter device.
-> + * @chan:	Channel number.
-> + * @data:	Data format.
-> + *
-> + * Properly configure a channel with respect to the expected data format. A
-Configure a channel ...
-
-We won't do it improperly ;)
-
-> + * @struct converter_data_fmt must be passed with the settings.
-> + *
-> + * RETURNS:
-> + * 0 on success, negative error number on failure.
-> + */
-> +int converter_data_format_set(struct converter_backend *conv,
-> +			      unsigned int chan,
-> +			      const struct converter_data_fmt *data);
-> +
-> +int converter_sample_edge_select(struct converter_backend *conv,
-> +				 enum converter_edge edge);
-> +
-> +static inline int
-> +converter_sample_on_falling_edge(struct converter_backend *conv)
-> +{
-> +	return converter_sample_edge_select(conv, CONVERTER_RISING_EDGE_SAMPLE);
-> +}
-> +
-> +static inline int
-> +converter_sample_on_rising_edge(struct converter_backend *conv)
-> +{
-> +	return converter_sample_edge_select(conv, CONVERTER_FALLING_EDGE_SAMPLE);
-> +}
-> +
-> +/**
-> + * converter_chan_enable - Enable a backend channel
-> + * @conv:	Converter device.
-> + * @chan:	Channel number.
-> + *
-> + * Enables a channel on the backend device.
-> + *
-> + * RETURNS:
-> + * 0 on success, negative error number on failure.
-> + */
-> +int converter_chan_enable(struct converter_backend *conv, unsigned int chan);
-> +
-> +/**
-> + * converter_chan_disable - Disable a backend channel
-> + * @conv:	Converter device.
-> + * @chan:	Channel number.
-> + *
-> + * Disables a channel on the backend device.
-> + *
-> + * RETURNS:
-> + * 0 on success, negative error number on failure.
-> + */
-> +int converter_chan_disable(struct converter_backend *conv, unsigned int chan);
-> +
-> +/**
-> + * converter_iodelay_set - Set's the backend data interface IO delay
-> + * @conv:	Converter device.
-> + * @num_lanes:	Number of lanes in the data interface.
-> + * @delay:	Delay to set.
-> + *
-> + * Controls the IO delay for all the lanes at the data interface (where data is
-> + * actually transferred between frontend and backend) level.
-> + *
-> + * RETURNS:
-> + * 0 on success, negative error number on failure.
-> + */
-> +int converter_iodelay_set(struct converter_backend *conv,
-> +			  unsigned int num_lanes, unsigned int delay);
-> +
-> +/**
-> + * converter_frontend_del - Remove the frontend device
-> + * @dev:	Device to remove from the aggregate
-> + *
-> + * Removes the frontend from the aggregate device. This tears down the frontend
-> + * and all the converters.
-> + *
-> + * Ideally, this should be called from the frontend driver .remove() callback.
-> + * This means that all the converters (and the frontend) will be tear down
-torn down 
-> + * before running any specific devres cleanup (at the driver core level). What
-> + * this all means is that we can use devm_ apis in .frontend_init() and being
-> + * sure those resources will be released after the backend resources and before
-> + * any devm_* used in .probe(). If that is not the case, one should likely not
-> + * use any devm_ API in .frontend_init(). That means .frontend_close() should be
-> + * provided to do all the necessary cleanups.
-
-You can force a driver remove to tear down another driver binding first though it all
-gets fiddly.  Take a look at how device_release_driver() is used.  May well not
-help you here though - I've not thought it through properly.
-
-> + */
-> +void converter_frontend_del(struct device *dev);
-> +
-> +/**
-> + * converter_frontend_add - Allocate and add a frontend device
-> + * @dev:	Device to allocate frontend for.
-> + * @ops:	Frontend callbacks.
-> + *
-> + * This allocates the frontend device and looks for all converters needed
-> + * so that, when they are available, all of the devices in the aggregate can be
-> + * initialized.
-> + *
-> + * RETURNS:
-> + * 0 on success, negative error number on failure.
-> + */
-> +int converter_frontend_add(struct device *dev, const struct frontend_ops *ops);
-> +
-> +/**
-> + * converter_get - Get a converter object
-> + * @frontend:	Frontend device.
-> + * @name:	Converter name.
-> + *
-> + * Get's a pointer to a converter device. If name is NULL, then it is assumed
-> + * that only one backend device is bond with the frontend and the first element
-> + * in the list is retrieved. Should only be called from the .frontend_init()
-> + * callback.
-> + *
-> + * RETURNS:
-> + * A converter pointer, negative error pointer otherwise.
-> + */
-> +struct converter_backend *__must_check
-> +converter_get(const struct converter_frontend *frontend, const char *name);
-> +
-> +/**
-> + * converter_add_direct_reg_access - Add debugfs direct register access
-> + * @conv: Coverter device
-> + * @indio_dev: IIO device
-> + *
-> + * This is analogous to the typical IIO direct register access in debugfs. The
-> + * extra converter file will be added in the same debugs dir as @indio_dev.
-> + * Moreover, if @conv->name is NULL, the file will be called
-> + * converter_direct_reg_access. Otherwise, will be
-> + * @conv->name_converter_direct_reg_access.
-> + */
-> +void converter_add_direct_reg_access(struct converter_backend *conv,
-> +				     struct iio_dev *indio_dev);
-> +
-...
-/
-
+SGkgS3J6eXN6dG9mLA0KDQoNCk9uIFR1ZSwgMjAyMy0wOC0yOSBhdCAxOToxMCArMDIwMCwgS3J6
+eXN6dG9mIEtvemxvd3NraSB3cm90ZToNCj4gRVhURVJOQUwgRU1BSUw6IERvIG5vdCBjbGljayBs
+aW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3UNCj4ga25vdyB0aGUgY29udGVudCBp
+cyBzYWZlDQo+IA0KPiBPbiAyOS8wOC8yMDIzIDE3OjQxLCBtYXJpdXMuY3Jpc3RlYUBtaWNyb2No
+aXAuY29twqB3cm90ZToNCj4gPiBGcm9tOiBNYXJpdXMgQ3Jpc3RlYSA8bWFyaXVzLmNyaXN0ZWFA
+bWljcm9jaGlwLmNvbT4NCj4gPiANCj4gPiBUaGlzIGlzIHRoZSBkZXZpY2UgdHJlZSBzY2hlbWEg
+Zm9yIGlpbyBkcml2ZXIgZm9yDQo+ID4gTWljcm9jaGlwIGZhbWlseSBvZiAxNTMuNiBrc3BzLCBM
+b3ctTm9pc2UgMTYvMjQtQml0DQo+ID4gRGVsdGEtU2lnbWEgQURDcyB3aXRoIGFuIFNQSSBpbnRl
+cmZhY2UgKE1pY3JvY2hpcCdzDQo+ID4gTUNQMzQ2MSwgTUNQMzQ2MiwgTUNQMzQ2NCwgTUNQMzQ2
+MVIsIE1DUDM0NjJSLA0KPiA+IE1DUDM0NjRSLCBNQ1AzNTYxLCBNQ1AzNTYyLCBNQ1AzNTY0LCBN
+Q1AzNTYxUiwNCj4gPiBNQ1AzNTYyUiBhbmQgTUNQMzU2NFIgYW5hbG9nIHRvIGRpZ2l0YWwgY29u
+dmVydGVycykuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogTWFyaXVzIENyaXN0ZWEgPG1hcml1
+cy5jcmlzdGVhQG1pY3JvY2hpcC5jb20+DQo+ID4gLS0tDQo+ID4gwqAuLi4vYmluZGluZ3MvaWlv
+L2FkYy9taWNyb2NoaXAsbWNwMzU2NC55YW1swqDCoCB8IDIwNQ0KPiA+ICsrKysrKysrKysrKysr
+KysrKw0KPiANCj4gV2hhdCBjaGFuZ2VkPyBDb3ZlciBsZXR0ZXIgc2F5cyBub3RoaW5nIGFib3V0
+IGJpbmRpbmcsIHNvIHRoaXMgcGF0Y2gNCj4gbXVzdCBzYXkuIEVzcGVjaWFsbHkgdGhhdCB5b3Ug
+ZGVjaWRlZCB0byBpZ25vcmUgcmV2aWV3Lg0KPiANCg0KICBNeSBiYWQuIEkgd2FzIGJhZCBoYW5k
+bGluZyB0aGUgcmVzdWJtaXRpb24gb2YgdGhlIHBhdGNoLiBJIHdhcyBub3QNCiJhd2FyZSIgdGhh
+dCBJIG5lZWQgdG8ga2VlcCB0aGUgInJldmlld2VkLWJ5IiBmb3IgdGhlIGZvbGxvd2luZw0KcGF0
+Y2hlcy4NCg0KVGhpcyBwYXRjaCBkaWRuJ3QgY2hhbmdlIGFueXRoaW5nIHRvIHRoZSAibWljcm9j
+aGlwLG1jcDM1NjQueWFtbCIgZmlsZS4NCg0KDQoNCj4gQmVzdCByZWdhcmRzLA0KPiBLcnp5c3p0
+b2YNCj4gDQoNCg==
