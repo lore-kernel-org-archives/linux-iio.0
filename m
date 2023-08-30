@@ -2,190 +2,127 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A5D1C6FA8F
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Aug 2023 18:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 055B3C83F1B
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Aug 2023 18:36:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231609AbjH3SgZ convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Aug 2023 14:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58058 "EHLO
+        id S233558AbjH3Sg1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 30 Aug 2023 14:36:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343638AbjH3QaP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Aug 2023 12:30:15 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04DC107
-        for <linux-iio@vger.kernel.org>; Wed, 30 Aug 2023 09:30:11 -0700 (PDT)
-Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4RbV5F42vLz6K5WY;
-        Thu, 31 Aug 2023 00:25:21 +0800 (CST)
-Received: from localhost (10.202.227.76) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.31; Wed, 30 Aug
- 2023 17:30:09 +0100
-Date:   Wed, 30 Aug 2023 17:30:08 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Nuno Sa <nuno.sa@analog.com>
-CC:     <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-        Olivier Moysan <olivier.moysan@foss.st.com>
-Subject: Re: [RFC PATCH 0/3] Add converter framework
-Message-ID: <20230830173008.000024a3@Huawei.com>
-In-Reply-To: <20230830172903.0000027f@Huawei.com>
-References: <20230804145342.1600136-1-nuno.sa@analog.com>
-        <20230830172903.0000027f@Huawei.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
+        with ESMTP id S242256AbjH3HlS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Aug 2023 03:41:18 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE99CD8;
+        Wed, 30 Aug 2023 00:41:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1693381275; x=1724917275;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5QX2utJhe//XqFa+InE4SbM4WETASb0Mj1a/b7o6gis=;
+  b=WJZ0IRXEaCGWgVGa2IhnGePCEisRvfIESnVkuNk1nci12CA1ZrJgURPf
+   bQoFWEKegR2jUecFjiRWvijICHaLNyc2pWK63S1w6FTmCe4gcds9zTKCn
+   M+XgQZC79pZ0nPEbbWvg1tESVbM6ueeUoE8+fFbeD/t2xS5F9qxMvrPtv
+   lN0ypp62XslYUGC2BO01HyrWp3YFRe3x9vEmiZn/J5ZSB6kv++UOBJq3g
+   QBP0W9rNy7A2w8o6YeJOcQORmnf8t7WeSlK+RGHf6AQDZfMlrhSI5MRGJ
+   3/dvYrZvyiAoEAdNmippkxkvkpUHYr8XOlRiltSTqwBxQu3Wg7/Ff8FH5
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10817"; a="374479606"
+X-IronPort-AV: E=Sophos;i="6.02,212,1688454000"; 
+   d="scan'208";a="374479606"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2023 00:40:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10817"; a="1069745573"
+X-IronPort-AV: E=Sophos;i="6.02,212,1688454000"; 
+   d="scan'208";a="1069745573"
+Received: from lkp-server02.sh.intel.com (HELO daf8bb0a381d) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 30 Aug 2023 00:40:37 -0700
+Received: from kbuild by daf8bb0a381d with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1qbFoa-0009Zd-0z;
+        Wed, 30 Aug 2023 07:40:36 +0000
+Date:   Wed, 30 Aug 2023 15:40:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        william.gray@linaro.org, lee@kernel.org
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        alexandre.torgue@foss.st.com, fabrice.gasnier@foss.st.com,
+        linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 8/8] counter: stm32-timer-cnt: add support for events
+Message-ID: <202308301541.ZqWpJdto-lkp@intel.com>
+References: <20230829134029.2402868-9-fabrice.gasnier@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [10.202.227.76]
-X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230829134029.2402868-9-fabrice.gasnier@foss.st.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 30 Aug 2023 17:29:03 +0100
-Jonathan Cameron <Jonathan.Cameron@Huawei.com> wrote:
+Hi Fabrice,
 
-> On Fri, 4 Aug 2023 16:53:38 +0200
-> Nuno Sa <nuno.sa@analog.com> wrote:
-> 
-> > This is the initial RFC following the discussion in [1]. I'm aware this is
-> > by no means ready for inclusion and it's not even compilable since in
-> > the RFC I did not included the patch to add component_compare_fwnode()
-> > and component_release_fwnode().   
-> 
-> Whilst I haven't read this through yet, I suspect Olivier will be able to
-> offer some insight on some of this and likewise you may be able to
-> point out pitfalls etc in his series (I see you did some review already :)
-> 
-> https://lore.kernel.org/linux-iio/20230727150324.1157933-1-olivier.moysan@foss.st.com/
-> 
-> Both are about multiple interacting components of an overall datapath.
-> Whether there is commonality isn't yet clear to me.
-Works better if I actually remember to CC Olivier.
+kernel test robot noticed the following build warnings:
 
-+CC Olivier!
-> 
-> > 
-> > The goal is to have a first feel on the
-> > direction of the framework so that if I  need to drastically change it,
-> > better do it now. The RFC also brings the ad9647 and the axi_adc core to
-> > the same functionality we have now upstream with one extra fundamental
-> > feature that is calibrating the digital interface. This would be very
-> > difficult to do with the current design. Note that I don't expect any
-> > review on those drivers (rather than things related to the framework). 
-> > 
-> > I also want to bring up a couple of things that I've
-> > been thinking that I'm yet not sure about (so some feedback might make
-> > mind in one direction or another).
-> > 
-> > 1) Im yet not sure if I should have different compatibles in the
-> > axi-adc-core driver. Note this soft core is a generic core and for every
-> > design (where the frontend device changes or has subtle changes like
-> > different number of data paths) there are subtle changes. So, the number
-> > of channels might be different, the available test patterns might be
-> > different, some ops might be available for some designs but not for
-> > others, etc...   
-> 
-> I don't suppose there is any chance Analog can make at least some of this
-> discoverable from the hardware?  Capability registers etc in the long
-> run. Can't fix what is already out there.
-> 
-> > With a different compatible we could fine tune
-> > those differences (with a chip_info like structure) and pass some const
-> > converter_config to the framework that would allow it to do more safety
-> > checks and potentially reduce the number of converter_ops.
-> > OTOH, starting to add all of these compatibles might become messy in the
-> > long run and will likely mean that we'll always have to change both
-> > drivers in order to support a new frontend. And the frontend devices
-> > should really be the ones having all the "knowledge" to configure the
-> > soft core even if it means more converter_ops (though devicetree might
-> > help as some features are really HW dependent). I more inclined to just
-> > leave things as-is in the RFC.  
-> 
-> I'm fine with putting this stuff in DT where possible.
-> 
-> > 
-> > 2) There are some IIO attributes (like scale, frequency, etc) that might
-> > be implemented in the soft cores. I still didn't made my mind if I should just
-> > have a catch all read_raw() and write_raw() converter_ops or more fine
-> > tuned ops. Having the catch all reduces the number of ops but also makes
-> > it more easier to add stuff that ends up being not used anymore and then
-> > forgotten. There are also cases (eg: setting sampling frequency) where
-> > we might need to apply settings in both the frontend and the backend
-> > devices which means having the catch all write_raw() would be more
-> > awkward in these case. I'm a bit more inclined to the more specific ops.   
-> 
-> It's the kernel - we can always change the internal API later as long as we
-> don't touch the user space part.  Go with your gut feeling today and
-> if it changes this sort of refactor usually isn't that bad.
-> 
-> > 
-> > 3) I also placed this in addac as this is mostly used in high speed DACs
-> > and ADCs but maybe we should just have it in the top level directory
-> > just in case this is started to be used in different type of devices?  
-> 
-> Easy to change later so right now I don't care where it is.
-> 
-> > 
-> > 4) Some function and data names are also starting to become very big so
-> > if there are no objections I will move all to use conv instead of full
-> > converter. Or maybe something a bit more generic (converter is a bit specific
-> > I know)?  
-> 
-> Abrv. fine as long as consistenty used.
-> 
-> > 
-> > I would love to hear some ideas about the above...
-> > 
-> > Anyways, I should also mention that the only visible ABI breakage is in
-> > the IIO device name. Before it was named "adi-axi-adc" and now it's
-> > "ad9647" which is what makes sense actually. With the current approach
-> > we would not be able to actually distinguish between designs.   
-> 
-> Given that will probably only result in support calls to ADI I'm fine with
-> that breakage. :)
-> 
-> > 
-> > So my plan for the actual series will be to just add the framework and migrate
-> > the current drivers to it with the same functionality as they have now (not
-> > sure if it will be viable to migrate the drivers in a way each commit is
-> > functional - unless we convert both drivers in one commit).  
-> Make sure they build. It's fine to end up with some non functional stubs
-> during such a migration.
-> 
-> > After that
-> > point, I will start adding all the missing features (and devices) to the
-> > ad9467 driver. To note that I also plan to include the axi-dac driver in
-> > the first series and that will require IIO DMA output buffer support
-> > so we might need to cherry-pick those patches from Paul's DMABUF series.  
-> As mentioned in reply to that, I'm fine with you carrying Paul's miniseries
-> in your patch set to make this all easy to manage.
-> 
-> Jonathan
-> 
-> > 
-> > Thanks!
-> > - Nuno Sá
-> > 
-> > [1]: https://lore.kernel.org/linux-iio/dac3967805d7ddbd4653ead6d50e614844e0b70b.camel@gmail.com/
-> > 
-> > Nuno Sa (3):
-> >   iio: addac: add new converter framework
-> >   iio: adc: ad9647: add based on converter framework
-> >   iio: adc: adi-axi-adc: add based on new converter framework
-> > 
-> >  drivers/iio/adc/ad9467_new.c        | 830 ++++++++++++++++++++++++++++
-> >  drivers/iio/adc/adi-axi-adc-new.c   | 405 ++++++++++++++
-> >  drivers/iio/addac/converter.c       | 547 ++++++++++++++++++
-> >  include/linux/iio/addac/converter.h | 485 ++++++++++++++++
-> >  4 files changed, 2267 insertions(+)
-> >  create mode 100644 drivers/iio/adc/ad9467_new.c
-> >  create mode 100644 drivers/iio/adc/adi-axi-adc-new.c
-> >  create mode 100644 drivers/iio/addac/converter.c
-> >  create mode 100644 include/linux/iio/addac/converter.h
-> >   
-> 
+[auto build test WARNING on linus/master]
+[also build test WARNING on v6.5 next-20230830]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/Fabrice-Gasnier/counter-chrdev-fix-getting-array-extensions/20230829-230111
+base:   linus/master
+patch link:    https://lore.kernel.org/r/20230829134029.2402868-9-fabrice.gasnier%40foss.st.com
+patch subject: [PATCH 8/8] counter: stm32-timer-cnt: add support for events
+config: arm-randconfig-001-20230830 (https://download.01.org/0day-ci/archive/20230830/202308301541.ZqWpJdto-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project.git 4a5ac14ee968ff0ad5d2cc1ffa0299048db4c88a)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20230830/202308301541.ZqWpJdto-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202308301541.ZqWpJdto-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/counter/stm32-timer-cnt.c:528:2: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
+     528 |         case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
+         |         ^
+   drivers/counter/stm32-timer-cnt.c:528:2: note: insert '__attribute__((fallthrough));' to silence this warning
+     528 |         case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
+         |         ^
+         |         __attribute__((fallthrough)); 
+   drivers/counter/stm32-timer-cnt.c:528:2: note: insert 'break;' to avoid fall-through
+     528 |         case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
+         |         ^
+         |         break; 
+   1 warning generated.
+
+
+vim +528 drivers/counter/stm32-timer-cnt.c
+
+   516	
+   517	static int stm32_count_watch_validate(struct counter_device *counter,
+   518					      const struct counter_watch *watch)
+   519	{
+   520		struct stm32_timer_cnt *const priv = counter_priv(counter);
+   521	
+   522		switch (watch->event) {
+   523		case COUNTER_EVENT_CAPTURE:
+   524			if (watch->channel >= priv->nchannels) {
+   525				dev_err(counter->parent, "Invalid channel %d\n", watch->channel);
+   526				return -EINVAL;
+   527			}
+ > 528		case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
+   529			return 0;
+   530		default:
+   531			return -EINVAL;
+   532		}
+   533	}
+   534	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
