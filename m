@@ -2,127 +2,54 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 055B3C83F1B
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Aug 2023 18:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C63C83F22
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Aug 2023 18:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233558AbjH3Sg1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Aug 2023 14:36:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
+        id S236588AbjH3Sgc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 30 Aug 2023 14:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242256AbjH3HlS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Aug 2023 03:41:18 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE99CD8;
-        Wed, 30 Aug 2023 00:41:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693381275; x=1724917275;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5QX2utJhe//XqFa+InE4SbM4WETASb0Mj1a/b7o6gis=;
-  b=WJZ0IRXEaCGWgVGa2IhnGePCEisRvfIESnVkuNk1nci12CA1ZrJgURPf
-   bQoFWEKegR2jUecFjiRWvijICHaLNyc2pWK63S1w6FTmCe4gcds9zTKCn
-   M+XgQZC79pZ0nPEbbWvg1tESVbM6ueeUoE8+fFbeD/t2xS5F9qxMvrPtv
-   lN0ypp62XslYUGC2BO01HyrWp3YFRe3x9vEmiZn/J5ZSB6kv++UOBJq3g
-   QBP0W9rNy7A2w8o6YeJOcQORmnf8t7WeSlK+RGHf6AQDZfMlrhSI5MRGJ
-   3/dvYrZvyiAoEAdNmippkxkvkpUHYr8XOlRiltSTqwBxQu3Wg7/Ff8FH5
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10817"; a="374479606"
-X-IronPort-AV: E=Sophos;i="6.02,212,1688454000"; 
-   d="scan'208";a="374479606"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2023 00:40:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10817"; a="1069745573"
-X-IronPort-AV: E=Sophos;i="6.02,212,1688454000"; 
-   d="scan'208";a="1069745573"
-Received: from lkp-server02.sh.intel.com (HELO daf8bb0a381d) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 30 Aug 2023 00:40:37 -0700
-Received: from kbuild by daf8bb0a381d with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qbFoa-0009Zd-0z;
-        Wed, 30 Aug 2023 07:40:36 +0000
-Date:   Wed, 30 Aug 2023 15:40:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        william.gray@linaro.org, lee@kernel.org
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        alexandre.torgue@foss.st.com, fabrice.gasnier@foss.st.com,
-        linux-iio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 8/8] counter: stm32-timer-cnt: add support for events
-Message-ID: <202308301541.ZqWpJdto-lkp@intel.com>
-References: <20230829134029.2402868-9-fabrice.gasnier@foss.st.com>
+        with ESMTP id S1343916AbjH3RPS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Aug 2023 13:15:18 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B69999E
+        for <linux-iio@vger.kernel.org>; Wed, 30 Aug 2023 10:15:15 -0700 (PDT)
+Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4RbW5n2Hl4z67QKJ;
+        Thu, 31 Aug 2023 01:10:53 +0800 (CST)
+Received: from localhost (10.202.227.76) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.31; Wed, 30 Aug
+ 2023 18:15:12 +0100
+Date:   Wed, 30 Aug 2023 18:15:12 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Nuno Sa <nuno.sa@analog.com>
+CC:     <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [RFC PATCH 3/3] iio: adc: adi-axi-adc: add based on new
+ converter framework
+Message-ID: <20230830181512.00005204@Huawei.com>
+In-Reply-To: <20230804145342.1600136-4-nuno.sa@analog.com>
+References: <20230804145342.1600136-1-nuno.sa@analog.com>
+        <20230804145342.1600136-4-nuno.sa@analog.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230829134029.2402868-9-fabrice.gasnier@foss.st.com>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.227.76]
+X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Fabrice,
+On Fri, 4 Aug 2023 16:53:41 +0200
+Nuno Sa <nuno.sa@analog.com> wrote:
 
-kernel test robot noticed the following build warnings:
+> Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v6.5 next-20230830]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Nothing stood out as a particular problem in here
+either...
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Fabrice-Gasnier/counter-chrdev-fix-getting-array-extensions/20230829-230111
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20230829134029.2402868-9-fabrice.gasnier%40foss.st.com
-patch subject: [PATCH 8/8] counter: stm32-timer-cnt: add support for events
-config: arm-randconfig-001-20230830 (https://download.01.org/0day-ci/archive/20230830/202308301541.ZqWpJdto-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project.git 4a5ac14ee968ff0ad5d2cc1ffa0299048db4c88a)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20230830/202308301541.ZqWpJdto-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202308301541.ZqWpJdto-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> drivers/counter/stm32-timer-cnt.c:528:2: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
-     528 |         case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
-         |         ^
-   drivers/counter/stm32-timer-cnt.c:528:2: note: insert '__attribute__((fallthrough));' to silence this warning
-     528 |         case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
-         |         ^
-         |         __attribute__((fallthrough)); 
-   drivers/counter/stm32-timer-cnt.c:528:2: note: insert 'break;' to avoid fall-through
-     528 |         case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
-         |         ^
-         |         break; 
-   1 warning generated.
-
-
-vim +528 drivers/counter/stm32-timer-cnt.c
-
-   516	
-   517	static int stm32_count_watch_validate(struct counter_device *counter,
-   518					      const struct counter_watch *watch)
-   519	{
-   520		struct stm32_timer_cnt *const priv = counter_priv(counter);
-   521	
-   522		switch (watch->event) {
-   523		case COUNTER_EVENT_CAPTURE:
-   524			if (watch->channel >= priv->nchannels) {
-   525				dev_err(counter->parent, "Invalid channel %d\n", watch->channel);
-   526				return -EINVAL;
-   527			}
- > 528		case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
-   529			return 0;
-   530		default:
-   531			return -EINVAL;
-   532		}
-   533	}
-   534	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Jonathan
