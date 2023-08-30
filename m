@@ -2,174 +2,1173 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4155CC83F19
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Aug 2023 18:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1BAEC83F17
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Aug 2023 18:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234401AbjH3Sge (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Aug 2023 14:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
+        id S234940AbjH3Sgd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 30 Aug 2023 14:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242448AbjH3IdZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Aug 2023 04:33:25 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D24D1AE;
-        Wed, 30 Aug 2023 01:33:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1693384399; x=1724920399;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=bfmrUaSGPf9ipBu9qeBDcmyUnsXpGFOnV0R+qwcKPaA=;
-  b=XW4lGz3gSQ1s7FzBZNWEd6GA0tGQuDadZy5b87n/2dOii0/rrb+iAOtA
-   /IGR6f0U1TlSPJcx8EwwP4gRyI64MRoO8eC2oommLMPXI2TMJ4J77Pvy3
-   WVdfBkATgqXHJZ02OORyiKopUhIJ9PLEbL3WHdwjITC7DT6umSq7RDpYK
-   cABTRX5iExb9+DW4aPWu2y4PRKpqqd6630/+gJdLZ3xWWzcAcp/GgGkwL
-   s3ugaHqdFfTarkz5wvCBvW8NGdQfHx7g6TLxVjgXspNte1ZnEdQj4ndWY
-   t3PisZ8DcYxI7PHLnnGA/AFynOGH4c3e38+LJC4/L8tfOMLyxQcykT9a0
-   A==;
-X-IronPort-AV: E=Sophos;i="6.02,213,1688454000"; 
-   d="scan'208";a="1999082"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2023 01:33:18 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Wed, 30 Aug 2023 01:33:14 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
- Transport; Wed, 30 Aug 2023 01:33:14 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fZ356RW8E47r2UmgD4vQKzRK8RJDZNKL2dqNuMLJo0XDJwGxHZslp/ZRg0H/IsaWip7/zp/73mHVhMzB16T9z9GMi3A9z8aKGjrXzNNGeHcxvPPQh+b4d9oCogaXRzAaHd5pDm5XbajAq5M359FOsUIKmV3shGRIzAUYzId+PP8f63rOqM2tiU1+1UUreV0CcI0MwzN8SpiCOnmG5OlSIPBSAuWM64RAhXjh1dBtR5B2rRvayGaxOWGZPlvApZ5nI5fNyYAfeCxYeQ7ArbYx17SQZ05gdBXoeovyRH9o6YMUXjKdjDIyWW3KFyXk3a0OM0HN3HWzYvs9YJyz+DvGtw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bfmrUaSGPf9ipBu9qeBDcmyUnsXpGFOnV0R+qwcKPaA=;
- b=HnMaRCJkGxjStGy2J8QIqoiNnUG6y0gu85yHkuH4Eor3Q+IEEiU40xaJdQbho+buvRb5kjkqCVCO0xOT6uVyJa5u45oUgVzcR1ZDAKuzTNlbAU+ehbzpp+KdQXqtn9eG0z+njMUktoVk4h3S58fomI3GxN8w5vYAHVHStVtEEb9sMP5+c1k79AQVc5QnzNxnlRXtGOXTjVkGwjs+DQ6dJjNfN0RFaRQfDbc86zNcRfasTQzcEh/bJQv1dol8QraC0HQ/svaRN8j6fCHuv8ylVBKKv0B86MHaogMMoR/npcccc5UD1UQQx4EsLnpQxaRXDoH4AnEtyl/4nCID/w3mDA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        with ESMTP id S242069AbjH3HPa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Aug 2023 03:15:30 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF14D1B1;
+        Wed, 30 Aug 2023 00:15:25 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-51a52a7d859so1231271a12.0;
+        Wed, 30 Aug 2023 00:15:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bfmrUaSGPf9ipBu9qeBDcmyUnsXpGFOnV0R+qwcKPaA=;
- b=FzoV9wvCGtgJ7n722k8lAngtJJcTHg2AfNVzpJ0joxTrTbaXP46z+iqRGzHzBwwxWfqfHwU4Vp6XCR5Wwm+CS03e/If1TlderjuI3DFvEf45FvFhU/QnUXhMDF0MXN33r6Nea2hO1TjRM225rb0RMGtUJ+L5XNOTzlr9IeqVMPs=
-Received: from IA1PR11MB6395.namprd11.prod.outlook.com (2603:10b6:208:3ac::14)
- by CH3PR11MB7896.namprd11.prod.outlook.com (2603:10b6:610:131::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.35; Wed, 30 Aug
- 2023 08:33:13 +0000
-Received: from IA1PR11MB6395.namprd11.prod.outlook.com
- ([fe80::6ca0:521:dd8e:b296]) by IA1PR11MB6395.namprd11.prod.outlook.com
- ([fe80::6ca0:521:dd8e:b296%7]) with mapi id 15.20.6699.034; Wed, 30 Aug 2023
- 08:33:12 +0000
-From:   <Marius.Cristea@microchip.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>,
-        <krzysztof.kozlowski@linaro.org>, <robh+dt@kernel.org>
-CC:     <conor+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 1/2] dt-bindings: iio: adc: adding MCP3564 ADC
-Thread-Topic: [PATCH v5 1/2] dt-bindings: iio: adc: adding MCP3564 ADC
-Thread-Index: AQHZ2o9SDk1SI69KHkCZzOSMXZ1LCbABgmKAgAEBuAA=
-Date:   Wed, 30 Aug 2023 08:33:12 +0000
-Message-ID: <ac2296410c46aac0166252defdf4dd5082c67ebe.camel@microchip.com>
-References: <20230829154133.40716-1-marius.cristea@microchip.com>
-         <20230829154133.40716-2-marius.cristea@microchip.com>
-         <ab0d99ca-54b9-2535-a783-967a3b2443bf@linaro.org>
-In-Reply-To: <ab0d99ca-54b9-2535-a783-967a3b2443bf@linaro.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: IA1PR11MB6395:EE_|CH3PR11MB7896:EE_
-x-ms-office365-filtering-correlation-id: ded832cb-50f5-481f-1727-08dba933bfce
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: uLpELdQwhRWZSe3e9QBG2iFNy0+4s05OJHBz49aCOUNgGACmOJaT0Qd1qNXoAKuajS4e/dwIJSsiOzMnFNY3eebgABmvhA4OtEX6bRoX5I0e9JybM7xPm2bh/xOqvIPYVTFn4ISiB1yLsPa93iQKMgj1V88twoNIWYP7o0sMwcCrtJGJnn7kOw8zlk2Opa2dzMVvVRbZ8yi6H6ty3tTVP48ORMc2PquycP6bCZ4EGfJ/bHTqfN3N9ViS7U7mVMrcVZ2rFIv3KEYIPinShCCHeveFW5yRZTtubdi/aqZtbYrFrLuCTi/36jL4NKebJrlII+eBeJsU+H//N4sM4usYc0qfLewNo73e15EKdenmvDC9kshdpFvMKOFG/jMmRWIxeXOCOJpZFQm8V7BJMsIpiuJ8RvAahXQWD9zx1KNKdizwYb+xFI8W12tKLaef9TdkWf2/c99Qyd0LOm5/DMvgRvAi4WNsZX1f28SVPKzMcjnGkDV3VComBEYzHm9sFfz0tz0vykoGyJ4RGmnaoVL8qbYf1zIiANWOjaq/ydrM0lPUC4zCn72g1af9ONrLeNQkXor/4u8UqnR9BWHxkago36H+9+1qLrmGobU2iXabElcEa69WYIjL7DsdwvftIDOX
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR11MB6395.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(346002)(136003)(376002)(366004)(39860400002)(1800799009)(186009)(451199024)(8936002)(122000001)(91956017)(66946007)(76116006)(478600001)(110136005)(53546011)(6506007)(71200400001)(66556008)(66476007)(64756008)(54906003)(6486002)(66446008)(316002)(38070700005)(38100700002)(41300700001)(6512007)(5660300002)(8676002)(26005)(36756003)(2906002)(2616005)(86362001)(4326008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?a282M3pneCszODJOUFAyWW5RTUR2NkFmdWtkbVNRMGNBTTh1U1RLczYwWE54?=
- =?utf-8?B?WE8vOTE2Q2hYVlVjczloaDkxKzUwRCtrTXoyNnVZY3cvMGdtUHdlYzZWOVlx?=
- =?utf-8?B?NmJjZk9XQ0FkYU42bk9FR2kxSTNsZlJjd0puYmpobVNHOGRBclNmL3Z0aTMz?=
- =?utf-8?B?YWVTaTc1VUNMRVp4bWRsTzRUMXVzbGg2ME9KM00wTlo2Umd3TWlQcU5waWti?=
- =?utf-8?B?dEpnK0thZ0w0VkxCRWJtTTU5eUxaM1cwdGtQazI0SjBRTDNGSFNpQWVnZlZO?=
- =?utf-8?B?eWlOSjNOaFJVYlE1QS9ZYnB6TXRwaUJSRktudzFzNHVtYUpqakUxaUs5RjFN?=
- =?utf-8?B?VjhWamsyQkQ2a1pITWs3TGk2bVE0MldIRjlHajIvd0duQnRaSzJrZ2lJQnEv?=
- =?utf-8?B?N1N1cFdQTm5RYTJFdjhwTEtQNFNjVy9LRHY1VXpIR1pKbEdXcjZIQkNqWXQ3?=
- =?utf-8?B?UHJJMEZqeVJnUGFpVGRVdml4aHA0ekhCZjg5U3JUVVpiK24xOVMvSE1wenh4?=
- =?utf-8?B?MCtmS09aenpFSm8wNWF0NVdSZ0tKaDJVZGtvM0ZPYmJQbnlTV3dITTBSaFBy?=
- =?utf-8?B?K1dRZzJmYlo3UDRINmpTMFFRS1dObjFDT3g2YnNsd0ZLRmZZR2lyZHhCU0Vy?=
- =?utf-8?B?RnM5WklETzA5K2syZ0htY1hIeS9zbWxuZUZCQklUVjRZSkpzdXhyemxUUmx6?=
- =?utf-8?B?YXJmOFJWd0JCYUQ0U3NnRERaRTV3dWhCemsxLzdDdG9KcFJuY2pXcEg1bzlh?=
- =?utf-8?B?ZHo3ajJTYVdnMjMzNWtHZHpMemhmaVhtTyt0U3FxdHZOOTVPYkR3VWpUWmR4?=
- =?utf-8?B?ZFo2UVB3Z1Bpb3padnhINm4xNWVTTnRwdUxzS2hob3I3SFgvcExydHFJUTlU?=
- =?utf-8?B?czJnTWl5eEZOMU96K0hwTEJ6dUl2dVVuZVFyQUJ1eVRIWGpCdDd3R2VzeWEy?=
- =?utf-8?B?VXVOY2xlblE3aFNGTlpzVytQbm95NmYxd05pMndDQmc3dGY3UituLzdaeDUz?=
- =?utf-8?B?MytRd3hzYXBhS0c5ZFFORlQrVldFUVVHMEdIS2RITUVPWnBsMzlXVzV3VHVG?=
- =?utf-8?B?bEJ4b0Zrdmh4Z2V5dXh3OFIyQUJ2Z1J6U1AwNmExZkNURUl0TWcrb3E3ckpG?=
- =?utf-8?B?RUk4ZTY0ZUtnaENMMlpkbENYMzBoalVYOHQzU3NENHJXMlhQcWxydzIwRXB0?=
- =?utf-8?B?eHZLRFZJalBKbUZ5RlJ1VGdKRGhIV1RwUVRFNmpuOXNBUE5nMFRsVVN4dWRO?=
- =?utf-8?B?T2RSYm1iVTg5MzJNUUFwckpQV3RGL1V5N2NsNi9hMTZWcGFuSHJpTEs4WDJK?=
- =?utf-8?B?RkQ3Z3d1TDFaUHRuNDBCNXVQRGhiWmVnc0dsY0pZWnkxOEZ5TlgxUEc1SE53?=
- =?utf-8?B?Z2puMmFXQ05VNnJkNlBkajI3bnNSN29ZVm8vTExyOWVPR1hhbnkxUEJKOHhm?=
- =?utf-8?B?NWd5NWNuOGp6dzRMODA3V01LUkZocjBFNXVONVdrR0pXczlJeGlXeTlYb05F?=
- =?utf-8?B?cUpOc1RSWkxEZ3IvbVZmTno4a3lSb1JkcHh4MTlkTVgxTVE0U0JjdU1MMzVn?=
- =?utf-8?B?VVZQWmYyWGZSZlNRcUVtcUxhN2F6c2VGa0swY1FtZUhubVZiWXQ5ZG5OVEhN?=
- =?utf-8?B?WnJtV25XVDByY3NvMzVFZm1xVGgzTmhvUWw0eHJ5d21oOGs0Z012MHgxbFpS?=
- =?utf-8?B?Ym5LSi96ZG9SN29LMzRZcEc3ZnFpNFlnOU1HNXNCK2JPUXNHYTJMb200ZHJ2?=
- =?utf-8?B?QXFLTkJvZnJrWDdYUkhWOGZTamNGZC85Uit3aEQxTDRhUGFOS0pNRmZzV2Jm?=
- =?utf-8?B?Z21RcUxVMUx0ZGNJRjFxQXJFZ2tudFozSy9mWkdJaGUxSXZWQm80Q2RlS3hy?=
- =?utf-8?B?REt0UDNCRjRFQkhYNUYyK2pwMmJLVVdwZzgxNkhiemRjbVlVZkJJcVVWUkNn?=
- =?utf-8?B?RWVDcGRaeEJOazV2SEdtVGhxZFlzNWFrMEFBRUsrSTI4Um1FeUFmQUZDWVll?=
- =?utf-8?B?UWpSSytxRlNubUdxWCsrMXpaTldJci8yNDk2QnhRV1JjaVhiZmlPVGlCUzln?=
- =?utf-8?B?MEpqeGpDWGpzajJOeHpXcTlhTkJuV2Mzc0dYcnExd2c1eWxrVlFxeG5ESWpE?=
- =?utf-8?B?VHdyeFhKTlJTTWlWMEVTSmN1V1duSlBXUHE2alVsRS9FRVErZEZ2NW82aE1Y?=
- =?utf-8?Q?HXrEvJP8h+RfiTaSRFvPRHc=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <926C283C9292CC478C3EA680EB2148F0@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20221208; t=1693379724; x=1693984524; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/MzJ5oBSb7luD02ued3bJvWqlDC+kCaw52rdLQgmodc=;
+        b=qz1LkWZKVDs+YWiOc+QGSxuT624qkYFdzcr9VYygrIs+ynOfzV3D3raf1AYztDrhj1
+         yc+ibTipINoa0Q8PJ2IlY1ZOjUI8lCI4FCd5tHweLRMWQXZTVrQG+OQrUtukWiw0nNNu
+         JkANwpHfCCm1iWycDcRhxLGgmsqQCXlP6ZjZRu/NTmAtXQVZPKKdAJcotMrAH3VJll9K
+         P9OovrxGJHHu/3/NKQ4tBHJZN1Kpdqai7lI7C8T18bQnKdkW+JPsOzDUgEUCMMojObLA
+         0qiL0O8W2AmYRMyTmL+MAo3JKg+PRfHbXzAlSGYTb3XdKcawW5449s1Mhmw/jL8016nJ
+         nh1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1693379724; x=1693984524;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/MzJ5oBSb7luD02ued3bJvWqlDC+kCaw52rdLQgmodc=;
+        b=WSu7km2lpks84ZV0/kF6biAe8YIsHwM+Tt2o+dHQXDHRxNQqZ1tX3fDxagRJinEvRs
+         62ITercF6gF4dOj/y6pgzVkueISeljGh5IuVCUrmyRr/hogMX/DzwAThEr6UPuIrYJVz
+         UCf2Xl1FCjxnWGXcdx0iChLBVgtYWgL98mZ/nIbvCBLzTiE8W24pQmjr6vf8atvL09fQ
+         eN5te+MkNc4ng9i9UN0LMfPZRiUclTNpDvIK1sqPtagwNEvDTy3BTVwOPuP/gGU+9rv/
+         Ub2UFm3hBqn5THJCDXvJ7Mqkm725Uf7f/aZeNDN+YSrgvr7OPKJ3i2OOCKY1sNnRUfWV
+         e7Rg==
+X-Gm-Message-State: AOJu0YwubRuF8rbvh1/0GLmZxr3Fc/i+890fcBB8PSD6+cvKtBUM3Kef
+        qLg8WVLjFyCRm8JEvDxQ1/l+wc6+ghTGo22ZVPU=
+X-Google-Smtp-Source: AGHT+IEto/3VmuhK35ccRqBIACHxYK0lHbx5h7sC8hT1i/+LKEpWC528Pqk0ZhoD99Re+41Fh85jcQ+j3A8wwlzWtYM=
+X-Received: by 2002:a17:907:2cc1:b0:9a5:9f3c:961e with SMTP id
+ hg1-20020a1709072cc100b009a59f3c961emr1657955ejc.18.1693379723856; Wed, 30
+ Aug 2023 00:15:23 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR11MB6395.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ded832cb-50f5-481f-1727-08dba933bfce
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2023 08:33:12.9341
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KEhemOki9CS9PH3E2O7K9P/HGcBavForkQXZ+3hjioTBYXUSv21NRJP20cAydqCfsSjan+Lgxxtg8wBG7uKYnmoa7nVRqSeGxdWFLOQPGHY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7896
+References: <20230816080225.21482-1-mingjin.yang@unisoc.com>
+ <20230816080225.21482-3-mingjin.yang@unisoc.com> <20230828165709.56ffa299@jic23-huawei>
+In-Reply-To: <20230828165709.56ffa299@jic23-huawei>
+From:   =?UTF-8?B?5p2o5piO6YeR?= <magicyangmingjin@gmail.com>
+Date:   Wed, 30 Aug 2023 15:15:12 +0800
+Message-ID: <CAKJtOf5chsyPrnMZGv32YFvxG1x5cDtBQmzk7wRqCn7C2+cB=g@mail.gmail.com>
+Subject: Re: [PATCH V0 2/2] iio: adc: sprd_pmic_adc: Add support for UMP
+ serise pmic adc
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Mingjin Yang <mingjin.yang@unisoc.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>, Ling_Ling.Xu@unisoc.com,
+        Jinfeng.Lin1@unisoc.com, Yangbin.Li@unisoc.com,
+        Jiansheng.Wu@unisoc.com, Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-SGkgS3J6eXN6dG9mLA0KDQoNCk9uIFR1ZSwgMjAyMy0wOC0yOSBhdCAxOToxMCArMDIwMCwgS3J6
-eXN6dG9mIEtvemxvd3NraSB3cm90ZToNCj4gRVhURVJOQUwgRU1BSUw6IERvIG5vdCBjbGljayBs
-aW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3UNCj4ga25vdyB0aGUgY29udGVudCBp
-cyBzYWZlDQo+IA0KPiBPbiAyOS8wOC8yMDIzIDE3OjQxLCBtYXJpdXMuY3Jpc3RlYUBtaWNyb2No
-aXAuY29twqB3cm90ZToNCj4gPiBGcm9tOiBNYXJpdXMgQ3Jpc3RlYSA8bWFyaXVzLmNyaXN0ZWFA
-bWljcm9jaGlwLmNvbT4NCj4gPiANCj4gPiBUaGlzIGlzIHRoZSBkZXZpY2UgdHJlZSBzY2hlbWEg
-Zm9yIGlpbyBkcml2ZXIgZm9yDQo+ID4gTWljcm9jaGlwIGZhbWlseSBvZiAxNTMuNiBrc3BzLCBM
-b3ctTm9pc2UgMTYvMjQtQml0DQo+ID4gRGVsdGEtU2lnbWEgQURDcyB3aXRoIGFuIFNQSSBpbnRl
-cmZhY2UgKE1pY3JvY2hpcCdzDQo+ID4gTUNQMzQ2MSwgTUNQMzQ2MiwgTUNQMzQ2NCwgTUNQMzQ2
-MVIsIE1DUDM0NjJSLA0KPiA+IE1DUDM0NjRSLCBNQ1AzNTYxLCBNQ1AzNTYyLCBNQ1AzNTY0LCBN
-Q1AzNTYxUiwNCj4gPiBNQ1AzNTYyUiBhbmQgTUNQMzU2NFIgYW5hbG9nIHRvIGRpZ2l0YWwgY29u
-dmVydGVycykuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogTWFyaXVzIENyaXN0ZWEgPG1hcml1
-cy5jcmlzdGVhQG1pY3JvY2hpcC5jb20+DQo+ID4gLS0tDQo+ID4gwqAuLi4vYmluZGluZ3MvaWlv
-L2FkYy9taWNyb2NoaXAsbWNwMzU2NC55YW1swqDCoCB8IDIwNQ0KPiA+ICsrKysrKysrKysrKysr
-KysrKw0KPiANCj4gV2hhdCBjaGFuZ2VkPyBDb3ZlciBsZXR0ZXIgc2F5cyBub3RoaW5nIGFib3V0
-IGJpbmRpbmcsIHNvIHRoaXMgcGF0Y2gNCj4gbXVzdCBzYXkuIEVzcGVjaWFsbHkgdGhhdCB5b3Ug
-ZGVjaWRlZCB0byBpZ25vcmUgcmV2aWV3Lg0KPiANCg0KICBNeSBiYWQuIEkgd2FzIGJhZCBoYW5k
-bGluZyB0aGUgcmVzdWJtaXRpb24gb2YgdGhlIHBhdGNoLiBJIHdhcyBub3QNCiJhd2FyZSIgdGhh
-dCBJIG5lZWQgdG8ga2VlcCB0aGUgInJldmlld2VkLWJ5IiBmb3IgdGhlIGZvbGxvd2luZw0KcGF0
-Y2hlcy4NCg0KVGhpcyBwYXRjaCBkaWRuJ3QgY2hhbmdlIGFueXRoaW5nIHRvIHRoZSAibWljcm9j
-aGlwLG1jcDM1NjQueWFtbCIgZmlsZS4NCg0KDQoNCj4gQmVzdCByZWdhcmRzLA0KPiBLcnp5c3p0
-b2YNCj4gDQoNCg==
+Jonathan Cameron <jic23@kernel.org> =E4=BA=8E2023=E5=B9=B48=E6=9C=8828=E6=
+=97=A5=E5=91=A8=E4=B8=80 23:56=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Wed, 16 Aug 2023 16:02:25 +0800
+> Mingjin Yang <mingjin.yang@unisoc.com> wrote:
+>
+> > This patch adds support for UNISOC UMP family
+> > of ADC driver. The ADC peripheral can support both
+> > voltage and current mode whose input signal is
+> > connected to the PMIC ADC AMUX.
+> >
+> > Signed-off-by: Mingjin Yang <mingjin.yang@unisoc.com>
+>
+> Hi Mingjin,
+>
+> Thanks for your driver - it's in pretty good shape for a v0.
+>
+> Comments inline.
+>
+> Jonathan
+>
+>
+> > diff --git a/drivers/iio/adc/sprd_pmic_adc.c b/drivers/iio/adc/sprd_pmi=
+c_adc.c
+> > new file mode 100644
+> > index 000000000000..6113bd84cd77
+> > --- /dev/null
+> > +++ b/drivers/iio/adc/sprd_pmic_adc.c
+> > @@ -0,0 +1,1298 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +// Copyright (C) 2020 Unisoc Inc.
+> > +
+> > +#include <linux/hwspinlock.h>
+> > +#include <linux/iio/iio.h>
+> > +#include <linux/math64.h>
+> > +#include <linux/mfd/syscon.h>
+> > +#include <linux/module.h>
+> > +#include <linux/nvmem-consumer.h>
+> > +#include <linux/of.h>
+> > +#include <linux/of_device.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/regmap.h>
+> > +#include <linux/regulator/consumer.h>
+> > +#include <linux/slab.h>
+> > +#include <linux/sort.h>
+> > +
+> > +/* ADC controller registers definition */
+> > +#define SPRD_ADC_CTL                 0x0
+> > +
+> > +#define SPRD_ADC_CH_CFG                      0x4
+> > +#define SPRD_ADC_CHN_ID_MASK         GENMASK(4, 0)
+> > +
+> > +#define SPRD_ADC_DATA                        0x4c
+> > +#define SPRD_ADC_DATA_MASK           GENMASK(11, 0)
+> > +
+> > +#define SPRD_ADC_INT_EN                      0x50
+> > +#define SPRD_ADC_IRQ_EN                      BIT(0)
+> > +
+> > +#define SPRD_ADC_INT_CLR             0x54
+> > +#define SPRD_ADC_IRQ_CLR             BIT(0)
+> > +
+> > +#define SPRD_ADC_INT_STS             0x58
+> > +
+> > +#define SPRD_ADC_INT_RAW             0x5c
+> > +#define SPRD_ADC_IRQ_RAW             BIT(0)
+> > +
+> > +/* Bits and mask definition for SPRD_ADC_CTL register */
+> > +#define SPRD_ADC_EN                  BIT(0)
+> > +#define SPRD_ADC_CHN_RUN             BIT(1)
+> > +#define SPRD_ADC_12BIT_MODE          BIT(2)
+> > +#define SPRD_ADC_RUN_NUM_MASK                GENMASK(7, 4)
+> > +#define SPRD_ADC_RUN_NUM_SHIFT               4
+> > +#define SPRD_ADC_AVERAGE_SHIFT               8
+> > +#define SPRD_ADC_AVERAGE_MASK                GENMASK(10, 8)
+> > +
+> > +/* Timeout (ms) for the trylock of hardware spinlocks */
+> > +#define SPRD_ADC_HWLOCK_TIMEOUT              5000
+> Name it so the units are CLAR
+>         SPRD_ADC_HWLOCK_TIMEOUT_MS
+> then drop teh comment that tells us nothing.
+> > +
+> > +/* Maximum ADC channel number */
+> Obvious comment: drop it.
+> > +#define SPRD_ADC_CHANNEL_MAX         32
+> > +
+> > +/* Timeout (us) for ADC data conversion according to ADC datasheet */
+> Reference specific part of datasheet or drop the comment.
+> > +#define SPRD_ADC_RDY_TIMEOUT         1000000
+> Name it so the unit is obviously
+>         TIMEOUT_US
+>
+> > +#define SPRD_ADC_POLL_RAW_STATUS     500
+> What's this one?
+> > +
+> > +/* ADC voltage ratio definition */
+> > +#define SPRD_RATIO_NUMERATOR_OFFSET  16
+> > +#define SPRD_RATIO_DENOMINATOR_MASK  GENMASK(15, 0)
+> > +#define RATIO(n, d)                  (((n) << SPRD_RATIO_NUMERATOR_OFF=
+SET) | (d))
+> > +#define R_INVALID                    (0xffffffff)
+> > +#define RATIO_DEF                    RATIO(1, 1)
+>
+> Prefix every define..
+>
+> > +
+> > +/* ADC specific channel reference voltage 3.5V */
+> > +#define SPRD_ADC_REFVOL_VDD35                3500000
+> > +
+> > +/* ADC default channel reference voltage is 2.8V */
+> > +#define SPRD_ADC_REFVOL_VDD28                2800000
+> > +
+> > +#define SPRD_ADC_CELL_MAX            (2)
+> > +#define SPRD_ADC_INVALID_DATA                (0XFFFFFFFF)
+> > +#define SPRD_ADC_INIT_MAGIC          (0xa7a77a7a)
+> > +#define ADC_MESURE_NUMBER_SW         (15)
+> > +#define ADC_MESURE_NUMBER_HW_DEF     (3) /* 2 << 3 =3D 8 times */
+>
+> Prefix with SPRD and also the brackets around integer values have little =
+purpose
+> so drop them.  Note the ones around variables are good.
+>
+> > +
+> > +#define CH_DATA_FMT "ch%d_d[(%d %d 0x%x 0x%x) | (%u/%u), (%u/%u), (%u/=
+%u), (%u/%u), (%u/%u)]\n"
+> This define hurts readability.  Just put in inline in the one place it's =
+used for debug.
+> > +
+> > +#define SPRD_ADC_CHANNEL(index, mask) {                              \
+> > +     .type =3D IIO_VOLTAGE,                                    \
+> > +     .channel =3D index,                                       \
+> > +     .info_mask_separate =3D mask | BIT(IIO_CHAN_INFO_SCALE),  \
+> > +     .datasheet_name =3D "CH##index",                          \
+> > +     .indexed =3D 1,                                           \
+> > +}
+> > +
+> > +#define CH_DATA_INIT(sl, filter, isen, ip_r)         \
+> > +{                                                    \
+> > +     .scale =3D sl,                                    \
+> > +     .isen_info =3D isen,                              \
+> > +     .filter_info =3D filter,                          \
+> > +     .ip_ratio =3D ip_r,                               \
+> > +     .ch_aux_ratio =3D {0, 0, 0, 0},                   \
+> > +     .inited =3D SPRD_ADC_INIT_MAGIC,                  \
+> > +}
+> > +
+> > +#define CALIB_INFO_INIT(ch, sl, gph) \
+> > +{                                    \
+> > +     .channel =3D ch,                  \
+> > +     .scale =3D sl,                    \
+> > +     .graph =3D gph,                   \
+> > +     .inited =3D SPRD_ADC_INIT_MAGIC,  \
+> > +}
+> > +
+> > +#define GRAPH_POINT_INIT(v0, a0, v1, a1)\
+>
+> space before \
+> also why the blank line here?
+>
+> > +                                     \
+> > +     .volt0 =3D v0,                    \
+> > +     .adc0 =3D a0,                     \
+> > +     .volt1 =3D v1,                    \
+> > +     .adc1 =3D a1,                     \
+> > +     .inited =3D SPRD_ADC_INIT_MAGIC
+> > +
+>
+> > +
+> > +enum SPRD_PMIC_TYPE {
+> > +     UMP9620_ADC,
+> > +     UMP518_ADC,
+> > +};
+> > +
+> > +enum SPRD_ADC_GRAPH_TYPE {
+> > +     TWO_CELL_GRAPH,
+> > +     SPRD_ADC_GRAPH_TYPE_MAX
+> > +};
+> > +
+> > +enum SPRD_ADC_GRAPH_OFFSET {
+> > +     GRAPH_BIG,
+> > +     GRAPH_SMALL,
+> > +     GRAPH_VBAT_DET,
+> > +     GRAPH_MAX
+> > +};
+> > +
+> > +enum SPRD_ADC_SCALE {
+> > +     SCALE_00,
+> > +     SCALE_01,
+> > +     SCALE_10,
+> > +     SCALE_11,
+> > +     SPRD_ADC_SCALE_MAX
+> > +};
+> > +
+> > +enum SPRD_ADC_REG_TYPE {
+> > +     REG_MODULE_EN,
+> > +     REG_CLK_EN,
+> > +     REG_SOFT_RST,
+> > +     REG_XTL_CTRL,
+> > +     REG_SCALE,
+> > +     REG_CFG_FIXED_ST =3D 11,/* FIXED CFG START */
+> > +     REG_CAL_EN,
+> > +     REG_NTC_MUX,
+> > +     REG_CFG_FIXED_END,/* FIXED CFG END */
+> > +     REG_ISEN_ST =3D 21,/* CURRENT MODE START */
+> > +     REG_ISEN0,
+> > +     REG_ISEN1,
+> > +     REG_ISEN2,
+> > +     REG_ISEN3,
+> > +     REG_ISEN_END,/* CURRENT MODE END */
+> > +     SPRD_ADC_REG_TYPE_MAX
+> > +};
+> > +
+> > +enum SPRD_ADC_REG_BASE {
+> > +     BASE_GLB,
+> > +     BASE_ANA
+> > +};
+> > +
+> > +struct sprd_adc_pm_data {
+> > +     struct regmap *clk_regmap;
+> > +     u32 clk_reg;/* adc clk26 vote reg */
+> > +     u32 clk_reg_mask;/* adc clk26 vote reg mask */
+> > +     bool dev_suspended;
+> > +};
+> > +
+> > +/*bit[0-7]: scale
+> /*
+>  * bit[0-7]: scale
+> ...
+>  */
+>
+> However, what is it referring to?
+>
+> > + *bit[8-15]: filter_info(bit8: sw filter support, bit[9-15]: hw filter=
+ val(2<<n))
+> > + *bit[16-23]: isen_info (bit16: isen support, bit[17-23]: isen val)
+> > + */
+> > +struct sprd_adc_channel_data {
+> > +     int scale;
+> > +     int graph;
+> > +     int isen_info;
+> > +     int filter_info;
+> > +     int ip_ratio;
+> > +     int ch_aux_ratio[SPRD_ADC_SCALE_MAX];
+> > +     int inited;
+> > +};
+> > +
+> > +struct calib_info {
+> > +     int channel;
+> > +     int scale;
+> > +     int graph;
+> > +     int ch_aux_ratio[SPRD_ADC_SCALE_MAX];
+> > +     int inited;
+> > +};
+> > +
+> > +struct reg_bit {
+>
+> sprd_adc_reg_bit etc
+> to reduce chance of a clash on naming in future.
+>
+> > +     u32 base;
+> > +     u32 reg_addr;
+> > +     u32 mask;
+> > +     u32 offset;
+> > +     u32 val_set;
+> > +     u32 val_clr;
+> > +     u32 inited;
+> > +     bool reverse;
+> > +     u32 (*get_val)(void *pri, int ch, bool set);
+> > +};
+>
+>
+>
+> > +
+> > +static void sprd_adc_calib_with_two_cell(struct sprd_adc_linear_graph =
+*graph);
+> > +static u32 get_isen(void *pri, int ch, bool enable);
+> > +static int sprd_adc_soft_rst(struct sprd_adc_data *data);
+> > +static int sprd_adc_hw_enable(struct sprd_adc_data *data);
+>
+> blank line here.
+>
+> > +static inline u32 GET_REG_ADDR(struct sprd_adc_data *data, int index)
+> Unless you have a very strong reason don't tell the compiler what to inli=
+ne.
+> These hints are often limit what it can optimise somewhat and can hurt
+> the actual performance.
+>
+> Generic naming without a prefix tends to break long term. Also, this is
+> just a function, shouldn't be in capitals.
+>
+> sprd_adc_get_reg_addr()
+>
+>
+> > +{
+> > +     u32 base =3D ((data->var_data->reg_list[index].base =3D=3D BASE_G=
+LB)
+> > +                 ? (data->var_data->glb_reg_base)
+> > +                 : (data->base - data->var_data->adc_reg_base_offset))=
+;
+> > +     return (base + data->var_data->reg_list[index].reg_addr);
+> > +}
+>
+>
+> > +
+> > +static inline void sprd_adc_ch_data_show(struct sprd_adc_data *data, i=
+nt ch)
+> > +{
+> > +     struct sprd_adc_channel_data *ch_data =3D &data->ch_data[ch];
+> > +     struct u32_fract ip_fract, aux_fract0, aux_fract1, aux_fract2, au=
+x_fract3;
+> > +
+> > +     ratio_to_u32_fract(ch_data->ip_ratio, &ip_fract);
+> > +     ratio_to_u32_fract(ch_data->ch_aux_ratio[0], &aux_fract0);
+> > +     ratio_to_u32_fract(ch_data->ch_aux_ratio[1], &aux_fract1);
+> > +     ratio_to_u32_fract(ch_data->ch_aux_ratio[2], &aux_fract2);
+> > +     ratio_to_u32_fract(ch_data->ch_aux_ratio[3], &aux_fract3);
+> > +     dev_dbg(data->dev, CH_DATA_FMT,
+> > +             ch, ch_data->scale, ch_data->graph, ch_data->isen_info, c=
+h_data->filter_info,
+> > +             ip_fract.numerator, ip_fract.denominator,
+> > +             aux_fract0.numerator, aux_fract0.denominator,
+> > +             aux_fract1.numerator, aux_fract1.denominator,
+> > +             aux_fract2.numerator, aux_fract2.denominator,
+> > +             aux_fract3.numerator, aux_fract3.denominator);
+>
+> A lot of code in this driver is debug.  Is it actually useful once you've=
+ finished
+> development?  I'd consider dropping at least some of it to reduce the amo=
+unt of
+> code you need to maintain long term.
+>
+> > +}
+> > +
+> > +static void sprd_adc_ch_data_merge(struct sprd_adc_data *data, struct =
+sprd_adc_channel_data *d_diff,
+>
+> Long line - generally try to stay under 80 chars if it doesn't hurt reada=
+bility
+> and under 100 unless it's a message someone might want to grep for.
+>
+>
+> > +                                struct sprd_adc_channel_data *d_def)
+> > +{
+> > +     struct sprd_adc_channel_data *ch_data;
+> > +     int ch;
+> > +
+> > +     for (ch =3D 0; ch < SPRD_ADC_CHANNEL_MAX; ch++) {
+> > +             ch_data =3D &data->ch_data[ch];
+> > +             *ch_data =3D ((d_diff[ch].inited =3D=3D SPRD_ADC_INIT_MAG=
+IC) ? d_diff[ch] : *d_def);
+> > +     }
+> > +
+> > +     for (ch =3D 0; ch < SPRD_ADC_CHANNEL_MAX; ch++) {
+> > +             sprd_adc_aux_ratio_init(data, ch);
+> > +             sprd_adc_ch_data_show(data, ch);
+> > +     }
+> > +}
+>
+>
+> > +static void ump9620_ch_data_init(struct sprd_adc_data *data)
+> > +{
+> > +     struct sprd_adc_channel_data ch_data_def =3D CH_DATA_INIT(SCALE_0=
+0, 0, 0, RATIO_DEF);
+> > +     struct sprd_adc_channel_data ch_data[SPRD_ADC_CHANNEL_MAX] =3D {
+>
+> const
+>
+> > +             [0] =3D CH_DATA_INIT(SCALE_01, 0, 0, RATIO_DEF),
+> > +             [5] =3D CH_DATA_INIT(SCALE_00, 0x1, 0x9, RATIO_DEF),
+> > +             [6] =3D CH_DATA_INIT(SCALE_00, 0x1, 0x9, RATIO_DEF),
+> > +             [7] =3D CH_DATA_INIT(SCALE_10, 0, 0, RATIO_DEF),
+> > +             [9] =3D CH_DATA_INIT(SCALE_10, 0, 0, RATIO_DEF),
+> > +             [10] =3D CH_DATA_INIT(SCALE_11, 0, 0, RATIO_DEF),
+> > +             [11] =3D CH_DATA_INIT(SCALE_00, 0, 0, RATIO_DEF),
+> > +             [13] =3D CH_DATA_INIT(SCALE_01, 0, 0, RATIO_DEF),
+> > +             [14] =3D CH_DATA_INIT(SCALE_00, 0, 0, RATIO(68, 900)),
+> > +             [15] =3D CH_DATA_INIT(SCALE_00, 0, 0, RATIO(1, 3)),
+> > +             [19] =3D CH_DATA_INIT(SCALE_11, 0, 0, RATIO_DEF),
+> > +             [21] =3D CH_DATA_INIT(SCALE_00, 0, 0, RATIO(3, 8)),
+> > +             [22] =3D CH_DATA_INIT(SCALE_00, 0, 0, RATIO(3, 8)),
+> > +             [23] =3D CH_DATA_INIT(SCALE_00, 0, 0, RATIO(3, 8)),
+> > +             [30] =3D CH_DATA_INIT(SCALE_11, 0, 0, RATIO_DEF),
+> > +             [31] =3D CH_DATA_INIT(SCALE_11, 0, 0, RATIO_DEF),
+> > +     };
+> > +
+> > +     sprd_adc_ch_data_merge(data, ch_data, &ch_data_def);
+> > +}
+> > +
+>
+> > +
+> > +static int sprd_adc_isen_enable(struct sprd_adc_data *data, int channe=
+l)
+> > +{
+> > +     bool isen_support =3D data->ch_data[channel].isen_info & 0x1;
+>
+> As below.
+>
+> > +
+> > +     if (!isen_support)
+> > +             return 0;
+> > +
+> > +     sprd_adc_regs_set_order(data, channel, REG_ISEN_ST, REG_ISEN_END)=
+;
+> > +     usleep_range(500, 1000);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int sprd_adc_isen_disable(struct sprd_adc_data *data, int chann=
+el)
+> > +{
+> > +     bool isen_support =3D data->ch_data[channel].isen_info & 0x1;
+>
+> FIELD_GET()
+>
+> > +
+> > +     if (!isen_support)
+> as isen_support not otherwise used.
+>         if (!FIELD_GET(...., ....))
+>
+> > +             return 0;
+> > +
+> > +     sprd_adc_regs_clr_order_reverse(data, channel, REG_ISEN_ST, REG_I=
+SEN_END);
+> > +     usleep_range(500, 1000);
+> > +
+> > +     return 0;
+> > +}
+> > +
+>
+> > +
+> > +static int sprd_adc_enable(struct sprd_adc_data *data, int channel)
+> > +{
+> > +     int ret =3D 0;
+> > +     u32 reg_read =3D 0;
+> > +
+> > +     if (data->pm_data.clk_regmap) {
+> > +             ret =3D regmap_update_bits(data->pm_data.clk_regmap, data=
+->pm_data.clk_reg,
+> > +                                      data->pm_data.clk_reg_mask,
+> > +                                      data->pm_data.clk_reg_mask);
+> > +             ret |=3D regmap_read(data->pm_data.clk_regmap, data->pm_d=
+ata.clk_reg, &reg_read);
+> > +             if (ret) {
+> > +                     dev_err(data->dev, "failed to enable clk26m, chan=
+nel %d\n", channel);
+> > +                     return ret;
+> > +             }
+> > +             dev_dbg(data->dev, "enable clk26m: ch %d, reg_read 0x%x\n=
+", channel, reg_read);
+>
+> Directly accessing the regmap of a clock seems unusual. Why not provide g=
+eneric clock interfaces
+> for this?
+
+This register is used to vote to enable/disable the pmic 26m clk which
+is provided to modules like audio, typec and adc.
+Therefore, this clk cannot be disabled or enabled directly.
+
+> > +     }
+> > +
+> > +     ret =3D sprd_adc_isen_enable(data, channel);
+> > +     if (ret) {
+> > +             dev_err(data->dev, "failed to enable isen\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     ret =3D regmap_update_bits(data->regmap, data->base + SPRD_ADC_CT=
+L,
+> > +                              SPRD_ADC_EN, SPRD_ADC_EN);
+> > +     if (ret) {
+> > +             dev_err(data->dev, "failed to set SPRD_ADC_EN\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     return ret;
+> > +}
+> > +
+> > +static int sprd_adc_disable(struct sprd_adc_data *data, int channel)
+> > +{
+> > +     int ret =3D 0;
+>
+> Set just below here. Check for other instances of this.
+>
+> > +     u32 reg_read =3D 0;
+> > +
+> > +     ret =3D regmap_update_bits(data->regmap, data->base + SPRD_ADC_CT=
+L, SPRD_ADC_EN, 0);
+> > +     if (ret) {
+> > +             dev_err(data->dev, "failed to reset SPRD_ADC_EN\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     ret =3D sprd_adc_isen_disable(data, channel);
+> > +     if (ret) {
+> > +             dev_err(data->dev, "failed to disable isen\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     if (data->pm_data.clk_regmap) {
+> > +             ret =3D regmap_update_bits(data->pm_data.clk_regmap, data=
+->pm_data.clk_reg,
+> > +                                      data->pm_data.clk_reg_mask, 0);
+> > +             ret |=3D regmap_read(data->pm_data.clk_regmap, data->pm_d=
+ata.clk_reg, &reg_read);
+>
+> Don't combine ret values. Can result in complete garbage.  Just handle ea=
+ch error
+> separately.  It costs a few lines, but always works!
+>
+> > +             if (ret) {
+> > +                     dev_err(data->dev, "failed to disable clk26m, cha=
+nnel %d\n", channel);
+> > +                     return ret;
+> > +             }
+> > +             dev_dbg(data->dev, "disable clk26m: ch %d, reg_read 0x%x\=
+n", channel, reg_read);
+> > +     }
+> > +
+> > +     return ret;
+>
+> return 0;
+> Can't get here with any other value that I can see.
+>
+> > +}
+> > +
+> > +static int sprd_adc_read(struct sprd_adc_data *data, int channel, int =
+scale, int *val)
+> > +{
+> > +     int ret =3D 0, sample_num_sw;
+> > +     u32 rawdata =3D 0, tmp, status, scale_shift, scale_mask;
+> > +     bool filter_sw =3D data->ch_data[channel].filter_info & 0x1;
+> > +     int sample_num_hw =3D data->ch_data[channel].filter_info >> 1;
+>
+> FIELD_GET() for both of these.
+>
+> > +
+> > +     if (data->pm_data.dev_suspended) {
+> > +             dev_err(data->dev, "adc_exp: adc bas been suspended, igno=
+re.\n");
+>
+> has
+>
+> > +             return -EBUSY;
+> > +     }
+> > +
+> > +     dev_dbg(data->dev, "ch_data[%d]: scale %d, graph %d, filter_info =
+0x%x, isen_info 0x%x\n",
+> > +             channel, data->ch_data[channel].scale, data->ch_data[chan=
+nel].graph,
+> > +             data->ch_data[channel].filter_info, data->ch_data[channel=
+].isen_info);
+> > +
+> > +     ret =3D hwspin_lock_timeout_raw(data->hwlock, SPRD_ADC_HWLOCK_TIM=
+EOUT);
+> > +     if (ret) {
+> > +             dev_err(data->dev, "timeout to get the hwspinlock\n");
+>
+> timeout getting the
+> or
+> timeout trying to get
+>
+> > +             return ret;
+> > +     }
+> > +
+> > +     ret =3D sprd_adc_enable(data, channel);
+> > +     if (ret)
+> > +             goto disable_adc;
+> > +
+> > +     ret =3D regmap_update_bits(data->regmap, data->base + SPRD_ADC_IN=
+T_CLR,
+> > +                              SPRD_ADC_IRQ_CLR, SPRD_ADC_IRQ_CLR);
+> > +     if (ret)
+> > +             goto disable_adc;
+> > +
+> > +     /* Configure the channel id and scale */
+> > +     scale_shift =3D data->var_data->reg_list[REG_SCALE].offset;
+> > +     scale_mask =3D data->var_data->reg_list[REG_SCALE].mask;
+> > +     tmp =3D (scale << scale_shift) & scale_mask;
+> > +     tmp |=3D channel & SPRD_ADC_CHN_ID_MASK;
+> > +     ret =3D regmap_update_bits(data->regmap, data->base + SPRD_ADC_CH=
+_CFG,
+> > +                              SPRD_ADC_CHN_ID_MASK | scale_mask, tmp);
+> > +     if (ret)
+> > +             goto disable_adc;
+> > +
+> > +     /* Select 12bit conversion mode, and only sample 1 time */
+> > +     tmp =3D SPRD_ADC_12BIT_MODE;
+> > +     sample_num_sw =3D (filter_sw ? ADC_MESURE_NUMBER_SW - 1 : 0);
+> > +     sample_num_hw =3D ((sample_num_hw > 0) ? sample_num_hw : ADC_MESU=
+RE_NUMBER_HW_DEF);
+> > +     tmp |=3D ((unsigned long)sample_num_sw << SPRD_ADC_RUN_NUM_SHIFT)=
+ & SPRD_ADC_RUN_NUM_MASK;
+> > +     tmp |=3D ((unsigned long)sample_num_hw << SPRD_ADC_AVERAGE_SHIFT)=
+ & SPRD_ADC_AVERAGE_MASK;
+> > +     ret =3D regmap_update_bits(data->regmap, data->base + SPRD_ADC_CT=
+L,
+> > +                              SPRD_ADC_RUN_NUM_MASK | SPRD_ADC_12BIT_M=
+ODE |
+> > +                              SPRD_ADC_AVERAGE_MASK, tmp);
+> > +     if (ret)
+> > +             goto disable_adc;
+> > +
+> > +     ret =3D regmap_update_bits(data->regmap, data->base + SPRD_ADC_CT=
+L,
+> > +                              SPRD_ADC_CHN_RUN, SPRD_ADC_CHN_RUN);
+> > +     if (ret)
+> > +             goto disable_adc;
+> > +
+> > +     ret =3D regmap_read_poll_timeout(data->regmap, data->base + SPRD_=
+ADC_INT_RAW, status,
+> > +                                    (status & SPRD_ADC_IRQ_RAW), SPRD_=
+ADC_POLL_RAW_STATUS,
+> > +                                    SPRD_ADC_RDY_TIMEOUT);
+> > +     if (ret) {
+> > +             dev_err(data->dev, "read adc timeout 0x%x\n", status);
+> > +             sprd_adc_regs_dump(data, channel, scale, "t_bef");
+> > +             sprd_adc_hw_enable(data);
+> > +             sprd_adc_soft_rst(data);
+> > +             sprd_adc_regs_dump(data, channel, scale, "t_aft");
+> > +             goto disable_adc;
+> > +     }
+> > +
+> > +     if (filter_sw) {
+> > +             rawdata =3D sprd_adc_get_val_with_sw_filter(data, channel=
+);
+> > +     } else {
+> > +             ret =3D regmap_read(data->regmap, data->base + SPRD_ADC_D=
+ATA, &rawdata);
+> check ret.
+> > +             rawdata &=3D SPRD_ADC_DATA_MASK;
+> > +     }
+> > +disable_adc:
+> > +     ret =3D sprd_adc_disable(data, channel);
+> > +
+> > +     hwspin_unlock_raw(data->hwlock);
+> > +
+> > +     if (!ret)
+> > +             *val =3D rawdata;
+> I think val is valid even if the disable fails. So do it up a few lines u=
+nconditionally.
+>
+> > +
+> > +     return ret;
+> > +}
+> > +
+> > +static int sprd_adc_calculate_volt_by_graph(struct sprd_adc_data *data=
+, int channel,
+> > +                                         int scale, int raw_adc)
+> > +{
+> > +     int tmp;
+> > +     struct sprd_adc_graphs *graphs =3D &sprd_adc_graphs_array[data->v=
+ar_data->graph_index];
+> > +     int graph_offset =3D data->ch_data[channel].graph;
+> > +     struct sprd_adc_linear_graph *linear_graph =3D &graphs->adc_graph=
+s[graph_offset];
+> > +
+> > +     tmp =3D (linear_graph->volt0 - linear_graph->volt1) * (raw_adc - =
+linear_graph->adc1);
+> > +     tmp /=3D (linear_graph->adc0 - linear_graph->adc1);
+> > +     tmp +=3D linear_graph->volt1;
+> > +     tmp =3D (tmp < 0 ? 0 : tmp);
+>
+>         tmp =3D max(0, tmp) perhaps makes it clearer this is clamping a s=
+mall negative (I think)
+>
+> > +
+> > +     dev_dbg(data->dev, "by_graph_c%d: v0 %d a0 %d, v1 %d a1 %d, raw_a=
+dc 0x%x, vol_graph %d\n",
+> > +             channel, linear_graph->volt0, linear_graph->adc0, linear_=
+graph->volt1,
+> > +             linear_graph->adc1, raw_adc, tmp);
+> > +
+> > +     return tmp;
+> > +}
+> > +
+> > +static int sprd_adc_calculate_volt_by_ratio(struct sprd_adc_data *data=
+, int channel,
+> > +                                         int scale, int vol_graph)
+> > +{
+> > +     struct u32_fract ip_fract, aux_fract;
+> > +     int pmic_type =3D data->var_data->pmic_type;
+> > +     u32 vol_final =3D vol_graph;
+> > +
+> > +     ratio_to_u32_fract(data->ch_data[channel].ip_ratio, &ip_fract);
+> > +     vol_final =3D DIV_ROUND_CLOSEST(vol_final * ip_fract.denominator,=
+ ip_fract.numerator);
+> > +
+> > +     ratio_to_u32_fract(data->ch_data[channel].ch_aux_ratio[scale], &a=
+ux_fract);
+> > +     vol_final =3D DIV_ROUND_CLOSEST(vol_final * aux_fract.denominator=
+, aux_fract.numerator);
+> > +
+> > +     dev_dbg(data->dev, "by_ratio_c%d: id %d, scale %d, ip_r[%d/%d], a=
+ux_r[%d/%d], vol_f %d\n",
+> > +             channel, pmic_type, scale, ip_fract.numerator, ip_fract.d=
+enominator,
+> > +             aux_fract.numerator, aux_fract.denominator, vol_final);
+> > +
+> > +     return vol_final;
+> > +}
+> > +
+> > +static int sprd_adc_read_processed(struct sprd_adc_data *data, int cha=
+nnel, int scale, int *val)
+> > +{
+> > +     int ret, raw_adc, vol_graph;
+> > +
+> > +     ret =3D sprd_adc_read(data, channel, scale, &raw_adc);
+> > +
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     vol_graph =3D sprd_adc_calculate_volt_by_graph(data, channel, sca=
+le, raw_adc);
+> > +     *val =3D sprd_adc_calculate_volt_by_ratio(data, channel, scale, v=
+ol_graph);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int sprd_adc_ch_data_encode(struct sprd_adc_data *data, int ch)
+> > +{
+> > +     int scale =3D data->ch_data[ch].scale & 0xff;
+> > +     int isen_info =3D data->ch_data[ch].isen_info & 0xff;
+> > +     int filter_info =3D data->ch_data[ch].filter_info & 0xff;
+> > +
+> > +     return (scale | (filter_info << 8) | (isen_info << 16));
+>
+> As below - looks like an array of u8. Treat it as such or use FIELD_PREP(=
+)
+> and treat it as a u32
+>
+>
+> > +}
+> > +
+> > +static void sprd_adc_ch_data_decode(struct sprd_adc_data *data, int ch=
+, int val)
+> > +{
+> > +     int scale_override, filter_override, isen_override;
+> > +
+> > +     scale_override =3D (val & 0xff);
+> > +     filter_override =3D ((val >> 8) & 0xff);
+> > +     isen_override =3D ((val >> 16) & 0xff);
+>
+> FIELD_GET() with appropriate mask defines.
+> Or just convert it to an array of u8 with appropriate endian conversion.
+>
+>
+> > +
+> > +     if (scale_override < SPRD_ADC_SCALE_MAX && scale_override !=3D da=
+ta->ch_data[ch].scale)
+> > +             data->ch_data[ch].scale =3D scale_override;
+> > +
+> > +     if (data->ch_data[ch].filter_info !=3D filter_override)
+> > +             data->ch_data[ch].filter_info =3D filter_override;
+> > +
+> > +     if (data->ch_data[ch].isen_info !=3D isen_override)
+> > +             data->ch_data[ch].isen_info =3D isen_override;
+> > +}
+> > +
+>
+> ...
+>
+> > +static int sprd_adc_hw_enable(struct sprd_adc_data *data)
+> > +{
+> > +     int ret;
+> > +     u32 reg_addr, mask;
+> > +
+> > +     reg_addr =3D GET_REG_ADDR(data, REG_XTL_CTRL);
+>
+> I'm not sure the local variables much help readability.
+> So I'd just put them inline instead perhaps providing a
+> local variabel for the reglist.
+>         u32 *reg_list =3D data->var_data->reg_list;
+>
+>         ret =3D regmap_update_bits(data->regmap,
+>                                  GET_REG_ADDR(data, REG_XTL_CTRL),
+>                                  reg_list[REG_XTL_CTRL]);
+>
+> etc.  May make sense for other similar cases.
+>
+>
+> > +     mask =3D data->var_data->reg_list[REG_XTL_CTRL].mask;
+> > +     ret =3D regmap_update_bits(data->regmap, reg_addr, mask, mask);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     reg_addr =3D GET_REG_ADDR(data, REG_MODULE_EN);
+> > +     mask =3D data->var_data->reg_list[REG_MODULE_EN].mask;
+> > +     ret =3D regmap_update_bits(data->regmap, reg_addr, mask, mask);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     /* Enable ADC work clock */
+> > +     reg_addr =3D GET_REG_ADDR(data, REG_CLK_EN);
+> > +     mask =3D data->var_data->reg_list[REG_CLK_EN].mask;
+> > +     ret =3D regmap_update_bits(data->regmap, reg_addr, mask, mask);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     return 0;
+>
+>         return regmap_update_bits()
+>
+> > +}
+> > +
+>
+> > +
+> > +static int sprd_adc_ch_data_init(struct sprd_adc_data *data)
+> > +{
+> > +     struct device_node *np =3D data->dev->of_node;
+> > +     int size, ret, ch, ch_data_val, i;
+> > +     u32 *ch_data_override;
+> > +
+> > +     data->var_data->ch_data_init(data);
+> > +
+> > +     size =3D of_property_count_elems_of_size(np, "ch_data_override", =
+sizeof(u32));
+> > +     if (size <=3D 0)
+> > +             return 0;
+> > +
+> > +     if (size % 2) {
+> > +             dev_err(data->dev, "Pair of ch data err!\n");
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     ch_data_override =3D kcalloc(size, sizeof(u32), GFP_KERNEL);
+> > +     if (!ch_data_override)
+> > +             return -ENOMEM;
+> > +
+> > +     ret =3D of_property_read_u32_array(np, "ch_data_override", ch_dat=
+a_override, size);
+> > +     if (ret < 0) {
+> > +             dev_err(data->dev, "Failed to read ch data from dt: %d\n"=
+, ret);
+> > +             kfree(ch_data_override);
+>
+> Probably better to use a goto for this cleanup so it can be shared with t=
+he normal
+> exit path. Of if you want to have fun (and don't need to backport this),
+> try the new __free() infrastructure to do scope based cleanup found in
+>
+> linux/cleanup.h
+>
+> This sort of pattern is exactly what that code is for.
+>
+>
+> > +             return ret;
+> > +     }
+> > +
+> > +     for (i =3D 0; i < size; i +=3D 2) {
+> > +             ch =3D ch_data_override[i];
+> > +             ch_data_val =3D ch_data_override[i+1];
+> kernel style always has spaces around an operator with two parameters.
+> [i + 1]
+> > +             sprd_adc_ch_data_decode(data, ch, ch_data_val);
+> > +             sprd_adc_ch_data_show(data, ch);
+> > +     }
+> > +
+> > +     kfree(ch_data_override);
+> > +
+> > +     return 0;
+> > +}
+> > +
+>
+> > +
+> > +static int sprd_adc_probe(struct platform_device *pdev)
+> > +{
+> > +     struct device_node *np =3D pdev->dev.of_node;
+> > +     struct sprd_adc_data *sprd_data;
+> > +     const struct sprd_adc_variant_data *pdata;
+> > +     struct iio_dev *indio_dev;
+> > +     int ret;
+> > +
+> > +     pdata =3D of_device_get_match_data(&pdev->dev);
+>
+> device_get_match_data()
+>
+>
+> > +     if (!pdata) {
+> > +             dev_err(&pdev->dev, "No matching driver data found\n");
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     indio_dev =3D devm_iio_device_alloc(&pdev->dev, sizeof(*sprd_data=
+));
+> > +     if (!indio_dev)
+> > +             return -ENOMEM;
+> > +
+> > +     sprd_data =3D iio_priv(indio_dev);
+> > +
+> > +     sprd_data->regmap =3D dev_get_regmap(pdev->dev.parent, NULL);
+> > +     if (!sprd_data->regmap) {
+> > +             dev_err(&pdev->dev, "failed to get ADC regmap\n");
+> > +             return -ENODEV;
+> > +     }
+> > +
+> > +     ret =3D of_property_read_u32(np, "reg", &sprd_data->base);
+>
+> Even though some elements of this (of_hwspin...) don't have generic firmw=
+are
+> interfaces, I would prefer to see those from linux/property.h used
+> wherever possible.  It will take us a long time to make that a subsystem
+> wide change, but good not to have more unnecessary instances of device tr=
+ee
+> specific property reading.
+
+Sorry, I don't understand what needs to be modified. Can you provide
+more information or give an example?
+Do you mean that the "reg"  property reading is unnecessary?
+
+> > +     if (ret) {
+> > +             dev_err(&pdev->dev, "failed to get ADC base address\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     sprd_data->irq =3D platform_get_irq(pdev, 0);
+> > +     if (sprd_data->irq < 0) {
+> > +             dev_err(&pdev->dev, "failed to get ADC irq number\n");
+> > +             return sprd_data->irq;
+> > +     }
+> > +
+> > +     ret =3D of_hwspin_lock_get_id(np, 0);
+> > +     if (ret < 0) {
+> > +             dev_err(&pdev->dev, "failed to get hwspinlock id\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     mutex_init(&sprd_data->mutex);
+> > +     sprd_data->hwlock =3D hwspin_lock_request_specific(ret);
+> > +     if (!sprd_data->hwlock) {
+> > +             dev_err(&pdev->dev, "failed to request hwspinlock\n");
+> > +             return -ENXIO;
+> > +     }
+> > +
+> > +     ret =3D devm_add_action(&pdev->dev, sprd_adc_free_lock, sprd_data=
+);
+> > +     if (ret) {
+> > +             sprd_adc_free_lock(sprd_data);
+>
+> devm_add_action_or_reset() as below.  Same for any more cases of this, I =
+won't
+> mention it again (not I review up the driver as they make more logical se=
+nse
+> to me that way around ;)
+>
+> > +             dev_err(&pdev->dev, "failed to add free lock action\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     sprd_data->dev =3D &pdev->dev;
+> > +     sprd_data->var_data =3D pdata;
+> > +     sprd_data->indio_dev =3D indio_dev;
+> > +
+> > +     /* ADC channel scales calibration from nvmem device */
+> > +     ret =3D sprd_adc_graphs_calibrate(sprd_data);
+> > +     if (ret) {
+> > +             dev_err(&pdev->dev, "failed to calib graphs from nvmem\n"=
+);
+> > +             return ret;
+> > +     }
+> > +
+> > +     ret =3D sprd_adc_pm_init(sprd_data);
+> > +     if (ret) {
+> > +             dev_err(&pdev->dev, "adc pm init err.\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     ret =3D sprd_adc_ch_data_init(sprd_data);
+> > +     if (ret) {
+> > +             dev_err(&pdev->dev, "ch data init err.\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     ret =3D sprd_adc_hw_enable(sprd_data);
+> > +     if (ret) {
+> > +             dev_err(&pdev->dev, "failed to enable ADC module\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     ret =3D devm_add_action(&pdev->dev, sprd_adc_hw_disable, sprd_dat=
+a);
+>
+> ret =3D devm_add_action_or_reset() and...
+>
+> > +     if (ret) {
+> > +             sprd_adc_hw_disable(sprd_data);
+>
+> drop this.
+>
+> This is such a common case that we have the or_reset() form for it.
+>
+> > +             dev_err(&pdev->dev, "failed to add ADC disable action\n")=
+;
+> > +             return ret;
+>
+> return dev_err_probe(&pdev->dev, ret, "...");
+> Same for all similar error handling in probe, or functions that are only
+> called from probe.
+>
+> > +     }
+> > +
+> > +     ret =3D sprd_adc_soft_rst(sprd_data);
+> > +     if (ret) {
+> > +             dev_err(&pdev->dev, "adc soft rst failed\n");
+> > +             return ret;
+>                 return dev_err_probe(...);
+>
+> > +     }
+> > +
+> > +     indio_dev->dev.parent =3D &pdev->dev;
+> > +     indio_dev->name =3D dev_name(&pdev->dev);
+> > +     indio_dev->modes =3D INDIO_DIRECT_MODE;
+> > +     indio_dev->info =3D &sprd_info;
+> > +     indio_dev->channels =3D sprd_channels;
+> > +     indio_dev->num_channels =3D ARRAY_SIZE(sprd_channels);
+> > +     ret =3D devm_iio_device_register(&pdev->dev, indio_dev);
+> > +     if (ret)
+> > +             dev_err(&pdev->dev, "could not register iio (ADC)");
+>
+> Prefer return dev_err_probe() in all cases.
+> Also should not carry on to set drvdata if this failed as we should never
+> need it.
+>
+> > +
+> > +     platform_set_drvdata(pdev, indio_dev);
+> > +
+> > +     return ret;
+> > +}
+>
+> > +
+> > +static const struct sprd_adc_variant_data ump9620_data =3D {
+> > +     .pmic_type =3D UMP9620_ADC,
+> > +     .glb_reg_base =3D 0x2000,
+> > +     .adc_reg_base_offset =3D 0x4,
+> > +     .reg_list =3D regs_ump9620,
+> > +     .graph_index =3D TWO_CELL_GRAPH,
+> > +     .calib_infos =3D {
+> > +             CALIB_INFO_INIT(11, SCALE_00, GRAPH_BIG),
+> > +             CALIB_INFO_INIT(1, SCALE_00, GRAPH_SMALL),
+> > +             CALIB_INFO_INIT(0, SCALE_01, GRAPH_VBAT_DET)
+> > +     },
+> > +     .aux_ratio_comm =3D {RATIO_DEF, RATIO(100, 133), RATIO(1000, 2600=
+), RATIO(1000, 4060)},
+> > +     .ch_data_init =3D ump9620_ch_data_init,
+> > +};
+> > +
+> > +static const struct sprd_adc_variant_data ump518_data =3D {
+> > +     .pmic_type =3D UMP518_ADC,
+> > +     .glb_reg_base =3D 0x1800,
+> > +     .adc_reg_base_offset =3D 0x4,
+> > +     .reg_list =3D regs_ump9620,
+> > +     .graph_index =3D TWO_CELL_GRAPH,
+> > +     .calib_infos =3D {
+> > +             CALIB_INFO_INIT(11, SCALE_00, GRAPH_BIG),
+> > +             CALIB_INFO_INIT(1, SCALE_00, GRAPH_SMALL),
+> > +             CALIB_INFO_INIT(0, SCALE_01, GRAPH_VBAT_DET)
+> > +     },
+> > +     .aux_ratio_comm =3D {RATIO_DEF, RATIO(100, 133), RATIO(1000, 2600=
+), RATIO(1000, 4060)},
+> > +     .ch_data_init =3D ump9620_ch_data_init,
+> > +};
+> > +
+> > +static const struct of_device_id sprd_adc_of_match[] =3D {
+> > +     { .compatible =3D "sprd,ump9620-adc", .data =3D &ump9620_data},
+> > +     { .compatible =3D "sprd,ump518-adc", .data =3D &ump518_data},
+>
+> Space before } for consistency with the opening bracket.
+>
+> Numerical order preferred as for the bindings.
+>
+> > +     { }
+> > +};
+> > +
+> > +static const struct dev_pm_ops sprd_adc_pm_ops =3D {
+> > +     .suspend_noirq =3D sprd_adc_pm_suspend,
+> > +     .resume_noirq =3D sprd_adc_pm_resume,
+> > +};
+> > +
+> > +static struct platform_driver sprd_adc_driver =3D {
+> > +     .probe =3D sprd_adc_probe,
+> > +     .driver =3D {
+> > +             .name =3D "sprd-adc",
+> > +             .of_match_table =3D sprd_adc_of_match,
+> > +             .pm     =3D &sprd_adc_pm_ops,
+>
+> Just space before =3D not a tab.
+>
+> Also what stops this building without pm_sleep support?
+> You probably should either map to one of the macros that set the pm
+> ops up or add pm_sleep_ptr() protection to allow the sprd_adc_pm_ops
+> structure to be removed if appropriate.
+>
+> > +     },
+> > +};
+> > +
+> > +module_platform_driver(sprd_adc_driver);
+> > +MODULE_DESCRIPTION("SPRD PMIC ADC Driver");
+> > +MODULE_LICENSE("GPL");
+>
