@@ -2,139 +2,82 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39EE3C83F18
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Aug 2023 18:36:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75559C83F29
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Aug 2023 07:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235276AbjH3Sgo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Aug 2023 14:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44944 "EHLO
+        id S229463AbjHaHs1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 31 Aug 2023 03:48:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245749AbjH3QL1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Aug 2023 12:11:27 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DC8198;
-        Wed, 30 Aug 2023 09:11:22 -0700 (PDT)
-Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4RbTh41dKRz67Nln;
-        Thu, 31 Aug 2023 00:07:00 +0800 (CST)
-Received: from localhost (10.202.227.76) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.31; Wed, 30 Aug
- 2023 17:11:19 +0100
-Date:   Wed, 30 Aug 2023 17:11:18 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Paul Cercueil <paul@crapouillou.net>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 0/6] iio: Add buffer write() support
-Message-ID: <20230830171118.00007726@Huawei.com>
-In-Reply-To: <20230807112113.47157-1-paul@crapouillou.net>
-References: <20230807112113.47157-1-paul@crapouillou.net>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
+        with ESMTP id S232494AbjHaHs1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 31 Aug 2023 03:48:27 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB63CEB;
+        Thu, 31 Aug 2023 00:48:22 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id a640c23a62f3a-98377c5d53eso53444066b.0;
+        Thu, 31 Aug 2023 00:48:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1693468101; x=1694072901; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=m/h0H2YPVBqYjaGBwW4IhOCDM0z5E5pLi9XA+OkpL5s=;
+        b=DaF2UgeMyBj+hpEjz4+GqrVVDSUZi6MLT3gAffv+0Hbvs8P0Nd9evCrAVXidaLcxdL
+         8+vt3QcvEShRWY81nqhsIxHR1SbwaxEEQ6oFUz+G60VCVC5Eu0PmezH/ApEFTzoNMnyr
+         7x/ojQjd5xsdjv01mfHRZL5TtGtj3+VhbvazRp7H2+iAOQPALQAl3u7V/bjd3BMjUV6b
+         ksXm4mPB+w8nIPz0HQfgzeJPgSmZ3D8LzCDeoy3o7ihkBCvmorFyBRpvh6xsfFMnURf/
+         Nvzh4kn4wyTScGEmUIsaolXDPPtZfEmV1gfNFMiogup798q5q6h1mFqE2HgUqDfhR0s6
+         fnXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1693468101; x=1694072901;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=m/h0H2YPVBqYjaGBwW4IhOCDM0z5E5pLi9XA+OkpL5s=;
+        b=BmdJosiOAOPma5pzfidw3Mm0aMhlNq6dqXw25kjRX9/mZtOvpk8KChkVrGC9wb+yG4
+         pmOwgET2UaWFSPt3PCRbPMrR+B8DuANkHVz8Eq42gBWS/xTsCZUB/hybG16Z3edR3R3M
+         3mgXaj+1LVDLfH+qTUDuCECpBM313Dz8ji1jUaSVAKDmROAhE6u9uyBBu10iUPqeVdpc
+         nhc1aLkTjUq9Z7UTjNhWmcIsd5BoM+Neysbt2LsSmSgTYniHce7ESImrxP17zCpiCN2M
+         YJM0Z9fPCB1IDPknn27Zl4UoHDGED3KkSVZQVhMydA920rrsvRaqF9zUrfBJO24x77mz
+         lCwg==
+X-Gm-Message-State: AOJu0YzdMuwnD1T53B8VJz8N/Qlj4s9Q37lB47C8h3V+9Lxfg1qvPgty
+        NtMI8IggL4PXoNWpO2wREVg=
+X-Google-Smtp-Source: AGHT+IFfYkO2CAmJrVcq+fgCI0FkUGLFzUGOMlvN9bEPnvcgaCvoohYnbwFfAsyv9bczO3YMQk6/PA==
+X-Received: by 2002:a17:906:5397:b0:9a1:e941:6f48 with SMTP id g23-20020a170906539700b009a1e9416f48mr3543360ejo.13.1693468100420;
+        Thu, 31 Aug 2023 00:48:20 -0700 (PDT)
+Received: from ?IPv6:2001:a61:3488:8a01:c631:bde5:1eff:9b66? ([2001:a61:3488:8a01:c631:bde5:1eff:9b66])
+        by smtp.gmail.com with ESMTPSA id f22-20020a170906495600b0098e2eaec395sm450311ejt.130.2023.08.31.00.48.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Aug 2023 00:48:19 -0700 (PDT)
+Message-ID: <0527327b556aac4ce9b7e4db85aa831ca439e600.camel@gmail.com>
+Subject: Re: [PATCH] iio: addac: ad74413r: fix function prefix typo
+From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To:     Antoniu Miclaus <antoniu.miclaus@analog.com>, jic23@kernel.org,
+        linus.walleij@linaro.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 31 Aug 2023 09:48:19 +0200
+In-Reply-To: <20230830094314.26353-1-antoniu.miclaus@analog.com>
+References: <20230830094314.26353-1-antoniu.miclaus@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.227.76]
-X-ClientProxiedBy: lhrpeml500002.china.huawei.com (7.191.160.78) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon,  7 Aug 2023 13:21:07 +0200
-Paul Cercueil <paul@crapouillou.net> wrote:
+On Wed, 2023-08-30 at 12:43 +0300, Antoniu Miclaus wrote:
+> Use complete device name prefix in the input current offset getter
+> function.
+>=20
+> Fixes: fea251b6a5db ("iio: addac: add AD74413R driver")
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> ---
 
-> [V3 was: "iio: new DMABUF based API, v3"][1]
-> 
-> Hi Jonathan,
-> 
-> This is a subset of my patchset that introduced a new interface based on
-> DMABUF objects [1]. It adds write() support to the IIO buffer
-> infrastructure.
-> 
-> The reason it is not the full IIO-DMABUF patchset, is because you
-> requested performance benchmarks - and our current numbers are barely
-> better (~ +10%) than the fileio interface. There is a good reason for
-> that: V3 of the patchset switched from having the IIO core creating the
-> DMABUFs backed by physically contiguous memory, to having the IIO core
-> being a simple DMABUF importer, and having the DMABUFs created
-> externally. We now use the udmabuf driver to create those, and they are
-> allocated from paged memory. While this works perfectly fine, our
-> buffers are now cut in 4 KiB chunks (pages), non-contiguous in memory,
-> which causes the DMA hardware to create an IRQ storm, as it raises an
-> interrupt after each 4 KiB in the worst case scenario.
+This a typo fix. So, I'm not so sure if a Fixes tag, backporting is really =
+needed...
+Anyways,
 
-Interesting. I'm guessing you don't necessarily need contiguous memory
-and huge pages would get rid of most of that overhead?
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
 
-Given embedded target those huge pages are hard to get so you need
-hugetlb support to improve the chances of it working.  Some quick searching
-suggests there is possible support on the way.
-https://lore.kernel.org/linux-mm/20230817064623.3424348-1-vivek.kasireddy@intel.com/
-
-
-> 
-> Anyway, this is not directly a problem of the IIO-DMABUF code - but I
-> can't really upstream a shiny new interface that I claim is much faster,
-> without giving numbers.
-> 
-> So while we fix this (either by updating the DMA IP and driver to
-> support scatter-gather)
-
-Long run you almost always end up needing that unless contig requirements
-are small and you want a robust solution.  I'm guessing no IOMMU to pretend
-it's all contiguous... 
-
-> or by hacking something quick to give us
-> physically contiguous DMABUFs just for the benchmark), I thought it
-> would make sense to upstream the few patches of the V3 patchset that are
-> needed for the IIO-DMABUF interface but aren't directly related.
-
-Good idea.
-
-> 
-> As for write() support, Nuno (Cc'd) said he will work on upstreaming the
-> DAC counterpart of adc/adi-axi-adc.c in the next few weeks, so there
-> will be a user for the buffer write() support. I hope you are okay with
-> this - otherwise, we can just wait until this work is done and submit it
-> all at once.
-
-Absolutely fine, though I won't pick this up without the user also being
-ready to go.
-
-> 
-> Changelog since v3:
-> - [PATCH 2/6] is new;
-> - [PATCH 3/6]: Drop iio_dma_buffer_space_available() function, and
->   update patch description accordingly;
-> - [PATCH 6/6]: .space_available is now set to iio_dma_buffer_usage
->   (which is functionally the exact same).
-> 
-> Cheers,
-> -Paul
-> 
-> [1] https://lore.kernel.org/all/20230403154800.215924-1-paul@crapouillou.net/
-> 
-> Alexandru Ardelean (1):
->   iio: buffer-dma: split iio_dma_buffer_fileio_free() function
-> 
-> Paul Cercueil (5):
->   iio: buffer-dma: Get rid of outgoing queue
->   iio: buffer-dma: Rename iio_dma_buffer_data_available()
->   iio: buffer-dma: Enable buffer write support
->   iio: buffer-dmaengine: Support specifying buffer direction
->   iio: buffer-dmaengine: Enable write support
-> 
->  drivers/iio/adc/adi-axi-adc.c                 |   3 +-
->  drivers/iio/buffer/industrialio-buffer-dma.c  | 187 ++++++++++++------
->  .../buffer/industrialio-buffer-dmaengine.c    |  28 ++-
->  include/linux/iio/buffer-dma.h                |  11 +-
->  include/linux/iio/buffer-dmaengine.h          |   5 +-
->  5 files changed, 160 insertions(+), 74 deletions(-)
-> 
-
+>=20
