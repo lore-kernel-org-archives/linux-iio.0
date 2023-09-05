@@ -2,134 +2,236 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3324CA0FFD
-	for <linux-iio@archiver.kernel.org>; Tue,  5 Sep 2023 16:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53A35CA0FFB
+	for <linux-iio@archiver.kernel.org>; Tue,  5 Sep 2023 16:19:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230044AbjIEQRx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 5 Sep 2023 12:17:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56720 "EHLO
+        id S234188AbjIEQTA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 5 Sep 2023 12:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354446AbjIELoy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Sep 2023 07:44:54 -0400
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2063.outbound.protection.outlook.com [40.107.104.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE341AD
-        for <linux-iio@vger.kernel.org>; Tue,  5 Sep 2023 04:44:50 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hCgxa/PEcneEAXyJnNsq4zPk1Eijji9ZxoxSajDyrSe2HG7j+Q+71lrJBKMCfXuy3lkd4FRP3YlJqkmVNAIlmb+wqp4yKBrZxW0iy5UtThImWoeuWzKe9L9i3jdPbYAc5NNKheDqcMDAAIHZF/cjMeIaW3x8ln7D4+Vjhp+iSB8fMX9XQMKasioZFHwSAMk497nu0KuYG9NLOjgO65NgKK6d/w/7D6Vmc26/CZnUxDCXplsac0wwAA++DdLaeS406I82J1clBRjCH6qz48QEzvuhUqy5GQIVrB3vZ6zPleOYN6NmZVTTjI6qtfnB3nIQLhY0vdkvPJMgux6yFJUBFA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FDQkp6JYeQOIhA3ObK5LdJ0StsNGRLyRTXqzAzojJYQ=;
- b=jIqLJYBYmxrHyEpNypyYXKUGJl6o1VbBIBLHkxIQ6VJO1Gbgggs8YwdDYMZ9cZl62vNP1Bz4NqrNjxJTaYexWHuqs5EVarHTFk9pO5iSVk6+EiY04vL2zcbcejbvFZeByzI+/zOU42c+8V8pqysTvEBntjF3v6DyJ5kfuoQ0dZC10aUfvWvBW77xze8jGxOwhyjC5p+GN3YFVjyZlf751CtkNDY/CmAoX8EDbYmiAXJpq7L66mwhY+CV+sXyojUg3VQxJeXo53wmXSd20Wt1m54Ybxdk98ww8ESzkZJHVV20hBh4r4OzVpH5ogKpKfj9HcFIozXQe+vGtvLAePkWgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
- dkim=pass header.d=vaisala.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FDQkp6JYeQOIhA3ObK5LdJ0StsNGRLyRTXqzAzojJYQ=;
- b=RIvgsfYjbCpJL7G5CAtqZ5PMShQPhVXZszJK3rckdEO0bEQXIZDE4ETEB9d2pCR2e9eugSp7JHMY8efiCmwnKR3VEoJfJqIwxyevCVxdCYQFpHHBbEJUfTlHq8fzFYLHdddJ3991scYdTQo5vZHW5gb7i6a2wqjVm4z9Q/2p49yLecytalfj3GjlhpWpbctzOOi4nP1mT8lYTejy9+UktoKB2EQtJivg62mQagL3IURssaMGQ1RtSXKC9uCZwoO3cki60CViNdTNEpOWlncNan/oN6uk2vWXW/jVZZlLPWge9lLwl7UrMt8Ey30LKTltJor9vhrh6FibtzSzbkwKKw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vaisala.com;
-Received: from HE1PR0602MB3625.eurprd06.prod.outlook.com (2603:10a6:7:81::18)
- by VE1PR06MB6957.eurprd06.prod.outlook.com (2603:10a6:800:1aa::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.33; Tue, 5 Sep
- 2023 11:44:47 +0000
-Received: from HE1PR0602MB3625.eurprd06.prod.outlook.com
- ([fe80::cec4:e994:fbc6:5f07]) by HE1PR0602MB3625.eurprd06.prod.outlook.com
- ([fe80::cec4:e994:fbc6:5f07%6]) with mapi id 15.20.6745.030; Tue, 5 Sep 2023
- 11:44:47 +0000
-Message-ID: <2bf0b48f-9ab3-c626-05b8-a17b4c7338e4@vaisala.com>
-Date:   Tue, 5 Sep 2023 14:44:44 +0300
+        with ESMTP id S1354181AbjIEKGh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Sep 2023 06:06:37 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD8090;
+        Tue,  5 Sep 2023 03:06:32 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3858AxNN016950;
+        Tue, 5 Sep 2023 12:06:11 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+        message-id:date:mime-version:subject:to:cc:references:from
+        :in-reply-to:content-type:content-transfer-encoding; s=
+        selector1; bh=scab9o1vuzKmYp8hok449uqiQ9nrpBKEYFW+Y+rdU14=; b=tb
+        Ou5FeDJPawXZtMG2UFCqwaqZTEk80V++0SJmgzfEAFD3d8xhJTB6RXgxYRuE+LfX
+        lcf/vmgMAQxVV/aSrtHLESoGKO9c1bL7LC3jeIWWz5mtO3+S90/ni6bqxNZdiASp
+        ROOAxWcsT4qpB3Hjq3fZnlcjutiN+pRSmR1Tg9xE/lsZZ6C1xroLneWklLOlT1Ga
+        DYURHFjn4tpbc1zIMYPzt81TNxbeaggu4hNdJRSflYycirsPQB6F+B8eOiKBZcw+
+        iO5tv9MpholJWiXOSmJ+UZUuM6ccm75sSZypkdP5qYrUKJiedrbaID4QDXZrlfSp
+        jZJrQVruCtCtDjNGp+JA==
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3sutffbfg3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Sep 2023 12:06:11 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B2F8B100057;
+        Tue,  5 Sep 2023 12:06:10 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id AA6D82309C3;
+        Tue,  5 Sep 2023 12:06:10 +0200 (CEST)
+Received: from [10.252.5.4] (10.252.5.4) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Tue, 5 Sep
+ 2023 12:06:10 +0200
+Message-ID: <9cf91ed4-8d57-6d84-1767-708a296803b9@foss.st.com>
+Date:   Tue, 5 Sep 2023 12:06:09 +0200
+MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
-Subject: Re: [PATCH] iio: adc: ti-ads1015: support deferred probe
+Subject: Re: [RFC v2 01/11] iio: introduce iio backend device
+To:     =?UTF-8?Q?Nuno_S=c3=a1?= <noname.nuno@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+CC:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        "Fabrice GASNIER" <fabrice.gasnier@st.com>
+References: <20230727150324.1157933-1-olivier.moysan@foss.st.com>
+ <20230727150324.1157933-2-olivier.moysan@foss.st.com>
+ <7ec3fe6183409c218b97a3359e951731b47fe16d.camel@gmail.com>
+ <095f9c64-bcac-e838-ba69-b5df623c444f@foss.st.com>
+ <8b63cad8749ceca31d2f50ee36925ce18523620f.camel@gmail.com>
 Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, jic23@kernel.org, lars@metafoo.de,
-        u.kleine-koenig@pengutronix.de
-References: <20230904101533.455896-1-tomas.melin@vaisala.com>
- <ZPW+MXuBSYEE1GfF@smile.fi.intel.com>
- <e12f3459-7025-89a1-704b-209391cb8f55@vaisala.com>
- <ZPcG0fzoMU5OMave@smile.fi.intel.com>
-From:   Tomas Melin <tomas.melin@vaisala.com>
-In-Reply-To: <ZPcG0fzoMU5OMave@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: GVX0EPF0000ED88.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:144:1:0:3:0:14) To HE1PR0602MB3625.eurprd06.prod.outlook.com
- (2603:10a6:7:81::18)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: HE1PR0602MB3625:EE_|VE1PR06MB6957:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1c6e036f-6a5b-49b7-928c-08dbae058138
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Brl+zShM5rRlPIjrOu8q7sJXrNTzvY/JIIVvYAvdm6EhEp5D6yCN5Ho07hf8KxzCG+2Mz56S2gHBqV6sLn64YfPPOT9z0K/wNn5MsHtriX94Al+HH+sGeND4fHIsjAQ6xr244Cz88VFPPsKLuSmhOFN8bn8UpxweDOI7r+cgyVxB15DoaUqqlz3qEpcH3quKukscwXWgR5HU5Dv/5l0gjZnLreGm1dJmaD/jPFH7Z97XkY0ud5vw6VZA4jyKaT2wKxY2C8UEOZZOu4fj/eF7ZbvFVjHzHLzo9IipGzqBFVWs40xpUMaDhX1DwdGNwMGV4rtWk1wnOcayEXAk7DYtxX/VUoFlUQKj6JtDfbVxG382htlzUKzgzqggaquY4KnHwDkwZ+m3RHrkSo9QJx1cIc5i2611E1bfNIpQgPe+vPpSRXh7Ydi3itXgp4zAlmtE/y8t1lB11Amr9oE0fiurbjaYGrUYGeRjlplvELrzPfPbmeqc3NOOd0c7kPwhbSYxXorJVx2FB3vD9/A/p/z/dpby93xAQBz1/niSm1Q+xqv0bPpwkzvWDKHVIABSCcoN71YpxETknSxxqBDhCYObdKEWfY7hE6OAiHVH642U3XRsHt5zNHgiCccY282BSDHYpg5ER9jyfNzKVvrEX4uK5A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0602MB3625.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(39850400004)(346002)(376002)(136003)(451199024)(1800799009)(186009)(8676002)(66556008)(66476007)(316002)(6486002)(6916009)(4326008)(2616005)(66946007)(8936002)(53546011)(6506007)(41300700001)(6512007)(44832011)(26005)(5660300002)(6666004)(478600001)(31686004)(2906002)(83380400001)(86362001)(31696002)(558084003)(36756003)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MTFVYUNLMVYxbFRhTkdSd3VPQTR0L051SmptblNUdnc5VWVSMzh1bFJ1THlw?=
- =?utf-8?B?MjR2QUwwRWN3ZVhVUElNL2w4ZHlRVlpxL1ZCTjYwWFQ5MGovMTRyTE40S3dP?=
- =?utf-8?B?ZnEwd2ROZVIrd01hOFdpNEJtbFdCckxoQ1VkVkE0b1NEYXZIYTY0VkVDcC9w?=
- =?utf-8?B?S1MyNUs0YVMxSXVCZ0JHWHhId2xibmJja3N5R2RxQSswTzd1UFhkK3hHQVc3?=
- =?utf-8?B?Q2xDNStnM2pPQVpsSUNIS1RUS2hmcllXbFhvQWVVK1BzeC9FSytzZUIyVVJF?=
- =?utf-8?B?L0gySTRadWZYME5VcU5iMkZhV3NRUTNYQTNZQmhYS0FzYWZ6bnN4ZVFGZnYx?=
- =?utf-8?B?WXNnZDVjNmE1ZmViMEhYVFovOW03VXRjUHFQM3pzYllyRkdRUUJUT1BjMndK?=
- =?utf-8?B?d3JJZnFIc25na1VkQlo5RVd2SmNjbGhya1VtWHZ3T2hVaHZZbU1kVXRGZUZm?=
- =?utf-8?B?eHpCeDlONVA2UmQvYkdhRUxpaU5BeGlvZHJiSU8wSkFsZU5PZVlTaVc3eU1x?=
- =?utf-8?B?TzlCZkZOR2NlTmgwYnpPcUtIZ3UzVkU4ZUZuUHdyamxqNlBhQ3d1azRlU2FX?=
- =?utf-8?B?aElIZnZjZHBzNElURlg4bE5EQXVOYnROKzRXTTRxcVpONXNlSkE0V3NQN3gr?=
- =?utf-8?B?b2JPQzFIbnNlQUZ2dVNIRkJFdjJDQzFiT1RnTXlPdjRVanBEQVJrcXhqeFd6?=
- =?utf-8?B?Y0lPbnJpblN2VzZiTlpxcHlOUHhhdW5BMko3ZWptMndNaUhTZlpOU0RjbHRn?=
- =?utf-8?B?Y2pYRElUNVFzUFNtOGdESE1HWkJiK29yQ2RyOWdGM296SWRieFYxaUlMRTlr?=
- =?utf-8?B?NmlKUHZXRitpUkJJai9RRXQ4L3dFcGJMekJzTzVuNEd0VGN1ejNNSHNkNDNz?=
- =?utf-8?B?QTVPaW4xUW9HMnFRdy9xZ0JlQVFhZHlWRWEwK3F5M2d2aXJUbXNTaXIzZEZo?=
- =?utf-8?B?Z003Z1pKSi8wdEtxSm9WczR2OFpONGlsWlAxU2kvdk9KelZwN2ZoRFJ5RjRu?=
- =?utf-8?B?OGJyb1VRYkx2VWhjRjJFdUM3OWFzTFBDR2h5ZW9kWXRBZGZqVEJuOUFVOE9M?=
- =?utf-8?B?YXBpc2hwaHNSalNROE5DZHN5bndZNkJoTXRoSjY0WEhRek9RLzJPY0hRcjBO?=
- =?utf-8?B?a2tPanlKSTV2Z0Y3Znk2OTd4UExLd25ZUno1VDZLRFBaQmNwL2pINCtJbXpp?=
- =?utf-8?B?c09YTzVqM2pTZWV2V1lTTFV2eWhHaGhCaVlXTXNMZ09leHZWTk5PTGpkTmcw?=
- =?utf-8?B?aXFpNmxJSE5qa21vSzVkU1E1WFp0TkJWTDN3WnNISm1IN21JQlBhenFRWUFX?=
- =?utf-8?B?NXROeHJJUVJTWFhBOFhqOSs5bFhPZTVCWGRFaml4WThod3ZpcDJObnVtWjZG?=
- =?utf-8?B?RHdkVk1OazQ4M0pCMjVKSi9zVU00eWVQT2tNWTRMeW95R3lwMSthV2RhUmFE?=
- =?utf-8?B?bk5qQzNIeG5zc2ZxV09PeU94eUNHZ2djR0c4RHF5WUtwaHhSZ09IY3cwV2cr?=
- =?utf-8?B?V2ozSW51b0dEcG5uVmFnUVVjaGN6S3dDNktETW50WHhXRXlrN1V1cmJvK2do?=
- =?utf-8?B?TXRKc2dhZURDNFlleU1xMXJqZTJTdFFLTk9seUUwYUpnVUMvUHJtTEphMlI3?=
- =?utf-8?B?M1JzNWJLeUFabzFQNFNDUkM4WG5QK2JXdU85Ymt3SlVUMWF3S1ppb3dzK2Vj?=
- =?utf-8?B?cXY2dndLTStPQWhJbGdJOFJueTgwOHVrNGUzYTNNRk1mNnd4dEo3SjRpN1A5?=
- =?utf-8?B?aFZQQUw4Yjh3cGQ0S3lxdGpld3NUME94anAvckN2SUw3K3BtNm5oZUFrNlI1?=
- =?utf-8?B?emltckJ1bitKU2dseGlaeTVKZlIzeVlHVGNnaWEwZVVoOVpxcG9JZ29sMXFy?=
- =?utf-8?B?aXRncHJyTmovOEI4dENSSXR3Q1lzU2RNVUxMN0w5aHpYT0RKcndoeUgwQkdI?=
- =?utf-8?B?T3d5YWx5VFFNUHpnU1A5Q0piVHE2SEE3WTNiZnlPaWN3blY0NUlhSWh5WndE?=
- =?utf-8?B?ei9jN0xaZzNrU0gxVlViWWlJYUhmS0g3TnZDZ2VyY0VUVU9pcDJJamRpcGgv?=
- =?utf-8?B?ZFBnZVVVczVEVkZwK1RnTWZjTzRHNklaeC8vWEY2YzF4cmRPcDM1SnlZZTZm?=
- =?utf-8?B?ak5HczEyaEQwVjk1eXZrbENkcm1ZaTkva1Z6OTdIRUMrZTlBSDJocjB0VXhF?=
- =?utf-8?B?OEE9PQ==?=
-X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1c6e036f-6a5b-49b7-928c-08dbae058138
-X-MS-Exchange-CrossTenant-AuthSource: HE1PR0602MB3625.eurprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2023 11:44:47.1435
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mwnKzSPRfXs9YkGPfp1xv3Z8ufi3HjZYHfrofWZmCLcLbmn6/YqXCcqRaOXHySLnDTAgBpv6CD/sKrEMzOZBcA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR06MB6957
+From:   Olivier MOYSAN <olivier.moysan@foss.st.com>
+In-Reply-To: <8b63cad8749ceca31d2f50ee36925ce18523620f.camel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.252.5.4]
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
+ definitions=2023-09-05_07,2023-08-31_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Hi Nuno,
 
-On 05/09/2023 13:45, Andy Shevchenko wrote:
+On 9/1/23 10:01, Nuno Sá wrote:
+> Hi Olivier,
 > 
-> As Jonathan said, please try to elaborate better what the real word issue is,
-> how it can be reproduced, etc.
+> On Thu, 2023-08-31 at 18:14 +0200, Olivier MOYSAN wrote:
+>> Hi Nuno,
+>>
+>> On 7/28/23 10:42, Nuno Sá wrote:
+>>> Hi Olivier,
+>>>
+>>> On Thu, 2023-07-27 at 17:03 +0200, Olivier Moysan wrote:
+>>>> Add a new device type in IIO framework.
+>>>> This backend device does not compute channel attributes and does not expose
+>>>> them through sysfs, as done typically in iio-rescale frontend device.
+>>>> Instead, it allows to report information applying to channel
+>>>> attributes through callbacks. These backend devices can be cascaded
+>>>> to represent chained components.
+>>>> An IIO device configured as a consumer of a backend device can compute
+>>>> the channel attributes of the whole chain.
+>>>>
+>>>> Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+>>>> ---
+>>>>    drivers/iio/Makefile               |   1 +
+>>>>    drivers/iio/industrialio-backend.c | 107 +++++++++++++++++++++++++++++
+>>>>    include/linux/iio/backend.h        |  56 +++++++++++++++
+>>>>    3 files changed, 164 insertions(+)
+>>>>    create mode 100644 drivers/iio/industrialio-backend.c
+>>>>    create mode 100644 include/linux/iio/backend.h
+>>>>
+>>>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+>>>> index 9622347a1c1b..9b59c6ab1738 100644
+>>>> --- a/drivers/iio/Makefile
+>>>> +++ b/drivers/iio/Makefile
+>>>> @@ -5,6 +5,7 @@
+>>>>    
+>>>>    obj-$(CONFIG_IIO) += industrialio.o
+>>>>    industrialio-y := industrialio-core.o industrialio-event.o inkern.o
+>>>> +industrialio-$(CONFIG_IIO_BACKEND) += industrialio-backend.o
+>>>>    industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+>>>>    industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
+>>>>    
+>>>> diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-
+>>>> backend.c
+>>>> new file mode 100644
+>>>> index 000000000000..7d0625889873
+>>>> --- /dev/null
+>>>> +++ b/drivers/iio/industrialio-backend.c
+>>>> @@ -0,0 +1,107 @@
+>>>> +// SPDX-License-Identifier: GPL-2.0
+>>>> +/* The industrial I/O core, backend handling functions
+>>>> + *
+>>>> + */
+>>>> +
+>>>> +#include <linux/kernel.h>
+>>>> +#include <linux/device.h>
+>>>> +#include <linux/property.h>
+>>>> +#include <linux/iio/iio.h>
+>>>> +#include <linux/iio/backend.h>
+>>>> +
+>>>> +static DEFINE_IDA(iio_backend_ida);
+>>>> +
+>>>> +#define to_iio_backend(_device) container_of((_device), struct iio_backend,
+>>>> dev)
+>>>> +
+>>>> +static void iio_backend_release(struct device *device)
+>>>> +{
+>>>> +       struct iio_backend *backend = to_iio_backend(device);
+>>>> +
+>>>> +       kfree(backend->name);
+>>>> +       kfree(backend);
+>>>> +}
+>>>> +
+>>>> +static const struct device_type iio_backend_type = {
+>>>> +       .release = iio_backend_release,
+>>>> +       .name = "iio_backend_device",
+>>>> +};
+>>>> +
+>>>> +struct iio_backend *iio_backend_alloc(struct device *parent)
+>>>> +{
+>>>> +       struct iio_backend *backend;
+>>>> +
+>>>> +       backend = devm_kzalloc(parent, sizeof(*backend), GFP_KERNEL);
+>>>>
+>>>
+>>> No error checking.
+>>>
+>>> I guess a lot of cleanings are still missing but the important thing I wanted to
+>>> notice is that the above pattern is not ok.
+>>> Your 'struct iio_backend *backend'' embeds a 'stuct device' which is a
+>>> refcounted object. Nevertheless, you're binding the lifetime of your object to
+>>> the parent device and that is wrong. The reason is that as soon as your parent
+>>> device get's released or just unbinded from it's driver, all the devres stuff
+>>> (including your 'struct iio_backend' object) will be released independentof
+>>> your 'struct device' refcount value...
+>>>
+>>> So, you might argue this won't ever be an issue in here but the pattern is still
+>>> wrong. There are some talks about this, the last one was given at the latest
+>>> EOSS:
+>>>
+>>> https://www.youtube.com/watch?v=HCiJL7djGw8&list=PLbzoR-pLrL6pY8a8zSKRC6-AihFrruOkq&index=27&ab_channel=TheLinuxFoundation
+>>>
+>>
+>> This is a good point. Thanks for pointing it out. Sure, there are still
+>> many things to improve.
+>>
+>> I have seen the comment from Jonathan on your "Add converter framework"
+>> serie. I had a quick look at the serie. It seems that we share the need
+>> to aggregate some IIO devices. But I need to read it more carefully to
+>> check if we can find some convergences here.
 > 
-Thanks for mentioning, for some reason the message from Jonathan had
-been filtered out, found it now.
+> Yeah, In my case, the backend devices are typically FPGA soft cores and the aggregate
+> device might connect to multiple of these backends. That was one of the reason why I
+> used the component API where the aggregate device is only configured when all the
+> devices are probed. Similarly, when one of them is unbind, the whole thing should be
+> torn down. Also, in my case, the frontend device needs to do a lot of setup on the
+> backend device so the whole thing works (so I do have/need a lot more .ops).
+> 
+> Anyways, it does not matter much what the backend device is and from a first glance
+> and looking at the .ops you have, it seems that this could easily be supported in the
+> framework I'm adding. The only things I'm seeing are:
 
-thanks,
-Tomas
+Thanks for your feedback. Yes, my feeling is that the API I need for the 
+dfsdm use case, can be covered by the API you propose. I'm not familiar 
+with component API however, as I discovered it in your serie. It is not 
+clear for me how this affects device tree description of the hardware. 
+So I need to take time to look at existing examples.
+I think I need also to try a template implementation of dfsdm use case 
+based on your API, to figure out how it could work.
+
+> 
+> 1) You would need to use the component API if it's ok. Also not sure if the cascaded
+> usecase you mention would work with that API.
+> 
+
+The cascaded use case by itself is not a real requirement for dfsdm use 
+case. The idea here was to think about future possible needs, and to 
+ensure that the solution is scalable enough. So, it is not a strong 
+requirement, but we probably need to keep it in mind.
+
+> 2) We would need to add the .read_raw() op. If you look at my RFC, I already have
+> some comments/concerns about having an option like that (see there).
+> 
+> Having said that, none of the above are blockers as 1), I can ditch the component API
+> in favour of typical FW/OF lookup (even though the component API makes some things
+> easier to handle) and 2), adding a .read_raw() op is not a blocker for me.
+> 
+
+Yes, It would be nice to have read_raw(), as this allows to stick to 
+existing IIO API for standard IIO attributes. But I guess this should 
+not be a problem.
+
+> Alternatively, another (maybe crazy) idea would be to have this framework have the
+> really generic stuff (like lookup + generic ops) and build my iio-converter on top of
+> it (extending it). You know, some OO fun :). Maybe not worth the trouble though.
+> 
+> Let's if Jonathan has some suggestions on how to proceed...
+> 
+> - Nuno Sá
+>>>
+> 
+
+Olivier
