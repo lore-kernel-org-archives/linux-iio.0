@@ -2,236 +2,128 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53A35CA0FFB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D922CA0FFF
 	for <linux-iio@archiver.kernel.org>; Tue,  5 Sep 2023 16:19:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234188AbjIEQTA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 5 Sep 2023 12:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
+        id S241053AbjIEQS5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 5 Sep 2023 12:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354181AbjIEKGh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Sep 2023 06:06:37 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD8090;
-        Tue,  5 Sep 2023 03:06:32 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3858AxNN016950;
-        Tue, 5 Sep 2023 12:06:11 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        message-id:date:mime-version:subject:to:cc:references:from
-        :in-reply-to:content-type:content-transfer-encoding; s=
-        selector1; bh=scab9o1vuzKmYp8hok449uqiQ9nrpBKEYFW+Y+rdU14=; b=tb
-        Ou5FeDJPawXZtMG2UFCqwaqZTEk80V++0SJmgzfEAFD3d8xhJTB6RXgxYRuE+LfX
-        lcf/vmgMAQxVV/aSrtHLESoGKO9c1bL7LC3jeIWWz5mtO3+S90/ni6bqxNZdiASp
-        ROOAxWcsT4qpB3Hjq3fZnlcjutiN+pRSmR1Tg9xE/lsZZ6C1xroLneWklLOlT1Ga
-        DYURHFjn4tpbc1zIMYPzt81TNxbeaggu4hNdJRSflYycirsPQB6F+B8eOiKBZcw+
-        iO5tv9MpholJWiXOSmJ+UZUuM6ccm75sSZypkdP5qYrUKJiedrbaID4QDXZrlfSp
-        jZJrQVruCtCtDjNGp+JA==
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3sutffbfg3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 05 Sep 2023 12:06:11 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B2F8B100057;
-        Tue,  5 Sep 2023 12:06:10 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id AA6D82309C3;
-        Tue,  5 Sep 2023 12:06:10 +0200 (CEST)
-Received: from [10.252.5.4] (10.252.5.4) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Tue, 5 Sep
- 2023 12:06:10 +0200
-Message-ID: <9cf91ed4-8d57-6d84-1767-708a296803b9@foss.st.com>
-Date:   Tue, 5 Sep 2023 12:06:09 +0200
+        with ESMTP id S1354625AbjIENBL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Sep 2023 09:01:11 -0400
+X-Greylist: delayed 1786 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Sep 2023 06:00:59 PDT
+Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF8AD127
+        for <linux-iio@vger.kernel.org>; Tue,  5 Sep 2023 06:00:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+        s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=ACAF9ClUWwDZJwDgnuxRSVlhjhfgxu43rO1ox6huuZI=; b=E0W68D9Ls3NHOg6czl3Cw/tx+b
+        1pVwDWqZRkr22JV3ljNTamHK23TTd9vww08UU/EQ1YVrqxFC5kwR94KUZOwAzIPLm57q1PUxSfeoO
+        VYldlb88zR/0BJWeMu2gASAlP0hOcQuer4SMoKi9Zd2U6g1TVBu4dBM+tFI1WDyAccirGa+ajwhYD
+        3fcn24eMARN0xPir1VKwjAMCOTCK5frW5Sdyfb8F1LRyFLPOPxCk3JfqzkP6BOBHgIHBXf7nFLVSt
+        thHmJPO3E80O+cqT6EEwVl47kO+8NsGMaeiURDQSgSqNZg+wjXjpzZYyUChpFj4m64IBnbs+CPK1O
+        HZDVNXLw==;
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www381.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <lars@metafoo.de>)
+        id 1qdVCz-0002IT-CN; Tue, 05 Sep 2023 14:31:05 +0200
+Received: from [136.25.87.181] (helo=[192.168.86.26])
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1qdVCz-000IH8-7L; Tue, 05 Sep 2023 14:31:05 +0200
+Message-ID: <38f995ab-99de-1d88-696e-edc78e24c8b2@metafoo.de>
+Date:   Tue, 5 Sep 2023 05:31:03 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [RFC v2 01/11] iio: introduce iio backend device
-To:     =?UTF-8?Q?Nuno_S=c3=a1?= <noname.nuno@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-CC:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        "Fabrice GASNIER" <fabrice.gasnier@st.com>
-References: <20230727150324.1157933-1-olivier.moysan@foss.st.com>
- <20230727150324.1157933-2-olivier.moysan@foss.st.com>
- <7ec3fe6183409c218b97a3359e951731b47fe16d.camel@gmail.com>
- <095f9c64-bcac-e838-ba69-b5df623c444f@foss.st.com>
- <8b63cad8749ceca31d2f50ee36925ce18523620f.camel@gmail.com>
+ Thunderbird/102.14.0
+Subject: Re: [PATCH] iio: adc: ti-ads1015: support deferred probe
 Content-Language: en-US
-From:   Olivier MOYSAN <olivier.moysan@foss.st.com>
-In-Reply-To: <8b63cad8749ceca31d2f50ee36925ce18523620f.camel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.252.5.4]
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-09-05_07,2023-08-31_01,2023-05-22_02
+To:     Tomas Melin <tomas.melin@vaisala.com>,
+        Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, jic23@kernel.org,
+        u.kleine-koenig@pengutronix.de
+References: <20230904101533.455896-1-tomas.melin@vaisala.com>
+ <ZPW+MXuBSYEE1GfF@smile.fi.intel.com> <20230904141251.00002b7d@Huawei.com>
+ <848d639c-43d1-bf92-2292-059dd1a019cf@vaisala.com>
+From:   Lars-Peter Clausen <lars@metafoo.de>
+In-Reply-To: <848d639c-43d1-bf92-2292-059dd1a019cf@vaisala.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.103.8/27022/Tue Sep  5 09:59:33 2023)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Nuno,
-
-On 9/1/23 10:01, Nuno Sá wrote:
-> Hi Olivier,
-> 
-> On Thu, 2023-08-31 at 18:14 +0200, Olivier MOYSAN wrote:
->> Hi Nuno,
+On 9/5/23 04:43, Tomas Melin wrote:
+> Hi,
+>
+> On 04/09/2023 16:12, Jonathan Cameron wrote:
+>> On Mon, 4 Sep 2023 14:23:29 +0300
+>> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 >>
->> On 7/28/23 10:42, Nuno Sá wrote:
->>> Hi Olivier,
->>>
->>> On Thu, 2023-07-27 at 17:03 +0200, Olivier Moysan wrote:
->>>> Add a new device type in IIO framework.
->>>> This backend device does not compute channel attributes and does not expose
->>>> them through sysfs, as done typically in iio-rescale frontend device.
->>>> Instead, it allows to report information applying to channel
->>>> attributes through callbacks. These backend devices can be cascaded
->>>> to represent chained components.
->>>> An IIO device configured as a consumer of a backend device can compute
->>>> the channel attributes of the whole chain.
->>>>
->>>> Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
->>>> ---
->>>>    drivers/iio/Makefile               |   1 +
->>>>    drivers/iio/industrialio-backend.c | 107 +++++++++++++++++++++++++++++
->>>>    include/linux/iio/backend.h        |  56 +++++++++++++++
->>>>    3 files changed, 164 insertions(+)
->>>>    create mode 100644 drivers/iio/industrialio-backend.c
->>>>    create mode 100644 include/linux/iio/backend.h
->>>>
->>>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
->>>> index 9622347a1c1b..9b59c6ab1738 100644
->>>> --- a/drivers/iio/Makefile
->>>> +++ b/drivers/iio/Makefile
->>>> @@ -5,6 +5,7 @@
->>>>    
->>>>    obj-$(CONFIG_IIO) += industrialio.o
->>>>    industrialio-y := industrialio-core.o industrialio-event.o inkern.o
->>>> +industrialio-$(CONFIG_IIO_BACKEND) += industrialio-backend.o
->>>>    industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
->>>>    industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
->>>>    
->>>> diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-
->>>> backend.c
->>>> new file mode 100644
->>>> index 000000000000..7d0625889873
->>>> --- /dev/null
->>>> +++ b/drivers/iio/industrialio-backend.c
->>>> @@ -0,0 +1,107 @@
->>>> +// SPDX-License-Identifier: GPL-2.0
->>>> +/* The industrial I/O core, backend handling functions
->>>> + *
->>>> + */
->>>> +
->>>> +#include <linux/kernel.h>
->>>> +#include <linux/device.h>
->>>> +#include <linux/property.h>
->>>> +#include <linux/iio/iio.h>
->>>> +#include <linux/iio/backend.h>
->>>> +
->>>> +static DEFINE_IDA(iio_backend_ida);
->>>> +
->>>> +#define to_iio_backend(_device) container_of((_device), struct iio_backend,
->>>> dev)
->>>> +
->>>> +static void iio_backend_release(struct device *device)
->>>> +{
->>>> +       struct iio_backend *backend = to_iio_backend(device);
->>>> +
->>>> +       kfree(backend->name);
->>>> +       kfree(backend);
->>>> +}
->>>> +
->>>> +static const struct device_type iio_backend_type = {
->>>> +       .release = iio_backend_release,
->>>> +       .name = "iio_backend_device",
->>>> +};
->>>> +
->>>> +struct iio_backend *iio_backend_alloc(struct device *parent)
->>>> +{
->>>> +       struct iio_backend *backend;
->>>> +
->>>> +       backend = devm_kzalloc(parent, sizeof(*backend), GFP_KERNEL);
->>>>
->>>
->>> No error checking.
->>>
->>> I guess a lot of cleanings are still missing but the important thing I wanted to
->>> notice is that the above pattern is not ok.
->>> Your 'struct iio_backend *backend'' embeds a 'stuct device' which is a
->>> refcounted object. Nevertheless, you're binding the lifetime of your object to
->>> the parent device and that is wrong. The reason is that as soon as your parent
->>> device get's released or just unbinded from it's driver, all the devres stuff
->>> (including your 'struct iio_backend' object) will be released independentof
->>> your 'struct device' refcount value...
->>>
->>> So, you might argue this won't ever be an issue in here but the pattern is still
->>> wrong. There are some talks about this, the last one was given at the latest
->>> EOSS:
->>>
->>> https://www.youtube.com/watch?v=HCiJL7djGw8&list=PLbzoR-pLrL6pY8a8zSKRC6-AihFrruOkq&index=27&ab_channel=TheLinuxFoundation
->>>
+>>> On Mon, Sep 04, 2023 at 01:15:22PM +0300, Tomas Melin wrote:
+>>>> Support deferred probe for cases where communication on
+>>>> i2c bus fails. These failures could happen for a variety of
+>>>> reasons including bus arbitration error or power failure.
+>>>> +out:
+>>>> +	if ((ret == -EAGAIN) || (ret == -ENXIO))
+>>>> +		return -EPROBE_DEFER;
+>>>> +	return ret;
+>>> Oh my... This looks so-o hackish.
+>> Agreed.  This is a non starter.
 >>
->> This is a good point. Thanks for pointing it out. Sure, there are still
->> many things to improve.
->>
->> I have seen the comment from Jonathan on your "Add converter framework"
->> serie. I had a quick look at the serie. It seems that we share the need
->> to aggregate some IIO devices. But I need to read it more carefully to
->> check if we can find some convergences here.
-> 
-> Yeah, In my case, the backend devices are typically FPGA soft cores and the aggregate
-> device might connect to multiple of these backends. That was one of the reason why I
-> used the component API where the aggregate device is only configured when all the
-> devices are probed. Similarly, when one of them is unbind, the whole thing should be
-> torn down. Also, in my case, the frontend device needs to do a lot of setup on the
-> backend device so the whole thing works (so I do have/need a lot more .ops).
-> 
-> Anyways, it does not matter much what the backend device is and from a first glance
-> and looking at the .ops you have, it seems that this could easily be supported in the
-> framework I'm adding. The only things I'm seeing are:
-
-Thanks for your feedback. Yes, my feeling is that the API I need for the 
-dfsdm use case, can be covered by the API you propose. I'm not familiar 
-with component API however, as I discovered it in your serie. It is not 
-clear for me how this affects device tree description of the hardware. 
-So I need to take time to look at existing examples.
-I think I need also to try a template implementation of dfsdm use case 
-based on your API, to figure out how it could work.
-
-> 
-> 1) You would need to use the component API if it's ok. Also not sure if the cascaded
-> usecase you mention would work with that API.
-> 
-
-The cascaded use case by itself is not a real requirement for dfsdm use 
-case. The idea here was to think about future possible needs, and to 
-ensure that the solution is scalable enough. So, it is not a strong 
-requirement, but we probably need to keep it in mind.
-
-> 2) We would need to add the .read_raw() op. If you look at my RFC, I already have
-> some comments/concerns about having an option like that (see there).
-> 
-> Having said that, none of the above are blockers as 1), I can ditch the component API
-> in favour of typical FW/OF lookup (even though the component API makes some things
-> easier to handle) and 2), adding a .read_raw() op is not a blocker for me.
-> 
-
-Yes, It would be nice to have read_raw(), as this allows to stick to 
-existing IIO API for standard IIO attributes. But I guess this should 
-not be a problem.
-
-> Alternatively, another (maybe crazy) idea would be to have this framework have the
-> really generic stuff (like lookup + generic ops) and build my iio-converter on top of
-> it (extending it). You know, some OO fun :). Maybe not worth the trouble though.
-> 
-> Let's if Jonathan has some suggestions on how to proceed...
-> 
-> - Nuno Sá
+>>> If anything, it has to be fixed on the level of regmap I2C APIs or so.
 >>>
-> 
+>>> Maybe something like regmap_i2c_try_write()/try_read() new APIs that
+>>> will provide the above. Otherwise you want to fix _every single driver_
+>>> in the Linux kernel
+>> Any probe ordering dependencies should be described by the
+>> firmware and the driver should 'get' the relevant resource.
+>> If there is anything not describable today then that is what we need
+>> to fix, not paper over the holes
+>>
+>> So can we have specifics of what is happening here?
+>>
+>> If it's arbitration with some other entity then fix the arbitration
+>> locking / hand over. If it's power, then make sure the relevant
+>> regulator get gotten and turned on + has the right delays etc.
+> Yes, right. In this use case, the ads1015 is connected to a channel of
+> a i2c multiplexer. When the mux is probed, it also enumerates all the
+> multiplexed buses and probes devices connected to them.
+> For some reason, it behaves so that the ads1015 is not detected on the
+> first attempt. Since it's a mux, connected to main i2c line, perhaps
+> there really is some bus arbitration issue, or then something else.
+>
+> Anyways, when deferring the probe for the ads1015, and attempting later
+> again it probes fine.
+>
+> So, it might be I've taken the wrong angle at this issue, but
+> it does solve the issue at hand. Obviously, there could be some issue
+> with the i2c mux driver, or then on hardware level too.
+>
+> Point is, that if the communication to the i2c bus has some temporary
+> error like EAGAIN, why could it not be reasonable to try again at a
+> later time instead of giving up completely.
 
-Olivier
+The way probe deferral works, or is supposed to work, is that if a 
+driver detects that it is missing a resource to initialize the device it 
+can return EPROBE_DEFER to try again later. Once a new resource becomes 
+available it will try again. In your case there is no resource 
+dependency, but just a random failure. So there is no guarantee that 
+probe will actually be called again since there might not be any new 
+resources that become available.
+
+The solution you've implemented might work on your specific platform, 
+but it does not work by design, it only works by chance. Returning 
+EPROBE_DEFER for things like IO errors is not the right approach. If you 
+need a quick hack you can for example write a small userspace script 
+that will trigger re-probe of the device at system startup.
+
+
