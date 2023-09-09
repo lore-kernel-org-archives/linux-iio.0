@@ -2,30 +2,30 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39031EEB565
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Sep 2023 00:44:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EA2EEB57B
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Sep 2023 00:44:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236115AbjIIAoj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 8 Sep 2023 20:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55768 "EHLO
+        id S1344600AbjIIAov (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 8 Sep 2023 20:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231760AbjIIAoI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 8 Sep 2023 20:44:08 -0400
+        with ESMTP id S1344146AbjIIAoP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 8 Sep 2023 20:44:15 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92AF44AB;
-        Fri,  8 Sep 2023 17:41:24 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FCCC4166B;
-        Sat,  9 Sep 2023 00:40:27 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF5630DC;
+        Fri,  8 Sep 2023 17:41:46 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4055C116B2;
+        Sat,  9 Sep 2023 00:41:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1694220028;
-        bh=NZMo8a28i7U4O7fPr6vcTgkZHB8n3jjzm1LpvEa3zVY=;
+        s=k20201202; t=1694220089;
+        bh=T/QZ4ZHDJ8caz3IIghvxfJlXc9+stTCAB2/9p4aHkaI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AL+pOfQqLajuqM5catImuKndrbIbJ1FPT2+aym/dK7Kc58SHu0k1QqC92EtouoNTo
-         vGSTkiYVdBtSaRIpeSerHvk/Eq8LcLqjiwbjAgDDZu0tNmvpXwptKsaO1JXzeQrFVP
-         d8Sm7CxM8OH3sb/z9SzDtNtxLQ9/s26AAwBWh3J2RM4a6Q8iCELznsHcL3EPNW+Wg9
-         /XSqWjx6LAf/YMZYjbzjkNjiHW2mmzJxBHBl+1rsJ/8mzuwJYbtA/7z1v5ggpzLeIM
-         pA2IdYFXFffgtG4StCYZqc2EQrAuPpYkcEjo1YGl87wDQEDINv1+IzX13oHyI8+HA/
-         fZmAXX9h4uVEw==
+        b=OtLV8mARADVbYYLPhXG1q8xe3OmUISh0GALHskZTgBjgm+U7V0hmEiMbzFc6WYqhk
+         HazhF04EX79SgixtCwKWKAWNKglRsuNkzghhaud7nJJKMWmjGNwHVEX3eMh9tGoOkB
+         hVh9VMDoSvJT1d7IfQ8sCIZK2KfdMhcTrtNUveFJxG/FOpHRLaLnohZPWhivEfHy8j
+         3zjELfl0WngMrhTs+8jNdRUzDZFMGjiba60UAhrqEOFC3ICMA2XYteuelmWpETJIFy
+         r7iy5E4ZS7Rs4ax35taGlGYUS97S9lWHiWT/pR8dBl1G/w+90FAOZas/s5QFMbUp7I
+         Ys02BOszHnLEA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -33,16 +33,16 @@ Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, jic23@kernel.org,
         linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 06/14] iio: core: Use min() instead of min_t() to make code more robust
-Date:   Fri,  8 Sep 2023 20:40:06 -0400
-Message-Id: <20230909004015.3580832-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 06/12] iio: core: Use min() instead of min_t() to make code more robust
+Date:   Fri,  8 Sep 2023 20:41:09 -0400
+Message-Id: <20230909004115.3581195-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230909004015.3580832-1-sashal@kernel.org>
-References: <20230909004015.3580832-1-sashal@kernel.org>
+In-Reply-To: <20230909004115.3581195-1-sashal@kernel.org>
+References: <20230909004115.3581195-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.4.256
+X-stable-base: Linux 4.14.325
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
@@ -67,7 +67,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 485b2e6748c59..52e10df70c079 100644
+index 97b7266ee0ffa..12d73ebcadfa3 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
 @@ -328,7 +328,7 @@ static ssize_t iio_debugfs_write_reg(struct file *file,
