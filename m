@@ -2,30 +2,30 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E46EEB57C
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Sep 2023 00:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 070E6EEB57F
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Sep 2023 00:38:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345628AbjIIAhq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 8 Sep 2023 20:37:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38862 "EHLO
+        id S1345791AbjIIAil (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 8 Sep 2023 20:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345609AbjIIAhp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 8 Sep 2023 20:37:45 -0400
+        with ESMTP id S1345801AbjIIAi2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 8 Sep 2023 20:38:28 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D991FF5;
-        Fri,  8 Sep 2023 17:37:21 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0562C43391;
-        Sat,  9 Sep 2023 00:36:19 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B86C2726;
+        Fri,  8 Sep 2023 17:38:00 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD046C4163C;
+        Sat,  9 Sep 2023 00:37:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1694219780;
+        s=k20201202; t=1694219851;
         bh=X/mWe0YImQqedcFo6R0XGlwGPM+GBM+YV7rXNS8i/VU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gpx8/rlpafVCeiiD8WpC+Lb1g1gFqaUtDh3zVBa/n4nKjZI5O3JWbmIg09LcX1rD8
-         a9/OfZc/FiX++ldJaxOPNLdmnJfrKFEN/udILICIgpUToCmeCmRgd4nhw4SKd6hqgD
-         nBH+0b2EmBHf/0d6JFQ+p5RxpelpgSlkF390khgCryglxs0B22GR8bGku/L3FCv/5h
-         QzgGEQ3q1p6lnXIrKiW2/6cwg3MHk1S0k3EKEjttaDfOEWj9xCMN550UTblzh96AVi
-         GwKApNC4NHCkImq1USkCryuEiNc+y1knXAwSsMv/h/cw5nH8BIWqsOajwm8NFZ/knC
-         tnE2Owzsy5g6Q==
+        b=idYXv1kK/KR14sN9a5ueBtaPAo4l5tC47NZHITIJE+iA+lvgde52dUa9QVFmR4prh
+         10Q5UJ2AD10dK74aupiv23qpU4VkJMJPiReYzUKk9XpbajASeVYNXnF/WO8iQpVtqa
+         kfQIkjaCo6UtsG8QVwJrVMOTMbDHu4z77ZL8MqWJa8sTcBuyQDqxJllTTrfTc8TZ3Z
+         mlPUhlXdFVNy/odUqv+w4+pRa8kbco29rKJj7zNlZ0xDQprDgLqClnaxbLw+no3mer
+         eZrzUfxWAdfYUI7K/aXUe2qV5LtgdybX/ZbZy3cYdiD5iADmoIuB0HGYV8MlC7jrLw
+         pUbDQr27Gn92Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -33,16 +33,16 @@ Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, jic23@kernel.org,
         linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.5 08/28] iio: core: Use min() instead of min_t() to make code more robust
-Date:   Fri,  8 Sep 2023 20:35:42 -0400
-Message-Id: <20230909003604.3579407-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.4 08/25] iio: core: Use min() instead of min_t() to make code more robust
+Date:   Fri,  8 Sep 2023 20:36:56 -0400
+Message-Id: <20230909003715.3579761-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230909003604.3579407-1-sashal@kernel.org>
-References: <20230909003604.3579407-1-sashal@kernel.org>
+In-Reply-To: <20230909003715.3579761-1-sashal@kernel.org>
+References: <20230909003715.3579761-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.5.2
+X-stable-base: Linux 6.4.15
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
