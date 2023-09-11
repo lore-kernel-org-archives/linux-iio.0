@@ -2,205 +2,85 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B6D3CA0EF4
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Sep 2023 21:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E37CA0EDA
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Sep 2023 21:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348737AbjIKVae (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Sep 2023 17:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47356 "EHLO
+        id S235482AbjIKVao (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 Sep 2023 17:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237641AbjIKNET (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Sep 2023 09:04:19 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8A3DF;
-        Mon, 11 Sep 2023 06:04:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694437453; x=1725973453;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EMruZn7KJAod3p21S8e62jnjMl5BS9upTMZiKyPocf0=;
-  b=IXz+ymP/i47Xc+ZJ+WVAKOGaxBYinE97u8h0ElO/0ptQpCYpWj74BPNS
-   lzFpfZR1m6PnAC8v7hRm4ArRUphz/oneauAZWbLvjS2KOwCzMfyrNpl5s
-   0+VkHYyg0hay7rK2ZUTUF8cHXolrnRp0a7NvOAPQUwjMg/AapQd/AGB2E
-   oyMqnd2EbiyFxW/qiUHr9M95u4B2OyWUniaxDoOd9dxgwPiQ0yw4S799F
-   o792ShgQ2a9fdy9zdV5Upf1gZXVCYEJ/ac0wwa6VXkM7yFsrj96tdidPK
-   8Xlc034U3UmfFg95KuXkFuIIFithsqsHfxGkof4q+8t6o5RA75RE0+Ubx
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10830"; a="358377179"
-X-IronPort-AV: E=Sophos;i="6.02,244,1688454000"; 
-   d="scan'208";a="358377179"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2023 06:03:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10830"; a="1074123880"
-X-IronPort-AV: E=Sophos;i="6.02,244,1688454000"; 
-   d="scan'208";a="1074123880"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2023 06:03:10 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qfgZG-008Kb6-0W;
-        Mon, 11 Sep 2023 16:03:06 +0300
-Date:   Mon, 11 Sep 2023 16:03:05 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Matti Vaittinen <mazziesaccount@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Mehdi Djait <mehdi.djait.k@gmail.com>,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v8 6/7] iio: accel: kionix-kx022a: Add a function to
- retrieve number of bytes in buffer
-Message-ID: <ZP8QCVbOpUOMxV8g@smile.fi.intel.com>
-References: <CAFukWp2Z0OCrJdTy+wzVs9jdCm70YNR-66q06=xoyGhaHg=aog@mail.gmail.com>
- <ZOdfeaW6AxE4eeqw@smile.fi.intel.com>
- <CAFukWp0ubncNcMiw-s_h5GoP1_RsjTaw3XxayGMuaeJJJneBow@mail.gmail.com>
- <ZOdrtNQijmhN9RAx@smile.fi.intel.com>
- <20230827190732.5e2215d0@jic23-huawei>
- <61247547-690c-fb8b-3a45-cd60754836a7@gmail.com>
- <ZOx8rAFBXMylgNzm@smile.fi.intel.com>
- <7ca3b60f-e59f-b578-7c22-48487663cfa7@gmail.com>
- <ZPiixW6CiR+z8s/r@smile.fi.intel.com>
- <8b73d2d9-ebba-8f3c-4b39-e3671117acf1@gmail.com>
+        with ESMTP id S235556AbjIKI5r (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Sep 2023 04:57:47 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5FA1BE
+        for <linux-iio@vger.kernel.org>; Mon, 11 Sep 2023 01:57:42 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id 4fb4d7f45d1cf-52a1ce529fdso5527582a12.1
+        for <linux-iio@vger.kernel.org>; Mon, 11 Sep 2023 01:57:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1694422661; x=1695027461; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=PPtHUZIWewGLj9iHDKkMNgrWCz06uDIIoWcdg8erj+Q=;
+        b=NPBsZti2JbOfPK5f0x2z6JNSrP4KnKgai2UUM4pO4c0y83GAftBqT/TxWEueMr/ulN
+         BTE7SZNEd6E/X1YyW+Y+LbVK/phxvfoZlDi4Zq0Rr0G3HH0FmymwX7eB6i9geTdJVxO9
+         aoaWBB5Dnxcdkbhat+4U7tp53tMewRaE0ZopkX7wEsCl/mwg+onZf694aPkM32K+HbyT
+         U7wxm3DswfFmQ34UbuxyC/EwKJdTqaXCuYdKqiNHjyABG0GHxGB9c0o6sVZm7kVG0iGI
+         PuiQjNH2h30F5UTKZGekIv5PEBl2VHG62XiMsr/9r24dn8msl7QFCGlFPDZYPUg6t6RD
+         jgsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694422661; x=1695027461;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=PPtHUZIWewGLj9iHDKkMNgrWCz06uDIIoWcdg8erj+Q=;
+        b=iek8jswqTjCjnMK0ZMQmSEx9WGqnvvpjuaGhPmKGrJazgHFnkLEtcu5eN8v52IbmjJ
+         b0clHpOEzPs2n5audl48nEbj72nL9XAcsQy9nuxp1CjxCHUCHmDBQf9rq5Zd1g4Op4HV
+         AxLVXE7R9f2szbQNyEYF/WdXO2QOk3ZjgeBHz2OJJRFQipTpaUa2Jz9krCzIn1x8VMJs
+         toKJTmI42hkbP1Ljg1qQQAt4jPHvf50YDZ0kbA/KQADt/AerEUrPDTCkNDmZ9daNjI6C
+         KJ1U61hEJJN3dLWI8nlOgo2OpqRq+xYuqRFPNqqDaoJI7BjbY6sxd8Icn/yHQpcqvPXW
+         7DUA==
+X-Gm-Message-State: AOJu0YyrnCSC9Ay/M9MFAKUTAgAhKWH9a3JZq5p3i40DNRIFZSyIh15F
+        MtZnH7z+G1zdZb4Amnr3qKk=
+X-Google-Smtp-Source: AGHT+IGvCsHj72yL+DJdiVNyCKlfczOk94H+mzBuwdLKjWHAs3z5v9YOeW5fXBKLfsq8ibbx2haVtw==
+X-Received: by 2002:aa7:d659:0:b0:51d:d4c3:6858 with SMTP id v25-20020aa7d659000000b0051dd4c36858mr7560579edr.12.1694422661023;
+        Mon, 11 Sep 2023 01:57:41 -0700 (PDT)
+Received: from ?IPv6:2003:f6:ef34:6000:4640:4182:8da8:51bf? (p200300f6ef346000464041828da851bf.dip0.t-ipconnect.de. [2003:f6:ef34:6000:4640:4182:8da8:51bf])
+        by smtp.gmail.com with ESMTPSA id d4-20020aa7d684000000b0051dfa2e30b2sm4348741edr.9.2023.09.11.01.57.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Sep 2023 01:57:40 -0700 (PDT)
+Message-ID: <0556d0fd2a99c2b1e64a76e94907232827b7f9c8.camel@gmail.com>
+Subject: Re: [PATCH] iio: ad4310: Replace devm_clk_register() with
+ devm_clk_hw_register()
+From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To:     Lars-Peter Clausen <lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        linux-iio@vger.kernel.org
+Date:   Mon, 11 Sep 2023 11:00:22 +0200
+In-Reply-To: <20230910140903.551081-1-lars@metafoo.de>
+References: <20230910140903.551081-1-lars@metafoo.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8b73d2d9-ebba-8f3c-4b39-e3671117acf1@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Sep 07, 2023 at 09:33:47AM +0300, Matti Vaittinen wrote:
-> On 9/6/23 19:03, Andy Shevchenko wrote:
-> > On Tue, Aug 29, 2023 at 09:33:27AM +0300, Matti Vaittinen wrote:
-> > > On 8/28/23 13:53, Andy Shevchenko wrote:
-> > > > On Mon, Aug 28, 2023 at 09:24:25AM +0300, Matti Vaittinen wrote:
-> > > > > On 8/27/23 21:09, Jonathan Cameron wrote:
+On Sun, 2023-09-10 at 07:09 -0700, Lars-Peter Clausen wrote:
+> The devm_clk_register() is deprecated and devm_clk_hw_register() should b=
+e
+> used as a replacement.
+>=20
+> Switching to the clk_hw interface also allows to use the built-in device
+> managed version of registering the clock provider. The non-clk_hw interfa=
+ce
+> does not have a device managed version.
+>=20
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
 
-...
-
-> > > > > I think that people who work on a driver like this should guess what this is
-> > > > > for.
-> > > > 
-> > > > _This_ is the result of what people always forgot to think about, i.e.
-> > > > newcomers.
-> > > 
-> > > Thanks Andy. This was a good heads-up for me. I do also see the need for
-> > > fresh blood here - we aren't getting any younger.
-> > > 
-> > > > What _if_ the newcomer starts with this code and already being puzzled
-> > > > enough on what the heck the function does. With all ambiguity we rise
-> > > > the threshold for the newcomers and make the kernel project not
-> > > > attractive to start with
-> > > 
-> > > I really appreciate you making a point about attracting newcomers (and there
-> > > is no sarcasm in this statement). I however don't think we're rising the bar
-> > > here. If a newcomer wants to work on a device-driver, the _first_ thing to
-> > > do is to be familiar with the device. Without prior experience of this kind
-> > > of devices it is really a must to get the data-sheet and see how the device
-> > > operates before jumping into reading the code. I would say that after
-> > > reading the fifo lvl description from data-sheet this should be obvious -
-> > > and no, I don't think we should replicate the data-sheet documentation in
-> > > the drivers for parts that aren't very peculiar.
-> > 
-> > There are (at least?) two approaches on the contribution:
-> > 1) generic / library wise;
-> > 2) specific hardware wise.
-> > 
-> > You are talking about 2), while my remark is about both. I can imagine a
-> > newcomer who possess a hardware that looks similar to what this driver is
-> > for.
-> 
-> Yes. I am talking about 2). And my stance is that device drivers belong to
-> category 2). If one works with a device driver for some HW, then he/she
-> needs to be willing to understand the hardware.
-> 
-> > Now, they would like to write a new driver (note, that compatibility can be
-> > checked by reading the RTL definitions, so no need to dive into the code)
-> > and use this as a (nice) reference. With that in mind, they can read a
-> > function named get_fifo_bytes() with not so extensive documentation nor
-> > fully self-explanatory name. One may mistakenly though about this as a
-> > function for something that returns FIFO capacity, but in the reality it is
-> > current amount of valid / data bytes in the FIFO for the ongoing
-> > communication with the device.
-> 
-> I can't avoid having a feeling that this is a very unlikely scenario. I am
-> afraid that by requesting this type of improvements at patch series which is
-> at v8 and has been running for half an year (and which was of a good quality
-> to start with, especially knowing this was the author's first driver) is
-> going to be more repulsive to the newcomers than the potential obfuscation.
-
-I agree and this is a side talk to the topic.
-
-> I don't try claiming that no-one could ever hit this trap (even if I don't
-> see it likely). I still believe that if one does so, he/she will also get
-> such a bug fixed without being totally discouraged - it's business as usual.
-> 
-> I hope this does not come out as rude. I do appreciate your reviews, it's
-> comforting to know someone looks my code with sharp eyes and points out
-> things like the dead code in BM1390 driver! I just like the words Jonathan
-> once spilled out:
-> 
-> "Don't let the perfect be enemy of good" (or something along those lines).
-
-True.
-
-> > > But the question how to attract newcomers to kernel is very valid and I
-> > > guess that not too many of us is thinking of it. Actually, I think we should
-> > > ask from the newcomers we have that what has been the most repulsive part of
-> > > the work when they have contributed.
-> > 
-> > > > (besides the C language which is already considered as mastodon among
-> > > > youngsters).
-> > > 
-> > > I think this is at least partially the truth. However, I think that in many
-> > > cases one of the issues goes beyond the language - many younger generation
-> > > people I know aren't really interested in _why_ things work, they just want
-> > > to get things working in any way they can - and nowadays when you can find a
-> > > tutorial for pretty much anything - one really can just look up instruction
-> > > about how a "foobar can be made to buzz" instead of trying to figure out
-> > > what makes a "foobar to buzz" in order to make it to buzz. So, I don't blame
-> > > people getting used to take a different approach. (Not sure this makes sense
-> > > - don't really know how to express my thoughts about this in a clear way -
-> > > besides, it may not even matter).
-> > 
-> > Yeah, I share your frustration and agree that people are loosing the feel of
-> > curiosity. Brave New World in front of us...
-> 
-> Well, who knows how things will be working out for the new generations?
-> Maybe they won't need the kernel in the future? Yes, I am stubbornly hanging
-> in the past practices and values. Direction things seem to head do not
-> always appeal to me - but perhaps it's just me? Who can say my values and
-> practices are the right ones for new generations :) My oldest son just moved
-> to his own home and I need to accept that young do build their own lives on
-> different values I had. And who knows, maybe the approach of just doing
-> things without knowing what exactly happens under the hood makes this world
-> very good for them?
-> 
-> But yes - I don't think it suits the kernel project at all :) This is a
-> project of dinosaurs like us XD
-> 
-> (DISCLAIMER: I don't know quite all young people in the world. Frankly to
-> tell, not even 90% XD So, I am not trying to say "all young people are like
-> this or that".
-
-Operating in terms of universal quantifier is always wrong (pun intended).
-
-> I just have a feeling that certain way of thinking is more
-> common amongst certain generations - but maybe it's just my misjudgement.
-> Please, don't be offended).
-> 
-> > > Anyways, I am pretty sure that - as with any community - the way people
-> > > are treated and how their contribution is appreciated is the key to make
-> > > them feel good and like the work. I think that in some cases it may
-> > > include allowing new contributors to get their code merged when it has
-> > > reached "good enough" state - even if it was not perfect. (Sure, when
-> > > things are good enough is subject to greater minds than me to ponder) ;)
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
 
