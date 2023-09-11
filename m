@@ -2,121 +2,117 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F485CA0EDC
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE4CECA0EF5
 	for <linux-iio@archiver.kernel.org>; Mon, 11 Sep 2023 21:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241954AbjIKVag (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Sep 2023 17:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49368 "EHLO
+        id S241969AbjIKVar (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 Sep 2023 17:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239959AbjIKOc3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Sep 2023 10:32:29 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1D5F2;
-        Mon, 11 Sep 2023 07:32:25 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 38BBAH3W032101;
-        Mon, 11 Sep 2023 10:32:22 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3t15ueg2w0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 11 Sep 2023 10:32:22 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 38BEWLvp051203
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 11 Sep 2023 10:32:21 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 11 Sep
- 2023 10:32:20 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 11 Sep 2023 10:32:20 -0400
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.194])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 38BEWAgU027658;
-        Mon, 11 Sep 2023 10:32:12 -0400
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH] iio: addac: ad74413r: update channel function set
-Date:   Mon, 11 Sep 2023 17:29:50 +0300
-Message-ID: <20230911142950.216687-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.42.0
+        with ESMTP id S237364AbjIKMnT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Sep 2023 08:43:19 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2842CEB;
+        Mon, 11 Sep 2023 05:43:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1694436194;
+  x=1725972194;
+  h=from:date:subject:mime-version:content-transfer-encoding:
+   message-id:to:cc;
+  bh=SBL7YdeBxdBTOUww15FA3CVSUVZQP5Z5Vgj3rVYX48k=;
+  b=bMLs648jnmLrycFxAd/NR5BsxC8iUY2JHzCklwdBxaRT/eE3CK4aJP2F
+   YCqYBj1BAqkRRCWOKam2opDiUxldqjSivifeEjTwB4LhMNDEoMBWdiEuc
+   SgQlGOgtNR5C8axpj/qOR723B/62QTLz8D/ayiKZmv2R20ujH+9e36iaC
+   WRojoIkZS5pt+9JsTjBJOujNznn8lpy9Gt1xRqzQxEmUgfyQxdlRP2F/i
+   XOHHDJhpq8SmO4cs7D2OfEfsHpihBiaNsoI+V+lL/eW+TyFWxbC/1pH6H
+   uW/qTjqTR4w2F2d1OJy64LDBgrVYDhsTHvA7aXTMBbgvkAgugbn20PErA
+   g==;
+From:   =?utf-8?q?M=C3=A5rten_Lindahl?= <marten.lindahl@axis.com>
+Date:   Mon, 11 Sep 2023 14:43:01 +0200
+Subject: [PATCH v2] iio: light: vcnl4000: Don't power on/off chip in config
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: CCtJ4chLEFmyMIZGFW382ULxlLLy80iW
-X-Proofpoint-GUID: CCtJ4chLEFmyMIZGFW382ULxlLLy80iW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-09-11_09,2023-09-05_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- suspectscore=0 phishscore=0 adultscore=0 malwarescore=0 mlxlogscore=999
- mlxscore=0 clxscore=1011 bulkscore=0 priorityscore=1501 impostorscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2308100000 definitions=main-2309110132
+Message-ID: <20230907-vcnl4000-pm-fix-v2-1-298e01f54db4@axis.com>
+X-B4-Tracking: v=1; b=H4sIAFQL/2QC/3WNTQ6CMBBGr2Jm7ZgpWkVX3sOwaKeDNJFCWtJgC
+ He3sHf5vp+8BZJELwkehwWiZJ/8EApUxwNwZ8Jb0LvCUFF1pjvdMHP4XIgIxx5bP6PVtWNybWs
+ 1Q3lZkwRtNIG77debNEncijFK2e+qV1O482ka4nc3Z7Wl/yVZoUJdG6VYOW2u/DSzTyceemjWd
+ f0B7PKxRsYAAAA=
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+CC:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@axis.com>,
+        =?utf-8?q?M=C3=A5rten_Lindahl?= <marten.lindahl@axis.com>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1694436191; l=2532;
+ i=marten.lindahl@axis.com; s=20230329; h=from:subject:message-id;
+ bh=ML9qCkSy62+/e/ZwttKxao8jlCaohmo4AkMCQFSHeqY=;
+ b=pWYIlAiRK7o6BthzsDkxg5tOxYpJfrT2uvzFep5zMW5S7HTXS8tHZDfPhD+jSm+f/JNKMWjfN
+ hVGQJ0pTK4zCTNU7REUNq8VXKB6OmyWSvsLycvKFFpIdELRJUiUPv4K
+X-Developer-Key: i=marten.lindahl@axis.com; a=ed25519;
+ pk=JfbjqFPJnIDIQOkJBeatC8+S3Ax3N0RIdmN+fL3wXgw=
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-According to the datasheet switching to a new channel function implies
-multiple steps.
+After enabling/disabling interrupts on the vcnl4040 chip the als and/or
+ps sensor is powered on or off depending on the interrupt enable bits.
+This is made as a last step in write_event_config.
 
-All functions must be selected for a minimum of 130 μs before changing
-to another function.
-The DAC_CODEx registers are not reset by changing channel functions.
-Prior to changing channel functions, it is recommended to set the DAC
-code to 0x0000 via the DAC_CODEx registers. Set the channel function
-to high impedance via the CH_FUNC_SETUPx registers before transitioning
-to the new channel function. After the new channel function is configured,
-it is recommended to wait 150 μs before updating the DAC code.
+But there is no reason to do this as the runtime PM handles the power
+state of the sensors. Interfering with this may impact sensor readings.
 
-Even though the channel switch is done at only at probe, where a device
-reset is performed, that does not guarantee that the steps prior
-changing to new channel function should be neglected.
+Consider the following:
+ 1. Userspace makes sensor data reading which triggers RPM resume
+    (sensor powered on) and a RPM suspend timeout. The timeout is 2000ms
+    before RPM suspend powers the sensor off if no new reading is made
+    within the timeout period.
+ 2. Userspace disables interrupts => powers sensor off
+ 3. Userspace reads sensor data = 0 because sensor is off and the
+    suspend timeout has not passed. For each new reading made within the
+    timeout period the timeout is renewed with 2000ms and RPM will not
+    make a new resume (device was not suspended). So the sensor will
+    not be powered on.
+ 4. No further userspace reading for 2000ms ends RPM suspend timeout and
+    triggers suspend (powers off already powered off sensor).
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Powering sensor off in (2) makes all consecutive readings made within
+2000ms to the previous reading (3) return invalid data.
+
+Skip setting power state when writing new event config.
+
+Fixes: 546676121cb9 ("iio: light: vcnl4000: Add interrupt support for vcnl4040")
+Fixes: bc292aaf9cb4 ("iio: light: vcnl4000: add illuminance irq vcnl4040/4200")
+Signed-off-by: Mårten Lindahl <marten.lindahl@axis.com>
 ---
- drivers/iio/addac/ad74413r.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+Changes in v2:
+- Rephrasing of commit msg.
+- Added 2 Fixes tags:
+  1. First tag refers to the original patch introducing the bug.
+  2. Second tag is for a later patch extending the faulty condition introduced in original patch.
+- Link to v1: https://lore.kernel.org/r/20230907-vcnl4000-pm-fix-v1-1-58a11c1d5a6c@axis.com
+---
+ drivers/iio/light/vcnl4000.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iio/addac/ad74413r.c b/drivers/iio/addac/ad74413r.c
-index 6b0e8218f150..7b9ebb481815 100644
---- a/drivers/iio/addac/ad74413r.c
-+++ b/drivers/iio/addac/ad74413r.c
-@@ -441,12 +441,30 @@ static int ad74413r_set_channel_function(struct ad74413r_state *st,
- {
- 	int ret;
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index 3a52b09c2823..fdf763a04b0b 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -1513,7 +1513,6 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
  
-+	ret = regmap_update_bits(st->regmap,
-+				 AD74413R_REG_CH_FUNC_SETUP_X(channel),
-+				 AD74413R_CH_FUNC_SETUP_MASK,
-+				 CH_FUNC_HIGH_IMPEDANCE);
-+	if (ret)
-+		return ret;
-+
-+	/* Set DAC code to 0 prior to changing channel function */
-+	ret = ad74413r_set_channel_dac_code(st, channel, 0);
-+	if (ret)
-+		return ret;
-+
-+	/* Delay required before transition to new desired mode */
-+	usleep_range(130, 150);
-+
- 	ret = regmap_update_bits(st->regmap,
- 				  AD74413R_REG_CH_FUNC_SETUP_X(channel),
- 				  AD74413R_CH_FUNC_SETUP_MASK, func);
- 	if (ret)
- 		return ret;
+ out:
+ 	mutex_unlock(&data->vcnl4000_lock);
+-	data->chip_spec->set_power_state(data, data->ps_int || data->als_int);
  
-+	/* Delay required before updating the new DAC code */
-+	usleep_range(150, 170);
-+
- 	if (func == CH_FUNC_CURRENT_INPUT_LOOP_POWER)
- 		ret = regmap_set_bits(st->regmap,
- 				      AD74413R_REG_ADC_CONFIG_X(channel),
+ 	return ret;
+ }
+
+---
+base-commit: 7ba2090ca64ea1aa435744884124387db1fac70f
+change-id: 20230907-vcnl4000-pm-fix-b58dc0dffb5c
+
+Best regards,
 -- 
-2.42.0
+Mårten Lindahl <marten.lindahl@axis.com>
 
