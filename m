@@ -2,232 +2,101 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA0BCD37B7
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Sep 2023 11:21:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8673ACD37BB
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Sep 2023 12:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231226AbjIPLVI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Sep 2023 07:21:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53758 "EHLO
+        id S238935AbjIPMjR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Sep 2023 08:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236015AbjIPLUt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 16 Sep 2023 07:20:49 -0400
-Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A941A6
-        for <linux-iio@vger.kernel.org>; Sat, 16 Sep 2023 04:20:43 -0700 (PDT)
-Received: by mail-ua1-x92b.google.com with SMTP id a1e0cc1a2514c-78f1210e27fso1181312241.1
-        for <linux-iio@vger.kernel.org>; Sat, 16 Sep 2023 04:20:43 -0700 (PDT)
+        with ESMTP id S239111AbjIPMjK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 16 Sep 2023 08:39:10 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1534CEF;
+        Sat, 16 Sep 2023 05:39:05 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id 2adb3069b0e04-500913779f5so4898977e87.2;
+        Sat, 16 Sep 2023 05:39:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1694863243; x=1695468043; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=wx1mJktLlGi9doqDMud3XUtJkccHnYdBYJ5bUZM5krg=;
-        b=hIekEfDRyXwiFgmVWmdC7uSfwFVVWQFOL4Pd7AuOgRzfYU60Srwu4r7zcJTbP5Wd26
-         ebkX1QWYMc4XQNymRFWKtywynvhmwKcTDxBZBOkcxgJQAiWLzaXUoIS+Rk28rqlupMwZ
-         2PIMEBN2VVSV3kOvKsqQMPd9MUz0e4/VBccYh4cmF6GBpwb/tz69RO6OMdwiQdFw6hk3
-         hCILJay8ATk2PxuTNRxzyr6cgqQZJClY5ETJqaQZ4piCiYh44ho6fk/n2xJBYcevHSo4
-         kPcymvwzb7TnKHXEIRi88JpJQhBTDe9Cvm9M4QUoK6s7QRIAKLxlv/DPF54e3qMXns8d
-         8zwg==
+        d=gmail.com; s=20230601; t=1694867944; x=1695472744; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Q79fUZZbSUv3woTyk6fuaOdxQDm7PBUultk07mBos+4=;
+        b=mgRIJ0a+yRHvOk2MXIASEWi4SCoaqfvBsezrBUFB9gWl7u7Z6V28ewtN7RAuCEyDYn
+         BJzdZUNncLqQfa+3dvFRE2bjt3+WldIZ40pL05QJn+spnGjocV6K26gW428mN93f+Kw8
+         n/m0edWr1fwvDX+hupI+zeiFVMtAIcg6WZDzB88SX9GFHLBl6ObHzDQV3qEEdiCZD7xy
+         UreoWrLfnuhHr0WfDR5KpS7iLoVAqY9pqntz81ERpZqguP2UmTEVQPCYBl+oekqnxDzB
+         tbSFdQrbK9EIY1zunZnLV4Kza1O2wAIbf1nHPh+lw/GJ0sWcR7CxcgAQfrnQwca9U6g8
+         r3zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694863243; x=1695468043;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wx1mJktLlGi9doqDMud3XUtJkccHnYdBYJ5bUZM5krg=;
-        b=KT5MDo3dzZtdBAUEIcHDUH0Pb2t3Cs+KquhRwqjxPyf1rlC5Ns0XWAWp3K2mDfrSbt
-         mtodAGYtcuXP7cnnpDdRav0fGzdF45pJZYVhkD1zUNgKyVH1+utFMDJEQosgjBwLASCd
-         rp0LEM82PLAlcQKO6bibbezSyX1dcIt5bp3i3l9AA8htoV6dKp8kVdbD8FiwMOrXUXOW
-         ld2eKKUAUTYoNfaQc88U20ydQTEGsu+wQ4DXE5ToQ5MQmg3kr1TYohVacrZwDUP8vEVv
-         d55brs58PG9Jw+4WMQeMCxWNz4Tn0dnol0OcMhT7Su8bJKvYK7mvOZjHQEeKeHdJMizt
-         7szA==
-X-Gm-Message-State: AOJu0Yzsr3E7hv4SxUogD40l6H5JTO/prE5xyGHEgyjghbtwikj+rCmH
-        U8x9ZuitDy0lWZsX03T7pl7JoQ==
-X-Google-Smtp-Source: AGHT+IEgoVmh83TRBPeUNUgrx0amBFL2ejoRJfyxpKwAxPrVjxedOqhzlp3kd0dU9f0mWfGWK+zf4Q==
-X-Received: by 2002:a05:6102:34d8:b0:450:c5e4:4869 with SMTP id a24-20020a05610234d800b00450c5e44869mr3639165vst.25.1694863242801;
-        Sat, 16 Sep 2023 04:20:42 -0700 (PDT)
-Received: from fedora.. (072-189-067-006.res.spectrum.com. [72.189.67.6])
-        by smtp.gmail.com with ESMTPSA id f30-20020ab0101e000000b004089cee1d28sm788352uab.1.2023.09.16.04.20.41
+        d=1e100.net; s=20230601; t=1694867944; x=1695472744;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Q79fUZZbSUv3woTyk6fuaOdxQDm7PBUultk07mBos+4=;
+        b=VxK+WTygJgRbrSVn7e6qOqisETscPzMTFrKVqYgoOYFzX5sDElXLFFD0NUW9yIJ55u
+         NUXd0gEOX5/s8I5ev1IPwdXBAyn2n0NXWU5XQcBXGb53+jFFCY4odPAdnLAJ3je6FVY4
+         keaCtNTT2sKaAhk8SKAydbKuPGzW9Vr6ftL8tw8KRDTftUi7ceQXcAM7TzR1V/HOC9rz
+         TQn8uFOBkBeoQHzzD5QjU2l1iTqQp2jNv/z62INwGFFrydfQJSnCO5febav08VxcAWZo
+         kbQpOf96mdLmkWTVe8MRiO3N+L0oBQrs8TgTHj8qvQ6i1IWTNKvlFiBJ4WTu0/hEr1Kr
+         v8+A==
+X-Gm-Message-State: AOJu0YwGch3BJWEENOTD7x6QFqK8MVejZ/6kdJA6f4Xa5OG6qNlbbliy
+        Wbd8tZDBih0LZaTwLOl7DS0=
+X-Google-Smtp-Source: AGHT+IGG6yNDr1u/yJrve6emYBkyCfBo5rXmedyP3fAucUQrIqExiENN7gWRJp/OitCxwnERHwWuTw==
+X-Received: by 2002:a05:6512:e96:b0:4f8:71cc:2b6e with SMTP id bi22-20020a0565120e9600b004f871cc2b6emr4423713lfb.33.1694867943947;
+        Sat, 16 Sep 2023 05:39:03 -0700 (PDT)
+Received: from localhost.localdomain ([77.134.181.150])
+        by smtp.gmail.com with ESMTPSA id bo6-20020a0564020b2600b0052284228e3bsm3474064edb.8.2023.09.16.05.39.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Sep 2023 04:20:42 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        William Breathitt Gray <william.gray@linaro.org>
-Subject: [RESEND PATCH] iio: addac: stx104: Add 8254 Counter/Timer support
-Date:   Sat, 16 Sep 2023 07:20:31 -0400
-Message-ID: <20230916112031.3634-1-william.gray@linaro.org>
-X-Mailer: git-send-email 2.41.0
+        Sat, 16 Sep 2023 05:39:03 -0700 (PDT)
+From:   Mehdi Djait <mehdi.djait.k@gmail.com>
+To:     jic23@kernel.org, mazziesaccount@gmail.com
+Cc:     krzysztof.kozlowski+dt@linaro.org,
+        andriy.shevchenko@linux.intel.com, robh+dt@kernel.org,
+        lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Mehdi Djait <mehdi.djait.k@gmail.com>
+Subject: [PATCH v9 2/7] iio: accel: kionix-kx022a: Remove blank lines
+Date:   Sat, 16 Sep 2023 14:38:48 +0200
+Message-Id: <3489099f653491e97b13b8f19fe86635b03020c8.1694867379.git.mehdi.djait.k@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <cover.1694867379.git.mehdi.djait.k@gmail.com>
+References: <cover.1694867379.git.mehdi.djait.k@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The STX104 features an 8254 Counter/Timer chip providing three
-counter/timers which can be used for frequency measurement, frequency
-output, pulse width modulation, pulse width measurement, event count,
-etc. The STX104 provides a register bank selection to bank select
-between the 8254 Bank and the Indexed Register Array Bank; the Indexed
-Register Array is not utilized by this driver, so the 8254 Bank is
-selected unconditionally.
+Remove blank lines pointed out by the checkpatch script
 
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Signed-off-by: Mehdi Djait <mehdi.djait.k@gmail.com>
 ---
-Looks like this was missed in the last merge cycle, so I'm resending it
-now as requested. [^1]
+ drivers/iio/accel/kionix-kx022a.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-[^1]: https://lore.kernel.org/all/ZJoO++gEMiDsZioz@fedora/
-
- drivers/iio/addac/Kconfig  |  1 +
- drivers/iio/addac/stx104.c | 61 ++++++++++++++++++++++++++++++++++++--
- 2 files changed, 60 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/addac/Kconfig b/drivers/iio/addac/Kconfig
-index 877f9124803c..b2623881f0ec 100644
---- a/drivers/iio/addac/Kconfig
-+++ b/drivers/iio/addac/Kconfig
-@@ -38,6 +38,7 @@ config STX104
- 	select REGMAP_MMIO
- 	select GPIOLIB
- 	select GPIO_REGMAP
-+	select I8254
- 	help
- 	  Say yes here to build support for the Apex Embedded Systems STX104
- 	  integrated analog PC/104 card.
-diff --git a/drivers/iio/addac/stx104.c b/drivers/iio/addac/stx104.c
-index d1f7ce033b46..6946a65512ca 100644
---- a/drivers/iio/addac/stx104.c
-+++ b/drivers/iio/addac/stx104.c
-@@ -8,6 +8,7 @@
- #include <linux/device.h>
- #include <linux/err.h>
- #include <linux/gpio/regmap.h>
-+#include <linux/i8254.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/types.h>
- #include <linux/isa.h>
-@@ -55,6 +56,7 @@ MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
- #define STX104_ADC_STATUS (STX104_AIO_BASE + 0x8)
- #define STX104_ADC_CONTROL (STX104_AIO_BASE + 0x9)
- #define STX104_ADC_CONFIGURATION (STX104_AIO_BASE + 0x11)
-+#define STX104_I8254_BASE (STX104_AIO_BASE + 0x12)
+diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-kx022a.c
+index f164b09520c9..2f1e7da25460 100644
+--- a/drivers/iio/accel/kionix-kx022a.c
++++ b/drivers/iio/accel/kionix-kx022a.c
+@@ -341,7 +341,6 @@ static int kx022a_turn_on_off_unlocked(struct kx022a_data *data, bool on)
+ 		dev_err(data->dev, "Turn %s fail %d\n", str_on_off(on), ret);
  
- #define STX104_AIO_DATA_STRIDE 2
- #define STX104_DAC_OFFSET(_channel) (STX104_DAC_BASE + STX104_AIO_DATA_STRIDE * (_channel))
-@@ -77,6 +79,7 @@ MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
- /* ADC Configuration */
- #define STX104_GAIN GENMASK(1, 0)
- #define STX104_ADBU BIT(2)
-+#define STX104_RBK GENMASK(7, 4)
- #define STX104_BIPOLAR 0
- #define STX104_GAIN_X1 0
- #define STX104_GAIN_X2 1
-@@ -168,6 +171,32 @@ static const struct regmap_config dio_regmap_config = {
- 	.io_port = true,
- };
- 
-+static const struct regmap_range pit_wr_ranges[] = {
-+	regmap_reg_range(0x0, 0x3),
-+};
-+static const struct regmap_range pit_rd_ranges[] = {
-+	regmap_reg_range(0x0, 0x2),
-+};
-+static const struct regmap_access_table pit_wr_table = {
-+	.yes_ranges = pit_wr_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(pit_wr_ranges),
-+};
-+static const struct regmap_access_table pit_rd_table = {
-+	.yes_ranges = pit_rd_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(pit_rd_ranges),
-+};
-+
-+static const struct regmap_config pit_regmap_config = {
-+	.name = "i8254",
-+	.reg_bits = 8,
-+	.reg_stride = 1,
-+	.reg_base = STX104_I8254_BASE,
-+	.val_bits = 8,
-+	.io_port = true,
-+	.wr_table = &pit_wr_table,
-+	.rd_table = &pit_rd_table,
-+};
-+
- static int stx104_read_raw(struct iio_dev *indio_dev,
- 	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
- {
-@@ -339,6 +368,21 @@ static const char *stx104_names[STX104_NGPIO] = {
- 	"DIN0", "DIN1", "DIN2", "DIN3", "DOUT0", "DOUT1", "DOUT2", "DOUT3"
- };
- 
-+static int bank_select_i8254(struct regmap *map)
-+{
-+	const u8 select_i8254[] = { 0x3, 0xB, 0xA };
-+	size_t i;
-+	int err;
-+
-+	for (i = 0; i < ARRAY_SIZE(select_i8254); i++) {
-+		err = regmap_write_bits(map, STX104_ADC_CONFIGURATION, STX104_RBK, select_i8254[i]);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
- static int stx104_init_hw(struct stx104_iio *const priv)
- {
- 	int err;
-@@ -361,7 +405,7 @@ static int stx104_init_hw(struct stx104_iio *const priv)
- 	if (err)
- 		return err;
- 
--	return 0;
-+	return bank_select_i8254(priv->aio_ctl_map);
+ 	return ret;
+-
  }
  
- static int stx104_probe(struct device *dev, unsigned int id)
-@@ -369,6 +413,7 @@ static int stx104_probe(struct device *dev, unsigned int id)
- 	struct iio_dev *indio_dev;
- 	struct stx104_iio *priv;
- 	struct gpio_regmap_config gpio_config;
-+	struct i8254_regmap_config pit_config;
- 	void __iomem *stx104_base;
- 	struct regmap *aio_ctl_map;
- 	struct regmap *aio_data_map;
-@@ -406,6 +451,11 @@ static int stx104_probe(struct device *dev, unsigned int id)
- 		return dev_err_probe(dev, PTR_ERR(dio_map),
- 				     "Unable to initialize dio register map\n");
+ static int kx022a_turn_off_lock(struct kx022a_data *data)
+@@ -1110,7 +1109,6 @@ int kx022a_probe_internal(struct device *dev)
+ 	if (ret)
+ 		return dev_err_probe(data->dev, ret, "Could not request IRQ\n");
  
-+	pit_config.map = devm_regmap_init_mmio(dev, stx104_base, &pit_regmap_config);
-+	if (IS_ERR(pit_config.map))
-+		return dev_err_probe(dev, PTR_ERR(pit_config.map),
-+				     "Unable to initialize i8254 register map\n");
-+
- 	priv = iio_priv(indio_dev);
- 	priv->aio_ctl_map = aio_ctl_map;
- 	priv->aio_data_map = aio_data_map;
-@@ -449,7 +499,13 @@ static int stx104_probe(struct device *dev, unsigned int id)
- 		.drvdata = dio_map,
- 	};
- 
--	return PTR_ERR_OR_ZERO(devm_gpio_regmap_register(dev, &gpio_config));
-+	err = PTR_ERR_OR_ZERO(devm_gpio_regmap_register(dev, &gpio_config));
-+	if (err)
-+		return err;
-+
-+	pit_config.parent = dev;
-+
-+	return devm_i8254_regmap_register(dev, &pit_config);
- }
- 
- static struct isa_driver stx104_driver = {
-@@ -464,3 +520,4 @@ module_isa_driver(stx104_driver, num_stx104);
- MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
- MODULE_DESCRIPTION("Apex Embedded Systems STX104 IIO driver");
- MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(I8254);
-
-base-commit: 9dc03309fe9ba9f9b26a37b2dd4fa2d5111a1ccf
+-
+ 	ret = devm_iio_trigger_register(dev, indio_trig);
+ 	if (ret)
+ 		return dev_err_probe(data->dev, ret,
 -- 
-2.41.0
+2.30.2
 
