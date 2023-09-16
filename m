@@ -2,64 +2,63 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C176C46CA1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D26F6CD37BE
 	for <linux-iio@archiver.kernel.org>; Sat, 16 Sep 2023 12:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239190AbjIPMjR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Sep 2023 08:39:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51272 "EHLO
+        id S239197AbjIPMjS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Sep 2023 08:39:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239097AbjIPMjJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 16 Sep 2023 08:39:09 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF21CED;
-        Sat, 16 Sep 2023 05:39:04 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id 2adb3069b0e04-502defbb0c3so5005488e87.0;
-        Sat, 16 Sep 2023 05:39:04 -0700 (PDT)
+        with ESMTP id S239160AbjIPMjM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 16 Sep 2023 08:39:12 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEA419A;
+        Sat, 16 Sep 2023 05:39:07 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-5280ef23593so3446581a12.3;
+        Sat, 16 Sep 2023 05:39:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1694867942; x=1695472742; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1694867946; x=1695472746; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=nieLmXIKnfkthdI8h0lUoH7VKVpFKo/h00FyBK08R40=;
-        b=RgZRIzAuQ4s6Xgali18E5fanTzIhz4xRh+yxU+V7xV1TjIIbsvOm8JfqHffcUmnAUH
-         Rzrz9878DpKNex4p4Z0uU2Fg6KmX3n340tPYJHQmuDrYdegzB2/pi62+45dUofpnTjGF
-         qvPJWdYvdNoy/enuKwLpk4FWVzNRSt9vdRnnXZwfjst3XvVqXxhO9N2EnQDtX58QMcFx
-         9MroYpz7xZftxZvNFXqzX8IxD1y6pEWc6202dVDUx76wABnX3cyyMiVbjM/OLjJ4wj5P
-         bbUSte9tmnQ23D3Ni0ABsIMzdosWO/47dA6xmhw5smwN2/FHpvncl5ClYH0Wou9TlOAZ
-         6KvQ==
+        bh=rbUZvYmQNv8XlHrBCEW1i93lPke7LBgt2Bqs3H5wtAk=;
+        b=F6iGH7t1axChCJBQ4Uaxbg98Y4TGX5MxKr8LsU3k6OXTPdBIyGRbYuMceFsEXU4ldk
+         3ZHwMC6cSS6RctFKY4UaI3kdyYbS1ZakgohUvNulvlSvt3MsHJZkrPhDIxqyrSzeIHPc
+         xHzyliViJ1HpDFqHvXBtf36UuTQtmA55r8+cJ127ZA227YBomiKH5yRANEABzXi4lW7L
+         hsm9S90QBhmnCIWjHIRndbG24g0bRFad1g7xyPZqtuYCfETtaIJ1fuoMt8kGbYYRqz3c
+         Sq7weyQj171yAco72DNj0n3s0aWRHGFHFqOlM1GcwX8XkXhYMcfUj1Os4fKppxauMGXC
+         pt6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694867942; x=1695472742;
+        d=1e100.net; s=20230601; t=1694867946; x=1695472746;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=nieLmXIKnfkthdI8h0lUoH7VKVpFKo/h00FyBK08R40=;
-        b=NqWPMCp1zUQ0HzMKnf488NxPyLfXvIUhJJmsj1lWS9Wyb1XJURsKZ6TnXPGDXp1OkM
-         TPIetcwR/SzfjtpiLR162p7pL8g4pTeOgXr2IKUu4lPafDEEAwnopDpIGx5lCEbIGX8m
-         sAdG/pTkTHE2VqXIWmh1yrYLqTER9PLy2GVpGM/ts1hvS9auDEQ5D2Vv1esDipKAjSKn
-         k0+4BymhRgs/F+ZWH25i9mMsXMemP52FMfWWc/pgZyYnPrpxeASWUI0QDASsqyyiD9kp
-         MzTOuO3jZ7owiapSrkuUsET05hCpOBK2ab45ZuU4bGdMFFCllFQzEHUDqaHscKm2QArG
-         Kraw==
-X-Gm-Message-State: AOJu0Yz4KGvaadPCZCGt++MO82o2yjYfHsxENQCgQQG3T/2R04XX3HWT
-        zwd2RsBHA/rBf1wA6djZtPU=
-X-Google-Smtp-Source: AGHT+IH/qxwqx8+EhczONsEZzFXbPcYDeP3F71DAK4QPw1NoWKyfQ+3paOogF1UI8wcNqMcQmmbhmw==
-X-Received: by 2002:a05:6512:3e05:b0:503:3b5:a65 with SMTP id i5-20020a0565123e0500b0050303b50a65mr1457882lfv.31.1694867942097;
-        Sat, 16 Sep 2023 05:39:02 -0700 (PDT)
+        bh=rbUZvYmQNv8XlHrBCEW1i93lPke7LBgt2Bqs3H5wtAk=;
+        b=QQ3yd+tYyLW2vthZMsYSi9r00NkiJZebTGo08g/B6obVQmuxC3yg+aE7cig9kNUFUB
+         pqE5wM9lroOE2hG29p5jnzYqgK7SOCqf+dLjlskXw1EpPHSuzyqQYE8zbYolT3b61mm+
+         NAxCmHA6XDCxj8n5nW4poX75U4f9e4TSMI/ASTIUY9qLdNhNE9Bb3zv2Big5chqXCAeE
+         rwkP5UnaiaA14fHh/0HppbUsIGz93oOuiqPQCWSRjZQxEjh4CXl0OYy7rhny/s1VNzL6
+         94GOZLi2LZHVvsiPZs+aqZoEM6lp2PIOH9jcGesFJOdVAHTMpfSlCv+I+65qcXG00B7G
+         GB6Q==
+X-Gm-Message-State: AOJu0YwOj54vqisrBxGQee9NBLZKX4rnMt316curU1/8twljBa0VlxW7
+        2SpcDVb66xRmSGT/vVXAkxs=
+X-Google-Smtp-Source: AGHT+IEW9exOYt9cVJju2hIT4N6DQ0wSOJuXq361U1FWB9/G6uY7vFibOZIXUkdPPmEq6pa9zXc1Gg==
+X-Received: by 2002:a05:6402:14c4:b0:530:4fc4:50f8 with SMTP id f4-20020a05640214c400b005304fc450f8mr3350537edx.29.1694867945641;
+        Sat, 16 Sep 2023 05:39:05 -0700 (PDT)
 Received: from localhost.localdomain ([77.134.181.150])
-        by smtp.gmail.com with ESMTPSA id bo6-20020a0564020b2600b0052284228e3bsm3474064edb.8.2023.09.16.05.39.00
+        by smtp.gmail.com with ESMTPSA id bo6-20020a0564020b2600b0052284228e3bsm3474064edb.8.2023.09.16.05.39.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Sep 2023 05:39:01 -0700 (PDT)
+        Sat, 16 Sep 2023 05:39:05 -0700 (PDT)
 From:   Mehdi Djait <mehdi.djait.k@gmail.com>
 To:     jic23@kernel.org, mazziesaccount@gmail.com
 Cc:     krzysztof.kozlowski+dt@linaro.org,
         andriy.shevchenko@linux.intel.com, robh+dt@kernel.org,
         lars@metafoo.de, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Mehdi Djait <mehdi.djait.k@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v9 1/7] dt-bindings: iio: Add KX132-1211 accelerometer
-Date:   Sat, 16 Sep 2023 14:38:47 +0200
-Message-Id: <735004c624082aead6e08ae37ea4fc086b11cf86.1694867379.git.mehdi.djait.k@gmail.com>
+        Mehdi Djait <mehdi.djait.k@gmail.com>
+Subject: [PATCH v9 3/7] iio: accel: kionix-kx022a: Warn on failed matches and assume compatibility
+Date:   Sat, 16 Sep 2023 14:38:49 +0200
+Message-Id: <b587cfec2f3350623277005f62121864bee857c7.1694867379.git.mehdi.djait.k@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1694867379.git.mehdi.djait.k@gmail.com>
 References: <cover.1694867379.git.mehdi.djait.k@gmail.com>
@@ -69,46 +68,33 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Extend the kionix,kx022a.yaml file to support the kx132-1211 device
+Avoid error returns on a failure to match and instead just warn with
+assumption that we have a correct dt-binding telling us that
+some new device with a different ID is backwards compatible.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Acked-by: Matti Vaittinen <mazziesaccount@gmail.com>
 Signed-off-by: Mehdi Djait <mehdi.djait.k@gmail.com>
 ---
- .../devicetree/bindings/iio/accel/kionix,kx022a.yaml | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/iio/accel/kionix-kx022a.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/kionix,kx022a.yaml b/Documentation/devicetree/bindings/iio/accel/kionix,kx022a.yaml
-index 986df1a6ff0a..034b69614416 100644
---- a/Documentation/devicetree/bindings/iio/accel/kionix,kx022a.yaml
-+++ b/Documentation/devicetree/bindings/iio/accel/kionix,kx022a.yaml
-@@ -4,19 +4,21 @@
- $id: http://devicetree.org/schemas/iio/accel/kionix,kx022a.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-kx022a.c
+index 2f1e7da25460..5a144f86c634 100644
+--- a/drivers/iio/accel/kionix-kx022a.c
++++ b/drivers/iio/accel/kionix-kx022a.c
+@@ -1025,10 +1025,8 @@ int kx022a_probe_internal(struct device *dev)
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "Failed to access sensor\n");
  
--title: ROHM/Kionix KX022A Accelerometer
-+title: ROHM/Kionix KX022A and KX132-1211 Accelerometers
+-	if (chip_id != KX022A_ID) {
+-		dev_err(dev, "unsupported device 0x%x\n", chip_id);
+-		return -EINVAL;
+-	}
++	if (chip_id != KX022A_ID)
++		dev_warn(dev, "unknown device 0x%x\n", chip_id);
  
- maintainers:
-   - Matti Vaittinen <mazziesaccount@gmail.com>
- 
- description: |
--  KX022A is a 3-axis accelerometer supporting +/- 2G, 4G, 8G and 16G ranges,
--  output data-rates from 0.78Hz to 1600Hz and a hardware-fifo buffering.
--  KX022A can be accessed either via I2C or SPI.
-+  KX022A and KX132-1211 are 3-axis accelerometers supporting +/- 2G, 4G, 8G and
-+  16G ranges, variable output data-rates and a hardware-fifo buffering.
-+  KX022A and KX132-1211 can be accessed either via I2C or SPI.
- 
- properties:
-   compatible:
--    const: kionix,kx022a
-+    enum:
-+      - kionix,kx022a
-+      - kionix,kx132-1211
- 
-   reg:
-     maxItems: 1
+ 	irq = fwnode_irq_get_byname(fwnode, "INT1");
+ 	if (irq > 0) {
 -- 
 2.30.2
 
