@@ -2,40 +2,42 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 523A8CD37B4
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Sep 2023 09:32:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 629DBCD37B4
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Sep 2023 09:48:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233032AbjIQJbo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Sep 2023 05:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58074 "EHLO
+        id S229957AbjIQJrq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Sep 2023 05:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbjIQJbL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Sep 2023 05:31:11 -0400
+        with ESMTP id S234550AbjIQJrP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Sep 2023 05:47:15 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153BCF7;
-        Sun, 17 Sep 2023 02:31:06 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D7ABC433C8;
-        Sun, 17 Sep 2023 09:31:03 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4613188;
+        Sun, 17 Sep 2023 02:47:10 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDFA4C433C7;
+        Sun, 17 Sep 2023 09:47:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1694943065;
-        bh=qY0ViA8iEFZmx8G65CjIhaEAbyjyjLTxoLfn54fZa5g=;
+        s=k20201202; t=1694944030;
+        bh=Hs/pfO3MtWotH2urHQD9K/7HmqsK4SlxRxtd6Dd4BhQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UDH0D2papCX2thnUX8OIVhRc2iRMyi7dle9xYgW2W4iUmTC+yYQPlARmPWjj6PDYh
-         ToMPSZhqcVVj25EqIaozCZtDSatcffWIp7513hN13WkJsll+xBsZxfalAoEFvv5mXf
-         JwslFr68XzhSa5MzrIgl+yleHSbK+iwCT5vUPfJQtREP9GasM0UtLYv0JHAWDLU9E5
-         96haPC9TLesoozutomNkmW57/L/hvt2IKZdFGM/WxwFMHDzp+usMqppJnXoZt20PAO
-         5J2qbRoTB0S/twH+D6IeahregKRdllMSVAwG0NcDCy3wL0in//4IF+YYNmq6oVea5m
-         hMVM4dGDkgG5Q==
-Date:   Sun, 17 Sep 2023 10:30:59 +0100
+        b=njcd4vaMzEQPDqKqfqKbP7oIjIEvPp/kLNgxYJploC/NMJSN/BeBNJ4B4J5UQAy2o
+         iHT2lgk2XU8SzUikFMYTmZKnGNzdt1ZgLQ/tH2F1EaNlmlb8PDOJ2v4312Nl0rCFLh
+         6gyj5aoXo4Z3uk8uXahwc8nLjTF5Af3KmHR0NuOpF2hGh5sABGGQvfHPspiJqSF84D
+         5tSjebr0bFlGMOutxpiOiXSllbr/Vv9mTennQbP7A0khyiFKmO9bI6m3M1jNOQUUCm
+         VoXPGb0/ea5WClMJkO4FVDyfjNllrnKhcZJRZ5bRiAbLJJUwoAi+ioB8MoTaECxt1g
+         IXvHvVIShMaIA==
+Date:   Sun, 17 Sep 2023 10:47:02 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     William Breathitt Gray <william.gray@linaro.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RESEND PATCH] iio: addac: stx104: Add 8254 Counter/Timer
- support
-Message-ID: <20230917103059.41730dbd@jic23-huawei>
-In-Reply-To: <20230916112031.3634-1-william.gray@linaro.org>
-References: <20230916112031.3634-1-william.gray@linaro.org>
+To:     Mehdi Djait <mehdi.djait.k@gmail.com>
+Cc:     mazziesaccount@gmail.com, krzysztof.kozlowski+dt@linaro.org,
+        andriy.shevchenko@linux.intel.com, robh+dt@kernel.org,
+        lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v9 0/7] iio: accel: Add support for Kionix/ROHM
+ KX132-1211 accelerometer
+Message-ID: <20230917104702.53b1cafe@jic23-huawei>
+In-Reply-To: <cover.1694867379.git.mehdi.djait.k@gmail.com>
+References: <cover.1694867379.git.mehdi.djait.k@gmail.com>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -44,182 +46,99 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 16 Sep 2023 07:20:31 -0400
-William Breathitt Gray <william.gray@linaro.org> wrote:
+On Sat, 16 Sep 2023 14:38:46 +0200
+Mehdi Djait <mehdi.djait.k@gmail.com> wrote:
 
-> The STX104 features an 8254 Counter/Timer chip providing three
-> counter/timers which can be used for frequency measurement, frequency
-> output, pulse width modulation, pulse width measurement, event count,
-> etc. The STX104 provides a register bank selection to bank select
-> between the 8254 Bank and the Indexed Register Array Bank; the Indexed
-> Register Array is not utilized by this driver, so the 8254 Bank is
-> selected unconditionally.
+> Hello everyone,
 > 
-> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
-> ---
-> Looks like this was missed in the last merge cycle, so I'm resending it
-> now as requested. [^1]
+> Version 9 for adding support for the kx132-1211 accelerometer
 > 
-> [^1]: https://lore.kernel.org/all/ZJoO++gEMiDsZioz@fedora/
-Ah. I indeed missed this entirely - saw counters in the patch title and failed
-to notice it was being added to an IIO driver :(  Sorry about that.
+> KX132-1211 accelerometer is a sensor which:
+> 	- supports G-ranges of (+/-) 2, 4, 8, and 16G
+> 	- can be connected to I2C or SPI
+> 	- has internal HW FIFO buffer
+> 	- supports various ODRs (output data rates)
+> 
+> The KX132-1211 accelerometer is very similar to the KX022A. 
+> One key difference is number of bits to report the number of data bytes that 
+> have been stored in the buffer: 8 bits for KX022A vs 10 bits for
+> KX132-1211.
 
-Anyhow, LGTM. Applied to the togreg branch of iio.git and pushed out as testing
-for 0-day etc to poke at it and see if we missed anything.
+Series applied with some minor white space tweaks as called out for individual
+patches.
+
+Applied to the togreg branch of iio.git and initially pushed out as testing for
+the autobuilders to poke at it and see what we've missed.
 
 Thanks,
 
 Jonathan
 
 > 
->  drivers/iio/addac/Kconfig  |  1 +
->  drivers/iio/addac/stx104.c | 61 ++++++++++++++++++++++++++++++++++++--
->  2 files changed, 60 insertions(+), 2 deletions(-)
+> Changes in v9:
+> - used i2c_get_match_data
+> - changed the name and description of the function to get available data
+>   in HW fifo buffer
+> - changed the description in the Kconfig file
 > 
-> diff --git a/drivers/iio/addac/Kconfig b/drivers/iio/addac/Kconfig
-> index 877f9124803c..b2623881f0ec 100644
-> --- a/drivers/iio/addac/Kconfig
-> +++ b/drivers/iio/addac/Kconfig
-> @@ -38,6 +38,7 @@ config STX104
->  	select REGMAP_MMIO
->  	select GPIOLIB
->  	select GPIO_REGMAP
-> +	select I8254
->  	help
->  	  Say yes here to build support for the Apex Embedded Systems STX104
->  	  integrated analog PC/104 card.
-> diff --git a/drivers/iio/addac/stx104.c b/drivers/iio/addac/stx104.c
-> index d1f7ce033b46..6946a65512ca 100644
-> --- a/drivers/iio/addac/stx104.c
-> +++ b/drivers/iio/addac/stx104.c
-> @@ -8,6 +8,7 @@
->  #include <linux/device.h>
->  #include <linux/err.h>
->  #include <linux/gpio/regmap.h>
-> +#include <linux/i8254.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/types.h>
->  #include <linux/isa.h>
-> @@ -55,6 +56,7 @@ MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
->  #define STX104_ADC_STATUS (STX104_AIO_BASE + 0x8)
->  #define STX104_ADC_CONTROL (STX104_AIO_BASE + 0x9)
->  #define STX104_ADC_CONFIGURATION (STX104_AIO_BASE + 0x11)
-> +#define STX104_I8254_BASE (STX104_AIO_BASE + 0x12)
->  
->  #define STX104_AIO_DATA_STRIDE 2
->  #define STX104_DAC_OFFSET(_channel) (STX104_DAC_BASE + STX104_AIO_DATA_STRIDE * (_channel))
-> @@ -77,6 +79,7 @@ MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
->  /* ADC Configuration */
->  #define STX104_GAIN GENMASK(1, 0)
->  #define STX104_ADBU BIT(2)
-> +#define STX104_RBK GENMASK(7, 4)
->  #define STX104_BIPOLAR 0
->  #define STX104_GAIN_X1 0
->  #define STX104_GAIN_X2 1
-> @@ -168,6 +171,32 @@ static const struct regmap_config dio_regmap_config = {
->  	.io_port = true,
->  };
->  
-> +static const struct regmap_range pit_wr_ranges[] = {
-> +	regmap_reg_range(0x0, 0x3),
-> +};
-> +static const struct regmap_range pit_rd_ranges[] = {
-> +	regmap_reg_range(0x0, 0x2),
-> +};
-> +static const struct regmap_access_table pit_wr_table = {
-> +	.yes_ranges = pit_wr_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(pit_wr_ranges),
-> +};
-> +static const struct regmap_access_table pit_rd_table = {
-> +	.yes_ranges = pit_rd_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(pit_rd_ranges),
-> +};
-> +
-> +static const struct regmap_config pit_regmap_config = {
-> +	.name = "i8254",
-> +	.reg_bits = 8,
-> +	.reg_stride = 1,
-> +	.reg_base = STX104_I8254_BASE,
-> +	.val_bits = 8,
-> +	.io_port = true,
-> +	.wr_table = &pit_wr_table,
-> +	.rd_table = &pit_rd_table,
-> +};
-> +
->  static int stx104_read_raw(struct iio_dev *indio_dev,
->  	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
->  {
-> @@ -339,6 +368,21 @@ static const char *stx104_names[STX104_NGPIO] = {
->  	"DIN0", "DIN1", "DIN2", "DIN3", "DOUT0", "DOUT1", "DOUT2", "DOUT3"
->  };
->  
-> +static int bank_select_i8254(struct regmap *map)
-> +{
-> +	const u8 select_i8254[] = { 0x3, 0xB, 0xA };
-> +	size_t i;
-> +	int err;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(select_i8254); i++) {
-> +		err = regmap_write_bits(map, STX104_ADC_CONFIGURATION, STX104_RBK, select_i8254[i]);
-> +		if (err)
-> +			return err;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static int stx104_init_hw(struct stx104_iio *const priv)
->  {
->  	int err;
-> @@ -361,7 +405,7 @@ static int stx104_init_hw(struct stx104_iio *const priv)
->  	if (err)
->  		return err;
->  
-> -	return 0;
-> +	return bank_select_i8254(priv->aio_ctl_map);
->  }
->  
->  static int stx104_probe(struct device *dev, unsigned int id)
-> @@ -369,6 +413,7 @@ static int stx104_probe(struct device *dev, unsigned int id)
->  	struct iio_dev *indio_dev;
->  	struct stx104_iio *priv;
->  	struct gpio_regmap_config gpio_config;
-> +	struct i8254_regmap_config pit_config;
->  	void __iomem *stx104_base;
->  	struct regmap *aio_ctl_map;
->  	struct regmap *aio_data_map;
-> @@ -406,6 +451,11 @@ static int stx104_probe(struct device *dev, unsigned int id)
->  		return dev_err_probe(dev, PTR_ERR(dio_map),
->  				     "Unable to initialize dio register map\n");
->  
-> +	pit_config.map = devm_regmap_init_mmio(dev, stx104_base, &pit_regmap_config);
-> +	if (IS_ERR(pit_config.map))
-> +		return dev_err_probe(dev, PTR_ERR(pit_config.map),
-> +				     "Unable to initialize i8254 register map\n");
-> +
->  	priv = iio_priv(indio_dev);
->  	priv->aio_ctl_map = aio_ctl_map;
->  	priv->aio_data_map = aio_data_map;
-> @@ -449,7 +499,13 @@ static int stx104_probe(struct device *dev, unsigned int id)
->  		.drvdata = dio_map,
->  	};
->  
-> -	return PTR_ERR_OR_ZERO(devm_gpio_regmap_register(dev, &gpio_config));
-> +	err = PTR_ERR_OR_ZERO(devm_gpio_regmap_register(dev, &gpio_config));
-> +	if (err)
-> +		return err;
-> +
-> +	pit_config.parent = dev;
-> +
-> +	return devm_i8254_regmap_register(dev, &pit_config);
->  }
->  
->  static struct isa_driver stx104_driver = {
-> @@ -464,3 +520,4 @@ module_isa_driver(stx104_driver, num_stx104);
->  MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
->  MODULE_DESCRIPTION("Apex Embedded Systems STX104 IIO driver");
->  MODULE_LICENSE("GPL v2");
-> +MODULE_IMPORT_NS(I8254);
+> Changes in v8:
+> - replaced min_t by min and kmalloc by kmalloc_array as suggested by Andy
 > 
-> base-commit: 9dc03309fe9ba9f9b26a37b2dd4fa2d5111a1ccf
+> Changes in v7:
+> - added a min_t in kx132_get_fifo_bytes to ensure that we don't that the
+>   fifo_bytes is never bigger than the 
+>   fifo_length * KX022A_FIFO_SAMPLES_SIZE_BYTES - no matter what we read from I2C
+>   as suggested by Matti
+> 
+> Changes in v6:
+> - check for availability of chip_info for the SPI case
+> - changed the order of elements in the kx022a_data struct to save memory
+> 
+> Changes in v5:
+> - moved the "kfree" call to match the reverse of what happens in 
+>   kx022a_fifo_enable() as suggested by Matti and Jonathan
+> - used min_t, checked for availability of chip_info and moved the
+>   position of u16 buf_smp_lvl_mask as suggested by Andy
+> - introduced buf_smp_lvl_mask in Patch 7 as suggested by Jonathan
+> 
+> Changes in v4:
+> - moved the allocation of the fifo_buffer to kx022a_fifo_enable and
+>   kx022a_fifo_disable
+> - some fixes to the regmap ranges of kx132-1211 
+> 
+> Changes in v3:
+> - added two new patches by separating the addition of the 
+>   i2c_device_id table and the removal of blank lines from other
+>   unrelated changes
+> - fixes a warning detected by the kernel test robot
+> - made all the changes related the chip_info in one patch
+> 
+> Changes in v2:
+> - added a new patch for warning when the device_id match fails in the
+>   probe function
+> - added a new patch for the function that retrieves the number of bytes
+>   in the buffer
+> - added a change to the Kconfig file in the patch adding the support
+>   for the kx132-1211
+> - various fixes and modifications listed under each patch
+> 
+> Mehdi Djait (7):
+>   dt-bindings: iio: Add KX132-1211 accelerometer
+>   iio: accel: kionix-kx022a: Remove blank lines
+>   iio: accel: kionix-kx022a: Warn on failed matches and assume
+>     compatibility
+>   iio: accel: kionix-kx022a: Add an i2c_device_id table
+>   iio: accel: kionix-kx022a: Refactor driver and add chip_info structure
+>   iio: accel: kionix-kx022a: Add a function to retrieve number of bytes
+>     in buffer
+>   iio: accel: Add support for Kionix/ROHM KX132-1211 accelerometer
+> 
+>  .../bindings/iio/accel/kionix,kx022a.yaml     |  12 +-
+>  drivers/iio/accel/Kconfig                     |  10 +-
+>  drivers/iio/accel/kionix-kx022a-i2c.c         |  20 +-
+>  drivers/iio/accel/kionix-kx022a-spi.c         |  15 +-
+>  drivers/iio/accel/kionix-kx022a.c             | 315 ++++++++++++++----
+>  drivers/iio/accel/kionix-kx022a.h             | 112 ++++++-
+>  6 files changed, 409 insertions(+), 75 deletions(-)
+> 
 
