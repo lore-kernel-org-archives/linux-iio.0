@@ -2,50 +2,47 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F01CE79B0
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Sep 2023 17:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 281D8CE79AB
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Sep 2023 17:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232662AbjISRuH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 Sep 2023 13:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60532 "EHLO
+        id S232600AbjISRuJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 Sep 2023 13:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232585AbjISRuE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Sep 2023 13:50:04 -0400
+        with ESMTP id S232663AbjISRuG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Sep 2023 13:50:06 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A03E98F
-        for <linux-iio@vger.kernel.org>; Tue, 19 Sep 2023 10:49:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C94BBC
+        for <linux-iio@vger.kernel.org>; Tue, 19 Sep 2023 10:50:00 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qier7-0006Me-Q1; Tue, 19 Sep 2023 19:49:49 +0200
+        id 1qierC-0006cl-Cj; Tue, 19 Sep 2023 19:49:54 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qier7-007VW4-6g; Tue, 19 Sep 2023 19:49:49 +0200
+        id 1qierB-007VX1-2C; Tue, 19 Sep 2023 19:49:53 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qier6-0034X9-Tb; Tue, 19 Sep 2023 19:49:48 +0200
+        id 1qierA-0034Y7-PB; Tue, 19 Sep 2023 19:49:52 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Heiko Stuebner <heiko@sntech.de>,
+        Rob Herring <robh@kernel.org>, linux-iio@vger.kernel.org,
         kernel@pengutronix.de
-Subject: [PATCH 10/49] iio: adc: fsl-imx25-gcq: Convert to platform remove callback returning void
-Date:   Tue, 19 Sep 2023 19:48:52 +0200
-Message-Id: <20230919174931.1417681-11-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 25/49] iio: adc: ti_am335x_adc: Convert to platform remove callback returning void
+Date:   Tue, 19 Sep 2023 19:49:07 +0200
+Message-Id: <20230919174931.1417681-26-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230919174931.1417681-1-u.kleine-koenig@pengutronix.de>
 References: <20230919174931.1417681-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1871; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=dwokYzDApAw0unZI9x7A6AHqnymrAuIG6PSKlUm1/hg=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlCd76K5GzPTQmY6dfG2Aw616ne91+VmeOH8I0c p8XabVqL3eJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZQne+gAKCRCPgPtYfRL+ Tq4SB/93F8f7zGAFruANv6RPJAncgvknEbeA2TVT16g7f+ZlTde+m7gqfCA5a0Z3VkEp6paWWmJ sRduZ/khwc5cq9z6F7PQJmMnilFGNmGmnjmqEHtlc+CFnT8hpbsGpgrYNXohdkSlfg+QrDVX907 O83YK8Narsmh1BGYzMk9m46fJeQvZg4J4ACKdE1XrjvssDSYD6jiTd+IyJjgYD8F5q66scc9dTu wUc5ya5qc08x/gkNr9XFPOyBt5wKtqr4XCaydyGD1WB8h3d4S0YKF/ezJQQldGIyOSDXka1Wjxp RlxlgL/y6KCMraT9HnlaV2pGONXexav/sCBdzHo4URKf13Xz
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1867; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=TGyPLY7mmTxktAfTFEv4MwQRCkt9deYJSsidQBhqb/U=; b=owGbwMvMwMXY3/A7olbonx/jabUkhlTO+9zrl3K02Ui9P+Wf67Vcw8Ek4vwFeY1Mg0NiJxqmX 9jzcYlsJ6MxCwMjF4OsmCKLfeOaTKsqucjOtf8uwwxiZQKZwsDFKQAT6bNg/19wps3Ra8Xbs00G G6LsN9U9zD1Xz6Y7x36R35f+ptOvoiRVBby8sj0/B53/KlkyQzTmY/NjV16WiYYcuzvC1NTd2Nk 7ZL1rJ3A5Mq6olG2bVSd39s6ENFEFF3XtDQ9nz52lJLsm98yfmY2ydQH/u1izc3136YsqK2/jEr 81K/aOj6WA6KX6xst1N9eIXT31y6JrU4TvwRPRHuvizif9ODKrdZXAejmFaVKbf/Nz39t+ZLXrZ 8d/il+2Pg4q22287LK7brhvLvfEGcEzpj23sDso/lLOdr6G+eeSZtGr1+xVLsc93Otr6e9iJht8 oOe8wX/+t/svyFm7NIQtX1TkWRnpO8+nyEBMZqbpC1dhAA==
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -70,39 +67,39 @@ callback to the void returning variant.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/adc/fsl-imx25-gcq.c | 6 ++----
+ drivers/iio/adc/ti_am335x_adc.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/adc/fsl-imx25-gcq.c b/drivers/iio/adc/fsl-imx25-gcq.c
-index 551e83ae573c..68c813de0605 100644
---- a/drivers/iio/adc/fsl-imx25-gcq.c
-+++ b/drivers/iio/adc/fsl-imx25-gcq.c
-@@ -384,7 +384,7 @@ static int mx25_gcq_probe(struct platform_device *pdev)
- 	return ret;
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 8db7a01cb5fb..c755e8cd5220 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -681,7 +681,7 @@ static int tiadc_probe(struct platform_device *pdev)
+ 	return err;
  }
  
--static int mx25_gcq_remove(struct platform_device *pdev)
-+static void mx25_gcq_remove(struct platform_device *pdev)
+-static int tiadc_remove(struct platform_device *pdev)
++static void tiadc_remove(struct platform_device *pdev)
  {
  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
- 	struct mx25_gcq_priv *priv = iio_priv(indio_dev);
-@@ -397,8 +397,6 @@ static int mx25_gcq_remove(struct platform_device *pdev)
- 		if (priv->vref[i])
- 			regulator_disable(priv->vref[i]);
- 	}
+ 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+@@ -697,8 +697,6 @@ static int tiadc_remove(struct platform_device *pdev)
+ 
+ 	step_en = get_adc_step_mask(adc_dev);
+ 	am335x_tsc_se_clr(adc_dev->mfd_tscadc, step_en);
 -
 -	return 0;
  }
  
- static const struct of_device_id mx25_gcq_ids[] = {
-@@ -413,7 +411,7 @@ static struct platform_driver mx25_gcq_driver = {
- 		.of_match_table = mx25_gcq_ids,
+ static int tiadc_suspend(struct device *dev)
+@@ -747,7 +745,7 @@ static struct platform_driver tiadc_driver = {
+ 		.of_match_table = ti_adc_dt_ids,
  	},
- 	.probe		= mx25_gcq_probe,
--	.remove		= mx25_gcq_remove,
-+	.remove_new	= mx25_gcq_remove,
+ 	.probe	= tiadc_probe,
+-	.remove	= tiadc_remove,
++	.remove_new = tiadc_remove,
  };
- module_platform_driver(mx25_gcq_driver);
+ module_platform_driver(tiadc_driver);
  
 -- 
 2.40.1
