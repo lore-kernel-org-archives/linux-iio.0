@@ -2,52 +2,48 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4B7CE79B3
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Sep 2023 17:50:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B40CE79B4
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Sep 2023 17:50:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232708AbjISRuI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 Sep 2023 13:50:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45014 "EHLO
+        id S232690AbjISRuH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 Sep 2023 13:50:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232606AbjISRuF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Sep 2023 13:50:05 -0400
+        with ESMTP id S232526AbjISRuE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Sep 2023 13:50:04 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7888995
-        for <linux-iio@vger.kernel.org>; Tue, 19 Sep 2023 10:49:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B0A492
+        for <linux-iio@vger.kernel.org>; Tue, 19 Sep 2023 10:49:58 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qier8-0006Ps-Ez; Tue, 19 Sep 2023 19:49:50 +0200
+        id 1qier8-0006L7-8G; Tue, 19 Sep 2023 19:49:50 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qier7-007VWD-No; Tue, 19 Sep 2023 19:49:49 +0200
+        id 1qier6-007VW0-Ux; Tue, 19 Sep 2023 19:49:48 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qier7-0034XH-EN; Tue, 19 Sep 2023 19:49:49 +0200
+        id 1qier6-0034X5-Ld; Tue, 19 Sep 2023 19:49:48 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Cai Huoqing <cai.huoqing@linux.dev>,
-        Haibo Chen <haibo.chen@nxp.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
         linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kernel@pengutronix.de
-Subject: [PATCH 12/49] iio: adc: imx8qxp: Convert to platform remove callback returning void
-Date:   Tue, 19 Sep 2023 19:48:54 +0200
-Message-Id: <20230919174931.1417681-13-u.kleine-koenig@pengutronix.de>
+        linux-samsung-soc@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH 09/49] iio: adc: exynos: Convert to platform remove callback returning void
+Date:   Tue, 19 Sep 2023 19:48:51 +0200
+Message-Id: <20230919174931.1417681-10-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230919174931.1417681-1-u.kleine-koenig@pengutronix.de>
 References: <20230919174931.1417681-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1926; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=q5nb4FK8nsEMv6NwxZJXP90sT91P3mWI6khuLzp74qw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlCd79qbfKyIsI34TRT+0OCBanzHaaUC7G1mqZ2 EthfuPXblSJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZQne/QAKCRCPgPtYfRL+ TrCNCACySEPK8JAEa6Ie0ZWmHPwklazr6c84g0jnKf5djZOYxgpjd/+cdIypnWEoqAKQALD5LEr BOZ8AJ5t/e725WVHIoLLLPIWeKg3ees4kXNHLq5SZ5ZBG71qYPL4kkCfr0x6kpbNxkOklIDGzzL Qy+7grxRWVfP7OVvjjh1wRmBKJzLWA+/ueLNQHWMZaQpyL/YU8KEWtYQCnf6eul1I+gjYHMaoIu lFy0KDJJgetEdoTfrlovrS+g0diSONLiib7+B5ualx3Rcd9K/EKLBP+1gCM+KdXUxR3RfA/wEim 7EC0lo5okHELRvtrYcOxZmkIiy5Gn0lH45IbeiytniTEQ6VY
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1968; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=BsqfNTwJdlz+LevSIl7H41XOmHPIvO8Y6ld7+BIbnfM=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlCd75eK5dSkdZ64Kwlc4XhWqdejgJjU3KJzw7s VevhTO5J8aJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZQne+QAKCRCPgPtYfRL+ TkemB/9WOntbKVIxy02vMHYgGFx4BBV2yA2oadceg7P5RHZyDMRUl3T1zmVYifTcwrtpTAijNCv k/pSjCE0BAtKms0xR802bAPsr/HbyiqWp8uRwU1FBjrhw1Rf7ZBM1EFrM3VK0zZ3WVS7I3o236Q iSS6xoK0ypniyYLExhLnE+3075SkjwUKitPptEdDalW/YfTICtsq0JsuGxqAkjA+9tdp6WGBvKI Xa55M9BzTmzo/W+HDh/V6XPUGgSE20Lr9WSgVENhkoA0ngbPGNtkbTUEs3IYQ+Zbn+Q4auO1BYg U1kU5t93Zrn3I/zT8xopoFkSQC/jo2jGdV1sS/HNiXUpSwNI
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -72,40 +68,40 @@ callback to the void returning variant.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/adc/imx8qxp-adc.c | 6 ++----
+ drivers/iio/adc/exynos_adc.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/adc/imx8qxp-adc.c b/drivers/iio/adc/imx8qxp-adc.c
-index fff6e5a2d956..fe82198170d5 100644
---- a/drivers/iio/adc/imx8qxp-adc.c
-+++ b/drivers/iio/adc/imx8qxp-adc.c
-@@ -404,7 +404,7 @@ static int imx8qxp_adc_probe(struct platform_device *pdev)
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index cff1ba57fb16..eb7a2dd59517 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -946,7 +946,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
  	return ret;
  }
  
--static int imx8qxp_adc_remove(struct platform_device *pdev)
-+static void imx8qxp_adc_remove(struct platform_device *pdev)
+-static int exynos_adc_remove(struct platform_device *pdev)
++static void exynos_adc_remove(struct platform_device *pdev)
  {
  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
- 	struct imx8qxp_adc *adc = iio_priv(indio_dev);
-@@ -422,8 +422,6 @@ static int imx8qxp_adc_remove(struct platform_device *pdev)
- 
- 	pm_runtime_disable(dev);
- 	pm_runtime_put_noidle(dev);
+ 	struct exynos_adc *info = iio_priv(indio_dev);
+@@ -964,8 +964,6 @@ static int exynos_adc_remove(struct platform_device *pdev)
+ 	exynos_adc_disable_clk(info);
+ 	exynos_adc_unprepare_clk(info);
+ 	regulator_disable(info->vdd);
 -
 -	return 0;
  }
  
- static int imx8qxp_adc_runtime_suspend(struct device *dev)
-@@ -489,7 +487,7 @@ MODULE_DEVICE_TABLE(of, imx8qxp_adc_match);
+ static int exynos_adc_suspend(struct device *dev)
+@@ -1006,7 +1004,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(exynos_adc_pm_ops, exynos_adc_suspend,
  
- static struct platform_driver imx8qxp_adc_driver = {
- 	.probe		= imx8qxp_adc_probe,
--	.remove		= imx8qxp_adc_remove,
-+	.remove_new	= imx8qxp_adc_remove,
+ static struct platform_driver exynos_adc_driver = {
+ 	.probe		= exynos_adc_probe,
+-	.remove		= exynos_adc_remove,
++	.remove_new	= exynos_adc_remove,
  	.driver		= {
- 		.name	= ADC_DRIVER_NAME,
- 		.of_match_table = imx8qxp_adc_match,
+ 		.name	= "exynos-adc",
+ 		.of_match_table = exynos_adc_match,
 -- 
 2.40.1
 
