@@ -2,226 +2,98 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 102AACE79AB
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Sep 2023 16:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE591CE79A8
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Sep 2023 17:49:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231707AbjISQpC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 Sep 2023 12:45:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35234 "EHLO
+        id S232542AbjISRuA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 Sep 2023 13:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231208AbjISQpB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Sep 2023 12:45:01 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C04AC6;
-        Tue, 19 Sep 2023 09:44:54 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id 4fb4d7f45d1cf-532c66a105bso965518a12.3;
-        Tue, 19 Sep 2023 09:44:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1695141893; x=1695746693; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/5csdseofUImLx6yLn7zRKEPhOKmtYK2S3jJiaVBr/o=;
-        b=KdmjX0vrW+Ar5h1zPgB6pcRxbqvfll7yR4hAx5BxlN5GPZ/vEOhf78Zp1wLVwL9zV3
-         Gcc+caBp6cru3f+Z5AicPriKd0lDIpSpRcm7D9PDxwckNtitjvi4xCtVtObqwgVtbVwS
-         6zcxqaHt6YDrUNe6ptnAAtoIvAYFm2uFvMHje/Nhf96dhIgB/1cKkMTW3zmDA5oVbsLR
-         Xph0A9d6sciby+PNjEZX/uZnbkfwk/hR6RLe26I6tah49UWu9wBZF13zcOCVXUqlY0hc
-         V/ShvvpbOnljjl+e3J7By0tww44H12Wvvjev+h4R8gYQHUQpF/C6uCMUUb13V1LV4asy
-         AP3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695141893; x=1695746693;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/5csdseofUImLx6yLn7zRKEPhOKmtYK2S3jJiaVBr/o=;
-        b=djgaEX3fpzerQbVWKBhrtPwd8ds1WH0+qgOsLtZbK1xLqDRYx8tsTbQVmafV/ImM4i
-         aDYwP5zQSvmwykoQ1wVphyvgmUD0stc1y39Get3ssLUtqp+4BiFgnjiItEDTcQlErtI7
-         6H7EZiYBlcYLRLXPROmEID6BI8fiam47mw5KqqgrMXta/KvttJd5xlFuj8NkkK/6QOed
-         qi3GQA5D2MaKsE1JUaMI2IUTCOvxwKr1Ubgi4pCIOhyVQ0Wj0BMUtXRzav2QbDPbHLup
-         a9EpHP2eRe5v42WoK2g9NuMwYINoHWSs0vmUcfMxS8X+8dEi3aQo9nNjWPuyeJfyvAph
-         hLRw==
-X-Gm-Message-State: AOJu0YyQTK+1KPiwFoXa30wWnnVhOxm3a7hG6YPjNjcAbwroy9ZEizWK
-        MoYAjMjysJLk3sPB25e+kSbtDJl7w/qPAaOIC0Q=
-X-Google-Smtp-Source: AGHT+IFMkv7QwQy5FRBZvVlosHX0VQUrCiobfUAS/8A2a6uMQjvCuplS5beL3JeSjAeRM9zRpQQCF8OX7y2bjWQ3dwo=
-X-Received: by 2002:a50:ec87:0:b0:531:9c1:8271 with SMTP id
- e7-20020a50ec87000000b0053109c18271mr23997edr.14.1695141892455; Tue, 19 Sep
- 2023 09:44:52 -0700 (PDT)
+        with ESMTP id S232526AbjISRt7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Sep 2023 13:49:59 -0400
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC3A8F
+        for <linux-iio@vger.kernel.org>; Tue, 19 Sep 2023 10:49:53 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qier6-0006KU-TV; Tue, 19 Sep 2023 19:49:48 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qier6-007VVt-H0; Tue, 19 Sep 2023 19:49:48 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qier6-0034Wx-7e; Tue, 19 Sep 2023 19:49:48 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH 07/49] iio: adc: dln2: Convert to platform remove callback returning void
+Date:   Tue, 19 Sep 2023 19:48:49 +0200
+Message-Id: <20230919174931.1417681-8-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230919174931.1417681-1-u.kleine-koenig@pengutronix.de>
+References: <20230919174931.1417681-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-References: <20230918080314.11959-1-jagathjog1996@gmail.com>
- <20230918080314.11959-2-jagathjog1996@gmail.com> <b27b58d9-9e55-b803-dd61-dd86a78e7c5c@linaro.org>
-In-Reply-To: <b27b58d9-9e55-b803-dd61-dd86a78e7c5c@linaro.org>
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-Date:   Tue, 19 Sep 2023 22:14:40 +0530
-Message-ID: <CAM+2Eu+R6M7U+t4z5K0Cty736ybAzis7xnrT1edk4-y6B=JAOA@mail.gmail.com>
-Subject: Re: [RFC 1/2] dt-bindings: iio: imu: Add DT binding doc for BMI323
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     jic23@kernel.org, andriy.shevchenko@linux.intel.com,
-        lars@metafoo.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1670; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=oWDpssMuP6XBt56XuGAlj6vtaAGStLMERv7UhQ1Tnj8=; b=owGbwMvMwMXY3/A7olbonx/jabUkhlTOe9/37Ar0ZLcxz0/kCNsS/tws/JPfa95Avo0vjjkrc PxyDzPtZDRmYWDkYpAVU2Sxb1yTaVUlF9m59t9lmEGsTCBTGLg4BWAiv/ey/1O7/NpFv9RoY5Z2 DovYf6lXmUtydvKZW7fsby3ZvXWrP4uwiTKLaE7bsx4nuR3b5Vqvxpr4csVJ59rJ8M8+fqn27By 9OZw13RFtvy6mvF3de3f6I+HD1zs6ihgmhtr6d1UrHnHhLMlgm5JlvD3p3defvGYqP3/uzs2QtQ /qUWecUfOt2n+5aNaBDa+vb1w13+70hqdC22RYLP95cDYv9uHKXrZeuPIbwzLZAImLAaclUxq05 X9kTIp7ZTtjWmLcxiKtw75d4dfjP+ZVehVLGi7W6Tjhwl62bh3Taem4VWamUxa6GnCqc134/Nw3 4TSz0YvJknOW+p3+F/Xg7/ZTs9juML2vmGBck+L9+6kmAA==
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Krzysztof,
+The .remove() callback for a platform driver returns an int which makes
+many driver authors wrongly assume it's possible to do error handling by
+returning an error code. However the value returned is ignored (apart
+from emitting a warning) and this typically results in resource leaks.
+To improve here there is a quest to make the remove callback return
+void. In the first step of this quest all drivers are converted to
+.remove_new() which already returns void. Eventually after all drivers
+are converted, .remove_new() will be renamed to .remove().
 
-On Mon, Sep 18, 2023 at 5:55=E2=80=AFPM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 18/09/2023 10:03, Jagath Jog J wrote:
-> > Add devicetree description document for Bosch BMI323, a 6-Axis IMU.
->
-> I don't know why this is RFC and cover letter does not explain it. Shall
-> I just ignore it? Patch is no ready? Recently at least two times someone
-> was disappointed that his code marked as RFC received my review.
+Trivially convert this driver from always returning zero in the remove
+callback to the void returning variant.
 
-Thank you for reviewing. This was the sensor's first patch series,
-so I initially submitted it as an RFC. I will mark it as "Patch"
-in the next series.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/iio/adc/dln2-adc.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
->
-> A nit, subject: drop second/last, redundant "DT binding doc for". The
-> "dt-bindings" prefix is already stating that these are bindings. Four
-> words entirely redundant and duplicating what prefix is saying...
+diff --git a/drivers/iio/adc/dln2-adc.c b/drivers/iio/adc/dln2-adc.c
+index 97d162a3cba4..06cfbbabaf8d 100644
+--- a/drivers/iio/adc/dln2-adc.c
++++ b/drivers/iio/adc/dln2-adc.c
+@@ -691,19 +691,18 @@ static int dln2_adc_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+ 
+-static int dln2_adc_remove(struct platform_device *pdev)
++static void dln2_adc_remove(struct platform_device *pdev)
+ {
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 
+ 	iio_device_unregister(indio_dev);
+ 	dln2_unregister_event_cb(pdev, DLN2_ADC_CONDITION_MET_EV);
+-	return 0;
+ }
+ 
+ static struct platform_driver dln2_adc_driver = {
+ 	.driver.name	= DLN2_ADC_MOD_NAME,
+ 	.probe		= dln2_adc_probe,
+-	.remove		= dln2_adc_remove,
++	.remove_new	= dln2_adc_remove,
+ };
+ 
+ module_platform_driver(dln2_adc_driver);
+-- 
+2.40.1
 
-Sure I will remove redundant words from the subject line.
-
->
->
-> >
-> > Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
-> > ---
-> >  .../bindings/iio/imu/bosch,bmi323.yaml        | 81 +++++++++++++++++++
-> >  1 file changed, 81 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/imu/bosch,bmi=
-323.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/imu/bosch,bmi323.yam=
-l b/Documentation/devicetree/bindings/iio/imu/bosch,bmi323.yaml
-> > new file mode 100644
-> > index 000000000000..9c08988103c5
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/imu/bosch,bmi323.yaml
-> > @@ -0,0 +1,81 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/imu/bosch,bmi323.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Bosch BMI323 6-Axis IMU
-> > +
-> > +maintainers:
-> > +  - Jagath Jog J <jagathjog1996@gmail.com>
-> > +
-> > +description:
-> > +  BMI323 is a 6-axis inertial measurement unit that supports accelerat=
-ion and
-> > +  gyroscopic measurements with hardware fifo buffering. Sensor also pr=
-ovides
-> > +  events information such as motion, steps, orientation, single and do=
-uble
-> > +  tap detection.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: bosch,bmi323
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  interrupt-names:
-> > +    enum:
-> > +      - INT1
-> > +      - INT2
-> > +    description: |
->
-> Do not need '|' unless you need to preserve formatting.
->
-> > +      set to "INT1" if INT1 pin should be used as interrupt input, set
-> > +      to "INT2" if INT2 pin should be used instead
->
-> And what happens with other INT pin? Remains floating?`
-
-Yes, the other pin is unconnected. The driver provides
-support for either INT1, INT2, or no interrupt configuration.
-I should have added minItems, maxItems, and const,
-I will add these in the next series.
-
->
-> > +
-> > +  drive-open-drain:
-> > +    description: |
->
-> Do not need '|' unless you need to preserve formatting.
-
-Sure I will remove this.
-
->
-> > +      set if the specified interrupt pin should be configured as
-> > +      open drain. If not set, defaults to push-pull.
->
-> Missing supplies. Are you sure device does not use any electric energy?
-
-Sorry, I missed adding supply, I will add it in the next series.
-
->
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +
-> > +allOf:
-> > +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> > +
-> > +unevaluatedProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    // Example for I2C
-> > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > +    i2c {
-> > +        #address-cells =3D <1>;
-> > +        #size-cells =3D <0>;
-> > +> +        bmi323@68 {
->
-> Node names should be generic. See also an explanation and list of
-> examples (not exhaustive) in DT specification:
-> https://devicetree-specification.readthedocs.io/en/latest/chapter2-device=
-tree-basics.html#generic-names-recommendation
-
-I intend to utilize the generic term 'imu' (representing the
-accelerometer and gyrometer)
-even though it's not listed in the generic-names recommendation.
-Would this be acceptable?
-
->
-> > +            compatible =3D "bosch,bmi323";
-> > +            reg =3D <0x68>;
-> > +            interrupt-parent =3D <&gpio1>;
-> > +            interrupts =3D <29 IRQ_TYPE_EDGE_RISING>;
-> > +            interrupt-names =3D "INT1";
-> > +        };
-> > +    };
-> > +  - |
-> > +    // Example for SPI
-> > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > +    spi {
->
->
-> It's the same as other example. No difference. Drop.
-
-Sure I will keep only one example.
-
->
-> Best regards,
-> Krzysztof
->
-
-Regards,
-Jagath
