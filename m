@@ -2,551 +2,137 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F151E7D0AD
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Sep 2023 20:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D80E7D0A2
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Sep 2023 20:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230227AbjIUUUU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Sep 2023 16:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
+        id S231181AbjIUUVe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Sep 2023 16:21:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231695AbjIUUTr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Sep 2023 16:19:47 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0347E6D;
-        Thu, 21 Sep 2023 10:27:17 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 38LAbQXB000605;
-        Thu, 21 Sep 2023 15:05:04 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        message-id:date:mime-version:subject:from:to:cc:references
-        :in-reply-to:content-type:content-transfer-encoding; s=
-        selector1; bh=6AqLoXGPw7uz+MC875pyy/CFwU0aSTYkKoYlw6xBWX4=; b=mB
-        25njK8Gur3NgJGNDx+kSRRxV5OS5Gco3JgR8uUL8irSAI6edIf1xgh4xuRJ7lg8Q
-        u+xOeXasTpuG3NvrD7zXkkKu2erHG7XyTo2M5pFfM8CBoNTAeuqkRsKh8qkHedx9
-        d10c2omsz7hckGVKZG5bb2yVN7q6JNkA2ctvB00TVwUEZovz9/fqawGiSjueXHlP
-        BJnq7jRbecupE231QgbIXpjCCToDihe2gJX9m0fxNNJcd2ZKSPjIaV5RqqhVnKDj
-        uuaTGSndM7arlgozzb4APdAeojyoCzHmW4WczJ01AiJcF+Cu/oARtZSpdtVT8mDn
-        Ef3zxDF5suSKG1KoyrJA==
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3t51sfmkjg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Sep 2023 15:05:03 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7E7BD100057;
-        Thu, 21 Sep 2023 15:05:02 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 63366233C62;
-        Thu, 21 Sep 2023 15:05:02 +0200 (CEST)
-Received: from [10.201.20.59] (10.201.20.59) by SHFDAG1NODE2.st.com
- (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Thu, 21 Sep
- 2023 15:05:01 +0200
-Message-ID: <36253b17-0892-83f7-2f17-367298246d8b@foss.st.com>
-Date:   Thu, 21 Sep 2023 15:05:01 +0200
+        with ESMTP id S231674AbjIUUU4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Sep 2023 16:20:56 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C473B43CA2
+        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 10:31:40 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id 2adb3069b0e04-50308217223so2092872e87.3
+        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 10:31:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1695317496; x=1695922296; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nYFN9YS9lGoY3Drq+6yfHeUu5PUEzCkva/9j6XN0ZE4=;
+        b=la2QrKF/QOTLv9Xl6vpk/AtMY/ONZdAaZu+qx6RtmnnPSI+Sgly6VuQeLB/YdyXxda
+         gcXI58IuoSFm6OQhfUEQ82P0v1r8XmhPWtQhahFsemM6hGYmfBNxqaC+2RNhCwXgPknA
+         iUHCCZvYdfRaDlH2/e2KLtpAqgkn4+Ty648QGK1K4XXUwZA8MBSPJJQdWKBR0S/sGQnG
+         vCr8VuytnRpSuGUyEq2HGFUmGlv3Jwtc2ZUy+RmEKht32REI2ldxn8nmyVJClepoxElm
+         C2MLRYKiWJC7Q/v7MogMsKimn+I44RoVo8x6ahQD9tg7maoFzFAxm3FLOXPKxNayHv5a
+         wlig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695317496; x=1695922296;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=nYFN9YS9lGoY3Drq+6yfHeUu5PUEzCkva/9j6XN0ZE4=;
+        b=aqlNsoXa+TEGFkXN+1iwE9TKTlea4whseM2jgfb0vHIwi++/WSlRsPhY6smq+wP6rc
+         D3FpCzUnCN04A/ls+K1xAYWVC5L3tgiYqpOOH9BZJ2qD7Ks25PNqEQrv6yY63CSfC9Tg
+         Wbo1FXxHXAzvmWwgfmwR750ZxGDhzmzEOZirXh4zIPSnOLEPLEdv6r/4qvOqI7HNz7T9
+         eOfbPMC6MgFRXKOMrygQDPBeViGj+XW2yyKsIyZ3ok5rzFms3ghc0tZQttHbBU50pBag
+         HUu30t/CD7Axsi5rDhMvjmiRlSNgHq3bn7cqvUtD9D85/Xp9/2pgY/LQGSfvv3slXImW
+         LhNg==
+X-Gm-Message-State: AOJu0YwnLlOFJ/v6EvpbQqs2KjGf7Z7na6JI44CpDAy2h5pHjbslA2O9
+        GuKf/ejoq2Z24uWK62lhnJ3E3d9+UZTbAqTLqALpamU5
+X-Google-Smtp-Source: AGHT+IFu1F25pmyaAgzXYF1qsHUDXBwQ437AiaWnWjMjwmw80fpRWTPc2ECeCGljKdTfsMbdgIq1Yg==
+X-Received: by 2002:a1c:ed08:0:b0:405:1bbd:aa9c with SMTP id l8-20020a1ced08000000b004051bbdaa9cmr5515593wmh.34.1695306166581;
+        Thu, 21 Sep 2023 07:22:46 -0700 (PDT)
+Received: from localhost.localdomain (abordeaux-655-1-129-86.w90-5.abo.wanadoo.fr. [90.5.10.86])
+        by smtp.gmail.com with ESMTPSA id n11-20020a5d4c4b000000b0031fbbe347ebsm1901426wrt.22.2023.09.21.07.22.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Sep 2023 07:22:46 -0700 (PDT)
+From:   David Lechner <dlechner@baylibre.com>
+To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-staging@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Axel Haslam <ahaslam@baylibre.com>,
+        Philip Molloy <pmolloy@baylibre.com>,
+        David Lechner <dlechner@baylibre.com>
+Subject: [v2 16/19] staging: iio: resolver: ad2s1210: rename fexcit attribute
+Date:   Thu, 21 Sep 2023 09:19:44 -0500
+Message-Id: <20230921141947.57784-19-dlechner@baylibre.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230921141947.57784-1-dlechner@baylibre.com>
+References: <20230921141947.57784-1-dlechner@baylibre.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH 3/8] tools/counter: add a flexible watch events tool
-Content-Language: en-US
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-To:     William Breathitt Gray <william.gray@linaro.org>
-CC:     <lee@kernel.org>, <alexandre.torgue@foss.st.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20230829134029.2402868-1-fabrice.gasnier@foss.st.com>
- <20230829134029.2402868-4-fabrice.gasnier@foss.st.com>
- <ZQdOcDQR6qONmmnR@fedora> <7aa66ac8-eceb-2f6e-960b-2c4dac9f595e@foss.st.com>
-In-Reply-To: <7aa66ac8-eceb-2f6e-960b-2c4dac9f595e@foss.st.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.201.20.59]
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-09-21_11,2023-09-21_01,2023-05-22_02
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 9/19/23 17:37, Fabrice Gasnier wrote:
-> On 9/17/23 21:07, William Breathitt Gray wrote:
->> On Tue, Aug 29, 2023 at 03:40:24PM +0200, Fabrice Gasnier wrote:
->>> This adds a new counter tool to be able to test various watch events.
->>> A flexible watch array can be populated from command line, each field
->>> may be tuned with a dedicated command line argument.
->>> Each argument can be repeated several times: each time it gets repeated,
->>> a corresponding new watch element is allocated.
->>>
->>> It also comes with a simple default watch (to monitor overflows), used
->>> when no watch parameters are provided.
->>>
->>> The print_usage() routine proposes another example, from the command line,
->>> which generates a 2 elements watch array, to monitor:
->>> - overflow events
->>> - capture events, on channel 3, that reads read captured data by
->>>   specifying the component id (capture3_component_id being 7 here).
->>>
->>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
->>
->> Hi Fabrice,
->>
->> This is great idea, it'll make it so much easier to test out drivers
->> so I'm excited! :-)
-> 
-> Hi William,
-> 
-> Thanks
-> 
->>
->> This is a new tool, so would you add a MAINTAINERS entry for the
->> counter_watch_events.c file?
-> 
-> I haven't thought about it.
-> I can add a MAINTAINERS entry, yes!
-> Who would you suggest ?
-> 
->>
->> More comments inline below.
->>
->>> ---
->>>  tools/counter/Build                  |   1 +
->>>  tools/counter/Makefile               |   8 +-
->>>  tools/counter/counter_watch_events.c | 348 +++++++++++++++++++++++++++
->>>  3 files changed, 356 insertions(+), 1 deletion(-)
->>>  create mode 100644 tools/counter/counter_watch_events.c
->>>
->>> diff --git a/tools/counter/Build b/tools/counter/Build
->>> index 33f4a51d715e..4bbadb7ec93a 100644
->>> --- a/tools/counter/Build
->>> +++ b/tools/counter/Build
->>> @@ -1 +1,2 @@
->>>  counter_example-y += counter_example.o
->>> +counter_watch_events-y += counter_watch_events.o
->>> diff --git a/tools/counter/Makefile b/tools/counter/Makefile
->>> index b2c2946f44c9..00e211edd768 100644
->>> --- a/tools/counter/Makefile
->>> +++ b/tools/counter/Makefile
->>> @@ -14,7 +14,7 @@ MAKEFLAGS += -r
->>>  
->>>  override CFLAGS += -O2 -Wall -g -D_GNU_SOURCE -I$(OUTPUT)include
->>>  
->>> -ALL_TARGETS := counter_example
->>> +ALL_TARGETS := counter_example counter_watch_events
->>>  ALL_PROGRAMS := $(patsubst %,$(OUTPUT)%,$(ALL_TARGETS))
->>>  
->>>  all: $(ALL_PROGRAMS)
->>> @@ -31,6 +31,12 @@ $(OUTPUT)include/linux/counter.h: ../../include/uapi/linux/counter.h
->>>  
->>>  prepare: $(OUTPUT)include/linux/counter.h
->>>  
->>> +COUNTER_WATCH_EVENTS := $(OUTPUT)counter_watch_events.o
->>> +$(COUNTER_WATCH_EVENTS): prepare FORCE
->>> +	$(Q)$(MAKE) $(build)=counter_watch_events
->>> +$(OUTPUT)counter_watch_events: $(COUNTER_WATCH_EVENTS)
->>> +	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@
->>> +
->>
->> Move this below the COUNTER_EXAMPLE block just so we can keep the
->> recipes in alphabetical order.
-> 
-> Ack, will update it.
-> 
->>
->>>  COUNTER_EXAMPLE := $(OUTPUT)counter_example.o
->>>  $(COUNTER_EXAMPLE): prepare FORCE
->>>  	$(Q)$(MAKE) $(build)=counter_example
->>> diff --git a/tools/counter/counter_watch_events.c b/tools/counter/counter_watch_events.c
->>> new file mode 100644
->>> index 000000000000..7f73a1519d8e
->>> --- /dev/null
->>> +++ b/tools/counter/counter_watch_events.c
->>> @@ -0,0 +1,348 @@
->>> +// SPDX-License-Identifier: GPL-2.0-only
->>> +/* Counter - Test various watch events in a userspace application
->>
->> "Counter" should be "Counter Watch Events" (or "counter_watch_events").
->>
->>> + * inspired by counter_example.c
->>
->> No need to mention counter_example.c, this utility does far more than
->> and bares little resemblance at this point to counter_example.c which is
->> really just a bare minimal example of watching Counter events.
-> 
-> Ack
-> 
->>
->>> + */
->>> +
->>> +#include <errno.h>
->>> +#include <fcntl.h>
->>> +#include <getopt.h>
->>> +#include <linux/counter.h>
->>> +#include <stdlib.h>
->>> +#include <stdio.h>
->>> +#include <string.h>
->>> +#include <sys/ioctl.h>
->>> +#include <unistd.h>
->>> +
->>> +#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
->>
->> My initial reaction was that this macro is already exposed in some
->> header for us, but my local /usr/include/linux/kernel.h file doesn't
->> appear to bare it so I guess not. Perhaps it'll be fine for our needs --
->> I think the only difference between this ARRAY_SIZE and the Linux kernel
->> one is the addition of __must_be_array(x).
-> 
-> I had the same reaction when trying to use it. Then, I figured out
-> several tools redefine this macro.
-> Digging further, I just found out some tools have in their Makefile CFLAGS:
-> -I$(srctree)/tools/include
-> and include from there: <linux/kernel.h>
-> 
-> I'll update the Makefile in v2, and remove this definition from here.
-> 
->>
->>> +
->>> +static struct counter_watch simple_watch[] = {
->>> +	{
->>> +		/* Component data: Count 0 count */
->>> +		.component.type = COUNTER_COMPONENT_COUNT,
->>> +		.component.scope = COUNTER_SCOPE_COUNT,
->>> +		.component.parent = 0,
->>> +		/* Event type: Index */
->>> +		.event = COUNTER_EVENT_OVERFLOW_UNDERFLOW,
->>
->> There's a bit of confusion here. The comment says the event type is
->> INDEX, but the structure event type is set for OVERFLOW_UNDERFLOW; also,
->> the commit description states that we're monitoring "overflows" which
->> implies to me the OVERFLOW event type. So which of the three is it?
-> 
-> Ah yes, It's a mix of bad copy paste and updates. I'll fix it.
-> 
->>
->>> +		/* Device event channel 0 */
->>> +		.channel = 0,
->>> +	},
->>> +};
->>> +
->>> +static int find_match_or_number_from_array(char *arg, const char * const str[], int sz, __u8 *val)
->>> +{
->>> +	unsigned int i;
->>> +	char *dummy;
->>> +	unsigned long idx;
->>> +	int ret;
->>> +
->>> +	for (i = 0; i < sz; i++) {
->>> +		ret = strncmp(arg, str[i], strlen(str[i]));
->>> +		if (!ret && strlen(str[i]) == strlen(arg)) {
->>> +			*val = i;
->>> +			return 0;
->>> +		}
->>
->> This has several strlen calls so I wonder if it's more wasteful than it
->> needs to me. I suppose the compiler would optimize this away, but I
->> think there is an alternative solution.
->>
->> We're checking for an exact match, so you don't need the string length.
->> Instead, you can compare each character, break when characters differ,
->> or return 0 when you reached the null byte for both. So something like
->> this:
->>
->>     for (j = 0; arg[j] == str[i][j]; j++) {
->>             /* If we reached the end of the strings */
->>             if (arg[j] == '\0') {
->>                     *val = i;
->>                     return 0;
->>             }
->>     }
->>     /* Strings do not match; continue to the next string */
->>
->> We end up with the same number of lines, so I'll leave it up to you
->> whether you want to use this solution, or if you consider the existing
->> code clearer read.
-> 
-> I'll look forward in the direction you propose. First, we need to
-> confirm in which form the arguments can be expected. It depends on your
-> proposal to use a --watch string formatted arguments.
-> 
->>
->>> +	}
->>> +
->>> +	/* fallback to number */
->>
->> I'm not sure it makes sense to support numbers. Although it's true that
->> the component type, component scope, and event type are passed as __u8
->> values, users are expected to treat those values are opaque and pass
->> them via the respective enum constants. Since we don't guarantee that
->> the specific enum constant values will remain consistent between kernel
->> versions, I don't think it's a good idea to give to users that sort of
->> implication by allowing them to use raw numbers for configuration
->> selection.
-> 
-> Ack, I can remove this.
-> 
-> I'm a bit surprised by this statement. I may be wrong... I'd expect a
-> userland binary to be compatible when updating to a newer kernel: e.g.
-> user API (ABI?) definitions to be stable (including enum constants) ?
-> 
->>
->>> +	idx = strtoul(optarg, &dummy, 10);
->>> +	if (!errno) {
->>> +		if (idx >= sz)
->>> +			return -EINVAL;
->>> +		*val = idx;
->>> +		return 0;
->>> +	}
->>> +
->>> +	return -errno;
->>> +}
->>> +
->>> +static const char * const counter_event_type_name[] = {
->>> +	"COUNTER_EVENT_OVERFLOW",
->>> +	"COUNTER_EVENT_UNDERFLOW",
->>> +	"COUNTER_EVENT_OVERFLOW_UNDERFLOW",
->>> +	"COUNTER_EVENT_THRESHOLD",
->>> +	"COUNTER_EVENT_INDEX",
->>> +	"COUNTER_EVENT_CHANGE_OF_STATE",
->>> +	"COUNTER_EVENT_CAPTURE",
->>> +};
->>> +
->>> +static int counter_arg_to_event_type(char *arg, __u8 *event)
->>> +{
->>> +	return find_match_or_number_from_array(arg, counter_event_type_name,
->>> +					       ARRAY_SIZE(counter_event_type_name), event);
->>> +}
->>> +
->>> +static const char * const counter_component_type_name[] = {
->>> +	"COUNTER_COMPONENT_NONE",
->>> +	"COUNTER_COMPONENT_SIGNAL",
->>> +	"COUNTER_COMPONENT_COUNT",
->>> +	"COUNTER_COMPONENT_FUNCTION",
->>> +	"COUNTER_COMPONENT_SYNAPSE_ACTION",
->>> +	"COUNTER_COMPONENT_EXTENSION",
->>> +};
->>> +
->>> +static int counter_arg_to_component_type(char *arg, __u8 *type)
->>> +{
->>> +	return find_match_or_number_from_array(arg, counter_component_type_name,
->>> +					       ARRAY_SIZE(counter_component_type_name), type);
->>> +}
->>> +
->>> +static const char * const counter_scope_name[] = {
->>> +	"COUNTER_SCOPE_DEVICE",
->>> +	"COUNTER_SCOPE_SIGNAL",
->>> +	"COUNTER_SCOPE_COUNT",
->>> +};
->>> +
->>> +static int counter_arg_to_scope(char *arg, __u8 *type)
->>> +{
->>> +	return find_match_or_number_from_array(arg, counter_scope_name,
->>> +					       ARRAY_SIZE(counter_scope_name), type);
->>> +}
->>> +
->>> +static void print_usage(void)
->>> +{
->>> +	fprintf(stderr, "Usage: counter_watch_events [options]...\n"
->>> +		"Test various watch events for given counter device\n"
->>> +		"  --channel -c <n>\n"
->>> +		"        Set watch.channel\n"
->>> +		"  --debug -d\n"
->>> +		"        Prints debug information\n"
->>> +		"  --event -e <number or counter_event_type string>\n"
->>> +		"        Sets watch.event\n"
->>> +		"  --help -h\n"
->>> +		"        Prints usage\n"
->>> +		"  --device-num -n <n>\n"
->>> +		"        Set device number (/dev/counter<n>, default to 0)\n"
->>> +		"  --id -i <n>\n"
->>> +		"        Set watch.component.id\n"
->>> +		"  --loop -l <n>\n"
->>> +		"        Loop for a number of events (forever if n < 0)\n"
->>> +		"  --parent -p <n>\n"
->>> +		"        Set watch.component.parent number\n"
->>> +		"  --scope -s <number or counter_scope string>\n"
->>> +		"        Set watch.component.scope\n"
->>> +		"  --type -t <number or counter_component_type string>\n"
->>> +		"        Set watch.component.type\n"
->>> +		"\n"
->>> +		"Example with two watched events:\n\n"
->>> +		"counter_watch_events -d \\\n"
->>> +		"\t-t COUNTER_COMPONENT_COUNT -s COUNTER_SCOPE_COUNT"
->>> +		" -e COUNTER_EVENT_OVERFLOW_UNDERFLOW -i 0 -c 0 \\\n"
->>> +		"\t-t COUNTER_COMPONENT_EXTENSION -s COUNTER_SCOPE_COUNT"
->>> +		" -e COUNTER_EVENT_CAPTURE -i 7 -c 3\n"
->>> +		);
->>> +}
->>
->> Are you following any particular convention for the usage description? I
->> wonder if there is a particular preferred standard for command-line
->> interface descriptions. A quick search brought up a few, such as the
->> POSIX Utility Conventions[^1] and docopt[^2].
->>
->> One improvement I would recommend here is to put the short form of the
->> option before the long form and separate them with a command to make it
->> clearer (e.g. "-h, --help").
->>
->> [^1] https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html
->> [^2] http://docopt.org
-> 
-> Thanks for pointing this! So definitely a good pointer, and suggestion
-> to look at!
-> 
-> I'll try to improve in v2.
-> 
->>
->>> +
->>> +static void print_watch(struct counter_watch *watch, int nwatch)
->>> +{
->>> +	int i;
->>> +
->>> +	/* prints the watch array in C-like structure */
->>> +	printf("watch[%d] = {\n", nwatch);
->>> +	for (i = 0; i < nwatch; i++) {
->>> +		printf(" [%d] =\t{\n"
->>> +		       "\t\t.component.type = %s\n"
->>> +		       "\t\t.component.scope = %s\n"
->>> +		       "\t\t.component.parent = %d\n"
->>> +		       "\t\t.component.id = %d\n"
->>> +		       "\t\t.event = %s\n"
->>> +		       "\t\t.channel = %d\n"
->>> +		       "\t},\n",
->>> +		       i,
->>> +		       counter_component_type_name[watch[i].component.type],
->>> +		       counter_scope_name[watch[i].component.scope],
->>> +		       watch[i].component.parent,
->>> +		       watch[i].component.id,
->>> +		       counter_event_type_name[watch[i].event],
->>> +		       watch[i].channel);
->>> +	}
->>> +	printf("};\n");
->>> +}
->>> +
->>> +static const struct option longopts[] = {
->>> +	{ "channel",		required_argument, 0, 'c' },
->>> +	{ "debug",		no_argument,       0, 'd' },
->>> +	{ "event",		required_argument, 0, 'e' },
->>> +	{ "help",		no_argument,       0, 'h' },
->>> +	{ "device-num",		required_argument, 0, 'n' },
->>> +	{ "id",			required_argument, 0, 'i' },
->>> +	{ "loop",		required_argument, 0, 'l' },
->>> +	{ "parent",		required_argument, 0, 'p' },
->>> +	{ "scope",		required_argument, 0, 's' },
->>> +	{ "type",		required_argument, 0, 't' },
->>> +	{ },
->>> +};
->>> +
->>> +int main(int argc, char **argv)
->>> +{
->>> +	int c, fd, i, ret;
->>> +	struct counter_event event_data;
->>> +	char *device_name = NULL;
->>> +	int debug = 0, loop = -1;
->>> +	char *dummy;
->>> +	int dev_num = 0, nwatch = 0, ncfg[] = {0, 0, 0, 0, 0, 0};
->>> +	int num_chan = 0, num_evt = 0, num_id = 0, num_p = 0, num_s = 0, num_t = 0;
->>> +	struct counter_watch *watches;
->>> +
->>> +	/*
->>> +	 * 1st pass: count events configurations number to allocate the watch array.
->>> +	 * Each watch argument can be repeated several times: each time it gets repeated,
->>> +	 * a corresponding watch is allocated (and configured) in 2nd pass.
->>> +	 */
->>
->> It feels a somewhat prone to error (at least cumbersome) to populate
-> 
-> Yes, this could be error prone. This is also why I added a print of the
-> gathered arguments when using --debug option.
-> Perhaps this could be better to always print it (e.g. print_watch()) ?
-> 
->> each watch via individual arguments for each field. Since a watch always
->> has these fields, perhaps instead we could pass some format string that
->> represents a watch, and deliminate watches via commas. For example, we
->> could have --watch="cco00,ecc73" to represent the two watches in the
->> usage example.
-> 
-> I like the idea, to concatenate as a string. With current approach, the
-> command line quickly becomes very long.
-> 
-> It makes it obvious in your example, that two watches are used, and no
-> argument is omitted.
-> On the opposite, each argument isn't very easy to understand compared to
-> plain text definition.
-> 
->>
->> Of course, we'd need to define a more robust format string convention
->> than in my example to ensure the correct configuration is properly
-> 
-> Indeed, by using a single letter, we could face limitations (ex:
-> overflow, underflow, overflow_underflow, which letter for the 3rd here?)
-> 
-> If we go this way, probably need to brainstorm a bit.
-> 
->> communicated. What do you think, would this approach would make things
->> simpler, or just more complicated in the end?
-> 
-> I'm not 100% sure if some helpers like getopt() will help here? So, I
-> guess this could be more complicated. This may also be against the
-> guideline "options should be preceded by the '-' delimiter character."
-> in [^1] (Ok, this would rather be the --watch option, fed with watch data.)
-> 
-> Would you have suggestions regarding possible helpers ? Or do you have
-> in mind some others tools that already adopted such approach ?
+This renames the fexcit attribute to excitation_frequency to be more
+human-readable. Since we are already making many breaking changes to
+the staging driver, this is a good time to do this.
 
+Also make use of IIO_DEVICE_ATTR_RW while we are touching this.
 
-Hi William,
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
+ drivers/staging/iio/resolver/ad2s1210.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-I've prototyped something to follow your suggestion regarding --watch=
-string arguments. This may endup in more easy to read, and hopefully
-simpler approach :-).
+diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
+index 27294eff99ef..14bec2b20939 100644
+--- a/drivers/staging/iio/resolver/ad2s1210.c
++++ b/drivers/staging/iio/resolver/ad2s1210.c
+@@ -217,9 +217,9 @@ static int ad2s1210_set_resolution_gpios(struct ad2s1210_state *st,
+ 				     bitmap);
+ }
+ 
+-static ssize_t ad2s1210_show_fexcit(struct device *dev,
+-				    struct device_attribute *attr,
+-				    char *buf)
++static ssize_t excitation_frequency_show(struct device *dev,
++					 struct device_attribute *attr,
++					 char *buf)
+ {
+ 	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	unsigned int value;
+@@ -240,9 +240,9 @@ static ssize_t ad2s1210_show_fexcit(struct device *dev,
+ 	return ret;
+ }
+ 
+-static ssize_t ad2s1210_store_fexcit(struct device *dev,
+-				     struct device_attribute *attr,
+-				     const char *buf, size_t len)
++static ssize_t excitation_frequency_store(struct device *dev,
++					  struct device_attribute *attr,
++					  const char *buf, size_t len)
+ {
+ 	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	u16 fexcit;
+@@ -555,8 +555,7 @@ static int ad2s1210_write_raw(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
+-static IIO_DEVICE_ATTR(fexcit, 0644,
+-		       ad2s1210_show_fexcit,	ad2s1210_store_fexcit, 0);
++static IIO_DEVICE_ATTR_RW(excitation_frequency, 0);
+ static IIO_DEVICE_ATTR(bits, 0644,
+ 		       ad2s1210_show_resolution, ad2s1210_store_resolution, 0);
+ static IIO_DEVICE_ATTR(fault, 0644,
+@@ -604,7 +603,7 @@ static const struct iio_chan_spec ad2s1210_channels[] = {
+ };
+ 
+ static struct attribute *ad2s1210_attributes[] = {
+-	&iio_dev_attr_fexcit.dev_attr.attr,
++	&iio_dev_attr_excitation_frequency.dev_attr.attr,
+ 	&iio_dev_attr_bits.dev_attr.attr,
+ 	&iio_dev_attr_fault.dev_attr.attr,
+ 	&iio_dev_attr_los_thrd.dev_attr.attr,
+-- 
+2.34.1
 
-I'll post a V2 soon for this series (removing some patches that seems
-already applied), or just this tool.
-
-Thanks,
-Fabrice
-
-> 
->>
->>> +	while ((c = getopt_long(argc, argv, "c:de:hn:i:l:p:s:t:", longopts, NULL)) != -1) {
->>> +		switch (c) {
->>> +		case 'c':
->>> +			ncfg[0]++;
->>> +			break;
->>> +		case 'e':
->>> +			ncfg[1]++;
->>> +			break;
->>> +		case 'i':
->>> +			ncfg[2]++;
->>> +			break;
->>> +		case 'p':
->>> +			ncfg[3]++;
->>> +			break;
->>> +		case 's':
->>> +			ncfg[4]++;
->>> +			break;
->>> +		case 't':
->>> +			ncfg[5]++;
->>> +			break;
->>> +		};
->>> +	};
->>> +
->>> +	for (i = 0; i < ARRAY_SIZE(ncfg); i++)
->>> +		if (ncfg[i] > nwatch)
->>> +			nwatch = ncfg[i];
->>> +
->>> +	if (nwatch) {
->>> +		watches = calloc(nwatch, sizeof(*watches));
->>
->> We need to check if calloc fails, right?
-> 
-> Yes, you're right, will fix this too.
-> 
-> Thanks for reviewing!
-> Best regards,
-> Fabrice
-> 
->>
->> William Breathitt Gray 
