@@ -2,182 +2,109 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A545E7D0A5
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Sep 2023 18:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64946E7D0A4
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Sep 2023 18:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229785AbjIUSiK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Sep 2023 14:38:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53506 "EHLO
+        id S230411AbjIUSjv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Sep 2023 14:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbjIUSh3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Sep 2023 14:37:29 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185FC5808E
-        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 10:28:06 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id ffacd0b85a97d-31ff985e292so1136081f8f.1
-        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 10:28:05 -0700 (PDT)
+        with ESMTP id S230265AbjIUSjm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Sep 2023 14:39:42 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5721981FD0
+        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 11:39:01 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id 2adb3069b0e04-503065c4b25so2160826e87.1
+        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 11:39:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1695317281; x=1695922081; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1695321537; x=1695926337; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=VtfnLMS48uOMTYFLHrC4VI+xPTOGEubCm+FExSzwlTk=;
-        b=OoEsZxI348/ZAv/jyh8CU3HHVAwqSDLUKLbeeqtZqwlqTZ0KC9N9xP1EJykz2Prbbg
-         xeO3D4wfw3a/CedwQpvMC5rwotSepTbCfsb/2TRd2L3dCM6MSwvek9sfbUSuauSeGtUW
-         1M8OS5vDxr1aw8EMcyKoXA1ti7FfusBnkAINVz6lyTiHgB2vFgoahfGjjV6tBH3ctupv
-         VV8WJtm/J1DWluhgp4+oLrL2wXHP5W9oWuT+2hGv86hs4LDBPnaNWcOGLYbNp7H1w2no
-         rliMM7zKhf6X89JAgDSHAcFrb+vX72Etm50kgFx35aKKIy80byaadR09eWNHE/SVIuwC
-         m3PA==
+        bh=KpzQyHHzEyWIms3Xvm/C3MN/zZk6cMQQr8BMD0wmneQ=;
+        b=2FwGXkh/xUKtSj5L1tXkCqI54O1cBC7v8HxZ5HOf5zJ0dSVmfwhcp4sUc7QjUDVALR
+         EDTsCoLzO4fUQ+URtg5pilbmYX0q5/Fpmu60z7gvr5hNc9J/KfAuKqVCsgsBXdms3+6f
+         lFDrKhLMQ5LoKl7RvrO5AAO6EYYTutSW7vIvFV2vr3h3uQBus6XXRVsV0+bw2S+wwtHy
+         0rW4plkB+tHVJ3i4qs1ac6IGuim4v4FAnyM+yboqg8h/zJGN5pCvXwSy2M8NBwDijAnf
+         qkbnfQ+NwQals4j+FRwFttaORVd6vXkgJ3TNbjdZYJm/w953cwETF7ozKu63s9x+OV0Y
+         aZrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695317281; x=1695922081;
+        d=1e100.net; s=20230601; t=1695321537; x=1695926337;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=VtfnLMS48uOMTYFLHrC4VI+xPTOGEubCm+FExSzwlTk=;
-        b=Wlm4oT0Tm1SYGzzCPcZkQ6qjWw1FBhARJr8Hw87pqDtnC56lutvn3ZTXEomUSnfMrU
-         Bj8X3SiE7LB7LHxcRwZNQpIrQzlDGeTzxfM/a1sUMD9lApSh4vDYXji/gCczye+8nLCv
-         DFs3EOkQNiebIjXWLDswe+d7nAPxrV2v61LGcWc91gd3qJ/2f3wS5ZTmFtQ/n6BnA6Zr
-         +Dw0V7eTVDC115/x/3D55BJ0iWKTWzysc+eiqYJiVzzKp8FdaJzaE2HFXh1UN65QFE3o
-         akjQXANLEXXJOWohBUNqujjDap9f7NmfOYXg5RbBIzi5W+rb3dh4MRzR7sAAxyCLRgSl
-         WWVQ==
-X-Gm-Message-State: AOJu0YzlWff33CT5mT+BTXn/Y7R0AeYv5Dr9obY03pMzygud1l01+/zg
-        VX3HaH9gQ6ua7OCwBPZwzgkJwv6wx8NZFteVJ4W6L9PCF0LbxzmX5okQibkb
-X-Google-Smtp-Source: AGHT+IHDdCW8l8v6OhDqZiyja7I2+F2x5WsRgSux5VP1tVFRRWSTYBCB9TdkqRkvd27HKrJXY3PRK7lDy+BsjgySXvg=
-X-Received: by 2002:a17:906:d044:b0:9a2:474:4aa0 with SMTP id
- bo4-20020a170906d04400b009a204744aa0mr4171303ejb.48.1695306427980; Thu, 21
- Sep 2023 07:27:07 -0700 (PDT)
+        bh=KpzQyHHzEyWIms3Xvm/C3MN/zZk6cMQQr8BMD0wmneQ=;
+        b=kQEJlUWk0/WcroQQzrOy5G/5+jmvtK0pgDxE6BDQ4tJdMOpu+oNyJ6lhEC+v/CzmMQ
+         XqZg/GC9bzP6GJw0r2Ik/ZlTswP7ebnysCZxj/1o5rrJsvgkgduzoW4s3RdcH6jJAKtC
+         tkt5CBGsuzwoAF/UxWPMFjwM2hSO6oMCw9CHUAr4TgwEJ04bMs6IzgAkP8Ys1ZximTw2
+         Qw8fv2+WFl4wi1OEgE/oeMt0kr37cfHqD8N0tAQUe0uOWdFlJMKMePS5TADwGf1bYXP8
+         Yj3GmH9XMd9F6X4VO8PotqhyCdlWnUZnbiqLgh2Ll2WxZx7WjHW++xGoyB3FVU/Y71ip
+         JLwg==
+X-Gm-Message-State: AOJu0YyXHO7dBDoUWXLv1vRooKbrNK+/pHH+n/oPXs2+jb4xoU7BvLvJ
+        JhFlN97I7d2VY2ijYYNr0PgWaxf9mWaOYEc+jfi1j77GGLoEDhkGOBSftnSJ
+X-Google-Smtp-Source: AGHT+IFpyIuxAeI+zJtqVgso5gl/oZPdQPJ8OzyoLwfbQ+BnxcwAYhxcZ6tg7lLrRy8p1y2N9Tuf2kP/Jg+Cn/6HtPI=
+X-Received: by 2002:a17:906:30c6:b0:9ad:e43b:1ef2 with SMTP id
+ b6-20020a17090630c600b009ade43b1ef2mr4584204ejb.16.1695289242308; Thu, 21 Sep
+ 2023 02:40:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230921141947.57784-1-dlechner@baylibre.com> <20230921141947.57784-21-dlechner@baylibre.com>
-In-Reply-To: <20230921141947.57784-21-dlechner@baylibre.com>
+References: <20230920170253.203395-1-dlechner@baylibre.com>
+ <20230920170253.203395-2-dlechner@baylibre.com> <20230921-b304d3fd05b37a8588e101a2@fedora>
+In-Reply-To: <20230921-b304d3fd05b37a8588e101a2@fedora>
 From:   David Lechner <dlechner@baylibre.com>
-Date:   Thu, 21 Sep 2023 16:26:57 +0200
-Message-ID: <CAMknhBFrQivxmE=3voeYgHAtQBf0FSTep7oHfWOAnBTwBogXGw@mail.gmail.com>
-Subject: Re: [v2 18/19] staging: iio: resolver: ad2s1210: add phase_lock_range attributes
-To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Cc:     linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+Date:   Thu, 21 Sep 2023 11:40:31 +0200
+Message-ID: <CAMknhBFfxWy4mWDVYkmaEBx3KkJnRvo1CsNSuab2Rj0TdtozQA@mail.gmail.com>
+Subject: Re: [PATCH 1/4] dt-bindings: iio: resolver: add devicetree bindings
+ for ad2s1210
+To:     Conor Dooley <conor@kernel.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Conor Dooley <conor+dt@kernel.org>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
         Axel Haslam <ahaslam@baylibre.com>,
-        Philip Molloy <pmolloy@baylibre.com>
+        Philip Molloy <pmolloy@baylibre.com>,
+        Apelete Seketeli <aseketeli@baylibre.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Looks like I got some wrong patches in the get-send-email. These two patche=
-s
-are included in the series "[v2 00/19] iio: resolver: move ad2s1210
-out of staging"
-so please disregard this copy of the two patches.
+On Thu, Sep 21, 2023 at 11:06=E2=80=AFAM Conor Dooley <conor@kernel.org> wr=
+ote:
+>
+> > Signed-off-by: Apelete Seketeli <aseketeli@baylibre.com>
+> > Signed-off-by: David Lechner <dlechner@baylibre.com>
+>
+> Missing a From: or co-developed-by?
 
-On Thu, Sep 21, 2023 at 4:22=E2=80=AFPM David Lechner <dlechner@baylibre.co=
-m> wrote:
+Missing Co-developed-by:. Will fix.
+
+> > +maintainers:
+> > +  - Michael Hennerich <michael.hennerich@analog.com>
 >
-> This adds new phase_lock_range and phase_lock_range_available attributes
-> to the ad2s1210 resolver driver. These attributes allow the user to set
-> the phase lock range bit in the control register to modify the behavior
-> of the resolver to digital converter.
+> Why's this a chap from analog, rather than the authors?
+
+This was written by my codeveloper so not sure about the why. Michael is
+on the CC so he can clarify if this is not correct.
+
+> > +  sample-gpios:
+> > +    description: |
 >
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
-> ---
->  drivers/staging/iio/resolver/ad2s1210.c | 58 +++++++++++++++++++++++++
->  1 file changed, 58 insertions(+)
+> What do you need the pipe for here? Don't see some formatting requiring
+> preservation. Ditto below.
 >
-> diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/ii=
-o/resolver/ad2s1210.c
-> index 71f0913b7e2e..f5b8b290e860 100644
-> --- a/drivers/staging/iio/resolver/ad2s1210.c
-> +++ b/drivers/staging/iio/resolver/ad2s1210.c
-> @@ -259,6 +259,60 @@ static ssize_t excitation_frequency_store(struct dev=
-ice *dev,
->         return ret;
->  }
+
+It is just a habit to always do this for multi-line text. Will remove.
+
+> > +
+> > +  assigned-resolution-bits:
 >
-> +static ssize_t phase_lock_range_show(struct device *dev,
-> +                                    struct device_attribute *attr,
-> +                                    char *buf)
-> +{
-> +       struct ad2s1210_state *st =3D iio_priv(dev_to_iio_dev(dev));
-> +       int ret;
-> +
-> +       mutex_lock(&st->lock);
-> +       ret =3D regmap_test_bits(st->regmap, AD2S1210_REG_CONTROL,
-> +                              AD2S1210_PHASE_LOCK_RANGE_44);
-> +       if (ret < 0)
-> +               goto error_ret;
-> +
-> +       ret =3D sprintf(buf, "%d\n", ret ? 44 : 360);
-> +
-> +error_ret:
-> +       mutex_unlock(&st->lock);
-> +       return ret;
-> +}
-> +
-> +static ssize_t phase_lock_range_store(struct device *dev,
-> +                                     struct device_attribute *attr,
-> +                                     const char *buf, size_t len)
-> +{
-> +       struct ad2s1210_state *st =3D iio_priv(dev_to_iio_dev(dev));
-> +       u16 udata;
-> +       int ret;
-> +
-> +       ret =3D kstrtou16(buf, 10, &udata);
-> +       if (ret < 0 || (udata !=3D 44 && udata !=3D 360))
-> +               return -EINVAL;
-> +
-> +       mutex_lock(&st->lock);
-> +
-> +       ret =3D regmap_update_bits(st->regmap, AD2S1210_REG_CONTROL,
-> +                                AD2S1210_PHASE_LOCK_RANGE_44,
-> +                                udata =3D=3D 44 ? AD2S1210_PHASE_LOCK_RA=
-NGE_44 : 0);
-> +       if (ret < 0)
-> +               goto error_ret;
-> +
-> +       ret =3D len;
-> +
-> +error_ret:
-> +       mutex_unlock(&st->lock);
-> +       return ret;
-> +}
-> +
-> +static ssize_t phase_lock_range_available_show(struct device *dev,
-> +                                              struct device_attribute *a=
-ttr,
-> +                                              char *buf)
-> +{
-> +       return sprintf(buf, "44 360\n");
-> +}
-> +
->  /* read the fault register since last sample */
->  static ssize_t ad2s1210_show_fault(struct device *dev,
->                                    struct device_attribute *attr, char *b=
-uf)
-> @@ -506,6 +560,8 @@ static int ad2s1210_write_raw(struct iio_dev *indio_d=
-ev,
->  }
+> I figure the lack of a vendor prefix here is "inspired" by the same
+> property for stm32?
 >
->  static IIO_DEVICE_ATTR_RW(excitation_frequency, 0);
-> +static IIO_DEVICE_ATTR_RW(phase_lock_range, 0);
-> +static IIO_DEVICE_ATTR_RO(phase_lock_range_available, 0);
->  static IIO_DEVICE_ATTR(fault, 0644,
->                        ad2s1210_show_fault, ad2s1210_clear_fault, 0);
->
-> @@ -552,6 +608,8 @@ static const struct iio_chan_spec ad2s1210_channels[]=
- =3D {
->
->  static struct attribute *ad2s1210_attributes[] =3D {
->         &iio_dev_attr_excitation_frequency.dev_attr.attr,
-> +       &iio_dev_attr_phase_lock_range.dev_attr.attr,
-> +       &iio_dev_attr_phase_lock_range_available.dev_attr.attr,
->         &iio_dev_attr_fault.dev_attr.attr,
->         &iio_dev_attr_los_thrd.dev_attr.attr,
->         &iio_dev_attr_dos_ovr_thrd.dev_attr.attr,
-> --
-> 2.34.1
->
+
+Correct.
