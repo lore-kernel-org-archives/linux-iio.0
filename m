@@ -2,164 +2,143 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31F66E7D0A2
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Sep 2023 19:47:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6F3E7D0A2
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Sep 2023 19:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231339AbjIUTrC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Sep 2023 15:47:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
+        id S230107AbjIUTyi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Sep 2023 15:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231210AbjIUTq4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Sep 2023 15:46:56 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701A5561C7
-        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 10:52:19 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-400a087b0bfso13032425e9.2
-        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 10:52:19 -0700 (PDT)
+        with ESMTP id S230173AbjIUTyW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Sep 2023 15:54:22 -0400
+Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41CA3D6E45
+        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 11:27:43 -0700 (PDT)
+Received: by mail-qk1-x74a.google.com with SMTP id af79cd13be357-773aeb22094so128937385a.1
+        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 11:27:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1695318737; x=1695923537; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T9WVKxDU/WCTxqQ52/M5ua8wasfSRRcZpI1eeblkSC8=;
-        b=VzQLyXUsjMOeKvBPyj07uWQGtUKOu9NSyLaaQtjtf7Uel6fd8vx5Hvr04+uf0VkirS
-         ti/xhmEODcTODxKQVjz9aGGcsn+vzrheoA1t++M3PA+MtQ6wMdoiCkiYJQi0IjAmouz/
-         X/VzlrUXq5GIxI8joQug85/V14k2bcHV3WbJ7N8NP7j4/xMa5GwK+AhAwN9AGJ+KexRE
-         NOhFrG/ZJHauk5z9eXu3FJMDyoJCltdHDLMdkbvRKOON3KTeNV/It1VgpSqv5tn9yYuz
-         x3fxh6ApFvaee0cWp2x76o1EhgukpPhF4YurYILrx1rtivzmhLM6m+9vyHJBvDmpqgUN
-         2bGg==
+        d=google.com; s=20230601; t=1695320862; x=1695925662; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=PCRMmvveaVcVSR15oJLrWC1xgCD5rCKuEjC1MAuPd54=;
+        b=xUV3L/cBqUbplZvJ9Q8K/h6fKfYnPwvRKfxEuIOQoJGm7nXjDl/JTqIfTbAjTkAbeV
+         AaDfzKwWsUsyi8h3N4V0fLruES5aXVRFYKK2Da6vqBH918Uh9Pi/DWKMeTbyVDPGpEaP
+         zuSoY/UF9aLRKboeKDJLGjG0YFfaIxyeDCiowGaEpC6yd+5ieYHtl1b3ikdynZEeNigE
+         9CYtDzsgHgGu7Nsm2LeH7UwyhrPeTyhCxIM6tv9HpdhH/nyS59Bqa+tVquUKD4jdj120
+         TNwRQnINTMo4xujy53/15LHd3Il+MrasXefD0T157unikfLjTf+OwFvMZp+VAYo33892
+         sVzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695318737; x=1695923537;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=T9WVKxDU/WCTxqQ52/M5ua8wasfSRRcZpI1eeblkSC8=;
-        b=QceK4RHbADnpUGSE7/gi/eRWPmysBSUk8zke4Cl+K+HGloFnZfUPBlAxYrtsAgy3DO
-         7/ZIS1zcCGnQKW8BvnikOZJIbzSdUePDQrqFJTvWYgvLMWyp5B7H0RGbk1sj5Vf63Ysr
-         Io5xFjQ6ysZGxfW2OMQ2M0911+UhcaUbnKVMkX4Rs2uyIi0Rm6Gbb3TsxCgGOZd6nBNf
-         NIVAErcPscWqOxnHsnFF7Fm+W1e7ffTfVMUN+dIdyliWPQZ6qi/ZH36dih6LHgwGkCEc
-         Pse0pO7hAA9RoOxq8Ja0lmXWg9oUbaBJ76EmiU8p7T/5HD7TMlMc+4wp4cgbzcpLUr9i
-         aIsQ==
-X-Gm-Message-State: AOJu0YwGzh7OwixBbJSfdDW3gJZmFfPv006Fat5Uo7mIvYNo+wzFYoeX
-        YBd8C4fweAgAWa0om9WRMHvFI8dXWeyvutX20Tzs/3Wv
-X-Google-Smtp-Source: AGHT+IE9ZEE6qW3Uh7F/2SHDgzRpOaJowWC7a1ZsGgdxWu4OvSFD38FqiRfJikCDKaiQeM4iFx0WXA==
-X-Received: by 2002:a5d:500d:0:b0:317:58e4:e941 with SMTP id e13-20020a5d500d000000b0031758e4e941mr5405435wrt.33.1695307462223;
-        Thu, 21 Sep 2023 07:44:22 -0700 (PDT)
-Received: from localhost.localdomain (abordeaux-655-1-129-86.w90-5.abo.wanadoo.fr. [90.5.10.86])
-        by smtp.gmail.com with ESMTPSA id s17-20020a1cf211000000b003fe2a40d287sm2125515wmc.1.2023.09.21.07.44.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Sep 2023 07:44:21 -0700 (PDT)
-From:   David Lechner <dlechner@baylibre.com>
-To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Cc:     linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Axel Haslam <ahaslam@baylibre.com>,
-        Philip Molloy <pmolloy@baylibre.com>,
-        David Lechner <dlechner@baylibre.com>
-Subject: [PATCH v2 11/19] staging: iio: resolver: ad2s1210: remove config attribute
-Date:   Thu, 21 Sep 2023 09:43:52 -0500
-Message-Id: <20230921144400.62380-12-dlechner@baylibre.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230921144400.62380-1-dlechner@baylibre.com>
-References: <20230921144400.62380-1-dlechner@baylibre.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        d=1e100.net; s=20230601; t=1695320862; x=1695925662;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=PCRMmvveaVcVSR15oJLrWC1xgCD5rCKuEjC1MAuPd54=;
+        b=j19+wbxN7Nj2Hw9TNRCsSRQOgly/UCcxEFqo9tnly1coT7+bJvMZr0r5MWlT/JyXfO
+         8JO5pCIa9soxU35mKe4iqyLalrr5O88mHzLRv3Q9mO9kg+4BXFMFrU0Lzjnn9TS4d8cT
+         RzLsXbpi0fTiNXP5oZB5WO76PMdAK28b7BDWg1Sv895zogdA3ImYi6Ef7ApQbtQ1jPat
+         NwZjKdoYxsWjsrF+3kf7PvbqKI/W1ghVc+cKvDdUgeyxFxGsN+MGpciIRtZuhBifib/O
+         EOjLhE1wFqXAUr1EnW7z3wGKYgnuAbVGuFIJfJ6QLfHzV3HO23TSPlPXaf5B4ZzjHU9E
+         /7Fg==
+X-Gm-Message-State: AOJu0YzQIcmn4JU8m9Q4fbIu0SOzwK/btVbsokTderM9rYxTyoCltX1o
+        yFnVPa213OLEdrjESRuU4hIpSqN9LXbIN7ildw==
+X-Google-Smtp-Source: AGHT+IHDyKp3cW0YeVyd0vhCpme6YAoecIObStizWMW7RFLYKWXmo/R2pTAhUCAwSHys9UXUTSOhS+KIcqAGjnZGfw==
+X-Received: from jstitt-linux1.c.googlers.com ([fda3:e722:ac3:cc00:2b:ff92:c0a8:23b5])
+ (user=justinstitt job=sendgmr) by 2002:a25:ce49:0:b0:d80:ff9:d19e with SMTP
+ id x70-20020a25ce49000000b00d800ff9d19emr63960ybe.9.1695279663292; Thu, 21
+ Sep 2023 00:01:03 -0700 (PDT)
+Date:   Thu, 21 Sep 2023 07:01:01 +0000
+Mime-Version: 1.0
+X-B4-Tracking: v=1; b=H4sIAC3qC2UC/x3NwQqDMAyA4VeRnBeojei6Vxk7jJptOawtiUhFf
+ HeLx+/y/zsYq7DBo9tBeRWTnBr6Wwfx905fRpmbwTtPLvgebdEUy4azyspqKJKxaK7yl2VDq4H 8gBHvkQaaxml0FKDFivJH6jV6vo7jBIHQTo14AAAA
+X-Developer-Key: i=justinstitt@google.com; a=ed25519; pk=tC3hNkJQTpNX/gLKxTNQKDmiQl6QjBNCGKJINqAdJsE=
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1695279662; l=2848;
+ i=justinstitt@google.com; s=20230717; h=from:subject:message-id;
+ bh=9jDyBMkgavsnNjxewPyVtkova19FE84VVZK9Pvb/rDk=; b=e5TEjYsjowMhf9fPiePv9hrz9ZlUb1GRwFyDE70vdQLcICQkLpAoogAgOXukubFmfNkqyHkBm
+ i+6F0QbTVSPBtqz25d/Mw5nxuJ1Y4S/g8IQULtXS2wdUiW7lNb3r3H6
+X-Mailer: b4 0.12.3
+Message-ID: <20230921-strncpy-drivers-iio-proximity-sx9324-c-v1-1-4e8d28fd1e7c@google.com>
+Subject: [PATCH] iio: sx9324: replace deprecated strncpy
+From:   Justin Stitt <justinstitt@google.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org,
+        Justin Stitt <justinstitt@google.com>
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This removes the config register sysfs attribute.
+`strncpy` is deprecated for use on NUL-terminated destination strings [1].
 
-Writing to the config register directly can be dangerous and userspace
-should not need to have to know the register layout. This register
-can still be accessed though debugfs if needed.
+We should prefer more robust and less ambiguous string interfaces.
 
-We can add new attributes to set specific flags in the config register
-in the future if needed (e.g. `enable_hysterisis` and
-`phase_lock_range`).
+`prop` is defined as this string literal with size 30 (including null):
+|       #define SX9324_PROXRAW_DEF "semtech,ph01-proxraw-strength"
+|      	char prop[] = SX9324_PROXRAW_DEF;
 
-Signed-off-by: David Lechner <dlechner@baylibre.com>
+Each of the strncpy->strscpy replacements involve string literals with a
+size less than 30 which means there are no current problems with how
+strncpy is used. However, let's move away from using strncpy entirely.
+
+A suitable replacement is `strscpy` [2] due to the fact that it
+guarantees NUL-termination on the destination buffer without
+unnecessarily NUL-padding.
+
+Moreover, let's opt for the more conventional `sizeof()` as opposed to
+`ARRAY_SIZE` for these simple strings.
+
+Link: https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings [1]
+Link: https://manpages.debian.org/testing/linux-manual-4.8/strscpy.9.en.html [2]
+Link: https://github.com/KSPP/linux/issues/90
+Cc: linux-hardening@vger.kernel.org
+Signed-off-by: Justin Stitt <justinstitt@google.com>
 ---
- drivers/staging/iio/resolver/ad2s1210.c | 47 -------------------------
- 1 file changed, 47 deletions(-)
+FWIW: It seems fragile to base future `prop` stores on the
+size of it's default string.
 
-diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index b99928394e3f..223cc4702188 100644
---- a/drivers/staging/iio/resolver/ad2s1210.c
-+++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -269,50 +269,6 @@ static ssize_t ad2s1210_store_fexcit(struct device *dev,
- 	return ret < 0 ? ret : len;
- }
+Note: build-tested
+---
+ drivers/iio/proximity/sx9324.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
+index 438f9c9aba6e..25ac2733bcef 100644
+--- a/drivers/iio/proximity/sx9324.c
++++ b/drivers/iio/proximity/sx9324.c
+@@ -937,11 +937,9 @@ sx9324_get_default_reg(struct device *dev, int idx,
+ 	case SX9324_REG_AFE_CTRL4:
+ 	case SX9324_REG_AFE_CTRL7:
+ 		if (reg_def->reg == SX9324_REG_AFE_CTRL4)
+-			strncpy(prop, "semtech,ph01-resolution",
+-				ARRAY_SIZE(prop));
++			strscpy(prop, "semtech,ph01-resolution", sizeof(prop));
+ 		else
+-			strncpy(prop, "semtech,ph23-resolution",
+-				ARRAY_SIZE(prop));
++			strscpy(prop, "semtech,ph23-resolution", sizeof(prop));
  
--static ssize_t ad2s1210_show_control(struct device *dev,
--				     struct device_attribute *attr,
--				     char *buf)
--{
--	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
--	unsigned int value;
--	int ret;
--
--	mutex_lock(&st->lock);
--	ret = regmap_read(st->regmap, AD2S1210_REG_CONTROL, &value);
--	mutex_unlock(&st->lock);
--	return ret < 0 ? ret : sprintf(buf, "0x%x\n", value);
--}
--
--static ssize_t ad2s1210_store_control(struct device *dev,
--				      struct device_attribute *attr,
--				      const char *buf, size_t len)
--{
--	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
--	unsigned char udata;
--	unsigned char data;
--	int ret;
--
--	ret = kstrtou8(buf, 16, &udata);
--	if (ret)
--		return -EINVAL;
--
--	mutex_lock(&st->lock);
--	data = udata & ~AD2S1210_ADDRESS_DATA;
--	ret = regmap_write(st->regmap, AD2S1210_REG_CONTROL, data);
--	if (ret < 0)
--		goto error_ret;
--
--	st->resolution =
--		ad2s1210_resolution_value[data & AD2S1210_SET_RES];
--	ad2s1210_set_resolution_pin(st);
--	ret = len;
--	st->hysteresis = !!(data & AD2S1210_ENABLE_HYSTERESIS);
--
--error_ret:
--	mutex_unlock(&st->lock);
--	return ret;
--}
--
- static ssize_t ad2s1210_show_resolution(struct device *dev,
- 					struct device_attribute *attr,
- 					char *buf)
-@@ -519,8 +475,6 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
- 
- static IIO_DEVICE_ATTR(fexcit, 0644,
- 		       ad2s1210_show_fexcit,	ad2s1210_store_fexcit, 0);
--static IIO_DEVICE_ATTR(control, 0644,
--		       ad2s1210_show_control, ad2s1210_store_control, 0);
- static IIO_DEVICE_ATTR(bits, 0644,
- 		       ad2s1210_show_resolution, ad2s1210_store_resolution, 0);
- static IIO_DEVICE_ATTR(fault, 0644,
-@@ -566,7 +520,6 @@ static const struct iio_chan_spec ad2s1210_channels[] = {
- 
- static struct attribute *ad2s1210_attributes[] = {
- 	&iio_dev_attr_fexcit.dev_attr.attr,
--	&iio_dev_attr_control.dev_attr.attr,
- 	&iio_dev_attr_bits.dev_attr.attr,
- 	&iio_dev_attr_fault.dev_attr.attr,
- 	&iio_dev_attr_los_thrd.dev_attr.attr,
--- 
-2.34.1
+ 		ret = device_property_read_u32(dev, prop, &raw);
+ 		if (ret)
+@@ -1012,11 +1010,9 @@ sx9324_get_default_reg(struct device *dev, int idx,
+ 	case SX9324_REG_PROX_CTRL0:
+ 	case SX9324_REG_PROX_CTRL1:
+ 		if (reg_def->reg == SX9324_REG_PROX_CTRL0)
+-			strncpy(prop, "semtech,ph01-proxraw-strength",
+-				ARRAY_SIZE(prop));
++			strscpy(prop, "semtech,ph01-proxraw-strength", sizeof(prop));
+ 		else
+-			strncpy(prop, "semtech,ph23-proxraw-strength",
+-				ARRAY_SIZE(prop));
++			strscpy(prop, "semtech,ph23-proxraw-strength", sizeof(prop));
+ 		ret = device_property_read_u32(dev, prop, &raw);
+ 		if (ret)
+ 			break;
+
+---
+base-commit: 2cf0f715623872823a72e451243bbf555d10d032
+change-id: 20230921-strncpy-drivers-iio-proximity-sx9324-c-8c3437676039
+
+Best regards,
+--
+Justin Stitt <justinstitt@google.com>
 
