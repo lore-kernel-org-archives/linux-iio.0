@@ -2,52 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A742E7D0A9
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Sep 2023 19:30:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31F66E7D0A2
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Sep 2023 19:47:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230183AbjIUTal (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Sep 2023 15:30:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43382 "EHLO
+        id S231339AbjIUTrC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Sep 2023 15:47:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229743AbjIUTaJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Sep 2023 15:30:09 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC565AE24B
-        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 11:04:53 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id 2adb3069b0e04-503065c4b25so2110671e87.1
-        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 11:04:53 -0700 (PDT)
+        with ESMTP id S231210AbjIUTq4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Sep 2023 15:46:56 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701A5561C7
+        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 10:52:19 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-400a087b0bfso13032425e9.2
+        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 10:52:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1695319492; x=1695924292; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=2dbJ671h4+Zrpefl6Lm2RwGWdFjdR10s5YR4gHySBBk=;
-        b=U9TJmf9tPRA8YXaMJ/Nn5ww/D+9eIqEIbk0UMZsz5i0gIvxJwCjYIclnYXJQGva6wX
-         8fXOhKyRL45oShUUuFXlnbS3E+OgoNz9l6sD22dg+ltr67RmxF3AaxzCeGm6QEzsgJ1N
-         H+M0QfAme2upb8gfGGlPgIdDi4mRr0bJsFi0qacvSdnkw0UZx5bYzvCBKgRlsAcNvLw9
-         sWGiQNx+4cKotVeNqwuqDoO226HkZ59c/ViPxhvRK8l1tCPhmWiBPH5lKqMeBVaN4190
-         NSQBj+LJvMDOo6Wh/0HZAolfjA2FR3l+YwNPWRtEx6peh+2M/zJtyN2/Wrz+ytYKBG0s
-         nPwg==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1695318737; x=1695923537; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T9WVKxDU/WCTxqQ52/M5ua8wasfSRRcZpI1eeblkSC8=;
+        b=VzQLyXUsjMOeKvBPyj07uWQGtUKOu9NSyLaaQtjtf7Uel6fd8vx5Hvr04+uf0VkirS
+         ti/xhmEODcTODxKQVjz9aGGcsn+vzrheoA1t++M3PA+MtQ6wMdoiCkiYJQi0IjAmouz/
+         X/VzlrUXq5GIxI8joQug85/V14k2bcHV3WbJ7N8NP7j4/xMa5GwK+AhAwN9AGJ+KexRE
+         NOhFrG/ZJHauk5z9eXu3FJMDyoJCltdHDLMdkbvRKOON3KTeNV/It1VgpSqv5tn9yYuz
+         x3fxh6ApFvaee0cWp2x76o1EhgukpPhF4YurYILrx1rtivzmhLM6m+9vyHJBvDmpqgUN
+         2bGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695319492; x=1695924292;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2dbJ671h4+Zrpefl6Lm2RwGWdFjdR10s5YR4gHySBBk=;
-        b=YTaDzuZssPEvoOxgGVmaYf9DTgWBc0wfPT93Zroyfvvubdm3RL6mCHYMxLsvyAfN+u
-         e68dyerVh2DHf3elQTnDNyHZqeq8KJSvNMRmfV7YZBMsRm1cGyFU++iQAUEdEGecd6bH
-         6OQBXXWY3ddfyAITHvfMjfJwCALmmVE9J9EzO3ud9sM3w7eSWk5fdJ2vayb852waEtDO
-         /cP/bILKMcZE0P7ku2lj9iSpKwfKpZ2iHJcodPCNS56nqumuBRz0DsR/hjmn7ewEykuY
-         HGRvlS9fLAj5Ub7/oatrkj+aIS6p6KOz0D4gRJYh6PI+ZOK2lUa8WquZWbjgd16jmspz
-         T1BA==
-X-Gm-Message-State: AOJu0YwRnuBB+iPrsHlJpLcyS0A7DZOkLPgQSPP9nve9sWDnM/8CeKpL
-        4k+FNuPwpSCavwKuqKMhRKX2gtfeN/m5DiuZwR0FWdvW
-X-Google-Smtp-Source: AGHT+IFl1Y1y2zMR1iNlW+1IiVeZ0qyN3wFDv4S8/6ruNMMK2i/+yZoG4piAY0plFw/WCYJXxcy+mQ==
-X-Received: by 2002:a05:600c:152:b0:404:2dbb:8943 with SMTP id w18-20020a05600c015200b004042dbb8943mr5711734wmm.2.1695307452618;
-        Thu, 21 Sep 2023 07:44:12 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1695318737; x=1695923537;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=T9WVKxDU/WCTxqQ52/M5ua8wasfSRRcZpI1eeblkSC8=;
+        b=QceK4RHbADnpUGSE7/gi/eRWPmysBSUk8zke4Cl+K+HGloFnZfUPBlAxYrtsAgy3DO
+         7/ZIS1zcCGnQKW8BvnikOZJIbzSdUePDQrqFJTvWYgvLMWyp5B7H0RGbk1sj5Vf63Ysr
+         Io5xFjQ6ysZGxfW2OMQ2M0911+UhcaUbnKVMkX4Rs2uyIi0Rm6Gbb3TsxCgGOZd6nBNf
+         NIVAErcPscWqOxnHsnFF7Fm+W1e7ffTfVMUN+dIdyliWPQZ6qi/ZH36dih6LHgwGkCEc
+         Pse0pO7hAA9RoOxq8Ja0lmXWg9oUbaBJ76EmiU8p7T/5HD7TMlMc+4wp4cgbzcpLUr9i
+         aIsQ==
+X-Gm-Message-State: AOJu0YwGzh7OwixBbJSfdDW3gJZmFfPv006Fat5Uo7mIvYNo+wzFYoeX
+        YBd8C4fweAgAWa0om9WRMHvFI8dXWeyvutX20Tzs/3Wv
+X-Google-Smtp-Source: AGHT+IE9ZEE6qW3Uh7F/2SHDgzRpOaJowWC7a1ZsGgdxWu4OvSFD38FqiRfJikCDKaiQeM4iFx0WXA==
+X-Received: by 2002:a5d:500d:0:b0:317:58e4:e941 with SMTP id e13-20020a5d500d000000b0031758e4e941mr5405435wrt.33.1695307462223;
+        Thu, 21 Sep 2023 07:44:22 -0700 (PDT)
 Received: from localhost.localdomain (abordeaux-655-1-129-86.w90-5.abo.wanadoo.fr. [90.5.10.86])
-        by smtp.gmail.com with ESMTPSA id s17-20020a1cf211000000b003fe2a40d287sm2125515wmc.1.2023.09.21.07.44.11
+        by smtp.gmail.com with ESMTPSA id s17-20020a1cf211000000b003fe2a40d287sm2125515wmc.1.2023.09.21.07.44.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Sep 2023 07:44:12 -0700 (PDT)
+        Thu, 21 Sep 2023 07:44:21 -0700 (PDT)
 From:   David Lechner <dlechner@baylibre.com>
 To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-staging@lists.linux.dev
@@ -60,91 +61,105 @@ Cc:     linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Axel Haslam <ahaslam@baylibre.com>,
         Philip Molloy <pmolloy@baylibre.com>,
         David Lechner <dlechner@baylibre.com>
-Subject: [PATCH v2 00/19] iio: resolver: move ad2s1210 out of staging
-Date:   Thu, 21 Sep 2023 09:43:41 -0500
-Message-Id: <20230921144400.62380-1-dlechner@baylibre.com>
+Subject: [PATCH v2 11/19] staging: iio: resolver: ad2s1210: remove config attribute
+Date:   Thu, 21 Sep 2023 09:43:52 -0500
+Message-Id: <20230921144400.62380-12-dlechner@baylibre.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230921144400.62380-1-dlechner@baylibre.com>
+References: <20230921144400.62380-1-dlechner@baylibre.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Resending v2 with proper `PATCH v2` prefix.
+This removes the config register sysfs attribute.
 
-Changes since v1:
-* Address initial device tree patch feedback
-* Drop "iio: sysfs: add IIO_DEVICE_ATTR_NAMED_RW macro" (related cleanups
-  also dropped for now, will address in a future series if needed)
-* Apply improvements as a series as patches to the staging driver. It is not
-  quite ready for the move out of staging patch yet.
+Writing to the config register directly can be dangerous and userspace
+should not need to have to know the register layout. This register
+can still be accessed though debugfs if needed.
 
-This series has been tested on actual hardware using a EVAL-AD2S1210 evaluation
-board. (Note: not all device tree features have been implemented in the driver
-since the eval board doesn't support them out of the box. We plan to add them
-later if needed.)
+We can add new attributes to set specific flags in the config register
+in the future if needed (e.g. `enable_hysterisis` and
+`phase_lock_range`).
 
-One thing left over from the staging driver that probably needs more attention
-still is the fault handling (both the fault threshold attributes and how
-userspace gets notified of fault conditions). We considered adding these as
-events, but the fault conditions are related to internal measurements in the
-chip that aren't available as channels.
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
+ drivers/staging/iio/resolver/ad2s1210.c | 47 -------------------------
+ 1 file changed, 47 deletions(-)
 
-Since the chip is designed to read the fault register each time we read the
-data registers for one of the two channels it seems like faults should be
-associated with channels one way or another. Would it make sense to add extra
-channels for the internal signals that only have fault events (mostly with
-IIO_EV_TYPE_THRESH)? Or would it make sense to add a new "flags" channel type
-where the "raw" value is bit flags? Or something else?
-
-Here is the table of available faults for context. Sine/cosine inputs are
-internal signals.
-
-| Bit | Description
-+-----+------------
-| D7  |  Sine/cosine inputs clipped
-| D6  |  Sine/cosine inputs below LOS threshold
-| D5  |  Sine/cosine inputs exceed DOS overrange threshold
-| D4  |  Sine/cosine inputs exceed DOS mismatch threshold
-| D3  |  Tracking error exceeds LOT threshold
-| D2  |  Velocity exceeds maximum tracking rate
-| D1  |  Phase error exceeds phase lock range
-| D0  |  Configuration parity error
-
-David Lechner (19):
-  dt-bindings: iio: resolver: add devicetree bindings for ad2s1210
-  staging: iio: Documentation: document IIO resolver AD2S1210 sysfs
-    attributes
-  staging: iio: resolver: ad2s1210: fix ad2s1210_show_fault
-  staging: iio: resolver: ad2s1210: fix not restoring sample gpio in
-    channel read
-  staging: iio: resolver: ad2s1210: fix probe
-  staging: iio: resolver: ad2s1210: always use 16-bit value for raw read
-  staging: iio: resolver: ad2s1210: implement IIO_CHAN_INFO_SCALE
-  staging: iio: resolver: ad2s1210: use devicetree to get fclkin
-  staging: iio: resolver: ad2s1210: use regmap for config registers
-  staging: iio: resolver: ad2s1210: add debugfs reg access
-  staging: iio: resolver: ad2s1210: remove config attribute
-  staging: iio: resolver: ad2s1210: rework gpios
-  staging: iio: resolver: ad2s1210: implement hysteresis as channel attr
-  staging: iio: resolver: ad2s1210: refactor setting excitation
-    frequency
-  staging: iio: resolver: ad2s1210: read excitation frequency from
-    control register
-  staging: iio: resolver: ad2s1210: rename fexcit attribute
-  staging: iio: resolver: ad2s1210: convert resolution to devicetree
-    property
-  staging: iio: resolver: ad2s1210: add phase_lock_range attributes
-  staging: iio: resolver: ad2s1210: add triggered buffer support
-
- .../bindings/iio/resolver/adi,ad2s1210.yaml   | 150 +++
- .../sysfs-bus-iio-resolver-ad2s1210           | 109 ++
- drivers/staging/iio/resolver/Kconfig          |   1 +
- drivers/staging/iio/resolver/ad2s1210.c       | 948 +++++++++++-------
- 4 files changed, 857 insertions(+), 351 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/resolver/adi,ad2s1210.yaml
- create mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-resolver-ad2s1210
-
+diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
+index b99928394e3f..223cc4702188 100644
+--- a/drivers/staging/iio/resolver/ad2s1210.c
++++ b/drivers/staging/iio/resolver/ad2s1210.c
+@@ -269,50 +269,6 @@ static ssize_t ad2s1210_store_fexcit(struct device *dev,
+ 	return ret < 0 ? ret : len;
+ }
+ 
+-static ssize_t ad2s1210_show_control(struct device *dev,
+-				     struct device_attribute *attr,
+-				     char *buf)
+-{
+-	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+-	unsigned int value;
+-	int ret;
+-
+-	mutex_lock(&st->lock);
+-	ret = regmap_read(st->regmap, AD2S1210_REG_CONTROL, &value);
+-	mutex_unlock(&st->lock);
+-	return ret < 0 ? ret : sprintf(buf, "0x%x\n", value);
+-}
+-
+-static ssize_t ad2s1210_store_control(struct device *dev,
+-				      struct device_attribute *attr,
+-				      const char *buf, size_t len)
+-{
+-	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+-	unsigned char udata;
+-	unsigned char data;
+-	int ret;
+-
+-	ret = kstrtou8(buf, 16, &udata);
+-	if (ret)
+-		return -EINVAL;
+-
+-	mutex_lock(&st->lock);
+-	data = udata & ~AD2S1210_ADDRESS_DATA;
+-	ret = regmap_write(st->regmap, AD2S1210_REG_CONTROL, data);
+-	if (ret < 0)
+-		goto error_ret;
+-
+-	st->resolution =
+-		ad2s1210_resolution_value[data & AD2S1210_SET_RES];
+-	ad2s1210_set_resolution_pin(st);
+-	ret = len;
+-	st->hysteresis = !!(data & AD2S1210_ENABLE_HYSTERESIS);
+-
+-error_ret:
+-	mutex_unlock(&st->lock);
+-	return ret;
+-}
+-
+ static ssize_t ad2s1210_show_resolution(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
+@@ -519,8 +475,6 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
+ 
+ static IIO_DEVICE_ATTR(fexcit, 0644,
+ 		       ad2s1210_show_fexcit,	ad2s1210_store_fexcit, 0);
+-static IIO_DEVICE_ATTR(control, 0644,
+-		       ad2s1210_show_control, ad2s1210_store_control, 0);
+ static IIO_DEVICE_ATTR(bits, 0644,
+ 		       ad2s1210_show_resolution, ad2s1210_store_resolution, 0);
+ static IIO_DEVICE_ATTR(fault, 0644,
+@@ -566,7 +520,6 @@ static const struct iio_chan_spec ad2s1210_channels[] = {
+ 
+ static struct attribute *ad2s1210_attributes[] = {
+ 	&iio_dev_attr_fexcit.dev_attr.attr,
+-	&iio_dev_attr_control.dev_attr.attr,
+ 	&iio_dev_attr_bits.dev_attr.attr,
+ 	&iio_dev_attr_fault.dev_attr.attr,
+ 	&iio_dev_attr_los_thrd.dev_attr.attr,
 -- 
 2.34.1
 
