@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B46E7D0A6
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Sep 2023 20:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70AA5E7D0A7
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Sep 2023 20:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231487AbjIUUSJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Sep 2023 16:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34516 "EHLO
+        id S230510AbjIUUSo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Sep 2023 16:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbjIUURu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Sep 2023 16:17:50 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923B05A007
-        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 10:20:40 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id 2adb3069b0e04-502b0d23f28so2079174e87.2
-        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 10:20:40 -0700 (PDT)
+        with ESMTP id S231496AbjIUUSO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Sep 2023 16:18:14 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A7C59949
+        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 10:20:17 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-53348be3fe1so935207a12.2
+        for <linux-iio@vger.kernel.org>; Thu, 21 Sep 2023 10:20:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1695316838; x=1695921638; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1695316816; x=1695921616; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BurSNjw3LRUUcMvXtonPsGB5QUx7CZPo8/XQKc8tXvQ=;
-        b=z9Sp6KlC8MYRvpyQ4Rn45KIKhCZDSeGyb5Uzv8glvxu/fgQh5NRHbLgLccchuz9E8l
-         1AOf9qfekJ5W7PqzvVrpeS9ItS0GVYbgYgaoQpYkIDO06Q61hqFnjex71ZucI6BdzLlv
-         E2HHJm1jCk+JPGiTXOHe2Morl4O0Q9H0ykKoH9cjD1IFeFCEAw/EQ/bvBcpknszKAjoR
-         I40Ast8y61lLeXypxY9r2jJRXCRkx5Otmiw+ytgtBKomJHjStyBU7AFqoq6pCAVpkMYU
-         +j0zXTdIHOaENfzUx9z9lofckRHhh8S2SomI2YJT3VlQfwEFrZCMYmAMh+jT2J9X6/a7
-         K+9A==
+        bh=8xPn0fJb1G79vmQneRtFHd9riwOuPrJO1tNQT+KG0zw=;
+        b=S5o2V64m472vGBlxE45OyYD3tt/c7uZMvJoVxJsUCPTzLRqGCENib31iydNBz1Ad7K
+         hv9MX1nWXi1uYS76Mh3RvsTj6Qvw/P2edS+eTDK380z96Ig33ApqDdwkxpwJvyeqOhte
+         NyPZQnNNNPDnaM3sN67v414l9UKz4It+nCrNGOAiwDXcN80rXuK9jW6G1feKw2RmDRkC
+         Q3UHvYI0vmJIWKdeRcBI8+HzR/+fLDJIqOlVP0uRtDq5mTFx/wV70/Fh9tvhg9lVRmts
+         RUtOFcvEH6jhyn7pJKqk1l6xbdPTOii4osQQzYhxEGMqK9KQ5s9Gm8TO/a20sb9FT4xc
+         M0JA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695316838; x=1695921638;
+        d=1e100.net; s=20230601; t=1695316816; x=1695921616;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=BurSNjw3LRUUcMvXtonPsGB5QUx7CZPo8/XQKc8tXvQ=;
-        b=A1G+qqNuImBlm0Ejruarmg48o8rjTALENu+ltpCfrbWDmq9CjFcxd5OszQ93sX2o/X
-         BoPiD4ADp+Bs7135o7t3RlKLvp3OoLbHX91hk21aLbylH0ndgkfuv35n3asy4RePRUAP
-         kwGznv7K9fVpVaKrYBzT058yEiJ2tio2ooF7FeWT+goZlRlapw2NNa/0NogSM7Eg1nUm
-         D+u/VfSWVP0RVwkoI5scWV/TilKHgBSeMhu5cBQzY7GRO9Agl7I4DLZtTH6R4H9TmyWk
-         sa9ysTM9e7miIduNFtJF7TbASvxKJLe9OVTpWEDZeZL4PIAI6d8vG4hNPPmibStfE7ct
-         JWKQ==
-X-Gm-Message-State: AOJu0Yz9113TjBLYgJsCtPMeetct/46KJfxS/IpfRYyyfQEJZ3RXDdgX
-        L9I/Zm+QhBSvSln3hhoXBTcftpbCTPDmzeLHniSk85Ro
-X-Google-Smtp-Source: AGHT+IHNEr10kFqru6shnxnQjCxmHgYq/iqV95+VoS8aS+sGpqc8B3o89A4hIe6FM7kiYkFbjggLAA==
-X-Received: by 2002:adf:f88f:0:b0:31d:3669:1c55 with SMTP id u15-20020adff88f000000b0031d36691c55mr5308299wrp.65.1695306153705;
-        Thu, 21 Sep 2023 07:22:33 -0700 (PDT)
+        bh=8xPn0fJb1G79vmQneRtFHd9riwOuPrJO1tNQT+KG0zw=;
+        b=ScQEqSKbbmuce5DENvwMocSPs55euknycpIjSZ1gLpnYMl9gKau/VvHbXrjGM5p4e/
+         afwiDN1pQTJozL0bo+q5fn6J0viBAYRO5gCsFWkbxkkZWqb27IpQz77AuMD0w1bLaWrn
+         aS4a8Ov9WKpb0J2J9h4L0qZDLYMPcU+LE+4LcaqJX0AM+aRfPJWTQc7ZSERFfEtQ1Gjr
+         66/15kAYTS+fazBUmv4xLPmb/gqnnvhVtanrphzWEYcQz0lq6x5RSjcLLIBW06Zv6z2T
+         LmzOoE62XyRFvHlb4RV0yMBygMl5+CiO2w31ZXDP41Cz2bwU5bXJtB0cNwB6eQHYK7pi
+         GT1A==
+X-Gm-Message-State: AOJu0Yzz1RzaodQ+4yBBZqUMC13rdvEFO0joDy8E1oWRNz2tjllF5/fp
+        my5fn6t5v74s9X7TI3lruKwbGU0C1RMKjXzp7u3X/Gae
+X-Google-Smtp-Source: AGHT+IH24xvDRaPHH44BwrDTbzdtwnxnkxTSk7+JyUWRFP+k6Au8hn9xlr4Gj5hf6z+Ngqc6nhucog==
+X-Received: by 2002:a7b:c859:0:b0:402:95a0:b2ae with SMTP id c25-20020a7bc859000000b0040295a0b2aemr4971411wml.32.1695307458717;
+        Thu, 21 Sep 2023 07:44:18 -0700 (PDT)
 Received: from localhost.localdomain (abordeaux-655-1-129-86.w90-5.abo.wanadoo.fr. [90.5.10.86])
-        by smtp.gmail.com with ESMTPSA id n11-20020a5d4c4b000000b0031fbbe347ebsm1901426wrt.22.2023.09.21.07.22.32
+        by smtp.gmail.com with ESMTPSA id s17-20020a1cf211000000b003fe2a40d287sm2125515wmc.1.2023.09.21.07.44.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Sep 2023 07:22:33 -0700 (PDT)
+        Thu, 21 Sep 2023 07:44:18 -0700 (PDT)
 From:   David Lechner <dlechner@baylibre.com>
 To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-staging@lists.linux.dev
@@ -61,160 +61,172 @@ Cc:     linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Axel Haslam <ahaslam@baylibre.com>,
         Philip Molloy <pmolloy@baylibre.com>,
         David Lechner <dlechner@baylibre.com>
-Subject: [PATCH 2/2] staging: iio: resolver: ad2s1210: add triggered buffer support
-Date:   Thu, 21 Sep 2023 09:19:30 -0500
-Message-Id: <20230921141947.57784-5-dlechner@baylibre.com>
+Subject: [PATCH v2 07/19] staging: iio: resolver: ad2s1210: implement IIO_CHAN_INFO_SCALE
+Date:   Thu, 21 Sep 2023 09:43:48 -0500
+Message-Id: <20230921144400.62380-8-dlechner@baylibre.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230921141947.57784-1-dlechner@baylibre.com>
-References: <20230921141947.57784-1-dlechner@baylibre.com>
+In-Reply-To: <20230921144400.62380-1-dlechner@baylibre.com>
+References: <20230921144400.62380-1-dlechner@baylibre.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This adds support for triggered buffers to the AD2S1210 resolver driver.
+This adds an implementation of IIO_CHAN_INFO_SCALE to the ad2s1210
+resolver driver. This allows userspace to get the scale factor for the
+raw values.
 
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
- drivers/staging/iio/resolver/ad2s1210.c | 84 ++++++++++++++++++++++++-
- 1 file changed, 83 insertions(+), 1 deletion(-)
+ drivers/staging/iio/resolver/ad2s1210.c | 107 ++++++++++++++++--------
+ 1 file changed, 72 insertions(+), 35 deletions(-)
 
 diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index f5b8b290e860..44a2ecaeeeff 100644
+index 985b8fecd65a..95d43b241a75 100644
 --- a/drivers/staging/iio/resolver/ad2s1210.c
 +++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -19,8 +19,11 @@
- #include <linux/sysfs.h>
- #include <linux/types.h>
+@@ -458,56 +458,91 @@ static ssize_t ad2s1210_store_reg(struct device *dev,
+ 	return ret < 0 ? ret : len;
+ }
  
-+#include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
++static const int ad2s1210_velocity_scale[] = {
++	17089132, /* 8.192MHz / (2*pi * 2500 / 2^15) */
++	42722830, /* 8.192MHz / (2*pi * 1000 / 2^15) */
++	85445659, /* 8.192MHz / (2*pi * 500 / 2^15) */
++	341782638, /* 8.192MHz / (2*pi * 125 / 2^15) */
++};
++
+ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
+ 			     struct iio_chan_spec const *chan,
+ 			     int *val,
+ 			     int *val2,
+-			     long m)
++			     long mask)
+ {
+ 	struct ad2s1210_state *st = iio_priv(indio_dev);
+ 	int ret = 0;
  
- #define DRV_NAME "ad2s1210"
+-	mutex_lock(&st->lock);
+-	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 0);
+-	/* delay (6 * tck + 20) nano seconds */
+-	udelay(1);
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&st->lock);
++		gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 0);
++		/* delay (6 * tck + 20) nano seconds */
++		udelay(1);
++
++		switch (chan->type) {
++		case IIO_ANGL:
++			ad2s1210_set_mode(MOD_POS, st);
++			break;
++		case IIO_ANGL_VEL:
++			ad2s1210_set_mode(MOD_VEL, st);
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++		if (ret < 0)
++			goto error_info_raw;
++		ret = spi_read(st->sdev, st->rx, 2);
++		if (ret < 0)
++			goto error_info_raw;
++
++		switch (chan->type) {
++		case IIO_ANGL:
++			*val = be16_to_cpup((__be16 *)st->rx);
++			ret = IIO_VAL_INT;
++			break;
++		case IIO_ANGL_VEL:
++			*val = (s16)be16_to_cpup((__be16 *)st->rx);
++			ret = IIO_VAL_INT;
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
  
-@@ -85,6 +88,12 @@ struct ad2s1210_state {
- 	unsigned long fclkin;
- 	/** The selected resolution */
- 	enum ad2s1210_resolution resolution;
-+	/** Scan buffer */
-+	struct {
-+		__be16 chan[2];
-+		/* Ensure timestamp is naturally aligned. */
-+		s64 timestamp __aligned(8);
-+	} scan;
- 	u8 rx[2] __aligned(IIO_DMA_MINALIGN);
- 	u8 tx[2];
- };
-@@ -592,18 +601,35 @@ static const struct iio_chan_spec ad2s1210_channels[] = {
+-	switch (chan->type) {
+-	case IIO_ANGL:
+-		ad2s1210_set_mode(MOD_POS, st);
+-		break;
+-	case IIO_ANGL_VEL:
+-		ad2s1210_set_mode(MOD_VEL, st);
+-		break;
+-	default:
+-		ret = -EINVAL;
++error_info_raw:
++		gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 1);
++		/* delay (2 * tck + 20) nano seconds */
++		udelay(1);
++		mutex_unlock(&st->lock);
+ 		break;
+-	}
+-	if (ret < 0)
+-		goto error_ret;
+-	ret = spi_read(st->sdev, st->rx, 2);
+-	if (ret < 0)
+-		goto error_ret;
+ 
+-	switch (chan->type) {
+-	case IIO_ANGL:
+-		*val = be16_to_cpup((__be16 *)st->rx);
+-		ret = IIO_VAL_INT;
+-		break;
+-	case IIO_ANGL_VEL:
+-		*val = (s16)be16_to_cpup((__be16 *)st->rx);
+-		ret = IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_ANGL:
++			/* approx 0.3 arc min converted to radians */
++			*val = 0;
++			*val2 = 95874;
++			ret = IIO_VAL_INT_PLUS_NANO;
++			break;
++		case IIO_ANGL_VEL:
++			*val = st->fclkin;
++			*val2 = ad2s1210_velocity_scale[st->resolution];
++			ret = IIO_VAL_FRACTIONAL;
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
+ 		break;
++
+ 	default:
+ 		ret = -EINVAL;
+ 		break;
+ 	}
+ 
+-error_ret:
+-	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 1);
+-	/* delay (2 * tck + 20) nano seconds */
+-	udelay(1);
+-	mutex_unlock(&st->lock);
+ 	return ret;
+ }
+ 
+@@ -549,12 +584,14 @@ static const struct iio_chan_spec ad2s1210_channels[] = {
  		.type = IIO_ANGL,
  		.indexed = 1,
  		.channel = 0,
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.endianness = IIO_BE,
-+		},
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 				      BIT(IIO_CHAN_INFO_SCALE) |
- 				      BIT(IIO_CHAN_INFO_HYSTERESIS),
- 		.info_mask_separate_available =
- 					BIT(IIO_CHAN_INFO_HYSTERESIS),
-+		.datasheet_name = "position",
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE),
  	}, {
  		.type = IIO_ANGL_VEL,
  		.indexed = 1,
  		.channel = 0,
-+		.scan_index = 1,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.endianness = IIO_BE,
-+		},
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 				      BIT(IIO_CHAN_INFO_SCALE),
--	}
-+		.datasheet_name = "velocity",
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(2),
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE),
+ 	}
  };
- 
- static struct attribute *ad2s1210_attributes[] = {
-@@ -665,6 +691,55 @@ static int ad2s1210_debugfs_reg_access(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
-+static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct ad2s1210_state *st = iio_priv(indio_dev);
-+	size_t chan = 0;
-+	int ret;
-+
-+	mutex_lock(&st->lock);
-+
-+	memset(&st->scan, 0, sizeof(st->scan));
-+	gpiod_set_value(st->sample_gpio, 1);
-+
-+	if (test_bit(0, indio_dev->active_scan_mask)) {
-+		ret = ad2s1210_set_mode(st, MOD_POS);
-+		if (ret < 0)
-+			goto error_ret;
-+
-+		/* REVIST: we can read 3 bytes here and also get fault flags */
-+		ret = spi_read(st->sdev, st->rx, 2);
-+		if (ret < 0)
-+			goto error_ret;
-+
-+		memcpy(&st->scan.chan[chan++], st->rx, 2);
-+	}
-+
-+	if (test_bit(1, indio_dev->active_scan_mask)) {
-+		ret = ad2s1210_set_mode(st, MOD_VEL);
-+		if (ret < 0)
-+			goto error_ret;
-+
-+		/* REVIST: we can read 3 bytes here and also get fault flags */
-+		ret = spi_read(st->sdev, st->rx, 2);
-+		if (ret < 0)
-+			goto error_ret;
-+
-+		memcpy(&st->scan.chan[chan++], st->rx, 2);
-+	}
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, &st->scan, pf->timestamp);
-+
-+error_ret:
-+	gpiod_set_value(st->sample_gpio, 0);
-+	mutex_unlock(&st->lock);
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static const struct iio_info ad2s1210_info = {
- 	.read_raw = ad2s1210_read_raw,
- 	.read_avail = ad2s1210_read_avail,
-@@ -850,6 +925,13 @@ static int ad2s1210_probe(struct spi_device *spi)
- 	indio_dev->num_channels = ARRAY_SIZE(ad2s1210_channels);
- 	indio_dev->name = spi_get_device_id(spi)->name;
- 
-+	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
-+					      &iio_pollfunc_store_time,
-+					      &ad2s1210_trigger_handler, NULL);
-+	if (ret < 0)
-+		return dev_err_probe(&spi->dev, ret,
-+				     "iio triggered buffer setup failed\n");
-+
- 	return devm_iio_device_register(&spi->dev, indio_dev);
- }
  
 -- 
 2.34.1
