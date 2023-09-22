@@ -2,45 +2,45 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB60E6FE41
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Sep 2023 14:40:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48265E6FE3E
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Sep 2023 14:40:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231346AbjIVOkO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 22 Sep 2023 10:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34586 "EHLO
+        id S231267AbjIVOkN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 Sep 2023 10:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231318AbjIVOkN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Sep 2023 10:40:13 -0400
+        with ESMTP id S230132AbjIVOkM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Sep 2023 10:40:12 -0400
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D558180;
-        Fri, 22 Sep 2023 07:40:06 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 38M9kSaU014836;
-        Fri, 22 Sep 2023 16:39:47 +0200
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C757B195;
+        Fri, 22 Sep 2023 07:40:04 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 38M9rxEX013779;
+        Fri, 22 Sep 2023 16:39:45 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
         from:to:cc:subject:date:message-id:in-reply-to:references
         :mime-version:content-transfer-encoding:content-type; s=
-        selector1; bh=zdlAGz2FQiBBGeAWxNhwr+O+Dy8TEyK7FmQMy9byDuA=; b=bK
-        gj1Zahqf8hBJpfgVavnicKOHRaLLvhg55NvUXT7TTQJet1/seiV57yPBL7pq3SNp
-        SwBiiO+PaOkMMy3Jhn5L8q/NT9YJELNuSZie6wRd/hqFOiRU+CekeWgUAkGvfN6P
-        cgrZqt4LXUnrBcSPuz2Mj+lgSgwDkXgetS5yfdzmv+9KkOKKpHRfObSzPWewu6l1
-        b69tYBOloDOeq9KnNaNlypjtBz/Jn3njt2t3j2KZstb/mHzKAIJwjKGDGl2mSk+Q
-        Ez6lmdr4k3v2YtrKYrYLh7U93LGYpwDkcDqFeTjyqFtsHNwwZMl1vc2xMm+WN1R2
-        PgcKioFQfHNWZbk9gSmw==
+        selector1; bh=jMfp6I+BexJFvXzAqqy60gAJqPrK5cBocD8rJADux+I=; b=ZJ
+        tTT2/1pwtDHeYembLb1gRKxP8V6BUbMzq4pXDdrPGq4prq7E8fhZs00p8IfDKKW1
+        IgtY/rIa+IAqW8K1YrhJGQooWF45zasSY9OFr+xOTC4Fge03JhjSKlq8zZ8Ny/w0
+        cCnxhcawiCcokE8VAU2HJOBvhZ6ELU2Zs8NjvEZH1M7nwJM3lFq9vVx1hNHCqHa5
+        H35GXVwWHqeyF/2IUS1hMm9hNYzUuExR6HP5o5t4k46YsBqgzdL/b7M4gylYK6cb
+        JnEguFAm9+QZwf1Je4Gu9SQjIROOsBWc6wvRyzu5cL/8aSjz9TiD0MprtyKjWUdo
+        vSYfVzp96/rjN0j/AJ7A==
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3t8tt03wg3-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3t8tt7kvsw-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Sep 2023 16:39:47 +0200 (MEST)
+        Fri, 22 Sep 2023 16:39:44 +0200 (MEST)
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 0BA7410005C;
-        Fri, 22 Sep 2023 16:39:46 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 73FA5100056;
+        Fri, 22 Sep 2023 16:39:44 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id F4222235F24;
-        Fri, 22 Sep 2023 16:39:45 +0200 (CEST)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 694B2235F24;
+        Fri, 22 Sep 2023 16:39:44 +0200 (CEST)
 Received: from localhost (10.252.14.82) by SHFDAG1NODE2.st.com (10.75.129.70)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Fri, 22 Sep
- 2023 16:39:45 +0200
+ 2023 16:39:44 +0200
 From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 To:     <william.gray@linaro.org>
 CC:     <lee@kernel.org>, <alexandre.torgue@foss.st.com>,
@@ -48,9 +48,9 @@ CC:     <lee@kernel.org>, <alexandre.torgue@foss.st.com>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 4/6] counter: stm32-timer-cnt: introduce clock signal
-Date:   Fri, 22 Sep 2023 16:39:18 +0200
-Message-ID: <20230922143920.3144249-5-fabrice.gasnier@foss.st.com>
+Subject: [PATCH v2 1/6] tools/counter: add a flexible watch events tool
+Date:   Fri, 22 Sep 2023 16:39:15 +0200
+Message-ID: <20230922143920.3144249-2-fabrice.gasnier@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230922143920.3144249-1-fabrice.gasnier@foss.st.com>
 References: <20230922143920.3144249-1-fabrice.gasnier@foss.st.com>
@@ -67,184 +67,463 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Introduce the internal clock signal, used to count when in simple rising
-function. Define signal ids, to improve readability. Also add the
-"frequency" attribute for the clock signal, and "prescaler" for the
-counter.
+This adds a new counter tool to be able to test various watch events.
+A flexible watch array can be populated from command line, each field
+may be tuned with a dedicated command line sub-option in "--watch" string.
+Several watch events can be defined, each can have specific watch options,
+by using "--watch <watch 1 options> --watch <watch 2 options>".
+Watch options is a comma separated list.
 
-Whit this patch, signal action reports consistent state when "increase"
-function is used, and the counting frequency:
-$ echo increase > function
-$ grep -H "" signal*_action
-signal0_action:rising edge
-signal1_action:none
-signal2_action:none
-$ echo 1 > enable
-$ cat count
-25425
-$ cat count
-44439
-$ cat ../signal0/frequency
-208877930
+It also comes with a simple default watch (to monitor overflow/underflow
+events), used when no watch parameters are provided. It's equivalent to:
+counter_watch_events -w comp_count,scope_count,evt_ovf_udf
+
+The print_usage() routine proposes another example, from the command line,
+which generates a 2 elements watch array, to monitor:
+- overflow underflow events
+- capture events, on channel 3, that reads read captured data by
+  specifying the component id (capture3_component_id being 7 here).
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 ---
- drivers/counter/stm32-timer-cnt.c | 84 ++++++++++++++++++++++++++++---
- 1 file changed, 76 insertions(+), 8 deletions(-)
+Changes in v2:
+Review comments from William:
+- revisit watch options to be less error prone: add --watch with
+  sub-options to properly define each watch one by one, as a comma
+  separated list
+- by the way, drop string/array parsing routines, replaced by getsubopt()
+- Improve command-line interface descriptions, e.g. like "-h, --help"
+- Makefile: adopt ARRAY_SIZE from tools/include/linux.kernel.h (via CFLAG)
+- remove reference to counter_example
+- clarify commit message, code comment: Index/overflow/underflow event
+- check calloc return value
+- Makefile: sort count_watch_events in alphabetic order
+- Makefile: add a clean rule to delete .*.o.cmd files
+---
+ tools/counter/Build                  |   1 +
+ tools/counter/Makefile               |  12 +-
+ tools/counter/counter_watch_events.c | 368 +++++++++++++++++++++++++++
+ 3 files changed, 379 insertions(+), 2 deletions(-)
+ create mode 100644 tools/counter/counter_watch_events.c
 
-diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
-index 668e9d1061d3..11c66876b213 100644
---- a/drivers/counter/stm32-timer-cnt.c
-+++ b/drivers/counter/stm32-timer-cnt.c
-@@ -21,6 +21,10 @@
- #define TIM_CCER_MASK	(TIM_CCER_CC1P | TIM_CCER_CC1NP | \
- 			 TIM_CCER_CC2P | TIM_CCER_CC2NP)
+diff --git a/tools/counter/Build b/tools/counter/Build
+index 33f4a51d715e..4bbadb7ec93a 100644
+--- a/tools/counter/Build
++++ b/tools/counter/Build
+@@ -1 +1,2 @@
+ counter_example-y += counter_example.o
++counter_watch_events-y += counter_watch_events.o
+diff --git a/tools/counter/Makefile b/tools/counter/Makefile
+index b2c2946f44c9..d82d35a520f6 100644
+--- a/tools/counter/Makefile
++++ b/tools/counter/Makefile
+@@ -12,9 +12,10 @@ endif
+ # (this improves performance and avoids hard-to-debug behaviour);
+ MAKEFLAGS += -r
  
-+#define STM32_CLOCK_SIG		0
-+#define STM32_CH1_SIG		1
-+#define STM32_CH2_SIG		2
+-override CFLAGS += -O2 -Wall -g -D_GNU_SOURCE -I$(OUTPUT)include
++override CFLAGS += -O2 -Wall -g -D_GNU_SOURCE -I$(OUTPUT)include \
++	 -I$(srctree)/tools/include
+ 
+-ALL_TARGETS := counter_example
++ALL_TARGETS := counter_example counter_watch_events
+ ALL_PROGRAMS := $(patsubst %,$(OUTPUT)%,$(ALL_TARGETS))
+ 
+ all: $(ALL_PROGRAMS)
+@@ -37,12 +38,19 @@ $(COUNTER_EXAMPLE): prepare FORCE
+ $(OUTPUT)counter_example: $(COUNTER_EXAMPLE)
+ 	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@
+ 
++COUNTER_WATCH_EVENTS := $(OUTPUT)counter_watch_events.o
++$(COUNTER_WATCH_EVENTS): prepare FORCE
++	$(Q)$(MAKE) $(build)=counter_watch_events
++$(OUTPUT)counter_watch_events: $(COUNTER_WATCH_EVENTS)
++	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@
 +
- struct stm32_timer_regs {
- 	u32 cr1;
- 	u32 cnt;
-@@ -216,11 +220,44 @@ static int stm32_count_enable_write(struct counter_device *counter,
- 	return 0;
- }
+ clean:
+ 	rm -f $(ALL_PROGRAMS)
+ 	rm -rf $(OUTPUT)include/linux/counter.h
+ 	rm -df $(OUTPUT)include/linux
+ 	rm -df $(OUTPUT)include
+ 	find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
++	find $(or $(OUTPUT),.) -name '\.*.o.cmd' -delete
  
-+static int stm32_count_prescaler_read(struct counter_device *counter,
-+				      struct counter_count *count, u64 *prescaler)
+ install: $(ALL_PROGRAMS)
+ 	install -d -m 755 $(DESTDIR)$(bindir);		\
+diff --git a/tools/counter/counter_watch_events.c b/tools/counter/counter_watch_events.c
+new file mode 100644
+index 000000000000..17eae0ab9cef
+--- /dev/null
++++ b/tools/counter/counter_watch_events.c
+@@ -0,0 +1,368 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Counter Watch Events - Test various counter watch events in a userspace application */
++
++#include <errno.h>
++#include <fcntl.h>
++#include <getopt.h>
++#include <linux/counter.h>
++#include <linux/kernel.h>
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++#include <sys/ioctl.h>
++#include <unistd.h>
++
++static struct counter_watch simple_watch[] = {
++	{
++		/* Component data: Count 0 count */
++		.component.type = COUNTER_COMPONENT_COUNT,
++		.component.scope = COUNTER_SCOPE_COUNT,
++		.component.parent = 0,
++		/* Event type: overflow or underflow */
++		.event = COUNTER_EVENT_OVERFLOW_UNDERFLOW,
++		/* Device event channel 0 */
++		.channel = 0,
++	},
++};
++
++static const char * const counter_event_type_name[] = {
++	"COUNTER_EVENT_OVERFLOW",
++	"COUNTER_EVENT_UNDERFLOW",
++	"COUNTER_EVENT_OVERFLOW_UNDERFLOW",
++	"COUNTER_EVENT_THRESHOLD",
++	"COUNTER_EVENT_INDEX",
++	"COUNTER_EVENT_CHANGE_OF_STATE",
++	"COUNTER_EVENT_CAPTURE",
++};
++
++static const char * const counter_component_type_name[] = {
++	"COUNTER_COMPONENT_NONE",
++	"COUNTER_COMPONENT_SIGNAL",
++	"COUNTER_COMPONENT_COUNT",
++	"COUNTER_COMPONENT_FUNCTION",
++	"COUNTER_COMPONENT_SYNAPSE_ACTION",
++	"COUNTER_COMPONENT_EXTENSION",
++};
++
++static const char * const counter_scope_name[] = {
++	"COUNTER_SCOPE_DEVICE",
++	"COUNTER_SCOPE_SIGNAL",
++	"COUNTER_SCOPE_COUNT",
++};
++
++static void print_watch(struct counter_watch *watch, int nwatch)
 +{
-+	struct stm32_timer_cnt *const priv = counter_priv(counter);
-+	u32 psc;
++	int i;
 +
-+	regmap_read(priv->regmap, TIM_PSC, &psc);
++	/* prints the watch array in C-like structure */
++	printf("watch[%d] = {\n", nwatch);
++	for (i = 0; i < nwatch; i++) {
++		printf(" [%d] =\t{\n"
++		       "\t\t.component.type = %s\n"
++		       "\t\t.component.scope = %s\n"
++		       "\t\t.component.parent = %d\n"
++		       "\t\t.component.id = %d\n"
++		       "\t\t.event = %s\n"
++		       "\t\t.channel = %d\n"
++		       "\t},\n",
++		       i,
++		       counter_component_type_name[watch[i].component.type],
++		       counter_scope_name[watch[i].component.scope],
++		       watch[i].component.parent,
++		       watch[i].component.id,
++		       counter_event_type_name[watch[i].event],
++		       watch[i].channel);
++	}
++	printf("};\n");
++}
 +
-+	*prescaler = psc + 1;
++static void print_usage(void)
++{
++	fprintf(stderr, "Usage:\n\n"
++		"counter_watch_events [options] [-w <watchoptions>]\n"
++		"counter_watch_events [options] [-w <watch1 options>] [-w <watch2 options>]...\n"
++		"\n"
++		"When no --watch option has been provided, simple watch example is used:\n"
++		"counter_watch_events [options] -w comp_count,scope_count,evt_ovf_udf\n"
++		"\n"
++		"Test various watch events for given counter device.\n"
++		"\n"
++		"Options:\n"
++		"  -d, --debug                Prints debug information\n"
++		"  -h, --help                 Prints usage\n"
++		"  -n, --device-num <n>       Use /dev/counter<n> [default: /dev/counter0]\n"
++		"  -l, --loop <n>             Loop for <n> events [default: 0 (forever)]\n"
++		"  -w, --watch <watchoptions> comma-separated list of watch options\n"
++		"\n"
++		"Watch options:\n"
++		"  scope_device               (COUNTER_SCOPE_DEVICE) [default: scope_device]\n"
++		"  scope_signal               (COUNTER_SCOPE_SIGNAL)\n"
++		"  scope_count                (COUNTER_SCOPE_COUNT)\n"
++		"\n"
++		"  comp_none                  (COUNTER_COMPONENT_NONE) [default: comp_none]\n"
++		"  comp_signal                (COUNTER_COMPONENT_SIGNAL)\n"
++		"  comp_count                 (COUNTER_COMPONENT_COUNT)\n"
++		"  comp_function              (COUNTER_COMPONENT_FUNCTION)\n"
++		"  comp_synapse_action        (COUNTER_COMPONENT_SYNAPSE_ACTION)\n"
++		"  comp_extension             (COUNTER_COMPONENT_EXTENSION)\n"
++		"\n"
++		"  evt_ovf                    (COUNTER_EVENT_OVERFLOW) [default: evt_ovf]\n"
++		"  evt_udf                    (COUNTER_EVENT_UNDERFLOW)\n"
++		"  evt_ovf_udf                (COUNTER_EVENT_OVERFLOW_UNDERFLOW)\n"
++		"  evt_threshold              (COUNTER_EVENT_THRESHOLD)\n"
++		"  evt_index                  (COUNTER_EVENT_INDEX)\n"
++		"  evt_change_of_state        (COUNTER_EVENT_CHANGE_OF_STATE)\n"
++		"  evt_capture                (COUNTER_EVENT_CAPTURE)\n"
++		"\n"
++		"  chan=<n>                   channel <n> for this watch [default: 0]\n"
++		"  id=<n>                     componend id <n> for this watch [default: 0]\n"
++		"  parent=<n>                 componend parent <n> for this watch [default: 0]\n"
++		"\n"
++		"Example with two watched events:\n\n"
++		"counter_watch_events -d \\\n"
++		"\t-w comp_count,scope_count,evt_ovf_udf \\\n"
++		"\t-w comp_extension,scope_count,evt_capture,id=7,chan=3\n"
++		);
++}
++
++static const struct option longopts[] = {
++	{ "debug",		no_argument,       0, 'd' },
++	{ "help",		no_argument,       0, 'h' },
++	{ "device-num",		required_argument, 0, 'n' },
++	{ "loop",		required_argument, 0, 'l' },
++	{ "watch",		required_argument, 0, 'w' },
++	{ },
++};
++
++/* counter watch subopts */
++enum {
++	WATCH_SCOPE_DEVICE,
++	WATCH_SCOPE_SIGNAL,
++	WATCH_SCOPE_COUNT,
++	WATCH_COMPONENT_NONE,
++	WATCH_COMPONENT_SIGNAL,
++	WATCH_COMPONENT_COUNT,
++	WATCH_COMPONENT_FUNCTION,
++	WATCH_COMPONENT_SYNAPSE_ACTION,
++	WATCH_COMPONENT_EXTENSION,
++	WATCH_EVENT_OVERFLOW,
++	WATCH_EVENT_UNDERFLOW,
++	WATCH_EVENT_OVERFLOW_UNDERFLOW,
++	WATCH_EVENT_THRESHOLD,
++	WATCH_EVENT_INDEX,
++	WATCH_EVENT_CHANGE_OF_STATE,
++	WATCH_EVENT_CAPTURE,
++	WATCH_CHANNEL,
++	WATCH_ID,
++	WATCH_PARENT,
++	WATCH_SUBOPTS_MAX,
++};
++
++static char * const counter_watch_subopts[WATCH_SUBOPTS_MAX + 1] = {
++	/* component.scope */
++	[WATCH_SCOPE_DEVICE] = "scope_device",
++	[WATCH_SCOPE_SIGNAL] = "scope_signal",
++	[WATCH_SCOPE_COUNT] = "scope_count",
++	/* component.type */
++	[WATCH_COMPONENT_NONE] = "comp_none",
++	[WATCH_COMPONENT_SIGNAL] = "comp_signal",
++	[WATCH_COMPONENT_COUNT] = "comp_count",
++	[WATCH_COMPONENT_FUNCTION] = "comp_function",
++	[WATCH_COMPONENT_SYNAPSE_ACTION] = "comp_synapse_action",
++	[WATCH_COMPONENT_EXTENSION] = "comp_extension",
++	/* event */
++	[WATCH_EVENT_OVERFLOW] = "evt_ovf",
++	[WATCH_EVENT_UNDERFLOW] = "evt_udf",
++	[WATCH_EVENT_OVERFLOW_UNDERFLOW] = "evt_ovf_udf",
++	[WATCH_EVENT_THRESHOLD] = "evt_threshold",
++	[WATCH_EVENT_INDEX] = "evt_index",
++	[WATCH_EVENT_CHANGE_OF_STATE] = "evt_change_of_state",
++	[WATCH_EVENT_CAPTURE] = "evt_capture",
++	/* channel, id, parent */
++	[WATCH_CHANNEL] = "chan",
++	[WATCH_ID] = "id",
++	[WATCH_PARENT] = "parent",
++	/* Empty entry ends the opts array */
++	NULL
++};
++
++int main(int argc, char **argv)
++{
++	int c, fd, i, ret, debug = 0, loop = 0, dev_num = 0, nwatch = 0;
++	struct counter_event event_data;
++	char *device_name = NULL, *subopts, *value;
++	struct counter_watch *watches;
++
++	/*
++	 * 1st pass:
++	 * - list watch events number to allocate the watch array.
++	 * - parse normal options (other than watch options)
++	 */
++	while ((c = getopt_long(argc, argv, "dhn:l:w:", longopts, NULL)) != -1) {
++		switch (c) {
++		case 'd':
++			debug = 1;
++			break;
++		case 'h':
++			print_usage();
++			return -1;
++		case 'n':
++			dev_num = strtoul(optarg, NULL, 10);
++			if (errno)
++				return -errno;
++			break;
++		case 'l':
++			loop = strtol(optarg, NULL, 10);
++			if (errno)
++				return -errno;
++			break;
++		case 'w':
++			nwatch++;
++			break;
++		default:
++			return -1;
++		};
++	};
++
++	if (nwatch) {
++		watches = calloc(nwatch, sizeof(*watches));
++		if (!watches) {
++			perror("Error allocating watches");
++			return 1;
++		}
++	} else {
++		/* default to simple watch example */
++		watches = simple_watch;
++		nwatch = ARRAY_SIZE(simple_watch);
++	}
++
++	/* 2nd pass: parse watch sub-options to fill in watch array */
++	optind = 1;
++	i = 0;
++	while ((c = getopt_long(argc, argv, "dhn:l:w:", longopts, NULL)) != -1) {
++		switch (c) {
++		case 'w':
++			subopts = optarg;
++			while (*subopts != '\0') {
++				ret = getsubopt(&subopts, counter_watch_subopts, &value);
++				switch (ret) {
++				case WATCH_SCOPE_DEVICE:
++				case WATCH_SCOPE_SIGNAL:
++				case WATCH_SCOPE_COUNT:
++					/* match with counter_scope */
++					watches[i].component.scope = ret;
++					break;
++				case WATCH_COMPONENT_NONE:
++				case WATCH_COMPONENT_SIGNAL:
++				case WATCH_COMPONENT_COUNT:
++				case WATCH_COMPONENT_FUNCTION:
++				case WATCH_COMPONENT_SYNAPSE_ACTION:
++				case WATCH_COMPONENT_EXTENSION:
++					/* match counter_component_type: subtract enum value */
++					ret -= WATCH_COMPONENT_NONE;
++					watches[i].component.type = ret;
++					break;
++				case WATCH_EVENT_OVERFLOW:
++				case WATCH_EVENT_UNDERFLOW:
++				case WATCH_EVENT_OVERFLOW_UNDERFLOW:
++				case WATCH_EVENT_THRESHOLD:
++				case WATCH_EVENT_INDEX:
++				case WATCH_EVENT_CHANGE_OF_STATE:
++				case WATCH_EVENT_CAPTURE:
++					/* match counter_event_type: subtract enum value */
++					ret -= WATCH_EVENT_OVERFLOW;
++					watches[i].event = ret;
++					break;
++				case WATCH_CHANNEL:
++					if (!value) {
++						fprintf(stderr, "Missing chan=<number>\n");
++						return -EINVAL;
++					}
++					watches[i].channel = strtoul(value, NULL, 10);
++					if (errno)
++						return -errno;
++					break;
++				case WATCH_ID:
++					if (!value) {
++						fprintf(stderr, "Missing id=<number>\n");
++						return -EINVAL;
++					}
++					watches[i].component.id = strtoul(value, NULL, 10);
++					if (errno)
++						return -errno;
++					break;
++				case WATCH_PARENT:
++					if (!value) {
++						fprintf(stderr, "Missing parent=<number>\n");
++						return -EINVAL;
++					}
++					watches[i].component.parent = strtoul(value, NULL, 10);
++					if (errno)
++						return -errno;
++					break;
++				default:
++					fprintf(stderr, "Unknown suboption '%s'\n", value);
++					return -EINVAL;
++				}
++			}
++			i++;
++			break;
++		}
++	};
++
++	if (debug)
++		print_watch(watches, nwatch);
++
++	ret = asprintf(&device_name, "/dev/counter%d", dev_num);
++	if (ret < 0)
++		return -ENOMEM;
++
++	if (debug)
++		printf("Opening %s\n", device_name);
++
++	fd = open(device_name, O_RDWR);
++	if (fd == -1) {
++		perror("Unable to open counter device");
++		return 1;
++	}
++
++	for (i = 0; i < nwatch; i++) {
++		ret = ioctl(fd, COUNTER_ADD_WATCH_IOCTL, watches + i);
++		if (ret == -1) {
++			fprintf(stderr, "Error adding watches[%d]: %s\n", i,
++				strerror(errno));
++			return 1;
++		}
++	}
++
++	ret = ioctl(fd, COUNTER_ENABLE_EVENTS_IOCTL);
++	if (ret == -1) {
++		perror("Error enabling events");
++		return 1;
++	}
++
++	for (i = 0; loop <= 0 || i < loop; i++) {
++		ret = read(fd, &event_data, sizeof(event_data));
++		if (ret == -1) {
++			perror("Failed to read event data");
++			return 1;
++		}
++
++		if (ret != sizeof(event_data)) {
++			fprintf(stderr, "Failed to read event data\n");
++			return -EIO;
++		}
++
++		printf("Timestamp: %llu\tData: %llu\t event: %s\tch: %d\n",
++		       event_data.timestamp, event_data.value,
++		       counter_event_type_name[event_data.watch.event],
++		       event_data.watch.channel);
++
++		if (event_data.status) {
++			fprintf(stderr, "Error %d: %s\n", event_data.status,
++				strerror(event_data.status));
++		}
++	}
 +
 +	return 0;
 +}
-+
-+static int stm32_count_prescaler_write(struct counter_device *counter,
-+				       struct counter_count *count, u64 prescaler)
-+{
-+	struct stm32_timer_cnt *const priv = counter_priv(counter);
-+	u32 psc;
-+
-+	if (!prescaler || prescaler > MAX_TIM_PSC + 1)
-+		return -ERANGE;
-+
-+	psc = prescaler - 1;
-+
-+	return regmap_write(priv->regmap, TIM_PSC, psc);
-+}
-+
- static struct counter_comp stm32_count_ext[] = {
- 	COUNTER_COMP_DIRECTION(stm32_count_direction_read),
- 	COUNTER_COMP_ENABLE(stm32_count_enable_read, stm32_count_enable_write),
- 	COUNTER_COMP_CEILING(stm32_count_ceiling_read,
- 			     stm32_count_ceiling_write),
-+	COUNTER_COMP_COUNT_U64("prescaler", stm32_count_prescaler_read,
-+			       stm32_count_prescaler_write),
-+};
-+
-+static const enum counter_synapse_action stm32_clock_synapse_actions[] = {
-+	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
- };
- 
- static const enum counter_synapse_action stm32_synapse_actions[] = {
-@@ -243,25 +280,31 @@ static int stm32_action_read(struct counter_device *counter,
- 	switch (function) {
- 	case COUNTER_FUNCTION_INCREASE:
- 		/* counts on internal clock when CEN=1 */
--		*action = COUNTER_SYNAPSE_ACTION_NONE;
-+		if (synapse->signal->id == STM32_CLOCK_SIG)
-+			*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
-+		else
-+			*action = COUNTER_SYNAPSE_ACTION_NONE;
- 		return 0;
- 	case COUNTER_FUNCTION_QUADRATURE_X2_A:
- 		/* counts up/down on TI1FP1 edge depending on TI2FP2 level */
--		if (synapse->signal->id == count->synapses[0].signal->id)
-+		if (synapse->signal->id == STM32_CH1_SIG)
- 			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
- 		else
- 			*action = COUNTER_SYNAPSE_ACTION_NONE;
- 		return 0;
- 	case COUNTER_FUNCTION_QUADRATURE_X2_B:
- 		/* counts up/down on TI2FP2 edge depending on TI1FP1 level */
--		if (synapse->signal->id == count->synapses[1].signal->id)
-+		if (synapse->signal->id == STM32_CH2_SIG)
- 			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
- 		else
- 			*action = COUNTER_SYNAPSE_ACTION_NONE;
- 		return 0;
- 	case COUNTER_FUNCTION_QUADRATURE_X4:
- 		/* counts up/down on both TI1FP1 and TI2FP2 edges */
--		*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
-+		if (synapse->signal->id == STM32_CH1_SIG || synapse->signal->id == STM32_CH2_SIG)
-+			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
-+		else
-+			*action = COUNTER_SYNAPSE_ACTION_NONE;
- 		return 0;
- 	default:
- 		return -EINVAL;
-@@ -276,27 +319,52 @@ static const struct counter_ops stm32_timer_cnt_ops = {
- 	.action_read = stm32_action_read,
- };
- 
-+static int stm32_count_clk_get_freq(struct counter_device *counter,
-+				    struct counter_signal *signal, u64 *freq)
-+{
-+	struct stm32_timer_cnt *const priv = counter_priv(counter);
-+
-+	*freq = clk_get_rate(priv->clk);
-+
-+	return 0;
-+}
-+
-+static struct counter_comp stm32_count_clock_ext[] = {
-+	COUNTER_COMP_SIGNAL_U64("frequency", stm32_count_clk_get_freq, NULL),
-+};
-+
- static struct counter_signal stm32_signals[] = {
- 	{
--		.id = 0,
-+		.id = STM32_CLOCK_SIG,
-+		.name = "Clock Signal",
-+		.ext = stm32_count_clock_ext,
-+		.num_ext = ARRAY_SIZE(stm32_count_clock_ext),
-+	},
-+	{
-+		.id = STM32_CH1_SIG,
- 		.name = "Channel 1"
- 	},
- 	{
--		.id = 1,
-+		.id = STM32_CH2_SIG,
- 		.name = "Channel 2"
- 	}
- };
- 
- static struct counter_synapse stm32_count_synapses[] = {
-+	{
-+		.actions_list = stm32_clock_synapse_actions,
-+		.num_actions = ARRAY_SIZE(stm32_clock_synapse_actions),
-+		.signal = &stm32_signals[STM32_CLOCK_SIG]
-+	},
- 	{
- 		.actions_list = stm32_synapse_actions,
- 		.num_actions = ARRAY_SIZE(stm32_synapse_actions),
--		.signal = &stm32_signals[0]
-+		.signal = &stm32_signals[STM32_CH1_SIG]
- 	},
- 	{
- 		.actions_list = stm32_synapse_actions,
- 		.num_actions = ARRAY_SIZE(stm32_synapse_actions),
--		.signal = &stm32_signals[1]
-+		.signal = &stm32_signals[STM32_CH2_SIG]
- 	}
- };
- 
 -- 
 2.25.1
 
