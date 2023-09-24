@@ -2,105 +2,122 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DDB8CE7A96
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Sep 2023 22:26:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31384CE7A8B
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Sep 2023 23:33:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230146AbjIXW0m (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 24 Sep 2023 18:26:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
+        id S229487AbjIXXdY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 24 Sep 2023 19:33:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbjIXW01 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Sep 2023 18:26:27 -0400
-Received: from mail.andi.de1.cc (mail.andi.de1.cc [IPv6:2a02:c205:3004:2154::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83D9FC;
-        Sun, 24 Sep 2023 15:26:19 -0700 (PDT)
-Received: from p200300ccff1ebc001a3da2fffebfd33a.dip0.t-ipconnect.de ([2003:cc:ff1e:bc00:1a3d:a2ff:febf:d33a] helo=aktux)
-        by mail.andi.de1.cc with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <andreas@kemnade.info>)
-        id 1qkXYA-00492D-TR; Mon, 25 Sep 2023 00:26:02 +0200
-Received: from andi by aktux with local (Exim 4.96)
-        (envelope-from <andreas@kemnade.info>)
-        id 1qkXYA-008YN2-0Q;
-        Mon, 25 Sep 2023 00:26:02 +0200
-From:   Andreas Kemnade <andreas@kemnade.info>
-To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        bcousson@baylibre.com, tony@atomide.com,
-        jean-baptiste.maneyrol@tdk.com, chenhuiz@axis.com,
-        andreas@kemnade.info, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: [PATCH 2/3] iio: imu: mpu6050: add level shifter flag
-Date:   Mon, 25 Sep 2023 00:25:58 +0200
-Message-Id: <20230924222559.2038721-3-andreas@kemnade.info>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230924222559.2038721-1-andreas@kemnade.info>
-References: <20230924222559.2038721-1-andreas@kemnade.info>
-MIME-Version: 1.0
+        with ESMTP id S229480AbjIXXdY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Sep 2023 19:33:24 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F7CDA;
+        Sun, 24 Sep 2023 16:33:18 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F3FCC433C7;
+        Sun, 24 Sep 2023 23:33:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1695598397;
+        bh=10atyq5flJp3Ki/ZHhh3d7snv45LW/GTM3IFPzoakjo=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=s/5nBCeThoxFxFlynFAx0qEZpuPC27/wZcZJ/P3TLvLkclJBU8ZZehIRyBNZQFRRL
+         F/XtmSZMeuikrvR1vmk+TmYxhCeuiOF8JKI3dLCGEnG63qhZhu2muOmnNd+uYQ+lAK
+         lhwhslGvm7RvCeuVlSrECVuWK1nLkFZXkhIaNFG6IJoUpBcXhKoFkZEZWe8Zo90Pb5
+         PNpYE0TjyPO0csAzIC8mmcMmd8hSpPXCixZUmZlCjT1vZAko5LHaVg62k1NNehdW9g
+         QDE5fXSbLC0LvkjBbirwFNSWL0Pc5Ovfj0Krz++p7OCdOwv/L7vOFz2WBD55nsnMLq
+         ai+gDO09UNsuQ==
+Received: (nullmailer pid 3866087 invoked by uid 1000);
+        Sun, 24 Sep 2023 23:33:15 -0000
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+From:   Rob Herring <robh@kernel.org>
+To:     Andreas Kemnade <andreas@kemnade.info>
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        conor+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        jic23@kernel.org, linux-omap@vger.kernel.org, chenhuiz@axis.com,
+        jean-baptiste.maneyrol@tdk.com, bcousson@baylibre.com,
+        robh+dt@kernel.org, tony@atomide.com, lars@metafoo.de,
+        andy.shevchenko@gmail.com, devicetree@vger.kernel.org
+In-Reply-To: <20230924222559.2038721-2-andreas@kemnade.info>
+References: <20230924222559.2038721-1-andreas@kemnade.info>
+ <20230924222559.2038721-2-andreas@kemnade.info>
+Message-Id: <169559839506.3866057.16365029701473740413.robh@kernel.org>
+Subject: Re: [PATCH 1/3] dt-bindings: iio: imu: mpu6050: Add level shifter
+Date:   Sun, 24 Sep 2023 18:33:15 -0500
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Some boards fail in magnetometer probe if flag is not set.
 
-Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_aux.c  | 5 +++++
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 3 +++
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 1 +
- 3 files changed, 9 insertions(+)
+On Mon, 25 Sep 2023 00:25:57 +0200, Andreas Kemnade wrote:
+> Found in ancient platform data struct:
+> level_shifter: 0: VLogic, 1: VDD
+> 
+> Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
+> ---
+>  .../devicetree/bindings/iio/imu/invensense,mpu6050.yaml         | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_aux.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_aux.c
-index 7327e5723f961..15dbe88ff8c43 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_aux.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_aux.c
-@@ -71,6 +71,11 @@ int inv_mpu_aux_init(const struct inv_mpu6050_state *st)
- 	unsigned int val;
- 	int ret;
- 
-+	ret = regmap_update_bits(st->map, 0x1, 0x80,
-+				 st->level_shifter ? 0x80 : 0);
-+	if (ret)
-+		return ret;
-+
- 	/* configure i2c master */
- 	val = INV_MPU6050_BITS_I2C_MST_CLK_400KHZ |
- 			INV_MPU6050_BIT_WAIT_FOR_ES;
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 29f906c884bd8..21cf794a41561 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -17,6 +17,7 @@
- #include <linux/regulator/consumer.h>
- #include <linux/pm.h>
- #include <linux/pm_runtime.h>
-+#include <linux/property.h>
- 
- #include <linux/iio/common/inv_sensors_timestamp.h>
- #include <linux/iio/iio.h>
-@@ -1495,6 +1496,8 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
- 	st->irq = irq;
- 	st->map = regmap;
- 
-+	st->level_shifter = device_property_present(dev,
-+						    "invensense,level-shifter");
- 	pdata = dev_get_platdata(dev);
- 	if (!pdata) {
- 		result = iio_read_mount_matrix(dev, &st->orientation);
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index ed5a96e78df05..7eba1439c8093 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -203,6 +203,7 @@ struct inv_mpu6050_state {
- 	s32 magn_raw_to_gauss[3];
- 	struct iio_mount_matrix magn_orient;
- 	unsigned int suspended_sensors;
-+	bool level_shifter;
- 	u8 *data;
- };
- 
--- 
-2.39.2
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/imu/invensense,mpu6050.yaml: properties:invensense,level-shifter: True is not of type 'object'
+	hint: Vendor specific properties must have a type and description unless they have a defined, common suffix.
+	from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/imu/invensense,mpu6050.yaml: properties:invensense,level-shifter: More than one condition true in oneOf schema:
+	{'description': 'Vendor specific properties must have a type and '
+	                'description unless they have a defined, common '
+	                'suffix.',
+	 'oneOf': [{'additionalProperties': False,
+	            'description': 'A vendor boolean property can use "type: '
+	                           'boolean"',
+	            'properties': {'deprecated': True,
+	                           'description': True,
+	                           'type': {'const': 'boolean'}},
+	            'required': ['type', 'description']},
+	           {'additionalProperties': False,
+	            'description': 'A vendor string property with exact values '
+	                           'has an implicit type',
+	            'oneOf': [{'required': ['enum']}, {'required': ['const']}],
+	            'properties': {'const': {'type': 'string'},
+	                           'deprecated': True,
+	                           'description': True,
+	                           'enum': {'items': {'type': 'string'}}},
+	            'required': ['description']},
+	           {'description': 'A vendor property needs a $ref to '
+	                           'types.yaml',
+	            'oneOf': [{'required': ['$ref']}, {'required': ['allOf']}],
+	            'properties': {'$ref': {'pattern': 'types.yaml#/definitions/'},
+	                           'allOf': {'items': [{'properties': {'$ref': {'pattern': 'types.yaml#/definitions/'}},
+	                                                'required': ['$ref']}]}},
+	            'required': ['description']},
+	           {'description': 'A vendor property can have a $ref to a a '
+	                           '$defs schema',
+	            'properties': {'$ref': {'pattern': '^#/(definitions|\\$defs)/'}},
+	            'required': ['$ref']}],
+	 'type': 'object'}
+	hint: Vendor specific properties must have a type and description unless they have a defined, common suffix.
+	from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230924222559.2038721-2-andreas@kemnade.info
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
