@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 366E0E728D0
-	for <linux-iio@archiver.kernel.org>; Fri, 29 Sep 2023 17:26:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC09E728CA
+	for <linux-iio@archiver.kernel.org>; Fri, 29 Sep 2023 17:26:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233673AbjI2R03 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 29 Sep 2023 13:26:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
+        id S233404AbjI2R0b (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 29 Sep 2023 13:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233700AbjI2R0R (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Sep 2023 13:26:17 -0400
-Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4710B10E7
-        for <linux-iio@vger.kernel.org>; Fri, 29 Sep 2023 10:26:04 -0700 (PDT)
-Received: by mail-oo1-xc35.google.com with SMTP id 006d021491bc7-57bab4e9e1aso5781791eaf.3
-        for <linux-iio@vger.kernel.org>; Fri, 29 Sep 2023 10:26:04 -0700 (PDT)
+        with ESMTP id S233820AbjI2R0S (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Sep 2023 13:26:18 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B005510FE
+        for <linux-iio@vger.kernel.org>; Fri, 29 Sep 2023 10:26:05 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id 46e09a7af769-6c63588b554so969943a34.0
+        for <linux-iio@vger.kernel.org>; Fri, 29 Sep 2023 10:26:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1696008363; x=1696613163; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1696008365; x=1696613165; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=j8tOsTdNCR758g2TkITBHYwFeOLCEzbiJxAY3l1Z6tI=;
-        b=thfGx90ZyAV4qGeI4PGwWim3bSeFpA7x7I42EZtvcWdmf2SmP5g/pUNelwQMPFqiDS
-         KhVzs9Dc5OnhEenAfoIBQEX2xiM3918jrZdNDlAVnuBTFkJgqU0vlMNrqNKuGMU0wFIi
-         ccZv4yyBGiz+ANIUT8qnseQnL4yxz6l2OmWCne/s1CMsD14PC2Fk86QjkmW9ZStrNay3
-         zgRQwp4U/NapnlzNqcmmDbd8f0wL8y4clJTUeVXcIyODj0vyQOqAT0PSpOvNt14iamuB
-         hazrlhNX9RjCEZZ0N1oqCz4ZVCMgrnC1bIke4wJ9m/Ygj1bgkvlUukK3+/XZVRdCYm6C
-         4aoQ==
+        bh=B+I4VRfCfFP72yApzhIwo9Fg0drG4LlaaDXwdDXV7tg=;
+        b=T087fHIxBpaE5+JlAXJ/WoSyhVhZRaTYD2L7JiAsZsRx4ZfJOQaybsCXS+Nj+4kJZ+
+         oQuDnLusWpVLgWzkvoREjFeKfNcaMncwTemJva6+AGJwQ6lg6CIog/0OGJOABoi23m9s
+         IuSHBmRKEXLzN+Jf6myRq1/r2QTQzX6i2W33SImGmLblvLvDWfSDynFBVX2v1sGy6K9z
+         w/jWphXvfj75MXgcm/JQ912W7NspF4FQmQkvnW7CLssFj76eHV3oiHNXeQSvp2w/CzmD
+         j06wHPTYCwk5WareSQxQOuCFLp5A0ek3vddVR7M5+15BdrMsucB/xe1L9OCQUlZ9oXi3
+         EMwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696008363; x=1696613163;
+        d=1e100.net; s=20230601; t=1696008365; x=1696613165;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=j8tOsTdNCR758g2TkITBHYwFeOLCEzbiJxAY3l1Z6tI=;
-        b=D5+QxixvbMTNVV6N4fP7JLdqPh5kOqqovIZAMY7Y3bxQULWxVuXtMMUsNCIiN9FOui
-         e0TgKZS6E/IRV4J9EUjFFSZBoRABTM71CY2T1QePxA+TGMHNxesF+6O2gaE8llYy6esB
-         4ZRhTeXYPIJUgzDMMOMx+Le8pRZhWkvd/xF1audIb3dBkh2UDF8Nmxqs1rvP0jbuRMaw
-         AU/1qWu3xBBnSSewPW+qfkIT8e2IATTMhnpW7QvpeIGde2ZqOvx2109wb3XYYHbh3eyJ
-         gjIKexfZLGoIVjzC61MEjOGtJXPQMsKd0EXYQaq3TpmgmpV8zhTcusdH0wN1AZNtC7fc
-         /0/w==
-X-Gm-Message-State: AOJu0Yzc5d+3BsqHhhR2udBf+XDOryiTK0ZHNHeZLEtig9cVIEdeGKPa
-        RE95BUldHsmHmKHfRwuyM8SH4zO/Gh32TuSsTGA4fA==
-X-Google-Smtp-Source: AGHT+IFKkstfKXcO5xMemJdNL3U367KvkT+g1DFIIOWc+qD0Caqx+nKTVY4+5Z6xdKJDBTREYdFRtg==
-X-Received: by 2002:a4a:ea28:0:b0:57b:eee7:4a40 with SMTP id y8-20020a4aea28000000b0057beee74a40mr5161496ood.7.1696008363143;
-        Fri, 29 Sep 2023 10:26:03 -0700 (PDT)
+        bh=B+I4VRfCfFP72yApzhIwo9Fg0drG4LlaaDXwdDXV7tg=;
+        b=XX50MWGQqYt4YknjaknS0NTJrmlxm9XWDHrYQ46yDbGrBEdKf4jF0x5/7iiGX15KlV
+         Av+WHzffESGopHSrAqnkQt3mY56FnCsB93jiy1ml6oHJFnNgk/MCmlbaZwbzY+nahpOe
+         MForQeTVSVWww1I1i9NW10HCNdQm0IjFM1W9233B87iQFf99subiPhTCBmnAjikzXshj
+         EDoNt0x0WUoD4Z07trIoEzX7x0StMDEs+5W34Rjfwd0xXUj7ZZ1C9qWzpzAYg8Wa9zvX
+         oddgAGUZLmjCYE0KbtE0eHK6cSfUULwwd+eZmYR5yRvcU5JMEG8/F5HzjVxazWB+KG01
+         Hs3A==
+X-Gm-Message-State: AOJu0YwicoTKdkQx4K8E+VCHiI3xc5QkXPGB+5S3mCXqtHuK7HkHZwRQ
+        kUDp0XlGCd68s9qeafCPBaZS1HiaJSgtM5APJhWGIw==
+X-Google-Smtp-Source: AGHT+IEDk3K0gISCTUXG8sbkK43ecAqVNck02OE2zcrr8O7+YohLLZ0CWNYmMufLd09XXF4qj6WujA==
+X-Received: by 2002:a05:6830:16d8:b0:6c4:e6d8:2cdc with SMTP id l24-20020a05683016d800b006c4e6d82cdcmr5028313otr.23.1696008364886;
+        Fri, 29 Sep 2023 10:26:04 -0700 (PDT)
 Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id f128-20020a4a5886000000b0057bb326cad4sm2272915oob.33.2023.09.29.10.26.02
+        by smtp.gmail.com with ESMTPSA id f128-20020a4a5886000000b0057bb326cad4sm2272915oob.33.2023.09.29.10.26.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Sep 2023 10:26:02 -0700 (PDT)
+        Fri, 29 Sep 2023 10:26:04 -0700 (PDT)
 From:   David Lechner <dlechner@baylibre.com>
 To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-staging@lists.linux.dev
@@ -62,9 +62,9 @@ Cc:     David Lechner <david@lechnology.com>,
         Axel Haslam <ahaslam@baylibre.com>,
         Philip Molloy <pmolloy@baylibre.com>,
         linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
-Subject: [PATCH v3 18/27] staging: iio: resolver: ad2s1210: convert resolution to devicetree property
-Date:   Fri, 29 Sep 2023 12:23:23 -0500
-Message-ID: <20230929-ad2s1210-mainline-v3-18-fa4364281745@baylibre.com>
+Subject: [PATCH v3 20/27] staging: iio: resolver: ad2s1210: add triggered buffer support
+Date:   Fri, 29 Sep 2023 12:23:25 -0500
+Message-ID: <20230929-ad2s1210-mainline-v3-20-fa4364281745@baylibre.com>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <20230929-ad2s1210-mainline-v3-0-fa4364281745@baylibre.com>
 References: <20230929-ad2s1210-mainline-v3-0-fa4364281745@baylibre.com>
@@ -80,250 +80,150 @@ From: David Lechner <david@lechnology.com>
 
 From: David Lechner <dlechner@baylibre.com>
 
-Selecting the resolution was implemented as the `bits` sysfs attribute.
-However, the selection of the resolution depends on how the hardware
-is wired and the specific application, so this is rather a job for
-devicetree to describe.
-
-A new devicetree property `adi,resolution` to specify the resolution
-required for each chip is added and the `bits` sysfs attribute is
-removed.
-
-Since the resolution is now supplied by a devicetree property, the
-resolution-gpios are now optional and we can allow for the case where
-the resolution pins on the AD2S1210 are hard-wired instead of requiring
-them to be connected to gpios.
+This adds support for triggered buffers to the AD2S1210 resolver driver.
 
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
 
 v3 changes:
-* Fixed multiline comment style.
+* Dropped setting datasheet_name of channels.
 
- drivers/staging/iio/resolver/ad2s1210.c | 136 ++++++++++++++------------------
- 1 file changed, 61 insertions(+), 75 deletions(-)
+ drivers/staging/iio/resolver/ad2s1210.c | 83 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 82 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index 6accb9e3db46..a0a426d0af19 100644
+index bafc134eed97..c0bc9eac18e8 100644
 --- a/drivers/staging/iio/resolver/ad2s1210.c
 +++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -63,6 +63,13 @@ enum ad2s1210_mode {
- 	MOD_CONFIG = 0b11,
- };
+@@ -20,8 +20,11 @@
+ #include <linux/sysfs.h>
+ #include <linux/types.h>
  
-+enum ad2s1210_resolution {
-+	AD2S1210_RES_10 = 0b00,
-+	AD2S1210_RES_12 = 0b01,
-+	AD2S1210_RES_14 = 0b10,
-+	AD2S1210_RES_16 = 0b11,
-+};
-+
- struct ad2s1210_state {
- 	struct mutex lock;
- 	struct spi_device *sdev;
-@@ -70,13 +77,12 @@ struct ad2s1210_state {
- 	struct gpio_desc *sample_gpio;
- 	/** GPIO pins connected to A0 and A1 lines. */
- 	struct gpio_descs *mode_gpios;
--	/** GPIO pins connected to RES0 and RES1 lines. */
--	struct gpio_descs *resolution_gpios;
- 	/** Used to access config registers. */
- 	struct regmap *regmap;
- 	/** The external oscillator frequency in Hz. */
- 	unsigned long clkin_hz;
--	u8 resolution;
-+	/** The selected resolution */
-+	enum ad2s1210_resolution resolution;
++#include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ 
+ #define DRV_NAME "ad2s1210"
+ 
+@@ -92,6 +95,12 @@ struct ad2s1210_state {
+ 	enum ad2s1210_resolution resolution;
  	/** For reading raw sample value via SPI. */
  	__be16 sample __aligned(IIO_DMA_MINALIGN);
++	/** Scan buffer */
++	struct {
++		__be16 chan[2];
++		/* Ensure timestamp is naturally aligned. */
++		s64 timestamp __aligned(8);
++	} scan;
  	/** SPI transmit buffer. */
-@@ -212,62 +218,6 @@ static int ad2s1210_reinit_excitation_frequency(struct ad2s1210_state *st,
- 	return regmap_write(st->regmap, AD2S1210_REG_SOFT_RESET, 0);
+ 	u8 rx[2];
+ 	/** SPI receive buffer. */
+@@ -617,6 +626,13 @@ static const struct iio_chan_spec ad2s1210_channels[] = {
+ 		.type = IIO_ANGL,
+ 		.indexed = 1,
+ 		.channel = 0,
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_BE,
++		},
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 				      BIT(IIO_CHAN_INFO_SCALE) |
+ 				      BIT(IIO_CHAN_INFO_HYSTERESIS),
+@@ -626,9 +642,18 @@ static const struct iio_chan_spec ad2s1210_channels[] = {
+ 		.type = IIO_ANGL_VEL,
+ 		.indexed = 1,
+ 		.channel = 0,
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_BE,
++		},
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 				      BIT(IIO_CHAN_INFO_SCALE),
+-	}, {
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(2),
++	{
+ 		/* used to configure phase lock range and get phase lock error */
+ 		.type = IIO_PHASE,
+ 		.indexed = 1,
+@@ -756,6 +781,55 @@ static int ad2s1210_debugfs_reg_access(struct iio_dev *indio_dev,
+ 	return ret;
  }
  
--static int ad2s1210_set_resolution_gpios(struct ad2s1210_state *st,
--					 u8 resolution)
--{
--	struct gpio_descs *gpios = st->resolution_gpios;
--	DECLARE_BITMAP(bitmap, 2);
--
--	bitmap[0] = (resolution - 10) >> 1;
--
--	return gpiod_set_array_value(gpios->ndescs, gpios->desc, gpios->info,
--				     bitmap);
--}
--
--static ssize_t ad2s1210_show_resolution(struct device *dev,
--					struct device_attribute *attr,
--					char *buf)
--{
--	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
--
--	return sprintf(buf, "%d\n", st->resolution);
--}
--
--static ssize_t ad2s1210_store_resolution(struct device *dev,
--					 struct device_attribute *attr,
--					 const char *buf, size_t len)
--{
--	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
--	unsigned char data;
--	unsigned char udata;
--	int ret;
--
--	ret = kstrtou8(buf, 10, &udata);
--	if (ret || udata < 10 || udata > 16) {
--		dev_err(dev, "ad2s1210: resolution out of range\n");
--		return -EINVAL;
--	}
--
--	data = (udata - 10) >> 1;
--
--	mutex_lock(&st->lock);
--	ret = regmap_update_bits(st->regmap, AD2S1210_REG_CONTROL,
--				 AD2S1210_SET_RES, data);
--	if (ret < 0)
--		goto error_ret;
--
--	ret = ad2s1210_set_resolution_gpios(st, udata);
--	if (ret < 0)
--		goto error_ret;
--
--	st->resolution = udata;
--	ret = len;
--
--error_ret:
--	mutex_unlock(&st->lock);
--	return ret;
--}
--
- /* read the fault register since last sample */
- static ssize_t ad2s1210_show_fault(struct device *dev,
- 				   struct device_attribute *attr, char *buf)
-@@ -572,8 +522,6 @@ static int ad2s1210_write_raw(struct iio_dev *indio_dev,
- 	}
- }
- 
--static IIO_DEVICE_ATTR(bits, 0644,
--		       ad2s1210_show_resolution, ad2s1210_store_resolution, 0);
- static IIO_DEVICE_ATTR(fault, 0644,
- 		       ad2s1210_show_fault, ad2s1210_clear_fault, 0);
- 
-@@ -628,7 +576,6 @@ static const struct iio_chan_spec ad2s1210_channels[] = {
- };
- 
- static struct attribute *ad2s1210_attributes[] = {
--	&iio_dev_attr_bits.dev_attr.attr,
- 	&iio_dev_attr_fault.dev_attr.attr,
- 	&iio_dev_attr_los_thrd.dev_attr.attr,
- 	&iio_dev_attr_dos_ovr_thrd.dev_attr.attr,
-@@ -650,15 +597,12 @@ static int ad2s1210_initial(struct ad2s1210_state *st)
- 	int ret;
- 
- 	mutex_lock(&st->lock);
--	ret = ad2s1210_set_resolution_gpios(st, st->resolution);
--	if (ret < 0)
--		return ret;
- 
- 	/* Use default config register value plus resolution from devicetree. */
- 	data = FIELD_PREP(AD2S1210_PHASE_LOCK_RANGE_44, 1);
- 	data |= FIELD_PREP(AD2S1210_ENABLE_HYSTERESIS, 1);
- 	data |= FIELD_PREP(AD2S1210_SET_ENRES, 0x3);
--	data |= FIELD_PREP(AD2S1210_SET_RES, (st->resolution - 10) >> 1);
-+	data |= FIELD_PREP(AD2S1210_SET_RES, st->resolution);
- 
- 	ret = regmap_write(st->regmap, AD2S1210_REG_CONTROL, data);
- 	if (ret < 0)
-@@ -698,6 +642,26 @@ static const struct iio_info ad2s1210_info = {
- 	.debugfs_reg_access = &ad2s1210_debugfs_reg_access,
- };
- 
-+static int ad2s1210_setup_properties(struct ad2s1210_state *st)
++static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
 +{
-+	struct device *dev = &st->sdev->dev;
-+	u32 val;
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ad2s1210_state *st = iio_priv(indio_dev);
++	size_t chan = 0;
 +	int ret;
 +
-+	ret = device_property_read_u32(dev, "assigned-resolution-bits", &val);
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret,
-+			"failed to read assigned-resolution-bits property\n");
++	mutex_lock(&st->lock);
 +
-+	if (val < 10 || val > 16)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "resolution out of range: %u\n", val);
++	memset(&st->scan, 0, sizeof(st->scan));
++	gpiod_set_value(st->sample_gpio, 1);
 +
-+	st->resolution = (val - 10) >> 1;
++	if (test_bit(0, indio_dev->active_scan_mask)) {
++		ret = ad2s1210_set_mode(st, MOD_POS);
++		if (ret < 0)
++			goto error_ret;
 +
-+	return 0;
++		/* REVIST: we can read 3 bytes here and also get fault flags */
++		ret = spi_read(st->sdev, st->rx, 2);
++		if (ret < 0)
++			goto error_ret;
++
++		memcpy(&st->scan.chan[chan++], st->rx, 2);
++	}
++
++	if (test_bit(1, indio_dev->active_scan_mask)) {
++		ret = ad2s1210_set_mode(st, MOD_VEL);
++		if (ret < 0)
++			goto error_ret;
++
++		/* REVIST: we can read 3 bytes here and also get fault flags */
++		ret = spi_read(st->sdev, st->rx, 2);
++		if (ret < 0)
++			goto error_ret;
++
++		memcpy(&st->scan.chan[chan++], st->rx, 2);
++	}
++
++	iio_push_to_buffers_with_timestamp(indio_dev, &st->scan, pf->timestamp);
++
++error_ret:
++	gpiod_set_value(st->sample_gpio, 0);
++	mutex_unlock(&st->lock);
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
 +}
 +
- static int ad2s1210_setup_clocks(struct ad2s1210_state *st)
- {
- 	struct device *dev = &st->sdev->dev;
-@@ -719,6 +683,9 @@ static int ad2s1210_setup_clocks(struct ad2s1210_state *st)
- static int ad2s1210_setup_gpios(struct ad2s1210_state *st)
- {
- 	struct device *dev = &st->sdev->dev;
-+	struct gpio_descs *resolution_gpios;
-+	DECLARE_BITMAP(bitmap, 2);
-+	int ret;
+ static const struct iio_info ad2s1210_info = {
+ 	.event_attrs = &ad2s1210_event_attribute_group,
+ 	.read_raw = ad2s1210_read_raw,
+@@ -944,6 +1018,13 @@ static int ad2s1210_probe(struct spi_device *spi)
+ 	indio_dev->num_channels = ARRAY_SIZE(ad2s1210_channels);
+ 	indio_dev->name = spi_get_device_id(spi)->name;
  
- 	/* should not be sampling on startup */
- 	st->sample_gpio = devm_gpiod_get(dev, "sample", GPIOD_OUT_LOW);
-@@ -736,16 +703,32 @@ static int ad2s1210_setup_gpios(struct ad2s1210_state *st)
- 		return dev_err_probe(dev, -EINVAL,
- 				     "requires exactly 2 mode-gpios\n");
- 
--	/* both pins high means that we start with 16-bit resolution */
--	st->resolution_gpios = devm_gpiod_get_array(dev, "resolution",
--						    GPIOD_OUT_HIGH);
--	if (IS_ERR(st->resolution_gpios))
--		return dev_err_probe(dev, PTR_ERR(st->resolution_gpios),
-+	/*
-+	 * If resolution gpios are provided, they get set to the required
-+	 * resolution, otherwise it is assumed the RES0 and RES1 pins are
-+	 * hard-wired to match the resolution indicated in the devicetree.
-+	 */
-+	resolution_gpios = devm_gpiod_get_array_optional(dev, "resolution",
-+							 GPIOD_ASIS);
-+	if (IS_ERR(resolution_gpios))
-+		return dev_err_probe(dev, PTR_ERR(resolution_gpios),
- 				     "failed to request resolution GPIOs\n");
- 
--	if (st->resolution_gpios->ndescs != 2)
--		return dev_err_probe(dev, -EINVAL,
--				     "requires exactly 2 resolution-gpios\n");
-+	if (resolution_gpios) {
-+		if (resolution_gpios->ndescs != 2)
-+			return dev_err_probe(dev, -EINVAL,
-+				      "requires exactly 2 resolution-gpios\n");
-+
-+		bitmap[0] = st->resolution;
-+
-+		ret = gpiod_set_array_value(resolution_gpios->ndescs,
-+					    resolution_gpios->desc,
-+					    resolution_gpios->info,
-+					    bitmap);
-+		if (ret < 0)
-+			return dev_err_probe(dev, ret,
-+					     "failed to set resolution gpios\n");
-+	}
- 
- 	return 0;
- }
-@@ -809,7 +792,10 @@ static int ad2s1210_probe(struct spi_device *spi)
- 
- 	mutex_init(&st->lock);
- 	st->sdev = spi;
--	st->resolution = 12;
-+
-+	ret = ad2s1210_setup_properties(st);
++	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
++					      &iio_pollfunc_store_time,
++					      &ad2s1210_trigger_handler, NULL);
 +	if (ret < 0)
-+		return ret;
++		return dev_err_probe(&spi->dev, ret,
++				     "iio triggered buffer setup failed\n");
++
+ 	return devm_iio_device_register(&spi->dev, indio_dev);
+ }
  
- 	ret = ad2s1210_setup_clocks(st);
- 	if (ret < 0)
 
 -- 
 2.42.0
