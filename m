@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C7E1E728CA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B87FAE728CE
 	for <linux-iio@archiver.kernel.org>; Fri, 29 Sep 2023 17:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233773AbjI2R0W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 29 Sep 2023 13:26:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
+        id S233559AbjI2R0X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 29 Sep 2023 13:26:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233655AbjI2R0O (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Sep 2023 13:26:14 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8705CCF
-        for <linux-iio@vger.kernel.org>; Fri, 29 Sep 2023 10:25:59 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id 46e09a7af769-6c644a1845cso402655a34.2
-        for <linux-iio@vger.kernel.org>; Fri, 29 Sep 2023 10:25:59 -0700 (PDT)
+        with ESMTP id S232954AbjI2R0N (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Sep 2023 13:26:13 -0400
+Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B15CD0
+        for <linux-iio@vger.kernel.org>; Fri, 29 Sep 2023 10:25:57 -0700 (PDT)
+Received: by mail-oo1-xc36.google.com with SMTP id 006d021491bc7-57de6e502fcso2661735eaf.3
+        for <linux-iio@vger.kernel.org>; Fri, 29 Sep 2023 10:25:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1696008359; x=1696613159; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1696008357; x=1696613157; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=m7Cah4tFWXDIvrzx0iEu5CQHxR6QCBvbbacvLocEMIw=;
-        b=CVzwWtC1qjY0E7pyIY2qtk0kPyS5mBLHG9qTuPFS5JZGhE9QdXqwBu8HqmX5bwGG7K
-         1QOF0j0dfb01/bgrGt1JNxLOWV/m6frOUv5izKRw/oRLjNpSMEQaidX48UtrMfIrJhR0
-         Ps23gLYyDbp8m8YRxCZIXHM4eTlkQvQk7rVssrpowMNo/XIF/bSW6FNr7043XBBYD4Dg
-         exThgehR7vY9SEcLaDbHiC9XixLuKXCSqU1vlEDy53m1VdcASyfbFsJwNXJImwYT3NGx
-         Gf9WhGb0kMAo68szaEnMjhog78k080L/OnhBM0PbQzUmY35wL4zpWIlaN3m23v173fSE
-         wiQw==
+        bh=bIleoNt3McOityrbAncOn1e2uXvostp1PJRCN57ck0k=;
+        b=juM0OS4v9Z3qzhmqi45kCjhxRbfDjT6LI0IEOqjM/XzhkcwOq5xqFd36YthYgZAKlR
+         1nMveCZ2BmPnsWSUs/CM3gZu9kPfushr63GFM4IA8u7aOJ/BsK/Hc7BDXrzmayuvrCmZ
+         JzGGMBMi63EEhVlJZwyA7+ZgIUewvGtuSwxl4UKZ3mjVjvAKRvg7sjGyKeczYC+I1rnh
+         3dGWcS1IyPuDdfRRDBI4XzJ/57tkaYF53c6jQvllOMDQmkiTF8rq1M9TBld3+LySEAn6
+         W/drXibQl6xI2BYaQzBqJurK+1lUZ6Z7bAHlaRXGZFClgrBW/8HHdbtqLl03EU6xiVYs
+         kzeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696008359; x=1696613159;
+        d=1e100.net; s=20230601; t=1696008357; x=1696613157;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=m7Cah4tFWXDIvrzx0iEu5CQHxR6QCBvbbacvLocEMIw=;
-        b=wc2iH/SZ9CpLnis1GoIG3bOQsxpYz0pSs7hBYa7QeLdTJ28CYxofK3tXfHzyQnc9hu
-         bjNfKRFdXzW7x57bBq1HFTxkW/4ID3KDvb8cAc0yv1JIKSX5xkw24OoCY8QuvoGfBfZ8
-         +DFPEKERAujIJQh5iNioMDp5WXZ1lT/FX1pZE1w5fj0gTey69EvcP3Sjoa4Z1qvkcL0D
-         Y0wl6QVAVA5E0X7srwwSISD2jBfz/+FdhAmOSb8DGgSBP8N++LWwpRb6DLtHygztcxkt
-         9rBTMsVJhvha4qZVlMof5k3h2epqZ3N2GMB+Qd4w8sbSudiQTFLfCHlEfJwpNquRDRxh
-         MtQw==
-X-Gm-Message-State: AOJu0YxVhB3iM/2Lf8OCkzbPpzb/KKyVjLoIYG80tC5r7xL35LjFVdPe
-        4s4jlJSxfwtydxVFnLTRnqUXpwgkQQW7a2akMSp6Ng==
-X-Google-Smtp-Source: AGHT+IFwSb2HM9F3mccamJg5DPrZ5c2hw3LjEW/cMpv+rxbchG4OZJMCnxsI1LfMh/9z8vcPTUJyoQ==
-X-Received: by 2002:a05:6830:11c6:b0:6bc:de9b:a3e6 with SMTP id v6-20020a05683011c600b006bcde9ba3e6mr5194184otq.24.1696008358736;
-        Fri, 29 Sep 2023 10:25:58 -0700 (PDT)
+        bh=bIleoNt3McOityrbAncOn1e2uXvostp1PJRCN57ck0k=;
+        b=WlqykEe39qec+b/sPHy5UJmmXG281IFvA34sRnLG4ZuFgPT7SZBH6VjhI6QiHYInzc
+         yQ8KFCnOabRKw+zfQ3Vhc8PXhzrLL/caBqtYYKxEMOwnMBlNAp76fa+bFgPAkHV/1wKZ
+         3w6RoPAlFycA58gQtFpukdiHt+5ph6MCyFu1BfYlc+yWaDwjt7xW5UJqLOJTH6aci7O8
+         3b4mUFa5vj769b+e098df0igRkEZfac15ptVPSzV2mlNYhSI4dYrs6eOJG5Cvn/tDLb1
+         hW9Nh1R1VzbpYh5wUYBGvwN4Gu9i1gqZyE3NC5TY/jq/vJFXHaBCmuwvmky1mNdbV0+j
+         6Hpw==
+X-Gm-Message-State: AOJu0YwhPqYuKskoNVDLqofLZ3njhAdDcnC+xmOSjfFPfcC9gRps+ath
+        Zj/rXZlvex2TDlW7/R6X70WS3jsMZ9ea8DJON9umQg==
+X-Google-Smtp-Source: AGHT+IHLFf9v4qAbn38RSz6/N2MsDw9a72xTy6kMUQDUcQjaR4b3zXDVJNtTSV4old/0mSNpduMelg==
+X-Received: by 2002:a4a:3c07:0:b0:57b:6f5c:c90a with SMTP id d7-20020a4a3c07000000b0057b6f5cc90amr4717947ooa.8.1696008356922;
+        Fri, 29 Sep 2023 10:25:56 -0700 (PDT)
 Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id f128-20020a4a5886000000b0057bb326cad4sm2272915oob.33.2023.09.29.10.25.57
+        by smtp.gmail.com with ESMTPSA id f128-20020a4a5886000000b0057bb326cad4sm2272915oob.33.2023.09.29.10.25.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Sep 2023 10:25:58 -0700 (PDT)
+        Fri, 29 Sep 2023 10:25:56 -0700 (PDT)
 From:   David Lechner <dlechner@baylibre.com>
 To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-staging@lists.linux.dev
@@ -62,9 +62,9 @@ Cc:     David Lechner <david@lechnology.com>,
         Axel Haslam <ahaslam@baylibre.com>,
         Philip Molloy <pmolloy@baylibre.com>,
         linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
-Subject: [PATCH v3 13/27] staging: iio: resolver: ad2s1210: rework gpios
-Date:   Fri, 29 Sep 2023 12:23:18 -0500
-Message-ID: <20230929-ad2s1210-mainline-v3-13-fa4364281745@baylibre.com>
+Subject: [PATCH v3 11/27] staging: iio: resolver: ad2s1210: add debugfs reg access
+Date:   Fri, 29 Sep 2023 12:23:16 -0500
+Message-ID: <20230929-ad2s1210-mainline-v3-11-fa4364281745@baylibre.com>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <20230929-ad2s1210-mainline-v3-0-fa4364281745@baylibre.com>
 References: <20230929-ad2s1210-mainline-v3-0-fa4364281745@baylibre.com>
@@ -80,311 +80,51 @@ From: David Lechner <david@lechnology.com>
 
 From: David Lechner <dlechner@baylibre.com>
 
-- Remove "adi," prefix from gpio names.
-- Sample gpio is now expected to be active low.
-- Convert A0 and A1 gpios to "mode-gpios" gpio array.
-- Convert RES0 and RES1 gpios to "resolution-gpios" gpio array.
-- Remove extraneous lookup tables.
-- Remove unused mode field from state struct.
-- Swap argument order of ad2s1210_set_mode() while we are touching this.
+This add an implementation of debugfs_reg_access for the AD2S1210
+driver.
 
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
 
-v3 changes:
-* Fixed multiline comment style.
+v3 changes: None
 
- drivers/staging/iio/resolver/ad2s1210.c | 164 +++++++++++++++++---------------
- 1 file changed, 85 insertions(+), 79 deletions(-)
+ drivers/staging/iio/resolver/ad2s1210.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
 diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index 2b9377447f6a..0ec3598b600a 100644
+index 0663a51d04ad..31415fbb6384 100644
 --- a/drivers/staging/iio/resolver/ad2s1210.c
 +++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -58,39 +58,21 @@
- #define AD2S1210_DEF_EXCIT	10000
- 
- enum ad2s1210_mode {
--	MOD_POS = 0,
--	MOD_VEL,
--	MOD_CONFIG,
--	MOD_RESERVED,
-+	MOD_POS = 0b00,
-+	MOD_VEL = 0b01,
-+	MOD_RESERVED = 0b10,
-+	MOD_CONFIG = 0b11,
- };
- 
--enum ad2s1210_gpios {
--	AD2S1210_SAMPLE,
--	AD2S1210_A0,
--	AD2S1210_A1,
--	AD2S1210_RES0,
--	AD2S1210_RES1,
--};
--
--struct ad2s1210_gpio {
--	const char *name;
--	unsigned long flags;
--};
--
--static const struct ad2s1210_gpio gpios[] = {
--	[AD2S1210_SAMPLE] = { .name = "adi,sample", .flags = GPIOD_OUT_LOW },
--	[AD2S1210_A0] = { .name = "adi,a0", .flags = GPIOD_OUT_LOW },
--	[AD2S1210_A1] = { .name = "adi,a1", .flags = GPIOD_OUT_LOW },
--	[AD2S1210_RES0] = { .name = "adi,res0", .flags = GPIOD_OUT_LOW },
--	[AD2S1210_RES1] = { .name = "adi,res1", .flags = GPIOD_OUT_LOW },
--};
--
--static const unsigned int ad2s1210_resolution_value[] = { 10, 12, 14, 16 };
--
- struct ad2s1210_state {
- 	struct mutex lock;
- 	struct spi_device *sdev;
--	struct gpio_desc *gpios[5];
-+	/** GPIO pin connected to SAMPLE line. */
-+	struct gpio_desc *sample_gpio;
-+	/** GPIO pins connected to A0 and A1 lines. */
-+	struct gpio_descs *mode_gpios;
-+	/** GPIO pins connected to RES0 and RES1 lines. */
-+	struct gpio_descs *resolution_gpios;
- 	/** Used to access config registers. */
- 	struct regmap *regmap;
- 	/** The external oscillator frequency in Hz. */
-@@ -98,7 +80,6 @@ struct ad2s1210_state {
- 	unsigned int fexcit;
- 	bool hysteresis;
- 	u8 resolution;
--	enum ad2s1210_mode mode;
- 	/** For reading raw sample value via SPI. */
- 	__be16 sample __aligned(IIO_DMA_MINALIGN);
- 	/** SPI transmit buffer. */
-@@ -107,18 +88,15 @@ struct ad2s1210_state {
- 	u8 tx[2];
- };
- 
--static const int ad2s1210_mode_vals[4][2] = {
--	[MOD_POS] = { 0, 0 },
--	[MOD_VEL] = { 0, 1 },
--	[MOD_CONFIG] = { 1, 1 },
--};
--
--static inline void ad2s1210_set_mode(enum ad2s1210_mode mode,
--				     struct ad2s1210_state *st)
-+static int ad2s1210_set_mode(struct ad2s1210_state *st, enum ad2s1210_mode mode)
- {
--	gpiod_set_value(st->gpios[AD2S1210_A0], ad2s1210_mode_vals[mode][0]);
--	gpiod_set_value(st->gpios[AD2S1210_A1], ad2s1210_mode_vals[mode][1]);
--	st->mode = mode;
-+	struct gpio_descs *gpios = st->mode_gpios;
-+	DECLARE_BITMAP(bitmap, 2);
-+
-+	bitmap[0] = mode;
-+
-+	return gpiod_set_array_value(gpios->ndescs, gpios->desc, gpios->info,
-+				     bitmap);
- }
- 
- /*
-@@ -143,6 +121,7 @@ static int ad2s1210_regmap_reg_write(void *context, unsigned int reg,
- 			.tx_buf = &st->tx[1],
- 		},
- 	};
-+	int ret;
- 
- 	/* values can only be 7 bits, the MSB indicates an address */
- 	if (val & ~0x7F)
-@@ -151,7 +130,9 @@ static int ad2s1210_regmap_reg_write(void *context, unsigned int reg,
- 	st->tx[0] = reg;
- 	st->tx[1] = val;
- 
--	ad2s1210_set_mode(MOD_CONFIG, st);
-+	ret = ad2s1210_set_mode(st, MOD_CONFIG);
-+	if (ret < 0)
-+		return ret;
- 
- 	return spi_sync_transfer(st->sdev, xfers, ARRAY_SIZE(xfers));
- }
-@@ -180,7 +161,10 @@ static int ad2s1210_regmap_reg_read(void *context, unsigned int reg,
- 	};
- 	int ret;
- 
--	ad2s1210_set_mode(MOD_CONFIG, st);
-+	ret = ad2s1210_set_mode(st, MOD_CONFIG);
-+	if (ret < 0)
-+		return ret;
-+
- 	st->tx[0] = reg;
- 	/*
- 	 * Must be valid register address here otherwise this could write data.
-@@ -219,16 +203,16 @@ int ad2s1210_update_frequency_control_word(struct ad2s1210_state *st)
- 	return regmap_write(st->regmap, AD2S1210_REG_EXCIT_FREQ, fcw);
- }
- 
--static const int ad2s1210_res_pins[4][2] = {
--	{ 0, 0 }, {0, 1}, {1, 0}, {1, 1}
--};
--
--static inline void ad2s1210_set_resolution_pin(struct ad2s1210_state *st)
-+static int ad2s1210_set_resolution_gpios(struct ad2s1210_state *st,
-+					 u8 resolution)
- {
--	gpiod_set_value(st->gpios[AD2S1210_RES0],
--			ad2s1210_res_pins[(st->resolution - 10) / 2][0]);
--	gpiod_set_value(st->gpios[AD2S1210_RES1],
--			ad2s1210_res_pins[(st->resolution - 10) / 2][1]);
-+	struct gpio_descs *gpios = st->resolution_gpios;
-+	DECLARE_BITMAP(bitmap, 2);
-+
-+	bitmap[0] = (resolution - 10) >> 1;
-+
-+	return gpiod_set_array_value(gpios->ndescs, gpios->desc, gpios->info,
-+				     bitmap);
- }
- 
- static inline int ad2s1210_soft_reset(struct ad2s1210_state *st)
-@@ -305,10 +289,13 @@ static ssize_t ad2s1210_store_resolution(struct device *dev,
- 	if (ret < 0)
- 		goto error_ret;
- 
--	st->resolution =
--		ad2s1210_resolution_value[data & AD2S1210_SET_RES];
--	ad2s1210_set_resolution_pin(st);
-+	ret = ad2s1210_set_resolution_gpios(st, udata);
-+	if (ret < 0)
-+		goto error_ret;
-+
-+	st->resolution = udata;
- 	ret = len;
-+
- error_ret:
- 	mutex_unlock(&st->lock);
+@@ -614,9 +614,29 @@ static int ad2s1210_initial(struct ad2s1210_state *st)
  	return ret;
-@@ -339,15 +326,19 @@ static ssize_t ad2s1210_clear_fault(struct device *dev,
- 	int ret;
- 
- 	mutex_lock(&st->lock);
--	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 0);
-+
-+	gpiod_set_value(st->sample_gpio, 1);
- 	/* delay (2 * tck + 20) nano seconds */
- 	udelay(1);
--	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 1);
-+	gpiod_set_value(st->sample_gpio, 0);
-+
- 	ret = regmap_read(st->regmap, AD2S1210_REG_FAULT, &value);
- 	if (ret < 0)
- 		goto error_ret;
--	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 0);
--	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 1);
-+
-+	gpiod_set_value(st->sample_gpio, 1);
-+	gpiod_set_value(st->sample_gpio, 0);
-+
- error_ret:
- 	mutex_unlock(&st->lock);
- 
-@@ -393,19 +384,19 @@ static int ad2s1210_single_conversion(struct ad2s1210_state *st,
- 				      struct iio_chan_spec const *chan,
- 				      int *val)
- {
--	int ret = 0;
-+	int ret;
- 
- 	mutex_lock(&st->lock);
--	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 0);
-+	gpiod_set_value(st->sample_gpio, 1);
- 	/* delay (6 * tck + 20) nano seconds */
- 	udelay(1);
- 
- 	switch (chan->type) {
- 	case IIO_ANGL:
--		ad2s1210_set_mode(MOD_POS, st);
-+		ret = ad2s1210_set_mode(st, MOD_POS);
- 		break;
- 	case IIO_ANGL_VEL:
--		ad2s1210_set_mode(MOD_VEL, st);
-+		ret = ad2s1210_set_mode(st, MOD_VEL);
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -432,7 +423,7 @@ static int ad2s1210_single_conversion(struct ad2s1210_state *st,
- 	}
- 
- error_ret:
--	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 1);
-+	gpiod_set_value(st->sample_gpio, 0);
- 	/* delay (2 * tck + 20) nano seconds */
- 	udelay(1);
- 	mutex_unlock(&st->lock);
-@@ -546,7 +537,9 @@ static int ad2s1210_initial(struct ad2s1210_state *st)
- 	int ret;
- 
- 	mutex_lock(&st->lock);
--	ad2s1210_set_resolution_pin(st);
-+	ret = ad2s1210_set_resolution_gpios(st, st->resolution);
-+	if (ret < 0)
-+		return ret;
- 
- 	/* Use default config register value plus resolution from devicetree. */
- 	data = FIELD_PREP(AD2S1210_PHASE_LOCK_RANGE_44, 1);
-@@ -612,20 +605,34 @@ static int ad2s1210_setup_clocks(struct ad2s1210_state *st)
- 
- static int ad2s1210_setup_gpios(struct ad2s1210_state *st)
- {
--	struct spi_device *spi = st->sdev;
--	int i, ret;
--
--	for (i = 0; i < ARRAY_SIZE(gpios); i++) {
--		st->gpios[i] = devm_gpiod_get(&spi->dev, gpios[i].name,
--					      gpios[i].flags);
--		if (IS_ERR(st->gpios[i])) {
--			ret = PTR_ERR(st->gpios[i]);
--			dev_err(&spi->dev,
--				"ad2s1210: failed to request %s GPIO: %d\n",
--				gpios[i].name, ret);
--			return ret;
--		}
--	}
-+	struct device *dev = &st->sdev->dev;
-+
-+	/* should not be sampling on startup */
-+	st->sample_gpio = devm_gpiod_get(dev, "sample", GPIOD_OUT_LOW);
-+	if (IS_ERR(st->sample_gpio))
-+		return dev_err_probe(dev, PTR_ERR(st->sample_gpio),
-+				     "failed to request sample GPIO\n");
-+
-+	/* both pins high means that we start in config mode */
-+	st->mode_gpios = devm_gpiod_get_array(dev, "mode", GPIOD_OUT_HIGH);
-+	if (IS_ERR(st->mode_gpios))
-+		return dev_err_probe(dev, PTR_ERR(st->mode_gpios),
-+				     "failed to request mode GPIOs\n");
-+
-+	if (st->mode_gpios->ndescs != 2)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "requires exactly 2 mode-gpios\n");
-+
-+	/* both pins high means that we start with 16-bit resolution */
-+	st->resolution_gpios = devm_gpiod_get_array(dev, "resolution",
-+						    GPIOD_OUT_HIGH);
-+	if (IS_ERR(st->resolution_gpios))
-+		return dev_err_probe(dev, PTR_ERR(st->resolution_gpios),
-+				     "failed to request resolution GPIOs\n");
-+
-+	if (st->resolution_gpios->ndescs != 2)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "requires exactly 2 resolution-gpios\n");
- 
- 	return 0;
  }
-@@ -690,7 +697,6 @@ static int ad2s1210_probe(struct spi_device *spi)
- 	mutex_init(&st->lock);
- 	st->sdev = spi;
- 	st->hysteresis = true;
--	st->mode = MOD_CONFIG;
- 	st->resolution = 12;
- 	st->fexcit = AD2S1210_DEF_EXCIT;
  
++static int ad2s1210_debugfs_reg_access(struct iio_dev *indio_dev,
++				       unsigned int reg, unsigned int writeval,
++				       unsigned int *readval)
++{
++	struct ad2s1210_state *st = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&st->lock);
++
++	if (readval)
++		ret = regmap_read(st->regmap, reg, readval);
++	else
++		ret = regmap_write(st->regmap, reg, writeval);
++
++	mutex_unlock(&st->lock);
++
++	return ret;
++}
++
+ static const struct iio_info ad2s1210_info = {
+ 	.read_raw = ad2s1210_read_raw,
+ 	.attrs = &ad2s1210_attribute_group,
++	.debugfs_reg_access = &ad2s1210_debugfs_reg_access,
+ };
+ 
+ static int ad2s1210_setup_clocks(struct ad2s1210_state *st)
 
 -- 
 2.42.0
