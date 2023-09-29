@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 925B1E728CE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31519E728CC
 	for <linux-iio@archiver.kernel.org>; Fri, 29 Sep 2023 17:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233082AbjI2RZx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S232985AbjI2RZx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 29 Sep 2023 13:25:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233315AbjI2RZw (ORCPT
+        with ESMTP id S233082AbjI2RZw (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Sep 2023 13:25:52 -0400
-Received: from mail-oo1-xc2a.google.com (mail-oo1-xc2a.google.com [IPv6:2607:f8b0:4864:20::c2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F54ECC0
-        for <linux-iio@vger.kernel.org>; Fri, 29 Sep 2023 10:25:50 -0700 (PDT)
-Received: by mail-oo1-xc2a.google.com with SMTP id 006d021491bc7-57bb6b1f764so5820938eaf.2
-        for <linux-iio@vger.kernel.org>; Fri, 29 Sep 2023 10:25:50 -0700 (PDT)
+Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8D01B4
+        for <linux-iio@vger.kernel.org>; Fri, 29 Sep 2023 10:25:48 -0700 (PDT)
+Received: by mail-oo1-xc33.google.com with SMTP id 006d021491bc7-57ad95c555eso7308196eaf.3
+        for <linux-iio@vger.kernel.org>; Fri, 29 Sep 2023 10:25:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1696008349; x=1696613149; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1696008348; x=1696613148; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sdyEj3wikWRAcNOtcWjzMUp/VXe76XnGqEiNgzZP6WM=;
-        b=15XdpdXmk98e/fncfJ5R9qnkVj+AXNYi55cpGje5PD480tQ4ZEE7X6dJKT64YOanru
-         Y6dww5ewy900Rlyq07qB0ubeXEyjVLANBV8BwVpQJhJ0T9aT3wXsrVLZ5IuvBiHeoAC+
-         IWWp4BXfCBb/PSGN3jAc+34+fvjbQNSg3WtPlBMsIbrLqeYJKoySI20Uz9LH+laceNxc
-         v69qPR0Feqa823+HV3KHtAF7+80lLTrkmNDlj6Q6H6+/C+tQewlt4UeehnSSlS3tbU+c
-         hZF2jHMEsVulycIRsZvY1sWEkFFYr7RUqSzqMH7LqY2dCTD/n9NRne2FDpIJp8Ygd37a
-         Y4og==
+        bh=qAQ+9OUUFA/CH23Ej2yuI6SPnrszEisFRJ29EV5BnFI=;
+        b=fJ9L6eF1DYhOqrq7trKapPLzVGpj3IJ2kd5o+H0/UMVw1pMXDoPO+dvzC2fNlT7xk1
+         iMx3MrghRU+3mWPB0UflEVae75Crb0GUqRzF4XhPRlsxZJxi1/+BYPIJX8MYnKCsx0Vt
+         vQw01wI8XPrRliU96ZpKLolet5fmkvM6CrAaEBT/5PAER2Wa0FyJpdwJkH9f30yz+yPM
+         +5jao/1FWt5alIN0qIW008o2yC2qgdUCa89ZwK9ezf+KsNk+fnoaStV0SRXlTdW+kXmu
+         pLq4DM8R+dP5tPlxryXrATvu9z8pr079WsBtNOGQmQiRTvu9a6hazvY6sjk6M6/ZP2qw
+         M7Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696008349; x=1696613149;
+        d=1e100.net; s=20230601; t=1696008348; x=1696613148;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=sdyEj3wikWRAcNOtcWjzMUp/VXe76XnGqEiNgzZP6WM=;
-        b=D6EG6mdXO5eh/IXO1tT3SBXC5Jis+xovTbF0d7kEp1z5NIZ9nTEmgeYWu5tvdpLhK8
-         ky0uznbFxciZiynQuZPxB/t4EyUZsQ8qnX0ABIn43WpLLOhfmc2N5BiZeMkUmB8yGASg
-         taeBT+3BKdm6PV0d4EBGSOucZrXetaskmWG6UfvTDAqujnuAOOKmJNK+2bjPuDFFTmqi
-         pKLEc/OpCNSSQ5fB93aA1DaCdjHQn0ETNnPbYgqHuq45rS0FEcTEewtQqngQ3ziPpOEL
-         JIKOldTHIgQit+tyFlzlk5rsqp4iFtMd7ElZocvVrvAas72Wmxp7a4QPn+VKhMEzYtBn
-         ZQ2Q==
-X-Gm-Message-State: AOJu0YztbXHLLXq5yugWWo/XtevRqhgAOjU1dz6jq98hu8L8NngNq1ir
-        VGygOm0A70PXS5apOAIzGO4oCfHc6ec8mMcPZrErdA==
-X-Google-Smtp-Source: AGHT+IEdsrADh4nu4YW1a/z3YRqrcmH2BqYxTLsP/81uaD4TcborXfHuhbM/eSAh86i/ThqzYbreAw==
-X-Received: by 2002:a4a:9c4d:0:b0:571:1fad:ebdb with SMTP id c13-20020a4a9c4d000000b005711fadebdbmr4938892ook.3.1696008349364;
-        Fri, 29 Sep 2023 10:25:49 -0700 (PDT)
+        bh=qAQ+9OUUFA/CH23Ej2yuI6SPnrszEisFRJ29EV5BnFI=;
+        b=s23HDIUyL6gWvnYFAC3CtQuAB/QqnioAvolcqyXg9bfQ3zuNqmqGSWEyILemAlEvmk
+         hrjX49bfqLD5tPwIvcm2xj7r8YNBBi0S1Y0WrZwD6zwha7rmvoNHxghNP1oGfSLPOTiy
+         rgc3KOLWysT1f8iaScd6Ai0xwE6zN9z5vOpwDFw6mHpDzSR+SnX5XA7g169Be1fb/7Am
+         Bv+osgu5DG4R9AeVXct3VQy95DjorECpOWglPXHMC+5EN/ShtykRtfMB4aetO6KSmNOc
+         EFpMsE6SK9o7Br4tbRY6U8nozGbVDJy3Ue+5puqzNL7bQCspRKwujOJtDtzKvKWpX9e6
+         WFTg==
+X-Gm-Message-State: AOJu0Ywsjodmrwzt1pKD6q15gpksS/Z4qWy6CzuVDBRxqOQCFDTt40yG
+        5/ZPICkQHY2rCUsQ5mmv/3gbRcbU9v7T065U7oymcw==
+X-Google-Smtp-Source: AGHT+IE0GlYIhnui3UmneJph2JGLREScOwg+lRf9xJY5Sh9TRXNM4Bntai/NVcRpUOhG9UYvUjpumQ==
+X-Received: by 2002:a4a:751d:0:b0:57b:5693:5ecb with SMTP id j29-20020a4a751d000000b0057b56935ecbmr4180070ooc.2.1696008347557;
+        Fri, 29 Sep 2023 10:25:47 -0700 (PDT)
 Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id f128-20020a4a5886000000b0057bb326cad4sm2272915oob.33.2023.09.29.10.25.48
+        by smtp.gmail.com with ESMTPSA id f128-20020a4a5886000000b0057bb326cad4sm2272915oob.33.2023.09.29.10.25.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Sep 2023 10:25:48 -0700 (PDT)
+        Fri, 29 Sep 2023 10:25:47 -0700 (PDT)
 From:   David Lechner <dlechner@baylibre.com>
 To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-staging@lists.linux.dev
@@ -61,10 +61,12 @@ Cc:     David Lechner <david@lechnology.com>,
         =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
         Axel Haslam <ahaslam@baylibre.com>,
         Philip Molloy <pmolloy@baylibre.com>,
-        linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
-Subject: [PATCH v3 03/27] staging: iio: resolver: ad2s1210: remove call to spi_setup()
-Date:   Fri, 29 Sep 2023 12:23:08 -0500
-Message-ID: <20230929-ad2s1210-mainline-v3-3-fa4364281745@baylibre.com>
+        linux-kernel@vger.kernel.org,
+        David Lechner <dlechner@baylibre.com>,
+        Apelete Seketeli <aseketeli@baylibre.com>
+Subject: [PATCH v3 01/27] dt-bindings: iio: resolver: add devicetree bindings for ad2s1210
+Date:   Fri, 29 Sep 2023 12:23:06 -0500
+Message-ID: <20230929-ad2s1210-mainline-v3-1-fa4364281745@baylibre.com>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <20230929-ad2s1210-mainline-v3-0-fa4364281745@baylibre.com>
 References: <20230929-ad2s1210-mainline-v3-0-fa4364281745@baylibre.com>
@@ -80,34 +82,210 @@ From: David Lechner <david@lechnology.com>
 
 From: David Lechner <dlechner@baylibre.com>
 
-This removes the call to spi_setup() in the ad2s1210 driver.
+This adds new DeviceTree bindings for the Analog Devices, Inc. AD2S1210
+resolver-to-digital converter.
 
-Setting MODE_3 was incorrect. It should be MODE_1 but we can let the
-device tree select this and avoid the need to call spi_setup().
-
+Co-developed-by: Apelete Seketeli <aseketeli@baylibre.com>
+Signed-off-by: Apelete Seketeli <aseketeli@baylibre.com>
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
 
 v3 changes:
-* This is a new patch split out from "staging: iio: resolver: ad2s1210:
- fix probe"
+* Expanded top-level description of A0/A1 lines.
+* Added required voltage -supply properties. (I did not pick up Rob's
+  Reviewed-by since I wasn't sure if this was trivial enough.)
 
- drivers/staging/iio/resolver/ad2s1210.c | 2 --
- 1 file changed, 2 deletions(-)
+v2 changes:
+* Add Co-developed-by:
+* Remove extraneous quotes on strings
+* Remove extraneous pipe on some multi-line descriptions
 
-diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index 3f08b59f4e19..8fde08887f7f 100644
---- a/drivers/staging/iio/resolver/ad2s1210.c
-+++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -683,8 +683,6 @@ static int ad2s1210_probe(struct spi_device *spi)
- 		return ret;
- 
- 	st->fclkin = spi->max_speed_hz;
--	spi->mode = SPI_MODE_3;
--	spi_setup(spi);
- 	ad2s1210_initial(st);
- 
- 	return 0;
+ .../bindings/iio/resolver/adi,ad2s1210.yaml        | 177 +++++++++++++++++++++
+ 1 file changed, 177 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/resolver/adi,ad2s1210.yaml b/Documentation/devicetree/bindings/iio/resolver/adi,ad2s1210.yaml
+new file mode 100644
+index 000000000000..8980b3cd8337
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/resolver/adi,ad2s1210.yaml
+@@ -0,0 +1,177 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/resolver/adi,ad2s1210.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices AD2S1210 Resolver-to-Digital Converter
++
++maintainers:
++  - Michael Hennerich <michael.hennerich@analog.com>
++
++description: |
++  The AD2S1210 is a complete 10-bit to 16-bit resolution tracking
++  resolver-to-digital converter, integrating an on-board programmable
++  sinusoidal oscillator that provides sine wave excitation for
++  resolvers.
++
++  The AD2S1210 allows the user to read the angular position or the
++  angular velocity data directly from the parallel outputs or through
++  the serial interface.
++
++  The mode of operation of the communication channel (parallel or serial) is
++  selected by the A0 and A1 input pins. In normal mode, data is latched by
++  toggling the SAMPLE line and can then be read directly. In configuration mode,
++  data is read or written using a register access scheme (address byte with
++  read/write flag and data byte).
++
++    A1  A0  Result
++     0   0  Normal mode - position output
++     0   1  Normal mode - velocity output
++     1   0  Reserved
++     1   1  Configuration mode
++
++  In normal mode, the resolution of the digital output is selected using
++  the RES0 and RES1 input pins. In configuration mode, the resolution is
++  selected by setting the RES0 and RES1 bits in the control register.
++
++  RES1  RES0  Resolution (Bits)
++     0     0  10
++     0     1  12
++     1     0  14
++     1     1  16
++
++  Note on SPI connections: The CS line on the AD2S1210 should hard-wired to
++  logic low and the WR/FSYNC line on the AD2S1210 should be connected to the
++  SPI CSn output of the SPI controller.
++
++  Datasheet:
++  https://www.analog.com/media/en/technical-documentation/data-sheets/ad2s1210.pdf
++
++properties:
++  compatible:
++    const: adi,ad2s1210
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 25000000
++
++  spi-cpha: true
++
++  avdd-supply:
++    description:
++      A 4.75 to 5.25 V regulator that powers the Analog Supply Voltage (AVDD)
++      pin.
++
++  dvdd-supply:
++    description:
++      A 4.75 to 5.25 V regulator that powers the Digital Supply Voltage (DVDD)
++      pin.
++
++  vdrive-supply:
++    description:
++      A 2.3 to 5.25 V regulator that powers the Logic Power Supply Input
++      (VDrive) pin.
++
++  clocks:
++    maxItems: 1
++    description: External oscillator clock (CLKIN).
++
++  reset-gpios:
++    description:
++      GPIO connected to the /RESET pin. As the line needs to be low for the
++      reset to be active, it should be configured as GPIO_ACTIVE_LOW.
++    maxItems: 1
++
++  sample-gpios:
++    description:
++      GPIO connected to the /SAMPLE pin. As the line needs to be low to trigger
++      a sample, it should be configured as GPIO_ACTIVE_LOW.
++    maxItems: 1
++
++  mode-gpios:
++    description:
++      GPIO lines connected to the A0 and A1 pins. These pins select the data
++      transfer mode.
++    minItems: 2
++    maxItems: 2
++
++  resolution-gpios:
++    description:
++      GPIO lines connected to the RES0 and RES1 pins. These pins select the
++      resolution of the digital output. If omitted, it is assumed that the
++      RES0 and RES1 pins are hard-wired to match the assigned-resolution-bits
++      property.
++    minItems: 2
++    maxItems: 2
++
++  fault-gpios:
++    description:
++      GPIO lines connected to the LOT and DOS pins. These pins combined indicate
++      the type of fault present, if any. As these pins a pulled low to indicate
++      a fault condition, they should be configured as GPIO_ACTIVE_LOW.
++    minItems: 2
++    maxItems: 2
++
++  adi,fixed-mode:
++    description:
++      This is used to indicate the selected mode if A0 and A1 are hard-wired
++      instead of connected to GPIOS (i.e. mode-gpios is omitted).
++    $ref: /schemas/types.yaml#/definitions/string
++    enum: [config, velocity, position]
++
++  assigned-resolution-bits:
++    description:
++      Resolution of the digital output required by the application. This
++      determines the precision of the angle and/or the maximum speed that can
++      be measured. If resolution-gpios is omitted, it is assumed that RES0 and
++      RES1 are hard-wired to match this value.
++    enum: [10, 12, 14, 16]
++
++required:
++  - compatible
++  - reg
++  - spi-cpha
++  - avdd-supply
++  - dvdd-supply
++  - vdrive-supply
++  - clocks
++  - sample-gpios
++  - assigned-resolution-bits
++
++oneOf:
++  - required:
++      - mode-gpios
++  - required:
++      - adi,fixed-mode
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        resolver@0 {
++            compatible = "adi,ad2s1210";
++            reg = <0>;
++            spi-max-frequency = <20000000>;
++            spi-cpha;
++            avdd-supply = <&avdd_regulator>;
++            dvdd-supply = <&dvdd_regulator>;
++            vdrive-supply = <&vdrive_regulator>;
++            clocks = <&ext_osc>;
++            sample-gpios = <&gpio0 90 GPIO_ACTIVE_LOW>;
++            mode-gpios = <&gpio0 86 0>, <&gpio0 87 0>;
++            resolution-gpios = <&gpio0 88 0>, <&gpio0 89 0>;
++            assigned-resolution-bits = <16>;
++        };
++    };
 
 -- 
 2.42.0
