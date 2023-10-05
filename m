@@ -2,86 +2,93 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6D4E9270D
-	for <linux-iio@archiver.kernel.org>; Thu,  5 Oct 2023 15:40:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0ECBE92717
+	for <linux-iio@archiver.kernel.org>; Thu,  5 Oct 2023 15:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233193AbjJEPk4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 5 Oct 2023 11:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
+        id S234857AbjJEPve (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 5 Oct 2023 11:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233303AbjJEPkZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 11:40:25 -0400
+        with ESMTP id S233479AbjJEPuz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 11:50:55 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703D4545A8;
-        Thu,  5 Oct 2023 07:55:14 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B660C433C8;
-        Thu,  5 Oct 2023 14:55:11 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1173A78923;
+        Thu,  5 Oct 2023 07:13:41 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C7E2C43397;
+        Thu,  5 Oct 2023 14:13:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696517714;
-        bh=HNIq3gj9XwCf0xsBOATUrSerdosaus7GV7T403QAhtE=;
+        s=k20201202; t=1696515221;
+        bh=QpGmCqU0pUYx3+Z24KLDIJS/wI6gYoTWqGYIY7fYRaI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=q7yZ9fIOszejj1ZSjqvX2yzqeAQL22a/p632pnplredVzk0zsxhbSKUlwuULgVwTM
-         MHRB/4NAy0t5Cm6hKKkf/XK/jjJ102iq443DLpaGtGmCNl2DbR9IIncKsRduliJBnZ
-         Apu2j/DOVEahsd6tW+WazbnbfGgKiFcElTEGNgE+Sjrp+SiXi5d6dQtL2zmvrIxs3B
-         cmUqBAMC2sdhNGjsbKfmvyEg6NmfCfRoAQa/Zs67DQkMSfSevAMwv2VPD1+sm2xDaZ
-         BlvUsYJQyChMUHJOx5h9QWSe+8gUDFmsWDhP+XT9qXD/WEeXUACP0tCafm/DvmsWKb
-         1xqWul69SyLKA==
-Date:   Thu, 5 Oct 2023 15:55:18 +0100
+        b=mY+hJD0MBcdzVOEqUF+5VxIfvCUs8WK+NVgBaobb0A3SFm+PSIpJe3nucjLjrRBox
+         Uzk/ZeufQph9nYnqcJmeoojK+igOxPidJaeE6+kURBSE3summTGVE2+Oat3ooLJt/j
+         BMurimxaWy8lznH4RROlLimfOtbvvHPz76/OEgU2evc284gz4IuzFpRR8FJlpw1Ts1
+         LGyjBfr8O1X9pvG3nqoQogDuRnLh6I77H6urjQ0r59Za/h32mFof/GqjDqkRWZCKpX
+         tziMOwrhYIJpdYTaSFkLx4EmBARfdbftBEgxpql5AlpBiVnrX8GCBmad9vuezakvyJ
+         YUrgiywq7fx5g==
+Date:   Thu, 5 Oct 2023 15:13:43 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?B?QW5k?= =?UTF-8?B?csOp?= Apitzsch <git@apitzsch.eu>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: magnetometer: ak8975: Fix 'Unexpected device'
- error
-Message-ID: <20231005155518.2fa53b49@jic23-huawei>
-In-Reply-To: <20231003165535.000000b8@Huawei.com>
-References: <20231001-ak_magnetometer-v1-1-09bf3b8798a3@apitzsch.eu>
-        <20231002102745.0000540b@Huawei.com>
-        <ZRqOn8tnJqvU22ex@smile.fi.intel.com>
-        <20231003165535.000000b8@Huawei.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     David Lechner <dlechner@baylibre.com>,
+        Philip Molloy <pmolloy@baylibre.com>,
+        linux-staging@lists.linux.dev, Axel Haslam <ahaslam@baylibre.com>,
+        Apelete Seketeli <aseketeli@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-kernel@vger.kernel.org,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, David Lechner <david@lechnology.com>
+Subject: Re: [PATCH v3 01/27] dt-bindings: iio: resolver: add devicetree
+ bindings for ad2s1210
+Message-ID: <20231005151343.6703ad69@jic23-huawei>
+In-Reply-To: <169625993628.1746950.6393858750841663279.robh@kernel.org>
+References: <20230929-ad2s1210-mainline-v3-0-fa4364281745@baylibre.com>
+        <20230929-ad2s1210-mainline-v3-1-fa4364281745@baylibre.com>
+        <169625993628.1746950.6393858750841663279.robh@kernel.org>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 3 Oct 2023 16:55:35 +0100
-Jonathan Cameron <Jonathan.Cameron@Huawei.com> wrote:
+On Mon, 2 Oct 2023 10:18:56 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-> On Mon, 2 Oct 2023 12:34:23 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->=20
-> > On Mon, Oct 02, 2023 at 10:27:45AM +0100, Jonathan Cameron wrote: =20
-> > > On Sun, 1 Oct 2023 18:09:56 +0200
-> > > Andr=C3=A9 Apitzsch <git@apitzsch.eu> wrote:   =20
-> >  =20
-> > > > Fixes: 4f9ea93afde1 ("iio: magnetometer: ak8975: Convert enum->poin=
-ter for data in the match tables")   =20
-> >=20
-> > ^^^ (1)
-> >=20
-> > ...
-> >  =20
-> > > So we need the spacer until someone converts this driver to use
-> > > pointers instead for both of and ACPI tables.   =20
-> >=20
-> > Isn't it done by (1) which is in your tree?
-> >  =20
-> I can't remember what's in my tree :)
->=20
-> Good point...
->=20
->=20
-Applied to the togreg branch of iio.git and pushed out as testing
-for 0-day to poke at it.
+> On Fri, 29 Sep 2023 12:23:06 -0500, David Lechner wrote:
+> > From: David Lechner <david@lechnology.com>
+> > 
+> > From: David Lechner <dlechner@baylibre.com>
+> > 
+> > This adds new DeviceTree bindings for the Analog Devices, Inc. AD2S1210
+> > resolver-to-digital converter.
+> > 
+> > Co-developed-by: Apelete Seketeli <aseketeli@baylibre.com>
+> > Signed-off-by: Apelete Seketeli <aseketeli@baylibre.com>
+> > Signed-off-by: David Lechner <dlechner@baylibre.com>
+> > ---
+> > 
+> > v3 changes:
+> > * Expanded top-level description of A0/A1 lines.
+> > * Added required voltage -supply properties. (I did not pick up Rob's
+> >   Reviewed-by since I wasn't sure if this was trivial enough.)
+> > 
+> > v2 changes:
+> > * Add Co-developed-by:
+> > * Remove extraneous quotes on strings
+> > * Remove extraneous pipe on some multi-line descriptions
+> > 
+> >  .../bindings/iio/resolver/adi,ad2s1210.yaml        | 177 +++++++++++++++++++++
+> >  1 file changed, 177 insertions(+)
+> >   
+> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> 
 
-Thanks,
+Applied to the togreg branch of iio.git and pushed out as testing for
+all the normal reasons.
 
 Jonathan
-
-
