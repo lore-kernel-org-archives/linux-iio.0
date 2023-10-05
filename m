@@ -2,140 +2,141 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1ADCE92709
-	for <linux-iio@archiver.kernel.org>; Thu,  5 Oct 2023 14:26:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96935E92702
+	for <linux-iio@archiver.kernel.org>; Thu,  5 Oct 2023 14:30:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231394AbjJEOZz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 5 Oct 2023 10:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43188 "EHLO
+        id S233477AbjJEOaN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 5 Oct 2023 10:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232814AbjJEOYF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 10:24:05 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25329007
-        for <linux-iio@vger.kernel.org>; Thu,  5 Oct 2023 01:36:55 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id a640c23a62f3a-99bdeae1d0aso134856866b.1
-        for <linux-iio@vger.kernel.org>; Thu, 05 Oct 2023 01:36:55 -0700 (PDT)
+        with ESMTP id S234144AbjJEO2c (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 10:28:32 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF7B21D01;
+        Thu,  5 Oct 2023 02:43:30 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id 4fb4d7f45d1cf-51e28cac164so4129652a12.1;
+        Thu, 05 Oct 2023 02:43:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1696495014; x=1697099814; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=b8UTzhAdpyBQxIe5FDho0E0NnDq18CgBro9Bv3TILXw=;
-        b=qNOw5QDqz1U7dhoRI5x1OY260qBxXhNrZq/lh/fw/x31GjTF/jvl0uZW8yoZM3VP8p
-         QwMsR7CIXTjRAsnLzkUraqwaiKKyiDBm8AiA7PRqmAhSbPGEYWuQ7hT2EPkhINP2GeFl
-         tmZqon3Sxw+793p0kZk1YS4iKcO5dAWvVBkPo29NfWRjhpttlTj8jxJ7HcAc8KufHAFS
-         ZZ6Rwf/7eww6mgQAHXXcdAZYQnd18Enz/+o5NF51s10SvPas17wd5TtLPWFXAKVNGPrJ
-         SqpLGmlQbm3sIN52B44CJHbfURII70opAUYFme5nVej9+T1FKhx0bKzSYB0et52LkDvm
-         JesQ==
+        d=gmail.com; s=20230601; t=1696499009; x=1697103809; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yFk1hMyZRR6j/Q7MSUiSQpNux3PKUHqj/LJOWiGIaOc=;
+        b=Qan5Z/GKLo1blKcuGgBwMCp0WOHAo/yDJuTzlDQPwAxR0RhTDs1dK5Yz6Af8PiJozm
+         r2pSeHQTCGv9+PqJNxESy4eWiJsVAGXEexJ1XoDJTY7v/J/95JFI/uVIRuVWRcYmxJ1k
+         zP1/xq4pxt1EqbxEEjvx4hKN6DcHkZ8guYW2TP7vWYvk2er8bNS0RrSgQwuGOXaDDpzC
+         OyRVvWBX9jsUcKWo3QgBboqnpf7tGEseXF1GEoCADqoCWQkP8lk3O9v7DulbNhsHhLGx
+         GHBFuKWrTTvTvTFl6d7Horu/l8DHCan/lihdYCj0pTXmF77+h2cKszNFEnR3v7MdZT0f
+         1EhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696495014; x=1697099814;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=b8UTzhAdpyBQxIe5FDho0E0NnDq18CgBro9Bv3TILXw=;
-        b=wQ5Zsl+nM6VSPsZxIr7dxjSQN5DMH8YMHSjhBPX5brFV4HdP9NPzjssQDkrYNd4us4
-         d0oN1TOCV/CgXIgPcZKPOjILnprWhKe49ebh+adlmTTaDTyAo2xcXn8+Y8UAh0mFiL+n
-         qv4mzoFnDSOlcYyoOTv/IF0eDUKnh6CBkiunNMllOsbFMQnXSObmmVVJyBZZM9zRKt0H
-         JuNR5YlIN/A5bFFlLI70DaDvbg5kKSb9WBGBL+TUoDco2PIaf3MTeRkXldlvJ6JvtSNu
-         LAV9z4SzJCrudt/8/MHyBuNh+75w3cVZVC+IPczetPno4Hiacemw7WPmdQ63wZj+it9I
-         mT6w==
-X-Gm-Message-State: AOJu0YyTb11CDME3lJZ6bjHIZcvhTRR6dWjvHOn9v1rNLkf5J5Ob2hyF
-        t15uL8JYgZM72Tm2yWN1KdJfFg==
-X-Google-Smtp-Source: AGHT+IFj3x7hP+Xsklyuu9mY6jxW5m7RoNCenO2OgtzW5rQJ1pySLYfpomU4uGapvb3bWcxfehQX9A==
-X-Received: by 2002:a17:906:2da:b0:9b2:ccd8:2d2b with SMTP id 26-20020a17090602da00b009b2ccd82d2bmr4134279ejk.77.1696495014255;
-        Thu, 05 Oct 2023 01:36:54 -0700 (PDT)
-Received: from krzk-bin.. (5-157-101-10.dyn.eolo.it. [5.157.101.10])
-        by smtp.gmail.com with ESMTPSA id i8-20020a17090671c800b009a198078c53sm780677ejk.214.2023.10.05.01.36.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Oct 2023 01:36:53 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: iio: add missing reset-gpios constrain
-Date:   Thu,  5 Oct 2023 10:36:50 +0200
-Message-Id: <20231005083650.92222-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        d=1e100.net; s=20230601; t=1696499009; x=1697103809;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yFk1hMyZRR6j/Q7MSUiSQpNux3PKUHqj/LJOWiGIaOc=;
+        b=dMaxldNOieM9KCdpMK9Sf2GCVWR/TCkIn4EB8n7s82njw2jDElToqwEKAELEk0xZkw
+         X6UBZim7JhdUDtkoOlWcA6ylaz8RJCuS6zSh8u/6vQGyVK3USupAo0YSFaZrcsbdM7uH
+         UeoYsLjzgqHnd8z5I5vWZM6zbBQMeohD9+9VT/574zNfXeJdR3LYl0iqHuj+5WP0vyE5
+         eLWx4iyAj6mQdQU20g2JK2WxdIGBI5+GsRfbY3gMWY5ecR/6bVSg8RXGq+kXA9aXwT+g
+         CDWqlgiY2bwRapMVs0mr8yEP0F81rIhmlf7sNTS2SEjfnEdvybMJJMdiebvPFZDwtNOb
+         Z7aA==
+X-Gm-Message-State: AOJu0YxA3TBh2SajVOZlmZzzHOOhXy8Q0RKS7CQxvApGLgJH4n75KV6X
+        gbxYoLg22snWnFTmjuGwarLxtyxc3vbfL6wHT3knLH/8aTw=
+X-Google-Smtp-Source: AGHT+IEUPEfNrlvMx3t5Sfp8v/9vGMhpyGjbTnVN6udKEfGdXvyew0SV3xmGgz4HOrJ5XMN/i8O1g6gCEDL32l2P1mg=
+X-Received: by 2002:a05:6402:2037:b0:534:2e37:dfd4 with SMTP id
+ ay23-20020a056402203700b005342e37dfd4mr1824893edb.1.1696499009070; Thu, 05
+ Oct 2023 02:43:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20231005035933.31016-1-andre.werner@systec-electronic.com> <f2e2d122-f5a7-401e-a429-0a86c2c0b3ab@linaro.org>
+In-Reply-To: <f2e2d122-f5a7-401e-a429-0a86c2c0b3ab@linaro.org>
+From:   werneazc <werneazc@gmail.com>
+Date:   Thu, 5 Oct 2023 11:43:18 +0200
+Message-ID: <CAKDJRcczo+8FAfDzNBhdZb8uBx_q5zP+f_X+jdZTr0qENj6vuA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: ti,ads7038: Add description
+ for ADS7038
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     jic23@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        lars@metafoo.de, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andre Werner <andre.werner@systec-electronic.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The Documentation/devicetree/bindings/gpio/gpio-consumer-common.yaml
-schema does not enforce number of reset GPIOs, thus each device binding
-must do it.
+Renaming is done and will be published in v3 version of the patch.
+Waiting for remarks for the second patch file before publishing the
+next version of the patch set.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml | 3 ++-
- Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml    | 3 ++-
- Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml | 3 ++-
- Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml | 3 ++-
- 4 files changed, 8 insertions(+), 4 deletions(-)
+Regards,
+Andr=C3=A9
 
-diff --git a/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml b/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
-index 2594fa192f93..2a04906531fb 100644
---- a/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
-+++ b/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
-@@ -32,7 +32,8 @@ properties:
- 
-   spi-cpol: true
- 
--  reset-gpios: true
-+  reset-gpios:
-+    maxItems: 1
- 
-   interrupts:
-     minItems: 1
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
-index 4e508bfcc9d8..5121685337b5 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
-@@ -78,7 +78,8 @@ properties:
-           - const: -1000
-           - const: 22000
- 
--  reset-gpios: true
-+  reset-gpios:
-+    maxItems: 1
- 
-   adi,dc-dc-ilim-microamp:
-     enum: [150000, 200000, 250000, 300000, 350000, 400000]
-diff --git a/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml b/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
-index b9b5beac33b2..5b6cde86b5a5 100644
---- a/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
-+++ b/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
-@@ -23,7 +23,8 @@ properties:
-     maxItems: 1
-     description: Connected to ADC_RDY pin.
- 
--  reset-gpios: true
-+  reset-gpios:
-+    maxItems: 1
- 
- required:
-   - compatible
-diff --git a/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml b/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml
-index 2958c4ca75b4..167d10bd60af 100644
---- a/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml
-+++ b/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml
-@@ -23,7 +23,8 @@ properties:
-     maxItems: 1
-     description: Connected to ADC_RDY pin.
- 
--  reset-gpios: true
-+  reset-gpios:
-+    maxItems: 1
- 
- additionalProperties: false
- 
--- 
-2.34.1
-
+On Thu, Oct 5, 2023 at 9:33=E2=80=AFAM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 05/10/2023 05:54, werneazc@gmail.com wrote:
+> > From: Andre Werner <andre.werner@systec-electronic.com>
+> >
+> > Add basic description for ADS7x38 ADC devices. The driver does only
+> > support a very basic set of functionalities provided by the chip.
+> > Also, the example in the description covers only a setup for ADS7038 de=
+vices
+> > while the driver structure will support both ADS7038 (SPI) and ADS7138 =
+(I2C) devices.
+> >
+> > Signed-off-by: Andre Werner <andre.werner@systec-electronic.com>
+> > ---
+> > - v2: Add commit message and correct vref-description copy-paste-error.
+> > ---
+> >  .../bindings/iio/adc/ti,ads7038.yaml          | 51 +++++++++++++++++++
+> >  1 file changed, 51 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads703=
+8.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads7038.yaml =
+b/Documentation/devicetree/bindings/iio/adc/ti,ads7038.yaml
+> > new file mode 100644
+> > index 000000000000..d40869b9a604
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads7038.yaml
+> > @@ -0,0 +1,51 @@
+> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iio/adc/ti,ads7038.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Texas Instruments ADS7038 and similar ADCs
+> > +
+> > +maintainers:
+> > +  - Andre Werner <andre.werner@systec-electronic.com>
+> > +
+> > +description: |
+> > +  Family of 7 channel, 12 bit ADCs with SPI/I2C interface.
+> > +
+> > +  Datasheet: https://www.ti.com/lit/gpn/ads7038
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - ti,ads7038
+> > +      - ti,ads7138
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  spi-max-frequency:
+> > +    maximum: 60000000
+> > +
+> > +  vref-supply:
+> > +    description: Supplies the reference voltage AVDD
+>
+> Didn't you already get a comment that there is no vref but avdd, so
+> avdd-supply?
+>
+>
+> Best regards,
+> Krzysztof
+>
