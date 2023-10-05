@@ -2,142 +2,95 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25187E92709
-	for <linux-iio@archiver.kernel.org>; Thu,  5 Oct 2023 14:32:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6536FE92707
+	for <linux-iio@archiver.kernel.org>; Thu,  5 Oct 2023 14:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234094AbjJEOcv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 5 Oct 2023 10:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
+        id S235505AbjJEOjB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 5 Oct 2023 10:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235104AbjJEOb3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 10:31:29 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547A91FE7;
-        Wed,  4 Oct 2023 20:59:47 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id 5b1f17b1804b1-405361bb94eso5009595e9.0;
-        Wed, 04 Oct 2023 20:59:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1696478386; x=1697083186; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=GXI1BYhZWroocq19G+lhuGPa3qcX4f4uqnmYQsIg5xc=;
-        b=cnSqW9OQrP/MA0A2Igu9rpFUTiecXjx1R5veLPYBVDo1efRD/IJNrGsO0UVWaMWdTo
-         Q7YmEBEEPDE8LyjCJ4xn1CqCQzIOv7AkJOmY+Thkc+ph9QqhSDvXbBJvmyl3UXncWQKA
-         96tEZ2+7kOhm6utcKcYpyh6dUxqCY6i8VimmAsbexFHinVzZw8L7xKKgDuFu6LqHQjIZ
-         udBlrIN/cqSTpLiWGVDZKJ0yDrT0ik3aSsT+GNyf+6j2hyxZCL21FV4287PW61B4TmHO
-         KEvPZ8BooE1Upm9Y17tTWSU9pse+UWjb2sa1MNxuclf5kDDLZdC5DyjSABWR7XY6nWQE
-         EuwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696478386; x=1697083186;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GXI1BYhZWroocq19G+lhuGPa3qcX4f4uqnmYQsIg5xc=;
-        b=gXzsWT+S7VKwlfRPrDCnIfOp64ePzBUVqRFlD4dVUQNbF9j/4ZTGB6poEvCue/qdnk
-         mDiFCeOEFrT1eTrYn/9fNQVlLGKlE55Z1CMg9wwNDoaJKGppRxNoeH7CfSBygzHbnnIm
-         jJzzlUFqBoDlOK6O/0u6qG+6i6Ry5ULoFJD2nwY0F6nzKcjmryYsiXYPT+WR8W0JY6AB
-         eaOJthDsn/aaqjrrqPpSor+45oCoynuj9kr2enys3eUiVX0s4psPEuavxt/O9jx7eXJH
-         d+97eEgZS0K9wktrc+rEhVHfZDcTl4qqn5QWV9hns54Qi9XrZZE+E/b4FidEMWAqJAZj
-         S1RQ==
-X-Gm-Message-State: AOJu0Yx0VNYFNj05m3x39qQE3DidnRoMr9iao38Hv8eXWyl215gPtDUl
-        mCuEzUK1zk3jLVEbnuxostQ=
-X-Google-Smtp-Source: AGHT+IHxJf1A+5f7DI0S276G253TSqUVG3SXkPwSa6MCPaqvDLMC8Y5kLTiGVWXqCXpOsZOxGw5igg==
-X-Received: by 2002:a05:600c:2107:b0:405:48ba:9c with SMTP id u7-20020a05600c210700b0040548ba009cmr4036141wml.16.1696478385427;
-        Wed, 04 Oct 2023 20:59:45 -0700 (PDT)
-Received: from ws-565760.systec.local ([212.185.67.148])
-        by smtp.gmail.com with ESMTPSA id a4-20020a05600c224400b003fe2a40d287sm567513wmm.1.2023.10.04.20.59.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Oct 2023 20:59:45 -0700 (PDT)
-From:   werneazc@gmail.com
-X-Google-Original-From: andre.werner@systec-electronic.com
-To:     jic23@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        lars@metafoo.de
-Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Andre Werner <andre.werner@systec-electronic.com>
-Subject: [PATCH v2 1/2] dt-bindings: iio: adc: ti,ads7038: Add description for ADS7038
-Date:   Thu,  5 Oct 2023 05:54:54 +0200
-Message-ID: <20231005035933.31016-1-andre.werner@systec-electronic.com>
-X-Mailer: git-send-email 2.42.0
+        with ESMTP id S235999AbjJEOg1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 10:36:27 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A542570A;
+        Thu,  5 Oct 2023 06:59:11 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7C49C4AF73;
+        Thu,  5 Oct 2023 13:38:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1696513089;
+        bh=IHjcJEdzOn5XpuR4rXMoCHN3hdl6l6qbxCqy3uQRR68=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hdhzp6tQXl6tvjcq1x6OfQN/c974rRNvEZaKS4R2RpqKqYifvkLl1kGaRhD9rvTWZ
+         ga2o1a64DLAey6jhLH1efLIVZcJHzJVYtHSbSBDeeDLl0dXGd/ZS7Ygvj8zyhp2RAW
+         x+wXEqby0DQ5y+eMWs3uRzwYGu4Ih4nuE+Y+rcnvbcwXqb1D4Im5BcZJ6epVdP3Bdl
+         sc9A9slKc5hXs8qQY85LP0eHqVN/TW0AoYE+g0tYBo9R/THyvGAAJxt/RsuTDTAlg4
+         s165+CJNCUAcAv+zB8o7RtfsIo3Oip1XoIuBKen59qYNX95pHYqnyK18ENhmkZ7k6n
+         7AvPCNpAyslzQ==
+Date:   Thu, 5 Oct 2023 14:38:12 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     David Lechner <dlechner@baylibre.com>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-staging@lists.linux.dev,
+        David Lechner <david@lechnology.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Axel Haslam <ahaslam@baylibre.com>,
+        Philip Molloy <pmolloy@baylibre.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 13/27] staging: iio: resolver: ad2s1210: rework gpios
+Message-ID: <20231005143812.42aff573@jic23-huawei>
+In-Reply-To: <20230930155536.5a5e982e@jic23-huawei>
+References: <20230929-ad2s1210-mainline-v3-0-fa4364281745@baylibre.com>
+        <20230929-ad2s1210-mainline-v3-13-fa4364281745@baylibre.com>
+        <20230930155536.5a5e982e@jic23-huawei>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Andre Werner <andre.werner@systec-electronic.com>
+On Sat, 30 Sep 2023 15:55:36 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-Add basic description for ADS7x38 ADC devices. The driver does only
-support a very basic set of functionalities provided by the chip.
-Also, the example in the description covers only a setup for ADS7038 devices
-while the driver structure will support both ADS7038 (SPI) and ADS7138 (I2C) devices.
+> On Fri, 29 Sep 2023 12:23:18 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
+> 
+> > From: David Lechner <david@lechnology.com>
+> > 
+> > From: David Lechner <dlechner@baylibre.com>
+> > 
+> > - Remove "adi," prefix from gpio names.
+> > - Sample gpio is now expected to be active low.
+> > - Convert A0 and A1 gpios to "mode-gpios" gpio array.
+> > - Convert RES0 and RES1 gpios to "resolution-gpios" gpio array.
+> > - Remove extraneous lookup tables.
+> > - Remove unused mode field from state struct.
+> > - Swap argument order of ad2s1210_set_mode() while we are touching this.
+> > 
+> > Signed-off-by: David Lechner <dlechner@baylibre.com>  
+> Applied,
+0-day ran smatch on this and it picked up that a log isn't released in
+an error path.  I've fixed that up with a goto error_ret and will push out a
+fresh testing branch for 0-day to take another look at.
 
-Signed-off-by: Andre Werner <andre.werner@systec-electronic.com>
----
-- v2: Add commit message and correct vref-description copy-paste-error.
----
- .../bindings/iio/adc/ti,ads7038.yaml          | 51 +++++++++++++++++++
- 1 file changed, 51 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads7038.yaml
+...
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads7038.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads7038.yaml
-new file mode 100644
-index 000000000000..d40869b9a604
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti,ads7038.yaml
-@@ -0,0 +1,51 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/ti,ads7038.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Texas Instruments ADS7038 and similar ADCs
-+
-+maintainers:
-+  - Andre Werner <andre.werner@systec-electronic.com>
-+
-+description: |
-+  Family of 7 channel, 12 bit ADCs with SPI/I2C interface.
-+
-+  Datasheet: https://www.ti.com/lit/gpn/ads7038
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,ads7038
-+      - ti,ads7138
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 60000000
-+
-+  vref-supply:
-+    description: Supplies the reference voltage AVDD
-+
-+required:
-+  - compatible
-+  - reg
-+  - vref-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        adc@0 {
-+            compatible = "ti,ads7038";
-+            reg = <0>;
-+            vref-supply = <&refin_supply>;
-+            spi-max-frequency = <10000000>;
-+        };
-+    };
--- 
-2.42.0
+> > @@ -546,7 +537,9 @@ static int ad2s1210_initial(struct ad2s1210_state *st)
+> >  	int ret;
+> >  
+> >  	mutex_lock(&st->lock);
+> > -	ad2s1210_set_resolution_pin(st);
+> > +	ret = ad2s1210_set_resolution_gpios(st, st->resolution);
+> > +	if (ret < 0)
+Exiting with lock held.  There is an error_ret label that releases the lock
+so use that.
 
+> > +		return ret;
+> >  
+> >  	/* Use default config register value plus resolution from devicetree. */
+> >  	data = FIELD_PREP(AD2S1210_PHASE_LOCK_RANGE_44, 1);
