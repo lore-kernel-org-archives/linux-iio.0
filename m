@@ -2,90 +2,151 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3FEE9270E
-	for <linux-iio@archiver.kernel.org>; Thu,  5 Oct 2023 14:43:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27DEEE92707
+	for <linux-iio@archiver.kernel.org>; Thu,  5 Oct 2023 14:46:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237002AbjJEOnR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 5 Oct 2023 10:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45868 "EHLO
+        id S230299AbjJEOp2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 5 Oct 2023 10:45:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235741AbjJEOi2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 10:38:28 -0400
+        with ESMTP id S239240AbjJEOmD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 10:42:03 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3334E364;
-        Thu,  5 Oct 2023 07:03:59 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C699C43397;
-        Thu,  5 Oct 2023 14:03:56 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C430D8723C;
+        Thu,  5 Oct 2023 07:17:37 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5929C3277D;
+        Thu,  5 Oct 2023 10:41:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696514639;
-        bh=piLsE53Q1gZgSQFUl07BSGRXu3dJHS5CexWfLgjoioM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=unHERqPdEuFsnlwkj8m5qiTQxIrHwyFBS4Ylk8EvqN9DZvHS4F+PgVWWJRKs04qLZ
-         UjVvRObXsKf1C+0743hADeJSmBxP16oo6/prqwkUa5/B/g2/5ySPticvvoJbK7GcqV
-         M+4dx6jkCc5RZUJio1GnO1OPuS67YePnXZKRrA1TDVxlm0Ft6NAgRA+UTdQEOL7ueQ
-         RQzgSQEtCMQvVsa960b2UCCpCFrLYuvRs9u64LzUUSwrejrOgXU9HSEfPm+8RZ/D9k
-         Fwc+vjtTmBFauSo73drSeW5QhEYYlYo8fU/5QTZ0oQxYtDDKVBzCDqLdLNT+RdTh2V
-         jtv3yMjVoxJqg==
-Date:   Thu, 5 Oct 2023 15:04:03 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     David Lechner <dlechner@baylibre.com>
-Cc:     linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+        s=k20201202; t=1696502472;
+        bh=H7QsAgn7LBwCWmNPERn7PZ2ivqiRzZN2vcLos6zUMnQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TY0lOBANpSJ4TxeMou7VuKThItJptvQjXX0Y0Xu3mm8YmwEPszlJJ/MErAikK+n+i
+         6RDZ256+EU1mMXcXp+m0dIfqL0OhbR2Kl4eSWJZGU/vt4mQLO2voPdAxoPvhU3Xt5L
+         1Hr2NsE2qLzE5QIYoRf5V/Y5ZEtMkoiLYz5xxe5Jf3GWZ4EKntLhjh579aBa2g4mHV
+         cS6078ZODgR38pDzNZBBxUF05eOIKvqcKLTjWxGoG7VC8UvTIDaE2KMl7FuGA+dxGL
+         R02VNMyywG036Phd8x3Hzc+UGj+99bvQBe9Ro+c5p2xcrAbgGU+zo+LRkbIOw5yR7f
+         NLNUy1TO7x6fg==
+Date:   Thu, 5 Oct 2023 11:41:07 +0100
+From:   Conor Dooley <conor@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@linaro.org>
-Subject: Re: [PATCH] staging: iio: resolver: ad2s1210: fix return with lock
- held
-Message-ID: <20231005150403.453851f3@jic23-huawei>
-In-Reply-To: <20231004-staging-iio-resolver-ad2s1210-fix-return-with-lock-held-v1-1-812b932997bd@baylibre.com>
-References: <20231004-staging-iio-resolver-ad2s1210-fix-return-with-lock-held-v1-1-812b932997bd@baylibre.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: add missing reset-gpios constrain
+Message-ID: <20231005-thrift-backer-d2f58a1bd441@spud>
+References: <20231005083650.92222-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="IP8sdSnYW24Jv8+L"
+Content-Disposition: inline
+In-Reply-To: <20231005083650.92222-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed,  4 Oct 2023 09:17:26 -0500
-David Lechner <dlechner@baylibre.com> wrote:
 
-> We missed a return statement in ad2s1210_initial() that would cause
-> the lock to be held when returning an error.
-> 
-> This is fixed by replacing the return with a goto to release the lock
-> before returning.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-> Closes: https://lore.kernel.org/r/202310030222.iokamE9T-lkp@intel.com/
-> Fixes: 0d03d0e65846 ("staging: iio: resolver: ad2s1210: rework gpios")
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
+--IP8sdSnYW24Jv8+L
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Oct 05, 2023 at 10:36:50AM +0200, Krzysztof Kozlowski wrote:
+> The Documentation/devicetree/bindings/gpio/gpio-consumer-common.yaml
+> schema does not enforce number of reset GPIOs, thus each device binding
+> must do it.
+>=20
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+
+Thanks,
+Conor.
+
 > ---
->  drivers/staging/iio/resolver/ad2s1210.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-> index 98afd2e9ea41..67d8af0dd7ae 100644
-> --- a/drivers/staging/iio/resolver/ad2s1210.c
-> +++ b/drivers/staging/iio/resolver/ad2s1210.c
-> @@ -555,7 +555,7 @@ static int ad2s1210_initial(struct ad2s1210_state *st)
->  	mutex_lock(&st->lock);
->  	ret = ad2s1210_set_resolution_gpios(st, st->resolution);
->  	if (ret < 0)
-> -		return ret;
-> +		goto error_ret;
-Ah.  I squashed the same fix into the original patch as it wasn't yet on a non
-rebasing tree.
+>  Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml | 3 ++-
+>  Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml    | 3 ++-
+>  Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml | 3 ++-
+>  Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml | 3 ++-
+>  4 files changed, 8 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml=
+ b/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
+> index 2594fa192f93..2a04906531fb 100644
+> --- a/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
+> +++ b/Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
+> @@ -32,7 +32,8 @@ properties:
+> =20
+>    spi-cpol: true
+> =20
+> -  reset-gpios: true
+> +  reset-gpios:
+> +    maxItems: 1
+> =20
+>    interrupts:
+>      minItems: 1
+> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml b/=
+Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
+> index 4e508bfcc9d8..5121685337b5 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
+> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
+> @@ -78,7 +78,8 @@ properties:
+>            - const: -1000
+>            - const: 22000
+> =20
+> -  reset-gpios: true
+> +  reset-gpios:
+> +    maxItems: 1
+> =20
+>    adi,dc-dc-ilim-microamp:
+>      enum: [150000, 200000, 250000, 300000, 350000, 400000]
+> diff --git a/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml=
+ b/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
+> index b9b5beac33b2..5b6cde86b5a5 100644
+> --- a/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
+> +++ b/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
+> @@ -23,7 +23,8 @@ properties:
+>      maxItems: 1
+>      description: Connected to ADC_RDY pin.
+> =20
+> -  reset-gpios: true
+> +  reset-gpios:
+> +    maxItems: 1
+> =20
+>  required:
+>    - compatible
+> diff --git a/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml=
+ b/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml
+> index 2958c4ca75b4..167d10bd60af 100644
+> --- a/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml
+> +++ b/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml
+> @@ -23,7 +23,8 @@ properties:
+>      maxItems: 1
+>      description: Connected to ADC_RDY pin.
+> =20
+> -  reset-gpios: true
+> +  reset-gpios:
+> +    maxItems: 1
+> =20
+>  additionalProperties: false
+> =20
+> --=20
+> 2.34.1
+>=20
 
-Thanks
+--IP8sdSnYW24Jv8+L
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Jonathan
+-----BEGIN PGP SIGNATURE-----
 
->  
->  	/* Use default config register value plus resolution from devicetree. */
->  	data = FIELD_PREP(AD2S1210_PHASE_LOCK_RANGE_44, 1);
-> 
-> ---
-> base-commit: a533eeaef80e879b3ad1937eee7a43d1f9961c5d
-> change-id: 20231004-staging-iio-resolver-ad2s1210-fix-return-with-lock-held-f547ce6fae49
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZR6SwwAKCRB4tDGHoIJi
+0gJnAQCE6henlUKuR+rKeIPonoiRNWu9XupZ7JL5eHFos8uHxgEAsfvRvMaMcYu6
+ZlvDaY0cp2AXNAKJL00y4ydHUa3tSgM=
+=Kzfj
+-----END PGP SIGNATURE-----
 
+--IP8sdSnYW24Jv8+L--
