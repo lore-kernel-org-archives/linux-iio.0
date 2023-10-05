@@ -2,141 +2,235 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96935E92702
-	for <linux-iio@archiver.kernel.org>; Thu,  5 Oct 2023 14:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D8EE92708
+	for <linux-iio@archiver.kernel.org>; Thu,  5 Oct 2023 14:30:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233477AbjJEOaN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 5 Oct 2023 10:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37160 "EHLO
+        id S234020AbjJEOam (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 5 Oct 2023 10:30:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234144AbjJEO2c (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 10:28:32 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF7B21D01;
-        Thu,  5 Oct 2023 02:43:30 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id 4fb4d7f45d1cf-51e28cac164so4129652a12.1;
-        Thu, 05 Oct 2023 02:43:30 -0700 (PDT)
+        with ESMTP id S234180AbjJEO3E (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 10:29:04 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05D923D01;
+        Thu,  5 Oct 2023 04:00:50 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id 2adb3069b0e04-50337b43ee6so1096485e87.3;
+        Thu, 05 Oct 2023 04:00:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1696499009; x=1697103809; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yFk1hMyZRR6j/Q7MSUiSQpNux3PKUHqj/LJOWiGIaOc=;
-        b=Qan5Z/GKLo1blKcuGgBwMCp0WOHAo/yDJuTzlDQPwAxR0RhTDs1dK5Yz6Af8PiJozm
-         r2pSeHQTCGv9+PqJNxESy4eWiJsVAGXEexJ1XoDJTY7v/J/95JFI/uVIRuVWRcYmxJ1k
-         zP1/xq4pxt1EqbxEEjvx4hKN6DcHkZ8guYW2TP7vWYvk2er8bNS0RrSgQwuGOXaDDpzC
-         OyRVvWBX9jsUcKWo3QgBboqnpf7tGEseXF1GEoCADqoCWQkP8lk3O9v7DulbNhsHhLGx
-         GHBFuKWrTTvTvTFl6d7Horu/l8DHCan/lihdYCj0pTXmF77+h2cKszNFEnR3v7MdZT0f
-         1EhQ==
+        d=gmail.com; s=20230601; t=1696503649; x=1697108449; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=4yKDLEpsQ7VNfIu4ns2cVaF5g5AlvkRxOThMkLNLu54=;
+        b=DyYTpj5O3SDs1MUT4akrYSG3JSOgGJjRn1EwJpWinCaqSyL9jnGX1S7XrMww7JZwtc
+         rpoe11uV7Z+g0eTnyKzi8xCbU5e2bAx1NBMS5D+JD7YJRIar7nkC3q55Q1Dl0Yle3IJr
+         sqS86VcwmAX87PfQFFe/kxTaESCOppN3VpExGiTBc62V1y1nc/+lLHwCxbsE3y5sCaL5
+         4D3Pkoym3b2QyijwL10TnFbcV5bbdzZJVsjCRs8uYpks/xHxrnY7tCQuiqclaq/7OPdC
+         p1xg6tZIEMqvbqhrrXO1EEfl17hG5QFnk90u41WYid34RYoCrHYTQaFv39P1ZaSGDX39
+         fUyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696499009; x=1697103809;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=yFk1hMyZRR6j/Q7MSUiSQpNux3PKUHqj/LJOWiGIaOc=;
-        b=dMaxldNOieM9KCdpMK9Sf2GCVWR/TCkIn4EB8n7s82njw2jDElToqwEKAELEk0xZkw
-         X6UBZim7JhdUDtkoOlWcA6ylaz8RJCuS6zSh8u/6vQGyVK3USupAo0YSFaZrcsbdM7uH
-         UeoYsLjzgqHnd8z5I5vWZM6zbBQMeohD9+9VT/574zNfXeJdR3LYl0iqHuj+5WP0vyE5
-         eLWx4iyAj6mQdQU20g2JK2WxdIGBI5+GsRfbY3gMWY5ecR/6bVSg8RXGq+kXA9aXwT+g
-         CDWqlgiY2bwRapMVs0mr8yEP0F81rIhmlf7sNTS2SEjfnEdvybMJJMdiebvPFZDwtNOb
-         Z7aA==
-X-Gm-Message-State: AOJu0YxA3TBh2SajVOZlmZzzHOOhXy8Q0RKS7CQxvApGLgJH4n75KV6X
-        gbxYoLg22snWnFTmjuGwarLxtyxc3vbfL6wHT3knLH/8aTw=
-X-Google-Smtp-Source: AGHT+IEUPEfNrlvMx3t5Sfp8v/9vGMhpyGjbTnVN6udKEfGdXvyew0SV3xmGgz4HOrJ5XMN/i8O1g6gCEDL32l2P1mg=
-X-Received: by 2002:a05:6402:2037:b0:534:2e37:dfd4 with SMTP id
- ay23-20020a056402203700b005342e37dfd4mr1824893edb.1.1696499009070; Thu, 05
- Oct 2023 02:43:29 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1696503649; x=1697108449;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4yKDLEpsQ7VNfIu4ns2cVaF5g5AlvkRxOThMkLNLu54=;
+        b=G9nM1blnRopCp6/ard/AfWg5PvGCdGxFBUeS+pfXKGuqJdTP7EOJL7miUqSdcjZpp2
+         raKbyh2VW8kAdqYeOQJrC9kFNbYoji14ShLbfG1l48GVsP+wZrneYNaf/UotGqybydIW
+         XXmOddeExtypN1Gksjh+EBdGpm6ppS9byGyCDMVadILCPONWptvkuIC9wlj9niifUx1v
+         rH5tp1Nli3GC/SYZZ7GCPGC8wQ+KS2HNQ8xagI6Xieb28xChGqAwaDG7/p5P7/2oi370
+         Yrv8yEBFjlaXKcp64Rmq+5l0ojEWNNKl01Yy+zWmaBztOPlfNE1W9epHl7thUa1cZEd1
+         St9g==
+X-Gm-Message-State: AOJu0YyD7mzVZNh0GfobWSWtXc22Ywvhup0pRvYUdgAPntzyaLIQw2v/
+        nmB/4q6bCzv7ELFPH+XT0Wo=
+X-Google-Smtp-Source: AGHT+IFvXRCpTbbGo0xm+WMtWgdEVQ3lrnpnQBX8o8q8w0En2Ih6C30E19ZNfYUh0gc/2I/xwbNrrg==
+X-Received: by 2002:ac2:4ec1:0:b0:503:8fa:da22 with SMTP id p1-20020ac24ec1000000b0050308fada22mr3940230lfr.22.1696503648874;
+        Thu, 05 Oct 2023 04:00:48 -0700 (PDT)
+Received: from localhost.localdomain ([5.2.194.157])
+        by smtp.gmail.com with ESMTPSA id g11-20020aa7d1cb000000b0052c9f1d3cfasm890066edp.84.2023.10.05.04.00.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Oct 2023 04:00:47 -0700 (PDT)
+From:   Dumitru Ceclan <mitrutzceclan@gmail.com>
+To:     mitrutzceclan@gmail.com
+Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, andy@kernel.org,
+        linux-gpio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        =?UTF-8?q?Leonard=20G=C3=B6hrs?= <l.goehrs@pengutronix.de>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Ceclan Dumitru <dumitru.ceclan@analog.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 1/2] dt-bindings: adc: add AD7173
+Date:   Thu,  5 Oct 2023 13:59:21 +0300
+Message-Id: <20231005105921.460657-1-mitrutzceclan@gmail.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-References: <20231005035933.31016-1-andre.werner@systec-electronic.com> <f2e2d122-f5a7-401e-a429-0a86c2c0b3ab@linaro.org>
-In-Reply-To: <f2e2d122-f5a7-401e-a429-0a86c2c0b3ab@linaro.org>
-From:   werneazc <werneazc@gmail.com>
-Date:   Thu, 5 Oct 2023 11:43:18 +0200
-Message-ID: <CAKDJRcczo+8FAfDzNBhdZb8uBx_q5zP+f_X+jdZTr0qENj6vuA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: ti,ads7038: Add description
- for ADS7038
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     jic23@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        lars@metafoo.de, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andre Werner <andre.werner@systec-electronic.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Renaming is done and will be published in v3 version of the patch.
-Waiting for remarks for the second patch file before publishing the
-next version of the patch set.
+The AD7173 family offer a complete integrated Sigma-Delta ADC solution
+which can be used in high precision, low noise single channel applications
+or higher speed multiplexed applications. The Sigma-Delta ADC is intended
+primarily for measurement of signals close to DC but also delivers
+outstanding performance with input bandwidths out to ~10kHz.
 
-Regards,
-Andr=C3=A9
+Signed-off-by: Dumitru Ceclan <mitrutzceclan@gmail.com>
+---
+V2 -> V3
+ - remove redundant descriptions
+ - use referenced 'bipolar' property
+ - remove newlines from example
 
-On Thu, Oct 5, 2023 at 9:33=E2=80=AFAM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 05/10/2023 05:54, werneazc@gmail.com wrote:
-> > From: Andre Werner <andre.werner@systec-electronic.com>
-> >
-> > Add basic description for ADS7x38 ADC devices. The driver does only
-> > support a very basic set of functionalities provided by the chip.
-> > Also, the example in the description covers only a setup for ADS7038 de=
-vices
-> > while the driver structure will support both ADS7038 (SPI) and ADS7138 =
-(I2C) devices.
-> >
-> > Signed-off-by: Andre Werner <andre.werner@systec-electronic.com>
-> > ---
-> > - v2: Add commit message and correct vref-description copy-paste-error.
-> > ---
-> >  .../bindings/iio/adc/ti,ads7038.yaml          | 51 +++++++++++++++++++
-> >  1 file changed, 51 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads703=
-8.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads7038.yaml =
-b/Documentation/devicetree/bindings/iio/adc/ti,ads7038.yaml
-> > new file mode 100644
-> > index 000000000000..d40869b9a604
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads7038.yaml
-> > @@ -0,0 +1,51 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/adc/ti,ads7038.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Texas Instruments ADS7038 and similar ADCs
-> > +
-> > +maintainers:
-> > +  - Andre Werner <andre.werner@systec-electronic.com>
-> > +
-> > +description: |
-> > +  Family of 7 channel, 12 bit ADCs with SPI/I2C interface.
-> > +
-> > +  Datasheet: https://www.ti.com/lit/gpn/ads7038
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - ti,ads7038
-> > +      - ti,ads7138
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  spi-max-frequency:
-> > +    maximum: 60000000
-> > +
-> > +  vref-supply:
-> > +    description: Supplies the reference voltage AVDD
->
-> Didn't you already get a comment that there is no vref but avdd, so
-> avdd-supply?
->
->
-> Best regards,
-> Krzysztof
->
+ .../bindings/iio/adc/adi,ad7173.yaml          | 130 ++++++++++++++++++
+ 1 file changed, 130 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
+new file mode 100644
+index 000000000000..bf9e3cbf842e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
+@@ -0,0 +1,130 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2023 Analog Devices Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/adi,ad7173.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices AD7173 ADC device driver
++
++maintainers:
++  - Ceclan Dumitru <dumitru.ceclan@analog.com>
++
++description: |
++  Bindings for the Analog Devices AD717X ADC's. Datasheets for supported chips:
++    https://www.analog.com/media/en/technical-documentation/data-sheets/AD7172-2.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/AD7173-8.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/AD7175-2.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/AD7176-2.pdf
++
++properties:
++  compatible:
++    enum:
++      - adi,ad7172-2
++      - adi,ad7173-8
++      - adi,ad7175-2
++      - adi,ad7176-2
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  spi-max-frequency:
++    maximum: 20000000
++
++  spi-cpol:
++    type: boolean
++
++  spi-cpha:
++    type: boolean
++
++  required:
++    - compatible
++    - reg
++    - interrupts
++
++patternProperties:
++  "^channel@[0-9a-f]$":
++    type: object
++    $ref: adc.yaml
++    unevaluatedProperties: false
++
++    properties:
++      reg:
++        minimum: 0
++        maximum: 15
++
++      diff-channels:
++        items:
++          minimum: 0
++          maximum: 31
++
++      bipolar:
++        type: boolean
++
++    required:
++      - reg
++      - diff-channels
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      adc@0 {
++        compatible = "adi,ad7173-8";
++        reg = <0>;
++
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
++        interrupt-parent = <&gpio>;
++        spi-max-frequency = <5000000>;
++
++        channel@0 {
++          reg = <0>;
++          bipolar;
++          diff-channels = <0 1>;
++        };
++
++        channel@1 {
++          reg = <1>;
++          diff-channels = <2 3>;
++        };
++
++        channel@2 {
++          reg = <2>;
++          bipolar;
++          diff-channels = <4 5>;
++        };
++
++        channel@3 {
++          reg = <3>;
++          bipolar;
++          diff-channels = <6 7>;
++        };
++
++        channel@4 {
++          reg = <4>;
++          diff-channels = <8 9>;
++        };
++      };
++    };
+-- 
+2.39.2
+
