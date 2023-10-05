@@ -2,49 +2,40 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EFE4E9271D
-	for <linux-iio@archiver.kernel.org>; Thu,  5 Oct 2023 15:57:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C12E92718
+	for <linux-iio@archiver.kernel.org>; Thu,  5 Oct 2023 15:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237866AbjJEP55 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 5 Oct 2023 11:57:57 -0400
+        id S236259AbjJEP6a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 5 Oct 2023 11:58:30 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233998AbjJEP4o (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 11:56:44 -0400
+        with ESMTP id S237198AbjJEP5g (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 11:57:36 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E2884ED8;
-        Thu,  5 Oct 2023 06:52:31 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C1E4C4AF6A;
-        Thu,  5 Oct 2023 13:32:58 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9F95FEB;
+        Thu,  5 Oct 2023 08:17:13 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EB54C433C7;
+        Thu,  5 Oct 2023 15:17:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696512782;
-        bh=BGZ37AUUud0e+3inw2fY++6jafQ2Lo1A7FxJ7ZWUW4w=;
+        s=k20201202; t=1696519033;
+        bh=CaTNBuS9Fb+l4tmi5Xy/KGFrITEbvOikbxtS6uzbucQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=b3cGXr1nzW94OjzF9GJSrd+tj7iA+dk3N9vU2mSZ3nZ6hy5iRAIro31mwNe87ghmC
-         RWu7hPzf8zrr1BOg15vzlq0qip/k/qWJxO5c9bp48EGc+IVwo09JSU565Gd9aXGSYr
-         mC2661YLfXyGxm/osYsLycgUA+Opm2qvhYIq6kyymniScSJXzkTs2sNrmzjHvm5sTX
-         zmQtgAa2ke/84PQYj9N0CBih+BSclejJavfVL76HakvznVoxjmYvvUBHrD7+Q8hcqg
-         XC4D4XTFpc+lihsAeTC0i8H2UTeVYK5NiKQxrN59J3xS1bDylMLMKVo1pp+4u8V+73
-         XN3qxW2LDNkqw==
-Date:   Thu, 5 Oct 2023 14:33:06 +0100
+        b=RmrQmJWsiOI0JOKuWZWH5xdVVFwz84p4aSCWCLx4AbpCab9LDFs+I7CKPX4pWDy71
+         y8S1ua7EdGnzFqblYc7vfLslKvpbicVKf9a9jx2Gi7UZH1Brwsin7U39NGSrlz2bjg
+         2CpMIAyxKbfSrs2ySjKKLzB6X7JCNECwTURpmEjjIEt8h/QU+wU5uOjfSGReSFWqMy
+         VSBZ9Ecczyox3r88Si/HGCH96nlwsN2/7kREX5rHFrLqIfEICs2WqnnKXxMHFBcjTA
+         YByJwxMeeQy08EwPtvKSZhIocbYJx1EeCn1a7QrifspH0K1HkhDFgm8dKDOwnz2qhM
+         4Py4qq+UtZvlg==
+Date:   Thu, 5 Oct 2023 16:17:18 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     George Stark <gnstark@sberdevices.ru>
-Cc:     <lars@metafoo.de>, <neil.armstrong@linaro.org>,
-        <khilman@baylibre.com>, <jbrunet@baylibre.com>,
-        <martin.blumenstingl@googlemail.com>, <nuno.sa@analog.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-amlogic@lists.infradead.org>, <kernel@sberdevices.ru>
-Subject: Re: [PATCH v2 2/2] iio: adc: meson: improve error logging at probe
- stage
-Message-ID: <20231005143306.6add05e6@jic23-huawei>
-In-Reply-To: <8ef7ff71-08e1-b0af-483d-e7cf3cc5efea@sberdevices.ru>
-References: <20230721102413.255726-1-gnstark@sberdevices.ru>
-        <20230721102413.255726-3-gnstark@sberdevices.ru>
-        <ZLphZzO20QW+t1m/@smile.fi.intel.com>
-        <20230722181559.02c8362c@jic23-huawei>
-        <8ef7ff71-08e1-b0af-483d-e7cf3cc5efea@sberdevices.ru>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>
+Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6] tools: iio: iio_generic_buffer ensure alignment
+Message-ID: <20231005161718.612fab8c@jic23-huawei>
+In-Reply-To: <ZRvlm4ktNLu+qmlf@dc78bmyyyyyyyyyyyyydt-3.rev.dnainternet.fi>
+References: <ZRvlm4ktNLu+qmlf@dc78bmyyyyyyyyyyyyydt-3.rev.dnainternet.fi>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -53,47 +44,78 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 3 Oct 2023 15:47:23 +0300
-George Stark <gnstark@sberdevices.ru> wrote:
+On Tue, 3 Oct 2023 12:57:47 +0300
+Matti Vaittinen <mazziesaccount@gmail.com> wrote:
 
-> Hello Jonathan
+> The iio_generic_buffer can return garbage values when the total size of
+> scan data is not a multiple of the largest element in the scan. This can be
+> demonstrated by reading a scan, consisting, for example of one 4-byte and
+> one 2-byte element, where the 4-byte element is first in the buffer.
 > 
-> It seems like you haven't had time for this patch yet. Should I fix it 
-> myself or just be more patient?
-I've been exceptionally slow on this one.  Was still sitting in patchwork
-but I'd failed to notice the dependency was now upstream.
+> The IIO generic buffer code does not take into account the last two
+> padding bytes that are needed to ensure that the 4-byte data for next
+> scan is correctly aligned.
+> 
+> Add the padding bytes required to align the next sample with the scan size.
+> 
+> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> Fixes: e58537ccce73 ("staging: iio: update example application.")
 
-Applied to the togreg branch of iio.git and I'll push that out initially
-as testing later today (I have to do a rebase to fix up an issue
-0-day caught on previous push before I do).
+Applied to the togreg branch of iio.git and pushed out as testing for
+all the normal reasons.
 
-Thanks for the poke and sorry it was necessary!
+Thanks,
 
 Jonathan
-
 > 
-> On 7/22/23 20:15, Jonathan Cameron wrote:
-> > On Fri, 21 Jul 2023 13:43:51 +0300
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> >   
-> >> On Fri, Jul 21, 2023 at 01:23:09PM +0300, George Stark wrote:  
-> >>> Add log messages for errors that may occur at probe stage  
-> >>
-> >> the probe  
-> > 
-> > British English - excellent ! :) (I argue this one far too often in
-> > specification committees :)
-> > 
-> >   
-> >>
-> >> stage.
-> >>  
-> > 
-> > I can tidy this up, but the patch will be a while anyway given the fix
-> > needs to work it's way into the upstream for my togreg branch (and I need
-> > to have send a pull request for togreg as well).
-> > 
-> > Jonathan
-> >   
+> ---
+> Revision history
+> v5 => v6:
+>  - fix typo pointed by Andy (wan't => want).
+> v4 => v5:
+>  - drop unnecessary comment.
+>  - drop all other patches as those were already applied.
+>  - add Fixes-tag.
+> v3 => v4:
+>  - drop extra print and TODO coment
+>  - add comment clarifying alignment sizes
+> ---
+>  tools/iio/iio_generic_buffer.c | 13 ++++++++++++-
+>  1 file changed, 12 insertions(+), 1 deletion(-)
 > 
+> diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
+> index 44bbf80f0cfd..0d0a7a19d6f9 100644
+> --- a/tools/iio/iio_generic_buffer.c
+> +++ b/tools/iio/iio_generic_buffer.c
+> @@ -54,9 +54,12 @@ enum autochan {
+>  static unsigned int size_from_channelarray(struct iio_channel_info *channels, int num_channels)
+>  {
+>  	unsigned int bytes = 0;
+> -	int i = 0;
+> +	int i = 0, max = 0;
+> +	unsigned int misalignment;
+>  
+>  	while (i < num_channels) {
+> +		if (channels[i].bytes > max)
+> +			max = channels[i].bytes;
+>  		if (bytes % channels[i].bytes == 0)
+>  			channels[i].location = bytes;
+>  		else
+> @@ -66,6 +69,14 @@ static unsigned int size_from_channelarray(struct iio_channel_info *channels, in
+>  		bytes = channels[i].location + channels[i].bytes;
+>  		i++;
+>  	}
+> +	/*
+> +	 * We want the data in next sample to also be properly aligned so
+> +	 * we'll add padding at the end if needed. Adding padding only
+> +	 * works for channel data which size is 2^n bytes.
+> +	 */
+> +	misalignment = bytes % max;
+> +	if (misalignment)
+> +		bytes += max - misalignment;
+>  
+>  	return bytes;
+>  }
+> 
+> base-commit: 0bb80ecc33a8fb5a682236443c1e740d5c917d1d
 
