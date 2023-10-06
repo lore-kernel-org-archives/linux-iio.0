@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08EE0E92FD0
-	for <linux-iio@archiver.kernel.org>; Fri,  6 Oct 2023 00:52:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24961E92FCF
+	for <linux-iio@archiver.kernel.org>; Fri,  6 Oct 2023 00:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbjJFAwI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 5 Oct 2023 20:52:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55518 "EHLO
+        id S229763AbjJFAwJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 5 Oct 2023 20:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbjJFAvW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 20:51:22 -0400
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E000F1
-        for <linux-iio@vger.kernel.org>; Thu,  5 Oct 2023 17:51:18 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-1e0ee4e777bso1025866fac.3
-        for <linux-iio@vger.kernel.org>; Thu, 05 Oct 2023 17:51:18 -0700 (PDT)
+        with ESMTP id S229807AbjJFAv0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2023 20:51:26 -0400
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFCD910A
+        for <linux-iio@vger.kernel.org>; Thu,  5 Oct 2023 17:51:16 -0700 (PDT)
+Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-1dcfb2a3282so1021955fac.2
+        for <linux-iio@vger.kernel.org>; Thu, 05 Oct 2023 17:51:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1696553477; x=1697158277; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1696553475; x=1697158275; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vIyovCBkjoJ0e3i6Eyil7FW0dowEMhYVcRMjTAbJ5NA=;
-        b=2UabR1QVj3rn88Z/sxD20RAIx0E85cG926So6X+XYEKUBx3gsjlsNHAi5nacRULGAP
-         4PKKUR3LdVEnNWsj6MD/ky4GGEcym1EC3NvWnEE/GVUaipAYPfTKml7RPi53/wX+qeAg
-         hL+Txc55bE2ISW2MRJBlpOVcoytdk+AP40S9qZVBRwWxXHrIYNLKvA5FuW7rXKMqG3Wx
-         xl1+iebdIm/OfWx6eLM109PAGqHXxOJDrZkyemJzLdAPguCQX7H2Www1WH9giKEqLMgw
-         +iYE3sixMB2g14j7o0CngMmWs/qiIgHFRP5YECjQ6LrRMH4a4URFB311RMhF0Yph2Q1p
-         ycFg==
+        bh=694cROjBX4OIAjPeqcWX3jQmtpcK+zvZ6QnLrkMQvzw=;
+        b=MDXpoUmErwMi5IsJSbUQGRqTh569ELJQprCuu+7+prhpsktOkXVij5DHKi+4p11Zi4
+         Hh45hFrJMCnot5Mo4itad8JTYXEX4cGWwy3ZX3RdGgqiQilENftz/gtskM2dGpVrDg6l
+         6du4Sk+lsoo3BLnYgaZFf5PITWX6urbunJE7MRG4c7O4lHKeaYA0KjE3lSBgFvnyjOH2
+         sPqcLy1ZpgsjYnV+c4BcgQNi4H0j/n3YuxTmWCPq9IsLTWzG6RxB/cjDwh/7VtlYR9wB
+         D5mzfJ8qrV/k+aRi2y+qW9WmXMKFR/MUa5+wL7egprBsRkx7/1UbSMkuKsHfcKWKvc8g
+         JuFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696553477; x=1697158277;
+        d=1e100.net; s=20230601; t=1696553475; x=1697158275;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=vIyovCBkjoJ0e3i6Eyil7FW0dowEMhYVcRMjTAbJ5NA=;
-        b=Lk0DkNUmILv4DumUghd8rcwkFZRtakqnwOBl+dzH1yei9TgBNHQ829ojLczYW6FEjx
-         yVwgoD7EpfLLnGiRIOsLoeNSNi9Z2xPtE8+lo9rQCiZkqljCWYu84KOP3lyxbBYDDTVB
-         m6SDvqMtI38eylX4miBCg0vRJVzUTHsaZ1F6OuVDTVz2T6PlGPPyUJ4Hc4O97fbacJ7g
-         znnpL56/oajLTjnIBt5EMhMyrbglagfROqNSFYaJDtKb9vZOjFCxtn1oSUQjqFQuVtQ9
-         sTTdvYzC4pjzMoirSgaiBanEcY8THR7zOZatSVkJ614+vwA4URTJNP/7BbbC64wHNo0F
-         pF8w==
-X-Gm-Message-State: AOJu0YxiO9OhkCFF9z3q2YS3xZkTbi8QhY+/cg5b0eLAqUF3jWZvFwuR
-        ID2gORa5iMUTLqe+buSJIjL6+IT6HQo61Wdv2XgyUQ==
-X-Google-Smtp-Source: AGHT+IFWe2/rG+yD9m1MnCeKecTm5lv5mdKxJ8Rv7DnRbl13JdS2N8dmdzj4jluk7YSpkEA1rBeQlw==
-X-Received: by 2002:a05:6870:4347:b0:1bb:84af:bf8f with SMTP id x7-20020a056870434700b001bb84afbf8fmr7694280oah.58.1696553477237;
-        Thu, 05 Oct 2023 17:51:17 -0700 (PDT)
+        bh=694cROjBX4OIAjPeqcWX3jQmtpcK+zvZ6QnLrkMQvzw=;
+        b=BZg68M3ifNayvuNPu0PPxdolOmR6x9lQbKHaV875aqbZf66s8MnwP+D0zy6sdbOROd
+         +/vuDUfqNe8k2aHSsTsBXqOpFVtYdA1J7+985FCwPO1G6iNOxP49dFVmEWSGZvJ2EKNq
+         WzTPF981u+GZs9zkxtFdrOJY1C/2N6H+KO5BVIriXSf7+7j7KONuLw+xQ8wASQg+NB1m
+         VWvDlZuxeN9fsHLWfkh4IQghJLDiZpiHOR3VjxS8jiFqKp0qsBKi9F5gvASiHv3qd/WK
+         KiCxjoaGXXmUh1t6eeTobOdk9rEUkhLTXgSoGndfXQM/nZHY9Iq6c89kWAHuPyz+CwLV
+         l2kw==
+X-Gm-Message-State: AOJu0Yw2vy0eG7lbVRWryz4zzEmEXUamg5tDAgChWljen4OGUSLoxu6G
+        I8S92c9XZnuWP8b7TtIdUq3nvR+hrWTZBrBcbh0Fdg==
+X-Google-Smtp-Source: AGHT+IFTWwdydsOLr5JLQZcSFArkRd3wlb2R0pk1X5gqz9FgWVbqkrdh9gTslILsB2FD6WKLARmMfA==
+X-Received: by 2002:a05:6870:583:b0:1d0:d78b:982e with SMTP id m3-20020a056870058300b001d0d78b982emr8029343oap.35.1696553475710;
+        Thu, 05 Oct 2023 17:51:15 -0700 (PDT)
 Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id mo9-20020a056871320900b001dd0ff401edsm545072oac.51.2023.10.05.17.51.16
+        by smtp.gmail.com with ESMTPSA id mo9-20020a056871320900b001dd0ff401edsm545072oac.51.2023.10.05.17.51.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Oct 2023 17:51:16 -0700 (PDT)
+        Thu, 05 Oct 2023 17:51:15 -0700 (PDT)
 From:   David Lechner <dlechner@baylibre.com>
 To:     linux-iio@vger.kernel.org, linux-staging@lists.linux.dev
 Cc:     David Lechner <dlechner@baylibre.com>,
@@ -58,9 +58,9 @@ Cc:     David Lechner <dlechner@baylibre.com>,
         Axel Haslam <ahaslam@baylibre.com>,
         Philip Molloy <pmolloy@baylibre.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 16/17] staging: iio: resolver: ad2s1210: remove fault attribute
-Date:   Thu,  5 Oct 2023 19:50:33 -0500
-Message-ID: <20231005-ad2s1210-mainline-v4-16-ec00746840fc@baylibre.com>
+Subject: [PATCH v4 14/17] staging: iio: resolver: ad2s1210: add register/fault support summary
+Date:   Thu,  5 Oct 2023 19:50:31 -0500
+Message-ID: <20231005-ad2s1210-mainline-v4-14-ec00746840fc@baylibre.com>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <20231005-ad2s1210-mainline-v4-0-ec00746840fc@baylibre.com>
 References: <20231005-ad2s1210-mainline-v4-0-ec00746840fc@baylibre.com>
@@ -72,114 +72,72 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Faults have been converted to events and we are now polling the fault
-register each time we read a sample, so we no longer need the fault
-attribute.
-
-This attribute was not suitable for promotion out of staging anyway
-since it was returning multiple values in a single attribute.
-
-The fault clearing feature should not be needed unless we need to
-support the fault output pins on the chip which is not currently
-supported. So we can add this feature back in if we need it later.
+The ad2s1210 driver shoe-horns the register and fault support into IIO
+events. The mapping between the registers/faults and the events is not
+obvious. To save users from having to read the entire driver to figure
+out how to use it, add a summary of the register/fault support to the
+top of the file.
 
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
 
 v4 changes: New patch in v4.
 
- drivers/staging/iio/resolver/ad2s1210.c | 57 ---------------------------------
- 1 file changed, 57 deletions(-)
+ drivers/staging/iio/resolver/ad2s1210.c | 40 +++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
 diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index 59c8eed26701..c4e1bc22e8b0 100644
+index d9d51bbbade8..51490fea1647 100644
 --- a/drivers/staging/iio/resolver/ad2s1210.c
 +++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -312,50 +312,6 @@ static int ad2s1210_reinit_excitation_frequency(struct ad2s1210_state *st,
- 	return regmap_write(st->regmap, AD2S1210_REG_SOFT_RESET, 0);
- }
- 
--/* read the fault register since last sample */
--static ssize_t ad2s1210_show_fault(struct device *dev,
--				   struct device_attribute *attr, char *buf)
--{
--	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
--	unsigned int value;
--	int ret;
--
--	mutex_lock(&st->lock);
--	ret = regmap_read(st->regmap, AD2S1210_REG_FAULT, &value);
--	mutex_unlock(&st->lock);
--
--	return ret < 0 ? ret : sprintf(buf, "0x%02x\n", value);
--}
--
--static ssize_t ad2s1210_clear_fault(struct device *dev,
--				    struct device_attribute *attr,
--				    const char *buf,
--				    size_t len)
--{
--	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
--	unsigned int value;
--	int ret;
--
--	mutex_lock(&st->lock);
--
--	gpiod_set_value(st->sample_gpio, 1);
--	/* delay (2 * tck + 20) nano seconds */
--	udelay(1);
--	gpiod_set_value(st->sample_gpio, 0);
--
--	ret = regmap_read(st->regmap, AD2S1210_REG_FAULT, &value);
--	if (ret < 0)
--		goto error_ret;
--
--	gpiod_set_value(st->sample_gpio, 1);
--	gpiod_set_value(st->sample_gpio, 0);
--
--error_ret:
--	mutex_unlock(&st->lock);
--
--	return ret < 0 ? ret : len;
--}
--
- static void ad2s1210_push_events(struct iio_dev *indio_dev,
- 				 u8 flags, s64 timestamp)
- {
-@@ -868,9 +824,6 @@ static int ad2s1210_write_raw(struct iio_dev *indio_dev,
- 	}
- }
- 
--static IIO_DEVICE_ATTR(fault, 0644,
--		       ad2s1210_show_fault, ad2s1210_clear_fault, 0);
--
- static const struct iio_event_spec ad2s1210_position_event_spec[] = {
- 	{
- 		/* Tracking error exceeds LOT threshold fault. */
-@@ -1020,15 +973,6 @@ static const struct iio_chan_spec ad2s1210_channels[] = {
- 	},
- };
- 
--static struct attribute *ad2s1210_attributes[] = {
--	&iio_dev_attr_fault.dev_attr.attr,
--	NULL,
--};
--
--static const struct attribute_group ad2s1210_attribute_group = {
--	.attrs = ad2s1210_attributes,
--};
--
- static ssize_t event_attr_voltage_reg_show(struct device *dev,
- 					   struct device_attribute *attr,
- 					   char *buf)
-@@ -1367,7 +1311,6 @@ static const struct iio_info ad2s1210_info = {
- 	.read_avail = ad2s1210_read_avail,
- 	.write_raw = ad2s1210_write_raw,
- 	.read_label = ad2s1210_read_label,
--	.attrs = &ad2s1210_attribute_group,
- 	.read_event_value = ad2s1210_read_event_value,
- 	.write_event_value = ad2s1210_write_event_value,
- 	.read_event_label = ad2s1210_read_event_label,
+@@ -4,7 +4,47 @@
+  *
+  * Copyright (c) 2010-2010 Analog Devices Inc.
+  * Copyright (c) 2023 BayLibre, SAS
++ *
++ * Device register to IIO ABI mapping:
++ *
++ * Register                    | Addr | IIO ABI (sysfs)
++ * ----------------------------|------|-------------------------------------------
++ * DOS Overrange Threshold     | 0x89 | events/in_altvoltage0_thresh_rising_value
++ * DOS Mismatch Threshold      | 0x8A | events/in_altvoltage0_mag_rising_value
++ * DOS Reset Maximum Threshold | 0x8B | events/in_altvoltage0_mag_rising_reset_max
++ * DOS Reset Minimum Threshold | 0x8C | events/in_altvoltage0_mag_rising_reset_min
++ * LOT High Threshold          | 0x8D | events/in_angl1_thresh_rising_value
++ * LOT Low Threshold [1]       | 0x8E | events/in_angl1_thresh_rising_hysteresis
++ * Excitation Frequency        | 0x91 | out_altvoltage0_frequency
++ * Control                     | 0x92 | *as bit fields*
++ *   Phase lock range          | D5   | events/in_phase0_mag_rising_value
++ *   Hysteresis                | D4   | in_angl0_hysteresis
++ *   Encoder resolution        | D3:2 | *not implemented*
++ *   Resolution                | D1:0 | *device tree: assigned-resolution-bits*
++ * Soft Reset                  | 0xF0 | [2]
++ * Fault                       | 0xFF | *not implemented*
++ *
++ * [1]: The value written to the LOT low register is high value minus the
++ * hysteresis.
++ * [2]: Soft reset is performed when `out_altvoltage0_frequency` is written.
++ *
++ * Fault to event mapping:
++ *
++ * Fault                                   |    | Channel     | Type   | Direction
++ * ----------------------------------------|----|---------------------------------
++ * Sine/cosine inputs clipped [3]          | D7 | altvoltage1 | mag    | either
++ * Sine/cosine inputs below LOS            | D6 | altvoltage0 | thresh | falling
++ * Sine/cosine inputs exceed DOS overrange | D5 | altvoltage0 | thresh | rising
++ * Sine/cosine inputs exceed DOS mismatch  | D4 | altvoltage0 | mag    | rising
++ * Tracking error exceeds LOT              | D3 | angl1       | thresh | rising
++ * Velocity exceeds maximum tracking rate  | D2 | anglvel0    | mag    | rising
++ * Phase error exceeds phase lock range    | D1 | phase0      | mag    | rising
++ * Configuration parity error              | D0 | *writes to kernel log*
++ *
++ * [3]: The chip does not differentiate between fault on sine vs. cosine so
++ * there will also be an event on the altvoltage2 channel.
+  */
++
+ #include <linux/bitfield.h>
+ #include <linux/bits.h>
+ #include <linux/clk.h>
 
 -- 
 2.42.0
