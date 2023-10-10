@@ -2,129 +2,96 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 636BCCD8CA9
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Oct 2023 16:17:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F6DCD8CA9
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Oct 2023 16:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233826AbjJJQRv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 Oct 2023 12:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49570 "EHLO
+        id S233479AbjJJQTE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 Oct 2023 12:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233958AbjJJQRl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Oct 2023 12:17:41 -0400
+        with ESMTP id S233961AbjJJQTD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Oct 2023 12:19:03 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9A41719;
-        Tue, 10 Oct 2023 09:07:17 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B71FC433C7;
-        Tue, 10 Oct 2023 16:07:14 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FDDE93;
+        Tue, 10 Oct 2023 09:19:02 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FDF5C433C8;
+        Tue, 10 Oct 2023 16:19:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696954037;
-        bh=I4Mq5KNftOzU1QBiwC1aaENLB1oSctS1fFgLbP5jObs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=C8pMnBKmhfF9gR8nBxQrzAvEp/Cv9arKFw390ivCleHFQ1/MAASwykuxa+TwODwId
-         2VFfDi1rKlynETRTcGzP8V9eApjafe4wU1/5M5/LHF6DkrBBqPlDJ8EHkhX+/a9gKd
-         nNrlbSb2IcDLJzbKAPUnB22snxRfHCEdrIXPe+jZqpnCG1ppqF8vgDJS2PCL2+Rm8N
-         SKQH3yaB1axT+jUb3IzlWRVsnt3r9rVQSwIC1V8MjIfOEFgdvPwW38kfO42xgcNXYZ
-         zXz+Zpw/ANPXI++kVrdFTtvEa7LdY3icNOlDGMygaUdXVpH3gj8QyCLHcaAnToFqVI
-         erLAvSPAGpz4A==
-Date:   Tue, 10 Oct 2023 17:07:27 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     David Lechner <dlechner@baylibre.com>
-Cc:     linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
-        Axel Haslam <ahaslam@baylibre.com>,
-        Philip Molloy <pmolloy@baylibre.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 14/17] staging: iio: resolver: ad2s1210: add
- register/fault support summary
-Message-ID: <20231010170727.524a5820@jic23-huawei>
-In-Reply-To: <20231005-ad2s1210-mainline-v4-14-ec00746840fc@baylibre.com>
-References: <20231005-ad2s1210-mainline-v4-0-ec00746840fc@baylibre.com>
-        <20231005-ad2s1210-mainline-v4-14-ec00746840fc@baylibre.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
+        s=k20201202; t=1696954742;
+        bh=ag41vErJLcdKpWvik5kJhsbnkB03toTtYunAk74GnXI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dx7YaSUcnpJ6i31sJjGmTurhcph5FdWf+D6PUKBdn7Kpq4plRrckNxcBAOeYqXbPf
+         MiQKYc0310YaucJacgIq6+fgIQArdHKfLY7kpbGRk864Cakn8zYBRC/5YY14vfJGEj
+         K5CHmkZKhkPOxzHHtEOdZRJORREJKlMOGYMr+sYIqxlhouiZzxu33loyGXcRu8C45d
+         h0CQRL+GQuon+oqhK5MCfkIVyaanl7ni3gAdJ1QvqQTPXM0BOJ4wYCBBS/8ZGWlIyD
+         pVib/siMUCWjRsQaW/eJXLbD9fDeXoLhGN2BCpKp85b+6PtaVW0Gdh/TRxkoObx5N8
+         VCVOy5R8KsKEw==
+Received: (nullmailer pid 1003012 invoked by uid 1000);
+        Tue, 10 Oct 2023 16:19:00 -0000
+Date:   Tue, 10 Oct 2023 11:19:00 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>
+Cc:     Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Paul Gazzillo <paul@pgazz.com>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: light: Avago APDS9306
+Message-ID: <20231010161900.GA999361-robh@kernel.org>
+References: <20231008154857.24162-1-subhajit.ghosh@tweaklogic.com>
+ <20231008154857.24162-2-subhajit.ghosh@tweaklogic.com>
+ <2c6ff28f-9031-beb2-f8d0-e7f12b0a07b4@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2c6ff28f-9031-beb2-f8d0-e7f12b0a07b4@gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu,  5 Oct 2023 19:50:31 -0500
-David Lechner <dlechner@baylibre.com> wrote:
-
-> The ad2s1210 driver shoe-horns the register and fault support into IIO
-> events. The mapping between the registers/faults and the events is not
-> obvious. To save users from having to read the entire driver to figure
-> out how to use it, add a summary of the register/fault support to the
-> top of the file.
+On Tue, Oct 10, 2023 at 11:52:28AM +0300, Matti Vaittinen wrote:
+> On 10/8/23 18:48, Subhajit Ghosh wrote:
+> > Add devicetree bindings for Avago APDS9306 Ambient Light Sensor.
+> > 
+> > Signed-off-by: Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>
+> > ---
+> >   .../bindings/iio/light/avago,apds9306.yaml    | 49 +++++++++++++++++++
+> >   1 file changed, 49 insertions(+)
+> >   create mode 100644 Documentation/devicetree/bindings/iio/light/avago,apds9306.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iio/light/avago,apds9306.yaml b/Documentation/devicetree/bindings/iio/light/avago,apds9306.yaml
+> > new file mode 100644
+> > index 000000000000..e8bb897782fc
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/light/avago,apds9306.yaml
+> > @@ -0,0 +1,49 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iio/light/avago,apds9306.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Avago APDS9306 Ambient Light Sensor
+> > +
+> > +maintainers:
+> > +  - Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>
+> > +
+> > +description:
+> > +  Datasheet at https://docs.broadcom.com/doc/AV02-4755EN
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: avago,apds9306
 > 
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
-This is indeed useful to have.
+> I see the driver supports two different variants of this IC, differentiated
+> by the part-ID register. Variants are named as apds9306 and apds9306-065. I
+> wonder if we could/should have different compatibles for them?
 
-Applied.
+If 1 compatible is sufficient to know how to power on both devices and 
+read the part-ID register, then no need for different compatibles.
 
-Thanks,
-
-Jonathan
-
-> ---
-> 
-> v4 changes: New patch in v4.
-> 
->  drivers/staging/iio/resolver/ad2s1210.c | 40 +++++++++++++++++++++++++++++++++
->  1 file changed, 40 insertions(+)
-> 
-> diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-> index d9d51bbbade8..51490fea1647 100644
-> --- a/drivers/staging/iio/resolver/ad2s1210.c
-> +++ b/drivers/staging/iio/resolver/ad2s1210.c
-> @@ -4,7 +4,47 @@
->   *
->   * Copyright (c) 2010-2010 Analog Devices Inc.
->   * Copyright (c) 2023 BayLibre, SAS
-> + *
-> + * Device register to IIO ABI mapping:
-> + *
-> + * Register                    | Addr | IIO ABI (sysfs)
-> + * ----------------------------|------|-------------------------------------------
-> + * DOS Overrange Threshold     | 0x89 | events/in_altvoltage0_thresh_rising_value
-> + * DOS Mismatch Threshold      | 0x8A | events/in_altvoltage0_mag_rising_value
-> + * DOS Reset Maximum Threshold | 0x8B | events/in_altvoltage0_mag_rising_reset_max
-> + * DOS Reset Minimum Threshold | 0x8C | events/in_altvoltage0_mag_rising_reset_min
-> + * LOT High Threshold          | 0x8D | events/in_angl1_thresh_rising_value
-> + * LOT Low Threshold [1]       | 0x8E | events/in_angl1_thresh_rising_hysteresis
-> + * Excitation Frequency        | 0x91 | out_altvoltage0_frequency
-> + * Control                     | 0x92 | *as bit fields*
-> + *   Phase lock range          | D5   | events/in_phase0_mag_rising_value
-> + *   Hysteresis                | D4   | in_angl0_hysteresis
-> + *   Encoder resolution        | D3:2 | *not implemented*
-> + *   Resolution                | D1:0 | *device tree: assigned-resolution-bits*
-> + * Soft Reset                  | 0xF0 | [2]
-> + * Fault                       | 0xFF | *not implemented*
-> + *
-> + * [1]: The value written to the LOT low register is high value minus the
-> + * hysteresis.
-> + * [2]: Soft reset is performed when `out_altvoltage0_frequency` is written.
-> + *
-> + * Fault to event mapping:
-> + *
-> + * Fault                                   |    | Channel     | Type   | Direction
-> + * ----------------------------------------|----|---------------------------------
-> + * Sine/cosine inputs clipped [3]          | D7 | altvoltage1 | mag    | either
-> + * Sine/cosine inputs below LOS            | D6 | altvoltage0 | thresh | falling
-> + * Sine/cosine inputs exceed DOS overrange | D5 | altvoltage0 | thresh | rising
-> + * Sine/cosine inputs exceed DOS mismatch  | D4 | altvoltage0 | mag    | rising
-> + * Tracking error exceeds LOT              | D3 | angl1       | thresh | rising
-> + * Velocity exceeds maximum tracking rate  | D2 | anglvel0    | mag    | rising
-> + * Phase error exceeds phase lock range    | D1 | phase0      | mag    | rising
-> + * Configuration parity error              | D0 | *writes to kernel log*
-> + *
-> + * [3]: The chip does not differentiate between fault on sine vs. cosine so
-> + * there will also be an event on the altvoltage2 channel.
->   */
-> +
->  #include <linux/bitfield.h>
->  #include <linux/bits.h>
->  #include <linux/clk.h>
-> 
-
+Rob
