@@ -2,17 +2,17 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E5DCDB486
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Oct 2023 12:47:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68184CDB465
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Oct 2023 12:47:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233412AbjJPMrU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S233562AbjJPMrU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 16 Oct 2023 08:47:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34602 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233491AbjJPMrR (ORCPT
+        with ESMTP id S233477AbjJPMrR (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Oct 2023 08:47:17 -0400
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE15F5;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB77F1;
         Mon, 16 Oct 2023 05:47:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Cc:To:In-Reply-To:References:Message-Id:
@@ -20,23 +20,23 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
         :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=PJALcNBz9ImCFUk6lytLPYTwt4DBsHnDsm7gSz1x8lo=; b=ff3G7CT6bnQycp0nllKxCQQDhD
-        zeSvojJucET6lcblBDwzfvLHu3iWKjSLvwEQYdTY3IWhOcYXe6JkIlmgz50IJ/QoAghxE2FRD8g2u
-        W8osi/fZoZwcV3GSP12kypy6EfNmCda56Im0EAFNfYMawfpSXazqeSeoZoN5i2H1wcjb1xXoQX4W+
-        xp3mWJndP8nIFjLcNHKXQRQcmlMTb2+nuz6shzg+/bWm0trpuUSob0pyUXvGG9OzNnpOh4e41F0v7
-        enNWAejnwCwmhUN2qRg4fHB5t97+T6K+119V1JM1v40DDTJK2tozppe6pzU+zh2JU7w+TsmcT0cr0
-        U+EeXRYw==;
+        bh=aSw/SitkCdghTwzNFGWOAeZtBD5jT+hGocMeTU5ypa8=; b=HIM79nsm3NMawH9LAl7a/gxsf7
+        m5DkG5QU2h2Br9Md060uHeeQK7Mo/gzmoJUkEVv7ZudtbxeqVFHbUZNzN59fYaCwXpCL8/nF3kvf6
+        5yIhx2zX0JttueZeGYcAKVMTVkTrqujpvgvHF6NbaoUUmbvVcgK2/kteZUHZsUnsAY0YiaPac3J4Q
+        qZllcbIzyWONuJPKXt3DWXPvGXL35Mj++CpMzjr+SY4W0ZtheDcyEBzAR6x+HmFJQKcUFUvaVPziS
+        +5ZI5JzLHeTDTzAhjIR8ZXrOd/E5ZeyG1GqzL6WOzyN7My6/EeTEAPXwE8zq9xDUlSPn/+q5X7Crt
+        KX1DaqJg==;
 Received: from re-byods-146-50-198-227.wireless.uva.nl ([146.50.198.227])
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1qsN02-0013kp-Ah; Mon, 16 Oct 2023 14:47:10 +0200
+        id 1qsN03-0013kp-Tt; Mon, 16 Oct 2023 14:47:11 +0200
 From:   Nia Espera <nespera@igalia.com>
-Date:   Mon, 16 Oct 2023 14:47:01 +0200
-Subject: [PATCH 1/5] iio: adc: add smb139x bindings
+Date:   Mon, 16 Oct 2023 14:47:03 +0200
+Subject: [PATCH 3/5] arm64: dts: qcom: pm8350k: remove hanging whitespace
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231016-nia-sm8350-for-upstream-v1-1-bb557a0af2e9@igalia.com>
+Message-Id: <20231016-nia-sm8350-for-upstream-v1-3-bb557a0af2e9@igalia.com>
 References: <20231016-nia-sm8350-for-upstream-v1-0-bb557a0af2e9@igalia.com>
 In-Reply-To: <20231016-nia-sm8350-for-upstream-v1-0-bb557a0af2e9@igalia.com>
 To:     Andy Gross <agross@kernel.org>,
@@ -56,53 +56,43 @@ Cc:     linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht,
         Nia Espera <nespera@igalia.com>
 X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1119; i=nespera@igalia.com;
- h=from:subject:message-id; bh=JHRfmZAZO9Oy7nubEEb+3rg3Tspx6ftNhCKm1jVHvjY=;
- b=owEB7QES/pANAwAIAfIkzsI3VuKtAcsmYgBlLTDMffV0GpejRx7QmlbEg2PlwXRVuPTe6tPP8
- xqD1HE7EEmJAbMEAAEIAB0WIQSBPDomug3slDJEnubyJM7CN1birQUCZS0wzAAKCRDyJM7CN1bi
- rTsWC/0XeieJo2IcVNzUcx9Jsfe9cTj9Up0k1WgcjRrpMwX3+DYKzDOLW1vEeoz/tAasmpNODWT
- 9EGUTEsIzLwb7BNuR8VyNfR7ynOcXKb+2uB5FRzHTAirulWrTebIcIv27mQy5LDxtLdBK6U5PNv
- cONwZgTu/w+I++iBvdsq0wVxsKSiP2umK05khO6WWVrc09sVrhvv+yhL9R5VcNP2aHaMzKVFIFv
- 7gcxaT5Hb3CJkEgCE0rEa2VsD/0ROVB8F0EOjrhXgZ13jMWH9SEPB3Y6mSRsqz+iGMOxu+hDAcz
- 03+yxQruoE0eLyxxts26bAthoZ1PcA5UjWzPGFLw3p9e46KOxtCVo1wGcFoxiS0fIApZwjg+UdA
- oARxtd6LgeliRR1E0JxgHEv95LrAWt9yQDkZY6XePf3M/PZGsG0jkh6b6GhnwRplMW9jOQ+bvGM
- nKMhn1HTb0imE0G/upd7QG0K5XMkQBbd4+760su63q955yRqObKsuQYxwiTvCPdqoLBeM=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=627; i=nespera@igalia.com;
+ h=from:subject:message-id; bh=eL/xbH1y2VfLlWI0VS2+3fBxKQWeWtx0gu6ZMciNzu0=;
+ b=owEB7QES/pANAwAIAfIkzsI3VuKtAcsmYgBlLTDM9Qvo5Dz5VAgsxXtZNrsqRkuHh6vIY96MZ
+ CpUy7M5k/KJAbMEAAEIAB0WIQSBPDomug3slDJEnubyJM7CN1birQUCZS0wzAAKCRDyJM7CN1bi
+ rZKNC/4yPqov6mprRsUKbWrS48z3NkIhHI3+y7O5xRFbI3urq9MesZYff6vi5f5JRAvRLuKCdwd
+ 8HWnO+BMrnBAqxMLmPUH6IbWI3p+oK5kJUzVafcdY7Ze8iV/v/+F83ufSGfCHwaJdws+JRWzT85
+ zZ8IzvXAY536A5E+lllr2DGFVvZl1o1+yW4UevFG0VACUdnzB3RMR2ZRcR5F2AeGy9hvlP7ojLX
+ 67FBuLRTsBjqwjYte/R8jKes6Tgk/48ZMgUnAS4uyPB+Ildv204axmcqco5vM0mzCCzRIlD/7Xb
+ Ih3Z4tll7WHjm/iV9YNcjC57xwjGaoSHwzUmH00rNhpMw6t9+cShqiTJ+IuPZ+fkVGnQ/64/Zbk
+ rAHwscBJoJHMttmdGhd8JOVAnOOInv3SCEX2B6PHncwm+x1HaVW443+tPjLyPB+cxQFeZNpsNYX
+ uSy+ZXIFYXvi+LFGxXcZY1WM4KARbbmnJYT1TLgGbEhEs98c1b/m+wDA1jQkpsXDZJlA4=
 X-Developer-Key: i=nespera@igalia.com; a=openpgp;
  fpr=813C3A26BA0DEC9432449EE6F224CEC23756E2AD
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Bindings for a charger controller chip found on sm8350
+pmk8350 has a random tab character inserted, so remove it.
 
 Signed-off-by: Nia Espera <nespera@igalia.com>
 ---
- include/dt-bindings/iio/qcom,spmi-adc7-smb139x.h | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ arch/arm64/boot/dts/qcom/pmk8350.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/dt-bindings/iio/qcom,spmi-adc7-smb139x.h b/include/dt-bindings/iio/qcom,spmi-adc7-smb139x.h
-new file mode 100644
-index 000000000000..fe163cd8bbdd
---- /dev/null
-+++ b/include/dt-bindings/iio/qcom,spmi-adc7-smb139x.h
-@@ -0,0 +1,17 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (c) 2020 The Linux Foundation. All rights reserved.
-+ */
+diff --git a/arch/arm64/boot/dts/qcom/pmk8350.dtsi b/arch/arm64/boot/dts/qcom/pmk8350.dtsi
+index 1eb74017062d..f0ed15458dd7 100644
+--- a/arch/arm64/boot/dts/qcom/pmk8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/pmk8350.dtsi
+@@ -22,7 +22,7 @@ reboot-mode {
+ 		mode-bootloader = <0x02>;
+ 	};
+ };
+-	
 +
-+#ifndef _DT_BINDINGS_QCOM_SPMI_VADC_SMB139X_H
-+#define _DT_BINDINGS_QCOM_SPMI_VADC_SMB139X_H
-+
-+#define SMB139x_1_ADC7_SMB_TEMP			(SMB139x_1_SID << 8 | 0x06)
-+#define SMB139x_1_ADC7_ICHG_SMB			(SMB139x_1_SID << 8 | 0x18)
-+#define SMB139x_1_ADC7_IIN_SMB			(SMB139x_1_SID << 8 | 0x19)
-+
-+#define SMB139x_2_ADC7_SMB_TEMP			(SMB139x_2_SID << 8 | 0x06)
-+#define SMB139x_2_ADC7_ICHG_SMB			(SMB139x_2_SID << 8 | 0x18)
-+#define SMB139x_2_ADC7_IIN_SMB			(SMB139x_2_SID << 8 | 0x19)
-+
-+#endif
+ &spmi_bus {
+ 	pmk8350: pmic@PMK8350_SID {
+ 		compatible = "qcom,pmk8350", "qcom,spmi-pmic";
 
 -- 
 2.42.0
