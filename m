@@ -2,103 +2,135 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6ADDCDB483
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Oct 2023 19:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B70A4CDB474
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Oct 2023 20:17:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234998AbjJQTnO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Oct 2023 15:43:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33654 "EHLO
+        id S235186AbjJQURf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Oct 2023 16:17:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234635AbjJQTnN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Oct 2023 15:43:13 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D0AC6;
-        Tue, 17 Oct 2023 12:43:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697571792; x=1729107792;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=JF3kBYiZ7ja2TA5QXy9uKVO4oRFv5C/TTDXBiZDQ1GA=;
-  b=M1nAayz14UVfm+ATwLcVXT4/IFgQXK6SbFv7vZPB3CnF0/GwQTHJLkia
-   jG9ocmghjVekXIpPWPQM5vmhr9mgEfbPpXFzB1CiEr/xBHLFaydF57kzl
-   A9hxbd2tYhWof0XVtJ6X0weSZ763BkBX7B2/ltSe6+l7jSZ2TeLlcAvZi
-   RMIfLEj44vfJa0LHfPnovMWwmEL/hyRbNoGctZM93H00OZQ1BatLnwb5x
-   i65k5ecrdTc9rT5S8uIWuu+sXtIGMM6bPGGwO1WnixcdabN3HtjbdTO9k
-   C9BFVigaVYrsa3MkAp2n1Xssz2pT+9Xoy3Yj1Xiid7lfp47u40jvlJHYp
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10866"; a="389738671"
-X-IronPort-AV: E=Sophos;i="6.03,233,1694761200"; 
-   d="scan'208";a="389738671"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2023 12:43:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10866"; a="929879025"
-X-IronPort-AV: E=Sophos;i="6.03,233,1694761200"; 
-   d="scan'208";a="929879025"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2023 12:43:08 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97-RC2)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qspy4-00000006PcA-2yxa;
-        Tue, 17 Oct 2023 22:43:04 +0300
-Date:   Tue, 17 Oct 2023 22:43:04 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gerald Loacker <gerald.loacker@wolfvision.net>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH v1 2/6] device property: Add
- fwnode_property_match_property_string()
-Message-ID: <ZS7jyHkKJcubVxws@smile.fi.intel.com>
-References: <20230808162800.61651-1-andriy.shevchenko@linux.intel.com>
- <20230808162800.61651-3-andriy.shevchenko@linux.intel.com>
- <20230809185944.1ae78e34@jic23-huawei>
- <ZNTlniWf8Ou9hHOT@smile.fi.intel.com>
- <20230828190101.50f70921@jic23-huawei>
- <CAJZ5v0gOXsX98jQTRSwoYmfYBfva1RHTsDaLL++m7c+kLjStVA@mail.gmail.com>
+        with ESMTP id S235197AbjJQURZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Oct 2023 16:17:25 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB5E6EAB;
+        Tue, 17 Oct 2023 13:07:26 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id 2adb3069b0e04-507b18cf2e1so3139907e87.3;
+        Tue, 17 Oct 2023 13:07:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1697573245; x=1698178045; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DAg++LrW3itK5V1WlKpiZ2b/nQX2LkLJrp9r6Hg+m/U=;
+        b=fyla5S4OvCipJM/zDK1s9UNIRpBC7Mjb63FEuf2qgq0w3eZv54ii8U42n1acRtFlSw
+         yq7k00GwzCMKz4jmt+KiJkYiSeUE/4cmbNDHSYktDKIdlWGDYIgNhcs0DFWG1Jl56MPo
+         uo6VDd30BbtIAiX3au4GT4clz9qYZ4VUaSb7GVary8cdy8mjgcBsXph+n7+UvIUE7AoH
+         7mi5/PZBMvos2gTshF8dLYuXvkjs29nNkgprcGMwjmduhikymaPHRKGLQSYw/ppFrHSb
+         /HoLYon3T3DmFb9hMflTuH3GBB7EBwfTrBPnNSWY58le9XUVTjeEAky+5tYHtIxK8GAw
+         wmpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697573245; x=1698178045;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=DAg++LrW3itK5V1WlKpiZ2b/nQX2LkLJrp9r6Hg+m/U=;
+        b=HtHe4gpvG1/Y25iUr/McroqkQAACDbn8l4UYVUY+3hpxnmYhm+zFKLGcxrWWSIf9tj
+         5e0xZcVmweCm1OB3ljG7Mz2/tKBA3elFabB1LcfC5ALm3RNKWq9dg28ZkZWiiepYB1pq
+         2HIwyQybQgh8EBu0ntTy1jkfMkc8lMiz+iiaWi27T9mML+bZ62hdh1cNfSGlkYrLCOOY
+         mkgXJ2/LVHcu9Hx9yqTzOn4nluo2YmE2CcJVYi47k1o2S1NtrrgN18lZ2o89zOBzRU6r
+         pGhmd1VbMuY6cK31IHvaKcXW0Yy4RPtbgcm9GixbVWGycwt0/duMt9Pm8rzOgq/LuEhE
+         rZ6w==
+X-Gm-Message-State: AOJu0Yx4Pt1zgTrZSevJIRBWWt7tA9ZRqc9ycdsQ2Vh4naix6XvSDelp
+        EYxx/1w0ICTi/SKl2XyuqWDik/mHPSq4Kdg9csY=
+X-Google-Smtp-Source: AGHT+IEqwRenbscVZ0NA7c0QZm2NZMJwFuAjJu03tHzrSKrWUtbnnSQutaqDUbCBHGH8REY6dKqpQ5X1YCi2LT8F0nQ=
+X-Received: by 2002:ac2:4827:0:b0:507:9f4c:efc8 with SMTP id
+ 7-20020ac24827000000b005079f4cefc8mr2339662lft.14.1697573244534; Tue, 17 Oct
+ 2023 13:07:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJZ5v0gOXsX98jQTRSwoYmfYBfva1RHTsDaLL++m7c+kLjStVA@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <cover.1666614295.git.mazziesaccount@gmail.com> <758b00d6aea0a6431a5a3a78d557d449c113b21e.1666614295.git.mazziesaccount@gmail.com>
+In-Reply-To: <758b00d6aea0a6431a5a3a78d557d449c113b21e.1666614295.git.mazziesaccount@gmail.com>
+From:   Jagath Jog J <jagathjog1996@gmail.com>
+Date:   Wed, 18 Oct 2023 01:37:12 +0530
+Message-ID: <CAM+2Eu+Xp6j1ppLd+zHMTu6jfc6DQKBShfe-nAyokVi0MUmoSA@mail.gmail.com>
+Subject: Re: [PATCH v5 2/3] iio: accel: Support Kionix/ROHM KX022A accelerometer
+To:     Matti Vaittinen <mazziesaccount@gmail.com>
+Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dmitry Rokosov <DDRokosov@sberdevices.ru>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Oct 17, 2023 at 09:19:30PM +0200, Rafael J. Wysocki wrote:
-> On Mon, Aug 28, 2023 at 8:00 PM Jonathan Cameron <jic23@kernel.org> wrote:
+Hi Matti,
 
-...
+On Mon, Oct 24, 2022 at 6:10=E2=80=AFPM Matti Vaittinen
+<mazziesaccount@gmail.com> wrote:
+>
+> KX022A is a 3-axis accelerometer from ROHM/Kionix. The sensor features
+> include variable ODRs, I2C and SPI control, FIFO/LIFO with watermark IRQ,
+> tap/motion detection, wake-up & back-to-sleep events, four acceleration
+> ranges (2, 4, 8 and 16g), and probably some other cool features.
 
-> Sorry for the delay, I've lost track of this.
+This is a nice driver, and I found it very helpful as a reference.
+One question regarding scale please see below.
 
-NP!
+> + * range is typically +-2G/4G/8G/16G, distributed over the amount of bit=
+s.
+> + * The scale table can be calculated using
+> + *     (range / 2^bits) * g =3D (range / 2^bits) * 9.80665 m/s^2
+> + *     =3D> KX022A uses 16 bit (HiRes mode - assume the low 8 bits are z=
+eroed
+> + *     in low-power mode(?) )
+> + *     =3D> +/-2G  =3D> 4 / 2^16 * 9,80665 * 10^6 (to scale to micro)
+> + *     =3D> +/-2G  - 598.550415
+> + *        +/-4G  - 1197.10083
+> + *        +/-8G  - 2394.20166
+> + *        +/-16G - 4788.40332
+> + */
+> +static const int kx022a_scale_table[][2] =3D {
+> +       { 598, 550415 },
+> +       { 1197, 100830 },
+> +       { 2394, 201660 },
+> +       { 4788, 403320 },
+> +};
 
-> Honestly, I have no strong opinion, but I think that this is going to
-> reduce some code duplication which is a valid purpose, so please feel
-> free to add
-> 
-> Acked-by: Rafael J. Wysocki <rafael@kernel.org>
-> 
-> to this patch.
+Given that the integer part is non-zero, and
+IIO_VAL_INT_PLUS_MICRO is returned for read_scale,
+As raw value will never be fractional how does this
+correspond to a reading of 9.8 m/s=C2=B2 for the Z-axis?
 
-Thank you!
+> +
+> +static int kx022a_read_avail(struct iio_dev *indio_dev,
+> +                            struct iio_chan_spec const *chan,
+> +                            const int **vals, int *type, int *length,
+> +                            long mask)
+> +{
+> +       switch (mask) {
+> +       case IIO_CHAN_INFO_SAMP_FREQ:
+> +               *vals =3D (const int *)kx022a_accel_samp_freq_table;
+> +               *length =3D ARRAY_SIZE(kx022a_accel_samp_freq_table) *
+> +                         ARRAY_SIZE(kx022a_accel_samp_freq_table[0]);
+> +               *type =3D IIO_VAL_INT_PLUS_MICRO;
+> +               return IIO_AVAIL_LIST;
+> +       case IIO_CHAN_INFO_SCALE:
+> +               *vals =3D (const int *)kx022a_scale_table;
+> +               *length =3D ARRAY_SIZE(kx022a_scale_table) *
+> +                         ARRAY_SIZE(kx022a_scale_table[0]);
+> +               *type =3D IIO_VAL_INT_PLUS_MICRO;
+> +               return IIO_AVAIL_LIST;
+> +       default:
+> +               return -EINVAL;
+> +       }
+> +}
 
-Jonathan, are we all set for applying this series?
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Regards
+Jagath
