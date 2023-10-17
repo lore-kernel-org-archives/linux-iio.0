@@ -2,147 +2,212 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A78E4CDB474
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Oct 2023 20:45:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F5C1CDB474
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Oct 2023 21:12:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344244AbjJQUpw convert rfc822-to-8bit (ORCPT
+        id S230056AbjJQVME convert rfc822-to-8bit (ORCPT
         <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Oct 2023 16:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59138 "EHLO
+        Tue, 17 Oct 2023 17:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344198AbjJQTTo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Oct 2023 15:19:44 -0400
-Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824F5F9;
-        Tue, 17 Oct 2023 12:19:42 -0700 (PDT)
-Received: by mail-oo1-f43.google.com with SMTP id 006d021491bc7-581e106fd25so127545eaf.0;
-        Tue, 17 Oct 2023 12:19:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697570381; x=1698175181;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=o7ieEvfyHQY7ULuaED1WrfSZ5wAczggZiEh44Iol3Mg=;
-        b=V6RDkGVr1oElsuHIr2MuhX2JvF0c+/qhsqHaMRUDpNlFHVozAd0AiORTjnbmfpRnsk
-         lQ0u5EdS2qnNJRAQ0/BaC28klJl0CfiHNgTnPM3yRgav7VeR17MOKEVjmOIKW6i1gCvm
-         9Jfxv6ZNMwCzNcJPoRG2Hgq1Ix3b5E5VCjCrYzwYsMG6euFyv/L2BSey17C6mDUlekfx
-         7FLFJZMYLVirxY+BejXGH3kwMlydiZNOOK3wZhkQjlQOz30RflU1hG6OSHTbM4Jm7ijc
-         nlDzMe5UM/386nzMM0W8iyRl1Jertz42GbRRVwtfo1f3RDp/4QWE0u0+tPCeToaa8Rbi
-         8BGA==
-X-Gm-Message-State: AOJu0YwGoZH1+SIMJHJ35CmIdUnKRzfTX1PGHrWF3i4Kq2gwYbaNvF0X
-        RGDxkCWD6HybumfsOa5tYlkpmzhVX1BDubDPCv4=
-X-Google-Smtp-Source: AGHT+IH7Ib+IgBHBd8TNyJMhv0EEBE9C9qmkJPLadiqejEoD18ZONUozBNi5jP6C7gdY9ygf44U13Go+m7CqCGt9u2c=
-X-Received: by 2002:a4a:e60d:0:b0:57b:7e31:c12 with SMTP id
- f13-20020a4ae60d000000b0057b7e310c12mr3522279oot.1.1697570381480; Tue, 17 Oct
- 2023 12:19:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230808162800.61651-1-andriy.shevchenko@linux.intel.com>
- <20230808162800.61651-3-andriy.shevchenko@linux.intel.com>
- <20230809185944.1ae78e34@jic23-huawei> <ZNTlniWf8Ou9hHOT@smile.fi.intel.com> <20230828190101.50f70921@jic23-huawei>
-In-Reply-To: <20230828190101.50f70921@jic23-huawei>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 17 Oct 2023 21:19:30 +0200
-Message-ID: <CAJZ5v0gOXsX98jQTRSwoYmfYBfva1RHTsDaLL++m7c+kLjStVA@mail.gmail.com>
-Subject: Re: [PATCH v1 2/6] device property: Add fwnode_property_match_property_string()
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gerald Loacker <gerald.loacker@wolfvision.net>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>
+        with ESMTP id S229883AbjJQVMD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Oct 2023 17:12:03 -0400
+Received: from smtprelay06.ispgateway.de (smtprelay06.ispgateway.de [80.67.18.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA9D94
+        for <linux-iio@vger.kernel.org>; Tue, 17 Oct 2023 14:12:00 -0700 (PDT)
+Received: from [92.206.139.21] (helo=note-book.lan)
+        by smtprelay06.ispgateway.de with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.96.1)
+        (envelope-from <git@apitzsch.eu>)
+        id 1qsrM3-0000rb-2r;
+        Tue, 17 Oct 2023 23:11:56 +0200
+Message-ID: <5e0d2716fb757d408ebe77cb132ae242ef3aa470.camel@apitzsch.eu>
+Subject: Re: [PATCH v2 1/5] iio: magnetometer: ak8975: Convert enum->pointer
+ for data in the match tables
+From:   =?ISO-8859-1?Q?Andr=E9?= Apitzsch <git@apitzsch.eu>
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Date:   Tue, 17 Oct 2023 23:11:54 +0200
+In-Reply-To: <20230818075600.24277-2-biju.das.jz@bp.renesas.com>
+References: <20230818075600.24277-1-biju.das.jz@bp.renesas.com>
+         <20230818075600.24277-2-biju.das.jz@bp.renesas.com>
+Autocrypt: addr=git@apitzsch.eu; prefer-encrypt=mutual;
+ keydata=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
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.50.0 
+MIME-Version: 1.0
+X-Df-Sender: YW5kcmVAYXBpdHpzY2guZXU=
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Aug 28, 2023 at 8:00 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Thu, 10 Aug 2023 16:26:54 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->
-> > On Wed, Aug 09, 2023 at 06:59:44PM +0100, Jonathan Cameron wrote:
-> > > On Tue,  8 Aug 2023 19:27:56 +0300
-> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > ...
-> >
-> > > > +int fwnode_property_match_property_string(const struct fwnode_handle *fwnode,
-> > > > + const char *propname, const char * const *array, size_t n)
-> > >
-> > > Hi Andy,
-> > >
-> > > Whilst I'm not 100% sold on adding ever increasing complexity to what we
-> > > match, this one feels like a common enough thing to be worth providing.
-> >
-> > Yep, that's why I considered it's good to add (and because of new comers).
-> >
-> > > Looking at the usecases I wonder if it would be better to pass in
-> > > an unsigned int *ret which is only updated on a match?
-> >
-> > So the question is here are we going to match (pun intended) the prototype to
-> > the device_property_match*() family of functions or to device_property_read_*()
-> > one. If the latter, this has to be renamed, but then it probably will contradict
-> > the semantics as we are _matching_ against something and not just _reading_
-> > something.
-> >
-> > That said, do you agree that current implementation is (slightly) better from
-> > these aspects? Anyway, look at the below.
-> >
-> > > That way the common properties approach of not checking the return value
-> > > if we have an optional property would apply.
-> > >
-> > > e.g. patch 3
-> >
-> > Only?
-> I didn't look further :)
->
-> >
-> > > would end up with a block that looks like:
-> > >
-> > >     st->input_mode = ADMV1014_IQ_MODE;
-> > >     device_property_match_property_string(&spi->dev, "adi,input-mode",
-> > >                                           input_mode_names,
-> > >                                           ARRAY_SIZE(input_mode_names),
-> > >                                           &st->input_mode);
-> > >
-> > > Only neat and tidy if the thing being optionally read into is an unsigned int
-> > > though (otherwise you still need a local variable)
-> >
-> > We also can have a hybrid variant, returning in both sides
-> >
-> >   int device_property_match_property_string(..., size_t *index)
-> >   {
-> >         if (index)
-> >                 *index = ret;
-> >         return ret;
-> >   }
-> >
-> > (also note the correct return type as it has to match to @n).
-> >
-> > Would it be still okay or too over engineered?
-> >
-> Probably over engineered....
->
-> Lets stick to what you have.  If various firmware folk are happy with
-> the new function that's fine by me.  Rafael?
+Hi,
 
-Sorry for the delay, I've lost track of this.
+Am Freitag, dem 18.08.2023 um 08:55 +0100 schrieb Biju Das:
+> Convert enum->pointer for data in the match tables to simplify the
+> probe()
+> by replacing device_get_match_data() and i2c_client_get_device_id by
+> i2c_get_match_data() as we have similar I2C, ACPI and DT matching
+> table.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+> v1->v2:
+>  * No change
+> ---
+>  drivers/iio/magnetometer/ak8975.c | 75 +++++++++++++----------------
+> --
+>  1 file changed, 30 insertions(+), 45 deletions(-)
+> 
+> diff --git a/drivers/iio/magnetometer/ak8975.c
+> b/drivers/iio/magnetometer/ak8975.c
+> index eb706d0bf70b..104798549de1 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -813,13 +813,13 @@ static const struct iio_info ak8975_info = {
+>  };
+>  
+>  static const struct acpi_device_id ak_acpi_match[] = {
+> -	{"AK8975", AK8975},
+> -	{"AK8963", AK8963},
+> -	{"INVN6500", AK8963},
+> -	{"AK009911", AK09911},
+> -	{"AK09911", AK09911},
+> -	{"AKM9911", AK09911},
+> -	{"AK09912", AK09912},
+> +	{"AK8975", (kernel_ulong_t)&ak_def_array[AK8975] },
+> +	{"AK8963", (kernel_ulong_t)&ak_def_array[AK8963] },
+> +	{"INVN6500", (kernel_ulong_t)&ak_def_array[AK8963] },
+> +	{"AK009911", (kernel_ulong_t)&ak_def_array[AK09911] },
+> +	{"AK09911", (kernel_ulong_t)&ak_def_array[AK09911] },
+> +	{"AKM9911", (kernel_ulong_t)&ak_def_array[AK09911] },
+> +	{"AK09912", (kernel_ulong_t)&ak_def_array[AK09912] },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
+> @@ -883,10 +883,7 @@ static int ak8975_probe(struct i2c_client
+> *client)
+>  	struct iio_dev *indio_dev;
+>  	struct gpio_desc *eoc_gpiod;
+>  	struct gpio_desc *reset_gpiod;
+> -	const void *match;
+> -	unsigned int i;
+>  	int err;
+> -	enum asahi_compass_chipset chipset;
+>  	const char *name = NULL;
+>  
+>  	/*
+> @@ -928,27 +925,15 @@ static int ak8975_probe(struct i2c_client
+> *client)
+>  		return err;
+>  
+>  	/* id will be NULL when enumerated via ACPI */
+> -	match = device_get_match_data(&client->dev);
+> -	if (match) {
+> -		chipset = (uintptr_t)match;
+> -		name = dev_name(&client->dev);
+> -	} else if (id) {
+> -		chipset = (enum asahi_compass_chipset)(id-
+> >driver_data);
+> -		name = id->name;
+> -	} else
+> -		return -ENOSYS;
+> -
+> -	for (i = 0; i < ARRAY_SIZE(ak_def_array); i++)
+> -		if (ak_def_array[i].type == chipset)
+> -			break;
+> -
+> -	if (i == ARRAY_SIZE(ak_def_array)) {
+> -		dev_err(&client->dev, "AKM device type unsupported:
+> %d\n",
+> -			chipset);
+> +	data->def = i2c_get_match_data(client);
+> +	if (!data->def)
+>  		return -ENODEV;
+> -	}
+>  
+> -	data->def = &ak_def_array[i];
+> +	/* If enumerated via firmware node, fix the ABI */
+> +	if (dev_fwnode(&client->dev))
+> +		name = dev_name(&client->dev);
+> +	else
+> +		name = id->name;
+>  
 
-Honestly, I have no strong opinion, but I think that this is going to
-reduce some code duplication which is a valid purpose, so please feel
-free to add
+I just noticed, that with the above change '0-000d' instead of the
+previous and expected 'ak09911' is shown now as name for the
+magnetometer in longcheer l9100 [1].
 
-Acked-by: Rafael J. Wysocki <rafael@kernel.org>
+id->name contains the expected string ('ak09911'), but because of
+dev_fwnode(&client->dev) being true, it is not used.
 
-to this patch.
+André
 
-Thanks!
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/arch/arm64/boot/dts/qcom/msm8939-longcheer-l9100.dts?h=next-20231017#n127
+
+>  	/* Fetch the regulators */
+>  	data->vdd = devm_regulator_get(&client->dev, "vdd");
+> @@ -1077,28 +1062,28 @@ static
+> DEFINE_RUNTIME_DEV_PM_OPS(ak8975_dev_pm_ops, ak8975_runtime_suspend,
+>  				 ak8975_runtime_resume, NULL);
+>  
+>  static const struct i2c_device_id ak8975_id[] = {
+> -	{"ak8975", AK8975},
+> -	{"ak8963", AK8963},
+> -	{"AK8963", AK8963},
+> -	{"ak09911", AK09911},
+> -	{"ak09912", AK09912},
+> -	{"ak09916", AK09916},
+> +	{"ak8975", (kernel_ulong_t)&ak_def_array[AK8975] },
+> +	{"ak8963", (kernel_ulong_t)&ak_def_array[AK8963] },
+> +	{"AK8963", (kernel_ulong_t)&ak_def_array[AK8963] },
+> +	{"ak09911", (kernel_ulong_t)&ak_def_array[AK09911] },
+> +	{"ak09912", (kernel_ulong_t)&ak_def_array[AK09912] },
+> +	{"ak09916", (kernel_ulong_t)&ak_def_array[AK09916] },
+>  	{}
+>  };
+>  
+>  MODULE_DEVICE_TABLE(i2c, ak8975_id);
+>  
+>  static const struct of_device_id ak8975_of_match[] = {
+> -	{ .compatible = "asahi-kasei,ak8975", },
+> -	{ .compatible = "ak8975", },
+> -	{ .compatible = "asahi-kasei,ak8963", },
+> -	{ .compatible = "ak8963", },
+> -	{ .compatible = "asahi-kasei,ak09911", },
+> -	{ .compatible = "ak09911", },
+> -	{ .compatible = "asahi-kasei,ak09912", },
+> -	{ .compatible = "ak09912", },
+> -	{ .compatible = "asahi-kasei,ak09916", },
+> -	{ .compatible = "ak09916", },
+> +	{ .compatible = "asahi-kasei,ak8975", .data =
+> &ak_def_array[AK8975] },
+> +	{ .compatible = "ak8975", .data = &ak_def_array[AK8975] },
+> +	{ .compatible = "asahi-kasei,ak8963", .data =
+> &ak_def_array[AK8963] },
+> +	{ .compatible = "ak8963", .data = &ak_def_array[AK8963] },
+> +	{ .compatible = "asahi-kasei,ak09911", .data =
+> &ak_def_array[AK09911] },
+> +	{ .compatible = "ak09911", .data = &ak_def_array[AK09911] },
+> +	{ .compatible = "asahi-kasei,ak09912", .data =
+> &ak_def_array[AK09912] },
+> +	{ .compatible = "ak09912", .data = &ak_def_array[AK09912] },
+> +	{ .compatible = "asahi-kasei,ak09916", .data =
+> &ak_def_array[AK09916] },
+> +	{ .compatible = "ak09916", .data = &ak_def_array[AK09916] },
+>  	{}
+>  };
+>  MODULE_DEVICE_TABLE(of, ak8975_of_match);
+
