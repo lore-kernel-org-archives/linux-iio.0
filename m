@@ -2,42 +2,42 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 193B2CDB486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1733CDB48A
 	for <linux-iio@archiver.kernel.org>; Wed, 18 Oct 2023 14:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345538AbjJRO1a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Oct 2023 10:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
+        id S1345565AbjJRO1b (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Oct 2023 10:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345672AbjJRO1U (ORCPT
+        with ESMTP id S1345537AbjJRO1U (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Oct 2023 10:27:20 -0400
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11509359E;
-        Wed, 18 Oct 2023 07:26:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3959132;
+        Wed, 18 Oct 2023 07:26:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Cc:To:In-Reply-To:References:Message-Id:
         Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:Sender:
         Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
         :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=4fUP0tSwnbpMdjb7K6eDxs6iBd7r7k7NIBV8eKcwP/0=; b=esfKvJ6t+VZvP1bVmag5ZIcGku
-        teGa5m40L94eryStGRZJjv+iIqknS9rlLChGCQH/xtRGNAitPmoYlOAXhZ69UwV9FUFhNbPonERl4
-        MAebZgOVEvYPOCe1481Z1BqA3JITu/4mN/EOrCvT5anPA71I4Agb0dsIypgEE/JbAkjkUVp9ql60x
-        qhDTZoOfg4DQNHl6/7tEGhAc6/nYw4EgbqAA7nHJxbNfI/47+95fgtcb6uHt5TIbHVtR4n3kohN5y
-        1VE5T4YoyeizIfjc6+kvLFaMrIyPwEOv3Gyxwo1JZwIR6Eu2nQrw8vvbAH74MVCKHH5Yo5hP0Dbuk
-        u1Z/FvHg==;
+        bh=WUFvCaplwb+OMl6szO4dvGflNfgGik7yhQL1tZppQ9o=; b=p/BAYykqqn83qNlFhYXWT4G61s
+        +F7VZnZB4gYlepgqRm99u2gvb15986CVTGhCSbDlkYCn1vw/Evv8Ng2f656Wx7l4+jlUb5/fUY7qM
+        bZkP38FUhW+M07HrMp7FWrLrvclgWk6mft1eB1kDUyj0jynjEa3PLUKNv6sNVw2PD2QfP7ze9IcH/
+        AQ3qbakLBVi9xTSDLl5efKe7TiXuSF078LbzrJepmYZuU6vDHrmVFnnBcOYV7DR+Ayne+UiKUG0uA
+        MDHtsMcDF/PYdPBUPymDIJaO1KTBmvQ5aBiLnPJm4Fb0MUsB7DhRCM6L3ZYLL9Ie0P2QLCNRMXOHA
+        CFYPiReQ==;
 Received: from [145.18.212.154]
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1qt7Ui-001paE-7n; Wed, 18 Oct 2023 16:25:56 +0200
+        id 1qt7Uk-001paE-AI; Wed, 18 Oct 2023 16:25:58 +0200
 From:   Nia Espera <nespera@igalia.com>
-Date:   Wed, 18 Oct 2023 16:25:14 +0200
-Subject: [PATCH v2 3/6] arm64: dts: qcom: pm8350k: remove hanging
- whitespace
+Date:   Wed, 18 Oct 2023 16:25:16 +0200
+Subject: [PATCH v2 5/6] dt-bindings: arm: qcom: add oneplus-lemonade(p)
+ bindings
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231018-nia-sm8350-for-upstream-v2-3-7b243126cb77@igalia.com>
+Message-Id: <20231018-nia-sm8350-for-upstream-v2-5-7b243126cb77@igalia.com>
 References: <20231018-nia-sm8350-for-upstream-v2-0-7b243126cb77@igalia.com>
 In-Reply-To: <20231018-nia-sm8350-for-upstream-v2-0-7b243126cb77@igalia.com>
 To:     Andy Gross <agross@kernel.org>,
@@ -60,44 +60,43 @@ Cc:     linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht,
         Nia Espera <nespera@igalia.com>
 X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=682; i=nespera@igalia.com;
- h=from:subject:message-id; bh=APP5garvIkYCYGoKeB/Nz7HFYVTAgEBtnOVhnK7sM6w=;
- b=owEB7QES/pANAwAIAfIkzsI3VuKtAcsmYgBlL+rqbY+CNQ4F3cGM8ql/kDdJZKUjABlDYFH80
- shH2rJJSiiJAbMEAAEIAB0WIQSBPDomug3slDJEnubyJM7CN1birQUCZS/q6gAKCRDyJM7CN1bi
- rcTmC/48bMPMbeB5pxmNctsjV+xgc26XscB37Kig/tDHgtWSmx7eMs3+oJnePffp33y/zv9DEol
- RKbqFfRtJUykLpTqDZOU11oi31OrkPJpJMBlzpEjUGswHA+uL3nhh3LgKw9PjbCzJlPepmG3aA3
- qpO5uMhrFLdehJWCknxk3QiViZBAG412RAUVCYt+zEu7zmRuCeL04AakBE9odG7yKKCSsagP6xL
- ZjSbgbP96RakT8sD6+qH1LkrIjdCeLqWJH4b0mcBsvEYlC3NmNZ2O28dolqD/NiOFTiCCqK27Dl
- koYyi8wLzmagjks+UH2iD6py9WtyBxrBldTCzIClTNGJUigT/+npxHssMta1MXeoOQHXf6zjLQd
- ZYX8+TiRWfWxcE7DzGuGyNDRqkd0EbqYTrCrzF12GmC0G6/SWNpYrJeLtTqtQAJxDLdxXAVhd2Q
- kA42cAZJaC4QTj2+pCoCby/4GmRiO8HUneOUuGbnnINExgBAJ7fj8wduLTKM/loltOs7k=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=771; i=nespera@igalia.com;
+ h=from:subject:message-id; bh=fZWUMa7J9qxmkjbmCBSVu6chMI8eH7xgrGVd2NuK9Js=;
+ b=owEB7QES/pANAwAIAfIkzsI3VuKtAcsmYgBlL+rqoA3/hMxECL3x8PW+HKmTzeUQrPnGFnzMl
+ 0K4I2z/vryJAbMEAAEIAB0WIQSBPDomug3slDJEnubyJM7CN1birQUCZS/q6gAKCRDyJM7CN1bi
+ rQ4tC/9ILy259rh/cNC/u8bFYdGQHq95g2AZ8EZSasCZlgfpqWy9z5+6jKnxKzhSXYh136bMdxQ
+ X0xFdUuoEcxwMXL4qpixzxTynd7IFL2L77zRd8/YS85vJaE+FXm2PlGIPaYQcCcSNwm+ddxq/rP
+ mKPeU/6TDcWXn/VG8I208+jQoOFvq9XksWFdeQgR6iz6C0jisBKS7Ufiae8Yc99maqCqBD+UPhD
+ w73Cq7it7IadmQ47evA38Xszr7tbbO5QJeCUubo9JbGYQLVw4v4GwcDkcGpsoXZQEZYSaxsYL5P
+ eetY6vBSFMddQu1gSM5Akn9v3FET1/RT6FIdaE9JpHwMMXaUguba0w952RWI6qibWZj6ZS8mc5o
+ wFlz9wwphLxkJp4mnKCvv6/B0nGphxtlmPVC06azRlrxjRxrp1GEey5H1r+Oz64uUEPozb0q/M1
+ dqRyaOA6Cx0albMAd2bcgMXDZbQm3GsXR8QY+dwDCmdH0KCRiB8/D81T1fMp41Dvdo3kc=
 X-Developer-Key: i=nespera@igalia.com; a=openpgp;
  fpr=813C3A26BA0DEC9432449EE6F224CEC23756E2AD
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-pmk8350 has a random tab character inserted, so remove it.
+Document the devicetree bindings for oneplus-lemonade and oneplus-lemonadep.
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 Signed-off-by: Nia Espera <nespera@igalia.com>
 ---
- arch/arm64/boot/dts/qcom/pmk8350.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/arm/qcom.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/pmk8350.dtsi b/arch/arm64/boot/dts/qcom/pmk8350.dtsi
-index 1eb74017062d..f0ed15458dd7 100644
---- a/arch/arm64/boot/dts/qcom/pmk8350.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pmk8350.dtsi
-@@ -22,7 +22,7 @@ reboot-mode {
- 		mode-bootloader = <0x02>;
- 	};
- };
--	
-+
- &spmi_bus {
- 	pmk8350: pmic@PMK8350_SID {
- 		compatible = "qcom,pmk8350", "qcom,spmi-pmic";
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index adbfaea32343..72832ee5b876 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -974,6 +974,8 @@ properties:
+               - qcom,sm8350-mtp
+               - sony,pdx214-generic
+               - sony,pdx215-generic
++              - oneplus,lemonade
++              - oneplus,lemonadep
+           - const: qcom,sm8350
+ 
+       - items:
 
 -- 
 2.42.0
