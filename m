@@ -2,173 +2,176 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC4EECDB483
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Oct 2023 20:29:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14472C41513
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Oct 2023 20:30:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231733AbjJRU3A (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Oct 2023 16:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44452 "EHLO
+        id S235205AbjJRUaV convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Oct 2023 16:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232373AbjJRU22 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Oct 2023 16:28:28 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9219D65
-        for <linux-iio@vger.kernel.org>; Wed, 18 Oct 2023 13:28:17 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id 2adb3069b0e04-507adc3381cso5580564e87.3
-        for <linux-iio@vger.kernel.org>; Wed, 18 Oct 2023 13:28:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697660896; x=1698265696; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=1IkfvvSOsBHtTtrxwDROKr8J2+syziWFNikOdZa81Lk=;
-        b=mkWYfqQqjb878ItjeyYcPAoG0BJ3aTsas2sb2gwBo+WwhMWDee04ln5rcE4/DnhAPU
-         mhroC/KttNdHg2mtZfRzMc7p5TSM6COHpUrTMTK4oIzvlPfNx7waf9NsOSxg8zgq6Pgt
-         +O9IDirCWv2BLeMchjal9h8TKVLsa8j8CiWfqQLCqEp7sc6+FFXv9PyHJppX+igvLDZA
-         qBMJ8GGgIzMeLJ6ovbHbtGEW8Uf21+dL8mtthYiRSL6AER8ohAmAcIioZ/n7XdfXXyE6
-         oT+56kc47k9QJW6gFoVxTqkPI9qqWM6vXkbZVEKDgRoXtqQRXLwGztyv5JpcQ8AqtR+n
-         e9WQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697660896; x=1698265696;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1IkfvvSOsBHtTtrxwDROKr8J2+syziWFNikOdZa81Lk=;
-        b=tL6nOPrVwQLGih1K9u337d9yq8ARX0PQTlGiZG4vL2sQhyqXXdjawk94PSkSbX+8IZ
-         +g4wdd5L5fA0N58+cqHJRF4IfeZymUE0xmZjgwRb+f+i/PvBDsgOKKk52qsBMTzs+Mm8
-         oL2/PNcFg9It4vbEqHI0sbsujrUEtCTB5GRVNUbplIUqlHC1iRFzqECLt8aFVjFekpe6
-         WgZM/yz18Rzp/j2v2fxcu4czLI1+E0lXZT4IYN0BHb9XLQY89TJvl+IU+W34ynr2o0W8
-         0n1ez/QisJ8GXIkNQlVmUgmGRnB55oXi0zyHEqbdBO3P7buLuaxYKeRU4LWxsP6ZHRob
-         DLgA==
-X-Gm-Message-State: AOJu0Yy3DvNTRdrMoUUPMkLpBNXMTkfj4erdG6LDb/TGNmdRhVLn6vzI
-        cSy0Uaidc05RzQf7ut2S1qYQUg==
-X-Google-Smtp-Source: AGHT+IG8XQIHxsr/RXLobSRarxMuGa2jh08MntDK4B5b0mJ7E/k80IR779VemDrdi8r7WBRejm78mw==
-X-Received: by 2002:a19:f603:0:b0:500:b42f:1830 with SMTP id x3-20020a19f603000000b00500b42f1830mr46218lfe.63.1697660895733;
-        Wed, 18 Oct 2023 13:28:15 -0700 (PDT)
-Received: from [172.30.205.86] (UNUSED.212-182-62-129.lubman.net.pl. [212.182.62.129])
-        by smtp.gmail.com with ESMTPSA id v12-20020ac2558c000000b00507aced147esm825302lfg.203.2023.10.18.13.28.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Oct 2023 13:28:15 -0700 (PDT)
-Message-ID: <5ac0d16a-0303-46c7-a008-31280629cc11@linaro.org>
-Date:   Wed, 18 Oct 2023 22:28:13 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/4] arm64: dts: qcom: qcm6490-fairphone-fp5: Add PM7325
- thermals
-Content-Language: en-US
-To:     Luca Weiss <luca@z3ntu.xyz>, Luca Weiss <luca.weiss@fairphone.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S1344682AbjJRUaA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Oct 2023 16:30:00 -0400
+X-Greylist: delayed 572 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 18 Oct 2023 13:29:28 PDT
+Received: from smtprelay01.ispgateway.de (smtprelay01.ispgateway.de [80.67.31.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583561BD;
+        Wed, 18 Oct 2023 13:29:27 -0700 (PDT)
+Received: from [92.206.139.21] (helo=note-book.lan)
+        by smtprelay01.ispgateway.de with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.96.1)
+        (envelope-from <git@apitzsch.eu>)
+        id 1qtD1D-00040X-0p;
+        Wed, 18 Oct 2023 22:19:51 +0200
+Message-ID: <82b99e17f45b09623eeaed12e4fac12609c15426.camel@apitzsch.eu>
+Subject: Re: [PATCH v2 1/5] iio: magnetometer: ak8975: Convert enum->pointer
+ for data in the match tables
+From:   =?ISO-8859-1?Q?Andr=E9?= Apitzsch <git@apitzsch.eu>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Cc:     phone-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20231013-fp5-thermals-v1-0-f14df01922e6@fairphone.com>
- <20231013-fp5-thermals-v1-4-f14df01922e6@fairphone.com>
- <34da335e-cbcd-4dc2-8a86-f31369db1fcd@linaro.org>
- <4958673.31r3eYUQgx@z3ntu.xyz>
-From:   Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <4958673.31r3eYUQgx@z3ntu.xyz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Date:   Wed, 18 Oct 2023 22:19:49 +0200
+In-Reply-To: <20231018204533.39399b0b@jic23-huawei>
+References: <20230818075600.24277-1-biju.das.jz@bp.renesas.com>
+         <20230818075600.24277-2-biju.das.jz@bp.renesas.com>
+         <5e0d2716fb757d408ebe77cb132ae242ef3aa470.camel@apitzsch.eu>
+         <CAMuHMdUTxQym7+vYPtnvMQeH8GKSk0iOyuMnLkgr3LH1E8TTYA@mail.gmail.com>
+         <20231018204533.39399b0b@jic23-huawei>
+Autocrypt: addr=git@apitzsch.eu; prefer-encrypt=mutual;
+ keydata=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
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.50.0 
+MIME-Version: 1.0
+X-Df-Sender: YW5kcmVAYXBpdHpzY2guZXU=
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Am Mittwoch, dem 18.10.2023 um 20:45 +0100 schrieb Jonathan Cameron:
+> On Wed, 18 Oct 2023 09:04:44 +0200
+> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> 
+> > Hi André,
+> > 
+> > On Tue, Oct 17, 2023 at 11:12 PM André Apitzsch <git@apitzsch.eu>
+> > wrote:
+> > > Am Freitag, dem 18.08.2023 um 08:55 +0100 schrieb Biju Das:  
+> > > > Convert enum->pointer for data in the match tables to simplify
+> > > > the
+> > > > probe()
+> > > > by replacing device_get_match_data() and
+> > > > i2c_client_get_device_id by
+> > > > i2c_get_match_data() as we have similar I2C, ACPI and DT
+> > > > matching
+> > > > table.
+> > > > 
+> > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>  
+> > 
+> > > > --- a/drivers/iio/magnetometer/ak8975.c
+> > > > +++ b/drivers/iio/magnetometer/ak8975.c
+> > > > @@ -883,10 +883,7 @@ static int ak8975_probe(struct i2c_client
+> > > > *client)
+> > > >       struct iio_dev *indio_dev;
+> > > >       struct gpio_desc *eoc_gpiod;
+> > > >       struct gpio_desc *reset_gpiod;
+> > > > -     const void *match;
+> > > > -     unsigned int i;
+> > > >       int err;
+> > > > -     enum asahi_compass_chipset chipset;
+> > > >       const char *name = NULL;
+> > > > 
+> > > >       /*
+> > > > @@ -928,27 +925,15 @@ static int ak8975_probe(struct i2c_client
+> > > > *client)
+> > > >               return err;
+> > > > 
+> > > >       /* id will be NULL when enumerated via ACPI */
+> > > > -     match = device_get_match_data(&client->dev);
+> > > > -     if (match) {
+> > > > -             chipset = (uintptr_t)match;
+> > > > -             name = dev_name(&client->dev);
+> > > > -     } else if (id) {
+> > > > -             chipset = (enum asahi_compass_chipset)(id-  
+> > > > > driver_data);  
+> > > > -             name = id->name;
+> > > > -     } else
+> > > > -             return -ENOSYS;
+> > > > -
+> > > > -     for (i = 0; i < ARRAY_SIZE(ak_def_array); i++)
+> > > > -             if (ak_def_array[i].type == chipset)
+> > > > -                     break;
+> > > > -
+> > > > -     if (i == ARRAY_SIZE(ak_def_array)) {
+> > > > -             dev_err(&client->dev, "AKM device type
+> > > > unsupported:
+> > > > %d\n",
+> > > > -                     chipset);
+> > > > +     data->def = i2c_get_match_data(client);
+> > > > +     if (!data->def)
+> > > >               return -ENODEV;
+> > > > -     }
+> > > > 
+> > > > -     data->def = &ak_def_array[i];
+> > > > +     /* If enumerated via firmware node, fix the ABI */
+> > > > +     if (dev_fwnode(&client->dev))
+> > > > +             name = dev_name(&client->dev);
+> > > > +     else
+> > > > +             name = id->name;
+> > > >  
+> > > 
+> > > I just noticed, that with the above change '0-000d' instead of
+> > > the previous and expected 'ak09911' is shown now as name for the
+> > > magnetometer in longcheer l9100 [1].  
+> > 
+> > While this doesn't help much, note that the old name would break
+> > the case of having two instances of the same device.
+> 
+> Why? In IIO ABI, this is the part number - it's absolutely fine to
+> have two device with same name. There are lots of other ways of
+> figuring out which is which (parent device being the easiest).
+> 
+> This is indeed a bug but it isn't a new one and it's been there long
+> enough that there may be userspace code relying on it...  
+> 
+At least for the longcheer l9100 it is a new bug that was introduced by
+this patch. But as my only use for this name is via hwtest[1], which
+uses the name as "pretty model name", it's fine with me if it cannot be
+fixed.
 
+André
 
-On 10/14/23 19:52, Luca Weiss wrote:
-> On Samstag, 14. Oktober 2023 01:13:29 CEST Konrad Dybcio wrote:
->> On 13.10.2023 10:09, Luca Weiss wrote:
->>> Configure the thermals for the QUIET_THERM, CAM_FLASH_THERM, MSM_THERM
->>> and RFC_CAM_THERM thermistors connected to PM7325.
->>>
->>> With this PMIC the software communication to the ADC is going through
->>> PMK7325 (= PMK8350).
->>>
->>> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
->>> ---
->>>
->>>   arch/arm64/boot/dts/qcom/qcm6490-fairphone-fp5.dts | 117
->>>   +++++++++++++++++++++ 1 file changed, 117 insertions(+)
->>>
->>> diff --git a/arch/arm64/boot/dts/qcom/qcm6490-fairphone-fp5.dts
->>> b/arch/arm64/boot/dts/qcom/qcm6490-fairphone-fp5.dts index
->>> 2c01f799a6b2..d0b1e4e507ff 100644
->>> --- a/arch/arm64/boot/dts/qcom/qcm6490-fairphone-fp5.dts
->>> +++ b/arch/arm64/boot/dts/qcom/qcm6490-fairphone-fp5.dts
->>> @@ -9,6 +9,7 @@
->>>
->>>   #define PM7250B_SID 8
->>>   #define PM7250B_SID1 9
->>>
->>> +#include <dt-bindings/iio/qcom,spmi-adc7-pm7325.h>
->>>
->>>   #include <dt-bindings/iio/qcom,spmi-adc7-pmk8350.h>
->>>   #include <dt-bindings/leds/common.h>
->>>   #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
->>>
->>> @@ -137,6 +138,20 @@ afvdd_2p8: regulator-afvdd-2p8 {
->>>
->>>   	};
->>>   	
->>>   	thermal-zones {
->>>
->>> +		camera-thermal {
->>> +			polling-delay-passive = <0>;
->>> +			polling-delay = <0>;
->>> +			thermal-sensors = <&pmk8350_adc_tm 2>;
->>> +
->>> +			trips {
->>> +				active-config0 {
->>> +					temperature = <125000>;
->>
->> are
->>
->>> +		rear-cam-thermal {
->>>
->>> +					temperature = <125000>;
->>
->> you
->>
->>> +		sdm-skin-thermal {
->>>
->>> +					temperature = <125000>;
->>
->> sure
->>
->> about these temps?
-> 
-> (email from my other address, quicker right now)
-> 
-> Well yes and no.
-> 
-> Yes as in those are the temps specified in downstream dtb.
-> No as in I'm 99% sure there's user space with definitely lower threshold that
-> actually does something in response to the temps.
-> 
-> I didn't look too much into this but does the kernel even do something when it
-> hits one of these trip points? I assume when there's a cooling device thing
-> specified then it can actually tell the driver to do something, but without
-> (and most drivers don't support this?) I'm assuming the kernel can't do much
-> anyways?
-> 
-> So e.g. when the temperature for the flash led is reached I'm assuming
-> downstream (+Android) either dims the led or turns it off? But I'd have to dig
-> quite a bit into the thermal setup there to check what it's really doing.
-I think reaching "critical" shuts down the platform, unless something
-registering the thermal zone explicitly overrides the behavior.
+[1] https://gitlab.com/MartijnBraam/hwtest
 
+> There are some of these from a time when I was being unobservant in
+> catching them in review (this one was approx 2014 I think)
+> We've never fixed them because of possibility of breaking usersapce.
 > 
-> But for now I think it's okay to put this current thermal config into dts and
-> we'll improve it later when 1. I understand more and 2. maybe some useful
-> drivers support the cooling bits?
-Yeah it's better than nothing, but ultimately we should probably move
-the values that userspace daemon operates on here in the dt..
+> 
+> > 
+> > > 
+> > > id->name contains the expected string ('ak09911'), but because of
+> > > dev_fwnode(&client->dev) being true, it is not used.
+> > > 
+> > > André
+> > > 
+> > > [1]
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/arch/arm64/boot/dts/qcom/msm8939-longcheer-l9100.dts?h=next-20231017#n127
+> > >  
+> > 
+> > Gr{oetje,eeting}s,
+> > 
+> >                         Geert
+> > 
+> 
 
-Konrad
