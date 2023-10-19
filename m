@@ -2,145 +2,219 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B726CDB483
-	for <linux-iio@archiver.kernel.org>; Thu, 19 Oct 2023 12:16:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECDECDB483
+	for <linux-iio@archiver.kernel.org>; Thu, 19 Oct 2023 13:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235441AbjJSMQF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 19 Oct 2023 08:16:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40714 "EHLO
+        id S1345923AbjJSNYL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 19 Oct 2023 09:24:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235357AbjJSMQA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Oct 2023 08:16:00 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFC6273B;
-        Thu, 19 Oct 2023 05:06:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697717162; x=1729253162;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wbG6VSsrlBl4hddw+r+h9iIxWdmh5TUrrYv38LQnvNk=;
-  b=mclnZkFHN4nuVo2N4KShG5HFnavnTF3ghl8speQvvEfbnhzSrvJwlu8m
-   dxYkq81SgQMY7+gvQsqsaqL7nE2yBo8sLWNt6+AVJ/QFqsXOLfaMjy2GP
-   gqwa4kxMTmQD3yGRlFQ0ITUwi5xM5czEK71gDPaJ4fzYhV2t3efOkP4VD
-   A30dhnKB6MEukZbymT9HjguqCaZkOgGZBKLe6waOH6FOghDCWONYZgQw0
-   dyNbgv6c9w8f9nnyGSqmmS0sPuNnefYkT0QEgG50ITbRHLAKnajl/kIE0
-   ZBRjKzrN6oDTHAve1IBHFCfmntlkLI5Rly1JYGWXCaRqXy9MA/W6pkOaB
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10867"; a="452702485"
-X-IronPort-AV: E=Sophos;i="6.03,237,1694761200"; 
-   d="scan'208";a="452702485"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2023 05:04:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10867"; a="750481206"
-X-IronPort-AV: E=Sophos;i="6.03,237,1694761200"; 
-   d="scan'208";a="750481206"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga007.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2023 05:04:25 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97-RC2)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qtRlG-00000006r4i-2EQa;
-        Thu, 19 Oct 2023 15:04:22 +0300
-Date:   Thu, 19 Oct 2023 15:04:22 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        =?iso-8859-1?Q?Andr=E9?= Apitzsch <git@apitzsch.eu>,
+        with ESMTP id S1345858AbjJSNYK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Oct 2023 09:24:10 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C863112;
+        Thu, 19 Oct 2023 06:24:08 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id 2adb3069b0e04-507c50b7c36so3350522e87.3;
+        Thu, 19 Oct 2023 06:24:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1697721846; x=1698326646; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6XTlMS7+GX23qRM9fgW0oBkKi4/d88mo4TG26yVCQlU=;
+        b=MVRxRbVeDptSZdxE499zyIqIDCoR66BglmR1rlG0rlBuoUxEdWWg3OOTm5Jh1KgMnj
+         PZ7T1uCBoBVzpOdvx52lyDlwKcx2hD2kPwJ+KTkb8uuL6JkDEJyfIFxaTuBG6JCE3DSN
+         dpEwZ1Qu1edWFO7b/stBhXfLNV3W4Wj2uydGnZDYqbTc4ROHCrMsehlfZc235DJxVJoE
+         9QX0fRTxa6DURqYfA1OoeCYGjSCKM4te2J+0gTG/S9kTW0Ukt+tXO763QZppis5f6UBq
+         gEUi7hOduMWzzbXMbC3pfrzOv3UEIMxYVULdEe8VKeOq/EzU349bfkZMVFhI7MN/9WfK
+         J5pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697721846; x=1698326646;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=6XTlMS7+GX23qRM9fgW0oBkKi4/d88mo4TG26yVCQlU=;
+        b=q/263Jx7uqD3FZ/Tua/1IO4KwOlCzupYB5Q24vacqbG8/3dHTR+C8qIiDzdFK+niLC
+         0+FNXu8DW6W1aGwwA6duflsePXJGJ72EwM3O4njg+HIBrjtOGmyV1uwwII2gdO4AG9Qu
+         JgKb4oAK+BL71jVVITrtb4TgnQZpkPRbKRVPfX8Xux1IgJgXC998kMx/z8p6Arja2HpA
+         W/FTrIoFbcKgIATGXFx9K6a/sYFa5W/7/Pz4cennCrNl2+cU8WDUcxpBFUsRq7D14Ncb
+         8tIL0ClfaOoWmddGrpm00MBpbUHTnGG1/ww+GYDr214B7qN0XED9nreU8N9vpg1pMJfF
+         7ZOw==
+X-Gm-Message-State: AOJu0YzSCr5a+pS+59o9/vSvufSITAV1ntscOUCBLTZzYOPJ/Soqde9V
+        ZysXJzfZwwOgPO3xu6aV87U=
+X-Google-Smtp-Source: AGHT+IFIy7ju57cvz9D/tYYiVheOKr1pHbTihQJxulDADgNu0cX04cPb68kvrRu29Ihr8dExZgjYdQ==
+X-Received: by 2002:ac2:5a1e:0:b0:507:9701:2700 with SMTP id q30-20020ac25a1e000000b0050797012700mr1399666lfn.20.1697721846098;
+        Thu, 19 Oct 2023 06:24:06 -0700 (PDT)
+Received: from dc78bmyyyyyyyyyyyyydt-3.rev.dnainternet.fi (dc78bmyyyyyyyyyyyyydt-3.rev.dnainternet.fi. [2001:14ba:16f8:1500::7])
+        by smtp.gmail.com with ESMTPSA id h9-20020a197009000000b005030cef433esm1088538lfc.94.2023.10.19.06.24.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Oct 2023 06:24:05 -0700 (PDT)
+Date:   Thu, 19 Oct 2023 16:23:56 +0300
+From:   Matti Vaittinen <mazziesaccount@gmail.com>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+Cc:     Matti Vaittinen <mazziesaccount@gmail.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH v2 1/5] iio: magnetometer: ak8975: Convert enum->pointer
- for data in the match tables
-Message-ID: <ZTEbRsofu6H4eeGT@smile.fi.intel.com>
-References: <20230818075600.24277-2-biju.das.jz@bp.renesas.com>
- <5e0d2716fb757d408ebe77cb132ae242ef3aa470.camel@apitzsch.eu>
- <CAMuHMdUTxQym7+vYPtnvMQeH8GKSk0iOyuMnLkgr3LH1E8TTYA@mail.gmail.com>
- <20231018204533.39399b0b@jic23-huawei>
- <82b99e17f45b09623eeaed12e4fac12609c15426.camel@apitzsch.eu>
- <TYCPR01MB11269EEF17ABCE541CC7B38CE86D4A@TYCPR01MB11269.jpnprd01.prod.outlook.com>
- <TYCPR01MB11269D21D7DD5356A64E5679586D4A@TYCPR01MB11269.jpnprd01.prod.outlook.com>
- <ZTD0UN4+wQjguCDF@smile.fi.intel.com>
- <TYCPR01MB11269269A3237CC119644F4D286D4A@TYCPR01MB11269.jpnprd01.prod.outlook.com>
- <20231019121722.00007e6e@Huawei.com>
+        Jagath Jog J <jagathjog1996@gmail.com>,
+        Mehdi Djait <mehdi.djait.k@gmail.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: kx022a: Fix acceleration value scaling
+Message-ID: <ZTEt7NqfDHPOkm8j@dc78bmyyyyyyyyyyyyydt-3.rev.dnainternet.fi>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="BRC617NORhFtqw3Q"
 Content-Disposition: inline
-In-Reply-To: <20231019121722.00007e6e@Huawei.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Oct 19, 2023 at 12:17:22PM +0100, Jonathan Cameron wrote:
-> On Thu, 19 Oct 2023 09:41:06 +0000
-> Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > > Subject: Re: [PATCH v2 1/5] iio: magnetometer: ak8975: Convert enum-  
-> > > >pointer for data in the match tables  
-> > > On Thu, Oct 19, 2023 at 07:08:23AM +0000, Biju Das wrote:  
-> > > > > Subject: RE: [PATCH v2 1/5] iio: magnetometer: ak8975: Convert enum-  
 
-...
+--BRC617NORhFtqw3Q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > > > > As mentioned in the patch.
-> > > > > /* If enumerated via firmware node, fix the ABI */
-> > > > >
-> > > > > Looks like this issue is not introduced by this patch.
-> > > > > The previous code uses device_get_match_data() which returns a match
-> > > > > as it uses DT node and it uses dev_name(&client->dev) instead of
-> > > > > id->name;
-> > > > >
-> > > > > Am I missing anything here? If it is just a test program, can it be  
-> > > fixed??  
-> > > > >
-> > > > > Please correct me if I am wrong.  
-> > > >
-> > > > I just realized that there is no .data in previous code for OF tables.
-> > > >
-> > > > Maybe we should add a check, if it is DT node, return id->name?
-> > > >
-> > > > Is there any API to distinguish DT node from ACPI??  
-> > > 
-> > > Of course, but I discourage people to use that, you have to have a very
-> > > good justification why you need it (and this case doesn't sound good enough
-> > > to me, or please elaborate). Hence I leave it as a homework to find those
-> > > APIs.  
-> > 
-> > Andre, complained that his test app is broken with this patch. I am waiting for his response whether he can fix his test app? 
-> > If not, we need to find a solution. One solution
-> > is adding a name variable and use consistent name across
-> > OF/ACPI/I2C tables for various devices.
-> > 
-> > Other solution is just add this check,
+The IIO ABI mandates acceleration values from accelerometer to be
+emitted in m/s^2. The KX022A was emitting values in micro m/s^2.
 
-> > if (dev_fwnode(&client->dev) && !(IS_ENABLED(CONFIG_OF) && dev->of_node))
+Fix driver to report the correct scale values.
 
-Taking the Jonathan's comment below into consideration we can do _something_
-like above, but using only a single API call instead of this ugly and monstrous
-condition.
+Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Reported-by: Jagath Jog J <jagathjog1996@gmail.com>
+Fixes: 7c1d1677b322 ("iio: accel: Support Kionix/ROHM KX022A accelerometer")
 
-> > 	name = dev_name(&client->dev);
-> > else
-> > 	name = id->name;
-> 
-> Given this is a userspace regression (caused by accidental "fix" - I missed
-> the fact it had this impact :(), I think it is valid to special case the ACPI in this rare
-> case but definitely needs a big fat comment saying why we are doing it and that it
-> should not be copied into other drivers!!!
-> 
-> If we can get away with fixing the original (many years old ABI misuse - but IIRC from a time
-> where our ABI docs were lacking) then I'm keen on doing so, but I doubt we can.
-> Definitely don't want to accidentally spread that bug though to new cases!
+---
+The fix is somewhat crude and just crops the last 3 digits (rounds) of the
+scale while using IIO_VAL_INT_PLUS_NANO. I played with a thought of using
+IIO_VAL_FRACTIONAL, which could have modelled the computation
+G_range * g * scaling / (2^16 * scaling) - where scaling 10000 would
+have allowed using g value 980665.
 
--- 
-With Best Regards,
-Andy Shevchenko
+This would have worked fine for reporting scale and available scales -
+but would be somewhat tricky when converting the user-supplied scale to
+register values in write_raw().
+
+Well, the g varies from 9.832 (poles) to 9.780 (equator) according to
+some website - no proper source check done but this sounds about right -
+so maybe the loss of accuracy is acceptable.
+
+I did only very quick testing on KX022A and iio_generic_buffer. After
+the patch the values seemed to be correct order of magnitude. Further
+testing is appreciated :)
+
+---
+ drivers/iio/accel/kionix-kx022a.c | 37 ++++++++++++++++++++++---------
+ 1 file changed, 26 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-k=
+x022a.c
+index 4ea3c6718ed4..971fc60efef0 100644
+--- a/drivers/iio/accel/kionix-kx022a.c
++++ b/drivers/iio/accel/kionix-kx022a.c
+@@ -273,17 +273,17 @@ static const unsigned int kx022a_odrs[] =3D {
+  *	(range / 2^bits) * g =3D (range / 2^bits) * 9.80665 m/s^2
+  *	=3D> KX022A uses 16 bit (HiRes mode - assume the low 8 bits are zeroed
+  *	in low-power mode(?) )
+- *	=3D> +/-2G  =3D> 4 / 2^16 * 9,80665 * 10^6 (to scale to micro)
+- *	=3D> +/-2G  - 598.550415
+- *	   +/-4G  - 1197.10083
+- *	   +/-8G  - 2394.20166
+- *	   +/-16G - 4788.40332
++ *	=3D> +/-2G  =3D> 4 / 2^16 * 9,80665
++ *	=3D> +/-2G  - 0.000598550415
++ *	   +/-4G  - 0.00119710083
++ *	   +/-8G  - 0.00239420166
++ *	   +/-16G - 0.00478840332
+  */
+ static const int kx022a_scale_table[][2] =3D {
+-	{ 598, 550415 },
+-	{ 1197, 100830 },
+-	{ 2394, 201660 },
+-	{ 4788, 403320 },
++	{ 0, 598550 },
++	{ 0, 1197101 },
++	{ 0, 2394202 },
++	{ 0, 4788403 },
+ };
+=20
+ static int kx022a_read_avail(struct iio_dev *indio_dev,
+@@ -302,7 +302,7 @@ static int kx022a_read_avail(struct iio_dev *indio_dev,
+ 		*vals =3D (const int *)kx022a_scale_table;
+ 		*length =3D ARRAY_SIZE(kx022a_scale_table) *
+ 			  ARRAY_SIZE(kx022a_scale_table[0]);
+-		*type =3D IIO_VAL_INT_PLUS_MICRO;
++		*type =3D IIO_VAL_INT_PLUS_NANO;
+ 		return IIO_AVAIL_LIST;
+ 	default:
+ 		return -EINVAL;
+@@ -366,6 +366,20 @@ static int kx022a_turn_on_unlock(struct kx022a_data *d=
+ata)
+ 	return ret;
+ }
+=20
++static int kx022a_write_raw_get_fmt(struct iio_dev *idev,
++				    struct iio_chan_spec const *chan,
++				    long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		return IIO_VAL_INT_PLUS_NANO;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
++	}
++}
++
+ static int kx022a_write_raw(struct iio_dev *idev,
+ 			    struct iio_chan_spec const *chan,
+ 			    int val, int val2, long mask)
+@@ -510,7 +524,7 @@ static int kx022a_read_raw(struct iio_dev *idev,
+=20
+ 		kx022a_reg2scale(regval, val, val2);
+=20
+-		return IIO_VAL_INT_PLUS_MICRO;
++		return IIO_VAL_INT_PLUS_NANO;
+ 	}
+=20
+ 	return -EINVAL;
+@@ -712,6 +726,7 @@ static int kx022a_fifo_flush(struct iio_dev *idev, unsi=
+gned int samples)
+ static const struct iio_info kx022a_info =3D {
+ 	.read_raw =3D &kx022a_read_raw,
+ 	.write_raw =3D &kx022a_write_raw,
++	.write_raw_get_fmt =3D &kx022a_write_raw_get_fmt,
+ 	.read_avail =3D &kx022a_read_avail,
+=20
+ 	.validate_trigger	=3D iio_validate_own_trigger,
+--=20
+2.41.0
 
 
+--=20
+Matti Vaittinen, Linux device drivers
+ROHM Semiconductors, Finland SWDC
+Kiviharjunlenkki 1E
+90220 OULU
+FINLAND
+
+~~~ "I don't think so," said Rene Descartes. Just then he vanished ~~~
+Simon says - in Latin please.
+~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
+Thanks to Simon Glass for the translation =3D]=20
+
+--BRC617NORhFtqw3Q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmUxLecACgkQeFA3/03a
+ocVJvwf9HKVfeU6NszWIyfoQdxF8uhuKnpuDaRHsUF/SY2XwL8Kwk0PeZKM9jfbc
+KWw47J6bC0CQZOYbxT/rgCmckiobiDXCzJAqsyI33HN+r966FST6IsY2LUDRJiFO
+1mXmv5mzXN8gv0Dow4fUDJchWq6zl8+XzXn621qttbsDsENWAxYgpfnOmf2I3XRn
+2Xz46DV4XkUg3sauniWyJG5kZ3zlqazL4HpHHogrNolRgu4tJI1qjoEW+4OoNqSj
++IMHBZB0t1QWb8anqXECzvYVzEV60wwHHwHgUtchm8vfiRnsnxv5C26VmUADrMDU
+MKtj4xun2ZowPCk0Lhv/uIa+8LkqBQ==
+=1jdQ
+-----END PGP SIGNATURE-----
+
+--BRC617NORhFtqw3Q--
