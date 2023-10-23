@@ -2,282 +2,157 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C56CDB474
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Oct 2023 11:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC9A0C001E0
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Oct 2023 12:36:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234477AbjJWLsU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 23 Oct 2023 07:48:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51336 "EHLO
+        id S230513AbjJWMgI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 23 Oct 2023 08:36:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234461AbjJWLsT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 23 Oct 2023 07:48:19 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF81E4
-        for <linux-iio@vger.kernel.org>; Mon, 23 Oct 2023 04:48:15 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id a640c23a62f3a-9ba081173a3so507073666b.1
-        for <linux-iio@vger.kernel.org>; Mon, 23 Oct 2023 04:48:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1698061694; x=1698666494; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=KYUwLjsk6Wh255qZf1jT5v/1wtsoRPVf0wGYXAopwWY=;
-        b=R8iHHZL2sbVyKTlpmvjH77z20JhDqi/tbyCUB92cg59VlNVvhniCg/vOOW/HyyPGOe
-         4UbWcjDn+zguHLISb2N8b+0ObPtn9jduT0hSIpq3FsGqK8cENEf51uI8Rl9zsjWCab8c
-         Rfd13lU/pJpg80wGVsWm6iCPYmbk8W3/mPpA/Omh7hQDdp9cSrigxNEkVvP60qYpDwmD
-         1w/zEPRcBfH98dzA5eXM2LdxaqmBSgkq8UQw4WnfzmGecXNkgWSvLsAh3PCPyvqcbME8
-         sWfh0Vc4LYibTtciodfaI7uqDW0wXFMfnRDAUypcRqEpUEIh4SRFRBilvoGvupvRjz5J
-         lrug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698061694; x=1698666494;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KYUwLjsk6Wh255qZf1jT5v/1wtsoRPVf0wGYXAopwWY=;
-        b=ix78CS9fXYV0jns0A/McNpX0rynyMuS/84IAmqNt4YZYYueB5Wn7xiUSdaJUNLG85F
-         ThLZupUExcZNWP97mjZN1Q2Ol8qIx1dwrDHm+3zJRaY1l9ynUxlS7yiPt3JgeDIumXw2
-         acaa3QaIC3sJMrHBlmLBE6PGrkcWEzPr73Ns0WlKIyu2CEJ2DNehKOS3AUuULXxBekYH
-         OeCs41+lrVe2Q8QNZ/IpvwKYTFp3xtx2eQct6HK/fm+/ad7cNWcQ5aXx6Ky6daj1GSmd
-         SypTbLBu4fU8oqbIXUGe0u3/m3vgW3nU73zBNOX0AIDYsjzyIVuTKxmu6X+XOh1R1kug
-         MJPQ==
-X-Gm-Message-State: AOJu0YwFh6hS6oVLe8g32D4D9fPWd6Zh2WEXgviypk/DYZanwp9+fydY
-        CzVmaa049XkWwRBC11Ui+08=
-X-Google-Smtp-Source: AGHT+IGUcsMK/IKOj+9gZOVnnAIbYf6dFNpqwwDosG0JqoaDCiwoWZELGj0CLG0A32UaHofEHtaEwQ==
-X-Received: by 2002:a17:907:988:b0:9c5:2806:72e2 with SMTP id bf8-20020a170907098800b009c5280672e2mr6636212ejc.34.1698061693464;
-        Mon, 23 Oct 2023 04:48:13 -0700 (PDT)
-Received: from ?IPv6:2003:f6:ef1b:2000:4423:d503:bf11:e8c6? (p200300f6ef1b20004423d503bf11e8c6.dip0.t-ipconnect.de. [2003:f6:ef1b:2000:4423:d503:bf11:e8c6])
-        by smtp.gmail.com with ESMTPSA id a5-20020a170906468500b00992b2c55c67sm6511485ejr.156.2023.10.23.04.48.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Oct 2023 04:48:13 -0700 (PDT)
-Message-ID: <0147cfed5e8402722186daa49256d20a8e2c83a1.camel@gmail.com>
-Subject: Re: [RFC PATCH 1/8] iio: locking: introduce __cleanup() based
- direct mode claiming infrastructure
-From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Cc:     David Lechner <dlechner@baylibre.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        Jagath Jog J <jagathjog1996@gmail.com>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Daniel Campello <campello@chromium.org>,
-        gregkh@linuxfoundation.org
-Date:   Mon, 23 Oct 2023 13:51:04 +0200
-In-Reply-To: <20231023105323.00000370@Huawei.com>
-References: <20231022154710.402590-1-jic23@kernel.org>
-         <20231022154710.402590-2-jic23@kernel.org>
-         <CAMknhBEEPC-JArFJvpHw0YAmdA+BrAQzkxU5vNvCwxf5OdHKrw@mail.gmail.com>
-         <462c181eab1c0b70c0350099b7f70aaf736aabe1.camel@gmail.com>
-         <20231023105323.00000370@Huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.50.0 
+        with ESMTP id S231370AbjJWMgH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 23 Oct 2023 08:36:07 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38153D6E;
+        Mon, 23 Oct 2023 05:36:05 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 39NB8ExR021705;
+        Mon, 23 Oct 2023 08:36:02 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3tvugj7ftc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 Oct 2023 08:36:02 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 39NCZx54012918
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 23 Oct 2023 08:36:00 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 23 Oct
+ 2023 08:35:59 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 23 Oct 2023 08:35:59 -0400
+Received: from rbolboac.ad.analog.com ([10.48.65.174])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 39NCZjdu025089;
+        Mon, 23 Oct 2023 08:35:51 -0400
+From:   Ramona Gradinariu <ramona.gradinariu@analog.com>
+To:     <jic23@kernel.org>, <nuno.sa@analog.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+CC:     Ramona Gradinariu <ramona.gradinariu@analog.com>
+Subject: [PATCH 1/3] iio: imu: adis: Use spi cs inactive delay
+Date:   Mon, 23 Oct 2023 15:35:40 +0300
+Message-ID: <20231023123542.582392-2-ramona.gradinariu@analog.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20231023123542.582392-1-ramona.gradinariu@analog.com>
+References: <20231023123542.582392-1-ramona.gradinariu@analog.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: B_RqpLKz7ZpU8hEXjaRE3QD91StcXUCG
+X-Proofpoint-GUID: B_RqpLKz7ZpU8hEXjaRE3QD91StcXUCG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-10-23_10,2023-10-19_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ phishscore=0 malwarescore=0 spamscore=0 impostorscore=0 priorityscore=1501
+ lowpriorityscore=0 bulkscore=0 clxscore=1015 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2310170000
+ definitions=main-2310230109
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 2023-10-23 at 10:53 +0100, Jonathan Cameron wrote:
-> On Mon, 23 Oct 2023 10:55:56 +0200
-> Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
->=20
-> > On Sun, 2023-10-22 at 16:10 -0500, David Lechner wrote:
-> > > On Sun, Oct 22, 2023 at 10:47=E2=80=AFAM Jonathan Cameron <jic23@kern=
-el.org>
-> > > wrote:=C2=A0=20
-> > > >=20
-> > > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > > >=20
-> > > > Allows use of:
-> > > >=20
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 CLASS(iio_claim_direct, =
-claimed_dev)(indio_dev);
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (IS_ERR(claimed_dev))
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 return PTR_ERR(claimed_dev);
-> > > >=20
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 st =3D iio_priv(claimed_=
-dev);
-> > > >=20
-> > > > to automatically call iio_device_release_direct_mode() based on sco=
-pe.
-> > > > Typically seen in combination with local device specific locks whic=
-h
-> > > > are already have automated cleanup options via guard(mutex)(&st->lo=
-ck)
-> > > > and scoped_guard().=C2=A0 Using both together allows most error han=
-dling to
-> > > > be automated.
-> > > >=20
-> > > > Note that whilst this pattern results in a struct iio_dev *claimed_=
-dev
-> > > > that can be used, it is not necessary to do so as long as that poin=
-ter
-> > > > has been checked for errors as in the example.
-> > > >=20
-> > > > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > > > ---
-> > > > =C2=A0drivers/iio/industrialio-core.c |=C2=A0 4 ++++
-> > > > =C2=A0include/linux/iio/iio.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 | 25 +++++++++++++++++++++++++
-> > > > =C2=A02 files changed, 29 insertions(+)
-> > > >=20
-> > > > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industri=
-alio-
-> > > > core.c
-> > > > index c77745b594bd..93bfad105eb5 100644
-> > > > --- a/drivers/iio/industrialio-core.c
-> > > > +++ b/drivers/iio/industrialio-core.c
-> > > > @@ -2065,6 +2065,10 @@ EXPORT_SYMBOL_GPL(iio_device_claim_direct_mo=
-de);
-> > > > =C2=A0 */
-> > > > =C2=A0void iio_device_release_direct_mode(struct iio_dev *indio_dev=
-)
-> > > > =C2=A0{
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Auto cleanup can result in=
- this being called with an ERR_PTR
-> > > > */
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (IS_ERR(indio_dev))
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 return;
-> > > > +
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mutex_unlock(&to_iio_dev=
-_opaque(indio_dev)->mlock);
-> > > > =C2=A0}
-> > > > =C2=A0EXPORT_SYMBOL_GPL(iio_device_release_direct_mode);
-> > > > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> > > > index d0ce3b71106a..11c42170fda1 100644
-> > > > --- a/include/linux/iio/iio.h
-> > > > +++ b/include/linux/iio/iio.h
-> > > > @@ -9,6 +9,7 @@
-> > > >=20
-> > > > =C2=A0#include <linux/device.h>
-> > > > =C2=A0#include <linux/cdev.h>
-> > > > +#include <linux/cleanup.h>
-> > > > =C2=A0#include <linux/slab.h>
-> > > > =C2=A0#include <linux/iio/types.h>
-> > > > =C2=A0/* IIO TODO LIST */
-> > > > @@ -644,6 +645,30 @@ int __devm_iio_device_register(struct device *=
-dev,
-> > > > struct iio_dev *indio_dev,
-> > > > =C2=A0int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s6=
-4
-> > > > timestamp);
-> > > > =C2=A0int iio_device_claim_direct_mode(struct iio_dev *indio_dev);
-> > > > =C2=A0void iio_device_release_direct_mode(struct iio_dev *indio_dev=
-);
-> > > > +/*
-> > > > + * Auto cleanup version of iio_device_claim_direct_mode,
-> > > > + *
-> > > > + *=C2=A0=C2=A0=C2=A0=C2=A0 CLASS(iio_claim_direct, claimed_dev)(in=
-dio_dev);
-> > > > + *=C2=A0=C2=A0=C2=A0=C2=A0 if (IS_ERR(claimed_dev))
-> > > > + *=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 return PTR_ERR(claimed_dev);
-> > > > + *
-> > > > + *=C2=A0=C2=A0=C2=A0=C2=A0 st =3D iio_priv(claimed_dev);
-> > > > + *=C2=A0=C2=A0=C2=A0=C2=A0 ....
-> > > > + */
-> > > > +DEFINE_CLASS(iio_claim_direct, struct iio_dev *,
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- iio_device_release_direct_mode(_T),
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- ({
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct i=
-io_dev *dev;
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int d =
-=3D iio_device_claim_direct_mode(_T);
-> > > > +
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (d < =
-0)
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev =3D ERR_PTR(d);
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 else
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev =3D _T;
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev;
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- }),
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- struct iio_dev *_T);
-> > > > +
-> > > > =C2=A0int iio_device_claim_buffer_mode(struct iio_dev *indio_dev);
-> > > > =C2=A0void iio_device_release_buffer_mode(struct iio_dev *indio_dev=
-);
-> > > >=20
-> > > > --
-> > > > 2.42.0
-> > > > =C2=A0=20
-> > >=20
-> > > What is the benefit of exposing `claimed_dev` rather than just the in=
-t
-> > > return value? It seems like it just makes more noise in the error
-> > > check.
-> > > =C2=A0=20
-> >=20
-> > I don't really have a very strong opinion on this but what I really don=
-'t
-> > like
-> > much is the pattern:
-> >=20
-> > CLASS(type, ret), where the return value is an argument of the macro...=
- It
-> > would
-> > be nice if we could just make it like:
-> >=20
-> > ret =3D guard(type)(...); //or any other variation of the guard() macro
-> > if (ret)=20
-> > 	return ret;
-> >=20
-> > the above could also be an error pointer or even have one variation of =
-each.
-> > but
-> > yeah, that likely means changing the cleanup.h file and that might be o=
-ut of
-> > scope for Jonathan's patch series.=20
-> >=20
->=20
-> I fully agree it's ugly and a little unintuitive but I don't see a way an
-> "lvalue"
-> can work work cleanly (due to magic types under the hood) and I suspect w=
-e
-> will
-> have to get used to this pattern.
->=20
+A delay is needed each time the chip selected becomes inactive,
+even after burst data readings are performed.
+Currently, there is no delay added after a burst reading
+and in case a new SPI transfer is performed before
+the needed delay, the adis device becomes unresponsive until
+reset.
 
-Yeah, given the games being played with the constructor and the _lock defin=
-ition
-so we return the variable we want to "release" I agree it would be hard to =
-have
-anything clean and likely even harder to read (more than it is already :)).
+This commit is adding the needed delay directly to the spi driver,
+using the cs_inactive parameter, in case it is not set and is
+removing the additional chip select change delay present in adis
+APIs to remove the double delay.
 
-However, I think users of the cleanup.h stuff could build on top of it... F=
-or
-instance, in our case we could have something like:
+Signed-off-by: Ramona Gradinariu <ramona.gradinariu@analog.com>
+---
+ drivers/iio/imu/adis.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-#define IIO_CLAIM_DIRECT(dev)=20
-	int __ret =3D 0;
-	CLASS(iio_claim_direct, claimed_dev)(dev);
-	if ((IS_ERR(claimed_dev))
-		__ret =3D PTR_ERR(claimed_dev);
-	__ret
-
-Then we could use it in the same way as before... Or at the very least I wo=
-uld
-simply make it a bit more readable for IIO (rather than the plain CLASS() c=
-all):
-
-#define IIO_CLAIM_DIRECT(claimed_dev, dev)
-	CLASS(iio_claim_direct, claimed_dev)(dev)
-
-Just some thoughts...
-
-- Nuno S=C3=A1
+diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
+index bc40240b29e2..495caf4ce87a 100644
+--- a/drivers/iio/imu/adis.c
++++ b/drivers/iio/imu/adis.c
+@@ -44,8 +44,6 @@ int __adis_write_reg(struct adis *adis, unsigned int reg, unsigned int value,
+ 			.cs_change = 1,
+ 			.delay.value = adis->data->write_delay,
+ 			.delay.unit = SPI_DELAY_UNIT_USECS,
+-			.cs_change_delay.value = adis->data->cs_change_delay,
+-			.cs_change_delay.unit = SPI_DELAY_UNIT_USECS,
+ 		}, {
+ 			.tx_buf = adis->tx + 2,
+ 			.bits_per_word = 8,
+@@ -53,8 +51,6 @@ int __adis_write_reg(struct adis *adis, unsigned int reg, unsigned int value,
+ 			.cs_change = 1,
+ 			.delay.value = adis->data->write_delay,
+ 			.delay.unit = SPI_DELAY_UNIT_USECS,
+-			.cs_change_delay.value = adis->data->cs_change_delay,
+-			.cs_change_delay.unit = SPI_DELAY_UNIT_USECS,
+ 		}, {
+ 			.tx_buf = adis->tx + 4,
+ 			.bits_per_word = 8,
+@@ -62,8 +58,6 @@ int __adis_write_reg(struct adis *adis, unsigned int reg, unsigned int value,
+ 			.cs_change = 1,
+ 			.delay.value = adis->data->write_delay,
+ 			.delay.unit = SPI_DELAY_UNIT_USECS,
+-			.cs_change_delay.value = adis->data->cs_change_delay,
+-			.cs_change_delay.unit = SPI_DELAY_UNIT_USECS,
+ 		}, {
+ 			.tx_buf = adis->tx + 6,
+ 			.bits_per_word = 8,
+@@ -144,8 +138,6 @@ int __adis_read_reg(struct adis *adis, unsigned int reg, unsigned int *val,
+ 			.cs_change = 1,
+ 			.delay.value = adis->data->write_delay,
+ 			.delay.unit = SPI_DELAY_UNIT_USECS,
+-			.cs_change_delay.value = adis->data->cs_change_delay,
+-			.cs_change_delay.unit = SPI_DELAY_UNIT_USECS,
+ 		}, {
+ 			.tx_buf = adis->tx + 2,
+ 			.bits_per_word = 8,
+@@ -153,8 +145,6 @@ int __adis_read_reg(struct adis *adis, unsigned int reg, unsigned int *val,
+ 			.cs_change = 1,
+ 			.delay.value = adis->data->read_delay,
+ 			.delay.unit = SPI_DELAY_UNIT_USECS,
+-			.cs_change_delay.value = adis->data->cs_change_delay,
+-			.cs_change_delay.unit = SPI_DELAY_UNIT_USECS,
+ 		}, {
+ 			.tx_buf = adis->tx + 4,
+ 			.rx_buf = adis->rx,
+@@ -163,8 +153,6 @@ int __adis_read_reg(struct adis *adis, unsigned int reg, unsigned int *val,
+ 			.cs_change = 1,
+ 			.delay.value = adis->data->read_delay,
+ 			.delay.unit = SPI_DELAY_UNIT_USECS,
+-			.cs_change_delay.value = adis->data->cs_change_delay,
+-			.cs_change_delay.unit = SPI_DELAY_UNIT_USECS,
+ 		}, {
+ 			.rx_buf = adis->rx + 2,
+ 			.bits_per_word = 8,
+@@ -524,6 +512,12 @@ int adis_init(struct adis *adis, struct iio_dev *indio_dev,
+ 	}
+ 
+ 	mutex_init(&adis->state_lock);
++
++	if (!spi->cs_inactive.value) {
++		spi->cs_inactive.value = data->cs_change_delay;
++		spi->cs_inactive.unit = SPI_DELAY_UNIT_USECS;
++	}
++
+ 	adis->spi = spi;
+ 	adis->data = data;
+ 	iio_device_set_drvdata(indio_dev, adis);
+-- 
+2.34.1
 
