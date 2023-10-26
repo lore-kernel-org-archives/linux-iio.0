@@ -2,116 +2,97 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9A82C25B6F
-	for <linux-iio@archiver.kernel.org>; Thu, 26 Oct 2023 09:59:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5202FC25B6B
+	for <linux-iio@archiver.kernel.org>; Thu, 26 Oct 2023 10:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbjJZJ7e (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 26 Oct 2023 05:59:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36630 "EHLO
+        id S231311AbjJZKPS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 26 Oct 2023 06:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbjJZJ7d (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 26 Oct 2023 05:59:33 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803A793;
-        Thu, 26 Oct 2023 02:59:31 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id 2adb3069b0e04-507e85ebf50so887254e87.1;
-        Thu, 26 Oct 2023 02:59:31 -0700 (PDT)
+        with ESMTP id S231200AbjJZKPR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 26 Oct 2023 06:15:17 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCE51AD;
+        Thu, 26 Oct 2023 03:15:15 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id d2e1a72fcca58-6b87c1edfd5so670574b3a.1;
+        Thu, 26 Oct 2023 03:15:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1698314370; x=1698919170; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KI1PEiAO30U0iU1euPlEFOmuh13Lp+HbCIEUsNyPRgM=;
-        b=FlfCtxR9DbcWC9xFLedsXXXXEGmuwkFg9zT1ReudUZ3v/arUwFl9CDHB/G2utLB3ln
-         CM3DubuAG71adGdqbaDY/0ZNvRCG7w3GdpDCFcjbCxvz9gmhKCWntqlbPSe9Ove/Z0PH
-         Eybhn1nVynF+pSBOMSmAW0wbkuu83r23YfYsY9GHivyYEm12r7h6P2EwusFYRw3V7vaf
-         jpkGuhbdfoD30leriLKz3+UHYOGvWXrRRH8p7beeSuIAsT8tZymIHYwGo8v3/Ke+kNN8
-         OymwFdKcHp1mP+eiVXW/hWTysBZzCCNu5ZadtvFMREwZwsa+E2LicnPPCKXdIEb/zT99
-         OqMw==
+        d=gmail.com; s=20230601; t=1698315314; x=1698920114; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:in-reply-to:mime-version:references
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=lyDPyIOy3XGS88UTNLJJ1fkRqGcbB4V7iUeidXioJIs=;
+        b=guKqWrB2KLSZn9bDyKr7422ZnfRDpzZvUDsmNyQaYma9Rp7LXkgsiZLRNmC18T2UOQ
+         emrTihRRG6TM2vnD67P0xHPZYggAKpLBSP1mL9YFrjVJ9RAgaudg3OXDEvP94qbUHsos
+         5SM8lcDRuqVe/vTRjkImYL4u9YO1znXqUvktBp+PRlu+8ePxE+1mJB8oZGKWvkvcg6pr
+         kUSzTlVzVGupv6skwlunexuh5UcYwkGoggHfqkPChnbecFQHjcy3GEPIOAyGN/4jPyq3
+         kbi1ghwcTEYcacmO3GLwbOwGtNV3z7GMNb3r+kzF3v1ExbbPD+oG5V5ED7vP3KgFox/U
+         a18A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698314370; x=1698919170;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KI1PEiAO30U0iU1euPlEFOmuh13Lp+HbCIEUsNyPRgM=;
-        b=Du9ihQIUcXA1R+l9vfFvbNojBMYJJWUCbp9/4hWEG2P8z4ecOkgBv11K5W3PHWHkbL
-         Usq3pp7K9mzgFp+MMmJLl6DXXY2qC5DOnnzXEQTMKY2ldLjYlBoaCec28iN/KGTnus4S
-         jSd1bmMmM52JSkTHN5D7DCdWZKVYrP8Zsu7DQAcw7P9MEz6iMRrtgNUxnUlBBDOdLAWZ
-         e2Fl4LPK7JF+MUqc08q0h4NtxIPTyZei3+da/heIM1bjkJv1JP7ifsemHymhWe79z+fm
-         hztoB5ZxsL/xJSsw5BSOovEEpr9bJrJyvl8jlGYXyDplTYLjDxeNHA1O9rF8/wtONNKQ
-         BXYw==
-X-Gm-Message-State: AOJu0YxQ5V/VwVKxNWYiSXlnTneq03fBr9E8pO60GlgXdTEbG263MAG0
-        QXP9M1RFY5gsbZ3mOe+PmPw=
-X-Google-Smtp-Source: AGHT+IFU2DhsmE8fRKdGc7spOyWFHAM7Y0b7NWCQvDMUSDXOhLRMnfF4E0z7IhNU+w7WqrtwnsYD5Q==
-X-Received: by 2002:ac2:5dcc:0:b0:507:b935:9f60 with SMTP id x12-20020ac25dcc000000b00507b9359f60mr12309156lfq.57.1698314369469;
-        Thu, 26 Oct 2023 02:59:29 -0700 (PDT)
-Received: from ?IPV6:2001:14ba:16f8:1500::1? (dc78bmyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f8:1500::1])
-        by smtp.gmail.com with ESMTPSA id t7-20020ac24c07000000b00507a68e637bsm2952035lfq.205.2023.10.26.02.59.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Oct 2023 02:59:28 -0700 (PDT)
-Message-ID: <e806f42f-9baa-4689-882a-144647cc03a3@gmail.com>
-Date:   Thu, 26 Oct 2023 12:59:28 +0300
+        d=1e100.net; s=20230601; t=1698315314; x=1698920114;
+        h=cc:to:subject:message-id:date:in-reply-to:mime-version:references
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lyDPyIOy3XGS88UTNLJJ1fkRqGcbB4V7iUeidXioJIs=;
+        b=UeYq5AsVau3clibg5h2bHMgAkp61X9ImdVGG89+6JWYrY53BD9z6aC2LShQ/qoiGV2
+         bkn3b4K9f3KIt+n/xuTUmq4ZSYKwrFw/s16sd+pTiZ5rq3iv9ZIV+CYXlQyylQ3T1F9t
+         PqqIxBZQMdcuAv7sU6JeAxIIZxg+MKfqsIL2Tnk4S7Y/9IWQ24lzOrJgBu8kk17sCe7N
+         DTNa2vPn00f5vZ7hUY7RIrR4U8VCJKwfjyVELA/8izpmYjGrI61hCpGnsgCqBUswe4yJ
+         toZa2m5CD2hKlImhnlRowc7J9e6ntKobY94emEi8yJxYiGUAKDCmgDT99g5lJAlJ6xT4
+         WaYQ==
+X-Gm-Message-State: AOJu0Yzeyzm8qJL6oqhpx6Kg5NicsSgWoH3qnNyrbIXvZqiKHpYjht5G
+        ttZbM0rYvrVEeC4y/gQqJ0sjg4NdtwEgN+Sx16Q=
+X-Google-Smtp-Source: AGHT+IEvmXLZL/xtR66yyrtzsgrGj6la/m8oCdfPB91c59DRAGDeBlWylY+chg+bCKBIBocZbVFU5r0Fk/kq4IX1oaY=
+X-Received: by 2002:a05:6a21:7189:b0:15d:8409:8804 with SMTP id
+ wq9-20020a056a21718900b0015d84098804mr7034921pzb.57.1698315314297; Thu, 26
+ Oct 2023 03:15:14 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 26 Oct 2023 03:15:13 -0700
+From:   Amit Dhingra <mechanicalamit@gmail.com>
+References: <CAO=gReHuuwB6mBZAXpYHGk9XsWE8e8+U3T9e6iqCXYQMcjZZVg@mail.gmail.com>
+ <a0636e8e-7a39-4c58-8dee-7187ffd7fc63@gmail.com> <e806f42f-9baa-4689-882a-144647cc03a3@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] MAINTAINERS: correct file entry IIO LIGHT SENSOR
+In-Reply-To: <e806f42f-9baa-4689-882a-144647cc03a3@gmail.com>
+Date:   Thu, 26 Oct 2023 03:15:13 -0700
+Message-ID: <CAO=gReECvyMDe5kbSeFQ3rAc1n6e2vkcE2mtMYUE3c45QMvW-A@mail.gmail.com>
+Subject: [PATCH v2] MAINTAINERS: correct file entry IIO LIGHT SENSOR
  GAIN-TIME_SCALE HELPERS
-Content-Language: en-US, en-GB
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-To:     Amit Dhingra <mechanicalamit@gmail.com>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>
 Cc:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
         Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         kernel-janitors@vger.kernel.org
-References: <CAO=gReHuuwB6mBZAXpYHGk9XsWE8e8+U3T9e6iqCXYQMcjZZVg@mail.gmail.com>
- <a0636e8e-7a39-4c58-8dee-7187ffd7fc63@gmail.com>
-In-Reply-To: <a0636e8e-7a39-4c58-8dee-7187ffd7fc63@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 10/26/23 12:56, Matti Vaittinen wrote:
-> On 10/26/23 11:33, Amit Dhingra wrote:
->> Commit ca11e4a35154 ("MAINTAINERS: Add IIO gain-time-scale helpers"),
->> updates the MAINTAINERS file. However the files listed do not exist.
->> These presumably come from commit 38416c28e168 ("iio: light: Add
->> gain-time-scale helpers")
->>
->> Fix the entries.
->>
->> Found by ./scripts/get_maintainer.pl --self-test=patterns
->>
->> Signed-off-by: Amit Dhingra <mechanicalamit@gmail.com>
->> ---
->>   MAINTAINERS | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index a493d96ffd85..6dd44ec48886 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -10287,8 +10287,8 @@ IIO LIGHT SENSOR GAIN-TIME-SCALE HELPERS
->>   M:    Matti Vaittinen <mazziesaccount@gmail.com>
->>   L:    linux-iio@vger.kernel.org
->>   S:    Maintained
->> -F:    drivers/iio/light/gain-time-scale-helper.c
->> -F:    drivers/iio/light/gain-time-scale-helper.h
->> +F:    drivers/iio/industrialio-gts-helper.c
->> +F:    include/linux/iio/iio-gts-helper.h
-> 
-> Thanks a lot Amit!
-> Seems like the very old file names were left in here.
-> 
-> Acked-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Commit ca11e4a35154 ("MAINTAINERS: Add IIO gain-time-scale helpers"),
+updates the MAINTAINERS file. However the files listed do not exist.
+These presumably come from commit 38416c28e168 ("iio: light: Add
+gain-time-scale helpers")
 
-Maybe we should add:
+Fix the entries.
+
+Found by ./scripts/get_maintainer.pl --self-test=patterns
+
 Fixes: ca11e4a35154 ("MAINTAINERS: Add IIO gain-time-scale helpers")
+Signed-off-by: Amit Dhingra <mechanicalamit@gmail.com>
+---
+ MAINTAINERS | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a493d96ffd85..6dd44ec48886 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10287,8 +10287,8 @@ IIO LIGHT SENSOR GAIN-TIME-SCALE HELPERS
+ M:	Matti Vaittinen <mazziesaccount@gmail.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+-F:	drivers/iio/light/gain-time-scale-helper.c
+-F:	drivers/iio/light/gain-time-scale-helper.h
++F:	drivers/iio/industrialio-gts-helper.c
++F:	include/linux/iio/iio-gts-helper.h
 
+ IIO MULTIPLEXER
+ M:	Peter Rosin <peda@axentia.se>
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
-
-~~ When things go utterly wrong vim users can always type :help! ~~
-
+2.42.0
