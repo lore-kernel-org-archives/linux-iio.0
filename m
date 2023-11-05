@@ -2,164 +2,107 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9628BC4167D
-	for <linux-iio@archiver.kernel.org>; Sun,  5 Nov 2023 14:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B695DC4332F
+	for <linux-iio@archiver.kernel.org>; Sun,  5 Nov 2023 19:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbjKEOWZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 5 Nov 2023 09:22:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38180 "EHLO
+        id S229477AbjKETcS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 5 Nov 2023 14:32:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjKEOWY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Nov 2023 09:22:24 -0500
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D92D6;
-        Sun,  5 Nov 2023 06:22:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1699194142; x=1730730142;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=toY6pyEYbBKJg/bhP6bai1KvDXetaJWeInK0Nmn3nX0=;
-  b=GNIy0GTu2qw+xMzamgTBc70OM3d90qwQgKs56oOxjWyIh9CCLgqrbhkF
-   wA6sSS30Nw8f73vBBoQ+hxfB1CSdmimGheodYMjfVuF4gknffRf9krMHQ
-   XbP2JRIZKnGBGgXOmvnXyMes1tTfHFL0/7H9eZOulM8wQXy+DbbWgqkUy
-   JTTwz1kw7bKpKI89v3GWyYXsAMo67ilrOP9QITDMPCkK9beB4gkc2tCBu
-   JR5i72Go1QQMPokV0RQR3qGMca6jabtgk4rb1ADlsJ94cPku3AGJb02Z2
-   JG9Svn5MDucRzPWIZKfCt7yw47FWR/DNyN/XnxMHD48gHH+mzyr88d5V8
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10885"; a="2059769"
-X-IronPort-AV: E=Sophos;i="6.03,279,1694761200"; 
-   d="scan'208";a="2059769"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2023 06:22:22 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10885"; a="935568580"
-X-IronPort-AV: E=Sophos;i="6.03,279,1694761200"; 
-   d="scan'208";a="935568580"
-Received: from lkp-server01.sh.intel.com (HELO 17d9e85e5079) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 05 Nov 2023 06:22:16 -0800
-Received: from kbuild by 17d9e85e5079 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qze10-0005W3-25;
-        Sun, 05 Nov 2023 14:22:14 +0000
-Date:   Sun, 5 Nov 2023 22:22:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S229451AbjKETcS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Nov 2023 14:32:18 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E7CFDD;
+        Sun,  5 Nov 2023 11:32:15 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id a640c23a62f3a-9c2a0725825so549081766b.2;
+        Sun, 05 Nov 2023 11:32:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1699212734; x=1699817534; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=vleltte9bqYNVxoqP70DPmoJepyBKDB/qLui5qjstUc=;
+        b=Imx+mV+wr4Jq82FlpBy6iPAkSwDx5ZZQMW8BZK64S7GdGQQUwRBjGSYq/dP0Sh65LH
+         Sm5yz3jtkyPq/VVX4+8iejTxxHRNM51oRHZ3urs60guyZj68q/CtY6ziU/EUdTEiam51
+         VSkLIlZcC5HMJP0goLjrh4DPb5DIc9R4kvEpK9KhEBRqpiXQsqrpeOG1x6fsrIQvV5Te
+         1OiBgyFLEYokhjeTeIhxjWv4iEIYvuZS3zN6cZn68jpCJCmTlVUJngNaG8fJYp5gUyRP
+         KmxeT/nTNdjQ+WirKKC6ceajqSQmf/V4hcwuD6O8rCuXkxmH2OI/BIUOYCGfkfJFcmHL
+         iSBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699212734; x=1699817534;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vleltte9bqYNVxoqP70DPmoJepyBKDB/qLui5qjstUc=;
+        b=gXDv51NL2eBXBJZOd17LhIF+IXKHE8ME1z/6zOg97SIwhfExuDD0+78f5RPA30k8bF
+         fHwpXazKsjtRraqlOqiKWFDz7Ifl4PrM8dSKhEqEPR6PvC0O4NfwtJf2HiG83q9Q+9Jv
+         z/uhZvGahUe7PPcHm7fQ+fZNEGvqhC3ndQ81xlY5gY0nIB1C2ieQVFw9lNM/Wpf9feRT
+         I1VJN1dmSg31De2PJGq+0yUmtktyGew5rxpf+UykWbTyWgyuHNG3WuxwfSRaCDTQx72X
+         hUfOvV/VlID+MOrgmWnCzAUcvRasT/QjUijqLNDX6s9HCjVxNhwTi411YTOLkOKassNi
+         tvVQ==
+X-Gm-Message-State: AOJu0YxhNPhFn6uF2C+iWtxD86btnH6FkDB+nBVeEySwJqFmEWGTK+BX
+        QFfEns4MtNOW+r0dWvJyNx4=
+X-Google-Smtp-Source: AGHT+IG5YMre6qZJMtlewbPjPz7g4uPVaNPoH86enWch0Sj16kYSPmGech8CbjnYPAyhSh26dX6DqQ==
+X-Received: by 2002:a17:907:25cd:b0:9c7:4d98:981f with SMTP id ae13-20020a17090725cd00b009c74d98981fmr11167835ejc.33.1699212733678;
+        Sun, 05 Nov 2023 11:32:13 -0800 (PST)
+Received: from spiri.. ([5.14.137.80])
+        by smtp.gmail.com with ESMTPSA id d26-20020a1709064c5a00b009b947aacb4bsm3300259ejw.191.2023.11.05.11.32.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Nov 2023 11:32:13 -0800 (PST)
+From:   alisadariana@gmail.com
+Cc:     Alisa-Dariana Roman <alisa.roman@analog.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Conor Dooley <conor+dt@kernel.org>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Matti Vaittinen <mazziesaccount@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Paul Gazzillo <paul@pgazz.com>
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>,
-        Matt Ranostay <matt@ranostay.sg>,
-        Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>,
+        Maksim Kiselev <bigunclemax@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Marius Cristea <marius.cristea@microchip.com>,
+        Okan Sahin <okan.sahin@analog.com>,
+        Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: light: Add support for APDS9306 Light Sensor
-Message-ID: <202311052102.1GrBH0gk-lkp@intel.com>
-References: <20231027074545.6055-3-subhajit.ghosh@tweaklogic.com>
+Subject: [PATCH 0/3] iio: adc: ad7192: Add support for AD7194
+Date:   Sun,  5 Nov 2023 21:31:28 +0200
+Message-Id: <20231105193132.47009-1-alisadariana@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231027074545.6055-3-subhajit.ghosh@tweaklogic.com>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Subhajit,
+From: Alisa-Dariana Roman <alisa.roman@analog.com>
 
-kernel test robot noticed the following build warnings:
+Dear maintainers,
 
-[auto build test WARNING on 611da07b89fdd53f140d7b33013f255bf0ed8f34]
+I am submitting a series of patches to improve the ad7192 driver by
+adding suport for AD7194 also.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Subhajit-Ghosh/dt-bindings-iio-light-Avago-APDS9306/20231027-154954
-base:   611da07b89fdd53f140d7b33013f255bf0ed8f34
-patch link:    https://lore.kernel.org/r/20231027074545.6055-3-subhajit.ghosh%40tweaklogic.com
-patch subject: [PATCH v2 2/2] iio: light: Add support for APDS9306 Light Sensor
-config: powerpc64-allyesconfig (https://download.01.org/0day-ci/archive/20231105/202311052102.1GrBH0gk-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project.git 4a5ac14ee968ff0ad5d2cc1ffa0299048db4c88a)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231105/202311052102.1GrBH0gk-lkp@intel.com/reproduce)
+Please consider applying these patches in order.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202311052102.1GrBH0gk-lkp@intel.com/
+Thank you for your time and attention.
 
-All warnings (new ones prefixed by >>):
+Kind regards,
 
->> drivers/iio/light/apds9306.c:598:10: warning: variable 'ret' is uninitialized when used here [-Wuninitialized]
-     598 |                 return ret;
-         |                        ^~~
-   drivers/iio/light/apds9306.c:593:9: note: initialize the variable 'ret' to silence this warning
-     593 |         int ret, intg_old, gain_old, gain_new, gain_new_closest;
-         |                ^
-         |                 = 0
-   1 warning generated.
+Alisa-Dariana Roman (3):
+  iio: adc: ad7192: Use device api
+  dt-bindings: iio: adc: ad7192: Add AD7194 support
+  iio: adc: ad7192: Add AD7194 support
 
-
-vim +/ret +598 drivers/iio/light/apds9306.c
-
-   589	
-   590	static int apds9306_intg_time_set(struct apds9306_data *data, int val2)
-   591	{
-   592		struct device *dev = data->dev;
-   593		int ret, intg_old, gain_old, gain_new, gain_new_closest;
-   594		bool ok;
-   595	
-   596		if (!iio_gts_valid_time(&data->gts, val2)) {
-   597			dev_err(dev, "Unsupported integration time %u\n", val2);
- > 598			return ret;
-   599		}
-   600	
-   601		intg_old = iio_gts_find_int_time_by_sel(&data->gts,
-   602							data->intg_time_idx);
-   603		if (ret < 0)
-   604			return ret;
-   605	
-   606		if (intg_old == val2)
-   607			return 0;
-   608	
-   609		gain_old = iio_gts_find_gain_by_sel(&data->gts, data->gain_idx);
-   610		if (gain_old < 0)
-   611			return gain_old;
-   612	
-   613		ret = iio_gts_find_new_gain_by_old_gain_time(&data->gts, gain_old,
-   614							     intg_old, val2, &gain_new);
-   615		if (gain_new < 0) {
-   616			dev_err(dev, "Unsupported gain with time\n");
-   617			return gain_new;
-   618		}
-   619	
-   620		gain_new_closest = iio_find_closest_gain_low(&data->gts, gain_new, &ok);
-   621		if (gain_new_closest < 0) {
-   622			gain_new_closest = iio_gts_get_min_gain(&data->gts);
-   623			if (gain_new_closest < 0)
-   624				return gain_new_closest < 0;
-   625		}
-   626		if (!ok)
-   627			dev_dbg(dev, "Unable to find optimum gain, setting minimum");
-   628	
-   629		ret = iio_gts_find_sel_by_int_time(&data->gts, val2);
-   630		if (ret < 0)
-   631			return ret;
-   632	
-   633		ret = apds9306_intg_time_set_hw(data, ret);
-   634		if (ret)
-   635			return ret;
-   636	
-   637		ret = iio_gts_find_sel_by_gain(&data->gts, gain_new_closest);
-   638		if (ret < 0)
-   639			return ret;
-   640	
-   641		return apds9306_gain_set_hw(data, ret);
-   642	}
-   643	
+ .../bindings/iio/adc/adi,ad7192.yaml          |  69 +++++++
+ drivers/iio/adc/Kconfig                       |   4 +-
+ drivers/iio/adc/ad7192.c                      | 176 ++++++++++++++++--
+ 3 files changed, 228 insertions(+), 21 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.34.1
+
