@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CD1C05054
-	for <linux-iio@archiver.kernel.org>; Wed,  8 Nov 2023 10:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABFE2C4167B
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Nov 2023 10:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344431AbjKHKoS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 8 Nov 2023 05:44:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
+        id S1344577AbjKHKoo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 8 Nov 2023 05:44:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344416AbjKHKoL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Nov 2023 05:44:11 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41E191BF1
-        for <linux-iio@vger.kernel.org>; Wed,  8 Nov 2023 02:44:04 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-40806e4106dso3791725e9.1
-        for <linux-iio@vger.kernel.org>; Wed, 08 Nov 2023 02:44:04 -0800 (PST)
+        with ESMTP id S1344508AbjKHKoO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Nov 2023 05:44:14 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C261BEA
+        for <linux-iio@vger.kernel.org>; Wed,  8 Nov 2023 02:44:11 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id 5b1f17b1804b1-4084e49a5e5so57068475e9.3
+        for <linux-iio@vger.kernel.org>; Wed, 08 Nov 2023 02:44:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699440242; x=1700045042; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1699440250; x=1700045050; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1RgzV0IV23WRll6q2E++ToH69k3tzXfaVshdvzq8RwE=;
-        b=iJ1GAqoBLn/tXaswz46AAySJ+xX9knDU4AGexMC+lunDeabwtIpxVGP41vbswH6CJ6
-         zDo0iX70sH7KcDkArphIMOrL5yX5gPx3KBQC+mSKInHDn0DOqu7584eWKfLBTK9cu7J/
-         NAtdXISNz62cO0nQRNdz8wSv6+qVVJi833Bqk86QSJlFDxGolD2s6INLUDtGOTBzckZ1
-         J54uzjmFH6/8xxX5LRCPe9kp131X3zCORFoeBe5iIbQ1m/oSfrlzbjFEQVQD3AftGj6K
-         a1xwqEQivTh0PtDGXhJOCrF+DKBlTHOGOozm5SbrhwayKorj46hfOnTIl7rpHzNuh0O9
-         g17Q==
+        bh=XAqMvg09lZkovg+Zu0r4p30xWSnUqCaJm0pKp8M4YOY=;
+        b=zvcmuWcd0sa/D/sHSiwIDHuZap1L5e0XOksAP8VqOUKNDOrEhMaOQ20DOc+VkG4pYo
+         Sf9kxNuezGAO7krgeyrBM5Rec/kEcA7Aeqbf4KJiH4ScLnhFT28BBT+6970pkcIkuyju
+         FvNoV3pIcVxx9pmMSmD2+yoB6dT+GryPm1M0ph9CbSVGSJoZx8hWjB3hZwo/rQTUBnWV
+         N2jK8AWQOHh2z4DiWb+lXSuzb7RTmu8d1+BHoeEJxL2WFwZAL2xU439e51BcKtbrmNKz
+         edvIx8/TlDrTOSXDmPx3P4x1pQewGeGCgeHuwKFBm/pvIo+FIR1ByI7n7ZypyR3WxLBm
+         RScA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699440242; x=1700045042;
+        d=1e100.net; s=20230601; t=1699440250; x=1700045050;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1RgzV0IV23WRll6q2E++ToH69k3tzXfaVshdvzq8RwE=;
-        b=xF0za4+ktas8rymcjieX/s4UOCzCBNOZFgtu9luK4EzlukbPTzmxG45Oo33Tvl6nF0
-         oNGF/4KufCTbqWBKh50+FTpgP19WARVqpxm/bo2872vgKP8bFu1hQgT2KImu9EZJZE7l
-         zgx9YndT8l5NTbZaMYIWE4/jQGY6ZBCLg2q5mCgyhhZAcRoSPlqQfSUzGLxqpEHYoBpv
-         63xY71Cu4jxp6oXodjV8K8lkoWnjg1L+IIZb9HlGFOABwvwo2/vxJlPSbHNDNz0nIpWP
-         +ij4jcgNC11/Ij0BhQH/ZkAUFlWzlxXTluEu0QcehwYEDezIkidm9DRmIwQzKq2dZYA/
-         m/ug==
-X-Gm-Message-State: AOJu0Yw3kJsiwIzKDgGkGtOEaVQZedrf3zDcBxYssDeWKz2Uv5W0DqvL
-        c7HuU2WrZhiIkQ/3HRDVxyTuoQ==
-X-Google-Smtp-Source: AGHT+IHPP+/pDFxlh9Psi/Jca/likZzzh/njk10M+c59wDGroA/smDDkbgNQyV6CWfAIY9RQJ9LQTQ==
-X-Received: by 2002:a05:600c:474a:b0:405:3924:3cad with SMTP id w10-20020a05600c474a00b0040539243cadmr1830807wmo.15.1699440242620;
-        Wed, 08 Nov 2023 02:44:02 -0800 (PST)
+        bh=XAqMvg09lZkovg+Zu0r4p30xWSnUqCaJm0pKp8M4YOY=;
+        b=rpSU4XU+USImMByoPS6rVIRwa/1s5hsHbmFQLCfEASthO/HO21ducVDwcv/eIqKRkU
+         u82Ans3MG9OVrT5gmdIgED6xd085oyZXHdLi6rq2ZK66w2cJHhfr2cSB0XjNQeM9B1XR
+         qQhqHhjn6CK781XzMRgS1sNvJmwqfMWuTWP/CSw9BlbWGWrtceAlcf0TZltsa/y/vaCY
+         GiRZT757YURGf/P5SFTzODClqMAE+SInc4mr1sbnNI1t9r7L2ELMiCgXwtr6+r+VrcyX
+         ibQEtFwxU3zPkg5jFIOf5q7fsAzjW3YTSMjK30Bsr3/lb42rfs2TeZ+EJGMIOSeYjz+K
+         jsyA==
+X-Gm-Message-State: AOJu0YwjcauhzTD8bMXntEWbxPQbbH5rpJuZGwpCVKzMC1SvpuXIY62Y
+        e77K9rtKoPQW89Co6YMh7md2MQ==
+X-Google-Smtp-Source: AGHT+IFviUW0LhnhTYkLsi418du0JsS+pSDR7WBQ3E2YbqFPxwTGmVG55ROJ8WQ2QG79sMX8+5JXdw==
+X-Received: by 2002:a05:600c:a49:b0:409:5d7d:b26d with SMTP id c9-20020a05600c0a4900b004095d7db26dmr1253167wmq.15.1699440250466;
+        Wed, 08 Nov 2023 02:44:10 -0800 (PST)
 Received: from krzk-bin.. ([178.197.218.126])
-        by smtp.gmail.com with ESMTPSA id fj12-20020a05600c0c8c00b004094c5d92bdsm19377377wmb.31.2023.11.08.02.43.59
+        by smtp.gmail.com with ESMTPSA id fj12-20020a05600c0c8c00b004094c5d92bdsm19377377wmb.31.2023.11.08.02.44.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Nov 2023 02:44:02 -0800 (PST)
+        Wed, 08 Nov 2023 02:44:09 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
         Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
@@ -85,9 +85,9 @@ To:     David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-sound@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 02/17] dt-bindings: i2c: exynos5: add specific compatibles for existing SoC
-Date:   Wed,  8 Nov 2023 11:43:28 +0100
-Message-Id: <20231108104343.24192-3-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 04/17] dt-bindings: mmc: samsung,exynos-dw-mshc: add specific compatibles for existing SoC
+Date:   Wed,  8 Nov 2023 11:43:30 +0100
+Message-Id: <20231108104343.24192-5-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231108104343.24192-1-krzysztof.kozlowski@linaro.org>
 References: <20231108104343.24192-1-krzysztof.kozlowski@linaro.org>
@@ -107,6 +107,9 @@ Documentation/devicetree/bindings/writing-bindings.rst state that:
 Add compatibles specific to each SoC in front of all old-SoC-like
 compatibles.
 
+While re-indenting the first enum, put also axis,artpec8-dw-mshc in
+alphabetical order.
+
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 ---
@@ -114,44 +117,45 @@ Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 I propose to take the patch through Samsung SoC (me). See cover letter
 for explanation.
 ---
- Documentation/devicetree/bindings/i2c/i2c-exynos5.yaml | 10 +++++++++-
- .../devicetree/bindings/soc/samsung/exynos-usi.yaml    |  2 +-
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ .../bindings/mmc/samsung,exynos-dw-mshc.yaml  | 25 ++++++++++++-------
+ 1 file changed, 16 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-exynos5.yaml b/Documentation/devicetree/bindings/i2c/i2c-exynos5.yaml
-index 3e52a0db6c41..c1f5d2cb7709 100644
---- a/Documentation/devicetree/bindings/i2c/i2c-exynos5.yaml
-+++ b/Documentation/devicetree/bindings/i2c/i2c-exynos5.yaml
-@@ -25,7 +25,15 @@ properties:
-           - samsung,exynos5250-hsi2c    # Exynos5250 and Exynos5420
-           - samsung,exynos5260-hsi2c    # Exynos5260
-           - samsung,exynos7-hsi2c       # Exynos7
--          - samsung,exynosautov9-hsi2c  # ExynosAutoV9 and Exynos850
-+          - samsung,exynosautov9-hsi2c
+diff --git a/Documentation/devicetree/bindings/mmc/samsung,exynos-dw-mshc.yaml b/Documentation/devicetree/bindings/mmc/samsung,exynos-dw-mshc.yaml
+index 6ee78a38bd74..5fe65795f796 100644
+--- a/Documentation/devicetree/bindings/mmc/samsung,exynos-dw-mshc.yaml
++++ b/Documentation/devicetree/bindings/mmc/samsung,exynos-dw-mshc.yaml
+@@ -14,15 +14,22 @@ maintainers:
+ 
+ properties:
+   compatible:
+-    enum:
+-      - samsung,exynos4210-dw-mshc
+-      - samsung,exynos4412-dw-mshc
+-      - samsung,exynos5250-dw-mshc
+-      - samsung,exynos5420-dw-mshc
+-      - samsung,exynos5420-dw-mshc-smu
+-      - samsung,exynos7-dw-mshc
+-      - samsung,exynos7-dw-mshc-smu
+-      - axis,artpec8-dw-mshc
++    oneOf:
++      - enum:
++          - axis,artpec8-dw-mshc
++          - samsung,exynos4210-dw-mshc
++          - samsung,exynos4412-dw-mshc
++          - samsung,exynos5250-dw-mshc
++          - samsung,exynos5420-dw-mshc
++          - samsung,exynos5420-dw-mshc-smu
++          - samsung,exynos7-dw-mshc
++          - samsung,exynos7-dw-mshc-smu
 +      - items:
 +          - enum:
-+              - samsung,exynos5433-hsi2c
-+          - const: samsung,exynos7-hsi2c
-+      - items:
-+          - enum:
-+              - samsung,exynos850-hsi2c
-+          - const: samsung,exynosautov9-hsi2c
-       - const: samsung,exynos5-hsi2c    # Exynos5250 and Exynos5420
-         deprecated: true
++              - samsung,exynos5433-dw-mshc-smu
++              - samsung,exynos7885-dw-mshc-smu
++              - samsung,exynos850-dw-mshc-smu
++          - const: samsung,exynos7-dw-mshc-smu
  
-diff --git a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-index a6836904a4f8..5b7ab69546c4 100644
---- a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-+++ b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-@@ -155,7 +155,7 @@ examples:
-         };
- 
-         hsi2c_0: i2c@13820000 {
--            compatible = "samsung,exynosautov9-hsi2c";
-+            compatible = "samsung,exynos850-hsi2c", "samsung,exynosautov9-hsi2c";
-             reg = <0x13820000 0xc0>;
-             interrupts = <GIC_SPI 227 IRQ_TYPE_LEVEL_HIGH>;
-             #address-cells = <1>;
+   reg:
+     maxItems: 1
 -- 
 2.34.1
 
