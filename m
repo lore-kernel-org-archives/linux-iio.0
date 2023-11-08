@@ -2,17 +2,17 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88147C04A92
-	for <linux-iio@archiver.kernel.org>; Wed,  8 Nov 2023 17:50:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF3BC41535
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Nov 2023 17:50:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbjKHRuk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S232132AbjKHRuk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 8 Nov 2023 12:50:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230118AbjKHRui (ORCPT
+        with ESMTP id S229705AbjKHRui (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Nov 2023 12:50:38 -0500
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BFE51FFC;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B5E41FF6;
         Wed,  8 Nov 2023 09:50:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Cc:To:In-Reply-To:References:Message-Id:
@@ -20,23 +20,24 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
         :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=gxLhFOfaf1pBt6EdevdiTRtiTB0fk8enVXm+fNYd8XY=; b=pFqoV2q/qAeNzl3DENifMTZMOR
-        Rxg2m7xChyMn1ARE4cociyUxlYuYciPlItI2QH53PHMwLXMV+Dvr9k2bHA5VLNsqqwNl5C9dDVxUp
-        HhzUfToTw109omrwRjUV9HkAQf7Rk6iH3u7KPONZgu+ukEar9qhHJsNKMTDoYuPhZ3F153o/9D65K
-        sA3G4ua7fJAi7e9lnEftJiVBCFoS/PcYqKl+c81FvF45bQ39LSmAhYH8qaPMrFLlENAheH4okzldZ
-        a+zPNqzkn7AjSO4nb5sv6A/y7048p6XZL93IlBSkfNdEQ+ai3L6JA//eFQh40LsxH1MQocP7AGXhr
-        WXdIyo/Q==;
+        bh=hqS3Xb8zxQKiAcPlqwtp/fc9T8jT+De7Oynf6zktYA8=; b=ZFHaG5AUSipcpRii9rfZlhmRcB
+        /ctme7NUmduwjYKRheCbQQu5FegffppHWJAb+w82yLEf/3vNgBwsaQBjotiKZJZcnCt6apjzsoN0k
+        0MCIM5tm28Peha6d1D3/6Sq41TX6bOOPYVCZ11okLL7zw9Ij/rZdFGk2qenVBAXIO6k+hwH6/sa6n
+        twrXWg0HK3TtLTqz9jqfBXfkgN/FB8iGKZxXs88sBU0ITgXPYQxuQjR7icnDBml3s+W0xb9kUeDLd
+        K61xDm6tg+VSQtDjUjRMFa5MggxAWi3v0USrTlpS2nDTrdOmBk/dsPnz6F5ByLbyCQN+Xq9SfyO9z
+        DZssGpYg==;
 Received: from i73190.upc-i.chello.nl ([62.195.73.190] helo=[192.168.68.111])
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1r0mhC-000vX4-Or; Wed, 08 Nov 2023 18:50:30 +0100
+        id 1r0mhG-000vX4-II; Wed, 08 Nov 2023 18:50:34 +0100
 From:   Nia Espera <nespera@igalia.com>
-Date:   Wed, 08 Nov 2023 18:50:25 +0100
-Subject: [PATCH v3 1/6] dt-bindings: iio: adc: add smb139x
+Date:   Wed, 08 Nov 2023 18:50:28 +0100
+Subject: [PATCH v3 4/6] arm64: dts: qcom: sm8350: Fix remoteproc interrupt
+ type
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231108-nia-sm8350-for-upstream-v3-1-18a024b5c74c@igalia.com>
+Message-Id: <20231108-nia-sm8350-for-upstream-v3-4-18a024b5c74c@igalia.com>
 References: <20231108-nia-sm8350-for-upstream-v3-0-18a024b5c74c@igalia.com>
 In-Reply-To: <20231108-nia-sm8350-for-upstream-v3-0-18a024b5c74c@igalia.com>
 To:     Andy Gross <agross@kernel.org>,
@@ -60,76 +61,73 @@ Cc:     linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht,
         Nia Espera <nespera@igalia.com>
 X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1969; i=nespera@igalia.com;
- h=from:subject:message-id; bh=Un/OwvHNh/M32hgzpr9ovGZiU8KNqRoeKJIliCD2flE=;
- b=owEB7QES/pANAwAIAfIkzsI3VuKtAcsmYgBlS8pk6cbPCmRUyR1JW9CmswvDwQTXLUq/j8Vlo
- Yt8x4r5pjiJAbMEAAEIAB0WIQSBPDomug3slDJEnubyJM7CN1birQUCZUvKZAAKCRDyJM7CN1bi
- rbbwC/0Q+bU1A8fLUjD9Rr7foTm6LKHC0EijfuyB/swRuplTAbweHHSgHDJ4xtB1jenwGSACzsR
- bOYoyWSirWlzItnuemKixi8Zdxh9kJJwVtBXDF3U+bWsyMccAdHcLErnihPM5E5FsgTk7KI9I6A
- AmA6NTYdoj9Za07Akltv2f/Fn87kdL7BUD6xBQ7gUhWE5sBtcZD73Kb/0dVE8P5CUCro54O/1YF
- i+2j6kG9h9eMKWQiQAR1N75kCgjB5pdkldTYXP1tiy+WO5O+QK6Zgwv7Smb5tN+SdpQF7pA+PI6
- A1UOJAv6MaWcBnm853UVJolxoPbMgO1O1AFiCr74wN/P2mX253seswz0LTYSCbSQewr9O4gd8tK
- 4qKdMYeI175oCeb3vr+ytXR9hJf1w+tmDZ6XfjpITUbqOek5mEsZScd4S6jQYG3NEdC7lX1oKsK
- g6n3s3pqEc1khxggcu7TDr42rcJonf+xBa2rC5TK1cTCEvtavxqfXVYFRUM2CEtehRBoQ=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2332; i=nespera@igalia.com;
+ h=from:subject:message-id; bh=TP6Qt/wFuV5FNgiSUkAeQOpv15rthluHHEVgMBNHlOM=;
+ b=owEB7QES/pANAwAIAfIkzsI3VuKtAcsmYgBlS8pkj9ajhK5XaF//j9m379+tcQfbZgBjNAbrp
+ WJWIn0L5oiJAbMEAAEIAB0WIQSBPDomug3slDJEnubyJM7CN1birQUCZUvKZAAKCRDyJM7CN1bi
+ rVivC/9KHuZ9PGZKIDKsDJFOPrIwoRc4by8G4gcthzOfdfV9BY8zYiBVXCbphaENVZ9C124/C/2
+ 72Rz+WVyA2Ulvyeb0DD1AU98YR4bp/xcRFOqrHMMrx3zR2EYwAGJLfwJQ6mFutWakDyzCpwAflS
+ ndBOSg7yMufnZ5l20HNcC18ppCA9xhAzViiqAVVRN1+I+nKInEYPhTE7iSsjnJyjumKqZWiPanE
+ k071S/ejb6wQBaIcB6davCkA2keqUNgxDWUPG7jc69ds5BTAl4CXWpdgfgkUb8L9mAc8kQmZ3rQ
+ L5c4Rl4TzNwdMvSe6dNgAp6kGDh0KIP9ms20UIn9HQ7xB8zsRAtzCNFG5F5Hheq70kapRmKFcAW
+ oN1Bu949VRo2/NAdwUExRz0hLA+24AwRgoABb0G6+Dw+Ka578CymBWZF6m5zgvJLwXtxOCI7OHS
+ /CUzBPmNJYiqHwycX3t2ztSVn+YHMqqdzWyUlN8n4yZOU27NaBk6zKIPI6DMM24wgdN0o=
 X-Developer-Key: i=nespera@igalia.com; a=openpgp;
  fpr=813C3A26BA0DEC9432449EE6F224CEC23756E2AD
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Bindings for a charger controller chip found on sm8350
+In a similar vein to
+https://lore.kernel.org/lkml/20220530080842.37024-3-manivannan.sadhasivam@linaro.org/,
+the remote processors on sm8350 fail to initialize with the 'correct'
+(i.e., specified in downstream) IRQ type. Change this to EDGE_RISING.
 
 Signed-off-by: Nia Espera <nespera@igalia.com>
 ---
- include/dt-bindings/iio/qcom,spmi-adc7-smb139x.h | 19 +++++++++++++++++++
- include/dt-bindings/iio/qcom,spmi-vadc.h         |  3 +++
- 2 files changed, 22 insertions(+)
+ arch/arm64/boot/dts/qcom/sm8350.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/dt-bindings/iio/qcom,spmi-adc7-smb139x.h b/include/dt-bindings/iio/qcom,spmi-adc7-smb139x.h
-new file mode 100644
-index 000000000000..c0680d1285cf
---- /dev/null
-+++ b/include/dt-bindings/iio/qcom,spmi-adc7-smb139x.h
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause */
-+/*
-+ * Copyright (c) 2020 The Linux Foundation. All rights reserved.
-+ */
-+
-+#ifndef _DT_BINDINGS_QCOM_SPMI_VADC_SMB139X_H
-+#define _DT_BINDINGS_QCOM_SPMI_VADC_SMB139X_H
-+
-+#include <dt-bindings/iio/qcom,spmi-vadc.h>
-+
-+#define SMB139x_1_ADC7_SMB_TEMP			(SMB139x_1_SID << 8 | ADC7_SMB_TEMP)
-+#define SMB139x_1_ADC7_ICHG_SMB			(SMB139x_1_SID << 8 | ADC7_ICHG_SMB)
-+#define SMB139x_1_ADC7_IIN_SMB			(SMB139x_1_SID << 8 | ADC7_IIN_SMB)
-+
-+#define SMB139x_2_ADC7_SMB_TEMP			(SMB139x_2_SID << 8 | ADC7_SMB_TEMP)
-+#define SMB139x_2_ADC7_ICHG_SMB			(SMB139x_2_SID << 8 | ADC7_ICHG_SMB)
-+#define SMB139x_2_ADC7_IIN_SMB			(SMB139x_2_SID << 8 | ADC7_IIN_SMB)
-+
-+#endif
-diff --git a/include/dt-bindings/iio/qcom,spmi-vadc.h b/include/dt-bindings/iio/qcom,spmi-vadc.h
-index 08adfe25964c..ef07ecd4d585 100644
---- a/include/dt-bindings/iio/qcom,spmi-vadc.h
-+++ b/include/dt-bindings/iio/qcom,spmi-vadc.h
-@@ -239,12 +239,15 @@
- #define ADC7_GPIO3				0x0c
- #define ADC7_GPIO4				0x0d
+diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+index 6d12066389fa..7d5ea338a870 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+@@ -2020,7 +2020,7 @@ mpss: remoteproc@4080000 {
+ 			compatible = "qcom,sm8350-mpss-pas";
+ 			reg = <0x0 0x04080000 0x0 0x4040>;
  
-+#define ADC7_SMB_TEMP				0x06
- #define ADC7_CHG_TEMP				0x10
- #define ADC7_USB_IN_V_16			0x11
- #define ADC7_VDC_16				0x12
- #define ADC7_CC1_ID				0x13
- #define ADC7_VREF_BAT_THERM			0x15
- #define ADC7_IIN_FB				0x17
-+#define ADC7_ICHG_SMB				0x18
-+#define ADC7_IIN_SMB				0x19
+-			interrupts-extended = <&intc GIC_SPI 264 IRQ_TYPE_LEVEL_HIGH>,
++			interrupts-extended = <&intc GIC_SPI 264 IRQ_TYPE_EDGE_RISING>,
+ 					      <&smp2p_modem_in 0 IRQ_TYPE_EDGE_RISING>,
+ 					      <&smp2p_modem_in 1 IRQ_TYPE_EDGE_RISING>,
+ 					      <&smp2p_modem_in 2 IRQ_TYPE_EDGE_RISING>,
+@@ -2062,7 +2062,7 @@ slpi: remoteproc@5c00000 {
+ 			compatible = "qcom,sm8350-slpi-pas";
+ 			reg = <0 0x05c00000 0 0x4000>;
  
- /* 30k pull-up1 */
- #define ADC7_AMUX_THM1_30K_PU			0x24
+-			interrupts-extended = <&pdc 9 IRQ_TYPE_LEVEL_HIGH>,
++			interrupts-extended = <&pdc 9 IRQ_TYPE_EDGE_RISING>,
+ 					      <&smp2p_slpi_in 0 IRQ_TYPE_EDGE_RISING>,
+ 					      <&smp2p_slpi_in 1 IRQ_TYPE_EDGE_RISING>,
+ 					      <&smp2p_slpi_in 2 IRQ_TYPE_EDGE_RISING>,
+@@ -3206,7 +3206,7 @@ adsp: remoteproc@17300000 {
+ 			compatible = "qcom,sm8350-adsp-pas";
+ 			reg = <0 0x17300000 0 0x100>;
+ 
+-			interrupts-extended = <&pdc 6 IRQ_TYPE_LEVEL_HIGH>,
++			interrupts-extended = <&pdc 6 IRQ_TYPE_EDGE_RISING>,
+ 					      <&smp2p_adsp_in 0 IRQ_TYPE_EDGE_RISING>,
+ 					      <&smp2p_adsp_in 1 IRQ_TYPE_EDGE_RISING>,
+ 					      <&smp2p_adsp_in 2 IRQ_TYPE_EDGE_RISING>,
+@@ -3511,7 +3511,7 @@ cdsp: remoteproc@98900000 {
+ 			compatible = "qcom,sm8350-cdsp-pas";
+ 			reg = <0 0x98900000 0 0x1400000>;
+ 
+-			interrupts-extended = <&intc GIC_SPI 578 IRQ_TYPE_LEVEL_HIGH>,
++			interrupts-extended = <&intc GIC_SPI 578 IRQ_TYPE_EDGE_RISING>,
+ 					      <&smp2p_cdsp_in 0 IRQ_TYPE_EDGE_RISING>,
+ 					      <&smp2p_cdsp_in 1 IRQ_TYPE_EDGE_RISING>,
+ 					      <&smp2p_cdsp_in 2 IRQ_TYPE_EDGE_RISING>,
 
 -- 
 2.42.1
