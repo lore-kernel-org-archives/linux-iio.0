@@ -1,32 +1,33 @@
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25DAF1DDEC;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C61915673;
 	Sat, 11 Nov 2023 22:08:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b="CzyCJ8SI"
+	dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b="hwkyFets"
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A4F3272;
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56B93253;
 	Sat, 11 Nov 2023 14:07:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-	s=20170329; h=Cc:To:In-Reply-To:References:Message-Id:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=qwqzZtkcXZc3OkNPJmm1+6PhhO4xyqN1G7JcRiwKhlI=; b=CzyCJ8SI12ZIBmK3408OeB8aVH
-	s2NEMg12U7WOMYgKMhv0zTBD+vmQgH8yWrgC0qSlz99NmdGzI99tlJAEC2Za7WyEa3zjWM4sJQ3PN
-	2GSvRcqcw1hBFYK+9vmAupki/SipIN6L6d12iy0o33yc4DslAidaB1YDPtgfHLPeiB3fML5UC5sLD
-	XpfOD2ivdXxF7SiEdF004F/HjXH6wziiRSyayTRRVXPr+3n2deN/7Wxq8XGwCQDWAY8YODyXpV7Lk
-	Rb0BvxLlrn1j0A6q5o4Uh8To7/i/eabeOgo2qM0HQ0iHGxyO6A3VjJr9JRuvOTfTkgHcLOgpvLHUV
-	jDCzHBMA==;
+	s=20170329; h=Cc:To:Content-Transfer-Encoding:Content-Type:MIME-Version:
+	Message-Id:Date:Subject:From:Sender:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=oLB1NGiEPNFZaXayNGepJMpKvCAIVEhg6rNxsCuSgls=; b=hwkyFetssa893Jbr5vdSd2GLMp
+	GHOy/TFvmVi2L3EwmPP4hNeAIiSRIeJMbt0DVhRZocz3QyGXiwLKk905EHrygtRSthBKcg5A5/onj
+	iICgrQkmfMphj56NfFrKAqzQT8H0GpXZaUaf8OkkebVMcu3X/Horg6LUOSMLxtRQEysLNmSh9Tw0N
+	GO2plECFeeyA9jrL4SjHVcRqS7C3R4tltOJ+ghUA1/u/joJEhFGcej9+bdMI62+KJF/FcYSzlJCOU
+	CZu2yXdzg4jGVZKc1Z8U6auOJyoXn54XhyPlT2/Ot517s5+BB5bvzbxTCGmv/XQ/1VFHc33tglFeG
+	H+KlSerA==;
 Received: from i73190.upc-i.chello.nl ([62.195.73.190] helo=[192.168.68.111])
 	by fanzine2.igalia.com with esmtpsa 
 	(Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-	id 1r1w8y-0029Vw-Nc; Sat, 11 Nov 2023 23:07:56 +0100
+	id 1r1w8w-0029Vw-7T; Sat, 11 Nov 2023 23:07:54 +0100
 From: Nia Espera <nespera@igalia.com>
-Date: Sat, 11 Nov 2023 23:07:40 +0100
-Subject: [PATCH v4 2/6] arm64: dts: qcom: sm8350: Fix DMA0 address
+Subject: [PATCH v4 0/6] support oneplus-lemonade(p) devices
+Date: Sat, 11 Nov 2023 23:07:38 +0100
+Message-Id: <20231111-nia-sm8350-for-upstream-v4-0-3a638b02eea5@igalia.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,9 +36,10 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231111-nia-sm8350-for-upstream-v4-2-3a638b02eea5@igalia.com>
-References: <20231111-nia-sm8350-for-upstream-v4-0-3a638b02eea5@igalia.com>
-In-Reply-To: <20231111-nia-sm8350-for-upstream-v4-0-3a638b02eea5@igalia.com>
+X-B4-Tracking: v=1; b=H4sIACr7T2UC/4XNTQ7CIBCG4as0rMXAAKW68h7GBSBtJ7E/gdpom
+ t5d2o0aoy7fL5lnJhJ9QB/JPptI8CNG7NoUcpMRV5u28hTPqQkwEJzxnLZoaGwKoRgtu0CvfRy
+ CNw2FUioQee4lcJKu++BLvK3y8ZS6xjh04b4+Gvmy/jdHThm1ViltmCnB7w5YmQuaresasqAjv
+ ELFdwgSpC1IwSF3VusPSDwhzn5AIkG8MAykVU5L9wbN8/wA6KyPNlEBAAA=
 To: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
  Konrad Dybcio <konrad.dybcio@linaro.org>, 
  Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
@@ -53,48 +55,79 @@ Cc: linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
  Luca Weiss <luca.weiss@fairphone.com>, 
  ~postmarketos/upstreaming@lists.sr.ht, Nia Espera <nespera@igalia.com>
 X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1152; i=nespera@igalia.com;
- h=from:subject:message-id; bh=uovBa8q6G8tS3dULOFwRiS9jeP93jHuTebmV0TK766Q=;
- b=owEB7QES/pANAwAIAfIkzsI3VuKtAcsmYgBlT/s4np8H5S0hOna8t05ffx/mA+Z0mtZibx6Rv
- piwgAnb+TSJAbMEAAEIAB0WIQSBPDomug3slDJEnubyJM7CN1birQUCZU/7OAAKCRDyJM7CN1bi
- rcw1DACcDiVuAB12Ql6u84b0ahab246ooXTnIudohg5hep23wp8ebC4YUj5YMcwTEZcQ0J/h7+d
- fXPxXncaxFXD8IdgydD0Ww5FgM0do/Vmv1/VewexdGUKnW1P1hq+9ltzQlny4OzG3tTT75mrO6p
- FBhpYdAUujHV8GKJ1wWeNlXIhkEub/fEBDOfKzuLtUuJhlVjppPYhQY2gk/IPv07MaslmP0hzAf
- X2B3eG93HjVXd5MwUkA1GXsWAdOm49KD34pO1KQkGWShC7s/mAbukjBWu0NhPT7gwkScKCUa97c
- k1Ov+drMgvGYxKRDljmUrd9/b2gojPvFs54sXq6i0TBH0VikOe+oWSVIqqGi3vhZ56wW+hOqCl2
- nEmp+IgL1XxZUwHH98qFvVDTHA6W6rbvNSvbr3LH8YZMFQoCTemFmnKwhI2oPf7T4TAjA8jkIw4
- cOvUcT3GWUP6eb8zi6oIyEmplwSQ7KNJui05AjXsaWg6RDOpAqcStOa0ZX8hDT2HzeNH0=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2383; i=nespera@igalia.com;
+ h=from:subject:message-id; bh=iz6Nkw3EJXV5T7V4mGGoBF1mUCtOGZEEQH+li2dAIyw=;
+ b=owEB7QES/pANAwAIAfIkzsI3VuKtAcsmYgBlT/s4VzrDlRJUTT1/u3z88jS2qfkZ9P2GZaMmt
+ nSUAcL4iZ6JAbMEAAEIAB0WIQSBPDomug3slDJEnubyJM7CN1birQUCZU/7OAAKCRDyJM7CN1bi
+ refDC/9+Pxnu8X0/OVKU8BDsbDc4wiuolt/hRm97HTzy2AAuImks+0On36H9d6663Qm0kXm9F6s
+ Ek9XbZAjvb6Llm3K5Fd/9kogyUB+/h7Yarc8WXrAV0tSXn1Ce7zeXTTNjyL29lDeogxBpxtB/DD
+ +xlddQylUmDoM2EZWb47FmB4KsOMZ1KLSZJAo44ZlzPPjgipxjXAj1sg+IhsyLoh899HHYimTD9
+ hz0FI0RjClZpEQGvkxnNEsPGVL3Lbd9Jn/9aXBBAbyYjM4z4rn2HjXrVoS54rY2TJTPk4TBToky
+ u38XkOhUuCnEga62Sw03cPabnBquEftqBbrXC9YkasJOCxRdpqTHU88Qh/T/zZV1EoZqwf7ZLsn
+ prW22XYPEE00WlhClHttxmgyAlT4HWPqPtEqC0POHRLURPeDe966nwY5O6r7e0aGoit41bLk1vb
+ E0i9orZQKX6ZnisGXgsNP/zLXMInNVMSGj3jh2ktKPJzRQ5noKcqlYZj4FzjD3exFf+QA=
 X-Developer-Key: i=nespera@igalia.com; a=openpgp;
  fpr=813C3A26BA0DEC9432449EE6F224CEC23756E2AD
 
-DMA0 node downstream is specified at 0x900000, so fix the typo. Without
-this, enabling any i2c node using DMA0 causes a hang.
+Patch series adding support for oneplus-lemonade and oneplus-lemonadep
+devices (OnePlus 9 & 9 Pro), along with a few needed fixups. Currently
+working as of this series:
 
-Fixes: bc08fbf49bc8 ("arm64: dts: qcom: sm8350: Define GPI DMA engines")
-Fixes: 41d6bca799b3 ("arm64: dts: qcom: sm8350: correct DMA controller unit address")
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+- USB OTG
+- UFS
+- Framebuffer display
+- Touchscreen (for lemonade)
+- Power & volume down keys
+- Battery reading
+- Modem, IPA, and remoteproc bringup
+
 Signed-off-by: Nia Espera <nespera@igalia.com>
 ---
- arch/arm64/boot/dts/qcom/sm8350.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Changes in v4:
+- Fixed up some small naming-related nits.
+- Link to v3: https://lore.kernel.org/r/20231108-nia-sm8350-for-upstream-v3-0-18a024b5c74c@igalia.com
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-index 00604bf7724f..6d12066389fa 100644
---- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-@@ -918,9 +918,9 @@ spi19: spi@894000 {
- 			};
- 		};
- 
--		gpi_dma0: dma-controller@9800000 {
-+		gpi_dma0: dma-controller@900000 {
- 			compatible = "qcom,sm8350-gpi-dma", "qcom,sm6350-gpi-dma";
--			reg = <0 0x09800000 0 0x60000>;
-+			reg = <0 0x00900000 0 0x60000>;
- 			interrupts = <GIC_SPI 244 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 245 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 246 IRQ_TYPE_LEVEL_HIGH>,
+Changes in v3:
+- Fixed up more incorrect devicetree properties.
+- Properly enabled the fsa type-C mux.
+- Added node for sm8350 PMIC glink.
+- Patch name fixes.
+- Link to v2: https://lore.kernel.org/r/20231018-nia-sm8350-for-upstream-v2-0-7b243126cb77@igalia.com
 
+Changes in v2:
+- Fixed up formatting/style.
+- Removed unused pinctrl nodes.
+- Removed unused properties.
+- Moved ADC7 defines to vadc header.
+- Edited copyright on lemonade dts and license on spmi header.
+- Fixed up therm channels.
+- Removed unnecessary hack w.r.t. timer node.
+- Link to v1: https://lore.kernel.org/r/20231016-nia-sm8350-for-upstream-v1-0-bb557a0af2e9@igalia.com
+
+---
+Nia Espera (6):
+      dt-bindings: iio: adc: qcom: Add Qualcomm smb139x
+      arm64: dts: qcom: sm8350: Fix DMA0 address
+      arm64: dts: qcom: pm8350k: Remove hanging whitespace
+      arm64: dts: qcom: sm8350: Fix remoteproc interrupt type
+      dt-bindings: arm: qcom: Add oneplus-lemonade(p)
+      arm64: dts: qcom: sm8350-lemonade(p): New devices
+
+ Documentation/devicetree/bindings/arm/qcom.yaml    |    2 +
+ arch/arm64/boot/dts/qcom/Makefile                  |    2 +
+ arch/arm64/boot/dts/qcom/pmk8350.dtsi              |    2 +-
+ .../arm64/boot/dts/qcom/sm8350-oneplus-common.dtsi | 1086 ++++++++++++++++++++
+ .../boot/dts/qcom/sm8350-oneplus-lemonade.dts      |   85 ++
+ .../boot/dts/qcom/sm8350-oneplus-lemonadep.dts     |   20 +
+ arch/arm64/boot/dts/qcom/sm8350.dtsi               |   12 +-
+ include/dt-bindings/iio/qcom,spmi-adc7-smb139x.h   |   19 +
+ include/dt-bindings/iio/qcom,spmi-vadc.h           |    3 +
+ 9 files changed, 1224 insertions(+), 7 deletions(-)
+---
+base-commit: ffc253263a1375a65fa6c9f62a893e9767fbebfa
+change-id: 20231016-nia-sm8350-for-upstream-2f452366e421
+
+Best regards,
 -- 
-2.42.1
+Nia Espera <nespera@igalia.com>
 
