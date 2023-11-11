@@ -1,32 +1,33 @@
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A24AB1FA7;
-	Sat, 11 Nov 2023 22:08:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2903E1DDEE;
+	Sat, 11 Nov 2023 22:08:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b="TzN/v24/"
+	dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b="EJCJeh7J"
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2055C385D;
-	Sat, 11 Nov 2023 14:08:03 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D0423840;
+	Sat, 11 Nov 2023 14:08:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
 	s=20170329; h=Cc:To:In-Reply-To:References:Message-Id:
 	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:Sender:
 	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
 	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
 	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=x9kwEypjevmEYUNyC18YSYgp8/2398DuMmARwC0CIlA=; b=TzN/v24/0wa4DzKz8Hw8NNJReH
-	3J3Unk2VZchcoRfgvOfJfLUzxuSnjCnT/WYDInDxxtWsr0AN0AvJayCgUmmoeThJYQPi0DhK684Q+
-	WrUIjHLhNTCrs7MNmp/RS9w33brHlDUNQCGGV5k/zt63vIofDIjTQE5BrvgZIDR6FQcOUUKts8cnT
-	tiErZKRM2Lt0LNObuFxFuvuod/Fzsj5rz/zQOJnXRmCkLKyTtUN5UB0m+RO8eWO8bNz+YiqZxYAIN
-	fOgo4jqjY8nZS1W0oREKOvNMJuktFETrpsd2OfP97q7s2UiKmD6RJMetWOmLqE/Ar9ZK1TU3XlFhM
-	+TXA6ttg==;
+	bh=2CnUQaTGxqUvfFdrUxE6AYsi+03ONnUHcjpsmARcoik=; b=EJCJeh7J0t0UmxZVZpbSXrf30U
+	l+b8MZQmixHxAWYLA4YkpVgwB67/3C60v7R4SxahGhwK6bhB99u8neX604x57th3bG/2gBVIn0wwR
+	hL/Qr1L8um8MZ7ST2HbbRj2uRsSQWTittyHpQUJd0r4014unxEKpR6ecWPTPq9/IYYaYwnVSa6Du3
+	iLHrNuy3ro9oRzBT1lSN9pO1BHuUVbfe2ZdzS9j8Fzye+07MuEcqDHM1olzrdu57LXgmMRXb4jfhc
+	9fsqCWBmEla6gPuik6C0ef01iz3k7hc7ldAWCNb05hIZPiG2c3DyMM0IdSvd1RnZbEpmJPfSlDZvn
+	XrmrK+9A==;
 Received: from i73190.upc-i.chello.nl ([62.195.73.190] helo=[192.168.68.111])
 	by fanzine2.igalia.com with esmtpsa 
 	(Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-	id 1r1w92-0029Vw-Fu; Sat, 11 Nov 2023 23:08:00 +0100
+	id 1r1w8z-0029Vw-WC; Sat, 11 Nov 2023 23:07:58 +0100
 From: Nia Espera <nespera@igalia.com>
-Date: Sat, 11 Nov 2023 23:07:43 +0100
-Subject: [PATCH v4 5/6] dt-bindings: arm: qcom: Add oneplus-lemonade(p)
+Date: Sat, 11 Nov 2023 23:07:41 +0100
+Subject: [PATCH v4 3/6] arm64: dts: qcom: pm8350k: Remove hanging
+ whitespace
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,7 +36,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231111-nia-sm8350-for-upstream-v4-5-3a638b02eea5@igalia.com>
+Message-Id: <20231111-nia-sm8350-for-upstream-v4-3-3a638b02eea5@igalia.com>
 References: <20231111-nia-sm8350-for-upstream-v4-0-3a638b02eea5@igalia.com>
 In-Reply-To: <20231111-nia-sm8350-for-upstream-v4-0-3a638b02eea5@igalia.com>
 To: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
@@ -53,40 +54,41 @@ Cc: linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
  Luca Weiss <luca.weiss@fairphone.com>, 
  ~postmarketos/upstreaming@lists.sr.ht, Nia Espera <nespera@igalia.com>
 X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=openpgp-sha256; l=792; i=nespera@igalia.com;
- h=from:subject:message-id; bh=8wzrr7zo2MAk5Q7UKt4HaR1sAhHvxZFVuBV6clgzOEw=;
- b=owEB7QES/pANAwAIAfIkzsI3VuKtAcsmYgBlT/s5L9kGBgtqZJ7BARUe0SCyYSEyCs/f5Wir9
- IWN7if8ELWJAbMEAAEIAB0WIQSBPDomug3slDJEnubyJM7CN1birQUCZU/7OQAKCRDyJM7CN1bi
- rRJJDACWyyop1OjfiNn3L4lAkXCWgOL/rMIfZJ6HvKa3dNnYoD3OdlUYpvc+T+hQmNuYUI0ltJJ
- vx7wU0uGNIxK38eXDrjKT1s3zAKbtmhtKb1/Qwya9OObg0RzBQ0KS3ZWdAUOJ82Am+YAR20xDt6
- mH2QBKJRy+CZQfiXVpnB7dC9VgBibOsX26434lXOz7ZlSksIeN/QJh0UL6pQ/l62/Ww3+yYFu5s
- XcUWOts/S8wrvgwH7FcJ/fxyOsOpzAZ1VFUSRWBXtbcVolOFjQcu9TcfhRRn0nc2oOUxQaSCO35
- OVCM+JMbVbA8mVbajQz45bYSo9msVcfiq12g+jfukVj7EO6r4LCldpbw5OGaIdTYn6+wq6pYrkM
- 9cUz3tNaab84uRnTh5o7IU6YFmbS1cGGKT2X0liZk44IrVUdfno5NynYY+/gm0Y8oTha3BWoWNk
- 6GeBiGSxRpCoX4cXaRb4KIkud7vZ4JKI5/nGT3LIQEJThMmaYWOtr4mvhoBO1EH19VZMQ=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=682; i=nespera@igalia.com;
+ h=from:subject:message-id; bh=0RUB7KOCa+Dyd4ytet9GLCvRq0z08dzAK+GEyion9dw=;
+ b=owEB7QES/pANAwAIAfIkzsI3VuKtAcsmYgBlT/s5UjcjTmdZAw3kS04syOcCyCUWjZxYmlwt8
+ zv/GSaAJ7SJAbMEAAEIAB0WIQSBPDomug3slDJEnubyJM7CN1birQUCZU/7OQAKCRDyJM7CN1bi
+ rZeZC/9SkQZpfkgdNuEbx273eRja6ZhHoTlIfCaDdXIzrc8VBw9rGlyXLIDSBeFYGoA9d93ETE9
+ /UbHtBOCk3GgdrX+PWvFRXo+ElShHmEp2ycfEZSKlAbwwJNgBPnnxK0C1oQUZA8tjTG5LEJt0HM
+ wPwwcTUXoFa0CpwQjU81a0W1mFvNdIE41Wb3nCZUZoX+1IWs/b/H+SzzKOGTRQooYSCeNo6X1s6
+ cw85tlq6XGegu4qH6C1tbognaaOI/iTCX13ZKM/HtUzjxh4X2TFI/2ZDR8Io+Nyxt4mVY50sove
+ vGqp0RELUNJCIiAYV8LIMn4R0WRDLDKpMbbIAf4U/3yusGAdR6U9/JzEtwmOvUXxa5ZvoYVgs0k
+ nfPOjoGl963AHjuAR0xuLj3gX45+BHi1R+tlxli/nnC0jjJfgQ0NrnnZnJFninFfZ9+L1NRNGRt
+ wdGh0geEiERpSrzCfWuG2JPjpPza63Ucg2F1g177YyCLufOK3CRCB/6cczSRb7UN+XPCk=
 X-Developer-Key: i=nespera@igalia.com; a=openpgp;
  fpr=813C3A26BA0DEC9432449EE6F224CEC23756E2AD
 
-Document the devicetree bindings for oneplus-lemonade and oneplus-lemonadep.
+pmk8350 has a random tab character inserted, so remove it.
 
+Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 Signed-off-by: Nia Espera <nespera@igalia.com>
 ---
- Documentation/devicetree/bindings/arm/qcom.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/boot/dts/qcom/pmk8350.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index adbfaea32343..90820f54f59a 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -970,6 +970,8 @@ properties:
-       - items:
-           - enum:
-               - microsoft,surface-duo2
-+              - oneplus,lemonade
-+              - oneplus,lemonadep
-               - qcom,sm8350-hdk
-               - qcom,sm8350-mtp
-               - sony,pdx214-generic
+diff --git a/arch/arm64/boot/dts/qcom/pmk8350.dtsi b/arch/arm64/boot/dts/qcom/pmk8350.dtsi
+index 1eb74017062d..f0ed15458dd7 100644
+--- a/arch/arm64/boot/dts/qcom/pmk8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/pmk8350.dtsi
+@@ -22,7 +22,7 @@ reboot-mode {
+ 		mode-bootloader = <0x02>;
+ 	};
+ };
+-	
++
+ &spmi_bus {
+ 	pmk8350: pmic@PMK8350_SID {
+ 		compatible = "qcom,pmk8350", "qcom,spmi-pmic";
 
 -- 
 2.42.1
