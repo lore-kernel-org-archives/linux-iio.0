@@ -1,65 +1,53 @@
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CD3118031;
-	Wed, 15 Nov 2023 13:00:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7784E1CAAF;
+	Wed, 15 Nov 2023 13:45:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QOOE6TUY"
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F417D130;
-	Wed, 15 Nov 2023 05:00:22 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id d2e1a72fcca58-6c431ca7826so5849230b3a.0;
-        Wed, 15 Nov 2023 05:00:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1700053222; x=1700658022; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wMGWOyYs7PfLPnHHX3eEkJL05C/4w6oYrycDGEtP+O8=;
-        b=QOOE6TUYLgGr6kfiybkGWALY/fl9rViuqOKLM29C2GV0XQ72h55aL+NdTGbrZiFkkJ
-         DzOQngHE7k/O5y6Nvivd4/LANUXrvFeSSHHXEyW0Z65BGU3CofWu5ZHMgkXvcnBujoQ5
-         n4oZs93XgRIpDZKKCuFgc5vjs3sIVuS7xVV0MwwBEtQ/DpGWTnHPKyM2WtCX+1akgiZr
-         MYozOqCTuOclsxXhg074nqstDf/b4wP1e4Rd1VNwL0SyufVa8fKPRYXJ5lXKo+spfMP7
-         cjyZbyQFIVkK45CG1TFm1Q5SLVJsz2JZApNbwwoKGvGPE+zsqcyi2+CSqaXm3QVJ70Qy
-         MYqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700053222; x=1700658022;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wMGWOyYs7PfLPnHHX3eEkJL05C/4w6oYrycDGEtP+O8=;
-        b=LY0bka8SpW4biZivPE3f1LwQ01ME4XD5kb91ayWs/sZYE24sFDb+ZnuIXQEjn4l/Hf
-         d7HW616pglkQtuWI6GZ/ITlvCbPHjHjw0wQFTQDV3A1lbG4b25Jc/Uvdg76vHlKT/zU5
-         TjkvSkZXyC3CpoAV44dLv+PBal8do9nRv6xdOsQzbHxzTdHjLqgnMp/uaXiwLW/ls6lR
-         C2OsqHfXhv33eOyCnBcbWKWqR1i5fsFNgmrfa3XeQPxhN8zKt9+FovvodvAc32QbMPd0
-         BLNOEFaysCJZ5PbqysPVU0SGBQI1QXMF71TTLb7lqOirQTN9Xag2PeDmw3I+7I8Vtehb
-         nhyg==
-X-Gm-Message-State: AOJu0YxCQMbwgTDUa5/XLRCnRkyyGANOJBsDLKi1uQ5TxgMiFJcMCUmx
-	JqMlUtMXovd6t2yIw2kXorEd7mUNRFUULQ==
-X-Google-Smtp-Source: AGHT+IG0DCAALxLt73Hxif+HsVVrnfq9qeiEd8MhZnzopAZbDKkX4ez1ojHiT+rNaTkOIS53L78BSg==
-X-Received: by 2002:a05:6a20:160b:b0:187:858b:8c1a with SMTP id l11-20020a056a20160b00b00187858b8c1amr568604pzj.50.1700053221366;
-        Wed, 15 Nov 2023 05:00:21 -0800 (PST)
-Received: from localhost.localdomain ([2401:4900:2353:8963:b940:1ac0:2fbc:6b6])
-        by smtp.gmail.com with ESMTPSA id fh42-20020a056a00392a00b006c4d128b71esm2812867pfb.98.2023.11.15.05.00.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Nov 2023 05:00:20 -0800 (PST)
-From: Anshul Dalal <anshulusr@gmail.com>
-To: linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Cc: Anshul Dalal <anshulusr@gmail.com>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	linux-kernel-mentees@lists.linuxfoundation.org,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v2 3/3] iio: chemical: add support for Aosong AGS02MA
-Date: Wed, 15 Nov 2023 18:28:08 +0530
-Message-ID: <20231115125810.1394854-3-anshulusr@gmail.com>
-X-Mailer: git-send-email 2.42.0
-In-Reply-To: <20231115125810.1394854-1-anshulusr@gmail.com>
-References: <20231115125810.1394854-1-anshulusr@gmail.com>
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="K5qR9s7u"
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 801A39B;
+	Wed, 15 Nov 2023 05:45:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1700055936; x=1731591936;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=OeuBwu619sZ9CKoQPi5K5tN9S8LiI/QU+WIb+tJzElw=;
+  b=K5qR9s7unnXRV3gVy9PsYjzG1vlOI8nl2W8EmYvJpcwh++32NUETLJyE
+   fY6lW/X0ybZMYqGCElq5mqVwaGo6qP31u+ogmM5jKb4czzcfaGTNV3pvd
+   lZ509x8vT8Vw+0utX1fbUYh+msZWP1Xy85jK1dF5Ju/ylD7hj6Z+B1t2s
+   o5lMcb/OSI0NROzKeQHI6mbGyMg70zNCLtB938sFoAnYi2o+rvbdHlj4m
+   ph7JAHJ11osBg0YCejBqPDTdf1ukG1qF/5jCAHRQquaAsJc6t80fMJAxd
+   msf3jetbR6zX3xEFAorxRlSxXf+4kSrCLLEyi0iaDGrMGA3cIYUjNvJ09
+   g==;
+X-CSE-ConnectionGUID: 2CxX/TgFSY+eV5q6XTnYdw==
+X-CSE-MsgGUID: vg1bWUbUSr6+Li1euWtieA==
+X-ThreatScanner-Verdict: Negative
+X-IronPort-AV: E=Sophos;i="6.03,305,1694761200"; 
+   d="scan'208";a="178883589"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 15 Nov 2023 06:45:35 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 15 Nov 2023 06:45:03 -0700
+Received: from marius-VM.mshome.net (10.10.85.11) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Wed, 15 Nov 2023 06:45:00 -0700
+From: <marius.cristea@microchip.com>
+To: <jic23@kernel.org>, <lars@metafoo.de>, <robh+dt@kernel.org>,
+	<jdelvare@suse.com>, <linux@roeck-us.net>, <linux-hwmon@vger.kernel.org>
+CC: <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <marius.cristea@microchip.com>
+Subject: [PATCH v3 1/2] dt-bindings: iio: adc: adding support for PAC193X
+Date: Wed, 15 Nov 2023 15:44:52 +0200
+Message-ID: <20231115134453.6656-2-marius.cristea@microchip.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20231115134453.6656-1-marius.cristea@microchip.com>
+References: <20231115134453.6656-1-marius.cristea@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,259 +55,162 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-A simple driver for the TVOC (Total Volatile Organic Compounds)
-sensor from Aosong: AGS02MA
+From: Marius Cristea <marius.cristea@microchip.com>
 
-Steps in reading the VOC sensor value over i2c:
-  1. Read 5 bytes from the register `AGS02MA_TVOC_READ_REG` [0x00]
-  2. The first 4 bytes are taken as the big endian sensor data with final
-     byte being the CRC
-  3. The CRC is verified and the value is returned over an
-     `IIO_CHAN_INFO_RAW` channel as percents
+This is the device tree schema for iio driver for
+Microchip PAC193X series of Power Monitors with Accumulator.
 
-Tested on Raspberry Pi Zero 2W
-
-Datasheet:
-  https://asairsensors.com/wp-content/uploads/2021/09/AGS02MA.pdf
-Product-Page:
-  http://www.aosong.com/m/en/products-33.html
-
-Signed-off-by: Anshul Dalal <anshulusr@gmail.com>
+Signed-off-by: Marius Cristea <marius.cristea@microchip.com>
 ---
+ .../bindings/iio/adc/microchip,pac1934.yaml   | 137 ++++++++++++++++++
+ 1 file changed, 137 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/microchip,pac1934.yaml
 
-Changes for v2:
-- Fixed Kconfig not selecting CRC8 (used to be `select crc8`)
-- Changed instances of asair to aosong
-- Report raw readings in percents instead of ppb
-- Added myself as maintainer for the device binding
----
- MAINTAINERS                    |   7 ++
- drivers/iio/chemical/Kconfig   |  11 +++
- drivers/iio/chemical/Makefile  |   1 +
- drivers/iio/chemical/ags02ma.c | 161 +++++++++++++++++++++++++++++++++
- 4 files changed, 180 insertions(+)
- create mode 100644 drivers/iio/chemical/ags02ma.c
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 81d5fc0bba68..07b82e766dbd 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3028,6 +3028,13 @@ S:	Supported
- W:	http://www.akm.com/
- F:	drivers/iio/magnetometer/ak8974.c
- 
-+AOSONG AGS02MA TVOC SENSOR DRIVER
-+M:	Anshul Dalal <anshulusr@gmail.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/chemical/aosong,ags02ma.yaml
-+F:	drivers/iio/chemical/ags02ma.c
-+
- ASC7621 HARDWARE MONITOR DRIVER
- M:	George Joseph <george.joseph@fairview5.com>
- L:	linux-hwmon@vger.kernel.org
-diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
-index c30657e10ee1..02649ab81b3c 100644
---- a/drivers/iio/chemical/Kconfig
-+++ b/drivers/iio/chemical/Kconfig
-@@ -5,6 +5,17 @@
- 
- menu "Chemical Sensors"
- 
-+config AOSONG_AGS02MA
-+	tristate "Aosong AGS02MA TVOC sensor driver"
-+	depends on I2C
-+	select CRC8
-+	help
-+	  Say Y here to build support for Aosong AGS02MA TVOC (Total Volatile
-+	  Organic Compounds) sensor.
-+
-+	  To compile this driver as module, choose M here: the module will be
-+	  called ags02ma.
-+
- config ATLAS_PH_SENSOR
- 	tristate "Atlas Scientific OEM SM sensors"
- 	depends on I2C
-diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
-index a11e777a7a00..2f3dee8bb779 100644
---- a/drivers/iio/chemical/Makefile
-+++ b/drivers/iio/chemical/Makefile
-@@ -4,6 +4,7 @@
- #
- 
- # When adding new entries keep the list in alphabetical order
-+obj-$(CONFIG_AOSONG_AGS02MA)	+= ags02ma.o
- obj-$(CONFIG_ATLAS_PH_SENSOR)	+= atlas-sensor.o
- obj-$(CONFIG_ATLAS_EZO_SENSOR)	+= atlas-ezo-sensor.o
- obj-$(CONFIG_BME680) += bme680_core.o
-diff --git a/drivers/iio/chemical/ags02ma.c b/drivers/iio/chemical/ags02ma.c
+diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,pac1934.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,pac1934.yaml
 new file mode 100644
-index 000000000000..e23655ffce69
+index 000000000000..2609cb19c377
 --- /dev/null
-+++ b/drivers/iio/chemical/ags02ma.c
-@@ -0,0 +1,161 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (C) 2023 Anshul Dalal <anshulusr@gmail.com>
-+ *
-+ * Driver for Aosong AGS02MA
-+ *
-+ * Datasheet:
-+ *   https://asairsensors.com/wp-content/uploads/2021/09/AGS02MA.pdf
-+ * Product Page:
-+ *   http://www.aosong.com/m/en/products-33.html
-+ *
-+ * TODO:
-+ *   - Add support for ug/m^3 units of measurement
-+ *   - Add support for modifying i2c address
-+ */
++++ b/Documentation/devicetree/bindings/iio/adc/microchip,pac1934.yaml
+@@ -0,0 +1,137 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/microchip,pac1934.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+#include <linux/crc8.h>
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+#include <linux/module.h>
++title: Microchip PAC1934 Power Monitors with Accumulator
 +
-+#define AGS02MA_DEVICE_NAME		   "ags02ma"
++maintainers:
++  - Marius Cristea <marius.cristea@microchip.com>
 +
-+#define AGS02MA_TVOC_READ_REG		   0x00
-+#define AGS02MA_VERSION_REG		   0x11
++description: |
++  This device is part of the Microchip family of Power Monitors with Accumulator.
++  The datasheet for PAC1931, PAC1932, PAC1933 and PAC1934 can be found here:
++    https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/PAC1931-Family-Data-Sheet-DS20005850E.pdf
 +
-+#define AGS02MA_VERSION_PROCESSING_DELAY   30
-+#define AGS02MA_TVOC_READ_PROCESSING_DELAY 1500
++properties:
++  compatible:
++    enum:
++      - microchip,pac1931
++      - microchip,pac1932
++      - microchip,pac1933
++      - microchip,pac1934
 +
-+#define AGS02MA_CRC8_INIT		   0xff
-+#define AGS02MA_CRC8_POLYNOMIAL		   0x31
-+#define AGS02MA_PPB_PERCENT_CONVERSION     10000000
++  reg:
++    maxItems: 1
 +
-+DECLARE_CRC8_TABLE(ags02ma_crc8_table);
++  "#address-cells":
++    const: 1
 +
-+struct ags02ma_data {
-+	struct i2c_client *client;
-+};
++  "#size-cells":
++    const: 0
 +
-+struct ags02ma_reading {
-+	__be32 data;
-+	u8 crc;
-+} __packed;
++  interrupts:
++    maxItems: 1
 +
-+static u32 ags02ma_register_read(struct i2c_client *client, u8 reg, u16 delay)
-+{
-+	u32 ret;
-+	u8 crc;
-+	struct ags02ma_reading read_buffer;
++  microchip,slow-io:
++    type: boolean
++    description: |
++      A GPIO used to trigger a change is sampling rate (lowering the chip power consumption).
++      If configured in SLOW mode, if this pin is forced high, sampling rate is forced to eight
++      samples/second. When it is forced low, the sampling rate is 1024 samples/second unless
++      a different sample rate has been programmed.
 +
-+	ret = i2c_master_send(client, &reg, sizeof(reg));
-+	if (ret < 0) {
-+		dev_err(&client->dev,
-+			"Failed to send data to register 0x%x: %d", reg, ret);
-+		return ret;
-+	}
++patternProperties:
++  "^channel@[1-4]+$":
++    type: object
++    $ref: adc.yaml
++    description: Represents the external channels which are connected to the ADC.
 +
-+	/* Processing Delay, Check Table 7.7 in the datasheet */
-+	msleep_interruptible(delay);
++    properties:
++      reg:
++        items:
++          minimum: 1
++          maximum: 4
 +
-+	ret = i2c_master_recv(client, (u8 *)&read_buffer, sizeof(read_buffer));
-+	if (ret < 0) {
-+		dev_err(&client->dev,
-+			"Failed to receive from register 0x%x: %d", reg, ret);
-+		return ret;
-+	}
-+	ret = be32_to_cpu(read_buffer.data);
++      shunt-resistor-micro-ohms:
++        description: |
++          Value in micro Ohms of the shunt resistor connected between
++          the SENSE+ and SENSE- inputs, across which the current is measured. Value
++          is needed to compute the scaling of the measured current.
 +
-+	crc = crc8(ags02ma_crc8_table, (u8 *)&read_buffer.data,
-+		   sizeof(read_buffer.data), AGS02MA_CRC8_INIT);
-+	if (crc != read_buffer.crc) {
-+		dev_err(&client->dev, "CRC error\n");
-+		return -EIO;
-+	}
++    required:
++      - reg
++      - shunt-resistor-micro-ohms
 +
-+	return ret;
-+}
++    unevaluatedProperties: false
 +
-+static int ags02ma_read_raw(struct iio_dev *iio_device,
-+			    struct iio_chan_spec const *chan, int *val,
-+			    int *val2, long mask)
-+{
-+	int ret;
-+	struct ags02ma_data *data = iio_priv(iio_device);
++required:
++  - compatible
++  - reg
++  - "#address-cells"
++  - "#size-cells"
 +
-+	if (mask == IIO_CHAN_INFO_RAW) {
-+		/* The sensor reads data as ppb */
-+		ret = ags02ma_register_read(data->client, AGS02MA_TVOC_READ_REG,
-+					    AGS02MA_TVOC_READ_PROCESSING_DELAY);
-+		if (ret < 0)
-+			return ret;
-+		*val = ret;
-+		*val2 = AGS02MA_PPB_PERCENT_CONVERSION;
-+		return IIO_VAL_FRACTIONAL;
-+	} else {
-+		return -EINVAL;
-+	}
-+}
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: interrupts
++    then:
++      properties:
++        microchip,slow-io: false
++    else:
++      if:
++        properties:
++          compatible:
++            contains:
++              const: microchip,slow-io
++      then:
++        properties:
++          interrupts: false
 +
-+static const struct iio_info ags02ma_info = {
-+	.read_raw = ags02ma_read_raw,
-+};
++additionalProperties: false
 +
-+static const struct iio_chan_spec ags02ma_channels[] = {
-+	{ .type = IIO_CONCENTRATION,
-+	  .channel2 = IIO_MOD_VOC,
-+	  .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) }
-+};
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
 +
-+static int ags02ma_probe(struct i2c_client *client)
-+{
-+	int ret;
-+	struct ags02ma_data *data;
-+	struct iio_dev *indio_dev;
-+	u32 version;
++        pac193x: power-monitor@10 {
++            compatible = "microchip,pac1934";
++            reg = <0x10>;
 +
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
++            #address-cells = <1>;
++            #size-cells = <0>;
 +
-+	crc8_populate_msb(ags02ma_crc8_table, AGS02MA_CRC8_POLYNOMIAL);
++            channel@1 {
++                reg = <0x1>;
++                shunt-resistor-micro-ohms = <24900000>;
++                label = "CPU";
++            };
 +
-+	ret = ags02ma_register_read(client, AGS02MA_VERSION_REG,
-+				    AGS02MA_VERSION_PROCESSING_DELAY);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "Failed to read device version: %d", ret);
-+		return ret;
-+	}
-+	version = ret;
-+	dev_dbg(&client->dev, "Aosong AGS02MA, Version: 0x%x", version);
++            channel@2 {
++                reg = <0x2>;
++                shunt-resistor-micro-ohms = <49900000>;
++                label = "GPU";
++            };
 +
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+	indio_dev->info = &ags02ma_info;
-+	indio_dev->channels = ags02ma_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(ags02ma_channels);
-+	indio_dev->name = AGS02MA_DEVICE_NAME;
++            channel@3 {
++                reg = <0x3>;
++                shunt-resistor-micro-ohms = <75000000>;
++                label = "MEM";
++                bipolar;
++            };
 +
-+	return devm_iio_device_register(&client->dev, indio_dev);
-+}
++            channel@4 {
++                reg = <0x4>;
++                shunt-resistor-micro-ohms = <100000000>;
++                label = "NET";
++                bipolar;
++            };
++        };
++    };
 +
-+static const struct i2c_device_id ags02ma_id_table[] = {
-+	{ AGS02MA_DEVICE_NAME, 0 },
-+	{ /* Sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(i2c, ags02ma_id_table);
-+
-+static struct i2c_driver ags02ma_driver = {
-+	.driver = {
-+		.name = AGS02MA_DEVICE_NAME,
-+	},
-+	.id_table = ags02ma_id_table,
-+	.probe = ags02ma_probe,
-+};
-+module_i2c_driver(ags02ma_driver);
-+
-+MODULE_AUTHOR("Anshul Dalal <anshulusr@gmail.com>");
-+MODULE_DESCRIPTION("Aosong AGS02MA TVOC Driver");
-+MODULE_LICENSE("GPL");
++...
 -- 
-2.42.0
+2.34.1
 
