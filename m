@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DKKICew2"
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DC1AA;
-	Sat, 18 Nov 2023 20:58:12 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id 5b1f17b1804b1-40859c464daso7603815e9.1;
-        Sat, 18 Nov 2023 20:58:12 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DzI4BCEI"
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69FE011D;
+	Sat, 18 Nov 2023 20:58:16 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-9e1021dbd28so456097566b.3;
+        Sat, 18 Nov 2023 20:58:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1700369891; x=1700974691; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=U1PTw7o6n++p2pe3+uDNhmt4e6YOBmzSfzozTRbXj6s=;
-        b=DKKICew2MXGcZ49HAdcc6o0ZmVQXzBLAOirik7sbg5J/33uv/h2sZODH2Wt6jwAW2j
-         Nycc/LjSn2RQ7gPOMb2NQkOgN10QELU+GV7X7O5o8CMoCLDjJ/42wscvmftHESMSHyHQ
-         AXUrapM/v/3tE+/dwEysaVjRMK4Yy6k/uVMOVEb9JxExVJIiUfCy9RdMlhSubV+M5rrV
-         CgR7nZhC3cdqgTzAuaOzEkUOdCHu/BgoNOiUmSipuxpoQfPnwYT9ol926A3RKT5B3pdx
-         qOxH7H6bdElH/+uoG0SKu1LEcZ3z78YRM9wdkE3hFoFRkymxmO9JdTTvdu4uben7glo9
-         c9qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700369891; x=1700974691;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=gmail.com; s=20230601; t=1700369895; x=1700974695; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=U1PTw7o6n++p2pe3+uDNhmt4e6YOBmzSfzozTRbXj6s=;
-        b=TxD4X9WN9ifRXVTLmOydwh7OOx8tXytmiQJh2FThCdW+4DOlfGAXt8/D2uVIoDTnDR
-         hjzqz+67VLI/FSTi57+dJKmR7g00zixRenc19EBXiSxVmiC1EHjOD12+JuyhZdtKtpGQ
-         KcOJVpx0fWjyYFnXat8GX2pu2yPALGiMGrjSerSiEKD9cy21DgQ9tmBx9g2+Nddwjgk3
-         X8huJpD20y9HSIxfBdnudxYVhzapxTI8oNH64FytVzkAo0f+dnTbS42MHODVfkh6/D9a
-         PXGA86rzDoz4UBKLUo1zwpDkiVesYRQ0MzfGIdE03feMiT9Ryi+DJhjrbj2Hgk5PqhKx
-         VgBg==
-X-Gm-Message-State: AOJu0Yxuz1w+TxIFrvQqVIvfNsJq7XuAovxULJxK4pvjM4hU95L/h+gh
-	XVcYsM5Oc9vhPFx7Z3aEcF8=
-X-Google-Smtp-Source: AGHT+IGK2HFD07qQcC5gTuWG6Pz4nHtRACtxN+wG086X5yYjhy3me6IkMfCGn18OkNWuSNFFQjUehQ==
-X-Received: by 2002:a05:6000:186d:b0:32f:80cf:c3cd with SMTP id d13-20020a056000186d00b0032f80cfc3cdmr3150241wri.4.1700369891167;
-        Sat, 18 Nov 2023 20:58:11 -0800 (PST)
+        bh=fplaLSYQTnlodH8FfQYQ5jvqJcl6qluHMzbsHoMOv78=;
+        b=DzI4BCEI6T9zet0NYyJeqS3snfNZJtfE4HUbZqztVByg2Oncxg62hrQd0oFW1jcDGX
+         RugmSVyBsgkfOlLb+f5YN6iVw8HRt0dyBNh2acHyKOOs90fRbKGDiZ8SzamEOUKynTk/
+         qGLFhNFgivcngQ8KUN9oliDLrvDvQPqjjX3HCbk5uWGloFo3rJyP/u4NT9t7olATM2Gj
+         oMcJKUo5GW2rIIgDMQ8DpSmkDw4UnKKAl7CDLb+lNj3xdQoz9R3UA3LSTUo6ophE8ca0
+         tCRP1LM2sLEAqvzCxO/U4hev/U6fDkvIjZuW4dgy9gmY40W27l8CXPWzvlwqcVVti1PZ
+         ESEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700369895; x=1700974695;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=fplaLSYQTnlodH8FfQYQ5jvqJcl6qluHMzbsHoMOv78=;
+        b=kdGBH3zGG78WUxcn/UeI9BBpA05v97zsHnejghq9fwpwlskkLgkmujhW/Dt3xrdz55
+         Rhjh9IQoWXSzm8cyuyn+6oWKuS3TDyy5X2xOvQT0/pcS3n0XpHCVjw1Dt4PnhUN+eCvn
+         VyZRDftoBDEcjZq2B6FJs+2l6RoovHb/FrBd1OlIubjf4oYQd/URyAI41QqyCBo2qdyb
+         X9YkEk2+c/LoSg/2i3xVKX8bFD1aC8aoV64P2jHrqD1clJwxI9cU4q7z4vBp/ZHBJusS
+         VjucRJuFnjWSVORRO3xUJOANe5iq2XP3vIBC2JgswuSYQ62vvPFsFtwJOoyDO6WWEoBH
+         i7Wg==
+X-Gm-Message-State: AOJu0Yza1YENzrWWJdOSMH3zyDIplvvWj+9RlOenNguVwaWxC6FSXcbB
+	jOvVabKVyVQ3HgdmS6TySlI=
+X-Google-Smtp-Source: AGHT+IHWDETWIINVAMoAfeD0sI4G7Z1GlcBzH8XX50y1rsq0701rmOy5UvWKW5dbBNBGFL6SWkXQrw==
+X-Received: by 2002:a17:906:3652:b0:9fc:fd2a:55d with SMTP id r18-20020a170906365200b009fcfd2a055dmr441623ejb.34.1700369894773;
+        Sat, 18 Nov 2023 20:58:14 -0800 (PST)
 Received: from [127.0.1.1] (2a02-8389-41cf-e200-9fcd-7897-f205-6e36.cable.dynamic.v6.surfer.at. [2a02:8389:41cf:e200:9fcd:7897:f205:6e36])
-        by smtp.gmail.com with ESMTPSA id q18-20020a1709060e5200b009f5b7b6f3c8sm2504220eji.56.2023.11.18.20.58.09
+        by smtp.gmail.com with ESMTPSA id q18-20020a1709060e5200b009f5b7b6f3c8sm2504220eji.56.2023.11.18.20.58.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Nov 2023 20:58:10 -0800 (PST)
+        Sat, 18 Nov 2023 20:58:14 -0800 (PST)
 From: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Subject: [PATCH 0/2] iio: light: add support for VEML6075 UVA and UVB light
- sensor
-Date: Sun, 19 Nov 2023 05:58:02 +0100
-Message-Id: <20231110-veml6075-v1-0-354b3245e14a@gmail.com>
+Date: Sun, 19 Nov 2023 05:58:04 +0100
+Subject: [PATCH 2/2] dt-bindings: iio: light: add support for Vishay
+ VEML6075
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -50,9 +50,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIANqVWWUC/x2M0QqDMAxFf0XybKGJ6HC/MnyINc5A7UaLZSD++
- 4KP53LuOaFIVinwbE7IUrXoJxlg20DYOL3F6WIM5KlDRO+q7HHwj951hD1REA48gukzF3Fz5hQ
- 2O6QjRhu/WVb93f3XdF1/p1U3hm8AAAA=
+Message-Id: <20231110-veml6075-v1-2-354b3245e14a@gmail.com>
+References: <20231110-veml6075-v1-0-354b3245e14a@gmail.com>
+In-Reply-To: <20231110-veml6075-v1-0-354b3245e14a@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh+dt@kernel.org>, 
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
@@ -61,39 +61,71 @@ Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, 
  Javier Carrasco <javier.carrasco.cruz@gmail.com>
 X-Mailer: b4 0.12.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1700369889; l=1062;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1700369889; l=1487;
  i=javier.carrasco.cruz@gmail.com; s=20230509; h=from:subject:message-id;
- bh=V2/ZEhgll+UdHLoD4NiUDtqLeWeoBJkkmnvE6IbaxD8=;
- b=o8z3uttBzv/qSqpOXKgErKg15ku3NmugreQmly9qW9umCTJi3IeqDq078C34Qp727OJdKDwQI
- bjSiDVUR7xEAQTZeuyYJiekSBrjNnSpFmgmsmKwcvHlNxvNWcxyopw0
+ bh=OUGiCOAJxrWsDYARNYQq1T/CNh7W00rLbeJhW/Ev090=;
+ b=3jeclC1PoYN1EtHlmytVuJaSl8lMjl2m/geBDnnv7YQl+jhAkk5ueXOXD10PXGe5+ATul3Yu2
+ FVW2e+4yFlqDzDe2n7WTca/rGDDjeJZlBWtU/HvFoy2gEFyTa0HcuEE
 X-Developer-Key: i=javier.carrasco.cruz@gmail.com; a=ed25519;
  pk=tIGJV7M+tCizagNijF0eGMBGcOsPD+0cWGfKjl4h6K8=
 
-This series adds support for the Vishay VEML6075 ultraviolet sensor,
-which offers UVA and UVB measurement channels and I2C communication.
+The Vishay VEML6075 is a 16-bit digital UVA and UVB sensor with I2C
+interface.
 
-The device bindings and a simple example are also provided.
-
-This driver has been tested with a Gravity VEML6075 UV Sensor Module in
-open air conditions.
+Add bindings and an example for the Vishay VEML6075.
 
 Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
 ---
-Javier Carrasco (2):
-      iio: light: add VEML6075 UVA and UVB light sensor driver
-      dt-bindings: iio: light: add support for Vishay VEML6075
+ .../bindings/iio/light/vishay,veml6075.yaml        | 40 ++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
- .../bindings/iio/light/vishay,veml6075.yaml        |  40 ++
- MAINTAINERS                                        |   6 +
- drivers/iio/light/Kconfig                          |  11 +
- drivers/iio/light/Makefile                         |   1 +
- drivers/iio/light/veml6075.c                       | 503 +++++++++++++++++++++
- 5 files changed, 561 insertions(+)
----
-base-commit: b85ea95d086471afb4ad062012a4d73cd328fa86
-change-id: 20231110-veml6075-321522ceaca9
+diff --git a/Documentation/devicetree/bindings/iio/light/vishay,veml6075.yaml b/Documentation/devicetree/bindings/iio/light/vishay,veml6075.yaml
+new file mode 100644
+index 000000000000..f8e2db29af42
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/vishay,veml6075.yaml
+@@ -0,0 +1,40 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/vishay,veml6075.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Vishay VEML6075 UVA and UVB sensor
++
++maintainers:
++  - Javier Carrasco <javier.carrasco.cruz@gmail.com>
++
++properties:
++  compatible:
++    const: vishay,veml6075
++
++  reg:
++    maxItems: 1
++
++  vdd-supply:
++    description: Regulator that provides power to the sensor
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        uv-sensor@10 {
++            compatible = "vishay,veml6075";
++            reg = <0x10>;
++            vdd-supply = <&vdd_reg>;
++        };
++    };
++...
 
-Best regards,
 -- 
-Javier Carrasco <javier.carrasco.cruz@gmail.com>
+2.39.2
 
