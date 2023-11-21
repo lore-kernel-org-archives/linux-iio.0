@@ -1,112 +1,106 @@
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F8571E523;
+	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NnrlbR5r"
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D688ABA;
-	Tue, 21 Nov 2023 02:14:02 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id 5614622812f47-3b3f6dd612cso3291374b6e.3;
-        Tue, 21 Nov 2023 02:14:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1700561642; x=1701166442; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2rBM84BPH3h1OTNeKF8gkahQrwyTUFEFO20bhp2Xhd8=;
-        b=NnrlbR5r2soU9t9TIxVn4YCusKvlrRaEi0T8vpS8rWNE+v5AsTWn9/BZRr0voePTJ5
-         QEHDRO4gXSuBe7Lv4RFCKHi29Z5vzwejmjSltA8PhW9+2wcK0PBxYM3pQ9Q5deSiWnSe
-         2rm7mEjEDuFUGgW2/psCCHo3+trO66a2MGh5zN8/WOs73A25an1jKkzfFKEJcVDR8hGS
-         ATkdtpwRIkdh4IGk+mRCKzB4VwcoBsDSz5c6B7AL3WRBfA4YAmTRJRfY9GfYFgCen6Xk
-         ataR/stE8KyTMbn0X5lY2pjHuXs2lyQZYfY/rJixs7ICYw0a0YowXHzDMuTjkfPX+Z+T
-         9uuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700561642; x=1701166442;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2rBM84BPH3h1OTNeKF8gkahQrwyTUFEFO20bhp2Xhd8=;
-        b=lyrUmH7F0xDY6rQw2zatLt4YtEUoB35hleeUWE/o1nC9kevJNk2aD38Xi5ucWSrHlj
-         ViF/vgq7YmyuFTVLp2D/Mm5v3ljqaAm4dfVLIIshRJbUV8U5GX9KBjS8NOLw9i68KUTk
-         /7i2Ce///a1Fha1IjHDCOrfcX7MeaL1lioXj6vxzEXlmrW5YN+HdXRdKW2bnW96NJyCq
-         jQHDkCd4AxkUa+y1Rv4DfeVkAwDYaJ28x63ANGovTsDY7TXpqBoL3eubfAuE/DFUEnPl
-         GkanEsWQbp1+mIVN/nbw0++5v4difDly7S2kZ4Zrj8LJWA3ePCVRLkQ2UwmbaaWlEUkv
-         BPkw==
-X-Gm-Message-State: AOJu0YxBGzATvMOISZ+kPK7dVUoKe/DO/7QFlSjfRcwkKkrbImRu/jJG
-	bjKTGblZ7xUy5Tj7jc5rQCMM3XEDqQbKsg==
-X-Google-Smtp-Source: AGHT+IGhEXVp30ly+W+J0Vq5BReMmqT7YvixSbVC5mluqZTiIrvaPLLb925ROrcuhxW/NFuCjXOCsQ==
-X-Received: by 2002:a05:6871:7b0c:b0:1f5:c7bb:8f2d with SMTP id pf12-20020a0568717b0c00b001f5c7bb8f2dmr12045321oac.35.1700561642127;
-        Tue, 21 Nov 2023 02:14:02 -0800 (PST)
-Received: from ?IPV6:2401:4900:2353:8963:b940:1ac0:2fbc:6b6? ([2401:4900:2353:8963:b940:1ac0:2fbc:6b6])
-        by smtp.gmail.com with ESMTPSA id f2-20020a056a0022c200b0064fd4a6b306sm7538948pfj.76.2023.11.21.02.13.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Nov 2023 02:14:01 -0800 (PST)
-Message-ID: <4eb9d00a-a672-40a8-a923-d728432b1250@gmail.com>
-Date: Tue, 21 Nov 2023 15:42:18 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oib2XK8e"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 36C59C43391;
+	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1700561839;
+	bh=xcCsv1YPXfjaIvVA0RXUQOLchG7pC7TZTbb7h2QT8FQ=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=oib2XK8eT+qBW/Nr472d/IyFjTfOHjRVg/9rYs7HMIkW6pLg/cMh1Mms2cGzbeyBm
+	 3XwDVwIpdyYzPypAuS8/xiVeIDZA2KuJdGCU3vmoTvScbRvA1DEAtASwslpoW2HM0J
+	 8k3dkcr0Vfl3SpneSmJg2avw0/cCj3BOSf0+55vLCfwvKO+sz+syiKp/gXFdtYob7S
+	 HsMmMdq2yS7GUtPdjdIfNXlxQSkzB008yQHlPcf12GKFSE6KHPEa5VYs6I5fncph7D
+	 DeHBHF+f1wTRjMq3/QxweB/k/8rAoHKdv/zrfCBMN+7s7/xaHqwvuUUwQ8dXiLxNDy
+	 TUDoQuRHZ1IZw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EFB9C61D88;
+	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
+From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
+Date: Tue, 21 Nov 2023 11:20:14 +0100
+Subject: [PATCH 01/12] driver: core: allow modifying device_links flags
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/3] dt-bindings: iio: chemical: add aosong,ags02ma
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
-Cc: Conor Dooley <conor+dt@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- linux-kernel-mentees@lists.linuxfoundation.org,
- Jonathan Cameron <jic23@kernel.org>
-References: <20231121095800.2180870-1-anshulusr@gmail.com>
- <20231121095800.2180870-2-anshulusr@gmail.com>
- <81149957-0403-4e41-8405-77ef8bfa3c8c@linaro.org>
-Content-Language: en-US
-From: Anshul Dalal <anshulusr@gmail.com>
-In-Reply-To: <81149957-0403-4e41-8405-77ef8bfa3c8c@linaro.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20231121-dev-iio-backend-v1-1-6a3d542eba35@analog.com>
+References: <20231121-dev-iio-backend-v1-0-6a3d542eba35@analog.com>
+In-Reply-To: <20231121-dev-iio-backend-v1-0-6a3d542eba35@analog.com>
+To: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-iio@vger.kernel.org
+Cc: Olivier MOYSAN <olivier.moysan@foss.st.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
+ Frank Rowand <frowand.list@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Nuno Sa <nuno.sa@analog.com>
+X-Mailer: b4 0.12.4
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1700562016; l=1762;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=E5lJx+ba9aYfbW1751Y9ldC8MoJ9UmaBt8xD72NDIH4=;
+ b=26RR5dmwuMuNTNSHOSrKzhJ9h6kRHuIupD5eZcLuJVFt7ycciyqPzBZYIEC4VKVNAvVs81nSY
+ 9h5AiMe0tyIBb/3LpfBAVNjBvpsPsIPVhI3Nrk+IXGAEEGFn+7cKzt7
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received:
+ by B4 Relay for nuno.sa@analog.com/20231116 with auth_id=100
+X-Original-From: Nuno Sa <nuno.sa@analog.com>
+Reply-To: <nuno.sa@analog.com>
 
+From: Nuno Sa <nuno.sa@analog.com>
 
+If a device_link is previously created (eg: via
+fw_devlink_create_devlink()) before the supplier + consumer are both
+present and bound to their respective drivers, there's no way to set
+DL_FLAG_AUTOREMOVE_CONSUMER anymore while one can still set
+DL_FLAG_AUTOREMOVE_SUPPLIER. Hence, rework the flags checks to allow
+for DL_FLAG_AUTOREMOVE_CONSUMER in the same way
+DL_FLAG_AUTOREMOVE_SUPPLIER is done.
 
-On 11/21/23 15:33, Krzysztof Kozlowski wrote:
-> On 21/11/2023 10:57, Anshul Dalal wrote:
->> Add bindings for Aosong AGS02MA TVOC sensor.
->>
->> The sensor communicates over i2c with the default address 0x1a.
->> TVOC values can be read in the units of ppb and ug/m^3 at register 0x00.
->>
->> Datasheet:
->>   https://asairsensors.com/wp-content/uploads/2021/09/AGS02MA.pdf
->> Product-Page:
->>   http://www.aosong.com/m/en/products-33.html
->>
-> 
-> 
->> +---
->> +$id: http://devicetree.org/schemas/iio/chemical/aosong,ags02ma.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Aosong AGS02MA VOC Sensor
->> [..]
->> +examples:
->> +  - |
->> +    #include <dt-bindings/interrupt-controller/irq.h>
->> +    i2c {
->> +        #address-cells = <1>;
->> +        #size-cells = <0>;
->> +
->> +        light-sensor@1a {
-> 
-> 
-> You called it chemical, so why this is here light-sensor?
+While at it, make sure that we are never left with
+DL_FLAG_AUTOPROBE_CONSUMER set together with one of
+DL_FLAG_AUTOREMOVE_CONSUMER or DL_FLAG_AUTOREMOVE_SUPPLIER.
 
-I was working on a binding for a light sensor in parallel at that time,
-I probably forgot to change this when copying the example from the light
-sensor.
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+---
+ drivers/base/core.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-Would be replaced by "voc-sensor" in the next revision, apologies for
-any inconvenience.
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 4d8b315c48a1..b6aac55c361d 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -806,11 +806,15 @@ struct device_link *device_link_add(struct device *consumer,
+ 		 * update the existing link to stay around longer.
+ 		 */
+ 		if (flags & DL_FLAG_AUTOREMOVE_SUPPLIER) {
+-			if (link->flags & DL_FLAG_AUTOREMOVE_CONSUMER) {
+-				link->flags &= ~DL_FLAG_AUTOREMOVE_CONSUMER;
+-				link->flags |= DL_FLAG_AUTOREMOVE_SUPPLIER;
+-			}
+-		} else if (!(flags & DL_FLAG_AUTOREMOVE_CONSUMER)) {
++			link->flags &= ~DL_FLAG_AUTOREMOVE_CONSUMER;
++			link->flags &= ~DL_FLAG_AUTOPROBE_CONSUMER;
++			link->flags |= DL_FLAG_AUTOREMOVE_SUPPLIER;
++
++		} else if (flags & DL_FLAG_AUTOREMOVE_CONSUMER) {
++			link->flags &= ~DL_FLAG_AUTOREMOVE_SUPPLIER;
++			link->flags &= ~DL_FLAG_AUTOPROBE_CONSUMER;
++			link->flags |= DL_FLAG_AUTOREMOVE_CONSUMER;
++		} else {
+ 			link->flags &= ~(DL_FLAG_AUTOREMOVE_CONSUMER |
+ 					 DL_FLAG_AUTOREMOVE_SUPPLIER);
+ 		}
 
-Thanks for the review.
+-- 
+2.42.1
 
-Best Regards,
-Anshul
