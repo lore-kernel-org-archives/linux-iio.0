@@ -1,29 +1,28 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C57C13D39B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C580D3D39D;
 	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LcArfob0"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 414DEC4339A;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vBOT88LO"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5818BC433AB;
 	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1700561839;
-	bh=SyiDg0M4bb96LkjdIXpGxEjy33+pSC9OiqWaYVm2mbo=;
+	bh=kR1P1qDaKkBJqKHxLcftCCQPOWdMTfwi8zlle0jyKqw=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=LcArfob0KPyzjlWHHA7Xr1L5mLN3cLO33jBh7/yw64RYsHJuq1o0UTd5a8hOKXfNW
-	 RjdQmprbhkoHvphiPQm9T4XDdALMw5Scjzk9vLQvxrwr59UVcW4a2VhJxZWdRNUQf3
-	 7xJkyURy9qSSO1qWz8fMe6zOOaPYTVlugo2YhCyYCu+zY5YPME8UoZJzJhm+/3brJc
-	 Es0S44UbwF2Sq8zCOsHQ7QuqQpREmY4LDmoe5ZNBoNCUq0Z86bWFexB12WDQOKdgPu
-	 5tCOMFd9i85F0JuJGFdtkdHxNzxFpOQLHSmdFv6Pgphp8f7n6SKzZqies7oV1ZUMzb
-	 YmiLpG3bHYx/A==
+	b=vBOT88LOE9Hs6UmC0GZ+CrcV2x6FG/SzD+X2lONoB3JvL2tlNzl3MHT8mw/pDFRT0
+	 lh1dLjA+OWD6POGvUMs7WJ2D42DbnNDq3r3I4QMJlgCh9qf3knMAZVFQ4T/uLwxC5x
+	 TrmLPYloHLqJm29RRfg6hQTtscFYPBS6BJil/qawV7Nn2VYbAgd2W2ES3nOG1Bxf7y
+	 03xIs0RPogPghut6UUi37ZmcJw//Km2lM9xesngRIKyagRWdSvXb5Ep14q4t74YJZ5
+	 SH89jBFFCUSLXwfUQWPvtg2gNv3xNHYQXH+VexP+48HP0cZ8aNewkEiGrs08OGDClX
+	 eJ59TbPZu538w==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B584C54FB9;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 469B0C5ACB3;
 	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Tue, 21 Nov 2023 11:20:15 +0100
-Subject: [PATCH 02/12] of: property: add device link support for
- io-backends
+Date: Tue, 21 Nov 2023 11:20:17 +0100
+Subject: [PATCH 04/12] iio: adc: ad9467: fix reset gpio handling
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -32,7 +31,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231121-dev-iio-backend-v1-2-6a3d542eba35@analog.com>
+Message-Id: <20231121-dev-iio-backend-v1-4-6a3d542eba35@analog.com>
 References: <20231121-dev-iio-backend-v1-0-6a3d542eba35@analog.com>
 In-Reply-To: <20231121-dev-iio-backend-v1-0-6a3d542eba35@analog.com>
 To: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -45,11 +44,11 @@ Cc: Olivier MOYSAN <olivier.moysan@foss.st.com>,
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Nuno Sa <nuno.sa@analog.com>
 X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1700562016; l=1344;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1700562016; l=2235;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=FN56N4bRgP7DSXQFw9VBSMu8KBn7uhCOtdkMxYwRVGo=;
- b=9P9DkFOjJlA87bAEaTzYVCxeiFrFxsqhruoD2Cj8TfiXTVFRdTcYH3Qw5P/Tq1x7Qczfi2yKB
- skhzbrDMdbjChTfL1jAZx0G/TbOKrbAh7dRl/k6Nc7QO6ooTB6aRZy9
+ bh=FvM763XbCHeFm7zY4qdHtyTPDglD207l1cPfXL+Oe8g=;
+ b=P0PYKwMAq5iL7cSwivnC4VVCg/v4uxIFKKFnAFSJextBIv6XHP6HMK5EgXWqu3AOEsvidK4k8
+ XV1C7/S/fs3AY8OC0AcvsmPzFVQheDspuKVpvkfZ3R5cLdaYu3EndBB
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received:
@@ -57,36 +56,81 @@ X-Endpoint-Received:
 X-Original-From: Nuno Sa <nuno.sa@analog.com>
 Reply-To: <nuno.sa@analog.com>
 
-From: Olivier Moysan <olivier.moysan@foss.st.com>
+From: Nuno Sa <nuno.sa@analog.com>
 
-Add support for creating device links out of more DT properties.
+The reset gpio was being requested with GPIOD_OUT_LOW which means, not
+asserted. Then it was being asserted but never de-asserted which means
+the devices was left in reset. Fix it by de-asserting the gpio.
 
-Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+While at it, moved the handling to it's own function and dropped
+'reset_gpio' from the 'struct ad9467_state' as we only need it during
+probe. On top of that, refactored things so that we now request the gpio
+asserted (i.e in reset) and then de-assert it.
+
+Fixes: ad6797120238 ("iio: adc: ad9467: add support AD9467 ADC")
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/of/property.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/adc/ad9467.c | 33 ++++++++++++++++++++-------------
+ 1 file changed, 20 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/of/property.c b/drivers/of/property.c
-index cf8dacf3e3b8..40a157daf08f 100644
---- a/drivers/of/property.c
-+++ b/drivers/of/property.c
-@@ -1244,6 +1244,7 @@ DEFINE_SIMPLE_PROP(interconnects, "interconnects", "#interconnect-cells")
- DEFINE_SIMPLE_PROP(iommus, "iommus", "#iommu-cells")
- DEFINE_SIMPLE_PROP(mboxes, "mboxes", "#mbox-cells")
- DEFINE_SIMPLE_PROP(io_channels, "io-channel", "#io-channel-cells")
-+DEFINE_SIMPLE_PROP(io_backends, "io-backends", NULL)
- DEFINE_SIMPLE_PROP(interrupt_parent, "interrupt-parent", NULL)
- DEFINE_SIMPLE_PROP(dmas, "dmas", "#dma-cells")
- DEFINE_SIMPLE_PROP(power_domains, "power-domains", "#power-domain-cells")
-@@ -1333,6 +1334,7 @@ static const struct supplier_bindings of_supplier_bindings[] = {
- 	{ .parse_prop = parse_iommu_maps, .optional = true, },
- 	{ .parse_prop = parse_mboxes, },
- 	{ .parse_prop = parse_io_channels, },
-+	{ .parse_prop = parse_io_backends, },
- 	{ .parse_prop = parse_interrupt_parent, },
- 	{ .parse_prop = parse_dmas, .optional = true, },
- 	{ .parse_prop = parse_power_domains, },
+diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
+index 39eccc28debe..368ea57be117 100644
+--- a/drivers/iio/adc/ad9467.c
++++ b/drivers/iio/adc/ad9467.c
+@@ -121,7 +121,6 @@ struct ad9467_state {
+ 	unsigned int			output_mode;
+ 
+ 	struct gpio_desc		*pwrdown_gpio;
+-	struct gpio_desc		*reset_gpio;
+ };
+ 
+ static int ad9467_spi_read(struct spi_device *spi, unsigned int reg)
+@@ -378,6 +377,23 @@ static int ad9467_preenable_setup(struct adi_axi_adc_conv *conv)
+ 	return ad9467_outputmode_set(st->spi, st->output_mode);
+ }
+ 
++static int ad9467_reset(struct device *dev)
++{
++	struct gpio_desc *gpio;
++
++	gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(gpio))
++		return PTR_ERR(gpio);
++	if (!gpio)
++		return 0;
++
++	fsleep(1);
++	gpiod_direction_output(gpio, 0);
++	fsleep(10);
++
++	return 0;
++}
++
+ static int ad9467_probe(struct spi_device *spi)
+ {
+ 	const struct ad9467_chip_info *info;
+@@ -408,18 +424,9 @@ static int ad9467_probe(struct spi_device *spi)
+ 	if (IS_ERR(st->pwrdown_gpio))
+ 		return PTR_ERR(st->pwrdown_gpio);
+ 
+-	st->reset_gpio = devm_gpiod_get_optional(&spi->dev, "reset",
+-						 GPIOD_OUT_LOW);
+-	if (IS_ERR(st->reset_gpio))
+-		return PTR_ERR(st->reset_gpio);
+-
+-	if (st->reset_gpio) {
+-		udelay(1);
+-		ret = gpiod_direction_output(st->reset_gpio, 1);
+-		if (ret)
+-			return ret;
+-		mdelay(10);
+-	}
++	ret = ad9467_reset(&spi->dev);
++	if (ret)
++		return ret;
+ 
+ 	conv->chip_info = &info->axi_adc_info;
+ 
 
 -- 
 2.42.1
