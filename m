@@ -1,29 +1,28 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 063823D3BD;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E59393D3AA;
 	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MG22fP/8"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BCEAAC433B7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qWgIDHcj"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 65C59C43215;
 	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1700561839;
-	bh=3jqcpmMVgRdlV0OZKCqw9abAHNIj6Mrrp0uhYEWv1Tw=;
+	bh=qSUa7Hi/hUvGOoV6T8t+VfM63v3j7nIpVAXf0Nwefts=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=MG22fP/8IbSk4s4y1vLdBrnoBg+zYmS0SAke44UgfmDz21OKuqfGt4MAF3OK+JWLl
-	 HSfavn7vxUR1o6bUUTQVNrOujw41oh/yjAV7vmM2OOqtgVHLW+QuM3rayrrUhd5SaX
-	 kNB3U5tO65hb5BNIoB0fE6BxIcwtI5y1Q8w7dWwuWM6S+gBGUcrB/Rm+UuClPVPTOX
-	 5aG04NOEmjBYdniXWXzx3pQxCM6H9/ofZFt8cyacAMQYYlsWPVUKKkuwDkN8s8bp0B
-	 Wcgehwn7348Unz8ppoiDBevUFpnbzAxM/LCQBLHRPoZRtIQ5kf+40sfvnAuGPVT42n
-	 ZdIoBP6JzXmEg==
+	b=qWgIDHcjtrnHnJCZozZC23X8yKhhvdi6PscYnSnqGN/hur4B5WMyBBAgV9hbRKEHl
+	 Q5X15wT0LX9tPbiAun3N0ifbMEt+pKH+ztuPEdUESZGPk0WrwNsJ39eCLaFq4lJFpO
+	 gcBVv/nXhkcEQJt7RxSUJcIKJH0dwXazuVsqWMnqCoOP4YRJzE5Mx7oTAiRBL1Q14e
+	 mOECvk9dPv1Iy41EndovdhNow/5t8UDqGwDHmwY7PkkmgjIxc42OShjd7AVvcO97Zp
+	 5gfPdvexpN36clBpRCL9MZb8fE90mzGe8xrqjmhw1qXxQqhEqrAZuEAKIvhYBdB+TR
+	 gh6/HQUOz5aEQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A924DC5ACB3;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 554F2C61D88;
 	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Tue, 21 Nov 2023 11:20:22 +0100
-Subject: [PATCH 09/12] iio: adc: ad9467: use chip_info variables instead of
- array
+Date: Tue, 21 Nov 2023 11:20:18 +0100
+Subject: [PATCH 05/12] iio: adc: ad9467: don't ignore error codes
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -32,7 +31,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231121-dev-iio-backend-v1-9-6a3d542eba35@analog.com>
+Message-Id: <20231121-dev-iio-backend-v1-5-6a3d542eba35@analog.com>
 References: <20231121-dev-iio-backend-v1-0-6a3d542eba35@analog.com>
 In-Reply-To: <20231121-dev-iio-backend-v1-0-6a3d542eba35@analog.com>
 To: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -45,11 +44,11 @@ Cc: Olivier MOYSAN <olivier.moysan@foss.st.com>,
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Nuno Sa <nuno.sa@analog.com>
 X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1700562016; l=4457;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1700562016; l=2285;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=vkbr36xjXuQW5nYydBocFuU8wGwlSsFvoY57jHRaH1w=;
- b=He0UNjSCXL2IIli4eBSKtEN63uAMX1iX8sAVvjSjiwnMjnttPr8caWXTQQjkZG7/HQauGJe4v
- gsLvTYTUJw8AkRva2t7rNxuOc9TIj9MRnodf6mbaPiFcZGIUmpJ591x
+ bh=p+reK//8NVmJckTKVuZ5PeMlMhxvLT/SuRjMD0wgKfo=;
+ b=R49EuewoiHYxiFgzjwcP3nIvMmY3PaNku9HMivMl6qBa1cAQ4vL1PO2YimCWCUzwwgQil7p41
+ rK7JWGwGhYhAXTFw/8uQ5/zSJbi1frMDouMhKua7NwtA37UYKhmdp5O
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received:
@@ -59,136 +58,79 @@ Reply-To: <nuno.sa@analog.com>
 
 From: Nuno Sa <nuno.sa@analog.com>
 
-Instead of having an array and keeping IDs for each entry of the array,
-just have a chip_info struct per device.
+Make sure functions that return errors are not ignored.
 
+Fixes: ad6797120238 ("iio: adc: ad9467: add support AD9467 ADC")
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/adc/ad9467.c | 89 +++++++++++++++++++++++-------------------------
- 1 file changed, 43 insertions(+), 46 deletions(-)
+ drivers/iio/adc/ad9467.c | 25 ++++++++++++++++---------
+ 1 file changed, 16 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
-index f0342c8942ee..5db5690ccee8 100644
+index 368ea57be117..04474dbfa631 100644
 --- a/drivers/iio/adc/ad9467.c
 +++ b/drivers/iio/adc/ad9467.c
-@@ -101,12 +101,6 @@
- #define AD9467_DEF_OUTPUT_MODE		0x08
- #define AD9467_REG_VREF_MASK		0x0F
+@@ -6,6 +6,7 @@
+  */
  
--enum {
--	ID_AD9265,
--	ID_AD9434,
--	ID_AD9467,
--};
--
- struct ad9467_chip_info {
- 	struct adi_axi_adc_chip_info	axi_adc_info;
- 	unsigned int			default_output_mode;
-@@ -234,43 +228,46 @@ static const struct iio_chan_spec ad9467_channels[] = {
- 	AD9467_CHAN(0, 0, 16, 'S'),
- };
+ #include <linux/module.h>
++#include <linux/mutex.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+@@ -160,11 +161,12 @@ static int ad9467_reg_access(struct adi_axi_adc_conv *conv, unsigned int reg,
+ 	struct spi_device *spi = st->spi;
+ 	int ret;
  
--static const struct ad9467_chip_info ad9467_chip_tbl[] = {
--	[ID_AD9265] = {
--		.axi_adc_info = {
--			.id = CHIPID_AD9265,
--			.max_rate = 125000000UL,
--			.scale_table = ad9265_scale_table,
--			.num_scales = ARRAY_SIZE(ad9265_scale_table),
--			.channels = ad9467_channels,
--			.num_channels = ARRAY_SIZE(ad9467_channels),
--		},
--		.default_output_mode = AD9265_DEF_OUTPUT_MODE,
--		.vref_mask = AD9265_REG_VREF_MASK,
-+static const struct ad9467_chip_info ad9467_chip_tbl = {
-+	.axi_adc_info = {
-+		.name = "ad9467",
-+		.id = CHIPID_AD9467,
-+		.max_rate = 250000000UL,
-+		.scale_table = ad9467_scale_table,
-+		.num_scales = ARRAY_SIZE(ad9467_scale_table),
-+		.channels = ad9467_channels,
-+		.num_channels = ARRAY_SIZE(ad9467_channels),
- 	},
--	[ID_AD9434] = {
--		.axi_adc_info = {
--			.id = CHIPID_AD9434,
--			.max_rate = 500000000UL,
--			.scale_table = ad9434_scale_table,
--			.num_scales = ARRAY_SIZE(ad9434_scale_table),
--			.channels = ad9434_channels,
--			.num_channels = ARRAY_SIZE(ad9434_channels),
--		},
--		.default_output_mode = AD9434_DEF_OUTPUT_MODE,
--		.vref_mask = AD9434_REG_VREF_MASK,
-+	.default_output_mode = AD9467_DEF_OUTPUT_MODE,
-+	.vref_mask = AD9467_REG_VREF_MASK,
-+};
+-	if (readval == NULL) {
++	if (!readval) {
+ 		ret = ad9467_spi_write(spi, reg, writeval);
+-		ad9467_spi_write(spi, AN877_ADC_REG_TRANSFER,
+-				 AN877_ADC_TRANSFER_SYNC);
+-		return ret;
++		if (ret)
++			return ret;
++		return ad9467_spi_write(spi, AN877_ADC_REG_TRANSFER,
++					AN877_ADC_TRANSFER_SYNC);
+ 	}
+ 
+ 	ret = ad9467_spi_read(spi, reg);
+@@ -274,6 +276,8 @@ static int ad9467_get_scale(struct adi_axi_adc_conv *conv, int *val, int *val2)
+ 	unsigned int i, vref_val;
+ 
+ 	vref_val = ad9467_spi_read(st->spi, AN877_ADC_REG_VREF);
++	if (vref_val < 0)
++		return vref_val;
+ 
+ 	vref_val &= info1->vref_mask;
+ 
+@@ -296,6 +300,7 @@ static int ad9467_set_scale(struct adi_axi_adc_conv *conv, int val, int val2)
+ 	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
+ 	unsigned int scale_val[2];
+ 	unsigned int i;
++	int ret;
+ 
+ 	if (val != 0)
+ 		return -EINVAL;
+@@ -305,11 +310,13 @@ static int ad9467_set_scale(struct adi_axi_adc_conv *conv, int val, int val2)
+ 		if (scale_val[0] != val || scale_val[1] != val2)
+ 			continue;
+ 
+-		ad9467_spi_write(st->spi, AN877_ADC_REG_VREF,
+-				 info->scale_table[i][1]);
+-		ad9467_spi_write(st->spi, AN877_ADC_REG_TRANSFER,
+-				 AN877_ADC_TRANSFER_SYNC);
+-		return 0;
++		ret = ad9467_spi_write(st->spi, AN877_ADC_REG_VREF,
++				       info->scale_table[i][1]);
++		if (ret < 0)
++			return ret;
 +
-+static const struct ad9467_chip_info ad9434_chip_tbl = {
-+	.axi_adc_info = {
-+		.name = "ad9434",
-+		.id = CHIPID_AD9434,
-+		.max_rate = 500000000UL,
-+		.scale_table = ad9434_scale_table,
-+		.num_scales = ARRAY_SIZE(ad9434_scale_table),
-+		.channels = ad9434_channels,
-+		.num_channels = ARRAY_SIZE(ad9434_channels),
- 	},
--	[ID_AD9467] = {
--		.axi_adc_info = {
--			.id = CHIPID_AD9467,
--			.max_rate = 250000000UL,
--			.scale_table = ad9467_scale_table,
--			.num_scales = ARRAY_SIZE(ad9467_scale_table),
--			.channels = ad9467_channels,
--			.num_channels = ARRAY_SIZE(ad9467_channels),
--		},
--		.default_output_mode = AD9467_DEF_OUTPUT_MODE,
--		.vref_mask = AD9467_REG_VREF_MASK,
-+	.default_output_mode = AD9434_DEF_OUTPUT_MODE,
-+	.vref_mask = AD9434_REG_VREF_MASK,
-+};
-+
-+static const struct ad9467_chip_info ad9265_chip_tbl = {
-+	.axi_adc_info = {
-+		.name = "ad9265",
-+		.id = CHIPID_AD9265,
-+		.max_rate = 125000000UL,
-+		.scale_table = ad9265_scale_table,
-+		.num_scales = ARRAY_SIZE(ad9265_scale_table),
-+		.channels = ad9467_channels,
-+		.num_channels = ARRAY_SIZE(ad9467_channels),
- 	},
-+	.default_output_mode = AD9265_DEF_OUTPUT_MODE,
-+	.vref_mask = AD9265_REG_VREF_MASK,
- };
++		return ad9467_spi_write(st->spi, AN877_ADC_REG_TRANSFER,
++					AN877_ADC_TRANSFER_SYNC);
+ 	}
  
- static int ad9467_get_scale(struct adi_axi_adc_conv *conv, int *val, int *val2)
-@@ -505,17 +502,17 @@ static int ad9467_probe(struct spi_device *spi)
- }
- 
- static const struct of_device_id ad9467_of_match[] = {
--	{ .compatible = "adi,ad9265", .data = &ad9467_chip_tbl[ID_AD9265], },
--	{ .compatible = "adi,ad9434", .data = &ad9467_chip_tbl[ID_AD9434], },
--	{ .compatible = "adi,ad9467", .data = &ad9467_chip_tbl[ID_AD9467], },
-+	{ .compatible = "adi,ad9265", .data = &ad9265_chip_tbl, },
-+	{ .compatible = "adi,ad9434", .data = &ad9434_chip_tbl, },
-+	{ .compatible = "adi,ad9467", .data = &ad9467_chip_tbl, },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, ad9467_of_match);
- 
- static const struct spi_device_id ad9467_ids[] = {
--	{ "ad9265", (kernel_ulong_t)&ad9467_chip_tbl[ID_AD9265] },
--	{ "ad9434", (kernel_ulong_t)&ad9467_chip_tbl[ID_AD9434] },
--	{ "ad9467", (kernel_ulong_t)&ad9467_chip_tbl[ID_AD9467] },
-+	{ "ad9265", (kernel_ulong_t)&ad9265_chip_tbl },
-+	{ "ad9434", (kernel_ulong_t)&ad9434_chip_tbl },
-+	{ "ad9467", (kernel_ulong_t)&ad9467_chip_tbl },
- 	{}
- };
- MODULE_DEVICE_TABLE(spi, ad9467_ids);
+ 	return -EINVAL;
 
 -- 
 2.42.1
