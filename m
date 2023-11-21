@@ -1,28 +1,28 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5CA53D3AB;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E79333D3AC;
 	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eM9cxBHG"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 756A9C433CD;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lntgOrf9"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AE8A5C433B6;
 	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1700561839;
-	bh=0BvXHNAq6MxvTFFypFKVLfm202ysR+MbTta68aDgcfw=;
+	bh=9VrRKn1T4nW7pywpPWHeJW9v+K02u4HC9bddai2LGIs=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=eM9cxBHG3fTojuudhsxbw1lZ7Gau0JELf/VvK07u5vpOTcme0gJ4xu+Itj8nCrBSS
-	 pQ69EQgUShyyhjHqyvtNK2fVLPjWzmn3347UIdDPX5pmrsJ9BNyBTiTtY5sWz3020C
-	 1pF2EKHPSBIM7uYjXbgTbtpIiVU8tqs+yJIhruao5qJns1oBXNxyzQgSuqsAuc5rj5
-	 j/4tC4i/BSgLYG/bNh5GL4Lb/bNJZgxQBh9frk9hEv1o+hRZ74LtQrT9pUsmM0NKwJ
-	 Mddy82xhpqFXPLV5KIcEOMEJ6uUrRPtQ/JJQjqjP0EiQQXm3lH0T31LaKT20IKzTiv
-	 Rj83/7XWraOOw==
+	b=lntgOrf9pEnmt1kBeSd1mEuOCJN9paZeKsT3jK8wRZVPLhqIbSMwiTYMe/U9HOPwc
+	 zNnmJjyDvY5mOpZ92z2Kkx40eIPuks4mwBGpdIBqLAOrOyBuHk5+80mqR3TB2QtKsi
+	 Vf5Fkke9TC2tqJYeJSgXO4+2jh8HxjWc+Vs2AZo769nsEf6Py80lcz95hZJ/nWiLVY
+	 b7PV4+JxiEBNaYak7HM8YEBK+KWQqbF17mx9tWFEmU2B5a/4H/z0hfe2GJ86uhbqtq
+	 z/D0wuyH26STC4e0nOa42Jt7GzGCvNg9zEmjlVcjLQse2/wzB781+XOu6MV0BgqV9C
+	 1EpPBux/E12Qg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63334C61D92;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED7DC54FB9;
 	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Tue, 21 Nov 2023 11:20:19 +0100
-Subject: [PATCH 06/12] iio: adc: ad9467: add mutex to struct ad9467_state
+Date: Tue, 21 Nov 2023 11:20:21 +0100
+Subject: [PATCH 08/12] iio: adc: ad9467: use spi_get_device_match_data()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -31,7 +31,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231121-dev-iio-backend-v1-6-6a3d542eba35@analog.com>
+Message-Id: <20231121-dev-iio-backend-v1-8-6a3d542eba35@analog.com>
 References: <20231121-dev-iio-backend-v1-0-6a3d542eba35@analog.com>
 In-Reply-To: <20231121-dev-iio-backend-v1-0-6a3d542eba35@analog.com>
 To: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -44,11 +44,11 @@ Cc: Olivier MOYSAN <olivier.moysan@foss.st.com>,
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Nuno Sa <nuno.sa@analog.com>
 X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1700562016; l=1622;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1700562016; l=686;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=g3tcVMAWnAaNpfd4zR0L8lXR29z5KekLRZe6sxMF/hk=;
- b=c73pLlPBK+gRvwbzpMIaQzg2/RJK0F0Puv/XvfzcIUdIwAgeIeOujPcKeq6HBext2kU07mya6
- y+9u9e194XEB1j4VRHh9o3JjEgyQO25ay/PCBtt95QyHrc9TUVacvKt
+ bh=zYitHUb6TMLk+FkB4cL0ig740y1mLs+DvRMVWPrSNF0=;
+ b=bXWJ7iE5iGJrgtGP5xd739Rr7ggBJOq8O9gdmWl6WbsvAQnU0yaRoF4iISJY3EzpfGMuAUAIN
+ 4AltcqL8Q1WDNvkTtIpIqq0oGoY4BjwJS5R5b8uMYVJRnq0B/qzJQbm
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received:
@@ -58,54 +58,28 @@ Reply-To: <nuno.sa@analog.com>
 
 From: Nuno Sa <nuno.sa@analog.com>
 
-When calling ad9467_set_scale(), multiple calls to ad9467_spi_write()
-are done which means we need to properly protect the whole operation so
-we are sure we will be in a sane state if two concurrent calls occur.
+Make use of spi_get_device_match_data() to simplify things.
 
-Fixes: ad6797120238 ("iio: adc: ad9467: add support AD9467 ADC")
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/adc/ad9467.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iio/adc/ad9467.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
-index 04474dbfa631..91821dee03b7 100644
+index df4c21248226..f0342c8942ee 100644
 --- a/drivers/iio/adc/ad9467.c
 +++ b/drivers/iio/adc/ad9467.c
-@@ -4,7 +4,7 @@
-  *
-  * Copyright 2012-2020 Analog Devices Inc.
-  */
--
-+#include <linux/cleanup.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/device.h>
-@@ -122,6 +122,8 @@ struct ad9467_state {
- 	unsigned int			output_mode;
- 
- 	struct gpio_desc		*pwrdown_gpio;
-+	/* protect against concurrent accesses to the device */
-+	struct mutex			lock;
- };
- 
- static int ad9467_spi_read(struct spi_device *spi, unsigned int reg)
-@@ -162,6 +164,7 @@ static int ad9467_reg_access(struct adi_axi_adc_conv *conv, unsigned int reg,
+@@ -455,9 +455,7 @@ static int ad9467_probe(struct spi_device *spi)
+ 	unsigned int id;
  	int ret;
  
- 	if (!readval) {
-+		guard(mutex)(&st->lock);
- 		ret = ad9467_spi_write(spi, reg, writeval);
- 		if (ret)
- 			return ret;
-@@ -310,6 +313,7 @@ static int ad9467_set_scale(struct adi_axi_adc_conv *conv, int val, int val2)
- 		if (scale_val[0] != val || scale_val[1] != val2)
- 			continue;
+-	info = of_device_get_match_data(&spi->dev);
+-	if (!info)
+-		info = (void *)spi_get_device_id(spi)->driver_data;
++	info = spi_get_device_match_data(spi);
+ 	if (!info)
+ 		return -ENODEV;
  
-+		guard(mutex)(&st->lock);
- 		ret = ad9467_spi_write(st->spi, AN877_ADC_REG_VREF,
- 				       info->scale_table[i][1]);
- 		if (ret < 0)
 
 -- 
 2.42.1
