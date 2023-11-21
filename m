@@ -1,28 +1,28 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C580D3D39D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5CA53D3AB;
 	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vBOT88LO"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5818BC433AB;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eM9cxBHG"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 756A9C433CD;
 	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1700561839;
-	bh=kR1P1qDaKkBJqKHxLcftCCQPOWdMTfwi8zlle0jyKqw=;
+	bh=0BvXHNAq6MxvTFFypFKVLfm202ysR+MbTta68aDgcfw=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=vBOT88LOE9Hs6UmC0GZ+CrcV2x6FG/SzD+X2lONoB3JvL2tlNzl3MHT8mw/pDFRT0
-	 lh1dLjA+OWD6POGvUMs7WJ2D42DbnNDq3r3I4QMJlgCh9qf3knMAZVFQ4T/uLwxC5x
-	 TrmLPYloHLqJm29RRfg6hQTtscFYPBS6BJil/qawV7Nn2VYbAgd2W2ES3nOG1Bxf7y
-	 03xIs0RPogPghut6UUi37ZmcJw//Km2lM9xesngRIKyagRWdSvXb5Ep14q4t74YJZ5
-	 SH89jBFFCUSLXwfUQWPvtg2gNv3xNHYQXH+VexP+48HP0cZ8aNewkEiGrs08OGDClX
-	 eJ59TbPZu538w==
+	b=eM9cxBHG3fTojuudhsxbw1lZ7Gau0JELf/VvK07u5vpOTcme0gJ4xu+Itj8nCrBSS
+	 pQ69EQgUShyyhjHqyvtNK2fVLPjWzmn3347UIdDPX5pmrsJ9BNyBTiTtY5sWz3020C
+	 1pF2EKHPSBIM7uYjXbgTbtpIiVU8tqs+yJIhruao5qJns1oBXNxyzQgSuqsAuc5rj5
+	 j/4tC4i/BSgLYG/bNh5GL4Lb/bNJZgxQBh9frk9hEv1o+hRZ74LtQrT9pUsmM0NKwJ
+	 Mddy82xhpqFXPLV5KIcEOMEJ6uUrRPtQ/JJQjqjP0EiQQXm3lH0T31LaKT20IKzTiv
+	 Rj83/7XWraOOw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 469B0C5ACB3;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63334C61D92;
 	Tue, 21 Nov 2023 10:17:19 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Tue, 21 Nov 2023 11:20:17 +0100
-Subject: [PATCH 04/12] iio: adc: ad9467: fix reset gpio handling
+Date: Tue, 21 Nov 2023 11:20:19 +0100
+Subject: [PATCH 06/12] iio: adc: ad9467: add mutex to struct ad9467_state
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -31,7 +31,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231121-dev-iio-backend-v1-4-6a3d542eba35@analog.com>
+Message-Id: <20231121-dev-iio-backend-v1-6-6a3d542eba35@analog.com>
 References: <20231121-dev-iio-backend-v1-0-6a3d542eba35@analog.com>
 In-Reply-To: <20231121-dev-iio-backend-v1-0-6a3d542eba35@analog.com>
 To: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -44,11 +44,11 @@ Cc: Olivier MOYSAN <olivier.moysan@foss.st.com>,
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Nuno Sa <nuno.sa@analog.com>
 X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1700562016; l=2235;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1700562016; l=1622;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=FvM763XbCHeFm7zY4qdHtyTPDglD207l1cPfXL+Oe8g=;
- b=P0PYKwMAq5iL7cSwivnC4VVCg/v4uxIFKKFnAFSJextBIv6XHP6HMK5EgXWqu3AOEsvidK4k8
- XV1C7/S/fs3AY8OC0AcvsmPzFVQheDspuKVpvkfZ3R5cLdaYu3EndBB
+ bh=g3tcVMAWnAaNpfd4zR0L8lXR29z5KekLRZe6sxMF/hk=;
+ b=c73pLlPBK+gRvwbzpMIaQzg2/RJK0F0Puv/XvfzcIUdIwAgeIeOujPcKeq6HBext2kU07mya6
+ y+9u9e194XEB1j4VRHh9o3JjEgyQO25ay/PCBtt95QyHrc9TUVacvKt
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received:
@@ -58,79 +58,54 @@ Reply-To: <nuno.sa@analog.com>
 
 From: Nuno Sa <nuno.sa@analog.com>
 
-The reset gpio was being requested with GPIOD_OUT_LOW which means, not
-asserted. Then it was being asserted but never de-asserted which means
-the devices was left in reset. Fix it by de-asserting the gpio.
-
-While at it, moved the handling to it's own function and dropped
-'reset_gpio' from the 'struct ad9467_state' as we only need it during
-probe. On top of that, refactored things so that we now request the gpio
-asserted (i.e in reset) and then de-assert it.
+When calling ad9467_set_scale(), multiple calls to ad9467_spi_write()
+are done which means we need to properly protect the whole operation so
+we are sure we will be in a sane state if two concurrent calls occur.
 
 Fixes: ad6797120238 ("iio: adc: ad9467: add support AD9467 ADC")
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/adc/ad9467.c | 33 ++++++++++++++++++++-------------
- 1 file changed, 20 insertions(+), 13 deletions(-)
+ drivers/iio/adc/ad9467.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
-index 39eccc28debe..368ea57be117 100644
+index 04474dbfa631..91821dee03b7 100644
 --- a/drivers/iio/adc/ad9467.c
 +++ b/drivers/iio/adc/ad9467.c
-@@ -121,7 +121,6 @@ struct ad9467_state {
+@@ -4,7 +4,7 @@
+  *
+  * Copyright 2012-2020 Analog Devices Inc.
+  */
+-
++#include <linux/cleanup.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/device.h>
+@@ -122,6 +122,8 @@ struct ad9467_state {
  	unsigned int			output_mode;
  
  	struct gpio_desc		*pwrdown_gpio;
--	struct gpio_desc		*reset_gpio;
++	/* protect against concurrent accesses to the device */
++	struct mutex			lock;
  };
  
  static int ad9467_spi_read(struct spi_device *spi, unsigned int reg)
-@@ -378,6 +377,23 @@ static int ad9467_preenable_setup(struct adi_axi_adc_conv *conv)
- 	return ad9467_outputmode_set(st->spi, st->output_mode);
- }
+@@ -162,6 +164,7 @@ static int ad9467_reg_access(struct adi_axi_adc_conv *conv, unsigned int reg,
+ 	int ret;
  
-+static int ad9467_reset(struct device *dev)
-+{
-+	struct gpio_desc *gpio;
-+
-+	gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
-+	if (IS_ERR(gpio))
-+		return PTR_ERR(gpio);
-+	if (!gpio)
-+		return 0;
-+
-+	fsleep(1);
-+	gpiod_direction_output(gpio, 0);
-+	fsleep(10);
-+
-+	return 0;
-+}
-+
- static int ad9467_probe(struct spi_device *spi)
- {
- 	const struct ad9467_chip_info *info;
-@@ -408,18 +424,9 @@ static int ad9467_probe(struct spi_device *spi)
- 	if (IS_ERR(st->pwrdown_gpio))
- 		return PTR_ERR(st->pwrdown_gpio);
+ 	if (!readval) {
++		guard(mutex)(&st->lock);
+ 		ret = ad9467_spi_write(spi, reg, writeval);
+ 		if (ret)
+ 			return ret;
+@@ -310,6 +313,7 @@ static int ad9467_set_scale(struct adi_axi_adc_conv *conv, int val, int val2)
+ 		if (scale_val[0] != val || scale_val[1] != val2)
+ 			continue;
  
--	st->reset_gpio = devm_gpiod_get_optional(&spi->dev, "reset",
--						 GPIOD_OUT_LOW);
--	if (IS_ERR(st->reset_gpio))
--		return PTR_ERR(st->reset_gpio);
--
--	if (st->reset_gpio) {
--		udelay(1);
--		ret = gpiod_direction_output(st->reset_gpio, 1);
--		if (ret)
--			return ret;
--		mdelay(10);
--	}
-+	ret = ad9467_reset(&spi->dev);
-+	if (ret)
-+		return ret;
- 
- 	conv->chip_info = &info->axi_adc_info;
- 
++		guard(mutex)(&st->lock);
+ 		ret = ad9467_spi_write(st->spi, AN877_ADC_REG_VREF,
+ 				       info->scale_table[i][1]);
+ 		if (ret < 0)
 
 -- 
 2.42.1
