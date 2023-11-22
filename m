@@ -1,284 +1,126 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jnTQMss2"
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A2E93;
-	Wed, 22 Nov 2023 10:55:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700679300; x=1732215300;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DmyGZTLiw6DZM1o+vxlMQwrB7RXguFu8pPn+LN62oJw=;
-  b=jnTQMss2fz4UBE/TMIQmLuG0Io/n2RQW7CWEABXXEUVE/hxDr5nMSYor
-   SJHwteWKEeKOISVTxqzjiAcO1tMqO8P7tothrsWFTPekOnK7r2aFYJIaI
-   4GD/FL4WqknfrAfqhBCQFqGSLPDZ68yQqR28Ue7xuUIZuTCaoIoBtVuDZ
-   +DCtajs7U5gUIuG+UExWKY8y+xTLQpAs86wg+w1r2gAs4RlNakM2ULUNj
-   5/K0j4DPLTRqg+igvyVy/vNnqdPj8wneZgXekkGLTT3RyWVcaro02FgjV
-   pFGeM2WWVXqD7Qe4P6YTLkdNyrLrcy/HfZ43sdysKrdPinDbhpp1ExjBS
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10902"; a="423249588"
-X-IronPort-AV: E=Sophos;i="6.04,219,1695711600"; 
-   d="scan'208";a="423249588"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2023 10:39:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="796029519"
-X-IronPort-AV: E=Sophos;i="6.04,218,1695711600"; 
-   d="scan'208";a="796029519"
-Received: from unknown (HELO smile.fi.intel.com) ([10.237.72.54])
-  by orsmga008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2023 02:49:02 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1r5kk2-0000000G47Y-272Q;
-	Wed, 22 Nov 2023 12:45:58 +0200
-Date: Wed, 22 Nov 2023 12:45:58 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Petre Rodan <petre.rodan@subdimension.ro>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Angel Iglesias <ang.iglesiasg@gmail.com>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	Andreas Klinger <ak@it-klinger.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Subject: Re: [PATCH 2/2] iio: pressure: driver for Honeywell HSC/SSC series
- pressure sensors
-Message-ID: <ZV3b5sUrGEj5ZOF0@smile.fi.intel.com>
-References: <20231117164232.8474-1-petre.rodan@subdimension.ro>
- <20231117164232.8474-2-petre.rodan@subdimension.ro>
- <ZVtSm5f-Qyp8LFFp@smile.fi.intel.com>
- <ZV2a213oidterHYZ@sunspire>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="mCt1Ud86"
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75FC31B8
+	for <linux-iio@vger.kernel.org>; Wed, 22 Nov 2023 12:17:39 -0800 (PST)
+Received: by mail-qv1-xf2c.google.com with SMTP id 6a1803df08f44-670e7ae4a2eso10783586d6.1
+        for <linux-iio@vger.kernel.org>; Wed, 22 Nov 2023 12:17:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1700684258; x=1701289058; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=sfuhOg7fLREVYMm9dTzTXqALWreH+h6p9+qLhzePyFY=;
+        b=mCt1Ud86u/P9z2hfz+yptcH1KYFlAVMJTiESZqHdsmI1s5KJMue65vlEIif8MwRwOF
+         Fc9spZOCFU3TPJ3H7ZsDCS9adqAapWB0BdxfDjyvy2su3LokaH6BODgMnX0D0DAMwF0y
+         iJD6nrATC0sjCYI/FXcl+ZxeiVXXHq+pyVeRvaz+JJbu78Jd4AZzPff8ILgDp/v4Wf3v
+         PHqEZSGvWRrGyqs8tsoGTwZpzVpAUveIoJeFjsBwarvDNHqq5O1OPACBfYlc7iH52kZj
+         kLPhPdU5rOvX4kKs97Ie+PbXOuAub9UTGJ2tvj90hnjWTfBX1czu+1pvbGwBe/x7FEJd
+         MthA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700684258; x=1701289058;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sfuhOg7fLREVYMm9dTzTXqALWreH+h6p9+qLhzePyFY=;
+        b=jYjYJS/PsWaVLxfOs10xCSI7MiFzOE3QOaRZ1HWW7Iw+L4XHlVYGAsAlIXrZW4LmCB
+         APF5EffTcakKxyktPjZsTXz9teVNATnj3YdqCUt79boxlSRRhKuppdTTMpTMFOphunDt
+         PkxTHaZkgBedrqp4FZaVPpW8Mx1Dx8ANKFZDqjPFDrCi8O5MwcEN0+6ymYNnw85jgfo+
+         hpPQqTiLxvR5keIAglFw3qAdwTIbMl9H1yRUbHfRah7ArvMr2XDto2eNiOtcdnOdm8K7
+         m4z2MEBYKTo63la6Ah0aZa4lnAU6V2/2Pc9d2PfrWvpc/ZnilQC0hKu2oBKTvZHMFqzj
+         EG+w==
+X-Gm-Message-State: AOJu0YyVfRwHW/UldtdqKRUOtYCB3hfS4rZ9XmQ/DKSs5BXougAwqq6+
+	3gv/XSE1KVfQMoCA0Rvz82XNaw==
+X-Google-Smtp-Source: AGHT+IEjLt0uBVJ+8ZR+C83Sz4GO+jKzSD8w4cQPLFvOELzntBpQJthrUn4s2ydIV5pepIe4jVNvkw==
+X-Received: by 2002:a0c:f705:0:b0:670:5242:a6a1 with SMTP id w5-20020a0cf705000000b006705242a6a1mr821580qvn.31.1700684258532;
+        Wed, 22 Nov 2023 12:17:38 -0800 (PST)
+Received: from [172.30.204.74] (UNUSED.212-182-62-129.lubman.net.pl. [212.182.62.129])
+        by smtp.gmail.com with ESMTPSA id y4-20020a0cd984000000b00679d90922c8sm59479qvj.131.2023.11.22.12.17.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Nov 2023 12:17:38 -0800 (PST)
+Message-ID: <d35b9250-eddb-4436-8daf-066ec84cf55f@linaro.org>
+Date: Wed, 22 Nov 2023 21:17:29 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZV2a213oidterHYZ@sunspire>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 6/6] arm64: dts: qcom: sm8350-lemonade(p): New devices
+Content-Language: en-US
+To: Nia Espera <nespera@igalia.com>, Andy Gross <agross@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Kees Cook <keescook@chromium.org>,
+ Tony Luck <tony.luck@intel.com>, "Guilherme G. Piccoli"
+ <gpiccoli@igalia.com>, Vinod Koul <vkoul@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, phone-devel@vger.kernel.org, Rob <Me@orbit.sh>,
+ Clayton Craft <clayton@igalia.com>,
+ Caleb Connolly <caleb.connolly@linaro.org>,
+ Luca Weiss <luca.weiss@fairphone.com>, ~postmarketos/upstreaming@lists.sr.ht
+References: <20231111-nia-sm8350-for-upstream-v4-0-3a638b02eea5@igalia.com>
+ <20231111-nia-sm8350-for-upstream-v4-6-3a638b02eea5@igalia.com>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <20231111-nia-sm8350-for-upstream-v4-6-3a638b02eea5@igalia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Level: *
 
-On Wed, Nov 22, 2023 at 08:08:27AM +0200, Petre Rodan wrote:
-> On Mon, Nov 20, 2023 at 02:35:39PM +0200, Andy Shevchenko wrote:
 
-...
 
-> sorry, what is 'LKP' in this context and how do I reproduce?
-
-It's an acronym for CI system run by Intel. You should have had an email in
-your mailbox with complains. It also duplicates them to a mailing list which
-address I don't know by heart.
-
-...
-
-> > Also there are missing at least these ones: array_size.h, types.h.
+On 11/11/23 23:07, Nia Espera wrote:
+> Device tree files for OnePlus 9 and 9 Pro. Details of supported features
+> mentioned in the cover letter for this patch series, but for
+> accessibility also repeated here:
 > 
-> '#include <linux/array_size.h>' is a weird one.
-
-Why?
-
-> $ cd /usr/src/linux/drivers
-> $ grep -r ARRAY_SIZE * | grep '\.c:' |  wc -l
->  32396
-> $ grep -r 'include.*array_size\.h' * | grep -E '\.[ch]:' | wc -l
-> 11
-> $ grep -r 'include.*array_size\.h' * | grep -E '\.[ch]:' | grep -v '^pinctrl' | wc -l
-> 0
-
-Hint, use `git grep ...` which much, much faster against the Git indexed data.
-
-> plus on a 6.1 version kernel, `make modules` actually reports that the header
-> can't be found if I include it. can't comprehend that. so I'll be skipping
-> that particular include.
-
-No, the new code is always should be submitted against latest release cycle,
-v6.7-rcX as of today. There is the header. Please, use it.
-
-...
-
-> > Can you utilize linear ranges data types and APIs? (linear_range.h)
+> - USB OTG
+> - UFS
+> - Framebuffer display
+> - Touchscreen (for lemonade)
+> - Power & volume down keys
+> - Battery reading
+> - Modem, IPA, and remoteproc bringup
 > 
-> not fit for this purpose, sorry.
-
-NP.
-
-...
-
-> > > +	if (data->buffer[0] & 0xc0)
-> > > +		return 0;
-> > > +
-> > > +	return 1;
-> > 
-> > You use bool and return integers.
-> > 
-> > Besides, it can be just a oneliner.
+> Steps to get booting:
 > 
-> rewritten as a one-liner, without GENMASK.
-> 
-> > 	return !(buffer[0] & GENMASK(3, 2));
-> > 
-> > (Note, you will need bits.h for this.)
-> > 
-> > > +}
+> - Wipe dtbo partition
+> - Flash vbmeta with disabled verity bit
+> - Flash kernel and initfs to boot partition with CLI args pd_ignore_unused
+> and clk_ignore_unused as v1 bootimg
+> - Flash rootfs to some other partition (probably super or userdata)
+Thanks for including this info here
 
-Why no GENMASK() ? What the meaning of the 0xc0?
-Ideally it should be
+> +&pmk8350_vadc {
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&gpio1_adc_default>, <&gpio3_adc_default>;
+> +
+> +	/* pmk8350-ref-gnd */
+I fail to see the benefit in having this both here and in the label
 
-#define ...meaningful name...  GENMASK()
+> +	channel@0 {
+> +		reg = <0x00>;
+> +		qcom,pre-scaling = <1 1>;
+> +		label = "pmk8350_ref_gnd";
+> +	};
+> +
+[...]
 
-...
+> +&tlmm {
+> +	gpio-reserved-ranges = <52 8>;
+Would you know what these are connected to?
 
-> > > +		mutex_lock(&data->lock);
-> > > +		ret = hsc_get_measurement(data);
-> > > +		mutex_unlock(&data->lock);
-> > 
-> > Use guard() operator from cleanup.h.
-> 
-> I'm not familiar with that, for the time being I'll stick to
-> mutex_lock/unlock if you don't mind.
+[...]
 
-I do mind. RAII is a method to make code more robust against forgotten
-unlock/free calls.
+> +&mpss {
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&rf_cable_ant0_active>;
+patch-wide:
 
-...
+property-n
+property-names
 
-> > > +		case IIO_PRESSURE:
-> > > +			*val =
-> > > +			    ((data->buffer[0] & 0x3f) << 8) + data->buffer[1];
-> > > +			return IIO_VAL_INT;
-> > > +		case IIO_TEMP:
-> > > +			*val =
-> > > +			    (data->buffer[2] << 3) +
-> > > +			    ((data->buffer[3] & 0xe0) >> 5);
-> > 
-> > Is this some endianess / sign extension? Please convert using proper APIs.
-> 
-> the raw conversion data is spread over 4 bytes and interlaced with other info
-> (see comment above the function).  I'm just cherry-picking the bits I'm
-> interested in, in a way my brain can understand what is going on.
-
-So, perhaps you need to use get_unaligned_.e32() and then FIELD_*() from
-bitfield.h. This will be much better in terms of understanding the semantics
-of these magic bit shifts and masks.
-
-...
-
-> > > +			ret = 0;
-> > > +			if (!ret)
-> > 
-> > lol
-> 
-> I should leave that in for comic relief. missed it after a lot of code
-> changes.
-
-I understand, that's why no shame on you, just fun code to see :-)
-
-...
-
-> > Strange indentation of }:s...
-> 
-> I blame `indent -linux --line-length 80` for these and weirdly-spaced pointer
-> declarations.  are you using something else?
-
-Some maintainers suggest to use clang-format. I find it weird in some corner
-cases. So, I would suggest to use it and reread the code and fix some
-strangenesses.
-
-...
-
-> > > +	if (strcasecmp(hsc->range_str, "na") != 0) {
-> > > +		// chip should be defined in the nomenclature
-> > > +		for (index = 0; index < ARRAY_SIZE(hsc_range_config); index++) {
-> > > +			if (strcasecmp
-> > > +			    (hsc_range_config[index].name,
-> > > +			     hsc->range_str) == 0) {
-> > > +				hsc->pmin = hsc_range_config[index].pmin;
-> > > +				hsc->pmax = hsc_range_config[index].pmax;
-> > > +				found = 1;
-> > > +				break;
-> > > +			}
-> > > +		}
-> > 
-> > Reinventing match_string() / sysfs_match_string() ?
-> 
-> match_string() is case-sensitive and operates on string arrays, so unfit for
-> this purpose.
-
-Let's put it this way: Why do you care of the relaxed case?
-I.o.w. why can we be slightly stricter?
-
-...
-
-> > Can you use regmap I2C?
-> 
-> the communication is one-way as in the sensors do not expect anything except
-> 4 bytes-worth of clock signals per 'packet' for both the i2c and spi
-> versions.  regmap is suited to sensors with an actual memory map.
-
-If not yet, worse to add in the comment area of the patch
-(after the cutter '---' line).
-
-...
-
-> > No use of this function prototype, we have a new one.
-> 
-> oops, I was hoping my 6.1.38 kernel is using the same API as 6.7.0
-> fixed.
-
-Same way with a (new) header :-)
-
-...
-
-> > > +	ret = devm_regulator_get_enable_optional(dev, "vdd");
-> > > +	if (ret == -EPROBE_DEFER)
-> > > +		return -EPROBE_DEFER;
-> > 
-> > Oh, boy, this should check for ENODEV or so, yeah, regulator APIs a bit
-> > interesting.
-> 
-> since I'm unable to test this I'd rather remove the block altogether.
-> if I go the ENODEV route my module will never load since I can't see any
-> vdd-supply support on my devboard.
-
-No, what I meant is to have something like
-
-	if (ret) {
-		if (ret != -ENODEV)
-			return ret;
-		...regulator is not present...
-	}
-
-This is how it's being used in dozens of places in the kernel. Just utilize
-`git grep ...` which should be a top-10 tool for the Linux kernel developer.
-
-Q: ...
-A: Try `git grep ...` to find your answer in the existing code.
-
-...
-
-> > > +	if (!dev_fwnode(dev))
-> > > +		return -EOPNOTSUPP;
-> > 
-> > Why do you need this?
-> > And why this error code?
-> 
-> it's intentional.
-> this module has a hard requirement on the correct parameters (transfer
-> function and pressure range) being provided in the devicetree.  without those
-> I don't want to provide any measurements since there can't be a default
-> transfer function and pressure range for a generic driver that supports an
-> infinite combination of those.
-> 
-> echo hsc030pa 0x28 > /sys/bus/i2c/devices/i2c-0/new_device
-> I want iio_info to detect 0 devices.
-
-So, fine, but the very first mandatory property check will fail as it has
-the very same check inside. So, why do you need a double check?
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Konrad
