@@ -1,115 +1,159 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AADCA18B08;
-	Wed, 22 Nov 2023 12:35:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AmzKg1O3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0685BC433C8;
-	Wed, 22 Nov 2023 12:35:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1700656525;
-	bh=1Ar0GKfipyRpyKssaDDz4nM10Fr0fuJQJLvwdTfE8yg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=AmzKg1O3K1rzLkH4aWS3nsfilpzZbpomRyyGlZ/CTQEpBpTWX6u2TsffsgMK0Rf1J
-	 41y6A2v2IxxsGu8ApVABHIiaEy9BRqPTagY9r71obCwfdOm2Yg5pI9b11mPdTIZu5v
-	 HclpKS5qWPQfozmDte3yQ8C1d184e9TCw8CMSQ12gWvizrxrRoLfhQKFY9NHlxBAzM
-	 6c7qVJvm4Zk3/jIa4CGlRPuU82VIUUzaDmUDiERfgFL1HTxNIGg6l54497QJUB4Vrt
-	 R9MTIXAeiz8mTI9nj7X+YTURDl2+KGeJlijEiLg868ahemoyTgIwZSx59Bb7KfV7u6
-	 pMVlbl6lFuTyQ==
-Message-ID: <ea997987-6a84-445c-a806-527d766569b1@kernel.org>
-Date: Wed, 22 Nov 2023 13:35:19 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PxvPBb6w"
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3E9D8;
+	Wed, 22 Nov 2023 04:42:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700656969; x=1732192969;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SqizgiAch9won05vBf6kAWzFctwB2I+ZrA5SgAqyzfY=;
+  b=PxvPBb6w9J1TIWGo34Hg9WG0/XUS3ORzLxjQe5Uq5xocbvnpOOF48eUI
+   w+UhqQCZpN/w9XDhPc6hzjSNcGOGeiJw5PgEPt1HEqu07qn4KldCrGFwT
+   HVOquZRLz4fb484wmxRtM0dMjEn8fILyoUUHqpvBXQumisHfBfYhMM01j
+   fbLkJDoRCBJUEK97O+tpSb8hemOujkvhVqkXWF+wH39842wh5Fnj8S0zp
+   R8sTcZs5h3cbbYeAnPrU03VlAi8g2N/v3PXXDkYb3jp+MW4ciWKwr4+wn
+   OQo58ayCUx0X03fNTQbSJo83RxupnGbl6kG0+WVToowLKM+TitP/npR3k
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="391815110"
+X-IronPort-AV: E=Sophos;i="6.04,218,1695711600"; 
+   d="scan'208";a="391815110"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2023 04:42:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="910779563"
+X-IronPort-AV: E=Sophos;i="6.04,218,1695711600"; 
+   d="scan'208";a="910779563"
+Received: from lkp-server01.sh.intel.com (HELO d584ee6ebdcc) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 22 Nov 2023 04:42:46 -0800
+Received: from kbuild by d584ee6ebdcc with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1r5mZ2-0000T1-0u;
+	Wed, 22 Nov 2023 12:42:44 +0000
+Date: Wed, 22 Nov 2023 20:40:55 +0800
+From: kernel test robot <lkp@intel.com>
+To: "marcelo.schmitt@analog.com" <marcelo.schmitt@analog.com>,
+	beniamin.bia@analog.com, paul.cercueil@analog.com,
+	Michael.Hennerich@analog.com, lars@metafoo.de, jic23@kernel.org,
+	marcelo.schmitt1@gmail.com
+Cc: oe-kbuild-all@lists.linux.dev,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/7] dt-bindings: iio: Add binding documentation for
+ AD7091R-8
+Message-ID: <202311221707.P5KpelyW-lkp@intel.com>
+References: <566503a54feba35178c778a7929bced66ebd8870.1700595310.git.marcelo.schmitt1@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] dt-bindings: iio: temperature: add MLX90635 device
- bindings
-Content-Language: en-US
-To: Crt Mori <cmo@melexis.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org
-References: <cover.1700648164.git.cmo@melexis.com>
- <2e8b4a7d3ef4bc1c53bd0a849e4c31eaf2477f6b.1700648165.git.cmo@melexis.com>
- <99d1808a-da04-4bc1-a1f7-cbd269adbbf0@kernel.org>
- <CAKv63uv87srZ3gJxFASuGWV6cULXkN=gYi_L=BCcd3dgOFQEfw@mail.gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <CAKv63uv87srZ3gJxFASuGWV6cULXkN=gYi_L=BCcd3dgOFQEfw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <566503a54feba35178c778a7929bced66ebd8870.1700595310.git.marcelo.schmitt1@gmail.com>
 
-On 22/11/2023 13:28, Crt Mori wrote:
->>> +  Since measured object emissivity effects Infra Red energy emitted,
->>> +  emissivity should be set before requesting the object temperature.
->>> +
->>> +properties:
->>> +  compatible:
->>> +    const: melexis,mlx90635
->>
->> It's the same as mlx90632. Add it there (as enum).
->>
-> 
-> Properties are the same, but then you can't have much differences for
-> a temperature sensor. It has a bit worse relative measurement error
-> outside of the human body range and overall different DSP, register
-> map, even physical size - it's 1.8x1.8 mm compared to 90632 3x3 mm. I
-> was not sure how it qualifies for adding it as another enum, but I
-> went with the feeling that if it can reuse the driver, then it is an
-> enum, otherwise it is a new file. And I could not reuse anything from
-> 90632.
-> 
-> Thanks for quick feedback and best regards,
+Hi,
 
-Driver is independent choice. There is no need for new binding file if
-everything is the same from bindings point of view.
+kernel test robot noticed the following build warnings:
 
-Best regards,
-Krzysztof
+[auto build test WARNING on jic23-iio/togreg]
+[also build test WARNING on linus/master v6.7-rc2 next-20231122]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/marcelo-schmitt-analog-com/MAINTAINERS-Add-MAINTAINERS-entry-for-AD7091R/20231122-093706
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/566503a54feba35178c778a7929bced66ebd8870.1700595310.git.marcelo.schmitt1%40gmail.com
+patch subject: [PATCH 5/7] dt-bindings: iio: Add binding documentation for AD7091R-8
+compiler: loongarch64-linux-gcc (GCC) 13.2.0
+reproduce: (https://download.01.org/0day-ci/archive/20231122/202311221707.P5KpelyW-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202311221707.P5KpelyW-lkp@intel.com/
+
+dtcheck warnings: (new ones prefixed by >>)
+>> Documentation/devicetree/bindings/iio/adc/adi,ad7091r8.yaml:50:11: [error] string value is redundantly quoted with any quotes (quoted-strings)
+
+vim +50 Documentation/devicetree/bindings/iio/adc/adi,ad7091r8.yaml
+
+     8	
+     9	maintainers:
+    10	  - Marcelo Schmitt <marcelo.schmitt@analog.com>
+    11	
+    12	description: |
+    13	  Analog Devices AD7091R-8 8-Channel 12-Bit ADC
+    14	  https://www.analog.com/media/en/technical-documentation/data-sheets/AD7091R-2_7091R-4_7091R-8.pdf
+    15	
+    16	properties:
+    17	  compatible:
+    18	    enum:
+    19	      - adi,ad7091r2
+    20	      - adi,ad7091r4
+    21	      - adi,ad7091r8
+    22	
+    23	  reg:
+    24	    maxItems: 1
+    25	
+    26	  vref-supply: true
+    27	
+    28	  spi-max-frequency: true
+    29	
+    30	  adi,conversion-start-gpios:
+    31	    description:
+    32	      Device tree identifier of the CONVST pin.
+    33	      This logic input is used to initiate conversions on the analog
+    34	      input channels.
+    35	    maxItems: 1
+    36	
+    37	  reset-gpios:
+    38	    maxItems: 1
+    39	
+    40	  interrupts:
+    41	    maxItems: 1
+    42	
+    43	required:
+    44	  - compatible
+    45	  - reg
+    46	  - adi,conversion-start-gpios
+    47	
+    48	patternProperties:
+    49	  "^channel@[0-7]$":
+  > 50	    $ref: "adc.yaml"
+    51	    type: object
+    52	    description: Represents the external channels which are connected to the ADC.
+    53	
+    54	    properties:
+    55	      reg:
+    56	        minimum: 0
+    57	        maximum: 7
+    58	
+    59	    required:
+    60	      - reg
+    61	
+    62	allOf:
+    63	  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+    64	
+    65	  # AD7091R-2 does not have ALERT/BUSY/GPO pin
+    66	  - if:
+    67	      properties:
+    68	        compatible:
+    69	          contains:
+    70	            enum:
+    71	              - adi,ad7091r4
+    72	              - adi,ad7091r8
+    73	    then:
+    74	      properties:
+    75	        interrupts: true
+    76	    else:
+    77	      properties:
+    78	        interrupts: false
+    79	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
