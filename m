@@ -1,108 +1,125 @@
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E68110E4;
-	Tue, 28 Nov 2023 07:23:59 -0800 (PST)
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3ASAYFA3006004;
-	Tue, 28 Nov 2023 10:23:40 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 3unejp8yww-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 28 Nov 2023 10:23:39 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 3ASFNbX0049267
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 28 Nov 2023 10:23:37 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 28 Nov 2023 10:23:36 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 28 Nov 2023 10:23:36 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 28 Nov 2023 10:23:36 -0500
-Received: from [127.0.0.1] ([10.44.3.56])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 3ASFNMDb003945;
-	Tue, 28 Nov 2023 10:23:30 -0500
-From: Nuno Sa <nuno.sa@analog.com>
-Date: Tue, 28 Nov 2023 16:26:08 +0100
-Subject: [PATCH v2 1/2] dt-bindings: adi,ad5791: Add support for
- controlling RBUF
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="rcpluKra"
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F87A0
+	for <linux-iio@vger.kernel.org>; Tue, 28 Nov 2023 07:59:02 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id a640c23a62f3a-a02cc476581so764539166b.2
+        for <linux-iio@vger.kernel.org>; Tue, 28 Nov 2023 07:59:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1701187140; x=1701791940; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AaKEDvZfPZNdz7W5gQHFALD/l/cH7uGbYVPM6yBbsYI=;
+        b=rcpluKra2YYHnn7gYg+6b4xqffMOPLN2SCmlj9hiMIYHDrWxqfUbSbizwUl1h2pIUs
+         48g2aR+HqhkhDpq+9nRTqcL0+y+4mFjuNf7iIKB8y5VYj68jbu+cr1WvOCw5wdMlAlLm
+         9OkZx4VFaRej129nEU6Xfwm9WSVumMT7Mxm4OAqxEJ4jbi2l9cF/3L5F9myMc5KYFBtu
+         uYtrOhiQwHTT6DjjHMg3pWYPN0euibFi3N8UAB3vgtHZsoWRbJlhL0l9t5RtdlfITAMO
+         Zd59ljigyqRRB/WrXs6WAk8IuYbqBK8ysRHjX9O5X56eTVkVrbBdA/zeWgeXro51ZxVV
+         ATTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701187140; x=1701791940;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=AaKEDvZfPZNdz7W5gQHFALD/l/cH7uGbYVPM6yBbsYI=;
+        b=DAYtAJYBpvTkTD79NTcI2b1RVniW2pUwU2eOPYwi/YrrkL9PXftNYh0V/c9TER2XHk
+         +gU0cGPvvwV42OZRTOOoOQI3QNnoPKGD3pkBVG8UlYjS0vDxmEpnm0bh/7Drc9qdeRcI
+         pmM3YdVyVJpCszJyJkpJpE19ARL2lV9JmWCqadUwRYgwr8C8w4uWcxG+qKlgmQOrd7H+
+         gI3Mc157mRzdNsTrnZ5HA6n6VPAY/OrQSxf+LsWubyiUGgsaOdeIKNBUDrAyDKCRnMB7
+         yWZeh969J6OEBcpqJCIwWDioS4l58mgIIecsweGOoGAiydEipgWHBDjBBbwmOWVFW0c6
+         2QMg==
+X-Gm-Message-State: AOJu0YzZ9ws2DwuH0anRafEZgAEOoAUWZpSPI5/U7Zpybo4EDtHUc8au
+	Xl1nymNEWHlRtsUrRpQHfkEDAg==
+X-Google-Smtp-Source: AGHT+IHRyZ1gCN80lTu4DpA/+6W2e3R58FaFqLJN0x+rlhbScFNHVuoFoIUOR1u8Nc9SeUtLdQd1wQ==
+X-Received: by 2002:a17:906:c9d3:b0:9e0:2319:16d4 with SMTP id hk19-20020a170906c9d300b009e0231916d4mr11550675ejb.40.1701187140662;
+        Tue, 28 Nov 2023 07:59:00 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.223.109])
+        by smtp.gmail.com with ESMTPSA id x13-20020a170906710d00b009b2ca104988sm6976187ejj.98.2023.11.28.07.58.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Nov 2023 07:59:00 -0800 (PST)
+Message-ID: <cf778d32-73a2-4ef2-a0dc-31c6c4efe3ea@linaro.org>
+Date: Tue, 28 Nov 2023 16:58:58 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20231128-ad5791-michael-stuff-v2-1-541bb1c9dc43@analog.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/2] dt-bindings: adi,ad5791: Add support for
+ controlling RBUF
+Content-Language: en-US
+To: Nuno Sa <nuno.sa@analog.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>
 References: <20231128-ad5791-michael-stuff-v2-0-541bb1c9dc43@analog.com>
-In-Reply-To: <20231128-ad5791-michael-stuff-v2-0-541bb1c9dc43@analog.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof
- Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "Krzysztof
- Kozlowski" <krzysztof.kozlowski@linaro.org>
-X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1701185184; l=982;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=zD6+twSOON3C1B9Q1jD94rOKIZYQOEtpLb3956omfXU=;
- b=/pirBo/F7G68Jt9umd5IHXv8J+BuvJ/YVQw3MNxmBnKdnkXm5++cegqDVmdSmNe1C8AsWvha/
- 0Kfc0WGxg8xBbJeRQd2/tPboFfgY1cdMT+MbEdF3+pGfmXEALfpzNSI
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: 0FrSIJ5Y_4ZVU1r0MQh88gQUWrAlkQYW
-X-Proofpoint-GUID: 0FrSIJ5Y_4ZVU1r0MQh88gQUWrAlkQYW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-28_16,2023-11-27_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- mlxlogscore=824 clxscore=1015 malwarescore=0 bulkscore=0 adultscore=0
- impostorscore=0 lowpriorityscore=0 suspectscore=0 mlxscore=0 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2311060001 definitions=main-2311280122
+ <20231128-ad5791-michael-stuff-v2-1-541bb1c9dc43@analog.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20231128-ad5791-michael-stuff-v2-1-541bb1c9dc43@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+On 28/11/2023 16:26, Nuno Sa wrote:
+> From: Michael Hennerich <michael.hennerich@analog.com>
+> 
+> This change adds support for an external amplifier to be connected in a
 
-This change adds support for an external amplifier to be connected in a
-gain of two configuration.
+Nothing improved here.
 
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Nuno Sa <nuno.sa@analog.com>
----
- Documentation/devicetree/bindings/iio/dac/adi,ad5791.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+I said "This commit/patch" so you replaced it to "change", really, read
+the Submitting patches document.
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5791.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5791.yaml
-index 3a84739736f6..c81285d84db7 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5791.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5791.yaml
-@@ -26,6 +26,11 @@ properties:
-   vdd-supply: true
-   vss-supply: true
- 
-+  adi,rbuf-gain2-en:
-+    description: Specify to allow an external amplifier to be connected in a
-+      gain of two configuration.
-+    type: boolean
-+
- required:
-   - compatible
-   - reg
 
--- 
-2.43.0
+
+Best regards,
+Krzysztof
 
