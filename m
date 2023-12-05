@@ -1,92 +1,133 @@
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42BA46928B
+	for <linux-iio@vger.kernel.org>; Tue,  5 Dec 2023 17:06:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dqi2MDNB"
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838009E;
-	Tue,  5 Dec 2023 08:33:25 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id a640c23a62f3a-a1b7b6bf098so412684566b.1;
-        Tue, 05 Dec 2023 08:33:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701794004; x=1702398804; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=dHAUfP9J9hYw6Y/D0QYfGV3SZNbPrYlP0cxK2LyLc5w=;
-        b=dqi2MDNBAxf+t3ir3KC6vS3FtXx/NgPOyE9cvc3FlxuNnf9qYjYlvo/PhtQnFPH77w
-         w6t9U8VS/QEtK2F2ZR4qMzcclbaXVzg/d028pdtk30GF098Is7gKC1Xa4a80xS/BUE4y
-         iUVPu6JNZHV1eGvpEOj4AyWEEzkRuzLe4U5LJKvfBY1qqO2+s4J5/Gv4cYT8+notRIRx
-         jXwEi1FuK6nI+lGrwHuHCl2B3reaJFd2z0PGfxp2FJy4GfyQenGG9ZEPVnKQWSM3fsUs
-         Y5k5/LzFufwKpXt8MQYy09kZ/qpk5HToejBn2E0OpIDAZPu2Hxh4zDsgagl5L/j26nyd
-         ytvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701794004; x=1702398804;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=dHAUfP9J9hYw6Y/D0QYfGV3SZNbPrYlP0cxK2LyLc5w=;
-        b=SVEJAk9OKTqvxaJL89BbkPAyAB7K53M5/lUAlJJxM4WT4Ge/S89uoaCMXmy3J/VkVV
-         ENtkC1WB/mjclX9cyeTlxib9Bfkab9Jw+9tw4eBgZY90ldK1oax83vwPV95hPwLqkqqQ
-         PQ523e1VrIHggcbFJTl3ghaDiyL8yNYczwUC76K3vFtsamy0DRh8gQn9GrwBacxI7p+Y
-         OYme4BMpILVV8MOJqz7PhqpJTKI9MrBKvRkw7owIzO+338H5uZCOGtgw3oRpTn7Sy+Gc
-         KD3ybFTr4UowEP+FLJImpvOX59PPPE2NwngoSi1Yl5iSSWCQqy1/tTYdXEPQZFCCpN9X
-         qhXg==
-X-Gm-Message-State: AOJu0YxbV0Kf261r3DvBNdtM6VksQNWm/qtFAxRmlBOAQlu76hNZq1MA
-	S7u4sgypIdSB03mIQUpgsKIUrH5v86g6WO2o+y8=
-X-Google-Smtp-Source: AGHT+IGczDP9zD/T4pczBEFyAzDxRTWLESnCkO+AaVNv7qm7h1SrX5Wou+uF+c/hxOW2vL6k8xWsvA==
-X-Received: by 2002:a17:906:6bd9:b0:a1a:e3c6:f50 with SMTP id t25-20020a1709066bd900b00a1ae3c60f50mr1509048ejs.66.1701794003689;
-        Tue, 05 Dec 2023 08:33:23 -0800 (PST)
-Received: from [172.25.98.130] ([5.2.194.157])
-        by smtp.gmail.com with ESMTPSA id l18-20020a1709066b9200b00a1d18c142eesm299267ejr.59.2023.12.05.08.33.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Dec 2023 08:33:23 -0800 (PST)
-Message-ID: <ac34ef21-493e-4a79-8a0a-1c37e2d9cbb4@gmail.com>
-Date: Tue, 5 Dec 2023 18:33:21 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fWCauffX"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D6B03C433C8;
+	Tue,  5 Dec 2023 17:06:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1701796005;
+	bh=sjUP64TzXG9MuFbyLhkat8sU5mUfln6N25I4AI6lZW0=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=fWCauffXAr1RSJQrWGF6ToyLzYPNsA35GhEGLDUxj2GR7J9x1frONNv6Rp71T4Aag
+	 EEcRggcOnZDMReTdShPqVmuP9CYODD1XvOow9DD3n1mcdmC2gvFrpmh5Nd4wjdht6x
+	 /8N/7eNaNbAyIAJtiwuBhUunqYTPbxeeHGPLyNQnPW/Vxa3nuJ6xu7oYoKn66OOY8l
+	 31VkB5eCrvUBBG1yXqm6/uSyqAh0+6yBXkfHXIEOLN/sQXjVwdI+h3JKKdIUuiRfb6
+	 HQU3ojW+UJfZrVD437+0bUbUKGT6oGG0mhc12XP3bOTF8guzKxkXlKx5HPjInnxDlA
+	 XLnmSq3240H5Q==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC7EC10DCE;
+	Tue,  5 Dec 2023 17:06:45 +0000 (UTC)
+From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
+Date: Tue, 05 Dec 2023 18:06:41 +0100
+Subject: [PATCH 1/8] iio: adc: ad9467: fix reset gpio handling
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 1/2] dt-bindings: adc: add AD7173
-Content-Language: en-US
-To: Conor Dooley <conor@kernel.org>
-Cc: linus.walleij@linaro.org, brgl@bgdev.pl, andy@kernel.org,
- linux-gpio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
- Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Michael Walle <michael@walle.cc>,
- Andy Shevchenko <andy.shevchenko@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
- ChiaEn Wu <chiaen_wu@richtek.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
- =?UTF-8?Q?Leonard_G=C3=B6hrs?= <l.goehrs@pengutronix.de>,
- Mike Looijmans <mike.looijmans@topic.nl>, Haibo Chen <haibo.chen@nxp.com>,
- Hugo Villeneuve <hvilleneuve@dimonoff.com>,
- Ceclan Dumitru <dumitru.ceclan@analog.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20231205134223.17335-1-mitrutzceclan@gmail.com>
- <20231205-jockey-chance-bc324d8809f9@spud>
-From: Ceclan Dumitru <mitrutzceclan@gmail.com>
-In-Reply-To: <20231205-jockey-chance-bc324d8809f9@spud>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20231205-iio-backend-prep-v1-1-7c9bc18d612b@analog.com>
+References: <20231205-iio-backend-prep-v1-0-7c9bc18d612b@analog.com>
+In-Reply-To: <20231205-iio-backend-prep-v1-0-7c9bc18d612b@analog.com>
+To: linux-iio@vger.kernel.org
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
+X-Mailer: b4 0.12.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1701796004; l=2385;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=jSRdyxiCoJT95OyuOsgiz/xzqOuZXfUDVd39nEe6GjE=;
+ b=ViXcMuziGM9kkRx+zo9zzYxxHcv50HWzMMyeuuuNIjTMWFTsN84xbPWzgXPFBHN2VtjwGpT0j
+ C1dExWSO4JXDq/HRf7tH8vhFiwIj70c4SGMyyHXCE58QF418LF4/IPu
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received:
+ by B4 Relay for nuno.sa@analog.com/20231116 with auth_id=100
+X-Original-From: Nuno Sa <nuno.sa@analog.com>
+Reply-To: <nuno.sa@analog.com>
 
+From: Nuno Sa <nuno.sa@analog.com>
 
+The reset gpio was being requested with GPIOD_OUT_LOW which means, not
+asserted. Then it was being asserted but never de-asserted which means
+the devices was left in reset. Fix it by de-asserting the gpio.
 
-On 12/5/23 18:25, Conor Dooley wrote:
-> On Tue, Dec 05, 2023 at 03:42:20PM +0200, Dumitru Ceclan wrote:
->> The AD7173 family offer a complete integrated Sigma-Delta ADC solution
->> which can be used in high precision, low noise single channel applications
->> or higher speed multiplexed applications. The Sigma-Delta ADC is intended
->> primarily for measurement of signals close to DC but also delivers
->> outstanding performance with input bandwidths out to ~10kHz.
->>
-...
->> +  required:
->> +    - compatible
->> +    - reg
->> +    - interrupts
-> 
-> This is at the wrong level of indent (as Rob's bot pointed out) and
-> should come after patternProperties too.
-> 
+While at it, moved the handling to it's own function and dropped
+'reset_gpio' from the 'struct ad9467_state' as we only need it during
+probe. On top of that, refactored things so that we now request the gpio
+asserted (i.e in reset) and then de-assert it. Also note that we now use
+gpiod_set_value_cansleep() instead of gpiod_direction_output() as we
+already request the pin as output.
 
-Yep, it was fixed in V6, forgot to include it
+Fixes: ad6797120238 ("iio: adc: ad9467: add support AD9467 ADC")
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+---
+ drivers/iio/adc/ad9467.c | 33 ++++++++++++++++++++-------------
+ 1 file changed, 20 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
+index 39eccc28debe..5ecf486bf5d1 100644
+--- a/drivers/iio/adc/ad9467.c
++++ b/drivers/iio/adc/ad9467.c
+@@ -121,7 +121,6 @@ struct ad9467_state {
+ 	unsigned int			output_mode;
+ 
+ 	struct gpio_desc		*pwrdown_gpio;
+-	struct gpio_desc		*reset_gpio;
+ };
+ 
+ static int ad9467_spi_read(struct spi_device *spi, unsigned int reg)
+@@ -378,6 +377,23 @@ static int ad9467_preenable_setup(struct adi_axi_adc_conv *conv)
+ 	return ad9467_outputmode_set(st->spi, st->output_mode);
+ }
+ 
++static int ad9467_reset(struct device *dev)
++{
++	struct gpio_desc *gpio;
++
++	gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(gpio))
++		return PTR_ERR(gpio);
++	if (!gpio)
++		return 0;
++
++	fsleep(1);
++	gpiod_set_value_cansleep(gpio, 0);
++	fsleep(10 * USEC_PER_MSEC);
++
++	return 0;
++}
++
+ static int ad9467_probe(struct spi_device *spi)
+ {
+ 	const struct ad9467_chip_info *info;
+@@ -408,18 +424,9 @@ static int ad9467_probe(struct spi_device *spi)
+ 	if (IS_ERR(st->pwrdown_gpio))
+ 		return PTR_ERR(st->pwrdown_gpio);
+ 
+-	st->reset_gpio = devm_gpiod_get_optional(&spi->dev, "reset",
+-						 GPIOD_OUT_LOW);
+-	if (IS_ERR(st->reset_gpio))
+-		return PTR_ERR(st->reset_gpio);
+-
+-	if (st->reset_gpio) {
+-		udelay(1);
+-		ret = gpiod_direction_output(st->reset_gpio, 1);
+-		if (ret)
+-			return ret;
+-		mdelay(10);
+-	}
++	ret = ad9467_reset(&spi->dev);
++	if (ret)
++		return ret;
+ 
+ 	conv->chip_info = &info->axi_adc_info;
+ 
+
+-- 
+2.43.0
+
