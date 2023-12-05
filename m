@@ -1,28 +1,28 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70911692A0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FD726929F
 	for <linux-iio@vger.kernel.org>; Tue,  5 Dec 2023 17:06:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IugFukPu"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1CC2EC433AB;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="knwV4FNa"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 03984C433D9;
 	Tue,  5 Dec 2023 17:06:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1701796006;
-	bh=lCObtoTpSqkaFQwyOFhNJ1ryAu4Gcs5xCQOhbPA4SMs=;
+	bh=9euPM8fcQcmDfI+ietptv8VMBXvl4pFwlJit+YP43hY=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=IugFukPuXBBRW1lreAmzjRw/SWxikJQjbilwC8Cf1WtTUh4ejHVk4pGGQAEIh0fJu
-	 imlxEBHFQOWbqgMn+E5u98C93rRsaJfvJHxRWauhsN/wnm9aL5tu5nMk4yibFBMOk0
-	 Z188+4t8lPwybxD3C9WIGPB5ncCVFA2kfzRq/diUT9NXO9FDF37cG0rVAj7nx4E/lK
-	 N5VRV1eCyrrjwWzfKO63BwaSZkR0g3XqUDyoflMbWR4hpd/7qXZsYP7JXromzczlME
-	 j1Ib+EtmkNOL6mpNRXDGcIAMcx9Ce4d9oxiN/xmxzG2LTN/41QQMpDYozxDVA0epLy
-	 9VCp8PZW5SkKA==
+	b=knwV4FNaLnAaQl/xK8CWaLx1G7Yj//jbQJrbT8/H7DU7STbtdsbNCJGeLUp0GPs4Q
+	 zH02FjN5IMkY4qQ9kEjZKZEpNiLloiIDBq4ztN3o+6hOquckcYlsPkvNYl3UkMIOA6
+	 WZm0HN2OESQkqxnJrWyYhoLKBEFakI2t7ghMUJNPbOvT7hNdB1lG65PCUj7A/m1tSm
+	 zo4aJSr0mqdPqOTfdHsVjxNaCOFkm8tc/+NyxXrRIaKPEencgDOuaob3wg6V42h410
+	 ISzDKFVUXn/o34TFXHxw2lbvwv8ftRRXMWArvyC/dlbExgS4uaVp63js262mlFRDCF
+	 5ap/fZUCpkMqQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE9EC10DCE;
-	Tue,  5 Dec 2023 17:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB1B4C4167B;
+	Tue,  5 Dec 2023 17:06:45 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Tue, 05 Dec 2023 18:06:47 +0100
-Subject: [PATCH 7/8] iio: adc: ad9467: use the more common !val NULL check
+Date: Tue, 05 Dec 2023 18:06:45 +0100
+Subject: [PATCH 5/8] iio: adc: ad9467: use spi_get_device_match_data()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -31,18 +31,18 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231205-iio-backend-prep-v1-7-7c9bc18d612b@analog.com>
+Message-Id: <20231205-iio-backend-prep-v1-5-7c9bc18d612b@analog.com>
 References: <20231205-iio-backend-prep-v1-0-7c9bc18d612b@analog.com>
 In-Reply-To: <20231205-iio-backend-prep-v1-0-7c9bc18d612b@analog.com>
 To: linux-iio@vger.kernel.org
 Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
 X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1701796004; l=707;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1701796004; l=686;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=3jM1tUSsUENHFVqpXxzR/Yo8ri6HTO5FowZWdC38P+c=;
- b=puuU1b0SdAO4L8t9ZAspVLPBtIUt4FOZedOvK6dpK0P7rCQwwtLtNKdQu+4P/hQ4K8yvkT1GY
- Ez+SKlkCjXqA4JyGY43Xoc/SDvd2DR8yWhZ8ghLHkOKavaOPMm/X0lB
+ bh=KwOoDJbfeKxv+O783O7duvsC7KCPDrH8MqqvCh2j2jc=;
+ b=ACyqsphlXIDuXvqbAJcHv8gAMEISv6L/6J5c3+Urd4EdPSovL+SwSa9MknGlfJAdB8AN+7Xaf
+ Zqvq3Q5WI5/Ah3xg5/nR3TdYz9RHKMFPLGMic3kZFe3DDmPI+N0p39E
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received:
@@ -52,27 +52,28 @@ Reply-To: <nuno.sa@analog.com>
 
 From: Nuno Sa <nuno.sa@analog.com>
 
-Check !val instead of directing checking for NULL (val == NULL).
-No functional changes intended.
+Make use of spi_get_device_match_data() to simplify things.
 
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/adc/ad9467.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/ad9467.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
-index 0d075e6b6248..637823de712f 100644
+index 3c8bd6c821a4..6bdbd0ea8d6c 100644
 --- a/drivers/iio/adc/ad9467.c
 +++ b/drivers/iio/adc/ad9467.c
-@@ -158,7 +158,7 @@ static int ad9467_reg_access(struct adi_axi_adc_conv *conv, unsigned int reg,
- 	struct spi_device *spi = st->spi;
+@@ -456,9 +456,7 @@ static int ad9467_probe(struct spi_device *spi)
+ 	unsigned int id;
  	int ret;
  
--	if (readval == NULL) {
-+	if (!readval) {
- 		guard(mutex)(&st->lock);
- 		ret = ad9467_spi_write(spi, reg, writeval);
- 		if (ret)
+-	info = of_device_get_match_data(&spi->dev);
+-	if (!info)
+-		info = (void *)spi_get_device_id(spi)->driver_data;
++	info = spi_get_device_match_data(spi);
+ 	if (!info)
+ 		return -ENODEV;
+ 
 
 -- 
 2.43.0
