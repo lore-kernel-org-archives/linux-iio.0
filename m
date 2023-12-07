@@ -1,81 +1,121 @@
-Received: from relay.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B0910DC;
-	Thu,  7 Dec 2023 11:06:04 -0800 (PST)
-Received: from omf17.hostedemail.com (a10.router.float.18 [10.200.18.1])
-	by unirelay05.hostedemail.com (Postfix) with ESMTP id C679B401F9;
-	Thu,  7 Dec 2023 18:56:22 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf17.hostedemail.com (Postfix) with ESMTPA id 3B73B1A;
-	Thu,  7 Dec 2023 18:56:18 +0000 (UTC)
-Message-ID: <c2138d24bcaec664e9239e6e1bade6116db04027.camel@perches.com>
-Subject: Re: [PATCH v3 01/13] scripts: checkpatch: Add __aligned to the list
- of attribute notes
-From: Joe Perches <joe@perches.com>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>, apw@canonical.com, 
- dwaipayanray1@gmail.com, lukas.bulwahn@gmail.com, paul.cercueil@analog.com,
-  Michael.Hennerich@analog.com, lars@metafoo.de, jic23@kernel.org, 
- robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-  dan.carpenter@linaro.org, marcelo.schmitt1@gmail.com
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Date: Thu, 07 Dec 2023 10:56:17 -0800
-In-Reply-To: <e8d5343a0a6b5d976873d3896ad9ab0c88505c6d.1701971344.git.marcelo.schmitt1@gmail.com>
-References: <cover.1701971344.git.marcelo.schmitt1@gmail.com>
-	 <e8d5343a0a6b5d976873d3896ad9ab0c88505c6d.1701971344.git.marcelo.schmitt1@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="MV1LYsc0"
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0BF1712
+	for <linux-iio@vger.kernel.org>; Thu,  7 Dec 2023 15:18:22 -0800 (PST)
+Received: by mail-lj1-x229.google.com with SMTP id 38308e7fff4ca-2cb20b965dbso2321431fa.1
+        for <linux-iio@vger.kernel.org>; Thu, 07 Dec 2023 15:18:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1701991100; x=1702595900; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2qVgIXXI2cMw2ajdOYKgvt4GH6JzHiU0pdSvnaX1mW4=;
+        b=MV1LYsc0sqYLrqubyZ9BgfYCovQ7NwnwTnHIfEkR7xBQXJNRRSsuyRNhOOpkF3dJLP
+         yyujvvp/NHVZte/5SzZrq1TEIU4DQyh0W0aH6t+o+Bpeq41KrkTrOU0P6T0y+r7PfL5V
+         5obuwdRjan4mYXCSji+IM6vlDnFtVOar44FXk0rfPmV3Wp9vaOwnHny9ttKqSd+pSrmn
+         Q6ee6/2w8uQ/VcEwY0K/CpfjaLy2ubXnFsFHYJG1Pn5RSjlBzUwevT6q3EiMBkInwL+9
+         LPWqx75VmSpWeCZZ+ReIVgXTXTIhr0l8CPoqLAaazvQOi0j4FkzqWQoglR8O1voUbZK0
+         Aj1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701991100; x=1702595900;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=2qVgIXXI2cMw2ajdOYKgvt4GH6JzHiU0pdSvnaX1mW4=;
+        b=KSZQ1XW8+96n6pqqKBBRfhZ33eC6nFM5bxgrYyu+6GnQethSXiq2o+onsD4V1+Qxfo
+         Zwm1aAeeAK5Io9WGXdt12mxWlnkVBbTh1HAD1sXqPvedPN0LHkyxPikUqlVOTCRdqKui
+         bLufpVKKhgPSFEYxQUuuyqbIJyZzlh84j46SRodNhzVSlAjosTVFwjbrtiP+PHKnTTrR
+         98mSuzsA+VYbFI8cenQHnpm0xx7cirJfymk+fKQxQq31K/XrDHM61oTCYeIz0h1MMpSx
+         fgHsr4RRQqOxrkBkHf0uMsHFB37kW0jwupeocXsbTTDvdNHQCxVrlgg2LjXgsEDVc4eO
+         xBCA==
+X-Gm-Message-State: AOJu0Yw25eYr7v4lmWugGx5TNlNNueAeBE5yakkMFTZ8QL1ZFANbxkQe
+	R3upcB7fmQwGIPN4r0zLAWzYiMt+6F3ivSS61ZDO7w==
+X-Google-Smtp-Source: AGHT+IHQ1Cpr4EU0uoWT4gxeah7NnQJz57yCMLaVX91YLu7zNGMJ28UWG2gIa8fDxSMey7KqGONBMNrBP01R9tlIPsE=
+X-Received: by 2002:a2e:3608:0:b0:2c9:f4e4:3206 with SMTP id
+ d8-20020a2e3608000000b002c9f4e43206mr932197lja.38.1701991099990; Thu, 07 Dec
+ 2023 15:18:19 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 3B73B1A
-X-Rspamd-Server: rspamout02
-X-Stat-Signature: uc1ruosambyhhk1jej9gqi9e1oaeh155
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX188AVrchA8Q6aSf2ubwLQwytSUKZZesA8Q=
-X-HE-Tag: 1701975378-987312
-X-HE-Meta: U2FsdGVkX1+CjSoSgA4ZE8tPllT47ZdAoJmXNslwU/RdfB9ysc18qu5HDv/6UxcleLmTGK/xkn9Crk4a0B67WkHfmt5oOKGXXZandu+E/HzSP+oWthr6rm6yzoYJmAA7i5VALJXVA3n4Y36OKkM62KcwWVxY4XGB6CeA9rYvioQ1Gl6DVSBzE8NuJGpwpv74aCXVlhLG0WnOdaU5RE8Kqwz2ja6pUMPtmiGEB2xR6/EOLrBPmq/zTGR5nqcJh6DYGk1/Iv7YN85Ep1EuFNhKNfPeZ9kZgiEqWOP/3OC7YR5LfPStgN5p1Rpq+gvkEg+5CbJINLb08STI2YpAOkWEv7WNHylca8Hiyg3x4z2SgBS+tvm0qIoZgggs5kBujoLD
+References: <cover.1701971344.git.marcelo.schmitt1@gmail.com> <14973feb4c0f4ad01a0e5047407c93ce9b9e5463.1701971344.git.marcelo.schmitt1@gmail.com>
+In-Reply-To: <14973feb4c0f4ad01a0e5047407c93ce9b9e5463.1701971344.git.marcelo.schmitt1@gmail.com>
+From: David Lechner <dlechner@baylibre.com>
+Date: Thu, 7 Dec 2023 17:18:09 -0600
+Message-ID: <CAMknhBHCYicEL_xhumBQMUm=HBVb=7dLrYsK8Zj2o7RodvMarw@mail.gmail.com>
+Subject: Re: [PATCH v3 02/13] iio: adc: ad7091r: Populate device driver data field
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: apw@canonical.com, joe@perches.com, dwaipayanray1@gmail.com, 
+	lukas.bulwahn@gmail.com, paul.cercueil@analog.com, 
+	Michael.Hennerich@analog.com, lars@metafoo.de, jic23@kernel.org, 
+	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, 
+	dan.carpenter@linaro.org, marcelo.schmitt1@gmail.com, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2023-12-07 at 15:37 -0300, Marcelo Schmitt wrote:
-> Checkpatch presumes attributes marked with __aligned(alignment) are part
-> of a function declaration and throws a warning stating that those
-> compiler attributes should have an identifier name which is not correct.
-> Add __aligned compiler attributes to the list of attribute notes
-> so they don't cause warnings anymore.
->=20
+On Thu, Dec 7, 2023 at 12:38=E2=80=AFPM Marcelo Schmitt
+<marcelo.schmitt@analog.com> wrote:
+>
+> Set device driver data so it can be retrieved when handling alert
+> events, avoiding null pointer dereference.
+>
+> Fixes: ca69300173b6 ("iio: adc: Add support for AD7091R5 ADC")
 > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 > ---
-> The patch that would trigger the mentioned checkpatch warning in this ser=
-ies is
-> patch number 12 (iio: adc: Add support for AD7091R-8).
->=20
->  scripts/checkpatch.pl | 1 +
+>  drivers/iio/adc/ad7091r-base.c | 1 +
 >  1 file changed, 1 insertion(+)
->=20
-> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-> index 25fdb7fda112..e6773ae0ad08 100755
-> --- a/scripts/checkpatch.pl
-> +++ b/scripts/checkpatch.pl
-> @@ -512,6 +512,7 @@ our $Attribute	=3D qr{
->  			__ro_after_init|
->  			__kprobes|
->  			$InitAttribute|
-> +			__aligned|
+>
+> diff --git a/drivers/iio/adc/ad7091r-base.c b/drivers/iio/adc/ad7091r-bas=
+e.c
+> index 8e252cde735b..0f192fbecbd4 100644
+> --- a/drivers/iio/adc/ad7091r-base.c
+> +++ b/drivers/iio/adc/ad7091r-base.c
+> @@ -232,6 +232,7 @@ int ad7091r_probe(struct device *dev, const char *nam=
+e,
+>         iio_dev->channels =3D chip_info->channels;
+>
+>         if (irq) {
+> +               dev_set_drvdata(st->dev, iio_dev);
+>                 ret =3D devm_request_threaded_irq(dev, irq, NULL,
+>                                 ad7091r_event_handler,
+>                                 IRQF_TRIGGER_FALLING | IRQF_ONESHOT, name=
+, st);
+> --
+> 2.42.0
+>
+>
 
-__aligned takes an argument so I think there needs
-to have something like the use of __alloc_size below
-this addition
-	__alloc_size\s*\(\s*\d+\s*(?:,\s*\d+\s*)?\)
+Instead of introducing a new relationship between iio_dev and st, why
+not pass iio_dev to devm_request_threaded_irq() instead of st and then
+use iio_priv() to get st in ad7091r_event_handler?
 
-maybe
+diff --git a/drivers/iio/adc/ad7091r-base.c b/drivers/iio/adc/ad7091r-base.=
+c
+index 8e252cde735b..0e5d3d2e9c98 100644
+--- a/drivers/iio/adc/ad7091r-base.c
++++ b/drivers/iio/adc/ad7091r-base.c
+@@ -174,8 +174,8 @@ static const struct iio_info ad7091r_info =3D {
 
-			__aligned\s*\([^\)]*\)
-
-though even that would work well with most uses it
-would not work with things like
-
-drivers/crypto/inside-secure/safexcel_hash.c:   u8 cache[HASH_CACHE_SIZE] _=
-_aligned(sizeof(u32));
-
+ static irqreturn_t ad7091r_event_handler(int irq, void *private)
+ {
+-    struct ad7091r_state *st =3D (struct ad7091r_state *) private;
+-    struct iio_dev *iio_dev =3D dev_get_drvdata(st->dev);
++    struct iio_dev *iio_dev =3D private;
++    struct ad7091r_state *st =3D iio_priv(iio_dev);
+     unsigned int i, read_val;
+     int ret;
+     s64 timestamp =3D iio_get_time_ns(iio_dev);
+@@ -234,7 +234,7 @@ int ad7091r_probe(struct device *dev, const char *name,
+     if (irq) {
+         ret =3D devm_request_threaded_irq(dev, irq, NULL,
+                 ad7091r_event_handler,
+-                IRQF_TRIGGER_FALLING | IRQF_ONESHOT, name, st);
++                IRQF_TRIGGER_FALLING | IRQF_ONESHOT, name, iio_dev);
+         if (ret)
+             return ret;
+     }
