@@ -1,95 +1,71 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3DD1709;
-	Thu,  7 Dec 2023 10:43:59 -0800 (PST)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3B7FJ9JV008046;
-	Thu, 7 Dec 2023 13:43:40 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3utd13spkm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 07 Dec 2023 13:43:39 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 3B7Ihc0j056454
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 7 Dec 2023 13:43:38 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Thu, 7 Dec 2023
- 13:43:37 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Thu, 7 Dec 2023 13:43:37 -0500
-Received: from work.ad.analog.com (HYB-hERzalRezfV.ad.analog.com [10.65.205.129])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 3B7IhHjg015426;
-	Thu, 7 Dec 2023 13:43:19 -0500
-From: Marcelo Schmitt <marcelo.schmitt@analog.com>
-To: <apw@canonical.com>, <joe@perches.com>, <dwaipayanray1@gmail.com>,
-        <lukas.bulwahn@gmail.com>, <paul.cercueil@analog.com>,
-        <Michael.Hennerich@analog.com>, <lars@metafoo.de>, <jic23@kernel.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <conor+dt@kernel.org>, <dan.carpenter@linaro.org>,
-        <marcelo.schmitt1@gmail.com>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 13/13] MAINTAINERS: Add MAINTAINERS entry for AD7091R
-Date: Thu, 7 Dec 2023 15:43:16 -0300
-Message-ID: <b55d378dd8b6dbe787a83b5a0a1f3f05b2530eab.1701971344.git.marcelo.schmitt1@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <cover.1701971344.git.marcelo.schmitt1@gmail.com>
+X-Greylist: delayed 142 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 Dec 2023 10:58:47 PST
+Received: from relay.hostedemail.com (smtprelay0014.hostedemail.com [216.40.44.14])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C00610F9;
+	Thu,  7 Dec 2023 10:58:47 -0800 (PST)
+Received: from omf15.hostedemail.com (a10.router.float.18 [10.200.18.1])
+	by unirelay09.hostedemail.com (Postfix) with ESMTP id 410A9801F7;
+	Thu,  7 Dec 2023 18:58:44 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf15.hostedemail.com (Postfix) with ESMTPA id A25171A;
+	Thu,  7 Dec 2023 18:58:39 +0000 (UTC)
+Message-ID: <26ceceaec7dfe109b43c8677f74d91c5c893ac60.camel@perches.com>
+Subject: Re: [PATCH v3 13/13] MAINTAINERS: Add MAINTAINERS entry for AD7091R
+From: Joe Perches <joe@perches.com>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>, apw@canonical.com, 
+ dwaipayanray1@gmail.com, lukas.bulwahn@gmail.com, paul.cercueil@analog.com,
+  Michael.Hennerich@analog.com, lars@metafoo.de, jic23@kernel.org, 
+ robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+  dan.carpenter@linaro.org, marcelo.schmitt1@gmail.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Date: Thu, 07 Dec 2023 10:58:38 -0800
+In-Reply-To: <b55d378dd8b6dbe787a83b5a0a1f3f05b2530eab.1701971344.git.marcelo.schmitt1@gmail.com>
 References: <cover.1701971344.git.marcelo.schmitt1@gmail.com>
+	 <b55d378dd8b6dbe787a83b5a0a1f3f05b2530eab.1701971344.git.marcelo.schmitt1@gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: hYXqmmgRqvFurNJCLhtn_cTpswRh5mWI
-X-Proofpoint-GUID: hYXqmmgRqvFurNJCLhtn_cTpswRh5mWI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-02_01,2023-11-30_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0 mlxscore=0
- spamscore=0 phishscore=0 adultscore=0 malwarescore=0 priorityscore=1501
- mlxlogscore=895 suspectscore=0 bulkscore=0 impostorscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2311290000
- definitions=main-2312070156
+X-Stat-Signature: kxqmrhecpbp8rrfygtoxcukpefw3woyr
+X-Rspamd-Server: rspamout07
+X-Rspamd-Queue-Id: A25171A
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/3NwuE18cfhVHEcK6vs+EyQ+1MnrtfxDk=
+X-HE-Tag: 1701975519-182943
+X-HE-Meta: U2FsdGVkX18+J42L2hwAsDCsmGB+Rg7Bix3MeDWX7Teb+C69tUX9anU45klsBarWWpuCDaqa747aFttNZ/nmfuXaZYXW/nQc+WvHWmSbZXEPRlebaODfW/DOG/9W6kohoy0NTvClAebSUky/V1JA1ob1AJsbJX5dMd9BWTberEvPqGuZZqwrhhjqIOiuveXhAYr2UMjRwoYd4zsj15zNvap/9vtoVhD0VsdZYNQaSZchmV6YYuicTpVkYSLGfY2Z6TR4p3O1IeRf3ah7bCjDjTdtdH3E29D6IqWvF2CJgeDgnLFS0TrSX7ZefB5lLNFTisvliB08PCml9EPYXWMjY1KHSRGCu1aBqeSYP8JPe1aapzTjsre2pk8U4ePtfY6HcO/acMZ4T/XoVK+xxfH3PFouclB9MJIP/wjJkW43i5XMoktSt6nJsg/AH+NLGBxG
 
-The driver for AD7091R was added in
-ca693001: iio: adc: Add support for AD7091R5 ADC
-but no MAINTAINERS file entry was added for it since then.
-Add a proper MAINTAINERS file entry for the AD7091R driver.
+On Thu, 2023-12-07 at 15:43 -0300, Marcelo Schmitt wrote:
+> The driver for AD7091R was added in
+> ca693001: iio: adc: Add support for AD7091R5 ADC
+> but no MAINTAINERS file entry was added for it since then.
+> Add a proper MAINTAINERS file entry for the AD7091R driver.
+[]
+> diff --git a/MAINTAINERS b/MAINTAINERS
+[]
+> @@ -1126,6 +1126,18 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-adc-ad4=
+130
+>  F:	Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
+>  F:	drivers/iio/adc/ad4130.c
+> =20
+> +ANALOG DEVICES INC AD7091R DRIVER
+> +M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Supported
+> +W:	http://ez.analog.com/community/linux-device-drivers
+> +F:	Documentation/devicetree/bindings/iio/adc/adi,ad7091r5.yaml
+> +F:	Documentation/devicetree/bindings/iio/adc/adi,ad7091r8.yaml
+> +F:	drivers/iio/adc/drivers/iio/adc/ad7091r-base.c
+> +F:	drivers/iio/adc/drivers/iio/adc/ad7091r-base.h
+> +F:	drivers/iio/adc/drivers/iio/adc/ad7091r5.c
+> +F:	drivers/iio/adc/drivers/iio/adc/ad7091r8.c
 
-Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
----
- MAINTAINERS | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Maybe use wildcards?
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1338e1176ea5..a6957678f546 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1126,6 +1126,18 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-adc-ad4130
- F:	Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
- F:	drivers/iio/adc/ad4130.c
- 
-+ANALOG DEVICES INC AD7091R DRIVER
-+M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	http://ez.analog.com/community/linux-device-drivers
-+F:	Documentation/devicetree/bindings/iio/adc/adi,ad7091r5.yaml
-+F:	Documentation/devicetree/bindings/iio/adc/adi,ad7091r8.yaml
-+F:	drivers/iio/adc/drivers/iio/adc/ad7091r-base.c
-+F:	drivers/iio/adc/drivers/iio/adc/ad7091r-base.h
-+F:	drivers/iio/adc/drivers/iio/adc/ad7091r5.c
-+F:	drivers/iio/adc/drivers/iio/adc/ad7091r8.c
-+
- ANALOG DEVICES INC AD7192 DRIVER
- M:	Alexandru Tachici <alexandru.tachici@analog.com>
- L:	linux-iio@vger.kernel.org
--- 
-2.42.0
+F:	Documentation/devicetree/bindings/iio/adc/adi,ad7091r*
+F:	drivers/iio/adc/drivers/iio/adc/ad7091r*
+
 
