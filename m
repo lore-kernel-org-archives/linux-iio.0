@@ -1,194 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4288130337;
-	Fri,  8 Dec 2023 15:30:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R13ny3bt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7409DC433C8;
-	Fri,  8 Dec 2023 15:30:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1702049422;
-	bh=RxJt1IRw23UP09MyvDYjKFY8QGbl8CX8IEuwGzGDpgA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=R13ny3btIbS4w0W3novK6XpflowpC1xFiBtWnPtqpUiq1nuPzfTgc9m11amAp63Sx
-	 4jBPZRV2bvycN2CnwcswRVeRoFHk69GyEfJ86HnjqBNVmO6o5Gh4l2CI4xkX7bHL75
-	 /aYuX0NIaZQR1tHtKZ7r3b/WCiWsjgUY0JoayDHYLSEE9A4BF93d3jv0wMsEJGBmPf
-	 QMgdOu2FDSl9qlwZeDtFQGcV07RSH7tXBdh1KLrInT6bq5t8xyMcSv0fwtrvXtsXRY
-	 T2/RxCFooy1qkuds85M1PCsUQ3b27vzg+08G9urJD7lKSSIXVBXW1SwZR+5PGOFrdI
-	 AkM/2hKkTygBg==
-Date: Fri, 8 Dec 2023 15:30:17 +0000
-From: Conor Dooley <conor@kernel.org>
-To: nuno.sa@analog.com
-Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="2GNma6WT"
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D71911723
+	for <linux-iio@vger.kernel.org>; Fri,  8 Dec 2023 07:52:37 -0800 (PST)
+Received: by mail-ot1-x334.google.com with SMTP id 46e09a7af769-6d9d307a732so1355322a34.1
+        for <linux-iio@vger.kernel.org>; Fri, 08 Dec 2023 07:52:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1702050757; x=1702655557; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=VUg/znhTOIWnO1n9WUNrCkz7MCYRa0cNRXdZfa57rxM=;
+        b=2GNma6WTvnX2ZM/RSDQ3MEaemiUC4QZ9NKeWp4HNL4R4GlzzPFOUQ7Q3Kb6OODPv7l
+         SishtNxHzlh887P27mgmLOMYvkyGtyBkBjmmBH8qaQJyNURnRraK8BQ3URT0glCixsME
+         dTt8kyuJDkwcczuBph+N76QmFCeC89t7vRuerzRqq5cb5YuHaatYPWld0aI6hsADby29
+         ClYz3vvLc4yYWM3M2R74m6Y8UEBYyqUaYAn+ZKqWF3ApqtTvn+vOUYP5rsfCT1XmdQ0x
+         zhLE1HoXwkm+LLL6jmDPJqYRpTNN0nOhAl81l3AOe3z37IRMRm5dU/pbXtO0hgw2p3N8
+         qxGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702050757; x=1702655557;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=VUg/znhTOIWnO1n9WUNrCkz7MCYRa0cNRXdZfa57rxM=;
+        b=t51sfbirPkAo3n3czpvtfRzAzgLzHboHbkqTHXWZV3iUfwHjbCJNafhlBWkcjatXQP
+         zCbryb7LLBvxFu+bf/tNPt8UWLvAREHf++Mk8k/dMtn/kDkpK1IfVcPxtSu1DKio2dNq
+         9YjJa+4ErdCw8Fh2BWMA/yLV8NmmXgbfpPYcjutklAkDya95GN0xZS4blPmsUp86goHg
+         +cXbcJFNeICb4hNpGlHGPkGeVTbpkZfqYJO7nGY5CE2RYYGsUxnBzUZ4S9q1CL8D89B5
+         MV7CSMXAk8KQxr/JU2cQTBvu4t7DG8y2WpheQ3QMe1ynXHchZz5Zf9q2YnpD8q6BTAhu
+         31WA==
+X-Gm-Message-State: AOJu0YzHfxl3DqIJ/Od5TRUiIPR1nO/BeVOIWnb3Wx7fhjo/6fXdvx2h
+	YOoGBkn9V/RTY38DfSYEXftu+Ugmtg4kZOf5QhE=
+X-Google-Smtp-Source: AGHT+IEvZm96yDwkXa4CYNB62gvIRQrwcn8Dogy1yVqamELwSIJAM+evvjcjOg0JkXwSpAfPt97sTw==
+X-Received: by 2002:a9d:7519:0:b0:6d8:4bfb:eb4c with SMTP id r25-20020a9d7519000000b006d84bfbeb4cmr242635otk.9.1702050757188;
+        Fri, 08 Dec 2023 07:52:37 -0800 (PST)
+Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
+        by smtp.gmail.com with ESMTPSA id v3-20020a9d7d03000000b006d99d363723sm332032otn.63.2023.12.08.07.52.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Dec 2023 07:52:36 -0800 (PST)
+From: David Lechner <dlechner@baylibre.com>
+To: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: David Lechner <dlechner@baylibre.com>,
 	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Olivier Moysan <olivier.moysan@foss.st.com>
-Subject: Re: [PATCH v2 0/8] iio: add new backend framework
-Message-ID: <20231208-corridor-outfit-ae0314b29186@spud>
-References: <20231208-dev-iio-backend-v2-0-5450951895e1@analog.com>
+	Jonathan Cameron <jic23@kernel.org>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+	Alexandru Ardelean <alexandru.ardelean@analog.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	Stefan Popa <stefan.popa@analog.com>
+Subject: [PATCH 0/2] iio: adc: add new ad7380 driver
+Date: Fri,  8 Dec 2023 09:51:39 -0600
+Message-ID: <20231208-ad7380-mainline-v1-0-2b33fe2f44ae@baylibre.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="eoSVKmAJ/NfelqU5"
-Content-Disposition: inline
-In-Reply-To: <20231208-dev-iio-backend-v2-0-5450951895e1@analog.com>
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.12.4
+Content-Transfer-Encoding: 8bit
 
+This series is adding a new driver for the Analog Devices Inc. AD7380,
+AD7381, AD7383, and AD7384 ADCs. These chips are part of a family of
+simultaneous sampling SAR ADCs.
 
---eoSVKmAJ/NfelqU5
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+To keep things simple, the initial driver implementation only supports
+the 2-channel differential chips listed above. There are also 4-channel
+differential chips and 4-channel single-ended chips in the family that
+can be added later.
 
-On Fri, Dec 08, 2023 at 04:14:07PM +0100, Nuno Sa via B4 Relay wrote:
-> This series depends on [1] and it only build on top of it. The point is
-> to already speed up the reviewing of the framework. That obviously means
-> that all those pacthes were dropped in v2.
->=20
-> v1:
->  https://lore.kernel.org/linux-iio/20231204144925.4fe9922f@jic23-huawei/T=
-/#m222f5175273b81dbfe40b7f0daffcdc67d6cb8ff
->=20
-> Changes in v2:
->  - Patch 1-2 and 5
->    * new patches.
->  - Patch 6:
->    * Fixed some docs failures;
->    * Fixed a legacy 'conv' name in one of the function parameters;
->    * Added .request_buffer() and .free_buffer() ops;
->    * Refactored the helper macros;
->    * Added Olivier as Reviewer.
->  - Patch 7:
->    * Use new devm_iio_backend_request_buffer().
->  - Patch 8:
->    * Implement new .request_buffer() and .free_buffer() ops;
->=20
-> Also would like to mention that in v2 I'm experimenting in having the
-> DMA on the backend device (as discussed with David in v1). Does not look
-> to bad but as I said before, I'm not seeing a big issue if we end up
-> having the buffer allocation in the frontend.
->=20
-> For the bindings folks:
->=20
-> I'm introducing a new io-backends property in the ad9467 bindings but I'm
-> not sure this is the way to do it. Ideally that new property become a
-> generic schema and I'm guessing I should send a PULL to?
->=20
-> https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/ii=
-o/iio-consumer.yaml
+Furthermore, the driver is just implementing basic support for capturing
+data. Additional features like interrupts, CRC, etc. can be added later.
 
-That seems like the right thing to do to me, depending on how widespread
-the use of these backends might be. What is seemingly missing though,
-=66rom this cover and from the bindings patch in the series in particular,
-is an explanation of what the "iio-backends" hardware actually is.
+Also, FYI, this driver will also be used as the base for an upcoming
+series adding AXI SPI Engine offload support for these chips along with
+[1].
 
-There is some text below, but it does not seem complete to me. Is the
-idea that this "backend" is shared between multiple frontend consumers?
-The one example is described as being "highly focused on ADI usecases"
+This work is being done by BayLibre and on behalf of Analog Devices Inc.
+hence the maintainers are @analog.com.
 
-Thanks,
-Conor.
+[1]: https://lore.kernel.org/linux-spi/20231204-axi-spi-engine-series-2-v1-0-063672323fce@baylibre.com/
 
->=20
-> (Jonathan, if you think that's not the right place, shout now :))
->=20
-> I'm also deprecating 'adi,adc-dev' as it is not relevant anymore. In the
-> driver code, we are actually breaking ABI but I'm taking a more
-> conservative approach in the bindings. Ideally I would also remove it in
-> the bindings :).
-> =20
->=20
-> As requested here we have a small diagram that illustrated on e typical
-> usage of the new framework:
->=20
->                                            ------------------------------=
--------------------------
->  ------------------                        | -----------         --------=
-----      -------  FPGA |
->  |     ADC        |------------------------| | AXI ADC |---------| DMA CO=
-RE |------| RAM |       |
->  | (Frontend/IIO) | Serial Data (eg: LVDS) | |(backend)|---------|       =
-   |------|     |       |
->  |                |------------------------| -----------         --------=
-----      -------       |
->  ------------------                        ------------------------------=
--------------------------
-> =20
-> The above is highly focused on ADI usecases. But one can see the idea...
-> The frontend is the real converter and is the one registering and
-> handling all the IIO interfaces. Such a device can then connect to a
-> backend device for further services/configurations. In the above
-> example, the backend device is an high speed core capable of handling
-> the high sample rate of these ADCs so that it can push that data further
-> in the pipeline (typically a DMA core) so the user can process the
-> samples with minimal losses.
->=20
-> Jonathan, I was also tempted in including the diagram in the source
-> file. Would that be a good idea?
->=20
-> [1]: https://lore.kernel.org/linux-iio/20231207-iio-backend-prep-v2-0-a4a=
-33bc4d70e@analog.com
->=20
-> ---
-> Nuno Sa (7):
->       dt-bindings: adc: ad9467: document io-backend property
->       dt-bindings: adc: axi-adc: deprecate 'adi,adc-dev'
->       driver: core: allow modifying device_links flags
->       iio: buffer-dmaengine: export buffer alloc and free functions
->       iio: add the IIO backend framework
->       iio: adc: ad9467: convert to backend framework
->       iio: adc: adi-axi-adc: move to backend framework
->=20
-> Olivier Moysan (1):
->       of: property: add device link support for io-backends
->=20
->  .../devicetree/bindings/iio/adc/adi,ad9467.yaml    |   5 +
->  .../devicetree/bindings/iio/adc/adi,axi-adc.yaml   |   4 +-
->  MAINTAINERS                                        |   8 +
->  drivers/base/core.c                                |  14 +-
->  drivers/iio/Kconfig                                |   5 +
->  drivers/iio/Makefile                               |   1 +
->  drivers/iio/adc/Kconfig                            |   3 +-
->  drivers/iio/adc/ad9467.c                           | 242 +++++++------
->  drivers/iio/adc/adi-axi-adc.c                      | 379 +++++----------=
------
->  drivers/iio/buffer/industrialio-buffer-dmaengine.c |   6 +-
->  drivers/iio/industrialio-backend.c                 | 386 +++++++++++++++=
-++++++
->  drivers/of/property.c                              |   2 +
->  include/linux/iio/adc/adi-axi-adc.h                |  68 ----
->  include/linux/iio/backend.h                        |  68 ++++
->  include/linux/iio/buffer-dmaengine.h               |   4 +-
->  15 files changed, 727 insertions(+), 468 deletions(-)
-> ---
-> base-commit: 330c0f834ccbdbe6a89da475cb1c56893f3a8363
-> change-id: 20231120-dev-iio-backend-d14b473a1d9f
-> --
->=20
-> Thanks!
-> - Nuno S=E1
->=20
+---
+David Lechner (2):
+      dt-bindings: iio: adc: Add binding for AD7380 ADCs
+      iio: adc: ad7380: new driver for AD7380 ADCs
 
---eoSVKmAJ/NfelqU5
-Content-Type: application/pgp-signature; name="signature.asc"
+ .../devicetree/bindings/iio/adc/adi,ad7380.yaml    | 102 +++++
+ MAINTAINERS                                        |  10 +
+ drivers/iio/adc/Kconfig                            |  16 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/ad7380.c                           | 467 +++++++++++++++++++++
+ 5 files changed, 596 insertions(+)
+---
+base-commit: 18f78b5e609b19b56237f0dae47068d44b8b0ecd
+change-id: 20231208-ad7380-mainline-e6c4fa7dbedd
 
------BEGIN PGP SIGNATURE-----
+Best regards,
+-- 
+David Lechner <dlechner@baylibre.com>
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZXM2iQAKCRB4tDGHoIJi
-0lgFAP9hVMM+0foMZ39lHZxREYl1j4NJ9VRydAwMC8Q1ls3g1wD9EqYOPQMRXMRx
-vlwyvuGpRHLVuQWvttO+WGitIDvAsQI=
-=kq3S
------END PGP SIGNATURE-----
-
---eoSVKmAJ/NfelqU5--
