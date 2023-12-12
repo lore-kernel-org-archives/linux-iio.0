@@ -1,434 +1,207 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aYUyreq7"
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 988F0CA;
-	Tue, 12 Dec 2023 07:16:54 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-40b5155e154so67372105e9.3;
-        Tue, 12 Dec 2023 07:16:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1702394213; x=1702999013; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Puomzrjt5SUW5WOIbHx2z4P43aqw9YO10Gcjn/mwTFU=;
-        b=aYUyreq7AnDYnOEQo002RNK4tVWnjMpElzIUUVrPIcnjmkuotJRkNcP270yn9cbrYZ
-         o4wh01ZSSs7f/Z8aBQpfI6YIS7tqpA9EzyxjueyReapnFoWMJbaESvOJvkyaFMaF1xvg
-         6PFteJMXl2N4pHCcGPzCN1viU2roH3myDW2K5Rsr4Mq+PXfr61Wobvh2ZPgeB3Ieeq0I
-         BcheSHkG3XswAlRAvPUVz2U8aqWRFHCwVGWakPqyVAPy1u4pzRv0aN8OJ9jlw74DXmmQ
-         90mI1nm43eEM5Swr/A7of2vOCy2K4AtLMY7mFthOMhgjyqNV+qP8jHpTKOPclzXLEiiU
-         saoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702394213; x=1702999013;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Puomzrjt5SUW5WOIbHx2z4P43aqw9YO10Gcjn/mwTFU=;
-        b=Uqwgy2wV2zl66HmNQKqXqVkgkQOvevOehGd4Wj8Qxi0vdFiMRKHl8dL2dwzE29t20P
-         tdCoPHHu8C2OiZkBsFdET+f/9pMZOTrid/jQOU6OckaXnZ+hO7OX+mSsFL6OH6pA7HTD
-         KiKtr0UxUux8PZxDQZpip4ig57l0vKJ0PLoJPKYx0zOr15uV7TOj53ssxB2WLLb+dedD
-         KbsVfLUUt9zA33H1wlHoGH87qtOu4OVul4KtquQM79W525LHV2hKKYoSPU2rTQMWqF9j
-         8zfXtM8hVpdaXw2mY32TTGEXDe0zfc4cpK517zYhF+yt7t6U4zn0tVVfclx1YCG0pLAq
-         y+lA==
-X-Gm-Message-State: AOJu0Yw1ziniMVqJmGNNQjtAWaie/GJ5anJmgmQbgH6esELjztFauQOR
-	3OTfa/LS49nOzeyd8pHKeAQ=
-X-Google-Smtp-Source: AGHT+IGlE0Fq6BbAEeOu6lKLZtxzcjQv99zNrO+z5y0JuNw3rcAs90ZaReQEUxtLM4cBKsDFaA379w==
-X-Received: by 2002:a05:600c:4f4d:b0:40b:5e4a:408a with SMTP id m13-20020a05600c4f4d00b0040b5e4a408amr2991203wmq.170.1702394212695;
-        Tue, 12 Dec 2023 07:16:52 -0800 (PST)
-Received: from ?IPv6:2003:f6:ef1b:2000:944c:cbc7:1e1c:2c47? (p200300f6ef1b2000944ccbc71e1c2c47.dip0.t-ipconnect.de. [2003:f6:ef1b:2000:944c:cbc7:1e1c:2c47])
-        by smtp.gmail.com with ESMTPSA id g17-20020a05600c311100b0040c4535f1a2sm8960220wmo.39.2023.12.12.07.16.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Dec 2023 07:16:52 -0800 (PST)
-Message-ID: <c21634252fec82dadd27b1bff69b24d3384acf00.camel@gmail.com>
-Subject: Re: [PATCH 2/2] iio: adc: ad7380: new driver for AD7380 ADCs
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org
-Cc: Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
- <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
- Jonathan Cameron <jic23@kernel.org>, Michael Hennerich
- <michael.hennerich@analog.com>, Nuno =?ISO-8859-1?Q?S=E1?=
- <nuno.sa@analog.com>, Alexandru Ardelean <alexandru.ardelean@analog.com>, 
- Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
- linux-kernel@vger.kernel.org, Stefan Popa <stefan.popa@analog.com>
-Date: Tue, 12 Dec 2023 16:19:56 +0100
-In-Reply-To: <20231208-ad7380-mainline-v1-2-2b33fe2f44ae@baylibre.com>
-References: <20231208-ad7380-mainline-v1-0-2b33fe2f44ae@baylibre.com>
-	 <20231208-ad7380-mainline-v1-2-2b33fe2f44ae@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.50.2 
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="P5a0uB+d"
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74EB100;
+	Tue, 12 Dec 2023 07:25:03 -0800 (PST)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3BCCqu7T030022;
+	Tue, 12 Dec 2023 16:24:06 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	from:to:cc:subject:date:message-id:in-reply-to:references
+	:mime-version:content-transfer-encoding:content-type; s=
+	selector1; bh=JpXp2EJHxY+VtUUSPxkkTyJMNNq/ux4P17gSFHI+E8k=; b=P5
+	a0uB+dKMINb+zPuc568irPju8xw51gybAQYBQqrkUxMu3M/daUwzLeBEMD67Z2pW
+	ZH7PDLmlDrfr/B4lVLS62uSacZ8JiKYyAenA/x5fmTYwYB15heyGh8kTJgJvsuQD
+	nOz17WrlMaFrPtHehUiLXYUtOzkQH+B35JMddfZeBL7C1Y/9mRxvGId44wPvcQkH
+	ZdFozR/5Tbj7PdKW+F1yDiqRLPzvxFskqZmlwOKJrkldl/c9NYieo3Ea4A7LIhBO
+	Lb/s9OGh50jT5E2CVdlCnKbHlomgpaRMh5BHVyNnOTf9otZuPl/Nr+TMg4G/wCum
+	7XNZu/4Q52TZ8AlCCM3g==
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3uvg0gusvb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 12 Dec 2023 16:24:06 +0100 (CET)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7F638100060;
+	Tue, 12 Dec 2023 16:24:05 +0100 (CET)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7435A22F7B3;
+	Tue, 12 Dec 2023 16:24:05 +0100 (CET)
+Received: from localhost (10.252.7.20) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Tue, 12 Dec
+ 2023 16:24:04 +0100
+From: Gatien Chevallier <gatien.chevallier@foss.st.com>
+To: <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <alexandre.torgue@foss.st.com>,
+        <vkoul@kernel.org>, <jic23@kernel.org>, <olivier.moysan@foss.st.com>,
+        <arnaud.pouliquen@foss.st.com>, <mchehab@kernel.org>,
+        <fabrice.gasnier@foss.st.com>, <andi.shyti@kernel.org>,
+        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <hugues.fruchet@foss.st.com>, <lee@kernel.org>,
+        <will@kernel.org>, <catalin.marinas@arm.com>, <arnd@kernel.org>,
+        <richardcochran@gmail.com>, Frank Rowand <frowand.list@gmail.com>,
+        <peng.fan@oss.nxp.com>, <lars@metafoo.de>, <rcsekar@samsung.com>,
+        <wg@grandegger.com>, <mkl@pengutronix.de>
+CC: <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <dmaengine@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-media@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-phy@lists.infradead.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>,
+        Oleksii Moisieiev <oleksii_moisieiev@epam.com>,
+        Gatien Chevallier <gatien.chevallier@foss.st.com>
+Subject: [PATCH v8 01/13] dt-bindings: document generic access controllers
+Date: Tue, 12 Dec 2023 16:23:44 +0100
+Message-ID: <20231212152356.345703-2-gatien.chevallier@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20231212152356.345703-1-gatien.chevallier@foss.st.com>
+References: <20231212152356.345703-1-gatien.chevallier@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-12_09,2023-12-12_01,2023-05-22_02
 
-Hi David,
+From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
 
-minor stuff from me...
+Introducing of the generic access controllers bindings for the
+access controller provider and consumer devices. Those bindings are
+intended to allow a better handling of accesses to resources in a
+hardware architecture supporting several compartments.
 
-On Fri, 2023-12-08 at 09:51 -0600, David Lechner wrote:
-> This adds a new driver for the AD7380 family ADCs.
->=20
-> The driver currently implements basic support for the AD7380, AD7381,
-> AD7383, and AD7384 2-channel differential ADCs. Support for additional
-> single-ended and 4-channel chips that use the same register map as well
-> as additional features of the chip will be added in future patches.
->=20
-> Co-developed-by: Stefan Popa <stefan.popa@analog.com>
-> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
-> ---
-> =C2=A0MAINTAINERS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0 1 +
-> =C2=A0drivers/iio/adc/Kconfig=C2=A0 |=C2=A0 16 ++
-> =C2=A0drivers/iio/adc/Makefile |=C2=A0=C2=A0 1 +
-> =C2=A0drivers/iio/adc/ad7380.c | 467
-> +++++++++++++++++++++++++++++++++++++++++++++++
-> =C2=A04 files changed, 485 insertions(+)
->=20
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index e2a998be5879..5a54620a31b8 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -438,6 +438,7 @@ S:	Supported
-> =C2=A0W:=09
-> https://wiki.analog.com/resources/tools-software/linux-drivers/iio-adc/ad=
-738x
-> =C2=A0W:	https://ez.analog.com/linux-software-drivers
-> =C2=A0F:	Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml
-> +F:	drivers/iio/adc/ad7380.c
-> =C2=A0
-> =C2=A0AD7877 TOUCHSCREEN DRIVER
-> =C2=A0M:	Michael Hennerich <michael.hennerich@analog.com>
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 35f9867da12c..cbfd626712e3 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -122,6 +122,22 @@ config AD7298
-> =C2=A0	=C2=A0 To compile this driver as a module, choose M here: the
-> =C2=A0	=C2=A0 module will be called ad7298.
-> =C2=A0
-> +config AD7380
-> +	tristate "Analog Devices AD7380 ADC driver"
-> +	depends on SPI_MASTER
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGER
-> +	select IIO_TRIGGERED_BUFFER
-> +	help
-> +	=C2=A0 AD7380 is a family of simultaneous sampling ADCs that share the
-> same
-> +	=C2=A0 SPI register map and have similar pinouts.
-> +
-> +	=C2=A0 Say yes here to build support for Analog Devices AD7380 ADC and
-> +	=C2=A0 similar chips.
-> +
-> +	=C2=A0 To compile this driver as a module, choose M here: the module wi=
-ll
-> be
-> +	=C2=A0 called ad7380.
-> +
-> =C2=A0config AD7476
-> =C2=A0	tristate "Analog Devices AD7476 1-channel ADCs driver and other
-> similar devices from AD and TI"
-> =C2=A0	depends on SPI
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index bee11d442af4..e046d8004f41 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -16,6 +16,7 @@ obj-$(CONFIG_AD7291) +=3D ad7291.o
-> =C2=A0obj-$(CONFIG_AD7292) +=3D ad7292.o
-> =C2=A0obj-$(CONFIG_AD7298) +=3D ad7298.o
-> =C2=A0obj-$(CONFIG_AD7923) +=3D ad7923.o
-> +obj-$(CONFIG_AD7476) +=3D ad7380.o
-> =C2=A0obj-$(CONFIG_AD7476) +=3D ad7476.o
-> =C2=A0obj-$(CONFIG_AD7606_IFACE_PARALLEL) +=3D ad7606_par.o
-> =C2=A0obj-$(CONFIG_AD7606_IFACE_SPI) +=3D ad7606_spi.o
-> diff --git a/drivers/iio/adc/ad7380.c b/drivers/iio/adc/ad7380.c
-> new file mode 100644
-> index 000000000000..6a5ec59bd1fd
-> --- /dev/null
-> +++ b/drivers/iio/adc/ad7380.c
-> @@ -0,0 +1,467 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Analog Devices AD738x Simultaneous Sampling SAR ADCs
-> + *
-> + * Copyright 2017 Analog Devices Inc.
-> + * Copyright 2023 BayLibre, SAS
-> + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/bitops.h>
-> +#include <linux/cleanup.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/slab.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/sysfs.h>
-> +
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +
->=20
+This patch is based on [1]. It is integrated in this patchset as it
+provides a use-case for it.
 
-...
+Diffs with [1]:
+	- Rename feature-domain* properties to access-control* to narrow
+	  down the scope of the binding
+	- YAML errors and typos corrected.
+	- Example updated
+	- Some rephrasing in the binding description
 
-> +
-> +static int ad7380_debugfs_reg_access(struct iio_dev *indio_dev, u32 reg,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0 u32 writeval, u32 *readval)
-> +{
-> +	struct ad7380_state *st =3D iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret =3D iio_device_claim_direct_mode(indio_dev);
-> +	if (ret)
-> +		return ret;
-> +
+[1]: https://lore.kernel.org/lkml/0c0a82bb-18ae-d057-562b
 
-potential controversial take: do we really need locking in here? regmap alr=
-eady
-has it's own lock (I think you're not disabling it) and if someone plays wi=
-th
-registers it shouldn't while buffering, well... This is a debug interface s=
-o I
-would probably not worry much. One could anyways for write stuff by going
-directly to regmap :)
+Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
+Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
+---
 
-That said, fine to be as-is from my side (just wanted to take it out of my
-system :))...
+Changes in V6:
+	- Renamed access-controller to access-controllers
+	- Example updated
+	- Removal of access-control-provider property
 
-> +	if (readval)
-> +		ret =3D regmap_read(st->regmap, reg, readval);
-> +	else
-> +		ret =3D regmap_write(st->regmap, reg, writeval);
-> +
-> +	iio_device_release_direct_mode(indio_dev);
-> +
-> +	return ret;
-> +}
-> +
-> +static irqreturn_t ad7380_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf =3D p;
-> +	struct iio_dev *indio_dev =3D pf->indio_dev;
-> +	struct ad7380_state *st =3D iio_priv(indio_dev);
-> +	struct spi_transfer xfer =3D {
-> +		.bits_per_word =3D st->chip_info-
-> >channels[0].scan_type.realbits,
-> +		.len =3D 4,
-> +		.rx_buf =3D &st->scan_data,
-> +	};
-> +	int ret;
-> +
-> +	ret =3D spi_sync_transfer(st->spi, &xfer, 1);
-> +
-> +	if (ret =3D=3D 0)
-> +		iio_push_to_buffers_with_timestamp(indio_dev, &st->scan_data,
-> +						=C2=A0=C2=A0 pf->timestamp);
-> +
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int ad7380_read_direct(struct ad7380_state *st,
-> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct iio_chan_spec const *chan, int =
-*val)
-> +{
-> +	struct spi_transfer xfers[] =3D {
-> +		/* toggle CS (no data xfer) to trigger a conversion */
-> +		{
-> +			.speed_hz =3D AD7380_REG_WR_SPEED_HZ,
-> +			.bits_per_word =3D chan->scan_type.realbits,
-> +			.delay =3D {
-> +				.value =3D 190, /* t[CONVERT] */
-> +				.unit =3D SPI_DELAY_UNIT_NSECS,
-> +			},
-> +			.cs_change =3D 1,
-> +			.cs_change_delay =3D {
-> +				.value =3D 10, /* t[CSH] */
-> +				.unit =3D SPI_DELAY_UNIT_NSECS,
-> +			},
-> +		},
-> +		/* then read both channels */
-> +		{
-> +			.speed_hz =3D AD7380_REG_WR_SPEED_HZ,
-> +			.bits_per_word =3D chan->scan_type.realbits,
-> +			.rx_buf =3D &st->rx[0],
-> +			.len =3D 4,
-> +		},
-> +	};
-> +	int ret;
-> +
-> +	ret =3D spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
-> +
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*val =3D sign_extend32(st->rx[chan->scan_index],
-> +			=C2=A0=C2=A0=C2=A0=C2=A0 chan->scan_type.realbits - 1);
-> +
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static int ad7380_read_raw(struct iio_dev *indio_dev,
-> +			=C2=A0=C2=A0 struct iio_chan_spec const *chan,
-> +			=C2=A0=C2=A0 int *val, int *val2, long info)
-> +{
-> +	struct ad7380_state *st =3D iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret =3D iio_device_claim_direct_mode(indio_dev);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret =3D ad7380_read_direct(st, chan, val);
-> +		iio_device_release_direct_mode(indio_dev);
-> +
-> +		return ret;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (st->vref) {
-> +			ret =3D regulator_get_voltage(st->vref);
+Changes in V5:
+	- Diffs with [1]
+	- Discarded the [IGNORE] tag as the patch is now part of the
+	  patchset
 
-nit: I wonder how likely it is for vref to change at runtime...
+ .../access-controllers.yaml                   | 84 +++++++++++++++++++
+ 1 file changed, 84 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/access-controllers/access-controllers.yaml
 
-> +			if (ret < 0)
-> +				return ret;
-> +
-> +			*val =3D ret / 1000;
-> +		} else {
-> +			*val =3D AD7380_INTERNAL_REF_MV;
-> +		}
-> +
-> +		*val2 =3D chan->scan_type.realbits;
-> +
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info ad7380_info =3D {
-> +	.read_raw =3D &ad7380_read_raw,
-> +	.debugfs_reg_access =3D &ad7380_debugfs_reg_access,
-> +};
-> +
-> +static int ad7380_init(struct ad7380_state *st)
-> +{
-> +	int ret;
-> +
-> +	/* perform hard reset */
-> +	ret =3D regmap_update_bits(st->regmap, AD7380_REG_ADDR_CONFIG2,
-> +				 AD7380_CONFIG2_RESET,
-> +				 FIELD_PREP(AD7380_CONFIG2_RESET,
-> +					=C2=A0=C2=A0=C2=A0 AD7380_CONFIG2_RESET_HARD));
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +
-> +	/* select internal or external reference voltage */
-> +	ret =3D regmap_update_bits(st->regmap, AD7380_REG_ADDR_CONFIG1,
-> +				 AD7380_CONFIG1_REFSEL,
-> +				 FIELD_PREP(AD7380_CONFIG1_REFSEL, !!st-
-> >vref));
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* SPI 1-wire mode */
-> +	return regmap_update_bits(st->regmap, AD7380_REG_ADDR_CONFIG2,
-> +				=C2=A0 AD7380_CONFIG2_SDO,
-> +				=C2=A0 FIELD_PREP(AD7380_CONFIG2_SDO, 1));
-> +}
-> +
-> +static void ad7380_release_regulator(void *p)
-> +{
-> +	struct regulator *reg =3D p;
-> +
-> +	regulator_disable(reg);
-> +}
-> +
-> +static int ad7380_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct ad7380_state *st;
-> +	const char *str_val;
-> +	int ret;
-> +
-> +	ret =3D device_property_read_string(&spi->dev, "adi,sdo-mode",
-> &str_val);
-> +	if (ret < 0)
-> +		return dev_err_probe(&spi->dev, ret,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to read adi,sdo-mode
-> property\n");
-> +
-> +	if (strcmp(str_val, "1-wire"))
-> +		return dev_err_probe(&spi->dev, -EINVAL,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0 "Only 1-wire SDO is supported\n");
-> +
-> +	indio_dev =3D devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	st =3D iio_priv(indio_dev);
-> +	st->spi =3D spi;
-> +	st->chip_info =3D spi_get_device_match_data(spi);
-> +
-
-if (!st->chip_info) ?
-
-> +	st->vref =3D devm_regulator_get_optional(&spi->dev, "refio");
-> +	if (IS_ERR(st->vref)) {
-> +		/*
-> +		 * If there is no REFIO supply, then it means that we are
-> using
-> +		 * the internal 2.5V reference.
-> +		 */
-> +		if (PTR_ERR(st->vref) =3D=3D -ENODEV)
-> +			st->vref =3D NULL;
-> +		else
-> +			return dev_err_probe(&spi->dev, PTR_ERR(st->vref),
-> +					=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to get refio
-> regulator\n");
-> +	}
-> +
-> +	if (st->vref) {
-> +		ret =3D regulator_enable(st->vref);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret =3D devm_add_action_or_reset(&spi->dev,
-> ad7380_release_regulator,
-> +					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 st->vref);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	st->regmap =3D devm_regmap_init(&spi->dev, NULL, st,
-> &ad7380_regmap_config);
-> +	if (IS_ERR(st->regmap))
-> +		return dev_err_probe(&spi->dev, PTR_ERR(st->regmap),
-> +				=C2=A0=C2=A0=C2=A0=C2=A0 "failed to allocate register map\n");
-> +
-
-Could we instead have a custom regmap_bus instead of bypass regmap with
-reg_read() and reg_write()?
-> +
-> +	indio_dev->channels =3D st->chip_info->channels;
-> +	indio_dev->num_channels =3D st->chip_info->num_channels;
-> +	indio_dev->dev.parent =3D &spi->dev;
-
-no need to assign parent (the core does it for you)...
-
-- Nuno S=C3=A1
+diff --git a/Documentation/devicetree/bindings/access-controllers/access-controllers.yaml b/Documentation/devicetree/bindings/access-controllers/access-controllers.yaml
+new file mode 100644
+index 000000000000..99e2865f0e46
+--- /dev/null
++++ b/Documentation/devicetree/bindings/access-controllers/access-controllers.yaml
+@@ -0,0 +1,84 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/access-controllers/access-controllers.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Generic Domain Access Controllers
++
++maintainers:
++  - Oleksii Moisieiev <oleksii_moisieiev@epam.com>
++
++description: |+
++  Common access controllers properties
++
++  Access controllers are in charge of stating which of the hardware blocks under
++  their responsibility (their domain) can be accesssed by which compartment. A
++  compartment can be a cluster of CPUs (or coprocessors), a range of addresses
++  or a group of hardware blocks. An access controller's domain is the set of
++  resources covered by the access controller.
++
++  This device tree binding can be used to bind devices to their access
++  controller provided by access-controllers property. In this case, the device
++  is a consumer and the access controller is the provider.
++
++  An access controller can be represented by any node in the device tree and
++  can provide one or more configuration parameters, needed to control parameters
++  of the consumer device. A consumer node can refer to the provider by phandle
++  and a set of phandle arguments, specified by '#access-controller-cells'
++  property in the access controller node.
++
++  Access controllers are typically used to set/read the permissions of a
++  hardware block and grant access to it. Any of which depends on the access
++  controller. The capabilities of each access controller are defined by the
++  binding of the access controller device.
++
++  Each node can be a consumer for the several access controllers.
++
++# always select the core schema
++select: true
++
++properties:
++  "#access-controller-cells":
++    description:
++      Number of cells in an access-controllers specifier;
++      Can be any value as specified by device tree binding documentation
++      of a particular provider. The node is an access controller.
++
++  access-controller-names:
++    $ref: /schemas/types.yaml#/definitions/string-array
++    description:
++      A list of access-controllers names, sorted in the same order as
++      access-controllers entries. Consumer drivers will use
++      access-controller-names to match with existing access-controllers entries.
++
++  access-controllers:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    description:
++      A list of access controller specifiers, as defined by the
++      bindings of the access-controllers provider.
++
++additionalProperties: true
++
++examples:
++  - |
++    clock_controller: access-controllers@50000 {
++        reg = <0x50000 0x400>;
++        #access-controller-cells = <2>;
++    };
++
++    bus_controller: bus@60000 {
++        reg = <0x60000 0x10000>;
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges;
++        #access-controller-cells = <3>;
++
++        uart4: serial@60100 {
++            reg = <0x60100 0x400>;
++            clocks = <&clk_serial>;
++            access-controllers = <&clock_controller 1 2>,
++                                 <&bus_controller 1 3 5>;
++            access-controller-names = "clock", "bus";
++        };
++    };
+-- 
+2.25.1
 
