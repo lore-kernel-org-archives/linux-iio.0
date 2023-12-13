@@ -1,29 +1,28 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDE222FC46;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3E6B2FC47;
 	Wed, 13 Dec 2023 15:03:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vDuRjb32"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 57753C433A9;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qhj5yw33"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 77E69C433CD;
 	Wed, 13 Dec 2023 15:03:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1702479787;
-	bh=LtZevuD9HlaZHWthi9dYUVW+AhV+2MD7SehZfZbe6Cs=;
+	bh=OPRTb/XW+2zsH8AnZHeRHdEClBBBI7WQURvAeLFHUZo=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=vDuRjb32rVlG+PESKX5/E32SsJW30yAEKl8FHnmXXcEnsmuf8fnxIo42KqIDW6mrS
-	 hBlgxZwl692WPBBJfYodGoilgXjEAcdZxmSHBzAgPtk9ODJB80DmwK1PD6WuQgwnM1
-	 Zi6Ux1BOzWgoSaxGFm5P9edwZa8yqFj5tNCxpJKNig0z9rnJeOJ3GmgTPSbESAw68K
-	 oo6O/a29SrxzOiS2wVLgS5vIi7Bpn5rlnYxUMlmGhljsSV3Ufwla++UprbQmsfdvBj
-	 rEQk3IV2jyauih5oCOiCS7OOQZ4nC7We2SfmIwrWZgkC0o4JKe2SjHU8/B4vRaR5p3
-	 UvmsShkkUMukA==
+	b=qhj5yw33rLJQK1g96uVLpjmh8Nj6UZvb5YKmqrpYf2nXefzV5igsSr036qXmhRSAb
+	 9sLXmwNmqxUv2sLRspvfHC3S7s+rtFIJG2UvwJhN3Q+wE6z8VlAzYdW15tiAXv1D/b
+	 mTG+tD9jT9YFS7eJBqCiiwNS7Mj4IA3RckC8n/4dl1KbMrKl5lANeJO4ul3EDnKAHC
+	 E+CFRN6HhLzwRghUuxtc30O5Y2TcxUImXrxiNOcHLcGDP0ouzCSe2hO6SPwW1j+iSc
+	 oSEz3mFZYyigYQFbBVUgvNmqJBqkWEMPPlO1zBsQP8ribM4btZ8Uu0i3r8frM9L3aH
+	 hGJPkr1sP+ZNg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36ABCC4167D;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA19C3A59D;
 	Wed, 13 Dec 2023 15:03:07 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Wed, 13 Dec 2023 16:02:32 +0100
-Subject: [PATCH v3 1/8] dt-bindings: adc: ad9467: add new io-backend
- property
+Date: Wed, 13 Dec 2023 16:02:34 +0100
+Subject: [PATCH v3 3/8] driver: core: allow modifying device_links flags
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -32,7 +31,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231213-dev-iio-backend-v3-1-bb9f12a5c6dc@analog.com>
+Message-Id: <20231213-dev-iio-backend-v3-3-bb9f12a5c6dc@analog.com>
 References: <20231213-dev-iio-backend-v3-0-bb9f12a5c6dc@analog.com>
 In-Reply-To: <20231213-dev-iio-backend-v3-0-bb9f12a5c6dc@analog.com>
 To: devicetree@vger.kernel.org, linux-iio@vger.kernel.org
@@ -44,11 +43,11 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
  Conor Dooley <conor+dt@kernel.org>
 X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1702479785; l=1274;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1702479785; l=1762;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=VgLwQbZqXp2b3r8rCQLCxjYuGEkN0w8TgD+TUyg/P+U=;
- b=RNEWJwrW39KG1P87W8rnKQQ8e2Lkd8TlA03zxcoQ0QbLcm+dFsEp7QUSCjggP5dF6AKs6wru6
- 7WfnleJV3PJD0xq5tzRac5ebkAlf7fXFTpZPm/33v/2vSbneQVITc2F
+ bh=NLZHAx7QEa2fUUjKTtfo6RESv2OQO0JG++qc/yxWC4M=;
+ b=03Z23fvem0p5C1zLIj2fOt0pZb3H1fLDXnlHY5Ku+kXOyyQykL8s7Q4nEKAtWwxFSIXyWjIFe
+ OqQgcrgWqq6Ci7b6euzGvk2aOps0bO7lEMwCSM3n/s059oHZZNGt/tc
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received:
@@ -58,46 +57,48 @@ Reply-To: <nuno.sa@analog.com>
 
 From: Nuno Sa <nuno.sa@analog.com>
 
-The ad9467 will make use of the new IIO backend framework which is a
-provider - consumer interface where IIO backends provide services to
-consumers. As such, and being this device a consumer,  add the new
-generic io-backend property to the bindings.
+If a device_link is previously created (eg: via
+fw_devlink_create_devlink()) before the supplier + consumer are both
+present and bound to their respective drivers, there's no way to set
+DL_FLAG_AUTOREMOVE_CONSUMER anymore while one can still set
+DL_FLAG_AUTOREMOVE_SUPPLIER. Hence, rework the flags checks to allow
+for DL_FLAG_AUTOREMOVE_CONSUMER in the same way
+DL_FLAG_AUTOREMOVE_SUPPLIER is done.
+
+While at it, make sure that we are never left with
+DL_FLAG_AUTOPROBE_CONSUMER set together with one of
+DL_FLAG_AUTOREMOVE_CONSUMER or DL_FLAG_AUTOREMOVE_SUPPLIER.
 
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/base/core.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
-index 7aa748d6b7a0..74e6827cbd47 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
-@@ -44,6 +44,9 @@ properties:
-       Pin that controls the powerdown mode of the device.
-     maxItems: 1
- 
-+  io-backends:
-+    maxItems: 1
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 67ba592afc77..fdbb5abc75d5 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -807,11 +807,15 @@ struct device_link *device_link_add(struct device *consumer,
+ 		 * update the existing link to stay around longer.
+ 		 */
+ 		if (flags & DL_FLAG_AUTOREMOVE_SUPPLIER) {
+-			if (link->flags & DL_FLAG_AUTOREMOVE_CONSUMER) {
+-				link->flags &= ~DL_FLAG_AUTOREMOVE_CONSUMER;
+-				link->flags |= DL_FLAG_AUTOREMOVE_SUPPLIER;
+-			}
+-		} else if (!(flags & DL_FLAG_AUTOREMOVE_CONSUMER)) {
++			link->flags &= ~DL_FLAG_AUTOREMOVE_CONSUMER;
++			link->flags &= ~DL_FLAG_AUTOPROBE_CONSUMER;
++			link->flags |= DL_FLAG_AUTOREMOVE_SUPPLIER;
 +
-   reset-gpios:
-     description:
-       Reset pin for the device.
-@@ -54,6 +57,7 @@ required:
-   - reg
-   - clocks
-   - clock-names
-+  - io-backends
- 
- additionalProperties: false
- 
-@@ -68,6 +72,7 @@ examples:
-             reg = <0>;
-             clocks = <&adc_clk>;
-             clock-names = "adc-clk";
-+            io-backends = <&iio_backend>;
-         };
-     };
- ...
++		} else if (flags & DL_FLAG_AUTOREMOVE_CONSUMER) {
++			link->flags &= ~DL_FLAG_AUTOREMOVE_SUPPLIER;
++			link->flags &= ~DL_FLAG_AUTOPROBE_CONSUMER;
++			link->flags |= DL_FLAG_AUTOREMOVE_CONSUMER;
++		} else {
+ 			link->flags &= ~(DL_FLAG_AUTOREMOVE_CONSUMER |
+ 					 DL_FLAG_AUTOREMOVE_SUPPLIER);
+ 		}
 
 -- 
 2.43.0
