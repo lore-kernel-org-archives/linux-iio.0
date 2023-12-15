@@ -1,144 +1,95 @@
-Received: from smtp.smtpout.orange.fr (smtp-13.smtpout.orange.fr [80.12.242.13])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 303353EA78
-	for <linux-iio@vger.kernel.org>; Fri, 15 Dec 2023 17:00:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wanadoo.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wanadoo.fr
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=wanadoo.fr header.i=@wanadoo.fr header.b="UGfEXITT"
-Received: from [192.168.1.18] ([92.140.202.140])
-	by smtp.orange.fr with ESMTPA
-	id EBR6rmv31emNIEBR6rInmB; Fri, 15 Dec 2023 17:53:17 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-	s=t20230301; t=1702659197;
-	bh=yYjHwcm5ONKKp2t/E2nQ5jgkSu+ukJ4Ae0Z81VV/l5U=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=UGfEXITTxE+pPRmAIu4Gbf5iCKKwO9WC9yJDTyvNy1c8Trpi3n/Cod/yWv3CZLx0q
-	 AJ9N0QRSrW3JAN8Az4HbSI8H+WFAyOFgjdR0gbuVHiiul17M/98TmXDgIidX+z4zF/
-	 TP2t0gk7J/JKSUsoehFD+MMQsDwCgz/tNH0TzCoAiKzVxGz6ClX4wKa3iRINQEjgK4
-	 OudbrKVOcg58kNynTqM/Wy97jwahCKZapZHCn/LyqYct+orJM8NRM5ew+ndtvD4MRv
-	 8/rf6AuYeDSctx7feQC0fi0/Ob7Y1JyY+nct8hOpX+yitz4oklMvQAHutxVc4E+aZt
-	 /KPbT6UKIzqJQ==
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Fri, 15 Dec 2023 17:53:17 +0100
-X-ME-IP: 92.140.202.140
-Message-ID: <66e9fe7a-927b-465f-aafe-8aea0e5998a4@wanadoo.fr>
-Date: Fri, 15 Dec 2023 17:53:16 +0100
+Received: from mail11.truemail.it (mail11.truemail.it [217.194.8.81])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 437B63FE55;
+	Fri, 15 Dec 2023 17:07:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=dolcini.it
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dolcini.it
+Received: from francesco-nb.int.toradex.com (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
+	by mail11.truemail.it (Postfix) with ESMTPA id ADB5C20640;
+	Fri, 15 Dec 2023 18:07:37 +0100 (CET)
+Date: Fri, 15 Dec 2023 18:07:33 +0100
+From: Francesco Dolcini <francesco@dolcini.it>
+To: Johan Hovold <johan@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Francesco Dolcini <francesco@dolcini.it>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-bluetooth@vger.kernel.org,
+	linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, greybus-dev@lists.linaro.org,
+	linux-iio@vger.kernel.org, netdev@vger.kernel.org,
+	chrome-platform@lists.linux.dev,
+	platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-sound@vger.kernel.org,
+	Francesco Dolcini <francesco.dolcini@toradex.com>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Alex Elder <elder@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Lee Jones <lee@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Benson Leung <bleung@chromium.org>,
+	Tzung-Bi Shih <tzungbi@kernel.org>, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v1] treewide, serdev: change receive_buf() return type to
+ size_t
+Message-ID: <ZXyH1Zv3Pxd6S3ag@francesco-nb.int.toradex.com>
+References: <20231214170146.641783-1-francesco@dolcini.it>
+ <ZXxWX-Fw1InID2ax@hovoldconsulting.com>
+ <ZXxa7yzKzG6048vw@francesco-nb.int.toradex.com>
+ <ZXx8bCVyxJ9Ddvqm@hovoldconsulting.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/3] iio: adc: ad7380: new driver for AD7380 ADCs
-To: dlechner@baylibre.com
-Cc: broonie@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org,
- jic23@kernel.org, krzysztof.kozlowski+dt@linaro.org, lgirdwood@gmail.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-spi@vger.kernel.org, michael.hennerich@analog.com, nuno.sa@analog.com,
- robh+dt@kernel.org, stefan.popa@analog.com
-References: <20231215-ad7380-mainline-v3-0-7a11ebf642b9@baylibre.com>
- <20231215-ad7380-mainline-v3-3-7a11ebf642b9@baylibre.com>
-Content-Language: fr
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20231215-ad7380-mainline-v3-3-7a11ebf642b9@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZXx8bCVyxJ9Ddvqm@hovoldconsulting.com>
 
-Le 15/12/2023 à 11:32, David Lechner a écrit :
-> This adds a new driver for the AD7380 family ADCs.
+Hello Johan, Greg
+
+On Fri, Dec 15, 2023 at 05:18:52PM +0100, Johan Hovold wrote:
+> On Fri, Dec 15, 2023 at 02:55:59PM +0100, Francesco Dolcini wrote:
+> > To me the change is correct, with that said probably this should have
+> > been explicitly mentioned in the commit message or a separate
+> > preparation patch.
 > 
-> The driver currently implements basic support for the AD7380, AD7381,
-> AD7383, and AD7384 2-channel differential ADCs. Support for additional
-> single-ended and 4-channel chips that use the same register map as well
-> as additional features of the chip will be added in future patches.
+> It's a separate change and should not be hidden away in a tree-wide
+> change that goes through a different maintainer.
 > 
-> Co-developed-by: Stefan Popa <stefan.popa-OyLXuOCK7orQT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Stefan Popa <stefan.popa-OyLXuOCK7orQT0dZR+AlfA@public.gmane.org>
-> Reviewed-by: Nuno Sa <nuno.sa-OyLXuOCK7orQT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: David Lechner <dlechner-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-> ---
+> Please drop this change from this patch and resubmit it separately to me
+> if you want and I'll review when I have the time.
 
-...
+Fine, I agree.
 
-> +static void ad7380_regulator_disable(void *p)
-> +{
-> +	regulator_disable(p);
-> +}
-> +
-> +static int ad7380_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct ad7380_state *st;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	st = iio_priv(indio_dev);
-> +	st->spi = spi;
-> +	st->chip_info = spi_get_device_match_data(spi);
-> +	if (!st->chip_info)
-> +		return dev_err_probe(&spi->dev, -EINVAL, "missing match data\n");
-> +
-> +	st->vref = devm_regulator_get_optional(&spi->dev, "refio");
+I see those options (let me know if you see other options I have not
+mentioned):
 
-Hi,
+1. I add this change (taking into account also intel ice) as a separate
+   patch in this series and you may just ack it and Greg could merge
+   together with the serdev one.
+2. I prepare an independent patch for the GNSS change and only once this
+   is merged I'll send a rebased v2 of this one.
+3. I update this patch without this GNSS API change, that mean I will
+   have to cast away the signed type from a few GNSS drivers.
 
-devm_regulator_get_enable_optional()?
-to save some LoC below and ad7380_regulator_disable()
+1 is my preferred option, 2 is fine, but it seems a little bit of overdoing,
+3 I would avoid, we are doing this cleanup to be a little bit more
+strongly typed and to prevent the kind of bugs that is the original trigger
+for this patch.
 
-CJ
+What would you Greg and Johan prefer?
 
-> +	if (IS_ERR(st->vref)) {
-> +		/*
-> +		 * If there is no REFIO supply, then it means that we are using
-> +		 * the internal 2.5V reference.
-> +		 */
-> +		if (PTR_ERR(st->vref) == -ENODEV)
-> +			st->vref = NULL;
-> +		else
-> +			return dev_err_probe(&spi->dev, PTR_ERR(st->vref),
-> +					     "Failed to get refio regulator\n");
-> +	}
-> +
-> +	if (st->vref) {
-> +		ret = regulator_enable(st->vref);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = devm_add_action_or_reset(&spi->dev, ad7380_regulator_disable,
-> +					       st->vref);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	st->regmap = devm_regmap_init(&spi->dev, NULL, st, &ad7380_regmap_config);
-> +	if (IS_ERR(st->regmap))
-> +		return dev_err_probe(&spi->dev, PTR_ERR(st->regmap),
-> +				     "failed to allocate register map\n");
-> +
-> +	indio_dev->channels = st->chip_info->channels;
-> +	indio_dev->num_channels = st->chip_info->num_channels;
-> +	indio_dev->name = st->chip_info->name;
-> +	indio_dev->info = &ad7380_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->available_scan_masks = ad7380_2_channel_scan_masks;
-> +
-> +	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
-> +					      iio_pollfunc_store_time,
-> +					      ad7380_trigger_handler, NULL);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ad7380_init(st);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return devm_iio_device_register(&spi->dev, indio_dev);
-> +}
 
-...
+> And when doing tree-wide changes, please try to follow the style of the
+> driver you are changing (e.g. do not introduce inconsistencies by
+> changing to open parenthesis alignment of continuation lines in code
+> that do not use it).
+
+ack, sorry about that, looking back at the archive is seems a recent
+pain point, also Jiri fell in this trap.
+
+Francesco
 
