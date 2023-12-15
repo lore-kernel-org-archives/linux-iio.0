@@ -1,138 +1,90 @@
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2077.outbound.protection.outlook.com [40.107.6.77])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 989202D78C;
-	Fri, 15 Dec 2023 12:43:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69E6B2E842;
+	Fri, 15 Dec 2023 13:26:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="dJ59biag"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LpeMq9HmZiipuc9BFZ+McFWUCQBrwyapK9Da3Y9bt2bUK0U2XUu6dKzgGCzy8gbAdHMmRgb1YP+CJ0/kJjzh5jlQzq/rv6M28RZnoJMqwNWtu+j0fVC6rVQ7sHxM8Ze18zmHpElx8BO3NSpwJ2PfGb22TPWMDWBEPIFM8AjoCenMi2E290v5JzJZKkpEfrdKNI+ay4FDeOoJW6gDpfFSuHD+L73FwS9WTHcOedrFu2lqJpBowqUZBeqiqRPrpToDOyXiqyvM39499He05bDPtn+xtqUuPHnOoxWOmPUUcb/3unJgkuF8q/7LwrLyfa+0HFmvBI/pxmv2lpagQVKLlg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DZ6AZfJBq1/R3Ehsfp2ZzikHLoqaqVdq72By7SEsjsg=;
- b=RaS1s8N9fNC5JyWqrSKQa1TP9b4SlP5xz7K/blblnvuv8W5zuSL0CGgjMF3Ijf6dw30jybtrwF+beM5mscartmK3/86d0O4V6VhuumOzj0jFJEVRhQBMH9wJ2Rx/6rBnZ0n6Cg7szdULrr9xK3o6iJ/Yl2mblKxH+O/BHTPKE7AXFD0ul/q0bmgUziz92dv3RiTRp5MjlZHmyayCP/2x94KK1ezxCSgS4OSyAbuwBYbD1qnoULRobxOWPh1tZJkvewDqq2A3Xk4gEqIxEUYG3Ln7JxllRER0tG9SlUs8wKh+Q5oGzk2w5d3EmfN8+jX7EQtVvh/lZ3+5kbVFexv6mg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 195.60.68.100) smtp.rcpttodomain=kernel.org smtp.mailfrom=axis.com;
- dmarc=fail (p=none sp=none pct=100) action=none header.from=axis.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DZ6AZfJBq1/R3Ehsfp2ZzikHLoqaqVdq72By7SEsjsg=;
- b=dJ59biagbgmcHk1Iv4SH4CWkAiDKd5/U5l0Z/rw/+iegmSRKtQFCTnEgV0jYm8RIHjt8O1yj8kn1WGiGJnaYJVT/ajmiMKJY+aWRCARr4E7jbjh0q19UylJnla86Q+qmBePS/pXraQhu4g8p21Db5k83SRgVhrwuqKT7ly3d2p4=
-Received: from AM6PR0502CA0056.eurprd05.prod.outlook.com
- (2603:10a6:20b:56::33) by AM7PR02MB6036.eurprd02.prod.outlook.com
- (2603:10a6:20b:1aa::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.31; Fri, 15 Dec
- 2023 12:43:19 +0000
-Received: from AMS0EPF000001A4.eurprd05.prod.outlook.com
- (2603:10a6:20b:56:cafe::2d) by AM6PR0502CA0056.outlook.office365.com
- (2603:10a6:20b:56::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.28 via Frontend
- Transport; Fri, 15 Dec 2023 12:43:18 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 195.60.68.100)
- smtp.mailfrom=axis.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=axis.com;
-Received-SPF: Fail (protection.outlook.com: domain of axis.com does not
- designate 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
- client-ip=195.60.68.100; helo=mail.axis.com;
-Received: from mail.axis.com (195.60.68.100) by
- AMS0EPF000001A4.mail.protection.outlook.com (10.167.16.229) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7113.14 via Frontend Transport; Fri, 15 Dec 2023 12:43:18 +0000
-Received: from SE-MAILARCH01W.axis.com (10.20.40.15) by se-mail02w.axis.com
- (10.20.40.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 15 Dec
- 2023 13:43:17 +0100
-Received: from se-mail01w.axis.com (10.20.40.7) by SE-MAILARCH01W.axis.com
- (10.20.40.15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 15 Dec
- 2023 13:43:17 +0100
-Received: from se-intmail01x.se.axis.com (10.0.5.60) by se-mail01w.axis.com
- (10.20.40.7) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Fri, 15 Dec 2023 13:43:17 +0100
-Received: from pc42775-2107.se.axis.com (pc42775-2107.se.axis.com [10.94.129.29])
-	by se-intmail01x.se.axis.com (Postfix) with ESMTP id 37706FFED;
-	Fri, 15 Dec 2023 13:43:17 +0100 (CET)
-Received: by pc42775-2107.se.axis.com (Postfix, from userid 21033)
-	id 2FB2B2FE5EB; Fri, 15 Dec 2023 13:43:17 +0100 (CET)
-From: =?utf-8?q?M=C3=A5rten_Lindahl?= <marten.lindahl@axis.com>
-Subject: [PATCH 0/2] Introduce new iio resolution standard attribute
-Date: Fri, 15 Dec 2023 13:43:03 +0100
-Message-ID: <20231212-vcnl4000-ps-hd-v1-0-1c62a95828c0@axis.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="1Yo+W8pt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36AADC433C7;
+	Fri, 15 Dec 2023 13:26:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1702646810;
+	bh=00ZkD0cu7HBjZVGkRek2lsYzXAxF35Yjjr+hicSHu5Y=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=1Yo+W8ptX+67SOYAVONFRcrHI+q2aCFD7vEjWVSvPiznqrNEBN0RX7AuxQA8Fq9o3
+	 JJ3FNRJdXfsJ1lSkc+ATqb8/6/Ogg1HVpfhKJNCDv8PhCin6QqABrwy3PGC7WSyanW
+	 q3/sJsi8ph1KA5HU1TJgqgS1QPZxq8wiwlyCJz+Q=
+Date: Fri, 15 Dec 2023 14:26:48 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Francesco Dolcini <francesco@dolcini.it>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-bluetooth@vger.kernel.org,
+	linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, greybus-dev@lists.linaro.org,
+	linux-iio@vger.kernel.org, netdev@vger.kernel.org,
+	chrome-platform@lists.linux.dev,
+	platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-sound@vger.kernel.org,
+	Francesco Dolcini <francesco.dolcini@toradex.com>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>, Lee Jones <lee@kernel.org>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Eric Dumazet <edumazet@google.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Benson Leung <bleung@chromium.org>,
+	Tzung-Bi Shih <tzungbi@kernel.org>, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v1] treewide, serdev: change receive_buf() return type to
+ size_t
+Message-ID: <2023121535-coveting-destruct-f567@gregkh>
+References: <20231214170146.641783-1-francesco@dolcini.it>
+ <ZXs94Mf1eOMCmGpT@francesco-nb.int.toradex.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIANhJfGUC/x2NywrCQAwAf6XkbCCbVrD+injYR+ou6FoSKULpv
- 3fb4zAMs4KJFjG4dyuoLMXKtzZwlw5i9vUlWFJjYOLesWNcYn0PRISzYU7Y39LAPkwjjVdoUfA
- mGNTXmI/s4+0neohZZSr/8/R4btsORlfhonkAAAA=
-To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<kernel@axis.com>, =?utf-8?q?M=C3=A5rten_Lindahl?= <marten.lindahl@axis.com>
-X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1702644197; l=1072;
- i=marten.lindahl@axis.com; s=20230329; h=from:subject:message-id;
- bh=31VyqmkRujamzIcfI6tW3ne2N8fczlVzWIw1S8SxjM0=;
- b=iqcBLFVHwOmvd5R+CYuuX5KzjjMcZypA98h7e3oXwXkh5IemYlOHMRKaQWQ0dIfco0e8kLVsw
- qrWHNQOvlPaAnxROFyUbt2EjxG1K1YRW1Cos+jGIhsM1aP44iLOSJYL
-X-Developer-Key: i=marten.lindahl@axis.com; a=ed25519;
- pk=JfbjqFPJnIDIQOkJBeatC8+S3Ax3N0RIdmN+fL3wXgw=
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AMS0EPF000001A4:EE_|AM7PR02MB6036:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9d7a78f2-cbaf-4139-d6d5-08dbfd6b6a10
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	5DSUcuvJk6bddV3BEmyhZ/BQbredBUyk6dzThQ7X7ZWRr+6mx+mjtuJdLGeyMVRCTnXaVl19Ly+Vasxnm4sdRvw9xt7Yo2yNpNWF5nOl47O8iBtQMmm9D/WHuQS7BIs7N/zd5A3OG2dpectZ1TFAdHT7LS9dbv2DZq/P6WthTk98MepJw77y2yuO+aCdwkNRvuqorM4PcIE2MzJ0Gtvi4Qe4NUvqmmuYtCCkC9e3/M2uLjU50yTznRITWQdhKDYTXb/nVxYtp6xudiFf7A9tZxnpZPnaUCBqOGqWXyHQbZo+KSYY32HvF/OgFcryy8sGUbt64ZoFQS8rYOd5x05PiP9oaCLe1JVk49ITEz4p8pYTUqHe8CXAWRa1/u/NdWcxCTw4Zy5jxJFH6M1LPyt/R+dknzvMXzsHG5EMlJ8N1HK2ZLthCDX+NN477K+UkOAlISy17ZCFhEeyxIarDoS1xZLq+IUmXzcZRep+DLBeySs7JuuADR9BVCvkFiMFvEwQQv0hM6XMX/xB+FWBadT3x6JDz1mb3a4eDmV8ZyYUL6GgB/qXH+4m5bMF/LpPbb7mrwHHBGPtv8/giuUfQH/ZJej8iMraj63hts8gtWw6IOFolTzWUdcBxoS50bvPxGm8wh9NzshdpfYOaK64bna98/315BHOuQA++Ny/yloiTluQU59gFVqzCJb+Hl84fstLXfY6jwpWeTjgp2ASd2rX8Lz5DZD5qXeI6ll1LCl+lyheOAkcuDSgbZ6zqgiw5Gw/DZHsGSK3O6pB/ucn1qrSUg==
-X-Forefront-Antispam-Report:
-	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(396003)(376002)(346002)(136003)(39850400004)(230922051799003)(1800799012)(186009)(64100799003)(82310400011)(451199024)(46966006)(40470700004)(36840700001)(40480700001)(40460700003)(36860700001)(47076005)(81166007)(356005)(82740400003)(2906002)(36756003)(5660300002)(83380400001)(336012)(6666004)(6266002)(426003)(107886003)(26005)(2616005)(478600001)(54906003)(70206006)(70586007)(41300700001)(86362001)(110136005)(4326008)(8676002)(8936002)(42186006)(316002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2023 12:43:18.5404
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9d7a78f2-cbaf-4139-d6d5-08dbfd6b6a10
-X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	AMS0EPF000001A4.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR02MB6036
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZXs94Mf1eOMCmGpT@francesco-nb.int.toradex.com>
 
-This patch introduces a new IIO standard attribute to set the bit
-resolution of the data *_raw readings dynamically using sysfs.
+On Thu, Dec 14, 2023 at 06:39:44PM +0100, Francesco Dolcini wrote:
+> On Thu, Dec 14, 2023 at 06:01:46PM +0100, Francesco Dolcini wrote:
+> > From: Francesco Dolcini <francesco.dolcini@toradex.com>
+> > 
+> > receive_buf() is called from ttyport_receive_buf() that expects values
+> > ">= 0" from serdev_controller_receive_buf(), change its return type from
+> > ssize_t to size_t.
+> > 
+> > Suggested-by: Jiri Slaby <jirislaby@kernel.org>
+> > Link: https://lore.kernel.org/all/087be419-ec6b-47ad-851a-5e1e3ea5cfcc@kernel.org/
+> > Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+> > ---
+> > hello,
+> > patch is based on current linux next.
+> > 
+> > It has an obvious problem, it touches files from multiple subsystem in a single
+> > patch that is complicated to review and eventually merge, just splitting this
+> > would however not work, it will break bisectability and the build.
+> > 
+> > I am looking for advise on the best way to move forward.
+> > 
+> > I see the following options:
+> >  - keep it as it is
+> >  - break it down with a patch with each subsystem, and squash before applying
+> >    from a single (tty?) subsystem
+> >  - go for a multi stage approach, defining a new callback, move to it and in
+> >    the end remove the original one, likewise it was done for i2c lately
+> 
+> whoops. I just noticed Greg applied commit 475fc6e2de6f ("tty: serdev:
+> convert to u8 and size_t") that touch the exact same files without much
+> of an issue.
+> 
+> Probably the "keep it as it is" is just the way to go.
 
-The VCNL4040/4200 proximity/ambient light sensors support 12-bit
-(default) and 16-bit ADC resolutions. This can be dynamically changed,
-so to support this with the standard iio channel configuration a new iio
-attribute should be added.
+Yeah, looks good to me, now queued up, thanks!
 
-The VCNL4040 devices will use this for setting proximity high definition
-(16-bit resolution).
-
-Signed-off-by: Mårten Lindahl <marten.lindahl@axis.com>
----
-Mårten Lindahl (2):
-      iio: core: Introduce resolution standard attribute
-      iio: light: vcnl4000: Add ps high definition for vcnl4040
-
- drivers/iio/industrialio-core.c |  1 +
- drivers/iio/light/vcnl4000.c    | 87 ++++++++++++++++++++++++++++++++++++++++-
- include/linux/iio/types.h       |  1 +
- 3 files changed, 87 insertions(+), 2 deletions(-)
----
-base-commit: a39b6ac3781d46ba18193c9dbb2110f31e9bffe9
-change-id: 20231212-vcnl4000-ps-hd-38d42abf9095
-
-Best regards,
--- 
-Mårten Lindahl <marten.lindahl@axis.com>
-
+greg k-h
