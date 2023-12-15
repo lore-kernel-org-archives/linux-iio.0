@@ -1,297 +1,144 @@
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2041.outbound.protection.outlook.com [40.107.22.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90D2B16429;
-	Fri, 15 Dec 2023 12:06:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F7A42D78D;
+	Fri, 15 Dec 2023 12:43:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N2D9cwf3"
-Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-2c9f7fe6623so5859781fa.3;
-        Fri, 15 Dec 2023 04:06:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1702641994; x=1703246794; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=TBUfARMmThR9DnoHf+0gkF7h9TnHtlVW5fEjCBUsJ7s=;
-        b=N2D9cwf31KJa9Ssf0ZVwhcgvjjOlwGMxwtzrEC3XwlSW7cKQsrmb1jBtrvTK/GUdee
-         pHJIZcxWYzlkoegUXa7MWn0bryS8ux/sLRM1WoJsX3TVFOApDiLaTx/+vTeta1Tyfc3n
-         mZWefYrFIpiIdX6F1aTL6Jj1sDy4sriJjseApQRZX66MEJkFBMSF0wb+p6mHb/xqWbfg
-         YUWnfnNAPtyLMaTSRMVZ8HM1EQs3XTsPL+H5Td66IWnE6XOzz+Du7KC0O9+IGGK+WC2s
-         1RLtfZThRX8tQH/8oC4FqpKvijJWb8CejkXgSOX4W/PPAYfuEHwT5qgtOJwbiG4lekXZ
-         Kqgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702641994; x=1703246794;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TBUfARMmThR9DnoHf+0gkF7h9TnHtlVW5fEjCBUsJ7s=;
-        b=Ucpffa7Jb0Ri9/bHv+MqVJf+HVwBtG4YggsbmdXAnjRY6sQnMXRGkxvdynmL1qHm8C
-         WJTsJFB9AezyhPb1RE9wlhLB7cSi5vRFR0E2uf/USPt87p+HuewoyCWIVMkw+gJkJa0c
-         zygaaE0202fWmsib3S/8pydlh6LAyeujeFtxZ6kblZcKeD6sZbjKcyrbu9ue/Qu0EQ6L
-         HBWdI+ipKbSQ7m5nSGe7qNVK1N6Lv75D4Uc7ySNVqSmEopxg322pKDGc06qMFmfhkr7R
-         6bmhYBQkWMH9gek+VywNQGB7UJoWkkh7flZdF2AKR3JZX57nxEK3pBY3E4jfHfU8seFh
-         1EVQ==
-X-Gm-Message-State: AOJu0YwlH0+zHuupfp6DAMbpJj3LciMm1h5mliCvBImxunqxz58V1zwQ
-	mic5YYRANcMibaJDKuVzwakX9y6KnSc=
-X-Google-Smtp-Source: AGHT+IGVDEwMnRPwxUAV74zc3GX2mgij+XgY26JBQhWeDhSha4fJ0tyoruQJE5EQrXnasMQ8+By2TQ==
-X-Received: by 2002:a2e:a103:0:b0:2cb:54a6:5c89 with SMTP id s3-20020a2ea103000000b002cb54a65c89mr4737720ljl.107.1702641994238;
-        Fri, 15 Dec 2023 04:06:34 -0800 (PST)
-Received: from [172.16.183.82] ([213.255.186.46])
-        by smtp.gmail.com with ESMTPSA id v18-20020a2e87d2000000b002ca013cb05csm2432031ljj.79.2023.12.15.04.06.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Dec 2023 04:06:33 -0800 (PST)
-Message-ID: <dff1e2f9-c2a1-4262-b80b-ce0c144fdaf5@gmail.com>
-Date: Fri, 15 Dec 2023 14:06:32 +0200
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="Mn+vXCRi"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G+HwuC2WpPt/S1kV/5DHIHd6qPJPtqlvZWeiyg5Z4khStY2r8VRAnvK+DAeEw8EN5f/J1wphuLl/e98kl/L2JuXCRp+D1OdanwzAeG3qVHDVv9tHC2AE1QWvEC6kjopVup2Gc+qSbyeKhzn3WD8QduG5FBMlSnsLlxbeBhRAW/5bmoBV4QtzQKR7wWxJ5B6Upio/RRKVkL4at5A4PXuFuUtIbhqyFE1TfKCxgeVa1Kfdv6oJp4UuDDtrE8EzwIo/u81l5LhBz2JkeBFUEm8WKkIKDJzkFShoBc+iv4UgeBff3ZG/0ow29z3E6uPT3m1TPvfj3J+dWJ8+rWc5Yu9fDw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gVlbeHodaBkyuhB5Z61CiMDCxmOr9AuX3+iIVFnYsh0=;
+ b=agmmpmegXNw3VwBW0alhbJ/w4Zj4GwJSkU+6LPcCtfmkiyrgN/mkZvwBafpOvU7lBrfBiEYxjooGw94Oob9eQBJpWYaeaD2Z4zffLYLoXJmj6P4IgHhqgmuTEeqFZ2vz6ZRwsOnidm+sH679u+ZwHPiiwkQYbYmUy2RnoXThFdyF+UgXf4Z1MO+TMCymwwRKENx9UYJx+ixL2BIQTvDQ9rDkUaBWi9ZIdV8eGvgbpMNq0dm3o6l01+DVMOYncfEnb/kE32ol2roAen37aUQIXkWcSW+7D1BltjYEri/YL5Xrk10yog/+REpX7zvvSzaSjtoURIdQfuBZXZYp/E4IEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 195.60.68.100) smtp.rcpttodomain=kernel.org smtp.mailfrom=axis.com;
+ dmarc=fail (p=none sp=none pct=100) action=none header.from=axis.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gVlbeHodaBkyuhB5Z61CiMDCxmOr9AuX3+iIVFnYsh0=;
+ b=Mn+vXCRi+uRrkcEp1SsLgpoT9FML4X9sQqWYcAPXzgII/7hqnAEqsAzxdnwVOZuQy33YTa6lswcLPgBX9oap1vdVVd/MgJQL4TS1sLSj7eHpvbvQYL7Qwt/tCz5EgV2wNxNZvVO9FBB4kXW16QY/Fx5UVcqXVdAVp1zRYzd8oQ4=
+Received: from AM6PR0502CA0053.eurprd05.prod.outlook.com
+ (2603:10a6:20b:56::30) by GV1PR02MB8404.eurprd02.prod.outlook.com
+ (2603:10a6:150:5b::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.28; Fri, 15 Dec
+ 2023 12:43:18 +0000
+Received: from AMS0EPF000001A4.eurprd05.prod.outlook.com
+ (2603:10a6:20b:56:cafe::f7) by AM6PR0502CA0053.outlook.office365.com
+ (2603:10a6:20b:56::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.26 via Frontend
+ Transport; Fri, 15 Dec 2023 12:43:18 +0000
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 195.60.68.100)
+ smtp.mailfrom=axis.com; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=none header.from=axis.com;
+Received-SPF: Fail (protection.outlook.com: domain of axis.com does not
+ designate 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
+ client-ip=195.60.68.100; helo=mail.axis.com;
+Received: from mail.axis.com (195.60.68.100) by
+ AMS0EPF000001A4.mail.protection.outlook.com (10.167.16.229) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7113.14 via Frontend Transport; Fri, 15 Dec 2023 12:43:18 +0000
+Received: from se-mail01w.axis.com (10.20.40.7) by se-mail02w.axis.com
+ (10.20.40.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 15 Dec
+ 2023 13:43:17 +0100
+Received: from se-intmail01x.se.axis.com (10.0.5.60) by se-mail01w.axis.com
+ (10.20.40.7) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
+ Transport; Fri, 15 Dec 2023 13:43:17 +0100
+Received: from pc42775-2107.se.axis.com (pc42775-2107.se.axis.com [10.94.129.29])
+	by se-intmail01x.se.axis.com (Postfix) with ESMTP id 38A681002F;
+	Fri, 15 Dec 2023 13:43:17 +0100 (CET)
+Received: by pc42775-2107.se.axis.com (Postfix, from userid 21033)
+	id 3164F2FEDDC; Fri, 15 Dec 2023 13:43:17 +0100 (CET)
+From: =?utf-8?q?M=C3=A5rten_Lindahl?= <marten.lindahl@axis.com>
+Date: Fri, 15 Dec 2023 13:43:04 +0100
+Subject: [PATCH 1/2] iio: core: Introduce resolution standard attribute
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 2/2] iio: light: isl76682: Add ISL76682 driver
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-To: Marek Vasut <marex@denx.de>, linux-iio@vger.kernel.org
-Cc: Alexander Stein <alexander.stein@ew.tq-group.com>,
- Andre Werner <andre.werner@systec-electronic.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Conor Dooley <conor+dt@kernel.org>,
- Fabio Estevam <festevam@denx.de>, Guenter Roeck <linux@roeck-us.net>,
- Jonathan Cameron <jic23@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Luca Ceresoli <luca.ceresoli@bootlin.com>, Mark Brown <broonie@kernel.org>,
- Naresh Solanki <naresh.solanki@9elements.com>,
- Patrick Rudolph <patrick.rudolph@9elements.com>,
- Rob Herring <robh+dt@kernel.org>,
- Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>,
- Vincent Tremblay <vincent@vtremblay.dev>, devicetree@vger.kernel.org
-References: <20231121031043.327614-1-marex@denx.de>
- <20231121031043.327614-2-marex@denx.de>
- <8b865546-0e51-45ff-ab76-8189afaa9ad5@gmail.com>
- <cd21c72f-d9ff-471d-a08d-9b67bf180950@denx.de>
- <4a39aff2-bb1a-447c-8c33-8bfad06777e3@gmail.com>
-Content-Language: en-US, en-GB
-In-Reply-To: <4a39aff2-bb1a-447c-8c33-8bfad06777e3@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+Message-ID: <20231212-vcnl4000-ps-hd-v1-1-1c62a95828c0@axis.com>
+References: <20231212-vcnl4000-ps-hd-v1-0-1c62a95828c0@axis.com>
+In-Reply-To: <20231212-vcnl4000-ps-hd-v1-0-1c62a95828c0@axis.com>
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<kernel@axis.com>, =?utf-8?q?M=C3=A5rten_Lindahl?= <marten.lindahl@axis.com>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1702644197; l=1316;
+ i=marten.lindahl@axis.com; s=20230329; h=from:subject:message-id;
+ bh=g78eLtKzeNWvee2JE6hc8/3fxzoe/g0pF2pOlQRG5Ms=;
+ b=FmTbhaJ1pgQvYSUi3Q2drgMCYi9CXjVTDGLaMMjDVj2nrMgcFg7pBBCdDCjNRpOd8XkgxpLUo
+ 1hj1GPmI2o5Cj2NntxrpkXPFbdEKaWinHsL+pi4khf4rbOpuY5faaI0
+X-Developer-Key: i=marten.lindahl@axis.com; a=ed25519;
+ pk=JfbjqFPJnIDIQOkJBeatC8+S3Ax3N0RIdmN+fL3wXgw=
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AMS0EPF000001A4:EE_|GV1PR02MB8404:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1a12726a-b255-4e3d-3bef-08dbfd6b69d5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	VH2uQg+Fs98kqjHXa5QV6sO/C/QC+axOJopxp2akJ/slPIR+bCUPPNQwhNE/L33CyRjkAjW8Ra+v2epIdE4404J00Qev1QC5lhj8jDSrdG+nxfxltZCMjAZ0lhpm2ZDIHNB1XdmSTGSCUk/EHU4iqVYDi6hhIjy2vOJ/yStj79JDTHcAawxOboJFUgWxyzXowXbw8s+4ZoeB6RTgVT3RqjepEHYYHuQPqycaL12P52m5rCNTfD6Y64E1CwftcSb5R3m8a+MAbI4dYjHlrfBnrpxcKxjbDCNIA+o7kCygP+d/jIgwH5jnBdBTfZpQNJzEKBTcpS9qNN5P4lBHjAtoAYkRhIf2RUdtgvmQfC+rYhYwoX/9bgKnyJoYNV1Lf6243Jd8FcPCpcTy3c20OGzQIhcBhcC9TurPA6U2vHcrsINavopVh+4HZTqZ2DHOc2gxqc0HC6uKDGSz26oI//lJ617KtwjZuSmJlF7F6gMTvoXMh/9X+kJ1IlA/FNvM8FrJYK4h8NCUTDdRzK2LH2UyPR89yHYhgw4GC/xyR6olt2lpk5Uj/HMc9uQ2oYn3RZCZ+2QeWSCfILiKHhqOvtGny8TOOJvqDSRew5JU8OtK6544I6Y7FM3MoP0GD2uw8OuxqtCktzGbxSYioyyIPMQOmK5dyCZLPcxCxp4DkgYMMG+LeOKVdtVyPEvF1Pc/O39Oux2oO0S2wuTLMIrDrAnGsIzKe/vkO12ElZGf0Yjlm0XqbKF4IaE4g3xGgKqtTGsstG2oRKzIHMtcwK6vC5RdKw==
+X-Forefront-Antispam-Report:
+	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(376002)(136003)(39860400002)(346002)(396003)(230922051799003)(1800799012)(451199024)(64100799003)(82310400011)(186009)(36840700001)(46966006)(40470700004)(86362001)(36756003)(40480700001)(356005)(81166007)(40460700003)(82740400003)(478600001)(6666004)(70586007)(54906003)(70206006)(336012)(26005)(6266002)(107886003)(41300700001)(2616005)(47076005)(2906002)(316002)(110136005)(42186006)(5660300002)(36860700001)(426003)(4326008)(8676002)(8936002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: axis.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2023 12:43:18.1654
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1a12726a-b255-4e3d-3bef-08dbfd6b69d5
+X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	AMS0EPF000001A4.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR02MB8404
 
-On 11/23/23 09:24, Matti Vaittinen wrote:
-> On 11/23/23 02:26, Marek Vasut wrote:
->> On 11/22/23 13:17, Matti Vaittinen wrote:
->>> On 11/21/23 05:10, Marek Vasut wrote:
+Introduce a new IIO standard attribute to set bit resolution of the
+data *_raw readings dynamically using sysfs.
 
-..snip
+Needed to set 16 bit data width (high definition) with the VCNL4040
+driver.
 
->>> I like this table-based look-up for write (and read) of scales. 
->>> Looking at this I see an analogy to some of the regulator stuff, like 
->>> for example the ramp-up values. What I do very much like in the 
->>> regulator subsystem is the drivers/regulator/helpers.c
->>>
->>> I wonder if similar approach would be usable in IIO as well? I mean, 
->>> providing readily written iio_regmap_read/write_raw_<functionality>() 
->>> and iio_available_*() helpers for the simple devices where we just 
->>> have value-register mapping? I mean, driver would just populate 
->>> something like:
->>>
->>> struct iio_scale_desc {
->>>      int *scale_val_table;
->>>      int *scale_val2_table;
->>>      int num_scales;
->>
->> You'd also need type here (fractional, int+micro, ...), right ?
-> 
-> Well, my thinking was to go with baby-steps. Eg, start by supporting 
-> just int+micro - but yes. As I wrote below, this can be expanded by 
-> allowing specifying the type.
-> 
->>>      int scale_reg_addr;
->>>      int scale_reg_mask;
->>> };
->>>
->>> and call helper like
->>> int iio_regmap_read_raw_scale(struct iio_dev *idev,
->>>                    struct iio_scale_desc *sd, int *val,
->>>                    int *val2)"
->>> provided by IIO framework.
->>>
->>> Similar helper for writing new scales and getting available scales.
->>>
->>> Later this could be expanded by allowing specifying the type of 
->>> provided values (in the example case, IIO_VAL_INT_PLUS_x - but maybe 
->>> this would be extensible (and worth) to support also the other options?)
->>>
+Signed-off-by: Mårten Lindahl <marten.lindahl@axis.com>
+---
+ drivers/iio/industrialio-core.c | 1 +
+ include/linux/iio/types.h       | 1 +
+ 2 files changed, 2 insertions(+)
 
-... snip
-
->>
->> The only thing I would wonder about is, should such a thing go into 
->> regmap so it can be reused cross-subsystem instead of making this iio 
->> specific ?
-> 
-> I definitely think a relation "register value" <=> "item from a table" 
-> is very much used also outside the IIO. So yes, a generic regmap helper 
-> for doing write as a "look value from table and write corresponding 
-> value to a register" and "read value from register and return me a 
-> corresponding item from a table" would be very usable.
-> 
-> There is a tradeoff when doing a generic one instead of making it 
-> targeted for IIO use. Supporting different types of data is likely to 
-> make the code a bit hairy. Also, the IIO way of having these IIO_VAL_* 
-> flags does probably require IIO - specific wrappers in any case.
-
-I had some spare time so drafted following:
-
-+struct reg_val_table {
-+       int *reg_vals;
-+       int *vals;
-+       int num_vals;
-+};
-
-...
-
-+/**
-+ * regtable_find_val - find a value matching register setting
-+ *
-+ * Search given table for value mathcing a register setting.
-+ *
-+ * @table:     Table from which the register setting - value pairs are
-+ *             searched.
-+ * @reg:       Register value for which the matching physical value is
-+ *             searched.
-+ * @val:       Pointer to location where the found value will be stored.
-+ *
-+ * returns:    0 on success, negative errno if table is invalid or match is
-+ *             not found.
-+ */
-+int regtable_find_val(const struct reg_val_table *table, int reg, int *val)
-
-
-+/**
-+ * regtable_find_reg - find a register setting matching given value.
-+ *
-+ * Search given table for a register setting matching a value.
-+ *
-+ * @table:     Table from which the register setting - value pairs are
-+ *             searched.
-+ * @val:       Value for which the matching register setting is searched.
-+ * @reg:       Pointer to location where the found register value will be
-+ *             stored.
-+ *
-+ * returns:    0 on success, negative errno if table is invalid or match is
-+ *             not found.
-+ */
-+int regtable_find_reg(const struct reg_val_table *table, int val, int *reg)
-
-
-+/**
-+ * regtable_find_greater_than_val - find the closest greater val and reg
-+ *
-+ * Search given table for the smallest value which is still greater than
-+ * the given value. Both the found value and corresponding register
-+ * setting are returned unless given pointers are NULL.
-+ *
-+ * @table:     Table from which the register setting - value pairs are
-+ *             searched.
-+ * @val_cmp:   Value to which the values stored in table are compared to.
-+ * @reg:       NULL or pointer to location where the matching register
-+ *             setting value will be stored.
-+ * @val:       NULL or pointer to location where the found value will be
-+ *             stored.
-+ *
-+ * returns:    0 on success, negative errno if table is invalid or match is
-+ *             not found.
-+ */
-+int regtable_find_greater_than_val(const struct reg_val_table *table, 
-int val_cmp,
-+                                  int *reg, int *val)
-
-
-+/**
-+ * regtable_find_smaller_than_val - find the closest smaller val and reg
-+ *
-+ * Search given table for the greatest value which is still smaller than
-+ * the given value. Both the found value and corresponding register
-+ * setting are returned unless given pointers are NULL.
-+ *
-+ * @table:     Table from which the register setting - value pairs are
-+ *             searched.
-+ * @val_cmp:   Value to which the values stored in table are compared to.
-+ * @reg:       NULL or pointer to location where the matching register
-+ *             setting value will be stored.
-+ * @val:       NULL or pointer to location where the found value will be
-+ *             stored.
-+ *
-+ * returns:    0 on success, negative errno if table is invalid or match is
-+ *             not found.
-+ */
-+int regtable_find_smaller_than_val(const struct reg_val_table *table,
-+                                  int val_cmp, int *reg, int *val)
-
-
-and
-
-+struct regmap_regval_table {
-+       const struct reg_val_table table;
-+       int reg;
-+       int mask;
-+};
-
-+/**
-+ * regmap_table_value_set - update register to match 
-human-understandable value
-+ * @map:       Register map
-+ * @table:     Table describing register-value, human-readable value 
-relation
-+ * value:      Human understandable value to configure in hardware.
-+ *
-+ * Return:     0 on success, negative errno on error.
-+ */
-+int regmap_table_value_set(struct regmap *map,
-+                          const struct regmap_regval_table *table, int 
-value)
-
-
-+/**
-+ * regmap_table_value_get - return human-understandable configuration
-+ *
-+ * Reads hardware or regmap cache for current hardware configuration and
-+ * converts the read register value to human understandable entity.
-+ * @map:       Register map
-+ * @table:     Table describing register-value, human-readable value 
-relation
-+ * value:      Human understandable value to configure in hardware.
-+ *
-+ * Return:     0 on success, negative errno on error.
-+ */
-+int regmap_table_value_get(struct regmap *map,
-+                          const struct regmap_regval_table *table, int 
-*value)
-
-
-(for anyone interested, whole thing + tests can be found from:
-https://github.com/M-Vaittinen/linux/commits/regtable/
-Just last 3 commits.)
-
-I am however having difficulties in seeing how this could be utilized by 
-IIO, which tends to rely on values being represented by two integers 
-(val and val2).
-
-Any suggestions regarding this idea? I'm wondering if I should just 
-scrap this and try seeing if I can make an IIO-specific helper(s) - or 
-if someone sees this would bring additional value worth an proper RFC? I 
-don't want to sen an RFC for people to properly review if this idea is 
-just plain stupid :)
-
-Yours,
-	-- Matti
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index c77745b594bd..4316e0290404 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -182,6 +182,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_THERMOCOUPLE_TYPE] = "thermocouple_type",
+ 	[IIO_CHAN_INFO_CALIBAMBIENT] = "calibambient",
+ 	[IIO_CHAN_INFO_ZEROPOINT] = "zeropoint",
++	[IIO_CHAN_INFO_RESOLUTION] = "resolution",
+ };
+ /**
+  * iio_device_id() - query the unique ID for the device
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 117bde7d6ad7..7de4d83ca105 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -68,6 +68,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_THERMOCOUPLE_TYPE,
+ 	IIO_CHAN_INFO_CALIBAMBIENT,
+ 	IIO_CHAN_INFO_ZEROPOINT,
++	IIO_CHAN_INFO_RESOLUTION,
+ };
+ 
+ #endif /* _IIO_TYPES_H_ */
 
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
-
-~~ When things go utterly wrong vim users can always type :help! ~~
+2.30.2
 
