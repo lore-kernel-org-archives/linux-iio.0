@@ -1,100 +1,65 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A67E3FE2C;
-	Fri, 15 Dec 2023 16:32:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE2D23E49F
+	for <linux-iio@vger.kernel.org>; Fri, 15 Dec 2023 16:54:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="u23Widco"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECD69C433C8;
-	Fri, 15 Dec 2023 16:32:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DVMCCjng"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5DA86C433C8
+	for <linux-iio@vger.kernel.org>; Fri, 15 Dec 2023 16:54:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1702657953;
-	bh=5xSZ6gC57XpMcrBYmJ5djtgBGtNosockr7ypfWQ/UoA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=u23WidcobeXI8hJTBO02gH39xAVyMZg3S/gk8R3+oMsy1a46PrrJRqER62yDtrdtf
-	 1sP9G3jW6bt0TkUH+FVWaUXb2WUMuoifq5UkKLSL9Vihbw/4tLEgQtVy3f2vCcs/Dv
-	 wXTrDDgayoevbU8NQT5CXG0gCcWFBHIOSHMEoJhbkn1WLbj/H/Eu2Fuq4FA4d679tr
-	 0edO8rQox64QgmVeY5DX9u/1v/sBmf4kwA7Zaxt4jUW2eY9C5xbVFoGtvPd+mKK3Eo
-	 sfxBmvoKrJU1x51n4fbHg8VooER+eL425YDkyzu8lDJ1d7HJ/0OT8IaPHRNo28jX8y
-	 dWVhTFyyt4wKA==
-Received: from johan by xi.lan with local (Exim 4.96.2)
-	(envelope-from <johan@kernel.org>)
-	id 1rEB6x-0000ZV-31;
-	Fri, 15 Dec 2023 17:32:28 +0100
-Date: Fri, 15 Dec 2023 17:32:27 +0100
-From: Johan Hovold <johan@kernel.org>
-To: Francesco Dolcini <francesco@dolcini.it>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-bluetooth@vger.kernel.org,
-	linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, greybus-dev@lists.linaro.org,
-	linux-iio@vger.kernel.org, netdev@vger.kernel.org,
-	chrome-platform@lists.linux.dev,
-	platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-sound@vger.kernel.org,
-	Francesco Dolcini <francesco.dolcini@toradex.com>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Alex Elder <elder@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Hans de Goede <hdegoede@redhat.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Benson Leung <bleung@chromium.org>,
-	Tzung-Bi Shih <tzungbi@kernel.org>, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v1] treewide, serdev: change receive_buf() return type to
- size_t
-Message-ID: <ZXx_m1R0x7omubxE@hovoldconsulting.com>
-References: <20231214170146.641783-1-francesco@dolcini.it>
- <ZXxZzd1iBOCmnczH@hovoldconsulting.com>
- <ZXxbx+laQk35W56U@francesco-nb.int.toradex.com>
+	s=k20201202; t=1702659255;
+	bh=qorUAmjTZdFMMvGDXO5fnnVaNjAcnUZJXfSLZlBZ0uQ=;
+	h=From:To:Subject:Date:In-Reply-To:References:From;
+	b=DVMCCjnglKLb9lEOMgu7zqC/m0reLlzsLDnKadHcT+Pi0wv0dK3qf0LqB04Jik/wE
+	 FonwLIIvmiYp1BzgefLGsWsW8qY9G3wprd+r19G4onGEKWI6TKM/zNCjC9+iPJ0XkP
+	 ZWqS4IdhchlFZQKV0cA80VQydJYxuiVZwCBmARTkONoLez+hxiZCh85DfzdPmujr4i
+	 kgV7LvFmPA24rQWZhMhjCCbqbjQKVc7msU8u/2A5bnpVnD/V6COAvsWvyBwb+WjuuV
+	 jicOYfZvlFYUbhaM11NrHlpeM2r+iawaCqYov/XPL2hS5Rv2Rxcr31E560cuwfTgYu
+	 LWT82d6ZiOTuA==
+Received: by aws-us-west-2-korg-bugzilla-1.web.codeaurora.org (Postfix, from userid 48)
+	id 48D30C53BD1; Fri, 15 Dec 2023 16:54:15 +0000 (UTC)
+From: bugzilla-daemon@kernel.org
+To: linux-iio@vger.kernel.org
+Subject: [Bug 218223] Ambient light sensor on Framework 13 AMD laptop stops
+ working in Linux 6.7
+Date: Fri, 15 Dec 2023 16:54:15 +0000
+X-Bugzilla-Reason: None
+X-Bugzilla-Type: changed
+X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
+X-Bugzilla-Product: Drivers
+X-Bugzilla-Component: IIO
+X-Bugzilla-Version: 2.5
+X-Bugzilla-Keywords: 
+X-Bugzilla-Severity: normal
+X-Bugzilla-Who: michael@michaelmarley.com
+X-Bugzilla-Status: NEW
+X-Bugzilla-Resolution: 
+X-Bugzilla-Priority: P3
+X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
+X-Bugzilla-Flags: 
+X-Bugzilla-Changed-Fields: 
+Message-ID: <bug-218223-217253-sQ6p4shjiU@https.bugzilla.kernel.org/>
+In-Reply-To: <bug-218223-217253@https.bugzilla.kernel.org/>
+References: <bug-218223-217253@https.bugzilla.kernel.org/>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Bugzilla-URL: https://bugzilla.kernel.org/
+Auto-Submitted: auto-generated
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZXxbx+laQk35W56U@francesco-nb.int.toradex.com>
 
-On Fri, Dec 15, 2023 at 02:59:35PM +0100, Francesco Dolcini wrote:
-> On Fri, Dec 15, 2023 at 02:51:09PM +0100, Johan Hovold wrote:
-> > On Thu, Dec 14, 2023 at 06:01:46PM +0100, Francesco Dolcini wrote:
-> > > From: Francesco Dolcini <francesco.dolcini@toradex.com>
-> > > 
-> > > receive_buf() is called from ttyport_receive_buf() that expects values
-> > > ">= 0" from serdev_controller_receive_buf(), change its return type from
-> > > ssize_t to size_t.
+https://bugzilla.kernel.org/show_bug.cgi?id=3D218223
 
-> > >  drivers/bluetooth/btmtkuart.c              |  4 ++--
-> > >  drivers/bluetooth/btnxpuart.c              |  4 ++--
+--- Comment #4 from Michael Marley (michael@michaelmarley.com) ---
+With the patch, the light sensor is working again.  Thanks!
 
-> > > -static ssize_t btnxpuart_receive_buf(struct serdev_device *serdev,
-> > > -				     const u8 *data, size_t count)
-> > > +static size_t btnxpuart_receive_buf(struct serdev_device *serdev,
-> > > +				    const u8 *data, size_t count)
-> > >  {
-> > >  	struct btnxpuart_dev *nxpdev = serdev_device_get_drvdata(serdev);
-> > 
-> > A quick check of just the first two functions here shows that they can
-> > return negative values.
-> 
-> This is already fixed. Patches are in next.
-> 
-> There were 3 buggy user of this API.
->  - 1 patch was merged a few days ago in mainline
->  - 2 patches are in next, the maintainer decided to wait for the next merge window
-> 
-> commit 687d2de93b11 ("Bluetooth: btmtkuart: fix recv_buf() return value")
-> commit 7954bbcdd7ea ("Bluetooth: btnxpuart: fix recv_buf() return value")
-> commit c8820c92caf0 ("platform/surface: aggregator: fix recv_buf() return value")
+--=20
+You may reply to this email to add a comment.
 
-Then why was that not mentioned in the patch (e.g. below the --- line)?
-
-You are certainly not making it easy for reviewers, but good to see that
-you thought about this, and I see now when reviewing the mail archives
-that those bugs were the reason for this patch in the first place.
-
-Johan
+You are receiving this mail because:
+You are watching the assignee of the bug.=
