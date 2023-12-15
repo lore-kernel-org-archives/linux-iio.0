@@ -1,46 +1,47 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7D241C2B3
-	for <linux-iio@vger.kernel.org>; Fri, 15 Dec 2023 10:32:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 803DB208D7
+	for <linux-iio@vger.kernel.org>; Fri, 15 Dec 2023 10:32:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="pkQhqyuf"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-33646dbedc9so392219f8f.3
-        for <linux-iio@vger.kernel.org>; Fri, 15 Dec 2023 02:32:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="n2SUDFzs"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-3363eba94ebso350415f8f.3
+        for <linux-iio@vger.kernel.org>; Fri, 15 Dec 2023 02:32:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1702636330; x=1703241130; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=jhaWMxJt5l6q4FIsRW2fysiTs2S/n3S9lW9qDaXU97Y=;
-        b=pkQhqyufAR2HAIKVFRE9z9E3MTab6pp/4zEwcQtkH0jcnTuqUlkjMVU+vgLdWm9Fyb
-         /rlyqdq9LOB12MpdSOKGiqBbXReow8Fen/X6a2Y6JkN9W+vRWROFb01pB8G1/rD1XCi/
-         PaR0glyxPARtkALjHG9f7EyWDVOfTA/sXoETar4Uw158Aybl7tn+53C14/mgfC2yOPcf
-         zx0GZmvNTXVnRT2Gb+GfdIHs+ymhfuEJiy8DzPb1I/HD9eR/5ZUuuMzY08/TXwG+6OKV
-         5wsXwWRy2usu/pwHjc59O35IHdaIva6BnrAIA+xCPoNvIn1hlf207C5n5I1Igx8Z34x1
-         bVrg==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1702636331; x=1703241131; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=f0vxSZ9RvxjYOzxMLTC82yIpjyAij/ySbPoNuVAOnVc=;
+        b=n2SUDFzs4UsriIJm0d/7roV2+AaFTVoW98MhnZiSZg9+ssNWei5VX8kgAlvri5zwF+
+         li4QQR4RgojWhik9zpvi0/Hk/TXcbG1xSm0xU1v7f9pkYXlKqQ1MJDh+1yn6SAgdkrFG
+         ML8k7esu33UZvQv7ZaXb0GHT7CQmm/viiquVZH5ISdaI2KI1nGGds6ZmZfEGVMK/83Pk
+         P9hamtZNSPwH7HKNmbochwwcHYjbRMAY3+e6yDDRU7OvRXIdh0l6HRCVs+HxneKC4R9L
+         hZLMpFIvH7LWhzWFw9UDSYv7icNwGnAlgealQL1KsYsuZ9H4BCgibynOqSL7v1QiPPD2
+         pUGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702636330; x=1703241130;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=jhaWMxJt5l6q4FIsRW2fysiTs2S/n3S9lW9qDaXU97Y=;
-        b=rdpz28sZzDI3YukOh5CicxooojqIulBnwaPn1EVuE9Eu2gtkCAj9eL/79gWRlt4p8v
-         Rw/ZZTjuU4lIo8NTvmnx1WZuHhx0pNOo/GBwcTHT9M4TnANJMCubP+fDVhK28nVy1VtA
-         lvPQ2XLttRvzsErouJ7UUsYstbWQ4dg7Gi3zcwVgT++DR+A4Cq51tD68s9tykhEGz51/
-         hrIbUnIKP0SagS+dr7lzjKDLOYXienxPSfs8/dmeL1q9QoHGkvMXLcVE5n2+yWDgRgwS
-         0Rb2Eyl+I6nuJBGjQGAkhR8elkY3L9Ksz09LCaBDPN1PHE5mJs+8vAS0orF13cNwF1wv
-         Pyow==
-X-Gm-Message-State: AOJu0YyfjBOCL4ePPgXOZ57RrnWUNncAHR/LVjIqqn3tS5eGnOFkzCiZ
-	V+F+Uep+OV8WwcVMopBHGToGIJmMgy77cj0PH4lEWg==
-X-Google-Smtp-Source: AGHT+IG7urKWjWUg8y89hKTSC8KawPNu3wHwDble3mtMje6XhbiGEHUoNara2tSed5io3NdqWOwjPA==
-X-Received: by 2002:a05:6000:235:b0:336:4a69:aaa1 with SMTP id l21-20020a056000023500b003364a69aaa1mr1463431wrz.93.1702636329903;
-        Fri, 15 Dec 2023 02:32:09 -0800 (PST)
+        d=1e100.net; s=20230601; t=1702636331; x=1703241131;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=f0vxSZ9RvxjYOzxMLTC82yIpjyAij/ySbPoNuVAOnVc=;
+        b=m6cauCgyo9/yySiV5xCvNvjSx9yBMIg4hENp6wglgj3B0/HhjwaxO/wLNVKcsO8oVB
+         +PiFNTksV0/ChbIyAGEBbWLNUKwBH0o0Ozx4Qe8HzXuBv7b+ofI2sm2mdB+qbQGnIK1e
+         NHGm9EjSqDLjqiLmO2eHTe1dJlrporu5BhlFfF9wbnH9piZOs4OoDj9WFGNPfiD37pz8
+         SELabGyKxjdtTlrI1p5EFPLyvwRNHVo4OpBUUbpIES5Uu0tvDTkl9mDyKINnmgX/Fzvw
+         z+SNlLwIlkeANAytLmHoVo9GHoYk++BzsGA0RX3/r6elCoKSixv9GDB7OTz2lM1hLZ3v
+         HGkA==
+X-Gm-Message-State: AOJu0YwAnn8kgN32uCKfqtIJepJYHurkyNBzJidTRPYL2TMDv4qu+YYa
+	IcCFLUqdpFPAdugSweXSh0xt4sAlp3xRoN+UI7Yp3Q==
+X-Google-Smtp-Source: AGHT+IEOOzxRXGV1KZ0ZURPlNdzksXFIi0QgWxDIMIyw6Tr1CG06Vcl6zRkqiJlkf7gxnqX8FFeMAA==
+X-Received: by 2002:a5d:430d:0:b0:333:130d:4311 with SMTP id h13-20020a5d430d000000b00333130d4311mr2749859wrq.52.1702636331594;
+        Fri, 15 Dec 2023 02:32:11 -0800 (PST)
 Received: from localhost.localdomain (abordeaux-655-1-152-60.w90-5.abo.wanadoo.fr. [90.5.9.60])
-        by smtp.gmail.com with ESMTPSA id q11-20020adffecb000000b003332db7d91dsm18421015wrs.39.2023.12.15.02.32.09
+        by smtp.gmail.com with ESMTPSA id q11-20020adffecb000000b003332db7d91dsm18421015wrs.39.2023.12.15.02.32.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Dec 2023 02:32:09 -0800 (PST)
+        Fri, 15 Dec 2023 02:32:11 -0800 (PST)
 From: David Lechner <dlechner@baylibre.com>
 To: linux-iio@vger.kernel.org,
 	linux-spi@vger.kernel.org,
@@ -55,12 +56,13 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	Liam Girdwood <lgirdwood@gmail.com>,
 	Mark Brown <broonie@kernel.org>,
 	linux-kernel@vger.kernel.org,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Stefan Popa <stefan.popa@analog.com>
-Subject: [PATCH v3 0/3] iio: adc: add new ad7380 driver
-Date: Fri, 15 Dec 2023 04:32:01 -0600
-Message-Id: <20231215-ad7380-mainline-v3-0-7a11ebf642b9@baylibre.com>
+	Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v3 2/3] dt-bindings: iio: adc: Add binding for AD7380 ADCs
+Date: Fri, 15 Dec 2023 04:32:03 -0600
+Message-Id: <20231215-ad7380-mainline-v3-2-7a11ebf642b9@baylibre.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20231215-ad7380-mainline-v3-0-7a11ebf642b9@baylibre.com>
+References: <20231215-ad7380-mainline-v3-0-7a11ebf642b9@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,77 +73,150 @@ Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.12.4
 Content-Transfer-Encoding: 8bit
 
-This series is adding a new driver for the Analog Devices Inc. AD7380,
-AD7381, AD7383, and AD7384 ADCs. These chips are part of a family of
-simultaneous sampling SAR ADCs.
+This adds a binding specification for the Analog Devices Inc. AD7380
+family of ADCs.
 
-One quirk of these chips is that since they are simultaneous sampling,
-they have multiple SPI data output lines that allow transferring two
-data words (one for each input channel) at the same time. So a new
-generic devicetree binding is added to describe this sort of SPI bus
-configuration.
-
-To keep things simple, the initial driver implementation only supports
-the 2-channel differential chips listed above. There are also 4-channel
-differential chips and 4-channel single-ended chips in the family that
-can be added later.
-
-Furthermore, the driver is just implementing basic support for capturing
-data. Additional features like interrupts, CRC, etc. can be added later.
-
-Also, FYI, this driver will also be used as the base for an upcoming
-series adding AXI SPI Engine offload support for these chips along with
-[1].
-
-This work is being done by BayLibre and on behalf of Analog Devices Inc.
-hence the maintainers are @analog.com.
-
-[1]: https://lore.kernel.org/linux-spi/20231204-axi-spi-engine-series-2-v1-0-063672323fce@baylibre.com/
-
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
-Changes in v3:
-- dt-bindings:
-    - Picked up Conor's Reviewed-By on the adi,ad7380 bindings
-- driver:
-    - Removed extra indent in DEFINE_AD7380_DIFFERENTIAL_2_CHANNEL macro
-    - Removed scan mask that included timestamp channel
-    - Removed parent device assignment
-    - Picked up Nuno's Reviewed-by
-- Link to v2: https://lore.kernel.org/r/20231213-ad7380-mainline-v2-0-cd32150d84a3@baylibre.com
+ .../devicetree/bindings/iio/adc/adi,ad7380.yaml    | 107 +++++++++++++++++++++
+ MAINTAINERS                                        |   9 ++
+ 2 files changed, 116 insertions(+)
 
-Changes in v2:
-- dt-bindings:
-    - Added new patch with generic spi-rx-bus-channels property
-    - Added maxItems to reg property
-    - Replaced adi,sdo-mode property with spi-rx-bus-channels
-    - Made spi-rx-bus-channels property optional with default value of 1
-      (this made the if: check more complex)
-    - Changed example to use gpio for interrupt
-- driver:
-    - Fixed CONFIG_AD7380 in Makefile
-    - rx_buf = st->scan_data.raw instead of rx_buf = &st->scan_data
-    - Moved iio_push_to_buffers_with_timestamp() outside of if statement
-    - Removed extra blank lines
-    - Renamed regulator disable function
-    - Dropped checking of adi,sdo-mode property (regardless of the actual
-      wiring, we can always use 1-wire mode)
-    - Added available_scan_masks
-    - Added check for missing driver match data
-- Link to v1: https://lore.kernel.org/r/20231208-ad7380-mainline-v1-0-2b33fe2f44ae@baylibre.com
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml
+new file mode 100644
+index 000000000000..43d58c52f7dd
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml
+@@ -0,0 +1,107 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/adi,ad7380.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices Simultaneous Sampling Analog to Digital Converters
++
++maintainers:
++  - Michael Hennerich <Michael.Hennerich@analog.com>
++  - Nuno Sá <nuno.sa@analog.com>
++
++description: |
++  * https://www.analog.com/en/products/ad7380.html
++  * https://www.analog.com/en/products/ad7381.html
++  * https://www.analog.com/en/products/ad7383.html
++  * https://www.analog.com/en/products/ad7384.html
++
++$ref: /schemas/spi/spi-peripheral-props.yaml#
++
++properties:
++  compatible:
++    enum:
++      - adi,ad7380
++      - adi,ad7381
++      - adi,ad7383
++      - adi,ad7384
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 80000000
++  spi-cpol: true
++  spi-cpha: true
++
++  spi-rx-bus-channels:
++    description:
++      In 1-wire mode, the SDOA pin acts as the sole data line and the SDOB/ALERT
++      pin acts as the ALERT interrupt signal. In 2-wire mode, data for input A
++      is read from SDOA and data for input B is read from SDOB/ALERT (and the
++      ALERT interrupt signal is not available).
++    enum: [1, 2]
++
++  vcc-supply:
++    description: A 3V to 3.6V supply that powers the chip.
++
++  vlogic-supply:
++    description:
++      A 1.65V to 3.6V supply for the logic pins.
++
++  refio-supply:
++    description:
++      A 2.5V to 3.3V supply for the external reference voltage. When omitted,
++      the internal 2.5V reference is used.
++
++  interrupts:
++    description:
++      When the device is using 1-wire mode, this property is used to optionally
++      specify the ALERT interrupt.
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - vcc-supply
++  - vlogic-supply
++
++allOf:
++  - if:
++      required:
++        - spi-rx-bus-channels
++    then:
++      if:
++        properties:
++          spi-rx-bus-channels:
++            const: 2
++      then:
++        properties:
++          interrupts: false
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@0 {
++            compatible = "adi,ad7380";
++            reg = <0>;
++
++            spi-cpol;
++            spi-cpha;
++            spi-max-frequency = <80000000>;
++
++            interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
++            interrupt-parent = <&gpio0>;
++
++            vcc-supply = <&supply_3_3V>;
++            vlogic-supply = <&supply_3_3V>;
++            refio-supply = <&supply_2_5V>;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fe1f6f97f96a..e2a998be5879 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -430,6 +430,15 @@ W:	http://wiki.analog.com/AD7142
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	drivers/input/misc/ad714x.c
+ 
++AD738X ADC DRIVER (AD7380/1/2/4)
++M:	Michael Hennerich <michael.hennerich@analog.com>
++M:	Nuno Sá <nuno.sa@analog.com>
++R:	David Lechner <dlechner@baylibre.com>
++S:	Supported
++W:	https://wiki.analog.com/resources/tools-software/linux-drivers/iio-adc/ad738x
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml
++
+ AD7877 TOUCHSCREEN DRIVER
+ M:	Michael Hennerich <michael.hennerich@analog.com>
+ S:	Supported
 
----
-David Lechner (3):
-      dt-bindings: spi: add spi-rx-bus-channels peripheral property
-      dt-bindings: iio: adc: Add binding for AD7380 ADCs
-      iio: adc: ad7380: new driver for AD7380 ADCs
+-- 
+2.34.1
 
- .../devicetree/bindings/iio/adc/adi,ad7380.yaml    | 107 +++++
- .../bindings/spi/spi-peripheral-props.yaml         |  12 +
- MAINTAINERS                                        |  10 +
- drivers/iio/adc/Kconfig                            |  16 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/ad7380.c                           | 462 +++++++++++++++++++++
- 6 files changed, 608 insertions(+)
----
-base-commit: 18f78b5e609b19b56237f0dae47068d44b8b0ecd
-change-id: 20231208-ad7380-mainline-e6c4fa7dbedd
