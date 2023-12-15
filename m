@@ -1,111 +1,119 @@
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4AE5182CC;
-	Fri, 15 Dec 2023 10:04:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=leemhuis.info
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=leemhuis.info
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1rE53I-0005EG-VC; Fri, 15 Dec 2023 11:04:17 +0100
-Message-ID: <d3d6fe7a-d6e1-4ea6-a8f6-2430731691b2@leemhuis.info>
-Date: Fri, 15 Dec 2023 11:04:19 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8D5820307
+	for <linux-iio@vger.kernel.org>; Fri, 15 Dec 2023 10:32:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="WkGmsWB6"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-40c48d7a7a7so4779885e9.3
+        for <linux-iio@vger.kernel.org>; Fri, 15 Dec 2023 02:32:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1702636330; x=1703241130; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=w3bsA3Hq1tZST6LLgdgUCasdE4/LKtqWt/9/psp4mcs=;
+        b=WkGmsWB6mErIuSPKRgwJk99QrrPKhdO4xeWDYJi8dCV8BSsfLGzVH0a0IIWPJuNV20
+         rGJ8eIZ37dboX9DG4b3t97m6+rnqUl+Ex6i9fU1AwD5rFENzDsuOlkNJimpjP0wndB8w
+         sN0rLED3t4GM8+/h66lycMs0PHsj2AVEOBmIQYe/+wtcDtvkY0cvZ/SiT4tUGanHvCjX
+         ZeASR51Qs4T78kqVuPMODnrVGABn0OqnoTkAi4JuTj0DbtGhgfAcOseTDA4UikT6Klnb
+         5Agp4w7Y1BBw9vD9dPDVqWVRrAutmpSwXA10I37AHw38A5wgFKY7mU1Xj6gnhFN7K5uH
+         kAHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702636330; x=1703241130;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=w3bsA3Hq1tZST6LLgdgUCasdE4/LKtqWt/9/psp4mcs=;
+        b=lKcJwSqQtZcOlT1ontrhWnd70flwzEEzlqZbw9dHmoF3YBhZKLicp48zfsLU1aO9cB
+         s27RMc5aYoLN6wrgtGMJUxnZ0tVbP0pIsxFOsoR/Mc9QY0OBARRS4LoZFbdsl+2m2fKe
+         Hfd9CG4N0oPBovW3MUplH6QIjgQXOfrP+f9pCigLgCEMWr6zFHcXpEdjlLUPlvFSzquG
+         yGTiStdjI2b39IY9I5Bw2icN7uY0t6P44oHxR/ZOCsGcncrg083CGmsoxM2M2sM+JzNv
+         xaphw2s9CKV/7XsyaILYeEd4hZJQSV2cAjIefxXPBDAcgFkFB5soVd6hkJ5C3vm4REwj
+         qjnQ==
+X-Gm-Message-State: AOJu0YxvYhiGMOaq0imxvn9mU0LEUcEPf+bp7BEq/8brAlnMUS3420Jk
+	79z4brpelC7RoU8p+2GcRpTwfDn/j0SGL/otPKwd/g==
+X-Google-Smtp-Source: AGHT+IGe4MMucKjjA3WOJtoTmJMh3Fj4pIUjOpDhgEcF23Hnh5z6vn2Zy3FUjhpnZwv0L/I4CQkvqw==
+X-Received: by 2002:adf:ebc4:0:b0:333:2fd2:8146 with SMTP id v4-20020adfebc4000000b003332fd28146mr7175355wrn.99.1702636330773;
+        Fri, 15 Dec 2023 02:32:10 -0800 (PST)
+Received: from localhost.localdomain (abordeaux-655-1-152-60.w90-5.abo.wanadoo.fr. [90.5.9.60])
+        by smtp.gmail.com with ESMTPSA id q11-20020adffecb000000b003332db7d91dsm18421015wrs.39.2023.12.15.02.32.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Dec 2023 02:32:10 -0800 (PST)
+From: David Lechner <dlechner@baylibre.com>
+To: linux-iio@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: David Lechner <dlechner@baylibre.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3 1/3] dt-bindings: spi: add spi-rx-bus-channels peripheral property
+Date: Fri, 15 Dec 2023 04:32:02 -0600
+Message-Id: <20231215-ad7380-mainline-v3-1-7a11ebf642b9@baylibre.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20231215-ad7380-mainline-v3-0-7a11ebf642b9@baylibre.com>
+References: <20231215-ad7380-mainline-v3-0-7a11ebf642b9@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/9] Support light color temperature and chromaticity
-Content-Language: en-US, de-DE
-To: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?=
- <thomas@t-8ch.de>
-Cc: Basavaraj Natikar <Basavaraj.Natikar@amd.com>, jikos@kernel.org,
- benjamin.tissoires@redhat.com, lars@metafoo.de,
- srinivas.pandruvada@linux.intel.com, linux-input@vger.kernel.org,
- linux-iio@vger.kernel.org, regressions@lists.linux.dev
-References: <20230919081054.2050714-1-Basavaraj.Natikar@amd.com>
- <4441bd6b-01cd-4f26-bf85-bde2e1bf404e@t-8ch.de>
- <20231210110735.52f8dc53@jic23-huawei>
-From: "Linux regression tracking (Thorsten Leemhuis)"
- <regressions@leemhuis.info>
-Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
-In-Reply-To: <20231210110735.52f8dc53@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.12.4
 Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1702634661;71de4177;
-X-HE-SMSGID: 1rE53I-0005EG-VC
 
-Hi, Thorsten here, the Linux kernel's regression tracker. Top-posting
-for once, to make this easily accessible to everyone.
+This adds a new spi-rx-bus-channels property to the generic spi
+peripheral property bindings. This property is used to describe
+devices that have parallel data output channels.
 
-Thomas, Jonathan, was any progress made to resolve below regression?
+This property is different from spi-rx-bus-width in that the latter
+means that we are reading multiple bits of a single word at one time
+while the former means that we are reading single bits of multiple words
+at the same time.
 
-Side note: vormally I would not prod you at this time of the cycle, but
-with the festive season coming up I thought it would be wise to ask a
-bit earlier for a status update.
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
 
-Ciao, Thorsten
+The rest of this series is ready to merge, so just looking for an ack from
+Mark on this one.
 
-On 10.12.23 12:07, Jonathan Cameron wrote:
-> On Thu, 7 Dec 2023 00:39:28 +0100
-> Thomas Weißschuh <thomas@t-8ch.de> wrote:
->> On 2023-09-19 13:40:45+0530, Basavaraj Natikar wrote:
->>> This series adds support for light color temperature and chromaticity.
->[...]
->>> Basavaraj Natikar (9):
->>>   iio: hid-sensor-als: Use channel index to support more hub attributes
->>>   iio: Add channel type light color temperature
->>>   iio: hid-sensor-als: Add light color temperature support
->>>   HID: amd_sfh: Add support for light color temperature
->>>   HID: amd_sfh: Add support for SFH1.1 light color temperature
->>>   iio: Add channel type for chromaticity
->>>   iio: hid-sensor-als: Add light chromaticity support
->>>   HID: amd_sfh: Add light chromaticity support
->>>   HID: amd_sfh: Add light chromaticity for SFH1.1  
->>
->> This series is breaking probing of hid-sensor-als on Framework 13 AMD
->> laptops [0].
->> The problem is that the patches require hid-sensors-als sensors to also
->> report chromaticity and color temparature which they don't.
-> Gah.  Missed that in review.  Sorry about that and thanks for digging into
-> this.
->>
->> When I remove the 'if (ret < 0) return ret;' checks in
->> als_parse_report() probing works and the illuminance/intensity channels
->> that show up behave as expected.
->> Unfortunately this still leaves behind a bunch of unusable channels.
->> A nice fix would be to have something like sysfs/hwmon .is_visible()
->> callback but that's not supported by IIO.
-> 
-> It's tricky to do because there is no simple association between
-> what is registered as channels and the resulting attribute.  We could probably
-> make it work, but not a simple thing to do.
-> 
->>
->> One aproach would be to detect the usable channels in als_parse_report()
->> and then adapt the indio_dev->channels based on that information.
->>
->> [0] https://bugzilla.kernel.org/show_bug.cgi?id=218223
-> 
-> Agreed that adapting the channels is the way to go.
-> Easiest option probably to set the relevant masks to 0 if the chromacity and
-> temp channels aren't there + set their scan index values to -1.
-> That 'should' suppress any attributes being created.
-> Having a gap in scan indexes is common anyway so any userspace should cope
-> with the timestamp being after a gap.
-> 
-> Alternatives would be to rebuild the chan_spec array to not have the entries,
-> or pass in and fill in two copies of the array, picking the relevant one only
-> on discovering if the temp and chromacity channels are present.
-> 
-> Jonathan
-> 
->>
->> #regzbot introduced: 5f05285df691b1e82108eead7165feae238c95ef
->> #regzbot monitor: https://bugzilla.kernel.org/show_bug.cgi?id=218223
->>
-> 
-> 
-> 
+ .../devicetree/bindings/spi/spi-peripheral-props.yaml        | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+index 15938f81fdce..1c8e71c18234 100644
+--- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
++++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+@@ -67,6 +67,18 @@ properties:
+     enum: [0, 1, 2, 4, 8]
+     default: 1
+ 
++  spi-rx-bus-channels:
++    description:
++      The number of parallel channels for read transfers. The difference between
++      this and spi-rx-bus-width is that a value N for spi-rx-bus-channels means
++      the SPI bus is receiving one bit each of N different words at the same
++      time whereas a value M for spi-rx-bus-width means that the bus is
++      receiving M bits of a single word at the same time. It is also possible to
++      use both properties at the same time, meaning the bus is receiving M bits
++      of N different words at the same time.
++    $ref: /schemas/types.yaml#/definitions/uint32
++    default: 1
++
+   spi-rx-delay-us:
+     description:
+       Delay, in microseconds, after a read transfer.
+
+-- 
+2.34.1
+
