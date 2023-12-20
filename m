@@ -1,48 +1,48 @@
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+Received: from mx08-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FE923E46E;
-	Wed, 20 Dec 2023 14:58:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5CBB3E478;
+	Wed, 20 Dec 2023 14:59:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="L6DX30we"
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3BKAmXS3012278;
-	Wed, 20 Dec 2023 15:57:57 +0100
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="4cemLYBa"
+Received: from pps.filterd (m0369457.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3BKDtBEe023361;
+	Wed, 20 Dec 2023 15:59:09 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
 	from:to:cc:subject:date:message-id:in-reply-to:references
 	:mime-version:content-transfer-encoding:content-type; s=
-	selector1; bh=g6KFG95QTDX3DDGTxlBut801yEYbV9MUDWmT6tLu8gg=; b=L6
-	DX30weht13vT7o/awcBqMslP7ZyeQPGDxQ7Z55Tlm2yTiFzPVUsT2NYZLFL5Luj/
-	WT6yHTIPp4v5XcZX+vIQTXXkfQ2OvW/qlDbxNGTrS2SUPrf9R3XNvYiS9VARyMve
-	J/KyQPQ2mtzg+K7jPutJQYrsmvLIDH+/W7mUe5hQ43kvQS1wKvjHmp4V94N+PZhT
-	ocVsemEA+Ikg5sjimxmGqZGMLwVlYuFhmKlk7pnZlprCbxVI7Yf1ym7ZYSvMxcad
-	/DouPyutjeVuUYiQl9NgGxAz0LeZlmskry1v1fhlC4DkRar0lWJbQ+y1QVSrFFER
-	dCsUKuhGTi8+IOmikxbw==
+	selector1; bh=aGDnZpzUU9Vo6OuENOZWDVj2oc7Tl0EGM7EnZev4dXU=; b=4c
+	emLYBaEC2mX8oz16/LzVpsbSEJ5MSpNHZSfbXQaCcWEYY1Vp+UUf++1fqm9Zl5Jz
+	XeYMFpWbKTkTu2KqKI9S8/Rs2BLkYvC8lB3SGv9rOWfGIV67+Om3+DTuyHIZHkUl
+	7dyTKY1vGCz0t6Pk2NgUEtGv4FYJ1UhXRD9MOJ+5VVsvtGw6CLLqc7cqaMc0Tl0R
+	9qhwV/2rf2r9OC45Hcut90mR342M4co1F5FlRy/zeHW1YsvZZgb7yZfBK1zMEB4N
+	7j2OviSc/teIgDU16+0UlGGndAHcvssR2ZRgzd/zArtrcSQcQ8HfrLUCa455zmrO
+	ov1IGVogcQFVf4FH9pTg==
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3v13nhhqt4-1
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3v3q80u4k5-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 20 Dec 2023 15:57:57 +0100 (CET)
+	Wed, 20 Dec 2023 15:59:09 +0100 (CET)
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 37102100059;
-	Wed, 20 Dec 2023 15:57:57 +0100 (CET)
+	by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D90B9100063;
+	Wed, 20 Dec 2023 15:59:08 +0100 (CET)
 Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 2E31421B512;
-	Wed, 20 Dec 2023 15:57:57 +0100 (CET)
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CCD7121B51D;
+	Wed, 20 Dec 2023 15:59:08 +0100 (CET)
 Received: from localhost (10.201.20.59) by SHFDAG1NODE2.st.com (10.75.129.70)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Wed, 20 Dec
- 2023 15:57:56 +0100
+ 2023 15:59:08 +0100
 From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 To: <william.gray@linaro.org>
 CC: <lee@kernel.org>, <alexandre.torgue@foss.st.com>,
         <fabrice.gasnier@foss.st.com>, <linux-iio@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 04/10] counter: stm32-timer-cnt: introduce clock signal
-Date: Wed, 20 Dec 2023 15:57:20 +0100
-Message-ID: <20231220145726.640627-5-fabrice.gasnier@foss.st.com>
+Subject: [PATCH v3 06/10] counter: stm32-timer-cnt: add checks on quadrature encoder capability
+Date: Wed, 20 Dec 2023 15:57:22 +0100
+Message-ID: <20231220145726.640627-7-fabrice.gasnier@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20231220145726.640627-1-fabrice.gasnier@foss.st.com>
 References: <20231220145726.640627-1-fabrice.gasnier@foss.st.com>
@@ -58,145 +58,131 @@ X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE2.st.com
  (10.75.129.70)
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-20_08,2023-12-20_01,2023-05-22_02
+ definitions=2023-12-20_09,2023-12-20_01,2023-05-22_02
 
-Introduce the internal clock signal, used to count when in simple rising
-function. Also add the "frequency" extension to the clock signal.
+This is a precursor patch to support capture channels on all possible
+channels and stm32 timer types. Original driver was intended to be used
+only as quadrature encoder and simple counter on internal clock.
 
-With this patch, signal action reports a consistent state when "increase"
-function is used, and the counting frequency:
-    $ echo increase > function
-    $ grep -H "" signal*_action
-    signal0_action:none
-    signal1_action:none
-    signal2_action:rising edge
-    $ echo 1 > enable
-    $ cat count
-    25425
-    $ cat count
-    44439
-    $ cat ../signal2/frequency
-    208877930
+So, add a check on encoder capability, so the driver may be probed for
+timer instances without encoder feature. This way, all timers may be used
+as simple counter on internal clock, starting from here.
+
+Encoder capability is retrieved by using the timer index (originally in
+stm32-timer-trigger driver and dt-bindings). The need to keep backward
+compatibility with existing device tree lead to parse aside trigger node.
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 ---
 Changes in v3:
-- split the patch in 3 parts: signal definition becomes a pre-cursor patch,
-  add the "prescaler" extension in its own patch.
-- Move the clock signal at the end of the signals array, so existing
-  userspace programs that may rely on signal0 being "Channel 1" for
-  example will remain compatible.
+- New patch split from:
+  "counter: stm32-timer-cnt: populate capture channels and check encoder"
+- return -EOPNOTSUPP when encoder function isn't supported by the timer
+  instance.
 ---
- drivers/counter/stm32-timer-cnt.c | 53 ++++++++++++++++++++++++++++---
- 1 file changed, 49 insertions(+), 4 deletions(-)
+ drivers/counter/stm32-timer-cnt.c | 55 +++++++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
 
 diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
-index c34747d7857e..21a9c20c4281 100644
+index bf2726dd7f12..6933d42b16bf 100644
 --- a/drivers/counter/stm32-timer-cnt.c
 +++ b/drivers/counter/stm32-timer-cnt.c
-@@ -23,6 +23,7 @@
- 
- #define STM32_CH1_SIG		0
- #define STM32_CH2_SIG		1
-+#define STM32_CLOCK_SIG		2
- 
- struct stm32_timer_regs {
- 	u32 cr1;
-@@ -226,6 +227,10 @@ static struct counter_comp stm32_count_ext[] = {
- 			     stm32_count_ceiling_write),
+@@ -11,6 +11,7 @@
+ #include <linux/mfd/stm32-timers.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/pinctrl/consumer.h>
+ #include <linux/platform_device.h>
+ #include <linux/types.h>
+@@ -38,6 +39,8 @@ struct stm32_timer_cnt {
+ 	u32 max_arr;
+ 	bool enabled;
+ 	struct stm32_timer_regs bak;
++	bool has_encoder;
++	u32 idx;
  };
  
-+static const enum counter_synapse_action stm32_clock_synapse_actions[] = {
-+	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
+ static const enum counter_function stm32_count_functions[] = {
+@@ -111,12 +114,18 @@ static int stm32_count_function_write(struct counter_device *counter,
+ 		sms = TIM_SMCR_SMS_SLAVE_MODE_DISABLED;
+ 		break;
+ 	case COUNTER_FUNCTION_QUADRATURE_X2_A:
++		if (!priv->has_encoder)
++			return -EOPNOTSUPP;
+ 		sms = TIM_SMCR_SMS_ENCODER_MODE_1;
+ 		break;
+ 	case COUNTER_FUNCTION_QUADRATURE_X2_B:
++		if (!priv->has_encoder)
++			return -EOPNOTSUPP;
+ 		sms = TIM_SMCR_SMS_ENCODER_MODE_2;
+ 		break;
+ 	case COUNTER_FUNCTION_QUADRATURE_X4:
++		if (!priv->has_encoder)
++			return -EOPNOTSUPP;
+ 		sms = TIM_SMCR_SMS_ENCODER_MODE_3;
+ 		break;
+ 	default:
+@@ -388,6 +397,48 @@ static struct counter_count stm32_counts = {
+ 	.num_ext = ARRAY_SIZE(stm32_count_ext)
+ };
+ 
++/* encoder supported on TIM1 TIM2 TIM3 TIM4 TIM5 TIM8 */
++#define STM32_TIM_ENCODER_SUPPORTED	(BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(7))
++
++static const char * const stm32_timer_trigger_compat[] = {
++	"st,stm32-timer-trigger",
++	"st,stm32h7-timer-trigger",
 +};
 +
- static const enum counter_synapse_action stm32_synapse_actions[] = {
- 	COUNTER_SYNAPSE_ACTION_NONE,
- 	COUNTER_SYNAPSE_ACTION_BOTH_EDGES
-@@ -246,7 +251,10 @@ static int stm32_action_read(struct counter_device *counter,
- 	switch (function) {
- 	case COUNTER_FUNCTION_INCREASE:
- 		/* counts on internal clock when CEN=1 */
--		*action = COUNTER_SYNAPSE_ACTION_NONE;
-+		if (synapse->signal->id == STM32_CLOCK_SIG)
-+			*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
-+		else
-+			*action = COUNTER_SYNAPSE_ACTION_NONE;
- 		return 0;
- 	case COUNTER_FUNCTION_QUADRATURE_X2_A:
- 		/* counts up/down on TI1FP1 edge depending on TI2FP2 level */
-@@ -264,7 +272,10 @@ static int stm32_action_read(struct counter_device *counter,
- 		return 0;
- 	case COUNTER_FUNCTION_QUADRATURE_X4:
- 		/* counts up/down on both TI1FP1 and TI2FP2 edges */
--		*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
-+		if (synapse->signal->id == STM32_CH1_SIG || synapse->signal->id == STM32_CH2_SIG)
-+			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
-+		else
-+			*action = COUNTER_SYNAPSE_ACTION_NONE;
- 		return 0;
- 	default:
- 		return -EINVAL;
-@@ -279,7 +290,30 @@ static const struct counter_ops stm32_timer_cnt_ops = {
- 	.action_read = stm32_action_read,
- };
- 
-+static int stm32_count_clk_get_freq(struct counter_device *counter,
-+				    struct counter_signal *signal, u64 *freq)
++static int stm32_timer_cnt_probe_encoder(struct platform_device *pdev,
++					 struct stm32_timer_cnt *priv)
 +{
-+	struct stm32_timer_cnt *const priv = counter_priv(counter);
++	struct device *parent = pdev->dev.parent;
++	struct device_node *tnode = NULL, *pnode = parent->of_node;
++	int i, ret;
 +
-+	*freq = clk_get_rate(priv->clk);
++	/*
++	 * Need to retrieve the trigger node index from DT, to be able
++	 * to determine if the counter supports encoder mode. It also
++	 * enforce backward compatibility, and allow to support other
++	 * counter modes in this driver (when the timer doesn't support
++	 * encoder).
++	 */
++	for (i = 0; i < ARRAY_SIZE(stm32_timer_trigger_compat) && !tnode; i++)
++		tnode = of_get_compatible_child(pnode, stm32_timer_trigger_compat[i]);
++	if (!tnode) {
++		dev_err(&pdev->dev, "Can't find trigger node\n");
++		return -ENODATA;
++	}
++
++	ret = of_property_read_u32(tnode, "reg", &priv->idx);
++	if (ret) {
++		dev_err(&pdev->dev, "Can't get index (%d)\n", ret);
++		return ret;
++	}
++
++	priv->has_encoder = !!(STM32_TIM_ENCODER_SUPPORTED & BIT(priv->idx));
++
++	dev_dbg(&pdev->dev, "encoder support: %s\n", priv->has_encoder ? "yes" : "no");
 +
 +	return 0;
 +}
 +
-+static struct counter_comp stm32_count_clock_ext[] = {
-+	COUNTER_COMP_SIGNAL_U64("frequency", stm32_count_clk_get_freq, NULL),
-+};
+ static int stm32_timer_cnt_probe(struct platform_device *pdev)
+ {
+ 	struct stm32_timers *ddata = dev_get_drvdata(pdev->dev.parent);
+@@ -409,6 +460,10 @@ static int stm32_timer_cnt_probe(struct platform_device *pdev)
+ 	priv->clk = ddata->clk;
+ 	priv->max_arr = ddata->max_arr;
+ 
++	ret = stm32_timer_cnt_probe_encoder(pdev, priv);
++	if (ret)
++		return ret;
 +
- static struct counter_signal stm32_signals[] = {
-+	/*
-+	 * Need to declare all the signals as a static array, and keep the signals order here,
-+	 * even if they're unused or unexisting on some timer instances. It's an abstraction,
-+	 * e.g. high level view of the counter features.
-+	 *
-+	 * Userspace programs may rely on signal0 to be "Channel 1", signal1 to be "Channel 2",
-+	 * and so on. When a signal is unexisting, the COUNTER_SYNAPSE_ACTION_NONE can be used,
-+	 * to indicate that a signal doesn't affect the counter.
-+	 */
- 	{
- 		.id = STM32_CH1_SIG,
- 		.name = "Channel 1"
-@@ -287,7 +321,13 @@ static struct counter_signal stm32_signals[] = {
- 	{
- 		.id = STM32_CH2_SIG,
- 		.name = "Channel 2"
--	}
-+	},
-+	{
-+		.id = STM32_CLOCK_SIG,
-+		.name = "Clock Signal",
-+		.ext = stm32_count_clock_ext,
-+		.num_ext = ARRAY_SIZE(stm32_count_clock_ext),
-+	},
- };
- 
- static struct counter_synapse stm32_count_synapses[] = {
-@@ -300,7 +340,12 @@ static struct counter_synapse stm32_count_synapses[] = {
- 		.actions_list = stm32_synapse_actions,
- 		.num_actions = ARRAY_SIZE(stm32_synapse_actions),
- 		.signal = &stm32_signals[STM32_CH2_SIG]
--	}
-+	},
-+	{
-+		.actions_list = stm32_clock_synapse_actions,
-+		.num_actions = ARRAY_SIZE(stm32_clock_synapse_actions),
-+		.signal = &stm32_signals[STM32_CLOCK_SIG]
-+	},
- };
- 
- static struct counter_count stm32_counts = {
+ 	counter->name = dev_name(dev);
+ 	counter->parent = dev;
+ 	counter->ops = &stm32_timer_cnt_ops;
 -- 
 2.25.1
 
