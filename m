@@ -1,124 +1,94 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01C053FB0B;
-	Wed, 20 Dec 2023 15:31:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BKFBbRd020666;
-	Wed, 20 Dec 2023 10:31:39 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 3v42psr45v-1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1757546B92;
+	Wed, 20 Dec 2023 15:52:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="xbf/l7ur"
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3BKAJMxu026336;
+	Wed, 20 Dec 2023 16:52:31 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	selector1; bh=dMuOAk+gwvkbeHZULHNVEMOJGqXKMt2xpT/Apfey03s=; b=xb
+	f/l7urPxvrldORWLQ24h8lgbfRitKrFHG+QvaC7BjQIJGYn+mI/s/oZnOeK2y2/t
+	qkykqrhxu9lakzQwgZwgW6kCeHouvFrv2hEBdOGxnpS0Rf8AH9T7NEgbjDvEnyGn
+	ZidlWnQXPMo8j7FfMgsMFYaJyW0dkBs9IxvT9Eemyd4iOabY8S4O1NsgHBJ8eeNf
+	D2+IXTJM50FN59SzuOZyKBgutYmYT4gagoxZAg3X+mqO05jXwhNHfPq6TBWqowMh
+	m+lHiFlQY94j3Xk+bn3XEkWrwbFradlEM6Kn73w09EIbO8sK1aYAK/1xjhv9TwWK
+	Bw52LkzGpnDNZU8r3HmQ==
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3v126m2t9r-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 20 Dec 2023 10:31:39 -0500 (EST)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 3BKFVLsc005300
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 20 Dec 2023 10:31:21 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 20 Dec
- 2023 10:31:20 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 20 Dec 2023 10:31:20 -0500
-Received: from [127.0.0.1] ([10.44.3.57])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 3BKFUxX8006998;
-	Wed, 20 Dec 2023 10:31:14 -0500
-From: Nuno Sa <nuno.sa@analog.com>
-Date: Wed, 20 Dec 2023 16:34:06 +0100
-Subject: [PATCH v4 3/8] driver: core: allow modifying device_links flags
+	Wed, 20 Dec 2023 16:52:31 +0100 (CET)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 02F33100057;
+	Wed, 20 Dec 2023 16:52:31 +0100 (CET)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id ED5B12207AC;
+	Wed, 20 Dec 2023 16:52:30 +0100 (CET)
+Received: from [10.201.20.59] (10.201.20.59) by SHFDAG1NODE2.st.com
+ (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Wed, 20 Dec
+ 2023 16:52:30 +0100
+Message-ID: <6a7ecf2f-eee9-4297-b0d6-be7e7f1d9fea@foss.st.com>
+Date: Wed, 20 Dec 2023 16:52:29 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH][next] tools/counter: Fix spelling mistake "componend" ->
+ "component"
+Content-Language: en-US
+To: Colin Ian King <colin.i.king@gmail.com>,
+        William Breathitt Gray
+	<william.gray@linaro.org>,
+        <linux-iio@vger.kernel.org>
+CC: <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20231219133015.365943-1-colin.i.king@gmail.com>
+From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+In-Reply-To: <20231219133015.365943-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20231220-iio-backend-v4-3-998e9148b692@analog.com>
-References: <20231220-iio-backend-v4-0-998e9148b692@analog.com>
-In-Reply-To: <20231220-iio-backend-v4-0-998e9148b692@analog.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, Rob
- Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki"
-	<rafael@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Olivier Moysan
-	<olivier.moysan@foss.st.com>
-X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1703086446; l=1762;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=NLZHAx7QEa2fUUjKTtfo6RESv2OQO0JG++qc/yxWC4M=;
- b=y+qI18TDZsj9USabDbOfZdJZqgEwJ3UTcbliBH4WZqUUNyYbfYoAxzTI0UTDE79NDooYBZZzs
- lUfdpwhSJZiAiJQnKZePnoHfp+QWZMH/0e23zwkPNRIpjbKDziccsJH
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: YIhbI8yS8Rozs_K8KFucgBJivutg3KE6
-X-Proofpoint-GUID: YIhbI8yS8Rozs_K8KFucgBJivutg3KE6
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-02_01,2023-11-30_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 malwarescore=0
- clxscore=1015 mlxlogscore=663 phishscore=0 impostorscore=0 spamscore=0
- lowpriorityscore=0 bulkscore=0 priorityscore=1501 adultscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2311290000
- definitions=main-2312200111
+ definitions=2023-12-20_09,2023-12-20_01,2023-05-22_02
 
-If a device_link is previously created (eg: via
-fw_devlink_create_devlink()) before the supplier + consumer are both
-present and bound to their respective drivers, there's no way to set
-DL_FLAG_AUTOREMOVE_CONSUMER anymore while one can still set
-DL_FLAG_AUTOREMOVE_SUPPLIER. Hence, rework the flags checks to allow
-for DL_FLAG_AUTOREMOVE_CONSUMER in the same way
-DL_FLAG_AUTOREMOVE_SUPPLIER is done.
+On 12/19/23 14:30, Colin Ian King wrote:
+> There are two spelling mistakes in the help text. Fix them.
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-While at it, make sure that we are never left with
-DL_FLAG_AUTOPROBE_CONSUMER set together with one of
-DL_FLAG_AUTOREMOVE_CONSUMER or DL_FLAG_AUTOREMOVE_SUPPLIER.
+Hi Colin,
+Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 
-Signed-off-by: Nuno Sa <nuno.sa@analog.com>
----
- drivers/base/core.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 67ba592afc77..fdbb5abc75d5 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -807,11 +807,15 @@ struct device_link *device_link_add(struct device *consumer,
- 		 * update the existing link to stay around longer.
- 		 */
- 		if (flags & DL_FLAG_AUTOREMOVE_SUPPLIER) {
--			if (link->flags & DL_FLAG_AUTOREMOVE_CONSUMER) {
--				link->flags &= ~DL_FLAG_AUTOREMOVE_CONSUMER;
--				link->flags |= DL_FLAG_AUTOREMOVE_SUPPLIER;
--			}
--		} else if (!(flags & DL_FLAG_AUTOREMOVE_CONSUMER)) {
-+			link->flags &= ~DL_FLAG_AUTOREMOVE_CONSUMER;
-+			link->flags &= ~DL_FLAG_AUTOPROBE_CONSUMER;
-+			link->flags |= DL_FLAG_AUTOREMOVE_SUPPLIER;
-+
-+		} else if (flags & DL_FLAG_AUTOREMOVE_CONSUMER) {
-+			link->flags &= ~DL_FLAG_AUTOREMOVE_SUPPLIER;
-+			link->flags &= ~DL_FLAG_AUTOPROBE_CONSUMER;
-+			link->flags |= DL_FLAG_AUTOREMOVE_CONSUMER;
-+		} else {
- 			link->flags &= ~(DL_FLAG_AUTOREMOVE_CONSUMER |
- 					 DL_FLAG_AUTOREMOVE_SUPPLIER);
- 		}
-
--- 
-2.43.0
-
+Thanks for your patch,
+Best Regards,
+Fabrice
+> ---
+>  tools/counter/counter_watch_events.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/counter/counter_watch_events.c b/tools/counter/counter_watch_events.c
+> index 3898fe7e35ec..37d1b4b3e63d 100644
+> --- a/tools/counter/counter_watch_events.c
+> +++ b/tools/counter/counter_watch_events.c
+> @@ -120,8 +120,8 @@ static void print_usage(void)
+>  		"  evt_capture                (COUNTER_EVENT_CAPTURE)\n"
+>  		"\n"
+>  		"  chan=<n>                   channel <n> for this watch [default: 0]\n"
+> -		"  id=<n>                     componend id <n> for this watch [default: 0]\n"
+> -		"  parent=<n>                 componend parent <n> for this watch [default: 0]\n"
+> +		"  id=<n>                     component id <n> for this watch [default: 0]\n"
+> +		"  parent=<n>                 component parent <n> for this watch [default: 0]\n"
+>  		"\n"
+>  		"Example with two watched events:\n\n"
+>  		"counter_watch_events -d \\\n"
