@@ -1,78 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.subdimension.ro (skycaves.subdimension.ro [172.104.132.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 654C34645F;
-	Wed, 20 Dec 2023 16:56:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA74D47A48;
+	Wed, 20 Dec 2023 17:25:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=subdimension.ro
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rXv6r7np"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A44E9C433C8;
-	Wed, 20 Dec 2023 16:56:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1703091386;
-	bh=TLXV2ADb5J8JDHjsS/AkjVpwjgDSB5XD0RxrIDny//g=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=rXv6r7npm46RE/ucuLLJO8lpq5fd/23hYUca/zFPSNobcouc1M/hoSLCkbAw8CPYW
-	 qSWdDFRt9Ln/742NjtbTz+SUxMSF1kT6B+ndDMIYgwjPnRG7YEPTiblt9GNNKKbUEO
-	 H44IgBByN2wrnOhDh8vg3ZTT1rT7l9Ms0FWj0AOcqmABMvXQV4UyNUffAQk3fBNcAX
-	 GpB76TvzwuHiN5aeKeTtReqbe+cEazBYw4+Iusw4//48gG0L1eQrqnXeGyM24XmniI
-	 P/JmH61j43D4sq9ZPbhr6vQUxrXS2OiVOS7lq4pUnBIUcZnYsIm0X5JYaoz1Lu+kJ2
-	 tuGfQ4drpYfDQ==
-Received: (nullmailer pid 683161 invoked by uid 1000);
-	Wed, 20 Dec 2023 16:56:24 -0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="LAiFO9Ms"
+Received: from sunspire (unknown [188.24.94.216])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id 7DCC028B50B;
+	Wed, 20 Dec 2023 17:25:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=subdimension.ro;
+	s=skycaves; t=1703093127;
+	bh=y5vShnC08AKzTQTcRg4gInuuznDW1Uhrzwdu10+dvQw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=LAiFO9MsEhzkYDFMwKcQf8wB8L61698RXerZe5mkKVqD7q7L6+KpiDJ36UiVpPXNQ
+	 eL2NBJvAHSqynMCmNd5fG4bQO75+c2zIhHKG9VMTBwZc6chzs4ymLOORwUz3kLoX7U
+	 vxV6VFMJQKEEQaTMaTQJnx8a8FGvOTs7jWipV4qo=
+Date: Wed, 20 Dec 2023 19:25:25 +0200
+From: Petre Rodan <petre.rodan@subdimension.ro>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: pressure: honeywell,mprls0025pa
+Message-ID: <ZYMjhfAbWfw9vUdd@sunspire>
+References: <20231219130230.32584-1-petre.rodan@subdimension.ro>
+ <20231219130230.32584-2-petre.rodan@subdimension.ro>
+ <20231220151645.16ada807@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: Rob Herring <robh@kernel.org>
-To: Nuno Sa <nuno.sa@analog.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Frank Rowand <frowand.list@gmail.com>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>, Michael Hennerich <Michael.Hennerich@analog.com>, Olivier Moysan <olivier.moysan@foss.st.com>, linux-iio@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org
-In-Reply-To: <20231220-iio-backend-v4-1-998e9148b692@analog.com>
-References: <20231220-iio-backend-v4-0-998e9148b692@analog.com>
- <20231220-iio-backend-v4-1-998e9148b692@analog.com>
-Message-Id: <170309138435.683144.1812971328993385650.robh@kernel.org>
-Subject: Re: [PATCH v4 1/8] dt-bindings: adc: ad9467: add new io-backend
- property
-Date: Wed, 20 Dec 2023 10:56:24 -0600
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="Yqw49bkJ6dzp0cuL"
+Content-Disposition: inline
+In-Reply-To: <20231220151645.16ada807@jic23-huawei>
 
 
-On Wed, 20 Dec 2023 16:34:04 +0100, Nuno Sa wrote:
-> The ad9467 will make use of the new IIO backend framework which is a
-> provider - consumer interface where IIO backends provide services to
-> consumers. As such, and being this device a consumer,  add the new
-> generic io-backend property to the bindings.
-> 
-> Signed-off-by: Nuno Sa <nuno.sa@analog.com>
-> ---
->  Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
+--Yqw49bkJ6dzp0cuL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-yamllint warnings/errors:
+hi Jonathan,
 
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml: io-backends: missing type definition
+On Wed, Dec 20, 2023 at 03:16:45PM +0000, Jonathan Cameron wrote:
+> On Tue, 19 Dec 2023 15:02:20 +0200
+> Petre Rodan <petre.rodan@subdimension.ro> wrote:
+> >    honeywell,pmin-pascal:
+> >      description:
+> >        Minimum pressure value the sensor can measure in pascal.
+> > +      To be specified only if honeywell,pressure-triplet is set to "NA".
+> That just added a backwards compatibility break.  It would be fine
+> if there was a default: NA for honeywell,pressure-triplet or a check that either
+> one or the other was supplied (which I'd prefer).  Thus old bindings will work
+> and new ones also supported.
 
-doc reference errors (make refcheckdocs):
+ok, I see your reasoning. but in this second scenario that you prefer how can we
+propery define the 'required:' block? an equivalent to
 
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20231220-iio-backend-v4-1-998e9148b692@analog.com
+required:
+  - compatible
+  - reg
+  - (honeywell,pmin-pascal && honeywell,pmax-pascal) || honeywell,pressure-triplet
+  - honeywell,transfer-function
 
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+thanks,
+peter
 
-pip3 install dtschema --upgrade
+--Yqw49bkJ6dzp0cuL
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+-----BEGIN PGP SIGNATURE-----
 
+iQIzBAABCAAdFiEE2Ap/wXYVGTXsPl+pzyaZmYROfzAFAmWDI4AACgkQzyaZmYRO
+fzB5ZA/8CeVKGy6zmv8F+NAtQkXHE+1XinZxdiHRwHo49Uj2sWnJnTCGg6JwocsQ
+ULmY/Kv81xgNGVbSC/MxDEnrwfKQ755pq/vLqLZAeUeRVKXLAQEfwYMXpLflFKYI
+Ct2YUPMacqOY+VyIuRCH619LAjcd25s1QfgrkqHJFvzv2cZh/Fcf89Sqc+hFSuPi
+0BGzR55VvW1D2TXcjycKD/DbUOUeVDcBbYqmu7wlnHo02w9N+KD2BXwbkgqhI22Z
+Jsgh+b0pufCdFmKuXAoWFnwgw/tB1+pvqNnVDiic8VxOzjKEvYpkyQwrbtGv/Osa
+7rG6NFtfgqEnLPOmO5S3rYhnfe8o69yMkWB3tfO2thf/7Z4v88jIPzFhqTMsyQTg
+eyqCBIzr/9fnDXyak3hdjSqpZKhiEg1DU2XBWT2wmL7baNCF+Yn7IRQ70tPEf8yp
+R83Hmp67TykKFBsBXU7HW7fBK1BGc+SQLlY/d1wJ1BOKlEplPBqCm5af1I9do5lP
+YIBnV54sReWPHb7TpcW9b+4ajmy8ACDXL7jNTZ2X2LdA40VehV1i9Qzep4E2ypph
+PjrrVnsBIIn1JgeI7PmPdyd6ybH4wDkdOuWE1IqC2S7/+2FBce6gCv7Y44jYjrkF
+ad0dhJAPciHBmNteBujC/qbCBz8j1ebGNyxHIokRLMA/Z6uesEg=
+=Ho9j
+-----END PGP SIGNATURE-----
+
+--Yqw49bkJ6dzp0cuL--
