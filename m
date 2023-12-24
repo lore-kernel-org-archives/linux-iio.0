@@ -1,38 +1,39 @@
 Received: from mail.subdimension.ro (skycaves.subdimension.ro [172.104.132.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D6125677;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D63C568C;
 	Sun, 24 Dec 2023 14:35:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="S7n3rG5V"
+	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="AADHLrC3"
 Received: from localhost.localdomain (unknown [188.24.94.216])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id 2833528B586;
-	Sun, 24 Dec 2023 14:35:11 +0000 (UTC)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id B437E28B53A;
+	Sun, 24 Dec 2023 14:35:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=subdimension.ro;
 	s=skycaves; t=1703428511;
-	bh=VhoWuBoCBEakCVIBAnazDcOgZVIKUnaIyUzxFGulZjQ=;
+	bh=FYSVyc6a7gii4XVzcpbGbqQQ/0VcN0hGzmBnFOnWCwg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=S7n3rG5V2AITRn+noHfqNeZVANnQwFLsqD/jCmUXTK/8sPdKhbHtLcH/L3swrGRMp
-	 9L+XiVcqEqQHU7mfGwxjYHRarYX4wldGFPv5q2lHHJFPjC8kmpVM7r+eMwaervbmue
-	 ltlzz1lfDYnBQsvpobI/+z/JZuB/Y173k3nZSJGE=
+	b=AADHLrC3QN1GkN+tXoceO2jYNkiS/M17KCoF4UyPfPmanJkoyLdPrYmVX/951q+Ob
+	 z7b7T4Ujxa1UglFABi+t4y0Ht4SRzyFrIBTPzoBiyDZ4TpAZQPLpTKzr+GL+HQoSSK
+	 Rf0y94yYuKLMKlSnKiQT8v1uGsFCy6YwNAwrwxQk=
 From: Petre Rodan <petre.rodan@subdimension.ro>
 To: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 Cc: Petre Rodan <petre.rodan@subdimension.ro>,
 	Andreas Klinger <ak@it-klinger.de>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Angel Iglesias <ang.iglesiasg@gmail.com>,
-	Matti Vaittinen <mazziesaccount@gmail.com>
-Subject: [PATCH v2 04/10] iio: pressure: mprls0025pa.c fix off-by-one enum
-Date: Sun, 24 Dec 2023 16:34:49 +0200
-Message-ID: <20231224143500.10940-5-petre.rodan@subdimension.ro>
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Subject: [PATCH v2 03/10] dt-bindings: iio: pressure: honeywell,mprls0025pa.yaml add spi bus
+Date: Sun, 24 Dec 2023 16:34:48 +0200
+Message-ID: <20231224143500.10940-4-petre.rodan@subdimension.ro>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20231224143500.10940-1-petre.rodan@subdimension.ro>
 References: <20231224143500.10940-1-petre.rodan@subdimension.ro>
@@ -44,41 +45,70 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Fix off-by-one error in transfer-function property.
-The honeywell,transfer-function property takes values between 1-3 so
-make sure the proper enum gets used.
+Add spi based example.
+
+Add spi-max-frequency property required by chip specifications.
+
+Add additional maintainer.
 
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 ---
- drivers/iio/pressure/mprls0025pa.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ .../iio/pressure/honeywell,mprls0025pa.yaml   | 26 +++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/pressure/mprls0025pa.c b/drivers/iio/pressure/mprls0025pa.c
-index 30fb2de36821..e3f0de020a40 100644
---- a/drivers/iio/pressure/mprls0025pa.c
-+++ b/drivers/iio/pressure/mprls0025pa.c
-@@ -323,6 +323,7 @@ static int mpr_probe(struct i2c_client *client)
- 	struct iio_dev *indio_dev;
- 	struct device *dev = &client->dev;
- 	s64 scale, offset;
-+	u32 func;
+diff --git a/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml b/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
+index e4021306d187..430496b047c7 100644
+--- a/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
++++ b/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
+@@ -8,12 +8,12 @@ title: Honeywell mprls0025pa pressure sensor
 
- 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_READ_BYTE))
- 		return dev_err_probe(dev, -EOPNOTSUPP,
-@@ -362,10 +363,11 @@ static int mpr_probe(struct i2c_client *client)
- 			return dev_err_probe(dev, ret,
- 				"honeywell,pmax-pascal could not be read\n");
- 		ret = device_property_read_u32(dev,
--				"honeywell,transfer-function", &data->function);
-+				"honeywell,transfer-function", &func);
- 		if (ret)
- 			return dev_err_probe(dev, ret,
- 				"honeywell,transfer-function could not be read\n");
-+		data->function = func - 1;
- 		if (data->function > MPR_FUNCTION_C)
- 			return dev_err_probe(dev, -EINVAL,
- 				"honeywell,transfer-function %d invalid\n",
+ maintainers:
+   - Andreas Klinger <ak@it-klinger.de>
++  - Petre Rodan <petre.rodan@subdimension.ro>
+
+ description: |
+   Honeywell pressure sensor of model mprls0025pa.
+
+-  This sensor has an I2C and SPI interface. Only the I2C interface is
+-  implemented.
++  This sensor has an I2C and SPI interface. Both are supported.
+
+   There are many models with different pressure ranges available. The vendor
+   calls them "mpr series". All of them have the identical programming model and
+@@ -88,6 +88,9 @@ properties:
+       Maximum pressure value the sensor can measure in pascal.
+       To be specified only if honeywell,pressure-triplet is not set.
+
++  spi-max-frequency:
++    maximum: 800000
++
+   vdd-supply:
+     description: provide VDD power to the sensor.
+
+@@ -135,3 +138,22 @@ examples:
+             vdd-supply = <&vcc_3v3>;
+         };
+     };
++  - |
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        pressure@0 {
++            compatible = "honeywell,mprls0025pa";
++            reg = <0>;
++            spi-max-frequency = <800000>;
++            reset-gpios = <&gpio1 28 GPIO_ACTIVE_HIGH>;
++            interrupt-parent = <&gpio0>;
++            interrupts = <30 IRQ_TYPE_EDGE_RISING>;
++
++            honeywell,pressure-triplet = "0015PA";
++            honeywell,transfer-function = <1>;
++            vdd-supply = <&vcc_3v3>;
++        };
++    };
++...
 --
 2.41.0
 
