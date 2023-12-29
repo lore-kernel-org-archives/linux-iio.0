@@ -1,25 +1,25 @@
 Received: from mail.subdimension.ro (skycaves.subdimension.ro [172.104.132.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D1D9111B2;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD29611707;
 	Fri, 29 Dec 2023 09:25:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="Q6iGt/rq"
+	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="mIaJW9MP"
 Received: from localhost.localdomain (unknown [188.24.94.216])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id AD3EC28B589;
+	by mail.subdimension.ro (Postfix) with ESMTPSA id 581A028B587;
 	Fri, 29 Dec 2023 09:25:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=subdimension.ro;
 	s=skycaves; t=1703841907;
-	bh=u3xyd+nm/UZuOc3ZGkrOgUgkrAV7H1N45wZ4bM46qHI=;
+	bh=WDPOUW7eIikkHeG8X4wBbQ+EIdwGrEaQcqnAsLeHEGg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Q6iGt/rqPO/JT9MpC9yAhsdDth9McjbYCHpUsFU9C8BX7RCcKSvlXmz4AbhqdmDiQ
-	 6InniD54xqzIL/taHDRqyoPG4bh6WF5yfeX3vJKIR9QxBuB5IREQ8gEJBs7KahBC1V
-	 GIDUsQrlynv466geO7D3L8QNRbRIXgQgdU4m8LA0=
+	b=mIaJW9MPIiNCMyBoEfJRjdEiuJ4AhJe0o9TNUvAraFysQ+wSv77fr7hU1NTmS6Usj
+	 74htdF0yGWbcKsPFMKoGHbG0CFJBfYNxzwlRoR9wPSHYKAJUGpp2CV+M9wrI9UdFQ8
+	 7u03koibqsE3BNczxn3udLHD5v1Ajp6dksPUKHwA=
 From: Petre Rodan <petre.rodan@subdimension.ro>
 To: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
@@ -30,9 +30,9 @@ Cc: Petre Rodan <petre.rodan@subdimension.ro>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Angel Iglesias <ang.iglesiasg@gmail.com>,
 	Matti Vaittinen <mazziesaccount@gmail.com>
-Subject: [PATCH v3 06/10] iio: pressure: mprls0025pa remove defaults
-Date: Fri, 29 Dec 2023 11:24:34 +0200
-Message-ID: <20231229092445.30180-7-petre.rodan@subdimension.ro>
+Subject: [PATCH v3 05/10] iio: pressure: mprls0025pa improve driver error resilience
+Date: Fri, 29 Dec 2023 11:24:33 +0200
+Message-ID: <20231229092445.30180-6-petre.rodan@subdimension.ro>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20231229092445.30180-1-petre.rodan@subdimension.ro>
 References: <20231229092445.30180-1-petre.rodan@subdimension.ro>
@@ -44,84 +44,54 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This driver supports 32*3 combinations of fixed ranges and transfer
-functions, plus custom ranges.
-
-So statistically a user has more than 99% chance that the provided
-default configuration will generate invalid pressure readings if the
-bindings are not initialized and the driver is instantiated via sysfs.
-
-The current patch removes this loophole making sure the driver loads
-only if the firmware properties are present.
+Improve driver error resilience by ignoring the measurement if any of
+the 3 error flags gets set while interacting with the sensor.
+Based on the datasheet, in table 14 on page 14, the status byte
+contains:
+    bit 5 busy flag - 1 if device is busy
+    bit 2 memory integrity/error flag - 1 if integrity test failed
+    bit 0 math saturation - 1 if internal math saturation has occurred
 
 Co-developed-by: Andreas Klinger <ak@it-klinger.de>
 Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
-v2 -> v3 drop the use of dev_fwnode() entirely
+v2 -> v3 no changes
 
- drivers/iio/pressure/mprls0025pa.c | 48 +++++++++++++-----------------
- 1 file changed, 20 insertions(+), 28 deletions(-)
+ drivers/iio/pressure/mprls0025pa.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/pressure/mprls0025pa.c b/drivers/iio/pressure/mprls0025pa.c
-index 233cc1dc38ad..e0a2a60c6245 100644
+index e3f0de020a40..233cc1dc38ad 100644
 --- a/drivers/iio/pressure/mprls0025pa.c
 +++ b/drivers/iio/pressure/mprls0025pa.c
-@@ -353,34 +353,26 @@ static int mpr_probe(struct i2c_client *client)
- 		return dev_err_probe(dev, ret,
- 				"can't get and enable vdd supply\n");
+@@ -39,6 +39,8 @@
+ #define MPR_I2C_MEMORY	BIT(2)	/* integrity test passed */
+ #define MPR_I2C_MATH	BIT(0)	/* internal math saturation */
 
--	if (dev_fwnode(dev)) {
--		ret = device_property_read_u32(dev, "honeywell,pmin-pascal",
--								&data->pmin);
--		if (ret)
--			return dev_err_probe(dev, ret,
--				"honeywell,pmin-pascal could not be read\n");
--		ret = device_property_read_u32(dev, "honeywell,pmax-pascal",
--								&data->pmax);
--		if (ret)
--			return dev_err_probe(dev, ret,
--				"honeywell,pmax-pascal could not be read\n");
--		ret = device_property_read_u32(dev,
--				"honeywell,transfer-function", &func);
--		if (ret)
--			return dev_err_probe(dev, ret,
--				"honeywell,transfer-function could not be read\n");
--		data->function = func - 1;
--		if (data->function > MPR_FUNCTION_C)
--			return dev_err_probe(dev, -EINVAL,
--				"honeywell,transfer-function %d invalid\n",
--								data->function);
--	} else {
--		/* when loaded as i2c device we need to use default values */
--		dev_notice(dev, "firmware node not found; using defaults\n");
--		data->pmin = 0;
--		data->pmax = 172369; /* 25 psi */
--		data->function = MPR_FUNCTION_A;
--	}
-+	ret = device_property_read_u32(dev, "honeywell,pmin-pascal",
-+				       &data->pmin);
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				   "honeywell,pmin-pascal could not be read\n");
-+	ret = device_property_read_u32(dev, "honeywell,pmax-pascal",
-+				       &data->pmax);
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				   "honeywell,pmax-pascal could not be read\n");
-+	ret = device_property_read_u32(dev,
-+				       "honeywell,transfer-function", &func);
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+			     "honeywell,transfer-function could not be read\n");
-+	data->function = func - 1;
-+	if (data->function > MPR_FUNCTION_C)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "honeywell,transfer-function %d invalid\n",
-+				     data->function);
++#define MPR_I2C_ERR_FLAG  (MPR_I2C_BUSY | MPR_I2C_MEMORY | MPR_I2C_MATH)
++
+ /*
+  * support _RAW sysfs interface:
+  *
+@@ -213,7 +215,7 @@ static int mpr_read_pressure(struct mpr_data *data, s32 *press)
+ 					status);
+ 				return status;
+ 			}
+-			if (!(status & MPR_I2C_BUSY))
++			if (!(status & MPR_I2C_ERR_FLAG))
+ 				break;
+ 		}
+ 		if (i == nloops) {
+@@ -233,7 +235,7 @@ static int mpr_read_pressure(struct mpr_data *data, s32 *press)
+ 		return -EIO;
+ 	}
 
- 	data->outmin = mpr_func_spec[data->function].output_min;
- 	data->outmax = mpr_func_spec[data->function].output_max;
+-	if (buf[0] & MPR_I2C_BUSY) {
++	if (buf[0] & MPR_I2C_ERR_FLAG) {
+ 		/*
+ 		 * it should never be the case that status still indicates
+ 		 * business
 --
 2.41.0
 
