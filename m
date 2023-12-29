@@ -1,25 +1,25 @@
 Received: from mail.subdimension.ro (skycaves.subdimension.ro [172.104.132.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5373810A18;
-	Fri, 29 Dec 2023 09:25:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C48810A01;
+	Fri, 29 Dec 2023 09:25:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="Bs3f2hKK"
+	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="fYzLmYvI"
 Received: from localhost.localdomain (unknown [188.24.94.216])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id 9608728B53A;
-	Fri, 29 Dec 2023 09:25:06 +0000 (UTC)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id 5F8E828B50B;
+	Fri, 29 Dec 2023 09:25:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=subdimension.ro;
-	s=skycaves; t=1703841906;
-	bh=YfYGIoUsTI6RzgUmUkVBpE+dj6lFzao+jS0AmTGN81E=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Bs3f2hKKzk/GN5rdiRahccBHXedBZeaRMfYOijRNv3atFnfBu0vgHc0bpf429z+/U
-	 /afaatpwBitxDxOuFQy/kTM5Gw72BNCdunkg6F4QZqg3UxoUA0EuUPamNn1cP/rmxt
-	 G3OuSnQQpleEN/3Eco7Z0H18znauBia+WVL4U9nI=
+	s=skycaves; t=1703841905;
+	bh=Xii80BZilbcTZ+e6K1vQw1brFErvXXiWZ9Qzq2HxA+w=;
+	h=From:To:Cc:Subject:Date;
+	b=fYzLmYvIS4P8M71zP2/H6/5wEEy1ph5gOS2L0bmSsXeZ+Yw1fXfnCDNquRbncXpAf
+	 21p4D1eiIWEmQpdoeY7G7N22+WWqnj3COhbncmybPl1Ab5EtVHmrFLrrurpu6IxNRc
+	 HbJrBRfOIQuPSiDmJNcjnuLwIs0Wgu3EKQiXqQg4=
 From: Petre Rodan <petre.rodan@subdimension.ro>
 To: linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
@@ -32,12 +32,10 @@ Cc: Petre Rodan <petre.rodan@subdimension.ro>,
 	Conor Dooley <conor+dt@kernel.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Andreas Klinger <ak@it-klinger.de>
-Subject: [PATCH v3 03/10] dt-bindings: iio: pressure: honeywell,mprls0025pa.yaml add spi bus
-Date: Fri, 29 Dec 2023 11:24:31 +0200
-Message-ID: <20231229092445.30180-4-petre.rodan@subdimension.ro>
+Subject: [PATCH v3 00/10] changes to mprls0025pa
+Date: Fri, 29 Dec 2023 11:24:28 +0200
+Message-ID: <20231229092445.30180-1-petre.rodan@subdimension.ro>
 X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20231229092445.30180-1-petre.rodan@subdimension.ro>
-References: <20231229092445.30180-1-petre.rodan@subdimension.ro>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -46,81 +44,58 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add spi based example.
+A number of fixes to the mprls0025pa driver:
+ - an off-by-one initially caused by a typo in the bindings file
+ - two error fields are never checked during sensor interaction
+ - unsafe initialization if the driver is instantiated via sysfs
+   and the bindings are missing
 
-Add spi-max-frequency property required by chip specifications.
+Quality of life changes:
+ - a refactor that adds a pressure-triplet property which initializes
+pmin-pascal and pmax-pascal just like in the hsc030pa driver.
+The user only needs to extract a short string from the chip name
+instead of looking up the chip in the datasheet, understand the
+nomenclature, extract the measurement range and then convert all units
+to pascals.
 
-Add additional maintainer.
+New feature:
+ - SPI compatibility for Honeywell MPR sensors that require it.
 
+Both binding and driver are backwards compatible.
+Tested in I2C and SPI modes with two different sensors.
+The refactor requires property function present in the togreg branch.
+
+Datasheet: https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/products/sensors/pressure-sensors/board-mount-pressure-sensors/micropressure-mpr-series/documents/sps-siot-mpr-series-datasheet-32332628-ciid-172626.pdf
 Co-developed-by: Andreas Klinger <ak@it-klinger.de>
 Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
----
-v2 -> v3 add $ref: /schemas/spi/spi-peripheral-props.yaml
 
- .../iio/pressure/honeywell,mprls0025pa.yaml   | 27 +++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+Petre Rodan (10):
+  dt-bindings: iio: pressure: honeywell,mprls0025pa.yaml improvements
+  dt-bindings: iio: pressure: honeywell,mprls0025pa.yaml add
+    pressure-triplet
+  dt-bindings: iio: pressure: honeywell,mprls0025pa.yaml add spi bus
+  iio: pressure: mprls0025pa fix off-by-one enum
+  iio: pressure: mprls0025pa improve driver error resilience
+  iio: pressure: mprls0025pa remove defaults
+  iio: pressure: mprls0025pa whitespace cleanup
+  iio: pressure: mprls0025pa refactor
+  iio: pressure: mprls0025pa add triplet property
+  iio: pressure: mprls0025pa add SPI driver
 
-diff --git a/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml b/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
-index 6643e51c481d..6994b30015bd 100644
---- a/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
-+++ b/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
-@@ -8,12 +8,12 @@ title: Honeywell mprls0025pa pressure sensor
+ .../iio/pressure/honeywell,mprls0025pa.yaml   |  98 ++++--
+ MAINTAINERS                                   |   3 +-
+ drivers/iio/pressure/Kconfig                  |  14 +-
+ drivers/iio/pressure/Makefile                 |   2 +
+ drivers/iio/pressure/mprls0025pa.c            | 313 +++++++++---------
+ drivers/iio/pressure/mprls0025pa.h            | 102 ++++++
+ drivers/iio/pressure/mprls0025pa_i2c.c        |  98 ++++++
+ drivers/iio/pressure/mprls0025pa_spi.c        |  89 +++++
+ 8 files changed, 542 insertions(+), 177 deletions(-)
+ create mode 100644 drivers/iio/pressure/mprls0025pa.h
+ create mode 100644 drivers/iio/pressure/mprls0025pa_i2c.c
+ create mode 100644 drivers/iio/pressure/mprls0025pa_spi.c
 
- maintainers:
-   - Andreas Klinger <ak@it-klinger.de>
-+  - Petre Rodan <petre.rodan@subdimension.ro>
-
- description: |
-   Honeywell pressure sensor of model mprls0025pa.
-
--  This sensor has an I2C and SPI interface. Only the I2C interface is
--  implemented.
-+  This sensor has an I2C and SPI interface.
-
-   There are many models with different pressure ranges available. The vendor
-   calls them "mpr series". All of them have the identical programming model and
-@@ -86,6 +86,9 @@ properties:
-     description:
-       Maximum pressure value the sensor can measure in pascal.
-
-+  spi-max-frequency:
-+    maximum: 800000
-+
-   vdd-supply:
-     description: provide VDD power to the sensor.
-
-@@ -103,6 +106,7 @@ oneOf:
-       - honeywell,pmax-pascal
-
- allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml
-   - if:
-       required:
-         - honeywell,pressure-triplet
-@@ -133,3 +137,22 @@ examples:
-             vdd-supply = <&vcc_3v3>;
-         };
-     };
-+  - |
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        pressure@0 {
-+            compatible = "honeywell,mprls0025pa";
-+            reg = <0>;
-+            spi-max-frequency = <800000>;
-+            reset-gpios = <&gpio1 28 GPIO_ACTIVE_HIGH>;
-+            interrupt-parent = <&gpio0>;
-+            interrupts = <30 IRQ_TYPE_EDGE_RISING>;
-+
-+            honeywell,pressure-triplet = "0015PA";
-+            honeywell,transfer-function = <1>;
-+            vdd-supply = <&vcc_3v3>;
-+        };
-+    };
-+...
 --
 2.41.0
 
