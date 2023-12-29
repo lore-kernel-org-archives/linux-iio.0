@@ -1,41 +1,41 @@
 Received: from mail.subdimension.ro (skycaves.subdimension.ro [172.104.132.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C48810A01;
-	Fri, 29 Dec 2023 09:25:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D1D9111B2;
+	Fri, 29 Dec 2023 09:25:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="fYzLmYvI"
+	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="Q6iGt/rq"
 Received: from localhost.localdomain (unknown [188.24.94.216])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id 5F8E828B50B;
-	Fri, 29 Dec 2023 09:25:05 +0000 (UTC)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id AD3EC28B589;
+	Fri, 29 Dec 2023 09:25:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=subdimension.ro;
-	s=skycaves; t=1703841905;
-	bh=Xii80BZilbcTZ+e6K1vQw1brFErvXXiWZ9Qzq2HxA+w=;
-	h=From:To:Cc:Subject:Date;
-	b=fYzLmYvIS4P8M71zP2/H6/5wEEy1ph5gOS2L0bmSsXeZ+Yw1fXfnCDNquRbncXpAf
-	 21p4D1eiIWEmQpdoeY7G7N22+WWqnj3COhbncmybPl1Ab5EtVHmrFLrrurpu6IxNRc
-	 HbJrBRfOIQuPSiDmJNcjnuLwIs0Wgu3EKQiXqQg4=
+	s=skycaves; t=1703841907;
+	bh=u3xyd+nm/UZuOc3ZGkrOgUgkrAV7H1N45wZ4bM46qHI=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=Q6iGt/rqPO/JT9MpC9yAhsdDth9McjbYCHpUsFU9C8BX7RCcKSvlXmz4AbhqdmDiQ
+	 6InniD54xqzIL/taHDRqyoPG4bh6WF5yfeX3vJKIR9QxBuB5IREQ8gEJBs7KahBC1V
+	 GIDUsQrlynv466geO7D3L8QNRbRIXgQgdU4m8LA0=
 From: Petre Rodan <petre.rodan@subdimension.ro>
 To: linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 Cc: Petre Rodan <petre.rodan@subdimension.ro>,
+	Andreas Klinger <ak@it-klinger.de>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Andreas Klinger <ak@it-klinger.de>
-Subject: [PATCH v3 00/10] changes to mprls0025pa
-Date: Fri, 29 Dec 2023 11:24:28 +0200
-Message-ID: <20231229092445.30180-1-petre.rodan@subdimension.ro>
+	Angel Iglesias <ang.iglesiasg@gmail.com>,
+	Matti Vaittinen <mazziesaccount@gmail.com>
+Subject: [PATCH v3 06/10] iio: pressure: mprls0025pa remove defaults
+Date: Fri, 29 Dec 2023 11:24:34 +0200
+Message-ID: <20231229092445.30180-7-petre.rodan@subdimension.ro>
 X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20231229092445.30180-1-petre.rodan@subdimension.ro>
+References: <20231229092445.30180-1-petre.rodan@subdimension.ro>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -44,58 +44,84 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-A number of fixes to the mprls0025pa driver:
- - an off-by-one initially caused by a typo in the bindings file
- - two error fields are never checked during sensor interaction
- - unsafe initialization if the driver is instantiated via sysfs
-   and the bindings are missing
+This driver supports 32*3 combinations of fixed ranges and transfer
+functions, plus custom ranges.
 
-Quality of life changes:
- - a refactor that adds a pressure-triplet property which initializes
-pmin-pascal and pmax-pascal just like in the hsc030pa driver.
-The user only needs to extract a short string from the chip name
-instead of looking up the chip in the datasheet, understand the
-nomenclature, extract the measurement range and then convert all units
-to pascals.
+So statistically a user has more than 99% chance that the provided
+default configuration will generate invalid pressure readings if the
+bindings are not initialized and the driver is instantiated via sysfs.
 
-New feature:
- - SPI compatibility for Honeywell MPR sensors that require it.
+The current patch removes this loophole making sure the driver loads
+only if the firmware properties are present.
 
-Both binding and driver are backwards compatible.
-Tested in I2C and SPI modes with two different sensors.
-The refactor requires property function present in the togreg branch.
-
-Datasheet: https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/products/sensors/pressure-sensors/board-mount-pressure-sensors/micropressure-mpr-series/documents/sps-siot-mpr-series-datasheet-32332628-ciid-172626.pdf
 Co-developed-by: Andreas Klinger <ak@it-klinger.de>
 Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
+---
+v2 -> v3 drop the use of dev_fwnode() entirely
 
-Petre Rodan (10):
-  dt-bindings: iio: pressure: honeywell,mprls0025pa.yaml improvements
-  dt-bindings: iio: pressure: honeywell,mprls0025pa.yaml add
-    pressure-triplet
-  dt-bindings: iio: pressure: honeywell,mprls0025pa.yaml add spi bus
-  iio: pressure: mprls0025pa fix off-by-one enum
-  iio: pressure: mprls0025pa improve driver error resilience
-  iio: pressure: mprls0025pa remove defaults
-  iio: pressure: mprls0025pa whitespace cleanup
-  iio: pressure: mprls0025pa refactor
-  iio: pressure: mprls0025pa add triplet property
-  iio: pressure: mprls0025pa add SPI driver
+ drivers/iio/pressure/mprls0025pa.c | 48 +++++++++++++-----------------
+ 1 file changed, 20 insertions(+), 28 deletions(-)
 
- .../iio/pressure/honeywell,mprls0025pa.yaml   |  98 ++++--
- MAINTAINERS                                   |   3 +-
- drivers/iio/pressure/Kconfig                  |  14 +-
- drivers/iio/pressure/Makefile                 |   2 +
- drivers/iio/pressure/mprls0025pa.c            | 313 +++++++++---------
- drivers/iio/pressure/mprls0025pa.h            | 102 ++++++
- drivers/iio/pressure/mprls0025pa_i2c.c        |  98 ++++++
- drivers/iio/pressure/mprls0025pa_spi.c        |  89 +++++
- 8 files changed, 542 insertions(+), 177 deletions(-)
- create mode 100644 drivers/iio/pressure/mprls0025pa.h
- create mode 100644 drivers/iio/pressure/mprls0025pa_i2c.c
- create mode 100644 drivers/iio/pressure/mprls0025pa_spi.c
+diff --git a/drivers/iio/pressure/mprls0025pa.c b/drivers/iio/pressure/mprls0025pa.c
+index 233cc1dc38ad..e0a2a60c6245 100644
+--- a/drivers/iio/pressure/mprls0025pa.c
++++ b/drivers/iio/pressure/mprls0025pa.c
+@@ -353,34 +353,26 @@ static int mpr_probe(struct i2c_client *client)
+ 		return dev_err_probe(dev, ret,
+ 				"can't get and enable vdd supply\n");
 
+-	if (dev_fwnode(dev)) {
+-		ret = device_property_read_u32(dev, "honeywell,pmin-pascal",
+-								&data->pmin);
+-		if (ret)
+-			return dev_err_probe(dev, ret,
+-				"honeywell,pmin-pascal could not be read\n");
+-		ret = device_property_read_u32(dev, "honeywell,pmax-pascal",
+-								&data->pmax);
+-		if (ret)
+-			return dev_err_probe(dev, ret,
+-				"honeywell,pmax-pascal could not be read\n");
+-		ret = device_property_read_u32(dev,
+-				"honeywell,transfer-function", &func);
+-		if (ret)
+-			return dev_err_probe(dev, ret,
+-				"honeywell,transfer-function could not be read\n");
+-		data->function = func - 1;
+-		if (data->function > MPR_FUNCTION_C)
+-			return dev_err_probe(dev, -EINVAL,
+-				"honeywell,transfer-function %d invalid\n",
+-								data->function);
+-	} else {
+-		/* when loaded as i2c device we need to use default values */
+-		dev_notice(dev, "firmware node not found; using defaults\n");
+-		data->pmin = 0;
+-		data->pmax = 172369; /* 25 psi */
+-		data->function = MPR_FUNCTION_A;
+-	}
++	ret = device_property_read_u32(dev, "honeywell,pmin-pascal",
++				       &data->pmin);
++	if (ret)
++		return dev_err_probe(dev, ret,
++				   "honeywell,pmin-pascal could not be read\n");
++	ret = device_property_read_u32(dev, "honeywell,pmax-pascal",
++				       &data->pmax);
++	if (ret)
++		return dev_err_probe(dev, ret,
++				   "honeywell,pmax-pascal could not be read\n");
++	ret = device_property_read_u32(dev,
++				       "honeywell,transfer-function", &func);
++	if (ret)
++		return dev_err_probe(dev, ret,
++			     "honeywell,transfer-function could not be read\n");
++	data->function = func - 1;
++	if (data->function > MPR_FUNCTION_C)
++		return dev_err_probe(dev, -EINVAL,
++				     "honeywell,transfer-function %d invalid\n",
++				     data->function);
+
+ 	data->outmin = mpr_func_spec[data->function].output_min;
+ 	data->outmax = mpr_func_spec[data->function].output_max;
 --
 2.41.0
 
