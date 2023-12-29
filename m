@@ -1,96 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.subdimension.ro (skycaves.subdimension.ro [172.104.132.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14646C8C2;
-	Thu, 28 Dec 2023 14:47:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9CA2C433C7;
-	Thu, 28 Dec 2023 14:47:00 +0000 (UTC)
-Date: Thu, 28 Dec 2023 09:46:57 -0500
-From: William Breathitt Gray <william.gray@linaro.org>
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] counter: linux/counter.h: fix Excess kernel-doc
- description warning
-Message-ID: <ZY2KYemBCrl7YwrP@ishi>
-References: <20231223050511.13849-1-rdunlap@infradead.org>
- <ZYw2SkkEzSW2C2gN@ubuntu-server-vm-macos>
- <d752d157-659b-4d05-90a9-ebbf19c07068@infradead.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C4B410A07;
+	Fri, 29 Dec 2023 09:25:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=subdimension.ro
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="WwWQReAp"
+Received: from localhost.localdomain (unknown [188.24.94.216])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id C256C28B538;
+	Fri, 29 Dec 2023 09:25:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=subdimension.ro;
+	s=skycaves; t=1703841906;
+	bh=2cwVTTHJN5btrCaPMvGl74zHSsIr8blS1pdlyCma1r0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=WwWQReApL2OH68s5zu3HYymzkdnynrIRPRUnjGn7+F7Ad/yNrWEas7yq9KULPST0w
+	 /ezr7AAQTNQgPfQ+805TEn5P7s1fQY074qIg09h9wb0SRl+zepGDpzVWo3hnUcsCSa
+	 tYY4kiylYB+V7RPqpdoETY3uQumKAAKeW5ywZvrY=
+From: Petre Rodan <petre.rodan@subdimension.ro>
+To: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Petre Rodan <petre.rodan@subdimension.ro>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Andreas Klinger <ak@it-klinger.de>
+Subject: [PATCH v3 01/10] dt-bindings: iio: pressure: honeywell,mprls0025pa.yaml improvements
+Date: Fri, 29 Dec 2023 11:24:29 +0200
+Message-ID: <20231229092445.30180-2-petre.rodan@subdimension.ro>
+X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20231229092445.30180-1-petre.rodan@subdimension.ro>
+References: <20231229092445.30180-1-petre.rodan@subdimension.ro>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Cv3hjeTS7H5THrLU"
-Content-Disposition: inline
-In-Reply-To: <d752d157-659b-4d05-90a9-ebbf19c07068@infradead.org>
+Content-Transfer-Encoding: 8bit
 
+Define enum inside the honeywell,transfer-function property block.
 
---Cv3hjeTS7H5THrLU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Set the correct irq edge in the example block.
+Based on the datasheet, in table 13 on page 11:
+"End-of-conversion indicator: This pin is set high when a measurement
+and calculation have been completed and the data is ready to be
+clocked out"
 
-On Wed, Dec 27, 2023 at 01:40:01PM -0800, Randy Dunlap wrote:
->=20
->=20
-> On 12/27/23 06:35, William Breathitt Gray wrote:
-> > On Fri, Dec 22, 2023 at 09:05:11PM -0800, Randy Dunlap wrote:
-> >> Remove the @priv: line to prevent the kernel-doc warning:
-> >>
-> >> include/linux/counter.h:400: warning: Excess struct member 'priv' desc=
-ription in 'counter_device'
-> >>
-> >> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> >> Cc: William Breathitt Gray <william.gray@linaro.org>
-> >> Cc: linux-iio@vger.kernel.org
-> >> ---
-> >>  include/linux/counter.h |    1 -
-> >>  1 file changed, 1 deletion(-)
-> >>
-> >> diff -- a/include/linux/counter.h b/include/linux/counter.h
-> >> --- a/include/linux/counter.h
-> >> +++ b/include/linux/counter.h
-> >> @@ -359,7 +359,6 @@ struct counter_ops {
-> >>   * @num_counts:		number of Counts specified in @counts
-> >>   * @ext:		optional array of Counter device extensions
-> >>   * @num_ext:		number of Counter device extensions specified in @ext
-> >> - * @priv:		optional private data supplied by driver
-> >>   * @dev:		internal device structure
-> >>   * @chrdev:		internal character device structure
-> >>   * @events_list:	list of current watching Counter events
-> >=20
-> > Hi Randy,
-> >=20
-> > Would you provide a Fixes tag for the commit that removed the 'priv'
-> > member so we can track when this warning appeared? You can respond with
-> > it to this thread and I'll add it in when I merge your patch.
->=20
-> Fixes: f2ee4759fb70 ("counter: remove old and now unused registration API=
-")
->=20
-> Thank you.
->=20
-> --=20
-> #Randy
+Add description on End-of-conversion interrupt.
 
-Applied, thanks!
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Co-developed-by: Andreas Klinger <ak@it-klinger.de>
+Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
+---
+v2 -> v3 no changes
 
-[1/1] counter: linux/counter.h: fix Excess kernel-doc description warning
-      commit: 49ca40f8d6ceb76bff83713f79215d8e6252f045
+ .../bindings/iio/pressure/honeywell,mprls0025pa.yaml       | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-William Breathitt Gray
+diff --git a/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml b/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
+index d9e903fbfd99..84ced4e5a7da 100644
+--- a/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
++++ b/Documentation/devicetree/bindings/iio/pressure/honeywell,mprls0025pa.yaml
+@@ -42,6 +42,10 @@ properties:
+     maxItems: 1
 
---Cv3hjeTS7H5THrLU
-Content-Type: application/pgp-signature; name="signature.asc"
+   interrupts:
++    description:
++      Optional interrupt for indicating End-of-conversion.
++      If not present, the driver loops for a while until the received status
++      byte indicates correct measurement.
+     maxItems: 1
 
------BEGIN PGP SIGNATURE-----
+   reset-gpios:
+@@ -65,6 +69,7 @@ properties:
+       1 - A, 10% to 90% of 2^24 (1677722 .. 15099494)
+       2 - B, 2.5% to 22.5% of 2^24 (419430 .. 3774874)
+       3 - C, 20% to 80% of 2^24 (3355443 .. 13421773)
++    enum: [1, 2, 3]
+     $ref: /schemas/types.yaml#/definitions/uint32
 
-iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZY2KYQAKCRC1SFbKvhIj
-K8I3AP4mGbr+wtyRDo1GphV/Mqi26l7KwWRm5pnhhSCdo19tTQEAtJ8TKXYmZ4a8
-erikOulmMaHyp3q5WHk9hw9MJmKWlQ0=
-=kQuO
------END PGP SIGNATURE-----
+   vdd-supply:
+@@ -93,7 +98,7 @@ examples:
+             reg = <0x18>;
+             reset-gpios = <&gpio3 19 GPIO_ACTIVE_HIGH>;
+             interrupt-parent = <&gpio3>;
+-            interrupts = <21 IRQ_TYPE_EDGE_FALLING>;
++            interrupts = <21 IRQ_TYPE_EDGE_RISING>;
+             honeywell,pmin-pascal = <0>;
+             honeywell,pmax-pascal = <172369>;
+             honeywell,transfer-function = <1>;
+--
+2.41.0
 
---Cv3hjeTS7H5THrLU--
