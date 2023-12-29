@@ -1,25 +1,25 @@
 Received: from mail.subdimension.ro (skycaves.subdimension.ro [172.104.132.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD29611707;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC1A811705;
 	Fri, 29 Dec 2023 09:25:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="mIaJW9MP"
+	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="hHS9P2KP"
 Received: from localhost.localdomain (unknown [188.24.94.216])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id 581A028B587;
-	Fri, 29 Dec 2023 09:25:07 +0000 (UTC)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id 0F40828B594;
+	Fri, 29 Dec 2023 09:25:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=subdimension.ro;
-	s=skycaves; t=1703841907;
-	bh=WDPOUW7eIikkHeG8X4wBbQ+EIdwGrEaQcqnAsLeHEGg=;
+	s=skycaves; t=1703841908;
+	bh=vBr77PlPfMNs1GvByaNmBP3bSQKIkAVW8QSD0Z9L7pE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=mIaJW9MPIiNCMyBoEfJRjdEiuJ4AhJe0o9TNUvAraFysQ+wSv77fr7hU1NTmS6Usj
-	 74htdF0yGWbcKsPFMKoGHbG0CFJBfYNxzwlRoR9wPSHYKAJUGpp2CV+M9wrI9UdFQ8
-	 7u03koibqsE3BNczxn3udLHD5v1Ajp6dksPUKHwA=
+	b=hHS9P2KP1Uvpka4tk/Dvb79Hfo9X9pFFVQIkvPUgl8/3hNni6Y2fpJtBa0UwuTmOm
+	 EgWZC/oHBS+HWmgnK2xqE9uW+/XY/6m3sBbV1QI3CH3fueFdOLvaeNLYOfL+XrvnuE
+	 0aauagJdKOKMKbyZR8uJ7cKVGrjsXsC9GdMNuvYI=
 From: Petre Rodan <petre.rodan@subdimension.ro>
 To: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
@@ -30,9 +30,9 @@ Cc: Petre Rodan <petre.rodan@subdimension.ro>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Angel Iglesias <ang.iglesiasg@gmail.com>,
 	Matti Vaittinen <mazziesaccount@gmail.com>
-Subject: [PATCH v3 05/10] iio: pressure: mprls0025pa improve driver error resilience
-Date: Fri, 29 Dec 2023 11:24:33 +0200
-Message-ID: <20231229092445.30180-6-petre.rodan@subdimension.ro>
+Subject: [PATCH v3 07/10] iio: pressure: mprls0025pa whitespace cleanup
+Date: Fri, 29 Dec 2023 11:24:35 +0200
+Message-ID: <20231229092445.30180-8-petre.rodan@subdimension.ro>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20231229092445.30180-1-petre.rodan@subdimension.ro>
 References: <20231229092445.30180-1-petre.rodan@subdimension.ro>
@@ -44,54 +44,120 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Improve driver error resilience by ignoring the measurement if any of
-the 3 error flags gets set while interacting with the sensor.
-Based on the datasheet, in table 14 on page 14, the status byte
-contains:
-    bit 5 busy flag - 1 if device is busy
-    bit 2 memory integrity/error flag - 1 if integrity test failed
-    bit 0 math saturation - 1 if internal math saturation has occurred
+Fix indentation and whitespace in code that will not get refactored.
+
+Make URL inside comment copy-paste friendly.
 
 Co-developed-by: Andreas Klinger <ak@it-klinger.de>
 Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
-v2 -> v3 no changes
+v2 -> v3 even more whitespace
 
- drivers/iio/pressure/mprls0025pa.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iio/pressure/mprls0025pa.c | 35 +++++++++++++++---------------
+ 1 file changed, 17 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/iio/pressure/mprls0025pa.c b/drivers/iio/pressure/mprls0025pa.c
-index e3f0de020a40..233cc1dc38ad 100644
+index e0a2a60c6245..fef3ca69c4f0 100644
 --- a/drivers/iio/pressure/mprls0025pa.c
 +++ b/drivers/iio/pressure/mprls0025pa.c
-@@ -39,6 +39,8 @@
- #define MPR_I2C_MEMORY	BIT(2)	/* integrity test passed */
- #define MPR_I2C_MATH	BIT(0)	/* internal math saturation */
-
-+#define MPR_I2C_ERR_FLAG  (MPR_I2C_BUSY | MPR_I2C_MEMORY | MPR_I2C_MATH)
-+
- /*
-  * support _RAW sysfs interface:
+@@ -5,10 +5,7 @@
+  * Copyright (c) Andreas Klinger <ak@it-klinger.de>
   *
-@@ -213,7 +215,7 @@ static int mpr_read_pressure(struct mpr_data *data, s32 *press)
- 					status);
- 				return status;
- 			}
--			if (!(status & MPR_I2C_BUSY))
-+			if (!(status & MPR_I2C_ERR_FLAG))
- 				break;
- 		}
- 		if (i == nloops) {
-@@ -233,7 +235,7 @@ static int mpr_read_pressure(struct mpr_data *data, s32 *press)
- 		return -EIO;
+  * Data sheet:
+- *  https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/
+- *    products/sensors/pressure-sensors/board-mount-pressure-sensors/
+- *    micropressure-mpr-series/documents/
+- *    sps-siot-mpr-series-datasheet-32332628-ciid-172626.pdf
++ *  https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/products/sensors/pressure-sensors/board-mount-pressure-sensors/micropressure-mpr-series/documents/sps-siot-mpr-series-datasheet-32332628-ciid-172626.pdf
+  *
+  * 7-bit I2C default slave address: 0x18
+  */
+@@ -84,9 +81,9 @@ struct mpr_func_spec {
+ };
+
+ static const struct mpr_func_spec mpr_func_spec[] = {
+-	[MPR_FUNCTION_A] = {.output_min = 1677722, .output_max = 15099494},
+-	[MPR_FUNCTION_B] = {.output_min =  419430, .output_max =  3774874},
+-	[MPR_FUNCTION_C] = {.output_min = 3355443, .output_max = 13421773},
++	[MPR_FUNCTION_A] = { .output_min = 1677722, .output_max = 15099494 },
++	[MPR_FUNCTION_B] = { .output_min =  419430, .output_max =  3774874 },
++	[MPR_FUNCTION_C] = { .output_min = 3355443, .output_max = 13421773 },
+ };
+
+ struct mpr_chan {
+@@ -273,7 +270,7 @@ static irqreturn_t mpr_trigger_handler(int irq, void *p)
+ 		goto err;
+
+ 	iio_push_to_buffers_with_timestamp(indio_dev, &data->chan,
+-						iio_get_time_ns(indio_dev));
++					   iio_get_time_ns(indio_dev));
+
+ err:
+ 	mutex_unlock(&data->lock);
+@@ -351,7 +348,7 @@ static int mpr_probe(struct i2c_client *client)
+ 	ret = devm_regulator_get_enable(dev, "vdd");
+ 	if (ret)
+ 		return dev_err_probe(dev, ret,
+-				"can't get and enable vdd supply\n");
++				     "can't get and enable vdd supply\n");
+
+ 	ret = device_property_read_u32(dev, "honeywell,pmin-pascal",
+ 				       &data->pmin);
+@@ -379,42 +376,44 @@ static int mpr_probe(struct i2c_client *client)
+
+ 	/* use 64 bit calculation for preserving a reasonable precision */
+ 	scale = div_s64(((s64)(data->pmax - data->pmin)) * NANO,
+-						data->outmax - data->outmin);
++			data->outmax - data->outmin);
+ 	data->scale = div_s64_rem(scale, NANO, &data->scale2);
+ 	/*
+ 	 * multiply with NANO before dividing by scale and later divide by NANO
+ 	 * again.
+ 	 */
+ 	offset = ((-1LL) * (s64)data->outmin) * NANO -
+-			div_s64(div_s64((s64)data->pmin * NANO, scale), NANO);
++		  div_s64(div_s64((s64)data->pmin * NANO, scale), NANO);
+ 	data->offset = div_s64_rem(offset, NANO, &data->offset2);
+
+ 	if (data->irq > 0) {
+ 		ret = devm_request_irq(dev, data->irq, mpr_eoc_handler,
+-				IRQF_TRIGGER_RISING, client->name, data);
++				       IRQF_TRIGGER_RISING,
++				       client->name,
++				       data);
+ 		if (ret)
+ 			return dev_err_probe(dev, ret,
+-				"request irq %d failed\n", data->irq);
++					  "request irq %d failed\n", data->irq);
  	}
 
--	if (buf[0] & MPR_I2C_BUSY) {
-+	if (buf[0] & MPR_I2C_ERR_FLAG) {
- 		/*
- 		 * it should never be the case that status still indicates
- 		 * business
+ 	data->gpiod_reset = devm_gpiod_get_optional(dev, "reset",
+-							GPIOD_OUT_HIGH);
++						    GPIOD_OUT_HIGH);
+ 	if (IS_ERR(data->gpiod_reset))
+ 		return dev_err_probe(dev, PTR_ERR(data->gpiod_reset),
+-						"request reset-gpio failed\n");
++				     "request reset-gpio failed\n");
+
+ 	mpr_reset(data);
+
+ 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
+-						mpr_trigger_handler, NULL);
++					      mpr_trigger_handler, NULL);
+ 	if (ret)
+ 		return dev_err_probe(dev, ret,
+-					"iio triggered buffer setup failed\n");
++				     "iio triggered buffer setup failed\n");
+
+ 	ret = devm_iio_device_register(dev, indio_dev);
+ 	if (ret)
+ 		return dev_err_probe(dev, ret,
+-					"unable to register iio device\n");
++				     "unable to register iio device\n");
+
+ 	return 0;
+ }
 --
 2.41.0
 
