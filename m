@@ -1,21 +1,21 @@
 Received: from mg.richtek.com (mg.richtek.com [220.130.44.152])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E1624693;
-	Tue,  2 Jan 2024 08:31:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 09F8C53A7;
+	Tue,  2 Jan 2024 08:40:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=richtek.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=richtek.com
 X-MailGates: (SIP:2,PASS,NONE)(compute_score:DELIVER,40,3)
 Received: from 192.168.10.46
-	by mg.richtek.com with MailGates ESMTPS Server V6.0(636823:0:AUTH_RELAY)
+	by mg.richtek.com with MailGates ESMTPS Server V6.0(636803:1:AUTH_RELAY)
 	(envelope-from <cy_huang@richtek.com>)
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256); Tue, 02 Jan 2024 16:30:43 +0800 (CST)
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256); Tue, 02 Jan 2024 16:39:43 +0800 (CST)
 Received: from ex3.rt.l (192.168.10.46) by ex3.rt.l (192.168.10.46) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.27; Tue, 2 Jan
- 2024 16:30:42 +0800
+ 2024 16:39:42 +0800
 Received: from linuxcarl2.richtek.com (192.168.10.154) by ex3.rt.l
  (192.168.10.45) with Microsoft SMTP Server id 15.2.1258.27 via Frontend
- Transport; Tue, 2 Jan 2024 16:30:42 +0800
-Date: Tue, 2 Jan 2024 16:30:42 +0800
+ Transport; Tue, 2 Jan 2024 16:39:42 +0800
+Date: Tue, 2 Jan 2024 16:39:42 +0800
 From: ChiYuan Huang <cy_huang@richtek.com>
 To: Jonathan Cameron <jic23@kernel.org>
 CC: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley
@@ -25,7 +25,7 @@ CC: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley
 	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH v2 2/2] iio: adc: rtq6056: Add support for the whole
  RTQ6056 family
-Message-ID: <20240102083042.GA13611@linuxcarl2.richtek.com>
+Message-ID: <20240102083942.GA14725@linuxcarl2.richtek.com>
 References: <cover.1703762557.git.cy_huang@richtek.com>
  <74db15583a9a68701dbff5a1a967c0d987d6dfb6.1703762557.git.cy_huang@richtek.com>
  <20231230120347.0816bd09@jic23-huawei>
@@ -40,14 +40,6 @@ Content-Disposition: inline
 In-Reply-To: <20231230120347.0816bd09@jic23-huawei>
 User-Agent: Mutt/1.5.21 (2010-09-15)
 
-Hi, Johathan:
-
-Most comments are good and will be fixed in next revision.
-
-Still one comment I cannot make sure.
-
-Please see the comment that's below yours.
-	
 On Sat, Dec 30, 2023 at 12:03:47PM +0000, Jonathan Cameron wrote:
 > On Thu, 28 Dec 2023 19:29:35 +0800
 > <cy_huang@richtek.com> wrote:
@@ -115,8 +107,6 @@ On Sat, Dec 30, 2023 at 12:03:47PM +0000, Jonathan Cameron wrote:
 > If the devices have different register fields, better to have different enums
 > for them as well as that should result in less confusing code.
 > 
-Actually, this is all the same register, just the control naming difference.
-If not to define the new eum, I can remain to use the same field to handle rtq6059 part.
 > 
 > >  	F_VBUSCT,
 > > +	F_BADC = F_VBUSCT,
@@ -352,7 +342,11 @@ If not to define the new eum, I can remain to use the same field to handle rtq60
 > 
 > If that is the case, why are you checking it?
 > I'd read that comment as meaning this will fail for RTQ6059
-> 
+>
+This is my misunderstanding. That's due to the draft datasheet not said this register
+exist.  After I contact the designer, that's all the same with RTQ6056.
+
+So I'll remove the comment line. The check is still needed. RTQ6059 won't fail in this check.
 > >  	if (vendor_id != RTQ6056_VENDOR_ID)
 > >  		return dev_err_probe(dev, -ENODEV,
 > >  				     "Invalid vendor id 0x%04x\n", vendor_id);
