@@ -1,77 +1,89 @@
-Received: from mg.richtek.com (mg.richtek.com [220.130.44.152])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A734DF6D;
-	Tue,  2 Jan 2024 11:28:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=richtek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=richtek.com
-X-MailGates: (SIP:2,PASS,NONE)(compute_score:DELIVER,40,3)
-Received: from 192.168.10.47
-	by mg.richtek.com with MailGates ESMTPS Server V6.0(636813:0:AUTH_RELAY)
-	(envelope-from <cy_huang@richtek.com>)
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256); Tue, 02 Jan 2024 19:28:25 +0800 (CST)
-Received: from ex3.rt.l (192.168.10.46) by ex4.rt.l (192.168.10.47) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.27; Tue, 2 Jan
- 2024 19:28:24 +0800
-Received: from linuxcarl2.richtek.com (192.168.10.154) by ex3.rt.l
- (192.168.10.45) with Microsoft SMTP Server id 15.2.1258.27 via Frontend
- Transport; Tue, 2 Jan 2024 19:28:24 +0800
-From: <cy_huang@richtek.com>
-To: Jonathan Cameron <jic23@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>
-CC: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh+dt@kernel.org>,
-	ChiYuan Huang <cy_huang@richtek.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-	<u.kleine-koenig@pengutronix.de>, <linux-iio@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 1/2] dt-bindings: iio: adc: rtq6056: add support for the whole RTQ6056 family
-Date: Tue, 2 Jan 2024 19:28:21 +0800
-Message-ID: <c1abb261bb00846f456eb8fe9b5919f59f287c24.1704189363.git.cy_huang@richtek.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <cover.1704189363.git.cy_huang@richtek.com>
-References: <cover.1704189363.git.cy_huang@richtek.com>
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D950DE555;
+	Tue,  2 Jan 2024 11:35:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z1wJhPs/"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-3367632ce7bso8080581f8f.2;
+        Tue, 02 Jan 2024 03:35:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1704195300; x=1704800100; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=orKv+A6OSfDSCHXqZgMuKri0ZasQ0RBaPs91SHs9hs4=;
+        b=Z1wJhPs/+m6cROii4fyc4JZnfOXbocQ6f37emD6PHGC6RdXDircjHWk6yFEQPDZeUr
+         tmADzMkKUss9gCBmkBU1Tcl4jK4OD+yTJcm49d2+sghZuJWxo7aoqrvUyQRhFGZs3Quh
+         Zva1QfL7GPQbWlNqo2v1u0UrsxAE5O6IedEWQmEEORf42xERsjUi/r2OsroKoTDT4PrR
+         ziRfT4WGuCxhkhz+vY9WdLIrzdo5n2sA45UPtMRXKdeJHiv8iIcfrRbIpHqhlLepg8W8
+         O5tHl3/r9mSTM/AWkMFGo8+R4lVQN5Jfk+yddNDrhByTwb1Q0z3P150ch8mg6YMCpezH
+         Oa3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1704195300; x=1704800100;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=orKv+A6OSfDSCHXqZgMuKri0ZasQ0RBaPs91SHs9hs4=;
+        b=JjlsqL7TbMI/H3pJK3LVf2DphSmZ0Do04f5JmDqwg5hXw4mKcd84v5bLk+l4sf09kO
+         uFjmSnCcpUrhapPJwlkN3WVeM/+UZU1r9EJ28bF/MVlhaHc8vut00zPUd2iEwibq8Nht
+         hsnRHWGVgrwh/fEvu7SrEW5nSvtXis+9tz/pkfAMSKXg483u/xsRuLNBaHLKCL4gJHzu
+         UDll8M60vgI+uGxtVT1tFF7zXW46F8352hWPFNf5U9GIbX2OXm30r9XpTDd/IN0xWm9P
+         WdpcqXR1KUwHN6Z4h+V64qXEn1XWlR0983qflXouW3Dzwa+2qjoEftRzAlbHLyBpo8Wn
+         On8Q==
+X-Gm-Message-State: AOJu0YydyHPzLzVGXnfu09+1HADI4nthZGlpDJ6qRJsgWrq9PwTYc63o
+	8s3zgqoVlGY6/08PD3cE6dmg4Hz3dd2BYqJH
+X-Google-Smtp-Source: AGHT+IFELfAmzLhdsEPLyRg6tHOQEeIWwtkfVf7ghI/7U2Dm2/h+LkSyBXG29dKTFvqZGT4Ld73Xfg==
+X-Received: by 2002:a05:6000:1c9:b0:336:7e39:a9c7 with SMTP id t9-20020a05600001c900b003367e39a9c7mr8644733wrx.141.1704195299883;
+        Tue, 02 Jan 2024 03:34:59 -0800 (PST)
+Received: from ?IPV6:2a02:8389:41cf:e200:f280:eb5b:2b83:dc35? (2a02-8389-41cf-e200-f280-eb5b-2b83-dc35.cable.dynamic.v6.surfer.at. [2a02:8389:41cf:e200:f280:eb5b:2b83:dc35])
+        by smtp.gmail.com with ESMTPSA id u17-20020a5d4351000000b00336f05840c4sm15498408wrr.100.2024.01.02.03.34.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Jan 2024 03:34:59 -0800 (PST)
+Message-ID: <c0c18292-b766-490d-a564-275f25d476cc@gmail.com>
+Date: Tue, 2 Jan 2024 12:34:58 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] io: light: as73211: add support for as7331
+Content-Language: en-US
+To: Christian Eggers <ceggers@arri.de>, Jonathan Cameron <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20231220-as7331-v1-0-745b73c27703@gmail.com>
+ <20231220-as7331-v1-2-745b73c27703@gmail.com> <2337038.ElGaqSPkdT@n95hx1g2>
+From: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+In-Reply-To: <2337038.ElGaqSPkdT@n95hx1g2>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: ChiYuan Huang <cy_huang@richtek.com>
+On 01.01.24 09:20, Christian Eggers wrote:
+> 
+> As I still work with Linux 6.1, I backported this patch for
+> that version. A short test with an as73211 didn't show any
+> differences.
+> 
+> If I shall test further revisions of this patch, I can do this
+> after the 9th of January.
+> 
+> 
+> If I shall test further revisions of this patch, I can do this
+> after the 9th of January.
+> 
+> 
+> Tested-by: Christian Eggers <ceggers@arri.de>
+> 
 
-Add compatible support for RTQ6053 and RTQ6059.
+Thanks a lot for testing, I am glad that everything still works as before.
 
-Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
-v3
-- Add Reviewed-by tag.
-
-v2
-- Refine the 'compatible' description with oneOf and listed items.
----
- .../devicetree/bindings/iio/adc/richtek,rtq6056.yaml     | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml b/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
-index 88e008629ea8..af2c3a67f888 100644
---- a/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
-@@ -25,7 +25,14 @@ description: |
- 
- properties:
-   compatible:
--    const: richtek,rtq6056
-+    oneOf:
-+      - enum:
-+          - richtek,rtq6056
-+          - richtek,rtq6059
-+      - items:
-+          - enum:
-+              - richtek,rtq6053
-+          - const: richtek,rtq6056
- 
-   reg:
-     maxItems: 1
--- 
-2.34.1
-
+Best regards,
+Javier Carrasco
