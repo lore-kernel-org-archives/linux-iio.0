@@ -1,11 +1,11 @@
 Received: from mg.richtek.com (mg.richtek.com [220.130.44.152])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E544F1EA8F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E54831EA95;
 	Thu,  4 Jan 2024 09:04:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=richtek.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=richtek.com
 X-MailGates: (SIP:2,PASS,NONE)(compute_score:DELIVER,40,3)
 Received: from 192.168.10.47
-	by mg.richtek.com with MailGates ESMTPS Server V6.0(636822:0:AUTH_RELAY)
+	by mg.richtek.com with MailGates ESMTPS Server V6.0(636814:1:AUTH_RELAY)
 	(envelope-from <cy_huang@richtek.com>)
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256); Thu, 04 Jan 2024 17:03:32 +0800 (CST)
 Received: from ex4.rt.l (192.168.10.47) by ex4.rt.l (192.168.10.47) with
@@ -22,12 +22,10 @@ CC: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh+dt@kernel.org>,
 	ChiYuan Huang <cy_huang@richtek.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
 	<u.kleine-koenig@pengutronix.de>, <linux-iio@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 1/2] dt-bindings: iio: adc: rtq6056: add support for the whole RTQ6056 family
-Date: Thu, 4 Jan 2024 17:03:30 +0800
-Message-ID: <c1abb261bb00846f456eb8fe9b5919f59f287c24.1704357933.git.cy_huang@richtek.com>
+Subject: [PATCH v4 0/2] RTQ6056: Add compatible for the same chip family
+Date: Thu, 4 Jan 2024 17:03:29 +0800
+Message-ID: <cover.1704357933.git.cy_huang@richtek.com>
 X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <cover.1704357933.git.cy_huang@richtek.com>
-References: <cover.1704357933.git.cy_huang@richtek.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -38,40 +36,47 @@ Content-Type: text/plain
 
 From: ChiYuan Huang <cy_huang@richtek.com>
 
-Add compatible support for RTQ6053 and RTQ6059.
+RTQ6053 and RTQ6059 are the same RTQ6056 family.
+The differences are listed below
+- RTQ6053
+  Only change chip package type
+- RTQ6059
+  1. Enlarge the shunt voltage sensing range
+  2. Shrink the pinout for VBUS sense pin
+  3. Due to 1, the scale value is also changed
 
-Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
-v3
-- Add Reviewed-by tag.
+Since v4:
+- Remove the unused chip type enum
+- Directly return in switch case of read_channel function
+- Refine in write_raw switch case for IIO_CHAN_INFO_SAMP_FREQ
+  If sample frequency is fixed, return invalid and break switch case
+- Use devdata->num_channels to replace the predefined constant
+- Change the rtq6059 difference part for the control bitfield name from
+  the general 'F_xxx' to 'F_RTQ6059_xxx'
+- Fix rtq6059 average sample variable store problem in 'set_average' function
 
-v2
-- Refine the 'compatible' description with oneOf and listed items.
----
- .../devicetree/bindings/iio/adc/richtek,rtq6056.yaml     | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+Since v3:
+- Add Reviewed-by tag in binding document patch
+- Resotre the enum for control field.
+- Put all the predefined datas/callbacks in dev_data.
+- Remove the unused 'rtq6059_info'.
+- Change 'default_conv_time' to 'default_conv_time_us'.
+- Move the comment for default config above the dev_data setting line.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml b/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
-index 88e008629ea8..af2c3a67f888 100644
---- a/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
-@@ -25,7 +25,14 @@ description: |
- 
- properties:
-   compatible:
--    const: richtek,rtq6056
-+    oneOf:
-+      - enum:
-+          - richtek,rtq6056
-+          - richtek,rtq6059
-+      - items:
-+          - enum:
-+              - richtek,rtq6053
-+          - const: richtek,rtq6056
- 
-   reg:
-     maxItems: 1
+Since v2:
+- Refine the description of 'compatible' property
+
+ChiYuan Huang (2):
+  dt-bindings: iio: adc: rtq6056: add support for the whole RTQ6056
+    family
+  iio: adc: rtq6056: Add support for the whole RTQ6056 family
+
+ .../bindings/iio/adc/richtek,rtq6056.yaml     |   9 +-
+ drivers/iio/adc/rtq6056.c                     | 275 ++++++++++++++++--
+ 2 files changed, 263 insertions(+), 21 deletions(-)
+
+
+base-commit: 610a9b8f49fbcf1100716370d3b5f6f884a2835a
 -- 
 2.34.1
 
