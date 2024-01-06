@@ -1,119 +1,90 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BD7079E2;
-	Sat,  6 Jan 2024 15:17:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B138D8474;
+	Sat,  6 Jan 2024 15:22:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LgnaQ/pW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1704554224; x=1736090224;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WV9Md1sc6jmvJkWb3qwI49IMLJFPQvQcYg3O0AoBWkQ=;
-  b=LgnaQ/pW+8pN+KdjzG5jGRnwacUoEZ4gTkxVBrH9oO4p2wC3c4wZ5ZgZ
-   53UgL91CwM9NgOz8H1LoXoQOvh4SkvgHs+PBL/HubnEc3ajZNiAjlLw/l
-   /Ic9Jj2eqnaLtmG9vlomftjYk725tprPl1nLtvQ0g74Vb4L7HqUP0UzyH
-   fXL+rW0eZ6diipJPdvlP6mzUu5+C0eOoo3ZUOFoUAXZZagGGUXYPhsf5v
-   Q5GkEsaFiaHXkaa+F4iLkn9MhEXLT4DSCY7rRJIIziIEH5LiRvd39KvI5
-   TTMAKxE51VZhMvG+Nc91rXu8A88AbetMnfBL9LO3Qtu5bVRUf+dNNHaey
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10945"; a="4430682"
-X-IronPort-AV: E=Sophos;i="6.04,337,1695711600"; 
-   d="scan'208";a="4430682"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2024 07:17:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10945"; a="1028017042"
-X-IronPort-AV: E=Sophos;i="6.04,337,1695711600"; 
-   d="scan'208";a="1028017042"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2024 07:16:57 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rM8Pt-0000000BwFw-2Y5T;
-	Sat, 06 Jan 2024 17:16:53 +0200
-Date: Sat, 6 Jan 2024 17:16:53 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, "Rafael J . Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Daniel Scally <djrscally@gmail.com>,
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Cosmin Tanislav <cosmin.tanislav@analog.com>,
-	Mihail Chindris <mihail.chindris@analog.com>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Tomislav Denis <tomislav.denis@avl.com>,
-	Marek Vasut <marex@denx.de>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	Marius Cristea <marius.cristea@microchip.com>,
-	Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [RFC PATCH 01/13] device property: Add cleanup.h based
- fwnode_handle_put() scope based cleanup.
-Message-ID: <ZZlu5fTW27Tx3drB@smile.fi.intel.com>
-References: <20240101172611.694830-1-jic23@kernel.org>
- <20240101172611.694830-2-jic23@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Aw7KdWLh"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-40d604b4b30so7892075e9.1;
+        Sat, 06 Jan 2024 07:22:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1704554573; x=1705159373; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=e3fDW402aU63JvYRAhJVsl7yZwjVojyYxUJdrbQ3u2U=;
+        b=Aw7KdWLhi3zkykGKgxKlrIUZLI0rRHHPVGV0Fg0O4QjF/YZX8NnwIljcRw3rteqo7+
+         hdvbVat5xG2mIZdcoJO2slvlI6AfxSfPRB/SpTk/HeMbduIqPc4DSGsGnrclF6sW/Q5y
+         S31M2DMLFFmSma1LNGATDnnOlYR0dBhZiE8TcWlFLc3RKzSVqID81IjriDZyn6e0AXsV
+         agVWZQ6NCL4hcWN9rBwXRMBNbn+eGHQVjIseeFOz4ggDrvBL9z7rCRbeyuZyEc0St+ag
+         /riEaYsSEqaM4zGhFrodCX3+K7tBAq0G74+a11dfaZFbmzMnVKZuF3eCWwIsGu0P7aer
+         LXJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1704554573; x=1705159373;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=e3fDW402aU63JvYRAhJVsl7yZwjVojyYxUJdrbQ3u2U=;
+        b=Z2QBkPxqZSnA5+TBf7IaHhRuEQWqVlVaYNS1i0NrZI2kVST24CZ99q0wA2yYYuS0Ge
+         mI4IcY6QlqEgaPpA3nwQE1Ps/5AjdGf7T2y3TI9v1fSADpoyc1ai30rVab+PFCkZFYWN
+         UYK7+Y7Zdyz8WkTA10bWSZnG96XhzXsLp77Iykfbzoh8SsQMnPWWgZGYAXjlpY8dGNrm
+         Kz4QePQ91JFrloj4Pz9COF49tQhMfwrO10u32j505UaxIKYp6p4ZUtjVO808dFd7hE20
+         kfxRLkaAdQGeBSCrSI+fLGAazqsCUOS71uUJDOMHpucmLt6dqlk5EUsZD0sBaACAvXnp
+         kFKA==
+X-Gm-Message-State: AOJu0YzV1w5VUS0B5vY1yIJU4Bg5J2E3NGWM0fXDlYUaXGIg1CQzdVkZ
+	ByJXqo6Z86qdeRvpn/fUsFM=
+X-Google-Smtp-Source: AGHT+IHfBHIgmYFZp/QnQeyDYv4aaxU4VKiNAoREFpNt4fOpSFsAJ9lRnVVBi3gTZ3O35EG/PF9hsw==
+X-Received: by 2002:a05:600c:8a4:b0:40d:5b0d:cebe with SMTP id l36-20020a05600c08a400b0040d5b0dcebemr563929wmp.39.1704554572850;
+        Sat, 06 Jan 2024 07:22:52 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id w5-20020a05600c474500b0040e34835a58sm4948321wmo.22.2024.01.06.07.22.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Jan 2024 07:22:52 -0800 (PST)
+From: Colin Ian King <colin.i.king@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	David Lechner <david@lechnology.com>,
+	linux-iio@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH][next] iio: adc: ti-ads7950: remove redundant assignment to variable ret
+Date: Sat,  6 Jan 2024 15:22:51 +0000
+Message-Id: <20240106152251.54617-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240101172611.694830-2-jic23@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On Mon, Jan 01, 2024 at 05:25:59PM +0000, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> This allows the following
-> 
-> struct fwnode_handle *child __free(kfree) = NULL;
-> 
-> device_for_each_child_node(dev, child) {
-> 	if (false)
-> 		return -EINVAL;
-> }
-> 
-> without the fwnode_handle_put() call which tends to complicate early
-> exits from such loops and lead to resource leak bugs.
-> 
-> Can also be used where the fwnode_handle was obtained from a call
-> such as fwnode_find_reference() as it will safely do nothing if
-> IS_ERR() is true.
+Variable ret is being assigned a value that is never read, the variable
+is being re-assigned again a few statements later. Remove it.
 
-...
+Cleans up clang scan build warning:
+warning: Value stored to 'ret' is never read [deadcode.DeadStores]
 
->  struct fwnode_handle *fwnode_handle_get(struct fwnode_handle *fwnode);
->  void fwnode_handle_put(struct fwnode_handle *fwnode);
-> +DEFINE_FREE(fwnode_handle, struct fwnode_handle *, fwnode_handle_put(_T))
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/iio/adc/ti-ads7950.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-In GPIO we have something similar and PeterZ explained there why if (_T) is
-important, hence this should be
-
-DEFINE_FREE(fwnode_handle, struct fwnode_handle *, if (_T) fwnode_handle_put(_T))
-
-or even
-
-DEFINE_FREE(fwnode_handle, struct fwnode_handle *, if (!IS_ERR_OR_NULL(_T)) fwnode_handle_put(_T))
-
-as we accept in many calls an error pointer as unset / undefined firmware node
-handle.
-
-
+diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+index 263fc3a1b87e..f975de059ba0 100644
+--- a/drivers/iio/adc/ti-ads7950.c
++++ b/drivers/iio/adc/ti-ads7950.c
+@@ -441,8 +441,6 @@ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+ 	if (ret)
+ 		goto out;
+ 
+-	ret = ((st->single_rx >> 12) & BIT(offset)) ? 1 : 0;
+-
+ 	/* Revert back to original settings */
+ 	st->cmd_settings_bitmask &= ~TI_ADS7950_CR_GPIO_DATA;
+ 	st->single_tx = TI_ADS7950_MAN_CMD_SETTINGS(st);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.39.2
 
