@@ -1,86 +1,103 @@
-Received: from mg.richtek.com (mg.richtek.com [220.130.44.152])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF02F8BF3;
-	Mon,  8 Jan 2024 01:48:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=richtek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=richtek.com
-X-MailGates: (SIP:2,PASS,NONE)(compute_score:DELIVER,40,3)
-Received: from 192.168.10.46
-	by mg.richtek.com with MailGates ESMTPS Server V6.0(636803:0:AUTH_RELAY)
-	(envelope-from <cy_huang@richtek.com>)
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256); Mon, 08 Jan 2024 09:47:30 +0800 (CST)
-Received: from ex4.rt.l (192.168.10.47) by ex3.rt.l (192.168.10.46) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.27; Mon, 8 Jan
- 2024 09:47:29 +0800
-Received: from linuxcarl2.richtek.com (192.168.10.154) by ex4.rt.l
- (192.168.10.45) with Microsoft SMTP Server id 15.2.1258.27 via Frontend
- Transport; Mon, 8 Jan 2024 09:47:29 +0800
-From: <cy_huang@richtek.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley
-	<conor+dt@kernel.org>, ChiYuan Huang <cy_huang@richtek.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 0/2] RTQ6056: Add compatible for the same chip family
-Date: Mon, 8 Jan 2024 09:47:26 +0800
-Message-ID: <cover.1704676198.git.cy_huang@richtek.com>
-X-Mailer: git-send-email 1.8.3.1
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 450638C06;
+	Mon,  8 Jan 2024 06:35:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nl6cIWW3"
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-2cceb5f0918so13724491fa.2;
+        Sun, 07 Jan 2024 22:35:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1704695719; x=1705300519; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=RUHqImkDji/0W298q5CLYrFD/FU6lfeTagixCLoFStQ=;
+        b=nl6cIWW36HYtDxoKwj7T8xg130WMTS0zFAgrtRzmRqLGeLZpLRIxU0eLOlRCGqnmI+
+         avAbA9VOc4/HODV8bBJXJTj3NumEYFWRAkkZeNbUyck00oHwophoejbZExosU/yqthzB
+         dJd9XwWtpUKu0jkcpq2IcQZU2+qs40+GyHUYFc6zqL9tqpdZigIowL4ZzZ8m6qG+lVEg
+         xTH1n7JYg/ICgoZBiEsceQ+Cm0uxdn21OWjWbimUViuAEdGMw7aNcY0WR9mu8NRQ7Xd2
+         IZaak0pNGPYuCwT9v8jYuDdimgE65WjGzGwqM804jTmw6tezoz40nZw9DGmvt1czZLkn
+         S13w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1704695719; x=1705300519;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RUHqImkDji/0W298q5CLYrFD/FU6lfeTagixCLoFStQ=;
+        b=dyhtth7buYqvRO67jZdwjGAmuzNHToR19IX1uSqWjyK+kPfpUKWygTe7vCXVCvZ2fM
+         0cnJscAhhZWUs+ccAhyi3ydnS3zjtI9QCj8uLjJiuVjlJqe5oH24oo58YJ7a3LXNYRDb
+         hmAPqOCId+o/X8w2e96OpyhTBDIGs17lekvhoc/o/3LX8pr6PW86thYGgEyhwAVMB2Eh
+         Xwg5t9fLWx/bjHSoZZ8RXYGNzl9VVv+8hC9SNtbN2XIV2Xh4hm51yM1QZt2lzzEbNaCG
+         JOwAnvxNG2MNBS3aUF2UiOMx9UJzZ/XsvoPcu8s01SC/NGwJeJ+vlJUUBRF170VfEnnb
+         1vMw==
+X-Gm-Message-State: AOJu0Yy1t4H0pTknsJl5G7sDU9liYOeWEdTobYMFDoKZovZdNXHsk7bd
+	35E8VKLW2CQH2H0SGFxf0+8=
+X-Google-Smtp-Source: AGHT+IG7QnT1MqegDq6TKHm2afXir+xT1YBWCGCM0moJ5ZPk35M1BZnuzE+I1B97RV+GXtLD5R5PcQ==
+X-Received: by 2002:a2e:a553:0:b0:2cd:4e51:cea6 with SMTP id e19-20020a2ea553000000b002cd4e51cea6mr449278ljn.106.1704695718962;
+        Sun, 07 Jan 2024 22:35:18 -0800 (PST)
+Received: from ?IPV6:2001:14ba:16f8:1500::7? (dc78bmyyyyyyyyyyyyydt-3.rev.dnainternet.fi. [2001:14ba:16f8:1500::7])
+        by smtp.gmail.com with ESMTPSA id g22-20020a2eb0d6000000b002cd40121a49sm1017491ljl.36.2024.01.07.22.35.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 07 Jan 2024 22:35:17 -0800 (PST)
+Message-ID: <fb847634-94f1-4001-bb5c-3c4c56aba9f7@gmail.com>
+Date: Mon, 8 Jan 2024 08:35:17 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: gts-helper: Fix division loop
+Content-Language: en-US, en-GB
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+ Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <ZZZ7pJBGkTdFFqiY@dc78bmyyyyyyyyyyyyydt-3.rev.dnainternet.fi>
+ <20240107162253.66c1f0f1@jic23-huawei>
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20240107162253.66c1f0f1@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: ChiYuan Huang <cy_huang@richtek.com>
+On 1/7/24 18:22, Jonathan Cameron wrote:
+> On Thu, 4 Jan 2024 11:34:28 +0200
+> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+> 
+>> The loop based 64bit division may run for a long time when dividend is a
+>> lot bigger than the divider. Replace the division loop by the
+>> div64_u64() which implementation may be significantly faster.
+>>
+>> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+>> Fixes: 38416c28e168 ("iio: light: Add gain-time-scale helpers")
+> 
+> Hmm. Fix or not perf improvement?
 
-RTQ6053 and RTQ6059 are the same RTQ6056 family.
-The differences are listed below
-- RTQ6053
-  Only change chip package type
-- RTQ6059
-  1. Enlarge the shunt voltage sensing range
-  2. Shrink the pinout for VBUS sense pin
-  3. Due to 1, the scale value is also changed
+Ha. I don't fancy calling my own doings as bugs - but when a code can 
+keep kernel busy looping for several seconds... :|
 
-Since v5:
-- Correct field names for rtq6059 bitfield declaration
+>  I'm going to take the middle ground
+> and leave the fixes tag, but not rush this in.
 
-Since v4:
-- Remove the unused chip type enum
-- Directly return in switch case of read_channel function
-- Refine in write_raw switch case for IIO_CHAN_INFO_SAMP_FREQ
-  If sample frequency is fixed, return invalid and break switch case
-- Use devdata->num_channels to replace the predefined constant
-- Change the rtq6059 difference part for the control bitfield name from
-  the general 'F_xxx' to 'F_RTQ6059_xxx'
-- Fix rtq6059 average sample variable store problem in 'set_average' function
+I think this is fine. It is nice to get this fix in stable if we have 
+longer living stables with GTS helpers, because that's where many people 
+do "real work" - and because it is likely some devices with new sensors 
+are being built on products using these stable releases.
 
-Since v3:
-- Add Reviewed-by tag in binding document patch
-- Resotre the enum for control field.
-- Put all the predefined datas/callbacks in dev_data.
-- Remove the unused 'rtq6059_info'.
-- Change 'default_conv_time' to 'default_conv_time_us'.
-- Move the comment for default config above the dev_data setting line.
+Still, the current users (ROHM light sensors) don't use that big 
+dividends. Hence I don't think this needs any high speed fixup process :)
 
-Since v2:
-- Refine the description of 'compatible' property
-
-ChiYuan Huang (2):
-  dt-bindings: iio: adc: rtq6056: add support for the whole RTQ6056
-    family
-  iio: adc: rtq6056: Add support for the whole RTQ6056 family
-
- .../bindings/iio/adc/richtek,rtq6056.yaml     |   9 +-
- drivers/iio/adc/rtq6056.c                     | 275 ++++++++++++++++--
- 2 files changed, 263 insertions(+), 21 deletions(-)
+Thanks!
 
 
-base-commit: 610a9b8f49fbcf1100716370d3b5f6f884a2835a
 -- 
-2.34.1
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
+
+~~ When things go utterly wrong vim users can always type :help! ~~
 
