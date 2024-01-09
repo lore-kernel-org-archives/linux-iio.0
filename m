@@ -1,101 +1,104 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AE8B3A1AA
-	for <linux-iio@vger.kernel.org>; Tue,  9 Jan 2024 15:46:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 409CVHX6024827;
-	Tue, 9 Jan 2024 09:00:19 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3vfmjshs9q-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 09 Jan 2024 09:00:19 -0500 (EST)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 409E0HY2013519
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 9 Jan 2024 09:00:17 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 9 Jan 2024
- 09:00:16 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 9 Jan 2024 09:00:16 -0500
-Received: from [127.0.0.1] ([10.44.3.56])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 409E09lG018844;
-	Tue, 9 Jan 2024 09:00:12 -0500
-From: Nuno Sa <nuno.sa@analog.com>
-Date: Tue, 9 Jan 2024 15:03:16 +0100
-Subject: [PATCH] iio: buffer-dmaengine: make use of the 'struct device *'
- argument
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A7A638DF8
+	for <linux-iio@vger.kernel.org>; Tue,  9 Jan 2024 17:56:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="FyN5zZvd"
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2ccae380df2so35467701fa.1
+        for <linux-iio@vger.kernel.org>; Tue, 09 Jan 2024 09:56:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1704823018; x=1705427818; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Ir7X5a3V1krP85f23EP+v6GSCmGNRbcVfuSwLprNqFc=;
+        b=FyN5zZvdKpSf7UjdCJeCu9pkEZIgpZqa5cVJnwiVbyR0KmIIMpR2psn+m9rdw3gvsA
+         4jlZkdeEowXysPrcXobo4rhxD7X1hgvffG6cGoYX7WF3wJVVNl30B1OsnundZmfoGsDC
+         AF9z7djC8TiZaSuOX+MfRkoj4DxSrnMttOUIKJ8XSUFAa6zfzZDLuxieBjyLHAnDlQGX
+         aa06QMFHHD2WeV2c+ym5wuQZK9W/IMmgMdKk6C5+8hcJsFJ9bDFd4LAYMS0/og5HsUIq
+         R6Ri7kL5ThyrCzoCnVcA32f/+DDttyaZ/4+6SiAvcscyMo24W6emR6x4Q7zxOn/rNr5i
+         pyLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1704823018; x=1705427818;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Ir7X5a3V1krP85f23EP+v6GSCmGNRbcVfuSwLprNqFc=;
+        b=qRfIpbk7OsGdYYng/Tqo1Br7aNcAJ8x9zmgjsP+dNcZrwfW+udP+wi2YheuxZOfUTR
+         pP+bEQ8iKXVk47N0nmzU+yq0XsUyvb0hVTsx+U8uBrGaSt9TyJwl5SiCa5T1NheQdxOu
+         VCvpCMMedS+UL7bVp/9MGFrL+6eM+BZs51owyc2V4f56ZThA6qwErsW2rd6NMqFaV1ca
+         LO8w5iAI9Xa9vkkDD2QoypQN4d/dgb04mzoHaFEwRtfzpPR2lSWe/GAldvc/Pibyg5hZ
+         fCf4m/r8Xj9+BJ4ag4f4C8fy9WatMtUAdjFb5xrB9PeSe7pFmNgxHDTwLokVM8fDvsbK
+         ShBg==
+X-Gm-Message-State: AOJu0Yz0uyYnaOhO55nzViEompkJD9iVxcIGjtJq1roDzLCV+TBDy7Tp
+	aJLwjXEDVF6WrLD9WlinzFyC18v0dMJnEFo9f+O+rAhzDf3uZZuC/HwELoxe
+X-Google-Smtp-Source: AGHT+IH7ZZOoIpO/4InB8njqMgI4oRwNszPhjfX/Amw/XzbuLsQRFWEL0mT/kboiYAYqlHaJltlT9lnTIfzuRBGiRYw=
+X-Received: by 2002:a2e:8ed7:0:b0:2cc:e9e1:e6a6 with SMTP id
+ e23-20020a2e8ed7000000b002cce9e1e6a6mr2700972ljl.92.1704823018085; Tue, 09
+ Jan 2024 09:56:58 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-ID: <20240109-dmaengine_use_device-v1-1-1cbdb7fe9f29@analog.com>
-X-B4-Tracking: v=1; b=H4sIACNSnWUC/x3MSwqAIBRG4a3EHSdo79pKhIT+1h1koRRBtPek4
- Rl856GIwIg0ZA8FXBx59ylUnpFZZ79AsE1NhSwqqWQv7DbDL+yhzwhtEzEQXV061Tcwbeco0SP
- A8f1vx+l9PzD7XvhmAAAA
-To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1704809001; l=1185;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=PibrZKOCAB7SkXP4dStaSKhGzGRQovyrwT7RdDOYVoE=;
- b=18qr5xUg1ptP3lhVnEORUDtD/DYPZ7YU9bSlmJ9R44ZWQ2PCaooaiU/YQbVzqE7b10v8Ac3Z7
- XJZHLlZi0RnDA5hzoGngPT50etH9xPpZuZNHqbEj/yuP5fh7DZ2DvFV
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: LZzGag1FigIc9CvlApbIwzgUxSk0nTGA
-X-Proofpoint-GUID: LZzGag1FigIc9CvlApbIwzgUxSk0nTGA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-02_01,2023-11-30_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- phishscore=0 bulkscore=0 suspectscore=0 malwarescore=0 impostorscore=0
- priorityscore=1501 clxscore=1015 mlxlogscore=846 adultscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2311290000
- definitions=main-2401090115
+References: <20240109-dmaengine_use_device-v1-1-1cbdb7fe9f29@analog.com>
+In-Reply-To: <20240109-dmaengine_use_device-v1-1-1cbdb7fe9f29@analog.com>
+From: David Lechner <dlechner@baylibre.com>
+Date: Tue, 9 Jan 2024 11:56:47 -0600
+Message-ID: <CAMknhBFUeAvtXorP+H_1Yqj4nJyqrPoqnAae5FOBvLCZ9SNVBQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: buffer-dmaengine: make use of the 'struct device *' argument
+To: Nuno Sa <nuno.sa@analog.com>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Respect the @dev argument in devm_iio_dmaengine_buffer_setup() and bind the
-IIO DMA buffer lifetime to that device.
+On Tue, Jan 9, 2024 at 9:47=E2=80=AFAM Nuno Sa <nuno.sa@analog.com> wrote:
+>
+> Respect the @dev argument in devm_iio_dmaengine_buffer_setup() and bind t=
+he
+> IIO DMA buffer lifetime to that device.
+>
+> For the only user of this function, the IIO parent device is the
+> struct device being passed to the API so no real fix in here (just
+> consistency with other IIO APIs).
+>
+> Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+> ---
+>  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers=
+/iio/buffer/industrialio-buffer-dmaengine.c
+> index 5f85ba38e6f6..45fe7d0d42ee 100644
+> --- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> +++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> @@ -279,8 +279,7 @@ int devm_iio_dmaengine_buffer_setup(struct device *de=
+v,
+>  {
+>         struct iio_buffer *buffer;
+>
+> -       buffer =3D devm_iio_dmaengine_buffer_alloc(indio_dev->dev.parent,
+> -                                                channel);
+> +       buffer =3D devm_iio_dmaengine_buffer_alloc(dev, channel);
+>         if (IS_ERR(buffer))
+>                 return PTR_ERR(buffer);
+>
+>
+> ---
+> base-commit: 3f4525f924e21d4f532517b17a20ffa5df7c0db7
+> change-id: 20240109-dmaengine_use_device-853f196ec78f
+> --
+>
+> Thanks!
+> - Nuno S=C3=A1
+>
+>
 
-For the only user of this function, the IIO parent device is the
-struct device being passed to the API so no real fix in here (just
-consistency with other IIO APIs).
+I noticed this too but didn't get around to fixing it yet. ;-)
 
-Signed-off-by: Nuno Sa <nuno.sa@analog.com>
----
- drivers/iio/buffer/industrialio-buffer-dmaengine.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-index 5f85ba38e6f6..45fe7d0d42ee 100644
---- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-@@ -279,8 +279,7 @@ int devm_iio_dmaengine_buffer_setup(struct device *dev,
- {
- 	struct iio_buffer *buffer;
- 
--	buffer = devm_iio_dmaengine_buffer_alloc(indio_dev->dev.parent,
--						 channel);
-+	buffer = devm_iio_dmaengine_buffer_alloc(dev, channel);
- 	if (IS_ERR(buffer))
- 		return PTR_ERR(buffer);
- 
-
----
-base-commit: 3f4525f924e21d4f532517b17a20ffa5df7c0db7
-change-id: 20240109-dmaengine_use_device-853f196ec78f
---
-
-Thanks!
-- Nuno Sá
-
+Reviewed-by: David Lechner <dlechner@baylibre.com>
