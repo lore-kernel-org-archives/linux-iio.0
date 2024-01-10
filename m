@@ -1,38 +1,34 @@
 Received: from mail.subdimension.ro (skycaves.subdimension.ro [172.104.132.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78AF24D105;
-	Wed, 10 Jan 2024 17:23:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 566DB4D12B;
+	Wed, 10 Jan 2024 17:23:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="Q+R50F5j"
+	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="Ab8AWGqI"
 Received: from localhost.localdomain (unknown [188.24.94.216])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id 27AF6295116;
+	by mail.subdimension.ro (Postfix) with ESMTPSA id E2D9B2997DA;
 	Wed, 10 Jan 2024 17:23:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=subdimension.ro;
-	s=skycaves; t=1704907393;
-	bh=JR2K1BGHxcrEH+xlbeKvVMsrrRoi4/Miv25LV1xkXWs=;
+	s=skycaves; t=1704907394;
+	bh=qsDFAv93tu0XrFFcOWZhPLu9VlWsI+eQCLQ6AKV/vgw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Q+R50F5jAAkGNV5MXSZqLkl4o0OpmvSKhAdLA4tRMfd/7asJONo/36bTmpWvHYbBE
-	 IouYktqbeh9Knwqp26O6aVbhSdp1mEexnlVj5CLq/BDwIpIFiSH1YRw2A7kujBWfp6
-	 mKb2fmRzPhfw55g0Sxqk4BEEHL/WkwW8Y/z/3vMQ=
+	b=Ab8AWGqIod2UVn0PU6YsPL9vvuD3qMkhpVANQ0PjIzBItuIfQsorp4ubOErYrvAC3
+	 0wJL50jUOR0QJs/SwWeHdzb/KvxBO6Gga97UiN2dPYO4PRoOZKwN3AuGv4oxm+pbLe
+	 FdUARi04f1kbMx5AW9Qzv+jbwokEzG41uwbbSzXk=
 From: Petre Rodan <petre.rodan@subdimension.ro>
 To: linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 Cc: Petre Rodan <petre.rodan@subdimension.ro>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Subject: [PATCH 2/6] dt-bindings: iio: pressure: honeywell,hsc030pa.yaml add sleep-mode
-Date: Wed, 10 Jan 2024 19:22:37 +0200
-Message-ID: <20240110172306.31273-3-petre.rodan@subdimension.ro>
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 5/6] iio: pressure: hsc030pa add triggered buffer
+Date: Wed, 10 Jan 2024 19:22:40 +0200
+Message-ID: <20240110172306.31273-6-petre.rodan@subdimension.ro>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20240110172306.31273-1-petre.rodan@subdimension.ro>
 References: <20240110172306.31273-1-petre.rodan@subdimension.ro>
@@ -44,43 +40,110 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add sleep-mode property present in some custom chips.
-
-This flag activates a special wakeup sequence prior to conversion.
+Add triggered buffer feature.
 
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
- .../bindings/iio/pressure/honeywell,hsc030pa.yaml      | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iio/pressure/hsc030pa.c | 42 +++++++++++++++++++++++++++++++++
+ drivers/iio/pressure/hsc030pa.h |  2 +-
+ 2 files changed, 43 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/pressure/honeywell,hsc030pa.yaml b/Documentation/devicetree/bindings/iio/pressure/honeywell,hsc030pa.yaml
-index 89977b9f01cf..350da1d6991b 100644
---- a/Documentation/devicetree/bindings/iio/pressure/honeywell,hsc030pa.yaml
-+++ b/Documentation/devicetree/bindings/iio/pressure/honeywell,hsc030pa.yaml
-@@ -86,6 +86,15 @@ properties:
-       Maximum pressure value the sensor can measure in pascal.
-       To be specified only if honeywell,pressure-triplet is set to "NA".
+diff --git a/drivers/iio/pressure/hsc030pa.c b/drivers/iio/pressure/hsc030pa.c
+index 7e3f74d53b47..3faa0fd42201 100644
+--- a/drivers/iio/pressure/hsc030pa.c
++++ b/drivers/iio/pressure/hsc030pa.c
+@@ -22,8 +22,11 @@
+ #include <linux/types.h>
+ #include <linux/units.h>
 
-+  honeywell,sleep-mode:
-+    description: |
-+      'Sleep Mode' is a special factory set mode of the chip that allows the
-+      sensor to power down between measurements. It is implemented only on
-+      special request, and it is an attribute not present in the HSC/SSC series
-+      nomenclature.
-+      Set in order to enable the special wakeup sequence prior to conversion.
-+    $ref: /schemas/types.yaml#/definitions/flag
++#include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+
+ #include <asm/unaligned.h>
+
+@@ -297,6 +300,23 @@ static int hsc_get_measurement(struct hsc_data *data)
+ 	return 0;
+ }
+
++static irqreturn_t hsc_trigger_handler(int irq, void *private)
++{
++	struct iio_poll_func *pf = private;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct hsc_data *data = iio_priv(indio_dev);
++	int ret;
 +
-   vdd-supply:
-     description:
-       Provide VDD power to the sensor (either 3.3V or 5V depending on the chip)
-@@ -140,6 +149,7 @@ examples:
-             honeywell,pressure-triplet = "NA";
-             honeywell,pmin-pascal = <0>;
-             honeywell,pmax-pascal = <200000>;
-+            //honeywell,sleep-mode;
-         };
-     };
- ...
++	ret = hsc_get_measurement(data);
++	if (!ret) {
++		iio_push_to_buffers_with_timestamp(indio_dev, &data->buffer,
++						   iio_get_time_ns(indio_dev));
++	}
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
+ /*
+  * IIO ABI expects
+  * value = (conv + offset) * scale
+@@ -382,13 +402,30 @@ static const struct iio_chan_spec hsc_channels[] = {
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 				      BIT(IIO_CHAN_INFO_SCALE) |
+ 				      BIT(IIO_CHAN_INFO_OFFSET),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 14,
++			.storagebits = 16,
++			.shift = 0,
++			.endianness = IIO_BE,
++		},
+ 	},
+ 	{
+ 		.type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 				      BIT(IIO_CHAN_INFO_SCALE) |
+ 				      BIT(IIO_CHAN_INFO_OFFSET),
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 11,
++			.storagebits = 16,
++			.shift = 5,
++			.endianness = IIO_BE,
++		},
+ 	},
++	IIO_CHAN_SOFT_TIMESTAMP(2),
+ };
+
+ static const struct iio_info hsc_info = {
+@@ -485,6 +522,11 @@ int hsc_common_probe(struct device *dev, hsc_recv_fn recv)
+ 	indio_dev->channels = hsc->chip->channels;
+ 	indio_dev->num_channels = hsc->chip->num_channels;
+
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
++					      hsc_trigger_handler, NULL);
++	if (ret)
++		return ret;
++
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+ EXPORT_SYMBOL_NS(hsc_common_probe, IIO_HONEYWELL_HSC030PA);
+diff --git a/drivers/iio/pressure/hsc030pa.h b/drivers/iio/pressure/hsc030pa.h
+index 56dc8e88194b..6c635c42d85d 100644
+--- a/drivers/iio/pressure/hsc030pa.h
++++ b/drivers/iio/pressure/hsc030pa.h
+@@ -56,7 +56,7 @@ struct hsc_data {
+ 	s32 p_scale_dec;
+ 	s64 p_offset;
+ 	s32 p_offset_dec;
+-	u8 buffer[HSC_REG_MEASUREMENT_RD_SIZE] __aligned(IIO_DMA_MINALIGN);
++	u8 buffer[16] __aligned(IIO_DMA_MINALIGN);
+ };
+
+ struct hsc_chip_data {
 --
 2.41.0
 
