@@ -1,47 +1,47 @@
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A5C14F897
-	for <linux-iio@vger.kernel.org>; Wed, 10 Jan 2024 19:51:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43B6D50256
+	for <linux-iio@vger.kernel.org>; Wed, 10 Jan 2024 19:51:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="DYtCGZ85"
-Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-58e256505f7so2394602eaf.3
-        for <linux-iio@vger.kernel.org>; Wed, 10 Jan 2024 11:51:19 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="cbfW3zrC"
+Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-5989add5511so500148eaf.3
+        for <linux-iio@vger.kernel.org>; Wed, 10 Jan 2024 11:51:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1704916278; x=1705521078; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1704916280; x=1705521080; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=WoFvxKWdDooo1qSzC88EM9Nr4w+h9Vd46EFkbYPsSPw=;
-        b=DYtCGZ85pbfryJGNqhUF4Mwq/s2IJBCLYdbVXcZLOQTTMhJS86QolB3UIl1+Emd3nB
-         P6ckUQiZlcgKwajSzt4FjkrPaY87p8sqQWrhlaIclD27u9YQLMHhY1Fw+l/lU4d0lejW
-         ubUKXLJgEZ8pRnHY0PT5osdpTQDm3alUwirTkAbcpz6EFjJcGt6hI+kwYpkxx8PYImOJ
-         oTyfdO73QCXeXWx1hl9OHm6IvpZmEovhyGlhSvzb8fxNsQq+ckrJk8f2MSywULRb0aF+
-         +wscSNVNacPlJS89FFH+DcLyrhP5gyhytLFKeL8R5/EWqDtXyeopuhGVbeqURHNH4+3f
-         6HGA==
+        bh=EAfisbraTIzPK5DNS+hXkieTeMFvO6LSXMmUPvgA/Yc=;
+        b=cbfW3zrCzDrC2BsJDrvGh2OelkTFByfUxrTt4miiSoq3fT2DmiaOTNftPRWZpCoOMx
+         d2gRMxkafALFBhuUMrgpW94onVz/j6zq9twsooZAcfDJjKfKEzZgraYwAbGXhD6Zghsq
+         jJx0T8rDjFrVaUrO+t8X0MvaVxOgQ1xgAUgJ7fvEBYdarHT4UnehFRbSfLRMMDBJXRTn
+         K9GOLzBYfxx6vyu/gIx8rYr65+rrnCasMncpBEp/1+vTM69O9WL8Au56+V2Lkx0qVqFO
+         oWYSHYXHlXnI4J7I5KebEWMiw2meBOD2gser2+Kfzy+h/VdaDE9HkkEk7D0wSLUYyIdz
+         MmRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704916278; x=1705521078;
+        d=1e100.net; s=20230601; t=1704916280; x=1705521080;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=WoFvxKWdDooo1qSzC88EM9Nr4w+h9Vd46EFkbYPsSPw=;
-        b=sdn2WPNrv8IdfKvRkQn/wpTwVBxqKWHnNSZDpdN8WYz9HBMkFTZF43ksZ1H59FkSrj
-         OyDaA5U1LCO9GCe3oGy+lQK18weKuQoEvJGZO8CsuccISZGprhTlCCSMydnS2XVlt6IB
-         +HqD2P6VczjWTHg1dh8WFPlroKmxRkDkd8IzoYpx8/Wtn3ZTRxUqQGc/8D6N4mTt1daR
-         20W62EGNa2/n5W4ru/ctYZbOokC/hNPdgd6YD7gf0ADB+7r91YGt3jaztLuW1jj19xvX
-         s+KkpbokWqLoizwBSQfigx7o+K4vvnZazYNXa35R+P2wiE/edPiQFJIC/e1LdqZ3n4KG
-         TzaA==
-X-Gm-Message-State: AOJu0YyiQZngmgZhXdmJ7ABoPpLGHqdBrswPcdukuPCNLKjlY8B7H/x2
-	RT6NRFGoYtG+IDT6CC38JAwsimFOp3Oe8w==
-X-Google-Smtp-Source: AGHT+IHrT/0uM2BhirfFIgGw42yzsFECk08FhInWXcIqOlIBJJbxXE41ntQmPNJUuiNBiHuZt4yDqw==
-X-Received: by 2002:a05:6820:1ca2:b0:594:3789:1aaf with SMTP id ct34-20020a0568201ca200b0059437891aafmr100073oob.15.1704916278503;
-        Wed, 10 Jan 2024 11:51:18 -0800 (PST)
+        bh=EAfisbraTIzPK5DNS+hXkieTeMFvO6LSXMmUPvgA/Yc=;
+        b=ajkewWVcKmWIfjkjiPRjnavv8icuU3sS5pD6ZYyjAgTFZQ1vKBuN2SqBJqbCHP9QhI
+         BSAAPGW5Ejjq9UCUV7QCKb4AGapxs4atA6a1h+ULQ7z1xKqAhW1rLIMF3ce1s3VHuUfU
+         eb4/Xic2SEnzfWZbjtPlCdNnxDRr1YuEGGJX6QjjNovpJ41R7chc5NY7syAutJXgYS6U
+         okgZLSZE/EcCjILNAftwcM82V6ilFAhhAmbVXewLWyXL/i5Ka8i3qAjJDmrdpXfOMIiA
+         /MgXXgQVw8rRjuVVIf/n9+WJlzBAUTtM0gnghgWcDwsEOnZl2xGCT8IyphOTgphzs58U
+         /Vxg==
+X-Gm-Message-State: AOJu0YyfmmBHGp9eBZ4utwZzrmDi9U5yOXlD1vlO6IKvOGIn6HrAht85
+	y0qo2ks1UkWIrMZ2FLY2UoO13tvs5oIhTQ==
+X-Google-Smtp-Source: AGHT+IHTumG0RvNmGteYGaGu6Rft2bQuoGUvLiP+GdymDcLixB0l11q6v2G9HH89HiPnDLtdCilfmg==
+X-Received: by 2002:a4a:3503:0:b0:590:2b6d:a862 with SMTP id l3-20020a4a3503000000b005902b6da862mr94634ooa.15.1704916280323;
+        Wed, 10 Jan 2024 11:51:20 -0800 (PST)
 Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 187-20020a4a0dc4000000b00595b35927a3sm938513oob.39.2024.01.10.11.51.17
+        by smtp.gmail.com with ESMTPSA id 187-20020a4a0dc4000000b00595b35927a3sm938513oob.39.2024.01.10.11.51.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jan 2024 11:51:18 -0800 (PST)
+        Wed, 10 Jan 2024 11:51:20 -0800 (PST)
 From: David Lechner <dlechner@baylibre.com>
 To: Mark Brown <broonie@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
@@ -61,9 +61,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-doc@vger.kernel.org,
 	linux-pwm@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 10/13] iio: buffer: dmaengine: export devm_iio_dmaengine_buffer_alloc()
-Date: Wed, 10 Jan 2024 13:49:51 -0600
-Message-ID: <20240109-axi-spi-engine-series-3-v1-10-e42c6a986580@baylibre.com>
+Subject: [PATCH 12/13] iio: offload: add new PWM triggered DMA buffer driver
+Date: Wed, 10 Jan 2024 13:49:53 -0600
+Message-ID: <20240109-axi-spi-engine-series-3-v1-12-e42c6a986580@baylibre.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20240109-axi-spi-engine-series-3-v1-0-e42c6a986580@baylibre.com>
 References: <20240109-axi-spi-engine-series-3-v1-0-e42c6a986580@baylibre.com>
@@ -77,93 +77,310 @@ Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.12.4
 Content-Transfer-Encoding: 8bit
 
-This changes devm_iio_dmaengine_buffer_alloc() to an exported symbol.
-This will be used by drivers that need to allocate a DMA buffer without
-attaching it to an IIO device.
+This adds a new driver for handling SPI offloading using a PWM as the
+trigger and DMA for the received data. This will be used by ADCs in
+conjunction with SPI controllers with offloading support to be able
+to sample at high rates without CPU intervention.
 
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
- Documentation/driver-api/driver-model/devres.rst   |  1 +
- drivers/iio/buffer/Kconfig                         | 14 +++++++-------
- drivers/iio/buffer/industrialio-buffer-dmaengine.c |  3 ++-
- include/linux/iio/buffer-dmaengine.h               |  2 ++
- 4 files changed, 12 insertions(+), 8 deletions(-)
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ .../iio/buffer/industrialio-hw-triggered-buffer.c  |   1 +
+ drivers/iio/offload/Kconfig                        |  21 ++
+ drivers/iio/offload/Makefile                       |   2 +
+ drivers/iio/offload/iio-pwm-triggered-dma-buffer.c | 212 +++++++++++++++++++++
+ 6 files changed, 238 insertions(+)
 
-diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
-index b23d4a2b68a6..60e4b7ba38e5 100644
---- a/Documentation/driver-api/driver-model/devres.rst
-+++ b/Documentation/driver-api/driver-model/devres.rst
-@@ -285,6 +285,7 @@ I2C
- IIO
-   devm_iio_device_alloc()
-   devm_iio_device_register()
-+  devm_iio_dmaengine_buffer_alloc()
-   devm_iio_dmaengine_buffer_setup()
-   devm_iio_kfifo_buffer_setup()
-   devm_iio_kfifo_buffer_setup_ext()
-diff --git a/drivers/iio/buffer/Kconfig b/drivers/iio/buffer/Kconfig
-index 925c5bf074bc..27d82fb4bc4d 100644
---- a/drivers/iio/buffer/Kconfig
-+++ b/drivers/iio/buffer/Kconfig
-@@ -40,6 +40,13 @@ config IIO_BUFFER_HW_CONSUMER
- 	  Should be selected by drivers that want to use the generic Hw consumer
- 	  interface.
- 
-+config IIO_HW_TRIGGERED_BUFFER
-+	tristate "Industrial I/O hardware triggered buffer support"
-+	select AUXILIARY_BUS
-+	select IIO_TRIGGER
-+	help
-+	  Provides helper functions for setting up hardware triggered buffers.
-+
- config IIO_KFIFO_BUF
- 	tristate "Industrial I/O buffering based on kfifo"
- 	help
-@@ -53,10 +60,3 @@ config IIO_TRIGGERED_BUFFER
- 	select IIO_KFIFO_BUF
- 	help
- 	  Provides helper functions for setting up triggered buffers.
--
--config IIO_HW_TRIGGERED_BUFFER
--	tristate "Industrial I/O hardware triggered buffer support"
--	select AUXILIARY_BUS
--	select IIO_TRIGGER
--	help
--	  Provides helper functions for setting up hardware triggered buffers.
-diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-index c67ddf963bfb..03225939f223 100644
---- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-@@ -244,7 +244,7 @@ static void __devm_iio_dmaengine_buffer_free(void *buffer)
-  *
-  * The buffer will be automatically de-allocated once the device gets destroyed.
-  */
--static struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
-+struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
- 	const char *channel)
- {
- 	struct iio_buffer *buffer;
-@@ -261,6 +261,7 @@ static struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
- 
- 	return buffer;
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 52eb46ef84c1..56738282d82f 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -90,6 +90,7 @@ source "drivers/iio/imu/Kconfig"
+ source "drivers/iio/light/Kconfig"
+ source "drivers/iio/magnetometer/Kconfig"
+ source "drivers/iio/multiplexer/Kconfig"
++source "drivers/iio/offload/Kconfig"
+ source "drivers/iio/orientation/Kconfig"
+ source "drivers/iio/test/Kconfig"
+ if IIO_TRIGGER
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 9622347a1c1b..20acf5e1a4a7 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -34,6 +34,7 @@ obj-y += imu/
+ obj-y += light/
+ obj-y += magnetometer/
+ obj-y += multiplexer/
++obj-y += offload/
+ obj-y += orientation/
+ obj-y += position/
+ obj-y += potentiometer/
+diff --git a/drivers/iio/buffer/industrialio-hw-triggered-buffer.c b/drivers/iio/buffer/industrialio-hw-triggered-buffer.c
+index 7a8a71066b0e..a2fae6059616 100644
+--- a/drivers/iio/buffer/industrialio-hw-triggered-buffer.c
++++ b/drivers/iio/buffer/industrialio-hw-triggered-buffer.c
+@@ -86,6 +86,7 @@ static int iio_hw_trigger_buffer_probe(struct auxiliary_device *adev,
  }
-+EXPORT_SYMBOL_GPL(devm_iio_dmaengine_buffer_alloc);
  
- /**
-  * devm_iio_dmaengine_buffer_setup() - Setup a DMA buffer for an IIO device
-diff --git a/include/linux/iio/buffer-dmaengine.h b/include/linux/iio/buffer-dmaengine.h
-index 5c355be89814..3ac616ddf5b9 100644
---- a/include/linux/iio/buffer-dmaengine.h
-+++ b/include/linux/iio/buffer-dmaengine.h
-@@ -10,6 +10,8 @@
- struct iio_dev;
- struct device;
- 
-+struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
-+						   const char *channel);
- int devm_iio_dmaengine_buffer_setup(struct device *dev,
- 				    struct iio_dev *indio_dev,
- 				    const char *channel);
+ static const struct auxiliary_device_id iio_hw_trigger_buffer_id_table[] = {
++	{ .name = "pwm-triggered-dma-buffer.triggered-buffer" },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(auxiliary, iio_hw_trigger_buffer_id_table);
+diff --git a/drivers/iio/offload/Kconfig b/drivers/iio/offload/Kconfig
+new file mode 100644
+index 000000000000..760c0cfe0e9c
+--- /dev/null
++++ b/drivers/iio/offload/Kconfig
+@@ -0,0 +1,21 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# SPI offload handlers for Industrial I/O
++#
++# When adding new entries keep the list in alphabetical order
++
++menu "SPI offload handlers"
++
++config IIO_PWM_TRIGGERED_DMA_BUFFER
++	tristate "PWM trigger and DMA buffer connected to SPI offload"
++	select AUXILIARY_BUS
++	select IIO_BUFFER_DMAENGINE
++	help
++	  Provides a periodic hardware trigger via a PWM connected to the
++	  trigger input of a SPI offload and a hardware buffer implemented
++	  via DMA connected to the data output stream the a SPI offload.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called "iio-pwm-triggered-dma-buffer".
++
++endmenu
+diff --git a/drivers/iio/offload/Makefile b/drivers/iio/offload/Makefile
+new file mode 100644
+index 000000000000..7300ce82f066
+--- /dev/null
++++ b/drivers/iio/offload/Makefile
+@@ -0,0 +1,2 @@
++
++obj-$(CONFIG_IIO_PWM_TRIGGERED_DMA_BUFFER) := iio-pwm-triggered-dma-buffer.o
+diff --git a/drivers/iio/offload/iio-pwm-triggered-dma-buffer.c b/drivers/iio/offload/iio-pwm-triggered-dma-buffer.c
+new file mode 100644
+index 000000000000..970ea82316f6
+--- /dev/null
++++ b/drivers/iio/offload/iio-pwm-triggered-dma-buffer.c
+@@ -0,0 +1,212 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Platform driver for a PWM trigger and DMA buffer connected to a SPI
++ * controller offload instance implementing the iio-hw-triggered-buffer
++ * interface.
++ *
++ * Copyright (C) 2023 Analog Devices, Inc.
++ * Copyright (C) 2023 BayLibre, SAS
++ */
++
++#include <linux/auxiliary_bus.h>
++#include <linux/pwm.h>
++#include <linux/module.h>
++#include <linux/mod_devicetable.h>
++#include <linux/platform_device.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/hw_triggered_buffer_impl.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/buffer-dmaengine.h>
++#include <linux/sysfs.h>
++
++struct iio_pwm_triggered_dma_buffer {
++	struct iio_hw_triggered_buffer_device hw;
++	struct pwm_device *pwm;
++};
++
++static const struct iio_trigger_ops iio_pwm_triggered_dma_buffer_ops;
++
++static int iio_pwm_triggered_dma_buffer_set_state(struct iio_trigger *trig, bool state)
++{
++	struct iio_pwm_triggered_dma_buffer *st = iio_trigger_get_drvdata(trig);
++
++	if (state)
++		return pwm_enable(st->pwm);
++
++	pwm_disable(st->pwm);
++
++	return 0;
++}
++
++static int iio_pwm_triggered_dma_buffer_validate_device(struct iio_trigger *trig,
++							struct iio_dev *indio_dev)
++{
++	/* Don't allow assigning trigger via sysfs. */
++	return -EINVAL;
++}
++
++static const struct iio_trigger_ops iio_pwm_triggered_dma_buffer_ops = {
++	.set_trigger_state = iio_pwm_triggered_dma_buffer_set_state,
++	.validate_device = iio_pwm_triggered_dma_buffer_validate_device,
++};
++
++static u32 axi_spi_engine_offload_pwm_trigger_get_rate(struct iio_trigger *trig)
++{
++	struct iio_pwm_triggered_dma_buffer *st = iio_trigger_get_drvdata(trig);
++	u64 period_ns = pwm_get_period(st->pwm);
++
++	if (period_ns)
++		return DIV_ROUND_CLOSEST_ULL(NSEC_PER_SEC, period_ns);
++
++	return 0;
++}
++
++static int
++axi_spi_engine_offload_set_samp_freq(struct iio_pwm_triggered_dma_buffer *st,
++				     u32 requested_hz)
++{
++	int period_ns;
++
++	if (requested_hz == 0)
++		return -EINVAL;
++
++	period_ns = DIV_ROUND_UP(NSEC_PER_SEC, requested_hz);
++
++	/*
++	 * FIXME: We really just need a clock, not a PWM. The current duty cycle
++	 * value is a hack to work around the edge vs. level offload trigger
++	 * issue in the ADI AXI SPI Engine firmware.
++	 */
++	return pwm_config(st->pwm, 10, period_ns);
++}
++
++static ssize_t sampling_frequency_show(struct device *dev,
++				       struct device_attribute *attr, char *buf)
++{
++	struct iio_trigger *trig = to_iio_trigger(dev);
++
++	return sysfs_emit(buf, "%u\n",
++			  axi_spi_engine_offload_pwm_trigger_get_rate(trig));
++}
++
++static ssize_t sampling_frequency_store(struct device *dev,
++					struct device_attribute *attr,
++					const char *buf, size_t len)
++{
++	struct iio_trigger *trig = to_iio_trigger(dev);
++	struct iio_pwm_triggered_dma_buffer *st = iio_trigger_get_drvdata(trig);
++	int ret;
++	u32 val;
++
++	ret = kstrtou32(buf, 10, &val);
++	if (ret)
++		return ret;
++
++	ret = axi_spi_engine_offload_set_samp_freq(st, val);
++	if (ret)
++		return ret;
++
++	return len;
++}
++
++static DEVICE_ATTR_RW(sampling_frequency);
++
++static struct attribute *iio_pwm_triggered_dma_buffer_attrs[] = {
++	&dev_attr_sampling_frequency.attr,
++	NULL
++};
++
++ATTRIBUTE_GROUPS(iio_pwm_triggered_dma_buffer);
++
++static void iio_pwm_triggered_dma_buffer_adev_release(struct device *dev)
++{
++}
++
++static void iio_pwm_triggered_dma_buffer_unregister_adev(void *adev)
++{
++	auxiliary_device_delete(adev);
++	auxiliary_device_uninit(adev);
++}
++
++static int iio_pwm_triggered_dma_buffer_probe(struct platform_device *pdev)
++{
++	struct iio_pwm_triggered_dma_buffer *st;
++	struct auxiliary_device *adev;
++	int ret;
++
++	st = devm_kzalloc(&pdev->dev, sizeof(*st), GFP_KERNEL);
++	if (!st)
++		return -ENOMEM;
++
++	st->pwm = devm_pwm_get(&pdev->dev, NULL);
++	if (IS_ERR(st->pwm))
++		return dev_err_probe(&pdev->dev, PTR_ERR(st->pwm),
++				     "failed to get PWM\n");
++
++	st->hw.buffer = devm_iio_dmaengine_buffer_alloc(&pdev->dev, "rx");
++	if (IS_ERR(st->hw.buffer))
++		return dev_err_probe(&pdev->dev, PTR_ERR(st->hw.buffer),
++				     "failed to allocate buffer\n");
++
++	st->hw.trig = devm_iio_trigger_alloc(&pdev->dev, "%s-%s-pwm-trigger",
++					     dev_name(pdev->dev.parent),
++					     dev_name(&pdev->dev));
++	if (!st->hw.trig)
++		return -ENOMEM;
++
++	st->hw.trig->ops = &iio_pwm_triggered_dma_buffer_ops;
++	st->hw.trig->dev.parent = &pdev->dev;
++	st->hw.trig->dev.groups = iio_pwm_triggered_dma_buffer_groups;
++	iio_trigger_set_drvdata(st->hw.trig, st);
++
++	/* start with a reasonable default value */
++	ret = axi_spi_engine_offload_set_samp_freq(st, 1000);
++	if (ret)
++		return dev_err_probe(&pdev->dev, ret,
++				     "failed to set sampling frequency\n");
++
++	ret = devm_iio_trigger_register(&pdev->dev, st->hw.trig);
++	if (ret)
++		return dev_err_probe(&pdev->dev, ret,
++				     "failed to register trigger\n");
++
++	adev = &st->hw.adev;
++	adev->name = "triggered-buffer";
++	adev->dev.parent = &pdev->dev;
++	adev->dev.release = iio_pwm_triggered_dma_buffer_adev_release;
++	adev->id = 0;
++
++	ret = auxiliary_device_init(adev);
++	if (ret)
++		return ret;
++
++	ret = auxiliary_device_add(adev);
++	if (ret) {
++		auxiliary_device_uninit(adev);
++		return ret;
++	}
++
++	return devm_add_action_or_reset(&pdev->dev,
++			iio_pwm_triggered_dma_buffer_unregister_adev, adev);
++}
++
++static const struct of_device_id iio_pwm_triggered_dma_buffer_match_table[] = {
++	{ .compatible = "adi,spi-offload-pwm-trigger-dma-buffer" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, iio_pwm_triggered_dma_buffer_match_table);
++
++static struct platform_driver iio_pwm_triggered_dma_buffer_driver = {
++	.probe = iio_pwm_triggered_dma_buffer_probe,
++	.driver = {
++		.name = "iio-pwm-triggered-dma-buffer",
++		.of_match_table = iio_pwm_triggered_dma_buffer_match_table,
++	},
++};
++module_platform_driver(iio_pwm_triggered_dma_buffer_driver);
++
++MODULE_AUTHOR("David Lechner <dlechner@baylibre.com>");
++MODULE_DESCRIPTION("AXI SPI Engine Offload PWM Trigger");
++MODULE_LICENSE("GPL");
 
 -- 
 2.43.0
