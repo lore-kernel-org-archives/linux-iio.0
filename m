@@ -1,47 +1,47 @@
-Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 719234F213
-	for <linux-iio@vger.kernel.org>; Wed, 10 Jan 2024 19:51:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 571A84F60F
+	for <linux-iio@vger.kernel.org>; Wed, 10 Jan 2024 19:51:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="O9k1ATy+"
-Received: by mail-oo1-f44.google.com with SMTP id 006d021491bc7-59827210160so1975444eaf.1
-        for <linux-iio@vger.kernel.org>; Wed, 10 Jan 2024 11:51:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="tMK+bB8F"
+Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-59898a3db56so599647eaf.1
+        for <linux-iio@vger.kernel.org>; Wed, 10 Jan 2024 11:51:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1704916275; x=1705521075; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1704916277; x=1705521077; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=jqqZ1xFBo82n6w1dVaiJcbo432Ln6B24n8maUrb2mjE=;
-        b=O9k1ATy+T89/CZvFYID+81bz5WDTQh/+XvcBDMsj8tdNpV1z0rqQu57uYQRlIO6wJK
-         YXDzg37ZwMMbC9fEudVU27qkgDQ5oRJw/hrGEyqafUT//j1eTc7MjCPjFafmSqYjbJGN
-         8taVXuHsKE5BCwPqydf2bLmxnAy7kgSgADSCKAjCcvOMZNoAbeWz7adTbYIzLxtxnOjd
-         BT+nA0QK+2x1wyWvxwKgudoEHwQ7hIZk+aY/I+snjpSWb+XvzyTBHICU4qsCpPD+EPEf
-         u2PJ2N+00gE9sZ9MTbY8wY43bR3oTzgkpxajp7Q7t8y2vxb0Rjx6JsWC966MaQsLmHmu
-         qBoA==
+        bh=uvLBZp36pzTyMACXtPdvGno5nE8Tc/vk1PKJFHFwqlw=;
+        b=tMK+bB8FHUKWiY4R5vG+otH2Fl8/4TA2DGMPe9VOBfcGgN3nUeqsw/qbpPo2uF5O0P
+         rrDr4JWl/LJ39a0Rij2SrdeJI1CkjT+3FlDkDe2XCrkhldMAwVgkFNomcSGEL+WfaLXX
+         Dsi4JwQLnY685n5mlP+IyYnJj11sMQXoUxxIqY9iDF6JSVDf7Tuncxw5LYIFa4g2BfpX
+         omQYBiMX8ztrcb+yVkYB3rtHRrcQltIhGXGG1rjg75WVgLwcTG+DkO6pnRcRA1crjZjZ
+         kivj4PZ278PM3jkAQfQExZK7azpKD0SskdULDLWz3kiJ+pZykeylEuO4N4ofg+Qll9Et
+         S7Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704916275; x=1705521075;
+        d=1e100.net; s=20230601; t=1704916277; x=1705521077;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=jqqZ1xFBo82n6w1dVaiJcbo432Ln6B24n8maUrb2mjE=;
-        b=aUQ/0wJdiyNtvjXE1IhZxQNubBmH5hdvNPPl9Ty3GFw6cjYFhfPaQoTAhPFWUtRNmW
-         KpqjmXRcOD7CBPgjhhzwWV0OjcwYSip7x0GcZNHJBBeWutYyfl6mS67v62WtRzTH9OWd
-         DdZ8cLuBUZTaguIVx7QvBqUxPBREkrFbM+TFXFbL97ZJn60OI4Xfuh/2riIlEMFDHz8t
-         SBOZQ4NLQ5JuO76ZaCYc69XMm8270iW34ENA34A81oNRGPwu1FeQjgfJ5qc7vPdaauTv
-         fZ7MC+I8qME8Z9ed3H/LrnfHSE3qiKJJBAQDn6Issdd/hJCThAzM6prBKZQy5DGx+6hm
-         duXg==
-X-Gm-Message-State: AOJu0Yyurztj7+KzEYhzbIOcS9B5teW1VAgDrg0MuiQ3iXjjNmIslqIg
-	o25DDttiaJ24qHLxQwq6u4Kt2OZYJQt6dg==
-X-Google-Smtp-Source: AGHT+IGpvpbNrgicdFH6SZalFJARifgnOCGpguDFxh622L8t3QzMdc8P1+4NLpt69DdVpeiIu3LAlA==
-X-Received: by 2002:a4a:c385:0:b0:598:9871:2800 with SMTP id u5-20020a4ac385000000b0059898712800mr400192oop.3.1704916275707;
-        Wed, 10 Jan 2024 11:51:15 -0800 (PST)
+        bh=uvLBZp36pzTyMACXtPdvGno5nE8Tc/vk1PKJFHFwqlw=;
+        b=mZp4Kg3L1K9EqTGbs0vve7WpoVvz/HU9SnxycKFxytaXuRXvwjNVrI8sZl8vtRzDZT
+         hZHkOdLq3Ejl2pgzfuWhRAZWquj+SP97nc+Ns2aObIHwYDYGmxzSZlQ3YG+7yduLZ0VS
+         5MB+q9BIZPbHWQ+48qzHZlPD9CEUSbl/NkwRX532jZCCh7l5a9ncBZ5fxaWhF/CgGRAp
+         jEPuRL+gXpWL0a2PCJ3olI82IrgI1KbFZZ92fNVVBevdoyPdM5VBp1OgGpTVOuO7Mzxi
+         q78OSUfu9Iu3SjbTYWp4VeEF3+cQWVLHBgEHeOj5JbglaSx/6hXGD8XYzPn0tCtE8sU3
+         GAtA==
+X-Gm-Message-State: AOJu0YxwUt+r5Iz5VYRcDz1QGx3qgKtK0hlRzLqqmnA53XsFAHQorQAV
+	0aAzSxFV40re48wYM4ciU18Qbw7E3f3tTw==
+X-Google-Smtp-Source: AGHT+IFbclB6k8E5/ylz/wBfLjmVg+ND+S+SfqvTYYmbBTtTdhhQGPaDPGrmNj5Z07W3EBq+SgmL3Q==
+X-Received: by 2002:a4a:3543:0:b0:598:1fa3:80b9 with SMTP id w3-20020a4a3543000000b005981fa380b9mr76085oog.14.1704916277632;
+        Wed, 10 Jan 2024 11:51:17 -0800 (PST)
 Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 187-20020a4a0dc4000000b00595b35927a3sm938513oob.39.2024.01.10.11.51.14
+        by smtp.gmail.com with ESMTPSA id 187-20020a4a0dc4000000b00595b35927a3sm938513oob.39.2024.01.10.11.51.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jan 2024 11:51:15 -0800 (PST)
+        Wed, 10 Jan 2024 11:51:17 -0800 (PST)
 From: David Lechner <dlechner@baylibre.com>
 To: Mark Brown <broonie@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
@@ -61,9 +61,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-doc@vger.kernel.org,
 	linux-pwm@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 07/13] iio: buffer: dmaengine: add INDIO_HW_BUFFER_TRIGGERED flag
-Date: Wed, 10 Jan 2024 13:49:48 -0600
-Message-ID: <20240109-axi-spi-engine-series-3-v1-7-e42c6a986580@baylibre.com>
+Subject: [PATCH 09/13] bus: auxiliary: increase AUXILIARY_NAME_SIZE
+Date: Wed, 10 Jan 2024 13:49:50 -0600
+Message-ID: <20240109-axi-spi-engine-series-3-v1-9-e42c6a986580@baylibre.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20240109-axi-spi-engine-series-3-v1-0-e42c6a986580@baylibre.com>
 References: <20240109-axi-spi-engine-series-3-v1-0-e42c6a986580@baylibre.com>
@@ -77,28 +77,32 @@ Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.12.4
 Content-Transfer-Encoding: 8bit
 
-This adds the new INDIO_HW_BUFFER_TRIGGERED flag to the available modes
-of the dmaengine buffer. This allows it to be used as the buffer of
-devices that use the INDIO_HW_BUFFER_TRIGGERED flag.
+The auxiliary bus uses names in the form of "module_name.device_name"
+for matching devices to drivers. Since the module name is the actual
+module name, it can be quite long which doesn't leave enough room for
+the device name.
+
+This patch increases the size AUXILIARY_NAME_SIZE to 64 to allow for
+both a ~32 character module name and a ~32 character device name.
 
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
- drivers/iio/buffer/industrialio-buffer-dmaengine.c | 2 +-
+ include/linux/mod_devicetable.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-index 5f85ba38e6f6..c67ddf963bfb 100644
---- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-@@ -120,7 +120,7 @@ static const struct iio_buffer_access_funcs iio_dmaengine_buffer_ops = {
- 	.data_available = iio_dma_buffer_data_available,
- 	.release = iio_dmaengine_buffer_release,
- 
--	.modes = INDIO_BUFFER_HARDWARE,
-+	.modes = INDIO_BUFFER_HARDWARE | INDIO_HW_BUFFER_TRIGGERED,
- 	.flags = INDIO_BUFFER_FLAG_FIXED_WATERMARK,
+diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
+index f458469c5ce5..4bd2d20067b6 100644
+--- a/include/linux/mod_devicetable.h
++++ b/include/linux/mod_devicetable.h
+@@ -861,7 +861,7 @@ struct mhi_device_id {
+ 	kernel_ulong_t driver_data;
  };
  
+-#define AUXILIARY_NAME_SIZE 32
++#define AUXILIARY_NAME_SIZE 64
+ #define AUXILIARY_MODULE_PREFIX "auxiliary:"
+ 
+ struct auxiliary_device_id {
 
 -- 
 2.43.0
