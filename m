@@ -1,108 +1,105 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C08E3714C;
-	Sun, 21 Jan 2024 12:56:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.93
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9A6A364DE;
+	Sun, 21 Jan 2024 12:56:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.120
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705841802; cv=none; b=B9VjdIvinCsJEV2CokidbTwQBKjPkvLKDmLH6FrMjyYn0J6QM4AwPFJokxDJTqvAfHdLfFRG1/lyiPMymxjQnhsCJScHorOKc0tGWU7wtkDg3BGmsvi2SepbLMPWyOECT+jtMTOgbxVE5H0X156Tnyi5199Lb7hxKTYWHUXU93w=
+	t=1705841821; cv=none; b=GPrq/KFJbFbbdMNG8TYcexfDpw4cLn2Nih4hKqbm1b4ppjwLAXj3uh1EmPM61s9dv50ObfroPGv1zG43AGl4yUOXPmi9xBpLnmi4GuKiwdVhBuwsjoQOe/RgJVg5NE7jRpP4tODFCeMXmXLeeZu8+s+aedD43OLHMaxhJUpmPgA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705841802; c=relaxed/simple;
-	bh=MFggLcNb6FnJrDnaHyePScPjFRJI9rDwfH1smuryGOk=;
+	s=arc-20240116; t=1705841821; c=relaxed/simple;
+	bh=6eY2EsvgLtd1tdx27pT2jiesQjvpacfStJLRMuLR5HE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IT4R6yM6BR0qN+/ZhZe6Ke3iI4zfvzWGEPc3ZDtCtooedqa33HMousfqGCOFvRdQLPZgAKtJIjTYoC8BZENysYmNieSaRnEFhEVv29AB4yVfhTaazwGxJvSN163u+PYwwJRXOIpcOxbCXRgqInLPXh/4cdXEWQP1xSIfI3/DtIM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iLnJaiiR; arc=none smtp.client-ip=192.55.52.93
+	 Content-Type:Content-Disposition:In-Reply-To; b=EbI2R762K1RUJxnoYElRP+FWtTbAPvEi6ph7jIaRWI9APnxYTBnDdpm/zz/yrH0/ac2CjDrU1yRIUxt0mVLZSZ5IwwrIe/ZppPk52kEmKt4J86HbtOag/lzvwMCV4m9UaqxLGYpzubDka5ZWrZ4jew/xuNtQ7BeQ721Jlhgoxmo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gOkdsABu; arc=none smtp.client-ip=192.55.52.120
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iLnJaiiR"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gOkdsABu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1705841801; x=1737377801;
+  t=1705841819; x=1737377819;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=MFggLcNb6FnJrDnaHyePScPjFRJI9rDwfH1smuryGOk=;
-  b=iLnJaiiRmIhyDDCleVG7b8ssVVRutUbiFfgfd/SG/ZNIgjTnKaMr1nss
-   GK7vUeRQXpcPZjuwVlkE2FzJBU9r4Bkh4aGOTLxDsobrgZZNc6UzWyYTr
-   ZApZRT9+cvgjQSXC9717wxpmpEypztyvPjEWDfKSwmdDM9UDILza7tsxD
-   AqFCUR2mK/e2nW6ZbCuEUWdY0WtMnEalfjK3uF8NLzqAnulp2V9lZeUMP
-   ehvDX1N0Qgsz3igAEBS87ulg7W7tC4pg/XqcZRjK2ZcEgmtBrn1OArOVj
-   5p+JM6n0PJ8KQDYYWz/WXsRGapklzp9KO9R1xkZRC2xScB0JEWOJhVOns
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10959"; a="398185464"
+   mime-version:in-reply-to;
+  bh=6eY2EsvgLtd1tdx27pT2jiesQjvpacfStJLRMuLR5HE=;
+  b=gOkdsABujlYpPKXOsyMhkdgfyPtnEwyVeRfaflS52qbKavpD8iVKljO7
+   iqKuitkzX4ulMrsaSnjX4S+/ZOSDCeRBYiEWXUJCkB6XwVv3vCOqJamZj
+   kvwHg0uvL79KSdq7idHCATzrMCR/RrovZcOaWiXkvvVcZoocAg5twjwPW
+   usgzMH7RxJMw7QjzjbJ30niSzHqfapSBMJ93ARvtQ2Km134XcwUJVLnr6
+   gPekFGYZnnqtx89co3EK+LOzg7JP7xY3U8Dk10bKNNgFtqTT2AXKp55oj
+   qfuNKXOhT8DbBT94M3rLbuBPI1PLPBoGX/OrHNCkqviaxAx3mvuV4HzCJ
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10959"; a="399901697"
 X-IronPort-AV: E=Sophos;i="6.05,209,1701158400"; 
-   d="scan'208";a="398185464"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2024 04:56:40 -0800
+   d="scan'208";a="399901697"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2024 04:56:58 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10959"; a="875746374"
+X-IronPort-AV: E=McAfee;i="6600,9927,10959"; a="904591545"
 X-IronPort-AV: E=Sophos;i="6.05,209,1701158400"; 
-   d="scan'208";a="875746374"
+   d="scan'208";a="904591545"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by FMSMGA003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2024 04:56:36 -0800
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2024 04:56:53 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.97)
 	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rRXJn-0000000Fcoe-0D1r;
-	Sun, 21 Jan 2024 14:52:55 +0200
-Date: Sun, 21 Jan 2024 14:52:54 +0200
+	id 1rRWvW-0000000FcFt-2GTK;
+	Sun, 21 Jan 2024 14:27:50 +0200
+Date: Sun, 21 Jan 2024 14:27:50 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: subhajit.ghosh@tweaklogic.com, anshulusr@gmail.com, conor+dt@kernel.org,
-	devicetree@vger.kernel.org, javier.carrasco.cruz@gmail.com,
-	jic23@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-	lars@metafoo.de, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, marex@denx.de, matt@ranostay.sg,
-	mazziesaccount@gmail.com, robh+dt@kernel.org,
-	stefan.windfeldt-prytz@axis.com
-Subject: Re: [PATCH v5 3/3] iio: light: Add support for APDS9306 Light Sensor
-Message-ID: <Za0TpiKjDD27Vh_x@smile.fi.intel.com>
-References: <20240121051735.32246-1-subhajit.ghosh@tweaklogic.com>
- <20240121051735.32246-4-subhajit.ghosh@tweaklogic.com>
- <8a7f03b6-caca-4fbb-8093-0ba87bd2e850@wanadoo.fr>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, "Rafael J . Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Daniel Scally <djrscally@gmail.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Cosmin Tanislav <cosmin.tanislav@analog.com>,
+	Mihail Chindris <mihail.chindris@analog.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Tomislav Denis <tomislav.denis@avl.com>,
+	Marek Vasut <marex@denx.de>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	Marius Cristea <marius.cristea@microchip.com>,
+	Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 00/13] device property / IIO: Use cleanup.h magic for
+ fwnode_handle_put() handling.
+Message-ID: <Za0NxrgBb0ve233b@smile.fi.intel.com>
+References: <20240114172009.179893-1-jic23@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8a7f03b6-caca-4fbb-8093-0ba87bd2e850@wanadoo.fr>
+In-Reply-To: <20240114172009.179893-1-jic23@kernel.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Sun, Jan 21, 2024 at 10:22:50AM +0100, Christophe JAILLET wrote:
-> Le 21/01/2024 à 06:17, Subhajit Ghosh a écrit :
-
-...
-
-> > +#define APDS9306_ALS_THRES_VAL_MAX	(BIT(20) - 1)
-> > +#define APDS9306_ALS_THRES_VAR_VAL_MAX	(BIT(3) - 1)
-> > +#define APDS9306_ALS_PERSIST_VAL_MAX	(BIT(4) - 1)
+On Sun, Jan 14, 2024 at 05:19:56PM +0000, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> Nit: GENMASK()?
+> Chances since RFC.
+> - Add if (!IS_ERR_OR_NULL(_T)) check as suggested by Andy Shevchenko.
+>   This may allow the compiler to optimize cases where it can tell that
+>   this check will fail rather than calling into fwnode_handle_put().
 
-I think no, these are plain numbers given in the form of BIT(x) - 1 to show the
-HW limit on the values (in bits).
+FWIW, this nuance is mentioned in [1] as:
 
-...
+  "Within the macro, this declaration is creating a new function called
+  __free_kfree() that makes a call to kfree() if the passed-in pointer is not
+  NULL. Nobody will ever call that function directly, but the declaration makes
+  it possible to write code like: ..."
 
-> > +	intg_time = iio_gts_find_int_time_by_sel(&data->gts, intg_time_idx);
-> > +	if (intg_time < 0)
-> > +		delay = apds9306_repeat_rate_period[repeat_rate_idx];
-> 
-> 'delay' is always overwritten by the line below.
+Not so explicit, but still...
 
-Seems like entire conditional here is not needed as it's implied in the max().
-And max() should take both signed or unsigned types, different types might have
-a side effect.
-
-> > +	/*
-> > +	 * Whichever is greater - integration time period or
-> > +	 * sampling period.
-> > +	 */
-> > +	delay = max(intg_time,
-> > +		    apds9306_repeat_rate_period[repeat_rate_idx]);
+[1]: https://lwn.net/Articles/934679/
 
 -- 
 With Best Regards,
