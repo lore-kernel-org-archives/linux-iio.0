@@ -1,108 +1,103 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9A6A364DE;
-	Sun, 21 Jan 2024 12:56:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.120
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B0F937160;
+	Sun, 21 Jan 2024 13:51:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705841821; cv=none; b=GPrq/KFJbFbbdMNG8TYcexfDpw4cLn2Nih4hKqbm1b4ppjwLAXj3uh1EmPM61s9dv50ObfroPGv1zG43AGl4yUOXPmi9xBpLnmi4GuKiwdVhBuwsjoQOe/RgJVg5NE7jRpP4tODFCeMXmXLeeZu8+s+aedD43OLHMaxhJUpmPgA=
+	t=1705845088; cv=none; b=KahHLmlN4xZuMDTYNBcL9RIXoIJm+l9cIGdxXJZKw46lMLYg4Gyx8qy7TwGqvw3HIb2DBAoVQ1J2V+AOLhbATKfGWpDxwKGPblF5CikHFfaIgTD7EwDsf75Ni3UwjYODyyiBe4okGwHcrm53FW38eifT8zyEz+gji6RrEkPtR8s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705841821; c=relaxed/simple;
-	bh=6eY2EsvgLtd1tdx27pT2jiesQjvpacfStJLRMuLR5HE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EbI2R762K1RUJxnoYElRP+FWtTbAPvEi6ph7jIaRWI9APnxYTBnDdpm/zz/yrH0/ac2CjDrU1yRIUxt0mVLZSZ5IwwrIe/ZppPk52kEmKt4J86HbtOag/lzvwMCV4m9UaqxLGYpzubDka5ZWrZ4jew/xuNtQ7BeQ721Jlhgoxmo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gOkdsABu; arc=none smtp.client-ip=192.55.52.120
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1705845088; c=relaxed/simple;
+	bh=RRuaQ9+UZxnjRq0EzIx5cXmNFrlQNvdxgFQYuMRugDs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ZCZs0e09+kuuDNBYhik4pv3/R34zd1zgzS1H+zvb245GHV0GyQ/98EJ8VvBkCteZETw77cEIrLmUmcIfkYkflEmh6vbPnB3WrK48SNDa+Ka17MrwHCdxiA5FOzkEcKthwKnz6hU/6Q7IzU65pBAIafml3PfSRwY1zQE/dJXkEIw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ILrkPXEz; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gOkdsABu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1705841819; x=1737377819;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6eY2EsvgLtd1tdx27pT2jiesQjvpacfStJLRMuLR5HE=;
-  b=gOkdsABujlYpPKXOsyMhkdgfyPtnEwyVeRfaflS52qbKavpD8iVKljO7
-   iqKuitkzX4ulMrsaSnjX4S+/ZOSDCeRBYiEWXUJCkB6XwVv3vCOqJamZj
-   kvwHg0uvL79KSdq7idHCATzrMCR/RrovZcOaWiXkvvVcZoocAg5twjwPW
-   usgzMH7RxJMw7QjzjbJ30niSzHqfapSBMJ93ARvtQ2Km134XcwUJVLnr6
-   gPekFGYZnnqtx89co3EK+LOzg7JP7xY3U8Dk10bKNNgFtqTT2AXKp55oj
-   qfuNKXOhT8DbBT94M3rLbuBPI1PLPBoGX/OrHNCkqviaxAx3mvuV4HzCJ
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10959"; a="399901697"
-X-IronPort-AV: E=Sophos;i="6.05,209,1701158400"; 
-   d="scan'208";a="399901697"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2024 04:56:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10959"; a="904591545"
-X-IronPort-AV: E=Sophos;i="6.05,209,1701158400"; 
-   d="scan'208";a="904591545"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2024 04:56:53 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rRWvW-0000000FcFt-2GTK;
-	Sun, 21 Jan 2024 14:27:50 +0200
-Date: Sun, 21 Jan 2024 14:27:50 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, "Rafael J . Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Daniel Scally <djrscally@gmail.com>,
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Cosmin Tanislav <cosmin.tanislav@analog.com>,
-	Mihail Chindris <mihail.chindris@analog.com>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Tomislav Denis <tomislav.denis@avl.com>,
-	Marek Vasut <marex@denx.de>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	Marius Cristea <marius.cristea@microchip.com>,
-	Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 00/13] device property / IIO: Use cleanup.h magic for
- fwnode_handle_put() handling.
-Message-ID: <Za0NxrgBb0ve233b@smile.fi.intel.com>
-References: <20240114172009.179893-1-jic23@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ILrkPXEz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A399CC433C7;
+	Sun, 21 Jan 2024 13:51:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1705845087;
+	bh=RRuaQ9+UZxnjRq0EzIx5cXmNFrlQNvdxgFQYuMRugDs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=ILrkPXEzoDn/HWJ+Tq1WzkeGUP3ZFCNJMPxvH7UdJzBRLl22nalPQkgg96npJZo/z
+	 BYt6Y5xPNg6EqQOUqzTU2fUDwOv3Anlhi5GX9xpHCh0Tx7yNsYIEjovBP6B90/Jlmb
+	 mpx+Ymtxw0LgE2fzdb2lYmSUacHN0LoyEb8FzjtOF+hMn5BQKDnxXEzdGWq75WRMeR
+	 3A+v5T+yOTKb1wT45ZTM0lBmzHiRF9OUQkauvoYssnjU8ZGP0wSbsG62eGwUjte1ft
+	 N7D9ixepEe26qB0BjC7hQgA3CwQW6aWDMb5s1Q1Jn5GSSGGtLcBYb78pDtI6JH7ETI
+	 zZAEkB9PTrvIg==
+Date: Sun, 21 Jan 2024 13:51:14 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Li peiyu <579lpy@gmail.com>,
+ robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 3/4] iio: humidity: Add driver for ti HDC302x
+ humidity sensors
+Message-ID: <20240121135114.5f2aa0cf@jic23-huawei>
+In-Reply-To: <b349fd4a-c7e3-44f8-9908-2abe24bbd69e@gmail.com>
+References: <20231211122201.9598-1-579lpy@gmail.com>
+	<20231211122940.9791-1-579lpy@gmail.com>
+	<d9a84e5b-9e23-4aa9-8e58-0bb9f2b224d7@metafoo.de>
+	<b349fd4a-c7e3-44f8-9908-2abe24bbd69e@gmail.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.40; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240114172009.179893-1-jic23@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jan 14, 2024 at 05:19:56PM +0000, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> Chances since RFC.
-> - Add if (!IS_ERR_OR_NULL(_T)) check as suggested by Andy Shevchenko.
->   This may allow the compiler to optimize cases where it can tell that
->   this check will fail rather than calling into fwnode_handle_put().
+On Sat, 20 Jan 2024 17:14:21 +0100
+Javier Carrasco <javier.carrasco.cruz@gmail.com> wrote:
 
-FWIW, this nuance is mentioned in [1] as:
+> On 20.01.24 05:17, Lars-Peter Clausen wrote:
+> > On 12/11/23 04:29, Li peiyu wrote: =20
+> >> Add support for HDC302x integrated capacitive based relative
+> >> humidity (RH) and temperature sensor.
+> >> This driver supports reading values, reading the maximum and
+> >> minimum of values and controlling the integrated heater of
+> >> the sensor.
+> >>
+> >> Co-developed-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+> >> Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+> >> Signed-off-by: Li peiyu <579lpy@gmail.com>
+> >> ---
+> >> =C2=A0 MAINTAINERS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=
+=A0 8 +
+> >> =C2=A0 drivers/iio/humidity/Kconfig=C2=A0=C2=A0 |=C2=A0 12 +
+> >> =C2=A0 drivers/iio/humidity/Makefile=C2=A0 |=C2=A0=C2=A0 1 +
+> >> =C2=A0 drivers/iio/humidity/hdc3020.c | 473 ++++++++++++++++++++++++++=
++++++++ =20
+> > I was just trying to use this driver. Somehow the Makefile and Kconfig
+> > changes were lost when the patch was applied to the IIO tree.
+> >=20
+> >  =20
+> Apparently only the driver code was added. The new entry in the
+> MAINTAINERS file is also missing.
+>=20
+> Best regards,
+> Javier Carrasco
 
-  "Within the macro, this declaration is creating a new function called
-  __free_kfree() that makes a call to kfree() if the passed-in pointer is not
-  NULL. Nobody will ever call that function directly, but the declaration makes
-  it possible to write code like: ..."
+Gah, I clearly messed up. My guess is a messy merge that went wrong..
 
-Not so explicit, but still...
+Anyhow, I'll post a patch to put this back in a few mins and pick it direct=
+ly
+given it's just putting in the missing stuff from this patch.
 
-[1]: https://lwn.net/Articles/934679/
+That will be on the fixes-togreg branch of iio.git shortly.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Extra tags etc are fine, but I'm keen to get this into linux-next at least
+quickly so we get some testing before I send a fixes pull request (probably
+next weekend).
+
+Sorry for the mess up!
+
+Jonathan
+
 
 
