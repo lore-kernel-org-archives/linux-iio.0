@@ -1,56 +1,63 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EFEF38F8F;
-	Mon, 22 Jan 2024 08:48:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28EC137143;
+	Mon, 22 Jan 2024 09:03:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705913307; cv=none; b=SaRdFkMcrxF92WaJcrHOmwNEQ7NWeVwPm+iKmRg/xoP8g48VSKNxDfzhI3aH/rByTy2/kBUg/K6T1A3JSFYXtE1YTLy4obdclZs1qBedheqjErJveEdU+VplkpM7bHfEXvq/0/iXEYP1oZg0B6cQIZ3SNStKj+T06EYnWqrAyk8=
+	t=1705914203; cv=none; b=KdFeTw5yfKcB7en/kbj3qkkN6VnN0ykzJcYd4+qy3Il55zkPWDrQ6Eyly9i/GfEk0TEPCjtp+yqVkhBSrua8YmeERXhRoExWFg7dbyjQA9pfh3t9tq9GUNdMOcwLvd/qOSLlylrXcd5nwzL+64hLxfCntUg2E3rTrVJvgrrsM9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705913307; c=relaxed/simple;
-	bh=WYvUJM6Lln/O7kMg7YLdb6gXjy+H8J71CclA1VdAyD8=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=kwVY7stdxYXdssnFfEbU/BrrR6Nq5nHBdKu3Byx0ZKfry1jiB4eTHfMn3mdv8+V5RdlYtFOoI1yZ8SZCS6AA3gduKvO94mCZaOEnXBh669ZT8pc7X1kc5Y/sfpkyOdHkC9DPbjXoPsVLkzJsQNKdoo9Uv62oc+/2+ytCwEbsZW0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=PbdD3Z0z; arc=none smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="PbdD3Z0z"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1705913305; x=1737449305;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=WYvUJM6Lln/O7kMg7YLdb6gXjy+H8J71CclA1VdAyD8=;
-  b=PbdD3Z0zZyqZPssJ1jRGUp97yERSto0Td81xnc+CujYHf/y/4XdEruqC
-   E3hX38B2sidv5Y/FtUI954CdAZYJpCB/gCvf4/ldtpLUAUrlN1Yhm6JK5
-   rqp8983Hr71VEyKs8jZYygswKr4QyK53An3R6Lf9iu/Es/doHYnEdIfR7
-   BpWOohAmIfHI+IK584kVAOgac6wTMbxxCuNd7m2hVT09+m2QqFDU3GTc6
-   BBFNai0+fAL5tfSybnr2oa+kZxA8YkvzJ7jg7V0l3gNHr6UhL1IuL9ww6
-   2JEXWghXl8Q5bD10BZPUgbZ1UTMLhKsbJ9+erZwJrkEX1ysLr1t06DU/I
-   g==;
-X-CSE-ConnectionGUID: 4ytLpERVSI+Hb+Gl/SsgFQ==
-X-CSE-MsgGUID: Bvw4fyzxTSmyLuJ1xX4WYw==
-X-IronPort-AV: E=Sophos;i="6.05,211,1701154800"; 
-   d="scan'208";a="15087208"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 22 Jan 2024 01:48:24 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 22 Jan 2024 01:47:18 -0700
-Received: from marius-VM.mshome.net (10.10.85.11) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.35 via Frontend
- Transport; Mon, 22 Jan 2024 01:47:15 -0700
-From: <marius.cristea@microchip.com>
-To: <jic23@kernel.org>, <lars@metafoo.de>, <robh+dt@kernel.org>,
-	<jdelvare@suse.com>, <linux@roeck-us.net>, <linux-hwmon@vger.kernel.org>
-CC: <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <marius.cristea@microchip.com>
-Subject: [PATCH v4 0/2] adding support for Microchip PAC193X Power Monitor
-Date: Mon, 22 Jan 2024 10:47:10 +0200
-Message-ID: <20240122084712.11507-1-marius.cristea@microchip.com>
+	s=arc-20240116; t=1705914203; c=relaxed/simple;
+	bh=EXy0nVQzZ65wUsrYDem9bvoLzDhSQaMlHTqdoME9Rh8=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=juQ9RBiHLe8cbVFZbgs88PVfLnBOo72GFBqbcnqaUrw3BWr//Ym65OPApqAPsSgNLXbCdawN9yMX/Kcok6ctLQ5NEFbpL3QWFKrUCHo4glBSSGy80LbMWsHe2kaV8WPJ3Pi594DG2VFxHTxIRI9uaUNEPgW+lJn2tptoxdBbf5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40M8g7K5004018;
+	Mon, 22 Jan 2024 04:02:59 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 3vsfxas4rk-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 22 Jan 2024 04:02:59 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 40M92v9A053144
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 22 Jan 2024 04:02:57 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 22 Jan 2024 04:02:56 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 22 Jan 2024 04:02:56 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 22 Jan 2024 04:02:56 -0500
+Received: from kim-VirtualBox.ad.analog.com (KPALLER2-L03.ad.analog.com [10.117.220.34])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 40M92aWx012545;
+	Mon, 22 Jan 2024 04:02:38 -0500
+From: Kim Seer Paller <kimseer.paller@analog.com>
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Rob Herring
+	<robh+dt@kernel.org>,
+        Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>, "Crt
+ Mori" <cmo@melexis.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Bartosz
+ Golaszewski" <brgl@bgdev.pl>,
+        =?UTF-8?q?Nuno=20S=C3=A1?=
+	<noname.nuno@gmail.com>,
+        Kim Seer Paller <kimseer.paller@analog.com>
+Subject: [PATCH v7 1/2] dt-bindings: iio: frequency: add admfm2000
+Date: Mon, 22 Jan 2024 17:02:27 +0800
+Message-ID: <20240122090228.28363-1-kimseer.paller@analog.com>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -60,89 +67,193 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: EDV1Buu5bnYXRZ8u_HAFQvaq7Ajxwh0r
+X-Proofpoint-ORIG-GUID: EDV1Buu5bnYXRZ8u_HAFQvaq7Ajxwh0r
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-01-21_04,2024-01-22_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 malwarescore=0
+ spamscore=0 priorityscore=1501 mlxscore=0 phishscore=0 suspectscore=0
+ mlxlogscore=999 adultscore=0 lowpriorityscore=0 impostorscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2401220065
 
-From: Marius Cristea <marius.cristea@microchip.com>
+Dual microwave down converter module with input RF and LO frequency
+ranges from 0.5 to 32 GHz and an output IF frequency range from 0.1 to
+8 GHz. It consists of a LNA, mixer, IF filter, DSA, and IF amplifier
+for each down conversion path.
 
-Adding support for Microchip PAC193X series of Power Monitor with
-Accumulator chip family. This driver covers the following part numbers:
- - PAC1931, PAC1932, PAC1933 and PAC1934
+Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
+---
+V6 -> V7: Changed RF path mode property to boolean.
+V5 -> V6: Moved array of switch and attenuation GPIOs to the channel node.
+          Changed pin coords with friendly names. Removed Reviewed-by tag.
+V4 -> V5: Added Reviewed-by tag.
+V3 -> V4: Updated the description of the properties with multiple entries and
+          defined the order.
+V2 -> V3: Adjusted indentation to resolve wrong indentation warning. 
+          Changed node name to converter. Updated the descriptions to clarify
+          the properties.
+V1 -> V2: Removed '|' after description. Specified the pins connected to
+          the GPIOs. Added additionalProperties: false. Changed node name to gpio.
+          Aligned < syntax with the previous syntax in the examples.
 
-  This device is at the boundary between IIO and HWMON (if you are
-looking just at the "shunt resistors, vsense, power, energy"). The
-device also has ADC internally that can measure voltages (up to 4
-channels) and also currents (up to 4 channels). The current is measured as
-voltage across the shunt_resistor.
+ .../bindings/iio/frequency/adi,admfm2000.yaml | 124 ++++++++++++++++++
+ MAINTAINERS                                   |   7 +
+ 2 files changed, 131 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admfm2000.yaml
 
-  I have started with a simple driver (this one that is more appropriate to be
-a HWMON) and willing to add more functionality later (like data buffering that
-is quite important for example if someone wants to profile power consumption
-of the processor itself, or a peripheral device, or a battery, this kind of
-functionality was requested by our customers).
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,admfm2000.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,admfm2000.yaml
+new file mode 100644
+index 000000000000..9e716f59d678
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,admfm2000.yaml
+@@ -0,0 +1,124 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright 2024 Analog Devices Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,admfm2000.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ADMFM2000 Dual Microwave Down Converter
++
++maintainers:
++  - Kim Seer Paller <kimseer.paller@analog.com>
++
++description:
++  Dual microwave down converter module with input RF and LO frequency ranges
++  from 0.5 to 32 GHz and an output IF frequency range from 0.1 to 8 GHz.
++  It consists of a LNA, mixer, IF filter, DSA, and IF amplifier for each down
++  conversion path.
++
++properties:
++  compatible:
++    enum:
++      - adi,admfm2000
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++patternProperties:
++  "^channel@[0-1]$":
++    type: object
++    description: Represents a channel of the device.
++
++    additionalProperties: false
++
++    properties:
++      reg:
++        description:
++          The channel number.
++        minimum: 0
++        maximum: 1
++
++      adi,mixer-mode:
++        description:
++          Enable mixer mode.
++        type: boolean
++
++      switch-gpios:
++        description: |
++          GPIOs to select the RF path for the channel.
++          SW-CH1   CTRL-A   CTRL-B
++          SW-CH2   CTRL-A   CTRL-B    CH1 Status        CH2 Status
++                   1        0         Direct IF mode    Mixer mode
++                   0        1         Mixer mode        Direct IF mode
++
++        items:
++          - description: SW-CH-CTRL-A GPIO
++          - description: SW-CH-CTRL-B GPIO
++
++      attenuation-gpios:
++        description: |
++          Choice of attenuation:
++          DSA-V4  DSA-V3  DSA-V2  DSA-V1  DSA-V0
++          1       1       1       1       1        0 dB
++          1       1       1       1       0        -1 dB
++          1       1       1       0       1        -2 dB
++          1       1       0       1       1        -4 dB
++          1       0       1       1       1        -8 dB
++          0       1       1       1       1        -16 dB
++          0       0       0       0       0        -31 dB
++
++        items:
++          - description: DSA-V0 GPIO
++          - description: DSA-V1 GPIO
++          - description: DSA-V2 GPIO
++          - description: DSA-V3 GPIO
++          - description: DSA-V4 GPIO
++
++    required:
++      - reg
++      - switch-gpios
++      - attenuation-gpios
++
++required:
++  - compatible
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    converter {
++      compatible = "adi,admfm2000";
++
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      channel@0 {
++        reg = <0>;
++        switch-gpios = <&gpio 1 GPIO_ACTIVE_LOW>,
++                       <&gpio 2 GPIO_ACTIVE_HIGH>;
++
++        attenuation-gpios = <&gpio 17 GPIO_ACTIVE_LOW>,
++                            <&gpio 22 GPIO_ACTIVE_LOW>,
++                            <&gpio 23 GPIO_ACTIVE_LOW>,
++                            <&gpio 24 GPIO_ACTIVE_LOW>,
++                            <&gpio 25 GPIO_ACTIVE_LOW>;
++      };
++
++      channel@1 {
++        reg = <1>;
++        adi,mixer-mode;
++        switch-gpios = <&gpio 3 GPIO_ACTIVE_LOW>,
++                       <&gpio 4 GPIO_ACTIVE_HIGH>;
++
++        attenuation-gpios = <&gpio 0 GPIO_ACTIVE_LOW>,
++                            <&gpio 5 GPIO_ACTIVE_LOW>,
++                            <&gpio 6 GPIO_ACTIVE_LOW>,
++                            <&gpio 16 GPIO_ACTIVE_LOW>,
++                            <&gpio 26 GPIO_ACTIVE_LOW>;
++      };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8d1052fa6a69..1f7cd2e848de 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1267,6 +1267,13 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/hwmon/adi,adm1177.yaml
+ F:	drivers/hwmon/adm1177.c
+ 
++ANALOG DEVICES INC ADMFM2000 DRIVER
++M:	Kim Seer Paller <kimseer.paller@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/frequency/adi,admfm2000.yaml
++
+ ANALOG DEVICES INC ADMV1013 DRIVER
+ M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+ L:	linux-iio@vger.kernel.org
 
-
-Differences related to previous patch:
-v4:
-  - remove the "reset_accumulators" proprietary attribute
-  - add enable/disable for energy channels
-  - remove "reset_accumulators" attribute
-  - remove unused/redundant defines
-  - rename variable to be more relevant into a certain context
-  - make "storagebits" naturally aligned power of 2
-  - fix coding style issues
-  - use to_iio_dev_attr to access address field in the IIO_DEVICE_ATTR()
-  - remove unnecesarry "break" from switch case
-  - remove double increment and initialization of a variable
-  - use address as index in IIO_DEVICE_ATTR
-  - properly handle memory allocation failure
-
-v3:
-- this version was sent also to HWMON list
-- fix review comments:
-  - drop redundant description from device tree bindings
-  - reorder "patternProperties:" to follow "properties:" in device tree bindings
-  - update comments to proper describe code
-  - use numbers instead of defines for clarity in some part of the code
-  - use the new "guard(mutex)"
-  - use "clamp()" instead of duplicating code
-  - remove extra layer of checking in some switch cases
-  - use "i2c_get_match_data()"
-  - replace while with for loops for the code to look cleaner
-  - reverse the logic to reduce indent.
-  - add comment related to channels numbering
-  - remove memory duplicate when creating dynamic channels
-  - add "devm_add_action_or_reset" to handle the "cancel_delayed_work_sync"
-  - remove "pac1934_remove()" function
-
-v2:
-- fix review comments:
-  - change the device tree bindings
-  - use label property
-  - fix coding style issues
-  - remove unused headers
-  - use get_unaligned_bexx instead of own functions
-  - change to use a system work queue
-  - use probe_new instead of old probe
-
-v1:
-- first version committed to review
-
-Marius Cristea (2):
-  dt-bindings: iio: adc: adding support for PAC193X
-  iio: adc: adding support for PAC193x
-
- .../ABI/testing/sysfs-bus-iio-adc-pac1934     |    9 +
- .../bindings/iio/adc/microchip,pac1934.yaml   |  120 ++
- MAINTAINERS                                   |    7 +
- drivers/iio/adc/Kconfig                       |   12 +
- drivers/iio/adc/Makefile                      |    1 +
- drivers/iio/adc/pac1934.c                     | 1646 +++++++++++++++++
- 6 files changed, 1795 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-pac1934
- create mode 100644 Documentation/devicetree/bindings/iio/adc/microchip,pac1934.yaml
- create mode 100644 drivers/iio/adc/pac1934.c
-
-
-base-commit: b1a1eaf6183697b77f7243780a25f35c7c0c8bdf
+base-commit: 32f764943a21c1af01016bbcd43605220c076262
 -- 
 2.34.1
 
