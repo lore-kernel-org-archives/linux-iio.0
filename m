@@ -1,45 +1,45 @@
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7AAB5FBA9;
-	Tue, 23 Jan 2024 14:09:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.248
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 604F55FDC8;
+	Tue, 23 Jan 2024 14:09:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706018982; cv=none; b=AuXsG0gTj8hmV6aTf88Y7VwwChogjtx1u0qPQXeIFK0ThF63gmG49AKgM8AHcycFFvpQqTaSeQxrYQk28vjb8z7kcHiUUVld3CaTNDimB/SIQuWoqYGIJFnVOQzxL5SSdb8iGzxXmYZHounV3uv3chuiPmR/a3bq2Ai6ZwJcSDQ=
+	t=1706018987; cv=none; b=IGZQ1IV3ihIyC6m+wHFkyAvw4imSv/c8TBAtPgbzhNRG30EIJzc96lMCPQG0W/BsNHLVPZLRJm4eLFluZcIfSZ4HQqk81BPQTfgb7Fm7vhLPA/6pHNaqvK6b0tv9jI4gCuaY9etaMQc/nEHetcU0IfiomruMv0q5o8joEdQoZ38=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706018982; c=relaxed/simple;
-	bh=94SZBYaZTO4/sNif/RBEFxoGQReKWRqy8LjSg5Jym8E=;
+	s=arc-20240116; t=1706018987; c=relaxed/simple;
+	bh=ZVwSX8hBbcyG6jlkyackNQ9w5I8lTGDkQfMizsNkTEE=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=o4qdlYDoRatEysI8+KiTxFeqsRolhKVkosdn9//OaWoiYnmkT13S+ne/oYq8Swdk7Uvh/UYJLlw31NPwt2/fmUEvWsCydHQu3oB5q08GvUgl77RopbP/3B+YzDOE53zrcNr14NROGyqTcxM7EGQweSI+cIt7D74Pd8BUf0PX23Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=ijxFNLai; arc=none smtp.client-ip=198.47.23.248
+	 MIME-Version:Content-Type; b=deNv51MQKFuKL1eWzZZkmc9cyGDnREmPRLlrLsopvMtEc0bTv6seujG/xUr98NW69j/oqHOBUwIm+61GBtXI35r6mBt6trn2/gCMlcZHvF8kq6jjgZemmwFzjHZ+LMldTVNc93+quR8IZeeMlwOmr8eIVK3IJleaw3rrKOvstvQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=ZaWtHge3; arc=none smtp.client-ip=198.47.19.141
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="ijxFNLai"
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-	by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 40NE9JOZ008640;
-	Tue, 23 Jan 2024 08:09:19 -0600
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="ZaWtHge3"
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 40NE9KtK031523;
+	Tue, 23 Jan 2024 08:09:20 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1706018959;
-	bh=+ybfr0OoM3GQtNN9TtXR+Au1IlzzSJrrS1YIsTQQ/co=;
+	s=ti-com-17Q1; t=1706018960;
+	bh=IIMacfmmzZD5CEfpZoAVBQCrv9WjJ7QV14EBtyNiVMc=;
 	h=From:To:CC:Subject:Date:In-Reply-To:References;
-	b=ijxFNLai3tDgE8oFhtyF+hpZj+5oLwsxKZRJ6o+Vppjhzvoe+s6tvDKjd6zsin3Xs
-	 wNecD7KoDGYSEoWP0bNYkJAWpum73oiZhgnWWkzLxuO3nei7g3y5zgrSDdAE776rGh
-	 CIrnnF4quWtmnpt+KfKRXDGyu5wZ5ffmtcmpIvjQ=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-	by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 40NE9JZR003072
+	b=ZaWtHge3VEVMACQrPxv4lbwYQ7DsTsfFV+CQBzp9B/qIrWVpkYA/n2yKu88VXjAX2
+	 AWAx6uvwV05DcwAOl9KGWL+UqJhiRJ4w8kckDAMtH2ULR4CltalIdp/EeYMheMtYRL
+	 a3Abage53/6CS8ZqPtoEDtENw16bl4dh7/1LqRqo=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+	by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 40NE9KV7113055
 	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 23 Jan 2024 08:09:19 -0600
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+	Tue, 23 Jan 2024 08:09:20 -0600
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Tue, 23
- Jan 2024 08:09:19 -0600
-Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ Jan 2024 08:09:20 -0600
+Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Tue, 23 Jan 2024 08:09:19 -0600
+ Frontend Transport; Tue, 23 Jan 2024 08:09:20 -0600
 Received: from lelvsmtp6.itg.ti.com ([10.249.42.149])
-	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 40NE9Ius034990;
+	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 40NE9Iuu034990;
 	Tue, 23 Jan 2024 08:09:19 -0600
 From: Andrew Davis <afd@ti.com>
 To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
@@ -47,9 +47,9 @@ To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
 CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Andrew Davis
 	<afd@ti.com>
-Subject: [PATCH 2/4] iio: health: afe4403: Use devm IIO helpers
-Date: Tue, 23 Jan 2024 08:09:16 -0600
-Message-ID: <20240123140918.215818-2-afd@ti.com>
+Subject: [PATCH 4/4] iio: health: afe4404: Use devm IIO helpers
+Date: Tue, 23 Jan 2024 08:09:18 -0600
+Message-ID: <20240123140918.215818-4-afd@ti.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20240123140918.215818-1-afd@ti.com>
 References: <20240123140918.215818-1-afd@ti.com>
@@ -69,14 +69,14 @@ and forgetting to unregister and free on error paths.
 
 Signed-off-by: Andrew Davis <afd@ti.com>
 ---
- drivers/iio/health/afe4403.c | 38 ++++++++----------------------------
- 1 file changed, 8 insertions(+), 30 deletions(-)
+ drivers/iio/health/afe4404.c | 36 +++++++-----------------------------
+ 1 file changed, 7 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
-index 9e9d6de2a7c83..1dbe48dae74ee 100644
---- a/drivers/iio/health/afe4403.c
-+++ b/drivers/iio/health/afe4403.c
-@@ -540,7 +540,7 @@ static int afe4403_probe(struct spi_device *spi)
+diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
+index 75a513a92242c..7768b07ef7a6f 100644
+--- a/drivers/iio/health/afe4404.c
++++ b/drivers/iio/health/afe4404.c
+@@ -547,7 +547,7 @@ static int afe4404_probe(struct i2c_client *client)
  
  		iio_trigger_set_drvdata(afe->trig, indio_dev);
  
@@ -85,23 +85,18 @@ index 9e9d6de2a7c83..1dbe48dae74ee 100644
  		if (ret) {
  			dev_err(afe->dev, "Unable to register IIO trigger\n");
  			return ret;
-@@ -553,46 +553,25 @@ static int afe4403_probe(struct spi_device *spi)
- 						afe->trig);
- 		if (ret) {
- 			dev_err(afe->dev, "Unable to request IRQ\n");
--			goto err_trig;
-+			return ret;
+@@ -564,42 +564,21 @@ static int afe4404_probe(struct i2c_client *client)
  		}
  	}
  
 -	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
--					 afe4403_trigger_handler, NULL);
+-					 afe4404_trigger_handler, NULL);
 +	ret = devm_iio_triggered_buffer_setup(afe->dev, indio_dev,
 +					      &iio_pollfunc_store_time,
-+					      afe4403_trigger_handler, NULL);
++					      afe4404_trigger_handler, NULL);
  	if (ret) {
  		dev_err(afe->dev, "Unable to setup buffer\n");
--		goto err_trig;
+-		goto unregister_trigger;
 +		return ret;
  	}
  
@@ -109,25 +104,25 @@ index 9e9d6de2a7c83..1dbe48dae74ee 100644
 +	ret = devm_iio_device_register(afe->dev, indio_dev);
  	if (ret) {
  		dev_err(afe->dev, "Unable to register IIO device\n");
--		goto err_buff;
+-		goto unregister_triggered_buffer;
 +		return ret;
  	}
  
  	return 0;
 -
--err_buff:
+-unregister_triggered_buffer:
 -	iio_triggered_buffer_cleanup(indio_dev);
--err_trig:
+-unregister_trigger:
 -	if (afe->irq > 0)
 -		iio_trigger_unregister(afe->trig);
 -
 -	return ret;
 -}
 -
--static void afe4403_remove(struct spi_device *spi)
+-static void afe4404_remove(struct i2c_client *client)
 -{
--	struct iio_dev *indio_dev = spi_get_drvdata(spi);
--	struct afe4403_data *afe = iio_priv(indio_dev);
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+-	struct afe4404_data *afe = iio_priv(indio_dev);
 -	int ret;
 -
 -	iio_device_unregister(indio_dev);
@@ -138,15 +133,15 @@ index 9e9d6de2a7c83..1dbe48dae74ee 100644
 -		iio_trigger_unregister(afe->trig);
  }
  
- static const struct spi_device_id afe4403_ids[] = {
-@@ -608,7 +587,6 @@ static struct spi_driver afe4403_spi_driver = {
- 		.pm = pm_sleep_ptr(&afe4403_pm_ops),
+ static const struct i2c_device_id afe4404_ids[] = {
+@@ -615,7 +594,6 @@ static struct i2c_driver afe4404_i2c_driver = {
+ 		.pm = pm_sleep_ptr(&afe4404_pm_ops),
  	},
- 	.probe = afe4403_probe,
--	.remove = afe4403_remove,
- 	.id_table = afe4403_ids,
+ 	.probe = afe4404_probe,
+-	.remove = afe4404_remove,
+ 	.id_table = afe4404_ids,
  };
- module_spi_driver(afe4403_spi_driver);
+ module_i2c_driver(afe4404_i2c_driver);
 -- 
 2.39.2
 
