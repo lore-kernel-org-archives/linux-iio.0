@@ -1,44 +1,45 @@
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 707995F876;
-	Tue, 23 Jan 2024 14:09:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.248
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92D055D8E2;
+	Tue, 23 Jan 2024 14:09:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.249
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706018979; cv=none; b=MQiXwhcUmIuJhCbOUpchOXi4ttpFKPeEeduudxM+lDjcq2Evf+HIFpP8OrV+Q7YabgDpUQxk56QSnt9+7hS/3qR7erKEGVAATmG9E0Zl8FLm6kp2mepmzHeYklcv98KDbEz5dWzw+qo/U6DIzLyXTIQJKfDT8Lw+Tnu3eKM2biY=
+	t=1706018980; cv=none; b=Eb+wXMOydszX40pkGIC9KvVuL42kNhOdAj+C3Kqw4gz8j/aHCdg1OmgOvm0i9uRQAy5rNFxmVDH5uZATaCIBcpf5vC1Rfko67Q0tWfcO81jZexC7jG6lDT5GPZb4scdy4C0rolqkOmdnpdetpZsUco8oELzM3YKJrgKLUwkCnhE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706018979; c=relaxed/simple;
-	bh=sLTwqP6WOMgR7XzrnZkXzjHudMd77AdlbaqN5zI3ijY=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=OmjSCFfCDytfh6uIKA5mMBSitofqNzAet8YYlJeeYmhZou+7+iCB4D6Lo2qIZKIkfdaJbPIb27cqmz/GYpwBJZNsutTOT9xPdWMdu8FrImeZUnIPMxbsSkRBw+ro7xtHCp5FRwcEUMhgjzEAFKnySBdJBCTTq4rinGuV0M2eEWY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=grcZOfGb; arc=none smtp.client-ip=198.47.23.248
+	s=arc-20240116; t=1706018980; c=relaxed/simple;
+	bh=SxuTBORfGF5xuK7WaufdbTkcdXRpMj62tgVmhO2eMZk=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=fi4Ux+S5Hkg4n10Np5hMVmxxzpVOPQZhQ5SLzssAe4Ql6x2BrxAK/cDVhMphqDHqc23KuEicEy2Yzhj6VLbmdKXiw9twr2VGOqKYyZmoGWA2YrJIdlVItXoNrbVGEOfUMV5NZ/exT+fm5JACtCp3W4O5uWrsEvQTFJoRG3H3s64=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=wSR6GGTG; arc=none smtp.client-ip=198.47.23.249
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="grcZOfGb"
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="wSR6GGTG"
 Received: from lelv0265.itg.ti.com ([10.180.67.224])
-	by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 40NE9JiH008636;
-	Tue, 23 Jan 2024 08:09:19 -0600
+	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 40NE9KCH051462;
+	Tue, 23 Jan 2024 08:09:20 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1706018959;
-	bh=Uufh4LvwbcbKCe08o0Fuz8M3j4+oEw0vRnDhHEVz7kg=;
-	h=From:To:CC:Subject:Date;
-	b=grcZOfGbSp2KvxaMyvuZ79xSFHRVR3zLX3SmMgqxlxVjgI3ovF4L/YiYb9mP6wCRj
-	 c7VFJ8ebdWov5jBVjvDfqWEZIpOsRrjtyK903XXyi38+3kYi5sPTcu8QTUWuRXFyYa
-	 xDe7PVeE0PsusebGNCObqGSkoE8S6PERp6nT7rfc=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-	by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 40NE9JpE003059
+	s=ti-com-17Q1; t=1706018960;
+	bh=WOE09cQw18mGzukoI/a3Ir2egN+CAwTh+Jgs3xeKW1k=;
+	h=From:To:CC:Subject:Date:In-Reply-To:References;
+	b=wSR6GGTG/DtYAb0xxfn2+UYvmLq5BYeOUZPAE6kChLfOEV6gxyDNh+4TnZilzVqFT
+	 bUgrneOT5tDSlSKAPA5IswAgSmNmL7RZ+SKAObmDltfzSzea/7UNE3SKAls1377A0M
+	 HRRlDQGRcOH1aesN+AXVONR7a06n1oAJmpgdNhwg=
+Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
+	by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 40NE9KvJ003092
 	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 23 Jan 2024 08:09:19 -0600
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+	Tue, 23 Jan 2024 08:09:20 -0600
+Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Tue, 23
  Jan 2024 08:09:19 -0600
-Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
+Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
  Frontend Transport; Tue, 23 Jan 2024 08:09:19 -0600
 Received: from lelvsmtp6.itg.ti.com ([10.249.42.149])
-	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 40NE9Iur034990;
+	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 40NE9Iut034990;
 	Tue, 23 Jan 2024 08:09:19 -0600
 From: Andrew Davis <afd@ti.com>
 To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
@@ -46,10 +47,12 @@ To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
 CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Andrew Davis
 	<afd@ti.com>
-Subject: [PATCH 1/4] iio: health: afe4403: Use devm action helper for regulator disable
-Date: Tue, 23 Jan 2024 08:09:15 -0600
-Message-ID: <20240123140918.215818-1-afd@ti.com>
+Subject: [PATCH 3/4] iio: health: afe4404: Use devm action helper for regulator disable
+Date: Tue, 23 Jan 2024 08:09:17 -0600
+Message-ID: <20240123140918.215818-3-afd@ti.com>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20240123140918.215818-1-afd@ti.com>
+References: <20240123140918.215818-1-afd@ti.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,34 +69,34 @@ functions and forgetting to unregister on error paths.
 
 Signed-off-by: Andrew Davis <afd@ti.com>
 ---
- drivers/iio/health/afe4403.c | 27 ++++++++++++++++-----------
- 1 file changed, 16 insertions(+), 11 deletions(-)
+ drivers/iio/health/afe4404.c | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
-index df3bc5c3d3786..9e9d6de2a7c83 100644
---- a/drivers/iio/health/afe4403.c
-+++ b/drivers/iio/health/afe4403.c
-@@ -346,6 +346,13 @@ static irqreturn_t afe4403_trigger_handler(int irq, void *private)
+diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
+index ede1e82013118..75a513a92242c 100644
+--- a/drivers/iio/health/afe4404.c
++++ b/drivers/iio/health/afe4404.c
+@@ -349,6 +349,13 @@ static irqreturn_t afe4404_trigger_handler(int irq, void *private)
  	return IRQ_HANDLED;
  }
  
-+static void afe4403_regulator_disable(void *data)
++static void afe4404_regulator_disable(void *data)
 +{
 +	struct regulator *regulator = data;
 +
 +	regulator_disable(regulator);
 +}
 +
- #define AFE4403_TIMING_PAIRS			\
- 	{ AFE440X_LED2STC,	0x000050 },	\
- 	{ AFE440X_LED2ENDC,	0x0003e7 },	\
-@@ -495,19 +502,24 @@ static int afe4403_probe(struct spi_device *spi)
+ /* Default timings from data-sheet */
+ #define AFE4404_TIMING_PAIRS			\
+ 	{ AFE440X_PRPCOUNT,	39999	},	\
+@@ -502,19 +509,24 @@ static int afe4404_probe(struct i2c_client *client)
  		dev_err(afe->dev, "Unable to enable regulator\n");
  		return ret;
  	}
-+	ret = devm_add_action_or_reset(afe->dev, afe4403_regulator_disable, afe->regulator);
++	ret = devm_add_action_or_reset(afe->dev, afe4404_regulator_disable, afe->regulator);
 +	if (ret) {
-+		dev_err(afe->dev, "Unable to add regulator disable action\n");
++		dev_err(afe->dev, "Unable to enable regulator\n");
 +		return ret;
 +	}
  
@@ -101,58 +104,67 @@ index df3bc5c3d3786..9e9d6de2a7c83 100644
  			   AFE440X_CONTROL0_SW_RESET);
  	if (ret) {
  		dev_err(afe->dev, "Unable to reset device\n");
--		goto err_disable_reg;
+-		goto disable_reg;
 +		return ret;
  	}
  
- 	ret = regmap_multi_reg_write(afe->regmap, afe4403_reg_sequences,
- 				     ARRAY_SIZE(afe4403_reg_sequences));
+ 	ret = regmap_multi_reg_write(afe->regmap, afe4404_reg_sequences,
+ 				     ARRAY_SIZE(afe4404_reg_sequences));
  	if (ret) {
  		dev_err(afe->dev, "Unable to set register defaults\n");
--		goto err_disable_reg;
+-		goto disable_reg;
 +		return ret;
  	}
  
  	indio_dev->modes = INDIO_DIRECT_MODE;
-@@ -523,8 +535,7 @@ static int afe4403_probe(struct spi_device *spi)
+@@ -530,8 +542,7 @@ static int afe4404_probe(struct i2c_client *client)
  						   iio_device_id(indio_dev));
  		if (!afe->trig) {
  			dev_err(afe->dev, "Unable to allocate IIO trigger\n");
 -			ret = -ENOMEM;
--			goto err_disable_reg;
+-			goto disable_reg;
 +			return -ENOMEM;
  		}
  
  		iio_trigger_set_drvdata(afe->trig, indio_dev);
-@@ -532,7 +543,7 @@ static int afe4403_probe(struct spi_device *spi)
+@@ -539,7 +550,7 @@ static int afe4404_probe(struct i2c_client *client)
  		ret = iio_trigger_register(afe->trig);
  		if (ret) {
  			dev_err(afe->dev, "Unable to register IIO trigger\n");
--			goto err_disable_reg;
+-			goto disable_reg;
 +			return ret;
  		}
  
  		ret = devm_request_threaded_irq(afe->dev, afe->irq,
-@@ -566,8 +577,6 @@ static int afe4403_probe(struct spi_device *spi)
- err_trig:
+@@ -549,7 +560,7 @@ static int afe4404_probe(struct i2c_client *client)
+ 						afe->trig);
+ 		if (ret) {
+ 			dev_err(afe->dev, "Unable to request IRQ\n");
+-			goto disable_reg;
++			return ret;
+ 		}
+ 	}
+ 
+@@ -573,8 +584,6 @@ static int afe4404_probe(struct i2c_client *client)
+ unregister_trigger:
  	if (afe->irq > 0)
  		iio_trigger_unregister(afe->trig);
--err_disable_reg:
+-disable_reg:
 -	regulator_disable(afe->regulator);
  
  	return ret;
  }
-@@ -584,10 +593,6 @@ static void afe4403_remove(struct spi_device *spi)
+@@ -591,10 +600,6 @@ static void afe4404_remove(struct i2c_client *client)
  
  	if (afe->irq > 0)
  		iio_trigger_unregister(afe->trig);
 -
 -	ret = regulator_disable(afe->regulator);
 -	if (ret)
--		dev_warn(afe->dev, "Unable to disable regulator\n");
+-		dev_err(afe->dev, "Unable to disable regulator\n");
  }
  
- static const struct spi_device_id afe4403_ids[] = {
+ static const struct i2c_device_id afe4404_ids[] = {
 -- 
 2.39.2
 
