@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 386A15FDCD;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 849795FEF7;
 	Tue, 23 Jan 2024 15:14:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706022874; cv=none; b=hfrq2EDK4S2Iyx6neHLK2WgMF9JJ3tdMHvcg8vg7X4SAMWxSr8kBEOZVYa7td2x+Q0nxAA/nDtFXtWiOCM4nMoY8EgxNh1nPhOCvyhQkBbnNkT9OOvtKZH4qM3qs7WFBFGBRXR1oXBmrAsiR/BuA546XhEwYfiZ/7FeplVJrUrc=
+	t=1706022874; cv=none; b=WK8ICZcfPzZGbHUq65mR5N0CvlHcFWjGNOd+s/cvxKdZexZw5nbEEhZnByqrqaOZv67aXB/M5XwtkQ6Tt7rJ+8Q4qYHDcnFV1ygTSR3Vj3U+bGZz+3KdFi/N7R/wLLpKsfYndSt9IjL9kSI8brWaI7hTTnaVMaFwt3UU+QvxwvA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706022874; c=relaxed/simple;
-	bh=mM6TTDzmT8c9b+zSIXYzN5EneJISfMEUqOB2Clmh47Q=;
+	bh=Jbx9A60oDrS6/ZkaMfuBhDkPhHXF7P3WtJFWzroFwZw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=TkhYYWh6qroWNd7Tz2npmnS6XeFAuIKgeY/AaV2NFj1ZeMLELkvzKdPcyn+3WWyOwQFcP8tNU+gs48zYiIQNis9mEjWhQJcMGsc0L/hIBLdWp3q1voK0209LNOfzoZdjsMgNg0a/Vu5aao+TlgmqKBa1L8hitslhGCMqqDrAIds=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=no0rMQsT; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=KhGy3Zuz6hWQq7SyJFDtVIkNv0NNMkZg6RSGfA1ibCDXudrWqRDqW0Amaglx1PQc/hG8jQy9QNQBIk/Sj3CdqeOH6ur1kpmNL30EjXJv/9SRXTidMmM936ZGDKa9MALzLzg3p9p4roWttDZfkw4zPhUXnL4sJNSoeSuLJJ+UeJc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AANTSJuI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="no0rMQsT"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CB919C4166A;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AANTSJuI"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E51B4C4167E;
 	Tue, 23 Jan 2024 15:14:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1706022873;
-	bh=mM6TTDzmT8c9b+zSIXYzN5EneJISfMEUqOB2Clmh47Q=;
+	bh=Jbx9A60oDrS6/ZkaMfuBhDkPhHXF7P3WtJFWzroFwZw=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=no0rMQsTtRr34Y3i2sTm6zgif5zm2sayTyPrRJxxSPAVi4PsL4r7GFgnvGJ1gSYjP
-	 8hJJzFpDzQ35yl8+88d5ppKkuX3n0Ru46z9tue5lQd9NoDtTcEaAzOnCSs6GxvOy4G
-	 MyLcsbkPsCAjysq7Q08pJvs7Dj5s8IGKoybbuU4sPsVp3m70xMo+vPWdxh1lJm3wYU
-	 SQpdjzmVyyEPEX8jYKO4hd30PchwRY8Q/F6+DiOMt4c2riiiEwPhRbG4CeJrGbX9Zy
-	 kHvexta69DFegZ0gGm2sluivjQKFYPYlNMlvWfYc+QfjhoRJIi+4R6iSn2UpDIDIR5
-	 SgkgEcNwgIfDA==
+	b=AANTSJuIDVPTbtb6LzOAEvnwhci4BAjAF2MB3DchE4FqbKpWeQj64KgDBSbCZlXKN
+	 9ERwyTRmd2WdGaHF9mF0JPdJwITT72wfbatmR3lEUi7hD5CvOviQb5rrQYKQH9rl+X
+	 NGZT0g0CFEn4fAYU/EDxOLwsiDqsE2glMdhk/G70TJt14NLzDGVrQjK7V1Uj8YIno5
+	 HtYVanN0MCAip0XhJTgfyCQ+8IEC6fFYxjLWq3f6Hj9QdotRyR6ojiUkBHXZrvtcHc
+	 jQd8qeUzZywJqxWK08P8eSL64WIiR7Gx4T3PN/2U5txzknGLSfoLUxYl8L4YxckH6C
+	 GUhiaHpBomVYA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B966EC47DDF;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5B97C47258;
 	Tue, 23 Jan 2024 15:14:33 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Tue, 23 Jan 2024 16:14:24 +0100
-Subject: [PATCH v7 3/9] dt-bindings: adc: axi-adc: update bindings for
- backend framework
+Date: Tue, 23 Jan 2024 16:14:27 +0100
+Subject: [PATCH v7 6/9] iio: buffer-dmaengine: export buffer alloc and free
+ functions
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240123-iio-backend-v7-3-1bff236b8693@analog.com>
+Message-Id: <20240123-iio-backend-v7-6-1bff236b8693@analog.com>
 References: <20240123-iio-backend-v7-0-1bff236b8693@analog.com>
 In-Reply-To: <20240123-iio-backend-v7-0-1bff236b8693@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
@@ -54,13 +54,13 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  "Rafael J. Wysocki" <rafael@kernel.org>, 
  Frank Rowand <frowand.list@gmail.com>, 
  Olivier Moysan <olivier.moysan@foss.st.com>, 
- Saravana Kannan <saravanak@google.com>, Rob Herring <robh@kernel.org>
+ Saravana Kannan <saravanak@google.com>
 X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1706022871; l=1739;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1706022871; l=3896;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=araWL3MBWOdTthhIEzT+iX7Wos0rotGDe8HqcId2NUg=;
- b=TmRlUPcTqQ7yHtySwvIe/LJr9awQYYA1hLmJI5TE2Cdr+Hc4pp0CFNntohcbbJTwccPqBDWco
- r4TyNeI/b2vBUooAibyeXNqJT4oGv7kZpoQdvGV7lIeecCV65PAib1U
+ bh=6pMFXM0wCdg3Id7C+f0CPli3rW2y13iOegJBdE0KPUQ=;
+ b=x+kT0NW+CBWtL0y8nI3w8oL8rxeNLSDTUVtwRM5O55pRN2iksreSU7DMbgg780WLGomaRVs/X
+ GHEj+oghwM3CTiCydiU3VkmLcVx05lsaukdRloF51PSkBOJnesjJEvR
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received:
@@ -70,55 +70,93 @@ Reply-To: <nuno.sa@analog.com>
 
 From: Nuno Sa <nuno.sa@analog.com>
 
-'adi,adc-dev' is now deprecated and must not be used anymore. Hence,
-also remove it from being required.
+Export iio_dmaengine_buffer_free() and iio_dmaengine_buffer_alloc().
+This is in preparation of introducing IIO backends support. This will
+allow us to allocate a buffer and control it's lifetime from a device
+different from the one holding the DMA firmware properties. Effectively,
+in this case the struct device holding the firmware information about
+the DMA channels is not the same as iio_dev->dev.parent (typical case).
 
-The reason why it's being deprecated is because the axi-adc CORE is now
-an IIO service provider hardware (IIO backends) for consumers to make use
-of. Before, the logic with 'adi,adc-dev' was the opposite (it was kind
-of consumer referencing other nodes/devices) and that proved to be wrong
-and to not scale.
+While at it, namespace the buffer-dmaengine exports and update the
+current user of these buffers.
 
-Now, IIO consumers of this hardware are expected to reference it using the
-io-backends property. Hence, the new '#io-backend-cells' is being added
-so the device is easily identified as a provider.
-
-Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/iio/adc/adi-axi-adc.c                      | 1 +
+ drivers/iio/buffer/industrialio-buffer-dmaengine.c | 8 +++++---
+ include/linux/iio/buffer-dmaengine.h               | 3 +++
+ 3 files changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml b/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-index 9996dd93f84b..add10b22dcac 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-@@ -39,12 +39,15 @@ properties:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description:
-       A reference to a the actual ADC to which this FPGA ADC interfaces to.
-+    deprecated: true
-+
-+  '#io-backends-cells'
-+    const: 0
+diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+index c247ff1541d2..0f21d1d98b9f 100644
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -447,3 +447,4 @@ module_platform_driver(adi_axi_adc_driver);
+ MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
+ MODULE_DESCRIPTION("Analog Devices Generic AXI ADC IP core driver");
+ MODULE_LICENSE("GPL v2");
++MODULE_IMPORT_NS(IIO_DMAENGINE_BUFFER);
+diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+index 45fe7d0d42ee..a18c1da292af 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
++++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+@@ -159,7 +159,7 @@ static const struct iio_dev_attr *iio_dmaengine_buffer_attrs[] = {
+  * Once done using the buffer iio_dmaengine_buffer_free() should be used to
+  * release it.
+  */
+-static struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
++struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
+ 	const char *channel)
+ {
+ 	struct dmaengine_buffer *dmaengine_buffer;
+@@ -210,6 +210,7 @@ static struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
+ 	kfree(dmaengine_buffer);
+ 	return ERR_PTR(ret);
+ }
++EXPORT_SYMBOL_NS_GPL(iio_dmaengine_buffer_alloc, IIO_DMAENGINE_BUFFER);
  
- required:
-   - compatible
-   - dmas
-   - reg
--  - adi,adc-dev
+ /**
+  * iio_dmaengine_buffer_free() - Free dmaengine buffer
+@@ -217,7 +218,7 @@ static struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
+  *
+  * Frees a buffer previously allocated with iio_dmaengine_buffer_alloc().
+  */
+-static void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
++void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
+ {
+ 	struct dmaengine_buffer *dmaengine_buffer =
+ 		iio_buffer_to_dmaengine_buffer(buffer);
+@@ -227,6 +228,7 @@ static void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
  
- additionalProperties: false
+ 	iio_buffer_put(buffer);
+ }
++EXPORT_SYMBOL_NS_GPL(iio_dmaengine_buffer_free, IIO_DMAENGINE_BUFFER);
  
-@@ -55,7 +58,6 @@ examples:
-         reg = <0x44a00000 0x10000>;
-         dmas = <&rx_dma 0>;
-         dma-names = "rx";
--
--        adi,adc-dev = <&spi_adc>;
-+        #io-backends-cells = <0>;
-     };
- ...
+ static void __devm_iio_dmaengine_buffer_free(void *buffer)
+ {
+@@ -287,7 +289,7 @@ int devm_iio_dmaengine_buffer_setup(struct device *dev,
+ 
+ 	return iio_device_attach_buffer(indio_dev, buffer);
+ }
+-EXPORT_SYMBOL_GPL(devm_iio_dmaengine_buffer_setup);
++EXPORT_SYMBOL_NS_GPL(devm_iio_dmaengine_buffer_setup, IIO_DMAENGINE_BUFFER);
+ 
+ MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
+ MODULE_DESCRIPTION("DMA buffer for the IIO framework");
+diff --git a/include/linux/iio/buffer-dmaengine.h b/include/linux/iio/buffer-dmaengine.h
+index 5c355be89814..cbb8ba957fad 100644
+--- a/include/linux/iio/buffer-dmaengine.h
++++ b/include/linux/iio/buffer-dmaengine.h
+@@ -10,6 +10,9 @@
+ struct iio_dev;
+ struct device;
+ 
++struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
++					      const char *channel);
++void iio_dmaengine_buffer_free(struct iio_buffer *buffer);
+ int devm_iio_dmaengine_buffer_setup(struct device *dev,
+ 				    struct iio_dev *indio_dev,
+ 				    const char *channel);
 
 -- 
 2.43.0
