@@ -1,47 +1,43 @@
 Received: from mail.subdimension.ro (skycaves.subdimension.ro [172.104.132.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30A5929425;
-	Sat, 27 Jan 2024 16:04:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DFA529429;
+	Sat, 27 Jan 2024 16:04:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=172.104.132.142
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706371462; cv=none; b=ZwLnY7THY1l1GvBWpslECJSvFjlNsoHS9uJvMjb13oIthHy/Ub99oBxsHf9+Bo28aiWuWXH5bULarctY85QX5qKPYNEfV8yTSmc4gsSXPp7d+lyoZKTJSXRNrdOrCVRUMLynK5lSBLPK9EIlUQgBOuvNyeYlVTzrux2Nr/XPcRo=
+	t=1706371462; cv=none; b=d3S2jN2SOU5djUCVXAibu93A2MnEChmmoUwlK8O2LkDNdkLexgUWr6nDoU+se3LP+EySAuGdWVX2W9Me3UPsuoE578onkG61u7WHcianQRmBL5VgoyTMW9TsZYlDr1JZOAdT90P7ehArKssbOc3aKao3wE3/UYU7Aheqjz6it5I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706371462; c=relaxed/simple;
-	bh=rThLPG0oKPIY+R5SCgniLS4AOa/AbEm1BbmpT++4eoA=;
+	bh=ckgGjldfa/QMe8AawYQJb7Zfb90P85Y8WeoWJuvHEos=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=t2Mpx2pmv7XP/4VQk4ycED3rwx789qyCZyhAdx1gnyB5n26Z88e00N5eoRqr4D4qD22Hq3ixMnZE820Bp+Ke16wRIuJBngn4LozuKsIHzr91O01GjWFN+RyHYAS3e1l+NfQScZfEyymtJSV8Wsal95X8gRpg42hi9XxBVVAa4zc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=Cd65x+KJ; arc=none smtp.client-ip=172.104.132.142
+	 MIME-Version; b=trCappT2L07M7Wk1hAEWbAchWiHi6nsWtDlGuUt2+4kcBc6HCoaam2B++HtgACean1+VmVfTWnqlAd8DA/B8mTwfTrcBHTOBNumpzekVAWfxXzuBiLydm9rCWnfWCUoHljRq6q+FLD4mdJAhl+vHhMcRSTQ/eY9ISVzOr1zKPvc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=CUh9o+uT; arc=none smtp.client-ip=172.104.132.142
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="Cd65x+KJ"
+	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="CUh9o+uT"
 Received: from localhost.localdomain (unknown [188.24.80.170])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id 365B4293A94;
+	by mail.subdimension.ro (Postfix) with ESMTPSA id BACDD293A96;
 	Sat, 27 Jan 2024 16:04:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=subdimension.ro;
 	s=skycaves; t=1706371452;
-	bh=rThLPG0oKPIY+R5SCgniLS4AOa/AbEm1BbmpT++4eoA=;
+	bh=ckgGjldfa/QMe8AawYQJb7Zfb90P85Y8WeoWJuvHEos=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Cd65x+KJigdUgolM9yGgHvd18F5uWnJQkw1b/oQB/HUPhr4Culgab6NpdCTq/nK95
-	 86UzlvQBZPQhPyzAmsBMSsV+zCQLMS1pz+TA1cnuk7Ami9p7SmDIG/exn1HIUcP8Dc
-	 ov2uVz+GGyq9TQJr0UfJGoM68TqmEQTzNXOrcVxI=
+	b=CUh9o+uTnmUJoufQ0WYAnwhjJmT6Hp05pQRZm8wnKawzLSpzmpxHiAsRRLS7S8r/E
+	 ndUqY5XHQo+bERBUbmOfr95NPFfJYJ6wKBoHgR4sLH8WJjv4e5/oCB18fiGxZGJesL
+	 LxfbLN3cg0gHeDKw0y0d8GqtzzP/v3mlWfz3hLqc=
 From: Petre Rodan <petre.rodan@subdimension.ro>
 To: linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 Cc: Petre Rodan <petre.rodan@subdimension.ro>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Subject: [PATCH v2 1/4] dt-bindings: iio: pressure: honeywell,hsc030pa.yaml add spi props
-Date: Sat, 27 Jan 2024 18:03:55 +0200
-Message-ID: <20240127160405.19696-2-petre.rodan@subdimension.ro>
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 3/4] iio: pressure: hsc030pa add mandatory delay
+Date: Sat, 27 Jan 2024 18:03:57 +0200
+Message-ID: <20240127160405.19696-4-petre.rodan@subdimension.ro>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20240127160405.19696-1-petre.rodan@subdimension.ro>
 References: <20240127160405.19696-1-petre.rodan@subdimension.ro>
@@ -53,29 +49,77 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add spi-peripheral-props.yaml requirement needed by the
-spi-max-frequency property.
+Add a mandatory 2ms delay between consecutive chip reads.
+
+I found a new Technical Note pdf that specifies that the measurement cycle
+in these chips takes around 1.26ms. By adding this 2ms delay we make sure
+that we never get stale measurements.
+
+For more details, please see "Figure 1" in the pdf below:
+
+https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/products/sensors/pressure-sensors/common/documents/sps-siot-sleep-mode-technical-note-008286-1-en-ciid-155793.pdf
 
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
-v2 -> v1 change the commit message based on Krzysztof's request
- .../devicetree/bindings/iio/pressure/honeywell,hsc030pa.yaml   | 3 +++
- 1 file changed, 3 insertions(+)
+v1 -> v2 no change
+ drivers/iio/pressure/hsc030pa.h     | 1 +
+ drivers/iio/pressure/hsc030pa_i2c.c | 3 +++
+ drivers/iio/pressure/hsc030pa_spi.c | 2 ++
+ 3 files changed, 6 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/pressure/honeywell,hsc030pa.yaml b/Documentation/devicetree/bindings/iio/pressure/honeywell,hsc030pa.yaml
-index 65a24ed67b3c..89977b9f01cf 100644
---- a/Documentation/devicetree/bindings/iio/pressure/honeywell,hsc030pa.yaml
-+++ b/Documentation/devicetree/bindings/iio/pressure/honeywell,hsc030pa.yaml
-@@ -99,6 +99,9 @@ required:
-   - honeywell,transfer-function
-   - honeywell,pressure-triplet
+diff --git a/drivers/iio/pressure/hsc030pa.h b/drivers/iio/pressure/hsc030pa.h
+index f1079a70799f..56dc8e88194b 100644
+--- a/drivers/iio/pressure/hsc030pa.h
++++ b/drivers/iio/pressure/hsc030pa.h
+@@ -13,6 +13,7 @@
+ #include <linux/iio/iio.h>
  
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml
+ #define HSC_REG_MEASUREMENT_RD_SIZE 4
++#define HSC_RESP_TIME_MS            2
+ 
+ struct device;
+ 
+diff --git a/drivers/iio/pressure/hsc030pa_i2c.c b/drivers/iio/pressure/hsc030pa_i2c.c
+index b5810bafef40..b3fd230e71da 100644
+--- a/drivers/iio/pressure/hsc030pa_i2c.c
++++ b/drivers/iio/pressure/hsc030pa_i2c.c
+@@ -8,6 +8,7 @@
+  * Datasheet: https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/products/sensors/pressure-sensors/common/documents/sps-siot-sleep-mode-technical-note-008286-1-en-ciid-155793.pdf
+  */
+ 
++#include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/errno.h>
+ #include <linux/i2c.h>
+@@ -25,6 +26,8 @@ static int hsc_i2c_recv(struct hsc_data *data)
+ 	struct i2c_msg msg;
+ 	int ret;
+ 
++	msleep_interruptible(HSC_RESP_TIME_MS);
 +
- additionalProperties: false
+ 	msg.addr = client->addr;
+ 	msg.flags = client->flags | I2C_M_RD;
+ 	msg.len = HSC_REG_MEASUREMENT_RD_SIZE;
+diff --git a/drivers/iio/pressure/hsc030pa_spi.c b/drivers/iio/pressure/hsc030pa_spi.c
+index 8d3441f1dcf9..818fa6303454 100644
+--- a/drivers/iio/pressure/hsc030pa_spi.c
++++ b/drivers/iio/pressure/hsc030pa_spi.c
+@@ -8,6 +8,7 @@
+  * Datasheet: https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/products/sensors/pressure-sensors/common/documents/sps-siot-sleep-mode-technical-note-008286-1-en-ciid-155793.pdf
+  */
  
- dependentSchemas:
++#include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+@@ -28,6 +29,7 @@ static int hsc_spi_recv(struct hsc_data *data)
+ 		.len = HSC_REG_MEASUREMENT_RD_SIZE,
+ 	};
+ 
++	msleep_interruptible(HSC_RESP_TIME_MS);
+ 	return spi_sync_transfer(spi, &xfer, 1);
+ }
+ 
 -- 
 2.43.0
 
