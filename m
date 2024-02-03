@@ -1,192 +1,119 @@
-Received: from smtp.smtpout.orange.fr (smtp-22.smtpout.orange.fr [80.12.242.22])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 433CC5C91E;
-	Sat,  3 Feb 2024 10:07:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.12.242.22
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B030C4F610;
+	Sat,  3 Feb 2024 11:59:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706954834; cv=none; b=WSRM/gR6yLJUEHcHvsOA33SvpPJF05yUTqyhc1V9ITnO7OI+E50Psc4uAZxQ2brfOmW6Duqh0ds6yxMuccdM/MwsztkQrOHm8y/5/wok+0PiMQTofQWbVpnkzYrAZ9yImiBBXLXhef7mOmz4TXfK/X5VF3M6wgL8DOlnwaGHBq0=
+	t=1706961589; cv=none; b=pcZB96OHyf5IhbCQeqe7WOJ4fn9pxsbODqmlAb2cIQhP4kaOfKARdJh9eT6b/ZlQoAb6kfJbR2eeqxguuwUFPMtx0AvD3wHqjZ57w5Dlew99Bdq9GsE7KzsFJZRUgy0PZXv28bCvExhnEdTgRr7x829kbzpe7tNxbr/DZ9+h5ZQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706954834; c=relaxed/simple;
-	bh=YQvE7y0NHy8x4IJxViUtYas8Dp3o2T+eCwn5UkgB5Sg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Wn9bEVNTumU1OsgXBsIbn2wS51avZH7+XFF3MwJDKiLLCdvljcDoJPYYTeUnBfNgOmj5UD4D7ivLvvZMSrlnY7QAqsc4fCA/TRaFPAYeAzq8sJ1lKVG9zk2brnjkFRiBRrGRSTSqZI9nj7cpdX508/TuJXl7VvmPpBFR14TkWcA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wanadoo.fr; spf=pass smtp.mailfrom=wanadoo.fr; dkim=pass (2048-bit key) header.d=wanadoo.fr header.i=@wanadoo.fr header.b=iM7eB28r; arc=none smtp.client-ip=80.12.242.22
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wanadoo.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wanadoo.fr
+	s=arc-20240116; t=1706961589; c=relaxed/simple;
+	bh=OxA6S6WclVuoMy1OROr9Sblvm8p6FUS0Tg9+lExPXrE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AaQ5mEDR5klWEQI8AO00sVYxZVIjmqJJ4KHYY4nNadD/FFKUWxB0MlmsBc9NN0IVMZMesr/JtJMOe93XKlvatIp7JUa4kcdRrD0vJ6M1ApMHo3+u8bOHBciv/vrd/cD4acJ60QfCyNZ8tuO3A71OwxN/zElCbpzt4Q2hZdSCqXw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N0n7obS9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=wanadoo.fr header.i=@wanadoo.fr header.b="iM7eB28r"
-Received: from [192.168.1.18] ([92.140.202.140])
-	by smtp.orange.fr with ESMTPA
-	id WCn3r4y1Qn8K2WCn3rKyrj; Sat, 03 Feb 2024 10:58:25 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-	s=t20230301; t=1706954305;
-	bh=53zy55g4yqyQ0+8fdEt1Lnm92Clz5kD41n0D2EGwMlY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=iM7eB28rFWHTU7/83TflV0d3jSZwcEUI9pMm8BlF4EXuqXPWFOc5ga/yyaCxACEVH
-	 ASeL4T1eSFbEuoj6gupci1lDuX0635O9k28orVXMYkvkPMv01DKQl1mGO/mUfLE2pL
-	 W9Au43oZoVPPz9eyppVP/iheOVax6ZSl9TkVdLDoXZu2ZmTTgIXh3WTfRiMCIntGHw
-	 vFEm24RsN0FMZJnrpM2Q36aN05tIws3oRxF2gNZsTxDPmJWBB0PjnWa8HOXRglaDI6
-	 wunQ9LEVJlBMIuakndaj6XVTWNc8JNCVPOQxJoWxUTuBoqzEuc+eXoG64J/dHviWxS
-	 I15/bBxgbOLig==
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sat, 03 Feb 2024 10:58:25 +0100
-X-ME-IP: 92.140.202.140
-Message-ID: <236dc9db-8525-413e-a77b-54df198c86f5@wanadoo.fr>
-Date: Sat, 3 Feb 2024 10:58:24 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N0n7obS9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C038EC433C7;
+	Sat,  3 Feb 2024 11:59:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1706961589;
+	bh=OxA6S6WclVuoMy1OROr9Sblvm8p6FUS0Tg9+lExPXrE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=N0n7obS9dPo1pGEHApNT1Bi8RyUCHYf8phRlwW9nuwnoS77i6kod4SOMsHPBoMSVm
+	 C6AiLFPsRN2hEqJYIIdqwZN+PSDbYQLPXbafWXzbutfoG5MaP9ePnu58jlMBYY/yW8
+	 lUDXGTZ8+qBBlaPybbK4KREm/fUQaxj/CJpHAkdljGFlkX3CIfUNKzBsaqjW7pa4EI
+	 ka7hh9C2p8K6sD4/6lVn+ovDoePEU4nrLVvL+IT5MR5KLpfz5sVF7hm9iEoftWhdiV
+	 VQloa1LxyoxHZMTZiptvJA3m34ubKeR+uxGc/dKSEUGttl46J6X9OAwg+maAFIoG3L
+	 2RKQR3OaDQZAw==
+Date: Sat, 3 Feb 2024 12:59:45 +0100
+From: Lorenzo Bianconi <lorenzo@kernel.org>
+To: Rob Herring <robh@kernel.org>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+	lorenzo.bianconi@redhat.com, devicetree@vger.kernel.org,
+	krzysztof.kozlowski+dt@linaro.org
+Subject: Re: [PATCH v3 3/3] dt-bindings: iio: imu: st_lsm6dsx: add
+ asm330lhhxg1
+Message-ID: <Zb4qsbvz-BREqayL@lore-desk>
+References: <cover.1706692153.git.lorenzo@kernel.org>
+ <93160585e69e4531a981064817ccbb143a6a1f70.1706692153.git.lorenzo@kernel.org>
+ <20240202194308.GA806128-robh@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: humidity: hdc3020: add threshold events support
-To: dima.fedrau@gmail.com
-Cc: 579lpy@gmail.com, javier.carrasco.cruz@gmail.com, jic23@kernel.org,
- lars@metafoo.de, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20240203090530.53374-1-dima.fedrau@gmail.com>
-Content-Language: en-MW
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20240203090530.53374-1-dima.fedrau@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="z17nX3BzMYKP3zxm"
+Content-Disposition: inline
+In-Reply-To: <20240202194308.GA806128-robh@kernel.org>
 
-Le 03/02/2024 à 10:05, Dimitri Fedrau a écrit :
-> Add threshold events support for temperature and relative humidity. To
-> enable them the higher and lower threshold registers must be programmed
-> and the higher threshold must be greater then or equal to the lower
-> threshold. Otherwise the event is disabled. Invalid hysteresis values
-> are ignored by the device. There is no further configuration possible.
-> 
-> Tested by setting thresholds/hysteresis and turning the heater on/off.
-> Used iio_event_monitor in tools/iio to catch events while constantly
-> displaying temperature and humidity values.
-> Threshold and hysteresis values are cached in the driver, used i2c-tools
-> to read the threshold and hysteresis values from the device and make
-> sure cached values are consistent to values written to the device.
-> 
-> Based on Fix:
-> a69eeaad093d "iio: humidity: hdc3020: fix temperature offset" in branch
-> fixes-togreg
-> 
-> Signed-off-by: Dimitri Fedrau <dima.fedrau-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->   drivers/iio/humidity/hdc3020.c | 339 +++++++++++++++++++++++++++++++++
->   1 file changed, 339 insertions(+)
-> 
-> diff --git a/drivers/iio/humidity/hdc3020.c b/drivers/iio/humidity/hdc3020.c
-> index ed70415512f6..1cdff7af4ca8 100644
-> --- a/drivers/iio/humidity/hdc3020.c
-> +++ b/drivers/iio/humidity/hdc3020.c
-> @@ -16,16 +16,27 @@
->   #include <linux/init.h>
->   #include <linux/module.h>
->   #include <linux/mutex.h>
-> +#include <linux/interrupt.h>
 
-Nit: alphabetical order could be kept
+--z17nX3BzMYKP3zxm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->   
->   #include <asm/unaligned.h>
->   
->   #include <linux/iio/iio.h>
-> +#include <linux/iio/events.h>
+> On Wed, Jan 31, 2024 at 10:11:31AM +0100, Lorenzo Bianconi wrote:
+> > Add device bindings for asm330lhhxg1 IMU sensor.
+> > The asm330lhhx supports a subset of the features and functionality
+> > provided by the lsm6dsr via identical interfaces and so is a
+> > suitable fallback compatible.
+>=20
+> A subset cannot fallback to a superset.
+>=20
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  Documentation/devicetree/bindings/iio/imu/st,lsm6dsx.yaml | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/iio/imu/st,lsm6dsx.yaml =
+b/Documentation/devicetree/bindings/iio/imu/st,lsm6dsx.yaml
+> > index 28b667a9cb76..316601b2da7a 100644
+> > --- a/Documentation/devicetree/bindings/iio/imu/st,lsm6dsx.yaml
+> > +++ b/Documentation/devicetree/bindings/iio/imu/st,lsm6dsx.yaml
+> > @@ -49,6 +49,9 @@ properties:
+> >        - items:
+> >            - const: st,asm330lhb
+> >            - const: st,asm330lhh
+> > +      - items:
+> > +          - const: st,asm330lhhxg1
+> > +          - const: st,lsm6dsr
+>=20
+> Assuming this is correct and the commit msg is wrong, can't this be=20
+> added to the existing entry?:
+>=20
+> items:
+>   - enum:
+>       - st,asm330lhhx
+>       - st,asm330lhhxg1
+>   - const: st,lsm6dsr
 
-Nit: same
+ack, I will fix it in v4.
 
-...
+Regards,
+Lorenzo
 
->   
-> +static const u8 HDC3020_R_T_RH_THRESH_LOW[2] = { 0xE1, 0x02 };
-> +static const u8 HDC3020_R_R_RH_THRESH_LOW_CLR[2] = { 0xE1, 0x09 };
+>=20
+>=20
+> > =20
+> >    reg:
+> >      maxItems: 1
+> > --=20
+> > 2.43.0
+> >=20
 
-I don't know what the R and T are for, but shoukld this be 
-HDC3020_R_T_RH_THRESH_LOW_CLR to match other adjacent line?
+--z17nX3BzMYKP3zxm
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> +static const u8 HDC3020_R_T_RH_THRESH_HIGH_CLR[2] = { 0xE1, 0x14 };
-> +static const u8 HDC3020_R_T_RH_THRESH_HIGH[2] = { 0xE1, 0x1F };
+-----BEGIN PGP SIGNATURE-----
 
-...
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZb4qsQAKCRA6cBh0uS2t
+rASsAQDkEexTPcDxOuQlX0hEXx5rWCsJW+oafotbi3lS9tFGigD/XkeUGrWuiuuj
+5Pz8pvhhEzf7IrZdUe+oG/hVOCJ/wQY=
+=2PAe
+-----END PGP SIGNATURE-----
 
-> +static int hdc3020_write_thresh(struct iio_dev *indio_dev,
-> +				const struct iio_chan_spec *chan,
-> +				enum iio_event_type type,
-> +				enum iio_event_direction dir,
-> +				enum iio_event_info info,
-> +				int val, int val2)
-> +{
-> +	struct hdc3020_data *data = iio_priv(indio_dev);
-> +	u16 *thresh;
-> +	u8 buf[5];
-> +	int ret;
-> +
-> +	/* Supported temperature range is from –40 to 125 degree celsius */
-> +	if (val < -45 || val > 125)
-> +		return -EINVAL;
-> +
-> +	/* Select threshold and associated register */
-> +	if (info == IIO_EV_INFO_VALUE) {
-> +		if (dir == IIO_EV_DIR_RISING) {
-> +			thresh = &data->t_rh_thresh_high;
-> +			memcpy(buf, HDC3020_S_T_RH_THRESH_HIGH, 2);
-> +		} else {
-> +			thresh = &data->t_rh_thresh_low;
-> +			memcpy(buf, HDC3020_S_T_RH_THRESH_LOW, 2);
-> +		}
-> +	} else {
-> +		if (dir == IIO_EV_DIR_RISING) {
-> +			thresh = &data->t_rh_thresh_high_clr;
-> +			memcpy(buf, HDC3020_S_T_RH_THRESH_HIGH_CLR, 2);
-> +		} else {
-> +			thresh = &data->t_rh_thresh_low_clr;
-> +			memcpy(buf, HDC3020_S_T_RH_THRESH_LOW_CLR, 2);
-> +		}
-> +	}
-> +
-> +	guard(mutex)(&data->lock);
-> +	switch (chan->type) {
-> +	case IIO_TEMP:
-> +		/*
-> +		 * Store truncated temperature threshold into 9 LSBs while
-> +		 * keeping the old humidity threshold in the 7 MSBs.
-> +		 */
-> +		val = (((val + 45) * 65535 / 175) >> HDC3020_THRESH_TEMP_SHIFT);
-
-Why 175?
-If the span is -40/+120, I guess it should be 160 and if it is -45/+120, 
-165. No?
-
-Maybe something like:
-   #define MIN_TEMP -45 (or -40)
-   #define MAX_TEMP 120
-in order to avoid hard coded constant?
-
-> +		val &= HDC3020_THRESH_TEMP_MASK;
-> +		val |= (*thresh & HDC3020_THRESH_HUM_MASK);
-> +		break;
-> +	case IIO_HUMIDITYRELATIVE:
-> +		/*
-> +		 * Store truncated humidity threshold into 7 MSBs while
-> +		 * keeping the old temperature threshold in the 9 LSBs.
-> +		 */
-> +		val = ((val * 65535 / 100) & HDC3020_THRESH_HUM_MASK);
-> +		val |= (*thresh & HDC3020_THRESH_TEMP_MASK);
-> +		break;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	put_unaligned_be16(val, &buf[2]);
-> +	buf[4] = crc8(hdc3020_crc8_table, buf + 2, 2, CRC8_INIT_VALUE);
-> +	ret = hdc3020_write_bytes(data, buf, 5);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Update threshold */
-> +	*thresh = val;
-> +
-> +	return 0;
-> +}
-
-CJ
-
+--z17nX3BzMYKP3zxm--
