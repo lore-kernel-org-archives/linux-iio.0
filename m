@@ -1,239 +1,141 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C14FD85278
-	for <linux-iio@vger.kernel.org>; Wed,  7 Feb 2024 18:44:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C3FD8286B;
+	Wed,  7 Feb 2024 19:57:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707331497; cv=none; b=CPlYal3Q1dAz+vTfmbYHWVjPT1BR5BIEXFN0kU4gKihfWtTjPZ767y/GgI8Go2mK/LtU9T5Z+aciJwloTXjlvF8kffM+EZqhwdlKrhc73o0F9STy854l3lhizwIxkLN/pFKBtUXfT0zINtvMvcoEruJ0jN9fsa0YldaLUaCMuKA=
+	t=1707335825; cv=none; b=lzXMeAzC47K+wam8K0Q4ut9vQU2clF/PIXAUbUSc48645xiOHWGClEdkVKK9y90kK65ZOIKL31gqaIri9IfJQW1kYjYKSExT3JILWNF39IKYh/vfZIctmbZOCp/oI7hHdPVyqO2tWBO91yaIlwA3AzcMIdAZ75rjyKW3J6EMJf4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707331497; c=relaxed/simple;
-	bh=s51zDtEtzddF+fOLbQ8v2gtuX5PVGr2PxCfCP0eStY0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=FIjjg2/H9YkJqdH/v8I/a2QcD4vqgJHPWQMfFdKC/xn2JEjsQh6NNWY6iqgosTtBBga+qq24DPDZFQv7wCCkeFD19VU5VDBet1ubxb86aJtO6h4ij6P6TXWcGYV2oRsf9W94HzHYyKcpetjEDraEzbEVIoPM7/sVrKzU1kr8XNg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rXmtA-0007PF-WC; Wed, 07 Feb 2024 19:43:17 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rXmt1-0054Wo-Fo; Wed, 07 Feb 2024 19:43:07 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rXmt1-00HRrh-0y;
-	Wed, 07 Feb 2024 19:43:07 +0100
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Mark Brown <broonie@kernel.org>
-Cc: kernel@pengutronix.de,
-	Moritz Fischer <mdf@kernel.org>,
-	Wu Hao <hao.wu@intel.com>,
-	Xu Yilun <yilun.xu@intel.com>,
-	Tom Rix <trix@redhat.com>,
-	linux-fpga@vger.kernel.org,
+	s=arc-20240116; t=1707335825; c=relaxed/simple;
+	bh=/FcFb9qUU0AFc7ntQBhM1DYybql7YvNG3j0P9y2MGhs=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Ir6yUS/3lEI88VrjrANMZkys2PfwWYPFSD1rUfXEKRDz+QiF0f5g7d6y6YkaXA3p23bGG6HekPh2hu041l7EgHRNLfKAzGdqWRujfg+SPFDLxtcLgZsbf/3EaFhjdHkuP+aCn94v3O9qVfcNXDGT/A8ENAWF4+qpaahvA5IPo14=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=evHphc0j; arc=none smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="evHphc0j"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a39e31e1aa9so9845666b.0;
+        Wed, 07 Feb 2024 11:57:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1707335822; x=1707940622; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3uPhDmGaNbr+vXWHveZBJmP7AayoiCUUwJqSBYw/j+Y=;
+        b=evHphc0jwG3eqkM+ybCJI9bM7H5e4u2OTLHTy1CPnlGWEYL2f4i30k45QYEFx6wf2R
+         AvKRSJW8lJaVNS8lYty4k8TIYTnNe2k1w3Pc35tZbHGhJ6bLYoxWvVmQmmvMldiKm2A3
+         kadgp0sEN4ePDla9EifOaDlatMMfGuxbZR6kofHQ1OnhsiJ2YRkMMSzXyoKKHxczOY2R
+         B5b9G0yaRGjQrKkgxTWHACXwnawWYnDOLtTqJzky0takj07uP35QAapoii25F0Xrby1q
+         Xjs7e9gap33g6ueiIOdF60GMDmPUWZ1aMNEU1ACe3f//V1i9mF/J5NTcEAHNo37M52E4
+         cHug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707335822; x=1707940622;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3uPhDmGaNbr+vXWHveZBJmP7AayoiCUUwJqSBYw/j+Y=;
+        b=Ue9MQtpBMrL5T97FaWoPDsBlJfo+HgufIzlrLWkgAcFwe/vVFiZR0RGxcfYWlzV1iS
+         le1Av0uWM0pllVL+Kh2d4lNp28gWuh8Ky5ErWqOcvkBgy0GHYgEVvGq6i3oBXJ132Y14
+         eHKzQQRkS4sj7NL7cnlShNcbn74wb58xaFIJ5viZpK5C8z4XxeSTEx7kFMC2zzXaNaPR
+         hybNoEDtmOGdoZiAORqVDSxIQXpBcXyqjbhRrKArPtH4b27o7BbZqbY7HW+m/tBni+gf
+         UY45XnABojFBAU0VqgON8tdTvcgYw6gohyIJVcdFEojrQe3+TJhk8fzKlOJZBbiNqlWZ
+         F5tw==
+X-Gm-Message-State: AOJu0YzfQU0Q8PWezm6ddWsueLJdcKVYth0YW8BZdJTbBuAKrMSPT+Ny
+	Dhfjb6g1WzWDTgbNonLu6SGIdZuG/lVgw9ZQrPGBw5wxVao1YHvh
+X-Google-Smtp-Source: AGHT+IEk+obbIzohAZ2Cb9TslRpGBO1bLg1Qbs9SXH09Foh5WinxJwTiiAubuQhQN0RLHTQqfL/OgQ==
+X-Received: by 2002:a17:906:ca2:b0:a37:3525:d227 with SMTP id k2-20020a1709060ca200b00a373525d227mr5543066ejh.27.1707335822056;
+        Wed, 07 Feb 2024 11:57:02 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCWak2uUE8YgnUnWJshSf3V14sOhgfgMZCSz114ya52S0qjEjhlTLLU+sN2hiZ5vNDLKS1E1TgjyS282mvbYjIM4iKbYwyXHJnYfXah1ZCTOZIOvbIfSjCjIDhx+3zKfuWh6L1HWFWnKwxFb0ndgO7KlDt5dHK4ftcqa1MWLAvAjbmRs7A==
+Received: from localhost.localdomain (i577B69E7.versanet.de. [87.123.105.231])
+        by smtp.gmail.com with ESMTPSA id rf19-20020a1709076a1300b00a353ca3d907sm1086438ejc.217.2024.02.07.11.57.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Feb 2024 11:57:01 -0800 (PST)
+From: Jesus Gonzalez <jesusmgh@gmail.com>
+To: andriy.shevchenko@linux.intel.com,
+	jic23@kernel.org,
+	lars@metafoo.de
+Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Alexander Aring <alex.aring@gmail.com>,
-	Stefan Schmidt <stefan@datenfreihafen.org>,
-	Miquel Raynal <miquel.raynal@bootlin.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	linux-wpan@vger.kernel.org,
-	netdev@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	linux-input@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	Martin Tuma <martin.tuma@digiteqautomotive.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	linux-media@vger.kernel.org,
-	Sergey Kozlov <serjk@netup.ru>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Yang Yingliang <yangyingliang@huawei.com>,
-	linux-mmc@vger.kernel.org,
-	Richard Weinberger <richard@nod.at>,
-	Vignesh Raghavendra <vigneshr@ti.com>,
-	Rob Herring <robh@kernel.org>,
-	Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>,
-	Amit Kumar Mahapatra via Alsa-devel <alsa-devel@alsa-project.org>,
-	linux-mtd@lists.infradead.org,
-	Simon Horman <horms@kernel.org>,
-	Ronald Wahl <ronald.wahl@raritan.com>,
-	Benson Leung <bleung@chromium.org>,
-	Tzung-Bi Shih <tzungbi@kernel.org>,
-	Guenter Roeck <groeck@chromium.org>,
-	chrome-platform@lists.linux.dev,
-	Michal Simek <michal.simek@amd.com>,
-	Max Filippov <jcmvbkbc@gmail.com>,
-	linux-spi@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	linux-arm-msm@vger.kernel.org,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	linux-mediatek@lists.infradead.org,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Javier Martinez Canillas <javierm@redhat.com>,
-	Sam Ravnborg <sam@ravnborg.org>,
-	dri-devel@lists.freedesktop.org,
-	linux-fbdev@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	Viresh Kumar <vireshk@kernel.org>,
-	Rui Miguel Silva <rmfrfs@gmail.com>,
-	Johan Hovold <johan@kernel.org>,
-	Alex Elder <elder@kernel.org>,
-	greybus-dev@lists.linaro.org,
-	Peter Huewe <peterhuewe@gmx.de>,
-	Jarkko Sakkinen <jarkko@kernel.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	linux-integrity@vger.kernel.org,
-	Herve Codina <herve.codina@bootlin.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	linux-usb@vger.kernel.org,
-	Helge Deller <deller@gmx.de>,
-	Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-	Kalle Valo <kvalo@kernel.org>,
-	Dmitry Antipov <dmantipov@yandex.ru>,
-	libertas-dev@lists.infradead.org,
-	linux-wireless@vger.kernel.org,
-	Jonathan Corbet <corbet@lwn.net>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	James Clark <james.clark@arm.com>,
-	linux-doc@vger.kernel.org
-Subject: [PATCH v3 00/32] spi: get rid of some legacy macros
-Date: Wed,  7 Feb 2024 19:40:14 +0100
-Message-ID: <cover.1707324793.git.u.kleine-koenig@pengutronix.de>
+	Jesus Gonzalez <jesusmgh@gmail.com>
+Subject: [PATCH v4 1/1] Add 10EC5280 to bmi160_i2c ACPI IDs to allow binding on some devices
+Date: Wed,  7 Feb 2024 20:55:50 +0100
+Message-ID: <20240207195549.37994-2-jesusmgh@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <ZcOLql2RGmPP10EY@smile.fi.intel.com>
+References: <ZcOLql2RGmPP10EY@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5860; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=s51zDtEtzddF+fOLbQ8v2gtuX5PVGr2PxCfCP0eStY0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlw86QixivRCd8jxsnKPB8Ssu0rmVV57zjiJehV Ejr/jxfufWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcPOkAAKCRCPgPtYfRL+ TqoZB/9v16XZw2mKXG2KBm/qLQpqoIFtAvhj1rhNwGsvXv87uFIurzYxaSWRcHnoydLYAUjcWin wLRECa33v1gti0Be6oV9BMfvx+Pvhq4lk4RnaSn96oPtZRpq+OTzE2mMSgz0Rgm3Al2XVM+wtll cMJhm+DE3KYghNi+61ohTBgmqcQSwjofaml1oAIf8F12/QJkYPMbKHLFo3eYUENR8f8KW6xfzcA Auq9djKc8DcVzUnZlQ8jFBRc78e3H4Wwojwi6fhxTf6BorMOWK2zEE8p+1QpcaPMCBrTOJnRdaw ZunuM2tkWRUATbyKWfDc9YAdTKZGkKDoDmegK95iBOzv5EQf
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-Changes since v2
-(https://lore.kernel.org/linux-spi/cover.1705944943.git.u.kleine-koenig@pengutronix.de):
+"10EC5280" is used by several manufacturers like Lenovo, GPD, or AYA (and
+probably others) in their ACPI table as the ID for the bmi160 IMU. This
+means the bmi160_i2c driver won't bind to it, and the IMU is unavailable
+to the user. Manufacturers have been approached on several occasions to
+try getting a BIOS with a fixed ID, mostly without actual positive
+results, and since affected devices are already a few years old, this is
+not expected to change. This patch enables using the bmi160_i2c driver for
+the bmi160 IMU on these devices.
 
- - Drop patch "mtd: rawnand: fsl_elbc: Let .probe retry if local bus is
-   missing" which doesn't belong into this series.
- - Fix a build failure noticed by the kernel build bot in
-   drivers/spi/spi-au1550.c. (I failed to catch this because this driver
-   is mips only, but not enabled in a mips allmodconfig. That's a bit
-   unfortunate, but not easily fixable.)
- - Add the Reviewed-by: and Acked-by: tags I received for v2.
+Here is the relevant extract from the DSDT of a GPD Win Max 2 (AMD 6800U
+model) with the latest firmware 1.05 installed. GPD sees this as WONTFIX
+with the argument of the device working with the Windows drivers.
 
-Mark already announced for v2 that he is willing to apply the whole
-series to his spi tree. Assuming no other show stoper are found in this
-v3, I assume that's the plan still for this series now.
+	Device (BMA2)
+	{
+	    Name (_ADR, Zero)  // _ADR: Address
+	    Name (_HID, "10EC5280")  // _HID: Hardware ID
+	    Name (_CID, "10EC5280")  // _CID: Compatible ID
+	    Name (_DDN, "Accelerometer")  // _DDN: DOS Device Name
+	    Name (_UID, One)  // _UID: Unique ID
+	    Method (_CRS, 0, NotSerialized)  // _CRS: Current Resource Settings
+	    {
+		Name (RBUF, ResourceTemplate ()
+		{
+		    I2cSerialBusV2 (0x0069, ControllerInitiated, 0x00061A80,
+		        AddressingMode7Bit, "\\_SB.I2CC",
+		        0x00, ResourceConsumer, , Exclusive,
+		        )
+		})
+		Return (RBUF) /* \_SB_.I2CC.BMA2._CRS.RBUF */
+	    }
+	    
+	    ...
+	    
+	}
 
-Thanks
-Uwe
+Signed-off-by: Jesus Gonzalez <jesusmgh@gmail.com>
+---
+v4: Moved comment back to relevant position inside function
 
-Uwe Kleine-König (32):
-  fpga: ice40-spi: Follow renaming of SPI "master" to "controller"
-  ieee802154: ca8210: Follow renaming of SPI "master" to "controller"
-  iio: adc: ad_sigma_delta: Follow renaming of SPI "master" to "controller"
-  Input: pxspad - follow renaming of SPI "master" to "controller"
-  Input: synaptics-rmi4 - follow renaming of SPI "master" to "controller"
-  media: mgb4: Follow renaming of SPI "master" to "controller"
-  media: netup_unidvb: Follow renaming of SPI "master" to "controller"
-  media: usb/msi2500: Follow renaming of SPI "master" to "controller"
-  media: v4l2-subdev: Follow renaming of SPI "master" to "controller"
-  misc: gehc-achc: Follow renaming of SPI "master" to "controller"
-  mmc: mmc_spi: Follow renaming of SPI "master" to "controller"
-  mtd: dataflash: Follow renaming of SPI "master" to "controller"
-  net: ks8851: Follow renaming of SPI "master" to "controller"
-  net: vertexcom: mse102x: Follow renaming of SPI "master" to "controller"
-  platform/chrome: cros_ec_spi: Follow renaming of SPI "master" to "controller"
-  spi: bitbang: Follow renaming of SPI "master" to "controller"
-  spi: cadence-quadspi: Don't emit error message on allocation error
-  spi: cadence-quadspi: Follow renaming of SPI "master" to "controller"
-  spi: cavium: Follow renaming of SPI "master" to "controller"
-  spi: geni-qcom: Follow renaming of SPI "master" to "controller"
-  spi: loopback-test: Follow renaming of SPI "master" to "controller"
-  spi: slave-mt27xx: Follow renaming of SPI "master" to "controller"
-  spi: spidev: Follow renaming of SPI "master" to "controller"
-  staging: fbtft: Follow renaming of SPI "master" to "controller"
-  staging: greybus: spi: Follow renaming of SPI "master" to "controller"
-  tpm_tis_spi: Follow renaming of SPI "master" to "controller"
-  usb: gadget: max3420_udc: Follow renaming of SPI "master" to "controller"
-  video: fbdev: mmp: Follow renaming of SPI "master" to "controller"
-  wifi: libertas: Follow renaming of SPI "master" to "controller"
-  spi: fsl-lib: Follow renaming of SPI "master" to "controller"
-  spi: Drop compat layer from renaming "master" to "controller"
-  Documentation: spi: Update documentation for renaming "master" to "controller"
+ drivers/iio/imu/bmi160/bmi160_i2c.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
- .../driver-api/driver-model/devres.rst        |  2 +-
- Documentation/spi/spi-summary.rst             | 74 +++++++++----------
- drivers/char/tpm/tpm_tis_spi_main.c           |  4 +-
- drivers/fpga/ice40-spi.c                      |  4 +-
- drivers/iio/adc/ad_sigma_delta.c              | 14 ++--
- drivers/input/joystick/psxpad-spi.c           |  4 +-
- drivers/input/rmi4/rmi_spi.c                  |  2 +-
- drivers/media/pci/mgb4/mgb4_core.c            | 14 ++--
- .../media/pci/netup_unidvb/netup_unidvb_spi.c | 48 ++++++------
- drivers/media/usb/msi2500/msi2500.c           | 38 +++++-----
- drivers/media/v4l2-core/v4l2-spi.c            |  4 +-
- drivers/misc/gehc-achc.c                      |  8 +-
- drivers/mmc/host/mmc_spi.c                    |  6 +-
- drivers/mtd/devices/mtd_dataflash.c           |  2 +-
- drivers/net/ethernet/micrel/ks8851_spi.c      |  4 +-
- drivers/net/ethernet/vertexcom/mse102x.c      |  2 +-
- drivers/net/ieee802154/ca8210.c               |  2 +-
- .../net/wireless/marvell/libertas/if_spi.c    |  2 +-
- drivers/platform/chrome/cros_ec_spi.c         |  8 +-
- drivers/spi/spi-ath79.c                       |  4 +-
- drivers/spi/spi-au1550.c                      |  2 +-
- drivers/spi/spi-bitbang.c                     | 64 ++++++++--------
- drivers/spi/spi-butterfly.c                   |  6 +-
- drivers/spi/spi-cadence-quadspi.c             |  7 +-
- drivers/spi/spi-cavium.c                      |  6 +-
- drivers/spi/spi-cavium.h                      |  2 +-
- drivers/spi/spi-davinci.c                     |  6 +-
- drivers/spi/spi-fsl-lib.c                     | 14 ++--
- drivers/spi/spi-geni-qcom.c                   |  2 +-
- drivers/spi/spi-gpio.c                        |  2 +-
- drivers/spi/spi-lm70llp.c                     |  6 +-
- drivers/spi/spi-loopback-test.c               |  4 +-
- drivers/spi/spi-oc-tiny.c                     |  6 +-
- drivers/spi/spi-omap-uwire.c                  |  4 +-
- drivers/spi/spi-sh-sci.c                      | 10 +--
- drivers/spi/spi-slave-mt27xx.c                |  2 +-
- drivers/spi/spi-xilinx.c                      |  4 +-
- drivers/spi/spi-xtensa-xtfpga.c               |  2 +-
- drivers/spi/spi.c                             |  2 +-
- drivers/spi/spidev.c                          |  2 +-
- drivers/staging/fbtft/fbtft-core.c            |  4 +-
- drivers/staging/greybus/spilib.c              | 66 ++++++++---------
- drivers/usb/gadget/udc/max3420_udc.c          |  2 +-
- drivers/video/fbdev/mmp/hw/mmp_spi.c          | 26 +++----
- include/linux/spi/spi.h                       | 20 +----
- include/linux/spi/spi_bitbang.h               |  2 +-
- include/media/v4l2-common.h                   |  6 +-
- 47 files changed, 253 insertions(+), 272 deletions(-)
-
-
-base-commit: b9b98f594b6f4c0b0fb2da4493453aef183bca4b
+diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c b/drivers/iio/imu/bmi160/bmi160_i2c.c
+index 81652c08e644..a081305254db 100644
+--- a/drivers/iio/imu/bmi160/bmi160_i2c.c
++++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
+@@ -43,6 +43,15 @@ static const struct i2c_device_id bmi160_i2c_id[] = {
+ MODULE_DEVICE_TABLE(i2c, bmi160_i2c_id);
+ 
+ static const struct acpi_device_id bmi160_acpi_match[] = {
++	/*
++	 * FIRMWARE BUG WORKAROUND
++	 * Some manufacturers like GPD, Lenovo or Aya used the incorrect
++	 * ID "10EC5280" for bmi160 in their DSDT. A fixed firmware is not
++	 * available as of Feb 2024 after trying to work with OEMs, and
++	 * this is not expected to change anymore since at least some of
++	 * the affected devices are from 2021/2022.
++	 */
++	{"10EC5280", 0},
+ 	{"BMI0160", 0},
+ 	{ },
+ };
 -- 
 2.43.0
 
