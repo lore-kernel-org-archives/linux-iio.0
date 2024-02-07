@@ -1,159 +1,143 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0FB181ACE;
-	Wed,  7 Feb 2024 17:27:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B50A784FC1
+	for <linux-iio@vger.kernel.org>; Wed,  7 Feb 2024 18:43:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707326838; cv=none; b=hprdayeTYc+OVUmGmgsP6u4hFxfHX1GgTOtrm1K8pd3b1yWxE1UigxyMsHjWuf2+Pv6x+dca987oDj3woIBRrSOsdjK8qQiyBOQaBrrSX+Ma9GOuLNnZL1w7R4quBRbMhr6aKFFe2gY6nti6CLYG3v0FfjJCmppoTj3uSEy9x4w=
+	t=1707331401; cv=none; b=AwNSijeWLnyQHkwsJKXkLGL8J44+JbnQxgeD0L93QoVFl/rsh5kAaP3If1/xWtEbUfzwWU/51QCwHTSIyJbq2JiOaGb20PIIwFI5d1dlhvK97q7jjPCXbBpitw0M1WaPR5Zqk2y6w3URN8j260Va7ynk6tf0NK3E0gQF1Q/6yNc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707326838; c=relaxed/simple;
-	bh=7wyYdg/OPZRMNK0CWvLZGY+pFUjlnvWuYHOfq6M3Yfs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PleHySX9OVK38ta9GfHYC5bHjTBqKrDd0o6FtVlX1LvX+8Wb6BySNdLycKhFk1gALCQHdZ5A3cHraCczmB44p0QD22tA/sUCuI4PRtc2IWvW92E9xIqwS9C/EhcOWduZesSXUZ9ALcNcm4m+pRCSJOZiMTrhMF7uJmicvVkr2/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jzM/DvIF; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jzM/DvIF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2E92C433C7;
-	Wed,  7 Feb 2024 17:27:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1707326837;
-	bh=7wyYdg/OPZRMNK0CWvLZGY+pFUjlnvWuYHOfq6M3Yfs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jzM/DvIFAg3I+QTeCC20Viunolxcz4TZyhwmZ2Vue+9jA0xmlBEkge0XQhZoCMOjM
-	 uyu3VeAQg91K4jIeOmd99QgFwZQfjnjEENmKpcdcKLauBStHNMfaMC5sTKy9bBbmrv
-	 lEZ3clyhhqUdoA0ZUrdfCim2+MxIlYehLrHQ7RU25j3dSKpMa1+E9mBhqVRBHQMYO/
-	 9lBAKqDp/1hlVTrZQJywwrnjd9UMY4fEFSU1bXrj1+Jr2EHQ6Ia0p1BclrnvkaBif8
-	 Z+TNRcnv5JrjYjP1/D98Ep+MdQN8NvW+C8ZiVAHNSm5CFfY+xSLRBbofqynxZcJ0Jq
-	 N/ffvSYndyBEw==
-Date: Wed, 7 Feb 2024 17:27:12 +0000
-From: Conor Dooley <conor@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: linux-iio@vger.kernel.org,
+	s=arc-20240116; t=1707331401; c=relaxed/simple;
+	bh=V9fXmo/wji/+Qk23ejom1WKCUrS23v2L7b4iJfa3OQA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XZ73Eb2KE+ZSdaYd2p9n9WZDumjXlVpnjcuVmXBllYiARm9/6DXd8zaYIDmtbWBJX6c9Uzk22YaaTvC5lYFea0MEm8dFpHrbvsUnddlo5m3ViJq6x2q3swkOe7EiRR+/qvfmdHDOl55Bapei+wswz6PFTHtZWm3+iBKPfusucEg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rXmt4-0007PI-4K; Wed, 07 Feb 2024 19:43:10 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rXmt2-0054Wx-6n; Wed, 07 Feb 2024 19:43:08 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rXmt2-00HRrt-0O;
+	Wed, 07 Feb 2024 19:43:08 +0100
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Mark Brown <broonie@kernel.org>
+Cc: kernel@pengutronix.de,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: add ad7944 ADCs
-Message-ID: <20240207-carat-darling-03f5a98e65da@spud>
-References: <20240206-ad7944-mainline-v1-0-bf115fa9474f@baylibre.com>
- <20240206-ad7944-mainline-v1-1-bf115fa9474f@baylibre.com>
- <CAMknhBGG_RS1t0OJw6_UnNQ_=S4YgN4i1YN26V8n=f9y28J9hQ@mail.gmail.com>
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v3 03/32] iio: adc: ad_sigma_delta: Follow renaming of SPI "master" to "controller"
+Date: Wed,  7 Feb 2024 19:40:17 +0100
+Message-ID:  <de866d09c80c89816df62602ba4ba8ba30e9971f.1707324794.git.u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1707324793.git.u.kleine-koenig@pengutronix.de>
+References: <cover.1707324793.git.u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="x110uJIlPRj+uj6y"
-Content-Disposition: inline
-In-Reply-To: <CAMknhBGG_RS1t0OJw6_UnNQ_=S4YgN4i1YN26V8n=f9y28J9hQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2991; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=V9fXmo/wji/+Qk23ejom1WKCUrS23v2L7b4iJfa3OQA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlw86ZyKdlBJFXTkRaTlW3JxU4uHlkNtqdRalfX 42PXw+zc2WJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcPOmQAKCRCPgPtYfRL+ TgpoB/sG42rH0oJy7cNU1GO6xZc88KNodEBcy21UcMIEmp921dWqScaoL/tW/QS+Y7Eio0qP9PO 22kR4swKLlPypEABX4367G5P5VdtFe1Zeh7vNZEhhUJtEdDTHx4k6rk2ukk/UBHAfT8MlMbDBlA ymLmuDBbsxlvxs7EixDi73Ylo1IZ5EDMm0eJDdpyKfpOGZX3RA8XcJUwDrYIHoYA3M0Vme8qLHP DnhNfwgUEjkgjfAKsfaDVdM6S/0y7AB2b/k4GZwR+tZ8+inbjrEbAtUKac1swdAbUmMedwlAJYV JwooqnM+mTbr3MzmSFfY22lzxZ/uHxaV8O6q4A9KwucT3RMB
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
+In commit 8caab75fd2c2 ("spi: Generalize SPI "master" to "controller"")
+some functions and struct members were renamed. To not break all drivers
+compatibility macros were provided.
 
---x110uJIlPRj+uj6y
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+To be able to remove these compatibility macros push the renaming into
+this driver.
 
-On Tue, Feb 06, 2024 at 11:34:13AM -0600, David Lechner wrote:
-> On Tue, Feb 6, 2024 at 11:26=E2=80=AFAM David Lechner <dlechner@baylibre.=
-com> wrote:
-> >
-> > This adds a new binding for the Analog Devices, Inc. AD7944, AD7985, and
-> > AD7986 ADCs.
-> >
-> > Signed-off-by: David Lechner <dlechner@baylibre.com>
-> > ---
-> >  .../devicetree/bindings/iio/adc/adi,ad7944.yaml    | 231 +++++++++++++=
-++++++++
-> >  MAINTAINERS                                        |   8 +
-> >  2 files changed, 239 insertions(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7944.yaml =
-b/Documentation/devicetree/bindings/iio/adc/adi,ad7944.yaml
-> > new file mode 100644
-> > index 000000000000..a023adbeba42
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7944.yaml
->=20
-> ...
->=20
->=20
-> +  adi,reference:
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +    enum: [ internal, internal-buffer, external ]
-> +    default: internal
->=20
-> ...
->=20
-> > +allOf:
-> > +  # ref-supply is only used for external reference voltage
-> > +  - if:
-> > +      not:
-> > +        required:
-> > +          - adi,reference
-> > +    then:
-> > +      properties:
-> > +        ref-supply: false
-> > +    else:
-> > +      if:
-> > +        properties:
-> > +          adi,reference:
-> > +            const: external
-> > +      then:
-> > +        required:
-> > +          - ref-supply
-> > +      else:
-> > +        properties:
-> > +          ref-supply: false
->=20
-> This seems like something that could potentially be improved in the
-> dtschema tooling. Since adi,reference has a default of "internal", I
-> would expect:
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/iio/adc/ad_sigma_delta.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-Oh god, Rob will probably have to remind us how this works. I talked
-with him about trying to do some conditional stuff like this a while
-back, but I was not able to find any logs for IRC from then.
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index 7e2192870743..55442eddf57c 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -212,7 +212,7 @@ int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
+ 	if (ret)
+ 		return ret;
+ 
+-	spi_bus_lock(sigma_delta->spi->master);
++	spi_bus_lock(sigma_delta->spi->controller);
+ 	sigma_delta->bus_locked = true;
+ 	sigma_delta->keep_cs_asserted = true;
+ 	reinit_completion(&sigma_delta->completion);
+@@ -235,7 +235,7 @@ int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
+ 	sigma_delta->keep_cs_asserted = false;
+ 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+ 	sigma_delta->bus_locked = false;
+-	spi_bus_unlock(sigma_delta->spi->master);
++	spi_bus_unlock(sigma_delta->spi->controller);
+ 
+ 	return ret;
+ }
+@@ -287,7 +287,7 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
+ 
+ 	ad_sigma_delta_set_channel(sigma_delta, chan->address);
+ 
+-	spi_bus_lock(sigma_delta->spi->master);
++	spi_bus_lock(sigma_delta->spi->controller);
+ 	sigma_delta->bus_locked = true;
+ 	sigma_delta->keep_cs_asserted = true;
+ 	reinit_completion(&sigma_delta->completion);
+@@ -322,7 +322,7 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
+ 	sigma_delta->keep_cs_asserted = false;
+ 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+ 	sigma_delta->bus_locked = false;
+-	spi_bus_unlock(sigma_delta->spi->master);
++	spi_bus_unlock(sigma_delta->spi->controller);
+ 	iio_device_release_direct_mode(indio_dev);
+ 
+ 	if (ret)
+@@ -387,7 +387,7 @@ static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
+ 
+ 	sigma_delta->samples_buf = samples_buf;
+ 
+-	spi_bus_lock(sigma_delta->spi->master);
++	spi_bus_lock(sigma_delta->spi->controller);
+ 	sigma_delta->bus_locked = true;
+ 	sigma_delta->keep_cs_asserted = true;
+ 
+@@ -401,7 +401,7 @@ static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
+ 	return 0;
+ 
+ err_unlock:
+-	spi_bus_unlock(sigma_delta->spi->master);
++	spi_bus_unlock(sigma_delta->spi->controller);
+ 
+ 	return ret;
+ }
+@@ -426,7 +426,7 @@ static int ad_sd_buffer_postdisable(struct iio_dev *indio_dev)
+ 
+ 	ad_sigma_delta_disable_all(sigma_delta);
+ 	sigma_delta->bus_locked = false;
+-	return spi_bus_unlock(sigma_delta->spi->master);
++	return spi_bus_unlock(sigma_delta->spi->controller);
+ }
+ 
+ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+-- 
+2.43.0
 
->      if:
->        properties:
->          adi,reference:
->            const: external
->      then:
->        required:
->          - ref-supply
->      else:
->        properties:
->          ref-supply: false
->=20
-> to be sufficient here. However, currently, if the adi,reference
-> property is omitted from the dts/dtb, the condition here evaluates to
-> true and unexpectedly (incorrectly?) the validator requires the
-> ref-supply property.
-
-But I was trying to do something like you are here, and was also
-surprised that this evaluated to true when the property was not present.
-
-I ended up doing something completely different, so I have no example to
-show you of how things ended up being.
-
-
-
---x110uJIlPRj+uj6y
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZcO9cAAKCRB4tDGHoIJi
-0nleAP9nmX07gBI9U1z0W95doO2LL4c6cqMPv9K6RCD9pvnqbgEA8H1q3EmcoLxn
-o0hU6apWmTvd+VJL+ba4PuLVOlUbygM=
-=9TQ/
------END PGP SIGNATURE-----
-
---x110uJIlPRj+uj6y--
