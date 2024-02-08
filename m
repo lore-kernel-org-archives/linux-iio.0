@@ -1,60 +1,60 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 120526A320
-	for <linux-iio@vger.kernel.org>; Thu,  8 Feb 2024 08:17:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAE376A01A
+	for <linux-iio@vger.kernel.org>; Thu,  8 Feb 2024 08:18:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707380248; cv=none; b=CTRqJazOAI1EnqHg/HRckc7eBwa2Gei8kf2VhL3ojWPLZBUV5uh+yuXIfQcnuSzktBBB65ghjy6AiMYOS5Rd49nYP9s8hZPCLmBBi/K7OM+4nIUFcB246at+hAmBvH5oTBT5JJGVEt02VxXF8bBjwqGnjFXhSCbgqdFoQMnegbY=
+	t=1707380288; cv=none; b=tz/pwBSzH/7jn5OR4VUfnTtReg8VmOZ1F6KKXkxnrIoLCzID7IlmINYd8L+KyyRo9W5hLQCiNw8dXWg2WwrLyzaKswILt7co0uezvgTSDcXoB1IbciU5/1ZeKa9UMVt5m0kvy1ZbPzyeYzzqWCE0jk4N46+UDZ9GsfioUdOr4Fc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707380248; c=relaxed/simple;
-	bh=cFhVyO9mZBb4K/oJNzkv3ovfeFXv6ANZP5fBnOocIQ4=;
+	s=arc-20240116; t=1707380288; c=relaxed/simple;
+	bh=nbZq8i68KoLoazBRqiYw3VADDcHa5yKyxI+OQdEIV+I=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bRxFhaEm8f4NwC8qyPEBAAs+Prpu2euO1Zya5Ut5Pa+uekb9PGqg3AlVHi4K7ebbW46ex0RCASSjmFCjaL5Np6L7kh5dCKVU5TM7yNvf8kcpqo28ljrsGVhmO/DJMVxV6yQjCRruvKVw3RSsn6hYju/YH/b12pNwjGfD0BaBZFw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=wd6mx8/u; arc=none smtp.client-ip=209.85.128.42
+	 In-Reply-To:Content-Type; b=Ugd9zw+RWLabOP0/3nCp96vLyYBrNGLMUVWRAndkv6sgXFmLjYNYScc/wJWh89gqZcq/CcITLk/P+V88Nvpeku9HAu0tXtHDKUMa+SFyBGoChCRweI3jQkoQhgkvuP08HG22AjoUEbE60Stu/zskNcOYf7J8pz++QGV7zFDx8+o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ZYyNMCOD; arc=none smtp.client-ip=209.85.128.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="wd6mx8/u"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4100826df08so13347215e9.2
-        for <linux-iio@vger.kernel.org>; Thu, 08 Feb 2024 00:17:26 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ZYyNMCOD"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-40fd72f7125so13110985e9.1
+        for <linux-iio@vger.kernel.org>; Thu, 08 Feb 2024 00:18:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1707380245; x=1707985045; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1707380285; x=1707985085; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=+IU/WIemk68VsWlu2CYm5KV56Ntg2w5tMs4G/OWutYU=;
-        b=wd6mx8/uUC3HRPMeiYTpgJmVBkN3T9ZblV79pFgprILlRx/vRPcD639GcFMyYo/g0J
-         wox6a9kYK5cvZmdL/MMI2oZvS3VtMdrf54GphOfvfKnSXHZEI51Pepy2sUkmj1OGfvHi
-         hPiY6Gb1dcUC0K5qFdEWTTP3NmWNVMs74rIBJjZNZOWYJVhy43rePCss9jsP2IMQKpmo
-         nQHiBNOK1jcsbOAQ01+wwLES1eVihYVMGC24ySZPQHe+6g6zo3Is91MGezpiNwKskT3X
-         C0OTxZPZZ2bYdBphlE9h9YUMjKfnJOJwc/3OFu3EKTAfaJ4zRAYAdzGzwhMbzeBw1w86
-         AHGg==
+        bh=hzjDELNKVw9+VYjbOMlBmirR01kGz4g7bnNKXxzZc/Y=;
+        b=ZYyNMCODNzj6Nn1hMDGIucnFQELTrUeMRtZ+mie6RVDtaYgjbq/CnLIEDkJ4svl7/d
+         uKtNZB7lhlGny/2mJ/XonDvr+jCBnyhtQ0x1yIdqgF7710ujV6rmIteOjIjc2Yk30PBf
+         BANuwY+PwFED4oZc+FiXIm1IUTsC5Nt7zT3SmFX5rv+MhhOf9569j1IaA3vutZacyGEv
+         9akW1olLuGeMq+LbTrM/8LvjHY9fAISV55Nl/bJLObWzSs+/YMVBdJQweAfDKVFmn1qQ
+         ZetxsNucjzhAeutrWOAfuuWIPLbw6IwacVrQW6VQoaJjI2WKF/pf3oO/KMPwirE1YTFG
+         Whkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707380245; x=1707985045;
+        d=1e100.net; s=20230601; t=1707380285; x=1707985085;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+IU/WIemk68VsWlu2CYm5KV56Ntg2w5tMs4G/OWutYU=;
-        b=hZowaFTsmkwQSnkMwe9mz0qrkx21O+gLRQ126O6hT84O74zO4ULYO8Vr22epN3bvzb
-         zuL4IxGBGM/gXzgLhSov+acUVipBTXKEqt2HAs5+lxaP46eSK8KVx13k/XMruWqyJTrQ
-         nLufo0jqwWfyqbGZx2S0Tfi8ohVPk1XJrt3v3SkkeGIx8rRiGfHPAxTTIzaeBFBZZ2TI
-         mH8/iq+8s7L5SeQitfwoR5WVR5OWFZlzmNIwktvqA4V39bpyjtYEJOGhC8MdDe/+ubZx
-         RLFqgciyHP+AhwYVsoSlQaWKfWzDBtSlK0D0hXfq0/NO1kuXQV4gKUVFVsgqIu7tblw4
-         ewnA==
-X-Forwarded-Encrypted: i=1; AJvYcCXMoDBFlRmnktJHChcFaSKNGIRv7uJ2v4aTsga81YItzC07I4mhx1Q7MLCG1aHqbTEMCH4reNNw18qETVjhIfbqFWZCEk/nAMa8
-X-Gm-Message-State: AOJu0YyWtd5vU3+NF0cGS4VtG8OfTCEFmZuUJVi7ZGo5UNkW59IvOCX2
-	nOzMDn1CzTMWOibCEQ3mtvCxmULgB59J6bRd1IikL8babED3+iX0+lsj35CktiA=
-X-Google-Smtp-Source: AGHT+IFeImHD4GuDOV7WqhwUVfZiBY0DZ/budKpAJx1zCNqYrvQLL4URWUwX/ve9jGJzNPq2PfFTTQ==
-X-Received: by 2002:adf:f08d:0:b0:33b:464c:b118 with SMTP id n13-20020adff08d000000b0033b464cb118mr5737547wro.26.1707380245293;
-        Thu, 08 Feb 2024 00:17:25 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCWG27wGktnvvv/vcScIQhkvRFHsOjG/jG49iIwjK5pxT/d+Dn/v1ylz/jcYyxgk+JHBWMSuMy9PdAtAB4f7cIBdSy4Ra/cA/hJMjx9Gmlp/SHpNJ6rXmDt5bC+CFcETrAheI4enPSlr5XWOCKllmGN6sml4lLeA28fYASm9/leNX/Bhq+k3l35psxVSGk1J3ehuGkiaXI4G1aT0dWKZkuLceUQv4ReuWZgT3PpB1LsJsH+7fPTrn7Vwgcg27Z1mgkbLWbmJrkdGE0UcGsNDfdgYsexq5yRg3SWakzNH/RHMKItSsZhhYXHbTB2Uus1Xddvk7NSj3O8BNLEMmHojjuzaZ+ltLNltWGjgagawb7B4tYHeIJnG0enQp203PsHtGhi249kzFsHDw6H4UBplsfsVHG9XW5B9NgUqu+6U3AAgOwZFt0VnG1Lhn5c/3ZnKbdy4n2R6PjInYFmmIflX+PZlWjYBCsNhj4iD5M29msXQ94/zdWn1JDJkP6SIdjhuIQzt5S+LMOxnaqpo/Jd50+TDrtBdHg==
+        bh=hzjDELNKVw9+VYjbOMlBmirR01kGz4g7bnNKXxzZc/Y=;
+        b=eiorsLdBv/IDLU9eFcRcsPEVNjoDaMIL9lR5kbMbeaPQr5wbLVAnFbtqRmsUyNxjb5
+         fYeAMHia2CaPqC4Ql/BcVVnaYdvjF3lc01a6QgEObEKP/NPy7J9YSfXRG8abTxWt+Zto
+         9x9vzEznRuK4EdGdO7deAuksky7PDVMRa6h8ZppSy9vDlNrV/ph5oHezStFPuRM0a/D4
+         WryiAk3EhcU/mypq8g6H35Pw2X2NCex8da79OPDOr/icS6jHQPqNHYP7uNDVL0y2+xZu
+         +/ch3Tan6obwaVov4Nt8/GYC3GU1aSWjw7/5csk3ic6rxBRTCZhZgjt+Oa9+I2yCxrmK
+         ljfw==
+X-Forwarded-Encrypted: i=1; AJvYcCW9Qjpa+cHmKz8DVawLL58w5l/9VKCWyZo3NHzY6bP3UvQ0RhfD9640dQA1yuhqIGAymG5AbgcHeRoGfg+/0fPw2uedrbx6hhgC
+X-Gm-Message-State: AOJu0YzTE6AVcA+/w5aAIoSIbvIQVt4wthEASqA9cZiTW6sxKOXP+00t
+	ToNmImF8wABdijA/cUvPa0u+xb9v1rn1wT1yRiBMT6WyzcKx/gWZVr8QLZSSqY0=
+X-Google-Smtp-Source: AGHT+IGX1v0DNa6dk68DpbamK9VoNLElNByYhFwXU8R28IKxKgIJVYtrPhtGs//RCuvvKJJ9Ajgcbw==
+X-Received: by 2002:a05:600c:1e1a:b0:40f:f069:8d13 with SMTP id ay26-20020a05600c1e1a00b0040ff0698d13mr4941390wmb.9.1707380285134;
+        Thu, 08 Feb 2024 00:18:05 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCWRKzqwGexCKu9ihoWDvIG6+anTtzBOWv/L9gC2rIKWjRWlI0/WAKrEUQG4UcXSw8IJTjkLZj9DbAm1YXocYilPt2cfBwpYvGE7k7IUShWDAd228NrjY+/fBN3VTQ2p4imYjf8dFXy3y3/DgNWS5DXJ677mkmIBjVuUjt87mEy6jzNGuH+Q14vIAAca0JD93o2LTT+0asBVe1l1PlaSjLzhXajA7OOxOuzXcsMzMzX+N+AM9eyWwZY3IMKVpa3j63Hn0jGUIFAgALb/LxtNl4JBkQU8QN0VROb64YGUVQ9R+ztGXaT0bllW+ptW3CGjz9PTELApxdYttMh4pOz9CBHEmk8C4xpyeoTkN8NQ/3l3wFzXUuA0DXZKjp47vrDjKaSEa8rTPg68CmhX09bPdcKXiehoLz+6pXuuhEH2801y1dVuBJnsPycYCHnK/IDQWsyRKuItSk26SJsnAdNKQf+2Wnwj4xWY52dcvMXkYEWqOIpoGddP9+iVMTYy8xsESHxgAOxUsqtbjVR2TWNXB+7dmB7H+w==
 Received: from [192.168.1.20] ([178.197.222.62])
-        by smtp.gmail.com with ESMTPSA id r20-20020adfb1d4000000b00337d6f0013esm3099374wra.107.2024.02.08.00.17.23
+        by smtp.gmail.com with ESMTPSA id r20-20020adfb1d4000000b00337d6f0013esm3099374wra.107.2024.02.08.00.18.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Feb 2024 00:17:24 -0800 (PST)
-Message-ID: <dbfde067-50b8-4f86-a098-0fc160114854@linaro.org>
-Date: Thu, 8 Feb 2024 09:17:23 +0100
+        Thu, 08 Feb 2024 00:18:04 -0800 (PST)
+Message-ID: <4647ae5a-b700-4eb0-91a2-d9885bd60431@linaro.org>
+Date: Thu, 8 Feb 2024 09:18:03 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,8 +62,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 2/5] dt-bindings: iio: light: adps9300: Add property
- vdd-supply
+Subject: Re: [PATCH v6 3/5] dt-bindings: iio: light: adps9300: Update
+ interrupt definitions
 Content-Language: en-US
 To: Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>,
  Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
@@ -79,7 +79,7 @@ Cc: Matt Ranostay <matt@ranostay.sg>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20240206130017.7839-1-subhajit.ghosh@tweaklogic.com>
- <20240206130017.7839-3-subhajit.ghosh@tweaklogic.com>
+ <20240206130017.7839-4-subhajit.ghosh@tweaklogic.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -125,22 +125,18 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20240206130017.7839-3-subhajit.ghosh@tweaklogic.com>
+In-Reply-To: <20240206130017.7839-4-subhajit.ghosh@tweaklogic.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 06/02/2024 14:00, Subhajit Ghosh wrote:
-> Add vdd-supply property which is valid and useful for all the
-> devices in this schema.
-
-Why is it useful? How is it useful? DT describes the hardware, not
-because something is "useful".
-
+> Include irq.h and irq level macro in the example for readability
 > 
 > this patch depends on patch:
-> "dt-bindings: iio: light: Merge APDS9300 and APDS9960 schemas"
+> "dt-bindings: iio: light: Add property vdd-supply"
 
-This is unrelated and does not make any sense in commit msg. Drop.
+Please, don't write such useless dependencies. This is neither true nor
+useful.
 
 
 Best regards,
