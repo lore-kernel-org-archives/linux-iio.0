@@ -1,94 +1,703 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A8127E77F;
-	Fri,  9 Feb 2024 16:47:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B1B07BAF3;
+	Fri,  9 Feb 2024 17:32:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707497248; cv=none; b=HqJn4c5XJ6SBOfXpu05CSxYoGF8rkjtPRLeuSq0OPrHDpKn0dRhYlMcnz1TFkpbSdpVMGVVxESx9oP/4Pua1IhZz5GZskhbkvZj0At86E33YcyrNHZOJLMnKH3miFDZkHN6fYOHryqz+e4Y6X6leiYkOBpsEIjOiXcoJupZz0sk=
+	t=1707499979; cv=none; b=h4ZRVgZUFZGY+NQLhKt1C1NXRjB582dtvAI1Jv/xAmnNoypCYLwxscK8nPdwdhktFdOQj6PMHvW21ljZurvsDdI9h0GtJt88z4IE+7tVdy7n6f8Rs/PBsNorzPGVtgHq55aHCm0wIXjq7+uzX6oUO4+8N+uqvPJKavsEZrkyIe4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707497248; c=relaxed/simple;
-	bh=GvjNkWjFuU9gPa9u67Cmqf0rtzOV28y+JihwcxXnPm4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DJcV9fNuv+Qfk6bGAabRxGWDZ0R6ka4+yaIm6eOAVTCsPyfa7Q82xDZKYImppZYiGJWAu7SJB03OAozOJDeuDT9tkjFGk3st00n56RO3r1Ry6cQ95JcO8ggq8jPci9UzEVorFe+dgIf7Lrgr7wXltGfJJkmCIXCsJg/DuqhAu7I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X8rbGvFV; arc=none smtp.client-ip=209.85.218.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1707499979; c=relaxed/simple;
+	bh=OvKdLLLzDXWq+/HNJ7245d/OCAJgTz1rtCazHK231jw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=jbl76AwZ3pHO/G39fWT1+0TCUkFUjXX5UHz9Jd9O2SWesZuiT9Tz3fhSl5prypTIB5GILfxWrtCX6/+BjpUWDAWiuvNuNBXSPwKiF1/kbWv464Sp/Fw9vdNHKDH4rRKHuACIuMB2s1BMEmWYTGrlyPrdP0mpIy7HIukvFU1u/QE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=1F3fbos2; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X8rbGvFV"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a3864258438so207218966b.0;
-        Fri, 09 Feb 2024 08:47:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1707497244; x=1708102044; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=f/WxMkU74BSyuBotyeONWFBUHqqgiBRmIjKpGNkVbwI=;
-        b=X8rbGvFV0SvpmsqCkf8h1oCKdPAIeR4ekGo6/RQ8jj7yd3YYjPaprdvwpF1VRH2qYL
-         aAPaWrM/3eeaQrjHkBylGvgZc8FawM4AJmT50nc6qxD0ORLzcroe7GqNnpdO1hSHlBd3
-         ngVRxuIC/rtMd/L3itFBbI4YzzJL8pVExgdKIRc87U66p5jf5uDsdVWEFUgtJX7JEM81
-         ekWphtd4bKEqdlJYlM1YDTzcycf76i9iNEFuPbuNvmziCRPiyNTybX7c2eLT7ZgL5LVy
-         LxiogKEK3sWqFAgHbOseEZmkzV1Re4bXhDtiI4+ppaoUZmCKNk/bk/YjwoMmsIvJB5Et
-         gHCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707497244; x=1708102044;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=f/WxMkU74BSyuBotyeONWFBUHqqgiBRmIjKpGNkVbwI=;
-        b=jkWvUMhD3F1tROhU/srhoPK2GXmjp2swVEp47jD+KK8Tdw0L1vfAAKhHMrF7USsZGA
-         856TBZhlzEJgYPwqH2UbhA1gG7MlxZvJ+U7kdhYXdFQdmZdIbCeePn4S7u6omdht4H5R
-         Jgx+B+v3bGyAXH9gsSW2e5UiztgMs/qrwWzGcYgL4+x1cH6/45hKAUBEYn0d9TqoZApE
-         B+zDTLhPY4BDeO2nQpu7yR9GfZi1hLcadGLPWJmD2qNXJhXP+DgDPU2eiVhA4zlSdg52
-         xUO74/txJeo70zJI62/kYWymVdJM8NGZF2b+gv46Lukfuai5scCYMxYNCcwGtFE1kyOE
-         /dXA==
-X-Forwarded-Encrypted: i=1; AJvYcCX8Uir+2z1O0bN1BzhApEsIEJ+RzzahVm1SrXXG2o11qouI9ia6bHNkEDoMHvji5wXlYT6mAudVFxGRQM9dPfEgmqPeKdI73l7RFg==
-X-Gm-Message-State: AOJu0YyEOKDaGvG7noNOXbR0Fn/edTrXf5hU6rKwgKXKmss8IB6ILcMz
-	C0qo74/c+CX8r7URObxH/AeMeFqIN30SY8gWdsbnsaqKoknoc+v7OPzKXAmQC2iTHt44Y1hcBK6
-	RaK5p4CEYuMFvjmw6rLQtYIJXXobdy349JHA=
-X-Google-Smtp-Source: AGHT+IFE5lpMmeVYiyBUB3zhAp5CSbwsEXeHObdhcq4VsH2NqiRarRszdJdAvQKiDvsJVH8ckyshjwOc6gi6tgDANSI=
-X-Received: by 2002:a17:906:b893:b0:a38:4fb5:c440 with SMTP id
- hb19-20020a170906b89300b00a384fb5c440mr1311114ejb.37.1707497244165; Fri, 09
- Feb 2024 08:47:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="1F3fbos2"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 4199IUNB016219;
+	Fri, 9 Feb 2024 10:25:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	from:date:subject:mime-version:content-type
+	:content-transfer-encoding:message-id:references:in-reply-to:to
+	:cc; s=DKIM; bh=Eyo+P9EYAoHh6PtlqnSTrBx3WqmLf8I1qlBiGUmQ7rA=; b=
+	1F3fbos2/UTiAlHT81KwfXUzD+RaxBkv6r/XoW92qdsxikWD2uRf8nSUSU3zsROj
+	18hCVyq6XaSPdJ5r/Ueu6FUo4ZclFa7bcEb0NJH0w0DVdyqjUrRcV8TiMGK3UJSg
+	fq/PF3bwLz+yuX8bqLUva2oPNO8CrsCFpwpwxKUnmDzDYWPXsy1VU0nXSUBeH0+V
+	jRSfwKQF5fH2ePjAvYIyjlwNefuM5R7Sw7Dz+JH1JT8PcA1IKGn//+z+dsPk1frO
+	bfSW/yQVRM2S2cvzgmM+do/VphaZsEwk1vEG1sW4Cdeieq+HbDaAPq8PiNuDKSO/
+	yozgMkyLex/uZNUP7xYSiA==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3w4uxnwfry-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 09 Feb 2024 10:25:59 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 419FPwid047875
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 9 Feb 2024 10:25:58 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 9 Feb 2024 10:25:57 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 9 Feb 2024 10:25:56 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 9 Feb 2024 10:25:56 -0500
+Received: from [127.0.0.1] ([10.44.3.56])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 419FPVJ7013228;
+	Fri, 9 Feb 2024 10:25:49 -0500
+From: Nuno Sa <nuno.sa@analog.com>
+Date: Fri, 9 Feb 2024 16:28:57 +0100
+Subject: [PATCH v10 7/7] iio: adc: adi-axi-adc: move to backend framework
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20240209-iio-backend-v10-7-3ed842064318@analog.com>
 References: <20240209-iio-backend-v10-0-3ed842064318@analog.com>
 In-Reply-To: <20240209-iio-backend-v10-0-3ed842064318@analog.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 9 Feb 2024 18:46:48 +0200
-Message-ID: <CAHp75VcW7D5YLm+VVH+m7s=8t3ki5d58Ta-HLOP3VpCU=rjFfg@mail.gmail.com>
-Subject: Re: [PATCH v10 0/7] iio: add new backend framework
-To: Nuno Sa <nuno.sa@analog.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Frank Rowand <frowand.list@gmail.com>, Olivier Moysan <olivier.moysan@foss.st.com>, 
-	Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "Rob
+ Herring" <robh+dt@kernel.org>,
+        Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Olivier Moysan
+	<olivier.moysan@foss.st.com>,
+        <andy.shevchenko@gmail.com>
+X-Mailer: b4 0.12.4
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1707492532; l=18276;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=OvKdLLLzDXWq+/HNJ7245d/OCAJgTz1rtCazHK231jw=;
+ b=FphEIdQGszbqO/FwF1bB7qCrgj8c0f6fsdbkynlxGm4meKBxdF0MLsItWH9m/pw0RWNdOfC0x
+ fH89ujNJY9DBToD1BiKrG0OPxHNNa90MNi/25ZekPsCtKiL9e/Zm8F5
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: nq0DCTsH2IxhYlWlGbd7NFF3FFhRIofo
+X-Proofpoint-GUID: nq0DCTsH2IxhYlWlGbd7NFF3FFhRIofo
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-09_12,2024-02-08_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ adultscore=0 spamscore=0 suspectscore=0 impostorscore=0 bulkscore=0
+ mlxlogscore=999 malwarescore=0 phishscore=0 clxscore=1015
+ priorityscore=1501 mlxscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.19.0-2401310000 definitions=main-2402090113
 
-On Fri, Feb 9, 2024 at 5:25=E2=80=AFPM Nuno Sa <nuno.sa@analog.com> wrote:
+Move to the IIO backend framework. Devices supported by adi-axi-adc now
+register themselves as backend devices.
 
-> Changes in v10:
->  - Patch 5
->    * Removed meaningless @ in function names;
->    * Added ascii diagram for the typicaly HW setup (Andy request);
->    * Add missing period;
->    * Use of dev_err_probe() in APIs meant to be called during probe().
->  - Patch 6
->    * Removed unneeded blank line;
->    * Fixed some English in the commit message.
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+---
+ drivers/iio/adc/Kconfig             |   2 +-
+ drivers/iio/adc/adi-axi-adc.c       | 378 +++++++++---------------------------
+ include/linux/iio/adc/adi-axi-adc.h |  68 -------
+ 3 files changed, 92 insertions(+), 356 deletions(-)
 
-Thanks for the update!
-I found it nice, only one (kinda important) finding is the 1000x reset
-timeout decrease. It might justify v11. If so, consider other comments
-as well.
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 61736dc21d2a..977832d797e1 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -325,7 +325,7 @@ config ADI_AXI_ADC
+ 	select IIO_BUFFER_HW_CONSUMER
+ 	select IIO_BUFFER_DMAENGINE
+ 	select REGMAP_MMIO
+-	depends on OF
++	select IIO_BACKEND
+ 	help
+ 	  Say yes here to build support for Analog Devices Generic
+ 	  AXI ADC IP core. The IP core is used for interfacing with
+diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+index 0f21d1d98b9f..cb28b25e97a4 100644
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -8,6 +8,7 @@
+ 
+ #include <linux/bitfield.h>
+ #include <linux/clk.h>
++#include <linux/err.h>
+ #include <linux/io.h>
+ #include <linux/delay.h>
+ #include <linux/module.h>
+@@ -17,13 +18,11 @@
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
+ 
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+-#include <linux/iio/buffer.h>
+-#include <linux/iio/buffer-dmaengine.h>
+-
+ #include <linux/fpga/adi-axi-common.h>
+-#include <linux/iio/adc/adi-axi-adc.h>
++#include <linux/iio/backend.h>
++#include <linux/iio/buffer-dmaengine.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/iio.h>
+ 
+ /*
+  * Register definitions:
+@@ -44,6 +43,7 @@
+ #define   ADI_AXI_REG_CHAN_CTRL_PN_SEL_OWR	BIT(10)
+ #define   ADI_AXI_REG_CHAN_CTRL_IQCOR_EN	BIT(9)
+ #define   ADI_AXI_REG_CHAN_CTRL_DCFILT_EN	BIT(8)
++#define   ADI_AXI_REG_CHAN_CTRL_FMT_MASK	GENMASK(6, 4)
+ #define   ADI_AXI_REG_CHAN_CTRL_FMT_SIGNEXT	BIT(6)
+ #define   ADI_AXI_REG_CHAN_CTRL_FMT_TYPE	BIT(5)
+ #define   ADI_AXI_REG_CHAN_CTRL_FMT_EN		BIT(4)
+@@ -55,286 +55,100 @@
+ 	 ADI_AXI_REG_CHAN_CTRL_FMT_EN |		\
+ 	 ADI_AXI_REG_CHAN_CTRL_ENABLE)
+ 
+-struct adi_axi_adc_core_info {
+-	unsigned int				version;
+-};
+-
+ struct adi_axi_adc_state {
+-	struct mutex				lock;
+-
+-	struct adi_axi_adc_client		*client;
+ 	struct regmap				*regmap;
+-};
+-
+-struct adi_axi_adc_client {
+-	struct list_head			entry;
+-	struct adi_axi_adc_conv			conv;
+-	struct adi_axi_adc_state		*state;
+ 	struct device				*dev;
+-	const struct adi_axi_adc_core_info	*info;
+ };
+ 
+-static LIST_HEAD(registered_clients);
+-static DEFINE_MUTEX(registered_clients_lock);
+-
+-static struct adi_axi_adc_client *conv_to_client(struct adi_axi_adc_conv *conv)
+-{
+-	return container_of(conv, struct adi_axi_adc_client, conv);
+-}
+-
+-void *adi_axi_adc_conv_priv(struct adi_axi_adc_conv *conv)
+-{
+-	struct adi_axi_adc_client *cl = conv_to_client(conv);
+-
+-	return (char *)cl + ALIGN(sizeof(struct adi_axi_adc_client),
+-				  IIO_DMA_MINALIGN);
+-}
+-EXPORT_SYMBOL_NS_GPL(adi_axi_adc_conv_priv, IIO_ADI_AXI);
+-
+-static int adi_axi_adc_config_dma_buffer(struct device *dev,
+-					 struct iio_dev *indio_dev)
+-{
+-	const char *dma_name;
+-
+-	if (!device_property_present(dev, "dmas"))
+-		return 0;
+-
+-	if (device_property_read_string(dev, "dma-names", &dma_name))
+-		dma_name = "rx";
+-
+-	return devm_iio_dmaengine_buffer_setup(indio_dev->dev.parent,
+-					       indio_dev, dma_name);
+-}
+-
+-static int adi_axi_adc_read_raw(struct iio_dev *indio_dev,
+-				struct iio_chan_spec const *chan,
+-				int *val, int *val2, long mask)
+-{
+-	struct adi_axi_adc_state *st = iio_priv(indio_dev);
+-	struct adi_axi_adc_conv *conv = &st->client->conv;
+-
+-	if (!conv->read_raw)
+-		return -EOPNOTSUPP;
+-
+-	return conv->read_raw(conv, chan, val, val2, mask);
+-}
+-
+-static int adi_axi_adc_write_raw(struct iio_dev *indio_dev,
+-				 struct iio_chan_spec const *chan,
+-				 int val, int val2, long mask)
+-{
+-	struct adi_axi_adc_state *st = iio_priv(indio_dev);
+-	struct adi_axi_adc_conv *conv = &st->client->conv;
+-
+-	if (!conv->write_raw)
+-		return -EOPNOTSUPP;
+-
+-	return conv->write_raw(conv, chan, val, val2, mask);
+-}
+-
+-static int adi_axi_adc_read_avail(struct iio_dev *indio_dev,
+-				  struct iio_chan_spec const *chan,
+-				  const int **vals, int *type, int *length,
+-				  long mask)
++static int axi_adc_enable(struct iio_backend *back)
+ {
+-	struct adi_axi_adc_state *st = iio_priv(indio_dev);
+-	struct adi_axi_adc_conv *conv = &st->client->conv;
+-
+-	if (!conv->read_avail)
+-		return -EOPNOTSUPP;
+-
+-	return conv->read_avail(conv, chan, vals, type, length, mask);
+-}
+-
+-static int adi_axi_adc_update_scan_mode(struct iio_dev *indio_dev,
+-					const unsigned long *scan_mask)
+-{
+-	struct adi_axi_adc_state *st = iio_priv(indio_dev);
+-	struct adi_axi_adc_conv *conv = &st->client->conv;
+-	unsigned int i;
++	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
+ 	int ret;
+ 
+-	for (i = 0; i < conv->chip_info->num_channels; i++) {
+-		if (test_bit(i, scan_mask))
+-			ret = regmap_set_bits(st->regmap,
+-					      ADI_AXI_REG_CHAN_CTRL(i),
+-					      ADI_AXI_REG_CHAN_CTRL_ENABLE);
+-		else
+-			ret = regmap_clear_bits(st->regmap,
+-						ADI_AXI_REG_CHAN_CTRL(i),
+-						ADI_AXI_REG_CHAN_CTRL_ENABLE);
+-		if (ret)
+-			return ret;
+-	}
++	ret = regmap_set_bits(st->regmap, ADI_AXI_REG_RSTN,
++			      ADI_AXI_REG_RSTN_MMCM_RSTN);
++	if (ret)
++		return ret;
+ 
+-	return 0;
++	fsleep(10);
++	return regmap_set_bits(st->regmap, ADI_AXI_REG_RSTN,
++			       ADI_AXI_REG_RSTN_RSTN | ADI_AXI_REG_RSTN_MMCM_RSTN);
+ }
+ 
+-static struct adi_axi_adc_conv *adi_axi_adc_conv_register(struct device *dev,
+-							  size_t sizeof_priv)
++static void axi_adc_disable(struct iio_backend *back)
+ {
+-	struct adi_axi_adc_client *cl;
+-	size_t alloc_size;
+-
+-	alloc_size = ALIGN(sizeof(struct adi_axi_adc_client), IIO_DMA_MINALIGN);
+-	if (sizeof_priv)
+-		alloc_size += ALIGN(sizeof_priv, IIO_DMA_MINALIGN);
++	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
+ 
+-	cl = kzalloc(alloc_size, GFP_KERNEL);
+-	if (!cl)
+-		return ERR_PTR(-ENOMEM);
+-
+-	mutex_lock(&registered_clients_lock);
+-
+-	cl->dev = get_device(dev);
+-
+-	list_add_tail(&cl->entry, &registered_clients);
+-
+-	mutex_unlock(&registered_clients_lock);
+-
+-	return &cl->conv;
++	regmap_write(st->regmap, ADI_AXI_REG_RSTN, 0);
+ }
+ 
+-static void adi_axi_adc_conv_unregister(struct adi_axi_adc_conv *conv)
++static int axi_adc_data_format_set(struct iio_backend *back, unsigned int chan,
++				   const struct iio_backend_data_fmt *data)
+ {
+-	struct adi_axi_adc_client *cl = conv_to_client(conv);
+-
+-	mutex_lock(&registered_clients_lock);
++	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
++	u32 val;
+ 
+-	list_del(&cl->entry);
+-	put_device(cl->dev);
++	if (!data->enable)
++		return regmap_clear_bits(st->regmap,
++					 ADI_AXI_REG_CHAN_CTRL(chan),
++					 ADI_AXI_REG_CHAN_CTRL_FMT_EN);
+ 
+-	mutex_unlock(&registered_clients_lock);
++	val = FIELD_PREP(ADI_AXI_REG_CHAN_CTRL_FMT_EN, true);
++	if (data->sign_extend)
++		val |= FIELD_PREP(ADI_AXI_REG_CHAN_CTRL_FMT_SIGNEXT, true);
++	if (data->type == IIO_BACKEND_OFFSET_BINARY)
++		val |= FIELD_PREP(ADI_AXI_REG_CHAN_CTRL_FMT_TYPE, true);
+ 
+-	kfree(cl);
++	return regmap_update_bits(st->regmap, ADI_AXI_REG_CHAN_CTRL(chan),
++				  ADI_AXI_REG_CHAN_CTRL_FMT_MASK, val);
+ }
+ 
+-static void devm_adi_axi_adc_conv_release(void *conv)
++static int axi_adc_chan_enable(struct iio_backend *back, unsigned int chan)
+ {
+-	adi_axi_adc_conv_unregister(conv);
+-}
+-
+-struct adi_axi_adc_conv *devm_adi_axi_adc_conv_register(struct device *dev,
+-							size_t sizeof_priv)
+-{
+-	struct adi_axi_adc_conv *conv;
+-	int ret;
+-
+-	conv = adi_axi_adc_conv_register(dev, sizeof_priv);
+-	if (IS_ERR(conv))
+-		return conv;
+-
+-	ret = devm_add_action_or_reset(dev, devm_adi_axi_adc_conv_release,
+-				       conv);
+-	if (ret)
+-		return ERR_PTR(ret);
++	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
+ 
+-	return conv;
++	return regmap_set_bits(st->regmap, ADI_AXI_REG_CHAN_CTRL(chan),
++			       ADI_AXI_REG_CHAN_CTRL_ENABLE);
+ }
+-EXPORT_SYMBOL_NS_GPL(devm_adi_axi_adc_conv_register, IIO_ADI_AXI);
+-
+-static const struct iio_info adi_axi_adc_info = {
+-	.read_raw = &adi_axi_adc_read_raw,
+-	.write_raw = &adi_axi_adc_write_raw,
+-	.update_scan_mode = &adi_axi_adc_update_scan_mode,
+-	.read_avail = &adi_axi_adc_read_avail,
+-};
+ 
+-static const struct adi_axi_adc_core_info adi_axi_adc_10_0_a_info = {
+-	.version = ADI_AXI_PCORE_VER(10, 0, 'a'),
+-};
+-
+-static struct adi_axi_adc_client *adi_axi_adc_attach_client(struct device *dev)
++static int axi_adc_chan_disable(struct iio_backend *back, unsigned int chan)
+ {
+-	const struct adi_axi_adc_core_info *info;
+-	struct adi_axi_adc_client *cl;
+-	struct device_node *cln;
+-
+-	info = of_device_get_match_data(dev);
+-	if (!info)
+-		return ERR_PTR(-ENODEV);
+-
+-	cln = of_parse_phandle(dev->of_node, "adi,adc-dev", 0);
+-	if (!cln) {
+-		dev_err(dev, "No 'adi,adc-dev' node defined\n");
+-		return ERR_PTR(-ENODEV);
+-	}
+-
+-	mutex_lock(&registered_clients_lock);
++	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
+ 
+-	list_for_each_entry(cl, &registered_clients, entry) {
+-		if (!cl->dev)
+-			continue;
+-
+-		if (cl->dev->of_node != cln)
+-			continue;
+-
+-		if (!try_module_get(cl->dev->driver->owner)) {
+-			mutex_unlock(&registered_clients_lock);
+-			of_node_put(cln);
+-			return ERR_PTR(-ENODEV);
+-		}
+-
+-		get_device(cl->dev);
+-		cl->info = info;
+-		mutex_unlock(&registered_clients_lock);
+-		of_node_put(cln);
+-		return cl;
+-	}
+-
+-	mutex_unlock(&registered_clients_lock);
+-	of_node_put(cln);
+-
+-	return ERR_PTR(-EPROBE_DEFER);
++	return regmap_clear_bits(st->regmap, ADI_AXI_REG_CHAN_CTRL(chan),
++				 ADI_AXI_REG_CHAN_CTRL_ENABLE);
+ }
+ 
+-static int adi_axi_adc_setup_channels(struct device *dev,
+-				      struct adi_axi_adc_state *st)
++static struct iio_buffer *axi_adc_request_buffer(struct iio_backend *back,
++						 struct iio_dev *indio_dev)
+ {
+-	struct adi_axi_adc_conv *conv = &st->client->conv;
+-	int i, ret;
++	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
++	struct iio_buffer *buffer;
++	const char *dma_name;
++	int ret;
+ 
+-	if (conv->preenable_setup) {
+-		ret = conv->preenable_setup(conv);
+-		if (ret)
+-			return ret;
+-	}
++	if (device_property_read_string(st->dev, "dma-names", &dma_name))
++		dma_name = "rx";
+ 
+-	for (i = 0; i < conv->chip_info->num_channels; i++) {
+-		ret = regmap_write(st->regmap, ADI_AXI_REG_CHAN_CTRL(i),
+-				   ADI_AXI_REG_CHAN_CTRL_DEFAULTS);
+-		if (ret)
+-			return ret;
++	buffer = iio_dmaengine_buffer_alloc(st->dev, dma_name);
++	if (IS_ERR(buffer)) {
++		dev_err(st->dev, "Could not get DMA buffer, %ld\n",
++			PTR_ERR(buffer));
++		return ERR_CAST(buffer);
+ 	}
+ 
+-	return 0;
+-}
+-
+-static int axi_adc_reset(struct adi_axi_adc_state *st)
+-{
+-	int ret;
+-
+-	ret = regmap_write(st->regmap, ADI_AXI_REG_RSTN, 0);
+-	if (ret)
+-		return ret;
+-
+-	mdelay(10);
+-	ret = regmap_write(st->regmap, ADI_AXI_REG_RSTN,
+-			   ADI_AXI_REG_RSTN_MMCM_RSTN);
++	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
++	ret = iio_device_attach_buffer(indio_dev, buffer);
+ 	if (ret)
+-		return ret;
++		return ERR_PTR(ret);
+ 
+-	mdelay(10);
+-	return regmap_write(st->regmap, ADI_AXI_REG_RSTN,
+-			    ADI_AXI_REG_RSTN_RSTN | ADI_AXI_REG_RSTN_MMCM_RSTN);
++	return buffer;
+ }
+ 
+-static void adi_axi_adc_cleanup(void *data)
++static void axi_adc_free_buffer(struct iio_backend *back,
++				struct iio_buffer *buffer)
+ {
+-	struct adi_axi_adc_client *cl = data;
+-
+-	put_device(cl->dev);
+-	module_put(cl->dev->driver->owner);
++	iio_dmaengine_buffer_free(buffer);
+ }
+ 
+ static const struct regmap_config axi_adc_regmap_config = {
+@@ -344,45 +158,46 @@ static const struct regmap_config axi_adc_regmap_config = {
+ 	.max_register = 0x0800,
+ };
+ 
++static const struct iio_backend_ops adi_axi_adc_generic = {
++	.enable = axi_adc_enable,
++	.disable = axi_adc_disable,
++	.data_format_set = axi_adc_data_format_set,
++	.chan_enable = axi_adc_chan_enable,
++	.chan_disable = axi_adc_chan_disable,
++	.request_buffer = axi_adc_request_buffer,
++	.free_buffer = axi_adc_free_buffer,
++};
++
+ static int adi_axi_adc_probe(struct platform_device *pdev)
+ {
+-	struct adi_axi_adc_conv *conv;
+-	struct iio_dev *indio_dev;
+-	struct adi_axi_adc_client *cl;
+ 	struct adi_axi_adc_state *st;
+ 	void __iomem *base;
+-	unsigned int ver;
++	unsigned int ver, *expected_ver;
+ 	int ret;
+ 
+-	cl = adi_axi_adc_attach_client(&pdev->dev);
+-	if (IS_ERR(cl))
+-		return PTR_ERR(cl);
+-
+-	ret = devm_add_action_or_reset(&pdev->dev, adi_axi_adc_cleanup, cl);
+-	if (ret)
+-		return ret;
+-
+-	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*st));
+-	if (indio_dev == NULL)
++	st = devm_kzalloc(&pdev->dev, sizeof(*st), GFP_KERNEL);
++	if (!st)
+ 		return -ENOMEM;
+ 
+-	st = iio_priv(indio_dev);
+-	st->client = cl;
+-	cl->state = st;
+-	mutex_init(&st->lock);
+-
+ 	base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(base))
+ 		return PTR_ERR(base);
+ 
++	st->dev = &pdev->dev;
+ 	st->regmap = devm_regmap_init_mmio(&pdev->dev, base,
+ 					   &axi_adc_regmap_config);
+ 	if (IS_ERR(st->regmap))
+ 		return PTR_ERR(st->regmap);
+ 
+-	conv = &st->client->conv;
++	expected_ver = (unsigned int *)device_get_match_data(&pdev->dev);
++	if (!expected_ver)
++		return -ENODEV;
+ 
+-	ret = axi_adc_reset(st);
++	/*
++	 * Force disable the core. Up to the frontend to enable us. And we can
++	 * still read/write registers...
++	 */
++	ret = regmap_write(st->regmap, ADI_AXI_REG_RSTN, 0);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -390,33 +205,19 @@ static int adi_axi_adc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (cl->info->version > ver) {
++	if (*expected_ver > ver) {
+ 		dev_err(&pdev->dev,
+ 			"IP core version is too old. Expected %d.%.2d.%c, Reported %d.%.2d.%c\n",
+-			ADI_AXI_PCORE_VER_MAJOR(cl->info->version),
+-			ADI_AXI_PCORE_VER_MINOR(cl->info->version),
+-			ADI_AXI_PCORE_VER_PATCH(cl->info->version),
++			ADI_AXI_PCORE_VER_MAJOR(*expected_ver),
++			ADI_AXI_PCORE_VER_MINOR(*expected_ver),
++			ADI_AXI_PCORE_VER_PATCH(*expected_ver),
+ 			ADI_AXI_PCORE_VER_MAJOR(ver),
+ 			ADI_AXI_PCORE_VER_MINOR(ver),
+ 			ADI_AXI_PCORE_VER_PATCH(ver));
+ 		return -ENODEV;
+ 	}
+ 
+-	indio_dev->info = &adi_axi_adc_info;
+-	indio_dev->name = "adi-axi-adc";
+-	indio_dev->modes = INDIO_DIRECT_MODE;
+-	indio_dev->num_channels = conv->chip_info->num_channels;
+-	indio_dev->channels = conv->chip_info->channels;
+-
+-	ret = adi_axi_adc_config_dma_buffer(&pdev->dev, indio_dev);
+-	if (ret)
+-		return ret;
+-
+-	ret = adi_axi_adc_setup_channels(&pdev->dev, st);
+-	if (ret)
+-		return ret;
+-
+-	ret = devm_iio_device_register(&pdev->dev, indio_dev);
++	ret = devm_iio_backend_register(&pdev->dev, &adi_axi_adc_generic, st);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -428,6 +229,8 @@ static int adi_axi_adc_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static unsigned int adi_axi_adc_10_0_a_info = ADI_AXI_PCORE_VER(10, 0, 'a');
++
+ /* Match table for of_platform binding */
+ static const struct of_device_id adi_axi_adc_of_match[] = {
+ 	{ .compatible = "adi,axi-adc-10.0.a", .data = &adi_axi_adc_10_0_a_info },
+@@ -448,3 +251,4 @@ MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
+ MODULE_DESCRIPTION("Analog Devices Generic AXI ADC IP core driver");
+ MODULE_LICENSE("GPL v2");
+ MODULE_IMPORT_NS(IIO_DMAENGINE_BUFFER);
++MODULE_IMPORT_NS(IIO_BACKEND);
+diff --git a/include/linux/iio/adc/adi-axi-adc.h b/include/linux/iio/adc/adi-axi-adc.h
+deleted file mode 100644
+index b7904992d561..000000000000
+--- a/include/linux/iio/adc/adi-axi-adc.h
++++ /dev/null
+@@ -1,68 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-/*
+- * Analog Devices Generic AXI ADC IP core driver/library
+- * Link: https://wiki.analog.com/resources/fpga/docs/axi_adc_ip
+- *
+- * Copyright 2012-2020 Analog Devices Inc.
+- */
+-#ifndef __ADI_AXI_ADC_H__
+-#define __ADI_AXI_ADC_H__
+-
+-struct device;
+-struct iio_chan_spec;
+-
+-/**
+- * struct adi_axi_adc_chip_info - Chip specific information
+- * @name		Chip name
+- * @id			Chip ID (usually product ID)
+- * @channels		Channel specifications of type @struct iio_chan_spec
+- * @num_channels	Number of @channels
+- * @scale_table		Supported scales by the chip; tuples of 2 ints
+- * @num_scales		Number of scales in the table
+- * @max_rate		Maximum sampling rate supported by the device
+- */
+-struct adi_axi_adc_chip_info {
+-	const char			*name;
+-	unsigned int			id;
+-
+-	const struct iio_chan_spec	*channels;
+-	unsigned int			num_channels;
+-
+-	const unsigned int		(*scale_table)[2];
+-	int				num_scales;
+-
+-	unsigned long			max_rate;
+-};
+-
+-/**
+- * struct adi_axi_adc_conv - data of the ADC attached to the AXI ADC
+- * @chip_info		chip info details for the client ADC
+- * @preenable_setup	op to run in the client before enabling the AXI ADC
+- * @reg_access		IIO debugfs_reg_access hook for the client ADC
+- * @read_raw		IIO read_raw hook for the client ADC
+- * @write_raw		IIO write_raw hook for the client ADC
+- * @read_avail		IIO read_avail hook for the client ADC
+- */
+-struct adi_axi_adc_conv {
+-	const struct adi_axi_adc_chip_info		*chip_info;
+-
+-	int (*preenable_setup)(struct adi_axi_adc_conv *conv);
+-	int (*reg_access)(struct adi_axi_adc_conv *conv, unsigned int reg,
+-			  unsigned int writeval, unsigned int *readval);
+-	int (*read_raw)(struct adi_axi_adc_conv *conv,
+-			struct iio_chan_spec const *chan,
+-			int *val, int *val2, long mask);
+-	int (*write_raw)(struct adi_axi_adc_conv *conv,
+-			 struct iio_chan_spec const *chan,
+-			 int val, int val2, long mask);
+-	int (*read_avail)(struct adi_axi_adc_conv *conv,
+-			  struct iio_chan_spec const *chan,
+-			  const int **val, int *type, int *length, long mask);
+-};
+-
+-struct adi_axi_adc_conv *devm_adi_axi_adc_conv_register(struct device *dev,
+-							size_t sizeof_priv);
+-
+-void *adi_axi_adc_conv_priv(struct adi_axi_adc_conv *conv);
+-
+-#endif
 
---=20
-With Best Regards,
-Andy Shevchenko
+-- 
+2.43.0
+
