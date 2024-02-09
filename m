@@ -1,118 +1,674 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F160067E66
-	for <linux-iio@vger.kernel.org>; Fri,  9 Feb 2024 09:53:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3848571B59;
+	Fri,  9 Feb 2024 15:26:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707472394; cv=none; b=K5PPodBG2Hkf0uHnmXdh3fD6bge5d9xErZUcrAmAR7EezsYdDjxnnNHigE9j9tG/7X3klg0otWucRe2wbQO6I3zEelUOKKq7MTVcoSLr4VRh+IPHaZ5k7UnlvxNpmPDZEv27r/Pvi9smTuXR5UundCLsqV99UmcwrYeMYFhsILo=
+	t=1707492385; cv=none; b=AD54/uPaHwndzF4iMRJrind4NOeZbdz8XOMjYljskxTMS9T8T07HRYLrJcLW2daQDMGmaTTmLbjVXrxsoE17SrzpzGw7mGs2tvFv9UUIdShGgd79DGEdlUN280yly2AWQLMN2ZoWgLi4trqDBfpPAH91Rw3vCfizFfZpweYGG9c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707472394; c=relaxed/simple;
-	bh=2IzTCvfVd7DW7ZrhwIX2VCDOzl3o1YjUbi6XJt3Tyzo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dFW57qkxi9rRtJbLLhSujD1etvdYHQEANtmvN6zrgdLs1FxlXnla4zBlCt0grisPZ1q6e5MRZZSES+NcUz30rZKTlUiDTVVCgjPmXIEQt2up3jbIMWyliGEOk+Jm62Yeb0a1240IcONKsAYHujRDLH1EOSVjuwv9TX7+6E/hheQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA3A8C433C7;
-	Fri,  9 Feb 2024 09:53:12 +0000 (UTC)
-Date: Fri, 9 Feb 2024 04:53:10 -0500
-From: William Breathitt Gray <william.gray@linaro.org>
-To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	nuno.sa@analog.com, linux-iio@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH] counter: fix privdata alignment
-Message-ID: <ZcX2BohmfzwF1_Is@ishi>
-References: <20240205-counter-align-fix-v1-1-4821ced960ab@analog.com>
- <ZcUeyN8OF49CGqij@ishi>
- <2ada0bacadf63dc4216a9a7f4d9d5d47041a8c8b.camel@gmail.com>
- <wkabgwmjkuc7rdtnyko6j5tbhbbrtjeudalhqj5rsut6s2tefa@xry7vuvztlty>
- <9abe545667599a085b346bd280fe96201d66f59a.camel@gmail.com>
+	s=arc-20240116; t=1707492385; c=relaxed/simple;
+	bh=VAafmV8xcrx+AoAEG2FPYLeVZspGc177EtOxK23puaM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=MKLcPnxe4/JZHmlHdS1Vcc6Z19y2TTerG+Xuv4GEtJ4O0aRvkzcWqGn6Rb329Loh6FSi1VGeStEsFjoOAuZ+GuGDctEeUs30Ucpd+A3d5DEG3fdv/k5L0LxhwYqSiMJ/uxtyZyHDxdUFdUygdQnWLpil5eMBcuFFhxwitwwtCLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=YeGMSxOB; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="YeGMSxOB"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 419DJTup013489;
+	Fri, 9 Feb 2024 10:26:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	from:date:subject:mime-version:content-type
+	:content-transfer-encoding:message-id:references:in-reply-to:to
+	:cc; s=DKIM; bh=ZBdO5r03C9T5Ar3anH+GVGpNT/OL9sgnA2kVsjhSKYg=; b=
+	YeGMSxOBKsub3vvMh4Ck0dyofilep3joTIG+Cdej/PVnd9WozhJSDhD3RKIWtauu
+	uk+9dpBZc7xgtYje+MV03V1DQGB4EhdtEDcClVPN/DJFJP7Kfur34pTpz9kueS8W
+	r30C9TP2CRpjy0ujVLkfYMFgCtbFiYhJuPw3qzH4nQvbMHhyoXbnbWkup3RhjX1e
+	bi9tHzWB3ATgTr8U1uU41VyDNkCRw6fThmYpi5PwrseaRE3f6tGtENdMZCfWSOUL
+	4BajspXW9e+VntwqKlm+dzVp8pAstP38S/DGTubpbymGVo0VDUoHsHnt6jDTsA6x
+	zI4WAIEpCvnmGrltDyPfDg==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3w53423p9f-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 09 Feb 2024 10:26:03 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 419FPuxO047866
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 9 Feb 2024 10:25:56 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 9 Feb 2024
+ 10:25:55 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 9 Feb 2024 10:25:55 -0500
+Received: from [127.0.0.1] ([10.44.3.56])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 419FPVJ5013228;
+	Fri, 9 Feb 2024 10:25:46 -0500
+From: Nuno Sa <nuno.sa@analog.com>
+Date: Fri, 9 Feb 2024 16:28:55 +0100
+Subject: [PATCH v10 5/7] iio: add the IIO backend framework
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="XMlHQKal9VtaqFx8"
-Content-Disposition: inline
-In-Reply-To: <9abe545667599a085b346bd280fe96201d66f59a.camel@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20240209-iio-backend-v10-5-3ed842064318@analog.com>
+References: <20240209-iio-backend-v10-0-3ed842064318@analog.com>
+In-Reply-To: <20240209-iio-backend-v10-0-3ed842064318@analog.com>
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>, Rob
+ Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Olivier Moysan
+	<olivier.moysan@foss.st.com>,
+        <andy.shevchenko@gmail.com>
+X-Mailer: b4 0.12.4
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1707492532; l=18513;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=VAafmV8xcrx+AoAEG2FPYLeVZspGc177EtOxK23puaM=;
+ b=hZU+l9MWntfzAePvvdbcavYgPZieGJVU9gIHcQ6z0OMOtjnI+1qfJIDLvYwPGsg/7mLOQxqzt
+ 5FT68NplqQiA2wLF+vveyhunggo+nEtISlFO45mARZdc0TFyGiCc6Cw
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: 9zsoUZx8CA7Gtq7zMKXmlLUX6LKFXNno
+X-Proofpoint-ORIG-GUID: 9zsoUZx8CA7Gtq7zMKXmlLUX6LKFXNno
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-09_12,2024-02-08_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
+ adultscore=0 phishscore=0 lowpriorityscore=0 priorityscore=1501
+ spamscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0 impostorscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2401310000 definitions=main-2402090113
 
+This is a Framework to handle complex IIO aggregate devices.
 
---XMlHQKal9VtaqFx8
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The typical architecture is to have one device as the frontend device which
+can be "linked" against one or multiple backend devices. All the IIO and
+userspace interface is expected to be registers/managed by the frontend
+device which will callback into the backends when needed (to get/set
+some configuration that it does not directly control).
 
-On Fri, Feb 09, 2024 at 10:07:19AM +0100, Nuno S=E1 wrote:
-> On Fri, 2024-02-09 at 09:30 +0100, Uwe Kleine-K=F6nig wrote:
-> > Hi Nuno,
-> >=20
-> > On Fri, Feb 09, 2024 at 08:42:02AM +0100, Nuno S=E1 wrote:
-> > > On Thu, 2024-02-08 at 13:34 -0500, William Breathitt Gray wrote:
-> > > > On Mon, Feb 05, 2024 at 04:58:14PM +0100, Nuno Sa via B4 Relay wrot=
-e:
-> > > > > diff --git a/drivers/counter/counter-core.c b/drivers/counter/cou=
-nter-
-> > > > > core.c
-> > > > > index 09c77afb33ca..073bf6b67a57 100644
-> > > > > --- a/drivers/counter/counter-core.c
-> > > > > +++ b/drivers/counter/counter-core.c
-> > > > > @@ -34,7 +34,7 @@ struct counter_device_allochelper {
-> > > > > =A0	 * This is cache line aligned to ensure private data behaves
-> > > > > like if it
-> > > > > =A0	 * were kmalloced separately.
-> > > > > =A0	 */
-> > > > > -	unsigned long privdata[] ____cacheline_aligned;
-> > > > > +	unsigned long privdata[] __aligned(ARCH_DMA_MINALIGN);
-> > > > > =A0};
-> > > > > =A0
-> > > > > =A0static void counter_device_release(struct device *dev)
-> > > > >=20
-> > > >=20
-> > > > This change sounds reasonable, but should the comment block above
-> > > > privdata be updated to reflect the change?
-> > >=20
-> > > Yeah, maybe. I can spin a new version with that... To be sure, you me=
-an (in
-> > > the
-> > > comment) private -> privdata, right?
-> >=20
-> > I guess he means: "This is cache line aligned to ensure private data
-> > behaves like if it were kmalloced separately." After your change it's
-> > not cache line aligned any more. IMHO keeping "private" is fine.
-> >=20
-> >=20
->=20
-> Oh yeah...
->=20
-> Yeah, it will depend on the platform. In some, it will still be cache ali=
-gned
-> but in others (as x86 which is DMA coeherent I think), it won't be and we=
- can
-> actually safe some memory.
->=20
-> - Nuno S=E1
+The basic framework interface is pretty simple:
+ - Backends should register themselves with @devm_iio_backend_register()
+ - Frontend devices should get backends with @devm_iio_backend_get()
 
-Yes, I was referring to the possibility that it won't be cache aligned
-anymore in some platforms as you mentioned, so a different comment would
-be better there now. You can keep the "private" wording if you like, or
-use "privdata" if you think it's clearer.
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+---
+ MAINTAINERS                        |   8 +
+ drivers/iio/Kconfig                |   9 +
+ drivers/iio/Makefile               |   1 +
+ drivers/iio/industrialio-backend.c | 418 +++++++++++++++++++++++++++++++++++++
+ include/linux/iio/backend.h        |  72 +++++++
+ 5 files changed, 508 insertions(+)
 
-Thanks,
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 87b61a53462b..98a9c56099f7 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10417,6 +10417,14 @@ L:	linux-media@vger.kernel.org
+ S:	Maintained
+ F:	drivers/media/rc/iguanair.c
+ 
++IIO BACKEND FRAMEWORK
++M:	Nuno Sa <nuno.sa@analog.com>
++R:	Olivier Moysan <olivier.moysan@foss.st.com>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	drivers/iio/industrialio-backend.c
++F:	include/linux/iio/backend.h
++
+ IIO DIGITAL POTENTIOMETER DAC
+ M:	Peter Rosin <peda@axentia.se>
+ L:	linux-iio@vger.kernel.org
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 52eb46ef84c1..9c351ffc7bed 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -71,6 +71,15 @@ config IIO_TRIGGERED_EVENT
+ 	help
+ 	  Provides helper functions for setting up triggered events.
+ 
++config IIO_BACKEND
++	tristate
++	help
++	  Framework to handle complex IIO aggregate devices. The typical
++	  architecture that can make use of this framework is to have one
++	  device as the frontend device which can be "linked" against one or
++	  multiple backend devices. The framework then makes it easy to get
++	  and control such backend devices.
++
+ source "drivers/iio/accel/Kconfig"
+ source "drivers/iio/adc/Kconfig"
+ source "drivers/iio/addac/Kconfig"
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 9622347a1c1b..0ba0e1521ba4 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -13,6 +13,7 @@ obj-$(CONFIG_IIO_GTS_HELPER) += industrialio-gts-helper.o
+ obj-$(CONFIG_IIO_SW_DEVICE) += industrialio-sw-device.o
+ obj-$(CONFIG_IIO_SW_TRIGGER) += industrialio-sw-trigger.o
+ obj-$(CONFIG_IIO_TRIGGERED_EVENT) += industrialio-triggered-event.o
++obj-$(CONFIG_IIO_BACKEND) += industrialio-backend.o
+ 
+ obj-y += accel/
+ obj-y += adc/
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+new file mode 100644
+index 000000000000..2fea2bbbe47f
+--- /dev/null
++++ b/drivers/iio/industrialio-backend.c
+@@ -0,0 +1,418 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Framework to handle complex IIO aggregate devices.
++ *
++ * The typical architecture is to have one device as the frontend device which
++ * can be "linked" against one or multiple backend devices. All the IIO and
++ * userspace interface is expected to be registers/managed by the frontend
++ * device which will callback into the backends when needed (to get/set some
++ * configuration that it does not directly control).
++ *
++ *                                           -------------------------------------------------------
++ * ------------------                        | ------------         ------------      -------  FPGA|
++ * |     ADC        |------------------------| | ADC CORE |---------| DMA CORE |------| RAM |      |
++ * | (Frontend/IIO) | Serial Data (eg: LVDS) | |(backend) |---------|          |------|     |      |
++ * |                |------------------------| ------------         ------------      -------      |
++ * ------------------                        -------------------------------------------------------
++ *
++ * The framework interface is pretty simple:
++ *   - Backends should register themselves with devm_iio_backend_register()
++ *   - Frontend devices should get backends with devm_iio_backend_get()
++ *
++ * Also to note that the primary target for this framework are converters like
++ * ADC/DACs so iio_backend_ops will have some operations typical of converter
++ * devices. On top of that, this is "generic" for all IIO which means any kind
++ * of device can make use of the framework. That said, If the iio_backend_ops
++ * struct begins to grow out of control, we can always refactor things so that
++ * the industrialio-backend.c is only left with the really generic stuff. Then,
++ * we can build on top of it depending on the needs.
++ *
++ * Copyright (C) 2023-2024 Analog Devices Inc.
++ */
++#define dev_fmt(fmt) "iio-backend: " fmt
++
++#include <linux/cleanup.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/errno.h>
++#include <linux/list.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/property.h>
++#include <linux/slab.h>
++#include <linux/types.h>
++
++#include <linux/iio/backend.h>
++
++struct iio_backend {
++	struct list_head entry;
++	const struct iio_backend_ops *ops;
++	struct device *dev;
++	struct module *owner;
++	void *priv;
++};
++
++/*
++ * Helper struct for requesting buffers. This ensures that we have all data
++ * that we need to free the buffer in a device managed action.
++ */
++struct iio_backend_buffer_pair {
++	struct iio_backend *back;
++	struct iio_buffer *buffer;
++};
++
++static LIST_HEAD(iio_back_list);
++static DEFINE_MUTEX(iio_back_lock);
++
++/*
++ * Helper macros to call backend ops. Makes sure the option is supported.
++ */
++#define iio_backend_check_op(back, op) ({ \
++	struct iio_backend *____back = back;				\
++	int ____ret = 0;						\
++									\
++	if (!____back->ops->op)						\
++		____ret = -EOPNOTSUPP;					\
++									\
++	____ret;							\
++})
++
++#define iio_backend_op_call(back, op, args...) ({		\
++	struct iio_backend *__back = back;			\
++	int __ret;						\
++								\
++	__ret = iio_backend_check_op(__back, op);		\
++	if (!__ret)						\
++		__ret = __back->ops->op(__back, ##args);	\
++								\
++	__ret;							\
++})
++
++#define iio_backend_ptr_op_call(back, op, args...) ({		\
++	struct iio_backend *__back = back;			\
++	void *ptr_err;						\
++	int __ret;						\
++								\
++	__ret = iio_backend_check_op(__back, op);		\
++	if (__ret)						\
++		ptr_err = ERR_PTR(__ret);			\
++	else							\
++		ptr_err = __back->ops->op(__back, ##args);	\
++								\
++	ptr_err;						\
++})
++
++#define iio_backend_void_op_call(back, op, args...) {		\
++	struct iio_backend *__back = back;			\
++	int __ret;						\
++								\
++	__ret = iio_backend_check_op(__back, op);		\
++	if (!__ret)						\
++		__back->ops->op(__back, ##args);		\
++}
++
++/**
++ * iio_backend_chan_enable - Enable a backend channel
++ * @back:	Backend device
++ * @chan:	Channel number
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_chan_enable(struct iio_backend *back, unsigned int chan)
++{
++	return iio_backend_op_call(back, chan_enable, chan);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_chan_enable, IIO_BACKEND);
++
++/**
++ * iio_backend_chan_disable - Disable a backend channel
++ * @back:	Backend device
++ * @chan:	Channel number
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_chan_disable(struct iio_backend *back, unsigned int chan)
++{
++	return iio_backend_op_call(back, chan_disable, chan);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_chan_disable, IIO_BACKEND);
++
++static void __iio_backend_disable(void *back)
++{
++	iio_backend_void_op_call(back, disable);
++}
++
++/**
++ * devm_iio_backend_enable - Device managed backend enable
++ * @dev:	Consumer device for the backend
++ * @back:	Backend device
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int devm_iio_backend_enable(struct device *dev, struct iio_backend *back)
++{
++	int ret;
++
++	ret = iio_backend_op_call(back, enable);
++	if (ret)
++		return ret;
++
++	return devm_add_action_or_reset(dev, __iio_backend_disable, back);
++}
++EXPORT_SYMBOL_NS_GPL(devm_iio_backend_enable, IIO_BACKEND);
++
++/**
++ * iio_backend_data_format_set - Configure the channel data format
++ * @back:	Backend device
++ * @chan:	Channel number
++ * @data:	Data format
++ *
++ * Properly configure a channel with respect to the expected data format. A
++ * @struct iio_backend_data_fmt must be passed with the settings.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_data_format_set(struct iio_backend *back, unsigned int chan,
++				const struct iio_backend_data_fmt *data)
++{
++	if (!data || data->type >= IIO_BACKEND_DATA_TYPE_MAX)
++		return -EINVAL;
++
++	return iio_backend_op_call(back, data_format_set, chan, data);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_data_format_set, IIO_BACKEND);
++
++static void iio_backend_free_buffer(void *arg)
++{
++	struct iio_backend_buffer_pair *pair = arg;
++
++	iio_backend_void_op_call(pair->back, free_buffer, pair->buffer);
++}
++
++/**
++ * devm_iio_backend_request_buffer - Device managed buffer request
++ * @dev:	Consumer device for the backend
++ * @back:	Backend device
++ * @indio_dev:	IIO device
++ *
++ * Request an IIO buffer from the backend. The type of the buffer (typically
++ * INDIO_BUFFER_HARDWARE) is up to the backend to decide. This is because,
++ * normally, the backend dictates what kind of buffering we can get.
++ *
++ * The backend .free_buffer() hooks is automatically called on @dev detach.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int devm_iio_backend_request_buffer(struct device *dev,
++				    struct iio_backend *back,
++				    struct iio_dev *indio_dev)
++{
++	struct iio_backend_buffer_pair *pair;
++	struct iio_buffer *buffer;
++
++	pair = devm_kzalloc(dev, sizeof(*pair), GFP_KERNEL);
++	if (!pair)
++		return -ENOMEM;
++
++	buffer = iio_backend_ptr_op_call(back, request_buffer, indio_dev);
++	if (IS_ERR(buffer))
++		return PTR_ERR(buffer);
++
++	/* weak reference should be all what we need */
++	pair->back = back;
++	pair->buffer = buffer;
++
++	return devm_add_action_or_reset(dev, iio_backend_free_buffer, pair);
++}
++EXPORT_SYMBOL_NS_GPL(devm_iio_backend_request_buffer, IIO_BACKEND);
++
++static void iio_backend_release(void *arg)
++{
++	struct iio_backend *back = arg;
++
++	module_put(back->owner);
++}
++
++static int __devm_iio_backend_get(struct device *dev, struct iio_backend *back)
++{
++	struct device_link *link;
++	int ret;
++
++	/*
++	 * Make sure the provider cannot be unloaded before the consumer module.
++	 * Note that device_links would still guarantee that nothing is
++	 * accessible (and breaks) but this makes it explicit that the consumer
++	 * module must be also unloaded.
++	 */
++	if (!try_module_get(back->owner))
++		return dev_err_probe(dev, -ENODEV,
++				     "Cannot get module reference\n");
++
++	ret = devm_add_action_or_reset(dev, iio_backend_release, back);
++	if (ret)
++		return ret;
++
++	link = device_link_add(dev, back->dev, DL_FLAG_AUTOREMOVE_CONSUMER);
++	if (!link)
++		return dev_err_probe(dev, -EINVAL,
++				     "Could not link to supplier(%s)\n",
++				     dev_name(back->dev));
++
++	dev_dbg(dev, "Found backend(%s) device\n", dev_name(back->dev));
++
++	return 0;
++}
++
++/**
++ * devm_iio_backend_get - Device managed backend device get
++ * @dev:	Consumer device for the backend
++ * @name:	Backend name
++ *
++ * Get's the backend associated with @dev.
++ *
++ * RETURNS:
++ * A backend pointer, negative error pointer otherwise.
++ */
++struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name)
++{
++	struct fwnode_handle *fwnode;
++	struct iio_backend *back;
++	unsigned int index;
++	int ret;
++
++	if (name) {
++		ret = device_property_match_string(dev, "io-backend-names",
++						   name);
++		if (ret < 0)
++			return ERR_PTR(ret);
++		index = ret;
++	} else {
++		index = 0;
++	}
++
++	fwnode = fwnode_find_reference(dev_fwnode(dev), "io-backends", index);
++	if (IS_ERR(fwnode)) {
++		dev_err_probe(dev, PTR_ERR(fwnode),
++			      "Cannot get Firmware reference\n");
++		return ERR_CAST(fwnode);
++	}
++
++	guard(mutex)(&iio_back_lock);
++	list_for_each_entry(back, &iio_back_list, entry) {
++		if (!device_match_fwnode(back->dev, fwnode))
++			continue;
++
++		fwnode_handle_put(fwnode);
++		ret = __devm_iio_backend_get(dev, back);
++		if (ret)
++			return ERR_PTR(ret);
++
++		return back;
++	}
++
++	fwnode_handle_put(fwnode);
++	return ERR_PTR(-EPROBE_DEFER);
++}
++EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get, IIO_BACKEND);
++
++/**
++ * __devm_iio_backend_get_from_fwnode_lookup - Device managed fwnode backend device get
++ * @dev:	Consumer device for the backend
++ * @fwnode:	Firmware node of the backend device
++ *
++ * Search the backend list for a device matching @fwnode.
++ * This API should not be used and it's only present for preventing the first
++ * user of this framework to break it's DT ABI.
++ *
++ * RETURNS:
++ * A backend pointer, negative error pointer otherwise.
++ */
++struct iio_backend *
++__devm_iio_backend_get_from_fwnode_lookup(struct device *dev,
++					  struct fwnode_handle *fwnode)
++{
++	struct iio_backend *back;
++	int ret;
++
++	guard(mutex)(&iio_back_lock);
++	list_for_each_entry(back, &iio_back_list, entry) {
++		if (!device_match_fwnode(back->dev, fwnode))
++			continue;
++
++		ret = __devm_iio_backend_get(dev, back);
++		if (ret)
++			return ERR_PTR(ret);
++
++		return back;
++	}
++
++	return ERR_PTR(-EPROBE_DEFER);
++}
++EXPORT_SYMBOL_NS_GPL(__devm_iio_backend_get_from_fwnode_lookup, IIO_BACKEND);
++
++/**
++ * iio_backend_get_priv - Get driver private data
++ * @back:	Backend device
++ */
++void *iio_backend_get_priv(const struct iio_backend *back)
++{
++	return back->priv;
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_get_priv, IIO_BACKEND);
++
++static void iio_backend_unregister(void *arg)
++{
++	struct iio_backend *back = arg;
++
++	guard(mutex)(&iio_back_lock);
++	list_del(&back->entry);
++}
++
++/**
++ * devm_iio_backend_register - Device managed backend device register
++ * @dev:	Backend device being registered
++ * @ops:	Backend ops
++ * @priv:	Device private data
++ *
++ * @ops is mandatory. Not providing it results in -EINVAL.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int devm_iio_backend_register(struct device *dev,
++			      const struct iio_backend_ops *ops, void *priv)
++{
++	struct iio_backend *back;
++
++	if (!ops)
++		return dev_err_probe(dev, -EINVAL, "No backend ops given\n");
++
++	/*
++	 * Through device_links, we guarantee that a frontend device cannot be
++	 * bound/exist if the backend driver is not around. Hence, we can bind
++	 * the backend object lifetime with the device being passed since
++	 * removing it will tear the frontend/consumer down.
++	 */
++	back = devm_kzalloc(dev, sizeof(*back), GFP_KERNEL);
++	if (!back)
++		return -ENOMEM;
++
++	back->ops = ops;
++	back->owner = dev->driver->owner;
++	back->dev = dev;
++	back->priv = priv;
++	scoped_guard(mutex, &iio_back_lock)
++		list_add(&back->entry, &iio_back_list);
++
++	return devm_add_action_or_reset(dev, iio_backend_unregister, back);
++}
++EXPORT_SYMBOL_NS_GPL(devm_iio_backend_register, IIO_BACKEND);
++
++MODULE_AUTHOR("Nuno Sa <nuno.sa@analog.com>");
++MODULE_DESCRIPTION("Framework to handle complex IIO aggregate devices");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+new file mode 100644
+index 000000000000..a6d79381866e
+--- /dev/null
++++ b/include/linux/iio/backend.h
+@@ -0,0 +1,72 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#ifndef _IIO_BACKEND_H_
++#define _IIO_BACKEND_H_
++
++#include <linux/types.h>
++
++struct fwnode_handle;
++struct iio_backend;
++struct device;
++struct iio_dev;
++
++enum iio_backend_data_type {
++	IIO_BACKEND_TWOS_COMPLEMENT,
++	IIO_BACKEND_OFFSET_BINARY,
++	IIO_BACKEND_DATA_TYPE_MAX
++};
++
++/**
++ * struct iio_backend_data_fmt - Backend data format
++ * @type:		Data type.
++ * @sign_extend:	Bool to tell if the data is sign extended.
++ * @enable:		Enable/Disable the data format module. If disabled,
++ *			not formatting will happen.
++ */
++struct iio_backend_data_fmt {
++	enum iio_backend_data_type type;
++	bool sign_extend;
++	bool enable;
++};
++
++/**
++ * struct iio_backend_ops - operations structure for an iio_backend
++ * @enable:		Enable backend.
++ * @disable:		Disable backend.
++ * @chan_enable:	Enable one channel.
++ * @chan_disable:	Disable one channel.
++ * @data_format_set:	Configure the data format for a specific channel.
++ * @request_buffer:	Request an IIO buffer.
++ * @free_buffer:	Free an IIO buffer.
++ **/
++struct iio_backend_ops {
++	int (*enable)(struct iio_backend *back);
++	void (*disable)(struct iio_backend *back);
++	int (*chan_enable)(struct iio_backend *back, unsigned int chan);
++	int (*chan_disable)(struct iio_backend *back, unsigned int chan);
++	int (*data_format_set)(struct iio_backend *back, unsigned int chan,
++			       const struct iio_backend_data_fmt *data);
++	struct iio_buffer *(*request_buffer)(struct iio_backend *back,
++					     struct iio_dev *indio_dev);
++	void (*free_buffer)(struct iio_backend *back,
++			    struct iio_buffer *buffer);
++};
++
++int iio_backend_chan_enable(struct iio_backend *back, unsigned int chan);
++int iio_backend_chan_disable(struct iio_backend *back, unsigned int chan);
++int devm_iio_backend_enable(struct device *dev, struct iio_backend *back);
++int iio_backend_data_format_set(struct iio_backend *back, unsigned int chan,
++				const struct iio_backend_data_fmt *data);
++int devm_iio_backend_request_buffer(struct device *dev,
++				    struct iio_backend *back,
++				    struct iio_dev *indio_dev);
++
++void *iio_backend_get_priv(const struct iio_backend *conv);
++struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name);
++struct iio_backend *
++__devm_iio_backend_get_from_fwnode_lookup(struct device *dev,
++					  struct fwnode_handle *fwnode);
++
++int devm_iio_backend_register(struct device *dev,
++			      const struct iio_backend_ops *ops, void *priv);
++
++#endif
 
-William Breathitt Gray
+-- 
+2.43.0
 
---XMlHQKal9VtaqFx8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZcX2BgAKCRC1SFbKvhIj
-K/9VAQDGKNJbQhNyauNyg+Yvqsv88LNUA7U6mLMqjS+JF5bu9gD/T/tgPC0NL7jS
-JjwSoUddFfF9O5TK+JVd5BuAkpoOnAk=
-=wGD6
------END PGP SIGNATURE-----
-
---XMlHQKal9VtaqFx8--
