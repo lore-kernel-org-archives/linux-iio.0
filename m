@@ -1,185 +1,180 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5852976043;
-	Fri,  9 Feb 2024 16:01:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E21E676905
+	for <linux-iio@vger.kernel.org>; Fri,  9 Feb 2024 16:05:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707494516; cv=none; b=VqzAwP3AG2UIfyCrlPW8iWlpB1cytlFE+TbFdx8Faq/9d0Ntj+ea44lJgwRONAg5riaQy6UfEKM0NXEQ1RZSEHugc0n1ty7gGgDZ1LKcQfwPXxt2VzV8pf+HCySdFN5p3Zt+ed4w/4PC8OX2rBqncDbwPTrKYxM/0Qd7OSYMZ9Q=
+	t=1707494720; cv=none; b=YUYH5dyU+N+gCv7tFAWnC+FZU6KT4W8nxqJLLQfxhMipR7aXA7gnUmobayCTMTw0sy/UMEry5SaAOgSeCftCM9ktLDGHV+Nl1cfNRrDnsMObuw494LRwVxYUFyogVG/fSknwuGV7rTXKoUIOHZPCGQjt5GlByM+lt05nCRdnd9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707494516; c=relaxed/simple;
-	bh=fzrUzq+1TIcZ2ftYpaROIQU2CbA6YRB2Sr1GbqXsbI0=;
-	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=r48RCHUnh0P/j4vSXI9XUwIBB3Jj9SqOlcMGac+vqqeVDlrZho7QtVLvQ1zDzuAW0vfN6VDnCDcx6JkhWjDPfgke9JBrW23ZzcDev2Yq7va7+PlnDE11z+uSkX4AD9bkA/3hHFOO/WkFW1E4ktha1wvxgpfovoLWXbPOOQYNN8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=RryP75p7; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1707494720; c=relaxed/simple;
+	bh=H8GybFc5aj6pORvVpE47Ai/Mk4aU7Jq0/uO5Si7f7nA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=U6R5BOb9CUO8KYDffwSfcgtFYbmNJA3LZAclqSHHxhvnU0bNSoOmfBcE4wEEoQqw6n/MlfRFmjnyxG6jGyhjU8ASf6BPRs6FLT7WAZmSdo1HiUTHInlAHis2dCPHNo/jRGuRg2x93QM2cx31EPtblhNerSEfzkjLqTWSyN7FKWw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nMp69HiW; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="RryP75p7"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 419E0am7013498;
-	Fri, 9 Feb 2024 10:25:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	from:subject:date:message-id:mime-version:content-type
-	:content-transfer-encoding:to:cc; s=DKIM; bh=qYBDdrorHAEm2Gs7L8f
-	DFHGkP8ufePj6T/OW+5O96G4=; b=RryP75p7cMuRCerGs4NWX414GqXwDcPtZqX
-	1VMDB8lhAZKDDeciHtUW95K41ERt8ACXFwKEKHkOgNC1Vbj85X2TbSfxgjCqEIkc
-	wN8L8ZKZW5eDJmDgZx2CHlc2dEumLfPuICCbBnRQVtoFKFMguWDSbC/AYA3H43PX
-	3LBcnqwUdUNkhxyxJaBmKblclzEdzS6/86Fhis6gfFHAPnPYei5SeQkny8NtyNhP
-	c03Ot4mu/6qkaUqC78QDFb4LCrUkTMPa6juPUeWq9AjFAwqvUZcHfDBlb57Oabx6
-	HJBozFz2RSA8vhuY9qNduFVAoEnMxQUkXnwOjx9rhs8KD3LoZaw==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3w53423p91-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 09 Feb 2024 10:25:50 -0500 (EST)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 419FPnOA047825
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 9 Feb 2024 10:25:49 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 9 Feb 2024
- 10:25:48 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 9 Feb 2024 10:25:48 -0500
-Received: from [127.0.0.1] ([10.44.3.56])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 419FPVJ0013228;
-	Fri, 9 Feb 2024 10:25:36 -0500
-From: Nuno Sa <nuno.sa@analog.com>
-Subject: [PATCH v10 0/7] iio: add new backend framework
-Date: Fri, 9 Feb 2024 16:28:50 +0100
-Message-ID: <20240209-iio-backend-v10-0-3ed842064318@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nMp69HiW"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-1d98fc5ebceso6878665ad.1
+        for <linux-iio@vger.kernel.org>; Fri, 09 Feb 2024 08:05:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1707494718; x=1708099518; darn=vger.kernel.org;
+        h=mime-version:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=o9aT+FcaX/UgQJoH3ETtkDrzabWjMfD8CWwDEmWTRXY=;
+        b=nMp69HiW7CIJTi6xVdreap/RNhtxyM4WYhgQkdjRTZDmH0zBt4WZuTckVUHVoCCrkF
+         pX/CtidjA1Ux5Nh9rZU0IbFE2zwVjNTc6cXmDP8icic7dp0UH3jxQeDDnYUpl961ZSoh
+         nud4C39Q96M4fb177LaaGIunvOYC7JSslWgCqM3kllDp6ELxMHJxxxS8e0QQcnMp4jlk
+         psutZqZ9/6Jmcw890ywvLaOYe/j5vDPSF2VmBR5217swS/cpybn95l7qLVYb5jStm3uP
+         9sCu4hg8rNJbwEPZUWnw3g7kR7eJW9hVn33mOrJ4yEGGslgcxnEcfkHDnWaFZUxJU85S
+         sQTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707494718; x=1708099518;
+        h=mime-version:message-id:date:subject:cc:to:from:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=o9aT+FcaX/UgQJoH3ETtkDrzabWjMfD8CWwDEmWTRXY=;
+        b=BHsAOKfAElEU2e37bOP9t4A1NCTgH6EkqQooUsLeB/VAaOJt+RLiy7jaJpYsltInQL
+         VyDJD9eaF0vNwIeT1Q0cqNwDR6gH9ifsT/GHWqVnH2JLp6eLbcGJ/tgsklLLXRtA76oI
+         EBdjFciVrvxUxUMqe+XfISMu3CnQ112/KK1VueFQxViVDq4esztZyLFyRLMRH+mLp/h/
+         eWuUy6mjsfXlcV2yNgvPOvEKqHiG0Lxj9vT7iGE4GH+iNgA7dSyZ3cmLKh6bKkr1/wQc
+         TyaAzWm4TQzt/2bGRmJbjTOXXhwZQiu4UoCQpNU7/YE2ciD00Jf5IkxTka8G6canSwBZ
+         Sf/g==
+X-Gm-Message-State: AOJu0YytqIBZGbxYUVFOtBPayjTUW6A7tbXXyDeD4gHDsjsFlxOmbOEO
+	i/SbW3HUy5rm0drYV1FRTE7TycAtP3ZEuxbK/YBT5j9YWxHwKjoq
+X-Google-Smtp-Source: AGHT+IGydBmvuHXDDyhQWkLfY8ro+Eqka3CpwWM89GqlIOdjs+AXRoSz7ICyMWBboF1QHelRmGZVtA==
+X-Received: by 2002:a17:902:fc44:b0:1d9:d162:667d with SMTP id me4-20020a170902fc4400b001d9d162667dmr2889178plb.38.1707494717891;
+        Fri, 09 Feb 2024 08:05:17 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCXEtOFFjmWuIU+GaWdp16RsVah5Fqjv6ncrttAgMgzv6FqR1kPYBafrH1v7//HYRgcjr/+c3K+Q4YLFzMCINW9P2d11aptl+JTtSAAjaQnygftGkCh4FFEM3B7QIc8VUO9G2/eUoDvPzlYrdgy7VbhX0MYUewmtcXxbxmJW2TWQi8UptGMmnp4=
+Received: from nobara-ally-pc.localnet (076-167-168-058.res.spectrum.com. [76.167.168.58])
+        by smtp.gmail.com with ESMTPSA id fd24-20020a056a002e9800b006e07f6aa1a6sm690358pfb.42.2024.02.09.08.05.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Feb 2024 08:05:17 -0800 (PST)
+From: Jonathan LoBue <jlobue10@gmail.com>
+To: jagathjog1996@gmail.com
+Cc: jic23@cam.ac.uk, luke@ljones.dev, dbenato.denis96@gmail.com,
+ lkml@antheas.dev, linux-iio@vger.kernel.org
+Subject:
+ [PATCH] iio: imu: bmi323: Support loading of bmi323 driver for ASUS ROG ALLY
+Date: Fri, 09 Feb 2024 08:05:14 -0800
+Message-ID: <5769241.DvuYhMxLoT@nobara-ally-pc>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIALNExmUC/6XPzUrEMBDA8VcpOW9kJh/TxJPvIR7yuRvUVlopy
- tJ3N10UGwpePM7A7z/Mlc1pKmlm992VTWkpcxmHOiCcOhYubjgnXmJdMAFCokDLSxm5d+E5DZE
- 7GQM6cr3ThlXxNqVcPm65x6c6X8r8Pk6ft/qitu13R0DTWRQHbq1JFpXxZMWDG9zLeL4L4yvbQ
- ov+D6YfrABRtFhX7GMKLoJC59UB93vcvr9QxWislhSkdqAP2OywkC3uN+xzFpK8ISsP2P5iAdR
- iW3HMRBG1DQBwwAh73bcaofIcMBn09WfV8FP3lzJeiQwha8jUHF3X9QvezC9zTgIAAA==
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, Rob
- Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Olivier Moysan
-	<olivier.moysan@foss.st.com>,
-        <andy.shevchenko@gmail.com>, Rob Herring
-	<robh@kernel.org>
-X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1707492532; l=3698;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=fzrUzq+1TIcZ2ftYpaROIQU2CbA6YRB2Sr1GbqXsbI0=;
- b=+kDmLPvUFDo5v39tmSjlxHV0QJtF+cbrtuqFCT72Jbiq3SR0M39nWbHdQ1gIgDcuZckhbdK6N
- nYJdB+XgQnBCWmV/E8ZjZHryIWXGyL63c7MZ2OyZb4JaPNXOxb24SvN
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: gaEdgAEfwkv1xsaLvy6VhLfVF1CZWBvD
-X-Proofpoint-ORIG-GUID: gaEdgAEfwkv1xsaLvy6VhLfVF1CZWBvD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-09_12,2024-02-08_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 suspectscore=0
- adultscore=0 phishscore=0 lowpriorityscore=0 priorityscore=1501
- spamscore=0 mlxlogscore=986 bulkscore=0 mlxscore=0 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2401310000 definitions=main-2402090113
+Content-Type: multipart/signed; boundary="nextPart6032406.lOV4Wx5bFT";
+ micalg="pgp-sha256"; protocol="application/pgp-signature"
 
-v1:
- https://lore.kernel.org/linux-iio/20231204144925.4fe9922f@jic23-huawei/T/#m222f5175273b81dbfe40b7f0daffcdc67d6cb8ff
+--nextPart6032406.lOV4Wx5bFT
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Jonathan LoBue <jlobue10@gmail.com>
+To: jagathjog1996@gmail.com
+Date: Fri, 09 Feb 2024 08:05:14 -0800
+Message-ID: <5769241.DvuYhMxLoT@nobara-ally-pc>
+MIME-Version: 1.0
 
-v2:
- https://lore.kernel.org/r/20231208-dev-iio-backend-v2-0-5450951895e1@analog.com
-
-v3:
- https://lore.kernel.org/linux-iio/20231213-dev-iio-backend-v3-0-bb9f12a5c6dc@analog.com/
-
-v4:
- https://lore.kernel.org/r/20231220-iio-backend-v4-0-998e9148b692@analog.com
-
-v5:
- https://lore.kernel.org/r/20240112-iio-backend-v5-0-bdecad041ab4@analog.com
-
-v6:
- https://lore.kernel.org/r/20240119-iio-backend-v6-0-189536c35a05@analog.com
-
-v7
- https://lore.kernel.org/r/20240123-iio-backend-v7-0-1bff236b8693@analog.com
-
-v8:
- https://lore.kernel.org/r/20240202-iio-backend-v8-0-f65ee8c8203d@analog.com
-
-v9:
- https://lore.kernel.org/r/20240206-iio-backend-v9-0-df66d159c000@analog.com
-
-Changes in v10:
- - Patch 5
-   * Removed meaningless @ in function names;
-   * Added ascii diagram for the typicaly HW setup (Andy request);
-   * Add missing period;
-   * Use of dev_err_probe() in APIs meant to be called during probe(). 
- - Patch 6
-   * Removed unneeded blank line;
-   * Fixed some English in the commit message.
-
-Jonathan, the series is based on next-20240207 since it already includes
-the io-channels fix Rob applied in his tree. I guess it should land in rc3 so
-after you rebase, all patches should apply cleanly (if applying them of course
-:)). Let me know if anything fails...
-
-Keeping the block diagram  so we don't have to follow links
-to check one of the typical setups.
-
-                                           -------------------------------------------------------
- ------------------                        | -----------         ------------      -------  FPGA |
- |     ADC        |------------------------| | AXI ADC |---------| DMA CORE |------| RAM |       |
- | (Frontend/IIO) | Serial Data (eg: LVDS) | |(backend)|---------|          |------|     |       |
- |                |------------------------| -----------         ------------      -------       |
- ------------------                        -------------------------------------------------------
+Due to an ACPI match of "BOSC0200" and existing gyro drivers, the ASUS ROG ALLY attempts to incorrectly load the bmc150 driver.
+This leaves the gyro inoperable for ASUS ROG ALLY. The correct gyro driver, bmi323, has already been upstreamed as part of the 6.8 kernel changes.
+In order to load the correct bmi323 driver for ASUS ROG ALLY's gyro, this patch uses a DMI match to unhook the ASUS ROG ALLY from loading the bmc150 driver.
+This unhooking is also added for the Ayaneo AIR Plus device, as requested by ChimeraOS devs.
 
 ---
-Nuno Sa (6):
-      dt-bindings: adc: ad9467: add new io-backend property
-      dt-bindings: adc: axi-adc: update bindings for backend framework
-      iio: buffer-dmaengine: export buffer alloc and free functions
-      iio: add the IIO backend framework
-      iio: adc: ad9467: convert to backend framework
-      iio: adc: adi-axi-adc: move to backend framework
 
-Olivier Moysan (1):
-      of: property: add device link support for io-backends
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -10,6 +10,7 @@
+ #include <linux/delay.h>
+ #include <linux/slab.h>
+ #include <linux/acpi.h>
++#include <linux/dmi.h>
+ #include <linux/of_irq.h>
+ #include <linux/pm.h>
+ #include <linux/pm_runtime.h>
+@@ -1670,6 +1671,9 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 	struct iio_dev *indio_dev;
+ 	int ret;
+ 
++	if (dmi_match(DMI_BOARD_NAME, "RC71L") || (dmi_match(DMI_BOARD_NAME, "AB05-AMD") && dmi_match(DMI_PRODUCT_NAME, "AIR Plus")))
++		return -ENODEV; // Abort loading bmc150 for ASUS ROG ALLY, Ayaneo Air Plus
++
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
 
- .../devicetree/bindings/iio/adc/adi,ad9467.yaml    |   4 +
- .../devicetree/bindings/iio/adc/adi,axi-adc.yaml   |   8 +-
- MAINTAINERS                                        |   8 +
- drivers/iio/Kconfig                                |   9 +
- drivers/iio/Makefile                               |   1 +
- drivers/iio/adc/Kconfig                            |   4 +-
- drivers/iio/adc/ad9467.c                           | 267 ++++++++-----
- drivers/iio/adc/adi-axi-adc.c                      | 379 +++++--------------
- drivers/iio/buffer/industrialio-buffer-dmaengine.c |   8 +-
- drivers/iio/industrialio-backend.c                 | 418 +++++++++++++++++++++
- drivers/of/property.c                              |   2 +
- include/linux/iio/adc/adi-axi-adc.h                |  68 ----
- include/linux/iio/backend.h                        |  72 ++++
- include/linux/iio/buffer-dmaengine.h               |   3 +
- 14 files changed, 798 insertions(+), 453 deletions(-)
 ---
-base-commit: 2ae0a045e6814c8c1d676d6153c605a65746aa29
-change-id: 20231219-iio-backend-a3dc1a6a7a58
---
 
-Thanks!
-- Nuno Sá
+Now, after this unhooking from bmc150, loading the correct bmi323 driver needs to occur. In order to accomplish this, an ACPI match table is added to bmi323.
+
+---
+
+--- a/drivers/iio/imu/bmi323/bmi323_i2c.c
++++ b/drivers/iio/imu/bmi323/bmi323_i2c.c
+@@ -5,6 +5,7 @@
+  * Copyright (C) 2023, Jagath Jog J <jagathjog1996@gmail.com>
+  */
+ 
++#include <linux/acpi.h>
+ #include <linux/i2c.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+@@ -93,6 +94,12 @@ static int bmi323_i2c_probe(struct i2c_c
+ 	return bmi323_core_probe(dev);
+ }
+ 
++static const struct acpi_device_id bmi323_acpi_match[] = {
++	{"BOSC0200"},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, bmi323_acpi_match);
++
+ static const struct i2c_device_id bmi323_i2c_ids[] = {
+ 	{ "bmi323" },
+ 	{ }
+@@ -109,6 +116,7 @@ static struct i2c_driver bmi323_i2c_driv
+ 	.driver = {
+ 		.name = "bmi323",
+ 		.of_match_table = bmi323_of_i2c_match,
++		.acpi_match_table = ACPI_PTR(bmi323_acpi_match),
+ 	},
+ 	.probe = bmi323_i2c_probe,
+ 	.id_table = bmi323_i2c_ids,
+
+---
+
+Patching these two files in this manner successfully accomplishes unhooking the ASUS ROG ALLY from the bmc150 driver and loading of the bmi323 driver.
+
+Best Regards,
+Jon LoBue
+
+Co-developed-by: Jonathan LoBue <jlobue10@gmail.com>
+Signed-off-by: Jonathan LoBue <jlobue10@gmail.com>
+Co-developed-by: Luke D. Jones <luke@ljones.dev>
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+Co-developed-by: Denis Benato <dbenato.denis96@gmail.com>
+Signed-off-by: Denis Benato <dbenato.denis96@gmail.com>
+Co-developed-by: Antheas Kapenekakis <lkml@antheas.dev>
+Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+
+--nextPart6032406.lOV4Wx5bFT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEgd5eGdGJaPFBoUcS4obKiQwb1x0FAmXGTToACgkQ4obKiQwb
+1x20mgf/eXniUrc/YGPoacPCTorRSzqqD9ZkqccL5pB7UktmsE3cbrha9xDS5sfw
+tl6rBwj94tCuTEElSNBT7AgJQ4UAjNjz9WC1pFi5Y1sPzTaiAMsaKxHDFGI8av3l
+n7ospSiQQbgwiSxJO7NZxof38p6jpW0/naT2m3nxV98UU8Ro63bu4iqt6ytD3aG1
+b/GSg5fG70lUUSCUs8FtSejOp+9KzqcOIfDqSM+fsJKfjSeMPmvFc0GRtejYEql/
+rRAvyQTBVrUkeoTGrBYK+B+ISFy3MXCrGRech1uwoNzI0cNopFkFOqDV9FKiA8D+
+79x/SC1RkEqR8kLO9FAxXUPtKNHmzA==
+=HKvC
+-----END PGP SIGNATURE-----
+
+--nextPart6032406.lOV4Wx5bFT--
+
+
 
