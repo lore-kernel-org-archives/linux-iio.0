@@ -1,43 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8332436AF0;
-	Sat, 10 Feb 2024 15:09:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8255954FB3;
+	Sat, 10 Feb 2024 15:12:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707577760; cv=none; b=tbd6uyJnkm420E9p5M8Fs+SX0R7JX8O6P/iu3dOjl7+aM02yL5vned/l5mWin7z96FLRBIILKRWTbqtEugQ53qZTJdmFOrkV3J2NJXuOT/vwDsM45h2IjL20IpsxuqGYUk0bqz0dVZi6+llp+lpFX7PAx2B06Vh9jZUhb+pHcKg=
+	t=1707577959; cv=none; b=hIMVzgAnLg1W96KDlUjh091TYsM0kv+/slZb+rz92l4HyFbR7+Stj5TopBTwjZ3jjbpAOotNxPWln/aDtPGSH9XkIQ7Cfc2uF6WVPthROD9wSMuFdIIqNylYO/197yPRfGkgLvP1aBPWyqx/hwhiS0lzIywBhS7Ner8E3FQD/MM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707577760; c=relaxed/simple;
-	bh=pLfRpHjTu9m4W1qVp6S/4OIPP2Vk2vK5FIofqlCRYbw=;
+	s=arc-20240116; t=1707577959; c=relaxed/simple;
+	bh=Bqdhe6m0hszTXiqousyJsHzppKR51PKO0JlO3RE6qMA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IlKYsHOw5JWFRMas6qSFQ7ni6/EyeEwNZwEj2o1gDhDkeYXmY0P0OUkcjuM4KGTgTKVXQmUTQdPFEKApDypIos+if2xPVjTpKQw9soQKqPdCp48XcE00wGqIuzYRB+rPh5keR/mf61JOSbGKbRy8cqW42AfyCeJsoru4iIKuFyU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TBxZ6iRT; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=KMo0K3P34+rEvhD+rT6tJXEO9U6iNPEMKS3aPRepz//P+tYm4J8cbmn1W9gwjl/6xqlkeT6bHoJezuGQOeqGgTFn4Y3miWPep+jmFgosBExZTc7i1ahy2XkdY652iGvSBiZt8Lqo3qwoyBaHNIlaZBYPyt3TKRh7HEsJBgszmgk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LI4cRHuB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TBxZ6iRT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02936C433C7;
-	Sat, 10 Feb 2024 15:09:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LI4cRHuB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ADD5C433F1;
+	Sat, 10 Feb 2024 15:12:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1707577759;
-	bh=pLfRpHjTu9m4W1qVp6S/4OIPP2Vk2vK5FIofqlCRYbw=;
+	s=k20201202; t=1707577959;
+	bh=Bqdhe6m0hszTXiqousyJsHzppKR51PKO0JlO3RE6qMA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=TBxZ6iRTVK8O3qULrXjcu9aWbDLvDocrTlaznymZzOSUUDvG9DNb0cS6/ng7KG7KU
-	 B8bBeOTMeiTwKXzlQnJZecrw3WLlSIAcmax5EB2O1Y8MqnsvpHHMHxjbcp7TkVYYhK
-	 cGi43eDOCg32mB0olSZermbJQBBvv7RANHcgJ7y2NJTOxkjflaYtY8YBTiq0hl8ETP
-	 xZ9un7gG+nX6sx4F34kCEijzdGDJ0PsnbTkHLwHnEZV89Q1ay9fIjak06VcHbF+Y5l
-	 LubrmNj1nqLHksfS0DUsPiHfext2+lGklbuQ/R6pGgU64ZT9xJhy3v5cbTPE/pGx+h
-	 CjmqCKMNhaIFw==
-Date: Sat, 10 Feb 2024 15:09:07 +0000
+	b=LI4cRHuBhmuYT3wQXMIIYKbPfcTOXbIGi9dxE7c/qyVg6nK4DnkBoLkin8YJzQ242
+	 ylm9WJYACDOupoQ/YfoGQwaZN6872OyVt9cbb7SY2Llwjb1ViyL+LBfRdHjznh7+g1
+	 alzlLc3yp8mThTM1N2f25OB3/ecqha9xytiEDDhqAj4ZOJaoNDpSOANlez23HoBJBU
+	 JIZZ+bBGLqBBr98IvgnksLGJyUCkGePnfmp59Q6aFs+Ecqyqwg0ZDO+5JYdEHLYtAz
+	 E2wRsoDkCWOMVxOjCcZYeiLcYhEOlc6n3nkrHc/IjiU/gh91n9/DwaBhakcIH0Nul9
+	 5emnwrJcKg2Tg==
+Date: Sat, 10 Feb 2024 15:12:28 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Petre Rodan <petre.rodan@subdimension.ro>
-Cc: andy.shevchenko@gmail.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v2 4/4] iio: pressure: hsc030pa add triggered buffer
-Message-ID: <20240210150907.40e27f53@jic23-huawei>
-In-Reply-To: <ZcEPJh1i7cc0xyBW@sunspire>
-References: <20240127160405.19696-1-petre.rodan@subdimension.ro>
-	<20240127160405.19696-5-petre.rodan@subdimension.ro>
-	<Zb-1UGJt27OV-vjc@surfacebook.localdomain>
-	<ZcEPJh1i7cc0xyBW@sunspire>
+To: Rob Herring <robh@kernel.org>
+Cc: Lorenzo Bianconi <lorenzo@kernel.org>, lorenzo.bianconi@redhat.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ krzysztof.kozlowski+dt@linaro.org
+Subject: Re: [PATCH v4 3/3] dt-bindings: iio: imu: st_lsm6dsx: add
+ asm330lhhxg1
+Message-ID: <20240210151228.38702142@jic23-huawei>
+In-Reply-To: <170714168769.3273951.16124017499544303407.robh@kernel.org>
+References: <cover.1706961432.git.lorenzo@kernel.org>
+	<942452ec9626bc1166501cec0fa88c369e28ec6f.1706961432.git.lorenzo@kernel.org>
+	<170714168769.3273951.16124017499544303407.robh@kernel.org>
 X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,40 +49,24 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 5 Feb 2024 18:39:02 +0200
-Petre Rodan <petre.rodan@subdimension.ro> wrote:
+On Mon, 5 Feb 2024 14:01:28 +0000
+Rob Herring <robh@kernel.org> wrote:
 
-> hello Andy,
-> 
-> On Sun, Feb 04, 2024 at 06:03:28PM +0200, andy.shevchenko@gmail.com wrote:
-> [..]
-> > > +	memcpy(&data->scan.chan[1], &data->buffer[2], 2);  
+> On Sat, 03 Feb 2024 13:01:38 +0100, Lorenzo Bianconi wrote:
+> > Add device bindings for asm330lhhxg1 IMU sensor.
+> > The lsm6dsr supports the features and functionality provided by
+> > the asm330lhhxg1 via identical interfaces and so is a suitable
+> > fallback compatible.
 > > 
-> > Hmm... We don't have fixed-size memcpy() :-(  
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  Documentation/devicetree/bindings/iio/imu/st,lsm6dsx.yaml | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> >   
 > 
-> 	__be16 *ptr;
+> Reviewed-by: Rob Herring <robh@kernel.org>
 > 
-> 	ptr = (__be16 *) data->buffer;
-> 	data->scan.chan[0] = *ptr;
-> 	data->scan.chan[1] = *++ptr;
-> 
-> is this an acceptable replacement? I do not understand that your concern was, my
-> intent was to copy exactly 2 bytes over.
 
-Andy?
+Series applied.
 
-I'm not sure what you meant here either.  
-
-There is an existing oddity that the read_raw deals with this as a be32 and
-masking out the right sections for each channel rather than perhaps more logical
-be16 pair here.
-
-Jonathan
-
-> 
-> > > +	iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
-> > > +					   iio_get_time_ns(indio_dev));  
-> 
-> thanks,
-> peter
-
+Thanks
