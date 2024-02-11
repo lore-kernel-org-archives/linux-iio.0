@@ -1,80 +1,103 @@
-Received: from vps.xff.cz (vps.xff.cz [195.181.215.36])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A1595DF09;
-	Sun, 11 Feb 2024 20:52:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.181.215.36
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20D0CFBF0;
+	Sun, 11 Feb 2024 22:32:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707684744; cv=none; b=OTuOJy04TFg3bxQKufFUUbgINPYaOBjv4Uwg9kvplyqyxUsxCndHn14UE1aJhKr0hFHS6/JTUY7nEZIbsn696mgWkCPU2LE8Ke/PzLgU1z5KZxxZA0oU/ZnbMo5+cLGnWrSX40O60AN8Flreth9l+HOC+OFEpwZTmRzYqaE5C4w=
+	t=1707690761; cv=none; b=TjxBU/eqUCKfQAH3B78il4lyJxaM1zuk0fhZehLOhE6teBSkUj2jApSeSCeDuDl9E4CDuve7ERf9QAvx/7JKiKB0JIIWjrjJJizj5JtPNGBT3r4i1NruQCbJ/slS/2zvRHxndp1caq4dF6dy70f67v4K70DJvA6wbBTOfC3sdMs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707684744; c=relaxed/simple;
-	bh=w4dFeJN6ekT4fZLMgY0MSjyE6BSqXIkBWnDC/steBeE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=igJjiftaCU3tywFDJpzV99C1OXbVupXm/A2NrvomezLINg0Ok71yBpKA9K/sA7j0HX+9aVxp0wbBZDu1CsXE+wu9OKLXRTQD+LJkvp8lm/ExSopw/26U3oDr922TRl1aIS+ePkwUQilRF12pVqdOI+EHuI7TfZy3ApHb12kjHj4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xff.cz; spf=pass smtp.mailfrom=xff.cz; dkim=pass (1024-bit key) header.d=xff.cz header.i=@xff.cz header.b=dmzPbnUS; arc=none smtp.client-ip=195.181.215.36
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xff.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xff.cz
+	s=arc-20240116; t=1707690761; c=relaxed/simple;
+	bh=zoK4wRIH61AhhcB8eZbYlC0YkWtpVzhdV4ljtB0iK8M=;
+	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
+	 Message-Id:Subject; b=j5GCD53aHStiVcPKpPJt9JLzVru0Lt5Fzyefgj4li1I67MPaohNMWXfePeuLfgxPBOX4a8Dj7YfChMfQyWcDbr4DEyPS6WGRxnXJQThKLp12hPBrXE/IjKd4txxIL2Y3FFwU4Jo+Qc+ewuTbX03E2ypk137MDtx0GiW8SZKU5CA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ns/TWa43; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=xff.cz header.i=@xff.cz header.b="dmzPbnUS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xff.cz; s=mail;
-	t=1707684739; bh=w4dFeJN6ekT4fZLMgY0MSjyE6BSqXIkBWnDC/steBeE=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=dmzPbnUSBN3rAZwsOXvc/kuP3DbzWzuU8f2O5UamPg5Fc1RazlMXoyFd7M1trUqUi
-	 75UG+FaleqqPP0yOWPlNQ/llBfxEU3g60GCK+q7CDDVSInLXwae9sEfZtYa9ENSW3t
-	 UQHHXT/OMUIr73IFC1CCh1y4Optr4iI5l3BXQIsI=
-From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Andrey Skvortsov <andrej.skvortzov@gmail.com>
-Cc: Ondrej Jirman <megi@xff.cz>,
-	Icenowy Zheng <icenowy@aosc.io>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] MAINTAINERS: Add an entry for AF8133J driver
-Date: Sun, 11 Feb 2024 21:51:59 +0100
-Message-ID: <20240211205211.2890931-4-megi@xff.cz>
-In-Reply-To: <20240211205211.2890931-1-megi@xff.cz>
-References: <20240211205211.2890931-1-megi@xff.cz>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ns/TWa43"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 588D0C433C7;
+	Sun, 11 Feb 2024 22:32:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1707690760;
+	bh=zoK4wRIH61AhhcB8eZbYlC0YkWtpVzhdV4ljtB0iK8M=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=ns/TWa43D572D5Gz+6TXJU0hnE4dvh2+d2PNNtTp7tg3iW3MeDIR+FjOr1toHiP0j
+	 nUUx4Xd/4yxdZC7d2lhyy0FF86MDCXYbns9kroHbN62rSpNvwxhNeXlmJXZ5QDrCR+
+	 e9OkXP9VzuzkQFvmEolUESwbUqi5H57fWS1aO86Kga6Cd0r8ctOJbzzt/jZ+UAhWpF
+	 XlOiCyAHU1XDst0yhI/W0+6opwpykLYRIdUNwZHF3IaS/TZRSD9/ney6A7p59xOzE5
+	 L96PaVHA2wzkH5cMh16zYNzSvYF+bM+WxEaLkGsTgR+jXK/8v39lxkHKVL/nRUGk5z
+	 YGauiH3bIS0dQ==
+Date: Sun, 11 Feb 2024 16:32:39 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From: Rob Herring <robh@kernel.org>
+To: =?utf-8?q?Ond=C5=99ej_Jirman?= <megi@xff.cz>
+Cc: linux-iio@vger.kernel.org, Icenowy Zheng <icenowy@aosc.io>, 
+ devicetree@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Conor Dooley <conor+dt@kernel.org>, 
+ linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, 
+ Andrey Skvortsov <andrej.skvortzov@gmail.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+In-Reply-To: <20240211205211.2890931-3-megi@xff.cz>
+References: <20240211205211.2890931-1-megi@xff.cz>
+ <20240211205211.2890931-3-megi@xff.cz>
+Message-Id: <170769075818.2433614.5244889858722764083.robh@kernel.org>
+Subject: Re: [PATCH 2/4] dt-bindings: iio: magnetometer: Add DT binding for
+ Voltafield AF8133J
 
-From: Ondrej Jirman <megi@xff.cz>
 
-As I am submitting the driver and have the device to test. I'll maintain
-the driver.
+On Sun, 11 Feb 2024 21:51:58 +0100, Ondřej Jirman wrote:
+> From: Icenowy Zheng <icenowy@aosc.io>
+> 
+> Voltafield AF8133J is a simple magnetometer sensor produced by Voltafield
+> Technology Corp, with dual power supplies (one for core and one for I/O)
+> and active-low reset pin.
+> 
+> The sensor has configurable range 1.2 - 2.2 mT and a software controlled
+> standby mode.
+> 
+> Add a device tree binding for it.
+> 
+> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+> Signed-off-by: Ondřej Jirman <megi@xff.cz>
+> ---
+>  .../iio/magnetometer/voltafield,af8133j.yaml  | 58 +++++++++++++++++++
+>  1 file changed, 58 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/voltafield,af8133j.yaml
+> 
 
-Signed-off-by: Ondrej Jirman <megi@xff.cz>
----
- MAINTAINERS | 6 ++++++
- 1 file changed, 6 insertions(+)
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index dc5ca7a042b5..cc691f61a77e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -579,6 +579,12 @@ F:	drivers/iio/accel/adxl372.c
- F:	drivers/iio/accel/adxl372_i2c.c
- F:	drivers/iio/accel/adxl372_spi.c
- 
-+AF8133J THREE-AXIS MAGNETOMETER DRIVER
-+M:	Ondřej Jirman <megi@xff.cz>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/magnetometer/voltafield,af8133j.yaml
-+F:	drivers/iio/magnetometer/af8133j.c
-+
- AF9013 MEDIA DRIVER
- L:	linux-media@vger.kernel.org
- S:	Orphan
--- 
-2.43.0
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/magnetometer/voltafield,af8133j.yaml: properties:compatible: ['voltafield,af8133j'] is not of type 'object', 'boolean'
+	from schema $id: http://json-schema.org/draft-07/schema#
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/magnetometer/voltafield,af8133j.yaml: properties:compatible: ['voltafield,af8133j'] is not of type 'object', 'boolean'
+	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/magnetometer/voltafield,af8133j.yaml: ignoring, error in schema: properties: compatible
+Documentation/devicetree/bindings/iio/magnetometer/voltafield,af8133j.example.dtb: /example-0/i2c/magnetometer@1c: failed to match any schema with compatible: ['voltafield,af8133j']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20240211205211.2890931-3-megi@xff.cz
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
