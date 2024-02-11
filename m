@@ -1,162 +1,76 @@
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.subdimension.ro (skycaves.subdimension.ro [172.104.132.142])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC6AB3BB3E
-	for <linux-iio@vger.kernel.org>; Sat, 10 Feb 2024 22:34:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 448644437A;
+	Sun, 11 Feb 2024 07:56:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=172.104.132.142
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707604455; cv=none; b=kTc0sP0glr8OnSKVt/6S/gWc4DBzOhw2AE3SJmEpzXIJDrtdT3WarEnIsuOiuykV3NFLgzaX0/czVxvf8OZP9RjVKGLmrZrFoum2Z+0BylV6n2W1ODaBN2O+LRiMpexs3rVhDxdam4GJFcLEp9A7mTFo+t4mIDgM3ilQFqWHxhk=
+	t=1707638218; cv=none; b=AZnOR3gdz1fwAXhDmKfM0ZBoWQvWT82BtTHQnaI3IMu4PLT3vxqyxWi1pm/ETkqfL0Q5WZyA/ABt/8v2fRbg9rlKsKk8QQ4qo8zmBKmTNdVEk1E5yevypbdrD9K3QzhCHfK2lCSwI5lzs/ZdN9dQbi6QrERlXusBCYM94Jpt/WI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707604455; c=relaxed/simple;
-	bh=2f8dPjBI/ZY7dCSAHUaCNnCtp7nkd9t3gmCOYWwsULk=;
+	s=arc-20240116; t=1707638218; c=relaxed/simple;
+	bh=6AKgtrBfCsel99oJPCAdmr2PiW5gpjpbUluGKeTb9f0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PlNxH5jpuZkpx84X7FYNc9q4HH7s+7GTZt0GOHP/Q7qP/i5QIUzd6USYNHueHvxrDgVfrCUbQPWMkl9PIfWHo4aFlT/l6SyGSmLCiP3zdwgsFWBkWbhzAESMe2cbvazjhUfPRdbxxwunFr6NrEEfGvpRadr4bb0kMIeGixmEPTQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jlg8JYr/; arc=none smtp.client-ip=209.85.210.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 MIME-Version; b=pfSSvt9k3yzgYiWs2G7sORxdFhk1Yml9RdpiUbIhjN9D8nZpetg6zDFW5f2bKbzvs6kQKIle5ZIP2s2+Xb5iFaBXH9BSrU3VcnnBrUw7HZLgrmKN/+CAJIeI2jcHyvtq+ljIvCNpfKs4Lfe+rg8is1NZDxjaCQr447P6wvlw9OU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=AXuAnsP4; arc=none smtp.client-ip=172.104.132.142
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=subdimension.ro
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jlg8JYr/"
-Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-6e2da00185dso351045a34.1
-        for <linux-iio@vger.kernel.org>; Sat, 10 Feb 2024 14:34:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1707604453; x=1708209253; darn=vger.kernel.org;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Py5o2uQ2CSbb5W6cNzyBQysajVpKL8ai4KYPGoRjhbM=;
-        b=Jlg8JYr/z2BcUS3/CwaWWCx5cHQREPNrd9RqtjF4Txe7dTtoQ+rKsuy04/S+H0JEWP
-         jwMLDgrPmqmTqgy9Cg/GaORlkoec7flRjCKLqMLbqYyERjlrMea0uNp5ekkPVBoLmAhC
-         tfrQKqpD3Ost+DwRW6lXWDt9sJOwnP65OC3fJ2PeKRsorhniw90ZCNK7tH+YcIGZPevx
-         jGPAHshZYIZvsoORCbbejoxnpZlXWOcDabBTVO+moSurikbV19AjIzhs3CkFeOB2uV/D
-         SK6i7Sf88K8e0mQb8TK5lI7cMxudlcPymm4ABZaTslaCRwXKRWQpJQRl3feeRKCvTz/I
-         8Bhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707604453; x=1708209253;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Py5o2uQ2CSbb5W6cNzyBQysajVpKL8ai4KYPGoRjhbM=;
-        b=IP+FG874lZKP97MqcU6o5U2zeZILizfysueeEbmsVmaxH39ZuOJtKQwiI0o6qcQLrn
-         Gie3HA0Z0jRIsRzhJ0F9qqoMwksefizPYKMwNPY9HF4+ukRwALNSgkCVuvGJu/YAZPti
-         r0f3Zy98o/RNVbeoEjpYERPlo4h2bHdeqhDDxWVUbCqdCUrkPlKghR4CVktCY1dumY31
-         EpEmBSUg/z1DRJTELX+lRaPqwx2TbSLMszxHWCaCv9voOS81bM9LlGO1Dz9QXE3RM+Kg
-         S7GUxgUlVgL0bwYeWFzl6qb2JIU/8pf8epJavNfmVDET+JSzBJIldL/aqT5P6GDCNOgJ
-         K08Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWSBevm2h8ioPUGrpM2bQEtY2urOHYblaIuhJVBs6V4/JKY0goyw/c1Xwc/1RyqdFMFn8GCXenFqugkyRf/onAyQ8LcRecoHatK
-X-Gm-Message-State: AOJu0Yy2Mml6j5f04X/yfmzNzPRCXn/jay918W93nN/VSAfs2JEb9cZc
-	rZu57WD0b0gb7YGHWtJPXCo4z2KCvMEphTd63amfE6+QFTcklSJB
-X-Google-Smtp-Source: AGHT+IGwUkbuInCa2I6zdggeaBmKSjDKKZlMNgxnbIM9cht/Djtd7shh0aCMfiKB/biQbf+Z4PYSqg==
-X-Received: by 2002:a05:6358:70c2:b0:176:9e87:412c with SMTP id h2-20020a05635870c200b001769e87412cmr5427518rwh.7.1707604452545;
-        Sat, 10 Feb 2024 14:34:12 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVeBs5fP7IkQgKPdivkchdEY/SvLbOuB20pBi2yNMR39lOWfGT5K7/e/D+OekdvBdLloMYp7adaX9k+uVHbPI74YOOZqerD2YqYFPkKDl/tAZ/TjP+bJnvPbtWj5VmTMbey8QA8gnL9O/YmK7coa19RLaGzFuswwkE57RUXviul/AuhFgPFuaa+qhmLoK51YckkpWV9HhkDoL9gi9PUXWm9xw==
-Received: from nobara-ally-pc.localnet (076-167-168-058.res.spectrum.com. [76.167.168.58])
-        by smtp.gmail.com with ESMTPSA id g22-20020a056a0023d600b006dddd685bbesm2768445pfc.122.2024.02.10.14.34.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Feb 2024 14:34:12 -0800 (PST)
-From: Jonathan LoBue <jlobue10@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: jagathjog1996@gmail.com, luke@ljones.dev, benato.denis96@gmail.com,
- linux-iio@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>,
- lkml@antheas.dev
-Subject: [PATCH 2/2] iio: imu: bmi323: Add and enable ACPI Match Table
-Date: Sat, 10 Feb 2024 14:34:11 -0800
-Message-ID: <4956451.31r3eYUQgx@nobara-ally-pc>
-In-Reply-To: <4923946.31r3eYUQgx@nobara-ally-pc>
-References:
- <5769241.DvuYhMxLoT@nobara-ally-pc> <20240210164956.3d29e3ee@jic23-huawei>
- <4923946.31r3eYUQgx@nobara-ally-pc>
+	dkim=pass (1024-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="AXuAnsP4"
+Received: from localhost.localdomain (unknown [188.24.101.32])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id 1CD4A327B85;
+	Sun, 11 Feb 2024 07:56:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=subdimension.ro;
+	s=skycaves; t=1707638209;
+	bh=6AKgtrBfCsel99oJPCAdmr2PiW5gpjpbUluGKeTb9f0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=AXuAnsP4jq5ARLjpnPbunCokwUwWzvPk4NpkL3xoiCmBoyZp1ihKkzLFUbz8Wq5Qx
+	 eFFjZIvYlPx4WdcR/45b2vYQKUwPfUg9A1qoRjyKbh1B6Hv2R4C8sI6ab83uFNTZ5N
+	 EdE7nQSpdadKuU1HRuAcfr51RsWwZlbEbHDjNfXY=
+From: Petre Rodan <petre.rodan@subdimension.ro>
+To: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Petre Rodan <petre.rodan@subdimension.ro>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v3 2/6] iio: pressure: hsc030pa: use signed type to hold div_64() result
+Date: Sun, 11 Feb 2024 09:56:33 +0200
+Message-ID: <20240211075645.28777-3-petre.rodan@subdimension.ro>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20240211075645.28777-1-petre.rodan@subdimension.ro>
+References: <20240211075645.28777-1-petre.rodan@subdimension.ro>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart4605103.LvFx2qVVIh";
- micalg="pgp-sha256"; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
 
---nextPart4605103.LvFx2qVVIh
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Jonathan LoBue <jlobue10@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 2/2] iio: imu: bmi323: Add and enable ACPI Match Table
-Date: Sat, 10 Feb 2024 14:34:11 -0800
-Message-ID: <4956451.31r3eYUQgx@nobara-ally-pc>
-In-Reply-To: <4923946.31r3eYUQgx@nobara-ally-pc>
-MIME-Version: 1.0
+Use signed type to variable holding the result given by div_s64().
 
-From c65d1ef44d749958f02d2b9a50a0e788b4497854 Mon Sep 17 00:00:00 2001
-From: Jonathan LoBue <jlobue10@gmail.com>
-Date: Sat, 10 Feb 2024 12:31:54 -0800
-Subject: [PATCH 2/2] iio: imu: bmi323: Add and enable ACPI Match Table
-
-This patch adds the ACPI match table for ASUS ROG ALLY to load the bmi323
-driver with an ACPI match of "BOSC0200".
-
-Co-developed-by: Jonathan LoBue <jlobue10@gmail.com>
-Signed-off-by: Jonathan LoBue <jlobue10@gmail.com>
-Co-developed-by: Luke D. Jones <luke@ljones.dev>
-Signed-off-by: Luke D. Jones <luke@ljones.dev>
-Co-developed-by: Denis Benato <benato.denis96@gmail.com>
-Signed-off-by: Denis Benato <benato.denis96@gmail.com>
-Co-developed-by: Antheas Kapenekakis <lkml@antheas.dev>
-Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
- drivers/iio/imu/bmi323/bmi323_i2c.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+v1 -> v2 no changes
+v2 -> v3 split cleanup patch into 3 parts, no code changes
+ drivers/iio/pressure/hsc030pa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/bmi323/bmi323_i2c.c b/drivers/iio/imu/bmi323/bmi323_i2c.c
-index 20a8001b9956..346ba2d1a169 100644
---- a/drivers/iio/imu/bmi323/bmi323_i2c.c
-+++ b/drivers/iio/imu/bmi323/bmi323_i2c.c
-@@ -5,6 +5,7 @@
-  * Copyright (C) 2023, Jagath Jog J <jagathjog1996@gmail.com>
-  */
+diff --git a/drivers/iio/pressure/hsc030pa.c b/drivers/iio/pressure/hsc030pa.c
+index d6a51f0c335f..7e3f74d53b47 100644
+--- a/drivers/iio/pressure/hsc030pa.c
++++ b/drivers/iio/pressure/hsc030pa.c
+@@ -406,7 +406,7 @@ int hsc_common_probe(struct device *dev, hsc_recv_fn recv)
+ 	struct hsc_data *hsc;
+ 	struct iio_dev *indio_dev;
+ 	const char *triplet;
+-	u64 tmp;
++	s64 tmp;
+ 	int ret;
  
-+#include <linux/acpi.h>
- #include <linux/i2c.h>
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
-@@ -93,6 +94,12 @@ static int bmi323_i2c_probe(struct i2c_client *i2c)
- 	return bmi323_core_probe(dev);
- }
- 
-+static const struct acpi_device_id bmi323_acpi_match[] = {
-+	{"BOSC0200"},
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(acpi, bmi323_acpi_match);
-+
- static const struct i2c_device_id bmi323_i2c_ids[] = {
- 	{ "bmi323" },
- 	{ }
-@@ -109,6 +116,7 @@ static struct i2c_driver bmi323_i2c_driver = {
- 	.driver = {
- 		.name = "bmi323",
- 		.of_match_table = bmi323_of_i2c_match,
-+		.acpi_match_table = ACPI_PTR(bmi323_acpi_match),
- 	},
- 	.probe = bmi323_i2c_probe,
- 	.id_table = bmi323_i2c_ids,
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*hsc));
 -- 
 2.43.0
-
---nextPart4605103.LvFx2qVVIh
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEgd5eGdGJaPFBoUcS4obKiQwb1x0FAmXH+eMACgkQ4obKiQwb
-1x33Pgf/WqmDNQG23pqJNEMqgcvJPSz3aez/8z43x8zkN8JFzGsSZ3VTzU//0JOB
-XrGb5Y6Nl0cdI7ujDeVr6UFb2BMmOvABA4VRitn9B0NrYKmwSIFt7yJEL218G3SY
-nTaWdpFtU+1mBsuJXFlBTyEJ46L07hq2H5LiMEJ0CBo/Q/u2UiG3iwW+nfh0cdFB
-LRkHnyWdRVx+/tZHAml93yhQkrc0zJEEFV/SrekM5q7zrjz3gQ2C5ThtGG7bQ7NY
-Xa6dIFNfsBst7ixkEU0VpWDn/43JaV2ykn+H+kGxaZYFFXvq7nt/z2ISb5ulligT
-df/Dc5lsyEdlG9RzLosyWlQbAi6L9g==
-=UwU2
------END PGP SIGNATURE-----
-
---nextPart4605103.LvFx2qVVIh--
-
-
 
