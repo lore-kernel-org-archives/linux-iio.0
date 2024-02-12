@@ -1,27 +1,27 @@
 Received: from vps.xff.cz (vps.xff.cz [195.181.215.36])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AFE645BED;
-	Mon, 12 Feb 2024 17:54:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 009B345BE8;
+	Mon, 12 Feb 2024 17:54:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.181.215.36
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707760458; cv=none; b=F3xMLZTBC0JJ4glsUhofYXD29DGRdVVI+ZmpDL1PLwapBnewz+iHyMAXN+aw5py0lMPYdDsMUshAbHZsw1o8z39d5W9LTIDwdWNGMKouueN0JOrGfavcT8WLVaXkGaWN7ItuYAQ+RE4XEbxR9X1pmTFWz3NMYuHheno2nrqDFz8=
+	t=1707760458; cv=none; b=IzuReJtOoKvb/Cb69CZg/5r4/88ehmJYTanAV79GE/bEx3oFTOeetH2pglFIftDyMDXGRofwBqHFL5v8cDyJRptTUGyPdMatfz+l+oCuHmF87rmY0da22uiNwfBTcSbd5LBZ5i9r7Kk5KfxlvUh1h5tM67Mz5f4fCKlr8nQm2BI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707760458; c=relaxed/simple;
-	bh=w4dFeJN6ekT4fZLMgY0MSjyE6BSqXIkBWnDC/steBeE=;
+	bh=0doP8NnUjaTfFjdMWPvwgVTOH9eAL0HI3FuMS2w8NvY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EIlC4X8rmpv50Zj1eYv96EkQFk4myQclATHGXYiH40HQghgGeiPY6xpPYBjSKTLMRl+o+OjxdiKFGXhxJyheTlSBor6FI7enwn7FOYBRB/UnuEzFB0ANzncLmC1+7VQ0XJOdhL1755TcM9+/2kkUr4goI2lEpR72Xc2cmZl9ZL0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xff.cz; spf=pass smtp.mailfrom=xff.cz; dkim=pass (1024-bit key) header.d=xff.cz header.i=@xff.cz header.b=g6PZhm/P; arc=none smtp.client-ip=195.181.215.36
+	 MIME-Version:Content-Type; b=ZniEPYKuaOiExaF4KvBH/c0/5azfsPv0aMDTaJWtPLQD+Z39sYnWmfZFVL7wVn8jGK+BoVLC5DUzLCxpyOUCz1//8PtpnPzGtvPNo02mpVoDNKhIrpp7S6gpRawqWDoM86Ff8B16dcVbN6kkaCuKR34dX7+gKhjt93CEk7tR6FU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xff.cz; spf=pass smtp.mailfrom=xff.cz; dkim=pass (1024-bit key) header.d=xff.cz header.i=@xff.cz header.b=Q15r1vqZ; arc=none smtp.client-ip=195.181.215.36
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xff.cz
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xff.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=xff.cz header.i=@xff.cz header.b="g6PZhm/P"
+	dkim=pass (1024-bit key) header.d=xff.cz header.i=@xff.cz header.b="Q15r1vqZ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xff.cz; s=mail;
-	t=1707760454; bh=w4dFeJN6ekT4fZLMgY0MSjyE6BSqXIkBWnDC/steBeE=;
+	t=1707760453; bh=0doP8NnUjaTfFjdMWPvwgVTOH9eAL0HI3FuMS2w8NvY=;
 	h=From:To:Cc:Subject:Date:References:From;
-	b=g6PZhm/Prk73mVVUFfWlw4G87khYBj4/3uYUDF/qZlgJkO/84G1G8JzUCaTlQ7Nrv
-	 LqO0FKEtTuLxXb2fm0k2ijhFcouznFtXWihL5gSj33pNfBHvmtyaLEpxAvzyhkTxCS
-	 r2mWGyLtDitwYKtdbkZqu2jxcGjBNQ7fbQX1K0vU=
+	b=Q15r1vqZ4gduuegRPgA2R/8nGOaW4ZWeE/pcy9ZKsX7Awcnnp1830TOGdT33wbJY3
+	 YVac8xAzV270WqTJFjfyHm/u3MgSkJMr0o7Lbfzr0ploVARQhrsPDRa8ZYrtcym1P3
+	 hLGKpC6yw0scauuS7b7KyfWj0/rJjj/5+RSP1mSc=
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
@@ -29,16 +29,17 @@ To: Jonathan Cameron <jic23@kernel.org>,
 	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
 	Conor Dooley <conor+dt@kernel.org>,
 	Andrey Skvortsov <andrej.skvortzov@gmail.com>
-Cc: Ondrej Jirman <megi@xff.cz>,
-	Icenowy Zheng <icenowy@aosc.io>,
+Cc: Icenowy Zheng <icenowy@aosc.io>,
 	Dalton Durst <dalton@ubports.com>,
 	Shoji Keita <awaittrot@shjk.jp>,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] MAINTAINERS: Add an entry for AF8133J driver
-Date: Mon, 12 Feb 2024 18:53:56 +0100
-Message-ID: <20240212175410.3101973-5-megi@xff.cz>
+	linux-kernel@vger.kernel.org,
+	=?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 1/4] dt-bindings: vendor-prefix: Add prefix for Voltafield
+Date: Mon, 12 Feb 2024 18:53:53 +0100
+Message-ID: <20240212175410.3101973-2-megi@xff.cz>
 In-Reply-To: <20240212175410.3101973-1-megi@xff.cz>
 References: <20240212175410.3101973-1-megi@xff.cz>
 Precedence: bulk
@@ -50,33 +51,32 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Ondrej Jirman <megi@xff.cz>
+From: Icenowy Zheng <icenowy@aosc.io>
 
-As I am submitting the driver and have the device to test. I'll maintain
-the driver.
+Voltafile Technology Corp. is a company that produces MEMS sensors.
 
-Signed-off-by: Ondrej Jirman <megi@xff.cz>
+Add a DT vendor prefix for it.
+
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+Signed-off-by: Ondřej Jirman <megi@xff.cz>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- MAINTAINERS | 6 ++++++
- 1 file changed, 6 insertions(+)
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index dc5ca7a042b5..cc691f61a77e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -579,6 +579,12 @@ F:	drivers/iio/accel/adxl372.c
- F:	drivers/iio/accel/adxl372_i2c.c
- F:	drivers/iio/accel/adxl372_spi.c
- 
-+AF8133J THREE-AXIS MAGNETOMETER DRIVER
-+M:	Ondřej Jirman <megi@xff.cz>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/magnetometer/voltafield,af8133j.yaml
-+F:	drivers/iio/magnetometer/af8133j.c
-+
- AF9013 MEDIA DRIVER
- L:	linux-media@vger.kernel.org
- S:	Orphan
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 1a0dc04f1db4..82e9f64c90ff 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -1534,6 +1534,8 @@ patternProperties:
+     description: VoCore Studio
+   "^voipac,.*":
+     description: Voipac Technologies s.r.o.
++  "^voltafield,.*":
++    description: Voltafield Technology Corp.
+   "^vot,.*":
+     description: Vision Optical Technology Co., Ltd.
+   "^vxt,.*":
 -- 
 2.43.0
 
