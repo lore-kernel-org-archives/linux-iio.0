@@ -1,43 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D35C65193;
-	Fri, 16 Feb 2024 11:05:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7B9F5C901;
+	Fri, 16 Feb 2024 11:18:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708081557; cv=none; b=B7uBkjWU9KbU4TnoRQgVCcf2nxgJDQjr5C2kBzMiK3vUf9RueC+MLwXLoFRGGYXg4a9n8+zoxrMV0jshIcepb+j3QdrnqYdwLoO17yd5ftjyFUVgB+jKoLF9oCgTC8O/OTtUcnAX3eO/9ttSKNXi2dg5ndteX2FYIzD2ByOwIH4=
+	t=1708082326; cv=none; b=Mexbe18rsjKiJlQtd7j/oO6JPVPxPEhO9MBPjs6smyOBtt8rpH14UsOzNMkx8gjJLsY6pHn5mq9vJKRWTlu29gOUdKcW5jpa+gXrYtKBb2uSmZPEIR6w2eMXrw7dzi0enSeBtmArNavfzKfcwWjEEo3prRY/2+hx3NZ/veXVS3M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708081557; c=relaxed/simple;
-	bh=9EwGRDiJUOCQYFRJiAC9JK5wa11kNaXqYFEr9m1LBXI=;
+	s=arc-20240116; t=1708082326; c=relaxed/simple;
+	bh=S1EkBA52eWhaCecQGNHtZp9xi5qzrdx3y2uZlJXx0L4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZHGZacx8oOWd4+HrNjVHu3DvU+W/eInM4wsBtsozQ/RaDjBpnhxcd0q+bkySmvK0mWkOCOqrae+t1nasyPOAVRdGHaudGTUrWYUmj07V3Y9BEKmWrE7OxZAiwVz5bdMI57D0aCFYwKV7ecNh4TmKBe+hT/3Q+A59WPW4n27x2es=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tUr/PeLl; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=g9MfyeOVGo5sHhxC0Rqs85fC95qo9aoyF7EZS+IQPjvAjpEtWweIYlFurTP2qGIaSmlHWx1RwQVY0dIFfcLXvoCoGB2CJeumBVgLXWYwl9rBdHyziAa+/PalgFYXF5HrZ4fzFZWCYhsQ3Juoe/qxbBn/SVxNOMPBrd/PQR9qPcg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=orxKIWYP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tUr/PeLl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7011BC433F1;
-	Fri, 16 Feb 2024 11:05:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="orxKIWYP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E20CC433C7;
+	Fri, 16 Feb 2024 11:18:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1708081556;
-	bh=9EwGRDiJUOCQYFRJiAC9JK5wa11kNaXqYFEr9m1LBXI=;
+	s=k20201202; t=1708082326;
+	bh=S1EkBA52eWhaCecQGNHtZp9xi5qzrdx3y2uZlJXx0L4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=tUr/PeLlXLrcCeA8bz9B7z5OEd4rXjFpW7Jcpru53mBQK0XYTWFg3ovrgPrPj8PII
-	 BsX8YUTpL+Xf2J4nyojXidQ0RNCBnb2P6x7xypkdjCWnpA0f8nP3AbT2lMa9Quela+
-	 /X89F3sPJV9ztGQ0+5hDGDM1O2Cdt8AU+0FXX+dEBqrOeyA+eXfg2p8jWiyD+0Yosz
-	 uzUdXEr73HYuu++3e/2FUDx6ILb6wVPPxGzSvHUTb/+cGUEmgiw8hjwieFJrvQbjHq
-	 ymbNDzYlRCnI8obgptfdqrDhjT0w2zVxLCHZN80HpQ0eG37EOX0MUmK04qcPhtr+3J
-	 t87c6twyf0/lw==
-Date: Fri, 16 Feb 2024 11:05:43 +0000
+	b=orxKIWYP6UjpVOwSkbQiwr3P3yVygztXW3iYoqxagKICMU/E5/BgwSs0K1fkri3c8
+	 pQsVtkNrlkU8XDxks5+LX4of4hAX0fOxzInTofeZOOpdsLHZd5kdFgl0EkpEZAKQ94
+	 ds3GObj+h43xzhR527WpNmrPJGya9oAE5ca5GNNx+5L2neKkg3IX7WGq4d8jWC/YKs
+	 8m7CHsTFjXPzKtye4A+U0OhqzpRDDuWvictq5jrl84c3jF+Rp9re5btlDW89U4a6J1
+	 Ucfsf+R1upYuQJCmlGTog5bd/Wx6Xgoo2UrJsL+CoYuiq0IXUmps+yjEK/eujEl7MC
+	 SF5u87xE+3eug==
+Date: Fri, 16 Feb 2024 11:18:34 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Vasileios Amoiridis <vassilisamir@gmail.com>, lars@metafoo.de,
- ang.iglesiasg@gmail.com, 579lpy@gmail.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
+To: Vasileios Amoiridis <vassilisamir@gmail.com>
+Cc: lars@metafoo.de, ang.iglesiasg@gmail.com,
+ andriy.shevchenko@linux.intel.com, 579lpy@gmail.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] drivers: iio: pressure: Add SPI support for BMP38x and
  BMP390
-Message-ID: <20240216110543.5d6289f6@jic23-huawei>
-In-Reply-To: <Zc5D35_4FdERZXe4@smile.fi.intel.com>
+Message-ID: <20240216111834.73287ab0@jic23-huawei>
+In-Reply-To: <20240215164332.506736-1-vassilisamir@gmail.com>
 References: <20240215164332.506736-1-vassilisamir@gmail.com>
-	<Zc5D35_4FdERZXe4@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,32 +47,128 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 15 Feb 2024 19:03:27 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Thu, 15 Feb 2024 17:43:32 +0100
+Vasileios Amoiridis <vassilisamir@gmail.com> wrote:
 
-> On Thu, Feb 15, 2024 at 05:43:32PM +0100, Vasileios Amoiridis wrote:
-> > According to the datasheet of BMP38x and BMP390 devices, in SPI
-> > operation, the first byte that returns after a read operation is
-> > garbage and it needs to be dropped and return the rest of the
-> > bytes.  
-> 
-> Thank you for the patch, my comments below.
-> 
-> ...
-> 
-> > +static int bmp380_regmap_spi_read(void *context, const void *reg,
-> > +				  size_t reg_size, void *val, size_t val_size)
-> > +{
-> > +	struct spi_device *spi = to_spi_device(context);
-> > +	u8 ret[BMP380_SPI_MAX_REG_COUNT_READ + 1];
-> > +	ssize_t status;
-> > +	u8 buf;  
-> 
-> AFAIU this buffer is not DMA-capable.
+> According to the datasheet of BMP38x and BMP390 devices, in SPI
+> operation, the first byte that returns after a read operation is
+> garbage and it needs to be dropped and return the rest of the
+> bytes.
 
-Doesn't matter in this case as spi_write_then_read() bounces anyway so you don't need
-to provide it with a dma safe buffer. It's in the docs, so we can rely
-on this not changing.
+Make it clear in the patch title that this is a fix and add a fixes tag.
 
-https://elixir.bootlin.com/linux/latest/source/drivers/spi/spi.c#L4391
+> 
+> Signed-off-by: Vasileios Amoiridis <vassilisamir@gmail.com>
+> ---
+>  drivers/iio/pressure/bmp280-spi.c | 47 ++++++++++++++++++++++++++++++-
+>  drivers/iio/pressure/bmp280.h     |  2 ++
+>  2 files changed, 48 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/pressure/bmp280-spi.c b/drivers/iio/pressure/bmp280-spi.c
+> index 433d6fac83c4..c4b4a5d67f94 100644
+> --- a/drivers/iio/pressure/bmp280-spi.c
+> +++ b/drivers/iio/pressure/bmp280-spi.c
+> @@ -35,6 +35,32 @@ static int bmp280_regmap_spi_read(void *context, const void *reg,
+>  	return spi_write_then_read(spi, reg, reg_size, val, val_size);
+>  }
+>  
+> +static int bmp380_regmap_spi_read(void *context, const void *reg,
+> +				  size_t reg_size, void *val, size_t val_size)
+> +{
+> +	struct spi_device *spi = to_spi_device(context);
+> +	u8 ret[BMP380_SPI_MAX_REG_COUNT_READ + 1];
+
+Given you rely on val_size < 3 you should check for that explcitly rather than
+potentially overflowing the buffer.
+ret is not a good naming choice for this variable as it's commonly used for
+integer return values.  Call it read_buf or something like that.
+
+> +	ssize_t status;
+> +	u8 buf;
+> +
+> +	memcpy(&buf, reg, reg_size);
+> +	buf |= 0x80;
+
+Can you use regmap_bus read_flag_mask for this?  Seems to apply to 
+all devices supported. + that's common for spi regmaps
+
+
+Mind you I note the bmp280_regmap_spi_write() is masking the bit out which seems
+backwards  - all the registers are defined with the bit set for that part
+but not the 380.  Ah well - not part of this fix even if it's odd.
+
+
+> +
+> +	/*
+> +	 * According to the BMP380, BMP388, BMP390 datasheets, for a basic
+> +	 * read operation, after the write is done, 2 bytes are received and
+> +	 * the first one has to be dropped. The 2nd one is the requested
+> +	 * value.
+> +	 */
+> +	status = spi_write_then_read(spi, &buf, 1, ret, val_size + 1);
+> +	if (status)
+> +		return status;
+> +
+> +	memcpy(val, ret + 1, val_size);
+> +
+> +	return 0;
+> +}
+> +
+>  static struct regmap_bus bmp280_regmap_bus = {
+>  	.write = bmp280_regmap_spi_write,
+>  	.read = bmp280_regmap_spi_read,
+> @@ -42,10 +68,18 @@ static struct regmap_bus bmp280_regmap_bus = {
+>  	.val_format_endian_default = REGMAP_ENDIAN_BIG,
+>  };
+>  
+> +static struct regmap_bus bmp380_regmap_bus = {
+> +	.write = bmp280_regmap_spi_write,
+> +	.read = bmp380_regmap_spi_read,
+> +	.reg_format_endian_default = REGMAP_ENDIAN_BIG,
+> +	.val_format_endian_default = REGMAP_ENDIAN_BIG,
+> +};
+> +
+>  static int bmp280_spi_probe(struct spi_device *spi)
+>  {
+>  	const struct spi_device_id *id = spi_get_device_id(spi);
+>  	const struct bmp280_chip_info *chip_info;
+> +	struct regmap_bus *bmp_regmap_bus;
+>  	struct regmap *regmap;
+>  	int ret;
+>  
+> @@ -58,8 +92,19 @@ static int bmp280_spi_probe(struct spi_device *spi)
+>  
+>  	chip_info = spi_get_device_match_data(spi);
+>  
+> +	switch (chip_info->chip_id[0]) {
+> +	case BMP380_CHIP_ID:
+> +	case BMP390_CHIP_ID:
+> +		bmp_regmap_bus = &bmp380_regmap_bus;
+> +		break;
+> +	default:
+> +		bmp_regmap_bus = &bmp280_regmap_bus;
+> +		break;
+> +	}
+> +
+> +
+>  	regmap = devm_regmap_init(&spi->dev,
+> -				  &bmp280_regmap_bus,
+> +				  bmp_regmap_bus,
+>  				  &spi->dev,
+>  				  chip_info->regmap_config);
+>  	if (IS_ERR(regmap)) {
+> diff --git a/drivers/iio/pressure/bmp280.h b/drivers/iio/pressure/bmp280.h
+> index 4012387d7956..ca482b7e4295 100644
+> --- a/drivers/iio/pressure/bmp280.h
+> +++ b/drivers/iio/pressure/bmp280.h
+> @@ -191,6 +191,8 @@
+>  #define BMP380_TEMP_SKIPPED		0x800000
+>  #define BMP380_PRESS_SKIPPED		0x800000
+>  
+> +#define BMP380_SPI_MAX_REG_COUNT_READ   3
+This doesn't seem useful as only used in one place.
+> +
+>  /* BMP280 specific registers */
+>  #define BMP280_REG_HUMIDITY_LSB		0xFE
+>  #define BMP280_REG_HUMIDITY_MSB		0xFD
 
