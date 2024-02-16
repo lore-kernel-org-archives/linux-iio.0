@@ -1,55 +1,57 @@
 Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F5FF135A6F
-	for <linux-iio@vger.kernel.org>; Fri, 16 Feb 2024 19:47:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D151137C3E
+	for <linux-iio@vger.kernel.org>; Fri, 16 Feb 2024 19:47:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708112854; cv=none; b=Tgc+4FmcVe6ksHid7MdNnenEti+chtkRifqTSEtRAEGasfNj3si51YfudAMU1ebfbNANUTESR2FcjSNWtgBRiGjPzF8dqQ0w3OXXGyw15W4gwJHb3xfGqoQ2dgt8++sQpxnuFC6dmZtlFaCPudODdWC2QdAgwrNwUXmIDYZRhfk=
+	t=1708112855; cv=none; b=lvhd3zNS2mc3lFHDoqaXecPin7isAuAC4v4dF1PUd4pUKK2xpUuK2/tBnpX+M0xXptc6LsLTFKItdEMKCGlJMpn/+WYDm91AHTDHkYladgwWN1pZvBEYWLlYY9pLLQAsa0jA2Aw3xF0CwbR/JklE2gizdxy64v/5OSwY/d4tQAY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708112854; c=relaxed/simple;
-	bh=SmhWWVRherSSU6IqXDSK9iug5x4NrJoiSZ8Z8ot0gvU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=dRh0OllRXKjVG+54AJUM4fCgmblGHZiT7FFaMQyVgSXZNJ3kF/QC+YQQBE2H0ull64wp/1lC4qFVWm0LwN8qg4tMOXJAKzhfFo1tLMHaf4xrlbhIgR2k820KsC/kV3eZkS1PfygzEtDa3HxDF4fQJwF6UrWm/hJWDxRQ9IMYaXw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=XaPJPgGf; arc=none smtp.client-ip=209.85.167.171
+	s=arc-20240116; t=1708112855; c=relaxed/simple;
+	bh=AntEKfTQteHzkW+1vhWBKmEu/Ds5ibIdpCWRvyGyGLc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=lhTcF4g2fj2/EoENx2CCrCFY7fLgCa0tUUbufAPiHvlHlLKLStWbskMlN6CZ84kuXBpKiTSt5dmMS2qizxYbPjAKm/D14ZIEPwGBtQjVhaaOEGwl+G1KdKXsI4M7IEHLHhPdFBE4RdA9eDLdUtqQAQZJDdI+G6vnrZAa5SrAsd8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=oiEaOOZQ; arc=none smtp.client-ip=209.85.167.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="XaPJPgGf"
-Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-3c02fd8e970so1818884b6e.2
-        for <linux-iio@vger.kernel.org>; Fri, 16 Feb 2024 11:47:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="oiEaOOZQ"
+Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-3bbd6ea06f5so1142893b6e.1
+        for <linux-iio@vger.kernel.org>; Fri, 16 Feb 2024 11:47:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1708112850; x=1708717650; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=aMru+TbGR1l/T6gVtc9rPekac/11roVdl4ywF715rRI=;
-        b=XaPJPgGf6+4DSb+48CZdpb/6zy2dVdfciJU9M7veAukxk21aBXcgBkaBunaxw4qfcW
-         W0qYVl9gm62oIhzFnlZ5XhTja2wncdmkE1XZsIWtAaWtf1ZkO41Di4V2kxnIM88pXz1z
-         6Xzh3kHXkpP51Yl8L41YMZYz6oNMWEP+inW8FzzMjXoGnnRWIh19WaLTIMH//jFxctOv
-         eeX8ORtg2epRipILHtgKvNjmckzOz+MOMW0XRVIyEDvU+tOv7tVcOrNC1LXpml2IPcmX
-         jasxzHnKIIr+gzmQHKew39h9Jw2d6+ueP8CXz3wt4jKll7oQy3D8kj1JlpQqnHYonmDl
-         RBpQ==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1708112852; x=1708717652; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xRtKh4RODB9L+oZp0KPmPHkY5ycQGObJCZaXBamZMjw=;
+        b=oiEaOOZQZGwymSuwPymsZW3ohHE4ZYVwpRp6EOvWQQI4wty65NTO+0Dx8/vZt/LpUM
+         rkU4eX/fHQpccPqEhblPRsmDXIzsmkcMxH18VZP2tJqHM/5mRhqchEAUGSYz8r4rB0/g
+         yWgd8/cqr3g1Mspgui8jq5gBo6vLykgH8yeFiY3EsLirOHjprbtiyy0zkWdWs0mhp0sU
+         ASKQbnuuLnb1a165WsFiPqJgM4QZ0lV+jTolGN+8heYrJxp/fGQoGgd5pIWc42UPtZCI
+         YpF2Mn+elEKSlQIRyNav7b/uaeBx9toghFxBHysoyMgrTHFaHliDNgxqAQty4B1OUhC6
+         rtmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708112850; x=1708717650;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=aMru+TbGR1l/T6gVtc9rPekac/11roVdl4ywF715rRI=;
-        b=pg+m2wUE846A7Y146EbL469DaGxUrf00eZChcAE2o7r5ka1QZYJAwHrHu8+pHjfKhV
-         aBt6KlHin/oHDMxgvWcxFYKH8HEtHHcLUa3HROyLn72PadJJurqExgxlD1as3vrkqfze
-         KmHTRk3emU1aedlZpJqxTI7FlobDpF/xW0MSWzJG8IVbfV+uGBw5lhwvjtVvIcz4ToEn
-         b7bGAI4v5uEfTE2kH+a06ShxoKJPBL3t+HeDGHE9dHc/QQF6MiX+ENllyC7jLDd73RLT
-         8KMiyAHTxkW6/NmjiKjDGmsITbOvlyHCj8UEwOMCIE1yVL87eCJCefg8KVMSMVotwH7I
-         d9hw==
-X-Gm-Message-State: AOJu0Yy/LE676ks1097LTIR2N2HXL40VG3X8mv9Csb2B7soRVODbqOeq
-	Zce0llPimnthYmDhBLJKCLDrcSUmBMhWoI52OXnlZxhmz3W2LSYh7/o0IXweOB6ibBF5UdGikm/
-	x
-X-Google-Smtp-Source: AGHT+IGJBZrYvbYX0IG7bRqDEFfE5DW3EZ9u9PL8550Cr0O0GrdlPovf38xkFRfX8pcp2zGtIU7kIA==
-X-Received: by 2002:a05:6808:f91:b0:3c1:3d7f:5363 with SMTP id o17-20020a0568080f9100b003c13d7f5363mr3720080oiw.36.1708112850496;
-        Fri, 16 Feb 2024 11:47:30 -0800 (PST)
+        d=1e100.net; s=20230601; t=1708112852; x=1708717652;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=xRtKh4RODB9L+oZp0KPmPHkY5ycQGObJCZaXBamZMjw=;
+        b=n+Gn6kibvCST7GgMKVHTl53f/QGZpd7cMvixI6uDv2xWzyUtfC2XMTyA98Q0UJ3WVB
+         SMcO01Ek20zvjo3O/+euQN5/d2VjA8LbMQi1vf58tzjLoaEi2LJ02B7dDd79h3Yn/yJg
+         cByoZnzKUFa8nsV8mVKJsIa6sTzxekd1cS/dgKhdL34GB8rYmiSuVWSFIYSJ4yifbieg
+         ahHg5tjRlD6w34ML65ImoETnNUDxQRb5HPjQm5fEAN0m4C0ZYhdLpBgC0aox4MnlcNtI
+         OulqlUUiYsza+k6vF2/Eeeo/uobtBVZf3IWs7zXDvlX7BbXqEz/ZHdAXsQB2wppNpDPP
+         OtUA==
+X-Gm-Message-State: AOJu0YxtUo58211zzeyntaV0ak8wJa3zd4TObV1DA6wZSCmlO7sjfxYO
+	qtyUkG/DK0s81BboTFbrfx+GmbyAP35+ASqu0JrpSkSjREFUhV7O0Ajek9n9J7a1lKKwEjq8KQk
+	1
+X-Google-Smtp-Source: AGHT+IGwbr2+djs1jFQKjChk8lUoMgGjmi6A8tfKctAGYOl57ERqel0db8QI1i+6AXaipBsIZjAVcw==
+X-Received: by 2002:a05:6808:187:b0:3c0:33cc:3a36 with SMTP id w7-20020a056808018700b003c033cc3a36mr3936856oic.6.1708112852440;
+        Fri, 16 Feb 2024 11:47:32 -0800 (PST)
 Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id cg10-20020a056808328a00b003c136d7ed2dsm83412oib.43.2024.02.16.11.47.29
+        by smtp.gmail.com with ESMTPSA id cg10-20020a056808328a00b003c136d7ed2dsm83412oib.43.2024.02.16.11.47.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Feb 2024 11:47:29 -0800 (PST)
+        Fri, 16 Feb 2024 11:47:31 -0800 (PST)
 From: David Lechner <dlechner@baylibre.com>
 To: linux-iio@vger.kernel.org
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -63,10 +65,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	Mark Brown <broonie@kernel.org>,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/2] iio: adc: ad7944: new driver
-Date: Fri, 16 Feb 2024 13:46:17 -0600
-Message-ID: <20240216-ad7944-mainline-v2-0-7eb69651e592@baylibre.com>
+Subject: [PATCH v2 2/2] iio: adc: ad7944: add driver for AD7944/AD7985/AD7986
+Date: Fri, 16 Feb 2024 13:46:19 -0600
+Message-ID: <20240216-ad7944-mainline-v2-2-7eb69651e592@baylibre.com>
 X-Mailer: git-send-email 2.43.2
+In-Reply-To: <20240216-ad7944-mainline-v2-0-7eb69651e592@baylibre.com>
+References: <20240216-ad7944-mainline-v2-0-7eb69651e592@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,40 +81,501 @@ Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.12.4
 Content-Transfer-Encoding: 8bit
 
-This is a new driver for the Analog Devices AD7944/AD7985/AD7986 family
-of ADCs. These are fairly simple chips (e.g. no configuration registers).
-The initial driver is only supporting the 'multi' (4-wire) SPI mode. We
-plan to follow up with support for the 'single' (3-wire) SPI mode.
+This adds a driver for the Analog Devices Inc. AD7944, AD7985, and
+AD7986 ADCs. These are a family of pin-compatible ADCs that can sample
+at rates up to 2.5 MSPS.
 
-This work is done on behalf of Analog Devices, Inc., hence the
-MAINTAINERS are @analog.com folks.
+The initial driver adds support for sampling at lower rates using the
+usual IIO triggered buffer and can handle all 3 possible reference
+voltage configurations.
 
+Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
-Changes in v2:
-- Added limit to spi-max-frequency for chain mode in DT bindings
-- Added spi-cpol property to DT bindings
-- Renamed '3-wire' mode to 'single' mode (to avoid confusion with spi-3wire)
-- Renamed '4-wire' mode to 'multi' mode
-- Dropped adi,reference property - now using only ref-supply and 
-  refin-supply to determine the reference voltage source
-- Fixed spelling of TURBO
-- Renamed t_cnv to t_conv to match datasheet name and fixed comment
-- Fixed wrong timestamp pushed to buffer
-- Fixed scaling for chips with signed data
-- Make use of sysfs_match_string() function
-- Link to v1: https://lore.kernel.org/r/20240206-ad7944-mainline-v1-0-bf115fa9474f@baylibre.com
+ MAINTAINERS              |   1 +
+ drivers/iio/adc/Kconfig  |  10 ++
+ drivers/iio/adc/Makefile |   1 +
+ drivers/iio/adc/ad7944.c | 427 +++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 439 insertions(+)
 
----
-David Lechner (2):
-      dt-bindings: iio: adc: add ad7944 ADCs
-      iio: adc: ad7944: add driver for AD7944/AD7985/AD7986
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 4f1e658e1e0d..83d8367595f1 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -458,6 +458,7 @@ R:	David Lechner <dlechner@baylibre.com>
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/adc/adi,ad7944.yaml
++F:	drivers/iio/adc/ad7944.c
+ 
+ ADAFRUIT MINI I2C GAMEPAD
+ M:	Anshul Dalal <anshulusr@gmail.com>
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 59ae1d17b50d..93fbe6f8e306 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -280,6 +280,16 @@ config AD7923
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7923.
+ 
++config AD7944
++	tristate "Analog Devices AD7944 and similar ADCs driver"
++	depends on SPI
++	help
++	  Say yes here to build support for Analog Devices
++	  AD7944, AD7985, AD7986 ADCs.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7944
++
+ config AD7949
+ 	tristate "Analog Devices AD7949 and similar ADCs driver"
+ 	depends on SPI
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 5a26ab6f1109..52d803b92cd7 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -29,6 +29,7 @@ obj-$(CONFIG_AD7780) += ad7780.o
+ obj-$(CONFIG_AD7791) += ad7791.o
+ obj-$(CONFIG_AD7793) += ad7793.o
+ obj-$(CONFIG_AD7887) += ad7887.o
++obj-$(CONFIG_AD7944) += ad7944.o
+ obj-$(CONFIG_AD7949) += ad7949.o
+ obj-$(CONFIG_AD799X) += ad799x.o
+ obj-$(CONFIG_AD9467) += ad9467.o
+diff --git a/drivers/iio/adc/ad7944.c b/drivers/iio/adc/ad7944.c
+new file mode 100644
+index 000000000000..d1964ef02fb5
+--- /dev/null
++++ b/drivers/iio/adc/ad7944.c
+@@ -0,0 +1,427 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Analog Devices AD7944/85/86 PulSAR ADC family driver.
++ *
++ * Copyright 2024 Analog Devices, Inc.
++ * Copyright 2024 BayLibre, SAS
++ */
++
++#include <linux/bitfield.h>
++#include <linux/bitops.h>
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/gpio/consumer.h>
++#include <linux/module.h>
++#include <linux/property.h>
++#include <linux/regulator/consumer.h>
++#include <linux/spi/spi.h>
++#include <linux/string_helpers.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
++#define AD7944_INTERNAL_REF_MV		4096
++
++enum ad7944_spi_mode {
++	/* datasheet calls this 3-wire mode */
++	AD7944_SPI_MODE_SINGLE,
++	/* datasheet calls this 4-wire mode */
++	AD7944_SPI_MODE_MULTI,
++	/* datasheet calls this chain mode */
++	AD7944_SPI_MODE_CHAIN,
++};
++
++struct ad7944_timing_spec {
++	/* Normal mode max conversion time (t_{CONV}) in nanoseconds. */
++	unsigned int conv_ns;
++	/* TURBO mode max conversion time (t_{CONV}) in nanoseconds. */
++	unsigned int turbo_conv_ns;
++};
++
++struct ad7944_adc {
++	struct spi_device *spi;
++	/* Chip-specific timing specifications. */
++	const struct ad7944_timing_spec *t;
++	/* GPIO connected to CNV pin. */
++	struct gpio_desc *cnv;
++	/* Optional GPIO to enable turbo mode. */
++	struct gpio_desc *turbo;
++	/* Indicates TURBO is hard-wired to be always enabled. */
++	bool always_turbo;
++	/* Reference voltage (millivolts). */
++	unsigned int ref_mv;
++
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++	struct {
++		union {
++			u16 u16;
++			u32 u32;
++		} raw;
++		u64 timestamp __aligned(8);
++	 } sample __aligned(IIO_DMA_MINALIGN);
++};
++
++static const struct ad7944_timing_spec ad7944_timing_spec = {
++	.conv_ns = 420,
++	.turbo_conv_ns = 320,
++};
++
++static const struct ad7944_timing_spec ad7986_timing_spec = {
++	.conv_ns = 500,
++	.turbo_conv_ns = 400,
++};
++
++struct ad7944_chip_info {
++	const char *name;
++	const struct ad7944_timing_spec *t;
++	const struct iio_chan_spec channels[2];
++};
++
++#define AD7944_DEFINE_CHIP_INFO(_name, _t, _bits, _sign)		\
++static const struct ad7944_chip_info _name##_chip_info = {		\
++	.name = #_name,							\
++	.t = &_t##_timing_spec,						\
++	.channels = {							\
++		{							\
++			.type = IIO_VOLTAGE,				\
++			.indexed = 1,					\
++			.differential = 1,				\
++			.channel = 0,					\
++			.channel2 = 1,					\
++			.scan_index = 0,				\
++			.scan_type.sign = _sign,			\
++			.scan_type.realbits = _bits,			\
++			.scan_type.storagebits = _bits > 16 ? 32 : 16,	\
++			.scan_type.endianness = IIO_CPU,		\
++			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)	\
++					| BIT(IIO_CHAN_INFO_SCALE),	\
++		},							\
++		IIO_CHAN_SOFT_TIMESTAMP(1),				\
++	},								\
++}
++
++AD7944_DEFINE_CHIP_INFO(ad7944, ad7944, 14, 'u');
++AD7944_DEFINE_CHIP_INFO(ad7985, ad7944, 16, 'u');
++AD7944_DEFINE_CHIP_INFO(ad7986, ad7986, 18, 's');
++
++static const char * const ad7944_spi_modes[] = {
++	[AD7944_SPI_MODE_SINGLE] = "single",
++	[AD7944_SPI_MODE_MULTI] = "multi",
++	[AD7944_SPI_MODE_CHAIN] = "chain",
++};
++
++/**
++ * ad7944_multi_mode_conversion - Perform a multi (4-wire) mode conversion and
++ *                                acquisition
++ * @adc: The ADC device structure
++ * @chan: The channel specification
++ * Return: 0 on success, a negative error code on failure
++ *
++ * Upon successful return adc->sample.raw will contain the conversion result.
++ */
++static int ad7944_multi_mode_conversion(struct ad7944_adc *adc,
++					 const struct iio_chan_spec *chan)
++{
++	unsigned int t_conv_ns = adc->always_turbo ? adc->t->turbo_conv_ns
++						   : adc->t->conv_ns;
++	struct spi_transfer xfers[] = {
++		{
++			/*
++			 * NB: can get better performance from some SPI
++			 * controllers if we use the same bits_per_word
++			 * in every transfer.
++			 */
++			.bits_per_word = chan->scan_type.realbits,
++			/*
++			 * CS has to be high for full conversion time to avoid
++			 * triggering the busy indication.
++			 */
++			.cs_off = 1,
++			.delay = {
++				.value = t_conv_ns,
++				.unit = SPI_DELAY_UNIT_NSECS,
++			},
++
++		},
++		{
++			.rx_buf = &adc->sample.raw,
++			.len = BITS_TO_BYTES(chan->scan_type.storagebits),
++			.bits_per_word = chan->scan_type.realbits,
++		},
++	};
++	int ret;
++
++	/*
++	 * In 4-wire mode, the CNV line is held high for the entire conversion
++	 * and acquisition process.
++	 */
++	gpiod_set_value_cansleep(adc->cnv, 1);
++
++	ret = spi_sync_transfer(adc->spi, xfers, ARRAY_SIZE(xfers));
++	if (ret)
++		return ret;
++
++	gpiod_set_value_cansleep(adc->cnv, 0);
++
++	return 0;
++}
++
++static int ad7944_single_conversion(struct ad7944_adc *adc,
++				    const struct iio_chan_spec *chan,
++				    int *val)
++{
++	int ret;
++
++	ret = ad7944_multi_mode_conversion(adc, chan);
++	if (ret)
++		return ret;
++
++	if (chan->scan_type.storagebits > 16)
++		*val = adc->sample.raw.u32;
++	else
++		*val = adc->sample.raw.u16;
++
++	if (chan->scan_type.sign == 's')
++		*val = sign_extend32(*val, chan->scan_type.realbits - 1);
++
++	return IIO_VAL_INT;
++}
++
++static int ad7944_read_raw(struct iio_dev *indio_dev,
++			   const struct iio_chan_spec *chan,
++			   int *val, int *val2, long info)
++{
++	struct ad7944_adc *adc = iio_priv(indio_dev);
++	int ret;
++
++	switch (info) {
++	case IIO_CHAN_INFO_RAW:
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
++
++		ret = ad7944_single_conversion(adc, chan, val);
++		iio_device_release_direct_mode(indio_dev);
++		return ret;
++
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_VOLTAGE:
++			*val = adc->ref_mv;
++			if (chan->scan_type.sign == 's')
++				*val2 = chan->scan_type.realbits - 1;
++			else
++				*val2 = chan->scan_type.realbits;
++
++			return IIO_VAL_FRACTIONAL_LOG2;
++		default:
++			return -EINVAL;
++		}
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info ad7944_iio_info = {
++	.read_raw = &ad7944_read_raw,
++};
++
++static irqreturn_t ad7944_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ad7944_adc *adc = iio_priv(indio_dev);
++	int ret;
++
++	ret = ad7944_multi_mode_conversion(adc, &indio_dev->channels[0]);
++	if (ret)
++		goto out;
++
++	iio_push_to_buffers_with_timestamp(indio_dev, &adc->sample.raw,
++					   pf->timestamp);
++
++out:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static const char * const ad7944_power_supplies[] = {
++	"avdd",	"dvdd",	"bvdd", "vio"
++};
++
++static void ad7944_ref_disable(void *ref)
++{
++	regulator_disable(ref);
++}
++
++static int ad7944_probe(struct spi_device *spi)
++{
++	const struct ad7944_chip_info *chip_info;
++	enum ad7944_spi_mode spi_mode;
++	struct iio_dev *indio_dev;
++	struct ad7944_adc *adc;
++	bool have_refin = false;
++	struct regulator *ref;
++	const char *str_val;
++	int ret;
++
++	/* adi,spi-mode property defaults to "multi" if not present */
++	if (device_property_read_string(&spi->dev, "adi,spi-mode", &str_val) < 0)
++		str_val = "multi";
++
++	spi_mode = sysfs_match_string(ad7944_spi_modes, str_val);
++
++	if (spi_mode != AD7944_SPI_MODE_MULTI)
++		return dev_err_probe(&spi->dev, -EINVAL,
++			"only adi,spi-mode = \"multi\" is currently supported\n");
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	adc = iio_priv(indio_dev);
++	adc->spi = spi;
++
++	chip_info = spi_get_device_match_data(spi);
++	if (!chip_info)
++		return dev_err_probe(&spi->dev, -EINVAL, "no chip info\n");
++
++	adc->t = chip_info->t;
++
++	/*
++	 * Some chips use unusual word sizes, so check now instead of waiting
++	 * for the first xfer.
++	 */
++	if (!spi_is_bpw_supported(spi, chip_info->channels[0].scan_type.realbits))
++		return dev_err_probe(&spi->dev, -EINVAL,
++				"SPI host does not support %d bits per word\n",
++				chip_info->channels[0].scan_type.realbits);
++
++	ret = devm_regulator_bulk_get_enable(&spi->dev,
++					     ARRAY_SIZE(ad7944_power_supplies),
++					     ad7944_power_supplies);
++	if (ret)
++		return dev_err_probe(&spi->dev, ret,
++				     "failed to get and enable supplies\n");
++
++	/*
++	 * Sort out what is being used for the reference voltage. Options are:
++	 * - internal reference: neither REF or REFIN is connected
++	 * - internal reference with external buffer: REF not connected, REFIN
++	 *   is connected
++	 * - external reference: REF is connected, REFIN is not connected
++	 */
++
++	ref = devm_regulator_get_optional(&spi->dev, "ref");
++	if (IS_ERR(ref)) {
++		if (PTR_ERR(ref) != -ENODEV)
++			ref = NULL;
++		else
++			return dev_err_probe(&spi->dev, PTR_ERR(ref),
++					     "failed to get REF supply\n");
++	}
++
++	ret = devm_regulator_get_enable_optional(&spi->dev, "refin");
++	if (ret == 0)
++		have_refin = true;
++	else if (ret != -ENODEV)
++		return dev_err_probe(&spi->dev, ret,
++				     "failed to get and enable REFIN supply\n");
++
++	if (have_refin && ref)
++		return dev_err_probe(&spi->dev, -EINVAL,
++				     "cannot have both refin and ref supplies\n");
++
++	if (ref) {
++		ret = regulator_enable(ref);
++		if (ret)
++			return dev_err_probe(&spi->dev, ret,
++					     "failed to enable REF supply\n");
++
++		ret = devm_add_action_or_reset(&spi->dev,
++						ad7944_ref_disable, ref);
++		if (ret)
++			return ret;
++
++		ret = regulator_get_voltage(ref);
++		if (ret < 0)
++			return dev_err_probe(&spi->dev, ret,
++					     "failed to get REF voltage\n");
++
++		/* external reference */
++		adc->ref_mv = ret / 1000;
++	} else {
++		/* internal reference */
++		adc->ref_mv = AD7944_INTERNAL_REF_MV;
++	}
++
++	adc->cnv = devm_gpiod_get(&spi->dev, "cnv", GPIOD_OUT_LOW);
++	if (IS_ERR(adc->cnv))
++		return dev_err_probe(&spi->dev, PTR_ERR(adc->cnv),
++				     "failed to get CNV GPIO\n");
++
++	adc->turbo = devm_gpiod_get_optional(&spi->dev, "turbo", GPIOD_OUT_LOW);
++	if (IS_ERR(adc->turbo))
++		return dev_err_probe(&spi->dev, PTR_ERR(adc->turbo),
++				     "failed to get TURBO GPIO\n");
++
++	if (device_property_present(&spi->dev, "adi,always-turbo"))
++		adc->always_turbo = true;
++
++	if (adc->turbo && adc->always_turbo)
++		return dev_err_probe(&spi->dev, -EINVAL,
++			"cannot have both turbo-gpios and adi,always-turbo\n");
++
++	indio_dev->name = chip_info->name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &ad7944_iio_info;
++	indio_dev->channels = chip_info->channels;
++	indio_dev->num_channels = ARRAY_SIZE(chip_info->channels);
++
++	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
++					      iio_pollfunc_store_time,
++					      ad7944_trigger_handler, NULL);
++	if (ret)
++		return ret;
++
++	return devm_iio_device_register(&spi->dev, indio_dev);
++}
++
++static const struct of_device_id ad7944_of_match[] = {
++	{ .compatible = "adi,ad7944", .data = &ad7944_chip_info },
++	{ .compatible = "adi,ad7985", .data = &ad7985_chip_info },
++	{ .compatible = "adi,ad7986", .data = &ad7986_chip_info },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ad7944_of_match);
++
++static const struct spi_device_id ad7944_spi_id[] = {
++	{ "ad7944", (kernel_ulong_t)&ad7944_chip_info },
++	{ "ad7985", (kernel_ulong_t)&ad7985_chip_info },
++	{ "ad7986", (kernel_ulong_t)&ad7986_chip_info },
++	{ }
++
++};
++MODULE_DEVICE_TABLE(spi, ad7944_spi_id);
++
++static struct spi_driver ad7944_driver = {
++	.driver = {
++		.name = "ad7944",
++		.of_match_table = ad7944_of_match,
++	},
++	.probe = ad7944_probe,
++	.id_table = ad7944_spi_id,
++};
++module_spi_driver(ad7944_driver);
++
++MODULE_AUTHOR("David Lechner <dlechner@baylibre.com>");
++MODULE_DESCRIPTION("Analog Devices AD7944 PulSAR ADC family driver");
++MODULE_LICENSE("GPL");
 
- .../devicetree/bindings/iio/adc/adi,ad7944.yaml    | 204 ++++++++++
- MAINTAINERS                                        |   9 +
- drivers/iio/adc/Kconfig                            |  10 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/ad7944.c                           | 427 +++++++++++++++++++++
- 5 files changed, 651 insertions(+)
----
-base-commit: bd2f1ed8873d4bbb2798151bbe28c86565251cfb
-change-id: 20240206-ad7944-mainline-17c968aa0967
+-- 
+2.43.2
+
