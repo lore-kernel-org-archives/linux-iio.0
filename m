@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF7CB12E1E8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF82312EBC3
 	for <linux-iio@vger.kernel.org>; Fri, 16 Feb 2024 14:11:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708092690; cv=none; b=TkSM7ntC2ptyjzvpvvpM8rV0lpS/DEJkkQ6HBx3RBu+U90o8/2Xkto7Q9/kB+EgzYn+1FEjmSEf8eyUKT7cg2r9CRgY1mGmBGBHa71BkQCCKZmuFSbnG6tpqe6/f5kRQCvAr0abgRivHJmTd1OtH8oobdt3jqNkXZR3kmXyShIM=
+	t=1708092690; cv=none; b=ZiKv0QvaBRS51zZxJguCZjQUhFDfaB/c6NmFsrCGA43futFiG/p3uWl5unhsHFSUThH9yYjLr6P0i/ES7sYPi6re2jlVHqBPbElLM71dmMEskMjOHyOkg/he3LSrImOcyN4SCWzjBUopuQ3G27IXoB8FAREMBCPJFhgqAqlc5cc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1708092690; c=relaxed/simple;
-	bh=K1bI3qSBsID6idTEBGaHrKCumxe2K3HYxfybRHk0M40=;
+	bh=zbYdxYyLR1xJLzpkg8i7cPdJipb8RgdsnXGGrxP71ys=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Dbfde9L0rWJLBKma9/lxez19WV5gAJ/BxBfnRjStCKti32Q4iUG/87mkdinfExulluOsszfmR8YfIAtv5dh+OCa3bd98NIVs1Bi3PofvLGbqREgAC8KKeqpmAaGkzkvw4YnQk7+xT+XLKZkK7wgBM3aRIA0xQ1xh5V2Jnz0d2eE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kkX3of4i; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=ovSiv9/O1qw03Gnpw/e9DQCrlG2G8mDsxOXgHg9Q3PeePSGnC+pT7vQX/YWrCUlL8q5SoOQWpPe74iUhm64v2L3LGAag4acj6pOox30KCJq5N5JNl8cGgSJon1P/Ns6XVwDRsNU+HL4eyVKgCXASK1vt3sWuOJUyXLKkytqIvZY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qtdhKqb5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kkX3of4i"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5D9A7C43399;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qtdhKqb5"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 769CFC43330;
 	Fri, 16 Feb 2024 14:11:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1708092689;
-	bh=K1bI3qSBsID6idTEBGaHrKCumxe2K3HYxfybRHk0M40=;
+	bh=zbYdxYyLR1xJLzpkg8i7cPdJipb8RgdsnXGGrxP71ys=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=kkX3of4i9NyPcU48ivH5plMUxwLJV7FP3BupktQLCSV2JRED3kC1dcwhUbAibkYRo
-	 xbtT+pmjjUqqqpPb0M7PMWTiygy0dYLqyXhbDi2+OcdQ4OXoPb2ZSuKLNLIqhJ8rvc
-	 VGkATHUXcvdUVqwDf1QCV8KNRwMyQR2uW7gqNm1dyYrgiCrgBKGQxhqg5CEWgpPtDB
-	 jo5Q743uxJttlMNtGRXRxmqvcK3Z7PwHroGyxsxsGc3y4wsM7YalNX+lQZ2VRL0C/v
-	 3IrLuweZ9+C/ysZZ43aZnCfcCQOvWU28ITjKn4J4W+ySNMqYuAv/BmfxG/9tLG6Jg7
-	 ppeu6RfeET3cg==
+	b=qtdhKqb5Fy2YWKTGNn6khEu51azIqs7VD/y3QXxJ4sVYf3tKIBYiNbY9TNo1Dusql
+	 mJNx5GSaExONln1oCTZ1cPKS7+UL+AaW2ROcnYEblhJrnZ99SvXVHc0Eq/uYcVZXrh
+	 E1F2FndveXs3o5yJfcfMuvdy9yk4DG+D8Nowv+3mnF9yDDCf3SDqKrwL/BYhJPpfw+
+	 6HRFU0hGxUpRj0/xIxhA3b25eq3xe5LlBPgZsAj0VjsdUlLltHL/isxrLPuQ3MyJa/
+	 VMBbUZCWKcZv+2rm/ZKnWogojxdCl+/a2cljIObCfYmTi0UNcjb6FzgwRjFM6TGFrU
+	 ML6OnkSEdossg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D088C48BF6;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A66C48260;
 	Fri, 16 Feb 2024 14:11:29 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Fri, 16 Feb 2024 15:10:52 +0100
-Subject: [PATCH RFC 3/8] iio: buffer-dma: Enable buffer write support
+Date: Fri, 16 Feb 2024 15:10:55 +0100
+Subject: [PATCH RFC 6/8] iio: backend: add new backend ops
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,22 +40,20 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240216-iio-backend-axi-dds-v1-3-22aed9fb07a1@analog.com>
+Message-Id: <20240216-iio-backend-axi-dds-v1-6-22aed9fb07a1@analog.com>
 References: <20240216-iio-backend-axi-dds-v1-0-22aed9fb07a1@analog.com>
 In-Reply-To: <20240216-iio-backend-axi-dds-v1-0-22aed9fb07a1@analog.com>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>, 
  Olivier Moysan <olivier.moysan@foss.st.com>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Paul Cercueil <paul@crapouillou.net>, 
- Alexandru Ardelean <ardeleanalex@gmail.com>
+ Michael Hennerich <Michael.Hennerich@analog.com>
 X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1708092664; l=6566;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1708092664; l=8015;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=L8Ql02GphZ76a78MQMNepoZSe0z1Oo9UelhjeRQ/JC8=;
- b=wVKa+4l8K+gInZdPI43AQx55LuIW2RzzX2POck+SSNsQFlonW2fbmd1laR6qhF7IuxLzdWfij
- k/EUH0EKPiFAkHfaWoOp0OnRnYadULH7RQuNz/mH/kcF8hn5Gi8WXBf
+ bh=rN0QCjqlMVi6zhSqFla2kqXViqpt4/ebJYdlaVhTU4w=;
+ b=tWjrufsIIy7RSRrg6PW8H8zFeFPTk1jCjL2uOcJrCQVney0BQhF3jSZch1Rk+J6TjZXXxvEUa
+ JR74dN65SzwAYXrXmQeQz6bdXeBGRbjnz/Q/1/cH1LGxMOKyRj06dJJ
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received:
@@ -63,189 +61,213 @@ X-Endpoint-Received:
 X-Original-From: Nuno Sa <nuno.sa@analog.com>
 Reply-To: <nuno.sa@analog.com>
 
-From: Paul Cercueil <paul@crapouillou.net>
+From: Nuno Sa <nuno.sa@analog.com>
 
-Adding write support to the buffer-dma code is easy - the write()
-function basically needs to do the exact same thing as the read()
-function: dequeue a block, read or write the data, enqueue the block
-when entirely processed.
+The following new ops are being added:
+- iio_backend_data_source_set()
+- iio_backend_read_phase()
+- iio_backend_write_phase()
+- iio_backend_read_scale()
+- iio_backend_write_scale()
+- iio_backend_read_frequency()
+- iio_backend_write_frequency()
 
-Therefore, the iio_buffer_dma_read() and the new iio_buffer_dma_write()
-now both call a function iio_buffer_dma_io(), which will perform this
-task.
+The new iio_backend_data_source_set() allows to select the data source
+on a backend. It can for example be used when enabling/disabling a
+buffer to mux between different data sources.
 
-Note that we preemptively reset block->bytes_used to the buffer's size
-in iio_dma_buffer_request_update(), as in the future the
-iio_dma_buffer_enqueue() function won't reset it.
+The rest of the APIs mostly resemble (apart from read/write frequency
+which have a couple of new arguments) the typical read/write raw
+functions (but fine grained for a specific attribute).
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/buffer/industrialio-buffer-dma.c | 89 +++++++++++++++++++++++-----
- include/linux/iio/buffer-dma.h               |  2 +
- 2 files changed, 75 insertions(+), 16 deletions(-)
+ drivers/iio/industrialio-backend.c | 65 ++++++++++++++++++++++++++++++++++++++
+ include/linux/iio/backend.h        | 53 ++++++++++++++++++++++++++++++-
+ 2 files changed, 117 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
-index 404f9867bdc5..29cc3083cb7e 100644
---- a/drivers/iio/buffer/industrialio-buffer-dma.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dma.c
-@@ -195,6 +195,18 @@ static void _iio_dma_buffer_block_done(struct iio_dma_buffer_block *block)
- 		block->state = IIO_BLOCK_STATE_DONE;
- }
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index 2fea2bbbe47f..bf26c41872ca 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -43,6 +43,7 @@
+ #include <linux/types.h>
  
-+static void iio_dma_buffer_queue_wake(struct iio_dma_buffer_queue *queue)
+ #include <linux/iio/backend.h>
++#include <linux/iio/iio.h>
+ 
+ struct iio_backend {
+ 	struct list_head entry;
+@@ -186,6 +187,16 @@ int iio_backend_data_format_set(struct iio_backend *back, unsigned int chan,
+ }
+ EXPORT_SYMBOL_NS_GPL(iio_backend_data_format_set, IIO_BACKEND);
+ 
++int iio_backend_data_source_set(struct iio_backend *back, unsigned int chan,
++				enum iio_backend_data_source data)
 +{
-+	__poll_t flags;
++	if (data >= IIO_BACKEND_DATA_SOURCE_MAX)
++		return -EINVAL;
 +
-+	if (queue->buffer.direction == IIO_BUFFER_DIRECTION_IN)
-+		flags = EPOLLIN | EPOLLRDNORM;
-+	else
-+		flags = EPOLLOUT | EPOLLWRNORM;
-+
-+	wake_up_interruptible_poll(&queue->buffer.pollq, flags);
++	return iio_backend_op_call(back, data_source_set, chan, data);
 +}
++EXPORT_SYMBOL_NS_GPL(iio_backend_data_source_set, IIO_BACKEND);
 +
- /**
-  * iio_dma_buffer_block_done() - Indicate that a block has been completed
-  * @block: The completed block
-@@ -212,7 +224,7 @@ void iio_dma_buffer_block_done(struct iio_dma_buffer_block *block)
- 	spin_unlock_irqrestore(&queue->list_lock, flags);
- 
- 	iio_buffer_block_put_atomic(block);
--	wake_up_interruptible_poll(&queue->buffer.pollq, EPOLLIN | EPOLLRDNORM);
-+	iio_dma_buffer_queue_wake(queue);
- }
- EXPORT_SYMBOL_GPL(iio_dma_buffer_block_done);
- 
-@@ -241,7 +253,7 @@ void iio_dma_buffer_block_list_abort(struct iio_dma_buffer_queue *queue,
- 	}
- 	spin_unlock_irqrestore(&queue->list_lock, flags);
- 
--	wake_up_interruptible_poll(&queue->buffer.pollq, EPOLLIN | EPOLLRDNORM);
-+	iio_dma_buffer_queue_wake(queue);
- }
- EXPORT_SYMBOL_GPL(iio_dma_buffer_block_list_abort);
- 
-@@ -335,8 +347,24 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
- 			queue->fileio.blocks[i] = block;
- 		}
- 
--		block->state = IIO_BLOCK_STATE_QUEUED;
--		list_add_tail(&block->head, &queue->incoming);
-+		/*
-+		 * block->bytes_used may have been modified previously, e.g. by
-+		 * iio_dma_buffer_block_list_abort(). Reset it here to the
-+		 * block's so that iio_dma_buffer_io() will work.
-+		 */
-+		block->bytes_used = block->size;
-+
-+		/*
-+		 * If it's an input buffer, mark the block as queued, and
-+		 * iio_dma_buffer_enable() will submit it. Otherwise mark it as
-+		 * done, which means it's ready to be dequeued.
-+		 */
-+		if (queue->buffer.direction == IIO_BUFFER_DIRECTION_IN) {
-+			block->state = IIO_BLOCK_STATE_QUEUED;
-+			list_add_tail(&block->head, &queue->incoming);
-+		} else {
-+			block->state = IIO_BLOCK_STATE_DONE;
-+		}
- 	}
- 
- out_unlock:
-@@ -488,20 +516,12 @@ static struct iio_dma_buffer_block *iio_dma_buffer_dequeue(
- 	return block;
- }
- 
--/**
-- * iio_dma_buffer_read() - DMA buffer read callback
-- * @buffer: Buffer to read form
-- * @n: Number of bytes to read
-- * @user_buffer: Userspace buffer to copy the data to
-- *
-- * Should be used as the read callback for iio_buffer_access_ops
-- * struct for DMA buffers.
-- */
--int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
--	char __user *user_buffer)
-+static int iio_dma_buffer_io(struct iio_buffer *buffer, size_t n,
-+			     char __user *user_buffer, bool is_from_user)
+ static void iio_backend_free_buffer(void *arg)
  {
- 	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
- 	struct iio_dma_buffer_block *block;
-+	void *addr;
- 	int ret;
- 
- 	if (n < buffer->bytes_per_datum)
-@@ -524,8 +544,13 @@ int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
- 	n = rounddown(n, buffer->bytes_per_datum);
- 	if (n > block->bytes_used - queue->fileio.pos)
- 		n = block->bytes_used - queue->fileio.pos;
-+	addr = block->vaddr + queue->fileio.pos;
- 
--	if (copy_to_user(user_buffer, block->vaddr + queue->fileio.pos, n)) {
-+	if (is_from_user)
-+		ret = copy_from_user(addr, user_buffer, n);
-+	else
-+		ret = copy_to_user(user_buffer, addr, n);
-+	if (ret) {
- 		ret = -EFAULT;
- 		goto out_unlock;
- 	}
-@@ -544,8 +569,40 @@ int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
- 
- 	return ret;
+ 	struct iio_backend_buffer_pair *pair = arg;
+@@ -231,6 +242,60 @@ int devm_iio_backend_request_buffer(struct device *dev,
  }
-+
-+/**
-+ * iio_dma_buffer_read() - DMA buffer read callback
-+ * @buffer: Buffer to read form
-+ * @n: Number of bytes to read
-+ * @user_buffer: Userspace buffer to copy the data to
-+ *
-+ * Should be used as the read callback for iio_buffer_access_ops
-+ * struct for DMA buffers.
-+ */
-+int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
-+	char __user *user_buffer)
-+{
-+	return iio_dma_buffer_io(buffer, n, user_buffer, false);
-+}
- EXPORT_SYMBOL_GPL(iio_dma_buffer_read);
+ EXPORT_SYMBOL_NS_GPL(devm_iio_backend_request_buffer, IIO_BACKEND);
  
-+/**
-+ * iio_dma_buffer_write() - DMA buffer write callback
-+ * @buffer: Buffer to read form
-+ * @n: Number of bytes to read
-+ * @user_buffer: Userspace buffer to copy the data from
-+ *
-+ * Should be used as the write callback for iio_buffer_access_ops
-+ * struct for DMA buffers.
-+ */
-+int iio_dma_buffer_write(struct iio_buffer *buffer, size_t n,
-+			 const char __user *user_buffer)
++int iio_backend_read_phase(struct iio_backend *back,
++			   const struct iio_chan_spec *chan, int *val,
++			   int *val2, unsigned int tone_idx)
 +{
-+	return iio_dma_buffer_io(buffer, n,
-+				 (__force __user char *)user_buffer, true);
++	return iio_backend_op_call(back, read_phase, chan, val, val2, tone_idx);
 +}
-+EXPORT_SYMBOL_GPL(iio_dma_buffer_write);
++EXPORT_SYMBOL_NS_GPL(iio_backend_read_phase, IIO_BACKEND);
++
++int iio_backend_write_phase(struct iio_backend *back,
++			    const struct iio_chan_spec *chan, int val,
++			    int val2, unsigned int tone_idx)
++{
++	return iio_backend_op_call(back, write_phase, chan, val, val2,
++				   tone_idx);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_write_phase, IIO_BACKEND);
++
++int iio_backend_read_scale(struct iio_backend *back,
++			   const struct iio_chan_spec *chan, int *val,
++			   int *val2, unsigned int tone_idx)
++{
++	return iio_backend_op_call(back, read_scale, chan, val, val2, tone_idx);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_read_scale, IIO_BACKEND);
++
++int iio_backend_write_scale(struct iio_backend *back,
++			    const struct iio_chan_spec *chan, int val,
++			    int val2, unsigned int tone_idx)
++{
++	return iio_backend_op_call(back, write_scale, chan, val, val2,
++				   tone_idx);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_write_scale, IIO_BACKEND);
++
++int iio_backend_read_frequency(struct iio_backend *back,
++			       const struct iio_chan_spec *chan, int *val,
++			       int *val2, unsigned int tone_idx,
++			       unsigned long long sample_freq)
++{
++	return iio_backend_op_call(back, read_frequency, chan, val, val2,
++				   tone_idx, sample_freq);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_read_frequency, IIO_BACKEND);
++
++int iio_backend_write_frequency(struct iio_backend *back,
++				const struct iio_chan_spec *chan, int val,
++				int val2, unsigned int tone_idx,
++				unsigned long long sample_freq)
++{
++	return iio_backend_op_call(back, write_frequency, chan, val, val2,
++				   tone_idx, sample_freq);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_write_frequency, IIO_BACKEND);
++
+ static void iio_backend_release(void *arg)
+ {
+ 	struct iio_backend *back = arg;
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+index a6d79381866e..c5bcbe89cb64 100644
+--- a/include/linux/iio/backend.h
++++ b/include/linux/iio/backend.h
+@@ -4,6 +4,7 @@
+ 
+ #include <linux/types.h>
+ 
++struct iio_chan_spec;
+ struct fwnode_handle;
+ struct iio_backend;
+ struct device;
+@@ -15,6 +16,12 @@ enum iio_backend_data_type {
+ 	IIO_BACKEND_DATA_TYPE_MAX
+ };
+ 
++enum iio_backend_data_source {
++	IIO_BACKEND_INTERNAL_CW,
++	IIO_BACKEND_EXTERNAL,
++	IIO_BACKEND_DATA_SOURCE_MAX
++};
 +
  /**
-  * iio_dma_buffer_usage() - DMA buffer data_available and
-  * space_available callback
-diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
-index 52a838ec0e57..6e27e47077d5 100644
---- a/include/linux/iio/buffer-dma.h
-+++ b/include/linux/iio/buffer-dma.h
-@@ -132,6 +132,8 @@ int iio_dma_buffer_disable(struct iio_buffer *buffer,
- 	struct iio_dev *indio_dev);
- int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
- 	char __user *user_buffer);
-+int iio_dma_buffer_write(struct iio_buffer *buffer, size_t n,
-+			 const char __user *user_buffer);
- size_t iio_dma_buffer_usage(struct iio_buffer *buffer);
- int iio_dma_buffer_set_bytes_per_datum(struct iio_buffer *buffer, size_t bpd);
- int iio_dma_buffer_set_length(struct iio_buffer *buffer, unsigned int length);
+  * struct iio_backend_data_fmt - Backend data format
+  * @type:		Data type.
+@@ -45,10 +52,33 @@ struct iio_backend_ops {
+ 	int (*chan_disable)(struct iio_backend *back, unsigned int chan);
+ 	int (*data_format_set)(struct iio_backend *back, unsigned int chan,
+ 			       const struct iio_backend_data_fmt *data);
++	int (*data_source_set)(struct iio_backend *back, unsigned int chan,
++			       enum iio_backend_data_source data);
++
+ 	struct iio_buffer *(*request_buffer)(struct iio_backend *back,
+ 					     struct iio_dev *indio_dev);
+ 	void (*free_buffer)(struct iio_backend *back,
+ 			    struct iio_buffer *buffer);
++	int (*read_phase)(struct iio_backend *back,
++			  const struct iio_chan_spec *chan, int *val, int *val2,
++			  unsigned int tone_idx);
++	int (*write_phase)(struct iio_backend *back,
++			   const struct iio_chan_spec *chan, int val, int val2,
++			   unsigned int tone_idx);
++	int (*read_scale)(struct iio_backend *back,
++			  const struct iio_chan_spec *chan, int *val, int *val2,
++			  unsigned int tone_idx);
++	int (*write_scale)(struct iio_backend *back,
++			   const struct iio_chan_spec *chan, int val, int val2,
++			   unsigned int tone_idx);
++	int (*read_frequency)(struct iio_backend *back,
++			      const struct iio_chan_spec *chan, int *val,
++			      int *val2, unsigned int tone_idx,
++			      unsigned long long sample_freq);
++	int (*write_frequency)(struct iio_backend *back,
++			       const struct iio_chan_spec *chan, int val,
++			       int val2, unsigned int tone_idx,
++			       unsigned long long sample_freq);
+ };
+ 
+ int iio_backend_chan_enable(struct iio_backend *back, unsigned int chan);
+@@ -56,10 +86,31 @@ int iio_backend_chan_disable(struct iio_backend *back, unsigned int chan);
+ int devm_iio_backend_enable(struct device *dev, struct iio_backend *back);
+ int iio_backend_data_format_set(struct iio_backend *back, unsigned int chan,
+ 				const struct iio_backend_data_fmt *data);
++int iio_backend_data_source_set(struct iio_backend *back, unsigned int chan,
++				enum iio_backend_data_source data);
+ int devm_iio_backend_request_buffer(struct device *dev,
+ 				    struct iio_backend *back,
+ 				    struct iio_dev *indio_dev);
+-
++int iio_backend_read_phase(struct iio_backend *back,
++			   const struct iio_chan_spec *chan, int *val,
++			   int *val2, unsigned int tone_idx);
++int iio_backend_write_phase(struct iio_backend *back,
++			    const struct iio_chan_spec *chan, int val,
++			    int val2, unsigned int tone_idx);
++int iio_backend_read_scale(struct iio_backend *back,
++			   const struct iio_chan_spec *chan, int *val,
++			   int *val2, unsigned int tone_idx);
++int iio_backend_write_scale(struct iio_backend *back,
++			    const struct iio_chan_spec *chan, int val,
++			    int val2, unsigned int tone_idx);
++int iio_backend_read_frequency(struct iio_backend *back,
++			       const struct iio_chan_spec *chan, int *val,
++			       int *val2, unsigned int tone_idx,
++			       unsigned long long sample_freq);
++int iio_backend_write_frequency(struct iio_backend *back,
++				const struct iio_chan_spec *chan, int val,
++				int val2, unsigned int tone_idx,
++				unsigned long long sample_freq);
+ void *iio_backend_get_priv(const struct iio_backend *conv);
+ struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name);
+ struct iio_backend *
 
 -- 
 2.43.0
