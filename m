@@ -1,181 +1,114 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21CE959B5F;
-	Fri, 16 Feb 2024 14:08:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DA7512D766
+	for <linux-iio@vger.kernel.org>; Fri, 16 Feb 2024 14:11:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708092519; cv=none; b=cdwhpkZuYRatqSRMhFjzxwUKrGUKADNhgxZ5lNjc+OQtAYBZ8FpsH3EuWysCgnxDWV5N+DAAGMMVaSP7ZL16ZNKAgwA1MzGmA0od4N2ng1Lqb6/8+XH5QF23npOTEMWWFmLJILIY6dsVwsZrKm8TMgVWu9bB5gPFbEY1b+QCP3M=
+	t=1708092689; cv=none; b=J6HmTDWf5Y5xxYeFYtcuoS6Z73ab867930qbMslZY2EmyZbDOO5ujXQz7NpvYSkGzbflnSBZrnaJxI1bAJfsaWrwqWBckwS8v25II93dYLbJAthABH6o7UncQF/FUvroJE+O5LQXN+QDvXoF0I/AcauOVnZYQXQKld0imf+7UHc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708092519; c=relaxed/simple;
-	bh=URft1yFNooeHjgEuV5zJYSSsgebVw7/oaikTAzwc7HY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fzDJe8gzJBdWxantCJJFbvqNNAUQnLAxr3F5g0eZUIJQaNW5Ycj7EoRuidv8cL81tnJBU0crkKZ/+bAk1aFTbNofrV9IrqE3LXb0Q+oe4hQ97ztQQMQ/kdy01e1Y2sU44N4gTjFOo8cq2ScDF0yMPMCly8Xten53y6FQhca60z4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TemEtxZv; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1708092689; c=relaxed/simple;
+	bh=Tuo7/PzJzLX1SAtU3H5a7iHPPv2xWVJsxIzSubTHDc0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=lbHa/b+NHL7/+6RQ6olAaOYkQPbIJrNBOO9eh6K5LrGb1oPPYifyAX8MCSi8NtBq31qfWXgLw+wNDEU6z2uiUclBJsFi5tHmFZXu24X2Zra5P24KhVBpwn3JOwo7+YiBhqCb09/ZBDEEwRfmzS0wRsVC0+h66KlbchiBkMzX604=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rx7XXuFE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TemEtxZv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54A7CC433F1;
-	Fri, 16 Feb 2024 14:08:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rx7XXuFE"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 40C51C433C7;
+	Fri, 16 Feb 2024 14:11:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1708092518;
-	bh=URft1yFNooeHjgEuV5zJYSSsgebVw7/oaikTAzwc7HY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=TemEtxZvXL3MtNaqtsE44bHlpFma7OYlRBd7d9HhpQx5e5uUjFuec2rr/BPGaoA9b
-	 qKXRUN1VIJlE6UV6N7Vg1HduKnWyHxBliIiw4js/LhN2C+p9mRd8zVSXOMyzH8uTs7
-	 kpuCoCP4a6qBIq6fvj+6OHq6Tori37riWp2JYLyXxO4CJT/uT0V44SYy6nDRMWNBOE
-	 YWrRYVOXsw9lxHEZIImnFdXSlf6XnMDCPguDceCO31PiMwFud7OXqqG80CIv3Rmi2U
-	 NndgxRpehHGvOMjozYXlP6JIhVGEpoFlE3Xifi9ix+QXgNAyLzecSNPWvXLWHiYR/i
-	 oy1DHzBsMpbhg==
-Date: Fri, 16 Feb 2024 14:08:26 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: linux-iio@vger.kernel.org, Michael Hennerich
- <Michael.Hennerich@analog.com>, Rob Herring <robh+dt@kernel.org>, Krzysztof
- Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley
- <conor+dt@kernel.org>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Liam
- Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: add ad7944 ADCs
-Message-ID: <20240216140826.58b3318d@jic23-huawei>
-In-Reply-To: <CAMknhBF8HKDftjBuwuA4GWUmn4j36Zut84d7xLKgZPDaiY87kA@mail.gmail.com>
-References: <20240206-ad7944-mainline-v1-0-bf115fa9474f@baylibre.com>
-	<20240206-ad7944-mainline-v1-1-bf115fa9474f@baylibre.com>
-	<20240210174022.7a0c7cdc@jic23-huawei>
-	<CAMknhBF8HKDftjBuwuA4GWUmn4j36Zut84d7xLKgZPDaiY87kA@mail.gmail.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-pc-linux-gnu)
+	s=k20201202; t=1708092689;
+	bh=Tuo7/PzJzLX1SAtU3H5a7iHPPv2xWVJsxIzSubTHDc0=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=Rx7XXuFE04kDAZ8vvEuAUz7eZL+oEnchZBZ4lPpYwhttmQV4IcTnjcUPmpIW4IC5d
+	 zrjWjYXBvFP3S8Xw+Uz/RhpGFLp5RrVsw+jPMiohRiaUyobUBPIY8Jqa1ATOsaxD94
+	 TH4ZNDGWNhxPDoUnf8hm3LOyRzWLGkDzl0r2lD8/TVMzxCdoMqNxV+Sfu5Hf/Aot7N
+	 u2HsTjMRJyfVoP/hnCHvV0nPsqVQ3QfZF93bWsKQ3fyw7YX7+g1YkzZVDNVv0DcR6Y
+	 SJW+Q7t5bsJbSaAKzuvWMDxwqBEB5z5cJZp0dn1hKxCKZqmPPbfdW4li1fsT28ipCY
+	 jOtW8ZqrX+JGg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 259FEC48BEF;
+	Fri, 16 Feb 2024 14:11:29 +0000 (UTC)
+From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
+Date: Fri, 16 Feb 2024 15:10:50 +0100
+Subject: [PATCH RFC 1/8] iio: buffer: add function to set the buffer
+ direction
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20240216-iio-backend-axi-dds-v1-1-22aed9fb07a1@analog.com>
+References: <20240216-iio-backend-axi-dds-v1-0-22aed9fb07a1@analog.com>
+In-Reply-To: <20240216-iio-backend-axi-dds-v1-0-22aed9fb07a1@analog.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, 
+ Olivier Moysan <olivier.moysan@foss.st.com>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>
+X-Mailer: b4 0.12.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1708092664; l=1611;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=d5nwu7cwhkLNuXvBJXa201xpcbfgCUn83k0KuJDTwTA=;
+ b=dH8M5t6AQdheCgW+ZjeT64oYXmXSOk26zy2dis9MriSL43KUs8exshkx4Hv8SqTJj5GKS9q1R
+ TD6ZvxI9EdEAj53s/1coK2NEEg7opqVp+VcbghvzeUauHMSOk7OxsO9
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received:
+ by B4 Relay for nuno.sa@analog.com/20231116 with auth_id=100
+X-Original-From: Nuno Sa <nuno.sa@analog.com>
+Reply-To: <nuno.sa@analog.com>
 
-> > > +  adi,spi-mode:
-> > > +    $ref: /schemas/types.yaml#/definitions/string
-> > > +    enum: [ 3-wire, 4-wire, chain ]
-> > > +    default: 4-wire
-> > > +    description:
-> > > +      This chip can operate in a 3-wire mode where SDI is tied to VIO, a 4-wire
-> > > +      mode where SDI acts as the CS line, or a chain mode where SDI of one chip
-> > > +      is tied to the SDO of the next chip in the chain and the SDI of the last
-> > > +      chip in the chain is tied to GND.  
-> >
-> > there is a standard property in spi-controller.yaml for 3-wire. Does that cover
-> > the selection between 3-wire and 4-wire here?  Seems like this might behave
-> > differently from that (and so perhaps we shouldn't use 3-wire as the description
-> > to avoid confusion, normally 3-wire is a half duplex link I think).  
-> 
-> I used "3-wire" because that is what the datasheet calls it. But yes,
-> I see the potential for confusion here since this "3-wire" is
-> completely unrelated to the standard "spi-3wire" property.
-Maybe we fall back on a comment that says something like.
+From: Nuno Sa <nuno.sa@analog.com>
 
-"This is not the same as spi-3wire." :)
+Add an helper function to set the direction. This is preliminary change
+and will be useful for IIO backends that provide output buffers.
 
-Whatever we end up with here, I'd like everyone to agree it's
-obviously different enough from existing SPI bindings that there won't
-be any confusion. 
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+---
+ drivers/iio/industrialio-buffer.c | 12 ++++++++++++
+ include/linux/iio/buffer.h        |  3 +++
+ 2 files changed, 15 insertions(+)
 
-> 
-> >
-> > Chain mode is more fun.  We've had that before and I'm trying to remember what
-> > the bindings look like. Devices like ad7280a do a different form of chaining.  
-> 
-> If there isn't a clear precedent for how to write bindings for chained
-> devices, this may be something better left for when there is an actual
-> use case to be sure we get it right.
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index b581a7e80566..504e5a96bd90 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -1982,6 +1982,18 @@ void iio_buffer_put(struct iio_buffer *buffer)
+ }
+ EXPORT_SYMBOL_GPL(iio_buffer_put);
+ 
++/**
++ * iio_buffer_set_dir() - Set the buffer direction
++ * @buffer: The buffer to set the direction
++ * @direction: The direction
++ */
++void iio_buffer_set_dir(struct iio_buffer *buffer,
++			enum iio_buffer_direction direction)
++{
++	buffer->direction = direction;
++}
++EXPORT_SYMBOL(iio_buffer_set_dir);
++
+ /**
+  * iio_device_attach_buffer - Attach a buffer to a IIO device
+  * @indio_dev: The device the buffer should be attached to
+diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+index 418b1307d3f2..aee52b834443 100644
+--- a/include/linux/iio/buffer.h
++++ b/include/linux/iio/buffer.h
+@@ -55,4 +55,7 @@ bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
+ int iio_device_attach_buffer(struct iio_dev *indio_dev,
+ 			     struct iio_buffer *buffer);
+ 
++void iio_buffer_set_dir(struct iio_buffer *buffer,
++			enum iio_buffer_direction direction);
++
+ #endif /* _IIO_BUFFER_GENERIC_H_ */
 
-Agreed.  Let us kick that into the future.
-
-> 
-> >
-> > Anyhow, main thing here is we need to be careful that the terms don't overlap
-> > with other possible interpretations.
-> >
-> > I think what this really means is:
-> >
-> > 3-wire - no chip select, exclusive use of the SPI bus (yuk)  
-> 
-> This can actually be done two ways. One where there is no CS and we
-> use cnv-gpios to control the conversion. The other is where CS of the
-> SPI controller is connected to the CNV pin on the ADC and cnv-gpios is
-> omitted. This requires very creative use of spi xfers to get the right
-> signal but does work.
-> 
-> In any case to achieve max sample rate these chips need to use this
-> "3-wire" mode and have exclusive use of the bus whether is is using
-> proper CS or not.
-> 
-> So maybe it would be more clear to split this one into two modes?
-> 3-wire with CS and 3-wire without CS?
-OK.
-
-I'm not sure if the standard SPI bindings have an option for
-CS tied active?  If so we should reuse that bit of [psson;e/
-
-> 
-> > 4-write - conventional SPI with CS  
-> 
-> Yes.
-> 
-> > chained - the 3 wire mode really but with some timing effects?  
-> 
-> Correct. With the exception that the SPI CS line can't be used in
-> chain mode (unless maybe if you had an inverted CS signal since the
-> CNV pin has to be high during the data transfer).
-> 
-> >
-> > Can we figure out if chained is going on at runtime?  
-> 
-> No. We would always need the devicetree to at least say how many chips
-> are in the chain. Also, in theory, each chip could have independent
-> supplies and therefore different reference voltages.
-That's one I think we only bother supporting when we actually see it.
-For previous chained devices I don't think we've ever needed to do
-it because they tend to be used for 'more of the same' rather than
-measuring different things.  Supplies so far have always been wired
-to single regulator (or single control anyway).
-
-
-> >
-> > If we are going to rule you supplying refin and ref supplies.  
-> 
-> Not sure what you mean here, but we can get rid of the adi,reference
-> property and just add a check to not allow both ref-supply and
-> refin-supply at the same time.
-
-I think that is simplest route.
-
-> 
-> >  
-> > > +
-> > > +  cnv-gpios:
-> > > +    description:
-> > > +      The Convert Input (CNV). This input has multiple functions. It initiates
-> > > +      the conversions and selects the SPI mode of the device (chain or CS). In
-> > > +      3-wire mode, this property is omitted if the CNV pin is connected to the
-> > > +      CS line of the SPI controller.
-> > > +    maxItems: 1  
-> >
-> > ah, that's exciting - so in 3-wire mode, we basically put the CS on a different pin...  
-> 
-> I explained this above already, but just to have it in context here as
-> well... In what the datasheet calls "3-wire" mode, we can either have
-> CS connected and no cnv-gpios or we can have no CS and have cnv-gpios
-> connected.
-> 
-> So the intention here was to make cnv-gpios required all other modes
-> but in 3-wire mode, make it optional.
-
-Seems reasonable. Thanks for the various explanations. This chip is just odd :)
-
-> 
-> 
-> >
-> > Mark, perhaps you can suggest how to handle this complex family of spi variants?
-> >
-> > Jonathan
-> >  
+-- 
+2.43.0
 
