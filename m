@@ -1,26 +1,27 @@
 Received: from vps.xff.cz (vps.xff.cz [195.181.215.36])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EA931350FB;
-	Fri, 16 Feb 2024 18:50:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DF121339B1;
+	Fri, 16 Feb 2024 18:50:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.181.215.36
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708109421; cv=none; b=pwW1M771SSzr40YQVZN4e6M7LLwca0EuNah8xXmaqeMwP7yIlQpMKc4Me93kqNs9B71pS5cHpvRS0BbIa887UwCPQj+cNeKg1XOgbirmly0IwN0r5GJc647ADyi/Ic/kuEmyXQks4Kd+qHYBsc0NAjDCUrYegp4UjSpH2YBZqYU=
+	t=1708109422; cv=none; b=WXAoS4JymXo1vtbfchtUeRDpN1fpZ9Tbqi6uu6xCo4f6Mn6LELdY7Uy9uqzLDMewbpOll56+A/zEKYL9nKJH0DstAvat3q9rD44Ifz4VQhKyIU5k/gALfcMr6aBu7C2VzSjD+DpNK3JOFnnoLdcKKN+PHvUqcjrcPKIPJ0i2ep8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708109421; c=relaxed/simple;
-	bh=51kgdgBqZYvIt5QFXzzBCP1nSeOtXNnvlQSNHeq2iNE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=VxgOFqR0bJVKjxbIZ92p8Yh1PX2iBZ2tAGX1R0AOI1EZ3SmmOn9v0u0IqYW+AMgqpVRlbg+RW+8RNjzWhWjWgHuVz4sajScIkRF2J8fYQi42HHBIUNF7peUVBUmdZm5rZuRgiLgib/1TeGgJp/EQNUR4+z84+RAzANAvZ0mnXYg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xff.cz; spf=pass smtp.mailfrom=xff.cz; dkim=pass (1024-bit key) header.d=xff.cz header.i=@xff.cz header.b=sVZ6F8Qi; arc=none smtp.client-ip=195.181.215.36
+	s=arc-20240116; t=1708109422; c=relaxed/simple;
+	bh=MzFWAiynKIMfBbcmFyJFSn3s5kPBd8miZrCSWWhxnWw=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=O6DwL2KuEhgWfI9ZdfQCk40S1au0GhxjHJQPJvdAQtmEMXFTnZy+lBY6T5HfQiEUjaS/KHr4Av0UBQvMp2XIfojUOCVG5RlNsY+ca8w1hkB7+6U97UaGOUgmG/6pbhN9t7KDBGqQWJPkb882HoBe+VnbSb2Ajn7jWmUw6zDDdes=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xff.cz; spf=pass smtp.mailfrom=xff.cz; dkim=pass (1024-bit key) header.d=xff.cz header.i=@xff.cz header.b=QN4IOHq7; arc=none smtp.client-ip=195.181.215.36
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xff.cz
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xff.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=xff.cz header.i=@xff.cz header.b="sVZ6F8Qi"
+	dkim=pass (1024-bit key) header.d=xff.cz header.i=@xff.cz header.b="QN4IOHq7"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xff.cz; s=mail;
-	t=1708109415; bh=51kgdgBqZYvIt5QFXzzBCP1nSeOtXNnvlQSNHeq2iNE=;
-	h=From:To:Cc:Subject:Date:From;
-	b=sVZ6F8QiwTZWzwbbkdtBDytu0NHg8y9VD/C31d+ZyNDOw1h+3AwTLXFlSFfWMwT64
-	 OqaUrHwB5kR5tt53iCI62v2aAZZLpv11oT/JLFVZ2KOW2vR+VFku7FHL4eZ73juj7H
-	 yX5AE9fSJAgHOUTWrzaGcimZ4hnyYHwKeI1iu4OM=
+	t=1708109416; bh=MzFWAiynKIMfBbcmFyJFSn3s5kPBd8miZrCSWWhxnWw=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=QN4IOHq7BlavFvAkl+8X+T0McgyiMLgH9xVxteDKFHXdf1rY9BA3lOF72pfWweGN2
+	 oS3uNWJkohj802NTT10VZuaRT6SckI6gj+evmsE7TqL+wFtQT+yH/yIbyLzgabinOX
+	 b5a+zYKmQcch11L2NwB2q91OsOEtQZ8WsGLl2vdY=
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
@@ -28,16 +29,19 @@ To: Jonathan Cameron <jic23@kernel.org>,
 	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
 	Conor Dooley <conor+dt@kernel.org>,
 	Andrey Skvortsov <andrej.skvortzov@gmail.com>
-Cc: Ondrej Jirman <megi@xff.cz>,
-	Icenowy Zheng <icenowy@aosc.io>,
+Cc: Icenowy Zheng <icenowy@aosc.io>,
 	Dalton Durst <dalton@ubports.com>,
 	Shoji Keita <awaittrot@shjk.jp>,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/4] Add support for AF8133J magnetometer
-Date: Fri, 16 Feb 2024 19:49:58 +0100
-Message-ID: <20240216185008.1370618-1-megi@xff.cz>
+	linux-kernel@vger.kernel.org,
+	=?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>,
+	Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v3 2/4] dt-bindings: iio: magnetometer: Add Voltafield AF8133J
+Date: Fri, 16 Feb 2024 19:50:00 +0100
+Message-ID: <20240216185008.1370618-3-megi@xff.cz>
+In-Reply-To: <20240216185008.1370618-1-megi@xff.cz>
+References: <20240216185008.1370618-1-megi@xff.cz>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -47,69 +51,91 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Ondrej Jirman <megi@xff.cz>
+From: Icenowy Zheng <icenowy@aosc.io>
 
-This series adds support for AF8133J magnetometer sensor. It's a simple
-3-axis sensor with two sensitivity options and not much else to it.
+Voltafield AF8133J is a simple magnetometer sensor produced by Voltafield
+Technology Corp, with dual power supplies (one for core and one for I/O)
+and active-low reset pin.
 
-This sensor is used on both Pinephone and Pinephone Pro. DT patches
-adding it will come later, once this driver is merged.
+The sensor has configurable range 1.2 - 2.2 mT and a software controlled
+standby mode.
 
-Please take a look. :)
+Add a device tree binding for it.
 
-Thank you very much,
-	Ondřej Jirman
-
-v3:
-- collect more tags
-- if (ret < 0) -> (ret) where appropriate
-- scoped guard move to af8133j_set_scale()
-- remove pm_runtime_disable/enable guard from af8133j_power_down_action()
-- pretty much just this:
-  https://megous.com/dl/tmp/0001-if-ret-0-ret-where-appropriate.patch
-  https://megous.com/dl/tmp/0002-scoped-guard-move-to-af8133j_set_scale.patch
-  https://megous.com/dl/tmp/0003-remove-pm_runtime_disable-enable-guard-from-af8133j_.patch
-
-v2:
-- move maintainers patch to the end of series
-- bindings:
-  - fix compatible definition in bindings file
-  - require power supplies
-  - fix descriptions
-- driver:
-  - sort includes
-  - rework RPM, the driver should now work with RPM disabled
-    among other improvements
-    - I've tested RPM left and right doing device bind/unbind under
-      various conditions, system suspend under various conditions,
-      etc.
-  - use scoped_guard for mutexes
-  - use devm for power down and handle power down correctly with both
-    RPM enabled/disabled without tracking power state in data->powered
-  - fix issue with changing scale while RPM suspended
-  - various code formatting issues resolved
-- as for sign-offs, I've added co-developed-by for people I know for
-  sure worked on the driver, and left other tags as they were when
-  I picked up the patch 2 years ago to my Linux branch
-
-Icenowy Zheng (3):
-  dt-bindings: vendor-prefix: Add prefix for Voltafield
-  dt-bindings: iio: magnetometer: Add Voltafield AF8133J
-  iio: magnetometer: add a driver for Voltafield AF8133J magnetometer
-
-Ondrej Jirman (1):
-  MAINTAINERS: Add an entry for AF8133J driver
-
- .../iio/magnetometer/voltafield,af8133j.yaml  |  60 ++
- .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
- MAINTAINERS                                   |   6 +
- drivers/iio/magnetometer/Kconfig              |  12 +
- drivers/iio/magnetometer/Makefile             |   1 +
- drivers/iio/magnetometer/af8133j.c            | 524 ++++++++++++++++++
- 6 files changed, 605 insertions(+)
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+Signed-off-by: Ondřej Jirman <megi@xff.cz>
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ .../iio/magnetometer/voltafield,af8133j.yaml  | 60 +++++++++++++++++++
+ 1 file changed, 60 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/voltafield,af8133j.yaml
- create mode 100644 drivers/iio/magnetometer/af8133j.c
 
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/voltafield,af8133j.yaml b/Documentation/devicetree/bindings/iio/magnetometer/voltafield,af8133j.yaml
+new file mode 100644
+index 000000000000..b6ab01a6914a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/magnetometer/voltafield,af8133j.yaml
+@@ -0,0 +1,60 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/magnetometer/voltafield,af8133j.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Voltafield AF8133J magnetometer sensor
++
++maintainers:
++  - Ondřej Jirman <megi@xff.cz>
++
++properties:
++  compatible:
++    const: voltafield,af8133j
++
++  reg:
++    maxItems: 1
++
++  reset-gpios:
++    description:
++      A signal for active low reset input of the sensor. (optional; if not
++      used, software reset over I2C will be used instead)
++
++  avdd-supply:
++    description:
++      A regulator that provides AVDD power (Working power, usually 3.3V) to
++      the sensor.
++
++  dvdd-supply:
++    description:
++      A regulator that provides DVDD power (Digital IO power, 1.8V - AVDD)
++      to the sensor.
++
++  mount-matrix:
++    description: An optional 3x3 mounting rotation matrix.
++
++required:
++  - compatible
++  - reg
++  - avdd-supply
++  - dvdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        magnetometer@1c {
++            compatible = "voltafield,af8133j";
++            reg = <0x1c>;
++            avdd-supply = <&reg_dldo1>;
++            dvdd-supply = <&reg_dldo1>;
++            reset-gpios = <&pio 1 1 GPIO_ACTIVE_LOW>;
++        };
++    };
 -- 
 2.43.0
 
