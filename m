@@ -1,115 +1,188 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09BFF23750
-	for <linux-iio@vger.kernel.org>; Mon, 19 Feb 2024 09:33:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5086B2D61B;
+	Mon, 19 Feb 2024 11:45:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708335200; cv=none; b=shAez9/mbKte0Di3OCszxW5moS2mWPFhX56EMjgSevZoLvqfMfNRkeMK1EeD+eQJXNrrm2a+hHhS5DLgg/dl/6uVA0J5EfxR88ZFqgPGl9uuaKmIiKVCiH5/DAMHWMFgWsRMhtqZUwRyEQURjz6PhWjZyFsDpxL8zeEhJ6pazT4=
+	t=1708343115; cv=none; b=HVU26oI1/R7pRI62iwqZZHltNj5xGCqzggZ+HFR8B1V3GqTwFbyY+MhnhAVj8UHe29UqKYzcIc4ZDfFuJgYeQm4KbHvVt8IUu6KTqX3GiRRr5PP3n7KETFDnKClO7nOt5XFRURw4cueqOZMSGeFaP7XBjRn4kvL0xRkItZ612Fs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708335200; c=relaxed/simple;
-	bh=IRrdTlGU/ZX6THZGzY/QmVIXbFl9/RK7PUhcBJMlrnI=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Jil4N/pWd/TWIRlyFdmiYWMNx1T3We2z+tOfzFIiIm9Htq0CLESUAsNFEHqkUxyzOBDOvS3fl20mg65wq/2HnGNxWHKbFf7S7Senum2c+ZP8idVN1aB6hCbAWiWK6BIyaL/ba+mvAVu+3DistXv9DmfEYJNxNMLf0QW/J1xdSdY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=Huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=Huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.31])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Tdcfv6ddDz6JB4f;
-	Mon, 19 Feb 2024 17:28:55 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
-	by mail.maildlp.com (Postfix) with ESMTPS id 9DA43141A07;
-	Mon, 19 Feb 2024 17:33:09 +0800 (CST)
-Received: from localhost (10.202.227.76) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Mon, 19 Feb
- 2024 09:33:09 +0000
-Date: Mon, 19 Feb 2024 09:33:10 +0000
-From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To: kernel test robot <lkp@intel.com>
-CC: Mike Looijmans <mike.looijmans@topic.nl>, <llvm@lists.linux.dev>,
-	<oe-kbuild-all@lists.linux.dev>, <linux-iio@vger.kernel.org>
-Subject: Re: [jic23-iio:testing 107/107]
- drivers/iio/adc/ti-ads1298.c:653:29: warning: variable 'ret' is
- uninitialized when used here
-Message-ID: <20240219093310.00005d3e@Huawei.com>
-In-Reply-To: <202402171104.pciYOoXE-lkp@intel.com>
-References: <202402171104.pciYOoXE-lkp@intel.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
+	s=arc-20240116; t=1708343115; c=relaxed/simple;
+	bh=ioLY6KFvH94t5iatXSvogujUGr8NSazHUMQUA5pIOq8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KO+GhVqw+GQL5tabMSo2y+nerc/f401zwI+wzAGHfuZWIAgcQouy4Y2J5R/vqXVF47UPfBoPHlwnGvy7etO39+X4Qe/2OerbsrFK8xW6bg5arXEj+V9+pSvHUpbFIpQPp4D0C2PdOKuKzXXHD/bhXNFsv43jKGoVxHkfynYnlGQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mnQQrV8q; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mnQQrV8q"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708343114; x=1739879114;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ioLY6KFvH94t5iatXSvogujUGr8NSazHUMQUA5pIOq8=;
+  b=mnQQrV8q98YDNiNA6QeCPnL8RNWbj7GhP3jGI8Q4oRfGQjgXP8BhJoUN
+   pfIp5YNygw5+KcmIjRWhTY2bS5pY1reCTNqFaBpb1Ftdp7i0Nnb8Xt0ni
+   eXF6Sep/BokrmSuI+2I+rLLCo2BDs0cgY08VBg4diy0XpUrKSRg27wAQh
+   vXyDgrEMOKuG4zr5JCZx0leLfhn4EHpVcq3xuJa0/tNq5lsOshL2dTqrl
+   xNQsajHAww1X9ijYHhAkl1q0LJRyPACJM2jNnbSq4Gu+GZ0xWOmbckGua
+   OwdoW37lt5nCIdOMpAiPWNkEGXUj9Ccw7vR/QsvR8xwJc42qnjngKKtec
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="19949529"
+X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
+   d="scan'208";a="19949529"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 03:45:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="912861564"
+X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
+   d="scan'208";a="912861564"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 03:45:08 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rc252-00000005oHy-0EFa;
+	Mon, 19 Feb 2024 13:45:04 +0200
+Date: Mon, 19 Feb 2024 13:45:03 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, "Rafael J . Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Daniel Scally <djrscally@gmail.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Julia Lawall <Julia.Lawall@inria.fr>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Cosmin Tanislav <cosmin.tanislav@analog.com>,
+	Mihail Chindris <mihail.chindris@analog.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Tomislav Denis <tomislav.denis@avl.com>,
+	Marek Vasut <marex@denx.de>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	Marius Cristea <marius.cristea@microchip.com>,
+	Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v4 09/15] iio: adc: stm32: Use
+ device_for_each_child_node_scoped()
+Message-ID: <ZdM_P93vVIrBHkmg@smile.fi.intel.com>
+References: <20240217164249.921878-1-jic23@kernel.org>
+ <20240217164249.921878-10-jic23@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: lhrpeml500004.china.huawei.com (7.191.163.9) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240217164249.921878-10-jic23@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-> >> drivers/iio/adc/ti-ads1298.c:653:29: warning: variable 'ret' is uninitialized when used here [-Wuninitialized]  
->      653 |                 return dev_err_probe(dev, ret, "Cannot get reset GPIO\n");
->          |                                           ^~~
->    drivers/iio/adc/ti-ads1298.c:642:9: note: initialize the variable 'ret' to silence this warning
->      642 |         int ret;
->          |                ^
->          |                 = 0
->    7 warnings generated.
+On Sat, Feb 17, 2024 at 04:42:43PM +0000, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-
-This is the only one that matters I think,
-
+> Switching to the _scoped() version removes the need for manual
+> calling of fwnode_handle_put() in the paths where the code
+> exits the loop early. In this case that's all in error paths.
 > 
-> vim +/ret +653 drivers/iio/adc/ti-ads1298.c
+> Note this includes a probable fix as in one path an error message was
+> printed with ret == 0.
 > 
->    635	
->    636	static int ads1298_probe(struct spi_device *spi)
->    637	{
->    638		struct ads1298_private *priv;
->    639		struct iio_dev *indio_dev;
->    640		struct device *dev = &spi->dev;
->    641		struct gpio_desc *reset_gpio;
->    642		int ret;
->    643	
->    644		indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
->    645		if (!indio_dev)
->    646			return -ENOMEM;
->    647	
->    648		priv = iio_priv(indio_dev);
->    649	
->    650		/* Reset to be asserted before enabling clock and power */
->    651		reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
->    652		if (IS_ERR(reset_gpio))
->  > 653			return dev_err_probe(dev, ret, "Cannot get reset GPIO\n");  
-Should be PTR_ERR(reset_gpio)
+> Took advantage of dev_err_probe() to futher simplify things given no
+> longer a need for the goto err.
 
-I'll fix it up when I'm on the right machine.
+...
 
+>  	const struct stm32_adc_info *adc_info = adc->cfg->adc_info;
 
->    654	
->    655		/* VREF can be supplied externally, otherwise use internal reference */
->    656		priv->reg_vref = devm_regulator_get_optional(dev, "vref");
->    657		if (IS_ERR(priv->reg_vref)) {
->    658			if (PTR_ERR(priv->reg_vref) != -ENODEV)
->    659				return dev_err_probe(dev, PTR_ERR(priv->reg_avdd),
->    660						     "Failed to get vref regulator\n");
->    661	
->    662			priv->reg_vref = NULL;
->    663		} else {
->    664			ret = regulator_enable(priv->reg_vref);
->    665			if (ret)
->    666				return ret;
->    667	
->    668			ret = devm_add_action_or_reset(dev, ads1298_reg_disable, priv->reg_vref);
->    669			if (ret)
->    670				return ret;
->    671		}
+I believe with
 
-Thanks as ever is due to the 0-day team! Should have gotten this in my local tests, but
-maybe I wasn't paying enough attention to the results :(
+	struct device *dev = &indio_dev->dev;
+
+you can make the below neater.
+Also see some side notes.
+
+> -	struct fwnode_handle *child;
+>  	const char *name;
+>  	int val, scan_index = 0, ret;
+>  	bool differential;
+>  	u32 vin[2];
+
+...
+
+>  		if (!ret) {
+
+Not a fan of this pattern, below we have two different patterns for the cases
+like this :-(
+
+> +			if (strlen(name) >= STM32_ADC_CH_SZ)
+> +				return dev_err_probe(&indio_dev->dev, -EINVAL,
+> +						     "Label %s exceeds %d characters\n",
+> +						     name, STM32_ADC_CH_SZ);
+> +
+>  			strscpy(adc->chan_name[val], name, STM32_ADC_CH_SZ);
+>  			ret = stm32_adc_populate_int_ch(indio_dev, name, val);
+>  			if (ret == -ENOENT)
+>  				continue;
+>  			else if (ret)
 
 
-Jonathan
+This 'else' is redundant.
+
+> +				return ret;
+> +		} else if (ret != -EINVAL)
+
+This also...
+
+> +			return dev_err_probe(&indio_dev->dev, ret, "Invalid label\n");
+
+...if you first do like
+
+		if (ret && ret != -EINVAL)
+			return dev_err_probe(...);
+		if (!ret) {
+
+Another option
+
+		if (ret) {
+			if (ret != -EINVAL)
+				return dev_err_probe(...);
+		} else {
+
+...
+
+>  		differential = false;
+>  		ret = fwnode_property_read_u32_array(child, "diff-channels", vin, 2);
+
+ARRAY_SIZE()?
+
+>  		/* diff-channels is optional */
+
+...
+
+>  		if (!ret) {
+> +			if (vin[0] != val || vin[1] >= adc_info->max_channels)
+> +				return dev_err_probe(&indio_dev->dev, -EINVAL,
+> +						     "Invalid channel in%d-in%d\n",
+> +						     vin[0], vin[1]);
+>  		} else if (ret != -EINVAL) {
+> -			dev_err(&indio_dev->dev, "Invalid diff-channels property %d\n", ret);
+> -			goto err;
+> +			return dev_err_probe(&indio_dev->dev, ret,
+> +					     "Invalid diff-channels property\n");
+>  		}
+
+As per above?
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
