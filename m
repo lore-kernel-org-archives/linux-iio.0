@@ -1,89 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F62D28DBF;
-	Mon, 19 Feb 2024 12:28:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ED6A2EB1D
+	for <linux-iio@vger.kernel.org>; Mon, 19 Feb 2024 13:11:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708345692; cv=none; b=gnjkfZPvzkustS2oapB4PgOJ0q4eBmudXKdmza56L2/tnkoBgu6wlC6s/eTryPnmMw4XzhyuVSCq0WiWQmS3ai77Keyb94LA6E/jXDbBo7AJ9Jsyou4MULNRiFFFtPKaOnPuHzWrb1q6Es8JaS+hpyqjaHiDS19y8S7hKxFm1d0=
+	t=1708348289; cv=none; b=L052BDQBKFyehEUgMkDmt3GDOQKrwafc6inZlPclkgC/jirchzEki4c+alZofAIzzXjNGB3eaD5EkkUFZvcZqO2tZrzUedY3TZn924s47/wWSHXnIEJ/lUrEziNBFbgv+yIinDBo7mEUGrMUmjOJhqvTwWdix3AA+viiToSl4ZQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708345692; c=relaxed/simple;
-	bh=it1Tistn1sJEwMWIAWLGZANrDgy48BdgJy8fXAyeYMM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=p3X2GkCrB3UQuBrSX8Qbk/0/bLXEXdejbnfQTPB3xsYkEosweQb9bHtfGpMeZxR3SlJDE1mHNfv7jAG4eEm5DqpECfpFNDFmQ8Mh0pcLY9U0faDVm7hLXjM/wFQl0Yp0CidZPOA4gA1P4FoL1bizaChR9dXA1rr25TeqSdTA48k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=J9niwD0w; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="J9niwD0w"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708345690; x=1739881690;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=it1Tistn1sJEwMWIAWLGZANrDgy48BdgJy8fXAyeYMM=;
-  b=J9niwD0wIUUDkmuUvJLiDUkF6Zv4cVEszF/3z6pxKuKl7/m2CioC7CpB
-   d/rC2c6woR+/R5RZhrIyrRKlhDxDi0ZurTT16WZBFzu3fozZHwTFq/klD
-   EpKjvIchRlNQ8HhYiUX5WqTtaNXIxdkf3OXzw8N6JFjqAO8igLouyk3ir
-   wL0kUUpWlhaUsQ8yTbGemfvxMpxk2SaVzY6BvmCNJwfCbxckIuC7x8uAM
-   6tUPPex51mqU+RoxY2734vj6lTfrz45AeDBMPFjULKfEHY+v+ytewcof0
-   zmGmmd7CUgnbhxl/sdqFJ/+C78PZUm7rs9vIY3NyEbhEo8BjJNpSXD1A9
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="2545100"
-X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="2545100"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 04:28:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="936286215"
-X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="936286215"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga001.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 04:28:01 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rc2kX-00000005opQ-3pKm;
-	Mon, 19 Feb 2024 14:27:57 +0200
-Date: Mon, 19 Feb 2024 14:27:57 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Mike Looijmans <mike.looijmans@topic.nl>
-Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Lee Jones <lee@kernel.org>,
-	Liam Beguin <liambeguin@gmail.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Maksim Kiselev <bigunclemax@gmail.com>,
-	Marcus Folkesson <marcus.folkesson@gmail.com>,
-	Marius Cristea <marius.cristea@microchip.com>,
-	Mark Brown <broonie@kernel.org>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Okan Sahin <okan.sahin@analog.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 2/2] iio: adc: ti-ads1298: Add driver
-Message-ID: <ZdNJTTy3j90mL8CJ@smile.fi.intel.com>
-References: <20240219065026.578517-1-mike.looijmans@topic.nl>
- <1b153bce-a66a-45ee-a5c6-963ea6fb1c82.949ef384-8293-46b8-903f-40a477c056ae.ec4cd694-3b45-4b64-9a96-fc1ccc42fc68@emailsignatures365.codetwo.com>
- <20240219065026.578517-2-mike.looijmans@topic.nl>
+	s=arc-20240116; t=1708348289; c=relaxed/simple;
+	bh=TvR5U9f4990NVUGBUfBdVxKWjB8M/3nA9XEJ9d2pcvg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Bj/0eIsgg1dVHGm4ReWOXuaedBI004mOhAGtWl8650k4eOINRIh+inW0Q+mT6aQh1+Ej+bKCHtn4r+trA1rJVhK94FlChpPAawNXnMS+/PLF/pPbp+ADDGssq5qLE/ZEjDejUGGacDsjJthtAHge6SlE2PsX0NvCDJN7f4EHiAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from dude02.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::28])
+	by metis.whiteo.stw.pengutronix.de with esmtp (Exim 4.92)
+	(envelope-from <m.felsch@pengutronix.de>)
+	id 1rc3QT-0005bN-Lc; Mon, 19 Feb 2024 14:11:17 +0100
+From: Marco Felsch <m.felsch@pengutronix.de>
+To: puranjay12@gmail.com,
+	jic23@kernel.org,
+	lars@metafoo.de,
+	robh+dt@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	kernel@pengutronix.de
+Subject: [PATCH v2 1/2] dt-bindings: iio: ti,tmp117: add vcc supply binding
+Date: Mon, 19 Feb 2024 14:11:13 +0100
+Message-Id: <20240219131114.134607-1-m.felsch@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240219065026.578517-2-mike.looijmans@topic.nl>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:1101:1d::28
+X-SA-Exim-Mail-From: m.felsch@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-On Mon, Feb 19, 2024 at 07:50:26AM +0100, Mike Looijmans wrote:
-> Skeleton driver for the TI ADS1298 medical ADC. This device is
-> typically used for ECG and similar measurements. Supports data
-> acquisition at configurable scale and sampling frequency.
+From: Thomas Haemmerle <thomas.haemmerle@leica-geosystems.com>
 
-This version seems good enough,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Add the binding to specify the vcc supply. We can't make it required
+since this would break the backward compatibility.
 
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Thomas Haemmerle <thomas.haemmerle@leica-geosystems.com>
+Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
+---
+v2:
+- mark vcc-supply as required
+
+ .../devicetree/bindings/iio/temperature/ti,tmp117.yaml       | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
+index 8c6d7735e875..33f2e9c5bd81 100644
+--- a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
++++ b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
+@@ -24,9 +24,13 @@ properties:
+   reg:
+     maxItems: 1
+ 
++  vcc-supply:
++    description: provide VCC power to the sensor.
++
+ required:
+   - compatible
+   - reg
++  - vcc-supply
+ 
+ additionalProperties: false
+ 
+@@ -39,5 +43,6 @@ examples:
+         tmp117@48 {
+              compatible = "ti,tmp117";
+              reg = <0x48>;
++             vcc-supply = <&pmic_reg_3v3>;
+         };
+     };
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.39.2
 
