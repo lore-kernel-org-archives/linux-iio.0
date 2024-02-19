@@ -1,156 +1,204 @@
-Received: from mx0a-00549402.pphosted.com (mx0a-00549402.pphosted.com [205.220.166.134])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79738E545;
-	Mon, 19 Feb 2024 13:32:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.166.134
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708349578; cv=fail; b=VjhkxAN154SaKdRz+GYQCUR/axn0eGNDqkTctmkYbMk6eQ3LOtp1EZJYFu94ml029Do9egVngjGMIiuLaDgOtg2jY60J5DsLCl4VPVtPxPtyYwe6+Msq1iSzGKCKGRDFIbGx1xYaKPTB1N06xK9rE4EbwrcyfhgFjr0+yU4cibw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708349578; c=relaxed/simple;
-	bh=ljont0EOtMS9zsM4H6012XOvX4tUcAhaX/QO/TiYnlE=;
-	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=czY6uP2CCOw8ErQhj3pimtIHw127HNysBT1ri0pNlThmQ0nYjv0/myw41+6QK9TGUjNKwstWe9Z3EyTJYySdbAsXD1ps9i9hPijLd53uXyDFR9Skj7oY38SpUN0v6kkAq/WEi3U2125f+EQioNMi1eLDOsnjia0Wal1BdIPB5AA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tdk.com; spf=pass smtp.mailfrom=tdk.com; dkim=pass (2048-bit key) header.d=tdk.com header.i=@tdk.com header.b=X9tpBCiC; arc=fail smtp.client-ip=205.220.166.134
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tdk.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tdk.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB5042C848;
+	Mon, 19 Feb 2024 13:45:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708350361; cv=none; b=mqKoNfH4fWvKIrICqmjzcZ2PZfj9MTnVNDKrqV8y56rOeGdVBpImfkdiT1ZGVPEdTGst440Ulwu/0ME7HqNgn/Ak2/CrlvbsSArZ4DqOpSkti+dM7XhtT1j3jIIYfqyvDoYWLSZD8J4xOI/auDnmgyn1e5h+xPjPOQ8gRCdqGoU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708350361; c=relaxed/simple;
+	bh=LVRTwEd+DLA5yoWWO1QyoAikwulsSgVa5Hj+jZY0/KU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Ov2sL9IV3aAy4WjkuBWxrU0pmVcGAN3zvdZQge3ALOSJTK4BOP8dwGkLIipODin0U8pyYdPmAa5VXI+Q10RbQl5fGhrqkeheYJxEBfjUUtGgyWUQeTNQ665njiggpzLae+u5tLKXKoqtKwTjGBbJ0OxPe0deWB2n95Ugf2M93K0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PDIeFQEx; arc=none smtp.client-ip=209.85.208.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tdk.com header.i=@tdk.com header.b="X9tpBCiC"
-Received: from pps.filterd (m0233778.ppops.net [127.0.0.1])
-	by mx0b-00549402.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41J9840w004093;
-	Mon, 19 Feb 2024 12:55:43 GMT
-Received: from jpn01-os0-obe.outbound.protection.outlook.com (mail-os0jpn01lp2105.outbound.protection.outlook.com [104.47.23.105])
-	by mx0b-00549402.pphosted.com (PPS) with ESMTPS id 3wak5y19ma-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 19 Feb 2024 12:55:42 +0000 (GMT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JXcchUlgJHZiuHPlO7V13i1jS7SBJCPw3R4bMGNn9dsbHFKtKifuuOAEN3+wuQV7ldVBkRHQOyZQdjyPKwMvNFI7u6nHMHRe1ZV2N6fU6FPzfl1k2Hua8FEcF2GJZcgnVAZruGywYtHHz6IIHPVP4gzyB8J3p0Or7K7YH6iJumkpd/4rTPWYOsfH2v/S1iyMSP3n+JUUSPjMIKzLGMFk5azNXF7cYavO6cg6/GhkFg/xey081QhfY+ePq4vHRX6CoVHrhF4c+Bfqmp5waexb891mmSOQLlS+IJpc67IZIe9np7ypk3jOEtGnahRslIEDBThlBqjwypS6226NoIOu3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SsnfK/V88qRM3L+aHmNRg6VClRGzZcCn87cibnECSZA=;
- b=F4RJoUjHTaHDd8u52g+Z5r5P1E0N194sC+KUj+40hMuMnIG7CtzZ3o0E3Ld1y7A/6Fs6g+1PWQStpVYL1fACtCbQ3ADmwTZQqi+lh75mOv2L8O9z+zAogNWSvFy1rmc7Fuw8KdnGkaxbIcibnwGhCacSHliWDyAh/PuCHd6InSlreOkemvJrPAd2EpqJbSiLE3FquMSkogd5/NqvtCEC2DHkm6yPrgma945Cf2heRTVumQZ2DubVao/7Snawf3UY3FzXy8gQqD1CsJygSOfibL/pviYgmTyxOdTNLj/YYjKQp2EM6mAXRLxEh50YgsYWzdtIaSKcbbwltgDJlgvDgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=tdk.com; dmarc=pass action=none header.from=tdk.com; dkim=pass
- header.d=tdk.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tdk.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SsnfK/V88qRM3L+aHmNRg6VClRGzZcCn87cibnECSZA=;
- b=X9tpBCiC8pp7R42dBSwsMd6kd360EEz3xb0QZg7BBOH1zU5Bqw+ipWE3dizNSeycQGFD7rK+KoXYq1EkEnBvOhQNR1Ze1Z+5hmPxvlxYVCxvfTBCrtw3e0WWClaC2bN5lUBlq7NierbYhyEzsqg8mivYH9KNd/W+3nYkFThvlSELZVvq7Omj9EpnCDsboqCux25+eb71wyC43F31BW0HxhgPHkHkbqVkDm2FuwjqdKQ8pJMaYD0RyWx4rVRwMQDQXmdVrMaes/0iZalffgI7Mg14sSWVGLqB1jdHTIlqNqlpRTQhHG9ySIBnr/n5jCjKyB25Ks5lSTy9jTRlCx/ScQ==
-Received: from OSZP286MB1942.JPNP286.PROD.OUTLOOK.COM (2603:1096:604:1a7::13)
- by TYWP286MB3110.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:2a0::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.38; Mon, 19 Feb
- 2024 12:55:38 +0000
-Received: from OSZP286MB1942.JPNP286.PROD.OUTLOOK.COM
- ([fe80::cb8d:ccc6:f2:ff8f]) by OSZP286MB1942.JPNP286.PROD.OUTLOOK.COM
- ([fe80::cb8d:ccc6:f2:ff8f%4]) with mapi id 15.20.7292.036; Mon, 19 Feb 2024
- 12:55:38 +0000
-From: inv.git-commit@tdk.com
-To: jic23@kernel.org
-Cc: lars@metafoo.de, linux-iio@vger.kernel.org, stable@vger.kernel.org,
-        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Subject: [PATCH] iio: imu: inv_mpu6050: fix FIFO parsing when empty
-Date: Mon, 19 Feb 2024 12:55:23 +0000
-Message-Id: <20240219125523.89431-1-inv.git-commit@tdk.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: LO4P123CA0307.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:197::6) To OSZP286MB1942.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:604:1a7::13)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PDIeFQEx"
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-563cb3ba9daso4186348a12.3;
+        Mon, 19 Feb 2024 05:45:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1708350357; x=1708955157; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=/jg6Jw6XVlwGHC6wg4qyCUXEftgbjGUXyrYMQCE+eOs=;
+        b=PDIeFQExfXgWjaIlE3CqGPAzlc0YQpf90TPIkayJp61AlpKgQK0EMYF5dGEGUQZZPa
+         8uf6NIhYZtlYt+lt3hQHkfSPZVTwnyEXLELiIsRIspUzEzqt/v2J7+MPzoXJkmrkUkHn
+         BLjopXOnOmV2nbupznaBNC4fyaP/nFjJlM/lCdLiA7L+pWWLb8M7O6X5qJmUSvq8bsn9
+         bpRLRUqwLNF5cdz8YXzR5KnkgBx+u/ZPwnWK0QrbEU5L4vrRvJjyn5s+L2O5cqHUtWaO
+         z6IuphuIcWh4lvYRwDbGBkVdOQF+3g653gRfzQxcCYbP89CIFSsX799hehgJkQewL5kh
+         TXgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708350357; x=1708955157;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/jg6Jw6XVlwGHC6wg4qyCUXEftgbjGUXyrYMQCE+eOs=;
+        b=CUOG3KwPYAete+B49jRlGimmTCc3yIuOWfbs3U5OeiaH3ilBQUC9Ef4vUpoj60RnmO
+         /LoYIdLQxaLAWploAKJQx7fRhhc1eemAMnFZVKxJrKc1eYBnmHAfWqXKgwQ232HjsJZ3
+         7df7XMCCPFZx58O78Ub3Q9Oil3FLGpymIGXIvsG2zJtrblpStTcChUnjq9JU02kVirV5
+         BO+XRvIKMWeUKPyeIV0JDbZ5zpsufvqZcuQN7pBKFhFcwzcDwBABMQotcmbSvRBAjPVc
+         c15qUPgtKOv21HxLzsjkkjbUV2kxAHYGgsfB3d02Npi0Dq2AhLTyh5m7IihDIFuEURCl
+         YeCw==
+X-Forwarded-Encrypted: i=1; AJvYcCUeRkNvPL6p7J1Rvh/KusOgq4Y+6qp9y0dWFICHZ4GCLWcw0jkpDFX804SwUcXjIcSxz+5OfVD28JgdsXHrYDMtYlIfEzFCwhEI81vhbBEAhJKTjLrfHxMQWs0+3RfKllQeRkv36A==
+X-Gm-Message-State: AOJu0YzxfQsskgM0030VpvuyhEDe5IiJ/ozPjOJkgwqODA42qB95KsMB
+	TZYEVhmDpFQ3rUZrR4klj1HA92Z02oZRQ4aAeRmUhyjDpc2wnaF/
+X-Google-Smtp-Source: AGHT+IG3aji4Ty3GEIJP9dbRMwyuvWwZbf3vrpfTuIDHxuukCje4SvBwS71gN000mbnquJt4Wn0cHw==
+X-Received: by 2002:aa7:d98e:0:b0:564:1ecc:ffb1 with SMTP id u14-20020aa7d98e000000b005641eccffb1mr3817601eds.39.1708350356513;
+        Mon, 19 Feb 2024 05:45:56 -0800 (PST)
+Received: from ?IPv6:2003:f6:ef1b:2000:944c:cbc7:1e1c:2c47? (p200300f6ef1b2000944ccbc71e1c2c47.dip0.t-ipconnect.de. [2003:f6:ef1b:2000:944c:cbc7:1e1c:2c47])
+        by smtp.gmail.com with ESMTPSA id x16-20020a056402415000b005644e4fdf36sm1708994eda.6.2024.02.19.05.45.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Feb 2024 05:45:56 -0800 (PST)
+Message-ID: <ce7ba8c4178fa05125bb91f35e3bf8c2a28098e7.camel@gmail.com>
+Subject: Re: [PATCH v4 15/15] iio: dac: ltc2688: Use
+ device_for_each_child_node_scoped()
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, "Rafael
+ J . Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
+ linux-acpi@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Daniel Scally <djrscally@gmail.com>, Heikki
+ Krogerus <heikki.krogerus@linux.intel.com>, Sakari Ailus
+ <sakari.ailus@linux.intel.com>, Julia Lawall <Julia.Lawall@inria.fr>
+Cc: Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Cosmin Tanislav
+ <cosmin.tanislav@analog.com>, Mihail Chindris <mihail.chindris@analog.com>,
+  Rasmus Villemoes <linux@rasmusvillemoes.dk>, Tomislav Denis
+ <tomislav.denis@avl.com>, Marek Vasut <marex@denx.de>,  Olivier Moysan
+ <olivier.moysan@foss.st.com>, Fabrice Gasnier
+ <fabrice.gasnier@foss.st.com>, Lad Prabhakar
+ <prabhakar.mahadev-lad.rj@bp.renesas.com>, Dmitry Baryshkov
+ <dmitry.baryshkov@linaro.org>, Marijn Suijten
+ <marijn.suijten@somainline.org>,  Marius Cristea
+ <marius.cristea@microchip.com>, Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+ Peter Zijlstra <peterz@infradead.org>, Jonathan Cameron
+ <Jonathan.Cameron@huawei.com>
+Date: Mon, 19 Feb 2024 14:49:17 +0100
+In-Reply-To: <20240217164249.921878-16-jic23@kernel.org>
+References: <20240217164249.921878-1-jic23@kernel.org>
+	 <20240217164249.921878-16-jic23@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.50.3 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: OSZP286MB1942:EE_|TYWP286MB3110:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5c8bd498-4578-4f20-dd49-08dc314a11de
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	kRR7UM5wVSdQsCXg1ZqFbGDYScDfByJy6kpPrmm/PLMvqZFAIwqbWRrsCoX9xi61HqHK0BzBjJRPZ6CZb0CN78IMDIDzeAhBLPmKYu84R03Bz31TOsjDwqsiprA5zDJXu8G+8BZPaNy+xosBN3WSgKK3CNQ7DkJqRXRanZYmcEoESZVvwB3i2JiHYRZDbTeD3VzfftaBwLTLzZZUwyN2wDwb/QSPN85/xQyQIZl0xEobYWRTzR6xYTrFxMLdG6fUuHrLHnTPYL6/fgpALvH+C0T+vx0gseWBGBNaUdrmZsM7i3sbOoLhMAHo6JP32/LUlzOkcB2MCe3H4pPztSe1YIhGPw+zPYuR/o8xvvAO8/2nl09oC0UGXxymc5qor9ZWIWmHN7L23+kuYLK9byUjeFJCPbvZ6qat/cQtG89s2JL9/rm/hK2MzCZYbZXz77KTNWeW861HzU/LKwH4Pyo9SZCFry2CZVGWtLc9dc8dLo5gKSDZvaDicDZBVgkDp9cpP9BTJVgNBZ1iflIlVwbJ6t/bgHuuRKKtgII3soIfWJAfdo6qOw9J9pT6vCUXCOaMz13fB1LPoadujWGqfHv5wlZNDbM/hu3lrEWsSYvOBXpGomvoD9raJIoxtXOcVY0pakn4N8ISgWs1AlGxyGEjbQ==
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSZP286MB1942.JPNP286.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(38350700005)(3613699003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?us-ascii?Q?U7wS8Mh4kB91foq/cL8qLY/YTF8knUgoM0kGMhYIDnRgl+LCchhzne5WC9Rc?=
- =?us-ascii?Q?BK49e+QYe7kQ0SqN5L6Zl+i+GBgTocac572ZrVgDtzJc6kOKkk0PsfPA3BHU?=
- =?us-ascii?Q?fJk556E/FgVk8ve+23fWGGWS7q6bNI9im77UZcWO7gtfHmva3LUzka1y7rEA?=
- =?us-ascii?Q?RHMD6EazTyd5rLpomOEU2G/URPgFHQuoZlEMz9HqdmJxqDAuYHmkpRaDKjcZ?=
- =?us-ascii?Q?A4b2Cu996HS5EoWyN99r3uUKmI6O1pV+VFuO/vYfHYn1ekWtIhx/82qQWNx2?=
- =?us-ascii?Q?KpGqIZ5NgWyXlTvFJPpwwXfNgl8Nu3spyuzq6xeEbMSBr7naEv7O1SA2U35A?=
- =?us-ascii?Q?DNFQwTIAjQyPJAw0eiEKSJJzM612hF/f2DClz7Lr70qK6z08wMYu/xkmOSIg?=
- =?us-ascii?Q?6dkM/Jy/ZsPT61xh/zyJHc2LJxSBfDy6NwAZmZjXEYGFn6LNT3yHc/b/XCP6?=
- =?us-ascii?Q?5rlQ3TKn466zA7FJOvX6NEehm+1kYBpLivVq2Gws0mOnE1p919FxnTGzJj7O?=
- =?us-ascii?Q?P/vq7lkHSD67yF4hKGZ+2zPVFnf+0tx+5dTNW6Ri3jwlxMNnyHfaC0arM3Zz?=
- =?us-ascii?Q?h3GlUvddEKmLyuYtc0WSmQ2dtJ+ZatB2w5TNgmnIpzWJdHhnnXXzyjpUKZlA?=
- =?us-ascii?Q?ijlbAdOnBVn0iz9QFZcGbZc0hxQVgvrQSUGt5fKge2MFzddyNUc6OH6dk0ss?=
- =?us-ascii?Q?Vc0zEQwKWW6eHs/cuAM4WV/PvqNkL/kSn2Bl1z1mNN/cHJOwuoacXN86pCnh?=
- =?us-ascii?Q?H8+JSKGhad/f7qwBkkJbQfR86HXO0jtjsgyhs6TDbp0+ADTQsFGr4IqER+NI?=
- =?us-ascii?Q?vocYlnkE3077FWuTpDI1IybOwf1ki3KsNJhHAuKBuk87YqrhF46z475Yuqox?=
- =?us-ascii?Q?NECcrv0JKGGnYsH5JQ2VQl0+G+BgoJRMJkL2ba3wDM8sSAtlvNW3E7dPVGWu?=
- =?us-ascii?Q?blyakhKE4yfo0dGWkWmC0r6zPe6HFP+heP5spqZIouIsXAVRwjVpGLg1tDN4?=
- =?us-ascii?Q?Mjb7dKsR3dQ2Ie2Vu866okHdyQMDLp4fE+B0qBHT6OOKlO6GhdZvjiapjtRn?=
- =?us-ascii?Q?WHD8lO0QkJTAJ8tTJk22rOXO0yrKv1fK82qQBiwyqqH39rNompGw7hd7FJ9I?=
- =?us-ascii?Q?jZzziGQMBVoBABpqTVAVgI2tfbB7605gWRvFi5U3+gYY1WD5DQs4QgZEZ4FU?=
- =?us-ascii?Q?dVGDzqe5z10KY8e+d/ctAp6eWJOO/OhlExYeSduobpHT26y2SkSfnoJlNGrc?=
- =?us-ascii?Q?7kg2lbc4+uGvecSGumXfzZyK6a5FRFUv7P0m/WqpkUe36m9NAJhr0Ckel/9E?=
- =?us-ascii?Q?mlh3g4Ho1tQY+nE4BzmNknZNw7gBf18bzEenlIBuY5Pr0e1vhX+QGt4SWmCk?=
- =?us-ascii?Q?uLxIUQPPTWbucvUl0C2GmP+qaPoCpMHE6c98FE+ITIjLFTW/niS54yHF4mxU?=
- =?us-ascii?Q?jsKULNeGFHJOY+dg+RJgs24+SQKr3GFp4GFwc4KhP8usYgTy2A95TcKcLwRE?=
- =?us-ascii?Q?IemfFIs8AzB9t9T5p0MugJgbr/41FB5OUgF5JG2FvfzVC2gEpuOh51SsXcZm?=
- =?us-ascii?Q?/MS+RpIPKY1NY+IEEE9+67i5gzh8qjEtyewhU07W?=
-X-OriginatorOrg: tdk.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c8bd498-4578-4f20-dd49-08dc314a11de
-X-MS-Exchange-CrossTenant-AuthSource: OSZP286MB1942.JPNP286.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2024 12:55:38.1065
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 7e452255-946f-4f17-800a-a0fb6835dc6c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: i4jri5h8/Maz9PnUqbffx9bkJFcl9cy+7hdHn7gwBY+f06yog3v9ufGEGHkU+2wvoLNcKJNtfZdEXWUx7kyFyg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWP286MB3110
-X-Proofpoint-ORIG-GUID: L2JWo-4Q6inveg2iPLmWK43gRTxQMucW
-X-Proofpoint-GUID: L2JWo-4Q6inveg2iPLmWK43gRTxQMucW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-19_09,2024-02-19_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 lowpriorityscore=0
- mlxlogscore=774 spamscore=0 mlxscore=0 impostorscore=0 clxscore=1015
- suspectscore=0 phishscore=0 malwarescore=0 priorityscore=1501 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2401310000
- definitions=main-2402190095
 
-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+On Sat, 2024-02-17 at 16:42 +0000, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>=20
+> Switching to the _scoped() version removes the need for manual
+> calling of fwnode_handle_put() in the paths where the code
+> exits the loop early. In this case that's all in error paths.
+>=20
+> Cc: Nuno S=C3=A1 <nuno.sa@analog.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> ---
 
-Now that we are reading the full FIFO in the interrupt handler,
-it is possible to have an emply FIFO since we are still receiving
-1 interrupt per data. Handle correctly this case instead of having
-an error causing a reset of the FIFO.
+Tested-by: Nuno Sa <nuno.sa@analog.com>
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
 
-Fixes: 0829edc43e0a ("iio: imu: inv_mpu6050: read the full fifo when processing data")
-Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-index 66d4ba088e70..d4f9b5d8d28d 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-@@ -109,6 +109,8 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
- 	/* compute and process only all complete datum */
- 	nb = fifo_count / bytes_per_datum;
- 	fifo_count = nb * bytes_per_datum;
-+	if (nb == 0)
-+		goto end_session;
- 	/* Each FIFO data contains all sensors, so same number for FIFO and sensor data */
- 	fifo_period = NSEC_PER_SEC / INV_MPU6050_DIVIDER_TO_FIFO_RATE(st->chip_config.divider);
- 	inv_sensors_timestamp_interrupt(&st->timestamp, fifo_period, nb, nb, pf->timestamp);
---
-2.34.1
+> v4: Moved alignment changes back to patch 4.
+> v3: Tweaked the alignment after comments from Andy.
+>=20
+> =C2=A0drivers/iio/dac/ltc2688.c | 24 ++++++------------------
+> =C2=A01 file changed, 6 insertions(+), 18 deletions(-)
+>=20
+> diff --git a/drivers/iio/dac/ltc2688.c b/drivers/iio/dac/ltc2688.c
+> index fc8eb53c65be..b71df03fc13b 100644
+> --- a/drivers/iio/dac/ltc2688.c
+> +++ b/drivers/iio/dac/ltc2688.c
+> @@ -746,26 +746,21 @@ static int ltc2688_span_lookup(const struct
+> ltc2688_state *st, int min, int max)
+> =C2=A0static int ltc2688_channel_config(struct ltc2688_state *st)
+> =C2=A0{
+> =C2=A0	struct device *dev =3D &st->spi->dev;
+> -	struct fwnode_handle *child;
+> =C2=A0	u32 reg, clk_input, val, tmp[2];
+> =C2=A0	int ret, span;
+> =C2=A0
+> -	device_for_each_child_node(dev, child) {
+> +	device_for_each_child_node_scoped(dev, child) {
+> =C2=A0		struct ltc2688_chan *chan;
+> =C2=A0
+> =C2=A0		ret =3D fwnode_property_read_u32(child, "reg", &reg);
+> -		if (ret) {
+> -			fwnode_handle_put(child);
+> +		if (ret)
+> =C2=A0			return dev_err_probe(dev, ret,
+> =C2=A0					=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to get reg property\n");
+> -		}
+> =C2=A0
+> -		if (reg >=3D LTC2688_DAC_CHANNELS) {
+> -			fwnode_handle_put(child);
+> +		if (reg >=3D LTC2688_DAC_CHANNELS)
+> =C2=A0			return dev_err_probe(dev, -EINVAL,
+> =C2=A0					=C2=A0=C2=A0=C2=A0=C2=A0 "reg bigger than: %d\n",
+> =C2=A0					=C2=A0=C2=A0=C2=A0=C2=A0 LTC2688_DAC_CHANNELS);
+> -		}
+> =C2=A0
+> =C2=A0		val =3D 0;
+> =C2=A0		chan =3D &st->channels[reg];
+> @@ -786,12 +781,10 @@ static int ltc2688_channel_config(struct ltc2688_st=
+ate
+> *st)
+> =C2=A0		if (!ret) {
+> =C2=A0			span =3D ltc2688_span_lookup(st, (int)tmp[0] / 1000,
+> =C2=A0						=C2=A0=C2=A0 tmp[1] / 1000);
+> -			if (span < 0) {
+> -				fwnode_handle_put(child);
+> +			if (span < 0)
+> =C2=A0				return dev_err_probe(dev, -EINVAL,
+> =C2=A0						=C2=A0=C2=A0=C2=A0=C2=A0 "output range not
+> valid:[%d %d]\n",
+> =C2=A0						=C2=A0=C2=A0=C2=A0=C2=A0 tmp[0], tmp[1]);
+> -			}
+> =C2=A0
+> =C2=A0			val |=3D FIELD_PREP(LTC2688_CH_SPAN_MSK, span);
+> =C2=A0		}
+> @@ -800,17 +793,14 @@ static int ltc2688_channel_config(struct ltc2688_st=
+ate
+> *st)
+> =C2=A0					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &clk_input);
+> =C2=A0		if (!ret) {
+> =C2=A0			if (clk_input >=3D LTC2688_CH_TGP_MAX) {
+> -				fwnode_handle_put(child);
+> =C2=A0				return dev_err_probe(dev, -EINVAL,
+> =C2=A0						=C2=A0=C2=A0=C2=A0=C2=A0 "toggle-dither-input inv
+> value(%d)\n",
+> =C2=A0						=C2=A0=C2=A0=C2=A0=C2=A0 clk_input);
+> =C2=A0			}
+> =C2=A0
+> =C2=A0			ret =3D ltc2688_tgp_clk_setup(st, chan, child,
+> clk_input);
+> -			if (ret) {
+> -				fwnode_handle_put(child);
+> +			if (ret)
+> =C2=A0				return ret;
+> -			}
+> =C2=A0
+> =C2=A0			/*
+> =C2=A0			 * 0 means software toggle which is the default mode.
+> @@ -844,11 +834,9 @@ static int ltc2688_channel_config(struct ltc2688_sta=
+te
+> *st)
+> =C2=A0
+> =C2=A0		ret =3D regmap_write(st->regmap, LTC2688_CMD_CH_SETTING(reg),
+> =C2=A0				=C2=A0=C2=A0 val);
+> -		if (ret) {
+> -			fwnode_handle_put(child);
+> +		if (ret)
+> =C2=A0			return dev_err_probe(dev, -EINVAL,
+> =C2=A0					=C2=A0=C2=A0=C2=A0=C2=A0 "failed to set chan
+> settings\n");
+> -		}
+> =C2=A0	}
+> =C2=A0
+> =C2=A0	return 0;
 
