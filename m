@@ -1,48 +1,69 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE4B614F9C8;
-	Tue, 20 Feb 2024 21:35:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65E0F55787;
+	Tue, 20 Feb 2024 22:43:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708464907; cv=none; b=jqh1eFTgv83gb8yE2MpR49BPWqSk1y9jxSSNe12MRgvKCWY62rpukbbb8U0uwX4q7EdYw8+BO0oT20YVbM7SSvZnCrNZJekvjm9I6Sw5jGzgzWGPaElCz4IMnazg5anNSOIZm50/cpq7iDkTH+mxlwmQqmv+9tIh1Md8ogudXp8=
+	t=1708469041; cv=none; b=W91yo1oRonU14lkK4phmJWz96oKqO7Rl0630VtV0hl7vMozq+xqI2JAcmd8InvK8/qyYQihVor3y6+2BccPHP8M36nVYbwfP2w4dq3lRQfe7+7tvdpQH0c4KjYuI+saJqfjZX6fF/UehscsCxrcGYcMIoa3XdRw0qZDuBP4Z8xg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708464907; c=relaxed/simple;
-	bh=LxTvQq64XK7yAstnWT9q+Hbs0Xz5SnKp4EtEMAWBAkw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=aq/kLG8ceI2A5LBluz4yGBQe6HXSbmhynhMKlz2p/4vleeyhOhwTrViYDMYBGGXck3Dt9jMkyk7pyipQwDOFHkvHOnJqKVTtYEqoOcOqjNDBiwczF8UGYPZDua0ib6sEuRPk0pWTt02fFdlpVEZM8lCfLFWFlE5KYlNLgny0EYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=yhLt9lOr; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1708469041; c=relaxed/simple;
+	bh=7OBXl7slkbYXNkGIWbZGvBwkUN2P3K/p4aq4Pl//018=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=uLYzlmlZjl1FtLjKUUp9k47ZGKnZ/SvNRHrOdtjYjmpcMLAV0NWRxCu8LHj2QGYrYlX5hXY7pZ1dnNMUSlw0tZWw9dcGM8Lx24Jh7TTcpOWkkgeULB6Nzj9h670RbaQGZTkQTwmY+kC8tz3xqerLFlRR2z3vbBlkTVbpo6S0LEo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ieqhiT33; arc=none smtp.client-ip=209.85.218.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="yhLt9lOr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A070C433F1;
-	Tue, 20 Feb 2024 21:35:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1708464906;
-	bh=LxTvQq64XK7yAstnWT9q+Hbs0Xz5SnKp4EtEMAWBAkw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=yhLt9lOrn5jEf53j1V3Znpz5fkZfm70aLkT1RkTUvLo3O2XirtK8mB2JPNNw1HXMR
-	 hi3A0duEW+vhl0t6MIwK81tNLP3h/ZoEknOm9H1nOIS0Ja0fB6yoxyG5vdtcQbmPpO
-	 Jk1N/GI5SMowIeH4OHZqi5rfAxbWgin+D7EIaAco=
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: stable@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	patches@lists.linux.dev,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Andrea Merello <andrea.merello@iit.it>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ieqhiT33"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-a3e87b2de41so266895866b.2;
+        Tue, 20 Feb 2024 14:43:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1708469038; x=1709073838; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=DHuB3jZibZ6qtCUb9uZTADnW27tWsLt6G/FLrbSZCEs=;
+        b=ieqhiT33QBrWIosXfxuF6R2nzZv/hAVRDUns/c/dsfVfni0XzH20tT7EZU0KbIhXRp
+         Tj1eznH/IceQX7ZRsF9Sc0f2qZKlbr/m2GpJw6o87oQeKtcN9MIYR47HnSGr8Wxd+tN1
+         p9onkqrANL4kanaFLljG91ooGEEOUxWFZx1gENvF66A3z60e+zr/tmLT+ecBpoJO2V5k
+         a39AHFG1wPNL2E67rKKj0yoyjce7xuR+CBm42HtynLHFy2av9F/8a/0+ol5zZctnp9dz
+         hTOo+KZwlR6eLtru6E6eG+zIXwNDJckGsBpSMpUCZCnpp2g7mbqE1Z+8ARVg5Q10/pjl
+         6eaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708469038; x=1709073838;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DHuB3jZibZ6qtCUb9uZTADnW27tWsLt6G/FLrbSZCEs=;
+        b=nh9lYMliKO8CF7ft53X+3N3PB/j4eS2+Zavu5C3E9lO7V7fG04OKD0ihjtUEEjbM0S
+         76v/DezBl9J340TBVoSJYpHlKbqCIkb28WWI6J65nnyvRxaJ6K54dHiMN1Mz9qsk+UID
+         d/r0Dgu0oOv5lTHaMMRlpkCHl/P+sLN+9ogdpHMCsWmMxwpDnIrX6vnZYmymBWtUi4HG
+         u1qIxU3SnDTdTKBakzy5Duz62GItO8aVhJRLEBdxy9AA65ge8cBnTmNgcT9yASXCKiSW
+         JyeRlhR8ofcMdHfPipV5/CWiKO6T07Dh1K/d2mGO7yQp6SPtLHZyXvYNsWQhz+teb2d7
+         mlpQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU/ESNCPBNtYAZX5Hx8Ed7mrVzZySQUZcILUegzHwqYBW+z/bmS3Tvt32Qzz4fPvxQRbo34NG5/XIgYsZPv/kV59WBbb2yO35hZhhanWwwwHLW3MNAjZbgsaySJf7/unSs/rbKTgWb3
+X-Gm-Message-State: AOJu0YxQQZHia4nexg0vpv8vDzADPyXtVqygZtHwUpsLkNzKNniNd8Nl
+	KuIdZrobyqDopmlgNk6jwejH83l+JDGalaL/0j49/T1v19jfDuZF
+X-Google-Smtp-Source: AGHT+IGef7cRx9p63So5jxOp2xHPGDx88OvziqNvplGafUO49cZ0JlsFYG1MOnGYkhXrNduPY2WEog==
+X-Received: by 2002:a17:906:af09:b0:a3e:d515:cdf3 with SMTP id lx9-20020a170906af0900b00a3ed515cdf3mr3933296ejb.27.1708469037440;
+        Tue, 20 Feb 2024 14:43:57 -0800 (PST)
+Received: from localhost.localdomain ([2a04:ee41:82:7577:4de1:dcc0:a48:7f])
+        by smtp.gmail.com with ESMTPSA id xg11-20020a170907320b00b00a3d83cff358sm4328489ejb.70.2024.02.20.14.43.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Feb 2024 14:43:57 -0800 (PST)
+From: Vasileios Amoiridis <vassilisamir@gmail.com>
+To: jic23@kernel.org
+Cc: lars@metafoo.de,
+	ang.iglesiasg@gmail.com,
+	andriy.shevchenko@linux.intel.com,
+	linus.walleij@linaro.org,
+	semen.protsenko@linaro.org,
 	linux-iio@vger.kernel.org,
-	Stable@vger.kernel.org,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 6.7 175/309] iio: imu: bno055: serdev requires REGMAP
-Date: Tue, 20 Feb 2024 21:55:34 +0100
-Message-ID: <20240220205638.628806459@linuxfoundation.org>
-X-Mailer: git-send-email 2.43.2
-In-Reply-To: <20240220205633.096363225@linuxfoundation.org>
-References: <20240220205633.096363225@linuxfoundation.org>
-User-Agent: quilt/0.67
-X-stable: review
-X-Patchwork-Hint: ignore
+	linux-kernel@vger.kernel.org,
+	Vasileios Amoiridis <vassilisamir@gmail.com>
+Subject: [PATCH 1/2] drivers: iio: pressure: Sort headers of BMPxxx SPI driver
+Date: Tue, 20 Feb 2024 23:43:28 +0100
+Message-Id: <20240220224329.53729-1-vassilisamir@gmail.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -51,57 +72,33 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-6.7-stable review patch.  If anyone has any objections, please let me know.
+Alphabetical sorting and separation of headers for the BMPxxx
+SPI driver.
 
-------------------
-
-From: Randy Dunlap <rdunlap@infradead.org>
-
-commit 35ec2d03b282a939949090bd8c39eb37a5856721 upstream.
-
-There are a ton of build errors when REGMAP is not set, so select
-REGMAP to fix all of them.
-
-Examples (not all of them):
-
-../drivers/iio/imu/bno055/bno055_ser_core.c:495:15: error: variable 'bno055_ser_regmap_bus' has initializer but incomplete type
-  495 | static struct regmap_bus bno055_ser_regmap_bus = {
-../drivers/iio/imu/bno055/bno055_ser_core.c:496:10: error: 'struct regmap_bus' has no member named 'write'
-  496 |         .write = bno055_ser_write_reg,
-../drivers/iio/imu/bno055/bno055_ser_core.c:497:10: error: 'struct regmap_bus' has no member named 'read'
-  497 |         .read = bno055_ser_read_reg,
-../drivers/iio/imu/bno055/bno055_ser_core.c: In function 'bno055_ser_probe':
-../drivers/iio/imu/bno055/bno055_ser_core.c:532:18: error: implicit declaration of function 'devm_regmap_init'; did you mean 'vmem_map_init'? [-Werror=implicit-function-declaration]
-  532 |         regmap = devm_regmap_init(&serdev->dev, &bno055_ser_regmap_bus,
-../drivers/iio/imu/bno055/bno055_ser_core.c:532:16: warning: assignment to 'struct regmap *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  532 |         regmap = devm_regmap_init(&serdev->dev, &bno055_ser_regmap_bus,
-../drivers/iio/imu/bno055/bno055_ser_core.c: At top level:
-../drivers/iio/imu/bno055/bno055_ser_core.c:495:26: error: storage size of 'bno055_ser_regmap_bus' isn't known
-  495 | static struct regmap_bus bno055_ser_regmap_bus = {
-
-Fixes: 2eef5a9cc643 ("iio: imu: add BNO055 serdev driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Andrea Merello <andrea.merello@iit.it>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux-iio@vger.kernel.org
-Cc: <Stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20240110185611.19723-1-rdunlap@infradead.org
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Vasileios Amoiridis <vassilisamir@gmail.com>
 ---
- drivers/iio/imu/bno055/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/pressure/bmp280-spi.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/iio/imu/bno055/Kconfig
-+++ b/drivers/iio/imu/bno055/Kconfig
-@@ -8,6 +8,7 @@ config BOSCH_BNO055
- config BOSCH_BNO055_SERIAL
- 	tristate "Bosch BNO055 attached via UART"
- 	depends on SERIAL_DEV_BUS
-+	select REGMAP
- 	select BOSCH_BNO055
- 	help
- 	  Enable this to support Bosch BNO055 IMUs attached via UART.
-
+diff --git a/drivers/iio/pressure/bmp280-spi.c b/drivers/iio/pressure/bmp280-spi.c
+index e8a5fed07e88..fd7ec6a5bca3 100644
+--- a/drivers/iio/pressure/bmp280-spi.c
++++ b/drivers/iio/pressure/bmp280-spi.c
+@@ -4,11 +4,12 @@
+  *
+  * Inspired by the older BMP085 driver drivers/misc/bmp085-spi.c
+  */
+-#include <linux/module.h>
+-#include <linux/spi/spi.h>
+ #include <linux/err.h>
++#include <linux/module.h>
+ #include <linux/regmap.h>
+ 
++#include <linux/spi/spi.h>
++
+ #include "bmp280.h"
+ 
+ static int bmp280_regmap_spi_write(void *context, const void *data,
+-- 
+2.25.1
 
