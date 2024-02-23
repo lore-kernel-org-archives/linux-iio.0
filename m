@@ -1,100 +1,91 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from smtp-8faf.mail.infomaniak.ch (smtp-8faf.mail.infomaniak.ch [83.166.143.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 433C278699;
-	Fri, 23 Feb 2024 12:46:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4824C2B9BF
+	for <linux-iio@vger.kernel.org>; Fri, 23 Feb 2024 12:46:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.166.143.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708692369; cv=none; b=A2OkJ6o3vvSD1NiYJNF9HodyH0h1sFQY6+9YqoPkGjQ7/t0CTF1Gg2hI2EcpQLoKk5cfpItkkpygonrKAkMeAQj+6klAmaYaK93BqzF3vP50s+an/gIfkTGvZPu24huuS1gD6+aK6/HMJnSGGvVzZBj7nA67y8U9jLBtwEoRFMk=
+	t=1708692372; cv=none; b=MfCrFx8Q1NLmn5sTIxyE9dLQWBYXtgCUvjhHt27ykZPEq/Df+QC5RjkpN7Q8vyWr0TR+FYmbIpzLdvLhj0PcqCN7vvOJy9kMeHHmwxL4DAYxm7jFpQ7+ddbCB6SxFK3gJVDjDw1Sq+5Aqgsb7okss094hlRCuXLoTeXliC/JCwY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708692369; c=relaxed/simple;
-	bh=0nvO5QhVTwHXLw89GWAB8O3fllRqeNhpn3I82k2THuM=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=heWsbMb9z9YtesSlRHJe3Ro1P0P+TcYOqf85FvG3zaSwNoXagcoAb/yAprEtuf9HBYtQ+97SyLhiBQkJTDdQpXMEhkX7XvcxIXYmNc9zQQ0wnRnSoUEbSI8TaR0tKoT4/CkuFXSr49Z4LStwLoEC55ubzZ8znI2nqDcAt1TnERw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.216])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Th8lh5rj4z67Jjw;
-	Fri, 23 Feb 2024 20:41:52 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
-	by mail.maildlp.com (Postfix) with ESMTPS id D4F19140119;
-	Fri, 23 Feb 2024 20:46:01 +0800 (CST)
-Received: from SecurePC-101-06.china.huawei.com (10.122.247.231) by
- lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Fri, 23 Feb 2024 12:46:01 +0000
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: <linux-iio@vger.kernel.org>, Rob Herring <robh@kernel.org>, Frank Rowand
-	<frowand.list@gmail.com>, <linux-kernel@vger.kernel.org>, Julia Lawall
-	<Julia.Lawall@inria.fr>
-CC: Peter Zijlstra <peterz@infradead.org>, Andy Shevchenko
-	<andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, <marek.vasut@gmail.com>
-Subject: [PATCH v2 3/4] of: unittest: Use for_each_child_of_node_scoped()
-Date: Fri, 23 Feb 2024 12:44:31 +0000
-Message-ID: <20240223124432.26443-4-Jonathan.Cameron@huawei.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20240223124432.26443-1-Jonathan.Cameron@huawei.com>
-References: <20240223124432.26443-1-Jonathan.Cameron@huawei.com>
+	s=arc-20240116; t=1708692372; c=relaxed/simple;
+	bh=G7JhRkmmJzhTv/nbROWOJ+QozMPIQrIGjBMDxlq8nVw=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=gxpuZIVXtrmUVDAURs3CPLGl79CeHwXog2g5MMdAD9fATmhhirYIe1i7wY8D28t5VCQEv7BoP+uWmCjv7ST4MOmDu/PtfZeNnG654SHwyIDB6bR0cmilAtrY2jN9zuMWB2cOiyJNCLjPwAUpqjqqsCPt0o6KwW5Sxg0bAocqCug=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=0leil.net; spf=pass smtp.mailfrom=0leil.net; arc=none smtp.client-ip=83.166.143.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=0leil.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=0leil.net
+Received: from smtp-4-0000.mail.infomaniak.ch (smtp-4-0000.mail.infomaniak.ch [10.7.10.107])
+	by smtp-4-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Th8rS6rJ3z5mK;
+	Fri, 23 Feb 2024 13:46:00 +0100 (CET)
+Received: from unknown by smtp-4-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4Th8rR5kDjzyKs;
+	Fri, 23 Feb 2024 13:45:59 +0100 (CET)
+From: Quentin Schulz <foss+kernel@0leil.net>
+Subject: [PATCH 0/3] iio: adc: rockchip_saradc: fix bitmasking and remove
+ custom logic for getting reset
+Date: Fri, 23 Feb 2024 13:45:20 +0100
+Message-Id: <20240223-saradcv2-chan-mask-v1-0-84b06a0f623a@theobroma-systems.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAGGT2GUC/x2M2wpAUBAAf0X7bItlhV+RhxOLTS6drZOSf3d4n
+ KaZG0y8ikGb3OAlqOmxR8jTBIbF7bOgjpGBMiozIkJz3o1DIPw0bs5W5KbgmuuKiSuI4ell0uu
+ fdv3zvF0lV5dkAAAA
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Heiko Stuebner <heiko@sntech.de>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+ Andy Shevchenko <andy.shevchenko@gmail.com>, 
+ Shreeya Patel <shreeya.patel@collabora.com>, Simon Xue <xxm@rock-chips.com>, 
+ Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ Quentin Schulz <quentin.schulz@theobroma-systems.com>, 
+ Quentin Schulz <foss+kernel@0leil.net>
+X-Mailer: b4 0.13.0
+X-Infomaniak-Routing: alpha
 
-A simple example of the utility of this autocleanup approach to
-handling of_node_put().
+The mask for the channel selection is incorrect as it's specified to be
+16b wide by is actually only 4.
 
-In this particular case some of the nodes needed for the test are
-not available and the _available_ version would cause them to be
-skipped resulting in a test failure.
+Also, the 16 lower bits in the SARADC_CONV_CON register are write
+protected. Whatever their value is can only be written to the hardware
+block if their associated bit in the higher 16 bits is set. Considering
+that the channel bitmask is 4b wide but that we can write e.g. 0 in
+there, we shouldn't use the value shifted by 16 as a mask but rather the
+bitmask for that value shifted by 16. This is currently NOT an issue
+because the only SoC with SARADCv2 IP is the RK3588 which has a reset
+defined in the SoC DTSI. When that is the case, the reset is asserted
+before every channel conversion is started. This means the registers are
+reset so effectively, we do not need to write zeros so the wrong mask
+still works because where we should be writing zeroes, there are already
+zeroes. However, let's fix this in case there comes a day there's an SoC
+which doesn't require to reset the controller before every channel
+conversion is started.
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Lastly, let's use the appropriate function from the reset subsystem
+for getting an optional exclusive reset instead of rolling out our own
+logic.
+
+Those three patches should not be changing any behavior.
+
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 ---
- drivers/of/unittest.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+Quentin Schulz (3):
+      iio: adc: rockchip_saradc: fix bitmask for channels on SARADCv2
+      iio: adc: rockchip_saradc: use mask for write_enable bitfield
+      iio: adc: rockchip_saradc: replace custom logic with devm_reset_control_get_optional_exclusive
 
-diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
-index d7593bde2d02..567904464a21 100644
---- a/drivers/of/unittest.c
-+++ b/drivers/of/unittest.c
-@@ -239,27 +239,22 @@ static void __init of_unittest_dynamic(void)
- 
- static int __init of_unittest_check_node_linkage(struct device_node *np)
- {
--	struct device_node *child;
- 	int count = 0, rc;
- 
--	for_each_child_of_node(np, child) {
-+	for_each_child_of_node_scoped(np, child) {
- 		if (child->parent != np) {
- 			pr_err("Child node %pOFn links to wrong parent %pOFn\n",
- 				 child, np);
--			rc = -EINVAL;
--			goto put_child;
-+			return -EINVAL;
- 		}
- 
- 		rc = of_unittest_check_node_linkage(child);
- 		if (rc < 0)
--			goto put_child;
-+			return rc;
- 		count += rc;
- 	}
- 
- 	return count + 1;
--put_child:
--	of_node_put(child);
--	return rc;
- }
- 
- static void __init of_unittest_check_tree_linkage(void)
+ drivers/iio/adc/rockchip_saradc.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
+---
+base-commit: 39133352cbed6626956d38ed72012f49b0421e7b
+change-id: 20240222-saradcv2-chan-mask-593585865256
+
+Best regards,
 -- 
-2.39.2
+Quentin Schulz <quentin.schulz@theobroma-systems.com>
 
