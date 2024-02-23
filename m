@@ -1,152 +1,125 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A735A7BB01;
-	Fri, 23 Feb 2024 12:46:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61D2C7BAE3;
+	Fri, 23 Feb 2024 12:50:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708692396; cv=none; b=CtlMPqDxniu3hfA6K9AvS+EGFmuh2QhXtUXGf5uq0OFCZWAp8I6kvSFqOMrpGjq94sxC51N5q47h4BkRUcbN1S3pdL+BuxhXjb+dQLapaUvCaVQrpdrq1GMYdowWThDcr+eHVqdU/Mipx8BVbLSG46jdvgwcfq8OYOC6c1AvvoA=
+	t=1708692661; cv=none; b=DUMTSpLTq/binFin+Jv3STbRILxT/oUyaYPWPnx6jcvGE8iwoVvTlpRTx1hKAqK0ZSa12odrlcqyp676rh6FtoD1JDzDIl8fF5EW8yP5A9rZJPPse1JsX3rVAcB62QuuabrUyr5fXkXLZSJ4DLcdGKR0WKaRSR3Z7WK25BDevAw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708692396; c=relaxed/simple;
-	bh=uwvaZI11bdMokSgb+i0nBIM711O1DzkCOL2KDkr/QbY=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=h1xUJmqIkMb4XftmDMtN6IDL17LUuA2W+2PCvgAAdUMNJGfcA3umfmDxIro4ThII5BXN9YhP6Rk/NoZrAmP2auUTHVPTGomd6bvjaqnfQEZhqgApJ9K6SebDAbDu8NSdrOTPk9JGtt7/idp5cBRDiiGqNWKvNA2b48Qp758MEqI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.31])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Th8ms30Ljz6K8qJ;
-	Fri, 23 Feb 2024 20:42:53 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
-	by mail.maildlp.com (Postfix) with ESMTPS id 57DD3141144;
-	Fri, 23 Feb 2024 20:46:32 +0800 (CST)
-Received: from SecurePC-101-06.china.huawei.com (10.122.247.231) by
- lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Fri, 23 Feb 2024 12:46:31 +0000
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: <linux-iio@vger.kernel.org>, Rob Herring <robh@kernel.org>, Frank Rowand
-	<frowand.list@gmail.com>, <linux-kernel@vger.kernel.org>, Julia Lawall
-	<Julia.Lawall@inria.fr>
-CC: Peter Zijlstra <peterz@infradead.org>, Andy Shevchenko
-	<andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, <marek.vasut@gmail.com>
-Subject: [PATCH v2 4/4] iio: adc: rcar-gyroadc: use for_each_available_child_node_scoped()
-Date: Fri, 23 Feb 2024 12:44:32 +0000
-Message-ID: <20240223124432.26443-5-Jonathan.Cameron@huawei.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20240223124432.26443-1-Jonathan.Cameron@huawei.com>
-References: <20240223124432.26443-1-Jonathan.Cameron@huawei.com>
+	s=arc-20240116; t=1708692661; c=relaxed/simple;
+	bh=AVRT8j5RaCn/BZf0gVyzpkugvUL51cHt0DCa7hvPaXg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HEgwhczmue+oSVLZmCaNaQjrTM5jiB1qrZURWyxH31++LXakEIFfqDaKwq47unw/TyibxTHHH6q25w5PLeJZHZ4TM9A1cE9wIIKmwblQUea6rZNQGEvba+ovsgWHLfIrbANf+muEeHK5L4wcRALP67SIpjeP6mz68WWProAEhr4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Dbw1DeUE; arc=none smtp.client-ip=209.85.167.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Dbw1DeUE"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-512b29f82d1so426805e87.1;
+        Fri, 23 Feb 2024 04:50:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1708692657; x=1709297457; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:mail-followup-to:message-id:subject:cc:to
+         :from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=aUQgrMlkxXtdk899rnSTIJQcALfRj3OIxVsQ4kgw0cA=;
+        b=Dbw1DeUEfT9408bUJ84YxJ6WRaLnkfjPWh8aeEmy2S8Frz3oO0f83JkJydOUG9Z1GQ
+         pXk8EcrhZxkBF1cQoy8ok4W4s9LLm423cAEu2vZPh2mfi8Pdmor8tkMEswUR9+eV5Tun
+         L84XAjmuislsX+qUbNorFqCc54TJO5PKpIZvpuRpzvJsvL0go73hqb943TG2Ji63rk9t
+         62tSZUsr4IuPlMt5dZhmmuBkUu+VcoGddE2jNJPacod0eTb73b7IcUZq+wrah2A3qJvf
+         harfhMXRgUjO7xopTLnU/Q5IY413X08VoMMMTjlB0B4tKGB7mCTjl60LRqgyWLvbfGFl
+         mHYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708692657; x=1709297457;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:mail-followup-to:message-id:subject:cc:to
+         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=aUQgrMlkxXtdk899rnSTIJQcALfRj3OIxVsQ4kgw0cA=;
+        b=wlBLQyk/efIA8iOuDeSpIbWkC48FDYhe/nf025zrbJDfA/y81wZj8FrbVBOMWcsbHf
+         Dw4r4ZEUT5E2Fn6wfc4pXNfulIDssha8TpFS2Bi639J8JqdgDQRaZwwFnMzsCXHX6Tl3
+         dsRHXfi1mzk175wij5V5lbiZScDHLxiG9Rd3WUBxOIOisLJJeWNOLCyhjWYieZtiowXp
+         m7SNteLWKo1ft8TrpTUkQ7JOCIdRnYo+cJt4GWhjqVA3fi2VtJ/2VMn0qOK6DJ0OxWRM
+         dv3+JaoYXu2GQfNLWEwtOiOZpKMMH2vZQAamIXZeWWTMfGdXrkDlHs/HZcdsGumgumCs
+         d3Rg==
+X-Forwarded-Encrypted: i=1; AJvYcCVQrgqUGCGAnq5WDlShTUaaF7LU53ctnSnww15hQwX3xtDaN1jXSDK2hFb3gElxNaEDfFD56lXJ8VMdY8+t2vrYY1q1hmteQFJm7qFDMWNm4gH5vZjByqerJfxQzWP/FptZqAoa4w==
+X-Gm-Message-State: AOJu0Yy9YQuLEPwXKSfhJJaIaIU5CjVzOwVxwFs2XHxXqBOAJB8RCClZ
+	kauBMr59AVksAvwUoHylymelgtLZaa3br3rrCiF5XBlCWKuXh7fD
+X-Google-Smtp-Source: AGHT+IGyxqZbZALpef/feNcgy99jXbBBv5LDTEdWJz/Xr+7J9fI7cV8HCU4wHYzxgYTrRBp0/rf7/w==
+X-Received: by 2002:ac2:4e06:0:b0:511:7259:370d with SMTP id e6-20020ac24e06000000b005117259370dmr1625621lfr.33.1708692657238;
+        Fri, 23 Feb 2024 04:50:57 -0800 (PST)
+Received: from localhost ([94.19.228.143])
+        by smtp.gmail.com with ESMTPSA id h17-20020a19ca51000000b00512d863919asm633177lfj.275.2024.02.23.04.50.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Feb 2024 04:50:55 -0800 (PST)
+Date: Fri, 23 Feb 2024 15:48:41 +0300
+From: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+To: =?utf-8?Q?Ond=C5=99ej?= Jirman <megi@xff.cz>
+Cc: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>, Icenowy Zheng <icenowy@aosc.io>,
+	Dalton Durst <dalton@ubports.com>, Shoji Keita <awaittrot@shjk.jp>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 3/4] iio: magnetometer: add a driver for Voltafield
+ AF8133J magnetometer
+Message-ID: <ZdiUKV7JJQ5TglYM@skv.local>
+Mail-Followup-To: Andrey Skvortsov <andrej.skvortzov@gmail.com>,
+	=?utf-8?Q?Ond=C5=99ej?= Jirman <megi@xff.cz>,
+	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>, Icenowy Zheng <icenowy@aosc.io>,
+	Dalton Durst <dalton@ubports.com>, Shoji Keita <awaittrot@shjk.jp>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+References: <20240222011341.3232645-1-megi@xff.cz>
+ <20240222011341.3232645-4-megi@xff.cz>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
+In-Reply-To: <20240222011341.3232645-4-megi@xff.cz>
 
-Using automated cleanup to replace of_node_put() handling allows for
-a simplfied flow by enabling direct returns on errors.
+Hi,
 
-Non available child nodes should never have been considered; that
-is ones where status != okay and was defined.
+On 24-02-22 02:13, Ondřej Jirman wrote:
+> From: Icenowy Zheng <icenowy@aosc.io>
+> 
+> AF8133J is a simple I2C-connected magnetometer, without interrupts.
+> 
+> Add a simple IIO driver for it.
+> 
+> Co-developed-by: Icenowy Zheng <icenowy@aosc.io>
+> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+> Signed-off-by: Dalton Durst <dalton@ubports.com>
+> Signed-off-by: Shoji Keita <awaittrot@shjk.jp>
+> Co-developed-by: Ondrej Jirman <megi@xff.cz>
+> Signed-off-by: Ondrej Jirman <megi@xff.cz>
+> Reviewed-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+> Tested-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+> ---
+>  drivers/iio/magnetometer/Kconfig   |  12 +
+>  drivers/iio/magnetometer/Makefile  |   1 +
+>  drivers/iio/magnetometer/af8133j.c | 524 +++++++++++++++++++++++++++++
+>  3 files changed, 537 insertions(+)
+>  create mode 100644 drivers/iio/magnetometer/af8133j.c
+> 
+> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+> index 38532d840f2a..cd2917d71904 100644
+> --- a/drivers/iio/magnetometer/Kconfig
+> +++ b/drivers/iio/magnetometer/Kconfig
+> @@ -6,6 +6,18 @@
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
----
- drivers/iio/adc/rcar-gyroadc.c | 21 ++++++---------------
- 1 file changed, 6 insertions(+), 15 deletions(-)
+I've tested v4 driver again on 6.8-rc5. Works like before.
 
-diff --git a/drivers/iio/adc/rcar-gyroadc.c b/drivers/iio/adc/rcar-gyroadc.c
-index d524f2e8e927..15a21d2860e7 100644
---- a/drivers/iio/adc/rcar-gyroadc.c
-+++ b/drivers/iio/adc/rcar-gyroadc.c
-@@ -318,7 +318,6 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
- 	struct rcar_gyroadc *priv = iio_priv(indio_dev);
- 	struct device *dev = priv->dev;
- 	struct device_node *np = dev->of_node;
--	struct device_node *child;
- 	struct regulator *vref;
- 	unsigned int reg;
- 	unsigned int adcmode = -1, childmode;
-@@ -326,7 +325,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
- 	unsigned int num_channels;
- 	int ret, first = 1;
- 
--	for_each_child_of_node(np, child) {
-+	for_each_available_child_of_node_scoped(np, child) {
- 		of_id = of_match_node(rcar_gyroadc_child_match, child);
- 		if (!of_id) {
- 			dev_err(dev, "Ignoring unsupported ADC \"%pOFn\".",
-@@ -352,7 +351,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
- 			num_channels = ARRAY_SIZE(rcar_gyroadc_iio_channels_3);
- 			break;
- 		default:
--			goto err_e_inval;
-+			return -EINVAL;
- 		}
- 
- 		/*
-@@ -369,7 +368,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
- 				dev_err(dev,
- 					"Failed to get child reg property of ADC \"%pOFn\".\n",
- 					child);
--				goto err_of_node_put;
-+				return ret;
- 			}
- 
- 			/* Channel number is too high. */
-@@ -377,7 +376,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
- 				dev_err(dev,
- 					"Only %i channels supported with %pOFn, but reg = <%i>.\n",
- 					num_channels, child, reg);
--				goto err_e_inval;
-+				return -EINVAL;
- 			}
- 		}
- 
-@@ -386,7 +385,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
- 			dev_err(dev,
- 				"Channel %i uses different ADC mode than the rest.\n",
- 				reg);
--			goto err_e_inval;
-+			return -EINVAL;
- 		}
- 
- 		/* Channel is valid, grab the regulator. */
-@@ -396,8 +395,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
- 		if (IS_ERR(vref)) {
- 			dev_dbg(dev, "Channel %i 'vref' supply not connected.\n",
- 				reg);
--			ret = PTR_ERR(vref);
--			goto err_of_node_put;
-+			return PTR_ERR(vref);
- 		}
- 
- 		priv->vref[reg] = vref;
-@@ -422,7 +420,6 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
- 		 * we can stop parsing here.
- 		 */
- 		if (childmode == RCAR_GYROADC_MODE_SELECT_1_MB88101A) {
--			of_node_put(child);
- 			break;
- 		}
- 	}
-@@ -433,12 +430,6 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
- 	}
- 
- 	return 0;
--
--err_e_inval:
--	ret = -EINVAL;
--err_of_node_put:
--	of_node_put(child);
--	return ret;
- }
- 
- static void rcar_gyroadc_deinit_supplies(struct iio_dev *indio_dev)
 -- 
-2.39.2
-
+Best regards,
+Andrey Skvortsov
