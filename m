@@ -1,28 +1,28 @@
-Received: from smtp-42aa.mail.infomaniak.ch (smtp-42aa.mail.infomaniak.ch [84.16.66.170])
+Received: from smtp-bc0f.mail.infomaniak.ch (smtp-bc0f.mail.infomaniak.ch [45.157.188.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7E7F7BB01
-	for <linux-iio@vger.kernel.org>; Fri, 23 Feb 2024 12:46:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=84.16.66.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D241C7D40B;
+	Fri, 23 Feb 2024 12:46:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.157.188.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708692372; cv=none; b=QoANMwTHop0j740G6VuwRDkg56t3+l+B9drKTQ9DwcvFohLA7im61UBJ0psJr1IiTJK72rrmPIQ/wG5uw4zYBwDswjOE/QWaUIXJapPvmWIDzbIM2fevvSuean2DKzw7mpvL07wjNxEmNbey5hU5xjvJp4YC6vLVxU2YMgt9Avo=
+	t=1708692373; cv=none; b=GWUw5fRmzE82Q2Pn8AVDtOPXff1YpM52iGIgGo+zRdhoqrczl/9qq/tgJjuU6sCOZfwHMDxBzeMGdnm99dgrv/e4FHeAdYUyEBp0wVjfhbwO5N/3JbsE7T7rJXL499FCzX3obRSZUCw+o8bqgf9ap0M419PUig+fM0XN6tq0VwQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708692372; c=relaxed/simple;
-	bh=oZmKnh899g7Ve8UaEWRKSGcDpbmmpXhJYkdPoVN2API=;
+	s=arc-20240116; t=1708692373; c=relaxed/simple;
+	bh=O5J38fZMczK0MaBGKtlxx86NTATzdfRmyBIfc3ANxZg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=IcBx7YsLH7ifg9O4dSruxBdAeusChhcdfIlaEwMw6UQut1XThGMLNFCMOc3q8UMke1NU24/t0YxhysqiJJ/pOgKGMCOSUV/NwEE81U821rIgdIqMhUdheNc4tqtDYwglQxhnzUdcnrnzZoCfObWZcxhJ9Wu0T+acM2kk4FykhxQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=0leil.net; spf=pass smtp.mailfrom=0leil.net; arc=none smtp.client-ip=84.16.66.170
+	 In-Reply-To:To:Cc; b=rN44W+idMCz/GOllGdOoc7TibXocInSGNaPpsO+F6MyVTXafRWUDpAi/oyXGxCdjPzPnM2O0j5khEb6oVCKBd0qCz+5lS39te4K/eUZlbCHcmTMnTOvvZ6zWcrs2GB1uuWEJeA6P43SUXYFsRx4254b1VTtP1beuLHUHv9M+f9k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=0leil.net; spf=pass smtp.mailfrom=0leil.net; arc=none smtp.client-ip=45.157.188.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=0leil.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=0leil.net
-Received: from smtp-4-0000.mail.infomaniak.ch (unknown [10.7.10.107])
-	by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Th8rT5Sg8zMrtd6;
-	Fri, 23 Feb 2024 13:46:01 +0100 (CET)
-Received: from unknown by smtp-4-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4Th8rS6knNzwNb;
-	Fri, 23 Feb 2024 13:46:00 +0100 (CET)
+Received: from smtp-4-0000.mail.infomaniak.ch (smtp-4-0000.mail.infomaniak.ch [10.7.10.107])
+	by smtp-4-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Th8rW0T5kzGlS;
+	Fri, 23 Feb 2024 13:46:03 +0100 (CET)
+Received: from unknown by smtp-4-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4Th8rV3HzMzw14;
+	Fri, 23 Feb 2024 13:46:02 +0100 (CET)
 From: Quentin Schulz <foss+kernel@0leil.net>
-Date: Fri, 23 Feb 2024 13:45:21 +0100
-Subject: [PATCH 1/3] iio: adc: rockchip_saradc: fix bitmask for channels on
- SARADCv2
+Date: Fri, 23 Feb 2024 13:45:23 +0100
+Subject: [PATCH 3/3] iio: adc: rockchip_saradc: replace custom logic with
+ devm_reset_control_get_optional_exclusive
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -31,7 +31,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240223-saradcv2-chan-mask-v1-1-84b06a0f623a@theobroma-systems.com>
+Message-Id: <20240223-saradcv2-chan-mask-v1-3-84b06a0f623a@theobroma-systems.com>
 References: <20240223-saradcv2-chan-mask-v1-0-84b06a0f623a@theobroma-systems.com>
 In-Reply-To: <20240223-saradcv2-chan-mask-v1-0-84b06a0f623a@theobroma-systems.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -50,31 +50,40 @@ X-Infomaniak-Routing: alpha
 
 From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 
-The SARADCv2 on RK3588 (the only SoC currently supported that has an
-SARADCv2) selects the channel through the channel_sel bitfield which is
-the 4 lowest bits, therefore the mask should be GENMASK(3, 0) and not
-GENMASK(15, 0).
+devm_reset_control_get_optional_exclusive does what this driver is
+trying to do in its probe function, therefore let's switch over to that
+subsystem function.
 
-Fixes: 757953f8ec69 ("iio: adc: rockchip_saradc: Add support for RK3588")
 Cc: Quentin Schulz <foss+kernel@0leil.net>
 Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 ---
- drivers/iio/adc/rockchip_saradc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/rockchip_saradc.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-index dd94667a623b..2da8d6f3241a 100644
+index 1c0042fbbb54..bbe954a738c7 100644
 --- a/drivers/iio/adc/rockchip_saradc.c
 +++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -52,7 +52,7 @@
- #define SARADC2_START			BIT(4)
- #define SARADC2_SINGLE_MODE		BIT(5)
+@@ -450,16 +450,11 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+ 	 * The reset should be an optional property, as it should work
+ 	 * with old devicetrees as well
+ 	 */
+-	info->reset = devm_reset_control_get_exclusive(&pdev->dev,
+-						       "saradc-apb");
++	info->reset = devm_reset_control_get_optional_exclusive(&pdev->dev,
++								"saradc-apb");
+ 	if (IS_ERR(info->reset)) {
+ 		ret = PTR_ERR(info->reset);
+-		if (ret != -ENOENT)
+-			return dev_err_probe(&pdev->dev, ret,
+-					     "failed to get saradc-apb\n");
+-
+-		dev_dbg(&pdev->dev, "no reset control found\n");
+-		info->reset = NULL;
++		return dev_err_probe(&pdev->dev, ret, "failed to get saradc-apb\n");
+ 	}
  
--#define SARADC2_CONV_CHANNELS GENMASK(15, 0)
-+#define SARADC2_CONV_CHANNELS GENMASK(3, 0)
- 
- struct rockchip_saradc;
- 
+ 	init_completion(&info->completion);
 
 -- 
 2.43.2
