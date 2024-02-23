@@ -1,103 +1,152 @@
-Received: from smtp-8fad.mail.infomaniak.ch (smtp-8fad.mail.infomaniak.ch [83.166.143.173])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7E217BAF8
-	for <linux-iio@vger.kernel.org>; Fri, 23 Feb 2024 12:46:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.166.143.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A735A7BB01;
+	Fri, 23 Feb 2024 12:46:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708692373; cv=none; b=bbqULgRi7717uxZ8/RS0gS1W/N228EddWI4izZHtxURjsJKL2RoHSw7r1kSRUO5ctFn3yD1hMkY1fZ3m6KYDXqaOAnMkcOidrfCCtHSigHR/GCxZoQ3hAr26tWyu1/KX8Icn2Ts4VcHRTbjWrMKRA2ej1hOaxV5lzCUhp0v3j+8=
+	t=1708692396; cv=none; b=CtlMPqDxniu3hfA6K9AvS+EGFmuh2QhXtUXGf5uq0OFCZWAp8I6kvSFqOMrpGjq94sxC51N5q47h4BkRUcbN1S3pdL+BuxhXjb+dQLapaUvCaVQrpdrq1GMYdowWThDcr+eHVqdU/Mipx8BVbLSG46jdvgwcfq8OYOC6c1AvvoA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708692373; c=relaxed/simple;
-	bh=K5SKHZ8edZFBOjaMQ5a+FjeaN0WmRn9O5VzcpKzw93w=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=syQtoPOR4KS47U6su0lu2lzuggJWBuPcT7NbzZ3l6iVIu0IFeDlkhnOPzaF/TbiwqpBMvh9zgo6tqo958p9VSL0XZfh494cd93mIAvoxq/E5a58dz3aiZn1TIwGVvcErkLdSw0A4bMUbtCGGJwOlsbZ/ahY66C8H+nJzuRXjf3g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=0leil.net; spf=pass smtp.mailfrom=0leil.net; arc=none smtp.client-ip=83.166.143.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=0leil.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=0leil.net
-Received: from smtp-4-0000.mail.infomaniak.ch (smtp-4-0000.mail.infomaniak.ch [10.7.10.107])
-	by smtp-4-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Th8rV3Qr6zGMT;
-	Fri, 23 Feb 2024 13:46:02 +0100 (CET)
-Received: from unknown by smtp-4-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4Th8rT5JLQzv7F;
-	Fri, 23 Feb 2024 13:46:01 +0100 (CET)
-From: Quentin Schulz <foss+kernel@0leil.net>
-Date: Fri, 23 Feb 2024 13:45:22 +0100
-Subject: [PATCH 2/3] iio: adc: rockchip_saradc: use mask for write_enable
- bitfield
+	s=arc-20240116; t=1708692396; c=relaxed/simple;
+	bh=uwvaZI11bdMokSgb+i0nBIM711O1DzkCOL2KDkr/QbY=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=h1xUJmqIkMb4XftmDMtN6IDL17LUuA2W+2PCvgAAdUMNJGfcA3umfmDxIro4ThII5BXN9YhP6Rk/NoZrAmP2auUTHVPTGomd6bvjaqnfQEZhqgApJ9K6SebDAbDu8NSdrOTPk9JGtt7/idp5cBRDiiGqNWKvNA2b48Qp758MEqI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.31])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Th8ms30Ljz6K8qJ;
+	Fri, 23 Feb 2024 20:42:53 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
+	by mail.maildlp.com (Postfix) with ESMTPS id 57DD3141144;
+	Fri, 23 Feb 2024 20:46:32 +0800 (CST)
+Received: from SecurePC-101-06.china.huawei.com (10.122.247.231) by
+ lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Fri, 23 Feb 2024 12:46:31 +0000
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To: <linux-iio@vger.kernel.org>, Rob Herring <robh@kernel.org>, Frank Rowand
+	<frowand.list@gmail.com>, <linux-kernel@vger.kernel.org>, Julia Lawall
+	<Julia.Lawall@inria.fr>
+CC: Peter Zijlstra <peterz@infradead.org>, Andy Shevchenko
+	<andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, <marek.vasut@gmail.com>
+Subject: [PATCH v2 4/4] iio: adc: rcar-gyroadc: use for_each_available_child_node_scoped()
+Date: Fri, 23 Feb 2024 12:44:32 +0000
+Message-ID: <20240223124432.26443-5-Jonathan.Cameron@huawei.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20240223124432.26443-1-Jonathan.Cameron@huawei.com>
+References: <20240223124432.26443-1-Jonathan.Cameron@huawei.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240223-saradcv2-chan-mask-v1-2-84b06a0f623a@theobroma-systems.com>
-References: <20240223-saradcv2-chan-mask-v1-0-84b06a0f623a@theobroma-systems.com>
-In-Reply-To: <20240223-saradcv2-chan-mask-v1-0-84b06a0f623a@theobroma-systems.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, Heiko Stuebner <heiko@sntech.de>, 
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
- Andy Shevchenko <andy.shevchenko@gmail.com>, 
- Shreeya Patel <shreeya.patel@collabora.com>, Simon Xue <xxm@rock-chips.com>, 
- Philipp Zabel <p.zabel@pengutronix.de>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, 
- Quentin Schulz <quentin.schulz@theobroma-systems.com>, 
- Quentin Schulz <foss+kernel@0leil.net>
-X-Mailer: b4 0.13.0
-X-Infomaniak-Routing: alpha
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
 
-From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Using automated cleanup to replace of_node_put() handling allows for
+a simplfied flow by enabling direct returns on errors.
 
-Some of the registers on the SARADCv2 have bits write protected except
-if another bit is set. This is usually done by having the lowest 16 bits
-store the data to write and the highest 16 bits specify which of the 16
-lowest bits should have their value written to the hardware block.
+Non available child nodes should never have been considered; that
+is ones where status != okay and was defined.
 
-The write_enable mask for the channel selection was incorrect because it
-was just the value shifted by 16 bits, which means it would only ever
-write bits and never clear them. So e.g. if someone starts a conversion
-on channel 5, the lowest 4 bits would be 0x5, then starts a conversion
-on channel 0, it would still be 5.
-
-Instead of shifting the value by 16 as the mask, let's use the OR'ing of
-the appropriate masks shifted by 16.
-
-Note that this is not an issue currently because the only SARADCv2
-currently supported has a reset defined in its Device Tree, that reset
-resets the SARADC controller before starting a conversion on a channel.
-However, this reset is handled as optional by the probe function and
-thus proper masking should be used in the event an SARADCv2 without a
-reset ever makes it upstream.
-
-Fixes: 757953f8ec69 ("iio: adc: rockchip_saradc: Add support for RK3588")
-Cc: Quentin Schulz <foss+kernel@0leil.net>
-Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/adc/rockchip_saradc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/rcar-gyroadc.c | 21 ++++++---------------
+ 1 file changed, 6 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-index 2da8d6f3241a..1c0042fbbb54 100644
---- a/drivers/iio/adc/rockchip_saradc.c
-+++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -102,12 +102,12 @@ static void rockchip_saradc_start_v2(struct rockchip_saradc *info, int chn)
- 	writel_relaxed(0xc, info->regs + SARADC_T_DAS_SOC);
- 	writel_relaxed(0x20, info->regs + SARADC_T_PD_SOC);
- 	val = FIELD_PREP(SARADC2_EN_END_INT, 1);
--	val |= val << 16;
-+	val |= SARADC2_EN_END_INT << 16;
- 	writel_relaxed(val, info->regs + SARADC2_END_INT_EN);
- 	val = FIELD_PREP(SARADC2_START, 1) |
- 	      FIELD_PREP(SARADC2_SINGLE_MODE, 1) |
- 	      FIELD_PREP(SARADC2_CONV_CHANNELS, chn);
--	val |= val << 16;
-+	val |= (SARADC2_START | SARADC2_SINGLE_MODE | SARADC2_CONV_CHANNELS) << 16;
- 	writel(val, info->regs + SARADC2_CONV_CON);
+diff --git a/drivers/iio/adc/rcar-gyroadc.c b/drivers/iio/adc/rcar-gyroadc.c
+index d524f2e8e927..15a21d2860e7 100644
+--- a/drivers/iio/adc/rcar-gyroadc.c
++++ b/drivers/iio/adc/rcar-gyroadc.c
+@@ -318,7 +318,6 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 	struct rcar_gyroadc *priv = iio_priv(indio_dev);
+ 	struct device *dev = priv->dev;
+ 	struct device_node *np = dev->of_node;
+-	struct device_node *child;
+ 	struct regulator *vref;
+ 	unsigned int reg;
+ 	unsigned int adcmode = -1, childmode;
+@@ -326,7 +325,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 	unsigned int num_channels;
+ 	int ret, first = 1;
+ 
+-	for_each_child_of_node(np, child) {
++	for_each_available_child_of_node_scoped(np, child) {
+ 		of_id = of_match_node(rcar_gyroadc_child_match, child);
+ 		if (!of_id) {
+ 			dev_err(dev, "Ignoring unsupported ADC \"%pOFn\".",
+@@ -352,7 +351,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 			num_channels = ARRAY_SIZE(rcar_gyroadc_iio_channels_3);
+ 			break;
+ 		default:
+-			goto err_e_inval;
++			return -EINVAL;
+ 		}
+ 
+ 		/*
+@@ -369,7 +368,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 				dev_err(dev,
+ 					"Failed to get child reg property of ADC \"%pOFn\".\n",
+ 					child);
+-				goto err_of_node_put;
++				return ret;
+ 			}
+ 
+ 			/* Channel number is too high. */
+@@ -377,7 +376,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 				dev_err(dev,
+ 					"Only %i channels supported with %pOFn, but reg = <%i>.\n",
+ 					num_channels, child, reg);
+-				goto err_e_inval;
++				return -EINVAL;
+ 			}
+ 		}
+ 
+@@ -386,7 +385,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 			dev_err(dev,
+ 				"Channel %i uses different ADC mode than the rest.\n",
+ 				reg);
+-			goto err_e_inval;
++			return -EINVAL;
+ 		}
+ 
+ 		/* Channel is valid, grab the regulator. */
+@@ -396,8 +395,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 		if (IS_ERR(vref)) {
+ 			dev_dbg(dev, "Channel %i 'vref' supply not connected.\n",
+ 				reg);
+-			ret = PTR_ERR(vref);
+-			goto err_of_node_put;
++			return PTR_ERR(vref);
+ 		}
+ 
+ 		priv->vref[reg] = vref;
+@@ -422,7 +420,6 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 		 * we can stop parsing here.
+ 		 */
+ 		if (childmode == RCAR_GYROADC_MODE_SELECT_1_MB88101A) {
+-			of_node_put(child);
+ 			break;
+ 		}
+ 	}
+@@ -433,12 +430,6 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 	}
+ 
+ 	return 0;
+-
+-err_e_inval:
+-	ret = -EINVAL;
+-err_of_node_put:
+-	of_node_put(child);
+-	return ret;
  }
  
-
+ static void rcar_gyroadc_deinit_supplies(struct iio_dev *indio_dev)
 -- 
-2.43.2
+2.39.2
 
