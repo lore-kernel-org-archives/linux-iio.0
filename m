@@ -1,111 +1,174 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2111.outbound.protection.outlook.com [40.107.8.111])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CD151E4B3;
-	Fri, 23 Feb 2024 13:02:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708693329; cv=none; b=F5JbtD6J2t4vegNhcFnEnKnCdht6Z2Y3zvDWfxUC36kIx96oqrF0lrBetxGExeD/f668Jy7HLB0O2WEVeU1z7v3lx3By8/bKWpXsOVHGeSg/i8mTqM/YROwU6Xm/5yCCuSVkx0gka/pvUCPCOaiP7+Q+M1OnIa/Zi0MkFiJaYV4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708693329; c=relaxed/simple;
-	bh=wjq07PpYymrZKKAoQVhq2BQc76gSpF0DqGU+6ncJhNo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=krXd1eP2xNmIqvIWcit9Lhrp71IyV/QUAQwA5+NaVE+8XQIIse4ATKo7gbgdVfq3q3MLjCQ/P8NHt559CXX1x4L5IwwpxFt9DVytBAw7yRtSA305JPb5OzoRCCZNiV6UI22HH/9SVH193iU9wjVaFpPa1QfTo/PP6RfQm99AdMo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=imYAMsJi; arc=none smtp.client-ip=209.85.218.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D47DA651A2;
+	Fri, 23 Feb 2024 13:10:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.8.111
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708693824; cv=fail; b=SAuvzyt1ghzeKmQKvJEu/3gLKPPvRERrVPkEC9sWzWHxeGh8V1rBDuSEIDV+LPcE7ht16mfTqTDS7i4lKnrGm43ZRkjXzIx44HKl6/Cflrb9Wgs/iL8oJpaHAxoQTLoPJVkRCRnZO88MLF0dOTdCdq+33OUwtdMzOx4X/JLVCXw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708693824; c=relaxed/simple;
+	bh=0kcWSeb5OU0M+gQ883HPl1++WCoYXsYfxBWY6d8pn/s=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=FxlOlphVdJfR06oVYdw9IrhkJMiAF33MkiWK2LtbIMfuq9c3Ksr7DbRYcVOiF+MREhEBQ8UFChuaOgCJkGrJ8SndHq2onN7uZRzpX4vmbdJ7an4LLvAah852PawKDNuyMtDQvZCa1ZkKcfb/yUa9af/EAmYyD/kLnj/Hmefe0rE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=theobroma-systems.com; spf=pass smtp.mailfrom=theobroma-systems.com; dkim=pass (2048-bit key) header.d=theobroma-systems.com header.i=@theobroma-systems.com header.b=f5RjaxiE; arc=fail smtp.client-ip=40.107.8.111
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=theobroma-systems.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=theobroma-systems.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="imYAMsJi"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a3f829cde6dso93656366b.0;
-        Fri, 23 Feb 2024 05:02:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1708693326; x=1709298126; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wjq07PpYymrZKKAoQVhq2BQc76gSpF0DqGU+6ncJhNo=;
-        b=imYAMsJixbEvRQxEfXAg3LQWGuA0c6z9+858Bp5S0DH8XZwQ15J7GhiYuk7KUGYQ6t
-         II8H3oBs7JNdq0k/ZhxNYt/IPMN57zPzLjuDtsfPbZGGC1D+czpxi56hxAnk7cNnXSZ2
-         rNPiBWixYI2zWyIYuMClHAOJoAhs1sdIYU4j3CQr1XevR8eK+vzcNoDS2jw6n2OyRho/
-         evhwscn8X+DUvdkvm+fOi0RbkI1x3mkX0pAJKq7YegpsmxT/+tXXYk1WXVuJvsIzCfWB
-         CPm0J1RcZfcMGLt1bPgYq+REcmDqgjXByRN6rs+VXw1DicDIxaYmMDtOm3F47PviMMQf
-         E6pQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708693326; x=1709298126;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wjq07PpYymrZKKAoQVhq2BQc76gSpF0DqGU+6ncJhNo=;
-        b=a4Xr5ulzxfVck4VFhY/YPyU9TOIzEboqNja70Oc129iKTJtsPyMXidroeLnqkyY9Pz
-         vto2yTq7kio0yKMF612+I+TBehRIAl381FYeoqAUx5bbGCztmVWl/8lSxQfCFoUWXUu4
-         vHs1Vgxc44eliYMdU/zYJtrmkT9PnzEdDY/s/jTfjr6/sqgLgsJo/j3dzDx7RZF/KLKA
-         VzA946vd0bX3msOqCgwIoJ0p9pbVdTQxL0/OEdUaMbPtxaSjip7+PAq4F59I2Sy4y8Xz
-         MguooI612XaReyY29ZUkeuQt3aTzuRK2aznwxKJhRNRVDaS4y+ijvmuIjjQIYbfHcQA/
-         eyjg==
-X-Forwarded-Encrypted: i=1; AJvYcCVCIyubaAZJEZJP745+BNju0+20Kwkj5yqHuCqbJgg1Scq+9k4krz6wXkisMJSPlJkhntAqN4DPjYv6xNjY5zZOitMKPCTcwnmA+8eKpebyCbM1ylylRImFXW0VRlszGjqrkbaUs4g3
-X-Gm-Message-State: AOJu0YzniotdBf6wQV77RlDiCxp6wS0Jx5vjDySKxuePix9lYpjnzBvw
-	bnxT380q2LkpQ+6sEVoOvAp9XVy3OmA0wobC/dW2hkYHTj1VDRXdgPLQej8tYlYUqAum/9wkzyV
-	AJoeT6GwiK+br5kKBTrDRV+UtQNweuWJ86Rg=
-X-Google-Smtp-Source: AGHT+IFJicXo49jcPmF3ozTCIntOPHZaNICbV+q4qp+G0h6fLVfkxYx5SfT0LbSBWWGkkoGdw+ja5cEeSVfLsSgJPVQ=
-X-Received: by 2002:a17:906:688f:b0:a3e:9df6:7f0a with SMTP id
- n15-20020a170906688f00b00a3e9df67f0amr1215288ejr.68.1708693326401; Fri, 23
- Feb 2024 05:02:06 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=theobroma-systems.com header.i=@theobroma-systems.com header.b="f5RjaxiE"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hQUzh88AvFtrD6njhuDnl8RDaBDZmDDVcGwdK5kCbE9R7X124rGJyC6TV/pIy6zKq/cq/o6/KwcxyF9VfJvYCgtr2TvxJYDuZbKJt26+54v3oypxtO93n0TqVu2H326vMNMZ8wRaLio7t5DLL4/TOMBaPvMUPkKNaD+T3I1xr7SaXjPGFx3iC4jeYMW+iSXbsXAdtE8JiGmsAbLvLqUUNk/mB2skQdEh6UV5pG1e0A3HHJraCU2TC4I99HpQ+nFQJ/rgCxoE0bdxGa+xS3UgpHea+LdazyhMqgdY1zVps8zHIWdCJjsQf7MOezqzHPQN6FIJeqkqzqIUNROEisiWtA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=h3kOLtuoNtwSoEE/BpxFI3fM08A5Vd+Wc2BwQF0qxc8=;
+ b=G+oWsMRr7C6AL24y7Wf4zb+N+VmtQwhuZc2Zjo2ogq/i5stZNPl2h4K8h6B3DMb8mQ6LIQuAUl1z2rP0CGVWGL+yNpekzYl9JxNk5X96t2ylO6puzyE1PQTy2IuN6MrgZLBpW+vMOtPKAtZ06GVzbJ7hkEw6ZSuvTtjoYm5i8KRUVfNJ1G4EuuLYVD5LCNXyYKfWZAQHgBDtOu2zv/WvNaH3SZ3DiNNwGwGlcMfJwm/ge/dcs+AoH2GARVKzaJS3IVfpeRetqxzqu41CUtVu1g6VxJG2ENcp/ZG5A1r8IrYe9ukvRDxjBWumm+Dg2gCeAUbE9eG4unLfYCcRMfYsLA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=theobroma-systems.com; dmarc=pass action=none
+ header.from=theobroma-systems.com; dkim=pass header.d=theobroma-systems.com;
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=theobroma-systems.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=h3kOLtuoNtwSoEE/BpxFI3fM08A5Vd+Wc2BwQF0qxc8=;
+ b=f5RjaxiEHUgKt9xQLQ/l37pyHQ2gljzftT7b8wlMIKhkxQO0tvTZ0jh3+m/IaH42BEaEaX07KU0Eli2MBwE7oThbZ/UBJxRqAD/nUpURZAY82bKaGKcu/F22NVWFfWICdHvlYIS1yutcKhOmWfYJH67QMlb+rrNdPX6Ov/Qun/B28dHSPaNbs0sgIflnvNmytGov6F/U3srBoMl6TXlHwnhqrWPvFd+j9jy4t/C+ED8pZhHsqcV000vzxTP+WFfz2ZYZkk2r4G5cOLuBCokNKsYPI/w0wcgkyNxdUtmnf9lDE1t5oI2uarzSsCvE0GsziRVigZlOp84wVrRiPK8ElQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=theobroma-systems.com;
+Received: from DU2PR04MB8536.eurprd04.prod.outlook.com (2603:10a6:10:2d7::10)
+ by AS8PR04MB8102.eurprd04.prod.outlook.com (2603:10a6:20b:3f3::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.24; Fri, 23 Feb
+ 2024 13:10:18 +0000
+Received: from DU2PR04MB8536.eurprd04.prod.outlook.com
+ ([fe80::550d:ad96:e3cb:9a6e]) by DU2PR04MB8536.eurprd04.prod.outlook.com
+ ([fe80::550d:ad96:e3cb:9a6e%5]) with mapi id 15.20.7316.023; Fri, 23 Feb 2024
+ 13:10:18 +0000
+Message-ID: <6f76ffab-69fe-4afb-9d7e-d3cdfe37c28c@theobroma-systems.com>
+Date: Fri, 23 Feb 2024 14:10:16 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/3] iio: adc: rockchip_saradc: replace custom logic with
+ devm_reset_control_get_optional_exclusive
+To: Andy Shevchenko <andy.shevchenko@gmail.com>,
+ Quentin Schulz <foss+kernel@0leil.net>
+Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
+ <lars@metafoo.de>, Heiko Stuebner <heiko@sntech.de>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Shreeya Patel <shreeya.patel@collabora.com>, Simon Xue <xxm@rock-chips.com>,
+ Philipp Zabel <p.zabel@pengutronix.de>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+References: <20240223-saradcv2-chan-mask-v1-0-84b06a0f623a@theobroma-systems.com>
+ <20240223-saradcv2-chan-mask-v1-3-84b06a0f623a@theobroma-systems.com>
+ <CAHp75VfVTJsQDwaPoPgGiT6jnymXAR3WpETqaKai8rXAC70iLw@mail.gmail.com>
+Content-Language: en-US
+From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+In-Reply-To: <CAHp75VfVTJsQDwaPoPgGiT6jnymXAR3WpETqaKai8rXAC70iLw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR2P281CA0147.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:98::12) To DU2PR04MB8536.eurprd04.prod.outlook.com
+ (2603:10a6:10:2d7::10)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240223-saradcv2-chan-mask-v1-0-84b06a0f623a@theobroma-systems.com>
-In-Reply-To: <20240223-saradcv2-chan-mask-v1-0-84b06a0f623a@theobroma-systems.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 23 Feb 2024 15:01:30 +0200
-Message-ID: <CAHp75VfmsDeTP97srRJU09gA988xw68+ZHsXvXT3W_wv1HEauA@mail.gmail.com>
-Subject: Re: [PATCH 0/3] iio: adc: rockchip_saradc: fix bitmasking and remove
- custom logic for getting reset
-To: Quentin Schulz <foss+kernel@0leil.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Heiko Stuebner <heiko@sntech.de>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
-	Shreeya Patel <shreeya.patel@collabora.com>, Simon Xue <xxm@rock-chips.com>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DU2PR04MB8536:EE_|AS8PR04MB8102:EE_
+X-MS-Office365-Filtering-Correlation-Id: c8ea6fa1-6e14-4bc1-a350-08dc3470c845
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	36ZRWF0wG6ixhqHKzc/oJYMbXHIXCbB9Q3p/SoRNus9uJtlNotxLvVMxSKyijobJkoYCyDMOAqi+VR4zE7QZI5yJV9I4SjS8QebzHGN4+INIGnPcD5uWIK2J8S71pLgziMQn0VYGBQQMh5j3+iAeMcCQIgf5qA/vpy12CJo9U9CCARd3zq2LQxu6mKCjMbxjRWAkxnXZr17ivyG8RZ4DkjvEKAs+7OhzFa+jV9WgKHPWxhqAi6KS5rIJsgdKykceILcX/fYqO5cr9t+IP+hViS4DIAj3pTM+uLuN8svWZhtPPpUMMCsDFpuLpgjrASL3uvDBvwexNx69BqdlLJTWnzZc4zRxoglO+mJVKPatP6nNPLSe0Be1u23jAjZ0ZEGZxw+nc5HJo+BbxZFFIcJSxwOnl87Ms0wgMfiiJlxMM6rf7W27W5EhTq1vHs5YATTYYZyJKzbPqjRshkRWZu+6YJkml6xOxvZE6j0n1xn1ei/lpmFTin93ndDwvvZn9KmS88mxHpLJRVFPJ1BLbnVPM3fhfasembdCzfvZ5BZ4mpM=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU2PR04MB8536.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ZVlaaERwZXRwQ3Y3bnk1cTdiWGp1MjNUcW14QjcxSUJLTTVkcW5EQ0pnV0dG?=
+ =?utf-8?B?QU5jaGlucnZraHpadzBlK1krT1BGbjRNRFZCeElrMUpaSWNralJXeTNiOHd3?=
+ =?utf-8?B?eFk3a0tuL3NWQXFUVnRjTWhKaVQ4UnVTTExCamVWT2ZGWFR1Y0Z1UTN3SDVM?=
+ =?utf-8?B?RFZ2d1pZcHJWMjNDYkhidTM4R3ZSZmZRM1FwcmJ6V3hDMU9zaDZSb2NMZVNC?=
+ =?utf-8?B?UXRMZlkveHNlZnZ6WXV1NXladTFVMHlHUzhsWjI5TlpVMGE0RjU1WHVRQllk?=
+ =?utf-8?B?WjRud2MvcTc1bjJpVWk3aVFPM1JrekFtdnB4eHphRlE2RTFXMXdBTGlCWURi?=
+ =?utf-8?B?anBaMzYwY2RjcXRSNGtlT3ZTQjNRNEd1QzJuS0MxRVpjaDNtTUovREE0OXov?=
+ =?utf-8?B?Z1BQRlNBaktLNnZQS2lTZENOMmUwd3hDc2xiK1ZuTVRGZy9QV09uZ3ZwWDda?=
+ =?utf-8?B?d2h3dk0rMVZwNDU0N0FreHk2M0poemU2QVFua3dFcExwNEZobGpZajUveWN2?=
+ =?utf-8?B?cGxwSzlxdlNJa3lFWHhiVnVuUk8zQ2Q5b2dLL3RURmF4ai9NT1RxUnFxTHVS?=
+ =?utf-8?B?Wkc1bGtTRnlUZDViUWQySUhwUVBUUmNONm5Ma0taMmpSTjlGVlhOK2NkZkZj?=
+ =?utf-8?B?MHUrV01wS0ZFdUxCMnpZdFBtc0d1RW1MT0E5ZXVNYnVVR0xOMXdIU3ZOUjRW?=
+ =?utf-8?B?Z1pZdVJubGM4cUtQWU95ZEVRZUxEeUg5cEFMOWw3UnV1Q0IzYkMxSzF3UEpr?=
+ =?utf-8?B?K1QyQmRzeTZBRDNlMkFVaTZ5SnN3dmd2QTBodVIvOVgwa2N2bTMzSnFFT0V0?=
+ =?utf-8?B?TnpQK1IzVUlTV1hyNVFmL001aVNqQ2h4S3RnUTV6d2Z6dFpKMFZYR1hkTUR3?=
+ =?utf-8?B?eVEvTmd3dHorS0JWYUQrY25JV2YvamVRQ1o3ejBJNXJDMTBnNkVUeWo4S0ZU?=
+ =?utf-8?B?VXIwM2ZLOUZXUmFnMmxrOFd6QUVhODExTE5MMVJBWGcwb2dIMlltbDFLams0?=
+ =?utf-8?B?aHF4ZStXNGE1Y3pxUmtCUTJrQlZpSDdzbmt4NUhQTTRrM05SM2FxSmJrM1BE?=
+ =?utf-8?B?VURLeTd4ekRrcGNFMDJkdkpNUXBDMkhMcnZYTGd3T0JBUE1CWnIrRU15azBU?=
+ =?utf-8?B?WmJqS2ZjbWc3WUpSSDZydnNlaWxTMWN5NHN1cUZKVkttUHF6NzJjYlZCN3Bw?=
+ =?utf-8?B?YnJXV3pkTWFmV2NzTUl1V2JNZTAzT3V4a1FWUms0ZTBROEdEaU1DUXQrbDc1?=
+ =?utf-8?B?STZzYWhSMzJiVDcyT0JiUmVWc0ZqR01KYWluUnVKOGdmcXdPTm1XRG5Xa1Ix?=
+ =?utf-8?B?ZFFoSUVZK25LaEV2aG5seDdKWXZ5WER6M3NMcE9XVjA0V1BDRDdYdlZlNkFQ?=
+ =?utf-8?B?Um1BcGp6NnVyUVl3UFNVc1JVd0RnaFVKZFY3NWVmNHdpLzdOZzZmU2wyR21u?=
+ =?utf-8?B?UmhUcHNYWHUzNjd4Yis0ZlhQWTYyYVR5ZFFneFVDUUZVck5Na1ZXSGhtMTEw?=
+ =?utf-8?B?S1E3Rm5FRDNad0swMEZqUENWeENMYmRYVFdlTHE0d0Y3Yk1Qdk90aXJhckhP?=
+ =?utf-8?B?a0hGNGJKL010dElEVmpINE05c1U0eHBwVFZ5dFVZVGVVeUhDTmFlMzBxWDk2?=
+ =?utf-8?B?dCtxYkJTUkNsN052bEhrYzRibm44Z0xTTUNIOVZ5bjlIdk9XdlM0Z2g0WEc3?=
+ =?utf-8?B?eGNBb0s4NjhLaG82UnN1Tmp5eTJVUm5lSnJNaVp0YjM1TmhoRzh0SGVNc2ps?=
+ =?utf-8?B?RTRLblcxa2xkYWYvK1FPZmFNeFRrK0thZlFoRHNxREEvbWJMUTV3U2tNZmJ3?=
+ =?utf-8?B?UHlrMWk2Q085Z1JXWFI0MXJqWXVHbGo1SzNFVUkrWENZWXRxbDZGSDFGVmxP?=
+ =?utf-8?B?WTJJeGZaRU93RXYvaS9aTy9EKzBEN2cvRDdWM0lvbEg0WnJXYng4VEhMZURp?=
+ =?utf-8?B?UGs0YUtqUDBxNlNmV2xBQUFlM1o2ZlhlWVdraTdsVXFvem8xcGxpMW1VdDE5?=
+ =?utf-8?B?QmxxbERMVDhRa1NnK0lnTFZBMXFnRkxzUXZMdVo2aTRJRXRuT0c0eU5VZE1E?=
+ =?utf-8?B?QzJUUDdiV2IrMkdPWWcydDVNU2hvcWFhRkxENW1jWHQyZUZEYjVBZXFMa3Na?=
+ =?utf-8?B?dW9ScGpHL2R3REJPMWpFZWVUTzdFem9YYVZHSFBMbjJLQU1VT2V5RU9NaU9J?=
+ =?utf-8?Q?ri3g6KjuuVmF3g1IYdSes/Y=3D?=
+X-OriginatorOrg: theobroma-systems.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8ea6fa1-6e14-4bc1-a350-08dc3470c845
+X-MS-Exchange-CrossTenant-AuthSource: DU2PR04MB8536.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2024 13:10:18.2303
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5e0e1b52-21b5-4e7b-83bb-514ec460677e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZjsRtn2kFDvwwEHPcVkMBqgtsJs/mA8YmRuecK6os2tdOGuGObnx0iSsx5posME7jE2fQ/i+g4XuaKQmXPoCpNoz148h3KugqEh3SHp5SpMPoB9S8suiA5/JxodiIXLY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8102
 
-On Fri, Feb 23, 2024 at 2:46=E2=80=AFPM Quentin Schulz <foss+kernel@0leil.n=
-et> wrote:
->
-> The mask for the channel selection is incorrect as it's specified to be
-> 16b wide by is actually only 4.
->
-> Also, the 16 lower bits in the SARADC_CONV_CON register are write
-> protected. Whatever their value is can only be written to the hardware
-> block if their associated bit in the higher 16 bits is set. Considering
-> that the channel bitmask is 4b wide but that we can write e.g. 0 in
-> there, we shouldn't use the value shifted by 16 as a mask but rather the
-> bitmask for that value shifted by 16. This is currently NOT an issue
-> because the only SoC with SARADCv2 IP is the RK3588 which has a reset
-> defined in the SoC DTSI. When that is the case, the reset is asserted
-> before every channel conversion is started. This means the registers are
-> reset so effectively, we do not need to write zeros so the wrong mask
-> still works because where we should be writing zeroes, there are already
-> zeroes. However, let's fix this in case there comes a day there's an SoC
-> which doesn't require to reset the controller before every channel
-> conversion is started.
->
-> Lastly, let's use the appropriate function from the reset subsystem
-> for getting an optional exclusive reset instead of rolling out our own
-> logic.
->
-> Those three patches should not be changing any behavior.
+Hi Andy,
 
-Nice series, I have the comments in patch 3, but no need to resend
-until Jonathan asks for. He might address that whilst applying.
+Thanks for the prompt feedback on the whole series.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+On 2/23/24 14:00, Andy Shevchenko wrote:
+> On Fri, Feb 23, 2024 at 2:46 PM Quentin Schulz <foss+kernel@0leil.net> wrote:
+>>
+>> From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+>>
+>> devm_reset_control_get_optional_exclusive does what this driver is
+> 
+> devm_reset_control_get_optional_exclusive()
+> 
+>> trying to do in its probe function, therefore let's switch over to that
+> 
+> do it in
+> 
+>> subsystem function.
+> 
+>> Cc: Quentin Schulz <foss+kernel@0leil.net>
+> 
+> You may use the --cc option to `git send-email` instead of polluting
+> commit messages, or move this after the '---' cutter line.
+> 
 
---=20
-With Best Regards,
-Andy Shevchenko
+The whole point is that my SoB and authorship is from my professional 
+mail address which is likely to change over time, the Cc is my personal 
+one for development. Basically, in the event that I change my employer, 
+I would still be reachable at that Cc address without having to modify 
+the .mailmap after the fact (which won't make it to an earlier version 
+of the kernel for example). Some maintainers don't really like this, 
+some don't mind, we'll see in which category the IIO maintainer(s) fall 
+in :) (I don't mind either way just to be clear).
+
+Cheers,
+Quentin
