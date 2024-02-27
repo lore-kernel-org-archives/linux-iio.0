@@ -1,105 +1,100 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A26961EB39
-	for <linux-iio@vger.kernel.org>; Tue, 27 Feb 2024 16:36:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 628B54EB4E;
+	Tue, 27 Feb 2024 17:39:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709051783; cv=none; b=kTcpL5aN1SH3Z+EesbKE1aVCyeGrVZv3tvR6KiJjrKzBlk4q9HXSUdgz1fhni4WMjY1++UDcYcFCKfyJ+G/zdZHlIhNMXh1MCReu5LwlB5ScuD6PT/Sv77MkRYLnU5SXHScE283dgQ/P5DPm6IdLt7rokFUUhLk7AVbPrXTszqY=
+	t=1709055559; cv=none; b=NebuMyaQhuUJIqUUXxqaZSVWp3dKifZeD9+ChibmkyA3wv1ZHI7TtmGG+41z7N7xFlI2W1C7wJxAE+n+7U/w6OTdZJefsDCk5xM2yRsEaeCKmStcolHa3+DDhAr0MooaaluTFEYtGitlKYuEf5irZJhZKG5MV1TpT11eU9wdkCw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709051783; c=relaxed/simple;
-	bh=9i5hlJapLP6jPwsym6zkalPtVBE+pFBSRmyXNbEoAEY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=dl5IZx0SCIPkl4aFuuoynLsi8cBejqiosowP9HY24GHa3xSuV7JxezdKUjYey5hv1feklaYtd6GjLOM8rHeVvR7FiSILGOfGwG6+CtvfnFeiCCVar3O425aj2UL0PJFJlS/N4jMY70yNFWR/TdiixDjmCT8WLCwUI0/g8j8+vBM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=2xN/NWyP; arc=none smtp.client-ip=209.85.208.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1709055559; c=relaxed/simple;
+	bh=aUwIXIB6ikWepNt71w+3eWpZLF7KACsXFdv8w1LK8cA=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JzqOv6WD2P58gIIXXiAE9hDBTEsgSZuScXFByvSoEPPA6SNLgTMK8Yo8fe/AZg6gMUbFxrrA+st7R06eBd7CF+l9OHc3gBSwhDauBgNfcnMw8zBf5No06Yz3TDEcyQv8DS41Q3sZdJJsc2G5d1gp/ytROll+jMeP7167pK619Y8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=FeXVongi; arc=none smtp.client-ip=185.132.182.106
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="2xN/NWyP"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2d094bc2244so53886021fa.1
-        for <linux-iio@vger.kernel.org>; Tue, 27 Feb 2024 08:36:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1709051779; x=1709656579; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9i5hlJapLP6jPwsym6zkalPtVBE+pFBSRmyXNbEoAEY=;
-        b=2xN/NWyPit65yZi63g9mDUgJJqD/xbqgpnu8+p+Lf6Tp/V6ZAlAu2jatg4oLQVkbCS
-         2nml10CFtTWF7+cYsVZKA3ZHmpOtp5xZjJAfC2gvkscm3ZxjDjhbBPo32niH0nnno/jC
-         Ltq9JzdI+ODlmZnILiU9uq97wIAQ2MgKDbvFSKbNdDX1BARG9Y//ksia5pXe66psxU46
-         zO548gJnTDq5oROX/1x9j7dYicdedUE97zuRNDkTv0OH1Xi0qzhIVqVLILOUOibXYmbM
-         yvJ8jEjQRNHUkvtJoOQvi4Cmh3XHcJ6DOnMZqdxLZap1cxcwnCb+kBGv06vZCiFJ1f4k
-         j1hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709051779; x=1709656579;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9i5hlJapLP6jPwsym6zkalPtVBE+pFBSRmyXNbEoAEY=;
-        b=TnBA/LkH2LfTe+Gr6ziIRMSksMw2FcAOQtSXw0lRgN2f/YLg+aOo+2mkyOiDEP92O8
-         rg7w3bTzeQ60VVk/f1N/HfvsvjMywwkz7EoXOCKMGwJTjsSkXHjqrsrpc/UaWzWgTTtj
-         iTVpXAwuqWf9xn/Y5lN65GAQ3T0IL8Ryjg/uJ4bvTPumiDrhoxAUqeeCW9fvkYM9B2xB
-         mstGAZsoINp1tAiLzcBg5eOcLOdvIw45L8jVsLV+o1i8K1+VdcEETbeNr2gGhlXqBtH9
-         2HCroHNRFCIHftyLSHly5EbehIxkk7Iuh+3xHLYMQ8e5KnJ9Ev/XULfM7WEUeyziyvUa
-         mhNw==
-X-Forwarded-Encrypted: i=1; AJvYcCXIULu2KZDL6NxFMx+mNiVWV2WXZgNX305svvjtl4twvHvJM7Sb+n5Rxb98MJFb+hK5djANP7GnYqYgQz9sa0oDr/IvXJrffcpL
-X-Gm-Message-State: AOJu0YxNXmvAElNolhnPYmLycz1PN4zkVGgrAJRKSol9cCzDDgtkK8GT
-	VEFiGmc39QW5MnM9vqfb5p4uEAoGmOdHsQuOqVgOFarh1b15SpB6qDlZ4HMZl33q/0dUW/8mGkq
-	j5CujOTyLO22wlmJb41WXOb28XHuo6vCtovJBpQ==
-X-Google-Smtp-Source: AGHT+IH7YLnLMluYbBqba2HqK2U/KdjlxswxBx1MLznMGFPH7zEmPhqgw9gjdxbEvl1zCBEAWp/RcuPS41adiKr/ORI=
-X-Received: by 2002:a05:651c:2c4:b0:2d2:7580:e220 with SMTP id
- f4-20020a05651c02c400b002d27580e220mr5748651ljo.15.1709051778879; Tue, 27 Feb
- 2024 08:36:18 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="FeXVongi"
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41RBi2YV006717;
+	Tue, 27 Feb 2024 18:39:03 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	from:to:cc:subject:date:message-id:in-reply-to:references
+	:mime-version:content-transfer-encoding:content-type; s=
+	selector1; bh=KVmmLD7PqCyPnZ/PZVStmvG794iivG5lxhLDKuQv7fY=; b=Fe
+	XVongigRGirHWyC2nHFSxyp4XqqxWcS2NJz1A+6ValJD2YK7QmHjukow1hHSmJLa
+	o8QcUmmBSzNVy26mD4tKpGitdYvHD0Tnkv4tp98w/RsbBwNPjny8vPAhNnVYSR69
+	qnE015eWsg7ONRG2taH96kGJELQ6A1LwFAG6HUpLkgVhLFCr7h+Q5OGXcX2/T9Vg
+	DAEFl/+1yQ/7rNzmfog3ZfiR3gKJrg7aArW82UFrecNVt01BaJVq6KfarClTgD1I
+	w/crG59UtLAh0QzZEGzISy0AwuHEjmEwmCly3N9p1d19x/Qu/F+dZlmDdQGMsN8G
+	PYxjX0xjMBB+741VIRzw==
+Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3whf4b9dj6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 27 Feb 2024 18:39:03 +0100 (CET)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 6BC204002D;
+	Tue, 27 Feb 2024 18:38:43 +0100 (CET)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 140312AD12E;
+	Tue, 27 Feb 2024 18:38:18 +0100 (CET)
+Received: from localhost (10.252.26.109) by SHFDAG1NODE2.st.com (10.75.129.70)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Tue, 27 Feb
+ 2024 18:38:17 +0100
+From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+To: <william.gray@linaro.org>
+CC: <lee@kernel.org>, <alexandre.torgue@foss.st.com>,
+        <fabrice.gasnier@foss.st.com>, <linux-iio@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 03/11] counter: stm32-timer-cnt: rename counter
+Date: Tue, 27 Feb 2024 18:37:55 +0100
+Message-ID: <20240227173803.53906-4-fabrice.gasnier@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20240227173803.53906-1-fabrice.gasnier@foss.st.com>
+References: <20240227173803.53906-1-fabrice.gasnier@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240219-mainline-spi-precook-message-v2-0-4a762c6701b9@baylibre.com>
- <20240219-mainline-spi-precook-message-v2-5-4a762c6701b9@baylibre.com> <20240224165706.18cc0d7e@jic23-huawei>
-In-Reply-To: <20240224165706.18cc0d7e@jic23-huawei>
-From: David Lechner <dlechner@baylibre.com>
-Date: Tue, 27 Feb 2024 10:36:07 -0600
-Message-ID: <CAMknhBGZkCx1HT1pzNHAgOCSvA3U7a6_P7DdDibfawziih_PwA@mail.gmail.com>
-Subject: Re: [PATCH v2 5/5] iio: adc: ad7380: use spi_optimize_message()
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Mark Brown <broonie@kernel.org>, Martin Sperl <kernel@martin.sperl.org>, 
-	David Jander <david@protonic.nl>, Michael Hennerich <michael.hennerich@analog.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Alain Volmat <alain.volmat@foss.st.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
-	Alexandre Torgue <alexandre.torgue@foss.st.com>, linux-spi@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org, 
-	Julien Stephan <jstephan@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-27_05,2024-02-27_01,2023-05-22_02
 
-On Sat, Feb 24, 2024 at 10:57=E2=80=AFAM Jonathan Cameron <jic23@kernel.org=
-> wrote:
->
-> On Mon, 19 Feb 2024 16:33:22 -0600
-> David Lechner <dlechner@baylibre.com> wrote:
->
-> > This modifies the ad7380 ADC driver to use spi_optimize_message() to
-> > optimize the SPI message for the buffered read operation. Since buffere=
-d
-> > reads reuse the same SPI message for each read, this can improve
-> > performance by reducing the overhead of setting up some parts the SPI
-> > message in each spi_sync() call.
-> >
-> > Signed-off-by: David Lechner <dlechner@baylibre.com>
-> Looks good to me.
->
-> As this is the driver you asked me to drop earlier this cycle,
-> how do we plan to merge this series?
->
-> If Mark is fine taking 1-4 with the user following along that's
-> fine by me, if not I guess we are in immutable tree territory for
-> next cycle?
+The STM32 timer may count on various sources or channels. The counter
+isn't specifically counting on channe1 1. So rename it to avoid a
+confusion.
 
-I've been out sick for a week so trying to get back up to speed here.
-It looks like Mark has picked up the spi changes, so that part is
-resolved. I'll work on getting the ad7380 driver resubmitted, then we
-can come back to this patch after 6.9-rc1 (assuming the SPI changes
-make it in to 3.9 of course).
+Reviewed-by: William Breathitt Gray <william.gray@linaro.org>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+---
+Changes in v4:
+- Add William's Reviewed-by tag
+---
+ drivers/counter/stm32-timer-cnt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
+index 36d812ddf162..668e9d1061d3 100644
+--- a/drivers/counter/stm32-timer-cnt.c
++++ b/drivers/counter/stm32-timer-cnt.c
+@@ -302,7 +302,7 @@ static struct counter_synapse stm32_count_synapses[] = {
+ 
+ static struct counter_count stm32_counts = {
+ 	.id = 0,
+-	.name = "Channel 1 Count",
++	.name = "STM32 Timer Counter",
+ 	.functions_list = stm32_count_functions,
+ 	.num_functions = ARRAY_SIZE(stm32_count_functions),
+ 	.synapses = stm32_count_synapses,
+-- 
+2.25.1
+
