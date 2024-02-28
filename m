@@ -1,47 +1,46 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F272B73509;
-	Wed, 28 Feb 2024 20:49:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD63215DBAF;
+	Wed, 28 Feb 2024 20:49:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709153384; cv=none; b=HFPYCaFoD4epYujifYltNridZL7HCSBOJsLKv4E19HIvnU8BtXot4HL//A8Ym2udkzHBvHyPOI6RKCyh6Die0zQDrQPjuDAQSIOq5tJbGiAPI4hIKuUIkHNz7dePMaPtJ0yPEthTGdUny/W8/qzYxZkkHgepQb4y/JcfqdWj/oM=
+	t=1709153385; cv=none; b=dQOHCN3grEA0N5xNwweRgigcDgzx16f25iry8fkULB4I1ACmh7LhsB8kN3f2r0jC1GqePzpqeKV9YLo1HCGBbxgNOFulFTY82yz8fDiUbyD1c5Kh+CrZvvSEAKkYOA9fmF7T8HqXtPPA3rDA2iSkRAnktOx74Q0t4cDTdCr0Flk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709153384; c=relaxed/simple;
-	bh=5rz+s7/pr5Tr5G4CC4rkjs7MtaG8CkV7L7yDYm59sps=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=e6v6fCKwrhwRR49m848Oj8CLKSFq76dDpSppXxujxotu7XKyQYRbIh+39XOQim2h8Kiehk87e6noZLTyNn3CH+HQdf57hcXY+OeIdbYovKsWglB+pfXsNRp5kvjEm+F/mNbTAYrU2A9xoQcTkpsscqPzmlftLBZWPRkS2wpplws=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WHpRlOAk; arc=none smtp.client-ip=192.198.163.17
+	s=arc-20240116; t=1709153385; c=relaxed/simple;
+	bh=/llCeBOq/akHF/gxzRufHNlRAWfKFNHHOOSUCKXMrCA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=r/9mrnXi3bBhnM620hlobSzMJP7X1CVaHHxTh5XzHi80EFxJ0eaSG5qpI10R8TFhdudYvltiOYbADvW2S8gt6vzRpkwMlJy/6UWD7/DH66LmxDtERXZeyepLmXz9yJCCe98VMWs+A9hpyLCvMk835SbKmiWTZzZcLwqqhW/kjwA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cHLGXjRQ; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WHpRlOAk"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cHLGXjRQ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709153383; x=1740689383;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5rz+s7/pr5Tr5G4CC4rkjs7MtaG8CkV7L7yDYm59sps=;
-  b=WHpRlOAkmDNw4JVId5nTg1YIaJ/7ucRNRfetXS9EOwurotohsS2OAG3e
-   pHXcwLAX2ul5NMMkbH+5ijjodJPgLcSbD9r0KM5VkAuFcdBJtItM0jlLw
-   Loh9WP/UK/+PTo2OVQff4U5kyD35wX4deyB2RC3vJg7QWM0FUOUhCkak2
-   6u98T5GAEsusbX185qJAUJ7Fd09ha5lQbwfLEZO2fbRpOjsUe8iUU9L0w
-   WUkkTnid0P/qrkUtI5X66eExoCLyiK2nwDjQg93qTspnGaokSRjzQpMtx
-   lv/9miu7qEPI0y+kzepwfHAu9nMMPKdah4G3EhhzXs9Z3mdfgCpnHpIdQ
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="3428690"
+  t=1709153384; x=1740689384;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/llCeBOq/akHF/gxzRufHNlRAWfKFNHHOOSUCKXMrCA=;
+  b=cHLGXjRQlnHK/NHK2RUQAb8ubhD4SkqTdAqpUXBNBfEHRlUU3QSV8p/W
+   faVQOxSAP2gA4TEMt9CTyG8ZguKjKtmDqbPP58UqMipsIj4A7FLxzx5+Q
+   DKqkfz8e55YGCKTZbO08J/tDpNl+0z6pAMZt0DHcaksxU2vKTyUf9+sLp
+   KO9luGtCTZQAZRLQbn+43fq9O7mJqX7f+k1kW7n9L38XpIE3yegMm0jLk
+   lvqccnpwvCODnGfMSi/Gbl6VxvSWpLCCLorCBN4nZexleVl96R81gV6Eo
+   /563T3qQdNuKy9CPoz45SiPBeJlYwSp7vktcwR20GJO29Tg/7OZomYWBI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="3428709"
 X-IronPort-AV: E=Sophos;i="6.06,191,1705392000"; 
-   d="scan'208";a="3428690"
+   d="scan'208";a="3428709"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2024 12:49:40 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="937034656"
+X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="937034657"
 X-IronPort-AV: E=Sophos;i="6.06,191,1705392000"; 
-   d="scan'208";a="937034656"
+   d="scan'208";a="937034657"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga001.fm.intel.com with ESMTP; 28 Feb 2024 12:49:35 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 1D9D5284; Wed, 28 Feb 2024 22:49:34 +0200 (EET)
+	id 01E211C5; Wed, 28 Feb 2024 22:49:33 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Vinod Koul <vkoul@kernel.org>,
 	Linus Walleij <linus.walleij@linaro.org>,
@@ -63,12 +62,10 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>,
 	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH v4 2/8] overflow: Add struct_size_with_data() and struct_data_pointer() helpers
-Date: Wed, 28 Feb 2024 22:41:32 +0200
-Message-ID: <20240228204919.3680786-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v4 0/8] iio: core: New macros and making use of them
+Date: Wed, 28 Feb 2024 22:41:30 +0200
+Message-ID: <20240228204919.3680786-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
-In-Reply-To: <20240228204919.3680786-1-andriy.shevchenko@linux.intel.com>
-References: <20240228204919.3680786-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,61 +74,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Introduce two helper macros to calculate the size of the structure
-with trailing aligned data and to retrieve the pointer to that data.
+Added new macros to overflow.h and reuse it in IIO. For the sake of examples
+a few more places were updated (requested by Kees). In case maintainers are okay,
+tags will be appreciated.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- include/linux/overflow.h | 27 ++++++++++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+v4:
+- dropped applied patches
+- refactored macros and code to make them simpler (Jonathan)
+- moved (renamed) macros to overflow.h
 
-diff --git a/include/linux/overflow.h b/include/linux/overflow.h
-index bc390f026128..b93bbf1b6aaa 100644
---- a/include/linux/overflow.h
-+++ b/include/linux/overflow.h
-@@ -2,9 +2,10 @@
- #ifndef __LINUX_OVERFLOW_H
- #define __LINUX_OVERFLOW_H
- 
-+#include <linux/align.h>
- #include <linux/compiler.h>
--#include <linux/limits.h>
- #include <linux/const.h>
-+#include <linux/limits.h>
- 
- /*
-  * We need to compute the minimum and maximum values representable in a given
-@@ -337,6 +338,30 @@ static inline size_t __must_check size_sub(size_t minuend, size_t subtrahend)
-  */
- #define array3_size(a, b, c)	size_mul(size_mul(a, b), c)
- 
-+/**
-+ * struct_size_with_data() - Calculate size of structure with trailing aligned data.
-+ * @p: Pointer to the structure.
-+ * @a: Alignment in bytes before trailing data.
-+ * @s: Data size in bytes (must not be 0).
-+ *
-+ * Calculates size of memory needed for structure of @p followed by an
-+ * aligned data of size @s.
-+ *
-+ * Return: number of bytes needed or SIZE_MAX on overflow.
-+ */
-+#define struct_size_with_data(p, a, s)	size_add(ALIGN(sizeof(*(p)), (a)), (s))
-+
-+/**
-+ * struct_data_pointer - Calculate offset of the trailing data reserved with
-+ * struct_size_with_data().
-+ * @p: Pointer to the structure.
-+ * @a: Alignment in bytes before trailing data.
-+ *
-+ * Return: offset in bytes to the trailing data reserved with
-+ * struct_size_with_data().
-+ */
-+#define struct_data_pointer(p, a)	PTR_ALIGN((void *)((p) + 1), (a))
-+
- /**
-  * flex_array_size() - Calculate size of a flexible array member
-  *                     within an enclosing structure.
+v3: https://lore.kernel.org/r/20230724110204.46285-1-andriy.shevchenko@linux.intel.com
+- dropped applied patches
+- use switch-case for the supported clocks (Jonathan)                                                            - redone opaque_struct_size() to be simpler (Uwe)
+- dropped wrong hunk for krealloc_array() conversion (Jonathan)                                                  - dropped initcall move (Jonathan)
+
+v2:
+- sprintf() --> sysfs_emit() (Nuno)
+- added tag (Nuno)
+
+Andy Shevchenko (8):
+  overflow: Use POD in check_shl_overflow()
+  overflow: Add struct_size_with_data() and struct_data_pointer()
+    helpers
+  iio: core: NULLify private pointer when there is no private data
+  iio: core: Calculate alloc_size only once in iio_device_alloc()
+  iio: core: Use new helpers from overflow.h in iio_device_alloc()
+  spi: Use new helpers from overflow.h in __spi_alloc_controller()
+  net-device: Use new helpers from overflow.h in netdevice APIs
+  dmaengine: ste_dma40: Use new helpers from overflow.h
+
+ drivers/dma/ste_dma40.c         | 12 ++++++------
+ drivers/iio/industrialio-core.c | 16 +++++++++-------
+ drivers/spi/spi.c               |  6 +++---
+ include/linux/netdevice.h       |  3 ++-
+ include/linux/overflow.h        | 29 +++++++++++++++++++++++++++--
+ net/core/dev.c                  | 10 +++++-----
+ 6 files changed, 52 insertions(+), 24 deletions(-)
+
 -- 
 2.43.0.rc1.1.gbec44491f096
 
