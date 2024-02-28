@@ -1,47 +1,47 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5875C15E5B7;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D00915E5DD;
 	Wed, 28 Feb 2024 20:49:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709153386; cv=none; b=o2fzdI8b5HG0g8nKKjEYeaTAQDb4qsjbRT+/bAGHLZ7QQNhV6mwA9y31rD5uvXMMem0YyN5gabXLradhf1bCjxzv/NpsfGDhEwUOBPzrnjXVTnss4CXwGIEyIf7ZMCxWwBQGsDQGFKBI4OaWvKIeig+6ccNSy/8Wu06EXlPzZwA=
+	t=1709153386; cv=none; b=tI9w45675iuATpmJW7Cn16uKal7ZdmNR2+YEkyzNyD4F5fBNU9cheL9aMmU4cVF9NyxFR09VVafurXp0vpEsh3sHR8DUz9KAeVH4Che6gw+0SLTNaoKjXKjGmwqMfaRUlSzYvVb4i5MdK6+MQ2/RawDeqAI9m4r7pzoBDVoKprQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1709153386; c=relaxed/simple;
-	bh=ChX9iCdEwwQPReQLo1Sn+5tF0+KgHD07SNo+rL4s+7A=;
+	bh=E3/6TZHqz4QzVouyFU4/0yUH2cIdu7rmw3fp5xSFDhI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ghsZa+7D1cxkcT+0cwbcHfyKsaBf1EoW71HpZf+LSXXPEpztErRU+2GP6xHUtjc5yzCeZ7IxYt3SLLvbZ9D1+Z5iX+DY+BVclAx0XKTNn2Jue+TKvHahkukdaWK1WDEDfpu1jhAbZHvV2Hl4m+8x+gutV5KVvrqjabIM4ZpUcNk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Y/ITHgv9; arc=none smtp.client-ip=192.198.163.17
+	 MIME-Version; b=j4kCB5nZBkKCeDWqG2aMuiFQdYhYfcbcImtoIgK4p+ChHBdwH9MMy0WYOxNnCSGOTh69dykdmxJkOuNyUTqnpjCOTSq/Egd4q5Y14UkMddgvFnZ0T8WGaw8sIxOjhHmVlFF5V1Od99eaisro+uCOSabw1u98arVXlGq1ZqyhMSM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XyqdnPOP; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Y/ITHgv9"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XyqdnPOP"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709153384; x=1740689384;
+  t=1709153385; x=1740689385;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ChX9iCdEwwQPReQLo1Sn+5tF0+KgHD07SNo+rL4s+7A=;
-  b=Y/ITHgv9+k2jQzkwooRBH/GkgS0d3ftUaXLpRhwrotAT0zoskDVx7jf9
-   idC0XvGHvzfPINRwLU+sj8FG3RLc8om2EYUx1uRKdP3vntwVDVoEZ9AVJ
-   c07ZcylbXFX801TRLkobEWFbkskeqTOKXm3bjo5tNwMGNQgBA3GvCBmTB
-   rzqI7zTRswFvYfc5uXf1Zr5ymcqPuSQIlBuTJYcvb0ADoK/QMBc62UvL6
-   Qd2OV5TsnqaipdT4+9yHrn898YqQTQiiM8wBC1BdBXQiTreS0INVIMcvN
-   EOSl3bf9JZglh5JgGafIU/iJVlqdiGqmUDJdlqgYqd5G3V10/RMk68AZH
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="3428719"
+  bh=E3/6TZHqz4QzVouyFU4/0yUH2cIdu7rmw3fp5xSFDhI=;
+  b=XyqdnPOPTr+1yiY8sg4u81oaK4a85KqOgMyO/fe225KNkHqdBoqotuQa
+   olsBOSF86OKAzGipD6PW9j7kCVzNcfSxbOzpNFXOZI2fF136Zh32t3P0P
+   X1lf76/TI89OxoXzXy0756W15rLINNL9W5ewIS+ZaZKmTlZvAWoFRGMXt
+   yNIyhmvuqLCKR7+/7uRL1QTuRIV2pljxVXAcJxnjeiaaw2qV/9t5kWXyx
+   NPPrgyW+yCIrbnv0xmsLQh7IEWMatB4jiFIdxUyppCGqFhXoKMvc+YEBK
+   e0hJ8wwzsBUhwg5GCGhL9+LugBbpZX+Y5c4rv+0J10iD0PFeKhCsHF3E3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="3428721"
 X-IronPort-AV: E=Sophos;i="6.06,191,1705392000"; 
-   d="scan'208";a="3428719"
+   d="scan'208";a="3428721"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2024 12:49:40 -0800
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2024 12:49:41 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="937034658"
+X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="937034660"
 X-IronPort-AV: E=Sophos;i="6.06,191,1705392000"; 
-   d="scan'208";a="937034658"
+   d="scan'208";a="937034660"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga001.fm.intel.com with ESMTP; 28 Feb 2024 12:49:35 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 2E89B426; Wed, 28 Feb 2024 22:49:34 +0200 (EET)
+	id 0BAAD192; Wed, 28 Feb 2024 22:49:34 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Vinod Koul <vkoul@kernel.org>,
 	Linus Walleij <linus.walleij@linaro.org>,
@@ -63,9 +63,9 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>,
 	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH v4 3/8] iio: core: NULLify private pointer when there is no private data
-Date: Wed, 28 Feb 2024 22:41:33 +0200
-Message-ID: <20240228204919.3680786-4-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v4 1/8] overflow: Use POD in check_shl_overflow()
+Date: Wed, 28 Feb 2024 22:41:31 +0200
+Message-ID: <20240228204919.3680786-2-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
 In-Reply-To: <20240228204919.3680786-1-andriy.shevchenko@linux.intel.com>
 References: <20240228204919.3680786-1-andriy.shevchenko@linux.intel.com>
@@ -77,35 +77,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In iio_device_alloc() when size of the private data is 0,
-the private pointer is calculated to behind the valid data.
-NULLify it for good.
+The check_shl_overflow() uses u64 type that is defined in types.h.
+Instead of including that header, just switch to use POD type
+directly.
 
-Fixes: 6d4ebd565d15 ("iio: core: wrap IIO device into an iio_dev_opaque object")
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/industrialio-core.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ include/linux/overflow.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 4302093b92c7..bd305fa87093 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1654,8 +1654,12 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
- 		return NULL;
- 
- 	indio_dev = &iio_dev_opaque->indio_dev;
--	indio_dev->priv = (char *)iio_dev_opaque +
--		ALIGN(sizeof(struct iio_dev_opaque), IIO_DMA_MINALIGN);
-+
-+	if (sizeof_priv)
-+		indio_dev->priv = (char *)iio_dev_opaque +
-+			ALIGN(sizeof(struct iio_dev_opaque), IIO_DMA_MINALIGN);
-+	else
-+		indio_dev->priv = NULL;
- 
- 	indio_dev->dev.parent = parent;
- 	indio_dev->dev.type = &iio_device_type;
+diff --git a/include/linux/overflow.h b/include/linux/overflow.h
+index dede374832c9..bc390f026128 100644
+--- a/include/linux/overflow.h
++++ b/include/linux/overflow.h
+@@ -197,7 +197,7 @@ static inline bool __must_check __must_check_overflow(bool overflow)
+ 	typeof(a) _a = a;						\
+ 	typeof(s) _s = s;						\
+ 	typeof(d) _d = d;						\
+-	u64 _a_full = _a;						\
++	unsigned long long _a_full = _a;				\
+ 	unsigned int _to_shift =					\
+ 		is_non_negative(_s) && _s < 8 * sizeof(*d) ? _s : 0;	\
+ 	*_d = (_a_full << _to_shift);					\
 -- 
 2.43.0.rc1.1.gbec44491f096
 
