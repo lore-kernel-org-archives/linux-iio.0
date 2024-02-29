@@ -1,128 +1,114 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E5CD14BD55;
-	Thu, 29 Feb 2024 16:08:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 671097580C;
+	Thu, 29 Feb 2024 16:19:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709222932; cv=none; b=eSgIuXFVbwL3wI8nuKopAs5m9ckB0tugB0xy28TrvH2VATBpwe/lyfVr/tYzW2gL9m5cD3/wAyEtiZJTRGlW8eMbJgcq1c2yuLIBmKHslP90vKxJeiNSM02c+Zvq2qWx6Pi/ZbGHph588hK0XHOGh10mYxltSgGFr9PrlrAJOdw=
+	t=1709223599; cv=none; b=RsZTVygOzW9HCDf5acah1JnFFIvVEyFpDXdbHeWomWhyTExuAIQ9X9Ru5Jy9CksXGo9qNPCJ2EZQxf6sKDbKtqF+mcoUcS8npeFEZBZvTm1ADO2aUeu7LjLQg0LBzgcNqKKHriCrJ6dUo+6c0aCi7p4vLE4n41G3XOez+26aDVY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709222932; c=relaxed/simple;
-	bh=phQc4hkSIQn3yiHAXeWQFXx0gX5DVha/1Nz+fvFb5T4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=Dn30VJDI9m1vUbSkXFHqnaAlsPejfqNNZwgz/rPlQS+KQp+wj7xtsw1QzXWL74KrMjWYtuno99c5aqd1EEBobOTeWvf9WNFGGrONVwdyK38aaIQozx9Xx+LfTPz0DVf1RLNdNPhyPf8w3rEcAYsl+cKoWi1GdyHgQKZrm6xDn6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=iH6WOGww; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1709223599; c=relaxed/simple;
+	bh=OYnaEB7igBlvrmSlezUCoGljUmbeasl6fjQmS0Cxzto=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=dooZKyYkcb7LqnndtvZoC+2tZTruVUUmmUrhuHd1KRj6v4lQASTUIsYi0pCPsIctRNdowRcOS97HvdHkw0mOfdygEvTaLNEnRD4IOFGqa8AS+uUbHZYcjqpPT2Gh2B5E7djwBCVMPCZiXbpZSgmmvCAF/S4rmvZhiKR2ZHgymbY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=g1RbyrHc; arc=none smtp.client-ip=209.85.208.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="iH6WOGww"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41TEaiRk007950;
-	Thu, 29 Feb 2024 11:08:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	from:date:subject:mime-version:content-type
-	:content-transfer-encoding:message-id:references:in-reply-to:to
-	:cc; s=DKIM; bh=ra31unJsEAYSWY1z1PbIppgkrQBB0gAJpLnLbGWvzX0=; b=
-	iH6WOGwwP4t4JmeH0qTwgP2Yap3rpj7MxqvZcM7q7CLhfY5VCd/wTFMNSDyzkgcj
-	cUs9O/a2c/7ioCAT3+ykAPs0Rm4cv/S/6IFKOSpookA2xS4WakVOSeFlbS3NjRt2
-	ZUpmDg2KuU7eolZMSWTofDM/k70fFXFAeBxc223oLscgv7SBJASeldiRDu4cRbtL
-	jXg2XKEjF6TBWTKURsJga4qym6wHVONT0uJYhxqa9xkxN3Zr/wJJYCY3Won7UfnJ
-	ZjDUQFsoMW4/lSmEXSGE1z8TbTxV96FZ0ygCSrWmDMudJi+fJt28hcN9X/+oOQWr
-	FSgBdiBLfMxDhiFqHlPnHA==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3wjcr2utnx-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 29 Feb 2024 11:08:37 -0500 (EST)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 41TG8Z76034092
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 29 Feb 2024 11:08:35 -0500
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 29 Feb 2024 11:08:34 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 29 Feb 2024 11:08:34 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Thu, 29 Feb 2024 11:08:34 -0500
-Received: from [127.0.0.1] ([10.44.3.58])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 41TG8J9G018856;
-	Thu, 29 Feb 2024 11:08:27 -0500
-From: Nuno Sa <nuno.sa@analog.com>
-Date: Thu, 29 Feb 2024 17:11:42 +0100
-Subject: [PATCH v2 2/3] dt-bindings: iio: temperature: ltc2983: document
- power supply
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g1RbyrHc"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-564fd9eea75so1769385a12.3;
+        Thu, 29 Feb 2024 08:19:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1709223596; x=1709828396; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zZDaiCfMZbNphQohAhx94MVQqcgltEp5N10EltKHmZ8=;
+        b=g1RbyrHci+U6YrDfY72b9W9iCn4CKAb9WkyoiHEWlwVjfDlKaS1TxK0NEMAennh4Ax
+         nfEfq/m7Yhx3EcD1pjPd0kuZhc5leQTtZAOwifSbZikNoTgd8SkiyOld7JlBvchDQPFd
+         9vJVcujrnU+IgzEi5CFWmcdy1AZ6tWns+Siy4IDrEXVZaXwyUdn/e5i3vEl/DgIQkyM4
+         VW8wFc5ZWoLZClJFvqIeeIOpRi2wBxcU8oOGt03F8e85YTTcBrTNRtk1vihp8bDw7nK/
+         CNg7lsIZvLyOzpsXExMDjJeeG4cz5syDe6v2957xBcPOopml0WISYxIaKSFn/7ycbxv5
+         SCZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709223596; x=1709828396;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zZDaiCfMZbNphQohAhx94MVQqcgltEp5N10EltKHmZ8=;
+        b=dH7ukR2lFxVjf7N699Hkm6+zT4Jhiq96JVCe71TfdqhPaSb67S6YTSmsgdNKGWVuEm
+         urujgXAEq/b5tS1pqTT72TY6bdOf3ESdYtO4L3iIgjx7aeFhCwFVY9uW+oInvCeD/+zb
+         8vJmDbhYnpAVcTm3kjyQDJzu7IpNtCMUB4fWwu+QrVSgnXZx2kEWzO/8LSTjLKbeTdjp
+         +1tGXOzxZsO+p8o/tL5YfGhXBXf0LhcjLkOwl4jI0M2ZBybOpEuNpUOfTD3DS9e3A6q8
+         9OhwswxgUyrViMdgjMQxVJIxaSGiI9GGXVuF04h6uv/6Q/0dNoZtt+N9S9gfLfSz+PVN
+         PARA==
+X-Forwarded-Encrypted: i=1; AJvYcCVpji8Gg7TYlpKDi/+dWBC0KWWgFtgPeZvysMvGq1k9zC7WIqkIy7ExdrzYCyhVcnMMUO+jHl6/aCXuK6uUMcWE+8BPjGrXGyF5dDaEvsNMJtCFT263sLbB4TrcAS8qXzcaamhIENX3J2yNCDxgT5uKkzJ60LvhcsBeESyGiYE5acQeJA==
+X-Gm-Message-State: AOJu0YyEl/bgBhD4qumzoLl8oSiFwPwzfxGZpDguy5gGfNlRcjN25Z6M
+	QfXBC+KPUN9GTiJlVzMBPYPQKUbJS+5pQXG+qsa5e2HsSGmT66DL
+X-Google-Smtp-Source: AGHT+IEomlkfZUbYwkcNE2XMqbAJ09R6DSu9zehMV6C8LqRFxsQPnda13UABVByHBev/l1yJ5Pt3GA==
+X-Received: by 2002:aa7:d6da:0:b0:564:7921:37c3 with SMTP id x26-20020aa7d6da000000b00564792137c3mr1711565edr.19.1709223595484;
+        Thu, 29 Feb 2024 08:19:55 -0800 (PST)
+Received: from [10.76.84.172] ([5.2.194.157])
+        by smtp.gmail.com with ESMTPSA id w20-20020a50fa94000000b005668c6837ecsm730561edr.32.2024.02.29.08.19.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Feb 2024 08:19:55 -0800 (PST)
+Message-ID: <0f1486de-785a-4c27-a0f9-98dfc94362d5@gmail.com>
+Date: Thu, 29 Feb 2024 18:19:53 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/2] dt-bindings: adc: ad7173: add support for
+ additional models
+Content-Language: en-US
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Ceclan Dumitru <dumitru.ceclan@analog.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20240228135532.30761-1-mitrutzceclan@gmail.com>
+ <20240228135532.30761-2-mitrutzceclan@gmail.com>
+ <9f3e461a-0b79-470f-b599-bba45cda006a@linaro.org>
+ <43840914-cb4a-4758-9691-0ebd8fb97681@gmail.com>
+ <8ad18b06-7ff1-4463-8ba0-d7a7d54e5b65@linaro.org>
+From: "Ceclan, Dumitru" <mitrutzceclan@gmail.com>
+In-Reply-To: <8ad18b06-7ff1-4463-8ba0-d7a7d54e5b65@linaro.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-ID: <20240229-ltc2983-misc-improv-v2-2-cc6f03da2529@analog.com>
-References: <20240229-ltc2983-misc-improv-v2-0-cc6f03da2529@analog.com>
-In-Reply-To: <20240229-ltc2983-misc-improv-v2-0-cc6f03da2529@analog.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Rob Herring
-	<robh+dt@kernel.org>,
-        Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1709223103; l=919;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=phQc4hkSIQn3yiHAXeWQFXx0gX5DVha/1Nz+fvFb5T4=;
- b=2OuzH1kF906TvjFiJDcpTN+R7LBDKz09rrCxfMZy3wSCTZXW4AlsoRn4hrv0jmtU7MU1ba07M
- wR+unqQkTZSBq+q4wfLQTDNRJLTPHAlngRfrTgj3KQK7FYia/eocjMz
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: 5oxWpDwAiVCnMUdI3g4LuOXj73FdW5eR
-X-Proofpoint-ORIG-GUID: 5oxWpDwAiVCnMUdI3g4LuOXj73FdW5eR
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-29_02,2024-02-29_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- mlxlogscore=815 clxscore=1015 mlxscore=0 malwarescore=0 bulkscore=0
- phishscore=0 suspectscore=0 lowpriorityscore=0 priorityscore=1501
- adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2402120000 definitions=main-2402290124
 
-Add a property for the VDD power supply regulator.
+On 29/02/2024 18:00, Krzysztof Kozlowski wrote:
+> On 29/02/2024 16:08, Ceclan, Dumitru wrote:
+>> On 29/02/2024 16:49, Krzysztof Kozlowski wrote:
+>>> On 28/02/2024 14:54, Dumitru Ceclan wrote:
+>>>> Add support for: AD7172-2, AD7175-8, AD7177-2.
+>>>> AD7172-4 does not feature an internal reference, check for external
+>>>>  reference presence.
+>>
+>> ...
+>>
+>>>> --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
+>>>> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
+>>>
+>>> There is no such file in next-20240229.
+>>>
+>>
+>> It's not yet accepted
+>> https://lore.kernel.org/all/20240228110622.25114-1-mitrutzceclan@gmail.com/
+> 
+> And how can we know this? You must clearly document dependencies.
+> 
+> This also means the patch cannot be directly applied and cannot be
+> tested by toolset.
 
-Signed-off-by: Nuno Sa <nuno.sa@analog.com>
----
- Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+Understood, sorry.
 
-diff --git a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
-index dbb85135fd66..2e4a2fc71d23 100644
---- a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
-+++ b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
-@@ -57,6 +57,8 @@ properties:
-   interrupts:
-     maxItems: 1
- 
-+  vdd-supply: true
-+
-   adi,mux-delay-config-us:
-     description: |
-       Extra delay prior to each conversion, in addition to the internal 1ms
-@@ -460,6 +462,7 @@ required:
-   - compatible
-   - reg
-   - interrupts
-+  - vdd-supply
- 
- additionalProperties: false
- 
+> 
+> Did you test this particular patch?
+> 
 
--- 
-2.44.0
+Yes
 
