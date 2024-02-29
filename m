@@ -1,131 +1,132 @@
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC4167D07B;
-	Thu, 29 Feb 2024 15:08:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88BA713A269;
+	Thu, 29 Feb 2024 15:26:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709219327; cv=none; b=UYBAp3DpxwJYKWnNQJ0pKAk+Hdt8BpLh6vq+6gCfKhaS+FRzmegdGJztJcssXZ9E1r1+gfG/zRbMAqlOpIhk0T5kXMwesTY7AS/pqH5TaLlIvRlCUdLxKLJ2jRjlRgmqJGWXk+2/JzMP0f14Ad6B0HfJF0rBIuBi/ytmNtXn+8M=
+	t=1709220384; cv=none; b=BFmDS9YGuwRnD4n2tGS362abrrwZKnKdhoLTA66ZD0/gNmQ00Jfr8SDvCvc/aSCjfqnoFjKJUNvI0KPELYCnUSDD2MQk3wKIAkYVLm62++cZJIcAZihW4Tt1X/dS1/8ZZTSpIHDJYy0Lyoe8sYuF3VlmoW8Xrz5XfiSqiV/tWNg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709219327; c=relaxed/simple;
-	bh=V1/mVULec3D2TuKr6FwSt3WXTRYRxDLupbI2ynb8Dkk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NKfTCbIIcuSv6c6Yxj/W952S0xcfPSiJgTce4xYEOglerWyJ3CNvZq9MJJN67cZ01/nPCJPUDmgxF8m9oqJy04SI6m5phOE4Vrl6Cx/idF8f1R4yKSxZ6bl4z1YcJHUEufkRmCLIr/udk2lo4XdqOTnkzwKXE7ump7/Tvywhn1M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gGyMcpmD; arc=none smtp.client-ip=209.85.219.53
+	s=arc-20240116; t=1709220384; c=relaxed/simple;
+	bh=dp25kPE3nvKMZpYYCIqRh0OUPBEE5k7Af31a9VuC7YM=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=OOnKuyNc7xmEAXjnnNfW2nzY+IMpGf7taSBZzkV3r1deE4pgUEPCsUXhZ2ZtZqAfQpOuUjOhLdRsWs/F/QtaGY5pQKqmkyjt0EkoO+3VKq++WHZgDHeT8rOEco4i1ML/SGSu8ilpvQbn/5WmwU4la43haMdeVhzOYSR49/dAds0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A40QmmRk; arc=none smtp.client-ip=209.85.218.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gGyMcpmD"
-Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-6900f479e3cso9066216d6.0;
-        Thu, 29 Feb 2024 07:08:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A40QmmRk"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-a443d2b78caso131599866b.1;
+        Thu, 29 Feb 2024 07:26:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1709219324; x=1709824124; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=v3Ojycqfi/juYUEyhNIkICtIQx3xZlmKoWCEZ50D4iM=;
-        b=gGyMcpmDUcy0OMvlTAyoihKrew7iPCM7U2K/f1phePFOVPyfCbcyIVKw3fr9AyCN5I
-         AX12XXpl6RKAcU0eih7XPX6pHTwcwxpHMO+Z2j2u8bD8GXV4dm2ICn7iYie4EkTclbEj
-         30cNpd0ozVd76rT+c3sCBGQuTJawRVWDDhK8I3DgqKUc7FHjHxThGd8ZWx3NcLEaYouK
-         HPYxfSNzByPpxU6QXo1Vl8f/dnkdeJ8JcYpR9gF7aRh0gucqrCCaqTLroSmgRu5wrZpM
-         DJj5kQorgBz+gAwLotCmqCe2b7NRZPGk5k2hSZUJ9pOJ7JZzVuHnkATTY2/5ZRJRjPIN
-         MXpw==
+        d=gmail.com; s=20230601; t=1709220381; x=1709825181; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=fDKK+JM2Mc+u4yC69ABwMe5pRMPqiOr3x+G24kQ6OeI=;
+        b=A40QmmRkYDVd+lBnBpTcg845ptEtPTNvqn+m/gt0wcsZiBbhGtfqXc5zmKNCU+dDmY
+         IeC75gaZr8zXWW8Ft4BcqYFg7BrebIoUbcyod9ZcUkBpTHma7/OLg46eH0u84V0waLC6
+         9PW7RQPS1jrvGLoC7Hhi/WRCempfKhNjfpbYp3iwufuhMcTZUVRUJbuQKTapOIx5Shcq
+         YiginZh0+JUDWqnkGwIr5exuL3flMrlieAqH8lOcuyhDAHY/FSrm9YD0k8bYsET8FFiM
+         N++HNb55w6Jtyja4vxU2pkH/MzgfyIU6rvTw4MvNHSzmw8r4ath5/1QDPFMndfGkWAeO
+         ADpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709219324; x=1709824124;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=v3Ojycqfi/juYUEyhNIkICtIQx3xZlmKoWCEZ50D4iM=;
-        b=rJQFNzProa18oxkPOOcnu4ngche7kop5cMcyjoSGnh0qxkQmDUZPrpPwOKgFDHJFJf
-         Cc+E9SzfIWGgohTLwM/yqSNYKn9CNkuHkyNrmz9re1kEyk/+rbqOD1GwIQBtXGCfBnjo
-         OMeBXhaEIw0IZSKAJLI8Oe22MhAxNvUzHaMMZ7V700iGTc7shwPJKAffTP+N05yME/8k
-         n0iZ/YqAcUhirCWqnHX16+LTtB9fLrMUfMcL9Ozmm4kO+PoS31Jdi8vfjPX6TRqxS8s2
-         rnWafbnZq86zYfAKlOncAYd1E8XpoXj3qpu7YQJ6Nakbwv05xakTIgFjqz5eYYJdEP2f
-         u30Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXYEG0nQAE14iym8qjWb/9FY/kypVSBAsgLHO4iCwlu4uQJXIF02Fx2C6I9JpfHF/yWSccykbA87YnZX273SO09QJGamYS+VpDsZjiSY46cpw9cRygjul3jisjy/joFKVh127msCGQTgtPBcBC0/hIP0RnjYaMaVnAo2aAPVLMlGJt33w==
-X-Gm-Message-State: AOJu0YxNbSf943IQIiwYJqYO64M2y9AJrHfWYVusu1dnyndWWXyjp8CR
-	4TDTGbQVcmnJTxGFpvcoZxV9AAcnC5pIbxnOi4U9TcNi5ZBNCe3H
-X-Google-Smtp-Source: AGHT+IGn0CwDlu22gvGSQQr+QUiovh1K7yL0y1Vz6ZELZ5jswvLl41ZKQZSSqUBVlCKL6G7OFppzow==
-X-Received: by 2002:a0c:e34c:0:b0:68f:b9c0:9bcf with SMTP id a12-20020a0ce34c000000b0068fb9c09bcfmr2784872qvm.50.1709219324412;
-        Thu, 29 Feb 2024 07:08:44 -0800 (PST)
-Received: from [10.76.84.172] ([5.2.194.157])
-        by smtp.gmail.com with ESMTPSA id bt4-20020ad455c4000000b0069051255b1bsm111981qvb.77.2024.02.29.07.08.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Feb 2024 07:08:44 -0800 (PST)
-Message-ID: <43840914-cb4a-4758-9691-0ebd8fb97681@gmail.com>
-Date: Thu, 29 Feb 2024 17:08:40 +0200
+        d=1e100.net; s=20230601; t=1709220381; x=1709825181;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fDKK+JM2Mc+u4yC69ABwMe5pRMPqiOr3x+G24kQ6OeI=;
+        b=egdNGsYR9BiS16sbh63NaktkBGcaLt9RQx6q4q59kvG2ghFVN//WnvC9yqccvrC8NM
+         m6GadIrawCd0r8dCYgBpoAJ1qcW4utR0Jl6lyGRzD25z49QVlyakRbUPTW1K5Iyfx/nR
+         K93mfB5KFmFGGO/9iq3Wt17NsBo6bCeoSHBpdIxw8e+NgsoYGBYdI7bHHa8cxc7oxM9/
+         ZKIWaV7G7/5yQ+++2oVzaViMjAtdlzMFNzLAIVlkC7Ka6YyE1SDwC/9WJ8WY5EcRzoHc
+         o4gTQRCPtAiwdUD7UKSohsQCNpKqV60yJPsevuqhlcnTWtvlhVEktCc8lDGvFHHbnoFy
+         VpFA==
+X-Forwarded-Encrypted: i=1; AJvYcCVscIlGwusDkxArRVnoVe1v0hHdzioq8nWtQk+86PVgLYtoz3WvnyeIJrWJqffVh0+6WxVwrKgEaAjDjMFuzAbjZbgnqBhBUuKNWt9gnq1S0OJGTWwvSCt6RX0HQA38LthKzU7o8QL+gUBcQ3u3GXHbOAompUL4Fj9PUU+92UoTrm3RTNd0an17e9lurjTJL5W4QkZjm6RmVG4ZBuD6KRiqXKBjr9isdwEGXp0AUaEpB+RDbEYWgYFgTCsjKbzxItJqZRpAC6X4IictqKbCFgqr+uTeaVN3
+X-Gm-Message-State: AOJu0YzCegXV9T9EWHR2GZDYnyRryUQLvNCrdVx9yZRpw8AyhFvAsfWF
+	rIQ5/SPXJyV+EXJWq/6XOGdPy2Eerwn6/pv5ng9QdszxWJh3xctM
+X-Google-Smtp-Source: AGHT+IH0BbQOh/RTvu68zev6Pz52w9G6f/rWM2ZMM0vlhc9AV/MotVi8zNP8RkVgD5Lo1Htbnl8XeA==
+X-Received: by 2002:a17:906:d9c6:b0:a44:4329:c091 with SMTP id qk6-20020a170906d9c600b00a444329c091mr1418331ejb.74.1709220380765;
+        Thu, 29 Feb 2024 07:26:20 -0800 (PST)
+Received: from ?IPv6:2003:f6:ef1b:2000:15d4:fc17:481e:8afe? (p200300f6ef1b200015d4fc17481e8afe.dip0.t-ipconnect.de. [2003:f6:ef1b:2000:15d4:fc17:481e:8afe])
+        by smtp.gmail.com with ESMTPSA id vw3-20020a170907a70300b00a42ee2af521sm778203ejc.137.2024.02.29.07.26.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Feb 2024 07:26:20 -0800 (PST)
+Message-ID: <9519dda9acd9db009dcb43102cc9b36943b35217.camel@gmail.com>
+Subject: Re: [PATCH v4 5/8] iio: core: Use new helpers from overflow.h in
+ iio_device_alloc()
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vinod Koul
+ <vkoul@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Jonathan
+ Cameron <Jonathan.Cameron@huawei.com>, Mark Brown <broonie@kernel.org>,
+ Kees Cook <keescook@chromium.org>, linux-arm-kernel@lists.infradead.org, 
+ dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-iio@vger.kernel.org, linux-spi@vger.kernel.org,
+ netdev@vger.kernel.org,  linux-hardening@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
+ <lars@metafoo.de>,  "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+ <pabeni@redhat.com>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, Nuno Sa
+ <nuno.sa@analog.com>
+Date: Thu, 29 Feb 2024 16:29:43 +0100
+In-Reply-To: <20240228204919.3680786-6-andriy.shevchenko@linux.intel.com>
+References: <20240228204919.3680786-1-andriy.shevchenko@linux.intel.com>
+	 <20240228204919.3680786-6-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.50.4 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] dt-bindings: adc: ad7173: add support for
- additional models
-Content-Language: en-US
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Ceclan Dumitru <dumitru.ceclan@analog.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20240228135532.30761-1-mitrutzceclan@gmail.com>
- <20240228135532.30761-2-mitrutzceclan@gmail.com>
- <9f3e461a-0b79-470f-b599-bba45cda006a@linaro.org>
-From: "Ceclan, Dumitru" <mitrutzceclan@gmail.com>
-In-Reply-To: <9f3e461a-0b79-470f-b599-bba45cda006a@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 
-On 29/02/2024 16:49, Krzysztof Kozlowski wrote:
-> On 28/02/2024 14:54, Dumitru Ceclan wrote:
->> Add support for: AD7172-2, AD7175-8, AD7177-2.
->> AD7172-4 does not feature an internal reference, check for external
->>  reference presence.
+On Wed, 2024-02-28 at 22:41 +0200, Andy Shevchenko wrote:
+> We have two new helpers struct_size_with_data() and struct_data_pointer()
+> that we can utilize in iio_device_alloc(). Do it so.
+>=20
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Nuno Sa <nuno.sa@analog.com>
+> ---
+> =C2=A0drivers/iio/industrialio-core.c | 5 ++---
+> =C2=A01 file changed, 2 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-c=
+ore.c
+> index 1986b3386307..223013725e32 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -1644,7 +1644,7 @@ struct iio_dev *iio_device_alloc(struct device *par=
+ent,
+> int sizeof_priv)
+> =C2=A0	size_t alloc_size;
+> =C2=A0
+> =C2=A0	if (sizeof_priv)
+> -		alloc_size =3D ALIGN(alloc_size, IIO_DMA_MINALIGN) +
+> sizeof_priv;
+> +		alloc_size =3D struct_size_with_data(iio_dev_opaque,
+> IIO_DMA_MINALIGN, sizeof_priv);
+> =C2=A0	else
+> =C2=A0		alloc_size =3D sizeof(struct iio_dev_opaque);
+> =C2=A0
+> @@ -1655,8 +1655,7 @@ struct iio_dev *iio_device_alloc(struct device *par=
+ent,
+> int sizeof_priv)
+> =C2=A0	indio_dev =3D &iio_dev_opaque->indio_dev;
+> =C2=A0
+> =C2=A0	if (sizeof_priv)
+> -		indio_dev->priv =3D (char *)iio_dev_opaque +
+> -			ALIGN(sizeof(struct iio_dev_opaque),
+> IIO_DMA_MINALIGN);
+> +		indio_dev->priv =3D struct_data_pointer(iio_dev_opaque,
+> IIO_DMA_MINALIGN);
 
-...
+I'd +1 for implementing what Kees suggested in IIO. Only thing is (I think)=
+, we
+need to move struct iio_dev indioo_dev to the end of struct iio_dev_opaque.
 
->> --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
->> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
-> 
-> There is no such file in next-20240229.
-> 
+- Nuno S=C3=A1
 
-It's not yet accepted
-https://lore.kernel.org/all/20240228110622.25114-1-mitrutzceclan@gmail.com/
 
-...
-
->> +  # Model ad7172-4 does not support internal reference
->> +  #  mandatory to have an external reference
->> +  - if:
->> +      properties:
->> +        compatible:
->> +          contains:
->> +            const: adi,ad7172-4
->> +    then:
->> +      patternProperties:
->> +        "^channel@[0-9a-f]$":
->> +          properties:
->> +            adi,reference-select:
->> +              enum:
->> +                - vref
->> +                - vref2
->> +                - avdd
->> +          required:
->> +            - adi,reference-select
-> 
-> Are you defining properties here? I cannot verify because this file does
-> not exist in next.
-> 
-
-No, just constraining reference-select to be required and exclude
-"refout-avss".
-
-> 
-> 
-> Best regards,
-> Krzysztof
-> 
 
