@@ -1,58 +1,59 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4E7B1353EF
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9E99185B
 	for <linux-iio@vger.kernel.org>; Thu, 29 Feb 2024 15:07:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709219261; cv=none; b=JMH3N/ispTIbT9qtopF6u69M9TQNeEPuqkgEaVh2zK+6UxBTdWdyOujhupvAexhAalmpG/SQF2MvYriccEfdm9i5J/r9EItOYLlaJAYqPkqNs8afS/J8brTwG9RfgA+2BDqOCl91krtnqV9ufaxj/ps5GwNGJ/vu5ix4c7RQ9jo=
+	t=1709219261; cv=none; b=VldM8rhVFXRPwNNXwUJl/I2ehHLdv3cJqGbRNyo1loX//pg/cyu3ldSoLzaR2HGGnc/ex59bALLFLN9AR9WU3+45YJlDq++/g+B5BVeeR8Uou6a56mSZP3LtynJXDm2id6vzHZGV2noAFdskSq9u4OpASqMoUpYd5v9CwseBVN8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1709219261; c=relaxed/simple;
-	bh=edxtdysQlwyEg8QjGKDFMQMTJcp5GxiXQZRrezckhS0=;
-	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=bL8hgEl6G/sEYmVX/L0WaoXo3nNexjud0toY6s/H+uhC8NRGV37XvBYFazydVgJX9ln8m2wjZPKoNb7HhkA3RVvxba4x/wqkkvWGk+x2mf7N2gRoTlqp5/5pORbf7hClfzITxq4dLCcMQ0vdR0cWWrv4jHcFqKPzUEm3+sWuWpg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=0p5sL3Uh; arc=none smtp.client-ip=148.163.135.77
+	bh=BhE6A6K0zJeeJOai1xDm/06UFHkqenoGkDxOB7kWAuI=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=Bnc3jv0FGO1yVjuYseED5ZuHA95onXw3taknH+RaEJotElj8ZYmK1e15ocaNgdpxE4OzMZRLDlq4xEB/SofsL4JH7X72sInHwjnus5xHGasG5uj+4Ndr2Vwlg7EBo6ajvMa+UBT7dklnBZEF8YcSqzWFbsXT3LcRUkFCim6xQjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Hj/Yp7nT; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="0p5sL3Uh"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41TE4aQm006825;
-	Thu, 29 Feb 2024 10:07:13 -0500
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Hj/Yp7nT"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41TEaiEV007950;
+	Thu, 29 Feb 2024 10:07:15 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	from:subject:date:message-id:mime-version:content-type
-	:content-transfer-encoding:to:cc; s=DKIM; bh=CNiByRZaOLU4qEXj2eH
-	t1Byx/1oI+A12l/YfEbir3Dk=; b=0p5sL3Uh6NawEiIuXa3KNt3gFr0Lra1Lnw5
-	krvFwuNxMno2OChXwKiPlKSDygm4SSONWlDN2ETasCoYpbEiG/OcIVy0VxyQr92/
-	UZhLgaDa7bb2YJW03gok2+EjcgHhk6raKb6Vi+o9gf4PD+uO64KQH4ZUURIvZtSn
-	RLkOE29rlAqKJKsl2LyPzOgYjkF/Q5HrDKN5cfSPv5tEBWaQt7mgxPbrb3CJAlzv
-	LGysoYsZHFKj8luVUgLuqdHpaYpYZJDxFox37bpuYgn30KaW0GwLfhKdh/24Dx7M
-	+3WWvfphqDuqcDPPuvYJEU7UjXhp6AjK7immzDf6AosANf64eEA==
+	from:date:subject:mime-version:content-type
+	:content-transfer-encoding:message-id:references:in-reply-to:to
+	:cc; s=DKIM; bh=S7tEI5lXZTlox5jbn7MIehYX2VXBGiLwpKRQmvvcXWM=; b=
+	Hj/Yp7nTzlKxo/VjCNqMUo9vhIUGPFgT27piV4dC64cDUXbrTxy66T2orUoMrNqH
+	WaXpQLgj7mkZGigz+JFqb0z5Y1nO2KWLgwSSQl//Q5dm1AZNF7sdQdAZUaO/EwAV
+	z6fSTshYYoX8Wm4ebJUBU9jwD5LdU8PFVdtUPQO7bx+a/oFzAwAs+XOw02hnMzrK
+	uE6jISgTKxUpYX9Cn1uY+pjgpNYC+JNjgIttVWI5p4hFwoAfoLlgXuH+Vm9O+Al5
+	TkDrEOmHvMBPz1iHcXbIjBuXBl43nL0VNhnzGQzqFQnmVS/6D/CXEvhB6Ktg+DcS
+	Zj69hz4msmGWKOewKkaZGg==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 3wjp9qhdan-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3wjcr2ujaq-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 29 Feb 2024 10:07:12 -0500 (EST)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 41TF7BPw023025
+	Thu, 29 Feb 2024 10:07:14 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 41TF7DRC023040
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 29 Feb 2024 10:07:11 -0500
+	Thu, 29 Feb 2024 10:07:13 -0500
 Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 29 Feb 2024 10:07:10 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ 15.2.986.14; Thu, 29 Feb 2024 10:07:12 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
  ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 29 Feb 2024 10:07:10 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Thu, 29 Feb 2024 10:07:10 -0500
+ 15.2.986.14; Thu, 29 Feb 2024 10:07:12 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Thu, 29 Feb 2024 10:07:12 -0500
 Received: from [127.0.0.1] ([10.44.3.58])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 41TF73ti015938;
-	Thu, 29 Feb 2024 10:07:06 -0500
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 41TF73tl015938;
+	Thu, 29 Feb 2024 10:07:10 -0500
 From: Nuno Sa <nuno.sa@analog.com>
-Subject: [PATCH v3 0/4] iio: move IIO to the cleanup.h magic
-Date: Thu, 29 Feb 2024 16:10:24 +0100
-Message-ID: <20240229-iio-use-cleanup-magic-v3-0-c3d34889ae3c@analog.com>
+Date: Thu, 29 Feb 2024 16:10:27 +0100
+Subject: [PATCH v3 3/4] iio: buffer: iio: core: move to the cleanup.h magic
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -60,87 +61,256 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAGCe4GUC/4WNQQ6CMBBFr0Jm7ZjaNoquuIdhUcoUJoGWtEI0p
- He3cgGX7yX//R0SRaYEj2qHSBsnDr6AOlVgR+MHQu4LgxRSCykVMgdcE6GdyPh1wdkMbPFOjlQ
- njLipHsp2ieT4fXSfbeGR0yvEz3GzyZ/9V9wkCnTXTte6thendGO8mcJwtmGGNuf8BbQ+K8+7A
- AAA
+Content-Transfer-Encoding: 7bit
+Message-ID: <20240229-iio-use-cleanup-magic-v3-3-c3d34889ae3c@analog.com>
+References: <20240229-iio-use-cleanup-magic-v3-0-c3d34889ae3c@analog.com>
+In-Reply-To: <20240229-iio-use-cleanup-magic-v3-0-c3d34889ae3c@analog.com>
 To: <linux-iio@vger.kernel.org>
 CC: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1709219428; l=2117;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1709219428; l=5988;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=edxtdysQlwyEg8QjGKDFMQMTJcp5GxiXQZRrezckhS0=;
- b=+8fnaLQzjal+Me4V1U65J0U+dmdNzvXvReyPXRk7FMSqieoFSIsJuISLnLHSdYAjgpefqb8Yp
- 426dOd0PZYPCcU2re4ZZ2v/r8UgAfUdwYufOYm3Hm1BoGpCg9qCopFI
+ bh=BhE6A6K0zJeeJOai1xDm/06UFHkqenoGkDxOB7kWAuI=;
+ b=vfcKErHwMLQKXlW6xdLfM1ooxsf9us+wocC7NElrL5PzTbGQfa5rWh4fGKF+kVqUeHepof0yQ
+ e7bSQiY1ydVCNOAnEgFeeHQnFafzCN4vwweVw7nDNvxJJeUUZsrHCFh
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: spyOYXVJHyx0iSP0VUwV6xY0Rv1pKQEQ
-X-Proofpoint-ORIG-GUID: spyOYXVJHyx0iSP0VUwV6xY0Rv1pKQEQ
+X-Proofpoint-GUID: dKBvbBK9B7IHzM2fRSj9SlRKzurh6O5M
+X-Proofpoint-ORIG-GUID: dKBvbBK9B7IHzM2fRSj9SlRKzurh6O5M
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2024-02-29_02,2024-02-29_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 suspectscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0
- bulkscore=0 mlxlogscore=965 adultscore=0 phishscore=0 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ mlxlogscore=746 clxscore=1015 mlxscore=0 malwarescore=0 bulkscore=0
+ phishscore=0 suspectscore=0 lowpriorityscore=0 priorityscore=1501
+ adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2402120000 definitions=main-2402290115
 
-Hi,
+Use the new cleanup magic for handling mutexes in IIO. This allows us to
+greatly simplify some code paths.
 
-In v3, I decided to drop the scope_guard_cond() usage (which meant
-dropping the event patch). Given the discussion on the cond_guard()
-patches, I think it's better to hold those conversions a bit
-since Linus came with a suggestion that will potentially change
-scope_guard_cond() - and for the better IMO.
-
-Another significant change is the __free(kfree) in all allocations in
-inkern.c. I have to admit that I'm not a fan of the in place declaration
-(too much time looking at kernel code I guess) but it makes the style
-more consistent (as we are doing the automatic cleanup in the locks).  
-
-v1:
- * https://lore.kernel.org/all/20240221-iio-use-cleanup-magic-v1-0-f9c292666f26@analog.com/
-
-v2:
- * https://lore.kernel.org/r/20240223-iio-use-cleanup-magic-v2-0-f6b4848c1f34@analog.com
-
-v3:
- - Patch 1:
-  * Do not use scope_guard_cond();
-  * Directly return -ENODEV and don't initialize ret.
- - Patch 2:
-  * Removed bonus space;
-  * Used the normal error check flow in iio_trigger_get_irq().
- - Patch 3:
-  * Refactored the state and ret conditions in iio_scan_mask_query();
-  * Removed ternary operator check in enable_store().
- - Patch 4:
-  * Still use goto at the error patch in iio_map_array_unregister_locked();
-  * Used __free(kfree) + return_ptr() in places where allocations are
-    done;
-  * Keep the else branch in iio_read_channel_processed_scale();
-  * Removed the comment in iio_channel_read_min().
-  
-
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
-Nuno Sa (4):
-      iio: core: move to cleanup.h magic
-      iio: trigger: move to the cleanup.h magic
-      iio: buffer: iio: core: move to the cleanup.h magic
-      iio: inkern: move to the cleanup.h magic
+ drivers/iio/industrialio-buffer.c | 122 +++++++++++++++-----------------------
+ 1 file changed, 48 insertions(+), 74 deletions(-)
 
- drivers/iio/industrialio-buffer.c  | 122 +++++++-----------
- drivers/iio/industrialio-core.c    |  34 ++---
- drivers/iio/industrialio-trigger.c |  71 +++++------
- drivers/iio/inkern.c               | 255 +++++++++++++------------------------
- 4 files changed, 176 insertions(+), 306 deletions(-)
----
-base-commit: 3cc5ebd3a2d6247aeba81873d6b040d5d87f7db1
-change-id: 20240223-iio-use-cleanup-magic-9efe3b0a073d
---
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index b581a7e80566..1d950a3e153b 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -10,6 +10,7 @@
+  * - Alternative access techniques?
+  */
+ #include <linux/anon_inodes.h>
++#include <linux/cleanup.h>
+ #include <linux/kernel.h>
+ #include <linux/export.h>
+ #include <linux/device.h>
+@@ -533,28 +534,26 @@ static ssize_t iio_scan_el_store(struct device *dev,
+ 	ret = kstrtobool(buf, &state);
+ 	if (ret < 0)
+ 		return ret;
+-	mutex_lock(&iio_dev_opaque->mlock);
+-	if (iio_buffer_is_active(buffer)) {
+-		ret = -EBUSY;
+-		goto error_ret;
+-	}
++
++	guard(mutex)(&iio_dev_opaque->mlock);
++	if (iio_buffer_is_active(buffer))
++		return -EBUSY;
++
+ 	ret = iio_scan_mask_query(indio_dev, buffer, this_attr->address);
+ 	if (ret < 0)
+-		goto error_ret;
+-	if (!state && ret) {
+-		ret = iio_scan_mask_clear(buffer, this_attr->address);
+-		if (ret)
+-			goto error_ret;
+-	} else if (state && !ret) {
++		return ret;
++
++	if (state && ret)
++		return len;
++
++	if (state)
+ 		ret = iio_scan_mask_set(indio_dev, buffer, this_attr->address);
+-		if (ret)
+-			goto error_ret;
+-	}
++	else
++		ret = iio_scan_mask_clear(buffer, this_attr->address);
++	if (ret)
++		return ret;
+ 
+-error_ret:
+-	mutex_unlock(&iio_dev_opaque->mlock);
+-
+-	return ret < 0 ? ret : len;
++	return len;
+ }
+ 
+ static ssize_t iio_scan_el_ts_show(struct device *dev,
+@@ -581,16 +580,13 @@ static ssize_t iio_scan_el_ts_store(struct device *dev,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	mutex_lock(&iio_dev_opaque->mlock);
+-	if (iio_buffer_is_active(buffer)) {
+-		ret = -EBUSY;
+-		goto error_ret;
+-	}
+-	buffer->scan_timestamp = state;
+-error_ret:
+-	mutex_unlock(&iio_dev_opaque->mlock);
++	guard(mutex)(&iio_dev_opaque->mlock);
++	if (iio_buffer_is_active(buffer))
++		return -EBUSY;
+ 
+-	return ret ? ret : len;
++	buffer->scan_timestamp = state;
++
++	return len;
+ }
+ 
+ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
+@@ -674,21 +670,16 @@ static ssize_t length_store(struct device *dev, struct device_attribute *attr,
+ 	if (val == buffer->length)
+ 		return len;
+ 
+-	mutex_lock(&iio_dev_opaque->mlock);
+-	if (iio_buffer_is_active(buffer)) {
+-		ret = -EBUSY;
+-	} else {
+-		buffer->access->set_length(buffer, val);
+-		ret = 0;
+-	}
+-	if (ret)
+-		goto out;
++	guard(mutex)(&iio_dev_opaque->mlock);
++	if (iio_buffer_is_active(buffer))
++		return -EBUSY;
++
++	buffer->access->set_length(buffer, val);
++
+ 	if (buffer->length && buffer->length < buffer->watermark)
+ 		buffer->watermark = buffer->length;
+-out:
+-	mutex_unlock(&iio_dev_opaque->mlock);
+ 
+-	return ret ? ret : len;
++	return len;
+ }
+ 
+ static ssize_t enable_show(struct device *dev, struct device_attribute *attr,
+@@ -1268,7 +1259,6 @@ int iio_update_buffers(struct iio_dev *indio_dev,
+ 		       struct iio_buffer *remove_buffer)
+ {
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+-	int ret;
+ 
+ 	if (insert_buffer == remove_buffer)
+ 		return 0;
+@@ -1277,8 +1267,8 @@ int iio_update_buffers(struct iio_dev *indio_dev,
+ 	    insert_buffer->direction == IIO_BUFFER_DIRECTION_OUT)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&iio_dev_opaque->info_exist_lock);
+-	mutex_lock(&iio_dev_opaque->mlock);
++	guard(mutex)(&iio_dev_opaque->info_exist_lock);
++	guard(mutex)(&iio_dev_opaque->mlock);
+ 
+ 	if (insert_buffer && iio_buffer_is_active(insert_buffer))
+ 		insert_buffer = NULL;
+@@ -1286,23 +1276,13 @@ int iio_update_buffers(struct iio_dev *indio_dev,
+ 	if (remove_buffer && !iio_buffer_is_active(remove_buffer))
+ 		remove_buffer = NULL;
+ 
+-	if (!insert_buffer && !remove_buffer) {
+-		ret = 0;
+-		goto out_unlock;
+-	}
++	if (!insert_buffer && !remove_buffer)
++		return 0;
+ 
+-	if (!indio_dev->info) {
+-		ret = -ENODEV;
+-		goto out_unlock;
+-	}
++	if (!indio_dev->info)
++		return -ENODEV;
+ 
+-	ret = __iio_update_buffers(indio_dev, insert_buffer, remove_buffer);
+-
+-out_unlock:
+-	mutex_unlock(&iio_dev_opaque->mlock);
+-	mutex_unlock(&iio_dev_opaque->info_exist_lock);
+-
+-	return ret;
++	return __iio_update_buffers(indio_dev, insert_buffer, remove_buffer);
+ }
+ EXPORT_SYMBOL_GPL(iio_update_buffers);
+ 
+@@ -1326,22 +1306,22 @@ static ssize_t enable_store(struct device *dev, struct device_attribute *attr,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	mutex_lock(&iio_dev_opaque->mlock);
++	guard(mutex)(&iio_dev_opaque->mlock);
+ 
+ 	/* Find out if it is in the list */
+ 	inlist = iio_buffer_is_active(buffer);
+ 	/* Already in desired state */
+ 	if (inlist == requested_state)
+-		goto done;
++		return len;
+ 
+ 	if (requested_state)
+ 		ret = __iio_update_buffers(indio_dev, buffer, NULL);
+ 	else
+ 		ret = __iio_update_buffers(indio_dev, NULL, buffer);
++	if (ret)
++		return ret;
+ 
+-done:
+-	mutex_unlock(&iio_dev_opaque->mlock);
+-	return (ret < 0) ? ret : len;
++	return len;
+ }
+ 
+ static ssize_t watermark_show(struct device *dev, struct device_attribute *attr,
+@@ -1368,23 +1348,17 @@ static ssize_t watermark_store(struct device *dev,
+ 	if (!val)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&iio_dev_opaque->mlock);
++	guard(mutex)(&iio_dev_opaque->mlock);
+ 
+-	if (val > buffer->length) {
+-		ret = -EINVAL;
+-		goto out;
+-	}
++	if (val > buffer->length)
++		return -EINVAL;
+ 
+-	if (iio_buffer_is_active(buffer)) {
+-		ret = -EBUSY;
+-		goto out;
+-	}
++	if (iio_buffer_is_active(buffer))
++		return -EBUSY;
+ 
+ 	buffer->watermark = val;
+-out:
+-	mutex_unlock(&iio_dev_opaque->mlock);
+ 
+-	return ret ? ret : len;
++	return len;
+ }
+ 
+ static ssize_t data_available_show(struct device *dev,
 
-Thanks!
-- Nuno Sá
+-- 
+2.44.0
 
