@@ -1,99 +1,240 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8381B137777;
-	Thu, 29 Feb 2024 14:53:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9EE286275
+	for <linux-iio@vger.kernel.org>; Thu, 29 Feb 2024 15:07:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709218439; cv=none; b=jiOGqZLoTWNYEpH99LFwaxF4hQOws74Cfk/BwO1a3333+9e9sAR40ZY5Cc80msZKrIf56AC8zG8YtwKDNsvF7aCrmRY6MGCPwm+Da3wHQari6meSr0OqpSBhpwSDUe148Uj0Ummn110W0eAgBkf9ZG5smvyY02XG3oGark0sd/M=
+	t=1709219261; cv=none; b=IPGt1RSieeeL32Y2yPHz4QilClV6iFcyGD7Lccud0O8+HouZSFoMvgP8rx1QRyY+dltu3I4BYZjYDvKnxzMBaearfbRpEZwp8KbApxUNP6xGDOKJUaoUz5Xi62DLRChXAh4Z/hktYnL7SfoJ1IOGxg4to0+GcUli1jDKPeECB+8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709218439; c=relaxed/simple;
-	bh=H/xypjHg3RAGtOrdFLSQMFFbI9FZppPqPGCTlvgpMy8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=L8PIyhS+Uqtv7g/yC69Pr3ZO6oTwiZG/ClI0Tnk/KksqtRkRGlgsJrAIW9BttMEfz0RaQFBJMygHZuaDkpZGf9+h34Qgk+7ILBx6ULsmpXwJtgt6ShpZ+jb+v4+xQCiGy5Z2S5KBnhxvCekVJa+OJu14zbBOgGkd0SvfdyFtLyU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DlslagbC; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1709219261; c=relaxed/simple;
+	bh=KpXJNxoGIddQpDJe5dpbHlAcBk6pr4U9YfhXAQ3qU5Y=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=tHfcu6nURUhqkzKDNgSYUiYi5ZCNoLSiXvvJN2D4KbrDu2Cf4keNiVqwysO/GImcvtLw79A4QIHSFbIdX5V2At/prHK6JHf10UWzlimVDQ8aPnEQDEkEbe5vDXFLSvNHN4ptjl+Q4y21Mkg930jwDrg45OGjGa6nBfBzfMtXvHE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=MZu8xUzf; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DlslagbC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709218438; x=1740754438;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=H/xypjHg3RAGtOrdFLSQMFFbI9FZppPqPGCTlvgpMy8=;
-  b=DlslagbCfXQK676474bV3pAjKHVKN+B6FAm5kPYwRIOIcOOKDcw81Q3O
-   qfBYM7LSuTBWPSrrsusAMDihGCLPFK7IGKdkMX6nIX5D4rvMjdZ85Wrf2
-   09vM1XfxWWJIBauatfLHd8e58v75Dh6TfjP6emtV4bZse3+Eik+rPysMC
-   x1YhBrSwzHrumEj/XnK8wywfbxR6vdRkQKHbCHXKlk2P5LjM/sGwZIm9Q
-   DGTOdxf3flKmTZaIGTdZxKmhi8x8oeRfmzfB1GAnCG58vzUYnlrup0qg7
-   teMB8+cy8LOxH+sANI3RoC+H1hqylxURboVjDvXOIRpkQKlw+3n+1ddzx
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="7470968"
-X-IronPort-AV: E=Sophos;i="6.06,194,1705392000"; 
-   d="scan'208";a="7470968"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Feb 2024 06:53:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="913983848"
-X-IronPort-AV: E=Sophos;i="6.06,194,1705392000"; 
-   d="scan'208";a="913983848"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Feb 2024 06:53:52 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rfhnA-00000008hMb-38bp;
-	Thu, 29 Feb 2024 16:53:48 +0200
-Date: Thu, 29 Feb 2024 16:53:48 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Vinod Koul <vkoul@kernel.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Mark Brown <broonie@kernel.org>, Kees Cook <keescook@chromium.org>,
-	linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-spi@vger.kernel.org, netdev@vger.kernel.org,
-	linux-hardening@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v4 8/8] dmaengine: ste_dma40: Use new helpers from
- overflow.h
-Message-ID: <ZeCafPgtU1FeyzJG@smile.fi.intel.com>
-References: <20240228204919.3680786-1-andriy.shevchenko@linux.intel.com>
- <20240228204919.3680786-9-andriy.shevchenko@linux.intel.com>
- <CACRpkdaEzexhCYFf-NKnbcagXc6Tqcn4J+sFWk94mbJG9LkpVw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="MZu8xUzf"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41TECxjY007932;
+	Thu, 29 Feb 2024 10:07:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	from:date:subject:mime-version:content-type
+	:content-transfer-encoding:message-id:references:in-reply-to:to
+	:cc; s=DKIM; bh=e+NiLelCm3HQz2pJGLc3OF6TxbuYvneYlP5StwzdYgE=; b=
+	MZu8xUzfyhixfDUmbfYucSyu/nz8R0B/Y0nYn4pi9OMfZXB7qAI44cDNdKI/2OOK
+	ijeFpJoDIoTlfKMOBSgmN3zNHm0ngGhQElkE8cGDcZoZtjXstX6WPAsqtnr8okNa
+	g++RO6mzw/0yYNSWm236BiprLNeRLNFrUObPhuakj5mLI0CWBr4vLhBwG9VfsyK8
+	ILeHJluXrKKrpxgaWwcfn/PG2Tbeuef+qIBHndreFgbJljjwls5PQRrgbf76Xpz9
+	MTQTQRVCqrNpLCPNwVghLIpqK1HCwrUcHu0KrBB1qB/9aMcwnbf2BtL0m4b14G5v
+	3hI5ofEv3RViV7vaysOwUg==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3wjcr2ujan-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 29 Feb 2024 10:07:14 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 41TF7CwS023034
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 29 Feb 2024 10:07:12 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Thu, 29 Feb
+ 2024 10:07:11 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Thu, 29 Feb 2024 10:07:11 -0500
+Received: from [127.0.0.1] ([10.44.3.58])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 41TF73tk015938;
+	Thu, 29 Feb 2024 10:07:09 -0500
+From: Nuno Sa <nuno.sa@analog.com>
+Date: Thu, 29 Feb 2024 16:10:26 +0100
+Subject: [PATCH v3 2/4] iio: trigger: move to the cleanup.h magic
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACRpkdaEzexhCYFf-NKnbcagXc6Tqcn4J+sFWk94mbJG9LkpVw@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20240229-iio-use-cleanup-magic-v3-2-c3d34889ae3c@analog.com>
+References: <20240229-iio-use-cleanup-magic-v3-0-c3d34889ae3c@analog.com>
+In-Reply-To: <20240229-iio-use-cleanup-magic-v3-0-c3d34889ae3c@analog.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1709219428; l=4787;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=KpXJNxoGIddQpDJe5dpbHlAcBk6pr4U9YfhXAQ3qU5Y=;
+ b=ow75LzjTnwvIs9RyRbQSxpXHoS23WujwWf8QM1+fctVrsDGK+Ru9q5AEmBXzfL833sHZ8yrBM
+ xKrGna6WUgcA7EyI6bt8MqYfxWlw0HC/HrI/GQmi3qlB8M+vaX9OiNm
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: Rj66mnSUjR3xXu2GQWiPWEN7-wTEt4Fy
+X-Proofpoint-ORIG-GUID: Rj66mnSUjR3xXu2GQWiPWEN7-wTEt4Fy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-29_02,2024-02-29_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ mlxlogscore=999 clxscore=1015 mlxscore=0 malwarescore=0 bulkscore=0
+ phishscore=0 suspectscore=0 lowpriorityscore=0 priorityscore=1501
+ adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2402120000 definitions=main-2402290115
 
-On Thu, Feb 29, 2024 at 03:14:03PM +0100, Linus Walleij wrote:
-> On Wed, Feb 28, 2024 at 9:49 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > We have two new helpers struct_size_with_data() and struct_data_pointer()
-> > that we can utilize in d40_hw_detect_init(). Do it so.
-> >
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> Wow really neat! Much easier to read and understand the code like this.
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Use the new cleanup magic for handling mutexes in IIO. This allows us to
+greatly simplify some code paths.
 
-Thanks, but Kees has seems even better suggestion.
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+---
+ drivers/iio/industrialio-trigger.c | 71 ++++++++++++++++----------------------
+ 1 file changed, 30 insertions(+), 41 deletions(-)
+
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 18f83158f637..16de57846bd9 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -4,6 +4,7 @@
+  * Copyright (c) 2008 Jonathan Cameron
+  */
+ 
++#include <linux/cleanup.h>
+ #include <linux/kernel.h>
+ #include <linux/idr.h>
+ #include <linux/err.h>
+@@ -80,19 +81,18 @@ int iio_trigger_register(struct iio_trigger *trig_info)
+ 		goto error_unregister_id;
+ 
+ 	/* Add to list of available triggers held by the IIO core */
+-	mutex_lock(&iio_trigger_list_lock);
+-	if (__iio_trigger_find_by_name(trig_info->name)) {
+-		pr_err("Duplicate trigger name '%s'\n", trig_info->name);
+-		ret = -EEXIST;
+-		goto error_device_del;
++	scoped_guard(mutex, &iio_trigger_list_lock) {
++		if (__iio_trigger_find_by_name(trig_info->name)) {
++			pr_err("Duplicate trigger name '%s'\n", trig_info->name);
++			ret = -EEXIST;
++			goto error_device_del;
++		}
++		list_add_tail(&trig_info->list, &iio_trigger_list);
+ 	}
+-	list_add_tail(&trig_info->list, &iio_trigger_list);
+-	mutex_unlock(&iio_trigger_list_lock);
+ 
+ 	return 0;
+ 
+ error_device_del:
+-	mutex_unlock(&iio_trigger_list_lock);
+ 	device_del(&trig_info->dev);
+ error_unregister_id:
+ 	ida_free(&iio_trigger_ida, trig_info->id);
+@@ -102,9 +102,8 @@ EXPORT_SYMBOL(iio_trigger_register);
+ 
+ void iio_trigger_unregister(struct iio_trigger *trig_info)
+ {
+-	mutex_lock(&iio_trigger_list_lock);
+-	list_del(&trig_info->list);
+-	mutex_unlock(&iio_trigger_list_lock);
++	scoped_guard(mutex, &iio_trigger_list_lock)
++		list_del(&trig_info->list);
+ 
+ 	ida_free(&iio_trigger_ida, trig_info->id);
+ 	/* Possible issue in here */
+@@ -120,12 +119,11 @@ int iio_trigger_set_immutable(struct iio_dev *indio_dev, struct iio_trigger *tri
+ 		return -EINVAL;
+ 
+ 	iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+-	mutex_lock(&iio_dev_opaque->mlock);
++	guard(mutex)(&iio_dev_opaque->mlock);
+ 	WARN_ON(iio_dev_opaque->trig_readonly);
+ 
+ 	indio_dev->trig = iio_trigger_get(trig);
+ 	iio_dev_opaque->trig_readonly = true;
+-	mutex_unlock(&iio_dev_opaque->mlock);
+ 
+ 	return 0;
+ }
+@@ -145,18 +143,14 @@ static struct iio_trigger *__iio_trigger_find_by_name(const char *name)
+ 
+ static struct iio_trigger *iio_trigger_acquire_by_name(const char *name)
+ {
+-	struct iio_trigger *trig = NULL, *iter;
++	struct iio_trigger *iter;
+ 
+-	mutex_lock(&iio_trigger_list_lock);
++	guard(mutex)(&iio_trigger_list_lock);
+ 	list_for_each_entry(iter, &iio_trigger_list, list)
+-		if (sysfs_streq(iter->name, name)) {
+-			trig = iter;
+-			iio_trigger_get(trig);
+-			break;
+-		}
+-	mutex_unlock(&iio_trigger_list_lock);
++		if (sysfs_streq(iter->name, name))
++			return iio_trigger_get(iter);
+ 
+-	return trig;
++	return NULL;
+ }
+ 
+ static void iio_reenable_work_fn(struct work_struct *work)
+@@ -259,22 +253,21 @@ static int iio_trigger_get_irq(struct iio_trigger *trig)
+ {
+ 	int ret;
+ 
+-	mutex_lock(&trig->pool_lock);
+-	ret = bitmap_find_free_region(trig->pool,
+-				      CONFIG_IIO_CONSUMERS_PER_TRIGGER,
+-				      ilog2(1));
+-	mutex_unlock(&trig->pool_lock);
+-	if (ret >= 0)
+-		ret += trig->subirq_base;
++	scoped_guard(mutex, &trig->pool_lock) {
++		ret = bitmap_find_free_region(trig->pool,
++					      CONFIG_IIO_CONSUMERS_PER_TRIGGER,
++					      ilog2(1));
++		if (ret < 0)
++			return ret;
++	}
+ 
+-	return ret;
++	return ret + trig->subirq_base;
+ }
+ 
+ static void iio_trigger_put_irq(struct iio_trigger *trig, int irq)
+ {
+-	mutex_lock(&trig->pool_lock);
++	guard(mutex)(&trig->pool_lock);
+ 	clear_bit(irq - trig->subirq_base, trig->pool);
+-	mutex_unlock(&trig->pool_lock);
+ }
+ 
+ /* Complexity in here.  With certain triggers (datardy) an acknowledgement
+@@ -451,16 +444,12 @@ static ssize_t current_trigger_store(struct device *dev,
+ 	struct iio_trigger *trig;
+ 	int ret;
+ 
+-	mutex_lock(&iio_dev_opaque->mlock);
+-	if (iio_dev_opaque->currentmode == INDIO_BUFFER_TRIGGERED) {
+-		mutex_unlock(&iio_dev_opaque->mlock);
+-		return -EBUSY;
++	scoped_guard(mutex, &iio_dev_opaque->mlock) {
++		if (iio_dev_opaque->currentmode == INDIO_BUFFER_TRIGGERED)
++			return -EBUSY;
++		if (iio_dev_opaque->trig_readonly)
++			return -EPERM;
+ 	}
+-	if (iio_dev_opaque->trig_readonly) {
+-		mutex_unlock(&iio_dev_opaque->mlock);
+-		return -EPERM;
+-	}
+-	mutex_unlock(&iio_dev_opaque->mlock);
+ 
+ 	trig = iio_trigger_acquire_by_name(buf);
+ 	if (oldtrig == trig) {
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.44.0
 
