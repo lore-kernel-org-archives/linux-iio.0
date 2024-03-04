@@ -1,46 +1,47 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF5EC224CF;
-	Mon,  4 Mar 2024 14:06:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8F343F9E9;
+	Mon,  4 Mar 2024 14:06:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709561217; cv=none; b=CP0skdvJApCn/jXBvK+zq9YzyscPTEO4N39sOJJQ910LNQ7XUS9f6L/7HF31e5soc3YVmQOUii89UUkA8bCRbqkf8tFEkvNhPiyDkqbAbAmgXbsTqBf8FtsoUxaoDuo7YgVl9Jv+u79O0jckZ780tNwpTr/Okhms2Letu9x9MWQ=
+	t=1709561219; cv=none; b=qqIRebjPM4M3dqwrPNrV7y2iLZIcSIT/XKHgzWzCMmc42+7ZfZ38clXA+2KNHOX63KB9es4QHU0/7HhNruXQQIKfqKHm8r7EVOarn6hzl2GBUd6nqyC66MRZgWTwsXWDe3iiBcYk3r3b1JaSOU8w8I8W3+lFdH9z5CwCjcoYGhI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709561217; c=relaxed/simple;
-	bh=oPgbP6Y7UWq3750QzKfWsGmdMlFfdlCl9robmFmEbdI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=F17nPM/OZs/SbwQbIGxSYv/hW3hGgcyY9ghQiqLdkJnRM8ogfiJ8Sa4XVwibIUpJe8oLRYOm9PYLJox3QhB39Fb5fUMsJGiuPPazEuutpUInZJta11RMasTXkKcyCyKCWccpUhfculmh92izDmuaknRttY+UvH/52PQvsVmvs70=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZbQz0mt2; arc=none smtp.client-ip=198.175.65.17
+	s=arc-20240116; t=1709561219; c=relaxed/simple;
+	bh=40hCdHKWv2XHazCffDZwn3ICc74hcXXERftpqKcn6VI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=hCZhITKpjjzGLYYBwGK+h9fKFE0stuZywVWgO7BG/sNRd2WS8XeuzI9y2EFukFccAet+j0OnjNW7b0B4HAxuRmZ/2Dw5Xbzj9wZBFsawgarsTSPVTgmdV3V21UxEmClX/eNEYd1PPuw/VWFa10pq2I652SCud//y5l6iM8OTeqE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Of4woBOf; arc=none smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZbQz0mt2"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Of4woBOf"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709561215; x=1741097215;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=oPgbP6Y7UWq3750QzKfWsGmdMlFfdlCl9robmFmEbdI=;
-  b=ZbQz0mt28Xneu4vwNwCHhZ4EsYoDTAcR+03HZlbb6zi8VNdg4z863FR9
-   +q1JOvwY3i59iuGPE5VPR+zwrlwl9uZ4kkjYbmlxX4p9ecjW/t5lEKRXv
-   ohv896HbtXb1Bi4rm4cwFwgng2zLloWJodj9MUprtZwUe1Q01lr0m/59e
-   fWG0e5RgMzrZi4yGvZSGODWYbeqRV9W+ByRTuWsn32UQ2gyNyNwf4hc30
-   xCUSxXZbLs9XmFYaVHcyDOmxbT7RrwrsuovvjRdFkMh6jW4U44G2CU9/2
-   cYIwXCFO51PXK6AJBA6jxq10+WcMTlXqzPcs2xdk5PZTukqMDQ+Gd3O/D
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="4214178"
+  t=1709561217; x=1741097217;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=40hCdHKWv2XHazCffDZwn3ICc74hcXXERftpqKcn6VI=;
+  b=Of4woBOf89oUB4qUGe/nyD25L1iwUiOrDJDNzGPMX73ofUuhOYWRWZVF
+   BSYOi8QnKNrlJGcwYSlopUTcUP8/b0fULpMLiiTvV0WJWWyisdw5U2q6a
+   nTOxC57UcJosx8QBOQrEzlxb97oBe6xUSrUjQLjLN37NFrKmD1AapBq0P
+   xEikf6CJu34TM6WSKhTzSvo7dw/mgkHELlLmMY2jKb/o+4GoL4SPoUsxK
+   hdtY/Qb6YgT82CgMbyfLa474+DD1XPUypLLJOMfvpDhBTjBUImgrOsQpw
+   iFsIA19bYbcImiDqQR6GIXVPc6Cuw1F7pKhqQxY/Lx1XtWUyZzDHoCMRT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="4214183"
 X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
-   d="scan'208";a="4214178"
+   d="scan'208";a="4214183"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2024 06:06:54 -0800
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2024 06:06:55 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="937040569"
+X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="937040570"
 X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
-   d="scan'208";a="937040569"
+   d="scan'208";a="937040570"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga001.fm.intel.com with ESMTP; 04 Mar 2024 06:06:53 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 2A19931F; Mon,  4 Mar 2024 16:06:52 +0200 (EET)
+	id 468883C0; Mon,  4 Mar 2024 16:06:52 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -48,10 +49,12 @@ To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
 	linux-kernel@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v1 0/2] iio: core: Fix and cleanup to iio_device_alloc()
-Date: Mon,  4 Mar 2024 16:04:31 +0200
-Message-ID: <20240304140650.977784-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 2/2] iio: core: Calculate alloc_size only once in iio_device_alloc()
+Date: Mon,  4 Mar 2024 16:04:33 +0200
+Message-ID: <20240304140650.977784-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
+In-Reply-To: <20240304140650.977784-1-andriy.shevchenko@linux.intel.com>
+References: <20240304140650.977784-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -60,20 +63,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This is an exctract of the two patches from 
-https://lore.kernel.org/r/20240228204919.3680786-1-andriy.shevchenko@linux.intel.com
+No need to rewrite the value, instead use 'else' branch.
+This will also help further refactoring the code later on.
 
-In v1 (extract):
-- removed unneeded 'else' branch (David)
-- fixed typo in allocation cleanup (David)
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/industrialio-core.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-Andy Shevchenko (2):
-  iio: core: Leave private pointer NULL when no private data supplied
-  iio: core: Calculate alloc_size only once in iio_device_alloc()
-
- drivers/iio/industrialio-core.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 8684ba246969..c7ad88932015 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1643,11 +1643,10 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
+ 	struct iio_dev *indio_dev;
+ 	size_t alloc_size;
+ 
+-	alloc_size = sizeof(struct iio_dev_opaque);
+-	if (sizeof_priv) {
+-		alloc_size = ALIGN(alloc_size, IIO_DMA_MINALIGN);
+-		alloc_size += sizeof_priv;
+-	}
++	if (sizeof_priv)
++		alloc_size = ALIGN(sizeof(*iio_dev_opaque), IIO_DMA_MINALIGN) + sizeof_priv;
++	else
++		alloc_size = sizeof(*iio_dev_opaque);
+ 
+ 	iio_dev_opaque = kzalloc(alloc_size, GFP_KERNEL);
+ 	if (!iio_dev_opaque)
 -- 
 2.43.0.rc1.1.gbec44491f096
 
