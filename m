@@ -1,60 +1,57 @@
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B96D312D1E6;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED66812C7E6;
 	Thu,  7 Mar 2024 13:34:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709818459; cv=none; b=LJy12bPY0sC2uiVRCJLWDmxc6yTI2p60Jb9Sf/oeTHGzCq+odjz6KfSPlKN+v6AuAU7PlxwKCBKOjgAYUUd8ywH3f0nZZpNYewBW0c1HBF8Xie1JNqkQXL+P6fzRYqIqpkw8X4tejYJLS7wcVdlEFV4q8CgvOTq4mT3l8GsNeZw=
+	t=1709818459; cv=none; b=TfDiyStYvwivgr4DVjNGaq5qiKy3ATyC0sXXQ6b9MgFrl7CHc1u4N3jxWEK2RZ86qJmjgSIJpQchoBg8my7+vZwCkbGuRT9McQvKpO9znGifPDuAzHoSWg5M65c9Sew8xFmaNZBEF3d7e9q4WbXAhf0CjAbqGeh6pbXTf6/ghuI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1709818459; c=relaxed/simple;
-	bh=LWsw026/asPNOxKB3DfQPCtN+8c7p5NHBaCKCQqDSWo=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=E62NSRbXEJF365CXapiig+1kBs/n+fcGfvpu+NvLJU/NMRDmzOgrPWL9oZ7y+U4oQemw8lYd+BcaF73qod0Q45/2q48uHadc23EgyBWFR7PhELH4PGZm8ReRg/3FQVvn4kC9ffn0+pkezIO7SXOzoHMGGXo5enlAMWn2BlGmG+c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=7MbuGdCA; arc=none smtp.client-ip=185.132.182.106
+	bh=xUlBpmb0di+/Oq5gPxw44wMQ9DN9MwcNDjYg1cBWBgw=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=qXabDK2IPKT691peWhr68V7rhB4fchKgnlHJCJ3Jj0ViJ5GnqK0IZPTgF0/+lF6yXX47wAmV0C63sOpEPUuQAHKSgFtloEud1Mwaj9HNb2Gj/v8PsMl5sMDHYpiOVpvU3JRhhuj3IGTuHtadvfNq040qxif6kfyHjmsMP9VjR1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=BSM3Rc2s; arc=none smtp.client-ip=185.132.182.106
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="7MbuGdCA"
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 4279x8Iq028743;
-	Thu, 7 Mar 2024 14:33:58 +0100
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="BSM3Rc2s"
+Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 4279qNWo012206;
+	Thu, 7 Mar 2024 14:33:53 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-	from:to:cc:subject:date:message-id:in-reply-to:references
-	:mime-version:content-transfer-encoding:content-type; s=
-	selector1; bh=+7nWDb9ZWuayfFkASgiJUL4avZyU6WuY7zpZjhvk6Uc=; b=7M
-	buGdCAh064QV5UxtSemkeKktdj715YEDnP34hOnWxuoPvR1bizyMPFs2c6Ah6Xxg
-	91un5/jB2VcXrWMHXUBo7hX9mQdGxfBj55AfIevjRG8PFNtS+Zwm80BUYWMwwKSv
-	BCc1bDnu/Ssj4zLPBDUZkxHrxeWVQFiq5lviRxCY4N0yljtblgSD1lVTTr5B4Kqu
-	weYNMKCptPNhsCQC+p3wxWJ2sycvb6IhLz3Bzz34XrnHHiM/IXfksq7AUh4WdcpH
-	pmjCovExiSWh4Y6lytkcUsc9ntVKGxOQbYtQX3Fy6HhIU7WQA7+c2SN8hCNXkRQo
-	PhX+XAIsLe5mGbDXlk5w==
+	from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding:content-type; s=selector1; bh=7LeJn9+
+	Q9QIQtH5uQXab1IA8eA4efREKX5wOGGIBS3M=; b=BSM3Rc2sTkwW/SSubKD6fLC
+	05z9P3/Fm2m48yRgq+w9jQ8/5phafEptIDVMXf7zaHOZtjHRn/W0MKm7C8ARTUap
+	V18vADY8+pIyXUXZBb3mVQNibh+EHyOgyAQd0jFp4IliSMU7PGzpijnp+gDG+JQj
+	6x6G2H9cfzJYbMEsg0hIC8/IJ9eaVsrLz644TnKqZNJrbdcsRhI5u9lpDEvg4gdC
+	nnULL6foMcqKriiWuBT5QndpYxDYkBJtTpZWWsPyG9uiBMd3dv1Qf+JVRrVAGG59
+	SHFXpCq0HXDkcJbcdnfQ1qnD062Cgu1vrNVBNc03JTRsDitYNSU488DSB4fEjyA=
+	=
 Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3wn87tt1c7-1
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3wmej5dtn8-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 07 Mar 2024 14:33:58 +0100 (CET)
+	Thu, 07 Mar 2024 14:33:53 +0100 (CET)
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 241F24002D;
-	Thu,  7 Mar 2024 14:33:55 +0100 (CET)
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 9EFE94002D;
+	Thu,  7 Mar 2024 14:33:49 +0100 (CET)
 Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7FE0527A504;
-	Thu,  7 Mar 2024 14:33:30 +0100 (CET)
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C987F279E99;
+	Thu,  7 Mar 2024 14:33:25 +0100 (CET)
 Received: from localhost (10.201.22.191) by SHFDAG1NODE2.st.com (10.75.129.70)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Thu, 7 Mar
- 2024 14:33:27 +0100
+ 2024 14:33:25 +0100
 From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 To: <william.gray@linaro.org>
 CC: <lee@kernel.org>, <alexandre.torgue@foss.st.com>,
         <fabrice.gasnier@foss.st.com>, <linux-iio@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 03/10] counter: stm32-timer-cnt: adopt signal definitions
-Date: Thu, 7 Mar 2024 14:32:59 +0100
-Message-ID: <20240307133306.383045-4-fabrice.gasnier@foss.st.com>
+Subject: [PATCH v5 00/10] counter: Add stm32 timer events support
+Date: Thu, 7 Mar 2024 14:32:56 +0100
+Message-ID: <20240307133306.383045-1-fabrice.gasnier@foss.st.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20240307133306.383045-1-fabrice.gasnier@foss.st.com>
-References: <20240307133306.383045-1-fabrice.gasnier@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,80 +66,65 @@ X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2024-03-07_08,2024-03-06_01,2023-05-22_02
 
-Adopt signals definitions to ease later signals additions.
-There are no intended functional changes here.
+Improves the stm32 timer counter driver by introducing new signals,
+e.g. counting frequency, and missing channels.
 
-Reviewed-by: William Breathitt Gray <william.gray@linaro.org>
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
----
+It also adds support for interrupt based events using the chrdev interface.
+Two event types are added in this series: overflows and capture.
+
+Up to now, stm32 timer counter driver focused mainly on quadrature
+encoder feature on channel 1 & 2. It was limited to timers that has
+the HW quadrature encoder.
+
+With this series, all timer instances can be enabled for:
+- Quadrature encoder on channel 1 and channel 2 (when supported in HW)
+- Simple counting on internal clock
+- Capture counter value when rising and falling edges are observed at
+  channel 1 to channel 4 input (number of channels varies depending on
+  the timer instance used)
+- Push overflow and/or capture events through the chardev interface
+
+Changes in v5:
+- Rebase on counter-next, where COUNTER_COMP_FREQUENCY() has been applied
+- Add collected Reviewed-by
+
 Changes in v4:
-- Add William's Reviewed-by tag
-Changes in v3:
- New patch split from "counter: stm32-timer-cnt: introduce clock signal"
----
- drivers/counter/stm32-timer-cnt.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+- Introduce new COUNTER_COMP_FREQUENCY() macro
+- Mainly update two last patchs, to address William's review comments
+  (details in each patch)
 
-diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
-index 668e9d1061d3..c34747d7857e 100644
---- a/drivers/counter/stm32-timer-cnt.c
-+++ b/drivers/counter/stm32-timer-cnt.c
-@@ -21,6 +21,9 @@
- #define TIM_CCER_MASK	(TIM_CCER_CC1P | TIM_CCER_CC1NP | \
- 			 TIM_CCER_CC2P | TIM_CCER_CC2NP)
- 
-+#define STM32_CH1_SIG		0
-+#define STM32_CH2_SIG		1
-+
- struct stm32_timer_regs {
- 	u32 cr1;
- 	u32 cnt;
-@@ -247,14 +250,14 @@ static int stm32_action_read(struct counter_device *counter,
- 		return 0;
- 	case COUNTER_FUNCTION_QUADRATURE_X2_A:
- 		/* counts up/down on TI1FP1 edge depending on TI2FP2 level */
--		if (synapse->signal->id == count->synapses[0].signal->id)
-+		if (synapse->signal->id == STM32_CH1_SIG)
- 			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
- 		else
- 			*action = COUNTER_SYNAPSE_ACTION_NONE;
- 		return 0;
- 	case COUNTER_FUNCTION_QUADRATURE_X2_B:
- 		/* counts up/down on TI2FP2 edge depending on TI1FP1 level */
--		if (synapse->signal->id == count->synapses[1].signal->id)
-+		if (synapse->signal->id == STM32_CH2_SIG)
- 			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
- 		else
- 			*action = COUNTER_SYNAPSE_ACTION_NONE;
-@@ -278,11 +281,11 @@ static const struct counter_ops stm32_timer_cnt_ops = {
- 
- static struct counter_signal stm32_signals[] = {
- 	{
--		.id = 0,
-+		.id = STM32_CH1_SIG,
- 		.name = "Channel 1"
- 	},
- 	{
--		.id = 1,
-+		.id = STM32_CH2_SIG,
- 		.name = "Channel 2"
- 	}
- };
-@@ -291,12 +294,12 @@ static struct counter_synapse stm32_count_synapses[] = {
- 	{
- 		.actions_list = stm32_synapse_actions,
- 		.num_actions = ARRAY_SIZE(stm32_synapse_actions),
--		.signal = &stm32_signals[0]
-+		.signal = &stm32_signals[STM32_CH1_SIG]
- 	},
- 	{
- 		.actions_list = stm32_synapse_actions,
- 		.num_actions = ARRAY_SIZE(stm32_synapse_actions),
--		.signal = &stm32_signals[1]
-+		.signal = &stm32_signals[STM32_CH2_SIG]
- 	}
- };
- 
+Changes in V3:
+- This series has been split [1] and renamed.
+[1] https://lore.kernel.org/lkml/20230922143920.3144249-1-fabrice.gasnier@foss.st.com/
+- Watch events tool patch applied, hence dropped from this series
+- Refactor / split several patches
+- Keep original signals order, to avoid breaking existing user space
+- Don't adjust number of signals: adopt static configuration. rely on
+  error mechanism to manage diversity across STM32 Timers instances.
+
+Changes in v2:
+- counter fix and improvement patch applied, hence dropped in v2 series
+- mfd patch applied, hence dropped in v2 series
+- revisit watch events tool (mainly command line interface)
+- add one patch to rename STM32 Timer counter
+- various review comments from v1
+
+Fabrice Gasnier (10):
+  counter: stm32-timer-cnt: rename quadrature signal
+  counter: stm32-timer-cnt: rename counter
+  counter: stm32-timer-cnt: adopt signal definitions
+  counter: stm32-timer-cnt: introduce clock signal
+  counter: stm32-timer-cnt: add counter prescaler extension
+  counter: stm32-timer-cnt: add checks on quadrature encoder capability
+  counter: stm32-timer-cnt: introduce channels
+  counter: stm32-timer-cnt: probe number of channels from registers
+  counter: stm32-timer-cnt: add support for overflow events
+  counter: stm32-timer-cnt: add support for capture events
+
+ drivers/counter/stm32-timer-cnt.c | 461 +++++++++++++++++++++++++++++-
+ include/linux/mfd/stm32-timers.h  |  13 +
+ 2 files changed, 460 insertions(+), 14 deletions(-)
+
 -- 
 2.25.1
 
