@@ -1,57 +1,57 @@
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 044D012D755;
-	Thu,  7 Mar 2024 13:35:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AD7F12DDA7;
+	Thu,  7 Mar 2024 13:35:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709818522; cv=none; b=hjQMDvWFDjrNWdsYFBFnU7AYFJaTABX9FvX5eymU3ib6W7ElEETpd/8Cd3VO1kVIk/wgukDuCL0cKmOSWMnmRnRr/YRkW4/fwkSvDrX07fJwSElMQcltcpMM1umothGvDnmi7Gol7+yiaHxLzwtHfu0iDPHRNAhpVznG220Wx8E=
+	t=1709818525; cv=none; b=HKdoVjQHenmF5dfrUrUIOL/eSmfE+Yzz3ff01OcXte6gAA7Vtw2j4WibOxsHJFtccvvUsni6dPn7DdyVxAi1bkqZnr93l2+MY1lWyQ3ODimJ6+OhpFDtcnOGM+GnhsqzLvQ22OvQkvOkE9c9h9LhiD+aogiOpAdO4OpCciN1b6U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709818522; c=relaxed/simple;
-	bh=xSphM6WnGvl8d1xN8bvZPdIouR73+Nnz5DSIQDy1jQw=;
+	s=arc-20240116; t=1709818525; c=relaxed/simple;
+	bh=sE9MDLiOgq9FU99NRLp+cLa9Sq+I4ShSz+hPVE9Zxq4=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZGcCAkJOMd3yHJWutQfzjrqz53LI0JCy0OIBJVzd5IaWYArgfAMgM40IdhsdFn11S8HaA+Guqu02MoTRGjiQQUH+HUGC/Zx7b5C0SzkwHU9b5o7UkrD3jjpQiu03o6kYepKDlu7MtT8T1B/Su97sZndDXJjkujuhYPMpSgqcfuo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=8XHLkKbl; arc=none smtp.client-ip=185.132.182.106
+	 MIME-Version:Content-Type; b=i8DEAgGXGBrHWLaTvA48DHgLQB9y4EtbAy8boJ/rl/rd2H8h70TWHSaNLZQw+B+F46O1EPo5Dyl5TwO1fSBfdpSPoJtly483D1+Ni7vWFgQUJR+kfHl1OLwmAn3ZeCF9RR7tH1fVBvhpEAfadSxtKbqA91JhLOq+0yMQCUknrV4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=zWxN8/Wa; arc=none smtp.client-ip=185.132.182.106
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="8XHLkKbl"
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 4278eS77014219;
-	Thu, 7 Mar 2024 14:35:09 +0100
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="zWxN8/Wa"
+Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 4279qDHA004218;
+	Thu, 7 Mar 2024 14:35:12 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
 	from:to:cc:subject:date:message-id:in-reply-to:references
 	:mime-version:content-transfer-encoding:content-type; s=
-	selector1; bh=j5LYoNpWBrOk/Pfrt8DrnNoB0RQgOHa3KZB9xD3ISKQ=; b=8X
-	HLkKbl6ZcY4LwurRPqcZE5Nt5d2tOjKEEVsjPUEfNmZ85FtdQ5sr05Aghrhek/Hn
-	YJTAuwrl0y2IJnir0FZw5YW16JiYpOMrjz79Phyh31PcJM+7IN/NaWiYDmXoIvB0
-	QBSXGtF+UpG/8/PQT3eVPYEEUkFa8L9Cil95ha45JLJEOXhVmcbiuMFl3RAazX6H
-	wf1b/ZoVExM8VAZIZ/2VHYLJjWY+NwMU+aTLcZsObF1sKHWudm0CmOXASQYf2JXm
-	GXHZL/++eM3d3EygVu8ZyB4gT3saHpODdxhinUGPHVcKN+v33qo7UkFppaEw2nAt
-	W1gtlya9qFzUSkV9KRfg==
+	selector1; bh=gOumbbgPaqvn44tqW0xgZQ1SLJ0gP3GHl099084722c=; b=zW
+	xN8/WaxT9yNL0c7qlAlz0IOzfrRX1iQkPX7pTr769bxiRgcZvrpc28TE+hvMU0v8
+	gvGz/cIvwVrpef7rWlRhA+1k8qyS/jCcAwjiwBIlCoGlggL6QmoDarYTDDPufJMf
+	RYirA5yrbFDVXcrz1Dmi0HDXUnzInQMRTjElRurK6zoT9rCLIOjT8198AZBkoiUo
+	Kv+GFG5FRErK3TOB1b91tSgRpb2atRQDc7oYc5i1yKqAno+pMlo8Jp4PRXLUA6Uv
+	QMRro8PE18nvh1eE4DjjPn7/g97MUnWLefrw5+gOq54RLwWys2Q5cKdLYW+RVcTf
+	TgNVZYIAK8Ie8aV6g6Dw==
 Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3wktdmgh44-1
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3wmej5dtvj-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 07 Mar 2024 14:35:09 +0100 (CET)
+	Thu, 07 Mar 2024 14:35:12 +0100 (CET)
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 246D040047;
-	Thu,  7 Mar 2024 14:35:05 +0100 (CET)
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id D03C440044;
+	Thu,  7 Mar 2024 14:35:08 +0100 (CET)
 Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 995CD27A501;
-	Thu,  7 Mar 2024 14:34:40 +0100 (CET)
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0A30D27A506;
+	Thu,  7 Mar 2024 14:34:42 +0100 (CET)
 Received: from localhost (10.201.22.191) by SHFDAG1NODE2.st.com (10.75.129.70)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Thu, 7 Mar
- 2024 14:34:39 +0100
+ 2024 14:34:41 +0100
 From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 To: <william.gray@linaro.org>
 CC: <lee@kernel.org>, <alexandre.torgue@foss.st.com>,
         <fabrice.gasnier@foss.st.com>, <linux-iio@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 06/10] counter: stm32-timer-cnt: add checks on quadrature encoder capability
-Date: Thu, 7 Mar 2024 14:33:02 +0100
-Message-ID: <20240307133306.383045-7-fabrice.gasnier@foss.st.com>
+Subject: [PATCH v5 08/10] counter: stm32-timer-cnt: probe number of channels from registers
+Date: Thu, 7 Mar 2024 14:33:04 +0100
+Message-ID: <20240307133306.383045-9-fabrice.gasnier@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20240307133306.383045-1-fabrice.gasnier@foss.st.com>
 References: <20240307133306.383045-1-fabrice.gasnier@foss.st.com>
@@ -69,17 +69,10 @@ X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2024-03-07_08,2024-03-06_01,2023-05-22_02
 
-This is a precursor patch to support capture channels on all possible
-channels and stm32 timer types. Original driver was intended to be used
-only as quadrature encoder and simple counter on internal clock.
+Probe the number of capture compare channels, by writing CCER register bits
+and read them back. Take care to restore the register original value.
 
-So, add a check on encoder capability, so the driver may be probed for
-timer instances without encoder feature. This way, all timers may be used
-as simple counter on internal clock, starting from here.
-
-Encoder capability is retrieved by using the timer index (originally in
-stm32-timer-trigger driver and dt-bindings). The need to keep backward
-compatibility with existing device tree lead to parse aside trigger node.
+This is a precursor patch to support capture channels.
 
 Reviewed-by: William Breathitt Gray <william.gray@linaro.org>
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
@@ -88,114 +81,53 @@ Changes in v5:
 - Add William's Reviewed-by tag.
 
 Changes in v4:
-- drop idx from struct stm32_timer_cnt as unused after probing
-- directly use dev struct in stm32_timer_cnt_probe_encoder routine.
+- directly use dev struct in stm32_timer_cnt_detect_channels routine.
 
 Changes in v3:
 - New patch split from:
   "counter: stm32-timer-cnt: populate capture channels and check encoder"
-- return -EOPNOTSUPP when encoder function isn't supported by the timer
-  instance.
 ---
- drivers/counter/stm32-timer-cnt.c | 55 +++++++++++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+ drivers/counter/stm32-timer-cnt.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
-index b969d550e90a..17f87ace450d 100644
+index f63d0c3e3f22..e1c0a502b74c 100644
 --- a/drivers/counter/stm32-timer-cnt.c
 +++ b/drivers/counter/stm32-timer-cnt.c
-@@ -11,6 +11,7 @@
- #include <linux/mfd/stm32-timers.h>
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
-+#include <linux/of.h>
- #include <linux/pinctrl/consumer.h>
- #include <linux/platform_device.h>
- #include <linux/types.h>
-@@ -38,6 +39,7 @@ struct stm32_timer_cnt {
- 	u32 max_arr;
+@@ -42,6 +42,7 @@ struct stm32_timer_cnt {
  	bool enabled;
  	struct stm32_timer_regs bak;
-+	bool has_encoder;
+ 	bool has_encoder;
++	unsigned int nchannels;
  };
  
  static const enum counter_function stm32_count_functions[] = {
-@@ -111,12 +113,18 @@ static int stm32_count_function_write(struct counter_device *counter,
- 		sms = TIM_SMCR_SMS_SLAVE_MODE_DISABLED;
- 		break;
- 	case COUNTER_FUNCTION_QUADRATURE_X2_A:
-+		if (!priv->has_encoder)
-+			return -EOPNOTSUPP;
- 		sms = TIM_SMCR_SMS_ENCODER_MODE_1;
- 		break;
- 	case COUNTER_FUNCTION_QUADRATURE_X2_B:
-+		if (!priv->has_encoder)
-+			return -EOPNOTSUPP;
- 		sms = TIM_SMCR_SMS_ENCODER_MODE_2;
- 		break;
- 	case COUNTER_FUNCTION_QUADRATURE_X4:
-+		if (!priv->has_encoder)
-+			return -EOPNOTSUPP;
- 		sms = TIM_SMCR_SMS_ENCODER_MODE_3;
- 		break;
- 	default:
-@@ -388,6 +396,49 @@ static struct counter_count stm32_counts = {
+@@ -416,6 +417,20 @@ static struct counter_count stm32_counts = {
  	.num_ext = ARRAY_SIZE(stm32_count_ext)
  };
  
-+/* encoder supported on TIM1 TIM2 TIM3 TIM4 TIM5 TIM8 */
-+#define STM32_TIM_ENCODER_SUPPORTED	(BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(7))
-+
-+static const char * const stm32_timer_trigger_compat[] = {
-+	"st,stm32-timer-trigger",
-+	"st,stm32h7-timer-trigger",
-+};
-+
-+static int stm32_timer_cnt_probe_encoder(struct device *dev,
-+					 struct stm32_timer_cnt *priv)
++static void stm32_timer_cnt_detect_channels(struct device *dev,
++					    struct stm32_timer_cnt *priv)
 +{
-+	struct device *parent = dev->parent;
-+	struct device_node *tnode = NULL, *pnode = parent->of_node;
-+	int i, ret;
-+	u32 idx;
++	u32 ccer, ccer_backup;
 +
-+	/*
-+	 * Need to retrieve the trigger node index from DT, to be able
-+	 * to determine if the counter supports encoder mode. It also
-+	 * enforce backward compatibility, and allow to support other
-+	 * counter modes in this driver (when the timer doesn't support
-+	 * encoder).
-+	 */
-+	for (i = 0; i < ARRAY_SIZE(stm32_timer_trigger_compat) && !tnode; i++)
-+		tnode = of_get_compatible_child(pnode, stm32_timer_trigger_compat[i]);
-+	if (!tnode) {
-+		dev_err(dev, "Can't find trigger node\n");
-+		return -ENODATA;
-+	}
++	regmap_read(priv->regmap, TIM_CCER, &ccer_backup);
++	regmap_set_bits(priv->regmap, TIM_CCER, TIM_CCER_CCXE);
++	regmap_read(priv->regmap, TIM_CCER, &ccer);
++	regmap_write(priv->regmap, TIM_CCER, ccer_backup);
++	priv->nchannels = hweight32(ccer & TIM_CCER_CCXE);
 +
-+	ret = of_property_read_u32(tnode, "reg", &idx);
-+	if (ret) {
-+		dev_err(dev, "Can't get index (%d)\n", ret);
-+		return ret;
-+	}
-+
-+	priv->has_encoder = !!(STM32_TIM_ENCODER_SUPPORTED & BIT(idx));
-+
-+	dev_dbg(dev, "encoder support: %s\n", priv->has_encoder ? "yes" : "no");
-+
-+	return 0;
++	dev_dbg(dev, "has %d cc channels\n", priv->nchannels);
 +}
 +
- static int stm32_timer_cnt_probe(struct platform_device *pdev)
- {
- 	struct stm32_timers *ddata = dev_get_drvdata(pdev->dev.parent);
-@@ -409,6 +460,10 @@ static int stm32_timer_cnt_probe(struct platform_device *pdev)
- 	priv->clk = ddata->clk;
- 	priv->max_arr = ddata->max_arr;
+ /* encoder supported on TIM1 TIM2 TIM3 TIM4 TIM5 TIM8 */
+ #define STM32_TIM_ENCODER_SUPPORTED	(BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(7))
  
-+	ret = stm32_timer_cnt_probe_encoder(dev, priv);
-+	if (ret)
-+		return ret;
+@@ -484,6 +499,8 @@ static int stm32_timer_cnt_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	stm32_timer_cnt_detect_channels(dev, priv);
 +
  	counter->name = dev_name(dev);
  	counter->parent = dev;
