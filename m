@@ -1,110 +1,130 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC350171A1
-	for <linux-iio@vger.kernel.org>; Sun, 10 Mar 2024 08:06:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 374781EB3B;
+	Sun, 10 Mar 2024 11:31:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710057987; cv=none; b=rCcb1hk53WELlw9xDII+2DCjkSP26lAaOAZ8j7IDJSZEhOcF9JI1CMA51Qk/1Y5sV/4BDzujZ3HtZW9zy2IchDL6X0xdH0AZzHe1tkSPWgDThsHzTlUPf9AiuKEjSMkdinmMTWQl23td22KY7FmyD/wTcOqoN8PaRpPYbnNlC9g=
+	t=1710070275; cv=none; b=JObx6hdqY+AH85Nnbp5e04jRoNyIBP5wMBITXZHWp+cO/UQdUY8YO/0T9YjQCt1uSY4vc1L3u1BLuAyC3QE9QvWBLVlOIYLDoqmFR+0OtcqGCRlj/g/5ujIvsINAdKE7cc3spwd5yiOfDsnKPlqAkkSLt99x7JnN38M5uCkrK5o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710057987; c=relaxed/simple;
-	bh=Y3iVEuUnTxadv+2Xsne2ZqFIPCWIinyeZaatYcGXFmw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SA7tbs3cdrmQ2huK30cZAnN398oly2fjAOwdX66mudisKakGLnf6H1ydaT+eWN+qYLsqh669XI2H2gdpV2ZoNMuqvl4N8wiW6D5HxS5zw4usMAuoy8FaIqvG45qSB02YTeVJEYtN48UfB/6IGpQqCno0E0sQ22YfShqPmYlBxpU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rjECC-00073Q-Vw; Sun, 10 Mar 2024 09:06:12 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rjECB-005Txt-WB; Sun, 10 Mar 2024 09:06:12 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rjECB-003KQv-2w;
-	Sun, 10 Mar 2024 09:06:11 +0100
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: William Breathitt Gray <william.gray@linaro.org>
-Cc: Vignesh Raghavendra <vigneshr@ti.com>,
-	Julien Panis <jpanis@baylibre.com>,
-	linux-iio@vger.kernel.org,
-	linux-omap@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	kernel@pengutronix.de
-Subject: [PATCH 1/2] counter: ti-ecap-capture: Convert to platform remove callback returning void
-Date: Sun, 10 Mar 2024 09:06:06 +0100
-Message-ID:  <f70902b2aabecaa9295c28629cd7a8a0e6eb06d0.1710057753.git.u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1710057753.git.u.kleine-koenig@pengutronix.de>
-References: <cover.1710057753.git.u.kleine-koenig@pengutronix.de>
+	s=arc-20240116; t=1710070275; c=relaxed/simple;
+	bh=xmHn29ycT3efiyadYaKMHk1CM4Om2IaoHBzYN+wd50k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=udPAOc/RkEVMMqigNgKrG7j6t80aiV91MaFQ3mUiVRR5EvPPy0jUtqOOxBQ0JMPwCX+bH2sTNOTlixy2g/py9ffCv/OTGJp34NGbB7M5eT+hpqvde8w4XfQSCurLNC5oneotSbdHQHyWRAmvNEQI+y9rhZEQRe53n0Y97bn3Ca0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kwrETTd7; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kwrETTd7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1710070273; x=1741606273;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xmHn29ycT3efiyadYaKMHk1CM4Om2IaoHBzYN+wd50k=;
+  b=kwrETTd7nR+B8s69VO9RyfW1Lc8IjCS2ItFJEAH5BfPQd310ULDNQjBC
+   PD0b/n1ICvta9APVqR7rk5QksFq7QdBFSXfH48SrphR6QZlBkHC+OvnWm
+   5AVvel/i+Fi7zLTCAl81KUvb/GZN4f3Nqg80UpDcdLzPBva9nuQop/zuO
+   sdipB+dvlEy52iy5s9pwJSBbdjlT83aPjwmzdIDXSkjZGCbWwok2TstKZ
+   UpO4AzwXGa7wZmrhyvXCLUpo2iZQTLX/iifgg0EFGBZz4ygcwQ2qPcz2Y
+   STFMuAEzVWz9Q2Mhx3b3416H2XksbTLUGWJJMnoDe/8La4ikzZ28RZayX
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11008"; a="15881881"
+X-IronPort-AV: E=Sophos;i="6.07,114,1708416000"; 
+   d="scan'208";a="15881881"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2024 04:31:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,114,1708416000"; 
+   d="scan'208";a="10906600"
+Received: from lkp-server01.sh.intel.com (HELO b21307750695) ([10.239.97.150])
+  by orviesa010.jf.intel.com with ESMTP; 10 Mar 2024 04:31:06 -0700
+Received: from kbuild by b21307750695 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rjHOS-0008Ct-0N;
+	Sun, 10 Mar 2024 11:31:04 +0000
+Date: Sun, 10 Mar 2024 19:30:32 +0800
+From: kernel test robot <lkp@intel.com>
+To: Paul Cercueil <paul@crapouillou.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Lars-Peter Clausen <lars@metafoo.de>, Vinod Koul <vkoul@kernel.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>
+Cc: oe-kbuild-all@lists.linux.dev, Nuno Sa <nuno.sa@analog.com>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	dmaengine@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org,
+	Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v8 3/6] iio: core: Add new DMABUF interface infrastructure
+Message-ID: <202403101928.WWSQwfdG-lkp@intel.com>
+References: <20240308170046.92899-4-paul@crapouillou.net>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1863; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=Y3iVEuUnTxadv+2Xsne2ZqFIPCWIinyeZaatYcGXFmw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBl7WnvQ6MhD8ir6vlj0K8bS/UVG6qXp8reE73Xx SkmyEVNDfeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZe1p7wAKCRCPgPtYfRL+ Tp04B/9JZ66umIX0fdbWIsAqswZ0vtG8Va9k8cSYwBIwxf8u0roWV9DCJnH+iM5UrbYqGnTbv2j 6nxM40CZZTbasN7E5PPLOw8fuD6hzVh5TcNUx/jkA3Qjn9mlnMV9Dyi01+3N7b0bJiqbNZMTHAJ Epzn/3xD/MozpLPFe0IonGoopq6KEb1I9zyHeELLfT5zVjZyE08oauRtlH3xmNi7j5Sk8AJeMbT RJSEsIS5sxkjKqzn5L7gNPU9AuYjI9jjpPquXTdjHOOV5kHKnm85BvUhSlFuenSHcNPxkhC0Ved yfzcbOzps4yhDQJEhLP+h+5rUnEj4wPjIo2WDTmNlrSmDAkg
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240308170046.92899-4-paul@crapouillou.net>
 
-The .remove() callback for a platform driver returns an int which makes
-many driver authors wrongly assume it's possible to do error handling by
-returning an error code. However the value returned is ignored (apart
-from emitting a warning) and this typically results in resource leaks.
+Hi Paul,
 
-To improve here there is a quest to make the remove callback return
-void. In the first step of this quest all drivers are converted to
-.remove_new(), which already returns void. Eventually after all drivers
-are converted, .remove_new() will be renamed to .remove().
+kernel test robot noticed the following build errors:
 
-Trivially convert this driver from always returning zero in the remove
-callback to the void returning variant.
+[auto build test ERROR on jic23-iio/togreg]
+[also build test ERROR on vkoul-dmaengine/next lwn/docs-next linus/master v6.8-rc7 next-20240308]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/counter/ti-ecap-capture.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Paul-Cercueil/dmaengine-Add-API-function-dmaengine_prep_peripheral_dma_vec/20240309-010421
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/20240308170046.92899-4-paul%40crapouillou.net
+patch subject: [PATCH v8 3/6] iio: core: Add new DMABUF interface infrastructure
+config: um-randconfig-002-20240310 (https://download.01.org/0day-ci/archive/20240310/202403101928.WWSQwfdG-lkp@intel.com/config)
+compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240310/202403101928.WWSQwfdG-lkp@intel.com/reproduce)
 
-diff --git a/drivers/counter/ti-ecap-capture.c b/drivers/counter/ti-ecap-capture.c
-index fb1cb1774674..d33d35055b91 100644
---- a/drivers/counter/ti-ecap-capture.c
-+++ b/drivers/counter/ti-ecap-capture.c
-@@ -537,15 +537,13 @@ static int ecap_cnt_probe(struct platform_device *pdev)
- 	return 0;
- }
- 
--static int ecap_cnt_remove(struct platform_device *pdev)
-+static void ecap_cnt_remove(struct platform_device *pdev)
- {
- 	struct counter_device *counter_dev = platform_get_drvdata(pdev);
- 	struct ecap_cnt_dev *ecap_dev = counter_priv(counter_dev);
- 
- 	if (ecap_dev->enabled)
- 		ecap_cnt_capture_disable(counter_dev);
--
--	return 0;
- }
- 
- static int ecap_cnt_suspend(struct device *dev)
-@@ -600,7 +598,7 @@ MODULE_DEVICE_TABLE(of, ecap_cnt_of_match);
- 
- static struct platform_driver ecap_cnt_driver = {
- 	.probe = ecap_cnt_probe,
--	.remove = ecap_cnt_remove,
-+	.remove_new = ecap_cnt_remove,
- 	.driver = {
- 		.name = "ecap-capture",
- 		.of_match_table = ecap_cnt_of_match,
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202403101928.WWSQwfdG-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+   /usr/bin/ld: drivers/iio/industrialio-buffer.o: in function `iio_buffer_dmabuf_release':
+>> industrialio-buffer.c:(.text+0xec6): undefined reference to `dma_buf_unmap_attachment'
+>> /usr/bin/ld: industrialio-buffer.c:(.text+0xf96): undefined reference to `dma_buf_detach'
+>> /usr/bin/ld: industrialio-buffer.c:(.text+0xfa5): undefined reference to `dma_buf_put'
+   /usr/bin/ld: drivers/iio/industrialio-buffer.o: in function `iio_buffer_signal_dmabuf_done':
+>> industrialio-buffer.c:(.text+0x4a56): undefined reference to `dma_fence_signal'
+   /usr/bin/ld: drivers/iio/industrialio-buffer.o: in function `iio_buffer_cleanup':
+>> industrialio-buffer.c:(.text+0x64f2): undefined reference to `dma_fence_release'
+   /usr/bin/ld: drivers/iio/industrialio-buffer.o: in function `iio_buffer_attach_dmabuf.isra.0':
+>> industrialio-buffer.c:(.text+0x9dbf): undefined reference to `dma_fence_context_alloc'
+>> /usr/bin/ld: industrialio-buffer.c:(.text+0x9df7): undefined reference to `dma_buf_get'
+>> /usr/bin/ld: industrialio-buffer.c:(.text+0x9e38): undefined reference to `dma_buf_attach'
+>> /usr/bin/ld: industrialio-buffer.c:(.text+0x9efe): undefined reference to `dma_buf_map_attachment'
+   /usr/bin/ld: industrialio-buffer.c:(.text+0xa2c1): undefined reference to `dma_buf_detach'
+   /usr/bin/ld: industrialio-buffer.c:(.text+0xa2cd): undefined reference to `dma_buf_put'
+>> /usr/bin/ld: industrialio-buffer.c:(.text+0xa34d): undefined reference to `dma_buf_unmap_attachment'
+   /usr/bin/ld: drivers/iio/industrialio-buffer.o: in function `iio_buffer_enqueue_dmabuf':
+>> industrialio-buffer.c:(.text+0xa949): undefined reference to `dma_buf_get'
+   /usr/bin/ld: industrialio-buffer.c:(.text+0xa997): undefined reference to `dma_buf_put'
+>> /usr/bin/ld: industrialio-buffer.c:(.text+0xac84): undefined reference to `dma_fence_init'
+>> /usr/bin/ld: industrialio-buffer.c:(.text+0xad4b): undefined reference to `dma_resv_wait_timeout'
+>> /usr/bin/ld: industrialio-buffer.c:(.text+0xadec): undefined reference to `dma_resv_reserve_fences'
+>> /usr/bin/ld: industrialio-buffer.c:(.text+0xae2c): undefined reference to `dma_resv_add_fence'
+>> /usr/bin/ld: industrialio-buffer.c:(.text+0xb0da): undefined reference to `dma_fence_release'
+   /usr/bin/ld: drivers/iio/industrialio-buffer.o: in function `iio_buffer_chrdev_ioctl':
+   industrialio-buffer.c:(.text+0xb833): undefined reference to `dma_buf_get'
+   /usr/bin/ld: industrialio-buffer.c:(.text+0xbad0): undefined reference to `dma_buf_put'
+   collect2: error: ld returned 1 exit status
+
 -- 
-2.43.0
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
