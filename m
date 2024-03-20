@@ -1,33 +1,60 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65AF732C60
-	for <linux-iio@vger.kernel.org>; Wed, 20 Mar 2024 09:37:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8572955774
+	for <linux-iio@vger.kernel.org>; Wed, 20 Mar 2024 10:26:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710927469; cv=none; b=NZ8cbsuvHTvlgnOo7xxTKYXm7HTFqWXfbplK0a008g488+X2qpgY6gIOuKg/HITyYInRIv4J07a6UVy1YuiaN3lSeWVWrcZLZppuAd3leJd5JCF4khCfd5FLajOvntjN2JKicyxzlW13rAkc+ovETYktO2pPJSPwtO1eH/j3M00=
+	t=1710930397; cv=none; b=altW5YqldM91/ltG/2OTQk6sxkRk7rea4WTQ4b/vLJLsiMqZQg4wKYsKRGOKJW4PqnMhvCNsHJV1ghNKtex9+td4FM/U9mUefejsyyy7iyx5T25DOsYcP+4T/uXC0AEX9huqHZp4RuGqnFRpJlR3sPuhKk7+Drur5ZmVapOIeO0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710927469; c=relaxed/simple;
-	bh=i/o5sRNIfaA5hJadnKQb+e+WdwHMkKnKubv664PT9M0=;
+	s=arc-20240116; t=1710930397; c=relaxed/simple;
+	bh=hPDbL9yBCJ01jeYZbd3qhOOSH+Ky4c+saEdUE0mgHoM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ea7/iMFqXRq1anY44ekWJL2FfSuGus9ePw3OTFTL6saU6o6p0MEJIZaDQqCGtFXpv5uG5CHKdSSm02zIppkGpP25WL7Osqi1M0v8FzK+HzW5xu+UzXZmxpj7BFCSgG5d+zMohyLM4tZHISUFBNA5RqEZjbyj2t72kV5wq+dlUdU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gSEL64Yh; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=k4q4kKhV2bAb9CRstvRVg+Hxoixw/W78mjHSNxJPF2CHCS/hQKO7HVYBWVOY/UoQOwZ5fJXqyvMkkblO2M9cL2KKcWaJZEyo4wTg4Qpkc+1T1dafa3mup0llCOkIWdsdfA2ayxa0iJEgsl1dUIxl1pZkDKaj4Kx3q9jDj34yLFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=GdaUk7EU; arc=none smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gSEL64Yh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60E86C433C7;
-	Wed, 20 Mar 2024 09:37:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1710927468;
-	bh=i/o5sRNIfaA5hJadnKQb+e+WdwHMkKnKubv664PT9M0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=gSEL64YhZ9ncxgqEkm2QOmLNEK4niRX9UOpJ2nl+w5GnOWq+OSi0XtHSygAQueBoB
-	 CCmyZB3R/Jbc6bcig5Yd7M2f8wyr4lvvjy86Ou8vqi1NEI4kPRGA+AYYXsyu3HXSBQ
-	 yriT/VETvNiL9dEYbD908+qC1aG7rCBzN2XIpzFw1Q7yxb6TSS69SL/MkLkzm7O6uV
-	 +U/tROhxJPNvYR+TM496eJiCu/h16EZRNiHYqlXDVdMjpMwyMk7VoPm5C/z/8l9ozs
-	 Q1diaGDj8Bx/z9bW4k5q/giLy4/hgCzE3j/rYnNY6ZsNXsetkGituDf++JYG8J+4yk
-	 Qhu/JVNjpP4NA==
-Message-ID: <7f349041-bf2f-434d-a9cd-a82ac902f613@kernel.org>
-Date: Wed, 20 Mar 2024 10:37:42 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="GdaUk7EU"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a46ba938de0so466329366b.3
+        for <linux-iio@vger.kernel.org>; Wed, 20 Mar 2024 03:26:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1710930394; x=1711535194; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=VpGoMrlo5DQZa6xGPeNOdlYE7HApDeslsKoUD+MA1nw=;
+        b=GdaUk7EUCFtpgb8ycx/V8KcN+n30/ODAw9kanlPZAtJIFuzdHTVZKwUPxp2tuheNL+
+         IRpPfanvNZUUEsxNzpyJcOHOm++Htjk4tSCoWP0qJFEWRQVsbIooOPKaeIG1xFDoYSZm
+         /DJKF/pqfp+8e7CXyEjT3dfaKAACfQz4K/X2mwkg0Rv4G5HkjkfXJLfUGTeuQ+ZuxVQk
+         6qoG2/xOKCMKuos6+MVF2s9swBi0lstmSpSsqCTj4aHOkiZa/9TiwzknFfF6Kfj5TTzF
+         oxJlJ9xfLPGNQS3jzYwA2VdOk77SoLL3x3juaIocqp6LAudFf/4xYHCyGRphl5Fo9jli
+         /ZCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1710930394; x=1711535194;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VpGoMrlo5DQZa6xGPeNOdlYE7HApDeslsKoUD+MA1nw=;
+        b=UEwMQor+YQh2AyDpiSQ7Y8MQZ/d+5HotT2I6sE2iwFFwZGDCyTX7U81isRAqAT/ULA
+         rS/58Rl3ORuzf4ZxX5Dh8q/+8cJwkKX68ppw3wByYn1mSJ5Oh+yvu6ZXsE2oK9CmANsl
+         hLAsnizkFj7SQmQpQuG+dg7TX8N6yyIT8Qw9RS6vp3tu1ZDB6d5c1th6y2PtleSCBims
+         tAck1f97AmuOu7A3G7e1aZ8mw6boGDPk3fpUv39AuN2njBuqctCcEMJ/bROswlUOv/as
+         zDgvXEd7gXvwd3arS2rXVE42FwB2RSO5e4pvkzNMni059tcCDR/3vMbN5nl2M3Mfzmvu
+         tUMg==
+X-Forwarded-Encrypted: i=1; AJvYcCX1JTFtJSX78DwvJeCnZL23e7uG3l4msFNvIWxAEDSVa+tp0GLumZZ/l0l7i8nIu66togp0PtYsHTR18O7eVNnrAusQDCs4Zyzl
+X-Gm-Message-State: AOJu0YzpJj++GJ9VpD2MMB+Af1nFlG2rdpOwfxETk86jbhrGz1TcnUQ0
+	2Un4/+8wNVssI1Hnx9PTzmEw3Q/MqjxNw0/BfE9og9zyf4jJju+8tJhvxSp6+ns=
+X-Google-Smtp-Source: AGHT+IHPiPe0RfzKoIIjIyq+CzGyloBtWq2u0upRoGyb1bMEJldqSg+3ylAVly06RqGqc2N9YEJSuQ==
+X-Received: by 2002:a17:906:88b:b0:a46:8e02:19c4 with SMTP id n11-20020a170906088b00b00a468e0219c4mr8436008eje.77.1710930393818;
+        Wed, 20 Mar 2024 03:26:33 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.222.97])
+        by smtp.gmail.com with ESMTPSA id u6-20020a1709063b8600b00a44efa48c24sm7059666ejf.117.2024.03.20.03.26.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Mar 2024 03:26:33 -0700 (PDT)
+Message-ID: <38637621-1611-4268-ae79-7ac93a72c5ee@linaro.org>
+Date: Wed, 20 Mar 2024 11:26:31 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,15 +62,21 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] iio: adxl345: add spi-3wire
-To: Lothar Rubusch <l.rubusch@gmail.com>, lars@metafoo.de,
- Michael.Hennerich@analog.com, jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, eraretuya@gmail.com
-References: <20240319212713.257600-1-l.rubusch@gmail.com>
- <20240319212713.257600-2-l.rubusch@gmail.com>
+Subject: Re: [PATCH 2/2] dt-bindings: iio: adc: nxp,imx93-adc.yaml: Add
+ calibration properties
+To: Andrej Picej <andrej.picej@norik.com>, haibo.chen@nxp.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Cc: jic23@kernel.org, lars@metafoo.de, shawnguo@kernel.org,
+ s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+ imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, robh@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+ upstream@lists.phytec.de
+References: <20240320100407.1639082-1-andrej.picej@norik.com>
+ <20240320100407.1639082-3-andrej.picej@norik.com>
 Content-Language: en-US
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Autocrypt: addr=krzk@kernel.org; keydata=
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
  cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
  JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
@@ -53,102 +86,92 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  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
- 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 fv0=
-In-Reply-To: <20240319212713.257600-2-l.rubusch@gmail.com>
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20240320100407.1639082-3-andrej.picej@norik.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 19/03/2024 22:27, Lothar Rubusch wrote:
-> Adds the spi-3wire feature and adds general refactoring to the
+On 20/03/2024 11:04, Andrej Picej wrote:
+> Document calibration properties and how to set them.
 
-Add
+Bindings are before users.
 
-> iio driver.
+Please use subject prefixes matching the subsystem. You can get them for
+example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
+your patch is touching.
+There is no file extension in prefixes.
+
 > 
-> The patch moves driver wide constants and fields into the
-
-Please do not use "This commit/patch/change", but imperative mood. See
-longer explanation here:
-https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
-
-> header. Thereby reduces redundant info struct definitions.
-> Allows to pass a function pointer from SPI/I2C specific probe,
-> and smaller refactorings. A regmap_update_bits() in the core
-> file replaces the regmap_write() to format_data.
-> 
-> Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
+> Signed-off-by: Andrej Picej <andrej.picej@norik.com>
 > ---
-
-
-
->  static int adxl345_spi_probe(struct spi_device *spi)
->  {
-> +	const struct adxl345_chip_info *chip_data;
->  	struct regmap *regmap;
+>  .../bindings/iio/adc/nxp,imx93-adc.yaml           | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml
+> index dacc526dc695..64958be62a6a 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml
+> @@ -46,6 +46,21 @@ properties:
+>    "#io-channel-cells":
+>      const: 1
 >  
-> +	/* Retrieve device name to pass it as driver specific data */
-> +	chip_data = device_get_match_data(&spi->dev);
-> +	if (!chip_data)
-> +		chip_data = (const struct adxl345_chip_info *) spi_get_device_id(spi)->driver_data;
-
-Are you sure you need the cast?
-
-And why aren't you using spi_get_device_match_data()?
-
+> +  nxp,calib-avg-en:
+> +    description:
+> +      Enable or disable averaging of calibration time.
+> +    enum: [ 0, 1 ]
 > +
->  	/* Bail out if max_speed_hz exceeds 5 MHz */
->  	if (spi->max_speed_hz > ADXL345_MAX_SPI_FREQ_HZ)
->  		return dev_err_probe(&spi->dev, -EINVAL, "SPI CLK, %d Hz exceeds 5 MHz\n",
->  				     spi->max_speed_hz);
->  
->  	regmap = devm_regmap_init_spi(spi, &adxl345_spi_regmap_config);
-> -	if (IS_ERR(regmap))
-> -		return dev_err_probe(&spi->dev, PTR_ERR(regmap), "Error initializing regmap\n");
-> +	if (IS_ERR(regmap)) {
-> +		dev_err_probe(&spi->dev, PTR_ERR(regmap), "Error initializing spi regmap: %ld\n",
-> +			      PTR_ERR(regmap));
-> +		return PTR_ERR(regmap);
+> +  nxp,calib-nr-samples:
+> +    description:
+> +      Selects the number of averaging samples to be used during calibration.
+> +    enum: [ 16, 32, 128, 512 ]
+> +
+> +  nxp,calib-t-samples:
+> +    description:
+> +      Specifies the sample time of calibration conversions.
+> +    enum: [ 8, 16, 22, 32 ]
 
-Why are you changing correct code into incorrect?
+No, use existing, generic properties. Open other bindings for this.
 
-> +	}
->  
-> -	return adxl345_core_probe(&spi->dev, regmap);
-> +	return adxl345_core_probe(&spi->dev, regmap, chip_data, &adxl345_spi_setup);
->  }
+Also, none of these were tested. I am not going to review such untested
+code.
 
+It does not look like you tested the bindings, at least after quick
+look. Please run `make dt_binding_check` (see
+Documentation/devicetree/bindings/writing-schema.rst for instructions).
+Maybe you need to update your dtschema and yamllint.
 
 Best regards,
 Krzysztof
