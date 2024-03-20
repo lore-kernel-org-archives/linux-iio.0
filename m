@@ -1,113 +1,259 @@
-Received: from cpanel.siel.si (cpanel.siel.si [46.19.9.99])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1A763BB4F;
-	Wed, 20 Mar 2024 10:40:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.19.9.99
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56D8C38DDC;
+	Wed, 20 Mar 2024 11:00:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710931235; cv=none; b=JfvcZIMx/R0Gt1kcDRPdS5dt1XP8tC6axGwoyI3GLmfhu3H47mzL/PIGB5waj72IDGPQ2Q/BD8MHVYkOtrNatbKV2YqFt2/8iffUAdlDAhfHWsu7tVNlU8yFzq38q+gtDrvSTatTzk7NsWFMiYtvU/UdLkArLwFWejmm/Kke0jY=
+	t=1710932412; cv=none; b=RCfYzaqgcLm5ty+PJhkrJVQ8k+Vzpv58b7CnMDHqWK9MPjAnkYsqQnqcf4+qMZA8MvZeJHSRJQA61LRDo1uEju3acyWYTFw6BzpKx/2X7BcYw4JO20M0qC7re6EBcxja4Fy8cW3O3kDzT3aj78+l+2QmuYUX/2tPesusT7vagR8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710931235; c=relaxed/simple;
-	bh=R8fTGH9OWGPMs9dIN2Cm0WFP0y0lgeZLVmVYPrCVwSY=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=uY6EZVKBELxJcxZTE6vcMa6Ig/03/Eaui/JqLGxYZADIPzhy5Ia23dUGEOCqTxJ7SeP9Rqgajo59ES5R57SEjOyxyxis2K7kOsmBAVigmWq0omxxnwmU0pLjMHKTpMxMN0mBXzFPQnMHl9updPv4J8tKb6gbPl08OSC+DWDv5UU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=norik.com; spf=pass smtp.mailfrom=norik.com; dkim=pass (2048-bit key) header.d=norik.com header.i=@norik.com header.b=QwZCousJ; arc=none smtp.client-ip=46.19.9.99
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=norik.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=norik.com
+	s=arc-20240116; t=1710932412; c=relaxed/simple;
+	bh=Aznw/c+qXOyZ2Z5JWJ5LOuv5wkmjEc5Gz0xaCb7OmTQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QJtpDJLH1U7d6eVDDAnGksthdceBX2Y3F/KGLH34p90KfX6E4dB4rnfMN1PRNKMV8YVs+XpxO026Bfytd0xKKlcDOVBN/tLkvnchqcD8HAaben0b76A4GLXJyuwpXjerSFkbhPN6th/bERDaIwjGVoZOPA5QrvgfQ9tU2UXjUUk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Zyui/hC+; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=norik.com header.i=@norik.com header.b="QwZCousJ"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=norik.com;
-	s=default; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-	Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-	List-Post:List-Owner:List-Archive;
-	bh=brVvifDkJB4+mWvFeTvzWiEvVdd6+g5oyJp8fuUKCZc=; b=QwZCousJRw5qU30TISjc8Lk19f
-	818/2S46S5WaeIs8rpvdGZZCe0/0kk8CyHKr5lDkyhlXUwnsAacbxuJElzuvN8bBDcCLI94ghTJWs
-	05A1VCZVddNtAqRMjoNAtdvOa4pG9xDeLelO3vm0sSx3dtlDwxXIt3nvmja81jk3VT04uWWmeBfT4
-	ANyB3I8cib3eKMmQm2rJtfTm43rwCJwzSpq1kKOwt4a+W4ypXpf6sLq3CN3/q/X6hLf+TdVZcay6s
-	Wgs8twucDjT+Qc4zWcIJTd8yNydrVEIjSMPRTYybRisNdAiCMQ7vzKCUckbDwuKwtLAwpKjt+FgbN
-	HaSygMWA==;
-Received: from [89.212.21.243] (port=57750 helo=localhost.localdomain)
-	by cpanel.siel.si with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.96.2)
-	(envelope-from <andrej.picej@norik.com>)
-	id 1rmsnx-005Tm8-1J;
-	Wed, 20 Mar 2024 11:04:17 +0100
-From: Andrej Picej <andrej.picej@norik.com>
-To: haibo.chen@nxp.com,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Cc: jic23@kernel.org,
-	lars@metafoo.de,
-	shawnguo@kernel.org,
-	s.hauer@pengutronix.de,
-	kernel@pengutronix.de,
-	festevam@gmail.com,
-	imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	robh@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org,
-	conor+dt@kernel.org,
-	upstream@lists.phytec.de
-Subject: [PATCH 2/2] dt-bindings: iio: adc: nxp,imx93-adc.yaml: Add calibration properties
-Date: Wed, 20 Mar 2024 11:04:06 +0100
-Message-Id: <20240320100407.1639082-3-andrej.picej@norik.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20240320100407.1639082-1-andrej.picej@norik.com>
-References: <20240320100407.1639082-1-andrej.picej@norik.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Zyui/hC+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1710932410; x=1742468410;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Aznw/c+qXOyZ2Z5JWJ5LOuv5wkmjEc5Gz0xaCb7OmTQ=;
+  b=Zyui/hC+RXfi55mOOJyz247ZfOcCvbt4eJ9a5mkrwCpKGWgOQPMPEeFn
+   X4/uDKh9ssBHNy7mVi+tVSqDJoP92GI16w1btxLRAvQBDTmgF8yTRdwfu
+   PnAX04gMKeRNjkjEb9ZdYpD1Hu23cNTi/cfNF8uWWQkx4ii7dPBL/UukS
+   obdX3CaCDuyq1PAcBKNiYbDWuRPSLC2+hQYOt9ojA8i/M2+N7Ut82EYpk
+   8O68fBw8908hW+u0jsplr2i4ZFQXSkJUvfh6+gMTSuxbQk0LlbpXucNdJ
+   UofeI98iH76JBRJhNqXPSdro5w1TXl78jWu4jawtqQGRrJ/+YWOuuaj8i
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11018"; a="17294637"
+X-IronPort-AV: E=Sophos;i="6.07,139,1708416000"; 
+   d="scan'208";a="17294637"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2024 04:00:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,11018"; a="914662756"
+X-IronPort-AV: E=Sophos;i="6.07,139,1708416000"; 
+   d="scan'208";a="914662756"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2024 04:00:04 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rmtft-0000000EY24-3tDz;
+	Wed, 20 Mar 2024 13:00:01 +0200
+Date: Wed, 20 Mar 2024 13:00:01 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Vasileios Amoiridis <vassilisamir@gmail.com>
+Cc: jic23@kernel.org, lars@metafoo.de, ang.iglesiasg@gmail.com,
+	mazziesaccount@gmail.com, ak@it-klinger.de,
+	petre.rodan@subdimension.ro, phil@raspberrypi.com, 579lpy@gmail.com,
+	linus.walleij@linaro.org, semen.protsenko@linaro.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v3 2/6] iio: pressure: Introduce new cleanup routines to
+ BMP280 driver *_raw() functions
+Message-ID: <ZfrBsY1rF-5stHqU@smile.fi.intel.com>
+References: <20240319002925.2121016-1-vassilisamir@gmail.com>
+ <20240319002925.2121016-3-vassilisamir@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - cpanel.siel.si
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - norik.com
-X-Get-Message-Sender-Via: cpanel.siel.si: authenticated_id: andrej.picej@norik.com
-X-Authenticated-Sender: cpanel.siel.si: andrej.picej@norik.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240319002925.2121016-3-vassilisamir@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Document calibration properties and how to set them.
+On Tue, Mar 19, 2024 at 01:29:21AM +0100, Vasileios Amoiridis wrote:
+> Introduce the new linux/cleanup.h with the guard(mutex) functionality
+> in the {read/write}_raw() functions
 
-Signed-off-by: Andrej Picej <andrej.picej@norik.com>
----
- .../bindings/iio/adc/nxp,imx93-adc.yaml           | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+Missing period at the end of the sentence.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml
-index dacc526dc695..64958be62a6a 100644
---- a/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml
-@@ -46,6 +46,21 @@ properties:
-   "#io-channel-cells":
-     const: 1
- 
-+  nxp,calib-avg-en:
-+    description:
-+      Enable or disable averaging of calibration time.
-+    enum: [ 0, 1 ]
-+
-+  nxp,calib-nr-samples:
-+    description:
-+      Selects the number of averaging samples to be used during calibration.
-+    enum: [ 16, 32, 128, 512 ]
-+
-+  nxp,calib-t-samples:
-+    description:
-+      Specifies the sample time of calibration conversions.
-+    enum: [ 8, 16, 22, 32 ]
-+
- required:
-   - compatible
-   - reg
+...
+
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_PROCESSED:
+>  		switch (chan->type) {
+>  		case IIO_HUMIDITYRELATIVE:
+> -			ret = data->chip_info->read_humid(data, val, val2);
+> -			break;
+> +			return data->chip_info->read_humid(data, val, val2);
+>  		case IIO_PRESSURE:
+> -			ret = data->chip_info->read_press(data, val, val2);
+> -			break;
+> +			return data->chip_info->read_press(data, val, val2);
+>  		case IIO_TEMP:
+> -			ret = data->chip_info->read_temp(data, val, val2);
+> -			break;
+> +			return data->chip_info->read_temp(data, val, val2);
+>  		default:
+> -			ret = -EINVAL;
+> -			break;
+> +			return -EINVAL;
+>  		}
+
+> -		break;
+> +		return 0;
+
+Now dead code.
+
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>  		switch (chan->type) {
+>  		case IIO_HUMIDITYRELATIVE:
+>  			*val = 1 << data->oversampling_humid;
+> -			ret = IIO_VAL_INT;
+> -			break;
+> +			return IIO_VAL_INT;
+>  		case IIO_PRESSURE:
+>  			*val = 1 << data->oversampling_press;
+> -			ret = IIO_VAL_INT;
+> -			break;
+> +			return IIO_VAL_INT;
+>  		case IIO_TEMP:
+>  			*val = 1 << data->oversampling_temp;
+> -			ret = IIO_VAL_INT;
+> -			break;
+> +			return IIO_VAL_INT;
+>  		default:
+> -			ret = -EINVAL;
+> -			break;
+> +			return -EINVAL;
+>  		}
+
+> -		break;
+> +		return 0;
+
+Ditto.
+
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+>  		if (!data->chip_info->sampling_freq_avail) {
+> -			ret = -EINVAL;
+> -			break;
+> +			return -EINVAL;
+>  		}
+>  
+>  		*val = data->chip_info->sampling_freq_avail[data->sampling_freq][0];
+>  		*val2 = data->chip_info->sampling_freq_avail[data->sampling_freq][1];
+> -		ret = IIO_VAL_INT_PLUS_MICRO;
+> -		break;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+>  	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+>  		if (!data->chip_info->iir_filter_coeffs_avail) {
+> -			ret = -EINVAL;
+> -			break;
+> +			return -EINVAL;
+>  		}
+>  
+>  		*val = (1 << data->iir_filter_coeff) - 1;
+> -		ret = IIO_VAL_INT;
+> -		break;
+> +		return IIO_VAL_INT;
+>  	default:
+> -		ret = -EINVAL;
+> -		break;
+> +		return -EINVAL;
+>  	}
+
+> -	mutex_unlock(&data->lock);
+> +	return 0;
+
+Ditto.
+
+...
+
+> +
+> +
+
+One blank line is enough.
+
+> +static int bmp280_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2, long mask)
+
+...
+
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> -		pm_runtime_get_sync(data->dev);
+> -		mutex_lock(&data->lock);
+>  		switch (chan->type) {
+>  		case IIO_HUMIDITYRELATIVE:
+> -			ret = bmp280_write_oversampling_ratio_humid(data, val);
+> -			break;
+> +			return bmp280_write_oversampling_ratio_humid(data, val);
+>  		case IIO_PRESSURE:
+> -			ret = bmp280_write_oversampling_ratio_press(data, val);
+> -			break;
+> +			return bmp280_write_oversampling_ratio_press(data, val);
+>  		case IIO_TEMP:
+> -			ret = bmp280_write_oversampling_ratio_temp(data, val);
+> -			break;
+> +			return bmp280_write_oversampling_ratio_temp(data, val);
+>  		default:
+> -			ret = -EINVAL;
+> -			break;
+> +			return -EINVAL;
+>  		}
+> -		mutex_unlock(&data->lock);
+> -		pm_runtime_mark_last_busy(data->dev);
+> -		pm_runtime_put_autosuspend(data->dev);
+> -		break;
+> +		return 0;
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+> -		pm_runtime_get_sync(data->dev);
+> -		mutex_lock(&data->lock);
+> -		ret = bmp280_write_sampling_frequency(data, val, val2);
+> -		mutex_unlock(&data->lock);
+> -		pm_runtime_mark_last_busy(data->dev);
+> -		pm_runtime_put_autosuspend(data->dev);
+> -		break;
+> +		return bmp280_write_sampling_frequency(data, val, val2);
+>  	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> -		pm_runtime_get_sync(data->dev);
+> -		mutex_lock(&data->lock);
+> -		ret = bmp280_write_iir_filter_coeffs(data, val);
+> -		mutex_unlock(&data->lock);
+> -		pm_runtime_mark_last_busy(data->dev);
+> -		pm_runtime_put_autosuspend(data->dev);
+> -		break;
+> +		return bmp280_write_iir_filter_coeffs(data, val);
+>  	default:
+>  		return -EINVAL;
+>  	}
+>  
+> +	return 0;
+
+As per above, dead code.
+
+...
+
+> +static int bmp280_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val, int val2, long mask)
+> +{
+> +	struct bmp280_data *data = iio_priv(indio_dev);
+
+> +	int ret = 0;
+
+Useless assignment.
+
+> +
+> +	pm_runtime_get_sync(data->dev);
+> +	ret = bmp280_write_raw_guarded(indio_dev, chan, val, val2, mask);
+> +	pm_runtime_mark_last_busy(data->dev);
+> +	pm_runtime_put_autosuspend(data->dev);
+> +
+>  	return ret;
+>  }
+
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
