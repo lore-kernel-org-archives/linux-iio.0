@@ -1,37 +1,38 @@
 Received: from cpanel.siel.si (cpanel.siel.si [46.19.9.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56EF739FED;
-	Wed, 20 Mar 2024 10:40:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1A763BB4F;
+	Wed, 20 Mar 2024 10:40:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.19.9.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710931230; cv=none; b=SJP5c59zlz1/g4u2cPSQ8RZ6ODbBqzsSbfE2uNDhAdU9gBS7bpjD27Po/ycLWTcp3Kp8cbVImedST/CgXT507e4f/Sf7M9+0CGGgzS8h/5FcLrPpYStQ6IR1pp3itHtiW15X7b4rty+bfk+krtliqkusgWhNoPSB/03Ezo+PnfQ=
+	t=1710931235; cv=none; b=JfvcZIMx/R0Gt1kcDRPdS5dt1XP8tC6axGwoyI3GLmfhu3H47mzL/PIGB5waj72IDGPQ2Q/BD8MHVYkOtrNatbKV2YqFt2/8iffUAdlDAhfHWsu7tVNlU8yFzq38q+gtDrvSTatTzk7NsWFMiYtvU/UdLkArLwFWejmm/Kke0jY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710931230; c=relaxed/simple;
-	bh=ls6xLhp/KwBA1fCnfVdKXiKvpHzqIRtYfTSXA2EgX4o=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=TZhJWC8GKa/NlLkwprTGzaL+wbLU+fc/6u8jBBfRwA8JtAsUuW1Swnu3lIfMF+ynysXc9JBetdwfRuNkJrtSZ1m4XDesG0L8ml2y49hBehgTD0lQUFvAxJ5l1KxpOPpG6T1IYMJGhhdY7K/ZVlZpZ5IgVI6jq0D+IMq08I8+doY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=norik.com; spf=pass smtp.mailfrom=norik.com; dkim=pass (2048-bit key) header.d=norik.com header.i=@norik.com header.b=jbjwjpsd; arc=none smtp.client-ip=46.19.9.99
+	s=arc-20240116; t=1710931235; c=relaxed/simple;
+	bh=R8fTGH9OWGPMs9dIN2Cm0WFP0y0lgeZLVmVYPrCVwSY=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=uY6EZVKBELxJcxZTE6vcMa6Ig/03/Eaui/JqLGxYZADIPzhy5Ia23dUGEOCqTxJ7SeP9Rqgajo59ES5R57SEjOyxyxis2K7kOsmBAVigmWq0omxxnwmU0pLjMHKTpMxMN0mBXzFPQnMHl9updPv4J8tKb6gbPl08OSC+DWDv5UU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=norik.com; spf=pass smtp.mailfrom=norik.com; dkim=pass (2048-bit key) header.d=norik.com header.i=@norik.com header.b=QwZCousJ; arc=none smtp.client-ip=46.19.9.99
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=norik.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=norik.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=norik.com header.i=@norik.com header.b="jbjwjpsd"
+	dkim=pass (2048-bit key) header.d=norik.com header.i=@norik.com header.b="QwZCousJ"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=norik.com;
-	s=default; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-	Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	s=default; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+	Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
 	List-Post:List-Owner:List-Archive;
-	bh=k/hQjJjKM/6k2dIpkZOd1CRB2GRUhhh9M/CTbWGkxv4=; b=jbjwjpsdmK16TTuRIvVxOmhZIc
-	HlhCLjlWDtjLAD9FUfGYndwLoeClywCY8MSkgv3l8kFFL30PvXMfY8fFQafC7itVkT9bhXVsQc3P2
-	8o5+caqTrTmGyCBCJkHfJUnxW2kLSdt66gTADdXVxy98l/ZaOA214ohvxJ3JFTsLJ0MqCAzmUaoAx
-	wYOneq0ntlulQr8RziSi/iwJT1J6jWfQ1jpwNLr91Wdv6REaiqf70ygVvK5Bd20KbSecQNIXMpS8v
-	o1ZvqXn5xAp1qQrPbLb/Lselh3/zNPuMH5Y8yZUExM+UFJZNqmWEL1jQkI26cEm6UR5pDFGzZQX40
-	tajbO/GA==;
+	bh=brVvifDkJB4+mWvFeTvzWiEvVdd6+g5oyJp8fuUKCZc=; b=QwZCousJRw5qU30TISjc8Lk19f
+	818/2S46S5WaeIs8rpvdGZZCe0/0kk8CyHKr5lDkyhlXUwnsAacbxuJElzuvN8bBDcCLI94ghTJWs
+	05A1VCZVddNtAqRMjoNAtdvOa4pG9xDeLelO3vm0sSx3dtlDwxXIt3nvmja81jk3VT04uWWmeBfT4
+	ANyB3I8cib3eKMmQm2rJtfTm43rwCJwzSpq1kKOwt4a+W4ypXpf6sLq3CN3/q/X6hLf+TdVZcay6s
+	Wgs8twucDjT+Qc4zWcIJTd8yNydrVEIjSMPRTYybRisNdAiCMQ7vzKCUckbDwuKwtLAwpKjt+FgbN
+	HaSygMWA==;
 Received: from [89.212.21.243] (port=57750 helo=localhost.localdomain)
 	by cpanel.siel.si with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
 	(Exim 4.96.2)
 	(envelope-from <andrej.picej@norik.com>)
-	id 1rmsnx-005Tm8-0g;
+	id 1rmsnx-005Tm8-1J;
 	Wed, 20 Mar 2024 11:04:17 +0100
 From: Andrej Picej <andrej.picej@norik.com>
 To: haibo.chen@nxp.com,
@@ -50,10 +51,12 @@ Cc: jic23@kernel.org,
 	krzysztof.kozlowski+dt@linaro.org,
 	conor+dt@kernel.org,
 	upstream@lists.phytec.de
-Subject: [PATCH 0/2] i.MX93 ADC calibration settings
-Date: Wed, 20 Mar 2024 11:04:04 +0100
-Message-Id: <20240320100407.1639082-1-andrej.picej@norik.com>
+Subject: [PATCH 2/2] dt-bindings: iio: adc: nxp,imx93-adc.yaml: Add calibration properties
+Date: Wed, 20 Mar 2024 11:04:06 +0100
+Message-Id: <20240320100407.1639082-3-andrej.picej@norik.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20240320100407.1639082-1-andrej.picej@norik.com>
+References: <20240320100407.1639082-1-andrej.picej@norik.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,26 +75,39 @@ X-Source:
 X-Source-Args: 
 X-Source-Dir: 
 
-Hi all,
+Document calibration properties and how to set them.
 
-we had some problems with failing ADC calibration on the i.MX93 boards.
-Changing default calibration settings fixed this. The board where this
-patches are useful is not yet upstream but will be soon (hopefully).
+Signed-off-by: Andrej Picej <andrej.picej@norik.com>
+---
+ .../bindings/iio/adc/nxp,imx93-adc.yaml           | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-Since we had these patches laying around we thought they might also be
-useful for someone else.
-
-Best regards,
-Andrej
-
-Andrej Picej (2):
-  iio: adc: imx93: Make calibration properties configurable
-  dt-bindings: iio: adc: nxp,imx93-adc.yaml: Add calibration properties
-
- .../bindings/iio/adc/nxp,imx93-adc.yaml       | 15 +++++
- drivers/iio/adc/imx93_adc.c                   | 66 +++++++++++++++++--
- 2 files changed, 76 insertions(+), 5 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml
+index dacc526dc695..64958be62a6a 100644
+--- a/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/nxp,imx93-adc.yaml
+@@ -46,6 +46,21 @@ properties:
+   "#io-channel-cells":
+     const: 1
+ 
++  nxp,calib-avg-en:
++    description:
++      Enable or disable averaging of calibration time.
++    enum: [ 0, 1 ]
++
++  nxp,calib-nr-samples:
++    description:
++      Selects the number of averaging samples to be used during calibration.
++    enum: [ 16, 32, 128, 512 ]
++
++  nxp,calib-t-samples:
++    description:
++      Specifies the sample time of calibration conversions.
++    enum: [ 8, 16, 22, 32 ]
++
+ required:
+   - compatible
+   - reg
 -- 
 2.25.1
 
