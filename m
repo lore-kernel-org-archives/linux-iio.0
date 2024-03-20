@@ -1,138 +1,195 @@
-Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com [209.85.221.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from cpanel.siel.si (cpanel.siel.si [46.19.9.99])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D4443BBCE
-	for <linux-iio@vger.kernel.org>; Wed, 20 Mar 2024 10:30:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9B322D05C;
+	Wed, 20 Mar 2024 10:40:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.19.9.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710930656; cv=none; b=E0N3BTE7/pePX6cvw848hxL22BL3dDd3832I42gk68Zc9UYcF2zvMv/F6HlkULbo4zHP4nzrxgpKgF0f3E27MLF6vUp0WV65njW1ljZmwQQS+uLpzSGDh7TsMkX3Hg2J0yxSo/MJfz7nP0QghdG1B0SSPIkD71v/x0qaZ1V+OPc=
+	t=1710931226; cv=none; b=CHspoaCntpQ14HsODLA02zbbKghRsd3V3QNk8xYA880Q9aQJvQ5Z+aJR5MkFQKVfVMJKIu5oACICfjpqTwxZxUP3ZlBxKVxwR+JlIacbGxJYDtM0Gr5i6ZcSHDjlH6qX2k//dSOaQSbgirBMe0km47kGfayIOkMBByVBC50RCe4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710930656; c=relaxed/simple;
-	bh=dmBIwpNva7TEkXpnOO/Czw8tTCnWdlg7AwIKfESnwyo=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=q7RaNPtzURB+YTPu5aiKbCf75GJsFAWwcGIqMLBz/lLzD7zeHv3oTvGlOdEN+AlOXb/RK9fLi6zrl/GZD3nKohX3YJHEkFQEvIBizj36SWXT8pCrqazlwmactVaK0M4Z5GSU5R0c5UzeAnq331X5lM8RJDgQ/ezVAjedmPW61P8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Aw1LCjbr; arc=none smtp.client-ip=209.85.221.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1710931226; c=relaxed/simple;
+	bh=Y32T7gZW4IggfhZ5kFlo81B/FTCzi9qFSwHVweW2rNM=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=CszHR/ZXtudI196gxQD/iR3nIUhTnM1QFKR4oNsl36Hub0hFfkdM96SB+TL4neheuTnzhwhDM2FLS+/boxXBEteY4ivB+T3G73akYBX6z/FUBnk8At5QjVeEFo7EjdsE4TJmivZrEEJkQsV7TrASEMGRpn5rQum2VBJ397k8E5w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=norik.com; spf=pass smtp.mailfrom=norik.com; dkim=pass (2048-bit key) header.d=norik.com header.i=@norik.com header.b=UD3/huH2; arc=none smtp.client-ip=46.19.9.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=norik.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=norik.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Aw1LCjbr"
-Received: by mail-vk1-f177.google.com with SMTP id 71dfb90a1353d-4d4404fbdf5so1212666e0c.0
-        for <linux-iio@vger.kernel.org>; Wed, 20 Mar 2024 03:30:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1710930654; x=1711535454; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=wqX+KnAanv2iuqfGETlGsbj1uZm9TQcxB/bIQKGRSN8=;
-        b=Aw1LCjbruHheMea1qCe9tHUfJpa3uX7R5H3RObDhbsJaZq8EIZpRaDFrR9xi8QBf6p
-         erAdXw0GoDJo0ENcvXwvLJ8/aEtnuQLhuRGO+EW21zMlCYuAI8i+WFZe9bPqRouWtHGA
-         Z/gInQTvZ49/eMMlradrCmiWIy9+ZhONO0B08Ll+se2csM/r0k3JjD2L5Nrk1Xog3Uiy
-         h8AyY5KvNRjrdADbJszPBKLfPUnURX03uQ059OHfhh70+nA8tP7zr9WAuBujqxnUt+Ih
-         PWVu3zaFizusLtCGLUS0AYqk1mt49QXXOkdJ9XaTcs+ot2Sf0OMhYBYIrmi8Xqd3movL
-         VhDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710930654; x=1711535454;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wqX+KnAanv2iuqfGETlGsbj1uZm9TQcxB/bIQKGRSN8=;
-        b=k7zd8pEL6VM4sw8WvIMjyADyyZQypCvdecr406alOOIygmuZKosQL40kULVqG0MVim
-         MJEgn2SNV8huIcjGSBx7hSTTqJihspVp+VsuHzWbrM3oRRdWXGTZwJxRBPdm85mCWcnm
-         0yf+m0dFaRp6tyndNiUXBPYU1inuHYLRLOUPWX1Ii4emCo0ezSjvbVyWAVb15rt26DBf
-         3L6BHSCyhxePEV89SVV+2+pdPoXyNBf7KCF6Kxy3aQOZzaTg6Vc8x1pHYQc/CovT/A/P
-         MjY5MvTgbAsno3bEMlaBGMDK7JjKqwJvs002BGIeYJfP3Lax26lt6hyMDnWxci+g7Ws+
-         fEGw==
-X-Gm-Message-State: AOJu0YyWuoJhl4Ecj0DUWhlHECt6snK955lvaGGi1XfLfU5nRFPkT/r9
-	wMxuF9+xo3BWC1uk1i3Gprw7FB/hFx2fAEKgyluqXIxIGiGzx7Tdpkn7DEKTF9zpCQ==
-X-Google-Smtp-Source: AGHT+IHGMmZhBPHDN3av5lN90uOe+UWcbkos5SqSfjc/wOChZ+7tof+BX1+8ciuk9qKJWmwhFcGSBg==
-X-Received: by 2002:a05:6122:d9e:b0:4d4:3bfa:ba0c with SMTP id bc30-20020a0561220d9e00b004d43bfaba0cmr12638708vkb.9.1710930654066;
-        Wed, 20 Mar 2024 03:30:54 -0700 (PDT)
-Received: from ?IPv6:2003:f6:ef1b:2000:15d4:fc17:481e:8afe? (p200300f6ef1b200015d4fc17481e8afe.dip0.t-ipconnect.de. [2003:f6:ef1b:2000:15d4:fc17:481e:8afe])
-        by smtp.gmail.com with ESMTPSA id n136-20020a1f728e000000b004b723acd1e1sm1692891vkc.11.2024.03.20.03.30.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Mar 2024 03:30:53 -0700 (PDT)
-Message-ID: <95b4f98948f1c3a802d185e947ad0bbcfef0a779.camel@gmail.com>
-Subject: Re: [PATCH 1/2] iio: adxl345: add spi-3wire
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Lothar Rubusch <l.rubusch@gmail.com>, lars@metafoo.de, 
-	Michael.Hennerich@analog.com, jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, eraretuya@gmail.com
-Date: Wed, 20 Mar 2024 11:34:20 +0100
-In-Reply-To: <20240319212713.257600-2-l.rubusch@gmail.com>
-References: <20240319212713.257600-1-l.rubusch@gmail.com>
-	 <20240319212713.257600-2-l.rubusch@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.50.4 
+	dkim=pass (2048-bit key) header.d=norik.com header.i=@norik.com header.b="UD3/huH2"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=norik.com;
+	s=default; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+	Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=iMhNhe+tcxLmuyKOOZrdE9LpgvkjJPJ2ncK9B+m2l1Q=; b=UD3/huH2xJxpLYmHVUVdrpRcfg
+	hM/Tcu5hF3lVsE2Tgl7+6R8mn9eOmqWtGGlCg9Z7s1Jyh72IJEDUIrcXhqk4B6a5hlTzQrqN5EboQ
+	7L8lL8vNP2PKWjQs1WX57MuIpRtF2eWPZnCrqqZMiGxf1Qxs8GULRB6JtK0XaMzcQXttibccLW8k2
+	FKOazelzUm9QVJDXqOSBb3X3U2dQ8lsaMPFGEx5yHmAEYUKcMAXO2QMbkYcduxeg9acsVJjIleYQv
+	1iiH/HxvMEjAy0cHmsKL3tWtlLXZbIB0uyyXb5uPLDd7pDgCeLLNtpA++7qIn03yHA/U/3F/JvScg
+	2uczQZCw==;
+Received: from [89.212.21.243] (port=57750 helo=localhost.localdomain)
+	by cpanel.siel.si with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+	(Exim 4.96.2)
+	(envelope-from <andrej.picej@norik.com>)
+	id 1rmsnx-005Tm8-10;
+	Wed, 20 Mar 2024 11:04:17 +0100
+From: Andrej Picej <andrej.picej@norik.com>
+To: haibo.chen@nxp.com,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: jic23@kernel.org,
+	lars@metafoo.de,
+	shawnguo@kernel.org,
+	s.hauer@pengutronix.de,
+	kernel@pengutronix.de,
+	festevam@gmail.com,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	robh@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org,
+	upstream@lists.phytec.de
+Subject: [PATCH 1/2] iio: adc: imx93: Make calibration properties configurable
+Date: Wed, 20 Mar 2024 11:04:05 +0100
+Message-Id: <20240320100407.1639082-2-andrej.picej@norik.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20240320100407.1639082-1-andrej.picej@norik.com>
+References: <20240320100407.1639082-1-andrej.picej@norik.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - cpanel.siel.si
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - norik.com
+X-Get-Message-Sender-Via: cpanel.siel.si: authenticated_id: andrej.picej@norik.com
+X-Authenticated-Sender: cpanel.siel.si: andrej.picej@norik.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 
-On Tue, 2024-03-19 at 21:27 +0000, Lothar Rubusch wrote:
-> Adds the spi-3wire feature and adds general refactoring to the
-> iio driver.
->=20
-> The patch moves driver wide constants and fields into the
-> header. Thereby reduces redundant info struct definitions.
-> Allows to pass a function pointer from SPI/I2C specific probe,
-> and smaller refactorings. A regmap_update_bits() in the core
-> file replaces the regmap_write() to format_data.
->=20
-> Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
-> ---
+Make calibration properties:
+ - AVGEN: allow averaging of calibration time,
+ - NRSMPL: select the number of averaging samples during calibration and
+ - TSAMP: specifies the sample time of calibration conversions
 
-On top of what Krzysztof already said I would also like for you to split th=
-e=20
-spi-3wire (which is adding a new feature) from the refactor in two differen=
-t
-patches. One more comment inline...
+configurable with device tree properties:
+ - nxp,calib-avg-en,
+ - nxp,calib-nr-samples and
+ - nxp,calib-t-samples.
 
-> =C2=A0drivers/iio/accel/adxl345.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 4=
-4 +++++++++++-
-> =C2=A0drivers/iio/accel/adxl345_core.c | 116 +++++++++++++++++-----------=
+Signed-off-by: Andrej Picej <andrej.picej@norik.com>
 ---
-> =C2=A0drivers/iio/accel/adxl345_i2c.c=C2=A0 |=C2=A0 30 ++++----
-> =C2=A0drivers/iio/accel/adxl345_spi.c=C2=A0 |=C2=A0 50 ++++++++-----
-> =C2=A04 files changed, 153 insertions(+), 87 deletions(-)
->=20
+ drivers/iio/adc/imx93_adc.c | 66 ++++++++++++++++++++++++++++++++++---
+ 1 file changed, 61 insertions(+), 5 deletions(-)
 
-...
-
-> diff --git a/drivers/iio/accel/adxl345_spi.c b/drivers/iio/accel/adxl345_=
-spi.c
-> index 93ca349f1..e456b61c6 100644
-> --- a/drivers/iio/accel/adxl345_spi.c
-> +++ b/drivers/iio/accel/adxl345_spi.c
-> @@ -20,48 +20,62 @@ static const struct regmap_config
-> adxl345_spi_regmap_config =3D {
-> =C2=A0	.read_flag_mask =3D BIT(7) | BIT(6),
-> =C2=A0};
-> =C2=A0
-> +static int adxl345_spi_setup(struct device *dev, struct regmap *regmap)
-> +{
-> +	struct spi_device *spi =3D container_of(dev, struct spi_device, dev);
-> +	int ret;
-> +
-> +	if (spi->mode & SPI_3WIRE) {
-> +		ret =3D regmap_write(regmap, ADXL345_REG_DATA_FORMAT,
-> +				=C2=A0=C2=A0 ADXL345_DATA_FORMAT_SPI);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	return 0;
-
-I think this would be neater:
-
-if (!(spi->mode & SPI_3WIRE))
-	return 0;
-
-return regmap_write(regmap, ADXL345_REG_DATA_FORMAT,
-		    ADXL345_DATA_FORMAT_SPI);
-
-- Nuno S=C3=A1
-
+diff --git a/drivers/iio/adc/imx93_adc.c b/drivers/iio/adc/imx93_adc.c
+index 4ccf4819f1f1..ad24105761ab 100644
+--- a/drivers/iio/adc/imx93_adc.c
++++ b/drivers/iio/adc/imx93_adc.c
+@@ -18,6 +18,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/property.h>
+ 
+ #define IMX93_ADC_DRIVER_NAME	"imx93-adc"
+ 
+@@ -43,6 +44,9 @@
+ #define IMX93_ADC_MCR_MODE_MASK			BIT(29)
+ #define IMX93_ADC_MCR_NSTART_MASK		BIT(24)
+ #define IMX93_ADC_MCR_CALSTART_MASK		BIT(14)
++#define IMX93_ADC_MCR_AVGEN_MASK		BIT(13)
++#define IMX93_ADC_MCR_NRSMPL_MASK		GENMASK(12, 11)
++#define IMX93_ADC_MCR_TSAMP_MASK		GENMASK(10, 9)
+ #define IMX93_ADC_MCR_ADCLKSE_MASK		BIT(8)
+ #define IMX93_ADC_MCR_PWDN_MASK			BIT(0)
+ #define IMX93_ADC_MSR_CALFAIL_MASK		BIT(30)
+@@ -145,7 +149,7 @@ static void imx93_adc_config_ad_clk(struct imx93_adc *adc)
+ 
+ static int imx93_adc_calibration(struct imx93_adc *adc)
+ {
+-	u32 mcr, msr;
++	u32 mcr, msr, value;
+ 	int ret;
+ 
+ 	/* make sure ADC in power down mode */
+@@ -156,12 +160,64 @@ static int imx93_adc_calibration(struct imx93_adc *adc)
+ 	mcr &= ~FIELD_PREP(IMX93_ADC_MCR_ADCLKSE_MASK, 1);
+ 	writel(mcr, adc->regs + IMX93_ADC_MCR);
+ 
+-	imx93_adc_power_up(adc);
+-
+ 	/*
+-	 * TODO: we use the default TSAMP/NRSMPL/AVGEN in MCR,
+-	 * can add the setting of these bit if need in future.
++	 * Set calibration settings:
++	 * - AVGEN: allow averaging of calibration time,
++	 * - NRSMPL: select the number of averaging samples during calibration,
++	 * - TSAMP: specifies the sample time of calibration conversions.
+ 	 */
++	if (!device_property_read_u32(adc->dev, "nxp,calib-avg-en", &value)) {
++		mcr &= ~IMX93_ADC_MCR_AVGEN_MASK;
++		mcr |= FIELD_PREP(IMX93_ADC_MCR_AVGEN_MASK, value);
++	}
++
++	if (!device_property_read_u32(adc->dev, "nxp,calib-nr-samples", &value)) {
++		switch (value) {
++		case 16:
++			value = 0x0;
++			break;
++		case 32:
++			value = 0x1;
++			break;
++		case 128:
++			value = 0x2;
++			break;
++		case 512:
++			value = 0x3;
++			break;
++		default:
++			dev_warn(adc->dev, "NRSMPL: wrong value, using default: 512\n");
++			value = 0x3;
++		}
++		mcr &= ~IMX93_ADC_MCR_NRSMPL_MASK;
++		mcr |= FIELD_PREP(IMX93_ADC_MCR_NRSMPL_MASK, value);
++	}
++
++	if (!device_property_read_u32(adc->dev, "nxp,calib-t-samples", &value)) {
++		switch (value) {
++		case 8:
++			value = 0x1;
++			break;
++		case 16:
++			value = 0x2;
++			break;
++		case 22:
++			value = 0x0;
++			break;
++		case 32:
++			value = 0x3;
++			break;
++		default:
++			dev_warn(adc->dev, "TSAMP: wrong value, using default: 22\n");
++			value = 0x0;
++		}
++		mcr &= ~IMX93_ADC_MCR_TSAMP_MASK;
++		mcr |= FIELD_PREP(IMX93_ADC_MCR_TSAMP_MASK, value);
++	}
++
++	writel(mcr, adc->regs + IMX93_ADC_MCR);
++
++	imx93_adc_power_up(adc);
+ 
+ 	/* run calibration */
+ 	mcr = readl(adc->regs + IMX93_ADC_MCR);
+-- 
+2.25.1
 
