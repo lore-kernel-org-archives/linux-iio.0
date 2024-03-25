@@ -1,122 +1,109 @@
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com [209.85.219.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5376CD2F0;
-	Sun, 24 Mar 2024 19:20:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11CD414A60C;
+	Mon, 25 Mar 2024 01:54:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711308059; cv=none; b=KS0FljZKzrV3QphllArU/kVZ0fInSHwhDfnb5jgxEveUZdQCz4pxSDsGBXs3mFfsK8rRWgK9IIrMPfR48t7UEhSr44tOGTQnwYgjjff+Dy6ZuoDdbVi6MJYrvyjLJfwzGn9lz7y3LdWbpPDucG3ufXlq0P9NnS3J+g/RnZ5ih3U=
+	t=1711331664; cv=none; b=sSuaLpwRfNybwqx9rJC1y3PEoMeMB6zwNkyidL6r8PV9r4JekYmRqhqQX2IMfp+ae2NQ6xXeCnNbknxo7or44MiJ3GMv4b/uIZEVmskBpx+SXTiZL3ZIlafuQxxwF8SiQntapoC7pXvBxtZZI7rdZFwd1RDFGP1Fk9Ef3PsndJ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711308059; c=relaxed/simple;
-	bh=ec6zwogSWF/fNWpt7FhBFrY0oM7pYPI9+xA6DMEzQSA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=o8YlDnis9Ka48HgcDArM1Uw8hAPPXaQJkMHa0TDa3cNmWOnb6hJYKVKV9gQNUo7Iarcd8wduz9DPUHfmKR8HtTtFpUdm0g8/pujIH3nQ1wGddB7l0vI3zN8TJOxxsaJ7wcneEKutz00WWwhL3PXG1qR5E6Fmk4xOZZYMJy1h7pM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Nn15ZB+G; arc=none smtp.client-ip=209.85.219.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1711331664; c=relaxed/simple;
+	bh=rcdcVMOwAqKdq7n5jkVq5QjE+E4mBd0LmLt5lwYal+k=;
+	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
+	 In-Reply-To:To:Cc; b=Yj+QdkRr4y9q5QpB65Dp07l27AOF503LHG04+ujNLmAQ3O6GaKctmL5H3lC8y30l3l7j4Tmo6FTGn+yZLajytTRLkUqGGy5xUsyg9WQ1uCKow2xsuZ+RzP1I6dUwKzTboXn1D4SiNerLzx/9jpQt13y65UFGvU4h5g2vrmT9JGs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UgoRuOdI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Nn15ZB+G"
-Received: by mail-yb1-f181.google.com with SMTP id 3f1490d57ef6-dcbef31a9dbso2582565276.1;
-        Sun, 24 Mar 2024 12:20:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1711308057; x=1711912857; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mM41Gvbk/e8sGiRkw6qJG8CwCqLe6A3OEvT8If2DaWc=;
-        b=Nn15ZB+GFEjAe2+7qHiYfU9Uczo0EduWDf4CHdb7C9LuwgTJxswaCb2oEelu3RMJ0S
-         DPqfeR2hTly0kuKHpzfmNVy3khC19Mz3ZpK+AvBl1ZaUzN99o88fWEqz8NEBOaVLe1Jy
-         3RsR52xjT/8wihgT46CgRNTSdfIfYu2eTfIea8oK5kely7ailb6Cm3U8czixtOQgxm/n
-         ikbMQbxsLHHx0U2eQlE9Umh/qr8+861WoqUf2J42ln6U5QPtp+GVBUM+/Zlp1qqPZnYs
-         hV2pv6rV1ezbHXJ1lOKWBxcuut9pcMzQSA8VxFvDVxRinMPzNxu3vVeeZhWnOmzSY/zE
-         MbLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711308057; x=1711912857;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mM41Gvbk/e8sGiRkw6qJG8CwCqLe6A3OEvT8If2DaWc=;
-        b=ri2mvKxagvO22f3wJaHVHmab0T+ONIQdK8moHNLVjLQprmGKwzYRVLpNFUKdX4x3S5
-         LrrmxTFERsSg/jqah7Ia+Bv8qCp3IpRTSWb2A+UzmpOtW9bdZ6gaSoz+N6jtSuB6JRDJ
-         RSbjPGyV6lnrJaO1dZuone7hLyRFgMmzjyzDXqqq/tSkq8VfMhT9wF2gSkBbifH3kBOB
-         mbKKQT8zgxKvli+js2+ghRmhGjq1IoNf+D2y0uMyEtUXDB/WzUhp9uheeL9xMG7TQlFf
-         ZVbtYx4oI1qSko9QZw6huxR2X+jqqpK5CverZJBQWWC+ewlR9PP+Kc7NfmW1S6pBZvAd
-         fSdw==
-X-Forwarded-Encrypted: i=1; AJvYcCVYYG0YougOlxMqlovvnP7NMjh1F/LZF7r7pbKIY8iwdkbVAgQ5qUOnQpt1xxnv3Uga90YI8wCHNlcQi0l+MoDzba+y5BFDL3n0ob2eNbs+E+S+zT1q0fBZTic237MFg47ybVAHHAEHHX11IUubEMpttZMdDANnYCVELXVgpKRQoUHcFw==
-X-Gm-Message-State: AOJu0Yw5A/25xr5ly1CYUvPNs7s0FT9k+9Gq8qbUQoMdD2yjvGCB+7q2
-	no+zwp/AuS9XVHhyZOTaIc0QoPqdXjuJUoZzx4ERzw8B2Y89zMHLY9UyVMZ252GOpXH5n73XPza
-	1zky14wLGnYv9a7QwsBsDd2mWY0o=
-X-Google-Smtp-Source: AGHT+IFqS2ZrdA2FD6/G+AAuimC5bFbLStYreahpfIPEM7iKtBZgsTv3B+AHsdqSrVywsyX/zsswbjSc0Ql17Gj6gmI=
-X-Received: by 2002:a5b:74c:0:b0:dc6:c2b2:c039 with SMTP id
- s12-20020a5b074c000000b00dc6c2b2c039mr3588945ybq.41.1711308057020; Sun, 24
- Mar 2024 12:20:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UgoRuOdI"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A08FAC4166A;
+	Mon, 25 Mar 2024 01:54:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1711331662;
+	bh=rcdcVMOwAqKdq7n5jkVq5QjE+E4mBd0LmLt5lwYal+k=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=UgoRuOdIKc1atcNCSy+fGMyIxd2EIL85aFzdiUP5IhrVwfyLuX4y1UYA/UQBPsAMD
+	 3sCV/0MeXlbM7sefeRf+lmdvdlgZ0TKvCfmEeGYkPwifpZb/yub4hlREVfgCNhRtZz
+	 ZiY0yetiX2oMC1bHns3loNE8fmm9pIIDXR7KvrkZSK4WdOtTGUmUud3p6vcyL60zKX
+	 9BjSBTkapaueuWOl6AMlmsqrYlvbxlrUS29IKX7go0Y/Tq8wfA4UxOJ9FCpuAE+CY5
+	 CxMUxLEonlCV+T0zvdc8MGEzb5H247rE1FolcBQONxia7RxxTo1NzWXjR86IfgfIYv
+	 gVtR4ZEqxDVIw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 886E5D2D0E3;
+	Mon, 25 Mar 2024 01:54:22 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240323122030.21800-1-l.rubusch@gmail.com> <20240324133941.26814432@jic23-huawei>
-In-Reply-To: <20240324133941.26814432@jic23-huawei>
-From: Lothar Rubusch <l.rubusch@gmail.com>
-Date: Sun, 24 Mar 2024 20:20:21 +0100
-Message-ID: <CAFXKEHbvdQoqyirUC8ueihfTcCs7m5CViP27S1sNDA0VerUVYQ@mail.gmail.com>
-Subject: Re: [PATCH v3 0/6] iio: accel: adxl345: Add spi-3wire feature
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, robh+dt@kernel.org, 
-	krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, eraretuya@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 00/32] spi: get rid of some legacy macros
+From: patchwork-bot+chrome-platform@kernel.org
+Message-Id: 
+ <171133166255.9916.6727664409114778134.git-patchwork-notify@kernel.org>
+Date: Mon, 25 Mar 2024 01:54:22 +0000
+References: <cover.1707324793.git.u.kleine-koenig@pengutronix.de>
+In-Reply-To: <cover.1707324793.git.u.kleine-koenig@pengutronix.de>
+To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig_=3Cu=2Ekleine-koenig=40pengutronix=2Ede=3E?=@ci.codeaurora.org
+Cc: broonie@kernel.org, kernel@pengutronix.de, mdf@kernel.org,
+ hao.wu@intel.com, yilun.xu@intel.com, trix@redhat.com,
+ linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
+ alex.aring@gmail.com, stefan@datenfreihafen.org, miquel.raynal@bootlin.com,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ linux-wpan@vger.kernel.org, netdev@vger.kernel.org, lars@metafoo.de,
+ Michael.Hennerich@analog.com, jic23@kernel.org, linux-iio@vger.kernel.org,
+ dmitry.torokhov@gmail.com, Jonathan.Cameron@huawei.com,
+ linux-input@vger.kernel.org, gregkh@linuxfoundation.org,
+ andriy.shevchenko@linux.intel.com, ulf.hansson@linaro.org,
+ martin.tuma@digiteqautomotive.com, mchehab@kernel.org,
+ linux-media@vger.kernel.org, serjk@netup.ru, arnd@arndb.de,
+ yangyingliang@huawei.com, linux-mmc@vger.kernel.org, richard@nod.at,
+ vigneshr@ti.com, robh@kernel.org, amit.kumar-mahapatra@amd.com,
+ alsa-devel@alsa-project.org, linux-mtd@lists.infradead.org, horms@kernel.org,
+ ronald.wahl@raritan.com, bleung@chromium.org, tzungbi@kernel.org,
+ groeck@chromium.org, chrome-platform@lists.linux.dev, michal.simek@amd.com,
+ jcmvbkbc@gmail.com, linux-spi@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, andersson@kernel.org,
+ konrad.dybcio@linaro.org, linux-arm-msm@vger.kernel.org,
+ matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com,
+ linux-mediatek@lists.infradead.org, tzimmermann@suse.de, javierm@redhat.com,
+ sam@ravnborg.org, dri-devel@lists.freedesktop.org,
+ linux-fbdev@vger.kernel.org, linux-staging@lists.linux.dev,
+ vireshk@kernel.org, rmfrfs@gmail.com, johan@kernel.org, elder@kernel.org,
+ greybus-dev@lists.linaro.org, peterhuewe@gmx.de, jarkko@kernel.org,
+ jgg@ziepe.ca, linux-integrity@vger.kernel.org, herve.codina@bootlin.com,
+ krzysztof.kozlowski@linaro.org, linux-usb@vger.kernel.org, deller@gmx.de,
+ dario.binacchi@amarulasolutions.com, kvalo@kernel.org, dmantipov@yandex.ru,
+ libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+ corbet@lwn.net, bhelgaas@google.com, james.clark@arm.com,
+ linux-doc@vger.kernel.org
 
-On Sun, Mar 24, 2024 at 2:39=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
- wrote:
->
-> On Sat, 23 Mar 2024 12:20:24 +0000
-> Lothar Rubusch <l.rubusch@gmail.com> wrote:
->
-> > Pass a function setup() as pointer from SPI/I2C specific modules
-> > to the core module. Implement setup() to pass the spi-3wire bus
-> > option, if declared in the device-tree.
-> >
-> > In the core module, then update data_format register
-> > configuration bits instead of overwriting it. The changes allow
-> > to remove a data_range field, remove I2C and SPI redundant info
-> > instances and replace them by a common info array instance.
-> >
-> > Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
-> That patch break up seems reasonable (one minor request for a split
-> in the relevant patch), but normal convention would be do do
-> refactoring first, then functionality at the end. Also removal stuff
-> and group, before adding things.
->
-> So roughly speaking reorder as
->
-> >   iio: accel: adxl345: Make data_format obsolete
-> >   iio: accel: adxl345: Remove single info instances
-> >   iio: accel: adxl345: Group bus configuration
-> >   dt-bindings: iio: accel: adxl345: Add spi-3wire
-> >   iio: accel: adxl345: Pass function pointer to core
-> >   iio: accel: adxl345: Add the spi-3wire
->
+Hello:
 
-Ok. If I split "Group bus configuration" into the grouping of the
-indio_dev in the probe() and adding a comment to the core's probe(), I
-will end up with something like this:
+This patch was applied to chrome-platform/linux.git (for-kernelci)
+by Mark Brown <broonie@kernel.org>:
 
-$ git log --oneline --reverse
- iio: accel: adxl345: Make data_range obsolete
- iio: accel: adxl345: Group bus configuration
- iio: accel: adxl345: Move defines to header <--- new
- dt-bindings: iio: accel: adxl345: Add spi-3wire
- iio: accel: adxl345: Pass function pointer to core
- iio: accel: adxl345: Add comment to probe  <--- new after split
- iio: accel: adxl345: Add spi-3wire option
+On Wed,  7 Feb 2024 19:40:14 +0100 you wrote:
+> Changes since v2
+> (https://lore.kernel.org/linux-spi/cover.1705944943.git.u.kleine-koenig@pengutronix.de):
+> 
+>  - Drop patch "mtd: rawnand: fsl_elbc: Let .probe retry if local bus is
+>    missing" which doesn't belong into this series.
+>  - Fix a build failure noticed by the kernel build bot in
+>    drivers/spi/spi-au1550.c. (I failed to catch this because this driver
+>    is mips only, but not enabled in a mips allmodconfig. That's a bit
+>    unfortunate, but not easily fixable.)
+>  - Add the Reviewed-by: and Acked-by: tags I received for v2.
+> 
+> [...]
 
-I feel I have to add the comment after adding the passed function
-pointer. Bascially I liked to add a comment mentioning especially the
-new function pointer there. So, although being a comment, the commit
-will be in this "high" position. Is this ok, or am I doing something
-wrong? Should I split into setting the comment first, then inside
-"Pass function pointer.." also update the comment?
+Here is the summary with links:
+  - [v3,15/32] platform/chrome: cros_ec_spi: Follow renaming of SPI "master" to "controller"
+    https://git.kernel.org/chrome-platform/c/85ad0ec049a7
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
