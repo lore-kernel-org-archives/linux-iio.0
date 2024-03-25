@@ -1,109 +1,82 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C3ED5810D;
-	Mon, 25 Mar 2024 20:32:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 799865D49F;
+	Mon, 25 Mar 2024 20:33:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.167.242.64
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711398731; cv=none; b=VdBgSO5Ok/vXG8c/NXwjO31zDfW2X2FJ5k68XBParUkW8YoeY5wcsMeHuUsecGNHurUrbc5aI+gf3/SRRbQW6qWZbw0mmtFoeIEampSQBStwE7G7TK5dCxR9nnwh4vUskcURbT7z1Dr0TRpem6Ctu1rURITk07QyWhj21wAB3Tg=
+	t=1711398782; cv=none; b=gwxAjVklwYRgnTEBOSvTE5HqgeiBLxoW5NGeVtPKOsN+zg6tP30A9xLZb5EsyUWXPdCxZrEW2zyMAaL0G7+rHLA/kPpbBT458uCJKepzd9m+GpX+WZwPfEjY/R0r/qNZUeogbk3EXQM7eqiImkyEC9d4kkua1H6LXtzt6Tc1ECs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711398731; c=relaxed/simple;
-	bh=qILMoowlP+MlDq1kLYWNHuIzJ//eEQGBD9+LRceFSfI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=caVO3QQVw7FyAVPRq22Arvbx0JvDoQf/OjR8TDYn38cB6bmyewohcAGgtZ+6HHs22efZFXc126tP0wf8lRkrHyhLk+jEgjgDIYKW1iAMPyu44BU1isOKPOVjkuE1lrpH2H1X8DTQsiZwL//R/5MPAD0cpgki7XHXY0cBrcLdxgw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mm3I6HRb; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1711398782; c=relaxed/simple;
+	bh=7yTT8lPe0pPP8LRjiZ20vvt0WYq95+MUh+JgWuseALI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=bxbo5D4gLcGG3crrDV12mFCO1qqp1ofF89CswKU0vbG7+kWvXy8ZDuDpM5uPscCCkn8zIHQ/5g+zCWfzQTTXZPv4ugze4KxUHj0Ovc9E07j6gU4iQDwGt/v+ZQqUYu1Go84np7Oqj6MuXp7rwj62YATBnDMhibCQh3JMgSG59/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com; spf=pass smtp.mailfrom=ideasonboard.com; dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b=CfdHKp9a; arc=none smtp.client-ip=213.167.242.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ideasonboard.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mm3I6HRb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2DAAC433C7;
-	Mon, 25 Mar 2024 20:32:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711398730;
-	bh=qILMoowlP+MlDq1kLYWNHuIzJ//eEQGBD9+LRceFSfI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=mm3I6HRbRRayzxvsaz8irY6sEI96CCtz+DF85bnvgwe2FflFXo50kOkwh5axGc12u
-	 S137VQPA8INyQnJDXY4eAh5iQOwQUT3QsHLjIWf0zCuedTbi/M6fiFA4ZdeynmyI6G
-	 X5Vss3HOSkQ+HfCZJ6u94ra8xJcb/DZhoVHSzOHSkv0wICRtxvn7JF40dKZAve8CiZ
-	 fN6pwRAF5yTHi2GtZIAUmU85cxhJ2b7kn07HUq8ocTCXWO8EUXH5Qh+5IuYUxeghMm
-	 7Qwp0tH+vBbaQVU0TvgX3AK4g6Tid4WUNJB+0W40DZE0DwQ6+bxiX82QzhoNFB9vgn
-	 a5ePSNW1E3o6Q==
-Date: Mon, 25 Mar 2024 20:31:55 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lothar Rubusch <l.rubusch@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, eraretuya@gmail.com
-Subject: Re: [PATCH v4 1/7] iio: accel: adxl345: Make data_range obsolete
-Message-ID: <20240325203155.23ddfe3d@jic23-huawei>
-In-Reply-To: <20240325153356.46112-2-l.rubusch@gmail.com>
-References: <20240325153356.46112-1-l.rubusch@gmail.com>
-	<20240325153356.46112-2-l.rubusch@gmail.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b="CfdHKp9a"
+Received: from pendragon.ideasonboard.com (81-175-209-231.bb.dnainternet.fi [81.175.209.231])
+	by perceval.ideasonboard.com (Postfix) with ESMTPSA id 316BB161B;
+	Mon, 25 Mar 2024 21:32:23 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+	s=mail; t=1711398743;
+	bh=7yTT8lPe0pPP8LRjiZ20vvt0WYq95+MUh+JgWuseALI=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=CfdHKp9akJkF8wW6xzJg67xD1PuIj8xRl+f76JTz/Sm0o4IVI7x5eXq89+8FdRk9d
+	 sxdas3OgsZ8vwBpMGZ4BPFDh/ozFReWQVQYvbAONCClM4JhKpnkiHPEh4zuw/5HuGt
+	 YZX4wVGzQ9dyH4XwBhKpoNqHbdWJhw3Arvn7Ho9Q=
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To: devicetree@vger.kernel.org,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Cc: Trevor Zaharichuk <trevor@au-zone.com>,
+	Greg Lytle <greg@au-zone.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Sean Nyekjaer <sean@geanix.com>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH 1/5] dt-bindings: iio: dac: ti,dac5571: Add DAC081C081 support
+Date: Mon, 25 Mar 2024 22:32:41 +0200
+Message-ID: <20240325203245.31660-2-laurent.pinchart@ideasonboard.com>
+X-Mailer: git-send-email 2.43.2
+In-Reply-To: <20240325203245.31660-1-laurent.pinchart@ideasonboard.com>
+References: <20240325203245.31660-1-laurent.pinchart@ideasonboard.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Mon, 25 Mar 2024 15:33:50 +0000
-Lothar Rubusch <l.rubusch@gmail.com> wrote:
+The DAC081C081 is a TI DAC whose software interface is compatible with
+the DAC5571. It is the 8-bit version of the DAC121C081, already
+supported by the DAC5571 bindings. Extends the bindings to support this
+chip.
 
-> Replace write() data_format by regmap_update_bits(), because
-> bus specific pre-configuration may have happened before on
-> the same register. Changes then need to be masked.
-> 
-> Remove the data_range field from the struct adxl345_data,
-> because it is not used anymore.
-> 
-> Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
-> ---
->  drivers/iio/accel/adxl345_core.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
-> index 8bd30a23e..be6758015 100644
-> --- a/drivers/iio/accel/adxl345_core.c
-> +++ b/drivers/iio/accel/adxl345_core.c
-> @@ -42,13 +42,13 @@
->  #define ADXL345_DATA_FORMAT_4G		1
->  #define ADXL345_DATA_FORMAT_8G		2
->  #define ADXL345_DATA_FORMAT_16G		3
-> +#define ADXL345_DATA_FORMAT_MSK		~((u8) BIT(6)) /* ignore spi-3wire */
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+---
+ Documentation/devicetree/bindings/iio/dac/ti,dac5571.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-I'm not keen on seeing masking of a bit we don't yet
-handle done by value.  Can we instead build this up by what we 'want' to
-write rather than don't. Will need a few more defines perhaps to cover
-the masks of SELF_TEST, INT_INVERT, FULL_RES, Justify and Range.
+diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac5571.yaml b/Documentation/devicetree/bindings/iio/dac/ti,dac5571.yaml
+index 79da0323c327..e59db861e2eb 100644
+--- a/Documentation/devicetree/bindings/iio/dac/ti,dac5571.yaml
++++ b/Documentation/devicetree/bindings/iio/dac/ti,dac5571.yaml
+@@ -21,6 +21,7 @@ properties:
+       - ti,dac5573
+       - ti,dac6573
+       - ti,dac7573
++      - ti,dac081c081
+       - ti,dac121c081
+ 
+   reg:
+-- 
+Regards,
 
->  
->  #define ADXL345_DEVID			0xE5
->  
->  struct adxl345_data {
->  	const struct adxl345_chip_info *info;
->  	struct regmap *regmap;
-> -	u8 data_range;
->  };
->  
->  #define ADXL345_CHANNEL(index, axis) {					\
-> @@ -219,14 +219,13 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap)
->  	data = iio_priv(indio_dev);
->  	data->regmap = regmap;
->  	/* Enable full-resolution mode */
-> -	data->data_range = ADXL345_DATA_FORMAT_FULL_RES;
->  	data->info = device_get_match_data(dev);
->  	if (!data->info)
->  		return -ENODEV;
->  
-> -	ret = regmap_write(data->regmap, ADXL345_REG_DATA_FORMAT,
-> -			   data->data_range);
-> -	if (ret < 0)
-> +	ret = regmap_update_bits(regmap, ADXL345_REG_DATA_FORMAT,
-> +				 ADXL345_DATA_FORMAT_MSK, ADXL345_DATA_FORMAT_FULL_RES);
-> +	if (ret)
->  		return dev_err_probe(dev, ret, "Failed to set data range\n");
->  
->  	indio_dev->name = data->info->name;
+Laurent Pinchart
 
