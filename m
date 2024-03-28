@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71C63130E4F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE3BB132492;
 	Thu, 28 Mar 2024 16:22:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711642927; cv=none; b=rzDcB80P5HaPwuGFezEFx3ma695jtqMRJUxk8HSzYlj85BkT8P8FWsuqdDkywbqB/rb44D20IorDJg8uLi36gFQyYYP3H2hAmeS1HoupXi3NNO6ljlF03YBR16UQmZtLRt5xCKWz2kY82upA8ZLzkC1lmcru0oICPA9HZnCyVN8=
+	t=1711642927; cv=none; b=pLLN6BwNRlFxUY+PSKKe8DMSecAhWV9UFXadyHzIuDo8xj2AJpa+ls3h77dJfp8qmOHLphZ8gvWaZRQjr7dicnIO8yPK/DpDc2zmob5UQ8XDMH9d3Y99XuAv4jw88kDMxHt9HSnJGf0n0SC7ozEa9B411luj/nTTo+Q0oS0FTGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1711642927; c=relaxed/simple;
-	bh=OIn2dZxMAHksrWIjCgDEJp/EXR+efkol4wQYb64yzgo=;
+	bh=Bnj4G9XpK1owNLhcShj4KfI60tdpeJg4h2+Xkc762g8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=a3/xNZY2yFyXh2Osf0kHjXddnjiCwXhWZKVUMTmZqaEPwZFTnG4EgabQIKlEkjeY0/Joy9AqN+gy3l6o1ihbXZFndZNovT2f+b7m7o/Q2gWOWEYPDEzVMNv+f2TW/kMopNwzj9oMqvxJ6lqKczxQV2Ag/jzlvcnlXa9tehW4LiE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i4Eql3pz; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=FBpwFHRlG1KtWfMV4n96IWOmM7ASfWlUC/7mTZra+LvP1S16NTniSDgtdlONyJy3PbVOovbOPn5lBFneBUqkciOC5qVe/tgCPYZBfqXc96pmwPQe0JmZ3WzzQjg+UHI2hKhZ+VjyVdILj1Mxk9zmFluD7Ndzz1YrkkzUnaCHAsw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n7MxqkSO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i4Eql3pz"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1C341C4166B;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n7MxqkSO"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6EB9EC41612;
 	Thu, 28 Mar 2024 16:22:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1711642927;
-	bh=OIn2dZxMAHksrWIjCgDEJp/EXR+efkol4wQYb64yzgo=;
+	bh=Bnj4G9XpK1owNLhcShj4KfI60tdpeJg4h2+Xkc762g8=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=i4Eql3pz2OAR/Kzs2ZFmJDHdOMUcTbz+92BQZ3b5z+xlxIeDSNQE4bDUXiduWLJSA
-	 wuZY/QAif/w7yHc7AAT9EHLc1CPOmRHdpezSXG0QCyVaM2GhvQCUKbG2A/qtCJeHx2
-	 FyCBcWVZu4fWWmaX/VmSUAm1BbmuhDxrveY2zE9fCjs26TD6h84ssvmEB5N7b0G/j3
-	 12p8iziEMsLLoIpdvqF5hZLPFieog42SUVx41rKrtG4IugVtRV6kncKlr2KDTHuN66
-	 e6EetqorMHLEfTDh+Nk1ivjMSsataUJMoI1XSzUG6pkkio5owAmVxcGBTx5jXb9F7V
-	 Mc7s8nYI+Tgag==
+	b=n7MxqkSO//mrVKCmYDqxppoYKtZlKQ3LNPbWW+t3Xn/GpU3VMYBdCOy3JxSkddJq3
+	 yL4lDqzi5umlCONYI1Mnk538nzWUVeAmxr4UZpjCe7tcHvCrMZfco1MQ/khgpSHQAY
+	 26ZAXSFD+3H8nNTvlf7GS2BlXVgp+tyKnfKQMKZbQft1S05DrqLD4cLFFKgUdfyi5S
+	 bSHaZsefqY2sbW8GDjPLDC0kdhzfXWwDC2Re2Mk4H2xYazUlw7wG2Jt77WmQbP8aMi
+	 pf0W1XBWISs2cFr8drYHd4a5LBXnlikR5hPxyqPoDpqlxCXSzrYa/WLpWMu+3NAweB
+	 wHjBjp56VMFTg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E299CD1283;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58AF7CD1284;
 	Thu, 28 Mar 2024 16:22:07 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Thu, 28 Mar 2024 17:22:03 +0100
-Subject: [PATCH v4 3/6] dt-bindings: iio: temperature: ltc2983: document
- power supply
+Date: Thu, 28 Mar 2024 17:22:05 +0100
+Subject: [PATCH v4 5/6] iio: backend: make use dev_errp_probe()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240328-ltc2983-misc-improv-v4-3-0cc428c07cd5@analog.com>
+Message-Id: <20240328-ltc2983-misc-improv-v4-5-0cc428c07cd5@analog.com>
 References: <20240328-ltc2983-misc-improv-v4-0-0cc428c07cd5@analog.com>
 In-Reply-To: <20240328-ltc2983-misc-improv-v4-0-0cc428c07cd5@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -53,14 +52,13 @@ Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
  Conor Dooley <conor+dt@kernel.org>, 
  Olivier Moysan <olivier.moysan@foss.st.com>, 
- Jyoti Bhayana <jbhayana@google.com>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ Jyoti Bhayana <jbhayana@google.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1711642925; l=1227;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1711642925; l=964;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=rnQzwLPbXO4Riqnz6PXrWUTn4Pd8xKChQYwf/cGw4js=;
- b=43SYwE62YUShXFDg44JLjUmDEaIeL6O2K6S/Q9mqqHe32n1B6dDx12C1g4d5anxoCxxyZqYgI
- vyxOz4sd/clAkTmqZx8ubk8axhEJSB8CfB5Uk+gatvrKoYJCh7Sqp2k
+ bh=UI9LYwYsbzsvYImq/LHr54gyhLBEwgpl2jvt1KqrE14=;
+ b=l04hnyfmitT+Wc9CJrsYi+vxjlfokLbKdPEhFV9RWHo3uTK/Oc+B5oE8Zqin/iltsRFq3jV4X
+ Z/YjBSEYriIDM+VyTSF3MM88ds1JoMh0zkeVGDvS+BqmmGPR5T9C6YM
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -70,43 +68,32 @@ Reply-To: nuno.sa@analog.com
 
 From: Nuno Sa <nuno.sa@analog.com>
 
-Add a property for the VDD power supply regulator.
+Using dev_errp_probe() to simplify the code.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iio/industrialio-backend.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
-index dbb85135fd66..312febeeb3bb 100644
---- a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
-+++ b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
-@@ -57,6 +57,8 @@ properties:
-   interrupts:
-     maxItems: 1
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index 2fea2bbbe47f..e0b08283d667 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -296,11 +296,9 @@ struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name)
+ 	}
  
-+  vdd-supply: true
-+
-   adi,mux-delay-config-us:
-     description: |
-       Extra delay prior to each conversion, in addition to the internal 1ms
-@@ -460,6 +462,7 @@ required:
-   - compatible
-   - reg
-   - interrupts
-+  - vdd-supply
+ 	fwnode = fwnode_find_reference(dev_fwnode(dev), "io-backends", index);
+-	if (IS_ERR(fwnode)) {
+-		dev_err_probe(dev, PTR_ERR(fwnode),
+-			      "Cannot get Firmware reference\n");
+-		return ERR_CAST(fwnode);
+-	}
++	if (IS_ERR(fwnode))
++		return dev_errp_probe(dev, PTR_ERR(fwnode),
++				      "Cannot get Firmware reference\n");
  
- additionalProperties: false
- 
-@@ -489,6 +492,7 @@ examples:
-             #address-cells = <1>;
-             #size-cells = <0>;
- 
-+            vdd-supply = <&supply>;
-             interrupts = <20 IRQ_TYPE_EDGE_RISING>;
-             interrupt-parent = <&gpio>;
- 
+ 	guard(mutex)(&iio_back_lock);
+ 	list_for_each_entry(back, &iio_back_list, entry) {
 
 -- 
 2.44.0
