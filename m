@@ -1,125 +1,89 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3F2880623;
-	Thu,  4 Apr 2024 11:03:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54C782C189
+	for <linux-iio@vger.kernel.org>; Thu,  4 Apr 2024 11:36:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712228639; cv=none; b=HgeAXjcv17JEvPQj9BHungO3eCHnBGl7Hu8iXfE6l5k9YmH6Qx5ErcbD4Ak5GbSGRcFzPpTzlipm8qEXnHCPJfX+uSt4ouDh6k8aAaYBGP1y3rWkd2XIL+fwRw0xGNH5qhPRYPxnuJNsci8jH7gQMhsMkRmJ7n5uuQNidFtZ6+c=
+	t=1712230591; cv=none; b=LtvUEX08dQSfRWsdCKSDiMMAQMZp+vUhkpxNIc28j9hdfrIDZ5FFGsXEvuJ2hykacofoXY8yaYNXHgwFk9bNqCiD0Ut1ESUMGpWIAErWgbD93zJ8fh3D+mjtsXJD5pr+B5LUqNATE1TfRG5eBeRLTY/W/exWMgjz2tIeFP1iylc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712228639; c=relaxed/simple;
-	bh=5FyAg1K4ouJ5EWpDCLIPu6j4EpVqzUbJWImyGChBtls=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=ubzfCEWo/bmOEV6DrsXFTT5FcHTDY/eQcPFhXf2mzoH2d0vj5ALCV10Xcocyk6VwhYcRUKw4/qqczJ4NgZB4vm3iWM6CKNjQWhjhl4OsNn5Ap05PmmQ6XbgigVe4Ns9jSUFnSAH9ZLsvEGyLxXIuUAgKBV79r9nKq9yTuD2JC4Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=jnvfx0Gl; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1712230591; c=relaxed/simple;
+	bh=KGuMIBcsl9wI2ckRU01PqRppnGK8iigFdGIoEim9GtA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=VVFaJxx+zPOIx+Ngm7j5kdxH7gGP9GelsJKnzJ6KxuwwQUNDLfF96pTXfnDNq72LumgZqdhmvYLCxmevi/3Bej2Tzp+nsNEvnyrHxwgOjJwS5kWtKhSWBpajJnq4lifyOP/hLZ/0w9IP8qlPCg/qVFBJjyrzZv5JQtxBMoZ+SP0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=GlrmqixO; arc=none smtp.client-ip=209.85.128.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="jnvfx0Gl"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 4348RPhD001360;
-	Thu, 4 Apr 2024 07:03:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	from:date:subject:mime-version:content-type
-	:content-transfer-encoding:message-id:references:in-reply-to:to
-	:cc; s=DKIM; bh=AXkpfDiS2TfBLEGZg8/Z2gQ/Z+9TV6MavTSUnKqZr3s=; b=
-	jnvfx0GlhLUZy9wtSa2xfsto3RGR+yBco4SeVVW02oenWqdj2zNz/7LBz8g1JRVE
-	w1rKSzigg9VMTIjCt0jzopn9sN4MNE38KzW5S6Iwthd/B5P6iSEFa/coTT/n/P/J
-	5z7xtNCmqbEg02+3jLCsjHYlXKEgCBRBVIeJaFRVSgoQRGmaUsIJ6k2q0lKnZzIj
-	M+bCBTeGxBA/D5nG56FprSGkKLL8Jn9FBKH9e0xaLRTLhPs+/n54fdMz05RR3lVK
-	nuuJUZEtV0p/7acugpioLjhOf/toxPp1qAa595ztqrw84fLyaQs99sNEYOyFzrEs
-	nxX9+l7xiSlQ3XVHhTrsVA==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3x9eks2kxa-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 04 Apr 2024 07:03:20 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 434B3IXT018909
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 4 Apr 2024 07:03:18 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Thu, 4 Apr 2024
- 07:03:18 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Thu, 4 Apr 2024 07:03:17 -0400
-Received: from [127.0.0.1] ([10.44.3.56])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 434B2vc9008372;
-	Thu, 4 Apr 2024 07:03:14 -0400
-From: Nuno Sa <nuno.sa@analog.com>
-Date: Thu, 4 Apr 2024 13:06:23 +0200
-Subject: [PATCH 1/4] dev_printk: add new dev_errp_probe() helper
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="GlrmqixO"
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-6098a20ab22so8008747b3.2
+        for <linux-iio@vger.kernel.org>; Thu, 04 Apr 2024 04:36:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1712230588; x=1712835388; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KGuMIBcsl9wI2ckRU01PqRppnGK8iigFdGIoEim9GtA=;
+        b=GlrmqixOJ2xYymcP7b2c/7PHLqhU7vEuhp0P9nPGqI2iwpxwBm0RwJU2d9+guRqlEl
+         +5mEVEfoKOOFTHZwR8aiHUu3pv6HC8mkUC4YTwMo7fOG5mtwAuA+gr4VWcMAySReqFXj
+         HsO1mFH4TH+95ggHmzrlK5QH0dsxBgJX7qlz3xDsHXcoURs+GJGHqszwnBidsu9l4yaO
+         QcqIXqb9ALfLARQ058JlSzPlrbkipiuufLMXrZaCUDkyUONYdbTzHuoM+O94AauT1epr
+         6TMtcf5JgSt+hBsL+zDoh3BvLzIxMx+zGdqaORyqaBru10gaFbaeamAv3Ott51kDIiGZ
+         UYWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712230588; x=1712835388;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KGuMIBcsl9wI2ckRU01PqRppnGK8iigFdGIoEim9GtA=;
+        b=g8VUW7XtG11onJWdixsGACVoqly/f/txHkpgI1QhxmPhXdWupOqCLWaQSZA2GSDSDY
+         TvZ1urOHp9hxiNFpo7ycf+vFEjROKdRtZOkQ6MDdqp67OWSpdIlvnoTn5BcnDqOvYMnM
+         mSJX5PYxvZUxZowf3CSWVmiQQvbA5qhfG59gM7wyDpM0ItOj0iVshM+CuTqSaihYYpsH
+         jrNpm+VSZ87WMIfxYWHpy/iUOdNDC2ZrhE054TTybI6N2Vuw7SgduK1gqOwhvmUJ7+iH
+         34aDfMxlxcyoKuyKZf7rU2sMiSbPXXed8z/cckyKucOOXwmuY01omLXxYIGU5beaA1Bp
+         egSg==
+X-Gm-Message-State: AOJu0YzfRe1YPHOdL/77gV9Wy1/MROvRePYnqmvcBmCWicahbtcgGilI
+	mbCFVnJrROobaIBPvqnh46HNRvJZxn8QnO3Sq2R8J8naSMYlfeEAMcDVC1mZ3wsx4CI3ms+x5K2
+	1+rDiIIkgxHJOFygLmkMFRcgCIS47DBOslpbmgQ==
+X-Google-Smtp-Source: AGHT+IHwArJ8DHmfqo+yV77gb4IAZGRTl0grfOa3+ickb8v70OYh02BrzVgORlVFCGo/fThRJLRvfyY9x8UofQf5RRU=
+X-Received: by 2002:a05:6902:102e:b0:dc6:db0c:4ff0 with SMTP id
+ x14-20020a056902102e00b00dc6db0c4ff0mr2551970ybt.32.1712230588301; Thu, 04
+ Apr 2024 04:36:28 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20240404-dev-add_dev_errp_probe-v1-1-d18e3eb7ec3f@analog.com>
-References: <20240404-dev-add_dev_errp_probe-v1-0-d18e3eb7ec3f@analog.com>
-In-Reply-To: <20240404-dev-add_dev_errp_probe-v1-0-d18e3eb7ec3f@analog.com>
-To: Petr Mladek <pmladek@suse.com>, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Olivier Moysan
-	<olivier.moysan@foss.st.com>,
-        Jyoti Bhayana <jbhayana@google.com>,
-        Andy
- Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Chris Down
-	<chris@chrisdown.name>,
-        John Ogness <john.ogness@linutronix.de>,
-        Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1712228790; l=860;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=5FyAg1K4ouJ5EWpDCLIPu6j4EpVqzUbJWImyGChBtls=;
- b=nzl0EQd5yurJfJRqTt/7lXZ9xzem5594ugLbq4+UL7SvtiNuJL+gXpEBfZ+jldHytMxlqdMU6
- Ofy/T44NONMDlG0DZ+yofl7Vinc1V2D9HTUZx1+7JSz7jBizycYI4ma
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: d_L781PnJ8F0700RrXkhJJHehi0_-ALa
-X-Proofpoint-ORIG-GUID: d_L781PnJ8F0700RrXkhJJHehi0_-ALa
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-04-04_07,2024-04-04_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=959 clxscore=1011
- suspectscore=0 bulkscore=0 spamscore=0 priorityscore=1501 phishscore=0
- lowpriorityscore=0 malwarescore=0 impostorscore=0 mlxscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2404010003
- definitions=main-2404040075
+References: <20240330190849.1321065-1-jic23@kernel.org> <20240330190849.1321065-2-jic23@kernel.org>
+In-Reply-To: <20240330190849.1321065-2-jic23@kernel.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Thu, 4 Apr 2024 13:36:15 +0200
+Message-ID: <CACRpkdZzOi5vv6yxqheqGZAZYBLTEL-uB=dt-i6ByDEhF6H0Kw@mail.gmail.com>
+Subject: Re: [PATCH 1/8] iio: adc: ab8500-gpadc: Allow COMPILE_TEST builds
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Marius Cristea <marius.cristea@microchip.com>, 
+	Mihail Chindris <mihail.chindris@analog.com>, Marcelo Schmitt <marcelo.schmitt1@gmail.com>, 
+	Kim Seer Paller <kimseer.paller@analog.com>, Dumitru Ceclan <mitrutzceclan@gmail.com>, 
+	Cosmin Tanislav <demonsingur@gmail.com>, Nuno Sa <nuno.sa@analog.com>, 
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This is similar to dev_err_probe() but for cases where an ERR_PTR() is
-to be returned simplifying patterns like:
+On Sat, Mar 30, 2024 at 8:09=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
+ wrote:
 
-	dev_err_probe(dev, ret, ...);
-	return ERR_PTR(ret)
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>
+> The dependencies on various ab8500 components prevent this driver
+> being useful but they don't seem to prevent it being built.
+> Improve build coverage by allowing COMPILE_TEST.
+>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Signed-off-by: Nuno Sa <nuno.sa@analog.com>
----
- include/linux/dev_printk.h | 5 +++++
- 1 file changed, 5 insertions(+)
+...but I think AB8500_CORE is a hard requirement because
+<linux/mfd/abx500.h> does not provide register accessor stubs?
 
-diff --git a/include/linux/dev_printk.h b/include/linux/dev_printk.h
-index ae80a303c216..790144f6f99c 100644
---- a/include/linux/dev_printk.h
-+++ b/include/linux/dev_printk.h
-@@ -277,4 +277,9 @@ do {									\
- 
- __printf(3, 4) int dev_err_probe(const struct device *dev, int err, const char *fmt, ...);
- 
-+/* Simple helper for dev_err_probe() when ERR_PTR() is to be returned. */
-+#define dev_errp_probe(dev, ___err, fmt, ...)	({		\
-+	ERR_PTR(dev_err_probe(dev, ___err, fmt, ##__VA_ARGS__));	\
-+})
-+
- #endif /* _DEVICE_PRINTK_H_ */
-
--- 
-2.44.0
-
+Yours,
+Linus Walleij
