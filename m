@@ -1,59 +1,59 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FBB816F27C;
-	Fri,  5 Apr 2024 14:57:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BC8016F83A;
+	Fri,  5 Apr 2024 14:57:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712329038; cv=none; b=f/uXxyFzCM/p5dJsdk2ARJ/+Usq2QawQK3bPywYvjtNIGRTO31PbD4XTZv3q/lWEaak+uIrjMvvFoyipX5Fkg/4oITtuPvFdhsg9fLV7jRMvJ/mseuHRQOHFnAjwCLHPtM2491IuO0Wt97cUH4gpCKQmscZDK8D3Z2uPKxt+/ik=
+	t=1712329039; cv=none; b=pAt7KBym2JHjbeNQCX+RVwa2YmCv1UVYw6fjfofXfwTqTHlUGKOP/zpBsd0LJVQdyAPZqoqQcn6dg91Gh3Ow0FBnxVDo22lQ2Ci8+9GSU3DJCm61a73weShpuLUnzDI5ZEzAdX7mpZM5dEhyO2oTJ8BncFKLHPPbV4HM5zAZrQg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712329038; c=relaxed/simple;
-	bh=9zYHg1Yh55ibCjfnImR8SDnU9VMfC9QIwwDyxbIAeug=;
-	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=MGk4z7j2isPMgGclF2HkIZ46MRVyWqqOV+3Saf8JVQuw44RhFIyF7KoDDbqdXBKlMTaH07ulpPy1hSRQ5hszmc58ABBaUrEAcZsc2NqaEYnIAqPZB31M7bw/dFw3Z8AVupqmVKGppscQxzl52o+fXWcrfY5jm+ZAtUtYiRYgyZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=UxbOQAA6; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1712329039; c=relaxed/simple;
+	bh=Fk4lWJpMLZkXmh2N8T8oTjFVOtwLh8aQfDOUkMx9F6o=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=sEdp8xWlrC9FuQNx86kDialrtbYHnl/arcXPiOROw1XzYjTVa/rhvtTiKzkVa2AgYvkX/eUMmzhQeFL5/KtByeZfYTuupdNrGHiWqiVL+F+s7wNXVz9HwCjSRGl2TlVww1KvvoLFAx1O+4QEfF9E7tLSvlLAPZXaOla3ymS2DFw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=g/gs4c6x; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="UxbOQAA6"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 435EYRP4000715;
-	Fri, 5 Apr 2024 10:56:48 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="g/gs4c6x"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 435DaOL9010390;
+	Fri, 5 Apr 2024 10:56:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	from:subject:date:message-id:mime-version:content-type
-	:content-transfer-encoding:to:cc; s=DKIM; bh=9SmIKpFsSzzC/dx981Z
-	v8Ah56nCYVv7KaIxbw9hDDgc=; b=UxbOQAA6D8RfG5VZBwa4mw81ZKEAVS4mY5x
-	+5mkLRo+jZSahbYAEnYYccRj7E/8EdaG3GVKn7EFUDKaLnANJZ4xkAPC82q0bGVH
-	jbqOCI9reYxD0aGrQrIOr0oGyBIzagtlt1HHzAg9Fcoyp8PTiGtLNR9VavcMrVpa
-	Hg4gqDW4Cfvt8uyYSuHQ5/yOnyxftGqslDw09jMhvir7yFbhPrZTe9nZrn2++Tdl
-	v8+gS0nwX/OaND+yxamGp1BgC/32ln/D7Zd+akDeA2LaB9tb//Q+pvuHzsq3kuu3
-	KyuNiiQSVMjB/EOYZ2rt4oQZFYIgA09gzdFlP5RWWTf0tNhcLtw==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3x9y8vvnna-1
+	from:date:subject:mime-version:content-type
+	:content-transfer-encoding:message-id:references:in-reply-to:to
+	:cc; s=DKIM; bh=YVKGNoKzrvkurl2nO2h9vb6vOjILdh+BjuxYqEdiIMQ=; b=
+	g/gs4c6xu+g5b1S6I9VCMWboXtS8Jj1Yi9ghrrVMrplz0j+Ooa90TQxmRGOi3FTq
+	2yzfTJlBECKpasXqtTFtyG7IU+fTt+zaiG4/Ta/P7EPsDXT5OIjXfmN9REHWAwB4
+	KA5Y7bCdo6AWFCucCGJFc1LSgYdDA2iU6ps+J1yjGnfYr+oIXxZ26YYnHhq05+OX
+	Dq0l0j41AZ1KBPhCO5WcCocynbH/4CoDqg6pY0op3IdR+Xi1g0vVK6T52gGZoPNe
+	dIgYlCuH/3hTvTJsrPs672Q1kbnvw8K0BDKnUNbAuCImYpS6eqyD0D1FNmom/xDc
+	cmt5s267Jj3+KJVH8s4DSw==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3x9epgr9j3-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 05 Apr 2024 10:56:48 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 435Eul1C064528
+	Fri, 05 Apr 2024 10:56:51 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 435EuooG022801
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 5 Apr 2024 10:56:47 -0400
+	Fri, 5 Apr 2024 10:56:50 -0400
 Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 5 Apr 2024 10:56:46 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ 15.2.986.14; Fri, 5 Apr 2024 10:56:49 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
  ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 5 Apr 2024 10:56:45 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 5 Apr 2024 10:56:45 -0400
+ 15.2.986.14; Fri, 5 Apr 2024 10:56:49 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 5 Apr 2024 10:56:49 -0400
 Received: from [127.0.0.1] ([10.44.3.56])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 435EuSHw019011;
-	Fri, 5 Apr 2024 10:56:30 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 435EuSI3019011;
+	Fri, 5 Apr 2024 10:56:45 -0400
 From: Nuno Sa <nuno.sa@analog.com>
-Subject: [PATCH v2 00/11] iio: dac: support IIO backends on the output
- direction
-Date: Fri, 5 Apr 2024 16:59:58 +0200
-Message-ID: <20240405-iio-backend-axi-dac-v2-0-293bab7d5552@analog.com>
+Date: Fri, 5 Apr 2024 17:00:03 +0200
+Subject: [PATCH v2 05/11] iio: buffer-dmaengine: Enable write support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,10 +61,10 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAO4REGYC/x3MQQqAIBBA0avErBsQtaKuEi1GnWoILBQikO6et
- HyL/wtkTsIZpqZA4luynLFCtw34neLGKKEatNJWWdWhyImO/MExID2CgTw6HkczGKdM76CWV+J
- Vnv86L+/7Af79BcplAAAA
+Content-Transfer-Encoding: 7bit
+Message-ID: <20240405-iio-backend-axi-dac-v2-5-293bab7d5552@analog.com>
+References: <20240405-iio-backend-axi-dac-v2-0-293bab7d5552@analog.com>
+In-Reply-To: <20240405-iio-backend-axi-dac-v2-0-293bab7d5552@analog.com>
 To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
 CC: Dragos Bogdan <dragos.bogdan@analog.com>,
         Lars-Peter Clausen
@@ -79,136 +79,58 @@ CC: Dragos Bogdan <dragos.bogdan@analog.com>,
  Cercueil" <paul@crapouillou.net>,
         Alexandru Ardelean <ardeleanalex@gmail.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1712329201; l=4644;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1712329201; l=1350;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=9zYHg1Yh55ibCjfnImR8SDnU9VMfC9QIwwDyxbIAeug=;
- b=bZyZSkExRpMcIt1nSzulZpAjRPU4waXjnWczAa/lMJfsbzlQhafW1aZzsm8T5iEu1HcdzU0Yx
- r70+cZXmThSAxnBE/GJYtibK2ZNyGbx8uo35kkvUpuQCGQ5rcKs6pyP
+ bh=hXi2S9a5+uGRDuzr8SCbjBuocFR5uBxzW+WmAaRiTGE=;
+ b=QFMJEDxlzTbTNE9mxkNujadqoWY5zuMtDwaxoORP+bvGsVz4yq9swT01hNQXqQXm2PfpaZ2wg
+ q5wsCnq5mCYAFd+4scwPKz6qWNFHiE1tlHi4G1g1FW9rf/IlHPtHLYg
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: vtXmL4Q1VmCPSI0P59Yn1zJk2TKhc5rw
-X-Proofpoint-GUID: vtXmL4Q1VmCPSI0P59Yn1zJk2TKhc5rw
+X-Proofpoint-ORIG-GUID: aZ8IjIbnJC4uwv9_P4xN-UFic0ySkiNY
+X-Proofpoint-GUID: aZ8IjIbnJC4uwv9_P4xN-UFic0ySkiNY
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2024-04-05_16,2024-04-05_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- impostorscore=0 malwarescore=0 mlxscore=0 lowpriorityscore=0 adultscore=0
- bulkscore=0 priorityscore=1501 suspectscore=0 clxscore=1011 phishscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2404010003 definitions=main-2404050106
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
+ adultscore=0 suspectscore=0 bulkscore=0 priorityscore=1501 malwarescore=0
+ mlxlogscore=820 spamscore=0 lowpriorityscore=0 mlxscore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2404010003
+ definitions=main-2404050106
 
-Hi Jonathan,
+From: Paul Cercueil <paul@crapouillou.net>
 
-Here it goes version 2 of the output backend series. The main points in
-here:
- - The refactoring the DMA BUF api for setup. I pretty much like how it
-   turned out. Note that Paul's patch ("iio: buffer-dmaengine: Support
-   specifying buffer direction") had to be updated accordingly.
- - Introduction of the struct iio_info callback for getting the backend.
-   I'm not sure about this one as we have no user for it and we may not
-   have one for sometime. I like how the "default" implementation for
-   getting the backend turned out and it should cover 99% of the cases. It
-   will only fail if the iio parent device is not the same device where we
-   bound the backend.
- - As mentioned above, we now get the backend from the iio device
-   matching the IIO parent device with the device used when getting the
-   backend. This should cover almost all the cases I think. Should be very
-   unlikely to use a different device in devm_iio_backend_get() and
-   devm_iio_device_alloc().
+Use the iio_dma_buffer_write() and iio_dma_buffer_space_available()
+functions provided by the buffer-dma core, to enable write support in
+the buffer-dmaengine code.
 
-For the bindings, I still did not addressed Rob's point about dma-names.
-I did reply [1] but still no feedback.
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+---
+ drivers/iio/buffer/industrialio-buffer-dmaengine.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Anyways, full log:
-
-v1:
- * https://lore.kernel.org/all/20240328-iio-backend-axi-dac-v1-0-afc808b3fde3@analog.com/
-
-v2:
- * Patch 1:
-  - New patch.
-
- * Patch 4:
-  - Make things consistent with the triggered buffer case.
-
- * Patch 6:
-  - Fixed description as it's an output device;
-  - Avoid duplicating the "bindings" word in the commit title.
+diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+index 051e1758e020..e5492572b248 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
++++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+@@ -123,12 +123,14 @@ static void iio_dmaengine_buffer_release(struct iio_buffer *buf)
  
- * Patch 7:
-  - Renamed vdd_3_3-supply -> vdd-3p3-supply;
-  - Added IRQ and vref properties;
-  - Avoid duplicating the "bindings" word in the commit title.
+ static const struct iio_buffer_access_funcs iio_dmaengine_buffer_ops = {
+ 	.read = iio_dma_buffer_read,
++	.write = iio_dma_buffer_write,
+ 	.set_bytes_per_datum = iio_dma_buffer_set_bytes_per_datum,
+ 	.set_length = iio_dma_buffer_set_length,
+ 	.request_update = iio_dma_buffer_request_update,
+ 	.enable = iio_dma_buffer_enable,
+ 	.disable = iio_dma_buffer_disable,
+ 	.data_available = iio_dma_buffer_usage,
++	.space_available = iio_dma_buffer_usage,
+ 	.release = iio_dmaengine_buffer_release,
+ 
+ 	.modes = INDIO_BUFFER_HARDWARE,
 
- * Patch 8:
-  - New patch.
-
- * Patch 9:
-  - Fixed some typos in kerneldocs;
-  - Add iio_backend_from_indio_dev_parent(). Default way of getting backends
-    from IIO devices;
-  - Explicitly differentiate frontends and backends ext_info in
-    iio_backend_extend_chan_spec().
-  - Spell out CW as CONTINUOUS_WAVE;
-  - Add _hz suffix in set_sample_rate().
-
- * Patch 10:
-  - Rephrase comment in axi_dac_set_sample_rate() when DDS is disabled;
-  - Use the new iio_dmaengine_buffer_setup_ext() API;
-  - Passed tone as 0,1 value being 1 second tone.
-
- * Patch 11:
-  - Fixed mixed spaces with tabs in ABI file and dac -> DAC;
-  - Add COMPILE_TEST to kconfig;
-  - Dropped operating mode enum. Use defines;
-  - Add comments for IIO enum operating mode and the value we need to
-    set on the device;
-  - Add spaces around {} in the reg_sequence;
-  - Always use Mu instead of mixture of Mu and MU;
-  - Don't error out if we do not recognize the part id;
-  - Make sure to deal with other errors than TIMEOUT in ad9739a_init().
-
-[1]: https://lore.kernel.org/linux-iio/04e2a0569953792673319f7fcab3fe03e6670c03.camel@gmail.com/
-
----
-Nuno Sa (7):
-      iio: buffer-dma: add iio_dmaengine_buffer_setup()
-      dt-bindings: iio: dac: add docs for AXI DAC IP
-      dt-bindings: iio: dac: add docs for AD9739A
-      iio: core: add get_iio_backend() callback
-      iio: backend: add new functionality
-      iio: dac: add support for AXI DAC IP core
-      iio: dac: support the ad9739a RF DAC
-
-Paul Cercueil (4):
-      iio: buffer-dma: Rename iio_dma_buffer_data_available()
-      iio: buffer-dma: Enable buffer write support
-      iio: buffer-dmaengine: Support specifying buffer direction
-      iio: buffer-dmaengine: Enable write support
-
- Documentation/ABI/testing/sysfs-bus-iio-ad9739a    |  19 +
- .../devicetree/bindings/iio/dac/adi,ad9739a.yaml   |  94 +++
- .../devicetree/bindings/iio/dac/adi,axi-dac.yaml   |  62 ++
- MAINTAINERS                                        |  17 +
- drivers/iio/adc/adi-axi-adc.c                      |  16 +-
- drivers/iio/buffer/industrialio-buffer-dma.c       | 100 +++-
- drivers/iio/buffer/industrialio-buffer-dmaengine.c |  83 +--
- drivers/iio/dac/Kconfig                            |  37 ++
- drivers/iio/dac/Makefile                           |   2 +
- drivers/iio/dac/ad9739a.c                          | 454 +++++++++++++++
- drivers/iio/dac/adi-axi-dac.c                      | 635 +++++++++++++++++++++
- drivers/iio/industrialio-backend.c                 | 179 ++++++
- include/linux/iio/backend.h                        |  49 ++
- include/linux/iio/buffer-dma.h                     |   4 +-
- include/linux/iio/buffer-dmaengine.h               |  24 +-
- include/linux/iio/iio.h                            |   2 +
- 16 files changed, 1698 insertions(+), 79 deletions(-)
----
-base-commit: 6020ca4de8e5404b20f15a6d9873cd6eb5f6d8d6
-change-id: 20240405-iio-backend-axi-dac-be99373b036b
---
-
-Thanks!
-- Nuno Sá
+-- 
+2.44.0
 
