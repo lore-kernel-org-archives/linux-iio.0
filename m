@@ -1,222 +1,260 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D4F81DFE4;
-	Fri,  5 Apr 2024 12:54:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=68.232.154.123
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712321659; cv=fail; b=TPvAEvroHOvFLMX73RBjmESgxC7S/0bEKvF1B7dP42zHToIh5+Ko0IuxHJdw1nsZGGkGOzJLNLbYiscQFCldHvA1uvYVeQfpd0f6ar2i3RvVfv/pJRw/0XkrtsZ8R+e3PaLWUFOUwnnMlo81M42jrRa7Ju6Htfdr8MqqmQCckXg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712321659; c=relaxed/simple;
-	bh=/FIJvKg3Nhr0/MFCKh8vur+ev2yooMmYFmNu3ymbpDE=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=AXvgaUbYBfPnll0m6yu5iJe/Z+ZVKuAP6G2OS5nCdh1fkmW0tn+pnCB3jC/kFym2KQIElZgXIo0Fwv7jmuUmbUSo06YH82QWoEFhI1ZWuJoYRGd8ONolhAHevHNgkZTECaDsBS3f0PKCuyZ4FnKpKh40be7DKlJ5BfExXewDpaQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=d1og2vLx; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=iy9YBG0v; arc=fail smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8747916DEAB;
+	Fri,  5 Apr 2024 14:57:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712329037; cv=none; b=EyQl66GWhGZLClfctungqHMwMN1kBY3EBDmfqn4LE+T1GxUvenXa2D1ZKf8mY0linH2N5CmTJWkjhRk+3Gvwd6+sEpjZpmOJQodylpx7E3TAE65tfitcbcC8ir7aDRFb8WbkKW4y3xu6WyJWX8ZLHjOSSp9UmlxoTup/AQsQsSI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712329037; c=relaxed/simple;
+	bh=qh7cxxUSeQcO4sXq3gc5A3BVtcxRR1nC991URhqSKdY=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=nkXQCYC0GYgqW+cuQgOZUF3cB+SjbhiD4XK7Gg9qMLmmZhnwOOW6lr1SohHeAbJpxpJ5uDwQj6GCCPjUI8KF5zxos+uegDvzyHgMwfgXM1Ko0ZDI3BqlAhqaxTxnTbKazdi7qdtx4ycEoNfgWsxWesocsQ2Hp7itz0x64BJK928=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=K1YL5eNl; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="d1og2vLx";
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="iy9YBG0v"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1712321657; x=1743857657;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=/FIJvKg3Nhr0/MFCKh8vur+ev2yooMmYFmNu3ymbpDE=;
-  b=d1og2vLxTJTdL+M1+vtaQlpQmXLPZ1a7WTKkfuJMgy7Ibog9jYaEcfuv
-   oiW0D8e4SVUFZzYTG6DbzfkOogfsYwCd0VQC+3ESF22wQ3xcHLE7wDbuY
-   N3e4gLKKPsLpakQ5ozU2cGr61MQPqMWPTdasJepbf3jCB54Q0TmSt75wa
-   rjv02c66HmxAxdYC44kp+bNbyXoqnA93UFNA1MzARqtTrSysjw5eFpcUj
-   adaVKWy0J42iVAs9asjqzY0p1KGsTLfNN+Mju6dx/gfdKXHmbBomVaRQ9
-   SKEn0okOk3yrelHaWxlKxjkdfudPnmwtUAz/t18iVcDGel9Cc3XCOBAr3
-   w==;
-X-CSE-ConnectionGUID: /aocNBZtTHKH1E4yeMPQ6w==
-X-CSE-MsgGUID: e726OJLWRIy1h1mgcqEP6Q==
-X-IronPort-AV: E=Sophos;i="6.07,181,1708412400"; 
-   d="scan'208";a="186925418"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 05 Apr 2024 05:54:10 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 5 Apr 2024 05:53:40 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (10.10.215.250)
- by email.microchip.com (10.10.87.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Fri, 5 Apr 2024 05:53:39 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Evu5buvQ/ZV18NT/ZudzHEl2mVUUBF4TBzYdwOLAZrcNsxol2D5wKbCcE+uympkMAZKI+6zWNgBNO83yOILO9purZBLcWS7iTm4Xuag2zrHJiSUc0AFVsJeWxzefKubqpmorSNMgPWkkz0MV2R8bup6W3lkCQvHdF/EO6/fg1hwG2xFT9ppqEamMwFJIJfv5nlSTCvpyUo5FjwS6AwHNA2LKJoXjllpOEim6eF6oZvXGHVXK2CmavJp/XHdHCdPJYC+3FP1ObR0Jz/6+JorQE2E2YZPhsXl4kXSX1tKS5CvDis7Sxgm9U6LRYTYf1bZQVxTYHm3nADfEbBw/YcNULw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/FIJvKg3Nhr0/MFCKh8vur+ev2yooMmYFmNu3ymbpDE=;
- b=L1yb0Ij7LxZL1VEd3oGzcYNQxSxDdUoCmWFtsRUzqTxcJLsBPhxT9QeW5+Mn2G15COB7I270zfrvLElUK5rKlMEwUoRV1CwRnI5qAdP3zipOoU/EW02ROJk3fBbLCTGIa5WvV/MbeWb/bRCgbrql8qj1gEc22Xr3PBtvpB7Y0z3bnhMeuqLxfyPsFhpxjc6gGqdmM/BFu4yz+K4pMWDQY1Vn4BQY/FXn0VSAB9sBXnrxyoaPBwn5/Cr5tmfBRkiJEKxCjTwvw6CGGPXE3eeWZeK4Qqa3xXeKdif2k2tIEEncfjJef83cbibOAoERmQS2kT+slhjlUEntvWBhK40TVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microchip.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/FIJvKg3Nhr0/MFCKh8vur+ev2yooMmYFmNu3ymbpDE=;
- b=iy9YBG0vArryhW99nI0ddeBk34JmVcn37UOA0wVKCdz/Uq8OL8UaFDjterib352NmZtSGiGVH3ymxl/Hy6ELn8XvACVrSSiV4SxiyATSe4zP1+axFoZF7L4e3ZEuh4/g5qEwUzV7kzsuTnsf+ZrwwVc69uG9wbJnJTpburueBw2JnMucksmUH1nWFM+oP6CPYlbPKjqkCBxWEZqJNXu50XEQE6BWwra5tUNXJJx9UelzHWDfwt1gI2/NCtb0pzABqGqq01p+KeIgUJfsDgVgUSk6SzEpVmX1B4/2grv5mmV+PUrBoJiiE/a9DjZpQoUveuAQWYh9uJcQGPfdhzpLpA==
-Received: from SN6PR11MB3167.namprd11.prod.outlook.com (2603:10b6:805:c6::10)
- by MW4PR11MB6933.namprd11.prod.outlook.com (2603:10b6:303:22a::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7452.25; Fri, 5 Apr
- 2024 12:53:38 +0000
-Received: from SN6PR11MB3167.namprd11.prod.outlook.com
- ([fe80::b059:198c:9128:7b43]) by SN6PR11MB3167.namprd11.prod.outlook.com
- ([fe80::b059:198c:9128:7b43%3]) with mapi id 15.20.7452.019; Fri, 5 Apr 2024
- 12:53:38 +0000
-From: <Marius.Cristea@microchip.com>
-To: <jic23@kernel.org>, <Conor.Dooley@microchip.com>
-CC: <linux@roeck-us.net>, <jdelvare@suse.com>, <linux-iio@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <lars@metafoo.de>,
-	<linux-kernel@vger.kernel.org>, <linux-hwmon@vger.kernel.org>,
-	<krzysztof.kozlowski+dt@linaro.org>, <robh+dt@kernel.org>,
-	<conor+dt@kernel.org>
-Subject: Re: [PATCH v5 2/2] iio: adc: adding support for PAC193x
-Thread-Topic: [PATCH v5 2/2] iio: adc: adding support for PAC193x
-Thread-Index: AQHaZa41DnEBQNNY0k6p6RiYUs7Fp7EZ4G+AgEABbwCAAANSgA==
-Date: Fri, 5 Apr 2024 12:53:38 +0000
-Message-ID: <e432bddc16952d9144ccf6da5a54b88e3171b947.camel@microchip.com>
-References: <20240222164206.65700-1-marius.cristea@microchip.com>
-	 <20240222164206.65700-3-marius.cristea@microchip.com>
-	 <20240224191559.40d233db@jic23-huawei>
-	 <20240405-embellish-bonnet-ab5f10560d93@wendy>
-In-Reply-To: <20240405-embellish-bonnet-ab5f10560d93@wendy>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR11MB3167:EE_|MW4PR11MB6933:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: D77TJ1DYIGrGv6DGPpIls3UTo8jC7rycuOI/iXTQ5J3mE1d6AVO9IQVH7PRk5Vw6+lOdC/JBbTmAhUtINu5QZJ0XLVpbHmYKwIvJyrkr16EHT1FrJx3DH8S+iLo5GrSiZIpDcTHocwIlwX74SNd/bCSGu7WPMY5K0TAB4zwCGAw6CeiPZEfIWaaylJU3VRkea9TMydTGuD49iFRMK1xaXxCbciH7zpaZAPy9qwWLHJDlKwzCqVj9Kmb6CQb2FQVR4vrwQG0GOeC2XCYq7YMcGvl4KRQGt14eRs8lZGHQsFhdpr/ly0lkPf8zWaNlTd02XdVvcNNbs+SF3VjVve+dk8gGkW5IBZvgMtv2/d9BwwU5oFjr11Xx5hwPXCwTDafAzbhNPX8DQjJ2W5ps7TNwS5WkwbgApC83nqzGZV3gb1zPM6l/NQX1iP0Haxjm2WEDObJq4CeonmK4xU2E1jwbt5kOnFMoDwb7eJVKokC0q7QauBX6R+NUBa677Q49s9AsWRCH6bhuI0rvPZP2qg1Q+3bY5TqAayozFZP0phZcy0nVXJ/b8iBYTTxbOjv9jIjuBNOM62q2aU5HerB5sUQWzofpqt/snwHfiF2cXq+xkDF7B9FLcH3LufPj1QuBXqKIhIjVVPh4Sv2RCMVt9UwMkUisjfF6LpPX4qvsn/Hs65Q=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3167.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(376005)(7416005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?T0VrSDhwTkZ4VElGc2FaZnlIelJDSDNvdlltcUEvNjRtdlcyZVdxRzE2RW94?=
- =?utf-8?B?TDBCU3hlWURlOVpPN3JCU0IrL25rQ05XYzZ6ZzBVM24ya3NNNnF6cVcyZGlB?=
- =?utf-8?B?MHU2eWZQWWN2UnVpdVkyaFpMT1Vpajk2dytBOHh6MjVGdVhJUWVuWFNyMnk3?=
- =?utf-8?B?QWVKQ2cydFY3S1k2ZHRSMklGMkhrM2tEM3FHK2kzYWcyN3lFcGxUTXc5RU81?=
- =?utf-8?B?TWZ2cnZUdTVoWFVJSkUxeVlSZnhBSzdsSzQ4U0l6OUNvY0xDaWlLMWIrUXFJ?=
- =?utf-8?B?U2VGcHNERmY2OUpIWFlhOTdPc0lKVUluUm9LWGY2WmZ0ZDdlZUd6YkJBM2Fu?=
- =?utf-8?B?ejhZL0VjaFhOV2tLQTdKN3dZenlPQWZsZkZDdHNyOHQ5WnBIUTg3ak4vTHcz?=
- =?utf-8?B?UFVJdEwvNEtXYlFlV1ZuRWZRKzhnYmVQeHBlaS9nTDlyenlsUEhJT1VnWFls?=
- =?utf-8?B?K2tUWGFxWldlUlhoeldabDk4MGdRM1VsL1BwcFVCWjRMQk9MWWozd3NxaVh0?=
- =?utf-8?B?NjBqdEttb3BTWStvZlZmYVQ0VzFSLzQzSVNHcVFDOVRNanhkZ0ozQXBnWGZw?=
- =?utf-8?B?bjVVZG9OYWlUZW96WkV5aFBiU2pSeU0vQ29waHdRbEdybytaSTE0MjNJNXlI?=
- =?utf-8?B?emlTQVE2cDRBTW1mSXpwa3d6OEpUSWQwdU1ja3UvYmFDbmN6ZVJmYkhOTHNT?=
- =?utf-8?B?eWhTeWlDdGJLaFlpcFZPMHRSc3VmUUFMK1VxRjdjbnNPVWVJRFB4b01GRlpT?=
- =?utf-8?B?cnQ0TXJTVXpQYnBLMjUvTnBLR3JHWGswS3pTWFNUS29mMTA2YVNkRHRLakJs?=
- =?utf-8?B?RnpyZUZieDFvVFZ4eE1ZMjV5TmVycEc3a01FMDkxZG8yRnhxWk5BMVFJWDhD?=
- =?utf-8?B?aEZaellNcDJYeFh5Q2VGNGQ5YkpLajFvY2s2SlBYS1dIMDBWa2kzOXVaTXRC?=
- =?utf-8?B?UFJ2dVRrRExMcjlONnRRUC8rZkZxVHh3SlFWWXZEaWxRNXJJNmlGdjdhaHBU?=
- =?utf-8?B?UVd4d1NwcHB0eUZTeWpzeCtOZFNPWERMZTByL2lZaUMwRjUzNkZBSXpWWmpP?=
- =?utf-8?B?dTJSczNCU0k1T2VTV04yWm4rTWkveHcrUkRGSklNalBzeGJOb3NiWnVHUUsy?=
- =?utf-8?B?ZS9PVzV2NXcwOXpiMTNQcnZyN1BETU94TEtPcGxFZ1JRZDNUemhQdmJVKzVj?=
- =?utf-8?B?Z2tOTThGMFhmNXoyK3RNQ1paUWQyMzJsV0d5UjlNMXVreVVtZ3d2Z0NWM1Fz?=
- =?utf-8?B?SmJiUGRHN3BzaVo3VUxxRGQwak9GU2RZQnd0TndwdjZkK0V0L0lmbzBsaVFX?=
- =?utf-8?B?N2RwUHFJY0YxWlhwdUZtRXd0d3ZMdkd0bTZCeGZ3WFlJSXVwUFZSek9KN2pT?=
- =?utf-8?B?NnRydjlqenJXS3ZmQXVZNDR4c0tvQU53d2dTU0lmWWl1QkY4bXdWKytzaEs4?=
- =?utf-8?B?T1lmcXZGSXR5bDJNcE9YMHNKV05QL05kbTdvNkg1VktFV1VRVTBWS3o0Q3NK?=
- =?utf-8?B?NWIxL1dvTVEyQjFkQisrMDE1U2owNk0yV1BPdE1zM1h5Zmo3aWZXS1I1YU01?=
- =?utf-8?B?NFdLRUlHWE1NVDdDSHVXWDFlcGs1TlNYWnF3elFaUFdQRG03S3RJWE1lYzRr?=
- =?utf-8?B?R2V4ellZM3hMdUxOQXRVVTdqUmhjQmxEajVUMWFQYmQ0V1ZNaTNaQ1JsUXV0?=
- =?utf-8?B?U29MWXUrZkFMaEs4aDhPWVZOMEZUYzNYWUp2K0d3NTY3dGFybDVWekFGYVZY?=
- =?utf-8?B?MUJOcjl1OXdYK1JsOEdzbTFLMWdkSXh3VUNIWU1PTGszRmhkR3JnMk1XOUtQ?=
- =?utf-8?B?Njd3ZEFFY3hCVzRpZGdsRzR1SW9OVlZZeVJ5UzFwYkQrV0xNbnFBTkxTVzY3?=
- =?utf-8?B?eU1IWTlpcUdVdG5seUoxQnpKNDJpVTB5Wll4L2xTeG9yNUJOV1F6N3ZKM21i?=
- =?utf-8?B?SUVZMGltMU0vdG1kK2pYckd6TzVWNDFkN0JEYUJTWjhlVmQvaktFUCtVZ0dv?=
- =?utf-8?B?cTREQ0szSm55NlRmODNIcE9qdXFlVUQvSjNOaG00RURzWlJud0NrMElzcjdk?=
- =?utf-8?B?Q0VkZFFVUUVhSkpNdDFMdE5qTTNxTHJiRyt4VkVPOWczdFpZRUIyZ3loaUhV?=
- =?utf-8?B?MFBPTVBDVS82UkU0ZWFDVy84RDN1dERneDF2bmw4eS9JQ0ZEQ2VWaWNGcjJX?=
- =?utf-8?B?RXc9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E19D4DE676DBEA4CBA88323BBB29BB67@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="K1YL5eNl"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 435CZwDY010078;
+	Fri, 5 Apr 2024 10:56:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	from:date:subject:mime-version:content-type
+	:content-transfer-encoding:message-id:references:in-reply-to:to
+	:cc; s=DKIM; bh=JKxxM8czizM00ZHQcVOyUMpdIZVrLnaIRNhHC9RGyy4=; b=
+	K1YL5eNlhQUll1g90AXvcWu1dbTYmSLojCt2WBgUlw3EwfU2iOJpU4weTmZDkhhq
+	BSEmDdYSkK6oPbp5spwZW7XYS5hkbCGvSJwKe65XtI+0troWUL7Y083Un5thW0qV
+	h7K1E+NjL2ZQYTojBarjChikwUX4/nMy6GsfSWk0d4rExGToCVaL+5eDSv+9oDwi
+	0n4tLqbMm7EIHfaMHHvql7PfFt6OdzNxrStZ28wSf5n0NjCIBHM5Is71QQG0xJ/q
+	kgRM1xS3Pb1BK+X4KxP56SGFA8JW10ZkdrfcyXsFMaNPtkjZYecvSV7pWQTboprP
+	6TSZ5Nk26TP1r1ZkCDOfQg==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3x9epgr9hn-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 05 Apr 2024 10:56:46 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 435EujDg064519
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 5 Apr 2024 10:56:45 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 5 Apr 2024 10:56:44 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 5 Apr 2024 10:56:44 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 5 Apr 2024 10:56:44 -0400
+Received: from [127.0.0.1] ([10.44.3.56])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 435EuSHx019011;
+	Fri, 5 Apr 2024 10:56:40 -0400
+From: Nuno Sa <nuno.sa@analog.com>
+Date: Fri, 5 Apr 2024 16:59:59 +0200
+Subject: [PATCH v2 01/11] iio: buffer-dma: add iio_dmaengine_buffer_setup()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3167.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d925e5a-124e-4bc9-0897-08dc556f69ba
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Apr 2024 12:53:38.2843
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zdX1g17jwHwuEGoNzZ+aqzy8F0/GWzhD8kik0tnKQAi05sMRw+qZcQWatcTvKj9kwGZc5+DvaZr9H4/xyQzHwfL5NOrYWniol92iSPN/Sso=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB6933
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20240405-iio-backend-axi-dac-v2-1-293bab7d5552@analog.com>
+References: <20240405-iio-backend-axi-dac-v2-0-293bab7d5552@analog.com>
+In-Reply-To: <20240405-iio-backend-axi-dac-v2-0-293bab7d5552@analog.com>
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC: Dragos Bogdan <dragos.bogdan@analog.com>,
+        Lars-Peter Clausen
+	<lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        "Jonathan Cameron" <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        Olivier Moysan <olivier.moysan@foss.st.com>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1712329201; l=5821;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=qh7cxxUSeQcO4sXq3gc5A3BVtcxRR1nC991URhqSKdY=;
+ b=i6AjopLFkpnhT39nCF8lxEFbJ6NjulwkZil3E7eIGuLeJop4Qv4cLgGYaOe6NC7fjDgcS57HH
+ QKozqRcRo2zDOSoDF6U8vkRIzxYDiSopSoLMCjgFKfQVd+ZdSOkl1t0
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: NkF0ai-QcIFmUcxDxvkNXjKJiO9CHGnY
+X-Proofpoint-GUID: NkF0ai-QcIFmUcxDxvkNXjKJiO9CHGnY
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-04-05_16,2024-04-05_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
+ adultscore=0 suspectscore=0 bulkscore=0 priorityscore=1501 malwarescore=0
+ mlxlogscore=999 spamscore=0 lowpriorityscore=0 mlxscore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2404010003
+ definitions=main-2404050106
 
-SGkgQ29ub3IsCgogICAgVGhhbmtzIGZvciByZXBvcnRpbmcgdGhlIGJ1Zy4gSSBoYXZlIGRldGVj
-dCBpdCBhbmQgSSdtIGFscmVhZHkKd29ya2luZyBvbiBhIHBhdGNoIGZvciBpdC4KClRoYW5rcywK
-TWFyaXVzCgpPbiBGcmksIDIwMjQtMDQtMDUgYXQgMTM6NDEgKzAxMDAsIENvbm9yIERvb2xleSB3
-cm90ZToKPiBPbiBTYXQsIEZlYiAyNCwgMjAyNCBhdCAwNzoxNTo1OVBNICswMDAwLCBKb25hdGhh
-biBDYW1lcm9uIHdyb3RlOgo+ID4gT24gVGh1LCAyMiBGZWIgMjAyNCAxODo0MjowNiArMDIwMAo+
-ID4gPG1hcml1cy5jcmlzdGVhQG1pY3JvY2hpcC5jb20+IHdyb3RlOgo+ID4gCj4gPiA+IEZyb206
-IE1hcml1cyBDcmlzdGVhIDxtYXJpdXMuY3Jpc3RlYUBtaWNyb2NoaXAuY29tPgo+ID4gPiAKPiA+
-ID4gVGhpcyBpcyB0aGUgaWlvIGRyaXZlciBmb3IgTWljcm9jaGlwCj4gPiA+IFBBQzE5M1ggc2Vy
-aWVzIG9mIFBvd2VyIE1vbml0b3Igd2l0aCBBY2N1bXVsYXRvciBjaGlwIGZhbWlseS4KPiA+ID4g
-Cj4gPiA+IFNpZ25lZC1vZmYtYnk6IE1hcml1cyBDcmlzdGVhIDxtYXJpdXMuY3Jpc3RlYUBtaWNy
-b2NoaXAuY29tPgo+ID4gU28gSSBoYWQgYSBmZXcgY29tbWVudHMgb24gdGhpcywgYnV0IG5vdGhp
-bmcgdGhhdCBjYW4ndCBiZSBjbGVhbmVkCj4gPiB1cCBsYXRlci4KPiA+ICsgSSdsbCBmaXggdGhl
-IHRoaW5nIHRoZSBib3RzIGRpZG4ndCBsaWtlIG9uIHRoZSBiaW5kaW5ncy4KPiA+IAo+ID4gU2Vy
-aWVzIGFwcGxpZWQgdG8gdGhlIHRvZ3JlZyBicmFuY2ggb2YgaWlvLmdpdCBhbmQgcHVzaGVkIG91
-dAo+ID4gYXMgdGVzdGluZyBmb3IgMC1kYXkgdG8gdGFrZSBhIGxvb2sgYXQgaXQuCj4gCj4gSSB0
-ZXN0ZWQgdGhpcyBvdXQgb24gdjYuOS1yYzIgYW5kIHByb21wdGVkIGEgYmFja3RyYWNlIHdoZW4g
-Y29sbGVjdGQKPiBzdGFydGVkIHJ1bm5pbmc6Cj4gwqDCoMKgwqDCoMKgwqDCoC0tLS0tLS0tLS0t
-LVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLQo+IMKgwqDCoMKgwqDCoMKgwqBVQlNBTjogYXJyYXkt
-aW5kZXgtb3V0LW9mLWJvdW5kcyBpbgo+IC9ob21lL2Nvbm9yL3N0dWZmL2xpbnV4L2RyaXZlcnMv
-aWlvL2FkYy9wYWMxOTM0LmM6ODU3OjI1Cj4gwqDCoMKgwqDCoMKgwqDCoGluZGV4IDcgaXMgb3V0
-IG9mIHJhbmdlIGZvciB0eXBlICd1MzIgWzRdJwo+IMKgwqDCoMKgwqDCoMKgwqBDUFU6IDEgUElE
-OiAxNzkgQ29tbTogaWlvZCBOb3QgdGFpbnRlZCA2LjkuMC1yYzItZGlydHkgIzEKPiDCoMKgwqDC
-oMKgwqDCoMKgSGFyZHdhcmUgbmFtZTogTWljcm9jaGlwIFBvbGFyRmlyZS1Tb0MgSWNpY2xlIEtp
-dCAoRFQpCj4gwqDCoMKgwqDCoMKgwqDCoENhbGwgVHJhY2U6Cj4gwqDCoMKgwqDCoMKgwqDCoFs8
-ZmZmZmZmZmY4MDAwNmJiYT5dIGR1bXBfYmFja3RyYWNlKzB4MjgvMHgzMAo+IMKgwqDCoMKgwqDC
-oMKgwqBbPGZmZmZmZmZmODBiZDY3ZDg+XSBzaG93X3N0YWNrKzB4MzgvMHg0NAo+IMKgwqDCoMKg
-wqDCoMKgwqBbPGZmZmZmZmZmODBiZTc4MjA+XSBkdW1wX3N0YWNrX2x2bCsweDZlLzB4OWEKPiDC
-oMKgwqDCoMKgwqDCoMKgWzxmZmZmZmZmZjgwYmU3ODY0Pl0gZHVtcF9zdGFjaysweDE4LzB4MjAK
-PiDCoMKgwqDCoMKgwqDCoMKgWzxmZmZmZmZmZjgwYmUxNDUyPl0gdWJzYW5fZXBpbG9ndWUrMHgx
-MC8weDQ2Cj4gwqDCoMKgwqDCoMKgwqDCoFs8ZmZmZmZmZmY4MDYxNTM1OD5dIF9fdWJzYW5faGFu
-ZGxlX291dF9vZl9ib3VuZHMrMHg2YS8weDc4Cj4gwqDCoMKgwqDCoMKgwqDCoFs8ZmZmZmZmZmY4
-MDk4MWYzYT5dIHBhYzE5MzRfcmVhZF9yYXcrMHgyMGMvMHgzNGMKPiDCoMKgwqDCoMKgwqDCoMKg
-WzxmZmZmZmZmZjgwOTc3YzRjPl0gaWlvX3JlYWRfY2hhbm5lbF9pbmZvKzB4NWMvMHhiZQo+IMKg
-wqDCoMKgwqDCoMKgwqBbPGZmZmZmZmZmODA3MzUxNmU+XSBkZXZfYXR0cl9zaG93KzB4MWMvMHg0
-YQo+IMKgwqDCoMKgwqDCoMKgwqBbPGZmZmZmZmZmODAzODcyOTI+XSBzeXNmc19rZl9zZXFfc2hv
-dysweDgwLzB4Y2MKPiDCoMKgwqDCoMKgwqDCoMKgWzxmZmZmZmZmZjgwMzg1YjEyPl0ga2VybmZz
-X3NlcV9zaG93KzB4M2MvMHg0YQo+IMKgwqDCoMKgwqDCoMKgwqBbPGZmZmZmZmZmODAzMWUzZDg+
-XSBzZXFfcmVhZF9pdGVyKzB4MTM2LzB4MmU0Cj4gwqDCoMKgwqDCoMKgwqDCoFs8ZmZmZmZmZmY4
-MDM4NWNkZT5dIGtlcm5mc19mb3BfcmVhZF9pdGVyKzB4MzgvMHgxNmEKPiDCoMKgwqDCoMKgwqDC
-oMKgWzxmZmZmZmZmZjgwMmU5MDRhPl0gdmZzX3JlYWQrMHgxYmUvMHgyYmEKPiDCoMKgwqDCoMKg
-wqDCoMKgWzxmZmZmZmZmZjgwMmU5YzQ4Pl0ga3N5c19yZWFkKzB4NjQvMHhkMgo+IMKgwqDCoMKg
-wqDCoMKgwqBbPGZmZmZmZmZmODAyZTljZDY+XSBfX3Jpc2N2X3N5c19yZWFkKzB4MjAvMHgyOAo+
-IMKgwqDCoMKgwqDCoMKgwqBbPGZmZmZmZmZmODBiZTgzOGE+XSBkb190cmFwX2VjYWxsX3UrMHhl
-ZS8weDIwNAo+IMKgwqDCoMKgwqDCoMKgwqBbPGZmZmZmZmZmODBiZjU3ZDA+XSByZXRfZnJvbV9l
-eGNlcHRpb24rMHgwLzB4NjQKPiDCoMKgwqDCoMKgwqDCoMKgLS0tWyBlbmQgdHJhY2UgXS0tLQo+
-IAo+IFRoZSBkZXZpY2UgaXRzZWxmIG9ubHkgaGFzIDQgY2hhbm5lbHMsIGJ1dCBpbiBzeXNmcyB0
-aGVyZSBhcmUgImZha2UiCj4gY2hhbm5lbHMgZm9yIHRoZSBhdmVyYWdlIHZvbHRhZ2VzIGFuZCBj
-dXJyZW50cyB0b28uIFVCU0FOIHBvaW50cyBhdDoKPiDCoMKgwqDCoMKgwqDCoMKgY2FzZSBQQUMx
-OTM0X1ZTRU5TRV9BVkdfNF9BRERSOgo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-KnZhbCA9IFBBQzE5MzRfTUFYX1ZTRU5TRV9SU0hJRlRFRF9CWV8xNkI7Cj4gwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqBpZiAoY2hhbi0+c2Nhbl90eXBlLnNpZ24gPT0gJ3UnKQo+IMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCp2YWwyID0gaW5m
-by0+c2h1bnRzW2NoYW5uZWxdOwo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZWxz
-ZQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCp2YWwy
-ID0gaW5mby0+c2h1bnRzW2NoYW5uZWxdID4+IDE7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqByZXR1cm4gSUlPX1ZBTF9GUkFDVElPTkFMOwo+IAo+IEFuZCBpbmZvLT5zaHVudHMg
-aXMgb25seSB2YWxpZCBmb3IgdGhlIDQgcmVhbCBjaGFubmVscywgc28gSSBndWVzcwo+IHRoZQo+
-IGF2ZXJhZ2VkIGNoYW5uZWxzIHByb2JhYmx5IG5lZWQgdG8gZG8gYSBbY2hhbm5lbCAtIDRdIG9y
-IHNpbWlsYXIuIEkKPiBkdW5ubyBpZiB0aGF0IHJlbGF0aW9uIGJldHdlZW4gYXZlcmFnZWQgY2hh
-bm5lbHMgYW5kIHRoZWlyICJyZWFsIgo+IGNvdW50ZXJwYXJ0cyBpcyBmaXhlZCBvciBpZiBkaWZm
-ZXJlbnQgcGFjIGRldmljZXMgbmVlZCBkaWZmZXJlbnQKPiB2YWx1ZXMsCj4gYnV0IG9uIG15IHN5
-c3RlbSBoZXJlIHRoYXQgd291bGQgd29yay4KPiAKPiBJIGRvIHF1aXRlIGxpa2UgdGhhdCBVQlNB
-TiBwb2ludHMgb3V0IHRoZSBsaW5lIGluIHF1ZXN0aW9uIDopCj4gCj4gQ2hlZXJzLAo+IENvbm9y
-LgoK
+This brings the DMA buffer API more in line with what we have in the
+triggered buffer. There's no need of having both
+devm_iio_dmaengine_buffer_setup() and devm_iio_dmaengine_buffer_alloc().
+Hence we introduce the new iio_dmaengine_buffer_setup() that together
+with devm_iio_dmaengine_buffer_setup() should be all we need.
+
+Note that as part of this change iio_dmaengine_buffer_alloc() is again
+static and the axi-adc was updated accordingly.
+
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+---
+ drivers/iio/adc/adi-axi-adc.c                      | 16 +-------
+ drivers/iio/buffer/industrialio-buffer-dmaengine.c | 48 +++++++++-------------
+ include/linux/iio/buffer-dmaengine.h               |  5 ++-
+ 3 files changed, 24 insertions(+), 45 deletions(-)
+
+diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+index 4156639b3c8b..184b36dca6d0 100644
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -124,26 +124,12 @@ static struct iio_buffer *axi_adc_request_buffer(struct iio_backend *back,
+ 						 struct iio_dev *indio_dev)
+ {
+ 	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
+-	struct iio_buffer *buffer;
+ 	const char *dma_name;
+-	int ret;
+ 
+ 	if (device_property_read_string(st->dev, "dma-names", &dma_name))
+ 		dma_name = "rx";
+ 
+-	buffer = iio_dmaengine_buffer_alloc(st->dev, dma_name);
+-	if (IS_ERR(buffer)) {
+-		dev_err(st->dev, "Could not get DMA buffer, %ld\n",
+-			PTR_ERR(buffer));
+-		return ERR_CAST(buffer);
+-	}
+-
+-	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
+-	ret = iio_device_attach_buffer(indio_dev, buffer);
+-	if (ret)
+-		return ERR_PTR(ret);
+-
+-	return buffer;
++	return iio_dmaengine_buffer_setup(st->dev, indio_dev, dma_name);
+ }
+ 
+ static void axi_adc_free_buffer(struct iio_backend *back,
+diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+index a18c1da292af..97f3116566f5 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
++++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+@@ -159,7 +159,7 @@ static const struct iio_dev_attr *iio_dmaengine_buffer_attrs[] = {
+  * Once done using the buffer iio_dmaengine_buffer_free() should be used to
+  * release it.
+  */
+-struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
++static struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
+ 	const char *channel)
+ {
+ 	struct dmaengine_buffer *dmaengine_buffer;
+@@ -210,7 +210,6 @@ struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
+ 	kfree(dmaengine_buffer);
+ 	return ERR_PTR(ret);
+ }
+-EXPORT_SYMBOL_NS_GPL(iio_dmaengine_buffer_alloc, IIO_DMAENGINE_BUFFER);
+ 
+ /**
+  * iio_dmaengine_buffer_free() - Free dmaengine buffer
+@@ -230,39 +229,33 @@ void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
+ }
+ EXPORT_SYMBOL_NS_GPL(iio_dmaengine_buffer_free, IIO_DMAENGINE_BUFFER);
+ 
+-static void __devm_iio_dmaengine_buffer_free(void *buffer)
+-{
+-	iio_dmaengine_buffer_free(buffer);
+-}
+-
+-/**
+- * devm_iio_dmaengine_buffer_alloc() - Resource-managed iio_dmaengine_buffer_alloc()
+- * @dev: Parent device for the buffer
+- * @channel: DMA channel name, typically "rx".
+- *
+- * This allocates a new IIO buffer which internally uses the DMAengine framework
+- * to perform its transfers. The parent device will be used to request the DMA
+- * channel.
+- *
+- * The buffer will be automatically de-allocated once the device gets destroyed.
+- */
+-static struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
+-	const char *channel)
++struct iio_buffer *iio_dmaengine_buffer_setup(struct device *dev,
++					      struct iio_dev *indio_dev,
++					      const char *channel)
+ {
+ 	struct iio_buffer *buffer;
+ 	int ret;
+ 
+ 	buffer = iio_dmaengine_buffer_alloc(dev, channel);
+ 	if (IS_ERR(buffer))
+-		return buffer;
++		return ERR_CAST(buffer);
+ 
+-	ret = devm_add_action_or_reset(dev, __devm_iio_dmaengine_buffer_free,
+-				       buffer);
+-	if (ret)
++	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
++
++	ret = iio_device_attach_buffer(indio_dev, buffer);
++	if (ret) {
++		iio_dmaengine_buffer_free(buffer);
+ 		return ERR_PTR(ret);
++	}
+ 
+ 	return buffer;
+ }
++EXPORT_SYMBOL_NS_GPL(iio_dmaengine_buffer_setup, IIO_DMAENGINE_BUFFER);
++
++static void __devm_iio_dmaengine_buffer_free(void *buffer)
++{
++	iio_dmaengine_buffer_free(buffer);
++}
+ 
+ /**
+  * devm_iio_dmaengine_buffer_setup() - Setup a DMA buffer for an IIO device
+@@ -281,13 +274,12 @@ int devm_iio_dmaengine_buffer_setup(struct device *dev,
+ {
+ 	struct iio_buffer *buffer;
+ 
+-	buffer = devm_iio_dmaengine_buffer_alloc(dev, channel);
++	buffer = iio_dmaengine_buffer_setup(dev, indio_dev, channel);
+ 	if (IS_ERR(buffer))
+ 		return PTR_ERR(buffer);
+ 
+-	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
+-
+-	return iio_device_attach_buffer(indio_dev, buffer);
++	return devm_add_action_or_reset(dev, __devm_iio_dmaengine_buffer_free,
++					buffer);
+ }
+ EXPORT_SYMBOL_NS_GPL(devm_iio_dmaengine_buffer_setup, IIO_DMAENGINE_BUFFER);
+ 
+diff --git a/include/linux/iio/buffer-dmaengine.h b/include/linux/iio/buffer-dmaengine.h
+index cbb8ba957fad..acb60f9a3fff 100644
+--- a/include/linux/iio/buffer-dmaengine.h
++++ b/include/linux/iio/buffer-dmaengine.h
+@@ -10,9 +10,10 @@
+ struct iio_dev;
+ struct device;
+ 
+-struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
+-					      const char *channel);
+ void iio_dmaengine_buffer_free(struct iio_buffer *buffer);
++struct iio_buffer *iio_dmaengine_buffer_setup(struct device *dev,
++					      struct iio_dev *indio_dev,
++					      const char *channel);
+ int devm_iio_dmaengine_buffer_setup(struct device *dev,
+ 				    struct iio_dev *indio_dev,
+ 				    const char *channel);
+
+-- 
+2.44.0
+
