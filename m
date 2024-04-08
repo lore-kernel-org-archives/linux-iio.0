@@ -1,149 +1,152 @@
-Received: from mx0a-00549402.pphosted.com (mx0a-00549402.pphosted.com [205.220.166.134])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43501481DF;
-	Mon,  8 Apr 2024 09:45:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.166.134
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712569531; cv=fail; b=uClv+xZijQCEAENJ+yb6xkyvVhx/2XzZp8JmmleuEz1aTPHmtlszKS/kPdurhZ9ZECVWPQuqeDGNLanXw4M5g3iHltshP888/epahI3cunsNQgQVk/84UPtYFHjHh1gMHOlgT+YNfh9iG+1YqDQmTD9lasqhoRHFYr4bOEwUECw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712569531; c=relaxed/simple;
-	bh=ZLgv/W7BSsouSMBByUHwXUrrZvWIeaQuSAAX4jzSBe8=;
-	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=tHJPglZ1tKfTWty7t1BQfYr1PisFwMOa6xXhtoEmupSjK/pigfW4HIi9rbW+y5BgnzFsZlLnTYdNtbXbbVCFQ5CgFiIkXbvBI+e2yH2Ek6ZLnm9emDI/4gp5/mSAIkvVl0ZU0atdR+y2xo+R4+H0sXtZoxcvnwggzQkXi5sxKdk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tdk.com; spf=pass smtp.mailfrom=tdk.com; dkim=pass (2048-bit key) header.d=tdk.com header.i=@tdk.com header.b=caMJy6TA; arc=fail smtp.client-ip=205.220.166.134
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tdk.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tdk.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F0254C62E
+	for <linux-iio@vger.kernel.org>; Mon,  8 Apr 2024 09:52:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712569948; cv=none; b=SBlE5enGcD6OZfGJ6ZSnDz7NQzNU0bubu4RA0g97qEY8mXKpA/AFRYonrJXPel+DAshebzMdyglzNwK9ryRmryCCxPGHZmdwba2WTpuDsDdoEAy/XYp8V4iH61Zt4/NZKiFAHJqLDRfEh9IOf5AwaaGDyw5B2vuZCLzuFTswd+E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712569948; c=relaxed/simple;
+	bh=8NDNzea5ccXfcLHSxLqgkSNK9J82qxWM8O92ulqUr+8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QKz76b8y+SV2J90JHcCvBKiSw1r7uNWymaA1g2PDG6KlM/NtHS83OASTDuw9JuOIhbG6xrmTi9ZLP/1IGZD5cmrFOPM/1DKvcnD/5nE/ewXM+IiBz7VI5IQbfAWTAi3wZtXbyJxjWvPJ5pSqlRpIZKZwuURYvkhGu3lJ9Hucqdw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=wfk4lDvE; arc=none smtp.client-ip=209.85.208.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tdk.com header.i=@tdk.com header.b="caMJy6TA"
-Received: from pps.filterd (m0233778.ppops.net [127.0.0.1])
-	by mx0b-00549402.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 437Ml45j024444;
-	Mon, 8 Apr 2024 09:07:39 GMT
-Received: from tyvp286cu001.outbound.protection.outlook.com (mail-japaneastazlp17010000.outbound.protection.outlook.com [40.93.73.0])
-	by mx0b-00549402.pphosted.com (PPS) with ESMTPS id 3xavryh6a5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 08 Apr 2024 09:07:38 +0000 (GMT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BAaV3V6Q2HwwM6z4OFq1FBdjrJFVAw7GJG1osfPGzqPJXekIHHEymjaCcjDpmIN8xMnww9VgAf3HpO4T5Yh/s/diujxyz14Sw0PpZKdfcTSxC9oiU7nE+W+dRzr9Bgx4uEnfhp5WHUrMCkOHJ6GwndumOJLogvXIbtu55u2/xlwP3iHJqGBSvaldSW4fvDgSByMhE1W1y8i74aeNWF13WmH7tD2xxqBLcpEW1pjq2e0s2IX+DcwRU7/ZMqdTqb+LwQlV6dC83oJtifn+JP+H1oYr3v+wH253QRo0W8mJbi+yJdG2luhuM7WdiTQTwrca22og5zJBep0+7h6EzoPPPA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TKAYCmCcfNkipyco3MYqBl0Fl3ziFWl5z2pumOgM3kQ=;
- b=oB8IQIMT5N5hhGbCgATbNi0H1obYR4ChyPSN145NcPXQfPKJ4/2TncZm/gtqwBrIk+nUVAM6F908XobgekdZtnmW7+TdBsZyIia/vslT5U022iIpK6wuP8x0Hk6CPZmUhuEuZuP2cmBe1V6z2fEsLhJEv2uuwPti0Eu+opewsukXisnk5qLLRNHgxWJtV1FWA+YsB/nDoL2YT/o82VSv3g5EU5p9rQWO9rI/kUMA/j0UWhkg4Y1xOWCNvGfiRZw2YuhJ4mSTXrdbqL4SM85kwJ6tGVcm72gX4xzQ+gWcl8Sra0F9qOGqTd0G9Dpc7iEGfGTYl8qQdU4FF9TIpIbHHA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=tdk.com; dmarc=pass action=none header.from=tdk.com; dkim=pass
- header.d=tdk.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tdk.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TKAYCmCcfNkipyco3MYqBl0Fl3ziFWl5z2pumOgM3kQ=;
- b=caMJy6TAiwk6f9dIIz58yCE+eUBFTG8t6PrGX/YGM5mJ88TG/oWtY/pWcVxZR9bqnshW7wZzsc8wOY8eJA46rJ7CHO7MxoOHwYv0JkAAzClGbRvEbN6nSSf8oOIm5mdKlqXKk+ZOr8hKTb7NLKYpu77d4bCBVZyaEFZY8c8BHjLoSe86q1+1lIc0KnEfVnjBzKVsq3E2C9G7qCZyZaeJLUap84obVokctQNllwAGjHvBOLU2MQxa4Qse2bb3avsaL8u89lxEphi6LtriMEzGklmKaQYQobk7TVRVc+xHanT2dY0NGhV7q7rWQ6D4FRLMjnDZqObvJN2VlSGMVLZ0gg==
-Received: from OSZP286MB1942.JPNP286.PROD.OUTLOOK.COM (2603:1096:604:1a7::13)
- by TYCP286MB3342.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:2c5::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.55; Mon, 8 Apr
- 2024 09:07:36 +0000
-Received: from OSZP286MB1942.JPNP286.PROD.OUTLOOK.COM
- ([fe80::9119:3ad4:c68d:9da2]) by OSZP286MB1942.JPNP286.PROD.OUTLOOK.COM
- ([fe80::9119:3ad4:c68d:9da2%6]) with mapi id 15.20.7409.053; Mon, 8 Apr 2024
- 09:07:36 +0000
-From: inv.git-commit@tdk.com
-To: jic23@kernel.org, robh@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org
-Cc: lars@metafoo.de, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Subject: [PATCH v3 0/2] iio: imu: inv_icm42600: add support of ICM-42688-P
-Date: Mon,  8 Apr 2024 09:07:18 +0000
-Message-Id: <20240408090720.847107-1-inv.git-commit@tdk.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: ZR2P278CA0043.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:47::17) To OSZP286MB1942.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:604:1a7::13)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="wfk4lDvE"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-5684db9147dso5603182a12.2
+        for <linux-iio@vger.kernel.org>; Mon, 08 Apr 2024 02:52:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1712569944; x=1713174744; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=GCMUzPyK00k87Jw5sHkWba5FiMib4VTOJ9PqHifwIPQ=;
+        b=wfk4lDvEGQRSEhIlENjuwgB/klRJTkMROq+EjgFhW8S8mG7LczTtGLN6I0xptyLF6u
+         wfvbyh06Ny/Hzj35SuJ37jOmBrLysEzz7P22/qC+VQGlDYlNvv+DJb9sl+r/+wfL9uTz
+         OKkhiZGv4oVq63C+YXWahw1Ba/mYKiuDD8y1Y4E+3wycE0udTrzuNJu42yrDaWgbTJoZ
+         b4rEL/eaadlMZ5DCtWZXMLdaCjdOUNyK/96hMyaSM5EVnttlL3BBfhmtDM0uM6yisOXM
+         +75vZzqFup3gPbkV+K9WuALYfv64qGGiM+B81owDQZddvmhEUWVE3dK1RwyriIuFuI1S
+         q6nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712569944; x=1713174744;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GCMUzPyK00k87Jw5sHkWba5FiMib4VTOJ9PqHifwIPQ=;
+        b=WTYXQYcCUNNiJiyo/QS2OWfQFCTs96Xtf8ltFO6Y1ToVIglVr4ILIoXxnEXhS8G2sB
+         Wn6OpyzKNRQc/j3fvskTe2VTlsD4NWr3oH5Xz9r1UnL6+qrCmACVghPEDFxez5kz8LNi
+         Gf7rsb4REXZfkIoBTn17CyekQtzin1c79sfBNUm4zBwP2fOn1qjG1roMws53tP5youof
+         sX+yE21Jj+IjzsxQ+HgSniaU7UhTw5nrhKnltL3sv4+uT0VO5mjJPL95DnYViPEUj+ka
+         taA0D3mVuttB/l3MTxg80JP1qzR3/x5iglGpQEvoCYg6v5XIHcgBoKYgdRMwHWRr8ShI
+         NKnw==
+X-Forwarded-Encrypted: i=1; AJvYcCUYVDAisOSdCbI6no4gK1iCQLCBrwsm+s011+SPvwTJCRiMLiOjGdBa4qvlwsiwBW0DP1D9hQW26nWwFA1bI09iAfC9VRzTsWKa
+X-Gm-Message-State: AOJu0YwobqwVdoHnqHuFUxKXZZQ1kS2Mjo6UDLWB7YWogtaTDVt6ep+H
+	l2fI3UKkNvV+mCUk/yXpzg6zr7aiLfr9c4gfdEwqyUUtzFQVdu7TRb2YL83qjzI=
+X-Google-Smtp-Source: AGHT+IEsrOhbe9PaPfGhogJAEej5OdI3r1yjGhHxAnP21dHKBc9PFDnaYDstoOljgHXx570ugzC7EA==
+X-Received: by 2002:a17:906:d787:b0:a51:a0e6:1b20 with SMTP id pj7-20020a170906d78700b00a51a0e61b20mr5090218ejb.55.1712569944074;
+        Mon, 08 Apr 2024 02:52:24 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.223.16])
+        by smtp.gmail.com with ESMTPSA id qa34-20020a17090786a200b00a519423fdaesm4176836ejc.122.2024.04.08.02.52.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Apr 2024 02:52:23 -0700 (PDT)
+Message-ID: <993a250a-37e7-4dc3-9f37-78c92538551b@linaro.org>
+Date: Mon, 8 Apr 2024 11:52:21 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: OSZP286MB1942:EE_|TYCP286MB3342:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	q46csIrbSGAJsz5duOHlIgjWQPfCfafJ527AmvfOVd1jlDZFt3tmdmRJ0BzxGHtjjfx2QjDC+hi1ZF2urwE4BpyKBDa+5u0gxp3YaKswZ7Gex4LVln7dxIOyXkr7lqgrBkOZdswOjZTCeA6szWApZhH10TRiMdnNtZipHq6p4kzNPG1EdiHrTkp/yb835m6U/KvR37t4IfSo7Si4U8U6zRSi7JPcOIP+ynaKl+FTvGsPPVzjnXno8WrKLMzoSBvOptbqlb8A1RuhRaRhDl3L2oFgRpN5UR66mIMXxqKIBNGq2X/zvLpmLlQqXr2jfFaBVgn7Q5Ph6EAQuB1zdO+TB2mcua4+nOiC2QOOXa1iXUW9b/IxKGHWZHztujGkEyWfFNBvzXdtYKCYZ6aVJbYMBjBcFfD6GFk8F67TsXEJKDx+1AP6WbVWLzP78rWjY+Eu9CoFvsET5rz4r2yQVWg/CIYibS6aO60mswdbx6DLc68lsjdoIcwcRQOrPgRs2svDWb/IBbo/efMojBSICrvyMrPofY3CnXCQExmCYJ81dQcERjOBQxyiptAYChEXFObAhQctmcONTfX6qSdJUPar9Zox6HSi/4MNfj+lRkCEFr8kvhu2Mw+ZFn5aEWFSBJfFN+ebRUbniMH9X7anhMnLHYznFY5KmBdHx+u65wBmOofiEOAEDHmFeE2/pLpQ3NxC3hP/6Ug1EEUWG6WrH5bHbl7iIMMCqYLQBLR4bCcssKZu6CLVoilb4SMNoFeYrC+m
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSZP286MB1942.JPNP286.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(52116005)(1800799015)(3613699003)(38350700005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?us-ascii?Q?uopaPnCY97z1xWFQn9t/vz3meNjOm8KxcwOROeyyAMgjDVr1mjbJ8JLv5bWD?=
- =?us-ascii?Q?ZKg9sfuwBIPZ3vTbfvXZ7nx7sMQ1W0DV/8+/s4viuThfEoyc549M1jeR7mba?=
- =?us-ascii?Q?yYaldIrnHqmNAoj/CcBLPIl90LnG+K228nbRnh3eWEU1YeAewmm/+SIWfD54?=
- =?us-ascii?Q?WMVJyyL8z+26G7Rg6HAdlO9nnjlINWN1rtij1RzKQrRyHpEeH1c+og6CeYjK?=
- =?us-ascii?Q?/0K3tOTe0AU2oNtvBUSK5h5TCYAwbsLM/2w+3dLmJoPueNrEXMNrpNFlAVdf?=
- =?us-ascii?Q?vtTqj+9PhuYSxNFJA8gua8CwLBW1BmE00TRfhtqPLd+2HjiiVMotZohsjpvq?=
- =?us-ascii?Q?Xjv/kVmgbswxK+3sSvch0YFJV3h4j/a9K+SM2wBMsjigFShDmSqjzWb9i1Ld?=
- =?us-ascii?Q?pzTupkHI/BSnx+WouA6vIFRgmi1FZbRC/sUiX4LX76+4HU4coldOXVQuu7KF?=
- =?us-ascii?Q?YVbFWOT07ul+ORj+KMQqk35FEg3QuL2BR/9fT09iIMZ4khGVEDL4F0uFEVH/?=
- =?us-ascii?Q?FTK6FbH3P3FuOycxwM2RMWx8QbsjXu8sTgECC5zAOQGHQPneGgC6+5dlTMam?=
- =?us-ascii?Q?Lxu5vmMUhipv+XwSDHzGNkDlZ4VqGZRzXcVS7l6+/t9nt43iS4t3lWDUPt8f?=
- =?us-ascii?Q?110zoeALeWPKJBoWOCWp1kSqEI9fTTjmmfS95PXw508Bh+PZOJUjYRC2mUTO?=
- =?us-ascii?Q?wlVLhliBb1URv0ploYtIsuucM8wCyuFmytg2n2hKBn9Vw1QBHi+zWBUmlRDu?=
- =?us-ascii?Q?QIm0U6SKbwtO3e6kCo+l7L4WrqBhK/zy3A8ybAnbevkNzr4MJZ6uUlun1OX2?=
- =?us-ascii?Q?4nJTUStn0BKiwuFmKTWzbBaST2jym4JhNN/mzAZNe+OZRt5KYlMo/PImKjzd?=
- =?us-ascii?Q?tuHI1yqAtcGU9KWlSXsZdmgf9xUYo0z+zvgmhxBovBgRm2m0XW9Ka/FI5jcB?=
- =?us-ascii?Q?raz2/h86ePWTtrYgoDT37TLYnT0vEGAd+ZIQDZlO/GQsqDsNCK7EvQEmyRTv?=
- =?us-ascii?Q?hSiQjQ1WEFM8GaaWuYWTQYreKe7VvYxYe22wP6JR+pywXNRPKrV6emzCBDsm?=
- =?us-ascii?Q?TwDFKmCGf2tXpkpC4Lh1WQ3XuhREexAnlSbEg1CXOkVXVDoEX+1SP3fui2Rs?=
- =?us-ascii?Q?WRnrC8GAgCD0Kk98DCY+yW6xSFLWS4GrM30wq1jwrHT8VtZSqYAHcM5kfdMC?=
- =?us-ascii?Q?r9njPJXMdtYxc7uruS3CRQVdwcAhPjvyozjN0RSMHtDeoCwJu0W92sFbcg0F?=
- =?us-ascii?Q?gPWei15/VebgyhdB/WzXmXBYazC9T+JUHUHWV3LForjLJ+pCnfapjOSHipnt?=
- =?us-ascii?Q?B7F2Sa6J0fH1iCZsSHLdjDvcEoxwv61F8YYE7byXgcGYt7fwmCWB2xRYxHRH?=
- =?us-ascii?Q?rPxsQJHjwkIcO126/q9+FdZ/ot9tiN8vXKDNQ+eHxdoMxgRPUf47Ns75FBQ1?=
- =?us-ascii?Q?2cnxi+kqqdB56yUk6mzI4Zph01TekS+B1pC2sfmD/mpNaDq5q9nE9vUTdfeD?=
- =?us-ascii?Q?hJdb/VdRaFGdJZ5mggJJKim9LTNxgRAP764y3bcej8bWeqv+ZVto29Dp7W4L?=
- =?us-ascii?Q?zQ6t9Ah7yh4NMRY0qONibGcRt1Y0GrVDqhURtNc1?=
-X-OriginatorOrg: tdk.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: deae64a7-1288-4765-437e-08dc57ab54dc
-X-MS-Exchange-CrossTenant-AuthSource: OSZP286MB1942.JPNP286.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2024 09:07:35.8894
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 7e452255-946f-4f17-800a-a0fb6835dc6c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iki/LjhTyO93KkD9mw+elplBE1GgkmPf1aJzjqa3IF4z4cSo3qLGkaFCdq2ytFyLWQJ8dGUvYCs8JjNuX19+Pg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCP286MB3342
-X-Proofpoint-GUID: dt9ItZBScrvWKnsF1ZqYyIKzIjkGQEMg
-X-Proofpoint-ORIG-GUID: dt9ItZBScrvWKnsF1ZqYyIKzIjkGQEMg
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-04-08_07,2024-04-05_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 adultscore=0 malwarescore=0
- clxscore=1015 mlxscore=0 priorityscore=1501 phishscore=0 mlxlogscore=999
- impostorscore=0 lowpriorityscore=0 bulkscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2404010003
- definitions=main-2404080070
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: imu: add icm42688 inside
+ inv_icm42600
+To: inv.git-commit@tdk.com, jic23@kernel.org, robh@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org
+Cc: lars@metafoo.de, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+References: <20240408090720.847107-1-inv.git-commit@tdk.com>
+ <20240408090720.847107-2-inv.git-commit@tdk.com>
+Content-Language: en-US
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20240408090720.847107-2-inv.git-commit@tdk.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+On 08/04/2024 11:07, inv.git-commit@tdk.com wrote:
+> From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+> 
+> Add bindings for ICM-42688-P chip.
+> 
+> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+> ---
 
-This series is for adding support of high-end specs ICM-42688-P chip.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Changelog:
-* v2: change order of chip definitions and order of patches
-* v3: add patch description and resend without email IP header issue
 
-Jean-Baptiste Maneyrol (2):
-  dt-bindings: iio: imu: add icm42688 inside inv_icm42600
-  iio: imu: inv_icm42600: add support of ICM-42688-P
+---
 
- .../devicetree/bindings/iio/imu/invensense,icm42600.yaml     | 1 +
- drivers/iio/imu/inv_icm42600/inv_icm42600.h                  | 2 ++
- drivers/iio/imu/inv_icm42600/inv_icm42600_core.c             | 5 +++++
- drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c              | 3 +++
- drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c              | 3 +++
- 5 files changed, 14 insertions(+)
+This is an automated instruction, just in case, because many review tags
+are being ignored. If you know the process, you can skip it (please do
+not feel offended by me posting it here - no bad intentions intended).
+If you do not know the process, here is a short explanation:
 
---
-2.34.1
+Please add Acked-by/Reviewed-by/Tested-by tags when posting new
+versions, under or above your Signed-off-by tag. Tag is "received", when
+provided in a message replied to you on the mailing list. Tools like b4
+can help here. However, there's no need to repost patches *only* to add
+the tags. The upstream maintainer will do that for tags received on the
+version they apply.
+
+https://elixir.bootlin.com/linux/v6.5-rc3/source/Documentation/process/submitting-patches.rst#L577
+
+Best regards,
+Krzysztof
 
