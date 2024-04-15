@@ -1,132 +1,111 @@
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on2045.outbound.protection.outlook.com [40.107.14.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D77295CDEE;
-	Mon, 15 Apr 2024 10:50:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.14.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713178244; cv=fail; b=FWg6XYSTQNvBsBd5zAMrDV69EEMhZXZGnJDzPckkU7mcSuJRXJ446+LUZljNs1X5/FKw2VJp6RH6h+D03A7tC9uI+tXKKbqzaxLKJsQSkhoMeduT5CUgzLszu0bg4P4gjZHlZaCm6JFzmx0gYBdkxvZOV+JFJl8Anb+ixe5JzoA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713178244; c=relaxed/simple;
-	bh=WTGxLS01gLxelsDWrerLWJq9NtggrlV7TUCSwjV9/5k=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=M69J+j7ErahhIdBZVwBPw6JOkSHqbW0yfnThe3mAlOo6T0mAvvlO9zPROlqSNHBfik46MO6m+f3rYhTXREbd5d5vuVoaZ/H56Wa/PH0to8be3ZhXrdyxBfM7NtT4J5bSnm2PtpzxuXQXdOU/Xre8aX8TfZEmq3BWyKGNLfAd8t0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=leica-geosystems.com; spf=fail smtp.mailfrom=leica-geosystems.com; dkim=pass (1024-bit key) header.d=leica-geosystems.com header.i=@leica-geosystems.com header.b=Ea4sgMeB; arc=fail smtp.client-ip=40.107.14.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=leica-geosystems.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=leica-geosystems.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C73C26996A;
+	Mon, 15 Apr 2024 12:21:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713183707; cv=none; b=RdU5foc/q0xJrLKc+WjHDs/eSNZr4NCHKdr4EIDvW2z5WnbhNnzMlQVTzHbrWGzKtZPT2zuNdtSiDxgdePYMI69iaF8fJ2UG+K/xwmDTPu5gVPGHauAmchWfuYtta2NYn/yKAyI/Zlp+PQ0VDtjvsGp13l55P3P9hzuUwmpxp4Q=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713183707; c=relaxed/simple;
+	bh=oxYZDNagqijYSZ+6DLoasunnbu0tHoD6v2B4bzlvYXs=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=UN7Bwng6wjsMRRzZnP+QIE3MzpsKrmqfIXrNTL0g37Vimw/8c36GygXNVtjhHe+cVQvnSGUX82iM9FwI9d0ShNhcvaSj+bqHT/PIUyz50LTm5UAdqU1JpCtay6OpANJw03pC5kO7wx66jm26nBCkzG0wiM3gKLlPa1vtT3cSJCg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=himGpr2m; arc=none smtp.client-ip=209.85.208.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=leica-geosystems.com header.i=@leica-geosystems.com header.b="Ea4sgMeB"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cNowSJL9RW9JRUqGNFNVZS6+O9Ue7ckSYqrviBpCZS4TiEri+X74VDFyB1Lmb3vBJzo4TwciKXOBbFleUoj9IV4AyYO8DIA/fLhiAGs8eFJ+erm0Qle2UVI4sL/zUWhKL8IChODaLJc7ZMWr/ke33KtZpzVz1UzacdjmSH1KbzcaVTK1OUpvKhtUzM2UXeRHeFAIOLqgYW3BVso1NQY/xPHk8/L3lQqpQHLAyZkomyBl8p/HmeIzM15bdjJExD7iOy6lwDAmbcpiEB7Y7xxnN3tf+HY9NE9xjPA2J+a0NDFzykZ2kvFaOmHJZzekN1BNZ7ylESTrYfXodp8VmV/7rg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gFP2T40SdOb34rdyxpvDUD1y4dLMH+6xUaQpG9xqzVQ=;
- b=NfZMeqO23wKujtDT2CzWdCH8JqDexsVesHN/BPBYyLo8qM326iDpGoDARXOUUJw7SkNMUwAT2q4FoO3F/2VATqL6Xba7acsAAomMm16FkqL21RhYBtQt/LBJnOEM3loYSbCQ+b/5+ApjfaDkx75s+3bweUO8J+Rck444bfmg1fq+qfgFynXFHNy56fZ7ENI8H0wv908j5/H4O+S6Am6DeyJWzaDzpb+THVkLOee0CozipcSx2JQ0K8HyKHF7jh+rRKmYHn9wIBEuqcRhxcv60qbapsGy2XjkpUl8B1OLPthRHGbIoqryNN3eRh3C47BMwiSF+NXzJI5pp0FewMJP2A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 193.8.40.94) smtp.rcpttodomain=vger.kernel.org
- smtp.mailfrom=leica-geosystems.com; dmarc=pass (p=reject sp=reject pct=100)
- action=none header.from=leica-geosystems.com; dkim=none (message not signed);
- arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=leica-geosystems.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gFP2T40SdOb34rdyxpvDUD1y4dLMH+6xUaQpG9xqzVQ=;
- b=Ea4sgMeBqrqO98lznAFqfM3szPObX2vx9AnvRHPCoDR4w2jSpFsql6pv/zbIHrEY5a3pjVTMExfKOzMfnG9gGOSylGSBU8rODAwJZjjYNOsg7h3go6RMboijferm0iA8MADGgbLck5xlw9Zv+HGt8HOiQKhnpQOGocBf0n7sRD4=
-Received: from DUZPR01CA0281.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:4b9::9) by PAXPR06MB7613.eurprd06.prod.outlook.com
- (2603:10a6:102:156::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.29; Mon, 15 Apr
- 2024 10:50:33 +0000
-Received: from DB5PEPF00014B97.eurprd02.prod.outlook.com
- (2603:10a6:10:4b9:cafe::84) by DUZPR01CA0281.outlook.office365.com
- (2603:10a6:10:4b9::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.33 via Frontend
- Transport; Mon, 15 Apr 2024 10:50:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
- smtp.mailfrom=leica-geosystems.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=leica-geosystems.com;
-Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com
- designates 193.8.40.94 as permitted sender) receiver=protection.outlook.com;
- client-ip=193.8.40.94; helo=hexagon.com; pr=C
-Received: from hexagon.com (193.8.40.94) by
- DB5PEPF00014B97.mail.protection.outlook.com (10.167.8.235) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7452.22 via Frontend Transport; Mon, 15 Apr 2024 10:50:33 +0000
-Received: from aherlnxbspsrv01.lgs-net.com ([10.60.34.116]) by hexagon.com with Microsoft SMTPSVC(10.0.17763.1697);
-	 Mon, 15 Apr 2024 12:50:32 +0200
-From: Thomas Haemmerle <thomas.haemmerle@leica-geosystems.com>
-To: jic23@kernel.org
-Cc: bsp-development.geo@leica-geosystems.com,
-	Thomas Haemmerle <thomas.haemmerle@leica-geosystems.com>,
-	Eddie James <eajames@linux.ibm.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Joel Stanley <joel@jms.id.au>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/4] iio: pressure: dps310: support negative temperature values
-Date: Mon, 15 Apr 2024 12:50:26 +0200
-Message-Id: <20240415105030.1161770-1-thomas.haemmerle@leica-geosystems.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="himGpr2m"
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-56fffd131a8so907155a12.0;
+        Mon, 15 Apr 2024 05:21:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713183704; x=1713788504; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=oxYZDNagqijYSZ+6DLoasunnbu0tHoD6v2B4bzlvYXs=;
+        b=himGpr2mJiiN6R2swqnfMlgZe8la/yxaxR3pdA4yy63XHh5v/fT/O7bU61imYvt4tE
+         KmeyMQd3gWwQI95jjtiZ8vUoG0Xxlj9RYiPmRlpx2IPYjQrjxim8MUziOFoYU65PBt10
+         HlSZOZgAXfumpSTgbmbOt08fkApFGX8jovPxdI/F9O/p4zgWRJSjTf9Z7pqWGy0YBJmK
+         88CDhlweLsSDNk4Jqzk00zExZM3wMhUuXqS7r7xi/O9EPTeJXuW5b2xacI7+D7XLy5Go
+         tuEZYPY1Hplz2uaQlCX4PVznL9KUTuXhxbX7YPCggekHpBEEHDMaBKUMWmgLYY6wFWnt
+         G1pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713183704; x=1713788504;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=oxYZDNagqijYSZ+6DLoasunnbu0tHoD6v2B4bzlvYXs=;
+        b=NkyE9V/RyHMo0BbfucyjgnLtAV/q1yupivWoivP1qmvdVn+CUEg6KklpPXmrMQ57Bw
+         ZeemmuOOh4KlN0ObI/w51lHByyrx21HQU/YLRhLcBVJVFde8MsJ8g7Wg3kw12k68Nj1O
+         txeJOhqSA3zHcKMhAe7I/eWg2Rh7X8mJCfRgMl1lJJwnjUBqbq7s0xM806JI2ayf2HTY
+         Pt5WsYsmek8DdUSEb+5D8+1TwJJ0A+mw9Vu15pTTquC59De/lF1OdIgbm5PRTJLXlzTl
+         Aj5iaCMRrixxOlFrYx9zVYtxO0oD3VJ11c1/54/dgu0e7066Uj/ee6V+guV6Ah9M6eEt
+         Ih6A==
+X-Forwarded-Encrypted: i=1; AJvYcCXqau8ZPoieljH57YsV2cQTYP7tosMXla6D9b2dMQiwkClH8IxL5rZZuk1ajnCn84Xoc1LF8eNshJwnPgmJNZqHVWCVmCC0FIGofw==
+X-Gm-Message-State: AOJu0YxveXZvKMWxfaqCo4BEkeiKEz7mmOjP9FOhd70YMPUtYZ17FsxG
+	6jtTMHtJPdGjy2+fdhJN+1EJgzpSWzh8Hj6480OIiS4CaHN/a/eo
+X-Google-Smtp-Source: AGHT+IEgcTU9buC9ZFMTo9J2N4MSJ0vNvU0XHEQatZvPGf4xKJvbEHW3LDYGecBSyTDncOHAULV7KA==
+X-Received: by 2002:a50:d49c:0:b0:56c:1735:57a2 with SMTP id s28-20020a50d49c000000b0056c173557a2mr8699108edi.31.1713183703885;
+        Mon, 15 Apr 2024 05:21:43 -0700 (PDT)
+Received: from ?IPv6:2003:f6:ef1c:c500:ee59:d953:f148:40ba? (p200300f6ef1cc500ee59d953f14840ba.dip0.t-ipconnect.de. [2003:f6:ef1c:c500:ee59:d953:f148:40ba])
+        by smtp.gmail.com with ESMTPSA id f10-20020a17090624ca00b00a46a2779475sm5376827ejb.101.2024.04.15.05.21.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Apr 2024 05:21:43 -0700 (PDT)
+Message-ID: <304de7549627332ebdda77cd0c00b327f7a7c188.camel@gmail.com>
+Subject: Re: [PATCH v3 07/10] dt-bindings: iio: dac: add docs for AD9739A
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: David Lechner <dlechner@baylibre.com>, nuno.sa@analog.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, Dragos Bogdan
+ <dragos.bogdan@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron
+ <jic23@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzysztof.kozlowski+dt@linaro.org>,  Conor Dooley <conor+dt@kernel.org>,
+ Olivier Moysan <olivier.moysan@foss.st.com>
+Date: Mon, 15 Apr 2024 14:25:17 +0200
+In-Reply-To: <CAMknhBHZRfvNtkbpWbi7tTXYa_rgRk+Q4z5MOd0O61FeEqBQnQ@mail.gmail.com>
+References: <20240412-iio-backend-axi-dac-v3-0-3e9d4c5201fb@analog.com>
+	 <20240412-iio-backend-axi-dac-v3-7-3e9d4c5201fb@analog.com>
+	 <CAMknhBHZRfvNtkbpWbi7tTXYa_rgRk+Q4z5MOd0O61FeEqBQnQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.0 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-OriginalArrivalTime: 15 Apr 2024 10:50:32.0897 (UTC) FILETIME=[BD54EB10:01DA8F22]
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB5PEPF00014B97:EE_|PAXPR06MB7613:EE_
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 8be8960e-4cba-4707-163e-08dc5d39e011
-X-SET-LOWER-SCL-SCANNER: YES
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ct7mXbBah7Zgto4UENJdiM6EfZ3oNbuIioJdIBIjOCFoDYSHqfw3vIbOsFBFUnORIohnlEtbzRhZucjZOjRsAqVr+QJwIw1zNQVUPhWrOEmA6c7j+IoYUJuIbEYezGy+KPS0YDEqpEemhzkYCR2TYX71DRYZDwvp+Mxq1kRH3Q3l1mnJCvLGSACxZ29mcPNu8zcDwhdaVXlQlZCmTwpCd1W7DTzNW0eFP7lOTLuOwDN0qafToZd2k4pT3wEMZav1lfajifMPifV2NNkU0S/6s0sSetBjuKwWmOmtBgwq8zHLCEttC9vrOpFCe8rM6ipG5CI0Gk1WQ7NMJc5Kuqg0l/H9J7+2jXN5zPdAErCOuolwQiSUomuP0qFTCBIhHipuErBiJpH+IiH7yC3/w8fwFv02Vctjd9NhS95Uos+F+lIRBS+QiEgHb8aq8u8oU3ms76vduS6iVET//PPCZsJXWubTWBStQWxTR4MNcdgMhRwJwJpCxZhrHYYJ8jhgB39HqhyA4+Soq9zejkGHmrqp7qMXsW8o78c14DGDB2yROnTlfETxFsTnr4oVGtoCZeX6B+Ef3Tm4kHW420A2SpAqPmza7dJn8yVa4/kO4o65W8z7kB4S1C4B8EdVdM43WUIDIzck0KNn0L6l/w5q9qZWfFK8ypVBWAS/pj3v2/AQlIc32JKe5+RjFmu9BPDwXLtFc6fOlpBGxHIIu8NxHor7wpr76OAXGsm6cuJX4nXsLMZq2QQgoq1GMXSy4B2gp7LH
-X-Forefront-Antispam-Report:
-	CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:hexagon.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230031)(82310400014)(36860700004)(376005)(1800799015);DIR:OUT;SFP:1101;
-X-OriginatorOrg: leica-geosystems.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2024 10:50:33.2096
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8be8960e-4cba-4707-163e-08dc5d39e011
-X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[hexagon.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DB5PEPF00014B97.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR06MB7613
 
-This patch set fixes the reading of negative temperatures (returned in
-millidegree celsius). As this requires a change of the error handling
-other functions are aligned with this.
-In addition a small code simplification for reading the scale factors
-for temperature and pressure is included.
+On Fri, 2024-04-12 at 18:47 -0500, David Lechner wrote:
+> On Fri, Apr 12, 2024 at 8:36=E2=80=AFAM Nuno Sa via B4 Relay
+> <devnull+nuno.sa.analog.com@kernel.org> wrote:
+> >=20
+> > From: Nuno Sa <nuno.sa@analog.com>
+> >=20
+>=20
+> ...
+>=20
+> > +=C2=A0 adi,full-scale-microamp:
+> > +=C2=A0=C2=A0=C2=A0 description: This property represents the DAC full =
+scale current.
+>=20
+> The description could be improved by saying what determines the value
+> that need to be entered here. (Also wondering if this is not something
+> that should be set at runtime using the _scale attribute instead.)
+>=20
 
----
-Changes in v2:
- - include fixes tag
- - Split up patch
- - introduce variables for intermediate results in functions
- - simplify scale factor reading
+Hmm, not sure what you mean here? For anyone using a device like this, it s=
+hould
+be clear what this is about :)
 
-Changes in v3:
- - fix locking issues reported in https://lore.kernel.org/all/cbdafb33-fd3b-47ad-a678-83fa92475278@moroto.mountain/
+> > +=C2=A0=C2=A0=C2=A0 minimum: 8700
+> > +=C2=A0=C2=A0=C2=A0 maximum: 31700
+>=20
+> Missing a default value since this is not a required property?
+>=20
 
-Thomas Haemmerle (4):
-  iio: pressure: dps310: support negative temperature values
-  iio: pressure: dps310: introduce consistent error handling
-  iio: pressure: dps310: consistently check return value of
-    `regmap_read`
-  iio: pressure: dps310: simplify scale factor reading
+Hmm, yes. That could definitely be added.
 
- drivers/iio/pressure/dps310.c | 138 +++++++++++++++++++---------------
- 1 file changed, 77 insertions(+), 61 deletions(-)
-
-
-base-commit: 0bbac3facb5d6cc0171c45c9873a2dc96bea9680
---
-2.34.1
+- Nuno S=C3=A1
+>=20
