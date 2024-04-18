@@ -1,45 +1,44 @@
 Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF606199E8B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 292AC199E98;
 	Thu, 18 Apr 2024 22:15:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.249
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713478515; cv=none; b=W7fVW1GzTd48wCXTjPT5JP+kyncSFpv/NsIB8WWaluAe14qhOGEGZAjc4DMMHf1MVOymAA3pnkzGxgLCsstpR9ne6ZtsSeS9v/BIEHNd0rlZGYxEZEv/sFN+mPVCp2rCY7mXOA05p7Dh7R+XmEhFeabkbmc8WsKGbnoHL+JT5Cs=
+	t=1713478515; cv=none; b=W8zkzTakqehivOLTVHWWK6xrBJYHXnhHXyUQTeBU0dgFrTV42s5HFDRX9Xk8c4pGSgT4h2guudYX9TAoTIok1ZUMuTtNc6t/uYxi1F7OuMAv7npeYT7RK7fIft103wlBuF0EY/c2pJ/YR60Rcit8/wIlwPCeC257CDAPtNtSFXI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1713478515; c=relaxed/simple;
-	bh=zpq5jnnmnGbDXaojSz47uYCFQRSwk98zlCtcPJaXLPE=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Ecgd2F3PLNeGUHnMbJGoXio959N9R9sl/TT9tPAfW8u5kE24rTNkoQxlw+JEFOgNtTF/EdrNBR9MW+zZh8kat9v1jo5Pg0EfGpPtg/NmcRo9ZzmnrzTl5aNsheBeD5Msh8tLnsy75IaOlB14mOzjcb8Zpv8Lxcb6qkNFmsz7S2Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=DuRnTePs; arc=none smtp.client-ip=198.47.23.249
+	bh=F16f7m+rXA4gqWpAX3hVUPiuUj/nL5rhRES+7nViR3k=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=jSDmiSdsBBaW2Ge1uv8AWwcYA1o0e66XHDd4X4/DerB2L4hB5CBxxn0ZcbfAwoNl0x3lWBGFOuz9pVmcQf3wZ1vFwI+t4eSwlcD7TVw93n+40uxvsNJHSL9N4JMFlQtvUfTkIryh49XRKWrAzmPGSnddqu51eCSfu37W86Ba19E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=aqs5FGO5; arc=none smtp.client-ip=198.47.23.249
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="DuRnTePs"
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 43IMEHfK054620;
-	Thu, 18 Apr 2024 17:14:18 -0500
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="aqs5FGO5"
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 43IMEH8O054612;
+	Thu, 18 Apr 2024 17:14:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1713478458;
-	bh=o06dol3nN98OIZOFY+JrhkFVzJ6ucs6BEG1V8x9K1N4=;
-	h=From:To:CC:Subject:Date:In-Reply-To:References;
-	b=DuRnTePscqsNNPqgMUY6eUyE5M2pmOKQ5gBz03EZAgxATRKCsa3vdXS4zmcg8KGHn
-	 3qEKcPkR+clSZJ6Q4lgzvbkTjcBymHUs+rxN0HuUsrUw0cc2fr6+854liZhD9oq/st
-	 LaT+kg0o21Xi1Km1l9DP9iChXUg5UjKRG1SOkv6U=
-Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
-	by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 43IMEHfj031594
+	s=ti-com-17Q1; t=1713478457;
+	bh=kEuyqCXrDydWu1snvJbTAmkNKiY15UuzZvoSw7vyxXo=;
+	h=From:To:CC:Subject:Date;
+	b=aqs5FGO5h3fONrjTiVETv7F6Ia+Ye3e7ioACqD8jNxL0hePrVHn79atWKdIPqiuCE
+	 JICbtWkIKFRVaRWxEA6ktxn08/cOeqVUFQwAzjVbAr+IN9rirPDRZ5WUeSTZC9CoOm
+	 4v62gSA1XNcOPBeAOrehqZOIseIQ8DIig9z3qW4U=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 43IMEHbA112329
 	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
 	Thu, 18 Apr 2024 17:14:17 -0500
-Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Thu, 18
  Apr 2024 17:14:17 -0500
-Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
  Frontend Transport; Thu, 18 Apr 2024 17:14:17 -0500
 Received: from judy-hp.dhcp.ti.com (judy-hp.dhcp.ti.com [128.247.81.105])
-	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 43IMEHqs111027;
+	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 43IMEHqo111027;
 	Thu, 18 Apr 2024 17:14:17 -0500
 From: Judith Mendez <jm@ti.com>
 To: Rob Herring <robh@kernel.org>,
@@ -52,12 +51,10 @@ To: Rob Herring <robh@kernel.org>,
 CC: David Lechner <david@lechnology.com>,
         <linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: [PATCH 4/7] arm64: dts: ti: k3-am64-main: Add eQEP nodes
-Date: Thu, 18 Apr 2024 17:14:14 -0500
-Message-ID: <20240418221417.1592787-5-jm@ti.com>
+Subject: [PATCH 0/7] Enable eQEP DT support for Sitara K3 platforms
+Date: Thu, 18 Apr 2024 17:14:10 -0500
+Message-ID: <20240418221417.1592787-1-jm@ti.com>
 X-Mailer: git-send-email 2.43.2
-In-Reply-To: <20240418221417.1592787-1-jm@ti.com>
-References: <20240418221417.1592787-1-jm@ti.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,59 +65,34 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 
-Add eQEP DT nodes 0-2 for AM642 SoC.
+This patch series adds eQEP DT nodes for K3 Sitara devices:
+- AM62x
+- AM62ax
+- AM62px
+- AM64x
 
-Since external hardware was needed to test eQEP, the DT nodes
-for eQEP were not included in the introductory commit. Now that
-eQEP has been validated, add nodes to k3-am64-main.dtsi.
+Also enable eQEP to be built as a module for ARCH_k3.
 
-Fixes: 8abae9389bdb ("arm64: dts: ti: Add support for AM642 SoC")
-Signed-off-by: Judith Mendez <jm@ti.com>
----
- arch/arm64/boot/dts/ti/k3-am64-main.dtsi | 30 ++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+Judith Mendez (7):
+  arm64: dts: ti: k3-am62-main: Add eQEP nodes
+  arm64: dts: ti: k3-am62a-main: Add eQEP nodes
+  arm64: dts: ti: k3-am62p-main: Add eQEP nodes
+  arm64: dts: ti: k3-am64-main: Add eQEP nodes
+  dt-bindings: counter: Update TI eQEP binding
+  counter: ti-eqep: Allow eQEP driver to be built for K3 devices
+  arm64: defconfig: Enable TI eQEP Driver
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am64-main.dtsi b/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
-index 6f9aa5e02138f..e7d31d7e0426c 100644
---- a/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
-@@ -1171,6 +1171,36 @@ ecap2: pwm@23120000 {
- 		status = "disabled";
- 	};
- 
-+	eqep0: counter@23200000 {
-+		compatible = "ti,am3352-eqep";
-+		reg = <0x00 0x23200000 0x00 0x100>;
-+		power-domains = <&k3_pds 59 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 59 0>;
-+		clock-names = "fck";
-+		interrupts = <GIC_SPI 116 IRQ_TYPE_EDGE_RISING>;
-+		status = "disabled";
-+	};
-+
-+	eqep1: counter@23210000 {
-+		compatible = "ti,am3352-eqep";
-+		reg = <0x00 0x23210000 0x00 0x100>;
-+		power-domains = <&k3_pds 60 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 60 0>;
-+		clock-names = "fck";
-+		interrupts = <GIC_SPI 117 IRQ_TYPE_EDGE_RISING>;
-+		status = "disabled";
-+	};
-+
-+	eqep2: counter@23220000 {
-+		compatible = "ti,am3352-eqep";
-+		reg = <0x00 0x23220000 0x00 0x100>;
-+		power-domains = <&k3_pds 62 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 62 0>;
-+		clock-names = "fck";
-+		interrupts = <GIC_SPI 118 IRQ_TYPE_EDGE_RISING>;
-+		status = "disabled";
-+	};
-+
- 	main_rti0: watchdog@e000000 {
- 		compatible = "ti,j7-rti-wdt";
- 		reg = <0x00 0xe000000 0x00 0x100>;
+ .../devicetree/bindings/counter/ti-eqep.yaml  | 10 +++++--
+ arch/arm64/boot/dts/ti/k3-am62-main.dtsi      | 30 +++++++++++++++++++
+ arch/arm64/boot/dts/ti/k3-am62a-main.dtsi     | 30 +++++++++++++++++++
+ arch/arm64/boot/dts/ti/k3-am62p-main.dtsi     | 30 +++++++++++++++++++
+ arch/arm64/boot/dts/ti/k3-am64-main.dtsi      | 30 +++++++++++++++++++
+ arch/arm64/configs/defconfig                  |  1 +
+ drivers/counter/Kconfig                       |  2 +-
+ 7 files changed, 129 insertions(+), 4 deletions(-)
+
+
+base-commit: 534ad093bb80f19c20b251a89f09ce1a0e3d4f2d
 -- 
 2.43.2
 
