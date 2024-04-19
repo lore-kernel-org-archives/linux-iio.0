@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C563B5F569;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D37695F87F;
 	Fri, 19 Apr 2024 08:25:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713515137; cv=none; b=fCGowMceVR4KtnAqWB0X26Cn85Wgfe+ZKVvq1HOwKD9x8++r862ZM0UqAKjQua26cZsVXNgD+1mTNxoa5h2RvlnIfvbLqfKDpCy6eqnYrR9I5YvVfsRgqgsmZ6AMLvYrmE9+zmR5fmsPiPHkY5e2JW8cbyGqGlOEDkccEuMDPWU=
+	t=1713515137; cv=none; b=YkFG9O1UGRlkqZK5ryhORyAIXPY7CKDaDo6kb7gfJRxIgAJo7REkIdmZX4KLcOsq6+NslGoafXpdv+OUrWjNJcG035/8fthSDF4kJQDFfjocXulrGX7gJF9o1hkEmbJPaMc1SnwoccDSHDdwBHXiBC1HjrEkp7ov9xGkVmj1I14=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1713515137; c=relaxed/simple;
-	bh=vv1sZWuK/m7+PM7Uk6de+tA1gCCCHUzNBPxqvztleyk=;
+	bh=vEN/Adw/KVnc2ILxmEpsoTMi1MPTaTRHY1lcioiRIIg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=RRvF4muOvjjc9ZIucgG5ebiKSovrqqoAwzGsqCO6sxMr2eOrZAlZU/S11lnb6B6rb7UQaQ13WYWuHmwdXm+OUrEAegexJgY/YuVbFJD8vY6Qc0TJMwFQj/LH+JyDE8qCkCdem2UCagEGW5FOuEnMgB/a63USPNFTCXQ3saGbLRA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rnRC4XZv; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=rUFdv/Y39YFIobY+2dYzbsGyfi4QbD7pexRct2caEje1R75/Tbq+w4Fvoxfwva9Zv9mLIXBgRqxN330d1vAtIbPi+M74WyTYxepLidkfI8So24dfj+tSwwBSBsWxAXwl/x9GuzoKb705UkZDMDSe2fVlz5eD9TThuoq/cAMpqMU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DqGJbmya; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rnRC4XZv"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A3C14C4AF08;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DqGJbmya"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 81F2EC4AF07;
 	Fri, 19 Apr 2024 08:25:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1713515137;
-	bh=vv1sZWuK/m7+PM7Uk6de+tA1gCCCHUzNBPxqvztleyk=;
+	bh=vEN/Adw/KVnc2ILxmEpsoTMi1MPTaTRHY1lcioiRIIg=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=rnRC4XZvLMP+9DuYgXpn4EAEz0GIsjAcRPBOMKbZ2Rm/E1jOu0HFVhE4wG0Gc/JvE
-	 cz5V4WQyz+Y/hmr1N8QAC1YXWR+hh1oQC9TUJkQqvXruG97pG51pMJ2iyrr4R6oacX
-	 LVQX8sCwUH/OEl2JMCYyIIrSVT31NpsRYYnZgh+fcjtDZMAedzcXN/g5TdRjQlPYRZ
-	 jOQr/eYGhB16jSU60q1P6lw1k7HXQOXsCV6cKK4/6mzchEWECf5N1EVZ4OQR4HepJf
-	 TXuXYMf43sEj5M+Z/Vo0eYhDbDmCSDSJP8LB+y3elC9nt7qZxDkVVU80+O5aIIWqOC
-	 ecT/CBccEK+3Q==
+	b=DqGJbmya5osjCZPe2Fj4QsDzNZiB6q07upW0Ln9OJKmfopwaHiFoxiJwJ832xUgK9
+	 0y8PwdKZZs+zQBS92AAhEpPjeOKgmsDX1KoLIHAvZXC54NPSHUnMN+Y/aDLUObzY2W
+	 /5kywbkPH23Wz2Gwo+JeyWpGdOL7EeXFAXCG6TXA1HvTlGFsxn/XatDOkz7i4h2XPa
+	 UHHoCCeu6Co/PkzvWA9vsUCGsGR9WHw5VLhsW4grz1zK+Px/3pUiHejeGtciBEQo+w
+	 2TAmdDKxkk+CsuZdxHdMX3ZK/rtJh3kmumBHUAWyVQFWyD73tointIGqbJlVf4iQU7
+	 AsoBKdnn3E/fw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E9D9C4345F;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF2EC4345F;
 	Fri, 19 Apr 2024 08:25:37 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Fri, 19 Apr 2024 10:25:43 +0200
-Subject: [PATCH v4 10/10] iio: dac: support the ad9739a RF DAC
+Date: Fri, 19 Apr 2024 10:25:41 +0200
+Subject: [PATCH v4 08/10] iio: backend: add new functionality
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240419-iio-backend-axi-dac-v4-10-5ca45b4de294@analog.com>
+Message-Id: <20240419-iio-backend-axi-dac-v4-8-5ca45b4de294@analog.com>
 References: <20240419-iio-backend-axi-dac-v4-0-5ca45b4de294@analog.com>
 In-Reply-To: <20240419-iio-backend-axi-dac-v4-0-5ca45b4de294@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
@@ -52,11 +52,11 @@ Cc: Dragos Bogdan <dragos.bogdan@analog.com>,
  Conor Dooley <conor+dt@kernel.org>, 
  Olivier Moysan <olivier.moysan@foss.st.com>, Nuno Sa <nuno.sa@analog.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1713515134; l=17533;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1713515134; l=11935;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=/3P9v3ybQjq/WOzXcbmKywJYR05xzdayCRC6OKXZSOc=;
- b=Z90qi/XouNUmOZGgPv2Pp42DNxdqfgCyyK6c2KnOXHfAbejERGyspu+1d5NhAok75JDP3Vmh+
- J/tUTHT4HWeC0FGEPXu3JUasbCZKOVecDnGbCgv8wmpb3yfyAC6CXsQ
+ bh=V/78nJNKUeoOgHyrjq3LsJTZbBeNffY5LTwYL0Gg++w=;
+ b=k/Nvsv0KdABoJnMqGNSEFq1/7FQh2zBAIx46hhnFuwN1SLRKv5Nyn4juwbiR1y0U1vv13mEV1
+ WdNx9xuO26xDlFVrFycyxYBegSEg/VTStNF4ng8EQB+ITGPi2aCLiPp
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -66,570 +66,340 @@ Reply-To: nuno.sa@analog.com
 
 From: Nuno Sa <nuno.sa@analog.com>
 
-The AD9739A is a 14-bit, 2.5 GSPS high performance RF DACs that are capable
-of synthesizing wideband signals from DC up to 3 GHz.
+This adds the needed backend ops for supporting a backend inerfacing
+with an high speed dac. The new ops are:
 
-A dual-port, source synchronous, LVDS interface simplifies the digital
-interface with existing FGPA/ASIC technology. On-chip controllers are used
-to manage external and internal clock domain variations over temperature to
-ensure reliable data transfer from the host to the DAC core.
+* data_source_set();
+* set_sampling_freq();
+* extend_chan_spec();
+* ext_info_set();
+* ext_info_get().
 
-Co-developed-by: Dragos Bogdan <dragos.bogdan@analog.com>
-Signed-off-by: Dragos Bogdan <dragos.bogdan@analog.com>
+Also to note the new helpers that are meant to be used by the backends
+when extending an IIO channel (adding extended info):
+
+* iio_backend_ext_info_set();
+* iio_backend_ext_info_get().
+
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio-ad9739a |  19 +
- MAINTAINERS                                     |   1 +
- drivers/iio/dac/Kconfig                         |  16 +
- drivers/iio/dac/Makefile                        |   1 +
- drivers/iio/dac/ad9739a.c                       | 463 ++++++++++++++++++++++++
- 5 files changed, 500 insertions(+)
+ drivers/iio/industrialio-backend.c | 179 +++++++++++++++++++++++++++++++++++++
+ include/linux/iio/backend.h        |  49 ++++++++++
+ 2 files changed, 228 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-ad9739a b/Documentation/ABI/testing/sysfs-bus-iio-ad9739a
-new file mode 100644
-index 0000000000000..ed59299e6f8d9
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-ad9739a
-@@ -0,0 +1,19 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_operating_mode
-+KernelVersion:	6.9
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		DAC operating mode. One of the following modes can be selected:
-+
-+		* normal: This is DAC normal mode.
-+		* mixed-mode: In this mode the output is effectively chopped at
-+			      the DAC sample rate. This has the effect of
-+			      reducing the power of the fundamental signal while
-+			      increasing the power of the images centered around
-+			      the DAC sample rate, thus improving the output
-+			      power of these images.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_operating_mode_available
-+KernelVersion:	6.9
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Available operating modes.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 505f28dc6da68..8ad79cf705524 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1241,6 +1241,7 @@ L:	linux-iio@vger.kernel.org
- S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
-+F:	drivers/iio/dac/ad9739a.c
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index 2fea2bbbe47f..f08ed6d70ae5 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -43,10 +43,12 @@
+ #include <linux/types.h>
  
- ANALOG DEVICES INC ADA4250 DRIVER
- M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index 7c0a8caa9a343..3c2bf620f00fb 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -131,6 +131,22 @@ config AD5624R_SPI
- 	  Say yes here to build support for Analog Devices AD5624R, AD5644R and
- 	  AD5664R converters (DAC). This driver uses the common SPI interface.
- 
-+config AD9739A
-+	tristate "Analog Devices AD9739A RF DAC spi driver"
-+	depends on SPI || COMPILE_TEST
-+	select REGMAP_SPI
-+	select IIO_BACKEND
-+	help
-+	  Say yes here to build support for Analog Devices AD9739A Digital-to
-+	  Analog Converter.
-+
-+	  The driver requires the assistance of the AXI DAC IP core to operate,
-+	  since SPI is used for configuration only, while data has to be
-+	  streamed into memory via DMA.
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called ad9739a.
-+
- config ADI_AXI_DAC
- 	tristate "Analog Devices Generic AXI DAC IP core driver"
- 	select IIO_BUFFER
-diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-index 6bcaa65434b24..8432a81a19dc2 100644
---- a/drivers/iio/dac/Makefile
-+++ b/drivers/iio/dac/Makefile
-@@ -29,6 +29,7 @@ obj-$(CONFIG_AD5696_I2C) += ad5696-i2c.o
- obj-$(CONFIG_AD7293) += ad7293.o
- obj-$(CONFIG_AD7303) += ad7303.o
- obj-$(CONFIG_AD8801) += ad8801.o
-+obj-$(CONFIG_AD9739A) += ad9739a.o
- obj-$(CONFIG_ADI_AXI_DAC) += adi-axi-dac.o
- obj-$(CONFIG_CIO_DAC) += cio-dac.o
- obj-$(CONFIG_DPOT_DAC) += dpot-dac.o
-diff --git a/drivers/iio/dac/ad9739a.c b/drivers/iio/dac/ad9739a.c
-new file mode 100644
-index 0000000000000..ff33120075bf6
---- /dev/null
-+++ b/drivers/iio/dac/ad9739a.c
-@@ -0,0 +1,463 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Analog Devices AD9739a SPI DAC driver
-+ *
-+ * Copyright 2015-2024 Analog Devices Inc.
-+ */
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/errno.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/minmax.h>
-+#include <linux/module.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/property.h>
-+#include <linux/regmap.h>
-+#include <linux/spi/spi.h>
-+#include <linux/units.h>
-+
-+#include <linux/iio/backend.h>
+ #include <linux/iio/backend.h>
 +#include <linux/iio/iio.h>
-+#include <linux/iio/types.h>
-+
-+#define AD9739A_REG_MODE		0
-+#define   AD9739A_RESET_MASK		BIT(5)
-+#define AD9739A_REG_FSC_1		0x06
-+#define AD9739A_REG_FSC_2		0x07
-+#define   AD9739A_FSC_MSB		GENMASK(1, 0)
-+#define AD9739A_REG_DEC_CNT		0x8
-+#define   AD9739A_NORMAL_MODE		0
-+#define   AD9739A_MIXED_MODE		2
-+#define   AD9739A_DAC_DEC		GENMASK(1, 0)
-+#define AD9739A_REG_LVDS_REC_CNT1	0x10
-+#define   AD9739A_RCVR_LOOP_EN_MASK	GENMASK(1, 0)
-+#define AD9739A_REG_LVDS_REC_CNT4	0x13
-+#define   AD9739A_FINE_DEL_SKW_MASK	GENMASK(3, 0)
-+#define AD9739A_REG_LVDS_REC_STAT9	0x21
-+#define   AD9739A_RCVR_TRACK_AND_LOCK	(BIT(3) | BIT(0))
-+#define AD9739A_REG_CROSS_CNT1		0x22
-+#define AD9739A_REG_CROSS_CNT2		0x23
-+#define AD9739A_REG_PHS_DET		0x24
-+#define AD9739A_REG_MU_DUTY		0x25
-+#define AD9739A_REG_MU_CNT1		0x26
-+#define   AD9739A_MU_EN_MASK		BIT(0)
-+#define AD9739A_REG_MU_CNT2		0x27
-+#define AD9739A_REG_MU_CNT3		0x28
-+#define AD9739A_REG_MU_CNT4		0x29
-+#define   AD9739A_MU_CNT4_DEFAULT	0xcb
-+#define AD9739A_REG_MU_STAT1		0x2A
-+#define   AD9739A_MU_LOCK_MASK		BIT(0)
-+#define AD9739A_REG_ANA_CNT_1		0x32
-+#define AD9739A_REG_ID			0x35
-+
-+#define AD9739A_ID			0x24
-+#define AD9739A_REG_IS_RESERVED(reg)	\
-+	((reg) == 0x5 || (reg) == 0x9 || (reg) == 0x0E || (reg) == 0x0D || \
-+	 (reg) == 0x2B || (reg) == 0x2C || (reg) == 0x34)
-+
-+#define AD9739A_FSC_MIN		8580
-+#define AD9739A_FSC_MAX		31700
-+#define AD9739A_FSC_RANGE	(AD9739A_FSC_MAX - AD9739A_FSC_MIN + 1)
-+
-+#define AD9739A_MIN_DAC_CLK	(1600 * MEGA)
-+#define AD9739A_MAX_DAC_CLK	(2500 * MEGA)
-+#define AD9739A_DAC_CLK_RANGE	(AD9739A_MAX_DAC_CLK - AD9739A_MIN_DAC_CLK + 1)
-+/* as recommended by the datasheet */
-+#define AD9739A_LOCK_N_TRIES	3
-+
-+struct ad9739a_state {
-+	struct iio_backend *back;
-+	struct regmap *regmap;
-+	unsigned long sample_rate;
-+};
-+
-+static int ad9739a_oper_mode_get(struct iio_dev *indio_dev,
-+				 const struct iio_chan_spec *chan)
+ 
+ struct iio_backend {
+ 	struct list_head entry;
+ 	const struct iio_backend_ops *ops;
++	struct device *frontend_dev;
+ 	struct device *dev;
+ 	struct module *owner;
+ 	void *priv;
+@@ -186,6 +188,44 @@ int iio_backend_data_format_set(struct iio_backend *back, unsigned int chan,
+ }
+ EXPORT_SYMBOL_NS_GPL(iio_backend_data_format_set, IIO_BACKEND);
+ 
++/**
++ * iio_backend_data_source_set - Select data source
++ * @back:	Backend device
++ * @chan:	Channel number
++ * @data:	Data source
++ *
++ * A given backend may have different sources to stream/sync data. This allows
++ * to choose that source.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_data_source_set(struct iio_backend *back, unsigned int chan,
++				enum iio_backend_data_source data)
 +{
-+	struct ad9739a_state *st = iio_priv(indio_dev);
-+	u32 mode;
-+	int ret;
-+
-+	ret = regmap_read(st->regmap, AD9739A_REG_DEC_CNT, &mode);
-+	if (ret)
-+		return ret;
-+
-+	mode = FIELD_GET(AD9739A_DAC_DEC, mode);
-+	/* sanity check we get valid values from the HW */
-+	if (mode != AD9739A_NORMAL_MODE && mode != AD9739A_MIXED_MODE)
-+		return -EIO;
-+	if (!mode)
-+		return AD9739A_NORMAL_MODE;
-+
-+	/*
-+	 * We get 2 from the device but for IIO modes, that means 1. Hence the
-+	 * minus 1.
-+	 */
-+	return AD9739A_MIXED_MODE - 1;
-+}
-+
-+static int ad9739a_oper_mode_set(struct iio_dev *indio_dev,
-+				 const struct iio_chan_spec *chan, u32 mode)
-+{
-+	struct ad9739a_state *st = iio_priv(indio_dev);
-+
-+	/*
-+	 * On the IIO interface we have 0 and 1 for mode. But for mixed_mode, we
-+	 * need to write 2 in the device. That's what the below check is about.
-+	 */
-+	if (mode == AD9739A_MIXED_MODE - 1)
-+		mode = AD9739A_MIXED_MODE;
-+
-+	return regmap_update_bits(st->regmap, AD9739A_REG_DEC_CNT,
-+				  AD9739A_DAC_DEC, mode);
-+}
-+
-+static int ad9739a_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int *val, int *val2, long mask)
-+{
-+	struct ad9739a_state *st = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*val = st->sample_rate;
-+		*val2 = 0;
-+		return IIO_VAL_INT_64;
-+	default:
++	if (data >= IIO_BACKEND_DATA_SOURCE_MAX)
 +		return -EINVAL;
-+	}
++
++	return iio_backend_op_call(back, data_source_set, chan, data);
 +}
++EXPORT_SYMBOL_NS_GPL(iio_backend_data_source_set, IIO_BACKEND);
 +
-+static int ad9739a_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	struct ad9739a_state *st = iio_priv(indio_dev);
-+
-+	return iio_backend_data_source_set(st->back, 0, IIO_BACKEND_EXTERNAL);
-+}
-+
-+static int ad9739a_buffer_postdisable(struct iio_dev *indio_dev)
-+{
-+	struct ad9739a_state *st = iio_priv(indio_dev);
-+
-+	return iio_backend_data_source_set(st->back, 0,
-+					   IIO_BACKEND_INTERNAL_CONTINUOS_WAVE);
-+}
-+
-+static bool ad9739a_reg_accessible(struct device *dev, unsigned int reg)
-+{
-+	if (AD9739A_REG_IS_RESERVED(reg))
-+		return false;
-+	if (reg > AD9739A_REG_MU_STAT1 && reg < AD9739A_REG_ANA_CNT_1)
-+		return false;
-+
-+	return true;
-+}
-+
-+static int ad9739a_reset(struct device *dev, const struct ad9739a_state *st)
-+{
-+	struct gpio_desc *gpio;
-+	int ret;
-+
-+	gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
-+	if (IS_ERR(gpio))
-+		return PTR_ERR(gpio);
-+	if (gpio) {
-+		/* minimum pulse width of 40ns */
-+		ndelay(40);
-+		gpiod_set_value_cansleep(gpio, 0);
-+		return 0;
-+	}
-+
-+	/* bring all registers to their default state */
-+	ret = regmap_set_bits(st->regmap, AD9739A_REG_MODE, AD9739A_RESET_MASK);
-+	if (ret)
-+		return ret;
-+
-+	ndelay(40);
-+
-+	return regmap_clear_bits(st->regmap, AD9739A_REG_MODE,
-+				 AD9739A_RESET_MASK);
-+}
-+
-+/*
-+ * Recommended values (as per datasheet) for the dac clk common mode voltage
-+ * and Mu controller. Look at table 29.
++/**
++ * iio_backend_set_sampling_freq - Set channel sampling rate
++ * @back:		Backend device
++ * @chan:		Channel number
++ * @sample_rate_hz:	Sample rate
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
 + */
-+static const struct reg_sequence ad9739a_clk_mu_ctrl[] = {
-+	/* DAC clk common mode voltage */
-+	{ AD9739A_REG_CROSS_CNT1, 0x0f },
-+	{ AD9739A_REG_CROSS_CNT2, 0x0f },
-+	/* Mu controller configuration */
-+	{ AD9739A_REG_PHS_DET, 0x30 },
-+	{ AD9739A_REG_MU_DUTY, 0x80 },
-+	{ AD9739A_REG_MU_CNT2, 0x44 },
-+	{ AD9739A_REG_MU_CNT3, 0x6c },
-+};
-+
-+static int ad9739a_init(struct device *dev, const struct ad9739a_state *st)
++int iio_backend_set_sampling_freq(struct iio_backend *back, unsigned int chan,
++				  u64 sample_rate_hz)
 +{
-+	unsigned int i = 0, lock, fsc;
-+	u32 fsc_raw;
-+	int ret;
++	return iio_backend_op_call(back, set_sample_rate, chan, sample_rate_hz);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_set_sampling_freq, IIO_BACKEND);
 +
-+	ret = regmap_multi_reg_write(st->regmap, ad9739a_clk_mu_ctrl,
-+				     ARRAY_SIZE(ad9739a_clk_mu_ctrl));
-+	if (ret)
-+		return ret;
+ static void iio_backend_free_buffer(void *arg)
+ {
+ 	struct iio_backend_buffer_pair *pair = arg;
+@@ -231,6 +271,143 @@ int devm_iio_backend_request_buffer(struct device *dev,
+ }
+ EXPORT_SYMBOL_NS_GPL(devm_iio_backend_request_buffer, IIO_BACKEND);
+ 
++static struct iio_backend *iio_backend_from_indio_dev_parent(const struct device *dev)
++{
++	struct iio_backend *back = ERR_PTR(-ENODEV), *iter;
 +
 +	/*
-+	 * Try to get the Mu lock. Repeat the below steps AD9739A_LOCK_N_TRIES
-+	 * (as specified by the datasheet) until we get the lock.
++	 * We deliberately go through all backends even after finding a match.
++	 * The reason is that we want to catch frontend devices which have more
++	 * than one backend in which case returning the first we find is bogus.
++	 * For those cases, frontends need to explicitly define
++	 * get_iio_backend() in struct iio_info.
 +	 */
-+	do {
-+		ret = regmap_write(st->regmap, AD9739A_REG_MU_CNT4,
-+				   AD9739A_MU_CNT4_DEFAULT);
-+		if (ret)
-+			return ret;
++	guard(mutex)(&iio_back_lock);
++	list_for_each_entry(iter, &iio_back_list, entry) {
++		if (dev == iter->frontend_dev) {
++			if (!IS_ERR(back)) {
++				dev_warn(dev,
++					 "Multiple backends! get_iio_backend() needs to be implemented");
++				return ERR_PTR(-ENODEV);
++			}
 +
-+		/* Enable the Mu controller search and track mode. */
-+		ret = regmap_set_bits(st->regmap, AD9739A_REG_MU_CNT1,
-+				      AD9739A_MU_EN_MASK);
-+		if (ret)
-+			return ret;
++			back = iter;
++		}
++	}
 +
-+		/* Ensure the DLL loop is locked */
-+		ret = regmap_read_poll_timeout(st->regmap, AD9739A_REG_MU_STAT1,
-+					       lock, lock & AD9739A_MU_LOCK_MASK,
-+					       0, 1000);
-+		if (ret && ret != -ETIMEDOUT)
-+			return ret;
-+	} while (ret && ++i < AD9739A_LOCK_N_TRIES);
-+
-+	if (i == AD9739A_LOCK_N_TRIES)
-+		return dev_err_probe(dev, ret, "Mu lock timeout\n");
-+
-+	/* Receiver tracking and lock. Same deal as the Mu controller */
-+	i = 0;
-+	do {
-+		ret = regmap_update_bits(st->regmap, AD9739A_REG_LVDS_REC_CNT4,
-+					 AD9739A_FINE_DEL_SKW_MASK,
-+					 FIELD_PREP(AD9739A_FINE_DEL_SKW_MASK, 2));
-+		if (ret)
-+			return ret;
-+
-+		/* Disable the receiver and the loop. */
-+		ret = regmap_write(st->regmap, AD9739A_REG_LVDS_REC_CNT1, 0);
-+		if (ret)
-+			return ret;
-+
-+		/*
-+		 * Re-enable the loop so it falls out of lock and begins the
-+		 * search/track routine again.
-+		 */
-+		ret = regmap_set_bits(st->regmap, AD9739A_REG_LVDS_REC_CNT1,
-+				      AD9739A_RCVR_LOOP_EN_MASK);
-+		if (ret)
-+			return ret;
-+
-+		/* Ensure the DLL loop is locked */
-+		ret = regmap_read_poll_timeout(st->regmap,
-+					       AD9739A_REG_LVDS_REC_STAT9, lock,
-+					       lock == AD9739A_RCVR_TRACK_AND_LOCK,
-+					       0, 1000);
-+		if (ret && ret != -ETIMEDOUT)
-+			return ret;
-+	} while (ret && ++i < AD9739A_LOCK_N_TRIES);
-+
-+	if (i == AD9739A_LOCK_N_TRIES)
-+		return dev_err_probe(dev, ret, "Receiver lock timeout\n");
-+
-+	ret = device_property_read_u32(dev, "adi,full-scale-microamp", &fsc);
-+	if (ret && ret == -EINVAL)
-+		return 0;
-+	if (ret)
-+		return ret;
-+	if (!in_range(fsc, AD9739A_FSC_MIN, AD9739A_FSC_RANGE))
-+		return dev_err_probe(dev, -EINVAL,
-+				     "Invalid full scale current(%u) [%u %u]\n",
-+				     fsc, AD9739A_FSC_MIN, AD9739A_FSC_MAX);
-+	/*
-+	 * IOUTFS is given by
-+	 *	Ioutfs = 0.0226 * FSC + 8.58
-+	 * and is given in mA. Hence we'll have to multiply by 10 * MILLI in
-+	 * order to get rid of the fractional.
-+	 */
-+	fsc_raw = DIV_ROUND_CLOSEST(fsc * 10 - 85800, 226);
-+
-+	ret = regmap_write(st->regmap, AD9739A_REG_FSC_1, fsc_raw & 0xff);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_update_bits(st->regmap, AD9739A_REG_FSC_2,
-+				  AD9739A_FSC_MSB, fsc_raw >> 8);
++	return back;
 +}
 +
-+static const char * const ad9739a_modes_avail[] = { "normal", "mixed-mode" };
-+
-+static const struct iio_enum ad9739a_modes = {
-+	.items = ad9739a_modes_avail,
-+	.num_items = ARRAY_SIZE(ad9739a_modes_avail),
-+	.get = ad9739a_oper_mode_get,
-+	.set = ad9739a_oper_mode_set,
-+};
-+
-+static const struct iio_chan_spec_ext_info ad9739a_ext_info[] = {
-+	IIO_ENUM_AVAILABLE("operating_mode", IIO_SEPARATE, &ad9739a_modes),
-+	IIO_ENUM("operating_mode", IIO_SEPARATE, &ad9739a_modes),
-+	{ }
-+};
-+
-+/*
-+ * The reason for having two different channels is because we have, in reality,
-+ * two sources of data:
-+ *   ALTVOLTAGE: It's a Continuous Wave that's internally generated by the
-+ *               backend device.
-+ *   VOLTAGE: It's the typical data we can have in a DAC device and the source
-+ *            of it has nothing to do with the backend. The backend will only
-+ *            forward it into our data interface to be sent out.
++/**
++ * iio_backend_ext_info_get - IIO ext_info read callback
++ * @indio_dev:	IIO device
++ * @private:	Data private to the driver
++ * @chan:	IIO channel
++ * @buf:	Buffer where to place the attribute data
++ *
++ * This helper is intended to be used by backends that extend an IIO channel
++ * (through iio_backend_extend_chan_spec()) with extended info. In that case,
++ * backends are not supposed to give their own callbacks (as they would not have
++ * a way to get the backend from indio_dev). This is the getter.
++ *
++ * RETURNS:
++ * Number of bytes written to buf, negative error number on failure.
 + */
-+static struct iio_chan_spec ad9739a_channels[] = {
-+	{
-+		.type = IIO_ALTVOLTAGE,
-+		.indexed = 1,
-+		.output = 1,
-+		.scan_index = -1,
-+	},
-+	{
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.output = 1,
-+		.ext_info = ad9739a_ext_info,
-+		.scan_type = {
-+			.sign = 's',
-+			.storagebits = 16,
-+			.realbits = 16,
-+		},
-+	}
-+};
-+
-+static const struct iio_info ad9739a_info = {
-+	.read_raw = ad9739a_read_raw,
-+};
-+
-+static const struct iio_buffer_setup_ops ad9739a_buffer_setup_ops = {
-+	.preenable = &ad9739a_buffer_preenable,
-+	.postdisable = &ad9739a_buffer_postdisable,
-+};
-+
-+static const struct regmap_config ad9739a_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.readable_reg = ad9739a_reg_accessible,
-+	.writeable_reg = ad9739a_reg_accessible,
-+	.max_register = AD9739A_REG_ID,
-+};
-+
-+static int ad9739a_probe(struct spi_device *spi)
++ssize_t iio_backend_ext_info_get(struct iio_dev *indio_dev, uintptr_t private,
++				 const struct iio_chan_spec *chan, char *buf)
 +{
-+	struct device *dev = &spi->dev;
-+	struct iio_dev *indio_dev;
-+	struct ad9739a_state *st;
-+	unsigned int id;
-+	struct clk *clk;
++	struct iio_backend *back;
++
++	/*
++	 * The below should work for the majority of the cases. It will not work
++	 * when one frontend has multiple backends in which case we'll need a
++	 * new callback in struct iio_info so we can directly request the proper
++	 * backend from the frontend. Anyways, let's only introduce new options
++	 * when really needed...
++	 */
++	back = iio_backend_from_indio_dev_parent(indio_dev->dev.parent);
++	if (IS_ERR(back))
++		return PTR_ERR(back);
++
++	return iio_backend_op_call(back, ext_info_get, private, chan, buf);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_ext_info_get, IIO_BACKEND);
++
++/**
++ * iio_backend_ext_info_set - IIO ext_info write callback
++ * @indio_dev:	IIO device
++ * @private:	Data private to the driver
++ * @chan:	IIO channel
++ * @buf:	Buffer holding the sysfs attribute
++ * @len:	Buffer length
++ *
++ * This helper is intended to be used by backends that extend an IIO channel
++ * (trough iio_backend_extend_chan_spec()) with extended info. In that case,
++ * backends are not supposed to give their own callbacks (as they would not have
++ * a way to get the backend from indio_dev). This is the setter.
++ *
++ * RETURNS:
++ * Buffer length on success, negative error number on failure.
++ */
++ssize_t iio_backend_ext_info_set(struct iio_dev *indio_dev, uintptr_t private,
++				 const struct iio_chan_spec *chan,
++				 const char *buf, size_t len)
++{
++	struct iio_backend *back;
++
++	back = iio_backend_from_indio_dev_parent(indio_dev->dev.parent);
++	if (IS_ERR(back))
++		return PTR_ERR(back);
++
++	return iio_backend_op_call(back, ext_info_set, private, chan, buf, len);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_ext_info_set, IIO_BACKEND);
++
++/**
++ * iio_backend_extend_chan_spec - Extend an IIO channel
++ * @indio_dev:	IIO device
++ * @back:	Backend device
++ * @chan:	IIO channel
++ *
++ * Some backends may have their own functionalities and hence capable of
++ * extending a frontend's channel.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_extend_chan_spec(struct iio_dev *indio_dev,
++				 struct iio_backend *back,
++				 struct iio_chan_spec *chan)
++{
++	const struct iio_chan_spec_ext_info *frontend_ext_info = chan->ext_info;
++	const struct iio_chan_spec_ext_info *back_ext_info;
 +	int ret;
 +
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+
-+	clk = devm_clk_get_enabled(dev, NULL);
-+	if (IS_ERR(clk))
-+		return dev_err_probe(dev, PTR_ERR(clk), "Could not get clkin\n");
-+
-+	st->sample_rate = clk_get_rate(clk);
-+	if (!in_range(st->sample_rate, AD9739A_MIN_DAC_CLK,
-+		      AD9739A_DAC_CLK_RANGE))
-+		return dev_err_probe(dev, -EINVAL,
-+				     "Invalid dac clk range(%lu) [%lu %lu]\n",
-+				     st->sample_rate, AD9739A_MIN_DAC_CLK,
-+				     AD9739A_MAX_DAC_CLK);
-+
-+	st->regmap = devm_regmap_init_spi(spi, &ad9739a_regmap_config);
-+	if (IS_ERR(st->regmap))
-+		return PTR_ERR(st->regmap);
-+
-+	ret = regmap_read(st->regmap, AD9739A_REG_ID, &id);
++	ret = iio_backend_op_call(back, extend_chan_spec, chan);
 +	if (ret)
 +		return ret;
++	/*
++	 * Let's keep things simple for now. Don't allow to overwrite the
++	 * frontend's extended info. If ever needed, we can support appending
++	 * it.
++	 */
++	if (frontend_ext_info && chan->ext_info != frontend_ext_info)
++		return -EOPNOTSUPP;
++	if (!chan->ext_info)
++		return 0;
 +
-+	if (id != AD9739A_ID)
-+		dev_warn(dev, "Unrecognized CHIP_ID 0x%X", id);
++	/* Don't allow backends to get creative and force their own handlers */
++	for (back_ext_info = chan->ext_info; back_ext_info->name; back_ext_info++) {
++		if (back_ext_info->read != iio_backend_ext_info_get)
++			return -EINVAL;
++		if (back_ext_info->write != iio_backend_ext_info_set)
++			return -EINVAL;
++	}
 +
-+	ret = ad9739a_reset(dev, st);
-+	if (ret)
-+		return ret;
++	return 0;
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_extend_chan_spec, IIO_BACKEND);
 +
-+	ret = ad9739a_init(dev, st);
-+	if (ret)
-+		return ret;
+ static void iio_backend_release(void *arg)
+ {
+ 	struct iio_backend *back = arg;
+@@ -263,6 +440,8 @@ static int __devm_iio_backend_get(struct device *dev, struct iio_backend *back)
+ 				     "Could not link to supplier(%s)\n",
+ 				     dev_name(back->dev));
+ 
++	back->frontend_dev = dev;
 +
-+	st->back = devm_iio_backend_get(dev, NULL);
-+	if (IS_ERR(st->back))
-+		return PTR_ERR(st->back);
+ 	dev_dbg(dev, "Found backend(%s) device\n", dev_name(back->dev));
+ 
+ 	return 0;
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+index a6d79381866e..9d144631134d 100644
+--- a/include/linux/iio/backend.h
++++ b/include/linux/iio/backend.h
+@@ -4,6 +4,7 @@
+ 
+ #include <linux/types.h>
+ 
++struct iio_chan_spec;
+ struct fwnode_handle;
+ struct iio_backend;
+ struct device;
+@@ -15,6 +16,26 @@ enum iio_backend_data_type {
+ 	IIO_BACKEND_DATA_TYPE_MAX
+ };
+ 
++enum iio_backend_data_source {
++	IIO_BACKEND_INTERNAL_CONTINUOS_WAVE,
++	IIO_BACKEND_EXTERNAL,
++	IIO_BACKEND_DATA_SOURCE_MAX
++};
 +
-+	ret = devm_iio_backend_request_buffer(dev, st->back, indio_dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = iio_backend_extend_chan_spec(indio_dev, st->back,
-+					   &ad9739a_channels[0]);
-+	if (ret)
-+		return ret;
-+
-+	ret = iio_backend_set_sampling_freq(st->back, 0, st->sample_rate);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_iio_backend_enable(dev, st->back);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->name = "ad9739a";
-+	indio_dev->info = &ad9739a_info;
-+	indio_dev->channels = ad9739a_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(ad9739a_channels);
-+	indio_dev->setup_ops = &ad9739a_buffer_setup_ops;
-+
-+	return devm_iio_device_register(&spi->dev, indio_dev);
++/**
++ * IIO_BACKEND_EX_INFO - Helper for an IIO extended channel attribute
++ * @_name:	Attribute name
++ * @_shared:	Whether the attribute is shared between all channels
++ * @_what:	Data private to the driver
++ */
++#define IIO_BACKEND_EX_INFO(_name, _shared, _what) {	\
++	.name = (_name),				\
++	.shared = (_shared),				\
++	.read =  iio_backend_ext_info_get,		\
++	.write = iio_backend_ext_info_set,		\
++	.private = (_what),				\
 +}
 +
-+static const struct of_device_id ad9739a_of_match[] = {
-+	{ .compatible = "adi,ad9739a" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, ad9739a_of_match);
-+
-+static const struct spi_device_id ad9739a_id[] = {
-+	{"ad9739a"},
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, ad9739a_id);
-+
-+static struct spi_driver ad9739a_driver = {
-+	.driver = {
-+		.name = "ad9739a",
-+		.of_match_table = ad9739a_of_match,
-+	},
-+	.probe = ad9739a_probe,
-+	.id_table = ad9739a_id,
-+};
-+module_spi_driver(ad9739a_driver);
-+
-+MODULE_AUTHOR("Dragos Bogdan <dragos.bogdan@analog.com>");
-+MODULE_AUTHOR("Nuno Sa <nuno.sa@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices AD9739 DAC");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS(IIO_BACKEND);
+ /**
+  * struct iio_backend_data_fmt - Backend data format
+  * @type:		Data type.
+@@ -35,8 +56,13 @@ struct iio_backend_data_fmt {
+  * @chan_enable:	Enable one channel.
+  * @chan_disable:	Disable one channel.
+  * @data_format_set:	Configure the data format for a specific channel.
++ * @data_source_set:	Configure the data source for a specific channel.
++ * @set_sample_rate:	Configure the sampling rate for a specific channel.
+  * @request_buffer:	Request an IIO buffer.
+  * @free_buffer:	Free an IIO buffer.
++ * @extend_chan_spec:	Extend an IIO channel.
++ * @ext_info_set:	Extended info setter.
++ * @ext_info_get:	Extended info getter.
+  **/
+ struct iio_backend_ops {
+ 	int (*enable)(struct iio_backend *back);
+@@ -45,10 +71,21 @@ struct iio_backend_ops {
+ 	int (*chan_disable)(struct iio_backend *back, unsigned int chan);
+ 	int (*data_format_set)(struct iio_backend *back, unsigned int chan,
+ 			       const struct iio_backend_data_fmt *data);
++	int (*data_source_set)(struct iio_backend *back, unsigned int chan,
++			       enum iio_backend_data_source data);
++	int (*set_sample_rate)(struct iio_backend *back, unsigned int chan,
++			       u64 sample_rate_hz);
+ 	struct iio_buffer *(*request_buffer)(struct iio_backend *back,
+ 					     struct iio_dev *indio_dev);
+ 	void (*free_buffer)(struct iio_backend *back,
+ 			    struct iio_buffer *buffer);
++	int (*extend_chan_spec)(struct iio_backend *back,
++				struct iio_chan_spec *chan);
++	int (*ext_info_set)(struct iio_backend *back, uintptr_t private,
++			    const struct iio_chan_spec *chan,
++			    const char *buf, size_t len);
++	int (*ext_info_get)(struct iio_backend *back, uintptr_t private,
++			    const struct iio_chan_spec *chan, char *buf);
+ };
+ 
+ int iio_backend_chan_enable(struct iio_backend *back, unsigned int chan);
+@@ -56,10 +93,22 @@ int iio_backend_chan_disable(struct iio_backend *back, unsigned int chan);
+ int devm_iio_backend_enable(struct device *dev, struct iio_backend *back);
+ int iio_backend_data_format_set(struct iio_backend *back, unsigned int chan,
+ 				const struct iio_backend_data_fmt *data);
++int iio_backend_data_source_set(struct iio_backend *back, unsigned int chan,
++				enum iio_backend_data_source data);
++int iio_backend_set_sampling_freq(struct iio_backend *back, unsigned int chan,
++				  u64 sample_rate_hz);
+ int devm_iio_backend_request_buffer(struct device *dev,
+ 				    struct iio_backend *back,
+ 				    struct iio_dev *indio_dev);
++ssize_t iio_backend_ext_info_set(struct iio_dev *indio_dev, uintptr_t private,
++				 const struct iio_chan_spec *chan,
++				 const char *buf, size_t len);
++ssize_t iio_backend_ext_info_get(struct iio_dev *indio_dev, uintptr_t private,
++				 const struct iio_chan_spec *chan, char *buf);
+ 
++int iio_backend_extend_chan_spec(struct iio_dev *indio_dev,
++				 struct iio_backend *back,
++				 struct iio_chan_spec *chan);
+ void *iio_backend_get_priv(const struct iio_backend *conv);
+ struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name);
+ struct iio_backend *
 
 -- 
 2.44.0
