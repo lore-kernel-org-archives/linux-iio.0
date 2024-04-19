@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 924F653E0A;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95F3754907;
 	Fri, 19 Apr 2024 08:25:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713515137; cv=none; b=JT+T0pXvTBSLiPEGh/fy9fYQ17YOBT8C0LrtHECsqM1RjrwRFVoZeiymFU8f6im8bhFHJjDXp3IFGcQuhjcUG+znFCo/LsZ/TjuCQOKg4gXQYM6MvRtdjApvMylFopcwcVb2utI6FHnm3GNu0gZz0s3ilRfDCPk1BS7YDq8nEfc=
+	t=1713515137; cv=none; b=fyEogKyscM1hOFB+mby/sVpAB+HOk10j97Ry09kQMCljj6WlwutlyjrWPrz6sYoTzKHaXL2TbzIPSggc2cmIdvzuZLMXsyRYMUhRG54WWdXh9TM7qQThyXicalGUDpJOHzrp+DTT4MX1V08WX06L4l8Zu71obtYyGaVmx7VsZcE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1713515137; c=relaxed/simple;
-	bh=W7Q9EeQC69HgOXY6yDvreeXfFACrgL2UG7ipn2evH7w=;
+	bh=JU9xMtgHF7csYGyrdna2VMJrSw3PZxwUCZMaLSIEDGw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=fQ5XIpoLCOzcEZQGXdBGL2ijbEFujRWbDoa2VhEzfnX1zDUXV0ZtnwhGjfzMzZjMdCznrN4v3bkFXdQODvYHlt+yU23Nin3F48ytgY1OkLIlSNuAZnj+LXMwKt0r1BzgOGETjBWCUPaNdRUZg4Wirjf8NoTZBt/iW/S5D8hgPUA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W30J6eHv; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=AvG8tISHlCZ5ND+oTfl7w26AmqM0QBy/Nru7wb6kCqBKe4KZTFFl+JIzXwo4i6YaBX0Wq2L8zYj17dDfcchn/XrmORYexh37EutAPykMgnVIIIJfMAxz4Q3Mkq94Pna8Ug8M2x1SekRudRcCnybFT0bimqR+RhGosL+Q0gkrNr4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D8lfng7f; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W30J6eHv"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3ED64C4AF0E;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D8lfng7f"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 704A0C4AF17;
 	Fri, 19 Apr 2024 08:25:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1713515137;
-	bh=W7Q9EeQC69HgOXY6yDvreeXfFACrgL2UG7ipn2evH7w=;
+	bh=JU9xMtgHF7csYGyrdna2VMJrSw3PZxwUCZMaLSIEDGw=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=W30J6eHv1JOn/3IPTH9EJ8jh2CpiP1of/Oz49SQytWVymgGqZlbDkmB0xW4eki90L
-	 VoTxFeCCDJW/loQmJQ5XOZZj8x5YMpzRLh3KVytjI1z06YlEC7U47QYrfQoqIFG0BN
-	 XYUPWghOl3POONzN857/UfYXLG8Io/12mC06oPIHThOwrRp+7Up8iEyWq3zQUeCljy
-	 V6fs5hPMir49wh9thAUjRFUUNncjgv68J97fcPhQK4CJv98yDOuwCNqQb2MwE2b+MR
-	 D6E+EhfDFvacSbjvCSvVMtrghuvIjjwQYc8V3MIT/CX7I3jWHe2L6sAGISshMGn8Px
-	 Nh+aZxHR1TX+Q==
+	b=D8lfng7flhrZ6QiZKvz6842wleic809WXEQ6u1A4ZuTwmHmaYjw7KMFbjIDAH/tCc
+	 qKbh7IHuykSWiDPPCtQ0lpegbaVgnHMyeCmTzIbnidPFfeT+g8SekUDKnevVwbfV5p
+	 qExKHveBzgCvz0m6rGXKSgwiuT6o/YZGiMWnA9Xx/Gr4DK8Vp4dYdWBDIYCr3tUNz9
+	 EtPF9SynQZseXIBFs3mW84GOX2u6iSgDjDNoswLX/RsfICtgH78ipBCasct7ACWgo3
+	 kWgTOAKgr7nN2yPE2ZXjHJzG03mOI0H+D0YELnJEvtwyOPHSiBZ7rTnSu2Y+i2Xkm1
+	 Qrec/uybXERYg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38712C4345F;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD41C05052;
 	Fri, 19 Apr 2024 08:25:37 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Fri, 19 Apr 2024 10:25:37 +0200
-Subject: [PATCH v4 04/10] iio: buffer-dmaengine: Support specifying buffer
- direction
+Date: Fri, 19 Apr 2024 10:25:40 +0200
+Subject: [PATCH v4 07/10] dt-bindings: iio: dac: add docs for AD9739A
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240419-iio-backend-axi-dac-v4-4-5ca45b4de294@analog.com>
+Message-Id: <20240419-iio-backend-axi-dac-v4-7-5ca45b4de294@analog.com>
 References: <20240419-iio-backend-axi-dac-v4-0-5ca45b4de294@analog.com>
 In-Reply-To: <20240419-iio-backend-axi-dac-v4-0-5ca45b4de294@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
@@ -51,15 +50,13 @@ Cc: Dragos Bogdan <dragos.bogdan@analog.com>,
  Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
  Conor Dooley <conor+dt@kernel.org>, 
- Olivier Moysan <olivier.moysan@foss.st.com>, 
- Paul Cercueil <paul@crapouillou.net>, 
- Alexandru Ardelean <ardeleanalex@gmail.com>, Nuno Sa <nuno.sa@analog.com>
+ Olivier Moysan <olivier.moysan@foss.st.com>, Nuno Sa <nuno.sa@analog.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1713515134; l=5579;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1713515134; l=3382;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=u23I6KLSCcrBhm4fnCuOy4udHamrKg4Ga64h2+KE9cI=;
- b=x4GnbGszJM4BngRXaOWF3R2YmYGWhjWeGO+ilRLFaYNQtMcn+TlrwFFvdKkEPo/jj+pQUds8M
- WPTHwfzCv+dCsd4moAnvdoLF+BiEsCk+GU8Z1Gmv24p9uw4mtBVEB21
+ bh=GMLvgZ43GiJT/S7gjQSxbTyRzXSCKsuzuMjmfYxCvfc=;
+ b=ytKS9K7LRQ3wYpL9nGcQDQKyBz6bdcNx86HWWI7CoymQNt1mBh/exB/SQEV33HsQBD1F5l8ef
+ vJ5L0xGCDp5DOh7AXhd20N7J/puRH6wArDE1Iz7Tn5aErA4KwTlzF08
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -67,154 +64,138 @@ X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
 X-Original-From: Nuno Sa <nuno.sa@analog.com>
 Reply-To: nuno.sa@analog.com
 
-From: Paul Cercueil <paul@crapouillou.net>
+From: Nuno Sa <nuno.sa@analog.com>
 
-Update the devm_iio_dmaengine_buffer_setup() function to support
-specifying the buffer direction.
+This adds the bindings documentation for the 14 bit
+RF Digital-to-Analog converter.
 
-Update the iio_dmaengine_buffer_submit() function to handle input
-buffers as well as output buffers.
-
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/buffer/industrialio-buffer-dmaengine.c | 41 +++++++++++++++-------
- include/linux/iio/buffer-dmaengine.h               | 25 +++++++++----
- 2 files changed, 47 insertions(+), 19 deletions(-)
+ .../devicetree/bindings/iio/dac/adi,ad9739a.yaml   | 95 ++++++++++++++++++++++
+ MAINTAINERS                                        |  8 ++
+ 2 files changed, 103 insertions(+)
 
-diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-index df05d66afff9..051e1758e020 100644
---- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-@@ -64,14 +64,25 @@ static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
- 	struct dmaengine_buffer *dmaengine_buffer =
- 		iio_buffer_to_dmaengine_buffer(&queue->buffer);
- 	struct dma_async_tx_descriptor *desc;
-+	enum dma_transfer_direction dma_dir;
-+	size_t max_size;
- 	dma_cookie_t cookie;
- 
--	block->bytes_used = min(block->size, dmaengine_buffer->max_size);
--	block->bytes_used = round_down(block->bytes_used,
--			dmaengine_buffer->align);
-+	max_size = min(block->size, dmaengine_buffer->max_size);
-+	max_size = round_down(max_size, dmaengine_buffer->align);
+diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
+new file mode 100644
+index 000000000000..c0b36476113a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
+@@ -0,0 +1,95 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/dac/adi,ad9739a.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	if (queue->buffer.direction == IIO_BUFFER_DIRECTION_IN) {
-+		block->bytes_used = max_size;
-+		dma_dir = DMA_DEV_TO_MEM;
-+	} else {
-+		dma_dir = DMA_MEM_TO_DEV;
-+	}
++title: Analog Devices AD9739A RF DAC
 +
-+	if (!block->bytes_used || block->bytes_used > max_size)
-+		return -EINVAL;
- 
- 	desc = dmaengine_prep_slave_single(dmaengine_buffer->chan,
--		block->phys_addr, block->bytes_used, DMA_DEV_TO_MEM,
-+		block->phys_addr, block->bytes_used, dma_dir,
- 		DMA_PREP_INTERRUPT);
- 	if (!desc)
- 		return -ENOMEM;
-@@ -229,9 +240,10 @@ void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
- }
- EXPORT_SYMBOL_NS_GPL(iio_dmaengine_buffer_free, IIO_DMAENGINE_BUFFER);
- 
--struct iio_buffer *iio_dmaengine_buffer_setup(struct device *dev,
--					      struct iio_dev *indio_dev,
--					      const char *channel)
-+struct iio_buffer *iio_dmaengine_buffer_setup_ext(struct device *dev,
-+						  struct iio_dev *indio_dev,
-+						  const char *channel,
-+						  enum iio_buffer_direction dir)
- {
- 	struct iio_buffer *buffer;
- 	int ret;
-@@ -242,6 +254,8 @@ struct iio_buffer *iio_dmaengine_buffer_setup(struct device *dev,
- 
- 	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
- 
-+	buffer->direction = dir;
++maintainers:
++  - Dragos Bogdan <dragos.bogdan@analog.com>
++  - Nuno Sa <nuno.sa@analog.com>
 +
- 	ret = iio_device_attach_buffer(indio_dev, buffer);
- 	if (ret) {
- 		iio_dmaengine_buffer_free(buffer);
-@@ -250,7 +264,7 @@ struct iio_buffer *iio_dmaengine_buffer_setup(struct device *dev,
- 
- 	return buffer;
- }
--EXPORT_SYMBOL_NS_GPL(iio_dmaengine_buffer_setup, IIO_DMAENGINE_BUFFER);
-+EXPORT_SYMBOL_NS_GPL(iio_dmaengine_buffer_setup_ext, IIO_DMAENGINE_BUFFER);
- 
- static void __devm_iio_dmaengine_buffer_free(void *buffer)
- {
-@@ -268,20 +282,21 @@ static void __devm_iio_dmaengine_buffer_free(void *buffer)
-  * It also appends the INDIO_BUFFER_HARDWARE mode to the supported modes of the
-  * IIO device.
-  */
--int devm_iio_dmaengine_buffer_setup(struct device *dev,
--				    struct iio_dev *indio_dev,
--				    const char *channel)
-+int devm_iio_dmaengine_buffer_setup_ext(struct device *dev,
-+					struct iio_dev *indio_dev,
-+					const char *channel,
-+					enum iio_buffer_direction dir)
- {
- 	struct iio_buffer *buffer;
- 
--	buffer = iio_dmaengine_buffer_setup(dev, indio_dev, channel);
-+	buffer = iio_dmaengine_buffer_setup_ext(dev, indio_dev, channel, dir);
- 	if (IS_ERR(buffer))
- 		return PTR_ERR(buffer);
- 
- 	return devm_add_action_or_reset(dev, __devm_iio_dmaengine_buffer_free,
- 					buffer);
- }
--EXPORT_SYMBOL_NS_GPL(devm_iio_dmaengine_buffer_setup, IIO_DMAENGINE_BUFFER);
-+EXPORT_SYMBOL_NS_GPL(devm_iio_dmaengine_buffer_setup_ext, IIO_DMAENGINE_BUFFER);
- 
- MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
- MODULE_DESCRIPTION("DMA buffer for the IIO framework");
-diff --git a/include/linux/iio/buffer-dmaengine.h b/include/linux/iio/buffer-dmaengine.h
-index acb60f9a3fff..81d9a19aeb91 100644
---- a/include/linux/iio/buffer-dmaengine.h
-+++ b/include/linux/iio/buffer-dmaengine.h
-@@ -7,15 +7,28 @@
- #ifndef __IIO_DMAENGINE_H__
- #define __IIO_DMAENGINE_H__
- 
-+#include <linux/iio/buffer.h>
++description: |
++  The AD9739A is a 14-bit, 2.5 GSPS high performance RF DACs that are capable
++  of synthesizing wideband signals from dc up to 3 GHz.
 +
- struct iio_dev;
- struct device;
++  https://www.analog.com/media/en/technical-documentation/data-sheets/ad9737a_9739a.pdf
++
++properties:
++  compatible:
++    enum:
++      - adi,ad9739a
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  reset-gpios:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  vdd-3p3-supply:
++    description: 3.3V Digital input supply.
++
++  vdd-supply:
++    description: 1.8V Digital input supply.
++
++  vdda-supply:
++    description: 3.3V Analog input supply.
++
++  vddc-supply:
++    description: 1.8V Clock input supply.
++
++  vref-supply:
++    description: Input/Output reference supply.
++
++  io-backends:
++    maxItems: 1
++
++  adi,full-scale-microamp:
++    description: This property represents the DAC full scale current.
++    minimum: 8580
++    maximum: 31700
++    default: 20000
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - io-backends
++  - vdd-3p3-supply
++  - vdd-supply
++  - vdda-supply
++  - vddc-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        dac@0 {
++            compatible = "adi,ad9739a";
++            reg = <0>;
++
++            clocks = <&dac_clk>;
++
++            io-backends = <&iio_backend>;
++
++            vdd-3p3-supply = <&vdd_3_3>;
++            vdd-supply = <&vdd>;
++            vdda-supply = <&vdd_3_3>;
++            vddc-supply = <&vdd>;
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2137eb452376..76e872e320d7 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1234,6 +1234,14 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/adc/adi,ad7780.yaml
+ F:	drivers/iio/adc/ad7780.c
  
- void iio_dmaengine_buffer_free(struct iio_buffer *buffer);
--struct iio_buffer *iio_dmaengine_buffer_setup(struct device *dev,
--					      struct iio_dev *indio_dev,
--					      const char *channel);
--int devm_iio_dmaengine_buffer_setup(struct device *dev,
--				    struct iio_dev *indio_dev,
--				    const char *channel);
-+struct iio_buffer *iio_dmaengine_buffer_setup_ext(struct device *dev,
-+						  struct iio_dev *indio_dev,
-+						  const char *channel,
-+						  enum iio_buffer_direction dir);
++ANALOG DEVICES INC AD9739a DRIVER
++M:	Nuno Sa <nuno.sa@analog.com>
++M:	Dragos Bogdan <dragos.bogdan@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
 +
-+#define iio_dmaengine_buffer_setup(dev, indio_dev, channel)	\
-+	iio_dmaengine_buffer_setup_ext(dev, indio_dev, channel,	\
-+				       IIO_BUFFER_DIRECTION_IN)
-+
-+int devm_iio_dmaengine_buffer_setup_ext(struct device *dev,
-+					struct iio_dev *indio_dev,
-+					const char *channel,
-+					enum iio_buffer_direction dir);
-+
-+#define devm_iio_dmaengine_buffer_setup(dev, indio_dev, channel)	\
-+	devm_iio_dmaengine_buffer_setup_ext(dev, indio_dev, channel,	\
-+					    IIO_BUFFER_DIRECTION_IN)
- 
- #endif
+ ANALOG DEVICES INC ADA4250 DRIVER
+ M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+ L:	linux-iio@vger.kernel.org
 
 -- 
 2.44.0
