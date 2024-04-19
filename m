@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71214131BC3;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 711BF1304A7;
 	Fri, 19 Apr 2024 15:36:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713541012; cv=none; b=Ii42sq00aN7HxcwQphGKjVrm398XQYrUaa7A6WHEiF09Q6E/HtCa5icd42kZ5JNgqoVBieE2V9+d6wjW1y6wGC5b9vRadRHkLVXDhQL9bdv9NW5tnAloC80iwdDNdNbAgMkphLXMKxY05FniN5VeOiAZ3M9/YftqY+HatllnWSA=
+	t=1713541012; cv=none; b=Hb4tyMGgbEpshDeNyedLhBAfE2So+F80XbFSYilWDtcfx4RxUeiTprrIg2DJvDedgMFbYpmUQAMvOIQUjsX45eYu2t31Ya2TuafvbM0XAU54QLZsSQWNlpQiG+ZClHMm5Y06lpGoLsyZI++lb4zooEWpFsKjcBQrR/jBRlqa7TM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1713541012; c=relaxed/simple;
-	bh=GDtgREF7AuO6QjknBMOjXCBlXRJsLRlx/8Nk4OtwUys=;
+	bh=KKVLahGVov+3Ev8//vGWIT9Ky/0x/0vrY7Px/D3ptpU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=gqsQojmgP10nh9MrPKcl+4GvnTAWsxaPLlDtmArj9J8HZJwPhubPZ+OFzfEjGRl0v7s93udQtNAelLALybbwjRSl3+IS8HWJmu/0cz3IrKtWVXOSXrGdfzFlIPBA8PKc7xiaR1ZKZkgDvUzlPEV7Uw5wEFVLeAOjtlhW3J3wX5g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MC4q56x6; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=ccDBm2tYNKbfZAOLRU/9Z4tbkLVEOoi8RwQnW97QzBiV5KFB+QVRiOlckX6SDJ/ewjDRC7oTqQ2fuXK13bfHHT0jie5jKfndBdfewMjpohh5Lk7ysKqfIJmvROHPL0mYFiOPWPnB/TJqW322BvEM0CLwHGsoXm4gQRsPHuqTaes=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=amhmumE/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MC4q56x6"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E6D3C4AF0A;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="amhmumE/"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1D19BC32786;
 	Fri, 19 Apr 2024 15:36:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1713541012;
-	bh=GDtgREF7AuO6QjknBMOjXCBlXRJsLRlx/8Nk4OtwUys=;
+	bh=KKVLahGVov+3Ev8//vGWIT9Ky/0x/0vrY7Px/D3ptpU=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=MC4q56x6MGkNMcCSqvi6fUBv+rpCBGqlCKBLXA63yOplq4qUIPTF01XCzVWYq/mcE
-	 rlLKpIwOmcwjYzGzg4JkWuiXJXaBIxySchPiNpWgVi62k+DCoB8FM5cyJaPN8lNEUs
-	 3lOSI1zaeN3QZRk32fw0C09Mfgekt5qtwCI1WusX+hVVy0rsVRBNrIVl97j/rwVRCn
-	 8hr0lYdUnk67D5XpPyVFAsvXgrULNPXyzRMJKEi11WsAFxBRgENgFOWvQbxVb2plNi
-	 Sb6yH/1Av7a1g0HGWi3g6vwzcVs2hIGs02j0sN0voMtuJZfXApm76+/bJZDgpAZlCd
-	 uNe5XP38GQo4g==
+	b=amhmumE/kqag85+e3rCsGZQqUd0n9THSSUNKPmcb1E5sf4uVDpMVuJeXaV7Zq48bb
+	 Cg5Fja2J4XiqCkI3SAxRAsbsQnjbBwNaQ0pv0ns0Bgp26txkIeooy6i51kAcl1i5s5
+	 vC8bgJa5NVNJwA04ScAN/LVlBABr/sJaZbVhmKXdsrtp3lYOXqm/PicLFoSyzqlAew
+	 ypoP9QuD9Rr28I/+ks1yQohBI6ipLu5EWOlSojrCUejnFPSjd9GsKRlUwP2pnelaAB
+	 sHqhycYHNlnP3Enh6CX9pzrF7S+b+vG/Ouea6dbe0a796srh6vr4yMl6d/71XeA1XG
+	 ghI1JtYlzZXOw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23529C04FF6;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD9FC4345F;
 	Fri, 19 Apr 2024 15:36:52 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Fri, 19 Apr 2024 17:36:47 +0200
-Subject: [PATCH 4/8] iio: adc: axi-adc: make sure AXI clock is enabled
+Date: Fri, 19 Apr 2024 17:36:46 +0200
+Subject: [PATCH 3/8] dt-bindings: adc: axi-adc: add clocks property
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240419-ad9467-new-features-v1-4-3e7628ff6d5e@analog.com>
+Message-Id: <20240419-ad9467-new-features-v1-3-3e7628ff6d5e@analog.com>
 References: <20240419-ad9467-new-features-v1-0-3e7628ff6d5e@analog.com>
 In-Reply-To: <20240419-ad9467-new-features-v1-0-3e7628ff6d5e@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
@@ -53,11 +53,11 @@ Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
  Conor Dooley <conor+dt@kernel.org>, 
  Olivier Moysan <olivier.moysan@foss.st.com>, Nuno Sa <nuno.sa@analog.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1713541010; l=1075;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1713541010; l=1048;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=vcTpXfTnayLjDiRZnxJ+F5aPNAy5eajFubKg0Cjp4PM=;
- b=DJqz9cqAlXa2S8X6UlnFqgxQpwj+itH3404Ns1gnu3EjcUw0EhCiJKm9YwHY82rX9ZEvp/9R7
- Mjva1Fe/xVeBDo064MiyI6ztaWaeeY9F5RsUuyOFwWyFcXGzYed56zd
+ bh=ZntCSlHgOIAf1gqisnjrXuzKRZVpUr7uIRrPEaUInis=;
+ b=HJBmv5brfYl/udSe+tJNa4T7w9PlMfU2vjNLhq6bstQ7ivb98lNF82DJyakUMqIx0+ruqr9p/
+ WLZEwd5JWahAPaQUKzPGm4HIAQ3H7lwNiIpXpRCmuZrPAj1LIRYCH20
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -67,37 +67,44 @@ Reply-To: nuno.sa@analog.com
 
 From: Nuno Sa <nuno.sa@analog.com>
 
-We can only access the IP core registers if the bus clock is enabled. As
-such we need to get and enable it and not rely on anyone else to do it.
+Add a required clock property as we can't access the device registers if
+the AXI bus clock is not properly enabled.
 
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/adc/adi-axi-adc.c | 5 +++++
+ Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml | 5 +++++
  1 file changed, 5 insertions(+)
 
-diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
-index a543b91124b07..e3b2158829416 100644
---- a/drivers/iio/adc/adi-axi-adc.c
-+++ b/drivers/iio/adc/adi-axi-adc.c
-@@ -175,6 +175,7 @@ static int adi_axi_adc_probe(struct platform_device *pdev)
- 	struct adi_axi_adc_state *st;
- 	void __iomem *base;
- 	unsigned int ver;
-+	struct clk *clk;
- 	int ret;
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml b/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
+index 3d49d21ad33df..e1f450b80db27 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
+@@ -28,6 +28,9 @@ properties:
+   reg:
+     maxItems: 1
  
- 	st = devm_kzalloc(&pdev->dev, sizeof(*st), GFP_KERNEL);
-@@ -195,6 +196,10 @@ static int adi_axi_adc_probe(struct platform_device *pdev)
- 	if (!expected_ver)
- 		return -ENODEV;
- 
-+	clk = devm_clk_get_enabled(&pdev->dev, NULL);
-+	if (IS_ERR(clk))
-+		return PTR_ERR(clk);
++  clocks:
++    maxItems: 1
 +
- 	/*
- 	 * Force disable the core. Up to the frontend to enable us. And we can
- 	 * still read/write registers...
+   dmas:
+     maxItems: 1
+ 
+@@ -48,6 +51,7 @@ required:
+   - compatible
+   - dmas
+   - reg
++  - clocks
+ 
+ additionalProperties: false
+ 
+@@ -58,6 +62,7 @@ examples:
+         reg = <0x44a00000 0x10000>;
+         dmas = <&rx_dma 0>;
+         dma-names = "rx";
++        clocks = <&axi_clk>;
+         #io-backend-cells = <0>;
+     };
+ ...
 
 -- 
 2.44.0
