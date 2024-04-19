@@ -1,155 +1,277 @@
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06A3612837C
-	for <linux-iio@vger.kernel.org>; Fri, 19 Apr 2024 13:56:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B2A112FB16;
+	Fri, 19 Apr 2024 15:36:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713535017; cv=none; b=FPw+kGilcdac9pVb9w9TYbvkjfNDEcGeR6dHMbY6F3CS14iZLoknstdgzWPVg23OBbPYeOxUxF9pg4MbOm4WHNSzrygd5PC/bQsMummNGJl7IUjZuojntKj8NLvwmcRcFbtS4jhvETzUMzcUASi/EOlXDpBmmoEFMne3lnwCf2Y=
+	t=1713541012; cv=none; b=amHxpyR82XbovW3/cHMKY0NQ1DsSsIv32OP4fZ/wYX6JvZDS9gPOl3DSIlYjbl1yaHXVqtcXqJx/Fqa18FfNUn9YMTD8vD/69c8WducALXVN4szDiR8FfAx83JKBi1LAWr7rRxZiPOkTWNR0ksFAx/VQb05GPYV8mukgxeZxqps=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713535017; c=relaxed/simple;
-	bh=HC5AjpYaeHDj8Mj5jLA96RcnHiHzcC4W3BA/9eZj0A8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oAkZsQL3V2I5NvVuCbpBvvu8voIyR1qQ9NRm3sbQy8jjYC0tvD9kZ2hn3ZaOQyTjpO4oTX4nRxD0kOzlr6+MadhR2QGJvAuRKTVjCuMVSHnuvG08KHBtH4VX2SWJgu1L07M1yfJHQYPNiElgmbFK4CP2NRNlvM2RsfosJqwxyXU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=snPv7bew; arc=none smtp.client-ip=209.85.215.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1713541012; c=relaxed/simple;
+	bh=OT1f5HQ85Uw5dWLz6Hgn1lTmPE4744OaSYCe5yedbzQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=fsUl+Ccuc6rnxpEF+J/T1dGvc4z+Y13QNxc6/HczxBSg3WzrkhFFl15AUsJC8U2ZoHTlG0bRoWd1UxI9dJyH6CeA7cJWoIfx9LQKwz6FfqQpEOZgJdbCpCFh0owUB53LLtZCF+7HdXX1E60pZUB6SUJM22udJ0zlC4O9S1HJrrs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NjYffbgJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="snPv7bew"
-Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-5cedfc32250so1361416a12.0
-        for <linux-iio@vger.kernel.org>; Fri, 19 Apr 2024 06:56:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1713535014; x=1714139814; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=lDxhWRlfVkx8ifw3fFXKI2zA+Tw6hAZQJsO5ryHPBLg=;
-        b=snPv7bewwmntbEEECfrOZO5k/lFluS9Uq/J8U91NAYik5ibg29XSe1iXP5wh1ChGy2
-         sv8QOJOCN4F6AYg9Y9I6N309yQuKWoNYrbVWDYTeSKrI0mL9OocezNyg46ElbSAhnM92
-         VpSGrjC7mO30mofUpDVAHn1Nb3L7seINnLRXDXJLZP5By81ct22gz6o49pahLuq2b5oD
-         NFiq70p5UB6L5iAf7ZY/R1P6v9pvPJyyB6efQudheEetVz90NVoR9nPbF1amvOvNXwNq
-         2WsOag8X3s962KsgSaMf9nngkC0tBeKJmLR3EUBskH4nfQfa4Nl8PLKVX8d/gwOoe9Jl
-         DnLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713535014; x=1714139814;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lDxhWRlfVkx8ifw3fFXKI2zA+Tw6hAZQJsO5ryHPBLg=;
-        b=BQ1s8Tr2HPRmgUg8Eh9DkhchBOa3kA01Jxe8zyGSyF0gpMcxI8SLU6nWDEEOwdb20R
-         wCevlbW36CDrekn/EBBY9Zawpfd0PTqinTBbUeqomO5ldjPqXwIF3ms5bU9iq8WuvlgG
-         aj9snFW6ehyHPdwJ0JaDkm2JyuH5r0R2mgo57yUlap0W2KX8ynj6OKJJhNByTZXgnheI
-         LnBP6lNSIuiNajYz3y8/b2YDEHkpPcH7/oUDgaftkE7Eb/PqP46sNecEeB14YZqdTqpt
-         sFxVw/CvHM1s+JDMlHOdGtVGOrCcNg+iHhd0vlc9qER0lamg4pS90Rbmy10GIsRZMadE
-         eXrA==
-X-Forwarded-Encrypted: i=1; AJvYcCU3dE/Tiu4/ax8SZ32jCDSzrY2anCoWSrz5gUPfDKrssPubN50QgTkOc79OESos/91F4Y0F+PoLe925/d2tje6b7R5YNXOtCiQ4
-X-Gm-Message-State: AOJu0YxO/VWvq75m2cDeMceyT2ZHOBUsm83HpWkst90ipJxT+F5P18bd
-	QM7pZMJoaeLRvASHWimE/kq/wc1Q3GAZ2WojVw7Mi+v5/33NRYWGUj+2p9L3G1U=
-X-Google-Smtp-Source: AGHT+IEgMbiLkd1PuoCMXAPdhR42Mglbd/GTuMi3fUokX/KI02xKefFL9uHE/uCFgcq9jdB6EpU+pA==
-X-Received: by 2002:a17:90b:3587:b0:2ac:88e4:2dd with SMTP id mm7-20020a17090b358700b002ac88e402ddmr1610993pjb.0.1713535014305;
-        Fri, 19 Apr 2024 06:56:54 -0700 (PDT)
-Received: from [172.20.9.36] ([209.37.221.130])
-        by smtp.gmail.com with ESMTPSA id f21-20020a17090a4a9500b002a058af5e12sm4861636pjh.12.2024.04.19.06.56.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Apr 2024 06:56:54 -0700 (PDT)
-Message-ID: <f297210a-ad3b-40f5-b8ab-e51e11cefbe4@linaro.org>
-Date: Fri, 19 Apr 2024 15:56:52 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NjYffbgJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EB53AC3277B;
+	Fri, 19 Apr 2024 15:36:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1713541012;
+	bh=OT1f5HQ85Uw5dWLz6Hgn1lTmPE4744OaSYCe5yedbzQ=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=NjYffbgJg3Q4Bxx6lFC9MCSFlCiUPp+9G2qjRzPe1CMzA5jYIka2dzM285FDtZ5ST
+	 0GhnRe3Pdj0kw1ika+QCYn6vrqtCF4YbDeraU9BV7tE5lkHaEQHoqjdow2E88i9rcY
+	 pM9AjLlSL3oVTOwhNg2vlMBbaBaCS5K6WS2iuDyPqLlhnyO/c+xxa5DTAmVAFrxGiX
+	 mlrzUjgi8aOvKSawUaSnCL6Rpp4bZ21ni/+Kld8yDNEe46GSn5ztgcxzJScOTsGrep
+	 UCsGYr6WPcOJFdRERzSlukAzKOTkBE39PV6A2VBMDmZ0DO6CR9yYZ6qsKiF7yVblMP
+	 NGRDoPgdKRnJw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C5AC04FF6;
+	Fri, 19 Apr 2024 15:36:51 +0000 (UTC)
+From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
+Date: Fri, 19 Apr 2024 17:36:44 +0200
+Subject: [PATCH 1/8] iio: backend: add API for interface tuning
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/7] arm64: dts: ti: k3-am62-main: Add eQEP nodes
-To: Judith Mendez <jm@ti.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Catalin Marinas
- <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- William Breathitt Gray <william.gray@linaro.org>
-Cc: David Lechner <david@lechnology.com>,
- linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-References: <20240418221417.1592787-1-jm@ti.com>
- <20240418221417.1592787-2-jm@ti.com>
-Content-Language: en-US
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20240418221417.1592787-2-jm@ti.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20240419-ad9467-new-features-v1-1-3e7628ff6d5e@analog.com>
+References: <20240419-ad9467-new-features-v1-0-3e7628ff6d5e@analog.com>
+In-Reply-To: <20240419-ad9467-new-features-v1-0-3e7628ff6d5e@analog.com>
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ Alexandru Ardelean <alexandru.ardelean@analog.com>, 
+ Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Olivier Moysan <olivier.moysan@foss.st.com>, Nuno Sa <nuno.sa@analog.com>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1713541010; l=7623;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=UN9oAzFiKwoRseAjq8NdAF3wlTP1db9PUGQ2DM4QoRQ=;
+ b=zrKmro4hJnByJECx3y8HxHJVzShYKzBsLW3PXbD9QqFSpirl9Mp95kNO7C5vmEUua+V078crW
+ O+d96m0jpB5DkKcLVjxjWfjs6oMx8uMb20NKtTmFRMCxYYrFZTcNJMF
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: Nuno Sa <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
 
-On 19/04/2024 00:14, Judith Mendez wrote:
-> Add eQEP DT nodes 0-2 for AM625 SoC.
-> 
-> Since external hardware was needed to test eQEP, the DT nodes
-> for eQEP were not included in the introductory commit. Now that
-> eQEP has been validated, add nodes to k3-am62-main.dtsi.
-> 
-> Fixes: f1d17330a5be ("arm64: dts: ti: Introduce base support for AM62x SoC")
-> Signed-off-by: Judith Mendez <jm@ti.com>
-> ---
->  arch/arm64/boot/dts/ti/k3-am62-main.dtsi | 30 ++++++++++++++++++++++++
->  1 file changed, 30 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/ti/k3-am62-main.dtsi b/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
-> index e9cffca073efc..0877899b90667 100644
-> --- a/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
-> +++ b/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
-> @@ -844,6 +844,36 @@ ecap2: pwm@23120000 {
->  		status = "disabled";
->  	};
->  
-> +	eqep0: counter@23200000 {
-> +		compatible = "ti,am3352-eqep";
+From: Nuno Sa <nuno.sa@analog.com>
 
-That's k3-am62, not am3352. See writing-bindings (and numerous
-presentations telling you how to do it, e.g. from two previous EOSS/ELCE).
+This is in preparation for supporting interface tuning in one for the
+devices using the axi-adc backend. The new added interfaces are all
+needed for that calibration:
 
-Best regards,
-Krzysztof
+ * iio_backend_test_pattern_set();
+ * iio_backend_chan_status();
+ * iio_backend_iodelay_set();
+ * iio_backend_data_sample_trigger().
+
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+---
+ drivers/iio/industrialio-backend.c | 86 ++++++++++++++++++++++++++++++++++++++
+ include/linux/iio/backend.h        | 57 +++++++++++++++++++++----
+ 2 files changed, 136 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index 2fea2bbbe47fd..45eea3b725a35 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -186,6 +186,92 @@ int iio_backend_data_format_set(struct iio_backend *back, unsigned int chan,
+ }
+ EXPORT_SYMBOL_NS_GPL(iio_backend_data_format_set, IIO_BACKEND);
+ 
++/**
++ * iio_backend_test_pattern_set - Configure a test pattern
++ * @back:	Backend device
++ * @chan:	Channel number
++ * @pattern:
++ *
++ * Configure a test pattern on the backend. This is typically used for
++ * calibrating the timings on the data digital interface.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_test_pattern_set(struct iio_backend *back,
++				 unsigned int chan,
++				 enum iio_backend_test_pattern pattern)
++{
++	if (pattern >= IIO_BACKEND_TEST_PATTERN_MAX)
++		return -EINVAL;
++
++	return iio_backend_op_call(back, test_pattern_set, chan, pattern);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_test_pattern_set, IIO_BACKEND);
++
++/**
++ * iio_backend_chan_status - Get the channel status
++ * @back:	Backend device
++ * @chan:	Channel number
++ * @status:	Channel status
++ *
++ * Get the current state of the backend channel. Typically used to check if
++ * there were any errors sending/receiving data.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_chan_status(struct iio_backend *back, unsigned int chan,
++			    struct iio_backend_chan_status *status)
++{
++	return iio_backend_op_call(back, chan_status, chan, status);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_chan_status, IIO_BACKEND);
++
++/**
++ * iio_backend_iodelay_set - Set digital I/O delay
++ * @back:	Backend device
++ * @lane:	Lane number
++ * @tap:	Number of taps
++ *
++ * Controls delays on sending/receiving data. One usecase for this is to
++ * calibrate the data digital interface so we get the best results when
++ * transferring data. Note that @tap has no unit since the actual delay per tap
++ * is very backend specific. Hence, frontend devices typically should go through
++ * an array of @taps (the size of that array should typically match the size of
++ * calibration points on the frontend device) and call this API.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_iodelay_set(struct iio_backend *back, unsigned int lane,
++			    unsigned int tap)
++{
++	return iio_backend_op_call(back, iodelay_set, lane, tap);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_iodelay_set, IIO_BACKEND);
++
++/**
++ * iio_backend_data_sample_trigger - Control when to sample data
++ * @back:	Backend device
++ * @trigger:	Data trigger
++ *
++ * Mostly useful for input backends. Configures the backend for when to sample
++ * data (eg: rising vs falling edge).
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_data_sample_trigger(struct iio_backend *back,
++				    enum iio_backend_sample_trigger trigger)
++{
++	if (trigger >= IIO_BACKEND_SAMPLE_TRIGGER_MAX)
++		return -EINVAL;
++
++	return iio_backend_op_call(back, data_sample_trigger, trigger);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_data_sample_trigger, IIO_BACKEND);
++
+ static void iio_backend_free_buffer(void *arg)
+ {
+ 	struct iio_backend_buffer_pair *pair = arg;
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+index a6d79381866ec..ad793fe0d78c2 100644
+--- a/include/linux/iio/backend.h
++++ b/include/linux/iio/backend.h
+@@ -15,6 +15,19 @@ enum iio_backend_data_type {
+ 	IIO_BACKEND_DATA_TYPE_MAX
+ };
+ 
++/* vendor specific from 32 */
++enum iio_backend_test_pattern {
++	/* modified prbs9 */
++	IIO_BACKEND_ADI_PRBS_9A = 32,
++	IIO_BACKEND_TEST_PATTERN_MAX
++};
++
++enum iio_backend_sample_trigger {
++	IIO_BACKEND_SAMPLE_TRIGGER_EDGE_FALLING,
++	IIO_BACKEND_SAMPLE_TRIGGER_EDGE_RISING,
++	IIO_BACKEND_SAMPLE_TRIGGER_MAX
++};
++
+ /**
+  * struct iio_backend_data_fmt - Backend data format
+  * @type:		Data type.
+@@ -28,15 +41,27 @@ struct iio_backend_data_fmt {
+ 	bool enable;
+ };
+ 
++/**
++ * struct iio_backend_chan_status - Backend channel status
++ *  @errors:	Errors occurred when sending/receiving data.
++ */
++struct iio_backend_chan_status {
++	bool errors;
++};
++
+ /**
+  * struct iio_backend_ops - operations structure for an iio_backend
+- * @enable:		Enable backend.
+- * @disable:		Disable backend.
+- * @chan_enable:	Enable one channel.
+- * @chan_disable:	Disable one channel.
+- * @data_format_set:	Configure the data format for a specific channel.
+- * @request_buffer:	Request an IIO buffer.
+- * @free_buffer:	Free an IIO buffer.
++ * @enable:			Enable backend.
++ * @disable:			Disable backend.
++ * @chan_enable:		Enable one channel.
++ * @chan_disable:		Disable one channel.
++ * @data_format_set:		Configure the data format for a specific channel.
++ * @test_pattern_set:		Configure a test pattern.
++ * @chan_status:		Get the channel status.
++ * @iodelay_set:		Set digital I/O delay.
++ * @data_sample_trigger:	Control when to sample data.
++ * @request_buffer:		Request an IIO buffer.
++ * @free_buffer:		Free an IIO buffer.
+  **/
+ struct iio_backend_ops {
+ 	int (*enable)(struct iio_backend *back);
+@@ -45,6 +70,15 @@ struct iio_backend_ops {
+ 	int (*chan_disable)(struct iio_backend *back, unsigned int chan);
+ 	int (*data_format_set)(struct iio_backend *back, unsigned int chan,
+ 			       const struct iio_backend_data_fmt *data);
++	int (*test_pattern_set)(struct iio_backend *back,
++				unsigned int chan,
++				enum iio_backend_test_pattern pattern);
++	int (*chan_status)(struct iio_backend *back, unsigned int chan,
++			   struct iio_backend_chan_status *status);
++	int (*iodelay_set)(struct iio_backend *back, unsigned int chan,
++			   unsigned int tap);
++	int (*data_sample_trigger)(struct iio_backend *back,
++				   enum iio_backend_sample_trigger trigger);
+ 	struct iio_buffer *(*request_buffer)(struct iio_backend *back,
+ 					     struct iio_dev *indio_dev);
+ 	void (*free_buffer)(struct iio_backend *back,
+@@ -56,6 +90,15 @@ int iio_backend_chan_disable(struct iio_backend *back, unsigned int chan);
+ int devm_iio_backend_enable(struct device *dev, struct iio_backend *back);
+ int iio_backend_data_format_set(struct iio_backend *back, unsigned int chan,
+ 				const struct iio_backend_data_fmt *data);
++int iio_backend_test_pattern_set(struct iio_backend *back,
++				 unsigned int chan,
++				 enum iio_backend_test_pattern pattern);
++int iio_backend_chan_status(struct iio_backend *back, unsigned int chan,
++			    struct iio_backend_chan_status *status);
++int iio_backend_iodelay_set(struct iio_backend *back, unsigned int lane,
++			    unsigned int tap);
++int iio_backend_data_sample_trigger(struct iio_backend *back,
++				    enum iio_backend_sample_trigger trigger);
+ int devm_iio_backend_request_buffer(struct device *dev,
+ 				    struct iio_backend *back,
+ 				    struct iio_dev *indio_dev);
+
+-- 
+2.44.0
+
 
