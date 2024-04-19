@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B25F12E1E7;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A09913049F;
 	Fri, 19 Apr 2024 15:36:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713541012; cv=none; b=V8aVphERxQjHitRrwtLkFG8CqzLtlTRXvHl6SPZgsZMxALyHkOkt6iMRNYEQon4G9DH9o/+r92BDuxen9nqQRfNnFc6Y+cUMStow7FVUKGqMgIgwsdCaRcu2ItNgFX9qN30hcoM5azmAjtDbpewQl3TnMJBStq/B4f0qRx/QtMI=
+	t=1713541012; cv=none; b=dDl6U2AlwbajMAjsLTtR5aOOQkciSV5wOKF2gT/KatOPjvGSJk7LZ3i4DAZN6rGI69ICUvJlXUAh0Y0Sbsjf7jyfuevmdvAmtekfk2Mc8AH14pbjOUA6DAam/+cFETzXZ82TilNENPJAvn7/lhnLJOV78EzVQQvPRwA201CzDNI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1713541012; c=relaxed/simple;
-	bh=XcTC4nhrKFpu4l4Ue99zz7dLYgzqq+aK6wzay67YX2g=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=KZTf5FDUUrcLiepplj2RUEBhaUQE4UqtLaEhi2tTphAn3umCqQTnDXN7AP6lUdb22z6/oek9RrCVmZTMY0aD5eSHJ2GLeAE54I6wNkHM5WMyrNLide/xsJlpVbaLeizGKWxY0/4FfAt73PDRcXFPidy816V6vbg4pcgg2dQf/Dc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GgVHw+KN; arc=none smtp.client-ip=10.30.226.201
+	bh=M63do2rsHrBol9Y21pmkGXyr8SUKXE1yQfuo4S+xsMs=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=W1at0h7vz7XjvjKtqeIrKfSa9WHacUxn6ietdeaOXzMlr7pJMzI0rXeccWV3njWeF/1v78TeW6P0ohNSqBJkTw+ieSnN8l++Fqq6cGQeBV7FNuSnCstlw8BCf1QaoUI9Iz7LOCMYZ4nKIYTvH6R/wsDr6AYDZgAQ+MnD2SyDaiA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gBSpE6pf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GgVHw+KN"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DD793C072AA;
-	Fri, 19 Apr 2024 15:36:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gBSpE6pf"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 13563C32781;
+	Fri, 19 Apr 2024 15:36:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713541011;
-	bh=XcTC4nhrKFpu4l4Ue99zz7dLYgzqq+aK6wzay67YX2g=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=GgVHw+KN12bqqhEix2S+zY3Ws8OJrRp+AyPecEhvQ96iWdvMrANXp2skoQrh7M/jS
-	 OBTGsAzgrL+HVDgKHsOIGy22kN/3u18qmL5AzDh3rE5ldQE7Y9oJPwjBe0vio8dAea
-	 YvIebaOqGYLtGTGfVOasBzDvTUN8d9B28C4928EEgI4sYuGbocibtKU3VrBS5vU3Ce
-	 XwdabRhxb0Y+NlYrXUn5fJ/5m5IA8z5qeFjgB62+uJZPi0/ITZRGekft5flS6/QXpS
-	 FfubATlro49pbXiay6PK3Au7TqeqeUf5VGR9ZjfKE2CaeJUkbCpR6dcO604mCnse3M
-	 z1/o+jFp2dEkQ==
+	s=k20201202; t=1713541012;
+	bh=M63do2rsHrBol9Y21pmkGXyr8SUKXE1yQfuo4S+xsMs=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=gBSpE6pfBPwdSyba8Jqysn8yJ1aw2s6fzeTykhH4nrZ1Yz6CQf0dyUZ80FqATt+mJ
+	 RIgBXC46MO3xABapu4G6TvJAAsA9+lEWBJ1XV33z8iTot4G1PjZ8ttOn9bODCnFTIq
+	 XV0Rw1pfpETZ5IYwhCj1YJ6GZGlQ7CfFVp1jqiYNsEPQTfveClcsUMvkqw5F9E+GUx
+	 lo6pT4wI+N9eZ2Ry+ICWCPcb6vC2A8AauGYgzX7FYVaES+3DGY1DDf+8eQAnQCvKiQ
+	 Zd2aj/tfFm4veoR2Rdm+v0SGTHEELJ7ELA3BmvVo6TtjVohwwfiik7sRRjYRn+UQ+F
+	 0bo7FZxL0rBrw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFCACC4345F;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EED59C071DB;
 	Fri, 19 Apr 2024 15:36:51 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Subject: [PATCH 0/8] iio: ad9467: support interface tuning
-Date: Fri, 19 Apr 2024 17:36:43 +0200
-Message-Id: <20240419-ad9467-new-features-v1-0-3e7628ff6d5e@analog.com>
+Date: Fri, 19 Apr 2024 17:36:45 +0200
+Subject: [PATCH 2/8] iio: adc: adi-axi-adc: only error out in major version
+ mismatch
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -39,10 +40,10 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAIuPImYC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIxMDE0NL3cQUSxMzc9281HLdtNTEktKi1GLdtKS0pMRE09SUNAMzJaDOgqL
- UtMwKsKnRsbW1AH7/8pJlAAAA
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240419-ad9467-new-features-v1-2-3e7628ff6d5e@analog.com>
+References: <20240419-ad9467-new-features-v1-0-3e7628ff6d5e@analog.com>
+In-Reply-To: <20240419-ad9467-new-features-v1-0-3e7628ff6d5e@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
 Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
  Alexandru Ardelean <alexandru.ardelean@analog.com>, 
@@ -53,11 +54,11 @@ Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
  Conor Dooley <conor+dt@kernel.org>, 
  Olivier Moysan <olivier.moysan@foss.st.com>, Nuno Sa <nuno.sa@analog.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1713541010; l=2508;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1713541010; l=1320;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=XcTC4nhrKFpu4l4Ue99zz7dLYgzqq+aK6wzay67YX2g=;
- b=Y69JHjIU3I4VRJrq1jupgSU9yq2gEXvNAZDtA7RK67ZCfN73+UG6KFO+FhOftw1bAX+wXx+Og
- 7Yc5xET3WQ3DRk99dgTQfbU4b+lFS0E+T9GXsehMY2mAxYw0He7vdWp
+ bh=PKeKv+/FjVf4CBXkS3IXNv+HfrXrDFDeJP+4Q7Z6xTk=;
+ b=BFlPAe3M5OBgFWkkaWq/O6gsfGa0Vd1GEBUfwRCXcvzaGJ+FegFvmtfP1dTDZkZfHI3pR2ABp
+ MTCRXzhpKF3AveS9Ijc58ZBmReShPeIV05HubsvboArxiYkuHx3A0nA
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -65,60 +66,39 @@ X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
 X-Original-From: Nuno Sa <nuno.sa@analog.com>
 Reply-To: nuno.sa@analog.com
 
-Hi Jonathan,
+From: Nuno Sa <nuno.sa@analog.com>
 
-Here it goes one more set of new functionality for the backend
-framework. This allows for one of the most important missing features of
-the ad9467 driver. I hope the new interfaces to be fairly straight.
-Though, there's one that's likely to catch your attention:
+The IP core only has breaking changes when there major version changes.
+Hence, only match the major number. This is also in line with the other
+core ADI has upstream. The current check for erroring out
+'expected_version > current_version"' is then wrong as we could just
+increase the core major with breaking changes and that would go
+unnoticed.
 
-iio_backend_iodelay_set()
-
-as you would expect (rightfully) some delay with actual units. The
-reason why it does not have any units is because the IO delay thing is
-mostly a calibration done at the backend level and the actually values
-and timings (each tap corresponds to) is very HW specific. For example
-the Xilinx/AMD zedboard has different specifications when compared to
-zc706.
-
-Given the above, I admit (:sweat smile:) I went the easier path and just added a
-parameter with no meaningful unit (with proper docs). I'm definitely open
-for ideas if this fells to hacky. One thing that I thought would be to
-have any additional API that could be called during probe and get an
-array of delays from the backend. Something like:
-
-iio_backend_iodelays_get(back, const unsigned int **delays_ps, unsigned int *ndelays)
-
-The backend should know what delays it supports. For the axi-adc IP we
-do have registers to detect the fpga grade etc so we could return the
-delays based on the HW we are running on. We would also need an addition
-refclk as the actual delay each tap introduces depends on a refclk.
-
-The series also has some "unrelated" patches for improvements and fixes. 
-
+Fixes: ef04070692a2 ("iio: adc: adi-axi-adc: add support for AXI ADC IP core")
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
-Nuno Sa (8):
-      iio: backend: add API for interface tuning
-      iio: adc: adi-axi-adc: only error out in major version mismatch
-      dt-bindings: adc: axi-adc: add clocks property
-      iio: adc: axi-adc: make sure AXI clock is enabled
-      iio: adc: adi-axi-adc: remove regmap max register
-      iio: adc: adi-axi-adc: support digital interface calibration
-      iio: adc: ad9467: cache the sample rate
-      iio: adc: ad9467: support digital interface calibration
+ drivers/iio/adc/adi-axi-adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- .../devicetree/bindings/iio/adc/adi,axi-adc.yaml   |   5 +
- drivers/iio/adc/ad9467.c                           | 340 ++++++++++++++++++---
- drivers/iio/adc/adi-axi-adc.c                      | 123 +++++++-
- drivers/iio/industrialio-backend.c                 |  86 ++++++
- include/linux/iio/backend.h                        |  57 +++-
- 5 files changed, 561 insertions(+), 50 deletions(-)
----
-base-commit: 62d3fb9dcc091ccdf25eb3b716e90e07e3ed861f
-change-id: 20240419-ad9467-new-features-fbfbaa5edf06
---
+diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+index 4156639b3c8bd..a543b91124b07 100644
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -207,9 +207,9 @@ static int adi_axi_adc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (*expected_ver > ver) {
++	if (ADI_AXI_PCORE_VER_MAJOR(ver) != ADI_AXI_PCORE_VER_MAJOR(*expected_ver)) {
+ 		dev_err(&pdev->dev,
+-			"IP core version is too old. Expected %d.%.2d.%c, Reported %d.%.2d.%c\n",
++			"Major version mismatch. Expected %d.%.2d.%c, Reported %d.%.2d.%c\n",
+ 			ADI_AXI_PCORE_VER_MAJOR(*expected_ver),
+ 			ADI_AXI_PCORE_VER_MINOR(*expected_ver),
+ 			ADI_AXI_PCORE_VER_PATCH(*expected_ver),
 
-Thanks!
-- Nuno Sá
+-- 
+2.44.0
 
 
