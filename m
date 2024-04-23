@@ -1,100 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB19B13C68D;
-	Tue, 23 Apr 2024 15:20:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5BF413BC33;
+	Tue, 23 Apr 2024 15:31:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713885643; cv=none; b=ko3ZUN0u3RoaCYL2k3/CrAmCKh4Ebtz0lY8cTT+XMcMBLHy/FO7220pL8jP+hoz2oU3cvmPMBidWNYOQn1xI2smt1aCZ+DtMuSNRK0fsmSbBDZVG1MkLWDgREPfXDi43UBltKwwPr+HlPCKFt8mdrXRo8oeGoTCiK/PucKsuBj8=
+	t=1713886291; cv=none; b=LkY9ZO/DHaZbRs02IGPCzwWLmI6N2e1fM4uklq+gov91J6Ho+RvpmtU31jzttyH7sVM6HG7KjURiBzrBmc7PZ3PxitPw7GtE5th2ruEtPnwf5df2Fo8aKmij3c4hzfq3dGd6Mk4bRAo1vXuee1BlAQLi3v9nd0IQpUXJuqMeZFc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713885643; c=relaxed/simple;
-	bh=qPg5S47mYtFSNZmI6098SuLsJSTkHXYOky1OUsD8mu4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=SXgsd92WFUBkPAYAtlS3xiydrNNnvI2XFveaYEUmkpmh/4wTknqdCkguZP9RcxkBuyF0DKzGLxI8KRlThZdZfAxnrD3qL5c1kcSMs/IRZXRupoMDRUILojwurRTdi8hx7sRB5XnBmmj5TDAxydj8ldUhVIjhsfCjbqd4smg5Rds=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RzPzj3lS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1713886291; c=relaxed/simple;
+	bh=BlpavYPezI9leAXjmHFPwGvnManzT7FMGBMAmW5A9bk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WkymYwu75BR9LmloWfp7Tl5gAcuiX4lUavR+SF6KBK+1Lyv552fQ6MSOc4atI36CXtUxb29w/jnMQ6udwgukEkt13lJHOCaqCuAwRfD99jkxqmLOOfxdjSnBk9IacWBpeUUT1VyZztgC9TpPivNtN3zWoGiSy4VF9oHhnZH9Slc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PXM5pSNp; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RzPzj3lS"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5CB91C116B1;
-	Tue, 23 Apr 2024 15:20:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713885643;
-	bh=qPg5S47mYtFSNZmI6098SuLsJSTkHXYOky1OUsD8mu4=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=RzPzj3lSqzplbAdXP9l7FK7qgQfIrBADUWCc2SgFZwJz1SLR2Pr4tAFje2Z7jxAQp
-	 UA2ZSvWpE8kPu8j7eIUpKDLIUotIW6P6KHDqZRKKSeUaT95gT60hmc0SUiFFUu4ADr
-	 vZxN5nKC25mVKh+UMrQP7nHGSvqAVDLNkMUB9RpeqlhAHOA1awyXcazv1kBwcNb7/Y
-	 HYEsHhhdY2qSrwC4U7svkmCYlsf1Cjq2Q2OLX5GYwz0u61ZwMKP7ASGh8nt8k1ArCp
-	 RBU7Qtch+BLSvZkiY3+23WQaS7zeUFz3yutnZ33UXN7Xi+F/930qXuBtPVmjwdVO4W
-	 jjJNM8dsmWxiw==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6FFC04FFE;
-	Tue, 23 Apr 2024 15:20:43 +0000 (UTC)
-From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Tue, 23 Apr 2024 17:20:32 +0200
-Subject: [PATCH v2 3/4] iio: backend: make use of dev_err_cast_probe()
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PXM5pSNp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713886290; x=1745422290;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BlpavYPezI9leAXjmHFPwGvnManzT7FMGBMAmW5A9bk=;
+  b=PXM5pSNpP5WbLYA3ajOKC5ly27PNCToxlGqTkpgaXaCxR9umm/JR/AFm
+   ci6Ll2dGmDOiv21Km/4vRFQVsOksmoBIuerho5O2My6zsiQq8JJePSNri
+   2yvh86SC82RM677i/D5kxBrfjMSBFEbiksKzUdo4sXKYJcwTB7Nkry0Sh
+   9u761a1NXh7G3moDaeVkGXNLKY6IlX/nstJcM9DcsZmypFM1tLewtVHuc
+   j9PNHFzipd+ZnXm9L2EzpuqCLlx+aOcyGZL+fwF4k9HsP7ncsj1OsygFx
+   SEPdl6NvgTjafL8/lPyqP/9JmJHd035hxuN9Q3z5fB28MTkJFtjC+Qwn0
+   A==;
+X-CSE-ConnectionGUID: SSc2HXT6ROCd7q3+65YTiA==
+X-CSE-MsgGUID: mpRh+nh8SzSjWlM9mb7BFQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="9585993"
+X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
+   d="scan'208";a="9585993"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 08:31:29 -0700
+X-CSE-ConnectionGUID: 7Wl1e3GhTIiPTuRGr92bFA==
+X-CSE-MsgGUID: Zz8/bys6SDqEXh8Z1+NeTA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
+   d="scan'208";a="55364540"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa002.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 08:31:24 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rzI76-00000000NQF-21FL;
+	Tue, 23 Apr 2024 18:31:20 +0300
+Date: Tue, 23 Apr 2024 18:31:20 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: nuno.sa@analog.com
+Cc: Petr Mladek <pmladek@suse.com>, Chris Down <chris@chrisdown.name>,
+	John Ogness <john.ogness@linutronix.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Jyoti Bhayana <jbhayana@google.com>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] dev_printk: add new dev_err_probe() helpers
+Message-ID: <ZifUSKFh2C4VG5QB@smile.fi.intel.com>
+References: <20240423-dev-add_dev_errp_probe-v2-0-12f43c5d8b0d@analog.com>
+ <20240423-dev-add_dev_errp_probe-v2-1-12f43c5d8b0d@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240423-dev-add_dev_errp_probe-v2-3-12f43c5d8b0d@analog.com>
-References: <20240423-dev-add_dev_errp_probe-v2-0-12f43c5d8b0d@analog.com>
-In-Reply-To: <20240423-dev-add_dev_errp_probe-v2-0-12f43c5d8b0d@analog.com>
-To: Petr Mladek <pmladek@suse.com>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- Chris Down <chris@chrisdown.name>, John Ogness <john.ogness@linutronix.de>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
- Olivier Moysan <olivier.moysan@foss.st.com>, 
- Andi Shyti <andi.shyti@kernel.org>, Jyoti Bhayana <jbhayana@google.com>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- Nuno Sa <nuno.sa@analog.com>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1713885641; l=960;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=O5sBK3dByRpiEz66h+ITvQMqPVPMlwbEa+A9Df4FqVo=;
- b=nei54/x6Mkn2Mx6Ct0Ltt/13H9JOLlF+w9Cmz3PJ7G5HAH92QrzgZNUmxoV52ZTd+mEIhRNDC
- IDXKUJpboqtCwYu3EzhkpajOLYz7lcxIbO1y+uix05hyT/x0KzVn13h
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
- auth_id=100
-X-Original-From: Nuno Sa <nuno.sa@analog.com>
-Reply-To: nuno.sa@analog.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240423-dev-add_dev_errp_probe-v2-1-12f43c5d8b0d@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-From: Nuno Sa <nuno.sa@analog.com>
+On Tue, Apr 23, 2024 at 05:20:30PM +0200, Nuno Sa via B4 Relay wrote:
+> From: Nuno Sa <nuno.sa@analog.com>
+> 
+> This is similar to dev_err_probe() but for cases where an ERR_PTR() or
+> ERR_CAST() is to be returned simplifying patterns like:
+> 
+> 	dev_err_probe(dev, ret, ...);
+> 	return ERR_PTR(ret)
+> or
+> 	dev_err_probe(dev, PTR_ERR(ptr), ...);
+> 	return ERR_CAST(ptr)
 
-Using dev_err_cast_probe() to simplify the code.
+...
 
-Signed-off-by: Nuno Sa <nuno.sa@analog.com>
----
- drivers/iio/industrialio-backend.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+> +/* Simple helper for dev_err_probe() when ERR_PTR() is to be returned. */
+> +#define dev_err_ptr_probe(dev, ___err, fmt, ...)	({		\
+> +	ERR_PTR(dev_err_probe(dev, ___err, fmt, ##__VA_ARGS__));	\
+> +})
 
-diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
-index f08ed6d70ae5..2cc6459246ce 100644
---- a/drivers/iio/industrialio-backend.c
-+++ b/drivers/iio/industrialio-backend.c
-@@ -475,11 +475,9 @@ struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name)
- 	}
- 
- 	fwnode = fwnode_find_reference(dev_fwnode(dev), "io-backends", index);
--	if (IS_ERR(fwnode)) {
--		dev_err_probe(dev, PTR_ERR(fwnode),
--			      "Cannot get Firmware reference\n");
--		return ERR_CAST(fwnode);
--	}
-+	if (IS_ERR(fwnode))
-+		return dev_err_cast_probe(dev, fwnode,
-+					  "Cannot get Firmware reference\n");
- 
- 	guard(mutex)(&iio_back_lock);
- 	list_for_each_entry(back, &iio_back_list, entry) {
+Why ; and hence why ({}) ?
+
+I even believe the compiler may warn if you have double ;; in some cases.
+
+...
+
+> +#define dev_err_cast_probe(dev, ___err_ptr, fmt, ...)	({			\
+> +	ERR_PTR(dev_err_probe(dev, PTR_ERR(___err_ptr), fmt, ##__VA_ARGS__));	\
+> +})
+
+Ditto.
 
 -- 
-2.44.0
+With Best Regards,
+Andy Shevchenko
 
 
