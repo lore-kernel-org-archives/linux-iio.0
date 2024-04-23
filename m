@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5B2913BAFE;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB13A13C676;
 	Tue, 23 Apr 2024 15:20:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713885643; cv=none; b=Ioak9dRWzbV3PcqXj7M2qNsB99iAehLucLUAfO1m9IzFAYMkqvzyO/h7/OCy5fpm2GZfXBUyDgjBn1gtsYzZWFrtoq47tPblsbm3Vy7ycVTy/naoOLwHMjl7/BuPKYEPh0akeKgdW1N1uX1hfVs6pePeUCGAHiJtgupDiywcBGg=
+	t=1713885643; cv=none; b=CbErouB2tmA3rWgW1+xCrLZOvMuvhQFzxiacxzhhy1p6Iassxxckdpm79wHaIBqNSMQUxonreW5MoKBBKIAM25EcLuzBrd/LZ4wpb+zcDqgkx1c+JOCX9tFUs+Q00hKb/pqavYczzEh9v+eTtcREoqfbuX1twx/rbzL294DvPsU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1713885643; c=relaxed/simple;
-	bh=OyvbrdsdOf2HxYi0DXyL+Wx579OMeT8jr9c640c8pY4=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=obkVByb/pv2183ui7PX3Dkq6pgrlSRQTVp/RGg9cLipdbfxIKL1eQfAiw75FdnAmCyqE/NjTDleyXbel+mHBJA72M0CUpXSmiYFCe51qwv9Ndu+H0rnEZCriuDdvpaFMRuJNX9JvHNUdxUDvXe7odQddVZhi0IQUTbcwTYp34kw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ePaTI8/W; arc=none smtp.client-ip=10.30.226.201
+	bh=daWyLQmhXixnMBBEbyIlhAgaxicpslZZ0+ILNyeGPzU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=L7yquQFgJsV4//LR9lYGED1Oy/FlDoigInp1te1358c8nMKSA6Aqnpeuoh3l0TTqNnt6Ex+mqJ0GjhBTHdDvUYwMKngO9rCBF9pRKJsOfpckFN9VW4HK9AzjpwWAArOzQbEWg/8mMIRp8JjCPxFmlyggg9SVNV8iK7NMkChYrWM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TCPN5i6U; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ePaTI8/W"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2386EC2BD11;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TCPN5i6U"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 62FB1C4AF0A;
 	Tue, 23 Apr 2024 15:20:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1713885643;
-	bh=OyvbrdsdOf2HxYi0DXyL+Wx579OMeT8jr9c640c8pY4=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=ePaTI8/WeGCq3oP9TPCFaFFHRJ/MYBA+RPJJNmoBRx8Gg5wQXfXvjVf7izK/YOc9f
-	 L/TFkEIWp6gqmQHnIczV2UPkAY/LUhHwHVh3+1ikEY6PK4FyW2AgAkQWnLrUk5XCdx
-	 g3uvo5iCPRiqJl7kHucO+W4ZHwCR2emSNC+6TTUlcAzS25ItrsK7HbRfEboX3VrZZl
-	 rlLNVKxW5AzFeXtqwcE6KG9uxS2E2U5fbUurJEAdIF5zL9oAVkq9w+qLKtkIGD5sim
-	 4UGQjWqZenRAKORFz6Pn0jncs3hZ456GzHlPES/1DNEp1PPWPQqcf2Eq4nvUQnnU/K
-	 XLClRxdhahKoQ==
+	bh=daWyLQmhXixnMBBEbyIlhAgaxicpslZZ0+ILNyeGPzU=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=TCPN5i6UbvhdkvBt0Us4vgrYZkPqrs6LP2P/Aml3dGG0qEHNc2+pQ+5UQ07NhCDsP
+	 +r1NCD1PLacLHGb+FSr8c5c7Oj/J5OQmwy8FjtHhuiM+9m6NPJQavIn7ZS7vTWp/Fv
+	 H1eU2Ki2ko7wWNT/MA2S6s7Z61HdSW4P2tJyZqSlGNrCgZqnwG/IEhAlhiVkp06604
+	 AWRh/0c52Z3M+8KezBbmSSrgHSq1+rFB2FI40H+xra+rEcdMZk7Rw7q+aJB+3i+Ub3
+	 LuWe5kVYvRZdoejNOTT8tGPqXi52QBPbJUHfY9ldfCh4RQRvyriYOtaxPYLO8r7Gua
+	 JybvCkUCsXnKQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AEA0C4345F;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC27C19F4F;
 	Tue, 23 Apr 2024 15:20:43 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Subject: [PATCH v2 0/4] dev_printk: add dev_errp_probe() helper
-Date: Tue, 23 Apr 2024 17:20:29 +0200
-Message-Id: <20240423-dev-add_dev_errp_probe-v2-0-12f43c5d8b0d@analog.com>
+Date: Tue, 23 Apr 2024 17:20:33 +0200
+Subject: [PATCH v2 4/4] iio: common: scmi_iio: convert to dev_err_probe()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -39,10 +39,10 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAL3RJ2YC/x2MQQqAIBAAvxJ7TjAzgr4SIdZutReVFSIQ/550G
- uYwUyCTMGVYugJCD2eOoYnpOzhuHy5SjM3BaGO1NaNCepRHdI2ORJJLEndSA6K20zye1k/Q4iR
- 08vuP163WDyo3lnloAAAA
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240423-dev-add_dev_errp_probe-v2-4-12f43c5d8b0d@analog.com>
+References: <20240423-dev-add_dev_errp_probe-v2-0-12f43c5d8b0d@analog.com>
+In-Reply-To: <20240423-dev-add_dev_errp_probe-v2-0-12f43c5d8b0d@analog.com>
 To: Petr Mladek <pmladek@suse.com>, 
  Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
  Chris Down <chris@chrisdown.name>, John Ogness <john.ogness@linutronix.de>, 
@@ -53,11 +53,11 @@ To: Petr Mladek <pmladek@suse.com>,
 Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
  Nuno Sa <nuno.sa@analog.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1713885641; l=1190;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1713885641; l=3433;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=OyvbrdsdOf2HxYi0DXyL+Wx579OMeT8jr9c640c8pY4=;
- b=41tRg6ufy5pwxxCdDpPaKGvcgOMYRhybemdpQjZ2/Fd1w219f0pYfxPZNYkVdRLz/hQG2fDR5
- SWNbzCJuCvYCvKJVNHX+MCFghLuwPPD0itHC517e+02X/5N33+emX0k
+ bh=ClJ3sRzkiojLcrvi0KpVZa+uYfx+C5zcG1LAl2kp8n8=;
+ b=VN2nBviGoxHI3FJL9V7BAJfS9jU4cTEgtov2PPD9aWEKmHMliTcjcuctwHjvXVoKDRXsFq0lz
+ APclNLIVmvbAAXJetoYeEU2tFiuLJPg5k8W5ParKCVUhDC+dXv26xUR
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -65,42 +65,104 @@ X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
 X-Original-From: Nuno Sa <nuno.sa@analog.com>
 Reply-To: nuno.sa@analog.com
 
-Hi,
+From: Nuno Sa <nuno.sa@analog.com>
 
-Here it goes the second version of this. Main difference is the
-introduction of dev_err_cast_probe(). Full log:
+Make use of dev_err_probe() and dev_err_ptr_probe() to simplify error paths
+during probe.
 
-v1:
- * https://lore.kernel.org/all/20240404-dev-add_dev_errp_probe-v1-0-d18e3eb7ec3f@analog.com/
-
-v2:
- * Patch 1:
-   - Renamed dev_errp_probe() -> dev_err_ptr_probe();
-   - Added dev_err_cast_probe().
- * Patch 2:
-   - Make use of dev_err_cast_probe();
-   - Also use dev_err_ptr_probe() in __ltc2983_custom_sensor_new().  
- * Patch 3:
-   - Use dev_err_cast_probe().
-
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
-Nuno Sa (4):
-      dev_printk: add new dev_err_probe() helpers
-      iio: temperature: ltc2983: convert to dev_err_probe()
-      iio: backend: make use of dev_err_cast_probe()
-      iio: common: scmi_iio: convert to dev_err_probe()
+ drivers/iio/common/scmi_sensors/scmi_iio.c | 45 +++++++++++++-----------------
+ 1 file changed, 19 insertions(+), 26 deletions(-)
 
- drivers/iio/common/scmi_sensors/scmi_iio.c |  45 ++---
- drivers/iio/industrialio-backend.c         |   8 +-
- drivers/iio/temperature/ltc2983.c          | 282 +++++++++++++----------------
- include/linux/dev_printk.h                 |   9 +
- 4 files changed, 158 insertions(+), 186 deletions(-)
----
-base-commit: a59668a9397e7245b26e9be85d23f242ff757ae8
-change-id: 20240423-dev-add_dev_errp_probe-1dd04573f4a5
---
+diff --git a/drivers/iio/common/scmi_sensors/scmi_iio.c b/drivers/iio/common/scmi_sensors/scmi_iio.c
+index 0c2caf3570db..841eda79a8cc 100644
+--- a/drivers/iio/common/scmi_sensors/scmi_iio.c
++++ b/drivers/iio/common/scmi_sensors/scmi_iio.c
+@@ -626,12 +626,10 @@ scmi_alloc_iiodev(struct scmi_device *sdev,
+ 				SCMI_PROTOCOL_SENSOR, SCMI_EVENT_SENSOR_UPDATE,
+ 				&sensor->sensor_info->id,
+ 				&sensor->sensor_update_nb);
+-	if (ret) {
+-		dev_err(&iiodev->dev,
+-			"Error in registering sensor update notifier for sensor %s err %d",
+-			sensor->sensor_info->name, ret);
+-		return ERR_PTR(ret);
+-	}
++	if (ret)
++		return dev_err_ptr_probe(&iiodev->dev, ret,
++					 "Error in registering sensor update notifier for sensor %s err %d",
++					 sensor->sensor_info->name, ret);
+ 
+ 	scmi_iio_set_timestamp_channel(&iio_channels[i], i);
+ 	iiodev->channels = iio_channels;
+@@ -653,10 +651,9 @@ static int scmi_iio_dev_probe(struct scmi_device *sdev)
+ 		return -ENODEV;
+ 
+ 	sensor_ops = handle->devm_protocol_get(sdev, SCMI_PROTOCOL_SENSOR, &ph);
+-	if (IS_ERR(sensor_ops)) {
+-		dev_err(dev, "SCMI device has no sensor interface\n");
+-		return PTR_ERR(sensor_ops);
+-	}
++	if (IS_ERR(sensor_ops))
++		return dev_err_probe(dev, PTR_ERR(sensor_ops),
++				     "SCMI device has no sensor interface\n");
+ 
+ 	nr_sensors = sensor_ops->count_get(ph);
+ 	if (!nr_sensors) {
+@@ -667,8 +664,8 @@ static int scmi_iio_dev_probe(struct scmi_device *sdev)
+ 	for (i = 0; i < nr_sensors; i++) {
+ 		sensor_info = sensor_ops->info_get(ph, i);
+ 		if (!sensor_info) {
+-			dev_err(dev, "SCMI sensor %d has missing info\n", i);
+-			return -EINVAL;
++			return dev_err_probe(dev, -EINVAL,
++					     "SCMI sensor %d has missing info\n", i);
+ 		}
+ 
+ 		/* This driver only supports 3-axis accel and gyro, skipping other sensors */
+@@ -683,29 +680,25 @@ static int scmi_iio_dev_probe(struct scmi_device *sdev)
+ 		scmi_iio_dev = scmi_alloc_iiodev(sdev, sensor_ops, ph,
+ 						 sensor_info);
+ 		if (IS_ERR(scmi_iio_dev)) {
+-			dev_err(dev,
+-				"failed to allocate IIO device for sensor %s: %ld\n",
+-				sensor_info->name, PTR_ERR(scmi_iio_dev));
+-			return PTR_ERR(scmi_iio_dev);
++			return dev_err_probe(dev, PTR_ERR(scmi_iio_dev),
++					     "failed to allocate IIO device for sensor %s: %ld\n",
++					     sensor_info->name, PTR_ERR(scmi_iio_dev));
+ 		}
+ 
+ 		err = devm_iio_kfifo_buffer_setup(&scmi_iio_dev->dev,
+ 						  scmi_iio_dev,
+ 						  &scmi_iio_buffer_ops);
+ 		if (err < 0) {
+-			dev_err(dev,
+-				"IIO buffer setup error at sensor %s: %d\n",
+-				sensor_info->name, err);
+-			return err;
++			return dev_err_probe(dev, err,
++					     "IIO buffer setup error at sensor %s: %d\n",
++					     sensor_info->name, err);
+ 		}
+ 
+ 		err = devm_iio_device_register(dev, scmi_iio_dev);
+-		if (err) {
+-			dev_err(dev,
+-				"IIO device registration failed at sensor %s: %d\n",
+-				sensor_info->name, err);
+-			return err;
+-		}
++		if (err)
++			return dev_err_probe(dev, err,
++					     "IIO device registration failed at sensor %s: %d\n",
++					     sensor_info->name, err);
+ 	}
+ 	return err;
+ }
 
-Thanks!
-- Nuno Sá
+-- 
+2.44.0
 
 
