@@ -1,64 +1,106 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C391135414;
-	Tue, 23 Apr 2024 14:27:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5B6A13C66C;
+	Tue, 23 Apr 2024 15:20:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713882430; cv=none; b=TVMqpHSpVweTUSNF27hNrGDZw8e4u78+9ginqTn1X6lLkrxQCt3Mia0J+mjldMBxpKpyLOFUb/6x3mqPphRDk4MXu/snMnlYWSqAVBdRxOfwSdOI6ufwP1hjrsrrMXGT60gFSn/sZg6RJJ2xV12L/OBJWG90WGeUMMeEwyd88K8=
+	t=1713885643; cv=none; b=Tb9/3V+v1xWEeyW8Ra1gtBIpYJoP9z/8vPGDoYIEe2hUZUQU4/U5hCm25Yv0ay6YZ0uNdQGrWMtrsWbaZvtTU8sTf7pSmtvq08Xf8voaKjQAGsRcxOoScA6E+A7PMlxs3sNULbry8WYmpi/e9hJXYxBeAn/xK3Mw7+UDSxYPvj8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713882430; c=relaxed/simple;
-	bh=p6+nMfFtgTI1FIbPYAQn6VkjWsmoaZ1b4k1WTxh5HCc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Dbfm04yHlehPQRd/dvdjt1eVI4J7e6QctoPLGklrUqx1vg2dlncQ8XnVIi+bPaG4e2k9e/c2oTDLee05s4/H/mSnsOPAu9NqP+FtPMpiwaD2TXyd9gVCnKxrl9gxgHxs9D15wemO4GVPppoem22hDlqbkzhDiY5SsbW9NCNZpqY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WRKtCJUt; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1713885643; c=relaxed/simple;
+	bh=apXmCZAAlTcv2d9FtqBi2n0toEmnnPvQSjQR+DLhq50=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=L7eMw/zQhcMTqMlZttu8jBGGAYksryIymqK/39d8j0upwBcKPZ8kbXTS6Q4hX8m1ay2ZPbZIf04QoJ1jWtOubRgaCR8BpapL/iujR+AYTqKUcCk1/0vGLszonjV65vpqxjD4692kWtSjc+XcLtYhy+Y9VrYoVzCTHbyWRXBWt40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r67htizY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WRKtCJUt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA940C116B1;
-	Tue, 23 Apr 2024 14:27:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r67htizY"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 40F41C2BD10;
+	Tue, 23 Apr 2024 15:20:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713882430;
-	bh=p6+nMfFtgTI1FIbPYAQn6VkjWsmoaZ1b4k1WTxh5HCc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=WRKtCJUtYQXs6vqAEQFOK9FlqRtyIVjBZ8KwKP9CFX3NztHoANMLEGjUPV/+Wi/7I
-	 ObU1s81qNHLZSHvwOCOpWfmfInDu9wrCPnFxvtFxt0+fTPIB6RhrRd0E3yrevKGiVU
-	 v71j5Efh2VHjH3QKHBdIfzJely875Euwte3Drz2rM3WFcpW6Yhvj5gwmRhJlLD1mVK
-	 V3KsALi/4hxAH0K82B3z0ZttabzgSrfx42R4IM/H1Vb8+5UB72HZOZlhRVVNkIiQ7Z
-	 GKR1ypoBVwyczX4mEaYl2N2IIwXECbp+H9v07KI3WO8xZaI+g1ssfGeR4NC49rv1eH
-	 o0e7avn8ylCPA==
-Date: Tue, 23 Apr 2024 09:27:07 -0500
-From: Rob Herring <robh@kernel.org>
-To: inv.git-commit@tdk.com
-Cc: linux-iio@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-	lars@metafoo.de, jic23@kernel.org, devicetree@vger.kernel.org,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	conor+dt@kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: imu: add icm42686 inside
- inv_icm42600
-Message-ID: <171388241406.154626.4140712543078243270.robh@kernel.org>
-References: <20240422152240.85974-1-inv.git-commit@tdk.com>
- <20240422152240.85974-2-inv.git-commit@tdk.com>
+	s=k20201202; t=1713885643;
+	bh=apXmCZAAlTcv2d9FtqBi2n0toEmnnPvQSjQR+DLhq50=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=r67htizYN/x7WAEHKNnhnuua7N+q/qXlye9hLVC+cItyv+pb6gU/aRy9I1GgtljvV
+	 Tnbm9umHVqqBel4x6M6kuwveJIO0GYthsb3vMKLiil80NuEALD/Npo9oaIZTC2JmxH
+	 Rgp+GKMS5ZI73KLDMw0a08/jsK/XLD2T0cbDPnC9pNQJUexgZ6UUTYBQmDRSNscPSM
+	 IQHzJg+wPCuvk+OgvuUk2noLVL4eU53zn/1q6y/kwCKbh10qzOLUBarXXSAfRjG96o
+	 sxEVZ1OwTtkrR6bR7XPi3qmC134bohzvz7jOZCQU+iE3n7E1awPsGY6a/5F8KSQhe/
+	 fq9xl0JT1Dijw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F50FC19F4E;
+	Tue, 23 Apr 2024 15:20:43 +0000 (UTC)
+From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
+Date: Tue, 23 Apr 2024 17:20:30 +0200
+Subject: [PATCH v2 1/4] dev_printk: add new dev_err_probe() helpers
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240422152240.85974-2-inv.git-commit@tdk.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240423-dev-add_dev_errp_probe-v2-1-12f43c5d8b0d@analog.com>
+References: <20240423-dev-add_dev_errp_probe-v2-0-12f43c5d8b0d@analog.com>
+In-Reply-To: <20240423-dev-add_dev_errp_probe-v2-0-12f43c5d8b0d@analog.com>
+To: Petr Mladek <pmladek@suse.com>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Chris Down <chris@chrisdown.name>, John Ogness <john.ogness@linutronix.de>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
+ Olivier Moysan <olivier.moysan@foss.st.com>, 
+ Andi Shyti <andi.shyti@kernel.org>, Jyoti Bhayana <jbhayana@google.com>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ Nuno Sa <nuno.sa@analog.com>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1713885641; l=1170;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=9vRT1yB7cKMgARCNN9R6YoimX7EiL0EJICliqmirgVI=;
+ b=/OQCs5rmT3dEQ4zj8HcAF6Mlps+bwWIA1WQPIkd72RdXPAjuUXauUJKqTqgJjsdsztQe/iaVU
+ QYcWYv80Ea1BvQ0hoiG+TYe08uVVpiyrbj5RnudcUx5EiejSrl/viaE
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: Nuno Sa <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
 
+From: Nuno Sa <nuno.sa@analog.com>
 
-On Mon, 22 Apr 2024 15:22:39 +0000, inv.git-commit@tdk.com wrote:
-> From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> 
-> Add bindings for ICM-42686-P chip supporting high FSRs.
-> 
-> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> ---
->  .../devicetree/bindings/iio/imu/invensense,icm42600.yaml         | 1 +
->  1 file changed, 1 insertion(+)
-> 
+This is similar to dev_err_probe() but for cases where an ERR_PTR() or
+ERR_CAST() is to be returned simplifying patterns like:
 
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
+	dev_err_probe(dev, ret, ...);
+	return ERR_PTR(ret)
+or
+	dev_err_probe(dev, PTR_ERR(ptr), ...);
+	return ERR_CAST(ptr)
+
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+---
+ include/linux/dev_printk.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/include/linux/dev_printk.h b/include/linux/dev_printk.h
+index ae80a303c216..b9623ec22350 100644
+--- a/include/linux/dev_printk.h
++++ b/include/linux/dev_printk.h
+@@ -277,4 +277,13 @@ do {									\
+ 
+ __printf(3, 4) int dev_err_probe(const struct device *dev, int err, const char *fmt, ...);
+ 
++/* Simple helper for dev_err_probe() when ERR_PTR() is to be returned. */
++#define dev_err_ptr_probe(dev, ___err, fmt, ...)	({		\
++	ERR_PTR(dev_err_probe(dev, ___err, fmt, ##__VA_ARGS__));	\
++})
++
++/* Simple helper for dev_err_probe() when ERR_CAST() is to be returned. */
++#define dev_err_cast_probe(dev, ___err_ptr, fmt, ...)	({			\
++	ERR_PTR(dev_err_probe(dev, PTR_ERR(___err_ptr), fmt, ##__VA_ARGS__));	\
++})
+ #endif /* _DEVICE_PRINTK_H_ */
+
+-- 
+2.44.0
+
 
