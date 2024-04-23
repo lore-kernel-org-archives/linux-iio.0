@@ -1,24 +1,23 @@
 Received: from a.peacevolution.org (a.peacevolution.org [206.189.193.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD04518B04;
-	Tue, 23 Apr 2024 22:41:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98ED11E898;
+	Tue, 23 Apr 2024 22:41:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=206.189.193.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713912077; cv=none; b=UwZ1b+WNurT5gKanqZLQljUs3qEplGG0zZXCRaSPfNqLiqgdbVlbyyv0Y5JDDaBmVh7BC0LIw8EuZDF+zET9DSRZzSLFauu7AOUdj9LhV5DggaaURID8Jfkhbd82VnS4Q9nshbUGoYaZFxxcGba9Fneyd4Uv9Ph7GKU0PqVZH4U=
+	t=1713912079; cv=none; b=klBn0/JGfFLGGKBeLUfprQJMWBAstaxGpGfLE3lR4xqQI2gtJi03ofVqyEkHuDxcbmi2of4vZVKCMA9bi5HMLm7Qvfq1dGIQ5iSikNBrYk7gZtSDaJpYYXDCSXqhEpn4lit/S4+fl67LznMWnRUOcbkx/LIuBllO3cMYVUYTq+Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713912077; c=relaxed/simple;
-	bh=P1hW2nR8B6iOhbYwXhr0Keb/5gFXWkQwEOZrik5q2G8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Nf/zTjl1yptjtbXOGW0YOTFTeMCYwMnvwJ018tCFHZk3G/6OAJNo543ftM2OJIAOAMCA6yCTgWk+U0kwUeTE2zvtGkG+MRlgSJTzgU7RNEoyx5PXzq7NVq01776NbCo0vwugTNOCx3i7j6P33murF8kHyNg8zVHI8HBvESj2EIU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=peacevolution.org; spf=pass smtp.mailfrom=peacevolution.org; dkim=pass (1024-bit key) header.d=peacevolution.org header.i=@peacevolution.org header.b=a4Lk9guU; arc=none smtp.client-ip=206.189.193.133
+	s=arc-20240116; t=1713912079; c=relaxed/simple;
+	bh=VgV+qCaKdW6B3jmUvzPURLXsRQqGq9RRxeY0w6UalFg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GsGt1YDqPBH5scMb+JItP2nyrkevQ4RIFuFdEEZ5FMpKu/+XFANzcgSEWp8POXee9aqui2q3M00ZGZxUJaF2fCKKtQ4fQXi1BFgi5bAY4DZTIatxk0fgPSrgOzZGec3Vd5DG/HmV9Z7H2uIkFWv0kIv+UHgIsYqrTdWPSp7Dymw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=peacevolution.org; spf=pass smtp.mailfrom=peacevolution.org; dkim=pass (1024-bit key) header.d=peacevolution.org header.i=@peacevolution.org header.b=UbPW8/Oo; arc=none smtp.client-ip=206.189.193.133
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=peacevolution.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=peacevolution.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=peacevolution.org header.i=@peacevolution.org header.b="a4Lk9guU"
+	dkim=pass (1024-bit key) header.d=peacevolution.org header.i=@peacevolution.org header.b="UbPW8/Oo"
 Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-	by a.peacevolution.org (Postfix) with ESMTPA id A939547A5F;
-	Tue, 23 Apr 2024 22:41:13 +0000 (UTC)
+	by a.peacevolution.org (Postfix) with ESMTPA id 5E54147A02;
+	Tue, 23 Apr 2024 22:41:08 +0000 (UTC)
 From: Aren Moynihan <aren@peacevolution.org>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
@@ -41,11 +40,9 @@ Cc: Aren Moynihan <aren@peacevolution.org>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-sunxi@lists.linux.dev,
 	Willow Barraco <contact@willowbarraco.fr>
-Subject: [PATCH v2 4/6] iio: light: stk3310: use dev_err_probe where possible
-Date: Tue, 23 Apr 2024 18:33:07 -0400
-Message-ID: <20240423223309.1468198-6-aren@peacevolution.org>
-In-Reply-To: <20240423223309.1468198-2-aren@peacevolution.org>
-References: <20240423223309.1468198-2-aren@peacevolution.org>
+Subject: [PATCH v2 0/6] iio: light: stk3310: support powering off during suspend
+Date: Tue, 23 Apr 2024 18:33:03 -0400
+Message-ID: <20240423223309.1468198-2-aren@peacevolution.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -54,125 +51,50 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Authentication-Results: auth=pass smtp.auth=aren@peacevolution.org smtp.mailfrom=aren@peacevolution.org
-X-Spam-Level: ***
-X-Spamd-Bar: +++
+X-Spam-Level: ****
+X-Spamd-Bar: ++++
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=peacevolution.org;
-	s=dkim; t=1713912074;
-	h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:in-reply-to:references;
-	bh=H5coa02/iaOjA9iqLxo1Oztbgi2cxOUrNasxJP7xbIE=;
-	b=a4Lk9guU0NEdyN6/998Mxl90hggHJaHblk9XS8qF2T7129mcpApydDwPe+0VXsjTlWJt96
-	Boedlc8cpdlMESLG7EeHzoycM2whNz/nKnNj9HlhQtaU7gomXRkM6GTCPvWVP8X6ZvXMXo
-	uuxj5Up77P48MW4o7v7RTlNWHasx9uc=
+	s=dkim; t=1713912069;
+	h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
+	bh=a7PU4WDv6YB/7pbWHelv2hIhCcSRKNyFO0apkn1vY0U=;
+	b=UbPW8/OogtAEjAnzCYyz7x4fhb0ccUmtFHS+FaUiEgQl2dvZqlxDNioLZAlOQdMLH11n0O
+	3mmaOoPG+U68t1SVf2nsljrqSyC4FkdDksSU+a9Dfg7I1+WT6swV830ha0br1xEmKE2hDX
+	EwF8D+s1kB33T4XVo6C3ICNK0XqKsEs=
 
-Using dev_err_probe instead of dev_err and return makes the errors
-easier to understand by including the error name, and saves a little
-code.
+In the Pine64 PinePhone, the stk3310 chip is powered by a regulator that is
+disabled at system boot and can be shut off during suspend. To ensure that
+the chip properly initializes, both after boot and suspend, we need to
+manage this regulator.
 
-Signed-off-by: Aren Moynihan <aren@peacevolution.org>
----
+Additionally if the chip is shut off in suspend, we need to make sure that
+it gets reinitialized with the same parameters after resume.
 
-Notes:
-    Added in v2
+Major changes in v2:
+ - Add handling of the IR LED. I was hesitant to include this as it is the
+   same as pull-up regulator for the i2c bus on the hardware I have, so I
+   can't test it well. I think leaving it out is more likely to cause
+   issues than including it.
+ - Convert stk3310 to use dev_err_probe for errors.
+ - Always enable / disable regulators and rely on dummy devices if they're
+   not specified.
+ - more listed in individual patches
 
- drivers/iio/light/stk3310.c | 44 +++++++++++++++++--------------------
- 1 file changed, 20 insertions(+), 24 deletions(-)
+Aren Moynihan (4):
+  dt-bindings: iio: light: stk33xx: add vdd and leda regulators
+  iio: light: stk3310: Manage LED power supply
+  iio: light: stk3310: use dev_err_probe where possible
+  iio: light: stk3310: log error if reading the chip id fails
 
-diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-index ee1ac95dbc0e..c56c6298d292 100644
---- a/drivers/iio/light/stk3310.c
-+++ b/drivers/iio/light/stk3310.c
-@@ -60,10 +60,10 @@
- 		data->reg_##name =					    \
- 			devm_regmap_field_alloc(&client->dev, regmap,	    \
- 				stk3310_reg_field_##name);		    \
--		if (IS_ERR(data->reg_##name)) {				    \
--			dev_err(&client->dev, "reg field alloc failed.\n"); \
--			return PTR_ERR(data->reg_##name);		    \
--		}							    \
-+		if (IS_ERR(data->reg_##name))				    \
-+			return dev_err_probe(&client->dev,		    \
-+				PTR_ERR(data->reg_##name),		    \
-+				"reg field alloc failed.\n");		    \
- 	} while (0)
- 
- static const struct reg_field stk3310_reg_field_state =
-@@ -480,22 +480,20 @@ static int stk3310_init(struct iio_dev *indio_dev)
- 	if (chipid != STK3310_CHIP_ID_VAL &&
- 	    chipid != STK3311_CHIP_ID_VAL &&
- 	    chipid != STK3311X_CHIP_ID_VAL &&
--	    chipid != STK3335_CHIP_ID_VAL) {
--		dev_err(&client->dev, "invalid chip id: 0x%x\n", chipid);
--		return -ENODEV;
--	}
-+	    chipid != STK3335_CHIP_ID_VAL)
-+		return dev_err_probe(&client->dev, -ENODEV,
-+				     "invalid chip id: 0x%x\n", chipid);
- 
- 	state = STK3310_STATE_EN_ALS | STK3310_STATE_EN_PS;
- 	ret = stk3310_set_state(data, state);
--	if (ret < 0) {
--		dev_err(&client->dev, "failed to enable sensor");
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(&client->dev, ret, "failed to enable sensor\n");
- 
- 	/* Enable PS interrupts */
- 	ret = regmap_field_write(data->reg_int_ps, STK3310_PSINT_EN);
- 	if (ret < 0)
--		dev_err(&client->dev, "failed to enable interrupts!\n");
-+		return dev_err_probe(&client->dev, ret,
-+				     "failed to enable interrupts!\n");
- 
- 	return ret;
- }
-@@ -530,10 +528,10 @@ static int stk3310_regmap_init(struct stk3310_data *data)
- 
- 	client = data->client;
- 	regmap = devm_regmap_init_i2c(client, &stk3310_regmap_config);
--	if (IS_ERR(regmap)) {
--		dev_err(&client->dev, "regmap initialization failed.\n");
--		return PTR_ERR(regmap);
--	}
-+	if (IS_ERR(regmap))
-+		return dev_err_probe(&client->dev, PTR_ERR(regmap),
-+				     "regmap initialization failed.\n");
-+
- 	data->regmap = regmap;
- 
- 	STK3310_REGFIELD(state);
-@@ -597,10 +595,8 @@ static int stk3310_probe(struct i2c_client *client)
- 	struct stk3310_data *data;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
--	if (!indio_dev) {
--		dev_err(&client->dev, "iio allocation failed!\n");
--		return -ENOMEM;
--	}
-+	if (!indio_dev)
-+		return dev_err_probe(&client->dev, -ENOMEM, "iio allocation failed!\n");
- 
- 	data = iio_priv(indio_dev);
- 	data->client = client;
-@@ -655,15 +651,15 @@ static int stk3310_probe(struct i2c_client *client)
- 						IRQF_ONESHOT,
- 						STK3310_EVENT, indio_dev);
- 		if (ret < 0) {
--			dev_err(&client->dev, "request irq %d failed\n",
--				client->irq);
-+			dev_err_probe(&client->dev, ret, "request irq %d failed\n",
-+				      client->irq);
- 			goto err_standby;
- 		}
- 	}
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0) {
--		dev_err(&client->dev, "device_register failed\n");
-+		dev_err_probe(&client->dev, ret, "device_register failed\n");
- 		goto err_standby;
- 	}
- 
+Ondrej Jirman (2):
+  iio: light: stk3310: Implement vdd supply and power it off during
+    suspend
+  arm64: dts: allwinner: pinephone: Add power supplies to stk3311
+
+ .../bindings/iio/light/stk33xx.yaml           |   4 +
+ .../dts/allwinner/sun50i-a64-pinephone.dtsi   |   2 +
+ drivers/iio/light/stk3310.c                   | 116 +++++++++++++-----
+ 3 files changed, 94 insertions(+), 28 deletions(-)
+
 -- 
 2.44.0
 
