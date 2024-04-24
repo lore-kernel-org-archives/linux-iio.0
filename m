@@ -1,128 +1,167 @@
-Received: from vps.xff.cz (vps.xff.cz [195.181.215.36])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx08-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5CA115B576;
-	Wed, 24 Apr 2024 12:59:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.181.215.36
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D52D15821F;
+	Wed, 24 Apr 2024 13:21:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.207.212.93
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713963599; cv=none; b=A5jDNZ44oONk38aZ5CMlWTCvRjVT2NRl+8N39KGMdVYVpBVCxwyIGSC9u7+cKF9wM6iIMhsN/9KPsCs18VhZCyn1jjBazEf5vYlde9z5fit18mIOzZfKWArsR/XdW6UJ13tFf9C5+cqnWS/LlxIytthZYRrun/gCohT1FH0NMLE=
+	t=1713964883; cv=none; b=eWx/va08RijE0fPY1x0ILTO1MwyyblCirvl51fbm5DuyW6BcSHb/7NpUi5/MTOxYRcee7vJPMoTXUNarlMqg7H0YCX3mCHU7Wt4SOPTmEEcYzCjFWXIWspq3atFmwPka1geqTe3dfqzR/6lc56cSnfVDVEDEimbOsOyHjM9xiX0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713963599; c=relaxed/simple;
-	bh=kamfKpDUAuUVYKc3JD6fhJN/bs5aaqGFBEBTvufzKSA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ciHFUfx0mWhSGKhwwTSETTe8YoV+1zgR/0krI7gdcBhm85O5LjbILd9JJnFtaKFqYTCR8YvMhQcerRlVSKVd8x7OdIMIg4u5OVDi5c7tZEZR/Jx5Xn4hSiNCopLsTE+tOe8b3vaHliEP7W1jeACDo91YPMc9Bh1YQVB8OxU9kb0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xff.cz; spf=pass smtp.mailfrom=xff.cz; dkim=pass (1024-bit key) header.d=xff.cz header.i=@xff.cz header.b=m2Opc8GE; arc=none smtp.client-ip=195.181.215.36
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xff.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xff.cz
+	s=arc-20240116; t=1713964883; c=relaxed/simple;
+	bh=bABuUtxtwMiaDJEDth6yYKqkY4fMD7xJ78zqRkijgc0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=d+f4eerOeh8o2zWpWiktseCsT9DvruN4cxFpblOXYXB9DCsdEaaAdx/kWcBep+qEnEvYTfc2fbtVTooam0Jelh8mtpOIYlaWvck60V6+LsabgCQ4dcLASXLNsT3CzG0N0MqC5XXf7PDA1MyMyQGMaJAlfbyUygRyQg+qrJDvMw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=oPBxCIqj; arc=none smtp.client-ip=91.207.212.93
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=xff.cz header.i=@xff.cz header.b="m2Opc8GE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xff.cz; s=mail;
-	t=1713963589; bh=kamfKpDUAuUVYKc3JD6fhJN/bs5aaqGFBEBTvufzKSA=;
-	h=Date:From:To:Cc:Subject:X-My-GPG-KeyId:References:From;
-	b=m2Opc8GEH5y1OCPgcUHTFE55CkaXhDFNC4qU5zJuox4opmWh69YhB6n2wMWjbLBew
-	 iA9GtdDPXTHD7fXEV5ewxEJen0QK5Byy+ZQrWJWDnxEvXD2onLoNfnFu1kqiijSerA
-	 m/BxquIGSzeUxD7Eitsp/l5Uuxbg6yxVAETYL/EE=
-Date: Wed, 24 Apr 2024 14:59:48 +0200
-From: =?utf-8?Q?Ond=C5=99ej?= Jirman <megi@xff.cz>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Aren Moynihan <aren@peacevolution.org>, 
-	Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>, 
-	Jernej Skrabec <jernej.skrabec@gmail.com>, Samuel Holland <samuel@sholland.org>, 
-	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-iio@vger.kernel.org, phone-devel@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev, 
-	Willow Barraco <contact@willowbarraco.fr>
-Subject: Re: [PATCH v2 2/6] iio: light: stk3310: Implement vdd supply and
- power it off during suspend
-Message-ID: <5qqil7ltqhdeabml6toqpcy773uhjxgwaz3txpy4kv4sz55o2y@hmar674eey7s>
-Mail-Followup-To: =?utf-8?Q?Ond=C5=99ej?= Jirman <megi@xff.cz>, 
-	Andy Shevchenko <andy.shevchenko@gmail.com>, Aren Moynihan <aren@peacevolution.org>, 
-	Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>, 
-	Jernej Skrabec <jernej.skrabec@gmail.com>, Samuel Holland <samuel@sholland.org>, 
-	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-iio@vger.kernel.org, phone-devel@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev, 
-	Willow Barraco <contact@willowbarraco.fr>
-X-My-GPG-KeyId: EBFBDDE11FB918D44D1F56C1F9F0A873BE9777ED
- <https://xff.cz/key.txt>
-References: <20240423223309.1468198-2-aren@peacevolution.org>
- <20240423223309.1468198-4-aren@peacevolution.org>
- <CAHp75VeRDSPvpmSbUyZPp0RMoTOE193U2ma18qxv_qZQKLCq8g@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="oPBxCIqj"
+Received: from pps.filterd (m0369457.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 43OC4omW029734;
+	Wed, 24 Apr 2024 14:20:40 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	selector1; bh=hkSUB26Hij3YoH4d4gONssMZiD9lhMIi9MYuoDahbc0=; b=oP
+	BxCIqjZqjU5yIPdolezp3gucfYE43BpO2moF0boJpv1s74317nNrf8tTbYX5usOd
+	rlKx/FhS1Qy6Jkjea82P6nnIhij2k6RtqQ72RGkfOKHZzW/rYU1jige7eN6glRBm
+	Gr/fYnvQ0nI1FFIhwyV+FpQcOob58VqnssUOpcpR/bfBeTjXY5MTu8NY0VN5oLNt
+	baPC6vo+Z6OwTORIZk9BIz6pJZyBiWpxinx+vs127hpTMIh3Q7+NTYQB11bqSkWu
+	wTRZ/tTR1dd1WWC/yQviBRPlU7NtgpxHp9kyOZz9PzdXYOFqZatkp9e4ugAKrRJ2
+	ZAcLVNQAQ/E+lH5KwgDw==
+Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3xmrnj5npa-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 24 Apr 2024 14:20:39 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 16FD54002D;
+	Wed, 24 Apr 2024 14:20:30 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0C4C621A91F;
+	Wed, 24 Apr 2024 14:19:21 +0200 (CEST)
+Received: from [10.48.86.79] (10.48.86.79) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Wed, 24 Apr
+ 2024 14:19:18 +0200
+Message-ID: <a0bd94ce-3ddb-4448-ada9-7070323cc98f@foss.st.com>
+Date: Wed, 24 Apr 2024 14:19:18 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v9 06/13] of: property: fw_devlink: Add support for
+ "access-controller"
+To: Saravana Kannan <saravanak@google.com>,
+        Gatien Chevallier
+	<gatien.chevallier@foss.st.com>
+CC: <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <vkoul@kernel.org>, <jic23@kernel.org>,
+        <olivier.moysan@foss.st.com>, <arnaud.pouliquen@foss.st.com>,
+        <mchehab@kernel.org>, <fabrice.gasnier@foss.st.com>,
+        <andi.shyti@kernel.org>, <ulf.hansson@linaro.org>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <hugues.fruchet@foss.st.com>, <lee@kernel.org>, <will@kernel.org>,
+        <catalin.marinas@arm.com>, <arnd@kernel.org>,
+        <richardcochran@gmail.com>, Frank Rowand <frowand.list@gmail.com>,
+        <peng.fan@oss.nxp.com>, <lars@metafoo.de>, <rcsekar@samsung.com>,
+        <wg@grandegger.com>, <mkl@pengutronix.de>,
+        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <dmaengine@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-media@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-phy@lists.infradead.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, Rob Herring <robh@kernel.org>
+References: <20240105130404.301172-1-gatien.chevallier@foss.st.com>
+ <20240105130404.301172-7-gatien.chevallier@foss.st.com>
+ <CAGETcx8HdnspNfDEJP+cqShJPsDryzGkOVq6B99cFQzkZi3dMg@mail.gmail.com>
+Content-Language: en-US
+From: Alexandre TORGUE <alexandre.torgue@foss.st.com>
+In-Reply-To: <CAGETcx8HdnspNfDEJP+cqShJPsDryzGkOVq6B99cFQzkZi3dMg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHp75VeRDSPvpmSbUyZPp0RMoTOE193U2ma18qxv_qZQKLCq8g@mail.gmail.com>
+X-ClientProxiedBy: SHFCAS1NODE1.st.com (10.75.129.72) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1011,Hydra:6.0.650,FMLib:17.11.176.26
+ definitions=2024-04-24_10,2024-04-23_02,2023-05-22_02
 
-On Wed, Apr 24, 2024 at 02:16:06AM GMT, Andy Shevchenko wrote:
-> On Wed, Apr 24, 2024 at 1:41 AM Aren Moynihan <aren@peacevolution.org> wrote:
-> >
-> > From: Ondrej Jirman <megi@xff.cz>
-> >
-> > VDD power input can be used to completely power off the chip during
-> > system suspend. Do so if available.
-> 
-> ...
-> 
-> >         ret = stk3310_init(indio_dev);
-> >         if (ret < 0)
-> > -               return ret;
-> > +               goto err_vdd_disable;
-> 
-> This is wrong. You will have the regulator being disabled _before_
-> IRQ. Note, that the original code likely has a bug which sets states
-> before disabling IRQ and removing a handler.
+Hi Saravana
 
-How so? stk3310_init is called before enabling the interrupt.
+On 4/24/24 07:57, Saravana Kannan wrote:
+> On Fri, Jan 5, 2024 at 5:03 AM Gatien Chevallier
+> <gatien.chevallier@foss.st.com> wrote:
+>>
+>> Allows tracking dependencies between devices and their access
+>> controller.
+>>
+>> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
+>> Acked-by: Rob Herring <robh@kernel.org>
+> 
+> Please cc me on fw_devlink patches. Also, this patch is breaking the
+> norm below. Please send a fix up patch.
+> 
+>> ---
+>> Changes in V9:
+>>          - Added Rob's review tag
+>>
+>> Changes in V6:
+>>          - Renamed access-controller to access-controllers
+>>
+>> Changes in V5:
+>>          - Rename feature-domain* to access-control*
+>>
+>> Patch not present in V1
+>>
+>>   drivers/of/property.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/of/property.c b/drivers/of/property.c
+>> index afdaefbd03f6..7f737eac91b2 100644
+>> --- a/drivers/of/property.c
+>> +++ b/drivers/of/property.c
+>> @@ -1268,6 +1268,7 @@ DEFINE_SIMPLE_PROP(leds, "leds", NULL)
+>>   DEFINE_SIMPLE_PROP(backlight, "backlight", NULL)
+>>   DEFINE_SIMPLE_PROP(panel, "panel", NULL)
+>>   DEFINE_SIMPLE_PROP(msi_parent, "msi-parent", "#msi-cells")
+>> +DEFINE_SIMPLE_PROP(access_controllers, "access-controllers", "#access-controller-cells")
+>>   DEFINE_SUFFIX_PROP(regulators, "-supply", NULL)
+>>   DEFINE_SUFFIX_PROP(gpio, "-gpio", "#gpio-cells")
+>>
+>> @@ -1363,6 +1364,7 @@ static const struct supplier_bindings of_supplier_bindings[] = {
+>>          { .parse_prop = parse_regulators, },
+>>          { .parse_prop = parse_gpio, },
+>>          { .parse_prop = parse_gpios, },
+>> +       { .parse_prop = parse_access_controllers, },
+> 
+> All the simple properties are listed before the suffix ones as the
+> suffix checks are more expensive. So, you should have inserted this
+> right before the suffix properties. Also, there's a merge conflict in
+> linux-next. So make sure you take that into account when sending the
+> fix up and picking the order.
 
-Original code has a bug that IRQ is enabled before registering the
-IIO device, so if IRQ is triggered before registration, iio_push_event
-from IRQ handler may be called on a not yet registered IIO device.
+I'm fixing the stm32-next branch by inserting
 
-Never saw it happen, though. :)
+         { .parse_prop = parse_access_controllers, },
+just before
 
-kind regards,
-	o.
+	{ .parse_prop = parse_regulators, },
 
-> Side note, you may make the driver neater with help of
+
 > 
->   struct device *dev = &client->dev;
+> -Saravana
 > 
-> defined in this patch.
+>>          {}
+>>   };
 > 
-> ...
-> 
-> >  static int stk3310_suspend(struct device *dev)
-> >  {
-> >         struct stk3310_data *data;
-> 
-> >         data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> 
-> Side note: This may be updated (in a separate change) to use
-> dev_get_drvdata() directly.
-> 
-> Jonathan, do we have something like iio_priv_from_drvdata(struct
-> device *dev)? Seems many drivers may utilise it.
-> 
-> >  }
-> 
-> ...
-> 
-> >  static int stk3310_resume(struct device *dev)
-> 
-> Ditto.
-> 
-> --
-> With Best Regards,
-> Andy Shevchenko
+>>
+>> --
+>> 2.35.3
+>>
