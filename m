@@ -1,57 +1,55 @@
-Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6012E149DF8
-	for <linux-iio@vger.kernel.org>; Thu, 25 Apr 2024 14:10:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD323171C2
+	for <linux-iio@vger.kernel.org>; Thu, 25 Apr 2024 14:10:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714054217; cv=none; b=t2YSuV6o4ukNTj5LOICZ+nYcG92VjEnOp67ztiWZJMv+iIIWRn831PtPJ2dFk3/mRhYZw6Ib3iukZd8MxkE8zy7x3S3tTpumPN+g571k7d9FcZkBQgEOIwcDGZDiTQeB82Pv9/NO9998XUyeY1YbpK7gDbYaSmcRTgEmiMB+tCU=
+	t=1714054217; cv=none; b=DOgnVDtTAg34Y56D3W4K4CpDFoeRaTA6KduO6vzsEAG9G5h8qDGWazmeaIZxoalqwSIJKyeG6io3Gz87XWyNgBguxKTqRYW+Lj6rMeFyssPy9KeDUrrwKCeu18wJgr95+fE/qjCCNf1y8jasLCxk9ni0h0r4kp9uM7r9vjACmHc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1714054217; c=relaxed/simple;
-	bh=3+clKuK8T/NHDacBXfosQNEM1KFC8ae6n+yXxooI6VA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hoGEds273pnIpRYqpplesh6BSts6kNaaF2WC+Nbi9XrYo9IrUI7H8gBqUxhgn9Pgg9sY+F2AzaeMZG924QOLqVjIsXtSZIy/2QEmR9Vl8qYIigrp40jtx9qpVqgMcfxu5Y7d+j256zPCc5aYFxT5rzgvqMTroPTXzniwH14GXsM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=W+8WZm8/; arc=none smtp.client-ip=209.85.160.50
+	bh=PMcrQr7vfTZSRSNcRmkCpyQp7LWBnFY770gK/C5SUSk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=YeK9m2ZeQpuc624eda7r0qZwSvv7kTDDfS56v/pI37rtsVsS81naswjKM6haShNUEbqYjX8K4/oLiP7j0MQQ/M9DTKP0MpwoYXZ804TfWYL582TOdIPJNCnFusJWtt44fjHj6vFAsARvUPZhP57/26xVnOFt4ftxaYsru5obaqs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=mKpb3Fly; arc=none smtp.client-ip=209.85.160.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="W+8WZm8/"
-Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-23335730db1so516781fac.2
-        for <linux-iio@vger.kernel.org>; Thu, 25 Apr 2024 07:10:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="mKpb3Fly"
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-23935d89261so478103fac.1
+        for <linux-iio@vger.kernel.org>; Thu, 25 Apr 2024 07:10:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1714054214; x=1714659014; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=teJq6nyJn4fxkVEcWVvz9Z8byUXbzOYcuXPlhjJXF6A=;
-        b=W+8WZm8/DgEMh08Lx76RK28jbIyQv6an/xgaoXLoeSA/0G6JRbT/Ieer6UJS9rqg3E
-         T8CGH3J3oh+exDlpUESYTZrVkxT60PAtWSkG6C9xfPH/0kYWu7OXU4tboZULHepEqGTj
-         D2S59RoTuOO2K5WH0STWqM/FIenSt6eE0ib37Q1MDplvN4ctvO36BTkmcRsp9caTeyPs
-         JOkE3MDUo6nI/XnpEvg3d4HkKTaUXd8mYY1+/kHAt3439hGn9IZh2SvUIs6FNjIVpNtC
-         Wvxt5EXbsqFEPZTSdkHZsL8GHpihjWRFH227+P6MOL7hvB4rQ8CtPaHy+NqJ5hNytq5Q
-         +N6A==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1714054213; x=1714659013; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=/EIvcYkNNA7uNCHReQKx+DoUp53lMP7MDiBbZ5jB3G0=;
+        b=mKpb3FlyRk44HMN9uezQae6MeQSwZ107oJt0ulYJ5nBVmj4A3A7lp0y0WaaRQyVObP
+         Du/eHRzlA/hviFHvjSYTxzdhVFydjLZMlihRhCFMYFsnxfWu1c8UHTf/VgVA1LY4PxMT
+         eqZARisR0YCl8o/E7fzS3WFnSO6gzS84fxv2jlVGADiEfBUF6njP7By8HVzHiR5cQG+6
+         F3LNAT1kg6vAfuURYk8v8SFX4k6hKBwtF5cBFjS9mxv1fhrsTxjlPKjzZjhbIwia21Lu
+         UDadC7YV2P13PUcbfgye4ZT78SOFcyTjAYetKIR7AW+06T8qX4x7010+NniHYdgBWh4C
+         EPgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714054214; x=1714659014;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=teJq6nyJn4fxkVEcWVvz9Z8byUXbzOYcuXPlhjJXF6A=;
-        b=MnMmB8DBN8hQe4toz3gI4+zk7G4IDp7+0QmKptANzhwmVWJpMI3GIVbeu6Gy2xpqk5
-         BjHsHJZGors65Q3k4Gqtdu/f6tPSo5vvXJBpTEYk7DGeBl1E9s9cJzhISQw/ZIbaEFV4
-         HcOjXc3A+tMCG8gbRHHAFly/cwR+ba3/MuIB8GSV1ceKSho1A5mJISvOmWfUQwz9Aqem
-         Kmbv+JWqFwGnKagq6rzOs4GGbN61wNazx6EhwoMYRCVt+pjLmM9aUZFNgqTjQziHXbNs
-         MDLBO/qPEQJyEAMeuICeJW42UMAxcUAt/0cyZSDb7mDqWlhlcpMxl2/EDV9/afG2MxPT
-         zgUw==
-X-Forwarded-Encrypted: i=1; AJvYcCW8obpReAz4R/RBBZJZCTBGZp9KySof7U/sHrp6RvfFfntsofbIPJO0rkerhuakzgzQe8vnKw8qgq2PGsLX4utzzgdCaVl12nCN
-X-Gm-Message-State: AOJu0YxjaYehcsWL6QncDINkhTRciliBCEGPV7Pi+iq+0cuWL7QlUHAP
-	vHKT4lxgPuTc9OJG2ROJQc1HDDVNDzSBHuTaUJtueKHtovrtF4vMxYNvfeR9MnA=
-X-Google-Smtp-Source: AGHT+IEcYQByXnCzw/YwDQrWCBNLbT6nrYCmIlYDyJNIh6cduxpoeD3kRx7i8oDLrwiJgVy9yp+Www==
-X-Received: by 2002:a05:6870:c08e:b0:22e:b736:786d with SMTP id c14-20020a056870c08e00b0022eb736786dmr6862632oad.31.1714054214583;
-        Thu, 25 Apr 2024 07:10:14 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1714054213; x=1714659013;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/EIvcYkNNA7uNCHReQKx+DoUp53lMP7MDiBbZ5jB3G0=;
+        b=Lb32PclBhuARZ9NNkDU7DCUxLdeGIrzlF/sZir0fvY6t4Y7EEP6K1OkNFas+D4ln06
+         iBIofIelMvFvx4mmCu+x9YjdtO2FBfqApuSRY5RYcSIjDEJ/tq/pZOFpQPf05Ujg/Qro
+         2ikuJAReFbNu2qBBQ9/R6fSSbY+AcGbGuE9Aza/QTjadV9rc0G9YpRnOXu4Pc+FB3AGX
+         buBzqEzv3wIMqmmi2f63DVKdWZOEJ4S5NXUegWiIObSYzdPoVO88b+Ji0ey8khsUKXi1
+         httPU+/ejsQ6Yg3tD/BDdr7qsBnELqyOqwU1Vu+HNPMEvmwxFOOhHW6aunEWqfATNDrB
+         f1zw==
+X-Forwarded-Encrypted: i=1; AJvYcCU4ukF6b4HPGaFdieUk8LIkgRRaDYaWOweb4prrkv5hcw5gp58wZiDbBsYfe87YaqW0zewrhnNthltwYrBrCa8yGmCuiZbmaHc1
+X-Gm-Message-State: AOJu0YwXiFfOPW/+0gh3cZKIhb56xu1259/M69mTpb9tMlLtq+qI9ZJp
+	bx06nrjioCfMCVXRaWfEjEdXJ2yun0PU4cOMHdDhoHZMJhknIYM6NpAE5XcPYvk=
+X-Google-Smtp-Source: AGHT+IGPh8BWqW4vel5Qzl3DF4uhNTmrKORgW/O0L3hxpcKmJ6L/waBufcrQ+V8+zzseyb0YDKubeg==
+X-Received: by 2002:a05:6870:e408:b0:22e:b2b4:f00b with SMTP id n8-20020a056870e40800b0022eb2b4f00bmr6380665oag.39.1714054212707;
+        Thu, 25 Apr 2024 07:10:12 -0700 (PDT)
 Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id pz8-20020a056871e48800b0023b5203fc58sm294786oac.37.2024.04.25.07.10.13
+        by smtp.gmail.com with ESMTPSA id pz8-20020a056871e48800b0023b5203fc58sm294786oac.37.2024.04.25.07.10.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Apr 2024 07:10:14 -0700 (PDT)
+        Thu, 25 Apr 2024 07:10:12 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -61,12 +59,10 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-doc@vger.kernel.org
-Subject: [PATCH 2/2] docs: iio: ad7944: add documentation for chain mode
-Date: Thu, 25 Apr 2024 09:10:00 -0500
-Message-ID: <20240425-iio-ad7944-chain-mode-v1-2-9d9220ff21e1@baylibre.com>
+Subject: [PATCH 0/2] iio: adc: ad7944: implement chain mode support
+Date: Thu, 25 Apr 2024 09:09:58 -0500
+Message-ID: <20240425-iio-ad7944-chain-mode-v1-0-9d9220ff21e1@baylibre.com>
 X-Mailer: git-send-email 2.43.2
-In-Reply-To: <20240425-iio-ad7944-chain-mode-v1-0-9d9220ff21e1@baylibre.com>
-References: <20240425-iio-ad7944-chain-mode-v1-0-9d9220ff21e1@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,84 +73,24 @@ Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.12.4
 Content-Transfer-Encoding: 8bit
 
-Add documentation for chain mode support that was recently added to the
-AD7944 ADC driver.
+This series adds support and documentation for the chain mode wiring
+configuration to the ad7944 driver. In this configuration, multiple
+chips are daisy-chained together in series via the SPI data lines.
+So it appears on the SPI bus as a single device with multiple channels.
 
-Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
- Documentation/iio/ad7944.rst | 30 ++++++++++++++++++++++++++++--
- 1 file changed, 28 insertions(+), 2 deletions(-)
+David Lechner (2):
+      iio: adc: ad7944: add support for chain mode
+      docs: iio: ad7944: add documentation for chain mode
 
-diff --git a/Documentation/iio/ad7944.rst b/Documentation/iio/ad7944.rst
-index f418ab1288ae..0d26e56aba88 100644
---- a/Documentation/iio/ad7944.rst
-+++ b/Documentation/iio/ad7944.rst
-@@ -24,7 +24,7 @@ Supported features
- SPI wiring modes
- ----------------
- 
--The driver currently supports two of the many possible SPI wiring configurations.
-+The driver currently supports three of the many possible SPI wiring configurations.
- 
- CS mode, 3-wire, without busy indicator
- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-@@ -68,6 +68,27 @@ CS mode, 4-wire, without busy indicator
- To select this mode in the device tree, omit the ``adi,spi-mode`` property and
- provide the ``cnv-gpios`` property.
- 
-+Chain mode, without busy indicator
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+.. code-block::
-+
-+                                                                 +-------------+
-+                  +-------------------------+--------------------| CS          |
-+                  v                         v                    |             |
-+        +--------------------+    +--------------------+         |     HOST    |
-+        |        CNV         |    |        CNV         |         |             |
-+   +--->| SDI   AD7944   SDO |--->| SDI   AD7944   SDO |-------->| SDI         |
-+   |    |        SCK         |    |        SCK         |         |             |
-+  GND   +--------------------+    +--------------------+         |             |
-+                  ^                         ^                    |             |
-+                  +-------------------------+--------------------| SCLK        |
-+                                                                 +-------------+
-+
-+To select this mode in the device tree, set the ``adi,spi-mode`` property to
-+``"chain"``, add the ``spi-cs-high`` flag, add the ``#daisy-chained-devices``
-+property, and omit the ``cnv-gpios`` property.
-+
- Reference voltage
- -----------------
- 
-@@ -86,7 +107,6 @@ Unimplemented features
- 
- - ``BUSY`` indication
- - ``TURBO`` mode
--- Daisy chain mode
- 
- 
- Device attributes
-@@ -108,6 +128,9 @@ AD7944 and AD7985 are pseudo-differential ADCs and have the following attributes
- | ``in_voltage0_scale``                 | Scale factor to convert raw value to mV.                     |
- +---------------------------------------+--------------------------------------------------------------+
- 
-+In "chain" mode, additional chips will appear as additional voltage input
-+channels, e.g. ``in_voltage1_raw``.
-+
- Fully-differential ADCs
- -----------------------
- 
-@@ -121,6 +144,9 @@ AD7986 is a fully-differential ADC and has the following attributes:
- | ``in_voltage0-voltage1_scale``        | Scale factor to convert raw value to mV.                     |
- +---------------------------------------+--------------------------------------------------------------+
- 
-+In "chain" mode, additional chips will appear as additional voltage input
-+channels, e.g. ``in_voltage2-voltage3_raw``.
-+
- 
- Device buffers
- ==============
+ Documentation/iio/ad7944.rst |  30 ++++++-
+ drivers/iio/adc/ad7944.c     | 186 ++++++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 204 insertions(+), 12 deletions(-)
+---
+base-commit: b80ad8e3cd2712b78b98804d1f59199680d8ed91
+change-id: 20240424-iio-ad7944-chain-mode-f5c4e6a856f6
 
+Best regards,
 -- 
-2.43.2
+David Lechner <dlechner@baylibre.com>
 
