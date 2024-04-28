@@ -1,104 +1,90 @@
-Received: from mail-108-mta165.mxroute.com (mail-108-mta165.mxroute.com [136.175.108.165])
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A5D064CC0
-	for <linux-iio@vger.kernel.org>; Sun, 28 Apr 2024 19:06:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.175.108.165
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 166B52AEE4
+	for <linux-iio@vger.kernel.org>; Sun, 28 Apr 2024 19:44:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714331169; cv=none; b=ghgevOGOLvCJ+OQjwKsmC0BMBh6RwPuKxdPkvrX94gbrbDIuO5G+cNN9U/MavMr/c9vfHbMV27QG3KVZ7JBL2cNHC53Lj5qeZj+7uLHlaHOMQXSZbCsUQMmZQ0oBKcEMrl+SLOMDu8KguKoOuf+C7SAuZi/Mvtsx9iB31bdjGiw=
+	t=1714333443; cv=none; b=Ww+RQMgazyHNa2LmF/eufaY3zKjG/Y3ghkqBNBkZ6a+k2gSX9Cwh+3SJqsytfueOvn5g5N4uMWNXZzuykGS+0yx1nMHwetjmHM67eqRMXy3tN26F1Yfbcia2HXAhN0vSCjg3fbCZ56pP6s7cY9cLwgPEVFxK5qSVUT/JIIUvcjs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714331169; c=relaxed/simple;
-	bh=FiUb2ZRKXaowaIWwgAaTVex3jsYUrKBONETujOYeFmY=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=JWsDqTrM0QMqeFzvt8ioorzy28rumCAw1yibyCPHSIf4M3kfVjB0LsGVoKHqK6gPaCiOxaCsw6ra6cgXoZXBWfSu4RxE1HMjXEZ44mWUjTMWPZ4hf/6L+J037CUIwzQII+i8SRL+rMpdo81LputV30UVwhebdEhyTCa8sxnjyeQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ahepp.dev; spf=pass smtp.mailfrom=ahepp.dev; dkim=fail (0-bit key) header.d=ahepp.dev header.i=@ahepp.dev header.b=CmtSsxO9 reason="key not found in DNS"; arc=none smtp.client-ip=136.175.108.165
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ahepp.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ahepp.dev
+	s=arc-20240116; t=1714333443; c=relaxed/simple;
+	bh=cERXvdIZCVS7B1mKykHRycZHT2z+/YgshBbc+TNkg6M=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=LDfJpHBGT1FAuK5i0HEm4JfixeQIxsljK4+QOTDxvmvbsvnyfOWxM8CFdMGzPkUJwVV+Ak1RZlZqKpJh1fbxT6LNY2NrTVFu1IUuTNHPUdaEVmBbrU3NXjkROooK4XUDDaLoShuoDq5EJOn03g/PzOYB/DKQ2AdzdjGKXp52buc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=wIdxwk2X; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=ahepp.dev header.i=@ahepp.dev header.b="CmtSsxO9"
-Received: from filter006.mxroute.com ([136.175.111.2] filter006.mxroute.com)
- (Authenticated sender: mN4UYu2MZsgR)
- by mail-108-mta165.mxroute.com (ZoneMTA) with ESMTPSA id 18f2614e28d0008ca2.005
- for <linux-iio@vger.kernel.org>
- (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
- Sun, 28 Apr 2024 19:00:54 +0000
-X-Zone-Loop: e955efd1765faaf4ba4327ed6c699d398ebe86b30a77
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=ahepp.dev;
-	s=x; h=To:References:Message-Id:Content-Transfer-Encoding:Cc:Date:In-Reply-To
-	:From:Subject:Mime-Version:Content-Type:Sender:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-	List-Post:List-Owner:List-Archive;
-	bh=968QCX5bxl8071/40EvUd0nag7Yb3N5amaxl7Wlh/00=; b=CmtSsxO9ueK0WBEuJPWL01y9yR
-	4PCbZ3IQNnYBTgQ7I4zpY/Ee7XDeoPziaN3fV2aoYVqoZZAfeKKtRIAcni0JwMgyLhAcNOnGQfCoL
-	RRPyeff5anHVrHkRlZSpsDJAUmIvyQ/xd/hZyNUVlds3gxBR2SQ1Qvh9WElREgfNJsJwBQWv5EkwI
-	xjQDB1WXE61xPvjOCjn2II5PAUarGIvIRVHXuZtTzLjgIdzZxNAEh51Sp6DREw/Rp+FkibTNkIxEL
-	8VDKxs1AINQZlQz2v/MzyiuBBKtxeiwayxo6zHnX/R9fyuMC6JHOHluFjPRKfru4TMA/W8TG5u8FY
-	XF/T5+CQ==;
-Content-Type: text/plain;
-	charset=utf-8
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="wIdxwk2X"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-1e51398cc4eso34592845ad.2
+        for <linux-iio@vger.kernel.org>; Sun, 28 Apr 2024 12:44:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google; t=1714333440; x=1714938240; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=AEVCsk7X+1CbRmIA7FbTrG9aCtrrBiXW5C9er5WvmSg=;
+        b=wIdxwk2XZxRvJHQ6r9um2vd1C6RYY0hytTZh4HwkYR0zq6CJ72M7sEOl9EBm1RJukv
+         eQybokjt/esVGILhqR5gJYVDz6HgK07UilSAvJ/zoZRvHmSalez0wGpXBVOgJ1V9HtFO
+         mRQ+FlGeudyh/e1Wkl3jZM5RFDUtjneYgXNWDgeVilZDAEPIQrqiIF8epfoJCjR3QNJV
+         HsPVDfcwo14W2uwKqxNCgTK7hENGzSeSrCQukeUuwSMfITyDSeSvJFrviE2stX9iasDJ
+         LnCUtJjSQ7AkkhKcyPoyCCxms+Qo2X/LYUJoIu5tejMlmffut7yMHSgBPH+8alppWY0X
+         cdMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714333440; x=1714938240;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AEVCsk7X+1CbRmIA7FbTrG9aCtrrBiXW5C9er5WvmSg=;
+        b=aQxDQIRkbpe9jY8PAFNeVhAbCXtz8I4WYYpDrYhDPj+4EBufzRv41OA8WslJcdLqr1
+         xXUdflpzYo+5ngIwUgmx05euo1lzMgmq/qKcDutj5yYi/BmH0CjXnqhreEX21ZXvTbP0
+         9nmxAPNaM7cXS/rFhP5MTFZOm7SKNJQpOYTgACZsgAsMCuPNq9fj1XOsQXjejLHCgikM
+         Ecs6vcFy7qtTK4QK61+fCXjLhftgsRlpWdJS7sN3mSEKY0Y5rEk1Wstl+P+ObMKFxEdZ
+         Uo1c6qUWoyL3XWFI3huWD2r5tr0Xr23/QqzbAN8Q3MKbWkWU/lBXe3rTw2d4CaRFBb/E
+         u5SA==
+X-Forwarded-Encrypted: i=1; AJvYcCXjjOrsUmmwfhf9o2NzUOdpVF15H8cSUkZfkqzAfLxHxASungiASEahuE5btnuiwadYf9nfEEzwsZq3IGF+nAzcKZpcWTtU/xfW
+X-Gm-Message-State: AOJu0Yz+2uFK6ZwzH+GfirsHHjqXqkxkvodFBNI8l3yJOfMHPHIyuJLp
+	t15IFeBLdMvRDRNYmhBCHl+yyzAG+vhbAP3wgfU9Ke4O1YvOHEKoqasVle4knClk9B7gWBGdN5d
+	WZdA=
+X-Google-Smtp-Source: AGHT+IEpPw4PDVMY3qVTyN1eVi6fYZcrKm085urilL8So+NO4n14eGtEjL4LW+6Pwdfby/3wINeceQ==
+X-Received: by 2002:a17:903:2312:b0:1eb:3df4:e63b with SMTP id d18-20020a170903231200b001eb3df4e63bmr8747571plh.7.1714333440389;
+        Sun, 28 Apr 2024 12:44:00 -0700 (PDT)
+Received: from ASUSLaptop-X513EAN.. ([2804:14c:81:903a:a3f3:f05c:11d1:1d76])
+        by smtp.gmail.com with ESMTPSA id l15-20020a170903120f00b001e45b3539dbsm18826374plh.41.2024.04.28.12.43.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Apr 2024 12:43:59 -0700 (PDT)
+From: ogustavo@usp.br
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: Gustavo Rodrigues <ogustavo@usp.br>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] iio: adc: ad799x: Fix warning generated by checkpatch
+Date: Sun, 28 Apr 2024 16:43:23 -0300
+Message-Id: <20240428194326.2836387-1-ogustavo@usp.br>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
-Subject: Re: [PATCH] iio: temperature: mcp9600: Fix temperature reading for
- negative values
-From: Andrew Hepp <andrew.hepp@ahepp.dev>
-In-Reply-To: <20240428144606.5b3d9a7e@jic23-huawei>
-Date: Sun, 28 Apr 2024 14:46:39 -0400
-Cc: Dimitri Fedrau <dima.fedrau@gmail.com>,
- Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
- Lars-Peter Clausen <lars@metafoo.de>,
- linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <C96CEE0A-920C-4BDD-9689-058B2E6D4B29@ahepp.dev>
-References: <20240424185913.1177127-1-dima.fedrau@gmail.com>
- <Ziy8DsMCeAGK79E7@debian-BULLSEYE-live-builder-AMD64>
- <20240427195758.GA3350@debian> <20240428144606.5b3d9a7e@jic23-huawei>
-To: Jonathan Cameron <jic23@kernel.org>
-X-Authenticated-Id: andrew.hepp@ahepp.dev
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Hi all,
+From: Gustavo Rodrigues <ogustavo@usp.br>
 
-On Apr 28, 2024, at 9:46=E2=80=AFAM, Jonathan Cameron <jic23@kernel.org> =
-wrote:
+Clean code of iio:adc:ad799x to cease warning messages pointed by
+checkpatch. These include proper variable declaration 'unsigned' to 
+'unsigned int', add blank line and use of octal permission instead of 
+symbolic.
 
-> Agreed - by my reading the original patch is correct. Maybe it would =
-act
-> as cleaner 'documentation' to have the sign_extend32() for the cold =
-junction be
-> from bit 12 rather than 15, but I'm not sure it's worth the effort.
->=20
-> Andrew, would be great if you can review this fix in case we are all =
-missing
-> something!
+Gustavo (3):
+  iio: adc: ad799x: change 'unsigned' to 'unsigned int' declaration
+  iio: adc: ad799x.c: add blank line to avoid warning messages
+  iio: adc: ad799x: Prefer to use octal permission instead of symbolic
 
-I also agree that Dimitri=E2=80=99s original patch appears correct per =
-the data sheet.
+ drivers/iio/adc/ad799x.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-I think of the cold junction register as a 16 bit 2s complement signed =
-integer,=20
-despite the limited range. I like sign extending it from bit 15 rather =
-than from 12.
+-- 
+2.34.1
 
-I applied Dimitri=E2=80=99s patch and stuck a dev board in my icebox.
-
-Before patch:
-    # cat /sys/bus/iio/devices/iio:device0/in_temp_raw=20
-    65222
-    # cat /sys/bus/iio/devices/iio:device0/in_temp_ambient_raw
-    65256
-
-After patch:
-    # cat /sys/bus/iio/devices/iio:device0/in_temp_raw
-    -260
-    # cat /sys/bus/iio/devices/iio:device0/in_temp_ambient_raw
-    -212
-
-Looks good to me! Thanks for the patch Dimitri, and thanks to all for =
-the review!
-
-Andrew=
