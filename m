@@ -1,104 +1,151 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 430D7745C2
-	for <linux-iio@vger.kernel.org>; Sun, 28 Apr 2024 19:44:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3C521DFC7
+	for <linux-iio@vger.kernel.org>; Sun, 28 Apr 2024 20:25:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714333463; cv=none; b=c45fvZ5MKFB0z/2kvRn7w/Trh563G+pH1yw1BFY1av7jdntpZghk8z84C7sZEaGzRs/axabqaG9nDNggPwql8flzxQMEFItFiHbxVrZ5bouHOIMqSs7ivMAiWbJOw7V/3i4hPKRq+y7yk4C1hxSQJ+9uheij9+bjY5wc64mbnn4=
+	t=1714335910; cv=none; b=pPw1FUWBrb0sSOQF9YTSWH9tKvjh9+06afeW2deWIJAl0M+Z3y2d8xIf1k+/1hQpi4F1+60cyukKAvq360puh5XCT73JTiUOAkEM9nczBke1FntLz/TdCi6ZJLdSA17ka4iKBjRjqRmvWPAAVJeIBXYzAlLtAvWTZCui1rPWsD8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714333463; c=relaxed/simple;
-	bh=zS4AnXDB56TofFf+N5bD9jOi5VXP4GDvHtyvSbjX1cE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=CVxjj1p+RRvVjPRPXa8DKuVF6bxS+EVtbAU8doOVvWQpWDVWEThAiikVgfxdhqNW2MdXpXupUcOVuUGKQwnraWu0dWOGjhVAtvc1nkQawycyaa2AMklhu7GxwKJZQs3t07XDTI6DFeJR1MCBzp8ocVD7tEKRC2+6UJvTU0UtBk4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=wYuP1pvI; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1714335910; c=relaxed/simple;
+	bh=yn0rMumD9n7/8Ruz9ja3FaSnlWN7W/l+1Pp0AusQFho=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=E+eNDijxZ1AvVhOWuHK2xfcUSvC06HZunIGl5XtdbOinUStIQ7H+6cXJLUnKjappMdDExfjkFFcRb6csVf/H3F+WeVhKZjzPj9Aogb29NwqAPOKVTmI940sqYIOwLQem6E/j3a5EMXcDtXA59+926LZ18nEiEH24fPzXzUl5rKw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dafmSjMQ; arc=none smtp.client-ip=209.85.210.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="wYuP1pvI"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1e4c4fb6af3so25646675ad.0
-        for <linux-iio@vger.kernel.org>; Sun, 28 Apr 2024 12:44:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dafmSjMQ"
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-6ed627829e6so4698258b3a.1
+        for <linux-iio@vger.kernel.org>; Sun, 28 Apr 2024 13:25:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1714333461; x=1714938261; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+ABjwBx02udN5kYF+DG5k19J/UsOSoScqfXThrVpOhI=;
-        b=wYuP1pvIj4PQUuoddb1BiVK5jKf60pUY5xQv35eZbateorfTCTdPbEwchiONnAjbuP
-         DlHrLOeqGxlbioKQ8tVP6WtQNl61aztk5dfB6VrFBe9HR79d4ed/OT7wBo2YX4kVfnmP
-         YgUQveDgf4dWFCQs0bsh1Zoj+iplG0jDZQwixTUWBpZHVaLoY0n4IATaVNqkNnNHVEFd
-         X81AiW7nq0VE6SHa5xMn6PmV09aaDp4/CjEibVglUszM8LT3rsN3UgalupFoKiEeec6n
-         bV6BKl8A1uppsuz+ikAHI8dKIqVnxVfpmucvylziLlQI+qRVvHLWIuNPUlTNAV1JgZE6
-         x7Mg==
+        d=gmail.com; s=20230601; t=1714335908; x=1714940708; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=e7wnHcjqC4ianr4ImbCf0xx9Vru0olSwYD1Tz+MZokc=;
+        b=dafmSjMQgV6GKStAnFCWrbtYFj/Qn4QngqotIFn3XPftvLHyKUrG/uAvWjqfe39EPU
+         XsQCu/uj5h6CwMEQnBUkAkkUQ+VN8I4E0oRdOpJ/jUImkkFpSAucV+owtasHcgA75WXR
+         P7wSUkfvE+b4kS/j/UQ66hDB/kJ+JhpFMui9EhliJv0NyxoMovwY07fjLNY37wAPz9+u
+         ehpQUK+8xMpbViIHQCB9lsZOxzdgeU+lm1qWzOyjizch7acJSlNf6pXOXroFRYZcDLMs
+         Ul+i97fGlp+VSq8vux9aeyhuBdz1gbZDaCCK7ze2DvIyIcpRoqcKH//86aD/W7AgdRCW
+         l2Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714333461; x=1714938261;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+ABjwBx02udN5kYF+DG5k19J/UsOSoScqfXThrVpOhI=;
-        b=XF2xuuob9hTU+EKIKRr02VKJOF5hzzHITPRMMais8+t28k6ZZHgFEpamqboosmgbos
-         p18UQEI46c+4MseM9MtJXbTTeTQGSnhAR2xLtezichxA9jalSik2R4CG/X+CrpCpOX8y
-         v76gXZbxNSeQiQg4qdA/NnOWUpvOl6hAQZDvQknIO2jQFRCqvzxtbP6I3im/gQ9hwsRU
-         NNyda+/+3/E0C88UNMNGskvtlO3J0+UGqGPFgUqSgFMrrtBhYAztjZ/uLXN/WSNSUQSB
-         k3KEFr1encyBR0FRA5xkj1ZnvswgSDq61XcxBTb2hrL3t6Q2Wj8lxRkTIn2zxMilxjfb
-         RyDw==
-X-Forwarded-Encrypted: i=1; AJvYcCVypNwU5iai7O+MOPpHHViH4TfIgNlBwiWEo2bx83jTZhClCz5Bnz6wRIbfjweNS2NstB/W3C+uGL+Mw/DxZaChoicKj8qFIcnX
-X-Gm-Message-State: AOJu0YxvihgPaEShtT2dk+mfeDe3fH045mOpRlLYhYrWgPCwowOL/kmS
-	DGv6Qimocw6PwXcn7AvaX/hiQ3XiOiHym5/U9/DQz+5kXEL64FiyPJxhbac6CLg=
-X-Google-Smtp-Source: AGHT+IHN7fVBjs1dCCI0J5AyCaBYr3UpWc7xNEBjnoK+wy0S2i1lnqBxYpDA2nrlp1Vrr7RgpoRaHw==
-X-Received: by 2002:a17:903:32c7:b0:1e8:682b:7f67 with SMTP id i7-20020a17090332c700b001e8682b7f67mr11057040plr.29.1714333461475;
-        Sun, 28 Apr 2024 12:44:21 -0700 (PDT)
-Received: from ASUSLaptop-X513EAN.. ([2804:14c:81:903a:a3f3:f05c:11d1:1d76])
-        by smtp.gmail.com with ESMTPSA id l15-20020a170903120f00b001e45b3539dbsm18826374plh.41.2024.04.28.12.44.18
+        d=1e100.net; s=20230601; t=1714335908; x=1714940708;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=e7wnHcjqC4ianr4ImbCf0xx9Vru0olSwYD1Tz+MZokc=;
+        b=ZYHIv01L9nzzNjeUL5XG6R7lxwz8fS/NrTtEuTX6LRL4N0OYIWimvdBMpRnks2WxqJ
+         Khsaoqf8IgdFxwugkErvSSO6cI0FTduv4k/n+8ffnoGGdfWp+mxwvBpmUjGRFzCzZan5
+         Tt7TaqhnggqFxdj3Uk5/9EmsjLUzV+2ywQE+fcK7TAIlLXSJ1huQUbnN3q6ES7JRGpRA
+         WKMd/+2gtUl+0sKe0BT3/XMyisYDQxmcP6ccncBOIWPuVFYZYsVAfbY9GaDQQcYuermC
+         sd5q5kMAt7t9zxtKUF63EctnZBB4h1WVmh0lIrhKhGVpsOmgzRp/UfPx4maeIn6r1a/o
+         yfXA==
+X-Gm-Message-State: AOJu0YwygcnwDCz7Gf0lsNdSONVmzcVKe9XV5FQW82bDsObD+DZ5HAhO
+	hWzjdzlpVtS9pT3Z78XpR6+WEhGcz6zzfxdeU5RuVQWEQFYPntCFxeXojv5m
+X-Google-Smtp-Source: AGHT+IGyVy2MGns74cTOGS//YncTbKyhI0de83Pde1l+AWYkHvEnzA3hLYoPUFXo1cuo1UGc8B+KlA==
+X-Received: by 2002:a05:6a00:1906:b0:6ea:e2d8:468 with SMTP id y6-20020a056a00190600b006eae2d80468mr11750947pfi.26.1714335908026;
+        Sun, 28 Apr 2024 13:25:08 -0700 (PDT)
+Received: from localhost ([2804:30c:1f6c:5400:ea32:e7c8:5bc0:103])
+        by smtp.gmail.com with ESMTPSA id fb12-20020a056a002d8c00b006f3ec69bc09sm2891924pfb.75.2024.04.28.13.25.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Apr 2024 12:44:20 -0700 (PDT)
-From: ogustavo@usp.br
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: Gustavo Rodrigues <ogustavo@usp.br>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Bruna Lopes <brunaafl@usp.br>
-Subject: [PATCH 3/3] iio: adc: ad799x: Prefer to use octal permission 
-Date: Sun, 28 Apr 2024 16:43:26 -0300
-Message-Id: <20240428194326.2836387-4-ogustavo@usp.br>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240428194326.2836387-1-ogustavo@usp.br>
-References: <20240428194326.2836387-1-ogustavo@usp.br>
+        Sun, 28 Apr 2024 13:25:07 -0700 (PDT)
+Date: Sun, 28 Apr 2024 17:25:57 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Marius Cristea <marius.cristea@microchip.com>,
+	Marek Vasut <marex@denx.de>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v6 1/2] iio: adc: mcp3564: Use
+ device_for_each_child_node_scoped()
+Message-ID: <Zi6w1V9mBWZAMv-t@debian-BULLSEYE-live-builder-AMD64>
+References: <20240428174020.1832825-1-jic23@kernel.org>
+ <20240428174020.1832825-2-jic23@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240428174020.1832825-2-jic23@kernel.org>
 
-From: Gustavo Rodrigues <ogustavo@usp.br>
+Hi Jonathan,
 
-Octal permissions are preferred over the symbolics ones
-for readbility. This ceases warning message pointed by checkpatch.
+This also looks good to me.
 
-Co-developed-by: Bruna Lopes <brunaafl@usp.br>
-Signed-off-by: Bruna Lopes <brunaafl@usp.br>
-Signed-off-by: Gustavo Rodrigues <ogustavo@usp.br>
----
- drivers/iio/adc/ad799x.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index 9a12e562c259..0f0dcd9ca6b6 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -524,7 +524,7 @@ static irqreturn_t ad799x_event_handler(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
--static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-+static IIO_DEV_ATTR_SAMP_FREQ(0644,
- 			      ad799x_read_frequency,
- 			      ad799x_write_frequency);
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("15625 7812 3906 1953 976 488 244 0");
--- 
-2.34.1
-
+On 04/28, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> 
+> Switching to the _scoped() version removes the need for manual
+> calling of fwnode_handle_put() in the paths where the code
+> exits the loop early. In this case that's all in error paths.
+> 
+> Cc: Marius Cristea <marius.cristea@microchip.com>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> ---
+>  drivers/iio/adc/mcp3564.c | 16 +++++++---------
+>  1 file changed, 7 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/mcp3564.c b/drivers/iio/adc/mcp3564.c
+> index 311b613b6057..e2ae13f1e842 100644
+> --- a/drivers/iio/adc/mcp3564.c
+> +++ b/drivers/iio/adc/mcp3564.c
+> @@ -998,7 +998,6 @@ static int mcp3564_parse_fw_children(struct iio_dev *indio_dev)
+>  	struct mcp3564_state *adc = iio_priv(indio_dev);
+>  	struct device *dev = &adc->spi->dev;
+>  	struct iio_chan_spec *channels;
+> -	struct fwnode_handle *child;
+>  	struct iio_chan_spec chanspec = mcp3564_channel_template;
+>  	struct iio_chan_spec temp_chanspec = mcp3564_temp_channel_template;
+>  	struct iio_chan_spec burnout_chanspec = mcp3564_burnout_channel_template;
+> @@ -1025,7 +1024,7 @@ static int mcp3564_parse_fw_children(struct iio_dev *indio_dev)
+>  	if (!channels)
+>  		return dev_err_probe(dev, -ENOMEM, "Can't allocate memory\n");
+>  
+> -	device_for_each_child_node(dev, child) {
+> +	device_for_each_child_node_scoped(dev, child) {
+>  		node_name = fwnode_get_name(child);
+>  
+>  		if (fwnode_property_present(child, "diff-channels")) {
+> @@ -1033,26 +1032,25 @@ static int mcp3564_parse_fw_children(struct iio_dev *indio_dev)
+>  							     "diff-channels",
+>  							     inputs,
+>  							     ARRAY_SIZE(inputs));
+> +			if (ret)
+> +				return ret;
+> +
+>  			chanspec.differential = 1;
+>  		} else {
+>  			ret = fwnode_property_read_u32(child, "reg", &inputs[0]);
+> +			if (ret)
+> +				return ret;
+>  
+>  			chanspec.differential = 0;
+>  			inputs[1] = MCP3564_AGND;
+>  		}
+> -		if (ret) {
+> -			fwnode_handle_put(child);
+> -			return ret;
+> -		}
+>  
+>  		if (inputs[0] > MCP3564_INTERNAL_VCM ||
+> -		    inputs[1] > MCP3564_INTERNAL_VCM) {
+> -			fwnode_handle_put(child);
+> +		    inputs[1] > MCP3564_INTERNAL_VCM)
+>  			return dev_err_probe(&indio_dev->dev, -EINVAL,
+>  					     "Channel index > %d, for %s\n",
+>  					     MCP3564_INTERNAL_VCM + 1,
+>  					     node_name);
+> -		}
+>  
+>  		chanspec.address = (inputs[0] << 4) | inputs[1];
+>  		chanspec.channel = inputs[0];
+> -- 
+> 2.44.0
+> 
+> 
