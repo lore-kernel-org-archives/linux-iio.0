@@ -1,83 +1,157 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C48014EC79;
-	Tue,  7 May 2024 15:32:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC2BB16D9AF
+	for <linux-iio@vger.kernel.org>; Tue,  7 May 2024 19:02:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715095959; cv=none; b=pShRA1iR+G1jbo5R1fGlVi1Krh+RiUbHrojqQoHyeRrryDfhJxXPuor+TCO0G6EGICHVbVSyZsUZjG8CcGmRSWKrtMynPiGUR2c2PCewp8zZj2x+eZxqbL7wJTqzzX6UlAdI4K1R56K2C1ObdkPAZw/LAQ3z7WfzRsM3Qhqwc1Y=
+	t=1715108540; cv=none; b=q/4WAWvAru+LxDThqC/yLYSmQkslRQVfvXz3oxFAns/H4sBkFe1v4SQWh5kVpFdy/lQpW8njvp4v16oDabSiPjIuFnxHxZNcrtH1vibOivKbuhrGqyMYnyIlHwhf/+lyMQ5F1uOF9mTcQxF0deCvsrau+PIY5fh8mMLsmeutV78=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715095959; c=relaxed/simple;
-	bh=Ou2zeBM3QxUvyYDfBrHE0Lbt7oXWCXliKJ4+o7Ci9to=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Bsgx3CkUNWPLx5Dxq5dYwAjO8dDUqfH0R3obaAgY3/nmKtegOEaMRUG36LaZkWWgsB5RrUFzBGAY0NXFHihF6h3DoeMG54SvqnQB9rOLNRLOCmRfoanevNJae6XsIfcf6pIuUTa+KtyAwcJbEH/faEavCglm6Urp+Sbl86r+RLc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dnJ2d+0Q; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1715108540; c=relaxed/simple;
+	bh=ZuQNDZ6FvEykzl/xun3pMRTdOGRALArKnmySgTgs6W4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=oovuoA6hdPJzANEasmQFsO+aR3ws/Kpe8aocJG00VVUE3FpL9XCTtjGQwzaVJ6ot2lvjK2Lne0gZMLv4QTkolq39muR6yRNoEKj32NCZHEL13pTXWovNkjzEZ4uvLTyUEkCLrMpP0RGf7I7+IYfFTjrnUEEHYfvLTPsmofAj9g8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=ZulPEtYj; arc=none smtp.client-ip=209.85.167.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dnJ2d+0Q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF870C2BBFC;
-	Tue,  7 May 2024 15:32:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1715095958;
-	bh=Ou2zeBM3QxUvyYDfBrHE0Lbt7oXWCXliKJ4+o7Ci9to=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=dnJ2d+0Q5PTpw7KYJRs0p4OfwojxugEtKjGqEiVP+ZafwLPzBsp/kkR7pKhFV2vX0
-	 EVKe2uQhW2d7vPlarApQ6fAN5NDmDHnlQKorVNCpEJv5Gc/wy4EhCi7za0xMljzyMW
-	 rbYunMzgb6wJakhWt7ROf0nDey+vv9F7cRVp3XeLs0xSDe2duscxyGc4xxekE6pMA+
-	 utxaU66zgNIj4R+X7liz/JtdIsZM59iT3fz/rwx3DL0XhpEXt0cSI0g/pe05goS1Ot
-	 g3st1q6c8yTf7Ai/EJzVWWo7LGOvNCga26PkRoVdHYeekIEmKrcsAYq3QcdBuHuS2H
-	 ul3JyjppYvTDQ==
-Date: Tue, 7 May 2024 16:32:34 +0100
-From: Conor Dooley <conor@kernel.org>
-To: =?iso-8859-1?B?QmFybmFi4XMgQ3rpbeFu?= <trabarni@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	Danila Tikhonov <danila@jiaxyga.com>
-Subject: Re: [PATCH v2 2/2] dt-bindings: iio: imu: bmi160: add bmi120
-Message-ID: <20240507-throwing-squealing-606f5d8ebd5b@spud>
-References: <20240504-bmi120-v2-0-3b3ce6e1c3c6@gmail.com>
- <20240504-bmi120-v2-2-3b3ce6e1c3c6@gmail.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="ZulPEtYj"
+Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-3c96be1ef20so1446440b6e.1
+        for <linux-iio@vger.kernel.org>; Tue, 07 May 2024 12:02:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1715108538; x=1715713338; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wCGWhLT+GW7C3GUbTFxtCVYF67mxCVX333qfGkLE2u0=;
+        b=ZulPEtYjD6TRCmGJEN9vUxlJw61b7U4ADye04UWDC4ICwuwbP55/RXw5MLQf6iZgt/
+         HHTk5+7jDM01vtJwPcNtg2C6CxuvhJA7STyhgBNwHux5GD4wVILcn0aYvwf3NmJ+a808
+         OnWfyP5mjY1mqmckXDDN0OmSIaLn/GK50SiT5rNC12t3voZNwImadJs3I9MGJJYmkjPU
+         QR9NuIi22/8f1D3fpcctQNxFcD1Xcec8gPLK628yTBojYBygPCbDapT/v5v0MgxF9Xvr
+         plt/cHrrTtNtvZPMaXoR12rqIC3WPeFxfXFy7PHewaKTUGVeOPcfwxGQZGFexd2sRDta
+         T+Aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715108538; x=1715713338;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=wCGWhLT+GW7C3GUbTFxtCVYF67mxCVX333qfGkLE2u0=;
+        b=RGp5cX4dlZRXaw6zolBTaQtwAtzD0AEr5qFDPxWMob+TeQlj6z23DHqAdAa+kJ8LCs
+         TktoZFiIQmIU5uARvOkxmd1jV2YJoZlVG04w6rvWO8TfXZc8skmpk0TO1SOJ5pYwd9S9
+         GcjyJGJTRfxFB5xRQrzfIHm1QtG4hqzz63eetcJe49cA7g/9BdAwzlieasp6H1qWnUxH
+         C5KpWQjMFNPRs32u7maA9PBZkxa9dWV8XL+JMOU6BkQwTNDfTuayZk3zuCY7lnHFUj5Q
+         0bVmox/isPgvE5vTBJ1kZAlUZVcCbkpFM+eeo4jnC6ID/wSvX0yrIaBniZM0BdrveYA8
+         j9lw==
+X-Forwarded-Encrypted: i=1; AJvYcCWZErwuaKTwMjca68A/YTIK+KngQwab3uOtbMLK16DJm5ynlQ26sQnsY7Pdlzl7KEzx58FMmftHxWs4Jps2oU0hTfM/VeEzpgRD
+X-Gm-Message-State: AOJu0YzGeaLZqY7pWgaKs3G8oA7I+xt6QXbeeGJTQPy7VuMntVRqJ8Fb
+	3BdUGmsxx4nUjGC2hfTfsixC6Al6rpJb1mhkfx18ZKbtSaE9UbXr3n5X/zapIIk=
+X-Google-Smtp-Source: AGHT+IFL6ERS1/RYKsFupGgA1xBg56o5QNJtLC1lE9gU+5b2z3/U/CF3gHCNHmI4JJsZ2InfuQGgaw==
+X-Received: by 2002:a05:6808:1b21:b0:3c9:6d1c:81db with SMTP id 5614622812f47-3c98532c341mr532151b6e.56.1715108537916;
+        Tue, 07 May 2024 12:02:17 -0700 (PDT)
+Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
+        by smtp.gmail.com with ESMTPSA id j14-20020a54480e000000b003c96bbe0e79sm909652oij.13.2024.05.07.12.02.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 May 2024 12:02:17 -0700 (PDT)
+From: David Lechner <dlechner@baylibre.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+	Julien Stephan <jstephan@baylibre.com>,
+	Esteban Blanc <eblanc@baylibre.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH RFC 1/4] iio: introduce struct iio_scan_type
+Date: Tue,  7 May 2024 14:02:05 -0500
+Message-ID: <20240507-iio-add-support-for-multiple-scan-types-v1-1-95ac33ee51e9@baylibre.com>
+X-Mailer: git-send-email 2.43.2
+In-Reply-To: <20240507-iio-add-support-for-multiple-scan-types-v1-0-95ac33ee51e9@baylibre.com>
+References: <20240507-iio-add-support-for-multiple-scan-types-v1-0-95ac33ee51e9@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="zHUfXpDt/8/b/n3m"
-Content-Disposition: inline
-In-Reply-To: <20240504-bmi120-v2-2-3b3ce6e1c3c6@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.12.4
+Content-Transfer-Encoding: 8bit
 
+This gives the channel scan_type a named type so that it can be used
+to simplify code in later commits.
 
---zHUfXpDt/8/b/n3m
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
+ include/linux/iio/iio.h | 41 ++++++++++++++++++++++-------------------
+ 1 file changed, 22 insertions(+), 19 deletions(-)
 
-On Sat, May 04, 2024 at 02:59:49PM +0200, Barnab=E1s Cz=E9m=E1n wrote:
-> From: Danila Tikhonov <danila@jiaxyga.com>
->=20
-> Document bosch,bmi120 compatible.
->=20
-> Signed-off-by: Danila Tikhonov <danila@jiaxyga.com>
-> Signed-off-by: Barnb=E1s Cz=E9m=E1n <trabarni@gmail.com>
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 55e2b22086a1..19de573a944a 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -173,6 +173,27 @@ struct iio_event_spec {
+ 	unsigned long mask_shared_by_all;
+ };
+ 
++/**
++ * struct iio_scan_type - specification for channel data format in buffer
++ * @sign:		's' or 'u' to specify signed or unsigned
++ * @realbits:		Number of valid bits of data
++ * @storagebits:	Realbits + padding
++ * @shift:		Shift right by this before masking out realbits.
++ * @repeat:		Number of times real/storage bits repeats. When the
++ *			repeat element is more than 1, then the type element in
++ *			sysfs will show a repeat value. Otherwise, the number
++ *			of repetitions is omitted.
++ * @endianness:		little or big endian
++ */
++struct iio_scan_type {
++	char	sign;
++	u8	realbits;
++	u8	storagebits;
++	u8	shift;
++	u8	repeat;
++	enum iio_endian endianness;
++};
++
+ /**
+  * struct iio_chan_spec - specification of a single channel
+  * @type:		What type of measurement is the channel making.
+@@ -184,17 +205,6 @@ struct iio_event_spec {
+  * @scan_index:		Monotonic index to give ordering in scans when read
+  *			from a buffer.
+  * @scan_type:		struct describing the scan type
+- * @scan_type.sign:		's' or 'u' to specify signed or unsigned
+- * @scan_type.realbits:		Number of valid bits of data
+- * @scan_type.storagebits:	Realbits + padding
+- * @scan_type.shift:		Shift right by this before masking out
+- *				realbits.
+- * @scan_type.repeat:		Number of times real/storage bits repeats.
+- *				When the repeat element is more than 1, then
+- *				the type element in sysfs will show a repeat
+- *				value. Otherwise, the number of repetitions
+- *				is omitted.
+- * @scan_type.endianness:	little or big endian
+  * @info_mask_separate: What information is to be exported that is specific to
+  *			this channel.
+  * @info_mask_separate_available: What availability information is to be
+@@ -245,14 +255,7 @@ struct iio_chan_spec {
+ 	int			channel2;
+ 	unsigned long		address;
+ 	int			scan_index;
+-	struct {
+-		char	sign;
+-		u8	realbits;
+-		u8	storagebits;
+-		u8	shift;
+-		u8	repeat;
+-		enum iio_endian endianness;
+-	} scan_type;
++	struct iio_scan_type scan_type;
+ 	long			info_mask_separate;
+ 	long			info_mask_separate_available;
+ 	long			info_mask_shared_by_type;
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+-- 
+2.43.2
 
-Thanks,
-Conor.
-
---zHUfXpDt/8/b/n3m
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZjpJkgAKCRB4tDGHoIJi
-0jUqAP0bwMEV57V9wdleYT2GDt/j5RfTV6A931H8hMgz361SnQEAv05YU6fqSPgW
-+dE5egZOrmdLdi8JDxwv9aNb3d/qoAE=
-=taDr
------END PGP SIGNATURE-----
-
---zHUfXpDt/8/b/n3m--
