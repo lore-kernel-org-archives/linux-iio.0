@@ -1,117 +1,196 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6310816D4DF;
-	Fri, 10 May 2024 12:30:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 141B712CDBE
+	for <linux-iio@vger.kernel.org>; Fri, 10 May 2024 14:19:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715344212; cv=none; b=V/WauXrw8maerT4rWYN5eUYW2VzQOLGXdiZj4v/oZS1labWcTQmMAfIp0zjX8k1KBDdJT8z3IBdPNIqE9AEjViHjeaNpGafEIYkJl9g7as6AkxBPJfeI9ys0fmJcOeBlKXzgmX78slYQf/eBYb0CY8J38lMXbjqv1pOg8zY9fA8=
+	t=1715350760; cv=none; b=H4TfKBJdWmjsmVfQQ5kaS7fhTEgnni4n0e6IKyqfCZqvv1m5mU2WOsjJ4Cp44sW3QC8JbnRATRyzC5VWM4W4vH1oz9lel0OgpRdEop0kVesZvPsm4+4gL6hNwNw+6nZHjgoNQLPdVjO+ffhYlWoGrWF0HnaL8maWjpkQWxsAcd8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715344212; c=relaxed/simple;
-	bh=11RXuL0ZvlTdxUPPzXosyvDPvDTezfS8XZOnSQLvLt4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DzqwOWcgfOKRH60jcgX1qoMUZg8fLI7OuHZgwYzgVicX5eaCjUsArWhsC+WFYlwltpe22MQa1IOcJ0OfQkaMMf7dYMYIsF8VHSOSgEbnj1xKcf2lHoKO3grq+kTaIg4nTeTRNuIiAeoAJ3WbrKkbaUTGSeIhvuPFFOiTdRZ+tZo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L4gn41EP; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1715350760; c=relaxed/simple;
+	bh=NlQ/Ug7dz4K2c2zWHyPJUr2k+IfziswsplWQ7RQc/kw=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=VpURJFwtZ88EHwZr9gRKKP6HVou2wlc+sj2Ak7Z4ouIq0umkLMvdpuiqveb6g6QqGC/muk/HvgSrVaHfUoKhSq3VF11UVKhN0McjLCJ4OigFLRlXi5ACUtfM+1i4TEXz56t9xYNm4kptuTsjVWFpYbpenj8w/AdFNIw7tD66h9E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=yLVn5E+6; arc=none smtp.client-ip=209.85.221.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L4gn41EP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715344210; x=1746880210;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=11RXuL0ZvlTdxUPPzXosyvDPvDTezfS8XZOnSQLvLt4=;
-  b=L4gn41EPOlxE1FizhbvXvGGwJIC6GOANiE4eRanEkMvVhngsy5NFf0YU
-   /NqGbyFE+WMbTYP0G+ELywtKgGJFSg/dJxI7x7llLqgyCxEJO3eBpPs3+
-   +RNVL/0Kg1StyyJFK+Ko+mtJv+K4YMCMOpOdk/nUweVMOXF1KUAk4iOcz
-   hWxLHP7Np1atnfXNiRpjpcTJPclMT2IJPGfsHEVSMIpEEeACGTo7eS7VJ
-   kljSa3R5u4l8fk7FAJAZk6y9cK1KYugeGMYQWFtf7rYj0x3eF3rU+fuXA
-   +vvUPgaZ+uVgLv0A0YEd4VWUXA8/sqvi+BuInfcxi08SU6WKGeizL6Mtx
-   w==;
-X-CSE-ConnectionGUID: 5VSJy6z5Rmi/Fh3UZCajug==
-X-CSE-MsgGUID: wRT4T2BDS4SjNetqmDzoPQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11068"; a="28832847"
-X-IronPort-AV: E=Sophos;i="6.08,151,1712646000"; 
-   d="scan'208";a="28832847"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2024 05:30:09 -0700
-X-CSE-ConnectionGUID: Tnc5xe9LSFCkD0JD2WoBrQ==
-X-CSE-MsgGUID: o/Q84inkQwWuL3RmWgHJ2g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,151,1712646000"; 
-   d="scan'208";a="60771038"
-Received: from lkp-server01.sh.intel.com (HELO f8b243fe6e68) ([10.239.97.150])
-  by fmviesa001.fm.intel.com with ESMTP; 10 May 2024 05:30:07 -0700
-Received: from kbuild by f8b243fe6e68 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1s5PO0-00068Y-2g;
-	Fri, 10 May 2024 12:30:04 +0000
-Date: Fri, 10 May 2024 20:29:14 +0800
-From: kernel test robot <lkp@intel.com>
-To: Yasin Lee <yasin.lee.x@outlook.com>, jic23@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, lars@metafoo.de, swboyd@chromium.org,
-	nuno.a@analog.com, andy.shevchenko@gmail.com,
-	u.kleine-koenig@pengutronix.de, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, yasin.lee.x@gmail.com,
-	yasin.lee.x@outlook.com
-Subject: Re: [PATCH] iio:proximity:hx9031as: Add TYHX HX9031AS/HX9023S sensor
- driver
-Message-ID: <202405102039.QdXzki1Z-lkp@intel.com>
-References: <SN7PR12MB8101EDFA7F91A59761095A28A4E72@SN7PR12MB8101.namprd12.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="yLVn5E+6"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-34d9c9f2cf0so1707784f8f.3
+        for <linux-iio@vger.kernel.org>; Fri, 10 May 2024 07:19:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1715350756; x=1715955556; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kBayFo9ABt7YlFjmk+ws+uzVFbLXwJ+VUXfXdiBtu3U=;
+        b=yLVn5E+672NVDcUuZ5BM9pqUiQ51PD0bYvsxde4oKfhH58dUTDwa7EJ/YV5wd2UZ+R
+         eH9fhGEjWqOVGY+dM/kb/6H0jSj91zknOZXoM4TZ67I3ozYssnfhoS8wTZ/NBdBQZIm5
+         bv81b7/jLbupL/+KYSndc6ixpctxX8WfWrjCbVZeSupcS+lUDT6M0XwHpSYMm2cbg4jL
+         /Jij+sL8dPrVJkO0wiZs9vP/m8inRb1OFwMSUREFJwVYl6HCFpMh6XlZbAqhjLQ0Egeb
+         DeD3hyZF04ZFwsNiGWcX0H2/tn/rskfphj7yWihS3SN8bPLwiMVP1EdoQGxuPmJPsOro
+         x+Nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715350756; x=1715955556;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=kBayFo9ABt7YlFjmk+ws+uzVFbLXwJ+VUXfXdiBtu3U=;
+        b=K+iOrwhbonGcXtV51gTF7UZdoFYrxuJ63NsaubPSgrDN557+3UMbnNY4nINnHiTZqb
+         aJWeeZQB3+YhcY9XvDBCsYsng4K3uz1mPfEpHMDkvGU3g0K5UOFN97XrQroBY+lshkWJ
+         yEtLWu9uMc+wjg6i/bJ2mn5mrhB+9WztcZYoeDhuIattiJDn4TYvEnwfZ7ItpaR7U4ae
+         K7s/SFsbajabb+xHpo2p0H3XjWqQrcWR4NZlNaPgqBVj3XVbFBp/Vys9TzWO2yTwGZ3Y
+         Jm/9S0KH35ORdBagajLTxIF5MBR5w2XxXfAtIjyJ8K1LU51ilGoWeDrWem1CW/f/szKp
+         SYyw==
+X-Forwarded-Encrypted: i=1; AJvYcCXNxz89WlpMSKyMz8R4amNHWdZ9TQvIsYWR5BTdXXkC3T1Mt/Nu4NK5uTKLJQy4NXVFtBYjwzdlmrNJ0CSbTMoecx4C70HhtWW0
+X-Gm-Message-State: AOJu0YyAPk0UclwRLl4IvVL0hdJv44MfDc/+JkcCaYBu+UTJDBZE0x7e
+	TfnWB0RYHhWCwtz6Qr9qHOOtRG66v7VL2b0SAn8oDwWiaox6NROM+kaJEIGHufs=
+X-Google-Smtp-Source: AGHT+IGJ7nj5x+rqDdO1Ls7q9E9QWTgWjhPJK1qtXFrn9CBOM7ecq92CKF5mEejihS5rabgpVGfggw==
+X-Received: by 2002:a05:6000:181a:b0:34c:fa08:791c with SMTP id ffacd0b85a97d-3504a969487mr2456273f8f.45.1715350756294;
+        Fri, 10 May 2024 07:19:16 -0700 (PDT)
+Received: from localhost.localdomain (host-79-47-39-74.retail.telecomitalia.it. [79.47.39.74])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-41fd97e842csm56111875e9.24.2024.05.10.07.19.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 May 2024 07:19:15 -0700 (PDT)
+From: Angelo Dureghello <adureghello@baylibre.com>
+X-Google-Original-From: Angelo Dureghello <adureghello@baylibre.org>
+To: jic23@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Cc: nuno.sa@analog.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Angelo Dureghello <adureghello@baylibre.com>
+Subject: [PATCH 2/3] iio: dac: ad3552r: add support for ad3541r and ad3551r
+Date: Fri, 10 May 2024 16:18:35 +0200
+Message-ID: <20240510141836.1624009-2-adureghello@baylibre.org>
+X-Mailer: git-send-email 2.45.0.rc1
+In-Reply-To: <20240510141836.1624009-1-adureghello@baylibre.org>
+References: <20240510141836.1624009-1-adureghello@baylibre.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SN7PR12MB8101EDFA7F91A59761095A28A4E72@SN7PR12MB8101.namprd12.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Yasin,
+From: Angelo Dureghello <adureghello@baylibre.com>
 
-kernel test robot noticed the following build warnings:
+Add support for single-output dac variants.
 
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on linus/master v6.9-rc7 next-20240510]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
+---
+ drivers/iio/dac/ad3552r.c | 39 +++++++++++++++++++++++++++++----------
+ 1 file changed, 29 insertions(+), 10 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Yasin-Lee/iio-proximity-hx9031as-Add-TYHX-HX9031AS-HX9023S-sensor-driver/20240510-173839
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/SN7PR12MB8101EDFA7F91A59761095A28A4E72%40SN7PR12MB8101.namprd12.prod.outlook.com
-patch subject: [PATCH] iio:proximity:hx9031as: Add TYHX HX9031AS/HX9023S sensor driver
-reproduce: (https://download.01.org/0day-ci/archive/20240510/202405102039.QdXzki1Z-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202405102039.QdXzki1Z-lkp@intel.com/
-
-versioncheck warnings: (new ones prefixed by >>)
-   INFO PATH=/opt/cross/rustc-1.76.0-bindgen-0.65.1/cargo/bin:/opt/cross/clang-18/bin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-   /usr/bin/timeout -k 100 3h /usr/bin/make KCFLAGS= -Wtautological-compare -Wno-error=return-type -Wreturn-type -Wcast-function-type -funsigned-char -Wundef -fstrict-flex-arrays=3 -Wformat-overflow -Wformat-truncation -Wenum-conversion W=1 --keep-going LLVM=1 -j32 ARCH=x86_64 versioncheck
-   find ./* \( -name SCCS -o -name BitKeeper -o -name .svn -o -name CVS -o -name .pc -o -name .hg -o -name .git \) -prune -o \
-   	-name '*.[hcS]' -type f -print | sort \
-   	| xargs perl -w ./scripts/checkversion.pl
-   ./drivers/accessibility/speakup/genmap.c: 13 linux/version.h not needed.
-   ./drivers/accessibility/speakup/makemapdata.c: 13 linux/version.h not needed.
->> ./drivers/iio/proximity/hx9031as.c: 16 linux/version.h not needed.
-   ./drivers/staging/media/atomisp/include/linux/atomisp.h: 23 linux/version.h not needed.
-   ./samples/bpf/spintest.bpf.c: 8 linux/version.h not needed.
-   ./samples/trace_events/trace_custom_sched.c: 11 linux/version.h not needed.
-   ./sound/soc/codecs/cs42l42.c: 14 linux/version.h not needed.
-   ./tools/lib/bpf/bpf_helpers.h: 410: need linux/version.h
-   ./tools/testing/selftests/bpf/progs/dev_cgroup.c: 9 linux/version.h not needed.
-   ./tools/testing/selftests/bpf/progs/netcnt_prog.c: 3 linux/version.h not needed.
-   ./tools/testing/selftests/bpf/progs/test_map_lock.c: 4 linux/version.h not needed.
-   ./tools/testing/selftests/bpf/progs/test_send_signal_kern.c: 4 linux/version.h not needed.
-   ./tools/testing/selftests/bpf/progs/test_spin_lock.c: 4 linux/version.h not needed.
-   ./tools/testing/selftests/bpf/progs/test_tcp_estats.c: 37 linux/version.h not needed.
-   ./tools/testing/selftests/wireguard/qemu/init.c: 27 linux/version.h not needed.
-
+diff --git a/drivers/iio/dac/ad3552r.c b/drivers/iio/dac/ad3552r.c
+index a492e8f2fc0f..0dd6f995c3e2 100644
+--- a/drivers/iio/dac/ad3552r.c
++++ b/drivers/iio/dac/ad3552r.c
+@@ -140,7 +140,9 @@ enum ad3552r_ch_vref_select {
+ };
+ 
+ enum ad3542r_id {
++	AD3541R_ID = 0x400b,
+ 	AD3542R_ID = 0x4009,
++	AD3551R_ID = 0x400a,
+ 	AD3552R_ID = 0x4008,
+ };
+ 
+@@ -745,7 +747,8 @@ static void ad3552r_calc_gain_and_offset(struct ad3552r_desc *dac, s32 ch)
+ 	} else {
+ 		/* Normal range */
+ 		idx = dac->ch_data[ch].range;
+-		if (dac->chip_id == AD3542R_ID) {
++		if (dac->chip_id == AD3541R_ID ||
++		    dac->chip_id == AD3542R_ID) {
+ 			v_min = ad3542r_ch_ranges[idx][0];
+ 			v_max = ad3542r_ch_ranges[idx][1];
+ 		} else {
+@@ -780,7 +783,7 @@ static int ad3552r_find_range(u16 id, s32 *vals)
+ 	int i, len;
+ 	const s32 (*ranges)[2];
+ 
+-	if (id == AD3542R_ID) {
++	if (id == AD3541R_ID || id == AD3542R_ID) {
+ 		len = ARRAY_SIZE(ad3542r_ch_ranges);
+ 		ranges = ad3542r_ch_ranges;
+ 	} else {
+@@ -955,9 +958,10 @@ static int ad3552r_configure_device(struct ad3552r_desc *dac)
+ 			dev_err(dev, "mandatory reg property missing\n");
+ 			goto put_child;
+ 		}
+-		if (ch >= AD3552R_NUM_CH) {
+-			dev_err(dev, "reg must be less than %d\n",
+-				AD3552R_NUM_CH);
++		if (ch >= AD3552R_NUM_CH ||
++			(dac->chip_id == AD3541R_ID && ch) ||
++			(dac->chip_id == AD3551R_ID && ch)) {
++			dev_err(dev, "channel %d is not supported\n", ch);
+ 			err = -EINVAL;
+ 			goto put_child;
+ 		}
+@@ -987,9 +991,10 @@ static int ad3552r_configure_device(struct ad3552r_desc *dac)
+ 				goto put_child;
+ 
+ 			dac->ch_data[ch].range = val;
+-		} else if (dac->chip_id == AD3542R_ID) {
++		} else if (dac->chip_id == AD3541R_ID ||
++			   dac->chip_id == AD3542R_ID) {
+ 			dev_err(dev,
+-				"adi,output-range-microvolt is required for ad3542r\n");
++				"adi,output-range-microvolt is required for ad354xr\n");
+ 			err = -EINVAL;
+ 			goto put_child;
+ 		} else {
+@@ -1088,10 +1093,20 @@ static int ad3552r_probe(struct spi_device *spi)
+ 		return err;
+ 
+ 	/* Config triggered buffer device */
+-	if (dac->chip_id == AD3552R_ID)
+-		indio_dev->name = "ad3552r";
+-	else
++	switch (dac->chip_id) {
++	case AD3541R_ID:
++		indio_dev->name = "ad3541r";
++		break;
++	case AD3542R_ID:
+ 		indio_dev->name = "ad3542r";
++		break;
++	case AD3551R_ID:
++		indio_dev->name = "ad3551r";
++		break;
++	case AD3552R_ID:
++		indio_dev->name = "ad3552r";
++		break;
++	}
+ 	indio_dev->dev.parent = &spi->dev;
+ 	indio_dev->info = &ad3552r_iio_info;
+ 	indio_dev->num_channels = dac->num_ch;
+@@ -1110,14 +1125,18 @@ static int ad3552r_probe(struct spi_device *spi)
+ }
+ 
+ static const struct spi_device_id ad3552r_id[] = {
++	{ "ad3541r", AD3541R_ID },
+ 	{ "ad3542r", AD3542R_ID },
++	{ "ad3551r", AD3551R_ID },
+ 	{ "ad3552r", AD3552R_ID },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(spi, ad3552r_id);
+ 
+ static const struct of_device_id ad3552r_of_match[] = {
++	{ .compatible = "adi,ad3541r"},
+ 	{ .compatible = "adi,ad3542r"},
++	{ .compatible = "adi,ad3551r"},
+ 	{ .compatible = "adi,ad3552r"},
+ 	{ }
+ };
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.45.0.rc1
+
