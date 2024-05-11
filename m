@@ -1,188 +1,146 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0935C171E6A;
-	Fri, 10 May 2024 23:24:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 033018F5E
+	for <linux-iio@vger.kernel.org>; Sat, 11 May 2024 00:49:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715383482; cv=none; b=liBJ7Tgu57ZQ1fA2BLadA16JimReDXfrn6TJkfJfoI+F4uzqyOofJCXDIgB8heUfQAS0HCOjPiGwgqvB16fpgmbax0hDTt3XyGIOS+ur3zJysqHq0RA5HV6CPlMxMc3Emg4pybCTaUH+RDZjFmwByK0G1cnFf/WQevUBY5/io7w=
+	t=1715388599; cv=none; b=Q8pkwFHmKSBj836zCmTIj69EOHFHc3Q6cs1L8gI2tb1OEBDeI/3ilL27RfX+8jA4pJgtIGPfWFQw5Ea+Fpss3Y0/J8sKQSaDSuLVe/eer29BgT6eCFkPBZ1n+yxeBh02K5sLdeKGFgU01LfnmS8qhoShJ7gkzBAt70Pkt1L/Rhw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715383482; c=relaxed/simple;
-	bh=CFfTjMpZwa0nTJjNm3L4qTZeh/Pp/1mtOQRR2uaqwLY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TLGNPtw41gcHOh1O9i5PXGPULnVhLKgrzjlvMj6I3Ovx8WhpMH7pRBSVtumTHIo2VHJzflYCch0+ex8OLyvCSbjO5TsuHveZbKWxth6tnBVW0KjZj14FYAp0CYcF8QCpqY5BL30FSa0sd5sy6MHFUR15SDWo/L00IbKz2CmXHQE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=U0L6mQVa; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1715388599; c=relaxed/simple;
+	bh=QslN9hiRjif2714MLfUNTy1aeizyH8JMJMB6mPnzuPI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=pDMdBc1ndq+RFSZVDgw3DhTX6DLXUqH0ADd/OSYBb928R243LhQm8Euy5kZwXneQj9FnLHf2b9aZgCM2qCmMZmc6DgR1WgwB2EoawwT9aPwYUNHtCMkSe1tLVW/pYgZuXyXqdsVWpk5o+tTY8ybwlOKw17VAT2frwpnSliWtEDQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=I+AF6YZv; arc=none smtp.client-ip=209.85.161.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="U0L6mQVa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715383480; x=1746919480;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=CFfTjMpZwa0nTJjNm3L4qTZeh/Pp/1mtOQRR2uaqwLY=;
-  b=U0L6mQVaCCOKzmQCMd8xVvGsZeuzUFmwWX7V40rK9FhwSq6UYnlHH4by
-   Wumk08dJw1ToVFYNwk/mXxvdrWSn6njdddj2ykjN2IGz40+9LRN2aZr8Q
-   CUW9/wb4LSUxqfB+lcPMl5xtCpkUzjrjoA4PhLwHnmF5pmr4at/TmNKOE
-   gm32gusainoBE+mmSAB6RlssVnbTZ5GIksnyWU9TWOsvFojj9drVWkbch
-   f2l7tnNKf0eGHkeKcbV6beAVc5J/1Y+POPpZGr+YluQgchxZJiDds1BqC
-   m+p5s9Npm0Efa88wFFTtue1J2Vm5Sd0yY6jYx0qvXZ2Q2blsfMyDNkL/e
-   A==;
-X-CSE-ConnectionGUID: CFGsqlkyTNC3chxwB5iUsQ==
-X-CSE-MsgGUID: rYAT6ljcRairXkd9ip7OQA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11069"; a="21989390"
-X-IronPort-AV: E=Sophos;i="6.08,152,1712646000"; 
-   d="scan'208";a="21989390"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2024 16:24:40 -0700
-X-CSE-ConnectionGUID: L3apfB/vTXaRnwBwnTOBXQ==
-X-CSE-MsgGUID: gakXD4PAS+a2Mv8trbS/MA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,152,1712646000"; 
-   d="scan'208";a="34633389"
-Received: from lkp-server01.sh.intel.com (HELO f8b243fe6e68) ([10.239.97.150])
-  by orviesa004.jf.intel.com with ESMTP; 10 May 2024 16:24:37 -0700
-Received: from kbuild by f8b243fe6e68 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1s5ZbO-0006fr-0T;
-	Fri, 10 May 2024 23:24:34 +0000
-Date: Sat, 11 May 2024 07:24:05 +0800
-From: kernel test robot <lkp@intel.com>
-To: Ramona Gradinariu <ramona.bolboaca13@gmail.com>,
-	linux-kernel@vger.kernel.org, jic23@kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	conor+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-	robh@kernel.org, nuno.sa@analog.com
-Cc: oe-kbuild-all@lists.linux.dev,
-	Ramona Gradinariu <ramona.bolboaca13@gmail.com>
-Subject: Re: [PATCH v2 8/8] drivers: iio: imu: Add support for adis1657x
- family
-Message-ID: <202405110735.khNaHnAJ-lkp@intel.com>
-References: <20240508131310.880479-9-ramona.bolboaca13@gmail.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="I+AF6YZv"
+Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-5ac8c73cf88so1420266eaf.2
+        for <linux-iio@vger.kernel.org>; Fri, 10 May 2024 17:49:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1715388597; x=1715993397; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Wm1JDIpGQ3/Aqds3KMjjWWOJUYPSXntTpGvlaeWf3LY=;
+        b=I+AF6YZvb0ZGtqfxIrQkw4wQE744NHHGfeUB2+wEHvD43mTYqJ2ZarJQdW3ERqrwVb
+         3216460M4XoEsbjvfOhcjNtYa8MFESqGPiOEp3agpE3GpURId0+YTxVSvgIsNrAveWRR
+         Kur18iuO86itQz2qZ6VL75LlRHdL3Bw+3dN9qmYJbkW7wLBgxYc/ky5l8GlZegY17jLl
+         Czsb9EOBKyWCTJwsUxYGYRWgVsmVsvTNyKmY+40iD3jY3xHkohN1/9uooJy3Y+boag2g
+         Y8qUg5Z4Mc1gQODqpnXEPy0eq246RoJX6kKrCtQOc62uR2+2uQkE6q1BS2N5t4XBN4WE
+         55iA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715388597; x=1715993397;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Wm1JDIpGQ3/Aqds3KMjjWWOJUYPSXntTpGvlaeWf3LY=;
+        b=Q7wMYYV0kuOMQuBmT5Kk77f4RY9IzzHCzm3c79u+SucmWslgrcp0ry1ITdvq6f1Alv
+         xkkcXfo8OsxB7QZ+yThkSbA7G28vtx7AbAbww2VRUGu31IaXbD2r5yNE/iX7qGcDptFa
+         5o1DMxYABa4YYMEsEWUTuBdL9ceJ4sXXJVRBtlG3tXSIFU85oj9TgSE/iJBm5I3opKsl
+         RAbFOMc2oZaDVNoqZCY0Qn4UhiWvrrf5LHYfItm1F4Tkb//j1WbUcV/0CN91XSQdDmDg
+         bc52ZMBGMLeZ/6AaxiAML4VAMzZA/q3KKfm48NDQLq2BPF/eYbho6E2/wNuK6NQJ+1Gv
+         vBXQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWZaW0NB7jaeoQ2FOVSM+gKvyUPmkWINtFRXaiCP+OwwCk+9hnWbp18QFOl186Dm7NBEbyVNWBW9ygJTEeM/BgN/ZGmM1RNWvtG
+X-Gm-Message-State: AOJu0YzHij1hva6ZgzsxtZ/Y2eUL9I7yLcMs0vs+K55sWZEFw3ImyKcz
+	VF3H/aQyzEBRcHnznd+VSdZIaq69ITXDdni+b8YXEFekBcE7vfAGGt9vGHMjJdw=
+X-Google-Smtp-Source: AGHT+IHIlPJpLdkHvfVzDbw2X1xtwQanIP+eKehd+NyrLExBkWOAZfON5byOulKnrHpJ4Pdp/WT0fg==
+X-Received: by 2002:a4a:907:0:b0:5af:4b39:b7e0 with SMTP id 006d021491bc7-5b2815cd612mr4164258eaf.0.1715388597084;
+        Fri, 10 May 2024 17:49:57 -0700 (PDT)
+Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-5b29015a3dbsm321132eaf.46.2024.05.10.17.49.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 May 2024 17:49:56 -0700 (PDT)
+From: David Lechner <dlechner@baylibre.com>
+To: Mark Brown <broonie@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+Cc: David Lechner <dlechner@baylibre.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	David Jander <david@protonic.nl>,
+	Martin Sperl <kernel@martin.sperl.org>,
+	linux-spi@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: [PATCH RFC v2 1/8] spi: dt-bindings: spi-peripheral-props: add spi-offloads property
+Date: Fri, 10 May 2024 19:44:24 -0500
+Message-ID: <20240510-dlech-mainline-spi-engine-offload-2-v2-1-8707a870c435@baylibre.com>
+X-Mailer: git-send-email 2.43.2
+In-Reply-To: <20240510-dlech-mainline-spi-engine-offload-2-v2-0-8707a870c435@baylibre.com>
+References: <20240510-dlech-mainline-spi-engine-offload-2-v2-0-8707a870c435@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240508131310.880479-9-ramona.bolboaca13@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.12.4
+Content-Transfer-Encoding: 8bit
 
-Hi Ramona,
+This adds a new property to the spi-peripheral-props binding for use
+with peripherals connected to controllers that support offloading.
 
-kernel test robot noticed the following build errors:
+Here, offloading means that the controller has the ability to perform
+complex SPI transactions without CPU intervention in some shape or form.
 
-[auto build test ERROR on jic23-iio/togreg]
-[cannot apply to linus/master v6.9-rc7 next-20240510]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+This property will be used to assign controller offload resources to
+each peripheral that needs them. What these resources are will be
+defined by each specific controller binding.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ramona-Gradinariu/dt-bindings-iio-imu-Add-ADIS16501-compatibles/20240508-211559
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20240508131310.880479-9-ramona.bolboaca13%40gmail.com
-patch subject: [PATCH v2 8/8] drivers: iio: imu: Add support for adis1657x family
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20240511/202405110735.khNaHnAJ-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 13.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240511/202405110735.khNaHnAJ-lkp@intel.com/reproduce)
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202405110735.khNaHnAJ-lkp@intel.com/
+v2 changes:
 
-All errors (new ones prefixed by >>):
+In v1, instead of generic SPI bindings, there were only controller-
+specific bindings, so this is a new patch.
 
-   In file included from drivers/iio/imu/adis16475.c:16:
-   include/linux/iio/imu/adis.h:530:60: warning: 'struct iio_dev_attr' declared inside parameter list will not be visible outside of this definition or declaration
-     530 |                                               const struct iio_dev_attr **buffer_attrs);
-         |                                                            ^~~~~~~~~~~~
-   drivers/iio/imu/adis16475.c: In function 'adis16475_probe':
->> drivers/iio/imu/adis16475.c:1959:69: error: passing argument 5 of 'devm_adis_setup_buffer_and_trigger_with_attrs' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    1959 |                                                                     adis16475_fifo_attributes);
-         |                                                                     ^~~~~~~~~~~~~~~~~~~~~~~~~
-         |                                                                     |
-         |                                                                     const struct attribute **
-   include/linux/iio/imu/adis.h:530:75: note: expected 'const struct iio_dev_attr **' but argument is of type 'const struct attribute **'
-     530 |                                               const struct iio_dev_attr **buffer_attrs);
-         |                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+In the previous version I also had an offloads object node that described
+what the offload capabilities were but it was suggested that this was
+not necessary/overcomplicated. So I've gone to the other extreme and
+made it perhaps over-simplified now by requiring all information about
+how each offload is used to be encoded in a single u32.
 
+We could of course consider using #spi-offload-cells instead for
+allowing encoding multiple parameters for each offload instance if that
+would be preferable.
 
-vim +/devm_adis_setup_buffer_and_trigger_with_attrs +1959 drivers/iio/imu/adis16475.c
+I also considered adding spi-offload-names that could be used as sort
+of a compatible string (more of an interface name really) in case some
+peripherals may want to support more than 1 specialized type of offload.
+---
+ .../devicetree/bindings/spi/spi-peripheral-props.yaml          | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-  1912	
-  1913	
-  1914	static int adis16475_probe(struct spi_device *spi)
-  1915	{
-  1916		struct iio_dev *indio_dev;
-  1917		struct adis16475 *st;
-  1918		int ret;
-  1919	
-  1920		indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-  1921		if (!indio_dev)
-  1922			return -ENOMEM;
-  1923	
-  1924		st = iio_priv(indio_dev);
-  1925	
-  1926		st->info = spi_get_device_match_data(spi);
-  1927		if (!st->info)
-  1928			return -EINVAL;
-  1929	
-  1930		ret = adis_init(&st->adis, indio_dev, spi, &st->info->adis_data);
-  1931		if (ret)
-  1932			return ret;
-  1933	
-  1934		indio_dev->name = st->info->name;
-  1935		indio_dev->channels = st->info->channels;
-  1936		indio_dev->num_channels = st->info->num_channels;
-  1937		if (st->info->flags & ADIS16475_HAS_FIFO)
-  1938			indio_dev->info = &adis16575_info;
-  1939		else
-  1940			indio_dev->info = &adis16475_info;
-  1941		indio_dev->modes = INDIO_DIRECT_MODE;
-  1942	
-  1943		ret = __adis_initial_startup(&st->adis);
-  1944		if (ret)
-  1945			return ret;
-  1946	
-  1947		ret = adis16475_config_irq_pin(st);
-  1948		if (ret)
-  1949			return ret;
-  1950	
-  1951		ret = adis16475_config_sync_mode(st);
-  1952		if (ret)
-  1953			return ret;
-  1954	
-  1955		if (st->info->flags & ADIS16475_HAS_FIFO) {
-  1956			ret = devm_adis_setup_buffer_and_trigger_with_attrs(&st->adis, indio_dev,
-  1957									    adis16475_trigger_handler_with_fifo,
-  1958									    &adis16475_buffer_ops,
-> 1959									    adis16475_fifo_attributes);
-  1960			if (ret)
-  1961				return ret;
-  1962			/* Update overflow behavior to always overwrite the oldest sample. */
-  1963			ret = adis_update_bits(&st->adis, ADIS16475_REG_FIFO_CTRL,
-  1964					       ADIS16575_OVERFLOW_MASK, (u16)ADIS16575_OVERWRITE_OLDEST);
-  1965		} else {
-  1966			ret = devm_adis_setup_buffer_and_trigger(&st->adis, indio_dev,
-  1967								 adis16475_trigger_handler);
-  1968		}
-  1969		if (ret)
-  1970			return ret;
-  1971	
-  1972		ret = devm_iio_device_register(&spi->dev, indio_dev);
-  1973		if (ret)
-  1974			return ret;
-  1975	
-  1976		adis16475_debugfs_init(indio_dev);
-  1977	
-  1978		return 0;
-  1979	}
-  1980	
+diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+index 15938f81fdce..32991a2d2264 100644
+--- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
++++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+@@ -113,6 +113,16 @@ properties:
+     minItems: 2
+     maxItems: 4
+ 
++  spi-offloads:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    description:
++      Array of controller offload instances that are reserved for use by the
++      peripheral device. The semantic meaning of the values of the array
++      elements is defined by the controller. For example, it could be a simple
++      0-based index of the offload instance, or it could be a bitfield where
++      a few bits represent the assigned hardware trigger, a few bits represent
++      the assigned RX stream, etc.
++
+   st,spi-midi-ns:
+     description: |
+       Only for STM32H7, (Master Inter-Data Idleness) minimum time
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.43.2
+
