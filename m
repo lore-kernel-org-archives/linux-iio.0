@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46BD525765;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4842628DC1;
 	Tue, 14 May 2024 07:23:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715671399; cv=none; b=DpOGmUR/Kj7VGSuCkpnQrwIMrmWzUK4toJqoJVFCf9zG8Ku3Oue4fyxms57cqJ6Dyga+zKm07FfQpxAd9XZ3rmMYUlevNSLryyGAYODDGXl7DTHBiDsASeE/chwjpFPudGOF4oLJ3O3l9VBQY8ZtWZJekBwo4Cn+MzriBDN0t1o=
+	t=1715671399; cv=none; b=aBJ6yN9qB3xM6qUAhZWtuRkWQGm7n/84ZBUlzqsvZVkG/QwWzaF+JEg9KrPVdYnTyVIOrx5C4eXNCphfCmMLDXvPCTUjGV+gaWL+cuVMM15sXfnnP/USUNGCoogkhG4oiJ67KhZH4kRoCpijred+Wth+PYFKiOsjN3gxLtmtXxE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1715671399; c=relaxed/simple;
-	bh=1YgStPTBqOXTZn/yGxVC0i4oXFG75QVcdPJh3J/HwHA=;
+	bh=CH6KEJHDJ5SKHbuQjpX1KVB6R0zspN6qqhSuvnA4z9A=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=qb1Thx8PQxoqx0rYwPZvX5zXo4+CSqHp7rLm5fuJWO72HrSdB4h7XZwoE2cIh7z9KWsBu2aL1o/fTgbq/WV90/YdEBL99gz8sEWiSaps6iSPBM+wsGz4LAtJoC0zhLgxs6qAjQW2H0xuWa4k1pV2p3W3ern7RPpCkiRkNaYlqXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UKXNoS0e; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=Q9c5Y3zora1duIYrn/K64Vfqxj+pnPHSl8HFQ2TvypgO46jR7LHMJyzKXPYb8N+kYjVWED1xg0y6XvpUn1nAroKTTbeB6PmRxFrcLOJniNVihQQjEwngss9eiw2cHAc5v5FS6LpiLtjIBln3b7mLXuIeY0HyqhTiQBNprM3iNgQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G1YPvxU3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UKXNoS0e"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AFE86C4DDF2;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G1YPvxU3"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 90A08C4AF0B;
 	Tue, 14 May 2024 07:23:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1715671398;
-	bh=1YgStPTBqOXTZn/yGxVC0i4oXFG75QVcdPJh3J/HwHA=;
+	bh=CH6KEJHDJ5SKHbuQjpX1KVB6R0zspN6qqhSuvnA4z9A=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=UKXNoS0efappWY/f21aEeftbGe4DpYwHuV0RA6MbMGGewgXLSTr08oIq1VC1kek6L
-	 i8EwpvjhVwPs8meeE2+KAD/ahapa9FnjqEQlhOMAUgSsyzr+1aZYO/oWtaJ5//L9uK
-	 TBdWp4uo7dL2BcAauGoBK3WRqFdhOE3U9vsCpHpSlCmEx02J/6jOg5VLEzfoxu+GrC
-	 q9pWJLGKc5pIZ6xpq05B4cXVywhyCgpO5HkGJZkTYhe+sFEURoh+6U+yFm0i8IDxZm
-	 Z9BGTkniaNKPzwj3+Pj+VcdMDBw40TyyJ+xjghGYIFNliyopbV2QSnSH539IznlmyQ
-	 1Wa82H5NKZ7dw==
+	b=G1YPvxU3XQYBf+KAqC5WT/AqUrM1nHwcuwQnrKPeV2JwzWhUWOKaaB+F/mbf0A3eE
+	 WIHmKYsii6XrlVsiUodq7epa6nAD0UJEt5rdzpfaSEwYETHTLC/HXqO1i/DVcc2paW
+	 Fc20WD0nPVlXtZOJEBtYceKqlTnsD3ebUt/QHd2ih5o5qT87f8oYKKlc1MFroPvwt9
+	 J55/OgnvoKYijhSnxPevFR6gsceKer46nA/bQhjiMfLlWTSUPSSe4yZagVnAFbFXfD
+	 tLicyOcXggvG1tbfW6BSAWKRa9UEYVdag2NoWXgt5Gh4gNKaxwP09IfH5BZlPgzJVt
+	 +HHLBJ779QDVQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F9CFC25B75;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 815FEC25B7D;
 	Tue, 14 May 2024 07:23:18 +0000 (UTC)
 From: Dumitru Ceclan via B4 Relay <devnull+dumitru.ceclan.analog.com@kernel.org>
-Date: Tue, 14 May 2024 10:22:54 +0300
-Subject: [PATCH v2 9/9] iio: adc: ad7173: Reduce device info struct size
+Date: Tue, 14 May 2024 10:22:52 +0300
+Subject: [PATCH v2 7/9] iio: adc: ad7173: Remove index from temp channel
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -39,8 +39,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20240514-ad4111-v2-9-29be6a55efb5@analog.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240514-ad4111-v2-7-29be6a55efb5@analog.com>
 References: <20240514-ad4111-v2-0-29be6a55efb5@analog.com>
 In-Reply-To: <20240514-ad4111-v2-0-29be6a55efb5@analog.com>
 To: Ceclan Dumitru <dumitru.ceclan@analog.com>
@@ -52,11 +52,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Dumitru Ceclan <mitrutzceclan@gmail.com>
 X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1715671396; l=1076;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1715671396; l=818;
  i=dumitru.ceclan@analog.com; s=20240313; h=from:subject:message-id;
- bh=RmIUo6Mi25zkqE47X3KPvkctN+OcwkN8pU6glB5Vkrs=;
- b=rzsfG15wDQ+1f9c6J8mg/V77m6QEu332viIRx2GWiZgtebRG93ls/4H1z9xLYV+VM551lCcq4
- wKwALbRSrbpAfDYDCXinF1na7NgfPMqR2r7GHjJTUm1jyC8MUNx2ZXs
+ bh=PHSKNobPRYt9MaauQ24UkVzLnDgB+hq+gyvloguiHrg=;
+ b=HMYGVrDTQhYns7yYxeY3C2C+OvnbjG9Ge3+00rD6BtPfU6yLR+xjZJdaBoVGHTQmFqNA0LhOP
+ p3dddLpMVYZD+Ltf7gQ1xEtHRSSSPbvQ9p8nLhWvPEFjzv0X1riJPrA
 X-Developer-Key: i=dumitru.ceclan@analog.com; a=ed25519;
  pk=HdqMlVyrcazwoiai7oN6ghU+Bj1pusGUFRl30jhS7Bo=
 X-Endpoint-Received: by B4 Relay for dumitru.ceclan@analog.com/20240313
@@ -66,43 +66,28 @@ Reply-To: dumitru.ceclan@analog.com
 
 From: Dumitru Ceclan <dumitru.ceclan@analog.com>
 
-Reduce the size used by the device info struct by packing the bool
- fields within the same byte. This reduces the struct size from 52 bytes
- to 44 bytes.
+Temperature channel is unique per device, index is not needed.
+
+This is breaking userspace: as main driver has not reached mainline yet
+it won't affect users as there are none.
 
 Signed-off-by: Dumitru Ceclan <dumitru.ceclan@analog.com>
 ---
- drivers/iio/adc/ad7173.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/iio/adc/ad7173.c | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/drivers/iio/adc/ad7173.c b/drivers/iio/adc/ad7173.c
-index f049d79380ac..f963c731cae3 100644
+index d965b66d4d5a..d66b47e1a186 100644
 --- a/drivers/iio/adc/ad7173.c
 +++ b/drivers/iio/adc/ad7173.c
-@@ -180,15 +180,15 @@ struct ad7173_device_info {
- 	unsigned int clock;
- 	unsigned int id;
- 	char *name;
--	bool has_current_inputs;
--	bool has_vcom_input;
--	bool has_temp;
-+	bool has_current_inputs		:1;
-+	bool has_vcom_input		:1;
-+	bool has_temp			:1;
- 	/* ((AVDD1 − AVSS)/5) */
--	bool has_common_input;
--	bool has_input_buf;
--	bool has_int_ref;
--	bool has_ref2;
--	bool higher_gpio_bits;
-+	bool has_common_input		:1;
-+	bool has_input_buf		:1;
-+	bool has_int_ref		:1;
-+	bool has_ref2			:1;
-+	bool higher_gpio_bits		:1;
- 	u8 num_gpios;
- };
+@@ -828,7 +828,6 @@ static const struct iio_chan_spec ad7173_channel_template = {
  
+ static const struct iio_chan_spec ad7173_temp_iio_channel_template = {
+ 	.type = IIO_TEMP,
+-	.indexed = 1,
+ 	.channel = AD7173_AIN_TEMP_POS,
+ 	.channel2 = AD7173_AIN_TEMP_NEG,
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
 
 -- 
 2.43.0
