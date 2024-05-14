@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2F18210E6;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 206EB22611;
 	Tue, 14 May 2024 07:23:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715671399; cv=none; b=h/ka+C+xYIIMmtEg5vJNMHnvml5FOcnd5T0lwyfiKO5eTIaWN8q3iAedOGiu8VN+liiTAAK2xqE+EFSOtfbR2SdAXJu1fQrTzhcmDSkzrzFmBUpe7Tv6HdqoSPtDr3hMJRtfyEE79HTCDMkkBN0BbarSQbjhfDiLeRfbXWNnpQ8=
+	t=1715671399; cv=none; b=dgp7Lng9vkMOHDPl9h14/9CEek/m/8AhF4Zgi7AoO95Tup6rqd5irGenDQDMQpHUFwjiEl/z7GIQyqydx3nEjoEYCk6HK8k3p+31fVerzbx0H5myQlSKo6DqJ13bXpr3uMkJQzwtnyRyefehN+Qnq3QkEU6AYBnXkvUVq37S+A8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1715671399; c=relaxed/simple;
-	bh=QgIvzdD8Redb/g03BsHqPcR78rBBA7ClGH+HoxeS/Dg=;
+	bh=r/iJwwjlTmvF5IR+bY064hfHnkla7DJQglYzNY1CROw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=JwmCoq12G+fL2GVvHKDOs6Eg3YtDA0HN28yg3lIHaKdFY/tEgmZhIFeZn+MLwqYpZC4VhOkwAACRmWBYeDHbY12OJmGQhOK1bHcCb26sLMQtFe91/evahELPe6luRMUfUG3hemNUaQ0IU49XSRSGkCDi+SH2IT3nuG7jttHgrrs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ALJlMiA1; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=sRDaD4uTUnBrYL8tbF9YnCW2J3uG1oRQoGuaHL7zeGeu4uLpULe2M1DrciUuJAjrdgxSqK2Y8rosrWs6DiSX0Ot6rsh+aiaMYl4oIQG26Cjt6CMM3irOMAhFfnBZqui1QHkNuf6kkKWhsFw1I2iDHpOVBfCdNOom/RYpK2BGxgM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XK1Uo2nc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ALJlMiA1"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6DFD7C4AF0F;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XK1Uo2nc"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 80D89C4AF66;
 	Tue, 14 May 2024 07:23:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1715671398;
-	bh=QgIvzdD8Redb/g03BsHqPcR78rBBA7ClGH+HoxeS/Dg=;
+	bh=r/iJwwjlTmvF5IR+bY064hfHnkla7DJQglYzNY1CROw=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ALJlMiA1q5oa09QIICSiSO2d1qUqP6TK1a/c46dqFFZjbD9q698w2ON+fqNf2lOrm
-	 RRNy7pRwDEMUQEKew2KOFHRf0fklHZ2ji9SIxFcMyHph6gJmss9g4Dwo45iD5IygDE
-	 c00qpd1jWtKGPxyAc5bO8mI2VGfKKEB9gKtZjrFgOQyZEFSM6n24Ksg0KQlLzDb6pX
-	 tB5r/+6jhyetJzrpxAW5HLq7CBwG6n+q6YGNS9s9f/E3MF9TaLH95Bf0ODKzk3gDuE
-	 ahLSNG/LRNyYtNhm3VFy4PPLJ8wd/E/jpes3k6Ujp0pabaZCnr9kW11Ifm2aVSubwE
-	 zQviyUN6zwCFQ==
+	b=XK1Uo2ncNP1zh6y3yjqNyh46mh//XVRSQuNMISE1inNWZnWWOy1AcLXle8HcJl1cL
+	 iH0XRHBIF7We3ekhsuCpl/tQEegWvWZNuXouzjF3hVY8dnzET4918CkO8aw7dxJLjQ
+	 Mvlm/8xQMAcMnNZVkI81ISiCgcaRpzeKVr4H4qHs8RsZR+RysbCjAJ9EtpdaGV9AiS
+	 5MN0vY2VrnAXypjbF431VoT7Qrgz29i+3z45hToAVFaMc4ORnO+rM2oid6tacs0mbt
+	 BMtvpsfxl5pb7IV/qNg2qLFvhP3PvhTg0iu0ZGlOGDUP6x/+4wXeKTTDfxvYZv2/BI
+	 Z7qJal0ckf6LA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C05C25B75;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75861C04FFE;
 	Tue, 14 May 2024 07:23:18 +0000 (UTC)
 From: Dumitru Ceclan via B4 Relay <devnull+dumitru.ceclan.analog.com@kernel.org>
-Date: Tue, 14 May 2024 10:22:49 +0300
-Subject: [PATCH v2 4/9] iio: adc: ad7173: refactor ain and vref selection
+Date: Tue, 14 May 2024 10:22:51 +0300
+Subject: [PATCH v2 6/9] iio: adc: ad7173: Add ad7173_device_info names
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240514-ad4111-v2-4-29be6a55efb5@analog.com>
+Message-Id: <20240514-ad4111-v2-6-29be6a55efb5@analog.com>
 References: <20240514-ad4111-v2-0-29be6a55efb5@analog.com>
 In-Reply-To: <20240514-ad4111-v2-0-29be6a55efb5@analog.com>
 To: Ceclan Dumitru <dumitru.ceclan@analog.com>
@@ -52,11 +52,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Dumitru Ceclan <mitrutzceclan@gmail.com>
 X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1715671396; l=3227;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1715671396; l=1239;
  i=dumitru.ceclan@analog.com; s=20240313; h=from:subject:message-id;
- bh=BQKfZH7Fc3eGJEHjq+owi/bXwaFMUL02xOWUE48nKU8=;
- b=6pEGQM18sxhf9W3j23sX7tZRn6Za14nZzHf/npskDYpEgNGYpCTiRG0STBqIgcNE1xw4kEnrL
- tUOdWD6/uf3DTJprHneYWtT66e7RSfgFpIdJyeWdfqSIsSExYyfyH4i
+ bh=PqeTnj5w9/XrPfeAGecqWJITOQlmi0XSad6CyOICJio=;
+ b=5EmB4s4xRNoWeii1HzRetU0NZrVJYr0z8L4RtClGtisPJFdo5sZtmdPDFdLDUxxzYyPeA0Qio
+ ccQ28CIMpNXB0mTmg+X4S/OGoM3YwoBVgE4QS1NuSjrZFDVu11nkqeT
 X-Developer-Key: i=dumitru.ceclan@analog.com; a=ed25519;
  pk=HdqMlVyrcazwoiai7oN6ghU+Bj1pusGUFRl30jhS7Bo=
 X-Endpoint-Received: by B4 Relay for dumitru.ceclan@analog.com/20240313
@@ -66,102 +66,42 @@ Reply-To: dumitru.ceclan@analog.com
 
 From: Dumitru Ceclan <dumitru.ceclan@analog.com>
 
- Move validation of analog inputs and reference voltage selection to
-separate functions to reduce the size of the channel config parsing
-function and improve readability.
+Add missing names from the device info struct for 3 models to ensure
+consistency with the rest of the models.
 
 Signed-off-by: Dumitru Ceclan <dumitru.ceclan@analog.com>
 ---
- drivers/iio/adc/ad7173.c | 62 ++++++++++++++++++++++++++++++++++--------------
- 1 file changed, 44 insertions(+), 18 deletions(-)
+ drivers/iio/adc/ad7173.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/iio/adc/ad7173.c b/drivers/iio/adc/ad7173.c
-index d5ad3f01dec7..fb33534d63a9 100644
+index 1e9ba3070770..d965b66d4d5a 100644
 --- a/drivers/iio/adc/ad7173.c
 +++ b/drivers/iio/adc/ad7173.c
-@@ -911,6 +911,44 @@ static int ad7173_register_clk_provider(struct iio_dev *indio_dev)
- 					   &st->int_clk_hw);
- }
- 
-+static int ad7173_validate_voltage_ain_inputs(struct ad7173_state *st,
-+					      unsigned int ain[2])
-+{
-+	struct device *dev = &st->sd.spi->dev;
-+
-+	for (int i = 0; i < 2; i++) {
-+		if (ain[i] < st->info->num_inputs)
-+			continue;
-+
-+		return dev_err_probe(dev, -EINVAL,
-+			"Input pin number out of range for pair (%d %d).\n",
-+			ain[0], ain[1]);
-+	}
-+
-+	return 0;
-+}
-+
-+static int ad7173_validate_reference(struct ad7173_state *st, int ref_sel)
-+{
-+	struct device *dev = &st->sd.spi->dev;
-+	int ret;
-+
-+	if (ref_sel == AD7173_SETUP_REF_SEL_INT_REF && !st->info->has_int_ref)
-+		return dev_err_probe(dev, -EINVAL,
-+			"Internal reference is not available on current model.\n");
-+
-+	if (ref_sel == AD7173_SETUP_REF_SEL_EXT_REF2 && !st->info->has_ref2)
-+		return dev_err_probe(dev, -EINVAL,
-+			"External reference 2 is not available on current model.\n");
-+
-+	ret = ad7173_get_ref_voltage_milli(st, ref_sel);
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "Cannot use reference %u\n",
-+				     ref_sel);
-+
-+	return 0;
-+}
-+
- static int ad7173_fw_parse_channel_config(struct iio_dev *indio_dev)
- {
- 	struct ad7173_channel *chans_st_arr, *chan_st_priv;
-@@ -971,11 +1009,9 @@ static int ad7173_fw_parse_channel_config(struct iio_dev *indio_dev)
- 		if (ret)
- 			return ret;
- 
--		if (ain[0] >= st->info->num_inputs ||
--		    ain[1] >= st->info->num_inputs)
--			return dev_err_probe(dev, -EINVAL,
--				"Input pin number out of range for pair (%d %d).\n",
--				ain[0], ain[1]);
-+		ret = ad7173_validate_voltage_ain_inputs(st, ain);
-+		if (ret)
-+			return ret;
- 
- 		ret = fwnode_property_match_property_string(child,
- 							    "adi,reference-select",
-@@ -986,19 +1022,9 @@ static int ad7173_fw_parse_channel_config(struct iio_dev *indio_dev)
- 		else
- 			ref_sel = ret;
- 
--		if (ref_sel == AD7173_SETUP_REF_SEL_INT_REF &&
--		    !st->info->has_int_ref)
--			return dev_err_probe(dev, -EINVAL,
--				"Internal reference is not available on current model.\n");
--
--		if (ref_sel == AD7173_SETUP_REF_SEL_EXT_REF2 && !st->info->has_ref2)
--			return dev_err_probe(dev, -EINVAL,
--				"External reference 2 is not available on current model.\n");
--
--		ret = ad7173_get_ref_voltage_milli(st, ref_sel);
--		if (ret < 0)
--			return dev_err_probe(dev, ret,
--					     "Cannot use reference %u\n", ref_sel);
-+		ret = ad7173_validate_reference(st, ref_sel);
-+		if (ret)
-+			return ret;
- 
- 		if (ref_sel == AD7173_SETUP_REF_SEL_INT_REF)
- 			st->adc_mode |= AD7173_ADC_MODE_REF_EN;
+@@ -227,6 +227,7 @@ static const struct ad7173_device_info ad7173_device_info[] = {
+ 		.num_sinc5_data_rates = ARRAY_SIZE(ad7173_sinc5_data_rates),
+ 	},
+ 	[ID_AD7172_4] = {
++		.name = "ad7172-4",
+ 		.id = AD7172_4_ID,
+ 		.num_inputs = 9,
+ 		.num_channels = 8,
+@@ -272,6 +273,7 @@ static const struct ad7173_device_info ad7173_device_info[] = {
+ 		.num_sinc5_data_rates = ARRAY_SIZE(ad7175_sinc5_data_rates),
+ 	},
+ 	[ID_AD7175_8] = {
++		.name = "ad7175-8",
+ 		.id = AD7175_8_ID,
+ 		.num_inputs = 17,
+ 		.num_channels = 16,
+@@ -302,6 +304,7 @@ static const struct ad7173_device_info ad7173_device_info[] = {
+ 		.num_sinc5_data_rates = ARRAY_SIZE(ad7175_sinc5_data_rates),
+ 	},
+ 	[ID_AD7177_2] = {
++		.name = "ad7177-2",
+ 		.id = AD7177_ID,
+ 		.num_inputs = 5,
+ 		.num_channels = 4,
 
 -- 
 2.43.0
