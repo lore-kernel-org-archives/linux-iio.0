@@ -1,119 +1,113 @@
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DD087CF16
-	for <linux-iio@vger.kernel.org>; Wed, 22 May 2024 15:02:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97F4C22F0D;
+	Wed, 22 May 2024 15:08:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716390178; cv=none; b=i6Hk793wRVMdKYvUVfzrt7PrL3A1nztqAfxsskTdMjiqiPpuJCGkscwnxs9RS2KcpLLQz/JyJpgQccaEd/XIVab7nojYT+pp0I9SrqtVpwj8AEbE0UrgwmjedftcY5+p6dr66u4eqzzgdEgRV59ZgTS5YfsR0IYK1JOH5wDlWEI=
+	t=1716390483; cv=none; b=SySQKtm4XinClsFyKqgGjlTveXwzaD4aHSEnid0UuKUpC0F3RDO949ZUGvOysjVDJSPSQdSv32vblRS4FSTAtHSDVQqkfzuDHm5mI1MKYRPaF23e6/D8jBdpuEQ36DthsZYhc0KRBjm69SlWfcZZHNBt8CYG8FKQxBfUwV560IM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716390178; c=relaxed/simple;
-	bh=pVh87fVqPqfQKJqqcDbSMFn+FcTBzRpmEsaCLIFq0AA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mV+Pk7wvbM5jcg2XEIGc+EtZ0L6Uon6nDsnKp1sNghxeNikfNjOk03y/FIMJc6eQVMwaI9GlE7f6vw7n6qY5cF2MLdi3IuXn5YLvwYw5NoZPeKd0L2Fj3Ag/J0q5I/63ywynJGEL0oard60Xh5b1bc3tPOKg+k/MtouF6248+ko=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=J6Z3qU5V; arc=none smtp.client-ip=209.85.208.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1716390483; c=relaxed/simple;
+	bh=PpZwJfjlRA2zGPwkwSl4YW9dyiXTZREZRpX0Vrwmr6Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nDGfD6J5Yn4fai7db81ZBRm8ykHjeJi1hSCtMjYxJHy8lMROH0nbR3M+NGNm7rDfz1yOOHW11Ohc0txAdLtDtetePguOgwpiPduGOI0EOVJyq+U2Z53zdF0K3NZUlUZKAZnxOtlqBpOvO+GDJFQQ4A9oYWOQYHRFwIBk9bn0w2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=k8eE1/mp; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="J6Z3qU5V"
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2e3b1b6e9d1so78074701fa.2
-        for <linux-iio@vger.kernel.org>; Wed, 22 May 2024 08:02:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1716390175; x=1716994975; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3jsqIIhfmiwTRQW5T/GGVz9A/caM/qGXeRU8xHOLSg0=;
-        b=J6Z3qU5VeCfmizfMpuuKDk8Tr+51wldm0CshacVsxrmUiCdjjraP71SQfvnwiQaykq
-         N1t2RjOw6OAXKyezl6O8kKGI5kuwzBfvKV2F773FvlFrv8Fn5h07WfGn7wgrzRDTkQde
-         k9cPYPNNcCaqsLwLxb7rAtf9RPj73ofxdZr1wXNqySPud0l6Cp4JAHrwZhDnYZpfT0v8
-         lIkGjCxd6BPSp/G9NIar5ZcMN7DH2+wzgVlCy0eE0Gpk+w1P9DHEGUZGFs+B+L96RJed
-         qxXlhV73fYCT/WfEZtqJwvEPMR7R/uweuulx9ZheyjhKQzvkAt38GL8E+7AI48YOs7TH
-         pTdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716390175; x=1716994975;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3jsqIIhfmiwTRQW5T/GGVz9A/caM/qGXeRU8xHOLSg0=;
-        b=cnlyRh292uPrfQ+dZMLYIvoyr+3MYVyw2DaT8W10XmgCRZ0b/wfzaZ8ojZ04vTy6aA
-         mMG0pNegXR/0H6eSCOr7KbzKhUtlc4Ng/lpb4+KaE9h9xEZOKLs++FhUYgXZtcDMmhsq
-         ovnpCqorszff53HER4MLbjzpl/MlJrtICXzED1ZeG7ft5eLDNl+gxHcUoTnwB8iUEAyG
-         LLL2FET2iqlgUP9pYkW1bhuJle83FbXfA/V7IvM+H9804w3cNiWoLq/MYNDzj917sYFB
-         v2czbliE+xc2fhGoSu1+ee9t0RGKMhub69naPTMjdmP4i0G2IyrarWItGNifnYa4epIQ
-         E18g==
-X-Forwarded-Encrypted: i=1; AJvYcCXxDo6wbL7Y0ATAvbfJF/4rs+GsLxyYhHWmGUBhyZX0FYu57Ww7X5vcdoXMmf04PZzRSwDCRZ1gSkMuBHohByHku69Be54wHrx5
-X-Gm-Message-State: AOJu0Yz3LjLj8Fq9f6maQi+Jjj9F3piBQO3+toIgCkFLBSQP04zlfEnS
-	ekPg7KzBtINQ+fqdaKRmnFPnAGuzVrsm8WKstNTyX6E/+YIpMndNOpHVTcwx4KA=
-X-Google-Smtp-Source: AGHT+IFO99+pk7LErl0507i4+6glcqOJj5k3VvjWUKfZyuG4ISlN/d5VATvuxSfbiyh00Qg47KZK8Q==
-X-Received: by 2002:a2e:9d02:0:b0:2e4:7996:f9f0 with SMTP id 38308e7fff4ca-2e94946d417mr14305091fa.17.1716390175584;
-        Wed, 22 May 2024 08:02:55 -0700 (PDT)
-Received: from localhost.localdomain (host-79-16-6-145.retail.telecomitalia.it. [79.16.6.145])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-41fa90e93absm531370515e9.9.2024.05.22.08.02.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 May 2024 08:02:55 -0700 (PDT)
-From: Angelo Dureghello <adureghello@baylibre.com>
-X-Google-Original-From: Angelo Dureghello <adureghello@baylibre.org>
-To: jic23@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org
-Cc: nuno.sa@analog.com,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Angelo Dureghello <adureghello@baylibre.com>
-Subject: [PATCH v2 6/6] iio: dac: ad3552r: uniform structure names
-Date: Wed, 22 May 2024 17:01:41 +0200
-Message-ID: <20240522150141.1776196-7-adureghello@baylibre.org>
-X-Mailer: git-send-email 2.45.0.rc1
-In-Reply-To: <20240522150141.1776196-1-adureghello@baylibre.org>
-References: <20240522150141.1776196-1-adureghello@baylibre.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="k8eE1/mp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1716390482; x=1747926482;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=PpZwJfjlRA2zGPwkwSl4YW9dyiXTZREZRpX0Vrwmr6Q=;
+  b=k8eE1/mp39J/YmpqtQ9LaphY1bDzux2ZbeGmGdiwHUwiNxi7zN9wd7ja
+   2BaHupOs4gvzEN3HCqNzaE/1DKjILSlC0dtlB2rvoO9iEfpFpPl0AWzCJ
+   xq1WrUIF+imgSzZ4xzALRl49WKskU2c60KB19cUo7c3MOTudW9UdCU2CX
+   x23/rZkeq+7U0KvhuD/hhRlidrUc5ViolO+UlZpCMmFnMKjDKi1gabSXL
+   +uzy8HOC85FXr9waf4evAcJCjLiCU2nV/cFORhFE3Wt/xGuJdbApSqOcN
+   tmx7otIvvSsvir+2LNQ7v5pTTPeg5hYylDMDDBS/FBzqfFZdr4Wkqzvg2
+   g==;
+X-CSE-ConnectionGUID: /zR2jcxeSUqRenXsgesckg==
+X-CSE-MsgGUID: uIyE62anSniEfZZaL7MfLA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11079"; a="12525513"
+X-IronPort-AV: E=Sophos;i="6.08,181,1712646000"; 
+   d="scan'208";a="12525513"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2024 08:08:01 -0700
+X-CSE-ConnectionGUID: G21mYBgcRDqZgfLR7pEdNQ==
+X-CSE-MsgGUID: t6qIuYpyR866F9sRIsACQw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,181,1712646000"; 
+   d="scan'208";a="33233067"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmviesa007.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2024 08:07:57 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1s9nZK-0000000A0m8-3RXe;
+	Wed, 22 May 2024 18:07:54 +0300
+Date: Wed, 22 May 2024 18:07:54 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: "Nechita, Ramona" <Ramona.Nechita@analog.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, "Sa, Nuno" <Nuno.Sa@analog.com>,
+	Marius Cristea <marius.cristea@microchip.com>,
+	"Schmitt, Marcelo" <Marcelo.Schmitt@analog.com>,
+	Maksim Kiselev <bigunclemax@gmail.com>,
+	Ivan Mikhaylov <fr0st61te@gmail.com>,
+	Marcus Folkesson <marcus.folkesson@gmail.com>,
+	Liam Beguin <liambeguin@gmail.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] drivers: iio: adc: add support for ad777x family
+Message-ID: <Zk4KSlZ7NFgYx2Co@smile.fi.intel.com>
+References: <20240522120005.18197-1-ramona.nechita@analog.com>
+ <9c19faf6ee186f144a705f458da83ea25f7a3a34.camel@gmail.com>
+ <SN6PR03MB4320549F56148C13C4BDBBA1F3EB2@SN6PR03MB4320.namprd03.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <SN6PR03MB4320549F56148C13C4BDBBA1F3EB2@SN6PR03MB4320.namprd03.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-From: Angelo Dureghello <adureghello@baylibre.com>
+On Wed, May 22, 2024 at 03:01:52PM +0000, Nechita, Ramona wrote:
+> Hello Nuno,
+> 
+> I apologize, I accidentally submitted the updated version that I used for the
+> project, instead of the one without axi. I will fix it and resend the patch
+> asap.
 
-Use same driver file name (ad3552r) for structure names used
-for all variants.
+First of all, do not top-post!
 
-Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
----
-Changes for v2:
-- patch added in v2
----
- drivers/iio/dac/ad3552r.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Second, don't do ASAP, take your time, read the comments given for this version
+and address the same / similar issues in any code you are possessing before
+sending.
 
-diff --git a/drivers/iio/dac/ad3552r.c b/drivers/iio/dac/ad3552r.c
-index b8bdbfed22e3..b060cdbc715d 100644
---- a/drivers/iio/dac/ad3552r.c
-+++ b/drivers/iio/dac/ad3552r.c
-@@ -139,7 +139,7 @@ enum ad3552r_ch_vref_select {
- 	AD3552R_EXTERNAL_VREF_PIN_INPUT
- };
- 
--enum ad3542r_id {
-+enum ad3552r_id {
- 	AD3541R_ID = 0x400b,
- 	AD3542R_ID = 0x4009,
- 	AD3551R_ID = 0x400a,
-@@ -265,7 +265,7 @@ struct ad3552r_ch_data {
- 
- struct ad3552r_model_data {
- 	const char *model_name;
--	enum ad3542r_id chip_id;
-+	enum ad3552r_id chip_id;
- 	unsigned int num_hw_channels;
- 	const s32 (*ranges_table)[2];
- 	int num_ranges;
+> -----Original Message-----
+> From: Nuno Sá <noname.nuno@gmail.com> 
+> Sent: Wednesday, May 22, 2024 5:36 PM
+> On Wed, 2024-05-22 at 14:59 +0300, ranechita wrote:
+> > Added support for ad7770,ad7771,ad7779 ADCs. The data is streamed only 
+> > on the spi-mode, without using the data lines.
+
+> Is this even compiling? This is definitely not code to be upstreamed since it
+> relies on the our out-of-tree/legacy driver for the adi-axi-adc. You need to
+> convert this to use the IIO backend framework (adding new interfaces if
+> needed).
+
 -- 
-2.45.0.rc1
+With Best Regards,
+Andy Shevchenko
+
 
