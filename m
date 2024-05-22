@@ -1,34 +1,34 @@
 Received: from mx.treblig.org (mx.treblig.org [46.235.229.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E62C48120D;
-	Wed, 22 May 2024 23:05:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FEC9149C6B;
+	Wed, 22 May 2024 23:05:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.229.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716419111; cv=none; b=plpjpolIutfHHLU+kK6wr7reu/fV3vqFr0dQuQoBvLx0gB2o2mxHS+HPHqU1j/p9fKTk+e1t/wsk5Vx2i5e797xCHhMymZ77kuhuQrE3e4N7QJ69K34P2aeCbfTWxI/o/hZUwM6e9Oqj5Y/liF7KOPUNzWL00gjTAzlQ+Qdqz7Q=
+	t=1716419112; cv=none; b=G09jDbgj2scC1uUDzFkiP+ICD+wOT+XGXfAu7Y194P7I50vCZVCLy+yffrPqm8Ihqf3HO8ZyT5pAIYn17Ul5RgN9/n7p/sAXP6GFJAsfFFyt1PK5+H6pylq0SAthtS+WropmAPgzMK+c6bPNIw1ITQvsY53s4ARjbA8sxA7ft3E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716419111; c=relaxed/simple;
-	bh=zAG7UVjZSITU22NtWsDj11EC6yJ4bIphhJ/MuCFdO10=;
+	s=arc-20240116; t=1716419112; c=relaxed/simple;
+	bh=GC91rZEjwWdn9kP5813pBtcRlW2ZP9h8kGBpnB8dAz4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=G+PyFvrpZon/9ZlkakikSU6jf0y6bIdDLZ9qTWtRbYOUQMy1U2isBbA9KgQO00yc35l+hNtE4oRDRA87l4QGzekmkbwCtAtYO9T1vE6OfqBzMzSYOaj2+cohlHI0ofcZkq6FL+iGLvQwIrRBU3MvwACtkZJGuY7wUg0XyOrbriE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=treblig.org; spf=pass smtp.mailfrom=treblig.org; dkim=pass (2048-bit key) header.d=treblig.org header.i=@treblig.org header.b=GouGs19n; arc=none smtp.client-ip=46.235.229.95
+	 MIME-Version; b=UN5XmRAfi6FBkK/TN7thY4v5JBfvq+x68lQFh35b+bV/W7KFzQkSfrtMPweFtYNF2E/qRtBTphqkj+Eni/j6/c1vhlWFsA6izpFjA8N1sVapYL2UbtOmCdEOFYYcacyIS6dT1u8pJMPfSmxV3Yei5tutNVOWy+KbKEP9WunBpVU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=treblig.org; spf=pass smtp.mailfrom=treblig.org; dkim=pass (2048-bit key) header.d=treblig.org header.i=@treblig.org header.b=APVKum7G; arc=none smtp.client-ip=46.235.229.95
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=treblig.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=treblig.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=treblig.org header.i=@treblig.org header.b="GouGs19n"
+	dkim=pass (2048-bit key) header.d=treblig.org header.i=@treblig.org header.b="APVKum7G"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
 	; s=bytemarkmx; h=MIME-Version:Message-ID:Date:Subject:From:Content-Type:From
-	:Subject; bh=i33G2UVz5c3/3ftJDH9srccXV/AXkIRSYqxyOSQWIC8=; b=GouGs19nkCmYyk1R
-	zFZnbNXkUQv0+lj0z61o3XPODLIH0VZR828C8ICNszJ3KA0XsFtBdQ6nwqu1EUMVj2D92NLmf83cI
-	ZnUoibxkvr832CNjPxtW1DMliGD2IjQAXpquzZw1U97oSq6ymLWBbJl1hq2GqORekdS2bgjXZUIaj
-	3sj3UBHyQLCYlfmKPAxcyXaGa80UhxwYLLPGGa64HwyNDkmqNtu4KKaPbUVi51dGm3lIQntLrWNc7
-	anBRhXuGbEveB4tZAQxwhczCtUjYKipcH6+z7e/ux9nyntO+htwRsLYa0oQUn73PvDtM4jTalJ5kT
-	5Kj0zFY994nn1+xiSA==;
+	:Subject; bh=o/dCa/2pvSYcJSKo2ek9COMY2kqbIjQug7Y5IygVtL0=; b=APVKum7G5V7S6kgB
+	5oZG0BICn9jweeOewJUfQIf2V4BIZlWwnySjoeQVSJuSH0rmTdFpuUNpYckmb/FMAqsXmAqbzbu5A
+	nlM94UTUovgov/ndILVZMJO3ou6L7uN0uwJELS1enJorr2lcCxOM3ZCxeg/3iDUv30ZICu14E3g6e
+	LXLWYBC4WWfuV7m3nNu1TTcby7J6bz3IMR1786MwBSKoCQturmPSfMcxJGSFvCe822rFgfqw089tO
+	X64zAy89pB7EFdSbrvo8gmv65nA9DibF7VL/mF5tUTPXidQ2tDktZUfi4vqgJhwK/W4ipYsQyIe/P
+	s9Xodr+ajXWFbx5/5g==;
 Received: from localhost ([127.0.0.1] helo=dalek.home.treblig.org)
 	by mx.treblig.org with esmtp (Exim 4.96)
 	(envelope-from <linux@treblig.org>)
-	id 1s9v12-0027Vk-3B;
-	Wed, 22 May 2024 23:05:01 +0000
+	id 1s9v15-0027Vk-2v;
+	Wed, 22 May 2024 23:05:04 +0000
 From: linux@treblig.org
 To: jic23@kernel.org,
 	lars@metafoo.de,
@@ -37,9 +37,9 @@ To: jic23@kernel.org,
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Dr. David Alan Gilbert" <linux@treblig.org>
-Subject: [PATCH 1/3] iio: accel: bmi088: remove unused struct 'bmi088_scale_info'
-Date: Thu, 23 May 2024 00:04:55 +0100
-Message-ID: <20240522230457.478156-2-linux@treblig.org>
+Subject: [PATCH 3/3] iio: light: rohm-bu27034: remove unused struct 'bu27034_result'
+Date: Thu, 23 May 2024 00:04:57 +0100
+Message-ID: <20240522230457.478156-4-linux@treblig.org>
 X-Mailer: git-send-email 2.45.1
 In-Reply-To: <20240522230457.478156-1-linux@treblig.org>
 References: <20240522230457.478156-1-linux@treblig.org>
@@ -53,33 +53,33 @@ Content-Transfer-Encoding: 8bit
 
 From: "Dr. David Alan Gilbert" <linux@treblig.org>
 
-'bmi088_scale_info' has been unused since the original
-commit c19ae6be7555 ("iio: accel: Add support for the Bosch-Sensortec
-BMI088").
+'bu27034_result' is unused since the original
+commit e52afbd61039 ("iio: light: ROHM BU27034 Ambient Light Sensor").
 
 Remove it.
 
 Signed-off-by: Dr. David Alan Gilbert <linux@treblig.org>
 ---
- drivers/iio/accel/bmi088-accel-core.c | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/iio/light/rohm-bu27034.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/iio/accel/bmi088-accel-core.c b/drivers/iio/accel/bmi088-accel-core.c
-index 4d989708e6c3..469a1255d93c 100644
---- a/drivers/iio/accel/bmi088-accel-core.c
-+++ b/drivers/iio/accel/bmi088-accel-core.c
-@@ -114,11 +114,6 @@ enum bmi088_odr_modes {
- 	BMI088_ACCEL_MODE_ODR_1600 = 0xc,
+diff --git a/drivers/iio/light/rohm-bu27034.c b/drivers/iio/light/rohm-bu27034.c
+index bf3de853a811..4937bf6fa046 100644
+--- a/drivers/iio/light/rohm-bu27034.c
++++ b/drivers/iio/light/rohm-bu27034.c
+@@ -223,12 +223,6 @@ struct bu27034_data {
+ 	} scan;
  };
  
--struct bmi088_scale_info {
--	int scale;
--	u8 reg_range;
+-struct bu27034_result {
+-	u16 ch0;
+-	u16 ch1;
+-	u16 ch2;
 -};
 -
- struct bmi088_accel_chip_info {
- 	const char *name;
- 	u8 chip_id;
+ static const struct regmap_range bu27034_volatile_ranges[] = {
+ 	{
+ 		.range_min = BU27034_REG_SYSTEM_CONTROL,
 -- 
 2.45.1
 
