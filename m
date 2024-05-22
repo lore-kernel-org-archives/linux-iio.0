@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 560A9EC7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65E981848
 	for <linux-iio@vger.kernel.org>; Wed, 22 May 2024 12:54:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716382447; cv=none; b=Eqjv3MYKTjAJOSeTpkZCI3fj9sysh4zpdN/LiWqNE9gULfgezES7aXkii8h1BDfF/Rfgk3jZxQrqJvK8bZ19mih5AvVf2+Q9cesVtXbD8iyrowJWcJf8CCDIwuTCoBEp0uVDkumAqRmBkL1JIlPLWAIh8xgo+ErVyDjWpMRwAAo=
+	t=1716382447; cv=none; b=QGnaNv9sisntFgrcRk2t4Y+evtos5BHi/sSawJgjVKnGNA56M8ESQNu7b6ij4qfqBYB6zr2CwwOslLoVYzVf2Wa4p/HMjB1eE0eMpJD5K4zGU/L1To8hRIMbEp1OBw7wAyaHZdCXICTuxg83aBoOuOeJZOgnpVkb0PKMjjxKnY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1716382447; c=relaxed/simple;
-	bh=kHj/TPFy35RtWhBWLYKooLoEmYZNgnP3Fqp7BjpqzfA=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=iXl4571UtZ3pCYY/3MR39iqSgaT+dL8XNb2aujOM3jJft7A66yQBSKSYtRbH/cWtoCzHBHgCO7P26wAyE/1rtMUEQnoQ3ikXoUBbPkPLYpMq3H9mrVqyNm4pF38LuS18oFlA4PcLVeWxMP8nEyLJ3wssWizua/Q62iiiNmhbxeo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qY8bp6q+; arc=none smtp.client-ip=10.30.226.201
+	bh=aSrCIkCGiu6tTQg0GYwKrxclRIWuTz5/VFiuhESD3Po=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=P77q4QhHfFWi553FSzczX4l5RMqerHLAsndzu9d0GtkiL8ZfsfNNvEJLBSeBc/YWN3DksK2I6FZEl6WQIyDuXe/dwwN0gbdoD9A3ynx4IaDN3SfbFESP3ckwi7Azm0w2BizyFvcgx55qPpbZxQ1ZnmDtcQPd0TBqebcNjTitPKY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GWHL+3As; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qY8bp6q+"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E8F4CC2BD11;
-	Wed, 22 May 2024 12:54:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GWHL+3As"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0F280C32782;
+	Wed, 22 May 2024 12:54:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1716382447;
-	bh=kHj/TPFy35RtWhBWLYKooLoEmYZNgnP3Fqp7BjpqzfA=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=qY8bp6q+CzGlsplBWAVesOAV6DaKQ/3fXMbrEUBEDXi3jB9oCYg8HAgJeb1NZ1z8d
-	 psrdxrd2O9FxR4jAIOPPIof5Yz7MB9KxSUXOpFgI1/K82KO8rpgSR8MU0uvmpIkyJd
-	 7G+3br7zjnyK4Tz1YI30DoxRJrraB8WcDPa5IFcRwmf/pqVeqRIf1gxHYv0Y5jX3fR
-	 fqGJcRY0aoWQaVnvtngmKyZom3C2ncEcqFI0s0skfW4kUhHZznE9V8InMRILl0yajL
-	 pwiSEmhuL01wMzK0K83B829TC+RWNiHkzI04S3VNXG9mcGGAssS7GUq67NwX21chO9
-	 QKbEW4dm20WEQ==
+	bh=aSrCIkCGiu6tTQg0GYwKrxclRIWuTz5/VFiuhESD3Po=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=GWHL+3AsOe1qDVqYGRPDWomDIWYBAqi0YSB0xqFXNCtzHYX4vbgevV2f/tkJuNoAR
+	 99NdKBFlcZNe3mAOebuQ3+CkWpA2M1LQUzB9ZuMtb1JL661Tjpc/U0w35ZBmhsX6pO
+	 E7XpxlhDltSIDXzQY0VJYCEJFTpA5EvlZewZ5fuDd7UjWt9GRWzxdPISbU866Nm1vk
+	 mQK7Fk6f85EqXaK8yIaPkPyJQpes8ghyGZuVivCFU895WDUyQnhSKxBTdwUAL2EdUd
+	 A+HgU29ulAHb1/AFG/jIX7fL5pPk4Q1BwafXWU1uGIVXTIFlr87+4UOrOydZdgd8gk
+	 OLxL4yWdb99MQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DCDC25B7A;
-	Wed, 22 May 2024 12:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A6AC25B7E;
+	Wed, 22 May 2024 12:54:07 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Subject: [PATCH v2 0/2] iio: adc: ad9467: use DMA safe buffer for spi
-Date: Wed, 22 May 2024 14:54:04 +0200
-Message-Id: <20240522-dev-ad9467-dma-v2-0-a37bec463632@analog.com>
+Date: Wed, 22 May 2024 14:54:06 +0200
+Subject: [PATCH v2 2/2] iio: adc: ad9467: change struct members padding
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -39,20 +39,20 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAOzqTWYC/3XMQQ7CIBCF4as0s3YMQ2mrrryH6QJhaEksGDBE0
- /TuYvcu/5e8b4XMyXOGS7NC4uKzj6GGPDRgZh0mRm9rgxRSiU70aLmgtmfVD2gXjS2RctbKwZC
- Denomdv69g7ex9uzzK6bP7hf6rX+pQkjInWnprnrFJ3fVQT/idDRxgXHbti/9de8IrQAAAA==
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240522-dev-ad9467-dma-v2-2-a37bec463632@analog.com>
+References: <20240522-dev-ad9467-dma-v2-0-a37bec463632@analog.com>
+In-Reply-To: <20240522-dev-ad9467-dma-v2-0-a37bec463632@analog.com>
 To: linux-iio@vger.kernel.org
 Cc: Lars-Peter Clausen <lars@metafoo.de>, 
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1716382445; l=700;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1716382445; l=2382;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=kHj/TPFy35RtWhBWLYKooLoEmYZNgnP3Fqp7BjpqzfA=;
- b=bLdWrJIze+rV2cn+D5fGS1FdipIVf5NjI+TG1XhUXLOwxUfC0GzYpqGf46Y2jJWPUQZqaX4rf
- mNfMyqgY4pxA2LRnDpfnvQz1iLzYayNh+qzgrGFJ1Sn+i8nyVHwTo/1
+ bh=KRf601UhH6cUyFxH9p8cxQJJFXZVEBFnvvguvfjDdPM=;
+ b=GZQZBeGHXM+p4BKmPqY+cqZ4ADeNUriVSfpnwCF3qY2DjHTOMk4D0+Ks+oXyX7P++UEzSGd2F
+ BGRXi8UwtN/DOnoxE3fUv2+aftC3XoUwQ9fjlcWbq9hurq33cvprYgt
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -60,30 +60,82 @@ X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
 X-Original-From: Nuno Sa <nuno.sa@analog.com>
 Reply-To: nuno.sa@analog.com
 
-Added a new patch to "fix" the annoying tabs alignment on struct
-members. 
+From: Nuno Sa <nuno.sa@analog.com>
 
+Using tabs and maintaining the start of the variables aligned is a pain and
+may lead to lot's of unrelated changes when adding new members. Hence,
+let's change things now and just have a simple space.
+
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
-Changes in v2:
-- Patch 1
-  * Don't use safe buffers for reads (uses spi_write_then_read()).
-- Patch 1
-  * New patch.
-- Link to v1: https://lore.kernel.org/r/20240506-dev-ad9467-dma-v1-1-e5c31b464e8f@analog.com
+ drivers/iio/adc/ad9467.c | 40 ++++++++++++++++++++--------------------
+ 1 file changed, 20 insertions(+), 20 deletions(-)
 
----
-Nuno Sa (2):
-      iio: adc: ad9467: use DMA safe buffer for spi
-      iio: adc: ad9467: change struct members padding
+diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
+index 3571cfe0f9cc2..ec11437cac7e0 100644
+--- a/drivers/iio/adc/ad9467.c
++++ b/drivers/iio/adc/ad9467.c
+@@ -107,27 +107,27 @@
+ #define AD9647_MAX_TEST_POINTS		32
+ 
+ struct ad9467_chip_info {
+-	const char		*name;
+-	unsigned int		id;
+-	const struct		iio_chan_spec *channels;
+-	unsigned int		num_channels;
+-	const unsigned int	(*scale_table)[2];
+-	int			num_scales;
+-	unsigned long		max_rate;
+-	unsigned int		default_output_mode;
+-	unsigned int		vref_mask;
+-	unsigned int		num_lanes;
++	const char *name;
++	unsigned int id;
++	const struct iio_chan_spec *channels;
++	unsigned int num_channels;
++	const unsigned int (*scale_table)[2];
++	int num_scales;
++	unsigned long max_rate;
++	unsigned int default_output_mode;
++	unsigned int vref_mask;
++	unsigned int num_lanes;
+ 	/* data clock output */
+-	bool			has_dco;
++	bool has_dco;
+ };
+ 
+ struct ad9467_state {
+-	const struct ad9467_chip_info	*info;
+-	struct iio_backend		*back;
+-	struct spi_device		*spi;
+-	struct clk			*clk;
+-	unsigned int			output_mode;
+-	unsigned int                    (*scales)[2];
++	const struct ad9467_chip_info *info;
++	struct iio_backend *back;
++	struct spi_device *spi;
++	struct clk *clk;
++	unsigned int output_mode;
++	unsigned int (*scales)[2];
+ 	/*
+ 	 * Times 2 because we may also invert the signal polarity and run the
+ 	 * calibration again. For some reference on the test points (ad9265) see:
+@@ -138,10 +138,10 @@ struct ad9467_state {
+ 	 * at the io delay control section.
+ 	 */
+ 	DECLARE_BITMAP(calib_map, AD9647_MAX_TEST_POINTS * 2);
+-	struct gpio_desc		*pwrdown_gpio;
++	struct gpio_desc *pwrdown_gpio;
+ 	/* ensure consistent state obtained on multiple related accesses */
+-	struct mutex			lock;
+-	u8				buf[3] __aligned(IIO_DMA_MINALIGN);
++	struct mutex lock;
++	u8 buf[3] __aligned(IIO_DMA_MINALIGN);
+ };
+ 
+ static int ad9467_spi_read(struct ad9467_state *st, unsigned int reg)
 
- drivers/iio/adc/ad9467.c | 103 +++++++++++++++++++++++------------------------
- 1 file changed, 50 insertions(+), 53 deletions(-)
----
-base-commit: 5e3c5871138da700796587aa5f096d39135f9d36
-change-id: 20240506-dev-ad9467-dma-3114fdd27c1f
---
-
-Thanks!
-- Nuno Sá
+-- 
+2.44.0
 
 
