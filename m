@@ -1,41 +1,41 @@
 Received: from vern.gendns.com (vern.gendns.com [98.142.107.122])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADF4984DF5;
-	Fri, 24 May 2024 21:09:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EE8C29403;
+	Fri, 24 May 2024 21:18:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=98.142.107.122
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716584951; cv=none; b=imhX7Eh8VayDxt9OysSfdpd56ci4uOowQWSBL4WgXHygIDy4sjV1q9v+VKm3ewmqt1qpIYegfaHCGZH/1W7V0pR8bQ1DykFNl3e2gMp02PiQmtksSX3mpRDMyJEYpRkgPMeTbcGWibg3NXN0a36J880PxghjbaH+mgjNHh50DwY=
+	t=1716585491; cv=none; b=W3JvK7B1dgX7b37BP/+uKykDV0AsuzgK4uZTS827Tesk61xnW1+NLH1fpiJvJPx/RdIAhuzKGDHZkkanAL93Gc9dmD0ZnL4xfGBIxdi5QMS2ak3Kkb/iaThPXixm/VsdgGVTbs2vkI2QKHH8YhZsO4FNNXSazL1xyuUC4kM4cJk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716584951; c=relaxed/simple;
-	bh=+AfAfmcGyubRjS8VGKQM7xZOGPjk0Yaif1TR7c9+BD4=;
+	s=arc-20240116; t=1716585491; c=relaxed/simple;
+	bh=oROgi6cW5VOrIvXKDoxANqqpCD+XvoJV5dJb1gpyPvM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BGfFe5KczToAnV+BWXxFh9NHOUaH+WkT6x2uQ6NCqqeD9ykMrA9uW6YshH+g/rWZw8Liia2Selt90ebCG5pjhXppK/xbSKpkPy0cty84ZmhNWL2KRpGV9/a45T8gSpZroc81mZjQW21Ef8FXHCKJ8aofI574cy40D7ibN4vefCY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com; spf=pass smtp.mailfrom=lechnology.com; dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b=q3RYErGP; arc=none smtp.client-ip=98.142.107.122
+	 In-Reply-To:Content-Type; b=m2x0vZou+U/7bPOQdBaLP4etx+Jad9wxiFCx7a0eFQCVRs8/f+YD+51gx2Q0RBks1Z0gHZDhsaqYFwPKI/2VGb9mjpa8w8BOdUW1iRF2yuXDBFzxqYBDqUyL2bvRRUUB8riCdjqZ3L2Fp2gvQ3gjR7FAxzTPP7AUF1qtqdYmr0s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com; spf=pass smtp.mailfrom=lechnology.com; dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b=PZafrCh9; arc=none smtp.client-ip=98.142.107.122
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lechnology.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="q3RYErGP"
+	dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="PZafrCh9"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
 	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
 	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=KyewEcE8FUbohtQZVy56twaOPLhQly4poPy63a3wihY=; b=q3RYErGPEZD5wmL6KWykDVahhs
-	6KWIPimgJLzDomnsWBrlUiOtuCcMsEFiKHra6F/XZ7BLznS77CwQs+dweGzx5jMA12S4/Xbwp1KtW
-	TmEPX37MCt8xO7VrVvY8dKCY+zOrBPvqYywATJ+pdQUUZu8cZwl9yTsOXgWFJ7JN+14/ouoep0qs1
-	0ycf56s+pFj0M5dYC4JZq18WVcnge6oadVdiJMYvbOq4Xlfs71HkWAfHcZLmS+/z0TyQ/C/ZrDJji
-	5E65u9D+StEMBRv9Z93C3oHwVh/0MOqnkphzAHYfNN6D8YkqwB0VD3+lQcOQuzcoo0gHp0kvYXvwB
-	cnUrkZFA==;
-Received: from ip98-183-112-25.ok.ok.cox.net ([98.183.112.25]:34758 helo=[192.168.0.142])
+	bh=8K9YIt8Xuf96IZuzLNykL3prlV4rmYksMmIVxMKfEio=; b=PZafrCh90nzp5HYVSIqgjMW0rE
+	qzgyuWcw7URB9qUqZNheuNyxPUWErvm3gY1XY+6XYVVcmDN+0TemBIivdax+GD91s+m/v5UfsOEEG
+	ztGpeLzukTFUnzGTwqeT4fIAp6cx91vjmQUQ5+3VPC6hIE2pUcpO+x7ZxGG/5EKDFEFWY4LogSPtC
+	ZLAI9J5giziT9f8kwx7+k3jhp8yP4v9+xJwA81nFTPrg7CZCxl5uUBuzRWIQVcmqKX9TvzpM9/Lf8
+	Yhns/sNrZW/TiC3aHtZFfQGLAPcCkp7C1M0sd+1XVqh5pE1T2fLFeu2qLpU3qDcVn8YtsSJ1pACf5
+	GtV/WwRg==;
+Received: from ip98-183-112-25.ok.ok.cox.net ([98.183.112.25]:40592 helo=[192.168.0.142])
 	by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
 	(Exim 4.96.2)
 	(envelope-from <david@lechnology.com>)
-	id 1sAbvN-0001uL-0c;
-	Fri, 24 May 2024 16:50:35 -0400
-Message-ID: <2956d10b-d2cf-4019-adc8-d8053e435767@lechnology.com>
-Date: Fri, 24 May 2024 15:50:32 -0500
+	id 1sAcM3-0002xk-0g;
+	Fri, 24 May 2024 17:18:08 -0400
+Message-ID: <78e25e9a-579c-4816-b1b2-a09d291f8480@lechnology.com>
+Date: Fri, 24 May 2024 16:18:05 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -43,8 +43,7 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/8] dt-bindings: counter: Add new ti,am62-eqep
- compatible
+Subject: Re: [PATCH v2 1/8] counter/ti-eqep: Add new ti-am62-eqep compatible
 To: Judith Mendez <jm@ti.com>, Rob Herring <robh@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
  Conor Dooley <conor+dt@kernel.org>, Catalin Marinas
@@ -54,7 +53,7 @@ Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
  Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>
 References: <20240523231516.545085-1-jm@ti.com>
- <20240523231516.545085-3-jm@ti.com>
+ <20240523231516.545085-2-jm@ti.com>
 Content-Language: en-US
 From: David Lechner <david@lechnology.com>
 Autocrypt: addr=david@lechnology.com; keydata=
@@ -99,7 +98,7 @@ Autocrypt: addr=david@lechnology.com; keydata=
  +M4GyTil33pnBXEZp29nh7ev4VJ96sVvnQFzls3motvG+pq/c37Ms1gYayeCzA2iCDuKx6Zk
  ybHg7IzNEduqZQ4bkaBpnEt+vwE3Gg5l4dAUFWAs9qY13nyBANQ282FNctziEHCUJZ/Map6T
  dzHWO6hU1HuvmlwcJSFCOey8yhkt386E6KfVYzrIhwTtabg+DLyMZK40Rop1VcU7Nx0M
-In-Reply-To: <20240523231516.545085-3-jm@ti.com>
+In-Reply-To: <20240523231516.545085-2-jm@ti.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
@@ -114,97 +113,14 @@ X-Source-Args:
 X-Source-Dir: 
 
 On 5/23/24 6:15 PM, Judith Mendez wrote:
-> Add new compatible ti,am62-eqep for TI K3 devices. If a device
-> uses this compatible, require power-domains property.
-> 
-> Since there is only one functional and interface clock for eqep,
-> clock-names is not really required. The clock-name also changed
-> for TI K3 SoCs so make clock-names optional for the new compatible
-> since there is only one clock that is routed to the IP.
-> 
-> While we are here, add an example using ti,am62-eqep compatible.
+> Add new compatible for ti-am62-eqep for TI K3 SoC's.
 > 
 > Signed-off-by: Judith Mendez <jm@ti.com>
 > ---
 > Changes since v1:
-> - Fix eqep binding for new compatible, require
->  power-domains for new compatible
+> - Add new compatible ti,am62-eqep
 > ---
->  .../devicetree/bindings/counter/ti-eqep.yaml  | 53 +++++++++++++++++--
->  1 file changed, 48 insertions(+), 5 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/counter/ti-eqep.yaml b/Documentation/devicetree/bindings/counter/ti-eqep.yaml
-> index 85f1ff83afe72..c4bb0231f166a 100644
-> --- a/Documentation/devicetree/bindings/counter/ti-eqep.yaml
-> +++ b/Documentation/devicetree/bindings/counter/ti-eqep.yaml
-> @@ -11,7 +11,9 @@ maintainers:
->  
->  properties:
->    compatible:
-> -    const: ti,am3352-eqep
-> +    enum:
-> +      - ti,am3352-eqep
-> +      - ti,am62-eqep
->  
->    reg:
->      maxItems: 1
-> @@ -21,19 +23,43 @@ properties:
->      maxItems: 1
->  
->    clocks:
-> -    description: The clock that determines the SYSCLKOUT rate for the eQEP
-> -      peripheral.
-> +    description: The functional and interface clock that determines the clock
-> +      rate for the eQEP peripheral.
->      maxItems: 1
->  
->    clock-names:
-> -    const: sysclkout
-> +    enum:
-> +      - sysclkout
-> +      - fck
-> +
 
-If we are making this optional for ti,am62-eqep, why add a new name?
+Reviewed-by: David Lechner <david@lechnology.com>
 
-Also, we could change the description to say that sysclockout is not a
-great name but is required for backwards compatibility.
 
-> +  power-domains:
-> +    maxItems: 1
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - ti,am3352-eqep
-> +    then:
-> +      required:
-> +        - clock-names
-
-What if we just add
-
-  else:
-    clock-names: false
-
-since there is only one clock and not worry about the name?
-
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - ti,am62-eqep
-> +    then:
-> +      required:
-> +        - power-domains
->  
->  required:
->    - compatible
->    - reg
->    - interrupts
->    - clocks
-> -  - clock-names
->  
