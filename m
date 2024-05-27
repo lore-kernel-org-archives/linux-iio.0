@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F49715A872;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD36115A874;
 	Mon, 27 May 2024 15:12:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716822730; cv=none; b=plchVXjwkn3Ye+yzNaUSV7njkzvoqUBSpRIQzSshrp200CbybvQPJi3dnkbCmmXf+8O1FCTU3fZklFuTsxxJiS7Zx25W5+8kwW7NyYtm4g3ZS0xIuW82k0sm1r5dDs6XORkoU7Q8NAOpTbfMdrXrmzoq6ytp+qy5icaxACL6gro=
+	t=1716822730; cv=none; b=JqmTyxapiMbuGJBSiv7rgrozu0QyISv6kHiYucEEbRS+kFkQCiaUCdRU8QUsLAsj6B+D9uHApAzaQisIm/ZMWW4043A5etwXmHz4RIKiuddlrlZdRy4TsdUV8qDSjZ4r+Ylo3Ug8dD/zi0LyxXqj2TYM1NYKu8/zNpYi5aPZQDI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1716822730; c=relaxed/simple;
-	bh=3TIcAQi2/9dfC8qhlCEi0dXTPr4blkbXwfz9/iRnzJE=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=sYP7yOkVUZ6Vk34eW8KZwUkc22vmxDTbQbt+nu14b8s+PhJ+kkneqi/j2eYRx6XsPdkDsEw4adQi6TyVr9wpvHfRgiL7PBe83QQ2hFjU5NUeoJ0eh5osnPEcNA5tuUZLoYaer4eP+BRRmOrnCTrSLrS0hPjdWkJrb8WF1UH0n80=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a6Ggu6jK; arc=none smtp.client-ip=10.30.226.201
+	bh=GC9XwJrAOyXHE+HoaYDJfgAuuuYZrjvZbTpFwyHEE3g=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=s8N/ut7L4oDT8fFVzQpcRKEaCOHVnOdVKlzb4+2m1vjaykrITyp3RkBx3YqALOxG/szo84qECmG15vCKDSClMejeRUpr3LB6uyBPToMw/VBd0mIV4jgm1rieV6fLlNc6p1w188gmKQBcYPx8+QiYRKMsIKk/a9C3ZGFMPjpHXzo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r5sLHUNo; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a6Ggu6jK"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 36954C2BBFC;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r5sLHUNo"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4E821C32789;
 	Mon, 27 May 2024 15:12:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1716822730;
-	bh=3TIcAQi2/9dfC8qhlCEi0dXTPr4blkbXwfz9/iRnzJE=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=a6Ggu6jK3bCqSnwAxBUWX2TERM+853A3ZUyTtRTLhkvz6NZk8xhjOZs2fZp/hTtqT
-	 96FKr7G1LyYK7VdLQxPo5MmiX7MEIxxJpT1/314w8U5F6pt2dGpA/fHtCaC4Kzz94V
-	 WjICiVVhhOkZwHoZd5cXLjl64lGSNP3WD+1fSiFkuhuO7j6CrT8L8ausXuLRCzBFn8
-	 l0OrM6MqBiL5oiYgWqRnobnPkXagi9Ur48IvgdkhSykBeFdpciuzv4gNHUPaArQWJR
-	 gga8SO/06n2uvaT8czDJiTbTg/gcOqP+yWxcGCxBQZQP1gVCdv5SgiRohh+Uw/qDfF
-	 0eJ+JRs5noCNA==
+	bh=GC9XwJrAOyXHE+HoaYDJfgAuuuYZrjvZbTpFwyHEE3g=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=r5sLHUNo2y0BWPiPJp+UKv7TZYhiWWQUaWa3UY1uMsYIIt0XQDRUVN05nirFTKcKi
+	 AGooTeABUWelhtPGEsg6ZlWJDvp4wF+QaqKeOq6eCV0ykun99OBFsQaL5fiHVhac5B
+	 bQe8JbfWFhJvtcgMjr20pgZ53VW6vPl/g7DtatoYprAii/PMFqbaP/NbstPidqWDUL
+	 7iBe9qDiw+l5T4nsTqNo64Ssa9c1+IxyOEuMm5f4Rbmcdk5J8PAfYCW3XKs2ZQVaba
+	 Mr5c+VcAlHoK0gh1zW2Ysq60xM0yT4BoBaJSKf90Fd8TLHDT1IJkBvh3O1rOc15E7l
+	 XYRDicSnFiN+A==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C9B6C25B74;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BA47C27C42;
 	Mon, 27 May 2024 15:12:10 +0000 (UTC)
 From: Arthur Becker via B4 Relay <devnull+arthur.becker.sentec.com@kernel.org>
-Subject: [PATCH v3 0/2] Add driver for Vishay VEML6040
-Date: Mon, 27 May 2024 17:12:07 +0200
-Message-Id: <20240527-veml6040-v3-0-6f3bbfd42960@sentec.com>
+Date: Mon, 27 May 2024 17:12:09 +0200
+Subject: [PATCH v3 2/2] dt-bindings: iio: light: add VEML6040 RGBW-LS
+ bindings
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,9 +41,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAMiiVGYC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyjHUUlJIzE
- vPSU3UzU4B8JSMDIxMDUyNz3bLU3BwzAxMDXQNjQ5O0ZANTE2NjcyWg8oKi1LTMCrBR0bG1tQA
- NU0qIWgAAAA==
+Message-Id: <20240527-veml6040-v3-2-6f3bbfd42960@sentec.com>
+References: <20240527-veml6040-v3-0-6f3bbfd42960@sentec.com>
+In-Reply-To: <20240527-veml6040-v3-0-6f3bbfd42960@sentec.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -50,11 +51,11 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, Arthur Becker <arthur.becker@sentec.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1716822728; l=935;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1716822728; l=1571;
  i=arthur.becker@sentec.com; s=20240521; h=from:subject:message-id;
- bh=3TIcAQi2/9dfC8qhlCEi0dXTPr4blkbXwfz9/iRnzJE=;
- b=f2u7rFyobvpBdch0ALMVecwwaYCyHKuTeMnZww3hvZMllZIRMVdwEBwhmzEEVqSJxSExX9Z1d
- myA6vZXuI8oBEcQPnNb3R8Vx5cVh/so7HQc6BYQLIIJlnjIxl0DXQD8
+ bh=u0p4w65fUlznIRwbLv+oCbf01W5aOcq+erfwbBRKE9w=;
+ b=zCjYc68+a0u7/fUR6r+IMPoQXLqxz9nMLelPqjfSZeibSwRIsayNYpLVecj3SxZ04uGnDNdds
+ xHdNaM8x2ouCb9AywBmXkiBFbEgqbcvrUAYlYgiCst0uUGksoXqr+92
 X-Developer-Key: i=arthur.becker@sentec.com; a=ed25519;
  pk=1GLsDBF6GZKt9oNFsvdnAB6sHyKKrSISlwM3AyWbx/k=
 X-Endpoint-Received: by B4 Relay for arthur.becker@sentec.com/20240521 with
@@ -62,31 +63,71 @@ X-Endpoint-Received: by B4 Relay for arthur.becker@sentec.com/20240521 with
 X-Original-From: Arthur Becker <arthur.becker@sentec.com>
 Reply-To: arthur.becker@sentec.com
 
-Thank you Jonathan, Krzysztof and Conor for your comments on my previous
-submission attempts. I hope that I addressed all points!
+From: Arthur Becker <arthur.becker@sentec.com>
 
-Changes since v2:
-- formatting, renaming of variables
-- power supply added in dt-binding file and turned on in driver
-(- using b4!)
+Device tree bindings for the vishay VEML6040 RGBW light sensor iio
+driver
 
 Signed-off-by: Arthur Becker <arthur.becker@sentec.com>
 ---
-Arthur Becker (2):
-      iio: light: driver for Vishay VEML6040
-      dt-bindings: iio: light: add VEML6040 RGBW-LS bindings
-
- .../bindings/iio/light/vishay,veml6040.yaml        |  44 ++++
- drivers/iio/light/Kconfig                          |  11 +
- drivers/iio/light/Makefile                         |   1 +
- drivers/iio/light/veml6040.c                       | 283 +++++++++++++++++++++
- 4 files changed, 339 insertions(+)
+V1 -> V3: Addressed review comments (v1 of the dt-bindings was sent
+along with v2 of the driver but not in a set)
 ---
-base-commit: 1613e604df0cd359cf2a7fbd9be7a0bcfacfabd0
-change-id: 20240527-veml6040-0314fc054337
+ .../bindings/iio/light/vishay,veml6040.yaml        | 44 ++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-Best regards,
+diff --git a/Documentation/devicetree/bindings/iio/light/vishay,veml6040.yaml b/Documentation/devicetree/bindings/iio/light/vishay,veml6040.yaml
+new file mode 100644
+index 000000000000..101c2cc6506e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/vishay,veml6040.yaml
+@@ -0,0 +1,44 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/vishay,veml6040.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: VEML6040 RGBW Light Sensor
++
++maintainers:
++  - Arthur Becker <arthur.becker@sentec.com>
++
++description:
++  Datasheet at https://www.vishay.com/docs/84276/veml6040.pdf
++
++properties:
++  compatible:
++    const: vishay,veml6040
++
++  reg:
++    enum:
++      - 0x10
++
++  vdd-supply: true
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        light-sensor@10 {
++            compatible = "vishay,veml6040";
++            reg = <0x10>;
++            vdd-supply = <&vdd_reg>;
++        };
++    };
++...
+
 -- 
-Arthur Becker <arthur.becker@sentec.com>
+2.34.1
 
 
