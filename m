@@ -1,57 +1,57 @@
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28A3A17C214
-	for <linux-iio@vger.kernel.org>; Thu, 30 May 2024 15:14:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEE4917F503
+	for <linux-iio@vger.kernel.org>; Thu, 30 May 2024 15:14:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717082073; cv=none; b=ewGsu3vYZXhJJPktX50CKdxQQZ7eAF0Rp94ZtUl3+ne7vZj8Xd3z4uzy1QgbSJ/64m/An9BUJxWZdCbq8aHtbqE/IF4jqeJH1icmYUWZI5ETgrcK+eI9Mjb0R0yiAkcCj9qxzxytaovaqlf+LyBLX9yJyc9BmFu928LsSIq/S/w=
+	t=1717082074; cv=none; b=AuXm9Mb5Cmuw6Wk1JC1Rh7m8xXBuiOlMTpZXvioGgJdodt7CHcEnUMwTOljFS3wtWhA6dOho/R0qVHrIa6TTTZwsXgcqFW4Q2llgJ8YUo8QYrOZ78w+LTsODQ5nS8xYxJAPpxdjEy5paNh0gUj8VekJu9WsCJ0xMjK238ODned8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717082073; c=relaxed/simple;
-	bh=ZRrBEnty0a3OvlAcxFKH/wVNDRG+6DSpTucqWWr66pQ=;
+	s=arc-20240116; t=1717082074; c=relaxed/simple;
+	bh=Xoa77mLrBZvVx2uEYxjsfkSdZpI7/EICencdXSVB99M=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CvOo/G+lRJUzOwuJzoOa++hQtNyNb4gg21rZuglpxJ6/sKCxGMNcW8w0NSA21kiU8ryc9qyUqHEUAai1ZwIXbBWj8xFNpJ9i9kEWyFUnLkLq+87ENlqUHluDYFeALbmo1jGJU2gSOLVMzH5uWmoTZw2eN4zyv7/fXeMU0zO9NUk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=IA0CP7al; arc=none smtp.client-ip=209.85.210.48
+	 MIME-Version:Content-Type; b=AITT79+JtX+8c9es1scPc5qsi7ZbKZoCkSOXK+J/GABSoNfVzUSPHzAWVLPo3nyYbSxz5ISdfM44HQt8Jsfoq6/Ll8XMZxsdNGMLVQJYS6nVobYd9aQ6aXxHJvD1rIU89d+r/K7/7dIKF+Ip93ZFHtZHLw0ZiN6GTpLT6MLR+sw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=MG+qVzYY; arc=none smtp.client-ip=209.85.167.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="IA0CP7al"
-Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-6f8d688ba3cso33598a34.3
-        for <linux-iio@vger.kernel.org>; Thu, 30 May 2024 08:14:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="MG+qVzYY"
+Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-3d1b33e9ac6so509882b6e.1
+        for <linux-iio@vger.kernel.org>; Thu, 30 May 2024 08:14:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1717082069; x=1717686869; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1717082072; x=1717686872; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FbWYNDGeB4acdSvzLHvqWONXfu2Ni8kWHZVRyossuwM=;
-        b=IA0CP7alcnAhoaw0ReGN3EZynNr/XEzvSWs+w6TKe4f+X5SVe04w8nFkvj+jymikic
-         5QYcY3eBou1//g9hryIINrBQirenZ85DvWk5ppdc+u3r6WskxZIiF7HSNvEwAE/jzyAz
-         q2yC6I3p1fafA+YBZC60mQ+3n9sVqBVpTsUEGNBUcI78wkYFJ1m7gTTtluVKJlH40KM8
-         5WiXVRJNN2hWgQLNwU4M6wwQoNpuLO141M3B6wmMFttkd6CtZ6oblh94jTu6M4arzqs9
-         MAY2fxA7hG1pcCpnaiWSP3c6Ew/+6u32i4veEDCl9n3J3OK/iGJIl0rnYHa0ECqU7ne+
-         NNWw==
+        bh=6/68b/SzzuRQNI8g1rtkBQU2w+J/r1CLstX409XeBLE=;
+        b=MG+qVzYYuGx6G7CBzoctIegCW9hgw2hIxGIQjuqpKWsAPGOwQW9NH5XvYkCu4qG+Wf
+         pc4yduUIq5RgKQ2eo3Z+QeDDt6yVBNiAEn/8o1eL6ORMIseOXDxiXP43/y2DUkoF4bM2
+         EXfMCgnkhFRyhivOLTpfwVvXhagbkJqCTUbJ4FHvBmKJAou7eRPek32SZBC9MCqtSayV
+         ki5uvyS0HqZrX1yGiQTD5kWr/JJZGNhnl/HWC8vRtwLmHi4jStnwkFyOR2+uBOoiiOlF
+         qFoGEzwLKo32wSO/OnFaf6COZC757Z/8U66lJfVKLL2DPMdS20hsg3uG8xJmkvK0rKb7
+         TRCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717082069; x=1717686869;
+        d=1e100.net; s=20230601; t=1717082072; x=1717686872;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=FbWYNDGeB4acdSvzLHvqWONXfu2Ni8kWHZVRyossuwM=;
-        b=PCfu9uIhXNB59W0mifn9C4kipBcfbxZlOBlvIiKtGxFEq18nKaO1TLs9JlXw3cf9MR
-         Zv7DnkIPMU86qHgSEY7AkR6PBkiimEECTw3MU/8eI2Uug9yFP9SSFqngdo1w1xyc9iX1
-         IHeocQ9vRaGEF+hZAo2zfEXMNI1TfV8WZCvK5fYnhU7gWeYrEK+DalrKrk/kFLsxMm0d
-         Dp6Sy6JdxdUqNsSRPF6W9//BQrQ2m18aFSnYBk5Gm/jV6A717HjPcQ0Tlz199uZk/OND
-         X1MLWlpXHvieADCzgYvwHilFr6h43NQ9WNPDkr8UcAMfZcJyrExy/uvMGBjE0JKOXksZ
-         ZIDw==
-X-Forwarded-Encrypted: i=1; AJvYcCWd10BSRU9H45cgNwjsjaxh9VWIkslJl+jyuWrtU45zhLjXTstmbGqh0kPD7lnpEmgVysOY5e+8aFBj3BHtCaqlGZ7oVdGtt04y
-X-Gm-Message-State: AOJu0Yycep9t5CSifGmeZtnIalj7FZRFUTEyNFRiPfTxdqfPLKDK7azI
-	+9HJeOHai1BILydeM531n1z6AoNSSTVansscriZBRFHC0UyK7TRxWZHpDIKIDYQ=
-X-Google-Smtp-Source: AGHT+IE2lyAsahNdb+M+r2VsDVKfYnrWiFE+5vnGDiP3IBTld3L7Pf2jxyrJMpOL2y8G8xxJqtOR7w==
-X-Received: by 2002:a9d:4802:0:b0:6f0:e7c3:945c with SMTP id 46e09a7af769-6f90af1c9b2mr2439771a34.36.1717082069189;
-        Thu, 30 May 2024 08:14:29 -0700 (PDT)
+        bh=6/68b/SzzuRQNI8g1rtkBQU2w+J/r1CLstX409XeBLE=;
+        b=dlQbjkwWb3UdHZrDkUleFDws+cKUl99xdEJFjlTh5FrqMO2lfN6bCt6cj47qUufn3j
+         kOeKERiuANVHcV+XpaWhUZvia1FoXJ0wPecdMMOgLSbqfLIrvxJkzI7+MutwBjfM00T9
+         xrUvl0+x57BmJtyzp/QF8F2udSO475y9fzdfOEOX+gecD2G9rqDILgQ8ttYVrlnrzekP
+         +2IQVGTzChhGEPNkFgyjg2++RljxKOCKTWed00IDPKmDhbrkk7zeksb6y57MHtsebpmf
+         KTYBDlFkoyptXpyNPljGATdK0KrCUOXlDeF70asB00cJqA1+OZNDAaiih5yZHxVlhBId
+         3+IQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVMvyNEKcNP/RDC5zV7dxxihzsshQuX/RFBrS4hM9aMuEvaIgFHG6dZSfeMxoQ4P5ng7y9HZwEK4ROKQ8BG3JQuOhDrZEfETD/z
+X-Gm-Message-State: AOJu0Yx5Ju3WN88cESrqI4WIhHW4FieHqxheozIRcKvtbLKdZN9E5lm0
+	SJvRwuTNydg3K3Pzrd29F9skKBVIyxzy6Dro4jlBclHGyiNCtE0b3bV3h7fQIBQ=
+X-Google-Smtp-Source: AGHT+IHL6d3EZT2jTd7bfKSK4pIy4e6GYOcsZNBh9G51hqhfnpXKdBnKgN9f0yHfcfUpHGZbi+jj2g==
+X-Received: by 2002:a05:6808:2013:b0:3d1:e059:feb2 with SMTP id 5614622812f47-3d1e05a02d2mr388238b6e.20.1717082071844;
+        Thu, 30 May 2024 08:14:31 -0700 (PDT)
 Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-6f8d0de6314sm2803425a34.41.2024.05.30.08.14.28
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-6f8d0de6314sm2803425a34.41.2024.05.30.08.14.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 May 2024 08:14:28 -0700 (PDT)
+        Thu, 30 May 2024 08:14:31 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -61,9 +61,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	Esteban Blanc <eblanc@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/5] iio: introduce struct iio_scan_type
-Date: Thu, 30 May 2024 10:14:08 -0500
-Message-ID: <20240530-iio-add-support-for-multiple-scan-types-v3-1-cbc4acea2cfa@baylibre.com>
+Subject: [PATCH v3 4/5] iio: adc: ad7380: use spi_optimize_message()
+Date: Thu, 30 May 2024 10:14:11 -0500
+Message-ID: <20240530-iio-add-support-for-multiple-scan-types-v3-4-cbc4acea2cfa@baylibre.com>
 X-Mailer: git-send-email 2.45.1
 In-Reply-To: <20240530-iio-add-support-for-multiple-scan-types-v3-0-cbc4acea2cfa@baylibre.com>
 References: <20240530-iio-add-support-for-multiple-scan-types-v3-0-cbc4acea2cfa@baylibre.com>
@@ -77,83 +77,142 @@ Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.12.4
 Content-Transfer-Encoding: 8bit
 
-This gives the channel scan_type a named type so that it can be used
-to simplify code in later commits.
+This changes the AD7380 to use spi_optimize_message() to optimize
+buffered reads.
+
+This changes both direct reads and buffered reads to use the same
+spi_message. This has some (welcome) side effects. The first is that
+in buffered reads, the timestamp will now correspond to the same sample
+rather than the previous sample. The second is that direct reads now
+use the same SPI bus speed as buffered reads.
+
+This reduces CPU usage of the IRQ thread from around 25% to around 20%
+when sampling at 10 kHz on a ZedBoard.
 
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
-v3 changes: none
-v2 changes: none
----
- include/linux/iio/iio.h | 41 ++++++++++++++++++++++-------------------
- 1 file changed, 22 insertions(+), 19 deletions(-)
+v3 changes:
+* New patch for this series
+* A similar patch was sent at [1].
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 55e2b22086a1..19de573a944a 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -173,6 +173,27 @@ struct iio_event_spec {
- 	unsigned long mask_shared_by_all;
- };
+[1]: https://lore.kernel.org/linux-iio/20240219-mainline-spi-precook-message-v2-5-4a762c6701b9@baylibre.com/
+---
+ drivers/iio/adc/ad7380.c | 70 ++++++++++++++++++++++++++----------------------
+ 1 file changed, 38 insertions(+), 32 deletions(-)
+
+diff --git a/drivers/iio/adc/ad7380.c b/drivers/iio/adc/ad7380.c
+index 6b0b1b0be363..006496807de9 100644
+--- a/drivers/iio/adc/ad7380.c
++++ b/drivers/iio/adc/ad7380.c
+@@ -232,6 +232,9 @@ struct ad7380_state {
+ 	struct regmap *regmap;
+ 	unsigned int vref_mv;
+ 	unsigned int vcm_mv[MAX_NUM_CHANNELS];
++	/* xfers, message an buffer for reading sample data */
++	struct spi_transfer xfer[2];
++	struct spi_message msg;
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+ 	 * transfer buffers to live in their own cache lines.
+@@ -331,15 +334,9 @@ static irqreturn_t ad7380_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ad7380_state *st = iio_priv(indio_dev);
+-	struct spi_transfer xfer = {
+-		.bits_per_word = st->chip_info->channels[0].scan_type.realbits,
+-		.len = (st->chip_info->num_channels - 1) *
+-		       BITS_TO_BYTES(st->chip_info->channels->scan_type.storagebits),
+-		.rx_buf = st->scan_data.raw,
+-	};
+ 	int ret;
  
-+/**
-+ * struct iio_scan_type - specification for channel data format in buffer
-+ * @sign:		's' or 'u' to specify signed or unsigned
-+ * @realbits:		Number of valid bits of data
-+ * @storagebits:	Realbits + padding
-+ * @shift:		Shift right by this before masking out realbits.
-+ * @repeat:		Number of times real/storage bits repeats. When the
-+ *			repeat element is more than 1, then the type element in
-+ *			sysfs will show a repeat value. Otherwise, the number
-+ *			of repetitions is omitted.
-+ * @endianness:		little or big endian
-+ */
-+struct iio_scan_type {
-+	char	sign;
-+	u8	realbits;
-+	u8	storagebits;
-+	u8	shift;
-+	u8	repeat;
-+	enum iio_endian endianness;
-+};
+-	ret = spi_sync_transfer(st->spi, &xfer, 1);
++	ret = spi_sync(st->spi, &st->msg);
+ 	if (ret)
+ 		goto out;
+ 
+@@ -355,33 +352,9 @@ static irqreturn_t ad7380_trigger_handler(int irq, void *p)
+ static int ad7380_read_direct(struct ad7380_state *st,
+ 			      struct iio_chan_spec const *chan, int *val)
+ {
+-	struct spi_transfer xfers[] = {
+-		/* toggle CS (no data xfer) to trigger a conversion */
+-		{
+-			.speed_hz = AD7380_REG_WR_SPEED_HZ,
+-			.bits_per_word = chan->scan_type.realbits,
+-			.delay = {
+-				.value = T_CONVERT_NS,
+-				.unit = SPI_DELAY_UNIT_NSECS,
+-			},
+-			.cs_change = 1,
+-			.cs_change_delay = {
+-				.value = st->chip_info->timing_specs->t_csh_ns,
+-				.unit = SPI_DELAY_UNIT_NSECS,
+-			},
+-		},
+-		/* then read all channels */
+-		{
+-			.speed_hz = AD7380_REG_WR_SPEED_HZ,
+-			.bits_per_word = chan->scan_type.realbits,
+-			.rx_buf = st->scan_data.raw,
+-			.len = (st->chip_info->num_channels - 1) *
+-			       ((chan->scan_type.storagebits > 16) ? 4 : 2),
+-		},
+-	};
+ 	int ret;
+ 
+-	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
++	ret = spi_sync(st->spi, &st->msg);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -464,6 +437,11 @@ static void ad7380_regulator_disable(void *p)
+ 	regulator_disable(p);
+ }
+ 
++static void ad7380_unoptimize_msg(void *msg)
++{
++	spi_unoptimize_message(msg);
++}
 +
- /**
-  * struct iio_chan_spec - specification of a single channel
-  * @type:		What type of measurement is the channel making.
-@@ -184,17 +205,6 @@ struct iio_event_spec {
-  * @scan_index:		Monotonic index to give ordering in scans when read
-  *			from a buffer.
-  * @scan_type:		struct describing the scan type
-- * @scan_type.sign:		's' or 'u' to specify signed or unsigned
-- * @scan_type.realbits:		Number of valid bits of data
-- * @scan_type.storagebits:	Realbits + padding
-- * @scan_type.shift:		Shift right by this before masking out
-- *				realbits.
-- * @scan_type.repeat:		Number of times real/storage bits repeats.
-- *				When the repeat element is more than 1, then
-- *				the type element in sysfs will show a repeat
-- *				value. Otherwise, the number of repetitions
-- *				is omitted.
-- * @scan_type.endianness:	little or big endian
-  * @info_mask_separate: What information is to be exported that is specific to
-  *			this channel.
-  * @info_mask_separate_available: What availability information is to be
-@@ -245,14 +255,7 @@ struct iio_chan_spec {
- 	int			channel2;
- 	unsigned long		address;
- 	int			scan_index;
--	struct {
--		char	sign;
--		u8	realbits;
--		u8	storagebits;
--		u8	shift;
--		u8	repeat;
--		enum iio_endian endianness;
--	} scan_type;
-+	struct iio_scan_type scan_type;
- 	long			info_mask_separate;
- 	long			info_mask_separate_available;
- 	long			info_mask_shared_by_type;
+ static int ad7380_probe(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev;
+@@ -552,6 +530,34 @@ static int ad7380_probe(struct spi_device *spi)
+ 		return dev_err_probe(&spi->dev, PTR_ERR(st->regmap),
+ 				     "failed to allocate register map\n");
+ 
++	/*
++	 * Setting up a low latency read for getting sample data. Used for both
++	 * direct read an triggered buffer.
++	 */
++
++	/* toggle CS (no data xfer) to trigger a conversion */
++	st->xfer[0].delay.value = T_CONVERT_NS;
++	st->xfer[0].delay.unit = SPI_DELAY_UNIT_NSECS;
++	st->xfer[0].cs_change = 1;
++	st->xfer[0].cs_change_delay.value = st->chip_info->timing_specs->t_csh_ns;
++	st->xfer[0].cs_change_delay.unit = SPI_DELAY_UNIT_NSECS;
++
++	/* then do a second xfer to read the data */
++	st->xfer[1].bits_per_word = st->chip_info->channels[0].scan_type.realbits;
++	st->xfer[1].rx_buf = st->scan_data.raw;
++	st->xfer[1].len = BITS_TO_BYTES(st->chip_info->channels[0].scan_type.storagebits)
++				* (st->chip_info->num_channels - 1);
++
++	spi_message_init_with_transfers(&st->msg, st->xfer, ARRAY_SIZE(st->xfer));
++
++	ret = spi_optimize_message(st->spi, &st->msg);
++	if (ret)
++		return ret;
++
++	ret = devm_add_action_or_reset(&spi->dev, ad7380_unoptimize_msg, &st->msg);
++	if (ret)
++		return ret;
++
+ 	indio_dev->channels = st->chip_info->channels;
+ 	indio_dev->num_channels = st->chip_info->num_channels;
+ 	indio_dev->name = st->chip_info->name;
 
 -- 
 2.45.1
