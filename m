@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99740176183;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B23A5179955;
 	Thu, 30 May 2024 12:08:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717070883; cv=none; b=V7KEdwZ+EN1Ls4VLhMAscC2WcYKJRqS45di9xDkX9uWa1l6kpz8DlibdMIJA1VzsXBEqGDxo5lYlw5RoVw2Mvkb2y/bmPa5wCIuir7WrrBIBKxYz0JMdI8rVICF99Z06w96ruCzso6xLDiAof+o7NeAQK+0F5if1e+7rD0FTpUA=
+	t=1717070883; cv=none; b=DRp3sS4PjXg95kEn9/mxr+pqoDrlibOX/tZ+e1nCSH8WmDWJTyCmMwAFx3LY2jLuwP2Yh72Yuama6nA9auPdVviLTg88JVOYQ/ori6/GykfkZdjgJZhWoTY+YP/DW+lPxRWiarU8g7oNT8oJw6s7Cr2EKtDeu259DkxK2fEQ8pg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1717070883; c=relaxed/simple;
-	bh=Sg1hOu3VEG/1Zs7niRX5/Vpq317beg+1Hh4A8ALk38o=;
+	bh=jDeJ/2LLIq3QhO9uL4NshnL3jZave7YV0UkfwYZ8P+4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=PQRiZciEBpNK7Z4WXpR9qM+43ems5zOdB6nYXw1r/OV58GtRYrLE0oiloiyIEmcpGOYKTSKJAXWeZ/wYbKPe/hY26Q9rlIPCgtBmvCpipfiXLSqBHsnBtS8AvN7AatImVBdFtzSbmSkLLrztcE/3kkQifqj9c59FKP6VqA+Im6A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k25+vziB; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=ZRNo+fRxTipp7hMkZGH+iXT4v7xuylGlFYMcW4N5S+FozKNfF9ZLRdkJSQub0KH314VsQ6lX7NK1k3r7PZeIyrx0qoZOncZUa3Kq6Nb5HMkofy4OvdiC+f+HcPcCMLmhQnR6zHSVPw0TUDWq6ESZfs+g9b8B6IIsU8oczg3QqgQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uOy+f4dn; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k25+vziB"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 45F29C32789;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uOy+f4dn"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 588DFC4AF07;
 	Thu, 30 May 2024 12:08:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1717070883;
-	bh=Sg1hOu3VEG/1Zs7niRX5/Vpq317beg+1Hh4A8ALk38o=;
+	bh=jDeJ/2LLIq3QhO9uL4NshnL3jZave7YV0UkfwYZ8P+4=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=k25+vziBpoiI26hc8mqD/ADcr/eGRoNYx6hWJfWcjoE9D3xKEcY8SJQ/ewtrxohut
-	 gVMxMOfhTyuHc1v0LEdzHOSrSs3b94TAzDrjxo//paOUa0pUdaMEyGLwvCJc21eXP2
-	 92hnCnFVMr8Ut7sYqGYAXuDE3wYcrCOhuAMDlWo7cze1o9XHBk5KdpoU2s1lqrhV5K
-	 hJtnlZdWR3IkW5AtOYStBiu+Glsb2ybo576FSafupPjzrv/WFaXYG5JWYrQ4PPaXn2
-	 4cXm419xQHi5hrO09CmNasng4UzNmNYz9505LmLmPRGxUycWdVf6nHfZ29MTrvh1+d
-	 kZqxJnPqW97nA==
+	b=uOy+f4dnG1Roxul3BaWOcsOczqLX51vutErzDzQ9hA3X1Zzuu7+khAEiW06wEp3cP
+	 I0ovYTNZl/IktaxAEhIXuSWhYZxOxI64UFQ0LhRpbM8Cb/xl4lvbWpT2w3zqimY+G3
+	 OLIUXaRJZYrkFTWNoG3taiJaiWHmFLZp1nz+b7fRqG2iBsBo5XNs75wGIZ6XNl9TvT
+	 2MfmNwhX/ZJheylgBzt/j56ip8jczdcG7k2JXv8KbVh75i1yuvn2NMPDXXjno3Ksqs
+	 vzGndhAWEhyAFWsj6Fd16eBGjdMS3w2iAXxN/EyEfe2CzkcNODIzzvsCautYpfvlu/
+	 WPFV/ufOj2otQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F22C27C4F;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51867C25B74;
 	Thu, 30 May 2024 12:08:03 +0000 (UTC)
 From: Dumitru Ceclan via B4 Relay <devnull+dumitru.ceclan.analog.com@kernel.org>
-Date: Thu, 30 May 2024 15:07:50 +0300
-Subject: [PATCH v3 2/5] iio: adc: ad7173: Add ad7173_device_info names
+Date: Thu, 30 May 2024 15:07:52 +0300
+Subject: [PATCH v3 4/5] iio: adc: ad7173: Clear append status bit
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240530-ad7173-fixes-v3-2-b85f33079e18@analog.com>
+Message-Id: <20240530-ad7173-fixes-v3-4-b85f33079e18@analog.com>
 References: <20240530-ad7173-fixes-v3-0-b85f33079e18@analog.com>
 In-Reply-To: <20240530-ad7173-fixes-v3-0-b85f33079e18@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -49,11 +49,11 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Dumitru Ceclan <mitrutzceclan@gmail.com>, 
  Dumitru Ceclan <dumitru.ceclan@analog.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1717070881; l=1300;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1717070881; l=1000;
  i=dumitru.ceclan@analog.com; s=20240313; h=from:subject:message-id;
- bh=jyW8M3kG3uqXuCNPYLLJGiYuxqeZCfGKeCCNwqrSJqE=;
- b=4ER/UoEn/wZkI/mak5zAphUNqZ5UqOLKaguF+1NemNuXpdxwqAYvU7JqWghs5G4GC1++u9dYk
- QcklpdWm3gDCBALYdzKaYyoU2WcJ5jcZdZ03thUV592FTTXKtZ/1XUo
+ bh=3Lih309+QmE+/CCcvFgIQ2n+1Fi+3MwieGtcQTnVs2U=;
+ b=tfCorgq0OSKRQvM2Q3NGFOUZ1X2YYA74t5jLnItpkypqPxNNNi3vR/gUXjZgy9xDWyb8j/uLq
+ NDCDOpATRj3CWE2Yawyq8iYYrUX1Tu74KX8etJRApoMR6nCL1zl+TDQ
 X-Developer-Key: i=dumitru.ceclan@analog.com; a=ed25519;
  pk=HdqMlVyrcazwoiai7oN6ghU+Bj1pusGUFRl30jhS7Bo=
 X-Endpoint-Received: by B4 Relay for dumitru.ceclan@analog.com/20240313
@@ -63,43 +63,29 @@ Reply-To: dumitru.ceclan@analog.com
 
 From: Dumitru Ceclan <dumitru.ceclan@analog.com>
 
-Add missing names from the device info struct for 3 models to ensure
-consistency with the rest of the models.
+The previous value of the append status bit was not cleared before
+setting the new value. This caused the bit to remain set after enabling
+buffered mode for multiple channels and not permit further buffered
+reads from a single channel after the fact.
 
 Fixes: 8eb903272f75 ("iio: adc: ad7173: add AD7173 driver")
 Signed-off-by: Dumitru Ceclan <dumitru.ceclan@analog.com>
 ---
- drivers/iio/adc/ad7173.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/adc/ad7173.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iio/adc/ad7173.c b/drivers/iio/adc/ad7173.c
-index 850574437bda..58620be41ef5 100644
+index eb512878c30e..e66a137a76be 100644
 --- a/drivers/iio/adc/ad7173.c
 +++ b/drivers/iio/adc/ad7173.c
-@@ -220,6 +220,7 @@ static const struct ad7173_device_info ad7173_device_info[] = {
- 		.num_sinc5_data_rates = ARRAY_SIZE(ad7173_sinc5_data_rates),
- 	},
- 	[ID_AD7172_4] = {
-+		.name = "ad7172-4",
- 		.id = AD7172_4_ID,
- 		.num_inputs = 9,
- 		.num_channels = 8,
-@@ -262,6 +263,7 @@ static const struct ad7173_device_info ad7173_device_info[] = {
- 		.num_sinc5_data_rates = ARRAY_SIZE(ad7175_sinc5_data_rates),
- 	},
- 	[ID_AD7175_8] = {
-+		.name = "ad7175-8",
- 		.id = AD7175_8_ID,
- 		.num_inputs = 17,
- 		.num_channels = 16,
-@@ -290,6 +292,7 @@ static const struct ad7173_device_info ad7173_device_info[] = {
- 		.num_sinc5_data_rates = ARRAY_SIZE(ad7175_sinc5_data_rates),
- 	},
- 	[ID_AD7177_2] = {
-+		.name = "ad7177-2",
- 		.id = AD7177_ID,
- 		.num_inputs = 5,
- 		.num_channels = 4,
+@@ -543,6 +543,7 @@ static int ad7173_append_status(struct ad_sigma_delta *sd, bool append)
+ 	unsigned int interface_mode = st->interface_mode;
+ 	int ret;
+ 
++	interface_mode &= ~AD7173_INTERFACE_DATA_STAT;
+ 	interface_mode |= AD7173_INTERFACE_DATA_STAT_EN(append);
+ 	ret = ad_sd_write_reg(&st->sd, AD7173_REG_INTERFACE_MODE, 2, interface_mode);
+ 	if (ret)
 
 -- 
 2.43.0
