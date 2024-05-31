@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABCAB17D341;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB47517D343;
 	Fri, 31 May 2024 19:42:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717184571; cv=none; b=pW0biCmqVQ6Ui+zJfVM3YDBRmy/e61JP/xncHNDBHlOvOWqAGsNNhnPXT4J0NnrPT0vCdd37Fa5F+tqUACOArL5WiZobT1RwbzN5E1B/k6GHOYJnzLPSnUikimDHtyEx4UK7T/NECHiHGjVwpjpRWu0v86+2BNGLucPefT2+lOk=
+	t=1717184571; cv=none; b=VCgCvY0NauBgo6KgmT9+BfTOqBKZALCOoqnYxDYzDOCsWa3oWvtfPBBiEyo6t2pAaqbT14i1xTl0hV0mJhJCPxSDLgjR6Bmt9EKxvEJoF9MjJqctan7/pMun4Y0r7lu95g6wChQBRLSZuuyvq5u+scPsJXwt8Aw5N8F0Mskr82A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1717184571; c=relaxed/simple;
-	bh=M1LcMgmmfpY2D4207JTUEyEzHZwxRlMHXw5z2scj/Oc=;
+	bh=coty3zmiVkzC0+Ab+NP3vBQIUemt6njlqQD0stWfSn4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=qhJSJ/HonT9pSiMEJkEF3rGqbWeWVwm32YiFXwmxI6HyMaR2oYGyTbVVKtKBrvSQ0CNIYuW7+z14bSV7yJx/bJEAqyQrfJPAoCGVLSrH+E9YwWmXqUGHWnoONVcDw3i9a4zwBBd2i5o1VFgdnRAgj9ns6IgCK8Ux8AlfKZmkGWI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h4cPIUg8; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=PbQGnruLEY/2MwZaEgzRhF+q/bVDwp24uF/rslokQFXMBlVsPMUCg0hrsUCL5TM0e5/o3C4SyM/uNXwBF/WdzFyGoXsK9dNrIrcyqtDqCcsVp6GYzA3LJKy95hYytxLsaMNu1jRv/bH387ChZQCiaN8ZSvQLts25BnWV+JPHQpk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KKHULrhD; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h4cPIUg8"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7D2FFC4AF17;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KKHULrhD"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5493EC4AF0F;
 	Fri, 31 May 2024 19:42:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1717184571;
-	bh=M1LcMgmmfpY2D4207JTUEyEzHZwxRlMHXw5z2scj/Oc=;
+	bh=coty3zmiVkzC0+Ab+NP3vBQIUemt6njlqQD0stWfSn4=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=h4cPIUg8tvUfcPA6XZ4wEHVMAEC4CbNHWvEpcBl8z992GCJCa7Dwg2F4PG8xBnW3f
-	 3gpvObwgSZsgP4NHpHRhjY6+z5ajakmvvECHKq6GVWTWt/0hXjSIbBSvklNXVFOwgI
-	 Zjz03iZInMPm302SGTeBcQbe8gzYphe7UMPk3UtMwUoB39G1Ckti1MdM4jq9U9TZFw
-	 Ets1xAYZx1EUAiSMv9VapVYltk4dm1YEICJMgt7gOsPyTVDfY68NLiidR5GNvZ7x6s
-	 MFQOmfP9V6J11+AtslpZVEmiswFCvFDIbGfDiv8jigSEOc+Cmh5QHbamrS9rK2ICR4
-	 pIsKKkwZxV4aw==
+	b=KKHULrhD16NlqabMnShbPtVFP9CbnKW1V3nH1+G74/nLcYDpBFPKD+wQFNTAWwiK1
+	 ul8G2wSx9qmQOdFdm8Xn8JECyTN1kXAF/pWXvMWZNFWmoMtsGU91QHzg/peQZ1USVh
+	 BQzKiw9Y4yoQIxVMDlMOmICIjpMbUTxNFCceArSO1L+1/kBCjPuSETR8UmhfhkSQs8
+	 dYf0QOb2aiVWEDg3qC1/6jOXHPXVk2TKtPMxIy2tIfBAEb4RY7f3+4ZNwZ9VrCafS7
+	 V+HJkAtXhD1nvqpDmINx0NzQbbP4sqpkqWRTmMRd+0rxDbivklyh/f9suoA32ZGUJS
+	 VUQC3pnbY7PjA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2B7C27C50;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B82DC27C4F;
 	Fri, 31 May 2024 19:42:51 +0000 (UTC)
 From: Dumitru Ceclan via B4 Relay <devnull+dumitru.ceclan.analog.com@kernel.org>
-Date: Fri, 31 May 2024 22:42:31 +0300
-Subject: [PATCH v4 5/6] iio: adc: ad7173: refactor device info structs
+Date: Fri, 31 May 2024 22:42:29 +0300
+Subject: [PATCH v4 3/6] iio: adc: ad7173: refactor ain and vref selection
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240531-ad4111-v4-5-64607301c057@analog.com>
+Message-Id: <20240531-ad4111-v4-3-64607301c057@analog.com>
 References: <20240531-ad4111-v4-0-64607301c057@analog.com>
 In-Reply-To: <20240531-ad4111-v4-0-64607301c057@analog.com>
 To: Ceclan Dumitru <dumitru.ceclan@analog.com>
@@ -52,11 +52,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Dumitru Ceclan <mitrutzceclan@gmail.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1717184569; l=9509;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1717184569; l=4550;
  i=dumitru.ceclan@analog.com; s=20240313; h=from:subject:message-id;
- bh=RCX3Uz+DiXHXyd/q5TMDm1Ci7vN+X3ks6WalypeIWPs=;
- b=yrUXe7DKclgkoK4krd0WMdGy1JW/vd6D0gaHhIl7hemmldgRFzLGCCAqB73oNwipnHBFFVyze
- mWljF2CzCUcAdbEL/0gBxyJwFIuemAcb6clSnCie25xj21VXMUR+Wq+
+ bh=7xTLh9Dt46L6LmGcvJeBdLPREQkljJ0gREj2u5d2Mow=;
+ b=XPE9rYupnMn63Ou1dEHEiVk8PJKUaxKx/OB6jyyZqEwr3OucVpbqQeX9vpSAAXqKcLC9KbSME
+ 5RzBrEZTSkTBlSIUIEs5wYHXykhgdwJDaKluwDf2axqfVqOae6XGpue
 X-Developer-Key: i=dumitru.ceclan@analog.com; a=ed25519;
  pk=HdqMlVyrcazwoiai7oN6ghU+Bj1pusGUFRl30jhS7Bo=
 X-Endpoint-Received: by B4 Relay for dumitru.ceclan@analog.com/20240313
@@ -66,312 +66,141 @@ Reply-To: dumitru.ceclan@analog.com
 
 From: Dumitru Ceclan <dumitru.ceclan@analog.com>
 
-Drop array of device info structs and use individual structs for all;
-drop models enum as no longer needed. This improves readability as the
-structs are pointed directly.
+Move validation of analog inputs and reference voltage selection to
+separate functions to reduce the size of the channel config parsing
+function and improve readability.
+Add defines for the number of analog inputs in a channel.
 
+Reviewed-by: David Lechner <dlechner@baylibre.com>
 Signed-off-by: Dumitru Ceclan <dumitru.ceclan@analog.com>
 ---
- drivers/iio/adc/ad7173.c | 267 ++++++++++++++++++++++-------------------------
- 1 file changed, 127 insertions(+), 140 deletions(-)
+ drivers/iio/adc/ad7173.c | 71 ++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 50 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/iio/adc/ad7173.c b/drivers/iio/adc/ad7173.c
-index ebfd2d5f9632..ed8ff8c5f343 100644
+index 6e249628bc64..a20831d99aa5 100644
 --- a/drivers/iio/adc/ad7173.c
 +++ b/drivers/iio/adc/ad7173.c
-@@ -129,16 +129,6 @@
- #define AD7173_FILTER_ODR0_MASK		GENMASK(5, 0)
- #define AD7173_MAX_CONFIGS		8
+@@ -60,6 +60,7 @@
+ #define AD7173_CH_SETUP_AINPOS_MASK	GENMASK(9, 5)
+ #define AD7173_CH_SETUP_AINNEG_MASK	GENMASK(4, 0)
  
--enum ad7173_ids {
--	ID_AD7172_2,
--	ID_AD7172_4,
--	ID_AD7173_8,
--	ID_AD7175_2,
--	ID_AD7175_8,
--	ID_AD7176_2,
--	ID_AD7177_2,
--};
++#define AD7173_NO_AINS_PER_CHANNEL	2
+ #define AD7173_CH_ADDRESS(pos, neg) \
+ 	(FIELD_PREP(AD7173_CH_SETUP_AINPOS_MASK, pos) | \
+ 	 FIELD_PREP(AD7173_CH_SETUP_AINNEG_MASK, neg))
+@@ -623,6 +624,7 @@ static int ad7173_setup(struct iio_dev *indio_dev)
+ static unsigned int ad7173_get_ref_voltage_milli(struct ad7173_state *st,
+ 						 u8 reference_select)
+ {
++	struct device *dev = &st->sd.spi->dev;
+ 	int vref;
+ 
+ 	switch (reference_select) {
+@@ -646,9 +648,11 @@ static unsigned int ad7173_get_ref_voltage_milli(struct ad7173_state *st,
+ 		return -EINVAL;
+ 	}
+ 
+-	if (vref < 0)
++	if (vref < 0) {
++		dev_err(dev, "Cannot use reference %u. Error:%d\n",
++			reference_select, vref);
+ 		return vref;
 -
- struct ad7173_device_info {
- 	const unsigned int *sinc5_data_rates;
- 	unsigned int num_sinc5_data_rates;
-@@ -211,115 +201,119 @@ static const unsigned int ad7175_sinc5_data_rates[] = {
- 	5000,					/* 20    */
- };
- 
--static const struct ad7173_device_info ad7173_device_info[] = {
--	[ID_AD7172_2] = {
--		.name = "ad7172-2",
--		.id = AD7172_2_ID,
--		.num_inputs = 5,
--		.num_channels = 4,
--		.num_configs = 4,
--		.num_gpios = 2,
--		.has_temp = true,
--		.has_input_buf = true,
--		.has_int_ref = true,
--		.has_common_input = true,
--		.clock = 2 * HZ_PER_MHZ,
--		.sinc5_data_rates = ad7173_sinc5_data_rates,
--		.num_sinc5_data_rates = ARRAY_SIZE(ad7173_sinc5_data_rates),
--	},
--	[ID_AD7172_4] = {
--		.name = "ad7172-4",
--		.id = AD7172_4_ID,
--		.num_inputs = 9,
--		.num_channels = 8,
--		.num_configs = 8,
--		.num_gpios = 4,
--		.has_temp = false,
--		.has_input_buf = true,
--		.has_ref2 = true,
--		.has_common_input = true,
--		.clock = 2 * HZ_PER_MHZ,
--		.sinc5_data_rates = ad7173_sinc5_data_rates,
--		.num_sinc5_data_rates = ARRAY_SIZE(ad7173_sinc5_data_rates),
--	},
--	[ID_AD7173_8] = {
--		.name = "ad7173-8",
--		.id = AD7173_ID,
--		.num_inputs = 17,
--		.num_channels = 16,
--		.num_configs = 8,
--		.num_gpios = 4,
--		.has_temp = true,
--		.has_input_buf = true,
--		.has_int_ref = true,
--		.has_ref2 = true,
--		.has_common_input = false,
--		.clock = 2 * HZ_PER_MHZ,
--		.sinc5_data_rates = ad7173_sinc5_data_rates,
--		.num_sinc5_data_rates = ARRAY_SIZE(ad7173_sinc5_data_rates),
--	},
--	[ID_AD7175_2] = {
--		.name = "ad7175-2",
--		.id = AD7175_2_ID,
--		.num_inputs = 5,
--		.num_channels = 4,
--		.num_configs = 4,
--		.num_gpios = 2,
--		.has_temp = true,
--		.has_input_buf = true,
--		.has_int_ref = true,
--		.has_common_input = true,
--		.clock = 16 * HZ_PER_MHZ,
--		.sinc5_data_rates = ad7175_sinc5_data_rates,
--		.num_sinc5_data_rates = ARRAY_SIZE(ad7175_sinc5_data_rates),
--	},
--	[ID_AD7175_8] = {
--		.name = "ad7175-8",
--		.id = AD7175_8_ID,
--		.num_inputs = 17,
--		.num_channels = 16,
--		.num_configs = 8,
--		.num_gpios = 4,
--		.has_temp = true,
--		.has_input_buf = true,
--		.has_int_ref = true,
--		.has_ref2 = true,
--		.has_common_input = true,
--		.clock = 16 * HZ_PER_MHZ,
--		.sinc5_data_rates = ad7175_sinc5_data_rates,
--		.num_sinc5_data_rates = ARRAY_SIZE(ad7175_sinc5_data_rates),
--	},
--	[ID_AD7176_2] = {
--		.name = "ad7176-2",
--		.id = AD7176_ID,
--		.num_inputs = 5,
--		.num_channels = 4,
--		.num_configs = 4,
--		.num_gpios = 2,
--		.has_temp = false,
--		.has_input_buf = false,
--		.has_int_ref = true,
--		.has_common_input = false,
--		.clock = 16 * HZ_PER_MHZ,
--		.sinc5_data_rates = ad7175_sinc5_data_rates,
--		.num_sinc5_data_rates = ARRAY_SIZE(ad7175_sinc5_data_rates),
--	},
--	[ID_AD7177_2] = {
--		.name = "ad7177-2",
--		.id = AD7177_ID,
--		.num_inputs = 5,
--		.num_channels = 4,
--		.num_configs = 4,
--		.num_gpios = 2,
--		.has_temp = true,
--		.has_input_buf = true,
--		.has_int_ref = true,
--		.has_common_input = true,
--		.clock = 16 * HZ_PER_MHZ,
--		.odr_start_value = AD7177_ODR_START_VALUE,
--		.sinc5_data_rates = ad7175_sinc5_data_rates,
--		.num_sinc5_data_rates = ARRAY_SIZE(ad7175_sinc5_data_rates),
--	},
-+static const struct ad7173_device_info ad7172_2_device_info = {
-+	.name = "ad7172-2",
-+	.id = AD7172_2_ID,
-+	.num_inputs = 5,
-+	.num_channels = 4,
-+	.num_configs = 4,
-+	.num_gpios = 2,
-+	.has_temp = true,
-+	.has_input_buf = true,
-+	.has_int_ref = true,
-+	.has_common_input = true,
-+	.clock = 2 * HZ_PER_MHZ,
-+	.sinc5_data_rates = ad7173_sinc5_data_rates,
-+	.num_sinc5_data_rates = ARRAY_SIZE(ad7173_sinc5_data_rates),
-+};
-+
-+static const struct ad7173_device_info ad7172_4_device_info = {
-+	.name = "ad7172-4",
-+	.id = AD7172_4_ID,
-+	.num_inputs = 9,
-+	.num_channels = 8,
-+	.num_configs = 8,
-+	.num_gpios = 4,
-+	.has_temp = false,
-+	.has_input_buf = true,
-+	.has_ref2 = true,
-+	.has_common_input = true,
-+	.clock = 2 * HZ_PER_MHZ,
-+	.sinc5_data_rates = ad7173_sinc5_data_rates,
-+	.num_sinc5_data_rates = ARRAY_SIZE(ad7173_sinc5_data_rates),
-+};
-+
-+static const struct ad7173_device_info ad7173_8_device_info = {
-+	.name = "ad7173-8",
-+	.id = AD7173_ID,
-+	.num_inputs = 17,
-+	.num_channels = 16,
-+	.num_configs = 8,
-+	.num_gpios = 4,
-+	.has_temp = true,
-+	.has_input_buf = true,
-+	.has_int_ref = true,
-+	.has_ref2 = true,
-+	.has_common_input = false,
-+	.clock = 2 * HZ_PER_MHZ,
-+	.sinc5_data_rates = ad7173_sinc5_data_rates,
-+	.num_sinc5_data_rates = ARRAY_SIZE(ad7173_sinc5_data_rates),
-+};
-+
-+static const struct ad7173_device_info ad7175_2_device_info = {
-+	.name = "ad7175-2",
-+	.id = AD7175_2_ID,
-+	.num_inputs = 5,
-+	.num_channels = 4,
-+	.num_configs = 4,
-+	.num_gpios = 2,
-+	.has_temp = true,
-+	.has_input_buf = true,
-+	.has_int_ref = true,
-+	.has_common_input = true,
-+	.clock = 16 * HZ_PER_MHZ,
-+	.sinc5_data_rates = ad7175_sinc5_data_rates,
-+	.num_sinc5_data_rates = ARRAY_SIZE(ad7175_sinc5_data_rates),
-+};
-+
-+static const struct ad7173_device_info ad7175_8_device_info = {
-+	.name = "ad7175-8",
-+	.id = AD7175_8_ID,
-+	.num_inputs = 17,
-+	.num_channels = 16,
-+	.num_configs = 8,
-+	.num_gpios = 4,
-+	.has_temp = true,
-+	.has_input_buf = true,
-+	.has_int_ref = true,
-+	.has_ref2 = true,
-+	.has_common_input = true,
-+	.clock = 16 * HZ_PER_MHZ,
-+	.sinc5_data_rates = ad7175_sinc5_data_rates,
-+	.num_sinc5_data_rates = ARRAY_SIZE(ad7175_sinc5_data_rates),
-+};
-+
-+static const struct ad7173_device_info ad7176_2_device_info = {
-+	.name = "ad7176-2",
-+	.id = AD7176_ID,
-+	.num_inputs = 5,
-+	.num_channels = 4,
-+	.num_configs = 4,
-+	.num_gpios = 2,
-+	.has_temp = false,
-+	.has_input_buf = false,
-+	.has_int_ref = true,
-+	.has_common_input = false,
-+	.clock = 16 * HZ_PER_MHZ,
-+	.sinc5_data_rates = ad7175_sinc5_data_rates,
-+	.num_sinc5_data_rates = ARRAY_SIZE(ad7175_sinc5_data_rates),
-+};
-+
-+static const struct ad7173_device_info ad7177_2_device_info = {
-+	.name = "ad7177-2",
-+	.id = AD7177_ID,
-+	.num_inputs = 5,
-+	.num_channels = 4,
-+	.num_configs = 4,
-+	.num_gpios = 2,
-+	.has_temp = true,
-+	.has_input_buf = true,
-+	.has_int_ref = true,
-+	.has_common_input = true,
-+	.clock = 16 * HZ_PER_MHZ,
-+	.odr_start_value = AD7177_ODR_START_VALUE,
-+	.sinc5_data_rates = ad7175_sinc5_data_rates,
-+	.num_sinc5_data_rates = ARRAY_SIZE(ad7175_sinc5_data_rates),
- };
- 
- static const char *const ad7173_ref_sel_str[] = {
-@@ -1190,32 +1184,25 @@ static int ad7173_probe(struct spi_device *spi)
++	}
+ 	return vref / (MICRO / MILLI);
  }
  
- static const struct of_device_id ad7173_of_match[] = {
--	{ .compatible = "adi,ad7172-2",
--	  .data = &ad7173_device_info[ID_AD7172_2]},
--	{ .compatible = "adi,ad7172-4",
--	  .data = &ad7173_device_info[ID_AD7172_4]},
--	{ .compatible = "adi,ad7173-8",
--	  .data = &ad7173_device_info[ID_AD7173_8]},
--	{ .compatible = "adi,ad7175-2",
--	  .data = &ad7173_device_info[ID_AD7175_2]},
--	{ .compatible = "adi,ad7175-8",
--	  .data = &ad7173_device_info[ID_AD7175_8]},
--	{ .compatible = "adi,ad7176-2",
--	  .data = &ad7173_device_info[ID_AD7176_2]},
--	{ .compatible = "adi,ad7177-2",
--	  .data = &ad7173_device_info[ID_AD7177_2]},
-+	{ .compatible = "adi,ad7172-2", .data = &ad7172_2_device_info},
-+	{ .compatible = "adi,ad7172-4", .data = &ad7172_4_device_info},
-+	{ .compatible = "adi,ad7173-8", .data = &ad7173_8_device_info},
-+	{ .compatible = "adi,ad7175-2", .data = &ad7175_2_device_info},
-+	{ .compatible = "adi,ad7175-8", .data = &ad7175_8_device_info},
-+	{ .compatible = "adi,ad7176-2", .data = &ad7176_2_device_info},
-+	{ .compatible = "adi,ad7177-2", .data = &ad7177_2_device_info},
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ad7173_of_match);
+@@ -905,13 +909,50 @@ static int ad7173_register_clk_provider(struct iio_dev *indio_dev)
+ 					   &st->int_clk_hw);
+ }
  
- static const struct spi_device_id ad7173_id_table[] = {
--	{ "ad7172-2", (kernel_ulong_t)&ad7173_device_info[ID_AD7172_2]},
--	{ "ad7172-4", (kernel_ulong_t)&ad7173_device_info[ID_AD7172_4]},
--	{ "ad7173-8", (kernel_ulong_t)&ad7173_device_info[ID_AD7173_8]},
--	{ "ad7175-2", (kernel_ulong_t)&ad7173_device_info[ID_AD7175_2]},
--	{ "ad7175-8", (kernel_ulong_t)&ad7173_device_info[ID_AD7175_8]},
--	{ "ad7176-2", (kernel_ulong_t)&ad7173_device_info[ID_AD7176_2]},
--	{ "ad7177-2", (kernel_ulong_t)&ad7173_device_info[ID_AD7177_2]},
-+	{ "ad7172-2", (kernel_ulong_t)&ad7172_2_device_info},
-+	{ "ad7172-4", (kernel_ulong_t)&ad7172_4_device_info},
-+	{ "ad7173-8", (kernel_ulong_t)&ad7173_8_device_info},
-+	{ "ad7175-2", (kernel_ulong_t)&ad7175_2_device_info},
-+	{ "ad7175-8", (kernel_ulong_t)&ad7175_8_device_info},
-+	{ "ad7176-2", (kernel_ulong_t)&ad7176_2_device_info},
-+	{ "ad7177-2", (kernel_ulong_t)&ad7177_2_device_info},
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, ad7173_id_table);
++static int ad7173_validate_voltage_ain_inputs(struct ad7173_state *st,
++					      const unsigned int ain[AD7173_NO_AINS_PER_CHANNEL])
++{
++	struct device *dev = &st->sd.spi->dev;
++
++	for (int i = 0; i < AD7173_NO_AINS_PER_CHANNEL; i++) {
++		if (ain[i] < st->info->num_inputs)
++			continue;
++
++		return dev_err_probe(dev, -EINVAL,
++			"Input pin number out of range for pair (%d %d).\n",
++			ain[0], ain[1]);
++	}
++
++	return 0;
++}
++
++static int ad7173_validate_reference(struct ad7173_state *st, int ref_sel)
++{
++	struct device *dev = &st->sd.spi->dev;
++	int ret;
++
++	if (ref_sel == AD7173_SETUP_REF_SEL_INT_REF && !st->info->has_int_ref)
++		return dev_err_probe(dev, -EINVAL,
++			"Internal reference is not available on current model.\n");
++
++	if (ref_sel == AD7173_SETUP_REF_SEL_EXT_REF2 && !st->info->has_ref2)
++		return dev_err_probe(dev, -EINVAL,
++			"External reference 2 is not available on current model.\n");
++
++	ret = ad7173_get_ref_voltage_milli(st, ref_sel);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
+ static int ad7173_fw_parse_channel_config(struct iio_dev *indio_dev)
+ {
+ 	struct ad7173_channel *chans_st_arr, *chan_st_priv;
+ 	struct ad7173_state *st = iio_priv(indio_dev);
+ 	struct device *dev = indio_dev->dev.parent;
+ 	struct iio_chan_spec *chan_arr, *chan;
+-	unsigned int ain[2], chan_index = 0;
++	unsigned int ain[AD7173_NO_AINS_PER_CHANNEL], chan_index = 0;
+ 	int ref_sel, ret, num_channels;
+ 
+ 	num_channels = device_get_child_node_count(dev);
+@@ -965,11 +1006,9 @@ static int ad7173_fw_parse_channel_config(struct iio_dev *indio_dev)
+ 		if (ret)
+ 			return ret;
+ 
+-		if (ain[0] >= st->info->num_inputs ||
+-		    ain[1] >= st->info->num_inputs)
+-			return dev_err_probe(dev, -EINVAL,
+-				"Input pin number out of range for pair (%d %d).\n",
+-				ain[0], ain[1]);
++		ret = ad7173_validate_voltage_ain_inputs(st, ain);
++		if (ret)
++			return ret;
+ 
+ 		ret = fwnode_property_match_property_string(child,
+ 							    "adi,reference-select",
+@@ -980,19 +1019,9 @@ static int ad7173_fw_parse_channel_config(struct iio_dev *indio_dev)
+ 		else
+ 			ref_sel = ret;
+ 
+-		if (ref_sel == AD7173_SETUP_REF_SEL_INT_REF &&
+-		    !st->info->has_int_ref)
+-			return dev_err_probe(dev, -EINVAL,
+-				"Internal reference is not available on current model.\n");
+-
+-		if (ref_sel == AD7173_SETUP_REF_SEL_EXT_REF2 && !st->info->has_ref2)
+-			return dev_err_probe(dev, -EINVAL,
+-				"External reference 2 is not available on current model.\n");
+-
+-		ret = ad7173_get_ref_voltage_milli(st, ref_sel);
+-		if (ret < 0)
+-			return dev_err_probe(dev, ret,
+-					     "Cannot use reference %u\n", ref_sel);
++		ret = ad7173_validate_reference(st, ref_sel);
++		if (ret)
++			return ret;
+ 
+ 		if (ref_sel == AD7173_SETUP_REF_SEL_INT_REF)
+ 			st->adc_mode |= AD7173_ADC_MODE_REF_EN;
 
 -- 
 2.43.0
