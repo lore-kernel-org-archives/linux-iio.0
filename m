@@ -1,169 +1,71 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C3EA77118;
-	Fri, 31 May 2024 15:25:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6B8716F904;
+	Fri, 31 May 2024 17:05:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717169118; cv=none; b=hZrbFuhjJRv24rd+lJN0UYaLnU2BEN2bWroClkb8afEWaqrXIhV5+MeXGzECuRjErZvc1KD7vH4CxAAFELLLzMqiyDXu95ibbNFoUeEju/52G2LZ4lTsYpM3Npg88WQIZLBDqHKVygF26A2ZxyON02Z3IIP263Wh2sQAxLT1evQ=
+	t=1717175142; cv=none; b=GLNJZp8uOqSWXDaf6DJfWl3gQfkOUGHCd0DZMaTfqZnCsO1qn63RuP5mSn/ygOM7Cv8V2YLPLZStOLIcsxGBYP2eUfOAHzaGKluMU0Nj5PqS6SW6Qb3oJO4/DrFG1Dy0EXsd2y9tBY9ey4GqoDYEuZbqaT4s+r4peHIl1YsRff8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717169118; c=relaxed/simple;
-	bh=4G6i+MqRsVd1u+U7jECgsxdbxRmfHnk2OKaw20DmgQE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=g2gieO9TkenE6UY5NkV8BmzUDFfVF12leGZlbJIU2rHbRiFCCByRsEpAlTxPhIjF+JF3fAm6G4kGBBgKfw9L7SBH0c5KGs2li0ZtpzVNJ64n7s/xp6B/DAwKxT+GzTEp/cBwaP8JyL7x0hxKzAc4F1+q9lWfmRRewHutUbTHsnI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mRub1NTE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1717175142; c=relaxed/simple;
+	bh=ojVyu4m/QK0eLUTVMQOzVZ1/YGKhIT0HpeVHhtnOmKk=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=U6BQM2fHUBKlJACxIJJAy2L3Vsbxt02V7Jh9o1xEgGuKaHxYq0Xw7NOYEYMtDeuDr8L/P7jaQnyRqHkb9JNwOI3/DnQcmzqwSJvsb3CqO0SJzMfIhz+UnKbvE5S7J13KA2UkeZ2eNUANW4oBX10iLKepfMDAbpDPpHRrCjCGLYs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uyHzAlGy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mRub1NTE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98DFCC32789;
-	Fri, 31 May 2024 15:25:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uyHzAlGy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D71CC116B1;
+	Fri, 31 May 2024 17:05:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717169118;
-	bh=4G6i+MqRsVd1u+U7jECgsxdbxRmfHnk2OKaw20DmgQE=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=mRub1NTEexeIKD+YW40l67qrKqF3dduVb4iUog4M4DuaILgl+EgJ/kIIMwrmnwX+7
-	 Ty5TmKhOHywqwV5d3aiTaYGd+E4TPkzZMdp+xP3UstJ5u37lrUbmUgPrBGwtI6Lp+p
-	 gY5CboHqGQq1XZ4KHdiEzPM6Wy8pVPZ//UB2bJgsy5HPSs0LQW4AyUQk0cO9eCD2I4
-	 AlpzGrFsmaeH0eB+XwLsfpdk5JRsOY/31MefO0ICWBE6SPz7qJQiz2ARYpQIbhZ//Z
-	 In5hs3VOdkMFEbox1zRNfrc4a2+vaiYgfsEA0aJpcGX3xUd58rcCvjBmaSr1VXEwhS
-	 XUmN9PvA/+EcA==
-Message-ID: <278ed1f7-7f98-412a-abef-840592e016d4@kernel.org>
-Date: Fri, 31 May 2024 17:25:13 +0200
+	s=k20201202; t=1717175142;
+	bh=ojVyu4m/QK0eLUTVMQOzVZ1/YGKhIT0HpeVHhtnOmKk=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=uyHzAlGy36mwd/hrJc4dAsxeyBUw+RfUNcOonw/PUWHZC7fON26bUJr9jG6PxPs+8
+	 +b64s2p3Kwp9LC40cykPj7lOOCNJk1a2AehDFiAUhwIEKcvoR3vFxaUBZMl79z5OPz
+	 FPJou03ZjeF5uFpYjrob/v2hj5gkmunLcAdogQvs4YPnYOr2qU1UYI674FY5fYEtkT
+	 bV6Iz9TBwQ6kGqqt2y+KSnIDKZ3O0Rl8R6hRSNb1kBzoIX5s9FQlSLhw1KvIrlTk5T
+	 n/ehnIOHOAjzlO1mWH2UnkRDSHieko8+XRtALn6kFf6EAbQWNq0BgUCKU55pJfp1KT
+	 NUoC3k6sQFn+w==
+From: Lee Jones <lee@kernel.org>
+To: jic23@kernel.org, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: lars@metafoo.de, robh@kernel.org, krzk+dt@kernel.org, 
+ conor+dt@kernel.org, matthias.bgg@gmail.com, lee@kernel.org, 
+ andy@kernel.org, nuno.sa@analog.com, bigunclemax@gmail.com, 
+ dlechner@baylibre.com, marius.cristea@microchip.com, 
+ marcelo.schmitt@analog.com, fr0st61te@gmail.com, mitrutzceclan@gmail.com, 
+ mike.looijmans@topic.nl, marcus.folkesson@gmail.com, 
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-mediatek@lists.infradead.org, kernel@collabora.com
+In-Reply-To: <20240530093410.112716-4-angelogioacchino.delregno@collabora.com>
+References: <20240530093410.112716-1-angelogioacchino.delregno@collabora.com>
+ <20240530093410.112716-4-angelogioacchino.delregno@collabora.com>
+Subject: Re: (subset) [PATCH v1 3/4] mfd: mt6397-core: Add support for
+ AUXADCs on MT6357/58/59 PMICs
+Message-Id: <171717513800.1210753.10558574294552850707.b4-ty@kernel.org>
+Date: Fri, 31 May 2024 18:05:38 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/1] dt-bindings: iio: adc: add a7779 doc
-To: Ramona Alexandra Nechita <ramona.nechita@analog.com>,
- linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org
-References: <20240531133604.1380-1-ramona.nechita@analog.com>
- <20240531133604.1380-2-ramona.nechita@analog.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20240531133604.1380-2-ramona.nechita@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.12.4
 
-On 31/05/2024 15:35, Ramona Alexandra Nechita wrote:
-> Add dt bindings for adc ad7779.
+On Thu, 30 May 2024 11:34:09 +0200, AngeloGioacchino Del Regno wrote:
+> Add the relevant AUXADC driver entries to the MFD cells of the
+> MT6357, MT6358, MT6359 PMICs to support their Auxiliary ADCs.
 > 
-> Signed-off-by: Ramona Alexandra Nechita <ramona.nechita@analog.com>
-> ---
->  .../ABI/testing/sysfs-bus-iio-adc-ad777x      | 23 +++++
->  .../bindings/iio/adc/adi,ad7779.yaml          | 87 +++++++++++++++++++
->  2 files changed, 110 insertions(+)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-ad777x
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7779.yaml
+> 
 
-Why is this sent separately troubles us all... I saw many patches from
-analog.com, so maybe there is a person who will help you, in case you do
-not want to read submitting patches?
+Applied, thanks!
 
-...
+[3/4] mfd: mt6397-core: Add support for AUXADCs on MT6357/58/59 PMICs
+      commit: fa9d9f4b5588003a955193fe9ff009687541f3e7
 
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +  spi-max-frequency: true
-
-Drop
-
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  vref-supply:
-> +    description:
-> +      ADC reference voltage supply
-> +
-> +  start-gpios:
-> +    description:
-> +      Pin that controls start synchronization pulse.
-> +    maxItems: 1
-> +
-> +  reset-gpios:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        adc@0 {
-> +          compatible = "adi,ad7779";
-
-Messed indentation. Keep same for entire example, e.g.
-Use 4 spaces for example indentation.
-
-Best regards,
-Krzysztof
+--
+Lee Jones [李琼斯]
 
