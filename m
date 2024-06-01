@@ -1,224 +1,115 @@
-Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B716A154C01;
-	Sat,  1 Jun 2024 18:35:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40040208D4;
+	Sat,  1 Jun 2024 18:40:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717266933; cv=none; b=n6cqdi1VUVWYrDfYZ92C3siqzVCfHTn5pT+Xf6dPdelLxhqUSuWCtcI2H6Az2k+3Rr32YcLcicMtJbXFw59Y4570ZGPU9gsIMriOGIwEprV2bHw3EFC0X8j1DtyrQh2RU9AXq3SDhc8lBuhXTqC9kCkwblyx0kS7ThV5Rjgn11U=
+	t=1717267243; cv=none; b=lpz4RvXWOoH/Wt7yJ535EbaqNIJOWcZJl0IJcPegLCiYaFg0glF0gtnAJvw4O5xx6j9ET15krEbSiduTIWAGNY6Has3S6yTJAP2xcyMaTI9Fyw0HPVPZ5IBTFk+3hppoG4hE/XPV5bSOm/EBC6gmNCUeOkSC/KLGfB7VsJrXneE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717266933; c=relaxed/simple;
-	bh=P1OTpKV/R6By4dLLQwzp2PNebfKG3S0FnUodq0ZXGis=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IAl75tnuCWlUk4VSZoRgWsIgRgcP49RtHfLW+rlhTafgmHhfena+m1E2WF0EpbOuY4gJARBupv02xUcF+x4g0nZOUWi471o95qDTeCQ+tsHZXM/9Mk6QEY9U+ZbjYNPkHkPFjwmG6A8y0TGMl92XjH7+j1wXYtTruK5qEnz+ByM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=VhLJrsN2; arc=none smtp.client-ip=178.21.23.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
+	s=arc-20240116; t=1717267243; c=relaxed/simple;
+	bh=LR/c8x+xXZigA1KgG3xrmw32mIIHb4FKtgh/evN9SM4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jjqp9/c4s/ZxmRJr2kio7Nawf8idtXnWhG9Z06u5iofXcHIpqYAh8gl6CStTqCKVDF1BH/vAZLjYImNj03ahlc5fyQrT2tzdtiibKdZtHkeKNnsh5DQha0XGDs0QVzvTQ48pkL9S5EvvE8sKr6DXAxeexmVz3C4BGbeoGITGzjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ATN9Qb1Q; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="VhLJrsN2"
-Received: from localhost (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id 9290640C71;
-	Sat,  1 Jun 2024 20:35:22 +0200 (CEST)
-X-Virus-Scanned: SPAM Filter at disroot.org
-Received: from layka.disroot.org ([127.0.0.1])
-	by localhost (disroot.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BGAEVI2169fv; Sat,  1 Jun 2024 20:35:21 +0200 (CEST)
-From: Kaustabh Chakraborty <kauschluss@disroot.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1717266921; bh=P1OTpKV/R6By4dLLQwzp2PNebfKG3S0FnUodq0ZXGis=;
-	h=From:To:Cc:Subject:Date;
-	b=VhLJrsN22T5t8i9IFIsE7Xbl5JYDXM/0TKNca9F0RgLRSXsXRcRETSOlHfSLaUDei
-	 mz/O6i8fjbSSayboG/fCjFII6koJ7IwdB7IsZiMuzS6eXuPJ4ht+SvUBn/hrkqQpZV
-	 qGcIhoUjQKR9xCWWRnPkQk8EndgQj/C4IrKm4gPn+HHbDwvySIbU1fA3LbxXKko+N9
-	 CgElRiu0VS2vUf3FxJBXGH0HqBXIzgSCJHDKMgJ15f5oS4IAVwmo9pclYEi6CR/S52
-	 iCN4Mz82tE4QPqegDNX5V1ikMFWTa/J+zQ1hR92xucOcqo4bPO9AdFxV8zlHnZd3hE
-	 x2M72I1MTEccw==
-To: linux-iio@vger.kernel.org,
-	jic23@kernel.org,
-	denis.ciocca@st.com
-Cc: devicetree@vger.kernel.org,
-	linus.walleij@linaro.org,
-	robh+dt@kernel.org,
-	kauschluss@disroot.org
-Subject: [PATCH v2] iio: accel: st_accel: add LIS2DS12
-Date: Sat,  1 Jun 2024 23:49:00 +0530
-Message-ID: <20240601183233.118397-1-kauschluss@disroot.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ATN9Qb1Q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4473C116B1;
+	Sat,  1 Jun 2024 18:40:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1717267242;
+	bh=LR/c8x+xXZigA1KgG3xrmw32mIIHb4FKtgh/evN9SM4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=ATN9Qb1Q/SYgGwtk3wP8kvB3/y8+DRjJA8v1hmyRJ/eLdP0QxQAB44DsMT+mu4Xzk
+	 SHv3yJCzIkg7gk1LztXMe6qxxJziJsG7ZviTNApc1uDS7cKus6+D3R/uCKE8ASoCIF
+	 3HWi4TON/z3r08sHdJsH2uW15L2Yx4tjx7zeXsz187l4hfH4RkA0/t0oxfO2PPB3m0
+	 VnhrkcTlCq2i2TvcWLQkiZQ/aqbnXRfAaJWrV6mnt7UioOUBNEjK8gH7US+EOoXMBu
+	 4btudvWHnlBYOtsTs8R7ILHaXf1H0yWWY8+hNP8B1cSYF4KvuD2+Rw2VH09OgEkJet
+	 osMYhweOv4pQg==
+Date: Sat, 1 Jun 2024 19:40:27 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
+Cc: "Ceclan, Dumitru" <mitrutzceclan@gmail.com>, dumitru.ceclan@analog.com,
+ Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley
+ <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/6] iio: adc: ad7173: refactor ain and vref
+ selection
+Message-ID: <20240601194027.67c97d76@jic23-huawei>
+In-Reply-To: <5e263d5ce90d6ad187adb7d4a007ce2e79095829.camel@gmail.com>
+References: <20240527-ad4111-v3-0-7e9eddbbd3eb@analog.com>
+	<20240527-ad4111-v3-3-7e9eddbbd3eb@analog.com>
+	<71452f6882efe6a181d477914488617d28a38e2f.camel@gmail.com>
+	<4b704b553282c0689dfef714c49ba97a33198898.camel@gmail.com>
+	<d2f4e6da-75b1-4450-b295-45772dfb3f33@gmail.com>
+	<5e263d5ce90d6ad187adb7d4a007ce2e79095829.camel@gmail.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.42; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-The LIS2DS12 accelerometer by STMicroelectronics is mostly compatible
-with the LIS2DE12 variant, except the WhoAmI value (0x43).
+On Fri, 31 May 2024 09:10:43 +0200
+Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
 
-Define sensor settings for LIS2DS12, and add support in the I2C and
-SPI drivers.
+> On Thu, 2024-05-30 at 17:45 +0300, Ceclan, Dumitru wrote:
+> > On 29/05/2024 15:49, Nuno S=C3=A1 wrote: =20
+> > > On Wed, 2024-05-29 at 14:27 +0200, Nuno S=C3=A1 wrote: =20
+> > > > On Mon, 2024-05-27 at 20:02 +0300, Dumitru Ceclan via B4 Relay wrot=
+e: =20
+> > > > > From: Dumitru Ceclan <dumitru.ceclan@analog.com> =20
+> >=20
+> > ...
+> >  =20
+> > > > > +static int ad7173_validate_voltage_ain_inputs(struct ad7173_stat=
+e *st,
+> > > > > +					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 unsigned int ain[2]) =20
+> > >=20
+> > > Pass the pointer and size of it... Also, it should be made 'const'
+> > >  =20
+> >=20
+> > I'm learning here: what is the purpose of passing the size of it?
+> > This is a specific case where the size will always be 2
+> >  =20
+>=20
+> Basically readability... Yes, in this case it will be a stretch to assume=
+ we'll ever
+> have anything bigger than 2 (so the scalability argument is not so applic=
+able) so I'm
+> ok if you don't pass the size. It's just I really dislike (as a practice)=
+ to have
+> raw/magic numbers in the code. In here, it won't be that bad as by the co=
+ntext, one
+> can easily understand the meaning of 2. Nevertheless, I would, still, at =
+the very
+> least consider to either use a #define or a better name for the iterator =
+(anything
+> more meaningful than 'i' so that it looks more understandable than 'i < 2=
+')
+>=20
 
-Datasheet: https://www.st.com/resource/en/datasheet/lis2ds12.pdf
+I'm late to the game, but I'd just split it into two parameters.
+Code is shorter as well.
 
-Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
----
-Changes in v2:
-- add SPI support
-- link datasheet in commit description
+static int ad7173_validate_voltage_ain_inputs(struct ad7173_state *st,
+					      unsigned int ain0, unsigned int ain1)
+{
+	if (ain0 >=3D st->info->num_inputs ||
+	    ain1 >=3D st->info->num_inputs)
+		return dev_err_probe(&st->sd.spi->dev, -EINVAL,
+				     "Input pin number out of range for pair (%d %d).\n",
+				     ain0, ain1);
+	return 0;
+}
 
-v1: https://lore.kernel.org/linux-iio/20240526083302.87172-1-kauschluss@disroot.org/
----
- drivers/iio/accel/st_accel.h      |  1 +
- drivers/iio/accel/st_accel_core.c | 77 +++++++++++++++++++++++++++++++
- drivers/iio/accel/st_accel_i2c.c  |  5 ++
- drivers/iio/accel/st_accel_spi.c  |  5 ++
- 4 files changed, 88 insertions(+)
-
-diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-index e7525615712b..2659f536cef6 100644
---- a/drivers/iio/accel/st_accel.h
-+++ b/drivers/iio/accel/st_accel.h
-@@ -35,6 +35,7 @@
- #define LIS3DHH_ACCEL_DEV_NAME		"lis3dhh"
- #define LIS3DE_ACCEL_DEV_NAME		"lis3de"
- #define LIS2DE12_ACCEL_DEV_NAME		"lis2de12"
-+#define LIS2DS12_ACCEL_DEV_NAME		"lis2ds12"
- #define LIS2HH12_ACCEL_DEV_NAME		"lis2hh12"
- #define LIS302DL_ACCEL_DEV_NAME		"lis302dl"
- #define LSM303C_ACCEL_DEV_NAME		"lsm303c_accel"
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index d2104e14e255..08356a90d48b 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -925,6 +925,83 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
- 		.multi_read_bit = true,
- 		.bootime = 2,
- 	},
-+	{
-+		.wai = 0x43,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
-+		.sensors_supported = {
-+			[0] = LIS2DS12_ACCEL_DEV_NAME,
-+		},
-+		.ch = (struct iio_chan_spec *)st_accel_8bit_channels,
-+		.odr = {
-+			.addr = 0x20,
-+			.mask = 0xf0,
-+			.odr_avl = {
-+				{ .hz = 1, .value = 0x01, },
-+				{ .hz = 10, .value = 0x02, },
-+				{ .hz = 25, .value = 0x03, },
-+				{ .hz = 50, .value = 0x04, },
-+				{ .hz = 100, .value = 0x05, },
-+				{ .hz = 200, .value = 0x06, },
-+				{ .hz = 400, .value = 0x07, },
-+				{ .hz = 1620, .value = 0x08, },
-+				{ .hz = 5376, .value = 0x09, },
-+			},
-+		},
-+		.pw = {
-+			.addr = 0x20,
-+			.mask = 0xf0,
-+			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-+		},
-+		.enable_axis = {
-+			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
-+			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
-+		},
-+		.fs = {
-+			.addr = 0x23,
-+			.mask = 0x30,
-+			.fs_avl = {
-+				[0] = {
-+					.num = ST_ACCEL_FS_AVL_2G,
-+					.value = 0x00,
-+					.gain = IIO_G_TO_M_S_2(15600),
-+				},
-+				[1] = {
-+					.num = ST_ACCEL_FS_AVL_4G,
-+					.value = 0x01,
-+					.gain = IIO_G_TO_M_S_2(31200),
-+				},
-+				[2] = {
-+					.num = ST_ACCEL_FS_AVL_8G,
-+					.value = 0x02,
-+					.gain = IIO_G_TO_M_S_2(62500),
-+				},
-+				[3] = {
-+					.num = ST_ACCEL_FS_AVL_16G,
-+					.value = 0x03,
-+					.gain = IIO_G_TO_M_S_2(187500),
-+				},
-+			},
-+		},
-+		.drdy_irq = {
-+			.int1 = {
-+				.addr = 0x22,
-+				.mask = 0x10,
-+			},
-+			.addr_ihl = 0x25,
-+			.mask_ihl = 0x02,
-+			.stat_drdy = {
-+				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
-+				.mask = 0x07,
-+			},
-+		},
-+		.sim = {
-+			.addr = 0x23,
-+			.value = BIT(0),
-+		},
-+		.multi_read_bit = true,
-+		.bootime = 2,
-+	},
-+
- 	{
- 		.wai = 0x41,
- 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
-diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-index fd3749871121..329a4d6fb2ec 100644
---- a/drivers/iio/accel/st_accel_i2c.c
-+++ b/drivers/iio/accel/st_accel_i2c.c
-@@ -102,6 +102,10 @@ static const struct of_device_id st_accel_of_match[] = {
- 		.compatible = "st,lis2de12",
- 		.data = LIS2DE12_ACCEL_DEV_NAME,
- 	},
-+	{
-+		.compatible = "st,lis2ds12",
-+		.data = LIS2DS12_ACCEL_DEV_NAME,
-+	},
- 	{
- 		.compatible = "st,lis2hh12",
- 		.data = LIS2HH12_ACCEL_DEV_NAME,
-@@ -154,6 +158,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
- 	{ LIS2DW12_ACCEL_DEV_NAME },
- 	{ LIS3DE_ACCEL_DEV_NAME },
- 	{ LIS2DE12_ACCEL_DEV_NAME },
-+	{ LIS2DS12_ACCEL_DEV_NAME },
- 	{ LIS2HH12_ACCEL_DEV_NAME },
- 	{ LIS302DL_ACCEL_DEV_NAME },
- 	{ LSM303C_ACCEL_DEV_NAME },
-diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
-index f72a24f45322..eadeb22c6ef7 100644
---- a/drivers/iio/accel/st_accel_spi.c
-+++ b/drivers/iio/accel/st_accel_spi.c
-@@ -60,6 +60,10 @@ static const struct of_device_id st_accel_of_match[] = {
- 		.compatible = "st,lsm303agr-accel",
- 		.data = LSM303AGR_ACCEL_DEV_NAME,
- 	},
-+	{
-+		.compatible = "st,lis2ds12",
-+		.data = LIS2DS12_ACCEL_DEV_NAME,
-+	},
- 	{
- 		.compatible = "st,lis2dh12-accel",
- 		.data = LIS2DH12_ACCEL_DEV_NAME,
-@@ -150,6 +154,7 @@ static const struct spi_device_id st_accel_id_table[] = {
- 	{ LIS331DLH_ACCEL_DEV_NAME },
- 	{ LSM330_ACCEL_DEV_NAME },
- 	{ LSM303AGR_ACCEL_DEV_NAME },
-+	{ LIS2DS12_ACCEL_DEV_NAME },
- 	{ LIS2DH12_ACCEL_DEV_NAME },
- 	{ LIS3L02DQ_ACCEL_DEV_NAME },
- 	{ LNG2DM_ACCEL_DEV_NAME },
--- 
-2.45.1
+> - Nuno S=C3=A1=20
+> >  =20
+>=20
 
