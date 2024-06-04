@@ -1,107 +1,116 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1B5478283;
-	Tue,  4 Jun 2024 08:02:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DEA2142900;
+	Tue,  4 Jun 2024 08:45:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717488156; cv=none; b=udKzwlVHLyVGA/WJDi0v7m+uYS3VUQ4YqHbbcZgAFF4F2Q3JXPGl+oF6WGpBET0MOZJ7D8HrxTuhCQeRApwKcHUgqV+WAI6Wwbr2IPRoSS6CMtndUWa0rMbkuIubY+pZ0ip4V+d8cV47dDfDLBEoIEso3KSAJX9i+muYvtQVx8Q=
+	t=1717490705; cv=none; b=FmjWPuqqKzmpSGsXR3xvjolNr2tKWXHf0U4PC1OS2dyJWR9Cg+q+zVuXwI/nIZjI0IIBOvpP6XZ0GZQoBywidbYC9IwO5iuGalNLYotWp5ncLWMznlql4+TK+xgtV6XQcYlha3wA5FeODqsKi6bXWMQT6h1gxlD/Hp23+b6U+P8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717488156; c=relaxed/simple;
-	bh=uHvOv9aK9XOoj9fYBdiwGn2AO8p3JyKaBsQ+U6DRHZU=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ISF9vnjh21UX3dhp2uoXvATR+hK8W98wvXMRuejuKszM4GmjGOQPGvBEk6k2yXvfDekecILDiL6psWzeKzmoOHNWZfwLNwgpKRKe/QCLrx0WKTDR5L+pBYBs/uMBVa2wynKomihLt9LVXdLhqCeULFOKxjMAHjK7JGug52urzfk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Utx2TM9Z; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1717490705; c=relaxed/simple;
+	bh=qoaQB7rxX8vYM9zT6xg/g3VNAy1PUU7qn2yUm7JbNTE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=eKKItqRZdovc7YcbqexDwH/2dbSfQtj6rQmirobyNdGXBRwIXnbbJCo64BTFluSKOWFrGQ0rvjcDm3cRU8++nht96HCYcsaBCRPGawH0kqResKT7L2PyPmrUeyEc3AF3r5I8TfntlJYf5ES3+iA3cTARPccmR+eC2aUlTK3mDw8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AMhwWNEM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Utx2TM9Z"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 68C41C2BBFC;
-	Tue,  4 Jun 2024 08:02:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AMhwWNEM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A60D0C2BBFC;
+	Tue,  4 Jun 2024 08:45:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717488156;
-	bh=uHvOv9aK9XOoj9fYBdiwGn2AO8p3JyKaBsQ+U6DRHZU=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=Utx2TM9Z4QUgwaYuHdYo4i0oAeVLfaVT+eS4hSXjrX6jb9eZ45FQKQiuY/hN/qmJl
-	 hDMfVdUFmFvxjtJUIntDVNa80V9JDpn+GE3bc4qlGaJgbld1U/1zFRfYFdXNkS21T+
-	 XTdsGVr5WBYhN3+KnyH9Rkz1Vdv51pbVaRT19LoJeu0kF9H+gSkV1Usf9XenKAz9Pf
-	 k/UWipFy3qUEwbfYQSix9c00Zr0yqgr/ELY9yznNuXS9sUlEliUGHhEttPUcUT57Qa
-	 azICEJJjVPORuLRwPcHeEBDq4glgBxqvn1/5hyYzzVMPKNhKYgVRyg/fTzObs+/3vm
-	 YuHzz5NlHpJkg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2CAC27C52;
-	Tue,  4 Jun 2024 08:02:36 +0000 (UTC)
-From: Arthur Becker via B4 Relay <devnull+arthur.becker.sentec.com@kernel.org>
-Subject: [PATCH v4 0/2] Add driver for Vishay VEML6040
-Date: Tue, 04 Jun 2024 10:01:47 +0200
-Message-Id: <20240604-veml6040-v4-0-5a4d59597874@sentec.com>
+	s=k20201202; t=1717490705;
+	bh=qoaQB7rxX8vYM9zT6xg/g3VNAy1PUU7qn2yUm7JbNTE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=AMhwWNEMwZ6o8RteW/0pjAl5ylovbgWc7MgM/FFZjl6A10V0kSCtOEK8HzgcgYI/a
+	 a3Bgbevo1QnH6WjtZaM6KvHA30SjE0lTue3Qy91JB5tAAZKNnYM72iV0Hnuqfuaqr7
+	 /+lJ56FXUmmZ1uaS4gFhBUIJXv5xTBo6FAlMpxVFD2eicBLd1mebf7xa2jlVk3tHgQ
+	 gKAyEG1FfjsOdJ0H5tMIVjoMiDfRNB09vlgYaAo5jbeszkpktrEkX9MjD6Om64Tz8M
+	 BDMnNs1m0OYHtBmPHAP41eMCUUsCBnbeBKOt8j19Y7Y+FpbWOFJbMo00ysg9P43Aex
+	 HgbKbPqUPKBCA==
+Message-ID: <e740deb8-e412-4913-9a79-59ad8e117d53@kernel.org>
+Date: Tue, 4 Jun 2024 10:45:00 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 2/2] dt-bindings: iio: light: add VEML6040 RGBW-LS
+ bindings
+To: arthur.becker@sentec.com, Jonathan Cameron <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Javier Carrasco <javier.carrasco.cruz@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org
+References: <20240604-veml6040-v4-0-5a4d59597874@sentec.com>
+ <20240604-veml6040-v4-2-5a4d59597874@sentec.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
+ cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
+ JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
+ gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
+ J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
+ NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
+ BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
+ vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
+ Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
+ TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
+ S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
+ FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJgPO8PBQkUX63hAAoJEBuTQ307
+ QWKbBn8P+QFxwl7pDsAKR1InemMAmuykCHl+XgC0LDqrsWhAH5TYeTVXGSyDsuZjHvj+FRP+
+ gZaEIYSw2Yf0e91U9HXo3RYhEwSmxUQ4Fjhc9qAwGKVPQf6YuQ5yy6pzI8brcKmHHOGrB3tP
+ /MODPt81M1zpograAC2WTDzkICfHKj8LpXp45PylD99J9q0Y+gb04CG5/wXs+1hJy/dz0tYy
+ iua4nCuSRbxnSHKBS5vvjosWWjWQXsRKd+zzXp6kfRHHpzJkhRwF6ArXi4XnQ+REnoTfM5Fk
+ VmVmSQ3yFKKePEzoIriT1b2sXO0g5QXOAvFqB65LZjXG9jGJoVG6ZJrUV1MVK8vamKoVbUEe
+ 0NlLl/tX96HLowHHoKhxEsbFzGzKiFLh7hyboTpy2whdonkDxpnv/H8wE9M3VW/fPgnL2nPe
+ xaBLqyHxy9hA9JrZvxg3IQ61x7rtBWBUQPmEaK0azW+l3ysiNpBhISkZrsW3ZUdknWu87nh6
+ eTB7mR7xBcVxnomxWwJI4B0wuMwCPdgbV6YDUKCuSgRMUEiVry10xd9KLypR9Vfyn1AhROrq
+ AubRPVeJBf9zR5UW1trJNfwVt3XmbHX50HCcHdEdCKiT9O+FiEcahIaWh9lihvO0ci0TtVGZ
+ MCEtaCE80Q3Ma9RdHYB3uVF930jwquplFLNF+IBCn5JRzsFNBFVDXDQBEADNkrQYSREUL4D3
+ Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
+ MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
+ OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
+ GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
+ 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
+ YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
+ 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
+ BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
+ JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
+ 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
+ YpsFAmA872oFCRRflLYACgkQG5NDfTtBYpvScw/9GrqBrVLuJoJ52qBBKUBDo4E+5fU1bjt0
+ Gv0nh/hNJuecuRY6aemU6HOPNc2t8QHMSvwbSF+Vp9ZkOvrM36yUOufctoqON+wXrliEY0J4
+ ksR89ZILRRAold9Mh0YDqEJc1HmuxYLJ7lnbLYH1oui8bLbMBM8S2Uo9RKqV2GROLi44enVt
+ vdrDvo+CxKj2K+d4cleCNiz5qbTxPUW/cgkwG0lJc4I4sso7l4XMDKn95c7JtNsuzqKvhEVS
+ oic5by3fbUnuI0cemeizF4QdtX2uQxrP7RwHFBd+YUia7zCcz0//rv6FZmAxWZGy5arNl6Vm
+ lQqNo7/Poh8WWfRS+xegBxc6hBXahpyUKphAKYkah+m+I0QToCfnGKnPqyYIMDEHCS/RfqA5
+ t8F+O56+oyLBAeWX7XcmyM6TGeVfb+OZVMJnZzK0s2VYAuI0Rl87FBFYgULdgqKV7R7WHzwD
+ uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
+ 7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
+ 5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
+In-Reply-To: <20240604-veml6040-v4-2-5a4d59597874@sentec.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAOvJXmYC/23MQQrCMBCF4auUWRsZM9MUXXkP6cKmExuwqSQlK
- CV3N3bt8n88vg2SRC8JLs0GUbJPfgk1+NCAne7hIcqPtUGjZmx1p7LMT4OMCunEzmLLRB3U+yu
- K8++duvW1J5/WJX52OdNv/YNkUqiMo2FwI+uzwWuSsIo92mWGvpTyBaIWJLKhAAAA
-To: Jonathan Cameron <jic23@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, Arthur Becker <arthur.becker@sentec.com>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1717488152; l=1495;
- i=arthur.becker@sentec.com; s=20240521; h=from:subject:message-id;
- bh=uHvOv9aK9XOoj9fYBdiwGn2AO8p3JyKaBsQ+U6DRHZU=;
- b=e/8TVxIokVEEUaj0I6HWTrOfYy+gzUjubml8W4SUO62Y3Zmho2fHunG2eTyV1OO1tqQ60TjCB
- ddSwCdykvITAltsCXDcGDuN6e8By9eL+H9IFEnw7tXh62kv8pnca5vM
-X-Developer-Key: i=arthur.becker@sentec.com; a=ed25519;
- pk=1GLsDBF6GZKt9oNFsvdnAB6sHyKKrSISlwM3AyWbx/k=
-X-Endpoint-Received: by B4 Relay for arthur.becker@sentec.com/20240521 with
- auth_id=163
-X-Original-From: Arthur Becker <arthur.becker@sentec.com>
-Reply-To: arthur.becker@sentec.com
 
-The driver allows to turn the module on/off, set the integration time
-(in MS) for the sensors, and read the raw measurements of the Red,
-Green, Blue and White sensors.
+On 04/06/2024 10:01, Arthur Becker via B4 Relay wrote:
+> From: Arthur Becker <arthur.becker@sentec.com>
+> 
+> Device tree bindings for the vishay VEML6040 RGBW light sensor iio
+> driver
+> 
+> Signed-off-by: Arthur Becker <arthur.becker@sentec.com>
+> ---
 
-Thank you Jonathan, Krzysztof, Conor and Rob for your comments on the
-driver, dt-bindings and my workflow!
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-To: Jonathan Cameron <jic23@kernel.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-To: Rob Herring <robh@kernel.org>
-To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-To: Conor Dooley <conor+dt@kernel.org>
-To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Arthur Becker <arthur.becker@sentec.com>
-
-Changes in v4:
-- Minor adjustments to the driver
-- Merged dt-bindings with veml6075
-- Link to v3: https://lore.kernel.org/r/20240527-veml6040-v3-0-6f3bbfd42960@sentec.com
-
----
-Arthur Becker (2):
-      iio: light: driver for Vishay VEML6040
-      dt-bindings: iio: light: add VEML6040 RGBW-LS bindings
-
- .../bindings/iio/light/vishay,veml6075.yaml        |   9 +-
- drivers/iio/light/Kconfig                          |  11 +
- drivers/iio/light/Makefile                         |   1 +
- drivers/iio/light/veml6040.c                       | 281 +++++++++++++++++++++
- 4 files changed, 300 insertions(+), 2 deletions(-)
----
-base-commit: 1613e604df0cd359cf2a7fbd9be7a0bcfacfabd0
-change-id: 20240527-veml6040-0314fc054337
+If there is any resend:
+A nit, subject: drop second/last, redundant "bindings". The
+"dt-bindings" prefix is already stating that these are bindings.
+See also:
+https://elixir.bootlin.com/linux/v6.7-rc8/source/Documentation/devicetree/bindings/submitting-patches.rst#L18
 
 Best regards,
--- 
-Arthur Becker <arthur.becker@sentec.com>
-
+Krzysztof
 
