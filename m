@@ -1,136 +1,88 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63CF318FDB2;
-	Wed,  5 Jun 2024 07:52:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F9F815E5A2;
+	Wed,  5 Jun 2024 07:58:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717573974; cv=none; b=BbjAXLrPoetyXiqM5Rj5Y1zHGOKGpRq/o6Q861/lkXa674GPtuiSrxWFpKQ3+RrVbl8ryqlrDXNRMekzHWkdIXVrxp/v/JiTeun3PqHSVCZHk3DVKLEXiTtdUvkcKRmgDs8gnsSInQoNFKNbf1cOL1UH6O8h052HVPVLhZ3B/HM=
+	t=1717574334; cv=none; b=IPd/rOfFpx/42uihGEw6JiMG0Qc4ZT971hRyeewv0G0+ZX6oHaqtVgxmYwTYmrMURIro9yZyuQhz3YKdvd+a2UdG7YFIOn0MSoEQYwREfRaW+vxJLW5HMSXv1wBvOT/6suyLoqRKIP/UjM5iS8ACdnDfMN6C3HNq/sj1G8RMFlE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717573974; c=relaxed/simple;
-	bh=KXkHFTvA4lOgG3pg/FBDDKuVPwHLIbPjM+awDwG4e30=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QBC/XiYH3ApXTx4F/vLnhxO2ayK+O1sdNGt+S7BKVV0yI2yjowJm9F3Ik9b5bCHazY7TuH26kyX2gA5JSDq9l57aNkPxhXfmG3hO19XKMTTURSxxClX1CtI0t5qTaknTkMkq9MxRf+3JmAJg3tlSPQR5859vq0WY5gZ4W0+fyjk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W8OOAZNe; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1717574334; c=relaxed/simple;
+	bh=73yx1cQiMoaF3qYtHAVqT2I1b91H0uUy1OQ4D4a3laU=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=EKaQ3+GvP7lM+PWVhNVfulQLtFbs/Rxd5BkaJ1ai3Dv62ydPz+4UyNaGNQ41cigrKbv9ot9ejT2L0lWJzHWSbp4eVtqTSCgP/C46qxS0EmtnFfIc1pnXJsCqmWk0I0s8tUVEVS7d+EspQVrs53wJeEsF6vL4CNu/kH/mq6OWwkc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R2Z2NuB/; arc=none smtp.client-ip=209.85.208.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W8OOAZNe"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717573973; x=1749109973;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KXkHFTvA4lOgG3pg/FBDDKuVPwHLIbPjM+awDwG4e30=;
-  b=W8OOAZNeCAGpJZxU3gzjogl5MmVoRHEoJQJKSX/683Km461LuqmeggEk
-   5kFO8kVNP9BaRJQj73NhkSug/B5l9I1tgL+ZQEOqjXUCGg1d2QsCQzwlp
-   QHQgj0Mh5x17CemhDIoYsbDGfORda/XclvCP7Lj+g3GRYE0d4KC8gbDSt
-   pcF2JzcuU54d5ryII6hHHI3M3uKomuil3TTM+8aSSg3c7Mxt6XGW+Ze+q
-   1NeYSLg/sPCk6oVyT6pp6jIX8sdlge+90HBivEzfHUSnIVT6WpBdxSobG
-   qjOpH7FC0SfuEinJriWBhYPOKDftzKT+n1qCVlKOdWNPy8RjjdDi0TLsx
-   A==;
-X-CSE-ConnectionGUID: mivbCTQRR/mOmEkep8L8Yg==
-X-CSE-MsgGUID: AzhisaTYR/au4inJHwNS0w==
-X-IronPort-AV: E=McAfee;i="6600,9927,11093"; a="14380828"
-X-IronPort-AV: E=Sophos;i="6.08,216,1712646000"; 
-   d="scan'208";a="14380828"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2024 00:52:52 -0700
-X-CSE-ConnectionGUID: NA5hmVSrQjmJkHBy/IUV3g==
-X-CSE-MsgGUID: gpswSGQ5RFK3VsV9fv9eNQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,216,1712646000"; 
-   d="scan'208";a="42450715"
-Received: from unknown (HELO 0610945e7d16) ([10.239.97.151])
-  by orviesa003.jf.intel.com with ESMTP; 05 Jun 2024 00:52:49 -0700
-Received: from kbuild by 0610945e7d16 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1sElRu-00015G-1K;
-	Wed, 05 Jun 2024 07:52:46 +0000
-Date: Wed, 5 Jun 2024 15:51:51 +0800
-From: kernel test robot <lkp@intel.com>
-To: Mudit Sharma <muditsharma.info@gmail.com>, ivan.orlov0322@gmail.com,
-	jic23@kernel.org, lars@metafoo.de, krzk+dt@kernel.org,
-	conor+dt@kernel.org, robh@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev,
-	Mudit Sharma <muditsharma.info@gmail.com>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] iio: light: ROHM BH1745 colour sensor
-Message-ID: <202406051506.orRmnC3s-lkp@intel.com>
-References: <20240603162122.165943-2-muditsharma.info@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R2Z2NuB/"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-57a2406f951so7181036a12.1;
+        Wed, 05 Jun 2024 00:58:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1717574331; x=1718179131; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=73yx1cQiMoaF3qYtHAVqT2I1b91H0uUy1OQ4D4a3laU=;
+        b=R2Z2NuB/peIqYx3bZsEpjm1EveS+8VNlH7emjm7R/VmJE/vqxjBeOgCAW0JBiwZXVH
+         PdYjH5ShAbdI0BfpuXQjO3rzYpG5IOdJj7cQSpiJpWyMvnf45EcicZIDIRgLlDIQSgv0
+         xqfwFMUt4jNBos3vtkRRnWaeq9xfGITyAgbAgFDeB7jc5Y2u5KlypmddyCeBGO7A6LIx
+         eXBMZIqYqMnf6uKEEoJEKunmMHE0RyUbVCx4PKjsbn9qQwn+9xcP+Xi76+Qjv/OThR/l
+         qKu3zed4O6rRYpkFBiynaKJWIm15xwBX7ZwQVjq0LENtS2oT9HwDE14xOYyaUuOBi+qK
+         VAyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717574331; x=1718179131;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=73yx1cQiMoaF3qYtHAVqT2I1b91H0uUy1OQ4D4a3laU=;
+        b=sU2PmhCl4RJusBndkEdjODomKe7MU6IpIcm/ZSEr9FjTSF4wNlDV45Fc2HIpPTm8SJ
+         o2HQDXOg03DoFaAZ16vlZEq4Q4FYCLp3mUqTohDBU1NDsyZTwh4UIYhDVq5XG3GEs2Y5
+         /jPh3l4dWr+0NXzM6oy7icUdQSIahavIp3rSlpJxoUvdCUwUV+n9FZYyhd5KVFVTSgfx
+         d+yEJJrN+oNfytPIzAuN7j4c2zpsaEwlVGXi+yN27o1Lp2PT4Cw9E72p6If+h4REbyG1
+         1EIPlPZrixCw8onNEkQvAeOb0UrUKMXE/swPLfcm80eKwMk1LDGomwplLVM+BH9fjpSA
+         720A==
+X-Forwarded-Encrypted: i=1; AJvYcCVbA8Edxbo6Y4YbZlU1hCdDZhngEeIMtHaEU/cFKE6Ro20ulaxBGWKN5eZKjKXOzOi4/TaMgGT/U0326EwbFXxxbRcaQQLijw2bBQYvWz78thIFWFwzcVeRiyzFMpNBTuHnr36zo5OXeyQ8IVF1KvlIZwkdcJ2C4B9dRq0FDir/9YgnVg==
+X-Gm-Message-State: AOJu0YwpmkBWGqZJ2W2A9bWZzX3+Ymj3LBk7GiqfQEletYxGp89C0SfJ
+	141eqUwC/dKvOTbDvxxLCWafIlUHFMf1XTUqNnqA6jnYb+4f6KdE
+X-Google-Smtp-Source: AGHT+IE5HjGVDVGG9Eq4BlP6A7hCYmxMt6EKZd+WC0B3dmq0mDthPNSg/6rPnAOjjBO+hRinBrQf4Q==
+X-Received: by 2002:a17:906:2808:b0:a59:9b75:b90 with SMTP id a640c23a62f3a-a699f34a886mr104481466b.2.1717574331312;
+        Wed, 05 Jun 2024 00:58:51 -0700 (PDT)
+Received: from ?IPV6:2a02:2f08:a10a:2300:8e59:f160:bdc8:6311? ([2a02:2f08:a10a:2300:8e59:f160:bdc8:6311])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a6866a69125sm692237966b.118.2024.06.05.00.58.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Jun 2024 00:58:50 -0700 (PDT)
+Message-ID: <b8acfc85-b918-43e9-9bd3-d1da7e34d05d@gmail.com>
+Date: Wed, 5 Jun 2024 10:58:49 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240603162122.165943-2-muditsharma.info@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/3] iio: adc: ad7192: Clean up dev
+From: Alisa-Dariana Roman <alisadariana@gmail.com>
+To: Alisa-Dariana Roman <alisa.roman@analog.com>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ Michael Hennerich <michael.hennerich@analog.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+ Alexandru Tachici <alexandru.tachici@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>
+References: <20240605075154.625123-1-alisa.roman@analog.com>
+Content-Language: en-US
+In-Reply-To: <20240605075154.625123-1-alisa.roman@analog.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Mudit,
+Hello! I apologize for the messed up cover letter!
 
-kernel test robot noticed the following build warnings:
+Please consider applying the commits in order!
 
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on linus/master v6.10-rc2 next-20240605]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Kind regards,
+Alisa-Dariana Roman
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Mudit-Sharma/iio-light-ROHM-BH1745-colour-sensor/20240604-002405
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20240603162122.165943-2-muditsharma.info%40gmail.com
-patch subject: [PATCH v2 2/3] iio: light: ROHM BH1745 colour sensor
-config: csky-randconfig-r112-20240605 (https://download.01.org/0day-ci/archive/20240605/202406051506.orRmnC3s-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 13.2.0
-reproduce: (https://download.01.org/0day-ci/archive/20240605/202406051506.orRmnC3s-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202406051506.orRmnC3s-lkp@intel.com/
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/iio/light/bh1745.c:99:3: sparse: sparse: symbol 'bh1745_int_source' was not declared. Should it be static?
->> drivers/iio/light/bh1745.c:105:3: sparse: sparse: symbol 'bh1745_gain' was not declared. Should it be static?
->> drivers/iio/light/bh1745.c:114:3: sparse: sparse: symbol 'bh1745_measurement_time' was not declared. Should it be static?
->> drivers/iio/light/bh1745.c:121:3: sparse: sparse: symbol 'bh1745_presistence_value' was not declared. Should it be static?
-
-vim +/bh1745_int_source +99 drivers/iio/light/bh1745.c
-
-    93	
-    94	enum {
-    95		BH1745_INT_SOURCE_RED,
-    96		BH1745_INT_SOURCE_GREEN,
-    97		BH1745_INT_SOURCE_BLUE,
-    98		BH1745_INT_SOURCE_CLEAR,
-  > 99	} bh1745_int_source;
-   100	
-   101	enum {
-   102		BH1745_ADC_GAIN_1X,
-   103		BH1745_ADC_GAIN_2X,
-   104		BH1745_ADC_GAIN_16X,
- > 105	} bh1745_gain;
-   106	
-   107	enum {
-   108		BH1745_MEASUREMENT_TIME_160MS,
-   109		BH1745_MEASUREMENT_TIME_320MS,
-   110		BH1745_MEASUREMENT_TIME_640MS,
-   111		BH1745_MEASUREMENT_TIME_1280MS,
-   112		BH1745_MEASUREMENT_TIME_2560MS,
-   113		BH1745_MEASUREMENT_TIME_5120MS,
- > 114	} bh1745_measurement_time;
-   115	
-   116	enum {
-   117		BH1745_PRESISTENCE_UPDATE_TOGGLE,
-   118		BH1745_PRESISTENCE_UPDATE_EACH_MEASUREMENT,
-   119		BH1745_PRESISTENCE_UPDATE_FOUR_MEASUREMENT,
-   120		BH1745_PRESISTENCE_UPDATE_EIGHT_MEASUREMENT,
- > 121	} bh1745_presistence_value;
-   122	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
