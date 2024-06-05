@@ -1,57 +1,57 @@
-Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FD00139D05;
-	Wed,  5 Jun 2024 17:20:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60E5E5380F;
+	Wed,  5 Jun 2024 17:20:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717608058; cv=none; b=sgmaAUXYcdv/7V3grplm+g0WDguhuFZaSh5GDS9zmdaXsH4t/NVRFiRcwpyLkDJkBG7oNDrfPV46CJEMMW/AB8kl8qVC5QCNoCf4Q2WABhfg6fhRPuUjZqQ1UaiMXiwYKIsKzAv555ZcA+we+uHMi5fhkadt2rvI8Y5kvsADZec=
+	t=1717608059; cv=none; b=khZ/leO8OvazTUZupY+U+KppDpNJ2jhcXs5XQ7UpylUlXuJ6MYe2R10hjKfd1KuRZZeFDEduZsg8nx7KDnfOzXjfniPYEICEwYS7MvoNCVOrpovuq5o5csaEqPd//Nl3k5o22yQHpVqaE1KnzNZCen4fJ8T7u8yY1dPT4uQ2xeU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717608058; c=relaxed/simple;
-	bh=/3WUGbzsfRdMGcgxSF83iPvl5/rRLdUK7to7VHJ/hLE=;
+	s=arc-20240116; t=1717608059; c=relaxed/simple;
+	bh=cBU3yekOXtlhNWdWpyG2xf0kFZVmOK5W2mTTLEsUAFk=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=OtG+7peA/G/CQ1NdyIVqcji4gMMFEUoOwemclVK2MusX4Jmx7G8ZwuILDj2rTmCn+0rSlwJ0WNLH0F8m0SIMve0q3+mom0uK1mlFN1vuKzFJ/LAkgVeNOEKOaDQJPG0ZerdJmVVo+FUx20+H3XcDw/m5U8hqikNQEAEUC2yiTSM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H7u7KCVb; arc=none smtp.client-ip=209.85.161.50
+	 MIME-Version; b=bIS5qqeAaGhRGYspzWLVg9Wil41Z4NmxSE7lWqZ31eFIYa4HHWKZ6hen4WJWmDbdBJENzokrI3qC/C0nHm8kT4xJphZ+YLdsQVpGbHDSBHGyGzr4VOya7w16ZLPaoNDTkbZX2AeFFmiDgNH4fbSXXbdwLJ+84FI66OEz7NywIkI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fDEQ7Wo0; arc=none smtp.client-ip=209.85.161.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H7u7KCVb"
-Received: by mail-oo1-f50.google.com with SMTP id 006d021491bc7-5b9776123a3so138734eaf.0;
-        Wed, 05 Jun 2024 10:20:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fDEQ7Wo0"
+Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-5ba33b08550so2321193eaf.2;
+        Wed, 05 Jun 2024 10:20:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1717608056; x=1718212856; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1717608055; x=1718212855; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lm8Yhk+byRnbcGcmTatBzsMUgVxwZv9RhcYpdQAuQCI=;
-        b=H7u7KCVbtSQBqpNuxoj30UL2rNCILGdQoz6dAFmKrf/epJx/PNJG5OwbFxI7xasF9V
-         6KCZxFFiFPt6wqDK/TWxDt9FPIsWJc9/dmGDqXhcGktmpP1dsDlJsI9aWWzvqte3G9oL
-         VfUXcRaIYa10FiLcQmNUyLDH/8pToamctqAQmD74ySJFFoflqQVFPmKnPYJwR0oJ3EEJ
-         r+o1Bz5SJuVtf7Obubk4/UeQsfsaGlzMeJuoJ3DWxLSKiKksNL+PaYsAGbIFle7EcmP/
-         sxDiUH/nxPHB9XmbAzADe0Lnsn5P+91vAL6WEH6DeZ6oY0SKcv/n34vDM+S4OnecBkuj
-         Vo2w==
+        bh=iycGYFzd3F+df0p/qsCILVl1cIBvCeHnsWMgOkKCQP4=;
+        b=fDEQ7Wo04zJOoc9WWoQqh9GiOiYlVfN+3cnfDoOwQ+jT/n8pl3CMEDZl5LGcFzgo03
+         egxt+wJdiEDjmXfZsja7/o9KELsYBm1CFe/CG9G5o0RGSw5K6inoPYnOzhymobiEQtZ6
+         FsuHtnLo3D3ao4Z6Z8Q0fuhtdDTXHmxXMq2mlwiWZ4HUHRmIeV8X61JRzCcuMrzXFfs+
+         umYZYD2eQQOe1ddijZyyhM2hVuRGD8yCypS1+L68a3ha5UJmQTvcyI6Na+MibPmjo2uh
+         SJIkozj18mcwXmSKgtzoOsBAAr2ai3dhRxSTyxX3jdTFUTnMl6MZ+uULPafGsdRI+r+U
+         DvxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717608056; x=1718212856;
+        d=1e100.net; s=20230601; t=1717608055; x=1718212855;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=lm8Yhk+byRnbcGcmTatBzsMUgVxwZv9RhcYpdQAuQCI=;
-        b=XAxYiMS7yiF6+J1Kq2Eqi86TmUbOP4Qvu9lqleMPIS5B9bT1xEBqfuH2GxFaQna1Mf
-         jRf/Uitqs4b3TSofFnALTZyNU6pTXDY38tVJK2QLlEx/DxkeYsk7T99n0p9Eltabg0y9
-         8y4hq6bghhWS1iMvvo6b+u/8NS5lDAocvLg3Vy7t1Ez/2JVFcSUS2nkJTYFYgWkphXgP
-         c+XeEbXqKNxcaSQoEGJenbt4i6GF7ZPrHOHAxsHZFDfJsfAxq8SrPpkvIaeTrIVsPjvt
-         UQ6hbtp37hlno6G7NIV98R6r1i4T3mOezMyFUQfYZ0aKCMIJ5fZGBeUIwyfbe1uz646O
-         p8QA==
-X-Forwarded-Encrypted: i=1; AJvYcCVJTf82KmKhQQDucQdlBgzwGnwoSwwkqC6779Q7k/XR3GdGSB430XH2GQ4hOtfzo2Zrpf1YrxIjX/cGAqi+qLt8CP6pj2NdNtPTTNfSr0YAkcV5TarTjESIIwuIDfpY2hG2v/WuGg==
-X-Gm-Message-State: AOJu0YwMYB/vplp6p5tWzswy3SRdwXcn8/9+Q+8SRnZvE9/7im03OZK9
-	TPnzoXzP1LHVhF5F/h4Qz0R5dRUzhMpOj1bXoZ9Y+MifzHoc9IY3
-X-Google-Smtp-Source: AGHT+IH4f0Qu8g/XdwPgr2Z7RFxmIcBoFptx44anMYUmu4fxOCuDovIPdBzmN3XV8wodkT07jf/Jug==
-X-Received: by 2002:a05:6820:1610:b0:5b9:f121:5287 with SMTP id 006d021491bc7-5ba791a0ab3mr3660070eaf.9.1717608056588;
-        Wed, 05 Jun 2024 10:20:56 -0700 (PDT)
+        bh=iycGYFzd3F+df0p/qsCILVl1cIBvCeHnsWMgOkKCQP4=;
+        b=All+8lZYEpXV4Os6QOt/fXs51YVTh0E1tA79dAnVXNtsAhjL2sXu4ZbxR/pHO4IAM3
+         8QCAOGWCDHhVqw/sAtsPm/sUQuYhwePBIATbKgxciacaBG5silH7H/DrG0zgMFDKtaEs
+         wMkVXWd1tj3KOlmZpUyqhn4L5UTHqEVfzSnOx3Q4MDhjMdACqiCJMkEfqnPPLv/RFHxS
+         e3nZ+n8ubc0lVnB+DXaFL0s8UcjccfdeHMM0dTifltzfS4S4zjuNyMa3La+849o4X4zk
+         HinAHi6/6gUiE24TfekGxMTYyaPkiBp8ulOYStB1ArInugKuNRE8WVlC3yClT3lautmt
+         flgA==
+X-Forwarded-Encrypted: i=1; AJvYcCVGUUa1XEzRo9nEgG+I6Qh7oBKeYN18iQrRG+DHPJbuhQRO8Ts2cZJyBwJ7crxtyAN3PH8sSpUPWDHxb7hjbc3meQG9DB+ZDcP3ldM0tWVkYG4QWUXaaiA7ivanZQ/iGkTlZONBvA==
+X-Gm-Message-State: AOJu0YxdQJ0DfRqSUILvjhzF7Jb+RW8rAxrLqoHQHEt0c9AaaA4uDj3b
+	EQllPiJ9zLdjgi7LDfQ7pjo14FEHJcB6VszizvvzAmWjnfJ+tKIX
+X-Google-Smtp-Source: AGHT+IGLosO08ZXKoA1XuLlmpddoc2V3y6CwKOw/IuAQwj1zCJCa9l6+oWIoh8BDD8IE8Pbo6tjJnQ==
+X-Received: by 2002:a05:6820:62a:b0:5b9:f351:3f8b with SMTP id 006d021491bc7-5ba78d42decmr3790153eaf.0.1717608055299;
+        Wed, 05 Jun 2024 10:20:55 -0700 (PDT)
 Received: from localhost.localdomain ([75.28.21.198])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-5ba72cb44f4sm586124eaf.40.2024.06.05.10.20.56
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-5ba72cb44f4sm586124eaf.40.2024.06.05.10.20.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jun 2024 10:20:56 -0700 (PDT)
+        Wed, 05 Jun 2024 10:20:55 -0700 (PDT)
 From: Chris Morgan <macroalpha82@gmail.com>
 To: linux-sunxi@lists.linux.dev
 Cc: linux-clk@vger.kernel.org,
@@ -66,11 +66,10 @@ Cc: linux-clk@vger.kernel.org,
 	conor+dt@kernel.org,
 	krzk+dt@kernel.org,
 	robh@kernel.org,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH V2 3/4] arm64: dts: allwinner: h616: Add GPADC device node
-Date: Wed,  5 Jun 2024 12:20:48 -0500
-Message-Id: <20240605172049.231108-4-macroalpha82@gmail.com>
+	Chris Morgan <macromorgan@hotmail.com>
+Subject: [PATCH V2 1/4] dt-bindings: clock: sun50i-h616-ccu: Add GPADC clocks
+Date: Wed,  5 Jun 2024 12:20:46 -0500
+Message-Id: <20240605172049.231108-2-macroalpha82@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240605172049.231108-1-macroalpha82@gmail.com>
 References: <20240605172049.231108-1-macroalpha82@gmail.com>
@@ -84,37 +83,36 @@ Content-Transfer-Encoding: 8bit
 
 From: Chris Morgan <macromorgan@hotmail.com>
 
-The H616 has a GPADC controller which is identical to the one found on
-the D1/T113s/R329/T507 SoCs.
+Add the required clock bindings for the GPADC.
 
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
 Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
 ---
- arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ include/dt-bindings/clock/sun50i-h616-ccu.h | 1 +
+ include/dt-bindings/reset/sun50i-h616-ccu.h | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-index 921d5f61d8d6..30ebc0d23760 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-@@ -589,6 +589,17 @@ spdif: spdif@5093000 {
- 			status = "disabled";
- 		};
+diff --git a/include/dt-bindings/clock/sun50i-h616-ccu.h b/include/dt-bindings/clock/sun50i-h616-ccu.h
+index 6f8f01e67628..ebb146ab7f8c 100644
+--- a/include/dt-bindings/clock/sun50i-h616-ccu.h
++++ b/include/dt-bindings/clock/sun50i-h616-ccu.h
+@@ -112,5 +112,6 @@
+ #define CLK_HDCP		126
+ #define CLK_BUS_HDCP		127
+ #define CLK_PLL_SYSTEM_32K	128
++#define CLK_BUS_GPADC		129
  
-+		gpadc: adc@5070000 {
-+			compatible = "allwinner,sun50i-h616-gpadc",
-+				     "allwinner,sun20i-d1-gpadc";
-+			reg = <0x05070000 0x400>;
-+			clocks = <&ccu CLK_BUS_GPADC>;
-+			resets = <&ccu RST_BUS_GPADC>;
-+			interrupts = <GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH>;
-+			status = "disabled";
-+			#io-channel-cells = <1>;
-+		};
-+
- 		ths: thermal-sensor@5070400 {
- 			compatible = "allwinner,sun50i-h616-ths";
- 			reg = <0x05070400 0x400>;
+ #endif /* _DT_BINDINGS_CLK_SUN50I_H616_H_ */
+diff --git a/include/dt-bindings/reset/sun50i-h616-ccu.h b/include/dt-bindings/reset/sun50i-h616-ccu.h
+index 1bd8bb0a11be..ed177c04afdd 100644
+--- a/include/dt-bindings/reset/sun50i-h616-ccu.h
++++ b/include/dt-bindings/reset/sun50i-h616-ccu.h
+@@ -66,5 +66,6 @@
+ #define RST_BUS_TVE0		57
+ #define RST_BUS_HDCP		58
+ #define RST_BUS_KEYADC		59
++#define RST_BUS_GPADC		60
+ 
+ #endif /* _DT_BINDINGS_RESET_SUN50I_H616_H_ */
 -- 
 2.34.1
 
