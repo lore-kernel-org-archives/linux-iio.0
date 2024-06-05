@@ -1,125 +1,161 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from aposti.net (aposti.net [89.234.176.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0DFB19006E
-	for <linux-iio@vger.kernel.org>; Wed,  5 Jun 2024 09:37:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 893D6190490;
+	Wed,  5 Jun 2024 11:09:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=89.234.176.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717580233; cv=none; b=opMNkMFS3QQUKo3hn8loXFfzi7FAn06d0PU67hNxb1kFmTdiTRjR8mhCSvIAZXH34UlnrXNKfrmW7LignPGeCNjE/hPC+n5v+m/auvjSMtCiVOycpDKE8iye9SV4M+q7u0LeQ+H+IowsndsNQ6n+Hl4bwsykjHssSkGNzZ4tLvE=
+	t=1717585757; cv=none; b=rhFXlgsDFebldskGJ5ncHfqIa+GT98EhOxtGxwm8Lk8T10nlCW78ZRypRZT57k1JqlQOL1KlSIHsmu7PtjBozuI/yLlMOJ5Q4YUyI6pv9ShqbAdmGZVX9ScHlklsRFq51QackKwocpGrihBPbM7xvX5YJnsfzQujUzFrE9ZYxX0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717580233; c=relaxed/simple;
-	bh=oi2WvBkcuibAfXOROdiAwxHovEGXU0w54vU+XEWreVY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=qwkQ8GnMv1C/uqLxs833Rxejj1I9SDg0uCfRW2i1kqpVwhvfsMhlfORvYIA2JovCBIeJlAywjoFNc06jSjG8isHdusXRb1IEGu6e1Vtrf7YnupKQ8u1GmRYVT4wkOraHL/PxJcxdzR82JC3RMimuYFLdr49sT/fCBNcEgPkGmW4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=s/jZCjkL; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1717585757; c=relaxed/simple;
+	bh=u1AIWsnttLSRKtpaWK94JbuZszg9FRkieNFLz9/mkVQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=OqeYzXR+u+dAQuDjRdlPxbKL6lejuuAx07le0gUCBXx/FrGdYpWc64h3Ol3Yo78ELp7QK/Vis6cSArUcGRD0iqE/B7OEteVDba5rS6kRw+H7lIrOL7MbuiNp6d5B/44QtgwqkIzoQ1PMsLQko7YRCLD2NZ5sfbXfkfjYMzM5yH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net; spf=pass smtp.mailfrom=crapouillou.net; dkim=pass (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b=duOEvwmL; arc=none smtp.client-ip=89.234.176.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=crapouillou.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="s/jZCjkL"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4214f803606so14403595e9.0
-        for <linux-iio@vger.kernel.org>; Wed, 05 Jun 2024 02:37:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1717580230; x=1718185030; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=LSZI+79Ozf+tLjEjjKM/vl02OsbKzTxtYkNCBqG2m2s=;
-        b=s/jZCjkLvjppfLVmWxBbvPvDbbCeP7nj2Uv3zFcpRXEg3crW/ZUsi/OC3WEV6l0iNO
-         8dNqn7SASjwiLEoBt5IQzymgz+YYvg+Y0j/d4Bn7buuB3/eUIAMuNc58t04ooRQTxybE
-         UFhOzYIg5wpEmpQTB7goav+A0uSZaXzsfIt+/oifyacwIHAqy+fnJriwTl4zDm21e3go
-         /hVe1k/kNtqkqkgnWAKbh/4fF5BiMTHWgp9RNJBNDAhgcwOaMt+JO9I4cFOvZvQiYMch
-         qFr8SP4MdDKAUyh6RYk4pqLDE10ozi/XFfphpcRHedNN02pjEfazSpDPkaaIcJdU4SV8
-         mHzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717580230; x=1718185030;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=LSZI+79Ozf+tLjEjjKM/vl02OsbKzTxtYkNCBqG2m2s=;
-        b=lKc3wBOijimaXh6vEodcMvzfhi8MtcIrQ7O4lc5kfFAEwVDeorHYcMcZsRbxcWiKX8
-         yIx6y71jED27CqMPKYPex1nsSI/DZUojmXxM8B+xd1kkyk/Ner1yBbf7WmmWeYn9Z9E3
-         vhXbcyY4XVG5L9befPioaiTMk62P78DsXCcYL30W/Ptqp8C/QcZlexV5NuiAZWrMxXMa
-         CXDPuxxwzv06OTwOTHzz5c4PhI5eSh/qHh6U3gGTXokEtHi+pR7GIRSAQmdTQH0fjnlw
-         XZa50Gdz79xYELY4aedEi2iS6JBamx+hMW/M/m2fI9kIVFymeRxwOrZoQZid2T8hr1Kd
-         tQGw==
-X-Gm-Message-State: AOJu0YzYAMRbh54D/PUbl3+A/iYjFUmg1w5744mEU5dRRftKxZ+SGW2Y
-	4jwSUWq2SqbqmkJVEV1hy1sqfSBx5bDIc1/nSNyYQFMlOa+bsBpu5r6JXI1sQZQ=
-X-Google-Smtp-Source: AGHT+IGAjFy2U1Sr+dNT5Lezmn24SCXAPKGBu2lzxTmKU5abNAvO1losuUJ7PfnTYXCgDx0HUW4r9A==
-X-Received: by 2002:a05:600c:46d3:b0:421:2adb:dd5d with SMTP id 5b1f17b1804b1-421562c7fa6mr15583975e9.8.1717580230396;
-        Wed, 05 Jun 2024 02:37:10 -0700 (PDT)
-Received: from arrakeen.starnux.net ([2a01:e0a:982:cbb0:52eb:f6ff:feb3:451a])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-421581016c6sm14510245e9.3.2024.06.05.02.37.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jun 2024 02:37:10 -0700 (PDT)
-From: Neil Armstrong <neil.armstrong@linaro.org>
-Date: Wed, 05 Jun 2024 11:37:08 +0200
-Subject: [PATCH] dt-bindings: iio: adc: amlogic,meson-saradc: add optional
- power-domains
+	dkim=pass (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b="duOEvwmL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+	s=mail; t=1717585739;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=A+bpo9IhXlSNnyxVxTZI9wza03doX2paj+5rtqcioR4=;
+	b=duOEvwmLl9bd8EXe/ieWKxDYIPVHIJVs32vqQ7hYjjmYfzNxBznCUE+9V8uZc71TGgu4Pg
+	C8LTXVDnrE1tyki4Wf0IC1mRKHVwafp94PNFRK6SHnTinxWx+IM+xPSClfUHJCohKHIt+w
+	XpMPyzrHCKx5/6AhZYsBzzyvtZ7db5Y=
+From: Paul Cercueil <paul@crapouillou.net>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Vinod Koul <vkoul@kernel.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Cc: Jonathan Corbet <corbet@lwn.net>,
+	Nuno Sa <nuno.sa@analog.com>,
+	linux-iio@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	dmaengine@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org,
+	Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v10 1/6] dmaengine: Add API function dmaengine_prep_peripheral_dma_vec()
+Date: Wed,  5 Jun 2024 13:08:40 +0200
+Message-ID: <20240605110845.86740-2-paul@crapouillou.net>
+In-Reply-To: <20240605110845.86740-1-paul@crapouillou.net>
+References: <20240605110845.86740-1-paul@crapouillou.net>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240605-topic-amlogic-upstream-bindings-fixes-power-domains-sardac-v1-1-40a8de6baa59@linaro.org>
-X-B4-Tracking: v=1; b=H4sIAMMxYGYC/x2NSQrDMAxFrxK0rsA1daerlCzUWHEF9YCUDhBy9
- 5quHg8e/69grMIG12EF5beY1NJlvxtgelBJjBK7g3f+4I4u4FKbTEj5WVPnq9miTBnvUqKUZDj
- Llw1b/bBirJmkGBpppAndfIne84lDOEM/aMr/uu/fxm37AUJHyVSMAAAA
-To: Jonathan Cameron <jic23@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Kevin Hilman <khilman@baylibre.com>, 
- Jerome Brunet <jbrunet@baylibre.com>, 
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, 
- linux-kernel@vger.kernel.org, Neil Armstrong <neil.armstrong@linaro.org>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1007;
- i=neil.armstrong@linaro.org; h=from:subject:message-id;
- bh=oi2WvBkcuibAfXOROdiAwxHovEGXU0w54vU+XEWreVY=;
- b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBmYDHFLxSezg6MSIqYHnt3c+yfTVn70mG8pfNZ2oUF
- kJzSJT6JAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCZmAxxQAKCRB33NvayMhJ0bRND/
- 9VWdftl4+ZipFhnGlqNjNwYhnqAPXR3Z0dbtvuMA7h/YrhUWK7oCzAcQM/xI+XK/HfPi9D1TKdstU3
- KL2F2FexCIHybxIBX76TWWAdT7C/hN8/Y9zXPj80wZLln4S2POzcAjiRRQ89IjZB3C+8LVDApKR/uC
- fozYKf3ofRX8YJXg5yojKqoBcB2wH2JOysdHma+e6i1JlQs6GSa7SS6iBwyZhFena7sh+hqTu+N3NV
- ezXtvolX/8fA5N7H4u0q2se2jxPsxqo4jc5awmDyLlcO86DSh2q8rK5E+fqB6I+hN4Jta2oj5WQ6fO
- WrIU1IzJXu9q84bFBPfeOIRXOaRI4UT/D7oC3NysuOYVNKHFinu6hshbdTcyQMsrICWcodXvAia8zp
- rfrdHW+tgck335MYJ7X3uTJXztALrOhB48enyC/8pk/eTzV+VyIJ3vf4pMm1CUToJEihZET5y/qshi
- 7OWOZHGeOQSt7HQusRVZTAkmHx7tktOa0IPSKZd6essrqWBLamjpSD6D7BN/RJegC040YlSBV4Hc4C
- 2/lrsFupoKccNtpaMrOb8djrXYpMF62TNkmRA5cCP/uUg51FfU9tZVl0IzeLwi14VwKLBkwFJLHg0j
- i8AcF8M73dcI7L/LbXTxXYzGYrLXDueA0365BDHWLs3FGCdHKCVkuyqzZvow==
-X-Developer-Key: i=neil.armstrong@linaro.org; a=openpgp;
- fpr=89EC3D058446217450F22848169AB7B1A4CFF8AE
+Content-Transfer-Encoding: 8bit
 
-On newer SoCs, the SAR ADC hardware can require a power-domain to operate,
-add it as optional.
+This function can be used to initiate a scatter-gather DMA transfer,
+where the address and size of each segment is located in one entry of
+the dma_vec array.
 
-Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+The major difference with dmaengine_prep_slave_sg() is that it supports
+specifying the lengths of each DMA transfer; as trying to override the
+length of the transfer with dmaengine_prep_slave_sg() is a very tedious
+process. The introduction of a new API function is also justified by the
+fact that scatterlists are on their way out.
+
+Note that dmaengine_prep_interleaved_dma() is not helpful either in that
+case, as it assumes that the address of each segment will be higher than
+the one of the previous segment, which we just cannot guarantee in case
+of a scatter-gather transfer.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+
 ---
- Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+v3: New patch
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
-index 7e8328e9ce13..f748f3a60b35 100644
---- a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
-@@ -66,6 +66,9 @@ properties:
-   nvmem-cell-names:
-     const: temperature_calib
+v5: Replace with function dmaengine_prep_slave_dma_vec(), and struct
+    'dma_vec'.
+    Note that at some point we will need to support cyclic transfers
+    using dmaengine_prep_slave_dma_vec(). Maybe with a new "flags"
+    parameter to the function?
+
+v7:
+  - Renamed *device_prep_slave_dma_vec() -> device_prep_peripheral_dma_vec();
+  - Added a new flag parameter to the function as agreed between Paul
+    and Vinod. I renamed the first parameter to prep_flags as it's supposed to
+    be used (I think) with enum dma_ctrl_flags. I'm not really sure how that API
+    can grow but I was thinking in just having a bool cyclic parameter (as the
+    first intention of the flags is to support cyclic transfers) but ended up
+    "respecting" the previously agreed approach.
+
+v10:
+  - Add kernel doc to dmaengine_prep_peripheral_dma_vec()
+  - Remove extra flags parameter
+---
+ include/linux/dmaengine.h | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+
+diff --git a/include/linux/dmaengine.h b/include/linux/dmaengine.h
+index 752dbde4cec1..9fc03068cabc 100644
+--- a/include/linux/dmaengine.h
++++ b/include/linux/dmaengine.h
+@@ -160,6 +160,16 @@ struct dma_interleaved_template {
+ 	struct data_chunk sgl[];
+ };
  
-+  power-domains:
-+    maxItems: 1
++/**
++ * struct dma_vec - DMA vector
++ * @addr: Bus address of the start of the vector
++ * @len: Length in bytes of the DMA vector
++ */
++struct dma_vec {
++	dma_addr_t addr;
++	size_t len;
++};
 +
- allOf:
-   - if:
-       properties:
-
----
-base-commit: c3f38fa61af77b49866b006939479069cd451173
-change-id: 20240605-topic-amlogic-upstream-bindings-fixes-power-domains-sardac-0f9d22e7e558
-
-Best regards,
+ /**
+  * enum dma_ctrl_flags - DMA flags to augment operation preparation,
+  *  control completion, and communicate status.
+@@ -910,6 +920,10 @@ struct dma_device {
+ 	struct dma_async_tx_descriptor *(*device_prep_dma_interrupt)(
+ 		struct dma_chan *chan, unsigned long flags);
+ 
++	struct dma_async_tx_descriptor *(*device_prep_peripheral_dma_vec)(
++		struct dma_chan *chan, const struct dma_vec *vecs,
++		size_t nents, enum dma_transfer_direction direction,
++		unsigned long flags);
+ 	struct dma_async_tx_descriptor *(*device_prep_slave_sg)(
+ 		struct dma_chan *chan, struct scatterlist *sgl,
+ 		unsigned int sg_len, enum dma_transfer_direction direction,
+@@ -973,6 +987,25 @@ static inline struct dma_async_tx_descriptor *dmaengine_prep_slave_single(
+ 						  dir, flags, NULL);
+ }
+ 
++/**
++ * dmaengine_prep_peripheral_dma_vec() - Prepare a DMA scatter-gather descriptor
++ * @chan: The channel to be used for this descriptor
++ * @vecs: The array of DMA vectors that should be transferred
++ * @nents: The number of DMA vectors in the array
++ * @dir: Specifies the direction of the data transfer
++ * @flags: DMA engine flags
++ */
++static inline struct dma_async_tx_descriptor *dmaengine_prep_peripheral_dma_vec(
++	struct dma_chan *chan, const struct dma_vec *vecs, size_t nents,
++	enum dma_transfer_direction dir, unsigned long flags)
++{
++	if (!chan || !chan->device || !chan->device->device_prep_peripheral_dma_vec)
++		return NULL;
++
++	return chan->device->device_prep_peripheral_dma_vec(chan, vecs, nents,
++							    dir, flags);
++}
++
+ static inline struct dma_async_tx_descriptor *dmaengine_prep_slave_sg(
+ 	struct dma_chan *chan, struct scatterlist *sgl,	unsigned int sg_len,
+ 	enum dma_transfer_direction dir, unsigned long flags)
 -- 
-Neil Armstrong <neil.armstrong@linaro.org>
+2.43.0
 
