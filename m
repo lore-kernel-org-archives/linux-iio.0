@@ -1,60 +1,59 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3227115B15C;
-	Fri,  7 Jun 2024 09:06:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3055873468;
+	Fri,  7 Jun 2024 09:17:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717751168; cv=none; b=Hsv9DYzNmdkQEQq2WEbBhMiP3/bS4vmf+PC6JCfxRV+Rn4mPwJs7AiC8PPB9joRV/vaeC+IkxCF/J7WQmsx9p+ZHJHhaBd2xVKsR9CvUypEvyEwK7tMQdTpd5RmYRSiwv6CuQe1MFaMEfr7fAOb6wa7qqGRp8lPjBm3Us04D8K4=
+	t=1717751828; cv=none; b=iqnn8HsdbMUDx+fFwpA5Fxb6s5/swyN1VIDdik2kW7UxWnrSp09127IeUaN7cdPmxOi47vQK5mpzKPrZHLE5enXg8QGGUDl9B/Fr6GOR5toYiKNmmP7U2B+jI0dtRlnvxMPBM8C5n/P0puhLZwK+YHICLcHfZ+bN/4XGU8yGVMY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717751168; c=relaxed/simple;
-	bh=02Ezor/EFk6mpRpX7GE8KDOgJoMksH7wmGt1Ymq2OUE=;
+	s=arc-20240116; t=1717751828; c=relaxed/simple;
+	bh=Qc5A8wW1S4AxpcaSX5CLxLhReIvvGxK0np1BQAuHJUs=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=RdvP4REZrPXs+ZzN6c6tWwB8tMiRT6WWgkVKvqQ2J5n2B3L5RxAt+uICTOt7LDF8M0x1WJt3F/Z7KQAtyEbzKtmKnKAuFUCBwg5/qKCChwnXVvxt/aPrsbBTGRY4KymOUF7X8BCKpYgrWKsw6do0Sy5r2fb5dae2Rdj76I+sOm0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ww4R4mEO; arc=none smtp.client-ip=209.85.208.44
+	 Content-Type:MIME-Version; b=MFOjNOT+PaCXfg36Jdgk/5l9iHC5n8DebZOS0IvV/vrxsqHScV3VvKE6sHiDpsvE4Q4EeTSCTOLzHKQI4637hgfmFj5xVNfEtq2/qqTJGxE+OFa086FdTO7my9Ymqm18z2arWSvgiL83fpV5txMG57AQzDwCMulvDnBEgitsi98=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MxWS4c+L; arc=none smtp.client-ip=209.85.218.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ww4R4mEO"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-57a526c6a2cso2118335a12.2;
-        Fri, 07 Jun 2024 02:06:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MxWS4c+L"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a63359aaacaso283214666b.1;
+        Fri, 07 Jun 2024 02:17:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1717751165; x=1718355965; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1717751825; x=1718356625; darn=vger.kernel.org;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=02Ezor/EFk6mpRpX7GE8KDOgJoMksH7wmGt1Ymq2OUE=;
-        b=Ww4R4mEOkuQkZ4Vr/RZmCUJAdkKTnZxfHVoXFLBopRgli/Mf72AxRmWne7aes2wBlf
-         gl2Fnn2+EigEF8wKIBUwSOdi2+mGeQQHuEVtjD14XdtLP7zkcb71WMFZNPmr24ZwzeBf
-         JPvp6/IAvrJ2PBFjwWK/fTOfyDkL8a5kxJ9uzgjlFXBgAKMUZ3BbheTZoeyymlzGWABy
-         ap7K7czgGjV817TdPm5kjDMXUTe4Ij7BHtofKrwQOnhFMR7Wb879Qkv0YiZLI+U4O+zC
-         EPPRiOjvEM7HwgQhp5yMA3BPnI6ViQFeeQe75seQvkR2kuo6od7/cDEqEczBdxZhRxyx
-         3H9A==
+        bh=pKVF5H7Af612iT5L8uzEkuJZLPXShQIxa9kUQtrflg8=;
+        b=MxWS4c+LFo4gs6XkijEcTGuEaSYgbfC9v1XFDGNG7re2nu4E0lx815WMGOY6e23mIH
+         Mbyl5wSEjeulI0QfkO9KDZP+HeaSM7ej0g/Xt7BaSzqq2X76iVBjCc0+vUSFhAIeM4gq
+         jUvuteWTtOfQLjvROODAhaWo50zOq0mytKcagCl73IaO40BpvbFskgCyQN3R31OoRe0n
+         SbrJK4DC6aUwgFLxE2Xjk4YfGZC2OT3KmlIQYHT9L0SQDCIS0XsFCCsKdQYGvoW9NbT/
+         glZ4SxLp+nZqx5ZK9yvKGDpHMuaMkNjPBGV3SUt0GaPDy5RDe5YGg0+TPtXtTNt6gnlf
+         zj+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717751165; x=1718355965;
+        d=1e100.net; s=20230601; t=1717751825; x=1718356625;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=02Ezor/EFk6mpRpX7GE8KDOgJoMksH7wmGt1Ymq2OUE=;
-        b=H6n10+eZwlc3O4RfAUV1+SaKQhxHQRRDVYYrBv1DIlTdHoZD2kt6Uhf4UTNEWfIwYz
-         2B971Xl/8LnZ3xVmcg0pLqA2wp1vIEqyVY5nfzRiqgh3tzozQgnEoMhT6SJFBihgL9Qr
-         pYRlvQxswYwg4OFpjSzgjY6xo38gcrsCUO21kuhekf4Dc/bLobsvqcj/VrBot3Ykib5s
-         X5MU9n6cGM5sSpMJYKu9jImUQqYkJDcXiZLMKxMotC5a+PepfLlm1xwtfyAssrZ0x692
-         KsT+Br2zM5DDPQ8LXquF3GOo4fL2Rc2xBbDtit4CYWT/2VGRfX+NgUSMS89nYn87E9Et
-         EDYA==
-X-Forwarded-Encrypted: i=1; AJvYcCWDSqdJk78HkWXAl8vRADEsvLrqfrH7NRiFWrpNa50i8fIn3ihJ2cRBKI9rG5xkChpC5nqJxFsjixmlgSyMkyZFsbD+8KZBvaZkUxAgWZqlTSRfav8U2x1Jwavt3dnLFLhonfIDMy63EEih4LvokS/knesRXW8jAvaYLbOagiZCYALadQ==
-X-Gm-Message-State: AOJu0Ywsh9oVZm+wnfha9jnUEFSC/4+LAeLVSVTDRR6KPZxYlmcMN6Lx
-	7e1DrziXCC3j01KAathh0USD18TEbFVlMSRErLCQIymuyl1FxvvE
-X-Google-Smtp-Source: AGHT+IEN6md56MkALoiq/calcQIVIkG7jdXgQegNznInubYEMGzzFbk4uZozcFPSfxkdToBhRaUBeg==
-X-Received: by 2002:a50:8719:0:b0:57a:2546:2512 with SMTP id 4fb4d7f45d1cf-57c5099b8b0mr965262a12.34.1717751165181;
-        Fri, 07 Jun 2024 02:06:05 -0700 (PDT)
+        bh=pKVF5H7Af612iT5L8uzEkuJZLPXShQIxa9kUQtrflg8=;
+        b=sscvUXs+ulAch3NjuiWAjvkhzHrmNrcjlAnWgEb5oeKhAFKhSLnbzv5jmwytgqbkrt
+         VjXDj8WTzXae6ZiKeK9aD4Bx1issTmmSSIzePOYbfhgKsOCzRBlqgBxB9N3YlrseOIUi
+         a/XJHEo8UNyKn86t+eq3J/pbIqtAXu+UZtFwDTNusU5alBRwVUA4aa1XyUMjuCQfDLI1
+         +KnszmlOgsdgbeHxGSNiAmgOtd+XMyHnoFz24+YGEYNPDi68umx5YS+g3QCqHWRaSALE
+         rgyzYaDAyLyh93HZ1gYAqg0BQ8x3VflrYwzP5V5fCwutHVGpWjlo7u1u+ojaP/BlSqOO
+         v0TA==
+X-Forwarded-Encrypted: i=1; AJvYcCWGdixuXJKgTS4rDq6Z3k4A39/GABnc3fnsXLIPCHfRqgW80FzcI2ISvmbrcapLFvzjb5oKj5Biu05+6MowO1gjBpdQhNDzcqsf1H/33ROXFGaPuZLdjH3k9UOwM87Q6CJ10Vkd6/788Cz3Ltsk9BP9OZbTGkTXEZPLBILYE/QAxxhbuw==
+X-Gm-Message-State: AOJu0YyTsXVH6AES4n3ZMC4dvUPIK0cXuo01JJSac234zo+NtXK+AlyF
+	lF38yiiyLam5JBNJWS83aQ6+3bjhc1vFDqWGz3zIkp0AzumwYfyP
+X-Google-Smtp-Source: AGHT+IFZ9CrXNfTfZ9TvGHJ1UJDSFIxgqBj3iy3NGjFj3Kcu440uPOWocAks1Fs6i2sTyCvaHKCs/g==
+X-Received: by 2002:a17:906:3610:b0:a69:7d72:b0d6 with SMTP id a640c23a62f3a-a6cdbef7773mr119943166b.71.1717751825299;
+        Fri, 07 Jun 2024 02:17:05 -0700 (PDT)
 Received: from ?IPv6:2003:f6:ef1c:c500:ee59:d953:f148:40ba? (p200300f6ef1cc500ee59d953f14840ba.dip0.t-ipconnect.de. [2003:f6:ef1c:c500:ee59:d953:f148:40ba])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-57aae2023a1sm2399254a12.61.2024.06.07.02.06.04
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a6c8072ac5asm215679066b.219.2024.06.07.02.17.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jun 2024 02:06:04 -0700 (PDT)
-Message-ID: <fe4e553875d2d20b4c3994c24bde02184d160ff4.camel@gmail.com>
-Subject: Re: [PATCH v6 8/9] iio: adc: ad7173: document sampling frequency
- behaviour
+        Fri, 07 Jun 2024 02:17:05 -0700 (PDT)
+Message-ID: <389546877ae11b18928b432e86710acf83974f67.camel@gmail.com>
+Subject: Re: [PATCH v6 9/9] iio: adc: ad7173: Add support for AD411x devices
 From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
 To: dumitru.ceclan@analog.com
 Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
@@ -64,10 +63,10 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
  David Lechner <dlechner@baylibre.com>,  linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org,  linux-kernel@vger.kernel.org, Dumitru Ceclan
  <mitrutzceclan@gmail.com>
-Date: Fri, 07 Jun 2024 11:09:51 +0200
-In-Reply-To: <20240606-ad4111-v6-8-573981fb3e2e@analog.com>
+Date: Fri, 07 Jun 2024 11:20:52 +0200
+In-Reply-To: <20240606-ad4111-v6-9-573981fb3e2e@analog.com>
 References: <20240606-ad4111-v6-0-573981fb3e2e@analog.com>
-	 <20240606-ad4111-v6-8-573981fb3e2e@analog.com>
+	 <20240606-ad4111-v6-9-573981fb3e2e@analog.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.52.2 
@@ -81,15 +80,77 @@ MIME-Version: 1.0
 On Thu, 2024-06-06 at 19:07 +0300, Dumitru Ceclan via B4 Relay wrote:
 > From: Dumitru Ceclan <dumitru.ceclan@analog.com>
 >=20
-> The ADCs supported by this driver feature a sequencer that read in a
-> loop all the enabled chanels. When setting the individual sampling
-> frequency for each channel and enabling multiple channels, the effective
-> of each channel will be lower than the actual set value. Document this
-> behaviour in a comment.
+> Add support for AD4111/AD4112/AD4114/AD4115/AD4116.
+>=20
+> The AD411X family encompasses a series of low power, low noise, 24-bit,
+> sigma-delta analog-to-digital converters that offer a versatile range of
+> specifications.
+>=20
+> This family of ADCs integrates an analog front end suitable for processin=
+g
+> both fully differential and single-ended, bipolar voltage inputs
+> addressing a wide array of industrial and instrumentation requirements.
+>=20
+> - All ADCs have inputs with a precision voltage divider with a division
+> =C2=A0 ratio of 10.
+> - AD4116 has 5 low level inputs without a voltage divider.
+> - AD4111 and AD4112 support current inputs (0 mA to 20 mA) using a 50ohm
+> =C2=A0 shunt resistor.
 >=20
 > Signed-off-by: Dumitru Ceclan <dumitru.ceclan@analog.com>
 > ---
+> =C2=A0drivers/iio/adc/ad7173.c | 317 ++++++++++++++++++++++++++++++++++++=
+++++++----
+> -
+> =C2=A01 file changed, 285 insertions(+), 32 deletions(-)
+>=20
+> diff --git a/drivers/iio/adc/ad7173.c b/drivers/iio/adc/ad7173.c
+> index 58da5717fd36..cfcd12447e24 100644
+> --- a/drivers/iio/adc/ad7173.c
+> +++ b/drivers/iio/adc/ad7173.c
+>=20
+...
 
-Reviewed-by: Nuno Sa <nuno.sa@analog.com>
+> =C2=A0static const struct ad7173_device_info ad7172_2_device_info =3D {
+> =C2=A0	.name =3D "ad7172-2",
+> =C2=A0	.id =3D AD7172_2_ID,
+> -	.num_inputs =3D 5,
+> +	.num_voltage_in =3D 5,
+> =C2=A0	.num_channels =3D 4,
+> =C2=A0	.num_configs =3D 4,
+> =C2=A0	.num_gpios =3D 2,
+> +	.higher_gpio_bits =3D false,
 
+No need to explicitly set to 'false'. Ditto for the other places...
+
+...
+
+>=20
+> =C2=A0static int ad7173_validate_voltage_ain_inputs(struct ad7173_state *=
+st,
+> =C2=A0					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 unsigned int ain0, unsigned int
+> ain1)
+> =C2=A0{
+> @@ -946,15 +1145,30 @@ static int ad7173_validate_voltage_ain_inputs(stru=
+ct
+> ad7173_state *st,
+> =C2=A0	=C2=A0=C2=A0=C2=A0 st->info->has_pow_supply_monitoring)
+> =C2=A0		return 0;
+> =C2=A0
+> -	special_input0 =3D AD7173_IS_REF_INPUT(ain0);
+> -	special_input1 =3D AD7173_IS_REF_INPUT(ain1);
+> +	special_input0 =3D AD7173_IS_REF_INPUT(ain0) ||
+> +			 (ain0 =3D=3D AD4111_VINCOM_INPUT && st->info-
+> >has_vincom_input);
+> +	special_input1 =3D AD7173_IS_REF_INPUT(ain1) ||
+> +			 (ain1 =3D=3D AD4111_VINCOM_INPUT && st->info-
+> >has_vincom_input);
+> +
+
+Wondering... can ain1 (or ain0) be AD4111_VINCOM_INPUT and !st->info-
+>has_vincom_input? Would that actually be acceptable? It would assume it's =
+not
+so we should check that right? Or am I missing something?
+
+- Nuno S=C3=A1
 
