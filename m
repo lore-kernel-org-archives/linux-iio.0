@@ -1,131 +1,123 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DA596D1B9;
-	Fri,  7 Jun 2024 16:18:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B333A19AA40;
+	Fri,  7 Jun 2024 16:28:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.248
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717777099; cv=none; b=YlTVQd+H3XrQro0low24h+9xF1A7o9Nx4k3j6bytwh77uV+xyGqis/17cGzgbuvnFbSScFZUlw2zFM8aXkT1SIlfhxZQ56ObwkI3rqcCzHwdRpoi+vdQ3uBUSiK/ui+uZqQYeAAApAbbx0oBXbhiM6xv5kv86FMcvOEoufKUwAE=
+	t=1717777735; cv=none; b=ub5LVt/YsanNqlkNwTrXMobRso2Ul+iJwhFcd7d4kc3SGE0JrXcij2SY76EuXVE9qkafY4Lv6FynJpYHxmXfIHzEo4HmrdN2VqQRtYK6SlLOHKeZ8++7UycZD1ainxEzBrXwJC/mNHqtnrz2l8I5CuN+gdU3y/0XcW2IlQvPeJs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717777099; c=relaxed/simple;
-	bh=62rTEi5JGTfNytOFoVt4sTFxXodoPen0JmPPMiO6/W8=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:To:CC; b=kxPkQREgeGFafdT/9wGQ5Q8ezXGzJ1vDbp+CDkhUpfx78+6jDrggztEsiV8cIPjSyQi25EkdsZCmgrwtrW8fkFM3p6bgi5NQL8BEoSmCCLiTMbvk8TtDrIZ3XCM4wXHr/4SdILvn8uEcuPwv5ZtgGAvodQWuAPjgz5bkO/lDSX0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=R4U5rZz5; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1717777735; c=relaxed/simple;
+	bh=v5vfruB7l2v9qAe9ilwgL7QaEEjs5wPBoQ/14S5UB2g=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=lPcFL1L2G0Io34sG3xdvFoyVRRj8fJG5zMzcRCoULFUgfdDQ90x6Oupq1WV8Oo4NPidJwqMskKfqE19Xk2ViesC99HMaEokPhWLZcz4SpoIz9tKFSXo0nOhhSeGQj/7yBud7nNljVax84QH+wPpeU98zlERcjBcJpNPv7eQ3yNo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=nPvAcsM1; arc=none smtp.client-ip=198.47.23.248
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="R4U5rZz5"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 457DcGqu031633;
-	Fri, 7 Jun 2024 16:17:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=AOfebpdrL/lq80KY6gYHFI
-	wPkcYngdV1lGgArMf6bMY=; b=R4U5rZz5miea+u0T0gJgDWYjqSxRdEEkV4E9eZ
-	xqrTERd1fx649Lk1DLaI1Z94hJSpBGlmvNb2Enu8u0zpp617JLR06p6YuBAUxLtT
-	1ART9FQMj2KzeStj0MqcWFtLyR4JZHJcR5k6amQaSKRHkMH4TSxqRInbQDzwGucc
-	OqWze0CeZBDN43cks8pFK+58ZCEF/51XPrW3eMFqaGe78Nj0z/PMoFpSBZGgT4HK
-	0bBAyepk61ARl0y/cGZUosDbMhvyCJxXbkOFpf8VTRoT4TFgjS7METiSlkMk3QIS
-	y0Oj+rQlySjp/vTjV1VACW/ceBHOpBWgyoMAPU1GeqseBpXA==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3yk8tcc493-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 07 Jun 2024 16:17:55 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 457GHs2v012396
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 7 Jun 2024 16:17:54 GMT
-Received: from [169.254.0.1] (10.49.16.6) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 7 Jun 2024
- 09:17:53 -0700
-From: Jeff Johnson <quic_jjohnson@quicinc.com>
-Date: Fri, 7 Jun 2024 09:17:52 -0700
-Subject: [PATCH] iio: add missing MODULE_DESCRIPTION() macros
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="nPvAcsM1"
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+	by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 457GRvan025670;
+	Fri, 7 Jun 2024 11:27:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1717777677;
+	bh=YFHPQL/G/uN01yS9rCCVaqefgaP5S3kCIPvNr4BAafA=;
+	h=From:To:CC:Subject:Date:In-Reply-To:References;
+	b=nPvAcsM1TDHINr9dQGeBJV+5uvitTio0lQAnknK6xkjujpY+XQK5KBu1FX49uycNR
+	 pZNSM06NTm7HUGgegj0vjb4zIrNjCTVspJdoFgvLvBzmSIqDQLLSnz1103hqWU6p4u
+	 a7MfnIbKwQOdQ12PxJRQKPf3gH1Olkolbx8AK0Co=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 457GRvDq096187
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 7 Jun 2024 11:27:57 -0500
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Fri, 7
+ Jun 2024 11:27:56 -0500
+Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Fri, 7 Jun 2024 11:27:56 -0500
+Received: from judy-hp.dhcp.ti.com (judy-hp.dhcp.ti.com [128.247.81.105])
+	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 457GRt1m068019;
+	Fri, 7 Jun 2024 11:27:56 -0500
+From: Judith Mendez <jm@ti.com>
+To: Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        William Breathitt Gray <william.gray@linaro.org>
+CC: David Lechner <david@lechnology.com>,
+        <linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        Nishanth Menon
+	<nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>
+Subject: [PATCH v3 6/8] arm64: dts: ti: k3-am64-main: Add eQEP nodes
+Date: Fri, 7 Jun 2024 11:27:53 -0500
+Message-ID: <20240607162755.366144-7-jm@ti.com>
+X-Mailer: git-send-email 2.45.1
+In-Reply-To: <20240607162755.366144-1-jm@ti.com>
+References: <20240607162755.366144-1-jm@ti.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20240607-md-drivers-iic-v1-1-9f9db6246083@quicinc.com>
-X-B4-Tracking: v=1; b=H4sIAK8yY2YC/x3MwQqDMAyA4VeRnBeoRRzuVYaHtI0zMDtJpgjiu
- 1s9fof/38FYhQ1e1Q7Kq5j8ckH9qCCOlD+MkorBO9+41j1xSphUVlZDkYiRQuMddZ2vWyjRrDz
- Idg/ffXEgYwxKOY7X5it52XAi+7PCcZz7T12QfwAAAA==
-To: Paul Cercueil <paul@crapouillou.net>, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Anand Ashok Dumbre
-	<anand.ashok.dumbre@xilinx.com>,
-        Michal Simek <michal.simek@amd.com>
-CC: <linux-mips@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <kernel-janitors@vger.kernel.org>,
-        Jeff Johnson <quic_jjohnson@quicinc.com>
-X-Mailer: b4 0.13.0
-X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: _z9vmYdy_Nn8E46Sf6JPtW5yxZ0HYiZQ
-X-Proofpoint-GUID: _z9vmYdy_Nn8E46Sf6JPtW5yxZ0HYiZQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-06-07_09,2024-06-06_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- clxscore=1011 malwarescore=0 suspectscore=0 phishscore=0 impostorscore=0
- mlxlogscore=912 priorityscore=1501 spamscore=0 adultscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2405170001
- definitions=main-2406070118
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 
-make allmodconfig && make W=1 C=1 reports:
-WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/iio/adc/ingenic-adc.o
-WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/iio/adc/xilinx-ams.o
-WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/iio/buffer/kfifo_buf.o
+Add eQEP device tree nodes 0-2 for AM642 SoC.
 
-Add the missing invocations of the MODULE_DESCRIPTION() macro.
-
-Signed-off-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+Signed-off-by: Judith Mendez <jm@ti.com>
 ---
- drivers/iio/adc/ingenic-adc.c  | 1 +
- drivers/iio/adc/xilinx-ams.c   | 1 +
- drivers/iio/buffer/kfifo_buf.c | 1 +
- 3 files changed, 3 insertions(+)
-
-diff --git a/drivers/iio/adc/ingenic-adc.c b/drivers/iio/adc/ingenic-adc.c
-index a7325dbbb99a..af70ca760797 100644
---- a/drivers/iio/adc/ingenic-adc.c
-+++ b/drivers/iio/adc/ingenic-adc.c
-@@ -920,4 +920,5 @@ static struct platform_driver ingenic_adc_driver = {
- 	.probe = ingenic_adc_probe,
- };
- module_platform_driver(ingenic_adc_driver);
-+MODULE_DESCRIPTION("ADC driver for the Ingenic JZ47xx SoCs");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
-index f0b71a1220e0..ee45475c495b 100644
---- a/drivers/iio/adc/xilinx-ams.c
-+++ b/drivers/iio/adc/xilinx-ams.c
-@@ -1430,5 +1430,6 @@ static struct platform_driver ams_driver = {
- };
- module_platform_driver(ams_driver);
- 
-+MODULE_DESCRIPTION("Xilinx AMS driver");
- MODULE_LICENSE("GPL v2");
- MODULE_AUTHOR("Xilinx, Inc.");
-diff --git a/drivers/iio/buffer/kfifo_buf.c b/drivers/iio/buffer/kfifo_buf.c
-index 05b285f0eb22..38034c8bcc04 100644
---- a/drivers/iio/buffer/kfifo_buf.c
-+++ b/drivers/iio/buffer/kfifo_buf.c
-@@ -287,4 +287,5 @@ int devm_iio_kfifo_buffer_setup_ext(struct device *dev,
- }
- EXPORT_SYMBOL_GPL(devm_iio_kfifo_buffer_setup_ext);
- 
-+MODULE_DESCRIPTION("Industrial I/O buffering based on kfifo");
- MODULE_LICENSE("GPL");
-
+Changes since v2:
+- No change
 ---
-base-commit: 19ca0d8a433ff37018f9429f7e7739e9f3d3d2b4
-change-id: 20240607-md-drivers-iic-cab420a99216
+ arch/arm64/boot/dts/ti/k3-am64-main.dtsi | 27 ++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/ti/k3-am64-main.dtsi b/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
+index 6f9aa5e02138f..6be710138dded 100644
+--- a/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
+@@ -1171,6 +1171,33 @@ ecap2: pwm@23120000 {
+ 		status = "disabled";
+ 	};
+ 
++	eqep0: counter@23200000 {
++		compatible = "ti,am62-eqep";
++		reg = <0x00 0x23200000 0x00 0x100>;
++		power-domains = <&k3_pds 59 TI_SCI_PD_EXCLUSIVE>;
++		clocks = <&k3_clks 59 0>;
++		interrupts = <GIC_SPI 116 IRQ_TYPE_EDGE_RISING>;
++		status = "disabled";
++	};
++
++	eqep1: counter@23210000 {
++		compatible = "ti,am62-eqep";
++		reg = <0x00 0x23210000 0x00 0x100>;
++		power-domains = <&k3_pds 60 TI_SCI_PD_EXCLUSIVE>;
++		clocks = <&k3_clks 60 0>;
++		interrupts = <GIC_SPI 117 IRQ_TYPE_EDGE_RISING>;
++		status = "disabled";
++	};
++
++	eqep2: counter@23220000 {
++		compatible = "ti,am62-eqep";
++		reg = <0x00 0x23220000 0x00 0x100>;
++		power-domains = <&k3_pds 62 TI_SCI_PD_EXCLUSIVE>;
++		clocks = <&k3_clks 62 0>;
++		interrupts = <GIC_SPI 118 IRQ_TYPE_EDGE_RISING>;
++		status = "disabled";
++	};
++
+ 	main_rti0: watchdog@e000000 {
+ 		compatible = "ti,j7-rti-wdt";
+ 		reg = <0x00 0xe000000 0x00 0x100>;
+-- 
+2.45.1
 
