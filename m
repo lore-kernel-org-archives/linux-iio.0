@@ -1,46 +1,46 @@
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D4E943AA1;
-	Fri,  7 Jun 2024 16:28:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26B2219AA46;
+	Fri,  7 Jun 2024 16:28:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.248
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717777736; cv=none; b=bCr96jayjloixkyV9IvUR+bEsisYZ0qlg30rgKVcA6WAr8MhnsmRFKW8Dl+1GQmo2GfM/FwWX282DyYSd2aFCpjqRWdvAeXVC4zN9+414hcZ1lbgJ7SjHHfSHQRYQkOSuxHVO07I24tUbjJNFCMioviWy/Ruw5SN/HfQUv1URDk=
+	t=1717777736; cv=none; b=FBKt5iVFDgyrzHqm/BTHX7zSeVsWHtTV3SJC6iLFPsc83NYXUXp1IFlhzkRVPc4LeuvtIqHQvOrBhXxSUFb/AzPUoVXfJdesqF3TmfIKb77Rrkf2qUToJXsF9/fVhCGAHrWbxXLxmxd5Vpz31/IKqkwrTLd+2Z/Bd0gIxn/9McA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1717777736; c=relaxed/simple;
-	bh=MEasLV+/E7mjn9Yx2J7UaBnX7TW0OsQRjgP21ugEnAY=;
+	bh=XTWHkqWIyDe91hgNfhXt2jRfvS33k3nyN4qbDENL2hc=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=N/j6kXclGs/mIko1opy+Kyp6nNA6l70c9twtF4OS/CbIy95aWyGb74/57y/fnpuxEkfACmuf8IsdN4QjOyu9CyPNlB3UDDK/v+gqsKUO3zMCfe2YYUbiuXk70XbyFQ3mzJjoQrDaBoul7d8eJjH4yG01jtTMs9GgXUdiy6IpuGc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=k/hr2GX+; arc=none smtp.client-ip=198.47.23.249
+	 MIME-Version:Content-Type; b=GXitSfSYrT7KRsCBOQDmLRlkDk5A0L9GxkGwoBU7Jcf6Vf7kYddE8nUstB3aPOTvOxbI5WiPHJ2vO24TeuJ267Q1LZOKMWVZ3ml78iY+Pa8yw8FrH74MjbWeUv98N4InXHjFGFtjs6X6pqpscuHr5drdSVLfMsUCnw98QX1dyS4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=QPEqrBqc; arc=none smtp.client-ip=198.47.23.248
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="k/hr2GX+"
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="QPEqrBqc"
 Received: from fllv0035.itg.ti.com ([10.64.41.0])
-	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 457GRvBw076008;
-	Fri, 7 Jun 2024 11:27:57 -0500
+	by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 457GRupJ025665;
+	Fri, 7 Jun 2024 11:27:56 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1717777677;
-	bh=j5iV2dg8nzrCJJLdyYys3qP0vGgUbyu9YRqCtbbAz4M=;
+	s=ti-com-17Q1; t=1717777676;
+	bh=qq+KuYT7G30cKRziBmhag3H0joWnmY4ry28xoGzNFIg=;
 	h=From:To:CC:Subject:Date:In-Reply-To:References;
-	b=k/hr2GX+FnPYmGucAicSC4r4y9KYqn3IJ0Yp5DFKjAWo8F5ahds0Xkcjf6n59Pjwf
-	 b3xPqrtPA0SKkV1qHT4tu6/mdzV76yjNPvvUt90Qv1cZG+nhRC8LjhRpzOCCkw5dlO
-	 RP5BLq8MqLJnNnXPwnTHGSlu5B6hcd9aUKWz6YiY=
-Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
-	by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 457GRvVU058836
+	b=QPEqrBqcX8t0tmEq6PXPjXU2d+tAkDhfBDw3gFj9Gx+KSy4lT+XmPU2n3XGvGDKpr
+	 w4xULJxiUdDVUSSTFGInCEU/C3DglkKXaUCFvvW9wbcjoxGXOWqognstXVsK508E8a
+	 374Swl9ruQaUazHcA7VzZZSdyp3V8/D+jhnZ3viQ=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+	by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 457GRuRH058789
 	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 7 Jun 2024 11:27:57 -0500
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+	Fri, 7 Jun 2024 11:27:56 -0500
+Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Fri, 7
  Jun 2024 11:27:56 -0500
-Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
  Frontend Transport; Fri, 7 Jun 2024 11:27:56 -0500
 Received: from judy-hp.dhcp.ti.com (judy-hp.dhcp.ti.com [128.247.81.105])
-	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 457GRt1n068019;
-	Fri, 7 Jun 2024 11:27:56 -0500
+	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 457GRt1i068019;
+	Fri, 7 Jun 2024 11:27:55 -0500
 From: Judith Mendez <jm@ti.com>
 To: Rob Herring <robh@kernel.org>,
         Krzysztof Kozlowski
@@ -54,9 +54,9 @@ CC: David Lechner <david@lechnology.com>,
         <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
         Nishanth Menon
 	<nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>
-Subject: [PATCH v3 7/8] arm64: dts: ti: k3-am64x-sk: Enable eQEP
-Date: Fri, 7 Jun 2024 11:27:54 -0500
-Message-ID: <20240607162755.366144-8-jm@ti.com>
+Subject: [PATCH v3 2/8] counter/ti-eqep: Add new ti-am62-eqep compatible
+Date: Fri, 7 Jun 2024 11:27:49 -0500
+Message-ID: <20240607162755.366144-3-jm@ti.com>
 X-Mailer: git-send-email 2.45.1
 In-Reply-To: <20240607162755.366144-1-jm@ti.com>
 References: <20240607162755.366144-1-jm@ti.com>
@@ -70,51 +70,29 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 
-There are 3 instances of eQEP on AM64x. Only EQEP0 signals
-can be routed to the user expansion so enable only EQEP0
-in k3-am642-sk.dts.
+Add new compatible for ti-am62-eqep for TI K3 SoC's.
 
 Signed-off-by: Judith Mendez <jm@ti.com>
+Reviewed-by: David Lechner <david@lechnology.com>
 ---
 Changes since v2:
-- Enable eQEP0 in k3-am64 SK board
+- No change
 ---
- arch/arm64/boot/dts/ti/k3-am642-sk.dts | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/counter/ti-eqep.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am642-sk.dts b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-index 5b028b3a3192f..1987da60672a2 100644
---- a/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-@@ -357,6 +357,16 @@ main_ecap0_pins_default: main-ecap0-default-pins {
- 			AM64X_IOPAD(0x0270, PIN_INPUT, 0) /* (D18) ECAP0_IN_APWM_OUT */
- 		>;
- 	};
-+
-+	main_eqep0_pins_default: main-eqep0-pins-default {
-+		pinctrl-single,pins = <
-+			AM64X_IOPAD(0x00a0, PIN_INPUT, 3) /* (N16) GPMC0_WPn.EQEP0_A */
-+			AM64X_IOPAD(0x00a4, PIN_INPUT, 3) /* (N17) GPMC0_DIR.EQEP0_B */
-+			AM64X_IOPAD(0x00ac, PIN_INPUT, 3) /* (R20) GPMC0_CSn1.EQEP0_I */
-+			AM64X_IOPAD(0x00a8, PIN_INPUT, 3) /* (R19) GPMC0_CSn0.EQEP0_S */
-+		>;
-+	};
-+
- 	main_wlan_en_pins_default: main-wlan-en-default-pins {
- 		pinctrl-single,pins = <
- 			AM64X_IOPAD(0x00c4, PIN_OUTPUT_PULLUP, 7) /* (V8) GPIO0_48 */
-@@ -672,3 +682,11 @@ &ecap0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&main_ecap0_pins_default>;
+diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
+index b0f24cf3e891d..f6850e142ddff 100644
+--- a/drivers/counter/ti-eqep.c
++++ b/drivers/counter/ti-eqep.c
+@@ -439,6 +439,7 @@ static int ti_eqep_remove(struct platform_device *pdev)
+ 
+ static const struct of_device_id ti_eqep_of_match[] = {
+ 	{ .compatible = "ti,am3352-eqep", },
++	{ .compatible = "ti,am62-eqep", },
+ 	{ },
  };
-+
-+&eqep0 {
-+	/* EQEP0_A is available on Pin 18 of header J4 */
-+	/* EQEP0_B is available on Pin 22 of header J4 */
-+	status = "okay";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&main_eqep0_pins_default>;
-+};
+ MODULE_DEVICE_TABLE(of, ti_eqep_of_match);
 -- 
 2.45.1
 
