@@ -1,122 +1,310 @@
-Received: from vern.gendns.com (vern.gendns.com [98.142.107.122])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E0A5149DED;
-	Sat,  8 Jun 2024 13:58:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=98.142.107.122
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 715774C65;
+	Sat,  8 Jun 2024 14:03:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717855131; cv=none; b=UxWde+gVkUrP5PYznSAiMPGrA9pkf1/ctvkfku1cyuKAe2wd6xynmATUZ4DySytQ77KmDF2JzlnNFzOtld9IVVIui/aM5FUe65d+xv2NPHImcy11iy5fU5JXxAi9h+eROHMQWdqsouatr85vYNMT+nmfN9iDNxa8+A9WWfWbZRo=
+	t=1717855427; cv=none; b=Kw/Tg+dWqZEEnzTOTogUxQN/Vf4WT7DOPYrIxj0aJpe/qPp7lgtxFjoDnOWfKY/7BzcJVJoOR2a+YJiTrITh3Q4stBTbmZlFsotJLj8cTb5pFfOM0GcOw/7rLnz9c/3kfSFx886HzbfmYqrHb+o1pIcGXKzvFXS51mXYf3sRFbo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717855131; c=relaxed/simple;
-	bh=atuIaMlN3pdZfwn4VkPXK6hRAFX1XKSt58+EsDAQ8W8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iGZ6NS9o+0Ynsw4dXPTEKzchHtsYFVGqRO3V1/yRU+DyWdukvEhbqqysZMhWqvUncjRsqy8P0D+tK8NEBfYBNK6ZdTyv+J8WqnMdXgQn6BNmFAraySeZpXOXjjGScCY7J5McukkojO/MZEdHWi6D97+6YkDpC19C6Ony6wHvkhI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com; spf=pass smtp.mailfrom=lechnology.com; dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b=a3brHnvc; arc=none smtp.client-ip=98.142.107.122
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lechnology.com
+	s=arc-20240116; t=1717855427; c=relaxed/simple;
+	bh=Hl7JElkJcbdHpUtB65SLQIwMa2FPm6koXDztf5INB2o=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=uQl7vy2qaMLElf4Z1PCkt8ZqSJpI6xPq6b44k9Fn6j648kdXhAqGCModONzR9Fm7oZwMZGp3MQZS1NQ88o7AlLhQbWaFQbUTWs6palFr/E6FLbozLNiNoxe8ewEReqEgIl4Wra4NcgFlYEYr4CCA+aujJwNL100xuLYWAlyuGVE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GPx8Ldb4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="a3brHnvc"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=atuIaMlN3pdZfwn4VkPXK6hRAFX1XKSt58+EsDAQ8W8=; b=a3brHnvcKcEVNd1tXDq/AzNVN1
-	FsPt4psGyvki3UHvIDwpNtjhGcwMnVutLRVpMW2bGuVtXPKloOA5bMGN1QugUxhzaqpnrTgxLWt4D
-	PxNrDkt3QmKuICVjHjzd0WUlywv9zlBy78EchJToRbK+By59EvwYzyVtcHVsYOuCSoCSxe5jwfZja
-	AHJ+WywOOl1kN+H1R5fFIRfx5H1Af7BsmleGEgdUFx/U9qcoXhLFEiXKFLyv0Rab6MBI5voP9+Oc/
-	cNWmg9K5mI3x1AowUWWMeTXhqwko1u53v2EFma1cFn8F44uGunxSOiI61uSbnJdNpxYqT54ag4KR8
-	R0sfDdfQ==;
-Received: from ip98-183-112-25.ok.ok.cox.net ([98.183.112.25]:59500 helo=[192.168.0.142])
-	by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.96.2)
-	(envelope-from <david@lechnology.com>)
-	id 1sFweK-0003Lm-0q;
-	Sat, 08 Jun 2024 09:58:45 -0400
-Message-ID: <5a053d6d-69d2-4d09-9a69-77fe73416484@lechnology.com>
-Date: Sat, 8 Jun 2024 08:58:39 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GPx8Ldb4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03CB4C2BD11;
+	Sat,  8 Jun 2024 14:03:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1717855427;
+	bh=Hl7JElkJcbdHpUtB65SLQIwMa2FPm6koXDztf5INB2o=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=GPx8Ldb4VVgxo75lr7ZV6H7JG22n6bMhkHEJm/RmkRzsD5GMNoyY8BQUlolCTf+Ea
+	 xGgQx1X58mq6W2CcJESG46g54I2jasFjgK1846RgWlVRW5vuV9ELsa1eV+z6S/T1Qa
+	 7CCR+urxGyNOabOBZ+IWID1SCFoXOnTeUAjriUQ/S2IWXsPfLa3Gk5eICsohyR4SIK
+	 GWQ0Aw5fR1555q93FTAtJdMCwz+5FuHRYp5pwrhghZ0G3ovqEXMWaPBCKsESt7hS2I
+	 3ru07fHtvHt+7q4ks0X6GYcGBkXmIx0rcRldFFf9L7ZTgQOwng+tFdxSsBtSjtn8V+
+	 QNC75seFk5Atw==
+Date: Sat, 8 Jun 2024 15:03:40 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Sean Anderson <sean.anderson@linux.dev>
+Cc: Jonathan Cameron <Jonathan.Cameron@Huawei.com>, "O'Griofa, Conall"
+ <conall.ogriofa@amd.com>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH] iio: xilinx-ams: Don't include ams_ctrl_channels in
+ scan_mask
+Message-ID: <20240608150340.06e8c1e2@jic23-huawei>
+In-Reply-To: <f789d5b8-46d4-47ab-a74b-72daf72116a0@linux.dev>
+References: <20240311162800.11074-1-sean.anderson@linux.dev>
+	<20240314154824.37150a54@jic23-huawei>
+	<a9ed95ec-aafe-49f6-93dd-c94c73620de2@linux.dev>
+	<DM6PR12MB4217EAA1049F815F234EE6D18B282@DM6PR12MB4217.namprd12.prod.outlook.com>
+	<3b481539-0c9c-4110-ad03-bd252e80efb0@linux.dev>
+	<20240316133627.5d2bf585@jic23-huawei>
+	<7ee83f15-88fc-4530-84b7-b8ee31663dbc@linux.dev>
+	<20240318152446.00001345@Huawei.com>
+	<7ddf8d4a-5b68-432d-93c1-ff270403cb60@linux.dev>
+	<20240319134258.0000574d@Huawei.com>
+	<f789d5b8-46d4-47ab-a74b-72daf72116a0@linux.dev>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.42; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/8] Enable eQEP DT support for Sitara K3 platforms
-To: Judith Mendez <jm@ti.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Catalin Marinas
- <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- William Breathitt Gray <william.gray@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>
-References: <20240607162755.366144-1-jm@ti.com>
-Content-Language: en-US
-From: David Lechner <david@lechnology.com>
-Autocrypt: addr=david@lechnology.com; keydata=
- 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
-In-Reply-To: <20240607162755.366144-1-jm@ti.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - vern.gendns.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lechnology.com
-X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+Content-Transfer-Encoding: quoted-printable
 
-On 6/7/24 11:27 AM, Judith Mendez wrote:
-> This patch series adds eQEP DT nodes for K3 Sitara devices:
+On Fri, 7 Jun 2024 13:42:19 -0400
+Sean Anderson <sean.anderson@linux.dev> wrote:
 
-FYI, it looks like you still have William's old not working email address
-so he might not be seeing this to pick it up.
+> On 3/19/24 09:42, Jonathan Cameron wrote:
+> > On Mon, 18 Mar 2024 11:28:49 -0400
+> > Sean Anderson <sean.anderson@linux.dev> wrote:
+> >  =20
+> >> On 3/18/24 11:24, Jonathan Cameron wrote: =20
+> >> > On Mon, 18 Mar 2024 11:18:43 -0400
+> >> > Sean Anderson <sean.anderson@linux.dev> wrote:
+> >> >    =20
+> >> >> On 3/16/24 09:36, Jonathan Cameron wrote:   =20
+> >> >> > On Fri, 15 Mar 2024 13:47:40 -0400
+> >> >> > Sean Anderson <sean.anderson@linux.dev> wrote:
+> >> >> >      =20
+> >> >> >> Hi Conall,
+> >> >> >>=20
+> >> >> >> On 3/15/24 09:18, O'Griofa, Conall wrote:     =20
+> >> >> >> > [AMD Official Use Only - General]
+> >> >> >> >=20
+> >> >> >> > Hi,
+> >> >> >> >=20
+> >> >> >> > I think there was a fix for this issue applied to the version =
+that was running on 5.15 that didn't seem to make it into the upstream driv=
+er.
+> >> >> >> > Please see link for reference https://github.com/Xilinx/linux-=
+xlnx/commit/608426961f16ab149b1b699f1c35f7ad244c0720
+> >> >> >> >=20
+> >> >> >> > I think a similar fix to the above patch is may be beneficial?=
+       =20
+> >> >> >>=20
+> >> >> >> These patches look functionally identical to me.     =20
+> >> >> >=20
+> >> >> > Because there are no channels with scan index between
+> >> >> > 22 * 2 + 16 (that patch) and 22 * 3 (your patch) that is
+> >> >> > the effect is indeed the same. But given the issues is the
+> >> >> > 64 limit on maximum scan index, 22 * 3 =3D 66 is an ugly value
+> >> >> > to compare with.
+> >> >> >=20
+> >> >> > I'm still very against the use of scan_index for anything other
+> >> >> > than scan indices (which is why partly how this bug wasn't noticed
+> >> >> > in the first palce). So the check should be scan_index !=3D -1
+> >> >> > and uses of those values elsewhere in the driver should be fixed
+> >> >> > (which looks simple to do from a quick glance at the code).     =
+=20
+> >> >>=20
+> >> >> OK, so how do the sysfs files get named then?   =20
+> >> >=20
+> >> > Using channel and channel2 as appropriate (+ index and modified
+> >> > which change the meaning of channel2) - scan_index never had
+> >> > anything to do with sysfs file names - just the value in
+> >> > bufferX/in_xyz_scan_index   =20
+> >>=20
+> >> I tried to prototype setting scan_index to -1, but when registering ch=
+annels I saw
+> >>=20
+> >> [    1.637049] iio iio:device0: tried to double register : in_voltage_=
+raw
+> >> [    1.637245] xilinx-ams ffa50000.ams: Failed to register sysfs inter=
+faces
+> >> [    1.637433] xilinx-ams: probe of ffa50000.ams failed with error -16
+> >>=20
+> >> And AIUI .channel is filled in by ams_parse_firmware. =20
+> >=20
+> > Is indexed set for the channel?  Check it at the point of calling
+> > devm_iio_device_register() as the code that builds the channels in this
+> > driver is complex, so maybe it's getting overwritten?
+> >=20
+> > There might be a core bug somewhere, but there are other drivers using
+> > -1 scan index without hitting this problem so my first instinct is
+> > something is getting wrongly set in the driver. =20
+>=20
+> Upon further review, I think scan_index should remain the same, and this
+> patch should be applied as-is.
+>=20
+> address is the only driver-private data in all of iio_chan_spec.
+> Unfortunately, it is suggestively named "address" and not "priv" or
+> "driver_id" or something similar. So the original author of this driver
+> went "Ah, I should put the channel address offsets in this register."
+> Except, because this driver has three address spaces, this is not enough
+> to uniquely identify the channel. So he then stuck an actual unique
+> identifier in scan_index. Now, you may object to this since the driver
+> doesn't actually support scans, but that is the current situation.
+>=20
+> So there is really nothing wrong with scan_index semantically in the
+> context of the driver. We should not convert one address space's
+> channels to use -1 scan_index, since it is used as a unique identifier
+> elsewhere in the channel.
+>=20
+> Future patches could convert scan_index to address, and store the
+> address offsets in an array. So e.g. reading a channel would go from
+> e.g.
+>=20
+> 	if (chan->scan_index >=3D AMS_PS_SEQ_MAX)
+> 		*val =3D readl(ams->pl_base + chan->address);
+> 	else
+> 		*val =3D readl(ams->ps_base + chan->address);
+>=20
+> to
+>=20
+> 	if (chan->address >=3D AMS_PS_SEQ_MAX)
+> 		*val =3D readl(ams->pl_base + ams_chan_addr[chan->address]);
+> 	else
+> 		*val =3D readl(ams->ps_base + ams_chan_addr[chan->address]);
+>=20
+> which while strictly less perfmant due to another level of indirection
+> does conform to existing semantics for scan_index. But TBH I don't see
+> much point in this.
+>=20
+> But the above change would be pretty significant and has a chance of
+> causing bugs of its own. So I would rather this bug fix be applied as-is
+> and the scan_index semantics be modified at some other time.
+Ok.  I'll pick this one up, but I'd either like the change you mention above
+or maybe as a lesser nice but easier solution, a patch adding comments
+on the use of scan_index in this driver.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/MAINTAINERS?id=c90663596e7c97363d8855c635f39500ed2f0030
+Applied to the fixes-togreg branch of iio.git.  Thanks for figuring out
+what happened here and the clear explanation.
 
+Jonathan
+
+>=20
+> --Sean
+>=20
+> >>=20
+> >> --Sean
+> >>  =20
+> >> >>=20
+> >> >> --Sean
+> >> >>    =20
+> >> >> >>=20
+> >> >> >> --Sean
+> >> >> >>      =20
+> >> >> >> >> -----Original Message-----
+> >> >> >> >> From: Sean Anderson <sean.anderson@linux.dev>
+> >> >> >> >> Sent: Thursday, March 14, 2024 5:30 PM
+> >> >> >> >> To: Jonathan Cameron <jic23@kernel.org>
+> >> >> >> >> Cc: linux-iio@vger.kernel.org; O'Griofa, Conall <conall.ogrio=
+fa@amd.com>;
+> >> >> >> >> linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kerne=
+l.org; Lars-Peter
+> >> >> >> >> Clausen <lars@metafoo.de>
+> >> >> >> >> Subject: Re: [PATCH] iio: xilinx-ams: Don't include ams_ctrl_=
+channels in
+> >> >> >> >> scan_mask
+> >> >> >> >>
+> >> >> >> >> Caution: This message originated from an External Source. Use=
+ proper caution
+> >> >> >> >> when opening attachments, clicking links, or responding.
+> >> >> >> >>
+> >> >> >> >>
+> >> >> >> >> On 3/14/24 11:48, Jonathan Cameron wrote:       =20
+> >> >> >> >> > On Mon, 11 Mar 2024 12:28:00 -0400
+> >> >> >> >> > Sean Anderson <sean.anderson@linux.dev> wrote:
+> >> >> >> >> >       =20
+> >> >> >> >> >> ams_enable_channel_sequence constructs a "scan_mask" for a=
+ll the PS
+> >> >> >> >> >> and PL channels. This works out fine, since scan_index for=
+ these
+> >> >> >> >> >> channels is less than 64. However, it also includes the
+> >> >> >> >> >> ams_ctrl_channels, where scan_index is greater than 64, tr=
+iggering
+> >> >> >> >> >> undefined behavior. Since we don't need these channels any=
+way, just       =20
+> >> >> >> >> exclude them.       =20
+> >> >> >> >> >>
+> >> >> >> >> >> Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
+> >> >> >> >> >> Signed-off-by: Sean Anderson <sean.anderson@linux.dev>    =
+   =20
+> >> >> >> >> >
+> >> >> >> >> > Hi Sean,
+> >> >> >> >> >
+> >> >> >> >> > I'd ideally like to understand why we have channels with su=
+ch large
+> >> >> >> >> > scan indexes.  Those values should only be used for buffere=
+d capture.
+> >> >> >> >> > It feels like they are being abused here.  Can we set them =
+to -1
+> >> >> >> >> > instead and check based on that?
+> >> >> >> >> > For a channel, a scan index of -1 means it can't be capture=
+d via the
+> >> >> >> >> > buffered interfaces but only accessed via sysfs reads.
+> >> >> >> >> > I think that's what we have here?       =20
+> >> >> >> >>
+> >> >> >> >> From what I can tell, none of the channels support buffered r=
+eads. And we can't
+> >> >> >> >> nai=CC=88vely convert the scan_index to -1, since that causes=
+ sysfs naming conflicts
+> >> >> >> >> (not to mention the compatibility break).
+> >> >> >> >>       =20
+> >> >> >> >> >
+> >> >> >> >> > I just feel like if we leave these as things stand, we will=
+ get bitten
+> >> >> >> >> > by similar bugs in the future.  At least with -1 it should =
+be obvious why!       =20
+> >> >> >> >>
+> >> >> >> >> There are just as likely to be bugs confusing the PL/PS subde=
+vices...
+> >> >> >> >>
+> >> >> >> >> FWIW I had no trouble identifying the channels involved with =
+this bug.
+> >> >> >> >>
+> >> >> >> >> --Sean
+> >> >> >> >>       =20
+> >> >> >> >> > Jonathan
+> >> >> >> >> >
+> >> >> >> >> >       =20
+> >> >> >> >> >> ---
+> >> >> >> >> >>
+> >> >> >> >> >>  drivers/iio/adc/xilinx-ams.c | 8 ++++++--
+> >> >> >> >> >>  1 file changed, 6 insertions(+), 2 deletions(-)
+> >> >> >> >> >>
+> >> >> >> >> >> diff --git a/drivers/iio/adc/xilinx-ams.c
+> >> >> >> >> >> b/drivers/iio/adc/xilinx-ams.c index a55396c1f8b2..4de7ce5=
+98e4d
+> >> >> >> >> >> 100644
+> >> >> >> >> >> --- a/drivers/iio/adc/xilinx-ams.c
+> >> >> >> >> >> +++ b/drivers/iio/adc/xilinx-ams.c
+> >> >> >> >> >> @@ -414,8 +414,12 @@ static void ams_enable_channel_sequen=
+ce(struct
+> >> >> >> >> >> iio_dev *indio_dev)
+> >> >> >> >> >>
+> >> >> >> >> >>      /* Run calibration of PS & PL as part of the sequence=
+ */
+> >> >> >> >> >>      scan_mask =3D BIT(0) | BIT(AMS_PS_SEQ_MAX);
+> >> >> >> >> >> -    for (i =3D 0; i < indio_dev->num_channels; i++)
+> >> >> >> >> >> -            scan_mask |=3D BIT_ULL(indio_dev->channels[i]=
+.scan_index);
+> >> >> >> >> >> +    for (i =3D 0; i < indio_dev->num_channels; i++) {
+> >> >> >> >> >> +            const struct iio_chan_spec *chan =3D
+> >> >> >> >> >> + &indio_dev->channels[i];
+> >> >> >> >> >> +
+> >> >> >> >> >> +            if (chan->scan_index < AMS_CTRL_SEQ_BASE)
+> >> >> >> >> >> +                    scan_mask |=3D BIT_ULL(chan->scan_ind=
+ex);
+> >> >> >> >> >> +    }
+> >> >> >> >> >>
+> >> >> >> >> >>      if (ams->ps_base) {
+> >> >> >> >> >>              /* put sysmon in a soft reset to change the s=
+equence */       =20
+> >> >> >> >> >       =20
+> >> >> >>      =20
+> >> >> >      =20
+> >> >>=20
+> >> >>    =20
+> >> >    =20
+> >>  =20
+> >  =20
 
