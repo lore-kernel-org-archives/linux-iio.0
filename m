@@ -1,55 +1,57 @@
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 069A382C6B
-	for <linux-iio@vger.kernel.org>; Wed, 12 Jun 2024 19:21:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80A6A82D93
+	for <linux-iio@vger.kernel.org>; Wed, 12 Jun 2024 19:21:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718220104; cv=none; b=slaF3AA4L8xlIWgLtVC3Kl22ulBPrkleCOHra9Vvc3Acc3i+qLhh/SiJtqaR3KIPHFQ3B2Mb84josFuZZQOEkET2fAUVqWTjXxp1gA2zYZF1E7Z2eL4hpTyf2XHqyXenvqgczLOWvWafHIyCJy8ZPf71QjX5a15YyrcSFyRavBA=
+	t=1718220106; cv=none; b=C0rnM0wEfy73zoh9dnf4uU3cJg6q0Sb5FRqs+mbgO8CvoODREPaWoWE6gs3H52DxshVuQ56qrpDB1HIdNhlF0buJCZxzlkDfglNz7VMBdqiIg5c50GvQxvq2LpDUXjE3PHfLZWqdWBNVhuw023ASHbB1/JMwVkwffj+d7lDjrYs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718220104; c=relaxed/simple;
-	bh=Uu9Gleg1ASn8Dt7yA/1zARp3BFz8u1dMTh4oQIDHX/k=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Ozy6lls4mf1Y0+VDbGazAggtTep5uOOAh8fqd3lQ2VVBbbntstO+ZRt1Oz3dmw67FC5wwqsmCy73QNwnhFWTV8kJCoUfkLwplRItEVeyNMHU5uFa+2Dy7rJbNwJtzEmbv993UWTE2pHft0hEMvuIgoWGLFkjr75VBH/m+E8Pfhs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=KcKZGMtj; arc=none smtp.client-ip=209.85.167.179
+	s=arc-20240116; t=1718220106; c=relaxed/simple;
+	bh=nYTAeIKAQnbfKWEqhRPle1j756SIOQpvdGbjJq8DHmA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=D8i4Dm70fLC4sOJYhcHjXmLEBjoFWzvAXQ5BBUhAyjeLG7Ld7cpmYjWOA1cfwh0+KhFGxo5hjI7IuWM5HD2He/IqOimKnQ6wjGi5MISlf9+ziCRMbrqtyIk+HWZqdNYbEsgekrE7qfrh0HswH7H2Rpnbkw06s8piD1DcmTvnZXI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=r74LmvTJ; arc=none smtp.client-ip=209.85.167.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="KcKZGMtj"
-Received: by mail-oi1-f179.google.com with SMTP id 5614622812f47-3d226c5a157so72591b6e.2
-        for <linux-iio@vger.kernel.org>; Wed, 12 Jun 2024 12:21:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="r74LmvTJ"
+Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-3d226aff122so62271b6e.2
+        for <linux-iio@vger.kernel.org>; Wed, 12 Jun 2024 12:21:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1718220101; x=1718824901; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=qXy7VIHll/aDTcqBYwLAggajOlv8GzK8EL/ET9q9bCA=;
-        b=KcKZGMtjmLVLw4epSZX5OqQkJsCAg+UA7HPZq6UhQd1JWuFWhrAqXCr/ajHlAhWs9/
-         eSR8B2v/5FMnnHCk/aklpVNhGJD5pAEZTxBjwUmSSUzcutRglcW+UpVGhce94o8vu28B
-         9mckY/Pg11StuYVVBUI+ES5mgb1KzRP9/iGl7Ach+VZpKFPt52OflmtlIaXJkNgRhaSR
-         ztvf7+D9D5VYTIWD5Q+tnsYByG61vX+B65+caYuWdajZGRAVYhhGWS3VyycJ4+qQQkwP
-         LIN7GX3jU4pQX0bGtBO7P3henBTrzWxen/hk/tFa9eLr4fmZkmGMjoSdYRZJx9L/hjsx
-         XPvA==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1718220104; x=1718824904; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nWjk00AKWLCCc2wBmuv0MRbs0RIV4aO29ZnuU1Z2jqM=;
+        b=r74LmvTJEi786hdPB17H0FI7tI/8MNGocXBMnZ9ksdS5YT0fwHcTyuSvYITil3QlrQ
+         QnakzZbNdfgxSURix0k493GYPiGEjj50jj44tofx5mwoiXHh/JD0dAbEX5LSGQ8xaCbY
+         eo8tyATaWdqDpLcRIDd+jMR1XMxKDbagQ14rgPJDJ2NXDMMpiqJ4+Nrd/1d61ku2bPIe
+         hlY6pWDAphNjUwfx/a6kQB25VLArjrgt5JFNKVnQbLp7Qm0CqaJ9iHZYJXSubFUol7Hl
+         oLSKfDUrSvuZ87g2xCraIDiXqUJXoP9uwMUb9eV4Deu8eboSfvYO3ivPEw+1h9EtsWi9
+         2LBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718220101; x=1718824901;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=qXy7VIHll/aDTcqBYwLAggajOlv8GzK8EL/ET9q9bCA=;
-        b=QL/7/HSxt5AYSCb00hRw51J5cY+3nfMJpyI7rk0ctNHUAzwAxxppvknDfFYSK24bP0
-         q92MTi7gziI/s1sL5abn60rFzbnrhElmI0Vgxzk6Ra66RLwfN26AfXjajnjc3tgH8rr2
-         xiTezZYEPAWgU81J3bhCfvbOQbhT585ZWQHxWvkxGMguVXPKXzFSrULoxWcF8zbNYw/v
-         rPJL+7+ck2jirJ6NCEwMSdOi0hpOpVqtGwktIY0/coKhd75BzZzFhYCUeIyJUrc3ic1A
-         Ia9ziWN3cNtlfFCvEijpcgESRzEtst8kQeE6Gl4vOua4IOHi+N1RByo066m5ePGO0vWE
-         hShA==
-X-Forwarded-Encrypted: i=1; AJvYcCXjQUcIHrypGguIyrq0lD3fcCc8dXhtnsWBCnFtSfZlMgHjnQHS76+4IepyxklCDMJRasd9mQjgBSnTCL7sscpWAHhC2WFk9aq6
-X-Gm-Message-State: AOJu0Yx41yB4f0//BVZ3XrVA+bdVP+pvNplgm8pvaqbS19YjsfM7vdun
-	VcZ8N6mdvoWkOPfFn9xIn4bW3edMjkKKAyBY/ZCgaVgXRccBmCYapuNmSPVfeVA=
-X-Google-Smtp-Source: AGHT+IFBYyiezdoccJIdyFcHFDAQu+3md5pmRIFWY9xx0C2Wc0lrAEmMqqvt6hKjm7tETzp01RmbeQ==
-X-Received: by 2002:a05:6808:220b:b0:3d2:2c07:c8af with SMTP id 5614622812f47-3d23e02eeb2mr3374670b6e.25.1718220101047;
-        Wed, 12 Jun 2024 12:21:41 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1718220104; x=1718824904;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=nWjk00AKWLCCc2wBmuv0MRbs0RIV4aO29ZnuU1Z2jqM=;
+        b=chtNFR9KrN77XGEudRrLJBId0olT/ORTAH/itLwjeXd7V3Ylb3KUvPrlsvtPWBNoAd
+         W2AEdqBYq8+fmO+YA5vO+ajC2OCjJhdN5RDEE+oLcY1X4dL1EdUChLWDY8/IkUZJ+k0U
+         zBCCBVccS7HVfHDhLm4472p7TvSMojqtJpwWfkOQzXre0+jwTCiS+VM2IfsGHo25AvCG
+         Y4hEx/YC5nCUzkLhHzknYSBEmHgOQc0A+jrGP9lMb93IKaF0Z4FDoJzy8VQ0UgEYfVez
+         H2p48APVBpAcoJuB/ziB6I8hF6Lb9fBkjeJh7BPtFjggQ8fzSXV5lWP0QiV5UFo15mqV
+         z0Sg==
+X-Forwarded-Encrypted: i=1; AJvYcCXv3ujzO1dDxgU+JdLayFjTt5uaOnP15FUIoKrS1GNIeCMEdvvdnsm4LliDqcQV6WubeSE8Q3WMV7P1vRRZCCBG8Dp4kcRtloCV
+X-Gm-Message-State: AOJu0YxHwy/ZtVbkCDbx7mTeIMDqx8t2Qmn6SzKEN+5XZVywvkRuKKnS
+	zh8fjoCJwYoXdhkhe73EJqilZaXNTC5L6gG/E28xOYMMoUOo4+LzgvDY6qBPdDA=
+X-Google-Smtp-Source: AGHT+IEa/VIxRkmieNYQk4VzRYdACSw5OtAZWDJEvPLtR8gg2MekPODBwYIt5gbwQDWgBopvLz4egg==
+X-Received: by 2002:a05:6808:138e:b0:3d2:29c2:9600 with SMTP id 5614622812f47-3d23e00b19fmr3371146b6e.23.1718220103587;
+        Wed, 12 Jun 2024 12:21:43 -0700 (PDT)
 Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-3d236676bfesm648795b6e.12.2024.06.12.12.21.39
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-3d236676bfesm648795b6e.12.2024.06.12.12.21.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jun 2024 12:21:40 -0700 (PDT)
+        Wed, 12 Jun 2024 12:21:43 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Rob Herring <robh@kernel.org>,
@@ -62,12 +64,13 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	Ramona Gradinariu <ramona.gradinariu@analog.com>
-Subject: [PATCH 0/3] iio: adc: ad4695: new driver for AD4695 and similar ADCs
-Date: Wed, 12 Jun 2024 14:20:39 -0500
-Message-ID: <20240612-iio-adc-ad4695-v1-0-6a4ed251fc86@baylibre.com>
+	linux-doc@vger.kernel.org
+Subject: [PATCH 3/3] Documentation: iio: Document ad4695 driver
+Date: Wed, 12 Jun 2024 14:20:42 -0500
+Message-ID: <20240612-iio-adc-ad4695-v1-3-6a4ed251fc86@baylibre.com>
 X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240612-iio-adc-ad4695-v1-0-6a4ed251fc86@baylibre.com>
+References: <20240612-iio-adc-ad4695-v1-0-6a4ed251fc86@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -78,30 +81,194 @@ Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.12.4
 Content-Transfer-Encoding: 8bit
 
-This is adding DT bindings and a new driver for the AD4695 and similar
-devices. The plan is to implement quite a few more features, but this
-is a complex chip so we're spreading out the work. To start with, we
-have a reasonably complete DT binding and a very basic driver.
+The Analog Devices Inc. AD4695 (and similar chips) are complex ADCs that
+will benefit from a detailed driver documentation.
 
-This work is being done in collaboration with Analog Devices Inc.,
-hence they listed as maintainers rather than me. The code has been
-tested on a Zedboard with an EVAL-AD4696FMCZ using the internal LDO,
-an external reference and a variety of input channel configurations.
+This documents the current features supported by the driver.
 
+Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
-David Lechner (3):
-      dt-bindings: iio: adc: add AD4695 and similar ADCs
-      iio: adc: ad4695: Add driver for AD4695 and similar ADCs
-      Documentation: iio: Document ad4695 driver
+ Documentation/iio/ad4695.rst | 145 +++++++++++++++++++++++++++++++++++++++++++
+ Documentation/iio/index.rst  |   1 +
+ MAINTAINERS                  |   1 +
+ 3 files changed, 147 insertions(+)
 
- .../devicetree/bindings/iio/adc/adi,ad4695.yaml    | 297 ++++++++
- Documentation/iio/ad4695.rst                       | 145 ++++
- Documentation/iio/index.rst                        |   1 +
- MAINTAINERS                                        |  11 +
- drivers/iio/adc/Kconfig                            |  11 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/ad4695.c                           | 804 +++++++++++++++++++++
- 7 files changed, 1270 insertions(+)
----
-base-commit: cc1ce839526a65620778617da0b022bd88e8a139
-change-id: 20240517-iio-adc-ad4695-ef72b2a2cf88
+diff --git a/Documentation/iio/ad4695.rst b/Documentation/iio/ad4695.rst
+new file mode 100644
+index 000000000000..6e142561524e
+--- /dev/null
++++ b/Documentation/iio/ad4695.rst
+@@ -0,0 +1,145 @@
++.. SPDX-License-Identifier: GPL-2.0-only
++
++=============
++AD4695 driver
++=============
++
++ADC driver for Analog Devices Inc. AD4695 and similar devices. The module name
++is ``ad4695``.
++
++
++Supported devices
++=================
++
++The following chips are supported by this driver:
++
++* `AD4695 <https://www.analog.com/AD4695>`_
++* `AD4696 <https://www.analog.com/AD4696>`_
++* `AD4697 <https://www.analog.com/AD4697>`_
++* `AD4698 <https://www.analog.com/AD4698>`_
++
++
++Supported features
++==================
++
++SPI wiring modes
++----------------
++
++The driver currently supports the following SPI wiring configuration:
++
++4-wire mode
++^^^^^^^^^^^
++
++In this mode, CNV and CS are tied together and there is a single SDO line.
++
++.. code-block::
++
++    +-------------+         +-------------+
++    |          CS |<-+------| CS          |
++    |         CNV |<-+      |             |
++    |     ADC     |         |     HOST    |
++    |             |         |             |
++    |         SDI |<--------| SDO         |
++    |         SDO |-------->| SDI         |
++    |        SCLK |<--------| SCLK        |
++    +-------------+         +-------------+
++
++To use this mode, in the device tree, omit the ``cnv-gpios`` and
++``spi-rx-bus-width`` properties.
++
++Channel configuration
++---------------------
++
++Since the chip supports multiple ways to configure each channel, this must be
++described in the device tree based on what is actually wired up to the inputs.
++
++There are three typical configurations:
++
++Single-ended where a pin is used with the ``REFGND`` pin, pseudo-differential
++where a pin is used with the ``COM`` pin and differential where two ``INx``
++pins are used as a pair
++
++Single-ended input
++^^^^^^^^^^^^^^^^^^
++
++Each ``INx`` pin can be used as a single-ended input in conjunction with the
++``REFGND`` pin. The device tree will look like this:
++
++.. code-block::
++
++    channel@2 {
++        reg = <2>;
++    };
++
++This will appear on the IIO bus as the ``voltage2`` channel. The processed value
++(*raw × scale*) will be the voltage between the ``INx`` relative to ``REFGND``.
++(Offset is always 0 when pairing with ``REFGND``.)
++
++Pseudo-differential input
++^^^^^^^^^^^^^^^^^^^^^^^^^
++
++Each ``INx`` pin can be used as a pseudo-differential input in conjunction with
++the ``COM`` pin. The device tree will look like this:
++
++.. code-block::
++
++    com-supply = <&vref_div_2>;
++
++    channel@3 {
++        reg = <3>;
++        adi,pin-pairing = "com";
++        bipolar;
++    };
++
++This will appear on the IIO bus as the ``voltage3`` channel. The processed value
++(*(raw + offset) × scale*) will be the voltage measured on ``INx`` relative to
++``REFGND``. (The offset is determined by the ``com-supply`` voltage.)
++
++Differential input
++^^^^^^^^^^^^^^^^^^
++
++An even-numbered ``INx`` pin and the following odd-numbered ``INx`` pin can be
++used as a differential pair. The device tree for using ``IN0`` as the positive
++input and ``IN1`` as the negative input will look like this:
++
++.. code-block::
++
++    channel@0 {
++        reg = <0>;
++        adi,pin-pairing = "next";
++        bipolar;
++    };
++
++This will appear on the IIO bus as the ``voltage0-voltage1`` channel. The
++processed value (*raw × scale*) will be the voltage difference between the two
++pins. (Offset is always 0 for differential channels.)
++
++VCC supply
++----------
++
++The chip supports being powered by an external LDO via the ``VCC`` input or an
++internal LDO via the ``LDO_IN`` input. The driver looks at the device tree to
++determine which is being used. If ``ldo-supply`` is present, then the internal
++LDO is used. If ``vcc-supply`` is present, then the external LDO is used and
++the internal LDO is disabled.
++
++Reference voltage
++-----------------
++
++The chip supports an external reference voltage via the ``REF`` input or an
++internal buffered reference voltage via the ``REFIN`` input. The driver looks
++at the device tree to determine which is being used. If ``ref-supply`` is
++present, then the external reference voltage is used and the internal buffer is
++disabled. If ``refin-supply`` is present, then the internal buffered reference
++voltage is used.
++
++Unimplemented features
++----------------------
++
++- Additional wiring modes
++- Buffered reads
++- Threshold events
++- Oversampling
++- Gain/offset calibration
++- GPIO support
++- CRC support
+diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
+index 4c13bfa2865c..df69a76bf583 100644
+--- a/Documentation/iio/index.rst
++++ b/Documentation/iio/index.rst
+@@ -17,6 +17,7 @@ Industrial I/O Kernel Drivers
+ .. toctree::
+    :maxdepth: 1
+ 
++   ad4695
+    ad7944
+    adis16475
+    adis16480
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 611b7929e650..edd1a4e8f538 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1198,6 +1198,7 @@ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/dac/adi,ad3552r.yaml
++F:	Documentation/iio/index.rst
+ F:	drivers/iio/dac/ad3552r.c
+ 
+ ANALOG DEVICES INC AD4130 DRIVER
+
+-- 
+2.45.2
+
