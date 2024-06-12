@@ -1,302 +1,211 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0a-00549402.pphosted.com (mx0a-00549402.pphosted.com [205.220.166.134])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C8C0170853;
-	Wed, 12 Jun 2024 13:03:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718197393; cv=none; b=G42RdJfU9j6roRe6XHIZ1zbVGH3erZrnRVRTlFQ212+Dca+5q9yqmKR00Z3aZr1tZ/mlzjX4lDHUivwVsA0P1DdrIThyZoGgJXhtebmJNiuKmBkXnzLuL8ZlmXjekGA06YHC1ww+hfZ0uK2ZJQCQwdKqycyymKKujzdGpwwcHJ8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718197393; c=relaxed/simple;
-	bh=WWBolOGIpylzEcR8iWVbSY4nDj6Q6Ok0Mr8U0S74Nog=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mthgy45VvPqjr+bPSobQCrl9e33jsfZOR9+2+FnfP0xylpx3zD2aKAPeeOfnzGQpP5ASF/4sp878HYwbj2bd+mleyktn/5Ax6vYVox5e0MZ3wby3+z3uT+Oqsda9NpxYFExUCG+nbJcA/d+OjcHZA7SFBvEpbC1jxnzB9+MWNVE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=TyTDP0cL; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C15F4178398
+	for <linux-iio@vger.kernel.org>; Wed, 12 Jun 2024 13:13:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.166.134
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718198002; cv=fail; b=tg06Ng+g1U+KVAqKBtuICsYj90BrnWRnoiPqs1zhovyumHW8qAzCraXtS/DEmZhNo7SCY3TbquWid04HLQh/J86VDlBgQgIlqbrCZVGovheyu+MAtJSxeQOhXqvE3ZfHbvRXnu7PcWAah6NmAYEtH2Qr5S7hOyekJxPItKNmMls=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718198002; c=relaxed/simple;
+	bh=dAMr4Ogw3xbXXryZPwe+RFYDSgttBgRI2S6C8KSBddU=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=DML7vyK1lwL5Y7GQ60Aa4q0hWHKP/c/VTXygjknWZq/RqEQBIY1/l3R4PPDkcoA5ksB4yidProLBRL7DzqotNO4j2YWWM7XVYKtAL2eGeXhgCLfh5Dgo77Ne6JA3SwICYp6ZeeXPX4nLWe2Jf1bs7hvF+RZ3+eYc1+6PuTg/No4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tdk.com; spf=pass smtp.mailfrom=tdk.com; dkim=pass (2048-bit key) header.d=tdk.com header.i=@tdk.com header.b=C9mWILBE; arc=fail smtp.client-ip=205.220.166.134
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tdk.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tdk.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="TyTDP0cL"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45C6cGqs002131;
-	Wed, 12 Jun 2024 09:02:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=F2fmS
-	JwBoHTFVSBAKg0voh+unOHQkM0gDth597YWM9Q=; b=TyTDP0cLIggvSnh0pPe49
-	OJPcWfA5F5v9z94IXQ6bB7kt9eb//l5G6jaj3vVmi8PkFcaxjvSvOtQ4ygg5NpFG
-	VOuMk7kBpM78b6IP2bYwpYjRkusaB7GE46pKjuPw/h9Fu+w1DJcoutIrXjHS5aHA
-	gw2bQOJV6tksMxRbz4isURjG8d4szbM4hvUZaJndAAoADZvxqiL8fBl1dBRBVH06
-	uvfxr6e9o4hg1syQqS7U0ooIC5Shb3FBq7hPxwJTvlif/rEtexI6i72+kI4rSH8V
-	hEqE8jkjcaEFJcvItwrD+6vJutFkz/WD7dM2C9nIBezLPvM+akWa2lMxB9LCZ6T6
-	g==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3ymh52yjm8-1
+	dkim=pass (2048-bit key) header.d=tdk.com header.i=@tdk.com header.b="C9mWILBE"
+Received: from pps.filterd (m0233778.ppops.net [127.0.0.1])
+	by mx0b-00549402.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45BMml5Y022473;
+	Wed, 12 Jun 2024 12:26:22 GMT
+Received: from deu01-be0-obe.outbound.protection.outlook.com (mail-be0deu01lp2172.outbound.protection.outlook.com [104.47.7.172])
+	by mx0b-00549402.pphosted.com (PPS) with ESMTPS id 3ymdnyjyrb-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 12 Jun 2024 09:02:58 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 45CD2vgi046992
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 12 Jun 2024 09:02:57 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Wed, 12 Jun 2024 09:02:56 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Wed, 12 Jun 2024 09:02:56 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 12 Jun 2024 09:02:56 -0400
-Received: from amiclaus-VirtualBox.ad.analog.com ([10.65.36.213])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 45CD2eNF023729;
-	Wed, 12 Jun 2024 09:02:50 -0400
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, "Rob
- Herring" <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        "Conor
- Dooley" <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v4 2/2] iio: frequency: adf4350: add clk provider
-Date: Wed, 12 Jun 2024 16:02:29 +0300
-Message-ID: <20240612130232.7692-2-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20240612130232.7692-1-antoniu.miclaus@analog.com>
-References: <20240612130232.7692-1-antoniu.miclaus@analog.com>
+	Wed, 12 Jun 2024 12:26:21 +0000 (GMT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=igR3CHDfQBsespOAB5y02kYPUL80/JSq/NBvgGnDwA+Nt3fIK71iWf8inPAm1DVR+v/bxfDUw+DaiXR0ELnPeZiyrCVyTF4KznuYh3B3hGZ+QA9BQD7n0g9LTDMiABI70zpTPXJbt9PSCFAy5BSOjCEVVi9W7ju5Eomj69cjAxFY1wDCoBc/wEmAHYhu+PLxfPzuKG5b0+SxW8H4KbRq6nci9yBjiLN6Elgln8tMv+3IfMr5TTQu19fO4s40mISYh8tXN+a36rImw2ui7WlPiH/+gVh1xELecOa3GeOu4VVt0r7X/SKQ+Ko8N6eE6xhZrzdyAyy7s+2ybX3qF4DP1g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dAMr4Ogw3xbXXryZPwe+RFYDSgttBgRI2S6C8KSBddU=;
+ b=ONlaAJYYouuib60JEK/M5iLJbZUu7tvYLDY8E/qsvxO62tM0Uy5rqBD8ru+egIc2PRh1ORpXaN3mhzlyNI6AKdfilFw/XTwVNuqRLcQVD1TC5gIZmMVF0JNVRWxR2mWE5103cllNzqsbv60UWBkc6WKHwzE3DUCH8qRIx2t1BFPaGVHhkNC/E/bZADY4oS3NUD/lze2e6RSpeiEoNVcURHHSJWX2l7l07xlzw6vhCdtl7O077IwzFaTzPPuloBcT9MklXXhJRLKbSDdOSSpw8ZrLgzHCp5Ho58/gzRB1rIKLjWwkcwkLUgSHFApnY0EMz8Z3tsGDViue03siicYGGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=tdk.com; dmarc=pass action=none header.from=tdk.com; dkim=pass
+ header.d=tdk.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tdk.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dAMr4Ogw3xbXXryZPwe+RFYDSgttBgRI2S6C8KSBddU=;
+ b=C9mWILBEH8EXP4wSJKm4w7WmspkStNc04NyrxZiKrnGBwBRWYwCQayYU3jknm5VBmBi3CJkAKScPV0yJQ6L9q0U+S0hHitf8NOC5siPeRZ3lPFLOqIWBb4jh+BIQkvx7a9XML4u7m8lT3pz0rwQrIzEuDqx+xL71fy/Sjn4xoLZPAqtnWwrnjnnFkq/A0UWYZxpVljsLBgfN+ZzlG+uNaE01XrLqh0gnkc2QtZsxZij9qPSYDORDu1JUuATc1hKWSRJRS2fHNRr3qDOtyMoudkMW0QyV0vBSz4Oac5y2BRu9ongds4t9kyyF/1SnpXTS8DVEMeVNVBSegQZN8IqvuA==
+Received: from FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:7c::11)
+ by FR6P281MB4537.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:131::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.20; Wed, 12 Jun
+ 2024 12:26:17 +0000
+Received: from FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM
+ ([fe80::53a6:70d:823f:e9ac]) by FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM
+ ([fe80::53a6:70d:823f:e9ac%4]) with mapi id 15.20.7677.019; Wed, 12 Jun 2024
+ 12:26:16 +0000
+From: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
+To: Sean Nyekjaer <sean@geanix.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
+        "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+Subject: Re: inv_icm42600: icm42670
+Thread-Topic: inv_icm42600: icm42670
+Thread-Index: AQHavKKKX1XTBHVPBUittfkVUpb3ZbHEC8Lq
+Date: Wed, 12 Jun 2024 12:26:15 +0000
+Message-ID: 
+ <FR3P281MB1757036E338AF80CEF7555ACCEC02@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
+References: <7s6uxp3luxdenurhh5kcgsrokiawtrlzn2krqphotoeuir5xol@yqhbztxiv6by>
+In-Reply-To: <7s6uxp3luxdenurhh5kcgsrokiawtrlzn2krqphotoeuir5xol@yqhbztxiv6by>
+Accept-Language: en-US, fr-FR
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: 
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: FR3P281MB1757:EE_|FR6P281MB4537:EE_
+x-ms-office365-filtering-correlation-id: ce310837-3709-42b8-77db-08dc8adadacf
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: 
+ BCL:0;ARA:13230032|1800799016|376006|366008|38070700010|3613699004;
+x-microsoft-antispam-message-info: 
+ =?iso-8859-1?Q?vW/vYxtoFNqKJv0UYei6Vtn9XtNtvd1QDC1gsvSqIPgOQz4PrAKf8vQTHV?=
+ =?iso-8859-1?Q?eIz/RgCjOC6QOfbWWwcBKBsR7oo3tvOXF2Ea/fR6mkp4PO8G3xXRjvYuyj?=
+ =?iso-8859-1?Q?hwFJFDdVivweqjs6ldrOd8nRm5h49LXNfXUCabeFok8IqLzSHFAQ7Lrqeh?=
+ =?iso-8859-1?Q?H8lgTEw8Lql5w5R5Ch5VrEOwphhMENSeru2pfNjEUFODX9bGz/b3svPFLy?=
+ =?iso-8859-1?Q?kOfoodPcsi2j/Ui1O6aDWylnERJ1FT5cBgMqF5EeO6cZpZIG9jGhMBN5lX?=
+ =?iso-8859-1?Q?2NSDYOzAFkkzuLvST5yOO8xz2x5gBHPnxSbwdAlcwSlot5cUwS8NX6kEh1?=
+ =?iso-8859-1?Q?ifaIUlih58X9/wOiMBLpUlFkYkfIeo4e/EbUFUMQF2g5Z85UYAuN2mwb27?=
+ =?iso-8859-1?Q?fAc9rgjXU6aqaHmkFEiqzT1VECeaH2IOVC9DeWS7dVWUviUyWFOunYqUaB?=
+ =?iso-8859-1?Q?ULN90gzHM2ZhqrXfQPkYk6cIy9ZNnZs2Tivvyvf7SDbomaJS0mY/828PjJ?=
+ =?iso-8859-1?Q?r+aiT5zjrNIa1sYBVhpZpIcXcXppk2ZL7t92vmry+WD/5Qs9mD8CA7TZQk?=
+ =?iso-8859-1?Q?M69kRvxVi2gvCbVn0PNROkyIRNyH8jHw4dDyAPDjR7/YtyEk5O5sK0e3kr?=
+ =?iso-8859-1?Q?fEJB9r858QwwJ3wdXFxpzjx44Pmc40uRRnOBgirp/MFG6JqOfjgXiCiMkK?=
+ =?iso-8859-1?Q?elLeuCYSrtjCwPVfBJ6/ZIQcrc3n3qU9FtA+9PJKK0tujAfqw+/0I4NaCa?=
+ =?iso-8859-1?Q?VpTs3Ur+eV3JoEMcCBOl0SZ7FJq6wx/1Aid1ejz3pT2Hs4j+XH9HLBwmmi?=
+ =?iso-8859-1?Q?r6yvO7TljdRzuJf+29N39DxyB6pTLV9mGf+jJw2ehV1zvqvu3kQLfDKbPt?=
+ =?iso-8859-1?Q?sfr1p4pV8iPafGLj+ubHplojEo4lUOyalhMP9xOntrUXRa4pgIu6Kk+6Yq?=
+ =?iso-8859-1?Q?O69lX11c3752Elkh1qJGCiOURfVHg//WCZ7k3amj7pnpOyjp5NTO8ogVop?=
+ =?iso-8859-1?Q?xWr95plqMfOuccNQswX/s6QNxNyG3H4eyf3lldBqJ3k7g2pz2tXmglg7aE?=
+ =?iso-8859-1?Q?UNen34Ce2kifpguJV6d7gPJlVlDned83R0lkyIr9eoIYwRdfhlmQMWc8dJ?=
+ =?iso-8859-1?Q?0Ta6Cquat+Wfu6b66ToKoVpQB/67rkUZkl1pELqamwbfBeNXtTugQ655OY?=
+ =?iso-8859-1?Q?XuyqKBk1jkTaYwdQOfU5NuH8C72RarrZEF88F0ahuuHfGvK1OxkwrBswmz?=
+ =?iso-8859-1?Q?SXSP6u9zywu21KE/8pM+Seax79SDypXUrJjOxGn8NzjEOd9lMXNdgLJT4u?=
+ =?iso-8859-1?Q?IfTwzBzQhNy3J+49FWBCDJX5b/PTFJSE+/EPtbe9C7LD8DF5n14C6r4uyt?=
+ =?iso-8859-1?Q?ejumJzZAKVxkzD5dR3cHk5NtDnHRqUBEx0F3Hzp6hpYWodPAE5wdkZmGjK?=
+ =?iso-8859-1?Q?cH+BADRU94ut11kQjrX0U+/miMgX1DpVp/7D+A=3D=3D?=
+x-forefront-antispam-report: 
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230032)(1800799016)(376006)(366008)(38070700010)(3613699004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: 
+ =?iso-8859-1?Q?1CSg/XCFMJD5sIdH2MPnYe2XA/KqoNC8XE6Q6WuNvGprE9uxj3Vkwgg4zP?=
+ =?iso-8859-1?Q?oCRS6Vy0gFzUsBGkjo+WRFR2QH1S6WiUcO3EIu8deqjr8HTqMxBD1vbA3F?=
+ =?iso-8859-1?Q?wH26CMH8zdCKlg+SpsTA7Bz+9fNRWX91fRTU0f6Ftn/mt+fHVjXQIFLGER?=
+ =?iso-8859-1?Q?ZO5+p9cDjiEuUHH26S5+sNN5vkI/Nt+qMPZbOjYtMqnVrmFcJU2Ly/5Jl4?=
+ =?iso-8859-1?Q?hlmbmdcz5Sc7coPK58Viry008NLvKxowOq9qEdmV6TXGd/tPGwp2aF8WHP?=
+ =?iso-8859-1?Q?X5e5XPYxHm6qjy/pyiCtfV6hVN7ERXiMgQeMGl1VfCuvzQM1HFMgifS88/?=
+ =?iso-8859-1?Q?IR6lO5LGTM+2VggyxwbkD72pAjrpn7j7i8epUFe+JqsqwvNiq7WFjbvh/n?=
+ =?iso-8859-1?Q?JHIFFOk06oCgzATwLPxEGLUfVLGzuopMWr3SIr7iiFcOnKW5zWHXFEZeV2?=
+ =?iso-8859-1?Q?adDWNGOtmNW9NZNfSjzVrtGNx0+xXjobsLjn7weJudN5Pso9jAebEPhJl/?=
+ =?iso-8859-1?Q?+PQk7gkW9YLU5nR11jhRyoHhte24ZtTbhkeWMugSQrF4+8RM70rInxpXI3?=
+ =?iso-8859-1?Q?YNAZ8CUOGn8pjr540IfM/aAAUUMcZTx3g1QOLEbr3qXt7Pch5tzJ09ROxR?=
+ =?iso-8859-1?Q?YR0aula5g4sh2e7UdRoiyVLcSgTUbjwWGiPtBdFS3yxDA0EU0j4SP7WAyK?=
+ =?iso-8859-1?Q?Q9Xbd9wsmT3Nyh8SElFxyR0S488eGE6Gv97K//CJY5DZ4d4jD9WmMUpy+Q?=
+ =?iso-8859-1?Q?ZgjKblda+5hZvpFqyRzw3T9YrmtbZ97Kv3zQTNEnVyiDveUuUr3s6vbO2U?=
+ =?iso-8859-1?Q?dileoL60phgBwU+03D6YXGZcN6sAKPbERDsBRNczoJqZbZhLyeioKox5tY?=
+ =?iso-8859-1?Q?N7Dl+I+Z5SCIX0yhHP7whyzzMrc6kdxrTPAHKTZKYQa6DUbitw1/pAYa5O?=
+ =?iso-8859-1?Q?f0OwyMW4bwdmUnNz866wiPYw7lfX5RZyHeSRykcpEjd51eGrv9YKcvagNk?=
+ =?iso-8859-1?Q?m3r/TmDZh9sbhxkomP5WmJo4RSWg6W/fw+jDsH3WkccGDSeGPPFM78Yebd?=
+ =?iso-8859-1?Q?6Eit5jEdzE7xd+FvScjl4PbC+NdkLf1553VL8DAAsC1zKL8SFeL3JrCMwr?=
+ =?iso-8859-1?Q?yrLWgMi6driRkSOQr6/SF/jzbtIMFLldS4Lfsl7O3pqu+KMU6/X/pYf9vc?=
+ =?iso-8859-1?Q?VZd55zeR+AlDWcoHO0QX+VzS1gv03H4GSoHIxZRFUsAqOxSoDiQVesXfYH?=
+ =?iso-8859-1?Q?GS0YZgWz5xHIagU2oxccntmQ3j/BMb28vLlN8qNaUaqCB/171q4BEgksU6?=
+ =?iso-8859-1?Q?Au3TE+v8DxUaEt4rQUd21uNCh6DNUcXwo7MenMTbPldC4AXKt8DbTohZtA?=
+ =?iso-8859-1?Q?1dibXslB/DX2UbkEa05RAZPf2Uo2YWKNzI7S0zwzKHjzSOLMVTAzMCgFbf?=
+ =?iso-8859-1?Q?cPZVEZbE1y6sGmh1ssPobwP+pTg2K48fgg3WKnU8A5uV0PLTZ6ldHx3g0n?=
+ =?iso-8859-1?Q?Nvpvw0rgKo75zDegRrZeUzithmWY5GULMQE40qkwRvXkBKmbaF4kH0NwPX?=
+ =?iso-8859-1?Q?fSEhOq4i3Vd6q0TImTRPJ1XuJ21LkxeXZ7dq6DWgPJvbXX/90BlowA2+nW?=
+ =?iso-8859-1?Q?sCMoq7tPdgrz8hYL/CZdv3TOfwdOPUAaJaNhF4eC3H6eRr7tdWvu7UCQCT?=
+ =?iso-8859-1?Q?mc3G1Yd/oSRJImu1TWwOLMnMOlWiYbr8Q9m3N9XU6YndvKDb1XQ9skRemX?=
+ =?iso-8859-1?Q?iAOg=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: p3J4BdCU9PG9j5DNTKhvuTK6YhZTsl5E
-X-Proofpoint-GUID: p3J4BdCU9PG9j5DNTKhvuTK6YhZTsl5E
+X-OriginatorOrg: tdk.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: ce310837-3709-42b8-77db-08dc8adadacf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jun 2024 12:26:15.8195
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 7e452255-946f-4f17-800a-a0fb6835dc6c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hTMsiANavE7BtwD8rgz1MW2VZuy0Ls1Hu3lqgke/FbbWhPycgplqrur/WxudI0dluR8NADi1CkKyhyPeRYKjbU+h+rAPOxxP5+4h3Uawa2Q=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR6P281MB4537
+X-Proofpoint-GUID: kAOBsBQcwknOBY7TGEeZC7Quh54PAH_9
+X-Proofpoint-ORIG-GUID: kAOBsBQcwknOBY7TGEeZC7Quh54PAH_9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-06-12_06,2024-06-12_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- suspectscore=0 mlxlogscore=999 priorityscore=1501 phishscore=0 bulkscore=0
- spamscore=0 lowpriorityscore=0 impostorscore=0 clxscore=1015 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2405170001
- definitions=main-2406120093
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 priorityscore=1501
+ lowpriorityscore=0 impostorscore=0 adultscore=0 mlxlogscore=563
+ phishscore=0 bulkscore=0 malwarescore=0 suspectscore=0 clxscore=1011
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2405170001 definitions=main-2406120090
 
-Add clk provider feature for the adf4350.
-
-Even though the driver was sent as an IIO driver in most cases the
-device is actually seen as a clock provider.
-
-This patch aims to cover actual usecases requested by users in order to
-completely control the output frequencies from userspace.
-
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-changes in v4:
- - rename macro to `to_adf4350_state`
- - do not expose ADF4350_FREQ and ADF4350_FREQ_REFIN if driver is used as clk
-   provider.
- - initialize flags with CLK_SET_RATE_PARENT
- drivers/iio/frequency/adf4350.c | 134 +++++++++++++++++++++++++++++++-
- 1 file changed, 133 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
-index 4abf80f75ef5..8309ddfca9af 100644
---- a/drivers/iio/frequency/adf4350.c
-+++ b/drivers/iio/frequency/adf4350.c
-@@ -19,6 +19,7 @@
- #include <linux/gpio/consumer.h>
- #include <asm/div64.h>
- #include <linux/clk.h>
-+#include <linux/clk-provider.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -36,6 +37,9 @@ struct adf4350_state {
- 	struct gpio_desc		*lock_detect_gpiod;
- 	struct adf4350_platform_data	*pdata;
- 	struct clk			*clk;
-+	struct clk			*clkout;
-+	const char			*clk_out_name;
-+	struct clk_hw			hw;
- 	unsigned long			clkin;
- 	unsigned long			chspc; /* Channel Spacing */
- 	unsigned long			fpfd; /* Phase Frequency Detector */
-@@ -61,6 +65,8 @@ struct adf4350_state {
- 	__be32				val __aligned(IIO_DMA_MINALIGN);
- };
- 
-+#define to_adf4350_state(_hw) container_of(_hw, struct adf4350_state, hw)
-+
- static struct adf4350_platform_data default_pdata = {
- 	.channel_spacing = 10000,
- 	.r2_user_settings = ADF4350_REG2_PD_POLARITY_POS |
-@@ -370,6 +376,12 @@ static const struct iio_chan_spec_ext_info adf4350_ext_info[] = {
- 	{ },
- };
- 
-+static const struct iio_chan_spec_ext_info adf4350_clk_ext_info[] = {
-+	_ADF4350_EXT_INFO("frequency_resolution", ADF4350_FREQ_RESOLUTION),
-+	_ADF4350_EXT_INFO("powerdown", ADF4350_PWRDOWN),
-+	{ },
-+};
-+
- static const struct iio_chan_spec adf4350_chan = {
- 	.type = IIO_ALTVOLTAGE,
- 	.indexed = 1,
-@@ -377,10 +389,122 @@ static const struct iio_chan_spec adf4350_chan = {
- 	.ext_info = adf4350_ext_info,
- };
- 
-+static const struct iio_chan_spec adf4350_clk_chan = {
-+	.type = IIO_ALTVOLTAGE,
-+	.indexed = 1,
-+	.output = 1,
-+	.ext_info = adf4350_clk_ext_info,
-+};
-+
- static const struct iio_info adf4350_info = {
- 	.debugfs_reg_access = &adf4350_reg_access,
- };
- 
-+static void adf4350_clk_del_provider(void *data)
-+{
-+	struct adf4350_state *st = data;
-+
-+	of_clk_del_provider(st->spi->dev.of_node);
-+}
-+
-+static unsigned long adf4350_clk_recalc_rate(struct clk_hw *hw,
-+					     unsigned long parent_rate)
-+{
-+	struct adf4350_state *st = to_adf4350_state(hw);
-+	unsigned long long tmp;
-+
-+	tmp = (u64)(st->r0_int * st->r1_mod + st->r0_fract) * st->fpfd;
-+	do_div(tmp, st->r1_mod * (1 << st->r4_rf_div_sel));
-+
-+	return tmp;
-+}
-+
-+static int adf4350_clk_set_rate(struct clk_hw *hw,
-+				unsigned long rate,
-+				unsigned long parent_rate)
-+{
-+	struct adf4350_state *st = to_adf4350_state(hw);
-+
-+	if (parent_rate == 0 || parent_rate > ADF4350_MAX_FREQ_REFIN)
-+		return -EINVAL;
-+
-+	st->clkin = parent_rate;
-+
-+	return adf4350_set_freq(st, rate);
-+}
-+
-+static int adf4350_clk_prepare(struct clk_hw *hw)
-+{
-+	struct adf4350_state *st = to_adf4350_state(hw);
-+
-+	st->regs[ADF4350_REG2] &= ~ADF4350_REG2_POWER_DOWN_EN;
-+
-+	return adf4350_sync_config(st);
-+}
-+
-+static void adf4350_clk_unprepare(struct clk_hw *hw)
-+{
-+	struct adf4350_state *st = to_adf4350_state(hw);
-+
-+	st->regs[ADF4350_REG2] |= ADF4350_REG2_POWER_DOWN_EN;
-+
-+	adf4350_sync_config(st);
-+}
-+
-+static int adf4350_clk_is_enabled(struct clk_hw *hw)
-+{
-+	struct adf4350_state *st = to_adf4350_state(hw);
-+
-+	return (st->regs[ADF4350_REG2] & ADF4350_REG2_POWER_DOWN_EN);
-+}
-+
-+static const struct clk_ops adf4350_clk_ops = {
-+	.recalc_rate = adf4350_clk_recalc_rate,
-+	.set_rate = adf4350_clk_set_rate,
-+	.prepare = adf4350_clk_prepare,
-+	.unprepare = adf4350_clk_unprepare,
-+	.is_enabled = adf4350_clk_is_enabled,
-+};
-+
-+static int adf4350_clk_register(struct adf4350_state *st)
-+{
-+	struct spi_device *spi = st->spi;
-+	struct clk_init_data init;
-+	struct clk *clk;
-+	const char *parent_name;
-+	int ret;
-+
-+	if (!device_property_present(&spi->dev, "#clock-cells"))
-+		return 0;
-+
-+	init.name = devm_kasprintf(&spi->dev, GFP_KERNEL, "%s-clk",
-+				   fwnode_get_name(dev_fwnode(&spi->dev)));
-+	device_property_read_string(&spi->dev, "clock-output-names",
-+				    &init.name);
-+
-+	parent_name = of_clk_get_parent_name(spi->dev.of_node, 0);
-+	if (!parent_name)
-+		return -EINVAL;
-+
-+	init.ops = &adf4350_clk_ops;
-+	init.parent_names = &parent_name;
-+	init.num_parents = 1;
-+	init.flags = CLK_SET_RATE_PARENT;
-+
-+	st->hw.init = &init;
-+	clk = devm_clk_register(&spi->dev, &st->hw);
-+	if (IS_ERR(clk))
-+		return PTR_ERR(clk);
-+
-+	ret = of_clk_add_provider(spi->dev.of_node, of_clk_src_simple_get, clk);
-+	if (ret)
-+		return ret;
-+
-+	st->clkout = clk;
-+
-+	return devm_add_action_or_reset(&spi->dev, adf4350_clk_del_provider, st);
-+}
-+
- static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
- {
- 	struct adf4350_platform_data *pdata;
-@@ -522,7 +646,6 @@ static int adf4350_probe(struct spi_device *spi)
- 
- 	indio_dev->info = &adf4350_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
--	indio_dev->channels = &adf4350_chan;
- 	indio_dev->num_channels = 1;
- 
- 	mutex_init(&st->lock);
-@@ -551,6 +674,15 @@ static int adf4350_probe(struct spi_device *spi)
- 			return ret;
- 	}
- 
-+	ret = adf4350_clk_register(st);
-+	if (ret)
-+		return ret;
-+
-+	if (st->clkout)
-+		indio_dev->channels = &adf4350_clk_chan;
-+	else
-+		indio_dev->channels = &adf4350_chan;
-+
- 	ret = devm_add_action_or_reset(&spi->dev, adf4350_power_down, indio_dev);
- 	if (ret)
- 		return dev_err_probe(&spi->dev, ret,
--- 
-2.45.2
-
+Hello Sean,=0A=
+=0A=
+despite its naming, icm42670/icm42607 are completely different chips compar=
+ed to traditional icm42600 chips.=0A=
+=0A=
+The icm42670 open-source Linux driver is currently work-in-progress in our =
+side. There is a plan to send it here when it will be ready. I'm sorry ther=
+e is no timeframe for the moment. We already have an internal Linux driver =
+for our Android solution, but it is not a standard one.=0A=
+=0A=
+icm42670 is sharing some things from icm42600 like the FIFO, but it's almos=
+t all. We are planning to do a driver with a single iio device and multiple=
+ buffers, different from what was done for icm42600 (at that time there was=
+ no multiple buffers support).=0A=
+=0A=
+Best regards,=0A=
+JB=0A=
+=0A=
+________________________________________=0A=
+From:=A0Sean Nyekjaer <sean@geanix.com>=0A=
+Sent:=A0Wednesday, June 12, 2024 10:28=0A=
+To:=A0Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>; INV Git Comm=
+it <INV.git-commit@tdk.com>=0A=
+Cc:=A0Jonathan Cameron <jic23@kernel.org>; linux-iio@vger.kernel.org <linux=
+-iio@vger.kernel.org>=0A=
+Subject:=A0inv_icm42600: icm42670=0A=
+=A0=0A=
+This Message Is From an Untrusted Sender=0A=
+You have not previously corresponded with this sender.=0A=
+=A0=0A=
+Hi all,=0A=
+=0A=
+I got a custom board with the TDK icm42670 fitted. We thought is was a=0A=
+simple ID add, but I was somewhat wrong.=0A=
+Many registers are on different addresses and so on.=0A=
+=0A=
+I have done some work in the st_lsm6dsx, that includes many different=0A=
+imu devices from the same family.=0A=
+But the driver is kinda hard to read because of that.=0A=
+=0A=
+So is it better to do a new driver called icm42670 or should we do the=0A=
+same style as the st_lsm6dsx?=0A=
+=0A=
+@TDK=0A=
+Do you have done some work for the icm42670?=0A=
+=0A=
+/Sean=0A=
+=0A=
