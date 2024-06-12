@@ -1,67 +1,74 @@
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98A9517D377;
-	Wed, 12 Jun 2024 13:56:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0F24537F8;
+	Wed, 12 Jun 2024 14:17:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718200595; cv=none; b=MKNcbdiHEJO+LwqD+NQ77GAsZbvXtgZfuQxG0AOdWJYIUZVawQ3qx2WFub45+DcRSOZ7i4IegjgFlRRT6M0kRhz/HLTiP2F6RUE1vFbBUszHxxMQaU42jHvwF2TgSMw/cjiJQuGihsGnxuMOn8SnO9NiK+oEPeUp135Gnr+z0Xk=
+	t=1718201831; cv=none; b=urEZOwY4Qrvr00N6Z/2lSN1Z5MBQwY3zajCd7EAsqXB2SNBDBwB2tCZsRSMYdgRH/WoFCbVrcPjRo+lJEHTZxvUAuc/q8EhORP9Awg9bi9KLTZnQY5pbONINlobt76RKh6wbABbgNpjhwvv4Ult2drdgbGLsXflPysYm+Xk/B90=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718200595; c=relaxed/simple;
-	bh=7LolFPbO1hTMMdKSlgj4lgHTXXs5+e4vcZPmXf+X2PQ=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lKwemH+u4ZiJWVTZbSn5pun/GGgNIlqjnU6q7ICQ3b6F8nRzQc4ZYNYcv/LvwuPxSvaHf9W9sxJFgBDYF39J71IY30ySvR2tLPI0y5mRwMDwbTlFRtrAPm5TcESMa5w5k90zsIVeSdEWFd2FJg6yFnFPsW3/z/8z9+pzab6w4sQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=aT7XqjjJ; arc=none smtp.client-ip=198.47.23.249
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	s=arc-20240116; t=1718201831; c=relaxed/simple;
+	bh=qbIPRYnyZGhF7xViW68hm4SHaRMwBauK1+ojB+XEcwk=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=pZQA+PI+ZodlExt5q5xzVIbPlA6+bJuI5t7BN0mwWhXqm7z5dKqP6bu0dV3QbW66wyLTdhLWov8JseyJ7bBelZfwRbioRf05AY4J1lnC4HEpElY+muMz1EvjjWCSqjFVtT/gd75bVStNB81+Mz1nNFtz0Tjf/gvc6bgEurq8xG4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Un9XR3un; arc=none smtp.client-ip=209.85.208.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="aT7XqjjJ"
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 45CDtdEW119432;
-	Wed, 12 Jun 2024 08:55:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1718200539;
-	bh=MJTQ6wU2tRfHsxb7YYfOMSHRUXUeBgzmXsMYDmJlqVI=;
-	h=From:To:CC:Subject:Date:In-Reply-To:References;
-	b=aT7XqjjJK+tYrDgw215MtOSVloF3NqA1eOB/B9QTE646aEoiB+k/9Gr419iww60AL
-	 pdZiCpvfJ35t/nSmPrfv+Q3GxUkRQbwLaeFfUznJ8M+uyxPceFa3hNtlxKMsn14dPw
-	 n0wiRsi0SmYEBcmxCyJmLcJ5TuZ9wpienUus2rwo=
-Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
-	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 45CDtdZ1112383
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 12 Jun 2024 08:55:39 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Wed, 12
- Jun 2024 08:55:38 -0500
-Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Wed, 12 Jun 2024 08:55:39 -0500
-Received: from judy-hp.dhcp.ti.com (judy-hp.dhcp.ti.com [128.247.81.105])
-	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 45CDtclR092708;
-	Wed, 12 Jun 2024 08:55:39 -0500
-From: Judith Mendez <jm@ti.com>
-To: Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski
-	<krzysztof.kozlowski@linaro.org>,
-        Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        William Breathitt Gray <wbg@kernel.org>, Nishanth Menon <nm@ti.com>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero
- Kristo <kristo@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        David
- Lechner <david@lechnology.com>
-Subject: [PATCH v5 2/8] counter/ti-eqep: Add new ti-am62-eqep compatible
-Date: Wed, 12 Jun 2024 08:55:32 -0500
-Message-ID: <20240612135538.2447938-3-jm@ti.com>
-X-Mailer: git-send-email 2.45.1
-In-Reply-To: <20240612135538.2447938-1-jm@ti.com>
-References: <20240612135538.2447938-1-jm@ti.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Un9XR3un"
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2e72224c395so22628611fa.3;
+        Wed, 12 Jun 2024 07:17:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1718201828; x=1718806628; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=spyLnB7qZ3YQPzkCd6Fxx3pPcQHJ/lEc1AThjKTsvPM=;
+        b=Un9XR3un0StTvINPeNlt/ed0mSGA2KmqQqNwrdgZO/OxfgSIbyU8NKr2L7F44OD30F
+         4infKm2iqNi0tGvaFk/IY9bN/+CbgtyQFmd9YQbRiMjQiQ/7TbjXL7ibeI+n5aNoFtl/
+         i8sZicL6Ej6hB040qy5cKA/Te8KeAy6mHFgEwRCqehvBPT4BQQyE6DUt+zSiS+j/16Ud
+         7ZfO2r/cmlua4N5Xdj4x6d7m2PMDnJJY/Ib32WyaOz8J2LlZ3T6dga26VQxiZUeA0Mlf
+         RXw/sED697fJ+Y2p4Hc14pFA+IE2acRrf9D10BfU4ccntFGyhkd7c0N2FkecnikO7GbO
+         QnOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718201828; x=1718806628;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=spyLnB7qZ3YQPzkCd6Fxx3pPcQHJ/lEc1AThjKTsvPM=;
+        b=Ayr5nKWixBXu+LfWS4s9ACsGv1HLivSkKVza3E8aojEMOom5TzJNXbd7EJ5jnsMw0H
+         hthDF96Swzj3fCe/w/h+hwCJZR9x/d01u44y0vtbDJNEup+h5d6pE7VEFhhCjmdqrcHK
+         xhKjJ6jFGKuWgcmKjLF+E8dw/1ndUbZIc++q4ofaM6+dIpS7zz9unuO2EY7o4anFMo4t
+         h674EpSO3y4jDPw+1xWRKNK12KZprggdYZ8PuHPSEZZHDZg9OHuEdJNAv/RI1r9lqa3G
+         uH2hqpljgVATEQkvcno1QhwqBGitXwKxRMUeC3IugyCjiamXk0z6WZDUeg7HNWeFcg2O
+         3bDQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWbAfE5DOXfd8tCkcFfO7Pf7UpIshPO6UBMn8AZjbxfH4hCEXGArNPbXIfCTa+DGQ9Ch/OqRzYWQV+lQV7F7gAAPSkCe8rhG/NMDYJR6wHZ00wpV07OHQ1x/WkEzbR8G6UFHzxTqdZgAfsjsnO74+7LlK0rG2yLM9RMIfWe7udNHkVVBg==
+X-Gm-Message-State: AOJu0Yyhw3hs8zdA66aEySwsxYkA06dG7GL2RkgxGtgrY1+xpGkJpjK/
+	y7MFYx5j+OOw4YLSD5FCGesF6+2anr3koe//oj+/9TTYv2tT8aKp
+X-Google-Smtp-Source: AGHT+IE8rB2Uo89G98SAm8buwFxQVgCiqk8FRbd59f7SxkuOyJXgrRp/2ihXz/Ys91n8zYSKO3Z+VA==
+X-Received: by 2002:a2e:854f:0:b0:2eb:dbc6:da84 with SMTP id 38308e7fff4ca-2ebfc949a21mr12145791fa.53.1718201827662;
+        Wed, 12 Jun 2024 07:17:07 -0700 (PDT)
+Received: from spiri.. ([5.2.194.157])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42286fe75ebsm27876655e9.9.2024.06.12.07.17.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jun 2024 07:17:07 -0700 (PDT)
+From: Alisa-Dariana Roman <alisadariana@gmail.com>
+X-Google-Original-From: Alisa-Dariana Roman <alisa.roman@analog.com>
+To: Alisa-Dariana Roman <alisa.roman@analog.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Alexandru Tachici <alexandru.tachici@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Subject: [PATCH v3 0/2] iio: adc: ad7192: Fix clock config
+Date: Wed, 12 Jun 2024 17:16:35 +0300
+Message-Id: <20240612141637.175709-1-alisa.roman@analog.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,32 +76,22 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 
-Add new compatible for ti-am62-eqep for TI K3 SoC's.
+Dear maintainers,
 
-Signed-off-by: Judith Mendez <jm@ti.com>
-Reviewed-by: David Lechner <david@lechnology.com>
----
-Changes since v4:
-- No change
----
- drivers/counter/ti-eqep.c | 1 +
- 1 file changed, 1 insertion(+)
+Thank you very much for your feedback!
 
-diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
-index 072b11fd6b32e..cd50f267cf6fb 100644
---- a/drivers/counter/ti-eqep.c
-+++ b/drivers/counter/ti-eqep.c
-@@ -437,6 +437,7 @@ static void ti_eqep_remove(struct platform_device *pdev)
- 
- static const struct of_device_id ti_eqep_of_match[] = {
- 	{ .compatible = "ti,am3352-eqep", },
-+	{ .compatible = "ti,am62-eqep", },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, ti_eqep_of_match);
--- 
-2.45.1
+Here is the series of only fixes. I will create another series for the
+other patches.
+
+King regards,
+Alisa-Dariana Roman.
+
+v2 -> v3
+  - remove clean up patch
+  - remove clk provider part
+  - keep name mclk
+  - organize in function ad7192_clock_setup
+  - change commit messages accordingly
+
 
