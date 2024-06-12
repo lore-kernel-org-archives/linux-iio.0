@@ -1,45 +1,45 @@
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98AD817DE06;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A23D717E463;
 	Wed, 12 Jun 2024 13:56:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.249
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718200593; cv=none; b=gj6TWTP8J1bU5VoWk16i3WFM1x/3SmA7PlRYXQ3L3UvPFKNPDuW3MnANVyHTWzMU6rFsGXZTBHQ2BvQU7V2AVRQ+ClkDuU+yO+CvIcwfOjR4bIWNfUPsUeoF4qjJahjDPxymVb2lbxy+lRcvgQWBV4ElA3CEi1/mZw39SCykfek=
+	t=1718200593; cv=none; b=CJPHSAhfMe3KZigbxv/2O6247feTLBHNZ8eJWRvLap0oyU4HIxeRs9eezBgwq35yTF1rI1oPMl9Zu3SL1sgUE4CLGDdl1b82EcvnkLJW50+WxmWSu/z/1t2USP/ornELOJ6qcP0I4wX61B0JzidR+zX179eIVi3rEAK9Aj5ViRM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1718200593; c=relaxed/simple;
-	bh=cOw6vd1kBFTfvnsbOIpMTpqMk/21EngxUqjT1KCjVL4=;
+	bh=pD6KsLVi1E/Ij/4oNiKHYqVGq9cozgVRVB6rdPkxMVg=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lUCaevyGC1TEaItbevWsG4sVWCf8NcenBBazbwHpDX45c5t7ftA40yCra6ZGbI6LHeKz3Fh1FpU60A/YBUFh8g3WwwHW1cgHsJZdoIGgfnDDK+GyIgjR1qPQBp2jPaecsTYMC8M3mkQ9dsnVqK8mBwMqiMmlsQq8NGZEV0XN7oE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=pS9J9L7u; arc=none smtp.client-ip=198.47.23.249
+	 MIME-Version:Content-Type; b=gimcjHA1S4EsvL6WS1H0CLAlMa8jOUiufEkS14hxV0YCL682Y3ikphpqXwojFAwxFeqhePgy2Wt9dU3bJDg7KhXyg9QT/U4FYOL2Vs8woPBeqzwlC6f3vhbNadna6AZ0uaIzw54aBIi5y9a8scooo4kBXcHW8E8jXI1eILrVbwY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=nbwnYy1d; arc=none smtp.client-ip=198.47.19.141
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="pS9J9L7u"
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 45CDtddp119436;
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="nbwnYy1d"
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 45CDtdGF125635;
 	Wed, 12 Jun 2024 08:55:39 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
 	s=ti-com-17Q1; t=1718200539;
-	bh=O21/XJ8Nr9AECG/6mhfZ0SgG8q2eniPF3B8RDzRj66g=;
+	bh=mx+FHTWyAu1V/who5h6ol4v3WAS+aC/NOSQmvH/F0KQ=;
 	h=From:To:CC:Subject:Date:In-Reply-To:References;
-	b=pS9J9L7uwE80zFEmwlaHOp+rGj39LRvUs0SbARRwDMfXSy5lCjjGOzfnCHg3Mm/pn
-	 nxIVqNlCx1KRKmupxYdwIhrPi15ZadDO54IRlqkOqQlgyL6FzuTnyB70hYe90Zcbrp
-	 0hqo+L1ZtlGiqzf2uI/gEr/szmfaH2J+FYeuNjYo=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-	by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 45CDtdmo023646
+	b=nbwnYy1d/hAsU9tMuntuSH8nDYQCrQsj/zxgWBPE2r8h6ezRs2MruHrRuiqEpnQd2
+	 1HzYjoIEnWoTA9z2IKHjcjtAnKpzcGkplc/IT26gMam1Fl9R5GVR9WBLoHYPZMICxO
+	 vUB6w8+amxBNnf3RVyz6KP/7vVwJUbGN4ENJ0T3s=
+Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
+	by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 45CDtdUP101149
 	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
 	Wed, 12 Jun 2024 08:55:39 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Wed, 12
  Jun 2024 08:55:39 -0500
-Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
  Frontend Transport; Wed, 12 Jun 2024 08:55:39 -0500
 Received: from judy-hp.dhcp.ti.com (judy-hp.dhcp.ti.com [128.247.81.105])
-	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 45CDtclX092708;
+	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 45CDtclS092708;
 	Wed, 12 Jun 2024 08:55:39 -0500
 From: Judith Mendez <jm@ti.com>
 To: Rob Herring <robh@kernel.org>,
@@ -56,9 +56,9 @@ CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         David
  Lechner <david@lechnology.com>
-Subject: [PATCH v5 8/8] counter: ti-eqep: Allow eQEP driver to be built for K3 devices
-Date: Wed, 12 Jun 2024 08:55:38 -0500
-Message-ID: <20240612135538.2447938-9-jm@ti.com>
+Subject: [PATCH v5 3/8] arm64: dts: ti: k3-am62-main: Add eQEP nodes
+Date: Wed, 12 Jun 2024 08:55:33 -0500
+Message-ID: <20240612135538.2447938-4-jm@ti.com>
 X-Mailer: git-send-email 2.45.1
 In-Reply-To: <20240612135538.2447938-1-jm@ti.com>
 References: <20240612135538.2447938-1-jm@ti.com>
@@ -72,31 +72,54 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 
-TI K3 SoC's support eQEP hardware, so add ARCH_K3 to the depends
-so the TI eQEP driver can be built for K3 devices.
+Add eQEP device tree nodes 0-2 for AM625 SoC.
 
 Signed-off-by: Judith Mendez <jm@ti.com>
-Reviewed-by: David Lechner <david@lechnology.com>
 ---
 Changes since v4:
 - No change
 ---
- drivers/counter/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/ti/k3-am62-main.dtsi | 27 ++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
-index 497bc05dca4df..d30d22dfe5774 100644
---- a/drivers/counter/Kconfig
-+++ b/drivers/counter/Kconfig
-@@ -138,7 +138,7 @@ config TI_ECAP_CAPTURE
+diff --git a/arch/arm64/boot/dts/ti/k3-am62-main.dtsi b/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
+index 448a59dc53a77..525997456adaa 100644
+--- a/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
+@@ -846,6 +846,33 @@ ecap2: pwm@23120000 {
+ 		status = "disabled";
+ 	};
  
- config TI_EQEP
- 	tristate "TI eQEP counter driver"
--	depends on (SOC_AM33XX || COMPILE_TEST)
-+	depends on SOC_AM33XX || ARCH_K3 || COMPILE_TEST
- 	select REGMAP_MMIO
- 	help
- 	  Select this option to enable the Texas Instruments Enhanced Quadrature
++	eqep0: counter@23200000 {
++		compatible = "ti,am62-eqep";
++		reg = <0x00 0x23200000 0x00 0x100>;
++		power-domains = <&k3_pds 59 TI_SCI_PD_EXCLUSIVE>;
++		clocks = <&k3_clks 59 0>;
++		interrupts = <GIC_SPI 116 IRQ_TYPE_EDGE_RISING>;
++		status = "disabled";
++	};
++
++	eqep1: counter@23210000 {
++		compatible = "ti,am62-eqep";
++		reg = <0x00 0x23210000 0x00 0x100>;
++		power-domains = <&k3_pds 60 TI_SCI_PD_EXCLUSIVE>;
++		clocks = <&k3_clks 60 0>;
++		interrupts = <GIC_SPI 117 IRQ_TYPE_EDGE_RISING>;
++		status = "disabled";
++	};
++
++	eqep2: counter@23220000 {
++		compatible = "ti,am62-eqep";
++		reg = <0x00 0x23220000 0x00 0x100>;
++		power-domains = <&k3_pds 62 TI_SCI_PD_EXCLUSIVE>;
++		clocks = <&k3_clks 62 0>;
++		interrupts = <GIC_SPI 118 IRQ_TYPE_EDGE_RISING>;
++		status = "disabled";
++	};
++
+ 	main_mcan0: can@20701000 {
+ 		compatible = "bosch,m_can";
+ 		reg = <0x00 0x20701000 0x00 0x200>,
 -- 
 2.45.1
 
