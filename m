@@ -1,137 +1,197 @@
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 281B813BC02
-	for <linux-iio@vger.kernel.org>; Mon, 17 Jun 2024 15:18:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B781182A6
+	for <linux-iio@vger.kernel.org>; Mon, 17 Jun 2024 15:28:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718637505; cv=none; b=PxqFAFwV3jTi23xg42qmr2w05OexLTq9I6n1LH7hsruz6uWLHk5HxZBTpG8GdrnkbLbIskvrdSdrfFRhmmTPOoEXSxQR7wR+xSnVSmx83PrILfByCBMg6VyNIiSnL17rFP2qdGmFjx9EpUMlSxOiqyHME4HWQN1scTeJOO6g0mY=
+	t=1718638137; cv=none; b=OJT+Cbf8nV0M/elCghG58B/ViPwKPo6gBzNPwaO7l9v8/TmTNUfKvZOr77xXqKMbfXZH1csY4O4MkBBpe3UabU+fARC/5Ox5/zmfvljg55plv6eeYW6VZd3s7xOw/rKppSknwX52gl4zW9vd68cBJjsxd2fVaro7lCoJVP9P+BY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718637505; c=relaxed/simple;
-	bh=Dtfjmiibyv70CczBYWesrAFMidjZ7VsVwcrW/v6aMN8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bv06M5sehlymgNVh2GPG16egw0SgziPuyBAwPtCd+nUrhyb+8xI2ZYjHv4W4lvRUrBr88P1F1eouIPl49DXnuinqkvo94+MMP0rtqcnOYrBhxBOsri+XULdsLt5jVKU8JqNO2MRmUr0vkL/+Ew2Sae1J4ImUJ/YGr1CqqyOTl8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=a+70oPMU; arc=none smtp.client-ip=209.85.167.182
+	s=arc-20240116; t=1718638137; c=relaxed/simple;
+	bh=AQ2SE0RH62XIYQ3Ernt2eE7UxS8NnWu8VvwS4vqeMkU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=tyyWrdSNUVR2wMJf/bC1RG2FyIf888uHogsKfrJ9QcdeHwNKZ4PVKw2jrondELgNtJuQHYivnTbPg6hXC9n1N33ltLqcgmDWERyvNGyhgs5r3eQyi9eEKfi5OrtaT0jwFyMVe1lp9Pu4dDouY+RZ6bcYkef0LLsFctP6vjaobQs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=ILVf9eDx; arc=none smtp.client-ip=209.85.160.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="a+70oPMU"
-Received: by mail-oi1-f182.google.com with SMTP id 5614622812f47-3d229826727so2552817b6e.1
-        for <linux-iio@vger.kernel.org>; Mon, 17 Jun 2024 08:18:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="ILVf9eDx"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-25488f4e55aso2014647fac.0
+        for <linux-iio@vger.kernel.org>; Mon, 17 Jun 2024 08:28:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1718637503; x=1719242303; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=DqFHaVaNbt8gAYcmaLaicI4T3xsUr/WCZWRgASuEC/s=;
-        b=a+70oPMUlgo2jv+0KQrK8hKQ1EjOIFGVdDqguJOdMFVuTUqsv00EryKZKYmRrsP11j
-         ueLp2SLBIPXf1odCmfADWqTvY+rDpBPqlzmQB6uXgcM7RG+tNoaJBNrx2H39iIHOkWnR
-         CZBDgd46BWeJyK2WL7CjUCJx+LUufQ7v+8RVj/SR8vyeM0IqwHQBQx3qNImK0OUvRr4K
-         NTtqDuTdXsgI248CB9c/FCxLJxVJkmojbBiJmvr+sGrDKBLW1g8SY5ptbjEXYyn89oFN
-         OMbLCnw+3Yy9RHKyx6mgnyTpeve4yr6kbUOcD2u5HOxuJDns2QO+/x7FX86wTBZA56n1
-         MubA==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1718638134; x=1719242934; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OlVlomx5sxYTMMcPGMNO+1cr2atFOWJw4tpHzK2RLUQ=;
+        b=ILVf9eDx26eGc0AjAtYjwCS3YzKWHl4zy5qcFoGI97L/O81fmiF6hjqbw37cO+7EJd
+         FMASWepbXCjB7SZeWbzF5WbUY9spDpt2tyPyzlKDiz18uhjeO7QCNHC5xKl/qo7hGjvM
+         mCJe8PI/oNG7YwZkTg71fPvDBiqwOnEjUhbzssS1SZlZU5k0ZwjdxxRtwMWVDu4Yq2fB
+         Ug/uzgxV0Axiz4g2lwAhcK3BA8YkAJ2SBePM88GdW5a8f4HasOpXPw5ZgghzE6Uk2cKr
+         fbGxl603EJypCD/vaoOhEo5dVRYLVjQhxSlQ1mup3/6x/c+y1dSfm3wSW6mD+8k0yy7V
+         7Y1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718637503; x=1719242303;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=DqFHaVaNbt8gAYcmaLaicI4T3xsUr/WCZWRgASuEC/s=;
-        b=q4Wl9ENaaqWPgNw/Ne1Shoh5KmREG1Dl2ibanD8smllmt/4d0yGyaIbyYN5VV904tL
-         yNuKy0FK6D1GcGpJFzWgTwgdNBGvxA60Ie1yeK6r8ua+4QdCZfzeJJlo+jHd4hbcRtyE
-         QKjSDykMVFSpMjB31ZMEqoDmuiZFZl4js4MbZeplzxL8qeCtEb8yvEu+e6zk16DRKQ5l
-         Pzg9z8CO3ZuopMcR/81soRxhWOw6l2lBhOu0F6wukLnKDQTct0PbIke0G0npxq+2IqLf
-         mEy3Z+LORXO0alTJ24YgjcXdtonUW2OtY/jET2pmNP3jtGqRPXWvZ8XiEDdryzRjE7qT
-         fNug==
-X-Forwarded-Encrypted: i=1; AJvYcCUro5CjL9gGdK0CJtr1Fa2Vk6EsqZTX5cv97Tf8yP8a8mXRnSwVS0YpkMgRpPwVjEbLlH0/0bS7cmw5qWjFUcKAF2MzMKta/Jpt
-X-Gm-Message-State: AOJu0Ywg3ap7/OragkrkFkSLqm5nlMxfMHEzErhkGufTptNi13Ie/CnE
-	+sP11bmVLfCL5CPaR/uMVQTvEpRozOd71W8hmtKVqFWM36+1BYG0lzOZ/81y0Yc=
-X-Google-Smtp-Source: AGHT+IGyElQstV3t6uBctyLHT4j9HpM72d7y0GvafAH57GHeiarMjs51iEj2uexrKxq3xWSCFSWR5w==
-X-Received: by 2002:a05:6808:1927:b0:3d2:2efd:123a with SMTP id 5614622812f47-3d24e8b9abfmr12625613b6e.2.1718637503175;
-        Mon, 17 Jun 2024 08:18:23 -0700 (PDT)
-Received: from megalith.oryx-coho.ts.net (d24-150-219-207.home.cgocable.net. [24.150.219.207])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-798abe47f2csm438381085a.116.2024.06.17.08.18.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jun 2024 08:18:22 -0700 (PDT)
-From: Trevor Gamblin <tgamblin@baylibre.com>
-To: Nuno Sa <nuno.sa@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Trevor Gamblin <tgamblin@baylibre.com>,
-	Angelo Dureghello <adureghello@baylibre.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: dac: adi-axi-dac: improve probe() error messaging
-Date: Mon, 17 Jun 2024 11:18:19 -0400
-Message-ID: <20240617151820.3337034-1-tgamblin@baylibre.com>
-X-Mailer: git-send-email 2.45.2
+        d=1e100.net; s=20230601; t=1718638134; x=1719242934;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=OlVlomx5sxYTMMcPGMNO+1cr2atFOWJw4tpHzK2RLUQ=;
+        b=Nmq3t5Ct7U2cnS0ifonCwE6N7TuhQ3Q9+98NHMc9ngj46vfyKP95NuV6HMkprFqL6F
+         DNy3+g5BkV3hvbxTVkWqF3wHP8i07fjsPe0O2LN6NXNEUrDaoMJSanoaUURpa69wUF/C
+         2KPL2kyxFAFNwzkDVDkHsxORGxRepjXCZtCaVdYSTNxkknVr4YZtfNdPReNoxzHOV/2+
+         ffyDkZP0KCb7rloJO8fxzMIhbIiLJx+leXcynn9xa4kJAglN8Hy1h9hvJYSgBVSL0mP8
+         X5s0LxwZvwlHf5Tgj8zDD5//9R+GMEug9kKLR2q1IuK7gyhaX9bZu6UNfZaDS06yuMGp
+         ekxg==
+X-Forwarded-Encrypted: i=1; AJvYcCWm9uG7HpTZHQA/JbBw/idwQXSvgqvkEVdJz7drAQqadjmMKYBofszi5Tofv80KBGbriJYlWs9lptuEb/T9Q19F1fsnDpEWzrhK
+X-Gm-Message-State: AOJu0YyZQPMUUiNKfaTuLX58RA6/lg49PxaqrTy/zh7APv3d7zzCBscz
+	XHSxY24+LXPpvK0mBVq9tqu4lwXO+eWG/2rGVuWRAei0bNJ0d89TSxRYEHuguTNTPEIikLnQfff
+	15edA+cu8iL3vWcqJuCm4Yt2dkf242jDb+mDrQw==
+X-Google-Smtp-Source: AGHT+IEvpsPwfQeZ/F68nF68Id+smXv/SHAWkQKFDcj9xghyMm1bgW9VRwCatWoay2IL1Zbv45XqJ2AisQj7k/JHDM0=
+X-Received: by 2002:a05:6870:899b:b0:254:a694:e678 with SMTP id
+ 586e51a60fabf-25842af7008mr10457150fac.37.1718638134130; Mon, 17 Jun 2024
+ 08:28:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240612-iio-adc-ref-supply-refactor-v2-0-fa622e7354e9@baylibre.com>
+ <20240612-iio-adc-ref-supply-refactor-v2-1-fa622e7354e9@baylibre.com>
+ <20240615130858.22043725@jic23-huawei> <dbf947a3-3d3b-4686-a707-a813b6a4ce5a@gmail.com>
+ <CAMknhBFJ01Xu69Arvd3S=dbADGFmzaYKm2XBtw_CtnjtYwnnew@mail.gmail.com>
+ <2d47aeef-5ee0-4e6f-a408-ba5d737d2c5a@gmail.com> <8dd5f4b9-809f-43d8-ba5c-5f7be23107a4@baylibre.com>
+ <15a0c2d8-9df4-4a26-bdf4-01f9c3f76ca7@gmail.com>
+In-Reply-To: <15a0c2d8-9df4-4a26-bdf4-01f9c3f76ca7@gmail.com>
+From: David Lechner <dlechner@baylibre.com>
+Date: Mon, 17 Jun 2024 10:28:42 -0500
+Message-ID: <CAMknhBE=fEDdYPe1VeZwWWuvqf5TcUdM_LQGOugHCxGhSGP8-w@mail.gmail.com>
+Subject: Re: [PATCH v2 1/5] iio: adc: ad7192: use devm_regulator_get_enable_read_voltage
+To: Alisa-Dariana Roman <alisadariana@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Marcelo Schmitt <marcelo.schmitt1@gmail.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Mark Brown <broonie@kernel.org>, 
+	Liam Girdwood <lgirdwood@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The current error handling for calls such as devm_clk_get_enabled() in
-the adi-axi-dac probe() function means that, if a property such as
-'clocks' (for example) is not present in the devicetree when booting a
-kernel with the driver enabled, the resulting error message will be
-vague, e.g.:
+On Mon, Jun 17, 2024 at 9:10=E2=80=AFAM Alisa-Dariana Roman
+<alisadariana@gmail.com> wrote:
+>
+> On 17.06.2024 16:48, David Lechner wrote:
+> > On 6/17/24 8:38 AM, Alisa-Dariana Roman wrote:
+> >> On 17.06.2024 16:22, David Lechner wrote:
+> >>> On Mon, Jun 17, 2024 at 4:35=E2=80=AFAM Alisa-Dariana Roman
+> >>> <alisadariana@gmail.com> wrote:
+> >>>>
+> >>>> On 15.06.2024 15:08, Jonathan Cameron wrote:
+> >>>>> On Wed, 12 Jun 2024 16:03:05 -0500
+> >>>>> David Lechner <dlechner@baylibre.com> wrote:
+> >>>>>
+> >>>>>> This makes use of the new devm_regulator_get_enable_read_voltage()
+> >>>>>> function to reduce boilerplate code.
+> >>>>>>
+> >>>>>> Error messages have changed slightly since there are now fewer pla=
+ces
+> >>>>>> where we print an error. The rest of the logic of selecting which
+> >>>>>> supply to use as the reference voltage remains the same.
+> >>>>>>
+> >>>>>> Also 1000 is replaced by MILLI in a few places for consistency.
+> >>>>>>
+> >>>>>> Signed-off-by: David Lechner <dlechner@baylibre.com>
+> >>>>>
+> >>>>> Complicated bit of code, but seems correct.
+> >>>>> However, it crossed with Alisa-Dariana switching adding a
+> >>>>> struct device *dev =3D &spi->dev to probe() that I picked up earlie=
+r
+> >>>>> today.
+> >>>>>
+> >>>>> I could unwind that but given Alisa-Dariana has a number of
+> >>>>> other patches on this driver in flight, I'd like the two of you
+> >>>>> to work out the best resolution between you.  Maybe easiest option
+> >>>>> is that Alisa-Dariana sends this a first patch of the next
+> >>>>> series I should pick up.
+> >>>>>
+> >>>>> Thanks,
+> >>>>>
+> >>>>> Jonathan
+> >>>> I will add this patch to my series and send it shortly.
+> >>>>
+> >>>> Kind regards,
+> >>>> Alisa-Dariana Roman.
+> >>>
+> >>> Great, thanks!
+> >>
+> >> Just one quick question:
+> >>
+> >> I am getting two such warnings when running the checkpatch script:
+> >>
+> >> WARNING: else is not generally useful after a break or return
+> >> #1335: FILE: ./drivers/iio/adc/ad7192.c:1335:
+> >> +        return dev_err_probe(dev, ret, "Failed to get AVDD voltage\n"=
+);
+> >> +    } else {
+> >>
+> >> Should I switch the last two branches to get rid of the warnings or ju=
+st ignore them?
+> >>
+> >
+> > In the other patches, I was able to reorder things to avoid this
+> > warning, but since this one was more complicated, I just ignored
+> > this warning.
+> >
+> > We can't just remove the else in this case because the return
+> > is inside of an `else if`.
+>
+>         /* AVDD can optionally be used as reference voltage */
+>         ret =3D devm_regulator_get_enable_read_voltage(dev, "avdd");
+>         if (ret =3D=3D -ENODEV || ret =3D=3D -EINVAL) {
+>                 /*
+>                  * We get -EINVAL if avdd is a supply with unknown voltag=
+e. We
+>                  * still need to enable it since it is also a power suppl=
+y.
+>                  */
+>                 ret =3D devm_regulator_get_enable(dev, "avdd");
+>                 if (ret)
+>                         return dev_err_probe(dev, ret,
+>                                              "Failed to enable AVDD suppl=
+y\n");
+>
+>                 avdd_mv =3D 0;
+>         } else if (ret >=3D 0) {
+>                 avdd_mv =3D ret / MILLI;
+>         } else {
+>                 return dev_err_probe(dev, ret, "Failed to get AVDD voltag=
+e\n");
+>         }
+>
+> Would switching the last two branches, in order to get rid of the
+> warnings, make the code harder to understand?
+>
 
-|adi_axi_dac 44a00000.dac: probe with driver adi_axi_dac failed with error -2
+I did it in the other order because usually we like to handle the
+error case first.
 
-Change the devm_clk_get_enabled(), devm_regmap_init_mmio(), and
-devm_iio_backend_register() checks to use dev_err_probe() with some
-context for easier debugging.
+To make it more like the other patches, we could do something like
+this. The only thing i don't like about it is that `ret` on the very
+last line could come from two different places. But it is logically
+sound in the current form.
 
-After the change:
+    /* AVDD can optionally be used as reference voltage */
+    ret =3D devm_regulator_get_enable_read_voltage(dev, "avdd");
+    if (ret =3D=3D -ENODEV || ret =3D=3D -EINVAL) {
+        /*
+         * We get -EINVAL if avdd is a supply with unknown voltage. We
+         * still need to enable it since it is also a power supply.
+         */
+        ret =3D devm_regulator_get_enable(dev, "avdd");
+        if (ret)
+            return dev_err_probe(dev, ret,
+                         "Failed to enable AVDD supply\n");
+    } else if (ret < 0) {
+        return dev_err_probe(dev, ret, "Failed to get AVDD voltage\n");
+    }
 
-|adi_axi_dac 44a00000.dac: error -ENOENT: failed to get clock
-|adi_axi_dac 44a00000.dac: probe with driver adi_axi_dac failed with error -2
-
-Suggested-by: Nuno Sa <nuno.sa@analog.com>
-Tested-by: Angelo Dureghello <adureghello@baylibre.com>
-Signed-off-by: Trevor Gamblin <tgamblin@baylibre.com>
----
-Added Angelo as Tested-by since he tested the patch on an internal
-setup.
----
- drivers/iio/dac/adi-axi-dac.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iio/dac/adi-axi-dac.c b/drivers/iio/dac/adi-axi-dac.c
-index 880d83a014a1..6d56428e623d 100644
---- a/drivers/iio/dac/adi-axi-dac.c
-+++ b/drivers/iio/dac/adi-axi-dac.c
-@@ -545,7 +545,8 @@ static int axi_dac_probe(struct platform_device *pdev)
- 
- 	clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 	if (IS_ERR(clk))
--		return PTR_ERR(clk);
-+		return dev_err_probe(&pdev->dev, PTR_ERR(clk),
-+				     "failed to get clock\n");
- 
- 	base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(base))
-@@ -555,7 +556,8 @@ static int axi_dac_probe(struct platform_device *pdev)
- 	st->regmap = devm_regmap_init_mmio(&pdev->dev, base,
- 					   &axi_dac_regmap_config);
- 	if (IS_ERR(st->regmap))
--		return PTR_ERR(st->regmap);
-+		return dev_err_probe(&pdev->dev, PTR_ERR(st->regmap),
-+				     "failed to init register map\n");
- 
- 	/*
- 	 * Force disable the core. Up to the frontend to enable us. And we can
-@@ -601,7 +603,8 @@ static int axi_dac_probe(struct platform_device *pdev)
- 	mutex_init(&st->lock);
- 	ret = devm_iio_backend_register(&pdev->dev, &axi_dac_generic, st);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(&pdev->dev, ret,
-+				     "failed to register iio backend\n");
- 
- 	dev_info(&pdev->dev, "AXI DAC IP core (%d.%.2d.%c) probed\n",
- 		 ADI_AXI_PCORE_VER_MAJOR(ver),
--- 
-2.45.2
-
+    avdd_mv =3D ret <=3D 0 ? 0 : ret / MILLI;
