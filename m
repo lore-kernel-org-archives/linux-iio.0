@@ -1,57 +1,60 @@
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B005A18EFC4
-	for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 13:45:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86E7216DC3D
+	for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 14:02:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718718310; cv=none; b=dMANZYOStsyhqd2d6ihFNf+17/DbPYuDI+GN8K9cODYcxTeKyoOJKA2wY1Pl2/tHDTkdjB3Yjhzf7MEHodF9OuklLdfJJ+53ZJaxoAFBlvC+PjCLL6mMMzFJ+F0CPBSH4fyvXJH33RGKipBO5wGCRjHJfDNcydre8ardeYnGi8s=
+	t=1718719358; cv=none; b=p+BcyEM82hjLY6kvckLRWOnNaHoniMng5WmZdpe3DiLPXhGdHGPxM7rcxFbVutE1WmdAqPoD4J8eYr4MCQpTN/OLKX0Z17yWZniiOMhpg2KnMqtxe7xbvKOxRIfy6YUA1khXwhUd57Zo2Ijvsf24WhB7mHtuElaAi53mNLZJbTM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718718310; c=relaxed/simple;
-	bh=ae4pwjFhUlQcrVR7mQTgRv94AhEmxr16sF6IEJpjbGg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=SzKNNOhMOrBD8Yt1XI5Xbnhl65JhmPDfZ6Gv3eD0bY4bTTG/J3ATNrOE4lPdPLjl2FBEgTbf53TgA+EZzTTxDOkz60h7BDAiMatvkXeTXEYo9oJvJtc+OSAroIoVmNn2rJFlTPFL51vBk8x711JnE4mSbh7KmycxZLV7qLWBM/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=kTMKmF/u; arc=none smtp.client-ip=209.85.208.173
+	s=arc-20240116; t=1718719358; c=relaxed/simple;
+	bh=PLtj7bSe++tHU1muE0ellbCUBsOVwaNLui/U8TXTses=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=CYP0xyTGQTJOkYorB2drNR6NZPvj5orQ9/EbY7kuznQgMnAuZzuscQm+UfFrcIUpnGDZXjXFrjEWrzFbAg2Yy6+qJofTtHimGt7k5dYURBM+YNkFiWKwFx/Z+JQW4SH4oFuJ/J4AE+kcmrWYO2ys0QGcLepAYkQIIT/bo1Y+wFc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=vypcjnui; arc=none smtp.client-ip=209.85.221.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="kTMKmF/u"
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2eabd22d3f4so65034271fa.1
-        for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 06:45:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="vypcjnui"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-356c4e926a3so5147678f8f.1
+        for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 07:02:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1718718307; x=1719323107; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=LmejdlmDlKHI06rCiq7kfLWivv1c0iup9shJzGhfZyM=;
-        b=kTMKmF/unm1iy5Dc+sTket50eoAUbQ/ssmcEE+Pfr73E8I22m+cTxJ9eGdR1QTfn6e
-         OQrRffwW9wOXsAFZdEtqQzOEWAGV/M+u+4I19gQ0XU3BOcVmvACppYDrRxBaBOvOjLYp
-         cV+s/ytz1HbPodug8aq7+nLJ/aDspJM8OkFJ6iMdEKF6Z67kH/B34Ktqh+it5b6FL0V+
-         QqtvokY5yes0K8xvVC2LRmHBG1FxdJw5LJb+85CPOIKtjbiXfq9U/1Y21yU6QqZfkYXZ
-         kboHV5/jfkPhVMZaiFSoyt/eZ/1Z5QoZv9B5PtH6QBWlu7ClMhewTuwGQjXc1eYGokG5
-         9DGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718718307; x=1719323107;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1718719355; x=1719324155; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=LmejdlmDlKHI06rCiq7kfLWivv1c0iup9shJzGhfZyM=;
-        b=DBWVPN9x7GMYHRb3nrC9hvjFqUbgST5qVLHKvcaipSFWJRRebKjEhe1QXuX1surwgk
-         o74i/gqSLgdSf+77Alp4rQX37r67AZ9ZVbyxLCqg5GEtphyFHdtlvxb1RXaz2dmpxQzV
-         NgvD2LBIH6GlTcmjvhRuHrZsDogmfcvlKtJnYuZFa/nseF6eP24BzUWRyoHLyF5c7ry9
-         Aibfx57RELm/yeRddkdKhgramIwnHNqWJW7NoLKTeJcr9K8G/CWHnuHyDHthAqpwyVIh
-         wJlmeUxNs1R0jzxk2CnWuh3ycOsGdv2fxZxeWnw8KZgT85cRUOBDSXrSwdsLVfgKoQF0
-         OFkA==
-X-Gm-Message-State: AOJu0Ywq52IGFISAK9RRgtO8XEbW7xRRcATHN1PqAKAa62PreVC7mZ9V
-	fsS/DYrKWvywZ8FulLRisjMEbzksDrQb9B3uXh381IimBa4hZ2PeHNy83iC8fic=
-X-Google-Smtp-Source: AGHT+IHcoXJP3gEa+WaQYbFLEmPnvIPyvgKbTmvBrMFHfdFfqDYyn76MEt5EBTgP2Xe0lQpJygXuEg==
-X-Received: by 2002:a05:651c:c1:b0:2ec:3cc6:e156 with SMTP id 38308e7fff4ca-2ec3cc6e17amr420021fa.50.1718718304493;
-        Tue, 18 Jun 2024 06:45:04 -0700 (PDT)
+        bh=uJg4U+PW9Snx8tG5VLs4l5kg/oNVaqq+3EVHHkcbQfc=;
+        b=vypcjnuiJke07aPcLopSP2JneN2mnNHmsXw7xgLzXa8jq9pBV2NnxEs9W+AMySMcgx
+         FPkt95Cny9Mdqq2ai6lF+rlm1p1WW9eVGUSCXhQT3AM3GENw2atiJQXAW2GK+o4WOtZZ
+         Q7oJWFTF6MilkHHPKrpD90AS2Dvl/4qG9RHqvCkun8W36XnGuCK2WEz0fL7QFdPUXWp0
+         rkKohkFRmS5HFQbKZsS7dFJI7iM5uv5J9+Nw5F/qasNfFHJS/vDk5zMpZE6cO0FT1m58
+         Z27OzAdR0/8QGEE+zIwpmy8iGhrz982wj7bLXgayPypcH9dCwNfb+z42JC1jhOQwIYFw
+         IM2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718719355; x=1719324155;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uJg4U+PW9Snx8tG5VLs4l5kg/oNVaqq+3EVHHkcbQfc=;
+        b=kHjhVFNfyosKroqms9XiCA0uLruo2Q0fwfiUNVpPjIeC391m4lNdaeOMogeaWz6IUE
+         xT/lx4AoxvgEw6p5CHSjKwO8xjevnd91UInmdlh/leCZ5IQAAyPOrMISnteES4oynh8V
+         TKw+VUKCL+tH5tXJk2jKSP7G/8luoroBo/zHdt0KkGjxtzTMuw9s1pQ6vbA+3MHxkPUc
+         ayEx35+6pTxgvZa1+0hVohHmi6i8n851zWoTF2azi+3fVI2RdZlmXcZUaRZsP2VyQ4CZ
+         kkfq30Fxne1RUlS3ygD4Y5dTGvVz2C4ieRKl1pbhwUmhgX8wDYCLP0lDj5gi3MzVs8HZ
+         0f3A==
+X-Gm-Message-State: AOJu0YwZfJ26ca86MR7cXIh7SkmvI0abwmyoVHKu+vs+L9TCEZBMPPYo
+	45h2GgWPX0yHJEV7dy0TGhFozTiV0xs1iiDTbbxQ0Q8a7FbHLpRnhSDTUyVCP5w=
+X-Google-Smtp-Source: AGHT+IEpUUcK2t2NT0uyE9LsIkX7F9ePlZPM6Wgs49S7h0PwgLnOw5XdUvtGqV7G0aa932wJUiWaZg==
+X-Received: by 2002:a5d:5607:0:b0:362:ea80:db0d with SMTP id ffacd0b85a97d-362ea80dc64mr155775f8f.11.1718719354954;
+        Tue, 18 Jun 2024 07:02:34 -0700 (PDT)
 Received: from [127.0.1.1] (frhb82016ds.ikexpress.com. [185.246.87.17])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3607509c8d8sm14160147f8f.32.2024.06.18.06.45.04
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-360750f22absm14412546f8f.79.2024.06.18.07.02.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jun 2024 06:45:04 -0700 (PDT)
+        Tue, 18 Jun 2024 07:02:34 -0700 (PDT)
 From: Guillaume Stols <gstols@baylibre.com>
-Date: Tue, 18 Jun 2024 13:45:00 +0000
-Subject: [PATCH v2] iio: adc: ad7606: remove frstdata check for serial mode
+Date: Tue, 18 Jun 2024 14:02:33 +0000
+Subject: [PATCH 1/9] dt-bindings: iio: adc: adi,ad7606: add missing
+ datasheet link
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -60,195 +63,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240618-cleanup-ad7606-v2-1-b0fd015586aa@baylibre.com>
-X-B4-Tracking: v=1; b=H4sIAFuPcWYC/13MQQ6CMBCF4auQWVvTmWABV97DsCjtKJMgkFYbC
- eHuVhI3Lv+XvG+FyEE4wrlYIXCSKNOYgw4FuN6Od1bicwNpKnWJRrmB7fialfWV0UahQSb2TY1
- 1B/k0B77Jewevbe5e4nMKy+4n/K4/qvqnEipUJ0eWGmPIaXvp7DJIF/jopge027Z9AG3Is5qvA
- AAA
+Message-Id: <20240618-cleanup-ad7606-v1-1-f1854d5c779d@baylibre.com>
+References: <20240618-cleanup-ad7606-v1-0-f1854d5c779d@baylibre.com>
+In-Reply-To: <20240618-cleanup-ad7606-v1-0-f1854d5c779d@baylibre.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
  Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>
+ Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Beniamin Bia <beniamin.bia@analog.com>, 
+ Stefan Popa <stefan.popa@analog.com>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- jstephan@baylibre.com, dlechner@baylibre.com, 
- Guillaume Stols <gstols@baylibre.com>
+ Michael Hennerich <michael.hennerich@analog.com>, 
+ linux-fbdev@vger.kernel.org, devicetree@vger.kernel.org, 
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ Guillaume Stols <gstols@baylibre.com>, jstephan@baylibre.com, 
+ dlechner@baylibre.com
 X-Mailer: b4 0.14.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1718718304; l=5944;
- i=gstols@baylibre.com; s=20240417; h=from:subject:message-id;
- bh=ae4pwjFhUlQcrVR7mQTgRv94AhEmxr16sF6IEJpjbGg=;
- b=UFHUE5RnD+Ur1KhALafDx0bqfNAbkQsQkxH64MYMSYGUORjK+ET2QDnqADfUI0UmPjBlXyHqd
- X5JQ/hyS94wCJ0gmqDESOfgMXIJpWCN0AmbvP5Dapgg5UbaFPtV+XGy
-X-Developer-Key: i=gstols@baylibre.com; a=ed25519;
- pk=XvMm5WHuV67sGYOJZqIYzXndbaJOlNd8Q6li6vnb4Cs=
 
-Frstdata pin is set high during the first sample's transmission and then
-set low.  This code chunk attempts to recover from an eventual glitch in
-the clock by checking frstdata state after reading the first channel's
-sample.  Currently, in serial mode, this check happens AFTER the 16th
-pulse, and if frstdata is not set it resets the device and returns EINVAL.
-According to the datasheet, "The FRSTDATA output returns to a logic low
-following the 16th SCLK falling edge.", thus after the 16th pulse, the
-check will always be true, and the driver will not work as expected.  Thus
-it must be removed for serial mode.
+Add AD7606-5 datasheet link.
 
 Signed-off-by: Guillaume Stols <gstols@baylibre.com>
 ---
-Changes in v2:
- - Remove frstdata check only for the serial interface as suggested by
-   Michael Hennerich.
- - Link to v1: https://lore.kernel.org/r/20240417-cleanup-ad7606-v1-1-5c2a29662c0a@baylibre.com
----
- drivers/iio/adc/ad7606.c     | 28 ++-----------------------
- drivers/iio/adc/ad7606.h     |  2 ++
- drivers/iio/adc/ad7606_par.c | 49 +++++++++++++++++++++++++++++++++++++++++---
- 3 files changed, 50 insertions(+), 29 deletions(-)
+ Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/adc/ad7606.c b/drivers/iio/adc/ad7606.c
-index 3a417595294f..c321c6ef48df 100644
---- a/drivers/iio/adc/ad7606.c
-+++ b/drivers/iio/adc/ad7606.c
-@@ -49,7 +49,7 @@ static const unsigned int ad7616_oversampling_avail[8] = {
- 	1, 2, 4, 8, 16, 32, 64, 128,
- };
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
+index 7fa46df1f4fb..d55c58400df5 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
+@@ -11,6 +11,7 @@ maintainers:
  
--static int ad7606_reset(struct ad7606_state *st)
-+int ad7606_reset(struct ad7606_state *st)
- {
- 	if (st->gpio_reset) {
- 		gpiod_set_value(st->gpio_reset, 1);
-@@ -60,6 +60,7 @@ static int ad7606_reset(struct ad7606_state *st)
- 
- 	return -ENODEV;
- }
-+EXPORT_SYMBOL_NS_GPL(ad7606_reset, IIO_AD7606);
- 
- static int ad7606_reg_access(struct iio_dev *indio_dev,
- 			     unsigned int reg,
-@@ -88,31 +89,6 @@ static int ad7606_read_samples(struct ad7606_state *st)
- {
- 	unsigned int num = st->chip_info->num_channels - 1;
- 	u16 *data = st->data;
--	int ret;
--
--	/*
--	 * The frstdata signal is set to high while and after reading the sample
--	 * of the first channel and low for all other channels. This can be used
--	 * to check that the incoming data is correctly aligned. During normal
--	 * operation the data should never become unaligned, but some glitch or
--	 * electrostatic discharge might cause an extra read or clock cycle.
--	 * Monitoring the frstdata signal allows to recover from such failure
--	 * situations.
--	 */
--
--	if (st->gpio_frstdata) {
--		ret = st->bops->read_block(st->dev, 1, data);
--		if (ret)
--			return ret;
--
--		if (!gpiod_get_value(st->gpio_frstdata)) {
--			ad7606_reset(st);
--			return -EIO;
--		}
--
--		data++;
--		num--;
--	}
- 
- 	return st->bops->read_block(st->dev, num, data);
- }
-diff --git a/drivers/iio/adc/ad7606.h b/drivers/iio/adc/ad7606.h
-index 0c6a88cc4695..6649e84d25de 100644
---- a/drivers/iio/adc/ad7606.h
-+++ b/drivers/iio/adc/ad7606.h
-@@ -151,6 +151,8 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
- 		 const char *name, unsigned int id,
- 		 const struct ad7606_bus_ops *bops);
- 
-+int ad7606_reset(struct ad7606_state *st);
-+
- enum ad7606_supported_device_ids {
- 	ID_AD7605_4,
- 	ID_AD7606_8,
-diff --git a/drivers/iio/adc/ad7606_par.c b/drivers/iio/adc/ad7606_par.c
-index d8408052262e..1f7050297b64 100644
---- a/drivers/iio/adc/ad7606_par.c
-+++ b/drivers/iio/adc/ad7606_par.c
-@@ -7,6 +7,7 @@
- 
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/platform_device.h>
- #include <linux/types.h>
- #include <linux/err.h>
-@@ -21,8 +22,30 @@ static int ad7606_par16_read_block(struct device *dev,
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct ad7606_state *st = iio_priv(indio_dev);
- 
--	insw((unsigned long)st->base_address, buf, count);
- 
-+	/*
-+	 * On the parallel interface, the frstdata signal is set to high while
-+	 * and after reading the sample of the first channel and low for all
-+	 * other channels.  This can be used to check that the incoming data is
-+	 * correctly aligned.  During normal operation the data should never
-+	 * become unaligned, but some glitch or electrostatic discharge might
-+	 * cause an extra read or clock cycle.  Monitoring the frstdata signal
-+	 * allows to recover from such failure situations.
-+	 */
-+	int num = count;
-+	u16 *_buf = buf;
-+
-+	if (st->gpio_frstdata) {
-+		insw((unsigned long)st->base_address, _buf, 1);
-+		if (!gpiod_get_value(st->gpio_frstdata)) {
-+			ad7606_reset(st);
-+			return -EIO;
-+		}
-+		_buf++;
-+		num--;
-+	}
-+	insw((unsigned long)st->base_address, _buf, num)
-+;
- 	return 0;
- }
- 
-@@ -35,8 +58,28 @@ static int ad7606_par8_read_block(struct device *dev,
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct ad7606_state *st = iio_priv(indio_dev);
--
--	insb((unsigned long)st->base_address, buf, count * 2);
-+	/*
-+	 * On the parallel interface, the frstdata signal is set to high while
-+	 * and after reading the sample of the first channel and low for all
-+	 * other channels.  This can be used to check that the incoming data is
-+	 * correctly aligned.  During normal operation the data should never
-+	 * become unaligned, but some glitch or electrostatic discharge might
-+	 * cause an extra read or clock cycle.  Monitoring the frstdata signal
-+	 * allows to recover from such failure situations.
-+	 */
-+	int num = count;
-+	u16 *_buf = buf;
-+
-+	if (st->gpio_frstdata) {
-+		insb((unsigned long)st->base_address, _buf, 2);
-+		if (!gpiod_get_value(st->gpio_frstdata)) {
-+			ad7606_reset(st);
-+			return -EIO;
-+		}
-+		_buf++;
-+		num--;
-+	}
-+	insb((unsigned long)st->base_address, _buf, num * 2);
- 
- 	return 0;
- }
+ description: |
+   Analog Devices AD7606 Simultaneous Sampling ADC
++  https://www.analog.com/media/en/technical-documentation/data-sheets/AD7605-4.pdf
+   https://www.analog.com/media/en/technical-documentation/data-sheets/ad7606_7606-6_7606-4.pdf
+   https://www.analog.com/media/en/technical-documentation/data-sheets/AD7606B.pdf
+   https://www.analog.com/media/en/technical-documentation/data-sheets/AD7616.pdf
 
----
-base-commit: 07d4d0bb4a8ddcc463ed599b22f510d5926c2495
-change-id: 20240416-cleanup-ad7606-161e2ed9818b
-
-Best regards,
 -- 
-Guillaume Stols <gstols@baylibre.com>
+2.34.1
 
