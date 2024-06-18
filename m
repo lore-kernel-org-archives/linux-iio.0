@@ -1,108 +1,119 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ACEE149C44;
-	Tue, 18 Jun 2024 08:30:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D2BE156F29;
+	Tue, 18 Jun 2024 09:21:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718699449; cv=none; b=l8tIKgTYWVZGSOxA5yp+POZMIqMgR4Line59kjp3xph5cMaFMTVlOSBbOGcxzL6/ozvcQeWdaKG56/HGygp7L74OijXwsrcWhbkq71sf0d4fZY7Ku788VQblOniB54U/FmXtiJJvfRkHZMSf/KkBv+Ccj9lsXlu6neequOgVUFo=
+	t=1718702465; cv=none; b=i+LVqq/CqlYnudTthBj3tJ50It8LsN4pJXG6d+LNf7O6GANM6JVQJW88loXpmaehSQdvETGUfATIo8MI8xHM+0vyMEieDaXN6988aw8/Ixsk5/LszOPAxfxlqPCGGwsgE0kKc8qlVilpRIQ2M/48I+/GTRDljIk7q8hTI8WAvTw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718699449; c=relaxed/simple;
-	bh=6FT1Od5d7MtnOn4kQe90In3Q4FHEYuebZEe5Hl7XNcE=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=jKXqDiMAw9N5E7VX4LGCn3mW1I6SiYhjg6P+K3ggHFqSpCn3ZOlM7FcUSXGWDs2LiXtPv+deQEur5p57ijW4IdpNAZtyoqh4SLB0fJuSsyyjm77uDqOmPImErcrnoJLpeNw2ccVyMCeJA0e6Xa2fnCa8LVTTpdSGHLvcV6lO7BQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MajyHx8l; arc=none smtp.client-ip=209.85.208.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1718702465; c=relaxed/simple;
+	bh=ODb0AS8Gid72yudRJyiMhX1jDUeji0O92Qk5KnJi5HU=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=JsQ7vD9VQck4eCAdqfiR3Fz6OHY8/ZB8goC+WfqQ9bkEEUeVAUlp1cdj8UIonwo1Lbpm5eCtyjO17c0b8GUe/GgunR7UDDCQuBW1qEDC3tOUguOLAT3kLelWWx2hgLSB/d88UpUYNSPk75bPjKVGOHqSLSbySbhPIqv5mV7GpuQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=yR+oHpt9; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MajyHx8l"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-57cd26347d3so2755490a12.1;
-        Tue, 18 Jun 2024 01:30:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1718699446; x=1719304246; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=6FT1Od5d7MtnOn4kQe90In3Q4FHEYuebZEe5Hl7XNcE=;
-        b=MajyHx8lWDyjWqB1xHFecdJJAobLb/kLF33nL5CBVRNBsU8I91v2GIc56govwItLb4
-         hjaE3zdViqrGwt+AxvibiNPznQiwHWgvEAZXVMaB2IiwDy/xJakRQw2BmRqH3BIzUte3
-         l4leTqTnq+eXs8px6w+Hs+mZ9kVlx+1ivl1sxa5/gEMi8M7SPaVWowD1OH3O2u3WkorK
-         tQItV+HQ0IxspYWkoJW+juFCpmBwVwvgwIIH/RhbguqyuXu3WVMwA4bBcs2nYEV5JsGC
-         pVRr3NX0x422jUJCysekW11HVeynG106EyPgmkAuPZXADBlpBsM5PBWwsoKAWEBPc50W
-         qvQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718699446; x=1719304246;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6FT1Od5d7MtnOn4kQe90In3Q4FHEYuebZEe5Hl7XNcE=;
-        b=A6fO4YiUdiYklc9gWOhNfjmi9aDuBKFP7/In8JLN7Vy25yMSZqtPdKCp6OwcW1SrWa
-         gGUePvhPlIgWg76ynnHnLHBJJ1UAd6xB+mY2GVaX18ZiG0ASi9SF+1YWtGumcytjco02
-         +CFMRmbrl5xkvgcGyvw3jg3e6gI5nx9CcgnDmKbUNL+JoNNOERk8ItneCvcgY+MCCv2n
-         0ILU76O4d0FTY09bHKsoiaF3PgM6DgfftNJ1aaIbwTLplNex95HWXi9lsYmm4Y4g7Set
-         RwvEvT2UQNLFg2jjYaXtQ5SXM1UCee94SXOMzT7uytTXrAx5W4AfXYt67rGcoAJJq/JO
-         aK+w==
-X-Forwarded-Encrypted: i=1; AJvYcCVX6AbvIdAGpHN8spcWg2tzKlSRgX3EsEYi3sFTlKoOAMv0LMz1tlS1BP72vK2D7CKr6l8wyyGbLeQlmJXH58eem8gWFF/17S6t9pgTG6IQw2FSGBjC56tAviOyrLiPsJD7Hx96PUyu
-X-Gm-Message-State: AOJu0YwbalI3glXfO6cu+IbW9uXc9zLOYW1OY67chq9xWzomwlehcF3d
-	RYhi8XqFdGr6/9VM6GExyTVtMZcjGZLFBhhXL+0+8t/lrQAljR4NMU9ODf6dwspzcQ==
-X-Google-Smtp-Source: AGHT+IHQbE7jFMXH3wO0Z8MsAhLV7cYwJYfZ6QOolSOHUg4GJ8a3hI83WNeUtzk11P+APsDR13KWyA==
-X-Received: by 2002:a50:8711:0:b0:57a:339f:1b2d with SMTP id 4fb4d7f45d1cf-57cbd673ee7mr7279502a12.5.1718699445403;
-        Tue, 18 Jun 2024 01:30:45 -0700 (PDT)
-Received: from ?IPv6:2003:f6:ef1c:c500:ee59:d953:f148:40ba? (p200300f6ef1cc500ee59d953f14840ba.dip0.t-ipconnect.de. [2003:f6:ef1c:c500:ee59:d953:f148:40ba])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-57cb72da6d0sm7385973a12.26.2024.06.18.01.30.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jun 2024 01:30:45 -0700 (PDT)
-Message-ID: <8ba6d78d2cd7f58d1d24e3c32211a8ef0d6864fc.camel@gmail.com>
-Subject: Re: [PATCH] iio: dac: adi-axi-dac: improve probe() error messaging
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Trevor Gamblin <tgamblin@baylibre.com>, Nuno Sa <nuno.sa@analog.com>, 
- Lars-Peter Clausen
-	 <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron
-	 <jic23@kernel.org>
-Cc: Angelo Dureghello <adureghello@baylibre.com>, linux-iio@vger.kernel.org,
-  linux-kernel@vger.kernel.org
-Date: Tue, 18 Jun 2024 10:34:34 +0200
-In-Reply-To: <20240617151820.3337034-1-tgamblin@baylibre.com>
-References: <20240617151820.3337034-1-tgamblin@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.2 
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="yR+oHpt9"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45I2vvDH006686;
+	Tue, 18 Jun 2024 04:20:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=s1jbBiljYWIQU2h5+M2d0n4QhEp
+	apypLQmJWq50+k+s=; b=yR+oHpt9pjtVUswxIlUbIAeE5RmM0K3GQKJCISTyoWB
+	tpYveDUHw2lgI1UfMBujoRvIsffQLUIgHR0naMKjtkUx6UBgr5tjSnSy5dbUsFFS
+	Xk1lf6gJLckPuEHykJv0om5N6M8EmVk5ULc04W1iqZC9zPWVaXrz+Ur1Vyr1QVvl
+	4i6z5fpE37qr56kO7gRgqw/jS8zgLneXKo4ezowRGHA9tNAAYClNqwcPg2q41Wlc
+	vTXbwKAhwNLCahJ7H2bw4cdSn4WES/E7nAdF8uESBHLaQCN9he7d3Glv2BdRR/Ia
+	bkLw2gSPzAITf86ijXK10XsyY2PU6fOj8c6tsuKYxyA==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3ys4t32840-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 18 Jun 2024 04:20:39 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 45I8KZ60049902
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Tue, 18 Jun 2024 04:20:35 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 18 Jun 2024 04:20:34 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 18 Jun 2024 04:20:34 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 18 Jun 2024 04:20:34 -0400
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.163])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 45I8KJEV004234;
+	Tue, 18 Jun 2024 04:20:22 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd
+	<sboyd@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Lars-Peter Clausen
+	<lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        "Jonathan Cameron" <jic23@kernel.org>, <linux-clk@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Conor Dooley
+	<conor.dooley@microchip.com>
+Subject: [PATCH v5 1/2] dt-bindings: iio: adf4350: add clk provider prop
+Date: Tue, 18 Jun 2024 11:20:06 +0300
+Message-ID: <20240618082012.4496-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: 2ekjhkomUuPqJkO0583p3I4WZH2cLugJ
+X-Proofpoint-ORIG-GUID: 2ekjhkomUuPqJkO0583p3I4WZH2cLugJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-06-18_02,2024-06-17_01,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
+ malwarescore=0 adultscore=0 suspectscore=0 mlxlogscore=999 spamscore=0
+ bulkscore=0 priorityscore=1501 lowpriorityscore=0 clxscore=1011 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2405170001
+ definitions=main-2406180061
 
-On Mon, 2024-06-17 at 11:18 -0400, Trevor Gamblin wrote:
-> The current error handling for calls such as devm_clk_get_enabled() in
-> the adi-axi-dac probe() function means that, if a property such as
-> 'clocks' (for example) is not present in the devicetree when booting a
-> kernel with the driver enabled, the resulting error message will be
-> vague, e.g.:
->=20
-> > adi_axi_dac 44a00000.dac: probe with driver adi_axi_dac failed with err=
-or -2
->=20
-> Change the devm_clk_get_enabled(), devm_regmap_init_mmio(), and
-> devm_iio_backend_register() checks to use dev_err_probe() with some
-> context for easier debugging.
->=20
-> After the change:
->=20
-> > adi_axi_dac 44a00000.dac: error -ENOENT: failed to get clock
-> > adi_axi_dac 44a00000.dac: probe with driver adi_axi_dac failed with err=
-or -2
->=20
-> Suggested-by: Nuno Sa <nuno.sa@analog.com>
-> Tested-by: Angelo Dureghello <adureghello@baylibre.com>
-> Signed-off-by: Trevor Gamblin <tgamblin@baylibre.com>
-> ---
-> Added Angelo as Tested-by since he tested the patch on an internal
-> setup.
-> ---
+Add properties required for providing clock to other consumers.
 
-Reviewed-by: Nuno Sa <nuno.sa@analog.com>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ .../devicetree/bindings/iio/frequency/adi,adf4350.yaml      | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,adf4350.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,adf4350.yaml
+index 43cbf27114c7..d1d1311332f8 100644
+--- a/Documentation/devicetree/bindings/iio/frequency/adi,adf4350.yaml
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,adf4350.yaml
+@@ -28,6 +28,12 @@ properties:
+   clock-names:
+     const: clkin
+ 
++  '#clock-cells':
++    const: 0
++
++  clock-output-names:
++    maxItems: 1
++
+   gpios:
+     maxItems: 1
+     description: Lock detect GPIO.
+-- 
+2.45.2
 
