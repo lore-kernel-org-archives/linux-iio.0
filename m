@@ -1,127 +1,154 @@
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11olkn2013.outbound.protection.outlook.com [40.92.20.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD5174A35
-	for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 15:33:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.169
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718724803; cv=none; b=ZnUeJDijnp/8YMCl1B17W4XfjQrOIXBv8RaOjluZGNZXkllSNzhbQE5xF3sURnE69dSwmsWX5T/zmw7eystgye3veEFU+6y6JiaNSerK/7YLgUoSyey2acmFQGj4Gaa3+8Se1c2WhElMyBvlYDJxAY61fh9BhsTKdop45q1Reac=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718724803; c=relaxed/simple;
-	bh=OidDUdMdqZ3vXqtOo2sYgJIbRttJdLKmRFOYCGLgqvw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SOfLFaPUIwdZ61ykz3EoXI0dKVwtTvJLo4o794vJ/GY32VqqUcLAIpjDX6a4cLqTy0ZJb7Wp+kfEFxyAfLNTkUDuyAo8kwe9pomX79VHfabMdvEgmjlygLWL+OTCAL/wAZecllz/t8VS0ekkGHjeo1JNv6r9/J8WUcy48AjkC0Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=jclrpdHb; arc=none smtp.client-ip=209.85.208.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 004654A35;
+	Tue, 18 Jun 2024 15:37:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.20.13
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718725032; cv=fail; b=BYCoOrCD0bdpIG37FJGAFwlftARcISWPGvg5WskjpClJQF+ISbGHaRnPylznRSGygLj5e80aa2vc68BndMGNg5lUiCJDs2f1qqLDww01ez8ZdAmyBp7mpUMrD1H4mhQsDA9fsOGWlUh/0H7NR1QBFCAWkJoabXJphJ9ORbPMOf4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718725032; c=relaxed/simple;
+	bh=PnUBaf0/l4t9kl991tMovirhQt5uzqCDSDVv4t0VxLI=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=sKRFTpPb+GF9Np1DExs79dTow1KSclOW70tZRv3cxsXrjL928vh+kPatIZc7YKRCVAIdkcTZoG3tTucFV/AJtowmTZCCkMVcg+l7FZ/mWkf6c+DEiIaEvXdLfKimM7S2EpGvnObB+FKLmXrg6icSy+efpzOkvHUTgD7BVM+kr8M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=Q4OKTXH0; arc=fail smtp.client-ip=40.92.20.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="jclrpdHb"
-Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-2ebd95f136bso63281031fa.0
-        for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 08:33:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1718724800; x=1719329600; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jfdIMHMbd41FfhZa+NmGcJDWVMknbpIRWOxq4rduHS8=;
-        b=jclrpdHb9BSRsL8x8bF3KmA7xFD7Cl5bO2+ugkthDBp/lnMRq9L7PwLVaJD9vbH+2h
-         XAFbIR+V4B7o6Ti0xIZ0QrirC7jz6aOq1SsHrLnHdipwZe0dovjWqCu7BjOtHsglz/5Y
-         A6vRSKyQQD9dApZlSnHuZQhjwhKfVx4vUXuuR+PM98rW83lF5Zeied0TbXIeb1rrhhEP
-         HtTkjF5kRsRtms3Tl7pGf5s6umoDyJouKy9lViaqJePUtSIrTyXMc0IK5f/E+PNhxtLB
-         LlllAug9PA9PrDQ6aPwR0PWgV/33YmpZ8NvBHr6i9nco25Ik7SLNbMTL4SsmP/vo/tnz
-         AZUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718724800; x=1719329600;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jfdIMHMbd41FfhZa+NmGcJDWVMknbpIRWOxq4rduHS8=;
-        b=H3t9dkz7Y2YhBFx/7p/xru/7UY12NQzqXDQkmmYHY3nEFgd1Y3wLhZQrnkQ+njXH1N
-         n+7ahOC7YWws2OoE2dNB0CMxFEOllbCYHzqVm2dJ/0S6KXFwgd64QN9ocW5N6kV2js/0
-         Zo6Xv4w2a09z/8P2FWPuDkZ/9+eao0dPPQRCe22LvncD3ReMzSi3Flcy4yBt68Zpz3xL
-         Vetzq4huOCGq/QNPWDnjnD6NUFJ1nKDrIfe3uBsEPf/V+IrD7PNlijXH4T8ITj9q2hIi
-         ofOVwtggjyZy5uSj7oYL8vAp4xcKn29e5q7dqUS49COLjK1NEV5R4QK7kPWrIaT5psK1
-         R5dQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV2xdzs/C6JNTMCrBvsaUBL9SdWYWpRlw7BJ3XalYoJ/C0zu/k/m3UiYtlmOFHJp3DQIRUAXfkA3QyNUjt1wLJFTG0nuwAZvVcN
-X-Gm-Message-State: AOJu0YwIUIpW0UF2hgXukEF6tpTpJGq9rYZLn2nDCRq6ONJbM3ucEerP
-	KqMWmY6Y/rq3g0XBXw2NsURYuwXdVRx0TsvixID38RQfd73vTTtUWSABQnPHjqWjOgNwWads/Gp
-	o
-X-Google-Smtp-Source: AGHT+IGPLHkRxLgiDT7OfhwzzitOA+lcgi9oUcdgszdwELkZ98EffR55DwHJ0KgmR1XLjbcwR77Org==
-X-Received: by 2002:a19:5e06:0:b0:52c:98df:f496 with SMTP id 2adb3069b0e04-52ca6e6d582mr7495426e87.40.1718724799855;
-        Tue, 18 Jun 2024 08:33:19 -0700 (PDT)
-Received: from ?IPV6:2a02:8428:e55b:1101:5f32:b458:c62f:c621? ([2a02:8428:e55b:1101:5f32:b458:c62f:c621])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-422f6419e38sm194500515e9.39.2024.06.18.08.33.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Jun 2024 08:33:19 -0700 (PDT)
-Message-ID: <12e5c4b4-e51d-4e69-8c63-3f6aefb574d9@baylibre.com>
-Date: Tue, 18 Jun 2024 17:33:16 +0200
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="Q4OKTXH0"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Nk01VPdQzqMyymXMv15rcAzoJ8QZmCn2dBdk/OysAOdtDOM3SHyZXH7qH7T+t8+0u8kwzMRJh/GSqJYJbJX6YXiRwQJ6i5Lwik3UkpdaL3q0nKqGvawVD0E6diVxaqfh7Zwu+glYCXanQXren6CXzDBW+THnGE4SDSEVRMkHqFHIMGLvgbU/D+s4PcJPVVQwibMiYax6ilCOC1uGGlHvmNPvP3WzrM/q5QFfNfXe0H2aOqe7Runjo8evjBHW0yq+iD3U50IyI1wvtAJbTsWYAQ9vobI3pLchKwXO1tagc5EjfFEIf3jHES2h0kRX1K79T55aGq1ivmSDnH5wytU2jA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=o7ohIHyt7kvKjjOt4LPOYz4zRFjwwtmYuSrDvt+JDVY=;
+ b=VDUMgJBpGucXFA07kaSyJTF7fHz+BJdQ2+GtFn5Ye3n56rsEPLAzDxC3Hs11PGD46abFdHxMSxtfQqNAXZy5HQXNXa3iSYsYGeFxJqU/GLaZH8bnVImW3bNOn8tJh7lYMUd0DYK3u1ROvRjvs+QC21A7auI1NpMhX7zl9tAO98rqQw0g6uq1BI2EsgR18nNMuLFk9QeYWISEYfjvlTdYTSRvJ2+feNomSIO/H//QhNVRNePXd3MXO+NK0rlJsdW4WzKddDkeomJxOhwE0Iz9HMyTKzNhG+l4dVqbVPWz0mZr41Dj76UHuOrAljkIVXrVPpfgioCf33tdYxdbPuSHXw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=o7ohIHyt7kvKjjOt4LPOYz4zRFjwwtmYuSrDvt+JDVY=;
+ b=Q4OKTXH0qMTx9iJDLpDwEkuBCYgM+01jHqf3yT/kzgX9AR/lETpFjBDKtxuwaOUpPhp5TCPG0dKur5vjFUnR/S8v5mjeplzMjQEOnuKb95X5iNs64G7F5wHleO/4pHtlA4b4nRtPloRcuh/tVu5l9en9UQbdSPXfwWNaOMGOOyDkdez7gBRsPYNt77QKLeDZphjI57RfvtxjJTZT/3WqaD83I/+l++pBr8lHVVLx0IqjP3znk3GZ9CUIDTEF7RWOWCK0UVzJyAqx2xdlkLTfP3f0ZIe/YTEj0kVbLN1FQZIJ20cQCB4hgehrNI750OOmaglb60TX3VAhEJMZYGhNqg==
+Received: from SN7PR12MB8101.namprd12.prod.outlook.com (2603:10b6:806:321::7)
+ by SN7PR12MB6791.namprd12.prod.outlook.com (2603:10b6:806:268::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.30; Tue, 18 Jun
+ 2024 15:37:08 +0000
+Received: from SN7PR12MB8101.namprd12.prod.outlook.com
+ ([fe80::fdb:e120:f99c:c899]) by SN7PR12MB8101.namprd12.prod.outlook.com
+ ([fe80::fdb:e120:f99c:c899%5]) with mapi id 15.20.7677.030; Tue, 18 Jun 2024
+ 15:37:08 +0000
+Message-ID:
+ <SN7PR12MB81015183CA729E84E18ABAB4A4CE2@SN7PR12MB8101.namprd12.prod.outlook.com>
+Date: Tue, 18 Jun 2024 23:36:59 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 2/3] dt-bindings:iio:proximity: Add hx9023s binding
+To: Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, Yasin Lee <yasin.lee.x@gmail.com>
+References: <20240616-add-tyhx-hx9023s-sensor-driver-v5-0-ebaf280bbf0e@outlook.com>
+ <SN7PR12MB810142C58543160AB45D07B3A4CC2@SN7PR12MB8101.namprd12.prod.outlook.com>
+ <2146cc14-dd70-4f49-9667-1564fc6a37dc@kernel.org>
+Content-Language: en-US
+From: Yasin Lee <yasin.lee.x@outlook.com>
+In-Reply-To: <2146cc14-dd70-4f49-9667-1564fc6a37dc@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TMN: [C/ppFAaBCWZ4x/5BD2PfHj9S13KqPD3wSRNIFBZ71Pd1JSKPDayfTPBAHmGds+gL]
+X-ClientProxiedBy: SI1PR02CA0045.apcprd02.prod.outlook.com
+ (2603:1096:4:1f6::16) To SN7PR12MB8101.namprd12.prod.outlook.com
+ (2603:10b6:806:321::7)
+X-Microsoft-Original-Message-ID:
+ <2c045d33-e3b3-4aa8-8377-4f5e84f77382@outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/9] dt-bindings: iio: adc: adi,ad7606: add supply
- properties
-To: Conor Dooley <conor@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Beniamin Bia <beniamin.bia@analog.com>,
- Stefan Popa <stefan.popa@analog.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
- devicetree@vger.kernel.org, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
- jstephan@baylibre.com, dlechner@baylibre.com
-References: <20240618-cleanup-ad7606-v1-0-f1854d5c779d@baylibre.com>
- <20240618-cleanup-ad7606-v1-4-f1854d5c779d@baylibre.com>
- <20240618-eggnog-cusp-8b5a17313367@spud>
-Content-Language: en-US
-From: Guillaume Stols <gstols@baylibre.com>
-In-Reply-To: <20240618-eggnog-cusp-8b5a17313367@spud>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN7PR12MB8101:EE_|SN7PR12MB6791:EE_
+X-MS-Office365-Filtering-Correlation-Id: 00314d01-b3df-4953-10f7-08dc8fac837b
+X-Microsoft-Antispam: BCL:0;ARA:14566002|461199025|440099025|3412199022;
+X-Microsoft-Antispam-Message-Info:
+	ZKEX9iDbJoM8/TLZvz/5U6OiLBZAzRyRqZH0DWWHhr89JRX0C+0zrfB4GbPXPBftJA8aY1iOA0erYf/lwBSNf9g+FbDB6lxPXCRDayCxsVxKN1neKwOWseZUdkEESEm5gqyGmeITO9PJBh03X5JTCsUsH/QAJM25OftgyIWWKoRVhzMI4HjnqtJxNO/Bq5iqMWpBks6ryJ02vlyxDN8lyHmR/1HaN1DRt9X+g5b+gEBmkx812oJt+N/gujFKgTbvEGKo00n9rQkENUZFO6cWJ+wP8P0xbwCDPv2q9id4AjKvLdL6i9e7aa5SWo0KeBHgtyESXHvhb2I61levyYvec9kfcgIli73D0jmZW0Q0LCDH1AhR3khKllTeKc0u8NNwxaBcPWLfmOqe3Vz2cjCPfrfHJqY6rpxFjsrEJ8nCKfYcmjPG0QmLRx+IVQvEshF8uS1oFLS55S5IkFne2r84P8eDr3MVYeOfc3OIZNYOcgwKmzR3cli4kmXzKktiCSLnHZG9oNwZgIyFQ8Lfs7nva07oR+gBMfhGkM5HTKWkKESR6owzhzIDQWZrnpvYOo2M
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?cy85dHJHZWF4cW1GTWx0RkttVVp2UEhKYlRoV0Z4NjJVSDdObVBKU3ZtWlVJ?=
+ =?utf-8?B?NWJkaVBoanNBdS9SZmdTczhXTFlrOEN1cjJ5bTRpQmRHVzBadVA0UnNDWENU?=
+ =?utf-8?B?WXBWRzNpQ3hrbUFac0s3SnhqdU9QTDNKZUVWMnVUckpveVBMNFptYVZueFh6?=
+ =?utf-8?B?dlJ2NG5Zc0tYdVlkVTFSQ3NNQ2dvSW9KeUI2QmNoMnFuNmZzUU05WDltZkI2?=
+ =?utf-8?B?OVhLcXdUSDhlM2RhQnhxNkQ4VnFwem1CY1JnenVBZnh1OGdBV2h0Qi83Um5v?=
+ =?utf-8?B?RUhGbUVMMUM3Q2NTKzAzRFVyVk5Kd1U3b2ZrK1U5YUVZb2VlTUJBcXdqOEtW?=
+ =?utf-8?B?NU9uVWtUZit2b0xWNk1WbDg5aHVSVGhkUmI4VHFCZmM1NHZJeDkzejM1TUhI?=
+ =?utf-8?B?VjNnaGJ2Nm16Q0s3VGlmc01vcmVjeWJpVXp0QkRPaDFnVTl2UTRjczU3OEo2?=
+ =?utf-8?B?TFNhUjhPUXpmNU9QSlZhOVZqK25tNGs3TGpTcmRRdmJkUis0M05iRnYvYUJT?=
+ =?utf-8?B?TmhOcFlyQncveEVHMnpDTHhreFYzakE2U3pSeW9LUG5oRG4yZVgzVXo0QjJN?=
+ =?utf-8?B?V2JaMjlMenJvbVBqRVBkWG1vTWpSMTNEeDNXcGJFMjFYNnVmOFFsVEVjRjJQ?=
+ =?utf-8?B?Y2RkbnB5SGZaVEpPaFJaMkdaSDlTZVlqN21IcHVBYUFyaS9WQjBDeXFNWE5q?=
+ =?utf-8?B?dHlFbWdnRVZBUnl3RUg4dUFoR0c5aWNCY1k1bDNjVDJwZjcyT2pFOGc1Rm11?=
+ =?utf-8?B?TUxIWW1ETVM1VVpqcktEdmEvdWxYdXdrby9QU0VGMC9PTlNEMGxubnF3MmUx?=
+ =?utf-8?B?ekNySlBWc09LRm9FNGYvUjlULzh5Z0U1cXd1eEcvdEdCWkh0dHRoMmhxeHRr?=
+ =?utf-8?B?RVF6WTdMNi9xVERQV3VWTUlINGsyMEg0cTZpWXZCaThIUjlOekJUSjlEbFBO?=
+ =?utf-8?B?TmlXL3kyNlh5akdHOS9aYzBjWmg1Vis5eGx3OGRoMUhxcW1nSmFJNnVxYi9S?=
+ =?utf-8?B?UktvZW1udkVxQzVYTWU3dEtwVVp6VWZpZGNYUW1KNDdBNlNnN2NHU2RxRzl5?=
+ =?utf-8?B?K1FOZlpiNjVhb0VMZmFpV1FxdEVGVVkwWUVzbk1Oc1g4bXI5b21uSmhuRlNO?=
+ =?utf-8?B?em1Md2M1blBXWGxWdTBnNVdhMGE5ZkRTc1JIdG8xUWRqWlNxUUhuVXlaMnA5?=
+ =?utf-8?B?OFpLU0s2T0tZUmx6SWhrNElVem5FUVVMOW83MHE5YkxWZGppclVwbVZyWitt?=
+ =?utf-8?B?dTJBVEowRVJPYlRVbTZIQ0ZsSUpQc056Qys4NERYRk5uQUZrK1VZVGVmZHRV?=
+ =?utf-8?B?VXpTWkVsT1QxZkc0V2ZHT1l4aUVNN2wxQVdWQjhaNXJMYWpOSXlzQmlHU2lV?=
+ =?utf-8?B?cVpuVTI0R1R2bDBwWFdGNEM1L3pvYlBZVy9wQ2hIenJvMXhEd2djaUtlNkh5?=
+ =?utf-8?B?WTI3YjNtWW4rNVQ0OVVWd3M4QWc2UEF4bnJ1ODZISTBQaWpkbXZBTEphN1Ns?=
+ =?utf-8?B?Vm4zK1AwM3p4WkFmbHN5TzcyTnd2UTVla0c1dmVqdG43azdvQkRuU2VnOXNY?=
+ =?utf-8?B?clpvVGUyZFo3MCs0d1ZoOFd1RGhHcEFHeDZRODJsWlo2ZlpycFpJdytvZEFj?=
+ =?utf-8?B?Z1NteUFhVUhxQlN3RWtHQS9XaHFMWndrYmt3VHc4YUhIekNDWHdKdml2S0tK?=
+ =?utf-8?B?SWtpRVV2ZGhpSExsV0owaXI1clF2a3RMQjlaYXdScmxWQkVSNUhuNGYvbUUw?=
+ =?utf-8?Q?jkwc/OCUlbbZ0lo2TcZ6ZR2eW6kfZXgfr3OduYb?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 00314d01-b3df-4953-10f7-08dc8fac837b
+X-MS-Exchange-CrossTenant-AuthSource: SN7PR12MB8101.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jun 2024 15:37:08.6371
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6791
 
 
-On 6/18/24 17:12, Conor Dooley wrote:
-> On Tue, Jun 18, 2024 at 02:02:36PM +0000, Guillaume Stols wrote:
->> Add voltage supplies
-> Are these available on all devices?
-
-Yes all chips from  AD7606 series (including AD7606B, AD7606C(-16,-18),
-AD7605-4, AD7606 (-4,-8,-6), AD7607, AD7608, AD7609), as well as AD7616
-have a VDrive pin, as well as a RefSelect + RefIn/RefOut pin that takes
-an input voltage in case RefSelect is high, or outputs the internal
-reference voltage if RefSelect is low.
-
+在 2024/6/16 15:42, Krzysztof Kozlowski 写道:
+> On 16/06/2024 09:36, Yasin Lee wrote:
+>> From: Yasin Lee <yasin.lee.x@gmail.com>
+>>
+>> A capacitive proximity sensor
+> Not much improved. No changelog, no responses to previous comments.
 >
->> Signed-off-by: Guillaume Stols <gstols@baylibre.com>
->> ---
->>   Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml | 9 +++++++++
->>   1 file changed, 9 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
->> index 80866940123c..e480c9a7c7ca 100644
->> --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
->> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
->> @@ -35,6 +35,15 @@ properties:
->>   
->>     avcc-supply: true
->>   
->> +  vdrive-supply:
->> +    description:
->> +      Determines the voltage level at which the interface logic pins will
->> +      operate.
->> +
->> +  refin-supply:
->> +    description:
->> +      The voltage supply for optional external reference voltage.
->> +
->>     interrupts:
->>       description:
->>         The BUSY pin falling edge indicates that the conversion is over, and thus
->>
->> -- 
->> 2.34.1
->>
+> I already asked TWICE. So this is third time. Respond to each comment
+> and acknowledge that you are going to implement it.
+>
+> Then write full changelog in patch changelog (so under ---) or in cover
+> letter (not present here) saying what changed.
+>
+> NAK, because you keep ignoring same comments given over and over.
+>
+> Best regards,
+> Krzysztof
+>
+Hi Krzysztof,
+
+I apologize for the oversight. I am currently working on addressing each 
+of the previous comments individually.
+I will ensure that all the comments are addressed in detail and will 
+include a comprehensive changelog in the cover letter for the next 
+version (v6).
+Thank you for your patience and guidance.
+
+Best regards,
+Yasin Lee
+
