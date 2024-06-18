@@ -1,67 +1,56 @@
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 367C44F5EA;
-	Tue, 18 Jun 2024 16:11:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B08E94DA0C;
+	Tue, 18 Jun 2024 16:12:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718727107; cv=none; b=r58G83DBFKOpBxhh4OOu2F9MECKb35r3Zb/yr7IH6oc2mLhXwxgfvyctaIhhBrXgCmqk81i1T3r9i4AZQI9aFA7nniOEfTSPmIgXdfFPjYHjDBRlTuYmXHJMUBB+mGsZBb2ONaQXJU5ccJonjJBRVHSL58Cw76zIkP07XQ0Yqec=
+	t=1718727138; cv=none; b=VrugwjhOZWCRv3TiFCztSN8r6YaNCNc37dI9kd5snQBIOJQQ9LS+9LjFxu9XbJpFGO0LgqEdPrHq5/wV9+Voyo8P+2aPMlVC7+f+oeKE9GQN6NuL/zWVweFNyo5ML6h7X5AZqst6lZ8YEqppQs6q7lQIfQpFrMxomc++oapOnww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718727107; c=relaxed/simple;
-	bh=j8UQyaa1lDFuOHaljzhOsivgcRkyHQkPDFY4yaSBxCw=;
+	s=arc-20240116; t=1718727138; c=relaxed/simple;
+	bh=AwPVk18OdGcscZHTFXzEXSjzJXtISdJya6SrT29SPXU=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gphlv1O1hJVhcoTgQi7JRYaSUeiaPpKI4fycZ1sibQIvLgJJSwjSXwDa7GT/yR4fwNcdYzULxCHb/OOYEfvBR2D3qAKz6hgScgQVsDZXI+tq+rYuqDGYJJ68nyf8p9uwI3wDiW8h54Wn03asfIG+7Esu7lJBE4tRsC0HrGnASYI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=zmUxWSyU; arc=none smtp.client-ip=185.132.182.106
+	 MIME-Version:Content-Type; b=SOVOeiZj1s1xBp/us7/sX3nlOYLKpFo9x55+PJ53WQ4jrc7CtN4dJcFD1dnLkYrGV18orl2lURcygQQNUW6ZTVydeeNNWNb5+3WsoBLyLTFIZdrc2YG9OqdxmPDwTMIHQhCWPAvR3W5r+2BLeUStcbC4dxdqfYsIHPlQMEcL6js=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=DWg+vTeG; arc=none smtp.client-ip=185.132.182.106
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="zmUxWSyU"
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45IF4uJW031745;
-	Tue, 18 Jun 2024 18:11:20 +0200
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="DWg+vTeG"
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45IFxAKF024676;
+	Tue, 18 Jun 2024 18:12:02 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=selector1; bh=
-	mt4jA5DmMOxU5cEiI40uNpQZdbSX0OU07yEosb4wrjs=; b=zmUxWSyUaWPyD1f4
-	nUMXNuHMstF5QGTrQlEQ5/Dxm7qGtodUfeVC6Vl8+lAvHCyUmY2tnfvvx0//qyvz
-	Sou+XG4yxp11ifnGz5e/h0/5DPPO7HiEg9p58KGPMDujdA9KcGcPITaAgjGAK37W
-	ZplON2yYkxFu7v5SpmPnRl3urPt+nMIdPDM8i4uxo4xPu6/b/KvroeQa5qC2FkjW
-	UoUTIDiWCWAqjeFmhrxJeD4zBnudM1dqjhSRvUaX6+4V92Do/BDhQGs/0v1HdrZt
-	t3JZBxpE7h0KNP82l7IcgWZZiMZsU0quVSkIt0zSA2T6XxDCUYwFKRCoR/OqRmHk
-	iL3DVw==
+	qL0QIk/5tc56Rf9/m2Q6wHM/v+PyGRnuQRu8OBBKDr4=; b=DWg+vTeGp/UYuPoA
+	2Os3m6pr72ek3sgwdvIL/QgGbfc2KYb6YA5AavqMoXE0nUXJ8bX3S6DkBVnybmUt
+	ufIsCyR7TzWSwe2i3Uq577jiB1H32/Vi+X2dsOVK58ebu4+1YhIYFVwEkdxzvX5A
+	KdN8yf5BOSOSAgBrxkHvHNeve0lwcTnQ1w9mKFT+AEl5S0oaQsUGw3eHGDWiHg9p
+	wc+//h6fG/TO7H54moP4uH+mCl5cEkGpLi+MDalI0OoeGipGMjywi1RoJj2BIEoQ
+	lNqanTWOdbjTBLDhkx5qYukbOynk6Erswo2z3CyMwAgt2ezEAclKqF33JTrv1H03
+	j2ssBA==
 Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ys0cgca63-1
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ys29y3ypf-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 18 Jun 2024 18:11:19 +0200 (MEST)
+	Tue, 18 Jun 2024 18:12:01 +0200 (MEST)
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id AA77E4002D;
-	Tue, 18 Jun 2024 18:11:15 +0200 (CEST)
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 3E50E4002D;
+	Tue, 18 Jun 2024 18:11:56 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 1A8D421D385;
-	Tue, 18 Jun 2024 18:10:27 +0200 (CEST)
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D4AB521BF78;
+	Tue, 18 Jun 2024 18:11:30 +0200 (CEST)
 Received: from localhost (10.252.27.64) by SHFDAG1NODE1.st.com (10.75.129.69)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Tue, 18 Jun
- 2024 18:10:26 +0200
+ 2024 18:11:30 +0200
 From: Olivier Moysan <olivier.moysan@foss.st.com>
-To: Olivier Moysan <olivier.moysan@foss.st.com>,
-        Arnaud Pouliquen
-	<arnaud.pouliquen@foss.st.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue
-	<alexandre.torgue@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-CC: <alsa-devel@alsa-project.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 4/8] dt-bindings: iio: dfsdm: move to backend framework
-Date: Tue, 18 Jun 2024 18:08:30 +0200
-Message-ID: <20240618160836.945242-5-olivier.moysan@foss.st.com>
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>
+CC: Olivier Moysan <olivier.moysan@foss.st.com>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: [PATCH 7/8] iio: add sd modulator generic iio backend
+Date: Tue, 18 Jun 2024 18:08:33 +0200
+Message-ID: <20240618160836.945242-8-olivier.moysan@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20240618160836.945242-1-olivier.moysan@foss.st.com>
 References: <20240618160836.945242-1-olivier.moysan@foss.st.com>
@@ -79,280 +68,166 @@ X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-06-18_02,2024-06-17_01,2024-05-17_01
 
-Change the DFSDM binding to use the new IIO backend framework,
-along with the adoption of IIO generic channels.
-This binding change allows to add scaling support to the DFSDM.
-
-Keep the legacy binding as deprecated for backward compatibility.
-
-The io-backends property is supported only in generic IIO channel
-binding.
-
-- Channel description with the generic binding (Audio and Analog):
-
-  Properties supersed by generic properties:
-    st,adc-channels: becomes "reg" property in channel node
-    st,adc-channel-names: becomes "label" property in channel node
-  Properties moved to channel child node:
-    st,adc-channel-types, st,adc-channel-clk-src, st,adc-alt-channel
-
-- Analog binding:
-
-  DFSDM filter channel is configured as an IIO backend consumer.
-  Add io-backends property in channel child nodes.
-
-  DFSDM is no more configured as a channel consumer from SD modulator.
-  Use of io-channels in DFSDM node is deprecated.
-
-- Audio binding:
-
-  DFSDM audio DAI is configured as a channel consumer from DFSDM filter.
-  No change compare to legacy.
+Add a generic driver to support sigma delta modulators.
+Typically, this device is a hardware connected to an IIO device
+in charge of the conversion. The device is exposed as an IIO backend
+device. This backend device and the associated conversion device
+can be seen as an aggregate device from IIO framework.
 
 Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
 ---
- .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml  | 158 +++++++++++++++++-
- 1 file changed, 152 insertions(+), 6 deletions(-)
+ drivers/iio/adc/Kconfig          |  10 +++
+ drivers/iio/adc/Makefile         |   1 +
+ drivers/iio/adc/sd_adc_backend.c | 110 +++++++++++++++++++++++++++++++
+ 3 files changed, 121 insertions(+)
+ create mode 100644 drivers/iio/adc/sd_adc_backend.c
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-index c1b1324fa132..dd414bab74c1 100644
---- a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-@@ -102,9 +102,11 @@ patternProperties:
-         items:
-           minimum: 0
-           maximum: 7
-+        deprecated: true
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 3d91015af6ea..f3dfdaa80678 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -1155,6 +1155,16 @@ config SPEAR_ADC
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called spear_adc.
  
-       st,adc-channel-names:
-         description: List of single-ended channel names.
-+        deprecated: true
- 
-       st,filter-order:
-         description: |
-@@ -118,6 +120,12 @@ patternProperties:
-       "#io-channel-cells":
-         const: 1
- 
-+      '#address-cells':
-+        const: 1
++config SD_ADC_BACKEND
++	tristate "Generic sigma delta modulator IIO backend"
++	select IIO_BACKEND
++	help
++	  Select this option to enables sigma delta modulator. This driver can
++	  support generic sigma delta modulators, as IIO backend devices.
 +
-+      '#size-cells':
-+        const: 0
++	  This driver can also be built as a module.  If so, the module
++	  will be called sd_adc_backend.
 +
-       st,adc-channel-types:
-         description: |
-           Single-ended channel input type.
-@@ -128,6 +136,7 @@ patternProperties:
-         items:
-           enum: [ SPI_R, SPI_F, MANCH_R, MANCH_F ]
-         $ref: /schemas/types.yaml#/definitions/non-unique-string-array
-+        deprecated: true
- 
-       st,adc-channel-clk-src:
-         description: |
-@@ -139,6 +148,7 @@ patternProperties:
-         items:
-           enum: [ CLKIN, CLKOUT, CLKOUT_F, CLKOUT_R ]
-         $ref: /schemas/types.yaml#/definitions/non-unique-string-array
-+        deprecated: true
- 
-       st,adc-alt-channel:
-         description:
-@@ -147,6 +157,7 @@ patternProperties:
-           If not set, channel n is connected to SPI input n.
-           If set, channel n is connected to SPI input n + 1.
-         type: boolean
-+        deprecated: true
- 
-       st,filter0-sync:
-         description:
-@@ -165,11 +176,65 @@ patternProperties:
-       - compatible
-       - reg
-       - interrupts
--      - st,adc-channels
--      - st,adc-channel-names
-       - st,filter-order
-       - "#io-channel-cells"
- 
-+    patternProperties:
-+      "^channel@([0-9]|1[0-9])$":
-+        type: object
-+        $ref: adc.yaml
-+        description: Represents the external channels which are connected to the DFSDM.
+ config SD_ADC_MODULATOR
+ 	tristate "Generic sigma delta modulator"
+ 	select IIO_BUFFER
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 37ac689a0209..9aee2e4307d7 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -139,3 +139,4 @@ obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+ obj-$(CONFIG_XILINX_AMS) += xilinx-ams.o
+ xilinx-xadc-y := xilinx-xadc-core.o xilinx-xadc-events.o
+ obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
++obj-$(CONFIG_SD_ADC_BACKEND) += sd_adc_backend.o
+diff --git a/drivers/iio/adc/sd_adc_backend.c b/drivers/iio/adc/sd_adc_backend.c
+new file mode 100644
+index 000000000000..556a49dc537b
+--- /dev/null
++++ b/drivers/iio/adc/sd_adc_backend.c
+@@ -0,0 +1,110 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Generic sigma delta modulator IIO backend
++ *
++ * Copyright (C) 2024, STMicroelectronics - All Rights Reserved
++ */
 +
-+        properties:
-+          reg:
-+            items:
-+              minimum: 0
-+              maximum: 8
++#include <linux/iio/backend.h>
++#include <linux/iio/iio.h>
++#include <linux/module.h>
++#include <linux/mod_devicetable.h>
++#include <linux/platform_device.h>
++#include <linux/regulator/consumer.h>
 +
-+          label:
-+            description:
-+              Unique name to identify which channel this is.
++struct iio_sd_backend_priv {
++	struct regulator *vref;
++	int vref_mv;
++};
 +
-+          st,adc-channel-types:
-+            description: |
-+              Single-ended channel input type.
-+              - "SPI_R": SPI with data on rising edge (default)
-+              - "SPI_F": SPI with data on falling edge
-+              - "MANCH_R": manchester codec, rising edge = logic 0, falling edge = logic 1
-+              - "MANCH_F": manchester codec, rising edge = logic 1, falling edge = logic 0
-+            items:
-+              enum: [ SPI_R, SPI_F, MANCH_R, MANCH_F ]
-+            $ref: /schemas/types.yaml#/definitions/non-unique-string-array
++static int sd_backend_enable(struct iio_backend *backend)
++{
++	struct iio_sd_backend_priv *priv = iio_backend_get_priv(backend);
 +
-+          st,adc-channel-clk-src:
-+            description: |
-+              Conversion clock source.
-+              - "CLKIN": external SPI clock (CLKIN x)
-+              - "CLKOUT": internal SPI clock (CLKOUT) (default)
-+              - "CLKOUT_F": internal SPI clock divided by 2 (falling edge).
-+              - "CLKOUT_R": internal SPI clock divided by 2 (rising edge).
-+            items:
-+              enum: [ CLKIN, CLKOUT, CLKOUT_F, CLKOUT_R ]
-+            $ref: /schemas/types.yaml#/definitions/non-unique-string-array
++	return regulator_enable(priv->vref);
++};
 +
-+          st,adc-alt-channel:
-+            description:
-+              Must be defined if two sigma delta modulators are
-+              connected on same SPI input.
-+              If not set, channel n is connected to SPI input n.
-+              If set, channel n is connected to SPI input n + 1.
-+            type: boolean
++static void sd_backend_disable(struct iio_backend *backend)
++{
++	struct iio_sd_backend_priv *priv = iio_backend_get_priv(backend);
 +
-+          io-backends:
-+            description:
-+              From common IIO binding. Used to pipe external sigma delta
-+              modulator or internal ADC backend to DFSDM channel.
++	regulator_disable(priv->vref);
++};
 +
-+        required:
-+          - reg
++static int sd_backend_read(struct iio_backend *backend, int *val, int *val2, long mask)
++{
++	struct iio_sd_backend_priv *priv = iio_backend_get_priv(backend);
 +
-+        additionalProperties: false
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		*val = priv->vref_mv;
++		*val2 = 0;
++		return IIO_VAL_INT;
 +
-     allOf:
-       - if:
-           properties:
-@@ -199,9 +264,19 @@ patternProperties:
-               description:
-                 From common IIO binding. Used to pipe external sigma delta
-                 modulator or internal ADC output to DFSDM channel.
-+              deprecated: true
- 
--          required:
--            - io-channels
-+          if:
-+            required:
-+              - st,adc-channels
-+          then:
-+            required:
-+              - io-channels
++	case IIO_CHAN_INFO_OFFSET:
++		*val = 0;
++		*val2 = 0;
++		return IIO_VAL_INT;
++	}
 +
-+          patternProperties:
-+            "^channel@([0-9]|1[0-9])$":
-+              required:
-+                - io-backends
- 
-       - if:
-           properties:
-@@ -294,7 +369,77 @@ examples:
-       #address-cells = <1>;
-       #size-cells = <0>;
- 
-+      // Example 1: Audio use case with generic binding
-       dfsdm0: filter@0 {
-+        compatible = "st,stm32-dfsdm-dmic";
-+        reg = <0>;
-+        interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
-+        dmas = <&dmamux1 101 0x400 0x01>;
-+        dma-names = "rx";
-+        #io-channel-cells = <1>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        st,filter-order = <5>;
++	return -EINVAL;
++};
 +
-+        channel@1 {
-+          reg = <1>;
-+          label = "dmic0";
-+          st,adc-channel-types = "SPI_R";
-+          st,adc-channel-clk-src = "CLKOUT";
-+          st,adc-alt-channel;
-+        };
++static const struct iio_backend_ops sd_backend_ops = {
++	.enable = sd_backend_enable,
++	.disable = sd_backend_disable,
++	.read_raw = sd_backend_read,
++};
 +
-+        asoc_pdm0: dfsdm-dai {
-+          compatible = "st,stm32h7-dfsdm-dai";
-+          #sound-dai-cells = <0>;
-+          io-channels = <&dfsdm0 0>;
-+        };
-+      };
++static int iio_sd_backend_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct regulator *vref;
++	struct iio_sd_backend_priv *priv;
++	int ret;
 +
-+      // Example 1: Analog use case with generic binding
-+      dfsdm1: filter@1 {
-+        compatible = "st,stm32-dfsdm-adc";
-+        reg = <1>;
-+        interrupts = <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>;
-+        dmas = <&dmamux1 102 0x400 0x01>;
-+        dma-names = "rx";
-+        st,filter-order = <1>;
-+        #io-channel-cells = <1>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
 +
-+        channel@2 {
-+          reg = <2>;
-+          label = "in2";
-+          st,adc-channel-types = "SPI_F";
-+          st,adc-channel-clk-src = "CLKOUT";
-+          st,adc-alt-channel;
-+          io-backends = <&sd_adc2>;
-+        };
++	vref = devm_regulator_get_optional(dev, "vref");
++	if (IS_ERR(vref)) {
++		if (PTR_ERR(vref) != -ENODEV)
++			return dev_err_probe(dev, PTR_ERR(vref), "Failed to get vref\n");
++	} else {
++		ret = regulator_get_voltage(vref);
++		if (ret < 0)
++			return ret;
 +
-+        channel@3 {
-+          reg = <3>;
-+          label = "in3";
-+          st,adc-channel-types = "SPI_R";
-+          st,adc-channel-clk-src = "CLKOUT";
-+          io-backends = <&sd_adc3>;
-+        };
-+      };
-+    };
++		priv->vref = vref;
++		priv->vref_mv = ret / 1000;
++	}
 +
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/stm32mp1-clks.h>
-+    dfsdm_2: dfsdm@4400d000 {
-+      compatible = "st,stm32mp1-dfsdm";
-+      reg = <0x4400d000 0x800>;
-+      clocks = <&rcc DFSDM_K>, <&rcc ADFSDM_K>;
-+      clock-names = "dfsdm", "audio";
-+      #address-cells = <1>;
-+      #size-cells = <0>;
++	ret = devm_iio_backend_register(&pdev->dev, &sd_backend_ops, priv);
++	if (ret)
++		return ret;
 +
-+      // Example 3: Audio use case with legacy binding
-+      dfsdm0_2: filter@0 {
-         compatible = "st,stm32-dfsdm-dmic";
-         reg = <0>;
-         interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
-@@ -307,14 +452,15 @@ examples:
-         st,adc-channel-clk-src = "CLKOUT";
-         st,filter-order = <5>;
- 
--        asoc_pdm0: dfsdm-dai {
-+        asoc_pdm0_2: dfsdm-dai {
-           compatible = "st,stm32h7-dfsdm-dai";
-           #sound-dai-cells = <0>;
-           io-channels = <&dfsdm0 0>;
-         };
-       };
- 
--      dfsdm_pdm1: filter@1 {
-+      // Example 3: Analog use case with legacy binding
-+      dfsdm1_2: filter@1 {
-         compatible = "st,stm32-dfsdm-adc";
-         reg = <1>;
-         interrupts = <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>;
++	return 0;
++};
++
++static const struct of_device_id sd_backend_of_match[] = {
++	{ .compatible = "sd-backend" },
++	{ .compatible = "ads1201" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, sd_backend_of_match);
++
++static struct platform_driver iio_sd_backend_adc = {
++	.driver = {
++		.name = "iio_sd_adc_backend",
++		.of_match_table = sd_backend_of_match,
++	},
++	.probe = iio_sd_backend_probe,
++};
++
++module_platform_driver(iio_sd_backend_adc);
++
++MODULE_DESCRIPTION("Basic sigma delta modulator IIO backend");
++MODULE_AUTHOR("Olivier Moysan <olivier.moysan@foss.st.com>");
++MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS(IIO_BACKEND);
 -- 
 2.25.1
 
