@@ -1,60 +1,60 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3657B16EB45
-	for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 14:02:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 632771AB8F8
+	for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 14:02:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718719361; cv=none; b=rqT8qhbiFREHmuQGtQ4IGaCnU5rhnlmFBBAJObqdaBw8DUcuj+szhKGokMfiGCznU0TL4coJ8epXXehWvo/y1D7RDM6EKiZ3z+GYeS/Htjjm+UoW9KTkO5NnKbajNLizB4NUkvgXOAU8WHz668rgZY88yaQ2whPS+aJk7MEmq6Q=
+	t=1718719362; cv=none; b=CkGA/29azAZtss+LnAz+DEsICQDBvYT8HpU0hLVdLR5i2P8d+3MxN3xOuPJufQR3VyklD8mQ/eKc3PLskHyFeudlg6mQDwudRf7fXbcvUSOqIPQsS4sjgNQc2tkenWOy/uisZya3K6F6xx5q4Eigi46IYVOq2KRJdXhv2n/UqY0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718719361; c=relaxed/simple;
-	bh=cWqIUPEPN7Udkq4+lFTiE2RXC6AoRwx5p3drvRYtbjY=;
+	s=arc-20240116; t=1718719362; c=relaxed/simple;
+	bh=A6kuif+EaXqoEMG7xaj25XS2KcSl5ZJh9WVTl3nCKxU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=FmjFDLCChkcioWHsD1kUR4rgaw0VOepsgG6uF0JDxWSP0hI5VpKMhnOSXrrTE7TDZ5ho6TSuVty0d6n2yzBXTa5dd4XeqIJoTAfPzlvnkBNUZG8ojYOXffpmGnEfTz/f01++kjD7mvst5xt1Yq9+0+C8z+Mf44YcDlLVP5wiU/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=vHcANnZj; arc=none smtp.client-ip=209.85.221.47
+	 In-Reply-To:To:Cc; b=BSrnPma6BcmxigZrU8/ic1rMjd5nw9mrEwawJoEt7+yIzIzr8miLO8q+Mkf3wp4eigdxq8ByNkZnea0xydegWYrgG2ocH9/YuC7Cuur6qk2keKR3KdqMDXSXlKMl5pImgFdwao5036Q8zuVQS0023d18D4EkueHSCRHjDzt5bV8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=XXddTLld; arc=none smtp.client-ip=209.85.221.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="vHcANnZj"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-36087277246so2308870f8f.3
-        for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 07:02:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="XXddTLld"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-35f23f3da44so4928413f8f.0
+        for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 07:02:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1718719356; x=1719324156; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1718719358; x=1719324158; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=4Wrqm5DzrB9rfiL9awg4tiFTM9PHAHUELJgH4ibg92I=;
-        b=vHcANnZjlBkre4EVmaL8tGKwfZYGinBHtZB2QV/GzNNqhcDLAxo+ykSOXMcHZNEx4F
-         Q2jxQW1MAR/HA94+Z7CXpcGwyuW5QMQpSU3/wrCdUgtYwykd0/zznidOBimAsM+fMYZF
-         5X1/yZEs+iX323dApLuN/qg40Io1Lq9pPEvznmlPNaKKgFIzoyOWtS6GH2IBHjlFob6X
-         d2J0c7JoQEOMGjDOG61XLqYS5+76WZFFDRiHDiqWP9xiGc3OxUk92hZnKmUX65HLzVM+
-         aBZwcSk7Bhg8EUrwhq4cGb3GzXrqP/cR7NYKyTULfZeVWdQUd6dfBsG9bGpeifWG5Rnu
-         1cOA==
+        bh=C7A2H1vn46bs7vzUe2mxoJ5kUKOzuhCfRLK3RT+N/4k=;
+        b=XXddTLldNAA7MBCQpQPNTn7HWZjIRyinpb8AAxMUtd4gElKlQhSMTx4sSi3d6SMGcB
+         z7vi3z2cl2NYZq1NymiN6u2YL/rWVYuJjka+SYKf2tQfF22dC9yPlXnSccHDjmzkl7mS
+         Z0ffF6IhwVK/EdtDeF7FwyIcJEUoZ3GTSIPuhNzdYkWli7lZxYopsnJOWLObllj4Ggt/
+         8Grns8DyRYzKSI54ZGrHTRbaF9VgIsvfu76RRVV4yylQBheSVSHy13QxSWEjg65A4By6
+         ypdzTTvCkfXBZ9Ap8xqb4JxXuhiuQqcIu4u2+3j9o4ThnXgUbas7su7/TNhT/4XFYW+3
+         dskQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718719356; x=1719324156;
+        d=1e100.net; s=20230601; t=1718719358; x=1719324158;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=4Wrqm5DzrB9rfiL9awg4tiFTM9PHAHUELJgH4ibg92I=;
-        b=U2Te2aNwWIJk/zvYcm3ZkAl8MoVJmL+vEFy7RfUuOBbL3/JaB4g7B6qLP8yx3P1gBd
-         wn+sccs6LFw5jzoVmT7R1V50IWt6O5Gyc/lvxELC60ZNl0IFghSoLpqAOXCRvrfS9QIX
-         AluH3HQAYVMcW6CcyTn0yHVh1313gR4HrEsEM/XBvAJuN2SPjLNZUnE9xOQhp4AGQKzp
-         6v2GWInbWzfFrAy1nFMd9/Zy5DxDjHNGAWdt71T6s+BYtUhz1yAvKJfYJofE/gM4uy68
-         9vV6WRXmaeW+TzCrSQGyQ4Y11JEsX0u/k13C4CyFw/QYrPvkrreCsOpvE78RJk3pf2J7
-         g9ow==
-X-Gm-Message-State: AOJu0YwHeIu2AdhMw+G4xIKwq2NOihMtonNg0aIxy6iavz95fAH+yKkI
-	3fb1P38/aXR+PGZI9pGwcjrcPDD80Akpv7qaDEoRRAAE0duN9ctXgm/Jc4yOUrE=
-X-Google-Smtp-Source: AGHT+IGeSMCl1GadLFgkDPuhpwEcL3FXopw0KUDqKdsouTUQDtdzzlakx+O+Eto4p6nRE0Ptb091YA==
-X-Received: by 2002:a05:6000:b42:b0:361:fd04:95ed with SMTP id ffacd0b85a97d-361fd0496a1mr1497363f8f.15.1718719356709;
-        Tue, 18 Jun 2024 07:02:36 -0700 (PDT)
+        bh=C7A2H1vn46bs7vzUe2mxoJ5kUKOzuhCfRLK3RT+N/4k=;
+        b=gYiynXVKwKvW+0no8nJY8viP90Iso9jrJoP5nbTgH0YBrvcG1e6voIsT8KSYpWZFHh
+         /joqdRi2SXQHmDG65zQwhIo78wAPEZ3EON/fp1aLliH7mQU4I5ywg7aH3+v3zrdr5SQ0
+         Bjgl1Mqn4mSMiNUp4Hvt5HmkArQldqOLuJMi7vs3Yv7hdwOvCE0qS7z66yG2o748JlLn
+         bGt8rA2Dpr1M3UnKc3QieJuEiYiQ/y3DVgWFgJZnbftm1ZXe6wTV5g4Hv+6rHj505xQj
+         o+qcKe+7iMbkj8ZLVnMbpKrRiCJSQk/OhLQOMUb4wlJEPq1o2qOc/J4TM75rRruaQV+i
+         586Q==
+X-Gm-Message-State: AOJu0YzlRQjXn5gpgPL5tdolhy+Yik+W70ouY0tq2H0IM+Y4qQBB2QMi
+	zFJg7udAhrXMe/F4tpc0nZ5/tqNVNnF9l1xiR+T+xd/t5/sgL7i4Xp+W0eeMAiRokoyKju1WgBe
+	Kqg8=
+X-Google-Smtp-Source: AGHT+IFveMAeeYnGXlbgaKPbEE636y3oEz+xbQvRxeYUKyvxdbSUC2rC5BJCZhSUrFoLatWxvWuhBw==
+X-Received: by 2002:a5d:6901:0:b0:360:8269:5690 with SMTP id ffacd0b85a97d-36082695cdamr7690748f8f.17.1718719357775;
+        Tue, 18 Jun 2024 07:02:37 -0700 (PDT)
 Received: from [127.0.1.1] (frhb82016ds.ikexpress.com. [185.246.87.17])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-360750f22absm14412546f8f.79.2024.06.18.07.02.36
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-360750f22absm14412546f8f.79.2024.06.18.07.02.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jun 2024 07:02:36 -0700 (PDT)
+        Tue, 18 Jun 2024 07:02:37 -0700 (PDT)
 From: Guillaume Stols <gstols@baylibre.com>
-Date: Tue, 18 Jun 2024 14:02:36 +0000
-Subject: [PATCH 4/9] dt-bindings: iio: adc: adi,ad7606: add supply
- properties
+Date: Tue, 18 Jun 2024 14:02:38 +0000
+Subject: [PATCH 6/9] dt-bindings: iio: adc: adi,ad7606: fix example
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,7 +63,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240618-cleanup-ad7606-v1-4-f1854d5c779d@baylibre.com>
+Message-Id: <20240618-cleanup-ad7606-v1-6-f1854d5c779d@baylibre.com>
 References: <20240618-cleanup-ad7606-v1-0-f1854d5c779d@baylibre.com>
 In-Reply-To: <20240618-cleanup-ad7606-v1-0-f1854d5c779d@baylibre.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -80,33 +80,26 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  dlechner@baylibre.com
 X-Mailer: b4 0.14.0
 
-Add voltage supplies
+Example uses adi,ad7606-8 as compatible, but adi,sw-mode is not
+available for it. So remove this property from example.
 
 Signed-off-by: Guillaume Stols <gstols@baylibre.com>
 ---
- Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-index 80866940123c..e480c9a7c7ca 100644
+index 65d6ca5843d7..a8fb0d926859 100644
 --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
 +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-@@ -35,6 +35,15 @@ properties:
- 
-   avcc-supply: true
- 
-+  vdrive-supply:
-+    description:
-+      Determines the voltage level at which the interface logic pins will
-+      operate.
-+
-+  refin-supply:
-+    description:
-+      The voltage supply for optional external reference voltage.
-+
-   interrupts:
-     description:
-       The BUSY pin falling edge indicates that the conversion is over, and thus
+@@ -198,7 +198,6 @@ examples:
+                                            <&gpio 23 GPIO_ACTIVE_HIGH>,
+                                            <&gpio 26 GPIO_ACTIVE_HIGH>;
+             standby-gpios = <&gpio 24 GPIO_ACTIVE_LOW>;
+-            adi,sw-mode;
+         };
+     };
+ ...
 
 -- 
 2.34.1
