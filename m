@@ -1,119 +1,108 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from aposti.net (aposti.net [89.234.176.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D2BE156F29;
-	Tue, 18 Jun 2024 09:21:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11D1D15746C;
+	Tue, 18 Jun 2024 09:26:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=89.234.176.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718702465; cv=none; b=i+LVqq/CqlYnudTthBj3tJ50It8LsN4pJXG6d+LNf7O6GANM6JVQJW88loXpmaehSQdvETGUfATIo8MI8xHM+0vyMEieDaXN6988aw8/Ixsk5/LszOPAxfxlqPCGGwsgE0kKc8qlVilpRIQ2M/48I+/GTRDljIk7q8hTI8WAvTw=
+	t=1718702770; cv=none; b=bKyEYjwd+pRRrysRZrT5t6ZMPcf0jJCYHeXaqDS1Te3Wkz26QpyKytmuVXEfdRNG2RL5yj1Q/rm4h3qcgTdv+adhQ+hkrIADHlU2/6R9PEM81sd8t4PcZqellPh/J7K7YveGN9hi2rJJO72jJ30oeaVyJs7wF1/3AgroqCDE5EA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718702465; c=relaxed/simple;
-	bh=ODb0AS8Gid72yudRJyiMhX1jDUeji0O92Qk5KnJi5HU=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=JsQ7vD9VQck4eCAdqfiR3Fz6OHY8/ZB8goC+WfqQ9bkEEUeVAUlp1cdj8UIonwo1Lbpm5eCtyjO17c0b8GUe/GgunR7UDDCQuBW1qEDC3tOUguOLAT3kLelWWx2hgLSB/d88UpUYNSPk75bPjKVGOHqSLSbySbhPIqv5mV7GpuQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=yR+oHpt9; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1718702770; c=relaxed/simple;
+	bh=GCW7NA4dl5Xd1S18xVblRR4uRlpHDpp4NbT+Np6s3/M=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=fiuYas1Lt82WrH1tA8EDn00rCFDVca71+BH1MADE6Bx9GsBs2T+N1rkpMnvcM8X2MLT3jGBRtN3RWaXSnxwyYXuRk3pKzq3tztiFhOIj+TszaVMPCWIzNf0ALb8MTmqWperjgqjnh3GVSvxf4M35fwAe8prDfew2br91F3ZB1c4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net; spf=pass smtp.mailfrom=crapouillou.net; dkim=pass (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b=1zHS64/b; arc=none smtp.client-ip=89.234.176.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=crapouillou.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="yR+oHpt9"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45I2vvDH006686;
-	Tue, 18 Jun 2024 04:20:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=s1jbBiljYWIQU2h5+M2d0n4QhEp
-	apypLQmJWq50+k+s=; b=yR+oHpt9pjtVUswxIlUbIAeE5RmM0K3GQKJCISTyoWB
-	tpYveDUHw2lgI1UfMBujoRvIsffQLUIgHR0naMKjtkUx6UBgr5tjSnSy5dbUsFFS
-	Xk1lf6gJLckPuEHykJv0om5N6M8EmVk5ULc04W1iqZC9zPWVaXrz+Ur1Vyr1QVvl
-	4i6z5fpE37qr56kO7gRgqw/jS8zgLneXKo4ezowRGHA9tNAAYClNqwcPg2q41Wlc
-	vTXbwKAhwNLCahJ7H2bw4cdSn4WES/E7nAdF8uESBHLaQCN9he7d3Glv2BdRR/Ia
-	bkLw2gSPzAITf86ijXK10XsyY2PU6fOj8c6tsuKYxyA==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3ys4t32840-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 18 Jun 2024 04:20:39 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 45I8KZ60049902
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 18 Jun 2024 04:20:35 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 18 Jun 2024 04:20:34 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 18 Jun 2024 04:20:34 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 18 Jun 2024 04:20:34 -0400
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.163])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 45I8KJEV004234;
-	Tue, 18 Jun 2024 04:20:22 -0400
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd
-	<sboyd@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski
-	<krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Lars-Peter Clausen
-	<lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        "Jonathan Cameron" <jic23@kernel.org>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Conor Dooley
-	<conor.dooley@microchip.com>
-Subject: [PATCH v5 1/2] dt-bindings: iio: adf4350: add clk provider prop
-Date: Tue, 18 Jun 2024 11:20:06 +0300
-Message-ID: <20240618082012.4496-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.45.2
+	dkim=pass (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b="1zHS64/b"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+	s=mail; t=1718702760;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=vXPLlenIHOVNSxchFiFQi3fw6uzbHuydzsC7VVd5GHk=;
+	b=1zHS64/bgpAwap7kyt5U4z7WR4EDDIxoqY22qu0YQI2O3XifRrK4zNIuwTYEFuqIWKzqwm
+	ifzecavzaf/TxD8N/PWg+YI6BApCdvIJdQi6EAIC+YwCwJYikgL3muFWH05TOODkNzbNrN
+	hSdAQ748taP5Coys1FUqn3WmyiG0X5E=
+Message-ID: <31c868f86d47195e0658eeafc4d6a2cbb9c013ce.camel@crapouillou.net>
+Subject: Re: [PATCH v10 3/6] iio: core: Add new DMABUF interface
+ infrastructure
+From: Paul Cercueil <paul@crapouillou.net>
+To: Markus Elfring <Markus.Elfring@web.de>, Nuno =?ISO-8859-1?Q?S=E1?=
+ <nuno.sa@analog.com>, linux-iio@vger.kernel.org, dmaengine@vger.kernel.org,
+  linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ linaro-mm-sig@lists.linaro.org, Christian =?ISO-8859-1?Q?K=F6nig?=
+ <christian.koenig@amd.com>, Jonathan Cameron <jic23@kernel.org>, Lars-Peter
+ Clausen <lars@metafoo.de>, Sumit Semwal <sumit.semwal@linaro.org>, Vinod
+ Koul <vkoul@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, linux-doc@vger.kernel.org, Jonathan
+ Corbet <corbet@lwn.net>, Randy Dunlap <rdunlap@infradead.org>
+Date: Tue, 18 Jun 2024 11:25:52 +0200
+In-Reply-To: <6a41fd88-5496-462a-86d2-446c2990fcf7@web.de>
+References: <20240605110845.86740-4-paul@crapouillou.net>
+	 <6a41fd88-5496-462a-86d2-446c2990fcf7@web.de>
+Autocrypt: addr=paul@crapouillou.net; prefer-encrypt=mutual;
+ keydata=mQENBF0KhcEBCADkfmrzdTOp/gFOMQX0QwKE2WgeCJiHPWkpEuPH81/HB2dpjPZNW03ZM
+ LQfECbbaEkdbN4YnPfXgcc1uBe5mwOAPV1MBlaZcEt4M67iYQwSNrP7maPS3IaQJ18ES8JJ5Uf5Uz
+ FZaUawgH+oipYGW+v31cX6L3k+dGsPRM0Pyo0sQt52fsopNPZ9iag0iY7dGNuKenaEqkYNjwEgTtN
+ z8dt6s3hMpHIKZFL3OhAGi88wF/21isv0zkF4J0wlf9gYUTEEY3Eulx80PTVqGIcHZzfavlWIdzhe
+ +rxHTDGVwseR2Y1WjgFGQ2F+vXetAB8NEeygXee+i9nY5qt9c07m8mzjABEBAAG0JFBhdWwgQ2VyY
+ 3VlaWwgPHBhdWxAY3JhcG91aWxsb3UubmV0PokBTgQTAQoAOBYhBNdHYd8OeCBwpMuVxnPua9InSr
+ 1BBQJdCoXBAhsDBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEHPua9InSr1BgvIH/0kLyrI3V0f
+ 33a6D3BJwc1grbygPVYGuC5l5eMnAI+rDmLR19E2yvibRpgUc87NmPEQPpbbtAZt8On/2WZoE5OIP
+ dlId/AHNpdgAtGXo0ZX4LGeVPjxjdkbrKVHxbcdcnY+zzaFglpbVSvp76pxqgVg8PgxkAAeeJV+ET
+ 4t0823Gz2HzCL/6JZhvKAEtHVulOWoBh368SYdolp1TSfORWmHzvQiCCCA+j0cMkYVGzIQzEQhX7U
+ rf9N/nhU5/SGLFEi9DcBfXoGzhyQyLXflhJtKm3XGB1K/pPulbKaPcKAl6rIDWPuFpHkSbmZ9r4KF
+ lBwgAhlGy6nqP7O3u7q23hRW5AQ0EXQqFwQEIAMo+MgvYHsyjX3Ja4Oolg1Txzm8woj30ch2nACFC
+ qaO0R/1kLj2VVeLrDyQUOlXx9PD6IQI4M8wy8m0sR4wV2p/g/paw7k65cjzYYLh+FdLNyO7IWYXnd
+ JO+wDPi3aK/YKUYepqlP+QsmaHNYNdXEQDRKqNfJg8t0f5rfzp9ryxd1tCnbV+tG8VHQWiZXNqN70
+ 62DygSNXFUfQ0vZ3J2D4oAcIAEXTymRQ2+hr3Hf7I61KMHWeSkCvCG2decTYsHlw5Erix/jYWqVOt
+ X0roOOLqWkqpQQJWtU+biWrAksmFmCp5fXIg1Nlg39v21xCXBGxJkxyTYuhdWyu1yDQ+LSIUAEQEA
+ AYkBNgQYAQoAIBYhBNdHYd8OeCBwpMuVxnPua9InSr1BBQJdCoXBAhsMAAoJEHPua9InSr1B4wsH/
+ Az767YCT0FSsMNt1jkkdLCBi7nY0GTW+PLP1a4zvVqFMo/vD6uz1ZflVTUAEvcTi3VHYZrlgjcxmc
+ Gu239oruqUS8Qy/xgZBp9KF0NTWQSl1iBfVbIU5VV1vHS6r77W5x0qXgfvAUWOH4gmN3MnF01SH2z
+ McLiaUGF+mcwl15rHbjnT3Nu2399aSE6cep86igfCAyFUOXjYEGlJy+c6UyT+DUylpjQg0nl8MlZ/
+ 7Whg2fAU9+FALIbQYQzGlT4c71SibR9T741jnegHhlmV4WXXUD6roFt54t0MSAFSVxzG8mLcSjR2c
+ LUJ3NIPXixYUSEn3tQhfZj07xIIjWxAYZo=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: 2ekjhkomUuPqJkO0583p3I4WZH2cLugJ
-X-Proofpoint-ORIG-GUID: 2ekjhkomUuPqJkO0583p3I4WZH2cLugJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-06-18_02,2024-06-17_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
- malwarescore=0 adultscore=0 suspectscore=0 mlxlogscore=999 spamscore=0
- bulkscore=0 priorityscore=1501 lowpriorityscore=0 clxscore=1011 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2405170001
- definitions=main-2406180061
 
-Add properties required for providing clock to other consumers.
+Hi Markus,
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
----
- .../devicetree/bindings/iio/frequency/adi,adf4350.yaml      | 6 ++++++
- 1 file changed, 6 insertions(+)
+Le lundi 17 juin 2024 =C3=A0 08:56 +0200, Markus Elfring a =C3=A9crit=C2=A0=
+:
+> =E2=80=A6
+> > +++ b/drivers/iio/industrialio-buffer.c
+> =E2=80=A6
+> > =C2=A0static int iio_buffer_chrdev_release(struct inode *inode, struct
+> > file *filep)
+> > =C2=A0{
+> =E2=80=A6
+> > =C2=A0	wake_up(&buffer->pollq);
+> >=20
+> > +	mutex_lock(&buffer->dmabufs_mutex);
+> > +
+> > +	/* Close all attached DMABUFs */
+> =E2=80=A6
+> > +	mutex_unlock(&buffer->dmabufs_mutex);
+> > +
+> > =C2=A0	kfree(ib);
+> =E2=80=A6
+>=20
+> Would you become interested to apply a statement like
+> =E2=80=9Cguard(mutex)(&buffer->dmabufs_mutex);=E2=80=9D?
+> https://elixir.bootlin.com/linux/v6.10-rc3/source/include/linux/mutex.h#L=
+196
 
-diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,adf4350.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,adf4350.yaml
-index 43cbf27114c7..d1d1311332f8 100644
---- a/Documentation/devicetree/bindings/iio/frequency/adi,adf4350.yaml
-+++ b/Documentation/devicetree/bindings/iio/frequency/adi,adf4350.yaml
-@@ -28,6 +28,12 @@ properties:
-   clock-names:
-     const: clkin
- 
-+  '#clock-cells':
-+    const: 0
-+
-+  clock-output-names:
-+    maxItems: 1
-+
-   gpios:
-     maxItems: 1
-     description: Lock detect GPIO.
--- 
-2.45.2
+I'll update the patch to use it.
 
+Cheers,
+-Paul
