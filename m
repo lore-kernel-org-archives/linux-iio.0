@@ -1,59 +1,59 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE25416DC13
-	for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 14:02:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98AA81AB906
+	for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 14:02:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718719362; cv=none; b=shkvHek1tQWfOXzw5dxu+ddBgKAtaieCpil/BHJjvDmSNx4HGHkJPD44J9Idfyz2hJg7WXHFHEtU7Vcu2RKV3XaivIF9CKIcJZVte3bTU6D95Ohz0+rSOTbksLdyf+MWSB2MokmNjpZKcffhCkMA84bcQdbiqGcTol77nSmB3nQ=
+	t=1718719363; cv=none; b=fsR8oC84bMVZ3MJ5pMTy9OoqBY4GDCPgnAglxZ47GjZ2OYkpHpxUhb2+eUs1uQFL+hhji/iHo0GI/p2hz8kqfhNbVTRlAHxbZCXSteayb/sPvcfLE+Zjsh6B1rbZXYq2E6ycieWivzy9y+r/40VHsNzdsbUPUdLw7CIB1FtydCQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718719362; c=relaxed/simple;
-	bh=Dg4uCUMceVWgsRkJ2KhN7U4MEvxhzasTmCDw03bT0EE=;
+	s=arc-20240116; t=1718719363; c=relaxed/simple;
+	bh=QmIv781VGnh+ryUYXx1F6xEK9035NP0/VEuO/oa1M9c=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=UzC4RT9O1uGP8f689lbDx0QTfzNXIHUYZMicMvF/jpeNVshwqBjLXi1cefjfbem8cTWxUDFNr0rGz3M8EG9IedAylbLYxagWliGPkRvIfGs3O0DOUXnNfh3k3ifa5oftMM4xVBm9jTc09zA9UJ3y5MBSFTN7VzLfeDYEnHcEg8E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=xj0YLYiX; arc=none smtp.client-ip=209.85.221.45
+	 In-Reply-To:To:Cc; b=hhAM9DQLl4BrAXI7AKEzp1mHnNkZIXcMNmGUE5qCkB4nAXz1HrUzwkjsjFTw8+7kQ57NlbxxTNTAon6aa4htFmLnzUjA/v5yTfNLUmZXdYdMxnQfoIg1ltkvtLVbLzdf12/W21rwEgoBmQ0bk/YXIxr1fcIP1yxGqC9CAaJ7iyo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=ohKtDfAW; arc=none smtp.client-ip=209.85.167.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="xj0YLYiX"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-3608e6d14b6so2029503f8f.0
-        for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 07:02:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="ohKtDfAW"
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-52c525257feso7085182e87.1
+        for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 07:02:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1718719357; x=1719324157; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1718719358; x=1719324158; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=UGD/hgLLXAT/g5axsjVVgJLnf9y+tbpA9Y5GEUxIfgU=;
-        b=xj0YLYiXLHxV4U/303CDwBc/IzVZDtF2GumC9oprxLUqcu/hVOAorem9Hs1ImxPZfJ
-         QE4RRw6mB/4gUMIq/aWrd5e+bGDDwk8yTTNNkVt2n8pAkcnYSqRYqFFEdKEnq1m5Twqz
-         T4D5hOUK4POcbZq/dweQ2yf6pW721TP/d4vgTXuDM6vI3Y3O4pCShNfm6KD0Oxdw9Wr+
-         XjeWHehc6i6wBDfn6ZvvIR47kMJJIES4Ju2CbWH3rIH24CRR7ZEN9olmhah16kNb95vR
-         1hbuwGLBiXCXdiKEgJ3e40Kjs2QCRum12IVwJQlLX0CZk607QdErt90OKegHkkuEMdhL
-         NK6A==
+        bh=iI4ADRyyzg0pZX/pPb/PmIK3doCtooaUT1uP9pqm4FQ=;
+        b=ohKtDfAWXiBKfE+4MAHaz94DbyynxLd/BJICDyyhmBA8gD0M4xYqBXpVmUNHUGeKWw
+         DwT+gqU4bqqakAFMpG1vXkgMA3YJP/luCFOrYwC1nzQjSS/UUuXdSf2f6risr73DPEvz
+         zOA+0KdRPZ8ubD+fgzRlhuRmB2kSRLeT1W+4xG57WnUkRaFomzQjALT2CNw5o0a5nz5x
+         EX5ov+NKAykBjBlq9tD0Ff+xBHuFOxdv3L2QKrydl8003kJyoZUF9SND0hGk/7siknwJ
+         tZx+0d97LU9niYpjuMexauD347ecvnZRpSYx3T1GtFuUi/qHuq6G9cBJSrqMgczbrZWM
+         82Gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718719357; x=1719324157;
+        d=1e100.net; s=20230601; t=1718719358; x=1719324158;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=UGD/hgLLXAT/g5axsjVVgJLnf9y+tbpA9Y5GEUxIfgU=;
-        b=qMU+o+hJ6ZA4i2ccZxlrzrzUEZhOLGEjp8yutbYkK26bspB1JRiPXsKcZk/hZoXFP1
-         rAbH6I/swXblJafpZzlzOEaWqET3Stak/jGGqoUhOk9kedKPIs1ZSBDkB1JW5fbW/2rd
-         gmFzXXIVCls7uBqCmKFD2mqLCfrt4fb0ZL0pQIjrqjn9TuDkIMyTzcIY3F1daj4Tf696
-         Lk27gTYPdCAojMA+OFLpAxIDo8Dy9D7WjKZOCasiBWa+quFBlkQ86fW9XqN+YcfZpRFz
-         hO6JHB6gUXUQMruFa6wDf4yhNyCPUgb64t7MY0LZU4NpkT+tKuliJqGtqxfEQO0PHxNz
-         +mmg==
-X-Gm-Message-State: AOJu0Ywv6hEgVl2Y3BG0WZmLNblCI5le+vJDK8WZ8eF6BDvEO4E5ky4J
-	yYG9LjstSN3TEFm92mewz8U94PNF7ArVGGZGCfU3WVI+g5hpp2cHqiOG71+1Fzg=
-X-Google-Smtp-Source: AGHT+IHFuggadGWzuwPQ5BQ96caDqox/xXR0j4uFJ20Kej5bsP8G8KLJpvUeKbdPACifYPBZrEKCOg==
-X-Received: by 2002:a05:6000:1e90:b0:35f:1c3c:56b8 with SMTP id ffacd0b85a97d-3607a76242emr8887364f8f.36.1718719357245;
-        Tue, 18 Jun 2024 07:02:37 -0700 (PDT)
+        bh=iI4ADRyyzg0pZX/pPb/PmIK3doCtooaUT1uP9pqm4FQ=;
+        b=UXE22VBs6fNNO1T6OQJ0DYgMWliDqDlHfx46YVvcJT0LWPKH9Sm81h9S3KgYGhL/MH
+         BvcBNmF0d0O9t/V+0QGr5up04O4pC2F8ZKdVvmilnv9sbkrCieZ11rBkkHmMLbQgwLnY
+         vpTq1rUM+7kV5lViw22wfeD2RQH4mypxAaKfeOrM/7asAimP/tViLZSwnHZSr55YJxuq
+         3o1e7fGkjQdk1mW/OACAjgHRnKiog4MFA3SvU86KY4sPy3lzBq0ZJRPQqf6MsQIgQ50s
+         I7T8BLq1HFiSCBY/xtPzCfcb6iJqVK3Fyk5ExjWL6L8GOgEs5kmfSgFyloSQZuAKea6W
+         gB9w==
+X-Gm-Message-State: AOJu0YznymKltMOAOZl4qIPYQ8PJkhoDMJfqt5RqNt0AyqnNcLzPloLd
+	8cp9V2xvqGT6TNxGsXDABhsj8QmtNtzh7zcuNMJPixrsOTBwP7qI1TE11zc65Fk=
+X-Google-Smtp-Source: AGHT+IHBu4z952wNs7NhOwlF6llGWnDm5ZPTxh7b2obRWVw6BiFyuLwn+c+TGhzkzw2h3HLjRG9iow==
+X-Received: by 2002:ac2:58c8:0:b0:52c:9e25:978d with SMTP id 2adb3069b0e04-52ca6e8fe35mr7316607e87.45.1718719358335;
+        Tue, 18 Jun 2024 07:02:38 -0700 (PDT)
 Received: from [127.0.1.1] (frhb82016ds.ikexpress.com. [185.246.87.17])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-360750f22absm14412546f8f.79.2024.06.18.07.02.36
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-360750f22absm14412546f8f.79.2024.06.18.07.02.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jun 2024 07:02:36 -0700 (PDT)
+        Tue, 18 Jun 2024 07:02:38 -0700 (PDT)
 From: Guillaume Stols <gstols@baylibre.com>
-Date: Tue, 18 Jun 2024 14:02:37 +0000
-Subject: [PATCH 5/9] dt-bindings: iio: adc: adi,ad7606: add conditions
+Date: Tue, 18 Jun 2024 14:02:39 +0000
+Subject: [PATCH 7/9] iio: adc: ad7606: switch mutexes to scoped_guard
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,7 +62,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240618-cleanup-ad7606-v1-5-f1854d5c779d@baylibre.com>
+Message-Id: <20240618-cleanup-ad7606-v1-7-f1854d5c779d@baylibre.com>
 References: <20240618-cleanup-ad7606-v1-0-f1854d5c779d@baylibre.com>
 In-Reply-To: <20240618-cleanup-ad7606-v1-0-f1854d5c779d@baylibre.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -79,90 +79,123 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  dlechner@baylibre.com
 X-Mailer: b4 0.14.0
 
-Since the driver supports several parts that present differences in
-their layout and behaviour, it is necessary to describe the differences
-from one chip to another.
+Switching to scoped_guard simplifies the code and avoids to take care to
+unlock the mutex in case of premature return.
 
 Signed-off-by: Guillaume Stols <gstols@baylibre.com>
 ---
- .../devicetree/bindings/iio/adc/adi,ad7606.yaml    | 50 +++++++++++++++++++++-
- 1 file changed, 48 insertions(+), 2 deletions(-)
+ drivers/iio/adc/ad7606.c | 71 ++++++++++++++++++++++--------------------------
+ 1 file changed, 33 insertions(+), 38 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-index e480c9a7c7ca..65d6ca5843d7 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-@@ -55,7 +55,8 @@ properties:
-       Must be the device tree identifier of the CONVST pin(s). This logic input
-       is used to initiate conversions on the analog input channels. As the line
-       is active high, it should be marked GPIO_ACTIVE_HIGH.
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 2
+diff --git a/drivers/iio/adc/ad7606.c b/drivers/iio/adc/ad7606.c
+index 3a417595294f..e3426287edf6 100644
+--- a/drivers/iio/adc/ad7606.c
++++ b/drivers/iio/adc/ad7606.c
+@@ -69,19 +69,18 @@ static int ad7606_reg_access(struct iio_dev *indio_dev,
+ 	struct ad7606_state *st = iio_priv(indio_dev);
+ 	int ret;
  
-   reset-gpios:
-     description:
-@@ -91,7 +92,8 @@ properties:
-       GPIO_ACTIVE_HIGH. On the AD7616, there are 2 pins, and if the 2 pins are
-       tied to a logic high, software mode is enabled, otherwise one of the 3
-       possible range values is selected.
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 2
+-	mutex_lock(&st->lock);
+-	if (readval) {
+-		ret = st->bops->reg_read(st, reg);
+-		if (ret < 0)
+-			goto err_unlock;
+-		*readval = ret;
+-		ret = 0;
+-	} else {
+-		ret = st->bops->reg_write(st, reg, writeval);
++	scoped_guard(mutex, &st->lock) {
++		if (readval) {
++			ret = st->bops->reg_read(st, reg);
++			if (ret < 0)
++				return ret;
++			*readval = ret;
++			return 0;
++		} else {
++			return st->bops->reg_write(st, reg, writeval);
++		}
+ 	}
+-err_unlock:
+-	mutex_unlock(&st->lock);
+-	return ret;
++	unreachable();
+ }
  
-   adi,oversampling-ratio-gpios:
-     description:
-@@ -123,6 +125,50 @@ required:
- allOf:
-   - $ref: /schemas/spi/spi-peripheral-props.yaml#
+ static int ad7606_read_samples(struct ad7606_state *st)
+@@ -124,18 +123,18 @@ static irqreturn_t ad7606_trigger_handler(int irq, void *p)
+ 	struct ad7606_state *st = iio_priv(indio_dev);
+ 	int ret;
  
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: adi,ad7616
-+    then:
-+      properties:
-+        adi,first-data-gpios: false
-+        standby-gpios: false
-+        adi,range-gpios:
-+          maxItems: 2
-+    else:
-+      properties:
-+        adi,range-gpios:
-+          maxItems: 1
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - adi,ad7605-4
-+              - adi,ad7616
-+    then:
-+      properties:
-+        adi,oversampling-ratio-gpios: false
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - adi,ad7605-4
-+              - adi,ad7606-4
-+              - adi,ad7606-6
-+              - adi,ad7606-8
-+    then:
-+      properties:
-+        adi,sw-mode: false
-+    else:
-+      properties:
-+        adi,conversion-start-gpios:
-+          maxItems: 1
-+
- unevaluatedProperties: false
+-	mutex_lock(&st->lock);
++	scoped_guard(mutex, &st->lock) {
++		ret = ad7606_read_samples(st);
++		if (ret)
++			goto error_ret;
  
- examples:
+-	ret = ad7606_read_samples(st);
+-	if (ret == 0)
+ 		iio_push_to_buffers_with_timestamp(indio_dev, st->data,
+ 						   iio_get_time_ns(indio_dev));
+-
+-	iio_trigger_notify_done(indio_dev->trig);
+-	/* The rising edge of the CONVST signal starts a new conversion. */
+-	gpiod_set_value(st->gpio_convst, 1);
+-
+-	mutex_unlock(&st->lock);
++error_ret:
++		iio_trigger_notify_done(indio_dev->trig);
++		/* The rising edge of the CONVST signal starts a new conversion. */
++		gpiod_set_value(st->gpio_convst, 1);
++	}
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -259,17 +258,15 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE:
+-		mutex_lock(&st->lock);
+-		i = find_closest(val2, st->scale_avail, st->num_scales);
+-		if (st->sw_mode_en)
+-			ch = chan->address;
+-		ret = st->write_scale(indio_dev, ch, i);
+-		if (ret < 0) {
+-			mutex_unlock(&st->lock);
+-			return ret;
++		scoped_guard(mutex, &st->lock) {
++			i = find_closest(val2, st->scale_avail, st->num_scales);
++			if (st->sw_mode_en)
++				ch = chan->address;
++			ret = st->write_scale(indio_dev, ch, i);
++			if (ret < 0)
++				return ret;
++			st->range[ch] = i;
+ 		}
+-		st->range[ch] = i;
+-		mutex_unlock(&st->lock);
+ 
+ 		return 0;
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+@@ -277,14 +274,12 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 			return -EINVAL;
+ 		i = find_closest(val, st->oversampling_avail,
+ 				 st->num_os_ratios);
+-		mutex_lock(&st->lock);
+-		ret = st->write_os(indio_dev, i);
+-		if (ret < 0) {
+-			mutex_unlock(&st->lock);
+-			return ret;
++		scoped_guard(mutex, &st->lock) {
++			ret = st->write_os(indio_dev, i);
++			if (ret < 0)
++				return ret;
++			st->oversampling = st->oversampling_avail[i];
+ 		}
+-		st->oversampling = st->oversampling_avail[i];
+-		mutex_unlock(&st->lock);
+ 
+ 		return 0;
+ 	default:
 
 -- 
 2.34.1
