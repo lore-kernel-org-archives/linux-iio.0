@@ -1,92 +1,132 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54E074595D;
-	Tue, 18 Jun 2024 15:53:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB08C50297;
+	Tue, 18 Jun 2024 16:10:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.207.212.93
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718726014; cv=none; b=MkE6lEQlQMroi1xpaLi7nKm2GSviNcqrYHWgU5dylmyQlgTNBRIUszijsmtmNRiYxr/tMGa+KmUE55wUFAXRDTaTa5GJYTQoLs3JpZ+wz3Zsb+IHljPo1OP5oGkXDhzb2oV3/tTpSeKbbHq6gVKiC1hW6oxJhavGXifynfs6ojU=
+	t=1718727017; cv=none; b=pvvfSMb7dhWegkpKzFNskyvPVCjnCZUgzKNshraw02tiDcIEWiKg1tK6qlTXC49Jmo8w404KAs6TrSjeN5LyieOwRHInmU7QXM5enAXWOtd4Y5fGi770twM4VHgzGO5a2sUdGUehoHYs2lObPZnSa/QBw4l8LrSpi2yvZds6GBk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718726014; c=relaxed/simple;
-	bh=8j9kZpWYFKPJ17/JFfrQ8rAerVTi3N6sqkeVogOAF5Y=;
-	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
-	 Message-Id:Subject; b=WG9nbaMh/V0RsPd9W6p/yAVNG1vceI5TQ/qP3juyq5QeQmgMf9J1MyBGqVCwKz89zusDTvr9hGTQbPFNXytzGFL/Q+fu220WNkT7IbaaJsfFtsLR0MTySOqp15CZK6DQDCDQ1A3yW/fNUWBsEoQXQsDPrZoGfGkndvJ+0KoRJlc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=liKcmHch; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1718727017; c=relaxed/simple;
+	bh=USB1J3c1I1YDJiBjUQrzN4H4/OWzJtRXO4GYW8Vt/iQ=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=aXmSD53vuKtsxUWn+IW0fCnWama6/Nt7esg5tQqxlX0wBbah8p5oNLK8a0lUrqV2zYtsUMm+dPcewrY4elLyTYkFbhZ9tTASVOC/wfhZiMsYbeScEoKTbAMQA5PG9IDfpdcTxO9Vs3x+uXJtz5pLdhCnGUTt8TQO/mn29tTwT24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=i91YT2Ob; arc=none smtp.client-ip=91.207.212.93
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="liKcmHch"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A25CC3277B;
-	Tue, 18 Jun 2024 15:53:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1718726014;
-	bh=8j9kZpWYFKPJ17/JFfrQ8rAerVTi3N6sqkeVogOAF5Y=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=liKcmHchZywAUJiiUirezQREET7vPhK/wCFZlVIDs7jnonsq3Kh17hLXJw825F4UP
-	 NtGShLSrljqguoliTg9Qdseg9Nm+yyru3mLT8HRfDfrdGyghRK7u42TBtv93Hj+/oE
-	 FL+7xS3Wmd6vMJlo3iDLKOXFkKDRtYBgnkSClVh6vkKNqkXXpj44H4rn7GNBuw2FEi
-	 fZwrVy/2K/3Rks1gcw1oCjOy1FY12CHsN/qVdu899FUyX+O+9fw4MHhMAcdm7rjI3d
-	 2mB+QsoBcAi9EK1M71M7mNDk/8K2PCH4KDTCvVqrKrecmwRtxkjk6rZAHdz8zaf6fY
-	 f1ds39dCJ9gAQ==
-Date: Tue, 18 Jun 2024 09:53:33 -0600
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="i91YT2Ob"
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45IG0GqB014183;
+	Tue, 18 Jun 2024 18:09:56 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=selector1; bh=
+	vtRrWuN32WlRT8GMWwj0eu9Vi1SpQstEyGYmHWc9F/Q=; b=i91YT2ObqSmeWtxS
+	zaCibFgRdSefsdEGbk5Z0BCAbbxaetDrrArO1KAXjF1jMj1Da1L57S5qJl6fsIod
+	Z4kegLTNGV1Kxvf6TwyrAoauzoEv5hbSxLMO7JxO+5LQ9iw1hJSL1mzFJ3eeBP2L
+	28gIuW7HlDQuRod8ThzH6mZuWD9ji5Z5ougpr8lp8C2RyRImxHMBr+sKW2+StWkW
+	nlHD/btne38O1VFsH4y1thO3ZQhUPdE/8Fz5nqVPoZ2vSLtPNYUIVqqlSDeUOraO
+	QbIJP4kazrBTv7U9a5WQX8Q7vzZ/xKEsBl/xpM3rmPd41ItjzDZYspjExazOxHbu
+	XOPWQQ==
+Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ys035m8dv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 18 Jun 2024 18:09:56 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 60A5A40045;
+	Tue, 18 Jun 2024 18:09:47 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A141721D3CA;
+	Tue, 18 Jun 2024 18:09:24 +0200 (CEST)
+Received: from localhost (10.252.27.64) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Tue, 18 Jun
+ 2024 18:09:24 +0200
+From: Olivier Moysan <olivier.moysan@foss.st.com>
+To: Nuno Sa <nuno.sa@analog.com>, Olivier Moysan <olivier.moysan@foss.st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 2/8] iio: add enable and disable services to iio backend framework
+Date: Tue, 18 Jun 2024 18:08:28 +0200
+Message-ID: <20240618160836.945242-3-olivier.moysan@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20240618160836.945242-1-olivier.moysan@foss.st.com>
+References: <20240618160836.945242-1-olivier.moysan@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Guillaume Stols <gstols@baylibre.com>
-Cc: Conor Dooley <conor+dt@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <michael.hennerich@analog.com>, 
- linux-fbdev@vger.kernel.org, jstephan@baylibre.com, 
- Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- dlechner@baylibre.com, Beniamin Bia <beniamin.bia@analog.com>, 
- Stefan Popa <stefan.popa@analog.com>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, linux-kernel@vger.kernel.org, 
- Michael Hennerich <Michael.Hennerich@analog.com>
-In-Reply-To: <20240618-cleanup-ad7606-v1-5-f1854d5c779d@baylibre.com>
-References: <20240618-cleanup-ad7606-v1-0-f1854d5c779d@baylibre.com>
- <20240618-cleanup-ad7606-v1-5-f1854d5c779d@baylibre.com>
-Message-Id: <171872601308.2592859.9209680647249959738.robh@kernel.org>
-Subject: Re: [PATCH 5/9] dt-bindings: iio: adc: adi,ad7606: add conditions
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-06-18_02,2024-06-17_01,2024-05-17_01
 
+Add iio_backend_disable() and iio_backend_enable() APIs to allow
+IIO backend consumer to request backend disabling and enabling.
 
-On Tue, 18 Jun 2024 14:02:37 +0000, Guillaume Stols wrote:
-> Since the driver supports several parts that present differences in
-> their layout and behaviour, it is necessary to describe the differences
-> from one chip to another.
-> 
-> Signed-off-by: Guillaume Stols <gstols@baylibre.com>
-> ---
->  .../devicetree/bindings/iio/adc/adi,ad7606.yaml    | 50 +++++++++++++++++++++-
->  1 file changed, 48 insertions(+), 2 deletions(-)
-> 
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+---
+ drivers/iio/industrialio-backend.c | 26 ++++++++++++++++++++++++++
+ include/linux/iio/backend.h        |  2 ++
+ 2 files changed, 28 insertions(+)
 
-My bot found errors running 'make dt_binding_check' on your patch:
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/adc/adi,ad7606.example.dtb: adc@0: adi,sw-mode: False schema does not allow True
-	from schema $id: http://devicetree.org/schemas/iio/adc/adi,ad7606.yaml#
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20240618-cleanup-ad7606-v1-5-f1854d5c779d@baylibre.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index b950e30018ca..d3db048c086b 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -166,6 +166,32 @@ int devm_iio_backend_enable(struct device *dev, struct iio_backend *back)
+ }
+ EXPORT_SYMBOL_NS_GPL(devm_iio_backend_enable, IIO_BACKEND);
+ 
++/**
++ * iio_backend_enable - Backend enable
++ * @dev: Consumer device for the backend
++ * @back: Backend device
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_enable(struct device *dev, struct iio_backend *back)
++{
++	return iio_backend_op_call(back, enable);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_enable, IIO_BACKEND);
++
++/**
++ * iio_backend_disable - Backend disable
++ * @dev: Consumer device for the backend
++ * @back: Backend device
++ *
++ */
++void iio_backend_disable(struct device *dev, struct iio_backend *back)
++{
++	iio_backend_void_op_call(back, disable);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_disable, IIO_BACKEND);
++
+ /**
+  * iio_backend_data_format_set - Configure the channel data format
+  * @back: Backend device
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+index cff486699054..81277e5b6160 100644
+--- a/include/linux/iio/backend.h
++++ b/include/linux/iio/backend.h
+@@ -120,6 +120,8 @@ struct iio_backend_ops {
+ int iio_backend_chan_enable(struct iio_backend *back, unsigned int chan);
+ int iio_backend_chan_disable(struct iio_backend *back, unsigned int chan);
+ int devm_iio_backend_enable(struct device *dev, struct iio_backend *back);
++int iio_backend_enable(struct device *dev, struct iio_backend *back);
++void iio_backend_disable(struct device *dev, struct iio_backend *back);
+ int iio_backend_data_format_set(struct iio_backend *back, unsigned int chan,
+ 				const struct iio_backend_data_fmt *data);
+ int iio_backend_data_source_set(struct iio_backend *back, unsigned int chan,
+-- 
+2.25.1
 
