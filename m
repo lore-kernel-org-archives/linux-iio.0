@@ -1,55 +1,58 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD06113AD04
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D69C13AD0F
 	for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2024 13:28:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718717331; cv=none; b=GC+LGgE1zQc/J2Jq6VBGzRUNZPErJSh60ucecUrlRDkiC3OGN/qTimvEBAVwCPEDyxwNNC3844gDCuVrb9TqAbqT9djyAV34LXng1R/i1l32x4PxAeTGCQe207HgSOqgnPqcET4D5U9qAJNgXY2/qOvynPoFXDmZWftgqJzZUjc=
+	t=1718717331; cv=none; b=iANy59jQwhBm6+i3WRXSot7BBMoA779/aJBFkK6ujjWRGKdi6bLdcu51lnpEn6lhYGFw47izZqB5rUuuelkgnsCrwXLlFaZ5gY/GD+ewCQu7G/8t4Yz27ucj+oNquNIiLC3nYTs0IiHWN+ZEMSLRmitniwOennz02txFHrQZfJo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1718717331; c=relaxed/simple;
-	bh=bMY3FC4dsWSyXnZwKFEPTtztmF68uI09cpTygXnm7/A=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=UZT3H24bAvrwceVkZm1nHyhii/PV6kPXiwD2dHr+ubjF0ECZoJuO8yiTJGCQhW0aVbPfmGWPPyiorhMtf2Z6E3Mw5INXXFvE7JyYRU6YJlYmJjKxfNKK92m0vq0FFzY6SGG/YFfsthTANj0VvfT7+BPissviaVkJsOkLmQtmeWM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=mfepwHPe; arc=none smtp.client-ip=148.163.135.77
+	bh=sz7muEiHocZnG0HtwFydePV1iRo8mJ8rOC7/V2DlN60=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=A9MpLmJYBSjuwLAdKQdnRtv1bfuq8ur/5oJTvO5sT+Qxb9vTjSpaCmHfMh1/2DYPnBKagckYaf1ZMlB046+RbDto9K0RHcYr4K58q9XqRKKy+sgBCUw4KQ0/9xEAWR3qEPNln4MbGbF8FA8REaAyGLD8D/WqApfJnDrAjBNNriw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=EhZKGFs8; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="mfepwHPe"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45IDBKmm006673;
-	Tue, 18 Jun 2024 09:28:37 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="EhZKGFs8"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 45IC3voL003805;
+	Tue, 18 Jun 2024 09:28:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=l+DnU
-	WqMXCVk6+1bnjT20Zbxdl8weVb7XgMJMO5Vr4M=; b=mfepwHPeIbYOj0ps+876G
-	FEMnbWNzEQ+qIKm4paOMSsVFT0Q1qNOVk1z2VCC/s4/4XgJIjeNBXezZ6olhSgXo
-	8ggCKAfBEU/qEYEj8uNbG0qH2Da4NnutJgF21gAVxNAfxbMkYyLEiZdDb3y8x/n1
-	BXViFEY6vhUlstEKyoq2c65/ic8ttaC/4tU29oKoVmasEUGoNStK+wxwB/QXQ9rT
-	4RuandGIMT8lCPvlUeCcgxvKsDLxeoJpKRCc3lgmCHqWlUKENCDqzdTjftVKHpSR
-	IuKUjxBFyZQZN8PpPwSRW6jp+8fgi5oPXTHY9ZT2TwI0vLAb0QlRVPrsA+RA2TPj
-	g==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3ys4t33by2-1
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=SNWBflz9Kbj201XL0qXnQhfvvy+
+	bLQ2cWk4YGYiORC8=; b=EhZKGFs80lRh6rNdpDee/0TMqW5guEBSxUcRqAA7I54
+	1sWh6wIM5BK/vA9neFK6eJM8vfDe7uuu5jju+Bi6KTXcIQxCurdTncNDs6eWwCwQ
+	BdOKFXH09HOggYcyCaWPf5Oo0DPju3urYFPkPD7+t/4hewaoL8VGpNeKa7mtZ8e6
+	htTiRE60kQe/cpMq+VFnsTD+Vkuz6eK9c2RBYVDCYDAi4g2H2EUJE7DBcAx8leyb
+	TauKKTfEb0KCT2qtb+W4us0J3y4t+FrMlg/xnuaohDgUK6cIQWKtseO2PIxIldKc
+	dn0jyazbHpu8Tig0a8k7FiYHFgtPSAkjzuXfmKub05g==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 3yu9wtgb1t-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 18 Jun 2024 09:28:36 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 45IDSZXY062006
+	Tue, 18 Jun 2024 09:28:35 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 45IDSYV1023607
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 18 Jun 2024 09:28:35 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 18 Jun
- 2024 09:28:34 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 18 Jun 2024 09:28:34 -0400
+	Tue, 18 Jun 2024 09:28:34 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 18 Jun 2024 09:28:33 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 18 Jun 2024 09:28:33 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 18 Jun 2024 09:28:33 -0400
 Received: from [127.0.0.1] ([10.44.3.56])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 45IDSLWO025769;
-	Tue, 18 Jun 2024 09:28:29 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 45IDSLWK025769;
+	Tue, 18 Jun 2024 09:28:24 -0400
 From: Nuno Sa <nuno.sa@analog.com>
-Date: Tue, 18 Jun 2024 15:32:07 +0200
-Subject: [PATCH 4/9] iio: gyro: adis16260: make use of the new lock helpers
+Subject: [PATCH 0/9] iio: imu: adis: make use the cleanup.h magic
+Date: Tue, 18 Jun 2024 15:32:03 +0200
+Message-ID: <20240618-dev-iio-adis-cleanup-v1-0-bd93ce7845c7@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -57,118 +60,69 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20240618-dev-iio-adis-cleanup-v1-4-bd93ce7845c7@analog.com>
-References: <20240618-dev-iio-adis-cleanup-v1-0-bd93ce7845c7@analog.com>
-In-Reply-To: <20240618-dev-iio-adis-cleanup-v1-0-bd93ce7845c7@analog.com>
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAFSMcWYC/x3MTQqAIBBA4avErBvQfiy6SrSwZqyBsFCSILp70
+ vJbvPdA5CAcYSgeCJwkyuEzdFnAslm/MgplQ6WqRhndI3FCkQMtScRlZ+uvE2fTdtoROdY15PQ
+ M7OT+t+P0vh9BUbccZgAAAA==
 To: <linux-iio@vger.kernel.org>
 CC: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich
 	<Michael.Hennerich@analog.com>,
         Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1718717531; l=2370;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1718717531; l=1598;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=bMY3FC4dsWSyXnZwKFEPTtztmF68uI09cpTygXnm7/A=;
- b=nZKjjgI4TTyYFMBJFVhocoM3IGkpgyxLcPYAO126JcVf5Ge4NMoxU8PXyHoq00NTVs8r+vix5
- /ihpWRmwxlhC+ZUBRqDdkPG6XPp3tOPM2w2ryEcAYt+E5w/RVjor07q
+ bh=sz7muEiHocZnG0HtwFydePV1iRo8mJ8rOC7/V2DlN60=;
+ b=gOG/nqtc3ygbZWXH0mhiVcNyaXnfj+7UOEkO17TT60lAVQqg/TFw6ILbrRACVX6lqqIHDJiUo
+ O9hrwf54zZvDI6KUZCb32Vb0+dJ6R8ZVpbWIHivEbc0TGkRm0fsBGfV
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: R1b_6WC_xTuCUuXJmjg8hVS-2C7Apd6y
-X-Proofpoint-ORIG-GUID: R1b_6WC_xTuCUuXJmjg8hVS-2C7Apd6y
+X-Proofpoint-ORIG-GUID: 5vruMRtq9_0c7nomoTVryly7dbW6Xsvm
+X-Proofpoint-GUID: 5vruMRtq9_0c7nomoTVryly7dbW6Xsvm
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-06-18_02,2024-06-17_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
- malwarescore=0 adultscore=0 suspectscore=0 mlxlogscore=618 spamscore=0
- bulkscore=0 priorityscore=1501 lowpriorityscore=0 clxscore=1015 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2405170001
- definitions=main-2406180100
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ priorityscore=1501 spamscore=0 impostorscore=0 bulkscore=0 suspectscore=0
+ lowpriorityscore=0 mlxlogscore=511 clxscore=1015 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2405170001 definitions=main-2406180100
 
-Use the new auto cleanup based locks so error paths are simpler.
+This is a simple series for moving the adis library into using the
+cleanup.h based locks.
 
-While at it, turned a sprintf() call into sysfs_emit().
+It also introduces new helpers (a normal and a scoped lock) for grabbing
+the adis device lock using the automatic cleanup guards. In the end
+(after updating all users) these new helpers fully replace the legacy
+adis_dev_lock() and adis_dev_unlock(). 
 
-Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/gyro/adis16136.c | 26 +++++++++-----------------
- 1 file changed, 9 insertions(+), 17 deletions(-)
+Nuno Sa (9):
+      iio: imu: adis_buffer: split trigger handling
+      iio: imu: adis: move to the cleanup magic
+      iio: imu: adis: add cleanup based lock helpers
+      iio: gyro: adis16260: make use of the new lock helpers
+      iio: gyro: adis16260: make use of the new lock helpers
+      iio: imu: adis16400: make use of the new lock helpers
+      iio: imu: adis16480: make use of the new lock helpers
+      iio: imu: adis16475: make use of the new lock helpers
+      iio: imu: adis: remove legacy lock helpers
 
-diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
-index c95cf41be34b..da83adc684d0 100644
---- a/drivers/iio/gyro/adis16136.c
-+++ b/drivers/iio/gyro/adis16136.c
-@@ -221,13 +221,12 @@ static ssize_t adis16136_read_frequency(struct device *dev,
- 	unsigned int freq;
- 	int ret;
- 
--	adis_dev_lock(&adis16136->adis);
-+	adis_dev_auto_lock(&adis16136->adis);
- 	ret = __adis16136_get_freq(adis16136, &freq);
--	adis_dev_unlock(&adis16136->adis);
- 	if (ret)
- 		return ret;
- 
--	return sprintf(buf, "%d\n", freq);
-+	return sysfs_emit(buf, "%d\n", freq);
- }
- 
- static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-@@ -251,21 +250,17 @@ static int adis16136_set_filter(struct iio_dev *indio_dev, int val)
- 	unsigned int freq;
- 	int i, ret;
- 
--	adis_dev_lock(&adis16136->adis);
-+	adis_dev_auto_lock(&adis16136->adis);
- 	ret = __adis16136_get_freq(adis16136, &freq);
- 	if (ret)
--		goto out_unlock;
-+		return ret;
- 
- 	for (i = ARRAY_SIZE(adis16136_3db_divisors) - 1; i >= 1; i--) {
- 		if (freq / adis16136_3db_divisors[i] >= val)
- 			break;
- 	}
- 
--	ret = __adis_write_reg_16(&adis16136->adis, ADIS16136_REG_AVG_CNT, i);
--out_unlock:
--	adis_dev_unlock(&adis16136->adis);
--
--	return ret;
-+	return __adis_write_reg_16(&adis16136->adis, ADIS16136_REG_AVG_CNT, i);
- }
- 
- static int adis16136_get_filter(struct iio_dev *indio_dev, int *val)
-@@ -275,23 +270,20 @@ static int adis16136_get_filter(struct iio_dev *indio_dev, int *val)
- 	uint16_t val16;
- 	int ret;
- 
--	adis_dev_lock(&adis16136->adis);
-+	adis_dev_auto_lock(&adis16136->adis);
- 
- 	ret = __adis_read_reg_16(&adis16136->adis, ADIS16136_REG_AVG_CNT,
- 				 &val16);
- 	if (ret)
--		goto err_unlock;
-+		return ret;
- 
- 	ret = __adis16136_get_freq(adis16136, &freq);
- 	if (ret)
--		goto err_unlock;
-+		return ret;
- 
- 	*val = freq / adis16136_3db_divisors[val16 & 0x07];
- 
--err_unlock:
--	adis_dev_unlock(&adis16136->adis);
--
--	return ret ? ret : IIO_VAL_INT;
-+	return IIO_VAL_INT;
- }
- 
- static int adis16136_read_raw(struct iio_dev *indio_dev,
+ drivers/iio/gyro/adis16136.c  | 26 ++++++----------
+ drivers/iio/gyro/adis16260.c  | 19 +++++-------
+ drivers/iio/imu/adis.c        | 11 +++----
+ drivers/iio/imu/adis16400.c   | 72 +++++++++++++++++++++----------------------
+ drivers/iio/imu/adis16475.c   | 43 +++++++++-----------------
+ drivers/iio/imu/adis16480.c   | 65 +++++++++++++++-----------------------
+ drivers/iio/imu/adis_buffer.c | 52 ++++++++++++++++---------------
+ include/linux/iio/imu/adis.h  | 66 ++++++++++-----------------------------
+ 8 files changed, 138 insertions(+), 216 deletions(-)
+---
+base-commit: cc1ce839526a65620778617da0b022bd88e8a139
+change-id: 20240618-dev-iio-adis-cleanup-b6571fddfe13
+--
 
--- 
-2.45.2
+Thanks!
+- Nuno Sá
 
