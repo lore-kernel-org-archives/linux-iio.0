@@ -1,314 +1,152 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6D095466B;
-	Wed, 19 Jun 2024 03:16:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C09D228EC;
+	Wed, 19 Jun 2024 05:21:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718767006; cv=none; b=ZJRuapRmPmPms4ymvCwixBqNj0BgQGDFAY3G8H7mgjEPFsOfSZfV/CLgL7d42GJ74GJ/5c5KhKoiLDRupMumy4wVZmDv/NV+a8lZhWBQ/FWY3XbfMjoRY5q4zDcOyWSTi0CEfdWZxh4NcXA37QQqBWECaEnqHhvV5MBGD+eBjF4=
+	t=1718774470; cv=none; b=bZAvl6DUwCkNZCURnT47jOeEeWUUchmrbrEl3e7ToivuC1zaj6i8ayo5sfu2nPOv5yRndsIRTIdA/AhzudLZXoxpzFgzdWP2T0rnLMwWMiu05/4GrZmuVI54/hMdhmBn7582UEkfZJkCt5TAS78VHaPWDlriYGEqpzQIO41YQLs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718767006; c=relaxed/simple;
-	bh=evre/A62rleMBzK6LSljo40VULixCUjb6n/TUkE6G4s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GqtuvmSILaqg9VN2DIfyCrigONjEDTBJ//PqJF+t72QcVwCHggQRfNXOZpCBGVX8lqhAxHFBZ//m4m2N4N/clUTCFcPcPT+xykbw0uPIaCYYGsKZsRo4yiC2NE8l4pmgWA7w3EK0XOD6N/aYTWH6jBpljSKxhsOJ158/Ck8Cu6k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Eb9gDpUo; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1718774470; c=relaxed/simple;
+	bh=3fhxlCy9Vz8ZybVo7OOz3mT1ven3q+ULsCnER4N4Jms=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=PmZl8cxow1A2teoBhQS7JEUzxea+OsbyelptPQaA4eruyKT2OdcNRn1bTickt04e32PeRZdayo6VwvoIJs5+tDHTOJYxjcawWH4kAukISEkifDUSsOgLlPTgitVJEvw6xk6trDM+HecnmHQYtTQJopcnJyx27RBXFUDKAjk1K1A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SWggAkHD; arc=none smtp.client-ip=209.85.221.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Eb9gDpUo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1718767005; x=1750303005;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=evre/A62rleMBzK6LSljo40VULixCUjb6n/TUkE6G4s=;
-  b=Eb9gDpUonlBb7QELGJCqzwR73HnH2MRxgx3IG6mRbNRIcFZeLvxy8xeS
-   1vc7722S5+1lBQlWsHNjslrEwSba1d09aVaAaFIzLOwfUMvszHsiq6Fyn
-   nOgoOSejizgfQtErHT10VNn4ZA3dssvENqJxmLkp0APOuM4VNT+PugxJq
-   wNacK4SkSBjAwKZQkHueBrxVPUFYJODhTmZWEMZsoqHEqhPunYWIfYjA/
-   UQ8TFPVKBajAMiIU6n7wKYYI5r9D4OYK19PTC27cJ3F1RLbfatXWfLA3q
-   I6VQSb+tsYTJDhICJ2VVusnqvAfiHtbEotJ1aa7GMcU+mInDYgIf4L22s
-   g==;
-X-CSE-ConnectionGUID: 1+v4NM++Rj6urfCdOSzmRA==
-X-CSE-MsgGUID: P2JNYFUZQEK0yvp1zCQauQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11107"; a="26363847"
-X-IronPort-AV: E=Sophos;i="6.08,249,1712646000"; 
-   d="scan'208";a="26363847"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2024 20:16:42 -0700
-X-CSE-ConnectionGUID: fhao++heQveyGaZRRaQIKA==
-X-CSE-MsgGUID: jTxQrE6WQRe3T6I1xWYmlA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,249,1712646000"; 
-   d="scan'208";a="46893909"
-Received: from lkp-server01.sh.intel.com (HELO 68891e0c336b) ([10.239.97.150])
-  by orviesa004.jf.intel.com with ESMTP; 18 Jun 2024 20:16:39 -0700
-Received: from kbuild by 68891e0c336b with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1sJloK-0006Dd-1P;
-	Wed, 19 Jun 2024 03:16:36 +0000
-Date: Wed, 19 Jun 2024 11:15:53 +0800
-From: kernel test robot <lkp@intel.com>
-To: Paul Cercueil <paul@crapouillou.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Vinod Koul <vkoul@kernel.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Cc: oe-kbuild-all@lists.linux.dev, Jonathan Corbet <corbet@lwn.net>,
-	Nuno Sa <nuno.sa@analog.com>, linux-iio@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	dmaengine@vger.kernel.org, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v11 3/7] iio: core: Add new DMABUF interface
- infrastructure
-Message-ID: <202406191014.9JAzwRV6-lkp@intel.com>
-References: <20240618100302.72886-4-paul@crapouillou.net>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SWggAkHD"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-35f1bc2ab37so5553576f8f.1;
+        Tue, 18 Jun 2024 22:21:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1718774467; x=1719379267; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Qwp3G2wkgfWztC1WiEcAvtKbcMmGeeZKMaO+Raf4cOc=;
+        b=SWggAkHDcEwiWYhEeY9I8XjHp3/FhgMT3R4TRCVxa8Y9ZosRqpEEKXaPZDXm/8C+f7
+         bbILypTMAcHzVN4tDsCxTWuLYqtnfaWagooKvybK2ksJvKCdST3SpyzdzgpnerX9jy2c
+         BTFSeUmeDYOqRCiCc78CIUq8aqRqpfUMBv8lLBORfiTmkMl0cC5Jx6uODdcGB8dGIIqu
+         SLiDhUWq4s3Wv4la9GdCq6aV9hd80Li34ItSSmGhppqBshL4fLh1t6fzlnrp3Hz2CCZa
+         RQVL9nMe8MH0io9qlFyKuo3DokMcYUQkVoOME1zhE3iqIFfoRXAqcl2mUfTU/SFTuFDd
+         fP3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718774467; x=1719379267;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Qwp3G2wkgfWztC1WiEcAvtKbcMmGeeZKMaO+Raf4cOc=;
+        b=nBoyfT6ZNCOSf6r80FuGUHZTrSnu3PByUaxQGP1TER1F1rRp1rRH39XGvEST6VfHAk
+         xU6NPY4TsL14NxO//DnpRoXuer5XkSE6q6fNhI6DgsZd5aXUaXEHj1nDSeWXC98E+IRm
+         CKXCCHmNx6pqdylQ5fwXe3B4XEGSMxVHtLJgAVIeG+f/8aSMkezTtIG1F3dwLfsxU1rW
+         yq9jIYX4pDbjS4uAue7IL8KN44LO9XNjvyRriKPs6lxc99bMcSbJKcf+UgtyHQ8C30/O
+         iGlWXsgmQLI0F10CZL2NU3VwEh3riW/hi5jrJ9LLc1DA0lnR+prRiGjiAWqjYpqckRAr
+         dzZw==
+X-Forwarded-Encrypted: i=1; AJvYcCU3kZKMA3yf7RbJ9gvu15zR1pAC+H6nvj6xFVbiOROfqEqBefiUb0j3b9OTNuqS3VZ1B28pweDeQVXgDwJYT/sQ+oGo4uMahlFBMzca
+X-Gm-Message-State: AOJu0YxbNXVO0SCvQkYFXvJWeUu8m2w0t/YorpXybRAPOV4X9BBfMl15
+	JjbKUDbGyjkSoC/9cKb6ZRzdokciyzYcDoaHP4J326Fi0LQhc30+
+X-Google-Smtp-Source: AGHT+IFj8N/tYTeh5HIsrNsSRhmMsWBORvW0ufQGbGhkqZvMrK95BBDNOYgO7F76PX0O5jwKLu2TpQ==
+X-Received: by 2002:a05:6000:12c1:b0:362:bbd8:229d with SMTP id ffacd0b85a97d-363176ad606mr915492f8f.27.1718774466762;
+        Tue, 18 Jun 2024 22:21:06 -0700 (PDT)
+Received: from nsa.fritz.box ([2001:a61:35f9:9001:40df:88bb:5090:7ab6])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-36289a4faeasm2607189f8f.95.2024.06.18.22.21.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Jun 2024 22:21:06 -0700 (PDT)
+Message-ID: <5b7b8a7132934b77b43ffde0650c68c1dd9a5b7e.camel@gmail.com>
+Subject: Re: [PATCH 2/8] iio: add enable and disable services to iio backend
+ framework
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Olivier Moysan <olivier.moysan@foss.st.com>, Nuno Sa
+ <nuno.sa@analog.com>,  Jonathan Cameron <jic23@kernel.org>, Lars-Peter
+ Clausen <lars@metafoo.de>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Wed, 19 Jun 2024 07:21:06 +0200
+In-Reply-To: <20240618160836.945242-3-olivier.moysan@foss.st.com>
+References: <20240618160836.945242-1-olivier.moysan@foss.st.com>
+	 <20240618160836.945242-3-olivier.moysan@foss.st.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.2 (3.52.2-1.fc40) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240618100302.72886-4-paul@crapouillou.net>
 
-Hi Paul,
+On Tue, 2024-06-18 at 18:08 +0200, Olivier Moysan wrote:
+> Add iio_backend_disable() and iio_backend_enable() APIs to allow
+> IIO backend consumer to request backend disabling and enabling.
+>=20
+> Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+> ---
 
-kernel test robot noticed the following build errors:
+Hi Olivier,
 
-[auto build test ERROR on jic23-iio/togreg]
-[also build test ERROR on vkoul-dmaengine/next linus/master v6.10-rc4 next-20240618]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+small notes from me...
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Paul-Cercueil/dmaengine-Add-API-function-dmaengine_prep_peripheral_dma_vec/20240618-180602
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20240618100302.72886-4-paul%40crapouillou.net
-patch subject: [PATCH v11 3/7] iio: core: Add new DMABUF interface infrastructure
-config: x86_64-randconfig-161-20240619 (https://download.01.org/0day-ci/archive/20240619/202406191014.9JAzwRV6-lkp@intel.com/config)
-compiler: clang version 18.1.5 (https://github.com/llvm/llvm-project 617a15a9eac96088ae5e9134248d8236e34b91b1)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240619/202406191014.9JAzwRV6-lkp@intel.com/reproduce)
+> =C2=A0drivers/iio/industrialio-backend.c | 26 ++++++++++++++++++++++++++
+> =C2=A0include/linux/iio/backend.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 |=C2=A0 2 ++
+> =C2=A02 files changed, 28 insertions(+)
+>=20
+> diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industriali=
+o-
+> backend.c
+> index b950e30018ca..d3db048c086b 100644
+> --- a/drivers/iio/industrialio-backend.c
+> +++ b/drivers/iio/industrialio-backend.c
+> @@ -166,6 +166,32 @@ int devm_iio_backend_enable(struct device *dev, stru=
+ct
+> iio_backend *back)
+> =C2=A0}
+> =C2=A0EXPORT_SYMBOL_NS_GPL(devm_iio_backend_enable, IIO_BACKEND);
+> =C2=A0
+> +/**
+> + * iio_backend_enable - Backend enable
+> + * @dev: Consumer device for the backend
+> + * @back: Backend device
+> + *
+> + * RETURNS:
+> + * 0 on success, negative error number on failure.
+> + */
+> +int iio_backend_enable(struct device *dev, struct iio_backend *back)
+> +{
+> +	return iio_backend_op_call(back, enable);
+> +}
+> +EXPORT_SYMBOL_NS_GPL(iio_backend_enable, IIO_BACKEND);
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202406191014.9JAzwRV6-lkp@intel.com/
+We do already have devm_iio_backend_enable(). From a correctness stand poin=
+t and even
+scalability, that API should now call your new iio_backend_enable() instead=
+ of
+directly call iio_backend_op_call(). I guess that change could be in this p=
+atch.
 
-All errors (new ones prefixed by >>):
+> +
+> +/**
+> + * iio_backend_disable - Backend disable
+> + * @dev: Consumer device for the backend
+> + * @back: Backend device
+> + *
+> + */
+> +void iio_backend_disable(struct device *dev, struct iio_backend *back)
+> +{
+> +	iio_backend_void_op_call(back, disable);
+> +}
+> +EXPORT_SYMBOL_NS_GPL(iio_backend_disable, IIO_BACKEND);
+> +
 
->> drivers/iio/industrialio-buffer.c:1715:3: error: cannot jump from this goto statement to its label
-    1715 |                 goto err_dmabuf_unmap_attachment;
-         |                 ^
-   drivers/iio/industrialio-buffer.c:1720:2: note: jump bypasses initialization of variable with __attribute__((cleanup))
-    1720 |         guard(mutex)(&buffer->dmabufs_mutex);
-         |         ^
-   include/linux/cleanup.h:164:15: note: expanded from macro 'guard'
-     164 |         CLASS(_name, __UNIQUE_ID(guard))
-         |                      ^
-   include/linux/compiler.h:189:29: note: expanded from macro '__UNIQUE_ID'
-     189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), __COUNTER__)
-         |                             ^
-   include/linux/compiler_types.h:84:22: note: expanded from macro '__PASTE'
-      84 | #define __PASTE(a,b) ___PASTE(a,b)
-         |                      ^
-   include/linux/compiler_types.h:83:23: note: expanded from macro '___PASTE'
-      83 | #define ___PASTE(a,b) a##b
-         |                       ^
-   <scratch space>:126:1: note: expanded from here
-     126 | __UNIQUE_ID_guard696
-         | ^
-   drivers/iio/industrialio-buffer.c:1704:3: error: cannot jump from this goto statement to its label
-    1704 |                 goto err_resv_unlock;
-         |                 ^
-   drivers/iio/industrialio-buffer.c:1720:2: note: jump bypasses initialization of variable with __attribute__((cleanup))
-    1720 |         guard(mutex)(&buffer->dmabufs_mutex);
-         |         ^
-   include/linux/cleanup.h:164:15: note: expanded from macro 'guard'
-     164 |         CLASS(_name, __UNIQUE_ID(guard))
-         |                      ^
-   include/linux/compiler.h:189:29: note: expanded from macro '__UNIQUE_ID'
-     189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), __COUNTER__)
-         |                             ^
-   include/linux/compiler_types.h:84:22: note: expanded from macro '__PASTE'
-      84 | #define __PASTE(a,b) ___PASTE(a,b)
-         |                      ^
-   include/linux/compiler_types.h:83:23: note: expanded from macro '___PASTE'
-      83 | #define ___PASTE(a,b) a##b
-         |                       ^
-   <scratch space>:126:1: note: expanded from here
-     126 | __UNIQUE_ID_guard696
-         | ^
-   drivers/iio/industrialio-buffer.c:1695:3: error: cannot jump from this goto statement to its label
-    1695 |                 goto err_dmabuf_detach;
-         |                 ^
-   drivers/iio/industrialio-buffer.c:1720:2: note: jump bypasses initialization of variable with __attribute__((cleanup))
-    1720 |         guard(mutex)(&buffer->dmabufs_mutex);
-         |         ^
-   include/linux/cleanup.h:164:15: note: expanded from macro 'guard'
-     164 |         CLASS(_name, __UNIQUE_ID(guard))
-         |                      ^
-   include/linux/compiler.h:189:29: note: expanded from macro '__UNIQUE_ID'
-     189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), __COUNTER__)
-         |                             ^
-   include/linux/compiler_types.h:84:22: note: expanded from macro '__PASTE'
-      84 | #define __PASTE(a,b) ___PASTE(a,b)
-         |                      ^
-   include/linux/compiler_types.h:83:23: note: expanded from macro '___PASTE'
-      83 | #define ___PASTE(a,b) a##b
-         |                       ^
-   <scratch space>:126:1: note: expanded from here
-     126 | __UNIQUE_ID_guard696
-         | ^
-   drivers/iio/industrialio-buffer.c:1690:3: error: cannot jump from this goto statement to its label
-    1690 |                 goto err_dmabuf_put;
-         |                 ^
-   drivers/iio/industrialio-buffer.c:1720:2: note: jump bypasses initialization of variable with __attribute__((cleanup))
-    1720 |         guard(mutex)(&buffer->dmabufs_mutex);
-         |         ^
-   include/linux/cleanup.h:164:15: note: expanded from macro 'guard'
-     164 |         CLASS(_name, __UNIQUE_ID(guard))
-         |                      ^
-   include/linux/compiler.h:189:29: note: expanded from macro '__UNIQUE_ID'
-     189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), __COUNTER__)
-         |                             ^
-   include/linux/compiler_types.h:84:22: note: expanded from macro '__PASTE'
-      84 | #define __PASTE(a,b) ___PASTE(a,b)
-         |                      ^
-   include/linux/compiler_types.h:83:23: note: expanded from macro '___PASTE'
-      83 | #define ___PASTE(a,b) a##b
-         |                       ^
-   <scratch space>:126:1: note: expanded from here
-     126 | __UNIQUE_ID_guard696
-         | ^
-   drivers/iio/industrialio-buffer.c:1684:3: error: cannot jump from this goto statement to its label
-    1684 |                 goto err_free_priv;
-         |                 ^
-   drivers/iio/industrialio-buffer.c:1720:2: note: jump bypasses initialization of variable with __attribute__((cleanup))
-    1720 |         guard(mutex)(&buffer->dmabufs_mutex);
-         |         ^
-   include/linux/cleanup.h:164:15: note: expanded from macro 'guard'
-     164 |         CLASS(_name, __UNIQUE_ID(guard))
-         |                      ^
-   include/linux/compiler.h:189:29: note: expanded from macro '__UNIQUE_ID'
-     189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), __COUNTER__)
-         |                             ^
-   include/linux/compiler_types.h:84:22: note: expanded from macro '__PASTE'
-      84 | #define __PASTE(a,b) ___PASTE(a,b)
-         |                      ^
-   include/linux/compiler_types.h:83:23: note: expanded from macro '___PASTE'
-      83 | #define ___PASTE(a,b) a##b
+We also have __iio_backend_disable() which is static since all users were u=
+sing
+devm_iio_backend_enable(). I understand that's not suitable for you but I w=
+ould
+instead rename the existing function to iio_backend_disable() and export it=
+.
 
+With the above changes:
 
-vim +1715 drivers/iio/industrialio-buffer.c
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
 
-  1655	
-  1656	static int iio_buffer_attach_dmabuf(struct iio_dev_buffer_pair *ib,
-  1657					    int __user *user_fd, bool nonblock)
-  1658	{
-  1659		struct iio_dev *indio_dev = ib->indio_dev;
-  1660		struct iio_buffer *buffer = ib->buffer;
-  1661		struct dma_buf_attachment *attach;
-  1662		struct iio_dmabuf_priv *priv, *each;
-  1663		struct dma_buf *dmabuf;
-  1664		int err, fd;
-  1665	
-  1666		if (!buffer->access->attach_dmabuf
-  1667		    || !buffer->access->detach_dmabuf
-  1668		    || !buffer->access->enqueue_dmabuf)
-  1669			return -EPERM;
-  1670	
-  1671		if (copy_from_user(&fd, user_fd, sizeof(fd)))
-  1672			return -EFAULT;
-  1673	
-  1674		priv = kzalloc(sizeof(*priv), GFP_KERNEL);
-  1675		if (!priv)
-  1676			return -ENOMEM;
-  1677	
-  1678		spin_lock_init(&priv->lock);
-  1679		priv->context = dma_fence_context_alloc(1);
-  1680	
-  1681		dmabuf = dma_buf_get(fd);
-  1682		if (IS_ERR(dmabuf)) {
-  1683			err = PTR_ERR(dmabuf);
-  1684			goto err_free_priv;
-  1685		}
-  1686	
-  1687		attach = dma_buf_attach(dmabuf, indio_dev->dev.parent);
-  1688		if (IS_ERR(attach)) {
-  1689			err = PTR_ERR(attach);
-  1690			goto err_dmabuf_put;
-  1691		}
-  1692	
-  1693		err = iio_dma_resv_lock(dmabuf, nonblock);
-  1694		if (err)
-  1695			goto err_dmabuf_detach;
-  1696	
-  1697		priv->dir = buffer->direction == IIO_BUFFER_DIRECTION_IN
-  1698			? DMA_FROM_DEVICE : DMA_TO_DEVICE;
-  1699	
-  1700		priv->sgt = dma_buf_map_attachment(attach, priv->dir);
-  1701		if (IS_ERR(priv->sgt)) {
-  1702			err = PTR_ERR(priv->sgt);
-  1703			dev_err(&indio_dev->dev, "Unable to map attachment: %d\n", err);
-  1704			goto err_resv_unlock;
-  1705		}
-  1706	
-  1707		kref_init(&priv->ref);
-  1708		priv->buffer = buffer;
-  1709		priv->attach = attach;
-  1710		attach->importer_priv = priv;
-  1711	
-  1712		priv->block = buffer->access->attach_dmabuf(buffer, attach);
-  1713		if (IS_ERR(priv->block)) {
-  1714			err = PTR_ERR(priv->block);
-> 1715			goto err_dmabuf_unmap_attachment;
-  1716		}
-  1717	
-  1718		dma_resv_unlock(dmabuf->resv);
-  1719	
-  1720		guard(mutex)(&buffer->dmabufs_mutex);
-  1721	
-  1722		/*
-  1723		 * Check whether we already have an attachment for this driver/DMABUF
-  1724		 * combo. If we do, refuse to attach.
-  1725		 */
-  1726		list_for_each_entry(each, &buffer->dmabufs, entry) {
-  1727			if (each->attach->dev == indio_dev->dev.parent
-  1728			    && each->attach->dmabuf == dmabuf) {
-  1729				/*
-  1730				 * We unlocked the reservation object, so going through
-  1731				 * the cleanup code would mean re-locking it first.
-  1732				 * At this stage it is simpler to free the attachment
-  1733				 * using iio_buffer_dma_put().
-  1734				 */
-  1735				iio_buffer_dmabuf_put(attach);
-  1736				return -EBUSY;
-  1737			}
-  1738		}
-  1739	
-  1740		/* Otherwise, add the new attachment to our dmabufs list. */
-  1741		list_add(&priv->entry, &buffer->dmabufs);
-  1742	
-  1743		return 0;
-  1744	
-  1745	err_dmabuf_unmap_attachment:
-  1746		dma_buf_unmap_attachment(attach, priv->sgt, priv->dir);
-  1747	err_resv_unlock:
-  1748		dma_resv_unlock(dmabuf->resv);
-  1749	err_dmabuf_detach:
-  1750		dma_buf_detach(dmabuf, attach);
-  1751	err_dmabuf_put:
-  1752		dma_buf_put(dmabuf);
-  1753	err_free_priv:
-  1754		kfree(priv);
-  1755	
-  1756		return err;
-  1757	}
-  1758	
+- Nuno S=C3=A1
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
