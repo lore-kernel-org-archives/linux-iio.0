@@ -1,108 +1,148 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com [209.85.217.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D250D1527B6;
-	Fri, 21 Jun 2024 12:05:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96684153BD2
+	for <linux-iio@vger.kernel.org>; Fri, 21 Jun 2024 13:26:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718971546; cv=none; b=KmYKfoDMfjCcIYTBsGEAQhe1llxixYSYdrrcdlsgj/TL8/iRXntQp6AFbcv2jTYfyL/RJrQhBDXGlK8T4GTb+zVJfRkbIcdm98IyMop2EyufxYZZmXoweC/Jp6bottSThlxJRNo+pkDpvK16BdRLaxS52CN7Xobfu7Zei06acbw=
+	t=1718976404; cv=none; b=ahv0QDZrvyMlWt8n3UEPUxMp6NGlTbXb7E6SnGd94fdWXPj+k9Oq7TbD0rfFkz1mxkzhxMEscPE6h7KJcnY54zPU2soocit2yXtamn6sKh3pImUOsW0LV+sY0dRdVGhVyy7y+vPc6QPPbaY+jwkopG9jrYl640VlPNH1hOf8NWE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718971546; c=relaxed/simple;
-	bh=7NEdzMDsG1aF5JXdHMtlEyGPHIx8whif1ryBPcbKBwk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nNO7pMm+02ssR2AMLXGYfdhkSrcLm7QOZYiA+f1iDexIZ45jCFZ9lbh95fhZ6+NCVS2hncOzj7R7IfCSr2pY/ilCMrDE9nB6ag/Wtn6c0WeaSAyNjZN1uSiv8sHY/6slAMUSCquJev+RL24437Ks52Q0hQrEQv41QIJu55Q4HiE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F1mKHCGL; arc=none smtp.client-ip=209.85.218.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1718976404; c=relaxed/simple;
+	bh=M8ICS2gUnqSAKdwVYa3WwNL+rTtc7oafu3hZ4D7sEm0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=EgEiRXkx43hd6Xr+XCU+2DjiaIo5nQYGQMwvxSraamQgxU5u6r6ciGDU2rbRrfcJS2s/wk/Rjm8hEQ1WExIEs4ufwAfF/pRDUeGyhvkmeSyA64BBm57EpT3shV93Ay9dVCLmraAq3Qpq/bGvpcqjGX0KObqXH6ZSYWRHkCNRVhc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=joVfdosG; arc=none smtp.client-ip=209.85.217.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F1mKHCGL"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a6f1c4800easo215299866b.3;
-        Fri, 21 Jun 2024 05:05:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="joVfdosG"
+Received: by mail-vs1-f41.google.com with SMTP id ada2fe7eead31-48f375e7554so23325137.1
+        for <linux-iio@vger.kernel.org>; Fri, 21 Jun 2024 06:26:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1718971543; x=1719576343; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=jBWbR+qMKGw2FOTak+FHBEDOXI2ey/XY9oATFfyQUnE=;
-        b=F1mKHCGLwyTYwel9y44GLRMBSl9opUjS/b2BUsIfAjYzL+SGhhClPqkx8U/uIOVarn
-         joUtEjkYi/EcFo5oeCX5SNFEvSQhKRpIf9MGhiOTcrlVqGky5/aHmyrLkzVGLXR7UfS+
-         BZkWdMNDJdUuXl+WykQROU5LTRicgpUXqhLMxUOdw3TAtR2Y+g7EOJiGWfO3FzQhKO7r
-         lDc36XPFnzCXEMPeZI87ojKfT1A4ID3iGtZ97EErDl3SRUylZVFNH9bYOnRDKEvpmiMc
-         1x02Jn3hLyk3s5Kqbgp/6eMWAqHgJ4fjwZzVWlbcNqcftEN4J0nnhd1ocDmNp5uuLW29
-         Wybg==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1718976400; x=1719581200; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cxkGI4IDUNtwkih25Bt66Jpt1EbuMgTL6TuQaswoa08=;
+        b=joVfdosGXl0ihqrtc4WgzxFrW9QIEhqYAtH9OU+7zwyi/jX2bG+1pPZHVlSNWQq3dn
+         0e8V/Hy1WJy3Pn+AjxMdOc3Q5pm33s99AXkmGUixAaFxRy94wEASz4uoyaUdcaZSVQlK
+         6g/9LUxH2hdNCuZ2bH7jYkUjLy1wyWszjOA7ydJyDiyy04B/9hhpl2MZz6xCE+f/9kHm
+         gqbH25VPQqrFg4mlN4ur9GBUqp1FIeJ51iaZJip1+rJjpqNY/4niTiYMisVHhok+uNzy
+         a6XLl/og8WfbZtkMPQX8wAS6rHcSOw9lFPifFgu748VlyWuTVpCNmIv4HOpdC9Cyt8a/
+         TTRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718971543; x=1719576343;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=jBWbR+qMKGw2FOTak+FHBEDOXI2ey/XY9oATFfyQUnE=;
-        b=Gc4cHeWlZhA/JlnkORN12Cd5CEfUwxZeoQJd1B5+ly0gJnHfQxc5ip/6We56nT0HZG
-         A7ldSoPX02rS3ddCW0g1sqHVaktZgdN7Bn4bvVu35GqfampWUArjU/km+eqYTFCdq42z
-         UuiueihsV2B6AZSw4h6vz5k/iSBAo9pQ2jRvia3g5yuuH87bfaGedPLx6hAdPUXYpa9y
-         bZFftvQS7r7Jg2+rgD7LykGN903H5CPsPMxsuM2ih2OVRXV0p+a6jM84MyLqICO61CX7
-         qq0TRMXYuvL/YvJgnuGEgZAQGOsTqKWYmD0H0BUjPhim2ix+56HJz8TGbAuy0JdoE4P3
-         VHeQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXDLrRm/RPyYNf2IkYCqNkvIZCD6Nn2+ArUbGS25gx8WFki4LaeOupe4lo922XtXpp4efa3UsyvcpYxow2FvkvRPtcrUU78+AVHVFBNEssJDfz3AJ3jtyD88cmKcj9vlmodQ2dr8oHu
-X-Gm-Message-State: AOJu0YzxTxkxfk7TTNOVOQaqbS5wo1GVdWG5GkBLZ30j4aVP5gyoyGy7
-	sAbsEpcZwd6nA5lL97OQQEogDmelvNcTH/JB3Ytkx7VWTEZPHMlb
-X-Google-Smtp-Source: AGHT+IETpyaW331fL0IzgKYIRceuwpmtPDiQxCUQHWy88ZV2GMIRi5fyqhdvCelfrgnbvaNrvgZkSA==
-X-Received: by 2002:a17:907:c24d:b0:a6f:c0e0:5512 with SMTP id a640c23a62f3a-a6fc0e055c5mr360768966b.23.1718971542880;
-        Fri, 21 Jun 2024 05:05:42 -0700 (PDT)
-Received: from HYB-hhAwRlzzMZb.ad.analog.com ([5.2.194.157])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a6fcf56ea09sm76975666b.201.2024.06.21.05.05.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jun 2024 05:05:42 -0700 (PDT)
-From: Dumitru Ceclan <mitrutzceclan@gmail.com>
-X-Google-Original-From: Dumitru Ceclan <dumitru.ceclan@analog.com>
-To: mitrutzceclan@gmail.com
-Cc: jic23@kernel.org,
-	dlechner@baylibre.com,
-	dumitru.ceclan@analog.com0,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Dumitru Ceclan <dumitru.ceclan@analog.com>
-Subject: [PATCH] iio: adc: ad_sigma_delta: fix disable_one callback
-Date: Fri, 21 Jun 2024 15:05:39 +0300
-Message-ID: <20240621120539.31351-1-dumitru.ceclan@analog.com>
-X-Mailer: git-send-email 2.43.0
+        d=1e100.net; s=20230601; t=1718976400; x=1719581200;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cxkGI4IDUNtwkih25Bt66Jpt1EbuMgTL6TuQaswoa08=;
+        b=bbaPakbuuNZDnx8Y2eQICDkDz494/9I29UkfsiHbvev1M0ZuCCGGUJdNxC3PuV8QQy
+         iQiA5FJXmSkhkzLOPlFn+D7DHMx2aqIanfREHP+ytWe+J+8mZBdQYzWMRktFGfmvUtDI
+         bj/njy3FcUy20k52nsDICAyEKhsoZLRnvO47hpRVh7iBj7/H5HV1n8znz8Xitcc4Ck25
+         ECRgd+bnN62BIFIKuQYV/cPPo0aTKzUn+/PiU2bbq0MizF+HVbXKzleP5AzNfmxAyKG1
+         UL9AYgTdtc2DlZUuZitSY40h21nwnwSQMIS5CZSinzNiJeIziui8fZih9rRRJe2NBuh+
+         P5PA==
+X-Forwarded-Encrypted: i=1; AJvYcCV3dcsHQq7pYfXg+NcUZOIbYNULi+ZojHAlsorRhOtvpASTwA96JGhuFEGNF/B5yQmyK3fThDPGl3pEDlHDD5lF/U3Qo4aCuWxQ
+X-Gm-Message-State: AOJu0Yw3TQAHDUk2+BbJlmASWHa5vbFIA66g6aBQ5f1Ybj7tlYM8xevC
+	NSuCPPNeEhSmtrmIaCzq3imAAGWId7jVNfgpOrJNIBv6C9fq/15uJ3TnK1pnPk5MsS3TaIV54JB
+	VtvcOWe8SX6UjwSirC+IGdo8//HXSeOZeCpTsdg==
+X-Google-Smtp-Source: AGHT+IFJFLnbZtfruK6baf9YWIg4LeyaPPP4GvccEFGIJqLdkPRkvc9ZCu4GwSE7nESYwJfha+my+CzBCme0z4pjarg=
+X-Received: by 2002:a05:6102:54a0:b0:48d:b0a3:fe34 with SMTP id
+ ada2fe7eead31-48f131a9f6cmr8780548137.2.1718976400058; Fri, 21 Jun 2024
+ 06:26:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240621120539.31351-1-dumitru.ceclan@analog.com>
+In-Reply-To: <20240621120539.31351-1-dumitru.ceclan@analog.com>
+From: Alexandru Ardelean <aardelean@baylibre.com>
+Date: Fri, 21 Jun 2024 16:26:29 +0300
+Message-ID: <CA+GgBR_7OXJLytDeF-MSJSAAgFRJm39wBbEXxSR6HUV_zcWg_A@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: ad_sigma_delta: fix disable_one callback
+To: Dumitru Ceclan <mitrutzceclan@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, dumitru.ceclan@analog.com0, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Dumitru Ceclan <dumitru.ceclan@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The ADC ad7192 is a sigma delta ADC with a sequencer that does not
-require a disable_one callback as all enable channel bits are within
-the same register.
+On Fri, Jun 21, 2024 at 3:05=E2=80=AFPM Dumitru Ceclan <mitrutzceclan@gmail=
+.com> wrote:
+>
+> The ADC ad7192 is a sigma delta ADC with a sequencer that does not
+> require a disable_one callback as all enable channel bits are within
+> the same register.
+>
+> Remove the requirement of the disable_one callback for sigma delta ADCs
+> with a sequencer.
+>
+> This patch could be squashed with the commit that it fixes from patch
+> series: Add support for AD411x
+>
 
-Remove the requirement of the disable_one callback for sigma delta ADCs
-with a sequencer.
+This fix looks fine.
+But, then this raises a question if this needs be to extended to the
+`disable_all` and maybe `indio_dev->info->update_scan_mode` check.
+And if so, how should this be handled?
 
-This patch could be squashed with the commit that it fixes from patch
-series: Add support for AD411x
+For example:
+drivers/iio/adc/ad7124.c:    .disable_all =3D ad7124_disable_all,
+drivers/iio/adc/ad7173.c:    .disable_all =3D ad7173_disable_all,
+drivers/iio/adc/ad7192.c:    .disable_all =3D ad7192_disable_all,
+drivers/iio/adc/ad7192.c:    .disable_all =3D ad7192_disable_all,
 
-Fixes: a25a0aab2187 ("iio: adc: ad_sigma_delta: add disable_one callback")
-Signed-off-by: Dumitru Ceclan <dumitru.ceclan@analog.com>
----
- drivers/iio/adc/ad_sigma_delta.c | 5 -----
- 1 file changed, 5 deletions(-)
+And:
+drivers/iio/adc/ad7124.c:    ret =3D ad_sd_init(&st->sd, indio_dev, spi,
+&ad7124_sigma_delta_info);
+drivers/iio/adc/ad7173.c:    ret =3D ad_sd_init(&st->sd, indio_dev, spi,
+&ad7173_sigma_delta_info);
+drivers/iio/adc/ad7192.c:    ret =3D ad_sd_init(&st->sd, indio_dev, spi,
+st->chip_info->sigma_delta_info);
+drivers/iio/adc/ad7780.c:    ad_sd_init(&st->sd, indio_dev, spi,
+&ad7780_sigma_delta_info);
+drivers/iio/adc/ad7791.c:    ad_sd_init(&st->sd, indio_dev, spi,
+&ad7791_sigma_delta_info);
+drivers/iio/adc/ad7793.c:    ad_sd_init(&st->sd, indio_dev, spi,
+&ad7793_sigma_delta_info);
 
-diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-index d6b5fca034a0..8c062b0d26e3 100644
---- a/drivers/iio/adc/ad_sigma_delta.c
-+++ b/drivers/iio/adc/ad_sigma_delta.c
-@@ -672,11 +672,6 @@ int ad_sd_init(struct ad_sigma_delta *sigma_delta, struct iio_dev *indio_dev,
- 			dev_err(&spi->dev, "ad_sigma_delta_info lacks disable_all().\n");
- 			return -EINVAL;
- 		}
--
--		if (!info->disable_one) {
--			dev_err(&spi->dev, "ad_sigma_delta_info lacks disable_one().\n");
--			return -EINVAL;
--		}
- 	}
- 
- 	if (info->irq_line)
--- 
-2.43.0
+At least the ad7791.c & ad7793.c drivers support parts with more than
+1 channel, and there does not seem to be any `disable_all` hook
+defined (at least in iio/testing).
+I have not gone too deep with `indio_dev->info->update_scan_mode`, but
+it would be worth to do a check there as well
 
+
+> Fixes: a25a0aab2187 ("iio: adc: ad_sigma_delta: add disable_one callback"=
+)
+> Signed-off-by: Dumitru Ceclan <dumitru.ceclan@analog.com>
+> ---
+>  drivers/iio/adc/ad_sigma_delta.c | 5 -----
+>  1 file changed, 5 deletions(-)
+>
+> diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_=
+delta.c
+> index d6b5fca034a0..8c062b0d26e3 100644
+> --- a/drivers/iio/adc/ad_sigma_delta.c
+> +++ b/drivers/iio/adc/ad_sigma_delta.c
+> @@ -672,11 +672,6 @@ int ad_sd_init(struct ad_sigma_delta *sigma_delta, s=
+truct iio_dev *indio_dev,
+>                         dev_err(&spi->dev, "ad_sigma_delta_info lacks dis=
+able_all().\n");
+>                         return -EINVAL;
+>                 }
+> -
+> -               if (!info->disable_one) {
+> -                       dev_err(&spi->dev, "ad_sigma_delta_info lacks dis=
+able_one().\n");
+> -                       return -EINVAL;
+> -               }
+>         }
+>
+>         if (info->irq_line)
+> --
+> 2.43.0
+>
+>
