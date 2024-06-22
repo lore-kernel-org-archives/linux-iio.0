@@ -1,196 +1,232 @@
-Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
+Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0255014B97A;
-	Sat, 22 Jun 2024 12:35:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E878314B97A;
+	Sat, 22 Jun 2024 12:36:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719059754; cv=none; b=Ic3s5QEfjYI2f/WwmVCR0bGtf+3x5OXUkupqCAE+L0KkP6dROTikzWH9QXr11F2ljQeUC6Hh1R1CPAe5021B4IhIGINSPw07acwUI5cekI7RdIBdHwZuJBm5MgZM1eSSTodclycAOjbEZjdr/AN27vGUJxo8CC/iQgQMSyBXH0c=
+	t=1719059822; cv=none; b=dIiY67Al5an0QJHnzm09B8HirRkHOwQQ6r24/9aWttpN9iMMcAurfoNeUlOjUwMTP/so8ZHf2Iqf86hHKGiGODT/kIxMZvqvBIcbNGsuCLahvCvU8qaF/yCh2bLyztMRGlFgosfHzRPs2eFrbBCwwy0jcroHOIxTSVYd6Jct/Ek=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719059754; c=relaxed/simple;
-	bh=UoCLhhSoEs7Xsh66F990Erh/cs3xganzhl/LZol97io=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uf63cFJx0Zfqo994gg7m8pCPC8ZQWkN9YFfzNNJ5CRvV+/m3k45S0Azd1LNBTDtBupjgF5ChrKswO3Vy5NpqMAledCtepVSK9IxrsJrg/P4855iYM7Jw6wCuHbILoBO+lAnqdPWMLXj3q6KyXULarKMY7GnlF/EfeaJTp3R8mgs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KtQ90NQf; arc=none smtp.client-ip=209.85.215.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1719059822; c=relaxed/simple;
+	bh=h7whw2AYyqsNwF3U1uayY34akXxwQgj4aLRDnufhU30=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KYcirar2/iOHgSe3MyRTQu9EPpF9LoTg5RWygZexz/NlkdOVi+GMNc+MsLadvjMizGBi19RgNXQnGrgUKkFzrm0uaGS48eX+ZOV2Dr5pnkQd9MLkE4KdyS1+19+00x+3sTC0rh/FfLSNrOX5x5US/CtrQtw5FG7ACy9fCfprWH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=LetzEit2; arc=none smtp.client-ip=178.21.23.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KtQ90NQf"
-Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-70df213542bso2073239a12.3;
-        Sat, 22 Jun 2024 05:35:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1719059752; x=1719664552; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=c1xc+TtnYIYIMppoIZtFnZo/BDI1KVIzOo/Vvnsq9yw=;
-        b=KtQ90NQfv5xCXmzYACgfQ06EZ1bYDqsgJLd7/o8Xnch0ENPyV8eSVOEfoAb9HzcRxU
-         t6GZ+wT3q9RvqsSE/LNb966a7Lkh6S3ZnuK/x+rbApdqvwXJViOx6BCHuh6mAzGNuZpO
-         cwMCY6jro0O3RijCJdK45hIMgjtTJACK8GRd9io+o2AyKGn51IaiFWYSwmsXcXnCHtBT
-         J+vTKvtfu8N/n/1+VQEqgV2jm3qW/Yw4FeAQzEjHZ/EoLzsqpAKJwDnNWP4m5jCH7QFI
-         1mYkOhKcSZerY3eiKft8557gesRp4tLQmF6P2C5Q+gDj5LLFM+/+tpCr3y4LFKT562nh
-         0GZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719059752; x=1719664552;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=c1xc+TtnYIYIMppoIZtFnZo/BDI1KVIzOo/Vvnsq9yw=;
-        b=SyllPrQFjgr45Pxj7cz7lX8JNKRN1CWpUZh3MDUvGFEd6MEn+Y7dNwZ6dVLB4mSAeV
-         TRM+JRmHRF8pG5WTySjRn6Dp/yMhbt3zhO2wHGHXK2eCNtyB46L9HR8bPgxszomuzXLN
-         WvPs4pBfmkN7bDvx6BlFwW4p6WXGuL/bqJVw7uIR/hwUPVw1V1pvQ3bOspDZNQEiYXuZ
-         UM8TCf/racKjsmdCJCuLCmaQKYmsPxjucLUe5Cp4XKgzsbyt5mv/2sPWlCcrvlqEEslB
-         z45fD39W0fzzEaYe21cyRT8eVNrUmGdnjV/74dPBDrMD8S04as5LLjgUJ/0VEcLoqOfF
-         DMJw==
-X-Forwarded-Encrypted: i=1; AJvYcCUITsDpfdI5ZUFowU07ygDLu9GikVlMJkS08zUBOraafKpHK17R5iwESaJCD559zHliP4cCHY6XbFS+HNqtdibz9CBOiFCW8hr0wCy6Rr9xwwnrH42ac1SwXEvh4pewyUsukNHhFSFdAXc3mBF9E9Z/FIIzYNBYhDo/elnoxMr9XW8cmA==
-X-Gm-Message-State: AOJu0Yynn2CUCKS8ipm+edTqWsu+Z303bJZngtfqJknnY442YFrwlIYd
-	awLt5GKAfWT7dgOpwon3zN12f9JBByRk4Jjg9Nu30Hk22qEH1SG/
-X-Google-Smtp-Source: AGHT+IGLBRP+PAayAeSE/5IwGuRJFMtD8w0U3b/DjMbel8NOE8coq2EuYXpkzwEEH3fzSn/GB/ZkMg==
-X-Received: by 2002:a05:6a21:1a1:b0:1b6:dae0:5531 with SMTP id adf61e73a8af0-1bcbb5c9c1bmr13189827637.46.1719059752043;
-        Sat, 22 Jun 2024 05:35:52 -0700 (PDT)
-Received: from [100.90.230.39] ([45.32.86.188])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f9eb31f669sm30300055ad.63.2024.06.22.05.35.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 22 Jun 2024 05:35:51 -0700 (PDT)
-Message-ID: <26db1f7b-bde9-43a5-8c9b-4323ccfc59cf@gmail.com>
-Date: Sat, 22 Jun 2024 20:35:41 +0800
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="LetzEit2"
+X-Virus-Scanned: SPAM Filter at disroot.org
+From: Kaustabh Chakraborty <kauschluss@disroot.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
+	t=1719059809; bh=h7whw2AYyqsNwF3U1uayY34akXxwQgj4aLRDnufhU30=;
+	h=From:To:Cc:Subject:Date;
+	b=LetzEit217K8UR7WrWhaKJpHe7GjdnOlCg9PFcFYnsT4bDBHG2an60rDLSYdFzGkb
+	 TpXLsw0kH29fJSlWtARUHmHzvRMbD3AFF8bYUdSKwO/duJ9aE1QbOJs8cE+Vl1G1ZI
+	 eKP8P6Rx4OXitJQCvrrd6BH1UZCdZDcSKaLrzmqu82tnRB1bwRhpWh4O3owM+hrtU4
+	 te05FFlzi9QmIspLCE8NY/jTRBwXXx2BDvDg2wZe7/NtdOZ6rF8IichJRN8rZytlmM
+	 3pDqRXVzp7NT6lWttnkLpYULmUZB695WQ/7qaGw+ZsMFOib/C0RU138w0kZRUBI+rK
+	 VwbRyBCDk1gsQ==
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org,
+	denis.ciocca@st.com
+Cc: devicetree@vger.kernel.org,
+	linus.walleij@linaro.org,
+	robh+dt@kernel.org,
+	kauschluss@disroot.org
+Subject: [PATCH v5 1/2] iio: accel: st_accel: add support for LIS2DS12
+Date: Sat, 22 Jun 2024 18:03:45 +0530
+Message-ID: <20240622123520.39253-1-kauschluss@disroot.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 2/3] dt-bindings: iio: proximity: Add TYHX HX9023S
-To: Conor Dooley <conor@kernel.org>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>, yasin.lee.x@outlook.com,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-References: <20240621-add-tyhx-hx9023s-sensor-driver-v6-0-65196a9020f1@gmail.com>
- <20240621-add-tyhx-hx9023s-sensor-driver-v6-2-65196a9020f1@gmail.com>
- <d35f5eba-abb4-4924-89d6-0beb878a0bf7@kernel.org>
- <385a7a64-fc76-4655-bc7f-d89d00b053d5@gmail.com>
- <20240622-superjet-dusk-cfd19f899cc2@spud>
-Content-Language: en-US
-From: Yasin Lee <yasin.lee.x@gmail.com>
-In-Reply-To: <20240622-superjet-dusk-cfd19f899cc2@spud>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
+Define sensor settings for LIS2DS12 by STMicroelectronics (WhoAmI 0x43)
+and add support in the I2C and SPI drivers.
 
-On 2024/6/22 18:51, Conor Dooley wrote:
-> On Sat, Jun 22, 2024 at 01:56:42PM +0800, Yasin Lee wrote:
->> On 2024/6/21 18:12, Krzysztof Kozlowski wrote:
->>
->> Hi ,Krzysztof
->> Thank you for your reply. I have some questions inline.
->>
->> Best regards,
->> Yasin
->>
->>> On 21/06/2024 09:40, Yasin Lee wrote:
->>>> A capacitive proximity sensor
->>>>
->>>> Signed-off-by: Yasin Lee <yasin.lee.x@gmail.com>
->>>> ---
->>>>    .../bindings/iio/proximity/tyhx,hx9023s.yaml       | 115 +++++++++++++++++++++
->>>>    1 file changed, 115 insertions(+)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.yaml b/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.yaml
->>>> new file mode 100644
->>>> index 000000000000..beca70ce7609
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.yaml
->>>> @@ -0,0 +1,115 @@
->>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>>> +%YAML 1.2
->>>> +---
->>>> +$id: http://devicetree.org/schemas/iio/proximity/tyhx,hx9023s.yaml#
->>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>>> +
->>>> +title: TYHX HX9023S capacitive proximity sensor
->>>> +
->>>> +maintainers:
->>>> +  - Yasin Lee <yasin.lee.x@gmail.com>
->>>> +
->>>> +description: |
->>>> +  TYHX HX9023S proximity sensor. Datasheet can be found here:
->>>> +    http://www.tianyihexin.com/ueditor/php/upload/file/20240614/1718336303992081.pdf
->>>> +
->>>> +allOf:
->>>> +  - $ref: /schemas/iio/iio.yaml#
->>> Which part of iio.yaml binding do you use here? I cannot find anything,
->>> so this looks wrong.	
->>>
->> I will remove this reference.
->>
->>
->>>> +
->>>> +properties:
->>>> +  compatible:
->>>> +    const: tyhx,hx9023s
->>>> +
->>>> +  reg:
->>>> +    maxItems: 1
->>>> +
->>>> +  interrupts:
->>>> +    description:
->>>> +      Generated by device to announce preceding read request has finished
->>>> +      and data is available or that a close/far proximity event has happened.
->>>> +    maxItems: 1
->>>> +
->>>> +  vdd-supply: true
->>>> +
->>>> +  "#address-cells":
->>>> +    const: 1
->>>> +
->>>> +  "#size-cells":
->>>> +    const: 0
->>>> +
->>>> +patternProperties:
->>>> +  "^channel@[0-4]$":
->>>> +    $ref: /schemas/iio/adc/adc.yaml
->>>> +    type: object
->>>> +
->>>> +    properties:
->>>> +      reg:
->>>> +        minimum: 0
->>>> +        maximum: 4
->>>> +        description: The channel number.
->>>> +
->>>> +      input-channel:
->>> Isn't this duplicating single-channel property?
->>>
->>> Where is this property defined (which common schema)?
->>>
->> |input-channel| is indeed intended for single-ended configuration, but I
->> couldn't find a definition
->>
->> or reference for |single-channel| anywhere. If possible, should I rename
->> |input-channel| to |single-channel|?
-> Single-channel is new, it should be the next branch of the iio tree and
-> in linux-next.
+Datasheet: https://www.st.com/resource/en/datasheet/lis2ds12.pdf
 
-Hi Conor，
+Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+---
+Changes in v5:
+- clarify incompatibility with other devices in description
 
-Thank you for informing me. I plan to temporarily add a prefix to this 
-attribute to distinguish it and update it in the future. Is this the 
-correct approach?
+v4: https://lore.kernel.org/linux-iio/20240611160821.13941-1-kauschluss@disroot.org/
+Changes in v4:
+- add compatible string to documentation
+- correct register addresses and settings
 
--       single-channel:
+v3: https://lore.kernel.org/linux-iio/20240601192914.141906-1-kauschluss@disroot.org/
+Changes in v3:
+- fix code formatting
 
-+      tyhx,single-channel:
-         $ref: /schemas/types.yaml#/definitions/uint32
-         minimum: 0
-         maximum: 4
-         description:
-           Specify the input pin used in single-ended configuration.
+v2: https://lore.kernel.org/linux-iio/20240601183233.118397-1-kauschluss@disroot.org/
+Changes in v2:
+- add SPI support
+- link datasheet in commit description
 
+v1: https://lore.kernel.org/linux-iio/20240526083302.87172-1-kauschluss@disroot.org/
+---
+ drivers/iio/accel/st_accel.h      |  1 +
+ drivers/iio/accel/st_accel_core.c | 81 +++++++++++++++++++++++++++++++
+ drivers/iio/accel/st_accel_i2c.c  |  5 ++
+ drivers/iio/accel/st_accel_spi.c  |  5 ++
+ 4 files changed, 92 insertions(+)
 
-Best regards，
-
-Yasin
+diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
+index e7525615712b..2659f536cef6 100644
+--- a/drivers/iio/accel/st_accel.h
++++ b/drivers/iio/accel/st_accel.h
+@@ -35,6 +35,7 @@
+ #define LIS3DHH_ACCEL_DEV_NAME		"lis3dhh"
+ #define LIS3DE_ACCEL_DEV_NAME		"lis3de"
+ #define LIS2DE12_ACCEL_DEV_NAME		"lis2de12"
++#define LIS2DS12_ACCEL_DEV_NAME		"lis2ds12"
+ #define LIS2HH12_ACCEL_DEV_NAME		"lis2hh12"
+ #define LIS302DL_ACCEL_DEV_NAME		"lis302dl"
+ #define LSM303C_ACCEL_DEV_NAME		"lsm303c_accel"
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index d2104e14e255..0e371efbda70 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -925,6 +925,87 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 		.multi_read_bit = true,
+ 		.bootime = 2,
+ 	},
++	{
++		.wai = 0x43,
++		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
++		.sensors_supported = {
++			[0] = LIS2DS12_ACCEL_DEV_NAME,
++		},
++		.ch = (struct iio_chan_spec *)st_accel_16bit_channels,
++		.odr = {
++			.addr = 0x20,
++			.mask = 0xf0,
++			.odr_avl = {
++				{ .hz = 10, .value = 0x01, },
++				{ .hz = 50, .value = 0x02, },
++				{ .hz = 100, .value = 0x03, },
++				{ .hz = 200, .value = 0x04, },
++				{ .hz = 400, .value = 0x05, },
++				{ .hz = 800, .value = 0x06, },
++			},
++		},
++		.pw = {
++			.addr = 0x20,
++			.mask = 0xf0,
++			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
++		},
++		.enable_axis = {
++			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
++			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
++		},
++		.fs = {
++			.addr = 0x20,
++			.mask = 0x0c,
++			.fs_avl = {
++				[0] = {
++					.num = ST_ACCEL_FS_AVL_2G,
++					.value = 0x00,
++					.gain = IIO_G_TO_M_S_2(61),
++				},
++				[1] = {
++					.num = ST_ACCEL_FS_AVL_4G,
++					.value = 0x02,
++					.gain = IIO_G_TO_M_S_2(122),
++				},
++				[2] = {
++					.num = ST_ACCEL_FS_AVL_8G,
++					.value = 0x03,
++					.gain = IIO_G_TO_M_S_2(244),
++				},
++				[3] = {
++					.num = ST_ACCEL_FS_AVL_16G,
++					.value = 0x01,
++					.gain = IIO_G_TO_M_S_2(488),
++				},
++			},
++		},
++		.bdu = {
++			.addr = 0x20,
++			.mask = 0x01,
++		},
++		.drdy_irq = {
++			.int1 = {
++				.addr = 0x23,
++				.mask = 0x01,
++			},
++			.int2 = {
++				.addr = 0x24,
++				.mask = 0x01,
++			},
++			.addr_ihl = 0x22,
++			.mask_ihl = 0x02,
++			.stat_drdy = {
++				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
++				.mask = 0x01,
++			},
++		},
++		.sim = {
++			.addr = 0x21,
++			.value = BIT(0),
++		},
++		.multi_read_bit = true,
++		.bootime = 2,
++	},
+ 	{
+ 		.wai = 0x41,
+ 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index fd3749871121..329a4d6fb2ec 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -102,6 +102,10 @@ static const struct of_device_id st_accel_of_match[] = {
+ 		.compatible = "st,lis2de12",
+ 		.data = LIS2DE12_ACCEL_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lis2ds12",
++		.data = LIS2DS12_ACCEL_DEV_NAME,
++	},
+ 	{
+ 		.compatible = "st,lis2hh12",
+ 		.data = LIS2HH12_ACCEL_DEV_NAME,
+@@ -154,6 +158,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
+ 	{ LIS2DW12_ACCEL_DEV_NAME },
+ 	{ LIS3DE_ACCEL_DEV_NAME },
+ 	{ LIS2DE12_ACCEL_DEV_NAME },
++	{ LIS2DS12_ACCEL_DEV_NAME },
+ 	{ LIS2HH12_ACCEL_DEV_NAME },
+ 	{ LIS302DL_ACCEL_DEV_NAME },
+ 	{ LSM303C_ACCEL_DEV_NAME },
+diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
+index f72a24f45322..825adab37105 100644
+--- a/drivers/iio/accel/st_accel_spi.c
++++ b/drivers/iio/accel/st_accel_spi.c
+@@ -64,6 +64,10 @@ static const struct of_device_id st_accel_of_match[] = {
+ 		.compatible = "st,lis2dh12-accel",
+ 		.data = LIS2DH12_ACCEL_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lis2ds12",
++		.data = LIS2DS12_ACCEL_DEV_NAME,
++	},
+ 	{
+ 		.compatible = "st,lis3l02dq",
+ 		.data = LIS3L02DQ_ACCEL_DEV_NAME,
+@@ -151,6 +155,7 @@ static const struct spi_device_id st_accel_id_table[] = {
+ 	{ LSM330_ACCEL_DEV_NAME },
+ 	{ LSM303AGR_ACCEL_DEV_NAME },
+ 	{ LIS2DH12_ACCEL_DEV_NAME },
++	{ LIS2DS12_ACCEL_DEV_NAME },
+ 	{ LIS3L02DQ_ACCEL_DEV_NAME },
+ 	{ LNG2DM_ACCEL_DEV_NAME },
+ 	{ H3LIS331DL_ACCEL_DEV_NAME },
+-- 
+2.45.1
 
