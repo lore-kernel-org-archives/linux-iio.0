@@ -1,88 +1,104 @@
-Received: from www571.your-server.de (www571.your-server.de [78.46.3.230])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FACF210E9;
-	Mon, 24 Jun 2024 06:15:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.46.3.230
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F2EA1F93E;
+	Mon, 24 Jun 2024 08:09:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719209716; cv=none; b=d+XdPqNpokZluzrLBGRoeMiK1sJZLfbx2b2/Ndt3Cbpk7ftyG4eSzVsFKfpWAA23gdsGP/E+UjpfQMIdI4fRs8DV6RClO9aC3aG5fkSTFKD46BuznfUUrgbN3rvmFsy0MAOboZusXfWXJN/lpxHDcsNcgjne9A+VjA4Y71V3xbk=
+	t=1719216572; cv=none; b=driZRgMSuJJSx+3Be1pdzOR+v01AztYUxl2dXSrMY1bKctWhlqjB/SZ7TGIldv7BiqUc+n1JlEH/h+UrOiDT56yNVyXg4kl4MP/vCdwGozyjGKU4xIMl063/g9RTqFcabekbMByHesBkfx9A+x+lD+saKyeaZrAD2W6YwVb0ViE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719209716; c=relaxed/simple;
-	bh=LyITajvfZ1CYC3rJmlH7koFvWcirjcPli+4A4YGoJyY=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=g1Yqmhoth4c8b4NOy3gALH2AXKQfEzEVGjeu8N/vl3um8Hvz/XbYUNZy59/OYyjOw+Uz92jTnEdJEUC2qgMEf1GXspSMlcRC4AsvtT4o2Q21j46QDvM5gbhUCOEfO8AjMn4eqKvNjfWY7KO6OtcN0JdKV1keGqok7W9bomH/L9s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=it-klinger.de; spf=pass smtp.mailfrom=it-klinger.de; arc=none smtp.client-ip=78.46.3.230
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=it-klinger.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=it-klinger.de
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-	by www571.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96.2)
-	(envelope-from <ak@it-klinger.de>)
-	id 1sLcny-000N1i-1N;
-	Mon, 24 Jun 2024 08:03:54 +0200
-Received: from [31.220.119.164] (helo=mail.your-server.de)
-	by sslproxy02.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <ak@it-klinger.de>)
-	id 1sLcny-00038L-27;
-	Mon, 24 Jun 2024 08:03:54 +0200
-Date: Mon, 24 Jun 2024 08:03:52 +0200
-From: Andreas Klinger <ak@it-klinger.de>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Joel Stanley <joel@jms.id.au>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Andreas Klinger <ak@it-klinger.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Nuno Sa <nuno.sa@analog.com>, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 02/10] iio: adc: hx711: use
- devm_regulator_get_enable_read_voltage()
-Message-ID: <ZnkMSO_dPWNY712F@mail.your-server.de>
+	s=arc-20240116; t=1719216572; c=relaxed/simple;
+	bh=NOhGw9rMrJpNkjxZpnWcF4vb9fMkV6OjsmbMKaXvgvk=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Vx3kBgsqYd/sCOmKdguCGqOCkiJdwRxr7RoLK5yt3q6r3i1laln/M/deu1HdajDJH4iVIopStaec3jBxHXQoDyYPvRSs3WrZKUY3HnuyxzUajN5bhdKjiJccGy9ifDjRkPqLZwiApDAPWtF26QqXC8vQCHFi40wiYPY4cghQ5N0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OSwdhsVN; arc=none smtp.client-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OSwdhsVN"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-363bbd51050so3040628f8f.0;
+        Mon, 24 Jun 2024 01:09:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1719216569; x=1719821369; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=NOhGw9rMrJpNkjxZpnWcF4vb9fMkV6OjsmbMKaXvgvk=;
+        b=OSwdhsVNd1DQKwGWNJMG/TsGEBIm/jsPujjB57AjjFx5K0yp93zF0mozMcCdMyT4Cj
+         5THLIVmjHkm6zXVYSJ+RCRFevVC85wmCNcwSf870Rza5ib6EFMu6jPtkoxOTs62p4yLM
+         rWxDfEI7ckkc02m5t2d/CN/wZnDW6zH7wAWG7waBGw8okMcKxJJ5BJ3dsYdj55HQ+r8y
+         mN9zr8HufKCaCWas1SfPNgts+qceYuXv9uu3BGP/8VbMx/QPPQ0RwhwrfpchVqD2Yo46
+         Q0yQ8BL5kgAaBveI1xQXMYEoAnRmcZG6BJ0sLfbmvzKXywKOK1YGQwAqf3IDV4r1gh+U
+         yhMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719216569; x=1719821369;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=NOhGw9rMrJpNkjxZpnWcF4vb9fMkV6OjsmbMKaXvgvk=;
+        b=gyuwNy/GSq75k19kMv51WYHrr4w1FQiWXOdn1cpIZIgnBjRCzocpyPh/rRRQ5XQwQG
+         bFhfmQUtRh4zxIoQ5IgO9NSsfslGgBWLcCnNAKTnJGJuLE0p2CQD38Jmr5IczIHnau6/
+         qbHF3o6uX3wnyM50UbL1r0oYDnwO3Au07Ktb1OcDyhLGZyPs3kPFw9gs/90HkRQVAl7x
+         Ump3hkkGaVd+g3iaCafcGJIBdEm5gbpbHRzFNnS/3mOh4dVso4cvj+660BnaLtVI5fBL
+         wVFqe26bpElKwy+mJob85SOs2DI0rzjpY2QVBYsPryqS6u2vrEoQOwn5BLTYMwS0pClg
+         pj0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXWPlQGxmFAOSxA/gqrPFgj+KXHrTFtUNXNEwUJ3EmLwhm1PL5BqgN7Aiw8gPVearSQn2yQHppBh5Dl2rhdcV1x4FEjKQrAAbTikym+ZfYb6Jjm91yIrAFYLUQ6s+R4wNuBHZ6qYuJkiSRShES+nmJiA3S4b91iOHCFUeJ6tav9WrpLo8WjlM63d54aTQxXTbGtwPSkWqtmKjiFCCTG7A==
+X-Gm-Message-State: AOJu0Yy6lh6eEWsrqYmgXSu8GBr9YWnWP5qhu/VOlwaLzmxsrLoTo+bj
+	rE6R29RZ8QWMsA+8nGxO/81u8hGnKtQd8RM3Tnxd/97hypCxKpgP
+X-Google-Smtp-Source: AGHT+IFsu4SA440qLS+OTNB2Kp/IDfKOew+1SLAqJbJX3Dq9uflpOsscaCxVGx6MDcd8J/58+fIhuA==
+X-Received: by 2002:adf:f887:0:b0:361:dde2:87a0 with SMTP id ffacd0b85a97d-366e4f0cd03mr3249911f8f.65.1719216569219;
+        Mon, 24 Jun 2024 01:09:29 -0700 (PDT)
+Received: from ?IPv6:2001:a61:35f9:9001:40df:88bb:5090:7ab6? ([2001:a61:35f9:9001:40df:88bb:5090:7ab6])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-366389b8597sm9252800f8f.36.2024.06.24.01.09.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jun 2024 01:09:28 -0700 (PDT)
+Message-ID: <85c7b836721ad49125eebf7498d2d8a9cd15dd64.camel@gmail.com>
+Subject: Re: [PATCH v6 2/2] iio: frequency: adf4350: add clk provider
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, Antoniu Miclaus
+	 <antoniu.miclaus@analog.com>
+Cc: Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>,  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,  Lars-Peter
+ Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>,  linux-clk@vger.kernel.org,
+ devicetree@vger.kernel.org,  linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+Date: Mon, 24 Jun 2024 10:09:28 +0200
+In-Reply-To: <20240622195018.587997ae@jic23-huawei>
+References: <20240621121403.47912-1-antoniu.miclaus@analog.com>
+	 <20240621121403.47912-2-antoniu.miclaus@analog.com>
+	 <20240622195018.587997ae@jic23-huawei>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.2 (3.52.2-1.fc40) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="N0AifF9IzWj2884v"
-Content-Disposition: inline
-In-Reply-To: <20240621-iio-regulator-refactor-round-2-v1-2-49e50cd0b99a@baylibre.com>
-X-Authenticated-Sender: ak@it-klinger.de
-X-Virus-Scanned: Clear (ClamAV 1.0.3/27315/Sun Jun 23 10:23:58 2024)
+
+On Sat, 2024-06-22 at 19:50 +0100, Jonathan Cameron wrote:
+> On Fri, 21 Jun 2024 15:13:59 +0300
+> Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+>=20
+> > Add clk provider feature for the adf4350.
+> >=20
+> > Even though the driver was sent as an IIO driver in most cases the
+> > device is actually seen as a clock provider.
+> >=20
+> > This patch aims to cover actual usecases requested by users in order to
+> > completely control the output frequencies from userspace.
+> >=20
+> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> You addressed both of Nuno's comments and I didn't have anything to add,
+> =C2=A0so I'll pick this up (can still add a tag though if Nuno wants to g=
+ive one).
+>=20
+
+Please do.
+
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
 
 
---N0AifF9IzWj2884v
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, 2024-06-21 at 22:11 +0000, David Lechner wrote:
-> Use the devm_regulator_get_enable_read_voltage() helper to simplify the
-> code.
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
-
-Reviewed-by: Andreas Klinger <ak@it-klinger.de>
-
---=20
-
---N0AifF9IzWj2884v
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGzBAABCgAdFiEE7/NrAFtB/Pj7rTUyyHDM+xwPAVEFAmZ5DEgACgkQyHDM+xwP
-AVE47Av7BUpI4xHaIMA7TiHs6JARgCK+wBtJWrS4/DxpJ8GsTmhhP5wZ6TC96nHL
-FtJH828ECT8BBgmkpoFYqLwiSdncLwUBAkQ36MukVjzIBXDYlyJRHHRbZb33NRGK
-v0xL0Fxhv6u5oh8uvwmJjfTFBvx98TQkLdcUbfkQ2R8P7oPHN1q9AVybLlQIGSe7
-/YEuHN7eLODtfGwxqhnhXFDXaSdLyjgK0xXOfaCgE925fBZd8t/fnJnXWQWdH5k+
-1+TzAFV7/kQiQpfnefQDhMaAFNmmpbDpIaiwXTWW5C7D94acGZBFYWibOfCU/MsY
-LEGsB99G24vtqUAjTofGQO5c8f3RaU7Q8TSBcQ1gtuEDXDT9T7fOoqJ6xTfRDb2i
-p8bJMTO28RdnAh32lKS1BdnRywk7i458mTQcT6ZSoumKaCr8qLrn9A27uzwmlnIo
-NFfNC8bLiVdk5WuS90o2zGZ3/hVuNWw8RjQNb8boUnDrzkQeY1JbSFma0KfayEzs
-NcnAWhsO
-=U+8T
------END PGP SIGNATURE-----
-
---N0AifF9IzWj2884v--
