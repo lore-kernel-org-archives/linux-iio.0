@@ -1,108 +1,89 @@
-Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B71E41494D9;
-	Tue, 25 Jun 2024 17:00:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7EB717837A;
+	Tue, 25 Jun 2024 17:31:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719334825; cv=none; b=k7FLxLp4Y/RGoK9hRxJiIQHauoaZwm00xbjSBJWwW6lgwK39S0Fp8dTC+oJLlfsFAw4OmQvzoPbG3it6IJsfttGI4OKFon9m55+lyfJlVXyyw7ifM44GrXvmCtcSt3uLE41oDPVoYBAAA1Qyw3Ixd6H7U9r635dQfuLzdr3pq8Y=
+	t=1719336682; cv=none; b=ZE0tpYyeEhmJ0G6YS084aBFjsD9bk0Li/GWsXlzI27u5pML9NAH4xu5gvKNnsXLIHJx5v3nS8y+lW4hCFPKR1Jm7dsvigd5vDI29y3Hi/byUKjzwvSMHzz5aGUquEdTMAvQhVljwhZB9TAfFFzjMXJgeyRL5SHskD1+9XPDJ4mo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719334825; c=relaxed/simple;
-	bh=7zGkmCGwedhVhDlUUqPb+kRA9524NAzODRiWSHPQgVc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qKqUEyEnj//j/qfi0U+RTj1fjcjDo+KXA/yazqR5HfEgtmdz7wZEvtRXR+ZJEInUDcySL7ff8fLc2/z1OXh3D9qLHfX2HPjZGPIc20ooayuBeKqhqMXLBQ7SRF+paZh60C1fKmM6yJh5t6NRPbw3PL8xiPVat9W7r8V9UTeWgRE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=lKZFGi00; arc=none smtp.client-ip=178.21.23.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
+	s=arc-20240116; t=1719336682; c=relaxed/simple;
+	bh=kHUi3Glz4/PPYP+tK0uqIXjQ/5/ZN+i50kgrI88ZFJY=;
+	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
+	 Message-Id:Subject; b=aW3YPmeN+tmKAZSO5qSHrZvdaGR0YT3vvD/054QV4kWawOH94GNgPc3PgiqFQDJtwKOENkOev7KIhVjy7muqo49+vvehvq6aeoR2JJMMXvjWrHyIrnL6ELmZOiUJ+n1VnRO2gaRhBss6328lY6bpfV58zACuf0eHnvq7prp7Eyo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iDha3Mc7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="lKZFGi00"
-X-Virus-Scanned: SPAM Filter at disroot.org
-From: Kaustabh Chakraborty <kauschluss@disroot.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1719334357; bh=7zGkmCGwedhVhDlUUqPb+kRA9524NAzODRiWSHPQgVc=;
-	h=From:To:Cc:Subject:Date;
-	b=lKZFGi00vOR3gge+h8j+BPt5adPxE55XO0ejK31HCF8KVMgYyHPN3gq6cqXGgS9s1
-	 kK+yMrqDXc+S73KKLziI6P/nmIY/GtFsNPIABdpPTwdQeRogl0+nzuq2DRJuWe8Ckb
-	 sR03DlR/ylMIf+0vB7iGNTTYj00zPAP4ZZnvNcVlVs3fb5McfBHxZ08ayJDZ7mFDhR
-	 YVHeOK9ttegmAVKnGAIDMQAzS93YfyK9FdTX8w2P9QLdt5PKk3Ix9UyM5v96YN8/v6
-	 o5pOCgS2vzAhtl3/AVsjc9oR1axLaNFtOvDBiXBcFpZgSgz/+YBX1I1VwgYWEB7Om3
-	 WwSKfSOnbRW7w==
-To: linux-iio@vger.kernel.org,
-	jic23@kernel.org
-Cc: devicetree@vger.kernel.org,
-	conor+dt@kernel.org,
-	Kaustabh Chakraborty <kauschluss@disroot.org>
-Subject: [PATCH 1/2] iio: light: stk3310: add support for stk3013
-Date: Tue, 25 Jun 2024 22:21:05 +0530
-Message-ID: <20240625165122.231182-1-kauschluss@disroot.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iDha3Mc7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01E26C32781;
+	Tue, 25 Jun 2024 17:31:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719336682;
+	bh=kHUi3Glz4/PPYP+tK0uqIXjQ/5/ZN+i50kgrI88ZFJY=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=iDha3Mc7e1EnXsShwZM34VzZxT73ZEqVU1fcqEp5ul8RpW4X8NbqcoTTjaybEXfYK
+	 7s0Os5QF697KdO3JqD+f20aD/+ANmQwd75mIpPRsemu6dYo6JNNvVlVXslY6aMkg4r
+	 rYi7oVRLrQiZMzkWBeTZl3+rDVbhow/ZizrO3+eMiShJb50MpTWLb+pHsjY8Xv6wMF
+	 x6RJWpYY1ds/kkzH9iPehgxV+kkr4c+lFY6zwtH2TkvTL3xk5jG4WEFnEcSVvvXvJS
+	 cnR1czIzp/uUrzbsdZZE48AS2ntI5fwJrAgWrH0C8U1f8BydtzrVu+b5p5stm8RDph
+	 6qT5fWVnFJA0Q==
+Date: Tue, 25 Jun 2024 11:31:20 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Yasin Lee <yasin.lee.x@gmail.com>
+Cc: linux-iio@vger.kernel.org, yasin.lee.x@outlook.com, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>
+In-Reply-To: <20240625-add-tyhx-hx9023s-sensor-driver-v8-2-0c224e3bddbc@gmail.com>
+References: <20240625-add-tyhx-hx9023s-sensor-driver-v8-0-0c224e3bddbc@gmail.com>
+ <20240625-add-tyhx-hx9023s-sensor-driver-v8-2-0c224e3bddbc@gmail.com>
+Message-Id: <171933668079.3655439.16090706511349678205.robh@kernel.org>
+Subject: Re: [PATCH v8 2/3] dt-bindings: iio: proximity: Add TYHX HX9023S
 
-Add support for Sensortek's STK3013 in the driver. The part bears the
-product ID 0x31.
 
-As seen in [1], Sensortek lists STK3013 as a proximity sensor. But it
-has been experimentally observed that they do have ambient light sensing
-capabilities. Furthermore, [2] implements a proximity and ambient light
-sensor driver for STK3x1x devices, which is also indicative of the fact
-that these parts are also ambient light sensors.
+On Tue, 25 Jun 2024 23:58:53 +0800, Yasin Lee wrote:
+> A capacitive proximity sensor
+> 
+> Signed-off-by: Yasin Lee <yasin.lee.x@gmail.com>
+> ---
+>  .../bindings/iio/proximity/tyhx,hx9023s.yaml       | 93 ++++++++++++++++++++++
+>  1 file changed, 93 insertions(+)
+> 
 
-[1] https://www.sensortek.com.tw/index.php/en/products/optical-sensor/
-[2] https://android.googlesource.com/kernel/msm.git/+/e6dfa4641d88201e8019be19ff557e5d2cf4572f
+My bot found errors running 'make dt_binding_check' on your patch:
 
-Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
----
- drivers/iio/light/stk3310.c | 5 +++++
- 1 file changed, 5 insertions(+)
+yamllint warnings/errors:
 
-diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-index e3470d6743ef..003e7c1473d7 100644
---- a/drivers/iio/light/stk3310.c
-+++ b/drivers/iio/light/stk3310.c
-@@ -35,6 +35,7 @@
- #define STK3310_STATE_EN_ALS			BIT(1)
- #define STK3310_STATE_STANDBY			0x00
- 
-+#define STK3013_CHIP_ID_VAL			0x31
- #define STK3310_CHIP_ID_VAL			0x13
- #define STK3311_CHIP_ID_VAL			0x1D
- #define STK3311A_CHIP_ID_VAL			0x15
-@@ -84,6 +85,7 @@ static const struct reg_field stk3310_reg_field_flag_nf =
- 				REG_FIELD(STK3310_REG_FLAG, 0, 0);
- 
- static const u8 stk3310_chip_ids[] = {
-+	STK3013_CHIP_ID_VAL,
- 	STK3310_CHIP_ID_VAL,
- 	STK3311A_CHIP_ID_VAL,
- 	STK3311S34_CHIP_ID_VAL,
-@@ -700,6 +702,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(stk3310_pm_ops, stk3310_suspend,
- 				stk3310_resume);
- 
- static const struct i2c_device_id stk3310_i2c_id[] = {
-+	{ "STK3013" },
- 	{ "STK3310" },
- 	{ "STK3311" },
- 	{ "STK3335" },
-@@ -708,6 +711,7 @@ static const struct i2c_device_id stk3310_i2c_id[] = {
- MODULE_DEVICE_TABLE(i2c, stk3310_i2c_id);
- 
- static const struct acpi_device_id stk3310_acpi_id[] = {
-+	{"STK3013", 0},
- 	{"STK3310", 0},
- 	{"STK3311", 0},
- 	{}
-@@ -716,6 +720,7 @@ static const struct acpi_device_id stk3310_acpi_id[] = {
- MODULE_DEVICE_TABLE(acpi, stk3310_acpi_id);
- 
- static const struct of_device_id stk3310_of_match[] = {
-+	{ .compatible = "sensortek,stk3013", },
- 	{ .compatible = "sensortek,stk3310", },
- 	{ .compatible = "sensortek,stk3311", },
- 	{ .compatible = "sensortek,stk3335", },
--- 
-2.45.2
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.example.dtb: proximity@2a: channel@0: Unevaluated properties are not allowed ('single-channel' was unexpected)
+	from schema $id: http://devicetree.org/schemas/iio/proximity/tyhx,hx9023s.yaml#
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.example.dtb: proximity@2a: channel@1: Unevaluated properties are not allowed ('single-channel' was unexpected)
+	from schema $id: http://devicetree.org/schemas/iio/proximity/tyhx,hx9023s.yaml#
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.example.dtb: proximity@2a: channel@2: Unevaluated properties are not allowed ('single-channel' was unexpected)
+	from schema $id: http://devicetree.org/schemas/iio/proximity/tyhx,hx9023s.yaml#
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20240625-add-tyhx-hx9023s-sensor-driver-v8-2-0c224e3bddbc@gmail.com
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
