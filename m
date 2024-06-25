@@ -1,113 +1,69 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E62449629;
-	Tue, 25 Jun 2024 16:24:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1176174ED2;
+	Tue, 25 Jun 2024 16:52:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719332664; cv=none; b=DMNsON4fGDqaeytyVpxwNecJf1M65dQJXPFzjX0dd/RfDnNeX/8rRSNBoJ4yFnL/fjgW19zyDwStdcGg6x7u6sc1cM5PPp/44PNOiWXLjvqyC5+4JMIlR2ASknMs7Shh2+F05XJkSR7M73qCAE9O41H+PYj079bDeWBJhbZOCe4=
+	t=1719334368; cv=none; b=A/RH6wCMY1gmu27OT59G8/x2BnOp9GNZ9EAXqq+Lr6Du4fwrFL6Lv7WySRp+R4/O0YDSd1uJO1tCwRxwa34nbNZ6bwgcDt174tbP/m/dqgMOvs8M4p34tUi2GJ9xcz+/j8PMTR8Pw17L1NLZJpHMXQ1j0gEgyKxSoBGOEMBOpGo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719332664; c=relaxed/simple;
-	bh=7YZlz23yUHTKCjEJ0DtkNCpW8MKikV7v5efaQ6NoijI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AoctrbQ6TNO6Y+0kTE8mFFMUmdqcJcul1HyiwV5n4BCxHBQSdWodLA2p9lonkV/7EDRgYYs8z13jJQOSCvsyA9FWZLDzYB817AIQDQj277bPXUzGUPiTNGLdAgbjnB367G7nk/cQNnBBVoqWqAo6oG3j/vi4aljqqVIoqzk1tIQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QibZCrOJ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1719334368; c=relaxed/simple;
+	bh=39UsyjL9EP1PAdrBgELTOcXGolrV68DGXQAkjwpdElU=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=qLpsSDZPp532S+DXKzOpDYw7jDZA8Un55AjGO8F4mlb/UXKKCieSWB0dBjFoki4NM1/b1GGum86RQIxEMR8ml+QWbMfEKjdDsaFLxijrpp5xZTWWolS1piQRsVLehFCIMGEYIkVsqe+PjeEzfn8yIKxzogPFg/B9AC91Rn13Cz0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=hhlitPq3; arc=none smtp.client-ip=178.21.23.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QibZCrOJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C237DC32781;
-	Tue, 25 Jun 2024 16:24:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719332664;
-	bh=7YZlz23yUHTKCjEJ0DtkNCpW8MKikV7v5efaQ6NoijI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=QibZCrOJE3TdSC/l6jubXU5aQ6D6tBlszjzyGCmfHCrWr8u7S16hKoB+8UhJWUfUU
-	 50AX+3jqnm/RPWUcMAg70zsj9HanIUY6o2ws4vYQNHYSouCjdZk/l4we7TyaTVQHo1
-	 2OWuHTxFXU4ySpoth1awIcoY8clXvBWP09YMU2wDSfIlmBkM8pZDEwYiLC4RRLFe+y
-	 COx3WQLjoPVPZ9FdS4CK/hkhup7ppglV2YzHb+3LB/XlmJAro1WIKIdqgtFiijQKJq
-	 +CXEX43uXCnT231WwnkoF6SC8WeRGAfKPFFaUkgNOFb8ir0WedmZM7BqzZGCVmWogS
-	 F7QPoBObm0DQg==
-Date: Tue, 25 Jun 2024 17:24:18 +0100
-From: Mark Brown <broonie@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>,
-	Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] spi: add
- EXPORT_SYMBOL_GPL(devm_spi_optimize_message)
-Message-ID: <0bf8f28d-e8df-458e-aa23-f597ba009466@sirena.org.uk>
-References: <20240624-devm_spi_optimize_message-v2-0-58155c0180c2@baylibre.com>
- <20240624-devm_spi_optimize_message-v2-1-58155c0180c2@baylibre.com>
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="hhlitPq3"
+X-Virus-Scanned: SPAM Filter at disroot.org
+From: Kaustabh Chakraborty <kauschluss@disroot.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
+	t=1719334361; bh=39UsyjL9EP1PAdrBgELTOcXGolrV68DGXQAkjwpdElU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=hhlitPq3Nvo4ZCypF+4Z3yToisK89YnVwB1+zYdefJQxIED3GIeS59QsSEsBjt4GI
+	 kMqABX5ffDb10NjYo5TeL9e9m6FC0m+9xolBsG8rV2oQTayVg/Hqxm396XgYAEaqqi
+	 2HuI31HnwytqTJoF0oz0/P9SK5WQnPR1nIVKiRt+GB7kORdnn1AoM2Wlm/uQhwwt5B
+	 3gxd39wY6Ce/R3/5ZAHO8kGPKCob8OZBeCHMWQt+Yc1YZEVQcNdVYoHWW/NOp3IEI3
+	 qHZ2GWWli7kEIGUMAKdpsPw60PqIPdFIhxQnMYaETRLTLpI7C2KCfKjLigPglIzQuo
+	 op325CmX/4qNw==
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org
+Cc: devicetree@vger.kernel.org,
+	conor+dt@kernel.org,
+	Kaustabh Chakraborty <kauschluss@disroot.org>
+Subject: [PATCH 2/2] dt-bindings: iio: light: stk33xx: add compatible for stk3013
+Date: Tue, 25 Jun 2024 22:21:06 +0530
+Message-ID: <20240625165122.231182-2-kauschluss@disroot.org>
+In-Reply-To: <20240625165122.231182-1-kauschluss@disroot.org>
+References: <20240625165122.231182-1-kauschluss@disroot.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Ko8OmLQlxLrDF+hM"
-Content-Disposition: inline
-In-Reply-To: <20240624-devm_spi_optimize_message-v2-1-58155c0180c2@baylibre.com>
-X-Cookie: Results vary by individual.
+Content-Transfer-Encoding: 8bit
 
+Add the compatible string of stk3013 to the existing list.
 
---Ko8OmLQlxLrDF+hM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
+---
+ Documentation/devicetree/bindings/iio/light/stk33xx.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Mon, Jun 24, 2024 at 03:10:30PM -0500, David Lechner wrote:
-> devm_spi_optimize_message() is a public function and needs
-> EXPORT_SYMBOL_GPL.
+diff --git a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
+index f6e22dc9814a..6003da66a7e6 100644
+--- a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
++++ b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
+@@ -19,6 +19,7 @@ allOf:
+ properties:
+   compatible:
+     enum:
++      - sensortek,stk3013
+       - sensortek,stk3310
+       - sensortek,stk3311
+       - sensortek,stk3335
+-- 
+2.45.2
 
-The following changes since commit 6ba59ff4227927d3a8530fc2973b80e94b54d58f:
-
-  Linux 6.10-rc4 (2024-06-16 13:40:16 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-devm-optimize
-
-for you to fetch changes up to 7e74a45c7afdd8a9f82d14fd79ae0383bbaaed1e:
-
-  spi: add EXPORT_SYMBOL_GPL(devm_spi_optimize_message) (2024-06-24 21:25:57 +0100)
-
-----------------------------------------------------------------
-spi: add devm_spi_optimize_message() helper
-
-Helper from David Lechner <dlechner@baylibre.com>:
-
-    In the IIO subsystem, we are finding that it is common to call
-    spi_optimize_message() during driver probe since the SPI message
-    doesn't change for the lifetime of the driver. This patch adds a
-    devm_spi_optimize_message() helper to simplify this common pattern.
-
-----------------------------------------------------------------
-David Lechner (3):
-      Documentation: devres: add missing SPI helpers
-      spi: add devm_spi_optimize_message() helper
-      spi: add EXPORT_SYMBOL_GPL(devm_spi_optimize_message)
-
- Documentation/driver-api/driver-model/devres.rst |  3 +++
- drivers/spi/spi.c                                | 28 ++++++++++++++++++++++++
- include/linux/spi/spi.h                          |  2 ++
- 3 files changed, 33 insertions(+)
-
---Ko8OmLQlxLrDF+hM
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmZ67zEACgkQJNaLcl1U
-h9AtDgf9G4HuXLXJ2ShPnYWdK55ZIitx+2RbwKOwcYn0s6zT4jUrMp8C2ggDu6Bk
-tEBWoHQq8LEjne7rvdJPe3bQgn1P/oX/uTyYrinnUCzACuv1D0HVmLOWescGu58K
-DFULjCinMjTDxTbTqIfmCyA00KzWbGdqPxyGuNAFUId+bRXVxR+DSJR4/4A9/A06
-39NlPhx41PePcsDgueEQActE2eZGWk3G/0wYybsgYIJx/sma5+oS+3+2fBr13xfq
-1Xaibgp2Vwf9qcANlaFVY3IVC4VyBBiQfAeSbzU7viDKAfcVGwYYajqg8XOIdnuR
-MjQFfz+1nXMQqqDPLK6Frx6hiwLUiQ==
-=YZv0
------END PGP SIGNATURE-----
-
---Ko8OmLQlxLrDF+hM--
