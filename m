@@ -1,60 +1,59 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7E2E1C230B
-	for <linux-iio@vger.kernel.org>; Fri, 28 Jun 2024 14:48:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70E4A1C2319
+	for <linux-iio@vger.kernel.org>; Fri, 28 Jun 2024 14:48:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719586125; cv=none; b=NUUYwZjhhlt8Ptrf2S9/PVIb+cUhpxy+jISGFddd5BDM6j59Je5C42bNMsWw8GHwIwe3TixH13vpwXmmFgN4SqQG0QmlHkuuiA7AWcQCAy76Sq4dOoJ7BocLbIEGH/cf1uUtlXYkLLcSqbNyxfMMDROof6XI5FN06P00S1lhSqE=
+	t=1719586125; cv=none; b=OmEJ+WtdRc+Qn5XYD4ZdiBDL43hjBNwX92hBMzzaJ9KG4RueoJhdwDQXOV4YRotbGzK/10JUC4qlS4AvHHhLpIdJO5PdsW4q3IrfW2Mas9L4IwE6t+jOP660eGTofOZhT0ITaMsz4xVdBbSxJyQhMuEQOWSL/6zA1XhhkyDUavg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1719586125; c=relaxed/simple;
-	bh=Me4ZAZeXpUEgoNz5XwlIttAMsS1eKUVKhBdpA0oqJm0=;
+	bh=6NkavYCS9KssnXRdhzuSjUIoOcS1DExNH94R1nY2LM4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=OM12D8jcnQn42f89v4KOIpc+scQLyM9wQCb+oj5UqxFKs3OnN2b/u1B6xU00NAip2tuZ3C5IbvPOMqN/RPWC6BaCQIFuKP2R80ZwJoQDNAhtD9/EBknwYi0ORR8WwSTJL1LVXaY0S24WDh1ihqgcrnTKesQruDoziMIwvNx4kzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=QqHyZxc8; arc=none smtp.client-ip=209.85.167.45
+	 In-Reply-To:To:Cc; b=HgKwXB3U19TR9mfPtvETvCAO/7dnoNI06ikYccS0TZMNQHtTBkbzNBpNxMFV2FRmFTZzA0+xh/qlGtCDZU2T7a1lIaA2+crMhzaLWN/EFyk3NE7fsgizm9LF6ZKnUIlkGD0x5/XiQ8Wv9fV225Uvro/x3TELTTCMYu3O9HT60AE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=Dpm+Tdhk; arc=none smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="QqHyZxc8"
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-52ce674da85so778804e87.2
-        for <linux-iio@vger.kernel.org>; Fri, 28 Jun 2024 07:48:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="Dpm+Tdhk"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-42563a9fa58so5390205e9.0
+        for <linux-iio@vger.kernel.org>; Fri, 28 Jun 2024 07:48:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1719586121; x=1720190921; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1719586122; x=1720190922; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=bXjkAZmosXV+EptKqWsfwFwF90aKrgxPO7Zqi4uv4Ng=;
-        b=QqHyZxc8wpMmzLDhsjgX+4llEEm2rKzls2vcfl9Xlv6DxVA5XZqXB3s4PVUTYLbfGL
-         xPWz5NYwEFSgijSnJBnEDEIwRsOfc79621g8T+034Y7pZskERdqxKuJknIuBrnFfzZR4
-         qpxxTmIevj8CJW348DgwUD2POJ8Se46WgOmyD8R+km3+faxmM8dm2uaSSTEMlxAV3K41
-         NyOzHKj0+Iy43yEO1BVcv9mV8t7mBCK9ar3QIqxpEwEALPgOUfla/XS9PTFc0Q55JsDS
-         FtLVg/aKlNVK1c+1mMI/ASJLLRwUSXzFsgBBv/hfjNF1AAO2FwE4KzBNA5q8Mg5FzbUz
-         msqw==
+        bh=EMkuNs3gcVUwYniv00+omCdhvDWOdn0nkqiQ69iJTAQ=;
+        b=Dpm+TdhkkAcNb1Epwv7L6B827Q5BMjzBqr8tcnLtjiG8F0df1eGrijZfC2WlSNZ0VI
+         gj6SfEyP0AL/0oTVWy59qwd96CFuoUKB3iggjrDIWDaU+zHXinnTfjuO6MsTNzNfMHdZ
+         GjNTw3Q/Ug2jju3bXoVaVbdXFRCyLiNOD2BMZcFdUmuggjuDsKxW37KCvI0Sy2bavmHc
+         BMUE57oRLMH05a8uHD2hCdlcOgkd7/WsIQdfSKKwnPVMq5KxTXfUF3RRCZiQ3FtYhWaO
+         oKr8eJ1vycOuWWDiPpmRaQnAJOIlj/ZRh8dCbyD60QXZ5XvHk2FscT/Cilw8ExbvybJ/
+         sy9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719586121; x=1720190921;
+        d=1e100.net; s=20230601; t=1719586122; x=1720190922;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=bXjkAZmosXV+EptKqWsfwFwF90aKrgxPO7Zqi4uv4Ng=;
-        b=J1yFt61sxqQ4gGttk0yQx+cH5LJFlzOq3IPC8cHCQm70MIpDzVDRUm97k7Me/3RGSR
-         G3C/mdbAFihM48FiKBZA8jHIbHPsUbbpCt08Pr7F9n56U0punXN/6ZSB3ORKMv1/ya8q
-         Hgk5/eGxLKOP71NeWGxPwBdcw7YNFPVjz90ojG9auKeUI7+1n9TLOq041eTbZrHNcLnB
-         3PaFpkaG2GG7LZocdWYDiiBECytBBMZzUn4SYkxHqW1raPzNCFKS+Z5Pcka1sQeECF+n
-         uqByQv3ACQSG3jQuCiWQ38NvyjPx4D+H97UymtwcvAmpFaweoQCVK/J3rBxEvHNphkNW
-         g6pw==
-X-Gm-Message-State: AOJu0YzlLfmWHXIA2Y42le7kGBa021D7qTcCjM+QzgG1tNu2gkfQ3sO5
-	3+JI3kW5iXqq7gfnaoUhHwOntjfOexeG8XUY6FEinmWn+JlcMci0cKcoozw3VNM=
-X-Google-Smtp-Source: AGHT+IErmCGJZr2n4zpPLQZf3axGy/KUUX5Ydi0z351aU/tY57diUN1hIBUy4+GUORXAl8m4HkV7Ow==
-X-Received: by 2002:a19:5f56:0:b0:52c:dd2f:2f2b with SMTP id 2adb3069b0e04-52ce1862743mr12666981e87.66.1719586120617;
-        Fri, 28 Jun 2024 07:48:40 -0700 (PDT)
+        bh=EMkuNs3gcVUwYniv00+omCdhvDWOdn0nkqiQ69iJTAQ=;
+        b=LXvuVZCE5XSRilaCBIlaRK3AnEVhWZNeqCHXeBPYgnGI58wZKl4Jkuu8VJ0MkMkOFx
+         YTssOoYx8vZ5EAuJKOy3lvDzFGnmWt22nRkcv4IQAgBRY02txlZZ6fBSfGpv7dczLGS8
+         lhOf38/YJT9ZSQPeu02uo+BvzPrhQkceOBPJUsogC9D90rmixrecUP1dwc3GW5UV0FZ/
+         qTZXq+364QtYk78RqPfoaFnU0ErppJd60UKDsEYvzUAyBTLx83ILlOjra3Zo9Bh9/iTO
+         o/cfjqltuyaqR7VUb1w7qzTg4/QEPdgyw4NfGd/ex+hFDAPPm0xPQQ2CCh+CLJq4ZpMr
+         bl3w==
+X-Gm-Message-State: AOJu0YwyoqIu0Tru1NDPeLxfvTUP12sO0rHUp5NGuHz7HmiTWhuTamru
+	3Pvswj7lYfK3NMrKcTH6UrRSAcuaAlAv5/FY+YtbbEcPOXeEln7xMPWsIy47fpo=
+X-Google-Smtp-Source: AGHT+IGv7t12CAtqBhXhRtWXm5NI4VGvGPgv75bfLG43FiWdKz+JsYKTuXkHFmGZ6kYlz0q3drnk4A==
+X-Received: by 2002:a05:600c:1c8f:b0:425:5eff:7182 with SMTP id 5b1f17b1804b1-4255eff7411mr52274695e9.31.1719586121796;
+        Fri, 28 Jun 2024 07:48:41 -0700 (PDT)
 Received: from [127.0.1.1] (frhb82016ds.ikexpress.com. [185.246.87.17])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4256af55c0asm37972575e9.15.2024.06.28.07.48.40
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4256af55c0asm37972575e9.15.2024.06.28.07.48.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Jun 2024 07:48:40 -0700 (PDT)
+        Fri, 28 Jun 2024 07:48:41 -0700 (PDT)
 From: Guillaume Stols <gstols@baylibre.com>
-Date: Fri, 28 Jun 2024 14:48:23 +0000
-Subject: [PATCH v2 05/10] dt-bindings: iio: adc: adi,ad7606: add supply
- properties
+Date: Fri, 28 Jun 2024 14:48:25 +0000
+Subject: [PATCH v2 07/10] dt-bindings: iio: adc: adi,ad7606: add conditions
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,8 +61,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240628-cleanup-ad7606-v2-5-96e02f90256d@baylibre.com>
+Content-Transfer-Encoding: 8bit
+Message-Id: <20240628-cleanup-ad7606-v2-7-96e02f90256d@baylibre.com>
 References: <20240628-cleanup-ad7606-v2-0-96e02f90256d@baylibre.com>
 In-Reply-To: <20240628-cleanup-ad7606-v2-0-96e02f90256d@baylibre.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -80,53 +79,100 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  dlechner@baylibre.com
 X-Mailer: b4 0.14.0
 
-Add voltage supplies
+Since the driver supports several parts that present differences in
+their layout and behaviour, it is necessary to describe the differences
+from one chip to another.
 
 Signed-off-by: Guillaume Stols <gstols@baylibre.com>
 ---
- Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ .../devicetree/bindings/iio/adc/adi,ad7606.yaml    | 60 +++++++++++++++++++---
+ 1 file changed, 54 insertions(+), 6 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-index 509970922cda..a1c38a5812f7 100644
+index 626782ea00b3..f825a2c19a06 100644
 --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
 +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-@@ -35,6 +35,15 @@ properties:
+@@ -52,10 +52,11 @@ properties:
  
-   avcc-supply: true
- 
-+  vdrive-supply:
-+    description:
-+      Determines the voltage level at which the interface logic pins will
-+      operate.
-+
-+  refin-supply:
-+    description:
-+      The voltage supply for optional external reference voltage.
-+
-   interrupts:
+   adi,conversion-start-gpios:
      description:
-       The BUSY pin falling edge indicates that the conversion is over, and thus
-@@ -106,9 +115,11 @@ required:
-   - reg
-   - spi-cpha
-   - avcc-supply
-+  - vdrive-supply
-   - interrupts
-   - adi,conversion-start-gpios
+-      Must be the device tree identifier of the CONVST pin. This logic input is
+-      used to initiate conversions on the analog input channels. As the line is
+-      active high, it should be marked GPIO_ACTIVE_HIGH.
+-    maxItems: 1
++      Must be the device tree identifier of the CONVST pin(s). This logic input
++      is used to initiate conversions on the analog input channels. As the line
++      is active high, it should be marked GPIO_ACTIVE_HIGH.
++    minItems: 1
++    maxItems: 2
  
-+
+   reset-gpios:
+     description:
+@@ -88,8 +89,11 @@ properties:
+       is tied to a logic high, the analog input range is ±10V for all channels.
+       On the AD760X, if this pin is tied to a logic low, the analog input range
+       is ±5V for all channels. As the line is active high, it should be marked
+-      GPIO_ACTIVE_HIGH.
+-    maxItems: 1
++      GPIO_ACTIVE_HIGH. On the AD7616, there are 2 pins, and if the 2 pins are
++      tied to a logic high, software mode is enabled, otherwise one of the 3
++      possible range values is selected.
++    minItems: 1
++    maxItems: 2
+ 
+   adi,oversampling-ratio-gpios:
+     description:
+@@ -123,6 +127,50 @@ required:
  allOf:
    - $ref: /schemas/spi/spi-peripheral-props.yaml#
  
-@@ -130,6 +141,7 @@ examples:
-             spi-cpha;
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: adi,ad7616
++    then:
++      properties:
++        adi,first-data-gpios: false
++        standby-gpios: false
++        adi,range-gpios:
++          maxItems: 2
++    else:
++      properties:
++        adi,range-gpios:
++          maxItems: 1
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - adi,ad7605-4
++              - adi,ad7616
++    then:
++      properties:
++        adi,oversampling-ratio-gpios: false
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - adi,ad7605-4
++              - adi,ad7606-4
++              - adi,ad7606-6
++              - adi,ad7606-8
++    then:
++      properties:
++        adi,sw-mode: false
++    else:
++      properties:
++        adi,conversion-start-gpios:
++          maxItems: 1
++
+ unevaluatedProperties: false
  
-             avcc-supply = <&adc_vref>;
-+            vdrive-supply = <&vdd_supply>;
- 
-             interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
-             interrupt-parent = <&gpio>;
+ examples:
 
 -- 
 2.34.1
