@@ -1,199 +1,301 @@
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9715516C69A
-	for <linux-iio@vger.kernel.org>; Tue,  2 Jul 2024 15:36:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58A551B47D0;
+	Tue,  2 Jul 2024 16:02:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719934594; cv=none; b=b7LT2b8DNN2V5SmDsYBS05b9M67ewAdmuHbZSYWosIXqtDl+Gbm/3FWAqntusCtOfUySO6FG5ggn6AlXq+GQ/iaYqbEKYP0sZ46XVTfn1OLEmkqBXyOb/fT7tP2vGbk02aGciIdE4H9RXJoQY4yrm7DYjcwLqxG4rXbB6oB7Dl4=
+	t=1719936159; cv=none; b=NHTJSJhKRF0rN55b4zzDLzpnO165XQhiH3/14Or4KdQsP4BPt0ljumFUmdCTPojfHzYQOu2ohz25i1KT/nIxBEFw05TmlTlCDYmRundtFfAZFDiTZH/5uBFUBeX1AgapFfME14gvGCIekcubBCbDyPfBwBM97cRxqDHtMUn1DpY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719934594; c=relaxed/simple;
-	bh=Fp3x+Gzf/0uHBv6XR8uh15iec1h9n1SDOYsklJ3emuA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=X7Qs26rP1+P17tht/G6lJAj2ghO7fpmMz9TJiWarYlpnzlCynS8xWzAbpb2gaW5lBfhiQFnwVwne85DOuUbCS6TiVgUzi9iT4ENofk5u02asz/+k+4y6GCsrJ0JnVXbNjilA3n0ZeN7+muLg/i0GPHu2bTf/tZogyzIUUMECQHA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=NXXE2flL; arc=none smtp.client-ip=209.85.160.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1719936159; c=relaxed/simple;
+	bh=H6knCmshjK5jGEsidqg9p/dgF02XphFvTsPHqzn4WQw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=d6gdui5iPeKfHXIuNCHYkmgw9qZP2BJgc7Ml+rFjVoELVpA92+KoxTzArmb5RPdbM0SJhKLrfVfjIZ+kGAwBNuHd8vGoqpLPIkqQ9i9O44/RZ/p1n9CQQqQAj9+SlFFn1XmIePWZmFq6D4SxM2etQP3wNIwVVs5d/Im8CEYd99o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B8ACQCOB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="NXXE2flL"
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-25d634c5907so2726518fac.2
-        for <linux-iio@vger.kernel.org>; Tue, 02 Jul 2024 08:36:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1719934592; x=1720539392; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=CbTCjOUMkDZIPmsuH+iEeMyNeIVhzfAOvL5XjW90R68=;
-        b=NXXE2flLjyXXQkAq4Rr7DNTlkYZsK5VCWJlLzPePYPuIngbukXBJQqSzIlS+NM0lzM
-         UuHkn+4hjv0lF453qevgTUqgX4esVwwKDLMLdXc4kQBgMBNDQav2AL1jNcP8iRkoi2CL
-         kNZMTHk/wRzhY/G5jDUZbRGU/7hZwMk/OHufhZXHP5xhVcqR8DysoURcRvbbksA1dP+b
-         71jvGNGXLmQYC1ap1lz63AkWEYMKblDk/ziZLYbYcYPvWp8Qf+P8xMhEN5loHwJdFvb1
-         iiP7D+PkNgQkdmrQR044Qi269DTiTKskD+KGqCkxmAWPQtVMQojNYUkG/DQrlVkTkDpM
-         uoLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719934592; x=1720539392;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CbTCjOUMkDZIPmsuH+iEeMyNeIVhzfAOvL5XjW90R68=;
-        b=Ck+oe650/W2+rttWqvue9VvOVOmTL9sGoM2NcPJXETgJz5/xf7PMxTQkhNL5q+kACo
-         v1+dOFrkCEUd9o8ZKsmxHEbtDhwD18tD39V8h4eZCmX0G+mIu2AOoiZ3Uxc6i424P5rg
-         Id0kQwK6yGJXh+mnXJ0ayeu0WjtGIvcTkqQIiSTOo5Axi46D5jendlGbH1ONzG62qoaF
-         nk2IfkMI11DBN5FT6YzPyLLP57n8KuWQtcqrOypch0jORkkUx/0myRu8Ss5BkXrw1gUw
-         AiL28KCLUXdAN4CUtVuHsdpCEUB8ArLLIY1kub3k8GafThlXVWxqIbWDFmIfqD6vZIqz
-         qKpw==
-X-Forwarded-Encrypted: i=1; AJvYcCXiIjcMe2PtPBBX+mladuSYQvFZFArH5vsp/Fr/yxCSkN+lBroDmjMye559ObW1z/AX2a5sM2kb262uLERuaPgSLihieRCv+GbE
-X-Gm-Message-State: AOJu0YyyW64JSbV+gZaOwC0/i7J2eBiR3zRMnMgc7BmH3z3RsP0omkj2
-	05UTp4blZ3f0iHF4ubg8m+5kqot3lq8DpMCqKbBjOJIZ//0AIcqeVyzRONLw8xs=
-X-Google-Smtp-Source: AGHT+IFP+4Qsz+EqJ6flGJt/Sal9Z9g3tdmP0nSmapG6Dq5fs42rjFxxPjALA3t+5y4sIsynpQJ4HA==
-X-Received: by 2002:a05:6870:164c:b0:254:85c0:c70c with SMTP id 586e51a60fabf-25db35936bbmr7665818fac.40.1719934591605;
-        Tue, 02 Jul 2024 08:36:31 -0700 (PDT)
-Received: from [192.168.0.142] (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-25d8e388597sm2231963fac.56.2024.07.02.08.36.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Jul 2024 08:36:31 -0700 (PDT)
-Message-ID: <bba8a12a-9d1e-467b-a7c1-8a027d5c2f89@baylibre.com>
-Date: Tue, 2 Jul 2024 10:36:29 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B8ACQCOB"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2D908C4AF0D;
+	Tue,  2 Jul 2024 16:02:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719936159;
+	bh=H6knCmshjK5jGEsidqg9p/dgF02XphFvTsPHqzn4WQw=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=B8ACQCOBSeXAMiWqKyyqtsTCs74VAAHr503UAPluDfd1+Ch9KQW1z4c7ILOQy72E+
+	 qRT7aPuRAuLdaqchknQHgetoXFjBbhGS1cDXg6tc8uE//VsfwpdfRjVA1uegXLmhRr
+	 SZJ/r1jJjiJmX7EF80VUJIL/oJRRcqbcTWeJJxpBq6CkelmfK3GK3Smxlwg2baHKmk
+	 Q3X0DZeLJc21GI+YTzCZ2wP3gpDgHn1B4ZHyT04Ly5u6wcRJ6OvDu6iZeLmKlxlmSl
+	 9nKGpc4oKhncgjOlgiFUYKXYP42H1QgIwqTcpeccj6KJlQQas1FwriZR1w4FvGoow/
+	 U8v74wm39pdEA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F9B7C3065E;
+	Tue,  2 Jul 2024 16:02:39 +0000 (UTC)
+From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
+Date: Tue, 02 Jul 2024 18:02:35 +0200
+Subject: [PATCH 03/20] iio: buffer: make use of iio_get_masklength()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 4/6] dt-bindings: iio: dac: Add adi,ltc2664.yaml
-To: Kim Seer Paller <kimseer.paller@analog.com>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, Dimitri Fedrau <dima.fedrau@gmail.com>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Michael Hennerich <michael.hennerich@analog.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>
-References: <20240702030025.57078-1-kimseer.paller@analog.com>
- <20240702030025.57078-5-kimseer.paller@analog.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20240702030025.57078-5-kimseer.paller@analog.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20240702-dev-iio-masklength-private-v1-3-98193bf536a6@analog.com>
+References: <20240702-dev-iio-masklength-private-v1-0-98193bf536a6@analog.com>
+In-Reply-To: <20240702-dev-iio-masklength-private-v1-0-98193bf536a6@analog.com>
+To: linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, 
+ Cosmin Tanislav <cosmin.tanislav@analog.com>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Benson Leung <bleung@chromium.org>, Guenter Roeck <groeck@chromium.org>, 
+ Dmitry Rokosov <ddrokosov@sberdevices.ru>, 
+ Nicolas Ferre <nicolas.ferre@microchip.com>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Claudiu Beznea <claudiu.beznea@tuxon.dev>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1719936156; l=8943;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=U7dr1egZgx9NyisqCoR3KT604oyD4R25bPaOlNgH5Bg=;
+ b=GJ1AZCX6hZqMIVksHzM6CH1VBok4DW6f0RMeoXqxnKC2jOlLABH/eJIND/PEHVWvtyddGVxTV
+ LjVguhviQOeA7/zdTDikSWTmyzmmqGOdJEPwuoReCfjpCo6L0VhKQYN
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: Nuno Sa <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
 
-On 7/1/24 10:00 PM, Kim Seer Paller wrote:
-> Add documentation for ltc2664.
-> 
+From: Nuno Sa <nuno.sa@analog.com>
 
-...
+Use iio_get_masklength() to access '.masklength' so it can be annotated
+as __private when there are no more direct users of it.
 
-> +  adi,manual-span-operation-config:
-> +    description:
-> +      This property must mimic the MSPAN pin configurations. By tying the MSPAN
-> +      pins (MSP2, MSP1 and MSP0) to GND and/or VCC, any output range can be
-> +      hardware-configured with different mid-scale or zero-scale reset options.
-> +      The hardware configuration is latched during power on reset for proper
-> +      operation.
-> +        0 - MPS2=GND, MPS1=GND, MSP0=GND (+-10V, reset to 0V)
-> +        1 - MPS2=GND, MPS1=GND, MSP0=VCC (+-5V, reset to 0V)
-> +        2 - MPS2=GND, MPS1=VCC, MSP0=GND (+-2.5V, reset to 0V)
-> +        3 - MPS2=GND, MPS1=VCC, MSP0=VCC (0V to 10, reset to 0V)
-> +        4 - MPS2=VCC, MPS1=GND, MSP0=GND (0V to 10V, reset to 5V)
-> +        5 - MPS2=VCC, MPS1=GND, MSP0=VCC (0V to 5V, reset to 0V)
-> +        6 - MPS2=VCC, MPS1=VCC, MSP0=GND (0V to 5V, reset to 2.5V)
-> +        7 - MPS2=VCC, MPS1=VCC, MSP0=VCC (0V to 5V, reset to 0V, enables SoftSpan)
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [0, 1, 2, 3, 4, 5, 6, 7]
-> +    default: 7
-> +
-> +  io-channels:
-> +    description:
-> +      ADC channel to monitor voltages and temperature at the MUXOUT pin.
-> +    maxItems: 1
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +patternProperties:
-> +  "^channel@[0-3]$":
-> +    $ref: dac.yaml
-> +    type: object
-> +    additionalProperties: false
-> +
-> +    properties:
-> +      reg:
-> +        description: The channel number representing the DAC output channel.
-> +        maximum: 3
-> +
-> +      adi,toggle-mode:
-> +        description:
-> +          Set the channel as a toggle enabled channel. Toggle operation enables
-> +          fast switching of a DAC output between two different DAC codes without
-> +          any SPI transaction.
-> +        type: boolean
-> +
-> +      output-range-microvolt:
+While at it, remove some unneeded line breaks.
 
-Could be helpful to add a description that says this property is only allowed when
-SoftSpan is enabled rather than requiring people to reason through the logic.
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+---
+ drivers/iio/buffer/industrialio-buffer-cb.c   |  2 +-
+ drivers/iio/buffer/industrialio-hw-consumer.c |  4 +--
+ drivers/iio/industrialio-buffer.c             | 50 ++++++++++++---------------
+ 3 files changed, 26 insertions(+), 30 deletions(-)
 
-> +        oneOf:
-> +          - items:
-> +              - const: 0
-> +              - enum: [5000000, 10000000]
-> +          - items:
-> +              - const: -5000000
-> +              - const: 5000000
-> +          - items:
-> +              - const: -10000000
-> +              - const: 10000000
-> +          - items:
-> +              - const: -2500000
-> +              - const: 2500000
+diff --git a/drivers/iio/buffer/industrialio-buffer-cb.c b/drivers/iio/buffer/industrialio-buffer-cb.c
+index 4c12b7a94af59..4befc9f55201e 100644
+--- a/drivers/iio/buffer/industrialio-buffer-cb.c
++++ b/drivers/iio/buffer/industrialio-buffer-cb.c
+@@ -77,7 +77,7 @@ struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
+ 	}
+ 
+ 	cb_buff->indio_dev = cb_buff->channels[0].indio_dev;
+-	cb_buff->buffer.scan_mask = bitmap_zalloc(cb_buff->indio_dev->masklength,
++	cb_buff->buffer.scan_mask = bitmap_zalloc(iio_get_masklength(cb_buff->indio_dev),
+ 						  GFP_KERNEL);
+ 	if (cb_buff->buffer.scan_mask == NULL) {
+ 		ret = -ENOMEM;
+diff --git a/drivers/iio/buffer/industrialio-hw-consumer.c b/drivers/iio/buffer/industrialio-hw-consumer.c
+index fb58f599a80b1..526b2a8d725d1 100644
+--- a/drivers/iio/buffer/industrialio-hw-consumer.c
++++ b/drivers/iio/buffer/industrialio-hw-consumer.c
+@@ -52,6 +52,7 @@ static const struct iio_buffer_access_funcs iio_hw_buf_access = {
+ static struct hw_consumer_buffer *iio_hw_consumer_get_buffer(
+ 	struct iio_hw_consumer *hwc, struct iio_dev *indio_dev)
+ {
++	unsigned int mask_longs = BITS_TO_LONGS(iio_get_masklength(indio_dev));
+ 	struct hw_consumer_buffer *buf;
+ 
+ 	list_for_each_entry(buf, &hwc->buffers, head) {
+@@ -59,8 +60,7 @@ static struct hw_consumer_buffer *iio_hw_consumer_get_buffer(
+ 			return buf;
+ 	}
+ 
+-	buf = kzalloc(struct_size(buf, scan_mask, BITS_TO_LONGS(indio_dev->masklength)),
+-		      GFP_KERNEL);
++	buf = kzalloc(struct_size(buf, scan_mask, mask_longs), GFP_KERNEL);
+ 	if (!buf)
+ 		return NULL;
+ 
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 0138b21b244f0..389bfb238b510 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -473,18 +473,19 @@ static bool iio_validate_scan_mask(struct iio_dev *indio_dev,
+ static int iio_scan_mask_set(struct iio_dev *indio_dev,
+ 			     struct iio_buffer *buffer, int bit)
+ {
++	unsigned int masklength = iio_get_masklength(indio_dev);
+ 	const unsigned long *mask;
+ 	unsigned long *trialmask;
+ 
+-	if (!indio_dev->masklength) {
++	if (!masklength) {
+ 		WARN(1, "Trying to set scanmask prior to registering buffer\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	trialmask = bitmap_alloc(indio_dev->masklength, GFP_KERNEL);
++	trialmask = bitmap_alloc(masklength, GFP_KERNEL);
+ 	if (!trialmask)
+ 		return -ENOMEM;
+-	bitmap_copy(trialmask, buffer->scan_mask, indio_dev->masklength);
++	bitmap_copy(trialmask, buffer->scan_mask, masklength);
+ 	set_bit(bit, trialmask);
+ 
+ 	if (!iio_validate_scan_mask(indio_dev, trialmask))
+@@ -492,12 +493,11 @@ static int iio_scan_mask_set(struct iio_dev *indio_dev,
+ 
+ 	if (indio_dev->available_scan_masks) {
+ 		mask = iio_scan_mask_match(indio_dev->available_scan_masks,
+-					   indio_dev->masklength,
+-					   trialmask, false);
++					   masklength, trialmask, false);
+ 		if (!mask)
+ 			goto err_invalid_mask;
+ 	}
+-	bitmap_copy(buffer->scan_mask, trialmask, indio_dev->masklength);
++	bitmap_copy(buffer->scan_mask, trialmask, masklength);
+ 
+ 	bitmap_free(trialmask);
+ 
+@@ -517,7 +517,7 @@ static int iio_scan_mask_clear(struct iio_buffer *buffer, int bit)
+ static int iio_scan_mask_query(struct iio_dev *indio_dev,
+ 			       struct iio_buffer *buffer, int bit)
+ {
+-	if (bit > indio_dev->masklength)
++	if (bit > iio_get_masklength(indio_dev))
+ 		return -EINVAL;
+ 
+ 	if (!buffer->scan_mask)
+@@ -733,8 +733,7 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
+ 	int length, i, largest = 0;
+ 
+ 	/* How much space will the demuxed element take? */
+-	for_each_set_bit(i, mask,
+-			 indio_dev->masklength) {
++	for_each_set_bit(i, mask, iio_get_masklength(indio_dev)) {
+ 		length = iio_storage_bytes_for_si(indio_dev, i);
+ 		if (length < 0)
+ 			return length;
+@@ -855,6 +854,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+ 			     struct iio_device_config *config)
+ {
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
++	unsigned int masklength = iio_get_masklength(indio_dev);
+ 	unsigned long *compound_mask;
+ 	const unsigned long *scan_mask;
+ 	bool strict_scanmask = false;
+@@ -863,7 +863,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+ 	unsigned int modes;
+ 
+ 	if (insert_buffer &&
+-	    bitmap_empty(insert_buffer->scan_mask, indio_dev->masklength)) {
++	    bitmap_empty(insert_buffer->scan_mask, masklength)) {
+ 		dev_dbg(&indio_dev->dev,
+ 			"At least one scan element must be enabled first\n");
+ 		return -EINVAL;
+@@ -917,7 +917,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+ 	}
+ 
+ 	/* What scan mask do we actually have? */
+-	compound_mask = bitmap_zalloc(indio_dev->masklength, GFP_KERNEL);
++	compound_mask = bitmap_zalloc(masklength, GFP_KERNEL);
+ 	if (!compound_mask)
+ 		return -ENOMEM;
+ 
+@@ -927,20 +927,19 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+ 		if (buffer == remove_buffer)
+ 			continue;
+ 		bitmap_or(compound_mask, compound_mask, buffer->scan_mask,
+-			  indio_dev->masklength);
++			  masklength);
+ 		scan_timestamp |= buffer->scan_timestamp;
+ 	}
+ 
+ 	if (insert_buffer) {
+ 		bitmap_or(compound_mask, compound_mask,
+-			  insert_buffer->scan_mask, indio_dev->masklength);
++			  insert_buffer->scan_mask, masklength);
+ 		scan_timestamp |= insert_buffer->scan_timestamp;
+ 	}
+ 
+ 	if (indio_dev->available_scan_masks) {
+ 		scan_mask = iio_scan_mask_match(indio_dev->available_scan_masks,
+-						indio_dev->masklength,
+-						compound_mask,
++						masklength, compound_mask,
+ 						strict_scanmask);
+ 		bitmap_free(compound_mask);
+ 		if (!scan_mask)
+@@ -1005,6 +1004,7 @@ static int iio_buffer_add_demux(struct iio_buffer *buffer,
+ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+ 				   struct iio_buffer *buffer)
+ {
++	unsigned int masklength = iio_get_masklength(indio_dev);
+ 	int ret, in_ind = -1, out_ind, length;
+ 	unsigned int in_loc = 0, out_loc = 0;
+ 	struct iio_demux_table *p = NULL;
+@@ -1016,17 +1016,13 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+ 
+ 	/* First work out which scan mode we will actually have */
+ 	if (bitmap_equal(indio_dev->active_scan_mask,
+-			 buffer->scan_mask,
+-			 indio_dev->masklength))
++			 buffer->scan_mask, masklength))
+ 		return 0;
+ 
+ 	/* Now we have the two masks, work from least sig and build up sizes */
+-	for_each_set_bit(out_ind,
+-			 buffer->scan_mask,
+-			 indio_dev->masklength) {
++	for_each_set_bit(out_ind, buffer->scan_mask, masklength) {
+ 		in_ind = find_next_bit(indio_dev->active_scan_mask,
+-				       indio_dev->masklength,
+-				       in_ind + 1);
++				       masklength, in_ind + 1);
+ 		while (in_ind != out_ind) {
+ 			ret = iio_storage_bytes_for_si(indio_dev, in_ind);
+ 			if (ret < 0)
+@@ -1036,8 +1032,7 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+ 			/* Make sure we are aligned */
+ 			in_loc = roundup(in_loc, length) + length;
+ 			in_ind = find_next_bit(indio_dev->active_scan_mask,
+-					       indio_dev->masklength,
+-					       in_ind + 1);
++					       masklength, in_ind + 1);
+ 		}
+ 		ret = iio_storage_bytes_for_si(indio_dev, in_ind);
+ 		if (ret < 0)
+@@ -1646,6 +1641,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+ 					     int index)
+ {
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
++	unsigned int masklength = iio_get_masklength(indio_dev);
+ 	struct iio_dev_attr *p;
+ 	const struct iio_dev_attr *id_attr;
+ 	struct attribute **attr;
+@@ -1708,8 +1704,8 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+ 				iio_dev_opaque->scan_index_timestamp =
+ 					channels[i].scan_index;
+ 		}
+-		if (indio_dev->masklength && !buffer->scan_mask) {
+-			buffer->scan_mask = bitmap_zalloc(indio_dev->masklength,
++		if (masklength && !buffer->scan_mask) {
++			buffer->scan_mask = bitmap_zalloc(masklength,
+ 							  GFP_KERNEL);
+ 			if (!buffer->scan_mask) {
+ 				ret = -ENOMEM;
+@@ -1879,7 +1875,7 @@ void iio_buffers_free_sysfs_and_mask(struct iio_dev *indio_dev)
+ bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
+ 				   const unsigned long *mask)
+ {
+-	return bitmap_weight(mask, indio_dev->masklength) == 1;
++	return bitmap_weight(mask, iio_get_masklength(indio_dev)) == 1;
+ }
+ EXPORT_SYMBOL_GPL(iio_validate_scan_mask_onehot);
+ 
 
-           default: [0, 5000000]
+-- 
+2.45.2
 
-> +
-> +    required:
-> +      - reg
-> +
-> +    allOf:
-> +      - if:
-> +          properties:
-> +            adi,manual-span-operation-config:
-> +              const: 7
-> +        then:
-> +          patternProperties:
-> +            "^channel@[0-3]$":
-> +              required: [output-range-microvolt]
-
-
-This logic doesn't look right to me. If adi,manual-span-operation-config
-is not 7, then SoftSpan is disabled, so we should have:
-
-    output-range-microvolt: false
-
-In that case since individual channels can't have a per-channel
-configuration because SoftSpan is not enabled (unless I am misunderstanding
-the datasheet?).
-
-Also, output-range-microvolt should never be required, even when
-adi,manual-span-operation-config is 7 because there is already a default
-value range (0V to 5V) specified by the adi,manual-span-operation-config
-property.
-
-I think the correct logic would be:
-
-    - if:
-        not:
-          properties:
-            adi,manual-span-operation-config:
-              const: 7
-        then:
-          patternProperties:
-            "^channel@[0-3]$":
-              properties:
-                output-range-microvolt: false
 
