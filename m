@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55E1315B995;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55EB01BA86F;
 	Tue,  2 Jul 2024 14:59:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719932378; cv=none; b=oU6yAMdyg1gO46koBAeV3UDQDkVTi/BkO14NjmP9bJLWbHarm/gbNwskeyCPo33iY9Vz4JF9AT1tLVuLcnQjKu8nXDQqV8yl3R3wePfgx5+877wJCL9QYEiIy3JFtgg+Epz1R3Gln0yl0dDov03Hg1rNfyQ/6O9/OvsFr7DyfPs=
+	t=1719932378; cv=none; b=UiOzO5UjszBW0d7W8VMgmCC74AlZWPRvjDhLFzfjjKbTOLQ7nAa77AzDpERShGlX4iFnLj5P7Is9XoHz39Kl/uj0ymFGT3URkrG3lkthyb0UXDRaUSlc8RiA5nZbvL+399QCwnpbVFQmzM3F3HTuw0kILR6rOGgIei71DrW90uE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1719932378; c=relaxed/simple;
-	bh=jcgekClSNbMNhKgcEzrXZ/EyPCCRQaAQrnvaG+E2eag=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=oeT+w5WUgMz+U2TrpZwbUPX3FIT6slYbYjmx5mCxsTyjc6jHw0fFTVEhUp8LhgufMjC9aBWZ67JsuItFf/x2TmQjP83fOIwWEYO4gp3i4OzWmSXd6pLcs4lnenJJa+DUUvE0xI3Cc8L8Co2+NLVfuo6dU9hy/fn8WAcvYWAKu1w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gmSk+VmC; arc=none smtp.client-ip=10.30.226.201
+	bh=NgF/eizFotlQAwM0aNP6UfzfK8XHzXtt0ZYRvxjJFn4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=b9w6WLRbR4uQyj8bWfaKU0wp1A5I6ISBqOM3432bWE2xcNnLibBgtjv7k5mX0HjCejjnoLmu0WV/JXLP7nerVTJgM/Od7H9hxBLGFg5Z4bflTNuHh90B3KV0ZeJNyXpR9G2QhqoXVtyPR6/t3vWvt0hhMGUlILA75ajY2FC9fQc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=o8BUhXNi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gmSk+VmC"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DFED3C116B1;
-	Tue,  2 Jul 2024 14:59:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="o8BUhXNi"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 02DCEC4AF0C;
+	Tue,  2 Jul 2024 14:59:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1719932378;
-	bh=jcgekClSNbMNhKgcEzrXZ/EyPCCRQaAQrnvaG+E2eag=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=gmSk+VmCDmDmQJ7bZaDEMqgUWP3HWTGLSLZdbFwUJRa3Yoq9+u77+1aZcQP5dosco
-	 tGBDi5e2ZKLykmUIbFfzTobzE7Fp6KuPunZXp8LFs/KbIlCXC6qc7B6M0wTsTkv6KG
-	 yiER6mZNsa83nzzYiYh+/NqOKg0zwNx8zFr0KsvB3QStuaWu3v75EegLUSGLLR0Hzj
-	 i3re4NjFygsY7t3qqqA14yI5qY31UrSsU4y91Q86QSfKukTZSrr6QDQ7S4PACshOWO
-	 JOJ7lmgyWSsPrqqtdp7gLB2fEBqTvnKqwN+wHlc1zVYjhPfuND/gCk7ZSw9hSE2C9Y
-	 WABJdf3o5yg4g==
+	bh=NgF/eizFotlQAwM0aNP6UfzfK8XHzXtt0ZYRvxjJFn4=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=o8BUhXNigFiGpTiktL+jc+bwA2Giz7+xoKWScaKGBoS+SxZBwkMLF0RBvWf0HFNzY
+	 aAt2NKKhkk8BdrDFVRdpRS6icKC9xRzKIRDG2Ql+VkFHPsMT6DTEuexmRvXoeNiVCO
+	 zWPYfSyOANrFWdzIne3RPei2CK4UDVDFMxyRgn70g5eCTfIk+h46THv1EjXpENtFvM
+	 nfPd0vUsDBr6DcG4rqzO0Z+juyTe3krRdTJG4QiOQtdJBX8n+kmBtPGpv4nkQfV6nA
+	 vyEXb8ZWvqAvDhj4XcMehrvJjcZLwNlk3Io0MbDxkvXb43dPcccdcwb9S3nbLG2xOS
+	 D1qmVM5e+C0Xw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9738C3064D;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6272C3065D;
 	Tue,  2 Jul 2024 14:59:37 +0000 (UTC)
 From: Petar Stoykov via B4 Relay <devnull+pd.pstoykov.gmail.com@kernel.org>
-Subject: [PATCH v3 0/3] Add support for Sensirion SDP500
-Date: Tue, 02 Jul 2024 16:59:07 +0200
-Message-Id: <20240702-mainline_sdp500-v3-0-0902047b3eee@gmail.com>
+Date: Tue, 02 Jul 2024 16:59:09 +0200
+Subject: [PATCH v3 2/3] iio: pressure: Add driver for Sensirion SDP500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,9 +40,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIALwVhGYC/x3MQQqAIBBA0avIrBOGySi7SkRITjVQJgoRRHdPW
- r7F/w9kTsIZevVA4kuynKGgrhTMmwsra/HFQEgGWyR9OAm7BJ6yjw2iRm+XbjbWEnVQqph4kfs
- /DuP7ft/FUwBhAAAA
+Message-Id: <20240702-mainline_sdp500-v3-2-0902047b3eee@gmail.com>
+References: <20240702-mainline_sdp500-v3-0-0902047b3eee@gmail.com>
+In-Reply-To: <20240702-mainline_sdp500-v3-0-0902047b3eee@gmail.com>
 To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh+dt@kernel.org>, 
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
@@ -51,11 +51,11 @@ To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
 Cc: Petar Stoykov <pd.pstoykov@gmail.com>, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1719932376; l=3344;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1719932376; l=6051;
  i=pd.pstoykov@gmail.com; s=20240702; h=from:subject:message-id;
- bh=jcgekClSNbMNhKgcEzrXZ/EyPCCRQaAQrnvaG+E2eag=;
- b=ZxisyshPUperM+epBVMZbYObLWmXodKbAg8igdiIODh2+68BB98ztg8wAdI98sXgoitHtKy1G
- L1+EDT0GUclC7dUQkOri7ZXcN9LjpVsVOLqjOn9v7jMI80NCs/SxRRc
+ bh=E0TQYZplLS+7OmNpTJrm7fpGY+BkaqBmnFpTsx0MI8A=;
+ b=Gopo4AL8RdjwG+JRlc+tVM0W3sgcd6pBMRyq8EUefO5KxvETTQemlPa8IRG0/TD1zr5lcaZKs
+ So3pL08jc0LD5G2uq9kOqQ+rQJHFE4bYukcFDPDGaOTQMyGOmGezRj7
 X-Developer-Key: i=pd.pstoykov@gmail.com; a=ed25519;
  pk=oxcGqcVV5O6wqlTh+39SbOwfbpD763i5x4TavUAHiCg=
 X-Endpoint-Received: by B4 Relay for pd.pstoykov@gmail.com/20240702 with
@@ -63,81 +63,211 @@ X-Endpoint-Received: by B4 Relay for pd.pstoykov@gmail.com/20240702 with
 X-Original-From: Petar Stoykov <pd.pstoykov@gmail.com>
 Reply-To: pd.pstoykov@gmail.com
 
-This patch series introduces support for Sensirion SDP500 in the IIO
-subsystem. The series is split into three patches:
+From: Petar Stoykov <pd.pstoykov@gmail.com>
 
-1. The first patch adds the device tree bindings.
-2. The second patch implements the device driver.
-3. The third patch updates the MAINTAINERS file.
-
-The driver is relatively simple. It provides a way to read the measured
-differential pressure directly in Pa, as the device has a fixed scale
-factor of 1/60. When an applications wants to read the pressure value,
-3 bytes are read from the device, 2 are data and 1 is CRC8. If the crc
-check passes, the raw value is made available.
-
-The initialization of the device just starts the measurement process.
-
-We have been using this device and driver in a product development for
-almost a year now. There the pressure is read every 25ms and is used in a
-control loop. We have not even seen crc errors. We are using the
-"linux-imx" repository and not the mainline one but I see no risky kernel
-functions in use so it should be fine here too.
-
-All feedback is appreciated! Thank you for taking the time to review this.
-
-Changelog
-v1->v2:
-	driver code:
-* Removed the use of wrapper functions for logging
-* Using built-in crc function instead of a custom one
-* Removed the use of a wrapper function for i2c send and receive data
-* Use get_unaligned_be16 instead of custom calculation
-* Removed error log if devm_iio_device_alloc fails
-* indio_dev->name set directly to "sdp500"
-* Updated error logging to use "dev_err_probe" in probe function
-* Added a sensor readout in the probe function (first one is always bad)
-* Used devm_iio_device_register instead of iio_device_register
-* Removed trailing comma in "sdp500_id" data
-* Deleted sdp500_remove after using devm_iio_device_register in probe
-	dt-bindings:
-* Fixed dt-bindings example wording
-* Added vdd-supply in dt-bindings example
-
-v2->v3:
-	driver code:
-* Added link to datasheet at the start of the driver code
-* Removed some unnecessary defines
-* Removed an unused argument of sdp500_start_measurement function
-* Renamed variable that holds the received CRC to "received_crc"
-* Switched to returning RAW and SCALE values instead of PROCESSED
-* Change logging to use data->dev instead of indio_dev->dev.parent
-* Removed unnecessary debug log of the read value from the sensor
-* Added vdd regulator handling
-* Added "sensirion,sdp510" as compatible
-* Removed the aligning of '=' in the sdp500_driver struct
-	dt-bindings:
-* Added "sensirion,sdp510" as possible compatible value in dt-bindings example
+Sensirion SDP500 is a digital differential pressure sensor. The sensor is
+accessed over I2C.
 
 Signed-off-by: Petar Stoykov <pd.pstoykov@gmail.com>
 ---
-Petar Stoykov (3):
-      dt-bindings: iio: pressure: Add Sensirion SDP500
-      iio: pressure: Add driver for Sensirion SDP500
-      MAINTAINERS: Add Sensirion SDP500
+ drivers/iio/pressure/Kconfig  |   9 +++
+ drivers/iio/pressure/Makefile |   1 +
+ drivers/iio/pressure/sdp500.c | 153 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 163 insertions(+)
 
- .../bindings/iio/pressure/sensirion,sdp500.yaml    |  41 ++++++
- MAINTAINERS                                        |   6 +
- drivers/iio/pressure/Kconfig                       |   9 ++
- drivers/iio/pressure/Makefile                      |   1 +
- drivers/iio/pressure/sdp500.c                      | 153 +++++++++++++++++++++
- 5 files changed, 210 insertions(+)
----
-base-commit: ab27740f76654ed58dd32ac0ba0031c18a6dea3b
-change-id: 20240702-mainline_sdp500-0d9f8c499228
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index 95efa32e4289..5debdfbd5324 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -212,6 +212,15 @@ config MS5637
+ 	  This driver can also be built as a module. If so, the module will
+ 	  be called ms5637.
+ 
++config SDP500
++	tristate "Sensirion SDP500 differential pressure sensor I2C driver"
++	depends on I2C
++	help
++	  Say Y here to build support for Sensirion SDP500 differential pressure
++	  sensor I2C driver.
++	  To compile this driver as a module, choose M here: the core module
++	  will be called sdp500.
++
+ config IIO_ST_PRESS
+ 	tristate "STMicroelectronics pressure sensor Driver"
+ 	depends on (I2C || SPI_MASTER) && SYSFS
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index 436aec7e65f3..489ef7b7befa 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -25,6 +25,7 @@ obj-$(CONFIG_MS5611) += ms5611_core.o
+ obj-$(CONFIG_MS5611_I2C) += ms5611_i2c.o
+ obj-$(CONFIG_MS5611_SPI) += ms5611_spi.o
+ obj-$(CONFIG_MS5637) += ms5637.o
++obj-$(CONFIG_SDP500) += sdp500.o
+ obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
+ st_pressure-y := st_pressure_core.o
+ st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
+diff --git a/drivers/iio/pressure/sdp500.c b/drivers/iio/pressure/sdp500.c
+new file mode 100644
+index 000000000000..661c70bc1b5b
+--- /dev/null
++++ b/drivers/iio/pressure/sdp500.c
+@@ -0,0 +1,153 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Driver for Sensirion sdp500 and sdp510 pressure sensors
++ *
++ * Datasheet: https://sensirion.com/resource/datasheet/sdp600
++ */
++
++#include <linux/i2c.h>
++#include <linux/crc8.h>
++#include <linux/iio/iio.h>
++#include <linux/regulator/consumer.h>
++#include <asm/unaligned.h>
++
++#define SDP500_CRC8_POLYNOMIAL  0x31   // x8 + x5 + x4 + 1 (normalized to 0x31)
++#define SDP500_READ_SIZE        3
++
++#define SDP500_I2C_START_MEAS 0xF1
++
++struct sdp500_data {
++	struct device *dev;
++};
++
++DECLARE_CRC8_TABLE(sdp500_crc8_table);
++
++static int sdp500_start_measurement(struct sdp500_data *data)
++{
++	struct i2c_client *client = to_i2c_client(data->dev);
++
++	return i2c_smbus_write_byte(client, SDP500_I2C_START_MEAS);
++}
++
++static const struct iio_chan_spec sdp500_channels[] = {
++	{
++		.type = IIO_PRESSURE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++	},
++};
++
++static int sdp500_read_raw(struct iio_dev *indio_dev,
++			  struct iio_chan_spec const *chan,
++			  int *val, int *val2, long mask)
++{
++	int ret;
++	u8 rxbuf[SDP500_READ_SIZE];
++	u8 received_crc, calculated_crc;
++	struct sdp500_data *data = iio_priv(indio_dev);
++	struct i2c_client *client = to_i2c_client(data->dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = i2c_master_recv(client, rxbuf, SDP500_READ_SIZE);
++		if (ret < 0) {
++			dev_err(data->dev, "Failed to receive data");
++			return ret;
++		}
++		if (ret != SDP500_READ_SIZE) {
++			dev_err(data->dev, "Data is received wrongly");
++			return -EIO;
++		}
++
++		received_crc = rxbuf[2];
++		calculated_crc = crc8(sdp500_crc8_table, rxbuf, sizeof(rxbuf) - 1, 0x00);
++		if (received_crc != calculated_crc) {
++			dev_err(data->dev, "calculated crc = 0x%.2X, received 0x%.2X",
++				calculated_crc, received_crc);
++			return -EIO;
++		}
++
++		*val = get_unaligned_be16(rxbuf);
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 1;
++		*val2 = 60;
++
++		return IIO_VAL_FRACTIONAL;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info sdp500_info = {
++	.read_raw = &sdp500_read_raw,
++};
++
++static int sdp500_probe(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev;
++	struct sdp500_data *data;
++	struct device *dev = &client->dev;
++	int ret;
++	u8 rxbuf[SDP500_READ_SIZE];
++
++	ret = devm_regulator_get_enable(dev, "vdd");
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to get and enable regulator\n");
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	/* has to be done before the first i2c communication */
++	crc8_populate_msb(sdp500_crc8_table, SDP500_CRC8_POLYNOMIAL);
++
++	data = iio_priv(indio_dev);
++	data->dev = dev;
++
++	indio_dev->name = "sdp500";
++	indio_dev->channels = sdp500_channels;
++	indio_dev->info = &sdp500_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->num_channels = ARRAY_SIZE(sdp500_channels);
++
++	ret = sdp500_start_measurement(data);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to start measurement");
++
++	/* First measurement is not correct, read it out to get rid of it */
++	i2c_master_recv(client, rxbuf, SDP500_READ_SIZE);
++
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "Failed to register indio_dev");
++
++	return 0;
++}
++
++static const struct i2c_device_id sdp500_id[] = {
++	{ "sdp500" },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, sdp500_id);
++
++static const struct of_device_id sdp500_of_match[] = {
++	{ .compatible = "sensirion,sdp500" },
++	{ .compatible = "sensirion,sdp510" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, sdp500_of_match);
++
++static struct i2c_driver sdp500_driver = {
++	.driver = {
++		.name = "sensirion,sdp500",
++		.of_match_table = sdp500_of_match,
++	},
++	.probe = sdp500_probe,
++	.id_table = sdp500_id,
++};
++module_i2c_driver(sdp500_driver);
++
++MODULE_AUTHOR("Thomas Sioutas <thomas.sioutas@prodrive-technologies.com>");
++MODULE_DESCRIPTION("Driver for Sensirion SDP500 differential pressure sensor");
++MODULE_LICENSE("GPL");
 
-Best regards,
 -- 
-Petar Stoykov <pd.pstoykov@gmail.com>
+2.39.2
 
 
