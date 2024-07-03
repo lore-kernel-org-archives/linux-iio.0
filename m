@@ -1,215 +1,105 @@
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+Received: from mx1.t-argos.ru (mx1.t-argos.ru [109.73.34.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACA7D174EFC;
-	Wed,  3 Jul 2024 10:38:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E91AE17967A;
+	Wed,  3 Jul 2024 10:49:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.73.34.58
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720003131; cv=none; b=r4/INWpD/I9EOj9UDIXdTMaNMby767ttIzrf3cMjwucmSYapYJCK2Z4Vnutd55U36A0crQEhWw8N9ZTKm1KYqR7JMVQWG1Wcxk3pqjGn4xdmsUCAYTZ75j41+OlV9XKKsxM00/KngC4Qd9VsLoNGB+ETHr7KD+YjWbC4+EEluuI=
+	t=1720003788; cv=none; b=HqXCed4pQrZMcLxJGFJygGzOssk8PsbTf1bcOCihxw+xnLYvZfHuqJ2cLQDbaYsyZAWbJt/LVxouZ2EGJNLVtrU0o5K3QxgMxFyDpKVgX3gpmF9gO4rP45DkAJVOYvbhK5qZOCNAtj7udE+ZSa4XXHnLlqK5/zn24884X/0QsFI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720003131; c=relaxed/simple;
-	bh=imYEkBXowZEctWnX7RSJaxD8kZRYLJFmccuWAyTSK7w=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hZ2gaGvWk4rLmnrliowh1iqj/3YZRPWUPmgcwqPFC7lNG/mQQtdUsPGiuur27Hhc8aJ2r1dE+Xh6ZTLqLibDuCYJTJFyOHCEKTEgesAWowM80FjkFiBoOvYGof5d9pIObXqkAEDjr3S4V0luWQ8L6V0ayVrIpMfdKmZAGcrFrMo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=aLctC95x; arc=none smtp.client-ip=217.70.183.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1720003788; c=relaxed/simple;
+	bh=3qXmo/5pNDaZWNpYAjzoXZ2kcJMP7hkArNksNzOixz8=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=p/smUUL13JPk5wJ4XGhGIhETzi2Zgw0KSyhtQWliFN88onIeqW1WvkR0k/FvF5/QstxxBzphZI2QermCHm76+bH4OWhp0qTwJFhBJ+Z/pLJXoXJB+xHujLl5k9t8nABh6GvE8Wdz9SINbkm55QNSwd5tTx13mLLPnZ0qmrUB1UI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=t-argos.ru; spf=pass smtp.mailfrom=t-argos.ru; dkim=pass (2048-bit key) header.d=t-argos.ru header.i=@t-argos.ru header.b=VLDgNOSK; arc=none smtp.client-ip=109.73.34.58
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=t-argos.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=t-argos.ru
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="aLctC95x"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 42E2C40006;
-	Wed,  3 Jul 2024 10:38:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1720003126;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=1Bx2CQCZLnvl2mGaHzoLhHeTCe30chHxVgbi6fu5d+s=;
-	b=aLctC95xt2Q6rMLnoKMX3FJ/PPaRdMHQEBg8Yh4ab3FSY9cbwu/dUFTyd2apLZ20deWbHL
-	p+IzkHN10jVZ1AG9Zn60wT53j8GY4YjZh45RcrSYSRiZO/UmHE3QPIVv0XvnhM2mXl2hWz
-	VOJOVdL5ZPhpZJKh1jWQ96KV9qbUgn5W/5TTMt7H+C2eSDixGWwEKYYBbQX1xXqSkyGHz5
-	91ju+rAKcnrwNcrolgluBFlh3QFO+/DQF5Wl+7Xbh+KtpnaGIUDYbYcsxewuu+9dpHQeok
-	x6ehLSPvrF/uwBxNqrMB68JqQwCZNKNJ8SkpeUBfTvTBYcpghA0kpCr+80jVbg==
-From: Luca Ceresoli <luca.ceresoli@bootlin.com>
-Date: Wed, 03 Jul 2024 12:37:04 +0200
-Subject: [PATCH 20/20] of: deprecate and rename of_property_for_each_u32()
+	dkim=pass (2048-bit key) header.d=t-argos.ru header.i=@t-argos.ru header.b="VLDgNOSK"
+Received: from mx1.t-argos.ru (localhost [127.0.0.1])
+	by mx1.t-argos.ru (Postfix) with ESMTP id B4F3D100004;
+	Wed,  3 Jul 2024 13:49:21 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=t-argos.ru; s=mail;
+	t=1720003761; bh=qBTrMRweeYn17EcgCxBKWTPEOQW17rObU/UXX5H3hws=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
+	b=VLDgNOSKdpC3Zroyoh26tyyRk7D5usQSaCSbQ0vIocD11Ugj/zXbhoJIqgoKxoDyT
+	 XON1rzewXW90zK43ttAXAHOueRErWIOhqtD8yVfz6jWROgolAiJPiB+oXpl81JIPps
+	 RBwxgtzWH51j0i5+Ep7YX2d+F6/+N4KWOOrsKcyU2Krxcmm3w13+cnBVkTQ/ot5joy
+	 F2D6G8OA7DIDV0dlMnbYZcPv/cVEH7MZosaa2lwEdqdYYwsDYBRyV2O/eDGdCJRE8o
+	 BC/BcRAvzjdg4MNUTP8ODpRW/0RTc0/v2pjL16UM3s6KkqgyPeckjnTtaY/H+FjVOz
+	 2lNLCKWm0CMNg==
+Received: from mx1.t-argos.ru.ru (ta-mail-02.ta.t-argos.ru [172.17.13.212])
+	by mx1.t-argos.ru (Postfix) with ESMTP;
+	Wed,  3 Jul 2024 13:48:06 +0300 (MSK)
+Received: from localhost.localdomain (172.17.215.5) by ta-mail-02
+ (172.17.13.212) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 3 Jul 2024
+ 13:47:45 +0300
+From: Aleksandr Mishin <amishin@t-argos.ru>
+To: Michael Hennerich <Michael.Hennerich@analog.com>
+CC: Aleksandr Mishin <amishin@t-argos.ru>, Lars-Peter Clausen
+	<lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Datta Shubhrajyoti <shubhrajyoti@ti.com>,
+	<linux-iio@vger.kernel.org>, <linux-staging@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <lvc-project@linuxtesting.org>
+Subject: [PATCH] staging: iio: frequency: ad9834: Validate frequency parameter value
+Date: Wed, 3 Jul 2024 13:47:34 +0300
+Message-ID: <20240703104734.12034-1-amishin@t-argos.ru>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240703-of_property_for_each_u32-v1-20-42c1fc0b82aa@bootlin.com>
-References: <20240703-of_property_for_each_u32-v1-0-42c1fc0b82aa@bootlin.com>
-In-Reply-To: <20240703-of_property_for_each_u32-v1-0-42c1fc0b82aa@bootlin.com>
-To: Miguel Ojeda <ojeda@kernel.org>, Rob Herring <robh@kernel.org>, 
- Saravana Kannan <saravanak@google.com>, 
- Nathan Chancellor <nathan@kernel.org>, 
- Michael Turquette <mturquette@baylibre.com>, 
- Stephen Boyd <sboyd@kernel.org>, Tony Lindgren <tony@atomide.com>, 
- Bjorn Andersson <andersson@kernel.org>, 
- =?utf-8?q?Emilio_L=C3=B3pez?= <emilio@elopez.com.ar>, 
- Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
- Samuel Holland <samuel@sholland.org>, Krzysztof Kozlowski <krzk@kernel.org>, 
- Daniel Lezcano <daniel.lezcano@linaro.org>, 
- Thomas Gleixner <tglx@linutronix.de>, 
- Florian Fainelli <florian.fainelli@broadcom.com>, 
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
- Linus Walleij <linus.walleij@linaro.org>, 
- Bartosz Golaszewski <brgl@bgdev.pl>, Jonathan Cameron <jic23@kernel.org>, 
- Lee Jones <lee@kernel.org>, Shawn Guo <shawnguo@kernel.org>, 
- Pengutronix Kernel Team <kernel@pengutronix.de>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, 
- Richard Leitner <richard.leitner@linux.dev>, 
- Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
- Nicolas Ferre <nicolas.ferre@microchip.com>, 
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
- Christophe Leroy <christophe.leroy@csgroup.eu>, 
- "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
- Damien Le Moal <dlemoal@kernel.org>
-Cc: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, 
- Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
- llvm@lists.linux.dev, linux-clk@vger.kernel.org, linux-omap@vger.kernel.org, 
- linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-sunxi@lists.linux.dev, linux-samsung-soc@vger.kernel.org, 
- linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org, 
- linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-usb@vger.kernel.org, patches@opensource.cirrus.com, 
- linux-sound@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
- linux-riscv@lists.infradead.org, Luca Ceresoli <luca.ceresoli@bootlin.com>
-X-Mailer: b4 0.14.0
-X-GND-Sasl: luca.ceresoli@bootlin.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: ta-mail-02.ta.t-argos.ru (172.17.13.212) To ta-mail-02
+ (172.17.13.212)
+X-KSMG-Rule-ID: 1
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Lua-Profiles: 186302 [Jul 03 2024]
+X-KSMG-AntiSpam-Version: 6.1.0.4
+X-KSMG-AntiSpam-Envelope-From: amishin@t-argos.ru
+X-KSMG-AntiSpam-Rate: 0
+X-KSMG-AntiSpam-Status: not_detected
+X-KSMG-AntiSpam-Method: none
+X-KSMG-AntiSpam-Auth: dkim=none
+X-KSMG-AntiSpam-Info: LuaCore: 21 0.3.21 ebee5449fc125b2da45f1a6a6bc2c5c0c3ad0e05, {Tracking_from_domain_doesnt_match_to}, 127.0.0.199:7.1.2;mx1.t-argos.ru.ru:7.1.1;t-argos.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1, FromAlignment: s
+X-MS-Exchange-Organization-SCL: -1
+X-KSMG-AntiSpam-Interceptor-Info: scan successful
+X-KSMG-AntiPhishing: Clean, bases: 2024/07/03 07:47:00
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2024/07/03 06:16:00 #25818842
+X-KSMG-AntiVirus-Status: Clean, skipped
 
-of_property_for_each_u32() is meant to disappear. All the call sites not
-using the 3rd and 4th arguments have already been replaced by
-of_property_for_each_u32_new().
+In ad9834_write_frequency() clk_get_rate() can return 0. In such case
+ad9834_calc_freqreg() call will lead to division by zero. Checking
+'if (fout > (clk_freq / 2))' doesn't protect in case of 'fout' is 0.
+ad9834_write_frequency() is called from ad9834_write(), where fout is
+taken from text buffer, which can contain any value.
 
-Deprecate the old macro. Also rename it to minimize the number of new
-usages and encourage conversion to the of_property_for_each_u32_new() macro
-in not(-yet)-upstream code.
+Modify parameters checking.
 
-Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
+Fixes: 12b9d5bf76bf ("Staging: IIO: DDS: AD9833 / AD9834 driver")
+Signed-off-by: Aleksandr Mishin <amishin@t-argos.ru>
 ---
+ drivers/staging/iio/frequency/ad9834.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Notes:
-
- * The following files have not been build-tested simply because I haven't
-   managed to have a config that enables them so far:
-
-     drivers/irqchip/irq-pic32-evic.c
-     drivers/pinctrl/pinctrl-k210.c
-
- * These have not been converted yet as they are not trivial, and they will
-   need to use a more specific function that does the lookup they need and
-   returns the result:
-
-     drivers/clk/clk-si5351.c
-     drivers/clk/clk.c
----
- .clang-format                    | 2 +-
- drivers/clk/clk-si5351.c         | 4 ++--
- drivers/clk/clk.c                | 2 +-
- drivers/irqchip/irq-pic32-evic.c | 2 +-
- drivers/pinctrl/pinctrl-k210.c   | 2 +-
- include/linux/of.h               | 3 ++-
- 6 files changed, 8 insertions(+), 7 deletions(-)
-
-diff --git a/.clang-format b/.clang-format
-index db25cde2651a..a91b9bb39d9b 100644
---- a/.clang-format
-+++ b/.clang-format
-@@ -569,8 +569,8 @@ ForEachMacros:
-   - 'nr_node_for_each_safe'
-   - 'of_for_each_phandle'
-   - 'of_property_for_each_string'
--  - 'of_property_for_each_u32'
-   - 'of_property_for_each_u32_new'
-+  - 'of_property_for_each_u32_old'
-   - 'pci_bus_for_each_resource'
-   - 'pci_dev_for_each_resource'
-   - 'pcl_for_each_chunk'
-diff --git a/drivers/clk/clk-si5351.c b/drivers/clk/clk-si5351.c
-index 4ce83c5265b8..ff990b15d616 100644
---- a/drivers/clk/clk-si5351.c
-+++ b/drivers/clk/clk-si5351.c
-@@ -1191,7 +1191,7 @@ static int si5351_dt_parse(struct i2c_client *client,
- 	 * property silabs,pll-source : <num src>, [<..>]
- 	 * allow to selectively set pll source
- 	 */
--	of_property_for_each_u32(np, "silabs,pll-source", prop, p, num) {
-+	of_property_for_each_u32_old(np, "silabs,pll-source", prop, p, num) {
- 		if (num >= 2) {
- 			dev_err(&client->dev,
- 				"invalid pll %d on pll-source prop\n", num);
-@@ -1232,7 +1232,7 @@ static int si5351_dt_parse(struct i2c_client *client,
- 	pdata->pll_reset[0] = true;
- 	pdata->pll_reset[1] = true;
+diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+index a7a5cdcc6590..9e42129f44f7 100644
+--- a/drivers/staging/iio/frequency/ad9834.c
++++ b/drivers/staging/iio/frequency/ad9834.c
+@@ -114,7 +114,7 @@ static int ad9834_write_frequency(struct ad9834_state *st,
  
--	of_property_for_each_u32(np, "silabs,pll-reset-mode", prop, p, num) {
-+	of_property_for_each_u32_old(np, "silabs,pll-reset-mode", prop, p, num) {
- 		if (num >= 2) {
- 			dev_err(&client->dev,
- 				"invalid pll %d on pll-reset-mode prop\n", num);
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index 8ea168c00997..aae940c18459 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -5383,7 +5383,7 @@ const char *of_clk_get_parent_name(const struct device_node *np, int index)
- 	/* if there is an indices property, use it to transfer the index
- 	 * specified into an array offset for the clock-output-names property.
- 	 */
--	of_property_for_each_u32(clkspec.np, "clock-indices", prop, vp, pv) {
-+	of_property_for_each_u32_old(clkspec.np, "clock-indices", prop, vp, pv) {
- 		if (index == pv) {
- 			index = count;
- 			break;
-diff --git a/drivers/irqchip/irq-pic32-evic.c b/drivers/irqchip/irq-pic32-evic.c
-index 1d9bb28d13e5..d9aec87f8b59 100644
---- a/drivers/irqchip/irq-pic32-evic.c
-+++ b/drivers/irqchip/irq-pic32-evic.c
-@@ -196,7 +196,7 @@ static void __init pic32_ext_irq_of_init(struct irq_domain *domain)
- 	int i = 0;
- 	const char *pname = "microchip,external-irqs";
+ 	clk_freq = clk_get_rate(st->mclk);
  
--	of_property_for_each_u32(node, pname, prop, p, hwirq) {
-+	of_property_for_each_u32_old(node, pname, prop, p, hwirq) {
- 		if (i >= ARRAY_SIZE(priv->ext_irqs)) {
- 			pr_warn("More than %d external irq, skip rest\n",
- 				ARRAY_SIZE(priv->ext_irqs));
-diff --git a/drivers/pinctrl/pinctrl-k210.c b/drivers/pinctrl/pinctrl-k210.c
-index b6d1ed9ec9a3..03acca8b01ef 100644
---- a/drivers/pinctrl/pinctrl-k210.c
-+++ b/drivers/pinctrl/pinctrl-k210.c
-@@ -797,7 +797,7 @@ static int k210_pinctrl_dt_subnode_to_map(struct pinctrl_dev *pctldev,
- 	if (ret < 0)
- 		goto exit;
+-	if (fout > (clk_freq / 2))
++	if (!fout || fout > (clk_freq / 2))
+ 		return -EINVAL;
  
--	of_property_for_each_u32(np, "pinmux", prop, p, pinmux_group) {
-+	of_property_for_each_u32_old(np, "pinmux", prop, p, pinmux_group) {
- 		const char *group_name, *func_name;
- 		u32 pin = FIELD_GET(K210_PG_PIN, pinmux_group);
- 		u32 func = FIELD_GET(K210_PG_FUNC, pinmux_group);
-diff --git a/include/linux/of.h b/include/linux/of.h
-index 756847539384..15c291ab6e71 100644
---- a/include/linux/of.h
-+++ b/include/linux/of.h
-@@ -1429,7 +1429,8 @@ static inline int of_property_read_s32(const struct device_node *np,
- 	     err == 0;							\
- 	     err = of_phandle_iterator_next(it))
- 
--#define of_property_for_each_u32(np, propname, prop, p, u)	\
-+/* deprecated - will be removed */
-+#define of_property_for_each_u32_old(np, propname, prop, p, u)	\
- 	for (prop = of_find_property(np, propname, NULL),	\
- 		p = of_prop_next_u32(prop, NULL, &u);		\
- 		p;						\
-
+ 	regval = ad9834_calc_freqreg(clk_freq, fout);
 -- 
-2.34.1
+2.30.2
 
