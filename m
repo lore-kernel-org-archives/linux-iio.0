@@ -1,50 +1,50 @@
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8266A4DA14;
-	Wed,  3 Jul 2024 07:07:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.207.212.93
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C721131BDD;
+	Wed,  3 Jul 2024 07:23:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719990448; cv=none; b=IGKbijCnzw8chZMq9cj7/yHT86P1RLmG26t7am/0l5jNvpTa27f8EKts7bwq5u+TnaJp18KXBTn01+Ofsuhw/X6CwTzdkS7hXSAEK4EkKwOZPtwKBzct5qvRXb+JUtDzINkZPBkIxNyWc+YxEY2IxORYEiY0t6cVVl+3pEA2FP4=
+	t=1719991394; cv=none; b=mPMRnClop3my7RcDS04C6sSSCvgorPW/6Czcsr1dZ8t8NU/L+lDMZMLcnmkf8KZMQlSyhGglrNXXs1maSrNgUp0o0ei4b5+AlRxMMWTXj0C0CAlldkV7bezIDG+EzOzncAQiXq27XoE7Rz8xcskyCkqyHQOP8uqul3vjcm9Nye4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719990448; c=relaxed/simple;
-	bh=q6WaU5swXT/s4hwLs9k+rXpFx+zCEPifl9xBeOoFdoE=;
+	s=arc-20240116; t=1719991394; c=relaxed/simple;
+	bh=LMG0Hk9HWoesEQBaKPnUAzUolPD1IIQjdRRRL3Ahrz8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=FdpsrGCI72BJ27K4pis8aiMhdERGEjxpQCUO2SCj04WiPqvU7H1D6WqXQsAy4J+rYJa4iR9C4s/eEECE1rBwcxkRpG8qbWsKHecurKDqRsWhhVE/3kBBJvIw1iopu+FNm2Zc2wJaLZRiNlzD2gleZjnYxhGsF32b9t26imm20P8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=7VyqvS9x; arc=none smtp.client-ip=91.207.212.93
+	 In-Reply-To:Content-Type; b=rIVyMCkzn7EVCo+Gvz3/NjzfJPhkoIktLuTHmbVqRZOGEIBXpZXwIXpnlyID8cJpkg//OZ1iqFHa6TyViEZkmbogIoVL5agLLpPGbx+WIq9Xkbs8/6e04f5Am6dwBcoQBnc15uOGYkMw7SmLw/VRNIULwl4J3jZ9J4zOPSYde5Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=6BKzlxMG; arc=none smtp.client-ip=185.132.182.106
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="7VyqvS9x"
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4631MRxA013828;
-	Wed, 3 Jul 2024 09:07:03 +0200
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="6BKzlxMG"
+Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4630KYv2022258;
+	Wed, 3 Jul 2024 09:22:57 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=selector1; bh=
-	bEgx7nB8T2pqb3/KDfGtk/eDJ9IIHrnsYSSf09kvHwU=; b=7VyqvS9xkwb6+zFb
-	qD9D14xjLBgVCuNd76qNw0stYiOdddwByABSAShLbYwzGCMqmgVpotYaInpQikuS
-	Y0nuzLcY5xASxBdZQzhOI6K+intoenQmQqPS+nbh5A3grEWdm61VAP8qUzSO8zzj
-	GhUhumPdyLCdi0nc+CEcS1PhjN7koaNAJBxdqXp9ztWgc2RsMbWs4wlWwwhjypAy
-	KFX5xSQ2ZcAwNwNLi16ECrOeH+hLgUkrYifQAdDMu+8g/C3fu5MNZFrrjiCjlGTL
-	waTOi5CqnsjbafaMTfFa2PUOc/HLG0fUL8c/N/BNiG1y37lNmdCVgrhK3PF3x+4a
-	cMFaYA==
+	lP6a1UtKqsjM5BY6HprJY0SpXdmd34uScXaSFUlCRhY=; b=6BKzlxMG7Fploan6
+	Q7z0BOpwXEuvAGiU2TVP5rXpARzGmn0Dle39WcqH8QzD8+/GI5HR1TA0Emcod90H
+	oH0G35YmCvszC48t8KcMUIbFtdkdeJMhsrKkYncaw5paxDnOr5nxd15pY7LdOsUT
+	X59lLZYT8PbNsuoeG+CARYpi7/zrXMYdiWh3hJ0EObPW/YJ9lpQPGhRmkt/4YqxD
+	HBKIO/FmatfpN+VOJ6AV3GcEK72iS3nO7xZI8BOFzuS71+5lwV4Nr68sLc+QetQ5
+	nQUCUwK+Et6SovgNcHdKOI0HM4XmR9kaba4EVp4rdKYDUBWhlJ0pXd8O0VkaQmTc
+	xBbrAw==
 Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 40295de98n-1
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 402uu0vp0e-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 03 Jul 2024 09:07:02 +0200 (MEST)
+	Wed, 03 Jul 2024 09:22:56 +0200 (MEST)
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 8DFE040048;
-	Wed,  3 Jul 2024 09:06:56 +0200 (CEST)
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id BEAC94004F;
+	Wed,  3 Jul 2024 09:22:52 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A2247212FB2;
-	Wed,  3 Jul 2024 09:06:20 +0200 (CEST)
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0BEA9214526;
+	Wed,  3 Jul 2024 09:22:17 +0200 (CEST)
 Received: from [10.252.27.110] (10.252.27.110) by SHFDAG1NODE1.st.com
  (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Wed, 3 Jul
- 2024 09:06:20 +0200
-Message-ID: <a41e9b9c-5657-4499-ab93-9df1ad80082f@foss.st.com>
-Date: Wed, 3 Jul 2024 09:06:19 +0200
+ 2024 09:22:16 +0200
+Message-ID: <7e7c0e37-cb5d-4c2e-93a5-708cf0f82f44@foss.st.com>
+Date: Wed, 3 Jul 2024 09:22:15 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -130,11 +130,11 @@ On 6/27/24 18:13, Conor Dooley wrote:
 > shouldn't be getting a new compatible. Isn't this actually as simple as
 > adding #io-backend-cells to the existing binding and using that to
 > determine whether the device is being used as a backend or in isolation?
->
+> 
 
 For sure. I came to the same conclusion. My first idea was to isolate 
-the deprecated binding. But I agree that the best approach is to adapt 
-the existing binding. I prepared a v3 like this.
+the deprecated binding. However, I agree that the best approach is to 
+adapt the existing binding. I prepared a v3 like this.
 
 BRs
 Olivier
