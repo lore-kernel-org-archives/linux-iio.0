@@ -1,60 +1,60 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B653C1A4F32;
-	Thu,  4 Jul 2024 09:22:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E93B1AAE15;
+	Thu,  4 Jul 2024 09:22:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720084953; cv=none; b=fM22R8PslxCEoy25oz6JpLqpoHOZpD0hrmFK9lbtIua/bhpO5JUxJm1taoiKNlfaH1OpyaXTbiRQX2TFLI05B6pi7c5nRV4HXZ579V/RKP13TBEahv4tGMXhAAg0ZGR3Ee2thvSX2GR9msB5GzgxOSSCddtc5jNfM5vgkcmZH7E=
+	t=1720084953; cv=none; b=NW6LcBQjuHkMErEuY1IfShMbOuF76SgUY5SGtOfWhMPb7ADyqcWakKy1gwtAr2VmX7KMzc5gXEfdL6hIRiMfpVeNx49Nk6pDHXjBwPhznz4hw+o97Egqfvsw1VeZkKpOL/0PaWimxkTPpGMhpqi+6djNLv4I+4F06gBcXK6mue4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1720084953; c=relaxed/simple;
-	bh=yRfskaTF2zPa7EXtHE46Ww/VTq0tzOvJaJaeoJNxS4g=;
+	bh=fRhh1wi0phWAUPnn4AUVYgDau6R2WoroOFT7i9aJ4o8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=N3Cr6nFunGNxvYc9jBnYeUXevzbCf4YlLh+NsFgAPu9/dK802sYm89rfj/57HqlwuwirdNdcTFEseI2mmfOdCoG1anws+pw+2X8XovGrab/R6iTYRamg8gzqvHMLbyTISBsJvTEE/KAwrwxOaXLakUry8oYqha4Skb7mDNekWoQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=1abDizql; arc=none smtp.client-ip=148.163.135.77
+	 In-Reply-To:To:CC; b=KQ7vICvowcokzLux3o5t5tE97Pya4NLYX2OgY7Pu1NEDcKDQ2j5SfZ6XH9myx4BNhYoDhG5SUp/JvO7WqZoMysyvStK05A+IG8+5+8yo4h5WHLfQ5d5AGgH2wohjRlP1A4i6l/tStAfSIq8sjfFvgKlYRliKM32Tw1dVO6909oU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=McZnubDo; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="1abDizql"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="McZnubDo"
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4646Wch9003572;
-	Thu, 4 Jul 2024 05:22:18 -0400
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4646Yp7E003583;
+	Thu, 4 Jul 2024 05:22:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=ClJnX
-	PiZY4h1loa1XU7bW6EiF9tBW593LtFo6OMUd3A=; b=1abDizqlV2X7OkoxKdu1Q
-	upYf2Jh4IEV0J0lFbS0lcSySnbUULgZWwGsxB+KdrHSzcipmS3Nn28DAAgtiPi4V
-	YVugTc3VqF5GulcTnx+DGbSxXoygdjhOkYd3dbJynNMqj1uHH3s9NzIXRdUuenBt
-	06kyA6i7HcR8Zw0V0JWkvBrGR8cVMVSoOsGXu0kBRfgkXJrmguEqr8UwdPuMLwc5
-	tARmkw0B1GWOzVK7oJpQV5O+puCu7rmCAD4YLmr58I5giNnkbz+c8p2pDJMN8xKa
-	4tqFfhRhIa8RJCs59DU0mym6mMGAtv3TOMkhhCxS3RYGV9E/XQsH55L023O2GoE9
-	A==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 405a7natfh-1
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=oUJjy
+	r4iHuFNczKWpssEjsOfWgmV5Uf+YLWCk7fBono=; b=McZnubDou2cauxgwKZgFd
+	L6tyB3ZUmZgbU8EzZUOHhqDtA9Lmb+mgHjfR7ILrb1Tsk3i9MudHQauQP+GdF2Ez
+	0+ihFPfZe/P2xzfZci6sVPWyqhrHpJwjdNufixAiSRqlGzrUcqhzeqWY7WxUaeE0
+	wJ6Cdg/adxSkmxMcmHHkQB+y/NIAUK9UTxUdemACaApCZL7NCYaPAkq8/apLezC/
+	c3pBxr3Kp6TFCzBhgp3Hl/QH+uvbXg+7xOF0EGb5KZXICtulYi4sXKe5nxz8llIt
+	T2JoZkq9TdA5VAnsd8J8s10qadRfoYuq4Fxgs4H/1WMOyDEL/Ut1jHltrBDe6nQ8
+	Q==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 405a7natfk-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 04 Jul 2024 05:22:17 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 4649MG6K047969
+	Thu, 04 Jul 2024 05:22:19 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 4649MI3n058897
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 4 Jul 2024 05:22:16 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+	Thu, 4 Jul 2024 05:22:18 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 4 Jul 2024 05:22:15 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ 15.2.986.14; Thu, 4 Jul 2024 05:22:17 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 4 Jul 2024 05:22:15 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Thu, 4 Jul 2024 05:22:15 -0400
+ 15.2.986.14; Thu, 4 Jul 2024 05:22:16 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Thu, 4 Jul 2024 05:22:16 -0400
 Received: from [127.0.0.1] ([10.44.3.56])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 4649M1dj012858;
-	Thu, 4 Jul 2024 05:22:07 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 4649M1dl012858;
+	Thu, 4 Jul 2024 05:22:09 -0400
 From: Nuno Sa <nuno.sa@analog.com>
-Date: Thu, 4 Jul 2024 11:25:21 +0200
-Subject: [PATCH 1/5] iio: adc: ad9467: support multiple channels
- calibration
+Date: Thu, 4 Jul 2024 11:25:23 +0200
+Subject: [PATCH 3/5] iio: adc: ad9467: don't allow reading vref if not
+ available
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,7 +63,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20240704-dev-iio-ad9467-new-devs-v1-1-f1adfee921f7@analog.com>
+Message-ID: <20240704-dev-iio-ad9467-new-devs-v1-3-f1adfee921f7@analog.com>
 References: <20240704-dev-iio-ad9467-new-devs-v1-0-f1adfee921f7@analog.com>
 In-Reply-To: <20240704-dev-iio-ad9467-new-devs-v1-0-f1adfee921f7@analog.com>
 To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
@@ -76,210 +76,123 @@ CC: Lars-Peter Clausen <lars@metafoo.de>,
         "Conor
  Dooley" <conor+dt@kernel.org>
 X-Mailer: b4 0.14.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1720085156; l=5343;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1720085156; l=3454;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=yRfskaTF2zPa7EXtHE46Ww/VTq0tzOvJaJaeoJNxS4g=;
- b=QcVgaoD7UieVrz4j51mh7dDO7FnOsXdtQIhkc1Ls4eDxZdEC6X5tC67mIwrowZP2eEXc9p8DF
- ENGtGfqKklXB4fLKm0+Vr0JejO7g8YftwICTWNY7g/iAMXjLYuqJSr/
+ bh=fRhh1wi0phWAUPnn4AUVYgDau6R2WoroOFT7i9aJ4o8=;
+ b=ikxWg2k77EE8lxhexSD1ZdQuIAdclSksFp6LobiL8SeB2cVyl6M78OdHODooPGMwm0IK5gCyN
+ vk0Gj1LhNzNBmEJkxZmB+sEvn8+oym+zLpJfouzpRsK3OUkJrODa1yP
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: SniFzoezIV7yYScm4huN89FuCHC6zpL0
-X-Proofpoint-GUID: SniFzoezIV7yYScm4huN89FuCHC6zpL0
+X-Proofpoint-ORIG-GUID: JRXSAUntWKDFgRhv20LoMy3KvgQMUmKV
+X-Proofpoint-GUID: JRXSAUntWKDFgRhv20LoMy3KvgQMUmKV
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-07-04_06,2024-07-03_01,2024-05-17_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 bulkscore=0
  priorityscore=1501 phishscore=0 suspectscore=0 mlxscore=0 spamscore=0
- impostorscore=0 lowpriorityscore=0 mlxlogscore=936 clxscore=1015
+ impostorscore=0 lowpriorityscore=0 mlxlogscore=894 clxscore=1015
  malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2406140001 definitions=main-2407040064
 
-The calibration process mixes the support for calibrating multiple
-channels with only having one channel. Some paths do have 'num_channels'
-into account while others don't.
+If there's only one possible scale, there's no way to change the Vref
+select in the device so avoid reading the register in ad9467_get_scale().
+In this case, it makes no sense to provide the .read_available()
+callback nor allowing for writing the scale attribute.
 
-As of now, the driver only supports devices with one channel so the
-above is not really a problem. That said, we'll add support for devices
-with more than one channel, hence let's properly make the calibration
-process to work with it.
+Note this is in preparation for supporting a new device that only has
+one possible scale.
 
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/adc/ad9467.c | 117 ++++++++++++++++++++++++++++++-----------------
- 1 file changed, 76 insertions(+), 41 deletions(-)
+ drivers/iio/adc/ad9467.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
-index 41c1b519c573..1d8270a5bccb 100644
+index 077c3a594bfc..d06a5fcc4ee8 100644
 --- a/drivers/iio/adc/ad9467.c
 +++ b/drivers/iio/adc/ad9467.c
-@@ -352,6 +352,34 @@ static int ad9467_outputmode_set(struct ad9467_state *st, unsigned int mode)
- 				AN877_ADC_TRANSFER_SYNC);
+@@ -231,14 +231,14 @@ static void __ad9467_get_scale(struct ad9467_state *st, int index,
+ 	*val2 = tmp % 1000000;
  }
  
-+static int ad9467_testmode_set(struct ad9467_state *st, unsigned int chan,
-+			       unsigned int test_mode)
-+{
-+	int ret;
-+
-+	if (st->info->num_channels > 1) {
-+		/* so that the test mode is only applied to one channel */
-+		ret = ad9467_spi_write(st, AN877_ADC_REG_CHAN_INDEX, BIT(chan));
-+		if (ret)
-+			return ret;
-+	}
-+
-+	ret = ad9467_spi_write(st, AN877_ADC_REG_TEST_IO, test_mode);
-+	if (ret)
-+		return ret;
-+
-+	if (st->info->num_channels > 1) {
-+		/* go to default state where all channels get write commands */
-+		ret = ad9467_spi_write(st, AN877_ADC_REG_CHAN_INDEX,
-+				       GENMASK(st->info->num_channels - 1, 0));
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return ad9467_spi_write(st, AN877_ADC_REG_TRANSFER,
-+				AN877_ADC_TRANSFER_SYNC);
-+}
-+
- static int ad9647_calibrate_prepare(struct ad9467_state *st)
+-#define AD9467_CHAN(_chan, _si, _bits, _sign)				\
++#define AD9467_CHAN(_chan, avai_mask, _si, _bits, _sign)		\
+ {									\
+ 	.type = IIO_VOLTAGE,						\
+ 	.indexed = 1,							\
+ 	.channel = _chan,						\
+ 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
+ 		BIT(IIO_CHAN_INFO_SAMP_FREQ),				\
+-	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE), \
++	.info_mask_shared_by_type_available = avai_mask,		\
+ 	.scan_index = _si,						\
+ 	.scan_type = {							\
+ 		.sign = _sign,						\
+@@ -248,11 +248,11 @@ static void __ad9467_get_scale(struct ad9467_state *st, int index,
+ }
+ 
+ static const struct iio_chan_spec ad9434_channels[] = {
+-	AD9467_CHAN(0, 0, 12, 's'),
++	AD9467_CHAN(0, BIT(IIO_CHAN_INFO_SCALE), 0, 12, 's'),
+ };
+ 
+ static const struct iio_chan_spec ad9467_channels[] = {
+-	AD9467_CHAN(0, 0, 16, 's'),
++	AD9467_CHAN(0, BIT(IIO_CHAN_INFO_SCALE), 0, 16, 's'),
+ };
+ 
+ static const struct ad9467_chip_info ad9467_chip_tbl = {
+@@ -301,9 +301,13 @@ static const struct ad9467_chip_info ad9265_chip_tbl = {
+ static int ad9467_get_scale(struct ad9467_state *st, int *val, int *val2)
  {
- 	struct iio_backend_data_fmt data = {
-@@ -360,32 +388,30 @@ static int ad9647_calibrate_prepare(struct ad9467_state *st)
- 	unsigned int c;
+ 	const struct ad9467_chip_info *info = st->info;
+-	unsigned int i, vref_val;
++	unsigned int i = 0, vref_val;
  	int ret;
  
--	ret = ad9467_spi_write(st, AN877_ADC_REG_TEST_IO,
--			       AN877_ADC_TESTMODE_PN9_SEQ);
--	if (ret)
--		return ret;
--
--	ret = ad9467_spi_write(st, AN877_ADC_REG_TRANSFER,
--			       AN877_ADC_TRANSFER_SYNC);
--	if (ret)
--		return ret;
--
- 	ret = ad9467_outputmode_set(st, st->info->default_output_mode);
- 	if (ret)
++	/* nothing to read if we only have one possible scale */
++	if (info->num_scales == 1)
++		goto out_get_scale;
++
+ 	ret = ad9467_spi_read(st, AN877_ADC_REG_VREF);
+ 	if (ret < 0)
  		return ret;
+@@ -318,6 +322,7 @@ static int ad9467_get_scale(struct ad9467_state *st, int *val, int *val2)
+ 	if (i == info->num_scales)
+ 		return -ERANGE;
  
- 	for (c = 0; c < st->info->num_channels; c++) {
-+		ret = ad9467_testmode_set(st, c, AN877_ADC_TESTMODE_PN9_SEQ);
-+		if (ret)
-+			return ret;
-+
- 		ret = iio_backend_data_format_set(st->back, c, &data);
- 		if (ret)
- 			return ret;
-+
-+		ret = iio_backend_test_pattern_set(st->back, c,
-+						   IIO_BACKEND_ADI_PRBS_9A);
-+		if (ret)
-+			return ret;
-+
-+		ret = iio_backend_chan_enable(st->back, c);
-+		if (ret)
-+			return ret;
- 	}
++out_get_scale:
+ 	__ad9467_get_scale(st, i, val, val2);
  
--	ret = iio_backend_test_pattern_set(st->back, 0,
--					   IIO_BACKEND_ADI_PRBS_9A);
--	if (ret)
--		return ret;
--
--	return iio_backend_chan_enable(st->back, 0);
-+	return 0;
+ 	return IIO_VAL_INT_PLUS_MICRO;
+@@ -332,6 +337,8 @@ static int ad9467_set_scale(struct ad9467_state *st, int val, int val2)
+ 
+ 	if (val != 0)
+ 		return -EINVAL;
++	if (info->num_scales == 1)
++		return -EOPNOTSUPP;
+ 
+ 	for (i = 0; i < info->num_scales; i++) {
+ 		__ad9467_get_scale(st, i, &scale_val[0], &scale_val[1]);
+@@ -730,7 +737,7 @@ static int ad9467_update_scan_mode(struct iio_dev *indio_dev,
+ 	return 0;
  }
  
- static int ad9647_calibrate_polarity_set(struct ad9467_state *st,
-@@ -468,38 +494,32 @@ static int ad9647_calibrate_stop(struct ad9467_state *st)
- 	unsigned int c, mode;
- 	int ret;
- 
--	ret = iio_backend_chan_disable(st->back, 0);
--	if (ret)
--		return ret;
--
--	ret = iio_backend_test_pattern_set(st->back, 0,
--					   IIO_BACKEND_NO_TEST_PATTERN);
--	if (ret)
--		return ret;
--
- 	for (c = 0; c < st->info->num_channels; c++) {
-+		ret = iio_backend_chan_disable(st->back, c);
-+		if (ret)
-+			return ret;
-+
-+		ret = iio_backend_test_pattern_set(st->back, c,
-+						   IIO_BACKEND_NO_TEST_PATTERN);
-+		if (ret)
-+			return ret;
-+
- 		ret = iio_backend_data_format_set(st->back, c, &data);
- 		if (ret)
- 			return ret;
-+
-+		ret = ad9467_testmode_set(st, c, AN877_ADC_TESTMODE_OFF);
-+		if (ret)
-+			return ret;
+-static const struct iio_info ad9467_info = {
++static struct iio_info ad9467_info = {
+ 	.read_raw = ad9467_read_raw,
+ 	.write_raw = ad9467_write_raw,
+ 	.update_scan_mode = ad9467_update_scan_mode,
+@@ -905,6 +912,8 @@ static int ad9467_probe(struct spi_device *spi)
+ 		return -ENODEV;
  	}
  
- 	mode = st->info->default_output_mode | AN877_ADC_OUTPUT_MODE_TWOS_COMPLEMENT;
--	ret = ad9467_outputmode_set(st, mode);
--	if (ret)
--		return ret;
--
--	ret = ad9467_spi_write(st, AN877_ADC_REG_TEST_IO,
--			       AN877_ADC_TESTMODE_OFF);
--	if (ret)
--		return ret;
--
--	return ad9467_spi_write(st, AN877_ADC_REG_TRANSFER,
--			       AN877_ADC_TRANSFER_SYNC);
-+	return ad9467_outputmode_set(st, mode);
- }
- 
- static int ad9467_calibrate(struct ad9467_state *st)
- {
--	unsigned int point, val, inv_val, cnt, inv_cnt = 0;
-+	unsigned int point, val, inv_val, cnt, inv_cnt = 0, c;
- 	/*
- 	 * Half of the bitmap is for the inverted signal. The number of test
- 	 * points is the same though...
-@@ -526,11 +546,26 @@ static int ad9467_calibrate(struct ad9467_state *st)
- 		if (ret)
- 			return ret;
- 
--		ret = iio_backend_chan_status(st->back, 0, &stat);
--		if (ret)
--			return ret;
-+		for (c = 0; c < st->info->num_channels; c++) {
-+			ret = iio_backend_chan_status(st->back, c, &stat);
-+			if (ret)
-+				return ret;
- 
--		__assign_bit(point + invert * test_points, st->calib_map, stat);
-+			/*
-+			 * A point is considered valid if all channels report no
-+			 * error. If one reports an error, then we consider the
-+			 * point as invalid and we can break the loop right away.
-+			 */
-+			if (stat) {
-+				dev_dbg(dev, "Invalid point(%u, inv:%u) for CH:%u\n",
-+					point, invert, c);
-+				break;
-+			}
-+
-+			if (c == st->info->num_channels - 1)
-+				__clear_bit(point + invert * test_points,
-+					    st->calib_map);
-+		}
- 	}
- 
- 	if (!invert) {
++	if (st->info->num_scales > 1)
++		ad9467_info.read_avail = ad9467_read_avail;
+ 	indio_dev->name = st->info->name;
+ 	indio_dev->channels = st->info->channels;
+ 	indio_dev->num_channels = st->info->num_channels;
 
 -- 
 2.45.2
