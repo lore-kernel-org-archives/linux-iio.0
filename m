@@ -1,60 +1,59 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4003148312
-	for <linux-iio@vger.kernel.org>; Fri,  5 Jul 2024 10:40:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8D3E149002
+	for <linux-iio@vger.kernel.org>; Fri,  5 Jul 2024 10:40:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720176058; cv=none; b=GDVZSRrZPG9JKucqQDR77UVpRMSJ+Addv27CylQc8fL6/PkFAQCh3UhAP4xIf1SUY15p7gR2zvC7VziBC+nprLVLUd5kU6HhtV62xWuXA7hUK3r0GTZyPYDKe5WzVsXOq7e3l5gf3OOpCIzLUHpOhXGwX7Pqs9msqWQZQA8S+B4=
+	t=1720176061; cv=none; b=S+/f1dGI+fihn/RBCWgXFcWW8dnA7Jfq2rOg57/Uty4Zkoo93Yuoh7IzAMlQ4VA/wXv9zwr+sOZt+A953vfdQD9mcDi0v6LqTSrfviDh+CafPJOiOpIvenz2ph3JQO6CB/7yRUia9QCMp5Lq4dgnaoVB3TPbEbCToZk0KbhKilI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720176058; c=relaxed/simple;
-	bh=2JNEEDT0yqg0ZpezS+vJkAIFphubIucu2CrwWdLhExA=;
+	s=arc-20240116; t=1720176061; c=relaxed/simple;
+	bh=p8oWdKJIvI/s9h6AmtHd1y9/mEFkDnWkbWLkspoDv58=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=GKBPcCKPRHvyyZzgTXtl5FsD/7qGTCAM0RUSOgyKXPMKS2XGM5lN+5+YwnqA7CJEltvpoIgXvYr4twzmd6rx49lMiFI9cqi1ILjX2y2hgBTa5nInmrZjNWr1TrzAQfsTXArj+81aF5gF3AkmuIbNSYbhmb5FgYb9JFPsi+VtWMo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=IeiwXAGx; arc=none smtp.client-ip=209.85.128.44
+	 In-Reply-To:To:Cc; b=Z4RdQt6ZMG9OLWmeqxCOK1uD9TU+6tvliWmVb/dgTTZx+mbmwKapaZdf25eogd6RSh/DRntoJMw1hAnvEIWlE0xR542Gejcl+QiTYh4Z5F2PADB0ta6E9i4Jqlvk1pMaegKQvUyljWhofYnw3fHLYxf1729dGBmiS5ATclQyH4g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Tog5x2NA; arc=none smtp.client-ip=209.85.221.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="IeiwXAGx"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4265921b0f6so1733295e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 05 Jul 2024 03:40:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Tog5x2NA"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-367ab50a07aso298494f8f.0
+        for <linux-iio@vger.kernel.org>; Fri, 05 Jul 2024 03:40:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1720176055; x=1720780855; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1720176058; x=1720780858; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=mPUGB6WWLvSgcH0G9Q4p2N02Tp+SMaWAilQNUIzP9x8=;
-        b=IeiwXAGxBTyEnIO9Us4XvDbvXCw7pmEzKczda6qvJEYejW5KjVRFGdOT9EEKU3j5SK
-         6+yRVIJtNXmiBXlB3EzG5EXG7dVCnzMLzUIwYpsvJKQXHmKbKe36Tlvs2Bz0hldxGXHc
-         vlZnEB5NvlLZJhC/uKKCq4pXmCNQudqRCBmfcwOZHzKCbsFzCgjpeZq5ZtbV78aRdsqa
-         FwbsdDv+RohVAcYfk/9TY5nF6H0QoERWnJE0jArtfB6Sz4mAD4fQOeGtvAuhWH/jQgIS
-         l7OZwpRr2kXL89X6ZTSFVz+CfOzgSvNa0a6OHZJN4uDwJDb/RtJw0etr+daHXKQhouTK
-         YDrQ==
+        bh=O7oWBhtqk3xwW6JyxZwaMMLkFEk7F/Zbtq+Lnku9XgY=;
+        b=Tog5x2NALYnHmcso3U533v4FSLGzHqEAnqN58d4BAiyJ9nIqu/fHU+mB1lD5H7ItwI
+         icFR9v4oCU/5AYdnK51IV02LciYmeyE2ipYaa69XFntMOz4RFBlZOVF2RNxx88nj65/C
+         L0ssJOPV0JQqGgaa6iL3/u/Z5yQ3r7mvuwyBdREkey79Ib56JpiNMkuFrYbtjFspe1k0
+         S0610MV+Pe/wSjbmF+QGjFcxBuylRLiqQ2epkanC51bU904zEl/tP/zAP69b0OdpfNM9
+         MDGO5BRG1zecXl5FWavpgP75IIp4rKgBaS25nHWUoDmuYjF4QU377jVrCDmzlTZbAln9
+         eNcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720176055; x=1720780855;
+        d=1e100.net; s=20230601; t=1720176058; x=1720780858;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=mPUGB6WWLvSgcH0G9Q4p2N02Tp+SMaWAilQNUIzP9x8=;
-        b=kijbZk9NfrrVX0bpkvEe/YwEqXmR6gK3YHNYS2LxCpZfzFgIRkqVSyjtyf5ooxpGHu
-         0yQNW39oHIwY3fXGDZOUDqLbxAd48E/HQtWGB9OAhsrROS5fbRmq7SvnHqv/rXKLz9ze
-         G02goAOC65hCvbzwa8UUSuvrTQowgyEyl6N6pqFSXpnrKBunRJ4YCBZObPs5A4RTlW5y
-         A6Fwr9ylsJMNJTJ5BNcsjnKazSJD2OaMMOgqsjzwPY1s840ITidHqbfVXrI0l4O7x4Ff
-         dzFDNo9mb0wDhQ+YTnJ8NJ4BWYEoUlrprXyJ48C2nqEr9q7khx25e7XsPIFnJnbm/1zY
-         oMlA==
-X-Gm-Message-State: AOJu0YzrV/sl+DlnJVxsBdP7/8HS1wSBnezK/svAk17t0Wx1YpBpzTSF
-	gkCrF16J/tlxnOgUW7z9NPbov2ckeUvBgRYRtIs2ofc454m0SHcQeAYNXZf5YtpfSIPBBahMUJ4
-	u
-X-Google-Smtp-Source: AGHT+IG91L1QiQgNWqSWoacLRT/4TO/Dx2hLrfRAQx3fZ6Bx/+xCR5Xz6K+GVEbHWRxKNEP2hp8MbA==
-X-Received: by 2002:a05:600c:3b87:b0:425:6bea:8554 with SMTP id 5b1f17b1804b1-4264a44dd7emr27116585e9.27.1720176055057;
-        Fri, 05 Jul 2024 03:40:55 -0700 (PDT)
+        bh=O7oWBhtqk3xwW6JyxZwaMMLkFEk7F/Zbtq+Lnku9XgY=;
+        b=tRTUJfp+4BFVQE4zx9BNbz3mpq1WMfViRuZDnsrEdqqR/O1pmnfmsEclgNGOKG7sYM
+         wzF3hhEZi1i2yduJZhdr77AfXt/svOszM2OttcAGpNXrpF1eFWBKTtsHYMd8pXIcgKRQ
+         ezR7cAqKIw4c3Efzy9qnQ5vyhrwgC13D6Bm7REftUEmQ6JQKQzDa3hdBIN1QECQyCfEo
+         Jr+StxsVY0TWB6hhPeJCSQgXj798dypjDJwGjkk3T/1rChoTFc98cpUqPykSi0gjSHNA
+         cGFQLjY2btHE05USwTWesMAYdHrsYuFJNIWgkBDM87bEjHn7hqlqTdT2VkRSDFDw3hN6
+         LrAQ==
+X-Gm-Message-State: AOJu0YwS00xPZFSbgv9dlWrLX8y2kJR8LnkERk9pm6EvhV6YoXGn128y
+	o7sTaykBLu3Clv2FH12CClOeSbYji4hvm8O5NbXn8hxai7lHROdg2TA/mm/XItM=
+X-Google-Smtp-Source: AGHT+IHPMMzu5kdlcoZYnKj2xBCDHrdAzNmKY1tb0qjEiMJJj0RsjyKrxPl+gMGzYZqJroN4prirIQ==
+X-Received: by 2002:adf:e68a:0:b0:35f:11c5:5c74 with SMTP id ffacd0b85a97d-3679dd34d4bmr3095033f8f.36.1720176058373;
+        Fri, 05 Jul 2024 03:40:58 -0700 (PDT)
 Received: from [127.0.1.1] ([178.197.219.137])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-36789d5ec1csm8680446f8f.37.2024.07.05.03.40.53
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-36789d5ec1csm8680446f8f.37.2024.07.05.03.40.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Jul 2024 03:40:54 -0700 (PDT)
+        Fri, 05 Jul 2024 03:40:57 -0700 (PDT)
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Date: Fri, 05 Jul 2024 12:40:44 +0200
-Subject: [PATCH 1/6] iio: accel: bma400: simplify with cleanup.h
+Date: Fri, 05 Jul 2024 12:40:46 +0200
+Subject: [PATCH 3/6] iio: adc: at91: simplify with cleanup.h
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,7 +62,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240705-cleanup-h-iio-v1-1-77114c7e84c5@linaro.org>
+Message-Id: <20240705-cleanup-h-iio-v1-3-77114c7e84c5@linaro.org>
 References: <20240705-cleanup-h-iio-v1-0-77114c7e84c5@linaro.org>
 In-Reply-To: <20240705-cleanup-h-iio-v1-0-77114c7e84c5@linaro.org>
 To: Dan Robertson <dan@dlrobertson.com>, 
@@ -79,19 +78,19 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 X-Mailer: b4 0.14.0
 X-Developer-Signature: v=1; a=openpgp-sha256; l=1335;
  i=krzysztof.kozlowski@linaro.org; h=from:subject:message-id;
- bh=2JNEEDT0yqg0ZpezS+vJkAIFphubIucu2CrwWdLhExA=;
- b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBmh82t2yoLgw7U/d/3WF1lw6Sbpe0R3WznQ7bXQ
- zvidEQNGzqJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCZofNrQAKCRDBN2bmhouD
- 18eFD/99kCbJW7rMBIrokTGQp+teP0OMxk9HEiucDrZMQqy964A/H6w6db7bxlu/FqpIge6xQfZ
- pgShtD2t06mxtvYqI8U7yZJgNkkNoOY8Mzy1NJncQrBuEXHf66NEGrsoMYwpPl31WIGH7LN6EsI
- Ghx3oPDxEmtAAuHBGsEhdCdDzuartmIyR0WnmgMSBT43VYTwVglMAg0Ep48AuxCZnm4PDQD89zo
- bPvUgyFgchmkNQEFwAByBkrlygUVTQ+IPLRa2TlVN+gsau951q2k5VgHgWhtzwqk+5uEWLZHYf6
- wc6adZUHqX43cgbEfSaINs2Mszebw7ONrWbCMLyJLtJsYEAo/UyDrSk8AwM3CXeCzFjkKUE0gem
- N4LryYcpQ0eZ+PKKK/2HL50uDBF+MoMhmJQyOrb5MWFCTQ4Yo54ImehbKCayJSNQg6wx+0fE1OY
- I5KBjLZbj579jh2iLHlCdWNuDwDG6JugmcbLsnJt9D/ZxzDLrGWU3nphOqADk6rOpFUARMuc3ms
- ZLcIPlDzNFu0ntch5S3pAJ5mSW8zKSv65ZGz4qcHkVlVysAPcs4/pKU2ewf0L4x8LOano98sgKg
- /Wp5hbOhQDKwhrdvno18IAYmmFh+9K4rLxikmurZbqTx43Y1luTowQ57+5oh4A5yl4L8c6+DW6P
- 7AiqGyaPLAdiiwA==
+ bh=p8oWdKJIvI/s9h6AmtHd1y9/mEFkDnWkbWLkspoDv58=;
+ b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBmh82v0r6Jh34sMwY1mn3FW86/CEhm6tM4W7RnL
+ uiEVj4Vr+mJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCZofNrwAKCRDBN2bmhouD
+ 1/3TD/9Na/SvzzL4bKKGkbGVC3TdFpp+yHgCyH52qQr8o7KQlHBEJKaH1jYv9NZmWAfRjEp/6WM
+ DX8l8spwS2QfhfjRD61w2RJxeNHKpMOhfRUVIL3iBAHrwDkv2wUlIi6iYH421pgx8LKaMK7Oadh
+ ZI8wacXDVGz0RHyrdOt5dYKeE/bzhdXMc6PD3z/VfdipVRtAkyUqdkqaof9EW1cm24JddMncVl7
+ GgUa2VE6T9e59sqS3YfaM3QfvlZsxRdPFfGHba5PyoE4dUv0ppeTyKzWouv9GySZayvSnNVDQmd
+ Sncvw4nm/LyKQKKIpLpjRv6t8r4aKWGastRB8/Xkq/6CaeR9geqf8/cepA6LiNsd5XqtTMgyCy0
+ x/tyceFDPl7QQaZXKGuD4CbscN2FxQyZYNsxx1YGEopceTWnUa09mmhHCGKCnCJplvXIlHGa2F+
+ fHZj0Z9dGL0kS8rP5ZdeEAZ+213jyU+fzDu9kapEegaH/3ycs+i/+6roOFLOONLTdJi3kbfykKl
+ HwM/9WrCzw2ruPd5Kx1vu51mz7IU9QgbsKj9QqfhRRoxvK/9bKdWhvOLBSkz4ofs8CbE1zpJSFi
+ eiARICHKU25nhyGaKKZUWQRdrUnt1N6n1Z5Xv7340vFdMMvK5C58k/NoPAoimRL1HlKPrF7Pery
+ tEe0GOCnirntzpw==
 X-Developer-Key: i=krzysztof.kozlowski@linaro.org; a=openpgp;
  fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
 
@@ -100,47 +99,48 @@ make the code a bit simpler.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/iio/accel/bma400_core.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/iio/adc/at91_adc.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-index e90e2f01550a..89db242f06e0 100644
---- a/drivers/iio/accel/bma400_core.c
-+++ b/drivers/iio/accel/bma400_core.c
-@@ -13,6 +13,7 @@
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index eb501e3c86a5..7bcda203436b 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -7,6 +7,7 @@
  
- #include <linux/bitfield.h>
+ #include <linux/bitmap.h>
  #include <linux/bitops.h>
 +#include <linux/cleanup.h>
- #include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-@@ -795,21 +796,19 @@ static int bma400_enable_steps(struct bma400_data *data, int val)
+ #include <linux/clk.h>
+ #include <linux/err.h>
+ #include <linux/io.h>
+@@ -543,22 +544,18 @@ static int at91_adc_get_trigger_value_by_name(struct iio_dev *idev,
+ 	int i;
  
- static int bma400_get_steps_reg(struct bma400_data *data, int *val)
- {
--	u8 *steps_raw;
- 	int ret;
+ 	for (i = 0; i < st->caps->trigger_number; i++) {
+-		char *name = kasprintf(GFP_KERNEL,
+-				"%s-dev%d-%s",
+-				idev->name,
+-				iio_device_id(idev),
+-				triggers[i].name);
++		char *name __free(kfree) = kasprintf(GFP_KERNEL, "%s-dev%d-%s",
++						     idev->name,
++						     iio_device_id(idev),
++						     triggers[i].name);
+ 		if (!name)
+ 			return -ENOMEM;
  
--	steps_raw = kmalloc(BMA400_STEP_RAW_LEN, GFP_KERNEL);
-+	u8 *steps_raw __free(kfree) = kmalloc(BMA400_STEP_RAW_LEN, GFP_KERNEL);
- 	if (!steps_raw)
- 		return -ENOMEM;
+ 		if (strcmp(trigger_name, name) == 0) {
+-			kfree(name);
+ 			if (triggers[i].value == 0)
+ 				return -EINVAL;
+ 			return triggers[i].value;
+ 		}
+-
+-		kfree(name);
+ 	}
  
- 	ret = regmap_bulk_read(data->regmap, BMA400_STEP_CNT0_REG,
- 			       steps_raw, BMA400_STEP_RAW_LEN);
--	if (ret) {
--		kfree(steps_raw);
-+	if (ret)
- 		return ret;
--	}
-+
- 	*val = get_unaligned_le24(steps_raw);
--	kfree(steps_raw);
-+
- 	return IIO_VAL_INT;
- }
- 
+ 	return -EINVAL;
 
 -- 
 2.43.0
