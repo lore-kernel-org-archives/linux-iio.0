@@ -1,127 +1,136 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 576B5155389
-	for <linux-iio@vger.kernel.org>; Tue,  9 Jul 2024 11:11:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A02915539D
+	for <linux-iio@vger.kernel.org>; Tue,  9 Jul 2024 12:56:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720523506; cv=none; b=ZLSZeFNuE0BDOeZhrRJEAWo9g2jFixLvyL0dSeS2cuHgmSbF+bG4WAAzZF+XjhhWanbHTo0xMoFS8Cw8WyhKLSBv3wl2WlPRUumDSvUcF11ZyfoWhXWC9DcBLCUZ2hSdl5szK60aOi+aHDnG/fa+dvckSoKrs4e67OBn9Cysx+I=
+	t=1720529769; cv=none; b=o/pyFpB64Ic4lEBCYoO2ef9LUDrtzu8gDAXpYhE/dYf2Rxh5STaqQjj/FSlWQf3ahwP2KiiolLc3xcTvAgN/S5JlpTqif0gHaXuIC2CGKyYIZgKi5T9rsqC0waEXX4YLgf67vGNf+zpguorGVKfrl8mUzNxH+MP65Lj7rRlXjr0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720523506; c=relaxed/simple;
-	bh=o50v2cJuiKP8YniWONn9l3GpdiNckMIc1Fnj6RUCT+E=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=lxqS/l5q58VlK0UGo8qQoiQ7ysP8HmLLBo+ABwsrsLTDRsUdnEJbWd1oZOrUwZifXT809/K+P8MUiUzcFsg1l1V6fUvGGLG3w4+S07WB7giYdVC2TmcxnIecAu6yELXxoUJ10Jnx7jWikidN6I5CHvsiWKMJ15GmCO4+4ew4AaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=mhrRiAY9; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1720529769; c=relaxed/simple;
+	bh=1mQ27usrQvicYMPygqOYmyZaZ+dqCqB7Hb9uZJQFy0E=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=rUg4SLSPD2q541kHApYBkesOhnJhVw5JEuDmEzW/v+cdV8U2Y9E7mUPRN7Ju7vx1LTlGRPoKlGz2yhbfOlxbIs4n9XmDDgVUMtaWZhn2ORqz8W9MlrrPAukcgMc3s9M/95x4IiXoPIWZT7BsQyK/jcPLEhv5a8NVdPNrVlPoDok=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thegoodpenguin.co.uk; spf=pass smtp.mailfrom=thegoodpenguin.co.uk; dkim=pass (2048-bit key) header.d=thegoodpenguin-co-uk.20230601.gappssmtp.com header.i=@thegoodpenguin-co-uk.20230601.gappssmtp.com header.b=q0TiX4GI; arc=none smtp.client-ip=209.85.208.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thegoodpenguin.co.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=thegoodpenguin.co.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="mhrRiAY9"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4697grl0029841;
-	Tue, 9 Jul 2024 07:11:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=fkgBB
-	ukgMdl0yPC3xMRBr0VWsgGPAhcytTqKtBKhtNQ=; b=mhrRiAY90urWGvByqWIS9
-	sHMnOmnJQmXwl3Bna+NKdHfgWiy6HktVgE1kZGJ95EvYRR9byojt9KEIshepst+9
-	apVKlwIiMURCG5U5+poKD6xkrdoH5fZTS+AsECcryTqJCdrVkCUCznCnv/BWUSaj
-	SlRG/Vx9nE9dhPbSpRAeXxywvtYkhPr9FZ3yvU0Nmvsj0x3UXVx6VMTGT76YZTNB
-	J9y4/ny9xhyepVOa84kliWHhRqGiDe7RZRTban3TPFlPkOzALB0WOKRap/AzGVi9
-	h+zxY7JfnzPaMAi8qL4g0SEnHmZ/S+rOzgOMwPni6jNIBP73fFJ2h/ntIN3Et7xE
-	A==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 408fy44100-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 09 Jul 2024 07:11:06 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 469BB5J2046284
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 9 Jul 2024 07:11:05 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 9 Jul 2024
- 07:11:04 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 9 Jul 2024 07:11:04 -0400
-Received: from [127.0.0.1] ([10.44.3.56])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 469BAlgl032387;
-	Tue, 9 Jul 2024 07:10:56 -0400
-From: Nuno Sa <nuno.sa@analog.com>
-Date: Tue, 9 Jul 2024 13:14:29 +0200
-Subject: [PATCH 2/9] iio: backend: print message in case op is not
- implemented
+	dkim=pass (2048-bit key) header.d=thegoodpenguin-co-uk.20230601.gappssmtp.com header.i=@thegoodpenguin-co-uk.20230601.gappssmtp.com header.b="q0TiX4GI"
+Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-2ee98947f70so42080581fa.1
+        for <linux-iio@vger.kernel.org>; Tue, 09 Jul 2024 05:56:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=thegoodpenguin-co-uk.20230601.gappssmtp.com; s=20230601; t=1720529765; x=1721134565; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Nr1AM+fDk7Hri75Oy0exjRtso/vQOFRBiEuG64RKjDU=;
+        b=q0TiX4GIJ7pR4UUm3UFs7b3Z+6glz9+K1ZSd+RQGqxFQu2+H5kf2uAbi73xXxxdgRm
+         /P7u6Wp9GR/ynybID00+H5UX/qDNBOBBkdWFaHXsi1CiB35uVZp6vtPMUl8CHVb3/IZG
+         2XgKqBggfC1AvpErg44sOKowX1honCN2R/PvGCRApv3zOGm399jauPjJj0KppiF8fpyo
+         sgQFZq81lS7DUFtQbfGWmhCDLusNaG8JksNNfkDkvAjwroogFgGBhzJo2zuSKziugzfh
+         lq1C4jwXmX4fMsaw9x9hk694vycLLYFt/W1cu6OLOrM4rqefioR9JbmtPAkwKdBQ7+Pt
+         NPMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1720529765; x=1721134565;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Nr1AM+fDk7Hri75Oy0exjRtso/vQOFRBiEuG64RKjDU=;
+        b=QR/3qCK1JAZYQeHKuImyBr23JQUBV6JGd7N6ylopt/nAkO/xdP0E17SybPx4itoTWd
+         et1HyTAkNYkbH8OLBp5/L+YbTKv4lrHAsGNrNHi4MdTSYdzouRIR2LJ0abSo5EGNnlGS
+         44f8pNdDlLWfkRmfDGEMj6Ydbs29RRva28Eqnbaw2rOFMKE8RYMGUo5lWxOPEbbT5Yfm
+         vG+uc2jZOxq4xVqSURMmHdMQDheHL+gEaszeslmEVMYJ01S8MemL7Dq8CV2Dr0iyESqi
+         spPS5bW34waJvVSjOlaBZkOzDKzj0c/QTVqydz3JV9LXXkpPDPT4SMSVxxu3Ndu2ON/9
+         746Q==
+X-Gm-Message-State: AOJu0YzMh+oALO5/PKa8VLcpJ72Bl/UOFrGjAuJFcfJYMFld5bX+ElKQ
+	lKU+akOkTYe8EPZrKRDKlbqhXIDC55bFkNsiqYJK01n34HDK6Qc8wBoxLxEekbvOzp8XPAKYUta
+	t
+X-Google-Smtp-Source: AGHT+IG8GHZ17xgCFUdlojYt9fTp4hlfExAQp6WMhX5pGinWdORsY5x+HIh9yisJj1/RYwlO0CeyAg==
+X-Received: by 2002:a2e:9259:0:b0:2ec:5843:2fbd with SMTP id 38308e7fff4ca-2eeb3188e5cmr15954351fa.41.1720529765143;
+        Tue, 09 Jul 2024 05:56:05 -0700 (PDT)
+Received: from carbon.local (aztw-29-b2-v4wan-166913-cust1764.vm26.cable.virginm.net. [82.37.38.229])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-367cde7e095sm2496757f8f.23.2024.07.09.05.56.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jul 2024 05:56:04 -0700 (PDT)
+From: Joshua Felmeden <jfelmeden@thegoodpenguin.co.uk>
+To: jic23@cam.ac.uk
+Cc: linux-iio@vger.kernel.org,
+	Joshua Felmeden <jfelmeden@thegoodpenguin.co.uk>
+Subject: [PATCH 1/2] dt-bindings: iio: humidity: add ENS21x sensor family
+Date: Tue,  9 Jul 2024 13:55:34 +0100
+Message-Id: <20240709125534.988703-1-jfelmeden@thegoodpenguin.co.uk>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20240709-dev-iio-backend-add-debugfs-v1-2-fb4b8f2373c7@analog.com>
-References: <20240709-dev-iio-backend-add-debugfs-v1-0-fb4b8f2373c7@analog.com>
-In-Reply-To: <20240709-dev-iio-backend-add-debugfs-v1-0-fb4b8f2373c7@analog.com>
-To: <linux-iio@vger.kernel.org>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Olivier
- Moysan <olivier.moysan@foss.st.com>
-X-Mailer: b4 0.14.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1720523682; l=1120;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=o50v2cJuiKP8YniWONn9l3GpdiNckMIc1Fnj6RUCT+E=;
- b=dAaUv2pd6eStfOClkw5zDO5pjW5G8rYl7z9mHQjgZgFOvf9zS2X1CU2uZnln5nhhIDPh40ahI
- uNh2rs4qAA2D+R4R+3uAn5/kTok9ouBZIMLVD9MbSi9A3jC68CLL/fH
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: iQGcJ-NfH-QNeOhESClkDHlukmUy23nW
-X-Proofpoint-ORIG-GUID: iQGcJ-NfH-QNeOhESClkDHlukmUy23nW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-07-09_02,2024-07-08_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 malwarescore=0
- suspectscore=0 adultscore=0 mlxscore=0 phishscore=0 mlxlogscore=633
- clxscore=1015 impostorscore=0 priorityscore=1501 lowpriorityscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2406140001 definitions=main-2407090077
+Content-Transfer-Encoding: 8bit
 
-For APIs that have a return value, -EOPNOTSUPP is returned in case the
-backend does not support the functionality. However, for APIs that do
-not have a return value we are left in silence. Hence, at least print a
-debug message in case the callback is not implemented by the backend.
+Add device tree documentation for ENS21x family of temperature and
+humidity sensors
 
-Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+Signed-off-by: Joshua Felmeden <jfelmeden@thegoodpenguin.co.uk>
 ---
- drivers/iio/industrialio-backend.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../iio/humidity/sciosense,ens21x.yaml        | 50 +++++++++++++++++++
+ 1 file changed, 50 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/humidity/sciosense,ens21x.yaml
 
-diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
-index 65a42944d090..f9da635cdfea 100644
---- a/drivers/iio/industrialio-backend.c
-+++ b/drivers/iio/industrialio-backend.c
-@@ -40,6 +40,7 @@
- #include <linux/mutex.h>
- #include <linux/property.h>
- #include <linux/slab.h>
-+#include <linux/stringify.h>
- #include <linux/types.h>
- 
- #include <linux/iio/backend.h>
-@@ -111,6 +112,9 @@ static DEFINE_MUTEX(iio_back_lock);
- 	__ret = iio_backend_check_op(__back, op);		\
- 	if (!__ret)						\
- 		__back->ops->op(__back, ##args);		\
-+	else							\
-+		dev_dbg(__back->dev, "Op(%s) not implemented\n",\
-+			__stringify(op));			\
- }
- 
- /**
-
+diff --git a/Documentation/devicetree/bindings/iio/humidity/sciosense,ens21x.yaml b/Documentation/devicetree/bindings/iio/humidity/sciosense,ens21x.yaml
+new file mode 100644
+index 000000000000..3140349a58b8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/humidity/sciosense,ens21x.yaml
+@@ -0,0 +1,50 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/humidity/sciosense,ens21x.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ScioSense ENS21x temperature and humidity sensor
++
++maintainers:
++  - Joshua Felmeden <jfelmeden@thegoodpenguin.co.uk>
++
++description: |
++  Temperature and Humidity sensor.
++
++  Datasheet:
++    https://www.sciosense.com/wp-content/uploads/2024/04/ENS21x-Datasheet.pdf
++    https://www.sciosense.com/wp-content/uploads/2023/12/ENS210-Datasheet.pdf
++
++properties:
++  compatible:
++    enum:
++      - sciosense,ens210
++      - sciosense,ens210a
++      - sciosense,ens211
++      - sciosense,ens212
++      - sciosense,ens213a
++      - sciosense,ens215
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    i2c {
++       #address-cells = <1>;
++       #size-cells = <0>;
++
++       temperature-sensor@43 {
++           compatible = "sciosense,ens210";
++           reg = <0x43>;
++       };
++    };
++...
++
 -- 
-2.45.2
+2.39.2
 
