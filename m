@@ -1,57 +1,57 @@
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBD8316B75D
-	for <linux-iio@vger.kernel.org>; Thu, 11 Jul 2024 19:15:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 963CB16E868
+	for <linux-iio@vger.kernel.org>; Thu, 11 Jul 2024 19:15:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720725359; cv=none; b=uwvCX9HpF1EMlBRZULyu1It0SlV7xYG4sfvf4zTzBtvjjmdqooSVCXU6RujI/Afujkr2IcSRzVfqpm7oQXhknWKfw64b9cZE7lZ9Hrq4XHZBFJW6tSAzWYe2bxjGuOEy/4Pi2YfK0Rvm0PT7YcyHmfZWJSdBXhQ1QkqAo09Hdxg=
+	t=1720725360; cv=none; b=jRiJMbedOyjISDIUX1LolG4b8JwA6UczVkc173nD9Z76gtCb7m/beknGvFLYS1SHQonaGU1n6lY5MLw8n19WMdc7OisSuQXa1C0CaaES/WlSBfCwbJ5lqoj6mY5PU7Y+9MYkMm9eXDf8x98YB6HBY5DYDuulH8HBVQ2k35JX/MY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720725359; c=relaxed/simple;
-	bh=gfHiONb+cHJIVTqfB/9PNM4sr78jejHlJxtoIigQzJE=;
+	s=arc-20240116; t=1720725360; c=relaxed/simple;
+	bh=rfl4NqLSWlS05DBQ/b/yyrEHhOHNJuLHuF0KFUBQ8WQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QeUKd9lHVUwqq7Lv9RRs8La5cLrz5WoKTzgFeKzBxQK7dQcj9pdi+ELGcU3iswIs2opx3zlOABrEVO3nDVcqkEBXpugg26gGp6OQirVvzm0eupjYdYM8xCD0YGMpH8ULzyycIgBEafFQ2ZmMStLu51EXMzWTpgrTcka5lmNAaBM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=shR8Z7tw; arc=none smtp.client-ip=209.85.160.44
+	 MIME-Version:Content-Type; b=aIHs/Mlak2CX6lv3JQ81kpn/iWr/x5s5UpmhaY96P8slOPAxyyHbbW8iX+eK6EfPSNjUI8kYYPofcd82kxZZWDe9ogOt/l5sF4JY5vlYjDQ2XUPWlKwsHHr96LMpKvBf5g28YNX8RyBi5dD3VYQXbu6X7yfh+7Z8EVcgnMQjOak=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=JmmgWgmd; arc=none smtp.client-ip=209.85.210.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="shR8Z7tw"
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-25e171122fcso577498fac.0
-        for <linux-iio@vger.kernel.org>; Thu, 11 Jul 2024 12:15:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="JmmgWgmd"
+Received: by mail-ot1-f45.google.com with SMTP id 46e09a7af769-70448cae1e0so603352a34.3
+        for <linux-iio@vger.kernel.org>; Thu, 11 Jul 2024 12:15:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1720725356; x=1721330156; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1720725357; x=1721330157; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DXl8ONeqJDCtJjXFOdFbBuLWW4pS+f6rPe69JfJPHDY=;
-        b=shR8Z7twutTDFOCdjLvQhuqQvaOqZGgCpdwT5r9xzhfvHHVnTw7wxVuB3zVYxEujV+
-         FzW9jGI/W3XKo4j7ShCBCHRinmYuHvfX/yZ4LA5RdBGn7QQa+wOFmzVP4MAd2wklMf+p
-         2LmmrhQqzqZkr+mI6RvSlnvs9j1ob7mI3Vlcyhkf8Q6DKRLboXtnPjzX6vRfCvmO9Brk
-         y2jwJdDfIYigrQuSYRC4RZkEMviKrN3kerW7s33Y/HoGhjBEvmuJER0Ye/mxadDMA8w/
-         lI/3d+EoEbU5Y93m7TeVi9niHkZsQdRLmUTcS7TYZOknjpkpk/ktqUwGn5CR0t/V6l8q
-         ItqQ==
+        bh=FQsqhGLGVhBM8gUHS+cpX5FO8rzqQp9edFEv9d41aaM=;
+        b=JmmgWgmdmS0xJrmZvb2FgnJj5GF4iYM830PTlPlE62YxEYFus5eG5kL2lF55Dp2JZi
+         L1ceYnD9GcxutoEEjGcIRLd+uOJEkxR+PJ6cUtYAqFuafASFt88Cbk6iznfetJfuq5Y5
+         SagQug/pT7aw9myDa9XT8phPnh9cfNpHzj7jAqLbIvp9/L7jwUxccv/VcRhmpte3iooR
+         O6OUI9cfN+9XgmZBACHv+RZP9LuDvvZ76XG4YlHlmcLCB9Ptt9SyavRlr7Zb281jMycq
+         4gdtzNmIGn6MAfjJ181wnfVh8ZBb0/0t1mZ17xIxxLktRJazb9C7U24d0y+BVOL9CSqb
+         qdRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720725356; x=1721330156;
+        d=1e100.net; s=20230601; t=1720725357; x=1721330157;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=DXl8ONeqJDCtJjXFOdFbBuLWW4pS+f6rPe69JfJPHDY=;
-        b=jhbjKAuykharkSsaaOZUTIHP/v8zPfSy0CiN7lutiWvSrxzvpAQjjK5yzTuxm7BeOb
-         AtiOYqBE64Pdr9Pb6GJ2yqx+RRjibC4/HIhF1abrkeeoWGghxPbVpKaPIhWRsjV5eApE
-         zw4xT0uRaLa/TRjjDTbbRHF/N+/U+r9gdbel6hk/GMPcnqnGwfb6wYagR8M69yWXCztq
-         KDCnEy+xALL8MGXp2Lz3ycYp/nCFZUzZ5yZkQ9MyNqWMWMvU+LtCmjKA56h54GSKmxmh
-         RM/BipMKWOQyq/d+qTlcrzZWh0yKDt0xr0BWRK9zAhIhMu1GF4/8vpWyBYH13RFrpJYX
-         lBww==
-X-Forwarded-Encrypted: i=1; AJvYcCWpO8lHfFC0rJXV+/HMDNeCk0828NEj2o6SrNWXPVm+qkIIL2Qe28kCXrpHQoaECeWzXAqMpleZGnjVUPiZjqMcHQ2Q6WBc5qqp
-X-Gm-Message-State: AOJu0YwJnpNZXut607ZzfNUMKsoUH8zs7j0eefW4kMxWsD6D+3dqwbEH
-	/cTa1ktm36Br2AwIp4u9lRqlEX1//MJnRmZNpD7K11XgcCfhsBW+cjlyxyQU+9A=
-X-Google-Smtp-Source: AGHT+IFGBzIS69PrcU1224cquu79zc+Im3Rapec/YVgIdzE9YQciBWM9pLTqaUBNywANmN9AxdffWg==
-X-Received: by 2002:a05:6870:a70d:b0:255:43c:dd22 with SMTP id 586e51a60fabf-26052d6b533mr224007fac.21.1720725355847;
-        Thu, 11 Jul 2024 12:15:55 -0700 (PDT)
+        bh=FQsqhGLGVhBM8gUHS+cpX5FO8rzqQp9edFEv9d41aaM=;
+        b=Jk2ZiOtciGrP4Bsyf1fuQY1YABQUwzBpK/PDkYRszMsvuxea5LSrLxCTVDMKT4qFsI
+         +cAFJuDXm0drsijDlM8KCPmOnXArX2CqXC0Qw68fLBS0ePLbvYRniwy7C2GiN0GPg/0o
+         GgHDiGT3Cz59lirhAeYkeumKcgPOsN6swFCOVOvVK3wm/5miwstu3eg57Ip1t+zTIwvD
+         QcbKEMTlsL3DL91rRtIfFQEGZ2GZq/VGow+ZSQWqWRg7K4VfpUTs52jNmuF75+ZNKGF2
+         QjLifImVFibRFGNHM8doiNxnGkOswYgkNBevYqvY5MkBPqReWPsi5NB2RSD01qVU/I+B
+         hqwg==
+X-Forwarded-Encrypted: i=1; AJvYcCWEPpiG5IuG0cCESFNSUgr9DTFdy9bXTNQDbpXFdRdDKKbHL+FuiSHNItrbMM/qITMWfGCPk5ms9fU8pgij3GCFNr8R4Z4wXy7D
+X-Gm-Message-State: AOJu0YxKpmV/qoQ5GjEWfU4UZTBPjl2bRnlaG+Y3OiNeDFS7f8RHXc1+
+	mT4rnKJpQ/Y0tr8OrqXxlz1H1pRGsoAknDR0YMExBADUXy3v26BPeV/eaoEwAbE=
+X-Google-Smtp-Source: AGHT+IG0klzgerAO/xrKkUieBiUkvbWh4y2QvKVH/NtvFh0NkVz3/6q0epMkr/bBMKGH1LwyLmJt7g==
+X-Received: by 2002:a05:6870:6587:b0:25e:1ced:744 with SMTP id 586e51a60fabf-25eaebc7d95mr8337902fac.47.1720725357602;
+        Thu, 11 Jul 2024 12:15:57 -0700 (PDT)
 Received: from localhost.localdomain (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-25eaa083bbcsm1826670fac.26.2024.07.11.12.15.55
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-25eaa083bbcsm1826670fac.26.2024.07.11.12.15.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jul 2024 12:15:55 -0700 (PDT)
+        Thu, 11 Jul 2024 12:15:57 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Rob Herring <robh@kernel.org>,
@@ -64,11 +64,10 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v4 1/3] dt-bindings: iio: adc: add AD4695 and similar ADCs
-Date: Thu, 11 Jul 2024 14:15:41 -0500
-Message-ID: <20240711-iio-adc-ad4695-v4-1-c31621113b57@baylibre.com>
+	linux-doc@vger.kernel.org
+Subject: [PATCH v4 3/3] Documentation: iio: Document ad4695 driver
+Date: Thu, 11 Jul 2024 14:15:43 -0500
+Message-ID: <20240711-iio-adc-ad4695-v4-3-c31621113b57@baylibre.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20240711-iio-adc-ad4695-v4-0-c31621113b57@baylibre.com>
 References: <20240711-iio-adc-ad4695-v4-0-c31621113b57@baylibre.com>
@@ -82,341 +81,213 @@ Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.14.0
 Content-Transfer-Encoding: 8bit
 
-Add device tree bindings for AD4695 and similar ADCs.
+The Analog Devices Inc. AD4695 (and similar chips) are complex ADCs that
+will benefit from a detailed driver documentation.
 
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+This documents the current features supported by the driver.
+
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
 
-Note, this may trigger a DT build warning "common-mode-channel: missing
-type definition" if the builder doesn't include the recently added
-common-mode-channel property [1]. This should be safe to ignore (passes
-make dt_binding_check locally).
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=testing&id=d86deaec1c5b0fb60c3619e8d2ae7a1d722fd2ad
-
-v4 changes:
-* Picked up Conor's reviewed-by tag.
+v4 changes: none
 
 v3 changes:
-* Change interrupts to be per pin instead of per signal.
-* Drop diff-channels and single-channel properties.
-* Odd numbered pins added to common-mode-channel property enum.
-* REFGND and COM values changes to avoid confusion with pin numbers.
-* Add inX-supply properties for odd numbed input pins.
+* Rework DT examples for DT bindings changes
 
 v2 changes:
-* Drop *-wlcsp compatible strings
-* Don't use fallback compatible strings
-* Reword supply descriptions
-* Use standard channel properties instead of adi,pin-pairing
-* Fix unnecessary | character
-* Fix missing blank line
-* Add header file with common mode channel macros
+* Rework DT examples for DT bindings changes
+* Fix wrong MAINTAINERS update
 ---
- .../devicetree/bindings/iio/adc/adi,ad4695.yaml    | 256 +++++++++++++++++++++
- MAINTAINERS                                        |  10 +
- include/dt-bindings/iio/adi,ad4695.h               |   9 +
- 3 files changed, 275 insertions(+)
+ Documentation/iio/ad4695.rst | 155 +++++++++++++++++++++++++++++++++++++++++++
+ Documentation/iio/index.rst  |   1 +
+ MAINTAINERS                  |   1 +
+ 3 files changed, 157 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4695.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4695.yaml
+diff --git a/Documentation/iio/ad4695.rst b/Documentation/iio/ad4695.rst
 new file mode 100644
-index 000000000000..a2e824e26691
+index 000000000000..a33e573d61d6
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4695.yaml
-@@ -0,0 +1,256 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/adi,ad4695.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/Documentation/iio/ad4695.rst
+@@ -0,0 +1,155 @@
++.. SPDX-License-Identifier: GPL-2.0-only
 +
-+title: Analog Devices Easy Drive Multiplexed SAR Analog to Digital Converters
++=============
++AD4695 driver
++=============
 +
-+maintainers:
-+  - Michael Hennerich <Michael.Hennerich@analog.com>
-+  - Nuno Sá <nuno.sa@analog.com>
++ADC driver for Analog Devices Inc. AD4695 and similar devices. The module name
++is ``ad4695``.
 +
-+description: |
-+  A family of similar multi-channel analog to digital converters with SPI bus.
 +
-+  * https://www.analog.com/en/products/ad4695.html
-+  * https://www.analog.com/en/products/ad4696.html
-+  * https://www.analog.com/en/products/ad4697.html
-+  * https://www.analog.com/en/products/ad4698.html
++Supported devices
++=================
 +
-+$ref: /schemas/spi/spi-peripheral-props.yaml#
++The following chips are supported by this driver:
 +
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ad4695
-+      - adi,ad4696
-+      - adi,ad4697
-+      - adi,ad4698
++* `AD4695 <https://www.analog.com/AD4695>`_
++* `AD4696 <https://www.analog.com/AD4696>`_
++* `AD4697 <https://www.analog.com/AD4697>`_
++* `AD4698 <https://www.analog.com/AD4698>`_
 +
-+  reg:
-+    maxItems: 1
 +
-+  spi-max-frequency:
-+    maximum: 80000000
++Supported features
++==================
 +
-+  spi-cpol: true
-+  spi-cpha: true
++SPI wiring modes
++----------------
 +
-+  spi-rx-bus-width:
-+    minimum: 1
-+    maximum: 4
++The driver currently supports the following SPI wiring configuration:
 +
-+  avdd-supply:
-+    description: Analog power supply.
++4-wire mode
++^^^^^^^^^^^
 +
-+  vio-supply:
-+    description: I/O pin power supply.
++In this mode, CNV and CS are tied together and there is a single SDO line.
 +
-+  ldo-in-supply:
-+    description: Internal LDO Input. Mutually exclusive with vdd-supply.
++.. code-block::
 +
-+  vdd-supply:
-+    description: Core power supply. Mutually exclusive with ldo-in-supply.
++    +-------------+         +-------------+
++    |          CS |<-+------| CS          |
++    |         CNV |<-+      |             |
++    |     ADC     |         |     HOST    |
++    |             |         |             |
++    |         SDI |<--------| SDO         |
++    |         SDO |-------->| SDI         |
++    |        SCLK |<--------| SCLK        |
++    +-------------+         +-------------+
 +
-+  ref-supply:
-+    description:
-+      External reference voltage. Mutually exclusive with refin-supply.
++To use this mode, in the device tree, omit the ``cnv-gpios`` and
++``spi-rx-bus-width`` properties.
 +
-+  refin-supply:
-+    description:
-+      Internal reference buffer input. Mutually exclusive with ref-supply.
++Channel configuration
++---------------------
 +
-+  com-supply:
-+    description: Common voltage supply for pseudo-differential analog inputs.
++Since the chip supports multiple ways to configure each channel, this must be
++described in the device tree based on what is actually wired up to the inputs.
 +
-+  adi,no-ref-current-limit:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      When this flag is present, the REF Overvoltage Reduced Current protection
-+      is disabled.
++There are three typical configurations:
 +
-+  adi,no-ref-high-z:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      Enable this flag if the ref-supply requires Reference Input High-Z Mode
-+      to be disabled for proper operation.
++An ``INx`` pin is used as the positive input with the ``REFGND``, ``COM`` or
++the next ``INx`` pin as the negative input.
 +
-+  cnv-gpios:
-+    description: The Convert Input (CNV). If omitted, CNV is tied to SPI CS.
-+    maxItems: 1
++Pairing with REFGND
++^^^^^^^^^^^^^^^^^^^
 +
-+  reset-gpios:
-+    description: The Reset Input (RESET). Should be configured GPIO_ACTIVE_LOW.
-+    maxItems: 1
++Each ``INx`` pin can be used as a pseudo-differential input in conjunction with
++the ``REFGND`` pin. The device tree will look like this:
 +
-+  interrupts:
-+    minItems: 1
-+    items:
-+      - description: Signal coming from the BSY_ALT_GP0 pin (ALERT or BUSY).
-+      - description: Signal coming from the GP2 pin (ALERT).
-+      - description: Signal coming from the GP3 pin (BUSY).
++.. code-block::
 +
-+  interrupt-names:
-+    minItems: 1
-+    items:
-+      - const: gp0
-+      - const: gp2
-+      - const: gp3
++    channel@0 {
++        reg = <0>; /* IN0 */
++    };
 +
-+  gpio-controller: true
++If no other channel properties are needed (e.g. ``adi,no-high-z``), the channel
++node can be omitted entirely.
 +
-+  "#gpio-cells":
-+    const: 2
-+    description: |
-+      The first cell is the GPn number: 0 to 3.
-+      The second cell takes standard GPIO flags.
++This will appear on the IIO bus as the ``voltage0`` channel. The processed value
++(*raw × scale*) will be the voltage present on the ``IN0`` pin relative to
++``REFGND``. (Offset is always 0 when pairing with ``REFGND``.)
 +
-+  "#address-cells":
-+    const: 1
++Pairing with COM
++^^^^^^^^^^^^^^^^
 +
-+  "#size-cells":
-+    const: 0
++Each ``INx`` pin can be used as a pseudo-differential input in conjunction with
++the ``COM`` pin. The device tree will look like this:
 +
-+patternProperties:
-+  "^in(?:[13579]|1[135])-supply$":
-+    description:
-+      Optional voltage supply for odd numbered channels when they are used as
-+      the negative input for a pseudo-differential channel.
++.. code-block::
 +
-+  "^channel@[0-9a-f]$":
-+    type: object
-+    $ref: adc.yaml
-+    unevaluatedProperties: false
-+    description:
-+      Describes each individual channel. In addition the properties defined
-+      below, bipolar from adc.yaml is also supported.
++    com-supply = <&vref_div_2>;
 +
-+    properties:
-+      reg:
-+        maximum: 15
++    channel@1 {
++        reg = <1>; /* IN1 */
++        common-mode-channel = <AD4695_COMMON_MODE_COM>;
++        bipolar;
++    };
 +
-+      common-mode-channel:
-+        description:
-+          Describes the common mode channel for single channels. 0xFF is REFGND
-+          and OxFE is COM. Macros are available for these values in
-+          dt-bindings/iio/adi,ad4695.h. Values 1 to 15 correspond to INx inputs.
-+          Only odd numbered INx inputs can be used as common mode channels.
-+        items:
-+          enum: [1, 3, 5, 7, 9, 11, 13, 15, 0xFE, 0xFF]
-+        default: 0xFF
++This will appear on the IIO bus as the ``voltage1`` channel. The processed value
++(*(raw + offset) × scale*) will be the voltage measured on the ``IN1`` pin
++relative to ``REFGND``. (The offset is determined by the ``com-supply`` voltage.)
 +
-+      adi,no-high-z:
-+        $ref: /schemas/types.yaml#/definitions/flag
-+        description:
-+          Enable this flag if the input pin requires the Analog Input High-Z
-+          Mode to be disabled for proper operation.
++The macro comes from:
 +
-+    required:
-+      - reg
++.. code-block::
 +
-+    allOf:
-+      # bipolar mode can't be used with REFGND
-+      - if:
-+          properties:
-+            common-mode-channel:
-+              const: 0xFF
-+        then:
-+          properties:
-+            bipolar: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - avdd-supply
-+  - vio-supply
-+
-+allOf:
-+  - oneOf:
-+      - required:
-+          - ldo-in-supply
-+      - required:
-+          - vdd-supply
-+
-+  - oneOf:
-+      - required:
-+          - ref-supply
-+      - required:
-+          - refin-supply
-+
-+  # the internal reference buffer always requires high-z mode
-+  - if:
-+      required:
-+        - refin-supply
-+    then:
-+      properties:
-+        adi,no-ref-high-z: false
-+
-+  # limit channels for 8-channel chips
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - adi,ad4697
-+              - adi,ad4698
-+    then:
-+      patternProperties:
-+        "^in(?:9|1[135])-supply$": false
-+        "^channel@[0-7]$":
-+          properties:
-+            reg:
-+              maximum: 7
-+            common-mode-channel:
-+              items:
-+                enum: [1, 3, 5, 7, 0xFE, 0xFF]
-+        "^channel@[8-9a-f]$": false
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
 +    #include <dt-bindings/iio/adi,ad4695.h>
 +
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
++Pairing two INx pins
++^^^^^^^^^^^^^^^^^^^^
 +
-+        adc@0 {
-+            compatible = "adi,ad4695";
-+            reg = <0>;
-+            spi-cpol;
-+            spi-cpha;
-+            spi-max-frequency = <80000000>;
-+            avdd-supply = <&power_supply>;
-+            ldo-in-supply = <&power_supply>;
-+            vio-supply = <&io_supply>;
-+            refin-supply = <&supply_5V>;
-+            com-supply = <&supply_2V5>;
-+            in3-supply = <&supply_2V5>;
-+            reset-gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
++An even-numbered ``INx`` pin and the following odd-numbered ``INx`` pin can be
++used as a pseudo-differential input. The device tree for using ``IN2`` as the
++positive input and ``IN3`` as the negative input will look like this:
 +
-+            #address-cells = <1>;
-+            #size-cells = <0>;
++.. code-block::
 +
-+            /* Pseudo-differential channel between IN0 and REFGND. */
-+            channel@0 {
-+                reg = <0>;
-+            };
++    in3-supply = <&vref_div_2>;
 +
-+            /* Pseudo-differential channel between IN1 and COM. */
-+            channel@1 {
-+                reg = <1>;
-+                common-mode-channel = <AD4695_COMMON_MODE_COM>;
-+                bipolar;
-+            };
-+
-+            /* Pseudo-differential channel between IN2 and IN3. */
-+            channel@2 {
-+                reg = <2>;
-+                common-mode-channel = <3>;
-+                bipolar;
-+            };
-+        };
++    channel@2 {
++        reg = <2>; /* IN2 */
++        common-mode-channel = <3>; /* IN3 */
++        bipolar;
 +    };
++
++This will appear on the IIO bus as the ``voltage2`` channel. The processed value
++(*(raw + offset) × scale*) will be the voltage measured on the ``IN1`` pin
++relative to ``REFGND``. (Offset is determined by the ``in3-supply`` voltage.)
++
++VCC supply
++----------
++
++The chip supports being powered by an external LDO via the ``VCC`` input or an
++internal LDO via the ``LDO_IN`` input. The driver looks at the device tree to
++determine which is being used. If ``ldo-supply`` is present, then the internal
++LDO is used. If ``vcc-supply`` is present, then the external LDO is used and
++the internal LDO is disabled.
++
++Reference voltage
++-----------------
++
++The chip supports an external reference voltage via the ``REF`` input or an
++internal buffered reference voltage via the ``REFIN`` input. The driver looks
++at the device tree to determine which is being used. If ``ref-supply`` is
++present, then the external reference voltage is used and the internal buffer is
++disabled. If ``refin-supply`` is present, then the internal buffered reference
++voltage is used.
++
++Unimplemented features
++----------------------
++
++- Additional wiring modes
++- Buffered reads
++- Threshold events
++- Oversampling
++- Gain/offset calibration
++- GPIO support
++- CRC support
+diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
+index 9cb4c50cb20d..a12520b2138e 100644
+--- a/Documentation/iio/index.rst
++++ b/Documentation/iio/index.rst
+@@ -18,6 +18,7 @@ Industrial I/O Kernel Drivers
+ .. toctree::
+    :maxdepth: 1
+ 
++   ad4695
+    ad7944
+    adis16475
+    adis16480
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 06ecfa64a39a..4aea2efd307d 100644
+index 1e97a4b929c2..18846fe48b91 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -1208,6 +1208,16 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-adc-ad4130
- F:	Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
- F:	drivers/iio/adc/ad4130.c
+@@ -1216,6 +1216,7 @@ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/adc/adi,ad4695.yaml
++F:	Documentation/iio/ad4695.rst
+ F:	drivers/iio/adc/ad4695.c
+ F:	include/dt-bindings/iio/adi,ad4695.h
  
-+ANALOG DEVICES INC AD4695 DRIVER
-+M:	Michael Hennerich <michael.hennerich@analog.com>
-+M:	Nuno Sá <nuno.sa@analog.com>
-+R:	David Lechner <dlechner@baylibre.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/adc/adi,ad4695.yaml
-+F:	include/dt-bindings/iio/adi,ad4695.h
-+
- ANALOG DEVICES INC AD7091R DRIVER
- M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
- L:	linux-iio@vger.kernel.org
-diff --git a/include/dt-bindings/iio/adi,ad4695.h b/include/dt-bindings/iio/adi,ad4695.h
-new file mode 100644
-index 000000000000..9fbef542bf67
---- /dev/null
-+++ b/include/dt-bindings/iio/adi,ad4695.h
-@@ -0,0 +1,9 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-+
-+#ifndef _DT_BINDINGS_ADI_AD4695_H
-+#define _DT_BINDINGS_ADI_AD4695_H
-+
-+#define AD4695_COMMON_MODE_REFGND	0xFF
-+#define AD4695_COMMON_MODE_COM		0xFE
-+
-+#endif /* _DT_BINDINGS_ADI_AD4695_H */
 
 -- 
 2.43.0
