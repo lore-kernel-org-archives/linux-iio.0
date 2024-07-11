@@ -1,117 +1,64 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0999371B51;
-	Thu, 11 Jul 2024 20:32:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F12FBDF43;
+	Thu, 11 Jul 2024 21:16:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720729969; cv=none; b=UeFQn2m8NWtOEueL5+bUl/14hDV8F04/8ZaLhljIAjmYCQFuHy6j+lKh7+0+rQithXOw6ukzC1tJwbSxJJgoe9PHF68BHK6SnJq44mVH6Troh2IhdSzo9Jn9A44jbKhN2AS81XnjdxFDXRMkLAD0jrjj4apUe16QShD9FGflEsI=
+	t=1720732562; cv=none; b=Z3+7r4yVMbUrll/H/UTYwAjpVUcIbSxmmdHTQqpVmE4djlVci4D3LAL0UA2qJjbp80761fdvyPT1KDHF/rjOZC7z3o6L4HbkudSAOr3K592U94Itsxlio5sPPoaPXzFvT0wg6miftd0HlZkVzeOvtQiBxPInbFwVmhVDcP+3n5Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720729969; c=relaxed/simple;
-	bh=Bfi0xFDAdZFAiE6w3WjlXCIy3ZKkk/pUFo1x5TCS4E8=;
-	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
-	 Message-Id:Subject; b=oQY/NQ5DWt9fkxweIKA+58JflvOxe8ILOIgvqSTBKzO1yZ+wMqmd6yC8nQBD9tEh7fPU8za39dIgE7hSVNSYRgC8GUXIQDrqM3St3klIHxnz3s/V0jVXUu+RaId+iAlZ0lr4gB2wwGC3PLhSC9hE4ZMnwuOrB/SWmBY4CeuCzJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WM1ehqaI; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1720732562; c=relaxed/simple;
+	bh=dudi4sdtVeovT/K8wDx3sBrqYXG8ImoAnYu5rdEU5aE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NGgl9Lolal1EDewtBJ+swmBWWuiYuzQlx4FWZI2r+kYWgW69jSRgzjekaXqFu9VEShoSBojZ7feBFJMbuNHouBcSjalGLzAibN+FDtFmXm59BcgjDolYShgzHqHn8KNLGRop1NxwSiCV7AqVUHA8/YhM+E2p5QFl4r5vdXhgswI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K/5R5FjF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WM1ehqaI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EEB8C116B1;
-	Thu, 11 Jul 2024 20:32:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K/5R5FjF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AEA3C116B1;
+	Thu, 11 Jul 2024 21:16:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1720729968;
-	bh=Bfi0xFDAdZFAiE6w3WjlXCIy3ZKkk/pUFo1x5TCS4E8=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=WM1ehqaIpRfhHRpE3w+gqtQdSy3PLBJJdwXf3TTpQmK0OrumdmSHCf3gItr4ODIu4
-	 0+C5n/5QnsYHcPT8R6kB1SYvJjKyu0pQXpjT6JGKNA5pd3WPXHyf9KRC897JvFPYBu
-	 6Vs9M5B0gcmECSwye9QtGiK1YC86jr7/mPVJoVS/8WPNkFVlT0Wa/tZsN1bgzgizd7
-	 ue7VimVbd5zDby6mdrwh5V8CtdWjf+/jUgnqxQoEKRgJCNOUOe5pmnJmuhMBzf/9Eb
-	 T1XrbrUhHftPi2H4yWhYR/OixMk9tQgWjc9C8DBInJGeKLiaCqZafwEfVV0lvpeZhY
-	 8evIpWTlFjBuA==
-Date: Thu, 11 Jul 2024 14:32:47 -0600
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	s=k20201202; t=1720732561;
+	bh=dudi4sdtVeovT/K8wDx3sBrqYXG8ImoAnYu5rdEU5aE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=K/5R5FjFU5bNGAXmSMR6Cgc9CUG6P93dVt1nsNU+RAvPdPhGZtN+JJPsl9TdWv6hQ
+	 9ZDqRufcnwroc2w1uT3NrkG+ETdMfHwtPTesbG4ppM1u/nP05BA9XOO+O9sdDNX+/N
+	 7SskSd7RpKTnizdMPDC5/kovJq/jwI1KYkPQldUDcAMpxawy7bNir6hu0TtQ6O3RWV
+	 ftXHB1s9FQL6i9Q6wdgX3AKUkK1yskGlu9yT2qDNkal2mP0eIEDw3noY5tsABKObej
+	 /d4pVmxU3dqar2sL9Fl6WKWaiJOuIQmnlDlR1LP/QHiWB0jsdBHY7+jtXxBRX/9ykP
+	 Cp2iMA7O0vBMw==
+Date: Thu, 11 Jul 2024 15:16:00 -0600
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Joshua Felmeden <jfelmeden@thegoodpenguin.co.uk>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: humidity: add ENS21x sensor
+ family
+Message-ID: <172073255962.3023307.17444377298694934166.robh@kernel.org>
+References: <20240710-ens21x-v3-0-4e3fbcf2a7fb@thegoodpenguin.co.uk>
+ <20240710-ens21x-v3-1-4e3fbcf2a7fb@thegoodpenguin.co.uk>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: linux-kernel@vger.kernel.org, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, linux-doc@vger.kernel.org, 
- Jonathan Cameron <jic23@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
- devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>, 
- linux-iio@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Michael Hennerich <michael.hennerich@analog.com>
-In-Reply-To: <20240711-iio-adc-ad4695-v4-1-c31621113b57@baylibre.com>
-References: <20240711-iio-adc-ad4695-v4-0-c31621113b57@baylibre.com>
- <20240711-iio-adc-ad4695-v4-1-c31621113b57@baylibre.com>
-Message-Id: <172072996727.2951364.2243340017408650155.robh@kernel.org>
-Subject: Re: [PATCH v4 1/3] dt-bindings: iio: adc: add AD4695 and similar
- ADCs
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240710-ens21x-v3-1-4e3fbcf2a7fb@thegoodpenguin.co.uk>
 
 
-On Thu, 11 Jul 2024 14:15:41 -0500, David Lechner wrote:
-> Add device tree bindings for AD4695 and similar ADCs.
+On Wed, 10 Jul 2024 14:24:04 +0100, Joshua Felmeden wrote:
+> Add device tree documentation for ENS21x family of temperature and
+> humidity sensors
 > 
-> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
+> Signed-off-by: Joshua Felmeden <jfelmeden@thegoodpenguin.co.uk>
 > ---
-> 
-> Note, this may trigger a DT build warning "common-mode-channel: missing
-> type definition" if the builder doesn't include the recently added
-> common-mode-channel property [1]. This should be safe to ignore (passes
-> make dt_binding_check locally).
-> 
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=testing&id=d86deaec1c5b0fb60c3619e8d2ae7a1d722fd2ad
-> 
-> v4 changes:
-> * Picked up Conor's reviewed-by tag.
-> 
-> v3 changes:
-> * Change interrupts to be per pin instead of per signal.
-> * Drop diff-channels and single-channel properties.
-> * Odd numbered pins added to common-mode-channel property enum.
-> * REFGND and COM values changes to avoid confusion with pin numbers.
-> * Add inX-supply properties for odd numbed input pins.
-> 
-> v2 changes:
-> * Drop *-wlcsp compatible strings
-> * Don't use fallback compatible strings
-> * Reword supply descriptions
-> * Use standard channel properties instead of adi,pin-pairing
-> * Fix unnecessary | character
-> * Fix missing blank line
-> * Add header file with common mode channel macros
-> ---
->  .../devicetree/bindings/iio/adc/adi,ad4695.yaml    | 256 +++++++++++++++++++++
->  MAINTAINERS                                        |  10 +
->  include/dt-bindings/iio/adi,ad4695.h               |   9 +
->  3 files changed, 275 insertions(+)
+>  .../bindings/iio/humidity/sciosense,ens21x.yaml    | 55 ++++++++++++++++++++++
+>  1 file changed, 55 insertions(+)
 > 
 
-My bot found errors running 'make dt_binding_check' on your patch:
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/adc/adi,ad4695.yaml: common-mode-channel: missing type definition
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20240711-iio-adc-ad4695-v4-1-c31621113b57@baylibre.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 
