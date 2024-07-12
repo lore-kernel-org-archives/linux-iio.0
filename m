@@ -1,57 +1,57 @@
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0D6F175545
-	for <linux-iio@vger.kernel.org>; Fri, 12 Jul 2024 16:04:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CC5D1741D2
+	for <linux-iio@vger.kernel.org>; Fri, 12 Jul 2024 16:04:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720800247; cv=none; b=IJDoWvWjadGm5014qN+ETbbavs66YK7B5NQ2OxEMEjq8Yk5ptTaZ0j6LIArJq+6hQDpGVVFRCd5oEKHlqNH4uqrTOKEXnI+0Ge0Af+2oHHuhiltsn7UkwiHWd0xDlLF0LY1MLHQvmTW1cSXSGltiAz1Jm8B3OG0NXSBR3F2ttD0=
+	t=1720800247; cv=none; b=ewfIGgwNrDDBLG5QVJdmyvKMryC5wmpQv3ecbpuHG0fw4N5FGeA5ZxwFx9xaS291/TgpLfGU36tzUGo1R8qnk+dt9izTlU3v4V9j/9hs9sOoe2P/oMeDyniWYQOWZ6rRx3QhsxWW0qI/t8AB2HTqPEGiJVuIsKPCOPKb1i9++fw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1720800247; c=relaxed/simple;
-	bh=Y/k/wdBv/5beOfFpJAQFfQXG5QorlewTAyQxhJSger4=;
+	bh=0VbOetS204hz3J5pkBmUitCsW+y9jRjY3qZVNN6H5vs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=to68mJ4VT3ktQgUsLgUy0mPHjLq7p5Si2RT3D2Q3L/3tt23pb8CVwGviHo4kk6/VHU0THXr8usonYkGSI3AnPdpdIGmDoSjvy0djIOkCuiBu8zorPI+o4PhRp1fGw90chShxtlJaabOio5+plychYufz+U8nF5fS9vD9Q1mVkrY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=QnmO49jl; arc=none smtp.client-ip=209.85.210.42
+	 MIME-Version:Content-Type; b=GmezHfj4FTFqXiqWAEJsaOWiqEfvHa1KWXyZTOkxhjt8VWGAT1YiQV/3B2xa+zbIwV3z7ZIKAKjM+48X8EtVjwIw0qT6f2EdjXchZEK7qXwNgBOieVrGLsK+tv2GxQE1xJPuTTffZAgBGGUbFPxCdaWjc7QrwtXbsofTu43+oEM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=lBSiWQge; arc=none smtp.client-ip=209.85.210.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="QnmO49jl"
-Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-7037c464792so1128396a34.2
-        for <linux-iio@vger.kernel.org>; Fri, 12 Jul 2024 09:04:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="lBSiWQge"
+Received: by mail-ot1-f41.google.com with SMTP id 46e09a7af769-70368b53cc0so1040322a34.1
+        for <linux-iio@vger.kernel.org>; Fri, 12 Jul 2024 09:04:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1720800245; x=1721405045; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1720800244; x=1721405044; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Xtk0UvTBio0HdPiv9SeTHdQ/nYZSzty+YaDbepVhjDk=;
-        b=QnmO49jlVfOP5X+O3cHivPKymPZJd4lFil1HBGfoJ4qvg0IbvoPY9m5+ZokpaLpA7I
-         n8X+LlmymvsfE/47bQaV69wiGdOq4DIOIeymue6tFahIFyx3XueT678CYrhADLp/U35t
-         Gi78sFv2PYchfiYGMJJjcs0AWleJTuJu94gBBTtU8xO8uKivjWKDpyDYaZLwxW6btNlt
-         9HKfm4CxTucC66ijB11ptNxaug7uHPVY68m4fGMTJbf3ITmjFrlBnF7oE+XFFtCBNzaJ
-         1/uzj0V7sXa3Wd5Rm1QFGSoM+Cl5wZWSzfM94o0qaRY9aHu+SOodD7Wo0atNq0RXYVqV
-         SAXQ==
+        bh=y+/He1wcvWjmLAJpdLkPUiwNIP+C83lJXvlwPZpJIgw=;
+        b=lBSiWQgerEAy2fr7z4pByWR48BuAsT1R87VwVII8U/2Iy0eC8oiOgil7MkIr9/CeAu
+         nPbSsLaRyiaWBOJujo9GEC2uAB3yFftpX9MOGmhyT4GfRrBXQFRiwQX4O84TR8MuyI8j
+         ZzGe4/oBuRLoZVNo5fkr8o9NAx3f86iTQoijV6RMmqHnKD6bDbLBJS4NAc1Iu2y7oc4t
+         NKkRSaBHjRkTp6ycfwl1JkhN/EMWAUDCtwyDHYwsFir8OY8vlgkR6jpoGgyCIedbTZej
+         t7HWotzEcMjn2jxTQDZg5tbrcKQwIJ5LA/igeVW870hGR+6FKINx/ohuajkFPqtPUcG/
+         d50Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720800245; x=1721405045;
+        d=1e100.net; s=20230601; t=1720800244; x=1721405044;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Xtk0UvTBio0HdPiv9SeTHdQ/nYZSzty+YaDbepVhjDk=;
-        b=eQXyOneyyjJZCCq1+HHus3njBYvh091+tZ6hOBVpTqu7kY5+M4SyzT7iSpYDbsV6n8
-         TyxRpox56nBxna7vq3uzcGKYqmnXALP8uYS+3Bxvc2huQROMXPh451LEXBlRqWDGjTi0
-         xZ9aB7CpPrY0KLnswNx7k3ulnudV3OMqWr6J7abAplK/XVb3KVdlU2T7VSIP/CTwEjna
-         fyLvQmDiFTLd2tYmoZMFEYh9e/vQpJYlxl2vV9JLFJ2ICRQP550TwJheJZzkCI5p5ka8
-         HusQLiEFLqb3MSwd6A9gGOuRHqqGNi51GLiYHL0Iht29zP3TBx9Fgj22ejT1FKk256Y4
-         2LFg==
-X-Forwarded-Encrypted: i=1; AJvYcCVxu5Xm51OtgdrAxy+RH3Nibaa5Gv8mg8Co0oQQz8rbMetHv0Rkuick1ZBOH43V+i4qM63cruMWsfoqYR+tGm5EP0e1XeR8oqUB
-X-Gm-Message-State: AOJu0Yzhc15OS5d3qB+ilLcoZKwBVHog4d7RSst+QIEWTJepxslW99ne
-	pciLOkIojKbz8W/yRWQtuIfZ0YBvAq8vNOQrc0iQRb5TeC6SA1ValCs4uZe8AWk=
-X-Google-Smtp-Source: AGHT+IH9XtVdLylUZCQ+EzQ5KpOpsjBt1EAapLPX8XGhtAR2cvYah4rBJcTwPGQIOWEJcZUPCn7lRA==
-X-Received: by 2002:a05:6870:d612:b0:25e:8509:160e with SMTP id 586e51a60fabf-25eae74a09amr10623112fac.3.1720800244908;
+        bh=y+/He1wcvWjmLAJpdLkPUiwNIP+C83lJXvlwPZpJIgw=;
+        b=JAXDOIySj0KbktJfeRegAWBnqbovaEyDHrTAjwZZeeQO8YlOukedecOsCh92iD7Q1s
+         ei0IrRZS6RtcgvG2MENQGmfHdMRXTm6SHpNtt3zIyNGG/+FPI2Lrd65wfoUefyX5OrIb
+         6FvfhjyFN67Q+P5EEI9vy2m8gkPTjOEzt+zgVEP3lAFuO8OCKzH1OdvtyS1COijAHzpg
+         zgIiWIR+It596qfBIvOQ2jALQs/wGfhGWXHAkPpbtYNx3vaFyAS7QZhufJH0ZT0Ape0n
+         N1hYHB/x73QtsvX0sAkGPGMpeyvWRFT97LnHFLqud9lCGIKzKHBovGaBHx8gkc0Yvslm
+         Fb0g==
+X-Forwarded-Encrypted: i=1; AJvYcCWSeIo3qQr9qfRBTiPdwLF28WWXSnN50nWVFLlXt1GUQo4ytS9Qy4INqd++MP/xxee95uL/NuL2ubEBMqMraNO5IBIIL5Yxf1M6
+X-Gm-Message-State: AOJu0YzZd+aU8LbRBxzzDq4JdAwSYLRE7A/4d/7BQqM/ffFfFvucIsFx
+	mSNivXnmWF0K000nGPM0qNQ3ls7xzNkE7Z8j+HQ+HbWMWASTLJlFQpQYDGhI/f0=
+X-Google-Smtp-Source: AGHT+IH/srFVuntJPDWvs53ehKj/qU4WBBDG3GMrsOa1plrNwF2SxPQ7RJAITmopV3xaWH2vtGNyxQ==
+X-Received: by 2002:a05:6870:d69e:b0:254:9ded:a3bf with SMTP id 586e51a60fabf-25eaebdfb43mr10277746fac.45.1720800244107;
         Fri, 12 Jul 2024 09:04:04 -0700 (PDT)
 Received: from localhost.localdomain (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-70374f78d35sm1615131a34.23.2024.07.12.09.04.04
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-70374f78d35sm1615131a34.23.2024.07.12.09.04.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jul 2024 09:04:04 -0700 (PDT)
+        Fri, 12 Jul 2024 09:04:03 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Marius Cristea <marius.cristea@microchip.com>,
@@ -62,9 +62,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	Mark Brown <broonie@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/6] iio: dac: mcp4728: use devm_regulator_get_enable_read_voltage()
-Date: Fri, 12 Jul 2024 11:03:53 -0500
-Message-ID: <20240712-iio-regulator-refactor-round-3-v1-2-835017bae43d@baylibre.com>
+Subject: [PATCH 1/6] iio: dac: mcp4728: rename err to ret in probe function
+Date: Fri, 12 Jul 2024 11:03:52 -0500
+Message-ID: <20240712-iio-regulator-refactor-round-3-v1-1-835017bae43d@baylibre.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20240712-iio-regulator-refactor-round-3-v1-0-835017bae43d@baylibre.com>
 References: <20240712-iio-regulator-refactor-round-3-v1-0-835017bae43d@baylibre.com>
@@ -78,94 +78,70 @@ Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.14.0
 Content-Transfer-Encoding: 8bit
 
-This makes use of the new devm_regulator_get_enable_read_voltage()
-helper function to reduce boilerplate code in the MCP4728 DAC driver.
+To prepare for using a function that returns a non-error value, rename
+the variable 'err' to 'ret' in the probe function.
 
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
- drivers/iio/dac/mcp4728.c | 33 +++++++--------------------------
- 1 file changed, 7 insertions(+), 26 deletions(-)
+ drivers/iio/dac/mcp4728.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/iio/dac/mcp4728.c b/drivers/iio/dac/mcp4728.c
-index 300985beb35d..192175dc6419 100644
+index c449ca949465..300985beb35d 100644
 --- a/drivers/iio/dac/mcp4728.c
 +++ b/drivers/iio/dac/mcp4728.c
-@@ -84,7 +84,6 @@ enum mcp4728_scale {
- 
- struct mcp4728_data {
- 	struct i2c_client *client;
--	struct regulator *vdd_reg;
- 	bool powerdown;
- 	int scales_avail[MCP4728_N_SCALES * 2];
- 	struct mcp4728_channel_data chdata[MCP4728_N_CHANNELS];
-@@ -415,15 +414,9 @@ static void mcp4728_init_scale_avail(enum mcp4728_scale scale, int vref_mv,
- 	data->scales_avail[scale * 2 + 1] = value_micro;
- }
- 
--static int mcp4728_init_scales_avail(struct mcp4728_data *data)
-+static int mcp4728_init_scales_avail(struct mcp4728_data *data, int vdd_mv)
- {
--	int ret;
--
--	ret = regulator_get_voltage(data->vdd_reg);
--	if (ret < 0)
--		return ret;
--
--	mcp4728_init_scale_avail(MCP4728_SCALE_VDD, ret / 1000, data);
-+	mcp4728_init_scale_avail(MCP4728_SCALE_VDD, vdd_mv, data);
- 	mcp4728_init_scale_avail(MCP4728_SCALE_VINT_NO_GAIN, 2048, data);
- 	mcp4728_init_scale_avail(MCP4728_SCALE_VINT_GAIN_X2, 4096, data);
- 
-@@ -530,17 +523,12 @@ static int mcp4728_init_channels_data(struct mcp4728_data *data)
- 	return 0;
- }
- 
--static void mcp4728_reg_disable(void *reg)
--{
--	regulator_disable(reg);
--}
--
- static int mcp4728_probe(struct i2c_client *client)
- {
+@@ -540,7 +540,7 @@ static int mcp4728_probe(struct i2c_client *client)
  	const struct i2c_device_id *id = i2c_client_get_device_id(client);
  	struct mcp4728_data *data;
  	struct iio_dev *indio_dev;
--	int ret;
-+	int ret, vdd_mv;
+-	int err;
++	int ret;
  
  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
  	if (!indio_dev)
-@@ -550,18 +538,11 @@ static int mcp4728_probe(struct i2c_client *client)
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
+@@ -554,14 +554,14 @@ static int mcp4728_probe(struct i2c_client *client)
+ 	if (IS_ERR(data->vdd_reg))
+ 		return PTR_ERR(data->vdd_reg);
  
--	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
--	if (IS_ERR(data->vdd_reg))
--		return PTR_ERR(data->vdd_reg);
--
--	ret = regulator_enable(data->vdd_reg);
--	if (ret)
-+	ret = devm_regulator_get_enable_read_voltage(&client->dev, "vdd");
-+	if (ret < 0)
- 		return ret;
+-	err = regulator_enable(data->vdd_reg);
+-	if (err)
+-		return err;
++	ret = regulator_enable(data->vdd_reg);
++	if (ret)
++		return ret;
  
--	ret = devm_add_action_or_reset(&client->dev, mcp4728_reg_disable,
--				       data->vdd_reg);
--	if (ret)
--		return ret;
-+	vdd_mv = ret / 1000;
+-	err = devm_add_action_or_reset(&client->dev, mcp4728_reg_disable,
++	ret = devm_add_action_or_reset(&client->dev, mcp4728_reg_disable,
+ 				       data->vdd_reg);
+-	if (err)
+-		return err;
++	if (ret)
++		return ret;
  
  	/*
  	 * MCP4728 has internal EEPROM that save each channel boot
-@@ -575,7 +556,7 @@ static int mcp4728_probe(struct i2c_client *client)
+@@ -569,15 +569,15 @@ static int mcp4728_probe(struct i2c_client *client)
+ 	 * driver at kernel boot. mcp4728_init_channels_data() reads back DAC
+ 	 * settings and stores them in data structure.
+ 	 */
+-	err = mcp4728_init_channels_data(data);
+-	if (err) {
+-		return dev_err_probe(&client->dev, err,
++	ret = mcp4728_init_channels_data(data);
++	if (ret) {
++		return dev_err_probe(&client->dev, ret,
  			"failed to read mcp4728 current configuration\n");
  	}
  
--	ret = mcp4728_init_scales_avail(data);
-+	ret = mcp4728_init_scales_avail(data, vdd_mv);
- 	if (ret) {
- 		return dev_err_probe(&client->dev, ret,
+-	err = mcp4728_init_scales_avail(data);
+-	if (err) {
+-		return dev_err_probe(&client->dev, err,
++	ret = mcp4728_init_scales_avail(data);
++	if (ret) {
++		return dev_err_probe(&client->dev, ret,
  				     "failed to init scales\n");
+ 	}
+ 
 
 -- 
 2.43.0
