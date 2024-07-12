@@ -1,46 +1,48 @@
 Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4580171075;
-	Fri, 12 Jul 2024 15:25:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0097173336;
+	Fri, 12 Jul 2024 15:25:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720797918; cv=none; b=AxZQX40cNf9iM0Vql4vwj4axPUbEFGDBRwhpvHfF6DtQSGxagDxusOyH1tl9XZtQq8UmGEbWr9ArTCkdTX51XUKNOttxCsGM5Sq4TbNNR2WZeMskf3iD6y4XzoN/GEEKT9/sQkvNtY6xsseJyUNh+gg9bWrlrRlT/InVl9XuO0E=
+	t=1720797918; cv=none; b=oK7P81f9PYaw/EIG1SuRTn9DkwJ1OUb6dLvuRmetspLfwjdK2kAT1JNLphsxwA5j/ynmXeD3LR5KzA9GB2Zqw0F+PMMrKoEbA26SOhSp4QEjBm4TqLlewFVzmJVjwxWzkvQlV084FSZMNdyQ0oCH7Q8FFZslQP5UsWW3aymgtmE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1720797918; c=relaxed/simple;
-	bh=Nf3c5cFPQqH6NjdQ5t3abQSsHaZokZU2IJwpFQAzxTs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lyPXCDiaVgVAtC4AopwkfZ0NkY8UyWey/VEsZvKWv8RbQoV/9SNCMJAByZZ+XQwV88heFe67v49AqAq6GrphgjZo0ypXazNy95IBddit34KmAnsp5lVcU3QozoJrwBn5deHdN3KUIGGueV8YM7j8yszexoOgYYFVZdQ5UkV8HsA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=Ue0QRp+W; arc=none smtp.client-ip=178.21.23.139
+	bh=39UsyjL9EP1PAdrBgELTOcXGolrV68DGXQAkjwpdElU=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=fPfxdFmb9rCgCHTXt8Y19sSFUrvoerdc+Ook/uZ+xaEe/h+eUA0rhS3MbzUwDFViThjcAtIAa0f2fmgOOqWoP1k1Y24VXO1VcJQybsyQNzlo3yX1mc8cJCQaADXnXE+A1F/CDNIEO9M4SudhYTwsBTcOmgAWK6cBYAO8gV2sVp8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=KH8s7PT6; arc=none smtp.client-ip=178.21.23.139
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="Ue0QRp+W"
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="KH8s7PT6"
 Received: from localhost (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id E3D1441A24;
-	Fri, 12 Jul 2024 17:25:05 +0200 (CEST)
+	by disroot.org (Postfix) with ESMTP id B996641A14;
+	Fri, 12 Jul 2024 17:25:13 +0200 (CEST)
 X-Virus-Scanned: SPAM Filter at disroot.org
 Received: from layka.disroot.org ([127.0.0.1])
 	by localhost (disroot.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WHmxWArao7F8; Fri, 12 Jul 2024 17:25:05 +0200 (CEST)
+	with ESMTP id H9SaWp3caJ0W; Fri, 12 Jul 2024 17:25:13 +0200 (CEST)
 From: Kaustabh Chakraborty <kauschluss@disroot.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1720797905; bh=Nf3c5cFPQqH6NjdQ5t3abQSsHaZokZU2IJwpFQAzxTs=;
-	h=From:To:Cc:Subject:Date;
-	b=Ue0QRp+WNS90FLcaHVnbZMvBVre3++HUBVGu2tCdVppyhZdzfohN1ffXUnIbBwpcb
-	 Fn52/3gZwYJSA9Wt//tdwhoheXW/wDl4s5WZvLucFwkWLrdRMD8DNe4/fv4pDyCo0p
-	 Y5K/oOvL3CH78vV0+SN0ocXzAOaV87TAJ8IppVNDeFpHPlHn1Fn1T+iyn7BoU8AYzf
-	 RquPp4Q0pcWS7+W3DAHyeM2VnZ4QLM6mHLym88IjeylLyoNcWQ768hrhVK8ybwOkWZ
-	 icpqg6FTSaJrzAivTO5VfzG5yJKviAzkAoqwF+0C0S0VbMMVQiOt5LZD+4e0gE+lWo
-	 MWRUxgtD9/v4g==
+	t=1720797913; bh=39UsyjL9EP1PAdrBgELTOcXGolrV68DGXQAkjwpdElU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=KH8s7PT6MEGFVqT4+lo78frWDiDCVz0X3tehopeBT84CjPi8o/7HCgaT0YrzKsgsp
+	 f9rhspMP9fdffAaLMg8hnljrLmy+oS4/PWXKZvSM/90wR0E8Fvq16d1sn10jz+UJev
+	 lAhhLO9cyDN/l/Mx8pK2cswZRxjsmWyX4XCEEPzlkv54svcBL+m8vxD42aXb/lRq0v
+	 eFU4OF6vnwm7YX2LMfx0L8MDeo92iwIc57sZrqf/xzmcV48XWwGa9CXTRMWMxnyAPM
+	 N1OeXpaJEu9RvKQ2tW303HG0WlNxQLNwiIiXUJYrZZpkKDOH1+gsY4W5t4CkhlZFC+
+	 3Zfq2uL81y1cA==
 To: linux-iio@vger.kernel.org,
 	jic23@kernel.org
 Cc: devicetree@vger.kernel.org,
 	conor+dt@kernel.org,
-	Kaustabh Chakraborty <kauschluss@disroot.org>,
-	Conor Dooley <conor@kernel.org>
-Subject: [PATCH 1/3] iio: light: stk3310: relax chipid check warning
-Date: Fri, 12 Jul 2024 20:54:00 +0530
-Message-ID: <20240712152417.97726-1-kauschluss@disroot.org>
+	Kaustabh Chakraborty <kauschluss@disroot.org>
+Subject: [PATCH 3/3] dt-bindings: iio: light: stk33xx: add compatible for stk3013
+Date: Fri, 12 Jul 2024 20:54:02 +0530
+Message-ID: <20240712152417.97726-3-kauschluss@disroot.org>
+In-Reply-To: <20240712152417.97726-1-kauschluss@disroot.org>
+References: <20240712152417.97726-1-kauschluss@disroot.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -49,30 +51,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In order to allow newer devices which are compatible with existing
-sensors, issuing a warning for an unknown chipid indicates that
-something has gone wrong with the init process, which isn't ideal.
-Swap it with a friendlier info message to get things right.
+Add the compatible string of stk3013 to the existing list.
 
-Suggested-by: Conor Dooley <conor@kernel.org>
 Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
 ---
- drivers/iio/light/stk3310.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/iio/light/stk33xx.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-index e3470d6743ef..48a971de6a04 100644
---- a/drivers/iio/light/stk3310.c
-+++ b/drivers/iio/light/stk3310.c
-@@ -496,7 +496,7 @@ static int stk3310_init(struct iio_dev *indio_dev)
- 
- 	ret = stk3310_check_chip_id(chipid);
- 	if (ret < 0)
--		dev_warn(&client->dev, "unknown chip id: 0x%x\n", chipid);
-+		dev_info(&client->dev, "new unknown chip id: 0x%x\n", chipid);
- 
- 	state = STK3310_STATE_EN_ALS | STK3310_STATE_EN_PS;
- 	ret = stk3310_set_state(data, state);
+diff --git a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
+index f6e22dc9814a..6003da66a7e6 100644
+--- a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
++++ b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
+@@ -19,6 +19,7 @@ allOf:
+ properties:
+   compatible:
+     enum:
++      - sensortek,stk3013
+       - sensortek,stk3310
+       - sensortek,stk3311
+       - sensortek,stk3335
 -- 
 2.45.2
 
