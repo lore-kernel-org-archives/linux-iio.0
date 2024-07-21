@@ -1,117 +1,90 @@
-Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19493156C72;
-	Sun, 21 Jul 2024 10:16:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCE26166302;
+	Sun, 21 Jul 2024 13:35:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721556967; cv=none; b=vBDEWMdtj7v7j7bVSJ2p70ES/VbQzF5vGouVRt/YUavBAEO1qx1ACuvaE28XjSX/u8m9cavGUxRg2bMOAl8Bs1eVRpjS+EDtJFPbwCpauCfk8Fl7TJVGg5yHuNzbuvZgIURQD+aSeeF8Zdi1AnnVMXf2vbO2SFfkwTkHkJa3RjE=
+	t=1721568920; cv=none; b=EOhd0uOyuSNyXHn5ducuO5WUawXCbHSlOg/Gi7BI2uj1XnljABeKDEUUt2VLT3JN8T6lGw+DU2ONfHK5mfFqT5hYaTDvvDR5vhecqWdPRDbgCeAI+dEMkAvs1pb+RFafFTrGMsgR6SVAzwytO17URsfF0P86pMoV6npgsp/6o9o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721556967; c=relaxed/simple;
-	bh=VbSZYwRv3jtpNXDiyhysm6/0+1x9p2kdZVp+aQs9vqw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=tA24tkPjAfexDd/2hprnlIYNSrbASndNO8EOElHnAtHCAwTTnAwfZlgDf015BmmNK2v0DUb5mXeugpDfG77z7+aF+WfMK5mdMj9Xyyin5j52XZ40mT6pExnU3+15x7I6HyL9duROKzY+XhFCI8iV2ZyRN2qDzpcmlESc9kIvhoI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=MS6qEWPr; arc=none smtp.client-ip=178.21.23.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
+	s=arc-20240116; t=1721568920; c=relaxed/simple;
+	bh=tGX2yKYZTIt3Q0s/YAylIxLVx4C+iRJs8AHqvQGziNY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FvmDzQtfCZ1XD1mkirAwecCL7cZq/miTeYRTVcSBKwfyswPCb6bVm3QVm7fgILBYdRx6nS0fk2RH+qUzbFGlefXsBG0AXP0XjqTOuV4x+a1+lCyGq0wrhGcZVG2Y+SeNNjDQonnyRTHKLL4FIHFbL0dHtKPcWDoa5tSZYKzUz2A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C1fNyB/N; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="MS6qEWPr"
-Received: from localhost (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id 3C3C841805;
-	Sun, 21 Jul 2024 12:15:59 +0200 (CEST)
-X-Virus-Scanned: SPAM Filter at disroot.org
-Received: from layka.disroot.org ([127.0.0.1])
-	by localhost (disroot.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id m1VOMynD1hsG; Sun, 21 Jul 2024 12:15:58 +0200 (CEST)
-From: Kaustabh Chakraborty <kauschluss@disroot.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1721556958; bh=VbSZYwRv3jtpNXDiyhysm6/0+1x9p2kdZVp+aQs9vqw=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=MS6qEWPrVL4eDaBDaedLGIFIxAPdpEuk8aim69gVyukw0ZY7FcC8l8SLsl64XfrJR
-	 632jvmmnUd611oyAGMbPNjxr5wXgV4PzWAy82hoyYYvWhTeGZomjB1Zr5amgrBW0NR
-	 ZrXO+2gH2IVO0tg047wKe044tGeXOJs/NhNcrMyBRbBhgMA/TZ+5BvVNqnDnAjFvtX
-	 jXzJZY/9j4B/6uck2OBSUQ1BI/XaItgVMvNinbs+XUz3GPp/6l1q96FVjBQTdZB0vi
-	 Z/sjvgDVlXVrVKglnTHF2q6HbWQxlCxxWZ2fdO1+Dn5aAM5uRSd8KPwgAQRVPGO0/Z
-	 WNWFTBolFkm7w==
-Date: Sun, 21 Jul 2024 15:44:30 +0530
-Subject: [PATCH v3 2/3] iio: light: stk3310: add support for stk3013
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C1fNyB/N"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4266ed6c691so22225465e9.3;
+        Sun, 21 Jul 2024 06:35:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1721568917; x=1722173717; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tGX2yKYZTIt3Q0s/YAylIxLVx4C+iRJs8AHqvQGziNY=;
+        b=C1fNyB/NK9ZmQsA95C5bC+yvcx4j018IntY7vS7prETMNoNk3kXyAt3W49h6W/xswW
+         vs3GjaLe5ZPMRJ01YZ4slfrQTMslcqv2aHAWus1/fSJtenDerMtkFNZsdIMMkfSGAuCJ
+         Tuj6TywvOQ60qaRy5hxRx7a5LCcBYLzBGVioZLESwg3aQ1KoGqzJJVZy29VnMHcdDxWW
+         E1VetEGbbW4Xldg139XtyX+sLWiDx40oZgbJahj7KCOQpK+CWq4NsrW+sEBOS2adNuE3
+         fcIL5+UNQk9lElg+UABXVZU3inccEhYyZ49v/yJr3fVi1Z7y8QPO5rig56u8vRHJNSql
+         b3TQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1721568917; x=1722173717;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tGX2yKYZTIt3Q0s/YAylIxLVx4C+iRJs8AHqvQGziNY=;
+        b=EefBArOXWZPT4A0bUlRdmYGQynQanT3F7RrlOjV23Y0OYeMg/Mmg/zO5NussstpZ/H
+         T4gSFlJrYCgRSKajIoL7++2lRc9J7yE4URk6qFsB/ZZE+wGr7EHDSnfmDZHut48YNGhe
+         +xRRvk6jak0LR6qS/HUzncBG3ZaatBS1i5SQbxDNmHHe4qJI5xs9+DTbLebPTEgM2aRo
+         tsDH8QGCwpPhmk+OhwjPwJGOVm2B+rT/Rem1pQp/7Q8aSEQ0mu+GIUdumaUoRQqu26Qs
+         B1+l502ojX0DfIT4Shdtzlx/5Kkvuy8gihS3gZaaBBPi/4Ez+Wxbua3GKEs2W1UCBabq
+         xkYw==
+X-Forwarded-Encrypted: i=1; AJvYcCXmlSSit8FO7zgyUrsyp5XNHkLXjEwPypBDRGp04H7ePkoSz9eabOdoXXotOtW1XnfQhflegHliOs/k42MkjfvZBrTy/dYZHxYeG/O51hFEUxJxJ/1iH71PQbpqVW9hggt1PzP9i2zXrSca4rG2+ajAHLEQGe8Y500BfKxd0ef6i4woow==
+X-Gm-Message-State: AOJu0YxGbMvSMm2MIA/pMAj/QOXFxiot3UZfqJ4/Tjfu/Ftce/ew2GHv
+	fkX92QfMl1DU49q1QdRtR+2WTnO/OR01c+g1e0h2MZT6GlftgWEW
+X-Google-Smtp-Source: AGHT+IEcn84Cq+Gii4W3vduMEPECvPWBWA0iK6LpwbsePcodSCViWjBHOrRvWfwO2/rBchjlyKEZyg==
+X-Received: by 2002:a05:600c:cc6:b0:426:6f48:2dad with SMTP id 5b1f17b1804b1-427daa67d53mr29230125e9.35.1721568916747;
+        Sun, 21 Jul 2024 06:35:16 -0700 (PDT)
+Received: from [172.27.139.187] (c7.campus.utcluj.ro. [193.226.6.226])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3687868ac48sm5992440f8f.29.2024.07.21.06.35.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 21 Jul 2024 06:35:16 -0700 (PDT)
+Message-ID: <8b616aec-06ce-462c-9161-1c05adcd1069@gmail.com>
+Date: Sun, 21 Jul 2024 16:35:14 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240721-stk3310-v3-2-98fcb6f551a1@disroot.org>
-References: <20240721-stk3310-v3-0-98fcb6f551a1@disroot.org>
-In-Reply-To: <20240721-stk3310-v3-0-98fcb6f551a1@disroot.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 3/4] dt-bindings: iio: adc: ad7192: Add clock provider
 To: Jonathan Cameron <jic23@kernel.org>, Conor Dooley <conor@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- Kaustabh Chakraborty <kauschluss@disroot.org>
+Cc: Alisa-Dariana Roman <alisa.roman@analog.com>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ Michael Hennerich <michael.hennerich@analog.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+References: <20240717212535.8348-1-alisa.roman@analog.com>
+ <20240717212535.8348-4-alisa.roman@analog.com>
+ <20240718-revisable-penpal-bc06ff6366ab@spud>
+ <20240720144257.200b4511@jic23-huawei>
+Content-Language: en-US
+From: Alisa-Dariana Roman <alisadariana@gmail.com>
+In-Reply-To: <20240720144257.200b4511@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Add support for Sensortek's STK3013 in the driver. The part bears the
-product ID 0x31.
+Thank you for suggesting and taking care of the tweaks!
 
-As seen in [1], Sensortek lists STK3013 as a proximity sensor. But it
-has been experimentally observed that they do have ambient light sensing
-capabilities. Furthermore, [2] implements a proximity and ambient light
-sensor driver for STK3x1x devices, which is also indicative of the fact
-that these parts are also ambient light sensors.
+I just wanted to point out that some little stray changes found their way into this commit:
 
-[1] https://www.sensortek.com.tw/index.php/en/products/optical-sensor/
-[2] https://android.googlesource.com/kernel/msm.git/+/e6dfa4641d88201e8019be19ff557e5d2cf4572f
+https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=testing&id=42991c882f7f264ff8533c289edd015bbc0bc5a7
 
-Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
----
- drivers/iio/light/stk3310.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-index 48a971de6a04..ed20b6714546 100644
---- a/drivers/iio/light/stk3310.c
-+++ b/drivers/iio/light/stk3310.c
-@@ -35,6 +35,7 @@
- #define STK3310_STATE_EN_ALS			BIT(1)
- #define STK3310_STATE_STANDBY			0x00
- 
-+#define STK3013_CHIP_ID_VAL			0x31
- #define STK3310_CHIP_ID_VAL			0x13
- #define STK3311_CHIP_ID_VAL			0x1D
- #define STK3311A_CHIP_ID_VAL			0x15
-@@ -84,6 +85,7 @@ static const struct reg_field stk3310_reg_field_flag_nf =
- 				REG_FIELD(STK3310_REG_FLAG, 0, 0);
- 
- static const u8 stk3310_chip_ids[] = {
-+	STK3013_CHIP_ID_VAL,
- 	STK3310_CHIP_ID_VAL,
- 	STK3311A_CHIP_ID_VAL,
- 	STK3311S34_CHIP_ID_VAL,
-@@ -700,6 +702,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(stk3310_pm_ops, stk3310_suspend,
- 				stk3310_resume);
- 
- static const struct i2c_device_id stk3310_i2c_id[] = {
-+	{ "STK3013" },
- 	{ "STK3310" },
- 	{ "STK3311" },
- 	{ "STK3335" },
-@@ -708,6 +711,7 @@ static const struct i2c_device_id stk3310_i2c_id[] = {
- MODULE_DEVICE_TABLE(i2c, stk3310_i2c_id);
- 
- static const struct acpi_device_id stk3310_acpi_id[] = {
-+	{"STK3013", 0},
- 	{"STK3310", 0},
- 	{"STK3311", 0},
- 	{}
-@@ -716,6 +720,7 @@ static const struct acpi_device_id stk3310_acpi_id[] = {
- MODULE_DEVICE_TABLE(acpi, stk3310_acpi_id);
- 
- static const struct of_device_id stk3310_of_match[] = {
-+	{ .compatible = "sensortek,stk3013", },
- 	{ .compatible = "sensortek,stk3310", },
- 	{ .compatible = "sensortek,stk3311", },
- 	{ .compatible = "sensortek,stk3335", },
-
--- 
-2.45.2
+Kind regards,
+Alisa-Dariana Roman.
 
