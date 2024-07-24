@@ -1,48 +1,48 @@
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C052D54759;
-	Wed, 24 Jul 2024 15:38:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29AF9158849;
+	Wed, 24 Jul 2024 15:39:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721835501; cv=none; b=gMJTjZSGeigOc99Lf+1DLWotZTxMvmXGQTgNfJRrpfz+giGaJjx+GvJqFTLpxUwMcqzxs+CCdQ+DeJxwfM3EtE9x6xgy3qqmt7FCOCL5dmfUmIb6946WogiUoSTxjfJAgSkUyITYoqsIzAmRcGHD1FDpTIARN+bKwcWOn4cHb5c=
+	t=1721835562; cv=none; b=JIvYQUmUdomYda2r63gLBZUOeygKoK9ci6xh/fw4Tz3gVkafYS8RhFp8DKxw+OJQeiQ7I0LzfQW4H2n9KAN9sDB1w4VkVs70jXliK1zlk4/VhvtCwmzuv2SgVkluRS674ZERa9DZiU4ulOsotakZKabe+2BgY/j3u/SqK/ncH6E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721835501; c=relaxed/simple;
-	bh=J6eVoVjI0r9LeuxtEHsnFajz6RHW/WnvBzjGTiYau60=;
+	s=arc-20240116; t=1721835562; c=relaxed/simple;
+	bh=vJtj0uiRD+wRP4s4o+1Grzp9TQho48vg38ByCKz9zWQ=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IdbLp2LDeUH4Ab/tiMK/AtnuvEixCciVvQFfL11fhqlc7GairBdMcZxabAAib3DmEvHGTKEscP+jHEWb8hLgfk7loGpBbx+o31aEPOOZZsLYurrkpLWhHBz4A3rVXp2DVVkl4cFofLWvR9gut0RQ26HfkIqIwGAOkp3lyonvHgM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=ba+c+5oy; arc=none smtp.client-ip=185.132.182.106
+	 MIME-Version:Content-Type; b=QNG66t+5iiqMCCFI0IlimKn7ynPwVzwSLARB/NZP2RhdkGMMHW/ecZ0CPIVFfeW25dyC1jbGHhhVsShqUNke7EFQouRZ9RpXqwTOiNwLQgOIIMtjA8glcCu7v0vJlo4uvyxaNKwDsfSyYbWo8HRR8ugxe3BFua3HRAikqshlf7U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=y9Y5/U8W; arc=none smtp.client-ip=185.132.182.106
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="ba+c+5oy"
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 46OB0dcJ014233;
-	Wed, 24 Jul 2024 17:38:00 +0200
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="y9Y5/U8W"
+Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 46OBrGTk007164;
+	Wed, 24 Jul 2024 17:39:04 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=selector1; bh=
-	JgtFBca7850c8/WsO4wUaROCqbM4+87GpTLt7ntXJNI=; b=ba+c+5oyhvGoc5qt
-	5ePdL0EykeCA54Du+LczrjKo0exE8ZMqeKuT5cRzGjGsydxIOxgEQhQUiqTT0LYS
-	DtaV0MPdB+fljopFyyQEI8AAGl2fq/eYZXbPd2mIDx+yEc8EOy6kaoy7KlJ9gWL5
-	Ub4WiYo9H8zQu4c6kMhR+OqxSO0E+qFImnAoJyrEj3TnDO2yZq80wqFIAwpqyC23
-	QRQEQgsYu4aCxaP0h351YdVAohIaWDc6HYZRYeYls0aAfNvr0LYOlDDaGOdKf5H1
-	USWxoiSR5g/kv/eZ2b4Nb+KqXx3+A+zRKFK0sJ4yLvicw2wJyDj4dc/BOLnQzPX0
-	OmJjmA==
+	obAHl17FOwdgFwlnCpiB2B4Xs5wcoUI3xJvQSaUYnm8=; b=y9Y5/U8WkW07faan
+	ZnYGE0i4Ps+G2YLRrnRMSUQUp0fCoXf4l/wHN/+Bj8KaJAaPvmtTm9HsdsTIBW9S
+	dujDZ7ZETWxsA+415bEL/bK8duNpR1bhF0gm83ntxHbGeasRjWf6QrcZBJaSbbHV
+	DlkeCi+fv6Rk84IVnX3mATZpfa6WKQ/Ecb2rK1TR9qmXVM2F+NyONRJ15WdDbww5
+	GRhy6/5tG09dI7KdLIKDEWVqI6z02wacuqRbBo9E1/mXhS130vIl4ctVqdlRPxMK
+	L7iImEJuOyja+kyKveaHI6e6RWp/mnFr7V2UiOuVr/sEaRtUG7jWvjhpvUSRcJES
+	6NUeuw==
 Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 40g2nh87gr-1
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 40gpt16a0k-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 24 Jul 2024 17:38:00 +0200 (MEST)
+	Wed, 24 Jul 2024 17:39:03 +0200 (MEST)
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 7F2C140045;
-	Wed, 24 Jul 2024 17:37:50 +0200 (CEST)
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 4EEF640045;
+	Wed, 24 Jul 2024 17:38:53 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5DA612414AB;
-	Wed, 24 Jul 2024 17:37:28 +0200 (CEST)
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A9A2D2414B1;
+	Wed, 24 Jul 2024 17:38:30 +0200 (CEST)
 Received: from localhost (10.252.12.39) by SHFDAG1NODE1.st.com (10.75.129.69)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.37; Wed, 24 Jul
- 2024 17:37:28 +0200
+ 2024 17:38:30 +0200
 From: Olivier Moysan <olivier.moysan@foss.st.com>
 To: <fabrice.gasnier@foss.st.com>, Nuno Sa <nuno.sa@analog.com>,
         Olivier
@@ -50,9 +50,9 @@ To: <fabrice.gasnier@foss.st.com>, Nuno Sa <nuno.sa@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
 CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 1/9] iio: add read scale and offset services to iio backend framework
-Date: Wed, 24 Jul 2024 17:36:29 +0200
-Message-ID: <20240724153639.803263-2-olivier.moysan@foss.st.com>
+Subject: [PATCH v5 3/9] iio: add child nodes support in iio backend framework
+Date: Wed, 24 Jul 2024 17:36:31 +0200
+Message-ID: <20240724153639.803263-4-olivier.moysan@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20240724153639.803263-1-olivier.moysan@foss.st.com>
 References: <20240724153639.803263-1-olivier.moysan@foss.st.com>
@@ -70,112 +70,129 @@ X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-07-24_15,2024-07-24_01,2024-05-17_01
 
-Add iio_backend_read_scale() and iio_backend_read_offset() services
-to read channel scale and offset from an IIO backbend device.
-
-Also add a read_raw callback which replicates the read_raw callback of
-the IIO framework, and is intended to request miscellaneous channel
-attributes from the backend device.
-Both scale and offset helpers use this callback.
+Add an API to support IIO generic channels binding:
+http://devicetree.org/schemas/iio/adc/adc.yaml#
+This new API is needed, as generic channel DT node isn't populated as a
+device.
+Add devm_iio_backend_fwnode_get() to allow an IIO device backend
+consumer to reference backend phandles in its child nodes.
 
 Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
 Reviewed-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/industrialio-backend.c | 19 +++++++++++++++++++
- include/linux/iio/backend.h        | 24 +++++++++++++++++++++++-
- 2 files changed, 42 insertions(+), 1 deletion(-)
+ drivers/iio/industrialio-backend.c | 57 +++++++++++++++++++++---------
+ include/linux/iio/backend.h        |  3 ++
+ 2 files changed, 44 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
-index f9da635cdfea..72dc82a42d8f 100644
+index b53904b03464..9e5ae3823595 100644
 --- a/drivers/iio/industrialio-backend.c
 +++ b/drivers/iio/industrialio-backend.c
-@@ -361,6 +361,25 @@ int devm_iio_backend_request_buffer(struct device *dev,
+@@ -577,19 +577,10 @@ static int __devm_iio_backend_get(struct device *dev, struct iio_backend *back)
+ 	return 0;
  }
- EXPORT_SYMBOL_NS_GPL(devm_iio_backend_request_buffer, IIO_BACKEND);
  
+-/**
+- * devm_iio_backend_get - Device managed backend device get
+- * @dev: Consumer device for the backend
+- * @name: Backend name
+- *
+- * Get's the backend associated with @dev.
+- *
+- * RETURNS:
+- * A backend pointer, negative error pointer otherwise.
+- */
+-struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name)
++static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, const char *name,
++							 struct fwnode_handle *fwnode)
+ {
+-	struct fwnode_handle *fwnode;
++	struct fwnode_handle *fwnode_back;
+ 	struct iio_backend *back;
+ 	unsigned int index;
+ 	int ret;
+@@ -604,17 +595,17 @@ struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name)
+ 		index = 0;
+ 	}
+ 
+-	fwnode = fwnode_find_reference(dev_fwnode(dev), "io-backends", index);
++	fwnode_back = fwnode_find_reference(fwnode, "io-backends", index);
+ 	if (IS_ERR(fwnode))
+ 		return dev_err_cast_probe(dev, fwnode,
+ 					  "Cannot get Firmware reference\n");
+ 
+ 	guard(mutex)(&iio_back_lock);
+ 	list_for_each_entry(back, &iio_back_list, entry) {
+-		if (!device_match_fwnode(back->dev, fwnode))
++		if (!device_match_fwnode(back->dev, fwnode_back))
+ 			continue;
+ 
+-		fwnode_handle_put(fwnode);
++		fwnode_handle_put(fwnode_back);
+ 		ret = __devm_iio_backend_get(dev, back);
+ 		if (ret)
+ 			return ERR_PTR(ret);
+@@ -622,11 +613,45 @@ struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name)
+ 		return back;
+ 	}
+ 
+-	fwnode_handle_put(fwnode);
++	fwnode_handle_put(fwnode_back);
+ 	return ERR_PTR(-EPROBE_DEFER);
+ }
++
 +/**
-+ * iio_backend_read_raw - Read a channel attribute from a backend device.
-+ * @back:	Backend device
-+ * @chan:	IIO channel reference
-+ * @val:	First returned value
-+ * @val2:	Second returned value
-+ * @mask:	Specify the attribute to return
++ * devm_iio_backend_get - Device managed backend device get
++ * @dev: Consumer device for the backend
++ * @name: Backend name
++ *
++ * Get's the backend associated with @dev.
 + *
 + * RETURNS:
-+ * 0 on success, negative error number on failure.
++ * A backend pointer, negative error pointer otherwise.
 + */
-+int iio_backend_read_raw(struct iio_backend *back,
-+			 struct iio_chan_spec const *chan, int *val, int *val2,
-+			 long mask)
++struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name)
 +{
-+	return iio_backend_op_call(back, read_raw, chan, val, val2, mask);
++	return __devm_iio_backend_fwnode_get(dev, name, dev_fwnode(dev));
 +}
-+EXPORT_SYMBOL_NS_GPL(iio_backend_read_raw, IIO_BACKEND);
+ EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get, IIO_BACKEND);
+ 
++/**
++ * devm_iio_backend_fwnode_get - Device managed backend firmware node get
++ * @dev: Consumer device for the backend
++ * @name: Backend name
++ * @fwnode: Firmware node of the backend consumer
++ *
++ * Get's the backend associated with a firmware node.
++ *
++ * RETURNS:
++ * A backend pointer, negative error pointer otherwise.
++ */
++struct iio_backend *devm_iio_backend_fwnode_get(struct device *dev,
++						const char *name,
++						struct fwnode_handle *fwnode)
++{
++	return __devm_iio_backend_fwnode_get(dev, name, fwnode);
++}
++EXPORT_SYMBOL_NS_GPL(devm_iio_backend_fwnode_get, IIO_BACKEND);
 +
- static struct iio_backend *iio_backend_from_indio_dev_parent(const struct device *dev)
- {
- 	struct iio_backend *back = ERR_PTR(-ENODEV), *iter;
+ /**
+  * __devm_iio_backend_get_from_fwnode_lookup - Device managed fwnode backend device get
+  * @dev: Consumer device for the backend
 diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
-index 4e81931703ab..578e8f33d27b 100644
+index 84d362272fc7..424a64477d48 100644
 --- a/include/linux/iio/backend.h
 +++ b/include/linux/iio/backend.h
-@@ -3,6 +3,7 @@
- #define _IIO_BACKEND_H_
- 
- #include <linux/types.h>
-+#include <linux/iio/iio.h>
- 
- struct iio_chan_spec;
- struct fwnode_handle;
-@@ -81,6 +82,7 @@ enum iio_backend_sample_trigger {
-  * @extend_chan_spec: Extend an IIO channel.
-  * @ext_info_set: Extended info setter.
-  * @ext_info_get: Extended info getter.
-+ * @read_raw: Read a channel attribute from a backend device
-  **/
- struct iio_backend_ops {
- 	int (*enable)(struct iio_backend *back);
-@@ -113,6 +115,9 @@ struct iio_backend_ops {
- 			    const char *buf, size_t len);
- 	int (*ext_info_get)(struct iio_backend *back, uintptr_t private,
- 			    const struct iio_chan_spec *chan, char *buf);
-+	int (*read_raw)(struct iio_backend *back,
-+			struct iio_chan_spec const *chan, int *val, int *val2,
-+			long mask);
- };
- 
- int iio_backend_chan_enable(struct iio_backend *back, unsigned int chan);
-@@ -141,7 +146,9 @@ ssize_t iio_backend_ext_info_set(struct iio_dev *indio_dev, uintptr_t private,
- 				 const char *buf, size_t len);
- ssize_t iio_backend_ext_info_get(struct iio_dev *indio_dev, uintptr_t private,
- 				 const struct iio_chan_spec *chan, char *buf);
--
-+int iio_backend_read_raw(struct iio_backend *back,
-+			 struct iio_chan_spec const *chan, int *val, int *val2,
-+			 long mask);
- int iio_backend_extend_chan_spec(struct iio_backend *back,
+@@ -155,6 +155,9 @@ int iio_backend_extend_chan_spec(struct iio_backend *back,
  				 struct iio_chan_spec *chan);
  void *iio_backend_get_priv(const struct iio_backend *conv);
-@@ -153,4 +160,19 @@ __devm_iio_backend_get_from_fwnode_lookup(struct device *dev,
- int devm_iio_backend_register(struct device *dev,
- 			      const struct iio_backend_ops *ops, void *priv);
- 
-+static inline int iio_backend_read_scale(struct iio_backend *back,
-+					 struct iio_chan_spec const *chan,
-+					 int *val, int *val2)
-+{
-+	return iio_backend_read_raw(back, chan, val, val2, IIO_CHAN_INFO_SCALE);
-+}
-+
-+static inline int iio_backend_read_offset(struct iio_backend *back,
-+					  struct iio_chan_spec const *chan,
-+					  int *val, int *val2)
-+{
-+	return iio_backend_read_raw(back, chan, val, val2,
-+				    IIO_CHAN_INFO_OFFSET);
-+}
-+
- #endif
+ struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name);
++struct iio_backend *devm_iio_backend_fwnode_get(struct device *dev,
++						const char *name,
++						struct fwnode_handle *fwnode);
+ struct iio_backend *
+ __devm_iio_backend_get_from_fwnode_lookup(struct device *dev,
+ 					  struct fwnode_handle *fwnode);
 -- 
 2.25.1
 
