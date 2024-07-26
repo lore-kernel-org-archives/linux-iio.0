@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A65AC176246;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0EA1176AB9;
 	Fri, 26 Jul 2024 08:23:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721982180; cv=none; b=OW98YDdZ+WOBxDp7dRcFdMrFreN5jyaeOjA3ngfX7pO3zMmGPZmfttilZzdi2TJ1qS4Ms47hgp6zm4TY/1KSBFPIvRdkIpBvCUPyBrWCWCjDKpZ3XI0fq11zc4PrFTyDq32DfDRdX8izUT5rr2c385FI3+7k7P8vILvm49UXCZs=
+	t=1721982180; cv=none; b=RysGoAEFo5BYwlsB5h16ii+Wc+eAiNercIQmh97Fj9Nsi15G4juKOf+iCySd7iyoka5sOOqWx4djIx6tEYUX+sYjn23Eq+eBf+6/txxPf45OcdT532a++mcNM1JjmGmzwgTPN9fNzBrSbjQmz1kBoA1rsTXKKS/SVJdex6M46cI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1721982180; c=relaxed/simple;
-	bh=dfsq9WXesUjhbKDtpY0RiTZOI95oQv5z6XwXaAoOuH0=;
+	bh=oe8PYLHkYuPtuvvy0SJEHViBy3af2R0M3XExrRg7rHg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Rck2QB6+QsNRpkFn7hAh3P8pq+9xvzlRtCjVY0E/USDVAXj47GaWbLAOTYS8tXbxvXOW3sc2/tS34XD8O8Tgt7LrqVSgEMC0G4HsN+D8qdhGDrYcftyvdVr7VWD6bz5DJZQL0iUhY6qbBsDYukvoCJhxi49TjUPUkVKAk+IaUZs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bAeCjuKW; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=g7wJ9BDQlHBm0h+szSN46jDnu7vFybdcsF0JwpoMslyenbpw2zhqp20z1COpSIN2gttyaDIugf6SHwThqhyxpOigqaKbTsawEMGMh22gxCuuhUn1jl8Ovf6aQG4Sh3XPRfghISP+IwrdYD/USL29J+mPEdlT1nO2KMJ4BYchPX0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UR51aywX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bAeCjuKW"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4CFA4C4AF0B;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UR51aywX"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 620BBC4AF0E;
 	Fri, 26 Jul 2024 08:23:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1721982180;
-	bh=dfsq9WXesUjhbKDtpY0RiTZOI95oQv5z6XwXaAoOuH0=;
+	bh=oe8PYLHkYuPtuvvy0SJEHViBy3af2R0M3XExrRg7rHg=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=bAeCjuKWzTG5YdofyfYqWmClLvx5xoqta28cThf5tEcXIkX4pPJzEj0c849G+tjzt
-	 hUCM0wVNIKWE4Z4KaPzU8vjbzaCFbqNAfgETc2sgrLyf9VBjNC0Gxkla4YXCPdVlbG
-	 bnCbaDhA3KS9vXYvtPJjiicmWWThWGz8mVZFXDRAg6EJc1CjQ5daVhAP5ewL662IP1
-	 yR/2gXA5g8LUdaqlpbtmcYK0/6TJL3sPLuOB8Hcg1tYUsvJUHwSIxf0TbhQtnuH+CE
-	 HNmHB2yfKm0tq6usnExYN3TaUP7VDSUMS1FvTt3sCe6Exj7kmw5FhsYhQCWGEVK2Qq
-	 UHpWAwFVrKQ7w==
+	b=UR51aywXSxEx1yhZR0OVsujJjEHRcbUoMk67jZ4JFSGiddvjClYA4ZzAWRHf9p7W9
+	 D3VzEt5epjMykl+COcuYQ2op4wXH+3vJtnbBMDq5c67/FHWU9otCzhh5CYi3N79HUn
+	 pD0zOTlfUqNRDEdftjE1IRFsZB0ze39DLzmDwJy4rdxNQdaBizaMjsUmakeRtXQIMU
+	 tAOelIu/lHpv+ZT885a1WSCnF2lFRuuQqa8EHmTm+n0h9qy+qHxpOf+r0qiqfWVmeh
+	 hojf1vBqt4oybROwemIVzQ7qegj+Vc7g1N+iYy47Y+dF9xXbi7k4YazZI7DKxKiYF4
+	 7ToawGv2n823g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A4E2C52CD8;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B0E5C49EA1;
 	Fri, 26 Jul 2024 08:23:00 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Fri, 26 Jul 2024 10:22:54 +0200
-Subject: [PATCH 02/23] iio: adc: max1118: make use of
+Date: Fri, 26 Jul 2024 10:22:56 +0200
+Subject: [PATCH 04/23] iio: adc: mcp3911: make use of
  iio_for_each_active_channel()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240726-dev-iio-masklength-private3-v1-2-82913fc0fb87@analog.com>
+Message-Id: <20240726-dev-iio-masklength-private3-v1-4-82913fc0fb87@analog.com>
 References: <20240726-dev-iio-masklength-private3-v1-0-82913fc0fb87@analog.com>
 In-Reply-To: <20240726-dev-iio-masklength-private3-v1-0-82913fc0fb87@analog.com>
 To: linux-iio@vger.kernel.org, linux-staging@lists.linux.dev
@@ -63,11 +63,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Benson Leung <bleung@chromium.org>, Guenter Roeck <groeck@chromium.org>, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 X-Mailer: b4 0.14.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1721982177; l=926;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1721982177; l=912;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=nn62DtDibXVy47IeSmUQXIyZlnKipK1U1Mlc06sEa04=;
- b=K7HowwyOrxCHk/s6AK4Sic1wW5+fc03nmNJIDvIQqUlN4gtgX23F5jqgDi+fFn26kmah385Vy
- g6xHmcZlad2CMtUhdMspRvGDY7mECcSV5itDWrXFs0AB1wg+te5bKBm
+ bh=1KkCvDVTiQQj9ZCfOwbqyke/aSJNCQQgce+lEqp7arg=;
+ b=PJ2ERIm3Y7YQuE/0nS2Vit1UFVvEoKeXYXfuf3k/e+LbI0UTkLnUDl5YVrxAwSfRt56phG3a9
+ 4HFRT841yy7AJJB/KM++DvIe7hx5B2xCZk1nZqsWiCPjqau+3H0mmJB
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -83,23 +83,22 @@ no more direct users of it.
 
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/adc/ina2xx-adc.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iio/adc/mcp3911.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index 727e390bd979..0fc24bceb58a 100644
---- a/drivers/iio/adc/ina2xx-adc.c
-+++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -755,8 +755,7 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
- 	 * Single register reads: bulk_read will not work with ina226/219
- 	 * as there is no auto-increment of the register pointer.
- 	 */
--	for_each_set_bit(bit, indio_dev->active_scan_mask,
--			 indio_dev->masklength) {
-+	iio_for_each_active_channel(indio_dev, bit) {
- 		unsigned int val;
+diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+index 5076028f541d..d0e77971c5d3 100644
+--- a/drivers/iio/adc/mcp3911.c
++++ b/drivers/iio/adc/mcp3911.c
+@@ -510,7 +510,7 @@ static irqreturn_t mcp3911_trigger_handler(int irq, void *p)
+ 		goto out;
+ 	}
  
- 		ret = regmap_read(chip->regmap,
+-	for_each_set_bit(scan_index, indio_dev->active_scan_mask, indio_dev->masklength) {
++	iio_for_each_active_channel(indio_dev, scan_index) {
+ 		const struct iio_chan_spec *scan_chan = &indio_dev->channels[scan_index];
+ 
+ 		adc->scan.channels[i] = get_unaligned_be24(&adc->rx_buf[scan_chan->channel * 3]);
 
 -- 
 2.45.2
