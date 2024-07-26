@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CE78177990;
-	Fri, 26 Jul 2024 08:23:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33019176246;
+	Fri, 26 Jul 2024 08:23:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721982181; cv=none; b=KRrXIj2oPnhJ3nB0ynIk+jUxRqugfPk2tYN8Ly9WksXUIG9TUu6fp7XLKiCWrKGBHf4K6A8dy84otdq4zpnrJNJTvHAnsxLzAGGY64jkiTG5M/Y1olVP7lyOAHMZ+8Kv7xJvfuRCZYhTaWpRyC7X7LKflpwOyf1XL2Me2bkIL5Y=
+	t=1721982181; cv=none; b=fR5zud1GScRxhHvHrj2vrUN11EySKJ5ZlXNISgNZlgNN4HE8a+e4Jh1MD9i1362R5Oh6kLVWC4x84npNYNnG1oGsYx5jgKG3/2LD36GMjywLTRFowlQ0U/v/us+DZDYKl3UZXEHpKsgmvWGihLXtMJ+5Bo8KfGSLXlJrzqSQYDY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1721982181; c=relaxed/simple;
-	bh=umD1IXfi/h95QQhMz4eWJTx8O2TaBSWYesNTGeRdxII=;
+	bh=zAvrC8FGXj77GiRK9gtP0Q61104VQzNebdy4cueU28w=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=AF7Zang75foNSf/01vvK8zejdaeD9v2z2RR8foxuT+v7W3vtdO39GeBmEj3LdVz14zlcByPCadvZ4khGK+Gnwh+xEAcZ1hKFHr4Yl5a+2HsO01cQsWuaO2ReDGrDrI6br51R9lrAAkTsveW9R5KKofLi0YlLcGhVYYXeVWq87KU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uhR5MQ1U; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=VatwiGJlBf+EvXjgszFlqVP0u4J76YVwzA9wKq0VWvTLkk1TZ8/5B6gCJp1X5jY8TOp0e0yirKryVbe4t/FRfduHxqeMUHOJMk9k9g4J9jpLTg4xqS9hWfTz0qeIlaDkRoDTjo3+jcVQyql3RZ8xqjRfKkNpvfSuRza2klVyj40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ehwDI3au; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uhR5MQ1U"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CC7CAC4AF0A;
-	Fri, 26 Jul 2024 08:23:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ehwDI3au"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 157CBC4AF1C;
+	Fri, 26 Jul 2024 08:23:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1721982180;
-	bh=umD1IXfi/h95QQhMz4eWJTx8O2TaBSWYesNTGeRdxII=;
+	s=k20201202; t=1721982181;
+	bh=zAvrC8FGXj77GiRK9gtP0Q61104VQzNebdy4cueU28w=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=uhR5MQ1UbywD/sGpU7PvS4RRLIDTtWYokMQE7yvKONuRCcB8dIWQ1ztlI9VvqrpCX
-	 hV8f5MdpljPSGrCZIYsMj2d6RAgSLlteVvfmBQ36QoAlFI2VLHeKUhySxMNr6hGa7n
-	 XdtcOtHlxqLq7A66oifTTYY9WwlaA0Tv0fxx3Qv3HLtqiG87V+QUHYymZ6JCreTtfj
-	 PDoAoE2gNQFNKDCjYx7HoGQUVxpCQRSKPQaG5yploCBSJ9vKtJ0Yo31r/s0mfWk/5M
-	 PHoOvfBVDjQttc87gyrKUWU0J0W2qOQMc8xZWIJqbW84HLwUe9xiiqy5gWzsv3li1Q
-	 DNfw1St6Tf7Mg==
+	b=ehwDI3auAxgTZpdDwi4Wyg6ORYenhF/Cp1OPouzlyFwAeAL6KVoYxiFr1LfhvfvtQ
+	 lpuzjnnz/r+Q2ybkuPL9x9yIxPy+hbODuw0RJpDYtfmjllOIvJNCjZNqAKTyr+V/fS
+	 IdIH25RnvN92n3T3sr5NcFiJH1JH6lqu4ujXfr5ZQF/mz7ZV6Fiysc9xvy/mxjeLn7
+	 fvluLoN2w+1Rc74g1NsO99OzNmpjSGsUHO9rO9fIZ1wn6TAjkumR+aaYQq5+AaRqwN
+	 iqnCkuFO7WBO77CfWB6leO9A0MAhogIYiK/XfHBbI4raAM7FZauIDZB8SRLOLk6Z8v
+	 9w42zwA7Xxo/g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D26C52CDA;
-	Fri, 26 Jul 2024 08:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C3BEC3DA7F;
+	Fri, 26 Jul 2024 08:23:01 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Fri, 26 Jul 2024 10:23:02 +0200
-Subject: [PATCH 10/23] iio: adc: ti-adc0832: make use of
+Date: Fri, 26 Jul 2024 10:23:06 +0200
+Subject: [PATCH 14/23] iio: adc: ti-ads1298: make use of
  iio_for_each_active_channel()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240726-dev-iio-masklength-private3-v1-10-82913fc0fb87@analog.com>
+Message-Id: <20240726-dev-iio-masklength-private3-v1-14-82913fc0fb87@analog.com>
 References: <20240726-dev-iio-masklength-private3-v1-0-82913fc0fb87@analog.com>
 In-Reply-To: <20240726-dev-iio-masklength-private3-v1-0-82913fc0fb87@analog.com>
 To: linux-iio@vger.kernel.org, linux-staging@lists.linux.dev
@@ -63,11 +63,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Benson Leung <bleung@chromium.org>, Guenter Roeck <groeck@chromium.org>, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 X-Mailer: b4 0.14.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1721982178; l=925;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1721982178; l=942;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=/zRhs+O5dU8RBr+bA0UyWxQ7bhGuFDbxpfRgXZ5+WII=;
- b=MQ4GGvW9pKcxivxR/c6CDelUg6zYahU1CzZdyeqX/tyLj5KopFY4oMsnbX6sseHma8Npd3ZO+
- TTs6JeQU5sNBUtSFyal4UdETC3vl9Rb3X99qollaj63XIHva8luakJD
+ bh=WR4+V9qNOnxFXSApS/dE7riP9G9UG30sxOIHDEDM8pg=;
+ b=ABjdENBRlRCm1CS6lUjav2Z/s60wYwXJeWfDm7wTp5gRDWxEqEEjBKnrGT0fNKD9FVFQeY+NR
+ gjhZoRPlg+ZAWmTOxCUfM6XECTwSHGM9wtWZti30ZNSWyfuojIlio2D
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -83,23 +83,23 @@ no more direct users of it.
 
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/adc/ti-adc0832.c | 3 +--
+ drivers/iio/adc/ti-ads1298.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/ti-adc0832.c b/drivers/iio/adc/ti-adc0832.c
-index b11ce555ba3b..d7800e1fa536 100644
---- a/drivers/iio/adc/ti-adc0832.c
-+++ b/drivers/iio/adc/ti-adc0832.c
-@@ -211,8 +211,7 @@ static irqreturn_t adc0832_trigger_handler(int irq, void *p)
+diff --git a/drivers/iio/adc/ti-ads1298.c b/drivers/iio/adc/ti-ads1298.c
+index 1d1eaba3d6d1..13cb32125eef 100644
+--- a/drivers/iio/adc/ti-ads1298.c
++++ b/drivers/iio/adc/ti-ads1298.c
+@@ -502,8 +502,7 @@ static void ads1298_rdata_complete(void *context)
+ 	}
  
- 	mutex_lock(&adc->lock);
- 
+ 	/* Demux the channel data into our bounce buffer */
 -	for_each_set_bit(scan_index, indio_dev->active_scan_mask,
 -			 indio_dev->masklength) {
 +	iio_for_each_active_channel(indio_dev, scan_index) {
  		const struct iio_chan_spec *scan_chan =
- 				&indio_dev->channels[scan_index];
- 		int ret = adc0832_adc_conversion(adc, scan_chan->channel,
+ 					&indio_dev->channels[scan_index];
+ 		const u8 *data = priv->rx_buffer + scan_chan->address;
 
 -- 
 2.45.2
