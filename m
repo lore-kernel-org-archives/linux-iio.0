@@ -1,111 +1,181 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1420A1922E5;
-	Tue, 30 Jul 2024 08:44:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84782193065;
+	Tue, 30 Jul 2024 08:48:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722329057; cv=none; b=e1QnTPmnWmeiIMPHaztjpDklxbZlEQP6SSN2GKMPuWtbk0uSZzwIwaDT0pXFcuUbaFvzHiIgvHKuqXfKXLagA3ybu8qtkZEUxC6usp05tV7PN/hmzgGzxz+h/wM4ey0xDYlWOpZCu2aYG7sD8jYznQ3u2muPVguVGbwdhxoFtEc=
+	t=1722329328; cv=none; b=izmli8AZijIGz8Ddtm4TcZlUgztEQ+l2G6nMFID6Lai1fXHXwlRQF3TeJbEjxYE4eJ4ecC+clazabHMUBnPRhRfrFxBSQitDriEhRjT0qPZHUvBjQkECFWpdt6kJFEl0czGxSz5h2HzF3XtlhpaR0bBy8BATmKOjxa9ZvaE8CeU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722329057; c=relaxed/simple;
-	bh=aZmQWE08N2VGqIGCPI4yD+88gDbO52QWF2iAlqp7BsM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=FDYWMyNE0iz/6ubCN7a5Nh6TgfNhz+mSPf92chzDn5/7uzJZ3em8QiAhTDOQn2QLFnFk9MupNQGMqBST+NWuH3sjXu1sHlnc3qaeUZDvPy/HN5v8H62djvHCT0CJwyEjp06cF3epmHWQNNOsNtxTGkPBk2cfleO31ymSQ/9FqBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sbW1F608; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722329328; c=relaxed/simple;
+	bh=kBFneU6R49V+WQX1C3rXTq747w5qEc3IKhKihApmF4Y=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=uhxRxuBGuxMofWAjPVcaX+l9iFsikFlwh6IsqBv5x2uDubuloidyxdmiM8HDNRHu99bPWx41QkOiGWh7yFtr+mvSuoeLo91N0idhYMfQ+7WeaBuCM81nvqZxqQyI2uji+id1Wsa0jvswCYI3QtM1KKNhIOiJOc9oK9JXqoyC8N0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=XcKpCUkt; arc=none smtp.client-ip=185.132.182.106
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sbW1F608"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25463C32782;
-	Tue, 30 Jul 2024 08:44:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722329056;
-	bh=aZmQWE08N2VGqIGCPI4yD+88gDbO52QWF2iAlqp7BsM=;
-	h=Date:Subject:To:References:From:In-Reply-To:From;
-	b=sbW1F608KWXv67kN9oPRG7JZNFlIhIvISFVkUwJ22r4ePdghl4+J0CBY82aMbkZLb
-	 WMXHgSwJRHtDcXvQiKTdjDZb8++j/ZfXu3XCWLUjLAb+825psu/d7u1kz+9Uee2ipk
-	 7DdtMz/p+dkYn/WwQ/d2BVZAdEztIQVynXsfLR1PU3XAII+4n2hF8p9J8wdfxL+FqY
-	 TIO70clkVMf8aXtY0uBBN5osDMasgHe2JpKRTPy6o/uH4wRbrnoReuWYDnFNUaKmbN
-	 k3OujsvqYv919ewpjLFkqcMpqdFqNVA3fqIbrECcsIOyq5TCWB3FxGZF3DNnj5OWQ7
-	 gERqR2Jcbg1Cw==
-Message-ID: <73c4044d-ce04-41cf-901c-15170bf003c3@kernel.org>
-Date: Tue, 30 Jul 2024 10:44:10 +0200
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="XcKpCUkt"
+Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 46U8Ib5B012747;
+	Tue, 30 Jul 2024 10:48:17 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=selector1; bh=
+	aLx2/9qybrXJ8bJcqI7xnqVCXKAknZa0c4mGUwESj2s=; b=XcKpCUktf8GzyunT
+	3u2OMafIAnlJQ/KlOiiU+43n4mekA0qfTUQSXwP+fFF8mGFWJp+MmMXvZNrAX+7g
+	iN2dD9GD5EFPMpuLilHB9gu25njN+AAYLaRyZRSS7ec0O0+1LU4eMiDyXFxVRjm5
+	EEZ1s67X0yUyZMRc7f9LEcmNyNS3AxRDUXbCv0JdVl0iK7LGgOGR3agyXtRi0T6Q
+	f8MlBA4XZt9DF8oS7ExXO/i+YlrljtvJU3c1jALX4WMIF1SYyGacdpqmNl9p1D+8
+	EeJSBHFrMBvgV7nW+DeMbbVRbVWN2iWwQlU02nVVP1do0KWN6NGIt/PZH4MYq3yW
+	BTaguw==
+Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 40naf29dvt-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 30 Jul 2024 10:48:17 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 219FD40044;
+	Tue, 30 Jul 2024 10:48:07 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D542221F0A5;
+	Tue, 30 Jul 2024 10:47:15 +0200 (CEST)
+Received: from localhost (10.252.3.32) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.37; Tue, 30 Jul
+ 2024 10:47:15 +0200
+From: Olivier Moysan <olivier.moysan@foss.st.com>
+To: <fabrice.gasnier@foss.st.com>, Nuno Sa <nuno.sa@analog.com>,
+        Olivier
+ Moysan <olivier.moysan@foss.st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v6 1/9] iio: add read scale and offset services to iio backend framework
+Date: Tue, 30 Jul 2024 10:46:31 +0200
+Message-ID: <20240730084640.1307938-2-olivier.moysan@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20240730084640.1307938-1-olivier.moysan@foss.st.com>
+References: <20240730084640.1307938-1-olivier.moysan@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: adf4377: add adf4378 support
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Dragos Bogdan <dragos.bogdan@analog.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20240729095047.25040-1-antoniu.miclaus@analog.com>
- <20240729095047.25040-2-antoniu.miclaus@analog.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20240729095047.25040-2-antoniu.miclaus@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-07-30_09,2024-07-26_01,2024-05-17_01
 
-On 29/07/2024 11:50, Antoniu Miclaus wrote:
-> The adf4378 provides only one output channel. Therefore there is only
-> one gpio available to enable the output. Reflect that into the bindings
-> using property conditions.
-> 
-> Add product link for the adf4378.
-> 
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Add iio_backend_read_scale() and iio_backend_read_offset() services
+to read channel scale and offset from an IIO backbend device.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Also add a read_raw callback which replicates the read_raw callback of
+the IIO framework, and is intended to request miscellaneous channel
+attributes from the backend device.
+Both scale and offset helpers use this callback.
 
-Best regards,
-Krzysztof
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
+---
+ drivers/iio/industrialio-backend.c | 19 +++++++++++++++++++
+ include/linux/iio/backend.h        | 24 +++++++++++++++++++++++-
+ 2 files changed, 42 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index f9da635cdfea..72dc82a42d8f 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -361,6 +361,25 @@ int devm_iio_backend_request_buffer(struct device *dev,
+ }
+ EXPORT_SYMBOL_NS_GPL(devm_iio_backend_request_buffer, IIO_BACKEND);
+ 
++/**
++ * iio_backend_read_raw - Read a channel attribute from a backend device.
++ * @back:	Backend device
++ * @chan:	IIO channel reference
++ * @val:	First returned value
++ * @val2:	Second returned value
++ * @mask:	Specify the attribute to return
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_read_raw(struct iio_backend *back,
++			 struct iio_chan_spec const *chan, int *val, int *val2,
++			 long mask)
++{
++	return iio_backend_op_call(back, read_raw, chan, val, val2, mask);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_read_raw, IIO_BACKEND);
++
+ static struct iio_backend *iio_backend_from_indio_dev_parent(const struct device *dev)
+ {
+ 	struct iio_backend *back = ERR_PTR(-ENODEV), *iter;
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+index 29c4cf0bd761..18b20426c25e 100644
+--- a/include/linux/iio/backend.h
++++ b/include/linux/iio/backend.h
+@@ -3,6 +3,7 @@
+ #define _IIO_BACKEND_H_
+ 
+ #include <linux/types.h>
++#include <linux/iio/iio.h>
+ 
+ struct iio_chan_spec;
+ struct fwnode_handle;
+@@ -81,6 +82,7 @@ enum iio_backend_sample_trigger {
+  * @extend_chan_spec: Extend an IIO channel.
+  * @ext_info_set: Extended info setter.
+  * @ext_info_get: Extended info getter.
++ * @read_raw: Read a channel attribute from a backend device
+  **/
+ struct iio_backend_ops {
+ 	int (*enable)(struct iio_backend *back);
+@@ -113,6 +115,9 @@ struct iio_backend_ops {
+ 			    const char *buf, size_t len);
+ 	int (*ext_info_get)(struct iio_backend *back, uintptr_t private,
+ 			    const struct iio_chan_spec *chan, char *buf);
++	int (*read_raw)(struct iio_backend *back,
++			struct iio_chan_spec const *chan, int *val, int *val2,
++			long mask);
+ };
+ 
+ int iio_backend_chan_enable(struct iio_backend *back, unsigned int chan);
+@@ -141,7 +146,9 @@ ssize_t iio_backend_ext_info_set(struct iio_dev *indio_dev, uintptr_t private,
+ 				 const char *buf, size_t len);
+ ssize_t iio_backend_ext_info_get(struct iio_dev *indio_dev, uintptr_t private,
+ 				 const struct iio_chan_spec *chan, char *buf);
+-
++int iio_backend_read_raw(struct iio_backend *back,
++			 struct iio_chan_spec const *chan, int *val, int *val2,
++			 long mask);
+ int iio_backend_extend_chan_spec(struct iio_backend *back,
+ 				 struct iio_chan_spec *chan);
+ void *iio_backend_get_priv(const struct iio_backend *conv);
+@@ -153,4 +160,19 @@ __devm_iio_backend_get_from_fwnode_lookup(struct device *dev,
+ int devm_iio_backend_register(struct device *dev,
+ 			      const struct iio_backend_ops *ops, void *priv);
+ 
++static inline int iio_backend_read_scale(struct iio_backend *back,
++					 struct iio_chan_spec const *chan,
++					 int *val, int *val2)
++{
++	return iio_backend_read_raw(back, chan, val, val2, IIO_CHAN_INFO_SCALE);
++}
++
++static inline int iio_backend_read_offset(struct iio_backend *back,
++					  struct iio_chan_spec const *chan,
++					  int *val, int *val2)
++{
++	return iio_backend_read_raw(back, chan, val, val2,
++				    IIO_CHAN_INFO_OFFSET);
++}
++
+ #endif
+-- 
+2.25.1
 
