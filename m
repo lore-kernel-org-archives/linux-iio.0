@@ -1,39 +1,60 @@
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81B071B143F;
-	Wed, 31 Jul 2024 12:24:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A614193072;
+	Wed, 31 Jul 2024 12:37:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722428673; cv=none; b=bRoDPixLocL1LGxRzZqJ5BVNQ0nR3k2jYxdmoawjQHeR86JbrCdVwDOwTuCmvUIVu7xigAlsYTl3FpdjFD0UPsJp4+q7CiUK3fO8DYNdDDMM1z46lFWOhabdgSVnb8Ra/2IsVr6BWCRp9MgGMEPF7J9PVau/rpeZnpSaiTrNRZM=
+	t=1722429450; cv=none; b=nsHLmv5Ems+RXylwmSXehlbYA56OFiIuK59BWu5sxp5vL8t7V4b025Ke6vbgxUtx68HRlaklvSIypn6zOUgKEKV3uUNNMJLVmGYAzlcqg1j9mlg+t9eNLlQv58MN1MXsQ/q9h2Q8vybpC3v1savC5ALLJ6Y8OVtixqsTipSdYkU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722428673; c=relaxed/simple;
-	bh=VGBmEQo2nn7LVz+FCdOawH68ueBW58buK4ypsx2P334=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=pqBOq7GwNl9afu8lLZluzm8PuQWx1haWdS/OHV2+3SBd+yiyyg10uAkDGkPLPcwosRs9rXeYikuV8FJ/zF4J+1o6yhWnI11xoC1thipWWkzu1NwEi2L/9L/YejyF6JSgF0UOwu/wXwuLiZto9PIEayFQm+ste7yFZF/ZgTWe00M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=AbeWo9nT; arc=none smtp.client-ip=217.70.183.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1722429450; c=relaxed/simple;
+	bh=dzSe2MfEfC34c+4Ae65St3/EyAcbDWKOFlWG9ZEcJrY=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=HWum5RRtimb2N8+6cbkX4Gq4uXR4Qp7CBFmsfkAp8PqrhLR1acjj9SzBZ5F6r9rYinjULw+7vt/Du+HfAR0MLv3gcj6yS2BxczoaQhYCUPOa7W51Bnn9y4FRUPhZnY4TX2K/85NT5CP0m9CYGxAhHD2rZAnqSSX+Gd0q/FAF+ns=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hOfXo+6X; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="AbeWo9nT"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 91A08FF803;
-	Wed, 31 Jul 2024 12:24:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1722428661;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ZYEIoC2tisBYOJ0m+sWdZe9mFaWjS8rQTyx2a5mnQVo=;
-	b=AbeWo9nT3W3E5+C+C0FJU+Jq+0zlfbsGhP0tlV6b6nUVhCLPCkFjOv3Vk/0JzrxFUcS6Y2
-	tXtsICSzjW2L6/m9TgyIK0Acydi70L0Dz6b1/nb9OdxnM/4wmZusnMZ/tSNFPef8bD5a14
-	7zOpCZSGNdVeTOKSyqRaiThkpjYebNkfP4SZT7PIZ1BAHccmycH6ZxXgjrlKRvAC8XB4Ne
-	tsNvd4E3U/Y8AzMrDSILPl3tRC0xruM9AZCpmXqF5ImttBBRYFhSE7ydQ2PIOWm535eKIo
-	lh/RV4t2+cb4YwsX7QBRKvn/cijRV9WSBYlInclpJfAs5+cniuRPqG+pK8ADjg==
-From: Thomas Bonnefille <thomas.bonnefille@bootlin.com>
-Date: Wed, 31 Jul 2024 14:24:15 +0200
-Subject: [PATCH v3 2/3] iio: adc: sophgo-saradc: Add driver for Sophgo
- SARADC
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hOfXo+6X"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4281abc65daso29849835e9.2;
+        Wed, 31 Jul 2024 05:37:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1722429447; x=1723034247; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ln4DNV38+EobFIMTju0Yg2SSs+l0VxUp6Zi2Xe/dcqw=;
+        b=hOfXo+6XUwXWVKqZ5SZ7K0FynGWaQtrfGwb1YCqG5MsBYZtZ3lrmhUH2HhUatBvYLr
+         cDBp0QRmvBKxcFkNfl9ZgLTKj/oqGK8KuaEY+Y9TkjCA+L4vDLdND/Ms96ynN3rN5qJd
+         F76/dSezb2OB/Jw6I7fPvNGMhQmMk18WDWcWc1J+Qt6noxQcfJZcPibMmlc13euVJGZS
+         kjj1m5GfBbGUdoon3NL9vYNyAqDkX9ZLTRL/8xal4xLHobnOxAhVy1oMiqfWjlXa8I/4
+         TKWwTdoPBMM+asOlKPRLAD1pGNyRPDRtlkcmNoA0Z0iWRgf5sKG/5PhGGNhZys6nT1rj
+         tP+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722429447; x=1723034247;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Ln4DNV38+EobFIMTju0Yg2SSs+l0VxUp6Zi2Xe/dcqw=;
+        b=NujTI655HfxieAkgXEh35wvEPfa+tcPKahNW03i8TRbOTZaUDfusg/hLkKqjRPKmGH
+         PpeeamtblJl6U3HcVTYjD3UB56g4fVcQb6QOh1eChwFNxEXteH7zo+2WZpWtv3H5iiML
+         pIwsdM2zWClcE8bbotJturA55pzNy40aVxsKWBF30WMopajCyDiArWoIAUfMXdPRi8K5
+         FHFPLZ6ktm9m60faAhEr2qFmBp4CwW7+bj1fNGJ9RjVdCeMIlrgY4oz7HydcFK9y0TdN
+         aMRYuQenYBZ7nP9ruS66qYQI9m647Z0rZD3PHNCCxYZi3Z3xIzqHJsg1eFzX/T/V8stU
+         qxOQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXC6+yj5hKlTFCXeylDNiayI3woItNIHtk1PPCp7rhKaJXx0S1EFyX6yoKjsPMCy2RFdVP2T+vmIDdlKrP9Ieu6Wu32kozlTnRrZKgionXJvCGJZl2WbKHoUr8U/rRlw4Ehg+oYpVG9
+X-Gm-Message-State: AOJu0Yz0dqxxiIIOUrJAnK6JH0kQo+Q1UlFC8rlbY14h5V5dN9VFHVJY
+	qG3rtoY34WbokI58YZqpX0dqoMe+hmgAynkxNywIyXIOsMQjpIq8
+X-Google-Smtp-Source: AGHT+IHVjYD52SvrfU3XRkigv/pabgZlH5vxxV8RcEdEyZOxMYHxQy04RFrhSOG0fkd92olRajbB4w==
+X-Received: by 2002:a05:600c:a03:b0:427:9db3:46ad with SMTP id 5b1f17b1804b1-42811dd1a29mr87444335e9.23.1722429446942;
+        Wed, 31 Jul 2024 05:37:26 -0700 (PDT)
+Received: from HYB-hhAwRlzzMZb.ad.analog.com ([5.2.194.157])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4282bb64755sm20600465e9.36.2024.07.31.05.37.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Jul 2024 05:37:26 -0700 (PDT)
+From: Dumitru Ceclan <mitrutzceclan@gmail.com>
+X-Google-Original-From: Dumitru Ceclan <dumitru.ceclan@analog.com>
+Subject: [PATCH 0/4] ad7124 fixes and improvements
+Date: Wed, 31 Jul 2024 15:37:21 +0300
+Message-Id: <20240731-ad7124-fix-v1-0-46a76aa4b9be@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -42,279 +63,59 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240731-sg2002-adc-v3-2-5ac40a518c0a@bootlin.com>
-References: <20240731-sg2002-adc-v3-0-5ac40a518c0a@bootlin.com>
-In-Reply-To: <20240731-sg2002-adc-v3-0-5ac40a518c0a@bootlin.com>
+X-B4-Tracking: v=1; b=H4sIAAEwqmYC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIxMDc2ND3cQUc0MjE920zApdY/PE1GTztFSDJLMkJaCGgqJUoDDYsOjY2lo
+ AUKAxxFwAAAA=
 To: Jonathan Cameron <jic23@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Chen Wang <unicorn_wang@outlook.com>, 
- Inochi Amaoto <inochiama@outlook.com>, 
- Paul Walmsley <paul.walmsley@sifive.com>, 
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>
-Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
- =?utf-8?q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, 
- Thomas Bonnefille <thomas.bonnefille@bootlin.com>
-X-Mailer: b4 0.14.1
-X-GND-Sasl: thomas.bonnefille@bootlin.com
+ Stefan Popa <stefan.popa@analog.com>, 
+ Alexandru Tachici <alexandru.tachici@analog.com>
+Cc: Dumitru Ceclan <mitrutzceclan@gmail.com>, 
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Dumitru Ceclan <dumitru.ceclan@analog.com>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1722429445; l=1307;
+ i=dumitru.ceclan@analog.com; s=20240313; h=from:subject:message-id;
+ bh=dzSe2MfEfC34c+4Ae65St3/EyAcbDWKOFlWG9ZEcJrY=;
+ b=tAwACJv4nJa3PC2cBpixYO1Nh5oSp59pzwRsyg9VupLJof5NjU9v25gjAxWJvVIV7cHUH47s6
+ 7uDmxr7g00FAbaWYCPhUQ7h25HG9EXOA9LAKznCk8iK2dvYqyCoX/AT
+X-Developer-Key: i=dumitru.ceclan@analog.com; a=ed25519;
+ pk=HdqMlVyrcazwoiai7oN6ghU+Bj1pusGUFRl30jhS7Bo=
 
-This adds a driver for the common Sophgo SARADC.
+This patch series adds fixes and improvements in the ad7124 driver.
 
-Signed-off-by: Thomas Bonnefille <thomas.bonnefille@bootlin.com>
+Fixes:
+- properly compare config values
+- add a delay after reset to allow chip initialization
+
+Improvements:
+- reduce the number of SPI transfers
+- ensure that after probe the ADC is in idle mode
+  and not continuos conversion mode
+
+Another thing that could be considered is improving the config pop
+behavior as kfifo_get() will return the least recently added config
+instead of the least recently *used* one.
+
+This could be an issue when multiple channels are using the same "old"
+config and the LRU considers that one as the least recently used.
+
+If this is considered a valid issue, I can add another patch for it.
+
+Signed-off-by: Dumitru Ceclan <dumitru.ceclan@analog.com>
 ---
- drivers/iio/adc/Kconfig             |  10 ++
- drivers/iio/adc/Makefile            |   1 +
- drivers/iio/adc/sophgo-cv18xx-adc.c | 206 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 217 insertions(+)
+Dumitru Ceclan (4):
+      iio: adc: ad7124: fix chip ID mismatch
+      iio: adc: ad7124: fix config comparison
+      iio: adc: ad7124: reduce the number of SPI transfers
+      iio: adc: ad7124: set initial ADC mode to idle
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index f60fe85a30d5..10d6570233f5 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1156,6 +1156,16 @@ config SC27XX_ADC
- 	  This driver can also be built as a module. If so, the module
- 	  will be called sc27xx_adc.
- 
-+config SOPHGO_CV18XX_ADC
-+	tristate "Sophgo CV18XX series SARADC"
-+	depends on ARCH_SOPHGO || COMPILE_TEST
-+	help
-+	  Say yes here to build support for the SARADC integrated inside
-+	  the Sophgo CV18XX series SoCs.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called sophgo_adc.
-+
- config SPEAR_ADC
- 	tristate "ST SPEAr ADC"
- 	depends on PLAT_SPEAR || COMPILE_TEST
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index d370e066544e..24c241b12ef0 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -105,6 +105,7 @@ obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
- obj-$(CONFIG_RZG2L_ADC) += rzg2l_adc.o
- obj-$(CONFIG_SC27XX_ADC) += sc27xx_adc.o
- obj-$(CONFIG_SD_ADC_MODULATOR) += sd_adc_modulator.o
-+obj-$(CONFIG_SOPHGO_CV18XX_ADC) += sophgo-cv18xx-adc.o
- obj-$(CONFIG_SPEAR_ADC) += spear_adc.o
- obj-$(CONFIG_STM32_ADC_CORE) += stm32-adc-core.o
- obj-$(CONFIG_STM32_ADC) += stm32-adc.o
-diff --git a/drivers/iio/adc/sophgo-cv18xx-adc.c b/drivers/iio/adc/sophgo-cv18xx-adc.c
-new file mode 100644
-index 000000000000..27e1aac9560f
---- /dev/null
-+++ b/drivers/iio/adc/sophgo-cv18xx-adc.c
-@@ -0,0 +1,206 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ *  Sophgo CV18XX series SARADC Driver
-+ *
-+ *  Copyright (C) Bootlin 2024
-+ *  Author: Thomas Bonnefille <thomas.bonnefille@bootlin.com>
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/clk.h>
-+#include <linux/completion.h>
-+#include <linux/dev_printk.h>
-+#include <linux/interrupt.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iopoll.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/platform_device.h>
-+
-+#define CV18XX_ADC_CTRL_REG			0x04
-+#define		CV18XX_ADC_EN			BIT(0)
-+#define		CV18XX_ADC_SEL(x)		BIT((x) + 4)
-+#define CV18XX_ADC_STATUS_REG			0x08
-+#define		CV18XX_ADC_BUSY			BIT(0)
-+#define CV18XX_ADC_CYC_SET_REG			0x0C
-+/* The default cycle configuration is set to maximize the accuracy */
-+#define		CV18XX_ADC_DEF_STARTUP_CYCLE	0xF
-+#define		CV18XX_ADC_DEF_SAMPLE_WINDOW	(0xF << 8)
-+#define		CV18XX_ADC_DEF_CLOCK_DIVIDER	(0x1 << 12)
-+#define		CV18XX_ADC_DEF_COMPARE_CYCLE	(0xF << 16)
-+#define CV18XX_ADC_CH_RESULT_REG(x)		(0x10 + 4 * (x))
-+#define		CV18XX_ADC_CH_RESULT		GENMASK(11, 0)
-+#define		CV18XX_ADC_CH_VALID		BIT(15)
-+#define CV18XX_ADC_INTR_EN_REG			0x20
-+#define CV18XX_ADC_INTR_CLR_REG			0x24
-+#define		CV18XX_ADC_INTR_CLR_BIT		BIT(0)
-+#define CV18XX_ADC_INTR_STA_REG			0x28
-+#define		CV18XX_ADC_INTR_STA_BIT		BIT(0)
-+
-+#define CV18XX_ADC_CHANNEL(index)					\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.channel = index,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+		.scan_index = index,					\
-+	}
-+
-+struct cv18xx_adc {
-+	struct completion completion;
-+	void __iomem *regs;
-+	struct mutex lock; /* ADC Control and Result register */
-+	int irq;
-+};
-+
-+static const struct iio_chan_spec sophgo_channels[] = {
-+	CV18XX_ADC_CHANNEL(1),
-+	CV18XX_ADC_CHANNEL(2),
-+	CV18XX_ADC_CHANNEL(3),
-+};
-+
-+static void cv18xx_adc_start_measurement(struct cv18xx_adc *saradc,
-+					    int channel)
-+{
-+	writel(0, saradc->regs + CV18XX_ADC_CTRL_REG);
-+	writel(CV18XX_ADC_SEL(channel) | CV18XX_ADC_EN,
-+	       saradc->regs + CV18XX_ADC_CTRL_REG);
-+}
-+
-+static int cv18xx_adc_wait(struct cv18xx_adc *saradc)
-+{
-+	if (saradc->irq < 0) {
-+		u32 reg;
-+
-+		return readl_poll_timeout(saradc->regs + CV18XX_ADC_STATUS_REG,
-+					  reg, !(reg & CV18XX_ADC_BUSY),
-+					  500, 1000000);
-+	}
-+	return wait_for_completion_timeout(&saradc->completion,
-+					  msecs_to_jiffies(1000)) > 0
-+					  ? 0 : -ETIMEDOUT;
-+}
-+
-+static int cv18xx_adc_read_raw(struct iio_dev *indio_dev,
-+				  struct iio_chan_spec const *chan,
-+				  int *val, int *val2, long mask)
-+{
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		{
-+		struct cv18xx_adc *saradc = iio_priv(indio_dev);
-+		u32 sample;
-+		int ret;
-+
-+		scoped_guard(mutex, &saradc->lock) {
-+			cv18xx_adc_start_measurement(saradc, chan->scan_index);
-+			ret = cv18xx_adc_wait(saradc);
-+			if (ret < 0)
-+				return ret;
-+
-+			sample = readl(saradc->regs + CV18XX_ADC_CH_RESULT_REG(chan->scan_index));
-+		}
-+		if (!(sample & CV18XX_ADC_CH_VALID))
-+			return -ENODATA;
-+
-+		*val = sample & CV18XX_ADC_CH_RESULT;
-+		return IIO_VAL_INT;
-+		}
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 3300;
-+		*val2 = 12;
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static irqreturn_t cv18xx_adc_interrupt_handler(int irq, void *private)
-+{
-+	struct cv18xx_adc *saradc = private;
-+
-+	if (!(FIELD_GET(CV18XX_ADC_INTR_STA_BIT,
-+			readl(saradc->regs + CV18XX_ADC_INTR_STA_REG))))
-+		return IRQ_NONE;
-+
-+	writel(CV18XX_ADC_INTR_CLR_BIT, saradc->regs + CV18XX_ADC_INTR_CLR_REG);
-+	complete(&saradc->completion);
-+	return IRQ_HANDLED;
-+}
-+
-+static const struct iio_info cv18xx_adc_info = {
-+	.read_raw = &cv18xx_adc_read_raw,
-+};
-+
-+static int cv18xx_adc_probe(struct platform_device *pdev)
-+{
-+	struct cv18xx_adc *saradc;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*saradc));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	saradc = iio_priv(indio_dev);
-+	indio_dev->name = "sophgo-cv18xx-adc";
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &cv18xx_adc_info;
-+	indio_dev->num_channels = ARRAY_SIZE(sophgo_channels);
-+	indio_dev->channels = sophgo_channels;
-+
-+	ret = IS_ERR(devm_clk_get_enabled(&pdev->dev, NULL));
-+	if (ret)
-+		return ret;
-+
-+	saradc->regs = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(saradc->regs))
-+		return PTR_ERR(saradc->regs);
-+
-+	saradc->irq = platform_get_irq_optional(pdev, 0);
-+	if (saradc->irq >= 0) {
-+		init_completion(&saradc->completion);
-+		ret = devm_request_irq(&pdev->dev, saradc->irq,
-+				       cv18xx_adc_interrupt_handler, 0,
-+				       dev_name(&pdev->dev), saradc);
-+		if (ret)
-+			return ret;
-+
-+		writel(1, saradc->regs + CV18XX_ADC_INTR_EN_REG);
-+	}
-+
-+	ret = devm_mutex_init(&pdev->dev, &saradc->lock);
-+	if (ret)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, indio_dev);
-+	writel(CV18XX_ADC_DEF_STARTUP_CYCLE |
-+	       CV18XX_ADC_DEF_SAMPLE_WINDOW |
-+	       CV18XX_ADC_DEF_CLOCK_DIVIDER |
-+	       CV18XX_ADC_DEF_COMPARE_CYCLE
-+	       , saradc->regs + CV18XX_ADC_CYC_SET_REG);
-+	return devm_iio_device_register(&pdev->dev, indio_dev);
-+
-+}
-+
-+static const struct of_device_id cv18xx_adc_match[] = {
-+	{ .compatible = "sophgo,cv1800b-saradc", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, cv18xx_adc_match);
-+
-+static struct platform_driver cv18xx_adc_driver = {
-+	.driver	= {
-+		.name		= "sophgo-saradc",
-+		.of_match_table	= cv18xx_adc_match,
-+	},
-+	.probe = cv18xx_adc_probe,
-+};
-+module_platform_driver(cv18xx_adc_driver);
-+
-+MODULE_AUTHOR("Thomas Bonnefille <thomas.bonnefille@bootlin.com>");
-+MODULE_DESCRIPTION("Sophgo SARADC driver");
-+MODULE_LICENSE("GPL");
+ drivers/iio/adc/ad7124.c | 61 ++++++++++++++++++++++++------------------------
+ 1 file changed, 31 insertions(+), 30 deletions(-)
+---
+base-commit: 380afccc2a55e8015adae4266e8beff96ab620be
+change-id: 20240731-ad7124-fix-37aec7fe0b6b
 
+Best regards,
 -- 
-2.45.2
+Dumitru Ceclan <dumitru.ceclan@analog.com>
 
