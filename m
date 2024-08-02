@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12248200104
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 121EB1E4F0F
 	for <linux-iio@vger.kernel.org>; Fri,  2 Aug 2024 14:27:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722608832; cv=none; b=H2X+NfPrhCEEbNY/HWD4wugsXvrlwX/qPB9d772LyUDIN6ocNYLwczpj/jSONcK8Go2ub16nmsIssUHbtD3XPTNqVvnaPsMz3X5ZXQ8IXH10YnkZ1pFwsljb/t+cGe8DR8MzUVkyqJE7R0gpS3Lc5OVR5074PKM/qnT1G2WDhbM=
+	t=1722608832; cv=none; b=EeKEZ1Kb8kok+wpi9OyA/hSk7v6lM4Y/69pezAsP+aVKWvkC4eoa4TIp1Dk70cj+Lm5iHdSIl6EzTN9YBMHNJygv+9TIcCOWUn+8+ZCQM26jcGo4dnJ4cUIP4QCKdMkLzD+GsKvXmI0zIebinHSBlRrT5Gnx8PC6rNYZORIzB0Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1722608832; c=relaxed/simple;
-	bh=SBfWwwEKEbxhEP03T+hS+zyaiCVkXdIESQqdbANX59E=;
+	bh=RyYzrspXZNU3YFGMoHMNkUEhxHeSKfFZlMJQpJUvgoM=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=TIjqeNIbi3n7GA0gkY0af9FMbBttSNvkU1hZgqzDpqfr67Sbc3wwYwglx2y6WE6jiBi1/JEblXHaPG9JymOHIQtL3jGEp80gXHVQ4F+v7ClsreflkSUr6OtkgTl9CXSKpVzwUReOdkbEIfY4+O6ahgE7XMFxNwnj/p/3ri6XyfI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YpKIV+Nh; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=TcMnEhZv4X86t22zRYMjl2Pwq7D9nAGac/mYH/F2/Qa5kx9EDhBZl45gW7WoQiZ8gh2IjnDinf3aLzuFx5jYGz7ZwMSZQfhcKH4CurT2Pw/hnnVKrMZN93vVxSD6mLw95Kwh2uwG1ToCm+L6oIfvGrwzf2I1YwMnh9Uu2wbXQNQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eA2x9nCN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YpKIV+Nh"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B746CC4AF11;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eA2x9nCN"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A9BF6C4AF0F;
 	Fri,  2 Aug 2024 14:27:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1722608831;
-	bh=SBfWwwEKEbxhEP03T+hS+zyaiCVkXdIESQqdbANX59E=;
+	bh=RyYzrspXZNU3YFGMoHMNkUEhxHeSKfFZlMJQpJUvgoM=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=YpKIV+NhIibIM42KmIIR+Cye/zy+CySSfJbF+o/6GMQodafw1hzGf4ar4G0UDo2U/
-	 XropLOeDVAa/foK4QvZajpQfdlj91ovUxniVTxFnNmZZskValZGXM+KC1Wbh5xScQp
-	 8P1i2nEuHVzo4P7CXGCwNmV70Al3SG7hfHKmJjNKJgSkpRunFMD2K7vqVS4702TsWl
-	 qlXTfhElpfj6VCudY2I2VE9Di+aWyUjlq2loH34AgxL1Wod3R0H6draL1Ds7Z3tG+D
-	 0q/S9aNQQa1mhy0OVdfjjnZdX8PKB/MtlIObMKTFoQiK6lvNiz01z6z2UYyBsZczqG
-	 LHsjLaoq8lAcA==
+	b=eA2x9nCN5TkikJ3PbSCN7ZTHjiGGDJ+dbGRWJ8WHW2bKMvfWiePIldZzwcyzm6j81
+	 8TfUggXA6Kmr5OlKyVyiS7WIYiyz5kLKx/BVVt0/hSPnmcVLkVz68ixBojptMqRpJs
+	 5fEMzFgBNKLMgLBN0p8mz/lCjJzRTeK/4keT18hzgFRROPDblslazj3FJwOw07VHZT
+	 wdTqyjhw+GTdV4K0uF0nk7Mx2dtk21cwIxJgm9NWnukMzO1ayMGQU9z0LwL3tS6lyv
+	 EMXWY7BwnpRyPnVfaT1dQGzE/smdP+aX9p6bBxMd4uLH5M/FCmV08VoI6biV8saPPM
+	 1HRbIZsvQMMwg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEDCC52D72;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD66C52D6F;
 	Fri,  2 Aug 2024 14:27:11 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Fri, 02 Aug 2024 16:27:02 +0200
-Subject: [PATCH v2 4/8] iio: adc: adi-axi-adc: support modified prbs23
+Date: Fri, 02 Aug 2024 16:27:01 +0200
+Subject: [PATCH v2 3/8] iio: backend: add a modified prbs23 support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240802-dev-iio-backend-add-debugfs-v2-4-4cb62852f0d0@analog.com>
+Message-Id: <20240802-dev-iio-backend-add-debugfs-v2-3-4cb62852f0d0@analog.com>
 References: <20240802-dev-iio-backend-add-debugfs-v2-0-4cb62852f0d0@analog.com>
 In-Reply-To: <20240802-dev-iio-backend-add-debugfs-v2-0-4cb62852f0d0@analog.com>
 To: linux-iio@vger.kernel.org
@@ -50,11 +50,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Olivier Moysan <olivier.moysan@foss.st.com>, 
  Dragos Bogdan <dragos.bogdan@analog.com>
 X-Mailer: b4 0.14.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1722608829; l=882;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1722608829; l=666;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=EQ5g4pJjEx9y5MLKCN3xwUb/Fi6/zxslXRaMN+MVLzQ=;
- b=j0mb6dHbN5EOar75CK9yfPLWGQhPtPzcVEPFb+edAGwsr3a3LM0k3/a1/hr2/W4xiFy0bCIcA
- PI9ucU1pRjvBN9NHhZRiz0z2GGxUFJM1ZxUhlGbpicYoFpeCtou8JU3
+ bh=gmG6owXx7+vNZNRlhh8piqNGl0cPxLcyjp7ksNBda48=;
+ b=dSYQG/EOsIvahMNnhWGicaCBOOKBYi/OPeFdnkclAAc6wHGRKDWS8bH2zsTOkHFc+WK7f5fVF
+ xwGDz49zfk4DlXTlFalEl8CKl4DviIW9GnR9iq/HT8Ce9Bzk3LbAK2h
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -64,28 +64,27 @@ Reply-To: nuno.sa@analog.com
 
 From: Nuno Sa <nuno.sa@analog.com>
 
-Add support for configuring the prbs23 sequence.
+Support ADI specific prb23 sequence that can be used both for
+calibrating or debugging digital interfaces.
 
 Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
- drivers/iio/adc/adi-axi-adc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ include/linux/iio/backend.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
-index 0a9d7433da30..f4cdfcca865d 100644
---- a/drivers/iio/adc/adi-axi-adc.c
-+++ b/drivers/iio/adc/adi-axi-adc.c
-@@ -199,6 +199,10 @@ static int axi_adc_test_pattern_set(struct iio_backend *back,
- 		return regmap_update_bits(st->regmap, ADI_AXI_ADC_REG_CHAN_CTRL_3(chan),
- 					  ADI_AXI_ADC_CHAN_PN_SEL_MASK,
- 					  FIELD_PREP(ADI_AXI_ADC_CHAN_PN_SEL_MASK, 0));
-+	case IIO_BACKEND_ADI_PRBS_23A:
-+		return regmap_update_bits(st->regmap, ADI_AXI_ADC_REG_CHAN_CTRL_3(chan),
-+					  ADI_AXI_ADC_CHAN_PN_SEL_MASK,
-+					  FIELD_PREP(ADI_AXI_ADC_CHAN_PN_SEL_MASK, 1));
- 	default:
- 		return -EINVAL;
- 	}
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+index 9d0dba7ab9e7..2b9d1aa86552 100644
+--- a/include/linux/iio/backend.h
++++ b/include/linux/iio/backend.h
+@@ -56,6 +56,8 @@ enum iio_backend_test_pattern {
+ 	IIO_BACKEND_NO_TEST_PATTERN,
+ 	/* modified prbs9 */
+ 	IIO_BACKEND_ADI_PRBS_9A = 32,
++	/* modified prbs23 */
++	IIO_BACKEND_ADI_PRBS_23A,
+ 	IIO_BACKEND_TEST_PATTERN_MAX
+ };
+ 
 
 -- 
 2.45.2
