@@ -1,117 +1,95 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0495A161310;
-	Tue,  6 Aug 2024 10:45:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64B741D0DCB
+	for <linux-iio@vger.kernel.org>; Tue,  6 Aug 2024 13:10:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722941110; cv=none; b=j343FR9IbceGfg8Yvkc2DmHON2sQddZnQhuWBrRO9nc/3dbjtU7BeyzDKKjGAFRY38yjTp9W+lDlVQcwL1f4hNP64/W0YTSKvC8LzUEMiuwygdjVhQX+PLQM3l+40LqiTw26BkQeljkIAhnjLDKedXyHCaNAnPYVum3JjX+p6z4=
+	t=1722949843; cv=none; b=nXGw/lOFhtpbo62OJD+3K7Jhx8U3eS5Gwve8zbON7SRC6IGEzC4bi3guSPu1uAWCDkupZ+IafL4Wss/DeRWjTAasn9WG12GLrvyzo9Ug3Ww+Syys0mIc4oACBKq5YeR+uvChQRqHH5PHMMUFn0Nw2v1cjH6J7BIj+Z5COkVdQx8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722941110; c=relaxed/simple;
-	bh=rOYhd2/EFTCSIXBMVNgLS/L0tQ85DFEsBrVqWQTwj/w=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=X2LeKS0LtUI6uRAfqc/4OuS6XbVZJ+h5IBTak/OfXl8cb5o63qn4Ngwug3oCWqxehaxwnGyYE2Kr3GlmQi3nEHTfPRu5s7H+70wGbJxgSUXAOdcR2mAMTVWr2rZa5r9u+CGHuJT2n/2X4OGTEfHNR/xAFYZldI0h/LU3vhZ689U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AQSHPzI6; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1722949843; c=relaxed/simple;
+	bh=iw++Tw0yTPibuWJy8aCLmBVxJIQ0ExZhg41xhJEYIck=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=UbsaVDglMgyzjrWdpLHQ+fYZ4x9HfuIMc3R3kZPzFGchj+pF0BUcRvp8kEOSv9PYerm3RunME+9sgYIipi3b2G/OzveUltXSDDrjP+hzCAIWLgexaap5YaJWnSii9A+cqDpVVPUCZEmUk0AsqaUuVAWGg6s0dgW96NB4lwD6An0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ria0XFa0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AQSHPzI6"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-428243f928fso4542415e9.0;
-        Tue, 06 Aug 2024 03:45:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1722941107; x=1723545907; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=zwKi+niK4mDkuGH1TU8kmdB7gCGRr8kwrsgvY8XWNKI=;
-        b=AQSHPzI6DQnQtop6ViJPySjMCVZoKEc+Jt8sshzV/+FQOP8/+TVaJOhjLbN/Kavdnl
-         1kLXUrWyuqW7vBFFjYjkfofROWnVF5stQuTkL+j0PwoiRO4kKwkNDxBRSzxLdCBpEMad
-         UW3QkMAz2sTjpCc9r79cpFShRKvSKg/ExR2qnQr/DBofzAogPieY9pqGbXotKuaPQ48U
-         DURSGfIE4i7Fd3gx3qJ+ruS4OsfcfTiokSNPHf5q+8+mwBV6Dr5CU99f/sCSidyfptwe
-         jFmBbAj28sMXsUjvITa8UDQY7qLNRWfcUJ8JeBxMnFMasrP2ea2mgFI8bkg4jOkEVAjk
-         4iEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722941107; x=1723545907;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zwKi+niK4mDkuGH1TU8kmdB7gCGRr8kwrsgvY8XWNKI=;
-        b=GVBNPWpdXoxCmKzsupbZIhg2cB1H4ay2dzJsOu9v+HKulW21/9N04xLRl0eJ3to7XC
-         czLKVehoL9eYaU5k+VqlG+OeruStKI8jr6rqn6UrDKIR2BOPaHXrw4Zrit1K7UwbUad8
-         w3oaJb2YHVIB7Nl3agSuOyreIOm5myBasMW/eZsZvY9q6RB/37AdZMy4zSw2TG5/5p7B
-         /RaEmOjhOdvaAJ5sScXAFmogzicgydwGSgOpBeNpaN+TGqsm+frtAXZBQFVwRGrV6A+o
-         SV8vRRgaQIf0WY/w34lcaGOEkfX70bNtRqsz9udZZ/W6r1CR89N9Fj9XyFWQ9VpwxFEx
-         Z/Bw==
-X-Forwarded-Encrypted: i=1; AJvYcCV8gQOvTWB5L0+qKd7jjGqX+7rYcjj9W9N0QM7KQhSMBtBLjO3yoBa7I5CHKwF5jjyDPhnbDQfckmxOMFanbLRhaDoAy8qFw44dUaBp/4UXs6h2uroNT+s5ClO+ojVhwdM7ELSTFxVW
-X-Gm-Message-State: AOJu0YzK+W5B5gzyg8y5sMcrCExhte+x4q0HGfmFO+9dN7qpq/pQd+Tz
-	RdPUXKsPopwDbOaJH4IKxChkdFl2j1Nz1GHStybpC27DyKHUan5U
-X-Google-Smtp-Source: AGHT+IHlDih8wASngLnMl9wG+rTzq76pmtVaIYD7eg8uIZmKmt/fQ5OsOJUSkZrVt4hQSJYgeLt0fA==
-X-Received: by 2002:a05:600c:45d5:b0:424:aa35:9fb9 with SMTP id 5b1f17b1804b1-428e6af285cmr132230085e9.2.1722941107000;
-        Tue, 06 Aug 2024 03:45:07 -0700 (PDT)
-Received: from ?IPv6:2001:a61:359b:e801:d44:32b3:6924:10d1? ([2001:a61:359b:e801:d44:32b3:6924:10d1])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4282bb64006sm238256225e9.30.2024.08.06.03.45.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Aug 2024 03:45:06 -0700 (PDT)
-Message-ID: <15304301efe5c23d55984f8a1f2a5016d7be213d.camel@gmail.com>
-Subject: Re: [PATCH] iio: adc: ad7124: fix DT configuration parsing
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Dumitru Ceclan <mitrutzceclan@gmail.com>
-Cc: lars@metafoo.de, jic23@kernel.org, alexandru.tachici@analog.com, 
-	Jonathan.Cameron@huawei.com, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Dumitru Ceclan <dumitru.ceclan@analog.com>
-Date: Tue, 06 Aug 2024 12:45:06 +0200
-In-Reply-To: <20240806085133.114547-1-dumitru.ceclan@analog.com>
-References: <20240806085133.114547-1-dumitru.ceclan@analog.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.2 (3.52.2-1.fc40) 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ria0XFa0"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3A135C4AF0C;
+	Tue,  6 Aug 2024 13:10:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1722949843;
+	bh=iw++Tw0yTPibuWJy8aCLmBVxJIQ0ExZhg41xhJEYIck=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=ria0XFa0WbPPZcRFnRMCRoy2JyjsBERVDCFwZZDFJldKopHs6H5jE+/Vz+ISINcuu
+	 FqhuQCmlMkst27Dsb0cMCDblxEuaOfTwfQU/qbOXB3NQRxsmybAqpXbjmK9oFwHBK9
+	 sFgQsIFYOizoeYfgrcXUUobwd+aylnrxaEgZFOyzrZOW4QvYEmwqBJr/LLtz1hEP54
+	 hNvcMRmXdoGFrmEIEG5g4mhkNuFHhWVmO1/yvHOSgFvBZ/zyFPdJDvAIMFZBD+kHuf
+	 JYNDgPRWkilhgIjWalKfaA2PyZGUIlAnZdYoFmIRYmYMXhuY6W4N+AWwmMPoXAyfHj
+	 eOYt/FVoX6e+g==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A983C3DA64;
+	Tue,  6 Aug 2024 13:10:43 +0000 (UTC)
+From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
+Date: Tue, 06 Aug 2024 15:10:39 +0200
+Subject: [PATCH 1/2] MAINTAINERS: add entry for ad9467
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240806-dev-ad-debugfs-doc-v1-1-153b882a3f01@analog.com>
+References: <20240806-dev-ad-debugfs-doc-v1-0-153b882a3f01@analog.com>
+In-Reply-To: <20240806-dev-ad-debugfs-doc-v1-0-153b882a3f01@analog.com>
+To: linux-iio@vger.kernel.org
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>
+X-Mailer: b4 0.14.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1722949842; l=910;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=0ISwLenbTtN0B41a+pby8UWaWMuEWdaKv5v9O1GxGtU=;
+ b=okf3f9JUB/Ef6s9yeST9Y9jgl9t5QHFk85dbdtiOy69+nywBPFvGxXDcf2RCRo6708Tkk03Tw
+ Wcy93qK/QPeCKBuKnx8OXD1+z1q1skXjw/eCwwQDcv1wKYg/1FFNDFg
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: Nuno Sa <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
 
-On Tue, 2024-08-06 at 11:51 +0300, Dumitru Ceclan wrote:
-> The cfg pointer is set before reading the channel number that the
-> configuration should point to. This causes configurations to be shifted
-> by one channel.
-> For example setting bipolar to the first channel defined in the DT will
-> cause bipolar mode to be active on the second defined channel.
->=20
-> Fix by moving the cfg pointer setting after reading the channel number.
->=20
-> Fixes: 7b8d045e497a ("iio: adc: ad7124: allow more than 8 channels")
-> Signed-off-by: Dumitru Ceclan <dumitru.ceclan@analog.com>
-> ---
+From: Nuno Sa <nuno.sa@analog.com>
 
-Reviewed-by: Nuno Sa <nuno.sa@analog.com>
+Document the maintainers for the IIO ad9467 high speed ADC.
 
-> =C2=A0drivers/iio/adc/ad7124.c | 3 +--
-> =C2=A01 file changed, 1 insertion(+), 2 deletions(-)
->=20
-> diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
-> index 3beed78496c5..672d41bac8ca 100644
-> --- a/drivers/iio/adc/ad7124.c
-> +++ b/drivers/iio/adc/ad7124.c
-> @@ -839,8 +839,6 @@ static int ad7124_parse_channel_config(struct iio_dev
-> *indio_dev,
-> =C2=A0	st->channels =3D channels;
-> =C2=A0
-> =C2=A0	device_for_each_child_node_scoped(dev, child) {
-> -		cfg =3D &st->channels[channel].cfg;
-> -
-> =C2=A0		ret =3D fwnode_property_read_u32(child, "reg", &channel);
-> =C2=A0		if (ret)
-> =C2=A0			return ret;
-> @@ -858,6 +856,7 @@ static int ad7124_parse_channel_config(struct iio_dev
-> *indio_dev,
-> =C2=A0		st->channels[channel].ain =3D AD7124_CHANNEL_AINP(ain[0]) |
-> =C2=A0						=C2=A0 AD7124_CHANNEL_AINM(ain[1]);
-> =C2=A0
-> +		cfg =3D &st->channels[channel].cfg;
-> =C2=A0		cfg->bipolar =3D fwnode_property_read_bool(child, "bipolar");
-> =C2=A0
-> =C2=A0		ret =3D fwnode_property_read_u32(child, "adi,reference-select",
-> &tmp);
+Signed-off-by: Nuno Sa <nuno.sa@analog.com>
+---
+ MAINTAINERS | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2708a9e9fc95..ff62a4c2ce9e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1310,6 +1310,15 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/adc/adi,ad7780.yaml
+ F:	drivers/iio/adc/ad7780.c
+ 
++ANALOG DEVICES INC AD9467 DRIVER
++M:	Michael Hennerich <Michael.Hennerich@analog.com>
++M:	Nuno Sa <nuno.sa@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
++F:	drivers/iio/adc/ad9467.c
++
+ ANALOG DEVICES INC AD9739a DRIVER
+ M:	Nuno Sa <nuno.sa@analog.com>
+ M:	Dragos Bogdan <dragos.bogdan@analog.com>
+
+-- 
+2.45.2
+
 
