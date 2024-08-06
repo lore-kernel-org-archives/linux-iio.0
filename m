@@ -1,89 +1,86 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC92C28683;
-	Tue,  6 Aug 2024 16:01:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37F1C51C3E
+	for <linux-iio@vger.kernel.org>; Tue,  6 Aug 2024 16:02:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722960119; cv=none; b=CzLW8i/6NmaQ/weVStwHfeF+Xrb6DpaESpkfrNVSdmrXAh41vmRzXCEnbrA+QOVN8j9bMkaV/fallL8mN8j1k7lM9QaSZPadKVerEotpXZMKoRa81n2e5b9RYcMITK6oQLcmQaqX0ywjlRENo/zOn30knGD98cz4JWfZNU8JYoo=
+	t=1722960125; cv=none; b=dnjpV0I+qq/hznkniNsSGsk8moisjvMAencQmQF5el/CJ1PCgFtt68gwvg23r0kZhxY9sbO4M1RvzFyfRbkgParjZCzNOUKj6W5n/SIQX6fN2pGqyY6dALGZtsznTxfmrBWbXDfWuDjcblGKWu9TXZ2J+MDYhUyTyUAs/JTAxCY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722960119; c=relaxed/simple;
-	bh=3vtD445Fm/8LAmd5d2AXOFWFQRMqgkclZ+9tFFTZK9A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=So00B9GXOiox6rnFeHmPXr+wYQTRcWA5MJVLJVzDFBgUc1QexRQ94+ye4Z+yn0MHr6SqWh6izjj5qn7hnzvJ+w08zjpWhon0DbbOlWPR0B5faKgcOBVWgNM6yiHC2ysuc9vmZyK/Rh+NN72WhUXZAJf5XIsXBGrn+CyWj9hUWDE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JFI6D2Yc; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722960125; c=relaxed/simple;
+	bh=+qNd4iirvqBwuTzn8WZr+OzTjElYUaaNYvgLWAMvdhQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=S0I2Ffu4Nx1uu8rUxaTdLfZWsitPAla2weKzVtjLBR936bU7HSoWg7igqo5qbwsr5o3Myv992hGjDZgugntaV3/MUN/qGnhzTwV1gwJRCR17doGXLQAP8C5PIrcoBRoJGr4SPDNSvs27oOTyp/B7YjkY67K3pND2+LBTri/AZIU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VePxo3u/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JFI6D2Yc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED39DC32786;
-	Tue,  6 Aug 2024 16:01:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VePxo3u/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAC0AC32786;
+	Tue,  6 Aug 2024 16:02:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722960119;
-	bh=3vtD445Fm/8LAmd5d2AXOFWFQRMqgkclZ+9tFFTZK9A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JFI6D2Yc54zRK1nBf87IgVWmaQXhaILSt/kgJeIR2uctGm+vOfMdyUlkifKnb5+Ui
-	 hNMXRGg4YKzk32Yq19mgn0X3MuobAKz79JUJM41iq48SLUWug0/LdRgvNOOOgu1cMf
-	 LkMf1njt5DrFhUDukAOZrNzF4N/D1ha7IaBrqwrFaarGiG8aOMqVTqg0WxR7dvuPki
-	 hz3fBV0xCqHYwbq4lcrQpYpVoDAoEFVDr+PJ79Eu8j3AArTRzI3uhAQM73FY+1m3qO
-	 w4gCtwePg9wzV/jp7GruD3SKojMHfZNEumJCuN1zWQwpuQ7tLCcxQUHWAQROP+g+fO
-	 Y73TugISbu6vw==
-Date: Tue, 6 Aug 2024 17:01:54 +0100
-From: Conor Dooley <conor@kernel.org>
-To: =?iso-8859-1?B?QmFybmFi4XMgQ3rpbeFu?= <barnabas.czeman@mainlining.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Albrieux <jonathan.albrieux@gmail.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux@mainlining.org,
-	Danila Tikhonov <danila@jiaxyga.com>
-Subject: Re: [PATCH v2 2/3] dt-bindings: iio: imu: magnetometer: Add ak09118
-Message-ID: <20240806-crouch-poker-c8ae9cc07e7f@spud>
-References: <20240806-ak09918-v2-0-c300da66c198@mainlining.org>
- <20240806-ak09918-v2-2-c300da66c198@mainlining.org>
- <20240806-paycheck-visibly-4e114692ae98@spud>
+	s=k20201202; t=1722960124;
+	bh=+qNd4iirvqBwuTzn8WZr+OzTjElYUaaNYvgLWAMvdhQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=VePxo3u/hvmgVao4xx8hvED27JhtQyPo3/pved57/l2LUxjrg5Ry/eXt1hGD84rGZ
+	 5aV4tAuvESjcAlK7OuVE2lsNI4woYz1cpFkRacC2fMhP/2A3L3NCRJudn4QMxi9arf
+	 2wfnx8sX/K5kTTjsM6URSBxJBxPEdYnuAr210GTgGqS1IzhyGgFY/HEQPvYdR7dbTa
+	 ylekmPQAU5Lb62iwSN8erxB3QHV41o2qHKJjGwKXj++tMa14oIOieOJM3lF4aPn7qP
+	 Bo9kRRL8/fq7qcBhXAYkq21Yseew6djWtPMxh1cS+ple0o7n2yzc0hvcEwTmsagoJx
+	 fZnRo1a+grjXQ==
+Date: Tue, 6 Aug 2024 17:01:58 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
+Cc: nuno.sa@analog.com, linux-iio@vger.kernel.org, Michael Hennerich
+ <Michael.Hennerich@analog.com>
+Subject: Re: [PATCH 0/2] docs: abi: document the debugfs interface for
+ ad9467
+Message-ID: <20240806170158.55aa3900@jic23-huawei>
+In-Reply-To: <20240806-dev-ad-debugfs-doc-v1-0-153b882a3f01@analog.com>
+References: <20240806-dev-ad-debugfs-doc-v1-0-153b882a3f01@analog.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="4nDRdZT2HlgzMSJc"
-Content-Disposition: inline
-In-Reply-To: <20240806-paycheck-visibly-4e114692ae98@spud>
-
-
---4nDRdZT2HlgzMSJc
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 06, 2024 at 05:00:44PM +0100, Conor Dooley wrote:
-> On Tue, Aug 06, 2024 at 08:10:19AM +0200, Barnab=E1s Cz=E9m=E1n wrote:
-> > From: Danila Tikhonov <danila@jiaxyga.com>
-> >=20
-> > Document asahi-kasei,ak09918 compatible.
+On Tue, 06 Aug 2024 15:10:38 +0200
+Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org> wrote:
+
+> Hi Jonathan,
 >=20
-> Please explain what makes this device incompatible with those already in
-> the binding and why a fallback is not suitable.
+> Here it goes the follow up for the ad9467 debugfs interface. While at
+> it, I realized there was no entry in MAINTAINERS for this driver so the
+> first patch is about that.
+>=20
+LGTM.
 
-=46rom the driver patch:
-| Add additional AK09118 to the magnetometer driver which has the same
-| register mapping and scaling as the AK09112 device.
+Applied to the togreg branch of iio.git and pushed out as testing.
+If anyone else has comments or wants to give tags, then there is still time.
 
-Why isnt a fallback suitable here?
+Thanks,
 
+Jonathan
 
---4nDRdZT2HlgzMSJc
-Content-Type: application/pgp-signature; name="signature.asc"
+> ---
+> Nuno Sa (2):
+>       MAINTAINERS: add entry for ad9467
+>       ABI: debugfs-iio-ad9467: document the debugfs interface
+>=20
+>  Documentation/ABI/testing/debugfs-iio-ad9467 | 39 ++++++++++++++++++++++=
+++++++
+>  MAINTAINERS                                  | 10 +++++++
+>  2 files changed, 49 insertions(+)
+> ---
+> base-commit: 593737c18ae789dc6e4b493510a0c00977972e2e
+> change-id: 20240806-dev-ad-debugfs-doc-90d6b64d01b8
+> --
+>=20
+> Thanks!
+> - Nuno S=C3=A1
+>=20
+>=20
+>=20
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZrJI8gAKCRB4tDGHoIJi
-0hOuAQDDjd6TSxLm8fYz8evmF1fhBUTWM9XpygUdvaSHLB3glAEAup0W2ySfBOwt
-xlNnOgTC++zpo+W/wf2KR5mfgcveCQ8=
-=bfXv
------END PGP SIGNATURE-----
-
---4nDRdZT2HlgzMSJc--
