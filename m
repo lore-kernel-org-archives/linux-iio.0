@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E1801D0DCE
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E1DB1D0DCF
 	for <linux-iio@vger.kernel.org>; Tue,  6 Aug 2024 13:10:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722949843; cv=none; b=UWwsWPk7+ZowAoOUQx2vzRkWde2xgHXSYEmYnB08BL4UHa/7YozoZSHZADLy7qL4kl+z7F33Z3D569fZUWrgYn/wsvBg/xMQdPwBTPNZ1Tcj3Ehj+NK4lyx3jzhT09gqWvaP2U4ts8F+p1EmiIrW21VTeY54noQg4H99unFDQko=
+	t=1722949843; cv=none; b=Jh829twmke0EqD9B1cGUoH9ocpakxrhrhBp2uiZKk7jyTAQWYsHjEsMV+4ZV2XVwQCwyq8TW1fsi6slTpyA4wZUoETYQHOtdQFo0LkpV03hqadmxg5oU2i2LoJO0nqql1/1q/nwyyUHSn21VM2g/ad3lVLHjSRy9kcundjFzoQQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1722949843; c=relaxed/simple;
-	bh=3A+fsnM2eA6XiRaYuuMCpWl/HZKVgh5Is1URSGtxg7I=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=gvLwTMfK3UADLez2ltgjLY+sNxjzbkSaBjE1dxOXrlD+RYhelso5gF75vrBlavPXrZFD0PI7xYz0+nRtj4747ZyzrO07vKI1p+wnI0qh/G5mJL51S50VgmRa4CkVtHtdKlk6WqUdDzMuh1ztrjZmgrSBoa79pFKVfUrrrAo7vtg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=di1llGDQ; arc=none smtp.client-ip=10.30.226.201
+	bh=nfxPSXplyGVnflmFeS9tVUFmre4uy9WUcl/Fa2uMweA=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=LS6u9BJZsrb0bm7pXjhJOZl1LU6o8rQzSbAS/nOVRpFNsiubZbDvnKRqhueERi9AiTc28rWlZg7Orr5wNF1Z+qRUDrgvE+cMdNjLOBbCSDJlPeJARrHxaTrZkwffSMy5RtxfY8EW7GZ862loJzj7yadFNIBg8k9KAL3Xnq3OzmQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QY1jWFIh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="di1llGDQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 46F09C4AF09;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QY1jWFIh"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 24D4CC32786;
 	Tue,  6 Aug 2024 13:10:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1722949843;
-	bh=3A+fsnM2eA6XiRaYuuMCpWl/HZKVgh5Is1URSGtxg7I=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=di1llGDQhh2I8kkU6pGuO7JKMiNU3wU8RMbeQ2gk0eWium+VtptaBAnpb6CEPNB+y
-	 0G7fxFwAfdMRJezUQ9sh4HQb6L6s+hBMP7bR1oKwJo3Q883OGbNKlaVGOT1wB0X7OA
-	 qS9umgHiY2Qeo/sgMyJAI42GJTVev8G7ZpKdJmmbnoEgWNuFrt5Bv9+6VASFVJjZVS
-	 wWwuw6havqdc+uAUqB0HRN3MS+TWVe/xdUUazSSBRPCqIQORlzIvreuL/MSxYTzz5Y
-	 T6mMfMexSCNDqzC+2AnN9+IRnSh95H5Xiw0DsEZvWlplthP1PU0+lC+LORoEtislKN
-	 e11KSfKWncMCQ==
+	bh=nfxPSXplyGVnflmFeS9tVUFmre4uy9WUcl/Fa2uMweA=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=QY1jWFIhOmFWaTN6S4MwXFAGsmDOi0Qg7Z72WF0u9oi7iOCM9S6bB1wlNNtowbVqk
+	 zotiwCCCWZcgc0vtGpY/KLHQTKi+sAbsEEMiG+VVDkQ28TsZE/A6vWw5xqSz42UMWp
+	 ZLmTrzJYPNOFqZBI6RmBPj8Cpe6YdTcGv4dmbNp/HcILKJm+ipUDG7uK8g1Ip89+E8
+	 kUMPYmo4x1iL9OVJfjGmdVT2IGesV2WQNT4vBjoGqb112zQkA9NTeoFeWpw1Gy2pdr
+	 br4dbuNy+50szkLFHLUa80VSguwR2GltEuNbH3k8m1gwIV7dP1cSgVJgp2SAIVdcFa
+	 YEcxYijjU9WSA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C83C52D73;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 176F4C49EA1;
 	Tue,  6 Aug 2024 13:10:43 +0000 (UTC)
 From: Nuno Sa via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>
-Date: Tue, 06 Aug 2024 15:10:40 +0200
-Subject: [PATCH 2/2] ABI: debugfs-iio-ad9467: document the debugfs
- interface
+Subject: [PATCH 0/2] docs: abi: document the debugfs interface for ad9467
+Date: Tue, 06 Aug 2024 15:10:38 +0200
+Message-Id: <20240806-dev-ad-debugfs-doc-v1-0-153b882a3f01@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,19 +39,19 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240806-dev-ad-debugfs-doc-v1-2-153b882a3f01@analog.com>
-References: <20240806-dev-ad-debugfs-doc-v1-0-153b882a3f01@analog.com>
-In-Reply-To: <20240806-dev-ad-debugfs-doc-v1-0-153b882a3f01@analog.com>
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAM4gsmYC/x2MMQqAMAwAvyKZDUQppfoVcbAmapYqLYpQ+neL0
+ 3HDXYYkUSXB2GSI8mjSM1Tp2gbWYwm7oHJ16Kk35Mgiy4MLV/h73xLyueJAbL01TJ13UMMryqb
+ vP53mUj6GgSxQZAAAAA==
 To: linux-iio@vger.kernel.org
 Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.14.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1722949842; l=2199;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1722949842; l=632;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=aJKe8f0BemREu/qLk6HbULLoyWom7koS7AvKrSH6W5s=;
- b=n8a62MGDGOgydg//SkXZSt9dVk+ZFTiotI05PbndAky6+X3cngiM0ztzIVmwL1L/0jIc7a8Li
- pD4NghPo1emCXtggD3Wa40NhWDQsI5r7QhMkpb/YHLFiRHPVqA0pK/I
+ bh=nfxPSXplyGVnflmFeS9tVUFmre4uy9WUcl/Fa2uMweA=;
+ b=gDJqGvofzuYYb/rEiY9j5AE1QKY6/SGLwL4w+8qKL6ynC5lFJw91Yq6X36c4oiCjErN4GUf7F
+ Q5tdVrMQLG0BLWzYnEzd2twibzsMXUAn35pTxlIub0jYCR5pZIM4gGj
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -60,75 +59,26 @@ X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
 X-Original-From: Nuno Sa <nuno.sa@analog.com>
 Reply-To: nuno.sa@analog.com
 
-From: Nuno Sa <nuno.sa@analog.com>
+Hi Jonathan,
 
-Document the debugfs interface for the IIO ad9467 high speed ADC.
+Here it goes the follow up for the ad9467 debugfs interface. While at
+it, I realized there was no entry in MAINTAINERS for this driver so the
+first patch is about that.
 
-Signed-off-by: Nuno Sa <nuno.sa@analog.com>
 ---
+Nuno Sa (2):
+      MAINTAINERS: add entry for ad9467
+      ABI: debugfs-iio-ad9467: document the debugfs interface
+
  Documentation/ABI/testing/debugfs-iio-ad9467 | 39 ++++++++++++++++++++++++++++
- MAINTAINERS                                  |  1 +
- 2 files changed, 40 insertions(+)
+ MAINTAINERS                                  | 10 +++++++
+ 2 files changed, 49 insertions(+)
+---
+base-commit: 593737c18ae789dc6e4b493510a0c00977972e2e
+change-id: 20240806-dev-ad-debugfs-doc-90d6b64d01b8
+--
 
-diff --git a/Documentation/ABI/testing/debugfs-iio-ad9467 b/Documentation/ABI/testing/debugfs-iio-ad9467
-new file mode 100644
-index 000000000000..0352fca1f7f2
---- /dev/null
-+++ b/Documentation/ABI/testing/debugfs-iio-ad9467
-@@ -0,0 +1,39 @@
-+What:		/sys/kernel/debug/iio/iio:deviceX/calibration_table_dump
-+KernelVersion:	6.11
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This dumps the calibration table that was filled during the
-+		digital interface tuning process.
-+
-+What:		/sys/kernel/debug/iio/iio:deviceX/in_voltage_test_mode_available
-+KernelVersion:	6.11
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		List all the available test tones:
-+		- off
-+		- midscale_short
-+		- pos_fullscale
-+		- neg_fullscale
-+		- checkerboard
-+		- prbs23
-+		- prbs9
-+		- one_zero_toggle
-+		- user
-+		- bit_toggle
-+		- sync
-+		- one_bit_high
-+		- mixed_bit_frequency
-+		- ramp
-+
-+		Note that depending on the actual device being used, some of the
-+		above might not be available (and they won't be listed when
-+		reading the file).
-+
-+What:		/sys/kernel/debug/iio/iio:deviceX/in_voltageY_test_mode
-+KernelVersion:	6.11
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Writing to this file will initiate one of available test tone on
-+		channel Y. Reading it, shows which test is running. In cases
-+		where an IIO backend is available and supports the test tone,
-+		additional information about the data correctness is given.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ff62a4c2ce9e..417c6751c0dc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1316,6 +1316,7 @@ M:	Nuno Sa <nuno.sa@analog.com>
- L:	linux-iio@vger.kernel.org
- S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/ABI/testing/debugfs-iio-ad9467
- F:	Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
- F:	drivers/iio/adc/ad9467.c
- 
-
--- 
-2.45.2
+Thanks!
+- Nuno Sá
 
 
