@@ -1,322 +1,128 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E2A312F588
-	for <linux-iio@vger.kernel.org>; Wed,  7 Aug 2024 16:03:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B6A82209B;
+	Wed,  7 Aug 2024 16:31:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723046631; cv=none; b=trk4YIWBDxpzIlBwYUek45pDpbDH6eNNOcjRnqFp9ghZyuV2R0+nJ54PG4Tk94liIGoDYw10/7tFxC0p38y1k23hqPlyQuZDWItzEDn1IVEbTZOQjiEzec59U5cxD9jgw0/2FllCvtxk3R4PHkjdxuEUihgYBdQlIYcUBamd5tM=
+	t=1723048266; cv=none; b=srwT1Hzie1SndiFNSEKYEhubllXXZbjJ83PPiYafhCipQJjktM9wsJAanSrrnsrq/NLWGLZMQlxBApuUyutOsbzE7BeGWbQGbsjLKStKm5K0Nt4kx7qZwZNp9oaATgMJkGs+45/n/8mbd2KTOBwDAQ74riwcOjxU15nwLHp8Occ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723046631; c=relaxed/simple;
-	bh=UHcPFY/LL0ufoOoXQpTD0kp5CsS6gXho2yTX7B0BXyM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UavvLA1qw0gjr+A4rySgoKfuG1uqT0NzO4L7iISBmC2rCKa1v3IEcMDNzm3pPERPDCbYQ56xC6RUF8h42mZoJRWswjHEEmMklG3phS8Du0uQ6P0LXfNI8oI1/X2fOM/oNcVbqYnEJwZrSRfZqA0ViRmLg4UVlL3ZoFsyyldBNSw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Dgu85WbJ; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1723048266; c=relaxed/simple;
+	bh=xpY5vvCuu+qLHbq5z8UGWcEKnBhb+gnD0MYieQx7bCE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=I4NpCP/7HJPNyuz62RtjPGkssFMICW7zdWvprdEC6mwmw8rhSo7ldfBQLFQptiUgTT2Mcb8GKasxsl9fzwaKN6bh2a0zEfU1mFvckB5/m2lDo6ANDButXiQzQBX0cHgLtLugVk0UQIGfyPeqmPg/IDFmgJVF4q1c6BXbMpdKQd4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=roUETvn0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Dgu85WbJ"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-428101fa30aso166585e9.3
-        for <linux-iio@vger.kernel.org>; Wed, 07 Aug 2024 09:03:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1723046627; x=1723651427; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GTPhBe2QExKnpLcJb29bXJlZlZGrdqwmpHKLUs3am1k=;
-        b=Dgu85WbJM9jT8P+pNKFa8PX1SLFqHoawXz4pLU0OUpZQKmdXNh4DjWLOqkN6FzxvKG
-         3ItPfqIiBNvzzRJfsa/D4z/qSRZFTa3ifoMVT3+S7WOgSUOabjIiSDtB+nc5RCzJ5yBg
-         TIA6gMYeLaWHFMKVrvF5X4gGV6fXvQDI9PCIQtrAyPLj9gr/mlYs5XMKfGK06m9RWJMZ
-         YbXiLQfy3+d67gurYoVrO1cC+2S9tCX4S7Gonx4VUig8rVNiOIPiGc1ltBR7FUQtRbdw
-         4qt7NKO8c+a5bM0b9v+V7q+LjYd190EQnCWYayksk21Mq3LuyZYE+zGY2NrSE4mB7rWn
-         cFeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723046627; x=1723651427;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GTPhBe2QExKnpLcJb29bXJlZlZGrdqwmpHKLUs3am1k=;
-        b=v8uq2MLCJwado/AJaJgszbgec13+ytmxIKwhnC74AfzmcET8BpBaH3ErqxR81HLYLA
-         14TIQd/KEmVfuGmyP+/qu9z9JJpXJZJXDlBfvwH7l0A9D+BRo+2MEbzsYtomFPvBWjpx
-         Hk67hFy3aLKZcEZYg2Djo0U5Up/PR7ZeHN/94/Q9mwSu95Ocgoj+KgMlF71igIbZbVEK
-         zdX8Vr+7MULx/t4z4h9qlUSXVXaxH02PtAqupA8Kii66XzEo6Zqx/EHQ2fOTkn6bcIb4
-         VNVuGZu9uAWyXvw5gvlkB/0uJPpZBF/jYaEGU5NXPri+XxWZQ6Mf6wOPVmIkDDmTD97Z
-         rMBw==
-X-Forwarded-Encrypted: i=1; AJvYcCXChg9eLbLJx4parzOUcNGW6VRDbIWKeCLWiNTqhCGy0LZfLnr7xuo5oSkMLDp2j844IQrB2wYa+GeQMqS41SuSdfkG3W83vwP8
-X-Gm-Message-State: AOJu0YzASWYaIxETXE4gToFVf8mmhTO2JJ4SJcwgzrzSG5VXR4HwvGlC
-	Ph9HQT06Vn2WLClQGQxxzua37T4S5N7eV5oj57c43H9iRncs2ycIt9/AEsNJVeigZFZFXGst7Yq
-	HefL2zMp3KN4bE8X6BUiGTv4MfUM=
-X-Google-Smtp-Source: AGHT+IGkhXHsp4pj3seOrIi4FHAZK5Cwfaq4azr1qY5PH1k5umMUfoYRlOWNqK+n991xevDXc9aFI647r052+0iBFwc=
-X-Received: by 2002:a05:6000:128b:b0:368:7f4f:9ead with SMTP id
- ffacd0b85a97d-36bbc0b4f07mr12114696f8f.7.1723046627141; Wed, 07 Aug 2024
- 09:03:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="roUETvn0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB311C32781;
+	Wed,  7 Aug 2024 16:31:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1723048266;
+	bh=xpY5vvCuu+qLHbq5z8UGWcEKnBhb+gnD0MYieQx7bCE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=roUETvn0NR/ps9fkVEd9ofFY9QdUbVr7O54be0AJW0r48LjzfJg2xflkXT/1/+CQo
+	 PnK2D49iSdewAmj7GPQyIN4ujHhbmR6+LrkfZgvdW+0PSEZGwVgcrZFc8t9OTH+qBD
+	 2R4QoT3G829AqiKMPVrva1tYaKchgIqrf+aOtZMmryhctyfl4kvfYwgfFjPqzK3RGL
+	 5PcJaaoyZ+hikcVz4QF+ExcLRds2LhMAgyIbh9dcNZiVrQJRwS10FSQhpjIgV2+GkR
+	 sXzt7eykRciwl40F8sCVTXe+9XHjkJ7Xehsfz48G68aLTvvDhkIV/PsHDEcbwCOoe6
+	 MhnASxeo4BIXw==
+Date: Wed, 7 Aug 2024 17:31:01 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Dumitru Ceclan <mitrutzceclan@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, mitrutz_ceclan@gmail.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Dumitru Ceclan <dumitru.ceclan@analog.com>
+Subject: Re: [PATCH 1/2] dt-bindings: adc: ad7173: add support for ad4113
+Message-ID: <20240807-crystal-fructose-7893ab4d8771@spud>
+References: <20240807-ad4113-v1-0-2d338f702c7b@analog.com>
+ <20240807-ad4113-v1-1-2d338f702c7b@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240311160557.437337-1-inv.git-commit@tdk.com>
- <20240311160557.437337-4-inv.git-commit@tdk.com> <0ea167a1-75d0-469d-a79f-ff2cb5e81bdc@gmail.com>
- <20240806175324.3eea67c7@jic23-huawei> <FR3P281MB175788FAFA8CEB3DDF1D9AC0CEB82@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
-In-Reply-To: <FR3P281MB175788FAFA8CEB3DDF1D9AC0CEB82@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
-From: Svyatoslav Ryhel <clamor95@gmail.com>
-Date: Wed, 7 Aug 2024 19:03:35 +0300
-Message-ID: <CAPVz0n3j_O45tonPY4LovAOeqkopq0q9r6CnbERyu5+Z5+_r-g@mail.gmail.com>
-Subject: Re: [PATCH v3 3/4] iio: imu: inv_mpu6050: add new interrupt handler
- for WoM events
-To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, INV Git Commit <INV.git-commit@tdk.com>, 
-	"lars@metafoo.de" <lars@metafoo.de>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="htDToTwmXcfMf35/"
+Content-Disposition: inline
+In-Reply-To: <20240807-ad4113-v1-1-2d338f702c7b@analog.com>
+
+
+--htDToTwmXcfMf35/
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-=D1=81=D1=80, 7 =D1=81=D0=B5=D1=80=D0=BF. 2024=E2=80=AF=D1=80. =D0=BE 18:48=
- Jean-Baptiste Maneyrol
-<Jean-Baptiste.Maneyrol@tdk.com> =D0=BF=D0=B8=D1=88=D0=B5:
->
-> Hello Jonathan and Svyatoslav,
->
-> this is really strange because it is an I2C transaction error happening.
-> The chip is obviously on, otherwise it would not be able to send interrup=
-t and have sensors running.
->
-> For investigating the issue, we need to know what is the chip used inside=
- this device. The driver is supporting a lot of chips that may have some sp=
-ecific behaviors.
->
-> Svyatoslav,
-> can you give us the name of the chip in this LG device or the whoami valu=
-e read by the driver?
->
+On Wed, Aug 07, 2024 at 05:58:04PM +0300, Dumitru Ceclan wrote:
+> This commit adds bindings support for AD4113.
+>=20
+> The AD4113 is a low power, low noise, 16-bit, =CE=A3-=CE=94 analog-to-dig=
+ital
+> converter (ADC) that integrates an analog front end (AFE) for four
+> fully differential or eight single-ended inputs.
 
-According to available schematics it is named as MPU-6050
-Accelerometer embedded Gyro Sensor 4X4 QFN R/TP 24P One Chip Solution
-INVENSENSE.
+You should highlight why it is incompatible from existing devices, it's
+not clear from the description/diff.
 
-> Thanks a lot for your help.
-> JB
->
-> ________________________________________
-> From: Jonathan Cameron <jic23@kernel.org>
-> Sent: Tuesday, August 6, 2024 18:53
-> To: Svyatoslav Ryhel <clamor95@gmail.com>
-> Cc: INV Git Commit <INV.git-commit@tdk.com>; lars@metafoo.de <lars@metafo=
-o.de>; linux-iio@vger.kernel.org <linux-iio@vger.kernel.org>; Jean-Baptiste=
- Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-> Subject: Re: [PATCH v3 3/4] iio: imu: inv_mpu6050: add new interrupt hand=
-ler for WoM events
->
-> This Message Is From an External Sender
-> This message came from outside your organization.
->
-> On Tue, 23 Jul 2024 11:25:03 +0300
-> Svyatoslav Ryhel <clamor95@gmail.com> wrote:
->
-> > 11.03.24 6:05 =D0=BF=D0=BF, inv.git-commit@tdk.com:
-> > > From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> > >
-> > > Add new interrupt handler for generating WoM event from int status re=
-gister
-> > > bits. Launch from interrupt the trigger poll function for data buffer=
-.
-> > >
-> > > Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com=
->
->
-> Jean-Baptiste,
->
-> Please take a look at this report.  I'd rather not revert the series
-> if we can figure out what is wrong and get a fix on top in reasonably
-> quickly.
->
-> I'd guess a power problem so we are getting interrupts when device is pow=
-ered down?
-> Hence the reads fail.
->
-> Jonathan
->
-> > > ---
-> > >   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  2 +
-> > >   drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    | 11 ---
-> > >   drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 69 ++++++++++++++++=
-+--
-> > >   3 files changed, 66 insertions(+), 16 deletions(-)
-> > >
-> > > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/=
-imu/inv_mpu6050/inv_mpu_iio.h
-> > > index d5b0465d1f74..ca5f7d45a6d4 100644
-> > > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> > > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> > > @@ -185,6 +185,7 @@ struct inv_mpu6050_hw {
-> > >    *  @magn_orient:       magnetometer sensor chip orientation if ava=
-ilable.
-> > >    *  @suspended_sensors:   sensors mask of sensors turned off for su=
-spend
-> > >    *  @data:                read buffer used for bulk reads.
-> > > + *  @it_timestamp: interrupt timestamp.
-> > >    */
-> > >   struct inv_mpu6050_state {
-> > >     struct mutex lock;
-> > > @@ -210,6 +211,7 @@ struct inv_mpu6050_state {
-> > >     unsigned int suspended_sensors;
-> > >     bool level_shifter;
-> > >     u8 *data;
-> > > +   s64 it_timestamp;
-> > >   };
-> > >
-> > >   /*register and associated bit definition*/
-> > > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio=
-/imu/inv_mpu6050/inv_mpu_ring.c
-> > > index 13da6f523ca2..e282378ee2ca 100644
-> > > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> > > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> > > @@ -51,21 +51,10 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *=
-p)
-> > >     u32 fifo_period;
-> > >     s64 timestamp;
-> > >     u8 data[INV_MPU6050_OUTPUT_DATA_SIZE];
-> > > -   int int_status;
-> > >     size_t i, nb;
-> > >
-> > >     mutex_lock(&st->lock);
-> > >
-> > > -   /* ack interrupt and check status */
-> > > -   result =3D regmap_read(st->map, st->reg->int_status, &int_status)=
-;
-> > > -   if (result) {
-> > > -           dev_err(regmap_get_device(st->map),
-> > > -                   "failed to ack interrupt\n");
-> > > -           goto flush_fifo;
-> > > -   }
-> > > -   if (!(int_status & INV_MPU6050_BIT_RAW_DATA_RDY_INT))
-> > > -           goto end_session;
-> > > -
-> > >     if (!(st->chip_config.accl_fifo_enable |
-> > >             st->chip_config.gyro_fifo_enable |
-> > >             st->chip_config.magn_fifo_enable))
-> > > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/=
-iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> > > index ec2398a87f45..2514966f6495 100644
-> > > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> > > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> > > @@ -6,6 +6,7 @@
-> > >   #include <linux/pm_runtime.h>
-> > >
-> > >   #include <linux/iio/common/inv_sensors_timestamp.h>
-> > > +#include <linux/iio/events.h>
-> > >
-> > >   #include "inv_mpu_iio.h"
-> > >
-> > > @@ -223,6 +224,65 @@ static const struct iio_trigger_ops inv_mpu_trig=
-ger_ops =3D {
-> > >     .set_trigger_state =3D &inv_mpu_data_rdy_trigger_set_state,
-> > >   };
-> > >
-> > > +static irqreturn_t inv_mpu6050_interrupt_timestamp(int irq, void *p)
-> > > +{
-> > > +   struct iio_dev *indio_dev =3D p;
-> > > +   struct inv_mpu6050_state *st =3D iio_priv(indio_dev);
-> > > +
-> > > +   st->it_timestamp =3D iio_get_time_ns(indio_dev);
-> > > +
-> > > +   return IRQ_WAKE_THREAD;
-> > > +}
-> > > +
-> > > +static irqreturn_t inv_mpu6050_interrupt_handle(int irq, void *p)
-> > > +{
-> > > +   struct iio_dev *indio_dev =3D p;
-> > > +   struct inv_mpu6050_state *st =3D iio_priv(indio_dev);
-> > > +   unsigned int int_status, wom_bits;
-> > > +   u64 ev_code;
-> > > +   int result;
-> > > +
-> > > +   switch (st->chip_type) {
-> > > +   case INV_MPU6050:
-> > > +   case INV_MPU6500:
-> > > +   case INV_MPU6515:
-> > > +   case INV_MPU6880:
-> > > +   case INV_MPU6000:
-> > > +   case INV_MPU9150:
-> > > +   case INV_MPU9250:
-> > > +   case INV_MPU9255:
-> > > +           wom_bits =3D INV_MPU6500_BIT_WOM_INT;
-> > > +           break;
-> > > +   default:
-> > > +           wom_bits =3D INV_ICM20608_BIT_WOM_INT;
-> > > +           break;
-> > > +   }
-> > > +
-> > > +   scoped_guard(mutex, &st->lock) {
-> > > +           /* ack interrupt and check status */
-> > > +           result =3D regmap_read(st->map, st->reg->int_status, &int=
-_status);
-> > > +           if (result) {
-> > > +                   dev_err(regmap_get_device(st->map), "failed to ac=
-k interrupt\n");
-> > > +                   return IRQ_HANDLED;
-> > > +           }
-> > > +
-> > > +           /* handle WoM event */
-> > > +           if (st->chip_config.wom_en && (int_status & wom_bits)) {
-> > > +                   ev_code =3D IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_=
-MOD_X_OR_Y_OR_Z,
-> > > +                                                IIO_EV_TYPE_ROC, IIO=
-_EV_DIR_RISING);
-> > > +                   iio_push_event(indio_dev, ev_code, st->it_timesta=
-mp);
-> > > +           }
-> > > +   }
-> > > +
-> > > +   /* handle raw data interrupt */
-> > > +   if (int_status & INV_MPU6050_BIT_RAW_DATA_RDY_INT) {
-> > > +           indio_dev->pollfunc->timestamp =3D st->it_timestamp;
-> > > +           iio_trigger_poll_nested(st->trig);
-> > > +   }
-> > > +
-> > > +   return IRQ_HANDLED;
-> > > +}
-> > > +
-> > >   int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev, int irq_ty=
-pe)
-> > >   {
-> > >     int ret;
-> > > @@ -235,11 +295,10 @@ int inv_mpu6050_probe_trigger(struct iio_dev *i=
-ndio_dev, int irq_type)
-> > >     if (!st->trig)
-> > >             return -ENOMEM;
-> > >
-> > > -   ret =3D devm_request_irq(&indio_dev->dev, st->irq,
-> > > -                          &iio_trigger_generic_data_rdy_poll,
-> > > -                          irq_type,
-> > > -                          "inv_mpu",
-> > > -                          st->trig);
-> > > +   ret =3D devm_request_threaded_irq(&indio_dev->dev, st->irq,
-> > > +                                   &inv_mpu6050_interrupt_timestamp,
-> > > +                                   &inv_mpu6050_interrupt_handle,
-> > > +                                   irq_type, "inv_mpu", indio_dev);
-> > >     if (ret)
-> > >             return ret;
-> > >
-> >
-> > Greetings!
-> >
-> > After this patch was applied to Linux kernel I faced a regression on my
-> > devices LG P895/P880.
-> >
-> > Dmesg is flooded with
-> >
-> > [ 50.035018] inv-mpu6050-i2c 0-0068: failed to ack interrupt -121
-> >
-> > and mpu6050 used on this device refuses to work. It did not occur befor=
-e
-> > WoM patches were
-> >
-> > applied and reverting patches restores normal work of mpu6050.
-> >
-> >
-> > Best regards,
-> >
-> > Svyatoslav R.
-> >
->
+>=20
+> Signed-off-by: Dumitru Ceclan <dumitru.ceclan@analog.com>
+> ---
+>  Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml | 3 +++
+>  1 file changed, 3 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml b/=
+Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
+> index 17c5d39cc2c1..ad15cf9bc2ff 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
+> @@ -28,6 +28,7 @@ description: |
+>    Datasheets for supported chips:
+>      https://www.analog.com/media/en/technical-documentation/data-sheets/=
+AD4111.pdf
+>      https://www.analog.com/media/en/technical-documentation/data-sheets/=
+AD4112.pdf
+> +    <AD4113: not released yet>
+>      https://www.analog.com/media/en/technical-documentation/data-sheets/=
+AD4114.pdf
+>      https://www.analog.com/media/en/technical-documentation/data-sheets/=
+AD4115.pdf
+>      https://www.analog.com/media/en/technical-documentation/data-sheets/=
+AD4116.pdf
+> @@ -44,6 +45,7 @@ properties:
+>      enum:
+>        - adi,ad4111
+>        - adi,ad4112
+> +      - adi,ad4113
+>        - adi,ad4114
+>        - adi,ad4115
+>        - adi,ad4116
+> @@ -331,6 +333,7 @@ allOf:
+>              enum:
+>                - adi,ad4111
+>                - adi,ad4112
+> +              - adi,ad4113
+>                - adi,ad4114
+>                - adi,ad4115
+>                - adi,ad4116
+>=20
+> --=20
+> 2.43.0
+>=20
+
+--htDToTwmXcfMf35/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZrOhRQAKCRB4tDGHoIJi
+0l5iAQDqQhWk64z9hZCUGYoQfNRbN5NJQDLXUDfQGLlhGAdXagEA5L9JOs6r6aU8
+wg9X0av/Kl3QNDjlTiVy52w1mVTkjAE=
+=r+wF
+-----END PGP SIGNATURE-----
+
+--htDToTwmXcfMf35/--
