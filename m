@@ -1,57 +1,56 @@
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FA181448C7
-	for <linux-iio@vger.kernel.org>; Wed,  7 Aug 2024 20:02:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01CC0364BC
+	for <linux-iio@vger.kernel.org>; Wed,  7 Aug 2024 20:02:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723060940; cv=none; b=BLrNVBcjlBrMAU5x4gCWpfaQj2YrUlAAQAYdd3qAMabF29kAYiY8C5jEMOTt/PmoXxcJQB+n1WKyDRhPrTSzdaDNqhq29c4//vHYo5gZXtbpulXvpZn+l2fv5cJ21PCb7XZrYc+93JNlZKe9YvFsZ7+YAGXsyXR0ZntIKNbn+bo=
+	t=1723060940; cv=none; b=cKdQdZ8aUwqIEZo9cPI5DBRrZo20PEDmAhDAyjJ53mdE0yMq/cEseoeLQrzezool3uOstY+uGsTwU8NyABraevA7ACZJyAvX5ohdusefN/xNIyXyEYRB/0qS79y9Inb8n/TpLePd6E2X1+X4CLml2z1tZBsRmQ22z3AMXC7JKQ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1723060940; c=relaxed/simple;
-	bh=m5t8YOEq14DzpXxC9kxyMNMwCAST8cQieg2+aTW9klI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nEI1LpamaIcOZqMMjuF46J652X1nbqRUbV1ErfjG7Ow4qnsEJ1B1EYR/JmvTKur0Gnkj82PPACWGazdYjgrlT/o2XJahRbMp4Qx0UwMomPNWp3jD2bngFQsgXiRKpiUhIIH5O//C0ta99DQLjzCgsi0wC9tLhxFHHfHDTLUqJD8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=TPrg1VVv; arc=none smtp.client-ip=209.85.210.52
+	bh=JqI/7JY0uwHO8jeHmfDAkuQSCd4muvWmJPLKHs/4J70=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=DxCGsCH70Z1R9PqPbmYkuJWc2r2wg08hdbIhD03aqs0JnZK1W8Do/QjKMCC7+Dx93DI1szaVVplWUAQ/j5wwEPnMIf7CnuvGWdw61Kpo8LbVFdje3yj9Bk37AlrARk/zbgvb0m2rmYCr+k+3eJfHsepZSD3dnm2HUCFbTgJVt+4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=Ckl2slCP; arc=none smtp.client-ip=209.85.210.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="TPrg1VVv"
-Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-7093705c708so213806a34.1
-        for <linux-iio@vger.kernel.org>; Wed, 07 Aug 2024 13:02:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="Ckl2slCP"
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-70944d76a04so135636a34.0
+        for <linux-iio@vger.kernel.org>; Wed, 07 Aug 2024 13:02:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723060938; x=1723665738; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=h2y1nEpEAN88fP/7CYpPbMEs5vEqFecEWNsSRdZjPkE=;
-        b=TPrg1VVvonedIFxZZZSQzfpypwUPzXWiqY4F1uX+5orTMfdd+iiY9DnXWoFlxFD6Eg
-         TVMsDFMsuY4H5E1VY3G5jCnNP8r2QhNsqHgcRi/7S+Aw8ilQhDs8gbevcCq/jieopdhr
-         Q4UkEL+r1OJOYP33OpxMpF7t1VPlIqaKey9q4XUicbYc28+gJoKhSHgJpknelhWvZDDl
-         iD7ybKcnHyuI9vX2H5oj9pBAP0yyN7PGkWjpLvkSH36Ip5cKJdBC6HBZANjGNXoj8MDo
-         thEZCNm28bRlkLpGEx/JrcWtAFAC5UvYy0mdJhXipLuToSyyRHw0E2Eq4TlEAT7q5rol
-         hhxg==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723060936; x=1723665736; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=LsITnJxqyk3GLU8VoWLUSQ1dx7O5PrUBJFkjcQc8Yi0=;
+        b=Ckl2slCPnKSgr8UNq8Ph9sqxOeN6LcIvmi7Tp9jhlNe4dANMmudJk0IaChD1LwdvQ7
+         CsEjf+RfubYyGNybetFxV/Lm/q4fTBHowZqcqySCKOWAF9r+wb2Ltlx9eAWrlMJ3FOUe
+         MgHEYqT0pZ7AwbxDTOrHhaR1XoNjjiYuYp06sLHVmgZhJ57cuV7Zfcg1c2rlEHWC2jJH
+         npGrNJ/zHP4u3H4UoeC54TKjISYDqN28+jzFZhllOaJP258MOBl985yhwCyWqU1QugSA
+         oww7/QMDKw5/OKVJhjKVPzijvhHQxTqKCE0j3JxG+RMO0hyFPfKuph0GW9jkBADUYQYE
+         hOmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723060938; x=1723665738;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=h2y1nEpEAN88fP/7CYpPbMEs5vEqFecEWNsSRdZjPkE=;
-        b=DH/k8R9e5t/xWIFx1zXX3PvXyaRHL4mPOVpvbRPKhIMBGC50SoAx6woqaEjdLR9wp9
-         87w1gVgWIgJsMkn8xly493C26aBa7KN/lJDmlt5MlauKbWyN9xsiJiSEaTtncmnklld6
-         lufmDDWCTQB+B8iGEMhLWi3TL2LqjaQSjtuFvlFucsAYkEdDgu+l4xpAoWBVqyLNO1GO
-         IZkEcz4yfwXqFaKNg/M2IDCI61hldmZyNdxIxv9EQ868LLWFfo3e3Hvum/UREEU0KmNI
-         nhEGlyqkXBrucT9bv6gfZdFFywV5jx0Y+4OEHtgYUq0lqmkjBprwkuGlPPCT/+lalBza
-         4qIw==
-X-Forwarded-Encrypted: i=1; AJvYcCXOLPenJ+5sXMxf/qvmeMZbNdFYCvFs9PFzCKLow+uHNJtxiKbTECJBzNRiQ2B3w62kOjzAq1dNYg5kqn/fh93CBs7KhtW4ZPRS
-X-Gm-Message-State: AOJu0YyQlxIs4IGI4UlrBP2iP0DA69ZtY82m2HZbjg1Tzbs1t2a7dfEk
-	gKT9nPtgVRhPn1oHnvXu8X1qj6cOaReG498zyEozRzv9L1CfLbe3BfSNRZTMRXw=
-X-Google-Smtp-Source: AGHT+IH8Nl0php+QRYheKFloGDFLC//hM73Q+fe7pdRaQE2K9PwYXuJqyTxUqUvBEQDhv5idA12HkQ==
-X-Received: by 2002:a05:6830:dc9:b0:703:7775:c6c2 with SMTP id 46e09a7af769-709b99724femr22842726a34.33.1723060937736;
-        Wed, 07 Aug 2024 13:02:17 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1723060936; x=1723665736;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=LsITnJxqyk3GLU8VoWLUSQ1dx7O5PrUBJFkjcQc8Yi0=;
+        b=ryXkwlJNTkSu/KLVtZX8h0gpnyuaQN1CaN0T+qTHHoIFRG80IZpmI32U1IegZArvk9
+         cbdW/lur1usEOmrvEYLzZ4e8WRvJ1BUYUuB6KxPkXjkK+vz1notAb4/lpvxD7AGfjZVW
+         0FsqosnHBiyfODu+kO+nCS3N4gb2JPLWRq+O0r4ioNi3g22VgIQiGUkfiKKm2hyfDrsv
+         oEt12n1jy5J7Ie3Um/O6NbJ7HYxnwi39ml0W1Fmk5w7w0rLNXQcYYOvOl1y/ZFoGz8L0
+         6onELXg1rqdMY+7HM7oxN7aF/++1SFPGRJUo3RahFQkNf3NAsUi0DEQnRGTEvLVSmdTx
+         JvLQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUBy4jJE1K3gRjr5RN2Xm4Yt1qIzL+ZUTDkx6ppV6q6frxNT6Kxzodk2cHdVf/xl8c5vjzQgYdDv+o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwiH2OvrasQPzv3xEtDKjIjstBJq5ivXqKkqgbMPURtszF6p9Ai
+	WYaROz7UZvoOjgq4lIrIa543BoznnpjMIRiWERIXAU+SREv8dASPaiJA8sExzbiIseDLUbdqRVj
+	j
+X-Google-Smtp-Source: AGHT+IHXba0L9xz2feaAjHZF5HL6FfrLqc1XVJbv+ptCNbxlgacOca0GRhf/jsOysJCJOOgMtHOHpQ==
+X-Received: by 2002:a05:6830:2a86:b0:703:6f95:98e9 with SMTP id 46e09a7af769-70b4641c8f2mr1430507a34.10.1723060935925;
+        Wed, 07 Aug 2024 13:02:15 -0700 (PDT)
 Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-70a31eaf7b6sm4951003a34.24.2024.08.07.13.02.16
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-70a31eaf7b6sm4951003a34.24.2024.08.07.13.02.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Aug 2024 13:02:17 -0700 (PDT)
+        Wed, 07 Aug 2024 13:02:15 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -61,12 +60,10 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-doc@vger.kernel.org
-Subject: [PATCH 2/2] doc: iio: ad4695: document buffered read
-Date: Wed,  7 Aug 2024 15:02:11 -0500
-Message-ID: <20240807-iio-adc-ad4695-buffered-read-v1-2-bdafc39b2283@baylibre.com>
+Subject: [PATCH 0/2] iio: adc: ad4695: implement triggered buffer
+Date: Wed,  7 Aug 2024 15:02:09 -0500
+Message-ID: <20240807-iio-adc-ad4695-buffered-read-v1-0-bdafc39b2283@baylibre.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240807-iio-adc-ad4695-buffered-read-v1-0-bdafc39b2283@baylibre.com>
-References: <20240807-iio-adc-ad4695-buffered-read-v1-0-bdafc39b2283@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,44 +74,32 @@ Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.14.0
 Content-Transfer-Encoding: 8bit
 
-The ad4695 driver has a quirk where the temperature channel can't be
-enabled on its own for buffered reads, so we should document this.
+This is a fairly simple series that adds support for triggered buffers
+to the ad4695 driver.
 
-Also, since there are 4 possible modes of reading conversion data, it
-is useful to know which one is actually being used, namely the advanced
-sequencer mode.
+Not directly related to this patch, but as a side discussion about
+future possibilities with this chip while we are here...
 
-Signed-off-by: David Lechner <dlechner@baylibre.com>
+The advanced sequencer on this chip can repeat the same channel multiple
+times which, when combined with the autocycle feature, can be used to
+create different effective sampling rates for individual channels.
+
+For example if we set up the sequence [IN1, IN2, IN1, IN3] and the time
+between each individual sample in the sequence is the same, then IN1 has
+an effective sampling rate of 2x the other channels.
+
+Have there ever been discussions before about implementing something
+like this in the IIO subsystem? I didn't see anything that looked like
+this already implemented in the kernel.
+
 ---
- Documentation/iio/ad4695.rst | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+David Lechner (2):
+      iio: adc: ad4695: implement triggered buffer
+      doc: iio: ad4695: document buffered read
 
-diff --git a/Documentation/iio/ad4695.rst b/Documentation/iio/ad4695.rst
-index a33e573d61d6..af76ce2d0702 100644
---- a/Documentation/iio/ad4695.rst
-+++ b/Documentation/iio/ad4695.rst
-@@ -147,9 +147,19 @@ Unimplemented features
- ----------------------
- 
- - Additional wiring modes
--- Buffered reads
- - Threshold events
- - Oversampling
- - Gain/offset calibration
- - GPIO support
- - CRC support
-+
-+Device buffers
-+==============
-+
-+This driver supports hardware triggered buffers. This uses the "advanced
-+sequencer" feature of the chip to trigger a burst of conversions.
-+
-+Due to hardware constraints, the temperature channel cannot be read on its own
-+for buffered reads. At least one voltage channel must also be enabled.
-+
-+Also see :doc:`iio_devbuf` for more general information.
-
--- 
-2.43.0
-
+ Documentation/iio/ad4695.rst |  12 ++-
+ drivers/iio/adc/ad4695.c     | 233 ++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 241 insertions(+), 4 deletions(-)
+---
+base-commit: 7cad163c39cb642ed587d3eeb37a5637ee02740f
+change-id: 20240807-iio-adc-ad4695-buffered-read-f49eb511e300
