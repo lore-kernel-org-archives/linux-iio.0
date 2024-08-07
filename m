@@ -1,157 +1,322 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE2D233CD2;
-	Wed,  7 Aug 2024 15:15:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E2A312F588
+	for <linux-iio@vger.kernel.org>; Wed,  7 Aug 2024 16:03:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723043756; cv=none; b=NdB2wS7pHeYR4KWrTQFy/Vbt63xnxNiMe8UgvclG9BsBPBPGgnDVkL4ga3TT7JrtTqhBIdlwv4/Ac46bnucI4tuvgsTcPjCbb/4a9RMN8FpS+aHsbrDR8syzCRTzvczYhaj/qVUtqU9jYGi6Bzkorop9BVT58H3zPz/p2wkueBc=
+	t=1723046631; cv=none; b=trk4YIWBDxpzIlBwYUek45pDpbDH6eNNOcjRnqFp9ghZyuV2R0+nJ54PG4Tk94liIGoDYw10/7tFxC0p38y1k23hqPlyQuZDWItzEDn1IVEbTZOQjiEzec59U5cxD9jgw0/2FllCvtxk3R4PHkjdxuEUihgYBdQlIYcUBamd5tM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723043756; c=relaxed/simple;
-	bh=fGBCywsutW3NjgrC9Ve6Qzx0bwXdOQ99qyoNgGNCcTI=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=PYdv89qTPQZC0+vj0IAJ8A1BB5o/FekoKhGK628esuzzmB954v+gxklRBarQQaSRdB+WLxx23WBMhBSNIAo0bksg+l00fh0XBpRi4dXgbrBo0Qx2HBw58PfBThGfoGUas+bA/Q90jxZFD8P2Vx8bnpAQDO0N3y1qqBjk2zrrNLo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=WVUZ1oEw; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	s=arc-20240116; t=1723046631; c=relaxed/simple;
+	bh=UHcPFY/LL0ufoOoXQpTD0kp5CsS6gXho2yTX7B0BXyM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=UavvLA1qw0gjr+A4rySgoKfuG1uqT0NzO4L7iISBmC2rCKa1v3IEcMDNzm3pPERPDCbYQ56xC6RUF8h42mZoJRWswjHEEmMklG3phS8Du0uQ6P0LXfNI8oI1/X2fOM/oNcVbqYnEJwZrSRfZqA0ViRmLg4UVlL3ZoFsyyldBNSw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Dgu85WbJ; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="WVUZ1oEw"
-Received: from localhost (docker-mailserver-web-1.docker-mailserver_default [172.22.0.5])
-	by mail.mainlining.org (Postfix) with ESMTPSA id 5A57CE450D;
-	Wed,  7 Aug 2024 15:15:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1723043746;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dK78BrKy6mLK/z1CVSmRJ+MbobVrp0HlEUG5n8TM4L4=;
-	b=WVUZ1oEwijeOty0DYuoRaSliKdYkd12+mmrEwx0GkRWgDPdrIqcDri69unLrul5a9SauP4
-	FOXH++okSgfma1ufH5ztSLh4iMFEqHR2n19e+sgCds4h4RbAAJBK2ptRTP79yyJhTF5rRC
-	qRB71Roy2W7psJBzOhbAGpXSERxAUSkzVrjxIHXU573H5ANmwWIieyhwhBs6DJgEvJkAYY
-	v9r/ct7LvsqP5zfek5KlNBZ6mQ9UT74EGoKR0kn2bKHdocXibQx2XxE9Frbi7cyrOPwpQE
-	lFaMGTZJM2ARFPQLMKIaWaJUECq9nrVVckihnw2nwR0vmPUSW4xw3vkqRwAEHQ==
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Dgu85WbJ"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-428101fa30aso166585e9.3
+        for <linux-iio@vger.kernel.org>; Wed, 07 Aug 2024 09:03:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1723046627; x=1723651427; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GTPhBe2QExKnpLcJb29bXJlZlZGrdqwmpHKLUs3am1k=;
+        b=Dgu85WbJM9jT8P+pNKFa8PX1SLFqHoawXz4pLU0OUpZQKmdXNh4DjWLOqkN6FzxvKG
+         3ItPfqIiBNvzzRJfsa/D4z/qSRZFTa3ifoMVT3+S7WOgSUOabjIiSDtB+nc5RCzJ5yBg
+         TIA6gMYeLaWHFMKVrvF5X4gGV6fXvQDI9PCIQtrAyPLj9gr/mlYs5XMKfGK06m9RWJMZ
+         YbXiLQfy3+d67gurYoVrO1cC+2S9tCX4S7Gonx4VUig8rVNiOIPiGc1ltBR7FUQtRbdw
+         4qt7NKO8c+a5bM0b9v+V7q+LjYd190EQnCWYayksk21Mq3LuyZYE+zGY2NrSE4mB7rWn
+         cFeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723046627; x=1723651427;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=GTPhBe2QExKnpLcJb29bXJlZlZGrdqwmpHKLUs3am1k=;
+        b=v8uq2MLCJwado/AJaJgszbgec13+ytmxIKwhnC74AfzmcET8BpBaH3ErqxR81HLYLA
+         14TIQd/KEmVfuGmyP+/qu9z9JJpXJZJXDlBfvwH7l0A9D+BRo+2MEbzsYtomFPvBWjpx
+         Hk67hFy3aLKZcEZYg2Djo0U5Up/PR7ZeHN/94/Q9mwSu95Ocgoj+KgMlF71igIbZbVEK
+         zdX8Vr+7MULx/t4z4h9qlUSXVXaxH02PtAqupA8Kii66XzEo6Zqx/EHQ2fOTkn6bcIb4
+         VNVuGZu9uAWyXvw5gvlkB/0uJPpZBF/jYaEGU5NXPri+XxWZQ6Mf6wOPVmIkDDmTD97Z
+         rMBw==
+X-Forwarded-Encrypted: i=1; AJvYcCXChg9eLbLJx4parzOUcNGW6VRDbIWKeCLWiNTqhCGy0LZfLnr7xuo5oSkMLDp2j844IQrB2wYa+GeQMqS41SuSdfkG3W83vwP8
+X-Gm-Message-State: AOJu0YzASWYaIxETXE4gToFVf8mmhTO2JJ4SJcwgzrzSG5VXR4HwvGlC
+	Ph9HQT06Vn2WLClQGQxxzua37T4S5N7eV5oj57c43H9iRncs2ycIt9/AEsNJVeigZFZFXGst7Yq
+	HefL2zMp3KN4bE8X6BUiGTv4MfUM=
+X-Google-Smtp-Source: AGHT+IGkhXHsp4pj3seOrIi4FHAZK5Cwfaq4azr1qY5PH1k5umMUfoYRlOWNqK+n991xevDXc9aFI647r052+0iBFwc=
+X-Received: by 2002:a05:6000:128b:b0:368:7f4f:9ead with SMTP id
+ ffacd0b85a97d-36bbc0b4f07mr12114696f8f.7.1723046627141; Wed, 07 Aug 2024
+ 09:03:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Wed, 07 Aug 2024 17:15:46 +0200
-From: barnabas.czeman@mainlining.org
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Jonathan Albrieux <jonathan.albrieux@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux@mainlining.org
-Subject: Re: [PATCH v2 1/3] iio: magnetometer: ak8975: Fix reading for ak099xx
- sensors
-In-Reply-To: <20240806171925.7c512c63@jic23-huawei>
-References: <20240806-ak09918-v2-0-c300da66c198@mainlining.org>
- <20240806-ak09918-v2-1-c300da66c198@mainlining.org>
- <20240806171925.7c512c63@jic23-huawei>
-Message-ID: <96c2bcfbebc9e6d97d97f32aec9249db@mainlining.org>
-X-Sender: barnabas.czeman@mainlining.org
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20240311160557.437337-1-inv.git-commit@tdk.com>
+ <20240311160557.437337-4-inv.git-commit@tdk.com> <0ea167a1-75d0-469d-a79f-ff2cb5e81bdc@gmail.com>
+ <20240806175324.3eea67c7@jic23-huawei> <FR3P281MB175788FAFA8CEB3DDF1D9AC0CEB82@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
+In-Reply-To: <FR3P281MB175788FAFA8CEB3DDF1D9AC0CEB82@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Wed, 7 Aug 2024 19:03:35 +0300
+Message-ID: <CAPVz0n3j_O45tonPY4LovAOeqkopq0q9r6CnbERyu5+Z5+_r-g@mail.gmail.com>
+Subject: Re: [PATCH v3 3/4] iio: imu: inv_mpu6050: add new interrupt handler
+ for WoM events
+To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, INV Git Commit <INV.git-commit@tdk.com>, 
+	"lars@metafoo.de" <lars@metafoo.de>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2024-08-06 18:19, Jonathan Cameron wrote:
-> On Tue, 06 Aug 2024 08:10:18 +0200
-> Barnabás Czémán <barnabas.czeman@mainlining.org> wrote:
-> 
-> Hi Barnabás,
-> 
-> Welcome to IIO.
-> 
->> ST2 register read should be placed after read measurment data,
->> because it will get correct values after it.
-> 
-> What is the user visible result of this? Do we detect errors when none
-> are there?  Do we have a datasheet reference for the status being
-> update on the read command, not after the trigger?
->> 
-> Needs a Fixes tag to let us know how far to backport the fix.
-> 
-> A few comments inline.
-> 
->> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
->> ---
->>  drivers/iio/magnetometer/ak8975.c | 31 
->> +++++++++++++++----------------
->>  1 file changed, 15 insertions(+), 16 deletions(-)
->> 
->> diff --git a/drivers/iio/magnetometer/ak8975.c 
->> b/drivers/iio/magnetometer/ak8975.c
->> index dd466c5fa621..925d76062b3e 100644
->> --- a/drivers/iio/magnetometer/ak8975.c
->> +++ b/drivers/iio/magnetometer/ak8975.c
->> @@ -692,22 +692,7 @@ static int ak8975_start_read_axis(struct 
->> ak8975_data *data,
->>  	if (ret < 0)
->>  		return ret;
->> 
->> -	/* This will be executed only for non-interrupt based waiting case 
->> */
->> -	if (ret & data->def->ctrl_masks[ST1_DRDY]) {
->> -		ret = i2c_smbus_read_byte_data(client,
->> -					       data->def->ctrl_regs[ST2]);
->> -		if (ret < 0) {
->> -			dev_err(&client->dev, "Error in reading ST2\n");
->> -			return ret;
->> -		}
->> -		if (ret & (data->def->ctrl_masks[ST2_DERR] |
->> -			   data->def->ctrl_masks[ST2_HOFL])) {
->> -			dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
->> -			return -EINVAL;
->> -		}
->> -	}
->> -
-> This completely removes the check from the _fill_buffer() path
-> 
->> -	return 0;
->> +	return !(ret & data->def->ctrl_masks[ST1_DRDY]);
-> returning a positive value here is unusual enough you should add a 
-> comment for
-> the function + use that return value.
-> 
->>  }
->> 
->>  /* Retrieve raw flux value for one of the x, y, or z axis.  */
->> @@ -731,6 +716,20 @@ static int ak8975_read_axis(struct iio_dev 
->> *indio_dev, int index, int *val)
->>  	ret = i2c_smbus_read_i2c_block_data_or_emulated(
->>  			client, def->data_regs[index],
->>  			sizeof(rval), (u8*)&rval);
-> No longer gated on ret & data->def->ctrl_masks[ST1_DRDY] which seems 
-> unintentional.
-It is checked exactly before the measurement data read, it is the return 
-value of ak8975_start_read_axis.
-The read section should be ST1 -> measurement -> ST2, exactly the same 
-can be found in the datasheets.
-> 
-> Still need a check on ret here.
-> 
->> +	ret = i2c_smbus_read_byte_data(client,
->> +				       data->def->ctrl_regs[ST2]);
->> +	if (ret < 0) {
->> +		dev_err(&client->dev, "Error in reading ST2\n");
->> +		goto exit;
->> +	}
->> +
->> +	if (ret & (data->def->ctrl_masks[ST2_DERR] |
->> +		   data->def->ctrl_masks[ST2_HOFL])) {
->> +		dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
->> +		ret = -EINVAL;
->> +		goto exit;
->> +	}
->> +
->>  	if (ret < 0)
->>  		goto exit;
-> 
-> And this one ends up redundant I think which suggests to me the
-> code is inserted a few lines early.
-> 
->> 
->> 
+=D1=81=D1=80, 7 =D1=81=D0=B5=D1=80=D0=BF. 2024=E2=80=AF=D1=80. =D0=BE 18:48=
+ Jean-Baptiste Maneyrol
+<Jean-Baptiste.Maneyrol@tdk.com> =D0=BF=D0=B8=D1=88=D0=B5:
+>
+> Hello Jonathan and Svyatoslav,
+>
+> this is really strange because it is an I2C transaction error happening.
+> The chip is obviously on, otherwise it would not be able to send interrup=
+t and have sensors running.
+>
+> For investigating the issue, we need to know what is the chip used inside=
+ this device. The driver is supporting a lot of chips that may have some sp=
+ecific behaviors.
+>
+> Svyatoslav,
+> can you give us the name of the chip in this LG device or the whoami valu=
+e read by the driver?
+>
+
+According to available schematics it is named as MPU-6050
+Accelerometer embedded Gyro Sensor 4X4 QFN R/TP 24P One Chip Solution
+INVENSENSE.
+
+> Thanks a lot for your help.
+> JB
+>
+> ________________________________________
+> From: Jonathan Cameron <jic23@kernel.org>
+> Sent: Tuesday, August 6, 2024 18:53
+> To: Svyatoslav Ryhel <clamor95@gmail.com>
+> Cc: INV Git Commit <INV.git-commit@tdk.com>; lars@metafoo.de <lars@metafo=
+o.de>; linux-iio@vger.kernel.org <linux-iio@vger.kernel.org>; Jean-Baptiste=
+ Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
+> Subject: Re: [PATCH v3 3/4] iio: imu: inv_mpu6050: add new interrupt hand=
+ler for WoM events
+>
+> This Message Is From an External Sender
+> This message came from outside your organization.
+>
+> On Tue, 23 Jul 2024 11:25:03 +0300
+> Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+>
+> > 11.03.24 6:05 =D0=BF=D0=BF, inv.git-commit@tdk.com:
+> > > From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+> > >
+> > > Add new interrupt handler for generating WoM event from int status re=
+gister
+> > > bits. Launch from interrupt the trigger poll function for data buffer=
+.
+> > >
+> > > Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com=
+>
+>
+> Jean-Baptiste,
+>
+> Please take a look at this report.  I'd rather not revert the series
+> if we can figure out what is wrong and get a fix on top in reasonably
+> quickly.
+>
+> I'd guess a power problem so we are getting interrupts when device is pow=
+ered down?
+> Hence the reads fail.
+>
+> Jonathan
+>
+> > > ---
+> > >   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  2 +
+> > >   drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    | 11 ---
+> > >   drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 69 ++++++++++++++++=
++--
+> > >   3 files changed, 66 insertions(+), 16 deletions(-)
+> > >
+> > > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/=
+imu/inv_mpu6050/inv_mpu_iio.h
+> > > index d5b0465d1f74..ca5f7d45a6d4 100644
+> > > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> > > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> > > @@ -185,6 +185,7 @@ struct inv_mpu6050_hw {
+> > >    *  @magn_orient:       magnetometer sensor chip orientation if ava=
+ilable.
+> > >    *  @suspended_sensors:   sensors mask of sensors turned off for su=
+spend
+> > >    *  @data:                read buffer used for bulk reads.
+> > > + *  @it_timestamp: interrupt timestamp.
+> > >    */
+> > >   struct inv_mpu6050_state {
+> > >     struct mutex lock;
+> > > @@ -210,6 +211,7 @@ struct inv_mpu6050_state {
+> > >     unsigned int suspended_sensors;
+> > >     bool level_shifter;
+> > >     u8 *data;
+> > > +   s64 it_timestamp;
+> > >   };
+> > >
+> > >   /*register and associated bit definition*/
+> > > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio=
+/imu/inv_mpu6050/inv_mpu_ring.c
+> > > index 13da6f523ca2..e282378ee2ca 100644
+> > > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> > > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> > > @@ -51,21 +51,10 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *=
+p)
+> > >     u32 fifo_period;
+> > >     s64 timestamp;
+> > >     u8 data[INV_MPU6050_OUTPUT_DATA_SIZE];
+> > > -   int int_status;
+> > >     size_t i, nb;
+> > >
+> > >     mutex_lock(&st->lock);
+> > >
+> > > -   /* ack interrupt and check status */
+> > > -   result =3D regmap_read(st->map, st->reg->int_status, &int_status)=
+;
+> > > -   if (result) {
+> > > -           dev_err(regmap_get_device(st->map),
+> > > -                   "failed to ack interrupt\n");
+> > > -           goto flush_fifo;
+> > > -   }
+> > > -   if (!(int_status & INV_MPU6050_BIT_RAW_DATA_RDY_INT))
+> > > -           goto end_session;
+> > > -
+> > >     if (!(st->chip_config.accl_fifo_enable |
+> > >             st->chip_config.gyro_fifo_enable |
+> > >             st->chip_config.magn_fifo_enable))
+> > > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/=
+iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> > > index ec2398a87f45..2514966f6495 100644
+> > > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> > > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> > > @@ -6,6 +6,7 @@
+> > >   #include <linux/pm_runtime.h>
+> > >
+> > >   #include <linux/iio/common/inv_sensors_timestamp.h>
+> > > +#include <linux/iio/events.h>
+> > >
+> > >   #include "inv_mpu_iio.h"
+> > >
+> > > @@ -223,6 +224,65 @@ static const struct iio_trigger_ops inv_mpu_trig=
+ger_ops =3D {
+> > >     .set_trigger_state =3D &inv_mpu_data_rdy_trigger_set_state,
+> > >   };
+> > >
+> > > +static irqreturn_t inv_mpu6050_interrupt_timestamp(int irq, void *p)
+> > > +{
+> > > +   struct iio_dev *indio_dev =3D p;
+> > > +   struct inv_mpu6050_state *st =3D iio_priv(indio_dev);
+> > > +
+> > > +   st->it_timestamp =3D iio_get_time_ns(indio_dev);
+> > > +
+> > > +   return IRQ_WAKE_THREAD;
+> > > +}
+> > > +
+> > > +static irqreturn_t inv_mpu6050_interrupt_handle(int irq, void *p)
+> > > +{
+> > > +   struct iio_dev *indio_dev =3D p;
+> > > +   struct inv_mpu6050_state *st =3D iio_priv(indio_dev);
+> > > +   unsigned int int_status, wom_bits;
+> > > +   u64 ev_code;
+> > > +   int result;
+> > > +
+> > > +   switch (st->chip_type) {
+> > > +   case INV_MPU6050:
+> > > +   case INV_MPU6500:
+> > > +   case INV_MPU6515:
+> > > +   case INV_MPU6880:
+> > > +   case INV_MPU6000:
+> > > +   case INV_MPU9150:
+> > > +   case INV_MPU9250:
+> > > +   case INV_MPU9255:
+> > > +           wom_bits =3D INV_MPU6500_BIT_WOM_INT;
+> > > +           break;
+> > > +   default:
+> > > +           wom_bits =3D INV_ICM20608_BIT_WOM_INT;
+> > > +           break;
+> > > +   }
+> > > +
+> > > +   scoped_guard(mutex, &st->lock) {
+> > > +           /* ack interrupt and check status */
+> > > +           result =3D regmap_read(st->map, st->reg->int_status, &int=
+_status);
+> > > +           if (result) {
+> > > +                   dev_err(regmap_get_device(st->map), "failed to ac=
+k interrupt\n");
+> > > +                   return IRQ_HANDLED;
+> > > +           }
+> > > +
+> > > +           /* handle WoM event */
+> > > +           if (st->chip_config.wom_en && (int_status & wom_bits)) {
+> > > +                   ev_code =3D IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_=
+MOD_X_OR_Y_OR_Z,
+> > > +                                                IIO_EV_TYPE_ROC, IIO=
+_EV_DIR_RISING);
+> > > +                   iio_push_event(indio_dev, ev_code, st->it_timesta=
+mp);
+> > > +           }
+> > > +   }
+> > > +
+> > > +   /* handle raw data interrupt */
+> > > +   if (int_status & INV_MPU6050_BIT_RAW_DATA_RDY_INT) {
+> > > +           indio_dev->pollfunc->timestamp =3D st->it_timestamp;
+> > > +           iio_trigger_poll_nested(st->trig);
+> > > +   }
+> > > +
+> > > +   return IRQ_HANDLED;
+> > > +}
+> > > +
+> > >   int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev, int irq_ty=
+pe)
+> > >   {
+> > >     int ret;
+> > > @@ -235,11 +295,10 @@ int inv_mpu6050_probe_trigger(struct iio_dev *i=
+ndio_dev, int irq_type)
+> > >     if (!st->trig)
+> > >             return -ENOMEM;
+> > >
+> > > -   ret =3D devm_request_irq(&indio_dev->dev, st->irq,
+> > > -                          &iio_trigger_generic_data_rdy_poll,
+> > > -                          irq_type,
+> > > -                          "inv_mpu",
+> > > -                          st->trig);
+> > > +   ret =3D devm_request_threaded_irq(&indio_dev->dev, st->irq,
+> > > +                                   &inv_mpu6050_interrupt_timestamp,
+> > > +                                   &inv_mpu6050_interrupt_handle,
+> > > +                                   irq_type, "inv_mpu", indio_dev);
+> > >     if (ret)
+> > >             return ret;
+> > >
+> >
+> > Greetings!
+> >
+> > After this patch was applied to Linux kernel I faced a regression on my
+> > devices LG P895/P880.
+> >
+> > Dmesg is flooded with
+> >
+> > [ 50.035018] inv-mpu6050-i2c 0-0068: failed to ack interrupt -121
+> >
+> > and mpu6050 used on this device refuses to work. It did not occur befor=
+e
+> > WoM patches were
+> >
+> > applied and reverting patches restores normal work of mpu6050.
+> >
+> >
+> > Best regards,
+> >
+> > Svyatoslav R.
+> >
+>
