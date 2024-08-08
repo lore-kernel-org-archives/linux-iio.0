@@ -1,133 +1,159 @@
-Received: from out28-124.mail.aliyun.com (out28-124.mail.aliyun.com [115.124.28.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E43AC18A926;
-	Thu,  8 Aug 2024 10:34:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1622E18A6A1;
+	Thu,  8 Aug 2024 11:52:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723113272; cv=none; b=kYKYJfaqS74AhYB1q1DL6Dlumq6KElLSWLsBHnNfJWA4u9+c/sYM5ilfspJWQc0qMTVbvnRPm5EfDinEOpYpTKqlogKPkyFZK7ru0e3Vc9oveYbImw9B9y5Yc5bVPynZQQmrNeyMrExwjxJTvsPoOY8DgAFRctfU8M6iuiv4aIU=
+	t=1723117977; cv=none; b=TNR9quSs5PTyH7d61fkkFcwl0L/PVwUqhjkTsuGjLdfGHXJlim8UCXmcKf2cysHDAe/XGEOvEMKW17AA1LwF2e5h9kgvpX867IWGm/6I4gw7acaWL5JgQcgedRPHJ0JIPSxlnaO9OdbYe6wlKKfojfWhPP2Hfpmj471lLL25U0A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723113272; c=relaxed/simple;
-	bh=u++nyEl/jtE/VyZmRVjuxJ9+xJadg2M6a3jX/APHSNY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=EcpBOefEi0dBMiOnmRw4Wlvt5/E0Y6BC+LfaFIf2NUKtDiOqanWl2xNpr1EttKPA9Zwr+QDYqQ5M/oDjsQLPlVY7iMsad+l51wrZLLYcSsYSVrm42E+yksamVPWk6HWj/gRhBqgqrWRWtYYSbD/Bkh5jp86MvJEVO8WJmmzlS7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=awinic.com; spf=pass smtp.mailfrom=awinic.com; arc=none smtp.client-ip=115.124.28.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=awinic.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=awinic.com
-X-Alimail-AntiSpam:AC=CONTINUE;BC=0.07756341|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.342594-0.000898024-0.656508;FP=8575172256919786746|0|0|0|0|-1|-1|-1;HT=maildocker-contentspam033032065106;MF=wangshuaijie@awinic.com;NM=1;PH=DS;RN=15;RT=15;SR=0;TI=SMTPD_---.YlkvC7t_1723112942;
-Received: from awinic..(mailfrom:wangshuaijie@awinic.com fp:SMTPD_---.YlkvC7t_1723112942)
-          by smtp.aliyun-inc.com;
-          Thu, 08 Aug 2024 18:29:04 +0800
-From: wangshuaijie@awinic.com
-To: jic23@kernel.org,
-	lars@metafoo.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	kees@kernel.org,
-	gustavoars@kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-hardening@vger.kernel.org
-Cc: wangshuaijie@awinic.com,
-	liweilei@awinic.com,
-	kangjiajun@awinic.com,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH V6 1/2] dt-bindings: iio: aw96103: Add bindings for aw96103/aw96105 sensor
-Date: Thu,  8 Aug 2024 10:28:50 +0000
-Message-ID: <20240808102851.4024025-2-wangshuaijie@awinic.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20240808102851.4024025-1-wangshuaijie@awinic.com>
-References: <20240808102851.4024025-1-wangshuaijie@awinic.com>
+	s=arc-20240116; t=1723117977; c=relaxed/simple;
+	bh=m51EJno8UBesKyQqHvQkOWFtrrSX/ZqToULucSY/DtU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Rpli6dnv2drX3Z2nZ18r5NApcvJFwpcqp5OiodKQsFuq3fkuDXbf433GRbtpJdPQkputgFRD3bNiTWmu9FxsOV+3VqnjX4eZm2ollPOuY4pDq58tTsk6P3PbjBd1waB9kc00IoTCf7Wf2e95GB98Tr5IlIydx7YeaZW1uV5awsk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Af1WgwJe; arc=none smtp.client-ip=209.85.218.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Af1WgwJe"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a7ab76558a9so129874866b.1;
+        Thu, 08 Aug 2024 04:52:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1723117974; x=1723722774; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=ac6ETZLxcTe0WIzDXjp8tedta06jKXN2670wajcTqnw=;
+        b=Af1WgwJev2JTBMP9KCg/hQ7aEYYRVcE+4E5hoAC6wBt29mjSr3yKYjfbBBxf7opDi0
+         njd9nRnAbv/jogpXJIzNrKQ9D+KT+9OKVDkeZl1ew83QkLl3nhznuHD/r2CTtmK6RrVb
+         Inozmbt3vLfJUUkh95xkvJXmJv2bOwJDzurv8Hq49Kc0cGaj/dBmWxJCHUZmoRrggZWl
+         64hDTpRlWL1SFBEiF2HnT37I6uhTuHAU8l727MhEw0siAKMYjfjyWTgkKhhyJ3Z2NB7t
+         jt126A2n6UCarljPAZXSNVoiklt0KIR1VBr/4ZIdhEvGqyPoF1sgIFadRzPuO1ewqKWf
+         e99A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723117974; x=1723722774;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ac6ETZLxcTe0WIzDXjp8tedta06jKXN2670wajcTqnw=;
+        b=JQU8ZvjNE/gz2wEGuGBelUFe0JpvxFiV3Anq+/8olnmRc8/A2Cc7xy1j9e+KMBnI9N
+         sPHrEdTFR7C/uYpXpXGW1jGh9oIMBSqePEYx4XUWs46qhXH2ptDPW6MMlwPrYgIUyP6J
+         pw0QBY0HH3N2oryC6PGEvy+QrIoQFByS/MKXp908DUzBmGIfVkhWih4ek/clDK6ODCLb
+         dYK1TjWqpstvk6gvo3k9+AV9ZLPDW7fuehPrAscvBP+mcsG1YDMPHNHv+uibDSZrw3E3
+         l/9Amda9N8EX7oHXYKq3XQ9DYcQmuWkqkKzSv4jE9/nagFlpzRoe81I9MuGNEuMKbaxl
+         uWFA==
+X-Forwarded-Encrypted: i=1; AJvYcCWnFopM2UPrK5KewdfcFPUa92onnOYmXzwNAopFVK4/sMIpdogK6C3bejbCyZowm3Bv22B+H1q85zmSU5O6qgwkXIhppmocwmJovjxyZkx19xjY7aiC/kyg437sVWeYByUmnnuNwUZ/SvfRP7hq/3+eSSZGUNlJKG8q0+BtjadpnLrgTw==
+X-Gm-Message-State: AOJu0YyDu30PTNsG/7/26oIiurx2TEl/vf1k2KMCROYhwnW8cJLtSKpi
+	GgrYyPFy59brXM/OotMW73xV+2+AlNOOD7C5mhJ/pU+7VBiDIgOH
+X-Google-Smtp-Source: AGHT+IElNtpEkOLei43eBl/uqdJ/2dt8nMmdkf6rNaOiRkgI2oVq7w4E9I17vKegv8fEuyucEa947w==
+X-Received: by 2002:a17:907:a0c8:b0:a77:ab9e:9202 with SMTP id a640c23a62f3a-a8091ec7f63mr124650066b.4.1723117974020;
+        Thu, 08 Aug 2024 04:52:54 -0700 (PDT)
+Received: from ?IPv6:2003:f6:ef1c:c500:ee59:d953:f148:40ba? (p200300f6ef1cc500ee59d953f14840ba.dip0.t-ipconnect.de. [2003:f6:ef1c:c500:ee59:d953:f148:40ba])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7dc9e80e49sm731594666b.180.2024.08.08.04.52.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Aug 2024 04:52:53 -0700 (PDT)
+Message-ID: <cea14e0a676de59b403185710782a50b1caf6616.camel@gmail.com>
+Subject: Re: [PATCH 2/2] iio: adc: ad7173: add support for ad4113
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Dumitru Ceclan <mitrutzceclan@gmail.com>, Lars-Peter Clausen
+	 <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron
+	 <jic23@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+	 <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+Cc: mitrutz_ceclan@gmail.com, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Dumitru Ceclan
+	 <dumitru.ceclan@analog.com>
+Date: Thu, 08 Aug 2024 13:56:53 +0200
+In-Reply-To: <20240807-ad4113-v1-2-2d338f702c7b@analog.com>
+References: <20240807-ad4113-v1-0-2d338f702c7b@analog.com>
+	 <20240807-ad4113-v1-2-2d338f702c7b@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.3 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-From: shuaijie wang <wangshuaijie@awinic.com>
+On Wed, 2024-08-07 at 17:58 +0300, Dumitru Ceclan wrote:
+> This commit adds support for the AD4113 ADC.
+> The AD4113 is a low power, low noise, 16-bit, =CE=A3-=CE=94 analog-to-dig=
+ital
+> converter (ADC) that integrates an analog front end (AFE) for four
+> fully differential or eight single-ended inputs.
+>=20
+> Signed-off-by: Dumitru Ceclan <dumitru.ceclan@analog.com>
+> ---
 
-Add device tree bindings for aw96103/aw96105 proximity sensor.
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: shuaijie wang <wangshuaijie@awinic.com>
----
- .../iio/proximity/awinic,aw96103.yaml         | 63 +++++++++++++++++++
- 1 file changed, 63 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/proximity/awinic,aw96103.yaml
-
-diff --git a/Documentation/devicetree/bindings/iio/proximity/awinic,aw96103.yaml b/Documentation/devicetree/bindings/iio/proximity/awinic,aw96103.yaml
-new file mode 100644
-index 000000000000..54b5bc176d5c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/proximity/awinic,aw96103.yaml
-@@ -0,0 +1,63 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/proximity/awinic,aw96103.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Awinic's AW96103 capacitive proximity sensor and similar
-+
-+maintainers:
-+  - Wang Shuaijie <wangshuaijie@awinic.com>
-+
-+description: |
-+  Awinic's AW96103/AW96105 proximity sensor.
-+  The specific absorption rate (SAR) is a metric that measures
-+  the degree of absorption of electromagnetic radiation emitted by
-+  wireless devices, such as mobile phones and tablets, by human tissue.
-+  In mobile phone applications, the proximity sensor is primarily
-+  used to detect the proximity of the human body to the phone. When the
-+  phone approaches the human body, it will actively reduce the transmit
-+  power of the antenna to keep the SAR within a safe range. Therefore,
-+  we also refer to the proximity sensor as a SAR sensor.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - awinic,aw96103
-+      - awinic,aw96105
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    description:
-+      Generated by the device to announce that a close/far
-+      proximity event has happened.
-+    maxItems: 1
-+
-+  vcc-supply:
-+    description:
-+      Optional regulator for chip, 1.7V-3.6V.
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - vcc-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        proximity@12 {
-+            compatible = "awinic,aw96103";
-+            reg = <0x12>;
-+            interrupt-parent = <&gpio>;
-+            interrupts = <23 IRQ_TYPE_EDGE_FALLING>;
-+            vcc-supply = <&pp1800_prox>;
-+        };
-+    };
--- 
-2.45.1
+> =C2=A0drivers/iio/adc/ad7173.c | 22 +++++++++++++++++++++-
+> =C2=A01 file changed, 21 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/iio/adc/ad7173.c b/drivers/iio/adc/ad7173.c
+> index a854f2d30174..82b63f9705b3 100644
+> --- a/drivers/iio/adc/ad7173.c
+> +++ b/drivers/iio/adc/ad7173.c
+> @@ -3,7 +3,7 @@
+> =C2=A0 * AD717x and AD411x family SPI ADC driver
+> =C2=A0 *
+> =C2=A0 * Supported devices:
+> - *=C2=A0 AD4111/AD4112/AD4114/AD4115/AD4116
+> + *=C2=A0 AD4111/AD4112/AD4113/AD4114/AD4115/AD4116
+> =C2=A0 *=C2=A0 AD7172-2/AD7172-4/AD7173-8/AD7175-2
+> =C2=A0 *=C2=A0 AD7175-8/AD7176-2/AD7177-2
+> =C2=A0 *
+> @@ -84,6 +84,7 @@
+> =C2=A0#define AD4111_ID			AD7173_ID
+> =C2=A0#define AD4112_ID			AD7173_ID
+> =C2=A0#define AD4114_ID			AD7173_ID
+> +#define AD4113_ID			0x31D0
+> =C2=A0#define AD4116_ID			0x34d0
+> =C2=A0#define AD4115_ID			0x38d0
+> =C2=A0#define AD7175_8_ID			0x3cd0
+> @@ -294,6 +295,23 @@ static const struct ad7173_device_info ad4112_device=
+_info
+> =3D {
+> =C2=A0	.num_sinc5_data_rates =3D ARRAY_SIZE(ad7173_sinc5_data_rates),
+> =C2=A0};
+> =C2=A0
+> +static const struct ad7173_device_info ad4113_device_info =3D {
+> +	.name =3D "ad4113",
+> +	.id =3D AD4113_ID,
+> +	.num_voltage_in_div =3D 8,
+> +	.num_channels =3D 16,
+> +	.num_configs =3D 8,
+> +	.num_voltage_in =3D 8,
+> +	.num_gpios =3D 2,
+> +	.higher_gpio_bits =3D true,
+> +	.has_vincom_input =3D true,
+> +	.has_input_buf =3D true,
+> +	.has_int_ref =3D true,
+> +	.clock =3D 2 * HZ_PER_MHZ,
+> +	.sinc5_data_rates =3D ad7173_sinc5_data_rates,
+> +	.num_sinc5_data_rates =3D ARRAY_SIZE(ad7173_sinc5_data_rates),
+> +};
+> +
+> =C2=A0static const struct ad7173_device_info ad4114_device_info =3D {
+> =C2=A0	.name =3D "ad4114",
+> =C2=A0	.id =3D AD4114_ID,
+> @@ -1437,6 +1455,7 @@ static int ad7173_probe(struct spi_device *spi)
+> =C2=A0static const struct of_device_id ad7173_of_match[] =3D {
+> =C2=A0	{ .compatible =3D "adi,ad4111",	.data =3D &ad4111_device_info },
+> =C2=A0	{ .compatible =3D "adi,ad4112",	.data =3D &ad4112_device_info },
+> +	{ .compatible =3D "adi,ad4113",	.data =3D &ad4113_device_info },
+> =C2=A0	{ .compatible =3D "adi,ad4114",	.data =3D &ad4114_device_info },
+> =C2=A0	{ .compatible =3D "adi,ad4115",	.data =3D &ad4115_device_info },
+> =C2=A0	{ .compatible =3D "adi,ad4116",	.data =3D &ad4116_device_info },
+> @@ -1454,6 +1473,7 @@ MODULE_DEVICE_TABLE(of, ad7173_of_match);
+> =C2=A0static const struct spi_device_id ad7173_id_table[] =3D {
+> =C2=A0	{ "ad4111",=C2=A0=C2=A0 (kernel_ulong_t)&ad4111_device_info },
+> =C2=A0	{ "ad4112",=C2=A0=C2=A0 (kernel_ulong_t)&ad4112_device_info },
+> +	{ "ad4113",=C2=A0=C2=A0 (kernel_ulong_t)&ad4113_device_info },
+> =C2=A0	{ "ad4114",=C2=A0=C2=A0 (kernel_ulong_t)&ad4114_device_info },
+> =C2=A0	{ "ad4115",=C2=A0=C2=A0 (kernel_ulong_t)&ad4115_device_info },
+> =C2=A0	{ "ad4116",=C2=A0=C2=A0 (kernel_ulong_t)&ad4116_device_info },
+>=20
 
