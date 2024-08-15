@@ -1,64 +1,68 @@
-Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4BED1B3F31
-	for <linux-iio@vger.kernel.org>; Thu, 15 Aug 2024 17:22:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0719C1B4C4B
+	for <linux-iio@vger.kernel.org>; Thu, 15 Aug 2024 17:22:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723742542; cv=none; b=fq0bySiMC5dgvWCffUfFy3YkxFgNXzeDQ9xDLObbgeHKgvC/qstYEWjF241wgpaP7P5Qx9U/KVa7A4B2mpbxYUhxCshqK5hT4Aw1mu1oUqOL+tMM+UI7qMihkXnwzV1xo9EtwZp1NNjL7CHHo689jpI0PQJ8lcEN/fEwFa+QRYA=
+	t=1723742542; cv=none; b=HbKGjSK7tSMFnihXd6b2MlC750/d95YH0EtitbH+R3WVnA9RSsm+4UE1WX11u82yyRHgW/R9zESzO4Helv2iQS7gv0vwRU3xlE51UxFguaYc9X+RV+cQ0gguV+aIgi2Q1W1h0cntzxzV+LFYa2H6LlKK4+O/R1NQFHf5wv6GjGs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1723742542; c=relaxed/simple;
-	bh=D4UwZUQ81I5vLXXTS5znzAKk9dzOv8liLoig0hVVJqA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=AwtH8ZtYOfvBTo/HDI+haSz7TI827Wjqehl8UQsPIlxBOdT0TLYqF6erTlcm6N3NULjBR0o9JfaCd+cSfsaWaMOn3b/IFVcIegYU+TXCgDzBpX2Hd8YrG3ECi6YaJgd2gK11UccWYPHgFt//MJLIZY+cCbBtYolk0543SwdQ99k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=DJvmMZsW; arc=none smtp.client-ip=209.85.161.54
+	bh=lQl5PN38ewp8fP1d10oMgjM61q8VF9A8RDMBz1cBMrg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=GjX01sjh56kCb5ud2HaT5eNIfWmQ2/cLwBHtCPE4Uu6mzoQJVttv+Fdj+Rs1Mqv2DQPNQPqm8BmPAWSBp3of48AA2USPgx9EQ3tRczUMjSMGiw99KLmPcKjFrAO0pXcGRzlgsLLclCHVu86aI82c+UN7LScwJeNGBvw+51yFF00=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=v1qQUl4Q; arc=none smtp.client-ip=209.85.160.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="DJvmMZsW"
-Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-5d5e97b8a22so683895eaf.2
-        for <linux-iio@vger.kernel.org>; Thu, 15 Aug 2024 10:22:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="v1qQUl4Q"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-264a12e05b9so778112fac.1
+        for <linux-iio@vger.kernel.org>; Thu, 15 Aug 2024 10:22:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723742538; x=1724347338; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=tYo8NEWGJIdtw9pJBLY1QEQbt1FShFOkJGNXlVqgZP8=;
-        b=DJvmMZsWjY7zmSE2CTJXf6WfAhFgwNCKgZYzd6OHd4SuhraCH22ZFkTNPmxLJW6pLr
-         jRCZ3r6HHkJ5oPoRYg+uYFhyKAl8X+H+Y2FeZ+xzwyafkNKtsTvISz73jz41S/xAfLiO
-         W90f/PElk2heyF27jozZDMsaMTy/frJ9WsFVmyWW552g5XuOIYwfHB8+PSfcqtallJES
-         d4dS24rrr+WnuYqWiVCb7CZBYQoNGx274cZXnZFv43LMLWxLce4o2aZ6dr/DusxTQjeZ
-         7ZNRietBb+xtd7J/S6JWzw7UBBi6e3L8sCkszt6sG/pzz/T3ri97oxLpgLSZ/pvfBIZu
-         17rA==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723742540; x=1724347340; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iRorKE+dqmoV40ZY8LVTmZRhjf2w7HVyyAsDfTVj74s=;
+        b=v1qQUl4Q+4nO7yjyt/2gs4BX6QsGdE3VqxKMQf+G1as6/R0M46STElifYqkrtM2uH6
+         6cKuoCwWomGTu9HxCcx0QATP9zDfPmGwN+I5DyTkEtNrwo+TwtnTdxhquc2Psky9a4Wr
+         ZJKJJ8WERcCPCzgi2kSMIYWIZB/UIbutNKFwEYYbHF/ANq7Ri2IvfII7sOrHU2dI8/xh
+         6QflOp+Qd6qpcLKw+zQwRy7ztN3vCWHxHLPOgJ+/p3XhosPda/A2k5JJcjeO8L81TpZS
+         u56rjxQ70ULxSANLgspUhtWp/YnVGtB8D63IhegssZOrg5tpSOq00leeF3s7u4ncsYkA
+         VUjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723742538; x=1724347338;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tYo8NEWGJIdtw9pJBLY1QEQbt1FShFOkJGNXlVqgZP8=;
-        b=msCaWRdJ2gKUVKHL0iKLzEDqzp/CHUZ5uPgx0e1ufN8Fqo+XsrFrQVkcYVZxAgn9kM
-         LA5lzfEq4WPcT3e9K0fABdeuQ5IrzaTqk9NG+QUZmA+3pj7Nf67MUQaHh8meh3RGxoxs
-         7EBr4f+JCqPmeMQXMak4U40o3B9lK3yq+kEf7y7liE1T2gmfA/+6bixWQkbXI1I1C9IW
-         9acA605tQVYIMLPdyAroGNeMeYIHCBXzZl5VEp2rb6kuII7bT57XBiqc1/+J4o3WIv5x
-         /eKf5hXz0NgScB2SeNHfa5ugfu5K/MZXiBk8yQ3yh2w5Ri5L5Y9YgrGcdamS4HxF/LmI
-         7C8Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWiU4r9j8koOH/sgtKmirFxtBRXuDCdFT+Jf62juSbzt1GavEf9Rw+zvML98Q3ogremaKNJbkFwZT+apldMlBaJolRl4GIBt3JP
-X-Gm-Message-State: AOJu0YyM1vJaO9eb1KzOGkjizXgsTzmANKmG1qcqktUn/HkSOvAIKZvE
-	4NY5/o78dRNNGwLzncQsgMQ7LmXq+gcQPKmPmlei4vlwSecOWuidf4ld4vnazaU=
-X-Google-Smtp-Source: AGHT+IEr2pJX4B0DWbzhh7aV0O3Fjoo7uLRK/CK6MZwkprR+TAigHIXKquq4qfr36D6u7mbE2e606A==
-X-Received: by 2002:a05:6870:d185:b0:25e:1edb:5bcf with SMTP id 586e51a60fabf-2701c34553emr282901fac.6.1723742537955;
-        Thu, 15 Aug 2024 10:22:17 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1723742540; x=1724347340;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=iRorKE+dqmoV40ZY8LVTmZRhjf2w7HVyyAsDfTVj74s=;
+        b=h0DobeehdKITfRs4S71ow5pBMeL/JUUZ93ibvCPWTGL31whbZmxxlbnroR0FI7EvL4
+         08soer1IKdq+/h+FooHohclS/HaQOtfeA3bmfuGWDsfHUMm0d3FL3k5vdouZnrQ1o9XU
+         fgxvPuAk/1JsiYaSrzYODX8XcvU0n96how6BbVqiM0XCXE2ZHo18DifPie1QdP5pITg7
+         HOxXJRhfUjU3mMhPAIZ9bjoZJGFIClhRK9q7+vNkQ4SUoB8D9lWaiq/Op1wNdps0keas
+         /paiSJ5p86hcmJoVEjgB87kSZ+3XwauM2ZV9GKm+mJv1Zvfomth01J6UZuWk0NquAIfd
+         85Eg==
+X-Forwarded-Encrypted: i=1; AJvYcCVWxYvDQvcXVfk0iXYya6w5iN05bGBs9LFNwDUFSIPQBiQdmgKfU8hddSU+l4F6AOAchK9TRHmHXfVWHhQW9CZxG/6RvxsW0aUm
+X-Gm-Message-State: AOJu0Yx4lr3sc2dbF9wy66IhT7w2yhaP6KUWuf2lKpRAzigkBGZTiMDI
+	jzm/LJQKdMdUSTuc3Y3Ms59WQU1JeDp6muui0EY+BUOW2OwgVTSzQXEmLe9j/+U=
+X-Google-Smtp-Source: AGHT+IFP978w/cZSnGt6qU9S3P11ASgJOMMtA752yMQZk71k8mAgRCA60iGjdtUWn2ku0TUWqrn6Ag==
+X-Received: by 2002:a05:6870:31c2:b0:25d:4f3c:c072 with SMTP id 586e51a60fabf-2701c380feemr213947fac.17.1723742540116;
+        Thu, 15 Aug 2024 10:22:20 -0700 (PDT)
 Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-70ca66297d0sm345327a34.68.2024.08.15.10.22.17
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-70ca66297d0sm345327a34.68.2024.08.15.10.22.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Aug 2024 10:22:17 -0700 (PDT)
+        Thu, 15 Aug 2024 10:22:19 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/4] iio: ABI: audit calibscal and calibbias attributes
-Date: Thu, 15 Aug 2024 12:22:09 -0500
-Message-ID: <20240815-iio-abi-calib-audit-v1-0-536b2fea8620@baylibre.com>
+Subject: [PATCH 3/4] iio: ABI: add missing calibscale attributes
+Date: Thu, 15 Aug 2024 12:22:12 -0500
+Message-ID: <20240815-iio-abi-calib-audit-v1-3-536b2fea8620@baylibre.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20240815-iio-abi-calib-audit-v1-0-536b2fea8620@baylibre.com>
+References: <20240815-iio-abi-calib-audit-v1-0-536b2fea8620@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,19 +73,46 @@ Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.14.0
 Content-Transfer-Encoding: 8bit
 
-While preparing to add some new variants of the calib{scale,bias} and
-calib{scale,bias}_available attributes, we noticed that quite a few
-of the existing attributes were not documented.
+This adds additional calibscale attributes to the ABI documentation for
+instances found in drivers by searching the code for:
 
----
-David Lechner (4):
-      iio: ABI: document calibscale_available attributes
-      iio: ABI: sort calibscale attributes
-      iio: ABI: add missing calibscale attributes
-      iio: ABI: add missing calibbias attributes
+    BIT(IIO_CHAN_INFO_CALIBSCALE)
 
- Documentation/ABI/testing/sysfs-bus-iio | 64 ++++++++++++++++++++++++++-------
- 1 file changed, 51 insertions(+), 13 deletions(-)
+Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
-base-commit: d505a9dc8de83df2a8ce8c9e780f7b29887f34af
-change-id: 20240815-iio-abi-calib-audit-fcc21b1c6892
+ Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 401e0a595aba..da8096b04e14 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -556,8 +556,15 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_x_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_capacitance_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance0_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_both_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_ir_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calibscale
+@@ -568,6 +575,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_i_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_q_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_calibscale
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+
+-- 
+2.43.0
+
