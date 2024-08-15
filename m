@@ -1,90 +1,115 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03FAF1B1512;
-	Thu, 15 Aug 2024 16:11:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8070129A1
+	for <linux-iio@vger.kernel.org>; Thu, 15 Aug 2024 17:22:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723738296; cv=none; b=Na1rkFV482W4vjg1FlICTKjXP2bGEYNE6IXmoyERZm3eg/soYF/RhQSgWDNIwzlQuodcHXliI063P8Ip5Z85nhH0gISs1IguahizATfkSmBXtL07auEJjf2Q5XZzyHA7nzIMoI7udY/MmTGZ66h3Ln0KnJRELJj40ZUV2IZukv0=
+	t=1723742541; cv=none; b=Ry77B+e43kjn7ZKs7z4sJVqeqFi0quP7fnT9/fFZ+E1Dy4K8mZAY5j5ne5qmAYwEldXZmsQ/N1H+sVP8JCAXYzDuuy2pcEEFbuYvZ+wwiMP4Yhbvv1sjUw9B8+wpeSuROytQoYaCxPyS5mb9USQUo5856gTfHSwNELjWDBY+hnE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723738296; c=relaxed/simple;
-	bh=PxxUNLRK1Op1mXSCSf+5ux4a9GTb2aTTZN7C5kMnUb4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZN1IywvLFAoLnJRmPCjgqpX2pfY5RtgpM5GsuFI9WNJ9um0EvM0dW7/MWSY89NNhkmqagQzG9xFC2Lh5+Z28Ig93euzQMQG/S3oIey6ZUt0Vy5SeWF4OM8GkdOkbwX0rHocNuvrrhNSaV+YvmnlZZxJc54WHlEa2uPuC+mSDQCE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RNzJ6GoF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1723742541; c=relaxed/simple;
+	bh=WmTXvE8G3cxrHN9egH1FEwZfFqBMr42bXrUWyWymz9I=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=KOpBafxm7nTWzg48n5Mqo0DExHD+w8gWaOamQ2WveoaWSxxde1zgsr8tn7qJI4YbGJCYMc49Vv8PKq03oVWeVhejyQ/Yr1luCak+vSWyuXKwgSm1C1eX7LCUrwlhtkxwTTS4jr8mh992wiqh2osU5IRr/yZ6alIStauaAkJQZiA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=phoJ4P0K; arc=none smtp.client-ip=209.85.160.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RNzJ6GoF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1F71C32786;
-	Thu, 15 Aug 2024 16:11:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1723738295;
-	bh=PxxUNLRK1Op1mXSCSf+5ux4a9GTb2aTTZN7C5kMnUb4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=RNzJ6GoF61TWJYY/9NGo9Aszd5m7ZdIhRnYiPCv+IiQA2RJ5OLAruuGvpPeaWF6BU
-	 R80yc96+60xWf7dpuuXWMdom7hU3ksX5MqymAHUvuAUQeLNn4R2zLTUkDY44NrCJLs
-	 XVhVBL0s8eh1nCPpjqge5kagNoiyRqDuIC5DFRtg1hgLODurcVwuP5nE5ISlBLW3r0
-	 HzLpDiawu1iKOur9Sne15hiJIgpNoG+GIec1ymni9TYOqmA78JzIuOGnmosDtMRplI
-	 plNw5SHO8jGg3Oxr1d+VPX9jg9bBUSvUJoUFh8RZLV7iZnxg/YNWwDPh1NI9lhAmex
-	 FXUxL49Fw85+Q==
-Date: Thu, 15 Aug 2024 17:11:29 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Guillaume Stols <gstols@baylibre.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-pwm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	20240705211452.1157967-2-u.kleine-koenig@baylibre.com,
-	20240712171821.1470833-2-u.kleine-koenig@baylibre.com,
-	cover.1721040875.git.u.kleine-koenig@baylibre.com,
-	aardelean@baylibre.com
-Subject: Re: [PATCH 0/8] Add iio backend compatibility for ad7606
-Message-ID: <20240815-favorable-bulge-bbf0b9ed644e@spud>
-References: <20240815-ad7606_add_iio_backend_support-v1-0-cea3e11b1aa4@baylibre.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="phoJ4P0K"
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-2681941eae0so728367fac.0
+        for <linux-iio@vger.kernel.org>; Thu, 15 Aug 2024 10:22:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723742538; x=1724347338; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vHRAF7kmvflKalOLusR4Jap2GAzcBGxuZVBcpBXyMtQ=;
+        b=phoJ4P0K8j6n4/N4EzFIsouNk3DVItQOlq8BE/0KzYBYllYpdmJxZArS2dhUELXU/o
+         H+Gra2erSzkxiv0wqLep1dmTjbQxS0UUY7Oe6v87qI72FHGVx6HP1lEuHQl9HaQte425
+         SXbttOTupTt2YgTFqmaOEWLC6a6uBUQapn9rcG1K/myQEVeYnE1j+lKFgXzxVbkeqmrH
+         qXwOeS32E73gfpdXsd4cBJweG0ZDeuWB0wkNH/Nylp2QWnXiaU0b1R6KIR16M7LMge0M
+         OXJbritqW0V8rqfircrwN3peMMYBYYHthDRW2tvgUP9YDZAIpSz6GslRmm4aEhtQNL/d
+         9YcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723742538; x=1724347338;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vHRAF7kmvflKalOLusR4Jap2GAzcBGxuZVBcpBXyMtQ=;
+        b=Osph0E8VVpy8yZ0Euq0kNrATIT3k/r3nZ87u7DMSEQvJiBJ1xfZLgnwaUych9St0Fj
+         2P2S+DgYatOIxJtiZM7vmsTU5R9C/0ixVA/EnQ2MACG66Ppu60L9+T3u4u4N4nZL6fY7
+         hI2eWnZlZLYvuXpLugywWfNLGkqOibRNQX81l3N3vU3j1SDMEYUAokNIkqpbrXx5Kgh+
+         9gQTUy3ReFaz9MlV2/FyfOMsiKCMTVXRO8TAioJdGriKfVqRes/zWsRgPK0+hdcClJn9
+         WeUHtwOs9xE4XSybskvnfYkSCZmFV2hlJZLEnpzVLGCUdE74mYhef4PqwnCJM+PAK4cz
+         6ULQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV6tSJrJrvnaTEPzhmAbzHhcFOyvqvBdxF2Dhxd+iP+FKN+xGG4//OZfKmprZf9lzJq2kFxYphJoUfXWMMVzIv6Grkn2Z4PL2xl
+X-Gm-Message-State: AOJu0YxqxLlMmmLJ6m6PINgfpVSpVGlOsXmDTCT55dSFuoWqKLgjHeOY
+	nVrGYFGec8HHkyGaLOA8m+iwra7G3DDD9rRrI9LQPnq7dvcUtdLsNzMUSFvWd8M=
+X-Google-Smtp-Source: AGHT+IEh4WplaZ1SJtcdjCsOA0FNThgn+ugIMMYYb8x0r3LFGNuPLS8DWjeiURI22hPEwttiGS0L4w==
+X-Received: by 2002:a05:6870:6c18:b0:261:39d:afa1 with SMTP id 586e51a60fabf-2701c3db78cmr207494fac.22.1723742538620;
+        Thu, 15 Aug 2024 10:22:18 -0700 (PDT)
+Received: from freyr.lechnology.com (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-70ca66297d0sm345327a34.68.2024.08.15.10.22.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Aug 2024 10:22:18 -0700 (PDT)
+From: David Lechner <dlechner@baylibre.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 1/4] iio: ABI: document calibscale_available attributes
+Date: Thu, 15 Aug 2024 12:22:10 -0500
+Message-ID: <20240815-iio-abi-calib-audit-v1-1-536b2fea8620@baylibre.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20240815-iio-abi-calib-audit-v1-0-536b2fea8620@baylibre.com>
+References: <20240815-iio-abi-calib-audit-v1-0-536b2fea8620@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Y8SSMKuOe5JYK1iA"
-Content-Disposition: inline
-In-Reply-To: <20240815-ad7606_add_iio_backend_support-v1-0-cea3e11b1aa4@baylibre.com>
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.14.0
+Content-Transfer-Encoding: 8bit
 
+There are a number of light sensor drivers that have various
+calibscale_available attributes. Up to now, these were missing from
+the documentation.
 
---Y8SSMKuOe5JYK1iA
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Kernel version 4.8 is used since the first use appears to be in
+commit eb869ade30a6 ("iio: Add tcs3472 color light sensor driver").
 
-On Thu, Aug 15, 2024 at 12:11:54PM +0000, Guillaume Stols wrote:
-> This series aims to add iio backend support for AD7606X ADCs.
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-Just to point out, your cc list is partially bogus as it contains:
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 78eca1698123..67d8d1df23d4 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -575,6 +575,19 @@ Description:
+ 		production inaccuracies).  If shared across all channels,
+ 		<type>_calibscale is used.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_illuminanceY_calibscale_available
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensityY_calibscale_available
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximityY_calibscale_available
++KernelVersion:	4.8
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Available values of calibscale. Maybe expressed as either of:
++
++		- a small discrete set of values like "1 8 16"
++		- a range specified as "[min step max]"
++
++		If shared across all channels, <type>_calibscale_available is used.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/in_activity_calibgender
+ What:		/sys/bus/iio/devices/iio:deviceX/in_energy_calibgender
+ What:		/sys/bus/iio/devices/iio:deviceX/in_distance_calibgender
 
-	 20240705211452.1157967-2-u.kleine-koenig@baylibre.com,
-	 20240712171821.1470833-2-u.kleine-koenig@baylibre.com,
-	 cover.1721040875.git.u.kleine-koenig@baylibre.com,
+-- 
+2.43.0
 
-Cheers,
-Conor.
-
---Y8SSMKuOe5JYK1iA
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZr4osQAKCRB4tDGHoIJi
-0o9xAP0SASwe8xbESxPqwdG0ONIB1nZR4wqUlTp/EA0AdS3wGQD/d4T3GI7qf2hM
-UviXVhLQym3CrZ637s6StEjIvGHRhgo=
-=oxT/
------END PGP SIGNATURE-----
-
---Y8SSMKuOe5JYK1iA--
