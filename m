@@ -1,61 +1,60 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E706D17AE16
-	for <linux-iio@vger.kernel.org>; Thu, 15 Aug 2024 12:12:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22F2717C98F
+	for <linux-iio@vger.kernel.org>; Thu, 15 Aug 2024 12:12:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723723933; cv=none; b=i+qxuoFedTh8M2QlxR1nBppac/FvuXSg7iL1qnGRyARs8y0cf2GRKz8cRkRkI6quqEiOx8WXZRYzNbhFyH8KIw9W70XOw6wHRpr7e6CEc7xRanoXbBzdtk0YzlZtW7FZnbhtGxsYyZgkwO/QXPfzVkERBVCeAOvcBODtaKbtQs8=
+	t=1723723933; cv=none; b=V0GW8C8afGdP/0GT1cGKXxgG3HhBOOOsTmJHBrpyW8ddgU3McxTT4uAaff/jSPLVI2R+urM7ZEqHDHn6X1qRu32MIcWR8HY7WGAfMMO7SIrl4e8jMQUhGGcnVU4iDpwtoM9uV7yuHh1siMQzpVghqV8GFntE3TF85Av8gAd17aE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1723723933; c=relaxed/simple;
-	bh=rXhZdUWJsqDazB5Vkbf8w2K7TEhns08C2q9VAY7oRJ8=;
+	bh=NbKx0MzTSy4AkOnvlPHkNNwV65/pkwG9IF0PJXDZUNw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=fSpo/ypbBKjgcFKCTJO3f26pImXKDlRP5iaLFUfNURhawceszi0WnOiGXLwIPOB+hqUe5pszlVCP1P52BQI4GeKce71bzKXoytANiXYIzAgNMx1keTXob0HH/8JQPdw9Lf7GbJgTduqIYg9C23zwT+mBrqUM4lroO/W7Xbcsnys=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=BaNftDo0; arc=none smtp.client-ip=209.85.128.52
+	 In-Reply-To:To:Cc; b=CCHHpx+unP7BsFp1JfEzE3en21EMK4VoEj5vp2/k1QZcXYn5v4LrneYL7FwX6+5e/B20wo9g8NXQ0OTNmCwqui1rfEqKFH+1mcYaL3GaSG9pZfS9GuwAeTAfn/KPdRcCQdhIsTqKrMFvD/1y0E3bLnVR8DSvPZX+XqeMPMc1Kaw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=o/wKZo/t; arc=none smtp.client-ip=209.85.221.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="BaNftDo0"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-427fc97a88cso5660515e9.0
-        for <linux-iio@vger.kernel.org>; Thu, 15 Aug 2024 05:12:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="o/wKZo/t"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-3717de33d58so486581f8f.1
+        for <linux-iio@vger.kernel.org>; Thu, 15 Aug 2024 05:12:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723723926; x=1724328726; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723723928; x=1724328728; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=YAz4wQg7uBRMgRGbUs7MSl25zX2Ca4ENNRVTWXCuU9Y=;
-        b=BaNftDo0BRSJsd9Wc68nFe3Yy9GD6EPIJr8HllL9C1NTcpELwpwVCnInFcT/vcUKQ9
-         QJt0k/GEda25MMVBfPqA93FE74YZEPUW3a5ZMnL/n1CvB+jKCJ7SO7s9k6R3XdV9UwM9
-         Tjd85AOUg9fSQ2l5e0Ytrbg35ThjWDthD7ItUDBnumAD00lYtYWGENKh03pWhsrxPGxT
-         aeVdF/AjmKENRalg1SG31K1J52qj+cYv+PJFa2Fqfbcwb3o5LiuWu4C0CaYtAILGgSCV
-         W8gikDLQXlSb2YpB+CabV5heSWi9XAMTnQwkdzy9TAxOZX5J76xSHmu8WFXErz1wDkrt
-         q7aA==
+        bh=Nlruai3BQqsm2YC4dPuHFKVGpCYgCvlc+hshYkB6H2k=;
+        b=o/wKZo/tDnKqm0doODysO8m8dYXNXqCSMbezw+IhBudRcpzNE3+m6W3OnhxG3BW9b2
+         4iIZ7CjifrOGx+AWR3vXAP58Le2OAMhaEGv4tMQWJ76R++erQz1Qw6tNkxbEyZv9LWbI
+         Ss0uP57a0UQwoM847ZAt3OcnrFzewDypuhEvzTKMWJZTkiXTLuVQLYV0AdQ22pYQEdOD
+         Cf8Odsr/SRGlaGL/ZU5z/EAVXl/sU9bvkNPkMVmMyHulUVT8zCzKUiot2eSXXx68QTcu
+         SxbJv9fXHdWjznC/h2JjdLvr55GDpC5bPw0v5LtPDX54YtogaVnA4Tu5kw2Vnvc4T+2O
+         MS/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723723926; x=1724328726;
+        d=1e100.net; s=20230601; t=1723723928; x=1724328728;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=YAz4wQg7uBRMgRGbUs7MSl25zX2Ca4ENNRVTWXCuU9Y=;
-        b=kO5syx6FI3+el/DTaijQtYUq8GG6RCULPPNDej/5SvqWRsasSx0i54dUhCWv1RRs6a
-         Qff07VDSG3P9yzAuYI4TNnySiLdzOWCxlcgzR9qQ6j9S8Sle9v5TCWJJix0YyG5IWbF9
-         N5TOdbzFSWruyFcVmsTs5mjnTg65ik698DO1aBqkYdScTBy7KTi658N2k8HHbhihHcTz
-         YuPhqcX4mcn4WQwpC0jHvx1vIDnGOlzw6LlGPSYmVeTNQCmubFQjUjj2qBEtNe28dl1y
-         3ri6sSYYLG6AXB0vQlcsKZ2gOvKiCdvQmH64CXMBep/DJPCwOmaszSYsHA3+LxZOdJA5
-         BBWg==
-X-Forwarded-Encrypted: i=1; AJvYcCWN2htB66peofJq2Vva0omuryRJszSeV53mLMQfrAqN9qgrI7Y2nN0gjLnZjht8Rj1fu1gG+KihTn8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyNqG9Joi9zrTjRzQaYrBoAIV+TomuRtY6wuv4etkKRsomMX6bU
-	x9d6PaOj1hQ6f7mcVcdYWrDTQrYaUxZ1OC4P92FquUPCYmtqTDWl5YL5A0wtI4k=
-X-Google-Smtp-Source: AGHT+IE7oDIh5qrSNArjB/+/3YroZbMJvOJ3u5VObrCTb4B77OgIVkH6sw3EHVQJNpWLQsADrWeAhA==
-X-Received: by 2002:a5d:6dae:0:b0:36d:2941:d531 with SMTP id ffacd0b85a97d-3717780fb2bmr4268953f8f.44.1723723925444;
-        Thu, 15 Aug 2024 05:12:05 -0700 (PDT)
+        bh=Nlruai3BQqsm2YC4dPuHFKVGpCYgCvlc+hshYkB6H2k=;
+        b=mDEal4mGoAi6n5CdXwO8IaHEAXin/7yhTPH172E7H4vBmLlSSTR1+c4tFWouMi5Qf5
+         pZi22qyby05mcHPRejr280kd4cz6Jy/00Z1qC3Rg4zsdkVBE+lgbOTiy1myTDyvZrAWg
+         2R5JBgkzHvf/pJIHsf4vBihb46GUhc5ikz0YTS9RKHTvVg11Zlqr3D+jqVZOTk/ewEsL
+         MjnwZyKdlJqgBoqZXZEeOMpmBSPNM5hp3d4UY0RRUJ+6dFpr/KWZt/DMvfGxypuX8OA3
+         FeFTcFHTTT0TfAm8uBJ0xHSNdAeu/8mWL0pUMdzMgWxDymaqq5w5e3+NiSserF08phpM
+         LomA==
+X-Forwarded-Encrypted: i=1; AJvYcCUbaWDv7oqMYBB0xdWMxi32UGhO3yHCLlkgnE4L7KqSfGk/ryFHDjCgISM1XQZ4qw88iXVBcjy9yTxc5RWPwqy964YEm3kN+iOz
+X-Gm-Message-State: AOJu0YynmD3nLXwpS63UjRy0kGHKZSN71NsbHK8kM/q3Dxp8Hll5bjMH
+	FC/6W7XPd8Za2WP5kYx9UzpRWEAawnQbUYFYXn0cJPYg0wtyduDnCgXn4hFzROw=
+X-Google-Smtp-Source: AGHT+IFqE0M2OmpEvxD4duj5kGOQWRtd+obMKR2lPW9I+CeIS+oRNhsQvPM4dCQIxcqphRcbR+qxkQ==
+X-Received: by 2002:a5d:59a5:0:b0:371:728e:d000 with SMTP id ffacd0b85a97d-3717775c9b2mr4340274f8f.1.1723723927819;
+        Thu, 15 Aug 2024 05:12:07 -0700 (PDT)
 Received: from [127.0.1.1] (frhb82016ds.ikexpress.com. [185.246.87.17])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-37189897926sm1365082f8f.87.2024.08.15.05.12.04
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-37189897926sm1365082f8f.87.2024.08.15.05.12.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Aug 2024 05:12:05 -0700 (PDT)
+        Thu, 15 Aug 2024 05:12:07 -0700 (PDT)
 From: Guillaume Stols <gstols@baylibre.com>
-Date: Thu, 15 Aug 2024 12:11:56 +0000
-Subject: [PATCH 2/8] dt-bindings: iio: adc: ad7606: Add iio backend
- bindings
+Date: Thu, 15 Aug 2024 12:11:59 +0000
+Subject: [PATCH 5/8] platform: add platform_get_device_match_data() helper
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,7 +63,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240815-ad7606_add_iio_backend_support-v1-2-cea3e11b1aa4@baylibre.com>
+Message-Id: <20240815-ad7606_add_iio_backend_support-v1-5-cea3e11b1aa4@baylibre.com>
 References: <20240815-ad7606_add_iio_backend_support-v1-0-cea3e11b1aa4@baylibre.com>
 In-Reply-To: <20240815-ad7606_add_iio_backend_support-v1-0-cea3e11b1aa4@baylibre.com>
 To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
@@ -84,139 +83,61 @@ Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
  20240712171821.1470833-2-u.kleine-koenig@baylibre.com, 
  cover.1721040875.git.u.kleine-koenig@baylibre.com, aardelean@baylibre.com
 X-Mailer: b4 0.14.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1723723923; l=3779;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1723723923; l=1781;
  i=gstols@baylibre.com; s=20240417; h=from:subject:message-id;
- bh=rXhZdUWJsqDazB5Vkbf8w2K7TEhns08C2q9VAY7oRJ8=;
- b=HPwEMFBxPMurmX27U87sY6QHKVNxGxR1eZ9Vd9WXBPxs9E9Zy3T97AKPeqbeZKiZbNK8VxrxE
- PeQ+5wj6O3GCZwcklTVKBAlaPuTPu2KCjnRLXLXzbln0dnP6I24b/Vm
+ bh=NbKx0MzTSy4AkOnvlPHkNNwV65/pkwG9IF0PJXDZUNw=;
+ b=VOYJGuD/1ccizW8foihyuYIcvcsufWDfHQhMJgly8oXiPmQELygHZcqqg/NPsa767PekcfJOM
+ vx/cis54SwFDlOLGtkc07Yo/YSNxVhQeNHA7o9alToZqiRWmpOqxr9/
 X-Developer-Key: i=gstols@baylibre.com; a=ed25519;
  pk=XvMm5WHuV67sGYOJZqIYzXndbaJOlNd8Q6li6vnb4Cs=
 
-Add the required properties for iio-backend support, as well as an
-example and the conditions to mutually exclude interruption and
-conversion trigger with iio-backend.
-The iio-backend's function is to controls the communication, and thus the
-interruption pin won't be available anymore.
-As a consequence, the conversion pin must be controlled externally since
-we will miss information about when every single conversion cycle (i.e
-conversion + data transfert) ends, hence a PWM is introduced to trigger
-the conversions.
+Inspired from spi_get_device_match_data() helper: if OF or ACPI driver
+data is available, platform_get_device_id will return NULL because
+platform_match_id is not called, and pdev->id_entry is never populated.
+This helper function checks if match data is available, and otherwise
+returns the ID table data.
 
 Signed-off-by: Guillaume Stols <gstols@baylibre.com>
 ---
- .../devicetree/bindings/iio/adc/adi,ad7606.yaml    | 75 +++++++++++++++++++++-
- 1 file changed, 72 insertions(+), 3 deletions(-)
+ drivers/base/platform.c         | 12 ++++++++++++
+ include/linux/platform_device.h |  1 +
+ 2 files changed, 13 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-index c0008d36320f..4b324f7e3207 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-@@ -114,13 +114,28 @@ properties:
-       assumed that the pins are hardwired to VDD.
-     type: boolean
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index 4c3ee6521ba5..26e9a026eb05 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -1090,6 +1090,18 @@ static const struct platform_device_id *platform_match_id(
+ 	return NULL;
+ }
  
-+  pwms:
-+    description:
-+      In case the conversion is triggered by a PWM instead of a GPIO plugged to
-+      the CONVST pin, the PWM must be referenced.
-+    minItems: 1
-+    maxItems: 2
++const void *platform_get_device_match_data(const struct platform_device *pdev)
++{
++	const struct platform_device_id *match;
 +
-+  pwm-names:
-+    minItems: 1
-+    maxItems: 2
++	match = device_get_match_data(&pdev->dev);
++	if (match)
++		return match;
 +
-+  io-backends:
-+    description:
-+      A reference to the iio-backend, which is responsible handling the BUSY
-+      pin's falling edge and communication.
-+      An example of backend can be found at
-+      http://analogdevicesinc.github.io/hdl/library/axi_ad7606x/index.html
++	return (const void *)platform_get_device_id(pdev)->driver_data;
++}
++EXPORT_SYMBOL_GPL(platform_get_device_match_data);
 +
- required:
-   - compatible
--  - reg
-   - avcc-supply
-   - vdrive-supply
--  - interrupts
--  - adi,conversion-start-gpios
+ #ifdef CONFIG_PM_SLEEP
  
- # This checks if reg is a chipselect so the device is on an SPI
- # bus, the if-clause will fail if reg is a tuple such as for a
-@@ -137,6 +152,35 @@ then:
-         - spi-cpol
+ static int platform_legacy_suspend(struct device *dev, pm_message_t mesg)
+diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+index d422db6eec63..e2cc09ecc447 100644
+--- a/include/linux/platform_device.h
++++ b/include/linux/platform_device.h
+@@ -45,6 +45,7 @@ struct platform_device {
+ };
  
- allOf:
-+  # Communication is handled either by the backend or an interrupt.
-+  - if:
-+      properties:
-+        pwms: false
-+    then:
-+      required:
-+        - adi,conversion-start-gpios
-+
-+  - if:
-+      properties:
-+        adi,conversion-start-gpios: false
-+    then:
-+      required:
-+        - pwms
-+
-+  - if:
-+      properties:
-+        interrupts: false
-+    then:
-+      required:
-+        - io-backends
-+
-+  - if:
-+      properties:
-+        io-backends: false
-+    then:
-+      required:
-+        - interrupts
-+
-   - if:
-       properties:
-         compatible:
-@@ -178,12 +222,37 @@ allOf:
-         adi,sw-mode: false
-     else:
-       properties:
-+        pwms:
-+          maxItems: 1
-+        pwm-names:
-+          maxItems: 1
-         adi,conversion-start-gpios:
-           maxItems: 1
+ #define platform_get_device_id(pdev)	((pdev)->id_entry)
++extern const void *platform_get_device_match_data(const struct platform_device *pdev);
  
- unevaluatedProperties: false
- 
- examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    / {
-+        adi_adc {
-+                compatible = "adi,ad7606b";
-+
-+                pwms = <&axi_pwm_gen 0 0>;
-+
-+                avcc-supply = <&adc_vref>;
-+                vdrive-supply = <&vdd_supply>;
-+
-+                reset-gpios = <&gpio0 91 GPIO_ACTIVE_HIGH>;
-+                standby-gpios = <&gpio0 90 GPIO_ACTIVE_LOW>;
-+                adi,range-gpios = <&gpio0 89 GPIO_ACTIVE_HIGH>;
-+                adi,oversampling-ratio-gpios = <&gpio0 88 GPIO_ACTIVE_HIGH
-+                                                &gpio0 87 GPIO_ACTIVE_HIGH
-+                                                &gpio0 86 GPIO_ACTIVE_HIGH>;
-+                io-backends = <&iio_backend>;
-+        };
-+    };
-+
-   - |
-     #include <dt-bindings/gpio/gpio.h>
-     #include <dt-bindings/interrupt-controller/irq.h>
+ #define dev_is_platform(dev) ((dev)->bus == &platform_bus_type)
+ #define to_platform_device(x) container_of((x), struct platform_device, dev)
 
 -- 
 2.34.1
