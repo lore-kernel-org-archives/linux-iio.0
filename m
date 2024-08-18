@@ -1,40 +1,39 @@
 Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80336153573;
-	Sun, 18 Aug 2024 22:29:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E3D515665C;
+	Sun, 18 Aug 2024 22:29:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724020192; cv=none; b=XezaEYr89NUNcHCfFVmLByxi5VVHPrsV870kRsW2NOETfTtft2weSg7IE1rvzA7rtkZl8Y9S9BOesTlmMD9Trot/40UJglQQPN0iWrXm4/2eX9oW18L62oD9FyZLrEfhxKP21BRK8WwBs/RW0vcTalzFIRA5i5VSSaZz9jQvNEc=
+	t=1724020193; cv=none; b=qxCQx8kBJ3OWI2AdDVu2Ndl+o6D+tkws0Zs/MKGO+ppmheBbgf4Jm7hMzsxlMsaw7OgJdy7KLIF+CT9GpS+1B/+wxGJwq0HNTNXZuyqUzXPbsoqOWU36jb7Egjxk4yuCGaLLLaVNNMsfFwk+kId44ajXBEWB/lUR+tLksWErnP0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724020192; c=relaxed/simple;
-	bh=kCUhIyTsTYSg3sqrYwG+YSGwdQQY9tEFfxayR51Ymo8=;
+	s=arc-20240116; t=1724020193; c=relaxed/simple;
+	bh=erR3YXfyR6YYacA2NXu2UfVsRMEtFUNDbmujbsNttnQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Flz9jv7VV1Eckmn8K6KTrK1LT+BMib+M5qZmN23hQ87baaY2ykjc/rwUR1F37HWKAB2ZDZ8XazbWf3VbbO9zbtKGYxtolfLRessE7MRwj74cuyaJVLmNaP5b93q9Ic2bw9zvSqe5IhpovsxoirGh5JfkhzUxWDUXBZDjuMVO86I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=LNrC8vPJ; arc=none smtp.client-ip=5.75.144.95
+	 In-Reply-To:To:Cc; b=TGGghUoazxKPdCXadvb9qJD3t4c4Wl1lhuavvmTi5o+FA/Qo3bRVdC6oy8InxENyxW3zbUrjavQeUgjTAQ6xfoeC1wDfmDV3Sb/x4EOFG6+6bI1vkBAJxIpnF3VRU/ZG3b8ixXDKMxU+7sVjRlq6uwLPhr//aIJ6kwER9Ba3ZZE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=DICxbbHB; arc=none smtp.client-ip=5.75.144.95
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="LNrC8vPJ"
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="DICxbbHB"
 Received: from [192.168.1.130] (BC24970D.unconfigured.pool.telekom.hu [188.36.151.13])
-	by mail.mainlining.org (Postfix) with ESMTPSA id E6A62E44F7;
-	Sun, 18 Aug 2024 22:29:41 +0000 (UTC)
+	by mail.mainlining.org (Postfix) with ESMTPSA id F33E6E44FA;
+	Sun, 18 Aug 2024 22:29:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1724020182;
+	s=psm; t=1724020183;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=c17U+oe70bN+xppTxzXJcfr6ftLHNKpTYuryoKZ7BMc=;
-	b=LNrC8vPJOlV9D4T5FTJmO/xJkg3LS420k0/d9J3d1pE/ws/EupnyLTNGr+WfpPsCLLEEfP
-	74w9y8Q6Ni1XEki18LC4+063snuAv+eMA/r54JD3T5CyXyCpsu7UqIVkY4yeCkh8SP9Sc6
-	Tsx/YJbRgwRl1byJiJWaQlX1c+twYRSPCoZKa1/Pnd/0dDUq07j8oU+/Sa/+cjKU/b/Pnf
-	E3o9zIs/KvJK6jVdnSVszCfRLXZ7OTy8Vcitp3EZIZi/tYXsr5S7/M67bU252xwTTkotU4
-	LVAm03RbOx9UWcxeWvWnW3aY7eN1D+VWiZyWmoEWvC0jGNc7QnBLDESyGiBUmg==
+	bh=AuAB+Yyk0IY0gR/o8Nr+b5iFRu32YIFGK3pitiqJ894=;
+	b=DICxbbHBbKioUGdouPLAMZ6dtuX1xbGvRxmdrR+ZLk3nQavVUoETebbI78JlJMci+l3ZsS
+	ujNpznX7yMbWbYhwCOg4BwM6iVxaWJbJojWDP940LBT25fuJ/woMbKxqlxAZxOof5B4ESO
+	kxCurm3Qqi5XeUhTmSFkKWv8x8Vd1CVmXt4E39CZu7mRqeF9UAlupM1FzZs7dGh5OaMigG
+	qzGyI4iyn8gTZRQmUvoOELc+a7iiATrD3owiLGewcmcsJK1qZTJsf9Zur/pDmsglVKXcVR
+	qpCz/UrWOOycT3rpqcFw1wA3Ps4S9dHDpDXPaDi7C+iteApoUm9fcobfXOpA1Q==
 From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Date: Mon, 19 Aug 2024 00:29:40 +0200
-Subject: [PATCH v4 2/4] iio: magnetometer: ak8975: Fix reading for ak099xx
- sensors
+Date: Mon, 19 Aug 2024 00:29:42 +0200
+Subject: [PATCH v4 4/4] iio: magnetometer: ak8975: Add AK09118 support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -43,7 +42,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20240819-ak09918-v4-2-f0734d14cfb9@mainlining.org>
+Message-Id: <20240819-ak09918-v4-4-f0734d14cfb9@mainlining.org>
 References: <20240819-ak09918-v4-0-f0734d14cfb9@mainlining.org>
 In-Reply-To: <20240819-ak09918-v4-0-f0734d14cfb9@mainlining.org>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -54,79 +53,134 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Gwendal Grignou <gwendal@chromium.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  devicetree@vger.kernel.org, linux@mainlining.org, 
- =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
+ Danila Tikhonov <danila@jiaxyga.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Mailer: b4 0.14.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1724020180; l=2228;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1724020180; l=3929;
  i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=kCUhIyTsTYSg3sqrYwG+YSGwdQQY9tEFfxayR51Ymo8=;
- b=eboiDO4/oPJNAqprREepdYnOw8y4H7Zjl9dHOdq/T4DJINj9ig6IRABcuGUWDJi49edIt+lEE
- 0x4c1wS36ZjBtx5ZJHdBiEvTcbNVTR5gmJa624zluf7TyCFbuCCdfTi
+ bh=jH94zmHYohaHlsfuauJez36FEmmQ91Sz43Wv2cI6eTA=;
+ b=+aAgFedlGGJ0qjoP2fysKXe821fhndg/kj6phLDhZC0tHH3mRc9BEVx3l2IyjR0sSTlD3QEKi
+ 3HKM7ROp0XhDQqz9kNu5gnO0tc9ZWKUBqO2QAiSlRTJyYRTiG4CU7sq
 X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
  pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-Move ST2 reading with overflow handling after measurement data
-reading.
-ST2 register read have to be read after read measurment data,
-because it means end of the reading and realease the lock on the data.
-Remove ST2 read skip on interrupt based waiting because ST2 required to
-be read out at and of the axis read.
+From: Danila Tikhonov <danila@jiaxyga.com>
 
-Fixes: 57e73a423b1e ("iio: ak8975: add ak09911 and ak09912 support")
+Add additional AK09118 to the magnetometer driver which has the same
+register mapping and scaling as the AK09112 device.
+
+Signed-off-by: Danila Tikhonov <danila@jiaxyga.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
 ---
- drivers/iio/magnetometer/ak8975.c | 32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
+ drivers/iio/magnetometer/Kconfig  |  2 +-
+ drivers/iio/magnetometer/ak8975.c | 37 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 38 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+index cd2917d71904..8eb718f5e50f 100644
+--- a/drivers/iio/magnetometer/Kconfig
++++ b/drivers/iio/magnetometer/Kconfig
+@@ -39,7 +39,7 @@ config AK8975
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say yes here to build support for Asahi Kasei AK8975, AK8963,
+-	  AK09911, AK09912 or AK09916 3-Axis Magnetometer.
++	  AK09911, AK09912, AK09916 or AK09918 3-Axis Magnetometer.
+ 
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called ak8975.
 diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 8eef4d5dd9e2..2fa6721aa66f 100644
+index 2fa6721aa66f..0eb0da9d6787 100644
 --- a/drivers/iio/magnetometer/ak8975.c
 +++ b/drivers/iio/magnetometer/ak8975.c
-@@ -695,22 +695,8 @@ static int ak8975_start_read_axis(struct ak8975_data *data,
- 	if (ret < 0)
- 		return ret;
+@@ -78,6 +78,7 @@
+  */
+ #define AK09912_REG_WIA1		0x00
+ #define AK09912_REG_WIA2		0x01
++#define AK09918_DEVICE_ID		0x0C
+ #define AK09916_DEVICE_ID		0x09
+ #define AK09912_DEVICE_ID		0x04
+ #define AK09911_DEVICE_ID		0x05
+@@ -209,6 +210,7 @@ enum asahi_compass_chipset {
+ 	AK09911,
+ 	AK09912,
+ 	AK09916,
++	AK09918,
+ };
  
--	/* This will be executed only for non-interrupt based waiting case */
--	if (ret & data->def->ctrl_masks[ST1_DRDY]) {
--		ret = i2c_smbus_read_byte_data(client,
--					       data->def->ctrl_regs[ST2]);
--		if (ret < 0) {
--			dev_err(&client->dev, "Error in reading ST2\n");
--			return ret;
--		}
--		if (ret & (data->def->ctrl_masks[ST2_DERR] |
--			   data->def->ctrl_masks[ST2_HOFL])) {
--			dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
--			return -EINVAL;
--		}
--	}
--
--	return 0;
-+	/* Return with zero if the data is ready. */
-+	return !data->def->ctrl_regs[ST1_DRDY];
- }
+ enum ak_ctrl_reg_addr {
+@@ -371,6 +373,34 @@ static const struct ak_def ak_def_array[] = {
+ 			AK09912_REG_HXL,
+ 			AK09912_REG_HYL,
+ 			AK09912_REG_HZL},
++	},
++	[AK09918] = {
++		/* ak09918 is register compatible with ak09912 this is for avoid
++		 * unknown id messages.
++		 */
++		.type = AK09918,
++		.raw_to_gauss = ak09912_raw_to_gauss,
++		.range = 32752,
++		.ctrl_regs = {
++			AK09912_REG_ST1,
++			AK09912_REG_ST2,
++			AK09912_REG_CNTL2,
++			AK09912_REG_ASAX,
++			AK09912_MAX_REGS},
++		.ctrl_masks = {
++			AK09912_REG_ST1_DRDY_MASK,
++			AK09912_REG_ST2_HOFL_MASK,
++			0,
++			AK09912_REG_CNTL2_MODE_MASK},
++		.ctrl_modes = {
++			AK09912_REG_CNTL_MODE_POWER_DOWN,
++			AK09912_REG_CNTL_MODE_ONCE,
++			AK09912_REG_CNTL_MODE_SELF_TEST,
++			AK09912_REG_CNTL_MODE_FUSE_ROM},
++		.data_regs = {
++			AK09912_REG_HXL,
++			AK09912_REG_HYL,
++			AK09912_REG_HZL},
+ 	}
+ };
  
- /* Retrieve raw flux value for one of the x, y, or z axis.  */
-@@ -737,6 +723,20 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 	if (ret < 0)
- 		goto exit;
+@@ -452,6 +482,7 @@ static int ak8975_who_i_am(struct i2c_client *client,
+ 	/*
+ 	 * Signature for each device:
+ 	 * Device   |  WIA1      |  WIA2
++	 * AK09918  |  DEVICE_ID_|  AK09918_DEVICE_ID
+ 	 * AK09916  |  DEVICE_ID_|  AK09916_DEVICE_ID
+ 	 * AK09912  |  DEVICE_ID |  AK09912_DEVICE_ID
+ 	 * AK09911  |  DEVICE_ID |  AK09911_DEVICE_ID
+@@ -484,6 +515,10 @@ static int ak8975_who_i_am(struct i2c_client *client,
+ 		if (wia_val[1] == AK09916_DEVICE_ID)
+ 			return 0;
+ 		break;
++	case AK09918:
++		if (wia_val[1] == AK09918_DEVICE_ID)
++			return 0;
++		break;
+ 	}
  
-+	/* Read out ST2 for release lock on measurment data. */
-+	ret = i2c_smbus_read_byte_data(client, data->def->ctrl_regs[ST2]);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "Error in reading ST2\n");
-+		goto exit;
-+	}
-+
-+	if (ret & (data->def->ctrl_masks[ST2_DERR] |
-+		   data->def->ctrl_masks[ST2_HOFL])) {
-+		dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
-+		ret = -EINVAL;
-+		goto exit;
-+	}
-+
- 	mutex_unlock(&data->lock);
- 
- 	pm_runtime_mark_last_busy(&data->client->dev);
+ 	dev_info(&client->dev, "Device ID %x is unknown.\n", wia_val[1]);
+@@ -1070,6 +1105,7 @@ static const struct i2c_device_id ak8975_id[] = {
+ 	{"ak09911", (kernel_ulong_t)&ak_def_array[AK09911] },
+ 	{"ak09912", (kernel_ulong_t)&ak_def_array[AK09912] },
+ 	{"ak09916", (kernel_ulong_t)&ak_def_array[AK09916] },
++	{"ak09918", (kernel_ulong_t)&ak_def_array[AK09918] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, ak8975_id);
+@@ -1084,6 +1120,7 @@ static const struct of_device_id ak8975_of_match[] = {
+ 	{ .compatible = "asahi-kasei,ak09912", .data = &ak_def_array[AK09912] },
+ 	{ .compatible = "ak09912", .data = &ak_def_array[AK09912] },
+ 	{ .compatible = "asahi-kasei,ak09916", .data = &ak_def_array[AK09916] },
++	{ .compatible = "asahi-kasei,ak09918", .data = &ak_def_array[AK09918] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, ak8975_of_match);
 
 -- 
 2.46.0
