@@ -1,93 +1,134 @@
-Received: from mout.web.de (mout.web.de [212.227.15.3])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2C0917E01C;
-	Sun,  1 Sep 2024 12:09:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D24961FEB;
+	Sun,  1 Sep 2024 13:41:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725192553; cv=none; b=b3YUhIyDDK8jJZVVQ9dKvaYFHQzAnvuHTkrosrSCYjMvO/4mwgrKzM//5dBbD4L0NYie3GbmYOqkK+JMkSqvOYpKfndaEma/5x1LdVAwTTEF7CHxiDzzRLsWAzTzKApzhzBpJWbvJNrGOXc0XkZN3GO3FYTxBkMpL7HGgaigfo8=
+	t=1725198065; cv=none; b=BHm5ZAPRl3nBaCWkugbcCUhJlsNvfbedFQGlkx6S2m3AQEDMgWapgR3S+YV/+8ktQ0AVWzhgZ7JKyyvPPJvwd3lweVar2RcC4tbuSbJ+A2c9uOvhPuGRwVF48j7xviCXWQNSLUc7cvKJ7+4Mj8Qr4x7l90u4e3+U2S2TUbjT/SM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725192553; c=relaxed/simple;
-	bh=cu9LJjm1nHCO9NMmkUm4yErSsdVtDA7IFZxoJ7nTO3I=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
-	 In-Reply-To:Content-Type; b=gjHwh7pz7B4kL34yxEUJUY3Psc4VrqUbJ0FLmMpLsuXimwaVlu0kHFHMlcq5COrQ8sjVtEhiK3QSq6Xh9diZoQZf7TD4q3EZmxN8DO7IYRPlfIbDObl/FYgSnBkVGuontPm3U7f9f86ICLm5VnIzcnJ4iQDPZX00C7c1+dBZvxc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=l1JBb4QA; arc=none smtp.client-ip=212.227.15.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+	s=arc-20240116; t=1725198065; c=relaxed/simple;
+	bh=tXHeqiUqOFXGvWoUKfIJGlj5u9CZSs2HMjaf837ADSg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=TW8yzAIUnzsm2GJYZfAbt8rHKJfVVvZDJvad1FhRGN89DvJPJCh5gJQuTJIsV99P9WjyX7nrkvGwInVTWRn116WSvl0rAkRJHkCoNgJAo8kvuACR304pJy8W4QsVOZsaDQGgBVRLwBnAz04icpcSQJgnywScue5a6g+f13Zrzqk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kmMrml3+; arc=none smtp.client-ip=209.85.215.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="l1JBb4QA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
-	s=s29768273; t=1725192523; x=1725797323; i=markus.elfring@web.de;
-	bh=mydL1oQ8sljL59ISc3eqaLx0XF1zkrGbHSVKS4Rrctw=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:References:
-	 Subject:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-	 cc:content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=l1JBb4QA8l4e6ojuCtxvfOS/ianBHxqytBZ/t0xskUiT4KCLMLVWSRP6zguvkaXX
-	 kU1Vn+jn/IcWJ6N9sBTLytApgAUD0Nz64wmLuHuCLCUo+au9nTICOphoAF2AL74mE
-	 Rk+PPlMmZ111IzYeMWHOKE8ZjAL63UKy2BxXl7B1fmPDqb624V9/iD8z5cayp8chP
-	 ivrNIlZUlJKBCbwZKckF78I3joQ3WK6FLN2McQ367BrfjswY5MpuuhARw/JMqCP7o
-	 cbF6JwgcxkZ26RwnzIu9HVFTu16VpJrIoIPYJgRM6eY3eP98VODxtyLZdWseln27c
-	 uHZAJwkw0j+qZ22lrA==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.21] ([94.31.84.95]) by smtp.web.de (mrweb005
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1MiuOW-1s69uR1tqe-00Zkc8; Sun, 01
- Sep 2024 14:08:43 +0200
-Message-ID: <533802b3-3034-4b7c-b903-72608917e2f0@web.de>
-Date: Sun, 1 Sep 2024 14:08:31 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kmMrml3+"
+Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-6bce380eb96so1818273a12.0;
+        Sun, 01 Sep 2024 06:41:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1725198064; x=1725802864; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PaFudmlePtimQjBZfYVX3i7AwPN92rG+FAZRbK6Jtws=;
+        b=kmMrml3+yUn0jkRz3BEQpJV0IMydcnRIkSlidHh+QmjexdsY+Gm0/W3DsIlu72TTME
+         2okzYauvclLlFDSaHYu1c5+1Yuft/7NOyh2fvskuSzxsW26XuhW2S6ly2bpjif5DfaHi
+         aAFFC2VijoSF8y4FxSNKccxQ/4U/qecnuu456AmYHCCyR6cU56xRPzbhDRwFWjtN6IYf
+         1omndwRVFsSdbiyD2kQiSvYIt0hFAaeVDWos4BXbZO7coymnpFlaE/RX316IeRukBMBA
+         aXhe0gAlnFYzbd8X++FYC3ytkOv7Y5pbLytR54WwrjrWJIz+tN+dsBtnFo/nsFbFIXdH
+         9Jjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725198064; x=1725802864;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=PaFudmlePtimQjBZfYVX3i7AwPN92rG+FAZRbK6Jtws=;
+        b=HJPKAXjpP34Gfxqny5y/nfk8tXb+LOFvepVr9iIu5aCfCDjsX+YifKE+pTKa0wJNPP
+         5+pi1ekOX8f5K8AL9v43QO4pUYzQypNFSSsMA/OfBZYhCK1RUhwFKzB4IrHjrsNBzqtX
+         p5SOsAdkI49WmRK2rOkWZQjYKhgtWvRGFHzOPADxhr1Iy7nFdmW4sw2T75DBg90iyoDv
+         2mm0VVNu88n1cvtBTgCyelAsNnn2srqrQU6uQsDnmOccFel330h1Qy57JvucfvvTIPin
+         0weOFYVtkUroUEMI3QAm9ZfiTnSJJ9o0tKg4ATeJg9jD/lNIskZdVuAllJvSAnI7Nrmt
+         kG3g==
+X-Forwarded-Encrypted: i=1; AJvYcCXqTL6OQ9lxjHk/Kn2p5yL76cN8hgXlp9w06ZtDXqhACMOXFTrRRFHc2nkvFpl9K8HewOvOqpu/I6TQJ5s=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxKSW9MnuAlAQ+jycmzYBymkgAPXVOEj6nivccJdVG97s/0ua/h
+	ORZWdrfxg2w6B32BNniqxsu8Npw6z2QTzoio6ig9FpAKIbzEjGbfHZUr5j1B61QAEin3HAVLBXq
+	bhFzEuyUgqrVkWtQ1U0/gfPFL1TjQNczquf2W0ZRK
+X-Google-Smtp-Source: AGHT+IEhwqeHy8ydo42E9/pecMoieQ+oFgkRtai7v5K1e2qk5CwAvQuJoaXrj08Fve0jiDwA71kVHNqDBJLtkDZuQEA=
+X-Received: by 2002:a05:6a21:394a:b0:1cc:e4d0:84e9 with SMTP id
+ adf61e73a8af0-1cece50235dmr4676852637.17.1725198063550; Sun, 01 Sep 2024
+ 06:41:03 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: Gyeyoung Baek <gye976@gmail.com>, linux-iio@vger.kernel.org,
- Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-Cc: LKML <linux-kernel@vger.kernel.org>
-References: <20240901091214.15199-1-gye976@gmail.com>
-Subject: Re: [PATCH] iio: imu: inv_mpu6050: Remove duplicate code between
- labels
-Content-Language: en-GB
-From: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <20240901091214.15199-1-gye976@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:QUKGJHOtld2ZXAvWSqLvppID7RVJ4c11NBPAf6WHwKoXtlm6Ia6
- PyW6QB4kmCCZxTBVdtjP7cWXeKSGVPxGW192ezZHU4IugbTxjzV5j9U7vakJ7PXnESuDkKJ
- xMiL4k04DPOFJLy8xtajwfXAS/gDtcdBNEg13xlNBof3L20UmeMVsRyIWR0ClD1/QkIQhxv
- VDXYXI4G2fCqtuF3Osf9w==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:orIapVHE6vA=;/ryElGWFVX4yl++yUK74o/+7653
- 0HEhieHVyIsVEw+Vj0Z1a8RX/k1wiXvlBaFvCjNYttgvRjtpzYRKmKN8jG7RE83mFEqg6TIe8
- 3u7GA+eHIHddFP3k2hR6Zr7ilKvjLMpnOKtVeCVIM3LwL03WUK0jFLHx9omjHi3AHNzUwZX74
- B/3wVjcd0HTO6j3hwmdt5jrvfTSsp36tTinJKXmkfqzpcJ11x5hOVjTgATAhuVfVYxR13OwWE
- xX5bS02rtrcMEROuafMpt+oanAZyS1/1K8xv0tqo8jNJN1aqsgaCkL8xbiVu0RaRYqjn8xv/y
- 37kTAw19ElGECyxKfQhI7ISd6clRnoAgiI1dwXNLEeRppLHO8dJZ8bEsOPNwRX3ahj2JaqAQb
- dXy3aSBl0ohWPlNgqQsOFqEVEZp5qXeXDd4ZPyUIg4VW7SscoWWBLLvPma8stv0WLlyGK4uI5
- iA46cTV1kk0cDfhbALm2438/h4CjY06zRGmwPTFMH+NUPYemgO2EPg1VHQlj8EjLwni9dekDm
- PSx4GDea+flWXpZjvdFa/57cyggEKCGSv2e9TaeZMsXM/9RsXEShQKkuMGGUUjwekkgKV2XOP
- KpkTP/cc9aSifFH+mU6fiK9DNcjlvaMsy/KDw7aO9Z9x12DvcN2J7P1qh1bbCvODVjgp5jN9u
- Ftae+ZJ4DLoOHdmDqIwVYmpd4gCKDcs2viyIaoFWLfnT2v3isxaFE4I1Eg/5Dy/xsVPNYErbx
- M5EHE0JQkB8PiDr0Mp8BqF77MpB1geiLSZW1b9kyaNi3SWpAPyeNYVgUzfh+JjLTTukKO5C/h
- e+IRa7+nhYfq+NY33dzDQ67Q==
+References: <20240901091214.15199-1-gye976@gmail.com> <533802b3-3034-4b7c-b903-72608917e2f0@web.de>
+In-Reply-To: <533802b3-3034-4b7c-b903-72608917e2f0@web.de>
+From: gyeyoung <gye976@gmail.com>
+Date: Sun, 1 Sep 2024 22:40:52 +0900
+Message-ID: <CAKbEznvriPOTZHFyNVoNkAce5q2vy+itN5yJ20kCQw3Akn_PEQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: imu: inv_mpu6050: Remove duplicate code between labels
+To: Markus Elfring <Markus.Elfring@web.de>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> 'flush_fifo' label performs same task as 'endsession' label
+Hello, I apologize for the insufficient explanation.
 
-                                            end_session?
+---
+Before the change:
 
-The number of actions differ between involved jump targets.
+"end_session:
+    mutex_unlock(&st->lock);
+    iio_trigger_notify_done(indio_dev->trig);
+    return IRQ_HANDLED;
+
+flush_fifo:
+    /* Flush HW and SW FIFOs. */
+    inv_reset_fifo(indio_dev);
+    mutex_unlock(&st->lock);
+    iio_trigger_notify_done(indio_dev->trig);
+    return IRQ_HANDLED;
+"
+---
+After the change:
+
+"flush_fifo:
+/* Flush HW and SW FIFOs. */
+inv_reset_fifo(indio_dev);
+
+end_session:
+mutex_unlock(&st->lock);
+iio_trigger_notify_done(indio_dev->trig);
+
+return IRQ_HANDLED;"
+---
+
+Here, 'flush_fifo' and 'end_session' are not the same. However, the
+work of 'flush_fifo' is a superset of 'end_session'.
 
 
-> immediately after calling 'env_reset_fifo' function.
-> so i remove that duplication.
+On Sun, Sep 1, 2024 at 9:08=E2=80=AFPM Markus Elfring <Markus.Elfring@web.d=
+e> wrote:
+>
+> > 'flush_fifo' label performs same task as 'endsession' label
+>
+>                                             end_session?
+>
+> The number of actions differ between involved jump targets.
+>
+>
+> > immediately after calling 'env_reset_fifo' function.
+> > so i remove that duplication.
+>
+> * You would like to specify a corresponding goto chain at the moment,
+>   don't you?
+>   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree=
+/Documentation/process/coding-style.rst?h=3Dv6.11-rc5#n526
+>
+> * How do you think about to increase the application of scope-based resou=
+rce management?
 
-* You would like to specify a corresponding goto chain at the moment,
-  don't you?
-  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/coding-style.rst?h=v6.11-rc5#n526
+firstly I understood that you might be referring to RAII. but I think
+this issue is not related to RAII.
+thanks for response.
 
-* How do you think about to increase the application of scope-based resource management?
-
-
-Regards,
-Markus
+>
+>
+> Regards,
+> Markus
