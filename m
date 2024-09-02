@@ -1,85 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6037817F394;
-	Mon,  2 Sep 2024 11:54:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73CAA1D6DC3
+	for <linux-iio@vger.kernel.org>; Mon,  2 Sep 2024 11:55:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725278076; cv=none; b=VuzjTi2MUgAAJ/M5Dz4Ri6sKq/Y/ZJT4Rz6blYorTtTxm54NbL2je2fr2weQHZE/wxdaZ6ou8o6XJ4WVJNDbiZq1uM/RPSQK0ZZxe/SUsSxPNLdnjaOUgCoc5BnId/mRSavYfYe7h8YxOr5x98TFZZnYBAB2I4cHjk+PLVIWyhU=
+	t=1725278120; cv=none; b=pZS2bU6iTFQJq92CZHkaFdDsCS1XbMhQfMf7H2YEeTykoqe43WWLM4G2M6iLcWmgI3XTqTGbGEOdsDi0fTUJfknBtywuQ0nmZNcks46bzv1usifXTPTqeSS9L4igBzEUrr136HFy8rslRDH+z06UIk49QYg5onzxV9abGlF3oys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725278076; c=relaxed/simple;
-	bh=Qoy6TXYrDxb7VDyVoMvrB2KIvBuOAimyxOxwy2B2xwY=;
+	s=arc-20240116; t=1725278120; c=relaxed/simple;
+	bh=H443R+FJPgvK3fmz2xAoehhGGbEadeYMb7ZSrpFtmws=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qOdJGOAF2ZlotYxCSMKLaFENMt/sSOSskpqmlEOmtBXnm34IJExjER74CnUxF/1RKA8oOxf6JYKtQQbyqTRw9X0X7QjC6Q0S/usvHk4EgVUHLONPu3tfBK9hyx/p06zlaiJB/UhDYyHRN2ZYsP5WvzItIiezkGFOTYEjQzQrZpU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rjZtWnsO; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=mRnatfBgUJ0puIVwD9vXxnWmzRa4HlN1Is6mqa9A0uQMM+VdBrsss+a7YyMDmugefjAfDhM++MOTXE0ebn4vwlLy6VjYhNGDYujMRWWAOzoAXxnQSjb8qeRlmGCJD75zChku716SL9cA5uF5tsibPg/xfqTeU8jBBPp/JsyGTgs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=avMDgd/3; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rjZtWnsO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB4A5C4CEC2;
-	Mon,  2 Sep 2024 11:54:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725278076;
-	bh=Qoy6TXYrDxb7VDyVoMvrB2KIvBuOAimyxOxwy2B2xwY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=rjZtWnsOxeRzyuI7Z4qmPAKCdx1AvBKFI2lSofSFykDSP2ZMddVNl1yGd8dQZ/4Us
-	 fvzb+3z8YINo3shAunu7qYN8vY3e9m2TJAiW2zNYY3V3pKs+AlUxWxtBMhL+O2DYsh
-	 BpPLh+tkTCHB2Sl0UU8/ENIg6Owa3587xsqSGDSRg21Tm+A4TQVFGeX6OjB2akqJRl
-	 LyE75B6FBGBpc8H1zssczwP/eGRETY1oMkmyq/KjykAgyPcJJf4ZfzLZxjJ/Az7hG/
-	 Zcvhza5hyL7Qq7zpdy+vNYQXMijvD0Fovvva4neFklk6lMbCGngHwickdK6alRoCgt
-	 o5NBYK47YP8Dw==
-Date: Mon, 2 Sep 2024 13:54:33 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Alexandru Ardelean <aardelean@baylibre.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, jic23@kernel.org, krzk+dt@kernel.org, robh@kernel.org, 
-	lars@metafoo.de, michael.hennerich@analog.com, gstols@baylibre.com
-Subject: Re: [PATCH v2 6/8] dt-bindings: iio: adc: document diff-channels
- corner case for some ADCs
-Message-ID: <pu536g76q5xanhwnvhpr52mttonb4gkmxfwwof4fyo4sww2g3l@6s7x3joiuzfa>
-References: <20240902103638.686039-1-aardelean@baylibre.com>
- <20240902103638.686039-7-aardelean@baylibre.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="avMDgd/3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1725278119; x=1756814119;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=H443R+FJPgvK3fmz2xAoehhGGbEadeYMb7ZSrpFtmws=;
+  b=avMDgd/3HAc4epCEyerkl996H6DM8JgAaGmZSBVc8EHeQY8JCLOqTfry
+   hlcfiO62LWGhV88p560pAs+EWnBO2yTnmczzeG7RS8kHaCx9AhuV8ChMy
+   scytlgwjXcNJ+F7wdKnJSrgk0KO75v3TJnvNi8PsmdpYjfOqvRWNHe8nV
+   BJA71M5uZOnAkBSq7jLJrkJy81WXsv3BMNFKUqSbhnNnFxxvow7aQ0yOH
+   oz/Gq3ZwV0HAZREREeYXnZGQI/YrQMkdnMGAy0APEAm7gPs7kah8ZaO5J
+   UyG/k1NWJoFr2MiZkSrghLWtRos9nU93b9XDYkcO2PZUQPplFhpVzCRGA
+   w==;
+X-CSE-ConnectionGUID: uYOlzNPdTXWn6rAx+sDxeA==
+X-CSE-MsgGUID: expiqbPNTqKlpBWFs8m62w==
+X-IronPort-AV: E=McAfee;i="6700,10204,11182"; a="26758740"
+X-IronPort-AV: E=Sophos;i="6.10,195,1719903600"; 
+   d="scan'208";a="26758740"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2024 04:48:54 -0700
+X-CSE-ConnectionGUID: wYZFMe6ORqS7DX2nW5ymJw==
+X-CSE-MsgGUID: ikjaDE9iSSOfz7TlEmtVMg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,195,1719903600"; 
+   d="scan'208";a="102042647"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2024 04:46:44 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1sl5W4-00000004LXz-1CuX;
+	Mon, 02 Sep 2024 14:46:40 +0300
+Date: Mon, 2 Sep 2024 14:46:40 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Sean Nyekjaer <sean@geanix.com>, Marek Vasut <marex@denx.de>,
+	Denis Ciocca <denis.ciocca@st.com>,
+	Rui Miguel Silva <rui.silva@linaro.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Danila Tikhonov <danila@jiaxyga.com>,
+	Jagath Jog J <jagathjog1996@gmail.com>,
+	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	Lorenzo Bianconi <lorenzo@kernel.org>,
+	Vasileios Amoiridis <vassilisamir@gmail.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 06/15] iio: gyro: mpu3050: use irq_get_trigger_type()
+Message-ID: <ZtWloABJOwC5KEos@smile.fi.intel.com>
+References: <20240901135950.797396-1-jic23@kernel.org>
+ <20240901135950.797396-7-jic23@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240902103638.686039-7-aardelean@baylibre.com>
+In-Reply-To: <20240901135950.797396-7-jic23@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Mon, Sep 02, 2024 at 01:36:29PM +0300, Alexandru Ardelean wrote:
-> Some ADCs have channels with negative and positive inputs, which can be
-> used to measure differential voltage levels. These inputs/pins are
-> dedicated (to the given channel) and cannot be muxed as with other ADCs.
+On Sun, Sep 01, 2024 at 02:59:41PM +0100, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> For those types of setups, the 'diff-channels' property can be specified to
-> be used with the channel number (or reg property) for both negative and
-> positive inputs/pins.
-> 
-> Signed-off-by: Alexandru Ardelean <aardelean@baylibre.com>
-> ---
->  Documentation/devicetree/bindings/iio/adc/adc.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> index 8e7835cf36fd..9b7a8e149639 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> @@ -37,6 +37,10 @@ properties:
->        to both the positive and negative inputs of a differential ADC.
->        The first value specifies the positive input pin, the second
->        specifies the negative input pin.
-> +      There are also some ADCs, where the differential channel has dedicated
-> +      positive and negative inputs which can be used to measure differential
-> +      voltage levels. For those setups, this property can be configured with
-> +      the the 'reg' property (i.e. diff-channels = <reg reg>).
+> Use irq_get_trigger_type() to replace getting the irq data then the
+> type in two steps.
 
-Please run scripts/checkpatch.pl and fix reported warnings. Then please
-run  and (probably) fix more warnings.
-Some warnings can be ignored, especially from --strict run, but the code
-here looks like it needs a fix. Feel free to get in touch if the warning
-is not clear.
+...
 
-Best regards,
-Krzysztof
+> -	irq_trig = irqd_get_trigger_type(irq_get_irq_data(irq));
+> +	irq_trig = irq_get_trigger_type(irq);
+
+Same remark about comment vs. assignment.
+
+>  	/*
+>  	 * Configure the interrupt generator hardware to supply whatever
+>  	 * the interrupt is configured for, edges low/high level low/high,
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
