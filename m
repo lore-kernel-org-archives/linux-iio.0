@@ -1,154 +1,89 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEAEE1547C3;
-	Mon,  2 Sep 2024 07:21:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3201976035
+	for <linux-iio@vger.kernel.org>; Mon,  2 Sep 2024 09:14:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725261698; cv=none; b=Qc0WM/F+iHt3vlI52bH76U46SaCxaxmMA/Namd+Kt844PxQDZehjkWLv9cwQWjB4prIVHEucJm/J1b3shvnUqcUovDLBTPS89TjC0mjGRXBtkv4TTTZ+s3ilj8zmROxBAZIrqVFabZbOJDb4hdCOaDzLKalg55zjuGYhc2wKyKk=
+	t=1725268446; cv=none; b=VAmcf0E6GMG7UIvlYnv7MQTisnx72w89Iy8PT6kytUpke4lIcBN4Cic+Y/lZAwvXOwOKI1WR9vkwNP9Xc9OeRZdeSUJfOIhdrLjIqL/dyxUvjN8u7RdtomfdOxeQze+x5xWJY1JEKa/n+LUAXDvhUKZk0kIt/rnsJJQR4ULyk7I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725261698; c=relaxed/simple;
-	bh=E8IFSuEGmDCnUmRzlrw+q1btyLEC2hHX28IN1qiv0DA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fL0LLpfLggnS0BuHY+Y6DBiiqWky/Hnw++7lOA1y9P+gLJGCkJSOb9MfqVQkkHcEASWO2VuWTrRhRA/vD3oTHrtag+IRhPOI+r5LnQX05rHfFQ0HvazhINMBwwyVmj1rbR2VU00/ZJN49phxHRNSJ7MMGSY3W5YA9RC/YmI7BZ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nYMZFl5R; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725268446; c=relaxed/simple;
+	bh=5e/6LMsJW4trgU5HcJOqnjBi1cFqQqTMk+I1u/D/7/o=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=c0GV3vYta3ZWMxi0mKFhoo3KZ5EVwavkkSDMixLGnPP9l0twGLqtHpmFP49KekW8W1l/HBIwnZsrX1A9nBLWl6ECgC+r3BQ654VrVHKByciMZTFgvg4T5J4fCrhBIlJBH4C/5ot73WLFYDW45F3ed3/bwyg4uK2t7EXMp4oN7sM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=dvoLSr2h; arc=none smtp.client-ip=209.85.167.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nYMZFl5R"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7520C4CEC2;
-	Mon,  2 Sep 2024 07:21:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725261697;
-	bh=E8IFSuEGmDCnUmRzlrw+q1btyLEC2hHX28IN1qiv0DA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nYMZFl5RkQHHHAlJW3FZ/FoSAjFfZ2t3qYRLc06sDl1UH+QTGDi3DdLJiSiHUuZsM
-	 Qil+GLZ/kq9TkoF6WxABuxQcLQm1WL/usleYcJGF3hF5w7X3otPqepJfO/OLtDOuvr
-	 S7R6NxRGyvxCrUbodq2Q+vCm460+RiMUxqnyDReMXFlxYdTHYMrmRAWZH9QidRrRfx
-	 ebGgw6trLFo6XhzfiUtsj53zAHS7uTqvaXe0yZo7qWbrm8/P8MQ0nEf2S4nNcxeg50
-	 t5gbqaLm59AzHDSnOqBzB244CPDZHZasX7vVWE0RzKufmub6E/2kM/iDMk6cBVumxf
-	 oTTbxT1lioDYg==
-Date: Mon, 2 Sep 2024 09:21:33 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Alex Lanzano <lanzano.alex@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jagath Jog J <jagathjog1996@gmail.com>, Ramona Gradinariu <ramona.bolboaca13@gmail.com>, 
-	Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: imu: add bmi270 bindings
-Message-ID: <y43rxkvcg5fnvef2pezzg5ckotqvfs2io6ohungfdpd7abcfm5@z62ruivg6p35>
-References: <20240901205354.3201261-1-lanzano.alex@gmail.com>
- <20240901205354.3201261-2-lanzano.alex@gmail.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dvoLSr2h"
+Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5334c4d6829so4968458e87.2
+        for <linux-iio@vger.kernel.org>; Mon, 02 Sep 2024 02:14:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1725268443; x=1725873243; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5e/6LMsJW4trgU5HcJOqnjBi1cFqQqTMk+I1u/D/7/o=;
+        b=dvoLSr2h9Jw2H9MMW/LVQeorWstviTa9HOYgLmdIY4IXmTzOmFkQ6OpJ4IkXGEjHYN
+         Spnuk/ZTX0ONZWrDFky7CGtB7mLUHqRPEaJ4llHd6b8oQNhbeNjCybEud+hBlBbyf64i
+         UkTgWErmapmDmryNrmZhZ2OQSy+QMuVH8ajQzO3TBDZYXne1UKQveiYDhnoJ/j+e+KVU
+         43FmnUadAA1Dvt3qQFG9DbTvYSfRRV/K6/D6JSnC/7mad/DldkFB574n3xQCKwOq1SxM
+         6mb5yh0DFfl49vcuPAzXTme9izuXcvOjbSK8VF2+aQEOsM9kHKOj6EMESSRCZ2331Ot4
+         p3sA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725268443; x=1725873243;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5e/6LMsJW4trgU5HcJOqnjBi1cFqQqTMk+I1u/D/7/o=;
+        b=IrHpZ4bdjsyqvIsaeRenh2XO45zF54Irb4oRzt5y+Wv2Syg9NvP41U03J3cZ9BZHsn
+         6bMfCFCDzP6MsEyIEsoAxHjxqqPjMh+Ax7T064ihgH1xB4W220F36h8XMmjCG3piX92H
+         n5wrYJNLT/Sn5v6hyc238EvAwrSUYM8I54OOm1PjHZMD+VAs7mxUoGSPn7n5fJHkV+Bk
+         OyF+pGp1k4c3dbw1Ky2MPm6h1K6cQvHw5yFBQf0z6p+mIdMeihtu7GxS1Vj4vCF+MRej
+         Ax0dAPJ/Kp/2D8x4C/CoPyfCGgm/j5ewRoWF6GZD4W+qhIOn433YLzjBGYom/pgdcsKA
+         L7tA==
+X-Gm-Message-State: AOJu0Yz2I8VvFktLFbCkCnVgp3vIHWbHCyvbQiJCBsA0uc2SrcPOveYr
+	m1AX+DRFWoSMi4VOwAjwKGtj4IGtcpV+thpXl994lT84ov0HVS9X4Oz5vYzQBueS6DdhviA9A53
+	pnCTe2c8+A3QtxCBy2kN1l5pK7EcFLh7XlXJsLQ==
+X-Google-Smtp-Source: AGHT+IELPfKWHgCrsUEfq215WcwRaDRvA/Y82xjPQ9I0VtPsdBTES7yq7tcU+52jo+QCHnHJNcx2h6oVV25ZFeogwa0=
+X-Received: by 2002:a05:6512:138e:b0:52e:9b15:1c60 with SMTP id
+ 2adb3069b0e04-53546ba9d09mr5862981e87.48.1725268442400; Mon, 02 Sep 2024
+ 02:14:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20240901205354.3201261-2-lanzano.alex@gmail.com>
+References: <20240901135950.797396-1-jic23@kernel.org> <20240901135950.797396-7-jic23@kernel.org>
+In-Reply-To: <20240901135950.797396-7-jic23@kernel.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Mon, 2 Sep 2024 11:13:51 +0200
+Message-ID: <CACRpkdYrrVNYD=yzaPe19JgEiCVccgze29roBHGsQJ+M+FHjTA@mail.gmail.com>
+Subject: Re: [PATCH 06/15] iio: gyro: mpu3050: use irq_get_trigger_type()
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Antoniu Miclaus <antoniu.miclaus@analog.com>, Sean Nyekjaer <sean@geanix.com>, 
+	Marek Vasut <marex@denx.de>, Denis Ciocca <denis.ciocca@st.com>, 
+	Rui Miguel Silva <rui.silva@linaro.org>, Danila Tikhonov <danila@jiaxyga.com>, 
+	Jagath Jog J <jagathjog1996@gmail.com>, 
+	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, Lorenzo Bianconi <lorenzo@kernel.org>, 
+	Vasileios Amoiridis <vassilisamir@gmail.com>, Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Sep 01, 2024 at 04:53:23PM -0400, Alex Lanzano wrote:
-> Add device tree bindings for the bmi270 IMU
-> 
-> Signed-off-by: Alex Lanzano <lanzano.alex@gmail.com>
-> ---
->  .../bindings/iio/imu/bosch,bmi270.yaml        | 80 +++++++++++++++++++
->  1 file changed, 80 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/imu/bosch,bmi270.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/imu/bosch,bmi270.yaml b/Documentation/devicetree/bindings/iio/imu/bosch,bmi270.yaml
-> new file mode 100644
-> index 000000000000..44534ef36378
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/imu/bosch,bmi270.yaml
-> @@ -0,0 +1,80 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/imu/bosch,bmi270.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Bosch BMI270 6-Axis IMU
-> +
-> +maintainers:
-> +  - Alex Lanzano <lanzano.alex@gmail.com>
-> +
-> +description: |
-> +  BMI270 is a 6-axis inertial measurement unit that can measure acceleration and
-> +  angular velocity. The sensor also supports configurable interrupt events such
-> +  as motion, step counter, and wrist motion gestures. The sensor can communicate
-> +  I2C or SPI.
-> +  https://www.bosch-sensortec.com/products/motion-sensors/imus/bmi270/
-> +
-> +properties:
-> +  compatible:
-> +    const: bosch,bmi270
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  vdd-supply: true
-> +  vddio-supply: true
-> +
-> +  interrupts:
-> +    minItems: 1
-> +    maxItems: 2
-> +
-> +  interrupt-names:
-> +    minItems: 1
-> +    maxItems: 2
-> +    items:
-> +      enum:
-> +        - INT1
-> +        - INT2
-> +
-> +  drive-open-drain:
-> +    description:
-> +      set if the specified interrupt pin should be configured as
-> +      open drain. If not set, defaults to push-pull.
-> +
-> +  mount-matrix:
-> +    description:
-> +      an optional 3x3 mounting rotation matrix.
-> +
-> +required:
-> +  - compatible
-> +  - reg
+On Sun, Sep 1, 2024 at 4:00=E2=80=AFPM Jonathan Cameron <jic23@kernel.org> =
+wrote:
 
-Device can operate without power provided?
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>
+> Use irq_get_trigger_type() to replace getting the irq data then the
+> type in two steps.
+>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-> +
-> +allOf:
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        imu@68 {
-> +            compatible = "bosch,bmi270";
-> +            reg = <0x68>;
-> +        };
-> +    };
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Keep just one, complete example. You miss here several properties.
-
-> +  - |
-> +    spi {
-
-Not much differences in this example, but if you want to keep it, then
-make it complete and fix the node name,
-
-Node names should be generic. See also an explanation and list of
-examples (not exhaustive) in DT specification:
-https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
-
-Best regards,
-Krzysztof
-
+Yours,
+Linus Walleij
