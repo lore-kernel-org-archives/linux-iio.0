@@ -1,23 +1,23 @@
-Received: from fgw23-7.mail.saunalahti.fi (fgw23-7.mail.saunalahti.fi [62.142.5.84])
+Received: from fgw22-7.mail.saunalahti.fi (fgw22-7.mail.saunalahti.fi [62.142.5.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23E93188593
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4916F18893A
 	for <linux-iio@vger.kernel.org>; Mon,  2 Sep 2024 22:29:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.84
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.83
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725316142; cv=none; b=NWo+tM3NgqLuao3C6MMtm4Tbc26lLzwuoxMDqhVb/3krx8Zep7TYf5KsxzuELjrme76Q5ddr3LShVriRToZXt1fU2+8/khFb20nw2OKZciclZDuOXlBaLoxNMLkLNir6YeS+WTxsWaiXey58dBkdylIYFDc8N3qh6Z/BT1X6GyE=
+	t=1725316142; cv=none; b=dG2UwMXnDIrH3ezvtqiJ6cz+yoz0U3UYwfh6ybld74bkq1ztiXYuR80iiKpsspOgLSIvb2hAPhdJ5hnhL/1ndcvPIstyURba6GltmRT8MEesHJ9pUwf9U3wsANUltY+LT3DjJ0ZO4CSsdsggfurZW/lFF286STzrDFlq7eqCgXE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1725316142; c=relaxed/simple;
-	bh=rz4cPLPk4U/N9gxi84pXdf1L9hx4wLHD3D5UxEPPbnc=;
+	bh=na8Ih3U30oMUt4tlFrC4bjWSAbvwr6i7Vjw2ATFC8Pk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=nUMHvaAHXynng/sOFUtZzPeCgWCSkdtKrI1JDn2rUsZcXQIME4XmCnwfXyQLVQzvs96q39dZO2jZ99ZUDCVHuoxxVgL00QJGXfgYwjIYdWyn2FMKSKV6rJI9iIPTybyIVX3R2rAVEieeyfDrQS2UU7RGb2J27IR7GTMg70bR9zc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.84
+	 MIME-Version; b=Td+ZLweDqDg1iIBPlcCvFYX0b/rY87ODd0U+BqWnOh4X10mh7LGiu7n/S5rBmdnAf3VLI18w9eef6SyZjXRDDJeuYL4GMrFA9satlEhD4ZRa0dAKYtNL5v1v32fMHl+JgIykzV2AKim2a5mGN7YCz99IXyv4NWwuNW2QCB2i6Mw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.83
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
 Received: from localhost (88-113-25-87.elisa-laajakaista.fi [88.113.25.87])
-	by fgw20.mail.saunalahti.fi (Halon) with ESMTP
-	id b3ad4428-697a-11ef-8e8a-005056bd6ce9;
-	Tue, 03 Sep 2024 01:28:39 +0300 (EEST)
+	by fgw22.mail.saunalahti.fi (Halon) with ESMTP
+	id b478b24d-697a-11ef-8ecb-005056bdf889;
+	Tue, 03 Sep 2024 01:28:40 +0300 (EEST)
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
 To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
 	David Lechner <dlechner@baylibre.com>,
@@ -36,9 +36,9 @@ Cc: Jiri Kosina <jikos@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v1 14/22] iio: imu: st_lsm6dsx: Get platform data via dev_get_platdata()
-Date: Tue,  3 Sep 2024 01:16:59 +0300
-Message-ID: <20240902222824.1145571-15-andy.shevchenko@gmail.com>
+Subject: [PATCH v1 16/22] iio: light: hid-sensor-prox: Get platform data via dev_get_platdata()
+Date: Tue,  3 Sep 2024 01:17:01 +0300
+Message-ID: <20240902222824.1145571-17-andy.shevchenko@gmail.com>
 X-Mailer: git-send-email 2.46.0
 In-Reply-To: <20240902222824.1145571-1-andy.shevchenko@gmail.com>
 References: <20240902222824.1145571-1-andy.shevchenko@gmail.com>
@@ -56,74 +56,35 @@ Access to platform data via dev_get_platdata() getter to make code cleaner.
 
 Signed-off-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ drivers/iio/light/hid-sensor-prox.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index ed0267929725..3958b5e1a3f6 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -2132,14 +2132,11 @@ st_lsm6dsx_get_drdy_reg(struct st_lsm6dsx_hw *hw,
- 			const struct st_lsm6dsx_reg **drdy_reg)
+diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
+index 26c481d2998c..5343ebd404bf 100644
+--- a/drivers/iio/light/hid-sensor-prox.c
++++ b/drivers/iio/light/hid-sensor-prox.c
+@@ -233,11 +233,11 @@ static int prox_parse_report(struct platform_device *pdev,
+ /* Function to initialize the processing for usage id */
+ static int hid_prox_probe(struct platform_device *pdev)
  {
- 	struct device *dev = hw->dev;
-+	const struct st_sensors_platform_data *pdata = dev_get_platdata(dev);
- 	int err = 0, drdy_pin;
++	struct hid_sensor_hub_device *hsdev = dev_get_platdata(&pdev->dev);
+ 	int ret = 0;
+ 	static const char *name = "prox";
+ 	struct iio_dev *indio_dev;
+ 	struct prox_state *prox_state;
+-	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
  
--	if (device_property_read_u32(dev, "st,drdy-int-pin", &drdy_pin) < 0) {
--		struct st_sensors_platform_data *pdata;
--
--		pdata = (struct st_sensors_platform_data *)dev->platform_data;
-+	if (device_property_read_u32(dev, "st,drdy-int-pin", &drdy_pin) < 0)
- 		drdy_pin = pdata ? pdata->drdy_int_pin : 1;
--	}
- 
- 	switch (drdy_pin) {
- 	case 1:
-@@ -2162,14 +2159,13 @@ st_lsm6dsx_get_drdy_reg(struct st_lsm6dsx_hw *hw,
- static int st_lsm6dsx_init_shub(struct st_lsm6dsx_hw *hw)
+ 	indio_dev = devm_iio_device_alloc(&pdev->dev,
+ 				sizeof(struct prox_state));
+@@ -315,7 +315,7 @@ static int hid_prox_probe(struct platform_device *pdev)
+ /* Function to deinitialize the processing for usage id */
+ static void hid_prox_remove(struct platform_device *pdev)
  {
- 	const struct st_lsm6dsx_shub_settings *hub_settings;
--	struct st_sensors_platform_data *pdata;
- 	struct device *dev = hw->dev;
-+	const struct st_sensors_platform_data *pdata = dev_get_platdata(dev);
- 	unsigned int data;
- 	int err = 0;
+-	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
++	struct hid_sensor_hub_device *hsdev = dev_get_platdata(&pdev->dev);
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct prox_state *prox_state = iio_priv(indio_dev);
  
- 	hub_settings = &hw->settings->shub_settings;
- 
--	pdata = (struct st_sensors_platform_data *)dev->platform_data;
- 	if (device_property_read_bool(dev, "st,pullups") ||
- 	    (pdata && pdata->pullups)) {
- 		if (hub_settings->pullup_en.sec_page) {
-@@ -2524,9 +2520,9 @@ static irqreturn_t st_lsm6dsx_sw_trigger_handler_thread(int irq,
- 
- static int st_lsm6dsx_irq_setup(struct st_lsm6dsx_hw *hw)
- {
--	struct st_sensors_platform_data *pdata;
- 	const struct st_lsm6dsx_reg *reg;
- 	struct device *dev = hw->dev;
-+	const struct st_sensors_platform_data *pdata = dev_get_platdata(dev);
- 	unsigned long irq_type;
- 	bool irq_active_low;
- 	int err;
-@@ -2554,7 +2550,6 @@ static int st_lsm6dsx_irq_setup(struct st_lsm6dsx_hw *hw)
- 	if (err < 0)
- 		return err;
- 
--	pdata = (struct st_sensors_platform_data *)dev->platform_data;
- 	if (device_property_read_bool(dev, "drive-open-drain") ||
- 	    (pdata && pdata->open_drain)) {
- 		reg = &hw->settings->irq_config.od;
-@@ -2639,7 +2634,7 @@ static int st_lsm6dsx_init_regulators(struct device *dev)
- int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id,
- 		     struct regmap *regmap)
- {
--	struct st_sensors_platform_data *pdata = dev->platform_data;
-+	const struct st_sensors_platform_data *pdata = dev_get_platdata(dev);
- 	const struct st_lsm6dsx_shub_settings *hub_settings;
- 	struct st_lsm6dsx_hw *hw;
- 	const char *name = NULL;
 -- 
 2.46.0
 
