@@ -1,100 +1,124 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73CAA1D6DC3
-	for <linux-iio@vger.kernel.org>; Mon,  2 Sep 2024 11:55:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 516DF17F394;
+	Mon,  2 Sep 2024 11:55:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725278120; cv=none; b=pZS2bU6iTFQJq92CZHkaFdDsCS1XbMhQfMf7H2YEeTykoqe43WWLM4G2M6iLcWmgI3XTqTGbGEOdsDi0fTUJfknBtywuQ0nmZNcks46bzv1usifXTPTqeSS9L4igBzEUrr136HFy8rslRDH+z06UIk49QYg5onzxV9abGlF3oys=
+	t=1725278158; cv=none; b=Oa+V/q3vABNHLwa0G5op/cH+QiL6MY+x99rcurbLSZpjE/UFQHObt/EmrKiXo34FgsYCKDoaKEMrN5f67n98bS38a7QAUzA7g5NPPu/VR90Azfh2gpAzxH5TAndEyjPChSzgL11BWG+WOzpLWfpUdwq7H2as1ZW2UAdqPf1g5Tg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725278120; c=relaxed/simple;
-	bh=H443R+FJPgvK3fmz2xAoehhGGbEadeYMb7ZSrpFtmws=;
+	s=arc-20240116; t=1725278158; c=relaxed/simple;
+	bh=Y8MfiB7irJCP3K3Jd5maCMcOLA9rDhVRzc4+TXJsPmM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mRnatfBgUJ0puIVwD9vXxnWmzRa4HlN1Is6mqa9A0uQMM+VdBrsss+a7YyMDmugefjAfDhM++MOTXE0ebn4vwlLy6VjYhNGDYujMRWWAOzoAXxnQSjb8qeRlmGCJD75zChku716SL9cA5uF5tsibPg/xfqTeU8jBBPp/JsyGTgs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=avMDgd/3; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=KJQW5TajqmhsDxw0NF+zzeH0UQX32KR5sdxowHO5l1urMuHpPdl0IjmSJhLklmm0wTY5nP4C9lz1gB+dDway+TQ0FQZ6CnenVxKDYT7wbhckxbtmnbAa6oAtbVLSDF/CZ7fSpzk3tux0AZJqTzPEazjt5Z+1ho/fROQQera0wM0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hsH7XqUA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="avMDgd/3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725278119; x=1756814119;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=H443R+FJPgvK3fmz2xAoehhGGbEadeYMb7ZSrpFtmws=;
-  b=avMDgd/3HAc4epCEyerkl996H6DM8JgAaGmZSBVc8EHeQY8JCLOqTfry
-   hlcfiO62LWGhV88p560pAs+EWnBO2yTnmczzeG7RS8kHaCx9AhuV8ChMy
-   scytlgwjXcNJ+F7wdKnJSrgk0KO75v3TJnvNi8PsmdpYjfOqvRWNHe8nV
-   BJA71M5uZOnAkBSq7jLJrkJy81WXsv3BMNFKUqSbhnNnFxxvow7aQ0yOH
-   oz/Gq3ZwV0HAZREREeYXnZGQI/YrQMkdnMGAy0APEAm7gPs7kah8ZaO5J
-   UyG/k1NWJoFr2MiZkSrghLWtRos9nU93b9XDYkcO2PZUQPplFhpVzCRGA
-   w==;
-X-CSE-ConnectionGUID: uYOlzNPdTXWn6rAx+sDxeA==
-X-CSE-MsgGUID: expiqbPNTqKlpBWFs8m62w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11182"; a="26758740"
-X-IronPort-AV: E=Sophos;i="6.10,195,1719903600"; 
-   d="scan'208";a="26758740"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2024 04:48:54 -0700
-X-CSE-ConnectionGUID: wYZFMe6ORqS7DX2nW5ymJw==
-X-CSE-MsgGUID: ikjaDE9iSSOfz7TlEmtVMg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,195,1719903600"; 
-   d="scan'208";a="102042647"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2024 04:46:44 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1sl5W4-00000004LXz-1CuX;
-	Mon, 02 Sep 2024 14:46:40 +0300
-Date: Mon, 2 Sep 2024 14:46:40 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Sean Nyekjaer <sean@geanix.com>, Marek Vasut <marex@denx.de>,
-	Denis Ciocca <denis.ciocca@st.com>,
-	Rui Miguel Silva <rui.silva@linaro.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Danila Tikhonov <danila@jiaxyga.com>,
-	Jagath Jog J <jagathjog1996@gmail.com>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	Lorenzo Bianconi <lorenzo@kernel.org>,
-	Vasileios Amoiridis <vassilisamir@gmail.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 06/15] iio: gyro: mpu3050: use irq_get_trigger_type()
-Message-ID: <ZtWloABJOwC5KEos@smile.fi.intel.com>
-References: <20240901135950.797396-1-jic23@kernel.org>
- <20240901135950.797396-7-jic23@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hsH7XqUA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33CCDC4CEC2;
+	Mon,  2 Sep 2024 11:55:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725278158;
+	bh=Y8MfiB7irJCP3K3Jd5maCMcOLA9rDhVRzc4+TXJsPmM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=hsH7XqUALX2lEKVlWS0dVERz5tJO1QBLsYNq9H2WVCi7oTLFsXwvLyVWU1L9JHt1k
+	 WDhcrysj6J+qNaRj7CG/xQHHMOA64VTJFTGyr6kBuIKLNWQBDHxqcvcsmzgkqPtxp7
+	 MpA7nDI6sbNEyuwIlceULxG3sf2y2eG3EL4o+/yReHCqDb5YxLzvFTfpZWIJyz83wW
+	 P9acAnop8tYgCKXI3pBIsYb8/+wyZjxAYghePHKjwOD+2exrM5zNTlebrZSLiGlFUl
+	 IjhF1gFmmZo8zfUVPMS6uuHju7lzzaH6g/PKQUxmK+N/Um4I0emhU5sVbbhZdnlY/v
+	 Z9eYpW/bBeI2Q==
+Date: Mon, 2 Sep 2024 13:55:54 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Alexandru Ardelean <aardelean@baylibre.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, jic23@kernel.org, krzk+dt@kernel.org, robh@kernel.org, 
+	lars@metafoo.de, michael.hennerich@analog.com, gstols@baylibre.com
+Subject: Re: [PATCH v2 7/8] dt-bindings: iio: adc: add adi,ad7606c-{16,18}
+ compatible strings
+Message-ID: <rdk2f6c457k462g5v6s5vumdmhejefyfareio5f6bogslg4wg5@ket4vfwwbyi7>
+References: <20240902103638.686039-1-aardelean@baylibre.com>
+ <20240902103638.686039-8-aardelean@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240901135950.797396-7-jic23@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20240902103638.686039-8-aardelean@baylibre.com>
 
-On Sun, Sep 01, 2024 at 02:59:41PM +0100, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> Use irq_get_trigger_type() to replace getting the irq data then the
-> type in two steps.
+On Mon, Sep 02, 2024 at 01:36:30PM +0300, Alexandru Ardelean wrote:
+>    reg:
+> @@ -114,6 +118,25 @@ properties:
+>        assumed that the pins are hardwired to VDD.
+>      type: boolean
+>  
+> +patternProperties:
+> +  "^channel@([0-7])$":
+> +    type: object
+> +    $ref: adc.yaml
+> +    unevaluatedProperties: false
+> +
+> +    properties:
+> +      reg:
+> +        description: The channel number.
+> +        minimum: 0
+> +        maximum: 7
+> +
+> +      diff-channels: true
 
-...
+Shouldn't this be specific?
 
-> -	irq_trig = irqd_get_trigger_type(irq_get_irq_data(irq));
-> +	irq_trig = irq_get_trigger_type(irq);
+> +
+> +      bipolar: true
+> +
+> +    required:
+> +      - reg
+> +
+>  required:
+>    - compatible
+>    - reg
+> @@ -202,4 +225,44 @@ examples:
+>              standby-gpios = <&gpio 24 GPIO_ACTIVE_LOW>;
+>          };
+>      };
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    spi {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        adc@0 {
+> +            compatible = "adi,ad7606c-18";
+> +            reg = <0>;
+> +            spi-max-frequency = <1000000>;
+> +            spi-cpol;
+> +            spi-cpha;
+> +
+> +            avcc-supply = <&adc_vref>;
+> +            vdrive-supply = <&vdd_supply>;
+> +
+> +            interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
+> +            interrupt-parent = <&gpio>;
+> +
+> +            adi,conversion-start-gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
+> +
+> +            adi,conversion-start-gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
+> +            reset-gpios = <&gpio 27 GPIO_ACTIVE_HIGH>;
+> +            adi,first-data-gpios = <&gpio 22 GPIO_ACTIVE_HIGH>;
+> +            standby-gpios = <&gpio 24 GPIO_ACTIVE_LOW>;
+> +
+> +            adi,sw-mode;
+> +
+> +            channel@1 {
+> +                reg = <1>;
+> +                diff-channel;
 
-Same remark about comment vs. assignment.
+Where is this property defined (which schema)?
 
->  	/*
->  	 * Configure the interrupt generator hardware to supply whatever
->  	 * the interrupt is configured for, edges low/high level low/high,
+Did you test it?
 
--- 
-With Best Regards,
-Andy Shevchenko
-
+Best regards,
+Krzysztof
 
