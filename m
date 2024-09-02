@@ -1,23 +1,23 @@
-Received: from fgw20-7.mail.saunalahti.fi (fgw20-7.mail.saunalahti.fi [62.142.5.81])
+Received: from fgw23-7.mail.saunalahti.fi (fgw23-7.mail.saunalahti.fi [62.142.5.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A155318953E
-	for <linux-iio@vger.kernel.org>; Mon,  2 Sep 2024 22:29:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3006B18B48E
+	for <linux-iio@vger.kernel.org>; Mon,  2 Sep 2024 22:29:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.84
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725316153; cv=none; b=rtaff2Wg9+lbzvrD9XJVg2QXTV8c4NvC9FxpZTlijM4W2WgDnTLNvLvD6ssXQxbQucRCDpt2kZ/VOoDfCP/9UzLKtie3SZk/eS6pvN9ZTIudEpiVVKYU1/C9ATind8w8+E+mpFm7j5craO4xMpZUfiBGYnVxc/BWJTuJ/OWpd8Y=
+	t=1725316155; cv=none; b=KRDhC8C/4KN+oV38XoPplSOBk0BhJ4sJ97YOCV7YpH3tfn8/hZIpZjZv8EhRbvyhsiiRtW7cXA7zBmiEi9SD2a6BUOcRbHzLcHLn50ErCbVbtELe1zO8G30HIEc4DUs0NmMyYLlLVcUGWxHj5r2DABPBoJiuXxXEXQaR5eYY8KU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725316153; c=relaxed/simple;
-	bh=TJVJWUgFroHz4D1KAqxrh0hBNP9FzfldUPa3LBUsFjI=;
+	s=arc-20240116; t=1725316155; c=relaxed/simple;
+	bh=Uy3gw0baEyg93YMzdsYyOhpSjIuIj+PESe4MBDgyQns=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=PrcUqSNE2tiB4ksfMy4whjBbU1L0hEsj996AcMY+KqrxsyVMhCtXXgNc5Hj1UqS24pgh1lt3KKdORRRYCNX9MyNhRFYlr0QGo63V+8s8jRTyGZW6o9X00V6hVzujeIbWlAwFrMrXh5i+ZDw4EdAODMe6nKEsZnMShlRzE1Z2Jes=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.81
+	 MIME-Version; b=kBR92GS4hp/J9ixobaa1TiZQqqKe6s/bbPE4hgAcGREejAyr22LGJwaGNygRdxIMipWR5eOfFZD4jYLYFFy+/cPxWPsf7G+fkk0Diy/g3VamVdaCaWEu9fcIzab3aq6ydb9yEqP5iETXZ/hpO0S9JRYXKRLBqWaiw2YYdite3XQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.84
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
 Received: from localhost (88-113-25-87.elisa-laajakaista.fi [88.113.25.87])
-	by fgw22.mail.saunalahti.fi (Halon) with ESMTP
-	id af57ce29-697a-11ef-8ecb-005056bdf889;
-	Tue, 03 Sep 2024 01:28:32 +0300 (EEST)
+	by fgw23.mail.saunalahti.fi (Halon) with ESMTP
+	id b4efba77-697a-11ef-8256-005056bdfda7;
+	Tue, 03 Sep 2024 01:28:41 +0300 (EEST)
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
 To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
 	David Lechner <dlechner@baylibre.com>,
@@ -36,9 +36,9 @@ Cc: Jiri Kosina <jikos@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v1 05/22] iio: adc: ad7793: Get platform data via dev_get_platdata()
-Date: Tue,  3 Sep 2024 01:16:50 +0300
-Message-ID: <20240902222824.1145571-6-andy.shevchenko@gmail.com>
+Subject: [PATCH v1 17/22] iio: light: lm3533-als: Get platform data via dev_get_platdata()
+Date: Tue,  3 Sep 2024 01:17:02 +0300
+Message-ID: <20240902222824.1145571-18-andy.shevchenko@gmail.com>
 X-Mailer: git-send-email 2.46.0
 In-Reply-To: <20240902222824.1145571-1-andy.shevchenko@gmail.com>
 References: <20240902222824.1145571-1-andy.shevchenko@gmail.com>
@@ -56,22 +56,41 @@ Access to platform data via dev_get_platdata() getter to make code cleaner.
 
 Signed-off-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/iio/adc/ad7793.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/light/lm3533-als.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
-index abebd519cafa..b86e89370e0d 100644
---- a/drivers/iio/adc/ad7793.c
-+++ b/drivers/iio/adc/ad7793.c
-@@ -770,7 +770,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
+index 7800f7fa51b7..6429d951ce7f 100644
+--- a/drivers/iio/light/lm3533-als.c
++++ b/drivers/iio/light/lm3533-als.c
+@@ -754,7 +754,7 @@ static int lm3533_als_set_resistor(struct lm3533_als *als, u8 val)
+ }
  
- static int ad7793_probe(struct spi_device *spi)
+ static int lm3533_als_setup(struct lm3533_als *als,
+-			    struct lm3533_als_platform_data *pdata)
++			    const struct lm3533_als_platform_data *pdata)
  {
--	const struct ad7793_platform_data *pdata = spi->dev.platform_data;
-+	const struct ad7793_platform_data *pdata = dev_get_platdata(&spi->dev);
- 	struct ad7793_state *st;
+ 	int ret;
+ 
+@@ -828,8 +828,8 @@ static const struct iio_info lm3533_als_info = {
+ 
+ static int lm3533_als_probe(struct platform_device *pdev)
+ {
++	const struct lm3533_als_platform_data *pdata;
+ 	struct lm3533 *lm3533;
+-	struct lm3533_als_platform_data *pdata;
+ 	struct lm3533_als *als;
  	struct iio_dev *indio_dev;
- 	int ret, vref_mv = 0;
+ 	int ret;
+@@ -838,7 +838,7 @@ static int lm3533_als_probe(struct platform_device *pdev)
+ 	if (!lm3533)
+ 		return -EINVAL;
+ 
+-	pdata = pdev->dev.platform_data;
++	pdata = dev_get_platdata(&pdev->dev);
+ 	if (!pdata) {
+ 		dev_err(&pdev->dev, "no platform data\n");
+ 		return -EINVAL;
 -- 
 2.46.0
 
