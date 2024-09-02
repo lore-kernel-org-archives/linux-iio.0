@@ -1,23 +1,23 @@
-Received: from fgw21-7.mail.saunalahti.fi (fgw21-7.mail.saunalahti.fi [62.142.5.82])
+Received: from fgw22-7.mail.saunalahti.fi (fgw22-7.mail.saunalahti.fi [62.142.5.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4E5918BB85
-	for <linux-iio@vger.kernel.org>; Mon,  2 Sep 2024 22:29:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.82
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0577718CC15
+	for <linux-iio@vger.kernel.org>; Mon,  2 Sep 2024 22:29:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.83
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725316163; cv=none; b=hesE19jfeHaj0fSvzxi6BNxoaN2x+gZBvMmHUCu/OFAlw8psY1q1x7hqprcTxCOtpyE9JEbduFnK/a30LJ5R2EKdEoKE3IHohPvE2UzMBiKWawKqR9RTN79JHaA/CeqRB5AZ+mjIkMHbiDXaMCaf5tND3dZqIp4IJTDJbnzsf0w=
+	t=1725316176; cv=none; b=XNjDX/y8LS2T3s7Tg7pwfOjYKlMUAI7bLLomE8YhqRVBFTztdh7hpad4w7CKbgD+sl1nR2qu/DLk13BtPQZ+wG2V27WKjrZZ7HEo7yZYgdMADMPTSfpvCLQodgRLYACreqGNS/jKVygMcUo4IHOTjlwW4wwJPKoZISv/EQwwXKI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725316163; c=relaxed/simple;
-	bh=q2W2x5oyaNvC8UUAdV6wNNKiWrB5DlPCM9Iu48dwc60=;
+	s=arc-20240116; t=1725316176; c=relaxed/simple;
+	bh=bCouMPCfZo5pf56gbl+7wP0aa2XkCRIomN3pfQ0D6fw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KugJ1Vs9/X89HP9Da2a2Dc3tW4GofZGZw8MQ1A1Pz0wpSuzSkoWt+yZ69DOR0pf2LjJSE62wzo/I6G0x3Zg5bwiEqHBbX1Nai2kEh3EyY8+l5Lp7blF5E1R1vAtmHVFOr+Fosw9ZSk4Pf7u7sIgfBdVZ4R3PuMjzIoEMuumYnH4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.82
+	 MIME-Version; b=EyG+8lCe+UvPP3gikolSB0T0kxtu2HxmMexi6215dcnCEYDa8leXOkVRXO6nuVai74SsuXxH48tz/U8zj4ScrAOuo+I+IL2X7CGsfC1nrpqxVzHJ2FJIJNCsj/LsYOvZIyJygSKc1s8ndOun+zUKDhl4BDMt4nXAhVpcF424g0c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.83
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
 Received: from localhost (88-113-25-87.elisa-laajakaista.fi [88.113.25.87])
-	by fgw22.mail.saunalahti.fi (Halon) with ESMTP
-	id b77fda6b-697a-11ef-8ecb-005056bdf889;
-	Tue, 03 Sep 2024 01:28:45 +0300 (EEST)
+	by fgw20.mail.saunalahti.fi (Halon) with ESMTP
+	id b05ac0f2-697a-11ef-8e8a-005056bd6ce9;
+	Tue, 03 Sep 2024 01:28:33 +0300 (EEST)
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
 To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
 	David Lechner <dlechner@baylibre.com>,
@@ -36,9 +36,9 @@ Cc: Jiri Kosina <jikos@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v1 21/22] iio: position: hid-sensor-custom-intel-hinge: Get platform data via dev_get_platdata()
-Date: Tue,  3 Sep 2024 01:17:06 +0300
-Message-ID: <20240902222824.1145571-22-andy.shevchenko@gmail.com>
+Subject: [PATCH v1 07/22] iio: dac: ad5504: Get platform data via dev_get_platdata()
+Date: Tue,  3 Sep 2024 01:16:52 +0300
+Message-ID: <20240902222824.1145571-8-andy.shevchenko@gmail.com>
 X-Mailer: git-send-email 2.46.0
 In-Reply-To: <20240902222824.1145571-1-andy.shevchenko@gmail.com>
 References: <20240902222824.1145571-1-andy.shevchenko@gmail.com>
@@ -56,33 +56,22 @@ Access to platform data via dev_get_platdata() getter to make code cleaner.
 
 Signed-off-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/iio/position/hid-sensor-custom-intel-hinge.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/dac/ad5504.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/position/hid-sensor-custom-intel-hinge.c b/drivers/iio/position/hid-sensor-custom-intel-hinge.c
-index 76e173850a35..63a9f2fcada7 100644
---- a/drivers/iio/position/hid-sensor-custom-intel-hinge.c
-+++ b/drivers/iio/position/hid-sensor-custom-intel-hinge.c
-@@ -263,9 +263,9 @@ static int hinge_parse_report(struct platform_device *pdev,
- /* Function to initialize the processing for usage id */
- static int hid_hinge_probe(struct platform_device *pdev)
+diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
+index e6c5be728bb2..305cd58cd257 100644
+--- a/drivers/iio/dac/ad5504.c
++++ b/drivers/iio/dac/ad5504.c
+@@ -270,7 +270,7 @@ static const struct iio_chan_spec ad5504_channels[] = {
+ 
+ static int ad5504_probe(struct spi_device *spi)
  {
-+	struct hid_sensor_hub_device *hsdev = dev_get_platdata(&pdev->dev);
- 	struct hinge_state *st;
+-	struct ad5504_platform_data *pdata = spi->dev.platform_data;
++	const struct ad5504_platform_data *pdata = dev_get_platdata(&spi->dev);
  	struct iio_dev *indio_dev;
--	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
- 	int ret;
- 	int i;
- 
-@@ -344,7 +344,7 @@ static int hid_hinge_probe(struct platform_device *pdev)
- /* Function to deinitialize the processing for usage id */
- static void hid_hinge_remove(struct platform_device *pdev)
- {
--	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-+	struct hid_sensor_hub_device *hsdev = dev_get_platdata(&pdev->dev);
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
- 	struct hinge_state *st = iio_priv(indio_dev);
- 
+ 	struct ad5504_state *st;
+ 	struct regulator *reg;
 -- 
 2.46.0
 
