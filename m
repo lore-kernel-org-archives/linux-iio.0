@@ -1,124 +1,107 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 516DF17F394;
-	Mon,  2 Sep 2024 11:55:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 926EA19E96A;
+	Mon,  2 Sep 2024 12:26:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725278158; cv=none; b=Oa+V/q3vABNHLwa0G5op/cH+QiL6MY+x99rcurbLSZpjE/UFQHObt/EmrKiXo34FgsYCKDoaKEMrN5f67n98bS38a7QAUzA7g5NPPu/VR90Azfh2gpAzxH5TAndEyjPChSzgL11BWG+WOzpLWfpUdwq7H2as1ZW2UAdqPf1g5Tg=
+	t=1725279985; cv=none; b=DTKIdWbw5P6rEPOKxoTmAAoVR1CZJLZeBZszI9IGGOWvZZaWJDWw4KdAzdU1TjhUyUiGKqDVvBuKCnbh6yBmYYPlNikuZy2J6+lPEK1NDAdf2FpoasT2ffcjLvQz/GMjV2zjuTfEG2ArOAEoHIqOV96oRRYOB42K3GZdtLxyGzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725278158; c=relaxed/simple;
-	bh=Y8MfiB7irJCP3K3Jd5maCMcOLA9rDhVRzc4+TXJsPmM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KJQW5TajqmhsDxw0NF+zzeH0UQX32KR5sdxowHO5l1urMuHpPdl0IjmSJhLklmm0wTY5nP4C9lz1gB+dDway+TQ0FQZ6CnenVxKDYT7wbhckxbtmnbAa6oAtbVLSDF/CZ7fSpzk3tux0AZJqTzPEazjt5Z+1ho/fROQQera0wM0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hsH7XqUA; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725279985; c=relaxed/simple;
+	bh=P/WjR7tOoR3+hQJPOsFg0Ba00Xt3tefhUhT4LAM8mno=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=NvS1roZHcjs8BtyN1HYBIYoZeqQcw5Un/efF+HyNKdZq2MDweigjvDrpsku4Pe3lnSr39OZiQNliBHYz6Fll7PH4tVuvWBt5YxkDw/vBbzxTSMwSzYmEKikpbquAhaSFWZYGDt3BFmv1EF3rnfNRntFPoZbmwQw9GxgBTKxmf/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eohobcZm; arc=none smtp.client-ip=209.85.215.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hsH7XqUA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33CCDC4CEC2;
-	Mon,  2 Sep 2024 11:55:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725278158;
-	bh=Y8MfiB7irJCP3K3Jd5maCMcOLA9rDhVRzc4+TXJsPmM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=hsH7XqUALX2lEKVlWS0dVERz5tJO1QBLsYNq9H2WVCi7oTLFsXwvLyVWU1L9JHt1k
-	 WDhcrysj6J+qNaRj7CG/xQHHMOA64VTJFTGyr6kBuIKLNWQBDHxqcvcsmzgkqPtxp7
-	 MpA7nDI6sbNEyuwIlceULxG3sf2y2eG3EL4o+/yReHCqDb5YxLzvFTfpZWIJyz83wW
-	 P9acAnop8tYgCKXI3pBIsYb8/+wyZjxAYghePHKjwOD+2exrM5zNTlebrZSLiGlFUl
-	 IjhF1gFmmZo8zfUVPMS6uuHju7lzzaH6g/PKQUxmK+N/Um4I0emhU5sVbbhZdnlY/v
-	 Z9eYpW/bBeI2Q==
-Date: Mon, 2 Sep 2024 13:55:54 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Alexandru Ardelean <aardelean@baylibre.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, jic23@kernel.org, krzk+dt@kernel.org, robh@kernel.org, 
-	lars@metafoo.de, michael.hennerich@analog.com, gstols@baylibre.com
-Subject: Re: [PATCH v2 7/8] dt-bindings: iio: adc: add adi,ad7606c-{16,18}
- compatible strings
-Message-ID: <rdk2f6c457k462g5v6s5vumdmhejefyfareio5f6bogslg4wg5@ket4vfwwbyi7>
-References: <20240902103638.686039-1-aardelean@baylibre.com>
- <20240902103638.686039-8-aardelean@baylibre.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eohobcZm"
+Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-7ae3d7222d4so3024184a12.3;
+        Mon, 02 Sep 2024 05:26:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1725279983; x=1725884783; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=haxmX6p2lihOUZmyKonHldfMHaTj+zVuxPjiPQTWX8g=;
+        b=eohobcZm63/d9pyNbFXhPUB4sRIJg7N35r9oiNOeGleRlr2DNLpQOStsaFzgNHBT2R
+         Yz8H5Cv0CYFqmAWNhD9/fD5960E38id+YYTr0hT4ff5936GLG+zZdJSuTEwNa1tS5Otw
+         ZxJ7n8wfPVTUSQXJqLBYhtRieEwKID7c3O0VzQVZZ0OvdEDVjBDmC0RPnIWhwJ8N4E9e
+         A9BVhpYn6HJcw3QS2t0cvosYrgLzWHTFtv9wuYnbFPlblm5eyWyeCne1hpDVRdi61Rmx
+         due9NZzHduwxGu77qkbey1R7pkDg3j27irj9S5l//coepLjP9ury2blT+wUgfKZTSecT
+         5CWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725279983; x=1725884783;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=haxmX6p2lihOUZmyKonHldfMHaTj+zVuxPjiPQTWX8g=;
+        b=ZqgLsUNMn1HgP4YZZPqBL+8qzQmf5jCoXU/KyfHNRdsc7fzFieoOhU4oAR9muQe1h4
+         GWLUfBrCDZYZLAoZLHCvFhgndxd0X+sYO+cY71d5/MXJm8vL0J68hj8Gt2I93TZQkF7b
+         m1wXkKqkrL9l+Y0AyvtioeLVRznScMl5ngCM+REgtNOmzvcVVO2O/eJyrub4JvkxqjH3
+         RQu9IWSNadt295ZTcU3Ijoc/W+Rvghq1ynKQsmq/jaZts5U+eHHQpLgOswl66oHv44cC
+         6qpbogu01O43Ma536HscJmVOarxdJxnBTAsiHkEib/c/bOJYQF2cvhpuO/7XbJigRS18
+         gwyg==
+X-Forwarded-Encrypted: i=1; AJvYcCUPLSe6wI34ovYSUwNRHpomJLGuD/x+5ySTt16ap1Z9JwOwt26ClT6QXfqUapgBv53JYHKAJBER4l006RU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxE5jXiPwXGErnMVqp3d5BdRF8L+58u+Ypr+mn7n2+xRlW5e/X9
+	HMJKmeVdgmQirT+gDll4FSTWXwdeOh2Ga0Ormgw1tB+981476v++myny0QlK
+X-Google-Smtp-Source: AGHT+IEzcv+DtNMVjJ9tluJLyVguZAE+5FHX3jNXHRduPWhsTYVNdkHtaJLgQkPo+wLxH1y2SxdvkQ==
+X-Received: by 2002:a05:6a21:710a:b0:1cc:eaa4:5e49 with SMTP id adf61e73a8af0-1cceaa4608fmr13976771637.26.1725279983253;
+        Mon, 02 Sep 2024 05:26:23 -0700 (PDT)
+Received: from abhash-IdeaPad-L340-15IRH-Gaming.. ([136.233.9.100])
+        by smtp.googlemail.com with ESMTPSA id d2e1a72fcca58-715e575b7dfsm6789541b3a.190.2024.09.02.05.26.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Sep 2024 05:26:22 -0700 (PDT)
+From: Abhash Jha <abhashkumarjha123@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: songqiang1304521@gmail.com,
+	jic23@kernel.org,
+	lars@metafoo.de,
+	linux-kernel@vger.kernel.org,
+	Abhash Jha <abhashkumarjha123@gmail.com>
+Subject: [PATCH v2 0/2] Continuous mode support for VL53l0x
+Date: Mon,  2 Sep 2024 17:55:54 +0530
+Message-ID: <20240902122557.129013-1-abhashkumarjha123@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20240902103638.686039-8-aardelean@baylibre.com>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Sep 02, 2024 at 01:36:30PM +0300, Alexandru Ardelean wrote:
->    reg:
-> @@ -114,6 +118,25 @@ properties:
->        assumed that the pins are hardwired to VDD.
->      type: boolean
->  
-> +patternProperties:
-> +  "^channel@([0-7])$":
-> +    type: object
-> +    $ref: adc.yaml
-> +    unevaluatedProperties: false
-> +
-> +    properties:
-> +      reg:
-> +        description: The channel number.
-> +        minimum: 0
-> +        maximum: 7
-> +
-> +      diff-channels: true
+Hello,
 
-Shouldn't this be specific?
+The first patch adds support for checking the sensor ID by reading
+MODEL_IDENTIFICATION register and seeing if it returns the value 0xEE
 
-> +
-> +      bipolar: true
-> +
-> +    required:
-> +      - reg
-> +
->  required:
->    - compatible
->    - reg
-> @@ -202,4 +225,44 @@ examples:
->              standby-gpios = <&gpio 24 GPIO_ACTIVE_LOW>;
->          };
->      };
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        adc@0 {
-> +            compatible = "adi,ad7606c-18";
-> +            reg = <0>;
-> +            spi-max-frequency = <1000000>;
-> +            spi-cpol;
-> +            spi-cpha;
-> +
-> +            avcc-supply = <&adc_vref>;
-> +            vdrive-supply = <&vdd_supply>;
-> +
-> +            interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
-> +            interrupt-parent = <&gpio>;
-> +
-> +            adi,conversion-start-gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
-> +
-> +            adi,conversion-start-gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
-> +            reset-gpios = <&gpio 27 GPIO_ACTIVE_HIGH>;
-> +            adi,first-data-gpios = <&gpio 22 GPIO_ACTIVE_HIGH>;
-> +            standby-gpios = <&gpio 24 GPIO_ACTIVE_LOW>;
-> +
-> +            adi,sw-mode;
-> +
-> +            channel@1 {
-> +                reg = <1>;
-> +                diff-channel;
+The second patch adds support for continuous mode in the sensor by using
+buffers. We enable the sensor's continuous mode in the buffer_postenable
+function.
+Replaced the irq handler with a threaded irq handler in order to perform
+I2C reads for the data. The continuous mode can be disabled by disabling
+the buffer.
+Added a trigger to the device for the continuous mode. Also validating that
+the device uses the internal trigger provided by us.
 
-Where is this property defined (which schema)?
+Changes in v2:
+- Added a trigger for the device
+- Added a poll function for the triggered buffer setup
+- Performed the data reading and pushing to buffers in the poll function
+- Minor code refactoring
 
-Did you test it?
+- Link to v1: https://lore.kernel.org/linux-iio/20240830201627.298264-1-abhashkumarjha123@gmail.com/T/#t
 
-Best regards,
-Krzysztof
+Regards,
+Abhash
+
+
+Abhash Jha (2):
+  iio: proximity: vl53l0x-i2c: Added sensor ID check
+  iio: proximity: vl53l0x-i2c: Added continuous mode support
+
+ drivers/iio/proximity/vl53l0x-i2c.c | 175 +++++++++++++++++++++++-----
+ 1 file changed, 148 insertions(+), 27 deletions(-)
+
+-- 
+2.43.0
 
