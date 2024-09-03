@@ -1,96 +1,55 @@
-Received: from cmccmta1.chinamobile.com (cmccmta6.chinamobile.com [111.22.67.139])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A5CC1C766C;
-	Tue,  3 Sep 2024 09:23:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.22.67.139
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96BAE1A0BD1
+	for <linux-iio@vger.kernel.org>; Tue,  3 Sep 2024 10:23:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725355400; cv=none; b=nX+M80tudCa9ZFdu45WECHKdqSGCITsLU/0pIBsUJMVHNoCMw2o0BLkoKs6JsqnfDkAOkiW68A/s0EzdMfZYzCPjJ7VSX6+1PuDaVLqhDHLgRNrCX8nujvdJSK+9bm7bBr4WhM40ejNW5MeRwhMSHw+jILhNDIdKOjjSogkaziM=
+	t=1725358990; cv=none; b=LPlLYTKvCrnQH1UcqZdEvwBIBQe+kzGY8+9vlDQ6bZrTiQPutW2Z+GioKhxYrF+rJ4fz+aOO6RuD0q47jbEZn+5ugFmPXzgzyQSrH2yp8q+IasnB11YD6P+xrKnRNjbzRZwbjTEWPbD5D5k+7TIJzq3rBH4svkFqtEa2FmbNYYw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725355400; c=relaxed/simple;
-	bh=k52wpp4TMmcpmmwWLIORRMJMFGgGL58X2X5Kb0FYbPE=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=eBLWTjK85OpipPJmLFGDA58st+oW8drmp42HEWZD/3HXQYTOQDcekaK27UBG+cmSsYJtJfuMjapWxSHsNa3Lf7aVkBw2NeWzzMkHW0RNdbPiO77x8WxLokT+Wp0Rfgy1RTwkgFiD6f0bff//aMoshcYX55MSKfOwto+Nl+Zj/2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com; spf=pass smtp.mailfrom=cmss.chinamobile.com; arc=none smtp.client-ip=111.22.67.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app01-12001 (RichMail) with SMTP id 2ee166d6d5810c3-ab9c5;
-	Tue, 03 Sep 2024 17:23:15 +0800 (CST)
-X-RM-TRANSID:2ee166d6d5810c3-ab9c5
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from localhost.localdomain (unknown[223.108.79.97])
-	by rmsmtp-syy-appsvr06-12006 (RichMail) with SMTP id 2ee666d6d582534-df3f4;
-	Tue, 03 Sep 2024 17:23:14 +0800 (CST)
-X-RM-TRANSID:2ee666d6d582534-df3f4
-From: zhangjiao2 <zhangjiao2@cmss.chinamobile.com>
-To: wbg@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	zhang jiao <zhangjiao2@cmss.chinamobile.com>
-Subject: [PATCH] tools/counter: close fd when exit
-Date: Tue,  3 Sep 2024 16:01:21 +0800
-Message-Id: <20240903080121.5294-1-zhangjiao2@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.33.0
+	s=arc-20240116; t=1725358990; c=relaxed/simple;
+	bh=GOx4kShMlxhwYK3tSSnd14tWFYG6U//vzwGBggPXksg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NLbtjo4z7OrmjFp/8KTljI870PmvZHOwz45dXIU3Oj+4WoHo0wJT/Gf2Jmh0dECFAotRzhRfM9LvipcUmFDMZ4lcGvZYJbk9+gpWNdzpfxNNgbMAFVmzOzCvnmJDPVPCwh70bTfoyBecSgKYONDdQn9J2L2Om/uqeZkzBoFK6DA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=gq15TpoR; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="gq15TpoR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6B38C4CEC4;
+	Tue,  3 Sep 2024 10:23:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1725358990;
+	bh=GOx4kShMlxhwYK3tSSnd14tWFYG6U//vzwGBggPXksg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=gq15TpoRppFcbYA8Xsiecb5QBYNDpWP6jexOWByeiWZjqQYEfbAnSeHGrK+HjKcq9
+	 w/Y+C8GmVyBA9FcFz8yvZiM1Mab3xLT4Dh4TSZAY33GujlJgA2mNnxfTGPBYNAKKch
+	 PAIfkUluOQCXu4mkHoQpQ0RQX565Qww0MEfAAcog=
+Date: Tue, 3 Sep 2024 12:00:12 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Subject: Re: [PULL] IIO: 1st set of New device support features and cleanup
+ for 6.12
+Message-ID: <2024090304-handheld-evergreen-4f0e@gregkh>
+References: <20240822194412.2b0f179e@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240822194412.2b0f179e@jic23-huawei>
 
-From: zhang jiao <zhangjiao2@cmss.chinamobile.com>
+On Thu, Aug 22, 2024 at 07:44:12PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 8400291e289ee6b2bf9779ff1c83a291501f017b:
+> 
+>   Linux 6.11-rc1 (2024-07-28 14:19:55 -0700)
+> 
+> are available in the Git repository at:
+> 
+>   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-6.12a
 
-close fd when exit the program
+Pulled and pushed out, thanks.
 
-Signed-off-by: zhang jiao <zhangjiao2@cmss.chinamobile.com>
----
- tools/counter/counter_example.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/tools/counter/counter_example.c b/tools/counter/counter_example.c
-index be55287b950f..37569208c235 100644
---- a/tools/counter/counter_example.c
-+++ b/tools/counter/counter_example.c
-@@ -57,12 +57,14 @@ int main(void)
- 		if (ret == -1) {
- 			fprintf(stderr, "Error adding watches[%d]: %s\n", i,
- 				strerror(errno));
-+			close(fd);
- 			return 1;
- 		}
- 	}
- 	ret = ioctl(fd, COUNTER_ENABLE_EVENTS_IOCTL);
- 	if (ret == -1) {
- 		perror("Error enabling events");
-+		close(fd);
- 		return 1;
- 	}
- 
-@@ -70,11 +72,13 @@ int main(void)
- 		ret = read(fd, event_data, sizeof(event_data));
- 		if (ret == -1) {
- 			perror("Failed to read event data");
-+			close(fd);
- 			return 1;
- 		}
- 
- 		if (ret != sizeof(event_data)) {
- 			fprintf(stderr, "Failed to read event data\n");
-+			close(fd);
- 			return -EIO;
- 		}
- 
-@@ -88,5 +92,6 @@ int main(void)
- 		       strerror(event_data[1].status));
- 	}
- 
-+	close(fd);
- 	return 0;
- }
--- 
-2.33.0
-
-
-
+greg k-h
