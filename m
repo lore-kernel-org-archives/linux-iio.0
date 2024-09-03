@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA8FE13DB92;
-	Tue,  3 Sep 2024 21:29:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42339197A67;
+	Tue,  3 Sep 2024 21:29:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725398975; cv=none; b=B6AfeVVcgAi0NZqnc7YZYcIfpmI1PrnO3+If1MagYqL2iEQy5TOA9wIbZzh+svQ1YbU1bWxaKZ+rqfsT6l5VlQVmXXyV78IWvwx5K1IAQhlklyzKMB7cbk4Um5U4G2fML2jgo2DqIuLS2NR1W4gLIqyQO13j8z/EZARXievG25U=
+	t=1725398977; cv=none; b=Cm7jghVgrzO3YScidOewR57Lc0wH5jBJdS2QU/fb19gQeVmy4i9a9Nkln9o3DQXTJbETRDtGVg2rgvDMs6Bepn2jBJT/SV7dVQBtVmEsROUp0ZSTp9jfZelmcfXNDuHoEnByQgllaMBhfQT6nJ5g7sH3+NvEWNP4Vxy91ChgSp8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725398975; c=relaxed/simple;
-	bh=RzBWo5I47sYPIU+Mwh9SA+bbgDpT7ljQ4ejQ2FXfWLE=;
+	s=arc-20240116; t=1725398977; c=relaxed/simple;
+	bh=ajPdL3zT44Mb1wkT/fu2AjjJ6krZ4DWIeQlZ9MsHEkQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=YGaUKeTlrhDgxXeoLl+6zh68yRBnq0xqVrGj7Cqb5VZQJ3bwTkufPRq/A2DX+ljtZr6bLjs1Y+xnRPauXA6iYzI7EnG0nn5udhcL5CUhfrnod3BcVThuY4aaX0zCXx8myiZTRqm4A48MCTKNMF5Y3FlwcI20gB5e9UvnJ+3sYhw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=M9dCvAk1; arc=none smtp.client-ip=198.175.65.9
+	 MIME-Version; b=VaGtXmB8nXdEFPr3Mz1dEbXot+Tke7j1ov+ck1UXJ6m6ZrGXi0BsFudIN/OtzdEluqZ/NsFzatccd2d2FyMK/8y008QrxHI/SuItmFFdyqsfrUPCaqeqRxXYux2UaM6wKtOLYAaVfZ78eXB3vgCWHW0JKtD2mjptGYgnyv0U5do=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h3bTyG1q; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="M9dCvAk1"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h3bTyG1q"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725398974; x=1756934974;
+  t=1725398977; x=1756934977;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RzBWo5I47sYPIU+Mwh9SA+bbgDpT7ljQ4ejQ2FXfWLE=;
-  b=M9dCvAk164yHh32Y0K/zek2zqGV6RJW1VZSsOzQbguH5fngtnyFJggTN
-   xNYM+wnx7qDV7st2zf3O1xTedq639lI4vc/b7zWDa1RpIuF5io6iOSuf2
-   OeqZnzboBatbOGFDRoRvxRNCCpe1qZJHr1Qn4srqM3Vl0+XwNaYuLSunU
-   vUTdsdHz+hrNGwPcFAAzBjGYutZcoXk3saYLxaYf27NdS8RzMtGxP8Lkl
-   Q/mh4eeWNgKwW/QA1OpkVoc228hJfOcnHpl+SN55EJI0OwfzX/LQWRbxW
-   ksuna85SFFyLcYdgsnpE41InGdTBfBfFLZ9F/sPOG2rclAtsCP2EQt9PQ
-   A==;
-X-CSE-ConnectionGUID: /lAQ3/jES/OrPyXTgKDI9w==
-X-CSE-MsgGUID: WlBxq9G+T7ej5IWlKizCYw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11184"; a="46554422"
+  bh=ajPdL3zT44Mb1wkT/fu2AjjJ6krZ4DWIeQlZ9MsHEkQ=;
+  b=h3bTyG1qPHEFn5ztzwOyvJiZbrwxyWjkPywEqnniH/k6Y4UuxfGTHxh/
+   LxoCEVgD37ceNlAxTKV7FcXEA0iArcgZ9LkG0sWr0CTl5ctwBn/N9yzo9
+   rh73cIWLe187VveWAr+NgMspqMB55EK0rF6bHSLQsigrEWy6oMOmmPU4z
+   4ZIxqtqGTWENmiHDNz0MU52LsbKSf8V9WtPtoEgvXn1y8Gdea+Eu/HRWW
+   8PXhWofJhdxqzW8tOtziTDlMBpiJZA9oEAY8rXcZMf9AXg3RYVq7auu96
+   jZUk34+taMGmcpSrWnhgo5cgzOirGO2cUNDj1bXc+mh/RMatlJEK5nUeJ
+   w==;
+X-CSE-ConnectionGUID: 7LeeOghHTSy/YXOdAJGQug==
+X-CSE-MsgGUID: VW05yyJCRXiHsqzy+NjwCQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11184"; a="46554428"
 X-IronPort-AV: E=Sophos;i="6.10,199,1719903600"; 
-   d="scan'208";a="46554422"
+   d="scan'208";a="46554428"
 Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2024 14:29:34 -0700
-X-CSE-ConnectionGUID: YeeJv4UYSji2B4ua+Gsflw==
-X-CSE-MsgGUID: KrWvWV/RQBy7cpBOkeNfzg==
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2024 14:29:37 -0700
+X-CSE-ConnectionGUID: zq/GWJZSTFyIkkvkDuUv8g==
+X-CSE-MsgGUID: 1VM+E7nQSp6WCVpvKV6FWg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,199,1719903600"; 
-   d="scan'208";a="95781598"
+   d="scan'208";a="95781600"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa002.jf.intel.com with ESMTP; 03 Sep 2024 14:29:32 -0700
+  by orviesa002.jf.intel.com with ESMTP; 03 Sep 2024 14:29:35 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 1D09B3C1; Wed, 04 Sep 2024 00:29:30 +0300 (EEST)
+	id 5D6B9AF3; Wed, 04 Sep 2024 00:29:33 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
@@ -52,9 +52,9 @@ To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-kernel@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v1 1/3] iio: imu: fxos8700: Drop unused acpi.h
-Date: Wed,  4 Sep 2024 00:28:20 +0300
-Message-ID: <20240903212922.3731221-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 3/3] iio: proximity: sx_common: Drop unused acpi.h
+Date: Wed,  4 Sep 2024 00:28:22 +0300
+Message-ID: <20240903212922.3731221-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
 In-Reply-To: <20240903212922.3731221-1-andriy.shevchenko@linux.intel.com>
 References: <20240903212922.3731221-1-andriy.shevchenko@linux.intel.com>
@@ -70,21 +70,34 @@ There are drivers that do not need acpi.h, drop unused inclusion.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/imu/fxos8700_core.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/iio/proximity/sx9360.c    | 1 -
+ drivers/iio/proximity/sx_common.h | 1 -
+ 2 files changed, 2 deletions(-)
 
-diff --git a/drivers/iio/imu/fxos8700_core.c b/drivers/iio/imu/fxos8700_core.c
-index 6d189c4b9ff9..281ebfd9c15a 100644
---- a/drivers/iio/imu/fxos8700_core.c
-+++ b/drivers/iio/imu/fxos8700_core.c
-@@ -8,7 +8,6 @@
+diff --git a/drivers/iio/proximity/sx9360.c b/drivers/iio/proximity/sx9360.c
+index 2b90bf45a201..07551e0decbd 100644
+--- a/drivers/iio/proximity/sx9360.c
++++ b/drivers/iio/proximity/sx9360.c
+@@ -7,7 +7,6 @@
+  * https://edit.wpgdadawant.com/uploads/news_file/program/2019/30184/tech_files/program_30184_suggest_other_file.pdf
   */
- #include <linux/module.h>
- #include <linux/regmap.h>
--#include <linux/acpi.h>
- #include <linux/bitops.h>
- #include <linux/bitfield.h>
  
+-#include <linux/acpi.h>
+ #include <linux/bits.h>
+ #include <linux/bitfield.h>
+ #include <linux/delay.h>
+diff --git a/drivers/iio/proximity/sx_common.h b/drivers/iio/proximity/sx_common.h
+index 175505eaae7b..da53268201a9 100644
+--- a/drivers/iio/proximity/sx_common.h
++++ b/drivers/iio/proximity/sx_common.h
+@@ -8,7 +8,6 @@
+ #ifndef IIO_SX_COMMON_H
+ #define IIO_SX_COMMON_H
+ 
+-#include <linux/acpi.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/types.h>
+ #include <linux/regulator/consumer.h>
 -- 
 2.43.0.rc1.1336.g36b5255a03ac
 
