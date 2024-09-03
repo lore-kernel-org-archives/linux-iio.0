@@ -1,111 +1,96 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93E05200116;
-	Tue,  3 Sep 2024 08:36:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+Received: from cmccmta1.chinamobile.com (cmccmta6.chinamobile.com [111.22.67.139])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A5CC1C766C;
+	Tue,  3 Sep 2024 09:23:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.22.67.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725352579; cv=none; b=OaYb9oFZILIFaX9OfRoewoDZITwvbTlrIfKMh+5aUUu0kpT5HHrilmthR09ig+ShtZdFqRK3+qLeNazutVdSBs6TJTQmR/smnuI/TRYrE+BhzQiUOTUwcQzlbLh2I+nqriGBKSlUyCNMsNmEZEfM4QMHpd+6T6E49w+9GXk/+to=
+	t=1725355400; cv=none; b=nX+M80tudCa9ZFdu45WECHKdqSGCITsLU/0pIBsUJMVHNoCMw2o0BLkoKs6JsqnfDkAOkiW68A/s0EzdMfZYzCPjJ7VSX6+1PuDaVLqhDHLgRNrCX8nujvdJSK+9bm7bBr4WhM40ejNW5MeRwhMSHw+jILhNDIdKOjjSogkaziM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725352579; c=relaxed/simple;
-	bh=2+C1JwNOInUIAA1rNB1sOdcsewGTgxK0O8vupNv4API=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=N+gWthCnyozknq8j7c0DDCEwidio5bqQvck2uMSUCuzmOmk5orJsXcmYMmgxgiq56wUmoDeJlWjXGymM7JR9/qzADDJ1975Ljdabl22jh+AdCaZreZ+CxeS4NsHJ76X/NeaJ3DSSZmCITrSBRVAmrBYupjBZFMSktbLjjo2H7l0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=Huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=Huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.231])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Wyf491JC8z6K603;
-	Tue,  3 Sep 2024 16:31:53 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
-	by mail.maildlp.com (Postfix) with ESMTPS id B6E84140B55;
-	Tue,  3 Sep 2024 16:36:13 +0800 (CST)
-Received: from localhost (10.203.177.66) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Tue, 3 Sep
- 2024 09:36:13 +0100
-Date: Tue, 3 Sep 2024 09:36:11 +0100
-From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To: <wangshuaijie@awinic.com>
-CC: <jic23@kernel.org>, <conor+dt@kernel.org>, <devicetree@vger.kernel.org>,
-	<gustavoars@kernel.org>, <kangjiajun@awinic.com>, <kees@kernel.org>,
-	<krzk+dt@kernel.org>, <lars@metafoo.de>, <linux-hardening@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<liweilei@awinic.com>, <robh@kernel.org>
-Subject: Re: [PATCH V9 0/2] Add support for aw96103/aw96105 proximity sensor
-Message-ID: <20240903093611.0000637f@Huawei.com>
-In-Reply-To: <20240903060304.910863-1-wangshuaijie@awinic.com>
-References: <20240831150724.201e7d73@jic23-huawei>
-	<20240903060304.910863-1-wangshuaijie@awinic.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
+	s=arc-20240116; t=1725355400; c=relaxed/simple;
+	bh=k52wpp4TMmcpmmwWLIORRMJMFGgGL58X2X5Kb0FYbPE=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=eBLWTjK85OpipPJmLFGDA58st+oW8drmp42HEWZD/3HXQYTOQDcekaK27UBG+cmSsYJtJfuMjapWxSHsNa3Lf7aVkBw2NeWzzMkHW0RNdbPiO77x8WxLokT+Wp0Rfgy1RTwkgFiD6f0bff//aMoshcYX55MSKfOwto+Nl+Zj/2o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com; spf=pass smtp.mailfrom=cmss.chinamobile.com; arc=none smtp.client-ip=111.22.67.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app01-12001 (RichMail) with SMTP id 2ee166d6d5810c3-ab9c5;
+	Tue, 03 Sep 2024 17:23:15 +0800 (CST)
+X-RM-TRANSID:2ee166d6d5810c3-ab9c5
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from localhost.localdomain (unknown[223.108.79.97])
+	by rmsmtp-syy-appsvr06-12006 (RichMail) with SMTP id 2ee666d6d582534-df3f4;
+	Tue, 03 Sep 2024 17:23:14 +0800 (CST)
+X-RM-TRANSID:2ee666d6d582534-df3f4
+From: zhangjiao2 <zhangjiao2@cmss.chinamobile.com>
+To: wbg@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	zhang jiao <zhangjiao2@cmss.chinamobile.com>
+Subject: [PATCH] tools/counter: close fd when exit
+Date: Tue,  3 Sep 2024 16:01:21 +0800
+Message-Id: <20240903080121.5294-1-zhangjiao2@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.33.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: lhrpeml100003.china.huawei.com (7.191.160.210) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
+Content-Transfer-Encoding: 8bit
 
-On Tue, 3 Sep 2024 06:03:04 +0000
-<wangshuaijie@awinic.com> wrote:
+From: zhang jiao <zhangjiao2@cmss.chinamobile.com>
 
-> On Sat, 31 Aug 2024 15:07:24 +0100, jic23@kernel.org wrote:
-> >On Tue, 27 Aug 2024 08:02:27 +0000
-> >wangshuaijie@awinic.com wrote:
-> >  
-> >> From: shuaijie wang <wangshuaijie@awinic.com>
-> >> 
-> >> Add drivers that support Awinic aw96103/aw96105 proximity sensors.
-> >> 
-> >> The aw9610x series are high-sensitivity capacitive proximity detection
-> >> sensors. This device detects human proximity and assists electronic devices
-> >> in reducing specific absorption rate (SAR) to pass SAR related certifications.
-> >> The device reduces RF power and reduces harm when detecting human proximity. 
-> >> Increase power and improve signal quality when the human body is far away.
-> >> 
-> >> The specific absorption rate (SAR) is a metric that measures the degree of
-> >> absorption of electromagnetic radiation emitted by wireless devices,
-> >> such as mobile phones and tablets, by human tissue.
-> >> 
-> >> This patch implements device initialization, registration,
-> >> I/O operation handling and interrupt handling, and passed basic testing.  
-> >I made one trivial tweak to add static to the iio_info declaration and
-> >applied to the togreg branch of iio.git, initially pushed out as testing
-> >for 0-day to see if it can find any issues we missed.
-> >
-> >Thanks,
-> >
-> >Jonathan  
-> 
-> Hi Jonathan,
-> 
-> Thank you very much for your help and suggestions, which have been very
-> beneficial to me. May I ask if I need to continue modifying my patch?
-> If not, please inform me of the approximate time for review and merging.
+close fd when exit the program
 
-It's already merged.
-https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=testing&id=a369e1d1a10790f63b4b858dc74b53730146754f
+Signed-off-by: zhang jiao <zhangjiao2@cmss.chinamobile.com>
+---
+ tools/counter/counter_example.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-That will be tested by the autobuilders + I need to rebase the whole
-tree on char-misc once Greg (hopefully) takes a pull request that is outstanding.
+diff --git a/tools/counter/counter_example.c b/tools/counter/counter_example.c
+index be55287b950f..37569208c235 100644
+--- a/tools/counter/counter_example.c
++++ b/tools/counter/counter_example.c
+@@ -57,12 +57,14 @@ int main(void)
+ 		if (ret == -1) {
+ 			fprintf(stderr, "Error adding watches[%d]: %s\n", i,
+ 				strerror(errno));
++			close(fd);
+ 			return 1;
+ 		}
+ 	}
+ 	ret = ioctl(fd, COUNTER_ENABLE_EVENTS_IOCTL);
+ 	if (ret == -1) {
+ 		perror("Error enabling events");
++		close(fd);
+ 		return 1;
+ 	}
+ 
+@@ -70,11 +72,13 @@ int main(void)
+ 		ret = read(fd, event_data, sizeof(event_data));
+ 		if (ret == -1) {
+ 			perror("Failed to read event data");
++			close(fd);
+ 			return 1;
+ 		}
+ 
+ 		if (ret != sizeof(event_data)) {
+ 			fprintf(stderr, "Failed to read event data\n");
++			close(fd);
+ 			return -EIO;
+ 		}
+ 
+@@ -88,5 +92,6 @@ int main(void)
+ 		       strerror(event_data[1].status));
+ 	}
+ 
++	close(fd);
+ 	return 0;
+ }
+-- 
+2.33.0
 
-That isn't relevant for your patch, but there is some other work queued
-up that has dependencies on fixes that went upstream quicker.
 
-This 'should' make the coming merge window so should be in v6.12 in
-about 3 months time.  You can develop additional features on top of it
-now but they are unlikely to make the 6.12 cycle as there is only about
-a week left.
-
-Jonathan
-
-> 
-> I look forward to your reply so that I can better plan my subsequent work.
-> 
-> Kind regards,
-> Wang Shuaijie
 
