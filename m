@@ -1,153 +1,117 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CBB3146A7A
-	for <linux-iio@vger.kernel.org>; Wed,  4 Sep 2024 07:58:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7703A189911;
+	Wed,  4 Sep 2024 09:20:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725436742; cv=none; b=tVCcc4qPgiAxvHSQ2E/6BGV6jyKT5y9VMWbXu6rM5d0AFZW7FEkXj3hJFk+hLwWjcfVNBEF5DXDzOncII5hgHOcOCAlW5+kChktuJps+yPTHZVCnABVSqB9hupefxLlaQljmi78mKUTkHshLaqcNRKoNGtjvmc+xuxG9QO3XqdA=
+	t=1725441601; cv=none; b=ZcxrIDAfHwglSZpJvSVWJWuiT33dlc5EhxDerKrVLitTP6OaLlS1VSm7MRf4SEh1irLrjfpuBsA9HUoVoDhC5nQcGCYMCj/z6uDlZGCfZ4G/L/sLzfPGanS/ps0nYjmzspdMSJHuJ0DlnTcPgGQ6lxBpgJAanfo5oiz1ktkn2jQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725436742; c=relaxed/simple;
-	bh=c2jAvJRISFmKTJLAivo6CZeVFTI+zZ70Yr/35SjCgB0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cXcUjryiVhCsvtTqLs/mIQYPJweIBrkoGdmJRnPrutH8/Nr7MQps8xxuXlJP9vOdPG87K2G3p2J8ui89OKxOaW/qbjei8l3G/hDc8zfObxqXe6d3pF7yo9KaZsTxUMx9XRyXuocBBWzMhx08WHPEilLCLsPpZY2cWUwG3e/EWtI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=OWJVwDHn; arc=none smtp.client-ip=209.85.218.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1725441601; c=relaxed/simple;
+	bh=6razxB3XTRNpTtjx5k2asc6Vi4m/sy8jDxjHmpj8T+M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Iqxywc4tsANj8YEvi275ldzQY04bNtQGrxpOBkS1a1GKK0WQZK0ASUV9Ki+DWRw51082TprBpEPOM6rKiTf2vmLxUWwXLIzv8rLTJGlKLdgHaxllLTvPoCV2jwDWPY8R3o9lffW7MIonx2J0NOB6HFJdRyUzDLeQi+iq0lKKl3w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WP+udyLc; arc=none smtp.client-ip=209.85.210.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="OWJVwDHn"
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a86e5e9ff05so723304166b.1
-        for <linux-iio@vger.kernel.org>; Wed, 04 Sep 2024 00:58:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WP+udyLc"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-71446767885so808453b3a.1;
+        Wed, 04 Sep 2024 02:20:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1725436738; x=1726041538; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=o38ll/1shPkcH2c9qDR658TMHisQqMl2xPlWoUMdupM=;
-        b=OWJVwDHnMvMCmaRJW7HdKr2jeHfY8//F0rB92qh1tL5zV2KubY62VlnZh43eMojbC1
-         e/ibN1Ky5R35wpXUkrpNi5z38Is8EIm3QkUbLFknEWTf0DZMYgoZKaqpw6sHpNNnVRiZ
-         ewhuwAXtlOEXZJ8hHjvxkB3YyuBPEtJe+DrhYKlJmmYzSC8A9LTu++Aw7tFOorLvSQXP
-         TqKcPddE2278eDMlkRkuUKO1RZlgEmTfw/dfrpWStHKZ+SdxMjd8P/y45pf8EhGOYi1i
-         ltCWJHrwRU8UVnC2VTxFYHkwFsX0zxUGyxH6oyRjCy0eMpGEUQxDPjFtugNMxzraACoA
-         GX+Q==
+        d=gmail.com; s=20230601; t=1725441600; x=1726046400; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=OxhuHC0JvOevWNQu8AZfhKCuLUtBcUPOpy8EHD7yMss=;
+        b=WP+udyLc0+SxFZ0GWLpDzczZW8hXbwWl0ifW6nXFN3nsUTHMkDPC/N9q82X3/mpoHe
+         F1MvqGNApa/Ftiq6M4D/RmtiNuWp4sSekp+cZ9F4PHNyCsNrqf0u+G99YoLWjcrIJUsg
+         umEs8nwBNm+Ia4PlugGxN/RDByg/g1ltyNOQAwX6OB1BrTg18neXPwgzVnI7/07mAbb/
+         6CKyKx7YrHiaeTwQXQmrqDSPP8aN8pJAa8eCyR580pqYiJqateO55D71lQxXIrGensaE
+         W56MxOn0WIUP6XNhR/iibj4agVR9j8ztjj4Jp+ZIjns4vkzxakMfkmJ7YERmpdp8Ns5y
+         KzGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725436738; x=1726041538;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=o38ll/1shPkcH2c9qDR658TMHisQqMl2xPlWoUMdupM=;
-        b=KoThAXFuP7hB9BDNY6lHV5MDpXQrldzkH++4s3GT5SCiXpVuzSObyEmveFx2JgcDg8
-         Agtzh6E+uHfWZWw6rr9njzH9m2hNYMf+/K4Mz2Mfc6A2FXpRwEgenE4uWLD4b+ywxJho
-         r68kUYkqtLa2QNyQmUYqZbqPS7U/Mcmlu4rXw8KDF8iiyqr6gdIwi5DaJrqYWh00qzme
-         C+gUMnuVE/lmwyUg9/t74ztzd9Mb0YdvgRelX5jWA9MU5AQlE/T+2g1bsRfbB45l8EYY
-         hQ7bkxKSTkUEOEzYhmQ+AiRXVQXmsVoC5pkwnjH/zR4SepsSFmBdK0k4y2HzwGnqs7ra
-         J4CQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVvR7JjoKrNzeE3T9D2tDMv5V2oaRm6wwerEPpXohYDffDKcLkqZKhGh4v+7mWBkb35wsPI4Tp3D4w=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxTvkIElKsWld51wKRc7B6JSN9O0QpAVmRV6DdECobVdEl0AMkD
-	ObqXyIXYZmUeNDXNgIQX0n35sBiyvDqGHVqmsnOFCi7Ak9nd1nKm0puvrHvf2KE=
-X-Google-Smtp-Source: AGHT+IHbXWBNh7i4cmQrik4TDTg1G8pCMakv2oa+Dk+9s51s/80FIoXVDzhEC95r4WGClTNuCsuPdA==
-X-Received: by 2002:a17:907:97d1:b0:a86:bb5f:ebbd with SMTP id a640c23a62f3a-a8a32fe029cmr183723666b.63.1725436737475;
-        Wed, 04 Sep 2024 00:58:57 -0700 (PDT)
-Received: from localhost (p5dc68f76.dip0.t-ipconnect.de. [93.198.143.118])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a89892232c7sm768623066b.222.2024.09.04.00.58.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Sep 2024 00:58:56 -0700 (PDT)
-Date: Wed, 4 Sep 2024 09:58:55 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Trevor Gamblin <tgamblin@baylibre.com>
-Cc: kernel test robot <lkp@intel.com>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	David Lechner <dlechner@baylibre.com>, oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] iio: adc: ad7625: add driver
-Message-ID: <mgsig2v65adwgfhofxk3snfbtibgjfeiqqj4iw5r2aquak22ve@3ssolag3ousl>
-References: <20240819-ad7625_r1-v3-2-75d5217c76b5@baylibre.com>
- <202408201520.lFtco3eF-lkp@intel.com>
- <7658aca4-a408-480c-98b6-4637bb86b5ad@baylibre.com>
+        d=1e100.net; s=20230601; t=1725441600; x=1726046400;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=OxhuHC0JvOevWNQu8AZfhKCuLUtBcUPOpy8EHD7yMss=;
+        b=b7c7FiRoF9YxVXdrsRPksPKaFoaMJbB6e/qXUF6JGu8YMt+VqbSuazt9zOMoIhTWaK
+         s+z5jzt2xAOfd3NTrBBXiBTEvS71UBWqZT7z2PLUOmkv1giBnjc7IC3U4uQbdnxzLFmn
+         2xWZkOfighwAJMV5x/hct8PuDpVX+RLud10CzoRpUh6+UaR1h7O9f90d7+zJ/KnuiCcl
+         PBBQjnPLgF26639/KiKAbLzTX1gQ514AclcZPzRHRt0c9RD24XiKuJzgI1UEPCgWINdt
+         iIuyzLDf20k7GLSz1DbfmTILYoSBX9Pz5rYF9pD3Cb38irOkU5D1qMBIpFD6aiD6sJHe
+         ItNw==
+X-Forwarded-Encrypted: i=1; AJvYcCU/pfMsqXguh2R+SAQ76+mCxWHrpss+2lNEBpfAtqL9EzA4ngXz0MeDwky/YgZYqdCxb3cW6v6g2hq2PQol@vger.kernel.org, AJvYcCWBXz5tb5ZIm0N1WqgtTpGlIqGLi1ysLGkROCZuh/KyNAZ4S3DGG62zy9fdMj7qny0JDyz0AjQvN8k=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxOy5bj04mQPhRWyIXjtc/k7MNGRKk4ir1GLFt/OOnifex/I7J4
+	bKAnLf0CZsmjIJgG7tLz+fZceORgVUf9y2uDR4L+1mqnh9zj8nec
+X-Google-Smtp-Source: AGHT+IG5r6LxxwSLcNuPIJYghUjnmKjDnBlTWOs1dfy7rWXAbChhgR1aoLhCrrGTbYXoCyfbbXZqDQ==
+X-Received: by 2002:a05:6a00:949f:b0:710:5d11:ec2e with SMTP id d2e1a72fcca58-71730436186mr9661376b3a.0.1725441599555;
+        Wed, 04 Sep 2024 02:19:59 -0700 (PDT)
+Received: from [100.116.227.126] ([45.32.86.188])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-717785227cfsm1196764b3a.34.2024.09.04.02.19.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Sep 2024 02:19:58 -0700 (PDT)
+Message-ID: <e477448a-6bf9-4ef6-bf53-25a278430f24@gmail.com>
+Date: Wed, 4 Sep 2024 17:19:53 +0800
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="3yytpvatfhmknuuz"
-Content-Disposition: inline
-In-Reply-To: <7658aca4-a408-480c-98b6-4637bb86b5ad@baylibre.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: proximity: hx9023s: Use 'CLOCK_BOOTTIME' as the
+ default clock source
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: jic23@kernel.org, dan.carpenter@linaro.org, nuno.sa@analog.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20240902103210.31369-1-yasin.lee.x@gmail.com>
+ <e2106a4f-ed3a-4b02-b1d2-d54c096fcab8@metafoo.de>
+Content-Language: en-US
+From: Yasin Lee <yasin.lee.x@gmail.com>
+In-Reply-To: <e2106a4f-ed3a-4b02-b1d2-d54c096fcab8@metafoo.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+On 9/2/24 18:43, Lars-Peter Clausen wrote:
+> On 9/2/24 12:32, Yasin Lee wrote:
+>> Override the default (CLOCK_REALTIME) clock source to 'CLOCK_BOOTTIME'.
+> Why? Won't this break existing applications that rely on the current 
+> default?
+>
+Dear Lars-Peter,
+
+Thank you very much for your careful review. After careful 
+consideration, I agree that changing the clock source from 
+CLOCK_REALTIME to CLOCK_BOOTTIME was not the right approach.
+
+This submission is incorrect and will be discarded.
+
+Best regards,
+Yasin Lee
 
 
---3yytpvatfhmknuuz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi Trevor,
-
-On Tue, Aug 20, 2024 at 05:07:27PM -0400, Trevor Gamblin wrote:
-> On 2024-08-20 3:19 a.m., kernel test robot wrote:
-> > Hi Trevor,
-> >=20
-> > kernel test robot noticed the following build errors:
-> >=20
-> > [auto build test ERROR on ac6a258892793f0a255fe7084ec2b612131c67fc]
-> >=20
-> > url:    https://github.com/intel-lab-lkp/linux/commits/Trevor-Gamblin/d=
-t-bindings-iio-adc-add-AD762x-AD796x-ADCs/20240819-221425
-> > base:   ac6a258892793f0a255fe7084ec2b612131c67fc
-> > patch link:    https://lore.kernel.org/r/20240819-ad7625_r1-v3-2-75d521=
-7c76b5%40baylibre.com
-> > patch subject: [PATCH v3 2/3] iio: adc: ad7625: add driver
-> > config: alpha-randconfig-r132-20240820 (https://download.01.org/0day-ci=
-/archive/20240820/202408201520.lFtco3eF-lkp@intel.com/config)
-> > compiler: alpha-linux-gcc (GCC) 13.3.0
-> > reproduce: (https://download.01.org/0day-ci/archive/20240820/2024082015=
-20.lFtco3eF-lkp@intel.com/reproduce)
-> Seems to be a problem with missing static inline definitions in pwm.h if
-> CONFIG_PWM isn't set. I've replied to the relevant series on the PWM mail=
-ing
-> list and will add "select PWM" to Kconfig for this driver.
-
-I'm not a big fan of the dummy static inlines. It seems to be a somewhat
-subjective thing, but I think that usually if a driver makes use of PWM
-functions it doesn't work at all if CONFIG_PWM=3Dn. Does your driver work
-with CONFIG_PWM=3Dn? If not, even if the dummy inline was there, I'd
-recommend at least a
-
-	depends on PWM || COMPILE_TEST
-
-=2E (This is also the implicit recommendation to use "depends" and not
-"select". Currently all drivers needing PWM use "depends" and mixing
-yields strange effects in menuconfig.)
-
-Currently there is only a single driver that uses "depends on PWM ||
-COMPILE_TEST" (i.e. SENSORS_PWM_FAN). I already considered changing that
-to plain "depends on PWM" and get rid of the dummy defines. While I
-didn't tackle that one yet, I'd like to not introduce dummys for the new
-waveform functions. So I suggest you either stick to
-
-	depends on PWM
-
-or try to convince me that these dummys are a good idea (and then
-probably use "... || COMPILE_TEST").
-
-Best regards
-Uwe
-
---3yytpvatfhmknuuz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmbYEzwACgkQj4D7WH0S
-/k5SvQf+NO8vcbtNzPEQ93q8b0bUlyJ0RMbzu+c2gvXGTNCZfFrxMknBXCxauxnk
-NsFS69G2JzB3Q/LG/Lny6rguZd9gkvYDBVKSjid2wdf4Kekr/2cKXSbAkPaFVQHu
-QQndCDqL6XKMpug1f5f3ehcxFnL7LVw5ZMSWMqO19bzpYGa6zgEH1JJVTmpVPDa5
-ZoOJoTb3njfPDLqGjBgdaZVaI0dAgwkP7Nf8DUbzXKqdZEl7d50T8c2LoJOEpZ1I
-NP/Jl0xMi8oWc3KtVuLvslL87nmXyRsW8bGdDFOlg+i7tYO3bJlBO4zoJ+2Nm0tx
-pSJaiqTBJkyu0HmnLg2VtkcQBqwZzA==
-=Ps67
------END PGP SIGNATURE-----
-
---3yytpvatfhmknuuz--
+>> Signed-off-by: Yasin Lee <yasin.lee.x@gmail.com>
+>> ---
+>>   drivers/iio/proximity/hx9023s.c | 4 ++++
+>>   1 file changed, 4 insertions(+)
+>>
+>> diff --git a/drivers/iio/proximity/hx9023s.c 
+>> b/drivers/iio/proximity/hx9023s.c
+>> index 8b9f84400e00..5363357a9a46 100644
+>> --- a/drivers/iio/proximity/hx9023s.c
+>> +++ b/drivers/iio/proximity/hx9023s.c
+>> @@ -1074,6 +1074,10 @@ static int hx9023s_probe(struct i2c_client 
+>> *client)
+>>                            "iio trigger register failed\n");
+>>       }
+>>   +    ret = iio_device_set_clock(indio_dev, CLOCK_BOOTTIME);
+>> +    if (ret)
+>> +        return dev_err_probe(dev, ret, "clock boottime set failed\n");
+>> +
+>>       ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
+>>                             iio_pollfunc_store_time,
+>>                             hx9023s_trigger_handler,
+>
+>
