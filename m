@@ -1,58 +1,58 @@
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBBDC149DFA
-	for <linux-iio@vger.kernel.org>; Fri,  6 Sep 2024 13:33:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 576EB1CEAB5
+	for <linux-iio@vger.kernel.org>; Fri,  6 Sep 2024 13:52:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725629607; cv=none; b=snx6zuRI0zOx+E9ZQ72Mg2KwQoFu1dWAHN4VB2A/rQ1nZYO53VyVYsjt1+Xp0nSsLXExqOtRsWqeKxyxnpowFLrFqlWKMB4CD7WrwZTjO+Vl0jF71cNrACHyoYJ0aNCXjc6OSXwydqvyt//QexzbNHYSqbUsGRo3n4VvxGjlxDQ=
+	t=1725630736; cv=none; b=MsHNonO2gS9CslBwaGZz6AZyyd0w3ZpI6onrdNsALl95aImgwPR0GpsqKH0mA09V/TyEoGR/2sXmOfcqtlqh9qP7F18WEGk2oNdDdtpACVtuAjeGv5cci3JkOWDXsV4AjDIh6k1qCU5Nx8XEZnlOLuq+vqLKUGrtGABlKPCr2mE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725629607; c=relaxed/simple;
-	bh=eJO0Wf/yWgnqoyhzRb3WOWUvELNt5GGNX829R/Im9tw=;
+	s=arc-20240116; t=1725630736; c=relaxed/simple;
+	bh=ZnnnIr+K1A4FDAgDbTsI4z4N0wjchTOUn7euwi8txNk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cBqx4NGjvSBw/aXSHFYRiohC4HMQ+W4EAbio1BG7VDZ/c/illsdCUVfZifQzsoXoYhvlMGyYWQ1jlVnmegvRAv4p+Cb19IBwUGIWTtw9Hv1tv9lEy4LkXg0mvqsEIDixKN9XPvzkcV/6u5SFmLfwXYKswlW7VGIPCxOtPYR55AQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=qdVl+k5W; arc=none smtp.client-ip=209.85.167.180
+	 In-Reply-To:Content-Type; b=VkBxVm1yVqay9Wj7m+GTanD5J9TIW79JD7F0sv5lCvenulDO2aDVyV0coLxIQHEB6h74F0XKGnv199qHtPEt1HDyONlT9rjXqXPhoBL0KIB0Z7lKdxpdZ35CwnbxlKlKBhkel6Ey5jZYxsEx7M/RIssjPQa5iLAw+3xV6de/vmg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=CHOcpzL0; arc=none smtp.client-ip=209.85.161.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="qdVl+k5W"
-Received: by mail-oi1-f180.google.com with SMTP id 5614622812f47-3e0059dc06bso1297103b6e.0
-        for <linux-iio@vger.kernel.org>; Fri, 06 Sep 2024 06:33:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="CHOcpzL0"
+Received: by mail-oo1-f52.google.com with SMTP id 006d021491bc7-5df998d7a44so1212257eaf.2
+        for <linux-iio@vger.kernel.org>; Fri, 06 Sep 2024 06:52:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1725629603; x=1726234403; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1725630733; x=1726235533; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=NsEgGZlpuH9wh0lupJqRkJ9X0JwfAqQ3O1SdcnbcGz4=;
-        b=qdVl+k5WxB6qh0PrasoDnYD0C5C65j3z6x/AN34ryDv2/dfwQuSawXYowoeoXM0ZcE
-         AD9QZ5g1I5fCFwApK9KECGYKowfC/mXYRM7SqjwYfzh2Y58dF2fK+ePERVBOITxblivm
-         E+4C/bdirOBV1pr/edQLr26GzTRFIZBcCppexRmDYdF7q4ttLy4KW7j+KgJYZCFC78m6
-         6AKT7DvHiZ+g4DU4Z8XWgGLoyFSaYdl5yr3JE6tSeiw9zaHamvx9iBhr4s3uwA0WXjxM
-         9e74qgaV8gSk+KrjxVao0d9wJxYUOlgix5NoxZ9aRndIKucWGfJqNvorSmTJ/yq6hjfF
-         qnOA==
+        bh=7F65YX/r9NBIT9OJBVYtcMbH5MfEewbpA3UhTv1Hc38=;
+        b=CHOcpzL08COsi3DA8nod4leSZHxUQXENZUwPw0Z6g6mMq3bny3dfIosn1VL5RWzRBP
+         J/hWTADAr+KAo5VQaCwy+dc2493tb/V572u2LuKFaefvkiO4mrpqs0wmyNWmUHCI7/zE
+         v6jgHBbAoe1kYxvb/GdrP5Jk01NoV7E46yl/l1GTcCSxHVyrgD+iRqhK3Q3XCS0JGJ1v
+         RzxhMY+dWb5t6ZUt0Ljj1/cbtuO3ucdGq48/gDAMEkN08K7+Z/4BpcFD8JG5NTIWQ9Xx
+         xg9bp2QnYr8wx8J20hiFE8w72GU3+mpmJvi9TeFJUdiHp2O0rKjwJ77MhRHLJiyXxIUn
+         UQRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725629603; x=1726234403;
+        d=1e100.net; s=20230601; t=1725630733; x=1726235533;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NsEgGZlpuH9wh0lupJqRkJ9X0JwfAqQ3O1SdcnbcGz4=;
-        b=HFLEIyfFNpXgtiqsZ6ayfScGSNym6Sf0nHzbvz1pqWF+K1RMlU5+a3IRcCjGp+SzqS
-         wRBmzdfalF75WUiARQRVpzr0Pj9VcxzQVt69EoCXdT4PByZUbDs7p8rAntXuIko96vUM
-         n4iw6X5duVkJk6eaN+Zc+Ipu9RZngEYhxSBicVbkrtvnsf9eCNiv7/jqhkBDcw7Gsq1I
-         EN9g2LlFIVpjUHLKiq6nl+A022My0zUg69JwWo6ToDLLeMJ8PjS4YUtQ3T7Kl5n6epNz
-         4ekr4WWz4uK6mskFJ/v964IPHaVfwm6K+mumhZmLPoekJRx2wQdCnGRNePOvBCraHvkR
-         WC3A==
-X-Gm-Message-State: AOJu0Yz02Don6jH0+ewKUwzcM+QSfUmyIpyvmKvmYgKr4VSUcScn+H+T
-	Ziu59ZNOsZnQWXvH24o4NUFfAemSMoOKFqsexCRlAMAGZ3LE62GSONstgBBf2ps=
-X-Google-Smtp-Source: AGHT+IGYUB83Z9nHWlTPrQM9wcE8xiaAiLCAyx0JD2GWznWKm4BOK3fAJlbiEp6O7QTWgUkQXfmnGw==
-X-Received: by 2002:a05:6808:22a0:b0:3db:334c:9768 with SMTP id 5614622812f47-3e029ce74c9mr3327075b6e.1.1725629602961;
-        Fri, 06 Sep 2024 06:33:22 -0700 (PDT)
+        bh=7F65YX/r9NBIT9OJBVYtcMbH5MfEewbpA3UhTv1Hc38=;
+        b=HHLLQ8WoI+M82CdY90BvugJ7rcg79GfEBqnCDoPIA5BY34DFRqX3MhL35QxP1XL4hw
+         EJsFnRXtwPtTIv/GfUQjvQm9QjBmCwqCFnT0DlYyjdU2Ud1hGBvb9BrK0f1rgHoMqaEJ
+         UiW1kKas9Nx4owzh4m8PMZMgHG8RGwO3WdfU1Ur9tW2TJJuB0Drl4MsbwLEpVrWxDreo
+         bIUOK6QpmXjRQpavvu9ezEzMrRzYF8N/FbE74Jq4tl0p0urulvB6FWetT+G7/d5lo39i
+         ykg+t8e3XHHcz7IBk29/mVt8iQ9djpZT1fXglXoXUIZXHyzOK2LPZo4gJb7ZoBekLNYo
+         b0hA==
+X-Gm-Message-State: AOJu0YxXgDXrJUv1Zb0l3T7+ZDOYJNe1h64jBDt+Jua6gCH2+ClDMcV5
+	hkcelW1HnAGzmwjG7gs5JwrEOeBNOeIU11GKLONd24oO3ZRnv9w40WgtdX25c3c=
+X-Google-Smtp-Source: AGHT+IER7xfw1Yyx+nyfJspkCGKpanLKB+G2/swE0L8dMzDsGxWsy0bEMNxwH5FdtTBW88Syu8yO2w==
+X-Received: by 2002:a05:6820:621:b0:5da:a4a7:8f6a with SMTP id 006d021491bc7-5e1a9cd68damr2960294eaf.4.1725630733327;
+        Fri, 06 Sep 2024 06:52:13 -0700 (PDT)
 Received: from [192.168.0.142] (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-3df11865a3dsm3722385b6e.45.2024.09.06.06.33.22
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-5dfa04bda37sm2981801eaf.21.2024.09.06.06.52.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Sep 2024 06:33:22 -0700 (PDT)
-Message-ID: <52eb0187-056b-413a-a64a-6fd001c27132@baylibre.com>
-Date: Fri, 6 Sep 2024 08:33:21 -0500
+        Fri, 06 Sep 2024 06:52:12 -0700 (PDT)
+Message-ID: <b8dfda0c-11fc-4b2d-b47d-f234cde87cfa@baylibre.com>
+Date: Fri, 6 Sep 2024 08:52:12 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -60,81 +60,72 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 8/8] iio: adc: ad7606: add support for AD7606C-{16,18}
- parts
-To: Alexandru Ardelean <aardelean@baylibre.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, jic23@kernel.org, krzk+dt@kernel.org,
- robh@kernel.org, lars@metafoo.de, michael.hennerich@analog.com,
- gstols@baylibre.com
-References: <20240905082404.119022-1-aardelean@baylibre.com>
- <20240905082404.119022-9-aardelean@baylibre.com>
- <2bf78e47-909a-45c0-bebb-6a8d38cdef7c@baylibre.com>
- <CA+GgBR9=unTe5WVq0G2zowbL9FnLfCwoAuZp=7VD=xZOt9Gn5w@mail.gmail.com>
+Subject: Re: [PATCH v2 4/9] iio: backend adi-axi-dac: add registering of child
+ fdt node
+To: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>,
+ Angelo Dureghello <adureghello@baylibre.com>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20240905-wip-bl-ad3552r-axi-v0-iio-testing-v2-0-87d669674c00@baylibre.com>
+ <20240905-wip-bl-ad3552r-axi-v0-iio-testing-v2-4-87d669674c00@baylibre.com>
+ <7bd162bb-dce8-4aff-9f56-1ab73b091a28@baylibre.com>
+ <35d882417c0a9c37e51b878790e2fa31dd0a1d63.camel@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <CA+GgBR9=unTe5WVq0G2zowbL9FnLfCwoAuZp=7VD=xZOt9Gn5w@mail.gmail.com>
+In-Reply-To: <35d882417c0a9c37e51b878790e2fa31dd0a1d63.camel@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 9/6/24 12:34 AM, Alexandru Ardelean wrote:
-> On Fri, Sep 6, 2024 at 2:30 AM David Lechner <dlechner@baylibre.com> wrote:
->>
->> On 9/5/24 3:24 AM, Alexandru Ardelean wrote:
-
-
->>> -static int ad7606_read_samples(struct ad7606_state *st)
->>> +static int ad7606_read_samples(struct ad7606_state *st, bool sign_extend_samples)
->>>  {
->>> +     unsigned int storagebits = st->chip_info->channels[1].scan_type.storagebits;
->>
->> Why [1]? Sure, they are all the same, but [0] would seem less arbitrary.
-> 
-> [0] is the timestamp channel.
-
-Oh, that's weird. First channel but last scan index!?
-
-
->>
->>> +     if (ret)
->>> +             return ret;
->>> +
->>> +     if (storagebits == 16 || !sign_extend_samples)
->>> +             return 0;
->>> +
->>> +     /* For 18 bit samples, we need to sign-extend samples to 32 bits */
->>> +     for (i = 0; i < num; i++)
->>> +             data32[i] = sign_extend32(data32[i], 17);> +
->>> +     return 0;
->>>  }
+On 9/6/24 12:42 AM, Nuno Sá wrote:
+> On Thu, 2024-09-05 at 14:19 -0500, David Lechner wrote:
+>> On 9/5/24 10:17 AM, Angelo Dureghello wrote:
+>>> From: Angelo Dureghello <adureghello@baylibre.com>
 >>>
->>>  static irqreturn_t ad7606_trigger_handler(int irq, void *p)
->>> @@ -124,11 +176,11 @@ static irqreturn_t ad7606_trigger_handler(int irq, void *p)
+>>> Change to obtain the fdt use case as reported in the
+>>> adi,ad3552r.yaml file in this patchset, with the DAC device that
+>>> is actually using the backend set as a child node of the backend.
 >>>
->>>       guard(mutex)(&st->lock);
+>>> To obtain this, registering all the child fdt nodes as platform
+>>> devices.
 >>>
->>> -     ret = ad7606_read_samples(st);
->>> +     ret = ad7606_read_samples(st, true);
+>>> Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
+>>> Co-developed-by: David Lechner <dlechner@baylibre.com>
+>>> Co-developed-by: Nuno Sá <nuno.sa@analog.com>
+>>> ---
+>>>  drivers/iio/dac/adi-axi-dac.c | 15 +++++++++++++++
+>>>  1 file changed, 15 insertions(+)
+>>>
+>>> diff --git a/drivers/iio/dac/adi-axi-dac.c b/drivers/iio/dac/adi-axi-dac.c
+>>> index cc31e1dcd1df..e883cd557b6a 100644
+>>> --- a/drivers/iio/dac/adi-axi-dac.c
+>>> +++ b/drivers/iio/dac/adi-axi-dac.c
+>>> @@ -783,6 +783,7 @@ static int axi_dac_probe(struct platform_device *pdev)
+>>>  {
+>>>  	struct axi_dac_state *st;
+>>>  	const struct axi_dac_info *info;
+>>> +	struct platform_device *child_pdev;
+>>>  	void __iomem *base;
+>>>  	unsigned int ver;
+>>>  	struct clk *clk;
+>>> @@ -862,6 +863,20 @@ static int axi_dac_probe(struct platform_device *pdev)
+>>>  		return dev_err_probe(&pdev->dev, ret,
+>>>  				     "failed to register iio backend\n");
+>>>  
+>>> +	device_for_each_child_node_scoped(&pdev->dev, child) {
 >>
->> Shouldn't the sign_extend parameter depend on if the data is unipolar or bipolar?
+>> This should use fwnode_for_each_available_child_node() so that it skips
+>> nodes with status != "okay".
+>>
 > 
-> [c1]
-> Sign-extension is only needed for 18-bit samples.
-> 16-bit samples are already properly sign(ed), but to 16-bits.
+> device_for_each_child_node() already only looks at available nodes IIRC
 > 
-> It's a slight performance improvement, that may look quirky here.
-> The idea here, is that for ad7606_scan_direct() we only need to
-> sign-extend 1 sample of the 8 samples we get.
-> And we need to sign-extend it to 32 bits regardless of it being 16-bit
-> or 18-bit.
-> 
-> In ad7606_trigger_handler(), the 16-bit samples were pushed as-is.
-> Which means that we need to sign-extend the samples at least for
-> 18-bits (as it is a new part)
-> The question now becomes if we should sign-extend to 32-bits, 16-bit
-> samples in ad7606_trigger_handler(), as that may break some ABI.
+> - Nuno Sá
 > 
 
-Sign extension should not be needed at all for buffered reads (that is
-what scan_type is for). So sign extension should only be needed for
-the direct read when returning a raw value via sysfs (raw read).
+Ah, you are right, I did not dig deep enough.
