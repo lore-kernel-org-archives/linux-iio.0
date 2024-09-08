@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB1711843;
-	Sun,  8 Sep 2024 12:39:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F68A52F6F;
+	Sun,  8 Sep 2024 15:11:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725799142; cv=none; b=OD8epf4Ax5U5qa10CyQbdFsyDAOaZoZPb0A6qMV3grZR5802Y8c5eyBOkWDnMI8ELkxydnT8Gfaneg3XoXDQRfoecO43KyDVPt3uu984dS1GTkX90s7OeI6ZChvW+F9p1zKUKzwqYryGe1Gn7jIJI2Na6ZH4KXp1lmjtTodXR+w=
+	t=1725808307; cv=none; b=JxEuJ6NUkebnMJFAQNTtrgpWiaC0tpgm/R3nPWu659blEYw1WpLJlgrtMIGivd5WVdlUSoj5+k3kumnQFpstumx++u+iroCUDCq2r9mixKZ6uTKi7wt0iyTZ0AXghr4OywkxDF3U7SBNLKV4QLvSVUJfNE/bx6QJgD7iAXIqTT0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725799142; c=relaxed/simple;
-	bh=j7MjqD0Uy+ztK0YQRZtbjpz9aAWhj7Ch/oB6PCH3LWw=;
+	s=arc-20240116; t=1725808307; c=relaxed/simple;
+	bh=e1uBFaapULMIxGobskK7ztZK5fdksEFqE32XmKUFWIo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YdmMOO4f+jus/BUvk2IilHHZ6CsVcS1YNl7NaTyRydy3SiUow+BT+/tIxT0WNKPRTtWsxqDIGfnQlNMU9ersk3f5gCmTaC30BTePGbW5aSxU8CrbHhqSiCcgqMJ5gmxmqA80W1zv2YIOdq0XhbmAkPWE7yyRp84meX+8ivFlWik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E+3o9JDI; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=kYvgt5Qm8TLVhlspVLSHS7M8fOSMYFpjVxT638ThTtC5SZCCpi8i4QZWFzqvMU+FE5PbDo0UO8dm/amhcghg7D/IZioWH9QdJHVhjG01SOCkb60BWxNAN5xDfiP4FmW/HGg0MPhhxP4y5OT1XZinwbuWjgYKDfJG+V26owneFk8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F0XT9e3m; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E+3o9JDI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C29F0C4CEC3;
-	Sun,  8 Sep 2024 12:38:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F0XT9e3m"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0B3FC4CEC3;
+	Sun,  8 Sep 2024 15:11:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725799142;
-	bh=j7MjqD0Uy+ztK0YQRZtbjpz9aAWhj7Ch/oB6PCH3LWw=;
+	s=k20201202; t=1725808306;
+	bh=e1uBFaapULMIxGobskK7ztZK5fdksEFqE32XmKUFWIo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=E+3o9JDIfmcxpeIVWZQV+2aj/ne6K97LHSp36jMzJVuZg1pFYYhJpkacX8hb7LNF/
-	 i4nQwbINENYo0H6xgbKgHdvlu3PRKOkZOhA1cWIXAy2FzMZNZS6qU13VOmALhE8fqZ
-	 fHhxMFIL3oGd3g8BmpzKcGasn8SosYi5czSjpDGN2a0nkCMNOpWVE+zMmk+0gQqlRI
-	 wavstQ3WLA2yZYDKpOUVM4GhMp51q2/TwG1QqyWj6miIpg8w1joCcgIAZWd+vKc66a
-	 TTRARINC71zyazWRaKpHSiE2tGRVCENgy+RVE7beDQJsN1ZjO8JXBepV5NPLb5Y9r9
-	 imJNfc95nT1rw==
-Date: Sun, 8 Sep 2024 13:38:52 +0100
+	b=F0XT9e3mDBpyQSRTnwIXnmD7FyrXIAyaZNscyj3Juf+tK/ro94iwF4BUGT7iA1uL/
+	 v9zkdnmG9y54A2g+AMZyhXfVgHGnBWUjnG+SRhKQ1Q55Dezhv8DIfFumdu6rUWWVrY
+	 2Z/e61++CNegTWlNhUQIaeKyMaF+IETGh4zYK5PCmvzikgJmlwZMhKY16gFVsukaiF
+	 bvptpOVUcGqSnnd23YRzlpP9rYlCOXbhJufZMTltBJOPumb4wZGI0jvMD8lUYiALJt
+	 OUqamlmKaY91sNQTEtY7yKl1bezui5ZysXALeqmASm8XeskDiQnGxzqkJQbd8xUlht
+	 pZgJZjZD7dC3Q==
+Date: Sun, 8 Sep 2024 16:11:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Angelo Dureghello <adureghello@baylibre.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
@@ -36,11 +36,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
  <olivier.moysan@foss.st.com>, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, David Lechner
  <dlechner@baylibre.com>
-Subject: Re: [PATCH v2 2/9] iio: backend: extend features
-Message-ID: <20240908133852.2599297a@jic23-huawei>
-In-Reply-To: <20240905-wip-bl-ad3552r-axi-v0-iio-testing-v2-2-87d669674c00@baylibre.com>
+Subject: Re: [PATCH v2 3/9] iio: backend adi-axi-dac: extend features
+Message-ID: <20240908161136.501a9c86@jic23-huawei>
+In-Reply-To: <20240905-wip-bl-ad3552r-axi-v0-iio-testing-v2-3-87d669674c00@baylibre.com>
 References: <20240905-wip-bl-ad3552r-axi-v0-iio-testing-v2-0-87d669674c00@baylibre.com>
-	<20240905-wip-bl-ad3552r-axi-v0-iio-testing-v2-2-87d669674c00@baylibre.com>
+	<20240905-wip-bl-ad3552r-axi-v0-iio-testing-v2-3-87d669674c00@baylibre.com>
 X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,74 +48,108 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 05 Sep 2024 17:17:32 +0200
+On Thu, 05 Sep 2024 17:17:33 +0200
 Angelo Dureghello <adureghello@baylibre.com> wrote:
 
 > From: Angelo Dureghello <adureghello@baylibre.com>
-> 
-> Extend backend features with new calls needed later on this
-> patchset from axi version of ad3552r.
-> 
-> A bus type property has been added to the devicetree to
-> inform the backend about the type of bus (interface) in use
-> bu the IP.
-> 
-> The follwoing calls are added:
-> 
-> iio_backend_ext_sync_enable
-> 	enable synchronize channels on external trigger
-> iio_backend_ext_sync_disable
-> 	disable synchronize channels on external trigger
-> iio_backend_ddr_enable
-> 	enable ddr bus transfer
-> iio_backend_ddr_disable
-> 	disable ddr bus transfer
-> iio_backend_set_bus_mode
-> 	select the type of bus, so that specific read / write
-> 	operations are performed accordingly
-> iio_backend_buffer_enable
-> 	enable buffer
-> iio_backend_buffer_disable
-> 	disable buffer
-> iio_backend_data_transfer_addr
-> 	define the target register address where the DAC sample
-> 	will be written.
-> iio_backend_bus_reg_read
-> 	generic bus read, bus-type dependent
-> iio_backend_bus_read_write
-> 	generic bus write, bus-type dependent
-
-The RAMP_16 definition doesn't seem immediately connected to the rest.
-+ I'm not sure what it is from the name.
-
-> 
+>=20
+> Extend DAC backend with new features required for the AXI driver
+> version for the ad3552r DAC. Mainly, a new compatible string has
+> been added to support a DAC IP very similar to the generic DAC IP
+> but with some customizations to work with the ad3552r.
+>=20
+> Then, a serie of generic functions has been added to match with
+> ad3552r needs. Function names has been kept generic as much as
+> possible, to allow re-utilization from other frontend drivers.
+>=20
 > Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
+> Co-developed-by: David Lechner <dlechner@baylibre.com>
+> Co-developed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+A few comments below.
+
 > ---
->  drivers/iio/industrialio-backend.c | 157 +++++++++++++++++++++++++++++++++++++
->  include/linux/iio/backend.h        |  33 ++++++++
->  2 files changed, 190 insertions(+)
-> 
-> diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
-> index 20b3b5212da7..231bef4b560e 100644
-> --- a/drivers/iio/industrialio-backend.c
-> +++ b/drivers/iio/industrialio-backend.c
-> @@ -718,6 +718,163 @@ static int __devm_iio_backend_get(struct device *dev, struct iio_backend *back)
->  	return 0;
->  }
-> diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
-> index 37d56914d485..eb8c5bb74bb5 100644
-> --- a/include/linux/iio/backend.h
-> +++ b/include/linux/iio/backend.h
->  
->  enum iio_backend_data_source {
->  	IIO_BACKEND_INTERNAL_CONTINUOUS_WAVE,
->  	IIO_BACKEND_EXTERNAL,
-> +	IIO_BACKEND_INTERNAL_RAMP_16,
+>  drivers/iio/dac/adi-axi-dac.c | 267 ++++++++++++++++++++++++++++++++++++=
+++++--
+>  1 file changed, 257 insertions(+), 10 deletions(-)
+>=20
+> diff --git a/drivers/iio/dac/adi-axi-dac.c b/drivers/iio/dac/adi-axi-dac.c
+> index 0cb00f3bec04..cc31e1dcd1df 100644
+> --- a/drivers/iio/dac/adi-axi-dac.c
+> +++ b/drivers/iio/dac/adi-axi-dac.c
+> @@ -44,11 +44,34 @@
+>  #define   AXI_DAC_RSTN_MMCM_RSTN	BIT(1)
+>  #define   AXI_DAC_RSTN_RSTN		BIT(0)
+>  #define AXI_DAC_REG_CNTRL_1		0x0044
+> +#define   AXI_DAC_EXT_SYNC_ARM		BIT(1)
+> +#define   AXI_DAC_EXT_SYNC_DISARM	BIT(2)
+>  #define   AXI_DAC_SYNC			BIT(0)
+>  #define AXI_DAC_REG_CNTRL_2		0x0048
+> -#define	  ADI_DAC_R1_MODE		BIT(4)
+> +#define   AXI_DAC_SDR_DDR_N		BIT(16)
+> +#define   AXI_DAC_SYMB_8B		BIT(14)
+> +#define	  ADI_DAC_R1_MODE		BIT(5)
 
-Not obvious what this is so maybe this enum needs docs in general.
+Bug?  Either was wrong before or after this change. I've no
+idea which.
 
->  	IIO_BACKEND_DATA_SOURCE_MAX
->  };
+
+> +
+> +static int axi_dac_bus_reg_write(struct iio_backend *back, u32 reg,
+> +				 unsigned int val, size_t data_size)
+> +{
+> +	struct axi_dac_state *st =3D iio_backend_get_priv(back);
+> +
+> +	switch (st->info->bus_type) {
+> +	case AXI_DAC_BUS_TYPE_DDR_QSPI: {
+
+...
+
+> +
+> +		return regmap_clear_bits(st->regmap, AXI_DAC_REG_CUSTOM_CTRL,
+> +					  AXI_DAC_TRANSFER_DATA);
+> +		}
+> +		break;
+
+Can't get here so drop the break;
+
+
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +}
+> +
+> +static int axi_dac_bus_reg_read(struct iio_backend *back, u32 reg,
+> +				unsigned int *val, size_t data_size)
+> +{
+> +	struct axi_dac_state *st =3D iio_backend_get_priv(back);
+> +
+> +	switch (st->info->bus_type) {
+> +	case AXI_DAC_BUS_TYPE_DDR_QSPI: {
+> +		int ret;
+> +		u32 bval;
+> +
+> +		bval =3D 0;
+> +		ret =3D axi_dac_bus_reg_write(back, AXI_DAC_RD_ADDR(reg), 0,
+> +					    data_size);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret =3D regmap_read_poll_timeout(st->regmap, AXI_DAC_UI_STATUS,
+> +					       bval, bval !=3D AXI_DAC_BUSY,
+> +					       10, 100);
+> +		if (ret)
+> +			return ret;
+> +
+> +		return regmap_read(st->regmap, AXI_DAC_CNTRL_DATA_RD, val);
+> +		}
+> +		break;
+Can't get here.
+
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +}
+
