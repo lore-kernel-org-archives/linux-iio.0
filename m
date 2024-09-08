@@ -1,46 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0A1452F6F;
-	Sun,  8 Sep 2024 15:11:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D63A16631D;
+	Sun,  8 Sep 2024 15:14:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725808311; cv=none; b=hlg+YvAODSIX2rpwtjWXL3+czLUUHnfRiCCHUFV6YWmFULUn671AqLSDrjSGji3INyr15SdUcnCS08qN4/uvHYr3PHAvducS3yVwpFBz9XuaYL6MPCpVEOpDpw3I92RPAhAkTw1tgO9am5Qc99SwR5ujDDkNxwWdZIqjhhDddfo=
+	t=1725808469; cv=none; b=GTwYuMr7f9DPXKcCrz5X5i//44Bqh9IhsBci7kyDBoDLsE3CGtvtdR5XjPBnAzxOyHTNj3WwzlurAZ0W1OPrECeFwRqGbI/qfCmxSlvSLmms/av2al3mHrM5eGyN+scwrdeb7Zynyzt0Djt9/0cHRPI/VEacj5x4M0ktRdAFJg0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725808311; c=relaxed/simple;
-	bh=QIe8KVt/ilAG8cwXbz/4XojndVBSms/x1BeIQ9gBAJQ=;
+	s=arc-20240116; t=1725808469; c=relaxed/simple;
+	bh=zQU4vcZ2UJf8bAIPe1Ymv3vVP4cl047JQd3pT3KhDsk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VmrVfDSEgKm9iMLhXHn6xrCXOE8SGVcStbXBE2rh6vKIein9S2D9/qDAMIwDEEeOt7ujU/CWI874EKoAti9wjsAaEVcAtWax4aNoXa1EV6ddUHHXkLyb/97hDHM3UA2QSr2U073mKf6jar0OYBxWDQFDosAH/ruqmEwkd8QYYGQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W+8zlbaj; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=MQIHAnxeflVzHc77wVT9sF2dG1SY8ecDFZ5txS3sytqbI2kuHHxzu+gDeTL6A8y+GLLbR6v7x13jPOw6EkC16Mdy0qfB6iQa+L48el2c6uUyQSyfKIkT3FeUYBHJYHYbhXB2ZHrO0ohL7nBKiPXnqTFlJ7K5Wnu0bMCxs0cPUe4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=URyrSbkr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W+8zlbaj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96E1CC4CEC9;
-	Sun,  8 Sep 2024 15:11:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="URyrSbkr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEAE3C4CEC3;
+	Sun,  8 Sep 2024 15:14:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725808311;
-	bh=QIe8KVt/ilAG8cwXbz/4XojndVBSms/x1BeIQ9gBAJQ=;
+	s=k20201202; t=1725808468;
+	bh=zQU4vcZ2UJf8bAIPe1Ymv3vVP4cl047JQd3pT3KhDsk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=W+8zlbajcwCINhyV5scgVMpNG3JnidbLaa2vGAn/eNQRNp+5xJ7VzZ+nnza/EhseQ
-	 /v5zNjS7q7CH0S49c8v0+PAlQym4Q77vftpOyWTzrV53HUV9v1Z90Oo2+4udpgoZBQ
-	 FbD5+vg51SIehSDAWhg+u0IkGkr6lO7AldGS6xS0VoJuU6UzS4jXUToSdFnfzISwhL
-	 6B0FMP/D6jifsId0lS4yXFp5+AJFpDwXj0kTHsMMsdUf0ZEOEHQ2G57xEMy2v+lI1C
-	 7U+j1itgESp6dLN4nxH7eObGjhR7ELNyLDdvObo6S8jrHk+hrCXNGsCg7N+c95nNIs
-	 AGnoWhO90eomg==
-Date: Sun, 26 May 2024 13:28:44 +0100
+	b=URyrSbkr+NsHrbUYFglKnk9xn7o5hHUWj+VoSM3qYkY2EDnglKE99ZY1wn4p6ZR4n
+	 WJH+BTJmcRdrOZL9SFVQK9qCFU9AbUaez3ZVa3MQENKMs9V0pJEN1/Wzj29BeMe8CY
+	 AUNJH+lNIk5+U0ztPs6fwD0Q4WWLTraElqszWZr+Hboe0vnKoJhetrMUtglPORtH/3
+	 Gha9OEoTxPYZ25+9nAtV20oj9woYv3VGsgCDoGL+FwiK031AMrJGtebUK8Uva/h5ax
+	 8bIwO/017MvG8Kc7OLXBhOBLlXgYKb/z09p835oDOfeeNZAxEyR0fn1YXKJm19MmaW
+	 QHMEc/q3IZCSQ==
+Date: Sun, 8 Sep 2024 16:14:20 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Dimitri Fedrau <dima.fedrau@gmail.com>
-Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>, Li peiyu
- <579lpy@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: humidity: hdc3020: fix hysteresis representation
-Message-ID: <20240526132844.6c3979e7@jic23-huawei>
-In-Reply-To: <20240524080948.GA560140@debian>
-References: <20240523114336.532428-1-dima.fedrau@gmail.com>
-	<cef810ee-bb2c-4588-baec-7edfc74daeea@gmail.com>
-	<20240523142849.GA558466@debian>
-	<17adc0d0-55c1-4608-a4c0-93f9911296f8@gmail.com>
-	<20240524080948.GA560140@debian>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.42; x86_64-pc-linux-gnu)
+To: Angelo Dureghello <adureghello@baylibre.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Olivier Moysan
+ <olivier.moysan@foss.st.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, David Lechner
+ <dlechner@baylibre.com>
+Subject: Re: [PATCH v2 6/9] iio: dac: ad3552r: changes to use FIELD_PREP
+Message-ID: <20240908161420.7af6c090@jic23-huawei>
+In-Reply-To: <20240905-wip-bl-ad3552r-axi-v0-iio-testing-v2-6-87d669674c00@baylibre.com>
+References: <20240905-wip-bl-ad3552r-axi-v0-iio-testing-v2-0-87d669674c00@baylibre.com>
+	<20240905-wip-bl-ad3552r-axi-v0-iio-testing-v2-6-87d669674c00@baylibre.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -50,81 +51,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 24 May 2024 10:09:48 +0200
-Dimitri Fedrau <dima.fedrau@gmail.com> wrote:
+On Thu, 05 Sep 2024 17:17:36 +0200
+Angelo Dureghello <adureghello@baylibre.com> wrote:
 
-> Am Thu, May 23, 2024 at 05:45:34PM +0200 schrieb Javier Carrasco:
-> > On 23/05/2024 16:28, Dimitri Fedrau wrote:  
-> > > Am Thu, May 23, 2024 at 04:12:37PM +0200 schrieb Javier Carrasco:  
-> > >> Hi Dimitri, a few comments inline.
-> > >>
-> > >> On 23/05/2024 13:43, Dimitri Fedrau wrote:  
-> > >>> According to the ABI docs hysteresis values are represented as offsets to
-> > >>> threshold values. Current implementation represents hysteresis values as
-> > >>> absolute values which is wrong. Nevertheless the device stores them as
-> > >>> absolute values and the datasheet refers to them as clear thresholds. Fix
-> > >>> the reading and writing of hysteresis values by including thresholds into
-> > >>> calculations.
-> > >>>
-> > >>> Fixes: 3ad0e7e5f0cb ("iio: humidity: hdc3020: add threshold events support")
-> > >>> Signed-off-by: Dimitri Fedrau <dima.fedrau@gmail.com>
-> > >>> ---
-> > >>>
-> > >>> Since absolute values are used on the device, the hysteresis values are
-> > >>> influenced by setting thresholds. Is this behavior in line with the ABI docs ?
-> > >>> It can be fixed by readjusting the threshold clear value whenever setting
-> > >>> thresholds to have the same hysteresis value as before. See some example below:
-> > >>>
-> > >>> # echo 25 > /sys/bus/iio/devices/iio\:device0/events/in_temp_thresh_rising_value
-> > >>> # cat /sys/bus/iio/devices/iio\:device0/events/in_temp_thresh_rising_value
-> > >>> 24.727626459
-> > >>> # echo 5 > /sys/bus/iio/devices/iio\:device0/events/in_temp_thresh_rising_hysteresis
-> > >>> # cat /sys/bus/iio/devices/iio\:device0/events/in_temp_thresh_rising_hysteresis
-> > >>> 5.127031357
-> > >>> # echo 35 > /sys/bus/iio/devices/iio\:device0/events/in_temp_thresh_rising_value
-> > >>> # cat /sys/bus/iio/devices/iio\:device0/events/in_temp_thresh_rising_hysteresis
-> > >>> 15.381094071
-> > >>>  
-> >   
-> > > Hi Javier,
-> > > 
-> > > thanks for reviewing so quickly. Do you think I should correct the clear
-> > > threshold values once I changed the threshold. I have an example
-> > > provided where I set the threshold and hysteresis. After setting the
-> > > threshold again the hysteresis value also changes.
-> > > 
-> > > Dimitri  
-> > 
-> > I am not sure if I got that right. Did the rising hysteresis change its
-> > value automatically from ~5 to ~15 by just adding 10 to the threshold?
-> > If we are treating the hysteresis as an offset, then it should not
-> > change its value i.e. it should keep the configured value.
-> >
-> > Best regards,
-> > Javier Carrasco  
+> From: Angelo Dureghello <adureghello@baylibre.com>
 > 
-> You got it right and I also think that the hysteresis value should keep
-> the configured value. The doc states that the hysteresis is represented
-> as offset to the threshold, but I didn't find anything related to the
-> changing hysteresis value. Propably because most devices implement the
-> hysteresis value as offset !? Would change this behavior in the next
-> version of the patch if Jonathan agrees.
+> Changes to use FIELD_PREP, so that driver-specific ad3552r_field_prep
+> is removed. Variables (arrays) that was used to call ad3552r_field_prep
+> are removed too.
+> 
+> Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
 
-Yes. It should be an offset.  I think you are right that most devices do
-it that way but even if they didn't the reality of ABI is that once we've
-defined it we are stuck with it!  Here I think the offset definition makes
-sense.
-
-Note that I suspect the hysteresis value might change in corner cases where
-it's not possible to keep it constant (not enough room in the register because
-the offset takes it out of range) Don't worry too much about any of those
-as long as we report the correct updated value.
+If it isn't too hard I would drag this to the start of the patch set
+because I'll happily pick it up as a cleanup before any discussion of later
+patches is complete.  That will reduce what people need to look at for
+future versions.
 
 Jonathan
-
-
-> 
-> Thanks again for taking time to review.
-> 
-> Dimitri
-
