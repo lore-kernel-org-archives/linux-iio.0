@@ -1,67 +1,74 @@
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A52E181328;
-	Sun,  8 Sep 2024 21:10:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D5774C74;
+	Mon,  9 Sep 2024 04:33:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725829802; cv=none; b=VnwR+ia6aJo6xPCDlWo/ERCCcSRkp7xNisbYY7BGIlc11WwTKklD+6ldJNwNn2L+2B5Bifg8QkI1ep1H0tDkdOeux5i+xmh2lbuAbyn+OdFCL8z95gb9GLMn7OCmxfStSlVqFL6zQuk0Wf4WO6MjzeAZgLwztpEynpCD0mRJPoE=
+	t=1725856384; cv=none; b=G9PYxEiqgeryCGX5fOOtYfmoeikW1vgziHbxFeqCLpO0gC7ZdFjjy2FV2vM0JE3rrnoFXbuAlvfYD+OJWv7CZdw+UK9SxvF2j8tWdmanZcBccxjfTqkxHpmeDxBoEXDTudzdu17mX+B6RkMA70cd77yZ+00YotOPBcPwd/TU5i0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725829802; c=relaxed/simple;
-	bh=hr5V3SKs+5sSdOcCMLObBljUvchYcD8eBaaOFqtYTr4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=e8Wh3ZAhqzbPYfvdy2nkDO0YLB+OwuA/VdbeOhosixPDHLZe3xgI8qql1S97NOfjwNzL6ayioBUvSobngQIVMRBpXSOUJobHJT/g3lVYi6R+hS5eKXITWv+atdp5OkDXNBh0N+g0/4MExVHsBpq0WZsLltRoBqJCPrr1touijSk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=YBbXd5wG; arc=none smtp.client-ip=185.11.138.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+	s=arc-20240116; t=1725856384; c=relaxed/simple;
+	bh=EVZPIUSsZjGZMeUpN7YnAFV0A0x6X3t6d3gx9BOiXBI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KVQzmVSEo/NtRmkWuAyT/4OADZA4e4rVcvF/z8KFy3CouWFzKQYOn36I/KgxPIoYeTM1XEObDLOIMTDFjTs5SJveXzyg0hM6RkDfc1hWXy01iUg/f1QcxwZHR6Y9xHelRma4ZDD2b2uCXNXUwjckICiTacxwx1TCj/qEa/fMUNc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=noIk1YfC; arc=none smtp.client-ip=209.85.222.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="YBbXd5wG"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
-	s=gloria202408; h=Content-Transfer-Encoding:MIME-Version:References:
-	In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=AODWEsE73iZy3ftOFUVpepawKaVLM9NWi8usTPEPRhw=; b=YBbXd5wGMQvFJ78L7z+1sRxDbj
-	lj8ky7GrcW/R8EGhM6SOQe+1YOUnnfUSAemNtm4Hq1xsa15A816rSSH0kk/qWszTu5rJCXhwRSOkO
-	NeHevL5NpBoay96RCGWudg1Z45AkXFxkZ+WZPRNH+IzXC3VqoHPB+3H1BCQN4n/2q2QyBCBZYKEGa
-	gdLwY99LziS6ERU8zhOh7g4vDNAJTHDCZwgUuibqdeTh6iRxkm10SSJfK8j+ni7wiQLPVC82cg8C+
-	KIm2ieNa2Ju72daIBrPau+b7ZDvr8JaInc4p9gEzB0ZiSxJAyLKF9/iH1B5E6xJX8dam384YJTFn3
-	05713NZg==;
-Received: from i5e8616cc.versanet.de ([94.134.22.204] helo=phil.lan)
-	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <heiko@sntech.de>)
-	id 1snPA1-0003s9-W8; Sun, 08 Sep 2024 23:09:30 +0200
-From: Heiko Stuebner <heiko@sntech.de>
-To: lee@kernel.org,
-	jikos@kernel.org,
-	jic23@kernel.org
-Cc: robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	jdelvare@suse.com,
-	linux@roeck-us.net,
-	srinivas.pandruvada@linux.intel.com,
-	bentiss@kernel.org,
-	dmitry.torokhov@gmail.com,
-	pavel@ucw.cz,
-	ukleinek@debian.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-hwmon@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	linux-input@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="noIk1YfC"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-7a99d23e036so164818585a.1;
+        Sun, 08 Sep 2024 21:33:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1725856381; x=1726461181; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=8QdOMMhx1gpxvBS/wfDoSKFubKp0egWivBQSYQQOJaA=;
+        b=noIk1YfCQwsDgnDcPp3X5141fmjEeNqRC7IVoYKAfS+rlXzrYuuLzy0QuEaapJe/rK
+         IUPrDx3krhf4eSsZ7s0MkNy91FvvK7jWBrIs3LByvecxupi0N20t2Fh4ri9MsfHvnjkH
+         jpZOAyqS1oEYGEt4bi4LCIDAVDeTbHrv9swyv3FUxQomWj5hawr0ybgqfdMaHrTGZOlI
+         L8wGEUGgdf23U1KezWUClPzH6Wr5sLxY5YuNy8xgldtltZZsAmhZRUY27RedJP3XkxoS
+         2xwxLd15BMe0U0otGNiEYVSNqhUCJ309/jSaQuhisYi5tvN8A3spxncrBzGzrK53B5rr
+         ahVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725856381; x=1726461181;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8QdOMMhx1gpxvBS/wfDoSKFubKp0egWivBQSYQQOJaA=;
+        b=huFiq0bUq6Jg0JMu+Hz82SVcSOODmYehmF+OsOQPsu/ZD+MUqTxJiqkKP8kP2zS+Si
+         ueLVrN7SoyVeGRqpTXWl+7HH6ElcVCnC+wRLk2D3BhjDuAB7gFxDz9VliRqtO9Gf70j9
+         d+D3WAApV4KTy2jxyz17PWtdLmDZBVK00VncuUlcF1ZE0G0CsHR9DX4rPMiOIEYXB9mX
+         tyHUPn5uudXK86+inHj4xLMx34Jea569fbsexCOZdsvJlsXFmlIp8TK7FSFfs8WlX1o4
+         gzWGwLbbouT/mO8jtKVK9WLD+hEdqjr0MLFSjvFSgEP/KbYsWbnlLNR+zODVLpA84LYK
+         HxIA==
+X-Forwarded-Encrypted: i=1; AJvYcCW/U3TEZcbQVFOREnRRgVjVO8LODaJhch6kzS0i8vs2E9rG7+zLVqe8Evk2GLDQMSujosBJ/GW4gQjAoqGe@vger.kernel.org, AJvYcCWYR+gowHg7Zj/5UX5f+nGGn5AupSvPthns7Zb9jRBY00Mh3IaslK0EuseZocmj09HAqAMjY+8ELSQo@vger.kernel.org, AJvYcCXbceBLS63k0gnhWHX9cj3KEktl96INBD7JDeyM81LoH0ua0RucFHbasMmR1XWD7G3FZpeJV++QVKZT@vger.kernel.org
+X-Gm-Message-State: AOJu0YxiysXm3R9gTFtkNXjJ6ntwhvxOONF8iWxSjGEzGfOWsJWj8Sm3
+	b6tjivgbp2S4YQrXIUjw6Dc6siFjICG4z9JUehkV8oeBi3PzsLi0
+X-Google-Smtp-Source: AGHT+IEh1QEywJsPJHkyFDksMeTinTFmR0iWFLZH3H5xDpwkYQocnQsExUxTRmOubpBbdi4NOakRNg==
+X-Received: by 2002:a05:620a:4543:b0:79f:197d:fe6e with SMTP id af79cd13be357-7a99735e832mr1260685385a.45.1725856380836;
+        Sun, 08 Sep 2024 21:33:00 -0700 (PDT)
+Received: from localhost.localdomain (ool-1826d901.dyn.optonline.net. [24.38.217.1])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7a9a794559bsm180791685a.6.2024.09.08.21.32.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Sep 2024 21:32:59 -0700 (PDT)
+From: Alex Lanzano <lanzano.alex@gmail.com>
+To: Alex Lanzano <lanzano.alex@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Ramona Gradinariu <ramona.bolboaca13@gmail.com>,
+	Nuno Sa <nuno.sa@analog.com>,
+	Jagath Jog J <jagathjog1996@gmail.com>
+Cc: skhan@linuxfoundation.org,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
 	linux-iio@vger.kernel.org,
-	linux-leds@vger.kernel.org,
-	Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v8 2/9] mfd: core: make platform_data pointer const in struct mfd_cell
-Date: Sun,  8 Sep 2024 23:07:56 +0200
-Message-ID: <20240908210803.3339919-3-heiko@sntech.de>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240908210803.3339919-1-heiko@sntech.de>
-References: <20240908210803.3339919-1-heiko@sntech.de>
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/2] Add I2C driver for Bosch BMI270 IMU
+Date: Mon,  9 Sep 2024 00:32:22 -0400
+Message-ID: <20240909043254.611589-1-lanzano.alex@gmail.com>
+X-Mailer: git-send-email 2.46.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,36 +77,46 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The content of the platform_data of a struct mfd_cell is simply passed on
-to the platform_device_add_data() call in mfd_add_device() .
+Add basic I2C support for the Bosch BMI270 IMU.
 
-platform_device_add_data() already handles the data behind that pointer
-as const and also uses kmemdup to create a copy of the data before
-handing that copy over to the newly created platform-device,
-so there is no reason to not extend this to struct mfd_cell, as the old
-copy in the mfd_cell will be stale anyway.
+References:
+https://www.bosch-sensortec.com/products/motion-sensors/imus/bmi270/
 
-This allows to pass structs gathered from of_device_get_match_data()
-as platform-data to sub-devices - which is retrieved as const already.
-
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Alex Lanzano <lanzano.alex@gmail.com>
 ---
- include/linux/mfd/core.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v3:
+- Remove code pertaining to buffer / triggered buffer
+- Move register definitions from struct to defines
+- Add bit mask defines for registers and replace hardcoded values
+- Create macros for accel and gryo channels
+- Code style cleanup
 
-diff --git a/include/linux/mfd/core.h b/include/linux/mfd/core.h
-index e8bcad641d8c..faeea7abd688 100644
---- a/include/linux/mfd/core.h
-+++ b/include/linux/mfd/core.h
-@@ -72,7 +72,7 @@ struct mfd_cell {
- 	int			(*resume)(struct platform_device *dev);
- 
- 	/* platform data passed to the sub devices drivers */
--	void			*platform_data;
-+	const void		*platform_data;
- 	size_t			pdata_size;
- 
- 	/* Matches ACPI */
+Changes in v2:
+- Remove spi example in binding documentation
+- Add more properties to i2c example in binding documentation
+---
+
+Alex Lanzano (2):
+  dt-bindings: iio: imu: add bmi270 bindings
+  iio: imu: Add i2c driver for bmi270 imu
+
+ .../bindings/iio/imu/bosch,bmi270.yaml        |  77 ++++++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/imu/Kconfig                       |   1 +
+ drivers/iio/imu/Makefile                      |   1 +
+ drivers/iio/imu/bmi270/Kconfig                |  21 ++
+ drivers/iio/imu/bmi270/Makefile               |   6 +
+ drivers/iio/imu/bmi270/bmi270.h               |  62 +++++
+ drivers/iio/imu/bmi270/bmi270_core.c          | 251 ++++++++++++++++++
+ drivers/iio/imu/bmi270/bmi270_i2c.c           |  48 ++++
+ 9 files changed, 474 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/imu/bosch,bmi270.yaml
+ create mode 100644 drivers/iio/imu/bmi270/Kconfig
+ create mode 100644 drivers/iio/imu/bmi270/Makefile
+ create mode 100644 drivers/iio/imu/bmi270/bmi270.h
+ create mode 100644 drivers/iio/imu/bmi270/bmi270_core.c
+ create mode 100644 drivers/iio/imu/bmi270/bmi270_i2c.c
+
 -- 
-2.43.0
+2.46.0
 
