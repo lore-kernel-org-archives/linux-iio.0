@@ -1,28 +1,28 @@
-Received: from cmccmta2.chinamobile.com (cmccmta4.chinamobile.com [111.22.67.137])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 09A8F136338;
-	Thu, 12 Sep 2024 03:28:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.22.67.137
+Received: from cmccmta2.chinamobile.com (cmccmta2.chinamobile.com [111.22.67.135])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C69B13A40F;
+	Thu, 12 Sep 2024 03:28:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.22.67.135
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726111737; cv=none; b=rKHPRuFQLy+TV/FvJCnC0frKqVZIHBnnW5O59vHNGBEEZaLQpll+0ITikO2f70aVHjrZsD4yD4fu1nocBQwILExMPFujnlQeIHMTRxnnCK67DlFjdOprNW6/11KVM31mW7qixV4hUodRW1y0gSjHI1kFcXt4Rgr6lMHqMMx//aE=
+	t=1726111741; cv=none; b=INuunB5kFWnJyPz5ifqvtuQArO8kpYmF8CVVVv0lWIk63uKDJKWOfVY4u2Lq8a7+LUCEZfQXKIdvXfGZsLezzqo+3TDDrmBGSJkQ/GzWeV5QcCQflga6mDIMYS0NssIuc07+Ejce78i7zPVJDxOiywytaZPedbmJ3Hn+eQJeiT4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726111737; c=relaxed/simple;
+	s=arc-20240116; t=1726111741; c=relaxed/simple;
 	bh=aaHump5Ez603AvINyLLmEIe2gGnCkcovisCUNr6gNsk=;
-	h=From:To:Cc:Subject:Date:Message-Id; b=eay9RMyqIlBr/EMR7REwp3z2gzxjHo+h0Nvc7vQWU+wWu5ltreEzFSVvbpppPK5lB0fuSazVMzlPOuu7URzRzKNARQGLu/A/vAUZDeriK9aG7cw6z/11jTjg0EuetvesMgfeUEtwAfar/QHaC8pKF1Nii2JIP5DFYkV3E/tscIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com; spf=pass smtp.mailfrom=cmss.chinamobile.com; arc=none smtp.client-ip=111.22.67.137
+	h=From:To:Cc:Subject:Date:Message-Id; b=Csc/ErgKAvugASvJhjMkBKJtZr2xPRCkMEOJOUq30q+ueHiwsddsYD6012IbLuXTzPwHWmslE8lo1cg86DTFM7fg3UEv/lBIDBC60riltV6fMe5Hv/icbhI8p4gw/KNfe5DLHPigXMZLGf/QtJfObGL1TShcMVTB2bA7bZzNyh8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com; spf=pass smtp.mailfrom=cmss.chinamobile.com; arc=none smtp.client-ip=111.22.67.135
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
 X-RM-TagInfo: emlType=0                                       
 X-RM-SPAM-FLAG:00000000
 Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app08-12008 (RichMail) with SMTP id 2ee866e25ff4613-5f647;
-	Thu, 12 Sep 2024 11:28:52 +0800 (CST)
-X-RM-TRANSID:2ee866e25ff4613-5f647
+	by rmmx-syy-dmz-app07-12007 (RichMail) with SMTP id 2ee766e25ff86b5-246bb;
+	Thu, 12 Sep 2024 11:28:56 +0800 (CST)
+X-RM-TRANSID:2ee766e25ff86b5-246bb
 X-RM-TagInfo: emlType=0                                       
 X-RM-SPAM-FLAG:00000000
 Received:from ubuntu.localdomain (unknown[10.54.5.255])
-	by rmsmtp-syy-appsvr05-12005 (RichMail) with SMTP id 2ee566e25ff20cb-fdccc;
-	Thu, 12 Sep 2024 11:28:51 +0800 (CST)
-X-RM-TRANSID:2ee566e25ff20cb-fdccc
+	by rmsmtp-syy-appsvr02-12002 (RichMail) with SMTP id 2ee266e25ff7691-050ca;
+	Thu, 12 Sep 2024 11:28:56 +0800 (CST)
+X-RM-TRANSID:2ee266e25ff7691-050ca
 From: Zhu Jun <zhujun2@cmss.chinamobile.com>
 To: jic23@kernel.org
 Cc: lars@metafoo.de,
@@ -30,8 +30,8 @@ Cc: lars@metafoo.de,
 	linux-kernel@vger.kernel.org,
 	zhujun2@cmss.chinamobile.com
 Subject: [RESEND] tools/iio: Add memory allocation failure check for trigger_name
-Date: Wed, 11 Sep 2024 20:28:49 -0700
-Message-Id: <20240912032849.2961-1-zhujun2@cmss.chinamobile.com>
+Date: Wed, 11 Sep 2024 20:28:54 -0700
+Message-Id: <20240912032854.3008-1-zhujun2@cmss.chinamobile.com>
 X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
