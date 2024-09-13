@@ -1,163 +1,177 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR03-VI1-obe.outbound.protection.outlook.com (mail-vi1eur03on2059.outbound.protection.outlook.com [40.107.103.59])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E60AA1D6DC7
-	for <linux-iio@vger.kernel.org>; Fri, 13 Sep 2024 09:55:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726221334; cv=none; b=LKsLMO0MRrBpd0zJTIKRTVSQ8Ewu5C7im+trSYX59f8zGYpC20zqOk2+lXdDVyCWqlbnfllkmxuImRiH2JQ9/FgSHw+3GcYTC720fwSp1pWfNsk8Q8+e/4JdkfV4lYtKvIMianKJVA6EwoIWhWbAlp7beOcq0S3Gcb8oTmcjbPE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726221334; c=relaxed/simple;
-	bh=QdwlMldGdphejuyA0j4+krFypkdA83svh79wzoxEj0w=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=VdEJ4YB82qpEA8urmuTtJZa4NQK31a0/LqgNE2Lb1FTxtP6XVasuJcAIGnIRkSeVv3LhMFxTmWN/AyJhBTLk5sexyqyvCNUkaI+dnGB+Sku19HpOr+Q5eUkiAA2OYK1CgtHbpk6AjuW0pWCZpALS3/02z5ax3YyQW+BfiNLfU8Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=arhh5NWE; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 146C11B654F;
+	Fri, 13 Sep 2024 09:57:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.103.59
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1726221450; cv=fail; b=d7BVSitvMLrhbCfkhFhOfnMQliedxtcnUlaBGWOwPoihdUwhYGRYw8DhQOaeb5MgWtQD2BicQVdgcWR4ixK1SX2i+UU7mZQ8nkzVqWt9n19FYCd9Vn1hc4zHyMEP6N0I43uQVF9UxupGrpKSZPPfB+hVrAJ1rDFAX/HdmeJoZfY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1726221450; c=relaxed/simple;
+	bh=aqY/vAVBSMH8SLZlhZ2rUTWyaKlm3LSZXGMGn4Xs3YI=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=FyAFtj5J4HCmQWB1g48hISs82eMul9BuOoasYkPA8+s0byZUjqg8Oc7zuN6abUACQcJInhHdQ/rkYqJAVhe59LZmXpbgzg8Fq4vJmAhFTmLgY7pzOWrD/bDqMn6AJEhXxE3eVc8OG46+HLItm9gH5HPri3jg3R3OylqiSdxwYQg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=hdZEyzdg; arc=fail smtp.client-ip=40.107.103.59
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="arhh5NWE"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-42cafda818aso18596735e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 13 Sep 2024 02:55:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1726221330; x=1726826130; darn=vger.kernel.org;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8IimCEQjw+RxgJwL7dEaHdlom89dp2Edr+TPjCTDc1c=;
-        b=arhh5NWEy49xdC8Rpv58dGQlK0ydVbRg9QdBUG47wMgAaNFpL8Y1CsoOhYcwb8nJXw
-         bEnoKrbJKQnaCVrwIUSpTRp1QaipudZUmJcbNqiSzfI+sDjdZRqE8/z13JRYhMUyBMho
-         Ny52fdZVdwMyoQlCtSEOxw5eevGlx0KCiCZ3VYWA5IdU0q7/AIJCxzSHK3wnOJL5lDsg
-         0PvNCSDJpuj2KdLDnqbVRTyVEcm3JYvBa5pqSmMxswQ/C6HXYYp7wHRKLkLjjyJDRm5P
-         FfVeN6R+/NChkWAdv395GfQQ6PwCW7QCs+2x0rpWOzyXO9zziUy7Z7IEFDZdEtXbXUuH
-         T2nQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726221330; x=1726826130;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=8IimCEQjw+RxgJwL7dEaHdlom89dp2Edr+TPjCTDc1c=;
-        b=mEDzQ2dr464KbyEpM+Bf4n5s5GEoSUTlOLWHPO4CtDdobY799iAtrctNN6EQ5UZEA5
-         t48JbY69Eias4D/tah9DXIDz6He3ol+bAVDG2JZhwHGkHwerCM/DYyjqNS7xRQ69k5LY
-         ZH1VwY0YIhj6iG8qaC2CUCQudyGyzAkIqKB2THN3s48psuXsk6TKpN778woCO8CF3Sqn
-         /QoyiNAqld6u5Eq9vK6ZUo+5XwzdagAyhXdmats8qBDeKhbRnDMZZ1U/jBHlwZbWHk0s
-         EQB810664CNwqHTPiYMOGrGE3OWXWfW9EaDrTKof36uAlNURlDWH6q16XWggt0YTTL24
-         ZVAg==
-X-Forwarded-Encrypted: i=1; AJvYcCX0WgyzDpRC+c31tSt81VSck0dJQeVbVVijaB17mytKBHavGLNS4pe2hWJe1pRoOAaKgWfLZRZbEoI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyDIshB1gufN5JjIzTnzA/jGXbiTIsh0QJDb8qIvuGoCG2QKNZz
-	f4Sv0b6DQzejJFGVoxuQFFvs2TzCFUEqqphH3g1qlly58J67ojClmJ7SPBXk8ws=
-X-Google-Smtp-Source: AGHT+IF4CvTAu/JtSSJx1DTcjPw9Y2oWznPE0a2seSirQo3gZlG7JOgoRrPbVmWsUTwVrl3EsyiV5A==
-X-Received: by 2002:a05:600c:35cf:b0:42c:bc22:e074 with SMTP id 5b1f17b1804b1-42cdb575036mr52128725e9.29.1726221329829;
-        Fri, 13 Sep 2024 02:55:29 -0700 (PDT)
-Received: from localhost (amontpellier-556-1-151-252.w109-210.abo.wanadoo.fr. [109.210.7.252])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42d9b1948fasm18463575e9.43.2024.09.13.02.55.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Sep 2024 02:55:29 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="hdZEyzdg"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=DFOCh9Iztdlg1cuYIdGXYb4lnLqGYcZTeH1GegxnE9VE4YPmaJhmt6IcYvNdI9QICWpRYV5BIKZ2dool84IWb6U8xjsfNSzTYoAqvhOhXF/mzqgCh2ABD1Obee8QvyHp9qbILEWUgg+c0zxSZhJwPLLxiYckmEupBTDrmkB0yYqy4RWmQS3vegqmPz/HOIhZhezv2FGqzbjHsNsSVBZkR3dlDw6KtZtLMKccBiWnXEtbZZyKt2ejca0pGlOlMmu9VCi55DUbmZedfonc6hHCoUMicRbmMK63vbyJLNl91YUGpj7GGvBMAoGUwd9+sntXsuqBGj8wt5lazUugUGf+Zw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LFPN0SBSr6PbHgcghlFBv+QWPvrLlELhnAj1xrXcBOo=;
+ b=lFOsKjRY0meGO/v5tqjfDQ8EXSm1DaturDsjr3t4USBELN0+Sios/W3RS9f78g48OcJDMB1jT80HrD+Jwxps9yM9CbnnjuMEz0hgMHBQLuVsL97ZkREjr07Zm3nlkCgKpjyJAI5QgXYD3MjA3n8xovcXXwM+LTzRFr8qMcZGH87jHmjmKX/eycie2Fg9Gzc3JVvgRgQHr6RvLrmfhmeYkzbrKaJTdzuQ3gdUCkLxyaULhQ0bjlF1E3FUwvwYX86IO7/IiNSYKP5w0Ab9EflDKTXWX1cuEHBfzz5flVcYwnSP7m1jNxgMXZ9mflRryGJB2xRxSVx6aKBmxi8PpEOaWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 195.60.68.100) smtp.rcpttodomain=kernel.org smtp.mailfrom=axis.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LFPN0SBSr6PbHgcghlFBv+QWPvrLlELhnAj1xrXcBOo=;
+ b=hdZEyzdgLB0aSSgpd/ALdlu/gybGhyIpGzNySE2jbBD+hXvyIj37ktS+3jMx2/y7DPrISsK65GVm2C8P4Im75V23nKSiDIz9TcETkJgY3c8Rzf2dfpjTPTB9xbecz1C7Gmj11C6+qfMrP6hvL+Rlw84mhJPZYNUhElouWwCJDuw=
+Received: from DU7P250CA0025.EURP250.PROD.OUTLOOK.COM (2603:10a6:10:54f::14)
+ by DB9PR02MB7260.eurprd02.prod.outlook.com (2603:10a6:10:25c::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7962.18; Fri, 13 Sep
+ 2024 09:57:24 +0000
+Received: from DU6PEPF0000B61E.eurprd02.prod.outlook.com
+ (2603:10a6:10:54f:cafe::3f) by DU7P250CA0025.outlook.office365.com
+ (2603:10a6:10:54f::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.26 via Frontend
+ Transport; Fri, 13 Sep 2024 09:57:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 195.60.68.100)
+ smtp.mailfrom=axis.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=axis.com;
+Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
+ 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
+ client-ip=195.60.68.100; helo=mail.axis.com; pr=C
+Received: from mail.axis.com (195.60.68.100) by
+ DU6PEPF0000B61E.mail.protection.outlook.com (10.167.8.133) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7918.13 via Frontend Transport; Fri, 13 Sep 2024 09:57:23 +0000
+Received: from se-mail01w.axis.com (10.20.40.7) by se-mail01w.axis.com
+ (10.20.40.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 13 Sep
+ 2024 11:57:22 +0200
+Received: from se-intmail01x.se.axis.com (10.0.5.60) by se-mail01w.axis.com
+ (10.20.40.7) with Microsoft SMTP Server id 15.1.2507.39 via Frontend
+ Transport; Fri, 13 Sep 2024 11:57:22 +0200
+Received: from pc55303-2334.se.axis.com (pc55303-2334.se.axis.com [10.94.180.8])
+	by se-intmail01x.se.axis.com (Postfix) with ESMTP id F34892D9;
+	Fri, 13 Sep 2024 11:57:21 +0200 (CEST)
+Received: by pc55303-2334.se.axis.com (Postfix, from userid 18269)
+	id F04B522FC7E6; Fri, 13 Sep 2024 11:57:21 +0200 (CEST)
+From: Emil Gedenryd <emil.gedenryd@axis.com>
+Date: Fri, 13 Sep 2024 11:57:02 +0200
+Subject: [PATCH v2 1/3] iio: light: opt3001: add missing full-scale range
+ value
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Fri, 13 Sep 2024 09:55:28 +0000
-Message-Id: <D452E2M75XCM.13OQGAPJ7JJ4A@baylibre.com>
-Cc: "Lars-Peter Clausen" <lars@metafoo.de>, "Michael Hennerich"
- <Michael.Hennerich@analog.com>, "Rob Herring" <robh@kernel.org>, "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>,
- "Nuno Sa" <nuno.sa@analog.com>, "Jonathan Corbet" <corbet@lwn.net>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, "David Lechner" <dlechner@baylibre.com>,
- <linux-doc@vger.kernel.org>
-Subject: Re: [PATCH 4/6] iio: adc: ad4030: add support for ad4630-24 and
- ad4630-16
-From: "Esteban Blanc" <eblanc@baylibre.com>
-To: "Jonathan Cameron" <jic23@kernel.org>
-X-Mailer: aerc 0.18.2-0-ge037c095a049
-References: <20240822-eblanc-ad4630_v1-v1-0-5c68f3327fdd@baylibre.com>
- <20240822-eblanc-ad4630_v1-v1-4-5c68f3327fdd@baylibre.com>
- <20240826102748.4be0b642@jic23-huawei>
-In-Reply-To: <20240826102748.4be0b642@jic23-huawei>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20240913-add_opt3002-v2-1-69e04f840360@axis.com>
+References: <20240913-add_opt3002-v2-0-69e04f840360@axis.com>
+In-Reply-To: <20240913-add_opt3002-v2-0-69e04f840360@axis.com>
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Andreas Dannenberg <dannenberg@ti.com>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, Emil Gedenryd <emil.gedenryd@axis.com>,
+	<kernel@axis.com>
+X-Mailer: b4 0.14.1
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DU6PEPF0000B61E:EE_|DB9PR02MB7260:EE_
+X-MS-Office365-Filtering-Correlation-Id: ce0347f9-80f7-4acf-3d19-08dcd3da776c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|82310400026|376014|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?M3BTREhXTlJaSEFpMExzeDVuRW5BUDFzSTA5M3JUZE5QendEUTZvVjhLTHJU?=
+ =?utf-8?B?SnNqTXlVZ2J1c1I1WkI4cWlhRUZSamIvUlRTUGMxT1hCUzFHK2pNN3QxSW9k?=
+ =?utf-8?B?QUtwVml2Qms4ZmIxV21Ba0M4RVRYM0dBNW43UjFWUlhpbWJteXk3aFNrbXh3?=
+ =?utf-8?B?ci8wRFZ3cmN3azB4U1VDVFpXTU9xbU15eTg1UCtHd3RaYVNyWUJpOUJuaUY5?=
+ =?utf-8?B?Zzh0RDRHZEZWWGhuZk1iYVlYUng1WmFOb0lCbkltRWhFOUdmNm5kWG84NkZ0?=
+ =?utf-8?B?cTR0aTk0Q0FWZTJLTkwrUEF3NFVjRkw4MHAvOGNiQjRFZFhrYlJpYTFNSmVI?=
+ =?utf-8?B?TnJnN3lCQkRORHJFQUVXclU3b09ENWlnRWpFTnJEMmpaaHFMUEthT2FsME8y?=
+ =?utf-8?B?bDJUN0NMMHZCekxUMEUxNGFRQ3g3Sk1kZ0FoTGluMFBNWjhhcGRHY3ZzNkgx?=
+ =?utf-8?B?SjVQU3pYUGVXbm1jQkNzai9XSVZieUZLTTF0Y2ZBY1NqRUNsRUw0TnUvYXQv?=
+ =?utf-8?B?RjNNaHorMkcrSkk4UFNnOUtnQzlaaStIM0pjbTFiK0Q0aEJIaFBNSUwvQi9V?=
+ =?utf-8?B?Tnl0RzJXaENMVk11TVJ6UTIzbVJGZUpMMDMxWFZmRG5iS080aXVBL2tpS3hw?=
+ =?utf-8?B?SFBHellSbW9oNDVDLysyOHFmYlRnL1BQbEFXTjBmNG1PRkNmMjlLTXZmdGJv?=
+ =?utf-8?B?NHFvYzFFbjBmRGpkSzRqMUlXeFVDU1QzdUIvSGVRVEpxbE0ycnl1WTIwZnhH?=
+ =?utf-8?B?MGRKbWozeEF6R2pHZGdmc3JseVFaS3kwZFQyU2QveXRSL1BybVB5WDUweXQ2?=
+ =?utf-8?B?Uk00Nmx1K0lxYzg3UG9WenNHbXdSZUtkWmRYR1YzQ0lrTWNlVVBESWxCdFJJ?=
+ =?utf-8?B?Y082cGNiZzZseWVCdUZSNWgxSEs0SHpHU1hBdDZpc3ZZUnQrOHBMSnhkMkxq?=
+ =?utf-8?B?dEZxajRvZXowMGlhY3RVR29ZQnVFYTZidS9mQ3dIWFZMKzRCV0FRbFhqSmJF?=
+ =?utf-8?B?SmtlS2ZkbnFmZzhEMHlFdUE2UXFCelZla2Z1ZE01WHVDVzlXTk1xZGhlcXBT?=
+ =?utf-8?B?ald0Ym5CL3lSRE8yRnErclRKT0RUU3ZOWXFFMnpvQktwNi9CV3lwZi83dUZI?=
+ =?utf-8?B?eDI2dFdOU3lGcktDbkptd0xHL1YwV04za3d1TkNaVktuQjkzQ2dDSS9CbEZv?=
+ =?utf-8?B?UnpjQUtYbGVpcUtKTGZPdEJqYTR3eUliRWsvbUlLVWY4emI1Q1I4azVKMERZ?=
+ =?utf-8?B?aHdMTnRDL0RrcFI4WlBWeTg3ckFVK0gvOXgwOGtxNW0yeTNpZ3NwSE5HYlJU?=
+ =?utf-8?B?UTJmdnlxNk1rOHVDTjk0Y1VSS1VQMHpva1FiOGNubVlrMjlMUjVpU2VCNGdl?=
+ =?utf-8?B?RXVIUW01S3ZRdTFQZ09GaVFOaTVwZ2s3alMwKzFwYjAwMEN5SHRZRVNySGRr?=
+ =?utf-8?B?ZUFYb0NPQWVxUXFyQStTRGtGdk4vbTJIUjAyYkFJN1hsR2xoRVlHTEUrbkJG?=
+ =?utf-8?B?R0U2dXlHVzR1aGxObFk5eTBoSzNPMWxqZUc5eEJHQStPK3ZHY3VRai9hbzlR?=
+ =?utf-8?B?S1JiM0NNc01iTytZZ0U1WFBreVY4a2VvcFpPMDhaSkZ4bkRJb1JzZWhKYTht?=
+ =?utf-8?B?NlVhcTEydVV6ZEFRdzRGaTRmTVhtK2FVdUI2TU13bUUvYjVDanAxdGp2SEtU?=
+ =?utf-8?B?dnNVd05rcnNnVS9JOU1RaEpzMkZvZVJXakRaYWZyWkZjdlRqOEVkNUtaWk9R?=
+ =?utf-8?B?a1AvaitPUDhZWG5ycVBDcmNUNDBGbXViWTFaSDJJYmdqcFY1Z3lKVm5MQVV5?=
+ =?utf-8?B?TGJQUHdrVXAwNUpxTmtwSVV2bzVNcmNacnJGWWJIaVA5TVlFbGZWQjdSQ2ZT?=
+ =?utf-8?B?NkRFNW5TL1o0b0tBWlhFclhnRWtVajVacktEMi94aGhyWXpHekxZTFZWMkxx?=
+ =?utf-8?Q?XSuI8Em6J4FCPShoW/En8XsBzLIK5G51?=
+X-Forefront-Antispam-Report:
+	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(376014)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: axis.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Sep 2024 09:57:23.8900
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ce0347f9-80f7-4acf-3d19-08dcd3da776c
+X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DU6PEPF0000B61E.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR02MB7260
 
-On Mon Aug 26, 2024 at 9:27 AM UTC, Jonathan Cameron wrote:
-> On Thu, 22 Aug 2024 14:45:20 +0200
-> Esteban Blanc <eblanc@baylibre.com> wrote:
-> > @@ -460,12 +517,21 @@ static int ad4030_conversion(struct ad4030_state =
-*st,
-> >  	if (ret)
-> >  		return ret;
-> > =20
-> > -	if (st->mode !=3D AD4030_OUT_DATA_MD_24_DIFF_8_COM)
-> > +	if (st->chip->num_channels =3D=3D 2)
-> > +		ad4030_extract_interleaved(st->rx_data.raw,
-> > +					   &st->rx_data.diff[0],
-> > +					   &st->rx_data.diff[1]);
-> > +
-> > +	if (st->mode !=3D AD4030_OUT_DATA_MD_16_DIFF_8_COM &&
-> > +	    st->mode !=3D AD4030_OUT_DATA_MD_24_DIFF_8_COM)
-> >  		return 0;
-> > =20
-> >  	byte_index =3D BITS_TO_BYTES(chan->scan_type.realbits);
-> > -	for (i =3D 0; i < st->chip->num_channels; i++)
-> > -		st->rx_data.buffered[i].common =3D ((u8 *)&st->rx_data.buffered[i].v=
-al)[byte_index];
-> > +	/* Doing it backward to avoid overlap when reordering */
-> > +	for (i =3D st->chip->num_channels - 1; i > 0; i--) {
-> > +		st->rx_data.buffered_common[i].diff =3D st->rx_data.diff[i];
-> > +		st->rx_data.buffered_common[i].common =3D ((u8 *)&st->rx_data.diff[i=
-])[byte_index];
-> > +	}
->
-> I wonder if doing it in place is actually worthwhile.  Maybe unpack into =
-a second
-> array? That is still fairly small and may make code easier to read.
+The opt3001 driver uses predetermined full-scale range values to
+determine what exponent to use for event trigger threshold values.
+The problem is that one of the values specified in the datasheet is
+missing from the implementation. This causes larger values to be
+scaled down to an incorrect exponent, effectively reducing the
+maximum settable threshold value by a factor of 2.
 
-Okay sure
+Add missing full-scale range array value.
 
-> > +static const unsigned long ad4630_channel_masks[] =3D {
-> > +	/* Differential only */
-> > +	BIT(0) | BIT(2),
-> > +	/* Differential with common byte */
-> > +	GENMASK(3, 0),
-> The packing of data isn't going to be good. How bad to shuffle
-> to put the two small channels next to each other?
-> Seems like it means you will want to combine your deinterleave
-> and channel specific handling above, which is a bit fiddly but
-> not much worse than current code.
+Fixes: 94a9b7b1809f ("iio: light: add support for TI's opt3001 light sensor")
+Signed-off-by: Emil Gedenryd <emil.gedenryd@axis.com>
+---
+ drivers/iio/light/opt3001.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-I can do it since that was what I had done in the RFC in the first place.
-Nuno asked for in this email https://lore.kernel.org/r/0036d44542f8cf45c91c=
-867f0ddd7b45d1904d6b.camel@gmail.com/:
+diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+index 887c4b776a86..176e54bb48c3 100644
+--- a/drivers/iio/light/opt3001.c
++++ b/drivers/iio/light/opt3001.c
+@@ -138,6 +138,10 @@ static const struct opt3001_scale opt3001_scales[] = {
+ 		.val = 20966,
+ 		.val2 = 400000,
+ 	},
++	{
++		.val = 41932,
++		.val2 = 800000,
++	},
+ 	{
+ 		.val = 83865,
+ 		.val2 = 600000,
 
->>> * You're pushing the CM channels into the end. So when we a 2 channel d=
-evice
->>> we'll have:
+-- 
+2.39.2
 
->>> in_voltage0 - diff
->>> in_voltage1 - diff
->>> in_voltage2 - CM associated with chan0
->>> in_voltage0 - CM associated with chan1
->>>
->>> I think we could make it so the CM channel comes right after the channe=
-l where
->>> it's data belongs too. So for example, odd channels would be CM channel=
-s (and
->>> labels could also make sense).
-
-So that's what I did here :D
-
-For the software side off things here it doesn't change a lot of things
-since we have to manipulate the data anyway, putting the extra byte at the
-end or in between is no extra work.
-For the offload engine however, it should be easier to ask for 24 bits
-then 8 bits for each channel as it would return two u32 per "hardware
-channel".
-
-In order to avoid having two different layouts, I was kind of sold by
-Nuno's idea of having the CM in between each diff channel.
-
-Thanks for your time,
-
---=20
-Esteban Blanc
-BayLibre
