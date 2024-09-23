@@ -1,177 +1,204 @@
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B79978283
-	for <linux-iio@vger.kernel.org>; Mon, 23 Sep 2024 14:51:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09E8777F2F;
+	Mon, 23 Sep 2024 14:53:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727103065; cv=none; b=iIJ5u3GMJgXC9dPLRSb2XAIG59RXoVybpaSz8bMe+nmG735OXPFx/js19BEzl1IRF6CBUCHBIWRuvfeN7gq3mJC1EJZmp9jwtaw1JSoYXDhwrOgPfL+pcOEf2+wjE2t3gyPly7ZU71B4B7xcucVyf03Zz83xjVc/atSu5g8WDPM=
+	t=1727103211; cv=none; b=q0IRLGa4xh57jAiyNoomysf71d47pTsIArwxW3HvJmmUspP8PznMmnTa99vFzLRsNM4PXNVc8DMSXv/STPSU4y7FkaXojRkSS0s7ix3qdYsTmVBQyIRwZmIp0iZ1YjbMK69VWKpoGLc4dIe+PKpWz4VyKuQ+sAe8lySR+qT5xzg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727103065; c=relaxed/simple;
-	bh=BsjiBnqrAUoClTsN7+h6hJtOPsIDoWFHkgfUY8gNaSQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JQ1+u0sN/hi75270gzQzq1inEoqjtzu1SNk8CV+x1vpuj+qht0IE04+FV1qhDFrj9KuhzkTftiZqB06pt8IlWY1km7+J3tWjbeQVo2WbPTwvhvin6z84nDY6oEUb882l4ds7VLauhMbeMxaSFCqn0+0zMVygNHGE3L7/KWi0F6A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=LU9eZzdq; arc=none smtp.client-ip=209.85.208.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1727103211; c=relaxed/simple;
+	bh=q/6vWTasDLm0W9z2hsovz3RuFO+UgGAJrDn3blh7EE8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=q4NtNcSh6fqnBtC6InylaW2IDioKcRTBYmIxuKZJWuavQ0aZwK06aHXpM4obzVUSHhb2zeJGd5tzh9pTCUx8oIKgB6Lkn+i1gjhpbD2DWJ0+bUDFUG2z7ElgAJk8wTEzJtiQ84gL1bTWUrFv4hArLCbxA231RspCu+e6d+4Pni4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VIDAUuz9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="LU9eZzdq"
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2f75aaaade6so45566551fa.1
-        for <linux-iio@vger.kernel.org>; Mon, 23 Sep 2024 07:51:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1727103061; x=1727707861; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=O4OUNFjDByLq9FRjOjUg0G9EEfy30+IfreUniUhssi4=;
-        b=LU9eZzdq8W7MCX45vErNuHSMrDIXqCUBmRx7Y/TgbuYdVBlektvf7IgtMirUwyUA49
-         Kqjtrn34SFnQILqiFyRaiNVSnc6i2sGr2AvmKRrlJroOk5SM6B50cmEK2zaHoLItnWHi
-         1B/atNWXX1ydTV7JTmyT68vfzSKwqcpg3NxO5WHsD5DqItfDJXcbQBtoBmNiq5uHH0vH
-         dx8sGw1T6aZ2X5c826/jVe8W6hUTAaJ/ywOjAe/K6WM9ikztlmZp4QCRqt+/1WRrUCNo
-         kYmgQ2VfUwTBh7ZeNVu5+mv2mjHr3Fkja1psmnwR5/5eMH7sOc39tmdFJtIW13f/v3E/
-         mvRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727103061; x=1727707861;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=O4OUNFjDByLq9FRjOjUg0G9EEfy30+IfreUniUhssi4=;
-        b=XLyhdARLCvX9XOmk/yh66ZraQB63/+TRQkUNvr9lzxUvRpM2W6OqzqFOFz50HckTJb
-         MsALP12DaNibyP3WY9cmb51P+wWvsNAk21RJLQdNSzb0JUkL8QrznsRbk1Z52J+KPch0
-         P2dyt8bKSvxU+SFJLbk7eB2BIxgH11e4zYxRO00T9UuSzV0iG6LKqxr+qKPcvqq+6QME
-         pQMPLEwUVZ4rQnC73EApXI4TcTXxVOm6gXso6XXfxlgvxMiYFib6fIZeTDqafB90y3AK
-         uIsW5hOLFVR5zw0No9uOa/DBwVKYiGBPd5AykJZOFw0JmWaC6dIXBi3Ql2umVPdW1T5X
-         063g==
-X-Gm-Message-State: AOJu0YysH9F8puDavau4Iqdha0gc7vnjDpDMYxoUwHjWCy/z9UOk+tIp
-	Zo1J5mwYboMrC+bX9qiqC19wcL1xDp0XcIc/mbiqzweiamM9GCL/esWXihjXNvFcq4locfyjhZn
-	BGOj7TY4p8Jo2f+M5LAlZwRfKKdUqQH71IfMwAA==
-X-Google-Smtp-Source: AGHT+IHc9xA0AFD7Yfw//MelyGncj9IdZ6HsoEM6nE1m1oiGo77DmPCbqw5ewHz2iMAEDz2rJOzQ4D6MhH5h66Sfe9U=
-X-Received: by 2002:a05:651c:54b:b0:2f7:631a:6e0d with SMTP id
- 38308e7fff4ca-2f7cc365e12mr62173071fa.12.1727103061396; Mon, 23 Sep 2024
- 07:51:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VIDAUuz9"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D229EC4CEC7;
+	Mon, 23 Sep 2024 14:53:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1727103210;
+	bh=q/6vWTasDLm0W9z2hsovz3RuFO+UgGAJrDn3blh7EE8=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=VIDAUuz9lXzSxKgM+wqIeYXSLEpLBDlw2y5GiiivR5jr7e8pjyiXn/Ujlfx5nkdsj
+	 pcCuX1RXr3V0S0TTl3WIAxtMXi6HtMXDFdPliotU7uPKnPhW0Lj0kKjrLlsoadnK1L
+	 nRMlgqsMOIcg27fwvfW0LNOhBlji2ajxkmSfce8KjENGqTTWJqUgXdT5NSH7eRWPC3
+	 fWZEEMWnsYP3yUPcx5ZcDnqo47NImQeYKzcI6KVzOHYglawi71CTDCv8LaGnbBH8nZ
+	 DcBzwfIaTLL/qBKOWj1tdcBFDZWhCF6dSD9L8E78Y5h0iocU4MclHLJ+uTzl8zHLhh
+	 gNZUpw8eFu6LA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E05CF9C74;
+	Mon, 23 Sep 2024 14:53:30 +0000 (UTC)
+From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Date: Mon, 23 Sep 2024 16:53:22 +0200
+Subject: [PATCH v2 2/2] iio: imu: inv_mpu6050: add support for
+ IAM-20680HT/HP
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240919130444.2100447-1-aardelean@baylibre.com> <20240919130444.2100447-2-aardelean@baylibre.com>
-In-Reply-To: <20240919130444.2100447-2-aardelean@baylibre.com>
-From: David Lechner <dlechner@baylibre.com>
-Date: Mon, 23 Sep 2024 16:50:49 +0200
-Message-ID: <CAMknhBFso4RXhhLSN_x1JEDCi70y-2BDVHKAzuh=bp7dt7dgxA@mail.gmail.com>
-Subject: Re: [PATCH v7 1/8] iio: adc: ad7606: add 'bits' parameter to channels macros
-To: Alexandru Ardelean <aardelean@baylibre.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, jic23@kernel.org, krzk+dt@kernel.org, 
-	robh@kernel.org, lars@metafoo.de, michael.hennerich@analog.com, 
-	gstols@baylibre.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240923-inv-mpu6050-add-iam20680-ht-hp-v2-2-48290e0b9931@tdk.com>
+References: <20240923-inv-mpu6050-add-iam20680-ht-hp-v2-0-48290e0b9931@tdk.com>
+In-Reply-To: <20240923-inv-mpu6050-add-iam20680-ht-hp-v2-0-48290e0b9931@tdk.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, 
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1727103209; l=4819;
+ i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
+ bh=/ldj+ehtICzWHkHGTke2yP8V+ZJuIQcCfLCxa5OZgXg=;
+ b=OTzZplcLjGZjfqicjharfREu1ibD25Dz1ovfVdAT/MlhsqduSpbnb5d/V+D9KB96DKTJ8xA5O
+ ugvQQPeszuuD91dSDs6aamelS+bwSaUFz3ayZrI8H0262EElJ0+66Xa
+X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
+ pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
+X-Endpoint-Received: by B4 Relay for
+ jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
+X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reply-To: jean-baptiste.maneyrol@tdk.com
 
-On Thu, Sep 19, 2024 at 3:04=E2=80=AFPM Alexandru Ardelean
-<aardelean@baylibre.com> wrote:
->
-> There are some newer additions to the AD7606 family, which support 18 bit
-> precision. Up until now, all chips were 16 bit.
->
-> This change adds a 'bits' parameter to the AD760X_CHANNEL macro and renam=
-es
-> 'ad7606_channels' -> 'ad7606_channels_16bit' for the current devices.
->
-> The AD7606_SW_CHANNEL() macro is also introduced, as a short-hand for IIO
-> channels in SW mode.
->
-> Signed-off-by: Alexandru Ardelean <aardelean@baylibre.com>
-> ---
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-...
+IAM-20680HT & HP are 2 variants of IAM-20680 with better specs,
+wider temperature range, and a bigger FIFO (4k).
 
-> diff --git a/drivers/iio/adc/ad7606.h b/drivers/iio/adc/ad7606.h
-> index 6649e84d25de..204a343067e5 100644
-> --- a/drivers/iio/adc/ad7606.h
-> +++ b/drivers/iio/adc/ad7606.h
-> @@ -8,7 +8,7 @@
->  #ifndef IIO_ADC_AD7606_H_
->  #define IIO_ADC_AD7606_H_
->
-> -#define AD760X_CHANNEL(num, mask_sep, mask_type, mask_all) {   \
-> +#define AD760X_CHANNEL(num, mask_sep, mask_type, mask_all, bits) {     \
->                 .type =3D IIO_VOLTAGE,                            \
->                 .indexed =3D 1,                                   \
->                 .channel =3D num,                                 \
-> @@ -19,24 +19,26 @@
->                 .scan_index =3D num,                              \
->                 .scan_type =3D {                                  \
->                         .sign =3D 's',                            \
-> -                       .realbits =3D 16,                         \
-> -                       .storagebits =3D 16,                      \
-> +                       .realbits =3D (bits),                     \
-> +                       .storagebits =3D (bits) > 16 ? 32 : 16,   \
->                         .endianness =3D IIO_CPU,                  \
->                 },                                              \
->  }
->
->  #define AD7605_CHANNEL(num)                            \
->         AD760X_CHANNEL(num, BIT(IIO_CHAN_INFO_RAW),     \
-> -               BIT(IIO_CHAN_INFO_SCALE), 0)
-> +               BIT(IIO_CHAN_INFO_SCALE), 0, 16)
->
-> -#define AD7606_CHANNEL(num)                            \
-> +#define AD7606_CHANNEL(num, bits)                      \
->         AD760X_CHANNEL(num, BIT(IIO_CHAN_INFO_RAW),     \
->                 BIT(IIO_CHAN_INFO_SCALE),               \
-> -               BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO))
-> +               BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), bits)
->
-> -#define AD7616_CHANNEL(num)    \
-> +#define AD7606_SW_CHANNEL(num, bits)   \
->         AD760X_CHANNEL(num, BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SC=
-ALE),\
-> -               0, BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO))
-> +               0, BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), bits)
-> +
-> +#define AD7616_CHANNEL(num)    AD7606_SW_CHANNEL(num, 16)
+Fully compatible with IAM-20680, FIFO is 512 bytes by default and
+with correct register setting we expand it to full 4k.
 
-It looks like the AD7616_CHANNEL macro is no longer used, so can be
-dropped. Or alternately, don't change the lines below to use
-AD7606_SW_CHANNEL.
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 20 ++++++++++++++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  | 10 ++++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  | 10 ++++++++++
+ 4 files changed, 44 insertions(+)
 
-With either of those changes:
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 14d95f34e981c8b71dd0892fbeb12735a8857d6c..6b0adb7f9ae301878d9b4d6febec0309bd77a256 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -286,6 +286,24 @@ static const struct inv_mpu6050_hw hw_info[] = {
+ 		.temp = {INV_ICM20608_TEMP_OFFSET, INV_ICM20608_TEMP_SCALE},
+ 		.startup_time = {INV_MPU6500_GYRO_STARTUP_TIME, INV_MPU6500_ACCEL_STARTUP_TIME},
+ 	},
++	{
++		.whoami = INV_IAM20680HP_WHOAMI_VALUE,
++		.name = "IAM20680HP",
++		.reg = &reg_set_6500,
++		.config = &chip_config_6500,
++		.fifo_size = 4 * 1024,
++		.temp = {INV_ICM20608_TEMP_OFFSET, INV_ICM20608_TEMP_SCALE},
++		.startup_time = {INV_MPU6500_GYRO_STARTUP_TIME, INV_MPU6500_ACCEL_STARTUP_TIME},
++	},
++	{
++		.whoami = INV_IAM20680HT_WHOAMI_VALUE,
++		.name = "IAM20680HT",
++		.reg = &reg_set_6500,
++		.config = &chip_config_6500,
++		.fifo_size = 4 * 1024,
++		.temp = {INV_ICM20608_TEMP_OFFSET, INV_ICM20608_TEMP_SCALE},
++		.startup_time = {INV_MPU6500_GYRO_STARTUP_TIME, INV_MPU6500_ACCEL_STARTUP_TIME},
++	},
+ };
+ 
+ static int inv_mpu6050_pwr_mgmt_1_write(struct inv_mpu6050_state *st, bool sleep,
+@@ -510,6 +528,8 @@ static int inv_mpu6050_set_accel_lpf_regs(struct inv_mpu6050_state *st,
+ 		return 0;
+ 	case INV_ICM20689:
+ 	case INV_ICM20690:
++	case INV_IAM20680HT:
++	case INV_IAM20680HP:
+ 		/* set FIFO size to maximum value */
+ 		val |= INV_ICM20689_BITS_FIFO_SIZE_MAX;
+ 		break;
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+index 0e03137fb3d40d4753989522cf5168ef358a1014..7a5926ba6b97d5e5fbdd08e0c90b58afb3f0131a 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -188,6 +188,8 @@ static const struct i2c_device_id inv_mpu_id[] = {
+ 	{"icm20602", INV_ICM20602},
+ 	{"icm20690", INV_ICM20690},
+ 	{"iam20680", INV_IAM20680},
++	{"iam20680hp", INV_IAM20680HP},
++	{"iam20680ht", INV_IAM20680HT},
+ 	{}
+ };
+ 
+@@ -254,6 +256,14 @@ static const struct of_device_id inv_of_match[] = {
+ 		.compatible = "invensense,iam20680",
+ 		.data = (void *)INV_IAM20680
+ 	},
++	{
++		.compatible = "invensense,iam20680hp",
++		.data = (void *)INV_IAM20680HP
++	},
++	{
++		.compatible = "invensense,iam20680ht",
++		.data = (void *)INV_IAM20680HT
++	},
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, inv_of_match);
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index e1c0c51468761ab18188a224e44e09f919d81f9a..a6862cf426396cbaf3452bb3451cd58e4f30a4ec 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -85,6 +85,8 @@ enum inv_devices {
+ 	INV_ICM20602,
+ 	INV_ICM20690,
+ 	INV_IAM20680,
++	INV_IAM20680HP,
++	INV_IAM20680HT,
+ 	INV_NUM_PARTS
+ };
+ 
+@@ -424,6 +426,8 @@ struct inv_mpu6050_state {
+ #define INV_ICM20602_WHOAMI_VALUE		0x12
+ #define INV_ICM20690_WHOAMI_VALUE		0x20
+ #define INV_IAM20680_WHOAMI_VALUE		0xA9
++#define INV_IAM20680HP_WHOAMI_VALUE		0xF8
++#define INV_IAM20680HT_WHOAMI_VALUE		0xFA
+ 
+ /* scan element definition for generic MPU6xxx devices */
+ enum inv_mpu6050_scan {
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+index 05451ca1580b637a66a30efe82fbd2a2b63e55d5..e6a291fcda958c56e889e58151929a2f602b0426 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+@@ -80,6 +80,8 @@ static const struct spi_device_id inv_mpu_id[] = {
+ 	{"icm20602", INV_ICM20602},
+ 	{"icm20690", INV_ICM20690},
+ 	{"iam20680", INV_IAM20680},
++	{"iam20680hp", INV_IAM20680HP},
++	{"iam20680ht", INV_IAM20680HT},
+ 	{}
+ };
+ 
+@@ -142,6 +144,14 @@ static const struct of_device_id inv_of_match[] = {
+ 		.compatible = "invensense,iam20680",
+ 		.data = (void *)INV_IAM20680
+ 	},
++	{
++		.compatible = "invensense,iam20680hp",
++		.data = (void *)INV_IAM20680HP
++	},
++	{
++		.compatible = "invensense,iam20680ht",
++		.data = (void *)INV_IAM20680HT
++	},
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, inv_of_match);
 
-Reviewed-by: David Lechner <dlechner@baylibre.com>
+-- 
+2.34.1
 
->
->  /**
->   * struct ad7606_chip_info - chip specific information
-> diff --git a/drivers/iio/adc/ad7606_spi.c b/drivers/iio/adc/ad7606_spi.c
-> index 62ec12195307..e00f58a6a0e9 100644
-> --- a/drivers/iio/adc/ad7606_spi.c
-> +++ b/drivers/iio/adc/ad7606_spi.c
-> @@ -67,14 +67,14 @@ static const struct iio_chan_spec ad7616_sw_channels[=
-] =3D {
->
->  static const struct iio_chan_spec ad7606b_sw_channels[] =3D {
->         IIO_CHAN_SOFT_TIMESTAMP(8),
-> -       AD7616_CHANNEL(0),
-> -       AD7616_CHANNEL(1),
-> -       AD7616_CHANNEL(2),
-> -       AD7616_CHANNEL(3),
-> -       AD7616_CHANNEL(4),
-> -       AD7616_CHANNEL(5),
-> -       AD7616_CHANNEL(6),
-> -       AD7616_CHANNEL(7),
-> +       AD7606_SW_CHANNEL(0, 16),
-> +       AD7606_SW_CHANNEL(1, 16),
-> +       AD7606_SW_CHANNEL(2, 16),
-> +       AD7606_SW_CHANNEL(3, 16),
-> +       AD7606_SW_CHANNEL(4, 16),
-> +       AD7606_SW_CHANNEL(5, 16),
-> +       AD7606_SW_CHANNEL(6, 16),
-> +       AD7606_SW_CHANNEL(7, 16),
->  };
->
->  static const unsigned int ad7606B_oversampling_avail[9] =3D {
-> --
-> 2.46.0
->
+
