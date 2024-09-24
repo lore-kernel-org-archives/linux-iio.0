@@ -1,120 +1,178 @@
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F40CE1AB519;
-	Tue, 24 Sep 2024 22:07:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EE90140E30;
+	Tue, 24 Sep 2024 22:32:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727215681; cv=none; b=N6NCuA/QnfKxDCYAJtshrli/5npkguoMhIAMVZjBtEZG4+lC7WtTrVpK03t5L55XsK5yhFFcsJ6MLX+tgBZ9PisCMG4Ek9D+YllaT7Gt3ea7FiTWaTEr8mUSxfRKG3bHTrhcBppH4ufVd/wTW/wo6svaUxSbB9Z/VJY7Aa+Hz94=
+	t=1727217174; cv=none; b=cRCZo28CJlPjc2+ueQtzwYqv9MKLKp6GeShNqXuEGSC5JRT3oMiQ/0vVN7go5+QkXNxzDw6qFwr9my5nSWUHJTO3alqwZNd2Gl0or+cN5ZViYZSwuAGsTEJ4Rf+UuIhi7B2CGd6vEzPHxhqheRjjWgM76YeUtZc17wbM3GLKTps=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727215681; c=relaxed/simple;
-	bh=Lm4eEehHmGZ56HFJ1rm8sdQ2HFVye/tnWeXbh92iEr0=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=R479PjDo8UJ8SLE3rTvs1wEnbrP5IghRFex9O0BVMguDHbAVi6FRcPvFOsOeNxeehg6FmXUrv+K01wqHghNzK1O+3B3n5btCztFXM3qIRa9tDfqLR8ozlUx1C1cK59jKiQpbBlLz4SGSERyD+pU/TPjeaMFehjgCfP6lNUbrwJ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=wispDvV3; arc=none smtp.client-ip=198.47.19.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	s=arc-20240116; t=1727217174; c=relaxed/simple;
+	bh=MMuFHHE8yf0thaTzhn4AnEOYyvt5BjWMgnjwJ6KAB1s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sx8tKoLEzHXdlqZJOqzwkp4nkDG+b9u1Cz/yV+eUSU4jgFBM9EwMTOMoYOyaBPf2vfZtDJqQSJXY2kCwh0EB72c11wYdF+VEk6BC56UhFpBN4GGnM0MUa77DfB5gi+EmHrDx0PgmVKdcnbj8iMFu3TS3WD1ItKdgy52q59PTV+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FUgu8IJr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="wispDvV3"
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 48OM72Gw082927;
-	Tue, 24 Sep 2024 17:07:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1727215622;
-	bh=1M2n6m+75pbsYposN1bAhoWmo9g+O2FkqiGVf/F7xdc=;
-	h=From:To:CC:Subject:Date:In-Reply-To:References;
-	b=wispDvV3xWKAqC5BMq3OM/8u5OOzmDU93RhfZY/WPIODlz+UTZDjgeckseDLYyEHc
-	 C36oI7dpMoby27XPr9KcckeZlvfHQn5wRaZktfCvdZervyhOpjQvBnUPf6NeLr9JI3
-	 YonIWNK8KCvdEsr5Qe6g/EgVDEPZ/J8KKCkbEfVA=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-	by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 48OM72Rf019415
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 24 Sep 2024 17:07:02 -0500
-Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Tue, 24
- Sep 2024 17:07:02 -0500
-Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Tue, 24 Sep 2024 17:07:02 -0500
-Received: from judy-hp.dhcp.ti.com (judy-hp.dhcp.ti.com [128.247.81.105])
-	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 48OM72lT037639;
-	Tue, 24 Sep 2024 17:07:02 -0500
-From: Judith Mendez <jm@ti.com>
-To: William Breathitt Gray <wbg@kernel.org>
-CC: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>, Nishanth Menon <nm@ti.com>,
-        Tero Kristo <kristo@kernel.org>, David Lechner
-	<david@lechnology.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-        Judith Mendez <jm@ti.com>
-Subject: [PATCH v6 2/5] arm64: dts: ti: k3-am62a-main: Add eQEP nodes
-Date: Tue, 24 Sep 2024 17:06:57 -0500
-Message-ID: <20240924220700.886313-3-jm@ti.com>
-X-Mailer: git-send-email 2.46.0
-In-Reply-To: <20240924220700.886313-1-jm@ti.com>
-References: <20240924220700.886313-1-jm@ti.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FUgu8IJr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AA66C4CEC4;
+	Tue, 24 Sep 2024 22:32:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1727217174;
+	bh=MMuFHHE8yf0thaTzhn4AnEOYyvt5BjWMgnjwJ6KAB1s=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=FUgu8IJr+Ekzzbc91nB4TXhAvZHd+gILh+QZALXrs3n7MX83hNy+x1A7twHI4XDr2
+	 fqBbeShVgqHMB/Af0g0ANggVirXF6Hak/FrdeXnSgmhzCHXmSoE70zu4CsYS7LwjFi
+	 1ySQHpMSHbnCf2C3iPXQ7Wmjb4+9OON4faBN0m1uGsujVZH//y7FLtdEvKsZ8nRBxY
+	 VEbzylvY+eToUycMvxIVe+CDiTOi2Kf3TnWGW+53IcxfpxBem+xKPfrZn9icGWvAit
+	 sujR8UvklpNmJqROJhlCVrhdEjKFf2hwg6VFg/hwrYnaY+TxWAjbm0Ky+rwwhARgc5
+	 Kh2fs75iXpkIw==
+Date: Tue, 24 Sep 2024 17:32:53 -0500
+From: Rob Herring <robh@kernel.org>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Nuno Sa <nuno.sa@analog.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Mike Looijmans <mike.looijmans@topic.nl>,
+	Marius Cristea <marius.cristea@microchip.com>,
+	Dumitru Ceclan <mitrutzceclan@gmail.com>,
+	=?iso-8859-1?Q?Jo=E3o_Paulo_Gon=E7alves?= <joao.goncalves@toradex.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Alisa-Dariana Roman <alisadariana@gmail.com>,
+	Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
+	Dragos Bogdan <dragos.bogdan@analog.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-pwm@vger.kernel.org
+Subject: Re: [PATCH 5/7] dt-bindings: iio: adc: add ad458x
+Message-ID: <20240924223253.GA408169-robh@kernel.org>
+References: <20240923101206.3753-1-antoniu.miclaus@analog.com>
+ <20240923101206.3753-6-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240923101206.3753-6-antoniu.miclaus@analog.com>
 
-Add eQEP device tree nodes 0-2 for AM62A7 SoC.
+On Mon, Sep 23, 2024 at 01:10:22PM +0300, Antoniu Miclaus wrote:
+> Add devicetree bindings for ad458x DAS family.
 
-Signed-off-by: Judith Mendez <jm@ti.com>
----
-Changes since v5:
-- No change
----
- arch/arm64/boot/dts/ti/k3-am62a-main.dtsi | 27 +++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+typo: ad485x
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am62a-main.dtsi b/arch/arm64/boot/dts/ti/k3-am62a-main.dtsi
-index 16a578ae2b41..a93e2cd7b8c7 100644
---- a/arch/arm64/boot/dts/ti/k3-am62a-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am62a-main.dtsi
-@@ -943,6 +943,33 @@ ecap2: pwm@23120000 {
- 		status = "disabled";
- 	};
- 
-+	eqep0: counter@23200000 {
-+		compatible = "ti,am62-eqep";
-+		reg = <0x00 0x23200000 0x00 0x100>;
-+		power-domains = <&k3_pds 59 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 59 0>;
-+		interrupts = <GIC_SPI 116 IRQ_TYPE_EDGE_RISING>;
-+		status = "disabled";
-+	};
-+
-+	eqep1: counter@23210000 {
-+		compatible = "ti,am62-eqep";
-+		reg = <0x00 0x23210000 0x00 0x100>;
-+		power-domains = <&k3_pds 60 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 60 0>;
-+		interrupts = <GIC_SPI 117 IRQ_TYPE_EDGE_RISING>;
-+		status = "disabled";
-+	};
-+
-+	eqep2: counter@23220000 {
-+		compatible = "ti,am62-eqep";
-+		reg = <0x00 0x23220000 0x00 0x100>;
-+		power-domains = <&k3_pds 62 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 62 0>;
-+		interrupts = <GIC_SPI 118 IRQ_TYPE_EDGE_RISING>;
-+		status = "disabled";
-+	};
-+
- 	mcasp0: audio-controller@2b00000 {
- 		compatible = "ti,am33xx-mcasp-audio";
- 		reg = <0x00 0x02b00000 0x00 0x2000>,
--- 
-2.46.0
+Subject too.
 
+> 
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> ---
+>  .../bindings/iio/adc/adi,ad485x.yaml          | 82 +++++++++++++++++++
+>  1 file changed, 82 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad485x.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad485x.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad485x.yaml
+> new file mode 100644
+> index 000000000000..5f5bdfa9522b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad485x.yaml
+> @@ -0,0 +1,82 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright 2022 Analog Devices Inc.
+
+It's 2024
+
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/adi,ad485x.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analog Devices AD485X DAS family device driver
+
+What's DAS?
+
+This is a binding, not 'device driver'. Just drop.
+
+> +
+> +maintainers:
+> +  - Sergiu Cuciurean <sergiu.cuciurean@analog.com>
+> +  - Dragos Bogdan <dragos.bogdan@analog.com>
+> +  - Antoniu Miclaus <antoniu.miclaus@analog.com>
+> +
+> +description: |
+> +  Analog Devices AD485X DAS family
+> +
+> +  https://www.analog.com/media/en/technical-documentation/data-sheets/ad4858.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,ad4858
+> +      - adi,ad4857
+> +      - adi,ad4856
+> +      - adi,ad4855
+> +      - adi,ad4854
+> +      - adi,ad4853
+> +      - adi,ad4852
+> +      - adi,ad4851
+> +      - adi,ad4858i
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  vcc-supply: true
+> +
+> +  vdd-supply: true
+> +
+> +  vddh-supply: true
+> +
+> +  vio-supply: true
+> +
+> +  pwms:
+> +    maxItems: 1
+> +
+> +  io-backends:
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 100000000
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - vcc-supply
+> +  - vdd-supply
+> +  - vddh-supply
+> +  - vio-supply
+> +  - pwms
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    spi {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        adc@0{
+> +            compatible = "adi,ad4858";
+> +            reg = <0>;
+> +            spi-max-frequency = <10000000>;
+> +            vcc-supply = <&vcc>;
+> +            vdd-supply = <&vdd>;
+> +            vddh-supply = <&vddh>;
+> +            vio-supply = <&vio>;
+> +            pwms = <&pwm_gen 0 0>;
+> +            io-backends = <&iio_backend>;
+> +        };
+> +    };
+> +...
+> -- 
+> 2.46.0
+> 
