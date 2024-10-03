@@ -1,60 +1,60 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2E8B1A707E;
-	Thu,  3 Oct 2024 16:49:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 373CA1ABED9;
+	Thu,  3 Oct 2024 16:49:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727974199; cv=none; b=V4VdkZDqt0FPIVbMCy88oCwrNk1TL8bNxYaZAXmVnAtZfUh8zLp3I8YLAn8qKlwobM/F7urw8I4ig2AylAF+AQlrnDvF5dwl/UMoq/XAm083lY7K4rAmFfJAKYimdlTCj1pAsr53XUGJccVe8Ck2d8iaWsRYHioR/bLeksifzOA=
+	t=1727974200; cv=none; b=UacuYvuhmL4ISHXKxIwrwC/I6/3PGYoapizm+GJ193nu7iImm2nGedhD5f6wMieXXUnRQ0HEAwMsDZOcNUTlHhBrvopwUYp3tDWEhkz1m7BCbb3NB1GPfEMVv+Pw/XydmE2EZqjaygvh4in5V5yndmsrpbxvj+31IIW8rNATZ+I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727974199; c=relaxed/simple;
-	bh=BBOiYyG846PZfy1vjYqIRCTmMXGkQS9IkdPgQcqfOOc=;
+	s=arc-20240116; t=1727974200; c=relaxed/simple;
+	bh=7koLyHPDo+qEkV7cTyZAP8yY6rmuZ3JOGuG5yYfrBOA=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=gHSwXc0wsMGWGKoevLI1LYtRpeeEmPN1gNRPqkR0r11pMwLgb3f41/qVtJOgRRrhWbZLLsBaHXdRPogwGVM3m/ZbcIvBnx2TogAmFX5Sle9LiUJAp2o2HVDbfL2A+Q5ypZLND/0wN6f1tcjROr/Uv4oh/PI1Qxl5ODeNBdMU998=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LcrrFfVr; arc=none smtp.client-ip=209.85.128.43
+	 In-Reply-To:To:Cc; b=AF9Sthwlq5osjUUEEWEDBLSnkoUo8sJ+cdZSOQFtmANc6047drRVn9QVPDXW15/N89WEiDjnfpNlQI9n87AfqtaQlAtqx723j5J6CBKOKtvXVyzef0JOcU64GwrWtPQQzIlfRMQLyLn4XwnHkBHsDCwPNu/5WcBiz8LgfarJSw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KfXn9TuU; arc=none smtp.client-ip=209.85.218.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LcrrFfVr"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-42e748f78d6so11175405e9.0;
-        Thu, 03 Oct 2024 09:49:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KfXn9TuU"
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-a8d56155f51so137725666b.2;
+        Thu, 03 Oct 2024 09:49:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1727974196; x=1728578996; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1727974197; x=1728578997; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=IeMLgap/sYuFhHx34dDTHROBJtr85UuEx3v3CO2czsA=;
-        b=LcrrFfVrtKgLuEWfgbotT6tX9gdHhuRbQyJp5QBljBSRvhry8cuoOnNb9tbl3AmBsw
-         LcSfpZmEGqDBL5Pto3ddiabruzdQzQlLnS4iOfEeG3ZeQaw/yHWuqVVfPB+VR22wg58a
-         9vNkdXdleNxDdobS6L+dtf3PixnN3aMVVfhSU4xF9LnDw22SIvPQmMnG4bcClrfB7abB
-         lOGk0vAhq6+ip2gMRFu5nJdGPIQcn5s3xW0cGSAMflixtrT42SH/Fv6zSCXosChe59Wq
-         v8XHccaqgbDz/y/AVoRPnbl32UleJtprrj/DUzk63tMsypkmjmaSEUcAHYPx6L15ZJyL
-         N4yQ==
+        bh=HoUh692mjj/PuFEXCwDXCJ5PT3l2iDf/Tiv5bvQT/sY=;
+        b=KfXn9TuUMNpukwsQGwIVvfYkCddMZlTjKYSKkZ467jJi9s0h8U+USlaUCcWLe8uL6S
+         ywga81vqdgBf6yDPVlqqQK/RhIZlClwTnXX+9pNM9wQsCWgp5Sbamkx7jgrBAe2L7LKb
+         VR8Fxn/fpiIB6rji+IRFFpZUdNbQna7iCLLPdZKZwACpqaLu00/I2Q27RuCjnfCaEYEV
+         HUMImkpOS+jceiuzZ+wxFJsBDUXU1P94XhVBDiQ11Nuw8mGD6YpA5jZqgSAJrBhE8HPM
+         l+rjqQ8YlpkrPDMLt1V3KlmOA08voNujsjgvGAeU3nmA475CIcZr8KvtE7XX3Kni/htI
+         HH+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727974196; x=1728578996;
+        d=1e100.net; s=20230601; t=1727974197; x=1728578997;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=IeMLgap/sYuFhHx34dDTHROBJtr85UuEx3v3CO2czsA=;
-        b=BS7VHYd8iI56ZPb4Y9EBnK2cFSzSdaIvKjJtLHDLOym6eTtCDP/hTrRQqXv9UVODWM
-         IBEjHCePb9UxyLWPFiFA2eS5esxsCMXlMugwL+fkxKaFF0KWafCaqAK/edpXeDnjmM/b
-         i+FPimkIXQYSusVbdkg7lfs81yz/6RGHVnM9DGGBUWdSEEDmjMWB0iMsOaCbKu07Kuxg
-         /PgpuAfQG6z/CzrIT4ZYBFBe6JTAfrhjCNFYjMpCvZtzj0Xbx8Hpuyx2SeY9dgQL90cK
-         0TVyaONb12UCgq1nsKJVtMDv9ogd6qehlR6mfncZEGgW9cfMYnmxqqoLVYBk7d4lv9HB
-         TNpQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVKLG6GQKt66apXKcdOotmlgJTs9Ue7SBM8gqLiBdIiDIBV2hYp6Bg5oCCrj84ROmvH3xXA/u82Wds2a/Zv@vger.kernel.org, AJvYcCWJyyeEWyE8ai5N3va4mMpH2c9YpZo0W4CWlH7i3dkf3ZzCS132JRkzn8K0kSICsc0ZgbmuiRGmtac=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwvpS9h0xoYHO7RJ00p1+GcBZR+tuCCMJMQgVLRKnIkREfMvv7j
-	zEw56n2URYGdQubrB+SWWXd7MppANIYMGFVVcWeMiB/OdSDT3oGmoZySNYsW
-X-Google-Smtp-Source: AGHT+IFmGb4w0A0HceHPEJuT45bZSB7rqUmneMmI1OKCrqlowBfyCr/68dRdIduPpAWqCmrR5rSDoA==
-X-Received: by 2002:a05:600c:4ed0:b0:42c:a8cb:6a96 with SMTP id 5b1f17b1804b1-42f778f12b8mr59258735e9.31.1727974195523;
-        Thu, 03 Oct 2024 09:49:55 -0700 (PDT)
+        bh=HoUh692mjj/PuFEXCwDXCJ5PT3l2iDf/Tiv5bvQT/sY=;
+        b=uwz/hOL8lEDExGpYD4ByXQJa7mspAwBKOilX7iDoDZ++sSf6MweiFcA6g1mSeRwa9J
+         EKz3j3xCy5fjmb41RokFBgIHb5IG+OhDQfSZKNvIcxrCHWaxOtuc0CABZc+09jGCIHS6
+         +IyFgBzIeWqAzo5xkBc7YUKJOi4d3st8U+Yx7AN32gT8+AkLntWvMNrf2lsnKdgJLFKZ
+         YZhGn/0WxD3/tK9Fk+pRWjIKTbWHS5Nbvnhid/ffC1yBz6Y6VdULJezxjhZpzzy5cCXv
+         ez2AKiUt3j90Wij5iwZHs/2osGMwXYEPpUZ3NxhLijhuzGK/hUvrZHlfhW8qLrNagiY3
+         zWiQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVyk5YHwg7CJ7Tc076J8L6V/77h4H0VbswPHl9JSQPujzgBNnQidILDahmb0rD4jCruO7RwDrDgT60=@vger.kernel.org, AJvYcCVz3VfeeRNvHAgmPrdYABjfmPvWy52xFUMBg63qAeC9mPVrS7oWBxcxMpFyZahPguyDki6RzByEkvlNQ3k9@vger.kernel.org
+X-Gm-Message-State: AOJu0YzwndBxGyeVyt6172ZHxHkDujVB4k2LVHtm5GcQ1PCZ/9SwJv+D
+	yLbVVBtaoCdMcYgOrsDYT8zxqRbDAlnZb/Rg4fukqmO8Q5aJgKzGXG2YqCiw
+X-Google-Smtp-Source: AGHT+IEaZu+RM6wUMOtfLrYnm4ThrLKwdBx9ZufmoMfeNZMzw1YjqoCW0Js02LEOGbMLEaJ+fGJFhQ==
+X-Received: by 2002:a05:600c:1e07:b0:42c:b037:5fce with SMTP id 5b1f17b1804b1-42f777b204fmr60095315e9.3.1727974186098;
+        Thu, 03 Oct 2024 09:49:46 -0700 (PDT)
 Received: from [127.0.1.1] (2a02-8389-41cf-e200-3ec5-11f2-e453-20e3.cable.dynamic.v6.surfer.at. [2a02:8389:41cf:e200:3ec5:11f2:e453:20e3])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f802a0134sm19783385e9.31.2024.10.03.09.49.54
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f802a0134sm19783385e9.31.2024.10.03.09.49.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Oct 2024 09:49:55 -0700 (PDT)
+        Thu, 03 Oct 2024 09:49:45 -0700 (PDT)
 From: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Date: Thu, 03 Oct 2024 18:49:39 +0200
-Subject: [PATCH 7/8] iio: dac: ltc1660: add missing select REGMAP_SPI in
+Date: Thu, 03 Oct 2024 18:49:33 +0200
+Subject: [PATCH 1/8] iio: resolver: ad2s1210 add missing select REGMAP in
  Kconfig
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -64,7 +64,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241003-ad2s1210-select-v1-7-4019453f8c33@gmail.com>
+Message-Id: <20241003-ad2s1210-select-v1-1-4019453f8c33@gmail.com>
 References: <20241003-ad2s1210-select-v1-0-4019453f8c33@gmail.com>
 In-Reply-To: <20241003-ad2s1210-select-v1-0-4019453f8c33@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -80,36 +80,36 @@ Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Javier Carrasco <javier.carrasco.cruz@gmail.com>
 X-Mailer: b4 0.14-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1727974182; l=777;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1727974182; l=827;
  i=javier.carrasco.cruz@gmail.com; s=20240312; h=from:subject:message-id;
- bh=BBOiYyG846PZfy1vjYqIRCTmMXGkQS9IkdPgQcqfOOc=;
- b=nBFm3Gc91JdpQDCbhgU/q20hldeYQyhgzM8lnumf1wrJtGWs/DIlM4evwDhj0aVl3S6E4rjcW
- Zk4eEK2TZspAOmW06SPAymmGU75PVQ92KoGOXSqrua4pVj4cDDdTy7q
+ bh=7koLyHPDo+qEkV7cTyZAP8yY6rmuZ3JOGuG5yYfrBOA=;
+ b=6Ubv21WEcM1kx7llZHyaJOSdkLaa+UtvERt9/khe+pXPBQPIinL+8mWEWGCAbKmYzk9ea2XEx
+ 4+r3BmSXeYhCo00W0wDYTMq0nHptpFAZgkbn4VNvnl/wVxSioAB7dos
 X-Developer-Key: i=javier.carrasco.cruz@gmail.com; a=ed25519;
  pk=lzSIvIzMz0JhJrzLXI0HAdPwsNPSSmEn6RbS+PTS9aQ=
 
-This driver makes use of regmap_spi, but does not select the required
+This driver makes use of regmap, but does not select the required
 module.
-Add the missing 'select REGMAP_SPI'.
+Add the missing 'select REGMAP'.
 
-Fixes: 8316cebd1e59 ("iio: dac: add support for ltc1660")
+Fixes: b3689e14415a ("staging: iio: resolver: ad2s1210: use regmap for config registers")
 Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
 ---
- drivers/iio/dac/Kconfig | 1 +
+ drivers/iio/resolver/Kconfig | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index 3160b10f2752..f13daf0fd9f7 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -354,6 +354,7 @@ config LPC18XX_DAC
- config LTC1660
- 	tristate "Linear Technology LTC1660/LTC1665 DAC SPI driver"
+diff --git a/drivers/iio/resolver/Kconfig b/drivers/iio/resolver/Kconfig
+index 424529d36080..640aef3e5c94 100644
+--- a/drivers/iio/resolver/Kconfig
++++ b/drivers/iio/resolver/Kconfig
+@@ -31,6 +31,7 @@ config AD2S1210
  	depends on SPI
-+	select REGMAP_SPI
+ 	depends on COMMON_CLK
+ 	depends on GPIOLIB || COMPILE_TEST
++	select REGMAP
  	help
- 	  Say yes here to build support for Linear Technology
- 	  LTC1660 and LTC1665 Digital to Analog Converters.
+ 	  Say yes here to build support for Analog Devices spi resolver
+ 	  to digital converters, ad2s1210, provides direct access via sysfs.
 
 -- 
 2.43.0
