@@ -1,71 +1,43 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BF311D9323;
-	Mon,  7 Oct 2024 15:46:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BB031DDC19;
+	Mon,  7 Oct 2024 18:19:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728315971; cv=none; b=WhyzvqrWjJUo4iWj7SMyQ6yZhIGxcrqBOEwPovm8Mm7+TGFPQqx5pOJ+UNmyddpNNcL1Jxso9eY54GIP8r5gl9euBSoSJaE1YuZQLhHhX1vsxe2yoLNFpMw6qQPRVTonSSJWfYJxC51wd2+lZt+9zBIIkQoGmqAPoKZ6lK7CO3k=
+	t=1728325151; cv=none; b=G0y2AoBpqdvzjOwzlyZZmshS3onSFkWqGJT8F8EBia1OUP1mIgjqLW7crwYu8hAkhBsMXS1Xrw7OcJK0AJUaSgB8tTLfI1hXH8StV671fXaKd2P/7UfBGMWG0rTZuuo+y0aegixVd5/9p3fwAwGfmgd+NoLs9ESW2HB4kCl37Ko=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728315971; c=relaxed/simple;
-	bh=IPz+aGl2hpLhDFrX5GfJESiSDX1f4cE9gll6GUH7TJY=;
+	s=arc-20240116; t=1728325151; c=relaxed/simple;
+	bh=qQA6uGhJh0navPHbWVU0cNsT9ZnnibRhRSL94S8Rsis=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YlA6v6UukloKWGf0MO4saVwsrQ7zfJcev5qiqw/f+hWBhbqTNPAzZYN0CzLXKGzbLfACwChLtS+BYHVAfv5bpVZ0Z3+Gax9DXKi1NCB+Y7y02OwUDzQvb90Wh5t7AjLwvoS5at6r9Ay2/qC7bRVgVSA2dPms5qJOItRj+w5HY2Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OFJjcDjJ; arc=none smtp.client-ip=209.85.221.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=piJRAsvxNl65K45JNRqngzU2aIQABsVm/sAziq45Un60LeToBLAk0T21hpJO2BMuJkz7enECkzrcPGJON13IwN7JJzzVS5NsvL87R1VzL5j/y5qeW6Wg84YCngfGtO+Tzey4rEqXMcpA+G/hpGTp9UwIm44MTj1n2d82oe+xNy8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F56kTJpb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OFJjcDjJ"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-37cc9aeb01dso3162060f8f.2;
-        Mon, 07 Oct 2024 08:46:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1728315968; x=1728920768; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=n6dprjm0PLZjMBeHgDbl3Q6+Sj+1Lh0wF19FbiiI9Hs=;
-        b=OFJjcDjJSg7zcYMMaOZXiQxxWNFtOXMKsVXvzkwLk8LavbSlP7jt57ezv4mpSf8mlr
-         J5QyhRdjg4tkHYbL9EvqqDSog9oJPyyyKILFg7t+fXDUSHtcv5RhDRD7qSKiyO2UTS6n
-         ol9UV6GUa/nEcNH34RUJyjVqgHeu/UAE8r6BkP0iAloSi7PZvxND51g9Naw2kVbqVjKR
-         TO6BW7+AyPrIVSL2QTOTHYarf6PboU1rhVvZMgvsmIpw1M5M1grNG0HbkN3VCgfAEHUm
-         8QpNJChhBCTgZQJRLk9vMx7KkcktvRbu9yXYPLqU/1tkTOBa6AMidu0GcRZMAmrA1TjG
-         EA3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728315968; x=1728920768;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=n6dprjm0PLZjMBeHgDbl3Q6+Sj+1Lh0wF19FbiiI9Hs=;
-        b=wbcL0v9hchiMGFVF6+PJDbtzeIBZNlWIhM/hAUOgIVqANpA2MHlR0yPkx+T5zciOWB
-         fJlspNFhn3/r64kEqOT7VAgnBNcdVskLs0QQzco2L0R5Z6t8P3gifm8k0D5swPXPb21B
-         IHWfo5vPDjboJ8W59mMflqiUymPNLny7TZ1FKWdCEs00AthpcJouKtp38hNmQ8fi8j0p
-         aLyQ/3CWYEo3WMvy1TaWc1jUaWQqrx05LRJPgOR/hwHQJbsKOAa9bboPDqvsP+mbh5z+
-         zxKd8BF8FRl27V1P97OANhS3OsdZ3xdu/lIGcUkmFHJN/A9CMxY5FKahnpwmdDanJw8j
-         b8ww==
-X-Forwarded-Encrypted: i=1; AJvYcCUj8DDC7pd3Wx3/+OpbcQv0nXGTMMrhncK3F90uW87/umX0bdPbqFer+xbbSL2+XuHwuSCTfIokXEOJy0wS@vger.kernel.org, AJvYcCWyefNgs1FAUV7vNiiBovlTfUR3Tl2cmKl2tzdvXXc3NCII7nDxCMiRSFdqprRpfP8XxTwDOvL+Xus=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyGOqtKi8VnmOU9i3VQRABAvbV1kcsOJv+GL3YIZiKlWI3o2VwQ
-	dfZ0FK+88pi/O5r92XexkEV2oLqdh56G44YG6aeTO0lupcW4NFFu
-X-Google-Smtp-Source: AGHT+IF+8sfGIn0BZv8JEm8l7fv06gDZuaryeZmXzbmOn6DC8csfkugDv/BvinOfUhgQEn85h8XL9g==
-X-Received: by 2002:a5d:63cc:0:b0:374:c31e:9721 with SMTP id ffacd0b85a97d-37d0e7d40aemr7238976f8f.42.1728315968206;
-        Mon, 07 Oct 2024 08:46:08 -0700 (PDT)
-Received: from redaops ([146.70.124.157])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f89e89b42sm77975205e9.13.2024.10.07.08.46.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Oct 2024 08:46:07 -0700 (PDT)
-Date: Mon, 7 Oct 2024 18:46:05 +0300
-From: Tudor Gheorghiu <tudor.reda@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Nam Cao <namcao@linutronix.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
-Subject: Re: [PATCH] staging: iio: frequency: rename macros
-Message-ID: <ZwQCPY7tmMg7ciVZ@redaops>
-References: <20241001202430.15874-2-tudor.reda@gmail.com>
- <20241001225426.wUBOFdMi@linutronix.de>
- <Zvy0qyQJP1S17SFv@redaops>
- <20241006122712.2cff065c@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F56kTJpb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8647C4CEC6;
+	Mon,  7 Oct 2024 18:19:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1728325150;
+	bh=qQA6uGhJh0navPHbWVU0cNsT9ZnnibRhRSL94S8Rsis=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=F56kTJpbnmyKekS9/Im+8fmvusGyGDEqQ/TYdP2R+XyA/4XoYgQkhuOkXZWCq0TQL
+	 t5tL6c0yVIzL890mfU+0zUNZowmhmIiq977rkuMBu45cRnhUtrYevaZNos5Qg4Mzvs
+	 2S6dQaFCBTElYDHVaa1vhfAk5zCMjl6D+kcp3WfuXutNzu403A9S0OtqHkrX9hxwa5
+	 wpZMblPJ5rA5uJ/mnMbyEy0F+/zFCKIp2Uy3cAODGqDCuhToYc8OoOaaa6X7N6v3NU
+	 NNUd8OdqvzSWjFTIL3p2anAfJ3a1Tafk6AtmLpncGO75irltnJ9j2Ev4Eyp4YOPpzz
+	 O39FhEcB4SmRA==
+Date: Mon, 7 Oct 2024 13:19:10 -0500
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Neil Armstrong <neil.armstrong@linaro.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH 1/3] dt-bindings: vendor-prefixes: Add Allegro
+ MicroSystems, Inc
+Message-ID: <172832514942.1898067.3097467627060908054.robh@kernel.org>
+References: <20241007-topic-input-upstream-als31300-v1-0-2c240ea5cb77@linaro.org>
+ <20241007-topic-input-upstream-als31300-v1-1-2c240ea5cb77@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -74,37 +46,16 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241006122712.2cff065c@jic23-huawei>
+In-Reply-To: <20241007-topic-input-upstream-als31300-v1-1-2c240ea5cb77@linaro.org>
 
-On Sun, Oct 06, 2024 at 12:27:12PM +0100, Jonathan Cameron wrote:
 
-> 
-> Hmm. If you really want to clean this up, then these macros shouldn't
-> exist at all.  They are legacy of ancient IIO code style and some slightly
-> ropey code even then (which is why it's in staging!)
-> 
-> Right option is to use the read_raw callbacks in conjunction with the
-> info_mask_* bitmaps that indicate which attributes the IIO core should create.
-> There are some corners in here such as PHASESYMBOL for which we've
-> never fixed on an ABI and that might need custom attributes, but even
-> then these macros probably wouldn't be involved.
+On Mon, 07 Oct 2024 15:14:38 +0200, Neil Armstrong wrote:
+> Link: https://www.allegromicro.com/en/about-allegro
+> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
 
-Hi Jonathan!
-Thank you so much for your input!
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
 
-I understand, so this is not as simple as just renaming the macros,
-there is actually a lot more to modify in order to make this driver up
-to date with modern standards. I will leave this for the original driver
-developers.
-
-> So I'd don't mind 'fixing' checkpatch or the code, but I'd
-> rather we fixed the drivers up properly.
-
-As for this, it is somewhat unrelated to the actual driver (I didn't
-even consider this initially). That is why I submitted a different patch:
-
-https://lore.kernel.org/all/20241002133418.7924-2-tudor.reda@gmail.com/
-
-Thanks again,
-Tudor
