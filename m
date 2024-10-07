@@ -1,157 +1,110 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26E311DA2EF
-	for <linux-iio@vger.kernel.org>; Mon,  7 Oct 2024 15:45:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BF311D9323;
+	Mon,  7 Oct 2024 15:46:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728315954; cv=none; b=C9W5/jWAlM2CVUnXlSbvqcxEHZUceiEL/CJFKYFjib1GoAVgc50Y/X5frjRD2oTPoAM6L8dJx3u2JmvXq+aq60eTUmIO3PSROws0wAWFcEu6xE64IltDh3IskJHNREf1XhXASktKWAbFrpS7MD78V+xVEVbplPcPgoo3rnVZYRo=
+	t=1728315971; cv=none; b=WhyzvqrWjJUo4iWj7SMyQ6yZhIGxcrqBOEwPovm8Mm7+TGFPQqx5pOJ+UNmyddpNNcL1Jxso9eY54GIP8r5gl9euBSoSJaE1YuZQLhHhX1vsxe2yoLNFpMw6qQPRVTonSSJWfYJxC51wd2+lZt+9zBIIkQoGmqAPoKZ6lK7CO3k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728315954; c=relaxed/simple;
-	bh=q8KqD3xvy2JB31/JkGiCsf/G4hyDPCkvTc5DXzMR1io=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=iyMDKYPSM6ibtx/vYcsb4NL8tWqt0pTje9MsRibphqhnZXVBJoBAZhpsMIM/HyfgTrGdkTUR9vyoLEtMY+48HapXiVWnY+cLBG+/a3Q1VZg5j3ZZ7Xb7IX82Ux/9XjwGI27BKT1J8VqhY/Twtdny7uEe3PPJZ00uwEiwBE7E/9o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=eJaEAqQx; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1728315971; c=relaxed/simple;
+	bh=IPz+aGl2hpLhDFrX5GfJESiSDX1f4cE9gll6GUH7TJY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YlA6v6UukloKWGf0MO4saVwsrQ7zfJcev5qiqw/f+hWBhbqTNPAzZYN0CzLXKGzbLfACwChLtS+BYHVAfv5bpVZ0Z3+Gax9DXKi1NCB+Y7y02OwUDzQvb90Wh5t7AjLwvoS5at6r9Ay2/qC7bRVgVSA2dPms5qJOItRj+w5HY2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OFJjcDjJ; arc=none smtp.client-ip=209.85.221.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="eJaEAqQx"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-42cbb08a1a5so47192045e9.3
-        for <linux-iio@vger.kernel.org>; Mon, 07 Oct 2024 08:45:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OFJjcDjJ"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-37cc9aeb01dso3162060f8f.2;
+        Mon, 07 Oct 2024 08:46:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1728315948; x=1728920748; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=oBooASvX/VhONc8SVPbZTST7U3LP08CxQ9THiZxZyXI=;
-        b=eJaEAqQx9B+3wkIQFSHkrviad+CedfXa5/DdpivmhV29roXUa+8iBGef4HGIVWj1QN
-         ZW3GGN/xR3Q27/97+UW8sxJVag1AZfLy0iC/0/P72qIJxLKNqhrBVEGvuUaVgIHGNyyU
-         wwThv2F9oKGcwYCfMmVbV10FyjwssdEyLnXhprjvkX3dstgd2E9ZiUlfKQuyjRwcsG3V
-         q0+nyJ+mF9G1DdwBlULkhnrbpV4bCJYxGK70I+b9pA1prH9Z+G6OFMbmfWbdDLsuxaWV
-         7/cIMdnDi34Xug2dY9V0WQvW61z8apqy20vrfXkyBhw4bZPtJMvheHE/XaaWEU/QrJkV
-         syLQ==
+        d=gmail.com; s=20230601; t=1728315968; x=1728920768; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=n6dprjm0PLZjMBeHgDbl3Q6+Sj+1Lh0wF19FbiiI9Hs=;
+        b=OFJjcDjJSg7zcYMMaOZXiQxxWNFtOXMKsVXvzkwLk8LavbSlP7jt57ezv4mpSf8mlr
+         J5QyhRdjg4tkHYbL9EvqqDSog9oJPyyyKILFg7t+fXDUSHtcv5RhDRD7qSKiyO2UTS6n
+         ol9UV6GUa/nEcNH34RUJyjVqgHeu/UAE8r6BkP0iAloSi7PZvxND51g9Naw2kVbqVjKR
+         TO6BW7+AyPrIVSL2QTOTHYarf6PboU1rhVvZMgvsmIpw1M5M1grNG0HbkN3VCgfAEHUm
+         8QpNJChhBCTgZQJRLk9vMx7KkcktvRbu9yXYPLqU/1tkTOBa6AMidu0GcRZMAmrA1TjG
+         EA3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728315948; x=1728920748;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oBooASvX/VhONc8SVPbZTST7U3LP08CxQ9THiZxZyXI=;
-        b=i1UNJxDEYK3ipBJhawajciozfZwUgJ/zcy1crSCgq7Z1G6rjw8QvplU0G1+Tilkm3A
-         /H4qvAKP5pPT28Guxa6Jlp96LfVtYNBzrLqbKJk2mngU9f1UUIMk9chi9W5k1rEp7EDD
-         V/RcKJEfLC389am9XDAy5EMa477hpNxAfp+4Ruu1vJFwRQx1ANBJ2KkQYsrOCKLUOnGu
-         l/62qYRcYs02dMHrBdMRtfrSA5IcWzxiP8rvugpK6upLUxGopqdY3v43ziFsS3JccFH7
-         turmthJnCnLdbDlWRMsIEhSJu7C2DMHHmZ2pUm/tPGLqCRg9yvSSA2ccMk1iTUqdHMkg
-         Npqw==
-X-Gm-Message-State: AOJu0YwKalaLOK6U+eeiJO9QaoRNM4295qerVixr9UxlJSMjGix1elA7
-	/MA4gMFMAnXvgFvzmtU1r/06us486I/NF5guFpOHgQWuJpXpo3Gzd+erDp2siRg=
-X-Google-Smtp-Source: AGHT+IGzR/XAzO+8nh4PcjEIF8gxwoLfd/vK0h/EkHNVg0wwMym23yIX71BMk+Xqn5FNmz5gdvvAXg==
-X-Received: by 2002:a05:600c:19d2:b0:42c:bae0:f066 with SMTP id 5b1f17b1804b1-42f85aa72f6mr91413065e9.13.1728315948108;
-        Mon, 07 Oct 2024 08:45:48 -0700 (PDT)
-Received: from [192.168.1.64] (2a02-842a-d52e-6101-6fd0-06c4-5d68-f0a5.rev.sfr.net. [2a02:842a:d52e:6101:6fd0:6c4:5d68:f0a5])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f9384f648sm17645555e9.20.2024.10.07.08.45.47
+        d=1e100.net; s=20230601; t=1728315968; x=1728920768;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=n6dprjm0PLZjMBeHgDbl3Q6+Sj+1Lh0wF19FbiiI9Hs=;
+        b=wbcL0v9hchiMGFVF6+PJDbtzeIBZNlWIhM/hAUOgIVqANpA2MHlR0yPkx+T5zciOWB
+         fJlspNFhn3/r64kEqOT7VAgnBNcdVskLs0QQzco2L0R5Z6t8P3gifm8k0D5swPXPb21B
+         IHWfo5vPDjboJ8W59mMflqiUymPNLny7TZ1FKWdCEs00AthpcJouKtp38hNmQ8fi8j0p
+         aLyQ/3CWYEo3WMvy1TaWc1jUaWQqrx05LRJPgOR/hwHQJbsKOAa9bboPDqvsP+mbh5z+
+         zxKd8BF8FRl27V1P97OANhS3OsdZ3xdu/lIGcUkmFHJN/A9CMxY5FKahnpwmdDanJw8j
+         b8ww==
+X-Forwarded-Encrypted: i=1; AJvYcCUj8DDC7pd3Wx3/+OpbcQv0nXGTMMrhncK3F90uW87/umX0bdPbqFer+xbbSL2+XuHwuSCTfIokXEOJy0wS@vger.kernel.org, AJvYcCWyefNgs1FAUV7vNiiBovlTfUR3Tl2cmKl2tzdvXXc3NCII7nDxCMiRSFdqprRpfP8XxTwDOvL+Xus=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyGOqtKi8VnmOU9i3VQRABAvbV1kcsOJv+GL3YIZiKlWI3o2VwQ
+	dfZ0FK+88pi/O5r92XexkEV2oLqdh56G44YG6aeTO0lupcW4NFFu
+X-Google-Smtp-Source: AGHT+IF+8sfGIn0BZv8JEm8l7fv06gDZuaryeZmXzbmOn6DC8csfkugDv/BvinOfUhgQEn85h8XL9g==
+X-Received: by 2002:a5d:63cc:0:b0:374:c31e:9721 with SMTP id ffacd0b85a97d-37d0e7d40aemr7238976f8f.42.1728315968206;
+        Mon, 07 Oct 2024 08:46:08 -0700 (PDT)
+Received: from redaops ([146.70.124.157])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f89e89b42sm77975205e9.13.2024.10.07.08.46.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Oct 2024 08:45:47 -0700 (PDT)
-From: Julien Stephan <jstephan@baylibre.com>
-Date: Mon, 07 Oct 2024 17:45:48 +0200
-Subject: [PATCH 5/6] iio: adc: ad7380: fix supplies for ad7380-4
+        Mon, 07 Oct 2024 08:46:07 -0700 (PDT)
+Date: Mon, 7 Oct 2024 18:46:05 +0300
+From: Tudor Gheorghiu <tudor.reda@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Nam Cao <namcao@linutronix.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Subject: Re: [PATCH] staging: iio: frequency: rename macros
+Message-ID: <ZwQCPY7tmMg7ciVZ@redaops>
+References: <20241001202430.15874-2-tudor.reda@gmail.com>
+ <20241001225426.wUBOFdMi@linutronix.de>
+ <Zvy0qyQJP1S17SFv@redaops>
+ <20241006122712.2cff065c@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20241007-ad7380-fix-supplies-v1-5-badcf813c9b9@baylibre.com>
-References: <20241007-ad7380-fix-supplies-v1-0-badcf813c9b9@baylibre.com>
-In-Reply-To: <20241007-ad7380-fix-supplies-v1-0-badcf813c9b9@baylibre.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, 
- Mark Brown <broonie@kernel.org>, Jonathan Corbet <corbet@lwn.net>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>, 
- Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-doc@vger.kernel.org, 
- Julien Stephan <jstephan@baylibre.com>
-X-Mailer: b4 0.14.1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241006122712.2cff065c@jic23-huawei>
 
-ad7380-4 is the only device in the family that does not have an internal
-reference. It uses "refin" as a required external reference.
-All other devices in the family use "refio"" as an optional external
-reference.
+On Sun, Oct 06, 2024 at 12:27:12PM +0100, Jonathan Cameron wrote:
 
-Fixes: 737413da8704 ("iio: adc: ad7380: add support for ad738x-4 4 channels variants")
-Signed-off-by: Julien Stephan <jstephan@baylibre.com>
----
- drivers/iio/adc/ad7380.c | 36 ++++++++++++++++++++++++++----------
- 1 file changed, 26 insertions(+), 10 deletions(-)
+> 
+> Hmm. If you really want to clean this up, then these macros shouldn't
+> exist at all.  They are legacy of ancient IIO code style and some slightly
+> ropey code even then (which is why it's in staging!)
+> 
+> Right option is to use the read_raw callbacks in conjunction with the
+> info_mask_* bitmaps that indicate which attributes the IIO core should create.
+> There are some corners in here such as PHASESYMBOL for which we've
+> never fixed on an ABI and that might need custom attributes, but even
+> then these macros probably wouldn't be involved.
+> 
 
-diff --git a/drivers/iio/adc/ad7380.c b/drivers/iio/adc/ad7380.c
-index 9ef44b605144..e9784769baa9 100644
---- a/drivers/iio/adc/ad7380.c
-+++ b/drivers/iio/adc/ad7380.c
-@@ -89,6 +89,7 @@ struct ad7380_chip_info {
- 	bool has_mux;
- 	const char * const *supplies;
- 	unsigned int num_supplies;
-+	bool external_ref_only;
- 	const char * const *vcm_supplies;
- 	unsigned int num_vcm_supplies;
- 	const unsigned long *available_scan_masks;
-@@ -431,6 +432,7 @@ static const struct ad7380_chip_info ad7380_4_chip_info = {
- 	.num_simult_channels = 4,
- 	.supplies = ad7380_supplies,
- 	.num_supplies = ARRAY_SIZE(ad7380_supplies),
-+	.external_ref_only = true,
- 	.available_scan_masks = ad7380_4_channel_scan_masks,
- 	.timing_specs = &ad7380_4_timing,
- };
-@@ -1047,17 +1049,31 @@ static int ad7380_probe(struct spi_device *spi)
- 				     "Failed to enable power supplies\n");
- 	msleep(T_POWERUP_MS);
- 
--	/*
--	 * If there is no REFIO supply, then it means that we are using
--	 * the internal 2.5V reference, otherwise REFIO is reference voltage.
--	 */
--	ret = devm_regulator_get_enable_read_voltage(&spi->dev, "refio");
--	if (ret < 0 && ret != -ENODEV)
--		return dev_err_probe(&spi->dev, ret,
--				     "Failed to get refio regulator\n");
-+	if (st->chip_info->external_ref_only) {
-+		ret = devm_regulator_get_enable_read_voltage(&spi->dev,
-+							     "refin");
-+		if (ret < 0)
-+			return dev_err_probe(&spi->dev, ret,
-+					     "Failed to get refin regulator\n");
-+
-+		st->vref_mv = ret / 1000;
- 
--	external_ref_en = ret != -ENODEV;
--	st->vref_mv = external_ref_en ? ret / 1000 : AD7380_INTERNAL_REF_MV;
-+		/* these chips don't have a register bit for this */
-+		external_ref_en = false;
-+	} else {
-+		/*
-+		 * If there is no REFIO supply, then it means that we are using
-+		 * the internal reference, otherwise REFIO is reference voltage.
-+		 */
-+		ret = devm_regulator_get_enable_read_voltage(&spi->dev,
-+							     "refio");
-+		if (ret < 0 && ret != -ENODEV)
-+			return dev_err_probe(&spi->dev, ret,
-+					     "Failed to get refio regulator\n");
-+
-+		external_ref_en = ret != -ENODEV;
-+		st->vref_mv = external_ref_en ? ret / 1000 : AD7380_INTERNAL_REF_MV;
-+	}
- 
- 	if (st->chip_info->num_vcm_supplies > ARRAY_SIZE(st->vcm_mv))
- 		return dev_err_probe(&spi->dev, -EINVAL,
+Hi Jonathan!
+Thank you so much for your input!
 
--- 
-2.46.0
+I understand, so this is not as simple as just renaming the macros,
+there is actually a lot more to modify in order to make this driver up
+to date with modern standards. I will leave this for the original driver
+developers.
 
+> So I'd don't mind 'fixing' checkpatch or the code, but I'd
+> rather we fixed the drivers up properly.
+
+As for this, it is somewhat unrelated to the actual driver (I didn't
+even consider this initially). That is why I submitted a different patch:
+
+https://lore.kernel.org/all/20241002133418.7924-2-tudor.reda@gmail.com/
+
+Thanks again,
+Tudor
