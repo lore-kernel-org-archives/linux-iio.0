@@ -1,60 +1,61 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 679B919049A
-	for <linux-iio@vger.kernel.org>; Wed,  9 Oct 2024 09:19:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CE6C191499
+	for <linux-iio@vger.kernel.org>; Wed,  9 Oct 2024 09:19:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728465594; cv=none; b=N6CebIV1byqY2gXLtnbBTojx27r0aw2s8zPqVDKoics0fGTEFjO5wYsbC9OiBu5V7iQJFiNqZotmWDgO2JUq+Tl8yWRroY+VJV3k7m/oZtrlHNg1P7FllCRMT/+ZN1E6AHvalqBFYfRdw1BshiUj0ZnRvZb2HfPMdKGRaiQ8yzM=
+	t=1728465595; cv=none; b=mVQQFrrpldwYe7QIJ5qdu1cC51A/N5tkl9u+jryB12rsbhUL/vc3qX63Vwqjcs+f9tKWjl/501ThzjDh/4KVIRvCBWdYwQETF+QH9GPzEeIf5RJ9DaulSrbFmvXNiQqbaqXT999ByPvKUtybswB9lkBeB0z3nyD12NTuMUN9iqQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728465594; c=relaxed/simple;
-	bh=LedlEdJCC/LMY2h2d3ZMK/XTHFaSBO06zmv+zukeWhM=;
+	s=arc-20240116; t=1728465595; c=relaxed/simple;
+	bh=uuGWxYey7yHQCI4vU9zbNCU9qHQf1LbNNRlr2LUqzxo=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hIYzv4wFw5EwYahk+DIetPl6LTlBnZnxU4/GfPgRMYd+ifkEPAHPLUN4Wm/gQutK/Qfyk5Z/rNKgObq2K0qO4Fdga4ZNssHrJxgG2x2may0l/flOVTL61Z2jit40yEX1Zt9uB3jWENi5QG30UYLaRUWkrjUekxcTMr2/evo2XR4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=2dT7ax7R; arc=none smtp.client-ip=209.85.167.45
+	 In-Reply-To:To:Cc; b=kJDqg06s9Z+8BSlpA7JV+FqsqueLjKxCfAJsBD8GqNWm98jUNM/Ql6kHwxCrAdj/E1dWINYIiaBuOnUd6LtVMn5XP4Gz1XPwoex+Iqbn4xxMwurb2TzbF+T9Bmno5zLMqsoEW8JNeOZdwXTAVryulNk3yKyOlPU6CgCVl6jMCUg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=PxCxKnGs; arc=none smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="2dT7ax7R"
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5398939d29eso8113744e87.0
-        for <linux-iio@vger.kernel.org>; Wed, 09 Oct 2024 02:19:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="PxCxKnGs"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-42cacabd2e0so62290285e9.3
+        for <linux-iio@vger.kernel.org>; Wed, 09 Oct 2024 02:19:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1728465588; x=1729070388; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1728465590; x=1729070390; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=9sxBsvfyhV52GErg93d3TwpYRkYKpCLqLg+LjkHg/oE=;
-        b=2dT7ax7REX8q7RSdAJNI/Ca3KxbopmB68elYRlv9A8ZCMTglcjPonJSPuGTWlqtIT6
-         Dzus5GDU0Jj82orq1qQ+EQ80rYCASZwh9AaJNPmEYI6g3OrUlG8XmjysfrI3nc9meMld
-         I7akCOliqDCyjC1ri3qOyvL8ysgsRDtpfzmaoVWXG8Wza71y25YAJYZ33/h+ZYKrnx0x
-         dmLGC1eJz2OSZoQk7QP16/BrZa3pexzfWR+TMOgzjxvYGPzsybDYkwEIbeeqaDcOT6ba
-         4aN8Dd68MVhyDlIe/tw4OVUFtf8x4tSLS31lvjJMnz53kQI1Tf9fFifjftJUb19LMJhI
-         20ow==
+        bh=ioyVQRlmSykkPScNPBSOZR4crBNY+9Ixx2TFHYTli/k=;
+        b=PxCxKnGsGsyNr767qsbwxOovJN1orJUeIv4FY/kmUGQXkWMfLWR0m/kNddTsB+WFta
+         SJHMTrKqOXmEELYSk/tFneYw2tZwHLXVensxxJENrgI1O4Lory99DYm+icV27ofZTuzw
+         XosrPezouJrBdKJig2YWO7UIEp84qn5Y1Rc9hufNTImfFqZb0L6UUzOOy5CKXd5WGtY8
+         3S0lNh36FjFieTfg+u3q1jAMRAt50Y5R9P4fWuS419sXHnNqR30uBjGAFyT1j21fOS04
+         DuKzbwEZeickLw66HVHI8N3c5OfC56YqhPHKxS1nK8PIUqR2CvX6wxhCkZCfvjLs0Zud
+         L2RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728465588; x=1729070388;
+        d=1e100.net; s=20230601; t=1728465590; x=1729070390;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=9sxBsvfyhV52GErg93d3TwpYRkYKpCLqLg+LjkHg/oE=;
-        b=ImNrwZXsntCJBIvCfsnmlBL+CMpzXYe67z6YGhTaRdh5kkYM6wA2dLQn0v4aPlitAb
-         KvM2C/Ovypz2SV7LXZ3xMysbOyfF78ocN04WHP1NnwHvDup1iVYzE++GWoYdb3oc7Gap
-         ZmdmdHoqAtpn8hlDXDvFObC3oDGQDyieM3QABz74ydDTNatKT08BGnyenLcboBsw6nRp
-         VGF2Eeuj0H7x5pLPfR3iouEIZLhZfrqetg5fguL9L6sKYDzVna4WDnnG339Vo8b7/QGl
-         TdjzvoJdRLWbD4/T34E61pkyBs+q6N1QnWMTao6Bg3Ap8LO5PZVlnLnbvZ8X0CSazsyU
-         dvMQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVD/g/INw2UyFYmRcZoMXWfAYAn1KtpS2PtKPJPUYXpdN8JTnqxTjVNU+A6Qewuyo78KYkPiL3uhZg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwliFIZaTCO0Hg7JdLs3ujGvQjCjjiyRvv/sxEG8bjRpzElSx6w
-	yuDg0r/mByG0KxUN+CA+MRMCop8lozV5PzOu9LohPnrEdEU6bceQgq67cJAigI4=
-X-Google-Smtp-Source: AGHT+IHYQG7GKXk+n7qR/3btWFErN/3GY0AZY2wR/wdZlZGQszvZ7tzxAcVmDX3/PqsYl/RTyG0tUA==
-X-Received: by 2002:a05:6512:3c98:b0:52c:cc2e:1c45 with SMTP id 2adb3069b0e04-539c4896e53mr1055046e87.15.1728465587930;
-        Wed, 09 Oct 2024 02:19:47 -0700 (PDT)
+        bh=ioyVQRlmSykkPScNPBSOZR4crBNY+9Ixx2TFHYTli/k=;
+        b=XpjWnwhkMtWfzFr7sb88CcT87OYmLaV7jSC+3+MJkNCV4WhJU+6O0rzfTDNc+ogQOx
+         LioKfEW64dNmNUAUJasbsTY2v4c8iKYMGlwCncHanVtpvdTQ7qYXehvx+xK2AY1+8CPB
+         XcPoZTD4+NXJvkrLUJ27tc20eXcCJusGUTokqci06ZHk+qDkmz04ZA6Ncgg12LFsyRgW
+         cdP51+SJxp1M7kzlZNcgl2d9pd/oEUlumyRSK5QcrWmeM2vBLL2rBWgsIa5k1r0Mgmyw
+         zWv7hWmpZZoC3Pxi6MhjkjwFl9/CztyFTtlKiQw4cbfYo1vH55VyowmZGZs4U6Sz/mcx
+         qMyQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUg+97XGUeRJG0MvvD+7YsQeC3++EFjfh9+aPoUuY4UaiyDjR34OzjT2eUrmLMUpTrReE1p02YorVo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx8T7WCOIDX85VW3pNZ2dwAEt9fmtkcl4koa1iSBlsyXBEryOMm
+	2tzCUEAnn6CpVMpdgQNv3zH/zlMXu72+8slxqJJt/umP5hCwpDdJx+bIW/0HRg8=
+X-Google-Smtp-Source: AGHT+IFzDIk1E+M5DMdcof+CZ5T2iitzbZ1ELPmRkmV0B9ZeNrzjpuKdiAku59JhRvy8QaHla4A/Dw==
+X-Received: by 2002:a05:600c:45d1:b0:42c:bfd6:9d4d with SMTP id 5b1f17b1804b1-430ccef5ff5mr13596205e9.2.1728465589561;
+        Wed, 09 Oct 2024 02:19:49 -0700 (PDT)
 Received: from [127.0.1.1] (frhb82016ds.ikexpress.com. [185.246.87.17])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-430d59b1207sm13892765e9.31.2024.10.09.02.19.46
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-430d59b1207sm13892765e9.31.2024.10.09.02.19.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2024 02:19:46 -0700 (PDT)
+        Wed, 09 Oct 2024 02:19:49 -0700 (PDT)
 From: Guillaume Stols <gstols@baylibre.com>
-Date: Wed, 09 Oct 2024 09:19:37 +0000
-Subject: [PATCH v4 6/8] iio: adc: ad7606: Introduce num_adc_channels
+Date: Wed, 09 Oct 2024 09:19:39 +0000
+Subject: [PATCH v4 8/8] iio: adc: ad7606: Disable PWM usage for non backend
+ version
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,8 +63,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20241009-ad7606_add_iio_backend_support-v4-6-6971a8c0f1d5@baylibre.com>
+Content-Transfer-Encoding: 8bit
+Message-Id: <20241009-ad7606_add_iio_backend_support-v4-8-6971a8c0f1d5@baylibre.com>
 References: <20241009-ad7606_add_iio_backend_support-v4-0-6971a8c0f1d5@baylibre.com>
 In-Reply-To: <20241009-ad7606_add_iio_backend_support-v4-0-6971a8c0f1d5@baylibre.com>
 To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
@@ -82,123 +83,82 @@ Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
  Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
  Guillaume Stols <gstols@baylibre.com>
 X-Mailer: b4 0.14.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1728465581; l=4625;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1728465581; l=2292;
  i=gstols@baylibre.com; s=20240417; h=from:subject:message-id;
- bh=LedlEdJCC/LMY2h2d3ZMK/XTHFaSBO06zmv+zukeWhM=;
- b=AaS7KusQPatp8MX1pH5ToR+la3iwSdh6zB9K40z6KABcG3HpnptxYWGhiGu6BPFHN699K94Ky
- VYbdSYgtQV1CniJYGqxgNmLQyY9MBriUVtggF+Z40PZd+VxxD2jQDhZ
+ bh=uuGWxYey7yHQCI4vU9zbNCU9qHQf1LbNNRlr2LUqzxo=;
+ b=XVLRBxAuTkn7joKpnvjCLRf6ITZ/+5ljsYb4AA/VxTsiKxFajOG4ywCjBEqxuqc7N5Gj84iTV
+ CILkNPzUc7wC3qLzFwcRQMmXbUilFKxPRUp+MLmez4at9Rdbv+KX5sW
 X-Developer-Key: i=gstols@baylibre.com; a=ed25519;
  pk=XvMm5WHuV67sGYOJZqIYzXndbaJOlNd8Q6li6vnb4Cs=
 
-This variable determines how many hardware channels has the chip,
-oppositely to the num_channels that can contain more channels, e.g a
-timestamp channel in our case. Introducing this variable avoids
-decreasing the former num_channels variable when reading the ADC's
-channels, and clarifies a bit the code.
+Since the pwm was introduced before backend, there was a mock use, with
+a GPIO emulation. Now that iio backend is introduced, the mock use can
+be removed.
 
 Signed-off-by: Guillaume Stols <gstols@baylibre.com>
 ---
- drivers/iio/adc/ad7606.c | 10 +++++++++-
- drivers/iio/adc/ad7606.h |  2 ++
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ drivers/iio/adc/ad7606.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iio/adc/ad7606.c b/drivers/iio/adc/ad7606.c
-index dfbdea8c28ba..ec902b268388 100644
+index 1313b5cbb0aa..a117206e5256 100644
 --- a/drivers/iio/adc/ad7606.c
 +++ b/drivers/iio/adc/ad7606.c
-@@ -150,6 +150,7 @@ static int ad7606_16bit_chan_scale_setup(struct ad7606_state *st,
- const struct ad7606_chip_info ad7605_4_info = {
- 	.channels = ad7605_channels,
- 	.name = "ad7605-4",
-+	.num_adc_channels = 4,
- 	.num_channels = 5,
- 	.scale_setup_cb = ad7606_16bit_chan_scale_setup,
- };
-@@ -158,6 +159,7 @@ EXPORT_SYMBOL_NS_GPL(ad7605_4_info, IIO_AD7606);
- const struct ad7606_chip_info ad7606_8_info = {
- 	.channels = ad7606_channels_16bit,
- 	.name = "ad7606-8",
-+	.num_adc_channels = 8,
- 	.num_channels = 9,
- 	.oversampling_avail = ad7606_oversampling_avail,
- 	.oversampling_num = ARRAY_SIZE(ad7606_oversampling_avail),
-@@ -168,6 +170,7 @@ EXPORT_SYMBOL_NS_GPL(ad7606_8_info, IIO_AD7606);
- const struct ad7606_chip_info ad7606_6_info = {
- 	.channels = ad7606_channels_16bit,
- 	.name = "ad7606-6",
-+	.num_adc_channels = 6,
- 	.num_channels = 7,
- 	.oversampling_avail = ad7606_oversampling_avail,
- 	.oversampling_num = ARRAY_SIZE(ad7606_oversampling_avail),
-@@ -178,6 +181,7 @@ EXPORT_SYMBOL_NS_GPL(ad7606_6_info, IIO_AD7606);
- const struct ad7606_chip_info ad7606_4_info = {
- 	.channels = ad7606_channels_16bit,
- 	.name = "ad7606-4",
-+	.num_adc_channels = 4,
- 	.num_channels = 5,
- 	.oversampling_avail = ad7606_oversampling_avail,
- 	.oversampling_num = ARRAY_SIZE(ad7606_oversampling_avail),
-@@ -188,6 +192,7 @@ EXPORT_SYMBOL_NS_GPL(ad7606_4_info, IIO_AD7606);
- const struct ad7606_chip_info ad7606b_info = {
- 	.channels = ad7606_channels_16bit,
- 	.name = "ad7606b",
-+	.num_adc_channels = 8,
- 	.num_channels = 9,
- 	.oversampling_avail = ad7606_oversampling_avail,
- 	.oversampling_num = ARRAY_SIZE(ad7606_oversampling_avail),
-@@ -198,6 +203,7 @@ EXPORT_SYMBOL_NS_GPL(ad7606b_info, IIO_AD7606);
- const struct ad7606_chip_info ad7606c_16_info = {
- 	.channels = ad7606_channels_16bit,
- 	.name = "ad7606c16",
-+	.num_adc_channels = 8,
- 	.num_channels = 9,
- 	.oversampling_avail = ad7606_oversampling_avail,
- 	.oversampling_num = ARRAY_SIZE(ad7606_oversampling_avail),
-@@ -208,6 +214,7 @@ EXPORT_SYMBOL_NS_GPL(ad7606c_16_info, IIO_AD7606);
- const struct ad7606_chip_info ad7606c_18_info = {
- 	.channels = ad7606_channels_18bit,
- 	.name = "ad7606c18",
-+	.num_adc_channels = 8,
- 	.num_channels = 9,
- 	.oversampling_avail = ad7606_oversampling_avail,
- 	.oversampling_num = ARRAY_SIZE(ad7606_oversampling_avail),
-@@ -219,6 +226,7 @@ const struct ad7606_chip_info ad7616_info = {
- 	.channels = ad7616_channels,
- 	.init_delay_ms = 15,
- 	.name = "ad7616",
-+	.num_adc_channels = 16,
- 	.num_channels = 17,
- 	.oversampling_avail = ad7616_oversampling_avail,
- 	.oversampling_num = ARRAY_SIZE(ad7616_oversampling_avail),
-@@ -528,7 +536,7 @@ static int ad7606_set_sampling_freq(struct ad7606_state *st, unsigned long freq)
+@@ -473,8 +473,6 @@ static int ad7606_pwm_set_high(struct ad7606_state *st)
+ 	cnvst_pwm_state.duty_cycle = cnvst_pwm_state.period;
  
- static int ad7606_read_samples(struct ad7606_state *st)
- {
--	unsigned int num = st->chip_info->num_channels - 1;
-+	unsigned int num = st->chip_info->num_adc_channels;
+ 	ret = pwm_apply_might_sleep(st->cnvst_pwm, &cnvst_pwm_state);
+-	/* sleep 2 µS to let finish the current pulse */
+-	fsleep(2);
  
- 	return st->bops->read_block(st->dev, num, &st->data);
+ 	return ret;
  }
-diff --git a/drivers/iio/adc/ad7606.h b/drivers/iio/adc/ad7606.h
-index d401d3ab37e0..b26a11b2eba1 100644
---- a/drivers/iio/adc/ad7606.h
-+++ b/drivers/iio/adc/ad7606.h
-@@ -71,6 +71,7 @@ typedef int (*ad7606_scale_setup_cb_t)(struct ad7606_state *st,
-  * @channels:		channel specification
-  * @name		device name
-  * @num_channels:	number of channels
-+ * @num_adc_channels	the number of channels the ADC actually inputs.
-  * @scale_setup_cb:	callback to setup the scales for each channel
-  * @oversampling_avail	pointer to the array which stores the available
-  *			oversampling ratios.
-@@ -82,6 +83,7 @@ typedef int (*ad7606_scale_setup_cb_t)(struct ad7606_state *st,
- struct ad7606_chip_info {
- 	const struct iio_chan_spec	*channels;
- 	const char			*name;
-+	unsigned int			num_adc_channels;
- 	unsigned int			num_channels;
- 	ad7606_scale_setup_cb_t		scale_setup_cb;
- 	const unsigned int		*oversampling_avail;
+@@ -492,8 +490,6 @@ static int ad7606_pwm_set_low(struct ad7606_state *st)
+ 	cnvst_pwm_state.duty_cycle = 0;
+ 
+ 	ret = pwm_apply_might_sleep(st->cnvst_pwm, &cnvst_pwm_state);
+-	/* sleep 2 µS to let finish the current pulse */
+-	fsleep(2);
+ 
+ 	return ret;
+ }
+@@ -576,7 +572,6 @@ static irqreturn_t ad7606_trigger_handler(int irq, void *p)
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	/* The rising edge of the CONVST signal starts a new conversion. */
+ 	gpiod_set_value(st->gpio_convst, 1);
+-	ad7606_pwm_set_high(st);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -899,7 +894,6 @@ static int ad7606_buffer_postenable(struct iio_dev *indio_dev)
+ 	struct ad7606_state *st = iio_priv(indio_dev);
+ 
+ 	gpiod_set_value(st->gpio_convst, 1);
+-	ad7606_pwm_set_high(st);
+ 
+ 	return 0;
+ }
+@@ -909,7 +903,6 @@ static int ad7606_buffer_predisable(struct iio_dev *indio_dev)
+ 	struct ad7606_state *st = iio_priv(indio_dev);
+ 
+ 	gpiod_set_value(st->gpio_convst, 0);
+-	ad7606_pwm_set_low(st);
+ 
+ 	return 0;
+ }
+@@ -1204,6 +1197,12 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
+ 
+ 		indio_dev->setup_ops = &ad7606_pwm_buffer_ops;
+ 	} else {
++
++		/* Reserve the PWM use only for backend (force gpio_convst definition) */
++		if (!st->gpio_convst)
++			return dev_err_probe(dev, -EINVAL,
++					     "No backend, connect convst to a GPIO");
++
+ 		init_completion(&st->completion);
+ 		st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
+ 						  indio_dev->name,
 
 -- 
 2.34.1
