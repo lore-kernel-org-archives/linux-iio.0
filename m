@@ -1,124 +1,270 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F80B1E5027;
-	Fri, 11 Oct 2024 12:31:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F7A11E501C;
+	Fri, 11 Oct 2024 13:45:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728649866; cv=none; b=hmAYTDZFMi2eRLAY0Kh+nO6Z9HiV2U/Kn/cYJKefsMvHnawwc7MPqm67PlTy8AAUtG+3yYJuuMJQZSKE+RH5QaqVYF/7Yl/uNdSD84esDkifklNQKJ73gEnaBgyf7ctMQKDHjh0GiuPZWu2q/N26cuJ04qDcyQ9B9+JkXkgBrg4=
+	t=1728654309; cv=none; b=N9oZePtPrYyvxH8B3BbIM8kPDJiaABb7ZNFTN4YKNsfX3m+LD1zGia6zjWJXsgBGvFlg5lUkMtAb6Ee5ldfoaI1S+VpD2OYO1bBQpshgeqHur0hspYJkQpTMZsn6tvBfQ64aceF4qGuJ1XT0WNwvpLCjvJgcO/4LTWpJ4+KSPnQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728649866; c=relaxed/simple;
-	bh=mXF5tY1r8sZ+BePLSvut8fwsgeweL9N6J98VLTTvPLE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Y/mE1XmvavyGfGTU0RO1MFVRc7nvqX+fXJ6tKK6vm1Bxu95JRBHay8XuP4fgv2wgiAvjD6vEGMcKXS9hi1Wm+XeGaqdgUcryQ9sx9zzMFmha/IONL1R7Clre+8QSwvAmomdafxirYJG4H89OUcYktJdy0fpU939ZeJ58ygG4DYs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MYtxGuFo; arc=none smtp.client-ip=209.85.218.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1728654309; c=relaxed/simple;
+	bh=jA6Bduz+f3uu0Nv/cNJGLTISP4v5zEwytxuOSAtHnHo=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=LCM+J106f9tAt2jzqgBZW30x7vd4v34zFmjZNkA3luhrEMZ4GpMVY7J0LwPKdXvUaBLzNS6SluKWB/Qj9kV8SnBMnTWfRMD8UUQiSNW/Bs/1y9YieZVVXA+PSABwJEWvSTP8bqlR0e18vtiTtw4YntwAkolu9EIX4ExLu9hEtFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=Yf2rDZtA; arc=none smtp.client-ip=68.232.153.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MYtxGuFo"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a9951fba3b4so312065066b.1;
-        Fri, 11 Oct 2024 05:31:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1728649863; x=1729254663; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=63D6g6LIgJSLc7UFUFlkwljQcLXEYto6STChMviNESg=;
-        b=MYtxGuFof1tx5V8y3nBaHxGF+fxX0aaNNvNGWuYJknYjpKcoc53hgxdtOg6+XLloQ+
-         O79qRxw/dEQ4htgaIMuPIzmxOyxlKISXLbiufrNlwSb2olJ2UkWqI1DILzI8dNe9msM+
-         Ocg+s878D2ON0RK3S/TcD8xwyCnqxkktqeQg+Mwu4wOOuo8z1DtODGJsjsob5Jefnl0X
-         xpWT0LbjLsIrs+Tx2lwmmehQKinvVPY/088ZY2vcb7f3OVcBvPoqlZenutw0VV4TTcDR
-         T694+FTfDIukMaPA94/Vkz/ZZSoQnU62NfGd7ZICORJDonGsXSiOvQWlUWeUA4zEU2/z
-         S9DQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728649863; x=1729254663;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=63D6g6LIgJSLc7UFUFlkwljQcLXEYto6STChMviNESg=;
-        b=j2Oo7a79P9IBb7xd7PfvyKt/LUwFCdPpZTonmSQg1N/37rpeHd/XzAazw74vjL6p3Y
-         fmcR1c+RMO1NRvkyfmTKkDGEj5I8wRZI7rHwRUzmZ0cew52cF114U9FmNYZaacddbflu
-         +jk3Lz+YlOo1Qs0am3a2lGU8ht9w3HeFQ5txrd8ybeb6d6IUgN2Tbf930TqZoXyzPtuZ
-         +jQuwpHFcInaVD1tx0EfgZznORfNqZDFo6bLRTGIge7NGACbK4tNK5NO53WiKbz8V3qq
-         X5lbDSXsHogUnkSJL+ENRTXXqdCGLIotJQu4Bq5S1y0viLSUwANstGD9REXrM6h6prIX
-         9S4Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVTb7ckvwH/uKiwpWXD+4B/aKGBg6F4lf/TPaPsIkw7pteiprI3j2GK0HX5r8XLdGjEEbfLZnYp+hg=@vger.kernel.org, AJvYcCWNeSwOkOy1vdIK6TmUkZusywDF5U5os07HpiSqQhZ8dPzGpNguO5Zm0ycUtSRdCs9GC9ambrGttfz5oPhY@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxngm8CoTqvDYRXCoiKGnfWE+DHaJ/cDPMEjAAkLtOUc7MwrKyz
-	Fpp9jbsVgB8YMiF1tQb8IZ0bGOn2KL/BEAA30EvWf1GDaVe/VOMg
-X-Google-Smtp-Source: AGHT+IHOI1+rAgiSZXEcbJ0u5CvDrlSaAtckGUxZS7Y/N9xHUmUDEO9strUSS97owHZQnmSzbyRzzw==
-X-Received: by 2002:a17:907:e297:b0:a99:8893:84d with SMTP id a640c23a62f3a-a99b95a7842mr217739866b.28.1728649862407;
-        Fri, 11 Oct 2024 05:31:02 -0700 (PDT)
-Received: from [10.10.12.27] (91-118-163-37.static.upcbusiness.at. [91.118.163.37])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a99a7f2437csm207068766b.57.2024.10.11.05.31.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Oct 2024 05:31:01 -0700 (PDT)
-Message-ID: <26f2e35e-0a07-4b24-91a2-a48d4bc5dadc@gmail.com>
-Date: Fri, 11 Oct 2024 14:31:00 +0200
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="Yf2rDZtA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1728654308; x=1760190308;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=jA6Bduz+f3uu0Nv/cNJGLTISP4v5zEwytxuOSAtHnHo=;
+  b=Yf2rDZtAIte9eV6qAJN07+yTpRDi4sEDu0hk7PflPx2Q5JVzvb4Hd6n7
+   Eb+QNTjcV+lww1QceTWSIuSRVlq7jsxmjB6AJMzx5GLmVygHVPEnfyVZ9
+   DVqyzLylDr6FVvSrTFL6PpFz8l6yzX+shP356nO369yOdxDybsq0NAfXu
+   c89fOP3Gva2ZoX0FoJZCdBfM1821H3f7RCvdDK8uv5TykiBuXsK1zOos2
+   1Uj2GpgTIlUW7lpjKtu52x4rSR/a0eSby8DNG1Pv3zlvMwxPae2mYQDvH
+   kLfpL7HpmpTPL94yW10qbYtOuY++ATlAJIAyxMHHmtxdQ4kj9LGKGDN9G
+   Q==;
+X-CSE-ConnectionGUID: N0YeULSXTTmb5DyOXbN91w==
+X-CSE-MsgGUID: yqr4ZoJiSg6YtyoNoIHJow==
+X-IronPort-AV: E=Sophos;i="6.11,196,1725346800"; 
+   d="scan'208";a="263955870"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 11 Oct 2024 06:45:01 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Fri, 11 Oct 2024 06:44:58 -0700
+Received: from vduicu-Virtual-Machine.mshome.net (10.10.85.11) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.35 via Frontend Transport; Fri, 11 Oct 2024 06:44:57 -0700
+From: <victor.duicu@microchip.com>
+To: <matteomartelli3@gmail.com>, <jic23@kernel.org>, <lars@metafoo.de>
+CC: <marius.cristea@microchip.com>, <victor.duicu@microchip.com>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3] iio: adc: pac1921: add ACPI support to Microchip pac1921.
+Date: Fri, 11 Oct 2024 16:44:54 +0300
+Message-ID: <20241011134454.45283-1-victor.duicu@microchip.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iio: Fix uninitialized variable
-To: "Yo-Jung (Leo) Lin" <0xff07@gmail.com>
-Cc: linux-kernel-mentees@lists.linuxfoundation.org, ricardo@marliere.net,
- skhan@linuxfoundation.org, Jonathan Cameron <jic23@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>, Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Bill Wendling
- <morbo@google.com>, Justin Stitt <justinstitt@google.com>,
- Vasileios Amoiridis <vassilisamir@gmail.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Angel Iglesias <ang.iglesiasg@gmail.com>, Adam Rizkalla
- <ajarizzo@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-References: <20241011093752.30685-1-0xff07@gmail.com>
- <20241011115334.367736-1-0xff07@gmail.com>
-Content-Language: en-US, de-AT
-From: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-In-Reply-To: <20241011115334.367736-1-0xff07@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On 11/10/2024 13:52, Yo-Jung (Leo) Lin wrote:
-> clang found that the "offset" in bmp580_trigger_handler doesn't get
-> initialized before access. Add proper initialization to this variable.
-> 
-> Signed-off-by: Yo-Jung (Leo) Lin <0xff07@gmail.com>
-> ---
-> Change in v2:
-> - Make value initialization immediate before its first use.
-> - Link to v1: https://lore.kernel.org/all/20241011093752.30685-1-0xff07@gmail.com/
-> 
-> ---
->  drivers/iio/pressure/bmp280-core.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-> index f4df222ed0c3..682329f81886 100644
-> --- a/drivers/iio/pressure/bmp280-core.c
-> +++ b/drivers/iio/pressure/bmp280-core.c
-> @@ -2222,6 +2222,8 @@ static irqreturn_t bmp580_trigger_handler(int irq, void *p)
->  		goto out;
->  	}
->  
-> +	offset = 0;
-> +
->  	/* Pressure calculations */
->  	memcpy(&data->sensor_data[offset], &data->buf[3], 3);
->  
+From: Victor Duicu <victor.duicu@microchip.com>
 
-That was a quick reply. I would recommend you to wait a little bit while
-the first version is under discussion.
+This patch implements ACPI support to Microchip pac1921.
+The driver can read shunt resistor value and label from ACPI table.
 
-I still see the offset thing a bit weird. data->sensor_data uses an
-offset to avoid hard-coded numbers, but for data->buf we do exactly
-that, in the very same lines.
+The patch was tested on a minnowboard(64b) and sama5(32b).
+In order to avoid overflow when reading 64b values from ACPi table or
+devicetree it is necessary:
+- the revision of .dsl file must be 2 or greater to enable 64b arithmetic.
+- the shunt resistor variable in devicetree must have the prefix "/bits/ 64".
 
-Setting offset to 0 to access the first element i.e. no offset required,
-and then adding the actual offset sizeof(s32), which could even be a
-const if the first access was to sensor_data[0], looks to verbose.
+Differences related to previous versions:
+v3:
+- simplify and make inline function pac1921_shunt_is_valid. Make argument u64.
+- fix link to DSM documentation.
+- in pac1921_match_acpi_device and pac1921_parse_of_fw, the shunt value is
+read as u64.
+- in pac1921_parse_of_fw remove code for reading label value from
+devicetree.
+- in pac1921_write_shunt_resistor cast the multiply result to u64 in order
+to fix overflow.
 
-These things are of course not critical, and the proposed fix is
-definitely ok, but I am missing some consistency here.
+v2:
+- remove name variable from priv. Driver reads label attribute with
+sysfs.
+- define pac1921_shunt_is_valid function.
+- move default assignments in pac1921_probe to original position.
+- roll back coding style changes.
+- add documentation for DSM(the linked document was used as reference).
+- remove acpi_match_device in pac1921_match_acpi_device.
+- remove unnecessary null assignment and comment.
+- change name of function pac1921_match_of_device to
+pac1921_parse_of_fw.
+
+v1:
+- initial version for review.
+
+Signed-off-by: Victor Duicu <victor.duicu@microchip.com>
+---
+ drivers/iio/adc/pac1921.c | 106 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 93 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/iio/adc/pac1921.c b/drivers/iio/adc/pac1921.c
+index 567279664e74..01c5eceab0be 100644
+--- a/drivers/iio/adc/pac1921.c
++++ b/drivers/iio/adc/pac1921.c
+@@ -67,6 +67,10 @@ enum pac1921_mxsl {
+ #define PAC1921_DEFAULT_DI_GAIN		0 /* 2^(value): 1x gain (HW default) */
+ #define PAC1921_DEFAULT_NUM_SAMPLES	0 /* 2^(value): 1 sample (HW default) */
+ 
++#define PAC1921_ACPI_GET_UOHMS_VALS             0
++#define PAC1921_ACPI_GET_LABEL			1
++#define PAC1921_DSM_UUID                        "f7bb9932-86ee-4516-a236-7a7a742e55cb"
++
+ /*
+  * Pre-computed scale factors for BUS voltage
+  * format: IIO_VAL_INT_PLUS_NANO
+@@ -204,6 +208,11 @@ struct pac1921_priv {
+ 	} scan;
+ };
+ 
++static inline bool pac1921_shunt_is_valid(u64 shunt_val)
++{
++	return (shunt_val == 0 || shunt_val > INT_MAX);
++}
++
+ /*
+  * Check if first integration after configuration update has completed.
+  *
+@@ -792,13 +801,13 @@ static ssize_t pac1921_write_shunt_resistor(struct iio_dev *indio_dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	rshunt_uohm = val * MICRO + val_fract;
+-	if (rshunt_uohm == 0 || rshunt_uohm > INT_MAX)
++	rshunt_uohm = (u64)val * MICRO + val_fract;
++	if (pac1921_shunt_is_valid(rshunt_uohm))
+ 		return -EINVAL;
+ 
+ 	guard(mutex)(&priv->lock);
+ 
+-	priv->rshunt_uohm = rshunt_uohm;
++	priv->rshunt_uohm = (u32)rshunt_uohm;
+ 
+ 	pac1921_calc_current_scales(priv);
+ 
+@@ -1150,6 +1159,74 @@ static void pac1921_regulator_disable(void *data)
+ 	regulator_disable(regulator);
+ }
+ 
++/*
++ * documentation related to the ACPI device definition
++ * https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ApplicationNotes/ApplicationNotes/PAC193X-Integration-Notes-for-Microsoft-Windows-10-and-Windows-11-Driver-Support-DS00002534.pdf
++ */
++static int pac1921_match_acpi_device(struct i2c_client *client, struct pac1921_priv *priv,
++				     struct iio_dev *indio_dev)
++{
++	acpi_handle handle;
++	union acpi_object *rez;
++	guid_t guid;
++	char *label;
++	u64 temp;
++
++	guid_parse(PAC1921_DSM_UUID, &guid);
++	handle = ACPI_HANDLE(&client->dev);
++
++	rez = acpi_evaluate_dsm(handle, &guid, 1, PAC1921_ACPI_GET_UOHMS_VALS, NULL);
++	if (!rez)
++		return dev_err_probe(&client->dev, -EINVAL,
++				     "Could not read shunt from ACPI table\n");
++
++	temp = rez->package.elements[0].integer.value;
++	ACPI_FREE(rez);
++
++	if (pac1921_shunt_is_valid(temp))
++		return dev_err_probe(&client->dev, -EINVAL, "Invalid shunt resistor\n");
++
++	priv->rshunt_uohm = temp;
++	pac1921_calc_current_scales(priv);
++
++	rez = acpi_evaluate_dsm(handle, &guid, 1, PAC1921_ACPI_GET_LABEL, NULL);
++	if (!rez)
++		return dev_err_probe(&client->dev, -EINVAL,
++				     "Could not read label from ACPI table\n");
++
++	label = devm_kmemdup(&client->dev, rez->package.elements->string.pointer,
++			     (size_t)rez->package.elements->string.length + 1,
++			     GFP_KERNEL);
++	label[rez->package.elements->string.length] = '\0';
++	indio_dev->label = label;
++	ACPI_FREE(rez);
++
++	return 0;
++}
++
++static int pac1921_parse_of_fw(struct i2c_client *client, struct pac1921_priv *priv,
++			       struct iio_dev *indio_dev)
++{
++	int ret;
++	struct device *dev = &client->dev;
++	u64 temp;
++
++	ret = device_property_read_u64(dev, "shunt-resistor-micro-ohms", &temp);
++
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "Cannot read shunt resistor property\n");
++
++	if (pac1921_shunt_is_valid(temp))
++		return dev_err_probe(dev, -EINVAL, "Invalid shunt resistor: %u\n",
++				     priv->rshunt_uohm);
++
++	priv->rshunt_uohm = (u32)temp;
++	pac1921_calc_current_scales(priv);
++
++	return 0;
++}
++
+ static int pac1921_probe(struct i2c_client *client)
+ {
+ 	struct device *dev = &client->dev;
+@@ -1176,17 +1253,14 @@ static int pac1921_probe(struct i2c_client *client)
+ 	priv->di_gain = PAC1921_DEFAULT_DI_GAIN;
+ 	priv->n_samples = PAC1921_DEFAULT_NUM_SAMPLES;
+ 
+-	ret = device_property_read_u32(dev, "shunt-resistor-micro-ohms",
+-				       &priv->rshunt_uohm);
+-	if (ret)
+-		return dev_err_probe(dev, ret,
+-				     "Cannot read shunt resistor property\n");
+-	if (priv->rshunt_uohm == 0 || priv->rshunt_uohm > INT_MAX)
+-		return dev_err_probe(dev, -EINVAL,
+-				     "Invalid shunt resistor: %u\n",
+-				     priv->rshunt_uohm);
++	if (ACPI_HANDLE(&client->dev))
++		ret = pac1921_match_acpi_device(client, priv, indio_dev);
++	else
++		ret = pac1921_parse_of_fw(client, priv,  indio_dev);
+ 
+-	pac1921_calc_current_scales(priv);
++	if (ret < 0)
++		return dev_err_probe(&client->dev, ret,
++				     "parameter parsing error\n");
+ 
+ 	priv->vdd = devm_regulator_get(dev, "vdd");
+ 	if (IS_ERR(priv->vdd))
+@@ -1243,11 +1317,17 @@ static const struct of_device_id pac1921_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, pac1921_of_match);
+ 
++static const struct acpi_device_id pac1921_acpi_match[] = {
++	{ "MCHP1921" },
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, pac1921_acpi_match);
+ static struct i2c_driver pac1921_driver = {
+ 	.driver	 = {
+ 		.name = "pac1921",
+ 		.pm = pm_sleep_ptr(&pac1921_pm_ops),
+ 		.of_match_table = pac1921_of_match,
++		.acpi_match_table = pac1921_acpi_match
+ 	},
+ 	.probe = pac1921_probe,
+ 	.id_table = pac1921_id,
+
+base-commit: c4f9679c92dc8f5a16cd3ad1c9a4a23c6d3f52d7
+-- 
+2.43.0
+
