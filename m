@@ -1,82 +1,75 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E24A802;
-	Fri, 11 Oct 2024 12:20:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7635D209662;
+	Fri, 11 Oct 2024 12:27:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728649222; cv=none; b=iIZojGLDsqzBgQK/q8Fsrdoctmma5Ylm3suVAWtZAyPLwOjgqiqagLuOA0WF7JOkx48ZHhjr4WpVKwMsD/PYxVJTSMrYm0pU5tB872P0zE71pTGun9iYkqdE9bvvZOlvj73lseLc98WUkVjiDrh+NTcYqptuDU6PHUmbHIp3YOo=
+	t=1728649626; cv=none; b=ocBD2f4JU7Zcy71tNgeydBJyFSR2l6+y4uQQhlROwCST0eJRoQEx80idvDTyAsBRwftgQ9C3xGGuj2WOVsVkUMxy6f4sH9lcXjX7hsxIVpeXPj+VHj2eemLrD0RqOuXZIh517L8h7ZcGoPNN1E5qS5L6WgnaoEZqJRxVTugOQ68=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728649222; c=relaxed/simple;
-	bh=FSVcya7AJzmLP8fH5k5lDNVInzXYZ9khIORtUZZH74I=;
+	s=arc-20240116; t=1728649626; c=relaxed/simple;
+	bh=6GPPNQBDfqFw1nrENpvoZrZGhGeZ1bDGnK0Ri68Nz6o=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=UwEgsWGLCd8r/KK5+EZyFWeqKTfO77VrEUgN+daurbR0VgoJo1DfOZDnl+phWCbr6Y10cDl0KyKiM7EHBYd+cmCGxhuxxhFrMz5APodRWqPjIExMDK4b4M6iuHoqXlme60M8fFsxCCQwPa6s33eH/POiKMhbWRH6aoTez4eY6uY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UURG80Ci; arc=none smtp.client-ip=209.85.218.45
+	 Content-Type:MIME-Version; b=dbX4ZRfXFtR4q7+/5wOvjhhE4UpG7LJcc9MaKnlM87GXIrKwmrnTpvpVpwjjOLW+PrBKl9VDXIgtQVuyuinR46ZxZeDqo1ReQWcSXGe7I3guSqWsEm/PrHgRurYjpsAB8Q/ToUldjycRXGgUMqsjMkbC3Nzcn0QfnHnmeErJPo0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OAMfP6F5; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UURG80Ci"
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a9968114422so281885066b.2;
-        Fri, 11 Oct 2024 05:20:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OAMfP6F5"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-42cb806623eso16710135e9.2;
+        Fri, 11 Oct 2024 05:27:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1728649218; x=1729254018; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1728649623; x=1729254423; darn=vger.kernel.org;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=Jlz12XyotTNNntibanQHl5R2spdT9YwbfoEX8IEOgkY=;
-        b=UURG80CiOhj39W0FPiR/tvBN5BBf/c3yQkgF1zIIutkpOCCSXX2rhb88hUtj2K+UOa
-         T3EEZ0PfhIhRh4UDHPyB08g9sWTa9iN/9OirML5QR1KNdD7b9fcauV+oVu69amlIuBa2
-         ywEdL+AZY+8xj6nOsgqWhA6ZS9XuQsv7hKYYkfpmU+hnwfJeK43kBYB0KPb0LRn00ERv
-         m4EbOVM5HRmRlaHn2l8WvjwaDgbvMRoHoWNaHx2BzTYPE5JsaGa9R2H038N8fsd+NJ4o
-         bbOQB7BdRho5yUvn7RIDdxzQvQ1r1uUhE9ZSTArmPotBvJ5J2RxtKbrth1uHIXpsMb7X
-         92RA==
+        bh=FizCtb5qWKRVpo+706XWFGZGPKWEwJd/P8uFS93BCZs=;
+        b=OAMfP6F53VY3jUySEjB86xlc93fe40ETnbtqF7eclrcUVcmV1wPIqSjCHO4pj0ZVw6
+         ZSL/IVYCpJb14ZAXGOOed1aHtQ9oFfSjaGBoGNh3bQDXk+FwElKumA3J+HyxsUDpESjy
+         OZw0eGLP56XSIGrbPzmIzJtEzbJ+h7wjeQEik9wfp5gdLlJcHvw+AfrZiXS626WFePyO
+         t6LD46yijFUDHH/f+zGhTZR9lELYjWWz7HKF7BEoy2X/ZUGFAnoUbX7QklDJuDZSzl+S
+         y0BQhfsR4pJE26xDHMQDlN53TYjPJGR81jEsoG3cNRdNz9Xo31KsYvRm32Icm76uyT+8
+         vreg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728649218; x=1729254018;
+        d=1e100.net; s=20230601; t=1728649623; x=1729254423;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=Jlz12XyotTNNntibanQHl5R2spdT9YwbfoEX8IEOgkY=;
-        b=R7wyUls78m5XBxoyESpTFYSt+5u9s2Q4rD85MDK2xPDaJ9F6pFo/UBtCSqWQ2f0C8L
-         3O+YnnAYtew/Xadb15RFeql4f2s8sVuzbgEwBxvCXO28djQz5B7lJAZEFfCC8vkRJ6ya
-         V7BRkppriExHqnZzK/o2MbAApzvEZmDSCHUQMwi0SYLTIEhonEnskAbepBNb0UsDqeH5
-         aY5MySfirt+4phphH3eo4lnUPJ3iCrqirNrcA8SlTVQL4uV6t/JUbFuMQ0MzIO+KGJal
-         PRdK+txzs75Etxlc5iuTk24A45t7aGr69pZtRmjARMFyNa24cTAVv/ZjLhq5G34G6Hek
-         WA2Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUtyVHhTI8iDdeAKo0uCo3jFJwx/ge9PA+ZPLEboANHf2k5ypxwIWs1KkNDyiHq/UPC2ARH9JjX7vMR@vger.kernel.org, AJvYcCV5tMq3+nej7eLvxpeRtPB1r66x591YJqHIy6ShJ4GWGh2fCir5p/9q0lalpOrL7t/e7lTSWU8Y7AODtw6v@vger.kernel.org, AJvYcCW6c2+7dtozRtalqCI+Yryaq8i9z54StKG7WE5w+OdLt3egFFyoVGEsres14mH/pTX8hxFU6KqZJEnV@vger.kernel.org, AJvYcCXI4EIYntJdTz0x7vsMNF0L1a+9ot9fIk823gB1KlvcWUvYVbm1j6Z3s+J+Wu392cXJ3fwTVYoDSXzP@vger.kernel.org
-X-Gm-Message-State: AOJu0YyeRWdtLX5WaZ0iIYUudQzuc2J9FSoFvf5ehzTezpovtJfDtCpJ
-	4u0thlYtlfjvqO4ijRJzPOh8a0XZ27QSnj0wHXQhURErr2iUvgR5
-X-Google-Smtp-Source: AGHT+IGhTynSDPKMzHVc1xr4jVsPbryff/kx9+zBubOf6lnVucB5ML8xrhIU7Q6n8RWO/kmDj3GvQg==
-X-Received: by 2002:a17:907:9806:b0:a99:497f:317 with SMTP id a640c23a62f3a-a99b95fb02bmr173285866b.62.1728649217375;
-        Fri, 11 Oct 2024 05:20:17 -0700 (PDT)
+        bh=FizCtb5qWKRVpo+706XWFGZGPKWEwJd/P8uFS93BCZs=;
+        b=GKE3e3xCU7ML8vJ0BoHmePw2cn0BYDkhZk9wtnKEynO04NVxok5O1JWULc44THUQvp
+         g6piBCdP192+Tuxpmp+kx4ObEQRVKqcKkPewoIbhw7lh0F64G34LlvYTivOCPZpzQPlR
+         BQP9y69v7cA7j5x6x/zlwhlSU6xDfWIshBZnJLxUeIL3gbgEgQwlfglChd/CDkbYwyGN
+         7wItA4kBDs/WiNdhSq8/HWwFpToTzUUCaoTcszMTpnYlur4hl8p/ZwBOFUETQOZBCStn
+         yKQnP98Yg87mcGQ7qcoSwJvNNpZhLa7EQblv+EwY9WHY+rNvFzRWhX5eMIoumcubxFeW
+         gzAA==
+X-Forwarded-Encrypted: i=1; AJvYcCUsNGqbIiGnZKt74GpzZ2UTyWzIaY4eSTnspmZJks1Up5ujKCBjBHLzsaOM0UXcqrrXpJ5m9H9gR89BSreT@vger.kernel.org, AJvYcCVtDYIPdkW5gbGnvAsUrvhWiqWbldY6HU/QJBl+BXX9v8+jvUoy4iCEZQY6MuUOiy5VnKffRWf+tEEK@vger.kernel.org, AJvYcCWwPg8W3vBJ8HsqCATU0cryRNwj8PVjEHkD+iwHBwylaX4UcVr5F5iiTCfPDAeirrH5WaYjs9/Vizfa@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyzl49IHMG6oPVO/DOnYbt/vYAliIDiJbnRx21lWZye2iGrTRB1
+	CR89ElX32k5aG0KgFU6mqVRokaTRa+viYMASQlhy3DaSct4cXKMu
+X-Google-Smtp-Source: AGHT+IGxL7m8CxkF/SsoOKG04+XptfKKRYh+VNgI3P2UxUFZYY5btHT9KXPTVj+te0Ua5scVjOznOw==
+X-Received: by 2002:a05:600c:3589:b0:42c:b961:c902 with SMTP id 5b1f17b1804b1-4311dee688cmr18793605e9.12.1728649622616;
+        Fri, 11 Oct 2024 05:27:02 -0700 (PDT)
 Received: from ?IPv6:2003:f6:ef15:2100:888:d3c6:a442:4910? (p200300f6ef1521000888d3c6a4424910.dip0.t-ipconnect.de. [2003:f6:ef15:2100:888:d3c6:a442:4910])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a99a80c022dsm206038466b.126.2024.10.11.05.20.16
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-430d748d445sm73501505e9.44.2024.10.11.05.27.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Oct 2024 05:20:17 -0700 (PDT)
-Message-ID: <e1979dbb5d79d18f84b6395d307a13734e7949b1.camel@gmail.com>
-Subject: Re: [PATCH v2 7/7] Documentation: ABI: testing: ad485x: add ABI docs
+        Fri, 11 Oct 2024 05:27:02 -0700 (PDT)
+Message-ID: <dd66a22d63b5b835b06604916e95b9a68cc26542.camel@gmail.com>
+Subject: Re: [PATCH v5 10/10] iio: dac: adi-axi-dac: add registering of
+ child fdt node
 From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, Antoniu Miclaus
-	 <antoniu.miclaus@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich	
- <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Nuno Sa
- <nuno.sa@analog.com>,  Olivier Moysan <olivier.moysan@foss.st.com>, Uwe
- =?ISO-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>, Andy Shevchenko
- <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Marcelo Schmitt	
- <marcelo.schmitt@analog.com>, AngeloGioacchino Del Regno	
- <angelogioacchino.delregno@collabora.com>, Mike Looijmans	
- <mike.looijmans@topic.nl>, Dumitru Ceclan <mitrutzceclan@gmail.com>, 
- =?ISO-8859-1?Q?Jo=E3o?= Paulo =?ISO-8859-1?Q?Gon=E7alves?=	
- <joao.goncalves@toradex.com>, Alisa-Dariana Roman <alisadariana@gmail.com>,
-  Sergiu Cuciurean <sergiu.cuciurean@analog.com>, Dragos Bogdan
- <dragos.bogdan@analog.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-pwm@vger.kernel.org
-Date: Fri, 11 Oct 2024 14:24:32 +0200
-In-Reply-To: <20241005183629.6a9cd4da@jic23-huawei>
-References: <20241004140922.233939-1-antoniu.miclaus@analog.com>
-		<20241004140922.233939-7-antoniu.miclaus@analog.com>
-	 <20241005183629.6a9cd4da@jic23-huawei>
+To: Angelo Dureghello <adureghello@baylibre.com>, Lars-Peter Clausen	
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Nuno
+ Sa	 <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, Rob Herring	
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley	
+ <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ linux-iio@vger.kernel.org, 	linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, dletchner@baylibre.com,  Mark Brown
+ <broonie@kernel.org>
+Date: Fri, 11 Oct 2024 14:31:17 +0200
+In-Reply-To: <20241008-wip-bl-ad3552r-axi-v0-iio-testing-v5-10-3d410944a63d@baylibre.com>
+References: 
+	<20241008-wip-bl-ad3552r-axi-v0-iio-testing-v5-0-3d410944a63d@baylibre.com>
+	 <20241008-wip-bl-ad3552r-axi-v0-iio-testing-v5-10-3d410944a63d@baylibre.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.54.0 
@@ -87,142 +80,72 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 
-On Sat, 2024-10-05 at 18:36 +0100, Jonathan Cameron wrote:
-> On Fri, 4 Oct 2024 17:07:56 +0300
-> Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+On Tue, 2024-10-08 at 17:43 +0200, Angelo Dureghello wrote:
+> From: Angelo Dureghello <adureghello@baylibre.com>
 >=20
-> > Add documentation for the packet size.
-> >=20
-> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> > ---
-> > changes in v2:
-> > =C2=A0- improve description for packet_format
-> > =C2=A0- add kernel version
-> > =C2=A0.../ABI/testing/sysfs-bus-iio-adc-ad485x=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 | 16 ++++++++++++++++
-> > =C2=A01 file changed, 16 insertions(+)
-> > =C2=A0create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-ad=
-485x
-> >=20
-> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-ad485x
-> > b/Documentation/ABI/testing/sysfs-bus-iio-adc-ad485x
-> > new file mode 100644
-> > index 000000000000..5d69a8d30383
-> > --- /dev/null
-> > +++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-ad485x
-> > @@ -0,0 +1,16 @@
-> > +What:		/sys/bus/iio/devices/iio:deviceX/packet_format_available
-> > +KernelVersion:	6.13
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		Packet sizes on the CMOS or LVDS conversion data output
-> > bus.
-> > +		Reading this returns the valid values that can be written
-> > to the
-> > +		packet_format.
-> > +
-> > +What:		/sys/bus/iio/devices/iio:deviceX/packet_format
-> > +KernelVersion:	6.13
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		This attribute configures the frame size on conversion data
-> > +		output bus. See packet_format_available for available sizes
-> > +		based on the device used.
-> > +		Reading returns the actual size used.
-> This needs to give some guidance to the user on 'why' they might pick a
-> particular
-> format.
+> Change to obtain the fdt use case as reported in the
+> adi,ad3552r.yaml file in this patchset.
 >=20
-> I'm also inclined to suggest that for now we pick a sensible default depe=
-ndent
-> on the other options enabled (oversampling etc) and don't expose it to th=
-e
-> user.=20
+> The DAC device is defined as a child node of the backend.
+> Registering the child fdt node as a platform devices.
 >=20
-
-Just for documentations and if someone does not want to check the datasheet=
- :):
-
-- Nonoversampling Packet Formats:
-
-			  -------------------
-20bit (packet_size =3D 0) - |20 bit conversion|
-			  -------------------
-
-                          -------------------------------------------
-24bit (packet_size =3D 1) - |20 bit conversion| OR/UR | 3 bit chan_id |
-			  -------------------------------------------
-
-                          -------------------------------------------------=
--------------------
-32bit (packet_size =3D 2) - |20 bit conversion| OR/UR | 3 bit chan_id | 4 b=
-it softspan | 0s... |
-			  --------------------------------------------------------------------
-
-- Oversampling Packet Formats
-
-			  -------------------
-20bit (packet_size =3D 0) - |20 bit conversion|
-			  -------------------
-
-                          --------------------
-24bit (packet_size =3D 1) - |24 bit conversion |
-			  --------------------
-
-                          -------------------------------------------------=
------------
-32bit (packet_size =3D 2) - |24 bit conversion| OR/UR | 3 bit chan_id | 4 b=
-it softspan |
-			  ------------------------------------------------------------
-
-> Eventually it looks like we may have to figure out a solution to describe
-> metadata packed alongside the channel readings but that may take a while
-> and I don't want to stall this driver on that discussion.
+> Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
+> ---
+> =C2=A0drivers/iio/dac/adi-axi-dac.c | 61
+> +++++++++++++++++++++++++++++++++++++++++++
+> =C2=A01 file changed, 61 insertions(+)
 >=20
+> diff --git a/drivers/iio/dac/adi-axi-dac.c b/drivers/iio/dac/adi-axi-dac.=
+c
+> index e43d0ecccb50..754c4061d0e3 100644
+> --- a/drivers/iio/dac/adi-axi-dac.c
+> +++ b/drivers/iio/dac/adi-axi-dac.c
+> @@ -18,6 +18,7 @@
+> =C2=A0#include <linux/module.h>
+> =C2=A0#include <linux/mod_devicetable.h>
+> =C2=A0#include <linux/mutex.h>
+> +#include <linux/platform_data/ad3552r-hs.h>
+> =C2=A0#include <linux/platform_device.h>
+> =C2=A0#include <linux/property.h>
+> =C2=A0#include <linux/regmap.h>
+> @@ -108,6 +109,8 @@ struct axi_dac_info {
+> =C2=A0struct axi_dac_state {
+> =C2=A0	struct regmap *regmap;
+> =C2=A0	struct device *dev;
+> +	/* Target DAC platform device */
+> +	struct platform_device *dac_pdev;
+> =C2=A0	/*
+> =C2=A0	 * lock to protect multiple accesses to the device registers and
+> global
+> =C2=A0	 * data/variables.
+> @@ -750,6 +753,44 @@ static int axi_dac_bus_reg_read(struct iio_backend *=
+back,
+> u32 reg, u32 *val,
+> =C2=A0	return regmap_read(st->regmap, AXI_DAC_CUSTOM_RD_REG, val);
+> =C2=A0}
+> =C2=A0
+> +static void axi_dac_child_remove(void *data)
+> +{
+> +	struct axi_dac_state *st =3D data;
+> +
+> +	platform_device_unregister(st->dac_pdev);
+> +}
+> +
+> +static int axi_dac_create_platform_device(struct axi_dac_state *st,
+> +					=C2=A0 struct fwnode_handle *child)
+> +{
+> +	struct ad3552r_hs_platform_data pdata =3D {
+> +		.bus_reg_read =3D axi_dac_bus_reg_read,
+> +		.bus_reg_write =3D axi_dac_bus_reg_write,
+> +	};
+> +	struct platform_device_info pi =3D {
+> +		.parent =3D st->dev,
+> +		.name =3D fwnode_get_name(child),
+> +		.id =3D PLATFORM_DEVID_AUTO,
+> +		.fwnode =3D child,
 
-There's something still not fully clear to me. So, oversampling would be ea=
-sy to
-deal with (for arguing about some packet size). OR/UR is the more tricky ca=
-se
-because of having metadata. But I'm trying to understand on how it could lo=
-ok
-because we still need a way to enable/disable OR/UR.=C2=A0
-
-Do you have in mind to have a form of metadata description in 'struct
-iio_scan_types' plus additional IIO_METADATA channels to enable/disable tho=
-se
-bits? For this usecase and as OR/UR actually depends on the packet format w=
-e
-could flip things with something like in_metadataX_enable and then argue ab=
-out
-the packet size settings.
-
-But things get messier if we look closer to the packets as we can see that =
-for
-non oversampled samples, the softspan info is optional. Now, I'm not convin=
-ced
-about that information being useful in the sample as we already have the sc=
-ale
-attribute and I'm not expecting people to change it during buffering... But=
- for
-the fun of things, how could we handle it if we cared (or if we actually ca=
-re)
-about it? Custom ABI like in_metadataX_scan_enable?
-
-Other thing that came to mind and that might be a sneaky way of bypassing t=
-he
-metadata stuff (for now) is to use events. AFAIU, we have status registers =
-were
-we can check the OR/UR and push those as normal events. But we would need t=
-o
-rely on an external trigger as hrtimer or something like that. So we could =
-have
-this "slowpath" for checking the channel status but still use the events AB=
-I
-(and this is the sneaky part) to argue about the packet_size and whether or=
- not
-that info will be available in the sample through DMA. Not sure if it's wor=
-th it
-though...
+also device_set_node() for this
 
 - Nuno S=C3=A1
+
+
