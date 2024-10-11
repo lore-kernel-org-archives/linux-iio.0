@@ -1,107 +1,85 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED52320CCD0;
-	Fri, 11 Oct 2024 09:40:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E41C20C497;
+	Fri, 11 Oct 2024 09:55:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728639651; cv=none; b=NK/Rr25uNCNIp+fkACCgN8Ul1rzMBEB389PyPoki9irFmJQdc6mzJXTGP+R+fK6pEb7OrullKSWy3qCfWsOlhlQueRuZW9w8FnmZG2VS20NrETgbZAiBQFFF876waKjxjIRwmKN1e/3OAz2ode+d/kAVjVFJrjjN4ogWdkGtl/M=
+	t=1728640508; cv=none; b=kOvvG0f8Ulqwk7pftbZDf0LU5M5rARwjffv3+oyOlVzaPicbYuHJnRYDt1HV19EBGwbbgIiMPibNV38+fhp+QiCAHmLhimlO2pwulY/9QkkofrHltM2z2Ul09ekrUwLQCNI5SynSurGHS6+F96xUkTdCq6BvWh8Yk5qRHsTFY0Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728639651; c=relaxed/simple;
-	bh=iQNhq+CQhhscdKGYDFLYkitEdQ89YDdaFMFypvyo1dU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=fRdOglqVAtAE3Lw5vNNXvtvYPCcmr1JuFjHDhbOlRq7evdSLBHOx/ALuPihJTqIL3YOA5faJNKW/M9Z3hn173rl5CaqaS9GFPxcrCDurtiSgbrtUxz4rhDQiBYT6xfEv2pcLDBpt0bWxc+OsUjsHsmwbzd5Jq3joY5gWbK7yEcU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZNCdYAzh; arc=none smtp.client-ip=209.85.222.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1728640508; c=relaxed/simple;
+	bh=4UhPzKAxq1htJyVXoa6Yn6iXVYNDJylwqoGp59Hnk8o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=b9AL47MW7e9xiw2WveW3w+LN8i5bXo8S1V2JG5SDj4b3zlm4Bv+OcdYqc5tq4U/NSI5ZnukR/1Pgrp9LtsxGeCEuI/Cow8ZnLerbDDshFvTBQCVeeO4Pa/wzcvUeo1ILzrdPFElDs8oxEUpM9JbmouEQOGvfjGfOKPcQUt3OWK4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jLkHTrD6; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZNCdYAzh"
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7afcf9f3c96so184377185a.1;
-        Fri, 11 Oct 2024 02:40:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1728639649; x=1729244449; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=O7AhjpOVVAnhOPJgZn0n/MxJSbqlC44iwzEWSMXLlrU=;
-        b=ZNCdYAzhfrDneiXphSLPn9XngeGaXs3/oAPVGj1vQ11hDV5qOaSF+q9RvKT1iZWQLf
-         c7BjSq0oamX2APTLNWlU1EEl+OWUmuV77nNlMbI0tUROJQ2NBeza0LMQ22bvgF+3Vi+a
-         hkVhsBO2D2D4bD7WkgMtnCG0W1zeXOQsWy8n7IDj1t/6Ajs/5zDFERhI4CN92W1CO3nr
-         laouUHh2y9BwJMaV3oQS/jxLLHuTzbufAICGHzWhJm6XAfciQPFw9VZTVWdIlrLInLT1
-         z2+aOZG/OLgG7O/nDYAsWzhrnEMUgGbO1p/G8pxMyb9N4A+XYg0K1mpSd4GYuxWJ4AsC
-         lQsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728639649; x=1729244449;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=O7AhjpOVVAnhOPJgZn0n/MxJSbqlC44iwzEWSMXLlrU=;
-        b=bzLmYXp5H/tCjrZol4fyj/O4p5fwfBmHk4AGOPV23GrNox5ZeCFk2tIbgaPTq7a+jp
-         4yewL+dwLvZzpRqnOW33r0ZEJpoK/on3iY2v2vxdvOqej8pfIrUz78hvPtt8zTzAhtfA
-         RI3e07zJejSakh5ML0nqYI/2kLoW3jTON45APglyRFMcBA3BrMSZhR2xRYch8VLyzNGj
-         oeBGFLuLYZ+d7B1+yJJqjIdzcqcbk7hiJaXOnGv54TF420ZjPOBvidT+nfMeFRUWFwOl
-         1AKeNzuGE6gJ36UJg/Pc4PV0Da9qu7nKHgOHh7FF/e4N8NEUZAydIe62uhgvedfW91zV
-         M7AA==
-X-Forwarded-Encrypted: i=1; AJvYcCUScRaHJYDsDQy6XVYo4RyA/jDSEYPv6yEybd5raDf0alm0KjFCkPJjbubcsitqDuwweQvzGAKX+KXnlHs/@vger.kernel.org, AJvYcCWQqqI7J58ALLd6u5E5Zy7K+PAcadfcyyX3CXm36WlTrg4oA33l2XbY4pTCv1PRn4ZWfQbwMEQnV+Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwZ+ZpudI5YKL4oObln+TPFtM5ZpLROFc+xs22gy1szb8f4kw0d
-	moH6lLyZjQGoVRAzBo1fGXJFl14sKdTmDbju7/cFURMz7LfTgtJO
-X-Google-Smtp-Source: AGHT+IG/+cAgSQ+5fGXIcN1uMcpXrVrmlk8jdj2JQFkFspeYwHXnn69GCnIs8Iu6eLdEN3k7633Y6A==
-X-Received: by 2002:a05:6214:449b:b0:6cb:e770:f50b with SMTP id 6a1803df08f44-6cbeffc1ee7mr36700466d6.33.1728639648775;
-        Fri, 11 Oct 2024 02:40:48 -0700 (PDT)
-Received: from ernestox.. (211-75-139-220.hinet-ip.hinet.net. [211.75.139.220])
-        by smtp.googlemail.com with ESMTPSA id 6a1803df08f44-6cbe85a5b7fsm13855256d6.2.2024.10.11.02.40.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Oct 2024 02:40:48 -0700 (PDT)
-From: "Yo-Jung (Leo) Lin" <0xff07@gmail.com>
-To: 
-Cc: linux-kernel-mentees@lists.linuxfoundation.org,
-	ricardo@marliere.net,
-	skhan@linuxfoundation.org,
-	0xff07@gmail.com,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Bill Wendling <morbo@google.com>,
-	Justin Stitt <justinstitt@google.com>,
-	Vasileios Amoiridis <vassilisamir@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Angel Iglesias <ang.iglesiasg@gmail.com>,
-	Adam Rizkalla <ajarizzo@gmail.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	llvm@lists.linux.dev
-Subject: [PATCH] iio: Fix uninitialized variable
-Date: Fri, 11 Oct 2024 17:37:45 +0800
-Message-ID: <20241011093752.30685-1-0xff07@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jLkHTrD6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1728640507; x=1760176507;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4UhPzKAxq1htJyVXoa6Yn6iXVYNDJylwqoGp59Hnk8o=;
+  b=jLkHTrD6ViI4PmiRTFY166/UJT9fAWyI6WuX2yb0uMlKuVt2GzXrvaDA
+   bwInfXl0UOLe3rruXzW0KRaZKihBsbXPPcoRWpHmh0qFy7jN2Mh/p3NMr
+   Y5MI30vmxKpXzw6AVSERdk/gvcz6d7/RTarCzOm9t8Fcq9J/1OHBdKi9r
+   RNyNegrK6RpvHgmbzIdoLhxw297u+2LCi1NXielu3a4KPJSC+Y4uxUGol
+   TsG1dKT6am3oqeAJid0UZPHUID/azw/Py9J0/xUa+UdIWxxNMeL7QFsq+
+   tB0HUnALNgi5FwU2YjO9ahVPXFLTvUshXur2hmy3rxCaH8L7AjtaLqODX
+   w==;
+X-CSE-ConnectionGUID: sD1IUPHxTMuWejysG9JqkQ==
+X-CSE-MsgGUID: qUmJVpm9RSmNRgrggo7vJw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11221"; a="31736419"
+X-IronPort-AV: E=Sophos;i="6.11,195,1725346800"; 
+   d="scan'208";a="31736419"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2024 02:55:07 -0700
+X-CSE-ConnectionGUID: NVo8UdIuT1+BB/rfQQu3GQ==
+X-CSE-MsgGUID: p8fLXQakTo2LVPCdCw2hsg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,195,1725346800"; 
+   d="scan'208";a="81686615"
+Received: from smile.fi.intel.com ([10.237.72.154])
+  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2024 02:55:04 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1szCMO-00000001qjM-3g4a;
+	Fri, 11 Oct 2024 12:55:00 +0300
+Date: Fri, 11 Oct 2024 12:55:00 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: vamoirid <vassilisamir@gmail.com>
+Cc: jic23@kernel.org, lars@metafoo.de, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, anshulusr@gmail.com, gustavograzs@gmail.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 01/13] iio: chemical: bme680: Fix indentation and
+ unnecessary spaces
+Message-ID: <Zwj19ONfbDr0f4Fh@smile.fi.intel.com>
+References: <20241010210030.33309-1-vassilisamir@gmail.com>
+ <20241010210030.33309-2-vassilisamir@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241010210030.33309-2-vassilisamir@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-clang found that the "offset" in bmp580_trigger_handler doesn't get
-initialized before access. Add proper initialization to this variable.
+On Thu, Oct 10, 2024 at 11:00:18PM +0200, vamoirid wrote:
+> From: Vasileios Amoiridis <vassilisamir@gmail.com>
+> 
+> Fix indentation issues, line breaking and unnecessary spaces
+> reported by checkpatch.pl.
 
-Signed-off-by: Yo-Jung (Leo) Lin <0xff07@gmail.com>
----
- drivers/iio/pressure/bmp280-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Can we move this to be the last (or close to the end) in the series?
 
-diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-index f4df222ed0c3..7d4151826b86 100644
---- a/drivers/iio/pressure/bmp280-core.c
-+++ b/drivers/iio/pressure/bmp280-core.c
-@@ -2210,7 +2210,7 @@ static irqreturn_t bmp580_trigger_handler(int irq, void *p)
- 	struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct bmp280_data *data = iio_priv(indio_dev);
--	int ret, offset;
-+	int ret, offset = 0;
- 
- 	guard(mutex)(&data->lock);
- 
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
