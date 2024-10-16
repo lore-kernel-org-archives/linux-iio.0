@@ -1,181 +1,203 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2043.outbound.protection.outlook.com [40.107.21.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 809B15478E;
-	Wed, 16 Oct 2024 21:09:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 889F11D2215;
+	Wed, 16 Oct 2024 21:35:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.43
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729112952; cv=pass; b=aNW4Oi8+8F/n8BQfgAkluC/xbNcPKqCdHcyrD2GdhPCbg5tDuY8NNzAdzuvvaJU8kQtJMYwqpR25d/qILRIUuzfThjFAlp04OolLy+gpbou1KpptvGNsw+5W8Xo/LooVn46yMg86lEYL4fQNUUcR4jPqOMyJrtRzppOUFQ0oCU0=
+	t=1729114512; cv=fail; b=NclI7+hk8jmy4l0SeVI3VT3XjBXjfWRoc906THsOBptR+cbvDOr5O4OsZP5Nb5D/m7brylAQijQlsAtJoNWh4/4BcyoYlEq+QuOPuUK9xzz0/NKI1nCss9wz3LwHHb2ocIOznHbEAdQC3ejDOE655P+WhctUNyAekbf3q9eCOfw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729112952; c=relaxed/simple;
-	bh=0+/gOofFsi9y7W7CR0Vh3GmtxpBEIW2ejcZ6SSgd9u0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VTHpwWCyFYqE0bpvg0+o16phuV6d7qOyQlFA0iE1TjFJj16EYM1Ww6N7ocmayFHelAaVh4BBtUVfcXGYRTB22EmnBIwZmsPkU0zEVe1bqOK7BkvyIYi304/BxOOW7UNcsCYDWBrEQcCbw7iid4F8RjqTEUQ4TjqFWPYGHDnnroM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=sebastian.reichel@collabora.com header.b=cJ8mC289; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1729114512; c=relaxed/simple;
+	bh=jBW9dRb2Q7fkECKRbwQaBsPqg3TX84ry26Q5ZmRVplo=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=OOVUO8lgJfbS5RIm8nyDIcC+wYBh3UxR2SWxQ9RH1Oue3cyKnxxla2WDGt5QrJ9CBdCz7uGQtNPiwI1OakfVewSE3AALzV/Xb1P7zTfiG8wa+U4FY/0yUfVy+63/e358JOiDIoBCjn/vK21bUYcVzke50AwqzsfTQedxSaNVBSk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=HPxmUMjR; arc=fail smtp.client-ip=40.107.21.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=sebastian.reichel@collabora.com header.b="cJ8mC289"
-ARC-Seal: i=1; a=rsa-sha256; t=1729112918; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=P/sQO56NlFMcz8/Wtr3rvXuE3ImE+rn+9KYMixtkTpmiTBuBPgzzl7rWQK7sxKZpcIZNudwDMs3W76fYQxUGAQpZaOiLiNGsZhF1ITQBdVoPL+xZH81MB+XXEm1hyNGM34kACQsc5cnFwUHR5s70BtH7pIzStZy/oXdkvsg1Io4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1729112918; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=OevVExCd74K4CyzC/2y78MWTRGO9BEZ5ceg9Xn4oW9Q=; 
-	b=WA7G/mTI3tuk/+QwbO0vA8BQPiBPfC1q/9aevZC9u6FWz77/O4Ngu3IKDkZPz6o6ljoXz8s0PXz6iqWXVlnSTx9UxPCTh9ept1TjPXcAYplSUcF6zi00vSxYv39TZb2JvvvwS7SItZPQQj+MvoqkuLmW09LPMRnhFsdRoY4me6M=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=sebastian.reichel@collabora.com;
-	dmarc=pass header.from=<sebastian.reichel@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1729112918;
-	s=zohomail; d=collabora.com; i=sebastian.reichel@collabora.com;
-	h=Date:Date:From:From:To:To:Cc:Cc:Subject:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To:Message-Id:Reply-To;
-	bh=OevVExCd74K4CyzC/2y78MWTRGO9BEZ5ceg9Xn4oW9Q=;
-	b=cJ8mC289aPpdg4XIj+WzPPSGf3XLikTxs/jUnzQGjbqrAw9mIIXlq1f0JRPYs4fw
-	pB1xFcR14rG99ZC7QAwcxJku4dRbWZTXOvXoMgNOy4Qj4uldzD0Vrw1XY2/M8u2/9RM
-	uPWrjnz+LwWs43FloZCEWcgtIKSpziCiDzhomeIg=
-Received: by mx.zohomail.com with SMTPS id 172911291581182.66214312711384;
-	Wed, 16 Oct 2024 14:08:35 -0700 (PDT)
-Received: by mercury (Postfix, from userid 1000)
-	id 945E5106044F; Wed, 16 Oct 2024 23:08:30 +0200 (CEST)
-Date: Wed, 16 Oct 2024 23:08:30 +0200
-From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Matteo Martelli <matteomartelli3@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Alisa-Dariana Roman <alisa.roman@analog.com>, Christian Eggers <ceggers@arri.de>, 
-	Peter Rosin <peda@axentia.se>, Paul Cercueil <paul@crapouillou.net>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v3 2/5] iio: consumers: copy/release available info from
- producer to fix race
-Message-ID: <7qvxz3fuwcjeq2ewv3nterlf72wbymt7np5nnjitzkt6smzh7v@737455c4xapy>
-References: <20241015-iio-read-avail-release-v3-0-ac3e08f25cb3@gmail.com>
- <20241015-iio-read-avail-release-v3-2-ac3e08f25cb3@gmail.com>
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="HPxmUMjR"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=c9epY61b5j4t3iQShCfzVn2uRtmazUIu7megdiAwsxwGirwspgxjBWUcJ2ELvquiRgcoxov6+BMdt4Uux+ckiL8gqj3m7U05B23wkSE/98qGv8/45utK3jqTKaLhC+lDMh/t9zTkgx7/o9SgPpShy+KqTS0l+fx4WQMiXu0tHKwHKmINZNaxCNJafeSdbIG3jfFHi4YI1/QfPPrLR5VqDfeOK98kYcZ96s4itF/AiG4BVwghE3mIEOkLzs7EK+YoyYlaU903kYuE15mzoAzf5/d93EQ9GQwZvLAhm1lNaxe04gp1sJ34tWm2Wk5MsGXLZJGkJBgglbzlJayZ50AmMA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lb2K3oIaWi5yrqQaC9lyjmZ5eqottKylRr1oLhFtCGc=;
+ b=QVwrqSRJdzYhQCsnROTNkXUda8E8ylUkcyUtcWeM/KKUYhzGvtHSC2diarAE5BeK8WFkomPh8hzieEXaDicdzEd4yRxt5WybiIlxNLZJwS6HHkI0Om3EaEHeeuJBUjGufC9EZVh1YF3wfXD5NxJiyNa0J6d6v49rIr/qazJ7cSmfBG1R1KHqoU9lD1VDb2f9SWKjoRyqHfT+ymA0Wv3qvjhyVTnQJZREXEIXMKynnm56I6yMUI/O/+FWbUwp+yvsJPksVYgTy/U6Ppa1qMmD5UB5V3aGhEsk36K+NXy0l6VWonvFB3+X5WvGKT/li5fggJLX0UT2wOe4TRE6fzUbJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 195.60.68.100) smtp.rcpttodomain=kernel.org smtp.mailfrom=axis.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lb2K3oIaWi5yrqQaC9lyjmZ5eqottKylRr1oLhFtCGc=;
+ b=HPxmUMjRWbL71I+n2Nk/Pc4R8UFgfGQ7bi/JGjpVwIM5/KHUYMqmr4pcxCrG2wnWXg7Kl4k9FoWyp4SMpFYD0lvAU7xZzN38Dmp8IUwiOUtCbbzukOFMBfCp8HnCwUF5/+eWA0S5CIRCTTIl52dDxLqLJs3UOjsHGMVIpHPndTU=
+Received: from AM4PR07CA0006.eurprd07.prod.outlook.com (2603:10a6:205:1::19)
+ by PA4PR02MB6589.eurprd02.prod.outlook.com (2603:10a6:102:fa::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.18; Wed, 16 Oct
+ 2024 21:35:06 +0000
+Received: from AMS1EPF0000004B.eurprd04.prod.outlook.com
+ (2603:10a6:205:1:cafe::a8) by AM4PR07CA0006.outlook.office365.com
+ (2603:10a6:205:1::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.17 via Frontend
+ Transport; Wed, 16 Oct 2024 21:35:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 195.60.68.100)
+ smtp.mailfrom=axis.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=axis.com;
+Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
+ 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
+ client-ip=195.60.68.100; helo=mail.axis.com; pr=C
+Received: from mail.axis.com (195.60.68.100) by
+ AMS1EPF0000004B.mail.protection.outlook.com (10.167.16.136) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8069.17 via Frontend Transport; Wed, 16 Oct 2024 21:35:06 +0000
+Received: from se-mail01w.axis.com (10.20.40.7) by se-mail02w.axis.com
+ (10.20.40.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 16 Oct
+ 2024 23:35:05 +0200
+Received: from se-intmail02x.se.axis.com (10.4.0.28) by se-mail01w.axis.com
+ (10.20.40.7) with Microsoft SMTP Server id 15.1.2507.39 via Frontend
+ Transport; Wed, 16 Oct 2024 23:35:05 +0200
+Received: from pc48051-2208.se.axis.com (pc48051-2208.se.axis.com [10.96.59.31])
+	by se-intmail02x.se.axis.com (Postfix) with ESMTP id 372E770;
+	Wed, 16 Oct 2024 23:35:05 +0200 (CEST)
+Received: by pc48051-2208.se.axis.com (Postfix, from userid 21236)
+	id 3447D18E1ECB; Wed, 16 Oct 2024 23:35:05 +0200 (CEST)
+From: Per-Daniel Olsson <perdaniel.olsson@axis.com>
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <rickard.andersson@axis.com>,
+	<kernel@axis.com>, Per-Daniel Olsson <perdaniel.olsson@axis.com>, "Krzysztof
+ Kozlowski" <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v4 1/2] dt-bindings: iio: light: Document TI OPT4060 RGBW sensor
+Date: Wed, 16 Oct 2024 23:34:08 +0200
+Message-ID: <20241016213409.3823162-2-perdaniel.olsson@axis.com>
+X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20241016213409.3823162-1-perdaniel.olsson@axis.com>
+References: <20241016213409.3823162-1-perdaniel.olsson@axis.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="omr3pkjg6x5yc4vn"
-Content-Disposition: inline
-In-Reply-To: <20241015-iio-read-avail-release-v3-2-ac3e08f25cb3@gmail.com>
-X-Zoho-Virus-Status: 1
-X-Zoho-AV-Stamp: zmail-av-1.3.1/229.70.43
-X-ZohoMailClient: External
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AMS1EPF0000004B:EE_|PA4PR02MB6589:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0dc11228-a5ab-4fe9-9046-08dcee2a6712
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|1800799024|36860700013|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?ZPJyOPdEKRc6d/iC6hq2YC45S7KFv4snw7IrBnKgQwDPDNaZQ0NNS3KlXRO7?=
+ =?us-ascii?Q?6z015ETch8+8yaHCJoslnmUZJmOYI5WC5Ppm6c+TKsydqs9zt8mgqKVIuePX?=
+ =?us-ascii?Q?IEXdnrti1zpJEWmCT/XHbkbkZgrt1J2899XbTBQVusrvnAcaYW2Wrn1pCofW?=
+ =?us-ascii?Q?vbYcGjY37w5SztUWvjIfYYIA68YNAGcWMVb69s6Zy41S2rwzr6vAatciPQuT?=
+ =?us-ascii?Q?xyj7eQuV5ra8eu8xO+xgSFaRYNBYxLvtYeIKG2LcDCzkrZf6KdUmiNy1Hrg4?=
+ =?us-ascii?Q?ftitH3aaG+4Qwjs6Vztwuo0QXEU47kpcXPDIWR5fTVDuSbAi7SyyF+o8ULds?=
+ =?us-ascii?Q?S/gqcVY1O6slDLFZHdCRcew/hQjCv52CEyhDJa5FMrh6D+fx7KC/Dwsrpq7f?=
+ =?us-ascii?Q?30Sf2G4HhizLCrb6r5Je8+kU6qliwNRbVUFPQSGaYSI55gxE0gFINn2xlNCU?=
+ =?us-ascii?Q?PnER8T2WXd4MgWFHzCRgmk8lFA7s7R3brOd2/Yfx8qoN7PIRS+Xp0kLfg6u5?=
+ =?us-ascii?Q?dRHy5Vz+C931dhKgxE/NqFnGx+DwgbNoZL8pELuE4hlZf/n1bMAVjtDcRon9?=
+ =?us-ascii?Q?R0L1fV4Ww+W+6JdxwhwtH/gJ9davNgVbyP10nu/+7w9BKAzTul4jjs7BMyXo?=
+ =?us-ascii?Q?uwEcpOCgHZ5t5Ds23oHbXjSdIizMuihaz/yAeawu9URnTxpW487KuuCkxmQq?=
+ =?us-ascii?Q?zAGKPm0QPvKHBU4drc3fVZRSEy9j7bRI7yyiuFZCtwCgEPRC+D2Cnual6hCL?=
+ =?us-ascii?Q?LTVgRw8Ia0vnp+Mh7xGGa0BqMeEmz5TIeHALwn28vzdT+a26mel8+ZS9oogx?=
+ =?us-ascii?Q?P44PY5W9kovwoxB18H5YZdjW0pm69cZvYjo4MiFlzSj0WPoQxNpoBzboFrAU?=
+ =?us-ascii?Q?b4+zMDyHl5st6oPsfO+EAxbwtL5tQUX2hkkW2zaiiP/n1k2yN3dtf101tEi9?=
+ =?us-ascii?Q?xuSMF2WEiIiP+ce+RdMNicoxGf+hSjNz5wAmzfjcntnxrGcqKxOytU/t0YM0?=
+ =?us-ascii?Q?kVoHVNfnZCAg4fao7QQZGWy7+IHEBoC6TWjvlteNC3IfNp6QCHb4Avk3scAE?=
+ =?us-ascii?Q?arVU+azZ3Ebt++xL2P/G+Eo5HzbMwoD2r7/YML3g9TEG87X/wZwiuhg1Iquy?=
+ =?us-ascii?Q?Sw6XWGZz9hEBxXOZDzsnofo+Vb4bA0kQuhUY7u59KKxIFnSG+UNWQIYC/YRS?=
+ =?us-ascii?Q?jKwOSI0sZj07rLkC+Kra6Hj/g2UeQBj/UOOiY/tMgzGYwW1inK56f6MKKAew?=
+ =?us-ascii?Q?Jjp1JfjoIxLpJ/czTC/B7leLoquFTY6HAq4c4FL9b3D4YC2DCRM5HYBa+LRQ?=
+ =?us-ascii?Q?VPT5ruP0K6IWtU3mAt4MWVrirCRgGz9PjnC7y67nqc9J7i8zfO8KIm2hWwuH?=
+ =?us-ascii?Q?JCAssQg=3D?=
+X-Forefront-Antispam-Report:
+	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(1800799024)(36860700013)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: axis.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2024 21:35:06.4605
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0dc11228-a5ab-4fe9-9046-08dcee2a6712
+X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	AMS1EPF0000004B.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR02MB6589
 
+Add devicetree bindings for the OPT4060 RGBW color sensor.
 
---omr3pkjg6x5yc4vn
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v3 2/5] iio: consumers: copy/release available info from
- producer to fix race
-MIME-Version: 1.0
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Per-Daniel Olsson <perdaniel.olsson@axis.com>
+---
+ .../bindings/iio/light/ti,opt4060.yaml        | 51 +++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/ti,opt4060.yaml
 
-Hi,
+diff --git a/Documentation/devicetree/bindings/iio/light/ti,opt4060.yaml b/Documentation/devicetree/bindings/iio/light/ti,opt4060.yaml
+new file mode 100644
+index 000000000000..0577e27db1ef
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/ti,opt4060.yaml
+@@ -0,0 +1,51 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/ti,opt4060.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Texas Instruments OPT4060 RGBW Color Sensor
++
++maintainers:
++  - Per-Daniel Olsson <perdaniel.olsson@axis.com>
++
++description:
++  Texas Instrument RGBW high resolution color sensor over I2C.
++  https://www.ti.com/lit/gpn/opt4060
++
++properties:
++  compatible:
++    enum:
++      - ti,opt4060
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  vdd-supply:
++    description: Regulator that provides power to the sensor.
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        light-sensor@44 {
++            compatible = "ti,opt4060";
++            reg = <0x44>;
++            vdd-supply = <&vdd_reg>;
++            interrupt-parent = <&gpio5>;
++            interrupts = <13 IRQ_TYPE_EDGE_FALLING>;
++        };
++    };
++...
+-- 
+2.39.5
 
-On Tue, Oct 15, 2024 at 01:06:35PM +0200, Matteo Martelli wrote:
-> Consumers need to call the producer's read_avail_release_resource()
-> callback after reading producer's available info. To avoid a race
-> condition with the producer unregistration, change inkern
-> iio_channel_read_avail() so that it copies the available info from the
-> producer and immediately calls its release callback with info_exists
-> locked.
->=20
-> Also, modify the users of iio_read_avail_channel_raw() and
-> iio_read_avail_channel_attribute() to free the copied available buffers
-> after calling these functions.
->=20
-> Signed-off-by: Matteo Martelli <matteomartelli3@gmail.com>
-> ---
-> diff --git a/drivers/power/supply/ingenic-battery.c b/drivers/power/suppl=
-y/ingenic-battery.c
-> index 0a40f425c27723ccec49985b8b5e14a737b6a7eb..3db000d9fff9a7a6819631314=
-547b3d16db7f967 100644
-> --- a/drivers/power/supply/ingenic-battery.c
-> +++ b/drivers/power/supply/ingenic-battery.c
-> @@ -12,6 +12,7 @@
->  #include <linux/platform_device.h>
->  #include <linux/power_supply.h>
->  #include <linux/property.h>
-> +#include <linux/slab.h>
-> =20
->  struct ingenic_battery {
->  	struct device *dev;
-> @@ -79,8 +80,10 @@ static int ingenic_battery_set_scale(struct ingenic_ba=
-ttery *bat)
->  		dev_err(bat->dev, "Unable to read channel avail scale\n");
->  		return ret;
->  	}
-> -	if (ret !=3D IIO_AVAIL_LIST || scale_type !=3D IIO_VAL_FRACTIONAL_LOG2)
-> -		return -EINVAL;
-> +	if (ret !=3D IIO_AVAIL_LIST || scale_type !=3D IIO_VAL_FRACTIONAL_LOG2)=
- {
-> +		ret =3D -EINVAL;
-> +		goto out;
-> +	}
-> =20
->  	max_mV =3D bat->info->voltage_max_design_uv / 1000;
-> =20
-> @@ -99,7 +102,8 @@ static int ingenic_battery_set_scale(struct ingenic_ba=
-ttery *bat)
-> =20
->  	if (best_idx < 0) {
->  		dev_err(bat->dev, "Unable to find matching voltage scale\n");
-> -		return -EINVAL;
-> +		ret =3D -EINVAL;
-> +		goto out;
->  	}
-> =20
->  	/* Only set scale if there is more than one (fractional) entry */
-> @@ -109,10 +113,13 @@ static int ingenic_battery_set_scale(struct ingenic=
-_battery *bat)
->  						  scale_raw[best_idx + 1],
->  						  IIO_CHAN_INFO_SCALE);
->  		if (ret)
-> -			return ret;
-> +			goto out;
->  	}
-> =20
-> -	return 0;
-> +	ret =3D 0;
-> +out:
-> +	kfree(scale_raw);
-> +	return ret;
->  }
-> =20
->  static enum power_supply_property ingenic_battery_properties[] =3D {
-
-It should be enough to declare scale_raw like this at the beginning
-of the function and otherwise keep it as is when you include
-<linux/cleanup.h>:
-
-const int *scale_raw __free(kfree) =3D NULL;
-
-Greetings,
-
--- Sebastian
-
---omr3pkjg6x5yc4vn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmcQK0sACgkQ2O7X88g7
-+pqmyg//aywh/aS9OiaC40xG03DJKnIbmtOS2ex1ddHCFNbiFgbDE/ASfF4VixQa
-LSLQVi1QZysDaJ6a8+ri67OxQNagQjPeKersbuHUnXGSo4JZQl7ANVu/soO69xR/
-PXngBjlP6goz0qUHgUOhMLhWxEJ+djUniI2+ZBbRAJVxVPPEPklHBya+eDwo4/W8
-r+fLQhyO3few3Hk31BTSwyyjX8Qz2YPrU3XxsR5irRaCbcYS2vI9TFaXsAdmnNct
-u5F8SjyesppgHLv/OLH6kUTLFhF5zfswv0FblOJEoJCvCCsge/kIAh+qDYMJe2rk
-nmi9Ie/eMyOuiqLb2GseoXdN9p2zDavDm5yKgg5e5I89vPz/+3BkPp4saTATnkzJ
-uiML1GgSAPxwCUzk/UqcQlfNK1vbIlI/0zYlK+HnedGrV21ysmsfL8OUWmXTU4Ji
-1nDInw/Umf+bUzdXZCAZ4nNU0ewf5vC6ZlWX7t2XKQmbn9cF0BtWtdOawm4xBlcy
-93yY+xw9LSsmYMOSnwuTNK2YUNHvNm9UaL8zgDhg2QrSXqP857vi4BaH1u7PonyB
-lol4EBdsVwHzaG0ngpPKvLitgd+S8HlOOzN6aLgdEoEcDiY1WdhXpEtsa8Vu6Yo+
-2Qd9oAyIE71i8UdnF+WjKPPpXJEyIVgZHLlGF5NeIXf/mFTHpDM=
-=I+0p
------END PGP SIGNATURE-----
-
---omr3pkjg6x5yc4vn--
