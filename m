@@ -1,54 +1,52 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A5A717E00F;
-	Fri, 18 Oct 2024 10:43:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ACF6201277;
+	Fri, 18 Oct 2024 10:43:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729248196; cv=none; b=SsCAU2Z9e1yx8A7Ag5n9KpxC8HeswLNWnSgO8iSb/i2BDqYpwhAy13fdQb1jawfpzI+0pJPfuM2M3I3sk570Yg1Wj7O5YB1DuXTOXnLbWKaJ5gIFQcz3ggcHktbErreSQ/H9CQntclK9qt1Hf04eHsPcJ4gzs+tfu4+DB+Ve+OQ=
+	t=1729248199; cv=none; b=a3vqN+HVhS5NGelZvfWwq8b/54F1qvO6Tkcn3Dm3r7Hzc5JzoQW8HIAjudVd0SdF2BPN+3H0C2xs6/Lx5+82mxbi3ja7dcI6eUADpWt/BQezPz/zDv8a1d7m5/6lDOYQtZLh6VBky3w6P9p9XFFLr1S7ysZTvCYB15JZkFINZA0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729248196; c=relaxed/simple;
-	bh=1/Bs8lmhcU8DoZN1H3ZTAg+l967efb1uDXw1lsSITqY=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=LHcNXCHCRLqYCnxIFL1R93/jbJlIdWIO/rcRIJCH1EBEMq7FopqPUulXF6F+dMosCfe/lkY8cnuSFoBvS9zkzA37hYK7YRIcrjJFp9k6iUy25gmAw9GGQtaDfBLP9XP6cIGNHzIophAKjUuotJCflVZh0B0Ytd3Q+yvXNT1P03A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=WiByHjzf; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1729248199; c=relaxed/simple;
+	bh=T84xyNyL3ZqCkgkR0MCH1x9hBWfkuDIgsMJsVOPZ1/I=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=MMM3MybsMrbX8y35SdDIJaTRDWe9XUKiLU2olaQnH9bwuOnXk0GzzV8yqxGFNmBn0ouEJ6joIp36TjbaorIJjKIfm9XvfIp1j/OyEzrfD/NVDyEbPfk7yAReidPGH4esIX4wC8FYBuaOKFr+kYWt3Fk/RMMYjIMEb/CvVW4kxc4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=oNhT5+jy; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="WiByHjzf"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="oNhT5+jy"
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49I8h1IR018095;
-	Fri, 18 Oct 2024 06:43:12 -0400
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49I8h1IS018095;
+	Fri, 18 Oct 2024 06:43:15 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=vDoi/Z6uuSWrg8HN07aVCklWRtG
-	42jfKf+OhqQ7cWp4=; b=WiByHjzfuuienFulj5CXLB7D7RkBV+DibmTItTmeMl6
-	wggQRZL0w4J2lR2E3FgWbMnd8uCF52fAueCcUYGeCynbwE4MPJztv7DlOCX0KhL7
-	SZ1PzeOVhDTfO08TNqvEJZU4JwX7p77t61FETs19wuwfqX3sj0pFOJvFQzMqQRRf
-	VvHT2Qt5yTA4itpauP0QLVcuZHdIsW8q5/BiBGE6oWB8PWwgxduRTFE34zgAFhCl
-	LZKToznw2cDZX/06DUXzBkYF/BWJKgjSDlAN0ab4YCgNGKN5tQz+DnNV7RLnoTIN
-	ARUwpiPsqbHmhMxeqL3bIRiMBLzfp/CbVNdn4jLzCTw==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 42bmdjress-1
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=At6k7
+	NR1GkaY4UmBJTZQefy22fx5D42E93CKLTUGWxA=; b=oNhT5+jyaWvSg+ika8yQW
+	PiPU1FvI6J6Uh3W/dbxMHHGoT/szgxTf/5eGo+FUEU3gYw2FPm1UMvxaUeqyCgHH
+	SsdR2oKgbINTzMygHllQxpbpulxy1/A1Iyey6foOZlNDnjh090qUta1UUqRndELg
+	5g9ne70NW6yvatXE8nB2m26WqLlaXnyag4hds3raDI9xjSEo1nRjm0r2Cb1zkBAr
+	zIfj2M/YbMBqm2ZXaMyJ8fpxv5HUNAgzqA0QD39jquM7GSOV/+mhmRvFbFPzXfNm
+	oL0HBBNioNTMbrkUn4BxmXNIQkyXdOtEHei0I4OvFUlBihjRZGNcXR0HAbss/hjN
+	Q==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 42bmdjret0-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 18 Oct 2024 06:43:11 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 49IAhAJL002013
+	Fri, 18 Oct 2024 06:43:15 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 49IAhE0C060203
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 18 Oct 2024 06:43:10 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 18 Oct 2024 06:43:10 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 18 Oct 2024 06:43:10 -0400
+	Fri, 18 Oct 2024 06:43:14 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 18 Oct
+ 2024 06:43:14 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 18 Oct 2024 06:43:10 -0400
+ Transport; Fri, 18 Oct 2024 06:43:14 -0400
 Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.189])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 49IAh2iK028631;
-	Fri, 18 Oct 2024 06:43:04 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 49IAh2iM028631;
+	Fri, 18 Oct 2024 06:43:10 -0400
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: <jic23@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
         <nuno.sa@analog.com>, <conor+dt@kernel.org>, <ukleinek@kernel.org>,
@@ -56,10 +54,12 @@ To: <jic23@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-pwm@vger.kernel.org>
 CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v4 1/6] iio: backend: add API for interface get
-Date: Fri, 18 Oct 2024 13:42:05 +0300
-Message-ID: <20241018104210.51659-1-antoniu.miclaus@analog.com>
+Subject: [PATCH v4 3/6] iio: adc: adi-axi-adc: add interface type
+Date: Fri, 18 Oct 2024 13:42:07 +0300
+Message-ID: <20241018104210.51659-3-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.46.2
+In-Reply-To: <20241018104210.51659-1-antoniu.miclaus@analog.com>
+References: <20241018104210.51659-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,8 +69,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: OlDNYazhV78VR_y2mT_gQrY4Q4a7t7zY
-X-Proofpoint-ORIG-GUID: OlDNYazhV78VR_y2mT_gQrY4Q4a7t7zY
+X-Proofpoint-GUID: AA6ORUMGu_VgKn8oT2WNL6TfivWp0So2
+X-Proofpoint-ORIG-GUID: AA6ORUMGu_VgKn8oT2WNL6TfivWp0So2
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
  definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
@@ -80,95 +80,64 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamsco
  phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2409260000 definitions=main-2410180069
 
-Add backend support for obtaining the interface type used.
+Add support for getting the interface (CMOS or LVDS) used by the AXI ADC
+IP.
 
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
-no changes in v4.
- drivers/iio/industrialio-backend.c | 24 ++++++++++++++++++++++++
- include/linux/iio/backend.h        | 13 +++++++++++++
- 2 files changed, 37 insertions(+)
+changes in v4:
+ - minor typo in commit message.
+ drivers/iio/adc/adi-axi-adc.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
-index efe05be284b6..ef1fd4cb0b24 100644
---- a/drivers/iio/industrialio-backend.c
-+++ b/drivers/iio/industrialio-backend.c
-@@ -449,6 +449,30 @@ ssize_t iio_backend_ext_info_set(struct iio_dev *indio_dev, uintptr_t private,
- }
- EXPORT_SYMBOL_NS_GPL(iio_backend_ext_info_set, IIO_BACKEND);
+diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+index 21ce7564e83d..ff48f26e02a3 100644
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -39,6 +39,9 @@
+ #define   ADI_AXI_REG_RSTN_MMCM_RSTN		BIT(1)
+ #define   ADI_AXI_REG_RSTN_RSTN			BIT(0)
  
-+/**
-+ * iio_backend_interface_type_get - get the interface type used.
-+ * @back: Backend device
-+ * @type: Interface type
-+ *
-+ * RETURNS:
-+ * 0 on success, negative error number on failure.
-+ */
-+int iio_backend_interface_type_get(struct iio_backend *back,
-+				   enum iio_backend_interface_type *type)
++#define ADI_AXI_ADC_REG_CONFIG			0x000c
++#define   ADI_AXI_ADC_REG_CONFIG_CMOS_OR_LVDS_N	BIT(7)
++
+ #define ADI_AXI_ADC_REG_CTRL			0x0044
+ #define    ADI_AXI_ADC_CTRL_DDR_EDGESEL_MASK	BIT(1)
+ 
+@@ -249,6 +252,25 @@ static int axi_adc_chan_disable(struct iio_backend *back, unsigned int chan)
+ 				 ADI_AXI_REG_CHAN_CTRL_ENABLE);
+ }
+ 
++static int axi_adc_interface_type_get(struct iio_backend *back,
++				      enum iio_backend_interface_type *type)
 +{
++	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
++	unsigned int val;
 +	int ret;
 +
-+	ret = iio_backend_op_call(back, interface_type_get, type);
++	ret = regmap_read(st->regmap, ADI_AXI_ADC_REG_CONFIG, &val);
 +	if (ret)
 +		return ret;
 +
-+	if (*type >= IIO_BACKEND_INTERFACE_MAX)
-+		return -EINVAL;
++	if (val & ADI_AXI_ADC_REG_CONFIG_CMOS_OR_LVDS_N)
++		*type = IIO_BACKEND_INTERFACE_CMOS;
++	else
++		*type = IIO_BACKEND_INTERFACE_LVDS;
 +
 +	return 0;
 +}
-+EXPORT_SYMBOL_NS_GPL(iio_backend_interface_type_get, IIO_BACKEND);
 +
- /**
-  * iio_backend_extend_chan_spec - Extend an IIO channel
-  * @indio_dev: IIO device
-diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
-index 8099759d7242..ad9fa0ada9b2 100644
---- a/include/linux/iio/backend.h
-+++ b/include/linux/iio/backend.h
-@@ -63,6 +63,14 @@ enum iio_backend_sample_trigger {
- 	IIO_BACKEND_SAMPLE_TRIGGER_MAX
+ static struct iio_buffer *axi_adc_request_buffer(struct iio_backend *back,
+ 						 struct iio_dev *indio_dev)
+ {
+@@ -285,6 +307,7 @@ static const struct iio_backend_ops adi_axi_adc_generic = {
+ 	.iodelay_set = axi_adc_iodelays_set,
+ 	.test_pattern_set = axi_adc_test_pattern_set,
+ 	.chan_status = axi_adc_chan_status,
++	.interface_type_get = axi_adc_interface_type_get,
  };
  
-+enum iio_backend_interface_type {
-+	IIO_BACKEND_INTERFACE_LVDS,
-+	IIO_BACKEND_INTERFACE_CMOS,
-+	IIO_BACKEND_INTERFACE_SERIAL_LVDS,
-+	IIO_BACKEND_INTERFACE_SERIAL_CMOS,
-+	IIO_BACKEND_INTERFACE_MAX
-+};
-+
- /**
-  * struct iio_backend_ops - operations structure for an iio_backend
-  * @enable: Enable backend.
-@@ -81,6 +89,7 @@ enum iio_backend_sample_trigger {
-  * @extend_chan_spec: Extend an IIO channel.
-  * @ext_info_set: Extended info setter.
-  * @ext_info_get: Extended info getter.
-+ * @interface_type_get: Interface type.
-  **/
- struct iio_backend_ops {
- 	int (*enable)(struct iio_backend *back);
-@@ -113,6 +122,8 @@ struct iio_backend_ops {
- 			    const char *buf, size_t len);
- 	int (*ext_info_get)(struct iio_backend *back, uintptr_t private,
- 			    const struct iio_chan_spec *chan, char *buf);
-+	int (*interface_type_get)(struct iio_backend *back,
-+				  enum iio_backend_interface_type *type);
- };
- 
- int iio_backend_chan_enable(struct iio_backend *back, unsigned int chan);
-@@ -142,6 +153,8 @@ ssize_t iio_backend_ext_info_set(struct iio_dev *indio_dev, uintptr_t private,
- ssize_t iio_backend_ext_info_get(struct iio_dev *indio_dev, uintptr_t private,
- 				 const struct iio_chan_spec *chan, char *buf);
- 
-+int iio_backend_interface_type_get(struct iio_backend *back,
-+				   enum iio_backend_interface_type *type);
- int iio_backend_extend_chan_spec(struct iio_dev *indio_dev,
- 				 struct iio_backend *back,
- 				 struct iio_chan_spec *chan);
+ static int adi_axi_adc_probe(struct platform_device *pdev)
 -- 
 2.46.2
 
