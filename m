@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1E0D1C3050;
-	Wed, 23 Oct 2024 15:21:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 952FD1C6F71;
+	Wed, 23 Oct 2024 15:22:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729696921; cv=none; b=KsBI1J0MX6LJTpAQwx1Xbjammb9H+K5tmjMeJByedAYNltvRRmrqd4M2DxWHFfGf6KiedQ1CzC5hmeBjmD3W6CLMwH5micN431nd+TjfPZbN7hwKGDrW2BuaOWISd/4VZ21lAukZdQ6QyMJKaibcMdIU3NzI26zJWufvLjqsZyE=
+	t=1729696922; cv=none; b=QyrEkBb/KWqS5maLl7yhiQfG3EbpBesecLo6uZapiSQy66WPnIrDZYhbmSrd/EzwD5jxSJCg9707FHZeF083R3cBGhnsvqRCoA1JIo/lBSkCiGvRf/7+2ReEs9E0B1a63S7Z/P3zbRMEJZEbf4c9/zHlwQ83yMsQBmyQGhcSe+o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729696921; c=relaxed/simple;
-	bh=jDq1gH5YCUKcq4BcItLXMsB6y4PEq3PrFo3E4XnyPsg=;
+	s=arc-20240116; t=1729696922; c=relaxed/simple;
+	bh=EvqHvmqySQB6ykPyYZ17efivk2BOCoil+F/v0X6V9zA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=CnGj2XHnEzodDgqYAD+nDpAeWrTXxkd6IkgUZMEMPLCxkvH99AhULuScteqZyK1QQ/+EH7jRN4gv2jqANfnESUhWwWueJqo9qSTbT3EhH+PJ7rV+/9CK2uhgl6M97u1DpBbCrmzJ81e4y5K1lhuIX3FK5f/CySkOBasHGgj+WI0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=II0wnrWr; arc=none smtp.client-ip=198.175.65.10
+	 MIME-Version; b=sxTruDoIrcNeKkI9UHz6SZ4lMnB0/I8VMAH8Fkvwat4jVUIT5mK4mQ+71HZgZWaP9Wmo9sVTFMxH5L2ca/uE0gc2PfPtriJJZyjPnmcaXufeMkL/gm8Ap5aybHHZSKjkf9IIrzaf6BWeULJcE98h7dFP87JShiyyqPdJnFvURwA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=chv30kM6; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="II0wnrWr"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="chv30kM6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1729696920; x=1761232920;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jDq1gH5YCUKcq4BcItLXMsB6y4PEq3PrFo3E4XnyPsg=;
-  b=II0wnrWrh0t8fVhMEnjB+JuojxSQ/PAiX/aENrdxDfZozyctn5N4r7Pm
-   UOL3qC7kkcUHAmPaxrCAME6MaYsCQMXklwJwXAN7YbZgnva5rCm+4ICRf
-   mp6oA65DhB/twygCf2gV51x4z3Cv93fgs9DHjiJu6YM/YmhZufxTxWlhd
-   mL5rlmpI9xCMpX1VuBF4BQZ80kjnps9N+xxryACDwdvXjXWZVQoeoFDJu
-   3cTgrALNLb5GSJc/vRiokvyYYZeMnebDa1zh8eQ2I5IVJSQNziJYB8el+
-   DWNUVNhSN0pGx7WWQoWiBIeheWNPWgedCPE63uLiJky0P1GdReObJ1hKt
-   A==;
-X-CSE-ConnectionGUID: uGjy5etLQESzzkOpyHEYmA==
-X-CSE-MsgGUID: o+HBFte8RaGIL2SsSgJbCA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="46757927"
+  bh=EvqHvmqySQB6ykPyYZ17efivk2BOCoil+F/v0X6V9zA=;
+  b=chv30kM68y3Ln09uCKZGyw+7TdPtnISqliZmyIJ8sbk1CGfS63K+VbAT
+   YhbeuS5ehcw74sSHqsfwZkIrIVeaoCfk7s/OYFFGRbKCH92O4uRFsvdjg
+   jkDhloRayZcVAniqRCJSVRkBt0rhB8nJDsbmwsbU1EdOZ0n11463uGwQT
+   HqTNws7l9YkEvriRrTO924W4ukK+GXovyearc39/z5cyzJUkF+IVwM5lh
+   XqWkDtMmS55gRIvN8RyySvJ1DCneiyi13uAl5JraLrCViW7fg9J8k0gCD
+   /iQIkYeaONGn9bCZ5iqKH/yllACKYcI70Hu86fG1e2Zwa4fsGTYsBa1oO
+   Q==;
+X-CSE-ConnectionGUID: b64rVXG7TKWT/VLunXQlqg==
+X-CSE-MsgGUID: yqT+kIJQQPS79DF446/4Iw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="29449170"
 X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="46757927"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2024 08:21:56 -0700
-X-CSE-ConnectionGUID: zUwNeNHhQs6jTkXpENGOVg==
-X-CSE-MsgGUID: MUdqcuqNSRuuz2DjFLAjsw==
+   d="scan'208";a="29449170"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2024 08:21:58 -0700
+X-CSE-ConnectionGUID: 5kS7MwdcQjCbvlL871Gt/w==
+X-CSE-MsgGUID: DhSO68g/Tvy1XDUmB4QtvA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,226,1725346800"; 
-   d="scan'208";a="79823545"
+   d="scan'208";a="80179590"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmviesa006.fm.intel.com with ESMTP; 23 Oct 2024 08:21:53 -0700
+  by orviesa010.jf.intel.com with ESMTP; 23 Oct 2024 08:21:50 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 24B7E644; Wed, 23 Oct 2024 18:21:49 +0300 (EEST)
+	id 9BF3C17E; Wed, 23 Oct 2024 18:21:48 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
@@ -56,9 +56,9 @@ To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Subject: [PATCH v1 11/13] iio: light: ltr501: Drop most likely fake ACPI IDs
-Date: Wed, 23 Oct 2024 18:17:34 +0300
-Message-ID: <20241023152145.3564943-12-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 01/13] iio: magnetometer: bmc150: Drop dead code from the driver
+Date: Wed, 23 Oct 2024 18:17:24 +0300
+Message-ID: <20241023152145.3564943-2-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
 In-Reply-To: <20241023152145.3564943-1-andriy.shevchenko@linux.intel.com>
 References: <20241023152145.3564943-1-andriy.shevchenko@linux.intel.com>
@@ -70,35 +70,54 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The commits in question do not proove that ACPI IDs exist.
-Quite likely it was a cargo cult addition while doing that
-for DT-based enumeration. Drop most likely fake ACPI IDs.
-
-The to be removed IDs has been checked against the following resources:
-1) DuckDuckGo
-2) Google
-3) MS catalog: https://www.catalog.update.microsoft.com/Search.aspx
-This gives no useful results in regard to DSDT, moreover, the official
-vendor ID in the registry for Lite-On is LCI.
+Since there is no ACPI IDs for this driver to be served for,
+drop dead ACPI bits from it completely.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/light/ltr501.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/iio/magnetometer/bmc150_magn.c | 15 ---------------
+ 1 file changed, 15 deletions(-)
 
-diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index 8c516ede9116..3fff5d58ba3c 100644
---- a/drivers/iio/light/ltr501.c
-+++ b/drivers/iio/light/ltr501.c
-@@ -1610,8 +1610,6 @@ static int ltr501_resume(struct device *dev)
- static DEFINE_SIMPLE_DEV_PM_OPS(ltr501_pm_ops, ltr501_suspend, ltr501_resume);
- 
- static const struct acpi_device_id ltr_acpi_match[] = {
--	{ "LTER0501", ltr501 },
--	{ "LTER0559", ltr559 },
- 	{ "LTER0301", ltr301 },
- 	{ },
+diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
+index 06d5a1ef1fbd..7de18c4a0ccb 100644
+--- a/drivers/iio/magnetometer/bmc150_magn.c
++++ b/drivers/iio/magnetometer/bmc150_magn.c
+@@ -14,7 +14,6 @@
+ #include <linux/interrupt.h>
+ #include <linux/delay.h>
+ #include <linux/slab.h>
+-#include <linux/acpi.h>
+ #include <linux/pm.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/iio/iio.h>
+@@ -855,17 +854,6 @@ static const struct iio_buffer_setup_ops bmc150_magn_buffer_setup_ops = {
+ 	.postdisable = bmc150_magn_buffer_postdisable,
  };
+ 
+-static const char *bmc150_magn_match_acpi_device(struct device *dev)
+-{
+-	const struct acpi_device_id *id;
+-
+-	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+-	if (!id)
+-		return NULL;
+-
+-	return dev_name(dev);
+-}
+-
+ int bmc150_magn_probe(struct device *dev, struct regmap *regmap,
+ 		      int irq, const char *name)
+ {
+@@ -894,9 +882,6 @@ int bmc150_magn_probe(struct device *dev, struct regmap *regmap,
+ 	if (ret)
+ 		return ret;
+ 
+-	if (!name && ACPI_HANDLE(dev))
+-		name = bmc150_magn_match_acpi_device(dev);
+-
+ 	mutex_init(&data->mutex);
+ 
+ 	ret = bmc150_magn_init(data);
 -- 
 2.43.0.rc1.1336.g36b5255a03ac
 
