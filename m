@@ -1,50 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CC121D967F;
-	Thu, 24 Oct 2024 13:04:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37BEE1D63FB;
+	Thu, 24 Oct 2024 13:04:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729775076; cv=none; b=Zdubw3HMxBn4uMG6blnsEA+58ELIc0ijhvOLBNt6gv1GHVOGbq7ccgoOOhJg/JVWG/wUnO4LchHmXXKncslsZG0M+VsBlaS60N4KNtvohI+5YWnY5u2AVnSLlfmDI0bF2UK9ViLFVV3MrvA/wWFVicjG79mJHcK1OYbebcww65c=
+	t=1729775083; cv=none; b=N7UUq0KAe/XVHm64oRyxPR1sndrIdLXMdrbVBt7VnIZLiOPCyrOYCK27HBwrUmfhy99usJEe0j23jVWYAdgQxp1gWSdcw1xz48grw0A64afBSA3j0RdonLbf37iGMtcFUs2JZXDo2uvbclzw+qXXHCxAiH5L4vu7H88ikp0Uetk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729775076; c=relaxed/simple;
-	bh=r1Ljs09ViP07Wgn+0g0azOe4A6vQASHH1I/FkFMyUOE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=tICRq6ma8D4lTnLuwOP1ms1DE/x49bG3Z/frgfVMiCIpX0se17Jt11vEXJPJ42aIvN9LuRYZmWSs6EC0LtQmot0+gSXRw2uru9a3n2tke9ObWTPsS1qrkqikYvNTS34RFWbfpdAH0AjiMweChMpafyO4vjKSTFPWRmTPMvakQvU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cN5Xmxli; arc=none smtp.client-ip=198.175.65.12
+	s=arc-20240116; t=1729775083; c=relaxed/simple;
+	bh=fnr+wlY4mm9fxB3WttBrUUaubpN0xpag/hGemkkYPyc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=uCcO3Ke15Bw9qwZzhPVTW41gJYb+uNh4B95kPRruQ3+vI8A2IVhOdbv5CBTq0JhUC1FnvfHb9jAgzvzh8XHqmADsPkgCABYHjOVOHdUdwdjVz8BE8ryG7o17EqOXD6N5AG9eFeMMcV32xSomykKqf0RsBPuWKUDZy9jdx8/uEqI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fU8S6YAy; arc=none smtp.client-ip=192.198.163.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cN5Xmxli"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fU8S6YAy"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729775074; x=1761311074;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=r1Ljs09ViP07Wgn+0g0azOe4A6vQASHH1I/FkFMyUOE=;
-  b=cN5XmxliYi3MX3DcwN0TNs0UTb2SloURUMH66qf2+Ft6bOvmXZmkaLdJ
-   4XjQSCcwldtUE1ceJ/f1I29k8PP/HPHuZNgMdDKziH/+ZDWvnz76ZFmTn
-   w49Ks1jKRotDo9vFszcp14JGknGgtAkPgt5Qh5O6EQMe5GW10Tim3ciPi
-   Xw/9FQYMxwkO+OMk1+JvbcTfEQDhlTCxKX7ovif48qSIOYtZ3/5OJABhT
-   8rGZ/Zhx5bI+xpa2fZRMnKMuyLmh2W9+PDrkjrg2/UhONsv552pl9OzBv
-   PpCJ+1UvDNpd3RCyVoRWXerjo7h/nzn1NwSU1/FZ80R7FaLJf09UQqsuA
-   A==;
-X-CSE-ConnectionGUID: g31vzK/WTKC1+9qLTSuVmA==
-X-CSE-MsgGUID: nXBGM+JXSdSlo3w5W1f8RA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11235"; a="40795248"
+  t=1729775081; x=1761311081;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fnr+wlY4mm9fxB3WttBrUUaubpN0xpag/hGemkkYPyc=;
+  b=fU8S6YAyf/at+QiQPPQmz2JjY2fNRZNN+eot6GMfqOfr4Z1J1+VD2N0A
+   /Ogm4/Q4txDrXY6Qb+/Nt3RyPJVpeYsvPymTIand57G+BO3KbQ2+DZoZC
+   t/GhAQTcwh3+dD7mKkwS2T03Hdy938CRwxb5NvXqOZ/GKwoFhBbiZqXE4
+   V/Zy5Q2REq9gKJsPWbVAwUhC4aI+Owp0qRrefjy5CxNY/tkmfkbc2aOay
+   VG7hzR16gUBgYyh6zgCCFWiMk5lQIONsk0bHzVvln0yX1vPn4Q6eQpJpS
+   4wA5n5dlSEfmdgvR2yxoWj8jeLc1XtE8C+y4oYXMKe76Y/XPmklpnCsTB
+   g==;
+X-CSE-ConnectionGUID: DyTPi9yBS8KOYOueOQCI+Q==
+X-CSE-MsgGUID: JZkZoWNHQAu9HTkzloRy8A==
+X-IronPort-AV: E=McAfee;i="6700,10204,11235"; a="54802768"
 X-IronPort-AV: E=Sophos;i="6.11,229,1725346800"; 
-   d="scan'208";a="40795248"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2024 06:04:32 -0700
-X-CSE-ConnectionGUID: XSs+pGdFSjSi4U3MWB2FEQ==
-X-CSE-MsgGUID: 9Cl0J33PSFq7huLLX0OMVg==
+   d="scan'208";a="54802768"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2024 06:04:28 -0700
+X-CSE-ConnectionGUID: dsqS1srlQkud69Tl7sw3SA==
+X-CSE-MsgGUID: zDOc5cSNRf6k/6pZ6a+Fxg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,229,1725346800"; 
-   d="scan'208";a="103898633"
+   d="scan'208";a="80238761"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmviesa002.fm.intel.com with ESMTP; 24 Oct 2024 06:04:29 -0700
+  by fmviesa007.fm.intel.com with ESMTP; 24 Oct 2024 06:04:25 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 1E3A26A7; Thu, 24 Oct 2024 16:04:25 +0300 (EEST)
+	id B2B2D331; Thu, 24 Oct 2024 16:04:24 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
@@ -56,12 +55,10 @@ To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-kernel@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 09/13] iio: light: isl29018: Replace a variant of iio_get_acpi_device_name_and_data()
-Date: Thu, 24 Oct 2024 15:36:14 +0300
-Message-ID: <20241024130424.3818291-10-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 00/13] iio: Clean up acpi_match_device() use cases
+Date: Thu, 24 Oct 2024 15:36:05 +0300
+Message-ID: <20241024130424.3818291-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
-In-Reply-To: <20241024130424.3818291-1-andriy.shevchenko@linux.intel.com>
-References: <20241024130424.3818291-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,68 +67,54 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-IIO core (ACPI part) provides a generic helper that may be used in
-the driver. Replace a variant of iio_get_acpi_device_name_and_data().
+There are current uses of acpi_match_device():
+- as strange way of checking if the device was enumerated via ACPI
+- as a way to get IIO device name as ACPI device instance name
+- as above with accompanying driver data
 
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/light/isl29018.c | 25 ++++++-------------------
- 1 file changed, 6 insertions(+), 19 deletions(-)
+Deduplicate its use by providing two new helper functions in IIO ACPI
+library and update the rest accordingly.
 
-diff --git a/drivers/iio/light/isl29018.c b/drivers/iio/light/isl29018.c
-index 8dfc750e68c0..526ee5619d26 100644
---- a/drivers/iio/light/isl29018.c
-+++ b/drivers/iio/light/isl29018.c
-@@ -687,20 +687,6 @@ static const struct isl29018_chip_info isl29018_chip_info_tbl[] = {
- 	},
- };
- 
--static const char *isl29018_match_acpi_device(struct device *dev, int *data)
--{
--	const struct acpi_device_id *id;
--
--	id = acpi_match_device(dev->driver->acpi_match_table, dev);
--
--	if (!id)
--		return NULL;
--
--	*data = (int)id->driver_data;
--
--	return dev_name(dev);
--}
--
- static void isl29018_disable_regulator_action(void *_data)
- {
- 	struct isl29018_chip *chip = _data;
-@@ -716,9 +702,10 @@ static int isl29018_probe(struct i2c_client *client)
- 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
- 	struct isl29018_chip *chip;
- 	struct iio_dev *indio_dev;
-+	const void *ddata;
-+	const char *name;
-+	int dev_id;
- 	int err;
--	const char *name = NULL;
--	int dev_id = 0;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
- 	if (!indio_dev)
-@@ -731,11 +718,11 @@ static int isl29018_probe(struct i2c_client *client)
- 	if (id) {
- 		name = id->name;
- 		dev_id = id->driver_data;
-+	} else {
-+		name = iio_get_acpi_device_name_and_data(&client->dev, &ddata);
-+		dev_id = (intptr_t)ddata;
- 	}
- 
--	if (ACPI_HANDLE(&client->dev))
--		name = isl29018_match_acpi_device(&client->dev, &dev_id);
--
- 	mutex_init(&chip->lock);
- 
- 	chip->type = dev_id;
+This also includes a rework of previously sent ltr501 patch.
+
+In v2:
+- collected tags (Hans, Jean-Baptiste)
+- updated SoB chain in patch 4
+
+Andy Shevchenko (13):
+  iio: magnetometer: bmc150: Drop dead code from the driver
+  iio: adc: pac1934: Replace strange way of checking type of enumeration
+  iio: imu: inv_mpu6050: Replace strange way of checking type of
+    enumeration
+  iio: acpi: Improve iio_read_acpi_mount_matrix()
+  iio: acpi: Add iio_get_acpi_device_name_and_data() helper function
+  iio: accel: mma9551: Replace custom implementation of
+    iio_get_acpi_device_name()
+  iio: accel: mma9553: Replace custom implementation of
+    iio_get_acpi_device_name()
+  iio: gyro: bmg160: Replace custom implementation of
+    iio_get_acpi_device_name()
+  iio: light: isl29018: Replace a variant of
+    iio_get_acpi_device_name_and_data()
+  iio: light: isl29018: drop ACPI_PTR() and CONFIG_ACPI guards
+  iio: light: ltr501: Drop most likely fake ACPI IDs
+  iio: light: ltr501: Add LTER0303 to the supported devices
+  iio: light: ltr501: Replace a variant of
+    iio_get_acpi_device_name_and_data()
+
+ drivers/iio/accel/mma9551.c                | 19 ++-------
+ drivers/iio/accel/mma9553.c                | 19 ++-------
+ drivers/iio/adc/pac1934.c                  |  2 +-
+ drivers/iio/gyro/bmg160_core.c             | 15 --------
+ drivers/iio/gyro/bmg160_i2c.c              |  4 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c |  5 +--
+ drivers/iio/industrialio-acpi.c            | 45 ++++++++++++++++++++--
+ drivers/iio/light/isl29018.c               | 38 ++++++------------
+ drivers/iio/light/ltr501.c                 | 29 +++++---------
+ drivers/iio/magnetometer/bmc150_magn.c     | 15 --------
+ include/linux/iio/iio.h                    | 10 +++++
+ 11 files changed, 86 insertions(+), 115 deletions(-)
+
 -- 
 2.43.0.rc1.1336.g36b5255a03ac
 
