@@ -1,89 +1,110 @@
-Received: from wiki.archlinuxcn.org (wiki.archlinuxcn.org [104.245.9.4])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16C4A16726E;
-	Thu, 24 Oct 2024 07:30:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=104.245.9.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E617F198E9B;
+	Thu, 24 Oct 2024 07:52:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729755071; cv=none; b=rUKZg6AYrV32I+dG+RF4jSsPB+7COTBwiRO+45XoNvKkdXXHuW9i7T24yebRSd3zvi3uDIJoXbspuQOeeWkWY3/HCu3t8sFrKRQKQPL30dL2qZHTRPMToeJ95XtY6IL8mlekDoN0UMEBV2S0UR8EWxP2Nxv+qu/Czk08kHwjBYQ=
+	t=1729756360; cv=none; b=Jm3S6aKQhAow9dqDyK+tD21XFqYVA3epOaxeEb/lXXuijuK9IOaRIibLBCwmgkU8+bHQR4ZvG+sOH/4DRyp7h/vwmpQkeJIgB8FTMg0FCMcmwpX65YdHW7N7kXO8g4bJxO2vVx2urNWQuEbMWfDth7y1BkQGILoQPHBtFHWNYR4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729755071; c=relaxed/simple;
-	bh=0og/Lc+FOv201w81B5yra/V4GJ7tcC9gsrNBemtGhFs=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
-	 In-Reply-To:Content-Type; b=JDXNKYzCZVY6ZwdrWOKpaqSu4/RimPVkKItBb3cC1Yk2nrJ0UwTDjDLy+tsNl/C4+i1DTydR1vGktcmq7bVu2tZGqcxj4HPvCjm20atSuewVJjQ0T+0mo7vpcf4pfybmnocrwZSixnxeRz+4ut11lfTH4/lPNFI10saC7M39C0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=archlinuxcn.org; spf=pass smtp.mailfrom=archlinuxcn.org; dkim=pass (2048-bit key) header.d=archlinuxcn.org header.i=@archlinuxcn.org header.b=dHW1x1n0; arc=none smtp.client-ip=104.245.9.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=archlinuxcn.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=archlinuxcn.org
+	s=arc-20240116; t=1729756360; c=relaxed/simple;
+	bh=iuAEsgdQuR7QXql0865AuzrLAn3JGMitY8NvxPwXVYc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=F0dksZvwduwRH5QrkriXVn5CspH5uF1RxkS9susbDB0C+ZM5iFyRspoD7VrVlEsDE67Mzblgilb3vrMLlf5i2uWDkVxPe6JI7S9Y3FroMW4498z1J02tzNtjUNgSYm/gzF5FzZJ33jAPYE8qSnIoTn49JHG5JioqNjTrX+7EIEc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ufwazgcy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=archlinuxcn.org header.i=@archlinuxcn.org header.b="dHW1x1n0"
-DKIM-Signature: a=rsa-sha256; bh=7bmf93KccZco1vkeephdnqfRykS8tBowUwbPty2fku8=;
- c=relaxed/relaxed; d=archlinuxcn.org;
- h=Subject:Subject:Sender:To:To:Cc:Cc:From:From:Date:Date:MIME-Version:MIME-Version:Content-Type:Content-Type:Content-Transfer-Encoding:Content-Transfer-Encoding:Reply-To:In-Reply-To:In-Reply-To:Message-Id:Message-Id:References:References:Autocrypt:Openpgp;
- i=@archlinuxcn.org; s=default; t=1729753926; v=1; x=1730185926;
- b=dHW1x1n0wG8iytTW0EtHnAKJ8f/nOq6kGNnSckz5fjAWcpJ28byWz0l9i0Y6P6HFyHUjVHVi
- YPyOz4J7jlvpfuD+XWmq7sx+9KIg8cpk8q4N307s6vpqIrEckYupyow4Vg/6tHxdLgx0qTW56kM
- B7yLaTLwNE2lq4wIEr8BQiDTeIiIV7x38//B1pkUd7b4JVQMgdu0oii1iXQKN4mf/FaQkNvu1W9
- VUcKxpttvs7rqGfpHb835X5NWaCWQA/RhAL4nOpyvocEl1wZU9isPtmKu9rktyE84W0qgWV9deE
- 5EGdlnrEeQgg/75GzH4IXgpYK54ZtoSI+k9tHRrXQAYVw==
-Received: by wiki.archlinuxcn.org (envelope-sender
- <integral@archlinuxcn.org>) with ESMTPS id 5251ddab; Thu, 24 Oct 2024
- 15:12:06 +0800
-Message-ID: <1ca0a261-c3f1-4cb5-ada4-8125ec22cdf6@archlinuxcn.org>
-Date: Thu, 24 Oct 2024 15:11:51 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ufwazgcy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C067C4CEC7;
+	Thu, 24 Oct 2024 07:52:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1729756359;
+	bh=iuAEsgdQuR7QXql0865AuzrLAn3JGMitY8NvxPwXVYc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=ufwazgcyvS3+PqWhNPLE7RWn/6xzkkfrQOC70JQlPDSXAPdWFiJ4cocW+zRM50qL8
+	 8N4CYetxsWQ1apYszsX3/QoGsujnm53IfE4nE1V9ywjAsI5kaCijfLZMNPteULgpk3
+	 jYQfCwHKkAWbRBTuw6pyXwBkniLjvyHZxZHcnGrlESmBIgjuqTwfWvK8r1/SqDRhwL
+	 umZSgNhP84+2toqbWDoF0/odM50d5mqS/22AsuMdILu7Yk3pjfqESARNgaqJQ1sOho
+	 /DzqVFgR0h6dqxUQx1ACuT8FaFaLrpLNTk1bhb5pr0Heoij+sdkURE4l3vJdD62Kbg
+	 OjxpVCjGBJM7A==
+Date: Thu, 24 Oct 2024 08:52:31 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, Marius Cristea
+ <marius.cristea@microchip.com>, Trevor Gamblin <tgamblin@baylibre.com>,
+ Hans de Goede <hdegoede@redhat.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Subject: Re: [PATCH v1 00/13] iio: Clean up acpi_match_device() use cases
+Message-ID: <20241024085231.132a8786@jic23-huawei>
+In-Reply-To: <20241023152145.3564943-1-andriy.shevchenko@linux.intel.com>
+References: <20241023152145.3564943-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: torvalds@linux-foundation.org
-Cc: aospan@netup.ru, conor.dooley@microchip.com, ddrokosov@sberdevices.ru,
- dmaengine@vger.kernel.org, dushistov@mail.ru, fancer.lancer@gmail.com,
- geert@linux-m68k.org, gregkh@linuxfoundation.org,
- hoan@os.amperecomputing.com, ink@jurassic.park.msu.ru, jeffbai@aosc.io,
- kexybiscuit@aosc.io, linux-alpha@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-fpga@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org,
- linux-ide@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
- linux-renesas-soc@vger.kernel.org, linux-spi@vger.kernel.org,
- manivannan.sadhasivam@linaro.org, mattst88@gmail.com,
- netdev@vger.kernel.org, nikita@trvn.ru, ntb@lists.linux.dev,
- patches@lists.linux.dev, richard.henderson@linaro.org, s.shtylyov@omp.ru,
- serjk@netup.ru, shc_work@mail.ru, torvic9@mailbox.org,
- tsbogend@alpha.franken.de, v.georgiev@metrotek.ru, wangyuli@uniontech.com,
- wsa+renesas@sang-engineering.com, xeb@mail.ru
-References: <CAHk-=whNGNVnYHHSXUAsWds_MoZ-iEgRMQMxZZ0z-jY4uHT+Gg@mail.gmail.com>
-Subject: Re: [PATCH] Revert "MAINTAINERS: Remove some entries due to various
- compliance requirements."
-Content-Language: en-US
-From: Integral <integral@archlinuxcn.org>
-In-Reply-To: <CAHk-=whNGNVnYHHSXUAsWds_MoZ-iEgRMQMxZZ0z-jY4uHT+Gg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-Dear Linus Torvalds,
+On Wed, 23 Oct 2024 18:17:23 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> There are current uses of acpi_match_device():
+> - as strange way of checking if the device was enumerated via ACPI
+> - as a way to get IIO device name as ACPI device instance name
+
+Quick note on this one. That's an ABI bug that we are stuck with because
+we missed it in review a long time back and names aren't critical enough
+to justify forcing a fix through.
+
+I don't have a particular problem with a function to wrap that up,
+but thought I'd just make it clear in this thread that no new
+driver should ever do this!
+
+Jonathan
 
 
-We are not paid actors. Most of us here are just common kernel
-
-developers or Linux users expressing our own opinions about the
-
-removal commit.
-
-
-I can fully understand your disapproval of Russian aggression. However,
-
-the true responsibility for the war lies with the ruler, not these innocent
-
-developers, right? Removing them from the MAINTAINERS file neither
-
-really assists Ukraine nor cripples Russia. Those who are removed are just
-
-developers, not politicians or soldiers. On the contrary, this silent 
-removal
-
-will damage our trust in the transparency of kernel development.
-
+> - as above with accompanying driver data
+> 
+> Deduplicate its use by providing two new helper functions in IIO ACPI
+> library and update the rest accordingly.
+> 
+> This also includes a rework of previously sent ltr501 patch.
+> 
+> Andy Shevchenko (13):
+>   iio: magnetometer: bmc150: Drop dead code from the driver
+>   iio: adc: pac1934: Replace strange way of checking type of enumeration
+>   iio: imu: inv_mpu6050: Replace strange way of checking type of
+>     enumeration
+>   iio: acpi: Improve iio_read_acpi_mount_matrix()
+>   iio: acpi: Add iio_get_acpi_device_name_and_data() helper function
+>   iio: accel: mma9551: Replace custom implementation of
+>     iio_get_acpi_device_name()
+>   iio: accel: mma9553: Replace custom implementation of
+>     iio_get_acpi_device_name()
+>   iio: gyro: bmg160: Replace custom implementation of
+>     iio_get_acpi_device_name()
+>   iio: light: isl29018: Replace a variant of
+>     iio_get_acpi_device_name_and_data()
+>   iio: light: isl29018: drop ACPI_PTR() and CONFIG_ACPI guards
+>   iio: light: ltr501: Drop most likely fake ACPI IDs
+>   iio: light: ltr501: Add LTER0303 to the supported devices
+>   iio: light: ltr501: Replace a variant of
+>     iio_get_acpi_device_name_and_data()
+> 
+>  drivers/iio/accel/mma9551.c                | 19 ++-------
+>  drivers/iio/accel/mma9553.c                | 19 ++-------
+>  drivers/iio/adc/pac1934.c                  |  2 +-
+>  drivers/iio/gyro/bmg160_core.c             | 15 --------
+>  drivers/iio/gyro/bmg160_i2c.c              |  4 +-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c |  5 +--
+>  drivers/iio/industrialio-acpi.c            | 45 ++++++++++++++++++++--
+>  drivers/iio/light/isl29018.c               | 38 ++++++------------
+>  drivers/iio/light/ltr501.c                 | 29 +++++---------
+>  drivers/iio/magnetometer/bmc150_magn.c     | 15 --------
+>  include/linux/iio/iio.h                    | 10 +++++
+>  11 files changed, 86 insertions(+), 115 deletions(-)
+> 
 
