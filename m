@@ -1,249 +1,140 @@
-Received: from mail.tlmp.cc (unknown [148.135.104.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DB821E766B;
-	Thu, 24 Oct 2024 14:04:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.135.104.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37AB81E1C33;
+	Thu, 24 Oct 2024 14:12:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729778686; cv=none; b=M+kdMEmQ0P+MXEH1hvNbnsroBZ6vBcgW/S32yvELLfp5v4kesd+YasVe+bLZK2TmHhlMO2TeWNLZXxb7zNBaV8PKqExZuD80eH10VMqIeQE0thhdOclhGg3v1J0DOwqtz64lGyGs4fsTqULMxKk4Gx2ona98zwbayq9sdUrZkaw=
+	t=1729779136; cv=none; b=SV31HwW/x3YVdzaZQQaM/Mlbam+k/TyTR68/FqLMbH9ntaNJMkUAbDtG+nnXI3hUC3Vf4Sash7zrBIaBzW2+6CF6KCiEoQ5rlAEygl5pYkvkaB27MRC8HVsjpSkdRh8t6h+4pH0d1XrlmS6BUTU76NaNcDmC9Qgh/pZbVfTgztA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729778686; c=relaxed/simple;
-	bh=xV3+YM4csR8hWKehkwGClwHk/OeWAo/jHKOiuMsEgNY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=nNkR4VU33sfFhyIYKPT6I6h/koTftY5gtMsmrL0vZLYAB8093NVAdkZF/WPN1Wa3LGN+FQOGHhTfydBF7dNl123RK82Fnqs2pR71hlHjEv0iBho9K50IBiUghHm48CJRhiTeui4AWZCJ8Z65O915OZOTcdNL4/jwFYG7NQmIbGc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kremlin.ru; spf=fail smtp.mailfrom=kremlin.ru; arc=none smtp.client-ip=148.135.104.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kremlin.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=kremlin.ru
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 9DE695E5DA;
-	Thu, 24 Oct 2024 10:04:30 -0400 (EDT)
-From: Vladimir Vladimirovich Putin <vladimir_putin_rus@kremlin.ru>
-To: torvalds@linux-foundation.org
-Cc: aospan@netup.ru,
-	conor.dooley@microchip.com,
-	ddrokosov@sberdevices.ru,
-	dmaengine@vger.kernel.org,
-	dushistov@mail.ru,
-	fancer.lancer@gmail.com,
-	geert@linux-m68k.org,
-	gregkh@linuxfoundation.org,
-	hoan@os.amperecomputing.com,
-	ink@jurassic.park.msu.ru,
-	jeffbai@aosc.io,
-	kexybiscuit@aosc.io,
-	linux-alpha@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-fpga@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	linux-hwmon@vger.kernel.org,
-	linux-ide@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-media@vger.kernel.org,
-	linux-mips@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	linux-spi@vger.kernel.org,
-	manivannan.sadhasivam@linaro.org,
-	mattst88@gmail.com,
-	netdev@vger.kernel.org,
-	nikita@trvn.ru,
-	ntb@lists.linux.dev,
-	patches@lists.linux.dev,
-	richard.henderson@linaro.org,
-	s.shtylyov@omp.ru,
-	serjk@netup.ru,
-	shc_work@mail.ru,
-	torvic9@mailbox.org,
-	tsbogend@alpha.franken.de,
-	v.georgiev@metrotek.ru,
-	wangyuli@uniontech.com,
-	wsa+renesas@sang-engineering.com,
-	xeb@mail.ru,
-	LKML <linux-kernel@vger.kernel.org>,
-	Vladimir Vladimirovich Putin <vladimir_putin_rus@kremlin.ru>
-Subject: [PATCH 2/2] MAINTAINERS: Remove Loongson due to compilance requirements.
-Date: Thu, 24 Oct 2024 22:03:53 +0800
-Message-ID: <20241024140353.384881-3-vladimir_putin_rus@kremlin.ru>
-X-Mailer: git-send-email 2.47.0
-In-Reply-To: <20241024140353.384881-1-vladimir_putin_rus@kremlin.ru>
-References: <CAHk-=whNGNVnYHHSXUAsWds_MoZ-iEgRMQMxZZ0z-jY4uHT+Gg@mail.gmail.com>
- <20241024140353.384881-1-vladimir_putin_rus@kremlin.ru>
+	s=arc-20240116; t=1729779136; c=relaxed/simple;
+	bh=Nj1ebmcv/mm+UDNIZ/dfe2bFowbODDJCifUQEhsRIc0=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=bWUMIsTZ0T0CZn267tXThIYOK5hVEQ0XYpak3aF7w4Lfx/xu6Sp2CFSQV3WRW8tDeSOfumJiRg7w50bEG7Ae//gLtVRQWppSORd31nX8+983bZ9JDhSvmbFObDYy5OCRoBOjcAzU6tTfZ80HcK/dqekl1UvOWE+vzzrP3fWM3hs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OO8ojSh9; arc=none smtp.client-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OO8ojSh9"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-a93c1cc74fdso124221566b.3;
+        Thu, 24 Oct 2024 07:12:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1729779132; x=1730383932; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Nj1ebmcv/mm+UDNIZ/dfe2bFowbODDJCifUQEhsRIc0=;
+        b=OO8ojSh9WDsj0rSgpByfnZd8pchVCJixVmCqBD7Nuq/IafPo//zv4YvTA/jlmifCb6
+         F+sVpCVvOAz5iHnEPZw4xhzQO0+Ck8MlVUTwhNKnDr3ADCw/8KDNtac1+qngjzLVZWMf
+         M/QOHhBiWqgmRyaKwpM8rvTQcEP3f6urnJlFIHVDx2yRXoouMxZAr1C5PbpQD9SxHQih
+         4ryQY/MAY/y9HTia1nzCqLKRG7p+7MgQZ08sl/zG7mbPMaBGd7UH7XLAX0BCPV/yiCIs
+         8t8VwXenp1F3vVOqXjFZMOmLvs4wuvgcLZfG6aZhCIX357yj8vSFdoFofVxQz2y5Rh23
+         cYdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1729779132; x=1730383932;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Nj1ebmcv/mm+UDNIZ/dfe2bFowbODDJCifUQEhsRIc0=;
+        b=M1hfSyAFg+CcONEC7HzZUIxreW4aC2yiL67qybvvtItkeOHr76k4S2JEtIyvkI7m91
+         E5p0ZMq4LvTg1sStrCI3+/918mnE/BrMebXilZV6/eQKfk5bJpmpYl61PPfXPJRFTarE
+         xEYfGr9RjpDodZ2SWzx/V2Y7eudQPVsNHy2Wy4AiA67VaWrYDAGzpG3FF+jWLicc1ZTp
+         nUDRi1u6DPHxun+Pn2p9t1Jx7V7xB8S7cJSHH6FZJpKZkWyIZRz1TrDM5bnXiW8MHsim
+         hhwjJp812s3KKsz0JSsBBbwB7ZOQ7M9cDrb8zOD6N02o3tVcZl3lqDdExohs9Oewbekj
+         Zy8Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVdtsi0NSvF5w9GLMocYLbK9+SBiCHsUPBQa2Y8TbnSUb90ApqjIi5sEhK6cjzctLlkeG/sNWK4QOds@vger.kernel.org, AJvYcCVjEPYBHTLeivO1s0jYtIDnkNmT3fG0gxXaDDuGGHE5q4WPtX6N0aIocPmCIjbeX1bgFza0oyD6vA+8@vger.kernel.org, AJvYcCWPqg0b22MDkQkSNYwcKwn80m0crJYIhGNtIzfye7mZbCGEUI9baRnme6t0GJCr5kvjdExp1knRpn3A@vger.kernel.org, AJvYcCXNyyHoN8M7BUuCFcpkpUZo5tSBRPjM+4NxswhUMDlWdCmu9oFp6g0EA70Dm1UHXvFX67Njt8Nesh5O@vger.kernel.org, AJvYcCXjF2z3wqXa5U6vPgAZ1suTuXjX0hU5E9UURxKB8krZWFiuFLQRqJeaaloI2saz+OYddMyoLiKcX1ndL53W@vger.kernel.org
+X-Gm-Message-State: AOJu0YxhVBYtTEkX8wmGP/rcQ0JTqI+mDefSnoOtZcsb7UAkn8y0GvNV
+	ElvPGegIS9TwzFipYJ6+5+UMk0z3Jf478IXE29S/P2FyGoQKl5Sy
+X-Google-Smtp-Source: AGHT+IHpDlN3uiwFaGU+NjrmHJnbgiUpiTHuzfNHuRoy7uR9tWOnbsFsdxmjuDvqcRRC+hYZGgSCDw==
+X-Received: by 2002:a17:906:7309:b0:a9a:55de:11f4 with SMTP id a640c23a62f3a-a9abf96d176mr580734466b.54.1729779132047;
+        Thu, 24 Oct 2024 07:12:12 -0700 (PDT)
+Received: from ?IPv6:2001:a61:34c9:ea01:14b4:7ed9:5135:9381? ([2001:a61:34c9:ea01:14b4:7ed9:5135:9381])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a9a9159a214sm627093766b.213.2024.10.24.07.12.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Oct 2024 07:12:11 -0700 (PDT)
+Message-ID: <72afe00622075f77b410e9537cca0a7ac5a4cba3.camel@gmail.com>
+Subject: Re: [PATCH RFC v4 00/15] spi: axi-spi-engine: add offload support
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: David Lechner <dlechner@baylibre.com>, Mark Brown <broonie@kernel.org>, 
+ Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Uwe
+ =?ISO-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>, Lars-Peter Clausen
+	 <lars@metafoo.de>, David Jander <david@protonic.nl>, Martin Sperl
+	 <kernel@martin.sperl.org>, linux-spi@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org
+Date: Thu, 24 Oct 2024 16:12:11 +0200
+In-Reply-To: <20241023-dlech-mainline-spi-engine-offload-2-v4-0-f8125b99f5a1@baylibre.com>
+References: 
+	<20241023-dlech-mainline-spi-engine-offload-2-v4-0-f8125b99f5a1@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.4 (3.52.4-1.fc40) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
 
-Loongson was added to the US Entity List[1] on 03/06/2023
+Hi David,
 
-The Entity List is a trade restriction list published by the United
-States Department of Commerce's Bureau of Industry and Security (BIS),
-consisting of certain foreign persons, entities, or governments.
-It is published as Supplement 4 of Part 744 of the Code
-of Federal Regulations. [2]
+On Wed, 2024-10-23 at 15:59 -0500, David Lechner wrote:
+> In this revision, I ended up changing quite a bit more that I was
+> expecting.
+>=20
+> In the DT bindings, I ended up dropping the #spi-offload-cells and
+> spi-offload properties. A couple of reasons for this:
+>=20
+> 1. Several people commented that it is odd to have a separate provider/
+> =C2=A0=C2=A0 consumer binding for something that already has a parent/chi=
+ld
+> =C2=A0=C2=A0 relationship (both on this series and in another unrelated s=
+eries
+> =C2=A0=C2=A0 with io-backends). For now, the only SPI offload provider is=
+ the AXI
+> =C2=A0=C2=A0 SPI Engine, which is a SPI controller.
+> 2. In a discussion unrelated to this series, but related to the idea
+> =C2=A0=C2=A0 of SPI offloads [1], it became apparent that the proposed us=
+e for
+> =C2=A0=C2=A0 the cells to select triggers and tx/rx streams doesn't actua=
+lly
+> =C2=A0=C2=A0 work for that case.
+> 3. In offline review, it was suggested that assigning specific offloads
+> =C2=A0=C2=A0 to specific peripherals may be too restrictive, e.g. if ther=
+e are
+> =C2=A0=C2=A0 controllers that have pools of identical offloads. This idea=
+ of
+> =C2=A0=C2=A0 pools of generic offloads has also come up in previous discu=
+ssions
+> =C2=A0=C2=A0 on the mailing list.
+>=20
+> [1]:
+> https://lore.kernel.org/linux-iio/e5310b63-9dc4-43af-9fbe-0cc3b604ab8b@ba=
+ylibre.com/
+>=20
+> So the idea is that if we do end up needing to use DT to assign certain
+> resources (triggers, DMA channels, etc.) to specific peripherals, we
+> would make a mapping attribute in the controller node rather than using
+> phandle cells. But we don't need this yet, so it isn't present in The
+> current patches.
+>=20
+> And if we ever end up with a SPI offload provider that is not a SPI
+> controller, we can bring back the #spi-offload-cells and
+> spi-offload properties.
 
-[1]: https://www.federalregister.gov/documents/2023/03/06/2023-04558/
-additions-and-revisions-of-entities-to-the-entity-list
-[2]: https://en.wikipedia.org/wiki/Entity_List
+Well I do like we kind of gave a step back and are more focused in supporti=
+ng what we
+have and know at the moment. And I think (for what I saw so far) things are=
+ being
+implemented in fairly flexible manner. So yeah, as far as I'm concerned, I =
+liked what
+I saw so far. Hopefully everyone can agree on this so we drop the RFC :)
 
-Signed-off-by: Vladimir Vladimirovich Putin <vladimir_putin_rus@kremlin.ru>
----
- MAINTAINERS | 50 --------------------------------------------------
- 1 file changed, 50 deletions(-)
+I'll try to look at the remaining patches tomorrow...
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 725a72e17a4a..c2de74bc8e38 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4041,7 +4041,6 @@ S:	Supported
- F:	arch/arm64/net/
- 
- BPF JIT for LOONGARCH
--M:	Tiezhu Yang <yangtiezhu@loongson.cn>
- R:	Hengqi Chen <hengqi.chen@gmail.com>
- L:	bpf@vger.kernel.org
- S:	Maintained
-@@ -5280,7 +5279,6 @@ F:	Documentation/dev-tools/checkpatch.rst
- 
- CHINESE DOCUMENTATION
- M:	Alex Shi <alexs@kernel.org>
--M:	Yanteng Si <siyanteng@loongson.cn>
- S:	Maintained
- F:	Documentation/translations/zh_CN/
- 
-@@ -7629,11 +7627,9 @@ F:	drivers/gpu/drm/lima/
- F:	include/uapi/drm/lima_drm.h
- 
- DRM DRIVERS FOR LOONGSON
--M:	Sui Jingfeng <suijingfeng@loongson.cn>
- L:	dri-devel@lists.freedesktop.org
- S:	Supported
- T:	git https://gitlab.freedesktop.org/drm/misc/kernel.git
--F:	drivers/gpu/drm/loongson/
- 
- DRM DRIVERS FOR MEDIATEK
- M:	Chun-Kuang Hu <chunkuang.hu@kernel.org>
-@@ -12426,8 +12422,6 @@ F:	tools/testing/selftests/kvm/*/aarch64/
- F:	tools/testing/selftests/kvm/aarch64/
- 
- KERNEL VIRTUAL MACHINE FOR LOONGARCH (KVM/LoongArch)
--M:	Tianrui Zhao <zhaotianrui@loongson.cn>
--M:	Bibo Mao <maobibo@loongson.cn>
- M:	Huacai Chen <chenhuacai@kernel.org>
- L:	kvm@vger.kernel.org
- L:	loongarch@lists.linux.dev
-@@ -13285,81 +13279,48 @@ M:	Huacai Chen <chenhuacai@kernel.org>
- R:	WANG Xuerui <kernel@xen0n.name>
- L:	loongarch@lists.linux.dev
- S:	Maintained
--T:	git git://git.kernel.org/pub/scm/linux/kernel/git/chenhuacai/linux-loongson.git
- F:	Documentation/arch/loongarch/
- F:	Documentation/translations/zh_CN/arch/loongarch/
- F:	arch/loongarch/
- F:	drivers/*/*loongarch*
--F:	drivers/cpufreq/loongson3_cpufreq.c
- 
- LOONGSON GPIO DRIVER
--M:	Yinbo Zhu <zhuyinbo@loongson.cn>
- L:	linux-gpio@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/gpio/loongson,ls-gpio.yaml
--F:	drivers/gpio/gpio-loongson-64bit.c
- 
- LOONGSON LS2X APB DMA DRIVER
--M:	Binbin Zhou <zhoubinbin@loongson.cn>
- L:	dmaengine@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/dma/loongson,ls2x-apbdma.yaml
- F:	drivers/dma/ls2x-apb-dma.c
- 
- LOONGSON LS2X I2C DRIVER
--M:	Binbin Zhou <zhoubinbin@loongson.cn>
- L:	linux-i2c@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/i2c/loongson,ls2x-i2c.yaml
- F:	drivers/i2c/busses/i2c-ls2x.c
- 
- LOONGSON-2 SOC SERIES CLOCK DRIVER
--M:	Yinbo Zhu <zhuyinbo@loongson.cn>
- L:	linux-clk@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/clock/loongson,ls2k-clk.yaml
--F:	drivers/clk/clk-loongson2.c
--F:	include/dt-bindings/clock/loongson,ls2k-clk.h
- 
- LOONGSON SPI DRIVER
--M:	Yinbo Zhu <zhuyinbo@loongson.cn>
- L:	linux-spi@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/spi/loongson,ls2k-spi.yaml
--F:	drivers/spi/spi-loongson-core.c
--F:	drivers/spi/spi-loongson-pci.c
--F:	drivers/spi/spi-loongson-plat.c
--F:	drivers/spi/spi-loongson.h
- 
- LOONGSON-2 SOC SERIES GUTS DRIVER
--M:	Yinbo Zhu <zhuyinbo@loongson.cn>
- L:	loongarch@lists.linux.dev
- S:	Maintained
--F:	Documentation/devicetree/bindings/hwinfo/loongson,ls2k-chipid.yaml
--F:	drivers/soc/loongson/loongson2_guts.c
- 
- LOONGSON-2 SOC SERIES PM DRIVER
--M:	Yinbo Zhu <zhuyinbo@loongson.cn>
- L:	linux-pm@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/soc/loongson/loongson,ls2k-pmc.yaml
--F:	drivers/soc/loongson/loongson2_pm.c
- 
- LOONGSON-2 SOC SERIES PINCTRL DRIVER
--M:	zhanghongchen <zhanghongchen@loongson.cn>
--M:	Yinbo Zhu <zhuyinbo@loongson.cn>
- L:	linux-gpio@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/pinctrl/loongson,ls2k-pinctrl.yaml
--F:	drivers/pinctrl/pinctrl-loongson2.c
- 
- LOONGSON-2 SOC SERIES THERMAL DRIVER
--M:	zhanghongchen <zhanghongchen@loongson.cn>
--M:	Yinbo Zhu <zhuyinbo@loongson.cn>
- L:	linux-pm@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/thermal/loongson,ls2k-thermal.yaml
--F:	drivers/thermal/loongson2_thermal.c
- 
- LSILOGIC MPT FUSION DRIVERS (FC/SAS/SPI)
- M:	Sathya Prakash <sathya.prakash@broadcom.com>
-@@ -15432,28 +15393,17 @@ MIPS/LOONGSON1 ARCHITECTURE
- M:	Keguang Zhang <keguang.zhang@gmail.com>
- L:	linux-mips@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/*/loongson,ls1*.yaml
--F:	arch/mips/include/asm/mach-loongson32/
--F:	arch/mips/loongson32/
--F:	drivers/*/*loongson1*
--F:	drivers/net/ethernet/stmicro/stmmac/dwmac-loongson1.c
- 
- MIPS/LOONGSON2EF ARCHITECTURE
- M:	Jiaxun Yang <jiaxun.yang@flygoat.com>
- L:	linux-mips@vger.kernel.org
- S:	Maintained
--F:	arch/mips/include/asm/mach-loongson2ef/
--F:	arch/mips/loongson2ef/
--F:	drivers/cpufreq/loongson2_cpufreq.c
- 
- MIPS/LOONGSON64 ARCHITECTURE
- M:	Huacai Chen <chenhuacai@kernel.org>
- M:	Jiaxun Yang <jiaxun.yang@flygoat.com>
- L:	linux-mips@vger.kernel.org
- S:	Maintained
--F:	arch/mips/include/asm/mach-loongson64/
--F:	arch/mips/loongson64/
--F:	drivers/irqchip/irq-loongson*
- F:	drivers/platform/mips/cpu_hwmon.c
- 
- MIROSOUND PCM20 FM RADIO RECEIVER DRIVER
--- 
-2.47.0
+- Nuno S=C3=A1
+
 
