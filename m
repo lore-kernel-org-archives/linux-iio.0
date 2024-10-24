@@ -1,333 +1,453 @@
-Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B39F1E285D
-	for <linux-iio@vger.kernel.org>; Thu, 24 Oct 2024 13:29:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95BAE24B28;
+	Thu, 24 Oct 2024 14:04:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729776553; cv=none; b=vCXqOLObdzAHNqosi2ySP2mbQ4gnae/OC5KuTOk1qWniVauQZHHcZMQENLMKE2Fd+GRMIf4njjoolYz95s9+e3iQeBWgqEelUp3SS+OdAZYIoS6T0g4giZQ0+3r0bEStpGpAqQTqzMsQEGgAFU836ZU/p8oeJRDPXQ2HWCt28ZU=
+	t=1729778661; cv=none; b=BP4il2cOnWol7VLy/bKpZZUBEE4hfuoyT2GgGay09ZRep4/IF3dmz/VhMSgEgjl1TyvWF/VkffanbERVGq2Awwc3aaZEoIzEHSz4nnJIcfcL9uOVmZMvEYtWZzOdOI5IwnldKop2NAKAbYAoxUxD0gMrroadze3QwtgZHxmqHmc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729776553; c=relaxed/simple;
-	bh=TNFGg/CYQGxNs+Ld3XxJZ5IfmtwWB2COK0LRP9AdQLs=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Aa3dghWq+c2Sv+TgJFpV5/dlkaOuOYVnjlE5SBVCujHMen3Hvk0xo2WN3D3ElyeNZbONzUZI9L2zqKWRdxyaNS8IpM5E3flbrTahUWypkU6l/QWRTyBop//pXYw2q2eUYprUBcTR9qEBBN5DWsGvJ1qUwjhXwAz6RJIlg9jfEic=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=EVJMBPte; arc=none smtp.client-ip=209.85.222.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1729778661; c=relaxed/simple;
+	bh=MKKxgjhlIAvEPf1RqfNwMN9PSwOKdDK9i7QX48sQFAk=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=V/siX9XDY3BYxrCzC+NnwvKGZp/fNi2/MDwjKz3pf2TNPLpLg4y24vZL0MB3DCOE+5Ei40iOr3nQFNpHUI+tD+2VwyE1gHtCTRnkHLNLPx5S+7cFpWsCvWZK4aHFvUxQlLyJ++QaOfkG87NAe7Ok7MUVcIdm9/YpbrCFD4YHwRY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jahAGJc0; arc=none smtp.client-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="EVJMBPte"
-Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-7b161fa1c7bso57046085a.0
-        for <linux-iio@vger.kernel.org>; Thu, 24 Oct 2024 06:29:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jahAGJc0"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-a9a6acac4c3so139104166b.0;
+        Thu, 24 Oct 2024 07:04:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1729776550; x=1730381350; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2mADvfbNearZia5yRK0i07ANDp2oc6aBLBYcSmlyDG4=;
-        b=EVJMBPteZafBmJap6zDFwn8Z+zsrfzDjto8H3WRlNBNkpzz2XqMSTS2ws2kdzGlgc+
-         e4ScBYtOzT1IhMS2UMzXS8mUH8kJQh17+MX9y3MRSMhkj5bBR+tweuQrV5MeAWEVrWx2
-         TI9dPpRCLjMJKDtT8H3qZ364tD9RLfze+473g=
+        d=gmail.com; s=20230601; t=1729778657; x=1730383457; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=TIXIN1+TP3w9ElAArKoeOcSoLCwRyX7h32R4b6WdAXM=;
+        b=jahAGJc0Kp4KKhLtRcMmBl6FQVO9F3Y6B20UMQzPuFmJl285PIqmwlTTj9xCghuQ8S
+         BEUyz6d1/CehHSDWFZBIkMvOvTVAbpMLD8wWuRXetUV8qNYEgU780QyvSi+RrwjOXKye
+         4oxJGfIb6xCcwkx5i5qyJFnO6WHVtN6xiw3KEGfMrd+FSiTjYk6gNzLbXTtWMUcg1r6X
+         yKj7mSMfm0IrsZTh9pBEju5+hl/1KCTtJ46OeKNztIQEoGGUF6WBnd+SNYe9acR8hWlG
+         rcDuYlLDSGA4Jm+CjeuMA0MwEkIsxAGNWBvuxgtUaxPh2RT2LpkeCgfyVksNvNxknk3z
+         H5xA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729776550; x=1730381350;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2mADvfbNearZia5yRK0i07ANDp2oc6aBLBYcSmlyDG4=;
-        b=onqoGbnOGLnboFlYDCDo5oJ0m7sO+eA6VfO2g6sOPmRglMhoE4MKDp7u49meNq7yzw
-         s0QFe5899BYt85ScBdpqMNPIC9ZY0Kj8F9fiW0Lxl5/yC1hZII5QXhDb8W88Bzr5x2Qj
-         tyRA8jbFU32vjMm6tZDPzwDFMyNBBA5JbWizLqWvIV+akeU8GYQNwWWrlbp17ND+k0Yy
-         gVyKgY1N/n93hzi3vHFmyELr10FI+ek9ZEMvOsnC6iACHnTEz9qRJM2JGceRs1gb0yVW
-         oHR2k/UKaN82/CJSkOoP/YDDWbt0kOSNHCC4YymnFNMDKl9K1tndTwFnJSOYvCop4udX
-         Laaw==
-X-Forwarded-Encrypted: i=1; AJvYcCVdRdpzE2aptv8vNYTJ6g3r/XrLwu9Zl6xGJcYf7lBLZM2eNLOazFk8SQatlXfOwGrWTX3XvoxsvQw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyTfkWEVs/8hx8T56ZtzcfphP9KH2zMiRs7iyuM7rVgBIT2QqL1
-	7tbPWbGQqk8QBR8iut9hCFDZJPPTGTAJBBcnHcRovVW1HppjKJVk8fnRobV7GA==
-X-Google-Smtp-Source: AGHT+IGLbXLa5kyweKu7WefNH+VU10qvs7wfcV2860hFBGJU+bW6CxA3VhN5gpV4uuydTUUtEpHUDQ==
-X-Received: by 2002:a05:620a:4720:b0:7a1:62ad:9d89 with SMTP id af79cd13be357-7b186d12a38mr205596785a.64.1729776549881;
-        Thu, 24 Oct 2024 06:29:09 -0700 (PDT)
-Received: from denia.c.googlers.com (189.216.85.34.bc.googleusercontent.com. [34.85.216.189])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7b165a5d663sm484204885a.94.2024.10.24.06.29.08
+        d=1e100.net; s=20230601; t=1729778657; x=1730383457;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TIXIN1+TP3w9ElAArKoeOcSoLCwRyX7h32R4b6WdAXM=;
+        b=MUxx0b8OHB7lczptwrnHtGUXfG8/6v77AEAUGo0n8bQN//dGqI0taBBI5fnbJQF4a/
+         5VnMjYEthud0B06JEhhLuCXfJaalY+sehzgEqtIrOg8gLYRfUSusVgRmBp5uEbVE5HXe
+         0MfD7VfxjcO7cxArmc3cDV5qCGsQFB6xaDx9irigahxyRV6MyvvypfnBR1NENxuhlROb
+         VYvNIMsBcfW1O22koeY9Lz2WEKhJUijr8coHDNs6FqeJLyExaeUx+DxI8TV+iKJwHYnh
+         fN9/HYFhl9U4NqLk0DRR8++D/IFzh4rTp+wzY5gA1HfGY04IhIFFsFD9CZF2oycxW43e
+         ma5g==
+X-Forwarded-Encrypted: i=1; AJvYcCUf5XuF8NdQ0Wr/Wt/hfADBLijZeYwTZJDJ37zpT3FYv7tU6mZLI8WtYdp2fTsbhH4+QebhfDwy8idt8bhv@vger.kernel.org, AJvYcCUtnWdNGB6UMPf/y5uF0bfMRaa2aG3BYIbRNyCpwKHSE0agaMM0kqhChwoQligsMXj3B67ET9xo9BXz@vger.kernel.org, AJvYcCUyxLqYEloz0qoWpM44No9WSN82it2KYzRZl+BHGcBsc3p4rxl6zHx2YlBkjtYR2yGM01pyZwH1b8E6@vger.kernel.org, AJvYcCXPU/0scs0QmbStAKJPJsn1k3WGpzNeMvCzfDezmF+oyKqxdlBo1VSuIld03xaEsCg+uDkzgE+EFULM@vger.kernel.org, AJvYcCXmD0B5Rps09jZ0CAnxQrg+3PlXO6KWfpY+rJaH+jUIa1kpOoooOMTQ5V/SDATXutIPfLRggYyuU0wT@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxota5JTe2dLcA4g90EmatpEraQGl4Nhg9gqQDqWmYmWoKk/pU8
+	jwGypo4UXAf56dbehGj1vrqtiF0jGHHWOFf55qsVcTPvjMmKlDuQ
+X-Google-Smtp-Source: AGHT+IFAH1SQUcmJIaJ2QKy7QEw783CHJUohMB1jGAnkB1Nhys0qaAikcw9JtnLzUDJkYZkzc7/1Fg==
+X-Received: by 2002:a17:907:6d0f:b0:a99:f283:8147 with SMTP id a640c23a62f3a-a9ad275880emr150745466b.27.1729778655994;
+        Thu, 24 Oct 2024 07:04:15 -0700 (PDT)
+Received: from ?IPv6:2001:a61:34c9:ea01:14b4:7ed9:5135:9381? ([2001:a61:34c9:ea01:14b4:7ed9:5135:9381])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a9a915a1133sm620237966b.220.2024.10.24.07.04.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Oct 2024 06:29:09 -0700 (PDT)
-From: Ricardo Ribalda <ribalda@chromium.org>
-Date: Thu, 24 Oct 2024 13:29:07 +0000
-Subject: [PATCH 3/3] iio: hid-sensor-prox: Add support for more channels
+        Thu, 24 Oct 2024 07:04:15 -0700 (PDT)
+Message-ID: <9762d3f3d3a2e5fbe5e5041cbdc928a9ab24e40b.camel@gmail.com>
+Subject: Re: [PATCH RFC v4 03/15] spi: offload: add support for hardware
+ triggers
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: David Lechner <dlechner@baylibre.com>, Mark Brown <broonie@kernel.org>, 
+ Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Uwe
+ =?ISO-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>, Lars-Peter Clausen
+	 <lars@metafoo.de>, David Jander <david@protonic.nl>, Martin Sperl
+	 <kernel@martin.sperl.org>, linux-spi@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org
+Date: Thu, 24 Oct 2024 16:04:14 +0200
+In-Reply-To: <20241023-dlech-mainline-spi-engine-offload-2-v4-3-f8125b99f5a1@baylibre.com>
+References: 
+	<20241023-dlech-mainline-spi-engine-offload-2-v4-0-f8125b99f5a1@baylibre.com>
+	 <20241023-dlech-mainline-spi-engine-offload-2-v4-3-f8125b99f5a1@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.4 (3.52.4-1.fc40) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20241024-hpd-v1-3-2a125882f1f8@chromium.org>
-References: <20241024-hpd-v1-0-2a125882f1f8@chromium.org>
-In-Reply-To: <20241024-hpd-v1-0-2a125882f1f8@chromium.org>
-To: Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires <bentiss@kernel.org>, 
- Jonathan Cameron <jic23@kernel.org>, 
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
- Lars-Peter Clausen <lars@metafoo.de>
-Cc: Harvey Yang <chenghaoyang@google.com>, linux-input@vger.kernel.org, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Ricardo Ribalda <ribalda@chromium.org>
-X-Mailer: b4 0.13.0
 
-Egis620 supports 3 channels: presense, proximity and attention.
+On Wed, 2024-10-23 at 15:59 -0500, David Lechner wrote:
+> Extend SPI offloading to support hardware triggers.
+>=20
+> This allows an arbitrary hardware trigger to be used to start a SPI
+> transfer that was previously set up with spi_optimize_message().
+>=20
+> A new struct spi_offload_trigger is introduced that can be used to
+> configure any type of trigger. It has a type discriminator and a union
+> to allow it to be extended in the future. Two trigger types are defined
+> to start with. One is a trigger that indicates that the SPI peripheral
+> is ready to read or write data. The other is a periodic trigger to
+> repeat a SPI message at a fixed rate.
+>=20
+> There is also a spi_offload_hw_trigger_validate() function that works
+> similar to clk_round_rate(). It basically asks the question of if we
+> enabled the hardware trigger what would the actual parameters be. This
+> can be used to test if the requested trigger type is actually supported
+> by the hardware and for periodic triggers, it can be used to find the
+> actual rate that the hardware is capable of.
+>=20
+> Signed-off-by: David Lechner <dlechner@baylibre.com>
+> ---
+>=20
+> In previous versions, we locked the SPI bus when the hardware trigger
+> was enabled, but we found this to be too restrictive. In one use case,
+> to avoid a race condition, we need to enable the SPI offload via a
+> hardware trigger, then write a SPI message to the peripheral to place
+> it into a mode that will generate the trigger. If we did it the other
+> way around, we could miss the first trigger.
+>=20
+> Another likely use case will be enabling two offloads/triggers at one
+> time on the same device, e.g. a read trigger and a write trigger. So
+> the exclusive bus lock for a single trigger would be too restrictive in
+> this case too.
+>=20
+> So for now, I'm going with Nuno's suggestion to leave any locking up to
+> the individual controller driver. If we do find we need something more
+> generic in the future, we could add a new spi_bus_lock_exclusive() API
+> that causes spi_bus_lock() to fail instead of waiting and add "locked"
+> versions of trigger enable functions. This would allow a peripheral to
+> claim exclusive use of the bus indefinitely while still being able to
+> do any SPI messaging that it needs.
+>=20
+> v4 changes:
+> * Added new struct spi_offload_trigger that is a generic struct for any
+> =C2=A0 hardware trigger rather than returning a struct clk.
+> * Added new spi_offload_hw_trigger_validate() function.
+> * Dropped extra locking since it was too restrictive.
+>=20
+> v3 changes:
+> * renamed enable/disable functions to spi_offload_hw_trigger_*mode*_...
+> * added spi_offload_hw_trigger_get_clk() function
+> * fixed missing EXPORT_SYMBOL_GPL
+>=20
+> v2 changes:
+> * This is split out from "spi: add core support for controllers with
+> =C2=A0 offload capabilities".
+> * Added locking for offload trigger to claim exclusive use of the SPI
+> =C2=A0 bus.
+> ---
+> =C2=A0drivers/spi/spi-offload.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 266=
+ ++++++++++++++++++++++++++++++++++++++++
+> =C2=A0include/linux/spi/spi-offload.h |=C2=A0 78 ++++++++++++
+> =C2=A02 files changed, 344 insertions(+)
+>=20
+> diff --git a/drivers/spi/spi-offload.c b/drivers/spi/spi-offload.c
+> index c344cbf50bdb..2a1f9587f27a 100644
+> --- a/drivers/spi/spi-offload.c
+> +++ b/drivers/spi/spi-offload.c
+> @@ -9,12 +9,26 @@
+> =C2=A0#include <linux/cleanup.h>
+> =C2=A0#include <linux/device.h>
+> =C2=A0#include <linux/export.h>
+> +#include <linux/list.h>
+> =C2=A0#include <linux/mutex.h>
+> +#include <linux/of.h>
+> =C2=A0#include <linux/property.h>
+> =C2=A0#include <linux/spi/spi-offload.h>
+> =C2=A0#include <linux/spi/spi.h>
+> =C2=A0#include <linux/types.h>
+> =C2=A0
+> +struct spi_offload_trigger {
+> +	struct list_head list;
+> +	struct device dev;
+> +	/* synchronizes calling ops and driver registration */
+> +	struct mutex lock;
+> +	const struct spi_offload_trigger_ops *ops;
+> +	void *priv;
+> +};
+> +
+> +static LIST_HEAD(spi_offload_triggers);
+> +static DEFINE_MUTEX(spi_offload_triggers_lock);
+> +
+> =C2=A0/**
+> =C2=A0 * devm_spi_offload_alloc() - Allocate offload instances
+> =C2=A0 * @dev: Device for devm purposes
+> @@ -102,3 +116,255 @@ struct spi_offload *devm_spi_offload_get(struct dev=
+ice *dev,
+> =C2=A0	return offload;
+> =C2=A0}
+> =C2=A0EXPORT_SYMBOL_GPL(devm_spi_offload_get);
+> +
+> +static void spi_offload_trigger_release(void *data)
+> +{
+> +	struct spi_offload_trigger *trigger =3D data;
+> +
+> +	guard(mutex)(&trigger->lock);
+> +	if (trigger->priv && trigger->ops->release)
+> +		trigger->ops->release(trigger->priv);
+> +
+> +	put_device(&trigger->dev);
+> +}
+> +
+> +struct spi_offload_trigger
+> +*devm_spi_offload_trigger_get(struct device *dev,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct spi_offload *offload,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 enum spi_offload_trigger_type type)
+> +{
+> +	struct spi_offload_trigger *trigger;
+> +	struct fwnode_reference_args args;
+> +	bool match =3D false;
+> +	int ret;
+> +
+> +	ret =3D fwnode_property_get_reference_args(dev_fwnode(offload-
+> >provider_dev),
+> +						 "trigger-sources",
+> +						 "#trigger-source-cells", 0, 0,
+> +						 &args);
+> +	if (ret)
+> +		return ERR_PTR(ret);
+> +
+> +	struct fwnode_handle *trigger_fwnode __free(fwnode_handle) =3D args.fwn=
+ode;
+> +
+> +	guard(mutex)(&spi_offload_triggers_lock);
+> +
+> +	list_for_each_entry(trigger, &spi_offload_triggers, list) {
+> +		if (trigger->dev.fwnode !=3D args.fwnode)
+> +			continue;
+> +
+> +		match =3D trigger->ops->match(trigger->priv, type, args.args,
+> args.nargs);
+> +		if (match)
+> +			break;
+> +	}
+> +
+> +	if (!match)
+> +		return ERR_PTR(-EPROBE_DEFER);
+> +
+> +	guard(mutex)(&trigger->lock);
+> +
+> +	if (!trigger->priv)
+> +		return ERR_PTR(-ENODEV);
 
-Modify the driver so it can read those channels as well.
+This is a bit odd tbh. Not a real deal breaker for me but the typical patte=
+rn I would
+expect is for methods of the trigger to get a struct spi_offload_trigger op=
+aque
+pointer. Then we provide a get_private kind of API for the private data. I =
+guess you
+want to avoid that but IMO it makes for neater API instead of getting void =
+pointers.
 
-Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
----
- drivers/iio/light/hid-sensor-prox.c | 161 ++++++++++++++++++++----------------
- 1 file changed, 89 insertions(+), 72 deletions(-)
+Another thing is, can the above actually happen? We have the
+spi_offload_triggers_lock grabbed and we got a match so the trigger should =
+not be
+able to go away (should block on the same lock).
 
-diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-index d38564fe22df..97550d0d21a9 100644
---- a/drivers/iio/light/hid-sensor-prox.c
-+++ b/drivers/iio/light/hid-sensor-prox.c
-@@ -13,16 +13,26 @@
- #include <linux/iio/buffer.h>
- #include "../common/hid-sensors/hid-sensor-trigger.h"
- 
--#define CHANNEL_SCAN_INDEX_PRESENCE 0
-+static const u32 prox_usage_ids[] = {
-+	HID_USAGE_SENSOR_HUMAN_PRESENCE,
-+	HID_USAGE_SENSOR_HUMAN_PROXIMITY,
-+	HID_USAGE_SENSOR_HUMAN_ATTENTION,
-+};
-+
-+#define MAX_USAGE ARRAY_SIZE(prox_usage_ids)
- 
- struct prox_state {
- 	struct hid_sensor_hub_callbacks callbacks;
- 	struct hid_sensor_common common_attributes;
--	struct hid_sensor_hub_attribute_info prox_attr;
--	u32 human_presence;
-+	struct hid_sensor_hub_attribute_info prox_attr[MAX_USAGE];
-+	struct iio_chan_spec channels[MAX_USAGE];
-+	u32 channel2usage[MAX_USAGE];
-+	u32 human_presence[MAX_USAGE];
- 	int scale_pre_decml;
- 	int scale_post_decml;
- 	int scale_precision;
-+	unsigned long scan_mask[2];
-+	int num_channels;
- };
- 
- static const u32 prox_sensitivity_addresses[] = {
-@@ -30,17 +40,23 @@ static const u32 prox_sensitivity_addresses[] = {
- 	HID_USAGE_SENSOR_DATA_PRESENCE,
- };
- 
--/* Channel definitions */
--static const struct iio_chan_spec prox_channels[] = {
--	{
--		.type = IIO_PROXIMITY,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
--		BIT(IIO_CHAN_INFO_SCALE) |
--		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
--		BIT(IIO_CHAN_INFO_HYSTERESIS),
--		.scan_index = CHANNEL_SCAN_INDEX_PRESENCE,
-+#define PROX_CHANNEL(_indexed, _channel) \
-+	{\
-+		.type = IIO_PROXIMITY,\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |\
-+		BIT(IIO_CHAN_INFO_SCALE) |\
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |\
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),\
-+		.indexed = _indexed,\
-+		.channel = _channel,\
- 	}
-+
-+/* Channel definitions (same order as prox_usage_ids) */
-+static const struct iio_chan_spec prox_channels[] = {
-+	PROX_CHANNEL(false, 0), // PRESENCE
-+	PROX_CHANNEL(true, 1), // PROXIMITY
-+	PROX_CHANNEL(true, 2), // ATTENTION
- };
- 
- /* Adjust channel real bits based on report descriptor */
-@@ -62,7 +78,7 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- {
- 	struct prox_state *prox_state = iio_priv(indio_dev);
- 	struct hid_sensor_hub_device *hsdev;
--	int report_id = -1;
-+	int report_id;
- 	u32 address;
- 	int ret_type;
- 	s32 min;
-@@ -71,29 +87,22 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- 	*val2 = 0;
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		switch (chan->scan_index) {
--		case  CHANNEL_SCAN_INDEX_PRESENCE:
--			report_id = prox_state->prox_attr.report_id;
--			min = prox_state->prox_attr.logical_minimum;
--			address = HID_USAGE_SENSOR_HUMAN_PRESENCE;
--			hsdev = prox_state->common_attributes.hsdev;
--			break;
--		default:
--			report_id = -1;
--			break;
--		}
--		if (report_id >= 0) {
--			hid_sensor_power_state(&prox_state->common_attributes,
--						true);
--			*val = sensor_hub_input_attr_get_raw_value(
--				hsdev, hsdev->usage, address, report_id,
--				SENSOR_HUB_SYNC, min < 0);
--			hid_sensor_power_state(&prox_state->common_attributes,
--						false);
--		} else {
-+		if (chan->scan_index >= prox_state->num_channels) {
- 			*val = 0;
- 			return -EINVAL;
- 		}
-+		address = prox_state->channel2usage[chan->scan_index];
-+		report_id = prox_state->prox_attr[chan->scan_index].report_id;
-+		hsdev = prox_state->common_attributes.hsdev;
-+		min = prox_state->prox_attr[chan->scan_index].logical_minimum;
-+		hid_sensor_power_state(&prox_state->common_attributes, true);
-+		*val = sensor_hub_input_attr_get_raw_value(hsdev,
-+							   hsdev->usage,
-+							   address,
-+							   report_id,
-+							   SENSOR_HUB_SYNC,
-+							   min < 0);
-+		hid_sensor_power_state(&prox_state->common_attributes, false);
- 		ret_type = IIO_VAL_INT;
- 		break;
- 	case IIO_CHAN_INFO_SCALE:
-@@ -103,7 +112,7 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- 		break;
- 	case IIO_CHAN_INFO_OFFSET:
- 		*val = hid_sensor_convert_exponent(
--				prox_state->prox_attr.unit_expo);
-+			prox_state->prox_attr[chan->scan_index].unit_expo);
- 		ret_type = IIO_VAL_INT;
- 		break;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
-@@ -178,48 +187,63 @@ static int prox_capture_sample(struct hid_sensor_hub_device *hsdev,
- {
- 	struct iio_dev *indio_dev = platform_get_drvdata(priv);
- 	struct prox_state *prox_state = iio_priv(indio_dev);
--	int ret = -EINVAL;
--
--	switch (usage_id) {
--	case HID_USAGE_SENSOR_HUMAN_PRESENCE:
--		switch (raw_len) {
--		case 1:
--			prox_state->human_presence = *(u8 *)raw_data;
--			return 0;
--		case 4:
--			prox_state->human_presence = *(u32 *)raw_data;
--			return 0;
--		default:
-+	int chan;
-+
-+	for (chan = 0; chan < prox_state->num_channels; chan++)
-+		if (prox_state->channel2usage[chan] == usage_id)
- 			break;
--		}
-+	if (chan == prox_state->num_channels)
-+		return -EINVAL;
-+
-+	switch (raw_len) {
-+	case 1:
-+		prox_state->human_presence[chan] = *(u8 *)raw_data;
-+		break;
-+	case 4:
-+		prox_state->human_presence[chan] = *(u32 *)raw_data;
- 		break;
- 	}
- 
--	return ret;
-+	return 0;
- }
- 
- /* Parse report which is specific to an usage id*/
- static int prox_parse_report(struct platform_device *pdev,
- 				struct hid_sensor_hub_device *hsdev,
--				struct iio_chan_spec *channels,
--				unsigned usage_id,
- 				struct prox_state *st)
- {
-+	struct iio_chan_spec *channels = st->channels;
-+	int index = 0;
- 	int ret;
-+	int i;
-+
-+	for (i = 0; i < MAX_USAGE; i++) {
-+		u32 usage_id = prox_usage_ids[i];
-+
-+		ret = sensor_hub_input_get_attribute_info(hsdev,
-+							  HID_INPUT_REPORT,
-+							  hsdev->usage,
-+							  usage_id,
-+							  &st->prox_attr[index]);
-+		if (ret < 0)
-+			continue;
-+		st->channel2usage[index] = usage_id;
-+		st->scan_mask[0] |= BIT(index);
-+		channels[index] = prox_channels[i];
-+		channels[index].scan_index = index;
-+		prox_adjust_channel_bit_mask(channels, index,
-+					     st->prox_attr[index].size);
-+		dev_dbg(&pdev->dev, "prox %x:%x\n", st->prox_attr[index].index,
-+			st->prox_attr[index].report_id);
-+		index++;
-+	}
- 
--	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
--			usage_id,
--			HID_USAGE_SENSOR_HUMAN_PRESENCE,
--			&st->prox_attr);
--	if (ret < 0)
-+	if (!index)
- 		return ret;
--	prox_adjust_channel_bit_mask(channels, CHANNEL_SCAN_INDEX_PRESENCE,
--					st->prox_attr.size);
- 
--	dev_dbg(&pdev->dev, "prox %x:%x\n", st->prox_attr.index,
--			st->prox_attr.report_id);
-+	st->num_channels = index;
- 
--	return ret;
-+	return 0;
- }
- 
- /* Function to initialize the processing for usage id */
-@@ -250,22 +274,15 @@ static int hid_prox_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	indio_dev->channels = devm_kmemdup(&pdev->dev, prox_channels,
--					   sizeof(prox_channels), GFP_KERNEL);
--	if (!indio_dev->channels) {
--		dev_err(&pdev->dev, "failed to duplicate channels\n");
--		return -ENOMEM;
--	}
--
--	ret = prox_parse_report(pdev, hsdev,
--				(struct iio_chan_spec *)indio_dev->channels,
--				hsdev->usage, prox_state);
-+	ret = prox_parse_report(pdev, hsdev, prox_state);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to setup attributes\n");
- 		return ret;
- 	}
- 
--	indio_dev->num_channels = ARRAY_SIZE(prox_channels);
-+	indio_dev->num_channels = prox_state->num_channels;
-+	indio_dev->channels = prox_state->channels;
-+	indio_dev->available_scan_masks = prox_state->scan_mask;
- 	indio_dev->info = &prox_info;
- 	indio_dev->name = name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	if (trigger->ops->request) {
+> +		ret =3D trigger->ops->request(trigger->priv, type, args.args,
+> args.nargs);
+> +		if (ret)
+> +			return ERR_PTR(ret);
+> +	}
+> +
+> +	get_device(&trigger->dev);
 
--- 
-2.47.0.163.g1226f6d8fa-goog
+try_module_get() would also make sense...
+
+...
+
+>=20
+> +struct spi_offload_trigger
+> +*devm_spi_offload_trigger_alloc(struct device *dev,
+> +				struct spi_offload_trigger_info *info)
+> +{
+> +	struct spi_offload_trigger *trigger;
+> +	int ret;
+> +
+> +	trigger =3D kzalloc(sizeof(*trigger), GFP_KERNEL);
+> +	if (!trigger)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	device_initialize(&trigger->dev);
+
+Do we really need the full struct device and the overhead of adding it to t=
+he driver
+core? AFAICT, we're using it only for refcouting so we could use a plain kr=
+ef for
+that matter. It would make things simpler. Or do you envision an future use=
+case as
+this might matter? Like allowing userspace to set some controls on the trig=
+ger (I
+would expect to be done through consumers though)?
+
+> +	trigger->dev.parent =3D info->parent;
+> +	trigger->dev.fwnode =3D info->fwnode;
+> +	trigger->dev.of_node =3D of_node_get(to_of_node(trigger->dev.fwnode));
+> +	trigger->dev.of_node_reused =3D true;
+> +	trigger->dev.release =3D spi_offload_trigger_dev_release;
+> +
+> +	mutex_init(&trigger->lock);
+> +	trigger->ops =3D info->ops;
+> +
+> +	ret =3D devm_add_action_or_reset(dev, spi_offload_trigger_put, trigger)=
+;
+> +	if (ret)
+> +		return ERR_PTR(ret);
+> +
+> +	ret =3D dev_set_name(&trigger->dev, "%s-%d", info->name, info->id);
+> +	if (ret)
+> +		return ERR_PTR(ret);
+> +
+> +	return trigger;
+> +}
+> +EXPORT_SYMBOL_GPL(devm_spi_offload_trigger_alloc);
+> +
+> +static void spi_offload_trigger_unregister(void *data)
+> +{
+> +	struct spi_offload_trigger *trigger =3D data;
+> +
+> +	scoped_guard(mutex, &spi_offload_triggers_lock)
+> +		list_del(&trigger->list);
+> +
+> +	guard(mutex)(&trigger->lock);
+> +	trigger->priv =3D NULL;
+
+nit: I guess this is a good as anything else but *ops could also be a good =
+fit to
+nullify :)
+
+> +	device_del(&trigger->dev);
+> +}
+> +
+> +int devm_spi_offload_trigger_register(struct device *dev,
+> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct spi_offload_trigger *trigger,
+> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 void *priv)
+> +{
+> +	int ret;
+> +
+> +	ret =3D device_add(&trigger->dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	trigger->priv =3D priv;
+> +
+> +	guard(mutex)(&spi_offload_triggers_lock);
+> +	list_add_tail(&trigger->list, &spi_offload_triggers);
+> +
+> +	ret =3D devm_add_action_or_reset(dev, spi_offload_trigger_unregister,
+> trigger);
+> +	if (ret)
+> +		return ret;
+>=20
+
+return devm_add_action_or_reset()?
+
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(devm_spi_offload_trigger_register);
+> diff --git a/include/linux/spi/spi-offload.h b/include/linux/spi/spi-offl=
+oad.h
+> index 92a557533b83..561cc1fb6f35 100644
+> --- a/include/linux/spi/spi-offload.h
+> +++ b/include/linux/spi/spi-offload.h
+> @@ -22,6 +22,7 @@
+> =C2=A0MODULE_IMPORT_NS(SPI_OFFLOAD);
+> =C2=A0
+> =C2=A0struct device;
+> +struct fwnode_handle;
+> =C2=A0struct spi_device;
+> =C2=A0
+> =C2=A0/* Offload can be triggered by external hardware event. */
+> @@ -53,6 +54,43 @@ struct spi_offload {
+> =C2=A0	struct spi_device *spi;
+> =C2=A0	/** @priv: provider driver private data */
+> =C2=A0	void *priv;
+> +	/** @ops: callbacks for offload support */
+> +	const struct spi_offload_ops *ops;
+> +};
+> +
+> +enum spi_offload_trigger_type {
+> +	/* Indication from SPI peripheral that data is read to read. */
+> +	SPI_OFFLOAD_TRIGGER_DATA_READY,
+> +	/* Trigger comes from a periodic source such as a clock. */
+> +	SPI_OFFLOAD_TRIGGER_PERIODIC,
+> +};
+> +
+> +struct spi_offload_trigger_periodic {
+> +	u64 frequency_hz;
+> +};
+> +
+> +struct spi_offload_trigger_config {
+> +	/** @type: type discriminator for union */
+> +	enum spi_offload_trigger_type type;
+> +	union {
+> +		struct spi_offload_trigger_periodic periodic;
+> +	};
+> +};
+> +
+> +/**
+> + * struct spi_offload_ops - callbacks implemented by offload providers
+> + */
+> +struct spi_offload_ops {
+> +	/**
+> +	 * @trigger_enable: Optional callback to enable the trigger for the
+> +	 * given offload instance.
+> +	 */
+> +	int (*trigger_enable)(struct spi_offload *offload);
+> +	/**
+> +	 * @trigger_disable: Optional callback to disable the trigger for the
+> +	 * given offload instance.
+> +	 */
+> +	void (*trigger_disable)(struct spi_offload *offload);
+> =C2=A0};
+> =C2=A0
+> =C2=A0struct spi_offload *devm_spi_offload_alloc(struct device *dev,
+> @@ -61,4 +99,44 @@ struct spi_offload *devm_spi_offload_alloc(struct devi=
+ce *dev,
+> =C2=A0struct spi_offload *devm_spi_offload_get(struct device *dev, struct=
+ spi_device
+> *spi,
+> =C2=A0					 const struct spi_offload_config *config);
+> =C2=A0
+> +struct spi_offload_trigger
+> +*devm_spi_offload_trigger_get(struct device *dev,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct spi_offload *offload,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 enum spi_offload_trigger_type type);
+> +int spi_offload_trigger_validate(struct spi_offload_trigger *trigger,
+> +				 struct spi_offload_trigger_config *config);
+> +int spi_offload_trigger_enable(struct spi_offload *offload,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct spi_offload_trigger *trig=
+ger,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct spi_offload_trigger_confi=
+g *config);
+> +void spi_offload_trigger_disable(struct spi_offload *offload,
+> +				 struct spi_offload_trigger *trigger);
+> +
+> +/* Trigger providers */
+> +
+> +struct spi_offload_trigger;
+> +
+> +struct spi_offload_trigger_ops {
+> +	bool (*match)(void *priv, enum spi_offload_trigger_type type, u64 *args=
+,
+> u32 nargs);
+> +	int (*request)(void *priv, enum spi_offload_trigger_type type, u64 *arg=
+s,
+> u32 nargs);
+> +	void (*release)(void *priv);
+> +	int (*validate)(void *priv, struct spi_offload_trigger_config *config);
+> +	int (*enable)(void *priv, struct spi_offload_trigger_config *config);
+> +	void (*disable)(void *priv);
+> +};
+
+Yeah, as I said... not a fan of the void *priv thing
+
+- Nuno S=C3=A1
 
