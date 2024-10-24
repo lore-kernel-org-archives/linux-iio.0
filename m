@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAECA1D517E;
-	Thu, 24 Oct 2024 13:04:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B8001D89E4;
+	Thu, 24 Oct 2024 13:04:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729775073; cv=none; b=tI5+E0nvAC6xJuguLsSmEIu4jzPekl4lUKhm7yxKilPlNqV77tRcUiJ3uJxU9V794ZztbI7V/ijsYL58Jojecx2EyvQ8uQIJd5uTO7puvHjWUCDn6xjetli5ujodmyzA4AfbsB1xZbD8DbyLwvx6hinDRtmsA1qXAZ1QbxaGi1U=
+	t=1729775074; cv=none; b=mqNfUGaQqb6ooffyVPbVlxsXoQEpCaRmYmkztWWafb1Fpxn2tCUsvn5BvZ4WiYCFVp2o8C8u8EorpO4jGOXWtbeMjHTQp9ySULBdsKey26CoOYE18Nw0s5bW9B5LxsczOA6YuHQKt56DGMZNVXQg12m38W9FFINK7naUxIOI75E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729775073; c=relaxed/simple;
-	bh=8sCpK1pd7nRUkCdMXWy4llb6XrvP6fxWrADB2+farzU=;
+	s=arc-20240116; t=1729775074; c=relaxed/simple;
+	bh=uf9btLtoClCOjF/hTMc4aLgnXwHw0svLKzR/oE7cpbo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=HkaweVk1cPtCAr+ewWIqnrnazznRWlIHn6D4y9KtDbC0KHMjELo8mHC2OEkVHK2MMKXyhun1cDIaU3w5ygHD6sTddAqn5SknepDIT+so25PMHmyNLrEktiLDUnqxtR13amWVF4JYjQe8L7u+wbWg+7BI84/VeDdBPTXxIF5n62E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ijznIl2U; arc=none smtp.client-ip=198.175.65.12
+	 MIME-Version; b=oqCSbcX+s2SPjxXIH9d6kLD1X9hmbooRzy0m1Hl4KuI2SHwtbsFpUmS37K2rHMiF9FGkj1HlMZm7Uljup0bZKc+BU4GAzIgCbw4vFB5okYIPpWzfVagudDauy/SMdnKhfI97H4aiPjpHphaM/EUXITxUhu/WavfnNUfMWZTwSnE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=l8dpvO54; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ijznIl2U"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="l8dpvO54"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1729775072; x=1761311072;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8sCpK1pd7nRUkCdMXWy4llb6XrvP6fxWrADB2+farzU=;
-  b=ijznIl2UHouY+xmTVfo8pTdcpyBX4VvSwYPLWtxwA8AgALP7n/7J79j+
-   tfRKTblJCeWehZWxjxiju1iFgEOVJPF30FwZV3pB+ODD7fRqsynIJtfDG
-   ldKyHDKZb+h3R+MWbOX8KLocND/Uwibu05l2uTh49QcLl7fWVs+cNy0cS
-   QPwqCQTQDRJcuRH+T2YygMKpUG7kEjKLawXoEzd736q1ucvL8vvEW2i2j
-   QaJ3H/x83HgfnkWc58x2EpEEe3q6AZdLugoOK4jS0+FfZ5GxPo+aKZEzj
-   Cq7VkUdachzvGmzrDWCkLo5BC+EH9JeIGV4cdqSZPJKDtCZGybFkB1sMS
-   w==;
-X-CSE-ConnectionGUID: nTZPB2ZfSeuNGinXeZ2B5w==
-X-CSE-MsgGUID: nyvlDOsATk+hQX6PyhNGkA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11235"; a="40795219"
+  bh=uf9btLtoClCOjF/hTMc4aLgnXwHw0svLKzR/oE7cpbo=;
+  b=l8dpvO540pDF2rMtTxOOk2MrNacMDua1zRFvSU/R870ASVpLRTAI+MUE
+   s+7CG+/n5qmKJGkIuXElo0egR6OJm0k3aUVpmunnW5EYP3igxX1cL1T4j
+   GQ4L2Q0iBnzG56Ay0mrAZu3lxeNcwBZM1Pf92PetS1wgrpiPOiEgSs9hR
+   flLpPK43QJ5jvJG8x2JO3aS5fbwqvdOPqQqj215Sj6LvpUL8UN3nTks6w
+   lfD8p04CrDyUbVX7kZ/EYZpEna1oUxlTx4B+d2yjuHI+7dePBieBBhgux
+   zfqxCr7eceOa9MUnBWi8eqB3Zdyn+xOx1ppW55tOoYLOqFKLOW2H/fd8Z
+   Q==;
+X-CSE-ConnectionGUID: 9GZS6s1DTaiuSrQOL3lbmw==
+X-CSE-MsgGUID: rT6+6DlOQ8KFEja8DLeMiQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11235"; a="40795228"
 X-IronPort-AV: E=Sophos;i="6.11,229,1725346800"; 
-   d="scan'208";a="40795219"
+   d="scan'208";a="40795228"
 Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2024 06:04:31 -0700
-X-CSE-ConnectionGUID: H3UAmlKlSeOEb10z8s9tdQ==
-X-CSE-MsgGUID: 39JOBR2ZRxyZS9FSbZOeEw==
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2024 06:04:32 -0700
+X-CSE-ConnectionGUID: Aslfd0SbSkWbImDdq2vs9w==
+X-CSE-MsgGUID: Hf3D80zFREmQFKzMtYsCag==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,229,1725346800"; 
-   d="scan'208";a="103898630"
+   d="scan'208";a="103898631"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmviesa002.fm.intel.com with ESMTP; 24 Oct 2024 06:04:29 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 0570A588; Thu, 24 Oct 2024 16:04:24 +0300 (EEST)
+	id 4572C7A7; Thu, 24 Oct 2024 16:04:25 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
@@ -56,9 +56,9 @@ To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-kernel@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 06/13] iio: accel: mma9551: Replace custom implementation of iio_get_acpi_device_name()
-Date: Thu, 24 Oct 2024 15:36:11 +0300
-Message-ID: <20241024130424.3818291-7-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 13/13] iio: light: ltr501: Replace a variant of iio_get_acpi_device_name_and_data()
+Date: Thu, 24 Oct 2024 15:36:18 +0300
+Message-ID: <20241024130424.3818291-14-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
 In-Reply-To: <20241024130424.3818291-1-andriy.shevchenko@linux.intel.com>
 References: <20241024130424.3818291-1-andriy.shevchenko@linux.intel.com>
@@ -71,61 +71,73 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
 IIO core (ACPI part) provides a generic helper that may be used in
-the driver. Replace custom implementation of iio_get_acpi_device_name().
+the driver. Replace a variant of iio_get_acpi_device_name_and_data().
 
 Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/accel/mma9551.c | 19 ++++---------------
- 1 file changed, 4 insertions(+), 15 deletions(-)
+ drivers/iio/light/ltr501.c | 25 ++++++++-----------------
+ 1 file changed, 8 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
-index fa1799b0b0df..a5d20d8d08b8 100644
---- a/drivers/iio/accel/mma9551.c
-+++ b/drivers/iio/accel/mma9551.c
-@@ -4,11 +4,11 @@
-  * Copyright (c) 2014, Intel Corporation.
-  */
- 
--#include <linux/module.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
- #include <linux/slab.h>
--#include <linux/acpi.h>
+diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+index 4051d0d9e799..c389be6a106d 100644
+--- a/drivers/iio/light/ltr501.c
++++ b/drivers/iio/light/ltr501.c
+@@ -15,7 +15,6 @@
+ #include <linux/err.h>
  #include <linux/delay.h>
- #include <linux/gpio/consumer.h>
+ #include <linux/regmap.h>
+-#include <linux/acpi.h>
+ #include <linux/regulator/consumer.h>
+ 
  #include <linux/iio/iio.h>
-@@ -435,17 +435,6 @@ static int mma9551_gpio_probe(struct iio_dev *indio_dev)
- 	return 0;
+@@ -1422,17 +1421,6 @@ static int ltr501_powerdown(struct ltr501_data *data)
+ 				  data->ps_contr & ~LTR501_CONTR_ACTIVE);
  }
  
--static const char *mma9551_match_acpi_device(struct device *dev)
+-static const char *ltr501_match_acpi_device(struct device *dev, int *chip_idx)
 -{
 -	const struct acpi_device_id *id;
 -
 -	id = acpi_match_device(dev->driver->acpi_match_table, dev);
 -	if (!id)
 -		return NULL;
--
+-	*chip_idx = id->driver_data;
 -	return dev_name(dev);
 -}
 -
- static int mma9551_probe(struct i2c_client *client)
+ static int ltr501_probe(struct i2c_client *client)
  {
  	const struct i2c_device_id *id = i2c_client_get_device_id(client);
-@@ -464,8 +453,8 @@ static int mma9551_probe(struct i2c_client *client)
+@@ -1440,8 +1428,10 @@ static int ltr501_probe(struct i2c_client *client)
+ 	struct ltr501_data *data;
+ 	struct iio_dev *indio_dev;
+ 	struct regmap *regmap;
+-	int ret, partid, chip_idx = 0;
+-	const char *name = NULL;
++	int partid, chip_idx;
++	const void *ddata;
++	const char *name;
++	int ret;
  
- 	if (id)
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+@@ -1523,11 +1513,12 @@ static int ltr501_probe(struct i2c_client *client)
+ 	if (id) {
  		name = id->name;
--	else if (ACPI_HANDLE(&client->dev))
--		name = mma9551_match_acpi_device(&client->dev);
-+	else
-+		name = iio_get_acpi_device_name(&client->dev);
+ 		chip_idx = id->driver_data;
+-	} else  if (ACPI_HANDLE(&client->dev)) {
+-		name = ltr501_match_acpi_device(&client->dev, &chip_idx);
+ 	} else {
+-		return -ENODEV;
++		name = iio_get_acpi_device_name_and_data(&client->dev, &ddata);
++		chip_idx = (intptr_t)ddata;
+ 	}
++	if (!name)
++		return -ENODEV;
  
- 	ret = mma9551_init(data);
- 	if (ret < 0)
+ 	data->chip_info = &ltr501_chip_info_tbl[chip_idx];
+ 
 -- 
 2.43.0.rc1.1336.g36b5255a03ac
 
