@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56EF7219C8D;
-	Thu, 24 Oct 2024 19:12:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B60ED21A6FB;
+	Thu, 24 Oct 2024 19:12:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729797133; cv=none; b=NQM4miCPMAQrJKWv0wTt8zp3vhdlBKXiCqnhZEdQDWP73JC4/OyXW1ZjNrDTS23T7tnC9klXTchv6L2RkliC2HDiGH6CuXLFQhsJPtfw05vS1Len7NtM84kIZoHTsixee/NWI7EtftftdsYlRrC0mrjxPcWNNBEWrX8xrIo/SSY=
+	t=1729797134; cv=none; b=Zm9b+O89optTLflRSdk1DwhbU1kG9DzjkgMaQeh1mvl04FCrZtfSKZ6GCRzZmeWaQkFervxTpGT0UMbHfIndscwpkusQ9cessqireV8ArrkTcgR6oQBHfBrzEAj9oi8nEdWh8k/pnHHyvRRAPvlR1ana3EGCO+67HpDQLyO4T9k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729797133; c=relaxed/simple;
-	bh=nnUYxTU6Qk+voFfM495gKZUOSvntg7CaVSFrf4/2QkM=;
+	s=arc-20240116; t=1729797134; c=relaxed/simple;
+	bh=bTHjEgjwF7ziSPu2OTlI6hYQ0inmQWL2SPBud47igzQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=L+DbWTswN+IdtaEvF/+HbDH14k8UMbVdBvQShOgKEqJH7IpIsCaOy0pyWTtpQPFlvibBC6IwuUF6KoP6VC0Y0l3H0n8RyrzwfsmGbYL88i3WU48d0nwVyEOUjmaPbb0ZYEi/1FAbRBlHa4IW3ZYDFRw9ZK/5kFmT76u/sy7RdIg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K3w4qmfP; arc=none smtp.client-ip=192.198.163.15
+	 MIME-Version; b=meA/njnjqVIA3g4IyJJX6eq4bU4m5EOb8ZAJm08Vbh+qhHLDD7FKt148+y4rwsEazzpeKV7OIQi8FejEZb4CGZnu3v1cI7/JqkDaCbi3A990qCHKqcfoqy0ZMHgVUKG2okB10H/jwSFWzdYCvdbxDzQWJqQT+0KR3/299o6vjEM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kKWuizoa; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K3w4qmfP"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kKWuizoa"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729797131; x=1761333131;
+  t=1729797132; x=1761333132;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=nnUYxTU6Qk+voFfM495gKZUOSvntg7CaVSFrf4/2QkM=;
-  b=K3w4qmfP1zfbFMm68o33Mf8H0ZT/Dq6g9TEg5FjSWPDT7xoBJ0vhQN3X
-   kz4t2RVpsWoPxdosD5/Yo0Y6qd172kjZcVu3isCqFyTps+eT4wr4LcUiW
-   a2rCTVNob7X4c/ZnjUHy6G7Yx8yRAPPtWTzo9RlKBTQ+97jFaGxfH54Ye
-   132y8C7B/q0nOi4HOMmm0MR/UE7WPSRzTP+b6HOJE5tE2gFLug3FSgxCG
-   2eKpx/2fkAO03HugRe+b/1UTh8VHou2Tak/NDxPopOtNarVidRQnzhN1u
-   8gc6Rx2/Ha0sL6/mkX/PzbiBdk9je9wCkVY+eTEFKiYBSgsEnyrFeX8Y6
-   g==;
-X-CSE-ConnectionGUID: yeVKRQOBSXS6b/BJvVc9OQ==
-X-CSE-MsgGUID: JeBr6j+zQjSmixOHYExayA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11235"; a="29563185"
+  bh=bTHjEgjwF7ziSPu2OTlI6hYQ0inmQWL2SPBud47igzQ=;
+  b=kKWuizoauO6zIHS0wxi4RRnsbU0KK7BKpInXK9CCu6RXuksE8FWPUD2S
+   4rwjLugobfZyV4uYbLpDEJ8brPj7aU3Tm+zh8CIbGVXZ/T2VD2Gtx9y3f
+   smTfYlSRmGKyobVi/gHr3rsmDNVUWKUxFPm3HAyMFGTAUUSAdqmMCFFRd
+   vwkXwESCkZg9XxyW2MMbxjvRMsVrz1lCo/enBgJFiZWYWaVZNmpuQ7Q/F
+   vf6bt+6+f+Jch7eWblOGFPszoN2ySTZUIvNB9GVqVcEF9gx5Yfupp5Vk7
+   hnxdk3L2mYyFsGYXIcjW6OmjCyQEp9LPmx0CcbNY8Ns2iPM3c7YvwteJ1
+   Q==;
+X-CSE-ConnectionGUID: EnZW/ztwS7Cv4Ptl1COvIA==
+X-CSE-MsgGUID: ksu17oOtTT2mji9q/UfvMg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11235"; a="46934449"
 X-IronPort-AV: E=Sophos;i="6.11,230,1725346800"; 
-   d="scan'208";a="29563185"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2024 12:12:08 -0700
-X-CSE-ConnectionGUID: H++YmrIrRrGSaL1UxHbZsQ==
-X-CSE-MsgGUID: oYYXpd/RQuGMsOyWqcK6jg==
+   d="scan'208";a="46934449"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2024 12:12:08 -0700
+X-CSE-ConnectionGUID: xztK5kVWT5m08OJRI5kwqw==
+X-CSE-MsgGUID: G1bb/SvzRbyhO4bdp9Edug==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,230,1725346800"; 
-   d="scan'208";a="85791741"
+   d="scan'208";a="80266683"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa004.jf.intel.com with ESMTP; 24 Oct 2024 12:12:06 -0700
+  by fmviesa006.fm.intel.com with ESMTP; 24 Oct 2024 12:12:06 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 860F25B8; Thu, 24 Oct 2024 22:12:01 +0300 (EEST)
+	id A356374C; Thu, 24 Oct 2024 22:12:01 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
@@ -56,9 +56,9 @@ To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-kernel@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v3 09/24] iio: accel: kxcjk-1013: Use local variable for regs
-Date: Thu, 24 Oct 2024 22:04:58 +0300
-Message-ID: <20241024191200.229894-10-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 12/24] iio: accel: kxcjk-1013: Move odr_start_up_times up in the code
+Date: Thu, 24 Oct 2024 22:05:01 +0300
+Message-ID: <20241024191200.229894-13-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
 In-Reply-To: <20241024191200.229894-1-andriy.shevchenko@linux.intel.com>
 References: <20241024191200.229894-1-andriy.shevchenko@linux.intel.com>
@@ -70,300 +70,189 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Use local variable for regs in preparatory of further cleaning up changes.
+Move odr_start_up_times up in the code in a preparation of
+the further cleaning up changes.
+
+While at it, make it clear what values from enum are being used for
+the respective array entries.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/accel/kxcjk-1013.c | 65 +++++++++++++++++++---------------
- 1 file changed, 37 insertions(+), 28 deletions(-)
+ drivers/iio/accel/kxcjk-1013.c | 154 ++++++++++++++++-----------------
+ 1 file changed, 77 insertions(+), 77 deletions(-)
 
 diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 0cc34e17a23f..a5411d920025 100644
+index 37c82fdf7c43..f384969a922d 100644
 --- a/drivers/iio/accel/kxcjk-1013.c
 +++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -445,9 +445,10 @@ MODULE_DEVICE_TABLE(acpi, kx_acpi_match);
- static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
- 			      enum kxcjk1013_mode mode)
- {
-+	const struct kx_chipset_regs *regs = data->regs;
- 	int ret;
+@@ -178,6 +178,83 @@ enum kx_chipset {
+ 	KX_MAX_CHIPS /* this must be last */
+ };
  
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->ctrl1);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->ctrl1);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
- 		return ret;
-@@ -458,7 +459,7 @@ static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
- 	else
- 		ret |= KXCJK1013_REG_CTRL1_BIT_PC1;
++/* Refer to section 4 of the specification */
++static const struct {
++	int odr_bits;
++	int usec;
++} odr_start_up_times[KX_MAX_CHIPS][12] = {
++	/* KXCJK-1013 */
++	[KXCJK1013] = {
++		{0x08, 100000},
++		{0x09, 100000},
++		{0x0A, 100000},
++		{0x0B, 100000},
++		{0, 80000},
++		{0x01, 41000},
++		{0x02, 21000},
++		{0x03, 11000},
++		{0x04, 6400},
++		{0x05, 3900},
++		{0x06, 2700},
++		{0x07, 2100},
++	},
++	/* KXCJ9-1008 */
++	[KXCJ91008] = {
++		{0x08, 100000},
++		{0x09, 100000},
++		{0x0A, 100000},
++		{0x0B, 100000},
++		{0, 80000},
++		{0x01, 41000},
++		{0x02, 21000},
++		{0x03, 11000},
++		{0x04, 6400},
++		{0x05, 3900},
++		{0x06, 2700},
++		{0x07, 2100},
++	},
++	/* KXCTJ2-1009 */
++	[KXTJ21009] = {
++		{0x08, 1240000},
++		{0x09, 621000},
++		{0x0A, 309000},
++		{0x0B, 151000},
++		{0, 80000},
++		{0x01, 41000},
++		{0x02, 21000},
++		{0x03, 11000},
++		{0x04, 6000},
++		{0x05, 4000},
++		{0x06, 3000},
++		{0x07, 2000},
++	},
++	/* KXTF9 */
++	[KXTF9] = {
++		{0x01, 81000},
++		{0x02, 41000},
++		{0x03, 21000},
++		{0x04, 11000},
++		{0x05, 5100},
++		{0x06, 2700},
++	},
++	/* KX023-1025 */
++	[KX0231025] = {
++		/* First 4 are not in datasheet, taken from KXCTJ2-1009 */
++		{0x08, 1240000},
++		{0x09, 621000},
++		{0x0A, 309000},
++		{0x0B, 151000},
++		{0, 81000},
++		{0x01, 40000},
++		{0x02, 22000},
++		{0x03, 12000},
++		{0x04, 7000},
++		{0x05, 4400},
++		{0x06, 3000},
++		{0x07, 3000},
++	},
++};
++
+ enum kx_acpi_type {
+ 	ACPI_GENERIC,
+ 	ACPI_SMO8500,
+@@ -361,83 +438,6 @@ static const struct kx_odr_map kxtf9_samp_freq_table[] = {
+ static const char *const kxtf9_samp_freq_avail =
+ 	"25 50 100 200 400 800";
  
--	ret = i2c_smbus_write_byte_data(data->client, data->regs->ctrl1, ret);
-+	ret = i2c_smbus_write_byte_data(data->client, regs->ctrl1, ret);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
- 		return ret;
-@@ -470,9 +471,10 @@ static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
- static int kxcjk1013_get_mode(struct kxcjk1013_data *data,
- 			      enum kxcjk1013_mode *mode)
- {
-+	const struct kx_chipset_regs *regs = data->regs;
- 	int ret;
- 
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->ctrl1);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->ctrl1);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
- 		return ret;
-@@ -488,9 +490,10 @@ static int kxcjk1013_get_mode(struct kxcjk1013_data *data,
- 
- static int kxcjk1013_set_range(struct kxcjk1013_data *data, int range_index)
- {
-+	const struct kx_chipset_regs *regs = data->regs;
- 	int ret;
- 
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->ctrl1);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->ctrl1);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
- 		return ret;
-@@ -501,7 +504,7 @@ static int kxcjk1013_set_range(struct kxcjk1013_data *data, int range_index)
- 	ret |= (KXCJK1013_scale_table[range_index].gsel_0 << 3);
- 	ret |= (KXCJK1013_scale_table[range_index].gsel_1 << 4);
- 
--	ret = i2c_smbus_write_byte_data(data->client, data->regs->ctrl1, ret);
-+	ret = i2c_smbus_write_byte_data(data->client, regs->ctrl1, ret);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
- 		return ret;
-@@ -514,6 +517,7 @@ static int kxcjk1013_set_range(struct kxcjk1013_data *data, int range_index)
- 
- static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
- {
-+	const struct kx_chipset_regs *regs = data->regs;
- 	int ret;
- 
- #ifdef CONFIG_ACPI
-@@ -535,7 +539,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->ctrl1);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->ctrl1);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
- 		return ret;
-@@ -544,7 +548,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
- 	/* Set 12 bit mode */
- 	ret |= KXCJK1013_REG_CTRL1_BIT_RES;
- 
--	ret = i2c_smbus_write_byte_data(data->client, data->regs->ctrl1, ret);
-+	ret = i2c_smbus_write_byte_data(data->client, regs->ctrl1, ret);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_ctrl\n");
- 		return ret;
-@@ -555,7 +559,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->data_ctrl);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->data_ctrl);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_data_ctrl\n");
- 		return ret;
-@@ -564,7 +568,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
- 	data->odr_bits = ret;
- 
- 	/* Set up INT polarity */
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->int_ctrl1);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->int_ctrl1);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_int_ctrl1\n");
- 		return ret;
-@@ -575,7 +579,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
- 	else
- 		ret &= ~KXCJK1013_REG_INT_CTRL1_BIT_IEA;
- 
--	ret = i2c_smbus_write_byte_data(data->client, data->regs->int_ctrl1, ret);
-+	ret = i2c_smbus_write_byte_data(data->client, regs->int_ctrl1, ret);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error writing reg_int_ctrl1\n");
- 		return ret;
-@@ -637,18 +641,17 @@ static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
- 
- static int kxcjk1013_chip_update_thresholds(struct kxcjk1013_data *data)
- {
-+	const struct kx_chipset_regs *regs = data->regs;
- 	int ret;
- 
--	ret = i2c_smbus_write_byte_data(data->client, data->regs->wake_timer,
--					data->wake_dur);
-+	ret = i2c_smbus_write_byte_data(data->client, regs->wake_timer, data->wake_dur);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev,
- 			"Error writing reg_wake_timer\n");
- 		return ret;
- 	}
- 
--	ret = i2c_smbus_write_byte_data(data->client, data->regs->wake_thres,
--					data->wake_thres);
-+	ret = i2c_smbus_write_byte_data(data->client, regs->wake_thres, data->wake_thres);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error writing reg_wake_thres\n");
- 		return ret;
-@@ -660,6 +663,7 @@ static int kxcjk1013_chip_update_thresholds(struct kxcjk1013_data *data)
- static int kxcjk1013_setup_any_motion_interrupt(struct kxcjk1013_data *data,
- 						bool status)
- {
-+	const struct kx_chipset_regs *regs = data->regs;
- 	int ret;
- 	enum kxcjk1013_mode store_mode;
- 
-@@ -676,7 +680,7 @@ static int kxcjk1013_setup_any_motion_interrupt(struct kxcjk1013_data *data,
- 	if (ret < 0)
- 		return ret;
- 
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->int_ctrl1);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->int_ctrl1);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_int_ctrl1\n");
- 		return ret;
-@@ -687,13 +691,13 @@ static int kxcjk1013_setup_any_motion_interrupt(struct kxcjk1013_data *data,
- 	else
- 		ret &= ~KXCJK1013_REG_INT_CTRL1_BIT_IEN;
- 
--	ret = i2c_smbus_write_byte_data(data->client, data->regs->int_ctrl1, ret);
-+	ret = i2c_smbus_write_byte_data(data->client, regs->int_ctrl1, ret);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error writing reg_int_ctrl1\n");
- 		return ret;
- 	}
- 
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->ctrl1);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->ctrl1);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
- 		return ret;
-@@ -704,7 +708,7 @@ static int kxcjk1013_setup_any_motion_interrupt(struct kxcjk1013_data *data,
- 	else
- 		ret &= ~KXCJK1013_REG_CTRL1_BIT_WUFE;
- 
--	ret = i2c_smbus_write_byte_data(data->client, data->regs->ctrl1, ret);
-+	ret = i2c_smbus_write_byte_data(data->client, regs->ctrl1, ret);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
- 		return ret;
-@@ -722,6 +726,7 @@ static int kxcjk1013_setup_any_motion_interrupt(struct kxcjk1013_data *data,
- static int kxcjk1013_setup_new_data_interrupt(struct kxcjk1013_data *data,
- 					      bool status)
- {
-+	const struct kx_chipset_regs *regs = data->regs;
- 	int ret;
- 	enum kxcjk1013_mode store_mode;
- 
-@@ -734,7 +739,7 @@ static int kxcjk1013_setup_new_data_interrupt(struct kxcjk1013_data *data,
- 	if (ret < 0)
- 		return ret;
- 
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->int_ctrl1);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->int_ctrl1);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_int_ctrl1\n");
- 		return ret;
-@@ -745,13 +750,13 @@ static int kxcjk1013_setup_new_data_interrupt(struct kxcjk1013_data *data,
- 	else
- 		ret &= ~KXCJK1013_REG_INT_CTRL1_BIT_IEN;
- 
--	ret = i2c_smbus_write_byte_data(data->client, data->regs->int_ctrl1, ret);
-+	ret = i2c_smbus_write_byte_data(data->client, regs->int_ctrl1, ret);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error writing reg_int_ctrl1\n");
- 		return ret;
- 	}
- 
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->ctrl1);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->ctrl1);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
- 		return ret;
-@@ -762,7 +767,7 @@ static int kxcjk1013_setup_new_data_interrupt(struct kxcjk1013_data *data,
- 	else
- 		ret &= ~KXCJK1013_REG_CTRL1_BIT_DRDY;
- 
--	ret = i2c_smbus_write_byte_data(data->client, data->regs->ctrl1, ret);
-+	ret = i2c_smbus_write_byte_data(data->client, regs->ctrl1, ret);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
- 		return ret;
-@@ -809,6 +814,7 @@ static int kxcjk1013_convert_odr_value(const struct kx_odr_map *map,
- 
- static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
- {
-+	const struct kx_chipset_regs *regs = data->regs;
- 	int ret;
- 	enum kxcjk1013_mode store_mode;
- 	const struct kx_odr_map *odr_setting;
-@@ -834,7 +840,7 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = i2c_smbus_write_byte_data(data->client, data->regs->data_ctrl,
-+	ret = i2c_smbus_write_byte_data(data->client, regs->data_ctrl,
- 					odr_setting->odr_bits);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error writing data_ctrl\n");
-@@ -843,7 +849,7 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
- 
- 	data->odr_bits = odr_setting->odr_bits;
- 
--	ret = i2c_smbus_write_byte_data(data->client, data->regs->wuf_ctrl,
-+	ret = i2c_smbus_write_byte_data(data->client, regs->wuf_ctrl,
- 					odr_setting->wuf_bits);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error writing reg_ctrl2\n");
-@@ -1245,9 +1251,10 @@ static void kxcjk1013_trig_reen(struct iio_trigger *trig)
- {
- 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
- 	struct kxcjk1013_data *data = iio_priv(indio_dev);
-+	const struct kx_chipset_regs *regs = data->regs;
- 	int ret;
- 
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->int_rel);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->int_rel);
- 	if (ret < 0)
- 		dev_err(&data->client->dev, "Error reading reg_int_rel\n");
- }
-@@ -1299,8 +1306,9 @@ static const struct iio_trigger_ops kxcjk1013_trigger_ops = {
- static void kxcjk1013_report_motion_event(struct iio_dev *indio_dev)
- {
- 	struct kxcjk1013_data *data = iio_priv(indio_dev);
-+	const struct kx_chipset_regs *regs = data->regs;
- 
--	int ret = i2c_smbus_read_byte_data(data->client, data->regs->int_src2);
-+	int ret = i2c_smbus_read_byte_data(data->client, regs->int_src2);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_int_src2\n");
- 		return;
-@@ -1365,9 +1373,10 @@ static irqreturn_t kxcjk1013_event_handler(int irq, void *private)
- {
- 	struct iio_dev *indio_dev = private;
- 	struct kxcjk1013_data *data = iio_priv(indio_dev);
-+	const struct kx_chipset_regs *regs = data->regs;
- 	int ret;
- 
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->int_src1);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->int_src1);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_int_src1\n");
- 		goto ack_intr;
-@@ -1390,7 +1399,7 @@ static irqreturn_t kxcjk1013_event_handler(int irq, void *private)
- 	if (data->dready_trigger_on)
- 		return IRQ_HANDLED;
- 
--	ret = i2c_smbus_read_byte_data(data->client, data->regs->int_rel);
-+	ret = i2c_smbus_read_byte_data(data->client, regs->int_rel);
- 	if (ret < 0)
- 		dev_err(&data->client->dev, "Error reading reg_int_rel\n");
- 
+-/* Refer to section 4 of the specification */
+-static const struct {
+-	int odr_bits;
+-	int usec;
+-} odr_start_up_times[KX_MAX_CHIPS][12] = {
+-	/* KXCJK-1013 */
+-	{
+-		{0x08, 100000},
+-		{0x09, 100000},
+-		{0x0A, 100000},
+-		{0x0B, 100000},
+-		{0, 80000},
+-		{0x01, 41000},
+-		{0x02, 21000},
+-		{0x03, 11000},
+-		{0x04, 6400},
+-		{0x05, 3900},
+-		{0x06, 2700},
+-		{0x07, 2100},
+-	},
+-	/* KXCJ9-1008 */
+-	{
+-		{0x08, 100000},
+-		{0x09, 100000},
+-		{0x0A, 100000},
+-		{0x0B, 100000},
+-		{0, 80000},
+-		{0x01, 41000},
+-		{0x02, 21000},
+-		{0x03, 11000},
+-		{0x04, 6400},
+-		{0x05, 3900},
+-		{0x06, 2700},
+-		{0x07, 2100},
+-	},
+-	/* KXCTJ2-1009 */
+-	{
+-		{0x08, 1240000},
+-		{0x09, 621000},
+-		{0x0A, 309000},
+-		{0x0B, 151000},
+-		{0, 80000},
+-		{0x01, 41000},
+-		{0x02, 21000},
+-		{0x03, 11000},
+-		{0x04, 6000},
+-		{0x05, 4000},
+-		{0x06, 3000},
+-		{0x07, 2000},
+-	},
+-	/* KXTF9 */
+-	{
+-		{0x01, 81000},
+-		{0x02, 41000},
+-		{0x03, 21000},
+-		{0x04, 11000},
+-		{0x05, 5100},
+-		{0x06, 2700},
+-	},
+-	/* KX023-1025 */
+-	{
+-		/* First 4 are not in datasheet, taken from KXCTJ2-1009 */
+-		{0x08, 1240000},
+-		{0x09, 621000},
+-		{0x0A, 309000},
+-		{0x0B, 151000},
+-		{0, 81000},
+-		{0x01, 40000},
+-		{0x02, 22000},
+-		{0x03, 12000},
+-		{0x04, 7000},
+-		{0x05, 4400},
+-		{0x06, 3000},
+-		{0x07, 3000},
+-	},
+-};
+-
+ static const struct {
+ 	u16 scale;
+ 	u8 gsel_0;
 -- 
 2.43.0.rc1.1336.g36b5255a03ac
 
