@@ -1,112 +1,231 @@
-Received: from mail-oa1-f66.google.com (mail-oa1-f66.google.com [209.85.160.66])
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62D911D173E;
-	Thu, 24 Oct 2024 12:34:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CF551714C9;
+	Thu, 24 Oct 2024 12:37:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729773278; cv=none; b=ofj3/KFHwOwb+B8IxQqJAXH6wO9t32aYBE3psdMxfuLnAhX9ha3nr4ML3VcCv6wmB5HIPZfi0tPHr5GvSsQ8vBV1EM6kIclr2U4OZWvfog9gwYaMiPqB2qyI/bgQ9a0tVARiCqsYCDYDBUUOxqjhk0sKj4YCkP/RbT0OER98HdU=
+	t=1729773465; cv=none; b=C9DjyvSdAmpgoeZT0L+c2tKxYDpo3AGHDuGTv26PoO8LtaW3eiajjfYGkfyjWMQNjmQkPRj4t+dr0i2TPbkiHpW08hNyylrTEKkg4VgCbWl9MBvWsZehfTMawu8S8WbIjimo3tpuxgs+sjcvmgyT8kFJuXy9Ne73FbE65PVnldQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729773278; c=relaxed/simple;
-	bh=WqKO+VQufYnnSQGNsjJoV9pHpcM4NLycUTcWyfMcgg8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=AfFby7ktPfaM8Je8ZJnyk8skBpp7XZRTCl0OqQC88l6642lhOF7FcfDcgJd+zNUZQ4rB4108yO0VyGZYa3CXHToQZTItxSK0bg1D3Ns8W0bPHGykElhta433X8w+U3+LcLnK5c7UnAkc7FMM5uLjQqkkZ8uIj86y+CtQTwkIUPo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QY5nFZuD; arc=none smtp.client-ip=209.85.160.66
+	s=arc-20240116; t=1729773465; c=relaxed/simple;
+	bh=NhUrbZLETYw0l+YLK1g63xDF45OXmFDWZDTSDxwx0p8=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=ko1Zcu6iGXHBvbks8mD6Fie6vrurq7HE+IkCINfKFLFqslhSVQMykpVTrWgzz2Q7GGWjJqqF5cBfdbK004US6Oa0ITfkSLlvEbkgx+LBULOM6DarmBdoXYfG/My3Q7U9j/8BAQUnHuMKNtIp9gEF4Llyvay55mzMpDt5IvtaGLg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RnX1VYn+; arc=none smtp.client-ip=209.85.167.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QY5nFZuD"
-Received: by mail-oa1-f66.google.com with SMTP id 586e51a60fabf-288d4da7221so473930fac.1;
-        Thu, 24 Oct 2024 05:34:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RnX1VYn+"
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-539ee1acb86so970495e87.0;
+        Thu, 24 Oct 2024 05:37:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1729773275; x=1730378075; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WqKO+VQufYnnSQGNsjJoV9pHpcM4NLycUTcWyfMcgg8=;
-        b=QY5nFZuDXaIz7hz38L7u08qLHJU9QTkiHyR4KBf6myTWmCmHp27MKIhJecgns2o+4V
-         4p4Nh6WlL+7dPV+cor4kUZf/tz9KonupNS9HApE8oeYnBpxR4aCnHZMtz9ocPaZmToG1
-         iPR0aRPRA5Uoao8soXfnmCQotbfG3008Y4YhjhCn4TNW9TG4zuGCAZpCmnucgTKms2qQ
-         RekgoDPsB2rCltMDzuo/5YQqvkIQv+olENuHTCpkkXryQGKu3KHLQU0aJUkQlQ2Y1XjZ
-         4SLGPgeP+ce4YflOV5yjLxVo6xE+cXGe3RdLDd3qzy1d7pHauEowpkeyCx6/lZdQPcTE
-         AvaQ==
+        d=gmail.com; s=20230601; t=1729773461; x=1730378261; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=NhUrbZLETYw0l+YLK1g63xDF45OXmFDWZDTSDxwx0p8=;
+        b=RnX1VYn+x2BQnvtGQjD0EOd2gKzaHjRIKbbTsmDf9KcYwmWzI1lyRzzfn+8wqM4Pxo
+         bxxZkzC8JhcyXjQIJ5DM0f4nn41q/4gbgvpHyLyRQqIEyG5dhafjHMZHzpawxGxRzXBF
+         8/JXmfLKcZUuvMvLZ9NolIGuSJmPhbWtJm2V1dhCKsYJBUO8uVYJfF2cGGX5AgXt8aF9
+         4RnX5cquLvuJvMl5aWOFc3PwG3DIzP2VCjUp00BDwAOT2ZBOGI2UyGguTFeuSOxEupRH
+         HhReb+ROPo2YHoXSYh1ikle3rO6PnvdUiuxfthkErOHsrbiUFTzG0mn/fte7UJBygRCP
+         R50Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729773275; x=1730378075;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WqKO+VQufYnnSQGNsjJoV9pHpcM4NLycUTcWyfMcgg8=;
-        b=qTiGzFVrMt1EyMsjVxDe4G6XcIKZiDN2rXhI4tpF9MZaLPkuv9FI542kmZAIZPk0Zb
-         jmrdSdlLgmS2W6BV8iGiWcF8Nv6od4eQ5lHPL95OdHT46dPUWsUZfsOJ6bMzJZVLs+Jl
-         HpZrjW7XS1pW/Gd5MlP3raddszk/0SHshJaL6ctTeMe3F6DyMxs5hIqTNL2mkNBCCufv
-         OtrGcxhzYx3J/a6VaJrHsTI41msitnrcSBq2pfEA3gZ7XTN8R6IhUIVDB4dHwNQHJQbR
-         Var78HkJSF30nIIMExYAhjlUB9KMS6msvLH7DnW9FGzDl1A5LewYy3cTpg1vKoUalS0G
-         UkDA==
-X-Forwarded-Encrypted: i=1; AJvYcCU2vvn5noWPlY4iJCBdY9lxNNnYJLqu/IM8Kcd13tGz8snuXTzQFjYhV+9zmYUa8Rl+i2rmkagw@vger.kernel.org, AJvYcCUZsUwqSRJp8CS0WbEEM5aG+2xmLL2xcqFXmR6BH0puZxe9JnnY05HCgAkpDqJZL6A5NUf2HxfpxM0YsA==@vger.kernel.org, AJvYcCUbRy9XuQJFui5oX48VThIyGx4Km9w+KzajCAPMTgzA2JF6ISU7c5B4bn7v7NG0chT9RKV/PDorlmYANw==@vger.kernel.org, AJvYcCV6L293Bp2qTrY+a86NaOdNRC3SGt9y6jeL+9CggvQATYPPGYR5X5yEWF5qvNdo/iLilJObNG1zLPGM@vger.kernel.org, AJvYcCVNAwFpNXUtlp58uCjGEorQWmXFUTf9ezrQRW5AzzVxXS8IPN1W2sV/cHQYwIovHf3KxQ8aq2xpsFo=@vger.kernel.org, AJvYcCVe0wHAc9zlluGKuixl3o0a+io5bdY/JyIaQA8TTRk7u/rIuD85cfznqglOulVb6FmF9v2EiPYHpZNUSw==@vger.kernel.org, AJvYcCVhBRQ/qFqZQz+XhQJXwRWCjrq4YW44Rklq/Yto5cxD7v59BKnrjgjSOe8+SW7uXncDBA6/J5MOZgYU@vger.kernel.org, AJvYcCVuE0txY9BBBIkJgJbv1bcnq/8Ir+eZTNzATDiGHnKB2lXyEMV3cCLJrqUVxnh53Ls0R5i3Sero6qx9rbI=@vger.kernel.org, AJvYcCW27sOniGN1zgpb4M9bDiUYEFc6n8VqBFteaFnAXhmgkvFeHzdLqZzlqjEvW09aR8VRb2bfw30UZUZ1itUc/ZKCkEg=@vger.kernel.org, AJvYcCXCJZv/W+xQ0nGI+Ghuf6oPo+pjp6yfzM5+3PYbZcRzbMJtIsKhav+JFtVJdOiIhTfjjxv+GtIuib187QE=@vger.kernel.org, AJvYcCXtXgWsXO4huUUJqnOP4ex9X/XOFIMAfYNpfUYg7FUKFnNXn5c3kshqwaON/OdiwV7N7er/rABDxT6viS0=@vger.kernel.org, AJvYcCXuF1n7iMtbLMswFc+x39qg3hS6vTaTzhPnR9GvDD35bX9zF+2XZg2OhU79Lbdpf/xs0IpZFr54zaqF@vger.kernel.org
-X-Gm-Message-State: AOJu0YyMSe76u5tzX4N+ZthQZ0PmmSB32k0KFWPzwBqERw+TJKiPP/bv
-	I5wZQzuUvK4oWfLPSe9dm7/fNYXm0onruHPVbc3HOO7Pd4hwnhNo
-X-Google-Smtp-Source: AGHT+IGNbdDr4bWOuekBU0ohovYD+u0SLmOKefBPtfh2fzqlR42/5wZYBu+ZqeJfv789Y4nUSEsYRQ==
-X-Received: by 2002:a05:6870:218a:b0:277:fb59:b74c with SMTP id 586e51a60fabf-28ced48efd0mr1364818fac.40.1729773275318;
-        Thu, 24 Oct 2024 05:34:35 -0700 (PDT)
-Received: from localhost.localdomain ([114.246.193.69])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-7eaeab48f62sm8534093a12.42.2024.10.24.05.34.22
+        d=1e100.net; s=20230601; t=1729773461; x=1730378261;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=NhUrbZLETYw0l+YLK1g63xDF45OXmFDWZDTSDxwx0p8=;
+        b=hDe5fdxlm3WrxTFObsGDvNpwXS+OYhyiKyeWiKl5nK/BlhqlXKyiWmgtv+cJgn/2Yy
+         zJQlhY1UTsQ53FftXTy2b8uObP79FZZANu7Ca51t0QlQJlQi1i4GvHDWRa92DlhSuFZM
+         IPKUgRX1wYXjL/Xzhl2nMo4sOYpPADMdL4QejDq+pVeNB3grQFEfbBG0nqNF3P1eKkbF
+         WnogQvZLj5NBoilvoSmaj2o+GqLYqyapoWEPv4duz4np/jtPpvlWHb02ACUk1M2DwLi4
+         rnV3zTLn08nRC0BuXcMmej1uZjXbKpXshLWTnFd6/4ZynzhWOXfgFEXGIKGSFHQbZk8l
+         P5mg==
+X-Forwarded-Encrypted: i=1; AJvYcCWM6j2J2f3SMf6840e6jdrnSldoZaDLJlJPfXfPQzGNAuRt0vpFQP/e4Np58aqYCZ5vrtra66eRZul7rAj8@vger.kernel.org, AJvYcCX702kJrshlngmXuzpvFh5lOdOZCkvfvTsDTYNELrBw3a7Y3iQr9oX6HQ9kADOMYjLSHD+y9qKxyjrW@vger.kernel.org, AJvYcCXFT1D2hZpewEOnS3vS4S0N5clGTIGfcqghAvWmTjA773SIABk5+Kt7g1Q+0ANsiWhBpDvCoOMN0S5Z@vger.kernel.org
+X-Gm-Message-State: AOJu0YwThTZC+f8ETd/HbdzcZVFpVnCuRFkuW8bLIIW7Bk7lPvsMLlyA
+	Y17vEtpD9AtQU3XDBPkcH2JZ6U+2uTNPu6WgNIzhPVZuQSWEXhKv
+X-Google-Smtp-Source: AGHT+IFJaactRWklQ9v1NMNih5bM2Vb4gQ6jaWEHSvyCRoZXlN6xWOOqiI+TJ4EeT9kvB/FAToUUgQ==
+X-Received: by 2002:a05:6512:131e:b0:539:e282:ce9e with SMTP id 2adb3069b0e04-53b1a3a39f1mr3079304e87.60.1729773461292;
+        Thu, 24 Oct 2024 05:37:41 -0700 (PDT)
+Received: from ?IPv6:2001:a61:34c9:ea01:14b4:7ed9:5135:9381? ([2001:a61:34c9:ea01:14b4:7ed9:5135:9381])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5cb6696b500sm5664022a12.13.2024.10.24.05.37.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Oct 2024 05:34:34 -0700 (PDT)
-From: =?UTF-8?q?=E9=99=88=E5=AF=92=E5=BD=A4?= <cxwdyx620@gmail.com>
-To: jensenhuangnvdia@gmail.com
-Cc: aospan@netup.ru,
-	conor.dooley@microchip.com,
-	ddrokosov@sberdevices.ru,
-	dmaengine@vger.kernel.org,
-	dushistov@mail.ru,
-	fancer.lancer@gmail.com,
-	geert@linux-m68k.org,
-	gregkh@linuxfoundation.org,
-	hoan@os.amperecomputing.com,
-	ink@jurassic.park.msu.ru,
-	jeffbai@aosc.io,
-	kexybiscuit@aosc.io,
-	linux-alpha@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-fpga@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	linux-hwmon@vger.kernel.org,
-	linux-ide@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-media@vger.kernel.org,
-	linux-mips@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	linux-spi@vger.kernel.org,
-	manivannan.sadhasivam@linaro.org,
-	mattst88@gmail.com,
-	netdev@vger.kernel.org,
-	nikita@trvn.ru,
-	ntb@lists.linux.dev,
-	patches@lists.linux.dev,
-	richard.henderson@linaro.org,
-	s.shtylyov@omp.ru,
-	serjk@netup.ru,
-	shc_work@mail.ru,
-	torvalds@linux-foundation.org,
-	torvic9@mailbox.org,
-	tsbogend@alpha.franken.de,
-	v.georgiev@metrotek.ru,
-	wangyuli@uniontech.com,
-	wsa+renesas@sang-engineering.com,
-	xeb@mail.ru
-Subject: Re: [PATCH] MAINTAINERS: Remove some entries due to various compliance requirements.
-Date: Thu, 24 Oct 2024 20:34:03 +0800
-Message-ID: <20241024123403.154-1-cxwdyx620@gmail.com>
-X-Mailer: git-send-email 2.47.0.windows.1
-In-Reply-To: <20241024113246.22901-1-JensenHuangNVDIA@gmail.com>
-References: <20241024113246.22901-1-JensenHuangNVDIA@gmail.com>
+        Thu, 24 Oct 2024 05:37:41 -0700 (PDT)
+Message-ID: <6c2f188fc04ea957c842fe595951039244c43b7e.camel@gmail.com>
+Subject: Re: [PATCH v7 2/8] dt-bindings: iio: dac: adi-axi-dac: add ad3552r
+ axi variant
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Angelo Dureghello <adureghello@baylibre.com>, Conor Dooley
+	 <conor@kernel.org>
+Cc: Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>,
+ linux-iio@vger.kernel.org,  devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, dlechner@baylibre.com,  Mark Brown
+ <broonie@kernel.org>
+Date: Thu, 24 Oct 2024 14:37:40 +0200
+In-Reply-To: <zfggfhasl3njyux5n44j2au4dlyjlngbtt4fps2xqzpngbwn42@72icpspkogtz>
+References: 
+	<20241021-wip-bl-ad3552r-axi-v0-iio-testing-v7-0-969694f53c5d@baylibre.com>
+	 <20241021-wip-bl-ad3552r-axi-v0-iio-testing-v7-2-969694f53c5d@baylibre.com>
+	 <20241022-flagpole-subject-51e68e81e948@spud>
+	 <zfggfhasl3njyux5n44j2au4dlyjlngbtt4fps2xqzpngbwn42@72icpspkogtz>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.4 (3.52.4-1.fc40) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 
-Well, the fact is that Linus Torvalds, our leader of Linux, is not **Palest=
-inian** but **Finnish**.=0D
+On Thu, 2024-10-24 at 11:28 +0200, Angelo Dureghello wrote:
+> Hi Conor,
+>=20
+> On 22.10.2024 18:22, Conor Dooley wrote:
+> > On Mon, Oct 21, 2024 at 02:40:12PM +0200, Angelo Dureghello wrote:
+> > > From: Angelo Dureghello <adureghello@baylibre.com>
+> > >=20
+> > > Add a new compatible and related bindigns for the fpga-based
+> > > "ad3552r" AXI IP core, a variant of the generic AXI DAC IP.
+> > >=20
+> > > The AXI "ad3552r" IP is a very similar HDL (fpga) variant of the
+> > > generic AXI "DAC" IP, intended to control ad3552r and similar chips,
+> > > mainly to reach high speed transfer rates using a QSPI DDR
+> > > (dobule-data-rate) interface.
+> > >=20
+> > > The ad3552r device is defined as a child of the AXI DAC, that in
+> > > this case is acting as an SPI controller.
+> > >=20
+> > > Note, #io-backend is present because it is possible (in theory anyway=
+)
+> > > to use a separate controller for the control path than that used
+> > > for the datapath.
+> > >=20
+> > > Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
+> > > ---
+> > > =C2=A0.../devicetree/bindings/iio/dac/adi,axi-dac.yaml=C2=A0=C2=A0 | =
+69 +++++++++++++++++++++-
+> > > =C2=A01 file changed, 66 insertions(+), 3 deletions(-)
+> > >=20
+> > > diff --git a/Documentation/devicetree/bindings/iio/dac/adi,axi-dac.ya=
+ml
+> > > b/Documentation/devicetree/bindings/iio/dac/adi,axi-dac.yaml
+> > > index a55e9bfc66d7..0aabb210f26d 100644
+> > > --- a/Documentation/devicetree/bindings/iio/dac/adi,axi-dac.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/dac/adi,axi-dac.yaml
+> > > @@ -19,11 +19,13 @@ description: |
+> > > =C2=A0=C2=A0 memory via DMA into the DAC.
+> > > =C2=A0
+> > > =C2=A0=C2=A0 https://wiki.analog.com/resources/fpga/docs/axi_dac_ip
+> > > +=C2=A0 https://analogdevicesinc.github.io/hdl/library/axi_ad3552r/in=
+dex.html
+> > > =C2=A0
+> > > =C2=A0properties:
+> > > =C2=A0=C2=A0 compatible:
+> > > =C2=A0=C2=A0=C2=A0=C2=A0 enum:
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - adi,axi-dac-9.1.b
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - adi,axi-ad3552r
+> > > =C2=A0
+> > > =C2=A0=C2=A0 reg:
+> > > =C2=A0=C2=A0=C2=A0=C2=A0 maxItems: 1
+> > > @@ -36,7 +38,12 @@ properties:
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - const: tx
+> > > =C2=A0
+> > > =C2=A0=C2=A0 clocks:
+> > > -=C2=A0=C2=A0=C2=A0 maxItems: 1
+> > > +=C2=A0=C2=A0=C2=A0 minItems: 1
+> > > +=C2=A0=C2=A0=C2=A0 maxItems: 2
+> > > +
+> > > +=C2=A0 clock-names:
+> > > +=C2=A0=C2=A0=C2=A0 minItems: 1
+> > > +=C2=A0=C2=A0=C2=A0 maxItems: 2
+> > > =C2=A0
+> > > =C2=A0=C2=A0 '#io-backend-cells':
+> > > =C2=A0=C2=A0=C2=A0=C2=A0 const: 0
+> > > @@ -47,7 +54,31 @@ required:
+> > > =C2=A0=C2=A0 - reg
+> > > =C2=A0=C2=A0 - clocks
+> > > =C2=A0
+> > > -additionalProperties: false
+> > > +allOf:
+> > > +=C2=A0 - if:
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 properties:
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 compatible:
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 contains:
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 c=
+onst: adi,axi-ad3552r
+> > > +=C2=A0=C2=A0=C2=A0 then:
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 $ref: /schemas/spi/spi-controller.yam=
+l#
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 properties:
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clocks:
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 minItems: 2
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 maxItems: 2
+> >=20
+> > Is this maxItems required? It matches the outer maximum.
+> >=20
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clock-names:
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 items:
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -=
+ const: s_axi_aclk
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -=
+ const: dac_clk
+> >=20
+> > The names are the same in both cases, you can move the definitions
+> > outside of the if/then/else stuff and only constrain it here.
+> >=20
+> thanks, could you maybe have a look if it's ok now ?
+> (maxItems not needed for a const list)
+>=20
+> =C2=A0 clocks:
+> =C2=A0=C2=A0=C2=A0 minItems: 1
+> =C2=A0=C2=A0=C2=A0 maxItems: 2
+>=20
+> =C2=A0 clock-names:
+> =C2=A0=C2=A0=C2=A0 items:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - const: s_axi_aclk
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - const: dac_clk
+> =C2=A0=C2=A0=C2=A0 minItems: 1
+>=20
+> =C2=A0 '#io-backend-cells':
+> =C2=A0=C2=A0=C2=A0 const: 0
+>=20
+> required:
+> =C2=A0 - compatible
+> =C2=A0 - dmas
+> =C2=A0 - reg
+> =C2=A0 - clocks
+>=20
+> allOf:
+> =C2=A0 - if:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 properties:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 compatible:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 contains:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const:=
+ adi,axi-ad3552r
+> =C2=A0=C2=A0=C2=A0 then:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 $ref: /schemas/spi/spi-controller.yaml#
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 properties:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clocks:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 minItems: 2
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clock-names:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 minItems: 2
+> =C2=A0=C2=A0=C2=A0 else:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 properties:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clocks:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 maxItems: 1
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clock-names:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 maxItems: 1
+
+I guess in this case it could even be clock-names: false. One does not make=
+ much
+sense.
+
+- Nuno S=C3=A1
+
+
