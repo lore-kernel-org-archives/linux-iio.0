@@ -1,307 +1,146 @@
-Received: from mail-lj1-f196.google.com (mail-lj1-f196.google.com [209.85.208.196])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87356217313;
-	Thu, 24 Oct 2024 19:09:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FBA22170BA;
+	Thu, 24 Oct 2024 19:12:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729796981; cv=none; b=urTfHEEy62Y7bNdrbI99UlIdO+PDJ+eld7azbmzgrNaxymy6rOb/Azg6NoTLjNwawohjnlJlAGDO7r69Hp91GVgKkRDesSqPyScXbmWXG6TfJyEFw1vNbZxSJV6GNbbyDjkKyzyNwLygYoaADgyVCkOs0eVWPBFziXipnGv/f1Y=
+	t=1729797127; cv=none; b=uYnZE6YF4hppCXYUPefGHnpzx6wqFj5u6IKGHF9j4hwXcwD5rDD36lirhc1C2ODKGQ5cfdAObHn3JNmwfw0mOtUPHE3eJDWmf9hXEqey+DptrIByjlIxWhTI1pw2XxzngmHfWOd0HFTxzCJOuR46C6Xko45CwlAbzXLIxvIwr3U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729796981; c=relaxed/simple;
-	bh=6rLVkYT85aPE762YWX/Qza6i4TLO/D+UE9Oy6vAHa5Y=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BQwKObg24rrFvgY9D1+z4siQbWdoNSHPMVPiQdTRv9BDLNPArxrWyNkjqOFiMo6Bx4tEUicKzrrBJVmjX3faPQ7ls4bMW/ppI16veJeCsswSXhszTTi7NUiSyRqbrqqRG0WnawZTJQMYzh0z6HqD03WtaxPLaNKTdWOmP0HCBfA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fsFvuXT8; arc=none smtp.client-ip=209.85.208.196
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1729797127; c=relaxed/simple;
+	bh=hvpYKl2aqhiqojiuSjEDscF3HMw+BXuyFgI4u7EJIFs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=k1V4IVPX+fJxO+vmL0wiuekD81MiyBHf8Ot3Uyh3NDg9TO/pbRe90VHXAk7rNspNY402J2JQwPi8EAwgW4MWLt818kHa660t8jbgObTCS9uVKq5hLAEiFYSVR6LsjtiCqmTv2pBDaY/faNlTw6jAuZpV5w4Aw8iJoGEwt5hv3v8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZEPD7HiR; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fsFvuXT8"
-Received: by mail-lj1-f196.google.com with SMTP id 38308e7fff4ca-2fb56cb61baso10529421fa.1;
-        Thu, 24 Oct 2024 12:09:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1729796977; x=1730401777; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6rLVkYT85aPE762YWX/Qza6i4TLO/D+UE9Oy6vAHa5Y=;
-        b=fsFvuXT80NI6PPukVBR3fQbAIw2PWJnmswQjIENQ9xj97yJ2cjhWj+5MJg1I8QPrrj
-         EMHmk/OW08D9j7tn2tBB/OgTu1MrSJZiME9Mv8Pj5HdDeR+pXnZ35e2mQagXlXvuXPbp
-         HpkOnNfQ7mB/kae7Zh10/bglbZMs3dnKJUgAyzlrD5UBd+2YMOopp5nABHKXPwlnySBa
-         ARcBbdgYg1n03rLOVjp2PpKEwYLNPGGXACCHQ1ivKlzMPU0p2KDw7ENvA2ToI4tUCxfD
-         nSBZEiaddozMr+kXX5/1NZoqXkDfn5K3EUZ1sT49Oj9XKRQIIDE9X2XPIIn+p/UPhUx4
-         71Kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729796977; x=1730401777;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6rLVkYT85aPE762YWX/Qza6i4TLO/D+UE9Oy6vAHa5Y=;
-        b=QSpp2qBkgoh8gH68tjQ2dnyn72YaZ51rERoAGxFFCwbVOB6BrWFwQ7XKxxjQiDzP29
-         /65UIp+0dx9iOy2qVtht3KeKn9W8A2bBFWfr+zPviGChj/mZZn8Hy/kLRLTljWcOgmn/
-         Ttal64s/MoeIAMjVF6gw7B0aY6x2y07U6xCiVCejp2YiXhqaOMoQncaUm11OT7F0St/F
-         qRebbHL/a+Vc7wD8tmpfnUhqoAo6LAyKPhIRmQn4dQQGbvhE/HvbucG7Hwbk2FLIhtje
-         UD5rf762Y7lKTUcoajs/qw5WxHLDcVB5gYjEULX5HEJYqlmEPgqo8ACLUilduKnyUZ+2
-         d0ug==
-X-Forwarded-Encrypted: i=1; AJvYcCUQG4QwwPr/RUySIlwogIF390xif4LcjkD6ErL1yGgVYUhoRA3BcBgZdz4bHUcCU0TznEe9KU3fxxQDew==@vger.kernel.org, AJvYcCUVQqGy9IOj4gnZd9c/hPw3DtCi5T+Hj+tULTVLK2MKGcXgCubRg1N4oCfAG5OFQJQuzGuBGzaD3prd73E=@vger.kernel.org, AJvYcCUwwPotPBbtV2FBeMuY91alRamNQAWNUa7fBeOm+QUzWlz/KzLj5hAwzB8br4hnJQ0JK0NlFjDXLnGUQ8k=@vger.kernel.org, AJvYcCV33YSfP9Q6ICGTFw2O5WJ3LFdbJt8y/YE2H3MlN8dPD2DUhl/SO5CYlUbnoFlzVfmeP/geKReguvdXHX0C7bSayTo=@vger.kernel.org, AJvYcCV95+eB+JhF016OxrheTs3J2w/hzxyiVg4uPcMmETBcWdW9U8no/aQ3ZKUz7dHqIbi4B+suE/zt@vger.kernel.org, AJvYcCVRb1ovrXl6q75n64iwigq+xQN+pEAts+M2v5XVImLNEYucRoE99pXpif/fbZZtER5GAvudKS/gYvRhVg==@vger.kernel.org, AJvYcCVhkhmtos193sDP/jnQWOIZu2FoNGvkz2EysfFArs56eCkiQYjqbTxyxOuittOwqxl32oATWL9OSInUtWs=@vger.kernel.org, AJvYcCW5AnB5HqNOgqdIw+NkS1gsgU4BpJ4SKZOMbidHIPTobBSzXnu692m44hIsxWpQd9wF+ZI8Lf/Jz1Df@vger.kernel.org, AJvYcCWBT0ZW0CGJ5uOLEVzCYwewT9hXYveJTneHP4YvIBLUnECMzZhX1izQAEQR/x1Xgzyi//1EbcIIT3Ph@vger.kernel.org, AJvYcCWE3c+YrnHoGnp/h0qspS9TuJsswFc52iiwA2qdnoZST8Q1UgJ/o5MW5P3Uu7qn0fpWRaz5phKoXPI=@vger.kernel.org, AJvYcCWTxwL1Rp/xVQSGBtv6GGRPsd2Qba3F2KAlz1M67sOldCaGcQqxHdCJSAAFiTKFByv5n7zQLuoEP6Zn@vger.kernel.org, AJvYcCWfTV4Ot7FQ1HxhS9nUw1BPyGXZCx5f/66fFYsEInzWDdPHu3Dn0T8n/7Kf9i3M+haFY5LsKOavEoN9hA==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz3I1D4d044fyyI6uqMIQPtZSa00hSCVI/8fmlz/n8X3kelqPqD
-	becRCnue8cDgHl6c4j1y1ZzhXlFpdhT0RevmUuQZaBWdHDI0MTjr
-X-Google-Smtp-Source: AGHT+IGDZSxlCbsTRRDrlADY9xf/FeuikVNO0XKyrbvhvT68OG6hcNp/RMPI6u9Uj4MeELBy7mQJQQ==
-X-Received: by 2002:a2e:d09:0:b0:2fb:44ca:801c with SMTP id 38308e7fff4ca-2fc9d5e335cmr33424471fa.35.1729796976493;
-        Thu, 24 Oct 2024 12:09:36 -0700 (PDT)
-Received: from localhost.localdomain ([176.106.245.80])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2fb9ae12072sm14875321fa.110.2024.10.24.12.09.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Oct 2024 12:09:35 -0700 (PDT)
-From: Russian Troll Factory No271241182262529470158368334307958208204522924631681408115158110636801578517908140749826211402494881312487421951176430536853 <vladimirputin693389@gmail.com>
-To: torvalds@linux-foundation.org
-Cc: aospan@netup.ru,
-	conor.dooley@microchip.com,
-	ddrokosov@sberdevices.ru,
-	dmaengine@vger.kernel.org,
-	dushistov@mail.ru,
-	fancer.lancer@gmail.com,
-	geert@linux-m68k.org,
-	gregkh@linuxfoundation.org,
-	hoan@os.amperecomputing.com,
-	ink@jurassic.park.msu.ru,
-	jeffbai@aosc.io,
-	kexybiscuit@aosc.io,
-	linux-alpha@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-fpga@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	linux-hwmon@vger.kernel.org,
-	linux-ide@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZEPD7HiR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1729797125; x=1761333125;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=hvpYKl2aqhiqojiuSjEDscF3HMw+BXuyFgI4u7EJIFs=;
+  b=ZEPD7HiRfORIZplHJ96Jy2YzO3vv1XyCWWc/7nTBREFoLCctrn4GCI7x
+   TMfFkyMYx3NAwxc39SEatiyS0vyUwjUiJtGfHAGDx4HrCkqUpedXOSzP7
+   MQtdbjwTYoVm8JEzBcNz7glBjC68gxKCFNBOx51hexgdqRXlnlprYsnMM
+   1AbOcVDwXYKAhe41ecCh7kx0zbTzPB/R7kZdYTCbzhlJ5rq74x2Atpb0u
+   ThO/UUzPn70bUW48Io/hxu3E3ANLjWvRlIYYAaeeXhh5E0mlQR9XwZCAV
+   yFxxKqgIWPkHQFnTdgBPZ11fO7e3B5viur3k4fJrUMOtSx9eos17+TojA
+   g==;
+X-CSE-ConnectionGUID: XS83D3Z1QiqfKFFZE7g3OA==
+X-CSE-MsgGUID: nyFpZ9IQQby1GUulfAR7/A==
+X-IronPort-AV: E=McAfee;i="6700,10204,11235"; a="46934404"
+X-IronPort-AV: E=Sophos;i="6.11,230,1725346800"; 
+   d="scan'208";a="46934404"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2024 12:12:04 -0700
+X-CSE-ConnectionGUID: A7qBuIkMQ3qYtlAPdmZoEA==
+X-CSE-MsgGUID: qKDA0PULT/Wp1z3jJIk3nA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,230,1725346800"; 
+   d="scan'208";a="80266645"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmviesa006.fm.intel.com with ESMTP; 24 Oct 2024 12:12:02 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 041F6252; Thu, 24 Oct 2024 22:12:00 +0300 (EEST)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Marius Cristea <marius.cristea@microchip.com>,
+	Trevor Gamblin <tgamblin@baylibre.com>,
+	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	Hans de Goede <hdegoede@redhat.com>,
 	linux-iio@vger.kernel.org,
-	linux-media@vger.kernel.org,
-	linux-mips@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	linux-spi@vger.kernel.org,
-	manivannan.sadhasivam@linaro.org,
-	mattst88@gmail.com,
-	netdev@vger.kernel.org,
-	nikita@trvn.ru,
-	ntb@lists.linux.dev,
-	patches@lists.linux.dev,
-	richard.henderson@linaro.org,
-	s.shtylyov@omp.ru,
-	serjk@netup.ru,
-	shc_work@mail.ru,
-	torvic9@mailbox.org,
-	tsbogend@alpha.franken.de,
-	v.georgiev@metrotek.ru,
-	wangyuli@uniontech.com,
-	wsa+renesas@sang-engineering.com,
-	xeb@mail.ru
-Subject: Magisk patch for android nox devices
-Date: Thu, 24 Oct 2024 22:09:31 +0300
-Message-ID: <20241024190931.14805-1-vladimirputin693389@gmail.com>
-X-Mailer: git-send-email 2.47.0
-In-Reply-To: <CAHk-=whNGNVnYHHSXUAsWds_MoZ-iEgRMQMxZZ0z-jY4uHT+Gg@mail.gmail.com>
-References: <CAHk-=whNGNVnYHHSXUAsWds_MoZ-iEgRMQMxZZ0z-jY4uHT+Gg@mail.gmail.com>
+	linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v3 00/24] iio: Clean up acpi_match_device() use cases
+Date: Thu, 24 Oct 2024 22:04:49 +0300
+Message-ID: <20241024191200.229894-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+There are current uses of acpi_match_device():
+- as strange way of checking if the device was enumerated via ACPI
+- as a way to get IIO device name as ACPI device instance name
+- as above with accompanying driver data
 
-Hi, the linux mailing list.
-You have asked me for your opinion. I present my opinion to you:
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
-LINUS TORVALDS IS A DICK
+Deduplicate its use by providing two new helper functions in IIO ACPI
+library and update the rest accordingly.
 
+This also includes a rework of previously sent ltr501 patch.
 
+Besides that there ie a big clean up for the kxcjk-1013 driver, started
+with the revert of the one patch discussed earlier today. Feel free to
+route that one via fixes branch of your tree.
+
+In v3:
+- collected tags (Marius)
+- added note to the documentation about usage of new API (Jonathan)
+- added a handful patches for kxcjk-1013 driver
+
+In v2:
+- collected tags (Hans, Jean-Baptiste)
+- updated SoB chain in patch 4
+
+Andy Shevchenko (24):
+  iio: magnetometer: bmc150: Drop dead code from the driver
+  iio: adc: pac1934: Replace strange way of checking type of enumeration
+  iio: imu: inv_mpu6050: Replace strange way of checking type of
+    enumeration
+  iio: acpi: Improve iio_read_acpi_mount_matrix()
+  iio: acpi: Add iio_get_acpi_device_name_and_data() helper function
+  iio: accel: kxcjk-1013: Remove redundant I²C ID
+  iio: accel: kxcjk-1013: Revert "Add support for KX022-1020"
+  iio: accel: kxcjk-1013: Switch from CONFIG_PM guards to pm_ptr() etc
+  iio: accel: kxcjk-1013: Use local variable for regs
+  iio: accel: kxcjk-1013: Rename kxcjk1013_info
+  iio: accel: kxcjk-1013: Start using chip_info variables instead of
+    enum
+  iio: accel: kxcjk-1013: Move odr_start_up_times up in the code
+  iio: accel: kxcjk-1013: Convert ODR times array to variable in
+    chip_info
+  iio: accel: kxcjk-1013: Get rid of enum kx_chipset
+  iio: accel: kxcjk-1013: Replace a variant of
+    iio_get_acpi_device_name_and_data()
+  iio: accel: kxcjk-1013: drop ACPI_PTR() and move ID out of CONFIG_ACPI
+    guards
+  iio: accel: mma9551: Replace custom implementation of
+    iio_get_acpi_device_name()
+  iio: accel: mma9553: Replace custom implementation of
+    iio_get_acpi_device_name()
+  iio: gyro: bmg160: Replace custom implementation of
+    iio_get_acpi_device_name()
+  iio: light: isl29018: Replace a variant of
+    iio_get_acpi_device_name_and_data()
+  iio: light: isl29018: drop ACPI_PTR() and CONFIG_ACPI guards
+  iio: light: ltr501: Drop most likely fake ACPI IDs
+  iio: light: ltr501: Add LTER0303 to the supported devices
+  iio: light: ltr501: Replace a variant of
+    iio_get_acpi_device_name_and_data()
+
+ drivers/iio/accel/kxcjk-1013.c             | 449 +++++++++++----------
+ drivers/iio/accel/mma9551.c                |  19 +-
+ drivers/iio/accel/mma9553.c                |  19 +-
+ drivers/iio/adc/pac1934.c                  |   2 +-
+ drivers/iio/gyro/bmg160_core.c             |  15 -
+ drivers/iio/gyro/bmg160_i2c.c              |   4 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c |   5 +-
+ drivers/iio/industrialio-acpi.c            |  48 ++-
+ drivers/iio/light/isl29018.c               |  38 +-
+ drivers/iio/light/ltr501.c                 |  29 +-
+ drivers/iio/magnetometer/bmc150_magn.c     |  15 -
+ include/linux/iio/iio.h                    |  10 +
+ 12 files changed, 315 insertions(+), 338 deletions(-)
+
+-- 
+2.43.0.rc1.1336.g36b5255a03ac
 
