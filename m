@@ -1,174 +1,287 @@
-Received: from vmicros1.altlinux.org (vmicros1.altlinux.org [194.107.17.57])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E5C151ABEB1;
-	Thu, 24 Oct 2024 10:01:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.107.17.57
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D4DF14F11E;
+	Thu, 24 Oct 2024 10:02:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729764086; cv=none; b=c3deY2buR/TSUyOa2t+z9mU9JLLPZIMrq1XN1xyYuedlJyjIVi72doWTLbvpHmLdr7yr7qeUwuLtnN5whFMafUrDGjoucrug+3uWFVkGhwRT099uMV7vYrYM7N29guP3Qvd9btpnrzFm19SeH9vRtdF/Q2nUW9+95M7KURrDULU=
+	t=1729764126; cv=none; b=DGlV59BvATyHgYL/1eZ6g+wQBefLzV3UcXF3l23O+v7blraIBM7tLPBU08RyCdNdfpHpQIIL7aBQ+DBjvsiAx8gySeOOJBZOaWhC8ASSDLf/MPUvPcGaAsI+nA+Opg87IFDlJRf+D8fpZX1Gq8YOsmcWlWmVXlJH80IpNT0sChY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729764086; c=relaxed/simple;
-	bh=iY1/51zaPHjVqosPGel6QiZiJ04KavIR7kHi6cy2EJM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jTaKuz3oDPCtoPxNuNPdqYHLrKrAOfCXTX5JrKe1cc7lkXNuYKlwJzdamKZalD3Yh6gDIkF4qOYzX7XDoUuJ913lQ0/1JtNZdZXjNNDMC/sJ2AAohunhP9moollVU0cThI3Vsx1khdA+v5bFKpbt6k/CWOJYB421niKwoeW2v+8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=altlinux.ru; spf=pass smtp.mailfrom=altlinux.org; arc=none smtp.client-ip=194.107.17.57
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=altlinux.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=altlinux.org
-Received: from imap.altlinux.org (imap.altlinux.org [194.107.17.38])
-	by vmicros1.altlinux.org (Postfix) with ESMTP id 3854C72C8F5;
-	Thu, 24 Oct 2024 12:53:39 +0300 (MSK)
-Received: by imap.altlinux.org (Postfix, from userid 705)
-	id 336F236D070D; Thu, 24 Oct 2024 12:53:39 +0300 (MSK)
-Date: Thu, 24 Oct 2024 12:53:39 +0300
-From: Michael Shigorin <mike@altlinux.ru>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Tor Vic <torvic9@mailbox.org>, Kexy Biscuit <kexybiscuit@aosc.io>,
-	jeffbai@aosc.io, gregkh@linuxfoundation.org, wangyuli@uniontech.com,
-	aospan@netup.ru, conor.dooley@microchip.com,
-	ddrokosov@sberdevices.ru, dmaengine@vger.kernel.org,
-	dushistov@mail.ru, fancer.lancer@gmail.com, geert@linux-m68k.org,
-	hoan@os.amperecomputing.com, ink@jurassic.park.msu.ru,
-	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-fpga@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-ide@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-mips@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-	linux-spi@vger.kernel.org, manivannan.sadhasivam@linaro.org,
-	mattst88@gmail.com, netdev@vger.kernel.org, nikita@trvn.ru,
-	ntb@lists.linux.dev, patches@lists.linux.dev,
-	richard.henderson@linaro.org, s.shtylyov@omp.ru, serjk@netup.ru,
-	shc_work@mail.ru, tsbogend@alpha.franken.de, v.georgiev@metrotek.ru,
-	wsa+renesas@sang-engineering.com, xeb@mail.ru
-Subject: what about CoC? (was: [PATCH] Revert "MAINTAINERS: Remove some
- entries due to various compliance requirements.")
-Message-ID: <20241024095339.GA32487@imap.altlinux.org>
-References: <a08dc31ab773604d8f206ba005dc4c7a@aosc.io>
- <20241023080935.2945-2-kexybiscuit@aosc.io>
- <124c1b03-24c9-4f19-99a9-6eb2241406c2@mailbox.org>
- <CAHk-=whNGNVnYHHSXUAsWds_MoZ-iEgRMQMxZZ0z-jY4uHT+Gg@mail.gmail.com>
+	s=arc-20240116; t=1729764126; c=relaxed/simple;
+	bh=L4OBI9kmzhb8Y5Z7ccxqHqPubs7j/bYb/whltKZ13n8=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Iv2PLGr9AIPE+lG31M/Dui+xGrZNnmt3pyKz0Y2hwFemS/zkRzBFvTU2RF+QEAjMV2sPcMyCBihnLdyqU22De3XqJkq02af179PpeUvKJisAe7dBFRhmLgG4LEPxIOMLq4TPEMUGIkrvp5g4htGERXCGg71f+Dhf99SjuvMGli8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=x9wy6+L7; arc=none smtp.client-ip=68.232.154.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="x9wy6+L7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1729764123; x=1761300123;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=L4OBI9kmzhb8Y5Z7ccxqHqPubs7j/bYb/whltKZ13n8=;
+  b=x9wy6+L7+A4z6HGFs/7RedsuyfTXri6r2lVLdDYH015ziiHy0xYStmpT
+   UKPeL9tLRqD1GHph6X2ZBc1IJgOYjvhD5YoRhrSBydj4wG8tsdp/W5A8T
+   0enFSNCIMOnra9UtbWFGp8dolB978qmJZQF/6zqZl0J0YkocrJOUOG/ro
+   8dj0u3m2wZYaXV94MV2JhL4f1j9gYFAReG982kezB2nDAUpq+HhXInFGj
+   PRHLxl8FKMF3Pw7u+XDdUUq8l3VyfP+2itnHa6qNTvxUzSAhRN+jKJD9F
+   dWpPS5JemxMnBTyGK59nzfPMdzyB7x+fh6Q4alAxGJAAutR4gG80u+mqg
+   w==;
+X-CSE-ConnectionGUID: SzYnXIcCSW+5oX6M0jz6iw==
+X-CSE-MsgGUID: hd12t9s6RUK6zhh9WJd9mA==
+X-IronPort-AV: E=Sophos;i="6.11,228,1725346800"; 
+   d="scan'208";a="200854445"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 24 Oct 2024 03:02:02 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Thu, 24 Oct 2024 03:01:41 -0700
+Received: from vduicu-Virtual-Machine.mshome.net (10.10.85.11) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.35 via Frontend Transport; Thu, 24 Oct 2024 03:01:40 -0700
+From: <victor.duicu@microchip.com>
+To: <matteomartelli3@gmail.com>, <jic23@kernel.org>, <lars@metafoo.de>
+CC: <marius.cristea@microchip.com>, <victor.duicu@microchip.com>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v6] iio: adc: pac1921: Add ACPI support to Microchip pac1921
+Date: Thu, 24 Oct 2024 13:00:50 +0300
+Message-ID: <20241024100050.4727-1-victor.duicu@microchip.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=koi8-r
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHk-=whNGNVnYHHSXUAsWds_MoZ-iEgRMQMxZZ0z-jY4uHT+Gg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 
-как хорошо, что по-русски можно писать то, что думаешь
+From: Victor Duicu <victor.duicu@microchip.com>
 
+This patch implements ACPI support to Microchip pac1921.
+The driver can read shunt resistor value and label from ACPI table.
 
-On Wed, Oct 23, 2024 at 10:45:47AM -0700, Linus Torvalds wrote:
-> It's entirely clear why the change was done
+Signed-off-by: Victor Duicu <victor.duicu@microchip.com>
+---
 
-Might seem so to you, but apparently not to those wondering.
+The patch was tested on minnowboard and sama5.
 
-> And FYI for the actual innocent bystanders who aren't troll
-> farm accounts - the "various compliance requirements" are not
-> just a US thing.
+Differences related to previous versions:
+v6:
+- set maximum acceptable value of shunt resistor to INT_MAX UOHMS
+in devicetree, ACPI table and user input.
+- in pac1921_match_acpi_device remove temp variable.
 
-US is just another victim of those trotzkist slugs --
-you can ask your father, he must know better *why*
-those have been expelled even by their own ilk
-a century ago here in Russia.
+v5:
+- set maximum acceptable value of shunt resistor to 2KOHM in devicetree,
+ACPI table and user input. The chosen value is lesser than INT_MAX,
+which is about 2.1KOHM.
+- in pac1921_match_acpi_device and pac1921_parse_of_fw change to only
+  read 32b values for resistor shunt.
 
-> If you haven't heard of Russian sanctions yet, you should try
-> to read the news some day.  And by "news", I don't mean Russian
-> state-sponsored spam.
+v4:
+- change name of pac1921_shunt_is_valid to pac1921_shunt_is_invalid.
+- fix coding style.
+- in pac1921_parse_of_fw change back to device_property_read_u32.
 
-Linus, those "news" have cost your family a child already,
-and Elon has paid a similar tax.  You have been limited in
-your right to tell what you think right here in linux-kernel@
-(unless you speak hate against *all* of the Russians, yeah).
+v3:
+- simplify and make inline function pac1921_shunt_is_valid. Make argument u64.
+- fix link to DSM documentation.
+- in pac1921_match_acpi_device and pac1921_parse_of_fw, the shunt value is
+read as u64.
+- in pac1921_parse_of_fw remove code for reading label value from
+devicetree.
+- in pac1921_write_shunt_resistor cast the multiply result to u64 in order
+to fix overflow.
 
-You've agreed that black is white and vice versa.  It is not.
+v2:
+- remove name variable from priv. Driver reads label attribute with
+sysfs.
+- define pac1921_shunt_is_valid function.
+- move default assignments in pac1921_probe to original position.
+- roll back coding style changes.
+- add documentation for DSM(the linked document was used as reference).
+- remove acpi_match_device in pac1921_match_acpi_device.
+- remove unnecessary null assignment and comment.
+- change name of function pac1921_match_of_device to
+pac1921_parse_of_fw.
 
-> As to sending me a revert patch - please use whatever mush
-> you call brains.
+v1:
+- initial version for review.
 
-It's not about the patch but rather about the attitude;
-Documentation/process/code-of-conduct-interpretation.rst:
+ drivers/iio/adc/pac1921.c | 106 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 93 insertions(+), 13 deletions(-)
 
-"regardless of ... ethnicity, ... nationality, ... race"
-"Focusing on what is best for the community"
+diff --git a/drivers/iio/adc/pac1921.c b/drivers/iio/adc/pac1921.c
+index a96fae546bc1..cbbb3c1525c1 100644
+--- a/drivers/iio/adc/pac1921.c
++++ b/drivers/iio/adc/pac1921.c
+@@ -67,6 +67,12 @@ enum pac1921_mxsl {
+ #define PAC1921_DEFAULT_DI_GAIN		0 /* 2^(value): 1x gain (HW default) */
+ #define PAC1921_DEFAULT_NUM_SAMPLES	0 /* 2^(value): 1 sample (HW default) */
+ 
++#define PAC1921_ACPI_GET_UOHMS_VALS             0
++#define PAC1921_ACPI_GET_LABEL			1
++#define PAC1921_DSM_UUID                        "f7bb9932-86ee-4516-a236-7a7a742e55cb"
++/* The maximum accepted value of shunt_resistor in UOHMS <= INT_MAX */
++#define PAC1921_MAX_SHUNT_VALUE_OHMS		2147
++
+ /*
+  * Pre-computed scale factors for BUS voltage
+  * format: IIO_VAL_INT_PLUS_NANO
+@@ -204,6 +210,11 @@ struct pac1921_priv {
+ 	} scan;
+ };
+ 
++static inline bool pac1921_shunt_is_invalid(u32 shunt_val)
++{
++	return (shunt_val == 0 || shunt_val > INT_MAX);
++}
++
+ /*
+  * Check if first integration after configuration update has completed.
+  *
+@@ -781,7 +792,7 @@ static ssize_t pac1921_write_shunt_resistor(struct iio_dev *indio_dev,
+ 					    const char *buf, size_t len)
+ {
+ 	struct pac1921_priv *priv = iio_priv(indio_dev);
+-	u64 rshunt_uohm;
++	u32 rshunt_uohm;
+ 	int val, val_fract;
+ 	int ret;
+ 
+@@ -792,8 +803,12 @@ static ssize_t pac1921_write_shunt_resistor(struct iio_dev *indio_dev,
+ 	if (ret)
+ 		return ret;
+ 
++	/* This check is to ensure val * MICRO won't overflow */
++	if (val < 0 || val > PAC1921_MAX_SHUNT_VALUE_OHMS)
++		return -EINVAL;
++
+ 	rshunt_uohm = val * MICRO + val_fract;
+-	if (rshunt_uohm == 0 || rshunt_uohm > INT_MAX)
++	if (pac1921_shunt_is_invalid(rshunt_uohm))
+ 		return -EINVAL;
+ 
+ 	guard(mutex)(&priv->lock);
+@@ -1150,6 +1165,69 @@ static void pac1921_regulator_disable(void *data)
+ 	regulator_disable(regulator);
+ }
+ 
++/*
++ * documentation related to the ACPI device definition
++ * https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ApplicationNotes/ApplicationNotes/PAC193X-Integration-Notes-for-Microsoft-Windows-10-and-Windows-11-Driver-Support-DS00002534.pdf
++ */
++static int pac1921_match_acpi_device(struct i2c_client *client, struct pac1921_priv *priv,
++				     struct iio_dev *indio_dev)
++{
++	acpi_handle handle;
++	union acpi_object *rez;
++	guid_t guid;
++	char *label;
++
++	guid_parse(PAC1921_DSM_UUID, &guid);
++	handle = ACPI_HANDLE(&client->dev);
++
++	rez = acpi_evaluate_dsm(handle, &guid, 1, PAC1921_ACPI_GET_UOHMS_VALS, NULL);
++	if (!rez)
++		return dev_err_probe(&client->dev, -EINVAL,
++				     "Could not read shunt from ACPI table\n");
++
++	priv->rshunt_uohm = rez->package.elements[0].integer.value;
++	ACPI_FREE(rez);
++
++	if (pac1921_shunt_is_invalid(priv->rshunt_uohm))
++		return dev_err_probe(&client->dev, -EINVAL, "Invalid shunt resistor\n");
++
++	pac1921_calc_current_scales(priv);
++
++	rez = acpi_evaluate_dsm(handle, &guid, 1, PAC1921_ACPI_GET_LABEL, NULL);
++	if (!rez)
++		return dev_err_probe(&client->dev, -EINVAL,
++				     "Could not read label from ACPI table\n");
++
++	label = devm_kmemdup(&client->dev, rez->package.elements->string.pointer,
++			     (size_t)rez->package.elements->string.length + 1,
++			     GFP_KERNEL);
++	label[rez->package.elements->string.length] = '\0';
++	indio_dev->label = label;
++	ACPI_FREE(rez);
++
++	return 0;
++}
++
++static int pac1921_parse_of_fw(struct i2c_client *client, struct pac1921_priv *priv)
++{
++	int ret;
++	struct device *dev = &client->dev;
++
++	ret = device_property_read_u32(dev, "shunt-resistor-micro-ohms",
++				       &priv->rshunt_uohm);
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "Cannot read shunt resistor property\n");
++
++	if (pac1921_shunt_is_invalid(priv->rshunt_uohm))
++		return dev_err_probe(dev, -EINVAL, "Invalid shunt resistor: %u\n",
++				     priv->rshunt_uohm);
++
++	pac1921_calc_current_scales(priv);
++
++	return 0;
++}
++
+ static int pac1921_probe(struct i2c_client *client)
+ {
+ 	struct device *dev = &client->dev;
+@@ -1176,17 +1254,13 @@ static int pac1921_probe(struct i2c_client *client)
+ 	priv->di_gain = PAC1921_DEFAULT_DI_GAIN;
+ 	priv->n_samples = PAC1921_DEFAULT_NUM_SAMPLES;
+ 
+-	ret = device_property_read_u32(dev, "shunt-resistor-micro-ohms",
+-				       &priv->rshunt_uohm);
+-	if (ret)
+-		return dev_err_probe(dev, ret,
+-				     "Cannot read shunt resistor property\n");
+-	if (priv->rshunt_uohm == 0 || priv->rshunt_uohm > INT_MAX)
+-		return dev_err_probe(dev, -EINVAL,
+-				     "Invalid shunt resistor: %u\n",
+-				     priv->rshunt_uohm);
+-
+-	pac1921_calc_current_scales(priv);
++	if (ACPI_HANDLE(&client->dev))
++		ret = pac1921_match_acpi_device(client, priv, indio_dev);
++	else
++		ret = pac1921_parse_of_fw(client, priv);
++	if (ret < 0)
++		return dev_err_probe(&client->dev, ret,
++				     "parameter parsing error\n");
+ 
+ 	priv->vdd = devm_regulator_get(dev, "vdd");
+ 	if (IS_ERR(priv->vdd))
+@@ -1243,11 +1317,17 @@ static const struct of_device_id pac1921_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, pac1921_of_match);
+ 
++static const struct acpi_device_id pac1921_acpi_match[] = {
++	{ "MCHP1921" },
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, pac1921_acpi_match);
+ static struct i2c_driver pac1921_driver = {
+ 	.driver	 = {
+ 		.name = "pac1921",
+ 		.pm = pm_sleep_ptr(&pac1921_pm_ops),
+ 		.of_match_table = pac1921_of_match,
++		.acpi_match_table = pac1921_acpi_match
+ 	},
+ 	.probe = pac1921_probe,
+ 	.id_table = pac1921_id,
 
-"Examples of unacceptable behavior ... insulting/derogatory
-comments ... Public or private harassment"
-
-Get back to single-standard integrity for yor own's sake.
-
-> I'm Finnish. Did you think I'd be *supporting* Russian
-> aggression?
-
-Have you heard of casus belli?  Do you think these were one?
-
-http://nypost.com/2022/02/21/russia-kills-5-ukrainian-saboteurs-allegedly-trying-to-breach-border/
-http://reuters.com/world/europe/russias-fsb-says-shell-ukrainian-territory-destroys-russian-border-guard-post-2022-02-21/
-
-That's February 21, 2022.  If I yelled all over the place
-about "Finnish invasion" after Russian IFVs have rovered
-Finland *first* for no good reason, would I be right?
-
-Feel free to ask, I actually grew up in Kiev and e.g.
-this bug fix was done there as well:
-
-http://bugzilla.kernel.org/show_bug.cgi?id=15658
-http://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=c9e2fbd909c20b165b2b9ffb59f8b674cf0a55b0
-
-Please do revert it too then.
-
-Drop Linux network stack while at that, that "roomful
-of Russian mathematicians" is now declared untermensch.
-
-> Apparently it's not just lack of real news,
-> it's lack of history knowledge too.
-
-On your side, Linus.
-On your side.
-
-Hope you're still Finnish, not a Finnish nazi
-(swap "Russians" with "Jews" in your email and
-re-read it; it's my homegrown "nazi test" --
-if this change suddenly makes a text "nazist",
-it was).
-
-It is the US that has pushed Finland towards NATO,
-basically to follow the grim destiny that the former
-Ukraine currently harvests, and that was prepared
-for Georgia (that evades it), Moldavia (that rishes
-full speed towards destruction), Poland, the three
-Baltic states, and now your homeland.
-
-There is no regulation that can force your own heart.
-Listen to it.  Not to emotions, but to the deep truth
-that never cries aloud.
-
-You bow to the jerks who are *afraid* of opposition,
-because there is no truth in their father.
-
-Remember those who yelled "Assad must go"?
-How many of them are still around?
-Those siding with them perish with them.
-
-
-PS: last time I've seen RMS in Moscow, he declared
-his support "to the Moscow protesters"; I've asked him
-whether he knows that the initial issue was that the
-dead people were identified en masse as those "voting"
-for "democratic" candidates in 2019 elections, and he
-stared at me and answered, "nonsense".  I've emailed
-him after BLM affairs to ask if what he sees makes
-sense but never seen a reply this time -- and dead
-voters turned out to be not a purely export-only
-"technology" a bit later (pretty cosmopolitan).
-
-
-Господи, спаси и сохрани раба Твоего заблуждшего
-Линуса и ближних его во веки веков; аминь!
-
+base-commit: 185a947e0ef928226f99c05fc973cde872806aa1
 -- 
-Michael Shigorin
-(whose first book on programming was
-Hyvonen and Seppanen's one on LISP)
-http://t.me/anna_news
+2.43.0
+
