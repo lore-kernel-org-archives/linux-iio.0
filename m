@@ -1,200 +1,159 @@
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [80.241.56.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A656107A0;
-	Fri, 25 Oct 2024 18:45:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.151
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E836B20F3CC
+	for <linux-iio@vger.kernel.org>; Fri, 25 Oct 2024 19:55:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729881950; cv=none; b=qt7qI9WWxkJ7pkgFioFWaH/9wVwv2LDyG0NyFwQvGYaK4vnEup4xiHgmISkGGqXwbNfh1mOGmsToc6kgrCkRoqiEdP1W9B/85qNbvCouB0/uyPdNGPHPB3Jff8u6PFDYyLyNn+J/Votl6GIAICgHnuBYqPX9+DOKJ+H65hPYlP0=
+	t=1729886120; cv=none; b=VejU966pBA13W1u9do4bfwv9GwH1xWAt97ZfV9CWiu+62nGq7n3/19PR5UdrdQ3XOqhjahdPkWqu6VJq0/2zcxLnDQsEPkP9IfN3hUBEOm/N4VFNQmVEZZ/VoCNAH90IKzRZSSVLWkbwZN+6fMiU2dTeWS0QDnz9H1I41+pEkp8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729881950; c=relaxed/simple;
-	bh=eoe/fP8YHFbJUGJWPDVWR2pm8bdAzVvuYmLMkOvFUCc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=s5Ld4AF2zg5xfBatop7nXqenoaZYeXvlebP509Wab0KC1SkTmqDR7J3bmPgMQm0WoYQlN+eSbt33GZ/YckryYrmL5I29wYpm8jeOaq4NHc4txpvZHwmxxT00yAm2FMVNwsgkIeIhuVHIcOsYXGJXtjQydZqOb1ZY6K24mPhlxUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=gdBTGg9q; arc=none smtp.client-ip=80.241.56.151
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
+	s=arc-20240116; t=1729886120; c=relaxed/simple;
+	bh=3i7gQSjPTVExJi+8tdLy48McQB4g9avSQB0iN/wuWbE=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=cQc6D++y7z8NELv7EoMW5lpekIdlwfqX0julyCecU+j5jHkDRLBuzEteYOcRjO5LITpTJyIUwa3TaYVi50VgSQ9y9X9aoHPnYalbKJtLoEG/K8+koZRyrBJOSc6+GVwvQ4rZyUNbfglJjpSFhJC0ZjEa4N88+p2mpeH+gtkCebE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=J4eROmSF; arc=none smtp.client-ip=209.85.160.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="gdBTGg9q"
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [10.196.197.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4XZs5L3sP6z9snx;
-	Fri, 25 Oct 2024 20:39:34 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1729881574;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=lSojNFdw8ftg3T7NakOd4AZhT9UMaiDwBHmwcORfhmk=;
-	b=gdBTGg9qaBnIiiH6XUTjeUDIpm/w19h2mJ2NxyWek4JBdbfHEfy1l85WLscQ4teM7X3Y8E
-	SzmAWuY6Tiv8TrbprFm973WyyZ+4RlCRZSgfEyQVNqd0vqp4fkqFnrWEBZthKLrpibPdn8
-	zOUeUEpcyhLgwtmKEbx1GfoJj+wV9qWVvuN6kVStn1ig/Bghe328CY4APIAqqMM1/M6DTp
-	Oi88jdSqZLP4fc+Ctf69KIG1PcmVc9Uqx7eoBdxCRl/yvszGacX3FksxcbsLOSr1RTVZ7U
-	RwAHePsvYqanhR6nADNx5z06lDr7cIO+uU+cHTctUfx45NWDJnFzydXg0RISPg==
-Message-ID: <872c8823-f62b-42f8-8bf3-86342374aa84@mailbox.org>
-Date: Fri, 25 Oct 2024 20:39:19 +0200
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="J4eROmSF"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-287b8444ff3so1220253fac.1
+        for <linux-iio@vger.kernel.org>; Fri, 25 Oct 2024 12:55:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1729886117; x=1730490917; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=XenFGeBbkfIEOtggTpW3cCFFoS+71BDD/eIdcva33jU=;
+        b=J4eROmSFx56wUODeJhhRyAssBV4TVx0v0r/ZRbzVf8HIw0pdo70vSFo8FiHtnxH3SI
+         /1MFd22KazK/CU4Vl0kwlxf5566iDOMew6/lsNsZCMKS+WX7nvr9Si0xR3ray/44JfYE
+         g0ommjbxK6nyIdSL1f5wjB1fgus/GeWrgbnzo1n2C+iPUayQ+IlOIBvU33xuloWfgrSd
+         lky9srSyq8ZqcloLXQ62nNY9GqGqURZE0eNKKEQY1F5XE3y7qTkItXcFwBV9G2dh4UlR
+         UMdP+wfc/xgYjIoYx7SFuaDPqOMMZ8XXWNfUOn7GqrwqQ+73ih2R3YEnJdr1+HPw41Nh
+         yOSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1729886117; x=1730490917;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XenFGeBbkfIEOtggTpW3cCFFoS+71BDD/eIdcva33jU=;
+        b=axQHWnTdyM+gsmSbgsQgk6PgZprgZYcXRJgPCCFRd5hBiiI3haYx/QsDb4D2lA1lmN
+         LLS5U8ZABSsboax5D+zXJQrheTri2SCHZMyQcXzmR1GdD47puXIQ6YVm4f+ex5QRwXBC
+         G+3FMIXWIdBnSE+9AVSQ3MqEpKW7/tUqb7hhXA6DroKmwj0o/+ORp/l3zKJgNdNzs+XQ
+         ef/Yx859vldzPMGdtHPbLbK/tSmDYtEF076NhWs85YOA5vRzWVSQSNXotMSpAhUszT89
+         aidEOc6tDF3DbyeXmq4PlVWyw4lPUrf9RcFZgIDKktyfcgQDdAT5mXoVAYF45kxcVGST
+         qa/g==
+X-Forwarded-Encrypted: i=1; AJvYcCWFQmgcRhgLQPJJXBy6FOFrkUcbRXUuilfgGeWbWGYlEAs6StjJz3zcNO0dE5NGZ7yImlcn80D2HK0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxRjI8OcX3xZ24F8i+8Wt8neGdnVarrsB9S6/z+P2POsG0um/4g
+	6HY0G9Aycp/w9AuQ6OJxioEbg1wVjhZ0elznZY5Pdraaj9tGTrrSkBZiIxqu374=
+X-Google-Smtp-Source: AGHT+IEBl+YXrAx7Fjt8TZ4PB95TM0tvCHEv3iGvmCdxmV7t5b+SMDo5OvPmODXDlwoCVREfYK+Mtw==
+X-Received: by 2002:a05:6870:1645:b0:278:2272:fc73 with SMTP id 586e51a60fabf-29051b1a3f1mr806157fac.8.1729886116876;
+        Fri, 25 Oct 2024 12:55:16 -0700 (PDT)
+Received: from [192.168.0.142] (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-290380f5fdesm458266fac.42.2024.10.25.12.55.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Oct 2024 12:55:15 -0700 (PDT)
+Message-ID: <315f158e-0c3b-48e3-b288-27170f0659ed@baylibre.com>
+Date: Fri, 25 Oct 2024 14:55:13 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Subject: Re: [PATCH] Revert "MAINTAINERS: Remove some entries due to various
- compliance requirements."
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 6/6] iio: adc: ad4851: add ad485x driver
+From: David Lechner <dlechner@baylibre.com>
+To: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, "Sa, Nuno" <Nuno.Sa@analog.com>,
+ "Bogdan, Dragos" <Dragos.Bogdan@analog.com>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+References: <20241014094154.9439-1-antoniu.miclaus@analog.com>
+ <20241014094154.9439-6-antoniu.miclaus@analog.com>
+ <60452f83-28a1-4a80-8e90-1f1ed32a594e@baylibre.com>
+ <CY4PR03MB33996900AAB90A050375CBB39B4F2@CY4PR03MB3399.namprd03.prod.outlook.com>
+ <f3351a7f-318b-42d6-aa1a-e8279eb06b78@baylibre.com>
 Content-Language: en-US
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Kexy Biscuit <kexybiscuit@aosc.io>, jeffbai@aosc.io,
- gregkh@linuxfoundation.org, wangyuli@uniontech.com, aospan@netup.ru,
- conor.dooley@microchip.com, ddrokosov@sberdevices.ru,
- dmaengine@vger.kernel.org, dushistov@mail.ru, fancer.lancer@gmail.com,
- geert@linux-m68k.org, hoan@os.amperecomputing.com, ink@jurassic.park.msu.ru,
- linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-fpga@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-hwmon@vger.kernel.org, linux-ide@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
- linux-spi@vger.kernel.org, manivannan.sadhasivam@linaro.org,
- mattst88@gmail.com, netdev@vger.kernel.org, nikita@trvn.ru,
- ntb@lists.linux.dev, patches@lists.linux.dev, richard.henderson@linaro.org,
- s.shtylyov@omp.ru, serjk@netup.ru, shc_work@mail.ru,
- tsbogend@alpha.franken.de, v.georgiev@metrotek.ru,
- wsa+renesas@sang-engineering.com, xeb@mail.ru
-References: <a08dc31ab773604d8f206ba005dc4c7a@aosc.io>
- <20241023080935.2945-2-kexybiscuit@aosc.io>
- <124c1b03-24c9-4f19-99a9-6eb2241406c2@mailbox.org>
- <CAHk-=whNGNVnYHHSXUAsWds_MoZ-iEgRMQMxZZ0z-jY4uHT+Gg@mail.gmail.com>
-From: Tor Vic <torvic9@mailbox.org>
-In-Reply-To: <CAHk-=whNGNVnYHHSXUAsWds_MoZ-iEgRMQMxZZ0z-jY4uHT+Gg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <f3351a7f-318b-42d6-aa1a-e8279eb06b78@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-MBO-RS-META: fcapfso3xo4bfkqbzachb4s163eexrjr
-X-MBO-RS-ID: 80e4fa8c609ea0e1360
 
-
-
-On 10/23/24 19:45, Linus Torvalds wrote:
-> Ok, lots of Russian trolls out and about.
-
-I was a little bit sick when I wrote my previous comment, but I wanted 
-to elaborate, so here we go:
+On 10/25/24 9:29 AM, David Lechner wrote:
+> On 10/25/24 6:35 AM, Miclaus, Antoniu wrote:
+>>>
+> ...
 > 
-> It's entirely clear why the change was done, it's not getting
-> reverted, and using multiple random anonymous accounts to try to
-> "grass root" it by Russian troll factories isn't going to change
-> anything.
+>>>
+>>> See the ad7380 driver as an example of how to impelemt this. [2]
+>>>
+>>> [2]: https://urldefense.com/v3/__https://lore.kernel.org/linux-
+>>> iio/20240530-iio-add-support-for-multiple-scan-types-v3-5-
+>>> cbc4acea2cfa@baylibre.com/__;!!A3Ni8CS0y2Y!4LS7UI11XqIHRgT3ckx76VYn
+>>> CyeikpTumyjO0qDTn7eF7Fd-
+>>> jFFL8yqpYcMAxP_u3VC09bfIAB7gW_rvGoM_sEA$
+>>>
+>>> Also, I would expect the .sign value to depend on how the
+>>> input is being used. If it is differential or single-ended
+>>> bipolar, then it is signed, but if it is signle-ended unipoloar
+>>> then it is unsiged.
+>>>
+>>> Typically, this is coming from the devicetree because it
+>>> depends on what is wired up to the input.
+>>
+>> This topic is mentioned in the cover letter, maybe not argued enough there.
+>> Yes, the go-to approach is to specify the unipolar/bipolar configuration in the devicetree.
+>> But this is a request from the actual users of the driver: to have the softspan fully
+>> controlled from userspace. That's why the offset and scale implementations were added.
+>> Both these attributes are influencing the softspan.
+>>
+>>>> +	},								\
+>>>> +}
+>>>
 > 
+> The cover letter did not get sent, so we did not see this.
 
-Of course it's not going to be reverted, and I don't mind.
-
-I do however mind about the fact that you accuse contributors (however 
-minimal their contributions were, like in my case) of being "Russian 
-trolls" using "multiple accounts".
-
-I would have thought that a man of your stature, knowledge and 
-publicity, wrote a more sensible, neutral comment than that childish 
-gibberish you produced.
-Such comments can be seen in the hundreds on every major news website's 
-comment section.
-Unfortunately, this is now common discussion standard at least in the 
-Western world:
-
-"You don't agree with X? You must be a Y!"
-
-There is no doubt that there are Russian troll factories - but there is 
-equally no doubt that there are Western troll factories. Without them, 
-this "game" wouldn't work.
-
-You could just have done a simple 'git log --grep="Name"' to find out 
-that most of those people who you accused of being trolls are actually 
-not trolls. Because trolls do not contribute.
-
-> And FYI for the actual innocent bystanders who aren't troll farm
-> accounts - the "various compliance requirements" are not just a US
-> thing.
-
-Of course not. It's a USUKEU thing. Or, dare I say, a thing of the 
-unipolar anglo-american empire. There is no way around a multipolar 
-world order if we as humans want to progress.
-
-Why didn't you (or Greg) elaborate on the "various compliance 
-requirements" in the first place?
-You could just have said:
-
-"Due to the sanctions against Russia, we as a US-based foundation are 
-required to abide and therefore we have to remove some maintainers that 
-are thought to be directly collaborating with the current regime" (I 
-specifically used a "Western" language).
-That, at least, would have been somewhat honest, though still hypocrite.
-
-And I did read through (most of) these EU compliance requirements 
-because of my job (not IT), so I'm not *that* clueless.
-
-The sanctions are absurd anyway - I don't remember that the US had been 
-sanctioned because of their illegal invasion of [insert country of your 
-choice]. US athletes excluded from the Olympics?? How dare you?
-
-I also don't remember that France or UK had been sanctioned because they 
-abused their UN mandate to get rid of Gaddafi.
-
-The "country" Kosovo, created by a war, isn't even recognized by all EU 
-member states!
-
-And don't even get me started on that Eastern Mediterranian country that 
-can commit the worst atrocities without ever getting seriously sanctioned.
-
-Meanwhile, we sanction Iran (hasn't started a war in ages), Cuba (hasn't 
-started a war in ages), North Korea (hasn't started a war in ages) etc.
-
-The Western arrogance and decadence is disgusting, and I say that as a 
-born and bred Western European.
+So please resend it so we can get the full explanation.
 
 > 
-> If you haven't heard of Russian sanctions yet, you should try to read
-> the news some day.  And by "news", I don't mean Russian
-> state-sponsored spam.
-
-I'm already more than fed up with the state-sponsored spam on German TV 
-- and I even have to pay for that BS!
-Now, I don't know how it is in Finland because I don't follow Finnish 
-news due to a total lack of language knowledge.
-
-I wish my country would quit NATO, and then I see that Finland *joined*. 
-Sorry, but I don't understand. No NATO, no war in Ukraine.
-Even as late as 2013, Russia and Ukraine did naval manoevers in the 
-Black Sea - together!
-
-This war is sooo totally unnecessary. Maybe you should ask Vicky "F!ck 
-the EU" Newland why this all happened.
-
+> Still, I have doubts about using the offset attribute for
+> this since a 0 raw value is always 0V for both unipolar
+> and bipolar cases. There is never an offset to apply to
+> the raw value.
 > 
-> As to sending me a revert patch - please use whatever mush you call
-> brains. I'm Finnish. Did you think I'd be *supporting* Russian
-> aggression? Apparently it's not just lack of real news, it's lack of
-> history knowledge too.
+> So I think we will need to find a different way to control
+> this other than the offset attribute.
 
-Why do you even mention your nationality?
-Just a few weeks ago, I read about the role of Finland in (and before) WW2.
-I don't think there is a big lack of history knowledge on my side.
+I thought about this some more and I have an idea to solve the
+issue without using devicetree or the offset attribute.
 
-My country was occupied by Germany twice, in 1914 and in 1940.
-And yet, I have absolutely no bad feelings about either Germany as a 
-country nor Germans as a people. OK, their government is the worst since 
-1945, but that's a different matter.
+But we should see what Jonathan thinks before implementing this
+in case it isn't a good idea.
 
-Wasn't Mannerheim married to a Russian? Eh?
+We can expose each voltage input to userspace as two different
+channels, a single-ended channel and a differential channel.
 
-The former German Minister of Foreign Affairs, Guido Westerwelle, once 
-talked about "late Roman decadence", albeit in a different context.
+For an 8 channel chip, we would have 16 IIO channels (in order
+of scan_index):
 
-And yet, he was totally right even in other contexts. The Western world 
-is actually in the state of "late Roman decadence".
-And what follows after that decadence? Right, the downfall. And it might 
-be a huge chance to create a better, more equitable world.
+in_voltage0_raw
+in_voltage0-voltage8_raw
+in_voltage1_raw
+in_voltage1-voltage9_raw
+...
+in_voltage7_raw
+in_voltage7-voltage15_raw
 
-> 
->                        Linus
+If you read the voltage using in_voltageX_raw, then the SoftSpan
+for that channel gets set to the 0V to +V value based on
+in_voltageX_scale. Likewise, if you read the in_voltageX-voltageY_raw
+attribute, the SoftSpan gets set to -V to +V according to
+in_voltageX-voltageY_scale.
 
-Tor Vic
+For buffered reads, only one of each in_voltageX_raw/in_voltageX-voltageY_raw
+pair can be enabled at the same time (because the chip is simultaneous
+sampling).
+
+
