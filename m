@@ -1,150 +1,165 @@
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59C531FB899;
-	Fri, 25 Oct 2024 18:33:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80189185E50;
+	Fri, 25 Oct 2024 18:40:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729881222; cv=none; b=U5bzucBZMDHMVO99cR9DK9JXN2P8konhwqDmwMS5Z33VIZ+t+Xo6Ac8+vha+qRLDErXJY5nwc75NdalYbSwsNb/znNHeqlk34o3POQVqa4NoGbgL8n1T+OIgoaLFQyOGNlP0ml0/afSGryvt3K10LGyOlKXyKHFGb1eLE89mJ1M=
+	t=1729881646; cv=none; b=Ed5awnu1NhkX9URuuMUW/6qU2ysMCntK+QWU85QVkJu2zslEg/OsjXuiwrGJkc2CakNyoirj8JoGmoPfTrDSRq2qdu8x/68cahoGwg4PhwtZa2holVyL6lisNZFuyLCpCXXJqCnvWRCSG8vdv1294aerNuCFTiTxy3jOpyXmpHM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729881222; c=relaxed/simple;
-	bh=PFuF2Y9/+ewHm3GZ7MwlHRnV69cbNKKUlmjY2oSyAsM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fzIoFP408PzsItjv9iobQslZhe5MkbkqcRws4yp8yd6oEQNoRJPLCeszLlKD1aKkjWJYvmzN5SVHDoVHbS7o2p+7Y65eT4jX+XjWJeUFtZHwkbyivVFPHouv+za1bFIgSN96+HLZNpQ6/qFDgL+XINSnzAL01IXALFD3AHfAI0k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DLC9spTf; arc=none smtp.client-ip=209.85.167.42
+	s=arc-20240116; t=1729881646; c=relaxed/simple;
+	bh=JRxNUr5yui2gNVAeX4FE/a5Z8KBgsyO2L2DGHu/TKtU=;
+	h=Date:From:To:Cc:Message-ID:Subject:MIME-Version:Content-Type; b=J4sBl3IhfUNIvQS8LUEBhFX2jMXVPrkCR9mL/esmXmQB6DFZvtxCAL3OKT++IKN7ttJ9Klw8jKM6uqpmZFl5FQ6+xnTaSOvL9DvwN/4H0GH32fo274mVXvnn9lfmdynyFtO3HzrHvHjskW2P2bEUxLzpo78iM4pPyxntUAui4So=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PmUlchIc; arc=none smtp.client-ip=209.85.221.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DLC9spTf"
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-539983beb19so3026080e87.3;
-        Fri, 25 Oct 2024 11:33:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PmUlchIc"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-37d462c91a9so1598331f8f.2;
+        Fri, 25 Oct 2024 11:40:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1729881218; x=1730486018; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iNHfasfIV5+HJoEc/2e6AI/MHWsXMOc2lwon+csxK/U=;
-        b=DLC9spTfvDaqIgTVB6kJ1Rjga/WBcO4Kxbr5k99nWihUjrSq0XaNNFsexktBywxEQx
-         JllBovscVKDCkRBZ0uASFzIM85dOTJTFsHjQ3xydv4sDvH3aq5tlEYIHiFeKXmZ4R9+Z
-         mgk9UnPEeCQ/5+AJI9LPZj1Wz0/N7RWCUirZF5mW6bCii11ith9aNufLwo3XkweLbkGN
-         A0iF/cJMBun80cxAtFeSKa3I6bjv9haWCYtqpSPPRFBIv0UJ074HiR5mXYnzjnY/7CTH
-         ipgwLa8TLFSSnnCpmJ7LHJiE80SffslT4Vp68O4RTUUnvoIVr8Kl8Z0irelFi5wee1eS
-         ZXmg==
+        d=gmail.com; s=20230601; t=1729881643; x=1730486443; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:subject:message-id:cc:to
+         :from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=JRxNUr5yui2gNVAeX4FE/a5Z8KBgsyO2L2DGHu/TKtU=;
+        b=PmUlchIchkKzpGCZm2vPQcINgkMTki8G8xL4aQVHV4lIKyUHIblgMKFC0HQuBdh4w2
+         md1esL0R77wspbiz0v57LTCcdpBYluHBS14BIWj2sy2I6oIvF+s8mg9YGiVHdgqoSOqt
+         HyN6bBLG0Ph5VGL6XYTrKULSx6ICVVkSszKOD3iyErVeCQncF3ZbYEnEVXFPHTG4+Wt2
+         4zqzozTmcQeqd+bCzSBWZ/Qa0IdOzkbnRtNQsTaY2n8BxZMYX/+hklToscp8QpeTdHNv
+         uzLRulQS9uKVY51SZfIu9tuUQoXdSwUyjbj8h0ZoNFSmm3LQn44enhMkGkF2dahV3R99
+         Rrtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729881218; x=1730486018;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=iNHfasfIV5+HJoEc/2e6AI/MHWsXMOc2lwon+csxK/U=;
-        b=QLtSrnl770jlGIdH8KOTzg/Y8kWH1sMnG790V+Xn3MP2CWMvgrLEvYpKbuVJt+wYZJ
-         qV2XqYuxB/7WvOZeG5fnRVY9rLp33EYsFYpC0ZLF/+uQUJBy9CLIlHunIgQL883fP5WR
-         dzZJeDnh5/jV82/zan0I7Vfg/k7iPHXeIyn4YZxy426BT4k1yPLLNDHM8IoNh0WQPTbC
-         LMIkhLxYIebl33MkpSLXvgxE9DdSBq6nk5Nv2xDIQ66kjKIRdd00QhOELt+OVNA9FH3N
-         U8FKdFHW0ziblc8Z+KBiCWcKzbUzoIFvr5jJD0CfVIypHjiEI5jzmgbDb/n/Fg4xkL0H
-         lPtw==
-X-Forwarded-Encrypted: i=1; AJvYcCUSZvQw0Vq0OFiv3ILnNYVxQqRh+L/k2mevMbQzz5/uHm5NBx0ItF6buFuQo65WRiLWKU5zCE426QH2G08g7g==@vger.kernel.org, AJvYcCWDHYhvAObduKgdWQvY2GUayAZWWNxEa3olu3CVphTsW2YprHqTVKO575Knv1cjlWYd7Glq8x2gbNDHDsZ1@vger.kernel.org, AJvYcCXhA88dKMgBXPFW8Onph0JN5MxqD2SBuycbyiW8dhKmB8IHEnevIt/DZv7cPhERyqecXo8O2qVKzK85@vger.kernel.org, AJvYcCXr71Yws29V4S66eqmRr2htK5XGIrgrxqiIrCZNHbRNS+e1AETCYLehzVts1NjvF9fimWJMBT8TQOXY@vger.kernel.org
-X-Gm-Message-State: AOJu0YytztOZgDnxqr4kFzIm9H5GmenFkAGnIGUOajoISB3HTljO1Jt+
-	OR/JUo9gMZK761KQryI/95kIziNvPcY6aOcaGYO3nrqMjBWpI3IbqwXjTjqvCIdJDCiBuA4y4J4
-	sD13TqWi8pI8GlUvd7Uw+3x13aO7P8gMA
-X-Google-Smtp-Source: AGHT+IESY941DMsos/v9jY/70rLdmFnnc61/VqhA8KDMnRbz+S6+o57bGRLKhxNrPoktyz1hscuRItPt5KURAyt3OKg=
-X-Received: by 2002:a05:6512:3baa:b0:53a:a26:5690 with SMTP id
- 2adb3069b0e04-53b348e57d1mr97390e87.34.1729881218147; Fri, 25 Oct 2024
- 11:33:38 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1729881643; x=1730486443;
+        h=content-transfer-encoding:mime-version:subject:message-id:cc:to
+         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=JRxNUr5yui2gNVAeX4FE/a5Z8KBgsyO2L2DGHu/TKtU=;
+        b=xRWs4UwOraFmkorxze2F6cwl07h2MkwqRa9KJHozVsZy1BtehlYRua0pCaZmH7aFfU
+         KDmPvZvl00r/U1YVU2Vs+hFWurZtnKUDZgGvWL7USy59u2cXUgOtv+TzgcQX6LRpf4sh
+         FZqIcPox0RsVGjKvLcQghJ2pbtiJq1hG0lT0gxFPQI26FnAQNWjrFgIAiKStGWg3CYEh
+         dr/tuaA8qJRdfqcktmtMYdxiWxjU7rJG3CtZG78PC72qxIexPXFlyeSO4zG2N77T3NMD
+         0o1pSxnv1UadjN9UbkJHUPWmg/kkw/reJ+C13CpHNZgOZAkspR+JjHU7hL9pNwA9URDL
+         u1gA==
+X-Forwarded-Encrypted: i=1; AJvYcCU80Prdd9iHJTthnpNQfiQRK7iCfZ5uPMPnmLn2OPP6ueHPWP0Kk6Idd1Z8UYYDMRapCWXr8rphKs8j@vger.kernel.org, AJvYcCVBOlO4ZrpibAy0Rt2/xAi4vorXfSA5FaN0M/S0h5JXA9i/YKMtaariCKYKY0Yt9zXAyvKBdbYSAPWV@vger.kernel.org, AJvYcCX+OQET6fwLnlBNoiy4KBIronzbq1DE7HKfcwBfV0kCgQEL/TLgjlYC1WHKTZu4J65ss4S2ryq3qQ3c@vger.kernel.org, AJvYcCXCILfq2rWi4HxBw6dFBdbDG431pGcR+dE9mP87D9s0YwlXqMdLxcfUA45VnXp95pJgZaP8ACA/PBNN@vger.kernel.org, AJvYcCXqn17Q0wNCYjQaaXtWfuSDiiE8TMB+phzRXrzjDrOnxdWwCUbPjAGT/BhAsXBsMMEZIn1DCW1Cik04+Qft@vger.kernel.org
+X-Gm-Message-State: AOJu0YzmdmgqyNNXaaRR0jmeL0/ipbdieoA6uYYx+PuMMD+qc0NbpXkP
+	Ono62HUdZiLJV7rrlw9W9dOPu3IyPKATuimMjT5BGBeBrp4SfpH99slHQj/jEb1kcqtt
+X-Google-Smtp-Source: AGHT+IGS6rcHOlbTprJsbT/HrRycQKHd080NuZIR69soUsvtun0u2f/I9JB4hvq+jJZoGz6PjNSYZQ==
+X-Received: by 2002:a5d:4311:0:b0:374:c17a:55b5 with SMTP id ffacd0b85a97d-3806111a1bemr275137f8f.14.1729881642551;
+        Fri, 25 Oct 2024 11:40:42 -0700 (PDT)
+Received: from [127.0.0.1] (aftr-62-216-210-211.dynamic.mnet-online.de. [62.216.210.211])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38058b70c91sm2193563f8f.85.2024.10.25.11.40.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Oct 2024 11:40:42 -0700 (PDT)
+Date: Fri, 25 Oct 2024 20:40:42 +0200 (GMT+02:00)
+From: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Mark Brown <broonie@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	=?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+	=?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	David Jander <david@protonic.nl>,
+	Martin Sperl <kernel@martin.sperl.org>, linux-spi@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org
+Message-ID: <dc52cda0-47d9-4cbf-a68e-0af304edc32e@gmail.com>
+Subject: Re: [PATCH RFC v4 11/15] iio: buffer-dmaengine: add
+ devm_iio_dmaengine_buffer_setup_ext2()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240714173431.54332-1-rayyan@ansari.sh> <20240714173431.54332-3-rayyan@ansari.sh>
- <823ce598-dffd-4983-bffa-32559558235d@redhat.com> <ZxpZfgsf-KldiX4w@black.fi.intel.com>
- <20241024173454.00006240@Huawei.com>
-In-Reply-To: <20241024173454.00006240@Huawei.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 25 Oct 2024 21:33:01 +0300
-Message-ID: <CAHp75VegkzEgbZhFxQpW=hi6foRvRtoe_rs47kimxGOCXwGPRA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] iio: accel: kxcjk-1013: Add support for KX022-1020
-To: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Hans de Goede <hdegoede@redhat.com>, Rayyan Ansari <rayyan@ansari.sh>, linux-arm-msm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-iio@vger.kernel.org, 
-	Bjorn Andersson <andersson@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Cameron <jic23@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Robert Yang <decatf@gmail.com>, Rob Herring <robh@kernel.org>, 
-	Sean Rhodes <sean@starlabs.systems>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
+X-Correlation-ID: <dc52cda0-47d9-4cbf-a68e-0af304edc32e@gmail.com>
 
-On Thu, Oct 24, 2024 at 7:34=E2=80=AFPM Jonathan Cameron
-<Jonathan.Cameron@huawei.com> wrote:
-> On Thu, 24 Oct 2024 17:28:14 +0300
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > On Mon, Jul 15, 2024 at 10:30:46AM +0200, Hans de Goede wrote:
-> > > On 7/14/24 7:33 PM, Rayyan Ansari wrote:
-> > > > Add compatible for the KX022-1020 accelerometer [1] using the
-> > > > KX022-1023 [2] register map as both have an identical i2c interface=
-.
-> > > >
-> > > > [1]: https://kionixfs.azureedge.net/en/datasheet/KX022-1020%20Speci=
-fications%20Rev%2012.0.pdf
-> > > > [2]: https://kionixfs.azureedge.net/en/datasheet/KX023-1025%20Speci=
-fications%20Rev%2012.0.pdf
-> > > >
-> > > > Signed-off-by: Rayyan Ansari <rayyan@ansari.sh>
-> > >
-> > > Thanks, patch looks good to me:
-> > >
-> > > Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-> >
-> > Note, this patch broke kx231025 case...
-> >
-> > > >   KXCJ91008,
-> > > >   KXTJ21009,
-> > > >   KXTF9,
-> > > > + KX0221020,
-> > > >   KX0231025,
-> > > >   KX_MAX_CHIPS /* this must be last */
-> > > >  };
-> >
-> > ...because this enum is used of ODR startup timeout settings which
-> > are all moved now to be 0 and new ID inherited the timeouts from
-> > the KX0231025 case.
-> >
-> > Since I have been looking into the driver, and I have a few patches
-> > coming, I propose to do the following (as it's still ODR data being
-> > missed) to:
-> > 1) revert this one
-> > 2) apply my set;
-> > 3) re-apply this with the fixed data.
+Oct 25, 2024 18:42:02 David Lechner <dlechner@baylibre.com>:
+
+> On 10/25/24 8:24 AM, Nuno S=C3=A1 wrote:
+>> I still need to look better at this but I do have one though already=20
+>> :)
+>>
+>> On Wed, 2024-10-23 at 15:59 -0500, David Lechner wrote:
+>>> Add a new devm_iio_dmaengine_buffer_setup_ext2() function to handle
+>>> cases where the DMA channel is managed by the caller rather than=20
+>>> being
+>>> requested and released by the iio_dmaengine module.
+>>>
+>>> Signed-off-by: David Lechner <dlechner@baylibre.com>
+>>> ---
+>>>
+>>> v4 changes:
+>>> * This replaces "iio: buffer-dmaengine: generalize requesting DMA=20
+>>> channel"
+>>> ---
 >
-> > Another approach can be done (but probably not by me) is to move the ID
-> > to the proper location, add ODR startup timeouts or explain why it's no=
-t
-> > needed and then apply my patch.
-> >
-> > But, taking into account that we are almost at -rc5 and I want my stuff
-> > not to be postponed, I tend to follow the first approach.
-> >
-> > Opinions, comments?
-> >
-> > P.S. FWIW, my set will include switching this driver to use chip_info
-> > structure so the similar mistakes won't happen again, that's also why
-> > I prefer the first approach I listed above.
+> ...
 >
-> Hmm. Either I want the revert in before the release, or your series
-> to make the merge window (and hence probably hit in first couple of stabl=
-e
-> releases).
+>>> @@ -282,12 +281,38 @@ void iio_dmaengine_buffer_free(struct=20
+>>> iio_buffer *buffer)
+>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_buffer_to_dmaengine_buff=
+er(buffer);
+>>> =C2=A0
+>>> =C2=A0=C2=A0=C2=A0 iio_dma_buffer_exit(&dmaengine_buffer->queue);
+>>> -=C2=A0=C2=A0 dma_release_channel(dmaengine_buffer->chan);
+>>> -
+>>> =C2=A0=C2=A0=C2=A0 iio_buffer_put(buffer);
+>>> +
+>>> +=C2=A0=C2=A0 if (dmaengine_buffer->owns_chan)
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dma_release_channel(dmaengine_buf=
+fer->chan);
+>>
+>> Not sure if I agree much with this owns_chan flag. The way I see it,=20
+>> we should always
+>> handover the lifetime of the DMA channel to the IIO DMA framework.=20
+>> Note that even the
+>> device you pass in for both requesting the channel of the spi_offload=C2=
+=A0=20
+>> and for
+>> setting up the DMA buffer is the same (and i suspect it will always=20
+>> be) so I would
+>> not go with the trouble. And with this assumption we could simplify a=20
+>> bit more the
+>> spi implementation.
+>
+> I tried something like this in v3 but Jonathan didn't seem to like it.
+>
+> https://lore.kernel.org/all/20240727144303.4a8604cb@jic23-huawei/
+>
+>>
+>> And not even related but I even suspect the current implementation=20
+>> could be
+>> problematic. Basically I'm suspecting that the lifetime of the DMA=20
+>> channel should be
+>> attached to the lifetime of the iio_buffer. IOW, we should only=20
+>> release the channel
+>> in iio_dmaengine_buffer_release() - in which case the current=20
+>> implementation with the
+>> spi_offload would also be buggy.
+>
+> The buffer can outlive the iio device driver that created the buffer?
 
-I have sent the v3 (out of 24 patches) that includes revert and a fix
-in the I2C ID table. Those two can be backported.
+Yes, it can as the IIO device itself. In case a userspace app has an open=
+=20
+FD for the buffer chardev, we get a reference that is only released when=20
+the FD is closed (which can outlive the device behind bound to its=20
+driver). That is why we nullify indio_dev->info and check for it on the=20
+read() and write() fops.
 
-> Ideal would be revert very soon and chase it in to togreg so your series
-> can go on top, but that would rely on some lucky timing of pull requests
-> and merges that is probably too optimistic.
+FWIW, I raised concerns about this in the past (as we don't have any lock=
+=20
+in those paths) but Jonathan rightfully wanted to see a real race. And I=20
+was too lazy to try and reproduce one but I'm still fairly sure we have=20
+theoretical (at least) races in those paths. And one of them could be (I=20
+think) concurrently hitting a DMA submit block while the device is being=20
+unbound. In that case the DMA chan would be already released and we could=
+=20
+still try to initiate a transfer. I did not check if that would crash or=20
+something but it should still not happen.
 
-Up to you how to proceed, the patches are available in the mailing list :-)
-
---=20
-With Best Regards,
-Andy Shevchenko
+- Nuno S=C3=A1
