@@ -1,62 +1,62 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com [209.85.128.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31C361DD0FA
-	for <linux-iio@vger.kernel.org>; Fri, 25 Oct 2024 09:51:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23C211F8180
+	for <linux-iio@vger.kernel.org>; Fri, 25 Oct 2024 09:51:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729849873; cv=none; b=nvxhcDeHbRF96SDcpHvbqom2EdYJSXDWXR6iK4dNKWlLJLc7Jbop9SNh1MPHcd/gsXsPYbqWcze28hebcPPz15Bvohw/phRYYni4I3umtM717+eBCGCExGykrJCe8G75DIC3OSOiGZgG/fZ0DnTIGGdvHiFlr/lvLgbAi8Xdox8=
+	t=1729849873; cv=none; b=Mijsz0avIvL2kSHvBKlBuwULboak6tK1fuBEXlyLL36NWlTBjN6O2Abx7QmsBfir9sdLk0bG/wVQE0RUToXnOIbIO8Dny7zl9oAJt6fKECDV60otCmWFqpqPuR78snRuAOlJ2M967oHCWA3od7LWmGO7A8/PYiuqNpVU3tk0J/Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1729849873; c=relaxed/simple;
-	bh=z3pMsYq/WCjJ5cGi5DZHS/I9h7QpOytsVxUzZssEfU8=;
+	bh=qkX0nl5rvNFAD4t3iDzIThyb/2D3UDTKreCfkCePaGQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=a6KUP+8ed9EDTAZEDkl749mlyTHuqZaL7TPslAZ/Uzz9T08hT8B9YED8Tz6Q5Mcr3Sqme1OqM4IFWb786JajT5SNL8FzH6Ena6Vv0+qTdkG//q0B0k0LKm5MRtW5j1Mf2Nw5oCpXEU4Max+l6LiDIJUrPmA7wRVckNmRJKBIKnI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=CjdFySvN; arc=none smtp.client-ip=209.85.167.48
+	 In-Reply-To:To:Cc; b=eqfhuHAvSU2VMB9rMZZ/lIMm2CclOgQM79w7n3HcmAyyIWfkTVmP2sqhF1B1Zv3FhZnQz3+9G4kYSZ7O7LpkC1GY4oIl4tV7O7aP4TAJVMaEZE7UeMfFq9p2PeHGTMIb6orEt1MIzTKbxrgOIM2V+/XNDMWHvG64VSNou36d6Ls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=lA1tg0Eh; arc=none smtp.client-ip=209.85.128.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="CjdFySvN"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-539e13375d3so2195207e87.3
-        for <linux-iio@vger.kernel.org>; Fri, 25 Oct 2024 02:51:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="lA1tg0Eh"
+Received: by mail-wm1-f66.google.com with SMTP id 5b1f17b1804b1-43155afca99so19829335e9.1
+        for <linux-iio@vger.kernel.org>; Fri, 25 Oct 2024 02:51:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1729849866; x=1730454666; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1729849869; x=1730454669; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=3LP2SK3ImgeSsfc3Kk3d1CrxyYM7oitcHbek/7ETa9o=;
-        b=CjdFySvN+EDGjbOO8IA82ZswCOoqCo/ubjbquDhkAD6yJrrgPItgLcTAYP41NYjVbV
-         4Qh+MhOuiXqmfqfMn94jo1u5I63WqxbAqJf7X8wncgxd/YJPwvVpGBAitQXcgaiEuPQ2
-         UC/A43NWJKySU2hfSKdbMA49EoXN8n43PpVuCUBXrsIiAfOngwoRmR6vru+rzzl7MXKz
-         WuIHUkZxiwSoULDgUQi8cdLnEPPQso62ydm1x394oKKP2bpac3487cnvbQwaYJV7rAip
-         l7Tkj9Ug93RB3vRu5iSAw6thGu/wvYt+2lO4X4a7Vrov+jqG/2iAmGGt9PyaeNPPhewk
-         Ci9g==
+        bh=/aYRx10LIx18s/5vpjDGgULjxldPzrrAdUjt9qoc4a4=;
+        b=lA1tg0EhCp6dO/I9egv8EA6rqK5v5UKRopaxlzw/CCC+vuhqwi8BhgIcEgCAVsk30U
+         J6tgfhaSfiC9Y7x6nIuM9+ygZyY0fIr7znJEKTZ9uBOqc0bkcdaTXfN0N8BRlV09EWQP
+         whCWCoikJtiCtJfI3MAEqQ9HBqVSZ0miFMnV2GsxdexoV+ahKaH7CashNJVW8+/c2EH8
+         8IaLPN8Ck8PMDeOow48W2nJtfK7Njcw+RM9SZCVtfv7msRebn6pAGydqDxpyOUT3r+c9
+         69PT0R10ybEyuRPtyde7q2yn/kUngvs1C8UpuJVanT6xl+A4+FZZeJ+aZY/kO8OeVHDE
+         fTnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729849866; x=1730454666;
+        d=1e100.net; s=20230601; t=1729849869; x=1730454669;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=3LP2SK3ImgeSsfc3Kk3d1CrxyYM7oitcHbek/7ETa9o=;
-        b=nWFaJHiYC8r1PnYF7aD6QYYdVIXAahge7NH94YceNFlbcarv7xDu74L2TI3GkAMcW3
-         eQDV2byupQ6EVNNPtxV50G/sUeXg5lBJLcja7J5oSseUPjN3nbCXjkVVfkVMEgm9k5mW
-         j0Rp7l6nezKIjarbBPZqi2g6O4PMXI4AUc1otPHHo2NYooxfPrtf0DAQ6byJJF3+96IV
-         EvvqjhGZkyXrSUyKQc/+1GcPGt29cRXy/nNyFrGvXlRBa8d28KJ1OBLsU3/wkO1RvUHj
-         9MGfczwK5Y7ZJ4hQlkIN06rizoXEe/EmmidnrbWNVgxWL2QHomBCrefRBbgY5esDRS24
-         Z2Jw==
-X-Gm-Message-State: AOJu0YwTeVQQRJO9MrUCiufmweGubnDLWDqQUVQ1bgtfftKX86hKhb2S
-	KFFlnfNRN37nRyeQa34sUMNjub1JvjFIbHLTIZVXUGCKt9ZA2Ig1Vd/meIuTbPn+Iwo7r22QtTo
-	zyEjbtQ==
-X-Google-Smtp-Source: AGHT+IGeKTIiekGEU2YXwtNJbKm4AdvByUFDKwaN7aLcVEwW3v81Sh+lpNL8Ji+hyT4LVxwJ6S+xrA==
-X-Received: by 2002:a05:651c:1508:b0:2fb:351c:c3c9 with SMTP id 38308e7fff4ca-2fc9d5982bdmr50368471fa.44.1729849865633;
-        Fri, 25 Oct 2024 02:51:05 -0700 (PDT)
+        bh=/aYRx10LIx18s/5vpjDGgULjxldPzrrAdUjt9qoc4a4=;
+        b=otFvqahpdBAOdt9itX+5+R4ZHXvjAzNl7ueRnIYPY8aQda4kf12nYMito/WYytL2XH
+         5ZYM4MJnAENJfuqPX+7QY2DWpLTu0Q4aUeURyNkNBqNxA/MxCwVqCfTicmuMON1T38G4
+         nJgAk+rXdqbcCUWGpHzgkkyY+K6hwdCt2gx/IgxuGFe0PX+joRhurZuhVOcFB/V6mSp+
+         0HGg6qUtCuOm/PImKKMoht5mUFi6do3id2F7GablSNp69Ca//ZCORJ4Mhv6HJtN1MZRj
+         2PNzSXdqU87V+MrUE4vKNMxJOhbM+G2ENfMkPF7GG1lc5XChvP2n3azsiFpdHpveATzB
+         X8uQ==
+X-Gm-Message-State: AOJu0Yzdj2ZnBusNdwiMYwCcG8wMr6HrR2jgZoKfq32p1vDrIkCryIKg
+	ku7i7ddG6DT84T1fMcajQq1dLErwk9UBewZx59Iw+bdek9C0Z65zjoS2Hj9lhI56/3qBbBaq6g2
+	+meBFaURb
+X-Google-Smtp-Source: AGHT+IHmwWsFrbMw/Bs+MM2teeITRSFYRP5Geof+tpjdxm9iyQ5zs+9wro7UoDvxoKjOKk3Hp1Cmvg==
+X-Received: by 2002:a05:600c:35d5:b0:431:52da:9d89 with SMTP id 5b1f17b1804b1-4318b5b0cf5mr36654655e9.1.1729849869003;
+        Fri, 25 Oct 2024 02:51:09 -0700 (PDT)
 Received: from [127.0.1.1] (host-79-41-194-153.retail.telecomitalia.it. [79.41.194.153])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-431935f6df1sm12895085e9.35.2024.10.25.02.51.03
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-431935f6df1sm12895085e9.35.2024.10.25.02.51.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Oct 2024 02:51:05 -0700 (PDT)
+        Fri, 25 Oct 2024 02:51:08 -0700 (PDT)
 From: Angelo Dureghello <adureghello@baylibre.com>
 X-Google-Original-From: Angelo Dureghello <adureghello@baylibre.org>
-Date: Fri, 25 Oct 2024 11:49:39 +0200
-Subject: [PATCH v8 6/8] iio: dac: ad3552r: extract common code (no changes
- in behavior intended)
+Date: Fri, 25 Oct 2024 11:49:41 +0200
+Subject: [PATCH v8 8/8] iio: dac: adi-axi-dac: add registering of child fdt
+ node
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,7 +65,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241025-wip-bl-ad3552r-axi-v0-iio-testing-v8-6-74ca7dd60567@baylibre.com>
+Message-Id: <20241025-wip-bl-ad3552r-axi-v0-iio-testing-v8-8-74ca7dd60567@baylibre.com>
 References: <20241025-wip-bl-ad3552r-axi-v0-iio-testing-v8-0-74ca7dd60567@baylibre.com>
 In-Reply-To: <20241025-wip-bl-ad3552r-axi-v0-iio-testing-v8-0-74ca7dd60567@baylibre.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -82,990 +82,112 @@ X-Mailer: b4 0.14.1
 
 From: Angelo Dureghello <adureghello@baylibre.com>
 
-Extracting common code, to share common code to be used later
-by the AXI driver version (ad3552r-axi.c).
+Change to obtain the fdt use case as reported in the
+adi,ad3552r.yaml file in this patchset.
+
+The DAC device is defined as a child node of the backend.
+Registering the child fdt node as a platform devices.
 
 Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
 ---
- drivers/iio/dac/Makefile         |   2 +-
- drivers/iio/dac/ad3552r-common.c | 248 ++++++++++++++++++++++++
- drivers/iio/dac/ad3552r.c        | 398 +++------------------------------------
- drivers/iio/dac/ad3552r.h        | 226 ++++++++++++++++++++++
- 4 files changed, 502 insertions(+), 372 deletions(-)
+ drivers/iio/dac/adi-axi-dac.c | 56 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
 
-diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-index 621d553bd6e3..c92de0366238 100644
---- a/drivers/iio/dac/Makefile
-+++ b/drivers/iio/dac/Makefile
-@@ -4,7 +4,7 @@
- #
+diff --git a/drivers/iio/dac/adi-axi-dac.c b/drivers/iio/dac/adi-axi-dac.c
+index 148e40a8ab2a..dc9f881bf9ce 100644
+--- a/drivers/iio/dac/adi-axi-dac.c
++++ b/drivers/iio/dac/adi-axi-dac.c
+@@ -29,6 +29,8 @@
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
  
- # When adding new entries keep the list in alphabetical order
--obj-$(CONFIG_AD3552R) += ad3552r.o
-+obj-$(CONFIG_AD3552R) += ad3552r.o ad3552r-common.o
- obj-$(CONFIG_AD5360) += ad5360.o
- obj-$(CONFIG_AD5380) += ad5380.o
- obj-$(CONFIG_AD5421) += ad5421.o
-diff --git a/drivers/iio/dac/ad3552r-common.c b/drivers/iio/dac/ad3552r-common.c
-new file mode 100644
-index 000000000000..672f0284bc05
---- /dev/null
-+++ b/drivers/iio/dac/ad3552r-common.c
-@@ -0,0 +1,248 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+//
-+// Copyright (c) 2010-2024 Analog Devices Inc.
-+// Copyright (c) 2024 Baylibre, SAS
++#include "ad3552r-hs.h"
 +
-+#include <linux/device.h>
-+#include <linux/module.h>
-+#include <linux/property.h>
-+#include <linux/regulator/consumer.h>
-+
-+#include "ad3552r.h"
-+
-+const s32 ad3552r_ch_ranges[AD3552R_MAX_RANGES][2] = {
-+	[AD3552R_CH_OUTPUT_RANGE_0__2P5V]	= { 0, 2500 },
-+	[AD3552R_CH_OUTPUT_RANGE_0__5V]		= { 0, 5000 },
-+	[AD3552R_CH_OUTPUT_RANGE_0__10V]	= { 0, 10000 },
-+	[AD3552R_CH_OUTPUT_RANGE_NEG_5__5V]	= { -5000, 5000 },
-+	[AD3552R_CH_OUTPUT_RANGE_NEG_10__10V]	= { -10000, 10000 }
-+};
-+EXPORT_SYMBOL_NS_GPL(ad3552r_ch_ranges, IIO_AD3552R);
-+
-+const s32 ad3542r_ch_ranges[AD3542R_MAX_RANGES][2] = {
-+	[AD3542R_CH_OUTPUT_RANGE_0__2P5V]	= { 0, 2500 },
-+	[AD3542R_CH_OUTPUT_RANGE_0__3V]		= { 0, 3000 },
-+	[AD3542R_CH_OUTPUT_RANGE_0__5V]		= { 0, 5000 },
-+	[AD3542R_CH_OUTPUT_RANGE_0__10V]	= { 0, 10000 },
-+	[AD3542R_CH_OUTPUT_RANGE_NEG_2P5__7P5V]	= { -2500, 7500 },
-+	[AD3542R_CH_OUTPUT_RANGE_NEG_5__5V]	= { -5000, 5000 }
-+};
-+EXPORT_SYMBOL_NS_GPL(ad3542r_ch_ranges, IIO_AD3552R);
-+
-+/* Gain * AD3552R_GAIN_SCALE */
-+static const s32 gains_scaling_table[] = {
-+	[AD3552R_CH_GAIN_SCALING_1]		= 1000,
-+	[AD3552R_CH_GAIN_SCALING_0_5]		= 500,
-+	[AD3552R_CH_GAIN_SCALING_0_25]		= 250,
-+	[AD3552R_CH_GAIN_SCALING_0_125]		= 125
-+};
-+
-+u16 ad3552r_calc_custom_gain(u8 p, u8 n, s16 goffs)
-+{
-+	return FIELD_PREP(AD3552R_MASK_CH_RANGE_OVERRIDE, 1) |
-+	       FIELD_PREP(AD3552R_MASK_CH_GAIN_SCALING_P, p) |
-+	       FIELD_PREP(AD3552R_MASK_CH_GAIN_SCALING_N, n) |
-+	       FIELD_PREP(AD3552R_MASK_CH_OFFSET_BIT_8, abs(goffs)) |
-+	       FIELD_PREP(AD3552R_MASK_CH_OFFSET_POLARITY, goffs < 0);
-+}
-+EXPORT_SYMBOL_NS_GPL(ad3552r_calc_custom_gain, IIO_AD3552R);
-+
-+static void ad3552r_get_custom_range(struct ad3552r_ch_data *ch_data,
-+				     s32 *v_min, s32 *v_max)
-+{
-+	s64 vref, tmp, common, offset, gn, gp;
-+	/*
-+	 * From datasheet formula (In Volts):
-+	 *	Vmin = 2.5 + [(GainN + Offset / 1024) * 2.5 * Rfb * 1.03]
-+	 *	Vmax = 2.5 - [(GainP + Offset / 1024) * 2.5 * Rfb * 1.03]
-+	 * Calculus are converted to milivolts
-+	 */
-+	vref = 2500;
-+	/* 2.5 * 1.03 * 1000 (To mV) */
-+	common = 2575 * ch_data->rfb;
-+	offset = ch_data->gain_offset;
-+
-+	gn = gains_scaling_table[ch_data->n];
-+	tmp = (1024 * gn + AD3552R_GAIN_SCALE * offset) * common;
-+	tmp = div_s64(tmp, 1024  * AD3552R_GAIN_SCALE);
-+	*v_max = vref + tmp;
-+
-+	gp = gains_scaling_table[ch_data->p];
-+	tmp = (1024 * gp - AD3552R_GAIN_SCALE * offset) * common;
-+	tmp = div_s64(tmp, 1024 * AD3552R_GAIN_SCALE);
-+	*v_min = vref - tmp;
-+}
-+
-+void ad3552r_calc_gain_and_offset(struct ad3552r_ch_data *ch_data,
-+				  const struct ad3552r_model_data *model_data)
-+{
-+	s32 idx, v_max, v_min, span, rem;
-+	s64 tmp;
-+
-+	if (ch_data->range_override) {
-+		ad3552r_get_custom_range(ch_data, &v_min, &v_max);
-+	} else {
-+		/* Normal range */
-+		idx = ch_data->range;
-+		v_min = model_data->ranges_table[idx][0];
-+		v_max = model_data->ranges_table[idx][1];
-+	}
-+
-+	/*
-+	 * From datasheet formula:
-+	 *	Vout = Span * (D / 65536) + Vmin
-+	 * Converted to scale and offset:
-+	 *	Scale = Span / 65536
-+	 *	Offset = 65536 * Vmin / Span
-+	 *
-+	 * Reminders are in micros in order to be printed as
-+	 * IIO_VAL_INT_PLUS_MICRO
-+	 */
-+	span = v_max - v_min;
-+	ch_data->scale_int = div_s64_rem(span, 65536, &rem);
-+	/* Do operations in microvolts */
-+	ch_data->scale_dec = DIV_ROUND_CLOSEST((s64)rem * 1000000, 65536);
-+
-+	ch_data->offset_int = div_s64_rem(v_min * 65536, span, &rem);
-+	tmp = (s64)rem * 1000000;
-+	ch_data->offset_dec = div_s64(tmp, span);
-+}
-+EXPORT_SYMBOL_NS_GPL(ad3552r_calc_gain_and_offset, IIO_AD3552R);
-+
-+int ad3552r_get_ref_voltage(struct device *dev, u32 *val)
-+{
-+	int voltage;
-+	int delta = 100000;
-+
-+	voltage = devm_regulator_get_enable_read_voltage(dev, "vref");
-+	if (voltage < 0 && voltage != -ENODEV)
-+		return dev_err_probe(dev, voltage,
-+				     "Error getting vref voltage\n");
-+
-+	if (voltage == -ENODEV) {
-+		if (device_property_read_bool(dev, "adi,vref-out-en"))
-+			*val = AD3552R_INTERNAL_VREF_PIN_2P5V;
-+		else
-+			*val = AD3552R_INTERNAL_VREF_PIN_FLOATING;
-+
-+		return 0;
-+	}
-+
-+	if (voltage > 2500000 + delta || voltage < 2500000 - delta) {
-+		dev_warn(dev, "vref-supply must be 2.5V");
-+		return -EINVAL;
-+	}
-+
-+	*val = AD3552R_EXTERNAL_VREF_PIN_INPUT;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_NS_GPL(ad3552r_get_ref_voltage, IIO_AD3552R);
-+
-+int ad3552r_get_drive_strength(struct device *dev, u32 *val)
-+{
-+	int err;
-+	u32 drive_strength;
-+
-+	err = device_property_read_u32(dev, "adi,sdo-drive-strength",
-+				       &drive_strength);
-+	if (err)
-+		return err;
-+
-+	if (drive_strength > 3) {
-+		dev_err_probe(dev, -EINVAL,
-+			      "adi,sdo-drive-strength must be less than 4\n");
-+		return -EINVAL;
-+	}
-+
-+	*val = drive_strength;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_NS_GPL(ad3552r_get_drive_strength, IIO_AD3552R);
-+
-+int ad3552r_get_custom_gain(struct device *dev, struct fwnode_handle *child,
-+			    u8 *gs_p, u8 *gs_n, u16 *rfb, s16 *goffs)
-+{
-+	int err;
-+	u32 val;
-+	struct fwnode_handle *gain_child __free(fwnode_handle) =
-+		fwnode_get_named_child_node(child,
-+					    "custom-output-range-config");
-+
-+	if (!gain_child)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "custom-output-range-config mandatory\n");
-+
-+	err = fwnode_property_read_u32(gain_child, "adi,gain-scaling-p", &val);
-+	if (err)
-+		return dev_err_probe(dev, err,
-+				     "adi,gain-scaling-p mandatory\n");
-+	*gs_p = val;
-+
-+	err = fwnode_property_read_u32(gain_child, "adi,gain-scaling-n", &val);
-+	if (err)
-+		return dev_err_probe(dev, err,
-+				     "adi,gain-scaling-n property mandatory\n");
-+	*gs_n = val;
-+
-+	err = fwnode_property_read_u32(gain_child, "adi,rfb-ohms", &val);
-+	if (err)
-+		return dev_err_probe(dev, err,
-+				     "adi,rfb-ohms mandatory\n");
-+	*rfb = val;
-+
-+	err = fwnode_property_read_u32(gain_child, "adi,gain-offset", &val);
-+	if (err)
-+		return dev_err_probe(dev, err,
-+				     "adi,gain-offset mandatory\n");
-+	*goffs = val;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_NS_GPL(ad3552r_get_custom_gain, IIO_AD3552R);
-+
-+static int ad3552r_find_range(const struct ad3552r_model_data *model_info,
-+			      s32 *vals)
-+{
-+	int i;
-+
-+	for (i = 0; i < model_info->num_ranges; i++)
-+		if (vals[0] == model_info->ranges_table[i][0] * 1000 &&
-+		    vals[1] == model_info->ranges_table[i][1] * 1000)
-+			return i;
-+
-+	return -EINVAL;
-+}
-+
-+int ad3552r_get_output_range(struct device *dev,
-+			     const struct ad3552r_model_data *model_info,
-+			     struct fwnode_handle *child, u32 *val)
-+{
-+	int ret;
-+	s32 vals[2];
-+
-+	/* This property is optional, so returning -ENOENT if missing */
-+	if (!fwnode_property_present(child, "adi,output-range-microvolt"))
-+		return -ENOENT;
-+
-+	ret = fwnode_property_read_u32_array(child,
-+					     "adi,output-range-microvolt",
-+					     vals, 2);
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				"invalid adi,output-range-microvolt\n");
-+
-+	ret = ad3552r_find_range(model_info, vals);
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret,
-+			"invalid adi,output-range-microvolt value\n");
-+
-+	*val = ret;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_NS_GPL(ad3552r_get_output_range, IIO_AD3552R);
-+
-+MODULE_DESCRIPTION("ad3552r common functions");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/dac/ad3552r.c b/drivers/iio/dac/ad3552r.c
-index 75825d6a398b..bbfb451a5da1 100644
---- a/drivers/iio/dac/ad3552r.c
-+++ b/drivers/iio/dac/ad3552r.c
-@@ -11,226 +11,9 @@
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iopoll.h>
- #include <linux/kernel.h>
--#include <linux/regulator/consumer.h>
- #include <linux/spi/spi.h>
+ /*
+  * Register definitions:
+  *   https://wiki.analog.com/resources/fpga/docs/axi_dac_ip#register_map
+@@ -97,6 +99,7 @@ struct axi_dac_info {
+ 	unsigned int version;
+ 	const struct iio_backend_info *backend_info;
+ 	bool has_dac_clk;
++	bool has_child_nodes;
+ };
  
--/* Register addresses */
--/* Primary address space */
--#define AD3552R_REG_ADDR_INTERFACE_CONFIG_A		0x00
--#define   AD3552R_MASK_SOFTWARE_RESET			(BIT(7) | BIT(0))
--#define   AD3552R_MASK_ADDR_ASCENSION			BIT(5)
--#define   AD3552R_MASK_SDO_ACTIVE			BIT(4)
--#define AD3552R_REG_ADDR_INTERFACE_CONFIG_B		0x01
--#define   AD3552R_MASK_SINGLE_INST			BIT(7)
--#define   AD3552R_MASK_SHORT_INSTRUCTION		BIT(3)
--#define AD3552R_REG_ADDR_DEVICE_CONFIG			0x02
--#define   AD3552R_MASK_DEVICE_STATUS(n)			BIT(4 + (n))
--#define   AD3552R_MASK_CUSTOM_MODES			GENMASK(3, 2)
--#define   AD3552R_MASK_OPERATING_MODES			GENMASK(1, 0)
--#define AD3552R_REG_ADDR_CHIP_TYPE			0x03
--#define   AD3552R_MASK_CLASS				GENMASK(7, 0)
--#define AD3552R_REG_ADDR_PRODUCT_ID_L			0x04
--#define AD3552R_REG_ADDR_PRODUCT_ID_H			0x05
--#define AD3552R_REG_ADDR_CHIP_GRADE			0x06
--#define   AD3552R_MASK_GRADE				GENMASK(7, 4)
--#define   AD3552R_MASK_DEVICE_REVISION			GENMASK(3, 0)
--#define AD3552R_REG_ADDR_SCRATCH_PAD			0x0A
--#define AD3552R_REG_ADDR_SPI_REVISION			0x0B
--#define AD3552R_REG_ADDR_VENDOR_L			0x0C
--#define AD3552R_REG_ADDR_VENDOR_H			0x0D
--#define AD3552R_REG_ADDR_STREAM_MODE			0x0E
--#define   AD3552R_MASK_LENGTH				GENMASK(7, 0)
--#define AD3552R_REG_ADDR_TRANSFER_REGISTER		0x0F
--#define   AD3552R_MASK_MULTI_IO_MODE			GENMASK(7, 6)
--#define   AD3552R_MASK_STREAM_LENGTH_KEEP_VALUE		BIT(2)
--#define AD3552R_REG_ADDR_INTERFACE_CONFIG_C		0x10
--#define   AD3552R_MASK_CRC_ENABLE			(GENMASK(7, 6) |\
--							 GENMASK(1, 0))
--#define   AD3552R_MASK_STRICT_REGISTER_ACCESS		BIT(5)
--#define AD3552R_REG_ADDR_INTERFACE_STATUS_A		0x11
--#define   AD3552R_MASK_INTERFACE_NOT_READY		BIT(7)
--#define   AD3552R_MASK_CLOCK_COUNTING_ERROR		BIT(5)
--#define   AD3552R_MASK_INVALID_OR_NO_CRC		BIT(3)
--#define   AD3552R_MASK_WRITE_TO_READ_ONLY_REGISTER	BIT(2)
--#define   AD3552R_MASK_PARTIAL_REGISTER_ACCESS		BIT(1)
--#define   AD3552R_MASK_REGISTER_ADDRESS_INVALID		BIT(0)
--#define AD3552R_REG_ADDR_INTERFACE_CONFIG_D		0x14
--#define   AD3552R_MASK_ALERT_ENABLE_PULLUP		BIT(6)
--#define   AD3552R_MASK_MEM_CRC_EN			BIT(4)
--#define   AD3552R_MASK_SDO_DRIVE_STRENGTH		GENMASK(3, 2)
--#define   AD3552R_MASK_DUAL_SPI_SYNCHROUNOUS_EN		BIT(1)
--#define   AD3552R_MASK_SPI_CONFIG_DDR			BIT(0)
--#define AD3552R_REG_ADDR_SH_REFERENCE_CONFIG		0x15
--#define   AD3552R_MASK_IDUMP_FAST_MODE			BIT(6)
--#define   AD3552R_MASK_SAMPLE_HOLD_DIFFERENTIAL_USER_EN	BIT(5)
--#define   AD3552R_MASK_SAMPLE_HOLD_USER_TRIM		GENMASK(4, 3)
--#define   AD3552R_MASK_SAMPLE_HOLD_USER_ENABLE		BIT(2)
--#define   AD3552R_MASK_REFERENCE_VOLTAGE_SEL		GENMASK(1, 0)
--#define AD3552R_REG_ADDR_ERR_ALARM_MASK			0x16
--#define   AD3552R_MASK_REF_RANGE_ALARM			BIT(6)
--#define   AD3552R_MASK_CLOCK_COUNT_ERR_ALARM		BIT(5)
--#define   AD3552R_MASK_MEM_CRC_ERR_ALARM		BIT(4)
--#define   AD3552R_MASK_SPI_CRC_ERR_ALARM		BIT(3)
--#define   AD3552R_MASK_WRITE_TO_READ_ONLY_ALARM		BIT(2)
--#define   AD3552R_MASK_PARTIAL_REGISTER_ACCESS_ALARM	BIT(1)
--#define   AD3552R_MASK_REGISTER_ADDRESS_INVALID_ALARM	BIT(0)
--#define AD3552R_REG_ADDR_ERR_STATUS			0x17
--#define   AD3552R_MASK_REF_RANGE_ERR_STATUS			BIT(6)
--#define   AD3552R_MASK_DUAL_SPI_STREAM_EXCEEDS_DAC_ERR_STATUS	BIT(5)
--#define   AD3552R_MASK_MEM_CRC_ERR_STATUS			BIT(4)
--#define   AD3552R_MASK_RESET_STATUS				BIT(0)
--#define AD3552R_REG_ADDR_POWERDOWN_CONFIG		0x18
--#define   AD3552R_MASK_CH_DAC_POWERDOWN(ch)		BIT(4 + (ch))
--#define   AD3552R_MASK_CH_AMPLIFIER_POWERDOWN(ch)	BIT(ch)
--#define AD3552R_REG_ADDR_CH0_CH1_OUTPUT_RANGE		0x19
--#define   AD3552R_MASK_CH_OUTPUT_RANGE_SEL(ch)		((ch) ? GENMASK(7, 4) :\
--							 GENMASK(3, 0))
--#define AD3552R_REG_ADDR_CH_OFFSET(ch)			(0x1B + (ch) * 2)
--#define   AD3552R_MASK_CH_OFFSET_BITS_0_7		GENMASK(7, 0)
--#define AD3552R_REG_ADDR_CH_GAIN(ch)			(0x1C + (ch) * 2)
--#define   AD3552R_MASK_CH_RANGE_OVERRIDE		BIT(7)
--#define   AD3552R_MASK_CH_GAIN_SCALING_N		GENMASK(6, 5)
--#define   AD3552R_MASK_CH_GAIN_SCALING_P		GENMASK(4, 3)
--#define   AD3552R_MASK_CH_OFFSET_POLARITY		BIT(2)
--#define   AD3552R_MASK_CH_OFFSET_BIT_8			BIT(0)
--/*
-- * Secondary region
-- * For multibyte registers specify the highest address because the access is
-- * done in descending order
-- */
--#define AD3552R_SECONDARY_REGION_START			0x28
--#define AD3552R_REG_ADDR_HW_LDAC_16B			0x28
--#define AD3552R_REG_ADDR_CH_DAC_16B(ch)			(0x2C - (1 - ch) * 2)
--#define AD3552R_REG_ADDR_DAC_PAGE_MASK_16B		0x2E
--#define AD3552R_REG_ADDR_CH_SELECT_16B			0x2F
--#define AD3552R_REG_ADDR_INPUT_PAGE_MASK_16B		0x31
--#define AD3552R_REG_ADDR_SW_LDAC_16B			0x32
--#define AD3552R_REG_ADDR_CH_INPUT_16B(ch)		(0x36 - (1 - ch) * 2)
--/* 3 bytes registers */
--#define AD3552R_REG_START_24B				0x37
--#define AD3552R_REG_ADDR_HW_LDAC_24B			0x37
--#define AD3552R_REG_ADDR_CH_DAC_24B(ch)			(0x3D - (1 - ch) * 3)
--#define AD3552R_REG_ADDR_DAC_PAGE_MASK_24B		0x40
--#define AD3552R_REG_ADDR_CH_SELECT_24B			0x41
--#define AD3552R_REG_ADDR_INPUT_PAGE_MASK_24B		0x44
--#define AD3552R_REG_ADDR_SW_LDAC_24B			0x45
--#define AD3552R_REG_ADDR_CH_INPUT_24B(ch)		(0x4B - (1 - ch) * 3)
--
--/* Useful defines */
--#define AD3552R_MAX_CH					2
--#define AD3552R_MASK_CH(ch)				BIT(ch)
--#define AD3552R_MASK_ALL_CH				GENMASK(1, 0)
--#define AD3552R_MAX_REG_SIZE				3
--#define AD3552R_READ_BIT				BIT(7)
--#define AD3552R_ADDR_MASK				GENMASK(6, 0)
--#define AD3552R_MASK_DAC_12B				0xFFF0
--#define AD3552R_DEFAULT_CONFIG_B_VALUE			0x8
--#define AD3552R_SCRATCH_PAD_TEST_VAL1			0x34
--#define AD3552R_SCRATCH_PAD_TEST_VAL2			0xB2
--#define AD3552R_GAIN_SCALE				1000
--#define AD3552R_LDAC_PULSE_US				100
--
--enum ad3552r_ch_vref_select {
--	/* Internal source with Vref I/O floating */
--	AD3552R_INTERNAL_VREF_PIN_FLOATING,
--	/* Internal source with Vref I/O at 2.5V */
--	AD3552R_INTERNAL_VREF_PIN_2P5V,
--	/* External source with Vref I/O as input */
--	AD3552R_EXTERNAL_VREF_PIN_INPUT
--};
--
--enum ad3552r_id {
--	AD3541R_ID = 0x400b,
--	AD3542R_ID = 0x4009,
--	AD3551R_ID = 0x400a,
--	AD3552R_ID = 0x4008,
--};
--
--enum ad3552r_ch_output_range {
--	/* Range from 0 V to 2.5 V. Requires Rfb1x connection */
--	AD3552R_CH_OUTPUT_RANGE_0__2P5V,
--	/* Range from 0 V to 5 V. Requires Rfb1x connection  */
--	AD3552R_CH_OUTPUT_RANGE_0__5V,
--	/* Range from 0 V to 10 V. Requires Rfb2x connection  */
--	AD3552R_CH_OUTPUT_RANGE_0__10V,
--	/* Range from -5 V to 5 V. Requires Rfb2x connection  */
--	AD3552R_CH_OUTPUT_RANGE_NEG_5__5V,
--	/* Range from -10 V to 10 V. Requires Rfb4x connection  */
--	AD3552R_CH_OUTPUT_RANGE_NEG_10__10V,
--};
--
--static const s32 ad3552r_ch_ranges[][2] = {
--	[AD3552R_CH_OUTPUT_RANGE_0__2P5V]	= {0, 2500},
--	[AD3552R_CH_OUTPUT_RANGE_0__5V]		= {0, 5000},
--	[AD3552R_CH_OUTPUT_RANGE_0__10V]	= {0, 10000},
--	[AD3552R_CH_OUTPUT_RANGE_NEG_5__5V]	= {-5000, 5000},
--	[AD3552R_CH_OUTPUT_RANGE_NEG_10__10V]	= {-10000, 10000}
--};
--
--enum ad3542r_ch_output_range {
--	/* Range from 0 V to 2.5 V. Requires Rfb1x connection */
--	AD3542R_CH_OUTPUT_RANGE_0__2P5V,
--	/* Range from 0 V to 3 V. Requires Rfb1x connection  */
--	AD3542R_CH_OUTPUT_RANGE_0__3V,
--	/* Range from 0 V to 5 V. Requires Rfb1x connection  */
--	AD3542R_CH_OUTPUT_RANGE_0__5V,
--	/* Range from 0 V to 10 V. Requires Rfb2x connection  */
--	AD3542R_CH_OUTPUT_RANGE_0__10V,
--	/* Range from -2.5 V to 7.5 V. Requires Rfb2x connection  */
--	AD3542R_CH_OUTPUT_RANGE_NEG_2P5__7P5V,
--	/* Range from -5 V to 5 V. Requires Rfb2x connection  */
--	AD3542R_CH_OUTPUT_RANGE_NEG_5__5V,
--};
--
--static const s32 ad3542r_ch_ranges[][2] = {
--	[AD3542R_CH_OUTPUT_RANGE_0__2P5V]	= {0, 2500},
--	[AD3542R_CH_OUTPUT_RANGE_0__3V]		= {0, 3000},
--	[AD3542R_CH_OUTPUT_RANGE_0__5V]		= {0, 5000},
--	[AD3542R_CH_OUTPUT_RANGE_0__10V]	= {0, 10000},
--	[AD3542R_CH_OUTPUT_RANGE_NEG_2P5__7P5V]	= {-2500, 7500},
--	[AD3542R_CH_OUTPUT_RANGE_NEG_5__5V]	= {-5000, 5000}
--};
--
--enum ad3552r_ch_gain_scaling {
--	/* Gain scaling of 1 */
--	AD3552R_CH_GAIN_SCALING_1,
--	/* Gain scaling of 0.5 */
--	AD3552R_CH_GAIN_SCALING_0_5,
--	/* Gain scaling of 0.25 */
--	AD3552R_CH_GAIN_SCALING_0_25,
--	/* Gain scaling of 0.125 */
--	AD3552R_CH_GAIN_SCALING_0_125,
--};
--
--/* Gain * AD3552R_GAIN_SCALE */
--static const s32 gains_scaling_table[] = {
--	[AD3552R_CH_GAIN_SCALING_1]		= 1000,
--	[AD3552R_CH_GAIN_SCALING_0_5]		= 500,
--	[AD3552R_CH_GAIN_SCALING_0_25]		= 250,
--	[AD3552R_CH_GAIN_SCALING_0_125]		= 125
--};
--
--struct ad3552r_ch_data {
--	s32	scale_int;
--	s32	scale_dec;
--	s32	offset_int;
--	s32	offset_dec;
--	s16	gain_offset;
--	u16	rfb;
--	u8	n;
--	u8	p;
--	u8	range;
--	bool	range_override;
--};
--
--struct ad3552r_model_data {
--	const char *model_name;
--	enum ad3552r_id chip_id;
--	unsigned int num_hw_channels;
--	const s32 (*ranges_table)[2];
--	int num_ranges;
--	bool requires_output_range;
--};
-+#include "ad3552r.h"
- 
- struct ad3552r_desc {
- 	const struct ad3552r_model_data *model_data;
-@@ -632,136 +415,35 @@ static int ad3552r_reset(struct ad3552r_desc *dac)
- 					FIELD_PREP(AD3552R_MASK_ADDR_ASCENSION, val));
+ struct axi_dac_state {
+@@ -699,6 +702,36 @@ static int axi_dac_bus_reg_read(struct iio_backend *back, u32 reg, u32 *val,
+ 	return regmap_read(st->regmap, AXI_DAC_CUSTOM_RD_REG, val);
  }
  
--static void ad3552r_get_custom_range(struct ad3552r_desc *dac, s32 i, s32 *v_min,
--				     s32 *v_max)
--{
--	s64 vref, tmp, common, offset, gn, gp;
--	/*
--	 * From datasheet formula (In Volts):
--	 *	Vmin = 2.5 + [(GainN + Offset / 1024) * 2.5 * Rfb * 1.03]
--	 *	Vmax = 2.5 - [(GainP + Offset / 1024) * 2.5 * Rfb * 1.03]
--	 * Calculus are converted to milivolts
--	 */
--	vref = 2500;
--	/* 2.5 * 1.03 * 1000 (To mV) */
--	common = 2575 * dac->ch_data[i].rfb;
--	offset = dac->ch_data[i].gain_offset;
--
--	gn = gains_scaling_table[dac->ch_data[i].n];
--	tmp = (1024 * gn + AD3552R_GAIN_SCALE * offset) * common;
--	tmp = div_s64(tmp, 1024  * AD3552R_GAIN_SCALE);
--	*v_max = vref + tmp;
--
--	gp = gains_scaling_table[dac->ch_data[i].p];
--	tmp = (1024 * gp - AD3552R_GAIN_SCALE * offset) * common;
--	tmp = div_s64(tmp, 1024 * AD3552R_GAIN_SCALE);
--	*v_min = vref - tmp;
--}
--
--static void ad3552r_calc_gain_and_offset(struct ad3552r_desc *dac, s32 ch)
--{
--	s32 idx, v_max, v_min, span, rem;
--	s64 tmp;
--
--	if (dac->ch_data[ch].range_override) {
--		ad3552r_get_custom_range(dac, ch, &v_min, &v_max);
--	} else {
--		/* Normal range */
--		idx = dac->ch_data[ch].range;
--		v_min = dac->model_data->ranges_table[idx][0];
--		v_max = dac->model_data->ranges_table[idx][1];
--	}
--
--	/*
--	 * From datasheet formula:
--	 *	Vout = Span * (D / 65536) + Vmin
--	 * Converted to scale and offset:
--	 *	Scale = Span / 65536
--	 *	Offset = 65536 * Vmin / Span
--	 *
--	 * Reminders are in micros in order to be printed as
--	 * IIO_VAL_INT_PLUS_MICRO
--	 */
--	span = v_max - v_min;
--	dac->ch_data[ch].scale_int = div_s64_rem(span, 65536, &rem);
--	/* Do operations in microvolts */
--	dac->ch_data[ch].scale_dec = DIV_ROUND_CLOSEST((s64)rem * 1000000,
--							65536);
--
--	dac->ch_data[ch].offset_int = div_s64_rem(v_min * 65536, span, &rem);
--	tmp = (s64)rem * 1000000;
--	dac->ch_data[ch].offset_dec = div_s64(tmp, span);
--}
--
--static int ad3552r_find_range(const struct ad3552r_model_data *model_data,
--			      s32 *vals)
--{
--	int i;
--
--	for (i = 0; i < model_data->num_ranges; i++)
--		if (vals[0] == model_data->ranges_table[i][0] * 1000 &&
--		    vals[1] == model_data->ranges_table[i][1] * 1000)
--			return i;
--
--	return -EINVAL;
--}
--
- static int ad3552r_configure_custom_gain(struct ad3552r_desc *dac,
- 					 struct fwnode_handle *child,
- 					 u32 ch)
- {
- 	struct device *dev = &dac->spi->dev;
--	u32 val;
- 	int err;
- 	u8 addr;
--	u16 reg = 0, offset;
--
--	struct fwnode_handle *gain_child __free(fwnode_handle)
--		= fwnode_get_named_child_node(child,
--					      "custom-output-range-config");
--	if (!gain_child)
--		return dev_err_probe(dev, -EINVAL,
--				     "mandatory custom-output-range-config property missing\n");
--
--	dac->ch_data[ch].range_override = 1;
--	reg |= FIELD_PREP(AD3552R_MASK_CH_RANGE_OVERRIDE, 1);
--
--	err = fwnode_property_read_u32(gain_child, "adi,gain-scaling-p", &val);
--	if (err)
--		return dev_err_probe(dev, err,
--				     "mandatory adi,gain-scaling-p property missing\n");
--	reg |= FIELD_PREP(AD3552R_MASK_CH_GAIN_SCALING_P, val);
--	dac->ch_data[ch].p = val;
--
--	err = fwnode_property_read_u32(gain_child, "adi,gain-scaling-n", &val);
--	if (err)
--		return dev_err_probe(dev, err,
--				     "mandatory adi,gain-scaling-n property missing\n");
--	reg |= FIELD_PREP(AD3552R_MASK_CH_GAIN_SCALING_N, val);
--	dac->ch_data[ch].n = val;
--
--	err = fwnode_property_read_u32(gain_child, "adi,rfb-ohms", &val);
--	if (err)
--		return dev_err_probe(dev, err,
--				     "mandatory adi,rfb-ohms property missing\n");
--	dac->ch_data[ch].rfb = val;
-+	u16 reg;
++static void axi_dac_child_remove(void *data)
++{
++	platform_device_unregister(data);
++}
++
++static int axi_dac_create_platform_device(struct axi_dac_state *st,
++					  struct fwnode_handle *child)
++{
++	struct ad3552r_hs_platform_data pdata = {
++		.bus_reg_read = axi_dac_bus_reg_read,
++		.bus_reg_write = axi_dac_bus_reg_write,
++		.bus_sample_data_clock_hz = st->dac_clk_rate,
++	};
++	struct platform_device_info pi = {
++		.parent = st->dev,
++		.name = fwnode_get_name(child),
++		.id = PLATFORM_DEVID_AUTO,
++		.fwnode = child,
++		.data = &pdata,
++		.size_data = sizeof(pdata),
++	};
++	struct platform_device *pdev;
++
++	pdev = platform_device_register_full(&pi);
++	if (IS_ERR(pdev))
++		return PTR_ERR(pdev);
++
++	return devm_add_action_or_reset(st->dev, axi_dac_child_remove, pdev);
++}
++
+ static const struct iio_backend_ops axi_dac_generic_ops = {
+ 	.enable = axi_dac_enable,
+ 	.disable = axi_dac_disable,
+@@ -840,6 +873,28 @@ static int axi_dac_probe(struct platform_device *pdev)
+ 		return dev_err_probe(&pdev->dev, ret,
+ 				     "failed to register iio backend\n");
  
--	err = fwnode_property_read_u32(gain_child, "adi,gain-offset", &val);
-+	err = ad3552r_get_custom_gain(dev, child,
-+				      &dac->ch_data[ch].p,
-+				      &dac->ch_data[ch].n,
-+				      &dac->ch_data[ch].rfb,
-+				      &dac->ch_data[ch].gain_offset);
- 	if (err)
--		return dev_err_probe(dev, err,
--				     "mandatory adi,gain-offset property missing\n");
--	dac->ch_data[ch].gain_offset = val;
-+		return err;
++	device_for_each_child_node_scoped(&pdev->dev, child) {
++		int val;
++
++		if (!st->info->has_child_nodes)
++			return dev_err_probe(&pdev->dev, -EINVAL,
++					     "invalid fdt axi-dac compatible.");
++
++		/* Processing only reg 0 node */
++		ret = fwnode_property_read_u32(child, "reg", &val);
++		if (ret)
++			return dev_err_probe(&pdev->dev, ret,
++						"invalid reg property.");
++		if (val != 0)
++			return dev_err_probe(&pdev->dev, -EINVAL,
++						"invalid node address.");
++
++		ret = axi_dac_create_platform_device(st, child);
++		if (ret)
++			return dev_err_probe(&pdev->dev, -EINVAL,
++						"cannot create device.");
++	}
++
+ 	dev_info(&pdev->dev, "AXI DAC IP core (%d.%.2d.%c) probed\n",
+ 		 ADI_AXI_PCORE_VER_MAJOR(ver),
+ 		 ADI_AXI_PCORE_VER_MINOR(ver),
+@@ -857,6 +912,7 @@ static const struct axi_dac_info dac_ad3552r = {
+ 	.version = ADI_AXI_PCORE_VER(9, 1, 'b'),
+ 	.backend_info = &axi_ad3552r,
+ 	.has_dac_clk = true,
++	.has_child_nodes = true,
+ };
  
--	offset = abs((s32)val);
--	reg |= FIELD_PREP(AD3552R_MASK_CH_OFFSET_BIT_8, (offset >> 8));
-+	dac->ch_data[ch].range_override = 1;
- 
--	reg |= FIELD_PREP(AD3552R_MASK_CH_OFFSET_POLARITY, (s32)val < 0);
- 	addr = AD3552R_REG_ADDR_CH_GAIN(ch);
- 	err = ad3552r_write_reg(dac, addr,
--				offset & AD3552R_MASK_CH_OFFSET_BITS_0_7);
-+				abs((s32)dac->ch_data[ch].gain_offset) &
-+				AD3552R_MASK_CH_OFFSET_BITS_0_7);
- 	if (err)
- 		return dev_err_probe(dev, err, "Error writing register\n");
- 
-+	reg = ad3552r_calc_custom_gain(dac->ch_data[ch].p, dac->ch_data[ch].n,
-+				       dac->ch_data[ch].gain_offset);
-+
- 	err = ad3552r_write_reg(dac, addr, reg);
- 	if (err)
- 		return dev_err_probe(dev, err, "Error writing register\n");
-@@ -772,30 +454,17 @@ static int ad3552r_configure_custom_gain(struct ad3552r_desc *dac,
- static int ad3552r_configure_device(struct ad3552r_desc *dac)
- {
- 	struct device *dev = &dac->spi->dev;
--	int err, cnt = 0, voltage, delta = 100000;
--	u32 vals[2], val, ch;
-+	int err, cnt = 0;
-+	u32 val, ch;
- 
- 	dac->gpio_ldac = devm_gpiod_get_optional(dev, "ldac", GPIOD_OUT_HIGH);
- 	if (IS_ERR(dac->gpio_ldac))
- 		return dev_err_probe(dev, PTR_ERR(dac->gpio_ldac),
- 				     "Error getting gpio ldac");
- 
--	voltage = devm_regulator_get_enable_read_voltage(dev, "vref");
--	if (voltage < 0 && voltage != -ENODEV)
--		return dev_err_probe(dev, voltage, "Error getting vref voltage\n");
--
--	if (voltage == -ENODEV) {
--		if (device_property_read_bool(dev, "adi,vref-out-en"))
--			val = AD3552R_INTERNAL_VREF_PIN_2P5V;
--		else
--			val = AD3552R_INTERNAL_VREF_PIN_FLOATING;
--	} else {
--		if (voltage > 2500000 + delta || voltage < 2500000 - delta) {
--			dev_warn(dev, "vref-supply must be 2.5V");
--			return -EINVAL;
--		}
--		val = AD3552R_EXTERNAL_VREF_PIN_INPUT;
--	}
-+	err = ad3552r_get_ref_voltage(dev, &val);
-+	if (err < 0)
-+		return err;
- 
- 	err = ad3552r_update_reg_field(dac,
- 				       AD3552R_REG_ADDR_SH_REFERENCE_CONFIG,
-@@ -804,13 +473,8 @@ static int ad3552r_configure_device(struct ad3552r_desc *dac)
- 	if (err)
- 		return err;
- 
--	err = device_property_read_u32(dev, "adi,sdo-drive-strength", &val);
-+	err = ad3552r_get_drive_strength(dev, &val);
- 	if (!err) {
--		if (val > 3) {
--			dev_err(dev, "adi,sdo-drive-strength must be less than 4\n");
--			return -EINVAL;
--		}
--
- 		err = ad3552r_update_reg_field(dac,
- 					       AD3552R_REG_ADDR_INTERFACE_CONFIG_D,
- 					       AD3552R_MASK_SDO_DRIVE_STRENGTH,
-@@ -835,21 +499,12 @@ static int ad3552r_configure_device(struct ad3552r_desc *dac)
- 					     "reg must be less than %d\n",
- 					     dac->model_data->num_hw_channels);
- 
--		if (fwnode_property_present(child, "adi,output-range-microvolt")) {
--			err = fwnode_property_read_u32_array(child,
--							     "adi,output-range-microvolt",
--							     vals,
--							     2);
--			if (err)
--				return dev_err_probe(dev, err,
--					"adi,output-range-microvolt property could not be parsed\n");
--
--			err = ad3552r_find_range(dac->model_data, vals);
--			if (err < 0)
--				return dev_err_probe(dev, err,
--						     "Invalid adi,output-range-microvolt value\n");
-+		err = ad3552r_get_output_range(dev, dac->model_data,
-+					       child, &val);
-+		if (err && err != -ENOENT)
-+			return err;
- 
--			val = err;
-+		if (!err) {
- 			if (ch == 0)
- 				val = FIELD_PREP(AD3552R_MASK_CH_OUTPUT_RANGE_SEL(0), val);
- 			else
-@@ -873,7 +528,7 @@ static int ad3552r_configure_device(struct ad3552r_desc *dac)
- 				return err;
- 		}
- 
--		ad3552r_calc_gain_and_offset(dac, ch);
-+		ad3552r_calc_gain_and_offset(&dac->ch_data[ch], dac->model_data);
- 		dac->enabled_ch |= BIT(ch);
- 
- 		if (ch == 0)
-@@ -1072,3 +727,4 @@ module_spi_driver(ad3552r_driver);
- MODULE_AUTHOR("Mihail Chindris <mihail.chindris@analog.com>");
- MODULE_DESCRIPTION("Analog Device AD3552R DAC");
- MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(IIO_AD3552R);
-diff --git a/drivers/iio/dac/ad3552r.h b/drivers/iio/dac/ad3552r.h
-new file mode 100644
-index 000000000000..22bd9ad27c65
---- /dev/null
-+++ b/drivers/iio/dac/ad3552r.h
-@@ -0,0 +1,226 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * AD3552R Digital <-> Analog converters common header
-+ *
-+ * Copyright 2021-2024 Analog Devices Inc.
-+ * Author: Angelo Dureghello <adureghello@baylibre.com>
-+ */
-+
-+#ifndef __DRIVERS_IIO_DAC_AD3552R_H__
-+#define __DRIVERS_IIO_DAC_AD3552R_H__
-+
-+/* Register addresses */
-+/* Primary address space */
-+#define AD3552R_REG_ADDR_INTERFACE_CONFIG_A		0x00
-+#define   AD3552R_MASK_SOFTWARE_RESET			(BIT(7) | BIT(0))
-+#define   AD3552R_MASK_ADDR_ASCENSION			BIT(5)
-+#define   AD3552R_MASK_SDO_ACTIVE			BIT(4)
-+#define AD3552R_REG_ADDR_INTERFACE_CONFIG_B		0x01
-+#define   AD3552R_MASK_SINGLE_INST			BIT(7)
-+#define   AD3552R_MASK_SHORT_INSTRUCTION		BIT(3)
-+#define AD3552R_REG_ADDR_DEVICE_CONFIG			0x02
-+#define   AD3552R_MASK_DEVICE_STATUS(n)			BIT(4 + (n))
-+#define   AD3552R_MASK_CUSTOM_MODES			GENMASK(3, 2)
-+#define   AD3552R_MASK_OPERATING_MODES			GENMASK(1, 0)
-+#define AD3552R_REG_ADDR_CHIP_TYPE			0x03
-+#define   AD3552R_MASK_CLASS				GENMASK(7, 0)
-+#define AD3552R_REG_ADDR_PRODUCT_ID_L			0x04
-+#define AD3552R_REG_ADDR_PRODUCT_ID_H			0x05
-+#define AD3552R_REG_ADDR_CHIP_GRADE			0x06
-+#define   AD3552R_MASK_GRADE				GENMASK(7, 4)
-+#define   AD3552R_MASK_DEVICE_REVISION			GENMASK(3, 0)
-+#define AD3552R_REG_ADDR_SCRATCH_PAD			0x0A
-+#define AD3552R_REG_ADDR_SPI_REVISION			0x0B
-+#define AD3552R_REG_ADDR_VENDOR_L			0x0C
-+#define AD3552R_REG_ADDR_VENDOR_H			0x0D
-+#define AD3552R_REG_ADDR_STREAM_MODE			0x0E
-+#define   AD3552R_MASK_LENGTH				GENMASK(7, 0)
-+#define AD3552R_REG_ADDR_TRANSFER_REGISTER		0x0F
-+#define   AD3552R_MASK_MULTI_IO_MODE			GENMASK(7, 6)
-+#define   AD3552R_MASK_STREAM_LENGTH_KEEP_VALUE		BIT(2)
-+#define AD3552R_REG_ADDR_INTERFACE_CONFIG_C		0x10
-+#define   AD3552R_MASK_CRC_ENABLE			(GENMASK(7, 6) |\
-+							 GENMASK(1, 0))
-+#define   AD3552R_MASK_STRICT_REGISTER_ACCESS		BIT(5)
-+#define AD3552R_REG_ADDR_INTERFACE_STATUS_A		0x11
-+#define   AD3552R_MASK_INTERFACE_NOT_READY		BIT(7)
-+#define   AD3552R_MASK_CLOCK_COUNTING_ERROR		BIT(5)
-+#define   AD3552R_MASK_INVALID_OR_NO_CRC		BIT(3)
-+#define   AD3552R_MASK_WRITE_TO_READ_ONLY_REGISTER	BIT(2)
-+#define   AD3552R_MASK_PARTIAL_REGISTER_ACCESS		BIT(1)
-+#define   AD3552R_MASK_REGISTER_ADDRESS_INVALID		BIT(0)
-+#define AD3552R_REG_ADDR_INTERFACE_CONFIG_D		0x14
-+#define   AD3552R_MASK_ALERT_ENABLE_PULLUP		BIT(6)
-+#define   AD3552R_MASK_MEM_CRC_EN			BIT(4)
-+#define   AD3552R_MASK_SDO_DRIVE_STRENGTH		GENMASK(3, 2)
-+#define   AD3552R_MASK_DUAL_SPI_SYNCHROUNOUS_EN		BIT(1)
-+#define   AD3552R_MASK_SPI_CONFIG_DDR			BIT(0)
-+#define AD3552R_REG_ADDR_SH_REFERENCE_CONFIG		0x15
-+#define   AD3552R_MASK_IDUMP_FAST_MODE			BIT(6)
-+#define   AD3552R_MASK_SAMPLE_HOLD_DIFF_USER_EN		BIT(5)
-+#define   AD3552R_MASK_SAMPLE_HOLD_USER_TRIM		GENMASK(4, 3)
-+#define   AD3552R_MASK_SAMPLE_HOLD_USER_ENABLE		BIT(2)
-+#define   AD3552R_MASK_REFERENCE_VOLTAGE_SEL		GENMASK(1, 0)
-+#define AD3552R_REG_ADDR_ERR_ALARM_MASK			0x16
-+#define   AD3552R_MASK_REF_RANGE_ALARM			BIT(6)
-+#define   AD3552R_MASK_CLOCK_COUNT_ERR_ALARM		BIT(5)
-+#define   AD3552R_MASK_MEM_CRC_ERR_ALARM		BIT(4)
-+#define   AD3552R_MASK_SPI_CRC_ERR_ALARM		BIT(3)
-+#define   AD3552R_MASK_WRITE_TO_READ_ONLY_ALARM		BIT(2)
-+#define   AD3552R_MASK_PARTIAL_REGISTER_ACCESS_ALARM	BIT(1)
-+#define   AD3552R_MASK_REGISTER_ADDRESS_INVALID_ALARM	BIT(0)
-+#define AD3552R_REG_ADDR_ERR_STATUS			0x17
-+#define   AD3552R_MASK_REF_RANGE_ERR_STATUS		BIT(6)
-+#define   AD3552R_MASK_STREAM_EXCEEDS_DAC_ERR_STATUS	BIT(5)
-+#define   AD3552R_MASK_MEM_CRC_ERR_STATUS		BIT(4)
-+#define   AD3552R_MASK_RESET_STATUS			BIT(0)
-+#define AD3552R_REG_ADDR_POWERDOWN_CONFIG		0x18
-+#define   AD3552R_MASK_CH_DAC_POWERDOWN(ch)		BIT(4 + (ch))
-+#define   AD3552R_MASK_CH_AMPLIFIER_POWERDOWN(ch)	BIT(ch)
-+#define AD3552R_REG_ADDR_CH0_CH1_OUTPUT_RANGE		0x19
-+#define   AD3552R_MASK_CH0_RANGE			GENMASK(2, 0)
-+#define   AD3552R_MASK_CH1_RANGE			GENMASK(6, 4)
-+#define   AD3552R_MASK_CH_OUTPUT_RANGE			GENMASK(7, 0)
-+#define   AD3552R_MASK_CH_OUTPUT_RANGE_SEL(ch)		((ch) ? \
-+							 GENMASK(7, 4) : \
-+							 GENMASK(3, 0))
-+#define AD3552R_REG_ADDR_CH_OFFSET(ch)			(0x1B + (ch) * 2)
-+#define   AD3552R_MASK_CH_OFFSET_BITS_0_7		GENMASK(7, 0)
-+#define AD3552R_REG_ADDR_CH_GAIN(ch)			(0x1C + (ch) * 2)
-+#define   AD3552R_MASK_CH_RANGE_OVERRIDE		BIT(7)
-+#define   AD3552R_MASK_CH_GAIN_SCALING_N		GENMASK(6, 5)
-+#define   AD3552R_MASK_CH_GAIN_SCALING_P		GENMASK(4, 3)
-+#define   AD3552R_MASK_CH_OFFSET_POLARITY		BIT(2)
-+#define   AD3552R_MASK_CH_OFFSET_BIT_8			BIT(8)
-+/*
-+ * Secondary region
-+ * For multibyte registers specify the highest address because the access is
-+ * done in descending order
-+ */
-+#define AD3552R_SECONDARY_REGION_START			0x28
-+#define AD3552R_REG_ADDR_HW_LDAC_16B			0x28
-+#define AD3552R_REG_ADDR_CH_DAC_16B(ch)			(0x2C - (1 - (ch)) * 2)
-+#define AD3552R_REG_ADDR_DAC_PAGE_MASK_16B		0x2E
-+#define AD3552R_REG_ADDR_CH_SELECT_16B			0x2F
-+#define AD3552R_REG_ADDR_INPUT_PAGE_MASK_16B		0x31
-+#define AD3552R_REG_ADDR_SW_LDAC_16B			0x32
-+#define AD3552R_REG_ADDR_CH_INPUT_16B(ch)		(0x36 - (1 - (ch)) * 2)
-+/* 3 bytes registers */
-+#define AD3552R_REG_START_24B				0x37
-+#define AD3552R_REG_ADDR_HW_LDAC_24B			0x37
-+#define AD3552R_REG_ADDR_CH_DAC_24B(ch)			(0x3D - (1 - (ch)) * 3)
-+#define AD3552R_REG_ADDR_DAC_PAGE_MASK_24B		0x40
-+#define AD3552R_REG_ADDR_CH_SELECT_24B			0x41
-+#define AD3552R_REG_ADDR_INPUT_PAGE_MASK_24B		0x44
-+#define AD3552R_REG_ADDR_SW_LDAC_24B			0x45
-+#define AD3552R_REG_ADDR_CH_INPUT_24B(ch)		(0x4B - (1 - (ch)) * 3)
-+
-+/* Useful defines */
-+#define AD3552R_MAX_CH					2
-+#define AD3552R_MASK_CH(ch)				BIT(ch)
-+#define AD3552R_MASK_ALL_CH				GENMASK(1, 0)
-+#define AD3552R_MAX_REG_SIZE				3
-+#define AD3552R_READ_BIT				BIT(7)
-+#define AD3552R_ADDR_MASK				GENMASK(6, 0)
-+#define AD3552R_MASK_DAC_12B				GENMASK(15, 4)
-+#define AD3552R_DEFAULT_CONFIG_B_VALUE			0x8
-+#define AD3552R_SCRATCH_PAD_TEST_VAL1			0x34
-+#define AD3552R_SCRATCH_PAD_TEST_VAL2			0xB2
-+#define AD3552R_GAIN_SCALE				1000
-+#define AD3552R_LDAC_PULSE_US				100
-+
-+#define AD3552R_MAX_RANGES	5
-+#define AD3542R_MAX_RANGES	6
-+
-+extern const s32 ad3552r_ch_ranges[AD3552R_MAX_RANGES][2];
-+extern const s32 ad3542r_ch_ranges[AD3542R_MAX_RANGES][2];
-+
-+enum ad3552r_id {
-+	AD3541R_ID = 0x400b,
-+	AD3542R_ID = 0x4009,
-+	AD3551R_ID = 0x400a,
-+	AD3552R_ID = 0x4008,
-+};
-+
-+struct ad3552r_model_data {
-+	const char *model_name;
-+	enum ad3552r_id chip_id;
-+	unsigned int num_hw_channels;
-+	const s32 (*ranges_table)[2];
-+	int num_ranges;
-+	bool requires_output_range;
-+};
-+
-+struct ad3552r_ch_data {
-+	s32	scale_int;
-+	s32	scale_dec;
-+	s32	offset_int;
-+	s32	offset_dec;
-+	s16	gain_offset;
-+	u16	rfb;
-+	u8	n;
-+	u8	p;
-+	u8	range;
-+	bool	range_override;
-+};
-+
-+enum ad3552r_ch_gain_scaling {
-+	/* Gain scaling of 1 */
-+	AD3552R_CH_GAIN_SCALING_1,
-+	/* Gain scaling of 0.5 */
-+	AD3552R_CH_GAIN_SCALING_0_5,
-+	/* Gain scaling of 0.25 */
-+	AD3552R_CH_GAIN_SCALING_0_25,
-+	/* Gain scaling of 0.125 */
-+	AD3552R_CH_GAIN_SCALING_0_125,
-+};
-+
-+enum ad3552r_ch_vref_select {
-+	/* Internal source with Vref I/O floating */
-+	AD3552R_INTERNAL_VREF_PIN_FLOATING,
-+	/* Internal source with Vref I/O at 2.5V */
-+	AD3552R_INTERNAL_VREF_PIN_2P5V,
-+	/* External source with Vref I/O as input */
-+	AD3552R_EXTERNAL_VREF_PIN_INPUT
-+};
-+
-+enum ad3542r_ch_output_range {
-+	/* Range from 0 V to 2.5 V. Requires Rfb1x connection */
-+	AD3542R_CH_OUTPUT_RANGE_0__2P5V,
-+	/* Range from 0 V to 3 V. Requires Rfb1x connection  */
-+	AD3542R_CH_OUTPUT_RANGE_0__3V,
-+	/* Range from 0 V to 5 V. Requires Rfb1x connection  */
-+	AD3542R_CH_OUTPUT_RANGE_0__5V,
-+	/* Range from 0 V to 10 V. Requires Rfb2x connection  */
-+	AD3542R_CH_OUTPUT_RANGE_0__10V,
-+	/* Range from -2.5 V to 7.5 V. Requires Rfb2x connection  */
-+	AD3542R_CH_OUTPUT_RANGE_NEG_2P5__7P5V,
-+	/* Range from -5 V to 5 V. Requires Rfb2x connection  */
-+	AD3542R_CH_OUTPUT_RANGE_NEG_5__5V,
-+};
-+
-+enum ad3552r_ch_output_range {
-+	/* Range from 0 V to 2.5 V. Requires Rfb1x connection */
-+	AD3552R_CH_OUTPUT_RANGE_0__2P5V,
-+	/* Range from 0 V to 5 V. Requires Rfb1x connection  */
-+	AD3552R_CH_OUTPUT_RANGE_0__5V,
-+	/* Range from 0 V to 10 V. Requires Rfb2x connection  */
-+	AD3552R_CH_OUTPUT_RANGE_0__10V,
-+	/* Range from -5 V to 5 V. Requires Rfb2x connection  */
-+	AD3552R_CH_OUTPUT_RANGE_NEG_5__5V,
-+	/* Range from -10 V to 10 V. Requires Rfb4x connection  */
-+	AD3552R_CH_OUTPUT_RANGE_NEG_10__10V,
-+};
-+
-+int ad3552r_get_output_range(struct device *dev,
-+			     const struct ad3552r_model_data *model_info,
-+			     struct fwnode_handle *child, u32 *val);
-+int ad3552r_get_custom_gain(struct device *dev, struct fwnode_handle *child,
-+			    u8 *gs_p, u8 *gs_n, u16 *rfb, s16 *goffs);
-+u16 ad3552r_calc_custom_gain(u8 p, u8 n, s16 goffs);
-+int ad3552r_get_ref_voltage(struct device *dev, u32 *val);
-+int ad3552r_get_drive_strength(struct device *dev, u32 *val);
-+void ad3552r_calc_gain_and_offset(struct ad3552r_ch_data *ch_data,
-+				  const struct ad3552r_model_data *model_data);
-+
-+#endif /* __DRIVERS_IIO_DAC_AD3552R_H__ */
+ static const struct of_device_id axi_dac_of_match[] = {
 
 -- 
 2.45.0.rc1
