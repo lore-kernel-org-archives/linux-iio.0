@@ -1,90 +1,89 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out-176.mta0.migadu.com (out-176.mta0.migadu.com [91.218.175.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AF3AAD24;
-	Sat, 26 Oct 2024 14:55:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 767442746C
+	for <linux-iio@vger.kernel.org>; Sat, 26 Oct 2024 14:58:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729954551; cv=none; b=XJoLZGkZl2q0bAs6KAkvTuQbx/YNqJnsXFUfopPaLkCyVue3L74WTM7Xk+3+J7EXBEdGRoFUjZTX3rbCn4zdPRLPw0ntrWxDVTgGphCmnHq+NXSX/GK1o3Jk3WHg6C/dqrU/8AQh4EYl97egVGEJ4+xyBnE4ad4W7jfXPrUCzkk=
+	t=1729954739; cv=none; b=BARVkzb32hlvfNhiCtQ05Yo/IIZvtbqXH++2Js0+2vzS2Up7SLlWx7fxZOoGH9HHqjA1ewLaPBwD+Vzv/uV/uEtrJLh/ow/oKpL1bHkKB6KFrRMLtcHHuwNwyZrm8zvq7upBIlT9u6Yxxg0j8AyhFA/W4lTq4/SGM2zWeyVcZVg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729954551; c=relaxed/simple;
-	bh=KfL7pKpwOhrZ9vAmsvWyx1jEYgsRRAxi55xj8Lku6Vk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OWrgZGExkIs0koVKR09IBjhUV/XfxSL3bnOfnTmT8kyiVkpNzV6g9V0tM3sSBdL6kVwNm8cHadBtRZCeB2ZpPZLaNYvOo07+w5zFvlJC6kch6B/plUPr0cIR868Se+0q4nlopedwRRBCv2CtGqw2DbCzTSSC9nH++4Hbys5zQ5A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TYbUJSKv; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1729954739; c=relaxed/simple;
+	bh=cKZz6m+Be2jRP++M064nr+ktpt5GpWCWvuKBYflV8FU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Kw8oOSuiQFrBbkMXbB7xBDJtp0fjy8237SGJCF/hyROoaK4MyCPNiXYcGRNYDmgeUxf6eQj8HmyGxc9Vsphk0arEeieiGxbH8fnnHSE6sbhG07kCSgECMCe+iWM7QtH1xD11/vmrfuiovkYHO2zy1zDgFIiaBsq2hoY49D/k9/0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ansari.sh; spf=pass smtp.mailfrom=ansari.sh; dkim=pass (1024-bit key) header.d=ansari.sh header.i=@ansari.sh header.b=Dn5TBkiO; arc=none smtp.client-ip=91.218.175.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ansari.sh
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ansari.sh
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TYbUJSKv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91160C4CEC6;
-	Sat, 26 Oct 2024 14:55:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1729954551;
-	bh=KfL7pKpwOhrZ9vAmsvWyx1jEYgsRRAxi55xj8Lku6Vk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=TYbUJSKvQHeCKv3jY67RackhWNrEz2cKxkYkFnnb/s6AybCI6q1VzQYbkhc28Ftd5
-	 w/SJEIHkscTQ59LVNiV+9fbBna1aDj3r4MVsGFUFRyqOuuUwyJqqH4OXhUVVOWQdWK
-	 19lMRMkBC+oOO+UfEdvmR5YDZDZPR0XeqcbEICEYrJMNLNXHgG/Qmt0Td1SMdof3Z7
-	 JoNunm53m1/dHEi0vJYkOte6kz7BClfAG4XyxgYLCKBdNmYVMBHgt/9jIJBsPAvE/e
-	 UNJlYEhka3vCbSok1kXguucSL7WU69oDoEp4GmYs3ohf98R9qDymbVzf3t+rKP4cfZ
-	 Qsel/l2egLcNg==
-Date: Sat, 26 Oct 2024 15:55:23 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, Liam Girdwood
- <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/11] iio: use devm_regulator_get_enable_read_voltage
- round 5
-Message-ID: <20241026155523.57e299a0@jic23-huawei>
-In-Reply-To: <20241023-iio-regulator-refactor-round-5-v1-0-d0bd396b3f50@baylibre.com>
-References: <20241023-iio-regulator-refactor-round-5-v1-0-d0bd396b3f50@baylibre.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=ansari.sh header.i=@ansari.sh header.b="Dn5TBkiO"
+Message-ID: <fc87c8d8-db22-41f8-9594-4687f89881f9@ansari.sh>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ansari.sh; s=key1;
+	t=1729954735;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=wHnOAbVcncqUjR3SFOoAO2bokF8DOuZvDVUBBaC+170=;
+	b=Dn5TBkiO4xqeZ6BAAAg6/62c4Yl1f1jUiHU9bVlq3UZMM8rcC30VRVicwOHunjp7CrmUJo
+	v51RGuUz/wkrI2kcEbCympnx4wKNSCuRnTWXFCG+9VI6Nz+0e+JikYVnPlyFjnLpL88BM3
+	NyHoWVPGnD+MqlQfYjUCRi4IEGPKGVA=
+Date: Sat, 26 Oct 2024 15:58:52 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Subject: Re: [PATCH v3 07/24] iio: accel: kxcjk-1013: Revert "Add support for
+ KX022-1020"
+To: Jonathan Cameron <jic23@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ Marius Cristea <marius.cristea@microchip.com>,
+ Trevor Gamblin <tgamblin@baylibre.com>,
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+ Hans de Goede <hdegoede@redhat.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+References: <20241024191200.229894-1-andriy.shevchenko@linux.intel.com>
+ <20241024191200.229894-8-andriy.shevchenko@linux.intel.com>
+ <20241026121619.668d07d7@jic23-huawei>
+Content-Language: en-US
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Rayyan Ansari <rayyan@ansari.sh>
+In-Reply-To: <20241026121619.668d07d7@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 
-On Wed, 23 Oct 2024 18:54:04 -0500
-David Lechner <dlechner@baylibre.com> wrote:
-
-> Here comes another round of reducing boilerplate code by simplifying
-> getting reference voltages and dropping more driver remove callbacks.
+On 26/10/2024 12:16, Jonathan Cameron wrote:
+> On Thu, 24 Oct 2024 22:04:56 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 > 
-Nice series. Applied to the togreg branch of iio.git and pushed out as testing.
+>> The mentioned change effectively broke the ODR startup timeouts
+>> settungs for KX023-1025 case. Let's revert it for now and see
+>> how we can handle it with the better approach after switching
+>> the driver to use data structure instead of enum.
+>>
+>> This reverts commit d5cbe1502043124ff8af8136b80f93758c4a61e0.
+>>
+>> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> I'll take this the slow way as I don't think there is time to chase the revert
+> through the various trees and still get the dependent patches in.
+> Hopefully we will fairly quickly get the missing table data and can
+> bring this back again.
+> 
+> For now, applied to the togreg branch of iio.git.
+> I have tagged it as a fix though. and +CC Rayyan
+> (I'm guessing maybe that will bounce as you rarely miss people you should
+> CC!)
+Hi,
+Sorry for not replying earlier, I've just caught up with the discussion.
+
+I don't fully understand why this is breaking KX023-1025, but you know 
+more than I do here.
+Does this not mean that the use of KX022-1020 in the 3 devices (Lumia 
+640, 640 XL, 735) using this from qcom-msm8226-microsoft-common.dtsi 
+will now be broken?
 
 Thanks,
-
-Jonathan
-
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
-> ---
-> David Lechner (11):
->       iio: dac: ad5380: use devm_regulator_get_enable_read_voltage()
->       iio: dac: ad5380: drop driver remove callbacks
->       iio: dac: ad5446: use devm_regulator_get_enable_read_voltage()
->       iio: dac: ad5446: drop driver remove callbacks
->       iio: dac: ad5504: use devm_regulator_get_enable_read_voltage()
->       iio: dac: ad5504: drop driver remove callback
->       iio: dac: ad5624r: use devm_regulator_get_enable_read_voltage()
->       iio: dac: ad5624r: drop driver remove callback
->       iio: dac: ad5761: use devm_regulator_get_enable_read_voltage()
->       iio: dac: ad5761: drop driver remove callback
->       iio: dac: ad5770r: use devm_regulator_get_enable_read_voltage()
-> 
->  drivers/iio/dac/ad5380.c      |  85 +++++++-------------------------
->  drivers/iio/dac/ad5446.c      |  77 +++++++----------------------
->  drivers/iio/dac/ad5504.c      |  59 ++++++-----------------
->  drivers/iio/dac/ad5624r.h     |   1 -
->  drivers/iio/dac/ad5624r_spi.c |  71 +++++----------------------
->  drivers/iio/dac/ad5761.c      | 109 +++++++++---------------------------------
->  drivers/iio/dac/ad5770r.c     |  41 ++--------------
->  7 files changed, 88 insertions(+), 355 deletions(-)
-> ---
-> base-commit: 9090ececac9ff1e22fb7e042f3c886990a8fb090
-> change-id: 20240813-iio-regulator-refactor-round-5-3248993c93b0
-> 
-> Best regards,
-
+Rayyan
