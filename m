@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 911451D2715;
-	Sat, 26 Oct 2024 11:49:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DEF81D3565;
+	Sat, 26 Oct 2024 11:50:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729943369; cv=none; b=pAJSiNWiS88E//sM/w6OSC0AS/XlvMcLgUH0FVHd4/JNcNeM4rA2IVXs6YLtIhKLdbcE6Sc9QWlmpcclsCbNqVRVenYypZm3KtGrEJjVR/15UgQywAXuictSWTEcU1YJfJVDma87MTfObdSVKyxiB5ZwiqXTCv06aIIGIUFkM1c=
+	t=1729943448; cv=none; b=jHyeqOUUqrl2DPLZZudcBBIZ5WxOS/wKzIHwYqt0cuyNPb2o+5yfCT7IAYRqXC4wbaRamPr4QZb5u2/ZEphSRVkINZBpbHeC9awBDi5cPL3IosMZwjuSETUPyR2CHr8CUtD5wa7m+2K+gky8bZ0gBCskU0Gb0o3P+3dNYvLEMOo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729943369; c=relaxed/simple;
-	bh=zhfHXolqQeemu1UCSxQeuPxbsv6uvPgF9dhlVwISxh4=;
+	s=arc-20240116; t=1729943448; c=relaxed/simple;
+	bh=aK82E2vFaeXQFWmctQ76NuKQdJ8A74uPxIr0gxqp9MA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=J4MCl4IXxF0TinOK1L8Jo4pawFyh2yShUrmqVlil+6xf4e48djuuZSCvAPOrv30C3qXC8xYiApVUe77DxlDUJahiKmMDizzzxnJ2QBtCNu5llPvZ4Tac2fBvwXJaILb6/MyhUiUFsLALNGSKS4lxa9hvHVNtdWDnYy3/TjCzwMA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VJJkX48s; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=L2VPVjfObOFi/GwZh6g++lYz2+BEMC/QRoVPwX9ASWNBGomBHOZRWpyS3+07m0Yrd4WI7HXX5qpWkPRbaLs8/eHEQVtn819lmS5z9Lx2BhcJACArVps0TGkv8nebn+fjtPm+BX/jvvBonyabaSzFjPxNpZ1NsKHIhuHDbRAqtdo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S9SmRvhi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VJJkX48s"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D562C4CEC6;
-	Sat, 26 Oct 2024 11:49:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S9SmRvhi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90FC5C4CEC6;
+	Sat, 26 Oct 2024 11:50:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1729943367;
-	bh=zhfHXolqQeemu1UCSxQeuPxbsv6uvPgF9dhlVwISxh4=;
+	s=k20201202; t=1729943447;
+	bh=aK82E2vFaeXQFWmctQ76NuKQdJ8A74uPxIr0gxqp9MA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=VJJkX48sPEqjnCAz5UFFSDhGumXoZIFJ/5gA0DeuChQUDv/kFw2dONqw4dnm8xBZn
-	 aLhfmUJD9CwTEofUADeVsVJF7YpGWJJOMqgEwNVhuwR6FugE7xbj2QqKWUqanYtjHv
-	 5KXGKlAsxLJ0JVRmmNiODIxxAdeETuqhYel6tygZClDC6EiZlhIVKnKPsLUjE8/A/b
-	 9B0Nv9qf+x+BDZvLRsmEu6ghncEwtj5IQYAWs3U/Ku8kg6RLJNGPO4FYlcTL/Ay86g
-	 LmM1DRYidVhG2UQBieeJLakL0xU7npnTRFkKx8uEAVR96FQXkp6jaKzRi6trYh3omD
-	 yOsYLe1vG1YZQ==
-Date: Sat, 26 Oct 2024 12:48:48 +0100
+	b=S9SmRvhiyEgjI9gWgT17t2ETUCkJFTQOYIRC+dzHBIOSi3ejNztdrmncP0SqQOfay
+	 N6NkZrZ79d2sAZeYrVAtbr1ea3uVR+Cld9okR9cMWwC8zzNjapZllo6QcjWZyUvyZt
+	 XkTXzEgkm5aC8zL7+Zabd8FMKfIJeaAGX40u2QkrLKFYxslQTCQbHGPqTb9yKmYFXR
+	 MF+qDOiuAw2zxrTxRUU5UngU42JjZ3tC/ubgKL+VlmXggZNf9wN7jAaAxJwph1ELT+
+	 NSFmesm60oxiVMmezWC2x2YcjoxcsBWUkfC4yK7BuPjLTciRmxjXbAZCoyOZ0z3i4I
+	 ga2fXxTsBilmg==
+Date: Sat, 26 Oct 2024 12:50:10 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, Marius Cristea
@@ -34,12 +34,12 @@ Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, Marius Cristea
  Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, Hans de Goede
  <hdegoede@redhat.com>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v3 19/24] iio: gyro: bmg160: Replace custom
- implementation of iio_get_acpi_device_name()
-Message-ID: <20241026124848.25a19718@jic23-huawei>
-In-Reply-To: <20241024191200.229894-20-andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v3 20/24] iio: light: isl29018: Replace a variant of
+ iio_get_acpi_device_name_and_data()
+Message-ID: <20241026125010.651dfe50@jic23-huawei>
+In-Reply-To: <20241024191200.229894-21-andriy.shevchenko@linux.intel.com>
 References: <20241024191200.229894-1-andriy.shevchenko@linux.intel.com>
-	<20241024191200.229894-20-andriy.shevchenko@linux.intel.com>
+	<20241024191200.229894-21-andriy.shevchenko@linux.intel.com>
 X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,12 +50,77 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 24 Oct 2024 22:05:08 +0300
+On Thu, 24 Oct 2024 22:05:09 +0300
 Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
 > IIO core (ACPI part) provides a generic helper that may be used in
-> the driver. Replace custom implementation of iio_get_acpi_device_name().
+> the driver. Replace a variant of iio_get_acpi_device_name_and_data().
 > 
 > Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Applied.
+This one briefly had me confused but is indeed fine because we never
+get an id match for a device coming from an ACPI binding.
+There is no way to make such a match (unlike DT where the naming
+is enough).
+
+So the else is sufficient.
+
+applied.
+> ---
+>  drivers/iio/light/isl29018.c | 25 ++++++-------------------
+>  1 file changed, 6 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/iio/light/isl29018.c b/drivers/iio/light/isl29018.c
+> index 8dfc750e68c0..526ee5619d26 100644
+> --- a/drivers/iio/light/isl29018.c
+> +++ b/drivers/iio/light/isl29018.c
+> @@ -687,20 +687,6 @@ static const struct isl29018_chip_info isl29018_chip_info_tbl[] = {
+>  	},
+>  };
+>  
+> -static const char *isl29018_match_acpi_device(struct device *dev, int *data)
+> -{
+> -	const struct acpi_device_id *id;
+> -
+> -	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+> -
+> -	if (!id)
+> -		return NULL;
+> -
+> -	*data = (int)id->driver_data;
+> -
+> -	return dev_name(dev);
+> -}
+> -
+>  static void isl29018_disable_regulator_action(void *_data)
+>  {
+>  	struct isl29018_chip *chip = _data;
+> @@ -716,9 +702,10 @@ static int isl29018_probe(struct i2c_client *client)
+>  	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+>  	struct isl29018_chip *chip;
+>  	struct iio_dev *indio_dev;
+> +	const void *ddata;
+> +	const char *name;
+> +	int dev_id;
+>  	int err;
+> -	const char *name = NULL;
+> -	int dev_id = 0;
+>  
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+>  	if (!indio_dev)
+> @@ -731,11 +718,11 @@ static int isl29018_probe(struct i2c_client *client)
+>  	if (id) {
+>  		name = id->name;
+>  		dev_id = id->driver_data;
+> +	} else {
+> +		name = iio_get_acpi_device_name_and_data(&client->dev, &ddata);
+> +		dev_id = (intptr_t)ddata;
+>  	}
+>  
+> -	if (ACPI_HANDLE(&client->dev))
+> -		name = isl29018_match_acpi_device(&client->dev, &dev_id);
+> -
+>  	mutex_init(&chip->lock);
+>  
+>  	chip->type = dev_id;
+
