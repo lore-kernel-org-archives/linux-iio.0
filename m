@@ -1,24 +1,23 @@
 Received: from a.peacevolution.org (a.peacevolution.org [206.189.193.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCDD81DDC2F;
-	Mon, 28 Oct 2024 14:22:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 840AD18C93D;
+	Mon, 28 Oct 2024 14:30:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=206.189.193.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730125339; cv=none; b=LRiZs9Xo8mi0i0W6ifdD5Nha+K1L0/PkMp6RQZxsgbws2sul63ZDS+j5uR92gaxS2GuUC7dC5dKdX/dCCmjQwJ9pMx61ZllsbfNnlj+b1dsHsUSkHk9l1Fe+MlTPCsUk8PBDBwGEWWqU/z8CERy7l7Tq0N8ygc5OUWSZD44xuX8=
+	t=1730125813; cv=none; b=c88n4z7uowoZFLhukMrkXn6FeR5E+fVoRqs2VxD1vgRdPhRtnpOl7Nkc36trVWZ+9U/aBOZIePKaLcRfkMfDxIECrWhrRigXr7/iJAPXD6GMTssdBXv+eTLa5qVYPH/Gy2Yrd/+oEbUaOEB64iU9CUl/vA4YUOBz7E4iXalQEB0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730125339; c=relaxed/simple;
-	bh=Az7W1ohdHrR78IqIcSfKr8mkmXTqZ+V08E1PhLHn4d4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=QvtsjepH/M5f1gGnNE2ZdgL4c/t1iFE7dut8UWglSaD3Spin3+ifn3vkkt/JN5FPT6bnx5Vw1mRGZO0XR6sEcGgTAE96ilBydzgSu2ZjhFvxdm0pZDno37qGFkosvEALAyMOc45NYfIRylB5OwNypR1fkiSBDuGZ7gMyO7cgytc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=peacevolution.org; spf=pass smtp.mailfrom=peacevolution.org; dkim=pass (1024-bit key) header.d=peacevolution.org header.i=@peacevolution.org header.b=FkSuad9R; arc=none smtp.client-ip=206.189.193.133
+	s=arc-20240116; t=1730125813; c=relaxed/simple;
+	bh=sdstsogHfVVzt/qF2FVu3AhaNVUWpR2HAeKX/JoSshs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ZMCAIdVsNmapcun4lDdaEaGo0e122KrCaqVLN0yfB7kkgvIN1KLz8bnX1JLZp6vBooS7uF/lIdh+prXNSnnfPgn3Lz8hsECK5+iZ55tlpFHK+fH5NhruL6Pkq4eEVaslQxW6YHf8EOV/jNutmrMiF1jqvCZXd7iGt7vQ/k9IL+o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=peacevolution.org; spf=pass smtp.mailfrom=peacevolution.org; dkim=pass (1024-bit key) header.d=peacevolution.org header.i=@peacevolution.org header.b=AVB+177H; arc=none smtp.client-ip=206.189.193.133
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=peacevolution.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=peacevolution.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=peacevolution.org header.i=@peacevolution.org header.b="FkSuad9R"
+	dkim=pass (1024-bit key) header.d=peacevolution.org header.i=@peacevolution.org header.b="AVB+177H"
 Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-	by a.peacevolution.org (Postfix) with ESMTPA id D87254C77B;
-	Mon, 28 Oct 2024 14:22:15 +0000 (UTC)
+	by a.peacevolution.org (Postfix) with ESMTPA id 0ADD64C564;
+	Mon, 28 Oct 2024 14:21:41 +0000 (UTC)
 From: Aren Moynihan <aren@peacevolution.org>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
@@ -41,11 +40,9 @@ Cc: Aren Moynihan <aren@peacevolution.org>,
 	linux-sunxi@lists.linux.dev,
 	Dragan Simic <dsimic@manjaro.org>,
 	phone-devel@vger.kernel.org
-Subject: [PATCH v3 6/6] arm64: dts: allwinner: pinephone: Add power supplies to stk3311
-Date: Mon, 28 Oct 2024 10:20:00 -0400
-Message-ID: <20241028142000.1058149-7-aren@peacevolution.org>
-In-Reply-To: <20241028142000.1058149-1-aren@peacevolution.org>
-References: <20241028142000.1058149-1-aren@peacevolution.org>
+Subject: [PATCH v3 0/6] iio: light: stk3310: support powering off during suspend
+Date: Mon, 28 Oct 2024 10:19:54 -0400
+Message-ID: <20241028142000.1058149-1-aren@peacevolution.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -57,42 +54,52 @@ Authentication-Results: auth=pass smtp.auth=aren@peacevolution.org smtp.mailfrom
 X-Spam-Level: ****
 X-Spamd-Bar: ++++
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=peacevolution.org;
-	s=dkim; t=1730125337;
-	h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:in-reply-to:references;
-	bh=1Fb34FGXqzMNx+nxE4qoPozuG7GAzwlPuHgHmRcGRGE=;
-	b=FkSuad9R/jOLZe6Le3I3hEkUAGnymubOEJP9B67v9DKLxDo0Kv1JVBbAyoZo6mAvNAhWwl
-	CEgB3woOmCngbAnZe2SqrND+rM0eK4TqqQs3T0Xez4k8T4NTn+CU3f795Y1nQvttv5Qf22
-	9EbvET02emJZvfxMPsW9m7Ucx4vHdW8=
+	s=dkim; t=1730125303;
+	h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
+	bh=O8RsRfQ0OglbTcLNh0bfBx27J2SnHEfQFA6wmv/Gu7k=;
+	b=AVB+177HK9Qd1iMLpM+4bhuIlh+W5zJ0k9Xni0T4R1EpdgmfO27T9W+uRd7xZWcMQn1Umk
+	eBOM/iW098j9le51t7XRoFHmU0h8egOB+38mmvB8050DsIcJnp/DyEcpwyx4p2IhRx7Q0X
+	F2Ni2tmH1dq7ve0XTTiY5Up5GMew57U=
 
-From: Ondrej Jirman <megi@xff.cz>
+In the Pine64 PinePhone, the stk3310 chip is powered by a regulator that is
+disabled at system boot and can be shut off during suspend. To ensure that
+the chip properly initializes, both after boot and suspend, we need to
+manage this regulator.
 
-This allows the driver to properly handle powering this device, and
-disable power during suspend.
+Additionally if the chip is shut off in suspend, we need to make sure that
+it gets reinitialized with the same parameters after resume.
 
-Signed-off-by: Ondrej Jirman <megi@xff.cz>
-Signed-off-by: Aren Moynihan <aren@peacevolution.org>
----
+Major changes in v3:
+ - Use bulk regulators instead of two individual ones
+ - Replace stk3310_remove with devm callbacks
+ - Hopefully I haven't missed anything, it's been a while since I worked on this
+   patch, and I didn't take good enough notes
 
-Notes:
-    Changes in v2:
-     - add leda-supply
+Major changes in v2:
+ - Add handling of the IR LED. I was hesitant to include this as it is the
+   same as pull-up regulator for the i2c bus on the hardware I have, so I
+   can't test it well. I think leaving it out is more likely to cause
+   issues than including it.
+ - Convert stk3310 to use dev_err_probe for errors.
+ - Always enable / disable regulators and rely on dummy devices if they're
+   not specified.
+ - more listed in individual patches
 
- arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+Aren Moynihan (5):
+  dt-bindings: iio: light: stk33xx: add vdd and leda regulators
+  iio: light: stk3310: handle all remove logic with devm callbacks
+  iio: light: stk3310: Implement vdd and leda supplies
+  iio: light: stk3310: use dev_err_probe where possible
+  iio: light: stk3310: log error if reading the chip id fails
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index 6d152066a59a..618341b63db2 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-@@ -260,6 +260,8 @@ light-sensor@48 {
- 		reg = <0x48>;
- 		interrupt-parent = <&pio>;
- 		interrupts = <1 0 IRQ_TYPE_EDGE_FALLING>; /* PB0 */
-+		vdd-supply = <&reg_ldo_io0>;
-+		leda-supply = <&reg_dldo1>;
- 	};
- 
- 	/* Accelerometer/gyroscope */
+Ondrej Jirman (1):
+  arm64: dts: allwinner: pinephone: Add power supplies to stk3311
+
+ .../bindings/iio/light/stk33xx.yaml           |   4 +
+ .../dts/allwinner/sun50i-a64-pinephone.dtsi   |   2 +
+ drivers/iio/light/stk3310.c                   | 156 +++++++++++++-----
+ 3 files changed, 118 insertions(+), 44 deletions(-)
+
 -- 
 2.47.0
 
