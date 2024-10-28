@@ -1,54 +1,54 @@
 Received: from mail.kernel-space.org (mail.kernel-space.org [195.201.34.187])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17DE9202632;
-	Mon, 28 Oct 2024 21:53:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CA1D202651;
+	Mon, 28 Oct 2024 21:53:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.34.187
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730152428; cv=none; b=pId2llgwHw3dOMOjJiL+ZnWqELLJjuJ96QLRFXsJz3k67Qi9lbj9tA04KUm0aSsaeVwdY1iiiAE4BzQJ/MoXKQ54SPJQyfAQmngKDAaBbTmgqCiiiY44n/Nzz9OjaPM/i1oOKQcARhLbHV2wZV0QkNWCLjXB6eDXLUYgHazp3sU=
+	t=1730152430; cv=none; b=kxIts4Jy0h2kw36US3doGQDhVuoAdWjAP8exMBdaFxziWSue/vzuXuySf2FJkKqVTMDDvr9pOIyLEGsa8hngIZcjdIvmzlcyiMH2qrNKCZ6SEd//XR8d/C29is0kF1zKJ2MLmnm2Rp7zNeqDBOOiUFemAOYy/PmHMEDYwM2M3dM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730152428; c=relaxed/simple;
-	bh=M6eYNW5a0kipKOu9KAPHLqjpuHaramh/VqG4M7ESTCE=;
+	s=arc-20240116; t=1730152430; c=relaxed/simple;
+	bh=Avb4Um4Q10xt3hLvwhjhHGsa6OUMaDptICCZbBlvddU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=QnoFY4SLx9lyc15O80fXwhSZPwd/Tl/WXY/hTWy4ITSAHAWuNBvaxyo9lF1W7Ls5xhJZMwcb1uQ9lKnpzKZLlP5cBY9SP7Af1djIRfBQGZI+nUhZF2ZHR3jf6IZ8cGs4btBjofSPy3uUwIQQv66Jp8kiK2wbHfYshLzxrbfDRuk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org; spf=pass smtp.mailfrom=kernel-space.org; dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b=xz6Qcqxz; dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b=hh4Yp/bU; arc=none smtp.client-ip=195.201.34.187
+	 In-Reply-To:To:Cc; b=V+YjKnzoXwF6XfjfLrBLWDrbEjoQ4E3odnn4kqP6iD4n/RIARFYgz4+rEOCXPD9M269iaxuyvdkgEvQWq30Vvl8L0ViqpXNzPQol4dX8gGkxip1YXL/biaY+rafSMWBbdVHX5FjA5Kf1NUWCYkohiFHiuyWEWu+B+SL2+ekjFWc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org; spf=pass smtp.mailfrom=kernel-space.org; dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b=HVKEDe0K; dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b=1LPmJeeJ; arc=none smtp.client-ip=195.201.34.187
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel-space.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b="xz6Qcqxz";
-	dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b="hh4Yp/bU"
+	dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b="HVKEDe0K";
+	dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b="1LPmJeeJ"
 Received: from kernel-space.org (localhost [127.0.0.1])
-	by kernel-space.org (OpenSMTPD) with ESMTP id b6fdc628;
-	Mon, 28 Oct 2024 21:37:56 +0000 (UTC)
+	by kernel-space.org (OpenSMTPD) with ESMTP id fc80e9b8;
+	Mon, 28 Oct 2024 21:37:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=kernel-space.org; h=from
 	:date:subject:mime-version:content-type
 	:content-transfer-encoding:message-id:references:in-reply-to:to
-	:cc; s=s1; bh=SwAVQaQ50uHM+WhCgrfu/hIjfk4=; b=xz6QcqxzICkW+q45+M
-	/9Q2WWkrl6TxtemO3l3UD0riWxj66RAaii0KK64Yn+6eO8dg3vlddp90Ycid19Px
-	nlsJbaqeddEzJKIwaC3lwO3GgRdJulBA8rzhUtGdx3vTyOTJCzm0MgXdtGxDfnCu
-	Kz7M4MUk9gpTBolOBefgPYJsw=
+	:cc; s=s1; bh=2xrQu4QBAjqvieRjHxiFo/1477o=; b=HVKEDe0K4E+LAF8fYJ
+	PnhAJ8JCCdl1GwS93C7mlZLEuWkIyA7kJ4m/1zQZrRDCaC3W92LO1RQxqhkoxU6a
+	OXm5jMhFs2kh6kHaxnzC6a+SzEb4EdsXtVzP8Bs3zTUB/ildD16mePAvMFHseiDw
+	xEQC0vwGi6dAGoGlbJ5hVI3H0=
 DomainKey-Signature: a=rsa-sha1; c=nofws; d=kernel-space.org; h=from
 	:date:subject:mime-version:content-type
 	:content-transfer-encoding:message-id:references:in-reply-to:to
-	:cc; q=dns; s=s1; b=ecSsg8IZIq9f7kgjx13/MjI5XpkDoUKG2faF8YoloPEc
-	v1ujZPYpDZnTBZub9MtnEdJ/N7gLjuN4eIT5Jt8Q4D0Kbsfsc15IJgsQ/9FR0Wc2
-	SXRYTFS7dWOtPhhB1nQz2mBWotOv+SKY5HzfUFcDLwjW70N5TcvLpo177QVwxMI=
+	:cc; q=dns; s=s1; b=lVM2+JG4/ZhD6Esoe81W+dgtVOlEOEaHIYlL0ap4sz0h
+	70TIrQYsJ3ahDpAluSfsw5dcBDFe90mVmmftetlLdD3uyktxt6RYrZod9SMBv9YZ
+	ug4T+aRMHjKUGaEDiaGkNahyEATIaaF4d8EGNViuxTN8jQabREAj356qeF6x83I=
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel-space.org;
-	s=s1; t=1730151475;
+	s=s1; t=1730151477;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=UyFa9I59JDk6TAAfx4Mv7dbF+XQX8DX8Tx78nJaiPGE=;
-	b=hh4Yp/bUQCZo12/9taOEcfQlI/axDquhrVsbC+MtFaYpsJDieJ3uYcfIDJyG+Mw5FC8A/T
-	gs0KtQYdxcM1uyLkjFWbTTG4u7qkbMHTA1L+9Cnh1ULoW2KTyX2XCo7d94XYtLEaZcli1O
-	SxwzsK0Gk3J9YGiPTmQPNkZsAsujs0k=
+	bh=MWiV1Z7DC6E3M1c9aebmC1lR4sTruyVnBnDNopuZ3xo=;
+	b=1LPmJeeJE/xuyNuYA0/yshd4ZXL3ixyA5OiIRyG0IubAz+Fwof+5GS9K326XH/Zd40zhVm
+	lgXvO97xglo4GjyRtc35vEYZqIhGT307qIiuX7suyKQdwyUQUl9UBI/CJg/0VSbaoTOa7Y
+	NyXptw49oK48G7NxJRfJJmQgnI38eTE=
 Received: from [127.0.1.1] (host-95-245-34-85.retail.telecomitalia.it [95.245.34.85])
-	by kernel-space.org (OpenSMTPD) with ESMTPSA id 64e18725 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-	Mon, 28 Oct 2024 21:37:55 +0000 (UTC)
+	by kernel-space.org (OpenSMTPD) with ESMTPSA id 306f7752 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+	Mon, 28 Oct 2024 21:37:57 +0000 (UTC)
 From: Angelo Dureghello <angelo@kernel-space.org>
-Date: Mon, 28 Oct 2024 22:45:31 +0100
-Subject: [PATCH v9 4/8] iio: dac: adi-axi-dac: extend features
+Date: Mon, 28 Oct 2024 22:45:34 +0100
+Subject: [PATCH v9 7/8] iio: dac: ad3552r: add high-speed platform driver
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -57,7 +57,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241028-wip-bl-ad3552r-axi-v0-iio-testing-v9-4-f6960b4f9719@kernel-space.org>
+Message-Id: <20241028-wip-bl-ad3552r-axi-v0-iio-testing-v9-7-f6960b4f9719@kernel-space.org>
 References: <20241028-wip-bl-ad3552r-axi-v0-iio-testing-v9-0-f6960b4f9719@kernel-space.org>
 In-Reply-To: <20241028-wip-bl-ad3552r-axi-v0-iio-testing-v9-0-f6960b4f9719@kernel-space.org>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -76,380 +76,654 @@ X-Mailer: b4 0.14.1
 
 From: Angelo Dureghello <adureghello@baylibre.com>
 
-Extend AXI-DAC backend with new features required to interface
-to the ad3552r DAC. Mainly, a new compatible string is added to
-support the ad3552r-axi DAC IP, very similar to the generic DAC
-IP but with some customizations to work with the ad3552r.
+Add High Speed ad3552r platform driver.
 
-Then, a series of generic functions has been added to match with
-ad3552r needs. Function names has been kept generic as much as
-possible, to allow re-utilization from other frontend drivers.
+The ad3552r DAC is controlled by a custom (fpga-based) DAC IP
+through the current AXI backend, or similar alternative IIO backend.
 
+Compared to the existing driver (ad3552r.c), that is a simple SPI
+driver, this driver is coupled with a DAC IIO backend that finally
+controls the ad3552r by a fpga-based "QSPI+DDR" interface, to reach
+maximum transfer rate of 33MUPS using dma stream capabilities.
+
+All commands involving QSPI bus read/write are delegated to the backend
+through the provided APIs for bus read/write.
+
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
 Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
 ---
- drivers/iio/dac/adi-axi-dac.c | 256 +++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 242 insertions(+), 14 deletions(-)
+ drivers/iio/dac/Kconfig      |  19 ++
+ drivers/iio/dac/Makefile     |   4 +-
+ drivers/iio/dac/ad3552r-hs.c | 529 +++++++++++++++++++++++++++++++++++++++++++
+ drivers/iio/dac/ad3552r-hs.h |  19 ++
+ drivers/iio/dac/ad3552r.h    |   4 +
+ 5 files changed, 574 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/adi-axi-dac.c b/drivers/iio/dac/adi-axi-dac.c
-index 04193a98616e..155d04ca2315 100644
---- a/drivers/iio/dac/adi-axi-dac.c
-+++ b/drivers/iio/dac/adi-axi-dac.c
-@@ -46,9 +46,28 @@
- #define AXI_DAC_CNTRL_1_REG			0x0044
- #define   AXI_DAC_CNTRL_1_SYNC			BIT(0)
- #define AXI_DAC_CNTRL_2_REG			0x0048
-+#define   AXI_DAC_CNTRL_2_SDR_DDR_N		BIT(16)
-+#define   AXI_DAC_CNTRL_2_SYMB_8B		BIT(14)
- #define   ADI_DAC_CNTRL_2_R1_MODE		BIT(5)
-+#define   AXI_DAC_CNTRL_2_UNSIGNED_DATA		BIT(4)
-+#define AXI_DAC_STATUS_1_REG			0x0054
-+#define AXI_DAC_STATUS_2_REG			0x0058
- #define AXI_DAC_DRP_STATUS_REG			0x0074
- #define   AXI_DAC_DRP_STATUS_DRP_LOCKED		BIT(17)
-+#define AXI_DAC_CUSTOM_RD_REG			0x0080
-+#define AXI_DAC_CUSTOM_WR_REG			0x0084
-+#define   AXI_DAC_CUSTOM_WR_DATA_8		GENMASK(23, 16)
-+#define   AXI_DAC_CUSTOM_WR_DATA_16		GENMASK(23, 8)
-+#define AXI_DAC_UI_STATUS_REG			0x0088
-+#define   AXI_DAC_UI_STATUS_IF_BUSY		BIT(4)
-+#define AXI_DAC_CUSTOM_CTRL_REG			0x008C
-+#define   AXI_DAC_CUSTOM_CTRL_ADDRESS		GENMASK(31, 24)
-+#define   AXI_DAC_CUSTOM_CTRL_SYNCED_TRANSFER	BIT(2)
-+#define   AXI_DAC_CUSTOM_CTRL_STREAM		BIT(1)
-+#define   AXI_DAC_CUSTOM_CTRL_TRANSFER_DATA	BIT(0)
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 26f9de55b79f..8f16358c779f 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -6,9 +6,28 @@
+ 
+ menu "Digital to analog converters"
+ 
++config AD3552R_HS
++	tristate "Analog Devices AD3552R DAC High Speed driver"
++	select ADI_AXI_DAC
++	select AD3552R_LIB
++	help
++	  Say yes here to build support for Analog Devices AD3552R
++	  Digital to Analog Converter High Speed driver.
 +
-+#define AXI_DAC_CUSTOM_CTRL_STREAM_ENABLE	(AXI_DAC_CUSTOM_CTRL_TRANSFER_DATA | \
-+						 AXI_DAC_CUSTOM_CTRL_STREAM)
- 
- /* DAC Channel controls */
- #define AXI_DAC_CHAN_CNTRL_1_REG(c)		(0x0400 + (c) * 0x40)
-@@ -63,12 +82,21 @@
- #define AXI_DAC_CHAN_CNTRL_7_REG(c)		(0x0418 + (c) * 0x40)
- #define   AXI_DAC_CHAN_CNTRL_7_DATA_SEL		GENMASK(3, 0)
- 
-+#define AXI_DAC_RD_ADDR(x)			(BIT(7) | (x))
++	  The driver requires the assistance of an IP core to operate,
++	  since data is streamed into target device via DMA, sent over a
++	  QSPI + DDR (Double Data Rate) bus.
 +
- /* 360 degrees in rad */
- #define AXI_DAC_2_PI_MEGA			6283190
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad3552r-hs.
++
++config AD3552R_LIB
++	tristate
++
+ config AD3552R
+ 	tristate "Analog Devices AD3552R DAC driver"
+ 	depends on SPI_MASTER
++	select AD3552R_LIB
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+index c92de0366238..414c152be779 100644
+--- a/drivers/iio/dac/Makefile
++++ b/drivers/iio/dac/Makefile
+@@ -4,7 +4,9 @@
+ #
  
- enum {
- 	AXI_DAC_DATA_INTERNAL_TONE,
- 	AXI_DAC_DATA_DMA = 2,
-+	AXI_DAC_DATA_INTERNAL_RAMP_16BIT = 11,
+ # When adding new entries keep the list in alphabetical order
+-obj-$(CONFIG_AD3552R) += ad3552r.o ad3552r-common.o
++obj-$(CONFIG_AD3552R_HS) += ad3552r-hs.o
++obj-$(CONFIG_AD3552R_LIB) += ad3552r-common.o
++obj-$(CONFIG_AD3552R) += ad3552r.o
+ obj-$(CONFIG_AD5360) += ad5360.o
+ obj-$(CONFIG_AD5380) += ad5380.o
+ obj-$(CONFIG_AD5421) += ad5421.o
+diff --git a/drivers/iio/dac/ad3552r-hs.c b/drivers/iio/dac/ad3552r-hs.c
+new file mode 100644
+index 000000000000..2fd7502c0e93
+--- /dev/null
++++ b/drivers/iio/dac/ad3552r-hs.c
+@@ -0,0 +1,529 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Analog Devices AD3552R
++ * Digital to Analog converter driver, High Speed version
++ *
++ * Copyright 2024 Analog Devices Inc.
++ */
++
++#include <linux/delay.h>
++#include <linux/gpio/consumer.h>
++#include <linux/iio/backend.h>
++#include <linux/iio/buffer.h>
++#include <linux/mod_devicetable.h>
++#include <linux/platform_device.h>
++#include <linux/property.h>
++#include <linux/units.h>
++
++#include "ad3552r.h"
++#include "ad3552r-hs.h"
++
++struct ad3552r_hs_state {
++	const struct ad3552r_model_data *model_data;
++	struct gpio_desc *reset_gpio;
++	struct device *dev;
++	struct iio_backend *back;
++	bool single_channel;
++	struct ad3552r_ch_data ch_data[AD3552R_MAX_CH];
++	struct ad3552r_hs_platform_data *data;
 +};
 +
-+struct axi_dac_info {
-+	unsigned int version;
-+	const struct iio_backend_info *backend_info;
-+	bool has_dac_clk;
- };
- 
- struct axi_dac_state {
-@@ -79,9 +107,11 @@ struct axi_dac_state {
- 	 * data/variables.
- 	 */
- 	struct mutex lock;
-+	const struct axi_dac_info *info;
- 	u64 dac_clk;
- 	u32 reg_config;
- 	bool int_tone;
-+	int dac_clk_rate;
- };
- 
- static int axi_dac_enable(struct iio_backend *back)
-@@ -471,6 +501,11 @@ static int axi_dac_data_source_set(struct iio_backend *back, unsigned int chan,
- 					  AXI_DAC_CHAN_CNTRL_7_REG(chan),
- 					  AXI_DAC_CHAN_CNTRL_7_DATA_SEL,
- 					  AXI_DAC_DATA_DMA);
-+	case IIO_BACKEND_INTERNAL_RAMP_16BIT:
-+		return regmap_update_bits(st->regmap,
-+					  AXI_DAC_CHAN_CNTRL_7_REG(chan),
-+					  AXI_DAC_CHAN_CNTRL_7_DATA_SEL,
-+					  AXI_DAC_DATA_INTERNAL_RAMP_16BIT);
- 	default:
- 		return -EINVAL;
- 	}
-@@ -528,6 +563,154 @@ static int axi_dac_reg_access(struct iio_backend *back, unsigned int reg,
- 	return regmap_write(st->regmap, reg, writeval);
- }
- 
-+static int axi_dac_ddr_enable(struct iio_backend *back)
++static int ad3552r_qspi_update_reg_bits(struct ad3552r_hs_state *st,
++					u32 reg, u32 mask, u32 val,
++					size_t xfer_size)
 +{
-+	struct axi_dac_state *st = iio_backend_get_priv(back);
++	u32 rval;
++	int ret;
 +
-+	return regmap_clear_bits(st->regmap, AXI_DAC_CNTRL_2_REG,
-+				 AXI_DAC_CNTRL_2_SDR_DDR_N);
++	ret = st->data->bus_reg_read(st->back, reg, &rval, xfer_size);
++	if (ret)
++		return ret;
++
++	rval = (rval & ~mask) | val;
++
++	return st->data->bus_reg_write(st->back, reg, rval, xfer_size);
 +}
 +
-+static int axi_dac_ddr_disable(struct iio_backend *back)
++static int ad3552r_hs_read_raw(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       int *val, int *val2, long mask)
 +{
-+	struct axi_dac_state *st = iio_backend_get_priv(back);
++	struct ad3552r_hs_state *st = iio_priv(indio_dev);
++	int ret;
++	int ch = chan->channel;
 +
-+	return regmap_set_bits(st->regmap, AXI_DAC_CNTRL_2_REG,
-+			       AXI_DAC_CNTRL_2_SDR_DDR_N);
-+}
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		/*
++		 * Using 4 lanes (QSPI), then using 2 as DDR mode is
++		 * considered always on (considering buffering mode always).
++		 */
++		*val = DIV_ROUND_CLOSEST(st->data->bus_sample_data_clock_hz *
++					 4 * 2, chan->scan_type.realbits);
 +
-+static int axi_dac_data_stream_enable(struct iio_backend *back)
-+{
-+	struct axi_dac_state *st = iio_backend_get_priv(back);
++		return IIO_VAL_INT;
 +
-+	return regmap_set_bits(st->regmap, AXI_DAC_CUSTOM_CTRL_REG,
-+			       AXI_DAC_CUSTOM_CTRL_STREAM_ENABLE);
-+}
++	case IIO_CHAN_INFO_RAW:
++		ret = st->data->bus_reg_read(st->back,
++				AD3552R_REG_ADDR_CH_DAC_16B(chan->channel),
++				val, 2);
++		if (ret)
++			return ret;
 +
-+static int axi_dac_data_stream_disable(struct iio_backend *back)
-+{
-+	struct axi_dac_state *st = iio_backend_get_priv(back);
-+
-+	return regmap_clear_bits(st->regmap, AXI_DAC_CUSTOM_CTRL_REG,
-+				 AXI_DAC_CUSTOM_CTRL_STREAM_ENABLE);
-+}
-+
-+static int axi_dac_data_transfer_addr(struct iio_backend *back, u32 address)
-+{
-+	struct axi_dac_state *st = iio_backend_get_priv(back);
-+
-+	if (address > FIELD_MAX(AXI_DAC_CUSTOM_CTRL_ADDRESS))
-+		return -EINVAL;
-+
-+	/*
-+	 * Sample register address, when the DAC is configured, or stream
-+	 * start address when the FSM is in stream state.
-+	 */
-+	return regmap_update_bits(st->regmap, AXI_DAC_CUSTOM_CTRL_REG,
-+				  AXI_DAC_CUSTOM_CTRL_ADDRESS,
-+				  FIELD_PREP(AXI_DAC_CUSTOM_CTRL_ADDRESS,
-+				  address));
-+}
-+
-+static int axi_dac_data_format_set(struct iio_backend *back, unsigned int ch,
-+				   const struct iio_backend_data_fmt *data)
-+{
-+	struct axi_dac_state *st = iio_backend_get_priv(back);
-+
-+	switch (data->type) {
-+	case IIO_BACKEND_DATA_UNSIGNED:
-+		return regmap_clear_bits(st->regmap, AXI_DAC_CNTRL_2_REG,
-+					 AXI_DAC_CNTRL_2_UNSIGNED_DATA);
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = st->ch_data[ch].scale_int;
++		*val2 = st->ch_data[ch].scale_dec;
++		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_OFFSET:
++		*val = st->ch_data[ch].offset_int;
++		*val2 = st->ch_data[ch].offset_dec;
++		return IIO_VAL_INT_PLUS_MICRO;
 +	default:
 +		return -EINVAL;
 +	}
 +}
 +
-+static int axi_dac_bus_reg_write_locked(struct iio_backend *back, u32 reg,
-+					u32 val, size_t data_size)
++static int ad3552r_hs_write_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int val, int val2, long mask)
 +{
-+	struct axi_dac_state *st = iio_backend_get_priv(back);
-+	int ret;
-+	u32 ival;
++	struct ad3552r_hs_state *st = iio_priv(indio_dev);
 +
-+	/*
-+	 * Both AXI_DAC_CNTRL_2_REG and AXI_DAC_CUSTOM_WR_REG need to know
-+	 * the data size. So keeping data size control here only,
-+	 * since data size is mandatory for the current transfer.
-+	 * DDR state handled separately by specific backend calls,
-+	 * generally all raw register writes are SDR.
-+	 */
-+	if (data_size == sizeof(u16))
-+		ival = FIELD_PREP(AXI_DAC_CUSTOM_WR_DATA_16, val);
-+	else
-+		ival = FIELD_PREP(AXI_DAC_CUSTOM_WR_DATA_8, val);
-+
-+	ret = regmap_write(st->regmap, AXI_DAC_CUSTOM_WR_REG, ival);
-+	if (ret)
-+		return ret;
-+
-+	if (data_size == sizeof(u8))
-+		ret = regmap_set_bits(st->regmap, AXI_DAC_CNTRL_2_REG,
-+				      AXI_DAC_CNTRL_2_SYMB_8B);
-+	else
-+		ret = regmap_clear_bits(st->regmap, AXI_DAC_CNTRL_2_REG,
-+					AXI_DAC_CNTRL_2_SYMB_8B);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_update_bits(st->regmap, AXI_DAC_CUSTOM_CTRL_REG,
-+				 AXI_DAC_CUSTOM_CTRL_ADDRESS,
-+				 FIELD_PREP(AXI_DAC_CUSTOM_CTRL_ADDRESS, reg));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_update_bits(st->regmap, AXI_DAC_CUSTOM_CTRL_REG,
-+				 AXI_DAC_CUSTOM_CTRL_TRANSFER_DATA,
-+				 AXI_DAC_CUSTOM_CTRL_TRANSFER_DATA);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_read_poll_timeout(st->regmap,
-+				AXI_DAC_UI_STATUS_REG, ival,
-+				FIELD_GET(AXI_DAC_UI_STATUS_IF_BUSY, ival) == 0,
-+				10, 100 * KILO);
-+	if (ret == -ETIMEDOUT)
-+		dev_err(st->dev, "AXI read timeout\n");
-+
-+	/* Cleaning always AXI_DAC_CUSTOM_CTRL_TRANSFER_DATA */
-+	return regmap_clear_bits(st->regmap, AXI_DAC_CUSTOM_CTRL_REG,
-+				 AXI_DAC_CUSTOM_CTRL_TRANSFER_DATA);
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		iio_device_claim_direct_scoped(return -EBUSY, indio_dev) {
++			return st->data->bus_reg_write(st->back,
++				    AD3552R_REG_ADDR_CH_DAC_16B(chan->channel),
++				    val, 2);
++		}
++		unreachable();
++	default:
++		return -EINVAL;
++	}
 +}
 +
-+static int axi_dac_bus_reg_write(struct iio_backend *back, u32 reg,
-+					u32 val, size_t data_size)
++static int ad3552r_hs_buffer_postenable(struct iio_dev *indio_dev)
 +{
-+	struct axi_dac_state *st = iio_backend_get_priv(back);
++	struct ad3552r_hs_state *st = iio_priv(indio_dev);
++	struct iio_backend_data_fmt fmt = {
++		.type = IIO_BACKEND_DATA_UNSIGNED
++	};
++	int loop_len, val, ret;
 +
-+	guard(mutex)(&st->lock);
-+	return axi_dac_bus_reg_write_locked(back, reg, val, data_size);
-+}
-+
-+static int axi_dac_bus_reg_read(struct iio_backend *back, u32 reg, u32 *val,
-+				size_t data_size)
-+{
-+	struct axi_dac_state *st = iio_backend_get_priv(back);
-+	int ret;
-+
-+	guard(mutex)(&st->lock);
-+
-+	/*
-+	 * SPI, we write with read flag, then we read just at the AXI
-+	 * io address space to get data read.
-+	 */
-+	ret = axi_dac_bus_reg_write_locked(back, AXI_DAC_RD_ADDR(reg), 0,
-+					   data_size);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_read(st->regmap, AXI_DAC_CUSTOM_RD_REG, val);
-+}
-+
- static const struct iio_backend_ops axi_dac_generic_ops = {
- 	.enable = axi_dac_enable,
- 	.disable = axi_dac_disable,
-@@ -541,11 +724,30 @@ static const struct iio_backend_ops axi_dac_generic_ops = {
- 	.debugfs_reg_access = iio_backend_debugfs_ptr(axi_dac_reg_access),
- };
- 
-+static const struct iio_backend_ops axi_ad3552r_ops = {
-+	.enable = axi_dac_enable,
-+	.disable = axi_dac_disable,
-+	.request_buffer = axi_dac_request_buffer,
-+	.free_buffer = axi_dac_free_buffer,
-+	.data_source_set = axi_dac_data_source_set,
-+	.ddr_enable = axi_dac_ddr_enable,
-+	.ddr_disable = axi_dac_ddr_disable,
-+	.data_stream_enable = axi_dac_data_stream_enable,
-+	.data_stream_disable = axi_dac_data_stream_disable,
-+	.data_format_set = axi_dac_data_format_set,
-+	.data_transfer_addr = axi_dac_data_transfer_addr,
-+};
-+
- static const struct iio_backend_info axi_dac_generic = {
- 	.name = "axi-dac",
- 	.ops = &axi_dac_generic_ops,
- };
- 
-+static const struct iio_backend_info axi_ad3552r = {
-+	.name = "axi-ad3552r",
-+	.ops = &axi_ad3552r_ops,
-+};
-+
- static const struct regmap_config axi_dac_regmap_config = {
- 	.val_bits = 32,
- 	.reg_bits = 32,
-@@ -555,7 +757,6 @@ static const struct regmap_config axi_dac_regmap_config = {
- 
- static int axi_dac_probe(struct platform_device *pdev)
- {
--	const unsigned int *expected_ver;
- 	struct axi_dac_state *st;
- 	void __iomem *base;
- 	unsigned int ver;
-@@ -566,14 +767,29 @@ static int axi_dac_probe(struct platform_device *pdev)
- 	if (!st)
- 		return -ENOMEM;
- 
--	expected_ver = device_get_match_data(&pdev->dev);
--	if (!expected_ver)
-+	st->info = device_get_match_data(&pdev->dev);
-+	if (!st->info)
- 		return -ENODEV;
-+	clk = devm_clk_get_enabled(&pdev->dev, "s_axi_aclk");
-+	if (IS_ERR(clk)) {
-+		/* Backward compat., old fdt versions without clock-names. */
-+		clk = devm_clk_get_enabled(&pdev->dev, NULL);
-+		if (IS_ERR(clk))
-+			return dev_err_probe(&pdev->dev, PTR_ERR(clk),
-+					"failed to get clock\n");
++	switch (*indio_dev->active_scan_mask) {
++	case AD3552R_CH0_ACTIVE:
++		st->single_channel = true;
++		loop_len = 2;
++		val = AD3552R_REG_ADDR_CH_DAC_16B(0);
++		break;
++	case AD3552R_CH1_ACTIVE:
++		st->single_channel = true;
++		loop_len = 2;
++		val = AD3552R_REG_ADDR_CH_DAC_16B(1);
++		break;
++	case AD3552R_CH0_ACTIVE | AD3552R_CH1_ACTIVE:
++		st->single_channel = false;
++		loop_len = 4;
++		val = AD3552R_REG_ADDR_CH_DAC_16B(1);
++		break;
++	default:
++		return -EINVAL;
 +	}
 +
-+	if (st->info->has_dac_clk) {
-+		struct clk *dac_clk;
- 
--	clk = devm_clk_get_enabled(&pdev->dev, NULL);
--	if (IS_ERR(clk))
--		return dev_err_probe(&pdev->dev, PTR_ERR(clk),
--				     "failed to get clock\n");
-+		dac_clk = devm_clk_get_enabled(&pdev->dev, "dac_clk");
-+		if (IS_ERR(dac_clk))
-+			return dev_err_probe(&pdev->dev, PTR_ERR(dac_clk),
-+					     "failed to get dac_clk clock\n");
++	ret = st->data->bus_reg_write(st->back, AD3552R_REG_ADDR_STREAM_MODE,
++				      loop_len, 1);
++	if (ret)
++		return ret;
 +
-+		/* We only care about the streaming mode rate */
-+		st->dac_clk_rate = clk_get_rate(dac_clk) / 2;
++	/* Inform DAC chip to switch into DDR mode */
++	ret = ad3552r_qspi_update_reg_bits(st,
++					   AD3552R_REG_ADDR_INTERFACE_CONFIG_D,
++					   AD3552R_MASK_SPI_CONFIG_DDR,
++					   AD3552R_MASK_SPI_CONFIG_DDR, 1);
++	if (ret)
++		return ret;
++
++	/* Inform DAC IP to go for DDR mode from now on */
++	ret = iio_backend_ddr_enable(st->back);
++	if (ret) {
++		dev_err(st->dev, "could not set DDR mode, not streaming");
++		goto exit_err;
 +	}
- 
- 	base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(base))
-@@ -598,12 +814,13 @@ static int axi_dac_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	if (ADI_AXI_PCORE_VER_MAJOR(ver) != ADI_AXI_PCORE_VER_MAJOR(*expected_ver)) {
-+	if (ADI_AXI_PCORE_VER_MAJOR(ver) !=
-+		ADI_AXI_PCORE_VER_MAJOR(st->info->version)) {
- 		dev_err(&pdev->dev,
- 			"Major version mismatch. Expected %d.%.2d.%c, Reported %d.%.2d.%c\n",
--			ADI_AXI_PCORE_VER_MAJOR(*expected_ver),
--			ADI_AXI_PCORE_VER_MINOR(*expected_ver),
--			ADI_AXI_PCORE_VER_PATCH(*expected_ver),
-+			ADI_AXI_PCORE_VER_MAJOR(st->info->version),
-+			ADI_AXI_PCORE_VER_MINOR(st->info->version),
-+			ADI_AXI_PCORE_VER_PATCH(st->info->version),
- 			ADI_AXI_PCORE_VER_MAJOR(ver),
- 			ADI_AXI_PCORE_VER_MINOR(ver),
- 			ADI_AXI_PCORE_VER_PATCH(ver));
-@@ -629,7 +846,8 @@ static int axi_dac_probe(struct platform_device *pdev)
- 		return ret;
- 
- 	mutex_init(&st->lock);
--	ret = devm_iio_backend_register(&pdev->dev, &axi_dac_generic, st);
 +
-+	ret = devm_iio_backend_register(&pdev->dev, st->info->backend_info, st);
- 	if (ret)
- 		return dev_err_probe(&pdev->dev, ret,
- 				     "failed to register iio backend\n");
-@@ -642,10 +860,20 @@ static int axi_dac_probe(struct platform_device *pdev)
- 	return 0;
- }
- 
--static unsigned int axi_dac_9_1_b_info = ADI_AXI_PCORE_VER(9, 1, 'b');
-+static const struct axi_dac_info dac_generic = {
-+	.version = ADI_AXI_PCORE_VER(9, 1, 'b'),
-+	.backend_info = &axi_dac_generic,
++	ret = iio_backend_data_transfer_addr(st->back, val);
++	if (ret)
++		goto exit_err;
++
++	ret = iio_backend_data_format_set(st->back, 0, &fmt);
++	if (ret)
++		goto exit_err;
++
++	ret = iio_backend_data_stream_enable(st->back);
++	if (ret)
++		goto exit_err;
++
++	return 0;
++
++exit_err:
++	ad3552r_qspi_update_reg_bits(st,
++				     AD3552R_REG_ADDR_INTERFACE_CONFIG_D,
++				     AD3552R_MASK_SPI_CONFIG_DDR,
++				     0, 1);
++
++	iio_backend_ddr_disable(st->back);
++
++	return ret;
++}
++
++static int ad3552r_hs_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct ad3552r_hs_state *st = iio_priv(indio_dev);
++	int ret;
++
++	ret = iio_backend_data_stream_disable(st->back);
++	if (ret)
++		return ret;
++
++	/* Inform DAC to set in SDR mode */
++	ret = ad3552r_qspi_update_reg_bits(st,
++					   AD3552R_REG_ADDR_INTERFACE_CONFIG_D,
++					   AD3552R_MASK_SPI_CONFIG_DDR,
++					   0, 1);
++	if (ret)
++		return ret;
++
++	ret = iio_backend_ddr_disable(st->back);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static inline int ad3552r_hs_set_output_range(struct ad3552r_hs_state *st,
++					      int ch, unsigned int mode)
++{
++	int val;
++
++	if (ch == 0)
++		val = FIELD_PREP(AD3552R_MASK_CH0_RANGE, mode);
++	else
++		val = FIELD_PREP(AD3552R_MASK_CH1_RANGE, mode);
++
++	return ad3552r_qspi_update_reg_bits(st,
++					AD3552R_REG_ADDR_CH0_CH1_OUTPUT_RANGE,
++					AD3552R_MASK_CH_OUTPUT_RANGE_SEL(ch),
++					val, 1);
++}
++
++static int ad3552r_hs_reset(struct ad3552r_hs_state *st)
++{
++	int ret;
++
++	st->reset_gpio = devm_gpiod_get_optional(st->dev,
++						 "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(st->reset_gpio))
++		return PTR_ERR(st->reset_gpio);
++
++	if (st->reset_gpio) {
++		fsleep(10);
++		gpiod_set_value_cansleep(st->reset_gpio, 0);
++	} else {
++		ret = ad3552r_qspi_update_reg_bits(st,
++					AD3552R_REG_ADDR_INTERFACE_CONFIG_A,
++					AD3552R_MASK_SOFTWARE_RESET,
++					AD3552R_MASK_SOFTWARE_RESET, 1);
++		if (ret)
++			return ret;
++	}
++	msleep(100);
++
++	return 0;
++}
++
++static int ad3552r_hs_scratch_pad_test(struct ad3552r_hs_state *st)
++{
++	int ret, val;
++
++	ret = st->data->bus_reg_write(st->back, AD3552R_REG_ADDR_SCRATCH_PAD,
++				      AD3552R_SCRATCH_PAD_TEST_VAL1, 1);
++	if (ret)
++		return ret;
++
++	ret = st->data->bus_reg_read(st->back, AD3552R_REG_ADDR_SCRATCH_PAD,
++				     &val, 1);
++	if (ret)
++		return ret;
++
++	if (val != AD3552R_SCRATCH_PAD_TEST_VAL1)
++		return dev_err_probe(st->dev, -EIO,
++			"SCRATCH_PAD_TEST mismatch. Expected 0x%x, Read 0x%x\n",
++			AD3552R_SCRATCH_PAD_TEST_VAL1, val);
++
++	ret = st->data->bus_reg_write(st->back, AD3552R_REG_ADDR_SCRATCH_PAD,
++				      AD3552R_SCRATCH_PAD_TEST_VAL2, 1);
++	if (ret)
++		return ret;
++
++	ret = st->data->bus_reg_read(st->back, AD3552R_REG_ADDR_SCRATCH_PAD,
++				     &val, 1);
++	if (ret)
++		return ret;
++
++	if (val != AD3552R_SCRATCH_PAD_TEST_VAL2)
++		return dev_err_probe(st->dev, -EIO,
++			"SCRATCH_PAD_TEST mismatch. Expected 0x%x, Read 0x%x\n",
++			AD3552R_SCRATCH_PAD_TEST_VAL2, val);
++
++	return 0;
++}
++
++static int ad3552r_hs_setup_custom_gain(struct ad3552r_hs_state *st,
++					int ch, u16 gain, u16 offset)
++{
++	int ret;
++
++	ret = st->data->bus_reg_write(st->back, AD3552R_REG_ADDR_CH_OFFSET(ch),
++				      offset, 1);
++	if (ret)
++		return ret;
++
++	return st->data->bus_reg_write(st->back, AD3552R_REG_ADDR_CH_GAIN(ch),
++				      gain, 1);
++}
++
++static int ad3552r_hs_setup(struct ad3552r_hs_state *st)
++{
++	s16 goffs;
++	u16 id;
++	u16 gain = 0, offset = 0;
++	u32 ch, val, range;
++	int ret;
++
++	ret = ad3552r_hs_reset(st);
++	if (ret)
++		return ret;
++
++	ret = iio_backend_ddr_disable(st->back);
++	if (ret)
++		return ret;
++
++	ret = ad3552r_hs_scratch_pad_test(st);
++	if (ret)
++		return ret;
++
++	ret = st->data->bus_reg_read(st->back, AD3552R_REG_ADDR_PRODUCT_ID_L,
++				     &val, 1);
++	if (ret)
++		return ret;
++
++	id = val;
++
++	ret = st->data->bus_reg_read(st->back, AD3552R_REG_ADDR_PRODUCT_ID_H,
++				     &val, 1);
++	if (ret)
++		return ret;
++
++	id |= val << 8;
++	if (id != st->model_data->chip_id)
++		dev_info(st->dev, "Chip ID error. Expected 0x%x, Read 0x%x\n",
++			 AD3552R_ID, id);
++
++	ret = st->data->bus_reg_write(st->back,
++				      AD3552R_REG_ADDR_SH_REFERENCE_CONFIG,
++				      0, 1);
++	if (ret)
++		return ret;
++
++	ret = st->data->bus_reg_write(st->back,
++				AD3552R_REG_ADDR_TRANSFER_REGISTER,
++				FIELD_PREP(AD3552R_MASK_MULTI_IO_MODE,
++					   AD3552R_QUAD_SPI) |
++				AD3552R_MASK_STREAM_LENGTH_KEEP_VALUE, 1);
++	if (ret)
++		return ret;
++
++	ret = iio_backend_data_source_set(st->back, 0, IIO_BACKEND_EXTERNAL);
++	if (ret)
++		return ret;
++
++	ret = iio_backend_data_source_set(st->back, 1, IIO_BACKEND_EXTERNAL);
++	if (ret)
++		return ret;
++
++	ret = ad3552r_get_ref_voltage(st->dev, &val);
++	if (ret < 0)
++		return ret;
++
++	val = ret;
++
++	ret = ad3552r_qspi_update_reg_bits(st,
++				AD3552R_REG_ADDR_SH_REFERENCE_CONFIG,
++				AD3552R_MASK_REFERENCE_VOLTAGE_SEL,
++				val, 1);
++	if (ret)
++		return ret;
++
++	ret = ad3552r_get_drive_strength(st->dev, &val);
++	if (!ret) {
++		ret = ad3552r_qspi_update_reg_bits(st,
++					AD3552R_REG_ADDR_INTERFACE_CONFIG_D,
++					AD3552R_MASK_SDO_DRIVE_STRENGTH,
++					val, 1);
++		if (ret)
++			return ret;
++	}
++
++	device_for_each_child_node_scoped(st->dev, child) {
++		ret = fwnode_property_read_u32(child, "reg", &ch);
++		if (ret)
++			return dev_err_probe(st->dev, ret,
++					     "reg property missing\n");
++
++		ret = ad3552r_get_output_range(st->dev, st->model_data, child,
++					       &range);
++		if (ret && ret != -ENOENT)
++			return ret;
++		if (ret == -ENOENT) {
++			ret = ad3552r_get_custom_gain(st->dev, child,
++						&st->ch_data[ch].p,
++						&st->ch_data[ch].n,
++						&st->ch_data[ch].rfb,
++						&st->ch_data[ch].gain_offset);
++			if (ret)
++				return ret;
++
++			gain = ad3552r_calc_custom_gain(st->ch_data[ch].p,
++						st->ch_data[ch].n,
++						st->ch_data[ch].gain_offset);
++			offset = abs(goffs);
++
++			st->ch_data[ch].range_override = 1;
++
++			ret = ad3552r_hs_setup_custom_gain(st, ch, gain,
++							   offset);
++			if (ret)
++				return ret;
++		} else {
++			st->ch_data[ch].range = range;
++
++			ret = ad3552r_hs_set_output_range(st, ch, range);
++			if (ret)
++				return ret;
++		}
++
++		ad3552r_calc_gain_and_offset(&st->ch_data[ch], st->model_data);
++	}
++
++	return 0;
++}
++
++static const struct iio_buffer_setup_ops ad3552r_hs_buffer_setup_ops = {
++	.postenable = ad3552r_hs_buffer_postenable,
++	.predisable = ad3552r_hs_buffer_predisable,
 +};
 +
-+static const struct axi_dac_info dac_ad3552r = {
-+	.version = ADI_AXI_PCORE_VER(9, 1, 'b'),
-+	.backend_info = &axi_ad3552r,
-+	.has_dac_clk = true,
++#define AD3552R_CHANNEL(ch) { \
++	.type = IIO_VOLTAGE, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
++			      BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
++			      BIT(IIO_CHAN_INFO_SCALE) | \
++			      BIT(IIO_CHAN_INFO_OFFSET), \
++	.output = 1, \
++	.indexed = 1, \
++	.channel = (ch), \
++	.scan_index = (ch), \
++	.scan_type = { \
++		.sign = 'u', \
++		.realbits = 16, \
++		.storagebits = 16, \
++		.endianness = IIO_BE, \
++	} \
++}
++
++static const struct iio_chan_spec ad3552r_hs_channels[] = {
++	AD3552R_CHANNEL(0),
++	AD3552R_CHANNEL(1),
 +};
++
++static const struct iio_info ad3552r_hs_info = {
++	.read_raw = &ad3552r_hs_read_raw,
++	.write_raw = &ad3552r_hs_write_raw,
++};
++
++static int ad3552r_hs_probe(struct platform_device *pdev)
++{
++	struct ad3552r_hs_state *st;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*st));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++	st->dev = &pdev->dev;
++
++	st->data = dev_get_platdata(st->dev);
++	if (!st->data)
++		return dev_err_probe(st->dev, -ENODEV, "No platform data !");
++
++	st->back = devm_iio_backend_get(&pdev->dev, NULL);
++	if (IS_ERR(st->back))
++		return PTR_ERR(st->back);
++
++	ret = devm_iio_backend_enable(&pdev->dev, st->back);
++	if (ret)
++		return ret;
++
++	st->model_data = device_get_match_data(&pdev->dev);
++	if (!st->model_data)
++		return -ENODEV;
++
++	indio_dev->name = "ad3552r";
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->setup_ops = &ad3552r_hs_buffer_setup_ops;
++	indio_dev->channels = ad3552r_hs_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ad3552r_hs_channels);
++	indio_dev->info = &ad3552r_hs_info;
++
++	ret = devm_iio_backend_request_buffer(&pdev->dev, st->back, indio_dev);
++	if (ret)
++		return ret;
++
++	ret = ad3552r_hs_setup(st);
++	if (ret)
++		return ret;
++
++	return devm_iio_device_register(&pdev->dev, indio_dev);
++}
++
++static const struct ad3552r_model_data ad3552r_model_data = {
++	.model_name = "ad3552r",
++	.chip_id = AD3552R_ID,
++	.num_hw_channels = 2,
++	.ranges_table = ad3552r_ch_ranges,
++	.num_ranges = ARRAY_SIZE(ad3552r_ch_ranges),
++};
++
++static const struct of_device_id ad3552r_hs_of_id[] = {
++	{ .compatible = "adi,ad3552r", .data = &ad3552r_model_data },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ad3552r_hs_of_id);
++
++static struct platform_driver ad3552r_hs_driver = {
++	.driver = {
++		.name = "ad3552r-hs",
++		.of_match_table = ad3552r_hs_of_id,
++	},
++	.probe = ad3552r_hs_probe,
++};
++module_platform_driver(ad3552r_hs_driver);
++
++MODULE_AUTHOR("Dragos Bogdan <dragos.bogdan@analog.com>");
++MODULE_AUTHOR("Angelo Dureghello <adueghello@baylibre.com>");
++MODULE_DESCRIPTION("AD3552R Driver - High Speed version");
++MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS(IIO_BACKEND);
++MODULE_IMPORT_NS(IIO_AD3552R);
+diff --git a/drivers/iio/dac/ad3552r-hs.h b/drivers/iio/dac/ad3552r-hs.h
+new file mode 100644
+index 000000000000..724261d38dea
+--- /dev/null
++++ b/drivers/iio/dac/ad3552r-hs.h
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (c) 2024 Analog Devices Inc.
++ * Copyright (c) 2024 Baylibre, SAS
++ */
++#ifndef __LINUX_PLATFORM_DATA_AD3552R_HS_H__
++#define __LINUX_PLATFORM_DATA_AD3552R_HS_H__
++
++struct iio_backend;
++
++struct ad3552r_hs_platform_data {
++	int (*bus_reg_read)(struct iio_backend *back, u32 reg, u32 *val,
++			    size_t data_size);
++	int (*bus_reg_write)(struct iio_backend *back, u32 reg, u32 val,
++			     size_t data_size);
++	u32 bus_sample_data_clock_hz;
++};
++
++#endif /* __LINUX_PLATFORM_DATA_AD3552R_HS_H__ */
+diff --git a/drivers/iio/dac/ad3552r.h b/drivers/iio/dac/ad3552r.h
+index 7511e3f1882c..fd5a3dfd1d1c 100644
+--- a/drivers/iio/dac/ad3552r.h
++++ b/drivers/iio/dac/ad3552r.h
+@@ -127,8 +127,12 @@
+ #define AD3552R_GAIN_SCALE				1000
+ #define AD3552R_LDAC_PULSE_US				100
  
- static const struct of_device_id axi_dac_of_match[] = {
--	{ .compatible = "adi,axi-dac-9.1.b", .data = &axi_dac_9_1_b_info },
-+	{ .compatible = "adi,axi-dac-9.1.b", .data = &dac_generic },
-+	{ .compatible = "adi,axi-ad3552r", .data = &dac_ad3552r },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, axi_dac_of_match);
++#define AD3552R_CH0_ACTIVE				BIT(0)
++#define AD3552R_CH1_ACTIVE				BIT(1)
++
+ #define AD3552R_MAX_RANGES	5
+ #define AD3542R_MAX_RANGES	6
++#define AD3552R_QUAD_SPI	2
+ 
+ extern const s32 ad3552r_ch_ranges[AD3552R_MAX_RANGES][2];
+ extern const s32 ad3542r_ch_ranges[AD3542R_MAX_RANGES][2];
 
 -- 
 2.45.0.rc1
