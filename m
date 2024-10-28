@@ -1,143 +1,152 @@
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92BB81DF24E
-	for <linux-iio@vger.kernel.org>; Mon, 28 Oct 2024 16:38:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 135591DE2BF;
+	Mon, 28 Oct 2024 16:39:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730133530; cv=none; b=iO+701CwhqDjBrl+wO7wGRF43ghF279r9K8Vru+sjPDMxvd5D1Qws9BL/9eM5Fg8mGrUDPo+R7gepA5hwWXJwyhJZRZcfIFrdulx8bOP0q0hkz9NTg+T4AZZ+Z7hD68aPmAM6kV3UwSS0qdl/GR51RoYgfOCw7g+gsHUV11JuP4=
+	t=1730133555; cv=none; b=hWLWW3eiU0fHAkT4USi8bUkcbV+oAsYAQ8P4jiB1DIdSRC3pQueo6KU7y7ZmiLc6q2RqhwfRJrEYmLe5GLSQFucGBCgu4Ksixd6qY9BQp42WnZIDTwjri9s6RO14hQmZkZ64fCDOMtFF/+HS9ccEJaPItJTZwYRfSP3FNXGXpDo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730133530; c=relaxed/simple;
-	bh=D/9/0QfGf2kL2YCg474JgIqFO07WdxvMzwREB4i0hpA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OiCRjejN5WMxIWz3yAgYgnuhGr4OkTVeSf0RTwRYYgQNWA46qVkMrbn6CXcxpRjxflmFFdkgu60naWS1DgcIGWruvrxDRVtlXzlxf2wHh8uwsRt2pFcNOpdVcE6scF++npY3K31o1Or3YGzA90YIpGcnPhNapu0BFzq31oJ0TsA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=AB7+9gJT; arc=none smtp.client-ip=209.85.210.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="AB7+9gJT"
-Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-718123ec383so2584720a34.3
-        for <linux-iio@vger.kernel.org>; Mon, 28 Oct 2024 09:38:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1730133527; x=1730738327; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=eHBv3mloFblXsI8B0YdKTr1Rad853vdsR5SEAXSvUe0=;
-        b=AB7+9gJTpSJdqfDAzAd6DSyBhJodd1O1PirUqaiZI6oQaCLlF9onj4+CiY/Da1J9+1
-         0bGTojnDL6ucOZjCrbmgDSCzUCmQYs7CgkZua9XAv95rYStPhb683X0fuO6gaifKLWq0
-         lWfguchVNgwfNH9sl5ufWSacJuGcSgIduz+heuP+oF7DlM0DyYZrCzBGyApHdDYIqPFJ
-         iM3xUsUl6cnxPCJ+VC/EsD5+l6QxlhWBmwO8v2EroYaaKFS9Ot4Ah0VNM9krMcTtF42C
-         DH0vaywNyXVDYv1z6NWGqeEOoYbFB/FUVPSYP7ulmcwAzW5VZXA0BoFeToh+5e8FZi3p
-         ExFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730133527; x=1730738327;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=eHBv3mloFblXsI8B0YdKTr1Rad853vdsR5SEAXSvUe0=;
-        b=k2KA61kz/Edhein3KPSO8J8IDzO8wU9h7hVHEt7vm7W+bmVseNgT7o1PvfHjQjhWyH
-         hbKXIuE4+qawxpKuPzT0kUiv9s9hhcZnMq9a4TGC4wVe2Zb6vURL9J6nLGkqIhSxAk5Z
-         4XLz5RcrDscvR9j6YIPFK2Mw0dzNihOON3BFgN1MJ6wFomNMOBZy+UjgK30S93Gl3DXY
-         VMOSWAaNNP92VZjBLfmnUVDPQx1txzJI2HsCt2g1p4jesxdYOmV+R0uiMoUu2R7YxH17
-         x2ndwCbvg5EQfRs5a3bQ6bO6k/UmcGnlMGe/Rlg6yyDT1a3HX8tTAUns2gr+rCCmyXNa
-         AQgw==
-X-Forwarded-Encrypted: i=1; AJvYcCWLScOylr0hTDqurWoJ5o7T9CgCmFLxn5rZUhL0+8lPWQ5QlWZGzON+QJ3Sdt0zdauaAUO+sg3gHWE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyAUEdVJwYmQNIUVh4i5nbsfa3sphNqz6d9BgYLPbO5DjWFkFYC
-	lOQo+z8FLl5ToLh67A8IWg5lH1o5Nql4br2KEyahTRMD702Mx8U63MoHN9Iy9oE=
-X-Google-Smtp-Source: AGHT+IG976pNgH6jj17M/FLgXdKLhdCM9MBn76qTibiVCeooF33NJgJuM4wLRJvZcoYm3qjr0KpXNg==
-X-Received: by 2002:a05:6830:4129:b0:718:ab4:8b70 with SMTP id 46e09a7af769-7186828aa13mr8360988a34.22.1730133527513;
-        Mon, 28 Oct 2024 09:38:47 -0700 (PDT)
-Received: from [192.168.0.142] (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-5ec1873887dsm1738568eaf.41.2024.10.28.09.38.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Oct 2024 09:38:46 -0700 (PDT)
-Message-ID: <9cf40804-c85d-43c5-82a3-14f75b9922e9@baylibre.com>
-Date: Mon, 28 Oct 2024 11:38:44 -0500
+	s=arc-20240116; t=1730133555; c=relaxed/simple;
+	bh=jeqOaqJuFOoxOEWYmX6WO8I6UoLf98HeNqbukHCZ4qU=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=RUx52C7YG4+a/7JS9ISfIlhgn2l3mQPK9w/plvbQXEwFJAEtx7sBXcU/PAsZxkshe95yAyIveK5wEAwg1SBKHNMmnHESCIpf2AnzRfvKqfpM5ga84TuWqMlL8R/FOcmriYPSbZnffIM9zw+tidbfuTS4HLrbiSlVEQg8KGO+NKg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=Huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=Huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.216])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Xcf9T3pWzz6LDXM;
+	Tue, 29 Oct 2024 00:34:21 +0800 (CST)
+Received: from frapeml500008.china.huawei.com (unknown [7.182.85.71])
+	by mail.maildlp.com (Postfix) with ESMTPS id E8BE91404FC;
+	Tue, 29 Oct 2024 00:39:09 +0800 (CST)
+Received: from localhost (10.203.177.66) by frapeml500008.china.huawei.com
+ (7.182.85.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Mon, 28 Oct
+ 2024 17:39:09 +0100
+Date: Mon, 28 Oct 2024 16:39:07 +0000
+From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To: David Lechner <dlechner@baylibre.com>
+CC: Jonathan Cameron <jic23@kernel.org>, Mark Brown <broonie@kernel.org>, Rob
+ Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
+ Dooley <conor+dt@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?=
+	<nuno.sa@analog.com>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?=
+	<ukleinek@kernel.org>, Michael Hennerich <Michael.Hennerich@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>, David Jander <david@protonic.nl>,
+	Martin Sperl <kernel@martin.sperl.org>, <linux-spi@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-pwm@vger.kernel.org>
+Subject: Re: [PATCH RFC v4 15/15] iio: adc: ad4695: Add support for SPI
+ offload
+Message-ID: <20241028163907.00007e12@Huawei.com>
+In-Reply-To: <2679570d-6255-467b-8312-117e553a52b4@baylibre.com>
+References: <20241023-dlech-mainline-spi-engine-offload-2-v4-0-f8125b99f5a1@baylibre.com>
+	<20241023-dlech-mainline-spi-engine-offload-2-v4-15-f8125b99f5a1@baylibre.com>
+	<20241026170038.4b629cff@jic23-huawei>
+	<5a090847-ee53-41be-ad28-b7604cf9020a@baylibre.com>
+	<20241027091244.2fe3c0ad@jic23-huawei>
+	<2679570d-6255-467b-8312-117e553a52b4@baylibre.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/4] iio: adc: ad7124: Make it work on de10-nano
-To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
- Conor Dooley <conor+dt@kernel.org>,
- Dumitru Ceclan <dumitru.ceclan@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Nuno Sa <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org
-References: <20241028160748.489596-6-u.kleine-koenig@baylibre.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20241028160748.489596-6-u.kleine-koenig@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: lhrpeml100012.china.huawei.com (7.191.174.184) To
+ frapeml500008.china.huawei.com (7.182.85.71)
 
-On 10/28/24 11:07 AM, Uwe Kleine-König wrote:
-> Hello,
-> 
-> this is iteration v2 to make ad7124 work on de10-nano. (Implicit) v1 is
-> available at
-> https://lore.kernel.org/linux-iio/20241024171703.201436-5-u.kleine-koenig@baylibre.com.
-> 
-> The changes since v1:
-> 
-> - Write 0 instead of 0x0001 to disable channels. While 0x0001 is the
->   reset default value for these registers (apart from the channel 0 one)
->   there is no sensible reason to use that value (i.e.
->   AD7124_CHANNEL_AINP(0) | AD7124_CHANNEL_AINM(1)) as the value is
->   reprogrammed before use anyhow. This addresses the feedback that the
->   magic value 0x0001 should better be constructed using register bit
->   field defintions.
-> 
-> - Add maxItems: 1 to the new property defined in the binding patch (Krzysztof)
-> 
-> - Rename property to rdy-gpios (Rob)
-> 
-> - Use rdy-gpios only for gpio reading and continue using the usual irq
->   defintion for the interrupt (Jonathan). I was surprised I can use both the
->   GPIO as input and the matching irq.
-> 
-> - patch #1 is new, and use GPIO_ACTIVE_LOW in the gpio descriptor
->   instead of 2.
-> 
-> Jonathan voiced concerns about the reliability of this solution and
-> proposed to implement polling. I'm convinced the solution implemented
-> here is robust, so I see no need to implement polling today.
-> 
-> Still open questions:
-> 
->  - Is rdy-gpios the right name. The line is named ̅R̅D̅Y, so maybe nrdy-gpios? Or
->    nRDY-gpios?
+On Sun, 27 Oct 2024 14:52:17 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-The GPIO_ACTIVE_LOW indicates the "bar" for active low, so we don't
-typically add the "n" prefix to the name. So rdy-gpios looks correct
-to me.
+> On 10/27/24 4:12 AM, Jonathan Cameron wrote:
+> > On Sat, 26 Oct 2024 19:01:53 -0500
+> > David Lechner <dlechner@baylibre.com> wrote:
+> >   
+> >> On 10/26/24 11:00 AM, Jonathan Cameron wrote:  
+> >>> On Wed, 23 Oct 2024 15:59:22 -0500
+> >>> David Lechner <dlechner@baylibre.com> wrote:
+> >>>     
+> 
+> ...
+> 
+> >>>     
+> >>>>  static int ad4695_probe(struct spi_device *spi)
+> >>>>  {
+> >>>>  	struct device *dev = &spi->dev;
+> >>>>  	struct ad4695_state *st;
+> >>>>  	struct iio_dev *indio_dev;
+> >>>> -	struct gpio_desc *cnv_gpio;
+> >>>>  	bool use_internal_ldo_supply;
+> >>>>  	bool use_internal_ref_buffer;
+> >>>>  	int ret;
+> >>>>  
+> >>>> -	cnv_gpio = devm_gpiod_get_optional(dev, "cnv", GPIOD_OUT_LOW);
+> >>>> -	if (IS_ERR(cnv_gpio))
+> >>>> -		return dev_err_probe(dev, PTR_ERR(cnv_gpio),
+> >>>> -				     "Failed to get CNV GPIO\n");
+> >>>> -
+> >>>> -	/* Driver currently requires CNV pin to be connected to SPI CS */
+> >>>> -	if (cnv_gpio)
+> >>>> -		return dev_err_probe(dev, -ENODEV,
+> >>>> -				     "CNV GPIO is not supported\n");
+> >>>> -
+> >>>>  	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> >>>>  	if (!indio_dev)
+> >>>>  		return -ENOMEM;
+> >>>> @@ -1002,8 +1374,13 @@ static int ad4695_probe(struct spi_device *spi)
+> >>>>  		return -EINVAL;
+> >>>>  
+> >>>>  	/* Registers cannot be read at the max allowable speed */
+> >>>> +	st->spi_max_speed_hz = spi->max_speed_hz;
+> >>>>  	spi->max_speed_hz = AD4695_REG_ACCESS_SCLK_HZ;
+> >>>>  
+> >>>> +	ret = devm_add_action_or_reset(dev, ad4695_restore_spi_max_speed_hz, st);    
+> >>>
+> >>> Why do you need to put it back in devm? What happens after this but without
+> >>> a driver restart that uses that faster rate?
+> >>>     
+> >> I should have added a comment here as this was a weird bug to trace.
+> >>
+> >> The core SPI framework sets the initial value of spi->max_speed_hz
+> >> to the minimum of the controller max rate and the max rate specified
+> >> by the devicetree.
+> >>
+> >> The SPI device lives beyond this driver, so if we bind the driver
+> >> and set spi->max_speed_hz to something other than what the SPI core
+> >> set it, then the next time we bind the driver, we don't get the
+> >> the max rate from the SPI core, but rather we changed it to when
+> >> the driver unbound.
+> >>
+> >> So on the second bind, the max rate would be the slow register
+> >> read rate instead of the actual max allowable rate.
+> >>
+> >> So we need to reset spi->max_speed_hz to what it was originally
+> >> on driver unbind so that everything works as expected on the
+> >> next bind.
+> >>
+> >> (Or we call this a SPI core bug and fix it there instead).  
+> > Definitely a question to ask.  Directly accessing spi_max_speed_hz may
+> > be the fundamental issue as I don't think the driver is generally
+> > expected to touch that in a dynamic fashion.  Should we be instead setting it
+> > per transfer for the ones that need it controlled?
+> > 
+> > Jonathan
+> >   
+> 
+> The problem is that we are using regmap and that doesn't have
+> a way to specify the max frequency for register reads that is
+> different from other uses of the SPI bus (i.e. reading sample
+> data). So we could fix it in the generic SPI regmap (not exactly
+> trivial) or we could write our own regmap read/write callbacks
+> in this driver that properly sets the per-transfer max speed.
 
->  - Jonathan wanted some input from ADI about this series and the
->    hardware details.
+Custom read / write callbacks seems the best approach at first
+glance, given this is pretty rare thing to do. 
+
 > 
-> Best regards
-> Uwe
 > 
-> Uwe Kleine-König (4):
->   dt-bindings: iio: adc: adi,ad7124: Use symbolic name for interrupt
->     flag
->   dt-bindings: iio: adc: adi,ad7124: Allow specifications of a gpio for
->     irq line
->   iio: adc: ad_sigma_delta: Add support for reading irq status using a
->     GPIO
->   iio: adc: ad7124: Disable all channels at probe time
-> 
->  .../bindings/iio/adc/adi,ad7124.yaml          | 11 +++++-
->  drivers/iio/adc/ad7124.c                      |  3 ++
->  drivers/iio/adc/ad_sigma_delta.c              | 35 ++++++++++++++++---
->  include/linux/iio/adc/ad_sigma_delta.h        |  1 +
->  4 files changed, 44 insertions(+), 6 deletions(-)
-> 
-> base-commit: 9852d85ec9d492ebef56dc5f229416c925758edc
 
