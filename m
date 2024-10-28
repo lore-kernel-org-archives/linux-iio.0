@@ -1,48 +1,38 @@
-Received: from a.peacevolution.org (a.peacevolution.org [206.189.193.133])
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 840AD18C93D;
-	Mon, 28 Oct 2024 14:30:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=206.189.193.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40953187352;
+	Mon, 28 Oct 2024 14:31:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.255
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730125813; cv=none; b=c88n4z7uowoZFLhukMrkXn6FeR5E+fVoRqs2VxD1vgRdPhRtnpOl7Nkc36trVWZ+9U/aBOZIePKaLcRfkMfDxIECrWhrRigXr7/iJAPXD6GMTssdBXv+eTLa5qVYPH/Gy2Yrd/+oEbUaOEB64iU9CUl/vA4YUOBz7E4iXalQEB0=
+	t=1730125885; cv=none; b=TJQoQFT8JgXa8e5JEjACF1oVVCK16JnuoL8J8eMCUnPWS99CtSm9yYa5VdeBdynUstJXFAnPmU61A4Slh4n0+47SxisxGIMKdcgPpW3oDQekB5SzmQuT1X+/FzzfPfGS+GzBvNPtij/iIorVF1ncYqCZtO/ZFsMHasaeBhV8Beo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730125813; c=relaxed/simple;
-	bh=sdstsogHfVVzt/qF2FVu3AhaNVUWpR2HAeKX/JoSshs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ZMCAIdVsNmapcun4lDdaEaGo0e122KrCaqVLN0yfB7kkgvIN1KLz8bnX1JLZp6vBooS7uF/lIdh+prXNSnnfPgn3Lz8hsECK5+iZ55tlpFHK+fH5NhruL6Pkq4eEVaslQxW6YHf8EOV/jNutmrMiF1jqvCZXd7iGt7vQ/k9IL+o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=peacevolution.org; spf=pass smtp.mailfrom=peacevolution.org; dkim=pass (1024-bit key) header.d=peacevolution.org header.i=@peacevolution.org header.b=AVB+177H; arc=none smtp.client-ip=206.189.193.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=peacevolution.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=peacevolution.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=peacevolution.org header.i=@peacevolution.org header.b="AVB+177H"
-Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-	by a.peacevolution.org (Postfix) with ESMTPA id 0ADD64C564;
-	Mon, 28 Oct 2024 14:21:41 +0000 (UTC)
-From: Aren Moynihan <aren@peacevolution.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>
-Cc: Aren Moynihan <aren@peacevolution.org>,
-	Kaustabh Chakraborty <kauschluss@disroot.org>,
-	=?UTF-8?q?Barnab=C3=A1s=20Cz=C3=A9m=C3=A1n?= <trabarni@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Ondrej Jirman <megi@xff.cz>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-sunxi@lists.linux.dev,
-	Dragan Simic <dsimic@manjaro.org>,
-	phone-devel@vger.kernel.org
-Subject: [PATCH v3 0/6] iio: light: stk3310: support powering off during suspend
-Date: Mon, 28 Oct 2024 10:19:54 -0400
-Message-ID: <20241028142000.1058149-1-aren@peacevolution.org>
+	s=arc-20240116; t=1730125885; c=relaxed/simple;
+	bh=uwHaIlsQqFu7ae8UFuLdJQ1AfGWr2S0itkv/Rz1zSsw=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Tn1Ax4z3ztMs1Sbhkg1xYD8KvEh+y2mKLs1w4djVAGMZ3/rXcNc4O5+zCHLiS1gxT32P0l7KayL3hbPkhMBxqtLve7ejdLABpxdKMYnC2FsJLeEGNKZfdUXkD/++LfIbW+Bs9u2AHECkImDwCqB5RcysQVxsYfjHWdH08WJxTKw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.255
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.162.254])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4XcbP03m0yz1T8Hx;
+	Mon, 28 Oct 2024 22:29:08 +0800 (CST)
+Received: from kwepemd200012.china.huawei.com (unknown [7.221.188.145])
+	by mail.maildlp.com (Postfix) with ESMTPS id E52E71800DE;
+	Mon, 28 Oct 2024 22:31:16 +0800 (CST)
+Received: from huawei.com (10.67.175.84) by kwepemd200012.china.huawei.com
+ (7.221.188.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.34; Mon, 28 Oct
+ 2024 22:31:16 +0800
+From: Zicheng Qu <quzicheng@huawei.com>
+To: <Michael.Hennerich@analog.com>, <renatogeh@gmail.com>, <lars@metafoo.de>,
+	<jic23@kernel.org>, <giuliano.belinassi@usp.br>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>
+CC: <tanghui20@huawei.com>, <zhangqiao22@huawei.com>,
+	<judy.chenhui@huawei.com>, <quzicheng@huawei.com>
+Subject: [PATCH] ad7780: fix division by zero in ad7780_write_raw()
+Date: Mon, 28 Oct 2024 14:20:27 +0000
+Message-ID: <20241028142027.1032332-1-quzicheng@huawei.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -50,56 +40,35 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Authentication-Results: auth=pass smtp.auth=aren@peacevolution.org smtp.mailfrom=aren@peacevolution.org
-X-Spam-Level: ****
-X-Spamd-Bar: ++++
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=peacevolution.org;
-	s=dkim; t=1730125303;
-	h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
-	bh=O8RsRfQ0OglbTcLNh0bfBx27J2SnHEfQFA6wmv/Gu7k=;
-	b=AVB+177HK9Qd1iMLpM+4bhuIlh+W5zJ0k9Xni0T4R1EpdgmfO27T9W+uRd7xZWcMQn1Umk
-	eBOM/iW098j9le51t7XRoFHmU0h8egOB+38mmvB8050DsIcJnp/DyEcpwyx4p2IhRx7Q0X
-	F2Ni2tmH1dq7ve0XTTiY5Up5GMew57U=
+Content-Type: text/plain
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemd200012.china.huawei.com (7.221.188.145)
 
-In the Pine64 PinePhone, the stk3310 chip is powered by a regulator that is
-disabled at system boot and can be shut off during suspend. To ensure that
-the chip properly initializes, both after boot and suspend, we need to
-manage this regulator.
+In the ad7780_write_raw() , val2 can be zero, which might lead to a
+division by zero error in DIV_ROUND_CLOSEST(). The ad7780_write_raw()
+is based on iio_info's write_raw. While val is explicitly declared that
+can be zero (in read mode), val2 is not specified to be non-zero.
 
-Additionally if the chip is shut off in suspend, we need to make sure that
-it gets reinitialized with the same parameters after resume.
+Fixes: 9085daa4abcc ("staging: iio: ad7780: add gain & filter gpio support")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Zicheng Qu <quzicheng@huawei.com>
+---
+ drivers/iio/adc/ad7780.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Major changes in v3:
- - Use bulk regulators instead of two individual ones
- - Replace stk3310_remove with devm callbacks
- - Hopefully I haven't missed anything, it's been a while since I worked on this
-   patch, and I didn't take good enough notes
-
-Major changes in v2:
- - Add handling of the IR LED. I was hesitant to include this as it is the
-   same as pull-up regulator for the i2c bus on the hardware I have, so I
-   can't test it well. I think leaving it out is more likely to cause
-   issues than including it.
- - Convert stk3310 to use dev_err_probe for errors.
- - Always enable / disable regulators and rely on dummy devices if they're
-   not specified.
- - more listed in individual patches
-
-Aren Moynihan (5):
-  dt-bindings: iio: light: stk33xx: add vdd and leda regulators
-  iio: light: stk3310: handle all remove logic with devm callbacks
-  iio: light: stk3310: Implement vdd and leda supplies
-  iio: light: stk3310: use dev_err_probe where possible
-  iio: light: stk3310: log error if reading the chip id fails
-
-Ondrej Jirman (1):
-  arm64: dts: allwinner: pinephone: Add power supplies to stk3311
-
- .../bindings/iio/light/stk33xx.yaml           |   4 +
- .../dts/allwinner/sun50i-a64-pinephone.dtsi   |   2 +
- drivers/iio/light/stk3310.c                   | 156 +++++++++++++-----
- 3 files changed, 118 insertions(+), 44 deletions(-)
-
+diff --git a/drivers/iio/adc/ad7780.c b/drivers/iio/adc/ad7780.c
+index e9b0c577c9cc..8ccb74f47030 100644
+--- a/drivers/iio/adc/ad7780.c
++++ b/drivers/iio/adc/ad7780.c
+@@ -152,7 +152,7 @@ static int ad7780_write_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_SCALE:
+-		if (val != 0)
++		if (val != 0 || val2 == 0)
+ 			return -EINVAL;
+ 
+ 		vref = st->int_vref_mv * 1000000LL;
 -- 
-2.47.0
+2.34.1
 
