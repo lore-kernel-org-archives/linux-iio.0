@@ -1,65 +1,63 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22F7C2141B2;
-	Wed, 30 Oct 2024 16:08:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0935F1E8858;
+	Wed, 30 Oct 2024 16:20:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730304488; cv=none; b=cOGCuMMrQa9L3d3YEhdDFzzqt4qUfTMGlaoH5EFbfKtkxOhZDnYs20Ga6ZYLKaauJu0awWxf0PBcc7yTMfylWLp6TfJOlYOeXg/Rk9B45UhhSJ2Y12+fErYNvBjiy2hWGTonWsypxyG7+XGzIxthHDXgaVKino7H4K8EwPONUzk=
+	t=1730305220; cv=none; b=V1Ec0Tutf6bAQzi7Pa6pSRgTBfflb0o7rt5GAm10g62U47qJPWa6wQso7nGiF9BGRbbPFE5oKQJITw0ytre385s5Rq8Pd5tNZJfPm6RoJ2Y30RK2Ljr5Thz7UrfBDNaZ4OI+FuZt+rJOnAxaRWqD6wB5vT6u06xcavJNjHhpXak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730304488; c=relaxed/simple;
-	bh=w5J1pfMR+5EsH4+HYJttJ9rxVRxOBk/FPPHfLvvsJ54=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=nrnu3erxP/ozo1HDgx/NP0eJ3POVV7JRH2TUvl6J6P8pNdVA4eCJBl3rj7VY9PJCrvCql0+YtgKrfjk0r9OvDLckvtrOfAWIjOynNDIoufsMipMdS/juJmz/I4xaH94hs/EmRY6V06GTigF5CsZ1NHKmSTW7QKvK7jvIGT0hHw8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kIJXfDLk; arc=none smtp.client-ip=192.198.163.18
+	s=arc-20240116; t=1730305220; c=relaxed/simple;
+	bh=g3c5mjdidyY5+z6Ykim+MllTe96golMtOVBRIlkKs9E=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TxaO5ezcltDWhSexJ3JrLAxWYRwfx4yZWa+VgCpDJ2TGR2PbS4UYyiiwWJIMh6VrRtCXPWb6iO5u9dM/t+aRqbMjRzNj1CZw6NT/LoKtkCVlWB98eq8QaoyBtKHTj6+d005wX4TH8zJm9BbjcID+bfVjsBFvNC20IIjx2eWASsk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dQPEzMQu; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kIJXfDLk"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dQPEzMQu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730304486; x=1761840486;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=w5J1pfMR+5EsH4+HYJttJ9rxVRxOBk/FPPHfLvvsJ54=;
-  b=kIJXfDLk7yvXBCyjQcSic6GaEuFEzd06lpr27u9owMRMfkIWNrADiDCX
-   kHJj29MqPTVn4F5gNIVL/ibiJn7YxN3lF5Xb/jfmKLATNZsiWj+LU3jEJ
-   CGZeMnumotqeovSAzzwZVQbbfWEoZA5B+S1O+3vJG3uFAULlG9gWNkj0r
-   EtXqYiH3nR9PYDKEImEqkaISFS4AQlWQISO7t4J4kyM6cvKnI9NEzZrr2
-   yQkvCmlpNJeShWI0MXzaU9NDGemXGsNBesMcMkmC9wR+0dMDNSw1qMuD5
-   huniL7252gszRZyM4fzZv6F7YNEMDKA3NSOVITMkqcW7rzmxeXCzQcGZ4
-   w==;
-X-CSE-ConnectionGUID: GSyeAs4MQje20DyVgftTsA==
-X-CSE-MsgGUID: hOC0GlrnT22CU+83HxeYnQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11241"; a="29432046"
-X-IronPort-AV: E=Sophos;i="6.11,245,1725346800"; 
-   d="scan'208";a="29432046"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2024 09:08:02 -0700
-X-CSE-ConnectionGUID: 9AqPC5ZZTYeow2Vyzq1x0g==
-X-CSE-MsgGUID: cm1O6Jr6RzCTEcjFLxByEg==
+  t=1730305219; x=1761841219;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=g3c5mjdidyY5+z6Ykim+MllTe96golMtOVBRIlkKs9E=;
+  b=dQPEzMQuX0EKTxGPwyhoh9RX4UKzUxfPAcsSkPvBbxKpzlmQK7tWiU2j
+   Pe9ikbm0dcxhqyXb/bAuvzhiLIGxpHGL/2Qggje7nY/fQiwQhuWa+zJ6q
+   xvesK7d0bOTCqptqW7G9w+iINdrGTt1a7dnoIhCLYm7TN2OW6HcIyAK9B
+   Cin0N2f1SzsA0pvmi5x3xtcIxrNbAJUo2nbUVLiVwKmILNQaf2iIZS0O9
+   5qqIBXttZrZMinTQJB47vxEe69DZJZ2v0RHJvGXVf8o4cp7tPpxBX0/kF
+   QSfhZqQAAIPd4B8p/2/ObmyQd0nihCvap92DgGC56OiLsIrTR915uofal
+   A==;
+X-CSE-ConnectionGUID: kj4W5vapT9OSl4zk8UvIUg==
+X-CSE-MsgGUID: cQNMadFCRNiyLehcY5TsJQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="40550670"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="40550670"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2024 09:20:19 -0700
+X-CSE-ConnectionGUID: XqFeaTnuSx2jyw9yqgRzrA==
+X-CSE-MsgGUID: Ml2nXwI7Rk+fZGJoUEIsVw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,245,1725346800"; 
-   d="scan'208";a="82523848"
+   d="scan'208";a="86973260"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa006.jf.intel.com with ESMTP; 30 Oct 2024 09:08:00 -0700
+  by fmviesa004.fm.intel.com with ESMTP; 30 Oct 2024 09:20:16 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 53C701CF; Wed, 30 Oct 2024 18:07:58 +0200 (EET)
+	id E7D711FD; Wed, 30 Oct 2024 18:20:14 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Hans de Goede <hdegoede@redhat.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Matteo Martelli <matteomartelli3@gmail.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Dan Carpenter <dan.carpenter@linaro.org>
-Subject: [PATCH v1 1/4] iio: acpi: Fill data with NULL when iio_get_acpi_device_name_and_data() fails
-Date: Wed, 30 Oct 2024 18:02:17 +0200
-Message-ID: <20241030160756.2099326-2-andriy.shevchenko@linux.intel.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v1 0/2] iio: adc: Check for error from devm_mutex_init()
+Date: Wed, 30 Oct 2024 18:19:17 +0200
+Message-ID: <20241030162013.2100253-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
-In-Reply-To: <20241030160756.2099326-1-andriy.shevchenko@linux.intel.com>
-References: <20241030160756.2099326-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,42 +66,18 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Fill data with NULL, if provided, when returning NULL from
-iio_get_acpi_device_name_and_data(). Note, the current users check
-for name to be valid, except one case which was initially doing
-like that and has to be fixed separately.
+Ignoring error checking from devm calls is a bad practice in general.
+While not critical today, it may become a problem tomorrow.
+Fix this for devm_mutex_init().
 
-Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-Closes: https://lore.kernel.org/r/54fac4a7-b601-40ce-8c00-d94807f5e214@stanley.mountain
-Fixes: dc60de4eb0a4 ("iio: acpi: Add iio_get_acpi_device_name_and_data() helper function")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/industrialio-acpi.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Andy Shevchenko (2):
+  iio: adc: ad4000: Check for error code from devm_mutex_init() call
+  iio: adc: pac1921: Check for error code from devm_mutex_init() call
 
-diff --git a/drivers/iio/industrialio-acpi.c b/drivers/iio/industrialio-acpi.c
-index d67a43843799..33c737c7a2f8 100644
---- a/drivers/iio/industrialio-acpi.c
-+++ b/drivers/iio/industrialio-acpi.c
-@@ -102,13 +102,17 @@ EXPORT_SYMBOL_GPL(iio_read_acpi_mount_matrix);
-  * NOTE: This helper function exists only for backward compatibility,
-  * do not use in a new code!
-  *
-- * Returns: ACPI device instance name or %NULL.
-+ * Returns: ACPI device instance name or %NULL When returning %NULL, the @data,
-+ * if provided, will be also initialised to %NULL.
-  */
- const char *iio_get_acpi_device_name_and_data(struct device *dev, const void **data)
- {
- 	const struct acpi_device_id *id;
- 	acpi_handle handle;
- 
-+	if (data)
-+		*data = NULL;
-+
- 	handle = ACPI_HANDLE(dev);
- 	if (!handle)
- 		return NULL;
+ drivers/iio/adc/ad4000.c  | 4 +++-
+ drivers/iio/adc/pac1921.c | 4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
 -- 
 2.43.0.rc1.1336.g36b5255a03ac
 
