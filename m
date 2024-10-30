@@ -1,133 +1,284 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B33D1DF754;
-	Wed, 30 Oct 2024 13:28:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30F6D1EBA06
+	for <linux-iio@vger.kernel.org>; Wed, 30 Oct 2024 13:44:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730294927; cv=none; b=J1WZaKgq4sprkRyv0UQulzB4JfKnAaqEnyMBsq+QiUMfqvsPtr6QiOMMlz/FDusQV5drko/BuWmIsTPXb0e87DZyFioJghtTDNpqFe0SQDkNYE2POcF7LcL1A5PujH0MZO5pqEvhKzeKn9rb+XeJffe8KOy0ML/ydrfFAIbQqyg=
+	t=1730295884; cv=none; b=CbLyTvf1oR7s9HfzXU+LLl0ZdUdiC/PFqn+wNSEqoLAykMlpUlle0hpHGxH9ZTki4VBfO8WoUZe/TdQmvrKcJZMJdhJw7xDK01znBblRJOtmQJZVQxZbJ5FDBFjuQnKkD+/8HtxHIsYwsiNuvdIw2v4C/iCkmfOXPrqHSF+0AiI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730294927; c=relaxed/simple;
-	bh=OpH0Ihzw4aLoatOPMl4+LfZ+kC1HwHVeg7SvENl2MHg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ec+vqLJ2Z5agKsHdd7k35Zh+cPQOu2RzdKVWSDOVctTtoMbA73YbYvWqWgqLHfhJmZBLzbXu5H97wzqWcn1TTMVyN3Vmbi4laDwg7FSmPB07k9Nz5sD/VdPIO7B2TkXaM1r8CqugeaWj7G+sIMSPqtDeQ4ZIn0LYfIrwa5RILps=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=biYP1z73; arc=none smtp.client-ip=209.85.167.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1730295884; c=relaxed/simple;
+	bh=XNOgRI6/E6rGpPVTM4KwhIdeiFUpPLgi+/tTI3E/mjA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=gzGc2U/TKVm3rVBEWFcIO3bnw4+3yHNYPMKk6a7q2zEkEr806SP2lTU20Bnh278G8ej3CaauwVaPqbl9FI5UpadlvcvUyoAQZ4ehKAzU8bxH0AHSu0fAiNgfpvfneDOv8BWpunm516gj3654waAhNzcMOqxrQ/iwlnAY/B7ePx8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=NJgrbFoZ; arc=none smtp.client-ip=209.85.167.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="biYP1z73"
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-53a097aa3daso5901929e87.1;
-        Wed, 30 Oct 2024 06:28:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="NJgrbFoZ"
+Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-53a097aa3daso5921354e87.1
+        for <linux-iio@vger.kernel.org>; Wed, 30 Oct 2024 06:44:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1730294923; x=1730899723; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=OGZab1xZG2/vym3zoXCYPi1+0F2M3o2xJQM0/wIDSEk=;
-        b=biYP1z73wN6CXjvF/lx2TajWBX3X9131F3ovKoC5IM0t6ElQSEu4j8DxBh185O6Ofs
-         dnhpWpEsy7g/DGckpzXFbSHWjkYH5HIjnrBEeffWOInHRMdtfwL4eeeYY2Yur7wjS4yg
-         BldIEFULoW4oOghx2eSdRnGGlhVGx1/GYrrfAx0Y1i1mREVKHh8Vy0PLTl07vljxVFzi
-         wpoEGQaApuhVSLaCEVhk4stQ5FGm68FVqOAGfolabGsqpXDv0sjJgRLGlkZDun/Nxs62
-         zqHomnK6FHgJuj2jyTOGI73+dX5jUXlW51cQfe6yrLU3dr4wmitSAzDjHXJ7HjwfeKgY
-         bQfA==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1730295879; x=1730900679; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Iaf1l+bnhiCTU8hwXRtL4ts0yRz9+4XKZaoBPuLyVFc=;
+        b=NJgrbFoZaYdjj8sNviivkqclZWcWxkT8mIMfnT4owrkmUCV3njsySksQG/aHN5Nait
+         hCkgkb9awLRHD67aoayKoLBuTxQ0HsEY6/vQHc+33oKRZ3fzW+EJrs4/Dgft6nfDqoTl
+         pETF+xztHgGKZilDJN8zkIvtQ3vfL3U8+0sWZupuXLcRpqR9z3m0noI3ib3I3AXqhiC/
+         0TBnv8x2DdbaOqmlCQeY1b/DLPz+wdXDbD6Z7MXa07vLAzri0RCuUwb+dCNzcfemSbvI
+         fQJxWL130x7toFYbYLJcTMXRUYcs/LoP+HvPM7Y98ovFuXKtB79lc/2TtudIDiBPFS5r
+         dXkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730294923; x=1730899723;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OGZab1xZG2/vym3zoXCYPi1+0F2M3o2xJQM0/wIDSEk=;
-        b=l8cCmFUXMcsyY6JCKteYMNbrO12Mmha9a0ybPoZSvmedt5Md3yJhzd/zKDrxyiQgAv
-         ryk3bGds/mWH84QmkKSpHPetcdQL/aFhnb76sbCumjkiF7vZfMjzC9XV0Lzyf7QANZJu
-         k0x2JJDEMLUcvASFN4eIU3SA61zq7R4+2FeWOsXA09GWFiU7VyM9eBZjWsrwpVcpzeMN
-         5vrhwM+NKs0a3l/yDCjhKKjmN6z1sKUpV51hzp5mZ8jh56GGg9DVylhYIHGXDWQp5ffX
-         tcCBNxQDb0sQTBWDwS2x09R5jdlpPCf5UoSXONhCNs08NdMzDzOuQX7/4buyjJKGuAaz
-         +ojA==
-X-Forwarded-Encrypted: i=1; AJvYcCUFUnj79z5cjzlXNla4E+ccnCHTawCyMoHvFz5MYvzWDAMBrgqYoVxQC92/UZBLuILqzfMLVZYDj03Ks9Ar@vger.kernel.org, AJvYcCUSugC7ZKonN1usdYJhug9gkE4JfeN+ur1Mggofq/eiBnt9TedlQ01VpXyVpeqAdsQA2BRCKBeDC2E=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yys7+6xzbJt8qHC7Hj1Q1VnZGt8JwiltjqBtX+JR0VXfpmsh6+M
-	hHiRvxMX2iY1XKArC3QB9eqWgCbStR5lSnTj4+HLUR996EwxL2WV
-X-Google-Smtp-Source: AGHT+IHE4gzj70K3Pk1n/7+JRn6DJxVC2dVUX0uQDIzgM9s0SSwXoTwlqo3E2IdUBCPgo8+BgUTuDA==
-X-Received: by 2002:a05:6512:39c7:b0:52e:9e70:d068 with SMTP id 2adb3069b0e04-53b348c0c88mr8721980e87.4.1730294922891;
-        Wed, 30 Oct 2024 06:28:42 -0700 (PDT)
-Received: from [172.16.183.207] ([213.255.186.46])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53bc0d6de47sm249349e87.261.2024.10.30.06.28.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Oct 2024 06:28:42 -0700 (PDT)
-Message-ID: <216a4ffe-b97a-43e8-b1cc-59baedcb0ca8@gmail.com>
-Date: Wed, 30 Oct 2024 15:28:41 +0200
+        d=1e100.net; s=20230601; t=1730295879; x=1730900679;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Iaf1l+bnhiCTU8hwXRtL4ts0yRz9+4XKZaoBPuLyVFc=;
+        b=iBgC3mHJoNbhqJj070ahItJ0TAlvETUKxn5IA8KpG08ZHmEqNWpaW+YRCZe5HcOhCC
+         dMZwrTajhMjcdpz6qV52iTRa+dQ864XQBWkZULxIeRRzOcnjgD9b5jEdLz+jwnzjFyOK
+         CaPzAYOdjUWh1Lv0qcN1Cj1R7pRumTMleavIDNPs0+jf6q0/DK4n5w87b5g/Q1TcI6fb
+         DxXeY15PNia4CNkPU7+bUU7TnEzx4VnKyZ6ZhX/l4n5pXzn5u5W6Pt9PvebGQRyO5CP8
+         OJa+v4hRJek0aCoduELdiXwj4VxfmWHAs6VY3xqIcGF7H/LpHKeseRCwaFX0OZvcfgjb
+         nh+A==
+X-Gm-Message-State: AOJu0YweW3Xl6degmHJe3ZnUgv8p7ZJjcUbl0qWa/aZyGNOldeOQu+41
+	i0nOZy7uT0pC67Jc7iqCHwIZhxSFI0d0p/URjw1rjhetEI3+PjTRWJmG4OlVZ5Q=
+X-Google-Smtp-Source: AGHT+IG8QJmX7y8D32rgtAy+irk49ns3+RygZ88fAcd7W5ZJEonrfo6aEX0LrZEQ1zKIpX7vAIosBw==
+X-Received: by 2002:ac2:4e0b:0:b0:536:741a:6bad with SMTP id 2adb3069b0e04-53b348c1086mr7961575e87.12.1730295878920;
+        Wed, 30 Oct 2024 06:44:38 -0700 (PDT)
+Received: from [192.168.1.62] (2a02-842a-d52e-6101-6f8f-5617-c4b6-8627.rev.sfr.net. [2a02:842a:d52e:6101:6f8f:5617:c4b6:8627])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-431bd97d693sm22135175e9.24.2024.10.30.06.44.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Oct 2024 06:44:38 -0700 (PDT)
+From: Julien Stephan <jstephan@baylibre.com>
+Date: Wed, 30 Oct 2024 14:44:25 +0100
+Subject: [PATCH v4 1/5] dt-bindings: iio: adc: ad7380: add adaq4370-4 and
+ adaq4380-4 compatible parts
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: kx022a: Fix raw read format
-To: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
- Kalle Niemi <kaleposti@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- Mehdi Djait <mehdi.djait.k@gmail.com>
-References: <ZyIxm_zamZfIGrnB@mva-rohm>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <ZyIxm_zamZfIGrnB@mva-rohm>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20241030-ad7380-add-adaq4380-4-support-v4-1-864ff02babae@baylibre.com>
+References: <20241030-ad7380-add-adaq4380-4-support-v4-0-864ff02babae@baylibre.com>
+In-Reply-To: <20241030-ad7380-add-adaq4380-4-support-v4-0-864ff02babae@baylibre.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+ Julien Stephan <jstephan@baylibre.com>, 
+ Conor Dooley <conor.dooley@microchip.com>
+X-Mailer: b4 0.14.2
 
-On 30/10/2024 15:16, Matti Vaittinen wrote:
-> The KX022A provides the accelerometer data in two subsequent registers.
-> The registers are laid out so that the value obtained via bulk-read of
-> these registers can be interpreted as signed 16-bit little endian value.
-> The read value is converted to cpu_endianes and stored into 32bit integer.
-> The le16_to_cpu() casts value to unsigned 16-bit value, and when this is
-> assigned to 32-bit integer the resulting value will always be positive.
-> 
-> This has not been a problem to users (at least not all users) of the sysfs
-> interface, who know the data format based on the scan info and who have
-> converted the read value back to 16-bit signed value.
-> 
-> This, however, will be a problem for those who use the in-kernel
-> interfaces, especially the iio_read_channel_processed_scale().
-> 
-> The iio_read_channel_processed_scale() performs multiplications to the
-> returned (always positive) raw value, which will cause strange results
-> when the data from the sensor has been negative.
-> 
-> Fix the read_raw format by casting the result of the le_to_cpu() to
-> signed 16-bit value before assigning it to the integer. This will make
-> the negative readings to be correctly reported as negative.
-> 
-> This fix will be visible to users by changing values returned via sysfs
-> to appear in correct (negative) format.
-> 
-> Reported-by: Kalle Niemi <kaleposti@gmail.com>
-> Fixes: 7c1d1677b322 ("iio: accel: Support Kionix/ROHM KX022A accelerometer")
-> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-> Tested-by: Kalle Niemi <kaleposti@gmail.com>
-> ---
->   drivers/iio/accel/kionix-kx022a.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-kx022a.c
-> index 53d59a04ae15..b6a828a6df93 100644
-> --- a/drivers/iio/accel/kionix-kx022a.c
-> +++ b/drivers/iio/accel/kionix-kx022a.c
-> @@ -594,7 +594,7 @@ static int kx022a_get_axis(struct kx022a_data *data,
->   	if (ret)
->   		return ret;
->   
-> -	*val = le16_to_cpu(data->buffer[0]);
-> +	*val = (s16)le16_to_cpu(data->buffer[0]);
->   
->   	return IIO_VAL_INT;
->   }
-> 
-> base-commit: 81983758430957d9a5cb3333fe324fd70cf63e7e
+adaq4370-4 (2MSPS) and adaq4380-4 (4MSPS) are quad-channel precision data
+acquisition signal chain μModule solutions compatible with the ad738x
+family, with the following differences:
 
+- pin selectable gain in front of each 4 adc
+- internal reference is 3V derived from refin-supply (5V)
+- additional supplies
 
-I should have CC's Mehdi who added the kx132-1211 support. Did so now - 
-sorry for the noise.
+To select the gain a new patternProperties is added to describe each
+channel. It is restricted to adaq devices.
 
-Yours,
-	-- Matti
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Julien Stephan <jstephan@baylibre.com>
+---
+ .../devicetree/bindings/iio/adc/adi,ad7380.yaml    | 120 +++++++++++++++++++++
+ 1 file changed, 120 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml
+index 0065d650882489e21b952bb9fb25f1e3a070ee68..ada08005b3cd1ce7ba13f96484a33fdee0e83a1c 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml
+@@ -25,6 +25,8 @@ description: |
+   * https://www.analog.com/en/products/ad7386-4.html
+   * https://www.analog.com/en/products/ad7387-4.html
+   * https://www.analog.com/en/products/ad7388-4.html
++  * https://www.analog.com/en/products/adaq4370-4.html
++  * https://www.analog.com/en/products/adaq4380-4.html
+ 
+ 
+ $ref: /schemas/spi/spi-peripheral-props.yaml#
+@@ -46,6 +48,8 @@ properties:
+       - adi,ad7386-4
+       - adi,ad7387-4
+       - adi,ad7388-4
++      - adi,adaq4370-4
++      - adi,adaq4380-4
+ 
+   reg:
+     maxItems: 1
+@@ -70,6 +74,20 @@ properties:
+   refin-supply:
+     description:
+       A 2.5V to 3.3V supply for external reference voltage, for ad7380-4 only.
++      For adaq devices, a 5V supply voltage. A 3.3V internal reference is
++      derived from it. Connect to vs-p-supply for normal operation.
++
++  vs-p-supply:
++    description:
++      Amplifiers positive supply.
++
++  vs-n-supply:
++    description:
++      Amplifiers negative supply.
++
++  ldo-supply:
++    description:
++      LDO supply. Connect to vs-p-supply or a 3.6 to 5.5 V supply.
+ 
+   aina-supply:
+     description:
+@@ -97,12 +115,45 @@ properties:
+       specify the ALERT interrupt.
+     maxItems: 1
+ 
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
+ required:
+   - compatible
+   - reg
+   - vcc-supply
+   - vlogic-supply
+ 
++patternProperties:
++  "^channel@[0-3]$":
++    $ref: adc.yaml
++    type: object
++
++    properties:
++      reg:
++        description:
++          The channel number. From 0 to 3 corresponding to channels A,B,C,D
++        minimum: 0
++        maximum: 3
++
++      adi,gain-milli:
++        description:
++          The hardware gain applied to the ADC input (in milli units).
++          If not present, default to 1000 (no actual gain applied).
++          Refer to the typical connection diagrams section of the datasheet for
++          pin wiring.
++        $ref: /schemas/types.yaml#/definitions/uint16
++        enum: [300, 600, 1000, 1600]
++        default: 1000
++
++    required:
++      - reg
++
++    additionalProperties: false
++
+ unevaluatedProperties: false
+ 
+ allOf:
+@@ -140,6 +191,7 @@ allOf:
+         aind-supply: false
+ 
+   # ad7380-4 uses refin-supply as external reference.
++  # adaq devices use internal reference only, derived from refin-supply
+   # All other chips from ad738x family use refio as optional external reference.
+   # When refio-supply is omitted, internal reference is used.
+   - if:
+@@ -147,6 +199,8 @@ allOf:
+         compatible:
+           enum:
+             - adi,ad7380-4
++            - adi,adaq4370-4
++            - adi,adaq4380-4
+     then:
+       properties:
+         refio-supply: false
+@@ -156,6 +210,27 @@ allOf:
+       properties:
+         refin-supply: false
+ 
++  # adaq devices need more supplies and using channel to declare gain property
++  # only applies to adaq devices
++  - if:
++      properties:
++        compatible:
++          enum:
++            - adi,adaq4370-4
++            - adi,adaq4380-4
++    then:
++      required:
++        - vs-p-supply
++        - vs-n-supply
++        - ldo-supply
++    else:
++      properties:
++        vs-p-supply: false
++        vs-n-supply: false
++        ldo-supply: false
++      patternProperties:
++        "^channel@[0-3]$": false
++
+ examples:
+   - |
+     #include <dt-bindings/interrupt-controller/irq.h>
+@@ -180,3 +255,48 @@ examples:
+             refio-supply = <&supply_2_5V>;
+         };
+     };
++
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@0 {
++            compatible = "adi,adaq4380-4";
++            reg = <0>;
++
++            spi-cpol;
++            spi-cpha;
++            spi-max-frequency = <80000000>;
++
++            interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
++            interrupt-parent = <&gpio0>;
++
++            vcc-supply = <&supply_3_3V>;
++            vlogic-supply = <&supply_3_3V>;
++            refin-supply = <&supply_5V>;
++            vs-p-supply = <&supply_5V>;
++            vs-n-supply = <&supply_0V>;
++            ldo-supply = <&supply_5V>;
++
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            channel@0 {
++                reg = <0>;
++                adi,gain-milli = /bits/ 16 <300>;
++            };
++
++            channel@2 {
++                reg = <2>;
++                adi,gain-milli = /bits/ 16 <600>;
++            };
++
++            channel@3 {
++                reg = <3>;
++                adi,gain-milli = /bits/ 16 <1000>;
++            };
++        };
++    };
+
+-- 
+2.47.0
+
