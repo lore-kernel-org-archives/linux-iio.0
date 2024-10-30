@@ -1,60 +1,59 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 696351EBFFF
-	for <linux-iio@vger.kernel.org>; Wed, 30 Oct 2024 13:44:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4895E1EF094
+	for <linux-iio@vger.kernel.org>; Wed, 30 Oct 2024 13:44:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730295887; cv=none; b=cdtqBqjluI69Soek1s/B19sUsDcWskwAKrOfaVBeiaOIZ0masLcUK0SGY+Iq8a8hukCd59EzWEwf4L7+X6azRUKkZNqYf3ZHdYnkyQ1erkQSrQNxx4uoW+UOYdpTqwpBcsUn6eRZNNzWlrsPhqIKpyoXxKriwXbMiGVezoPXceE=
+	t=1730295887; cv=none; b=HHzmZIXga259aSIgqjZjI3waW//xSCL/NsZXSqFImbgiEVUBF/NC54j3hwveezB8chgLmCtaOu7FmBGWEFC8cCdOVg0uoWmQ9WMosfA2eSzn1IyjaFSoC5TejArkH1OtnUwbVdfvXvHIKVbN/u7uuMJtLC/SJOAlWp7l8v7XALQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1730295887; c=relaxed/simple;
-	bh=RO9hGOKZEvxMEHLVRYfaOYF08wLVGpI7aOsmLqLjRtM=;
+	bh=lyFd5Qy9b/diKvMLRhapoJ8Lj/FcZgWn8uTxreNufZw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=TxHsndAN4JhpA0anI/IE2wpgYENHIF6nBH8QDj2LcA4iyNMjdjJW4jzIyHWgL+Sca19tFI5ry2QZquAKD0FkRMWtBYsdVshOs9Fs5ChkFz7VHFHMHkQn88acDclMJVSV9/4siX/SdIzSARcgL1SB6fMhcEs719sqHF+sKL7hOAU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=bKJQAbIG; arc=none smtp.client-ip=209.85.128.41
+	 In-Reply-To:To:Cc; b=MD10mD2OtWsQ0azCvt/Suc6eQgj/h5mjvs7LBrM2H9Ip5IHIKoOe6lXWLWg/N8slSS0qGN9ucmZn20TFWKNwgnyokBOL+x95D/pZumOmSMvK8KdHhDcnXYOC1d0NAbXq2pX1nAyJ4+pjp1e2GCj0xN87C7SA7tuOep6ka0TxQRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=TBgdcrxG; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="bKJQAbIG"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-43158625112so64299305e9.3
-        for <linux-iio@vger.kernel.org>; Wed, 30 Oct 2024 06:44:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="TBgdcrxG"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4316cce103dso84468025e9.3
+        for <linux-iio@vger.kernel.org>; Wed, 30 Oct 2024 06:44:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1730295881; x=1730900681; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1730295882; x=1730900682; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=8BjJ2M207dDw7Til612ivS6L47An/FajkZsL4QTnDEc=;
-        b=bKJQAbIGjBPe4iS983eJ78eVNlPZltni+bIIZh6tMortUtEK0FOkkJI+RsNB2ZkJZj
-         Gao0cmxA0wecIq3nXV4+JB0Amf1klyOlpxQCTRhNZ4od+U8If4+sPxv9USAtLvQ9ghuS
-         WjS77wKgTP5XaRQgp3gfrvsjefStH1oTmfHshCgqT4UiPZZk8AerIFUbkBx4kIMGqpAM
-         gPyKkSH5STYVraBBICcut3RdYiKvQxIlIGmi/sX7TgBbcz+ZkoeErnivj6y/N8hZqcfd
-         RJ6nevKobTqikTAUme945dWGVdH/VI+Jrd5/yq5GgcxXv6fGDG86HE/qUtFvpScMn+xz
-         Qb1Q==
+        bh=dSM1H9kQmZbNYjD2c9OgvWRYm0lRsPAWlbXFXQCdhuI=;
+        b=TBgdcrxGvba4ZuXK1SG4WM1YUxazRDtpDYxoXKL7TRfX6ZAiU4r7bMf8v8bqSEx0oT
+         VmyW9rXK6aNs/UgHRK8+V/FQapyXY1yuAF/Bqqznx9muE+DCuTkU3mu/fg46W7Dk1zT/
+         C0WF2WjKE+6zO9W5JRvpzZo+bYhwkIi47w1G9gIILHNnhQFwS9Ych5dDtd7v0REdTV8f
+         6jj57+WYIC3Mt3FLU5Mcwq76dy2ClU/6DBIRbLnV6lyRx9uc6C7OibbaT3eukzI29iEw
+         IEC+mMtjB+v5RqZ4tZWJZHEeGWLEUCGQ09GUxYq9+WaiFA3DbS4kdUJOuPWG/ZKywZJ/
+         2T9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730295881; x=1730900681;
+        d=1e100.net; s=20230601; t=1730295882; x=1730900682;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=8BjJ2M207dDw7Til612ivS6L47An/FajkZsL4QTnDEc=;
-        b=mAVxnFdacl+JC7Zwqd/ms2E/7r0nyHr3md7AiiFjkpHDzVNcwrhfud1dZ4JIYp08MP
-         VwixmLBtf/G4exMzLcPZu1jzAV6e4fWcaSXGctItPIDNdeoqkX45zFtqFIlyaZ1RHzW3
-         ji4Aj9b6oqaqYzyRs5562LFn17GVNpb1SJ9x8veykBN084cy/v4ekqxK8b6Y7UiEZNKW
-         IDB2okrE4jJoj8763bUK8mlZIi+N5htQH3cV0iOBBXVaxmVvAqSEJ4We1TTjdBWdNp0n
-         KhclaIhsJNafkMQLSjkwHTtDO7S4Gdh4iiZcDtVH8/iiV4OAYk1n73JwRSRb7P0Hp1VE
-         pn+Q==
-X-Gm-Message-State: AOJu0Yx6AbQn0q7MZV8ZeFa5aH2PzBiG3XxReLbSnYC4SKD7GmR/Ws0D
-	aMXU8K1l/VsRiRsPMfwWPh115Br36UMPoa67n4UL2qtWqOAvd0XyfPnVFfs4GtU=
-X-Google-Smtp-Source: AGHT+IEqWScIHhC8tPglxlTqg9bpzau4UkxRE+2yBiH6NV8VeDBBJkoxE09TQc+ilKeht4wWRnPEFw==
-X-Received: by 2002:a05:600c:4711:b0:431:586e:7e7 with SMTP id 5b1f17b1804b1-4319ac6e818mr145719855e9.1.1730295880634;
-        Wed, 30 Oct 2024 06:44:40 -0700 (PDT)
+        bh=dSM1H9kQmZbNYjD2c9OgvWRYm0lRsPAWlbXFXQCdhuI=;
+        b=ZmuCEpFfxsekFLk+19sOkAjUF8cQmuawi6E+dOSZUO2W4q1jfdxH+yTGz8TKB3ZlFG
+         UdsKZEDrY7KXgFNu0FUrhtQ9GVhkXn8DvBjnaH/YFXxtNpYdkk3jAtBiyH7LkcULu5NT
+         34g8nc4THGEepDCEwSqohhK/d/0XJIrMTBjq6TCjWQrhKDj+6joJrRnNb13y75Bv/9De
+         uxUsV4CK5uOA9YEeKkHQCIcFxtdFeRn4YotNwlLDqkcoJOmmJjMCsj8sLX11G9u69s+k
+         y9XusbCzlEVSm8aArmz73RWUYvHfUl174rxGSRvEmsWg0NwTEm39FQVBSt5BHc7cvlP0
+         BRvg==
+X-Gm-Message-State: AOJu0YxxgcLE1JbIokBhcta58G/pnYqfWh16IBeE7NjNVLc3EKyu5HOc
+	fSxQzw7wfbk1NOB0Oy8i1WG4QQXM71UQeDnUXn3h8dx9eptqSCur7AWkEdC6TDA=
+X-Google-Smtp-Source: AGHT+IE2n8u+e+ZREW1BpdcgVl/9aw+yhcg+q8JpfH04yUN5XBE8lhFyGFOGAUTC9j2X67KQA3sBlg==
+X-Received: by 2002:a05:600c:4f4a:b0:431:4b88:d407 with SMTP id 5b1f17b1804b1-4319ac6f874mr169681245e9.5.1730295882572;
+        Wed, 30 Oct 2024 06:44:42 -0700 (PDT)
 Received: from [192.168.1.62] (2a02-842a-d52e-6101-6f8f-5617-c4b6-8627.rev.sfr.net. [2a02:842a:d52e:6101:6f8f:5617:c4b6:8627])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-431bd97d693sm22135175e9.24.2024.10.30.06.44.40
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-431bd97d693sm22135175e9.24.2024.10.30.06.44.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Oct 2024 06:44:40 -0700 (PDT)
+        Wed, 30 Oct 2024 06:44:42 -0700 (PDT)
 From: Julien Stephan <jstephan@baylibre.com>
-Date: Wed, 30 Oct 2024 14:44:27 +0100
-Subject: [PATCH v4 3/5] iio: adc: ad7380: use local dev variable to shorten
- long lines
+Date: Wed, 30 Oct 2024 14:44:29 +0100
+Subject: [PATCH v4 5/5] docs: iio: ad7380: add adaq4370-4 and adaq4380-4
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,7 +62,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241030-ad7380-add-adaq4380-4-support-v4-3-864ff02babae@baylibre.com>
+Message-Id: <20241030-ad7380-add-adaq4380-4-support-v4-5-864ff02babae@baylibre.com>
 References: <20241030-ad7380-add-adaq4380-4-support-v4-0-864ff02babae@baylibre.com>
 In-Reply-To: <20241030-ad7380-add-adaq4380-4-support-v4-0-864ff02babae@baylibre.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -77,122 +76,56 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  Julien Stephan <jstephan@baylibre.com>
 X-Mailer: b4 0.14.2
 
-Use local dev variable in the probe function to shorten long lines.
+Adding documentation for adaq4370-4 and adaq4380-4 supported devices. In
+particular, document the reference voltage mechanism and the gain
+parameter that are specific to adaq devices.
 
 Signed-off-by: Julien Stephan <jstephan@baylibre.com>
 ---
- drivers/iio/adc/ad7380.c | 33 ++++++++++++++++-----------------
- 1 file changed, 16 insertions(+), 17 deletions(-)
+ Documentation/iio/ad7380.rst | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/iio/adc/ad7380.c b/drivers/iio/adc/ad7380.c
-index e5eececaaf501cda8f51d801c089e593111df714..206c894953f057acca20805fb30185cb7ab8a902 100644
---- a/drivers/iio/adc/ad7380.c
-+++ b/drivers/iio/adc/ad7380.c
-@@ -1035,12 +1035,13 @@ static int ad7380_init(struct ad7380_state *st, bool external_ref_en)
+diff --git a/Documentation/iio/ad7380.rst b/Documentation/iio/ad7380.rst
+index 6f70b49b9ef27c1ac32acaefecd1146e5c8bd6cc..1b9777c33e0c3e9e06f72d7c957a012346d4a26a 100644
+--- a/Documentation/iio/ad7380.rst
++++ b/Documentation/iio/ad7380.rst
+@@ -27,6 +27,8 @@ The following chips are supported by this driver:
+ * `AD7386-4 <https://www.analog.com/en/products/ad7386-4.html>`_
+ * `AD7387-4 <https://www.analog.com/en/products/ad7387-4.html>`_
+ * `AD7388-4 <https://www.analog.com/en/products/ad7388-4.html>`_
++* `ADAQ4370-4 <https://www.analog.com/en/products/adaq4370-4.html>`_
++* `ADAQ4380-4 <https://www.analog.com/en/products/adaq4380-4.html>`_
  
- static int ad7380_probe(struct spi_device *spi)
- {
-+	struct device *dev = &spi->dev;
- 	struct iio_dev *indio_dev;
- 	struct ad7380_state *st;
- 	bool external_ref_en;
- 	int ret, i;
  
--	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
- 	if (!indio_dev)
- 		return -ENOMEM;
+ Supported features
+@@ -47,6 +49,12 @@ ad7380-4
+ ad7380-4 supports only an external reference voltage (2.5V to 3.3V). It must be
+ declared in the device tree as ``refin-supply``.
  
-@@ -1048,21 +1049,20 @@ static int ad7380_probe(struct spi_device *spi)
- 	st->spi = spi;
- 	st->chip_info = spi_get_device_match_data(spi);
- 	if (!st->chip_info)
--		return dev_err_probe(&spi->dev, -EINVAL, "missing match data\n");
-+		return dev_err_probe(dev, -EINVAL, "missing match data\n");
++ADAQ devices
++~~~~~~~~~~~~
++
++adaq4370-4 and adaq4380-4 don't have an external reference, but use a 3V
++internal reference derived from one of its supplies (``refin-supply``)
++
+ All other devices from ad738x family
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  
--	ret = devm_regulator_bulk_get_enable(&spi->dev, st->chip_info->num_supplies,
-+	ret = devm_regulator_bulk_get_enable(dev, st->chip_info->num_supplies,
- 					     st->chip_info->supplies);
+@@ -121,6 +129,14 @@ Example for AD7386/7/8 (2 channels parts):
  
- 	if (ret)
--		return dev_err_probe(&spi->dev, ret,
-+		return dev_err_probe(dev, ret,
- 				     "Failed to enable power supplies\n");
- 	fsleep(T_POWERUP_US);
+ When enabling sequencer mode, the effective sampling rate is divided by two.
  
- 	if (st->chip_info->external_ref_only) {
--		ret = devm_regulator_get_enable_read_voltage(&spi->dev,
--							     "refin");
-+		ret = devm_regulator_get_enable_read_voltage(dev, "refin");
- 		if (ret < 0)
--			return dev_err_probe(&spi->dev, ret,
-+			return dev_err_probe(dev, ret,
- 					     "Failed to get refin regulator\n");
++Gain (ADAQ devices only)
++~~~~~~~~~~~~~~~~~~~~~~~~
++
++ADAQ devices have a pin selectable gain in front of each ADC. The appropriate
++gain is selectable from device tree using the ``adi,gain-milli`` property.
++Refer to the typical connection diagrams section of the datasheet for pin
++wiring.
++
+ Unimplemented features
+ ----------------------
  
- 		st->vref_mv = ret / 1000;
-@@ -1074,10 +1074,9 @@ static int ad7380_probe(struct spi_device *spi)
- 		 * If there is no REFIO supply, then it means that we are using
- 		 * the internal reference, otherwise REFIO is reference voltage.
- 		 */
--		ret = devm_regulator_get_enable_read_voltage(&spi->dev,
--							     "refio");
-+		ret = devm_regulator_get_enable_read_voltage(dev, "refio");
- 		if (ret < 0 && ret != -ENODEV)
--			return dev_err_probe(&spi->dev, ret,
-+			return dev_err_probe(dev, ret,
- 					     "Failed to get refio regulator\n");
- 
- 		external_ref_en = ret != -ENODEV;
-@@ -1085,7 +1084,7 @@ static int ad7380_probe(struct spi_device *spi)
- 	}
- 
- 	if (st->chip_info->num_vcm_supplies > ARRAY_SIZE(st->vcm_mv))
--		return dev_err_probe(&spi->dev, -EINVAL,
-+		return dev_err_probe(dev, -EINVAL,
- 				     "invalid number of VCM supplies\n");
- 
- 	/*
-@@ -1095,18 +1094,18 @@ static int ad7380_probe(struct spi_device *spi)
- 	for (i = 0; i < st->chip_info->num_vcm_supplies; i++) {
- 		const char *vcm = st->chip_info->vcm_supplies[i];
- 
--		ret = devm_regulator_get_enable_read_voltage(&spi->dev, vcm);
-+		ret = devm_regulator_get_enable_read_voltage(dev, vcm);
- 		if (ret < 0)
--			return dev_err_probe(&spi->dev, ret,
-+			return dev_err_probe(dev, ret,
- 					     "Failed to get %s regulator\n",
- 					     vcm);
- 
- 		st->vcm_mv[i] = ret / 1000;
- 	}
- 
--	st->regmap = devm_regmap_init(&spi->dev, NULL, st, &ad7380_regmap_config);
-+	st->regmap = devm_regmap_init(dev, NULL, st, &ad7380_regmap_config);
- 	if (IS_ERR(st->regmap))
--		return dev_err_probe(&spi->dev, PTR_ERR(st->regmap),
-+		return dev_err_probe(dev, PTR_ERR(st->regmap),
- 				     "failed to allocate register map\n");
- 
- 	/*
-@@ -1157,7 +1156,7 @@ static int ad7380_probe(struct spi_device *spi)
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->available_scan_masks = st->chip_info->available_scan_masks;
- 
--	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
-+	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
- 					      iio_pollfunc_store_time,
- 					      ad7380_trigger_handler,
- 					      &ad7380_buffer_setup_ops);
-@@ -1168,7 +1167,7 @@ static int ad7380_probe(struct spi_device *spi)
- 	if (ret)
- 		return ret;
- 
--	return devm_iio_device_register(&spi->dev, indio_dev);
-+	return devm_iio_device_register(dev, indio_dev);
- }
- 
- static const struct of_device_id ad7380_of_match_table[] = {
 
 -- 
 2.47.0
