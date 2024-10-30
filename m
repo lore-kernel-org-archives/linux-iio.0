@@ -1,93 +1,137 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 842502141B5;
-	Wed, 30 Oct 2024 15:55:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16AE61E2838;
+	Wed, 30 Oct 2024 16:08:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730303730; cv=none; b=QRMEUOS+A9MdoeKLfbG9E0TV/Us4eCzQUTJPz/9iYEy+wkADMqB2aItynUALOOAPAJMwvBmSlfz9XyCAXfczyq1JrxlUZVMUgeQdVCNZsOJVyKqZeGPY5WrDBlyQjyyhHcwujTsLczEegytmMuVbI6zXqWMQYlpghIf4Tc/8e9g=
+	t=1730304483; cv=none; b=L/vXbKsxtMxIkaMAMOTeabtm+6FOwpVjdMWg5pW8lhXuyifHFW9tuNyox9i5QVvr2zy/XJUe/gomAwupPni0uHAIFqutNVI64L1/QnlMZiTmqEo56dXZAMwLw/+9Im40nReLuVOEs3m36PPgyK3pLM/Dh2ghs0tZ8iawWhFcxrA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730303730; c=relaxed/simple;
-	bh=3yyLl30TQjYKD071Dpap+W12aDnptjFmDQr9KsgJj4U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WAYXw3vMHugbSbXEJk300/OkuDToPYQv/eQGwvPTKIeyuVRVQVFOAZpu824VAxRi5MXhA2yAqX9LXksqX1BkVMggT2YkpHL+N03nXERqWKPL4RNL8FqF/6K3t9diiaW6gj/rgKT7au+8wocsIfyOgL21kqXf5VqxlWYRw+kczxY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=II0PQP69; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1730304483; c=relaxed/simple;
+	bh=sG3ot16sMv9t5rM8f8rGAEaq9yO+g6GPx5PBiVGBZvQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=um+OfWfBWv7YxSBGP5pED6Z5e4r9LNqZkSspFleJf9bUZuGaAB+JxyaYm5Dqox2C4nD+V4qp35gezZ4CcNaMN16eWMbnFbNo5vOO/E1KhrqkfpKjgTNlDVL1dIGzptms1hbL26NyeOKB62oPGKLYQts/H4u9nUk4dN8negWLjJM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JFBaNX3w; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="II0PQP69"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03BDEC4CECE;
-	Wed, 30 Oct 2024 15:55:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730303730;
-	bh=3yyLl30TQjYKD071Dpap+W12aDnptjFmDQr9KsgJj4U=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=II0PQP69uWeP8lH2TXSIqUAQTe8WyNMJpjFfn+2Ctqok/d+umG4MHgWALYdMPIzVY
-	 mCKwu5o+4F+M0RaJEHnflVbiau/dHaakOVDDWkC2gejogLJ3G3UFyb65te+GHzG8LP
-	 09bMmB/73rZFHV7tiJS9uTCZh7nqqsam6un7bSc2ygu25rAoUPD785aZHTMA/tSYYa
-	 FZbCf6ZRYSopkB5ThsQNKWjF+5kmXV1j/+cWRSX3yxE3zU03j/r8TC1+9bdLCBFmsZ
-	 zHJWnFjAUtwG+smzYdbgEPbqgk+ujO4X5KRB8q9jZjBSWYo9oEeqdaaLo3J+MhKlJj
-	 /9Dh9N2CvzTEQ==
-Date: Wed, 30 Oct 2024 15:55:24 +0000
-From: Mark Brown <broonie@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	David Jander <david@protonic.nl>,
-	Martin Sperl <kernel@martin.sperl.org>, linux-spi@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH RFC v4 02/15] spi: add basic support for SPI offloading
-Message-ID: <e1b4f91a-ac94-4939-90eb-fc10e9a72ee9@sirena.org.uk>
-References: <20241023-dlech-mainline-spi-engine-offload-2-v4-0-f8125b99f5a1@baylibre.com>
- <20241023-dlech-mainline-spi-engine-offload-2-v4-2-f8125b99f5a1@baylibre.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JFBaNX3w"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1730304483; x=1761840483;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=sG3ot16sMv9t5rM8f8rGAEaq9yO+g6GPx5PBiVGBZvQ=;
+  b=JFBaNX3wSA9Z9dDdybmB5LCjU5QqNa+Wj5bro5LVycYdsZ6dwUlsIvgc
+   rsMaE+eUSjOrCxZ00inLJHz9ORrz/qPo/dCIYfFotFjtJxAu6054ikFog
+   /w/PaRXmXZpH93MeUeHCxNJQEBR2g19LPXjDYxQM0d5LfSFQygNgZNLI5
+   Vk38GvyLBT1VHuaBMOpY6/PkjKtad54zAzcIdVcjNv84bikuYUB/ZDdTi
+   AmcyBq4JLpIzlQMlKn0Dwqhgl0xSeRjhwmq682tqvEE6Q45uoKfAUxewr
+   i6vYfaEVGianhusCjYhnWvZLtrbKElVobOVedip1zdyWDk2AYUZODhQP/
+   A==;
+X-CSE-ConnectionGUID: htsrnKQpSHODfbuVvj3Fkg==
+X-CSE-MsgGUID: j9T3qg5HRzulIkZISrVCTQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="30165101"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="30165101"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2024 09:08:02 -0700
+X-CSE-ConnectionGUID: s8IUe0R6THCIt2UwyPMhxA==
+X-CSE-MsgGUID: 3Ziq6GkVSeO1mMUzfIma2g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,245,1725346800"; 
+   d="scan'208";a="113212711"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmviesa001.fm.intel.com with ESMTP; 30 Oct 2024 09:07:59 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 6BF8131D; Wed, 30 Oct 2024 18:07:58 +0200 (EET)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hans de Goede <hdegoede@redhat.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v1 3/4] iio: accel: kxcjk-1013: Deduplicate ODR startup time array
+Date: Wed, 30 Oct 2024 18:02:19 +0200
+Message-ID: <20241030160756.2099326-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
+In-Reply-To: <20241030160756.2099326-1-andriy.shevchenko@linux.intel.com>
+References: <20241030160756.2099326-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="wIB7CppBQdb9BVMQ"
-Content-Disposition: inline
-In-Reply-To: <20241023-dlech-mainline-spi-engine-offload-2-v4-2-f8125b99f5a1@baylibre.com>
-X-Cookie: I feel partially hydrogenated!
+Content-Transfer-Encoding: 8bit
 
+The content of kxcj91008_odr_start_up_times and kxcjk1013_odr_start_up_times
+is identical, deduplicate it.
 
---wIB7CppBQdb9BVMQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/accel/kxcjk-1013.c | 25 ++++---------------------
+ 1 file changed, 4 insertions(+), 21 deletions(-)
 
-On Wed, Oct 23, 2024 at 03:59:09PM -0500, David Lechner wrote:
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 3d24d4fb6621..27c83c17931a 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -193,23 +193,6 @@ static const struct kx_odr_start_up_time kxcjk1013_odr_start_up_times[] = {
+ 	{ }
+ };
+ 
+-/* KXCJ9-1008 */
+-static const struct kx_odr_start_up_time kxcj91008_odr_start_up_times[] = {
+-	{ 0x08, 100000 },
+-	{ 0x09, 100000 },
+-	{ 0x0A, 100000 },
+-	{ 0x0B, 100000 },
+-	{ 0x00, 80000 },
+-	{ 0x01, 41000 },
+-	{ 0x02, 21000 },
+-	{ 0x03, 11000 },
+-	{ 0x04, 6400 },
+-	{ 0x05, 3900 },
+-	{ 0x06, 2700 },
+-	{ 0x07, 2100 },
+-	{ }
+-};
+-
+ /* KXCTJ2-1009 */
+ static const struct kx_odr_start_up_time kxtj21009_odr_start_up_times[] = {
+ 	{ 0x08, 1240000 },
+@@ -325,24 +308,24 @@ static const struct kx_chipset_info kxcjk1013_info = {
+ 
+ static const struct kx_chipset_info kxcj91008_info = {
+ 	.regs = &kxcjk1013_regs,
+-	.times = pm_ptr(kxcj91008_odr_start_up_times),
++	.times = pm_ptr(kxcjk1013_odr_start_up_times),
+ };
+ 
+ static const struct kx_chipset_info kxcj91008_kiox010a_info = {
+ 	.regs = &kxcjk1013_regs,
+-	.times = pm_ptr(kxcj91008_odr_start_up_times),
++	.times = pm_ptr(kxcjk1013_odr_start_up_times),
+ 	.acpi_type = ACPI_KIOX010A,
+ };
+ 
+ static const struct kx_chipset_info kxcj91008_kiox020a_info = {
+ 	.regs = &kxcjk1013_regs,
+-	.times = pm_ptr(kxcj91008_odr_start_up_times),
++	.times = pm_ptr(kxcjk1013_odr_start_up_times),
+ 	.acpi_type = ACPI_GENERIC,
+ };
+ 
+ static const struct kx_chipset_info kxcj91008_smo8500_info = {
+ 	.regs = &kxcjk1013_regs,
+-	.times = pm_ptr(kxcj91008_odr_start_up_times),
++	.times = pm_ptr(kxcjk1013_odr_start_up_times),
+ 	.acpi_type = ACPI_SMO8500,
+ };
+ 
+-- 
+2.43.0.rc1.1336.g36b5255a03ac
 
-> +struct spi_offload *devm_spi_offload_alloc(struct device *dev,
-> +					   size_t num_offloads,
-> +					   size_t priv_size)
-
-> +	privs = (void *)(offloads + num_offloads);
-
-Casting to or from void * is generally suspicious.
-
-> +		void *priv = privs + i * priv_size;
-
-Can we have some brackets here for clarity please?
-
---wIB7CppBQdb9BVMQ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmciVusACgkQJNaLcl1U
-h9Chqgf8DW8de4pnIgIUw/jsiKAtu3L5MxZFUkpBXjxY07ECczmWImt2iWoseFYJ
-rILRHF01ca8kZn1PRVsO9CFoP89a+jkwZgvXjYT7A+9jy3yBgGSddeOkrrvgOUBD
-1R5JngdpYU4IesCQWUopjqKJw61zFZvwmKboQR38z3Yxnfb88Ea1+XkwE/sCofPp
-KB7Z918mA4iyn5L9p8nrA1t8ivRc/KC0zBzH3smen+WzAqsLz5HfIJke5UzbTN6I
-zsYQP0gBHr0SDkivg9dKJ3oCcTwGpQ8iZySndgpLOHbBVEUxMTTmKetyOGldmpKF
-1MR7dfo/8rpKErN0COB/DbEgmN2RBQ==
-=NEXq
------END PGP SIGNATURE-----
-
---wIB7CppBQdb9BVMQ--
