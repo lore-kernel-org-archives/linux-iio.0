@@ -1,49 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C7A519BBC;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95A77168DA;
 	Fri,  1 Nov 2024 13:17:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730467033; cv=none; b=IhQaqX4DCXspYOjXsCy2jRoltIplTjg+Uto142C8sO9e1z50F0m+cyST1sD6fpfhg503EnG2TOLYN0Bc/tlZus0el8mVH245NFt+7aMBeKqIlxoaBJGN0xARkm5dP9EGIiFvrO4WoLpNlf0aKk28NEoaFRJanVmmkzOp9D5c1Z8=
+	t=1730467033; cv=none; b=kgWmUfFBocrDCv6MLqB1Y8HOZc3m7ofbFwICdIgQX6GzkDttw5EfBEk8YwqYQciY3VCbnA9+bQ86yuXGrspltcLIuQsLTyvVyS4avL3sngSEbBlKgv9KSA0ZvUhc2ybUjINdJNeybsnekAQtZSR4PAYb1AKcOFrjXKFH1PRR75E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1730467033; c=relaxed/simple;
-	bh=/TArAnxsNcro0yGmSdNhHVG87gaDRBp0F+b6ECdeI4Q=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JI5ho1cjZF6iIK4VE1+Bywe0cCQHQgGhFA2DP/FxLeNOpjGc1vopPjBwBR64cST2GF2Om0flXPf5JRMAr9QPD/Gu5U64O27X9XjXZz7I5CGTOgw6USRUfz6o32lmADGqeS+DnSiDsiK7oP+1Mbag0QOy9QZiFjsAVL1eFpG1A30=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MIsTSwqD; arc=none smtp.client-ip=198.175.65.15
+	bh=aOLbCzDG18JjRhWg9vu/kyWY/YfLn12G2M8765yV5HA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=dHV+fhQ1zrZGs/oes3T82DM5s9KtTcE5l54/3fvFRPlECC1fict43v33uER+S3dcfkhhT5xsryGxZ3MOAWeebkZfVnGYnOBWkr6bTHXaneQbKShv1a3Ua3uLbiKDve+sLCUqCzibq8AffxEUMdiiSKyXu8LbCQWd0IC45fbVc80=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TUI+DQYx; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MIsTSwqD"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TUI+DQYx"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1730467031; x=1762003031;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=/TArAnxsNcro0yGmSdNhHVG87gaDRBp0F+b6ECdeI4Q=;
-  b=MIsTSwqD5xq1lv20h35FOHsHjvC7DMIH+EghJxiXfs29SnpE8M6ZY/YF
-   7v7B7ZkNLQbP4yUM+FZMDcLqrQESy8kyfDNINZ/S84gKRcUzD5lC1+f1Q
-   KAheH11eSxaYlsbGf9uet5ttsju75YseFzpHvmATzt+kpenc5mD+tAR8e
-   knrsI2k+Dr1llNe9k2vBqRPrI8rKx7TMBLc9BOgTSMWtVaZO7hYfRewWF
-   81/TfLvPdmbMNLzw95Iu2tTIrCQWEPrhq2NRPsHGO9ReVJu6BAnYs3Fn0
-   DsAN524QZetZW/33qHrJAYr6f+dTDMzRswQ6HCQCqEs/h58BVmA/G4HzB
-   A==;
-X-CSE-ConnectionGUID: 9+O+4jnxSrSQJ5fiPmul5w==
-X-CSE-MsgGUID: C6Pgc7n+SPGcvuRGnku53w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="33920647"
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=aOLbCzDG18JjRhWg9vu/kyWY/YfLn12G2M8765yV5HA=;
+  b=TUI+DQYx6cqVbVx4L/kfJ9ZXRR8isflgzHbzfspbM50jf6EFYEXUZ4KV
+   vR2VD/Z9RSh4l+cFhvNUsq3RiFmUw6zzvf+YJYwj4pNylbkxNXojvFx+4
+   Hp50swtD29LarIIWSLCH5NqJlsLQ/nQnE7KPSalcZmQtXVzuiUDYD1evx
+   CnCAeV2xDSsWzxFCw4/IgT5mccTFDw9J41Gzr6T6Byjb3kNDvKn6hi9KC
+   dYfAa1v6uXngPeX4+n+DzaNg/1mQt1MTbXbzlRB1idL33+IuEq7InyzQ7
+   3KHpwHnyfqxnnrqfydXZIXiGXmpWP4Y9eqUQsDzr1eRnWkaIaOQI0O90A
+   w==;
+X-CSE-ConnectionGUID: +SgEuXhyRgq5uwWmwzfFCw==
+X-CSE-MsgGUID: RBVKqQNSSvS88K0n/Nr9Mw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="30088447"
 X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="33920647"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2024 06:17:11 -0700
-X-CSE-ConnectionGUID: ce217UrTThSrwRmgEJLC9w==
-X-CSE-MsgGUID: KiS7kbAoR+W17MUxoumkeA==
+   d="scan'208";a="30088447"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2024 06:17:11 -0700
+X-CSE-ConnectionGUID: ICmC6/MhQ3WEu5u1eNIjZw==
+X-CSE-MsgGUID: /E9M4tpNSQmtymv1thRh/w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="87754308"
+X-IronPort-AV: E=Sophos;i="6.11,249,1725346800"; 
+   d="scan'208";a="83100792"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa003.jf.intel.com with ESMTP; 01 Nov 2024 06:17:10 -0700
+  by orviesa006.jf.intel.com with ESMTP; 01 Nov 2024 06:17:10 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 180861AC; Fri, 01 Nov 2024 15:17:08 +0200 (EET)
+	id 458BF357; Fri, 01 Nov 2024 15:17:08 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -51,10 +52,12 @@ To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
 	linux-kernel@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v3 0/4] iio: initialise ddata for iio_get_acpi_device_name_and_data()
-Date: Fri,  1 Nov 2024 15:16:00 +0200
-Message-ID: <20241101131705.3697913-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 3/4] iio: accel: kxcjk-1013: Assign NULL to ddata in kxcjk1013_probe()
+Date: Fri,  1 Nov 2024 15:16:03 +0200
+Message-ID: <20241101131705.3697913-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
+In-Reply-To: <20241101131705.3697913-1-andriy.shevchenko@linux.intel.com>
+References: <20241101131705.3697913-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,32 +66,38 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Dan reported that ddata might be used uninitialised in some cases.
-Let's initialise it to NULL (patches 1 - 3). With that, update one driver
-to drop an unneeded anymore check (included in patch 3).
+When iio_get_acpi_device_name_and_data() fails, the ddata may be left
+uninitialised. Initialise it to NULL and drop unneeded NULL check
+in kxcjk1013_probe().
 
-While at it, one more cleanup to kxcjk-1013 (patch 4) is added.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/accel/kxcjk-1013.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Jonathan, dunno if you want to rebase at this stage (probably not),
-but if you do, feel free to fold the patches 1-3 to the initial code.
-
-In v3:
-- made Subject more specific for patches 1-3 (Markus)
-
-In v2:
-- rewritten patches 1-3 to do the job on the caller side (Jonathan)
-
-Andy Shevchenko (4):
-  iio: light: isl29018: Assign NULL to ddata in isl29018_probe()
-  iio: light: ltr501: Assign NULL to ddata in ltr501_probe()
-  iio: accel: kxcjk-1013: Assign NULL to ddata in kxcjk1013_probe()
-  iio: accel: kxcjk-1013: Deduplicate ODR startup time array
-
- drivers/iio/accel/kxcjk-1013.c | 30 ++++++------------------------
- drivers/iio/light/isl29018.c   |  2 +-
- drivers/iio/light/ltr501.c     |  2 +-
- 3 files changed, 8 insertions(+), 26 deletions(-)
-
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 28ed0e09d099..753ec2f71a9a 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -1462,7 +1462,7 @@ static int kxcjk1013_probe(struct i2c_client *client)
+ 	struct kxcjk1013_data *data;
+ 	struct iio_dev *indio_dev;
+ 	struct kxcjk_1013_platform_data *pdata;
+-	const void *ddata;
++	const void *ddata = NULL;
+ 	const char *name;
+ 	int ret;
+ 
+@@ -1507,8 +1507,7 @@ static int kxcjk1013_probe(struct i2c_client *client)
+ 		data->info = (const struct kx_chipset_info *)(id->driver_data);
+ 	} else {
+ 		name = iio_get_acpi_device_name_and_data(&client->dev, &ddata);
+-		if (name)
+-			data->info = ddata;
++		data->info = ddata;
+ 		if (data->info == &kxcj91008_kiox010a_info)
+ 			indio_dev->label = "accel-display";
+ 		else if (data->info == &kxcj91008_kiox020a_info)
 -- 
 2.43.0.rc1.1336.g36b5255a03ac
 
