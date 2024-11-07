@@ -1,101 +1,79 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6552F20F5AA;
-	Thu,  7 Nov 2024 13:56:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11829212D00;
+	Thu,  7 Nov 2024 14:34:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730987811; cv=none; b=JrC8PiAaxFINzymortJjSjk9uCVqie7c44YFo0hEiv1zUghJepPTqlxdbpZfx666Zaff/rMFHD+ozTAzQR2LIfJiyqiZ5VXOGdC214XU3dBrpWZv1Y0yUqFkV320d1xrQYxNqeJ5hFpo0MjT7rNi+l6dXXmUjmo1aFv4Z9W5TUU=
+	t=1730990077; cv=none; b=Pr96kurTKoK+gA+XzSsZqRObtgUtQYrDuBXNprx/ghZA8gM1rwwVaknA77IwoXVKuVf51VXh61MXcERqO914Bwb3LOcHBtDrURmjcVLrhU9hFc/zGW13VhMxx6EYt8fQCBa1Vr/EXvc7PSf/KDFFYCXYB7jKK7sagZVZCpryHZs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730987811; c=relaxed/simple;
-	bh=7v/jldVNPehBirnoJkZk0fUgltTH/iaWGYa4s4Cqmj0=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Mk4McP2LNQeX9YVta3Ttp+buwVB1UlNMuilIvD4C3UQpSrs4+UxBM16JHSTW05EmQh0yycMNqFUQUAwF6jOCkvb4gewyblesLvCJwd7NUHpeHVKbjeDSmEV+9DrGs+bNhAwsRKuSaxLeAIH0yN1kwAjhMCLLWh4nc3yB+5P6bAw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=Huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=Huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.31])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Xkk952JS5z6K99D;
-	Thu,  7 Nov 2024 21:55:05 +0800 (CST)
-Received: from frapeml500008.china.huawei.com (unknown [7.182.85.71])
-	by mail.maildlp.com (Postfix) with ESMTPS id A05BF140856;
-	Thu,  7 Nov 2024 21:56:45 +0800 (CST)
-Received: from localhost (10.203.177.66) by frapeml500008.china.huawei.com
- (7.182.85.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Thu, 7 Nov
- 2024 14:56:44 +0100
-Date: Mon, 28 Oct 2024 17:05:21 +0000
-From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To: Robert Budai <robert.budai@analog.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
-	<Michael.Hennerich@analog.com>, Nuno Sa <nuno.sa@analog.com>, "Ramona
- Gradinariu" <ramona.gradinariu@analog.com>, Antoniu Miclaus
-	<antoniu.miclaus@analog.com>, Jonathan Cameron <jic23@kernel.org>, "Rob
- Herring" <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, "Conor
- Dooley" <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Jagath Jog J
-	<jagathjog1996@gmail.com>, <linux-iio@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>, <robi_budai@yahoo.com>
-Subject: Re: [PATCH 0/5] Add support for ADIS16550 and ADIS16550W
-Message-ID: <20241028170521.0000325c@Huawei.com>
-In-Reply-To: <20241028123550.9128-1-robert.budai@analog.com>
-References: <20241028123550.9128-1-robert.budai@analog.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	s=arc-20240116; t=1730990077; c=relaxed/simple;
+	bh=cPfsizR0GhWQSjoMoj6ev7y0kRO6mxVltbXk9yQ6RCw=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=V7pDPbqDc+BiMHh29Ct10M+TotTeMS07IdZLpWJKlMCRjWPk/aM4a5m+dZjcp7mUiPtLHkGvegmR8CK3v+WWpp1Arpag8s+aIA/0DvWFbl0JnpKKlm8eqNQqpHn9HwEHupW1A+mJtOhZP2i+ZaQDaCM8SLEAJG+ToIA5AoXVILM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mKF4NHK9; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mKF4NHK9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10C0CC4CECC;
+	Thu,  7 Nov 2024 14:34:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1730990076;
+	bh=cPfsizR0GhWQSjoMoj6ev7y0kRO6mxVltbXk9yQ6RCw=;
+	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+	b=mKF4NHK9r1+8tE9VEE779JEN4YPJLcLdTe0ttAjyIwDylxoTTtqzFbRIggnKq6uO6
+	 h0ALIHV3VWB3WAFXjQfzSLL0my3BWqJfXs4I7YMzmIOnpVxYEU8JG+OMCC8Aw5lx5Y
+	 P4X6ee9KvpVlu/bdq1FZZJu1k1GlZFJdrz5LM13BCPXSr54i109bus6IZWoj9hSMzh
+	 oSRr+qhDaLaA5MkqRK7XwxLsFRkjTbTmOfHzQzur7abh7e+N2u0P4BjreVSRnErD//
+	 G8Px6e6FJtL+VivgnxwhJaqhTXu8wxx9Q4cnHk/ZFAHffhIUx5iGO1pogYTgw6Fbgi
+	 a5kieyYvbkBrg==
+Date: Thu, 7 Nov 2024 15:34:33 +0100 (CET)
+From: Jiri Kosina <jikos@kernel.org>
+To: =?ISO-8859-15?Q?Heiko_St=FCbner?= <heiko@sntech.de>
+cc: lee@kernel.org, jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+    conor+dt@kernel.org, jdelvare@suse.com, linux@roeck-us.net, 
+    srinivas.pandruvada@linux.intel.com, bentiss@kernel.org, 
+    dmitry.torokhov@gmail.com, pavel@ucw.cz, ukleinek@debian.org, 
+    devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+    linux-hwmon@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+    linux-rockchip@lists.infradead.org, linux-input@vger.kernel.org, 
+    linux-iio@vger.kernel.org, linux-leds@vger.kernel.org, 
+    stable@vger.kernel.org
+Subject: Re: [PATCH v9 1/9] HID: hid-sensor-hub: don't use stale platform-data
+ on remove
+In-Reply-To: <4934964.GXAFRqVoOG@diego>
+Message-ID: <nycvar.YFH.7.76.2411071534110.20286@cbobk.fhfr.pm>
+References: <20241107114712.538976-1-heiko@sntech.de> <20241107114712.538976-2-heiko@sntech.de> <nycvar.YFH.7.76.2411071358210.20286@cbobk.fhfr.pm> <4934964.GXAFRqVoOG@diego>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ClientProxiedBy: lhrpeml100001.china.huawei.com (7.191.160.183) To
- frapeml500008.china.huawei.com (7.182.85.71)
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-On Mon, 28 Oct 2024 14:35:42 +0200
-Robert Budai <robert.budai@analog.com> wrote:
+On Thu, 7 Nov 2024, Heiko St=FCbner wrote:
 
-> The ADIS16550 is a complete inertial system that includes a triaxis gyros=
-cope
-> and a triaxis accelerometer. Each inertial sensor in the ADIS16550 combin=
-es
-> industry leading MEMS only technology with signal conditioning that optim=
-izes
-> dynamic performance. The factory calibration characterizes each sensor fo=
-r
-> sensitivity, bias, and alignment. As a result, each sensor has its own dy=
-namic
-> compensation formulas that provide accurate sensor measurements.
-
-
-Dropping the more marketing parts of this preferred.  Second
-sentence doesn't add much that we care about.
-The rest is fine.
-
+> This change was more or less a surprise find, because I wanted to make
+> the platform_data pointer in the mfd_cell struct const and this the hid
+> sensor hub stood out as doing something strange ;-) .
 >=20
-> Nuno S=E1 (3):
->   iio: imu: adis: Add custom ops struct
->   iio: imu: adis: Add DIAG_STAT register size
->   iio: imu: adis16550: add adis16550 support
->=20
-> Ramona Gradinariu (2):
->   dt-bindings: iio: Add adis16550 bindings
->   docs: iio: add documentation for adis16550 driver
->=20
->  .../bindings/iio/imu/adi,adis16550.yaml       |   95 ++
->  Documentation/iio/adis16550.rst               |  389 ++++++
->  Documentation/iio/index.rst                   |    1 +
->  MAINTAINERS                                   |   10 +
->  drivers/iio/imu/Kconfig                       |   13 +
->  drivers/iio/imu/Makefile                      |    1 +
->  drivers/iio/imu/adis.c                        |   33 +-
->  drivers/iio/imu/adis16550.c                   | 1228 +++++++++++++++++
->  include/linux/iio/imu/adis.h                  |   33 +-
->  9 files changed, 1788 insertions(+), 15 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/imu/adi,adis165=
-50.yaml
->  create mode 100644 Documentation/iio/adis16550.rst
->  create mode 100644 drivers/iio/imu/adis16550.c
->=20
+> So patch 2 of this series actually depends on this change to not cause
+> build errors.
+
+Ah, right.
+
+> But seeing that we're after -rc6 alredy, I would assume the brunt of the=
+=20
+> mcu series might need to wait after 6.13-rc1 anyway - but I guess that=20
+> depends on how Lee sees things ;-) .
+
+OK, I am keeping my hands off it for the time being.
+
+Thanks,
+
+--=20
+Jiri Kosina
+SUSE Labs
 
