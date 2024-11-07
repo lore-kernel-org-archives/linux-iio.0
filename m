@@ -1,40 +1,43 @@
 Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FF97216DE3;
-	Thu,  7 Nov 2024 17:31:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B995721315C;
+	Thu,  7 Nov 2024 17:31:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731000662; cv=none; b=kiXuqLisOWl2h3WSkqYuiwsb00FW+dNbw3kkKuHttdT5sUbJ+o9bb4qiM0dlnbUQnGurL3yvAuVetqm0/iyu7/VlRPARUc3LRqPW+jva59tycsz0rjuphTUcctuCEfN0RGTf/0uojMJRkFWK/iqYB9sTNvOR9+Xg7kb2PXG+zyY=
+	t=1731000665; cv=none; b=dYZ1a02i1oXjdW/1YCjuQjxhHIXIjCoTWXElFKvgUhBsYVJoA8XAK4wYzjengEKbGBwGjCh9mZB2PNfLhHEHgpFRuv66yPDQEUa1QPZa0h/UDMF3shBiDELvr1n9qugZAyySXxSoKudoFN0EySwnrK1h9lPCxIL97N0KBvRSwWk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731000662; c=relaxed/simple;
-	bh=DGNFU7sXY8nxTWRDfpiShCdLXxJ7RRd5W4g1wy9oGZA=;
-	h=Date:To:From:Cc:Subject:Message-ID:MIME-Version:Content-Type; b=N37gZiERK87YKPyWzQ4VfYpaRsNJLCk+j8WXSDJgcucMBHHHp4ULgWZBVe/IN+iZzQCRJ34L/XM3UcSuGwdoX8TWO++PIaZXljjJigkxeLp5BIpcL4eLQiwWfdZK7QfSRwCN1oXRmDix+v1PbRdhNCzygZw0pLX5r3zOnpdNkWc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=XXKhWSP6; arc=none smtp.client-ip=185.70.43.16
+	s=arc-20240116; t=1731000665; c=relaxed/simple;
+	bh=BwjFGaw+4nmam3HpqYea3paas9g0vq5E6hqSbuNDetk=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Q/Z+MQW4dlN3f6q0te6NEJNUFhVUi5phjZmOhnbRxw2y4FvN5LAcqNxFX51+/rtZb/g3iGFzg7hN+E/Tec9ubv+bq7BoRdvAdb8+Ejt3kHMt0Wm7hfMro3jZwW+hdOgyZ1vvDwCbu4y0/L4khEg3NfOA9uH40quik3FAX9iPd2c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=hS+9Ntbe; arc=none smtp.client-ip=185.70.43.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="XXKhWSP6"
+	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="hS+9Ntbe"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1731000652; x=1731259852;
-	bh=/8djxCnsO+tFNzNR9N609OFJyho5I7jhO1PgaDM6cDw=;
-	h=Date:To:From:Cc:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
-	 Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector:
-	 List-Unsubscribe:List-Unsubscribe-Post;
-	b=XXKhWSP69oy24UtJm5CRY5tin+nuesLYu1XaO6KEb6KaHJ1wjUefqu/5vlZQ8QDgD
-	 ns9N+i1nCJY2sOYT8pYiva8Hvzz4Dh1WuCXKe9LWJtmrm4LaK9p9Lbfc2OlDFWUdlo
-	 JvdH1dHwdNJhJXCxgCUg4vbfyyhOGP0MhL0NrX1D6tJOBQU2HFhR4raSuWVLtHX0Hd
-	 fI05FegkMa02rA3OrV95bVPNZLUtdsql7qM5hrpDq6cU5REWC0vQ2JRPk5f0Z2BlvY
-	 pYU7pQtdT1ku+ccldI/pxpCbeF1x6GqXmXtVbntTOdrJYedP8Cfz/g490qevo2qKPu
-	 JhzV7chafcmrw==
-Date: Thu, 07 Nov 2024 17:30:48 +0000
+	s=protonmail3; t=1731000662; x=1731259862;
+	bh=BwjFGaw+4nmam3HpqYea3paas9g0vq5E6hqSbuNDetk=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector:List-Unsubscribe:List-Unsubscribe-Post;
+	b=hS+9NtbeFQHdtWUbVUN12YPx4UUxTNi73yC10EBVyFUanxtcH88NQgWwb6F5mtjS1
+	 wrW0nzKLEWHhCf90Ns8vMKNy84rX/eBltfwzgbihL89Yes0OXpoV8Hb+AoZX1xXtLn
+	 sw+/NZVPiVACP4/Fq1bXmyNwECdCal2qYCrDus0CsDaHq6Ud9cWsikqbYp0j9yI8d0
+	 mknl7/lDGT0ZZf+7vn+wlsug7NvtWlwyIrEM7XfYk5C3Oq86NTnoOuE7Rli4vN0Ikg
+	 27WGk4xIgdq9ttm6Idoy7KVn34xTSmtokqKv0h+SQDPfBjOoNUKL+Izlw+IytDCxxq
+	 1/zL1kOJTg6LQ==
+Date: Thu, 07 Nov 2024 17:30:57 +0000
 To: jic23@kernel.org, lars@metafoo.de, gregkh@linuxfoundation.org, parthiban.veerasooran@microchip.com, christian.gromm@microchip.com, sudipm.mukherjee@gmail.com, teddy.wang@siliconmotion.com
 From: =?utf-8?Q?Dominik_Karol_Pi=C4=85tkowski?= <dominik.karol.piatkowski@protonmail.com>
 Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, linux-fbdev@vger.kernel.org, =?utf-8?Q?Dominik_Karol_Pi=C4=85tkowski?= <dominik.karol.piatkowski@protonmail.com>
-Subject: [PATCH 0/4] staging: Remove contact information from TODO files
-Message-ID: <20241107172908.95530-1-dominik.karol.piatkowski@protonmail.com>
+Subject: [PATCH 2/4] staging: sm750fb: Remove TODO contact information
+Message-ID: <20241107172908.95530-3-dominik.karol.piatkowski@protonmail.com>
+In-Reply-To: <20241107172908.95530-1-dominik.karol.piatkowski@protonmail.com>
+References: <20241107172908.95530-1-dominik.karol.piatkowski@protonmail.com>
 Feedback-ID: 117888567:user:proton
-X-Pm-Message-ID: 2c73f128d512200b086d91bf6c91aa220cbe864c
+X-Pm-Message-ID: c950f1fdc6c123f5e69c1aff40369bb6a367959e
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -44,26 +47,29 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-Some TODO files contained contact information - it is redundant, as it
-can be found in MAINTAINERS file. It can also get stale easily. This
-series removes that.
+Remove contact information from TODO file, as it is redundant and can
+get stale easily.
 
 Signed-off-by: Dominik Karol Pi=C4=85tkowski <dominik.karol.piatkowski@prot=
 onmail.com>
+---
+ drivers/staging/sm750fb/TODO | 5 -----
+ 1 file changed, 5 deletions(-)
 
-Dominik Karol Pi=C4=85tkowski (4):
-  staging: iio: Remove TODO file
-  staging: sm750fb: Remove TODO contact information
-  staging: rtl8723bs: Remove TODO contact information
-  staging: most: Remove TODO contact information
-
- drivers/staging/iio/TODO       | 5 -----
- drivers/staging/most/TODO      | 7 -------
- drivers/staging/rtl8723bs/TODO | 3 ---
- drivers/staging/sm750fb/TODO   | 5 -----
- 4 files changed, 20 deletions(-)
- delete mode 100644 drivers/staging/iio/TODO
-
+diff --git a/drivers/staging/sm750fb/TODO b/drivers/staging/sm750fb/TODO
+index 481409eb3fb3..9dd57c566257 100644
+--- a/drivers/staging/sm750fb/TODO
++++ b/drivers/staging/sm750fb/TODO
+@@ -12,8 +12,3 @@ TODO:
+ Note:
+ - This driver will be removed from staging after the drm driver is ready
+ - The drm driver is getting ready at https://gitlab.com/sudipm/sm750/tree/=
+sm750
+-
+-Please send any patches to
+-=09Greg Kroah-Hartman <greg@kroah.com>
+-=09Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+-=09Teddy Wang <teddy.wang@siliconmotion.com>
 --=20
 2.34.1
 
