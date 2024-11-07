@@ -1,95 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14E672101A1;
-	Thu,  7 Nov 2024 12:59:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C6ED212F03;
+	Thu,  7 Nov 2024 13:31:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730984348; cv=none; b=trDtV2cqoFq9dbBfRg/HB0XdP++V3ziJMBSi6Y7k59DcBxozZNI+R59WAKKTQsNmHd338RRdJgVwLf6AxBZh1CidB1uuAjcrdTGKuWLCV82V6jnndepM65ZhQ/gGlso7DHJYW1crnyq0P4NpU8HCc2icnc2PqqpmHzNHfjQet9M=
+	t=1730986306; cv=none; b=TkbmvdIJxfZ5t+EH4zf1tbWSPnYHP930c+1sj8C2448MPB0uDy+cagqWmBPQTVZ1FWGFcGwNTPiBAGCsl2B4/TXxmun7syePylff9T2flljrasitkDYnkMxKWtBTNnscrr3EZOvEtoEWitAK/3ZC+0SZueTfMj5RDlLslmBZtgs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730984348; c=relaxed/simple;
-	bh=O2jEPTTUJi8YuBrD4uo+6+5CJE7GCRdzMd3WNJyIb5Y=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=t4cwznAuAehwUFU9S+2q5s7305TCIeWFYv9F+imj+nnqj9Rby9Sam3YFF892ArXz/3Jyd2Kc1durds2lWasL1jfHU2E1jrn+v0by+Rm/9/C73cY+iovs68ll9cSmhgPR1Ru3WuerWlhWkRkZFZDRv3eFFavZsF1kqJTBOtfjLPY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iD63z4HW; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1730986306; c=relaxed/simple;
+	bh=O4Ly+TUbcNgizUM1IEqHG6sZzsVmPfKjoOUUN/qY6OU=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=p/8CQouaBs2ah26gvH+Fec5EWpfqIw7IIJM9s92mFCwRQdo55k3ilusUEaJUvtNYEdHNhxWd0U71gC6DyDVZCPiMgJuJTxzAnocuP9P9t89jpfntYMgpcK6273YIJHRRM2/Mg6QE50A9b3IWG/06KN6UleVw+TD3v9b9HGfL3is=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=ni6taHqX; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iD63z4HW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BC64C4CED0;
-	Thu,  7 Nov 2024 12:59:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730984347;
-	bh=O2jEPTTUJi8YuBrD4uo+6+5CJE7GCRdzMd3WNJyIb5Y=;
-	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-	b=iD63z4HWcMWir7bHC1m9R+CT/cgDL1VVsJnEYKSEV2jU7HGI+2dVFuZypj0yOnSMM
-	 mn3gjCdYb+BdncyjpsM7aAENfKfDqDXnjHN+2pZzXcAtNKO7WmYhwE7RzeUBCUKw2h
-	 Nup1Iz0s1HgQ3Gb4OUa/iOOIVQiZ4CeVgWd2UBMnORr7GbcAdAEXM1MgcLuoSUbXms
-	 X6tG5gVUTPfyBUebk8mkJuHitQAqBK1utoJ6fBjCahU4wIHzJtNHElOGwm7LDcPfaW
-	 MRn8cczXOJQV1BRqGDf6dCM2YXKLjO2zUv3syEb+P+BmVoRQB7n7BShvU1hPmmuX3Q
-	 BivsrE6XS583g==
-Date: Thu, 7 Nov 2024 13:59:04 +0100 (CET)
-From: Jiri Kosina <jikos@kernel.org>
-To: Heiko Stuebner <heiko@sntech.de>
-cc: lee@kernel.org, jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
-    conor+dt@kernel.org, jdelvare@suse.com, linux@roeck-us.net, 
-    srinivas.pandruvada@linux.intel.com, bentiss@kernel.org, 
-    dmitry.torokhov@gmail.com, pavel@ucw.cz, ukleinek@debian.org, 
-    devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-    linux-hwmon@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-    linux-rockchip@lists.infradead.org, linux-input@vger.kernel.org, 
-    linux-iio@vger.kernel.org, linux-leds@vger.kernel.org, 
-    stable@vger.kernel.org
-Subject: Re: [PATCH v9 1/9] HID: hid-sensor-hub: don't use stale platform-data
- on remove
-In-Reply-To: <20241107114712.538976-2-heiko@sntech.de>
-Message-ID: <nycvar.YFH.7.76.2411071358210.20286@cbobk.fhfr.pm>
-References: <20241107114712.538976-1-heiko@sntech.de> <20241107114712.538976-2-heiko@sntech.de>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="ni6taHqX"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4A7DH96r005049;
+	Thu, 7 Nov 2024 08:31:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=dQpYsJYMGMBaCtPWFQEdS4VtUyv
+	uxNAP5yuT99fgGKs=; b=ni6taHqX7Bw0dtal2mrYy6giiWs6ZaacLzdUoS1d6Xk
+	i/e5Tg89fGBcSS4Ei/I4FsJc+qtWxYVlJ5kQvnWg4TZrQ+0TBBsFDyS9VK7nmLEP
+	6s3N1y0NdrAitBR8qDjycbpBNI2GxEbn96xZWogh9ysFWD87+AZajRr0c4Bz2Fdd
+	8B9an8NeTFDwUCL281uqYX6bg7HF8YU6KJwR5JQ1piWSzUEqgAcmK6QWUQHVKDrX
+	k/y+FZQLXKBmHgvTFpDve2jj0ZMTpZalrWSIrzQTPFscaP3QfusjM7lcMNeGW9vi
+	PDytharrL02fBQPdMOFFpnTStrwroWxJ7mhKnPUBEXw==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 42rsdks7u8-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 07 Nov 2024 08:31:41 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 4A7DVe36034819
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 7 Nov 2024 08:31:40 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Thu, 7 Nov 2024 08:31:40 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Thu, 7 Nov 2024 08:31:40 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Thu, 7 Nov 2024 08:31:40 -0500
+Received: from localhost.localdomain ([10.48.65.12])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 4A7DVUGq019172;
+	Thu, 7 Nov 2024 08:31:32 -0500
+From: Darius Berghe <darius.berghe@analog.com>
+To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <jic23@kernel.org>, <darius.berghe@analog.com>
+Subject: [PATCH v2 0/3] iio: imu: add devices to adis16480 driver
+Date: Thu, 7 Nov 2024 15:45:14 +0200
+Message-ID: <20241107134517.3089112-1-darius.berghe@analog.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: 9U0tJdebFaLj8DpJ0aeVvT0QEAxdarBj
+X-Proofpoint-ORIG-GUID: 9U0tJdebFaLj8DpJ0aeVvT0QEAxdarBj
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 mlxlogscore=999 clxscore=1015 mlxscore=0 suspectscore=0
+ priorityscore=1501 phishscore=0 adultscore=0 spamscore=0 impostorscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2411070105
 
-On Thu, 7 Nov 2024, Heiko Stuebner wrote:
+Thanks for the review and input Jonathan, I've addressed the 2 points
+you raised in V1, here's the breakdown.
 
-> The hid-sensor-hub creates the individual device structs and transfers them
-> to the created mfd platform-devices via the platform_data in the mfd_cell.
-> 
-> Before e651a1da442a ("HID: hid-sensor-hub: Allow parallel synchronous reads")
-> the sensor-hub was managing access centrally, with one "completion" in the
-> hub's data structure, which needed to be finished on removal at the latest.
-> 
-> The mentioned commit then moved this central management to each hid sensor
-> device, resulting on a completion in each struct hid_sensor_hub_device.
-> The remove procedure was adapted to go through all sensor devices and
-> finish any pending "completion".
-> 
-> What this didn't take into account was, platform_device_add_data() that is
-> used by mfd_add{_hotplug}_devices() does a kmemdup on the submitted
-> platform-data. So the data the platform-device gets is a copy of the
-> original data, meaning that the device worked on a different completion
-> than what sensor_hub_remove() currently wants to access.
-> 
-> To fix that, use device_for_each_child() to go through each child-device
-> similar to how mfd_remove_devices() unregisters the devices later and
-> with that get the live platform_data to finalize the correct completion.
-> 
-> Fixes: e651a1da442a ("HID: hid-sensor-hub: Allow parallel synchronous reads")
-> Cc: stable@vger.kernel.org
-> Acked-by: Benjamin Tissoires <bentiss@kernel.org>
-> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Changes in v2:
+ - document in the commit description the main differences between 
+   the newly added and the already supported devices
+ - make adis16487 fallback compatible with adis16485 since they are
+   functionally equivalent
 
-Acked-by: Jiri Kosina <jkosina@suse.com>
+Darius Berghe (3):
+  iio: imu: adis16480: add devices to adis16480 driver
+  iio: imu: adis16480: add devices to adis16480 - docs
+  dt-bindings: iio: adis16480: add devices to adis16480
 
-Are you planning to merge this together with the rest of the set, or do 
-you want me to expedite it? I'll be happy to apply it separately as a 
-proper fix.
-
-Thanks,
+ .../bindings/iio/imu/adi,adis16480.yaml       |  5 ++
+ Documentation/iio/adis16480.rst               |  3 +
+ drivers/iio/imu/adis16480.c                   | 75 +++++++++++++++++++
+ 3 files changed, 83 insertions(+)
 
 -- 
-Jiri Kosina
-SUSE Labs
+2.46.1
 
