@@ -1,68 +1,68 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BEE655C29
-	for <linux-iio@vger.kernel.org>; Mon, 11 Nov 2024 12:08:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 383CB55C29
+	for <linux-iio@vger.kernel.org>; Mon, 11 Nov 2024 12:12:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731326934; cv=none; b=dWvQeZHMXZi1XLFhjAry7OOfZPAA0Ywz8ukLvlbXtWb9Hrc0CfpCpiQAMAA5a22e5i0KuVkq5tzZ72C/TcZkAMPITLIKJs5evj0vHFkL7WT+hI1MA7F6aHQ4bkSfQG21qoehSTfah3n6ATrPFQnKr7NXDleugW/MrNB/3nEByf4=
+	t=1731327143; cv=none; b=mnbU8Ig258UJtetXIWAzhp8OZCaBblnRAF4MPVd6sYfSDy8QsjwZLnUAplzFJOrM6EzO+qCpfM0vK7LZMS1int0gg6uhwebWrSRERe/Pr1YkPdd0l2cY+z/ATKVtZzbAtvtpn5nlFpsVetIjqTnvq2WPdFzOkS91oCNlQRb4Gfc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731326934; c=relaxed/simple;
-	bh=zizQgxUJjUFrPYu/U95nAIDgqBgMs8uy7LcYBXmA8Hg=;
+	s=arc-20240116; t=1731327143; c=relaxed/simple;
+	bh=MYPFJ/QHuhRFvZR1gxMo8eXaZCjaRP6tLWd2q3gcNcc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O23nNO8/C93bg+ZNEXcGdtufwWu985Flfkw9HUmLHyR9tS21fKrfBGzi+g2r47ITULU5WmJ0zPg2hFcskyZ4IenBTPve3Rzrl/oZlonASg5mrGxiWNRgI8PZBVdmuqeAx4WaD4GhDsVSzA73i3O9jgD9zgsfN9J4zYhJZdOUJI8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=B2A3pUY4; arc=none smtp.client-ip=209.85.128.46
+	 Content-Type:Content-Disposition:In-Reply-To; b=PqK3gvXWe4BpzFF7meJ6wM4nVMzh1FoR3WVdqcLfFgiYQp2flZh3Ry4GaOUlhDiPBY+z6XrTGdHtMlSyUUkueG+mAcWthDjO0J7y0b9ddn55NRem0Y5Gopshq/PaEo+eAz2T7skra59JBYhfcJbr1Nc/kzLs4iraYczzarbQQ+E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=2V1xs4YS; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="B2A3pUY4"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4315e9e9642so36124825e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 11 Nov 2024 04:08:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="2V1xs4YS"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-431548bd1b4so37262585e9.3
+        for <linux-iio@vger.kernel.org>; Mon, 11 Nov 2024 04:12:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1731326930; x=1731931730; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1731327139; x=1731931939; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=zizQgxUJjUFrPYu/U95nAIDgqBgMs8uy7LcYBXmA8Hg=;
-        b=B2A3pUY4RTH0z5k4LtZuBVQU5bVNdW7ksm6fxZdDHUgG/B1SCIid5hDCFXn+wmX9ko
-         RwqFx9WHbmCp1sMgWgmH/wrft5IaT6Ot2h+Jsg7/FEmWern99iC2Zw5L12Iq8FBibq4N
-         NdgXCqawbGqEpZN/ZUhQBc4veuHMrhUDUdTNG8H7fYgy0agC4FdUMYAzblQIYGgpgiXM
-         iCzVa9sh4wkiZWkEPHLB1cTqDRZ/q7RkZq0yK2uTarVPpjdNZar+ZyP2dSnuvhytVKZo
-         8GYD6MvAg53gmQcw8MjxSsVt8XPgTiEnDgQyWBigPEpiQ/SHz+z2Ubb56sRqh/RJ/bbX
-         RkYQ==
+        bh=xs+3Bmk7/ET8ZIXxUWywxy47jkhQeABRqUPAmW38Cw0=;
+        b=2V1xs4YSfvzgAHTu3ddY7aQXSHINjseTy6sppFujC1yV7TgLUcOG7MybzZkXCItt4E
+         Gfn7bxr1wm9dsHuRJzwXHQ6Wy9z00AzfZufLUUlcOg0X4Ah2J2wWCMUv5UAF9Xu344tU
+         16OfxyzABgAM0zLlqui5OPtHK4B/9vqkCFiEuYDAFM/3qVnUxxw0eLmNsFjvv47xrNzs
+         Dbtl/+vaHbCRRrIGV18ehAG5r7jCttQmozPggvfs0cxqnseFFqt0UMtw+IA+PbuQ+hCh
+         B8femclRdXtoSk6Gvn1LK5rRySN3wGtVNLjhJLsIgJEmZO3aQiPfVsDkOULWofhE+dPf
+         yKEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731326930; x=1731931730;
+        d=1e100.net; s=20230601; t=1731327139; x=1731931939;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zizQgxUJjUFrPYu/U95nAIDgqBgMs8uy7LcYBXmA8Hg=;
-        b=Ax6dsyiv8J3pucHPoJgHAc6xkgLQB988JI+g1YEPHkRIhrgcm3r111Iz5bU2hlXGm4
-         u9/YFhz3pZTuH5vzkfGS8iroG9N0UcsUTvlTyks9U+7SqEuwc2HNbISNYwJY6e98KplM
-         hwSBMdq0uq9gOA3HX7xNVKNgv4O7a1azgZozuFHR2NKLY+S1+nkJBhj62PSHnuAZa+Z4
-         hFDgbet8k573XVqjohJNLPFVC9vcv7NQzCgWOuV7vtI1brpBVx24j1Iv+t1SM3H3RQkf
-         0ml/3HnP5hwEydEAokxg5Z6n2s/p2qm8OCDGKyfm7dkGwjE/3ezyiSp/o+NzoIQ5f4dJ
-         MBVg==
-X-Forwarded-Encrypted: i=1; AJvYcCWYQpsCuhZ70dKMzo/h6VNBJmyMTByn4GF4hA/TQ3MRvfpNeFlL+AAdUZBUcuMvLfOpIZDyxsT0JMw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwLSpcWA4J+ay+IDBi/69wtzLHt0/2EADUlvLNAgY+dKCi676lu
-	M2bDvJZAHTZs+5w8jz1hh+pXcnzU8Ay7T5Xt4U5oBi3i3Kun3QNUH280cmd+jkM=
-X-Google-Smtp-Source: AGHT+IESb2lgi5llcF/0yneUYuBGSTFn5srS4ez8tf3me+ouGpBVRxiy7S3mll8POcwSSd1avTopZw==
-X-Received: by 2002:a5d:6482:0:b0:37d:4517:acdb with SMTP id ffacd0b85a97d-381f172a860mr11659759f8f.20.1731326930553;
-        Mon, 11 Nov 2024 04:08:50 -0800 (PST)
+        bh=xs+3Bmk7/ET8ZIXxUWywxy47jkhQeABRqUPAmW38Cw0=;
+        b=pNJBnLo1adWemb330324CRNfyPTsw0nD6CZ/H0pS92NgrhoREOFEpZtW24djdIhdpG
+         Pn7P+iw6gCVRFEIlsBffoBmhHfJ80KZbFtRqPvBEdbYsjmIeEWu6S1NVl81iP5vDtUTQ
+         /8yI60RLH1K648nXBnEJ81P3JRkjUEWwPQD5bkYGdW08X6p3aCBgl27qpXbaJIioaxRN
+         Bxs5YaDneFRcHHI1QNPY+KsjE+1mdnSp+5qdlUmt67BVSacVYKBI/IOSMwvQ/00Ji5Ia
+         AZgz/CihuUMNfMCx0cHte8K6MqwkvJsiWIQ4KY7WaV2bMcqegWI9m/0vtvcfH1VRlPCy
+         YhiQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXSFAd1vd7icGgO9NKphO/SM24FpgwtL879GPi+q3/FQhe7p3h6/+rBMFPvnspZrrKsFMnTq4JEnmI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwaU6T3r7ysM9XoLYKdANEA0qqWDO3tHdMN2fbLt4J/Hk72h9AX
+	OcUcFk09O3YydWpiqVe8eL5pvqQl+Dl0hDAn8xoyy1l/s3f8fIh69HBHgFyKOcw=
+X-Google-Smtp-Source: AGHT+IFTrCeJsG4pTRHfhvy6GFhZe1enatnsIdLOV+d/7VyKJJXALSMPOSSGn3f7bQZGCXpBbPrFsQ==
+X-Received: by 2002:a05:600c:3b8f:b0:431:5f1b:a7c6 with SMTP id 5b1f17b1804b1-432b751f5edmr101593285e9.30.1731327139457;
+        Mon, 11 Nov 2024 04:12:19 -0800 (PST)
 Received: from localhost (p200300f65f28bb0063ffae39110fa2df.dip0.t-ipconnect.de. [2003:f6:5f28:bb00:63ff:ae39:110f:a2df])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-381ed97cd97sm12694879f8f.27.2024.11.11.04.08.49
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-381ed97cfefsm12671139f8f.26.2024.11.11.04.12.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Nov 2024 04:08:50 -0800 (PST)
-Date: Mon, 11 Nov 2024 13:08:48 +0100
+        Mon, 11 Nov 2024 04:12:18 -0800 (PST)
+Date: Mon, 11 Nov 2024 13:12:17 +0100
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: adc: ad7124: Don't create more channels than
- the hardware is capable of
-Message-ID: <c2mdg4pn5rgjdlwet2gmgqvmym36ttlyg5ag2u62a3qtkdwqce@p45gyz5ghgel>
-References: <20241108181813.272593-4-u.kleine-koenig@baylibre.com>
- <20241108181813.272593-5-u.kleine-koenig@baylibre.com>
- <c94271b1-924b-4de6-b3bb-77e16265bb0d@baylibre.com>
+To: Dan Carpenter <dan.carpenter@linaro.org>
+Cc: oe-kbuild@lists.linux.dev, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, lkp@intel.com, 
+	oe-kbuild-all@lists.linux.dev, Mircea Caprioru <mircea.caprioru@analog.com>, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibe.com>
+Subject: Re: [PATCH 2/2] iio: adc: ad7124: Refuse invalid input specifiers
+Message-ID: <v5ytfwjmimsbfgdq3sb2xg6d2dkllvnv2a7wltwtzt62oqikge@574uazpvjd67>
+References: <20241108181813.272593-6-u.kleine-koenig@baylibre.com>
+ <bb25249b-62b8-4d7f-9ef3-cb5e1f8674ba@stanley.mountain>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,61 +70,54 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="gi7kmm2hjevdp2sm"
+	protocol="application/pgp-signature"; boundary="fouxnykmbwuimmjy"
 Content-Disposition: inline
-In-Reply-To: <c94271b1-924b-4de6-b3bb-77e16265bb0d@baylibre.com>
+In-Reply-To: <bb25249b-62b8-4d7f-9ef3-cb5e1f8674ba@stanley.mountain>
 
 
---gi7kmm2hjevdp2sm
+--fouxnykmbwuimmjy
 Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 1/2] iio: adc: ad7124: Don't create more channels than
- the hardware is capable of
+Subject: Re: [PATCH 2/2] iio: adc: ad7124: Refuse invalid input specifiers
 MIME-Version: 1.0
 
-[dropped Mircea Caprioru from Cc: as their address bounces.]
+[Dropped Mircea Caprioru from Cc: as the analog.com MTA doesn't know
+their address]
 
-Hello David,
+Hello Dan,
 
-On Fri, Nov 08, 2024 at 12:52:35PM -0600, David Lechner wrote:
-> On 11/8/24 12:18 PM, Uwe Kleine-K=F6nig wrote:
-> > The ad7124-4 and ad7124-8 both support 16 channel registers. Don't
-> > accept more (logical) channels from dt than that.
+On Mon, Nov 11, 2024 at 12:15:45PM +0300, Dan Carpenter wrote:
+> 4112b30ba58b5c Uwe Kleine-K=F6nig  2024-11-08  871  		if (!ad7124_valid_i=
+nput_select(ain[0], st->chip_info) ||
+> 4112b30ba58b5c Uwe Kleine-K=F6nig  2024-11-08  872  		    !ad7124_valid_i=
+nput_select(ain[1], st->chip_info))
+> 4112b30ba58b5c Uwe Kleine-K=F6nig  2024-11-08  873  			return dev_err_pro=
+be(dev, ret,
 >=20
-> Why should the devicetree be limited by the number of channel
-> registers? Channel registers are a resource than can be
-> dynamically assigned, so it doesn't seem like the devicetree
-> should be specifying that assignment.
+> s/ret/-EINVAL/?
+>=20
+> 4112b30ba58b5c Uwe Kleine-K=F6nig  2024-11-08 @874  					     "diff-chann=
+els property of %pfwP contains invalid data\n", child);
 
-Note the device tree isn't limited as I didn't adapt the binding. It's
-just that the driver doesn't bind if too many channels are specified.
-And while your statement about the channels being a dynamic resource is
-right, currently the driver doesn't cope and allocates resources
-statically, and happily assumes there is a CHANNEL_16 register if the
-device tree specifies 17 (or more) logical channels and writes to
-CONFIG_0 then which very likely results in strange effects.
+Indeed. I adapted that in my tree, so will be fixed in v2.
 
-So as long as the driver doesn't implement this (possible) dynamic
-mapping to the CHANNEL registers, it's IMHO right to refuse to bind (or
-alternatively only use the 16 first logical channels).
-
-Best regards
+Thanks
 Uwe
 
---gi7kmm2hjevdp2sm
+--fouxnykmbwuimmjy
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmcx884ACgkQj4D7WH0S
-/k5H9QgAp/z9QnQ+sHCZdd1yNdGqXRp99Z5F8+7pq9w0DDblAy098aK0u2OOhbg0
-+Ts38CwizZ6LrPTuYfpkkPPH+03i5ZKb2vFdJSLgPVJve2kwSxELpu6S4oR+p1nh
-5a9O9xou5u1cXL9R39df4I98zdPaz+CKM430/iJFhzcPDqkC7PyqTgia9l7QWVSG
-T2W/cIEBXyoH/SJcLt53hGi7ZXetbXA8Zp9RM6ZZJ1szBtB4SoHcRVslT1tMDk2q
-jd2hiHWOu6DrZvMb5F26Oq2vL9uv4cM8eBiT3EzsufW5aeo5CB6DMdacorsQjKEe
-PlFARzxFj/M59Df0ctC6uNQllbe8Aw==
-=LIet
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmcx9J4ACgkQj4D7WH0S
+/k4nJQgAlTnkDayqlntyEewP3+b8xai6S8tWGg4oVXcZG2VRF9hJmUZYIislQRT8
+RqFv8/YpMKLVUWklIvFWyCHXhouEd4dwSuJnflIwgTRii4S9yNhhv2l1INDzQqWz
+zNKRfRAeJS/FC8Ju9yICppslJNCUnZiAuD1BiknH4u2aiM0M3TDHwDjS3NY08VFI
+fX5JmGG/UGw7PFOLc+aiTzkOrhpK0Zevx9k4WDPBP7iUZi9Py/bBYYNW+qPLkTn/
+h22Z8nzfFNPrvMlorIh9ETD+ON2GlO/qBmH94/DyLVzcLSnsxNMbxt1RUYXNAavR
+CtGw1AmZTRW6Ldpvo/vDMsAwnU7Sfg==
+=fCAt
 -----END PGP SIGNATURE-----
 
---gi7kmm2hjevdp2sm--
+--fouxnykmbwuimmjy--
