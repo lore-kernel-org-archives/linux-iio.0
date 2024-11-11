@@ -1,123 +1,119 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 383CB55C29
-	for <linux-iio@vger.kernel.org>; Mon, 11 Nov 2024 12:12:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B50A19C569;
+	Mon, 11 Nov 2024 12:12:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731327143; cv=none; b=mnbU8Ig258UJtetXIWAzhp8OZCaBblnRAF4MPVd6sYfSDy8QsjwZLnUAplzFJOrM6EzO+qCpfM0vK7LZMS1int0gg6uhwebWrSRERe/Pr1YkPdd0l2cY+z/ATKVtZzbAtvtpn5nlFpsVetIjqTnvq2WPdFzOkS91oCNlQRb4Gfc=
+	t=1731327153; cv=none; b=XKiM/jkA8DqS8amd2b9bnLWuiKTiK5wvuBCzZz6cQ8eO9K0ZraWG9poTaHnAy4etHXnadYKu7REvY8e9hmMh188+RfYK2ZGoTh5NceNDTXTnx/NK3v4Bi6IHLva6xptvu/Nsw8Cba9PSeBbTaY+HAaHnojipGwJspXVxwJ2m4So=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731327143; c=relaxed/simple;
-	bh=MYPFJ/QHuhRFvZR1gxMo8eXaZCjaRP6tLWd2q3gcNcc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PqK3gvXWe4BpzFF7meJ6wM4nVMzh1FoR3WVdqcLfFgiYQp2flZh3Ry4GaOUlhDiPBY+z6XrTGdHtMlSyUUkueG+mAcWthDjO0J7y0b9ddn55NRem0Y5Gopshq/PaEo+eAz2T7skra59JBYhfcJbr1Nc/kzLs4iraYczzarbQQ+E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=2V1xs4YS; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1731327153; c=relaxed/simple;
+	bh=Zljfv92krEPvd9pBshB3SSyFBSh2rKBlbOMEX0xCtTw=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=dghFV60lkNVm4sJtaBJx3KED1lOGizIVSHD3mtp8qIenLmos2i13B9satoY6Xqnk036xqQM1oECrlelbB/yAzDXi2C72c5+OyC09Gry4omyB465OqoQqhn7YlidB8ZdWcaAHeuM+u5o8y1PEhL0OTTqn8n7vYjy0XcvSpmA4TWY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=m/CVh7iW; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="2V1xs4YS"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-431548bd1b4so37262585e9.3
-        for <linux-iio@vger.kernel.org>; Mon, 11 Nov 2024 04:12:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1731327139; x=1731931939; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xs+3Bmk7/ET8ZIXxUWywxy47jkhQeABRqUPAmW38Cw0=;
-        b=2V1xs4YSfvzgAHTu3ddY7aQXSHINjseTy6sppFujC1yV7TgLUcOG7MybzZkXCItt4E
-         Gfn7bxr1wm9dsHuRJzwXHQ6Wy9z00AzfZufLUUlcOg0X4Ah2J2wWCMUv5UAF9Xu344tU
-         16OfxyzABgAM0zLlqui5OPtHK4B/9vqkCFiEuYDAFM/3qVnUxxw0eLmNsFjvv47xrNzs
-         Dbtl/+vaHbCRRrIGV18ehAG5r7jCttQmozPggvfs0cxqnseFFqt0UMtw+IA+PbuQ+hCh
-         B8femclRdXtoSk6Gvn1LK5rRySN3wGtVNLjhJLsIgJEmZO3aQiPfVsDkOULWofhE+dPf
-         yKEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731327139; x=1731931939;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xs+3Bmk7/ET8ZIXxUWywxy47jkhQeABRqUPAmW38Cw0=;
-        b=pNJBnLo1adWemb330324CRNfyPTsw0nD6CZ/H0pS92NgrhoREOFEpZtW24djdIhdpG
-         Pn7P+iw6gCVRFEIlsBffoBmhHfJ80KZbFtRqPvBEdbYsjmIeEWu6S1NVl81iP5vDtUTQ
-         /8yI60RLH1K648nXBnEJ81P3JRkjUEWwPQD5bkYGdW08X6p3aCBgl27qpXbaJIioaxRN
-         Bxs5YaDneFRcHHI1QNPY+KsjE+1mdnSp+5qdlUmt67BVSacVYKBI/IOSMwvQ/00Ji5Ia
-         AZgz/CihuUMNfMCx0cHte8K6MqwkvJsiWIQ4KY7WaV2bMcqegWI9m/0vtvcfH1VRlPCy
-         YhiQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXSFAd1vd7icGgO9NKphO/SM24FpgwtL879GPi+q3/FQhe7p3h6/+rBMFPvnspZrrKsFMnTq4JEnmI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwaU6T3r7ysM9XoLYKdANEA0qqWDO3tHdMN2fbLt4J/Hk72h9AX
-	OcUcFk09O3YydWpiqVe8eL5pvqQl+Dl0hDAn8xoyy1l/s3f8fIh69HBHgFyKOcw=
-X-Google-Smtp-Source: AGHT+IFTrCeJsG4pTRHfhvy6GFhZe1enatnsIdLOV+d/7VyKJJXALSMPOSSGn3f7bQZGCXpBbPrFsQ==
-X-Received: by 2002:a05:600c:3b8f:b0:431:5f1b:a7c6 with SMTP id 5b1f17b1804b1-432b751f5edmr101593285e9.30.1731327139457;
-        Mon, 11 Nov 2024 04:12:19 -0800 (PST)
-Received: from localhost (p200300f65f28bb0063ffae39110fa2df.dip0.t-ipconnect.de. [2003:f6:5f28:bb00:63ff:ae39:110f:a2df])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-381ed97cfefsm12671139f8f.26.2024.11.11.04.12.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Nov 2024 04:12:18 -0800 (PST)
-Date: Mon, 11 Nov 2024 13:12:17 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: oe-kbuild@lists.linux.dev, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, lkp@intel.com, 
-	oe-kbuild-all@lists.linux.dev, Mircea Caprioru <mircea.caprioru@analog.com>, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibe.com>
-Subject: Re: [PATCH 2/2] iio: adc: ad7124: Refuse invalid input specifiers
-Message-ID: <v5ytfwjmimsbfgdq3sb2xg6d2dkllvnv2a7wltwtzt62oqikge@574uazpvjd67>
-References: <20241108181813.272593-6-u.kleine-koenig@baylibre.com>
- <bb25249b-62b8-4d7f-9ef3-cb5e1f8674ba@stanley.mountain>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="m/CVh7iW"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4AB8p5gN016099;
+	Mon, 11 Nov 2024 07:12:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=DomZdjxDJxOIJzigVdyuwK3ZEyR
+	ZY4e/zacRd1lbIHs=; b=m/CVh7iW0BX8V1xgTVBT7qS99wfvprxbM3IKvQn+XEE
+	XxH6XFLOyiidbAdohQATl4z4vczxBnPaXP08bsQLaDHSpLxf4UCP5VDWIuGsEV67
+	f/OdJk1BMWLCQ+7wmtxYrVe+o40Tm115TYphfRWuW7bmbnbNHWf66FNdtXMFzhvS
+	Sg2zmdbygFfAG6+ysV1HVjWyok6INkesGagZR7l69tmF4Gt0qugegY9mLauT3oqt
+	L/GBhjwlRLHbGQS0156ZiAwGh5U8G+D/8QrfDdLvpovKm4iJpQfd3aCiYI/VMQ01
+	fbKNdN0w4qnW/8B/5BB16ZWua4TbH1Wb9arw3OUxEpQ==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 42uesdgr95-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 11 Nov 2024 07:12:27 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 4ABCCQi1025098
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 11 Nov 2024 07:12:26 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 11 Nov
+ 2024 07:12:26 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 11 Nov 2024 07:12:26 -0500
+Received: from amiclaus-VirtualBox.ad.analog.com ([10.65.36.213])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 4ABCCFEJ010000;
+	Mon, 11 Nov 2024 07:12:18 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
+        <dlechner@baylibre.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v6 0/8] *** Add support for AD485x DAS Family ***
+Date: Mon, 11 Nov 2024 14:11:55 +0200
+Message-ID: <20241111121203.3699-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.47.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="fouxnykmbwuimmjy"
-Content-Disposition: inline
-In-Reply-To: <bb25249b-62b8-4d7f-9ef3-cb5e1f8674ba@stanley.mountain>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: MZ4n5VYq51pabZOT0SiY6rk7EmEnJzj2
+X-Proofpoint-ORIG-GUID: MZ4n5VYq51pabZOT0SiY6rk7EmEnJzj2
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
+ malwarescore=0 priorityscore=1501 phishscore=0 adultscore=0 clxscore=1015
+ mlxlogscore=999 lowpriorityscore=0 suspectscore=0 spamscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2409260000
+ definitions=main-2411110101
 
+Add support for AD485X fully buffered, 8-channel simultaneous sampling,
+16/20-bit, 1 MSPS data acquisition system (DAS) with differential, wide
+common-mode range inputs.
 
---fouxnykmbwuimmjy
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 2/2] iio: adc: ad7124: Refuse invalid input specifiers
-MIME-Version: 1.0
+Some particularities:
+1. softspan - the devices support multiple softspans which are represented in iio
+              through offset/scale. The current handling implies changing both
+              the scale and the offset separately via IIO, therefore in order to
+              properly set the softspan, each time the offset changes the softspan
+              is set to the default value. And only after changing also the scale
+              the desired softspan is set. This is the approach we are suggesting
+              since we need the softspan configurable from userspace and not from
+              devicetree.
 
-[Dropped Mircea Caprioru from Cc: as the analog.com MTA doesn't know
-their address]
+2. packet format - Data provided on the CMOS and LVDS conversion data output buses
+                   are packaged into eight channel packets. This is currently handled
+                   as extended info.
 
-Hello Dan,
+Antoniu Miclaus (8):
+  iio: backend: add API for interface get
+  iio: backend: add support for data size set
+  iio: backend: add API for oversampling
+  iio: adc: adi-axi-adc: add interface type
+  iio: adc: adi-axi-adc: set data format
+  iio: adc: adi-axi-adc: add oversampling
+  dt-bindings: iio: adc: add ad4851
+  iio: adc: ad4851: add ad485x driver
 
-On Mon, Nov 11, 2024 at 12:15:45PM +0300, Dan Carpenter wrote:
-> 4112b30ba58b5c Uwe Kleine-K=F6nig  2024-11-08  871  		if (!ad7124_valid_i=
-nput_select(ain[0], st->chip_info) ||
-> 4112b30ba58b5c Uwe Kleine-K=F6nig  2024-11-08  872  		    !ad7124_valid_i=
-nput_select(ain[1], st->chip_info))
-> 4112b30ba58b5c Uwe Kleine-K=F6nig  2024-11-08  873  			return dev_err_pro=
-be(dev, ret,
->=20
-> s/ret/-EINVAL/?
->=20
-> 4112b30ba58b5c Uwe Kleine-K=F6nig  2024-11-08 @874  					     "diff-chann=
-els property of %pfwP contains invalid data\n", child);
+ .../bindings/iio/adc/adi,ad4851.yaml          |  103 ++
+ drivers/iio/adc/Kconfig                       |   13 +
+ drivers/iio/adc/Makefile                      |    1 +
+ drivers/iio/adc/ad4851.c                      | 1190 +++++++++++++++++
+ drivers/iio/adc/adi-axi-adc.c                 |   63 +
+ drivers/iio/industrialio-backend.c            |   59 +
+ include/linux/iio/backend.h                   |   17 +
+ 7 files changed, 1446 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad4851.yaml
+ create mode 100644 drivers/iio/adc/ad4851.c
 
-Indeed. I adapted that in my tree, so will be fixed in v2.
+-- 
+2.47.0
 
-Thanks
-Uwe
-
---fouxnykmbwuimmjy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmcx9J4ACgkQj4D7WH0S
-/k4nJQgAlTnkDayqlntyEewP3+b8xai6S8tWGg4oVXcZG2VRF9hJmUZYIislQRT8
-RqFv8/YpMKLVUWklIvFWyCHXhouEd4dwSuJnflIwgTRii4S9yNhhv2l1INDzQqWz
-zNKRfRAeJS/FC8Ju9yICppslJNCUnZiAuD1BiknH4u2aiM0M3TDHwDjS3NY08VFI
-fX5JmGG/UGw7PFOLc+aiTzkOrhpK0Zevx9k4WDPBP7iUZi9Py/bBYYNW+qPLkTn/
-h22Z8nzfFNPrvMlorIh9ETD+ON2GlO/qBmH94/DyLVzcLSnsxNMbxt1RUYXNAavR
-CtGw1AmZTRW6Ldpvo/vDMsAwnU7Sfg==
-=fCAt
------END PGP SIGNATURE-----
-
---fouxnykmbwuimmjy--
