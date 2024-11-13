@@ -1,110 +1,97 @@
-Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A841200BB3
-	for <linux-iio@vger.kernel.org>; Wed, 13 Nov 2024 18:46:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD50F204F66;
+	Wed, 13 Nov 2024 20:06:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731523564; cv=none; b=tFiMGC+nRA0D2GDGZmqpKY1Hy8c/O8Q7Tco9T30Rn7TCiK63TUP/K4z34yoXIFOWPMhs08lUWmHJcOyeKyernkiUTl2VJVTsYM0MYy4HgcowAJNuVWgfCGMf4Ec0mpd9f+nj9x8eeAvvp6qV/r+x+vbMThA60yaY0OROT0V+duc=
+	t=1731528396; cv=none; b=aDLmSXMgqSkpK8L+nEEZuSRyTNO5MnKrksfk1bTTrAsBD5QKU0Qp2jmLDnFVNG5BAH5sQaoSSFUxdHYKJovwFDqBA/4An2PR2lCjAEV6WBRpGYA7FKeE1qDTFe7JMO+NOhWPWAHQ2l8YU+4WmZ0VZf5k4kwU3lvlkPU2Xgkjtxk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731523564; c=relaxed/simple;
-	bh=qJpxyAs4H+dTLoeEZp4VwJIFz2j9VXgI9Zeo2ZAExbU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WZSK8uwExCIoHiu7+gJKBm1EdE++uRx0j25yt9VhRC9/c2UBfs5sH5cheivfKP2/uzF2fgXJMbIpSH5zt0AcMv018pqLNzySDDzOi9u1qvlNFByA+z+i/wNsj9OSAqOrGznGRj5yeH+pKlW+Fo6T9MwC/xSF03tgLjAqdfYs23o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=agLeTEUf; arc=none smtp.client-ip=209.85.160.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1731528396; c=relaxed/simple;
+	bh=HQa731/ZLoyCeGQhzG0hA4Lc2hG47E76VLAEtxnlya4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=DGxY0Pq/QgsAPwzRvQ+0cS8rzNMNdlIck/X512mBQ9kfa6ejbaQCYI+iNyjENaXG/EbON+pzy/dsGpSCsDDj+eVDDMW0fNTQgz1HwRRa2OHnO3ObdNnscV25syH30JX9htXUVsQyveHvS7GdfGth+dD2lK4+bCLeyBII0GZeLw0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LKEANdlh; arc=none smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="agLeTEUf"
-Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-28854674160so3141712fac.2
-        for <linux-iio@vger.kernel.org>; Wed, 13 Nov 2024 10:46:01 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LKEANdlh"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a9a6acac4c3so1237338866b.0;
+        Wed, 13 Nov 2024 12:06:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1731523560; x=1732128360; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=mJ7Y/M/QGwKyB5CvuHkhSVy962R5KxlMZ/Ip0/+E6l8=;
-        b=agLeTEUfStG/SX5jUqWSsYj/dB3fR/2DLhiNGYufvz2ex0Zd9/vxeCEMmw7dd3RmDW
-         LUm5VWMTPeXf3ge4H1Cqru8HdrMmQQYDskEnYp2rBBedrFaV7pCb847eIrm4K3DxSeMa
-         N64H5jiG0cbHDY6gNICEdWroO7+/Bk07v0p50SbxUWFMxEn3OmcHOdfDW/NeGJMJImul
-         j7R07k0AOPf0fy4bccU6qS/BfvXapK/jEfvxliKN00uDF2laPh41HxbEaaKzdAjfeBaL
-         8lyufTGBRYrKJ/05rPTpUcy0LDekRpCpND51sPh8Bgo03yaSLUv7APpryml0IgqLmfk5
-         v2wQ==
+        d=gmail.com; s=20230601; t=1731528393; x=1732133193; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RfiqwKr6r1SFdFylK6olsTY9Jg8oGIrvq97lnYAbMIA=;
+        b=LKEANdlhDr/O/j8ZLq1yakZ4WzNDu3XOq9n6jZM6yeln3M+VGln3XrZcfjAUldhX8E
+         RAzi+UEM0W4ZTkZcAEjr/JLA3z1v2+Oin+sG7YSUhB1Jp1s+tES004lGa0KAyOwUsRg8
+         2znVCErTNSUnb6tyQSbEtJHzqQMDVv6Cd/dF5esZJxWFIPslIbJkEIvo8UhPV2DJw3GX
+         wmphiZq6MJ54HIXsV7Zbkvx51cXNXS7Mf4kMJILiZiSHmez7EYBgf8eUJDcde0PoU5Mv
+         LxCgnl7oozoLFHpeZwqBiTIToUBKYprW2BzpjtfaLLgd0Oc3jR8zSVBBObhunfcV4MJh
+         5ouA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731523560; x=1732128360;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mJ7Y/M/QGwKyB5CvuHkhSVy962R5KxlMZ/Ip0/+E6l8=;
-        b=bc6lhV0EBvIZsY4xepL6wgVIa6Yx1Ej6fMf1r0NhXDG6rJuo8v5gD6vbDd3ASbNeXp
-         ppFg9JH8TmIWWUJRr4G5Di09iUuOlNVB61vOdjwY0rifbpgaKlOXvEGb3Z8L0G66AmVl
-         UOWXiYFk2j/CmWx5DdjpHA5DK4BhSQ6rSW5N2/uhlzW3aKitHIhN7NRqFvtiKUwPdOnf
-         MQTGdxY7bZFHdfOWMeB7vVULeRKlR2iOMo0L7p9mfcHK1tmbZMRK4AsTQPGRrG2Q30XK
-         P4WIVGUfu37dSojS2tM1c4C6zvM4iCR1dMho11EdP1A4PYi9HoLQFPnrswGtufBe3hMn
-         M5iQ==
-X-Gm-Message-State: AOJu0YyTWOoXEvtT979hq8IwHRSkV+hyd60GaAHuAzTPa66AjOxDeNfg
-	3K10JCUeasvLKnybj4cX6wOAt5JASxABxNl0Lgqd7WzRY3VsfgitNBMJTKBtYOI=
-X-Google-Smtp-Source: AGHT+IGDnM8FDvc9dksVkdxOZk5+ligG6UwLyNCFDFxzr3nHZV7huFdENqO8b10hbKcokqz9jofFmQ==
-X-Received: by 2002:a05:6870:70a2:b0:288:a953:a5c7 with SMTP id 586e51a60fabf-295e8d6a2bamr4648440fac.14.1731523560424;
-        Wed, 13 Nov 2024 10:46:00 -0800 (PST)
-Received: from [192.168.0.142] (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-71a600a23cfsm827198a34.66.2024.11.13.10.45.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Nov 2024 10:46:00 -0800 (PST)
-Message-ID: <ad1b7946-02c4-4447-9b4b-1d57200f482f@baylibre.com>
-Date: Wed, 13 Nov 2024 12:45:59 -0600
+        d=1e100.net; s=20230601; t=1731528393; x=1732133193;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RfiqwKr6r1SFdFylK6olsTY9Jg8oGIrvq97lnYAbMIA=;
+        b=Me6mTPLkb8qi/SDSopnGcCm74tDQRihX33snf9U2yRQ7ThNj/xmDpnZti6mgRZ12AG
+         dRz5Gk51u+/RmHJCc0sBpY0E3g2HCWOPbFoevf5AjDJ67A8oTTkmgdHkND2iTmdlflzB
+         yY+M9aHiJ2nCV3AIdoh9yOhmxYWEFLopFxtg8N1oRAvN4yp9cLyN7H7iZCNdWaoJc/RP
+         LHV4gMemxKZtDWMFFtJYfiX3wgWyXa086HNtkZGK0ZeXs8qHb78QeK5eqmJz8fHz1u+2
+         pgehRkkJsP5m/pchzOy8j+gpcngVszaoNt6LXy8BN8VLIh70aow0y/ET3CPZcaLdApoI
+         ifqw==
+X-Forwarded-Encrypted: i=1; AJvYcCUVPYOElZ157vych6OJXRAplPXDtP5Ak0Gm0GG9zv+MZfi19njtzGbUf3Mg4HF2hNVzL5NOVjqluNIXRmZA@vger.kernel.org, AJvYcCXmRjQl/GBNQqIkvQLo/jYlP63+DPOtdBRh7+zm8Fh+QlFPgjm3S5K5urzzq9xWR8EXuRIFnv8qBxc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxDlt38zrA2BKWxovw7QycVfZSIAq2qz1+afqolt3kS1RASiTs/
+	Lk+0Rl6RetKM80se2pB0MHiDmCxi7ElA21zGi0lKmsGpCLmB05jkRQCyr05MTHIRNU6XlZZAmbX
+	S8ucdXAgGV1JRRhynK6VvlRk+FiY=
+X-Google-Smtp-Source: AGHT+IFxbCoWBxSdChQkoMmve7hcdaZW27H3+o4Ca5p3TintmJb2KqP5B1CnAyiClgG78ZhkxK1Irpv4qTh5ZENq+pE=
+X-Received: by 2002:a17:906:d551:b0:a99:61f7:8413 with SMTP id
+ a640c23a62f3a-a9eefee66femr2190969166b.23.1731528392844; Wed, 13 Nov 2024
+ 12:06:32 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] dt-bindings: iio: adc: adi,ad4695: change include
- path
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-doc@vger.kernel.org,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, linux-kernel@vger.kernel.org,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Jonathan Cameron
- <jic23@kernel.org>, devicetree@vger.kernel.org,
- Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Michael Hennerich <michael.hennerich@analog.com>
-References: <20241113-iio-adc-ad4695-move-dt-bindings-header-v1-0-aba1f0f9b628@baylibre.com>
- <20241113-iio-adc-ad4695-move-dt-bindings-header-v1-2-aba1f0f9b628@baylibre.com>
- <173152191678.1024361.7493718883312810903.robh@kernel.org>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <173152191678.1024361.7493718883312810903.robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20241113114654.8203-1-victor.duicu@microchip.com>
+In-Reply-To: <20241113114654.8203-1-victor.duicu@microchip.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Wed, 13 Nov 2024 22:05:55 +0200
+Message-ID: <CAHp75Vcj=vX2GNQRGPfB2rGod2VrWby942tpdws4GkObba+1GQ@mail.gmail.com>
+Subject: Re: [PATCH v10] iio: adc: pac1921: Add ACPI support to Microchip pac1921
+To: victor.duicu@microchip.com
+Cc: matteomartelli3@gmail.com, jic23@kernel.org, lars@metafoo.de, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	marius.cristea@microchip.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 11/13/24 12:18 PM, Rob Herring (Arm) wrote:
-> 
-> On Wed, 13 Nov 2024 10:55:20 -0600, David Lechner wrote:
->> Change the include path for the adi,ad4695.h header since it has been
->> moved to the include/dt-bindings/iio/adc/ directory.
->>
->> Signed-off-by: David Lechner <dlechner@baylibre.com>
->> ---
->>  Documentation/devicetree/bindings/iio/adc/adi,ad4695.yaml | 7 ++++---
->>  1 file changed, 4 insertions(+), 3 deletions(-)
->>
-> 
-> My bot found errors running 'make dt_binding_check' on your patch:
-> 
-> yamllint warnings/errors:
-> 
-> dtschema/dtc warnings/errors:
-> Documentation/devicetree/bindings/iio/adc/adi,ad4695.example.dts:19:18: fatal error: dt-bindings/iio/adc/adi,ad4695.h: No such file or directory
->    19 |         #include <dt-bindings/iio/adc/adi,ad4695.h>
->       |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+On Wed, Nov 13, 2024 at 1:48=E2=80=AFPM <victor.duicu@microchip.com> wrote:
+>
+> From: Victor Duicu <victor.duicu@microchip.com>
+>
+> This patch implements ACPI support to Microchip pac1921.
+> The driver can read the shunt resistor value and label from the ACPI tabl=
+e.
+>
+> Signed-off-by: Victor Duicu <victor.duicu@microchip.com>
 
-Is this testing this patch without the other patch from this series?
+...
 
-I did run make `dt_binding_check DT_SCHEMA_FILES=adi,ad4695.yaml ...`
-locally before sending the patch, so wasn't expecting an error here.
+> Differences related to previous versions:
+> v10:
+> - fix coding style mistakes.
+> - add UL to PAC1921_MAX_SHUNT_VALUE_uOHMS.
+> - edit comment in pac1921_write_shunt_resistor.
+> - in pac1921_probe use is_acpi_device_node instead of
+>   ACPI_HANDLE.
 
-I know that normally we should be including the header change in the same
-patch as the .yaml file, but in this case, I had to make an exception
-because the same header is also included in a .c file. It seemed better
-to not break compiling .c files rather than follow the rule strictly.
+Any explanation why my tag was not included? Haven't you addressed all
+the things I pointed out? If not, care to elaborate why?
+
+--=20
+With Best Regards,
+Andy Shevchenko
