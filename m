@@ -1,200 +1,261 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 791721DA61E;
-	Thu, 14 Nov 2024 11:30:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 383531F80CC;
+	Thu, 14 Nov 2024 12:21:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731583844; cv=none; b=FBz0tTL+muG2amRrn88YA8fy2ni+sjt5azw2SDedmlQzUUuB2WHdtyLXrXn+eK0uYHJvbxNmanD3MnlTzDhaW2cz7D58U5Pwby6lVKNRj45rTxK6w7u/aozyuWbaFnANY7OwnQhq9gqIHq5Bc+8d/MMoEiPZG6wSqb1/tESm2uo=
+	t=1731586902; cv=none; b=jn+lPCeTBy6qtuMq26LsZaD2gVg+XEyTstwncGZ/QPkSvJPYIZpfvP14Gekybe9qh6D2k8jIX9md7blyDrzuSD3ihIcJKDJsmqiRASEd3TLm/gfxjh8Jxw7zCvISsNaiC4pUBhVeseVk8+JpGX0IMNIflF+qa7nZd4FEsrtkNdQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731583844; c=relaxed/simple;
-	bh=hRD4BKZVaxgBzUOHxWoudCPhmtWb5ew723zgsc94Izc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OaOEfekyKs0/ji4ssC67yd0YeFP+3iaK2MUOXRMo5WRH0gojQJS5j+YnHdtxTWMXR3LqynnkCmMWMFAoqYsvbvnTSr0FxjP2h9P8e+O+PnAv9+RfbREXzyuEPQU81tyCVtog5CP2aMOJlcvadelZ0kxC8m/pByscWZsYbad34JU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PEjM8KwB; arc=none smtp.client-ip=209.85.167.52
+	s=arc-20240116; t=1731586902; c=relaxed/simple;
+	bh=qhLjRTwMSiK1gN/1gAQwpbV/O+5iNG+GVRk0YMFjoLc=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=USIisy56SCWaiQMIrSjUuBuVqVqPyJHhp71nsrmoonkUXZf3q1axlCrngSxO6mBDULRaHN0tA3GeMxDR9JPKalj2/Wjvh1DCHFz2ar3AvCSq9vrVttYFxdzQZsfESXyUUa+ccQB3OwiTmJfsz8Ae3urJFXMx2Cfv6unYa591lEY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J0X3j0xX; arc=none smtp.client-ip=209.85.221.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PEjM8KwB"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-539e4b7409fso439209e87.0;
-        Thu, 14 Nov 2024 03:30:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J0X3j0xX"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-37d49a7207cso348021f8f.0;
+        Thu, 14 Nov 2024 04:21:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1731583840; x=1732188640; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=CEX5GwYmBNON0GE7V12uBchTc7MznAcgp4EpJUax770=;
-        b=PEjM8KwBx/sYVs/+92Hks39DIKJfWfF7XF1bvSLq0adlFO5Oli2BOzEuDyPt9xr+zL
-         pEjgPANfEF2HM/4HXLZMz6ZoKVz0IZo9pGmyzjKB9jrnC5Nh73x0qpTRHpJlRXmPaTAI
-         ESqHS3YBZBUUuMl9+x7BUcChnEWJFN8W10I2cBo4BOXTV+fkL2umziDdVTxg+PgU/pGE
-         cpWKdxkfagS6x6OkJFNI3cuSYz3poJwUVpNrAR/H+Si1GOisY1LzkhitX9sc8VZyClRh
-         nHUFcew/4t7HOxQD6E3brF7iIYhJm0AH49oAAEZOqqkpUmX8W+1OqgsMdfFbLg4oLHAN
-         nEbA==
+        d=gmail.com; s=20230601; t=1731586898; x=1732191698; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=GLjOREoOQmBlhC3DKhm0mq2e1vDsIIepitbl2vA1L6A=;
+        b=J0X3j0xXruw3EuwJKg+nvKpC42Pr6EA4XwDRFHAbmg1UI4d1xTHZdhfPuKW/FdWFgz
+         pQKqT3dbm8aunHqEOwco8O3F32h8o4t27rPUOkUbPCv/w2FilxXDbMC1pbjPEUjR1QVi
+         TxciM6k4BrKkTZQcqSjpW/lztrUVrk/AHYaepcYAFSi2oMQuSAg9A6FY63PM1nrcC+SP
+         /YCaQ+WoGNNarojPvSCKH2NfSjERyAO/1OZItzfKTDdwuYUVlBsE1REtdVx27tDXAMY6
+         dEjowK6Uw7IDuh2Oh+AEOE5O/EyNW0/wKt1pey7I62mLvFkLVdLKMSgn6jghBL42DlLd
+         ImlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731583840; x=1732188640;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CEX5GwYmBNON0GE7V12uBchTc7MznAcgp4EpJUax770=;
-        b=SfoV9UY5Iko/hoIIMtb2n9fFpjrduMG++/1P91WsC+HQQIv9hL9NM91HAB56j3bzzs
-         Xs9hvwKmbZV6OtfmarRJa9pTsjtk8c7pPQnUHI85PWG3cJXBIfC9tDkt+j7WR1HRddze
-         +Dp25vf58h5xzyiZqfKlUC0Z5sc8wKXdRxMOwCpQcBd6lTm4aORNTYz9J2gx6X3s806/
-         SASmx/s/dhgT+lu1jWn74eaTGyzlV9Cu7Uo4pJQnNmHMATiz5bov+KsiWHaUN+xVDTTj
-         9CFq5UNCaiwvTZ1UL5P6KZPo2zTYlnYWrhyulssu7kP/pJifMiTxs7H5b2hNwuAQIorz
-         7Ifw==
-X-Forwarded-Encrypted: i=1; AJvYcCUtimBUuxb0z7H57wtIhVuC5oD50Xv/yKKtqgsUaElq/DYXS/dBUfgW9Z7Ogklxi6haMKud/CeYrFBfva3v@vger.kernel.org, AJvYcCVoeriztOOns9K86nSNjmzgviOYh7ddK3fA2ah4STxWYa5/pc7f83bzn3irhk6RAwsbfO1a5Tz27Ds=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx8/RJHkI33/yEtrAQFl51WHEWihXmsdsVeiV9cOIM76dn6PKCj
-	NdTNs5fZ/cIUmTM0unDfVSuQCJR6eovaF6wFVxoAWTYjwVYMG4LN
-X-Google-Smtp-Source: AGHT+IHkWIfqGoeDDAubCFqdpmqXKIZgbj0xXAVVaLn902NxJWgsKZRI0Mbl+aIBsYSSxu3826X0+A==
-X-Received: by 2002:a05:6512:39d0:b0:53b:1f90:5779 with SMTP id 2adb3069b0e04-53da49bdc32mr743478e87.28.1731583839279;
-        Thu, 14 Nov 2024 03:30:39 -0800 (PST)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53da64f8c76sm154913e87.12.2024.11.14.03.30.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Nov 2024 03:30:37 -0800 (PST)
-Message-ID: <1410938e-5135-434c-911e-7ba925bafd49@gmail.com>
-Date: Thu, 14 Nov 2024 13:30:35 +0200
+        d=1e100.net; s=20230601; t=1731586898; x=1732191698;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GLjOREoOQmBlhC3DKhm0mq2e1vDsIIepitbl2vA1L6A=;
+        b=g5TXj/VROBYDL3wWCB8Jty326NSFIqis7kJG5wj33RGp7r/G1l756NktNDS1tLIjHL
+         9A/xK/Ygd9FoItyG1O2gvZ+uB2xvPasDLf1/Ye86COBQ+KyZvLRHl5tCNb6FuffUZUsc
+         b4ir970Smyr0FtCUsUzZXQUXuYuO9lpO4BDrgfgFvKB/dzFcK0po/QIjKvNJrLf1KpnE
+         WAwpRQg6N0erf1ciicXFqdJWukt65f/TRNEoTHzg6covAN1n2outChdWb8cq9EGgp52w
+         AmEVTKeXDcUZZN1PSnOaNG6RQmCGrA6c18VKtTEn47jJZkUBvG3tVcRz9Z3Y+ZuhQEJE
+         3bTA==
+X-Forwarded-Encrypted: i=1; AJvYcCVFtdcvigAD/c0GxJzbjh3PIOdraUTRPgY9IQ1Rwi5Hzl/oot55cxa3Sk4nNisD/f6OyOKkySbfwAwCWTBP@vger.kernel.org, AJvYcCVmBxFbDz86s6psxPXVsrVqWBPxGHbg2z2e8ct5ykuB81pqt/BqtGLIh8lmNF/238xAMmDIVgVH9Aw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxXCPJ1lLrprIshE6c9YIOrauscrT/SU6dLnyNdN+3GYb+YzIye
+	iJzftlB8xtyF4IFYEl9Ed38bpvC8hIzO64KvalbDqX9pDm9Jqwhn7aCR+1ZpBJTLaoPS
+X-Google-Smtp-Source: AGHT+IFAntRADJj0A+Cc9AR+vsdBDax2iZ60M05lB3tpTGYieGeiP3siZAXAgF6rVx24csMg3EaVSg==
+X-Received: by 2002:a05:6000:701:b0:37d:39c8:ecca with SMTP id ffacd0b85a97d-38218542e5fmr1578826f8f.55.1731586898339;
+        Thu, 14 Nov 2024 04:21:38 -0800 (PST)
+Received: from ?IPv6:2003:f6:ef02:f400:a23c:697f:16fb:11c5? (p200300f6ef02f400a23c697f16fb11c5.dip0.t-ipconnect.de. [2003:f6:ef02:f400:a23c:697f:16fb:11c5])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3821adbebe2sm1320715f8f.61.2024.11.14.04.21.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Nov 2024 04:21:37 -0800 (PST)
+Message-ID: <b0a9eecb7b83c29aa545ed7717e3a6c2275b5e27.camel@gmail.com>
+Subject: Re: [PATCH] iio: accel: kx022a: Improve reset delay
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Matti Vaittinen <mazziesaccount@gmail.com>, Matti Vaittinen
+	 <matti.vaittinen@fi.rohmeurope.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
+ <lars@metafoo.de>, 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Thu, 14 Nov 2024 13:26:01 +0100
+In-Reply-To: <1410938e-5135-434c-911e-7ba925bafd49@gmail.com>
+References: <ZzWfXbjaDkFnu_Jg@mva-rohm>
+	 <be375e24f74997743743fadf68125e176c23e2df.camel@gmail.com>
+	 <f4cf3437-87ea-4d0f-8dab-890d89f85605@gmail.com>
+	 <1f315c2f3eea86fe4db48f0168660ab4b0b020f1.camel@gmail.com>
+	 <1410938e-5135-434c-911e-7ba925bafd49@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.1 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: accel: kx022a: Improve reset delay
-To: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>,
- Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <ZzWfXbjaDkFnu_Jg@mva-rohm>
- <be375e24f74997743743fadf68125e176c23e2df.camel@gmail.com>
- <f4cf3437-87ea-4d0f-8dab-890d89f85605@gmail.com>
- <1f315c2f3eea86fe4db48f0168660ab4b0b020f1.camel@gmail.com>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <1f315c2f3eea86fe4db48f0168660ab4b0b020f1.camel@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 
-On 14/11/2024 12:46, Nuno Sá wrote:
-> On Thu, 2024-11-14 at 11:54 +0200, Matti Vaittinen wrote:
->> On 14/11/2024 11:43, Nuno Sá wrote:
->>> On Thu, 2024-11-14 at 08:57 +0200, Matti Vaittinen wrote:
->>>> All the sensors supported by kx022a driver seemed to require some delay
->>>> after software reset to be operational again. More or less a random
->>>> msleep(1) was added to cause the driver to go to sleep so the sensor has
->>>> time to become operational again.
->>>>
->>>> Now we have official docuumentation available:
->>>> https://fscdn.rohm.com/kionix/en/document/AN010_KX022ACR-Z_Power-on_Procedure_E.pdf
->>>> https://fscdn.rohm.com/kionix/en/document/TN027-Power-On-Procedure.pdf
->>>> https://fscdn.rohm.com/kionix/en/document/AN011_KX134ACR-LBZ_Power-on_Procedure_E.pdf
->>>>
->>>> stating the required time is 2 ms.
->>>>
->>>> Due to the nature of the current msleep implementation, the msleep(1) is
->>>> likely to be sleeping more than 2ms already - but the value "1" is
->>>> misleading in case someone needs to optimize the start time and change
->>>> the msleep to a more accurate delay. Hence it is better for
->>>> "documentation" purposes to use value which actually reflects the
->>>> specified 2ms wait time.
->>>>
->>>> Change the value of delay after software reset to match the
->>>> specifications and add links to the power-on procedure specifications.
->>>>
->>>> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
->>>> ---
->>>> Sorry for not including this to the KX134ACR-LBZ series I sent
->>>> yesterday. It was only half an hour after I had sent the KX134ACR-LBZ
->>>> support when I was notified about the existence of the KX022ACR-Z
->>>> start-up procedure specification... Hence this lone patch to code which
->>>> I just sent a miscallaneous series for before.
->>>>
->>>>    drivers/iio/accel/kionix-kx022a.c | 11 ++++++++---
->>>>    1 file changed, 8 insertions(+), 3 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-
->>>> kx022a.c
->>>> index 32387819995d..ccabe2e3b130 100644
->>>> --- a/drivers/iio/accel/kionix-kx022a.c
->>>> +++ b/drivers/iio/accel/kionix-kx022a.c
->>>> @@ -1121,10 +1121,15 @@ static int kx022a_chip_init(struct kx022a_data
->>>> *data)
->>>>    		return ret;
->>>>    
->>>>    	/*
->>>> -	 * I've seen I2C read failures if we poll too fast after the
->>>> sensor
->>>> -	 * reset. Slight delay gives I2C block the time to recover.
->>>> +	 * According to the power-on procedure documents, there is (at
->>>> least)
->>>> +	 * 2ms delay required after the software reset. This should be
->>>> same
->>>> for
->>>> +	 * all, KX022ACR-Z, KX132-1211, KX132ACR-LBZ and KX134ACR-LBZ.
->>>> +	 *
->>>> +	 *
->>>> https://fscdn.rohm.com/kionix/en/document/AN010_KX022ACR-Z_Power-on_Procedure_E.pdf
->>>> +	 *
->>>> https://fscdn.rohm.com/kionix/en/document/TN027-Power-On-Procedure.pdf
->>>> +	 *
->>>> https://fscdn.rohm.com/kionix/en/document/AN011_KX134ACR-LBZ_Power-on_Procedure_E.pdf
->>>>    	 */
->>>> -	msleep(1);
->>>> +	msleep(2);
->>>
->>> msleep() is not advisable for something lower than 20ms. Maybe take the
->>> opportunity and change it to fsleep()?
->>
->> Thank you for the suggestion Nuno. I did originally consider using the
->> usleep_range() since the checkpatch knows to warn about msleep with
->> small times.
->>
->> However, there should be no rush to power-on the sensor at startup. It
->> usually does not matter if the sleep is 2 or 20 milli seconds, as long
->> as it is long enough. I wonder if interrupting the system with hrtimers
->> for _all_ smallish delays (when the longer delay would not really hurt)
-> 
-> That's why you have ranges of about 20% (I think) in usleep() so you minimize
-> hrtimers interrupts.
-> 
-> Other thing is boot time... Sleeping 20ms instead of 2ms is a huge difference.
-> Imagine if everyone thought like this for small sleeps :)?
+On Thu, 2024-11-14 at 13:30 +0200, Matti Vaittinen wrote:
+> On 14/11/2024 12:46, Nuno S=C3=A1 wrote:
+> > On Thu, 2024-11-14 at 11:54 +0200, Matti Vaittinen wrote:
+> > > On 14/11/2024 11:43, Nuno S=C3=A1 wrote:
+> > > > On Thu, 2024-11-14 at 08:57 +0200, Matti Vaittinen wrote:
+> > > > > All the sensors supported by kx022a driver seemed to require some
+> > > > > delay
+> > > > > after software reset to be operational again. More or less a rand=
+om
+> > > > > msleep(1) was added to cause the driver to go to sleep so the sen=
+sor
+> > > > > has
+> > > > > time to become operational again.
+> > > > >=20
+> > > > > Now we have official docuumentation available:
+> > > > > https://fscdn.rohm.com/kionix/en/document/AN010_KX022ACR-Z_Power-=
+on_Procedure_E.pdf
+> > > > > https://fscdn.rohm.com/kionix/en/document/TN027-Power-On-Procedur=
+e.pdf
+> > > > > https://fscdn.rohm.com/kionix/en/document/AN011_KX134ACR-LBZ_Powe=
+r-on_Procedure_E.pdf
+> > > > >=20
+> > > > > stating the required time is 2 ms.
+> > > > >=20
+> > > > > Due to the nature of the current msleep implementation, the mslee=
+p(1)
+> > > > > is
+> > > > > likely to be sleeping more than 2ms already - but the value "1" i=
+s
+> > > > > misleading in case someone needs to optimize the start time and c=
+hange
+> > > > > the msleep to a more accurate delay. Hence it is better for
+> > > > > "documentation" purposes to use value which actually reflects the
+> > > > > specified 2ms wait time.
+> > > > >=20
+> > > > > Change the value of delay after software reset to match the
+> > > > > specifications and add links to the power-on procedure specificat=
+ions.
+> > > > >=20
+> > > > > Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> > > > > ---
+> > > > > Sorry for not including this to the KX134ACR-LBZ series I sent
+> > > > > yesterday. It was only half an hour after I had sent the KX134ACR=
+-LBZ
+> > > > > support when I was notified about the existence of the KX022ACR-Z
+> > > > > start-up procedure specification... Hence this lone patch to code
+> > > > > which
+> > > > > I just sent a miscallaneous series for before.
+> > > > >=20
+> > > > > =C2=A0=C2=A0=C2=A0drivers/iio/accel/kionix-kx022a.c | 11 ++++++++=
+---
+> > > > > =C2=A0=C2=A0=C2=A01 file changed, 8 insertions(+), 3 deletions(-)
+> > > > >=20
+> > > > > diff --git a/drivers/iio/accel/kionix-kx022a.c
+> > > > > b/drivers/iio/accel/kionix-
+> > > > > kx022a.c
+> > > > > index 32387819995d..ccabe2e3b130 100644
+> > > > > --- a/drivers/iio/accel/kionix-kx022a.c
+> > > > > +++ b/drivers/iio/accel/kionix-kx022a.c
+> > > > > @@ -1121,10 +1121,15 @@ static int kx022a_chip_init(struct kx022a=
+_data
+> > > > > *data)
+> > > > > =C2=A0=C2=A0=C2=A0		return ret;
+> > > > > =C2=A0=C2=A0=20
+> > > > > =C2=A0=C2=A0=C2=A0	/*
+> > > > > -	 * I've seen I2C read failures if we poll too fast after the
+> > > > > sensor
+> > > > > -	 * reset. Slight delay gives I2C block the time to recover.
+> > > > > +	 * According to the power-on procedure documents, there is
+> > > > > (at
+> > > > > least)
+> > > > > +	 * 2ms delay required after the software reset. This should
+> > > > > be
+> > > > > same
+> > > > > for
+> > > > > +	 * all, KX022ACR-Z, KX132-1211, KX132ACR-LBZ and KX134ACR-
+> > > > > LBZ.
+> > > > > +	 *
+> > > > > +	 *
+> > > > > https://fscdn.rohm.com/kionix/en/document/AN010_KX022ACR-Z_Power-=
+on_Procedure_E.pdf
+> > > > > +	 *
+> > > > > https://fscdn.rohm.com/kionix/en/document/TN027-Power-On-Procedur=
+e.pdf
+> > > > > +	 *
+> > > > > https://fscdn.rohm.com/kionix/en/document/AN011_KX134ACR-LBZ_Powe=
+r-on_Procedure_E.pdf
+> > > > > =C2=A0=C2=A0=C2=A0	 */
+> > > > > -	msleep(1);
+> > > > > +	msleep(2);
+> > > >=20
+> > > > msleep() is not advisable for something lower than 20ms. Maybe take=
+ the
+> > > > opportunity and change it to fsleep()?
+> > >=20
+> > > Thank you for the suggestion Nuno. I did originally consider using th=
+e
+> > > usleep_range() since the checkpatch knows to warn about msleep with
+> > > small times.
+> > >=20
+> > > However, there should be no rush to power-on the sensor at startup. I=
+t
+> > > usually does not matter if the sleep is 2 or 20 milli seconds, as lon=
+g
+> > > as it is long enough. I wonder if interrupting the system with hrtime=
+rs
+> > > for _all_ smallish delays (when the longer delay would not really hur=
+t)
+> >=20
+> > That's why you have ranges of about 20% (I think) in usleep() so you
+> > minimize
+> > hrtimers interrupts.
+> >=20
+> > Other thing is boot time... Sleeping 20ms instead of 2ms is a huge
+> > difference.
+> > Imagine if everyone thought like this for small sleeps :)?
+>=20
+> I think this is interesting question. My thoughts were along the line=20
+> that, even if small sleeps were extended to longer (where small sleep is=
+=20
+> not a priority), the CPUs would still (especially during the boot up)=20
+> have their hands full. I don't know if we might indeed end up a=20
+> situation where CPUs were idling, waiting for next timer slot.
 
-I think this is interesting question. My thoughts were along the line 
-that, even if small sleeps were extended to longer (where small sleep is 
-not a priority), the CPUs would still (especially during the boot up) 
-have their hands full. I don't know if we might indeed end up a 
-situation where CPUs were idling, waiting for next timer slot.
+My problem is not the CPU but delaying probing devices as you probe one dev=
+ice
+at time...
 
-What comes to boot time, I doubt the CPUs run out of things to do, 
-especially when we use the probe_type = PROBE_PREFER_ASYNCHRONOUS.
+>=20
+> What comes to boot time, I doubt the CPUs run out of things to do,=20
+> especially when we use the probe_type =3D PROBE_PREFER_ASYNCHRONOUS.
 
+Yeah, with this, the above does not apply. Still, spending more time in a w=
+orker
+than needed (and 18ms is huge) seems a waste to me.
 
->> is a the best design choice. Hence I'd rather keep the msleep when we
->> don't need to guarantee delay to be short instead of defaulting to
->> hrtimers or even busy-loop when it is not required.
->>
->> Do you think I am mistaken?
->>
-> 
-> To me this is more about correctness and do what the docs tell us to do :).
-> Sure, here you know what you're doing and you don't care if you end up sleeping
-> more than 2ms but that's not always the case and code like this allows for legit
-> mistakes (if someone just copy paste this for example).
+>=20
+>=20
+> > > is a the best design choice. Hence I'd rather keep the msleep when we
+> > > don't need to guarantee delay to be short instead of defaulting to
+> > > hrtimers or even busy-loop when it is not required.
+> > >=20
+> > > Do you think I am mistaken?
+> > >=20
+> >=20
+> > To me this is more about correctness and do what the docs tell us to do=
+ :).
+> > Sure, here you know what you're doing and you don't care if you end up
+> > sleeping
+> > more than 2ms but that's not always the case and code like this allows =
+for
+> > legit
+> > mistakes (if someone just copy paste this for example).
+>=20
+> Right. I just wonder if always requiring stricter wake-up instead of=20
+> allowing things to run uninterrupted is the best role model either?
 
-Right. I just wonder if always requiring stricter wake-up instead of 
-allowing things to run uninterrupted is the best role model either?
+Why not :)? If we just need to wait 2ms, why waiting more? I would be very
+surprised if hrtimers are a deal breaker in here. Otherwise, we should remo=
+ve it
+from the docs...
+=20
+>=20
+> > Not a big deal anyways...
+>=20
+> Agree :) But I think this is a spot where I could learn a bit. I will=20
+> gladly switch to the fsleep() if someone explains me relying on hrtimers=
+=20
+> should be preferred also when there is no real need to wake up quicker=
+=20
+> than msleep() allows.
+>=20
 
-> Not a big deal anyways...
+Personally, I think that sleeping more than needed is always a wast and the=
+n it
+comes back to my correctness comment. In here you know what you're doing bu=
+t I
+dunno that switching to hrtimers will do any arm to the device :) and allow=
+s
+proper patterns to be copied.
 
-Agree :) But I think this is a spot where I could learn a bit. I will 
-gladly switch to the fsleep() if someone explains me relying on hrtimers 
-should be preferred also when there is no real need to wake up quicker 
-than msleep() allows.
-
-Thanks for the discussion!
-
-Yours,
-	-- Matti
+- Nuno S=C3=A1
 
