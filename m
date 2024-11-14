@@ -1,57 +1,62 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C9F11B3930;
-	Thu, 14 Nov 2024 23:10:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66F3A1B3949;
+	Thu, 14 Nov 2024 23:10:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731625822; cv=none; b=Rnb2Vj8wwlhAAdinzz7cHOUGKoGpeZJttNh6VDx2U4BNY1Qm9Efub5MEQjGfsUom/6RpRqMImKU9lFsaF6KG6J+ACYJIP7ou1Cp+eXBFveJ1bxCjJMAVBtxN7RSiHjumDQ3mX+NWLeVi/QvAB9VoLUQxsECCej2Nhy0iG3yJqQU=
+	t=1731625823; cv=none; b=a/HPJmHGUVTisNOgCFnBWjM8xFo7GT6MyZu3RcEUaBsrUxnm3MJ8M8n2DGQLU94ogOtcMHHmCR6KgiLg3x61y3YH1SCBuVznG1q1dR9wBdLGkKFfLo0v2sf3+q100R08kQT3a7ZQCZ0uXbEJIh90RXNHLizH6Za6hQ+wczGBuTA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731625822; c=relaxed/simple;
-	bh=+PHQLrTNWeQsXdijBQ7PsCkFbdsNKrzTG1/AdiqprSk=;
+	s=arc-20240116; t=1731625823; c=relaxed/simple;
+	bh=3+8TGTdnmuRDOCovADWFx3rULEh3tRTgXMyrKonxBas=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=c/ZUyZwpReZIQ3P7i7RgMqavVhw7jH2O3K0WM2qnlEVzWmpgOjRNAuYu9NJzXtumvuCqheQrSbyF0rCrCqCXBxW30i7ZJ8L6tF1Fd9Ujk+5nKrWIzq5kH9H5VDkwLofBTQJ4TQbI2gK24d7TckJKTzyYunTMQV9jjvHydmjIzK4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X4vFl3zo; arc=none smtp.client-ip=209.85.128.54
+	 MIME-Version; b=D8hvib6DSfYOcVIkByPn+ulPYhhTJjdulkYtkHl1m0Q1zhSxaM5o/gOFRfygG02VzVIdhATy+YCCSfeL0yvvFZ4r14qJTkc3mjS7kUdkTCKcygqbXuqKTyrjdCS+UlXu7ZQefdQhIXEMg+LmtCwoAZL6DwYgMEL+u2cI38Ypsn8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mvPiZnAX; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X4vFl3zo"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-43158124a54so1398085e9.3;
-        Thu, 14 Nov 2024 15:10:19 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mvPiZnAX"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-43152fa76aaso1069975e9.1;
+        Thu, 14 Nov 2024 15:10:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1731625818; x=1732230618; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1731625820; x=1732230620; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gqLCx7ko/pTUy6BjX7kjCxNomdFNpbjuzoAFnkseXBA=;
-        b=X4vFl3zosW5E1gtNfuOtAnzS+bDXVRQvuGc+dBNuI29mZYRcAnV+eaaAu4IX2+GNmr
-         qNUKr+u16PjwIMRUOZ216JCxdmYMCj/kqL0QrBBoihF5H5QQxO4C0+nxAANy+OL93CM+
-         MMEfWKCoO+O0j5iufkoJCn6RRxUThadFUx61No9yyaOgm/I0ZckPRxjjC69G2xCESSax
-         HBC5ss53xFpoWyTF2TTazImbpcAfErktHZHQrEFeBCYm5vkrtlEWMhceDqgE4ajivRZe
-         MXhpqBskmp6tIek3T2Lh4p0PpfQXG0KTNIbqEmjoP4ziIpefjbRlWHC2qYR83RQg2llt
-         hEjA==
+        bh=vpq3lBbChwHQ1yWypFmrljsNCSzIVAAQbPGcSyQvPoU=;
+        b=mvPiZnAXQ75EdQFywFG6SOq6aU92XdJPql4ZOTiiwDzWaW5BLxJexN8HqNHZJgcYW1
+         FjGmIvmo+6sIoSln+z98iRFR4ddV2lahWSpnfVCQo1LL9c/bEZd/7T3Wihd3yvCFI8Fu
+         51ty2JYbIS6xqVEkl8M8/13jvtuYN+ls27dDYEDCH5qBidTgZ4R5pgvxuvGisgQhuLTS
+         yiTguUWMyIo68uunYOaSXcKFoLBlKYofnn80Rz8GIBs9u1c4Q8P1Zy96UCF/pf9mDhe5
+         JksPOmBAJybuimrI0vWgP2kdyaGyq8HXHQIbeguud9cYJAhYRn8ONeLjPcnbeMTvoprG
+         6+aA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731625818; x=1732230618;
+        d=1e100.net; s=20230601; t=1731625820; x=1732230620;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=gqLCx7ko/pTUy6BjX7kjCxNomdFNpbjuzoAFnkseXBA=;
-        b=n70C11PuAyExE23sjpiyx9b32adtOwN7dGiMplwi2V8bYwhlmLhIY9SuJNUiMZTKBd
-         WxKF6pEJltePKay57NMmTkyrnXibwbLEHHipLZvzjiY+iGC6jEagEkNTbzy9GLSoJlnU
-         fGWtQkTmuWH+zs3j4IMY2uq8tU1xKgB4W6hYCQ0WaV/PoVeK5mTiazHDt+Gtnrar1QIe
-         juJJk0Cd//W4pe/630o4kh5Agx6A9Yj24F/TuWL54fef/0Umn7CoPhf2pHV+nCsSw7/+
-         CC9sitSzRzAsFWwnf0IV6SeSSSCFK67EeAnFKVsYapR1Kv9qMguvOAqAUWZBhFAiB05a
-         8OuA==
-X-Forwarded-Encrypted: i=1; AJvYcCU7E8wmIBe9eNgU8aKczEuBEwH70O2dqcjiGK4FgXLdyZPkYoeHuBlr9J+kqKEF8eQbVt0jqrLNvPVWOQHX@vger.kernel.org, AJvYcCWbwdvYpwOHFK9N9H2XVW9YONVn6ANq/2o9fp+WMU+qSZI1sVOlpEn6snfUJNmlnZLXg+5rSmOrjAE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzdB1Re8oPqnq0IhtXF0PdMBY9h5O35avWekbEp0MjwoHdZkjgq
-	kmlYn2YcISfZvs6Zyad+dyZU3Zq3JoFBBH3GL+JiyBacwczatAt6
-X-Google-Smtp-Source: AGHT+IHb+tBVY+6h0mvrGFljj2gzLndNaKfnXnQk9XMn0RgE/qcWzg1m+TsyPeMhNSplGRMWrjxD7Q==
-X-Received: by 2002:a05:600c:3ca8:b0:431:5316:6752 with SMTP id 5b1f17b1804b1-432df71e06fmr1709965e9.2.1731625817658;
-        Thu, 14 Nov 2024 15:10:17 -0800 (PST)
+        bh=vpq3lBbChwHQ1yWypFmrljsNCSzIVAAQbPGcSyQvPoU=;
+        b=Wu8g5xoOB/7i58PgV3EVzdKYUhl74Yc+1qd2K9qJTAIHlgB7qGfal5b96iOOGN8CkL
+         LzkSKQ8PvyAFC18bYynTbJ4qiF5ZdwPnCNOVNKbVr45A9A+K+GJNml/+i343habBT40a
+         XQSETHS3E3xcOVuUfLxpNxPTYq0wL0w5a3RVqrI/mQNGsP2lSIehYt1qXvDWPkxK9fuR
+         A+EkYOcP+sbiJ4JArjORT25AZs8BKQB6CJnlucuATiq4c6pSnk6psdn1I88IVrk+MQxY
+         dNtVLKMVv9s1gGkbxekAKI2goaqfgRCaNcs1EA+nSY+hLYNkFRO35HKV7y5h081n1vhk
+         0L6w==
+X-Forwarded-Encrypted: i=1; AJvYcCVIa8Fkrh6dRVH4lazVfLm1hgUQOxnU/YS4daK7Ue2AARU3XDxktGVQP7FhkjbFycFVXCV8Le/iEZXzJcj7@vger.kernel.org, AJvYcCXNncABkz9TKjsGrRklsCd7qju6CFikXyW/JSefrj0+E+TalNuOSU5ux1AIpMWqmCYMQhxCsu3toGE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzh+xaQl1JA4JAObP9jDNI1kFgyV+Sfi0EO3iw2TtDH7JeutQpT
+	A4qxq2t5ldd40zYtR7wbNtYJp2sQ7ezb+mPQzyC5CD3x8RvXXYnK/EIQidIu
+X-Gm-Gg: ASbGncvz/8Xk/5CPidKuJlfazqKhoBNR3q2DeJ1BHX9a7hjkl1e141zEF7DBI3pa6Lf
+	AUlI198f22Y7kbDnicbyM90jhdfLgcmGURxgnQZHut8lXlkrZ3w3xKEkcwR/azNxU6F8Qbd0BKJ
+	1k4dyhAnVDxlwzgdat8xyK5DCdueyffwJUI6iMEVST/eO9FhfrdbogquHtIAkbifnpiBQnBkcom
+	xKoNWxJ0dVQyiZD7gn++ZoLLKQ41opbUZL9Y1Ri6j+PnLFTnxu1WHnBz7cqikkCfqXlGHkl4Oh/
+	LHfPwtWvfI4998oJeAUqd3Un+xPm
+X-Google-Smtp-Source: AGHT+IGU97K/j+iu3cMhre3pgJnmMA40jSRhp1AgIVMrXApFSHlnBSTVg1hBlprgYeqz/uT0rQfz6Q==
+X-Received: by 2002:a05:600c:354b:b0:42c:aeee:80b with SMTP id 5b1f17b1804b1-432df797e02mr1636225e9.8.1731625819388;
+        Thu, 14 Nov 2024 15:10:19 -0800 (PST)
 Received: from 5dfbf0f66296.v.cablecom.net (84-72-156-211.dclient.hispeed.ch. [84.72.156.211])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432dab789fasm36464265e9.18.2024.11.14.15.10.16
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432dab789fasm36464265e9.18.2024.11.14.15.10.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2024 15:10:17 -0800 (PST)
+        Thu, 14 Nov 2024 15:10:19 -0800 (PST)
 From: Lothar Rubusch <l.rubusch@gmail.com>
 To: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
@@ -60,9 +65,9 @@ To: lars@metafoo.de,
 	linux-kernel@vger.kernel.org
 Cc: l.rubusch@gmx.ch,
 	Lothar Rubusch <l.rubusch@gmail.com>
-Subject: [PATCH 03/22] iio: accel: adxl345: rename struct adxl34x_state
-Date: Thu, 14 Nov 2024 23:09:43 +0000
-Message-Id: <20241114231002.98595-4-l.rubusch@gmail.com>
+Subject: [PATCH 05/22] iio: accel: adxl345: measure right-justified
+Date: Thu, 14 Nov 2024 23:09:45 +0000
+Message-Id: <20241114231002.98595-6-l.rubusch@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20241114231002.98595-1-l.rubusch@gmail.com>
 References: <20241114231002.98595-1-l.rubusch@gmail.com>
@@ -74,58 +79,36 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Rename the struct "adxl345_data" to "adxl34x_state". First, the
-data structure is supposed to be extended to represent state rather than
-only hold sensor data. The data will be a separate member pointer.
-Second, the driver not only covers the adxl345 accelerometer, it also
-supports the adxl345, adxl346 and adxl375. Thus "adxl34x_" is a choice
-for a common prefix.
+Make measurements right-justified, since it is the default for the
+driver and sensor. By not setting the ADXL345_DATA_FORMAT_JUSTIFY bit,
+the data becomes right-judstified. This was the original setting, there
+is no reason to change it to left-justified, where right-justified
+simplifies working on the registers.
 
 Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
 ---
- drivers/iio/accel/adxl345_core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/accel/adxl345_core.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
-index 3fb7a7b1b7..30896555a4 100644
+index 2b62e79248..926e397678 100644
 --- a/drivers/iio/accel/adxl345_core.c
 +++ b/drivers/iio/accel/adxl345_core.c
-@@ -17,7 +17,7 @@
- 
- #include "adxl345.h"
- 
--struct adxl345_data {
-+struct adxl34x_state {
- 	const struct adxl345_chip_info *info;
- 	struct regmap *regmap;
- };
-@@ -43,7 +43,7 @@ static int adxl345_read_raw(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *chan,
- 			    int *val, int *val2, long mask)
- {
--	struct adxl345_data *st = iio_priv(indio_dev);
-+	struct adxl34x_state *st = iio_priv(indio_dev);
- 	__le16 accel;
- 	long long samp_freq_nhz;
- 	unsigned int regval;
-@@ -99,7 +99,7 @@ static int adxl345_write_raw(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan,
- 			     int val, int val2, long mask)
- {
--	struct adxl345_data *st = iio_priv(indio_dev);
-+	struct adxl34x_state *st = iio_priv(indio_dev);
- 	s64 n;
- 
- 	switch (mask) {
-@@ -181,7 +181,7 @@ static void adxl345_powerdown(void *regmap)
- int adxl345_core_probe(struct device *dev, struct regmap *regmap,
- 		       int (*setup)(struct device*, struct regmap*))
- {
--	struct adxl345_data *st;
-+	struct adxl34x_state *st;
+@@ -184,8 +184,13 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
+ 	struct adxl34x_state *st;
  	struct iio_dev *indio_dev;
  	u32 regval;
++
++	/* NB: ADXL345_DATA_FORMAT_JUSTIFY or 0:
++	 * do right-justified: 0, then adjust resolution according to 10-bit
++	 * through 13-bit in channel - this is the default behavior, and can
++	 * be modified here by oring ADXL345_DATA_FORMAT_JUSTIFY
++	 */
  	unsigned int data_format_mask = (ADXL345_DATA_FORMAT_RANGE |
+-					 ADXL345_DATA_FORMAT_JUSTIFY |
+ 					 ADXL345_DATA_FORMAT_FULL_RES |
+ 					 ADXL345_DATA_FORMAT_SELF_TEST);
+ 	int ret;
 -- 
 2.39.2
 
