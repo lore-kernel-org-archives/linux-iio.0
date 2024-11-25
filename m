@@ -1,98 +1,171 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86D6B1ACDE8;
-	Mon, 25 Nov 2024 13:48:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C43CCEAF6;
+	Mon, 25 Nov 2024 14:22:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732542485; cv=none; b=p4dob8kKVkqZr+r2uI+gLnQJnappT3TLdY43D6waGrjyr1e6Nr7j5F3nYO51XaPrWH9zV+7n0VygrCK48nlz76jZxPRcU9s56S7JZIec6gQQlYve2rInw8K+eiZONShfHWr8pvZyHnOCFZOWMh8JBcpYyowa9GoAwKY4myTL7co=
+	t=1732544579; cv=none; b=XA7fSBFF5OCc1w8tFj4F3UVPHxi2tfs0Rc3iRgOI+XJhCNXMRkYpiGGcSUF5R78/LZZVDA+rDId91gwcXq6p1kIilrRLBSWBoakNQ9rEfGXK5iyRJpycQYcJC329JMf5HCSlfsmG2lDKM36kNDNMvzf0/6UyCrom7hcK66n4W1E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732542485; c=relaxed/simple;
-	bh=r9lkHO1FFzLwQ6iFQt3hcN9n6ULg/dlsFSnIbCI5/TU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pmdIssePEKrLidMP7BGYLwJsk1xSmVq9rT7zt4nSTpc9GPXLNkN+q16G9CvA3cngpAdObzFNnKbEfkTveThFjjYzplZlJ8ZvQax1BWK8mfDhWEqFI5GtDSc7EOBit05PHVAQoujPRN+gjGa6/GH21WURx6CQRhU0CSniCqmiK14=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Is0dvLPp; arc=none smtp.client-ip=209.85.208.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1732544579; c=relaxed/simple;
+	bh=SG0jvqLVog//QTlMMQhzLqPOC5yAbeI7oA5YQ850jqw=;
+	h=From:To:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=biSEZD2dTWOD5L5jLYgqgmNgHOYv4OneYIGyjHAKvB8ywJuj+sKHnGoG2GejMAfCkHprYuP8eR8SxXDzCb+gGyxnavj3k+dNeKF2HMj0ckF8BbltkdBds4MlGq3pr96mHrMKYnD9NyLoKLMPSgpP45c+MIBTt3KaCX/gUy+tMh0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=ePzmS8iw; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Is0dvLPp"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-5cfe5da1251so5519527a12.1;
-        Mon, 25 Nov 2024 05:48:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1732542482; x=1733147282; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6fA1F5WZzvKo1QuPRZbBAhyS6aNTDvmwps9SWjuQ01U=;
-        b=Is0dvLPpdcZ4A+3AbJKewBuqkz2UmlhDfnc4N47JehJHmetx8BtglWhdNTrkjIH67/
-         Tgr7C0SgBiVdliLfXwgPBuh3NaKDHhfDKZkyXfO77vGRN5I4jGeq9XPTM2oRoQBZUT1O
-         bjUVLGtPYyGAZugYOMFGTBSO+yxevAJ1h0zPYHH1YFABnCM/ObH2QehvSIJhb2KYzKVu
-         0zi4Xll7RfKF3D99UwJAcYob9cQNsrpQBgtHOpg5cRkkoZFDeQd0p5Qq99Qq7a8wddMd
-         h22Ced2JKdVM2tp9DcJ0CVqy9kmt/Exd44yfu31Khme3s/f1reQMIPz90HFWMM3ujEfa
-         zHTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732542482; x=1733147282;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6fA1F5WZzvKo1QuPRZbBAhyS6aNTDvmwps9SWjuQ01U=;
-        b=UO3no1XHK6Wb8qJt4Qaq0rEugiljMoxG47SP2sX+UXGIK4nqdZM03IE7bLTOKtcNOm
-         yuFTuhIcnT5xfmv3KS/UeHcSZRF8i7MY8U3NMTHWfqr2vM+2Q5o1gI7fLfxKDwjRADc2
-         aukmPuc2NqwqeW1SLtPrL7oxo8/kmB8NDCQbCRqZcqy+F3429eu7SBtmXMW27wc6E77R
-         ADZe4Z0W9zuAwAHXvSZiBG6tm8PlK+7I4VZG+p7IrCcVQJDpQhmvRZX15KHx+qXI6TsU
-         2+5NeM3NmWfhLz3fLr3iEh0XJMcM34GWAic7KCnqUWtfZyU/n/Z3Jzl7dLaRY4jbNLhQ
-         a+BA==
-X-Forwarded-Encrypted: i=1; AJvYcCWHCufahhcItnR/GcRmSCiiLMJmzryw5Q08jCbQKOjxASCcpTjBUge9QRIeNoNA9wncw0el6B28+d4h@vger.kernel.org, AJvYcCWfU3uUwvP6bk5fgVGwqilsMWFUJWZapsgpgMu2QAFkqLt2DTbz+Bf7Xieb1M/elOPjNRY75usE9IAG@vger.kernel.org
-X-Gm-Message-State: AOJu0YzBpqS2i2OzCQGw5zMbpdcjjLnSTtxD+1b0vMsYgQQRyT3/2Ieu
-	eMcT1kif/pod0kyOmRUz6tjsLAvt1SR9udFndWeJF6qRZ7Eqf3srEsvJ/ap+uHL8InuRU0gbmGb
-	3OnzeE4EZAoFCDtwnIB5sv3+b4A4=
-X-Gm-Gg: ASbGncsNUCHbkQsEjRdrUba4+XxmeeENmG2azrco0p+P3f0tSF9m+7XVbI8YLqwBAuQ
-	UamYd7zDtcZTNrZO51LmwUuW1Q+C3q05wbw==
-X-Google-Smtp-Source: AGHT+IHcbV66eT+bwaP/+AEbTKqcauCg3LmlqWNWCdN1eoerWIsVQ7yse2m70EOdWHdwTsHonAStf+FnNnnFL85D2mM=
-X-Received: by 2002:a17:906:31c5:b0:aa5:225f:47d9 with SMTP id
- a640c23a62f3a-aa5225fb282mr868286066b.29.1732542481607; Mon, 25 Nov 2024
- 05:48:01 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="ePzmS8iw"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4APDrtju014880;
+	Mon, 25 Nov 2024 09:22:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=ofJdo
+	U+dIwUs841cv12FL6guNefCzeKBMVmj1OZwFts=; b=ePzmS8iwfJ1z1XjF6Asqq
+	YNlqcC7PaOil1JVefILKO2oCHdRtEfVFKqxKhWi4Lo381oxE1fuOO7BQtWB1OjCs
+	r7Te26TBoV8NLUBrpjulpFBzskWHcE8B4ZVTKhMLyDaA5uRgRtF8OtzFfamceOQ8
+	39z+6mToeeBzlP4DzPb9yDhaRSy1So9JtmJ3djwFSvT4NiS8aBE7YoMPyBwn2HSb
+	ERpk+MfNKLgGVOdcGmX+8g2nQPkUqWFE+zPWLyWQNGrQFYzs+NxkY2ueDoCZLhoC
+	t1yqXDeEQbdjSzUwDPd/3dZhN/xWDi5PWPDUXWSJVDH211ZXT+g0zoUVKZOv2UgQ
+	Q==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 434pbd1813-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 25 Nov 2024 09:22:43 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 4APEMgTb032092
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 25 Nov 2024 09:22:42 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 25 Nov
+ 2024 09:22:42 -0500
+Received: from ASHBMBX9.ad.analog.com ([fe80::e370:92d6:3366:81e5]) by
+ ASHBMBX9.ad.analog.com ([fe80::e370:92d6:3366:81e5%20]) with mapi id
+ 15.02.0986.014; Mon, 25 Nov 2024 09:22:42 -0500
+From: "Budai, Robert" <Robert.Budai@analog.com>
+To: "Budai, Robert" <Robert.Budai@analog.com>,
+        Lars-Peter Clausen
+	<lars@metafoo.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "Sa,
+ Nuno" <Nuno.Sa@analog.com>,
+        "Gradinariu, Ramona"
+	<Ramona.Gradinariu@analog.com>,
+        "Miclaus, Antoniu"
+	<Antoniu.Miclaus@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>, "Rob
+ Herring" <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "Conor
+ Dooley" <conor+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: RE: [PATCH 0/7] adis16550-v2
+Thread-Topic: [PATCH 0/7] adis16550-v2
+Thread-Index: AQHbPz7pSPeUMR9QEk6zMP7RDy8im7LH6pGg
+Date: Mon, 25 Nov 2024 14:22:41 +0000
+Message-ID: <7f065b32ec8043b5bf6d902184f39d96@analog.com>
+References: <20241125133520.24328-1-robert.budai@analog.com>
+In-Reply-To: <20241125133520.24328-1-robert.budai@analog.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IGFpPSIwIiBubT0iYm9keS50eHQiIHA9ImM6XHVzZXJzXHJi?=
+ =?us-ascii?Q?dWRhaVxhcHBkYXRhXHJvYW1pbmdcMDlkODQ5YjYtMzJkMy00YTQwLTg1ZWUt?=
+ =?us-ascii?Q?NmI4NGJhMjllMzViXG1zZ3NcbXNnLWY1ZjA3Y2QzLWFiMjctMTFlZi1iYWU1?=
+ =?us-ascii?Q?LWRjMWJhMTgxMTNjZVxhbWUtdGVzdFxmNWYwN2NkNC1hYjI3LTExZWYtYmFl?=
+ =?us-ascii?Q?NS1kYzFiYTE4MTEzY2Vib2R5LnR4dCIgc3o9IjQyODIiIHQ9IjEzMzc3MDEw?=
+ =?us-ascii?Q?OTYwMjE4NzkxNCIgaD0iRDREYzZIQ0ZhdHNEWDJLaWtYc2YzOE9TdDMwPSIg?=
+ =?us-ascii?Q?aWQ9IiIgYmw9IjAiIGJvPSIxIiBjaT0iY0FBQUFFUkhVMVJTUlVGTkNnVUFB?=
+ =?us-ascii?Q?RW9DQUFDS1NtZTRORC9iQWJMcTNkNkczRWtVc3VyZDNvYmNTUlFEQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUhBQUFBRGFBUUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUVBQVFBQkFBQUFmcHljV2dBQUFBQUFBQUFBQUFBQUFKNEFBQUJo?=
+ =?us-ascii?Q?QUdRQWFRQmZBSE1BWlFCakFIVUFjZ0JsQUY4QWNBQnlBRzhBYWdCbEFHTUFk?=
+ =?us-ascii?Q?QUJ6QUY4QVpnQmhBR3dBY3dCbEFGOEFaZ0J2QUhNQWFRQjBBR2tBZGdCbEFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBRUFBQUFBQUFBQUFnQUFBQUFBbmdBQUFHRUFaQUJwQUY4QWN3QmxB?=
+ =?us-ascii?Q?R01BZFFCeUFHVUFYd0J3QUhJQWJ3QnFBR1VBWXdCMEFITUFYd0IwQUdrQVpR?=
+ =?us-ascii?Q?QnlBREVBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQVFBQUFBQUFB?=
+ =?us-ascii?Q?QUFDQUFBQUFBQ2VBQUFBWVFCa0FHa0FYd0J6QUdVQVl3QjFBSElBWlFCZkFI?=
+ =?us-ascii?Q?QUFjZ0J2QUdvQVpRQmpBSFFBY3dCZkFIUUFhUUJsQUhJQU1nQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUJBQUFBQUFBQUFBSUFBQUFBQUE9PSIv?=
+ =?us-ascii?Q?PjwvbWV0YT4=3D?=
+x-dg-rorf: true
+x-dg-refone: QmxBR01BZFFCeUFHVUFYd0J3QUhJQWJ3QnFBR1VBWXdCMEFITUFYd0JtQUdFQWJBQnpBR1VBWHdCbUFHOEFjd0JwQUhRQWFRQjJBR1VBQUFBOEFBQUFBQUFBQUdFQVpBQnBBRjhBY3dCbEFHTUFkUUJ5QUdVQVh3QndBSElBYndCcUFHVUFZd0IwQUhNQVh3QjBBR2tBWlFCeUFERUFBQUE4QUFBQUFBQUFBR0VBWkFCcEFGOEFjd0JsQUdNQWRRQnlBR1VBWHdCd0FISUFid0JxQUdVQVl3QjBBSE1BWHdCMEFHa0FaUUJ5QURJQUFBQT0iLz48L21ldGE+
+x-adiruleop-newscl: Rule Triggered
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20241122113322.242875-12-u.kleine-koenig@baylibre.com>
- <20241122113322.242875-22-u.kleine-koenig@baylibre.com> <CAHp75Ve_sD-a-m4pYmKrT=LhajO=F7TG7KM7AsM47J0=ksVgNw@mail.gmail.com>
- <eghe47rkwxmcfkamayemvwfksonrwbysaadakbdm4lvzcsy4ee@7gftiif7ka6i>
-In-Reply-To: <eghe47rkwxmcfkamayemvwfksonrwbysaadakbdm4lvzcsy4ee@7gftiif7ka6i>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 25 Nov 2024 15:47:25 +0200
-Message-ID: <CAHp75Ve3hBhCMFkjA4-hiLfGQLeeGt_74e=PwTH_nF1NCYiyOA@mail.gmail.com>
-Subject: Re: [PATCH v3 10/10] iio: adc: ad7124: Implement temperature measurement
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Alexandru Ardelean <aardelean@baylibre.com>, 
-	Alisa-Dariana Roman <alisa.roman@analog.com>, Conor Dooley <conor+dt@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Dumitru Ceclan <dumitru.ceclan@analog.com>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Nuno Sa <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>, 
-	devicetree@vger.kernel.org, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-GUID: Dnl2RKIYo1XTGXrJZpK0YK9yXPBWsfTu
+X-Proofpoint-ORIG-GUID: Dnl2RKIYo1XTGXrJZpK0YK9yXPBWsfTu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 phishscore=0
+ priorityscore=1501 suspectscore=0 lowpriorityscore=0 spamscore=0
+ impostorscore=0 malwarescore=0 mlxlogscore=999 clxscore=1015 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2411250122
 
-On Mon, Nov 25, 2024 at 1:27=E2=80=AFPM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@baylibre.com> wrote:
-> On Fri, Nov 22, 2024 at 10:31:07PM +0200, Andy Shevchenko wrote:
-> > On Fri, Nov 22, 2024 at 1:34=E2=80=AFPM Uwe Kleine-K=C3=B6nig
-> > <u.kleine-koenig@baylibre.com> wrote:
-> > > +       /* Add one for temperature */
-> > > +       st->num_channels =3D min(num_channels + 1, AD7124_MAX_CHANNEL=
-S);
-> >
-> > Is the type of both arguments the same?
->
-> Hmm, my compiler is happy with it at least. I don't understand why
-> though. I'll do a few more tests ...
+Missed -v2 flag at format-patch command. Should I resend them?
 
-If num_channels is signed int or shorter than (independently on the
-sign) int, then it's obvious why. + 1 makes it int.
+> -----Original Message-----
+> From: Robert Budai <robert.budai@analog.com>
+> Sent: Monday, November 25, 2024 3:35 PM
+> To: Lars-Peter Clausen <lars@metafoo.de>; Hennerich, Michael
+> <Michael.Hennerich@analog.com>; Sa, Nuno <Nuno.Sa@analog.com>;
+> Gradinariu, Ramona <Ramona.Gradinariu@analog.com>; Miclaus, Antoniu
+> <Antoniu.Miclaus@analog.com>; Jonathan Cameron <jic23@kernel.org>; Rob
+> Herring <robh@kernel.org>; Krzysztof Kozlowski <krzk+dt@kernel.org>; Cono=
+r
+> Dooley <conor+dt@kernel.org>; Jonathan Corbet <corbet@lwn.net>; Budai,
+> Robert <Robert.Budai@analog.com>; linux-iio@vger.kernel.org;
+> devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
+> doc@vger.kernel.org
+> Subject: [PATCH 0/7] adis16550-v2
+>=20
+> Version 2 of adding adis16550 and adis16550w device driver for iio.
+>=20
+> Robert Budai (7):
+>   iio: imu: adis: Remove documented not used elements
+>   iio: imu: adis: Add custom ops struct
+>   iio: imu: adis: Add reset to custom ops
+>   iio: imu: adis: Add DIAG_STAT register size
+>   dt-bindings: iio: Add adis16550 bindings
+>   iio: imu: adis16550: add adis16550 support
+>   docs: iio: add documentation for adis16550 driver
+>=20
+>  .../bindings/iio/imu/adi,adis16550.yaml       |   97 ++
+>  Documentation/iio/adis16550.rst               |  389 ++++++
+>  Documentation/iio/index.rst                   |    1 +
+>  MAINTAINERS                                   |    9 +
+>  drivers/iio/imu/Kconfig                       |   13 +
+>  drivers/iio/imu/Makefile                      |    1 +
+>  drivers/iio/imu/adis.c                        |   31 +-
+>  drivers/iio/imu/adis16550.c                   | 1203 +++++++++++++++++
+>  include/linux/iio/imu/adis.h                  |   34 +-
+>  9 files changed, 1762 insertions(+), 16 deletions(-)
+>  create mode 100644
+> Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
+>  create mode 100644 Documentation/iio/adis16550.rst
+>  create mode 100644 drivers/iio/imu/adis16550.c
+>=20
+> --
+> 2.34.1
 
---=20
-With Best Regards,
-Andy Shevchenko
