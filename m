@@ -1,177 +1,280 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A1A51B87FF;
-	Tue, 26 Nov 2024 22:00:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68C44199935;
+	Tue, 26 Nov 2024 23:15:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732658414; cv=none; b=TebXDIOP3OaWneGDE97S1j3jQvsQMnq+eoyQxT53tQ0Vd/Hy+4u2ESby1/lzfnuq2L4+y+4k801KPildPdVhTrqyB5sBaNb+mluXqcWoOMsbIe63l/zSoG1q7cGSgi3slcyFbE3UWzqZ/ijoMiSzn6QO4QWt6QN2nvEoCnaCcbs=
+	t=1732662938; cv=none; b=c6OlFX9UK++pTmkD23pG2pFB6He/nxxugoBZabRnDA39FMnpUDvNjhtdTRMW26KLgzdwHOTCalWn9lS2eSLDtovl8KF3cPIlv0KIrLyawXydGbGmg52YfyVtMioCs7Kh6MHBTsk8Se78z2dfBhdL0tuPIELdJp6mHh7I28p/2vY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732658414; c=relaxed/simple;
-	bh=a2+/MmWFaijNBOfYzJdymrWHQtSJRpiSmPNIqSVAc8c=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:Cc:
-	 References:In-Reply-To; b=IRnQ8al4duGIZjr4D14N09wbr/BW70i8L1SCmsIPHKkDxuohMHtLwwEgnb9koXO/TWZIUUjuesySECOkd4t7unt5m4xyO9J9EsPZxTqMsnN3rvUc3CT8XH+6E++ytyMhxdNl+q0rSc08JsQfuALh+BZStJHf7Cqq17Xt8zilz7Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C9yVyEVj; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1732662938; c=relaxed/simple;
+	bh=iY/Knmgd+T9lZnFhfWMnieGLUHLgrGd9wTEcikePfHQ=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=t7QOh23NoSlDFUdwtE1KQXp9iaw/0ApbbNdFKG6McswplQrOmj27jT53Houd0FgUgHoAC+g9OVMAILiKeveIfobO5s7VfDzn0MOi1ahVQmaJ1SxpxZpnPNLN4OZtF7O1Cqgme2sE/6SFbkEYdfmQpWgioifqJSFAachze9j1fC0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=nIhXZ8Bn; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C9yVyEVj"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-434a8640763so7791795e9.1;
-        Tue, 26 Nov 2024 14:00:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1732658411; x=1733263211; darn=vger.kernel.org;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=O2YAjAUCL19nVhGZ9FKqkp7bPNOtiIRcPPeFNZu8aU8=;
-        b=C9yVyEVjABdngaEVt2I8wnG4N+KWoWbJXhDnpxkMWMhCMkaP8+7/oAwGO9SJ8M302p
-         xEMmipqAi1iTo+FpdtADHY/xJSt+Ki83jbTfu96yvqfrOfI9T3GwuhBW59lnEuJ1JIKc
-         28hQy/5cFAm5xNSIQ7it9Nf2cfxuiW/O1dbaFUyzqArzoh+Djh+LUFIOPhzRjjE2f8/T
-         iLN7EF2httHfY7uDg2ZSxlpiIPk6ooYWKyGLC+mgItVe3iIP597hMNvB4bC+dYtU6aOL
-         lSXkKLzQr6yEazKwvM+s5GEfGsodmHtddwTPyQ+pM2B7MIQj3h4f7EUgn+jUnqCxrodt
-         XiCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732658411; x=1733263211;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=O2YAjAUCL19nVhGZ9FKqkp7bPNOtiIRcPPeFNZu8aU8=;
-        b=OqHwZ8PmjsWfFfZKkOQ5RpmDVqoCku7nUb6zIq64W2Qpuf5CjkNpS5IU3BJS4IcdAG
-         A/mhDrKLjEfFo6Hq7/+tBQRY8XXmaBxxb2OpF9FRLLPhBse1w7TlS/mu2wqQIpy4YqC4
-         huWh2TY214S3s7gOSa+8hE8shh3xzkRHS08WAAsuvuJn9aawl6B67avS2i0EZ0DtJwSz
-         WS/SO42EvTa4i29j2M92siUXYzh68qfrrtng6Wg88uXjAWunAD9sEG731sPOx4Pl1G12
-         4lUj6kXd7uBERdtYfFhcPZ2CSd7xExqTmpZ3pStbKRufHOfPr0lY6PVhhLqwPSa3VLDd
-         04Og==
-X-Forwarded-Encrypted: i=1; AJvYcCU/h1mXTby3QHWvOFxNBO3QP6oaH+TVNoITqIfAUxa941poBYwYolvnbjM3jv4C61npzRQ3NjF1dVk=@vger.kernel.org, AJvYcCWJseH14kMUcuuCgJ+h/DX+5JUJco5ydRaAlx8zejJTQI1dQeD6YzLufNYAJid+IgsX8ElY1wyR3YNAwMqf@vger.kernel.org, AJvYcCWnVrKXtYOjcUXl/PXxpXeXgL27tLSa8J8WFKAb+yVMAokqA1j8cMC2/rF7DA3Z7rBakQGklfUG@vger.kernel.org
-X-Gm-Message-State: AOJu0YyrJzn/8q+RIwsY3C3thuXK6/vT6nEInLdtJ25VWxJum/G1JIcZ
-	dnJBOYipr1kz9i7ZLGLX1mOwAlrcHyXNLzlJ4YiB4D7bhsHxQhkE
-X-Gm-Gg: ASbGncvVFUEP2akVQCvVtWeKiYmu7wyIreCqd7eIi8l0RZBlwNzHq0ae7KDIaLsOfUJ
-	ojqcb1axEmNXbmNudId2hDybHbtLbK8CJ3aGfeJEE6PbgSUqZCcBB4raJ6ms6mofV8uXaQbO7bY
-	F6DnoSJ0Ie0qxAYxwGy+Ng1Hj9Adz570AdWojLYq5zqUhZMq8cBw/Z/1KEdypGrxeXcQkQRL5fZ
-	Zosisk8bIsVF3yHfm4kvZcHT1hGmIsljni77S7xLYYfQ0gOgeAgXmWzeI9U1M45PG2qqN6IOGGQ
-	7WhZuEfySotrEbSVUHjyGQG7fU8cB6mlVrAbklw1Baq54Q8vG9jbSe4GHStrUZ2lxrQh
-X-Google-Smtp-Source: AGHT+IGvgRXk4D4VKZNKxidgv3B+igOKa6hjyopdhCh95FJBs6H/igQMnbzCZirtIai1eRFVFtZrfQ==
-X-Received: by 2002:a05:600c:458b:b0:431:5ce4:bcf0 with SMTP id 5b1f17b1804b1-434a9dc6753mr7596535e9.15.1732658411345;
-        Tue, 26 Nov 2024 14:00:11 -0800 (PST)
-Received: from localhost (2a02-8389-41cf-e200-d42c-04c9-936b-d14b.cable.dynamic.v6.surfer.at. [2a02:8389:41cf:e200:d42c:4c9:936b:d14b])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-434aa74fec9sm619785e9.6.2024.11.26.14.00.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Nov 2024 14:00:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="nIhXZ8Bn"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4AQJwUp4014757;
+	Tue, 26 Nov 2024 18:15:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=09kVF
+	gi3vwjRzokajQMe1DYNd+SySHgePPAr9FZ4qz8=; b=nIhXZ8Bnycv4e/G9EwZsZ
+	JNMZ2t3bzRpcnG2ak1Bf8P7cSetjvGwHN7ir8PrJ0JIjdYjyLYbAYTw1EHGK60tz
+	GRNU16CIAV+SAp/h1pi6W8S3ORCeN4QwXsUH9rH8Vx0Tx+Oa/87fjLR1rmoJZ5kf
+	8FgpW7MrQ/K1G19mDqaoYvT+nEyWf8RjBQjbJqPIMeSAi0nR26P35QFOZenpaJT1
+	dDu3Qd0Ua+ScEMtQHIwwQ/CQogn/PUKQO8Q3rf3Jw2ezy+4nuVzD9/6JnvI//zja
+	zETx0H7KhXdnZqj/GEzC/2wVN1lQECiUYg8n15B/ztesSWokcDkrGev4DK/Pio0S
+	w==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 434pbd9gsv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 26 Nov 2024 18:15:22 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 4AQNFLnG037064
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Tue, 26 Nov 2024 18:15:21 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 26 Nov 2024 18:15:21 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 26 Nov 2024 18:15:20 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 26 Nov 2024 18:15:20 -0500
+Received: from work.ad.analog.com (HYB-hERzalRezfV.ad.analog.com [10.65.205.9])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 4AQNF73E017889;
+	Tue, 26 Nov 2024 18:15:10 -0500
+From: Marcelo Schmitt <marcelo.schmitt@analog.com>
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+        <marcelo.schmitt@analog.com>, <jic23@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+        <marcelo.schmitt1@gmail.com>
+Subject: [PATCH v4 1/4] dt-bindings: iio: adc: adi,ad4000: Add PulSAR
+Date: Tue, 26 Nov 2024 20:15:05 -0300
+Message-ID: <227873de1e9aa249504639da2241915541d089d5.1732660478.git.marcelo.schmitt@analog.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <cover.1732660478.git.marcelo.schmitt@analog.com>
+References: <cover.1732660478.git.marcelo.schmitt@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 26 Nov 2024 23:00:08 +0100
-Message-Id: <D5WG58I3QIEL.7Y7EGKOC7AS8@gmail.com>
-Subject: Re: [PATCH 02/11] iio: adc: ti-ads1119: fix information leak in
- triggered buffer
-From: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
-To: "Jonathan Cameron" <jic23@kernel.org>
-Cc: "Francesco Dolcini" <francesco@dolcini.it>, "Lars-Peter Clausen"
- <lars@metafoo.de>, "Antoni Pokusinski" <apokusinski01@gmail.com>,
- =?utf-8?q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?=
- <jpaulo.silvagoncalves@gmail.com>, "Gregor Boirie"
- <gregor.boirie@parrot.com>, "Jonathan Cameron"
- <Jonathan.Cameron@huawei.com>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, =?utf-8?q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?=
- <joao.goncalves@toradex.com>, "Francesco Dolcini"
- <francesco.dolcini@toradex.com>, <stable@vger.kernel.org>
-X-Mailer: aerc 0.18.2
-References: <20241125-iio_memset_scan_holes-v1-0-0cb6e98d895c@gmail.com>
- <20241125-iio_memset_scan_holes-v1-2-0cb6e98d895c@gmail.com>
- <20241126085958.GA13577@francesco-nb>
- <59a4b096-101b-419d-8a19-1063d759b4e2@gmail.com>
- <20241126185211.385f82c4@jic23-huawei>
-In-Reply-To: <20241126185211.385f82c4@jic23-huawei>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: B6svGxM2Yod5uezzcYFn0fPCXnxF31LF
+X-Proofpoint-ORIG-GUID: B6svGxM2Yod5uezzcYFn0fPCXnxF31LF
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 phishscore=0
+ priorityscore=1501 suspectscore=0 lowpriorityscore=0 spamscore=0
+ impostorscore=0 malwarescore=0 mlxlogscore=999 clxscore=1015 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2411260186
 
-On Tue Nov 26, 2024 at 7:52 PM CET, Jonathan Cameron wrote:
-> On Tue, 26 Nov 2024 10:46:37 +0100
-> Javier Carrasco <javier.carrasco.cruz@gmail.com> wrote:
->
-> > On 26/11/2024 09:59, Francesco Dolcini wrote:
-> > > On Mon, Nov 25, 2024 at 10:16:10PM +0100, Javier Carrasco wrote:
-> > >> The 'scan' local struct is used to push data to user space from a
-> > >> triggered buffer, but it has a hole between the sample (unsigned int=
-)
-> > >> and the timestamp. This hole is never initialized.
-> > >>
-> > >> Initialize the struct to zero before using it to avoid pushing
-> > >> uninitialized information to userspace.
-> > >>
-> > >> Cc: stable@vger.kernel.org
-> > >> Fixes: a9306887eba4 ("iio: adc: ti-ads1119: Add driver")
-> > >> Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-> > >> ---
-> > >>  drivers/iio/adc/ti-ads1119.c | 2 ++
-> > >>  1 file changed, 2 insertions(+)
-> > >>
-> > >> diff --git a/drivers/iio/adc/ti-ads1119.c b/drivers/iio/adc/ti-ads11=
-19.c
-> > >> index e9d9d4d46d38..2615a275acb3 100644
-> > >> --- a/drivers/iio/adc/ti-ads1119.c
-> > >> +++ b/drivers/iio/adc/ti-ads1119.c
-> > >> @@ -506,6 +506,8 @@ static irqreturn_t ads1119_trigger_handler(int i=
-rq, void *private)
-> > >>  	unsigned int index;
-> > >>  	int ret;
-> > >>
-> > >> +	memset(&scan, 0, sizeof(scan));
-> > >
-> > > Did you consider adding a reserved field after sample and just
-> > > initializing that one to zero?
-> > >
-> > > It seems a trivial optimization not adding much value, but I thought =
-about
-> > > it, so I'd like to be sure you considered it.
-> > >
-> > > In any case, the change is fine.
-> > >
-> > > Reviewed-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-> > >
-> > > Thanks,
-> > > Francesco
-> > >
-> >
-> > Hi Francesco, thanks for your review.
-> >
-> > In this particular case where unsigned int is used for the sample, the
-> > padding would _in theory_ depend on the architecture. The size of the
-> > unsigned int is usually 4 bytes, but the standard only specifies that i=
-t
-> > must be able to contain values in the [0, 65535] range i.e. 2 bytes.
-> > That is indeed theory, and I don't know if there is a real case where a
-> > new version of Linux is able to run on an architecture that uses 2 byte=
-s
-> > for an int. I guess there is not, but better safe than sorry.
-> Using an unsigned int here is a bug as well as we should present consiste=
-nt
-> formatted data whatever the architecture.
+Extend the AD4000 series device tree documentation to also describe
+PulSAR devices.
 
-Would you prefer that in the same patch as they are related issues? I
-could switch to u32 in v2 along with anything else that might arise in
-the reviews of the rest of the series.
-If you prefer a separate patch, that's fine too.
+The single-channel series of PulSAR devices is similar to the AD4000 series
+except PulSAR devices sample at slower rates and don't have a
+configuration register. Because PulSAR devices don't have a configuration
+register, they don't support all features of AD4000 devices and thus fewer
+interfaces are provided to user space. Also, while AD4000 may have their
+SDI pin connected to SPI host MOSI line, PulSAR SDI pin is never connected
+to MOSI.
 
-> >
-> > We could be more specific with u32 for the sample and then add the
-> > reserved field, but I would still prefer a memset() for this small
-> > struct. Adding and initializing a reserved field looks a bit artificial
-> > to me, especially for such marginal gains.
-> Issue with reserved fields is we would have to be very very careful to sp=
-ot them
-> all.  A memset avoids that care being needed.
->
-> Jonathan
->
-> >
-> > Moreover, the common practice (at least in IIO)is a plain memset() to
-> > initialize struct holes, and such common patterns are easier to maintai=
-n :)
-> >
-> > Best regards,
-> > Javier Carrasco
+Some devices within the PulSAR series are just faster versions of others.
+From fastest to slowest, AD7980, AD7988-5, AD7686, AD7685, and AD7988-1 are
+all 16-bit pseudo-differential pin-for-pin compatible ADCs. Devices that
+only vary on the sample rate are documented with a common fallback
+compatible.
+
+Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+---
+Change log v3 -> v4
+- Sorted compatible strings in alphabetical order.
+- Left only fallback compatibles in allOf check list for adi,sdi-pin property.
+- Improved patch description with explanation about how the AD4000 and PulSAR
+  devices are different.
+
+Well, I didn't manage to get a dtbs_check message for all the cases I was
+expecting to cover, yet. I trust the test done by maintainers while I don't
+figure out what's wrong with my setup.
+
+FWIW, here's what I tried:
+
+Cloned dt-binding tree from git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git
+Fetched and checked out dt/next branch.
+Applied AD4000/PulSAR patches.
+- <62dd96ac9cd> ("iio: adc: ad4000: fix reading unsigned data")
+- <8ebfd0925521> ("iio: adc: ad4000: Check for error code from devm_mutex_init() call")
+- the patches from this patch series
+
+Cloned dtc from git://git.kernel.org/pub/scm/utils/dtc/dtc.git into a directory
+at the same level of linux kernel source dir.
+
+Cloned dt-schema from https://github.com/devicetree-org/dt-schema.git into a
+directory at the same level of linux kernel source dir.
+Within dt-schema, 
+mkdir venv
+python3 -m venv venv/
+source venv/bin/activate
+python3 -m ensurepip --default-pip
+python3 -m pip install --upgrade pip setuptools wheel
+pip install yamllint
+pip install dtschema --upgrade
+pip install -e .
+
+export ARCH=arm; export CROSS_COMPILE=arm-linux-gnueabi-
+Ran `./scripts/dtc/update-dtc-source.sh` from the top level of Linux source tree.
+make defconfig
+Added zynq-coraz7s-ad7685.dts to arch/arm/boot/dts/xilinx/.
+Added zynq-coraz7s-ad7685.dtb to arch/arm/boot/dts/xilinx/Makefile.
+make -j4 dtbs_check # but it didn't print anything about adi,sdi-pin value.
+Changed the compatible from "adi,ad7685" to "adi,ad7687" and dtbs_check prints
+arch/arm/boot/dts/xilinx/zynq-coraz7s-ad7685.dtb: adc@0: adi,sdi-pin:0: 'sdi' is not one of ['high', 'low', 'cs']
+
+-zynq-coraz7s-ad7685.dts file {
+// SPDX-License-Identifier: GPL-2.0
+
+/dts-v1/;
+#include "zynq-7000.dtsi"
+
+/ {
+	adc_vref: regulator-vref {
+		compatible = "regulator-fixed";
+		regulator-name = "EVAL 5V Vref";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		regulator-always-on;
+	};
+
+	adc_vdd: regulator-vdd {
+		compatible = "regulator-fixed";
+		regulator-name = "Eval VDD supply";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		regulator-always-on;
+	};
+
+	adc_vio: regulator-vio {
+		compatible = "regulator-fixed";
+		regulator-name = "Eval VIO supply";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+};
+
+&spi0 {
+	adc@0 {
+		compatible = "adi,ad7685";
+		reg = <0>;
+		spi-max-frequency = <40000000>;
+		vdd-supply = <&adc_vdd>;
+		vio-supply = <&adc_vio>;
+		ref-supply = <&adc_vref>;
+		adi,sdi-pin = "sdi";
+	};
+};
+-} zynq-coraz7s-ad7685.dts file
+
+ .../bindings/iio/adc/adi,ad4000.yaml          | 56 +++++++++++++++++++
+ 1 file changed, 56 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4000.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4000.yaml
+index e413a9d8d2a2..3c1171c7f0e1 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad4000.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4000.yaml
+@@ -19,6 +19,20 @@ description: |
+     https://www.analog.com/media/en/technical-documentation/data-sheets/ad4020-4021-4022.pdf
+     https://www.analog.com/media/en/technical-documentation/data-sheets/adaq4001.pdf
+     https://www.analog.com/media/en/technical-documentation/data-sheets/adaq4003.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7685.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7686.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7687.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7688.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7690.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7691.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7693.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7942.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7946.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7980.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7982.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7983.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7984.pdf
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7988-1_7988-5.pdf
+ 
+ $ref: /schemas/spi/spi-peripheral-props.yaml#
+ 
+@@ -63,6 +77,32 @@ properties:
+ 
+       - const: adi,adaq4003
+ 
++      - items:
++          - enum:
++              - adi,ad7685
++              - adi,ad7686
++              - adi,ad7980
++              - adi,ad7988-1
++              - adi,ad7988-5
++          - const: adi,ad7983
++
++      - items:
++          - enum:
++              - adi,ad7688
++              - adi,ad7693
++          - const: adi,ad7687
++
++      - items:
++          - enum:
++              - adi,ad7690
++              - adi,ad7982
++              - adi,ad7984
++          - const: adi,ad7691
++
++      - enum:
++          - adi,ad7942
++          - adi,ad7946
++
+   reg:
+     maxItems: 1
+ 
+@@ -133,6 +173,22 @@ required:
+   - ref-supply
+ 
+ allOf:
++  # Single-channel PulSAR devices have SDI either tied to VIO, GND, or host CS.
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - adi,ad7687
++              - adi,ad7691
++              - adi,ad7942
++              - adi,ad7946
++              - adi,ad7983
++    then:
++      properties:
++        adi,sdi-pin:
++          enum: [ high, low, cs ]
++          default: cs
+   # The configuration register can only be accessed if SDI is connected to MOSI
+   - if:
+       required:
+-- 
+2.45.2
 
