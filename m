@@ -1,131 +1,176 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49C80D517;
-	Wed, 27 Nov 2024 00:17:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ADE4A23;
+	Wed, 27 Nov 2024 00:30:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732666658; cv=none; b=PKRkBXiQD0Msxcs43RZaHBuiPs/pmo8TmxBUWOVADPuxIHLueEZ5bdfsAYanHxswVcBQrJPHOhmsl/A8/Tu0zMChKAnJI8njmboAsTpvbNOxv6lDtvJQNMJel9x7z48kGfuboBFq5mO+xoBLc+7PzZ2VlgizS6hnl+rdVRk04uU=
+	t=1732667443; cv=none; b=QhG3CzrR6I1ZquzXod16R+WDRD9PHOgbyl8yE6NtWgmpGlnPLK3x4qlKeBnzpAAeQXoti1WO/z3FyDqnEemu12n2W7bVGCj5nd8CLdGDCdZl9wkmlzfaZgyjQ/DtEKcIW5vCnZdBClT0blcqg6KwZkOx5J4UHT8MVZi9v6Xx9jA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732666658; c=relaxed/simple;
-	bh=3zQGgYViYfddDFudo4XQx+PIFRbdURjDIECwTHZcNVg=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=hyk7mDxDBih7jrey/a/TX2PMlWPGZtytaTHx6QS5/A4v7a0koHtdQr1ouwJHknx3888QFNRsePrtOlV2jOBWb9zOZpJQfXYMXYhl0fx57JTiv6VHvVLVXKaeEoUwjb5uRD98+KpPY6yt7AZ4pPeAEv/Y21B3PWGttEXMYD4Ycwc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Idvf7GU9; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1732667443; c=relaxed/simple;
+	bh=B/XP/5li46wEXl9jRgvnOXy0VBsDGFE+to1Hlxg9ikg=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=L4NEZ0+qrA/RnU6BJ6zj2HF1Qh8aOxcPa+78lNfRQpTzczxd/sR+2LvH/KlpH59CcePgm6PBlikOnOh06pc3gpu3tM8U+Ru3rFpBqXqkE3lk0SSE9K4ONsGAl3siIKAUDZUFX1ZJr2o+AwA1orB+WabP/9Ox8a35pwhNKdtXoFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LF6RzbQL; arc=none smtp.client-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Idvf7GU9"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4AQKD623005108;
-	Tue, 26 Nov 2024 18:15:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=Afs1oJHuuK8U+LzMvoQBlS7DAgr
-	/xKze3s6A4DgU3so=; b=Idvf7GU9ZrnnzCMXf/tmc6oz0ZFgVyD63KC4Ly0USdw
-	wZ3jZoxIgrkM2z13zpzQzJ3nDj0bGD+QgyrOSQS08tngGDS82WrNVoP0vLAR7Acl
-	w56X6/lts+5BTWsHxzoPgqv6t/AeirIxZ0gD9l0itZwffNlni0FAJk1KQxnz8zf9
-	RM1H7WuBX8GU+2cWjm8tKiyHxekpiEb2APZg/03kSoCRaYHXZvGPlM5GLNsfRuNN
-	/nc/+PGH6E/T3ioM8r0URz1hLaw79ipCfOAsAVlr/a3eHl3E+l6rF0h1Fu7UWNQR
-	0eOOATJsYBCDmhowp/v/HjXbu1unbudhxX5sCzuVHhg==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 433cu71346-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 26 Nov 2024 18:15:01 -0500 (EST)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 4AQNF074016276
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 26 Nov 2024 18:15:00 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 26 Nov 2024 18:14:59 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 26 Nov 2024 18:14:59 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 26 Nov 2024 18:14:59 -0500
-Received: from work.ad.analog.com (HYB-hERzalRezfV.ad.analog.com [10.65.205.9])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 4AQNEmur017847;
-	Tue, 26 Nov 2024 18:14:50 -0500
-From: Marcelo Schmitt <marcelo.schmitt@analog.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC: <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <marcelo.schmitt@analog.com>, <jic23@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
-        <marcelo.schmitt1@gmail.com>
-Subject: [PATCH v4 0/4] Timestamp and PulSAR support for ad4000
-Date: Tue, 26 Nov 2024 20:14:44 -0300
-Message-ID: <cover.1732660478.git.marcelo.schmitt@analog.com>
-X-Mailer: git-send-email 2.39.2
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LF6RzbQL"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4315e9e9642so57253705e9.0;
+        Tue, 26 Nov 2024 16:30:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1732667440; x=1733272240; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Ej8tv2A3HWZXC2wma35bhFGNWRxHqMQLJ4mpt4LT9Bk=;
+        b=LF6RzbQLCA+04o86SXHcLkQgWF+u4D3YnafKkE5gaYAOlc4G/YA5jaoKz3gsTpHb19
+         I/PYFRdwWQiSQ+k6Hi0wCXi/+NjmaO1qNto5JVBCOcuLt3hbT+gXjQS3689nlmvtObim
+         ag43KcMupEI/xMrCfyrKEV+kQDyLK9V+r/j4TDVW2/PRLoISMF4/bGd4FZ+fUVCl8xuW
+         FVFqalX6JSDF8EIatxIWwBrX9BWr4buEbAY21mxJo3XPtq6xFXHUwsjhEJpIOGAzTg23
+         fK7PxSqshTNr/N5klzZazVZhQ0eoPDpuEbo80jmYZyRXhsxNKkbTUmqcBQWOlR9cNhB6
+         247Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1732667440; x=1733272240;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ej8tv2A3HWZXC2wma35bhFGNWRxHqMQLJ4mpt4LT9Bk=;
+        b=qxSu9dCY1gfj/uP0ceuuRWrL5O1zaZAqskhNGqQlGr1m09Iv5sG+u9gaX/VdeE2vCj
+         f7zuSh1M1U+MF1H7MojoniAHUfKPivGXjex2IeN0pocOh5O8TlOLI0FJtMK9NTFlqEJV
+         DgrMu+8m4p20QlQSkXoO0b5xQ3BbXbNybn7cujrwi30uHi5MtvWsYf6xcV1y4oskUw4A
+         xH6p67dRLvuYEIS26eupRE486P0lkvBfKLMKjZB3fZUql/LpyuX+2QY/newxJL7rEqJ1
+         uWF0LbevJH59J8u/k6B1RYLBlojs7URzEN4zjJ+L8H0PHXIHyYwA7tsZxvJm8Ek00ZCe
+         JxUQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUfEX8Cplxj4HbTd/QUpWM4Ne/NWGTfDaYFx4uYdsUgZGp62ewU5+JkWqrDQcswAawa08ksTTT4uSg=@vger.kernel.org, AJvYcCWgH3OJtwc2c24LW9URN0UIPsDcRhG60Popvvr75ni4ZLsKmx4VNo0jGIAwsfR0BA0bqYgVyiDQ@vger.kernel.org, AJvYcCX94igKltFjvOgBc03K+0NxwIyQWNTlGyFiJMuMxfkGIzT/4XZT6cGlcLwBoZ/AYsd9LHL51gmH/yJcIucS@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxj3wUCLFKpnELDRhlgnE6FwoJF8/qF4p2d5SB3rFa2LwX4hpwO
+	wDRiB9UGbfnqr6oRbP07yqX95FsOPIchEIE4l/1qkn+rsMyJfWit
+X-Gm-Gg: ASbGncvZXs+fU1jLXQOvyfBHmMH9Yz1TwNgnVZfAjsLPHcnu0oJHxM+TotV3XXEAbFj
+	OabZetLuu5PXP683vihTZXntHBr45ch0FLRDqIZlsL27IXbDHb74gZc58P3mW0gaaJctlbTVZCJ
+	psJ9/Lk4dsaUPGQG0jBvgiQMUQRKu2pQMbWZM8PthK8OyEytImUSRb5cicDYxzh1eDLwRQKyNMu
+	xwYND8uTAMw+kSmJEqtSmjhVQd6G2vs7sdLQ0ZoqntB0i2Xm2o9ksK7ExC7tys9V+IWuUso6hn+
+	sJv3f0lz3HexG/zhYQkxE2I/vIzuEUP/rV4T9KdQOirLrzyiHF/Kf/Ko7wm/xjxBN2thge9LIui
+	ksDLxChrTIFZ37P3A7er/arZXbsmYfjc8SmDNC3bRY74=
+X-Google-Smtp-Source: AGHT+IEPN/MJAsvPH/wHNl/SHEw0ZMIZ1SSH4y1SpB0BkcojvZudR4bbqDNjOWlU55rWqsIvScXncQ==
+X-Received: by 2002:a05:600c:5253:b0:434:9e1d:7629 with SMTP id 5b1f17b1804b1-434a9e07911mr8451625e9.33.1732667439604;
+        Tue, 26 Nov 2024 16:30:39 -0800 (PST)
+Received: from ?IPV6:2a02:8389:41cf:e200:2880:ffb8:6aed:9f0d? (2a02-8389-41cf-e200-2880-ffb8-6aed-9f0d.cable.dynamic.v6.surfer.at. [2a02:8389:41cf:e200:2880:ffb8:6aed:9f0d])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3825fbedf63sm14723779f8f.102.2024.11.26.16.30.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Nov 2024 16:30:38 -0800 (PST)
+Message-ID: <98feceae-2146-478b-8296-d3a41401dbf9@gmail.com>
+Date: Wed, 27 Nov 2024 01:30:36 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: UCxtWM6RShCt_VpWzjcYCeIelOEathtc
-X-Proofpoint-ORIG-GUID: UCxtWM6RShCt_VpWzjcYCeIelOEathtc
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- malwarescore=0 phishscore=0 clxscore=1015 spamscore=0 suspectscore=0
- mlxscore=0 adultscore=0 lowpriorityscore=0 priorityscore=1501
- impostorscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.19.0-2409260000 definitions=main-2411260186
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 02/11] iio: adc: ti-ads1119: fix information leak in
+ triggered buffer
+From: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Francesco Dolcini <francesco@dolcini.it>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Antoni Pokusinski <apokusinski01@gmail.com>,
+ =?UTF-8?Q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?=
+ <jpaulo.silvagoncalves@gmail.com>, Gregor Boirie <gregor.boirie@parrot.com>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ =?UTF-8?Q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?= <joao.goncalves@toradex.com>,
+ Francesco Dolcini <francesco.dolcini@toradex.com>, stable@vger.kernel.org
+References: <20241125-iio_memset_scan_holes-v1-0-0cb6e98d895c@gmail.com>
+ <20241125-iio_memset_scan_holes-v1-2-0cb6e98d895c@gmail.com>
+ <20241126085958.GA13577@francesco-nb>
+ <59a4b096-101b-419d-8a19-1063d759b4e2@gmail.com>
+ <20241126185211.385f82c4@jic23-huawei> <D5WG58I3QIEL.7Y7EGKOC7AS8@gmail.com>
+Content-Language: en-US, de-AT
+In-Reply-To: <D5WG58I3QIEL.7Y7EGKOC7AS8@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Complement the ad4000 driver with a timestamp channel, a minor adjust in
-transfer timing, and support for single-channel PulSAR devices.
+On 26/11/2024 23:00, Javier Carrasco wrote:
+> On Tue Nov 26, 2024 at 7:52 PM CET, Jonathan Cameron wrote:
+>> On Tue, 26 Nov 2024 10:46:37 +0100
+>> Javier Carrasco <javier.carrasco.cruz@gmail.com> wrote:
+>>
+>>> On 26/11/2024 09:59, Francesco Dolcini wrote:
+>>>> On Mon, Nov 25, 2024 at 10:16:10PM +0100, Javier Carrasco wrote:
+>>>>> The 'scan' local struct is used to push data to user space from a
+>>>>> triggered buffer, but it has a hole between the sample (unsigned int)
+>>>>> and the timestamp. This hole is never initialized.
+>>>>>
+>>>>> Initialize the struct to zero before using it to avoid pushing
+>>>>> uninitialized information to userspace.
+>>>>>
+>>>>> Cc: stable@vger.kernel.org
+>>>>> Fixes: a9306887eba4 ("iio: adc: ti-ads1119: Add driver")
+>>>>> Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+>>>>> ---
+>>>>>  drivers/iio/adc/ti-ads1119.c | 2 ++
+>>>>>  1 file changed, 2 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/iio/adc/ti-ads1119.c b/drivers/iio/adc/ti-ads1119.c
+>>>>> index e9d9d4d46d38..2615a275acb3 100644
+>>>>> --- a/drivers/iio/adc/ti-ads1119.c
+>>>>> +++ b/drivers/iio/adc/ti-ads1119.c
+>>>>> @@ -506,6 +506,8 @@ static irqreturn_t ads1119_trigger_handler(int irq, void *private)
+>>>>>  	unsigned int index;
+>>>>>  	int ret;
+>>>>>
+>>>>> +	memset(&scan, 0, sizeof(scan));
+>>>>
+>>>> Did you consider adding a reserved field after sample and just
+>>>> initializing that one to zero?
+>>>>
+>>>> It seems a trivial optimization not adding much value, but I thought about
+>>>> it, so I'd like to be sure you considered it.
+>>>>
+>>>> In any case, the change is fine.
+>>>>
+>>>> Reviewed-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+>>>>
+>>>> Thanks,
+>>>> Francesco
+>>>>
+>>>
+>>> Hi Francesco, thanks for your review.
+>>>
+>>> In this particular case where unsigned int is used for the sample, the
+>>> padding would _in theory_ depend on the architecture. The size of the
+>>> unsigned int is usually 4 bytes, but the standard only specifies that it
+>>> must be able to contain values in the [0, 65535] range i.e. 2 bytes.
+>>> That is indeed theory, and I don't know if there is a real case where a
+>>> new version of Linux is able to run on an architecture that uses 2 bytes
+>>> for an int. I guess there is not, but better safe than sorry.
+>> Using an unsigned int here is a bug as well as we should present consistent
+>> formatted data whatever the architecture.
+> 
+> Would you prefer that in the same patch as they are related issues? I
+> could switch to u32 in v2 along with anything else that might arise in
+> the reviews of the rest of the series.
+> If you prefer a separate patch, that's fine too.
+> 
 
-Change log v3 -> v4
-[IIO]
-- No changes.
-[Device tree]
-- Sorted compatible strings in alphabetical order.
-- Left only fallback compatibles in allOf check list for adi,sdi-pin property.
-- Improved patch description with explanation about how the AD4000 and PulSAR
-  devices are different.
+Although now that I am looking into it, and according to the datasheet
+and defined scan_type, the right size should be s16.
 
-Change log v2 -> v3
-[IIO]
-- Reverted to direct assignment of ad4000_time_spec structs.
-[Device tree]
-- No changes.
-
-Change log v1 -> v2
-- Added Suggested-by and Reviewed-by tags.
-[IIO]
-- Commented the removal of unused AD4000_TQUIET1_NS define in commit body.
-- Made a common macro to assign ad4000_time_spec.
-- Explicitly initialized PulSAR t_quiet2_ns with 0 as those don't need any quiet time.
-- Improved PulSAR support commit description with more context.
-- Dropped support for AD7694.
-[Device tree]
-- Made "cs" the default adi,sdi-pin value for PulSAR devices.
-
-Link to v3: https://lore.kernel.org/linux-iio/cover.1732020224.git.marcelo.schmitt@analog.com/
-Link to v2: https://lore.kernel.org/linux-iio/cover.1731953012.git.marcelo.schmitt@analog.com/
-Link to v1: https://lore.kernel.org/linux-iio/cover.1731626099.git.marcelo.schmitt@analog.com/
-
-
-Marcelo Schmitt (4):
-  dt-bindings: iio: adc: adi,ad4000: Add PulSAR
-  iio: adc: ad4000: Add timestamp channel
-  iio: adc: ad4000: Use device specific timing for SPI transfers
-  iio: adc: ad4000: Add support for PulSAR devices
-
- .../bindings/iio/adc/adi,ad4000.yaml          |  56 ++++
- drivers/iio/adc/ad4000.c                      | 311 +++++++++++++++---
- 2 files changed, 316 insertions(+), 51 deletions(-)
-
-
-base-commit: 9dd2270ca0b38ee16094817f4a53e7ba78e31567
--- 
-2.45.2
+>>>
+>>> We could be more specific with u32 for the sample and then add the
+>>> reserved field, but I would still prefer a memset() for this small
+>>> struct. Adding and initializing a reserved field looks a bit artificial
+>>> to me, especially for such marginal gains.
+>> Issue with reserved fields is we would have to be very very careful to spot them
+>> all.  A memset avoids that care being needed.
+>>
+>> Jonathan
+>>
+>>>
+>>> Moreover, the common practice (at least in IIO)is a plain memset() to
+>>> initialize struct holes, and such common patterns are easier to maintain :)
+>>>
+>>> Best regards,
+>>> Javier Carrasco
+> 
 
