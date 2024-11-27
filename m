@@ -1,208 +1,148 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5FA91FE454;
-	Wed, 27 Nov 2024 14:14:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C5231FF7B5
+	for <linux-iio@vger.kernel.org>; Wed, 27 Nov 2024 14:38:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732716887; cv=none; b=BmLuYnvUdlK1w5ciSJR4eKN1MKNT0Uv7T1BAzh7uXYK+dyBJpToC8LPRMaBzudAGqAff+Ft3giSWgSt3ay3q/ddPE3cL/4Rlt7zbmyJeZ57jUvs0/4kuchjRWk26HukuYw4yAkQ8PH28Fc41Q50u+IN1L6C/b2dgTmZff2U5Fjc=
+	t=1732718321; cv=none; b=V8u4jm29+Sax9z+lmINYLEPpzXIiDLAoZ7DWdx9uwM3iVnBVVgWD9nuV8SCtnHV2gVLBoWNW5vmJhLSxj8gNQci2BR6uW9jZpvVjiuk4Ow79IROy1hhCl3ysoCBUeOAHoRvPVjTiTAHzi2sBwChcxwEIcz+CqcGUSDYwmJ5iesM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732716887; c=relaxed/simple;
-	bh=paxZs3Cdlf93Q1+n3h1fBFQZMnc13IPiJrr77HuCbiw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HhdaUc1yrB74rEoG2/e9mlE3VPR+gBqcMew6Yph9zJzB/xTte/tvZ203bboJWrpnqu9XS3EzBBTpwElFXUIGyUz8PViAqE7uk9phtzGuaZtsR+822HDV3BKxLWOva08HWC+achNbGEsX0tBA9gfPT363C7zndlzVJMUprdIvAWM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UIz+7dh3; arc=none smtp.client-ip=209.85.167.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1732718321; c=relaxed/simple;
+	bh=lnsn699LpgnPbF0lMZ+d2fnNy1n5cw6ru66r6iKjaoQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BnNE+V5tvU7uJfkVI6pUctZFoViqD7cehreByw2Dvo8keNfDQ9FLQJ/71/S3slHdc3FzjsMdF0KkgSsLxIx5/HdLIrKV7j0XG5dgmiunukB1V3XFRJvJltE442rXbJN4wbVrU+G/i9JafLkRx98FXwLTmHjDJ999Mjx0VFpxT0o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=EDFz+eZL; arc=none smtp.client-ip=209.85.221.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UIz+7dh3"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-53dd2fdcebcso6867718e87.0;
-        Wed, 27 Nov 2024 06:14:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="EDFz+eZL"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-38230ed9baeso4848081f8f.1
+        for <linux-iio@vger.kernel.org>; Wed, 27 Nov 2024 06:38:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1732716884; x=1733321684; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Um5TZq365fWOw0yCr9WfM9tBuVJrd4ZuD8M9A4DLXK0=;
-        b=UIz+7dh3vqw+bkETFF0lryBbhPebcZSFyuJEagxITuPXgQFeBDNl8bv1ORSQvihTiZ
-         sQxNnG7JQ2+50Z9jvkXiUsFuv/CbMbqgs8f+Nwuw3FqbMA2j+dEU0C4fos0aeMccMs9O
-         kjbqkNvDYf+dUx8B7KDYbpqsugOF71I8HFQKgVgoQCPYpg/ttMVTEZUOJqJfSeCcvYck
-         hKfGIN8CEEzAON4zEWTTYUt+VDJOs/Jt8Zg2XyWKt2/NGFEF71rknaB8vcSnMajHgn9P
-         mERxlqBIRXncyO2CSecSOLXjKbF5E0I7mvfh7XDr2eV7lew8AU/n1ffffp48WQfsrmzd
-         IqHw==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1732718317; x=1733323117; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fjCD0qFxOqO5DReL54VpjPy3zOSRJFVTaycjBR40RnM=;
+        b=EDFz+eZL0XuPyRZ7u1u1anW4m01z0xRhbi6lEJZt+75GgOI7GLDD8xsIyJLIKzOi9s
+         qfRAilBKozz6e+7RN7YGmypW7+Ap9j8iUCao5cai6FZAxy9nb2QvkzJhNtvvk7BmCaqj
+         6hjrv59c4ZT+10J/Uv2GbY/p1uWmE1aVtbDev//in92KRgjxIUvUycBA0mUn+Ljywlos
+         qb96EBdfzVfYyg5o6bCOA7J6S4Q7gpBZCDz/jckU+2pFg2uLDMKlW9NyoKiJAjpNoFvc
+         7+VYs/rGwPDiVgkpvTmtMFI/hUY6c/+RLwJvnVCJzgm564zgYfVZecgVJ2Gi2gt0RTB8
+         Lmig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732716884; x=1733321684;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Um5TZq365fWOw0yCr9WfM9tBuVJrd4ZuD8M9A4DLXK0=;
-        b=vRD3LTwgO81wCWQqAcXnsGVigR8Qh5fBWiD6udj37eh/Zr7e4Fsap8XBlgR1GS1V22
-         7Y1Rn14wmsZ3kFbc5pQEuDuE/aGiVAAL65e9qoMYS+YCWkFlv5d47v8wfkUjf8LMm3zd
-         Gt+d3wRzOw0UF2388bTPezYW1aXr+IlOfnZuxIQx7VTIy773QYW5HFSL1TCentcO9eu7
-         I0TxsvJVD7u/OhFXlhlVCpbAKBCLWh557v0Jt8ZWyIOK/7UUpDeFHVCKD41AziWVRE2S
-         /5lICLWPgh9rKjBke0A92ArG9baIYa740/N6haOYb74pLfOS/Ot823cfG8GjENHUhgaO
-         bAGw==
-X-Forwarded-Encrypted: i=1; AJvYcCUx50IdrWyzGG3w0ZJMPA8Xq72h/OdEFDOVoj3yT5V5+BJ8V9oXskJ0o2o3TZ4rxblWgS6OsnWW/eD8VpLo@vger.kernel.org, AJvYcCV0jeb3rfjT4iTrLYZ7f5bRUKijySIhQRuaYwbT0RGoi0Zx1CB9L1pDzjJ6zQmZHp3APKo8ciUrXjcY@vger.kernel.org, AJvYcCX0W6dCuwNkEYb7pQTO1BZPYiD3TxPVX/7/kibnRFOuTHWxd7TTkigDKLb3L9SJrjHLCBhj5mYvAoSh@vger.kernel.org
-X-Gm-Message-State: AOJu0YyrkgvFTxLQWWq9wW/yISEkcT4ybB3eFuT0S9lZjVLZ9zOymmP/
-	0ToiAJ1Gixv8wF+b9y70/iTJCIbSt79lqsHUQpz3uAHeaIosyUEFNT1afw==
-X-Gm-Gg: ASbGncuMTjGWoD3IdUI7ys8cu73S27zzWwS2hfJdp4rJD7PZSBSeSQbP8bFQcY3Q+0G
-	/IZaNaxnG7pDDq9iSEFCifCBPUwsWzk47KJWor+IMY3qGWa8rbSeuMCLbgFmOZaK28b67SswkUF
-	l6taILkurXW5jzTEpaXTsyDnLalM0zK5/IhGhBLm7l6CVwjqfOdA8MntLjA2IMWXVbzxy+eeqvQ
-	pOkXpCBg29C2S4VbWWEqur+isAoV+XY5fQq06VdbkYangeCP7N7nSg1OBw2I4ehQBfm4T/1miAX
-	6f8y1XmMCLC7Pc55Aej8md/N4o0Fehk=
-X-Google-Smtp-Source: AGHT+IHmGIqaxMqackvlpmM5ajOcte2kcWyZ19LAd1LyiW8cxDqpxp6gMdyGjZJ5ScCnw/bZFnOq2Q==
-X-Received: by 2002:a05:6512:3da4:b0:53d:d0ed:9e06 with SMTP id 2adb3069b0e04-53df0117880mr2065080e87.56.1732716883660;
-        Wed, 27 Nov 2024 06:14:43 -0800 (PST)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53dd2499995sm2316610e87.261.2024.11.27.06.14.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Nov 2024 06:14:43 -0800 (PST)
-Message-ID: <2d16bf36-57d3-4c54-bbee-2e7d93399f29@gmail.com>
-Date: Wed, 27 Nov 2024 16:14:41 +0200
+        d=1e100.net; s=20230601; t=1732718317; x=1733323117;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fjCD0qFxOqO5DReL54VpjPy3zOSRJFVTaycjBR40RnM=;
+        b=ILwoCTTqw/njSvQUuldF5pgt8WzKZOk14VRJHUCQ3mukfdmU0UevtuUGipFgUfVLZ8
+         HjMGj7XgXgGIVjsIqE573Ur6711PIWOAy+Cev+VqHTTg+ewlKnWAzOhNM9w+/EgzdowJ
+         X4vVGx/Abaihh0bnIMcpvtUYRp+LLKPvBPtQML4aXqpSMoXfk74EY98zJMoZ7qtFQbGh
+         Lu+/HYSgyfCwHUlKdOLfkz/p+xGNz9xMpn8D1lE6gbLuSYrmlgqO4yoeHeZ7P5x1VDCk
+         WXCTzKr92651ylObY1MrmZILznGFjGAq8PmWvfyYvb8vSZljf4e6dHanW/fNAYE/hiP2
+         lPzA==
+X-Forwarded-Encrypted: i=1; AJvYcCV6Yc/gGQcwWI2ry6VSE4C7jsN44kNM6+7Gu/aBlYnZds02KEYHy0fSe45CnfZoHUA8oA+OofZSn8w=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxBQkvFMA53UE6e4UzfhmkPHt3vwCnzJHmgnIvGMoHmG6esU+mm
+	8HA/WanOMz7Azu5tQrW1Z/1FvEsNbbN2k4PSboysPHG7vgQhJCyFJxS3xqi0/sk=
+X-Gm-Gg: ASbGncs0IDMbCrt24Ja1Hx+shMMht5quzUQytt4A7yvxMtw29LLaKb8VzE3RBj43cPJ
+	89Sozbgv3cayoXxMnSe1ZzBDiMVBkQXQRlRC2SE45IW4t+i9vvnZNhUEKx5qWM7bmzzg2C+1gVY
+	sEvI18Wn46d/35cG1FY8bidKBhrm1qDkehvGBAxQclXtzSi5NgebaVc5EZhIUimQYuUkdleZfoo
+	wXOrxlvw2oDw85AP/zNpv4sjGE6AHmT6yPFqY90jmc3aAeqMU/eesQxvMu0ve99XWn9Xo1UFerX
+	rg9q
+X-Google-Smtp-Source: AGHT+IHMmEsMtbcC+5w4VmxGp70yBDULVWkU/ZbDtSTIP0A5u8I3KUEQg1ao763uGeZiDyE/hL1wcQ==
+X-Received: by 2002:a5d:6c6c:0:b0:382:30a5:c38e with SMTP id ffacd0b85a97d-385c6ec1158mr2425497f8f.31.1732718316694;
+        Wed, 27 Nov 2024 06:38:36 -0800 (PST)
+Received: from localhost (p5dc6838f.dip0.t-ipconnect.de. [93.198.131.143])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3825fb2609csm16714496f8f.44.2024.11.27.06.38.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Nov 2024 06:38:36 -0800 (PST)
+Date: Wed, 27 Nov 2024 15:38:34 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Alexandru Ardelean <aardelean@baylibre.com>, Alisa-Dariana Roman <alisa.roman@analog.com>, 
+	Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Dumitru Ceclan <dumitru.ceclan@analog.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Nuno Sa <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org, 
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 10/10] iio: adc: ad7124: Implement temperature
+ measurement
+Message-ID: <mg34sbu6agf7v4iupeaf47n5ubpq4igevhjacvurumf5sfpjs6@ioyyjm3zijdf>
+References: <20241122113322.242875-12-u.kleine-koenig@baylibre.com>
+ <20241122113322.242875-22-u.kleine-koenig@baylibre.com>
+ <CAHp75Ve_sD-a-m4pYmKrT=LhajO=F7TG7KM7AsM47J0=ksVgNw@mail.gmail.com>
+ <eghe47rkwxmcfkamayemvwfksonrwbysaadakbdm4lvzcsy4ee@7gftiif7ka6i>
+ <CAHp75Ve3hBhCMFkjA4-hiLfGQLeeGt_74e=PwTH_nF1NCYiyOA@mail.gmail.com>
+ <2tsxyxmfh3ozolsziu3bps7liagzl4gmvy4oykvyeapziagvy4@tfa2lcxmdsmf>
+ <CAHp75VcMHyqjsAVveRf58PhoiKyPJRsjBQiLkz+XVu+NDc+Wog@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/8] iio: gts: Simplify using __free
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
- Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1732105157.git.mazziesaccount@gmail.com>
- <5efc30d832275778d1f48d7e2c75b1ecc63511d5.1732105157.git.mazziesaccount@gmail.com>
- <20241123163713.2ec03a37@jic23-huawei>
- <964035d9-cccd-4e12-af71-00ca39cc3596@gmail.com>
- <20241126175214.76609ba9@jic23-huawei>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <20241126175214.76609ba9@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="kbmnltnu74luhggm"
+Content-Disposition: inline
+In-Reply-To: <CAHp75VcMHyqjsAVveRf58PhoiKyPJRsjBQiLkz+XVu+NDc+Wog@mail.gmail.com>
 
-Hi & Thanks Jonathan,
 
-On 26/11/2024 19:52, Jonathan Cameron wrote:
-> On Mon, 25 Nov 2024 11:16:22 +0200
-> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
-> 
->> Hi Jonathan,
->>
->> Thanks once again for the review :)
->>
->> On 23/11/2024 18:37, Jonathan Cameron wrote:
->>> On Thu, 21 Nov 2024 10:20:07 +0200
->>> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
->>>    
->>>> The error path in the gain_to_scaletables() uses goto for unwinding an
->>>> allocation on failure. This can be slightly simplified by using the
->>>> automated free when exiting the scope.
->>>>
->>>> Use __free(kfree) and drop the goto based error handling.
->>>>
->>>> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
->>>>
->>>> ---
->>>>
->>>> Revision history:
->>>>     v1 => v2:
->>>>     - patch number changed because a change was added to the series.
->>>>     - rebased on iio/testing to avoid conflicts with queued fixes
->>>> ---
->>>>    drivers/iio/industrialio-gts-helper.c | 19 ++++++++-----------
->>>>    1 file changed, 8 insertions(+), 11 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/industrialio-gts-helper.c b/drivers/iio/industrialio-gts-helper.c
->>>> index 291c0fc332c9..602d3d338e66 100644
->>>> --- a/drivers/iio/industrialio-gts-helper.c
->>>> +++ b/drivers/iio/industrialio-gts-helper.c
->>>> @@ -4,6 +4,7 @@
->>>>     * Copyright (c) 2023 Matti Vaittinen <mazziesaccount@gmail.com>
->>>>     */
->>>>    
->>>> +#include <linux/cleanup.h>
->>>>    #include <linux/device.h>
->>>>    #include <linux/errno.h>
->>>>    #include <linux/export.h>
->>>> @@ -167,8 +168,8 @@ static int iio_gts_gain_cmp(const void *a, const void *b)
->>>>    
->>>>    static int gain_to_scaletables(struct iio_gts *gts, int **gains, int **scales)
->>>>    {
->>>> -	int i, j, new_idx, time_idx, ret = 0;
->>>> -	int *all_gains;
->>>> +	int ret, i, j, new_idx, time_idx;
->>>> +	int *all_gains __free(kfree) = NULL;
->>> See the docs in cleanup.h (added recently).
->>>
->>> Constructor and destructor should go together.   Dan wrote good docs on this
->>> (which are now in cleanup.h) so I'll not go into why!
->>
->> I went through the cleanup.h, and noticed the nice explanation for the
->> pitfall where we have multiple "scoped operations" with specific
->> ordering required. I didn't see other reasoning beyond that - I do hope
->> I didn't miss anything.
->>
->> I find introducing variables mid-function very confusing. Only exception
->> for this has been introducing temporary variables at the start of a
->> block, to reduce the scope. I would still like to avoid this when it
->> isn't absolutely necessary, as it bleeds my eyes :)
->>
->> I really don't see why we would have other cleanups which required
->> specific ordering with the allocated "all_gains".
->>
->> Anyways, if you think we really have a problem here, would it then
->> suffice if I moved the:
->>
->>           gain_bytes = array_size(gts->num_hwgain, sizeof(int));
->>           all_gains = kcalloc(gts->num_itime, gain_bytes, GFP_KERNEL);
->>           if (!all_gains)
->>                   return -ENOMEM;
->>
->> to the beginning of the function, and the "int *all_gains __free(kfree)
->> = NULL;" as last variable declaration?
->>
-> 
-> No.  You need to follow the standard way. It is something we are
-> all getting used to, but all use of cleanup.h needs to follow same rules
-> so that reviewers find it easy to review once they are seeing lots of
-> instances of it.
-> 
-> Many indeed find this ugly but reality is it's happening all over the place
-> just usually hidden in a macro.  From cleanup.h look at how
-> guard() works for instance.
+--kbmnltnu74luhggm
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v3 10/10] iio: adc: ad7124: Implement temperature
+ measurement
+MIME-Version: 1.0
 
-Well, those macros are better in that the variables they internally 
-declare aren't visible in the outside code. The 'all_gains' pointer is 
-used throughout the function, and I really dislike having local 
-variables which aren't declared at the beginning of a function/block 
-emerge out of nowhere. Makes me think: "why this terribly named global?".
+On Mon, Nov 25, 2024 at 09:33:12PM +0200, Andy Shevchenko wrote:
+> On Mon, Nov 25, 2024 at 4:52=E2=80=AFPM Uwe Kleine-K=C3=B6nig
+> <u.kleine-koenig@baylibre.com> wrote:
+> > On Mon, Nov 25, 2024 at 03:47:25PM +0200, Andy Shevchenko wrote:
+> > > On Mon, Nov 25, 2024 at 1:27=E2=80=AFPM Uwe Kleine-K=C3=B6nig
+> > > <u.kleine-koenig@baylibre.com> wrote:
+> > > > On Fri, Nov 22, 2024 at 10:31:07PM +0200, Andy Shevchenko wrote:
+> > > > > On Fri, Nov 22, 2024 at 1:34=E2=80=AFPM Uwe Kleine-K=C3=B6nig
+> > > > > <u.kleine-koenig@baylibre.com> wrote:
+> > > > > > +       /* Add one for temperature */
+> > > > > > +       st->num_channels =3D min(num_channels + 1, AD7124_MAX_C=
+HANNELS);
+> > > > >
+> > > > > Is the type of both arguments the same?
+> > > >
+> > > > Hmm, my compiler is happy with it at least. I don't understand why
+> > > > though. I'll do a few more tests ...
+> > >
+> > > If num_channels is signed int or shorter than (independently on the
+> > > sign) int, then it's obvious why. + 1 makes it int.
+> >
+> > Ah indeed, I should have understood that without that explanation.
+>=20
+> Yeah, but a closer look shows to me that num_channels is unsigned int
+> or did I look in the wrong place? If that's true, that should make a
+> warning appear since AD7124_MAX_CHANNELS is signed int...
 
-Well, maybe I really just need to try to adapt these things but I will 
-drop this one out of the series for now. TBH, I don't really like how 
-this table building function looks like. It's too long and confusing. I 
-will see if there is a sane way to split it, and maybe get the __free() 
-pointers to the beginning of a function as well ;)
+The ideas in the definition of min are a bit hard to follow, but IIUC it
+doesn't warn because AD7124_MAX_CHANNELS is non-negative and so there is
+no danger for misinterpretation.
 
->> (This is not optimal as we will then do the allocation even if
->> converting gains to scales failed - but I don't think this is a real
->> problem as this should never happen after the driver is proven working
->> for the first time).
->>
->>> Upshot is this goes where you do the kcalloc, not up here.
->>
->> *whining* "but, but, but ... it is ugly..." :)
-> 
-> :)  It won't look ugly after a few years!
+Best regards
+Uwe
 
-Could be. But now I am in the middle of "everything used to be better in 
-the good old day" -crisis. Playing 8-bit NES games and wondering if I 
-could fix my old C64 ^_^;
+--kbmnltnu74luhggm
+Content-Type: application/pgp-signature; name="signature.asc"
 
-In any case, thanks for the guidance (and optimism!) XD
+-----BEGIN PGP SIGNATURE-----
 
-Yours,
-	-- Matti
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmdHLucACgkQj4D7WH0S
+/k4/Lgf+I6KqOWJtmrxLTxrPIVrJqQgSbCiw6Z9kTouW4Od/YbS8hVskCFPkSTbl
+xo/Yh4jSUTLMpV5jE+erOQgrJxtqjSBUIDKP+V1tMCItEw+AEbDmrenRLRt6FYU9
+s7eTWma6O0O9tD/Lulh7n+1giTAg1Rcp/5NJCgwRllfWG88cFUOijwjf3N/BNNqf
+yS0SwO9WqLlNdpQifLBI2RmQWWWXbvIm5zidT1gizkd76zX93ENt2EiL15VGW1M3
+2IonL8Md+KAJVVSvhhui42mePHqx5qupFLRVTI4iLkAL0uYbWhKqcT6dwI3HYQsS
+mrL/aQBvmIIYPS2JrrCSO4Wtjxoe2w==
+=nfqX
+-----END PGP SIGNATURE-----
+
+--kbmnltnu74luhggm--
