@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 803368468;
-	Sat, 30 Nov 2024 20:56:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D6578468;
+	Sat, 30 Nov 2024 20:59:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733000191; cv=none; b=SSKvc8Y1ndZIsrn9CB339EHncNP2xhwfsajWwT/9laKYs5+b3oBp6r7ip5k09DV/IefeWcCfLAUu3xeHm5FqNJMMYpHJIWnHJ/TkTzTeBzUHK8qxXXoGomTuBOaze9GBcxRjm5B0zlpOZgu6IrI6qzknJsrC6c28SawyEatwcZ4=
+	t=1733000386; cv=none; b=Eske5aucARa3B89FJOUvU5kGQ1570tAeN5HoMx2T1KX84EdQMztAKp9o5RmARyqxvnL/AK6QPZ2yvFBiMM/xQUUVsLPQnJGUX6hn6TIU4qQ6gx4M4KmfvuyYL3VFZaWP3PWPbWzCJzwxMXlzJqMGAR4mC9lnTVtE6C9n5RXj324=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733000191; c=relaxed/simple;
-	bh=AuoCNRh1zJIBYYjOrPQovumijuE60CAF61F+tC5WQAg=;
+	s=arc-20240116; t=1733000386; c=relaxed/simple;
+	bh=nL3v8itbGOexhyHoVUPezrnkQf2GpaPcNziJY3pGiOs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tDWa2wMF//HqEjYzwxTKOlxDiKMrXkbz8uicVtsD8MJBj0nTaXW8mU7g+FGp+aLo1bY/XhnlibOLTwh8/aXHLc54HPJ8eRlXkA7sWuVkofF6OSWOv3pmEgKqG9jnmXMW006M99H6l3NX87Gj4DPfwgX6Ny0MCCRii0WZ2gTvA8E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N40pQPFv; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=AzwtzwCDyUNu3Y4XRSfaHfCUm2WMNS1hgF4pl0MS/FGPv+R+kyQa0H9s+6brdK6zymJtT00QEVg9HpKOHLvc1C8Q+bSw8NQundQFjkMc5Dw1rdlg4pD4NyNm5DnsJODAq4P7Mpy5E0T1DFJeVJ80rXrNTyACqz+TxgZ39I7NQsM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NeEqf/Ak; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N40pQPFv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 171EFC4CECC;
-	Sat, 30 Nov 2024 20:56:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NeEqf/Ak"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7813CC4CECC;
+	Sat, 30 Nov 2024 20:59:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1733000191;
-	bh=AuoCNRh1zJIBYYjOrPQovumijuE60CAF61F+tC5WQAg=;
+	s=k20201202; t=1733000386;
+	bh=nL3v8itbGOexhyHoVUPezrnkQf2GpaPcNziJY3pGiOs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=N40pQPFvEA4Yt6n5U+ITE4SK65/9YK7o/+d8MSgKacZqLCSQ45c9/h2RVSHBpRfoE
-	 TaSHJ4XmxjuwiRkSkjU1G2yhZZErifyVvOIhkxGOBPeNfK2IkDCwcV4I/DZjtNfffi
-	 m06mQ+QCj98pzq9UKPNHZRl0RIz6J8AC/BNd6lczqLezYFhGf1YSNHkyeIv5A/1amQ
-	 pKsWAKMtMSdBKjnlgkctXc0xegeDdHYHgYFgm8oQidcf0SWYXW+i76RMCcTOfQ5Fu3
-	 BLb1aff7QfWpPQfiq65K8dzVid/rygHQaspTpBbqHHz/PLzNqguJ/A6ucxsTXW80Nn
-	 UlX2vWAzdkbIQ==
-Date: Sat, 30 Nov 2024 20:56:22 +0000
+	b=NeEqf/AkzZeVRGrtZgn7c44YJLWVldor+K4G1lEWact0hOs9+3wREbINoNhZ2zG7K
+	 ybN72C06zUUHRFdXRjxh5FyiuE0HcNxNcu3eFm7HcZNzqjqdXMuUDLLr2gSfe17JFW
+	 rfeD6/MiePBhfQ9FjfsJsB8roqryrpp/OTZq5KTeNTfCmyhHnaJYXyalUUu9ZDGicX
+	 wbsS/EQ0VZTs7cPClERG+la9VgSDR8IJeOmqSFpJli4AFtsxjM4ycuP47IyW/jqQhR
+	 FC9mM4VIQLr3EKVDXUqr8eDX659RLlW1IpdxZU3LHNLEF6hT/7BoFcArqfbTiHVJyz
+	 6biNzsLAvFh5Q==
+Date: Sat, 30 Nov 2024 20:59:37 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>, Antoni Pokusinski
@@ -38,12 +38,12 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>, Antoni Pokusinski
  =?UTF-8?B?w6Nv?= Paulo =?UTF-8?B?R29uw6dhbHZlcw==?=
  <joao.goncalves@toradex.com>, Francesco Dolcini
  <francesco.dolcini@toradex.com>, stable@vger.kernel.org
-Subject: Re: [PATCH 05/11] iio: imu: kmx61: fix information leak in
- triggered buffer
-Message-ID: <20241130205622.6bc2339e@jic23-huawei>
-In-Reply-To: <20241125-iio_memset_scan_holes-v1-5-0cb6e98d895c@gmail.com>
+Subject: Re: [PATCH 04/11] iio: adc: rockchip_saradc: fix information leak
+ in triggered buffer
+Message-ID: <20241130205937.19a24818@jic23-huawei>
+In-Reply-To: <20241125-iio_memset_scan_holes-v1-4-0cb6e98d895c@gmail.com>
 References: <20241125-iio_memset_scan_holes-v1-0-0cb6e98d895c@gmail.com>
-	<20241125-iio_memset_scan_holes-v1-5-0cb6e98d895c@gmail.com>
+	<20241125-iio_memset_scan_holes-v1-4-0cb6e98d895c@gmail.com>
 X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,36 +54,36 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 25 Nov 2024 22:16:13 +0100
+On Mon, 25 Nov 2024 22:16:12 +0100
 Javier Carrasco <javier.carrasco.cruz@gmail.com> wrote:
 
-> The 'buffer' local array is used to push data to user space from a
+> The 'data' local struct is used to push data to user space from a
 > triggered buffer, but it does not set values for inactive channels, as
 > it only uses iio_for_each_active_channel() to assign new values.
 > 
-> Initialize the array to zero before using it to avoid pushing
+> Initialize the struct to zero before using it to avoid pushing
 > uninitialized information to userspace.
 > 
 > Cc: stable@vger.kernel.org
-> Fixes: c3a23ecc0901 ("iio: imu: kmx61: Add support for data ready triggers")
+> Fixes: 4e130dc7b413 ("iio: adc: rockchip_saradc: Add support iio buffers")
 > Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
 Applied.
 > ---
->  drivers/iio/imu/kmx61.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iio/adc/rockchip_saradc.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-> index 324c38764656..e19c5d3137c6 100644
-> --- a/drivers/iio/imu/kmx61.c
-> +++ b/drivers/iio/imu/kmx61.c
-> @@ -1193,7 +1193,7 @@ static irqreturn_t kmx61_trigger_handler(int irq, void *p)
->  	struct kmx61_data *data = kmx61_get_data(indio_dev);
->  	int bit, ret, i = 0;
->  	u8 base;
-> -	s16 buffer[8];
-> +	s16 buffer[8] = { };
+> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+> index 240cfa391674..dfd47a6e1f4a 100644
+> --- a/drivers/iio/adc/rockchip_saradc.c
+> +++ b/drivers/iio/adc/rockchip_saradc.c
+> @@ -368,6 +368,8 @@ static irqreturn_t rockchip_saradc_trigger_handler(int irq, void *p)
+>  	int ret;
+>  	int i, j = 0;
 >  
->  	if (indio_dev == data->acc_indio_dev)
->  		base = KMX61_ACC_XOUT_L;
+> +	memset(&data, 0, sizeof(data));
+> +
+>  	mutex_lock(&info->lock);
+>  
+>  	iio_for_each_active_channel(i_dev, i) {
 > 
 
