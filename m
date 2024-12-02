@@ -1,305 +1,298 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0667F1F949;
-	Mon,  2 Dec 2024 09:47:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.135.77
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733132854; cv=fail; b=jENFTJW+hhubNMn+lHg1LIsL9CZnI7Lxesonu08PMX1icvNsG5A5XciLTAOJ2/Duc0vPmy8aXd7gZgOvDxmXUdvgQYNii4mou+mzlPbS4UC1Wvk0PlSy1NNlcRmEnS4DcvTE1aKO3tg29CUsHng50vnlJq4UHpyMRhCnuUWN5hc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733132854; c=relaxed/simple;
-	bh=/v6Nzi6s2XJE10/CgSZXcKO+Dca66B6HUFzX6/bjuhc=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=NRH6Fk5NKfw7egz/fA8x077HEuWKV6BhBNm4d0wL+Pv1j7eRAMstQVeUapDbdKxqDUxomeXIcY/+SJ0tvK2MYXE2m+kIqHde6U/hGIJeoWhz1VbuWRPpqrqy3QmUt2M7Cf6stmMJ095rGUdHWlgx2jGpwNH/Rtc6rPVvFjNfu+4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Sizx5wWP; arc=fail smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC4071FC10E
+	for <linux-iio@vger.kernel.org>; Mon,  2 Dec 2024 10:14:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1733134472; cv=none; b=PY70xZ7Yo/Io7eGtWVAjkDFHBWHD5NeiNnnCdgt+9VEIOnAJwmbhCCPwhllDyUgmlkF2uo70YX6P0613xdCoKGVCtgR1ZOmMKAUxflwMxPb7KtaAYKdldcOz0BEtk33vWMxs44r0f9W0+JF45ka1CMtH77TFGkX3EwR0ehcPku8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1733134472; c=relaxed/simple;
+	bh=lxtQNPG7ecK6Iv4xprjHSTDP5kz4+CAaG6h4MbYJZwg=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=tJqjSUBSHcQMA0IYNn0JX5l094HvFoDeGXXsz8z+OCRSqQfgB0RW5ozAsW3x6v8Xq2O3BnHhq2hwNnHTw3pfQ9ugfzxY+8zMkJwy+035XZ/uye5b6xRbqyukY8KrlgvDlOFA+u2abYVja3nFOzkkhqRfo68sIIgrqc7piBnbcLk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=zYuWdesn; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Sizx5wWP"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4B29OI4i026779;
-	Mon, 2 Dec 2024 04:47:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=LdaoV
-	0/2H2JpE38Ek+TrLvBdQHaxjQdlZEvaiC19a7I=; b=Sizx5wWP6lS0mcpoLLJKB
-	pwtLSN8UxQUoWtFfMPdtdiJGuh4CijJiLZmyzWILrmu6ZC7QrY0N3HnJYub7scE7
-	iZe/xolKEo0uJHXWNDUptX2WzjR+MbgWhYy4l2CXD7MXeJinUbi+pqPSqqbaX3DU
-	VnRU2jEh0TZLhkFEPj1XUneqsLo2ZZgl/Dkf8UsLQrNFqGOT4TeduGidDpjeGL9j
-	ojpX3OSk0IZjEfSiM+TNhgwAOk//u4/ThMRGevfZzPHZ42uUgCvpDQT3BvfvvNrv
-	wiPbx21f6FtFXSWBd8AVccFuBy19dmfsVzvcllK+w33f/a05baDT7ZajuA67bg+j
-	A==
-Received: from bl2pr02cu003.outbound.protection.outlook.com (mail-eastusazlp17010003.outbound.protection.outlook.com [40.93.11.3])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4380g6f4d2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 02 Dec 2024 04:47:23 -0500 (EST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ym9k/TrD8eJ905jf3LhUln5RHnW4HrCouJQNORcBhv9sU1SEi3QR1POnUymkmn0ZmNgpF9CUDmyHFSS2SGBJrm2DZOplsWbeD72cYljDz1+JiprPYDmezYzsWwj/eZuTaTguJPloocY6sUcm9WkZkUaqfpW/vU6XlDMIW4mCEjlh7pnP4hch3FD8/wOPG6MW3KWnU18UvNxJTfFLmE6B6AdTbpHJVwKeDn4JWJHJmmJschM6b/Z7UOEtAOYXSd8oTDigm22J7q7I9+WApW/INwF28Xhi4AnOZkk8PqquW4ptxFqNDf+lTxZzwbHyo7u3AU/42U1+RK0/a46eRNmYlQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LdaoV0/2H2JpE38Ek+TrLvBdQHaxjQdlZEvaiC19a7I=;
- b=X/46szweauA58JpInZnD3CvxYXX7CTzN+20FaF86i6I1aXHrdm/8PlnSf1CFQavNIu6uL9Y3Xz5mJL7+b2hRKMKSJs5ZzsZADSaI42Vd07l46zlI+ZPIozi+Z16GKaAG+q9DWKdVxzROWuztlgQko0KW1D8zuFb4AnyR58+rcOoiCFRzfQHy22725sDM97w7HhFuOlmnTRIMbQ2LSuwsyRTqVDUmouH3eJiH0tiGAFG7CJhFZ9dqaUy/6KGTFjvPUU7L+2fEyquZ12uLNXkzq2M3S6N29WEgj23j1+pnHzJhqJVXlqO5/Cw46HILO+Hxub1HxhQcxpPYCkp8T9P4nQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-Received: from CY4PR03MB3399.namprd03.prod.outlook.com (2603:10b6:910:57::13)
- by CH0PR03MB6178.namprd03.prod.outlook.com (2603:10b6:610:d1::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8207.18; Mon, 2 Dec
- 2024 09:47:21 +0000
-Received: from CY4PR03MB3399.namprd03.prod.outlook.com
- ([fe80::6504:9615:dbab:cc17]) by CY4PR03MB3399.namprd03.prod.outlook.com
- ([fe80::6504:9615:dbab:cc17%6]) with mapi id 15.20.8137.018; Mon, 2 Dec 2024
- 09:47:21 +0000
-From: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: "robh@kernel.org" <robh@kernel.org>,
-        "conor+dt@kernel.org"
-	<conor+dt@kernel.org>,
-        "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org"
-	<linux-pwm@vger.kernel.org>
-Subject: RE: [PATCH v3 1/2] dt-bindings: iio: adf4371: add rdiv2 and doubler
-Thread-Topic: [PATCH v3 1/2] dt-bindings: iio: adf4371: add rdiv2 and doubler
-Thread-Index: AQHbQnQq0niAj4s/T0yYjCevKGPL9LLQCAcAgAKv0CA=
-Date: Mon, 2 Dec 2024 09:47:21 +0000
-Message-ID:
- <CY4PR03MB3399CB671D685BA8164E0F3B9B352@CY4PR03MB3399.namprd03.prod.outlook.com>
-References: <20241129153356.63547-1-antoniu.miclaus@analog.com>
-	<20241129153356.63547-2-antoniu.miclaus@analog.com>
- <20241130163948.269289dc@jic23-huawei>
-In-Reply-To: <20241130163948.269289dc@jic23-huawei>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-dg-ref:
- =?iso-8859-2?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcYW1pY2xhdX?=
- =?iso-8859-2?Q?NcYXBwZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZi?=
- =?iso-8859-2?Q?ODRiYTI5ZTM1Ylxtc2dzXG1zZy02ZDJiOGQ0ZC1iMDkyLTExZWYtYWZmOC?=
- =?iso-8859-2?Q?00MTU2NDUwMDAwMzBcYW1lLXRlc3RcNmQyYjhkNGYtYjA5Mi0xMWVmLWFm?=
- =?iso-8859-2?Q?ZjgtNDE1NjQ1MDAwMDMwYm9keS50eHQiIHN6PSIzNzcwIiB0PSIxMzM3Nz?=
- =?iso-8859-2?Q?YwNjQ0MjUzMTk5NzAiIGg9Ii8vcDd6KzdlV1J5S2dhN0ZUQmp2WW9hV2F5?=
- =?iso-8859-2?Q?Yz0iIGlkPSIiIGJsPSIwIiBibz0iMSIgY2k9ImNBQUFBRVJIVTFSU1JVRk?=
- =?iso-8859-2?Q?5DZ1VBQUVvQ0FBQWlYb1V2bjBUYkFVV3hPWGg4WkpSOFJiRTVlSHhrbEh3?=
- =?iso-8859-2?Q?REFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFIQUFBQURhQVFBQUFBQUFBQU?=
- =?iso-8859-2?Q?FBQUFBQUFBQUFBQUFBQUFFQUFRQUJBQUFBbWk3Sm1RQUFBQUFBQUFBQUFB?=
- =?iso-8859-2?Q?QUFBSjRBQUFCaEFHUUFhUUJmQUhNQVpRQmpBSFVBY2dCbEFGOEFjQUJ5QU?=
- =?iso-8859-2?Q?c4QWFnQmxBR01BZEFCekFGOEFaZ0JoQUd3QWN3QmxBRjhBWmdCdkFITUFh?=
- =?iso-8859-2?Q?UUIwQUdrQWRnQmxBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU?=
- =?iso-8859-2?Q?FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?iso-8859-2?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUVBQUFBQUFBQUFBZ0FBQUFBQW5nQU?=
- =?iso-8859-2?Q?FBR0VBWkFCcEFGOEFjd0JsQUdNQWRRQnlBR1VBWHdCd0FISUFid0JxQUdV?=
- =?iso-8859-2?Q?QVl3QjBBSE1BWHdCMEFHa0FaUUJ5QURFQUFBQUFBQUFBQUFBQUFBQUFBQU?=
- =?iso-8859-2?Q?FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?iso-8859-2?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU?=
- =?iso-8859-2?Q?FBQUFBQUFBQUFBQUFBQUFRQUFBQUFBQUFBQ0FBQUFBQUNlQUFBQVlRQmtB?=
- =?iso-8859-2?Q?R2tBWHdCekFHVUFZd0IxQUhJQVpRQmZBSEFBY2dCdkFHb0FaUUJqQUhRQW?=
- =?iso-8859-2?Q?N3QmZBSFFBYVFCbEFISUFNZ0FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?iso-8859-2?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU?=
- =?iso-8859-2?Q?FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?iso-8859-2?Q?QUFBQUFBQUFCQUFBQUFBQUFBQUlBQUFBQUFBPT0iLz48L21ldGE+?=
-x-dg-rorf:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: CY4PR03MB3399:EE_|CH0PR03MB6178:EE_
-x-ms-office365-filtering-correlation-id: cd2c940b-0912-4f63-7c4b-08dd12b6512f
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|376014|38070700018;
-x-microsoft-antispam-message-info:
- =?iso-8859-2?Q?ShrT7YJWTfoYvGClC8IUkKBAzbGqTVt44KzrO3akvvfZxqsuHgWcqgEdn+?=
- =?iso-8859-2?Q?MkwpfzHc2rzIbeUVFfsiLAzgyfqf4WrYnf868XCqRAO1EnsoIHi+dJUKKd?=
- =?iso-8859-2?Q?9GpGMVQ/6jZ6ovgknAK/Wd4uZtDNPbqJB7E24AoHoN6HWd8MhUigDyhA6Q?=
- =?iso-8859-2?Q?Ri0Yxt2ev5moXs4Nc+f7TlKb+0oXOg00eO3AZriCjsYClDd7JedN3hvm+2?=
- =?iso-8859-2?Q?IHuflUzLbtyiscbvsL3qhZxfiS+f2/viN+2k0F7+OFascREfL5MVzYt18d?=
- =?iso-8859-2?Q?vsw+U6poMQFeS+II6REpmLhq+5h8Ck/kjJEjCXCfGSJNVyOCxvIWCMrTJm?=
- =?iso-8859-2?Q?E8WM6XGBlprlD0b9D7RmZsrrDSvg6qq+bkM3E3p1p0ioYvGfyfNKzIO1b0?=
- =?iso-8859-2?Q?ZFQ5BKEELSQZWFsjXbibaV87vdGv2m0hGM5aRoEkNlHoPzsguVqHfmPUyh?=
- =?iso-8859-2?Q?zkQ/RP10RybVgIfXJGLP1RoPLfy4KY9pmRzWk8+RJBS/xAvj69tTzlTxbM?=
- =?iso-8859-2?Q?+PolWxcmEoJVEZke3sSUXI4xXQGWV/gNV6YtB1Di0FW3fEw6DFfGiYu4Up?=
- =?iso-8859-2?Q?R9/XTWEViWFn6A6DcJY0ck8UUdxeGZaygmakWcmQ2tGyEQYcWvJptSeM0S?=
- =?iso-8859-2?Q?uvQN9/QmTWK1zzePD8RIHmwe53nvnIT6VPmrzkUEUNJT6tweiTEEXBZ1OR?=
- =?iso-8859-2?Q?gsWdNu3FQrldA1UfKxg0FXh+5rx9K2NuWjdGeFNkXC+rf994+TYoDLhAKq?=
- =?iso-8859-2?Q?u6yWYrOX7/vJghF2ECqFLSa8aJsKqsyHQ4eqYncUi7so7sp7P3rYV4Wwd8?=
- =?iso-8859-2?Q?6rzWmrWjWJWHnOpPEeT8vdy7VAi8qBFbeOmDyJVL6Q+4jkr2DSWUIE1mY/?=
- =?iso-8859-2?Q?1f6q18IQ5IPXZkzIw0RYRQGdvFm6OXzxWdoTe1SAfpzp5wWwRQiOBaWUAy?=
- =?iso-8859-2?Q?eFmo1sKb82jDu/JkBUCMgv/qyygcAeEL1dwMEw7bgn1xxOwK2+6BpKrQ4k?=
- =?iso-8859-2?Q?5ZolyG+peGl1fymmjVphF85+0s9g8GKfKwk0QMCGOygoN/MZgl9SyuVFMs?=
- =?iso-8859-2?Q?1thDz3/hfQCQwtvQcKUEsZgT4C7OnMoFq5Alr04knkldPn22oICZBSuhJf?=
- =?iso-8859-2?Q?eYxBJEpEUzEhlI0rPRnZmukw3BCpUSsAr9f+SD9rDIseUz5J6BlS9aPtj0?=
- =?iso-8859-2?Q?gI9mi8mAJiiO2l7JMqgk0gP97Ywa2YuMarG6uWY0jRNPUzarcYE3kt0QLc?=
- =?iso-8859-2?Q?K6BXfP+9IkpXnfcWyn14MLtmM6UBTonFP7ywYyN5bx95toPUM56fFWgHSy?=
- =?iso-8859-2?Q?RPWhFodzjDGoKeJqbU8gfc49q3oLk7dDeg+n/Q9J4Zdl3yncEJT5LCut1I?=
- =?iso-8859-2?Q?2c5bEQclNLmYEU9WrRv6py+4yV2DwIN1op6xX2OXdlKWWXwxk9KPlTBb3C?=
- =?iso-8859-2?Q?Eq8f3D5o3R/SfAxyWKB7Ejh00/4yG0LKjgNVcw=3D=3D?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR03MB3399.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-2?Q?prZLCq73YL9LNjNVWxOpQBRAFdwzewF/lGKznXC4/BzyMCEAJGSuKR5Mxb?=
- =?iso-8859-2?Q?0xBIeXroDL0juRGfQg91igq4sld7ypGgHseRVVW8rKpwZe0+g1lvifOMqT?=
- =?iso-8859-2?Q?5UPyq4K0u26sJVzrPV5K7B6BA5CZFyilBbk3XGzsaG2VcJ5NmcGaLIBxuh?=
- =?iso-8859-2?Q?u27tioTenLTLACiQ0z6ZHCmNhrtYa5dUIGGwKehpJhX+vNV5dzDM323HVf?=
- =?iso-8859-2?Q?e94BQka/wWmPyDPR9HyiEXqTfTo+a+DtxfGq3AAcfn6/ZuowS+j2ecVZlr?=
- =?iso-8859-2?Q?97G8iafwWjQc25QniSPVzjgRP4+HWKMXQpARDmMlh5KhgyjC7pKEA6+agH?=
- =?iso-8859-2?Q?Yky6TUCZrA784haEHbHUi9s0+miE+gm3Jyjvf2J/kFjFH+3gc9agnfxPB9?=
- =?iso-8859-2?Q?NEA+xu4Zd/SuOAL5S/AQQMtgmWYC6MTjrLCcWIwquyHRTzZ0wCLMVjZo1Z?=
- =?iso-8859-2?Q?l5N7M3GJiOnxfuKeZNWIUGq6if/FybfnQzTFJtpKhZ6Hs6zV9EBzkVjsh0?=
- =?iso-8859-2?Q?ifOTxZ4Ss8N/SACCTnsSGE2IlYhhTeX3UtBdSOqm/fzpEq8uvfvfGgL2bh?=
- =?iso-8859-2?Q?57ZH8/fYo+WmbWWItWU56oKTHqzAq/qCxiHeqqrOqaWH9CBBgqnVR/yu6U?=
- =?iso-8859-2?Q?aHrPE8FdT1OSaSyvWS7kl48YXX1XInS4qfoDFoxbtiff46fiUXmZadOcKA?=
- =?iso-8859-2?Q?tqinERDDm6x3ssQOVnReKr8Fwk238cwPsnESlaLJkS8TDvNyBSCac8fewr?=
- =?iso-8859-2?Q?Acd0bq+RMHDp+FVBsdjjRx0npKmAhpPOsbjiRzzNYd59miwqgvMV/SvEZh?=
- =?iso-8859-2?Q?vzHINlMa+lxtxryHfzolObignyms1W7Rcj3o26sO88QCheUFt4M4lfeNOX?=
- =?iso-8859-2?Q?cITCz0k8CxuvI/o94PzNvp9fDrd2x5nWtL9T5SctU0bESgzVqqVi+wBDet?=
- =?iso-8859-2?Q?NtHIQV+yjVShHf82kWj83z9I2PqKqocIq6my/OALZnqijRg/0gie0qBszq?=
- =?iso-8859-2?Q?5lOHraL01stRIqR4QU7/Grb2a3o/rEpRdsa2vB+ePGARM2s6xLweepp0ev?=
- =?iso-8859-2?Q?09Pr2jLQ1m0z/1Vf2FstKweRiBjKmD6gC5a5eiOxjgk1xJ4CwQwTrGEzfj?=
- =?iso-8859-2?Q?eBRxxrV6sDNEs5Ar++OSRd0hwuc6ew+f2PZBzznJJVpGBvTtMgJ/FveMFo?=
- =?iso-8859-2?Q?GZJW+e4fvSb7o0Ux2KJUbx3SzIe0JT7LNiCMNPTdJ4wJA+8P5Vtyor+HhU?=
- =?iso-8859-2?Q?oltJgFxdNa4Sjy75MhSZLuUs4hXZknfeaWzYQ2KVf9PistVIChJBJ/f6q/?=
- =?iso-8859-2?Q?hYmjRYNylRsDd1M//U6p3YrASY+6+RivSDMnIiW74xQ2cAJ1/xqYIzchAp?=
- =?iso-8859-2?Q?tXN4mK/oLiXvyEwDGNtYwH1c8bFq5vbKIYxk4HVw53PptCjlCm5uXIcjX0?=
- =?iso-8859-2?Q?Bj+QDlkqVEgJ4XBwqAMxcDyBIV2wh8HyBN2Uz/LFvRR7Kl3DY+IP2GLb89?=
- =?iso-8859-2?Q?EuHkjXdT1fjrtrbfa9Ryx+PINBNsRlcgtjkmk8ttea3onA9lAU9z8bM4G8?=
- =?iso-8859-2?Q?E79EYXrwYZh/GSeNyKrGXPv4TZ8v7Pw+ADKy38BApYGIWuaMfHwXz2fiJA?=
- =?iso-8859-2?Q?JSs/NjiRj+7Gx4aUC2nsZBGh5X/f/DGRws?=
-Content-Type: text/plain; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="zYuWdesn"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-434a14d6bf4so36402115e9.1
+        for <linux-iio@vger.kernel.org>; Mon, 02 Dec 2024 02:14:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1733134468; x=1733739268; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=C3sHijHsObcmuC5+B0nCO3Vf+v46fobTZzfGbKsmzqY=;
+        b=zYuWdesn9Lcc9QTDd3FwO3o5mYT9tzQpJUMk3xEsvQFZIyQ4Go0OU1lTzeqQsj+GfJ
+         rnoaYgJRVC9Vfe48ZtypMVps3K5T0Hvba1s9Fsnr3YjDzdql6og1HhY6iUHAR9vXyMoj
+         zlr1PnxDaQODaUu7vHEWpjRFOdI8spP621aV+fn4NV8piqEB2ysJPAES65OrjgxM2DiP
+         ta6cD7fhg9B+6iRh5ncz4Xa12/iz4qlJ9IvnZY+ZBTOa3/bK8B/xWrXmohwZlEJVdCgI
+         ShvP4vhJgHkIZa1EzN9c/3LfSVooqO55Cn8Xn2dyZVCnxkuv8A2r2eaCtKiej4BxpLOh
+         RiHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733134468; x=1733739268;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=C3sHijHsObcmuC5+B0nCO3Vf+v46fobTZzfGbKsmzqY=;
+        b=JG6a5hueSheMbGojAemMCDB6vPqJzBbN2xwVwJ+CAnEAlDTpnrQNXCsazWY8iLMfEw
+         7rXaMvWPpScmWuFlX8CcutBLZmMOWEzfO5puzvDbxiiBPD/IEQs9LIfCHC+ziuC5xkJf
+         RwDfg4uugte/mQNg9dY2ku/oNMeDn6deuCP8O5YoqxBzxZktL5gVaSE62SUFA0kfWvJk
+         Y5NOWBLzVfbppV9ewD/WOSCICqFaBl/Sgh0oJD4kL8el4t+qL2qWGY13qL8HvvYhGoKz
+         9B6za4yxAUl22/J/jCMD4gypS1MmTDK9Iy240BGABPgx+F2PTZx9v4vVmIDxTyX83aSN
+         Cpaw==
+X-Gm-Message-State: AOJu0YwK9v/TrapR+KRAJZ9NrcP7/0PCCdZiC3sQmgnU49wYV58Abcef
+	cOs2cRvN8IrNsk2ao/0tLFBr490ZvW/qE4NxFzWoIOEH19JVE9ixcFwMFQy0NuA=
+X-Gm-Gg: ASbGncssRf5MaGxhru/7kVMBy+K1WCXgsvKl8Udfkp1umz5EaAjR5EPY3Nge8xS1fzJ
+	kgNSXmgftWK01+d2XrwDyU/HX6l+gatR7ppdVYFvEJC1KA66tRmxndO1LLkGqdCVWpYtbqpP2jf
+	xxF2TKCE/fKI7sOQ41gD/hWz6I2bhq4TRTOvbiyzAyy/SEo3ltt1EuXJd64tDkKlbcyOoRYyNm6
+	Oqw8aXjdVZwdaTcdjBmrltbwwhKKEk65pzft7pgfgCQKA6Opy3O2aZ3jiq5eGPDVWvgrnzi1Cgm
+	NmxD0s5hjG40Ih1EKfoa
+X-Google-Smtp-Source: AGHT+IFjx/yJJybfJqzTJyGbOn2E5AZSxv5el1mA0qTMGPGYHc4xLYJUUBB5kp/oNkqyJxkeV2587w==
+X-Received: by 2002:a05:600c:4e8b:b0:431:93d8:e1a1 with SMTP id 5b1f17b1804b1-434a9df1f34mr189694025e9.27.1733134467826;
+        Mon, 02 Dec 2024 02:14:27 -0800 (PST)
+Received: from [127.0.0.1] (alille-653-1-300-114.w90-1.abo.wanadoo.fr. [90.1.180.114])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-434aa7e5e59sm181138325e9.44.2024.12.02.02.14.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Dec 2024 02:14:27 -0800 (PST)
+From: Guillaume Ranquet <granquet@baylibre.com>
+Date: Mon, 02 Dec 2024 11:09:52 +0100
+Subject: [PATCH v3 1/2] iio: adc: ad7173: add calibration support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR03MB3399.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd2c940b-0912-4f63-7c4b-08dd12b6512f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Dec 2024 09:47:21.1702
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Fi/v8q2s7Vellog+yyKPIBRztWQrvGiVrQVYCGwYug81CeAXUPhMM1hbIO3T6ljbYemLgMF43W4KlFBj5SB8mH47wKbOpGMQUcV5XxAxSaM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR03MB6178
-X-Proofpoint-GUID: sAocVfrW8RIj2qr8mnKh_Qz4JCtq6_YA
-X-Proofpoint-ORIG-GUID: sAocVfrW8RIj2qr8mnKh_Qz4JCtq6_YA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
- mlxlogscore=999 spamscore=0 clxscore=1015 mlxscore=0 adultscore=0
- priorityscore=1501 phishscore=0 suspectscore=0 lowpriorityscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2412020086
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20241202-ad411x_calibration-v3-1-beb6aeec39e2@baylibre.com>
+References: <20241202-ad411x_calibration-v3-0-beb6aeec39e2@baylibre.com>
+In-Reply-To: <20241202-ad411x_calibration-v3-0-beb6aeec39e2@baylibre.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Guillaume Ranquet <granquet@baylibre.com>
+X-Mailer: b4 0.15-dev
 
+The ad7173 family of chips has up to four calibration modes.
 
+Internal zero scale: removes ADC core offset errors.
+Internal full scale: removes ADC core gain errors.
+System zero scale: reduces offset error to the order of channel noise.
+System full scale: reduces gain error to the order of channel noise.
 
---
-Antoniu Micl=E3u=BA
+All voltage channels will undergo an internal zero/full scale
+calibration at bootup.
 
-> -----Original Message-----
-> From: Jonathan Cameron <jic23@kernel.org>
-> Sent: Saturday, November 30, 2024 6:40 PM
-> To: Miclaus, Antoniu <Antoniu.Miclaus@analog.com>
-> Cc: robh@kernel.org; conor+dt@kernel.org; linux-iio@vger.kernel.org;
-> devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
-> pwm@vger.kernel.org
-> Subject: Re: [PATCH v3 1/2] dt-bindings: iio: adf4371: add rdiv2 and doub=
-ler
->=20
-> [External]
->=20
-> On Fri, 29 Nov 2024 17:33:52 +0200
-> Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
->=20
-> > Add support for reference doubler enable and reference divide by 2
-> > clock.
-> >
-> > Both of these blocks are optional on the frequency path within the
-> > chip and can be adjusted depending on the custom needs of the
-> > applications.
-> Thanks for the additional info!
-> >
-> > The doubler is useful for increasing the PFD comparison frequency
-> > which will result in a noise performance of the system.
->=20
-> So I'll play devil's advocate. Improved noise performance sounds
-> good. If it doesn't take me out of range of allowed frequencies, why
-> would I not turn it on?  What is it about the surrounding circuitry
-> etc that would make this a bad idea for some uses of this chip
-> but not others?
->=20
-> >
-> > The reference divide by 2 divides the reference signal by 2,
-> > resulting in a 50% duty cycle PFD frequency.
->=20
-> why would I want one of those? My 'guess' is this makes sense
-> if the reference frequency is too high after the application of
-> the scaling done by the 5 bit counter.  In effect it means the
-> division circuitry does divide by 1-31, 2-64 in steps of 2.
->=20
-> That could all be wrapped up in the existing control of the
-> frequency, and so far I'm still not seeing a strong reason why
-> it belongs in DT.
->=20
-> The 50% cycle thing is a bit of a red herring as assuming it
-> is triggered on say the rising edge of the high frequency signal
-> to toggle the divided signal, that will always be a 50% duty cycle.
->=20
-As mentioned in the cover letter this was mostly a request from
-customers that are using adf4371 on a large scale and they need
-these features to be controllable somehow by the user.
+System zero/full scale can be done after bootup using the newly created
+iio interface 'sys_calibration' and 'sys_calibration_mode'
 
-Since these attributes were already validated as devicetree properties
-for adf4350 on mainline, I found this as the best approach to satisfy
-both ends.
+Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+---
+ drivers/iio/adc/ad7173.c | 116 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 116 insertions(+)
 
-Antoniu
-> Jonathan
->=20
-> >
-> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> > ---
-> > changes in v3:
-> >  - add explanation in commit body
-> >  .../devicetree/bindings/iio/frequency/adf4371.yaml    | 11 +++++++++++
-> >  1 file changed, 11 insertions(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/frequency/adf4371.ya=
-ml
-> b/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml
-> > index 1cb2adaf66f9..ef241c38520c 100644
-> > --- a/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml
-> > @@ -40,6 +40,17 @@ properties:
-> >        output stage will shut down until the ADF4371/ADF4372 achieves l=
-ock
-> as
-> >        measured by the digital lock detect circuitry.
-> >
-> > +  adi,reference-doubler-enable:
-> > +    type: boolean
-> > +    description:
-> > +      If this property is present, the reference doubler block is enab=
-led.
-> > +
-> > +  adi,adi,reference-div2-enable:
-> > +    type: boolean
-> > +    description:
-> > +      If this property is present, the reference divide by 2 clock is =
-enabled.
-> > +      This feature can be used to provide a 50% duty cycle signal to t=
-he PFD.
-> > +
-> >  required:
-> >    - compatible
-> >    - reg
+diff --git a/drivers/iio/adc/ad7173.c b/drivers/iio/adc/ad7173.c
+index a0fca16c3be07534547a5b914d525d05f7425340..5e711b9c80840547bcfa2ad8f5fc8e15c1acc5d2 100644
+--- a/drivers/iio/adc/ad7173.c
++++ b/drivers/iio/adc/ad7173.c
+@@ -150,6 +150,11 @@
+ #define AD7173_FILTER_ODR0_MASK		GENMASK(5, 0)
+ #define AD7173_MAX_CONFIGS		8
+ 
++#define AD7173_MODE_CAL_INT_ZERO		0x4 /* Internal Zero-Scale Calibration */
++#define AD7173_MODE_CAL_INT_FULL		0x5 /* Internal Full-Scale Calibration */
++#define AD7173_MODE_CAL_SYS_ZERO		0x6 /* System Zero-Scale Calibration */
++#define AD7173_MODE_CAL_SYS_FULL		0x7 /* System Full-Scale Calibration */
++
+ struct ad7173_device_info {
+ 	const unsigned int *sinc5_data_rates;
+ 	unsigned int num_sinc5_data_rates;
+@@ -175,6 +180,7 @@ struct ad7173_device_info {
+ 	bool has_input_buf;
+ 	bool has_int_ref;
+ 	bool has_ref2;
++	bool has_internal_fs_calibration;
+ 	bool higher_gpio_bits;
+ 	u8 num_gpios;
+ };
+@@ -196,6 +202,7 @@ struct ad7173_channel {
+ 	unsigned int chan_reg;
+ 	unsigned int ain;
+ 	struct ad7173_channel_config cfg;
++	u8 syscalib_mode;
+ };
+ 
+ struct ad7173_state {
+@@ -272,6 +279,7 @@ static const struct ad7173_device_info ad4111_device_info = {
+ 	.has_input_buf = true,
+ 	.has_current_inputs = true,
+ 	.has_int_ref = true,
++	.has_internal_fs_calibration = true,
+ 	.clock = 2 * HZ_PER_MHZ,
+ 	.sinc5_data_rates = ad7173_sinc5_data_rates,
+ 	.num_sinc5_data_rates = ARRAY_SIZE(ad7173_sinc5_data_rates),
+@@ -291,6 +299,7 @@ static const struct ad7173_device_info ad4112_device_info = {
+ 	.has_input_buf = true,
+ 	.has_current_inputs = true,
+ 	.has_int_ref = true,
++	.has_internal_fs_calibration = true,
+ 	.clock = 2 * HZ_PER_MHZ,
+ 	.sinc5_data_rates = ad7173_sinc5_data_rates,
+ 	.num_sinc5_data_rates = ARRAY_SIZE(ad7173_sinc5_data_rates),
+@@ -326,6 +335,7 @@ static const struct ad7173_device_info ad4114_device_info = {
+ 	.has_temp = true,
+ 	.has_input_buf = true,
+ 	.has_int_ref = true,
++	.has_internal_fs_calibration = true,
+ 	.clock = 2 * HZ_PER_MHZ,
+ 	.sinc5_data_rates = ad7173_sinc5_data_rates,
+ 	.num_sinc5_data_rates = ARRAY_SIZE(ad7173_sinc5_data_rates),
+@@ -343,6 +353,7 @@ static const struct ad7173_device_info ad4115_device_info = {
+ 	.has_temp = true,
+ 	.has_input_buf = true,
+ 	.has_int_ref = true,
++	.has_internal_fs_calibration = true,
+ 	.clock = 8 * HZ_PER_MHZ,
+ 	.sinc5_data_rates = ad4115_sinc5_data_rates,
+ 	.num_sinc5_data_rates = ARRAY_SIZE(ad4115_sinc5_data_rates),
+@@ -360,6 +371,7 @@ static const struct ad7173_device_info ad4116_device_info = {
+ 	.has_temp = true,
+ 	.has_input_buf = true,
+ 	.has_int_ref = true,
++	.has_internal_fs_calibration = true,
+ 	.clock = 4 * HZ_PER_MHZ,
+ 	.sinc5_data_rates = ad4116_sinc5_data_rates,
+ 	.num_sinc5_data_rates = ARRAY_SIZE(ad4116_sinc5_data_rates),
+@@ -505,6 +517,105 @@ static const struct regmap_config ad7173_regmap_config = {
+ 	.read_flag_mask = BIT(6),
+ };
+ 
++enum {
++	AD7173_SYSCALIB_ZERO_SCALE,
++	AD7173_SYSCALIB_FULL_SCALE,
++};
++
++static const char * const ad7173_syscalib_modes[] = {
++	[AD7173_SYSCALIB_ZERO_SCALE] = "zero_scale",
++	[AD7173_SYSCALIB_FULL_SCALE] = "full_scale",
++};
++
++static int ad7173_set_syscalib_mode(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan,
++				    unsigned int mode)
++{
++	struct ad7173_state *st = iio_priv(indio_dev);
++
++	st->channels[chan->channel].syscalib_mode = mode;
++
++	return 0;
++}
++
++static int ad7173_get_syscalib_mode(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan)
++{
++	struct ad7173_state *st = iio_priv(indio_dev);
++
++	return st->channels[chan->channel].syscalib_mode;
++}
++
++static ssize_t ad7173_write_syscalib(struct iio_dev *indio_dev,
++				     uintptr_t private,
++				     const struct iio_chan_spec *chan,
++				     const char *buf, size_t len)
++{
++	struct ad7173_state *st = iio_priv(indio_dev);
++	bool sys_calib;
++	int ret, mode;
++
++	ret = kstrtobool(buf, &sys_calib);
++	if (ret)
++		return ret;
++
++	mode = st->channels[chan->channel].syscalib_mode;
++	if (sys_calib) {
++		if (mode == AD7173_SYSCALIB_ZERO_SCALE)
++			ret = ad_sd_calibrate(&st->sd, AD7173_MODE_CAL_SYS_ZERO,
++					      chan->address);
++		else
++			ret = ad_sd_calibrate(&st->sd, AD7173_MODE_CAL_SYS_FULL,
++					      chan->address);
++	}
++
++	return ret ? : len;
++}
++
++static const struct iio_enum ad7173_syscalib_mode_enum = {
++	.items = ad7173_syscalib_modes,
++	.num_items = ARRAY_SIZE(ad7173_syscalib_modes),
++	.set = ad7173_set_syscalib_mode,
++	.get = ad7173_get_syscalib_mode
++};
++
++static const struct iio_chan_spec_ext_info ad7173_calibsys_ext_info[] = {
++	{
++		.name = "sys_calibration",
++		.write = ad7173_write_syscalib,
++		.shared = IIO_SEPARATE,
++	},
++	IIO_ENUM("sys_calibration_mode", IIO_SEPARATE,
++		 &ad7173_syscalib_mode_enum),
++	IIO_ENUM_AVAILABLE("sys_calibration_mode", IIO_SHARED_BY_TYPE,
++			   &ad7173_syscalib_mode_enum),
++	{ }
++};
++
++static int ad7173_calibrate_all(struct ad7173_state *st, struct iio_dev *indio_dev)
++{
++	int ret;
++	int i;
++
++	for (i = 0; i < st->num_channels; i++) {
++		if (indio_dev->channels[i].type != IIO_VOLTAGE)
++			continue;
++
++		ret = ad_sd_calibrate(&st->sd, AD7173_MODE_CAL_INT_ZERO, st->channels[i].ain);
++		if (ret < 0)
++			return ret;
++
++		if (st->info->has_internal_fs_calibration) {
++			ret = ad_sd_calibrate(&st->sd, AD7173_MODE_CAL_INT_FULL,
++					      st->channels[i].ain);
++			if (ret < 0)
++				return ret;
++		}
++	}
++
++	return 0;
++}
++
+ static int ad7173_mask_xlate(struct gpio_regmap *gpio, unsigned int base,
+ 			     unsigned int offset, unsigned int *reg,
+ 			     unsigned int *mask)
+@@ -801,6 +912,10 @@ static int ad7173_setup(struct iio_dev *indio_dev)
+ 	if (!st->config_cnts)
+ 		return -ENOMEM;
+ 
++	ret = ad7173_calibrate_all(st, indio_dev);
++	if (ret)
++		return ret;
++
+ 	/* All channels are enabled by default after a reset */
+ 	return ad7173_disable_all(&st->sd);
+ }
+@@ -1023,6 +1138,7 @@ static const struct iio_chan_spec ad7173_channel_template = {
+ 		.storagebits = 32,
+ 		.endianness = IIO_BE,
+ 	},
++	.ext_info = ad7173_calibsys_ext_info,
+ };
+ 
+ static const struct iio_chan_spec ad7173_temp_iio_channel_template = {
+
+-- 
+2.47.0
 
