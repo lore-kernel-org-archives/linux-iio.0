@@ -1,64 +1,65 @@
-Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB64A1FAC52
-	for <linux-iio@vger.kernel.org>; Mon,  2 Dec 2024 10:14:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CC071FC117
+	for <linux-iio@vger.kernel.org>; Mon,  2 Dec 2024 10:14:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733134472; cv=none; b=fdbKPiGBopV50i1l3o5okFolJBarwoA82dyf134HGmnTpCjl1a0889sC8aDGfdHqd4thYk+M9jOnYD+jUyXkJfOj0DcYGF+pO1dauLZJvXBiTjijhHxUJdpj7k1wKQQV0/LC/X7XbBF03b5q63Hi5HVu5PR3Es+YH/BoKvElgIc=
+	t=1733134473; cv=none; b=PfvUSpYTaLCIt/Fzp6GedS0WXy7u5IaSoeoDxAdnmlSRXefyRR4ilvEZIDxl18Cs5q7JUt8q+jTqhXBR9SLKH4SOmY0hAKLghLCE6/7JXikrDq3iFu5ihzdi+7QAERwp+g/a4JTdNjP3gDJ6TBK1E5IYj5jA0TMvAvO3aJgbs8s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733134472; c=relaxed/simple;
-	bh=y89btrVZZHWMs6tFQVeVoCpJGbf3KUnvEJFPQGsh1qE=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=lH8Qm5v89UvQkQQLX2yMWtWYZ1ukIscQymDTU9lw2x/3aQJv/xyrkw2+EdwpvnnbEFEwRbnrac3JIXvatQNOSpQNYjOuXJxacx+yJOR4+LJSxGwlehulgVHPMuj5hn80L7GAD64NjT0es/74Q3PF6tsF0OT3QQJauUtmspsDA/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=WI5LKMdR; arc=none smtp.client-ip=209.85.208.180
+	s=arc-20240116; t=1733134473; c=relaxed/simple;
+	bh=gUUTuRBqFh6i1HpXlE6OB83LoDsqVr3hA6U4CkK7QvM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=b+Ng1pToicByfMJcVPNhg5Da12toZ24GglfCUG+aeQesG7Ylowc0Tm/duzTEpnlD+q2aKpJAGbataWNIMHIGRSCmpBeWxicOAkCRl8yHY3a/pG3liHGN2s6E9G9MtzQZ9l4TBBibiTuTxTTXCGdip9DE8bcKP/g4XyLsXhV/M9c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=o2qHcMqc; arc=none smtp.client-ip=209.85.128.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="WI5LKMdR"
-Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2ffced84ba8so36465061fa.2
-        for <linux-iio@vger.kernel.org>; Mon, 02 Dec 2024 02:14:28 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="o2qHcMqc"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-434aafd68e9so33984025e9.0
+        for <linux-iio@vger.kernel.org>; Mon, 02 Dec 2024 02:14:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1733134467; x=1733739267; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=MEqu8QTTmJEH9b+tgcljzF1wPRZvnpRGaZo9l19yhks=;
-        b=WI5LKMdRcFrPoL//rzJE58z4pyqRrIkPFDU4pzP2yGfuvzjSxJLJGmAl805RTA8aRC
-         dYTtrFoZFD9H/ZIHnzOA1UJCMJwOOKTAp7MvXZUIU0BNDsGVXoW86aN9zBtZcioVFCWL
-         ZMUSjKM8/Sluli6mFT4J02eVRZ74AqxMJdJtQLvlhRGmPuy8Lj+LBYs4Haxh2l8FuC5c
-         iknCp20QBNWQMElV+Jfo8INeVGjROv9nYNH1HaCe/T8gNJjimzDR/lLSMDQikgUXDH/7
-         CbZJS7JyZKyAquOOAdw/69ktilttlQPfUvdlsC/PbS7e/RKzXdzQ3QWHO4CI+5q3cM1j
-         5pYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733134467; x=1733739267;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1733134469; x=1733739269; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=MEqu8QTTmJEH9b+tgcljzF1wPRZvnpRGaZo9l19yhks=;
-        b=bEoce2gT2bCI/F2RLmW5C98J9ja5U6Y+Og31LkGWq5RgjsX2sTn1SRqnZMTCDsTI5Q
-         mzn7XNHTA1X+ts1pTnluJ+yMkPffuLqP1XKonasG/RwSoIqcxskL/iLVSBX2DIYTYFeS
-         uY/tYWCV/eWD97SBM51j11nzcvo/2JL5bOxTXuGHbYKplIcfuWOkq4npL9UgTtYfjG19
-         gxNqdDFqr3V1nwYrBhMcTk5sQKoMpK6DRBDo7Np9qj4hMFS6JiV3jcM+BEgSnYdM5sjf
-         zXKMhzR3j3pE80ZqEmyAiunteB3vXXdwhDo2iX1xb/9OPMPa9ZSypWMlyEctbztl6gVK
-         dg/Q==
-X-Gm-Message-State: AOJu0YwRdYnFgsBQ/Ghe9j/kXTgWakuHU8Tmiq8XO00BDHw/nVRLxFzX
-	iZRhw0hoadWT1TXA7XLBpgw4cau48iRuIE+CyYv7wVycb6kdONzbHGZOWjbslaM=
-X-Gm-Gg: ASbGnctnqqryDO3+pCeBK/Ni8tEuo3M6aq27xPjkF+sEyXwXspnQ/VHnGSHVHNjHiDi
-	EaXO4QxnQRoP9yQTE6TR1LHoTw54+irwf4IkmRJlLuufiPogtKYOyA9GUZOhUJmobd8eO2YUdss
-	ClY7lHuc9AUAuILTxtn1rMMOMum6KR3g7XyFbcph37g1FK/+CU8b7pyLegHdBtNpmrLHYMAwDGL
-	rV8tYkiZzE/L8wixblwPE4Www2bux3eC6MzHBnPoGVPML11VPSF5YmXnmxJUj0nuJgsByY3fZ/K
-	GKYHjtB27ADBNrx82pZs
-X-Google-Smtp-Source: AGHT+IFouL2tbzASUTdPpFT+L+a+KMjLRYgELVVpgbmS4v/eYLV2yBBgeVOSFMTcgCxdfeHhL4SyXw==
-X-Received: by 2002:a2e:91d1:0:b0:2ff:cae1:2297 with SMTP id 38308e7fff4ca-2ffd60cfac5mr107823531fa.26.1733134466887;
-        Mon, 02 Dec 2024 02:14:26 -0800 (PST)
+        bh=UShwHa1ujiu/7K4Zm9WNENd64U85UqA/kqLEIbdrEk4=;
+        b=o2qHcMqcYMvouPrItrEazojopPjPbTAevmFGOHISVHdHtCPtB1icC70Kx+hDkpXfHn
+         o7UKuRLklBY6KukcRYWQ/1m7KVNInrsSzk1BqiRKTMmYe5sKQMoc69fH8TD7ZoIEugOx
+         +CEA+XjT4OrUQrQDRH9M0sdMFVfjsIc8LlO3igSXCFC99O1SYMroRwF31Y+6krqfd9h+
+         e8/qgq7K44DETVg+2F0Ydy/R3cE29Dr02sIoaWQhWjWYThrEo21205keyLZC9UOxmxLL
+         tX5sGcrIMrSnx6MrhEH2X2xDgC4G0MYXWzmtGcasek2RteplzJJMZM8aVs9V+dqEbE5g
+         F+Kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733134469; x=1733739269;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UShwHa1ujiu/7K4Zm9WNENd64U85UqA/kqLEIbdrEk4=;
+        b=YaUuOeNrwPU4yE74h3zuH0wgNvc+aH6HlPg3oRUrKhIMJUG0cHBOfarARCPmVj9SZn
+         92cGPuuDXjl7D9+ZYT3r0bBNV9oyYqurkZ6M0eAjZfmPlV7ehUqEanfTT2ee3NSKyldG
+         TMKNBUMn3fowFAfa5YkVIWgPQJ0SvmyUr79M54JbZalF34QmFld60IMeCC0moNPtc0r7
+         m90TBPUe3/xcPVafVVnZWY6cxuAJ7bMwfLobTzMZmsju/1Y+GPNbOzAENa626lbeRkXX
+         ee97DK5Al1MhtZ76+u2kPdh0AdvyatOVwdfLg3mxfKMF1vQ+O+NkMqs5buxcev5O/6Rx
+         +nwQ==
+X-Gm-Message-State: AOJu0Yzs/72OYkEekzFkYbARTaYNZNKME8NIVLemyWRTTmJuka2zOUUu
+	FvRHKdthIqUyV/APJQIGuetZ2tFHnH23LV+m0VxFC6eTuWsQsCjfHFsANCFXXFE=
+X-Gm-Gg: ASbGncs3hIg3gcHoRCxjrFspGED4hF3y0PiezSaVR4QzAwwJNSDDAL6uYyqgAPTmPme
+	Q2eajPtmWxiRO4Ycu6vxHNC6H9LkEwdbh5jyJWvtVvA/JOGJG8pNllq47W0BJ5LLFWF4yRegTyW
+	MK5F3JyDNNXsqE+Nya0amkDRb8fwrkzvW7wVjLLbjXct+zAmudob0c6CdVBfLrABy3QKN9LwgEs
+	JP7JudulhbD8mS1VllA1BKKurkC/CY2tEzXiD2RBgR9IqMMr8q6ezU0QD/KzAybeAz2X5xoY41S
+	V0ygOIlZJiVEXQiHq2eh
+X-Google-Smtp-Source: AGHT+IG99R6RmHPizsPQYmPL6FxUEvS09nH38X0UgGDDBVNTdkRxoIeaJaNsFnED1YOxtAcH9liGCg==
+X-Received: by 2002:a05:600c:314d:b0:434:a75b:5f6c with SMTP id 5b1f17b1804b1-434a9dbea45mr229123865e9.10.1733134468819;
+        Mon, 02 Dec 2024 02:14:28 -0800 (PST)
 Received: from [127.0.0.1] (alille-653-1-300-114.w90-1.abo.wanadoo.fr. [90.1.180.114])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-434aa7e5e59sm181138325e9.44.2024.12.02.02.14.26
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-434aa7e5e59sm181138325e9.44.2024.12.02.02.14.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Dec 2024 02:14:26 -0800 (PST)
+        Mon, 02 Dec 2024 02:14:28 -0800 (PST)
 From: Guillaume Ranquet <granquet@baylibre.com>
-Subject: [PATCH v3 0/2] iio: adc: ad7173: add calibration support to chip
- family
-Date: Mon, 02 Dec 2024 11:09:51 +0100
-Message-Id: <20241202-ad411x_calibration-v3-0-beb6aeec39e2@baylibre.com>
+Date: Mon, 02 Dec 2024 11:09:53 +0100
+Subject: [PATCH v3 2/2] iio: adc: ad-sigma-delta: Document ABI for sigma
+ delta adc
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,11 +68,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAHCHTWcC/33NSwrCMBAG4KtI1kYy0yaNrryHiEyT1Aa0laSEl
- tK7m3YlIq6Gfx7fzCy64F1kp93Mgks++r7LodjvmGmpuzvubc4MBZYAIDnZXMeboYevAw15naN
- RqoAK7FFrlg9fwTV+3NDLNefWx6EP0/Yjwdr9yyXgwGWjUdimlkaLc03TOnYH0z/ZKib8ULD6q
- SAXXKkS0JIpJNGXsizLG94fTs/9AAAA
-X-Change-ID: 20241115-ad411x_calibration-2c663171d988
+Message-Id: <20241202-ad411x_calibration-v3-2-beb6aeec39e2@baylibre.com>
+References: <20241202-ad411x_calibration-v3-0-beb6aeec39e2@baylibre.com>
+In-Reply-To: <20241202-ad411x_calibration-v3-0-beb6aeec39e2@baylibre.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>
@@ -79,36 +78,82 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Guillaume Ranquet <granquet@baylibre.com>
 X-Mailer: b4 0.15-dev
 
-Calibration on the ad7173 family is the same as on the ad7192 family of
-chips and mostly uses the ad_sigma_delta common code.
+Add common calibration nodes for sigma delta adc.
 
 Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
 ---
-Changes in v3:
-- Small fixes to the ABI documentation of sigma_delta
-- Move the system calibration mode to the ad7173_channel to avoid yet
-  another allocation.
-- Link to v2: https://lore.kernel.org/r/20241127-ad411x_calibration-v2-0-66412dac35aa@baylibre.com
+ .../ABI/testing/sysfs-bus-iio-adc-ad-sigma-delta   | 23 +++++++++++++++++++++
+ Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192 | 24 ----------------------
+ 2 files changed, 23 insertions(+), 24 deletions(-)
 
-Changes in v2:
-- Add a common ad sigma delta ABI documentation to describe calibration
-  nodes that are common in the sigma delta family.
-- Link to v1: https://lore.kernel.org/r/20241115-ad411x_calibration-v1-1-5f820dfb5c80@baylibre.com
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-ad-sigma-delta b/Documentation/ABI/testing/sysfs-bus-iio-adc-ad-sigma-delta
+new file mode 100644
+index 0000000000000000000000000000000000000000..a5a8a579f4f34d5982d4d7d4545a0bc246505910
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-ad-sigma-delta
+@@ -0,0 +1,23 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_sys_calibration
++KernelVersion: 5.5
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This attribute, if available, initiates the system calibration procedure. This is done on a
++		single channel at a time. Write '1' to start the calibration.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_sys_calibration_mode_available
++KernelVersion: 5.5
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This attribute, if available, returns a list with the possible calibration modes.
++		There are two available options:
++		"zero_scale" - calibrate to zero scale
++		"full_scale" - calibrate to full scale
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_sys_calibration_mode
++KernelVersion: 5.5
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This attribute, if available, sets up the calibration mode used in the system calibration
++		procedure. Reading returns the current calibration mode.
++		Writing sets the system calibration mode.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192 b/Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192
+index f8315202c8f0df2bd4b7216f5cf8d3c2780fcf3f..28be1cabf1124ac7593392e17e4759ddfac829e8 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192
++++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192
+@@ -19,33 +19,9 @@ Description:
+ 		the bridge can be disconnected (when it is not being used
+ 		using the bridge_switch_en attribute.
+ 
+-What:		/sys/bus/iio/devices/iio:deviceX/in_voltagex_sys_calibration
+-KernelVersion:
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		Initiates the system calibration procedure. This is done on a
+-		single channel at a time. Write '1' to start the calibration.
+-
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltage2-voltage2_shorted_raw
+ KernelVersion:
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Measure voltage from AIN2 pin connected to AIN(+)
+ 		and AIN(-) shorted.
+-
+-What:		/sys/bus/iio/devices/iio:deviceX/in_voltagex_sys_calibration_mode_available
+-KernelVersion:
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		Reading returns a list with the possible calibration modes.
+-		There are two available options:
+-		"zero_scale" - calibrate to zero scale
+-		"full_scale" - calibrate to full scale
+-
+-What:		/sys/bus/iio/devices/iio:deviceX/in_voltagex_sys_calibration_mode
+-KernelVersion:
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		Sets up the calibration mode used in the system calibration
+-		procedure. Reading returns the current calibration mode.
+-		Writing sets the system calibration mode.
 
----
-Guillaume Ranquet (2):
-      iio: adc: ad7173: add calibration support
-      iio: adc: ad-sigma-delta: Document ABI for sigma delta adc
-
- .../ABI/testing/sysfs-bus-iio-adc-ad-sigma-delta   |  23 ++++
- Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192 |  24 -----
- drivers/iio/adc/ad7173.c                           | 116 +++++++++++++++++++++
- 3 files changed, 139 insertions(+), 24 deletions(-)
----
-base-commit: 744cf71b8bdfcdd77aaf58395e068b7457634b2c
-change-id: 20241115-ad411x_calibration-2c663171d988
-
-Best regards,
 -- 
-Guillaume Ranquet <granquet@baylibre.com>
+2.47.0
 
