@@ -1,80 +1,57 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 438941DE2B9;
-	Mon,  2 Dec 2024 18:19:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 753BF17C7CE;
+	Mon,  2 Dec 2024 18:23:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733163565; cv=none; b=VQfO7SBSyduAUTBnTOgrY0WKh3PFbQLr+yT5aCr8SkPfOe24YKpDElPbfl6z435mndbwl6AzAS3y5uqxdut0tszckykJkN1eBqzTc37wIvhOxKmzJ31Z+PtR5/UfluOEmV+5iPSgJvy09Ms3kIEShaw4l6dY2IJ0xMu1LM7Kpwo=
+	t=1733163792; cv=none; b=VNrw/hP26ECOSJrlVELM2+xmk+4hDp6Qag8w4c5pf93eWkSu0wTGgU9zEeD6Mmg0eRXSQpekgIWgTXNpvev5YIKq7xoXLieoSf/gwTozxaDb8puW0XONwh9ydIPM+gk0/MZ7GZlXy7CX5EjoBpRgg5L+QL9+wjD2SoFg3Ii2X7c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733163565; c=relaxed/simple;
-	bh=LEz00guzn4qhDaTRkau3I6J2YUsYaVQ4/yPuVJabF3s=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Q7r18T79bbk5yQXZ8/NBAwjRnysFdw7CCO6ifN5At/jaHBBUMvLvrRcXfoK6UTDgx2sOTvOfJmyntNdEia5Rn2+Ylfphl5QU62oFAb7XfHCLZwqn5lfaH7fcUJ0oH/6NYbyVa4qDnrsVrunRqJbLniuvROHCkUxBJUwg+4TZEsE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h5d19WzV; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1733163792; c=relaxed/simple;
+	bh=xhIIKTgEjgfgPJ7uZLN9bGnfJwQ9HDBQbB0AxH1lDxY=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=RGGrx4NUkviTFwHECSoXXBVcMaQ+60BbL9QbfVw0JJgqAQUY24b/a/PwDGktQml+UcgQj5ygqoO+P/DwmVyMWUUJAYAIUhgFWk+X/xWwx7mxz+Xcd6IbJu8z5z3HZgZPqe4qkRYm8a7ebvhxCpnXtfAPTy4lKCpBUY6U9fP3IYI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=SXfbWijL; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h5d19WzV"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-385e2880606so2813809f8f.3;
-        Mon, 02 Dec 2024 10:19:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733163561; x=1733768361; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EJHG5zlnZJREAPBRYLvXNSMO/bhsEbMFRfOYHRsgKio=;
-        b=h5d19WzVbICgxNI+cXBwNqs6yiR652qKlBnjs9nCcC/ddqvoBuRrXDSfM2DdUEgXH+
-         JQIv/uszUTd+tuRedM//PMzf1hIcgXuF/oT1LymV1WUXLltAqbcGp5OwfllLu4vU1Waa
-         8Qa08rwE0thsPYAOqyqQut/6twd9xabQNhCUm5nPI1AtS+/BFqhwKVZ0SBM/ubvcg9FF
-         yBZiXqWz2OyaZKjdSrYKwOhfXXQLcoDsnvGRkPvUD8eM4acOSIZ4pYZXbiva62CPZBBw
-         nyKZumJHkU+T7GrKYo3yzjhz0XGV8mcWJJuDXMctZZVMKG4ufpKNLAyCpYgb57w7OKzl
-         BHzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733163561; x=1733768361;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EJHG5zlnZJREAPBRYLvXNSMO/bhsEbMFRfOYHRsgKio=;
-        b=brprlJGLzxA1nNJxKEp4h+aUhop7gx6eTXzMwbya7z+7oBuvWXn0da0SxbJpCqCC1T
-         aHzVnEsGh/8LNdgS/vSNcccZOqlRpIow0j/GeeqKcPEhvoLId4i3Q8QFQrUtUv2sKdxA
-         Ckta8pGn010PUJM456CGQaAhVoVdS+wWnWFBFnq0xNPrilp4kX7gIkz8jyuATmCSP+jq
-         8qYBatMNibH+xUANXI9yj9+oE5/+nmQF4h9fRVuKEv/5IjT/xilJOx53VPXUobsDsikZ
-         lSDvB/ZUxwobGTsC5tvP6FyFSyxnvGe+4jTMJmisiuUGBPg/pva97VxSWGCa7skUoUK2
-         I6cg==
-X-Forwarded-Encrypted: i=1; AJvYcCUigZwftEep7U8UD9bxEbFMh7THwS2tMLFm3fCpoC2/DSmIfuEtG1+ESdgL7lKRjidhXbErUQWi5Yda48AH@vger.kernel.org, AJvYcCVuADgzA9VhtzLbz6N38wt74GnjrNVcb3QMDGiFS+sAHzSbgE5B7gIjdlAwUIz6bsiMGn2dunTLWnrN@vger.kernel.org, AJvYcCW+pRGm2hJHmwkhd5ijkerzZ+quocn7LRAkulxskcL4/5f+dQ7DYOeRtK9Q2MIYaBPeFNdxbtBZ6DS8@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywjt1sE7L4n1d/XamYFEtFX1imVQ2NG08H2nYA4vZRjLTixL31F
-	hRf60O2xQ4jNyeJ4632aNm21ErNUNDoPJt/Uc/nWrkWcIdFZhOTq
-X-Gm-Gg: ASbGncsIAMFWmDUuXYH+ri2x92JW6oInx4xQsYL7lyszjp8JqsRM8tv2q7Pzf8F1l1F
-	R7NwhsEHgPWTeojHg5/0CYEuUjvXWeU97+nWC+bdjr6GipNRq4w2li2YW31LL8dks3muQhP32K6
-	8MuzGRaPOcUkgClhFTzJjus/eEFFw194swWjWL0V4pvVKCBnpORfpKvaGbgHmzp/I3eQN2WBTbJ
-	kx0pUycrNbjXr2tngaqNf1gCSrhtMFF06cXJR5GSo/hjMlGd9Ho9J12V/DsUFM=
-X-Google-Smtp-Source: AGHT+IHdUWWloiPXzF8xdcj4H3ESL9UrWjJZlQq0Z2MrJ9KvIQZGpdTjb+XnCqw3qQIW1vUc+qOYJw==
-X-Received: by 2002:a05:6000:2a2:b0:385:e877:c037 with SMTP id ffacd0b85a97d-385e877c2abmr10956444f8f.42.1733163561425;
-        Mon, 02 Dec 2024 10:19:21 -0800 (PST)
-Received: from vamoirid-laptop.. ([2a04:ee41:82:7577:ea8a:93ec:a066:eb25])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-385d7d4d9b0sm11659108f8f.65.2024.12.02.10.19.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Dec 2024 10:19:20 -0800 (PST)
-From: Vasileios Amoiridis <vassilisamir@gmail.com>
-To: jic23@kernel.org,
-	lars@metafoo.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	andriy.shevchenko@linux.intel.com
-Cc: ajarizzo@gmail.com,
-	ak@it-klinger.de,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	vassilisamir@gmail.com
-Subject: [PATCH v1 3/3] iio: pressure: bmp280: Make time vars intuitive and move to fsleep
-Date: Mon,  2 Dec 2024 19:19:07 +0100
-Message-ID: <20241202181907.21471-4-vassilisamir@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20241202181907.21471-1-vassilisamir@gmail.com>
-References: <20241202181907.21471-1-vassilisamir@gmail.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="SXfbWijL"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4B2HdRtB026862;
+	Mon, 2 Dec 2024 13:22:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=Hg01MtYLSNkXslDYbN5/Uh6enJb
+	m4mOvCya7IpOQFkc=; b=SXfbWijLh6XiLoscTrptzRznEZOGg1BT/H99sPw9xtg
+	8Z6kudAOJrUuJJ+AibT5geO7Yjc5zyguvfWIoSBBkBVaxhuUxuEdcchjUM6sLFsJ
+	aK6gXgutNLmIccHbHhFAx7yPKQxMMj23WMObiF7jrJQmDU3f3U25ZORSN2JDeNy8
+	+kstgFBR05swKrL+XFvekCyByMxcJWI0Ovl/IoNpSyndTAj5GcOyYx3++JGrcYnY
+	sm/O1kX/fR6lMqDVRr5xMVwROvxGlfJ446YenLb3LFnr42TAuL6t0GnnknFdzhTc
+	g/xgxQArlQBBnqVo9XMLXK8GftGjgQGa1j8IhjJOAkA==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4380g6h6hw-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 02 Dec 2024 13:22:54 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 4B2IMrXd037765
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 2 Dec 2024 13:22:53 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 2 Dec 2024
+ 13:22:53 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 2 Dec 2024 13:22:53 -0500
+Received: from work.ad.analog.com (HYB-hERzalRezfV.ad.analog.com [10.65.205.9])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 4B2IMfkQ007526;
+	Mon, 2 Dec 2024 13:22:44 -0500
+From: Marcelo Schmitt <marcelo.schmitt@analog.com>
+To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <jic23@kernel.org>, <lars@metafoo.de>, <marcelo.schmitt1@gmail.com>
+Subject: [PATCH 1/1] Documentation: ABI: IIO: Re-add filter_type/filter_mode
+Date: Mon, 2 Dec 2024 15:22:39 -0300
+Message-ID: <b2132bd3ca1d64cdd8d5afab1f1f33c574718b50.1732901318.git.marcelo.schmitt@analog.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -82,215 +59,105 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: N6f4ONGVqAyC_D2ulWzVRNIuUaDEnRX4
+X-Proofpoint-ORIG-GUID: N6f4ONGVqAyC_D2ulWzVRNIuUaDEnRX4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
+ mlxlogscore=999 spamscore=0 clxscore=1015 mlxscore=0 adultscore=0
+ priorityscore=1501 phishscore=0 suspectscore=0 lowpriorityscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2412020156
 
-Move sleep functions to the new fsleep() implementation. While at it,
-add time unit abbreviation as a suffix of time describing variables to
-make them more intuitive.
+The ad4130 driver exports in_voltageY-voltageZ_filter_mode and
+in_voltage-voltage_filter_mode_available attributes to user space.
+The ad7779 driver exports filter_type and filter_type_available.
+Add (back again) documentation for filter_type/filter_mode attributes.
 
-Signed-off-by: Vasileios Amoiridis <vassilisamir@gmail.com>
+Fixes: 01bb12922b60 ("Documentation: ABI: added filter mode doc in sysfs-bus-iio")
+Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 ---
- drivers/iio/pressure/bmp280-core.c | 39 +++++++++++++++---------------
- drivers/iio/pressure/bmp280.h      |  4 +--
- 2 files changed, 22 insertions(+), 21 deletions(-)
+Digressing a bit away from the specific ABI used by ad4130 and ad7779,
+the sinc3/4/5 filters are called `filter_mode` in ad4130 driver while other
+drivers (ad7779, ad7124, ad7768-1) call sinc3/4/5 filters a `filter_type`.
+Datasheets use the term `filter type`.
 
-diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-index e5ec8137961f..b39ef30f8eda 100644
---- a/drivers/iio/pressure/bmp280-core.c
-+++ b/drivers/iio/pressure/bmp280-core.c
-@@ -1002,7 +1002,7 @@ static int bmp280_preinit(struct bmp280_data *data)
- 	 * after resetting, the device uses the complete power-on sequence so
- 	 * it needs to wait for the defined start-up time.
- 	 */
--	fsleep(data->start_up_time);
-+	fsleep(data->start_up_time_us);
+Depending on the particular ADC chip/design, the sinc3/4/5 filter configuration
+may have an impact on the output data rate (ODR) (which is equivalent to the
+sampling frequency for SAR ADCs - `sampling_frequency` ABI), 3dB cutoff
+frequency of the filter (`_low_pass_3db_frequency` attributes), or settling
+time.
+
+ad7768-1 sets sinc3/4/5 according to the sampling_frequency attribute. No
+filter_type attribute.
+
+ad7173 sets the filter_type according to sampling_frequency too, though it
+looks like support for only one filter type is implemented.
+
+ad7124 sets sinc3/4/5 filters according to a filter_low_pass_3db_frequency
+attribute so it doesn't export filter type attributes to user space.
+Missing `in_voltageY-voltageZ_filter_low_pass_3db_frequency` documentation?
+follow up patch?
+
+ Documentation/ABI/testing/sysfs-bus-iio | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index f83bd6829285..704c9033cb5b 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -2268,6 +2268,20 @@ Description:
+ 		An example format is 16-bytes, 2-digits-per-byte, HEX-string
+ 		representing the sensor unique ID number.
  
- 	ret = regmap_read(data->regmap, BMP280_REG_STATUS, &reg);
- 	if (ret)
-@@ -1161,7 +1161,7 @@ const struct bmp280_chip_info bmp280_chip_info = {
- 	.chip_id = bmp280_chip_ids,
- 	.num_chip_id = ARRAY_SIZE(bmp280_chip_ids),
- 	.regmap_config = &bmp280_regmap_config,
--	.start_up_time = 2000,
-+	.start_up_time_us = 2000,
- 	.channels = bmp280_channels,
- 	.num_channels = ARRAY_SIZE(bmp280_channels),
- 	.avail_scan_masks = bmp280_avail_scan_masks,
-@@ -1347,7 +1347,7 @@ const struct bmp280_chip_info bme280_chip_info = {
- 	.chip_id = bme280_chip_ids,
- 	.num_chip_id = ARRAY_SIZE(bme280_chip_ids),
- 	.regmap_config = &bme280_regmap_config,
--	.start_up_time = 2000,
-+	.start_up_time_us = 2000,
- 	.channels = bme280_channels,
- 	.num_channels = ARRAY_SIZE(bme280_channels),
- 	.avail_scan_masks = bme280_avail_scan_masks,
-@@ -1414,7 +1414,7 @@ static int bmp380_cmd(struct bmp280_data *data, u8 cmd)
- 		return ret;
- 	}
- 	/* Wait for 2ms for command to be processed */
--	usleep_range(data->start_up_time, data->start_up_time + 100);
-+	fsleep(data->start_up_time_us);
- 	/* Check for command processing error */
- 	ret = regmap_read(data->regmap, BMP380_REG_ERROR, &reg);
- 	if (ret) {
-@@ -1806,7 +1806,7 @@ static int bmp380_chip_config(struct bmp280_data *data)
- 		 * formula in datasheet section 3.9.2 with an offset of ~+15%
- 		 * as it seen as well in table 3.9.1.
- 		 */
--		msleep(150);
-+		fsleep(150 * USEC_PER_MSEC);
- 
- 		/* Check config error flag */
- 		ret = regmap_read(data->regmap, BMP380_REG_ERROR, &tmp);
-@@ -1957,7 +1957,7 @@ const struct bmp280_chip_info bmp380_chip_info = {
- 	.num_chip_id = ARRAY_SIZE(bmp380_chip_ids),
- 	.regmap_config = &bmp380_regmap_config,
- 	.spi_read_extra_byte = true,
--	.start_up_time = 2000,
-+	.start_up_time_us = 2000,
- 	.channels = bmp380_channels,
- 	.num_channels = ARRAY_SIZE(bmp380_channels),
- 	.avail_scan_masks = bmp280_avail_scan_masks,
-@@ -2006,7 +2006,8 @@ static int bmp580_soft_reset(struct bmp280_data *data)
- 		dev_err(data->dev, "failed to send reset command to device\n");
- 		return ret;
- 	}
--	usleep_range(2000, 2500);
-+	/* From datasheet's table 4: electrical characteristics */
-+	fsleep(2000);
- 
- 	/* Dummy read of chip_id */
- 	ret = regmap_read(data->regmap, BMP580_REG_CHIP_ID, &reg);
-@@ -2208,7 +2209,7 @@ static int bmp580_nvmem_read_impl(void *priv, unsigned int offset, void *val,
- 		goto exit;
- 	}
- 	/* Wait standby transition time */
--	usleep_range(2500, 3000);
-+	fsleep(2500);
- 
- 	while (bytes >= sizeof(*dst)) {
- 		addr = bmp580_nvmem_addrs[offset / sizeof(*dst)];
-@@ -2274,7 +2275,7 @@ static int bmp580_nvmem_write_impl(void *priv, unsigned int offset, void *val,
- 		goto exit;
- 	}
- 	/* Wait standby transition time */
--	usleep_range(2500, 3000);
-+	fsleep(2500);
- 
- 	while (bytes >= sizeof(*buf)) {
- 		addr = bmp580_nvmem_addrs[offset / sizeof(*buf)];
-@@ -2458,7 +2459,7 @@ static int bmp580_chip_config(struct bmp280_data *data)
- 		return ret;
- 	}
- 	/* From datasheet's table 4: electrical characteristics */
--	usleep_range(2500, 3000);
-+	fsleep(2500);
- 
- 	/* Set default DSP mode settings */
- 	reg_val = FIELD_PREP(BMP580_DSP_COMP_MASK, BMP580_DSP_PRESS_TEMP_COMP_EN) |
-@@ -2649,7 +2650,7 @@ const struct bmp280_chip_info bmp580_chip_info = {
- 	.chip_id = bmp580_chip_ids,
- 	.num_chip_id = ARRAY_SIZE(bmp580_chip_ids),
- 	.regmap_config = &bmp580_regmap_config,
--	.start_up_time = 2000,
-+	.start_up_time_us = 2000,
- 	.channels = bmp580_channels,
- 	.num_channels = ARRAY_SIZE(bmp580_channels),
- 	.avail_scan_masks = bmp280_avail_scan_masks,
-@@ -2720,7 +2721,7 @@ static int bmp180_wait_for_eoc(struct bmp280_data *data, u8 ctrl_meas)
- 			delay_us =
- 				conversion_time_max[data->oversampling_press];
- 
--		usleep_range(delay_us, delay_us + 1000);
-+		fsleep(delay_us);
- 	}
- 
- 	ret = regmap_read(data->regmap, BMP280_REG_CTRL_MEAS, &ctrl);
-@@ -2988,7 +2989,7 @@ const struct bmp280_chip_info bmp180_chip_info = {
- 	.chip_id = bmp180_chip_ids,
- 	.num_chip_id = ARRAY_SIZE(bmp180_chip_ids),
- 	.regmap_config = &bmp180_regmap_config,
--	.start_up_time = 2000,
-+	.start_up_time_us = 2000,
- 	.channels = bmp280_channels,
- 	.num_channels = ARRAY_SIZE(bmp280_channels),
- 	.avail_scan_masks = bmp280_avail_scan_masks,
-@@ -3066,7 +3067,7 @@ const struct bmp280_chip_info bmp085_chip_info = {
- 	.chip_id = bmp180_chip_ids,
- 	.num_chip_id = ARRAY_SIZE(bmp180_chip_ids),
- 	.regmap_config = &bmp180_regmap_config,
--	.start_up_time = 2000,
-+	.start_up_time_us = 2000,
- 	.channels = bmp280_channels,
- 	.num_channels = ARRAY_SIZE(bmp280_channels),
- 	.avail_scan_masks = bmp280_avail_scan_masks,
-@@ -3175,7 +3176,7 @@ int bmp280_common_probe(struct device *dev,
- 	data->oversampling_temp = chip_info->oversampling_temp_default;
- 	data->iir_filter_coeff = chip_info->iir_filter_coeff_default;
- 	data->sampling_freq = chip_info->sampling_freq_default;
--	data->start_up_time = chip_info->start_up_time;
-+	data->start_up_time_us = chip_info->start_up_time_us;
- 
- 	/* Bring up regulators */
- 	regulator_bulk_set_supply_names(data->supplies,
-@@ -3201,7 +3202,7 @@ int bmp280_common_probe(struct device *dev,
- 		return ret;
- 
- 	/* Wait to make sure we started up properly */
--	usleep_range(data->start_up_time, data->start_up_time + 100);
-+	fsleep(data->start_up_time_us);
- 
- 	/* Bring chip out of reset if there is an assigned GPIO line */
- 	gpiod = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
-@@ -3287,7 +3288,7 @@ int bmp280_common_probe(struct device *dev,
- 	 * Set autosuspend to two orders of magnitude larger than the
- 	 * start-up time.
- 	 */
--	pm_runtime_set_autosuspend_delay(dev, data->start_up_time / 10);
-+	pm_runtime_set_autosuspend_delay(dev, data->start_up_time_us / 10);
- 	pm_runtime_use_autosuspend(dev);
- 	pm_runtime_put(dev);
- 
-@@ -3306,7 +3307,7 @@ static int bmp280_runtime_suspend(struct device *dev)
- 
- 	data->chip_info->set_mode(data, BMP280_SLEEP);
- 
--	fsleep(data->start_up_time);
-+	fsleep(data->start_up_time_us);
- 	return regulator_bulk_disable(BMP280_NUM_SUPPLIES, data->supplies);
- }
- 
-@@ -3320,7 +3321,7 @@ static int bmp280_runtime_resume(struct device *dev)
- 	if (ret)
- 		return ret;
- 
--	usleep_range(data->start_up_time, data->start_up_time + 100);
-+	fsleep(data->start_up_time_us);
- 
- 	ret = data->chip_info->chip_config(data);
- 	if (ret)
-diff --git a/drivers/iio/pressure/bmp280.h b/drivers/iio/pressure/bmp280.h
-index a3631bc0e188..5b2ee1d0ee46 100644
---- a/drivers/iio/pressure/bmp280.h
-+++ b/drivers/iio/pressure/bmp280.h
-@@ -434,7 +434,7 @@ struct bmp280_data {
- 		struct bmp380_calib bmp380;
- 	} calib;
- 	struct regulator_bulk_data supplies[BMP280_NUM_SUPPLIES];
--	unsigned int start_up_time; /* in microseconds */
-+	unsigned int start_up_time_us;
- 
- 	/* log of base 2 of oversampling rate */
- 	u8 oversampling_press;
-@@ -490,7 +490,7 @@ struct bmp280_chip_info {
- 
- 	const struct iio_chan_spec *channels;
- 	int num_channels;
--	unsigned int start_up_time;
-+	unsigned int start_up_time_us;
- 	const unsigned long *avail_scan_masks;
- 
- 	const int *oversampling_temp_avail;
++What:		/sys/bus/iio/devices/iio:deviceX/filter_type
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY-voltageZ_filter_mode
++voltageY_filter_type_available
++KernelVersion:	6.1
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Set the filter mode of the channel. When the filter mode
++		changes, the in_voltageY-voltageZ_sampling_frequency and
++		in_voltageY-voltageZ_sampling_frequency_available attributes
++		might also change to accommodate the new filter mode.
++		If the current sampling frequency is out of range for the new
++		filter mode, the sampling frequency will be changed to the
++		closest valid one.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/filter_type_available
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltage-voltage_filter_mode_available
+ KernelVersion:	6.1
+
+base-commit: 9dd2270ca0b38ee16094817f4a53e7ba78e31567
+prerequisite-patch-id: 3370db9ec1e67ba97b55607f445ff37c60929668
+prerequisite-patch-id: d686dd309e1d3d39d038613f514e58ff5893ae42
+prerequisite-patch-id: c832285d7bcc22433f2314a144566aa9437fd5da
+prerequisite-patch-id: 3f758a121e36edd43789e80379ff81beeb2d75ce
+prerequisite-patch-id: 0ef36ec4d6cf23f08bdb3bc4399ced2561a2a69b
+prerequisite-patch-id: c8e7f0e10a2630bd0029ee160f8dfc3f742378ba
+prerequisite-patch-id: 5e85d52a87f2a833893eeeac5d1651bda46d0931
+prerequisite-patch-id: cd75aba06cf77f8cd398dc7d0c33d94e1277d1f3
+prerequisite-patch-id: b813c25db823f1b02d0e9005188d41c0d89eb291
+prerequisite-patch-id: 024ac23a16e45e802b70afe9bc464d1caeb41fcc
+prerequisite-patch-id: bc084c859bfa93c5764e656bbcbfd4d14e031299
+prerequisite-patch-id: 51ebb591fbbb3535899332ce1b106a3f8d6497da
+prerequisite-patch-id: 2b396d1069227fee1c5a7bcf33bc63a56681441b
+prerequisite-patch-id: c00b841cea6e331e19fb1f31beae831572bce4f5
+prerequisite-patch-id: 4fe5fcebfeb745a83a7054390a304a1e250d74d1
+prerequisite-patch-id: 461cce4f81f88bbec71580c0743b8970a504899c
+prerequisite-patch-id: 59cf79cfa5f091815f578aad884ba0e3f9ae2175
+prerequisite-patch-id: d48f6e531e64ee7797890e9f36f849f881884f1a
+prerequisite-patch-id: 5f48c69023ecae6b3de595c9a209d1c4d65b5ba2
+prerequisite-patch-id: 73e2fc3be282880231105142342b47b00b23ab6d
+prerequisite-patch-id: d71deacf6bb4e90e8059a12a94ade36866729fa0
+prerequisite-patch-id: 6173a25ddf92a3d1446923d9e87b15642b761034
+prerequisite-patch-id: 5b248ee02cc148eeea4f01c435e701b74bc07c60
+prerequisite-patch-id: 9fa4f11d62ba0e1ef9f3ca08ef1ee5c1f0711038
+prerequisite-patch-id: 6cf99f094cfa8d984a1c1cab8813d1078ee48f05
+prerequisite-patch-id: b42c4bf1ce430dccca920f942c6040f641c8307e
 -- 
-2.43.0
+2.45.2
 
