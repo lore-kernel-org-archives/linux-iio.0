@@ -1,126 +1,133 @@
-Received: from www530.your-server.de (www530.your-server.de [188.40.30.78])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F8EB2500BD;
-	Tue,  3 Dec 2024 07:35:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.40.30.78
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 677091DDC25;
+	Tue,  3 Dec 2024 09:16:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733211327; cv=none; b=gSa98diNYXBAEWNiTBLiot8khTk/rYtijK/CUjv6GLNskxZuMLJnsW9v53td0tWeKCnJJiHGxoMT0U71sfDtzTtN/yeo4coorCOTJZrkWhU5w3rb9j6YpNZ8qDrRuAtSy1y/mvLEcvwnqEm4yST8aCNLT6HpXQuQachfkRrqXiQ=
+	t=1733217372; cv=none; b=LyUE7yaM+8SeGopo4foBJNa0GVMVToLPgirHYCwGisMiCEYPm+8xd7gYuRWWH12T4ly42o9McwRSXQCWS+MX/antCGay5WJK86ZKNN2fKTVlI4+16+IZPkEMUTRKESVpfPE+fqRLx39W/2vcCGUm6rRf850Vi2TLnlJs1exVOGo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733211327; c=relaxed/simple;
-	bh=rVywOE0gRgGqCEDA/wgT1A60I07fUyj/DjFLWSig95E=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=X1j7rxxFra964YSK1o/fvM2kHfJgRecgITQ5T3bVGOG6sKxePabJhdrs3OlM2G/99ggMvUqwVq7SGRfg8A1h7YhoRCpS9/r3MjjesIWidWUl5nJuNwcZELqY371J8tE/exAHwF1ZMjGowNEPeu7pvvSHnHOlBYYCJIciF+VteHo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=Hmcrf63s; arc=none smtp.client-ip=188.40.30.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1733217372; c=relaxed/simple;
+	bh=wbgqDVMWXhMwWUq+ARw0MJ/wP5rnkKhrCkyNoFwkv38=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=XZkiEpChTzqjwoPo+fzeKt+cITL8mm0QYzPIwNHHJv/z1NXOBapobPc3Yafx071mYw1DPVzZqkWkxXkrwbYlb0RXtYMBGWQ5e/9K7un/KqbUuBeJihLb41rVqOwGZTCmHts7mm9V1t5prmnKStsTeWKMqmkhoI4dNRdXoUK/CmI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JwCD0uGS; arc=none smtp.client-ip=209.85.216.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="Hmcrf63s"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=geanix.com;
-	s=default2211; h=Cc:To:Message-Id:Content-Transfer-Encoding:Content-Type:
-	MIME-Version:Subject:Date:From:Sender:Reply-To:Content-ID:Content-Description
-	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	In-Reply-To:References; bh=VBzRnmrC8jmWZvvyhpj/asxRV9aBhj2F5LFhdxtLcfU=; b=Hm
-	crf63sNEleBGJxoSxu2E34jJ3jVc7qvsugD/cmHZW3mpa+e7TaS0WDUtEisEYaGEK+5uYJcPw/xfs
-	J8qjO8PYBfBK28v3u0849Q8em9J/Iuc3J6iCm7i7HfeGGSftSHlReY36eiNH7J6wnxP78guPdRyAR
-	ohQB1rdTP5nyLrUNJTR2/YxEnVTWvHyngnUrybzG4j420qTAvrWQvqyc0vZN4QvO9DgCzlKpBkUiX
-	srhQVALwVIzw5y6IAYdGkD37COwwSm2GTeN5w8mDMzy9+yneyWUEtiAteLq0AVmeEmVGMsxEvK0o2
-	ESXzp91MsBAMEeR/Kr+AyW5HozHCelmw==;
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-	by www530.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <sean@geanix.com>)
-	id 1tINCu-000FNH-4C; Tue, 03 Dec 2024 08:20:28 +0100
-Received: from [185.17.218.86] (helo=zen.localdomain)
-	by sslproxy04.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <sean@geanix.com>)
-	id 1tINCt-000Bol-2Q;
-	Tue, 03 Dec 2024 08:20:27 +0100
-From: Sean Nyekjaer <sean@geanix.com>
-Date: Tue, 03 Dec 2024 08:20:17 +0100
-Subject: [PATCH] iio: imu: st_lsm6dsx: don't always auto-enable I2C, I3C
- and SPI interface drivers
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JwCD0uGS"
+Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-2eec9b3a1bbso1477812a91.3;
+        Tue, 03 Dec 2024 01:16:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1733217371; x=1733822171; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+SiiyDRalD5xASi8k9BJDefjshvIVg9c+UxPMRyISNM=;
+        b=JwCD0uGSjI2XrV2FRpncQzMWdWnYEa4JMnvsQLidZi4X/QwU6H105UQwzhkyezg5ex
+         34slFGCWthrjdqXSqjQiMBGduxs4vjzt+cX5GcFhiZPwPwrTSfBeJZMJWEo7cmIeM+cv
+         KGVM5vKM48/bmyzzb49jtM284wCa+7AmZRvIcrCQ6zlB3UFWyvOg2Fh/WVqyL6iGRaDN
+         1URwFHy+aks8OR1c6TMQhzUekjSXAYS2A4tLdiOp4ylo+y5OcpTbDaUdZUEd7OBZzpJt
+         D7F9nelo/zxLUxZBNZwtmzH6QfvrNJhWwgZys/+lXKjSZbEiEOnak9ZVdHBEMEQQzTeZ
+         sbxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733217371; x=1733822171;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+SiiyDRalD5xASi8k9BJDefjshvIVg9c+UxPMRyISNM=;
+        b=aoIaLd1O4XxKVnqb94NvH4hYD3DiYYFVHM0PqkW8oYGoLHS0OIkf30L4r01PmUQBFJ
+         7iCaQXMCVX/gyTlGeE1DQUBTtLsa3y8BY6kFLM4fOQKwFF4zs3QWwVD2o4v2w7LcdEUA
+         KaQ0J13u6XDT8azV1f6/i186167M2UmmKsGPlKCdGetKaB8/x3Z307A9PzqodaewSznP
+         vQbGfPh/v61RqcgZpBeEsSnTjnjMA1DraoIRd/Sig70QKrEATeRB/N6AwxY9Dn1wDIPi
+         B3t1/TuXko4CGv+2VTEMYPtQmcEF9ej0EJREgxzZEsDC4WV22j696j5W9lFFLuLGUREe
+         bFfg==
+X-Forwarded-Encrypted: i=1; AJvYcCUOFLicJWBRCDjDA/2EkQ2Llve/bD7sSgDBY4VIV5bkyKyrKoSDBMsFxNFpcaxb6YLZQ2GGQ6T7zemP@vger.kernel.org, AJvYcCWCDR3bHcLKCrD40Y4JScQnVewzJ0aDXHQKvFc8O0C0sMXteQfA8jGNBKHfLObTW2TnaG4L3Xv6SZnleH5U@vger.kernel.org, AJvYcCWv3Q3sJxwr5lkUM3+sJl5u7D3sndNrmOkoe3l3Y/hfykTWuJUKnRFykVyrtZNk10JEqUxFWs7CszhG@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw+5+4Sc1AfQDu6/+Rsn2gUelGMbMkVEIHtNX3Mn82mrNrbSDFS
+	BqJ0ip59akO+mhpjW0CVJWCdKwkco4V7mPa8fMby3G6j+DWy14hr
+X-Gm-Gg: ASbGncuBov/OobOcOa+ePWHGupAvy9giShbAr3DCSCOK8QxxFajnhk2cieFNboP60QR
+	j5QRoE2vOOzzYyjnF90zIWyH+yToX0lVocUNmpXbpx6EtntWhECbB5P4GnPTyoRT04HYyDJMZnH
+	t71zP/SkppEdWKqqeIVzoNQKn66uZh9scDZu1XnwTsBAPWS3GqFkiKzasSJk7bB8qwd2yJqvbb/
+	05n+WQPR6IvL0TFtx0B4rBg2JKVxvO7y+qk8ICDb4A3rlgt6QpqvIyHsQJzr7HLSrq44/3n030a
+	rcI7Y387bDpuzz0=
+X-Google-Smtp-Source: AGHT+IFgGhE5SLC27Oi1AeRF0rRV8UEqlKW6VpIhPrFpWYx1U5vcw6NF5lfHTg/4SdLEXzNIxiC6eQ==
+X-Received: by 2002:a17:90b:3a85:b0:2ee:e961:303d with SMTP id 98e67ed59e1d1-2ef01275c7dmr2455939a91.35.1733217370567;
+        Tue, 03 Dec 2024 01:16:10 -0800 (PST)
+Received: from hcdev-d520mt.. (60-250-196-139.hinet-ip.hinet.net. [60.250.196.139])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2ee566a9a34sm7713069a91.51.2024.12.03.01.16.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Dec 2024 01:16:09 -0800 (PST)
+From: Eason Yang <j2anfernee@gmail.com>
+To: avifishman70@gmail.com,
+	tmaimon77@gmail.com,
+	tali.perry1@gmail.com,
+	venture@google.com,
+	yuenn@google.com,
+	benjaminfair@google.com,
+	jic23@kernel.org,
+	lars@metafoo.de,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	nuno.sa@analog.com,
+	dlechner@baylibre.com,
+	javier.carrasco.cruz@gmail.com,
+	andriy.shevchenko@linux.intel.com,
+	marcelo.schmitt@analog.com,
+	olivier.moysan@foss.st.com,
+	mitrutzceclan@gmail.com,
+	tgamblin@baylibre.com,
+	matteomartelli3@gmail.com,
+	alisadariana@gmail.com,
+	gstols@baylibre.com,
+	thomas.bonnefille@bootlin.com,
+	ramona.nechita@analog.com,
+	mike.looijmans@topic.nl,
+	chanh@os.amperecomputing.com,
+	KWLIU@nuvoton.com,
+	yhyang2@nuvoton.com
+Cc: openbmc@lists.ozlabs.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Eason Yang <j2anfernee@gmail.com>
+Subject: [PATCH v2 0/2] iio: adc: add Nuvoton NCT720x ADC driver
+Date: Tue,  3 Dec 2024 17:15:38 +0800
+Message-Id: <20241203091540.3695650-1-j2anfernee@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20241203-lsm6dsx-v1-1-6d7893443bc8@geanix.com>
-X-B4-Tracking: v=1; b=H4sIADGxTmcC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIxNDIKGbU5xrllJcoWtqYWpoYWRgYQIUVAKqLihKTcusAJsUHVtbCwBFrqq
- 4WQAAAA==
-X-Change-ID: 20241202-lsm6dsx-585182084202
-To: Lorenzo Bianconi <lorenzo@kernel.org>, 
- Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Sean Nyekjaer <sean@geanix.com>
-X-Mailer: b4 0.14.2
-X-Authenticated-Sender: sean@geanix.com
-X-Virus-Scanned: Clear (ClamAV 0.103.10/27475/Mon Dec  2 10:41:11 2024)
+Content-Transfer-Encoding: 8bit
 
-This patch makes I2C, I3C and SPI interface drivers for ST lsm6dsx
-individually selectable via Kconfig.
+Change since version 2:
+ - Remvoe read-vin-data-size property, default use read word vin data
+ - Use regmap instead of i2c smbus API
+ - IIO should be IIO_CHAN_INFO_RAW and _SCALE not _PROCESSED
+ - Use dev_xxx_probe in probe function and dev_xxx in other functions
+ - Use devm_iio_device_register replace of iio_device_register
+ - Use guard(mutex) replace of mutex_lock
+ - Use get_unaligned_le16 conversion API
+ - Add delay 25 msecs for registers ready
 
-The default is kept unchanged - I2C, I3C and SPI interface drivers are
-still selected by default if the corresponding bus support is available.
+Changes since version 1:
+ - Add new property in iio:adc binding document
+ - Add new driver for Nuvoton NCT720x driver
 
-However, the patch makes it possible to explicitly disable drivers
-that are not needed for a particular target.
+Eason Yang (2):
+  dt-bindings: iio: adc: Add binding for Nuvoton NCT720x ADCs
+  iio: adc: add Nuvoton NCT720x ADC driver
 
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
----
- drivers/iio/imu/st_lsm6dsx/Kconfig | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ .../bindings/iio/adc/nuvoton,nct720x.yaml     |  40 ++
+ MAINTAINERS                                   |   2 +
+ drivers/iio/adc/Kconfig                       |  10 +
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/nct720x.c                     | 533 ++++++++++++++++++
+ 5 files changed, 586 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,nct720x.yaml
+ create mode 100644 drivers/iio/adc/nct720x.c
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/Kconfig b/drivers/iio/imu/st_lsm6dsx/Kconfig
-index 89d687ec3099cc3ecb848e44f610c5cd64c80ad1..3cabec3b152d21403b40668a20ca7d175109a79e 100644
---- a/drivers/iio/imu/st_lsm6dsx/Kconfig
-+++ b/drivers/iio/imu/st_lsm6dsx/Kconfig
-@@ -6,9 +6,6 @@ config IIO_ST_LSM6DSX
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	select IIO_KFIFO_BUF
--	select IIO_ST_LSM6DSX_I2C if (I2C)
--	select IIO_ST_LSM6DSX_SPI if (SPI_MASTER)
--	select IIO_ST_LSM6DSX_I3C if (I3C)
- 	help
- 	  Say yes here to build support for STMicroelectronics LSM6DSx imu
- 	  sensor.
-@@ -42,16 +39,19 @@ config IIO_ST_LSM6DSX
- 	  will be called st_lsm6dsx.
- 
- config IIO_ST_LSM6DSX_I2C
--	tristate
--	depends on IIO_ST_LSM6DSX
-+	tristate "ST_LSM6DSx driver for STM 6-axis IMU MEMS sensors I2C Interface"
-+	depends on I2C && IIO_ST_LSM6DSX
-+	default I2C && IIO_ST_LSM6DSX
- 	select REGMAP_I2C
- 
- config IIO_ST_LSM6DSX_SPI
--	tristate
--	depends on IIO_ST_LSM6DSX
-+	tristate "ST_LSM6DSx driver for STM 6-axis IMU MEMS sensors SPI Interface"
-+	depends on SPI_MASTER && IIO_ST_LSM6DSX
-+	default SPI_MASTER && IIO_ST_LSM6DSX
- 	select REGMAP_SPI
- 
- config IIO_ST_LSM6DSX_I3C
--	tristate
--	depends on IIO_ST_LSM6DSX
-+	tristate "ST_LSM6DSx driver for STM 6-axis IMU MEMS sensors I3C Interface"
-+	depends on I3C && IIO_ST_LSM6DSX
-+	default I3C && IIO_ST_LSM6DSX
- 	select REGMAP_I3C
-
----
-base-commit: 4ecd1edf4994bc5385609c6ea9e599b4ee958706
-change-id: 20241202-lsm6dsx-585182084202
-
-Best regards,
 -- 
-Sean Nyekjaer <sean@geanix.com>
+2.34.1
 
