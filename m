@@ -1,62 +1,62 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D8BE20B1E1;
-	Tue,  3 Dec 2024 20:53:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B95820B211;
+	Tue,  3 Dec 2024 20:53:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733259196; cv=none; b=TQ+wWnUQboPW51x0pL3K42kYv7eEpACPu5rOa/GpEqwcCo/M9PnyDKUNT0ZyoNGXDCXSo/DkJyIO22MInp7jq4b3gEzNp2EOkSPkcofrzFnolgSzi6bXLxjIX5Fbbs67vUgvfiegUHp3YpiQbyiks3d1omtm3kw7gZ05VCeB2ik=
+	t=1733259198; cv=none; b=K8+Be71Ya+9G/ANTwIDy2/JTMrVwOMmrwMMhuYncI0uUUgXDIimF9b7R18DEMXHolVqI4wvx7Mq5s499uqpk5QcSNmUdVwQWJOuw+O7XbwpyehqrPjal8FYlz6MbsO0JbbmT5pyL3Wpi+SIB4qk29vwH2bc9jArqSNbCRyXB+ac=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733259196; c=relaxed/simple;
-	bh=hjcd5A8voRW+pwEIP7TsS26RQsBVlcg+595pH9ZdwXU=;
+	s=arc-20240116; t=1733259198; c=relaxed/simple;
+	bh=FY91FECIG8vyXTtfxzalXSXZ249nSTm+wGDBjFYvNpU=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=BsJ/nRGhbULhOn+7TV28C92OxPCM7WcQDsJzkpRLa8Js6w395P1/vpJFUXiS7QC+E2aa3+JCMSkBxuMjtQ2dHtZPVvzLoTEIie6G3ZkdBUeinhG5nHEa+3nqZzxLLiv4IBzssDVQjXjLaveyppJOwm/+eWBMp78WfgvYDx3u4UQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SX7AY1NL; arc=none smtp.client-ip=209.85.128.52
+	 MIME-Version; b=i+KGl03Cju4D1EnG0nJEbCC8uKuxwxXqgZSChyrzScxJiFrTqREAxkNgHAE48IJnECbq0M5fWFYDQ1vsZVBReCREEWQN6PPHedJ/dmlm9wKaqqSWILTb6is9IVn3A8Pc5kUXnI65mLwohsWOy05Rbozzbybsr6aemlzXYggG4i0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ChGkL5oK; arc=none smtp.client-ip=209.85.128.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SX7AY1NL"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-43499332f7aso5206475e9.1;
-        Tue, 03 Dec 2024 12:53:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ChGkL5oK"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-434a29ecbceso7078605e9.0;
+        Tue, 03 Dec 2024 12:53:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733259193; x=1733863993; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1733259194; x=1733863994; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=hSRlyww607wNG4Ky6SHBw5ubjyNIkPXdbs/bES90CC4=;
-        b=SX7AY1NLNr8cfTES3KW3u2H1/xlcCT1OFihE3UbBGgG/Lt119uXA0EWv4j14bkXYk+
-         s2k4XQpsa6n5quF8n28kbxAD4z0zNEV5k+YVs8FkKS/FSCTGhH7ZKFCrwhAvbN5m9toa
-         kpqh9Odgp7+S9h6q/Y9cxHDx8EWvuLeEyPz0DAOm9bThW1/DE5gZb1osrwPJS8e4P5o6
-         csa8U/GsICSoVasJffS69yWfpJRCYE5vDmPQDjCR6yQM7/NgOC7Zyp7wfFbvBcZI8OXb
-         S//4d+PfIYrnVpSI3j42fshpbv4hJv7tdSH5bNAsF2d067hbkDStobeS99LUrXFmYq8a
-         pmpQ==
+        bh=yA7vOziRlmc/bZx4fMvI0r+Cuk3SCmX4PpXxbI8VPks=;
+        b=ChGkL5oKYMG4OGy9tnFfWEKYdX4NhGnSNGcgZkNZiTWewNUHHL62btl3Jch5OSbsC8
+         egFdjkJ3F/NCkn44qD9vXebn3x8CCwad2NZMjNzwHeGEpK8Aj0J8BkR0tLgGNeOYdsK2
+         3x8Fme6O3bxCBSfBY5GR5cF8bGjNqkUhCXlDPfL6F5FKOQvVs02PADhyBY7bkUvbPLge
+         DKizbwFL+CrEqPrv0TNrWvOpvx46u6O6UgXLX6VxCbHWgl3cFYF+6ghejfXbrj+MhbXZ
+         A8x6+WN5zj/QxFp3zKNtFh7w37qMI2Y+JmejbNSaXqyAH5Wuh2hKtzytogOav731/PTB
+         diBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733259193; x=1733863993;
+        d=1e100.net; s=20230601; t=1733259194; x=1733863994;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=hSRlyww607wNG4Ky6SHBw5ubjyNIkPXdbs/bES90CC4=;
-        b=bfcZIf+CLgtcwUnk28KCv8agb7UB4lbEpVDn0f4OK5wHur1fRAZelz+iuqIGvo+rjc
-         wMkJze1OxtxKhFCxuxwkEVL6j8Ln38Coo13n0Sc+7EPSQpXT82lubdkKXbB1bkXW39F7
-         Qrgyr0mE+QLyp9XuB98JBhuC9N/DM+AJ1Mb43M1gN8V8LBEbiEE/7tLgb3DCkqEA+GfJ
-         xEL8hgJXWCHinPBY36BymwiN7WkP8fU2As01Cu+dmsU/Q3EFwoFJpvETf+umkeWpK9DD
-         2Z9QEDVOyigMby4Kux2yYqJRJE4GwZJYQ6VrJnVWWDPd3/f582Rw4XIAeh9j6YODdvMf
-         ntZA==
-X-Forwarded-Encrypted: i=1; AJvYcCVqkEY2TzDz/ZczjvpLeM558EVeJMpfnZOSm+RbsGKF1NJTJCQkv7fG1K7jvVO03q8+e3DbCXk0Agg=@vger.kernel.org, AJvYcCXnxNILbypcAIWgXnE3imKj8VBquNS09LVWAq/m+hQPMfdXymibpZOVeT0870Jmj9Oa1ATCTIjGw1LoOXdm@vger.kernel.org
-X-Gm-Message-State: AOJu0YwCwnFzB8JW6OHDWg8y9nKP8Lb3rA3MjfQtHMnB5uUom8feHUZi
-	G9JBYcC6U4zqh7kzfF44DinSEs5tR04EMDD2tIy1qoZEcFqk+v8c
-X-Gm-Gg: ASbGncvA4rQrDXULOx/10b0TglzDmD68EjAKiBbtpl75r0e26OVSS804p3KYjp0Rjwk
-	ZMPtMgmJgL3wWxx1j4YLLBHbJheaGkDUrze1VanaOn5VVfFl7Nt8zdFJDPRi0XV1bkDAWWtH4uq
-	jNAbQqk1rVZ9d/Y8ytCF2ryRLS6YUmHk5fR6EzOIM/AJjxJhWMDpd+VDebR/ivQ8jeqGffeSSNT
-	vw4VfT55T0n6ccZrUBjjkJhIC7bddouAT+O7pbl20YZzcJjp7W4PBCZ77F9KukeY+ONgfbVyt7L
-	ehszmt0B7FcXFKBhWdbXRDw1kAw7
-X-Google-Smtp-Source: AGHT+IFKabrlhumUgKLcNroI+FaBmvovJMbwHTjB5dMy0//6WqKHy/yNGRh8dTYHHwqHPYZ4ste/DA==
-X-Received: by 2002:a5d:6d05:0:b0:385:e88a:7038 with SMTP id ffacd0b85a97d-385fddd3402mr1240391f8f.1.1733259192709;
-        Tue, 03 Dec 2024 12:53:12 -0800 (PST)
+        bh=yA7vOziRlmc/bZx4fMvI0r+Cuk3SCmX4PpXxbI8VPks=;
+        b=CnuYDsFThDhlfVgQD+l/xnFglGdo9mtPG5Fy+PvgbV3hML9FqTOwO4v8sF3ojbQcfj
+         3oUA3psShPC3n4Yb46JJKtIIuStG8QIPlDkejjogwVbjr0d/Z3Ra6neKCvRqNgD/Uty3
+         cXKAPQL4OMN6DwD5/P/0JLqTZeiA3PfiEEj6iPy4l2nb1xJrCm04SBn7mDUG4JlJIoWw
+         B5RpRSOWZGmxqT0A+agEFxyU1TM5hWL3jOba9zdEGYcIRQr9L+62CHo4Q4A0R6QZusO5
+         4runpQDdu8Ji3QrDWB7ZDa+tTcPWfvPy7ctyhPYlsKHR5VwZ+uVsggmdy3TRU1qOUTrk
+         pRMg==
+X-Forwarded-Encrypted: i=1; AJvYcCUbbYyem3zidzD2o7ygaho3Mpqn/Vrq0RPL22KlRKu0UDjVgXfDpQURZdPgknqfeUISLOvFX9fYGnQrUCqJ@vger.kernel.org, AJvYcCWE2jcwnp/0AkvUeWMKDaZjGF28qWM7H+et2ztuA3sMlHjNQI9NuMGPLfNT6/U5DB2alw6C9WHBJLs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywk02RA3A4C0n0qttr5S3wbAzwiNzCzkE3EeuT4w8OU8OigXch7
+	fSxCaymtjC5A9mExDxOYP9ZagcDtAJ0zRv1JFfx/TVw936mN/jwg
+X-Gm-Gg: ASbGncslLvzVoxJDHfb7Cg2veVR1LEl8Jt4rPEp1E06rPkqs3oo8tFTK3bQ3SwbzVVN
+	b3DRTzsTjdoVmAQXzvWdwgWwat+dfh8cJW7TTkcxji3uatVGd3k+h9byJ7HmkIwOqurk4BzVKJX
+	kAd3iOhRFh9kXgemiwtCEHl/4P6lZQT/kN8w7jXFD7eGxI16xEIjC6TjtEKPMqtZAnlgYEfXZ0b
+	7NV7u19kRUesS5nLqSiTZ15aA+aRc90TCZVpXodgErN5s3TI3nEQKjmhJm46OVm5L7xpnajPuVS
+	AjGHpSlkktIypwMSZmOIeyq2tF+x
+X-Google-Smtp-Source: AGHT+IF8CuGWZEBktezY5BS7YphnMd2zJ/kIWieEl2c7J3moHhstF2htiyuWmP6rtnP+sHe/iTdE6Q==
+X-Received: by 2002:a05:6000:4011:b0:382:4e71:1a12 with SMTP id ffacd0b85a97d-385fd3c30aamr1439178f8f.1.1733259194422;
+        Tue, 03 Dec 2024 12:53:14 -0800 (PST)
 Received: from 7b58d44c4ff6.v.cablecom.net (84-72-156-211.dclient.hispeed.ch. [84.72.156.211])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-385ebaf3bccsm9042750f8f.68.2024.12.03.12.53.11
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-385ebaf3bccsm9042750f8f.68.2024.12.03.12.53.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Dec 2024 12:53:12 -0800 (PST)
+        Tue, 03 Dec 2024 12:53:14 -0800 (PST)
 From: Lothar Rubusch <l.rubusch@gmail.com>
 To: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
@@ -69,9 +69,9 @@ Cc: devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	eraretuya@gmail.com,
 	l.rubusch@gmail.com
-Subject: [PATCH v3 06/10] dt-bindings: iio: accel: add interrupt-names
-Date: Tue,  3 Dec 2024 20:52:37 +0000
-Message-Id: <20241203205241.48077-7-l.rubusch@gmail.com>
+Subject: [PATCH v3 07/10] iio: accel: adxl345: initialize IRQ number
+Date: Tue,  3 Dec 2024 20:52:38 +0000
+Message-Id: <20241203205241.48077-8-l.rubusch@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20241203205241.48077-1-l.rubusch@gmail.com>
 References: <20241203205241.48077-1-l.rubusch@gmail.com>
@@ -83,53 +83,58 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add interrupt-names INT1 and INT2 for the two interrupt lines of the
-sensor. Only one line will be connected for incoming events. The driver
-needs to be configured accordingly. If no interrupt line is set up, the
-sensor will still measure, but no events are possible.
+Add the possibility to claim an interrupt and init the state structure
+with interrupt number and interrupt line to use. The adxl345 can use
+two different interrupt lines, mainly to signal FIFO watermark events,
+single or double tap, activity, etc. Hence, having the interrupt line
+available is crucial to implement such features.
 
 Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
 ---
- .../devicetree/bindings/iio/accel/adi,adxl345.yaml  | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/iio/accel/adxl345_core.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl345.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl345.yaml
-index 280ed479ef5..c3483a4b652 100644
---- a/Documentation/devicetree/bindings/iio/accel/adi,adxl345.yaml
-+++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl345.yaml
-@@ -37,6 +37,17 @@ properties:
-   interrupts:
-     maxItems: 1
+diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
+index 0bb2c653e13..dc91b2dcd62 100644
+--- a/drivers/iio/accel/adxl345_core.c
++++ b/drivers/iio/accel/adxl345_core.c
+@@ -11,6 +11,7 @@
+ #include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/units.h>
++#include <linux/interrupt.h>
  
-+  interrupt-names:
-+    Data ready is only available on INT1, but events can use either or
-+    both pins.  If not specified, first element assumed to correspond
-+    to INT1 and second (where present) to INT2.
-+  minItems: 1
-+  maxItems: 2
-+  items:
-+    enum:
-+      - INT1
-+      - INT2
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -18,8 +19,10 @@
+ #include "adxl345.h"
+ 
+ struct adxl345_state {
++	int irq;
+ 	const struct adxl345_chip_info *info;
+ 	struct regmap *regmap;
++	u8 intio;
+ };
+ 
+ #define ADXL345_CHANNEL(index, axis) {					\
+@@ -212,6 +215,17 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
+ 
+ 	st = iio_priv(indio_dev);
+ 	st->regmap = regmap;
 +
- required:
-   - compatible
-   - reg
-@@ -61,6 +72,7 @@ examples:
-             reg = <0x2a>;
-             interrupt-parent = <&gpio0>;
-             interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
-+            interrupt-names = "INT1";
-         };
-     };
-   - |
-@@ -79,5 +91,6 @@ examples:
-             spi-cpha;
-             interrupt-parent = <&gpio0>;
-             interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
-+            interrupt-names = "INT2";
-         };
-     };
++	st->intio = -1;
++	st->irq = fwnode_irq_get_byname(dev_fwnode(dev), "INT1");
++	if (st->irq > 0)
++		st->intio = ADXL345_INT1;
++	else {
++		st->irq = fwnode_irq_get_byname(dev_fwnode(dev), "INT2");
++		if (st->irq > 0)
++			st->intio = ADXL345_INT2;
++	}
++
+ 	st->info = device_get_match_data(dev);
+ 	if (!st->info)
+ 		return -ENODEV;
 -- 
 2.39.5
 
