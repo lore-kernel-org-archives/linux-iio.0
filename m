@@ -1,62 +1,62 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 780B4207A1F;
-	Tue,  3 Dec 2024 20:53:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10F8620ADE1;
+	Tue,  3 Dec 2024 20:53:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733259193; cv=none; b=QKXh8sfYVOaHBadFykNz7WBQZBm28l2d7eItf2Npzp8M28KEZtfqcWD34Fot0VxoHAXvUhN2jlmP+bS4i+uuiHuEVQ8YuMLvFRgcEIw2+fwtnc52MdUhNYRt+vYt5ItjBHmt3YKO93SgRBx1K+Tn4p/wrHJdMeR+X/qdAXauGgQ=
+	t=1733259194; cv=none; b=YEnb1ePEYY7Oj0dOeEf39AFoygi0xYNBRiWJryB2DtXsW/Y1YeHE1E5m/gDBJLghr1U9m9OZLZRUIR2yTwdw0WKKaWF9xHgeaazKXb+ZRxNBLD4H4yNjnZdUxBARYdjhfBcgJOMN/uJ/YIL2b8f+8T5sSTvf/NVt1jb+X2lZUmk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733259193; c=relaxed/simple;
-	bh=o/lpI9Fd+uyjmqbC3M5WpJqu5Nkn3HEhk7znZmdrG90=;
+	s=arc-20240116; t=1733259194; c=relaxed/simple;
+	bh=7x6c4McqriE+EY2lsVFpTBN7B5n6vTorPBvTrqJAZQ4=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Mj65jkO/tJpNINOknxASBqDb3p2so8AXV3tGYpcSCIpCdVyRnEXYLSJR85avzZdIzJ58q2yZHmUZSWoZstUU5yjphQUASumi5EUhrsmuhJ5y+6M6J1EdbRzSuRRwKAqbPsxNtX+QolW9K/iXdj5M1YoCVwabhueX77SqFz2KBaQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ya8N23bL; arc=none smtp.client-ip=209.85.128.46
+	 MIME-Version; b=KSJMPQeZvWniILYu3Z6vuoj6qVl7WvwqX8KKjgY+c3vipZUtZLyCW0G3V8pghMa/PvAoWlUKZ/mHYnaZfe3GhlwfIxZuLOe55I+Bv8TNDoUCJPQFaLIQ0u8PQbHJSceJQ1CbZZ88E8om6DRxGt6YkBB/cMnF+VqvBcQMuQq+Oao=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C55GOJqB; arc=none smtp.client-ip=209.85.221.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ya8N23bL"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4348f65e373so7054315e9.2;
-        Tue, 03 Dec 2024 12:53:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C55GOJqB"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-385e44a1a2dso156449f8f.3;
+        Tue, 03 Dec 2024 12:53:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733259190; x=1733863990; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1733259191; x=1733863991; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=P0SeLMeajdOsD9tUkvbsJQTKmVK5v3TGj4Il/E1cJl0=;
-        b=Ya8N23bL+hjzkJiRmRZQGemyDU0MJc9C2sdojBN1LPgRjVw/d894cig9KC1IJWK942
-         F6SLRCrJhSAhXlSB+Gc8nYsnCiWIvEB4i1zYa821BSS2LMMx5VXZ2V1RpHtGhkNM74R7
-         aLJz5l3lWgrshm6ZAOFqDoQx3YXpPmaRH55/rV3vR0qbWJImaLCWqxP35a8VghJg32NX
-         y0r70Kf3ztR0n95qaDEQmF5TgESXtNiAzaQ7yPQCa+Wm/rDJpKJJgydXfj1VQVIYYlCN
-         b+Mk9/hktMUZOXNzgyb+PWcJiufe8i1VOM0PkItzjrj+rbnwpiKEBnRjjnUESglycP/d
-         FvYw==
+        bh=z3z8OPkTXyo/oK61J/lQvQSxHrdZAWZaME9/d3kJunE=;
+        b=C55GOJqB63jFZw9y5MrqMPa76EKApRAIB6/VVvwrURR8K9437E/ctwmYUyHtnniyfO
+         z8R49kh4La4otm/8hdOHEBb6cIj0QN5I97vXEdK9Yfymm1yjJF6BEvUQcDhPTHJVJuBp
+         aucfnLDlEHJZg3QLG8DAEaXDM5va8EP6IuxYuHVSKBhuutwVGF3mT+rPJ2EsSP64WbsU
+         xr7wqeIDGfINnvR2FEtpmzDSjep4nbr9NUao1ou6g+RPnDptx5lmgqQexgKL8hpsQHcW
+         aCd0K1bnB9IKz/ddVBIu/rbMKaCT4Zo+f32FzXq9RLgAwpPQS7iyDmL1XckDjlEsZQDt
+         /j7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733259190; x=1733863990;
+        d=1e100.net; s=20230601; t=1733259191; x=1733863991;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=P0SeLMeajdOsD9tUkvbsJQTKmVK5v3TGj4Il/E1cJl0=;
-        b=K865vB3lac1SuFpQfpUNKNsnUeg6AjMlO0VzYZQlHWNjnl9bNXdAItCTEEhkuW4aEe
-         F8gKpNsnxEEGDcOnsh9HfdBYNBb9aupeexYCu9j8EenTettmUSaom+cxbWfCqIws/Ae8
-         pV9RYt5XLt8lAVgGgzKR88puVyPywb2xCg/jFgroAfFpdYyFIxvg+WG03ENScjZ733G3
-         fH7+jeXJtsHF0QiHWJ4/yfqQP39SGz2GQ0q4oCIjvY6y8Aqmfy2oDvnJfEJB/y+M5XKg
-         wYvmbCdlUEZfyWjfBoksNll2dq9pp5Bj/aQkkruTJFOt9MioTDKqlR6DQztL+8/B6hjY
-         G7tA==
-X-Forwarded-Encrypted: i=1; AJvYcCV/xvYoJ9g7a1uAOlgTloIredzNgbLnQA+/NSg2QKnorzTmeWVJie5NcNOrgEHw8oESuBkXQ3aGANg=@vger.kernel.org, AJvYcCWCI/43OQxwuX5ynpv4JV1Qll9PZlL/7ZQWeNjdA5xd1bGrVJRtXylH5rRGoTcVF0dtmqtOzHeyisV1RWE/@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy2ttrbbQfQJEwKuf0xvithTbvp3vJcldeVe2wINGn9gioc5SCC
-	znZiiMEUOUde5YoobmzWx+CEBOCJrN204EE4yw8bNQVCNTaXzHb3ECCeyw==
-X-Gm-Gg: ASbGnctPDyOkPMWdWByWSuLOYKlcfyzIlSA0aWMcv5/qLpA/+nSOEc6kpnpFeg8N7Eh
-	KXD6IQBu/A3hz8QOSzSoewCYYVHnslVOgKK+d/VI3JqUsJlWshXXADRTdK+Z/kp/C8mMCpC4vGa
-	rJe6HIBtvey+10ERPdgcLTvfBGdwm45girUTHOj2PsHld8G8AHEtQXoh5X68VDS2bfPKVyqj1ZK
-	esj+Ld1EHMj7JxuZs1iy7Hf5z70LC4bqZHvFOJX0PMUO8vnyyaOZu5b0jMND058/9iR2TNREEti
-	CzCdD5zJpfaedPhVVaD0KtI+6hSc
-X-Google-Smtp-Source: AGHT+IGD6ZPOpR8AqIvu2pWgIl8eW2InmZPbtk93t30ynomOzynLmktqEl1UxTwRpizJhTJWWvrK2A==
-X-Received: by 2002:a05:600c:1c02:b0:431:4a7e:a121 with SMTP id 5b1f17b1804b1-434d0a38d88mr14284985e9.9.1733259189703;
-        Tue, 03 Dec 2024 12:53:09 -0800 (PST)
+        bh=z3z8OPkTXyo/oK61J/lQvQSxHrdZAWZaME9/d3kJunE=;
+        b=vHn1+n1N1D7m2b66seyFzwQhvzpqCaAR1hPfjeU+0N7EX0uQik9vE66fbHk8weiwTW
+         2Uka8+5XSwRCyrqcKqEdsjkPc9cE3dnp/Bv5UrQk52TcF2ewvmztPYo0LVAkzydxcUSb
+         Y7SrVUd8aU4ATIo4f/G3M/gGLlmdOIyVjo9O1A/KjBJA8+tw8rJZ8evuqafYjpkt/PoF
+         6ELYzJKOlAlqK8mpOO+PegwxVrs2N6cbFQTFFDtoL1pAiv+RhTnDvS+7JoT6oPrG+IuJ
+         u4S+3re8qw9WSH7l63vQre/j3Gx3UElzugqZ1xjI52bIHug6SFGwSz/9BHrTOlsdWH1s
+         1XtQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVSpC/jcSbLkQb1AAw6BpiBQR9cXNxMdHW0rt1uplrm0bjyyQUeqHKb5rMIvirSIwA6kdCPfqHQM9k=@vger.kernel.org, AJvYcCW7IjRY4XgcayQZyOSYXrX+sZnMi+a10rcaliW1P9Rcg6zfIl9q2pRzi2x+GRtsL2V2dkvBgF1+rezGNRSd@vger.kernel.org
+X-Gm-Message-State: AOJu0YyK/knsFfXuMn79gzeh2D9lEXcFCdnGZuwWvFPqsDmZavhvEooc
+	OhNZjeNVDaPSRp81ZpiWDUMI9pGZSi/1pjKFik0hYv+CuGiszlgeITGZRw==
+X-Gm-Gg: ASbGncuvXFzKWgwd2WM8L+4AVoaO2dnCLiKL11hxs16+LWyHWp4MSxob/m2f+Wtgye7
+	pr6I4iIND6FLqKpYwBhlqWuCwt4TuEv3Owov6oVEhMFjxy319Q1WCHPcrZ0BqKtd6YLxAJisSTK
+	MW2hzX2CB0wcZDq5l5mLJYbRe5Zny9RBLysIKSAw6WsLXutyMjFvKwTurEVbGXzdEZy6zz9H0vO
+	PZOvbgxzjOwleANoDwTm2vz3LWUK47OEDtcT4QVK6jsiarI5aTvuTJU1gxvOT8sbAdxxYPD7JnQ
+	1H1N4pnA/ARckwPMudQi3I50qgOj
+X-Google-Smtp-Source: AGHT+IEuDTodDy+Zqsc1eozHcG4M3AcivjQdlyyXofSRfyTIb/0I0TlTqnvGpWSrFep1zsby2lY8lA==
+X-Received: by 2002:a5d:47c9:0:b0:385:ed78:e17d with SMTP id ffacd0b85a97d-385fd36ca63mr1563307f8f.0.1733259191359;
+        Tue, 03 Dec 2024 12:53:11 -0800 (PST)
 Received: from 7b58d44c4ff6.v.cablecom.net (84-72-156-211.dclient.hispeed.ch. [84.72.156.211])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-385ebaf3bccsm9042750f8f.68.2024.12.03.12.53.07
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-385ebaf3bccsm9042750f8f.68.2024.12.03.12.53.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Dec 2024 12:53:09 -0800 (PST)
+        Tue, 03 Dec 2024 12:53:10 -0800 (PST)
 From: Lothar Rubusch <l.rubusch@gmail.com>
 To: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
@@ -69,9 +69,9 @@ Cc: devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	eraretuya@gmail.com,
 	l.rubusch@gmail.com
-Subject: [PATCH v3 04/10] iio: accel: adxl345: add function to switch measuring
-Date: Tue,  3 Dec 2024 20:52:35 +0000
-Message-Id: <20241203205241.48077-5-l.rubusch@gmail.com>
+Subject: [PATCH v3 05/10] iio: accel: adxl345: extend list of defines
+Date: Tue,  3 Dec 2024 20:52:36 +0000
+Message-Id: <20241203205241.48077-6-l.rubusch@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20241203205241.48077-1-l.rubusch@gmail.com>
 References: <20241203205241.48077-1-l.rubusch@gmail.com>
@@ -83,88 +83,134 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Replace the powerup / powerdown functions by a generic function to put
-the sensor in STANDBY, or MEASURE mode. This is needed for several
-features of the accelerometer. It allows to change e.g. FIFO settings.
+Extend the list of constants. Keep them the header file for readability.
+The constants allow the implementation of events like FIFO-watermark,
+single tap, double tap, freefall, etc.
 
 Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
 ---
- drivers/iio/accel/adxl345_core.c | 44 ++++++++++++++++++++++----------
- 1 file changed, 31 insertions(+), 13 deletions(-)
+ drivers/iio/accel/adxl345.h | 89 ++++++++++++++++++++++++++++++++-----
+ 1 file changed, 77 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
-index 11eb0ceef39..0bb2c653e13 100644
---- a/drivers/iio/accel/adxl345_core.c
-+++ b/drivers/iio/accel/adxl345_core.c
-@@ -138,6 +138,34 @@ static int adxl345_write_raw_get_fmt(struct iio_dev *indio_dev,
- 	}
- }
+diff --git a/drivers/iio/accel/adxl345.h b/drivers/iio/accel/adxl345.h
+index 3d5c8719db3..ed81d5cf445 100644
+--- a/drivers/iio/accel/adxl345.h
++++ b/drivers/iio/accel/adxl345.h
+@@ -9,37 +9,102 @@
+ #define _ADXL345_H_
  
-+/**
-+ * adxl345_set_measure_en() - Enable and disable measuring.
-+ *
-+ * @st: The device data.
-+ * @en: Enable measurements, else standby mode.
-+ *
-+ * For lowest power operation, standby mode can be used. In standby mode,
-+ * current consumption is supposed to be reduced to 0.1uA (typical). In this
-+ * mode no measurements are made. Placing the device into standby mode
-+ * preserves the contents of FIFO.
-+ *
-+ * Return: Returns 0 if successful, or a negative error value.
+ #define ADXL345_REG_DEVID		0x00
++#define ADXL345_REG_THRESH_TAP	0x1D
+ #define ADXL345_REG_OFSX		0x1E
+ #define ADXL345_REG_OFSY		0x1F
+ #define ADXL345_REG_OFSZ		0x20
+-#define ADXL345_REG_OFS_AXIS(index)	(ADXL345_REG_OFSX + (index))
++/* Tap duration */
++#define ADXL345_REG_DUR		0x21
++/* Tap latency */
++#define ADXL345_REG_LATENT		0x22
++/* Tap window */
++#define ADXL345_REG_WINDOW		0x23
++/* Activity threshold */
++#define ADXL345_REG_THRESH_ACT		0x24
++/* Inactivity threshold */
++#define ADXL345_REG_THRESH_INACT	0x25
++/* Inactivity time */
++#define ADXL345_REG_TIME_INACT	0x26
++/* Axis enable control for activity and inactivity detection */
++#define ADXL345_REG_ACT_INACT_CTRL	0x27
++/* Free-fall threshold */
++#define ADXL345_REG_THRESH_FF		0x28
++/* Free-fall time */
++#define ADXL345_REG_TIME_FF		0x29
++/* Axis control for single tap or double tap */
++#define ADXL345_REG_TAP_AXIS		0x2A
++/* Source of single tap or double tap */
++#define ADXL345_REG_ACT_TAP_STATUS	0x2B
++/* Data rate and power mode control */
+ #define ADXL345_REG_BW_RATE		0x2C
+ #define ADXL345_REG_POWER_CTL		0x2D
++#define ADXL345_REG_INT_ENABLE		0x2E
++#define ADXL345_REG_INT_MAP		0x2F
++#define ADXL345_REG_INT_SOURCE		0x30
+ #define ADXL345_REG_DATA_FORMAT		0x31
+-#define ADXL345_REG_DATAX0		0x32
+-#define ADXL345_REG_DATAY0		0x34
+-#define ADXL345_REG_DATAZ0		0x36
+-#define ADXL345_REG_DATA_AXIS(index)	\
+-	(ADXL345_REG_DATAX0 + (index) * sizeof(__le16))
++#define ADXL345_REG_XYZ_BASE		0x32
++#define ADXL345_REG_DATA_AXIS(index)				\
++	(ADXL345_REG_XYZ_BASE + (index) * sizeof(__le16))
++
++#define ADXL345_REG_FIFO_CTL		0x38
++#define ADXL345_REG_FIFO_STATUS		0x39
++
++#define ADXL345_DEVID			0xE5
++
++#define ADXL345_FIFO_CTL_SAMLPES(x)	(0x1f & (x))
++#define ADXL345_FIFO_CTL_TRIGGER(x)	(0x20 & ((x) << 5)) /* 0: INT1, 1: INT2 */
++#define ADXL345_FIFO_CTL_MODE(x)	(0xc0 & ((x) << 6))
+ 
++#define ADXL345_INT_DATA_READY		BIT(7)
++#define ADXL345_INT_SINGLE_TAP		BIT(6)
++#define ADXL345_INT_DOUBLE_TAP		BIT(5)
++#define ADXL345_INT_ACTIVITY		BIT(4)
++#define ADXL345_INT_INACTIVITY		BIT(3)
++#define ADXL345_INT_FREE_FALL		BIT(2)
++#define ADXL345_INT_WATERMARK		BIT(1)
++#define ADXL345_INT_OVERRUN		BIT(0)
++
++#define ADXL345_S_TAP_MSK	ADXL345_INT_SINGLE_TAP
++#define ADXL345_D_TAP_MSK	ADXL345_INT_DOUBLE_TAP
++
++#define ADXL345_INT1			0
++#define ADXL345_INT2			1
++
++/*
++ * BW_RATE bits - Bandwidth and output data rate. The default value is
++ * 0x0A, which translates to a 100 Hz output data rate
 + */
-+static int adxl345_set_measure_en(struct adxl345_state *st, bool en)
-+{
-+	unsigned int val = 0;
-+
-+	val = (en) ? ADXL345_POWER_CTL_MEASURE : ADXL345_POWER_CTL_STANDBY;
-+	return regmap_write(st->regmap, ADXL345_REG_POWER_CTL, val);
-+}
-+
-+static void adxl345_powerdown(void *ptr)
-+{
-+	struct adxl345_state *st = ptr;
-+
-+	adxl345_set_measure_en(st, false);
-+}
-+
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
- "0.09765625 0.1953125 0.390625 0.78125 1.5625 3.125 6.25 12.5 25 50 100 200 400 800 1600 3200"
- );
-@@ -158,16 +186,6 @@ static const struct iio_info adxl345_info = {
- 	.write_raw_get_fmt	= adxl345_write_raw_get_fmt,
- };
+ #define ADXL345_BW_RATE			GENMASK(3, 0)
++#define ADXL345_BW_LOW_POWER	BIT(4)
+ #define ADXL345_BASE_RATE_NANO_HZ	97656250LL
  
--static int adxl345_powerup(void *regmap)
--{
--	return regmap_write(regmap, ADXL345_REG_POWER_CTL, ADXL345_POWER_CTL_MEASURE);
--}
+-#define ADXL345_POWER_CTL_MEASURE	BIT(3)
+ #define ADXL345_POWER_CTL_STANDBY	0x00
++#define ADXL345_POWER_CTL_WAKEUP	GENMASK(1, 0)
++#define ADXL345_POWER_CTL_SLEEP	BIT(2)
++#define ADXL345_POWER_CTL_MEASURE	BIT(3)
++#define ADXL345_POWER_CTL_AUTO_SLEEP	BIT(4)
++#define ADXL345_POWER_CTL_LINK	BIT(5)
+ 
+ #define ADXL345_DATA_FORMAT_RANGE	GENMASK(1, 0)	/* Set the g range */
+-#define ADXL345_DATA_FORMAT_JUSTIFY	BIT(2)	/* Left-justified (MSB) mode */
++#define ADXL345_DATA_FORMAT_IS_LEFT_JUSTIFIED	BIT(2)
+ #define ADXL345_DATA_FORMAT_FULL_RES	BIT(3)	/* Up to 13-bits resolution */
+-#define ADXL345_DATA_FORMAT_SPI_3WIRE	BIT(6)	/* 3-wire SPI mode */
+-#define ADXL345_DATA_FORMAT_SELF_TEST	BIT(7)	/* Enable a self test */
 -
--static void adxl345_powerdown(void *regmap)
--{
--	regmap_write(regmap, ADXL345_REG_POWER_CTL, ADXL345_POWER_CTL_STANDBY);
--}
--
- /**
-  * adxl345_core_probe() - Probe and setup for the accelerometer.
-  * @dev:	Driver model representation of the device
-@@ -236,13 +254,13 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
- 				     regval, ADXL345_DEVID);
++#define ADXL345_DATA_FORMAT_SPI_3WIRE	BIT(6)
++#define ADXL345_DATA_FORMAT_SELF_TEST	BIT(7)
+ #define ADXL345_DATA_FORMAT_2G		0
+ #define ADXL345_DATA_FORMAT_4G		1
+ #define ADXL345_DATA_FORMAT_8G		2
+ #define ADXL345_DATA_FORMAT_16G		3
  
- 	/* Enable measurement mode */
--	ret = adxl345_powerup(st->regmap);
-+	ret = adxl345_set_measure_en(st, true);
- 	if (ret < 0)
- 		return dev_err_probe(dev, ret, "Failed to enable measurement mode\n");
+-#define ADXL345_DEVID			0xE5
++#define ADXL345_REG_OFS_AXIS(index)	(ADXL345_REG_OFSX + (index))
++
++/*
++ * FIFO stores a maximum of 32 entries, which equates to a maximum of 33 entries
++ * available at any given time because an additional entry is available at the
++ * output filter of the device.
++ *
++ * (see datasheet FIFO_STATUS description on "Entries Bits")
++ */
++#define ADXL345_FIFO_SIZE  33
  
--	ret = devm_add_action_or_reset(dev, adxl345_powerdown, st->regmap);
-+	ret = devm_add_action_or_reset(dev, adxl345_powerdown, st);
- 	if (ret < 0)
--		return ret;
-+		return dev_err_probe(dev, ret, "Failed to add action or reset\n");
- 
- 	return devm_iio_device_register(dev, indio_dev);
- }
+ /*
+  * In full-resolution mode, scale factor is maintained at ~4 mg/LSB
 -- 
 2.39.5
 
