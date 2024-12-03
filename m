@@ -1,142 +1,111 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from www530.your-server.de (www530.your-server.de [188.40.30.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FADB7DA8C;
-	Tue,  3 Dec 2024 06:27:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C853193404;
+	Tue,  3 Dec 2024 07:22:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.40.30.78
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733207281; cv=none; b=ok1SvDKaknFJU1k0KTwBNGqp60hARYPspaLxBux4nHWMtZLOM7rHgCXZeOh/eosbK3dkaD5AzYyNwtWfY7Vgdat1oCxK/E8FE3zWUTLBa/kGlIO+YE7EyAfAleKD2BAxYFyIxc8huCEpt+h/UDrjZyfFa8HvNVacb/RiCKVKOVA=
+	t=1733210549; cv=none; b=cod+VLo3NoVXsvoqieqqpZ7Q47NTaelO1BXDM6BiyEHR4TLjjGi8JNTjbgEAuSWvyVC43V806Z3MJWxam8JnKTXU56KF7ATXtMOvxRmve9i43YVlKbEeijFgQz+fl2jqBBdHaIfE3aXJZrL68rBQdreRegmlHmw9isdkdJLcL9k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733207281; c=relaxed/simple;
-	bh=BVNz6a6RQMt/P4mz6tdTnhvoVtjhnxgIemE1GaEyFuM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=np49sIKJHkqYbDoRjJRzpoUEKG1IFCwNK13aMFCOjSKGv9ItGWhbkRe3fhWrhlqumvfewU0P0tIRRX8gg+gNMugtwyQBxvP2erbdsZzj2rSRah/5N/VmHpiHe4Wbyqy4qsf+jAXmuxlAAESfKNIR6P2hgwxOplEAHQ0Wt5sbfcs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nkMF/SeP; arc=none smtp.client-ip=209.85.167.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1733210549; c=relaxed/simple;
+	bh=DFyp/R0jxpqhgTccWILwnURhQxdrodsREP29KXQN+N4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=SNm4f1Bvk9arHJ15jLeMR5f9AlkD7R3LSttN9FTsmS6/I8fEuYoc0eG+tdDjRks7Cjm3BGGyPpG6Tfuyb1pzMD5aVEnf2IVgyPvxGxwG3F2+QBu5JIAVHvee+4tLPMfPRS+lK+ShXJTLT295OubQhSdnFhHT2nB9Oqx2tEp6z2g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=h5o/K34o; arc=none smtp.client-ip=188.40.30.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nkMF/SeP"
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-53df80eeeedso5322819e87.2;
-        Mon, 02 Dec 2024 22:27:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733207278; x=1733812078; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tn8XClVZRZxX3/WQO34yniUIKIw8qkK1xsMKchWydIA=;
-        b=nkMF/SeP7oGso6gPPRKpCjDx9nlZzN8KUfAUQvJKp/ePPnvlsRY9bz9FgV5EstikFj
-         QcQ9ukL5iWEEFZ6a02ceFv/ufpMyBV1k1yB5OzWY8eA+XGDPhF06nZf4HzeRsdzKM7+l
-         Mces4/O/rrv6mtJaS+XwQ2HwqCVIxRjWPPiHP1yS9kzykZlkAgPrFTKQsYVxxltzNKb0
-         wb3+gB2ApmKlhIKRVeovmBt9BvHad0uKFN3K1vzAaRhWtVP+5oAtEcwrJq+aFuMbz23O
-         eAFC+p+9jA028iFuPu+apRbMPaJY88PS8JvGOOjbmssY413/e2Qbd3MdM85Sor45p2RE
-         NN1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733207278; x=1733812078;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=tn8XClVZRZxX3/WQO34yniUIKIw8qkK1xsMKchWydIA=;
-        b=etgjKDz1ytnmrRy5ZJTyVwGgBi8OeVijSeVDULv44hCidlwcfu7JeBXJd0akWAS76L
-         pud4ZouPHJ8OqALLf1gIEpmNoXsHtnh7FsFEeYVqcsNi7ui4ISsX0fEste1t0KL9c9E6
-         j8NcsL0WEHUqiIoeOCtadUvEs3Gl0MD1/RyJX1F5Baae9iVTUPXDtxVCrAC9iT8RFlZv
-         qpSUXfzPg/mzmDGZI7lKD9jOkNwSxlmlQLuvJUZPzCXQpdxUVSAB7n7qET9eLdSYzuGS
-         IE81a4XPXHsEGh6yO9uvr580GGcOrxln7XIOQIYgcsI1TtDqoQyPzISp4+PJDS7sajzM
-         hr/g==
-X-Forwarded-Encrypted: i=1; AJvYcCUc7qAe1Wrr1EIgmeqPjM67VAJna2IPE6vVh6DKudwZ4ef/GAMRiGGIvvVJoRBj79WihqXRr16+rjkzEStl@vger.kernel.org, AJvYcCW3OSusfyDxi1xAIKbupLLL0IfxDaiUEsIoDRGuXKCJEGZXNJusOeAAznUexiAOvx5RWSLpaSx0AM0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YypgV6oXKKETQH4sMyH0CHtHq1Qke51jeaqHH9ijUyC8q6QCVAW
-	cZwJdwIke/NKPhYJVwnEnHdqCPbAnFL9getJtqXFbNa2zTh5GDJU
-X-Gm-Gg: ASbGncu/4yrZipjW5spFfYDGC3eD705kh3iPJ4cTuE90HtYaiHdLLw6LxPa982t1/Re
-	chGdHCnnkKxWdyLWPTiB10gvxYBAcQZvGd/cVz3EAr4QCoeNIci0EYA2QdCIEcIZO8qL2IqId3+
-	PqS0ClS/gydDmwzfNAJWIdhdIAQVdsdHIbnMgMO4CpmfnmSxlZxDP9HDvvS6g0xA31LbDL8Ne1Y
-	SD5B27pjfkkNxaucsVWQ3GwJ7NDaQB6F25lZqqcCpkinluSZB6RwPKL2f8V1NWCZ21Tu4Q8fIW3
-	tLHwK73AlLqKoYBDr5YqXEW1NoUu3s4=
-X-Google-Smtp-Source: AGHT+IG6/iBhi38LxIDWitZejm7IOANx4mjE7WdE7+FthbU+d4d0bYVm1bQgAKA/JAOkusW63REprQ==
-X-Received: by 2002:a05:6512:2254:b0:53d:d486:9705 with SMTP id 2adb3069b0e04-53e129f0048mr704191e87.9.1733207277766;
-        Mon, 02 Dec 2024 22:27:57 -0800 (PST)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53df646f0e6sm1710764e87.154.2024.12.02.22.27.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Dec 2024 22:27:55 -0800 (PST)
-Message-ID: <4004fafd-7596-4def-bf78-e91685f0c934@gmail.com>
-Date: Tue, 3 Dec 2024 08:27:53 +0200
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="h5o/K34o"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=geanix.com;
+	s=default2211; h=Cc:To:Message-Id:Content-Transfer-Encoding:Content-Type:
+	MIME-Version:Subject:Date:From:Sender:Reply-To:Content-ID:Content-Description
+	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	In-Reply-To:References; bh=6jVLTp18SWbdeHtZP7DxFFXE7kTlMhv8zC8+fegqAt8=; b=h5
+	o/K34oPg8+8SwkBX8khV2d7Wu0g3b4ZOpHjfAR3tPBXA6w+M5QnUkx1VCy9oSEP1egtXjetVywu8v
+	rqQZ9m3asJCGVwvI3X23OXs+9GutOQlLs7CdT+T8nSU41H3IgqRRL+GZBW+Lc3vbdOPfXtYe8u0Ah
+	kZDSFGz84FakPUU45uufuu+patmO9SA9W+0IViMkI9JXTn+JvwHqmk6w6VH3lxb+wjq3Ox3As/LMO
+	jxFfUDDl5KwQJ07NgCgziGHXLJsKUEZKioJiwx6fScOpZ6wPWlzIPi8h06SNgdl/I81xRq+3YpiP2
+	m1auGuSBqWqDDgGffG+04g9wcwVR+drQ==;
+Received: from sslproxy04.your-server.de ([78.46.152.42])
+	by www530.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <sean@geanix.com>)
+	id 1tINEl-000Fgf-BV; Tue, 03 Dec 2024 08:22:23 +0100
+Received: from [185.17.218.86] (helo=zen.localdomain)
+	by sslproxy04.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <sean@geanix.com>)
+	id 1tINEk-000MPv-2Y;
+	Tue, 03 Dec 2024 08:22:22 +0100
+From: Sean Nyekjaer <sean@geanix.com>
+Date: Tue, 03 Dec 2024 08:22:11 +0100
+Subject: [PATCH v2] dt-bindings: iio: accel: fxls8962af: add wakeup-source
+ property
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: kx022a: document new chip_info structure members
-To: Mehdi Djait <mehdi.djait@linux.intel.com>
-Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
- Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <Z02eXtrrO8U5-ffo@mva-rohm>
- <hv7kqspym5qkcwbw4r6ogi362sbooohijplxbkro5qdmndvhr6@t2cftbs4n7rz>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <hv7kqspym5qkcwbw4r6ogi362sbooohijplxbkro5qdmndvhr6@t2cftbs4n7rz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20241203-fxlsdt-v2-1-ef523461b507@geanix.com>
+X-B4-Tracking: v=1; b=H4sIAKKxTmcC/2XMQQ7CIBCF4as0sxbDjLWkrryH6YJQaCdRMNAQT
+ MPdxW5d/i8v3w7JRrYJbt0O0WZOHHwLOnVgVu0XK3huDSSpR6RRuPJM8yZIIl0v0mipBmjnd7S
+ OywE9ptYrpy3Ez+Fm/K1/REaBwjk1jEr3yhh9X6z2XM4mvGCqtX4BzuD9qJ0AAAA=
+X-Change-ID: 20241129-fxlsdt-2012530ca076
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Sean Nyekjaer <sean@geanix.com>
+X-Mailer: b4 0.14.2
+X-Authenticated-Sender: sean@geanix.com
+X-Virus-Scanned: Clear (ClamAV 0.103.10/27475/Mon Dec  2 10:41:11 2024)
 
-On 02/12/2024 15:41, Mehdi Djait wrote:
-> Hi Matti,
+Add a wakeup-source property to the binding to describe whether the
+wakeup interrupts from the accelerometer can wake the system from
+suspend.
 
-> On Mon, Dec 02, 2024 at 01:47:42PM +0200, Matti Vaittinen wrote:
->> The kx022a driver supports a few different HW variants. A chip-info
->> structure is used to describe sensor specific details. Support for
->> sensors with different measurement g-ranges was added recently,
->> introducing sensor specific scale arrays.
->>
->> The members of the chip-info structure have been documented using
->> kerneldoc. The newly added members omitted the documentation. It is nice
->> to have all the entries documented for the sake of the consistency.
->> Furthermore, the scale table format may not be self explatonary, nor how
->> the amount of scales is informed.
->>
->> Add documentation to scale table entries to maintain consistency and to
->> make it more obvious how the scales should be represented.
->>
->> Suggested-by: Mehdi Djait <mehdi.djait@linux.intel.com>
->> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
->>
->> ---
->> Wording is difficult. Especially when not working on ones native
->> language. So, I am glad is someone evaluates whether using the 'NANO'
->> to describe 0.000 000 001 is correct - or if term like 'ppb' would make
->> more sense...
->> ---
->>   drivers/iio/accel/kionix-kx022a.h | 5 +++++
->>   1 file changed, 5 insertions(+)
->>
->> diff --git a/drivers/iio/accel/kionix-kx022a.h b/drivers/iio/accel/kionix-kx022a.h
->> index 142652ff4b22..82c4ced7426d 100644
->> --- a/drivers/iio/accel/kionix-kx022a.h
->> +++ b/drivers/iio/accel/kionix-kx022a.h
->> @@ -137,6 +137,11 @@ struct kx022a_data;
->>    *
->>    * @name:			name of the device
->>    * @regmap_config:		pointer to register map configuration
->> + * scale_table:			Array of two integer tables containing
->> + *				supported scales. Each scale is represented
->> + *				a 2 value array. First value being full
->> + *				integers, second being NANOs.
-> 
-> How about:
-> 
-> Array of tables containing two scaling factors for the supported
-> acceleration measurement ranges. First value is the integer part and
-> second value is the fractional part in nano units.
-> 
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+---
+Changes in v2:
+- Corrected commit message
+- Link to v1: https://lore.kernel.org/r/20241129-fxlsdt-v1-1-ff7697a47cca@geanix.com
+---
+ Documentation/devicetree/bindings/iio/accel/nxp,fxls8962af.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Hi Mehdi. Thanks for the input. I definitely prefer your wording over 
-what I wrote. Except maybe the note about each table containing two 
-scaling factors. I think a table contains two integers, but only one 
-scaling factor which is composed of those integers.
+diff --git a/Documentation/devicetree/bindings/iio/accel/nxp,fxls8962af.yaml b/Documentation/devicetree/bindings/iio/accel/nxp,fxls8962af.yaml
+index 2d99e3811da07ea0453feafbcf82a227185ecea2..c175f4c4cbdb8f8debb0fe64ed21157f3a878d59 100644
+--- a/Documentation/devicetree/bindings/iio/accel/nxp,fxls8962af.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/nxp,fxls8962af.yaml
+@@ -46,6 +46,11 @@ properties:
+   drive-open-drain:
+     type: boolean
+ 
++  wakeup-source:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description:
++      Enable wake on accelerometer event
++
+ required:
+   - compatible
+   - reg
+@@ -69,6 +74,7 @@ examples:
+             interrupt-parent = <&gpio0>;
+             interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
+             interrupt-names = "INT1";
++            wakeup-source;
+         };
+     };
+   - |
 
-I am also still wondering if ppb (or even fully written "parts per 
-billion") should be used instead of nano. In my ears the "nano" needs 
-units, but I suppose the scale does not have any.
+---
+base-commit: a61ff7eac77e86de828fe28c4e42b8ae9ec2b195
+change-id: 20241129-fxlsdt-2012530ca076
 
-Yours,
-	-- Matti
+Best regards,
+-- 
+Sean Nyekjaer <sean@geanix.com>
+
