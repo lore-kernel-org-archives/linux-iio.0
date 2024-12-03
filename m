@@ -1,467 +1,137 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A328208997;
-	Tue,  3 Dec 2024 20:53:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69A72205AA9;
+	Tue,  3 Dec 2024 21:38:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733259203; cv=none; b=qt2c29QFOCKnkXbHCfv/ZhUM/dqnY9YrtDbT2zVKrDLuxutBeaiWs1FGkfLnarIhcXsT7I/7pvaVcja5p04tfGiSgfTwgcrssBO+YkDZqzRuev7P1cOuMhuyHA1X7BN1KjWwgK39UySTMDT3TeKz9NuayV9pouwrb/X8vIBw+kc=
+	t=1733261898; cv=none; b=ub3Vv334Rju0d9OTm/dY/010u0/TCP8iaF9bX0UxPn+XCNFI7WxcwhcDNkYM2516JrPa29ggf+bWc/gISjXWn25fGAPYWLTcn7b0SZqnT+V0K/WJ8O83KajOUmu9TrdmCHjT7qJdW1RMz8/uSySK5EBjJhM4/bqmaZXtFK8JHFk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733259203; c=relaxed/simple;
-	bh=lz4Q07p/KplAnEjRp9RHgmnK7pPyniDcePlEJC24xFY=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=j9ZCgBgxBMotTVGE1dLYd3W7idV2P/IFcg7jM75fLUVZbgYvhu7vXN0XN9iaaWnR/5QS5IPMh+mJH+ry31T6huhiEOFuel07ahzt+gL4cX9fsGsdtBoxntMIHXVZMnf5rH9sY1WVJ6b9ilYEKz/kqbrDIJqwlll2uAY11PLJySg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=atZh6hsn; arc=none smtp.client-ip=209.85.128.51
+	s=arc-20240116; t=1733261898; c=relaxed/simple;
+	bh=l03a30oLSQSPguXncQBQuphNBZWYsKqZgJCGJsnRpWU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jYvtE41nchVx7IP81hzMI8F1uHJGSA790ZlSOMwi+gDl944MeaBTBjhSigJvpR9z6iQnRy+KwcbNIY9U+JGfu7gezd1lapFnTUZtVwwr6VrvaiHpHbou4op1RM+GnVia0Q3Srx4vuBkFMnq2wHsYWjSOj1z7HPp2zv/nZUdy5fU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BY3Ya0eZ; arc=none smtp.client-ip=209.85.221.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="atZh6hsn"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4349c376d4fso5977525e9.0;
-        Tue, 03 Dec 2024 12:53:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BY3Ya0eZ"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-385de59c1a0so4514473f8f.2;
+        Tue, 03 Dec 2024 13:38:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733259200; x=1733864000; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+t8orI5Rq2k51/PM4eG88qZH1gwVItqpQe9nQFhHnTM=;
-        b=atZh6hsnuJCS1Omkrlut8u/+zgoDyEVj2IN2E3Ziy/YNaLLWWXh4the6L+A81FNGtz
-         jby3U5HAKX4VCCEJxpXgl+a77hrKUyOetRjCGU3PQSMt8/2BdxicaBgBtJ49Ua2p2rvj
-         gbCcpnBzp8whLHonpQB2TO6OSCgCEyaoSqPmUP1881bQML1GEHV4iYgUNUm9ZrexonwF
-         J+hXXXrQfy5hkVUVeShXZ+HT0gw/B7+m4xfUtxnbcP6l6REu9CkVwHXVLhtJg1leqZv7
-         s3aFcIascWVwuZbcFtAPyoUYeBZbTVPeQsrGYoCbhK5pnLVneN/b5ou451o3h7URguUW
-         Z+DA==
+        d=gmail.com; s=20230601; t=1733261895; x=1733866695; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=2FGHzM7J3OqvAreJZS1EIJ3jxTVqZr7bzpMiim9rHNY=;
+        b=BY3Ya0eZIY0tjhmKmAFAaACZwB6oOxb3T9YGBIT8UGFPnUlKaeSFOYorZnejF33oUm
+         jVLO9secg4fx3S+297fFy5LLkw3PsxSXM0ebtZt2yaQCeSdGXKjQKOCIWsxSgSkIm30F
+         Mee81BAyfiJhCvOgn9sOPbV0hS2IRieONPAwmKZLpPn0K25b+uT/3Y+yquSPzH3oB/AO
+         M6rXH3nd7vUJrk9tLwutcp6ayctDp1YUw92rJXx1WV/HQcDyHzhllXO548v4h8jXVOFI
+         cv6j/gRT8ddLVVquKn2fvSFPEOG5qevWMPKqa5/dKqW3Z/ctZ4Bbz23tPjVifGs+s5YG
+         PKDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733259200; x=1733864000;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+t8orI5Rq2k51/PM4eG88qZH1gwVItqpQe9nQFhHnTM=;
-        b=jIIXUrATqbd2hAUF+UgrEiLi1n2FN3LSefZKNyDLpVtt+Izmgdr5R6YPwWl0OR8nCU
-         1oEDw9+wtsi/Tqyso+U1mKO1qsVJJ71O1OZJmoxAerS4HH/V2yECT+It94NUjOjZX2K6
-         oBRoWIgqGOUAg9VuowADSbxWS5nZt51tQ1bt7HPiLlORCo+wTqs+lkJ+EiDdXk86Y1MR
-         BmyDblLjKb4J1+drLHytIw6+10tr5zbAFnZCKldmH+VF9rpE3cjhiDD+7PD1zeSWDHW5
-         zJ2MCVSkSsqWK8tQ9cFPD97n7UTmYAXZY8cCc4W7gXm7XriCBaYqPYtMcgMvDhfFwvKT
-         cPPA==
-X-Forwarded-Encrypted: i=1; AJvYcCUKBbZWsWrQPZeQZf512LHs88UIV7eLI5RIF6mHd354z6FyBCredWrrgGXwcRGyJs9bCFj+YoM5/8A=@vger.kernel.org, AJvYcCWiHs5Ey9Ids3OHGI3KHcpzVwUu4DliGH9n4vmL6o27oHRac1YIohIWbYGyfjSOl98a1RUNwjOb5kufYjcc@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywe30PiEEdXBG0qmQpHeC5TuVNqiW+/G8DRcCKhOsY+fdSdyeI2
-	q1UXboPxZ2OthCvBHkrevPNDBIQeVMwl8o5AC6GCXJAM88n5Jt5e
-X-Gm-Gg: ASbGncv1DUtWwtojQr7b3UaPJAU1aJ/AmapApu8ZhKo7fZpErS2HAgFKjBXUa0QfsfA
-	8zPszszDlIQ5tyllWBvpdHFZt0ktHQBEt7Z3s9tclEUmuUcXWdevDk+BxJZnJrcZNORGHSgRCL2
-	gPIwnULlAyDnUnoPTJx+z3bHz8vyB4N+hy95A1L5E4IrxZzr9U6Bd1fwTM3DTYfSm9vWkpru+jM
-	3/UzY+OaPOXFpMzsFqXFzZ14BtImQjwhIaaNNbB+8b0dAMh5dv1iI03M2bRAfQIc8vb4uA3J/OX
-	yMYQxkXILui3DyicNfLh9WCzWLrI
-X-Google-Smtp-Source: AGHT+IFBzlKiOsVfWE6zlcwj8O4uzn8k6ESYWC2EcNJcWRWncXGvdqCiLQuirKyz35i9TZLS+C+cUg==
-X-Received: by 2002:a05:600c:4ec7:b0:434:9d62:aa17 with SMTP id 5b1f17b1804b1-434d0a07455mr13330165e9.5.1733259199508;
-        Tue, 03 Dec 2024 12:53:19 -0800 (PST)
-Received: from 7b58d44c4ff6.v.cablecom.net (84-72-156-211.dclient.hispeed.ch. [84.72.156.211])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-385ebaf3bccsm9042750f8f.68.2024.12.03.12.53.18
+        d=1e100.net; s=20230601; t=1733261895; x=1733866695;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2FGHzM7J3OqvAreJZS1EIJ3jxTVqZr7bzpMiim9rHNY=;
+        b=XBxW6sZrQBGKOikRg/uvWViESAnTLof6g9wobJxcUld2x55r0W1UgHz6n8Q/vZQ0bg
+         +bRRtSo5JIWt6TF3PEJy/N1UGevlpq/e7eosiGIq1RKiYfyazagh2QeVPe5bH0YizKxu
+         J12P2zOii7sCu6ae5Skw+nABvMqxs47QF/x8W1i0EfHa/8X928dY/sLM/4I4hZbpZx5G
+         TPM9VfaQFgEl4wsLX2wyIGjyXCfzxaenu18tTGU2yWYpkRkC5Xb/5l78gF1OdX7qek8O
+         8VfcqGNZzCFJCeFyEQQIhYf1ZY8+E1i7WYQVgTI2CfaJFxXzJYKif8j26cJrW0JdNhM6
+         /uYA==
+X-Forwarded-Encrypted: i=1; AJvYcCUJXiPaoF+RGU6dY0/cqy1k5XE0NOZvt5QBfN+8N00RiSJtgo91wDJh/QecpScchvcYRqkD8fkTkrE=@vger.kernel.org, AJvYcCVaFJgy5UFOIsi70qStrG0ADZh4vituuIjPUE6BWRWHaNmbmZKrKgzNcfQRGI3cd8NMMiAsNnIoRw0d0fy/@vger.kernel.org
+X-Gm-Message-State: AOJu0YyhZ57W2MRUdKc79TJirARAf7zipvhN58dsbdwOOrW8dAc839Rq
+	eHLJRU/omzjrhPYztLPtwmqthi9IEz8wVWy4Y0XoeV4UMKM207g3
+X-Gm-Gg: ASbGncvmBp90JXC8Ub/JrgPrT0BXG4y659cLO97/qd4YNKqDWP3j3O8WCQ6neEJYKDe
+	nAf2K9DKCVPL5iPgmpsoMRnaoANATTkgbwCE8LPX8z9ZaOQVIB/pgkEszKjDkmhpBIC8s5uAXDJ
+	OgoZbMpHWI0P3mVsIIW9ohAHtZObIrD+HgRfOWZBuIoIpfJgx9nwMSWc5xFGrXtN7fEL8/s9iH0
+	kPvuN8KfxVP5fSxFyHisPUWDIBuV6UVo+jMJ8OS6iURGi8l3MQJZXBFw7wR
+X-Google-Smtp-Source: AGHT+IHL4wO3JlYTbKLCNKO+w6R37VMh8CYOEEr1VcKlglNKl05nYfs4II9OTn1WL0oy9csmVypfnA==
+X-Received: by 2002:a5d:64ce:0:b0:385:f220:f779 with SMTP id ffacd0b85a97d-385fd4364bcmr3386171f8f.49.1733261894586;
+        Tue, 03 Dec 2024 13:38:14 -0800 (PST)
+Received: from vamoirid-laptop ([2a04:ee41:82:7577:56d9:cf1e:faf4:54e1])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-385e13e8eadsm12366715f8f.28.2024.12.03.13.38.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Dec 2024 12:53:19 -0800 (PST)
-From: Lothar Rubusch <l.rubusch@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org
-Cc: devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	eraretuya@gmail.com,
-	l.rubusch@gmail.com
-Subject: [PATCH v3 10/10] iio: accel: adxl345: add kfifo with watermark
-Date: Tue,  3 Dec 2024 20:52:41 +0000
-Message-Id: <20241203205241.48077-11-l.rubusch@gmail.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20241203205241.48077-1-l.rubusch@gmail.com>
-References: <20241203205241.48077-1-l.rubusch@gmail.com>
+        Tue, 03 Dec 2024 13:38:14 -0800 (PST)
+Date: Tue, 3 Dec 2024 22:38:12 +0100
+From: Vasileios Amoiridis <vassilisamir@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: lars@metafoo.de, krzysztof.kozlowski@linaro.org, nuno.sa@analog.com,
+	u.kleine-koenig@baylibre.com, abhashkumarjha123@gmail.com,
+	jstephan@baylibre.com, dlechner@baylibre.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jack Andersen <jackoalan@gmail.com>
+Subject: Re: [PATCH RFC 3/6] iio: adc: dln2-adc: make use of
+ iio_is_soft_ts_enabled()
+Message-ID: <Z096RGnVRUQo-Wgn@vamoirid-laptop>
+References: <20241130002710.18615-1-vassilisamir@gmail.com>
+ <20241130002710.18615-4-vassilisamir@gmail.com>
+ <20241130140255.70b4b68b@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241130140255.70b4b68b@jic23-huawei>
 
-Add a basic setup for kfifo with configurable watermark, add a handler
-for watermark interrupt events and extend the channel for the
-scan_index needed for the kfifo. The sensor is configurable to use a
-FIFO_BYPASSED mode or a FIFO_STREAM mode. For the FIFO_STREAM mode a
-watermark can be configured, or disabled by setting 0. Further features
-are based on the FIFO setup.
+On Sat, Nov 30, 2024 at 02:02:55PM +0000, Jonathan Cameron wrote:
+> On Sat, 30 Nov 2024 01:27:07 +0100
+> Vasileios Amoiridis <vassilisamir@gmail.com> wrote:
+> 
+> > Use the iio_is_soft_ts_enabled() accessor to access the value of the
+> > scan_timestamp. This way, it can be marked as __private when there
+> > are no direct accessors of it.
+> > 
+> > Signed-off-by: Vasileios Amoiridis <vassilisamir@gmail.com>
+> 
+> The original code looks to me like a micro optimization that we should
+> consider dropping to reduce complexity.  It is only used to zero a hole
+> in a structure conditionally if the timestamp is enabled.
+> 
+> Better I think to just drop all the ts_pad_offset etc stuff in favour of
+> just zeroing the whole of the data structure in dln2_adc_trigger_h()
+> whether or not the timestamp is enabled.
+> 
+> My guess is that on a reasonably performance CPU the occasional cost
+> of a branch miss prediction will outweigh zeroing a fairly small structure
+> anyway.
+> 
+> +CC Jack who wrote this driver.
+> 
+> Jonathan
+> 
+> 
 
-Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
----
- drivers/iio/accel/adxl345_core.c | 300 +++++++++++++++++++++++++++++++
- 1 file changed, 300 insertions(+)
+Hi Jonathan,
 
-diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
-index 0a3acce2198..8c20e1e39c3 100644
---- a/drivers/iio/accel/adxl345_core.c
-+++ b/drivers/iio/accel/adxl345_core.c
-@@ -15,15 +15,28 @@
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/events.h>
-+#include <linux/iio/kfifo_buf.h>
- 
- #include "adxl345.h"
- 
-+#define ADXL345_FIFO_BYPASS	0
-+#define ADXL345_FIFO_FIFO	1
-+#define ADXL345_FIFO_STREAM	2
-+
-+#define ADXL345_DIRS 3
-+
- struct adxl345_state {
- 	int irq;
- 	const struct adxl345_chip_info *info;
- 	struct regmap *regmap;
-+	__le16 fifo_buf[ADXL345_DIRS * ADXL345_FIFO_SIZE];
- 	bool fifo_delay; /* delay: delay is needed for SPI */
- 	u8 intio;
-+	u8 int_map;
-+	u8 watermark;
-+	u8 fifo_mode;
- };
- 
- #define ADXL345_CHANNEL(index, reg, axis) {					\
-@@ -36,6 +49,13 @@ struct adxl345_state {
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
- 		BIT(IIO_CHAN_INFO_SAMP_FREQ),				\
- 	.scan_index = (index),				\
-+	.scan_type = {					\
-+		.sign = 's',				\
-+		.realbits = 13,				\
-+		.storagebits = 16,			\
-+		.shift = 0,				\
-+		.endianness = IIO_LE,			\
-+	},						\
- }
- 
- enum adxl345_chans {
-@@ -48,6 +68,25 @@ static const struct iio_chan_spec adxl345_channels[] = {
- 	ADXL345_CHANNEL(2, chan_z, Z),
- };
- 
-+static int adxl345_set_interrupts(struct adxl345_state *st)
-+{
-+	int ret;
-+	unsigned int int_enable = st->int_map;
-+	unsigned int int_map;
-+
-+	/* Any bits set to 0 in the INT map register send their respective
-+	 * interrupts to the INT1 pin, whereas bits set to 1 send their respective
-+	 * interrupts to the INT2 pin. The intio shall convert this accordingly.
-+	 */
-+	int_map = 0xFF & (st->intio ? st->int_map : ~st->int_map);
-+
-+	ret = regmap_write(st->regmap, ADXL345_REG_INT_MAP, int_map);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(st->regmap, ADXL345_REG_INT_ENABLE, int_enable);
-+}
-+
- static int adxl345_read_raw(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *chan,
- 			    int *val, int *val2, long mask)
-@@ -133,6 +172,31 @@ static int adxl345_write_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
-+static int adxl345_set_watermark(struct iio_dev *indio_dev, unsigned int value)
-+{
-+	struct adxl345_state *st = iio_priv(indio_dev);
-+	unsigned int fifo_mask = 0x1F;
-+	int ret;
-+
-+	if (value == 0) {
-+		st->int_map &= ~ADXL345_INT_WATERMARK;
-+		return 0;
-+	}
-+
-+	if (value > ADXL345_FIFO_SIZE)
-+		value = ADXL345_FIFO_SIZE;
-+
-+	ret = regmap_update_bits(st->regmap, ADXL345_REG_FIFO_CTL,
-+				 fifo_mask, value);
-+	if (ret)
-+		return ret;
-+
-+	st->watermark = value;
-+	st->int_map |= ADXL345_INT_WATERMARK;
-+
-+	return 0;
-+}
-+
- static int adxl345_write_raw_get_fmt(struct iio_dev *indio_dev,
- 				     struct iio_chan_spec const *chan,
- 				     long mask)
-@@ -188,11 +252,224 @@ static const struct attribute_group adxl345_attrs_group = {
- 	.attrs = adxl345_attrs,
- };
- 
-+static int adxl345_set_fifo(struct adxl345_state *st)
-+{
-+	u8 fifo_ctl;
-+	int ret;
-+
-+	/* FIFO should only be configured while in standby mode */
-+	ret = adxl345_set_measure_en(st, false);
-+	if (ret < 0)
-+		return ret;
-+
-+	fifo_ctl = ADXL345_FIFO_CTL_SAMLPES(st->watermark) |
-+		ADXL345_FIFO_CTL_TRIGGER(st->intio) |
-+		ADXL345_FIFO_CTL_MODE(st->fifo_mode);
-+
-+	ret = regmap_write(st->regmap, ADXL345_REG_FIFO_CTL, fifo_ctl);
-+	if (ret < 0)
-+		return ret;
-+
-+	return adxl345_set_measure_en(st, true);
-+}
-+
-+/**
-+ * adxl345_get_samples() - Read number of FIFO entries.
-+ * @st: The initialized state instance of this driver.
-+ *
-+ * The sensor does not support treating any axis individually, or exclude them
-+ * from measuring.
-+ *
-+ * Return: negative error, or value.
-+ */
-+static int adxl345_get_samples(struct adxl345_state *st)
-+{
-+	unsigned int regval = 0;
-+	int ret;
-+
-+	ret = regmap_read(st->regmap, ADXL345_REG_FIFO_STATUS, &regval);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0x3f & regval;
-+}
-+
-+/**
-+ * adxl345_fifo_transfer() - Read samples number of elements.
-+ * @st: The instance of the state object of this sensor.
-+ * @samples: The number of lines in the FIFO referred to as fifo_entry,
-+ * a fifo_entry has 3 elements for X, Y and Z direction of 2 bytes each.
-+ *
-+ * It is recommended that a multiple-byte read of all registers be performed to
-+ * prevent a change in data between reads of sequential registers. That is to
-+ * read out the data registers X0, X1, Y0, Y1, Z0, Z1 at once.
-+ *
-+ * Return: 0 or error value.
-+ */
-+static int adxl345_fifo_transfer(struct adxl345_state *st, int samples)
-+{
-+	size_t count;
-+	int i, ret;
-+
-+	count = sizeof(st->fifo_buf[0]) * ADXL345_DIRS;
-+	for (i = 0; i < samples; i++) {
-+		ret = regmap_noinc_read(st->regmap, ADXL345_REG_XYZ_BASE,
-+				st->fifo_buf + (i * count / 2), count);
-+		if (ret < 0)
-+			return ret;
-+	}
-+	return ret;
-+}
-+
-+/**
-+ * adxl345_fifo_reset() - Empty the FIFO in error condition.
-+ * @st: The instance to the state object of the sensor.
-+ *
-+ * Read all elements of the FIFO. Reading the interrupt source register
-+ * resets the sensor.
-+ */
-+static void adxl345_fifo_reset(struct adxl345_state *st)
-+{
-+	int regval;
-+	int samples;
-+
-+	adxl345_set_measure_en(st, false);
-+
-+	samples = adxl345_get_samples(st);
-+	if (samples > 0)
-+		adxl345_fifo_transfer(st, samples);
-+
-+	regmap_read(st->regmap, ADXL345_REG_INT_SOURCE, &regval);
-+
-+	adxl345_set_measure_en(st, true);
-+}
-+
-+static int adxl345_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	struct adxl345_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = adxl345_set_interrupts(st);
-+	if (ret < 0)
-+		return ret;
-+
-+	st->fifo_mode = ADXL345_FIFO_STREAM;
-+	return adxl345_set_fifo(st);
-+}
-+
-+static int adxl345_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct adxl345_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	st->int_map = 0x00;
-+
-+	ret = adxl345_set_interrupts(st);
-+	if (ret < 0)
-+		return ret;
-+
-+	st->fifo_mode = ADXL345_FIFO_BYPASS;
-+	return adxl345_set_fifo(st);
-+}
-+
-+static const struct iio_buffer_setup_ops adxl345_buffer_ops = {
-+	.postenable = adxl345_buffer_postenable,
-+	.predisable = adxl345_buffer_predisable,
-+};
-+
-+static int adxl345_get_status(struct adxl345_state *st)
-+{
-+	int ret;
-+	unsigned int regval;
-+
-+	ret = regmap_read(st->regmap, ADXL345_REG_INT_SOURCE, &regval);
-+	if (ret < 0)
-+		return ret;
-+
-+	return (0xff & regval);
-+}
-+
-+static int adxl345_fifo_push(struct iio_dev *indio_dev,
-+				  int samples)
-+{
-+	struct adxl345_state *st = iio_priv(indio_dev);
-+	int i, ret;
-+
-+	if (samples <= 0)
-+		return -EINVAL;
-+
-+	ret = adxl345_fifo_transfer(st, samples);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < ADXL345_DIRS * samples; i += ADXL345_DIRS) {
-+		/*
-+		 * To ensure that the FIFO has completely popped, there must be at least 5
-+		 * us between the end of reading the data registers, signified by the
-+		 * transition to register 0x38 from 0x37 or the CS pin going high, and the
-+		 * start of new reads of the FIFO or reading the FIFO_STATUS register. For
-+		 * SPI operation at 1.5 MHz or lower, the register addressing portion of the
-+		 * transmission is sufficient delay to ensure the FIFO has completely
-+		 * popped. It is necessary for SPI operation greater than 1.5 MHz to
-+		 * de-assert the CS pin to ensure a total of 5 us, which is at most 3.4 us
-+		 * at 5 MHz operation.
-+		 */
-+		if (st->fifo_delay && (samples > 1))
-+			udelay(3);
-+
-+		iio_push_to_buffers(indio_dev, &st->fifo_buf[i]);
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * irqreturn_t adxl345_event_handler() - Handle events of the ADXL345.
-+ * @irq: The irq being handled.
-+ * @p: The struct iio_device pointer for the device.
-+ *
-+ * Return: The interrupt was handled.
-+ */
-+static irqreturn_t adxl345_event_handler(int irq, void *p)
-+{
-+	struct iio_dev *indio_dev = p;
-+	struct adxl345_state *st = iio_priv(indio_dev);
-+	u8 int_stat;
-+	int samples;
-+
-+	int_stat = adxl345_get_status(st);
-+	if (int_stat < 0)
-+		return IRQ_NONE;
-+
-+	if (int_stat == 0x0)
-+		goto err;
-+
-+	if (int_stat & ADXL345_INT_OVERRUN)
-+		goto err;
-+
-+	if (int_stat & (ADXL345_INT_DATA_READY | ADXL345_INT_WATERMARK)) {
-+		samples = adxl345_get_samples(st);
-+		if (samples < 0)
-+			goto err;
-+
-+		if (adxl345_fifo_push(indio_dev, samples) < 0)
-+			goto err;
-+
-+	}
-+	return IRQ_HANDLED;
-+
-+err:
-+	adxl345_fifo_reset(st);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static const struct iio_info adxl345_info = {
- 	.attrs		= &adxl345_attrs_group,
- 	.read_raw	= adxl345_read_raw,
- 	.write_raw	= adxl345_write_raw,
- 	.write_raw_get_fmt	= adxl345_write_raw_get_fmt,
-+	.hwfifo_set_watermark = adxl345_set_watermark,
- };
- 
- /**
-@@ -222,6 +499,7 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
- 	unsigned int data_format_mask = (ADXL345_DATA_FORMAT_RANGE |
- 					 ADXL345_DATA_FORMAT_FULL_RES |
- 					 ADXL345_DATA_FORMAT_SELF_TEST);
-+	u8 fifo_ctl;
- 	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-@@ -293,6 +571,28 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
- 	if (ret < 0)
- 		return dev_err_probe(dev, ret, "Failed to add action or reset\n");
- 
-+	if (st->irq > 0) {
-+		dev_dbg(dev, "initialize for FIFO_STREAM mode\n");
-+
-+		ret = devm_iio_kfifo_buffer_setup(dev, indio_dev, &adxl345_buffer_ops);
-+		if (ret)
-+			return ret;
-+
-+		ret = devm_request_threaded_irq(dev, st->irq, NULL, &adxl345_event_handler,
-+				IRQF_SHARED | IRQF_ONESHOT,
-+				indio_dev->name, indio_dev);
-+		if (ret)
-+			return dev_err_probe(dev, ret, "Failed to setup triggered buffer\n");
-+
-+	} else {
-+		dev_dbg(dev, "initialize for FIFO_BYPASS mode (fallback)\n");
-+
-+		fifo_ctl = ADXL345_FIFO_CTL_MODE(ADXL345_FIFO_BYPASS);
-+
-+		ret = regmap_write(st->regmap, ADXL345_REG_FIFO_CTL, fifo_ctl);
-+		if (ret < 0)
-+			return ret;
-+	}
- 	return devm_iio_device_register(dev, indio_dev);
- }
- EXPORT_SYMBOL_NS_GPL(adxl345_core_probe, "IIO_ADXL345");
--- 
-2.39.5
+Thanks for the review once again! It looks like it should be fairly
+straightforward to drop the zeroing of the ts_pad_{offset/length} so
+indeed, if Jack doesn't have anything strong against it I could move
+forward and send a v2.
 
+Cheers,
+Vasilis
+
+> > ---
+> >  drivers/iio/adc/dln2-adc.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/adc/dln2-adc.c b/drivers/iio/adc/dln2-adc.c
+> > index 30328626d9be..f9cf132c41e6 100644
+> > --- a/drivers/iio/adc/dln2-adc.c
+> > +++ b/drivers/iio/adc/dln2-adc.c
+> > @@ -128,7 +128,7 @@ static void dln2_adc_update_demux(struct dln2_adc *dln2)
+> >  		in_loc += 2;
+> >  	}
+> >  
+> > -	if (indio_dev->scan_timestamp) {
+> > +	if (iio_is_soft_ts_enabled(indio_dev)) {
+> >  		size_t ts_offset = indio_dev->scan_bytes / sizeof(int64_t) - 1;
+> >  
+> >  		dln2->ts_pad_offset = out_loc;
+> 
