@@ -1,149 +1,102 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFAC720B7ED;
-	Tue,  3 Dec 2024 23:55:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E2922500B8;
+	Wed,  4 Dec 2024 01:36:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733270154; cv=none; b=Se1hzcw3ddZ9+ZclNjp0Mv+heizMNIm22/KBGCn+MI8sr4uCJ4+h7vMEuP3rqZBVJC+F66lWY1K7DypSMRhIE8Fwr4nNF056YoSNXt6ZgVYFlaIBvsaaKZBQmTptAvvbYYB8UV52xWVBgXAsgpbA3TaUGbyB9uyWGAox66GV1uw=
+	t=1733276187; cv=none; b=CnwclujkyT28pU5UgqPK7HEdv3MpbE6X97GDdKez7alBP+AfppzpTSaBsbH864kmRtBWMC48xx7hmFeO4Rv+04ynRj+9E7/IMyZh7aOo1lJWui8rYxoT2IVa1iZy/gOuBnyT+Eo3IqhMOSoMpxc70OzkWohrFFaJOyzadCbGMxk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733270154; c=relaxed/simple;
-	bh=ZJy+O9wAN5psXY5U1XwM4rfLbaZm+Ldb/OiSmxBOm5Q=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=l1hwkLX5nPF8GjdXxf1yR6KowcWJIOIsJPzq3rzS21EQKPuFNWuhNIb/i81kHXJDYYu7yb7HRl4M6iX4uQEluWtUA3uUvyA0kALWQTLgCg5vHnDY3VP/CTVgI1PisWqfPYjdNAOqUWgbFCIR3GTmsWdIkNjf2RikPAk+98F9KV8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MAJ2wTuX; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1733276187; c=relaxed/simple;
+	bh=mjLYAJWAsJEP7C3SPxpA96ZZvMOvnlODGBD00nA+UHI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Ko5PIChUvJhhXrZyLREDyAdXNgWHbXxs9Y6LGAiyUVOCIh46OZSVAbjrFbyjJwILFqnVvYSDbzhDD4QzhIDWwgMrd43+hixf3hLjiPJKBz0buPbUYHFn2azRnuEcK0WxehnccOJgEU31O9qrm1Bp5sAG1eKT9a7ZsI7zjbya71w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SbBHyb1i; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MAJ2wTuX"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-434a8640763so51453245e9.1;
-        Tue, 03 Dec 2024 15:55:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733270151; x=1733874951; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=M4mvtSDDIU4b4TfX3DZsirgFj9Aga5ZvWdRIoTLMLpA=;
-        b=MAJ2wTuX9Bw4ZCUOT08S9CfjFvI7jy0y6TORDj/JeCosfZdzeYPhC1n4a1JN+W9rhg
-         GejE7D4/408c62DaBopqEjOnLy2C5F04RH8b+0zL3v1nUB+Zpa8RtzG7W0vlfM4UgTCs
-         C+x/6X23rB2RH1wLkxlK1QC1CJlkC5AScpodb7/v5/5B0JaDk9n92eoNh8RInbBP+ynF
-         5M8RdB3wkQVgev2kF5RIxU0kJHW6s2ZgyA8PKCbdp5/+d5ndiD1sRCU2//RVfDYP2wyW
-         0+4dfyLN6UNLFN+nluL+mbjEyc65ImSJx4WF3c9GWjFabV8gls5Ak/H+Uc323XgnYH7H
-         mggg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733270151; x=1733874951;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=M4mvtSDDIU4b4TfX3DZsirgFj9Aga5ZvWdRIoTLMLpA=;
-        b=osAw37iFHhHEDuGNMxek5cUnX8n0MrJwXtmsQ7UcspNw9HAPlZ0JzzznbJGHVtKQm9
-         UFargjDq5gn41Qjj4c5sxpfrfjDj/UZZIbADXEdEwb/3PQAloT8aimhCZK0rjIZiIUhd
-         wVrGpkWKnZhVV8eZJuvBDx3z+QkuZhq0KlHAXBjiiYCuztpjcn4xRRGMvYixkOeKjOqM
-         vtGMvXyNI9kOg0U4ZV4nyqvt+lZGirGFvRO6KTFETqyrOiOGC5t8U54qrq9RT9giJ8s2
-         mMeq5SkRPNieangNV4NeAc74M7RT7H92kUgb9xuAgnfILCOL+wt6T8tljAaOX7mN0LgZ
-         eg9g==
-X-Forwarded-Encrypted: i=1; AJvYcCUgjnjC7EGTO8CNP6cPANtfEwxCZAq/6DNCpRzHMhSlx4lLiF+s1p/m7ljUtAmAPp3zwQVMZWVMG/QEACSg@vger.kernel.org, AJvYcCVwulWuslu1zfu3GjZTcP0Kud+i7koQ4NeUwCZvatPWX+hfaPywDv0Gvs+Qr2OpgyMMJmtU3DtH@vger.kernel.org, AJvYcCW8nbOTU9PQ0Sok+jLlyI1re/mEYdCiPZZnZZMMBhn0df69laja5xkpZISyn4s1tQ/3XxHUO2fVuxo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzorrX5pPzu75ERvbwP/mrKs3cBIOpXG6RZ2oC1f6SCp6byTpOA
-	01FHAP+65yJed+hmLzjazpyhOWMIPW0VRHczuq22/RWfW8ZOy3oi
-X-Gm-Gg: ASbGncuCtfbQhUzUTkynjOu1HPrIAiYP7t2TAFzBux7Jwe3XboVNG9ABHKzoplmIjZ2
-	FiWFjMXKjfqCIyzjms79ZuMcwTx0qRf6tSU6hltBY8nEHVKwvLKEliEgZnyU0RLwH8IVhBkYES0
-	oBcqNgbsM4Rpa/u0lH6TUyUBX1cd97W9iGI1kMxbwet2MVGbnnrEfjPtQeAL4sBoPgmNgbd8C7n
-	oOIWvlrDtBEOoqqECbQY0Mcnf+xMVUBubJWjXM+I4LKkebfdGxMT4fh77HibYYI4vDGdqTMUP27
-	x/ndrcmcJZfOrNRY8mKiH9AT+AgkybggMXNCHZpu7Ei9zVQUGox5KSCFM5PFjgbIeMzlKIBP
-X-Google-Smtp-Source: AGHT+IH1PEiLlez5u7cIOYP8lz3vPaYwfOqcP2PsVBS+elkdoDcUfrfRJh98/H8DHZijEK/fHVThVA==
-X-Received: by 2002:a05:600c:19c8:b0:431:5d89:646e with SMTP id 5b1f17b1804b1-434d2268fb8mr28531065e9.32.1733270151033;
-        Tue, 03 Dec 2024 15:55:51 -0800 (PST)
-Received: from [127.0.1.1] (2a02-8389-41cf-e200-5e3a-77ab-7b2b-a993.cable.dynamic.v6.surfer.at. [2a02:8389:41cf:e200:5e3a:77ab:7b2b:a993])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-434d527e287sm3871025e9.12.2024.12.03.15.55.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Dec 2024 15:55:50 -0800 (PST)
-From: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Date: Wed, 04 Dec 2024 00:55:32 +0100
-Subject: [PATCH v2 2/2] iio: light: as73211: fix channel handling in
- only-color triggered buffer
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SbBHyb1i"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1733276186; x=1764812186;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=mjLYAJWAsJEP7C3SPxpA96ZZvMOvnlODGBD00nA+UHI=;
+  b=SbBHyb1igaqH9TxUAM5ODMj5UKCreJzK958PqscnzMGipsosa+i0DXFP
+   S2Yyj6C3BlzjRwOtzkXbjHHNpa0yWZsJO27Gi0VEq0REcsTA/zyYfqh3+
+   YB4djkMiqWfhuWHD+VOOlH9tPUWcXkM+fU0N52AFKc/Y9XM4uput4rVaE
+   09jiUvzTMz4cNS3CY6suLic/M1au+94PYuLJV2Perj1wTgEE3sNOEQrEt
+   0j6okyOfqTEGk1GixGc7qbjupnEA9+PeV5f4XSJVRauca05bYknS2pZ7i
+   tJdUXSYFcWFVGnnJWoJVndIdy6TF/kjQdiQNHWOpDvrYaGobu17XvSFBY
+   A==;
+X-CSE-ConnectionGUID: elPpvnXTQsOSjkNHnzd2hw==
+X-CSE-MsgGUID: aYVDXF+vS4W2H3EHd1IPtg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11275"; a="37293577"
+X-IronPort-AV: E=Sophos;i="6.12,206,1728975600"; 
+   d="scan'208";a="37293577"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2024 17:36:25 -0800
+X-CSE-ConnectionGUID: FqNcxhpARV+GxDMfSicfZA==
+X-CSE-MsgGUID: 2rjJOPfDRUe/t+A2j89SUQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,206,1728975600"; 
+   d="scan'208";a="98694830"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orviesa004.jf.intel.com with ESMTP; 03 Dec 2024 17:36:23 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 2790842D; Wed, 04 Dec 2024 03:36:22 +0200 (EET)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v1 2/4] iio: afe: rescale: Don't use ULL(1) << x instead of BIT(x)
+Date: Wed,  4 Dec 2024 03:33:17 +0200
+Message-ID: <20241204013620.862943-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
+In-Reply-To: <20241204013620.862943-1-andriy.shevchenko@linux.intel.com>
+References: <20241204013620.862943-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20241204-iio_memset_scan_holes-v2-2-3f941592a76d@gmail.com>
-References: <20241204-iio_memset_scan_holes-v2-0-3f941592a76d@gmail.com>
-In-Reply-To: <20241204-iio_memset_scan_holes-v2-0-3f941592a76d@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, 
- Antoni Pokusinski <apokusinski01@gmail.com>, 
- Francesco Dolcini <francesco@dolcini.it>, 
- =?utf-8?q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?= <jpaulo.silvagoncalves@gmail.com>, 
- Christian Eggers <ceggers@arri.de>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- =?utf-8?q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?= <joao.goncalves@toradex.com>, 
- Francesco Dolcini <francesco.dolcini@toradex.com>, 
- Javier Carrasco <javier.carrasco.cruz@gmail.com>, stable@vger.kernel.org
-X-Mailer: b4 0.14-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1733270145; l=1997;
- i=javier.carrasco.cruz@gmail.com; s=20240312; h=from:subject:message-id;
- bh=ZJy+O9wAN5psXY5U1XwM4rfLbaZm+Ldb/OiSmxBOm5Q=;
- b=uFVC5j35izd0O5MfAM25DtBA7BXdzdXbkXuLcJnrugXPOUgrTNuZVmd3u6QAMlKiLCbJqnyWp
- mqIZfQ9qRSXB3rqy22JPT8RcpKTKvrJb6G7lAlO45SboLHuuJLxea9G
-X-Developer-Key: i=javier.carrasco.cruz@gmail.com; a=ed25519;
- pk=lzSIvIzMz0JhJrzLXI0HAdPwsNPSSmEn6RbS+PTS9aQ=
+Content-Transfer-Encoding: 8bit
 
-The channel index is off by one unit if AS73211_SCAN_MASK_ALL is not
-set (optimized path for color channel readings), and it must be shifted
-instead of leaving an empty channel for the temperature when it is off.
+ULL(1) << x is just an open-coded implementation of BIT_ULL().
+Replace the former by the latter.
 
-Once the channel index is fixed, the uninitialized channel must be set
-to zero to avoid pushing uninitialized data.
+Note, the rest of the code properly uses BIT()/BIT_ULL() already.
 
-Cc: stable@vger.kernel.org
-Fixes: 403e5586b52e ("iio: light: as73211: New driver")
-Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/light/as73211.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ drivers/iio/afe/iio-rescale.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/light/as73211.c b/drivers/iio/light/as73211.c
-index be0068081ebb..2d45dfeda406 100644
---- a/drivers/iio/light/as73211.c
-+++ b/drivers/iio/light/as73211.c
-@@ -672,9 +672,12 @@ static irqreturn_t as73211_trigger_handler(int irq __always_unused, void *p)
+diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+index 470dd7d41b2a..9d33e7aabe4d 100644
+--- a/drivers/iio/afe/iio-rescale.c
++++ b/drivers/iio/afe/iio-rescale.c
+@@ -8,6 +8,7 @@
+  * Author: Peter Rosin <peda@axentia.se>
+  */
  
- 		/* AS73211 starts reading at address 2 */
- 		ret = i2c_master_recv(data->client,
--				(char *)&scan.chan[1], 3 * sizeof(scan.chan[1]));
-+				(char *)&scan.chan[0], 3 * sizeof(scan.chan[0]));
- 		if (ret < 0)
- 			goto done;
-+
-+		/* Avoid pushing uninitialized data */
-+		scan.chan[3] = 0;
- 	}
++#include <linux/bits.h>
+ #include <linux/err.h>
+ #include <linux/gcd.h>
+ #include <linux/mod_devicetable.h>
+@@ -62,7 +63,7 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+ 		if (scale_type == IIO_VAL_FRACTIONAL)
+ 			tmp = *val2;
+ 		else
+-			tmp = ULL(1) << *val2;
++			tmp = BIT_ULL(*val2);
  
- 	if (data_result) {
-@@ -682,9 +685,15 @@ static irqreturn_t as73211_trigger_handler(int irq __always_unused, void *p)
- 		 * Saturate all channels (in case of overflows). Temperature channel
- 		 * is not affected by overflows.
- 		 */
--		scan.chan[1] = cpu_to_le16(U16_MAX);
--		scan.chan[2] = cpu_to_le16(U16_MAX);
--		scan.chan[3] = cpu_to_le16(U16_MAX);
-+		if (*indio_dev->active_scan_mask == AS73211_SCAN_MASK_ALL) {
-+			scan.chan[1] = cpu_to_le16(U16_MAX);
-+			scan.chan[2] = cpu_to_le16(U16_MAX);
-+			scan.chan[3] = cpu_to_le16(U16_MAX);
-+		} else {
-+			scan.chan[0] = cpu_to_le16(U16_MAX);
-+			scan.chan[1] = cpu_to_le16(U16_MAX);
-+			scan.chan[2] = cpu_to_le16(U16_MAX);
-+		}
- 	}
- 
- 	iio_push_to_buffers_with_timestamp(indio_dev, &scan, iio_get_time_ns(indio_dev));
-
+ 		rem2 = *val % (int)tmp;
+ 		*val = *val / (int)tmp;
 -- 
-2.43.0
+2.43.0.rc1.1336.g36b5255a03ac
 
