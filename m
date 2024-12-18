@@ -1,172 +1,136 @@
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D7D11925A2;
-	Wed, 18 Dec 2024 09:05:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.207.212.93
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B8BE175D2D;
+	Wed, 18 Dec 2024 10:05:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734512721; cv=none; b=QBmc/oV310RY9jFQDfTMH97k9LK2DYsXFm4PhgmPvpE8A7baLIGGShZhyWL4O3aM0/mdwl98IXerHX4JyjYO4DyKcYOrXEybeBss2kss+IrZN/p563+YQFtFV7V6BkyCjyaHkA3BjxM8x4SD5K8/rhg9Upsd8WHjF0K8QmWYfaY=
+	t=1734516306; cv=none; b=LSTIbi93lELDIrXARKFRScenNoJXy0KQ5dZgy/SsVdT3O3X4u691BVnsEt3Cj6cCrlnGnTiXAyz5V07iM8dGAD09Cro1VirGgI2tEJRFHHoUsA3tpiiIkXC9MxTJCyF4TpEkxVEStUBgb2ug11B5ce3+sL/xMq/E63uu7Yr6zM0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734512721; c=relaxed/simple;
-	bh=i5781SrdTzv0z1hkaCd04HLCgm/icH0mX8fAl8lXIjg=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=NXnt1L0hmUtV6n/xnpecwk7aotd3ItTDvJqCk9S/zd/NiiOK0HHjeWVHue+9gqO1mh9bx08x9p+mGr6ZSrHBqmM90W3EMQsCPMez1rV9JS0Cog9By5Qn+VXaHxpXlXbRdAx0PBHuRJ1+dnsJ/Si6c3lupG1WxrcSU4m//1XQ1s8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=gTbg4+Ik; arc=none smtp.client-ip=91.207.212.93
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
+	s=arc-20240116; t=1734516306; c=relaxed/simple;
+	bh=AvgDaXHtwbjGpgaswDIE8L8Q79jWldOS8jXiymOqhVI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OwT81RMOb75siRTxeUGBcRIKhqIZ7ZVuN1MwXs/av8jYkyY967fRuXEVWojfWrHaGqEJDMlJf2a4dou/XbRoaLVsQILsM7/P0T1yh8uDhgMfvaejmxph3p/gbS3Hm/6rHWpgLMuoOSIhJ06ohFNMMugvZCzN6HYRCApjzXlVX/w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GBoT5JfE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="gTbg4+Ik"
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BI6oJQf032726;
-	Wed, 18 Dec 2024 10:05:10 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=selector1; bh=
-	+82biZaVNxLrPwnRt+Mf4mhE6BomVWsuu3IFQ+UAqLo=; b=gTbg4+Iksy2TzHhw
-	hb5RcDkajAtmfWF5yRszHK7PYXTSt94hGkGUqXLBhpyfbdvOMJFRZaD/MVgOuh0n
-	thixD1r3UOB37lw0iWpUSer/uvTyYUIoSbW56XoOMNmPFTtmx/tqHlm0O+mtY+Zi
-	YiFDXCUfCM3ZDFha9iJFllTJRdGHZf0PYRbg/zSht2o5a+daMEquOF7sQ7TZkr4W
-	HhbtLS97KYngpXUHO+edqDjpDJ6j69Y94JWSwodeDNIx715kXBBip44pNIJH6R9q
-	SLF7FH5XtVqfPKBQ3CMO9ejxk6nomKgfbVM7Nl5pngR9qF6AbmcJaMq1NjAMOzTw
-	r1AIZw==
-Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 43ksfrgh75-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 18 Dec 2024 10:05:10 +0100 (CET)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 5F74E40078;
-	Wed, 18 Dec 2024 10:04:01 +0100 (CET)
-Received: from Webmail-eu.st.com (eqndag1node6.st.com [10.75.129.135])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A416B25EEC4;
-	Wed, 18 Dec 2024 10:03:00 +0100 (CET)
-Received: from SAFDAG1NODE1.st.com (10.75.90.17) by EQNDAG1NODE6.st.com
- (10.75.129.135) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.37; Wed, 18 Dec
- 2024 10:03:00 +0100
-Received: from localhost (10.48.86.222) by SAFDAG1NODE1.st.com (10.75.90.17)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.37; Wed, 18 Dec
- 2024 10:03:00 +0100
-From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-To: <lee@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-        <conor+dt@kernel.org>, <alexandre.torgue@foss.st.com>,
-        <wbg@kernel.org>, <jic23@kernel.org>, <ukleinek@kernel.org>
-CC: <catalin.marinas@arm.com>, <will@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <olivier.moysan@foss.st.com>
-Subject: [PATCH 8/9] arm64: dts: st: add timer pins for stm32mp257f-ev1
-Date: Wed, 18 Dec 2024 10:01:52 +0100
-Message-ID: <20241218090153.742869-9-fabrice.gasnier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20241218090153.742869-1-fabrice.gasnier@foss.st.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GBoT5JfE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61230C4CECE;
+	Wed, 18 Dec 2024 10:05:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1734516305;
+	bh=AvgDaXHtwbjGpgaswDIE8L8Q79jWldOS8jXiymOqhVI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GBoT5JfEG3pfz6gRlPYib7Y3mQXMytM4776pg7n11Ax/1FB1gGF4PuUGD0pu+/3M1
+	 fTdCR0peOq3XVYYzqgR8vTrocVlKfazgleENOepmy9l6Y+0M/G/HgcSs0NEXyhFhKi
+	 qCamv4C0sLyGxCYRNzV/XM2xd47k9vsx0M66oZduxJLuHnahexO0GL3uauj8eWoKsW
+	 ApyVzOM0NrEciAyArjzoJrM4Rd0mPQYYo46g3DWVWeAq/YEjyTsOGEfEDm6p66i/Da
+	 SpZEfRYPaO3SWX+ZRaCiTp3oy8IUamFvJX160Qyzu/CwVRUAlyaOtIeGzrbo40jRNW
+	 bk70WqLac5pQA==
+Date: Wed, 18 Dec 2024 11:05:03 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc: lee@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, alexandre.torgue@foss.st.com, wbg@kernel.org, jic23@kernel.org, 
+	catalin.marinas@arm.com, will@kernel.org, devicetree@vger.kernel.org, 
+	linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org, 
+	olivier.moysan@foss.st.com
+Subject: Re: [PATCH 5/9] pwm: stm32: add support for stm32mp25
+Message-ID: <lptm6gh2lzjqxm26lbmdw4yr2fowo6ytxwzqwl65khrx5xpcox@u25yzz6ssdy5>
 References: <20241218090153.742869-1-fabrice.gasnier@foss.st.com>
+ <20241218090153.742869-6-fabrice.gasnier@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SAFDAG1NODE1.st.com
- (10.75.90.17)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="o4ocvksavacg3j36"
+Content-Disposition: inline
+In-Reply-To: <20241218090153.742869-6-fabrice.gasnier@foss.st.com>
 
-Add timer pins available on stm32mp257f-ev1, configured for PWM:
-- timer3 CH2 is available on mikroBUS connector
-- timer8 CH1, timer8 CH4, timer10 CH1 and timer12 CH2 are available
-  on EXPANSION connector
-Arbitrary define all these pins to be used as PWM (output) channels,
-except for timer10 CH1, to be used as counter input.
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
----
- arch/arm64/boot/dts/st/stm32mp25-pinctrl.dtsi | 61 +++++++++++++++++++
- 1 file changed, 61 insertions(+)
+--o4ocvksavacg3j36
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 5/9] pwm: stm32: add support for stm32mp25
+MIME-Version: 1.0
 
-diff --git a/arch/arm64/boot/dts/st/stm32mp25-pinctrl.dtsi b/arch/arm64/boot/dts/st/stm32mp25-pinctrl.dtsi
-index 8fdd5f020425..bb9dc82d3dd5 100644
---- a/arch/arm64/boot/dts/st/stm32mp25-pinctrl.dtsi
-+++ b/arch/arm64/boot/dts/st/stm32mp25-pinctrl.dtsi
-@@ -82,6 +82,53 @@ pins {
- 		};
- 	};
- 
-+	pwm3_pins_a: pwm3-0 {
-+		pins {
-+			pinmux = <STM32_PINMUX('B', 15, AF7)>; /* TIM3_CH2 */
-+			bias-pull-down;
-+			drive-push-pull;
-+			slew-rate = <0>;
-+		};
-+	};
-+
-+	pwm3_sleep_pins_a: pwm3-sleep-0 {
-+		pins {
-+			pinmux = <STM32_PINMUX('B', 15, ANALOG)>; /* TIM3_CH2 */
-+		};
-+	};
-+
-+	pwm8_pins_a: pwm8-0 {
-+		pins {
-+			pinmux = <STM32_PINMUX('J', 5, AF8)>, /* TIM8_CH1 */
-+				 <STM32_PINMUX('J', 4, AF8)>; /* TIM8_CH4 */
-+			bias-pull-down;
-+			drive-push-pull;
-+			slew-rate = <0>;
-+		};
-+	};
-+
-+	pwm8_sleep_pins_a: pwm8-sleep-0 {
-+		pins {
-+			pinmux = <STM32_PINMUX('J', 5, ANALOG)>, /* TIM8_CH1 */
-+				 <STM32_PINMUX('J', 4, ANALOG)>; /* TIM8_CH4 */
-+		};
-+	};
-+
-+	pwm12_pins_a: pwm12-0 {
-+		pins {
-+			pinmux = <STM32_PINMUX('B', 11, AF9)>; /* TIM12_CH2 */
-+			bias-pull-down;
-+			drive-push-pull;
-+			slew-rate = <0>;
-+		};
-+	};
-+
-+	pwm12_sleep_pins_a: pwm12-sleep-0 {
-+		pins {
-+			pinmux = <STM32_PINMUX('B', 11, ANALOG)>; /* TIM12_CH2 */
-+		};
-+	};
-+
- 	sdmmc1_b4_pins_a: sdmmc1-b4-0 {
- 		pins1 {
- 			pinmux = <STM32_PINMUX('E', 4, AF10)>, /* SDMMC1_D0 */
-@@ -158,6 +205,20 @@ pins1 {
- 		};
- 	};
- 
-+	tim10_counter_pins_a: tim10-counter-0 {
-+		pins {
-+			pinmux = <STM32_PINMUX('B', 9, AF9)>; /* TIM10_CH1 */
-+			bias-disable;
-+		};
-+	};
-+
-+	tim10_counter_sleep_pins_a: tim10-counter-sleep-0 {
-+		pins {
-+			pinmux = <STM32_PINMUX('B', 9, ANALOG)>; /* TIM10_CH1 */
-+			bias-disable;
-+		};
-+	};
-+
- 	usart2_pins_a: usart2-0 {
- 		pins1 {
- 			pinmux = <STM32_PINMUX('A', 4, AF6)>; /* USART2_TX */
--- 
-2.25.1
+On Wed, Dec 18, 2024 at 10:01:49AM +0100, Fabrice Gasnier wrote:
+> diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
+> index 17e591f61efb..99383e09920e 100644
+> --- a/drivers/pwm/pwm-stm32.c
+> +++ b/drivers/pwm/pwm-stm32.c
+> @@ -19,6 +19,7 @@
+>  #define CCMR_CHANNEL_SHIFT 8
+>  #define CCMR_CHANNEL_MASK  0xFF
+>  #define MAX_BREAKINPUT 2
+> +#define MAX_PWM_OUTPUT 4
 
+I would prefer a less generic name. Something like STM32_PWM_MAX_OUTPUT.
+=20
+>  struct stm32_breakinput {
+>  	u32 index;
+> [...]
+> @@ -790,11 +800,31 @@ static void stm32_pwm_detect_complementary(struct s=
+tm32_pwm *priv)
+>  	priv->have_complementary_output =3D (ccer !=3D 0);
+>  }
+> =20
+> -static unsigned int stm32_pwm_detect_channels(struct regmap *regmap,
+> +static unsigned int stm32_pwm_detect_channels(struct stm32_timers *ddata,
+>  					      unsigned int *num_enabled)
+>  {
+> +	struct regmap *regmap =3D ddata->regmap;
+>  	u32 ccer, ccer_backup;
+> =20
+> +	if (ddata->ipidr) {
+> +		unsigned int npwm =3D 0;
+
+No need to initialize npwm.
+
+> +		u32 val;
+> +
+> +		/* Simply deduce from HWCFGR the number of outputs (MP25). */
+> +		regmap_read(regmap, TIM_HWCFGR1, &val);
+> +
+> +		/*
+> +		 * Timers may have more capture/compare channels than the
+> +		 * actual number of PWM channel outputs (e.g. TIM_CH[1..4]).
+> +		 */
+> +		npwm =3D FIELD_GET(TIM_HWCFGR1_NB_OF_CC, val);
+> +
+> +		regmap_read(regmap, TIM_CCER, &ccer);
+> +		*num_enabled =3D hweight32(ccer & TIM_CCER_CCXE);
+
+So the part that determines *num_enabled is the same for both variants.
+Maybe it's possible to share the code for that?
+
+> +		return npwm < MAX_PWM_OUTPUT ? npwm : MAX_PWM_OUTPUT;
+> +	}
+> +
+>  	/*
+>  	 * If channels enable bits don't exist writing 1 will have no
+>  	 * effect so we can detect and count them.
+
+Best regards
+Uwe
+
+--o4ocvksavacg3j36
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmdinkwACgkQj4D7WH0S
+/k7nywf+JjLEk4Gaee/ADgMvYOiBEUH8OA9/D7Ae1isx7Ve33iUPYu57fZCQFdJ9
+7ah0kiX1U5gsFd96TlfydpA3EjhrHr/t8DKL5ZL9WWiKPi68Bb1HM/MZrnh641TZ
+xV6o0+OlYihaqYZpJkt93x0TXdg4+KR6PWk5aSVf47bWNC3jg3n1gLADY8GIKl/Y
+Sk/j12ktASXSCxNOscdwhwdyNIHCbmH/rU3FA8lEA1H9/5UZ5ljUoZRxBeqDqptz
+Qh4YiPPr1fs24A0/z4uh/W3CMkLkW8RXCCffGQprrejK0O1cb6JNhnAiMNZBLbcC
+Wc1T1qulU2XYmW7Of1S4WCcelNWE+A==
+=WbTY
+-----END PGP SIGNATURE-----
+
+--o4ocvksavacg3j36--
