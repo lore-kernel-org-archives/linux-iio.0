@@ -1,168 +1,121 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-m127100.qiye.163.com (mail-m127100.qiye.163.com [115.236.127.100])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 079C08C1F
-	for <linux-iio@vger.kernel.org>; Tue, 24 Dec 2024 09:34:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B391EC0;
+	Tue, 24 Dec 2024 09:40:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.236.127.100
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735032882; cv=none; b=dL/KWBzmnohIHRvlDiDYOYMSH3ZHgsBjXhjxxJOOWauFle2gyKOSplQQHDDjC83gf1BtVV8FSUq8I+hfODLGhysARFCCtaze/qOoe/ElaUtEzMwlnAJCkPbHqEvSyYYcl9jAHA7OKK2r8hn2hj4jILUJNGSAW967AdwmwWxzAVQ=
+	t=1735033257; cv=none; b=H9kNlam18OljOENL1tyAliyR01DlvbV8x8edB896eHWmsaE66fEyLdR/8hpvxWGmRXPpoGws+Ip/8IXufjPpmAuScYjnEUWq1c8bGDPnmAWbzMLSbWCXgMsaRe7Bw8jT03QVHFfOYjF21vEZM5oNp2GypxpdlsGhqm/D1PdFkUA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735032882; c=relaxed/simple;
-	bh=kSfw31r1V5uQjSD98r12a1K9VX6sZXrUEVT0pOUqXUs=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=BzsSNp22GDl3aCe6XukM62Hp+tawFgBlmKsks/xLEtYSqlZm8rPXM+WthZAnYCcifXfBW1FH4RUA3DP4q0bgkC7Pcdwq+Y8S2tQDm1/UqHqonTXQcW24CuXu9dm7mcJfn/a4t036TlowvnIzYEQgzTis+nXYsnpK6XrTUCdXPJc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=hMgg89VJ; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1735033257; c=relaxed/simple;
+	bh=D4H5ioGi8SvHHqPHO3sUY5c4YpfW/IZ/TXfcp5B9zwY=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=NkK6TqZEeVCs9k+07Hepb6TRwQcr6kyVsZuvzRh2HAnOSy17N8l/U8B30ahPqsphBfYePgJwGRkj3XgSBhenzaVRF4CPtBCOPcBYvarZePpvjW2RI9PGoMaE7TbB9UfQBVBW8x1KJbb5iA0bsf3LRCXMB1QrGn4V3MYltCZppsY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=SIs43kcI; arc=none smtp.client-ip=115.236.127.100
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="hMgg89VJ"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-434e3953b65so33702765e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 24 Dec 2024 01:34:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1735032879; x=1735637679; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GHxfnHco609cw6bEt34RvlmgEA4BmkTtw1PkuvrIB18=;
-        b=hMgg89VJFfdSLoQ6EhKxa9tBhfG/nJbolXDU6sG+4/rs8h0RvKxSy7yYDgVnyINm8e
-         0hoteQZbF40WwtdxbJs9YqanMoUlB5t5CU7bSCNC6bvHgZY666WR2Zj5eD9Gtjv9vteF
-         6Huc98CxQaKh1K5dClTNZq9e3YteGNlv5FyomgGwjaS9WbF69NleKNuuZG784WRhw6kL
-         ea0ZgJ1Z2Sq65YV22j3M/xWWnMLEDClKFR0+2PDMfRDSndemHGwuFuL8u+ODYGx0gOGY
-         U620eWEMVABRr4y/0pvcuCFSHvAe74yAodKm+8x5uqrl8nqrxxe5GulAFaV8kJjRVcwg
-         pnWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1735032879; x=1735637679;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GHxfnHco609cw6bEt34RvlmgEA4BmkTtw1PkuvrIB18=;
-        b=xJVhUbX7xR9ZlBSZopExyZ8p1nwdBirSvizu5D1T+nPkGpZ5q9w8XljHqWZTzETxFj
-         3DHH1dN1C/nLNMbdccccrIt0QpeGqMm2lOduTCUI6uPW8tu+rY+iSZ+rkjdKTJZv06pg
-         CZiJf4SUrHczQnxY8o6IkI8czj6GPZrbQurBarEJdJ+ySKpORvHK87/5fwDkcNOEz8LM
-         LeHylSNjHYF0rjfkAdlShcfI2iF3ppCFmyj+ToMBehLOJiE9keMyJlod+wc/hpZ9sVi+
-         /zhfb1K9mobczXx0U5EOYixAXGXdwFZfHwuYhSCOohF3uD4jquxJrWB3ofRRdIEoE9Nc
-         hoSg==
-X-Gm-Message-State: AOJu0Yw8SRtMmZoNiKYamdxGvEAa8C5CLoCBbpXIafOL2oD2wRRPcbP/
-	+8jC9zQcZOzP3qFj1RBXkT8r+7oI+3UQJcfNW1kgW61UWfMaLvXNDMeOiM52OFw=
-X-Gm-Gg: ASbGncsI2QHzi47ncG+Vw8T/Z8PGQU+EbQZem6RUmBV2t2jCNU/W4LvCwuuaVrgzlpV
-	6VOO9uyWfbKXp/ZOwl623SeC5NBE/Y+ls4bSp36KkYG65cYKGSjLwg1Z2hgu0oEa6/CLYsoLJE5
-	KMdo9Wn/89LPeMjlsNvgvGRwYTUWL8Tm7lzX+MUHrG1gRCZHueiJ4nFFEAfH5rJTl2QnScudOmJ
-	b16vG+DtyodI0BxsdQw/l+q0YhCAqkuaQXbPsIMCeyx+CL6wLFnjTqs72aHJNsB0nDgNko1Vty+
-	NRF8eU9pQ30gvVd5nwKTQX/kgvlSIMv1hmqc4SxicpK7QIP6ug==
-X-Google-Smtp-Source: AGHT+IGZX699OSrVyMHZfxCNhIMRgOtdkxq4kcRZIVIIzs0qAsHeLAPMigr0o64lDLP6J6HC9mM9hg==
-X-Received: by 2002:a05:600c:1f85:b0:434:9936:c823 with SMTP id 5b1f17b1804b1-43668646741mr142737805e9.18.1735032879107;
-        Tue, 24 Dec 2024 01:34:39 -0800 (PST)
-Received: from [192.168.1.62] (2a02-842a-d52e-6101-6fd0-06c4-5d68-f0a5.rev.sfr.net. [2a02:842a:d52e:6101:6fd0:6c4:5d68:f0a5])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43661219a7csm160932535e9.24.2024.12.24.01.34.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Dec 2024 01:34:38 -0800 (PST)
-From: Julien Stephan <jstephan@baylibre.com>
-Date: Tue, 24 Dec 2024 10:34:33 +0100
-Subject: [PATCH RFC v2 4/4] docs: iio: ad7380: add alert support
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="SIs43kcI"
+Received: from localhost.localdomain (unknown [58.22.7.114])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 6aa905c9;
+	Tue, 24 Dec 2024 17:40:45 +0800 (GMT+08:00)
+From: Kever Yang <kever.yang@rock-chips.com>
+To: heiko@sntech.de
+Cc: linux-rockchip@lists.infradead.org,
+	Simon Xue <xxm@rock-chips.com>,
+	Kever Yang <kever.yang@rock-chips.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 2/2] iio: adc: rockchip_saradc: add rk3562
+Date: Tue, 24 Dec 2024 17:40:42 +0800
+Message-Id: <20241224094042.3816483-2-kever.yang@rock-chips.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20241224094042.3816483-1-kever.yang@rock-chips.com>
+References: <20241224094042.3816483-1-kever.yang@rock-chips.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20241224-ad7380-add-alert-support-v2-4-7c89b2bf7cb3@baylibre.com>
-References: <20241224-ad7380-add-alert-support-v2-0-7c89b2bf7cb3@baylibre.com>
-In-Reply-To: <20241224-ad7380-add-alert-support-v2-0-7c89b2bf7cb3@baylibre.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>, 
- Jonathan Corbet <corbet@lwn.net>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-doc@vger.kernel.org, Julien Stephan <jstephan@baylibre.com>
-X-Mailer: b4 0.14.2
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZGkpCSlZMQ04dSRoaGBkdQklWFRQJFh
+	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUpLSUhCSE
+	NVSktLVUpCS0tZBg++
+X-HM-Tid: 0a93f80a4f9d03afkunm6aa905c9
+X-HM-MType: 1
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Pgw6SAw6MDIPDEo9LDosMQxD
+	SwkKCxVVSlVKTEhOS0hISU9NTUlNVTMWGhIXVRAeDR4JVQIaFRw7CRQYEFYYExILCFUYFBZFWVdZ
+	EgtZQVlOQ1VJSVVMVUpKT1lXWQgBWUFJS0NLNwY+
+DKIM-Signature:a=rsa-sha256;
+	b=SIs43kcIBQ30JV3HyXMPTAWyOMs6KfJjb+mkdOCVarF0/E8XQiVPn6gccY36DEBc+mLUjzEqQP6U+A5yZfWXJwj7iPh8TzLlX8kvcg6XYYO3yMX8Bnlsh/mUlAtqO8osdzALlliB1jwaMoY/0Dgv8atw0OMs1DQZCcq575C5hsU=; s=default; c=relaxed/relaxed; d=rock-chips.com; v=1;
+	bh=PWTpV5unBG06xQWRz5c8PNc7qqWDa9gYmL9khDtzsDU=;
+	h=date:mime-version:subject:message-id:from;
 
-Add a section for alert support, explaining how user can use iio events
-attributes to enable alert and set thresholds, but also what kind of
-events will be generated.
+From: Simon Xue <xxm@rock-chips.com>
 
-Signed-off-by: Julien Stephan <jstephan@baylibre.com>
+rk3562 is using v2 saradc with 8 channels.
+
+Signed-off-by: Simon Xue <xxm@rock-chips.com>
+Signed-off-by: Kever Yang <kever.yang@rock-chips.com>
 ---
- Documentation/iio/ad7380.rst | 56 +++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 55 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/iio/ad7380.rst b/Documentation/iio/ad7380.rst
-index c46127700e14ca9ec3cac0bd5776b6702f2659e2..7cca4a9ad42ae8b3fda2e063ffd864ffa9dac2f1 100644
---- a/Documentation/iio/ad7380.rst
-+++ b/Documentation/iio/ad7380.rst
-@@ -92,6 +92,61 @@ must restart iiod using the following command:
- 
- 	root:~# systemctl restart iiod
- 
-+Alert
-+-----
-+
-+When configured in 1 SDO line mode (see `SPI wiring modes`_), the SDOB or the
-+SDOD line (respectively for the 2 or 4 channels variants) can act as an alert
-+pin.
-+
-+At the end of a conversion the low-active alert pin gets asserted if the
-+conversion result exceeds the alert high limit or falls below the alert low
-+limit. It is cleared, on a falling edge of CS. The alert pin is common to all
-+channels.
-+
-+User can enable alert using the regular iio events attribute:
-+
-+.. code-block:: bash
-+
-+	events/thresh_either_en
-+
-+The high and low thresholds are common to all channels and can also be set using
-+regular iio events attributes:
-+
-+.. code-block:: bash
-+
-+	events/in_thresh_falling_value
-+	events/in_thresh_rising_value
-+
-+User space IIO events
-+~~~~~~~~~~~~~~~~~~~~~
-+
-+If the ``interrupts`` property is set in the device tree, IIO events will be
-+generated for alerts.  A register identifies the faulty channel, and direction,
-+but during buffered reads, registers are inaccessible, making it impossible to
-+know the exact channel triggering the alert. A generic event is sent for each
-+channel, resulting in 2 or 4 events per alert, depending on the number of
-+channels:
-+
-+.. code-block:: bash
-+
-+	Event: time: 1733501917162945723, type: voltage, channel: 0-1, evtype: thresh, direction: either
-+	Event: time: 1733501917162945723, type: voltage, channel: 2-3, evtype: thresh, direction: either
-+
-+
-+Alert Reset timeout (buffered read only)
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+In buffered reads, if input stays out of thresholds limit, an interrupt will be
-+generated for each sample read, because the alert pin is cleared when CS get
-+active (i.e when starting a new conversion). As a result, excessive event
-+generation can occur. User can set a reset timeout in milliseconds, during
-+which interrupt will be disabled:
-+
-+.. code-block:: bash
-+
-+	events/thresh_either_reset_timeout
-+
- Channel selection and sequencer (single-end chips only)
- -------------------------------------------------------
- 
-@@ -144,7 +199,6 @@ Unimplemented features
- - Rolling average oversampling
- - Power down mode
- - CRC indication
--- Alert
- 
- 
- Device buffers
+ drivers/iio/adc/rockchip_saradc.c | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+index 240cfa391674..7c8a9d37d245 100644
+--- a/drivers/iio/adc/rockchip_saradc.c
++++ b/drivers/iio/adc/rockchip_saradc.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ /*
+  * Rockchip Successive Approximation Register (SAR) A/D Converter
+- * Copyright (C) 2014 ROCKCHIP, Inc.
++ * Copyright (C) 2014 Rockchip Electronics Co., Ltd.
+  */
+ 
+ #include <linux/bitfield.h>
+@@ -275,6 +275,25 @@ static const struct rockchip_saradc_data rk3399_saradc_data = {
+ 	.power_down = rockchip_saradc_power_down_v1,
+ };
+ 
++static const struct iio_chan_spec rockchip_rk3562_saradc_iio_channels[] = {
++	SARADC_CHANNEL(0, "adc0", 10),
++	SARADC_CHANNEL(1, "adc1", 10),
++	SARADC_CHANNEL(2, "adc2", 10),
++	SARADC_CHANNEL(3, "adc3", 10),
++	SARADC_CHANNEL(4, "adc4", 10),
++	SARADC_CHANNEL(5, "adc5", 10),
++	SARADC_CHANNEL(6, "adc6", 10),
++	SARADC_CHANNEL(7, "adc7", 10),
++};
++
++static const struct rockchip_saradc_data rk3562_saradc_data = {
++	.channels = rockchip_rk3562_saradc_iio_channels,
++	.num_channels = ARRAY_SIZE(rockchip_rk3562_saradc_iio_channels),
++	.clk_rate = 1000000,
++	.start = rockchip_saradc_start_v2,
++	.read = rockchip_saradc_read_v2,
++};
++
+ static const struct iio_chan_spec rockchip_rk3568_saradc_iio_channels[] = {
+ 	SARADC_CHANNEL(0, "adc0", 10),
+ 	SARADC_CHANNEL(1, "adc1", 10),
+@@ -324,6 +343,9 @@ static const struct of_device_id rockchip_saradc_match[] = {
+ 	}, {
+ 		.compatible = "rockchip,rk3399-saradc",
+ 		.data = &rk3399_saradc_data,
++	}, {
++		.compatible = "rockchip,rk3562-saradc",
++		.data = &rk3562_saradc_data,
+ 	}, {
+ 		.compatible = "rockchip,rk3568-saradc",
+ 		.data = &rk3568_saradc_data,
 -- 
-2.47.1
+2.25.1
 
