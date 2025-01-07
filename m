@@ -1,64 +1,65 @@
-Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com [209.85.128.68])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E48C1E0E01
-	for <linux-iio@vger.kernel.org>; Tue,  7 Jan 2025 08:48:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.68
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BD831DF75E
+	for <linux-iio@vger.kernel.org>; Tue,  7 Jan 2025 08:48:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736239714; cv=none; b=cq9Wr6yO61bnYBEs7p4rf9afi+TdxeE0CE5rUT/vjJgkF4z+clhFR3reHmTAzSJeydbv9a8T05W4fqfhtTZ1IY+2kteLFlHvhcxWJ77jF+gqCaLy1ZDd1Nq4Rt/DQSZtx9gSQFNh/f4MUk50PELVrLVzB5Y6+r6idYHXugL6Eac=
+	t=1736239714; cv=none; b=ZR4xBkLos4Uw5ekBo2y9ik+VmagnoaN1dJ6o+XsuZpYouqE7C4IvUK6BsMoh92/W+0yQOe3Jx2KKCGc4pdBkNOPswTidN1D94WTBlqZpX0nyYBxHvriOAlYkjLzM2Y1AOlIuUAWc1xq9eUc1DAf/SYRDa3a8hYRc73P9gHYU8qQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1736239714; c=relaxed/simple;
-	bh=OpXFBqIRxayWYy838v0tIReyzOHoFPXkfb3RieMBDm0=;
+	bh=eSSplP/3FY91YR2XwZTXJZ2Ax/rrzWeyNFYg2OhghvI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=pIot6e7mqWmxcgDsmcrcONReOYepsCyLzS55cBo2JQTkANhpmlkLdqZq8E5whC1qhHfHS9PJ+qTz3sp18hoecxYNpjW45g3MDi5iLu/0PlSz9xfrEH3exoDNBlYhqMSUPNEsxsFSilX62XcLpgi8OsxgObGgGLvqvRejMZ4YWn8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=C3DYJO4L; arc=none smtp.client-ip=209.85.128.68
+	 In-Reply-To:To:Cc; b=ZcIqO8x7J8jZkruYTqlibEaoLQrPSuHq9e3wHp5xYH2VyVNsqn9mpyxy3yvmnbDqwEyMgZVoEHXpcpzd4G8e6cpwxi6ObaC1wapgueBP2BRGACm4KfduigQ6tenFW/kOijiQzTJyq+THjmQm6nDG4qP5VJSMpJ2wNz5XHWE413I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=QmbOoHym; arc=none smtp.client-ip=209.85.128.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="C3DYJO4L"
-Received: by mail-wm1-f68.google.com with SMTP id 5b1f17b1804b1-4361f796586so156982475e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 07 Jan 2025 00:48:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="QmbOoHym"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-43635796b48so91868995e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 07 Jan 2025 00:48:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1736239709; x=1736844509; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1736239706; x=1736844506; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=lQojh4vJndN41Gj34B/frazp8U3nnF6i/HJBJX4kBzw=;
-        b=C3DYJO4L3pN+pAM+7BvaLyNePlU7cTdRTQS6LIEaG0pdFyffq3Gj48fYlkQ3JQ2bIX
-         mUFPkI/av7KE6x3SeXSieM13TD6DMygrIpdcAJDvEbMF5AnxJ7p2SC+9csbzsAQHfXcH
-         BNomysibtaiJAFLlZ5zQudmkBwOkNT86CbxfLQ5zbw4MxbdI0J8OgzKHugocKARD9yit
-         pF1WBpPTPY5TTifjTtpRYdAtU2apzjDrhWzYTohj2Sc97bPSPQ+Nyzrdo245dv4o003Q
-         Wf3yj3o6H/1yxcsJ7QI+CE8sZrRT2qxVUfLtC8uw7u4WWLGJ67jB4nHSt4QVb8Y12640
-         nmMQ==
+        bh=hZ+/3KnECndMbh/2k2JKBTk8y/NjC4Kknkr3b9iFCA8=;
+        b=QmbOoHymiXR3HSPWS4+gtQR+EwmtBPja7KgOHX6jD3cKInHr78dlnaAXdAYrnQys35
+         m3KLBez06RVWIiuDMFc5JzUhdBia+Ql2MEECtqOd5PdAuPEC8050yHjKV84CqxWkVIWs
+         wDPW5LskeTD+mB1QxjHWucJbTtj1eK882mV0PaQBHPt3zbl3dCgdzMU5DLX1CW/nYKoH
+         qnmK0Yzg3I8WYtDCEClssUqzqbTIvN8hncqrJCKJ/Vr8+85xLiyF/PWVp1Heo6GjANgu
+         rKFXOqxEk68zPgC1OGm40+ltp23QZWeijHa6UJ5wlmEwmE2PAr+iV2iSSFY2xegEMBLL
+         /VlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736239709; x=1736844509;
+        d=1e100.net; s=20230601; t=1736239706; x=1736844506;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=lQojh4vJndN41Gj34B/frazp8U3nnF6i/HJBJX4kBzw=;
-        b=KiBqWbCSTGEzsIhDjiZBoE42xpFPSPV5tcTN1EQTegg8a559Ps/kTo92ixJ6uBp1Wn
-         ztBCy0fO46WRM8XDAgxDWJItsBozsLBDbgSsKFVcqBwnS++j5aC2EG17mSz0Dec3vrSa
-         WHYGznSxHd6DXl12bCBIfRpN0x6V2CxFm2BhPgMU2h6SjHRfChgR1G56ZaEM8ypXF2id
-         nTEzNHNz4i0F+K+QjyP9/NUcN9ILqYeZNK/CTGvM2nNefz+4JWRqnJgeUe/396TjRkMk
-         AQwwj5NKJfMqKBxqoSD6FZ53L3A2XhxJX4PLtl3U8AcmW+uo+l2dZcq3p2NxC+n3t5x0
-         eirw==
-X-Gm-Message-State: AOJu0Yx0O5d3kaco/kuKNyDuPBH3tzJj61z93A3Dfre0S+jD2Dvf8LCY
-	JATfr7RegBIfNO9UAzr63SRkWyn1LsII+Ot4MRDckl9nKadxfcOSQOgCM+0tcEI=
-X-Gm-Gg: ASbGncv6H3uj4iN6mIH/TXYieQ8AxjQAIqfpxIk/jdpr9EK81yc7FrS0b37o7oh5o5z
-	wOP6eJdafDoZFGhyRvSzhMUfJFyMjbZSOLS+3XDHINcrCUtRskdykQtR1Qji2xfo6fzoMIth/Nu
-	4pC5ki0E+3Hf5W85SFXTFNzCfY6LBqxWDg8Ksz3aFBUfZMJYlZbTWJhhbQ8oMx5pC6TANjuB3Xc
-	Zi/UvyzFr445qDa/f72UK5DarIPWkEyBKkMuEid5RN67ONPOwz9tbm6N5YcrnUaTmIp4Irxr+K+
-	y4Nd+dV0NvfIUSYHFhsCosNKQypYnnBWsGCBxEj6sj4bboqdDw==
-X-Google-Smtp-Source: AGHT+IEWVn/IlSWfib9pQwA3jHGI2sLUhKtfgApNDeKG4eEkxqTaxRrq6BjH7PlJzVCaWSGLc9PRjg==
-X-Received: by 2002:a05:600c:4709:b0:436:1ac2:1acf with SMTP id 5b1f17b1804b1-43668a3a35dmr460164025e9.20.1736239709462;
-        Tue, 07 Jan 2025 00:48:29 -0800 (PST)
+        bh=hZ+/3KnECndMbh/2k2JKBTk8y/NjC4Kknkr3b9iFCA8=;
+        b=VeQkawMytPiDIlZU6GdiRl7Q3qR9Weua53nxCokYyWqywfi1CACujs743CI7Xy7oPh
+         YtULwJUMwsQgi4+MykpL4YwqPA3K3LK+LM4Qj6mwPUqsX9TsMGlq86S8opppMUh3ewah
+         H8DtVmYV/UKY9yt78F4wisYzX27gNGiSheLow514NyeoWJ0XPMexl6lzCzuKCVc7Tt8i
+         vqp4YUK1ktTic840ZjqijwUnVe2d8ObLkmf5+lNYUYzQPNuF8Q8SfFhxJ5hyKoMdUyWx
+         1YHty3ak/IWrWwRFtO9gHHFI9vFVu5tcoUJi4yPDx70q77Y/YwzP9mwX0IwNpwUP6xEk
+         zrZQ==
+X-Gm-Message-State: AOJu0Yw8yGi2ZTB2YznDSTmn7lZesgG2UZZjzBtCIZi+am0dGJIrDxwa
+	9c6e77k5sqFD6lV277MJEKGDxPYgKwJ34V1GEAAjlvatNkMMVLATFs/f/iJr1Nc=
+X-Gm-Gg: ASbGnctan+rK+YQz9mRTGkWzGb1oj1UaZb2ZjH1RR1SwnUTf4meAv+jy7mw5Sd1hbTT
+	UGX6O667g7DQfWcEX+kW/aPEDFe2t3fGhtPaNgelOPVWf9chSEMColzomN/92hzGCQFenRn1v0N
+	26aKDAUr9hlQGnsj+Et7NxJ/PpOCBEANoauG1NzQmvJJ3eCLKYBsYdQ8E3M+CVJ5ZNsGvdwHSsm
+	svY4HyZRp4YGR/ASUpzZs+kW2Wn34YRwXzmGSQfvffPYq84oMzRvfFuWEo0LANda02kLZ2rmtA0
+	4iFiuzWkbUjKNvikblM/8hpQKGZ5T1Mp1UjzjvBxtoOYhRLGcg==
+X-Google-Smtp-Source: AGHT+IGQ4V3dSc3vK+Zyhlr0chhocUMOJ1bGwH2LL7mekY4ZcsViuFPyGalpXb4K+Ellw6y7xZP6gw==
+X-Received: by 2002:a05:600c:1d12:b0:436:1b86:f05 with SMTP id 5b1f17b1804b1-436dc20b0c1mr16203915e9.11.1736239706555;
+        Tue, 07 Jan 2025 00:48:26 -0800 (PST)
 Received: from [192.168.1.62] (2a02-842a-d52e-6101-6fd0-06c4-5d68-f0a5.rev.sfr.net. [2a02:842a:d52e:6101:6fd0:6c4:5d68:f0a5])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a1c828817sm50722280f8f.1.2025.01.07.00.48.28
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a1c828817sm50722280f8f.1.2025.01.07.00.48.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jan 2025 00:48:28 -0800 (PST)
+        Tue, 07 Jan 2025 00:48:26 -0800 (PST)
 From: Julien Stephan <jstephan@baylibre.com>
-Date: Tue, 07 Jan 2025 09:48:28 +0100
-Subject: [PATCH v3 4/5] iio: adc: ad7380: add alert support
+Date: Tue, 07 Jan 2025 09:48:25 +0100
+Subject: [PATCH v3 1/5] iio: adc: ad7380: do not use
+ iio_device_claim_direct_scoped anymore
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,7 +68,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250107-ad7380-add-alert-support-v3-4-bce10afd656b@baylibre.com>
+Message-Id: <20250107-ad7380-add-alert-support-v3-1-bce10afd656b@baylibre.com>
 References: <20250107-ad7380-add-alert-support-v3-0-bce10afd656b@baylibre.com>
 In-Reply-To: <20250107-ad7380-add-alert-support-v3-0-bce10afd656b@baylibre.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -79,268 +80,171 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-doc@vger.kernel.org, Julien Stephan <jstephan@baylibre.com>
 X-Mailer: b4 0.14.2
 
-The alert functionality is an out of range indicator and can be used as
-an early indicator of an out of bounds conversion result.
+Conditionnal scoped handlers are turning out to be a real pain:
+readability issues, compiler and linker handling issues among others so
+rollback and remove the scoped version of iio_dvice_claim_direct_mode.
 
-ALERT_LOW_THRESHOLD and ALERT_HIGH_THRESHOLD registers are common to all
-channels.
-
-When using 1 SDO line (only mode supported by the driver right now), i.e
-data outputs only on SDOA, SDOB (or SDOD for 4 channels variants) is
-used as an alert pin. The alert pin is updated at the end of the
-conversion (set to low if an alert occurs) and is cleared on a falling
-edge of CS.
-
-The ALERT register contains information about the exact alert status:
-channel and direction. ALERT register can be accessed using debugfs if
-enabled.
-
-User can set high/low thresholds and enable alert detection using the
-regular iio events attributes:
-
-  events/in_thresh_falling_value events/in_thresh_rising_value
-  events/thresh_either_en
-
-In most use cases, user will hardwire the alert pin to trigger a shutdown.
-
-In theory, we could generate userspace IIO events for alerts, but this
-is not implemented yet for several reasons [1]. This can be implemented
-later if a real use case actually requires it.
+To impove code readability factorize code to set oversampling ratio.
 
 Signed-off-by: Julien Stephan <jstephan@baylibre.com>
-
-[1] https://lore.kernel.org/all/4be16272-5197-4fa1-918c-c4cdfcaee02e@baylibre.com/
 ---
- drivers/iio/adc/ad7380.c | 189 +++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 189 insertions(+)
+ drivers/iio/adc/ad7380.c | 110 +++++++++++++++++++++++++++++------------------
+ 1 file changed, 67 insertions(+), 43 deletions(-)
 
 diff --git a/drivers/iio/adc/ad7380.c b/drivers/iio/adc/ad7380.c
-index a532de4422082df8503454d66fc49f75b52cff68..1fc694c1557cead906ce199c7777bddf9d29d400 100644
+index 4f32cb22f140442b831dc9a4f275e88e4ab2388e..bc7d58850a3e2a84a241d81377e3dc14c43fc101 100644
 --- a/drivers/iio/adc/ad7380.c
 +++ b/drivers/iio/adc/ad7380.c
-@@ -34,6 +34,7 @@
- #include <linux/util_macros.h>
- 
- #include <linux/iio/buffer.h>
-+#include <linux/iio/events.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
-@@ -112,6 +113,24 @@ struct ad7380_chip_info {
- 	const struct ad7380_timing_specs *timing_specs;
- };
- 
-+static const struct iio_event_spec ad7380_events[] = {
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_shared_by_dir = BIT(IIO_EV_INFO_VALUE),
-+	},
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_FALLING,
-+		.mask_shared_by_dir = BIT(IIO_EV_INFO_VALUE),
-+	},
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_EITHER,
-+		.mask_shared_by_all = BIT(IIO_EV_INFO_ENABLE),
-+	},
-+};
-+
- enum {
- 	AD7380_SCAN_TYPE_NORMAL,
- 	AD7380_SCAN_TYPE_RESOLUTION_BOOST,
-@@ -214,6 +233,8 @@ static const struct iio_scan_type ad7380_scan_type_16_u[] = {
- 	.has_ext_scan_type = 1,							\
- 	.ext_scan_type = ad7380_scan_type_##bits##_##sign,			\
- 	.num_ext_scan_type = ARRAY_SIZE(ad7380_scan_type_##bits##_##sign),	\
-+	.event_spec = ad7380_events,						\
-+	.num_event_specs = ARRAY_SIZE(ad7380_events),				\
- }
- 
- #define AD7380_CHANNEL(index, bits, diff, sign)		\
-@@ -1157,12 +1178,180 @@ static int ad7380_get_current_scan_type(const struct iio_dev *indio_dev,
- 					    : AD7380_SCAN_TYPE_NORMAL;
- }
- 
-+static int ad7380_read_event_config(struct iio_dev *indio_dev,
-+				    const struct iio_chan_spec *chan,
-+				    enum iio_event_type type,
-+				    enum iio_event_direction dir)
-+{
+@@ -675,15 +675,21 @@ static const struct regmap_config ad7380_regmap_config = {
+ static int ad7380_debugfs_reg_access(struct iio_dev *indio_dev, u32 reg,
+ 				     u32 writeval, u32 *readval)
+ {
+-	iio_device_claim_direct_scoped(return  -EBUSY, indio_dev) {
+-		struct ad7380_state *st = iio_priv(indio_dev);
 +	struct ad7380_state *st = iio_priv(indio_dev);
-+	int alert_en, tmp, ret;
-+
++	int ret;
+ 
+-		if (readval)
+-			return regmap_read(st->regmap, reg, readval);
+-		else
+-			return regmap_write(st->regmap, reg, writeval);
+-	}
+-	unreachable();
 +	ret = iio_device_claim_direct_mode(indio_dev);
 +	if (ret)
 +		return ret;
 +
-+	ret = regmap_read(st->regmap, AD7380_REG_ADDR_CONFIG1, &tmp);
++	if (readval)
++		ret = regmap_read(st->regmap, reg, readval);
++	else
++		ret = regmap_write(st->regmap, reg, writeval);
 +
 +	iio_device_release_direct_mode(indio_dev);
 +
-+	if (ret)
-+		return ret;
-+
-+	alert_en = FIELD_GET(AD7380_CONFIG1_ALERTEN, tmp);
-+
-+	return alert_en;
-+}
-+
-+static int ad7380_write_event_config(struct iio_dev *indio_dev,
-+				     const struct iio_chan_spec *chan,
-+				     enum iio_event_type type,
-+				     enum iio_event_direction dir,
-+				     bool state)
-+{
-+	struct ad7380_state *st = iio_priv(indio_dev);
++	return ret;
+ }
+ 
+ /*
+@@ -920,6 +926,7 @@ static int ad7380_read_raw(struct iio_dev *indio_dev,
+ {
+ 	struct ad7380_state *st = iio_priv(indio_dev);
+ 	const struct iio_scan_type *scan_type;
 +	int ret;
-+
-+	ret = iio_device_claim_direct_mode(indio_dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_update_bits(st->regmap,
-+				 AD7380_REG_ADDR_CONFIG1,
-+				 AD7380_CONFIG1_ALERTEN,
-+				 FIELD_PREP(AD7380_CONFIG1_ALERTEN, state));
-+
-+	iio_device_release_direct_mode(indio_dev);
-+
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int ad7380_read_event_value(struct iio_dev *indio_dev,
-+				   const struct iio_chan_spec *chan,
-+				   enum iio_event_type type,
-+				   enum iio_event_direction dir,
-+				   enum iio_event_info info,
-+				   int *val, int *val2)
-+{
-+	struct ad7380_state *st = iio_priv(indio_dev);
-+	int ret, tmp;
-+
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+
-+		switch (dir) {
-+		case IIO_EV_DIR_RISING:
-+			ret = regmap_read(st->regmap,
-+					  AD7380_REG_ADDR_ALERT_HIGH_TH,
-+					  &tmp);
-+			if (ret)
-+				return ret;
-+
-+			*val = FIELD_GET(AD7380_ALERT_HIGH_TH, tmp);
-+			ret = IIO_VAL_INT;
-+			break;
-+		case IIO_EV_DIR_FALLING:
-+			ret = regmap_read(st->regmap,
-+					  AD7380_REG_ADDR_ALERT_LOW_TH,
-+					  &tmp);
-+			if (ret)
-+				return ret;
-+
-+			FIELD_GET(AD7380_ALERT_LOW_TH, tmp);
-+			ret = IIO_VAL_INT;
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+
-+		iio_device_release_direct_mode(indio_dev);
-+		return ret;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad7380_write_event_value(struct iio_dev *indio_dev,
-+				    const struct iio_chan_spec *chan,
-+				    enum iio_event_type type,
-+				    enum iio_event_direction dir,
-+				    enum iio_event_info info,
-+				    int val, int val2)
-+{
-+	struct ad7380_state *st = iio_priv(indio_dev);
-+	const struct iio_scan_type *scan_type;
-+	int ret;
-+	u16 th;
-+
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
+ 
+ 	scan_type = iio_get_current_scan_type(indio_dev, chan);
+ 
+@@ -928,11 +935,16 @@ static int ad7380_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (info) {
+ 	case IIO_CHAN_INFO_RAW:
+-		iio_device_claim_direct_scoped(return -EBUSY, indio_dev) {
+-			return ad7380_read_direct(st, chan->scan_index,
+-						  scan_type, val);
+-		}
+-		unreachable();
 +		ret = iio_device_claim_direct_mode(indio_dev);
 +		if (ret)
 +			return ret;
 +
-+		/*
-+		 * According to the datasheet,
-+		 * AD7380_REG_ADDR_ALERT_HIGH_TH[11:0] are the 12 MSB of the
-+		 * 16-bits internal alert high register. LSB are set to 0xf.
-+		 * AD7380_REG_ADDR_ALERT_LOW_TH[11:0] are the 12 MSB of the
-+		 * 16 bits internal alert low register. LSB are set to 0x0.
-+		 *
-+		 * When alert is enabled the conversion from the adc is compared
-+		 * immediately to the alert high/low thresholds, before any
-+		 * oversampling. This means that the thresholds are the same for
-+		 * normal mode and oversampling mode.
-+		 */
-+
-+		/* Extract the 12 MSB of val */
-+		scan_type = iio_get_current_scan_type(indio_dev, chan);
-+		if (IS_ERR(scan_type))
-+			return PTR_ERR(scan_type);
-+
-+		th = val >> (scan_type->realbits - 12);
-+
-+		switch (dir) {
-+		case IIO_EV_DIR_RISING:
-+			ret = regmap_write(st->regmap,
-+					   AD7380_REG_ADDR_ALERT_HIGH_TH,
-+					   th);
-+			if (ret)
-+				return ret;
-+
-+			break;
-+		case IIO_EV_DIR_FALLING:
-+			ret = regmap_write(st->regmap,
-+					   AD7380_REG_ADDR_ALERT_LOW_TH,
-+					   th);
-+			if (ret)
-+				return ret;
-+
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
++		ret = ad7380_read_direct(st, chan->scan_index,
++					 scan_type, val);
 +
 +		iio_device_release_direct_mode(indio_dev);
-+		return ret;
-+	default:
-+		return -EINVAL;
-+	}
-+}
 +
- static const struct iio_info ad7380_info = {
- 	.read_raw = &ad7380_read_raw,
- 	.read_avail = &ad7380_read_avail,
- 	.write_raw = &ad7380_write_raw,
- 	.get_current_scan_type = &ad7380_get_current_scan_type,
- 	.debugfs_reg_access = &ad7380_debugfs_reg_access,
-+	.read_event_config = &ad7380_read_event_config,
-+	.write_event_config = &ad7380_write_event_config,
-+	.read_event_value = &ad7380_read_event_value,
-+	.write_event_value = &ad7380_write_event_value,
- };
++		return ret;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		/*
+ 		 * According to the datasheet, the LSB size is:
+@@ -1008,47 +1020,59 @@ static int ad7380_osr_to_regval(int ratio)
+ 	return -EINVAL;
+ }
  
- static int ad7380_init(struct ad7380_state *st, bool external_ref_en)
++static int ad7380_set_oversampling_ratio(struct ad7380_state *st, int val)
++{
++	int ret, osr, boost;
++
++	osr = ad7380_osr_to_regval(val);
++	if (osr < 0)
++		return osr;
++
++	/* always enable resolution boost when oversampling is enabled */
++	boost = osr > 0 ? 1 : 0;
++
++	ret = regmap_update_bits(st->regmap,
++				 AD7380_REG_ADDR_CONFIG1,
++				 AD7380_CONFIG1_OSR | AD7380_CONFIG1_RES,
++				 FIELD_PREP(AD7380_CONFIG1_OSR, osr) |
++				 FIELD_PREP(AD7380_CONFIG1_RES, boost));
++
++	if (ret)
++		return ret;
++
++	st->oversampling_ratio = val;
++	st->resolution_boost_enabled = boost;
++
++	/*
++	 * Perform a soft reset. This will flush the oversampling
++	 * block and FIFO but will maintain the content of the
++	 * configurable registers.
++	 */
++	ret = regmap_update_bits(st->regmap,
++				 AD7380_REG_ADDR_CONFIG2,
++				 AD7380_CONFIG2_RESET,
++				 FIELD_PREP(AD7380_CONFIG2_RESET,
++					    AD7380_CONFIG2_RESET_SOFT));
++	return ret;
++}
+ static int ad7380_write_raw(struct iio_dev *indio_dev,
+ 			    struct iio_chan_spec const *chan, int val,
+ 			    int val2, long mask)
+ {
+ 	struct ad7380_state *st = iio_priv(indio_dev);
+-	int ret, osr, boost;
++	int ret;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+-		osr = ad7380_osr_to_regval(val);
+-		if (osr < 0)
+-			return osr;
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
+ 
+-		/* always enable resolution boost when oversampling is enabled */
+-		boost = osr > 0 ? 1 : 0;
++		ret = ad7380_set_oversampling_ratio(st, val);
+ 
+-		iio_device_claim_direct_scoped(return -EBUSY, indio_dev) {
+-			ret = regmap_update_bits(st->regmap,
+-					AD7380_REG_ADDR_CONFIG1,
+-					AD7380_CONFIG1_OSR | AD7380_CONFIG1_RES,
+-					FIELD_PREP(AD7380_CONFIG1_OSR, osr) |
+-					FIELD_PREP(AD7380_CONFIG1_RES, boost));
++		iio_device_release_direct_mode(indio_dev);
+ 
+-			if (ret)
+-				return ret;
+-
+-			st->oversampling_ratio = val;
+-			st->resolution_boost_enabled = boost;
+-
+-			/*
+-			 * Perform a soft reset. This will flush the oversampling
+-			 * block and FIFO but will maintain the content of the
+-			 * configurable registers.
+-			 */
+-			return regmap_update_bits(st->regmap,
+-					AD7380_REG_ADDR_CONFIG2,
+-					AD7380_CONFIG2_RESET,
+-					FIELD_PREP(AD7380_CONFIG2_RESET,
+-						   AD7380_CONFIG2_RESET_SOFT));
+-		}
+-		unreachable();
++		return ret;
+ 	default:
+ 		return -EINVAL;
+ 	}
 
 -- 
 2.47.1
