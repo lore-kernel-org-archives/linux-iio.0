@@ -1,189 +1,107 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BEA620C486;
-	Fri, 10 Jan 2025 09:15:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E76F720A5EC;
+	Fri, 10 Jan 2025 09:21:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736500535; cv=none; b=rCekuhAukCFbOlu1aLk72cjfQXWMFBt5Qvkd1cmSncZgkN5wUQwVLYLqyvOQv7QGyRlIsvnyTV2Qbw87hjEIIUBa61uP6FS8i55TRh8smaGOWdfURyIeKJF04f8rDIZS5XBVEerpMGcuKgDZ31pXFZbWhgRCFzIuqhONmvWIu00=
+	t=1736500902; cv=none; b=GOrTpBI+u0t+UGvElA5NbtsRR07A1wOvA40nF/ceuybWHRVy4QTpdjbcuIptUiK/RYjlLySWlTyUHkLqzK7oU8C3c+EqDdMhkvCCTirEhXawbIEiN7HGsfLDlj/QScVM9tqghzmD6J/we0z5GbTgOXDaYpOfZe8LL0Pe9me6fOM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736500535; c=relaxed/simple;
-	bh=yMuEvX/0U7rOLFcEb9brDgo1VAoZ4vuXu+wSia6WGk4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BT/iFVjMB4LTbGrXp6gBTMkyE/19CYa2EEM+5oLPy218koZJp2F7+X1mf3dz0Yy+XEzcwsdScNiM2oMhNzoLRJgBul/Nt6L5+mULwWoArwg4NhvMNFv0zA/VlN/72OUeP4xBtmcGR6sePBF3pGuSkPy34IuiMlOrJrYlithnxkU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lLN3yYhg; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1736500902; c=relaxed/simple;
+	bh=5KF5+LXInrAUlvBfTZWp1T4c7jMEFPqtKcH7bYppp9s=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Efb73K2M6Q1UZgqdKqz6lBJSMbWIlifFLUIcCeRpPRcQuJqtMEYXnFOyGzhb0s4Y3TFEUxjWQerOfuhkfHg4SmCHt+VwjHZfkdR4iy+yqwVUBmqMI/QGU6pWk/PmRVRU557qMSaOpwQ7jOMaBQ5hgqyoTDpePDkOdwFALhAsQWI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q9lwJ7Cv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lLN3yYhg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736500533; x=1768036533;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yMuEvX/0U7rOLFcEb9brDgo1VAoZ4vuXu+wSia6WGk4=;
-  b=lLN3yYhgVDTRvnH/1NpzOkPaVTAGAnPtvD4SwT/SozaWfk6X9PFIkIQE
-   n4I1jdjFm71GJJPH79nEJbVks9ecKiaBWjPNBizeEUYpsb2puI1Kvf07r
-   0fIEpEumLxN8+NePCeAViKL4xByxuxJq7k6iagBIdSY+CMpIYrGZXIbjn
-   D82nDQ21xonILNzFdjr/Z+Xoy8XPcxHb3O2LNZOTUeDqiS6T8llGklHp1
-   p04jQY/vUFm2J1BkAuFyQzdd3wgz1qYHaTI84F/gXJcWYP/pnvO6g1IKc
-   6elazwvbQZcsoe/1c+DGEMv1hBEmUK2BKz4zu7lOmt7guPDjbJZB99+wN
-   A==;
-X-CSE-ConnectionGUID: u0QaVGddQXeT0bXFcHllmQ==
-X-CSE-MsgGUID: w1YqzZmIQIupvBwG7l7wmQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11310"; a="54329484"
-X-IronPort-AV: E=Sophos;i="6.12,303,1728975600"; 
-   d="scan'208";a="54329484"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2025 01:15:33 -0800
-X-CSE-ConnectionGUID: nXeOA/HsSjCgwUAhzL1AzQ==
-X-CSE-MsgGUID: aI6o95PbSoGAda90UPR43Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,303,1728975600"; 
-   d="scan'208";a="103862509"
-Received: from lkp-server01.sh.intel.com (HELO d63d4d77d921) ([10.239.97.150])
-  by fmviesa008.fm.intel.com with ESMTP; 10 Jan 2025 01:15:28 -0800
-Received: from kbuild by d63d4d77d921 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tWB70-000IuB-24;
-	Fri, 10 Jan 2025 09:15:26 +0000
-Date: Fri, 10 Jan 2025 17:14:43 +0800
-From: kernel test robot <lkp@intel.com>
-To: Antoni Pokusinski <apokusinski01@gmail.com>, jic23@kernel.org,
-	lars@metafoo.de, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, andrej.skvortzov@gmail.com,
-	neil.armstrong@linaro.org, icenowy@aosc.io, megi@xff.cz,
-	danila@jiaxyga.com, javier.carrasco.cruz@gmail.com, and@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, apokusinski01@gmail.com,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: magnetometer: si7210: add driver for Si7210
-Message-ID: <202501101656.F268NchW-lkp@intel.com>
-References: <20250108234411.882768-3-apokusinski01@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q9lwJ7Cv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C721C4CED6;
+	Fri, 10 Jan 2025 09:21:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1736500901;
+	bh=5KF5+LXInrAUlvBfTZWp1T4c7jMEFPqtKcH7bYppp9s=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=q9lwJ7CvjdJ3ZI9KiH7gCL7BsSz2j9W90hFtr1FqhAld+gQzSZ4iwEt7vRmveNu8G
+	 MYwNNGNm1xocb+54Bw68s8wW7rlFIxiS7ubnhwwSBJ7exXO68bgprvMe67BSykdHn7
+	 z4uzQj25aodADkSlDMrstLT152U8OZAl002qRg1EheR2MPPRu3MsGPRTHlnbCNj0NO
+	 dUHbpCBuXFHcDL8psS3kCtfwhqio3HaLFkzl4k/tXdYU3ruMR5ZyBIOC4JjdGO0ePC
+	 bd2GA9+Qsca4xfyrIpKk8kOOfOtAC3ZBpGlOvU6ftajOZW69Kzlts7veF/J0MoW/9i
+	 Ii1843aL5gkOA==
+Message-ID: <637904ec-3b93-4597-ac14-161bce66c916@kernel.org>
+Date: Fri, 10 Jan 2025 10:21:35 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250108234411.882768-3-apokusinski01@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: magnetometer: add binding for
+ Si7210
+To: Antoni Pokusinski <apokusinski01@gmail.com>, jic23@kernel.org,
+ lars@metafoo.de, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ andrej.skvortzov@gmail.com, neil.armstrong@linaro.org, icenowy@aosc.io,
+ megi@xff.cz, danila@jiaxyga.com, javier.carrasco.cruz@gmail.com
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org
+References: <20250108234411.882768-1-apokusinski01@gmail.com>
+ <20250108234411.882768-2-apokusinski01@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
+ cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
+ JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
+ gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
+ J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
+ NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
+ BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
+ vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
+ Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
+ TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
+ S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
+ FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJgPO8PBQkUX63hAAoJEBuTQ307
+ QWKbBn8P+QFxwl7pDsAKR1InemMAmuykCHl+XgC0LDqrsWhAH5TYeTVXGSyDsuZjHvj+FRP+
+ gZaEIYSw2Yf0e91U9HXo3RYhEwSmxUQ4Fjhc9qAwGKVPQf6YuQ5yy6pzI8brcKmHHOGrB3tP
+ /MODPt81M1zpograAC2WTDzkICfHKj8LpXp45PylD99J9q0Y+gb04CG5/wXs+1hJy/dz0tYy
+ iua4nCuSRbxnSHKBS5vvjosWWjWQXsRKd+zzXp6kfRHHpzJkhRwF6ArXi4XnQ+REnoTfM5Fk
+ VmVmSQ3yFKKePEzoIriT1b2sXO0g5QXOAvFqB65LZjXG9jGJoVG6ZJrUV1MVK8vamKoVbUEe
+ 0NlLl/tX96HLowHHoKhxEsbFzGzKiFLh7hyboTpy2whdonkDxpnv/H8wE9M3VW/fPgnL2nPe
+ xaBLqyHxy9hA9JrZvxg3IQ61x7rtBWBUQPmEaK0azW+l3ysiNpBhISkZrsW3ZUdknWu87nh6
+ eTB7mR7xBcVxnomxWwJI4B0wuMwCPdgbV6YDUKCuSgRMUEiVry10xd9KLypR9Vfyn1AhROrq
+ AubRPVeJBf9zR5UW1trJNfwVt3XmbHX50HCcHdEdCKiT9O+FiEcahIaWh9lihvO0ci0TtVGZ
+ MCEtaCE80Q3Ma9RdHYB3uVF930jwquplFLNF+IBCn5JRzsFNBFVDXDQBEADNkrQYSREUL4D3
+ Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
+ MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
+ OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
+ GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
+ 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
+ YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
+ 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
+ BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
+ JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
+ 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
+ YpsFAmA872oFCRRflLYACgkQG5NDfTtBYpvScw/9GrqBrVLuJoJ52qBBKUBDo4E+5fU1bjt0
+ Gv0nh/hNJuecuRY6aemU6HOPNc2t8QHMSvwbSF+Vp9ZkOvrM36yUOufctoqON+wXrliEY0J4
+ ksR89ZILRRAold9Mh0YDqEJc1HmuxYLJ7lnbLYH1oui8bLbMBM8S2Uo9RKqV2GROLi44enVt
+ vdrDvo+CxKj2K+d4cleCNiz5qbTxPUW/cgkwG0lJc4I4sso7l4XMDKn95c7JtNsuzqKvhEVS
+ oic5by3fbUnuI0cemeizF4QdtX2uQxrP7RwHFBd+YUia7zCcz0//rv6FZmAxWZGy5arNl6Vm
+ lQqNo7/Poh8WWfRS+xegBxc6hBXahpyUKphAKYkah+m+I0QToCfnGKnPqyYIMDEHCS/RfqA5
+ t8F+O56+oyLBAeWX7XcmyM6TGeVfb+OZVMJnZzK0s2VYAuI0Rl87FBFYgULdgqKV7R7WHzwD
+ uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
+ 7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
+ 5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
+In-Reply-To: <20250108234411.882768-2-apokusinski01@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Antoni,
+On 09/01/2025 00:44, Antoni Pokusinski wrote:
+> Silicon Labs Si7210 is an I2C Hall effect magnetic position
+> and temperature sensor.
+> 
+> Signed-off-by: Antoni Pokusinski <apokusinski01@gmail.com>
+> ---
 
-kernel test robot noticed the following build warnings:
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on linus/master v6.13-rc6 next-20250110]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Antoni-Pokusinski/dt-bindings-iio-magnetometer-add-binding-for-Si7210/20250109-074641
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20250108234411.882768-3-apokusinski01%40gmail.com
-patch subject: [PATCH v2 2/2] iio: magnetometer: si7210: add driver for Si7210
-config: openrisc-randconfig-r123-20250110 (https://download.01.org/0day-ci/archive/20250110/202501101656.F268NchW-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 14.2.0
-reproduce: (https://download.01.org/0day-ci/archive/20250110/202501101656.F268NchW-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202501101656.F268NchW-lkp@intel.com/
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/iio/magnetometer/si7210.c:169:16: sparse: sparse: cast from restricted __be16
->> drivers/iio/magnetometer/si7210.c:189:24: sparse: sparse: restricted __be16 degrades to integer
->> drivers/iio/magnetometer/si7210.c:206:23: sparse: sparse: cast to restricted __be16
-   drivers/iio/magnetometer/si7210.c:206:23: sparse: sparse: restricted __be16 degrades to integer
-   drivers/iio/magnetometer/si7210.c:206:23: sparse: sparse: restricted __be16 degrades to integer
-
-vim +169 drivers/iio/magnetometer/si7210.c
-
-   143	
-   144	static int si7210_fetch_measurement(struct si7210_data *data,
-   145					    struct iio_chan_spec const *chan,
-   146					    __be16 *buf)
-   147	{
-   148		u8 dspsigsel = chan->type == IIO_MAGN ? 0 : 1;
-   149		int ret;
-   150	
-   151		guard(mutex)(&data->fetch_lock);
-   152	
-   153		ret = regmap_update_bits(data->regmap, SI7210_REG_DSPSIGSEL,
-   154					 SI7210_MASK_DSPSIGSEL, dspsigsel);
-   155		if (ret < 0)
-   156			return ret;
-   157	
-   158		ret = regmap_update_bits(data->regmap, SI7210_REG_POWER_CTRL,
-   159					 SI7210_MASK_ONEBURST | SI7210_MASK_STOP,
-   160					 SI7210_MASK_ONEBURST & ~SI7210_MASK_STOP);
-   161		if (ret < 0)
-   162			return ret;
-   163	
-   164		/* Read the contents of the registers containing the result: DSPSIGM, DSPSIGL */
-   165		ret = regmap_bulk_read(data->regmap, SI7210_REG_DSPSIGM, buf, 2);
-   166		if (ret < 0)
-   167			return ret;
-   168	
- > 169		*buf = cpu_to_be16(*buf);
-   170	
-   171		return 0;
-   172	}
-   173	
-   174	static int si7210_read_raw(struct iio_dev *indio_dev,
-   175				   struct iio_chan_spec const *chan,
-   176				   int *val, int *val2, long mask)
-   177	{
-   178		struct si7210_data *data = iio_priv(indio_dev);
-   179		long long tmp;
-   180		__be16 dspsig;
-   181		int ret;
-   182	
-   183		switch (mask) {
-   184		case IIO_CHAN_INFO_RAW:
-   185			ret = si7210_fetch_measurement(data, chan, &dspsig);
-   186			if (ret < 0)
-   187				return ret;
-   188	
- > 189			*val = dspsig & GENMASK(14, 0);
-   190			return IIO_VAL_INT;
-   191		case IIO_CHAN_INFO_SCALE:
-   192			*val = 0;
-   193			if (data->curr_scale == 20)
-   194				*val2 = 1250;
-   195			else /* data->curr_scale == 200 */
-   196				*val2 = 12500;
-   197			return IIO_VAL_INT_PLUS_MICRO;
-   198		case IIO_CHAN_INFO_OFFSET:
-   199			*val = -16384;
-   200			return IIO_VAL_INT;
-   201		case IIO_CHAN_INFO_PROCESSED:
-   202			ret = si7210_fetch_measurement(data, chan, &dspsig);
-   203			if (ret < 0)
-   204				return ret;
-   205	
- > 206			tmp = FIELD_GET(GENMASK(14, 3), dspsig);
-   207			tmp = (div_s64(-383 * tmp * tmp, 100) + (160940 * tmp - 279800000));
-   208			tmp = (1 + (data->temp_gain >> 11)) * tmp + 62500 * data->temp_offset;
-   209	
-   210			ret = regulator_get_voltage(data->vdd);
-   211			if (ret < 0)
-   212				return ret;
-   213	
-   214			tmp -= 222 * div_s64(ret, 1000);
-   215	
-   216			*val = div_s64(tmp, 1000);
-   217	
-   218			return IIO_VAL_INT;
-   219		default:
-   220			return -EINVAL;
-   221		}
-   222	}
-   223	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Best regards,
+Krzysztof
