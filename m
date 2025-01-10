@@ -1,107 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E76F720A5EC;
-	Fri, 10 Jan 2025 09:21:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79AF620C038;
+	Fri, 10 Jan 2025 09:22:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.207.212.93
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736500902; cv=none; b=GOrTpBI+u0t+UGvElA5NbtsRR07A1wOvA40nF/ceuybWHRVy4QTpdjbcuIptUiK/RYjlLySWlTyUHkLqzK7oU8C3c+EqDdMhkvCCTirEhXawbIEiN7HGsfLDlj/QScVM9tqghzmD6J/we0z5GbTgOXDaYpOfZe8LL0Pe9me6fOM=
+	t=1736500938; cv=none; b=U6Up0IchwbR1exk3S1QExvAjD6VeXMRewC46NzgBO0jZ1LRx041k7z3O0b5kIcn9Qr7r4gENO/PDqQizF1Ne0nUEeSxJBC59gN9bis/EX3FYRgcJABbyuyLw/yWrq1hfng55ZlEIiBZNKPIzq7+Mao5J3AehdNyAOHPCCrqJpmc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736500902; c=relaxed/simple;
-	bh=5KF5+LXInrAUlvBfTZWp1T4c7jMEFPqtKcH7bYppp9s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Efb73K2M6Q1UZgqdKqz6lBJSMbWIlifFLUIcCeRpPRcQuJqtMEYXnFOyGzhb0s4Y3TFEUxjWQerOfuhkfHg4SmCHt+VwjHZfkdR4iy+yqwVUBmqMI/QGU6pWk/PmRVRU557qMSaOpwQ7jOMaBQ5hgqyoTDpePDkOdwFALhAsQWI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q9lwJ7Cv; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1736500938; c=relaxed/simple;
+	bh=WwvIg9Cmt18RYee+/QUqe5qozU9odvXlhFuEBV1U2Vw=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=a9FiNYn5fGhQZBLtUtOfzvSl0pkJYKg96DCmaBSO3uuxAQPmMb9rQmWDVDmOMi8Kb85jYt27B563sQXeqeQivxk+7N4HoAOD2vFhi7Pr4qzaM64XmqGZwiS0lc9JxmdoH0jexpUU5LvRrW12s6AgbfGAdUenAOlnS+0LsAnj3cE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=nDji/mW/; arc=none smtp.client-ip=91.207.212.93
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q9lwJ7Cv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C721C4CED6;
-	Fri, 10 Jan 2025 09:21:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736500901;
-	bh=5KF5+LXInrAUlvBfTZWp1T4c7jMEFPqtKcH7bYppp9s=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=q9lwJ7CvjdJ3ZI9KiH7gCL7BsSz2j9W90hFtr1FqhAld+gQzSZ4iwEt7vRmveNu8G
-	 MYwNNGNm1xocb+54Bw68s8wW7rlFIxiS7ubnhwwSBJ7exXO68bgprvMe67BSykdHn7
-	 z4uzQj25aodADkSlDMrstLT152U8OZAl002qRg1EheR2MPPRu3MsGPRTHlnbCNj0NO
-	 dUHbpCBuXFHcDL8psS3kCtfwhqio3HaLFkzl4k/tXdYU3ruMR5ZyBIOC4JjdGO0ePC
-	 bd2GA9+Qsca4xfyrIpKk8kOOfOtAC3ZBpGlOvU6ftajOZW69Kzlts7veF/J0MoW/9i
-	 Ii1843aL5gkOA==
-Message-ID: <637904ec-3b93-4597-ac14-161bce66c916@kernel.org>
-Date: Fri, 10 Jan 2025 10:21:35 +0100
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="nDji/mW/"
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50A8DlBH000357;
+	Fri, 10 Jan 2025 10:21:58 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=selector1; bh=
+	h6ab+x6Ynx/O74V+SfsXYwAL7nLhG88cwarhkjj6DpE=; b=nDji/mW/AuPMid5J
+	aoKDXsEF0VSGsNnbjL53ztfvRBa6mPsGcYdAqD2HQAqIg5yF47WOEszIV9k5RkT6
+	Y9Ou0mc7dpg4TUwSrM48ZW1evbpnw9+20HM/DmG3tNp0IsBpDdANURGgIbT8lduD
+	69zzx5Gl0EN1mSx49s1qmc/sOrJw4zrkBjFP559t3a89YzIpMmXhMJcV85bi7QPz
+	pE8TcPH7wyQ1dJnIkHCgqyhF41F4WdKE+d8u5MfQdmzrDwZ6rTNzNss4uJ15qN8I
+	++du5Tr9GAWKKqnO3CCuVQNO7BCmdR4diVoOwDwrWM3joMzxk4WtGuYB9kVhsOzU
+	pSefXg==
+Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 442q2dhyvd-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 10 Jan 2025 10:21:58 +0100 (CET)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id D33AA40052;
+	Fri, 10 Jan 2025 10:21:01 +0100 (CET)
+Received: from Webmail-eu.st.com (eqndag1node5.st.com [10.75.129.134])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 1D50F28A669;
+	Fri, 10 Jan 2025 10:20:02 +0100 (CET)
+Received: from SAFDAG1NODE1.st.com (10.75.90.17) by EQNDAG1NODE5.st.com
+ (10.75.129.134) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.37; Fri, 10 Jan
+ 2025 10:20:01 +0100
+Received: from localhost (10.252.28.64) by SAFDAG1NODE1.st.com (10.75.90.17)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.37; Fri, 10 Jan
+ 2025 10:20:01 +0100
+From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+To: <lee@kernel.org>, <ukleinek@kernel.org>, <alexandre.torgue@foss.st.com>
+CC: <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+        <wbg@kernel.org>, <jic23@kernel.org>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <olivier.moysan@foss.st.com>, <fabrice.gasnier@foss.st.com>
+Subject: [PATCH v3 3/8] counter: stm32-timer-cnt: add support for stm32mp25
+Date: Fri, 10 Jan 2025 10:19:17 +0100
+Message-ID: <20250110091922.980627-4-fabrice.gasnier@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20250110091922.980627-1-fabrice.gasnier@foss.st.com>
+References: <20250110091922.980627-1-fabrice.gasnier@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: magnetometer: add binding for
- Si7210
-To: Antoni Pokusinski <apokusinski01@gmail.com>, jic23@kernel.org,
- lars@metafoo.de, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- andrej.skvortzov@gmail.com, neil.armstrong@linaro.org, icenowy@aosc.io,
- megi@xff.cz, danila@jiaxyga.com, javier.carrasco.cruz@gmail.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
-References: <20250108234411.882768-1-apokusinski01@gmail.com>
- <20250108234411.882768-2-apokusinski01@gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20250108234411.882768-2-apokusinski01@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SHFCAS1NODE1.st.com (10.75.129.72) To SAFDAG1NODE1.st.com
+ (10.75.90.17)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
 
-On 09/01/2025 00:44, Antoni Pokusinski wrote:
-> Silicon Labs Si7210 is an I2C Hall effect magnetic position
-> and temperature sensor.
-> 
-> Signed-off-by: Antoni Pokusinski <apokusinski01@gmail.com>
-> ---
+Add support for STM32MP25 SoC. There are new counter modes that may be
+implemented in later. Still, use newly introduced compatible to handle
+this new HW variant and avoid being blocked with existing compatible
+in SoC dtsi file. Modes supported currently still remains compatible.
+New timer 20 has encoder capability, add it to the list.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: William Breathitt Gray <wbg@kernel.org>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+---
+ drivers/counter/stm32-timer-cnt.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
+index e75b69476a00..3d3384cbea87 100644
+--- a/drivers/counter/stm32-timer-cnt.c
++++ b/drivers/counter/stm32-timer-cnt.c
+@@ -669,12 +669,14 @@ static void stm32_timer_cnt_detect_channels(struct device *dev,
+ 	dev_dbg(dev, "has %d cc channels\n", priv->nchannels);
+ }
+ 
+-/* encoder supported on TIM1 TIM2 TIM3 TIM4 TIM5 TIM8 */
+-#define STM32_TIM_ENCODER_SUPPORTED	(BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(7))
++/* encoder supported on TIM1 TIM2 TIM3 TIM4 TIM5 TIM8 TIM20 */
++#define STM32_TIM_ENCODER_SUPPORTED	(BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(7) | \
++					 BIT(19))
+ 
+ static const char * const stm32_timer_trigger_compat[] = {
+ 	"st,stm32-timer-trigger",
+ 	"st,stm32h7-timer-trigger",
++	"st,stm32mp25-timer-trigger",
+ };
+ 
+ static int stm32_timer_cnt_probe_encoder(struct device *dev,
+@@ -846,6 +848,7 @@ static SIMPLE_DEV_PM_OPS(stm32_timer_cnt_pm_ops, stm32_timer_cnt_suspend,
+ 
+ static const struct of_device_id stm32_timer_cnt_of_match[] = {
+ 	{ .compatible = "st,stm32-timer-counter", },
++	{ .compatible = "st,stm32mp25-timer-counter", },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, stm32_timer_cnt_of_match);
+-- 
+2.25.1
+
