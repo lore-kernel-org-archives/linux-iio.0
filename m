@@ -1,50 +1,52 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2EED206F1B;
-	Fri, 10 Jan 2025 07:43:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1362207A25;
+	Fri, 10 Jan 2025 07:43:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736495010; cv=none; b=iNc0ENLBwxm6JOeVOCCpMJ3CzW0EX/AQi7LOYtfLvWseR/W2eS/ME9aFTMg/lr470uQwRsdHEb9LBv+l6Fl2CFW2a6Gw3G0RuYZgtEZtheuxT9F5cp5N7ZjPXn7XI0d32nM7wUL4PBMptFhbXZgmCKLUWstVM1wCOKtL3f6jcLo=
+	t=1736495014; cv=none; b=bywaqMsML299t9i8az6tdpAY7VSPVZJCXvHhKk+grhTKT8ixn9X3Y+Jp5EEinIV0Mh+5lgolguKO5sjyJsfeKv5o5MkxhGsLx7kWaKBMMXxOWfYijIIZIHWoNleP2V5pDl+Q8AldoEhnLXSnh/ztjEGEribbAcKntq5/M4q3pUY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736495010; c=relaxed/simple;
-	bh=7N0olu4BlMRguZ5wloHWkhC+2NeWyOGqmceCcv0hPUY=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=lhN7x9KHqGzXO4rn3VK7eqALY9Unbsg48AaoEVEmW92FjiXhcKvxBm58nMtJCAjvA4xJbC3C8YWTYken8PXqMi8U1en6l7E8u/hLqKI5VUmN/8ffdigM7y++AViY44yGPbmxtMz4DtDXf2RfFlHecY6Kb+edu+nqjVnuo5PW9pg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=DFCSwCio; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1736495014; c=relaxed/simple;
+	bh=EnkMe/3tYFgv6B386GQ8ItxMVz+gO35WRCbTF7E/T9E=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=GQ9AOhaP5ekRh08dALMacP1on87XZMYHnpLm+nVIpPmwe+8gWh3gTDNwTlSxq59f6vI9FcAf2ZPts7gxzaM+hS3hJ9YvtA4l+7IOmklG8xL8nmS/TXDSeG3o2piVcjtw1mMqxmGOFnUnMT6m1n6ZE2OqehKD0jyxkTV9cZFv3Bk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=uaWFySk6; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="DFCSwCio"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50A6LCD3001985;
-	Fri, 10 Jan 2025 02:43:12 -0500
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="uaWFySk6"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50A6oDAJ020283;
+	Fri, 10 Jan 2025 02:43:18 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=cwERC/HaSv5cWLlyrMkI/z2Ygoq
-	6SWAxVZxBwsI3Sos=; b=DFCSwCioGZ7B/Fx7kJ3+ZKF6zr/KGphJI4rHwOz3kWT
-	VHSmpNTiutuLdEtkHpszN1zviuM5Os5V12KFbGJGZc1rlZ4WMMRb/MbOtGowC64I
-	l+TcsnIrayADCZ8lWOPnFGGfMj/BfFqA2UMZ0OMBj3YWN5Vg8QwGqnGkAbpNG2RY
-	lVSHpCvuPLIeOFomcfnRStKpDFORYTO6mLfqaIouQorJsHWbBEBBkC1WkbgR8j3Q
-	nZCYqlrooTkmIByYnw5kLpJ++JbQ6yYdXxC+8rmxIp6hGsKTOmwJYXWPsVYdvKkW
-	/oRJP7jREXl1VaXAhasZ6UVGRFyO88SfzlAAXnRRqOg==
+	content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=ireG0
+	PGrTtIUvE10qOPnya7qRbRYHeQUtU+ON9wBp4k=; b=uaWFySk60ltvNbqe4Cqn3
+	K06TGXD8vGFWA8+Jr3C6ZC2Jvw2osa04BJioA8jDKB5kY0S8zhThjpHvkCOWiJHN
+	WNJ/FYTaKXY9dZlkm9qnMG98BqmM1r0EgiSrhbBNi0rV4RdUAyyg1PO0TcjrKpct
+	dBjSwgisAlbiH/4SAJsa33hTcZ6HpdUrNjc7PmnWy9Au6va6JVDsulKGp9QzbuHj
+	3FF5p1SS0mfZnbwuqU8+hxg1mRM1LjmZPaA8p7SWMeuAaF12jqDWJ10H4jQqYgOK
+	sI7AjyP5H+McTa4CE/tj+hNPbaprTudvKGQQsJIDnhqivctths4xuRHDMSoa8t7z
+	Q==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 442mavam1q-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 442xmr86ep-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 10 Jan 2025 02:43:11 -0500 (EST)
+	Fri, 10 Jan 2025 02:43:18 -0500 (EST)
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 50A7hAwc051810
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 50A7hHu0051825
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 10 Jan 2025 02:43:10 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+	Fri, 10 Jan 2025 02:43:17 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 10 Jan
- 2025 02:43:10 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 10 Jan 2025 02:43:10 -0500
+ 2025 02:43:17 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 10 Jan 2025 02:43:17 -0500
 Received: from dell-precision-robert.ad.analog.com ([10.48.65.204])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 50A7gvop032122;
-	Fri, 10 Jan 2025 02:42:59 -0500
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 50A7gvor032122;
+	Fri, 10 Jan 2025 02:43:08 -0500
 From: Robert Budai <robert.budai@analog.com>
 To: Nuno Sa <nuno.sa@analog.com>,
         Ramona Gradinariu
@@ -63,10 +65,12 @@ To: Nuno Sa <nuno.sa@analog.com>,
         Alex Lanzano <lanzano.alex@gmail.com>, <linux-iio@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-doc@vger.kernel.org>
-Subject: [PATCH v4 0/6] Add support for ADIS16550 and ADIS16550W
-Date: Fri, 10 Jan 2025 09:42:48 +0200
-Message-ID: <20250110074254.38966-1-robert.budai@analog.com>
+Subject: [PATCH v4 2/6] iio: imu: adis: Add reset to custom ops
+Date: Fri, 10 Jan 2025 09:42:50 +0200
+Message-ID: <20250110074254.38966-3-robert.budai@analog.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20250110074254.38966-1-robert.budai@analog.com>
+References: <20250110074254.38966-1-robert.budai@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -76,41 +80,85 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: sI04RTTAfgY72GnptvE2XQzZ7dd_hSji
-X-Proofpoint-GUID: sI04RTTAfgY72GnptvE2XQzZ7dd_hSji
+X-Proofpoint-ORIG-GUID: ln0MkLnRMuU3HGRb25Z3xk-VUa3ADCpl
+X-Proofpoint-GUID: ln0MkLnRMuU3HGRb25Z3xk-VUa3ADCpl
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
  definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
- bulkscore=0 adultscore=0 clxscore=1015 mlxlogscore=999 phishscore=0
- lowpriorityscore=0 malwarescore=0 priorityscore=1501 suspectscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2501100063
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
+ mlxscore=0 impostorscore=0 clxscore=1015 suspectscore=0 mlxlogscore=999
+ bulkscore=0 phishscore=0 malwarescore=0 priorityscore=1501
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2501100062
 
-Add support for ADIS16550 and ADIS16550W
+This patch allows the custom definition of reset functionality
+for adis object. It is useful in cases where the driver does not
+need to sleep after the reset since it is handled by the library.
 
-Robert Budai (6):
-  iio: imu: adis: Add custom ops struct
-  iio: imu: adis: Add reset to custom ops
-  iio: imu: adis: Add DIAG_STAT register size
-  dt-bindings: iio: Add adis16550 bindings
-  iio: imu: adis16550: add adis16550 support
-  docs: iio: add documentation for adis16550 driver
+Co-developed-by: Ramona Gradinariu <ramona.gradinariu@analog.com>
+Signed-off-by: Ramona Gradinariu <ramona.gradinariu@analog.com>
+Co-developed-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+Signed-off-by: Robert Budai <robert.budai@analog.com>
+---
+ drivers/iio/imu/adis.c       | 7 ++++---
+ include/linux/iio/imu/adis.h | 3 +++
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
- .../bindings/iio/imu/adi,adis16550.yaml       |   96 ++
- Documentation/iio/adis16550.rst               |  378 ++++++
- Documentation/iio/index.rst                   |    1 +
- MAINTAINERS                                   |    9 +
- drivers/iio/imu/Kconfig                       |   13 +
- drivers/iio/imu/Makefile                      |    1 +
- drivers/iio/imu/adis.c                        |   30 +-
- drivers/iio/imu/adis16550.c                   | 1202 +++++++++++++++++
- include/linux/iio/imu/adis.h                  |   33 +-
- 9 files changed, 1749 insertions(+), 14 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
- create mode 100644 Documentation/iio/adis16550.rst
- create mode 100644 drivers/iio/imu/adis16550.c
-
+diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
+index 54915c7a3e76..9e4113473dc4 100644
+--- a/drivers/iio/imu/adis.c
++++ b/drivers/iio/imu/adis.c
+@@ -340,7 +340,7 @@ int __adis_reset(struct adis *adis)
+ 	const struct adis_timeout *timeouts = adis->data->timeouts;
+ 
+ 	ret = __adis_write_reg_8(adis, adis->data->glob_cmd_reg,
+-				 ADIS_GLOB_CMD_SW_RESET);
++					 ADIS_GLOB_CMD_SW_RESET);
+ 	if (ret) {
+ 		dev_err(&adis->spi->dev, "Failed to reset device: %d\n", ret);
+ 		return ret;
+@@ -491,6 +491,7 @@ EXPORT_SYMBOL_NS_GPL(adis_single_conversion, "IIO_ADISLIB");
+ static const struct adis_ops adis_default_ops = {
+ 	.read = __adis_read_reg,
+ 	.write = __adis_write_reg,
++	.reset = __adis_reset,
+ };
+ 
+ /**
+@@ -522,9 +523,9 @@ int adis_init(struct adis *adis, struct iio_dev *indio_dev,
+ 
+ 	adis->spi = spi;
+ 	adis->data = data;
+-	if (!adis->ops->write && !adis->ops->read)
++	if (!adis->ops->write && !adis->ops->read && !adis->ops->reset)
+ 		adis->ops = &adis_default_ops;
+-	else if (!adis->ops->write || !adis->ops->read)
++	else if (!adis->ops->write || !adis->ops->read || !adis->ops->reset)
+ 		return -EINVAL;
+ 
+ 	iio_device_set_drvdata(indio_dev, adis);
+diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+index 89cfa75ae9ea..52652f51db2e 100644
+--- a/include/linux/iio/imu/adis.h
++++ b/include/linux/iio/imu/adis.h
+@@ -98,12 +98,15 @@ struct adis_data {
+  * struct adis_ops: Custom ops for adis devices.
+  * @write: Custom spi write implementation.
+  * @read: Custom spi read implementation.
++ * @reset: Custom sw reset implementation. The custom implementation does not
++ *	   need to sleep after the reset. It's done by the library already.
+  */
+ struct adis_ops {
+ 	int (*write)(struct adis *adis, unsigned int reg, unsigned int value,
+ 		     unsigned int size);
+ 	int (*read)(struct adis *adis, unsigned int reg, unsigned int *value,
+ 		    unsigned int size);
++	int (*reset)(struct adis *adis);
+ };
+ 
+ /**
 -- 
 2.34.1
 
