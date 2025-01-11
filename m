@@ -1,207 +1,145 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 149931B85CC;
-	Sat, 11 Jan 2025 20:11:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EECFCA55;
+	Sat, 11 Jan 2025 21:56:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736626270; cv=none; b=iV9nE9LWUsank2UXISvj7+gjjpEWTKOvBXmOKNeYuik+xXl1l1JyD5jl8TqeFYsvU1avnEgAj1fOmHwcnb2jc36FGqtWTzR74Jsfu3eAroko6jSsYD/LVEROq1pZt4gLryngX0NjSU5Y7oUwb0aBnObORLXio6KCeatkGY3DhZs=
+	t=1736632582; cv=none; b=IMOzjuV+hy5for/PVLaaYtuBRgdX/y7qoDDjfCtw/6uLt4P6aezUDtEF8vS9zCCMsjKHJszCwuaml7H0HiG6O9K8nVdjB2qGwNOxfXh0vlPQ1eEb+1OFAAyW0jnz7zrOGJ2Ozdw8Q/SPjFaSCoTNNBIjaqMPGYkxMWZbQ9DQdxA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736626270; c=relaxed/simple;
-	bh=zHENJgA45YYkFLL0ldE4wCLz8XeAFTgRqKHUY79HGiw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=emxPSUvEnMI7TX3zFIfFl0pZLLpShr1MtpPuehPYTd4nMO9dwm55ZxKdlA3MslnvioKh5lflaGuINETZy9vH5R6+05jdNXbzIGqql2JkFCFK4xQHSgX99k6yX7Dobc671UEm0x/4UjXhurO5o5TgezXwgWj6KTKGqUdXxIQfzCI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DeGOLksy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1736632582; c=relaxed/simple;
+	bh=wVAIOcC8/MluVMZNcHxAYpkkoZnwc3NcstGDJ0zZu4g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pI1Wm+yTT2nCfL7kKqAb60SNiXVGbYIUszGlr81T5vXvXWLScIlsjgmPlG/KE8iMedezzQIzDoY72Mq3c/3HAiuT0GTmoqLRs/fYs//TT/Xf10fenTflouwC2G9k0QZJPIA5w8hHSZgUmYhcC6DDRelwMhpGtbE+5RhZD7Iv7So=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=auD1K+uB; arc=none smtp.client-ip=209.85.210.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DeGOLksy"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AF269C4CEE3;
-	Sat, 11 Jan 2025 20:11:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736626269;
-	bh=zHENJgA45YYkFLL0ldE4wCLz8XeAFTgRqKHUY79HGiw=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=DeGOLksy0TY24bt+xBPEz/Lk5QF2zS4NnDvTlxmjANlRShk/tbQs9FOhpKlycG9ev
-	 1FpECt5Act7q2nve7S8bj9tHKZNGgnlRuV+nRl8I2XzWjXZpXmu281foF9Iup2eCIp
-	 NbuXL8h36ic1pZT7j+80ZBcsr4JqKO8rPpR28OdxkpjonioaEI3dgm1wcEkGVPgUcI
-	 nG2cyNBatTTTfaN4aZzMP21tfFvjukyWhc8DxWwNg5RVozA/k+7VhZmMuIrvXnzXSl
-	 84wiAENNYHd3RCfCbJSVr53ylV4GoCcIIMfembbyALFgBRMMbKQkeDSxKv3GyxandZ
-	 mG6blifU/eQEQ==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D84E7719C;
-	Sat, 11 Jan 2025 20:11:09 +0000 (UTC)
-From: Vasiliy Doylov via B4 Relay <devnull+nekodevelopper.gmail.com@kernel.org>
-Date: Sat, 11 Jan 2025 23:11:08 +0300
-Subject: [PATCH 3/4] iio: accel: mc3230: add mc3510c support
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="auD1K+uB"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-71e31d295eeso367814a34.3;
+        Sat, 11 Jan 2025 13:56:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1736632579; x=1737237379; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=loOtPquvh3+Rddn8R48POaSkeUCptBGFOlaZFrQdYso=;
+        b=auD1K+uBW83olQ+A4M/xN5zcG7FgVpMoGIgMKCDqpKMdUiN02xTSwPvIp04kfqL1Oi
+         NZvWgZpwkc8r1siPhy/MNdhPmxiZNqWfshbHixGRjgHdoYNvIWGL/kZYY7RsPrtTdJ+P
+         xnzArgNOpxipyCEArUqiNvWbu3Eg8k4RrndNORW+PjarhCzdQY+zvJAkuBAQaHb21V9z
+         P1Rt5u+Dr8ljLiTm/zTfBMKwcEfAAF0Qrx7l8DgGAGh1+v/J0K7/YDxgUqQMBaHHz5q3
+         Jhr8SUHihCwuO2RithQOR2YCPTBiXBiFoAR5olyKTNl8jFn3JjCDdhW8zw6YSqKufpuZ
+         Gcdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736632579; x=1737237379;
+        h=in-reply-to:content-disposition:mime-version:references:reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=loOtPquvh3+Rddn8R48POaSkeUCptBGFOlaZFrQdYso=;
+        b=ik0FDhpruRVLWkxRJIMRjnRMtV+4vh1mCUF8Yj4zrzQ2/GsBNDsI0LJc9xUsbe8SeK
+         XOJsiy1C1I2g0eL3fzeIb3LLcTHQZT8DA/3Gsmx/VkL4DhvMiOdXtc7bVWcYGOPMxQWZ
+         1y+6N+q9coSoBWXmryiAVNoeHj+ci7AfSc05oc7505Jh1uNJLWQ0fNWAX00sL7dHhLgv
+         p2zcz7m0LGWY73Ueo2XmVPwDCXXuoPNadxZsqDMR8PTtWzYXVB9qbFfUHt/EaeWM8lCH
+         067oRvS3UYd349m6huUMq3WiMBHlnAqSJVStEnzavkfNWRlaoum9Dr1c459nUGi1OBnB
+         kQKw==
+X-Forwarded-Encrypted: i=1; AJvYcCU+OYW7jPTe6UeAX8SbaUTheyNuZL0YogctkgBOxcVJrnKE5wsSnQEHD9WTl/E45EGN2+6/CM/J7tqc@vger.kernel.org, AJvYcCWiKWq8cDNPI6U935sWlPB04aEinydpNowWSKal7BehJPl2Bphrvo1wKeN3/KvS576fjfBGe7zTIrOp@vger.kernel.org, AJvYcCXZgG+V9a9tRheHr4ikmKqDR8JhcDogAar4icbxkMbhJwbA3qHKh452Tt3OVUBoDHDMSJbJGbcBqC3ktJsN@vger.kernel.org
+X-Gm-Message-State: AOJu0YxQXn1vAD9Q0vawzbhFtxzitz00JfZp6HSu3dr4PpuQxiAiDbsv
+	Cim7et5nri0O1iSGzCpQpcDF6ro1vF+owboxhQaAA0/RCG5cORES
+X-Gm-Gg: ASbGnctvDl1CKEj008M+ClFH4r3I8RWNtKqrLDcpp1xaffC9PxdrmYS5O8y95MViv+S
+	r71lIGJXWqK2i+qaV7UsVlWKYBeiq8INNR/lfNImzZ/mbi0dZdwvdBSN1Y0waNKGfm42VdMoIbh
+	kvuHIhLKzI+8E02J7iRbIcxdyZ6v+jSBzFTqkLFsVp4tvlINunkwqpXH2R1sO3cuGsOhWdcNHS4
+	uIAYCtlaS7toc+GIRIw0GnjlPWVGgguWddwf2SNlJCdACjwqvggfOAl8daKo1Mi98OKDPCTTr5A
+	GA==
+X-Google-Smtp-Source: AGHT+IGuHISPlavr3hGJB+OMwWrc9jBpOUN+SV1VDOHzQz20bQR9b31+g8SYn+XssRntWIJfIqFvTw==
+X-Received: by 2002:a05:6830:6206:b0:71f:c1df:7b5 with SMTP id 46e09a7af769-721e2f2cbbbmr3966321a34.7.1736632578914;
+        Sat, 11 Jan 2025 13:56:18 -0800 (PST)
+Received: from JSANTO12-L01.ad.analog.com ([189.121.203.94])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7231862a20asm2027666a34.65.2025.01.11.13.56.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jan 2025 13:56:18 -0800 (PST)
+Date: Sat, 11 Jan 2025 18:56:13 -0300
+From: Jonathan Santos <jonath4nns@gmail.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jonathan Santos <Jonathan.Santos@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	marcelo.schmitt1@gmail.com
+Subject: Re: [PATCH v1 00/15] iio: adc: ad7768-1: Add features, improvements,
+ and fixes
+Message-ID: <Z4Lo/cmUbKeBJWce@JSANTO12-L01.ad.analog.com>
+Reply-To: eeea054d-ebe8-4917-85c6-ff001cef50c5@baylibre.com
+References: <cover.1736201898.git.Jonathan.Santos@analog.com>
+ <eeea054d-ebe8-4917-85c6-ff001cef50c5@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250111-mainlining-mc3510c-v1-3-57be503addf8@gmail.com>
-References: <20250111-mainlining-mc3510c-v1-0-57be503addf8@gmail.com>
-In-Reply-To: <20250111-mainlining-mc3510c-v1-0-57be503addf8@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- devicetree@vger.kernel.org, Vasiliy Doylov <nekodevelopper@gmail.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4230;
- i=nekodevelopper@gmail.com; h=from:subject:message-id;
- bh=ydt9wEg9ZXDn59JTji5alQyxsHpWkyrwV3RCLRJDzSw=;
- b=owGbwMvMwCW2fZ/SFZeSpU2Mp9WSGNKbLkSv8WDsmtnCctluzwWfmPsNlj43JBmLuS68dWgNO
- ZHL9pm3o5SFQYyLQVZMkcVmo8dssfxwyUnTnirAzGFlAhnCwMUpABNRcmJkmNe8NarpU7i1z5lT
- yUaMH55EirO+1jQ8aHPHItstXUZRh5FhZxyzWfO602aPr0zsko3V5Z13pGD5c6/dMxnfsi18yzO
- JAwA=
-X-Developer-Key: i=nekodevelopper@gmail.com; a=openpgp;
- fpr=3CB1489B166F57199296E520B7BE22D44474A582
-X-Endpoint-Received: by B4 Relay for nekodevelopper@gmail.com/default with
- auth_id=314
-X-Original-From: Vasiliy Doylov <nekodevelopper@gmail.com>
-Reply-To: nekodevelopper@gmail.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <eeea054d-ebe8-4917-85c6-ff001cef50c5@baylibre.com>
 
-From: Vasiliy Doylov <nekodevelopper@gmail.com>
+On 01/07, David Lechner wrote:
+> On 1/7/25 9:23 AM, Jonathan Santos wrote:
+> > This patch series introduces some new features, improvements,
+> > and fixes for the AD7768-1 ADC driver. 
+> > 
+> > The goal is to support all key functionalities listed in the device
+> > datasheet, including filter mode selection, common mode voltage 
+> > configuration and GPIO support. Additionally, this includes fixes 
+> > for SPI communication and for IIO interface, and also code improvements
+> > to enhance maintainability and readability.
+> 
+> It looks like some of the patches also have to do with a sync trigger for one
+> or more chips. There was a recent discussion about this for another ADC that
+> seems relevant:
+> 
+> [1]: https://lore.kernel.org/linux-iio/20241128125811.11913-1-alisa.roman@analog.com/
+> 
+Interesting. That would cover the case where we control the synchronization with a GPIO,
+but it gets more complex when using /SYNC_OUT in a multidevice setup, since it requires
+sending a SPI command to the "main device" to toggle the pin.
 
-This commit integrates support for the mc3510c into the mc3230 driver.
-
-Tested on Huawei MediaPad T3 10 (huawei-agassi)
-
-Signed-off-by: Vasiliy Doylov <nekodevelopper@gmail.com>
----
- drivers/iio/accel/mc3230.c | 55 ++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 44 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iio/accel/mc3230.c b/drivers/iio/accel/mc3230.c
-index 3cad6f2d7a2a79df38f90e5656763f6ed019a920..ebbb96c658d87a83007c7c3c7212ce9ebf039963 100644
---- a/drivers/iio/accel/mc3230.c
-+++ b/drivers/iio/accel/mc3230.c
-@@ -22,20 +22,41 @@
- #define MC3230_MODE_OPCON_STANDBY	0x03
- 
- #define MC3230_REG_CHIP_ID		0x18
--#define MC3230_CHIP_ID			0x01
--
- #define MC3230_REG_PRODUCT_CODE		0x3b
--#define MC3230_PRODUCT_CODE		0x19
- 
- /*
-  * The accelerometer has one measurement range:
-  *
-  * -1.5g - +1.5g (8-bit, signed)
-  *
-- * scale = (1.5 + 1.5) * 9.81 / (2^8 - 1)	= 0.115411765
-  */
- 
--static const int mc3230_nscale = 115411765;
-+enum mc3xxx_chips {
-+	MC3230,
-+	MC3510C,
-+};
-+
-+struct mc3xxx_chip_info {
-+	const char *name;
-+	const u8 chip_id;
-+	const u8 product_code;
-+	const int scale;
-+};
-+
-+static struct mc3xxx_chip_info mc3xxx_chip_info_tbl[] = {
-+	[MC3230] = {
-+		.name = "mc3230",
-+		.chip_id = 0x01,
-+		.product_code = 0x19,
-+		.scale = 115411765, // (1.5 + 1.5) * 9.81 / (2^8 - 1) = 0.115411765
-+	},
-+	[MC3510C] = {
-+		.name = "mc3510c",
-+		.chip_id = 0x23,
-+		.product_code = 0x10,
-+		.scale = 625000000, // Was obtained empirically
-+	},
-+};
- 
- #define MC3230_CHANNEL(reg, axis) {	\
- 	.type = IIO_ACCEL,	\
-@@ -50,6 +71,7 @@ static const int mc3230_nscale = 115411765;
- struct mc3230_data {
- 	struct i2c_client *client;
- 	struct iio_mount_matrix orientation;
-+	const struct mc3xxx_chip_info *chip_info;
- };
- 
- static const struct iio_mount_matrix *
-@@ -111,7 +133,7 @@ static int mc3230_read_raw(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = 0;
--		*val2 = mc3230_nscale;
-+		*val2 = data->chip_info->scale;
- 		return IIO_VAL_INT_PLUS_NANO;
- 	default:
- 		return -EINVAL;
-@@ -127,15 +149,23 @@ static int mc3230_probe(struct i2c_client *client)
- 	int ret;
- 	struct iio_dev *indio_dev;
- 	struct mc3230_data *data;
-+	const struct mc3xxx_chip_info *chip_info;
- 
-+	chip_info = i2c_get_match_data(client);
- 	/* First check chip-id and product-id */
- 	ret = i2c_smbus_read_byte_data(client, MC3230_REG_CHIP_ID);
--	if (ret != MC3230_CHIP_ID)
-+	if (ret != chip_info->chip_id) {
-+		dev_err(&client->dev,
-+		"chip id check fail: 0x%x != 0x%x !\n", ret, chip_info->chip_id);
- 		return (ret < 0) ? ret : -ENODEV;
-+	}
- 
- 	ret = i2c_smbus_read_byte_data(client, MC3230_REG_PRODUCT_CODE);
--	if (ret != MC3230_PRODUCT_CODE)
-+	if (ret != chip_info->product_code) {
-+		dev_err(&client->dev,
-+		"product code check fail: 0x%x != 0x%x !\n", ret, chip_info->product_code);
- 		return (ret < 0) ? ret : -ENODEV;
-+	}
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev) {
-@@ -145,10 +175,11 @@ static int mc3230_probe(struct i2c_client *client)
- 
- 	data = iio_priv(indio_dev);
- 	data->client = client;
-+	data->chip_info = chip_info;
- 	i2c_set_clientdata(client, indio_dev);
- 
- 	indio_dev->info = &mc3230_info;
--	indio_dev->name = "mc3230";
-+	indio_dev->name = chip_info->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->channels = mc3230_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(mc3230_channels);
-@@ -200,13 +231,15 @@ static int mc3230_resume(struct device *dev)
- static DEFINE_SIMPLE_DEV_PM_OPS(mc3230_pm_ops, mc3230_suspend, mc3230_resume);
- 
- static const struct i2c_device_id mc3230_i2c_id[] = {
--	{ "mc3230" },
-+	{ "mc3230", (kernel_ulong_t)&mc3xxx_chip_info_tbl[MC3230] },
-+	{ "mc3510c", (kernel_ulong_t)&mc3xxx_chip_info_tbl[MC3510C] },
- 	{}
- };
- MODULE_DEVICE_TABLE(i2c, mc3230_i2c_id);
- 
- static const struct of_device_id mc3230_of_match[] = {
--	{ .compatible = "mcube,mc3230" },
-+	{ .compatible = "mcube,mc3230", &mc3xxx_chip_info_tbl[MC3230] },
-+	{ .compatible = "mcube,mc3510c", &mc3xxx_chip_info_tbl[MC3510C] },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, mc3230_of_match);
-
--- 
-2.47.1
-
-
+The main device being the one which its /SYNC_OUT drives the others SYNC_IN.
+> > 
+> > Jonathan Santos (8):
+> >   dt-bindings: iio: adc: ad7768-1: add synchronization over SPI property
+> >   Documentation: ABI: add wideband filter type to  sysfs-bus-iio
+> >   Documentation: ABI: testing: ad7768-1: Add device specific ABI
+> >     documentation.
+> >   iio: adc: ad7768-1: set MOSI idle state to high
+> >   iio: adc: ad7768-1: use guard(mutex) to simplify code
+> >   iio: adc: ad7768-1: add multiple scan types to support 16-bits mode
+> >   iio: adc: ad7768-1: add support for Synchronization over SPI
+> >   iio: adc: ad7768-1: add filter type and decimation rate attributes
+> > 
+> > Sergiu Cuciurean (7):
+> >   iio: adc: ad7768-1: Fix conversion result sign
+> >   iio: adc: ad7768-1: Update reg_read function
+> >   iio: adc: ad7768-1: Add reset gpio
+> >   iio: adc: ad7768-1: Move buffer allocation to a separate function
+> >   iio: adc: ad7768-1: Add support for variable VCM
+> >   iio: adc: ad7768-1: Add reg_write_masked function
+> >   iio: adc: ad7768-1: Add GPIO controller support
+> > 
+> >  Documentation/ABI/testing/sysfs-bus-iio       |   2 +
+> >  .../ABI/testing/sysfs-bus-iio-adc-ad7768-1    |  13 +
+> >  .../bindings/iio/adc/adi,ad7768-1.yaml        |  24 +-
+> >  drivers/iio/adc/ad7768-1.c                    | 830 +++++++++++++++---
+> >  4 files changed, 747 insertions(+), 122 deletions(-)
+> >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-ad7768-1
+> > 
+> > 
+> > base-commit: 5de07b8a24cf44cdb78adeab790704bf577c2c1d
+> 
+> What are all of these prerequisites?
+> 
+I might have done something wrong while generating the pacthes, i will check this.
+> > prerequisite-patch-id: 8b531bca46f7c7ea1c0f6d232d162fd05fda52f7
+> > prerequisite-patch-id: c8c8637cb3343097c3224a9aa315fc45dca15f45
+> > prerequisite-patch-id: e0baac9ef84e6e8a0a272fc6191fc1cb48143e44
+> > prerequisite-patch-id: 7e5cad70809fa7d37e917628147c197427c11594
+> > prerequisite-patch-id: 28dcdb0ebc3ca3c02713f83c94a4eedbe81095dc
+> > ...
