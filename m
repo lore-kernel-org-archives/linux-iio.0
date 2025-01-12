@@ -1,231 +1,117 @@
-Received: from fgw23-7.mail.saunalahti.fi (fgw23-7.mail.saunalahti.fi [62.142.5.84])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 939E31BBBFE
-	for <linux-iio@vger.kernel.org>; Sun, 12 Jan 2025 16:07:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.84
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 640D71BBBF4;
+	Sun, 12 Jan 2025 16:07:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736698033; cv=none; b=I4433gBLCcSzaQFlwkm+khHTJHJHjTN/mPauFI4JXhKKEzj7Qq4UwFhJFo/Ut6PimyYwhyS6hi7feopoBeUBx+gEeBYo2IJZhKIT0Dne0wP7KgFp9yeMDddPut44YztRaMkWby59MwP5OGBNzrpCmdJXj1UvdHtMQ1bVSKCtepc=
+	t=1736698067; cv=none; b=Tqx+cMf2wZc4TaMIyHhtteEgw0AAJhrVzqkcaCq1eKRoybq+hPfnFrvzGDwvPQifh0jYI6hZ5ZYMlDbMRxFC1q0OoeDH9jla5gOfsYtLTtijiPj+Q2XQ6PlJm2g8teejhVOEe6lPuAnBKKPiJj129nvj47ZhRlCVDtCXt7MEt2I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736698033; c=relaxed/simple;
-	bh=xFDZOEsdJij55vPLUIoFb2+OePlK0+efq4pZ9gMxG28=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LDfVnOQNK4MAD26bAsfFvsf3Sq5DyPfGfwnwEzgqJsBA47rCm90zgmibsXvdvuguhJAQWDZah24EKosmDHHB4jiei7rfWD/+HbcG/y3epgdolV+Op2jgsNufAZ4sD/nG4ZREin/nCvHrT84tmrNwdRJZEy6K56YIl/6n9Frts/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
-Received: from localhost (88-113-25-143.elisa-laajakaista.fi [88.113.25.143])
-	by fgw23.mail.saunalahti.fi (Halon) with ESMTP
-	id 1be29296-d0ff-11ef-a20f-005056bdfda7;
-	Sun, 12 Jan 2025 18:05:57 +0200 (EET)
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Sun, 12 Jan 2025 18:05:57 +0200
-To: Lothar Rubusch <l.rubusch@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	eraretuya@gmail.com
-Subject: Re: [PATCH v9 3/4] iio: accel: adxl345: add FIFO with watermark
- events
-Message-ID: <Z4PoZTV4VbmzXnVd@surfacebook.localdomain>
-References: <20241228232949.72487-1-l.rubusch@gmail.com>
- <20241228232949.72487-4-l.rubusch@gmail.com>
+	s=arc-20240116; t=1736698067; c=relaxed/simple;
+	bh=ws6d0Tir81zfEMIo3Iv9pyj2/RpUpAccKseGIzt6EiI=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
+	 References:In-Reply-To; b=GgpUlSWeVsJebatILUVvlsf7yYkqS3nJw4C8zeYc05Pw4g39SDnT0UQOf6NkexmLpQ4me1ftXxc8IElhFTNi3kaoihSsD+MxW/sV3gtoNJ7luXI9bYqh3veNyS0EHhLM58dcarJ/gzBneQzBTR8k90UTKgOF8Lkq8817fW74MNk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TnNzKI55; arc=none smtp.client-ip=209.85.221.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TnNzKI55"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-38a88ba968aso2978001f8f.3;
+        Sun, 12 Jan 2025 08:07:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1736698064; x=1737302864; darn=vger.kernel.org;
+        h=in-reply-to:references:from:to:cc:subject:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vfhk7dxskIWup4BxhAT2ThjYcUUpbv+WhEtZQMeo3V8=;
+        b=TnNzKI55NeeNlijVWm2ezt3pMEBS5Pu8EioTJ9YFiLpiLpkLX10QkM/sX1wK8RA8iO
+         I5cp5BI6qEG6D8VSdpxYCeAihBdzBOfreW8aKCbJ4Oi0q7Vq7ZyrwsC+pn7anXfUF/IR
+         RL+R0xHLVzWu/p9F83ZwcMnrDwepZTXUWSGqX9u3M8o1nZmuoLJOCVxV4Yae0DvQno47
+         FPP1HdLdySq2R9YAZthW61qcQX/6qNTqFipNzuqhWlDC9s+/1LTWs5QZfxpV8ajnDnk9
+         SR4r+t7T9S1Yvkk/fR/crNEE7dy4viAmZUtsQJUto0qAzxHeZBEoplZ2yrZKxPVVhRdQ
+         htXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736698064; x=1737302864;
+        h=in-reply-to:references:from:to:cc:subject:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=vfhk7dxskIWup4BxhAT2ThjYcUUpbv+WhEtZQMeo3V8=;
+        b=FEIXW+NmOK5hg5PjrDF6SUdRN578T7Yy742c80J+pflohIVHxzK29YyDKC0HNgiggg
+         Z1JWDvYpMbn94DMAMqZnWvnPuf8wCE2jaAMgiN6hgB9GzaM2/BXz0KCGxv9lttsYKfSg
+         0z9YwznI8bfxc4qhJ68DUuLHsjw1v0EnHXIZ8k43zCMD4mhHSOAasOaEkswHdVvwy7wM
+         YopxBoHnCgCVj7TgSPrVoyFiJid3J7dR+VU3JNKownp4IXFKE7ULGNVVxSOArEKP0IDZ
+         Sl8tj2TCVQ4o+ovg94JDMr+v10FRGTamKD8BAve9sUKMINS4dvC7Glnj/BRcVQ6m43up
+         BIRQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUDFpRTnja5nM0QqpVHv0wcB2VHYiwQIc7lOBgygW8RRlfJ7zRqg4JiKmL/oadMyH3ZspUQPig957o=@vger.kernel.org, AJvYcCW1Z1NeHyry8NjbsTEpUeG5QBJrM86rMY1JwivyAAOgF+ng8D7ph83raa1FVacFBcvidoGKb2ih7zvZxw5o@vger.kernel.org
+X-Gm-Message-State: AOJu0YzVzWYIbrhPqCIOy5pZFRCOocr5xOo8/+xLdQMoHSh1a5tAyiEd
+	YbdwtvQJxJ3BIAUch0ous1PcRUfhGuHenzb7sw6B1URSbb2DF/t/Bx4FzA==
+X-Gm-Gg: ASbGnculJtZweK5zq8PsTVJB0jqii6hjwXPXbI5hDo20yLXuQt1NZMebu8uA+8RlKbe
+	hjyeFhIbUDCh/5I1UEL474owPthnJJqLol07c6tDe9zFzgk2306H43fmg1wBionDTh3RZH7YAxn
+	0pYMrf3eoQoLfCzeGOP49JtALHxmdf7zrQgLxgEq1BgIpJsnP4IItlxca8E2ENKIg0WLHhVws2M
+	nufrUzqJmDxlJtPG13Inm2eWj9GHkQAD2VnjCSMqCyLfO4Ziy6zXvEd/R7WENDHYKnluiE9VBw3
+	HGTy4H7eyxbym+bXMlMusqZo/mxd+snw3tHmbttUj9fTWHqp+jsNAWARJ5Cg1gF2wzvwLNdK4zT
+	B
+X-Google-Smtp-Source: AGHT+IHFMk86PVZ9PUQ5EVTLuo2RL1ACBbF3rC56IuKyxKoPS8kJr1flynrjAfHtOfw2WrcBCub2EQ==
+X-Received: by 2002:a5d:6483:0:b0:385:fabf:13d5 with SMTP id ffacd0b85a97d-38a8730d55cmr17582090f8f.25.1736698063543;
+        Sun, 12 Jan 2025 08:07:43 -0800 (PST)
+Received: from localhost (2a02-8389-41cf-e200-b3ae-4f78-5cdc-b04a.cable.dynamic.v6.surfer.at. [2a02:8389:41cf:e200:b3ae:4f78:5cdc:b04a])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a8e383654sm10119572f8f.30.2025.01.12.08.07.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 12 Jan 2025 08:07:43 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241228232949.72487-4-l.rubusch@gmail.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sun, 12 Jan 2025 17:07:41 +0100
+Message-Id: <D7082ZE34NTT.DHC0Y5220527@gmail.com>
+Subject: Re: [PATCH v2 3/4] iio: light: veml3235: extend regmap to add cache
+Cc: "Matti Vaittinen" <mazziesaccount@gmail.com>, "Jonathan Cameron"
+ <jic23@kernel.org>, "Lars-Peter Clausen" <lars@metafoo.de>,
+ <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Jonathan
+ Cameron" <Jonathan.Cameron@huawei.com>
+To: "Andy Shevchenko" <andy.shevchenko@gmail.com>
+From: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
+X-Mailer: aerc 0.18.2
+References: <20241224-veml3235_scale-v2-0-2e1286846c77@gmail.com>
+ <20241224-veml3235_scale-v2-3-2e1286846c77@gmail.com>
+ <Z4PdP1ZWkd_YgzJF@surfacebook.localdomain>
+In-Reply-To: <Z4PdP1ZWkd_YgzJF@surfacebook.localdomain>
 
-Sat, Dec 28, 2024 at 11:29:48PM +0000, Lothar Rubusch kirjoitti:
-> Add a basic setup for FIFO with configurable watermark. Add a handler
-> for watermark interrupt events and extend the channel for the
-> scan_index needed for the iio channel. The sensor is configurable to use
-> a FIFO_BYPASSED mode or a FIFO_STREAM mode. For the FIFO_STREAM mode now
-> a watermark can be configured, or disabled by setting 0. Further features
-> require a working FIFO setup.
+On Sun Jan 12, 2025 at 4:18 PM CET, Andy Shevchenko wrote:
+> Tue, Dec 24, 2024 at 11:59:02AM +0100, Javier Carrasco kirjoitti:
+> > The configuration and ID registers are not volatile and are not affecte=
+d
+> > by read operations (i.e. not precious), making them suitable to be
+> > cached in order to reduce the number of accesses to the device.
+>
+> ...
+>
+> >  static const struct regmap_config veml3235_regmap_config =3D {
+> >  	.name =3D "veml3235_regmap",
+> >  	.reg_bits =3D 8,
+> >  	.val_bits =3D 16,
+> >  	.max_register =3D VEML3235_REG_ID,
+> >  	.val_format_endian =3D REGMAP_ENDIAN_LITTLE,
+> > +	.rd_table =3D &veml3235_readable_table,
+> > +	.wr_table =3D &veml3235_writable_table,
+> > +	.volatile_table =3D &veml3235_volatile_table,
+> > +	.cache_type =3D REGCACHE_RBTREE,
+>
+> Any specific reason why this is NOT a maple tree?
+>
 
-...
+Hello Andy,
 
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/kfifo_buf.h>
+I followed the most common approach in IIO (52 RBTREE vs 2 MAPLE),
+assuming that the "low-end systems" comment for the different REGCACHE_*
+applies well to the typical systems that will make use of this driver,
+and many others under IIO. I considered that *possible* performance
+advantage for low-end systems above other considerations, like the
+general rule about using maple tree.
 
-Why not keep it ordered?
-
-...
-
-> +static int adxl345_set_watermark(struct iio_dev *indio_dev, unsigned int value)
-> +{
-> +	struct adxl345_state *st = iio_priv(indio_dev);
-> +	unsigned int fifo_mask = 0x1F;
-
-GENMASK() ?
-(BIT(5) - 1) ? 
-
-> +	int ret;
-> +
-> +	value = min(value, ADXL345_FIFO_SIZE - 1);
-> +
-> +	ret = regmap_update_bits(st->regmap, ADXL345_REG_FIFO_CTL, fifo_mask, value);
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->watermark = value;
-> +	st->int_map |= ADXL345_INT_WATERMARK;
-> +
-> +	return 0;
-> +}
-
-...
-
-> +	int i, ret = 0;
-
-Why is i signed?
-
-> +
-> +	/* count is the 3x the fifo_buf element size, hence 6B */
-> +	count = sizeof(st->fifo_buf[0]) * ADXL345_DIRS;
-> +	for (i = 0; i < samples; i++) {
-> +		/* read 3x 2 byte elements from base address into next fifo_buf position */
-> +		ret = regmap_bulk_read(st->regmap, ADXL345_REG_XYZ_BASE,
-> +				       st->fifo_buf + (i * count / 2), count);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		/*
-> +		 * To ensure that the FIFO has completely popped, there must be at least 5
-> +		 * us between the end of reading the data registers, signified by the
-> +		 * transition to register 0x38 from 0x37 or the CS pin going high, and the
-> +		 * start of new reads of the FIFO or reading the FIFO_STATUS register. For
-> +		 * SPI operation at 1.5 MHz or lower, the register addressing portion of the
-> +		 * transmission is sufficient delay to ensure the FIFO has completely
-> +		 * popped. It is necessary for SPI operation greater than 1.5 MHz to
-> +		 * de-assert the CS pin to ensure a total of 5 us, which is at most 3.4 us
-> +		 * at 5 MHz operation.
-> +		 */
-> +		if (st->fifo_delay && samples > 1)
-> +			udelay(3);
-> +	}
-
-MIssed blank line.
-
-> +	return ret;
-
-...
-
-> +static int adxl345_fifo_push(struct iio_dev *indio_dev,
-> +			     int samples)
-
-This can be effectively a single line.
-
-> +{
-> +	struct adxl345_state *st = iio_priv(indio_dev);
-> +	int i, ret;
-
-> +	if (samples <= 0)
-> +		return -EINVAL;
-
-This is strange. Why the heck somebody could translate the input parameter to
-an error? Can't the function simply take the positive input only? Otherwise,
-what is the meaning of the samples < 0 ?
-
-> +	ret = adxl345_fifo_transfer(st, samples);
-> +	if (ret)
-> +		return ret;
-
-> +	for (i = 0; i < ADXL345_DIRS * samples; i += ADXL345_DIRS)
-
-Why doing mulpiplication here and step != 1 there instead of just one
-multiplication...
-
-> +		iio_push_to_buffers(indio_dev, &st->fifo_buf[i]);
-
-...in the above line?
-
-> +	return 0;
-> +}
-
-...
-
-> +/**
-> + * adxl345_irq_handler() - Handle irqs of the ADXL345.
-> + * @irq: The irq being handled.
-> + * @p: The struct iio_device pointer for the device.
-> + *
-> + * Return: The interrupt was handled.
-> + */
-> +static irqreturn_t adxl345_irq_handler(int irq, void *p)
-> +{
-> +	struct iio_dev *indio_dev = p;
-> +	struct adxl345_state *st = iio_priv(indio_dev);
-> +	int int_stat;
-> +	int samples;
-> +
-> +	int_stat = adxl345_get_status(st);
-> +	if (int_stat <= 0)
-> +		return IRQ_NONE;
-> +
-> +	if (int_stat & ADXL345_INT_OVERRUN)
-> +		goto err;
-> +
-> +	if (int_stat & ADXL345_INT_WATERMARK) {
-> +		samples = adxl345_get_samples(st);
-> +		if (samples < 0)
-> +			goto err;
-
-You already seem to guarantee no negative samples, and TBH this has to be
-
-		ret = ...
-		...
-
-		samples = ret;
-
-which will make more sense and better types.
-
-
-> +		if (adxl345_fifo_push(indio_dev, samples) < 0)
-> +			goto err;
-> +	}
-> +	return IRQ_HANDLED;
-> +
-> +err:
-> +	adxl345_fifo_reset(st);
-> +
-> +	return IRQ_HANDLED;
-> +}
-
-...
-
-> +	if (st->intio != ADXL345_INT_NONE) {
-
-What's wrong with positive conditional?
-Negative is slightly harder to read and parse at a glance.
-
-> +		/* FIFO_STREAM mode is going to be activated later */
-> +		ret = devm_iio_kfifo_buffer_setup(dev, indio_dev, &adxl345_buffer_ops);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = devm_request_threaded_irq(dev, st->irq, NULL,
-> +						&adxl345_irq_handler,
-> +						IRQF_SHARED | IRQF_ONESHOT,
-> +						indio_dev->name, indio_dev);
-> +		if (ret)
-> +			return ret;
-> +	} else {
-> +		/* FIFO_BYPASS mode */
-> +		fifo_ctl = ADXL345_FIFO_CTL_MODE(ADXL345_FIFO_BYPASS);
-> +		ret = regmap_write(st->regmap, ADXL345_REG_FIFO_CTL, fifo_ctl);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks and best regards,
+Javier Carrasco
