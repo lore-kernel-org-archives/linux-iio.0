@@ -1,147 +1,135 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEB8A139B;
-	Sun, 12 Jan 2025 12:05:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF16A1AB530;
+	Sun, 12 Jan 2025 12:06:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736683541; cv=none; b=F0VL5bqhxZwtY80veT/sFDoQ7XD8gYk/6gJ8JSdoRvHDoacI1qVa8/cgb26P0PLN4BJsmyVCGJdS0WoH/6oMcC8Qv6NorcB4lqu0NaFL6kRAGuGQqw02Ixo5XCrIYY2bVgo6z9d5F5MirYARe7ihvrbFeUHL1KvN0ikO83Cu8qo=
+	t=1736683565; cv=none; b=SBvnLHLdwI9CzPB09T9Y/wjcDYlr8YSzBxtG4UUfmOe0nE51e7O4zRGTS9brJOSUuK0eDpj38fp7zkmzqPa9J3ux1q3vp5SgbykG6aE/BizMoDi2YRizkWzWJ2RKZDq4bbgUIRMykSFY1wC8Ycm3KP/htJ+HPOVQ0Rz0dvUbmgs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736683541; c=relaxed/simple;
-	bh=ktLANMa+jnGipKDn/U875LSbC2dHl2mcA7foa9+gLW8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pUlxwIjddzZDTNi0VAT8qJwnBkghBJe6EnuIYQ+I5ac8qtpz/WoZLAfJU4Cq+Q49rksdii5apHSWUPeJSCRY3hUBDsbm4LTDyCM3WBNBUCyKuQwXqv/Sw13LVaQ4PKyeGmhf93I0ENzL08LGrCPDGrNOrrLTW8SIyzsB5kqQf8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qn4f9Ylg; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1736683565; c=relaxed/simple;
+	bh=kvKC97JeAx/m1MCydo6d/Py+eTfMKM+AcUKKqHF3zc0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=P/qTT+HpMP9D+k+rrU0I7I4Wgs1tvI7q9DXFrtKMmFO1lUmCC522ErFzWD5DaKXdTk3zrpXdOIo15RGi1haKjTfDfbqnDpgVciywDr+feBpD1KRYYlt7w6c8dsmoZVZFN+N1E1w5QA3dUK0x0NoKGi6m6hsOlyI0/xGnl7psZsI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hPZuiBfh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qn4f9Ylg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 779EDC4CEDF;
-	Sun, 12 Jan 2025 12:05:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hPZuiBfh"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 96A2BC4CEE2;
+	Sun, 12 Jan 2025 12:06:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736683540;
-	bh=ktLANMa+jnGipKDn/U875LSbC2dHl2mcA7foa9+gLW8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=qn4f9Ylgmrh+a0G1KAVNZpIXUVhg8KW5EA2dDZ1LBL/aFF+jy6toZI53zNELdJfZm
-	 44OTUkyqz3Y5YfXIqbPzxw6jzUrUdt2EyvhLcZ7yKxu99VN70UYwLZ+g2DAwWGIDNA
-	 rER6lTixlBmlJaSntEnuRh6J0jIREBEGvNhEe5FW4s9o/S9wkUWTXfPC6KMw8h+VdL
-	 y1WSJyx2aaZ0uowSTGi4YB5le/ePbQe0qYcGk441hcT6DKw8FAakr6gOSyAOO0ajGJ
-	 T/W5KI9fz/JLsMj2s2GRuMDaD9MZ2/OEjoC+DxsQY/SHcxCMJBXNpwR2jdxNdx7kZE
-	 ZR15P9BtL3jSw==
-Date: Sun, 12 Jan 2025 12:05:30 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Cc: Jonathan Santos <Jonathan.Santos@analog.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, lars@metafoo.de,
- Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org
-Subject: Re: [PATCH v1 01/15] dt-bindings: iio: adc: ad7768-1: add
- synchronization over SPI property
-Message-ID: <20250112120530.1950a265@jic23-huawei>
-In-Reply-To: <Z4GWSgruwnkDfYSg@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1736201898.git.Jonathan.Santos@analog.com>
-	<bde43579b41199f0c17f07dfacefcb137028e66e.1736201898.git.Jonathan.Santos@analog.com>
-	<Z4GWSgruwnkDfYSg@debian-BULLSEYE-live-builder-AMD64>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-pc-linux-gnu)
+	s=k20201202; t=1736683564;
+	bh=kvKC97JeAx/m1MCydo6d/Py+eTfMKM+AcUKKqHF3zc0=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=hPZuiBfh9VUEar9jC2Ek5V3eUMAc+0gc0vCnG63BEJKXWvGGCtykeVcZk9a+0Tp5S
+	 DjI3//0eMJ7D/d9lwNhVaHXHUBJEqWjr8oRhDRZIu10qYwBs+64GjK4DPrYXXoohve
+	 yp9F9898Qvy4Q9EP+cDMG9kJUAQ9ZX9Tln6Do15lRy+Hrxppdy8GffUql61VZMZe3r
+	 titOu8lxPWA7jYOuVFdNOXt/xWvkPpDNNs/bE6JdMXOcTJoVy/kwDpgmKFuSbh8X7j
+	 BtoP8izSOYQ2LVNhfWP9nNfbOieFHIHptAWW94iLsxMaaBrrVGLCk3cjfnvDG89Rxx
+	 BKtbXGIArsyRQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C0D8E77188;
+	Sun, 12 Jan 2025 12:06:04 +0000 (UTC)
+From: Vasiliy Doylov via B4 Relay <devnull+nekodevelopper.gmail.com@kernel.org>
+Date: Sun, 12 Jan 2025 15:06:03 +0300
+Subject: [PATCH v2 2/5] iio: accel: mc3230: add mount matrix support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20250112-mainlining-mc3510c-v2-2-322804a545cf@gmail.com>
+References: <20250112-mainlining-mc3510c-v2-0-322804a545cf@gmail.com>
+In-Reply-To: <20250112-mainlining-mc3510c-v2-0-322804a545cf@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ devicetree@vger.kernel.org, Vasiliy Doylov <nekodevelopper@gmail.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1922;
+ i=nekodevelopper@gmail.com; h=from:subject:message-id;
+ bh=tt9zbmLm9qM5VxkCOcKg8jECB+aJJH6bwFRVLsKm6MY=;
+ b=owGbwMvMwCW2fZ/SFZeSpU2Mp9WSGNKbN2j9cn+97c+ShWV+Pyp2hQexZmxhjbsRfejkbT6xO
+ ddza/SkOkpZGMS4GGTFFFlsNnrMFssPl5w07akCzBxWJpAhDFycAjCRs06MDEeu5aazrdMS/Vqg
+ rjx7XSOTqoOAJWOtX9eX4rYFoqsr3zP8r7Sc9yP+xGyNPW/PnVetifZ90hL+Jyo1rnR306wbHNf
+ aWQE=
+X-Developer-Key: i=nekodevelopper@gmail.com; a=openpgp;
+ fpr=3CB1489B166F57199296E520B7BE22D44474A582
+X-Endpoint-Received: by B4 Relay for nekodevelopper@gmail.com/default with
+ auth_id=314
+X-Original-From: Vasiliy Doylov <nekodevelopper@gmail.com>
+Reply-To: nekodevelopper@gmail.com
 
-On Fri, 10 Jan 2025 18:51:06 -0300
-Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
+From: Vasiliy Doylov <nekodevelopper@gmail.com>
 
-> On 01/07, Jonathan Santos wrote:
-> > Add adi,sync-in-spi property to enable synchronization over SPI.
-> > This should be used in the case when the GPIO cannot provide a
-> > pulse synchronous with the base MCLK signal.
-> > 
-> > User can choose between SPI, GPIO synchronization or neither of them,
-> > but only if a external pulse can be provided, for example, by another
-> > device in a multidevice setup.
-> > 
-> > Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
-> > ---
-> >  .../bindings/iio/adc/adi,ad7768-1.yaml        | 24 ++++++++++++++++++-
-> >  1 file changed, 23 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
-> > index 3ce59d4d065f..55cec27bfe60 100644
-> > --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
-> > @@ -47,6 +47,15 @@ properties:
-> >        in any way, for example if the filter decimation rate changes.
-> >        As the line is active low, it should be marked GPIO_ACTIVE_LOW.
-> >  
-> > +  adi,sync-in-spi:
-> > +    description:
-> > +      Enables synchronization of multiple devices over SPI. This property is
-> > +      used when a signal synchronous to the base MCLK signal cannot be provided
-> > +      via GPIO. It requires the SYNC_OUT pin to be connected to the SYNC_IN pin
-> > +      on the ADC. In the case of multiple devices, the SYNC_OUT pin of one device
-> > +      should be routed to the SYNC_IN pins of the other devices.  
-> So, if I'm getting it right,
+This patch allows to read a mount-matrix device tree
+property and report to user-space or in-kernel iio clients.
 
-Datasheet on this is indeed complex!
+Signed-off-by: Vasiliy Doylov <nekodevelopper@gmail.com>
+---
+ drivers/iio/accel/mc3230.c | 28 ++++++++++++++++++++++++----
+ 1 file changed, 24 insertions(+), 4 deletions(-)
 
->/SYNC_IN may be driven by a GPIO (ADAQ7768-1 datasheet Figure 131),
+diff --git a/drivers/iio/accel/mc3230.c b/drivers/iio/accel/mc3230.c
+index caa40a14a6316acae3a972f0ebe0b325db96eb44..a153a3f715ed7f2f1417618715767f265b49191d 100644
+--- a/drivers/iio/accel/mc3230.c
++++ b/drivers/iio/accel/mc3230.c
+@@ -44,18 +44,34 @@ static const int mc3230_nscale = 115411765;
+ 	.channel2 = IIO_MOD_##axis,	\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+ 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++	.ext_info = mc3230_ext_info, \
+ }
+ 
++struct mc3230_data {
++	struct i2c_client *client;
++	struct iio_mount_matrix orientation;
++};
++
++static const struct iio_mount_matrix *
++mc3230_get_mount_matrix(const struct iio_dev *indio_dev,
++			const struct iio_chan_spec *chan)
++{
++	struct mc3230_data *data = iio_priv(indio_dev);
++
++	return &data->orientation;
++}
++
++static const struct iio_chan_spec_ext_info mc3230_ext_info[] = {
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, mc3230_get_mount_matrix),
++	{}
++};
++
+ static const struct iio_chan_spec mc3230_channels[] = {
+ 	MC3230_CHANNEL(MC3230_REG_XOUT, X),
+ 	MC3230_CHANNEL(MC3230_REG_YOUT, Y),
+ 	MC3230_CHANNEL(MC3230_REG_ZOUT, Z),
+ };
+ 
+-struct mc3230_data {
+-	struct i2c_client *client;
+-};
+-
+ static int mc3230_set_opcon(struct mc3230_data *data, int opcon)
+ {
+ 	int ret;
+@@ -141,6 +157,10 @@ static int mc3230_probe(struct i2c_client *client)
+ 	if (ret < 0)
+ 		return ret;
+ 
++	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
++	if (ret)
++		return ret;
++
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "device_register failed\n");
 
-For that we expose a gpio binding already. If that's present we know what is going on.
+-- 
+2.47.1
 
->/SYNC_IN may be driven by own device /SYNC_OUT (ADAQ7768-1 datasheet Figure 133),
-
-This is the default - no information provided so it isn't wired externally.
-We don't normally bother to describe required chip to chip connections.
-I couldn't entirely figure out if this is 'required' if we aren't driving explicitly
-from GPIO or another chip but i think it is(?).
-
->/SYNC_IN may be driven by other AD7768-1 > /SYNC_OUT pin (also Figure 133).
-This is only case we are about for sync in I think.
-
-As long as there isn't a valid 'not connected' It think we are fine with a boolean.
-
-> That is too much to describe with a boolean.
-> 
-> If David's suggestion of using a trigger-source doesn't fit, this property
-> should at least become an enum or string.
-> 
-> > +    type: boolean
-> > +
-> >    reset-gpios:
-> >      maxItems: 1
-> >  
-> > @@ -65,7 +74,6 @@ required:
-> >    - vref-supply
-> >    - spi-cpol
-> >    - spi-cpha
-> > -  - adi,sync-in-gpios
-> >  
-> >  patternProperties:
-> >    "^channel@([0-9]|1[0-5])$":
-> > @@ -89,6 +97,20 @@ patternProperties:
-> >  allOf:
-> >    - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> >  
-> > +  # adi,sync-in-gpios and adi,sync-in-spi are mutually exclusive (neither is also valid)
-> > +  - if:
-> > +      required:
-> > +        - adi,sync-in-gpios
-> > +    then:
-> > +      properties:
-> > +        adi,sync-in-spi: false
-> > +  - if:
-> > +      required:
-> > +        - adi,sync-in-spi
-> > +    then:
-> > +      properties:
-> > +        adi,sync-in-gpios: false
-> > +
-> >  unevaluatedProperties: false
-> >  
-> >  examples:
-> > -- 
-> > 2.34.1
-> >   
 
