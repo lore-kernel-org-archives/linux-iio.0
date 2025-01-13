@@ -1,157 +1,136 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CECB22AE5E;
-	Mon, 13 Jan 2025 11:03:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2B9E14A09C;
+	Mon, 13 Jan 2025 11:17:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736766183; cv=none; b=piu8A6ynIjq+6yV0IpS+Du9o+4DBGruN7St2ze4gv0kBzHR6Lq8ba+E9zJsHDPHXaDDPoMVNvuqnSQcVf7zrRRiE8OyEg1kYSHnyEnkm2COnp+NXnxteaYROaNs6u6nzO6gJDHVyCpYtj0CAKPDWEgwMnpYx+U8otkX4SwVAtrI=
+	t=1736767043; cv=none; b=AAjzNEBdHhZXA8iC7SPHSOSiW51KBLBWnIbgHr2vDp01bTYL/YFq4nNMZlZjenbEOo88Cz3IQetAwAqoGV6xoBgBGsJAnWi+RQKJwqXTonS+O7QQLiLNqibvA9gVpMjs/nVKT8LG2xOQKtshojhN9mBJFEjSO9c97X1yUqJ1ar0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736766183; c=relaxed/simple;
-	bh=Wr2LRE/pmrYAVG0jbKHh4afociWhY2Hx+KPsaAnAA7Q=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
-	 References:In-Reply-To; b=BVeTOjIlLs7cQpF8NfjGNYBglYI4g3XqgRGCsBoG81DwICR0DYUp/T+adnybUxZuDXxId/2XsIRx1wkmyKmlKvWlt6Mo6uIpDXX9siPW2ZiDTha5Ttjjx9RrNa0uYDNWgndnOENGAZKF6DtQjhfQ62oNebhr9PVjNiRNKN1upYs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ju1UQiXv; arc=none smtp.client-ip=209.85.128.41
+	s=arc-20240116; t=1736767043; c=relaxed/simple;
+	bh=jShLxB6yPTKBOffN+oc3LtPY0zNdtJZKcpS+cUCWfO0=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=uXanfItJqh6Fb98e5xtn6SasHraUceYqlnIGliUE8YhbYELz3drz27WCvUwvFFxyj0DjBUajEYcNuGB6y6p1xaF6GqSzvtlsI++kD8Cj1r4mXcCQISf3PviFCtReOJbj9/bPnkdlg7ycOssgZJUhoGeztPce9ITUUDvuxbH/Tno=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GKBCFwat; arc=none smtp.client-ip=209.85.221.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ju1UQiXv"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4361fe642ddso43596875e9.2;
-        Mon, 13 Jan 2025 03:03:00 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GKBCFwat"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-3862d6d5765so2246063f8f.3;
+        Mon, 13 Jan 2025 03:17:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1736766179; x=1737370979; darn=vger.kernel.org;
-        h=in-reply-to:references:from:to:cc:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OO0Vmppvf4EcSCM4ye8lfOWM/qiRf6EIEwUmakPgPS0=;
-        b=Ju1UQiXvy9s99kmmhT2kCpV75pGZlcqNCTFubk8H2AXE6kW6m+m0T7goCkYruihq2b
-         Y9ldSeepOBuuli1+TvqEtfu+lIct9O3201s1C5lcgb7WXUW7s/NMRKbIdhIueehqx9Z7
-         1AniIPv7h/YYoFuW4YhKFvJwsOlJuJM1mmlBk0m3Z0dcvh0BbYRVSt6gAcsb5MhiJWnY
-         fiq5tFOOn7C6w2l20AKrqn5dWfjsEvjwb/72yDL0YGnp91ucUe6sgVnyEAEgRcyckmLM
-         iHAsGuEkrX7pgsonfdwxxsSs+cbrj/uoWCm5FUHv2OSoVmi4sE38PGfsjHDudIvbhFHZ
-         cHlw==
+        d=gmail.com; s=20230601; t=1736767040; x=1737371840; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=jShLxB6yPTKBOffN+oc3LtPY0zNdtJZKcpS+cUCWfO0=;
+        b=GKBCFwaty6iAsC9dyDocQUCXKl24A1NdXpqXq+WvclF4n/Ys+9rzWor3n960sbL2jr
+         lJXde7pAIwxfDw8qYTKL07wQM3niaqtnkZrMIiziMgJIqUUqlKEFjR3kiGJeLwrYIZRy
+         18hZZUsyUVJvestqLrnCFHvHZXEHkT9kpTv4BqmMCdK7417BmRlK+64gnveuNSjGngOA
+         hA9nPc/BXpkQeyr94ir19bk1ldPOuIgnSSGtPRPYSWn4uGHp45vV9psJmaTD4e5U6/9y
+         X5prsXssbgkCIaZHXX8BXYlHXtOqeTXZKso6+c4H2395HPFeHqxnMuabNv/qwHDY84jW
+         xSig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736766179; x=1737370979;
-        h=in-reply-to:references:from:to:cc:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=OO0Vmppvf4EcSCM4ye8lfOWM/qiRf6EIEwUmakPgPS0=;
-        b=k+dxp2nnV0Pq0mWWlqIAwE1i3k8WQQA9g5RDn41a2yT1sLgl70kJSxaddKortlc/ti
-         VGmc2EDDD+C/ShZmXRyqBmSSFj8VFb0Vke+ag18iXx29MTGf3xEJ3+/biMmCAIpVrBUP
-         SN8uqFCX8T7c3HAJX3UmJEIk5nXYbX15a8y56Je2TTZje6XwmmV4XJOZBUVDhaBNyv5/
-         xV+XjoGyON5dGZiZUHBCknMZ5zb606v2BOk+Lz9havAqYh8rQbEazaq8v+9jf1Hm1gzU
-         a19xTLnmo4zIddM55C41yv0d9FrFJ1NnqGk5H0UmSW+WNxKK6QDeI81o/CZRYm6Aw5EZ
-         HtGA==
-X-Forwarded-Encrypted: i=1; AJvYcCV1R2X/k22E9l0yRXi/qDfu1qWKZNWucbwZQU6CpklYgLiq5WXK3iR36aARjfoCjuL3Z3uW8OpavRblzoU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy8ecqs8oFiqpM963tNwxN8wuhuuqMKe07ajb1/R5O2q94mS6hD
-	Rp10DSmOSptCQaXRukSSQuLxnlrTolQKNxbGYLcfHBqHJ9ljaCYT
-X-Gm-Gg: ASbGncvXFTVwtke9JR8D5g2j2dLr06a2/etC3p3xfS1YP1ipABRltJJcsEDIyHI5d6D
-	5vbpyVWBY4j81jAKi01ENKBbz9kxf8g/jOj6khyAJOJVunnc3tOurrA3Oj8ZZ1lgZaM/lD6UNpb
-	EceYjzDoIr1dxDpjFmrQADtzIc/6LDV0Y2fwQ3VtJNU4UxrB/a0YH+QsaZkZbETdw8bYqhgsXpW
-	8euL6b/8WtviiSGMa9vO1LPXNQqQpc/PyHYhHEehDuzZWIjKqnDsvwHnKhGT5RnvnIH0mx6TywA
-	UVyeIxHlKfEiNpgUAxkDRtEtzcF5aA==
-X-Google-Smtp-Source: AGHT+IFcLxs44/sDHAbJZetje//tTaFSPM9aAstVOCB93p11w28SiGoFL4wxLYruwp5df9BaVvxkgQ==
-X-Received: by 2002:a05:600c:3c94:b0:434:fd15:3ac9 with SMTP id 5b1f17b1804b1-436e26e2563mr159330755e9.22.1736766179297;
-        Mon, 13 Jan 2025 03:02:59 -0800 (PST)
-Received: from localhost (91-118-163-37.static.upcbusiness.at. [91.118.163.37])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-436e2e92794sm172475795e9.37.2025.01.13.03.02.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jan 2025 03:02:58 -0800 (PST)
+        d=1e100.net; s=20230601; t=1736767040; x=1737371840;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jShLxB6yPTKBOffN+oc3LtPY0zNdtJZKcpS+cUCWfO0=;
+        b=djTaiwMXFYYZamWlXULKOtTQCCTDlvtPB+4bskF3x9dqnlqaNfL2BPodrWoIVY2JWY
+         6UT/sUe0kOXmPZduEXh1qbbJIt5BscKPyib+ySKpRJUQpWfKtRvJWCEBEvUbUgtwu3AB
+         NWstubLHOD3g+oAZccxCjaaOJwvdtYtwitgfg5I3SQyv8il3lgmbCJy5EcmchxYIzCwT
+         eaLStmfT5vJOrimhbWdME+6PkfM+uZAmXqUx1n083IOE0jsXq6TUBTZ5fA7flNX8L6Yh
+         833+3EFOabd5nCfDJ3eefJM8JxSlykG4yFQbtrNL4MyCLj9K7C4yh+mMwBDIJIHI1kCb
+         okOA==
+X-Forwarded-Encrypted: i=1; AJvYcCUNPl03U86+fXnKV3hLKWgw6kMsvcAiMD54JLK9pZ7Ssi5I+CTTz0D4OH/NsMJDvfmsrQopg5QB96toHbxS@vger.kernel.org, AJvYcCVI5DUQpJYvhRKuovuT4laqW/Ioc7n0UIVQQiaK90ONioP991momQcVVKc57fKgXyclVHC5ltl6jm18@vger.kernel.org, AJvYcCWCGcxg2SGfPHZlOhhiNkt5MXJxvKfy/TCCpo04pNK0U2GcMHmUE7QzK+z+Vqo2GRjOBoZzqdMpwZtw@vger.kernel.org, AJvYcCXw/n0K3FEtX95DsKBgaRc9b/PGuaAYdhyKJ6bClS9jjvFwih0do5H0ZAdvtX4Iq4BcDmv8EBHcpUOs@vger.kernel.org
+X-Gm-Message-State: AOJu0YxKVIECZXbqxVX+LfjPCi/mLXIGPdVPIevxuoYdC8LC5NqE2XjQ
+	FKVgdA7vxXThW08khdZ7aybIsr64jRbRFbNuj8rKqrPq/SjfA+yP
+X-Gm-Gg: ASbGnct89vIX+f3Sl3+apZ7bj6ZEN/VwIS/i1URw4aJvp/37YqFFdBCcMVEzdjuSdNg
+	9sbB+KaivB5CMEcIIQtQE5HKVaCYEKMIVVCHYu2jIG77kcEDQXaiChqzc9TLaFubvPkXJJWtogm
+	tYbUR+xZ4qHspiR1CmT4CMXK/Tm2izRMcxFqr+pgrBhxXiPMcyi4KzQvPmuFO17r13ZE+cImM66
+	JZFj5uIrbtiZhvQqNJIML9ckgH382w5ev6jhilpNR0EVcyd30xcPxVcmLA3jjtgDUzaCIEIOdGg
+	EcwOpSS34e0WrDYUkD96tv16pLVZ
+X-Google-Smtp-Source: AGHT+IEyulpb6krnjq+a6pFe00X75S3dCfDh4t+ulX+aMtZchEnDU1cZXPTsuZ7vYdkSHBJALIwjEw==
+X-Received: by 2002:a5d:5f52:0:b0:385:fcfb:8d4f with SMTP id ffacd0b85a97d-38a872deb1amr20375594f8f.21.1736767039711;
+        Mon, 13 Jan 2025 03:17:19 -0800 (PST)
+Received: from ?IPv6:2001:818:ea8e:7f00:2575:914:eedd:620e? ([2001:818:ea8e:7f00:2575:914:eedd:620e])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-436dd14dfcasm165138065e9.1.2025.01.13.03.17.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jan 2025 03:17:19 -0800 (PST)
+Message-ID: <98dad0cd3ba55411797c1871c5ceb5f656b8225b.camel@gmail.com>
+Subject: Re: [PATCH v4 1/3] dt-bindings: iio: adf4371: add refin mode
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Krzysztof Kozlowski <krzk@kernel.org>, Antoniu Miclaus
+	 <antoniu.miclaus@analog.com>
+Cc: jic23@kernel.org, robh@kernel.org, conor+dt@kernel.org, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Date: Mon, 13 Jan 2025 11:17:18 +0000
+In-Reply-To: <499ef047-d3fc-4d2a-ba7d-342ff08a351d@kernel.org>
+References: <20250109133707.3845-1-antoniu.miclaus@analog.com>
+	 <20250109133707.3845-2-antoniu.miclaus@analog.com>
+	 <mr7j4znl63p3ldhrxpc47mio63deszpqswbsqxxiby5nftpgbr@b4h47yp3xev5>
+	 <2f483161cbe1f797a9095ca3c9f4f472d3785acb.camel@gmail.com>
+	 <499ef047-d3fc-4d2a-ba7d-342ff08a351d@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.2 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Mon, 13 Jan 2025 12:02:57 +0100
-Message-Id: <D70W87IM1EWE.V84CD9QKDITR@gmail.com>
-Subject: Re: [PATCH 0/2] iio: light: fix scale in veml6030
-Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Jonathan
- Cameron" <Jonathan.Cameron@huawei.com>
-To: "Matti Vaittinen" <mazziesaccount@gmail.com>, "Jonathan Cameron"
- <jic23@kernel.org>, "Lars-Peter Clausen" <lars@metafoo.de>, "Rishi Gupta"
- <gupt21@gmail.com>
-From: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
-X-Mailer: aerc 0.18.2
-References: <20250107-veml6030-scale-v1-0-1281e3ad012c@gmail.com>
- <25d5ff51-8a1c-4e34-9f0e-e11778313d8c@gmail.com>
-In-Reply-To: <25d5ff51-8a1c-4e34-9f0e-e11778313d8c@gmail.com>
+MIME-Version: 1.0
 
-On Mon Jan 13, 2025 at 11:25 AM CET, Matti Vaittinen wrote:
-> On 07/01/2025 22:50, Javier Carrasco wrote:
-> > This series follows a similar approach as recently used for the veml323=
-5
-> > by using iio-gts to manage the scale as stated in the ABI. In its
-> > current form, the driver exposes the hardware gain instead of the
-> > multiplier for the raw value to obtain a value in lux.
-> >
-> > Although this driver and the veml3235 have many similarities, there are
-> > two main differences in this series compared to the one used to fix the
-> > other driver:
-> >
-> > - The veml6030 has fractional gains, which are not supported by the
-> >    iio-gts helpers. My first attempt was adding support for them, but
-> >    that made the whole iio-gts implementation more complex, cumbersome,
-> >    and the risk of affecting existing clients was not negligible.
->
-> I do agree. If one added support for fractional gains, it should be very
-> very clear implementation so that even my limited capacity could handle
-> it :)
->
+On Mon, 2025-01-13 at 11:21 +0100, Krzysztof Kozlowski wrote:
+> On 13/01/2025 10:55, Nuno S=C3=A1 wrote:
+> > On Mon, 2025-01-13 at 09:37 +0100, Krzysztof Kozlowski wrote:
+> > > On Thu, Jan 09, 2025 at 03:37:05PM +0200, Antoniu Miclaus wrote:
+> > > > =C2=A0=C2=A0 clock-names:
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0 description:
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Must be "clkin"
+> > > > -=C2=A0=C2=A0=C2=A0 maxItems: 1
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Must be "clkin" if the input refere=
+nce is single ended or "clkin-
+> > > > diff"
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if the input reference is different=
+ial. By default single ended
+> > > > input
+> > > > is
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 applied.
+> > > > +=C2=A0=C2=A0=C2=A0 enum: [clkin, clkin-diff]
+> > > > +=C2=A0=C2=A0=C2=A0 default: clkin
+> > >=20
+> > > Which pins are these? I went through adf4371 datasheet and no referen=
+ce
+> > > on clock inputs like clkin or clkin-diff.
+> > >=20
+> > >=20
+> >=20
+> > Hmm, I guess we should call this 'refp' and 'refp-n' then (the latter s=
+eems
+> > a
+> > bit more odd)? Or just 'ref' and 'ref-diff'?
+>=20
+> That mistake was done at the beginning - the "clkin" is just useless
+> name. It cannot be "clkout" and it cannot be anything else than clk, so
+> it is 100% redundant.
+>=20
 
-I am working on another driver (veml6031x00, I sent a v1 with the same
-flow as this one, as it inherited the gain configuration) that will
-probably need some more tweaking to work with integer gains: it starts
-by x0.125 like this one, but then it provides weird gains like 0.66 that
-prevents a simple x8 adjustment... I will try to scale up and down instead
-of adding fractional gains, though.
+Oh sure... Makes sense and I forgot that the property is not new...
 
-> >    Instead, a x8 factor has been used for the hardware gain to present
-> >    the minimum value (x0.125) as x1, keeping linearity. The scales
-> >    iio-gts generates are therefore right without any extra conversion,
-> >    and they match the values provided in the different datasheets.
->
-> I didn't look through the patches yet - I'm getting to there though :)
-> Anyways, I assume you don't expose this HARDWAREGAIN to users?
->
+> But looking for pins brought second point - here you claim these are
+> mutually exclusive while datasheet suggests that both inputs can be
+> connected. Unless they come from the same source always?
+>=20
 
-That's right, HARDWAREGAIN is not exposed. If you believe that it should
-be exposed, I am open to discuss.
+If you have a single ended input then only one pin (the positive one) will =
+be
+used. If the input signal is differential, then both pins will be used. So =
+they
+are mutually exclusive... You either have single ended or a differential in=
+put.=20
+And depending on the input type, the limit of the input frequency varies.
 
-> > - This driver included a processed value for the ambient light, maybe
-> >    because the scale did not follow the ABI and the conversion was not
-> >    direct. To avoid breaking userspace, the functionality has been kept=
-,
-> >    but of course using the fixed scales. That requires using intermedia=
-te
-> >    u64 values u64 divisions via div_u64() and do_div() to avoid overflo=
-ws.
-> >
-> > To ease the usage of the iio-gts selectors, a previous patch to support
-> > regfields and caching has been included.
->
-> I don't see why iio-gts would need regfields? (I have never been able to
-> fully decide whether the regfields are a nice thing or not. I feel that
-> in many cases regfields just add an extra layer of obfuscation while
-> providing little help - but this is just my personal opinion and I'm not
-> against using them. I just don't think the iio-gts needs them to be
-> used. AFAIR, selectors do not need to start from zero.).
->
-> Yours,
-> 	-- Matti
+- Nuno S=C3=A1
 
-For me, using regfields makes everything more straightforward: you
-define the shifting in the configuration phase, and then you can simply
-assign the selectors to the field, with the same values as the field in
-question would expect for a given configuration (0 is 0, 1 is 1, and so
-on). I see that easier than thinking about register-level values, that
-are easier to get wrong.
-
-Once you have defined your regfields, you don't have to think ever again
-about their position. Actually, I think that iio-gts works perfect with
-that approach, even if its father is not a fan of regfields ;)
-
-Thank you for your feedback and best regards,
-Javier Carrasco
