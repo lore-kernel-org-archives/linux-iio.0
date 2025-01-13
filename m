@@ -1,99 +1,96 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4598B17758;
-	Mon, 13 Jan 2025 13:25:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27C3F3E49D;
+	Mon, 13 Jan 2025 14:02:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736774723; cv=none; b=ag3A/2xjCGGw8urHkuAybE7mXaZ4Vr1Dtm6RLDKyoWN/y22JWCOsr+NC23kWB2s+d6ZfOGZtOOhIG/ddGRc2kwkoX33wfoWz/SK/WNNVB+Tl9ETQz5n87fZUu6V/dXr4XxTjLNH8D19OyCcPnkGH2ZlfkUPrH/IelaXJYnRKtiM=
+	t=1736776923; cv=none; b=SicYAl0kLgmMzFUAmYlxD6uYaYwEJUU1ior0MuIglEwTRYBE4oTSfSavYugiChK0NCJwBhSFfQZOgOwtYlqWi16+poABg2A4px8ZC2DySjy3ZPyEBQ18tvbexqx46nR1klaYbpR4oj5lkt+sPu2u1ju2pK44Iu/389f3l8uwcxI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736774723; c=relaxed/simple;
-	bh=xnQLwSHcvF6j1mimtvTF/7QRDlE230ubJEUxZwuK6ms=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=BAm9WiTr/+xxo+NEAkmSMgUi+wAuWj0RgDOxq8NBy7xYOpu9Wl+95PfFK9a2+NZjLcqjkR3XpIfuxcgG9pN8X02xKkqOIuWksTPN+x4xyZlLg+PNeHv7ozmrS+Uy3UTXD6+3x6yB4YHmHPZ13Xmg16zLN/MD+9RWPBqa7Npw4Y0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=DjicuXBN; arc=none smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	s=arc-20240116; t=1736776923; c=relaxed/simple;
+	bh=y4ngFRv0AOBNbmFrZkhBTx2rszuk5J+ukbqnUzzOgZM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=mSFXWozWBoDqki0ZS4DH5XgVcQMFowEyHoJGPXKO+aTivPz6Vc3mESxFOlblyGCBD9V/uyBYteNdQ5183XHPh2cSvXLtl3Whyg1t7Fz0Bl/hgwlf0wQDosudcMoID+7CxzcYrP0RrKDhiG0T2BO5uJ4D9OYNEsHdTq6hTcxKNys=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GVvCha9m; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="DjicuXBN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1736774722; x=1768310722;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=xnQLwSHcvF6j1mimtvTF/7QRDlE230ubJEUxZwuK6ms=;
-  b=DjicuXBN8ELdzDoIetRCYX2KSFUOk6tBj9e1+f4hDIb47aAP45cP6KY+
-   3T9KgEhv4fYd4sUGLVJu7obJqeJIw3YUIab7NU+2f++OmHl6sEOV2pEs6
-   ujYDuFygnxZKCqyYjsgUru7ecZ6Ee3BFc5a3kp2m6HIWkatiaPLnH8+Ys
-   74fmwTcKlmfqJV9IoNuZLGkvufmjBZqu3X9B92PcQwIdQRL7MzvAexnie
-   /E0C7cUbkyf3xZvhDBZD5EHvSmUudinuCgHmBQ0MCOJfrmsUO+Z74nhMX
-   /TENhy9P822VtU5Z6kTv2/3iRFWK7T7Yrp5aEVv/mw+IIIH62TCXfCxdo
-   g==;
-X-CSE-ConnectionGUID: LcF2qxNfTySqveYfUQjaNw==
-X-CSE-MsgGUID: OikX8WsLSE2LPyMR9qHgtQ==
-X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
-   d="scan'208";a="36896072"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 13 Jan 2025 06:25:21 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 13 Jan 2025 06:25:04 -0700
-Received: from vduicu-Virtual-Machine.mshome.net (10.10.85.11) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.35 via Frontend Transport; Mon, 13 Jan 2025 06:25:02 -0700
-From: <victor.duicu@microchip.com>
-To: <matteomartelli3@gmail.com>, <andy.shevchenko@gmail.com>,
-	<jic23@kernel.org>, <lars@metafoo.de>
-CC: <marius.cristea@microchip.com>, <victor.duicu@microchip.com>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1] iio: adc: pac1921: Move ACPI_FREE to cover all branches
-Date: Mon, 13 Jan 2025 15:22:14 +0200
-Message-ID: <20250113132214.36276-1-victor.duicu@microchip.com>
-X-Mailer: git-send-email 2.45.2
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GVvCha9m"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C3739C4CEE2;
+	Mon, 13 Jan 2025 14:02:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1736776922;
+	bh=y4ngFRv0AOBNbmFrZkhBTx2rszuk5J+ukbqnUzzOgZM=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=GVvCha9mdczE2AVtIICDzZqQ0VvlqANXZvChje0JLzJeTt7jESZ/HigmDKCttgRgS
+	 KLSiya0Gy4KK5Bopy+yPzkwTIYUrfltCbANnYRCw0q04XQrDEM3+/CnYqZD4fU1vCN
+	 rl1AXSFyJhrTjvUQK63gwVL+u7n29o6vNFPyAAK18mkN9QzWI14qmsAF//L/Bx9XtY
+	 6cza5sHE1EQhHHpKiAkmXGxTWqaMPRH4B8p7npP+s2l7QddDxtvKR5TjlApIXxItrX
+	 HJsnVbiLKlSCT6M02kZcOFGtADDj1CZh+jzCzQ7Wf3vU37H4/RevcGxYSsrTvJgM/O
+	 n3Ym72sq+V2xw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFCBDC02183;
+	Mon, 13 Jan 2025 14:02:02 +0000 (UTC)
+From: Vasiliy Doylov via B4 Relay <devnull+nekodevelopper.gmail.com@kernel.org>
+Date: Mon, 13 Jan 2025 17:02:00 +0300
+Subject: [PATCH v4 1/5] dt-bindings: iio: accel: mc3230: document mc3510c
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250113-mainlining-mc3510c-v4-1-4118411ef569@gmail.com>
+References: <20250113-mainlining-mc3510c-v4-0-4118411ef569@gmail.com>
+In-Reply-To: <20250113-mainlining-mc3510c-v4-0-4118411ef569@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ devicetree@vger.kernel.org, Vasiliy Doylov <nekodevelopper@gmail.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1123;
+ i=nekodevelopper@gmail.com; h=from:subject:message-id;
+ bh=QPSsNqso95qPWrSIr5ihfDk9Bwjnpi3oQpu3J2o7Ics=;
+ b=owGbwMvMwCW2fZ/SFZeSpU2Mp9WSGNJbZW5s8YlUjBEOM5Kdv/Zk8uWOt25xVvN/G128v5k77
+ +T2CQtUO0pZGMS4GGTFFFlsNnrMFssPl5w07akCzBxWJpAhDFycAjCRnwEM/7NCL2YHMt8LMd62
+ eYdo9+S2Rl7pjHtdgWJfRCOj59np2zH8T8lQrVpY6uipnjnlgqz9pCWi/R3qQSHiDE1ZuxRXBu5
+ hAwA=
+X-Developer-Key: i=nekodevelopper@gmail.com; a=openpgp;
+ fpr=3CB1489B166F57199296E520B7BE22D44474A582
+X-Endpoint-Received: by B4 Relay for nekodevelopper@gmail.com/default with
+ auth_id=314
+X-Original-From: Vasiliy Doylov <nekodevelopper@gmail.com>
+Reply-To: nekodevelopper@gmail.com
 
-From: Victor Duicu <victor.duicu@microchip.com>
+From: Vasiliy Doylov <nekodevelopper@gmail.com>
 
-This patch moves ACPI_FREE in pac1921_match_acpi_device
-in order to cover all branches.
+The MC3510C is a 3 asix digital accelerometer. It handled by the same
+driver as MC3230. Document it as a trivial device.
 
-Reported-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Victor Duicu <victor.duicu@microchip.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Vasiliy Doylov <nekodevelopper@gmail.com>
 ---
- drivers/iio/adc/pac1921.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/trivial-devices.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-This patch ensures that status is freed before
-exiting the function.
+diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+index fadbd3c041c8c39faedfe62874d4eba25a0bf30e..6c34e4c0dcc6df5a4d8edc5effb80980de820db9 100644
+--- a/Documentation/devicetree/bindings/trivial-devices.yaml
++++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+@@ -187,6 +187,8 @@ properties:
+           - maxim,max6621
+             # mCube 3-axis 8-bit digital accelerometer
+           - mcube,mc3230
++            # mCube 3-axis 8-bit digital accelerometer
++          - mcube,mc3510c
+             # Measurement Specialities I2C temperature and humidity sensor
+           - meas,htu21
+             # Measurement Specialities I2C pressure and temperature sensor
 
-diff --git a/drivers/iio/adc/pac1921.c b/drivers/iio/adc/pac1921.c
-index 90f61c47b1c4..6b67e387b3c0 100644
---- a/drivers/iio/adc/pac1921.c
-+++ b/drivers/iio/adc/pac1921.c
-@@ -1198,11 +1198,12 @@ static int pac1921_match_acpi_device(struct iio_dev *indio_dev)
- 
- 	label = devm_kstrdup(dev, status->package.elements[0].string.pointer,
- 			     GFP_KERNEL);
-+	ACPI_FREE(status);
-+
- 	if (!label)
- 		return -ENOMEM;
- 
- 	indio_dev->label = label;
--	ACPI_FREE(status);
- 
- 	return 0;
- }
-
-base-commit: 577a66e2e634f712384c57a98f504c44ea4b47da
 -- 
-2.45.2
+2.47.1
+
 
