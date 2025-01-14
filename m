@@ -1,65 +1,65 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A08D88488
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jan 2025 15:31:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3273218EFCC
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jan 2025 15:31:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736868711; cv=none; b=FlSuI7VlVk6/gKtCLr1LxWANNl1YYMHgQUsXIZ5v79Vk2DdSzjGuD43CpexikdvJ0F/Oo4ulW3caAzkJ0071EkMzmc7o+gW5x+QL6pQ7cCXysAukNfoZn517bnxztFxlV6dp00tW/EOAZsvyb+GuhWWAp/UVRCT3ntvLl8Q2hXk=
+	t=1736868712; cv=none; b=Rxgc+Rs2MMU+7QKUxnS6adpzPCTF1hAeNsuCRZSQsBX+o/kSBj5KSgMGETqBXmuBgwYV3IDpnCj+ZwANucnJnMToHqQVJ1d7FLKzqBr23t/I8olckNg19zSpWxeSJ4juFJt6Nz0FN7DWoCd8wUFJZi36RJNqCxPLOicvdiyVItU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736868711; c=relaxed/simple;
-	bh=pqyr7lB2YlEjhkiVyE7jHiA6cFUHvqgoHwiJXFTx2Ys=;
+	s=arc-20240116; t=1736868712; c=relaxed/simple;
+	bh=pSP5O2KpDcWDn/YPvUVk/p3yqEOsgwFMEHN2oKWfl2Q=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=n5faDzp3NaAq6J5Zi6avgOcbN5rls4rphJJtMTIW7PiyfL3UxSpELtILvHNml9XaU6OG0lESKsaDTGbPLHhvfZ0LYml4b+UnGnH3JbFZEfWq4ObVYPEK3hztwDxpdfVtrjLsBn8nNf2KcBMpIMQ9SlO4F8xnqWpGzwJBLHFwXhE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=2FComeN8; arc=none smtp.client-ip=209.85.221.53
+	 In-Reply-To:To:Cc; b=sq+WXB9tWtJ+KHe4V8U8rtjHWcleRmPSxqSR+vrS0qoCvCgnwWOO9S2hhQn9ZwMlEhPC740V59xjdEWzAbzbU6h6MX8JfmyzvPcWv3PCXPDdPfQl9RtvB12cMMxVw3IbMq51gaN/QG6xYbYMxB2aR+yzY9jREZ0nJbMqXjAc7aA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=oQTAmP0V; arc=none smtp.client-ip=209.85.221.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="2FComeN8"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-385e06af753so2871309f8f.2
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jan 2025 07:31:47 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="oQTAmP0V"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-38a88ba968aso4664219f8f.3
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jan 2025 07:31:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1736868706; x=1737473506; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1736868708; x=1737473508; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=M1ZK1w7swUyQuLFjvZaL7bfwG8xysBkjwjJzs0AMUFQ=;
-        b=2FComeN8pPywh+irUsHDr/YwuN5JgkPNtnzgGY2+i5jmWe+GiL/vuXdquK/h0c5PTi
-         euwPNo5OjfJEQ06MofXOKrxmPif6I6ZN9M060RM3b3y0oNBvhxsiP3JeYKDmovYBCHaC
-         bbmYWvTr2fWaIkrFpdPWvLSNKzGPQMYzWTLzbe9gXGvS2VAeb+7vJh+hqTu9h524X/mv
-         RdXm2wcjAKyFAgc1CZNK7HTyn9hxnXhkSX8g/cqCZb6KtmJ+JvfCBniFfZQ97WCWZSx5
-         Mlvx3KEo3FhJTuWybdZe9afB4Y9ef8rMfFTIXRqlbzTMiJkx8chDNheMlA2qGsnaZcLU
-         GCYg==
+        bh=79ELYnS/0cFQomhFXegbEFpd0OUlcm/1XJ4h0p0TxPA=;
+        b=oQTAmP0VN/7YrYU0b6McFPgPIdRbtBGuuj+QZs7zFWMpc4Ys4B7A8DNhTO8k5qNSjE
+         Tcov0GwTlyF1O3zTegRwtabcUiflWHbRUoG2/SzC78tRM4R211tRDCa+PudXefg4VALW
+         VB++8ghIMHRVIma6U/wURV2BWFahXvuW1S23nyN0M5Uvs3jQIO+xDragxvQYE0RKkalD
+         2OiqSM0U/nFNlDP4NNLc0VdZnu7Bto776vSc7om4bKqyf6Kdbl9UcKMNo0bayrD1AF0m
+         iIIJcccdjzNa19ATmduCyDqw0VQ0IbpxlyyIN+6iPdzaBUqn1dRwJlQCWRoamSSQPzem
+         28fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736868706; x=1737473506;
+        d=1e100.net; s=20230601; t=1736868708; x=1737473508;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=M1ZK1w7swUyQuLFjvZaL7bfwG8xysBkjwjJzs0AMUFQ=;
-        b=s3MIisWvspuf3Sp4HXARxgUxCUTF6MWodVODWc7/MlWNCPxT3aM2bjkip5IWPC0aWf
-         ZKhC51mWZgmZZV4ImSZEi++ZKwemojuJJoRNcGTcq5JJ3JKpdM6s3JHMsQwXNS7xJtRy
-         nQ2wqA6b3BF5HaaZxQiCxsALoc8wLUjtcRxb7up2BGMB5+FawTO9erTATmct+R2+XBNh
-         zogJ1HYkP1MM6jNuCnuJ3zGab2JahRj+QsBwS5nM4FhPGl1T7tA0Xt73v5iHh/yobe0+
-         qKLEkv/0UeB+dJpdQGYLdhqLG8o/3nlziwfgEZW9su2auvXaXRNubLc6iZzplHmnyuL3
-         4OVw==
-X-Forwarded-Encrypted: i=1; AJvYcCVLJBrF2qirqBsapJgaVFglWkkywH5PicUpaJDsRYiBI+8LnJAIf6gc7IzbA9Nqjd/HgYPWABpiddI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyiHnDZCp2hFChQjYojRVyMU/oBURbPp5AGWMmcjXd8Lzl2yXId
-	9xFnAOpo7ydBVXwhw/vX3lZ3ZWfdVMnaROBu7zF8gIVoXnjtKSx+eBPxTt9KsbU=
-X-Gm-Gg: ASbGnctGFdKVC4MkAI0+2I9PuNttKe880FZ5jnmmu2btfAwO4xVzLue20RrLDxvxQEh
-	1ZJ2MeBd9X/n8o71QVOZCdJNwhLGrOshT0XiKae1EnfqEj4t/F7Lavw22bacoiCUZg8EhSm/CXp
-	+2blfo2nODovTh/Ivv28Gxx8Uwe84OzZGf8+UPUqy8mLA6sdzqgHCgV+MM4NiwoVaR46hDOzJyR
-	e57M+5o005ln4M17uPriazMgi3vcIEuBrR9afAaXbfCCYhf4IyoECds6GI=
-X-Google-Smtp-Source: AGHT+IGUfVVhHPPVS2cv9/nifIYxojUhr8Wg6b+On+7nFINLHTVHlstooWa0UcWalyJD5136uQ5tlQ==
-X-Received: by 2002:a5d:6da8:0:b0:38a:5ce8:df51 with SMTP id ffacd0b85a97d-38a872f7ef2mr22563413f8f.2.1736868704441;
-        Tue, 14 Jan 2025 07:31:44 -0800 (PST)
+        bh=79ELYnS/0cFQomhFXegbEFpd0OUlcm/1XJ4h0p0TxPA=;
+        b=FWJo1TASfyWNc3ZtwJlOEZY3N8V3dsgqIuEFXMuooXAtY8ayogFrFarMrymlxF0JS9
+         JztUReuJNzbwqKOFNsErh2dv9klP0HzYpXDUrbs4ZGCLBQ6E1318jbAXMWJd+k32ud8x
+         kEIYlEcqSUrU1R0dV7Nb2FzFlQ4Cc+ApjlqiO1nK/qvihJpTbE6lsxaJo2ckN8cOOScM
+         ebxQhw5fKLkM1HKroSJ/WtSRpPWGFECRJ+vV0yTRSRKQSDUn6X1SqrfulId/QpzwDa0Y
+         GlbbpxgWkunsHRiWpanD7MMudmTdbgRkwGUNX9o5iwtGCKqCmUVZ+NZlJ38IeBExMq+t
+         ClLw==
+X-Forwarded-Encrypted: i=1; AJvYcCXOzFo5qu/TEaybYfI8fwEhIPCYQyJHc03y0f8r6LMMRVek8uHkLsGCqyZg8UGham9BDL9JtbYTTww=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxgUrxmgCHYL1gDoyuo+RpXu7axWBUpaN/6CrzTuJ2GfqqaTba4
+	8Cf7jaA3LI5HbZ0gKJDUVaX/6rgxJOUgc8GoPCHfLFdFLaE4yOqZ6vrTyB3LwaA=
+X-Gm-Gg: ASbGncuEGDZ3MlmX157o6WtH1/WyI1WJSw5dH79ryu2CIsTMp5cGD9A9BdMFW3Glzmx
+	F+GqKtjzsFMDlS+waAQcG7eKYWbunadQwOQ9ftYHaeCCTD+f3JSBjVi3DfrkM3okYDlPUjIP6Rq
+	zNIwivDdbYn3LOhvw/CIQaTjZIguUiFMh1S7PqE8AnSqsnGdZlYELMGSVwt21xQitFSBsm0IaGX
+	jA8AfiYTvgVJy1h5Orz2kVt08HGf8qvU3v7A1x4pdy9IpOLuXoRM/5fwAs=
+X-Google-Smtp-Source: AGHT+IEQwIlC+JLtLtee+bYn5GDdoWVZ3hShcRyhT/V0Hier8yuFXFLUZ2GFZ3aUCqKCEmcFYWLBlw==
+X-Received: by 2002:a05:6000:184e:b0:382:46ea:113f with SMTP id ffacd0b85a97d-38a872fc1b3mr23588975f8f.10.1736868707122;
+        Tue, 14 Jan 2025 07:31:47 -0800 (PST)
 Received: from [127.0.1.1] ([87.13.70.66])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a8e4b8116sm15049907f8f.79.2025.01.14.07.31.43
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a8e4b8116sm15049907f8f.79.2025.01.14.07.31.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jan 2025 07:31:43 -0800 (PST)
+        Tue, 14 Jan 2025 07:31:46 -0800 (PST)
 From: Angelo Dureghello <adureghello@baylibre.com>
 X-Google-Original-From: Angelo Dureghello <adureghello@baylibre.org>
-Date: Tue, 14 Jan 2025 16:30:10 +0100
-Subject: [PATCH v4 1/9] iio: dac: ad3552r-common: fix ad3541/2r ranges
+Date: Tue, 14 Jan 2025 16:30:12 +0100
+Subject: [PATCH v4 3/9] iio: dac: adi-axi-dac: modify stream enable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,7 +68,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250114-wip-bl-ad3552r-axi-v0-iio-testing-carlos-v4-1-979402e33545@baylibre.com>
+Message-Id: <20250114-wip-bl-ad3552r-axi-v0-iio-testing-carlos-v4-3-979402e33545@baylibre.com>
 References: <20250114-wip-bl-ad3552r-axi-v0-iio-testing-carlos-v4-0-979402e33545@baylibre.com>
 In-Reply-To: <20250114-wip-bl-ad3552r-axi-v0-iio-testing-carlos-v4-0-979402e33545@baylibre.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -82,85 +82,36 @@ X-Mailer: b4 0.14.1
 
 From: Angelo Dureghello <adureghello@baylibre.com>
 
-Fix ad3541/2r voltage ranges to be as per ad3542r datasheet,
-rev. C, table 38 (page 57).
+Change suggested from the AXI HDL team, modify the function
+axi_dac_data_stream_enable() to check for interface busy, to avoid
+possible issues when starting the stream.
 
-The wrong ad354xr ranges was generating erroneous Vpp output.
-
-In more details:
-- fix wrong number of ranges, they are 5 ranges, not 6,
-- remove non-existent 0-3V range,
-- adjust order, since ad3552r_find_range() get a wrong index,
-  producing a wrong Vpp as output.
-
-Retested all the ranges on real hardware, EVALAD3542RFMCZ:
-
-adi,output-range-microvolt (fdt):
-<(000000) (2500000)>;   ok (Rfbx1, switch 10)
-<(000000) (5000000)>;   ok (Rfbx1, switch 10)
-<(000000) (10000000)>;  ok (Rfbx1, switch 10)
-<(-5000000) (5000000)>; ok (Rfbx2, switch +/- 5)
-<(-2500000) (7500000)>; ok (Rfbx2, switch -2.5/7.5)
-
-Fixes: 8f2b54824b28 ("drivers:iio:dac: Add AD3552R driver support")
+Fixes: e61d7178429a ("iio: dac: adi-axi-dac: extend features")
 Reviewed-by: Nuno Sa <nuno.sa@analog.com>
-Reviewed-by: David Lechner <dlechner@baylibre.com>
 Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
 ---
- drivers/iio/dac/ad3552r-common.c | 5 ++---
- drivers/iio/dac/ad3552r.h        | 8 +++-----
- 2 files changed, 5 insertions(+), 8 deletions(-)
+ drivers/iio/dac/adi-axi-dac.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/iio/dac/ad3552r-common.c b/drivers/iio/dac/ad3552r-common.c
-index 0f495df2e5ce..03e0864f5084 100644
---- a/drivers/iio/dac/ad3552r-common.c
-+++ b/drivers/iio/dac/ad3552r-common.c
-@@ -22,11 +22,10 @@ EXPORT_SYMBOL_NS_GPL(ad3552r_ch_ranges, "IIO_AD3552R");
+diff --git a/drivers/iio/dac/adi-axi-dac.c b/drivers/iio/dac/adi-axi-dac.c
+index b143f7ed6847..ac871deb8063 100644
+--- a/drivers/iio/dac/adi-axi-dac.c
++++ b/drivers/iio/dac/adi-axi-dac.c
+@@ -585,6 +585,14 @@ static int axi_dac_ddr_disable(struct iio_backend *back)
+ static int axi_dac_data_stream_enable(struct iio_backend *back)
+ {
+ 	struct axi_dac_state *st = iio_backend_get_priv(back);
++	int ret, val;
++
++	ret = regmap_read_poll_timeout(st->regmap,
++				AXI_DAC_UI_STATUS_REG, val,
++				FIELD_GET(AXI_DAC_UI_STATUS_IF_BUSY, val) == 0,
++				10, 100 * KILO);
++	if (ret)
++		return ret;
  
- const s32 ad3542r_ch_ranges[AD3542R_MAX_RANGES][2] = {
- 	[AD3542R_CH_OUTPUT_RANGE_0__2P5V]	= { 0, 2500 },
--	[AD3542R_CH_OUTPUT_RANGE_0__3V]		= { 0, 3000 },
- 	[AD3542R_CH_OUTPUT_RANGE_0__5V]		= { 0, 5000 },
- 	[AD3542R_CH_OUTPUT_RANGE_0__10V]	= { 0, 10000 },
--	[AD3542R_CH_OUTPUT_RANGE_NEG_2P5__7P5V]	= { -2500, 7500 },
--	[AD3542R_CH_OUTPUT_RANGE_NEG_5__5V]	= { -5000, 5000 }
-+	[AD3542R_CH_OUTPUT_RANGE_NEG_5__5V]	= { -5000, 5000 },
-+	[AD3542R_CH_OUTPUT_RANGE_NEG_2P5__7P5V]	= { -2500, 7500 }
- };
- EXPORT_SYMBOL_NS_GPL(ad3542r_ch_ranges, "IIO_AD3552R");
- 
-diff --git a/drivers/iio/dac/ad3552r.h b/drivers/iio/dac/ad3552r.h
-index fd5a3dfd1d1c..4b5581039ae9 100644
---- a/drivers/iio/dac/ad3552r.h
-+++ b/drivers/iio/dac/ad3552r.h
-@@ -131,7 +131,7 @@
- #define AD3552R_CH1_ACTIVE				BIT(1)
- 
- #define AD3552R_MAX_RANGES	5
--#define AD3542R_MAX_RANGES	6
-+#define AD3542R_MAX_RANGES	5
- #define AD3552R_QUAD_SPI	2
- 
- extern const s32 ad3552r_ch_ranges[AD3552R_MAX_RANGES][2];
-@@ -189,16 +189,14 @@ enum ad3552r_ch_vref_select {
- enum ad3542r_ch_output_range {
- 	/* Range from 0 V to 2.5 V. Requires Rfb1x connection */
- 	AD3542R_CH_OUTPUT_RANGE_0__2P5V,
--	/* Range from 0 V to 3 V. Requires Rfb1x connection  */
--	AD3542R_CH_OUTPUT_RANGE_0__3V,
- 	/* Range from 0 V to 5 V. Requires Rfb1x connection  */
- 	AD3542R_CH_OUTPUT_RANGE_0__5V,
- 	/* Range from 0 V to 10 V. Requires Rfb2x connection  */
- 	AD3542R_CH_OUTPUT_RANGE_0__10V,
--	/* Range from -2.5 V to 7.5 V. Requires Rfb2x connection  */
--	AD3542R_CH_OUTPUT_RANGE_NEG_2P5__7P5V,
- 	/* Range from -5 V to 5 V. Requires Rfb2x connection  */
- 	AD3542R_CH_OUTPUT_RANGE_NEG_5__5V,
-+	/* Range from -2.5 V to 7.5 V. Requires Rfb2x connection  */
-+	AD3542R_CH_OUTPUT_RANGE_NEG_2P5__7P5V,
- };
- 
- enum ad3552r_ch_output_range {
+ 	return regmap_set_bits(st->regmap, AXI_DAC_CUSTOM_CTRL_REG,
+ 			       AXI_DAC_CUSTOM_CTRL_STREAM_ENABLE);
 
 -- 
 2.47.0
