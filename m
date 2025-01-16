@@ -1,168 +1,104 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46A8E22B590
-	for <linux-iio@vger.kernel.org>; Thu, 16 Jan 2025 15:06:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4D1722B8A0;
+	Thu, 16 Jan 2025 16:42:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737040014; cv=none; b=UkdImcOThDsB79EasyQNZFy1vjmw+ngxojf/LTrzGueoNwPHPl1rfkLzvI5Ofkgc+abkZcys8WJ9OuR9wSUAGPf62Cjy0ZUvITlCGH0JF+eaJAuP246VhhdLEy4zHG+c6Vmr5bHceMzGH5Vd3Cjl+JhUN4NgZSWbKaPOblXL+14=
+	t=1737045741; cv=none; b=YiQyQ3fE+H8sindvgzQmm92waqjwGpJ0ME6g01k03BeBaNOCXyINss8EfR7vZqkOuRWf34DNhayQHUP96KOT6Iz0KquuhAPJWuODDxYa0GuT9FzN+snYhGTMJy+fTkMH3SdaC5dIFuUT3hElphDpVD9Vz5fC9BxqDFAwjGZbwuI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737040014; c=relaxed/simple;
-	bh=OvMvpa5hJvjp4mkxfj0XCsyUfbH0TO5uL7Xwk9BXyfI=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=PVGGFSa5vRoKo4zfg0VikJ4JqN9zouoW2UEGEQ1LFtRCh2lSeiVovITXZVhylqT1wrwGx0dY01SGdTsv7MHz2RPvQv+kvVTL1YdtXdC2Vc9F2ECungdFr4HpReFHC7KCFnFHdCyRr4beHu1BPZNqxhKyOkaL4G0FX456flo/kU4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=KF1uh0hq; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="KF1uh0hq"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-436a39e4891so6809935e9.1
-        for <linux-iio@vger.kernel.org>; Thu, 16 Jan 2025 07:06:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1737040008; x=1737644808; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=bYmh0880XE2lLymcGq8FMdf3HLknZRQFCBrcBxm7rsc=;
-        b=KF1uh0hqtYe2KxnOqJuJU35WovaY8KY7x+SzmiUQp7SclFS+0l08eO5pi+iOE08D2W
-         BIlMBeWDPqvNOijMum3o60S4xwuIjFwGfFqqTMHGpPx7IZ4FKLop70owvx65JakNXrpE
-         P3u9M6znnOKb4gW2AQFSE1AuiDI7XR3ofbf/u5j52SnfszDAgrPgeUfUvlavZE24G6JW
-         q1vFeL7viEl2xW+guu7VbDjYhn3BfrcNoWP0EBgJMyyQVcKDAL60ZqN+j9dvETV4NZ2W
-         pLVfsTqBG08a7T5QP6EmQzel5g9X+3xbHFuw1wea4Oj1M7d3HEYlhl9l+19CcXDxGJDA
-         H8ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737040008; x=1737644808;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bYmh0880XE2lLymcGq8FMdf3HLknZRQFCBrcBxm7rsc=;
-        b=wXtJ72Oo3N9UhL2GwjizwygJOKxj82DOnpSWzufjtaK/WFBQ2IVophmP6kONv796+j
-         AxSX7JgKlZPsQbY+LowYIaQk6BESNTktugvgSjSVNhirBF0XFHQW7zPzJOuzCrhNP4Ai
-         XOFzgy9yFh8hBXyrq5iRlvFzBexcThdx/jf3SMmbY3sIBBLzF/EDaZbbOlpvOXIvLFax
-         6yDrP5c/pwIbrXeH4Q1ckNY1Jnc2M+LbuhbxBH13leo9BzkVPzrKYaS51K4cYmibFBIp
-         PIDCZP4Z6x9zQ1qhDWClfTbME+ojAbXMbCzzKdPTROj1esctDPruUTyMLlTTP20P7rCM
-         sFTA==
-X-Gm-Message-State: AOJu0YxuuencemvH+r8c4JVq2kvr+opZEy+Q/5nJ0cHzltl+F9g+OAka
-	6zMWub1+muw5s9T8P0/ok/H8QJ2qONWKrPMvM4tE9UKyc5T4fbVTVSAlU7ziHH0=
-X-Gm-Gg: ASbGncva4wjlf+WsAtUIhd5lQMEzpp7IpLfSZ0Mxclkbx/dhIN++rIEUT6YYDfnQZmc
-	agjq/kmPcG5ALBsPxjpnebBXuCVatnGNFV27XdrBqldnXSofKT+UIAnSnC7Wn/XsjZwyBTguLME
-	8oC8faN04BSC8QOiH5lHjGXkzHpXF/ERtvA8qc7wQy4W0B6dq/GCX/8LtnbiWeMuZFh2T/xj/sZ
-	65d+6K3Ucda5YC7K6Qo8bugLP7rMJ2Bxv0CJ6I0X7VgAk2EKFgpSjHnMa2c2OqM7/0N9IOmh1o3
-	W1egcyliprv6YIYCrV3tGg/OKjA=
-X-Google-Smtp-Source: AGHT+IHU27OYlDGXMzXBaKrU+DkQAHWS8+mLw8V3qTbihM+GrLtuH3Q/whk1TW3oyYUFbrFi53pf9A==
-X-Received: by 2002:a05:600c:1c28:b0:434:a734:d268 with SMTP id 5b1f17b1804b1-436e2699dfbmr347566565e9.14.1737040008384;
-        Thu, 16 Jan 2025 07:06:48 -0800 (PST)
-Received: from [127.0.0.1] (alille-653-1-300-114.w90-1.abo.wanadoo.fr. [90.1.180.114])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43890408a66sm2199445e9.5.2025.01.16.07.06.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jan 2025 07:06:47 -0800 (PST)
-From: Guillaume Ranquet <granquet@baylibre.com>
-Date: Thu, 16 Jan 2025 16:01:46 +0100
-Subject: [PATCH RFC v3 1/2] iio: introduce the FAULT event type
+	s=arc-20240116; t=1737045741; c=relaxed/simple;
+	bh=Gabzw77sqMoTj2enTfVlZILY8B3tf3buDe95F1mn3IQ=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VJzRtnNYRYxYGQq9Y5nJQuCtNLdHRs/W6Vw40O+zWhI84T/l3CxQml30d5LGneW+6GT9O2DrkACn3o7AjO05EblXgXe4K8xFjd0DpL/1CuNIOYtu40qi0nkIPHvDkMwO8Xh0iO3D01rm38jgg6NQMFbn+BFDETKG1qdecCU8vRY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.31])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4YYpWs2lkPz6L5Ct;
+	Fri, 17 Jan 2025 00:40:41 +0800 (CST)
+Received: from frapeml500008.china.huawei.com (unknown [7.182.85.71])
+	by mail.maildlp.com (Postfix) with ESMTPS id 0C403140390;
+	Fri, 17 Jan 2025 00:42:15 +0800 (CST)
+Received: from localhost (10.203.177.66) by frapeml500008.china.huawei.com
+ (7.182.85.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Thu, 16 Jan
+ 2025 17:42:13 +0100
+Date: Thu, 16 Jan 2025 16:42:11 +0000
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To: Vasiliy Doylov via B4 Relay <devnull+nekodevelopper.gmail.com@kernel.org>
+CC: <nekodevelopper@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, "Krzysztof Kozlowski"
+	<krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH RESEND v4 0/5] iio: accel: mc3230: add mount matrix, of
+ match and mc3510c support
+Message-ID: <20250116164211.000079d0@huawei.com>
+In-Reply-To: <20250116-mainlining-mc3510c-v4-0-a41308b85ec2@gmail.com>
+References: <20250116-mainlining-mc3510c-v4-0-a41308b85ec2@gmail.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250116-ad4111_openwire-v3-1-ea9ebf29bd1d@baylibre.com>
-References: <20250116-ad4111_openwire-v3-0-ea9ebf29bd1d@baylibre.com>
-In-Reply-To: <20250116-ad4111_openwire-v3-0-ea9ebf29bd1d@baylibre.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Guillaume Ranquet <granquet@baylibre.com>
-X-Mailer: b4 0.15-dev
+X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
+ frapeml500008.china.huawei.com (7.182.85.71)
 
-Add a new event type to describe an hardware failure.
+On Thu, 16 Jan 2025 16:52:41 +0300
+Vasiliy Doylov via B4 Relay <devnull+nekodevelopper.gmail.com@kernel.org> wrote:
 
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
----
- drivers/iio/industrialio-event.c | 2 ++
- include/uapi/linux/iio/types.h   | 2 ++
- tools/iio/iio_event_monitor.c    | 4 ++++
- 3 files changed, 8 insertions(+)
+Always say why you are resending.
 
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index db06501b0e61a91e3b06345b418504803f4aefb5..ea3dcdc0b70a7b8d53281d92d9d3bacbc74638ba 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -232,6 +232,7 @@ static const char * const iio_ev_type_text[] = {
- 	[IIO_EV_TYPE_CHANGE] = "change",
- 	[IIO_EV_TYPE_MAG_REFERENCED] = "mag_referenced",
- 	[IIO_EV_TYPE_GESTURE] = "gesture",
-+	[IIO_EV_TYPE_FAULT] = "fault",
- };
- 
- static const char * const iio_ev_dir_text[] = {
-@@ -240,6 +241,7 @@ static const char * const iio_ev_dir_text[] = {
- 	[IIO_EV_DIR_FALLING] = "falling",
- 	[IIO_EV_DIR_SINGLETAP] = "singletap",
- 	[IIO_EV_DIR_DOUBLETAP] = "doubletap",
-+	[IIO_EV_DIR_OPENWIRE] = "openwire",
- };
- 
- static const char * const iio_ev_info_text[] = {
-diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-index 12886d4465e4896aedce837c2df63c78f83a5496..ac0f5ee0bac4aa44577d7d772d3628a084f5c645 100644
---- a/include/uapi/linux/iio/types.h
-+++ b/include/uapi/linux/iio/types.h
-@@ -119,6 +119,7 @@ enum iio_event_type {
- 	IIO_EV_TYPE_CHANGE,
- 	IIO_EV_TYPE_MAG_REFERENCED,
- 	IIO_EV_TYPE_GESTURE,
-+	IIO_EV_TYPE_FAULT,
- };
- 
- enum iio_event_direction {
-@@ -128,6 +129,7 @@ enum iio_event_direction {
- 	IIO_EV_DIR_NONE,
- 	IIO_EV_DIR_SINGLETAP,
- 	IIO_EV_DIR_DOUBLETAP,
-+	IIO_EV_DIR_OPENWIRE,
- };
- 
- #endif /* _UAPI_IIO_TYPES_H_ */
-diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-index cccf62ea2b8f9b55a83a4960c1a60087c7b053f3..efa1807ab505a507f10aa2d314e03e40b71f62ba 100644
---- a/tools/iio/iio_event_monitor.c
-+++ b/tools/iio/iio_event_monitor.c
-@@ -75,6 +75,7 @@ static const char * const iio_ev_type_text[] = {
- 	[IIO_EV_TYPE_CHANGE] = "change",
- 	[IIO_EV_TYPE_MAG_REFERENCED] = "mag_referenced",
- 	[IIO_EV_TYPE_GESTURE] = "gesture",
-+	[IIO_EV_TYPE_FAULT] = "fault",
- };
- 
- static const char * const iio_ev_dir_text[] = {
-@@ -83,6 +84,7 @@ static const char * const iio_ev_dir_text[] = {
- 	[IIO_EV_DIR_FALLING] = "falling",
- 	[IIO_EV_DIR_SINGLETAP] = "singletap",
- 	[IIO_EV_DIR_DOUBLETAP] = "doubletap",
-+	[IIO_EV_DIR_OPENWIRE] = "openwire",
- };
- 
- static const char * const iio_modifier_names[] = {
-@@ -249,6 +251,7 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_EV_TYPE_MAG_ADAPTIVE:
- 	case IIO_EV_TYPE_CHANGE:
- 	case IIO_EV_TYPE_GESTURE:
-+	case IIO_EV_TYPE_FAULT:
- 		break;
- 	default:
- 		return false;
-@@ -260,6 +263,7 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_EV_DIR_FALLING:
- 	case IIO_EV_DIR_SINGLETAP:
- 	case IIO_EV_DIR_DOUBLETAP:
-+	case IIO_EV_DIR_OPENWIRE:
- 	case IIO_EV_DIR_NONE:
- 		break;
- 	default:
+Jonathan
 
--- 
-2.47.1
+> Changes includes:
+> - Add mount matrix handling
+> - Add match table to work with DT
+> - Add MC3510C support
+> 
+> MC3510C use same registors as MC3230, but different value scale.
+> 
+> Signed-off-by: Vasiliy Doylov <nekodevelopper@gmail.com>
+> ---
+> Changes in v4:
+> - Fixed commit messages
+> - Added const modificator to chip_infos
+> - Return name->chip_id->product_code->scale order
+> - `{}` replaced by `{ }` (with space)
+> - Link to v3: https://lore.kernel.org/r/20250112-mainlining-mc3510c-v3-0-9ee6520ab69d@gmail.com
+> 
+> Changes in v2:
+> - Ordered commits
+> - Fixed comment style
+> - Ordered struct members
+> - Fixed device table
+> - MC5310C commit splitted
+> - Link to v1: https://lore.kernel.org/r/20250111-mainlining-mc3510c-v1-0-57be503addf8@gmail.com
+> 
+> Changes in v3:
+> - Fixed patch (poped stash)
+> - Link to v2: https://lore.kernel.org/all/20250112-mainlining-mc3510c-v2-0-322804a545cf@gmail.com
+> 
+> ---
+> Vasiliy Doylov (5):
+>       dt-bindings: iio: accel: mc3230: document mc3510c
+>       iio: accel: mc3230: add mount matrix support
+>       iio: accel: mc3230: add OF match table
+>       iio: accel: mc3230: add multiple devices support
+>       iio: accel: mc3230: add mc3510c support
+> 
+>  .../devicetree/bindings/trivial-devices.yaml       |  2 +
+>  drivers/iio/accel/mc3230.c                         | 95 ++++++++++++++++++----
+>  2 files changed, 80 insertions(+), 17 deletions(-)
+> ---
+> base-commit: 2b88851f583d3c4e40bcd40cfe1965241ec229dd
+> change-id: 20250111-mainlining-mc3510c-564702fba487
+> 
+> Best regards,
 
