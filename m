@@ -1,315 +1,356 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91BCA1A725C;
-	Sat, 18 Jan 2025 20:50:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59B7A15350B;
+	Sun, 19 Jan 2025 17:32:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737233437; cv=none; b=fmo5RtaeegYWZBpOOa2Z2cwfusM65m2S9G7run1pVU5SIC+YJkUIspq8CY4YZ1LTnumRRcuZt2lt97P7zvPfFCDFNeNe/wFBaIrBTkfFaBhQrXMkYYcK6mNaJ57LI684TJH9ka1RWuZxlkTj6MY5P4gp7BaWbr67OyrIcWVZDlU=
+	t=1737307926; cv=none; b=iAL7b8GuQLd9Z4M5ms5wGz/XVW4QkHhXVSwZwab7NYC8PBq/g6m8vpb2YvEmW8o1kFyM9Tt/FDtJkg8ZpMToXMLzbvC+CmhTNhj7e1Z/MdyOfK1fQL683G5wMCx9fkJe1TDL9qlNyWXdzx285fLFPnLxws6KgrwXw05PDZP4xFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737233437; c=relaxed/simple;
-	bh=Ny2eazBvBz+HD7V6Ej+FJ/fXnIZxW8SVRu5LidsR1lI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CRDFbVsFEeOaSeg1DG0ZSV6UBRpuTcOXmws4ve/9gxCZLCY39QIydmOZIDZQfRpQIvpCs4M1wRGcI2k6IyQ+abSMc+7rRSrbN9zdyKhK4TaOKE21++zK/xZV+tu2+r2YYHOV7sNzN965775RFXmqHJGZgpCM3R7EWHxX+FeWAow=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=O7YZPhgu; arc=none smtp.client-ip=209.85.214.180
+	s=arc-20240116; t=1737307926; c=relaxed/simple;
+	bh=yUx0jU+a13IvjSM0IqnelCLfCdrYK4uIfAXReGUvlVI=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=kRFMq3HerxdwN9dXjyZ4UXmMvDv93D1st0l6d4VulbudLfYKe8dEq4ohGN2NWRekxh2Y9CnNf50zPFgvORY4mb4qQS/mRBhiETGFsTEuaYnJs4Jgay76z7Ezu68VvnnyyLozQhxlD4VBEKuvqTHwCPx5/gD7ZHaI0x5tqLiUwIA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MNGBzgKd; arc=none smtp.client-ip=209.85.221.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O7YZPhgu"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-219f8263ae0so59593725ad.0;
-        Sat, 18 Jan 2025 12:50:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MNGBzgKd"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-385f07cd1a4so2891372f8f.1;
+        Sun, 19 Jan 2025 09:32:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1737233435; x=1737838235; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ploq2WKRqVnusvM3GXcyWAVIZOA0Hrn71AsZtOmPJGI=;
-        b=O7YZPhgu2tPUmQpzDpFXo850msmjEPvDqqYsm4oKmqyGY9/bmT5OarIH0YteK+K9o+
-         DOL/tX1Qt8frrkJPEPRX/XiVRlVj40pLMHZRaPFYzVOiMyP5ILPuxppEUU9f0SPj5j/t
-         /CP1LUmTerJ1wTl0MZ6h4fq9BGYmIIFzk0AUWEc3YKHS+hlt89OIdgkiBqMMSTu7CVnh
-         y+/POfCPMuJEr1QCeVznvQF1eFi9iQ0RfU4p3PC/IXOj15pmsmVNsb3pY4OR4bnLcV05
-         nzYkUixwBmuhgOa0nLx+qcVIiZm+tOgSMpF0+16jSISJr5TfJnYe0nHENtwHFmGb2deR
-         6p6w==
+        d=gmail.com; s=20230601; t=1737307922; x=1737912722; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=W96YyxvLefuW5bSwIFKR4DQWdJ/E7oNWc2nAgNmkDnE=;
+        b=MNGBzgKd9Qa6dClzV9srzMkiftdePN1dt7PeqO/nC1h9L9FU5sv9zPRNGGvurr/R+E
+         cIrPCeQHWWOCzuI+9B/sdQEJ0GlDs+/2qkqHPrs+B2lRSq3sK2ImqDli8r+GWaAjxHtm
+         FrTd+1j82Il072Ucnm7T8zOpV+DgyjqmfTpaldTksrBeWCPZi83gLG9tF4LxBs76XhYs
+         IlWrTVk02vObfdXsUPiVEeLvD0Pu6dQaEiVoF8HOgOMUiCKWAwYF6JDNpTL9yL0WsqEH
+         LKdh57FwzUNaQ26gRdOX64gjfnHT3WV9I0AH/l6RONSOFNI1PwxYmMOc08GoglErYhHL
+         t1Gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737233435; x=1737838235;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ploq2WKRqVnusvM3GXcyWAVIZOA0Hrn71AsZtOmPJGI=;
-        b=I1hXwD77otEPRWTnxxA3aeXuLQCwFhMQUfKznmxgMKwOjHY9MQTUxRh9lCBi+MywO5
-         0+hpDgUbxvf9YnkGZtoQ6RdKrJBukKtEEbNCaVcXXwNezE/uoM9hU6UdFxmTC0waikJc
-         lBJOEo4G3Q/h6yFGg2HDZIjUkfBtQHRd208t/a8YettnI2xPjCaTNA5mF1KHHPgTmevt
-         tsNlSUxzDMuTRkouwk+Qeag59IzP9l6Gqu4fLeC7eWHtV5w8yVtFaAdMxyWyo9lI4J4T
-         gUyVZYUXsXAls20cbAwFmw+1b7fjK7Kkcqh5uAj7waSf0LbSr6ryA8eNH282I3DZCF64
-         ZpAQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVAh0CUswBwh6AZf3nTLa0fPKlQT2FQVuvTPcRri1EGmacDzT39Vr0xci5RO16RD2TTnO1yTgbDeE8=@vger.kernel.org, AJvYcCVTa5mh+RXpOohgBmlnX8ckURRgXpxgSs45fhbaRvLyZuPyHWd7a452Js+TxIK3IqvUlPCuvtVwPbpnjVnC@vger.kernel.org, AJvYcCVhqx42mYANcqL2tbJjoB9I5YfplQ5hNg0j+n96MFUxQ/RVcjmWCgchvjH7Z8Zj2tObkbXuMqTzJJ0l@vger.kernel.org
-X-Gm-Message-State: AOJu0YznIdlsLMboP3b0wPjZ+GR1MxbRSFk+ErxcpOqfri+9MBAInJ03
-	biblOoMtVqyvhV3ItAO3q/9MuheL+H5DtoMy8IOaHIEc5YQ0bbrg
-X-Gm-Gg: ASbGncu9AYbpynkNqZuo4Vfl06s0Nzr4bUqjxZh/k2PlNH0aITFTUbpVbSaVihgA6uE
-	gSep2bSuKPfSCZPpTVS2VeIwYqYIR8VqkrmDGauBqEEAnumyWDI9316ANZtP/HKysiM8unWYaN+
-	jMfW3oqUSkIc4n+h+V0pdNEJrYRSic0VzIfRQ0b37BfpVyXWjoyZK+8tT2X9YNNn6501ocxE1RX
-	rRoSnjfmfCFy+O4Y3dI/Pmkf0am6qLAUbl/CNgZXWGdUkdgJ2G+7ja4s5wwLXKOb31Rld2xlYtp
-	xg==
-X-Google-Smtp-Source: AGHT+IFNpfUkFGhNrm0RwUIgH2sanQ7blYK5jdIGT9ysMpfnL146ECKSdQIvgwx3/fv0pIQvWD/uXA==
-X-Received: by 2002:a05:6a00:3493:b0:725:9cc4:2354 with SMTP id d2e1a72fcca58-72daf950b6fmr11007153b3a.10.1737233434596;
-        Sat, 18 Jan 2025 12:50:34 -0800 (PST)
-Received: from localhost ([2804:30c:b30:a800:c057:a90:a425:2f39])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-72dab7f2a44sm4165911b3a.36.2025.01.18.12.50.33
+        d=1e100.net; s=20230601; t=1737307922; x=1737912722;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=W96YyxvLefuW5bSwIFKR4DQWdJ/E7oNWc2nAgNmkDnE=;
+        b=jEoE5b+yGDRJpmY60F3g/NaIR/iSjqcF9K+v3I5zY0RxgYqkCms/n3itwVn742TCeb
+         9ih6i3aLIVSSzcm9y03sCot3ePb2plf+HcLjfK4oFQrfQZ/G4HgnFyanx8EXsylxREWp
+         Uln6KCRTNhZU7ECOh45mh6C88v6LX+em4mqC3NgE0BTokL2+dBouena6Eiyk1Ynkw6vE
+         vMIGlLDyTZY5AyiOGd9rs7BfKeBVnhIt4Geh0vkL1ElHreEdVzhceEw4gRjQZ0lLWCxO
+         q68PycTW5syTdM8UXAy8bTq3Cj+F1OAP4LFDBZQtmX77ReigglJMlmh+4WwfqeB6c3Yg
+         Z+Zw==
+X-Forwarded-Encrypted: i=1; AJvYcCWIJGwU4mNUbxuk0qNPTufK/9KvU/eWruoIDXNdXnN+h6Cx673Z76nrUgCW0TfreqRosyMuhdvKs5ejISw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwqRyFJ1DlNprp+XDR84T2rzE0+eq+XppcPUlP9L3QAM8sKbb62
+	bX2ALpn7lEWtX4qRHfYPiQdjHK+UiWR/VLdeUVNAW7azbxyccjXV
+X-Gm-Gg: ASbGnctuHKMZ0d7jJ+Yh4BULVGOUlRNLbVnEF539x1rr0gsj3JeK5ZdYwIWSeduggGp
+	F9xM3saA1uGRiA1u6vAnQ81/gman24rMMDMMnZ3Urjr23smrafARlyfjo9VITm9eut/8aEXLGv+
+	D9DWVLtPGaYUrj8a397qS++8EFTqa287nhN8KOssLOtspkBfbdW3Ae96WoNVCRv0uVr3vKorSS+
+	pjaSECu7AVDnm+W6Umu3Y9Wz50R+c5cvocdqomrP3xs+XfWBBsUxNVG4ThaLZhrwdKcf3uuZO10
+	jJwSDuHSZFpinUvyGRHu6bIxgzzA9DBWCFPbsFRBgfN1eGsiZqHbt43GbEvHksGjjmxJKko1SNN
+	Ny0wNOvxHXAKcf7vG
+X-Google-Smtp-Source: AGHT+IH2Rck6xfQ8abBTFgNB1llsI9ikNLzB/k9stGOcb/JY1yUmqqoD64lCSBIV2hQ3tLAp4F46Kw==
+X-Received: by 2002:a5d:47a3:0:b0:385:d852:29ed with SMTP id ffacd0b85a97d-38bf57a9853mr8304933f8f.36.1737307922486;
+        Sun, 19 Jan 2025 09:32:02 -0800 (PST)
+Received: from [127.0.1.1] (2a02-8389-41cf-e200-ec17-b16a-8f4c-782f.cable.dynamic.v6.surfer.at. [2a02:8389:41cf:e200:ec17:b16a:8f4c:782f])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38bf32221e2sm8299423f8f.36.2025.01.19.09.32.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Jan 2025 12:50:33 -0800 (PST)
-Date: Sat, 18 Jan 2025 17:51:10 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>,
-	linux-iio@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, lars@metafoo.de, corbet@lwn.net
-Subject: Re: [PATCH v2 1/1] Documentation: iio: Add ADC documentation
-Message-ID: <Z4wUPtDfnmQ53L0k@debian-BULLSEYE-live-builder-AMD64>
-References: <efa1dba23c38b207716883d6226ce9e9df5a51b8.1736862045.git.marcelo.schmitt@analog.com>
- <3bd58574-36c6-4102-ad7d-1aeff0e46a95@baylibre.com>
- <20250118155153.2574dbe5@jic23-huawei>
+        Sun, 19 Jan 2025 09:32:02 -0800 (PST)
+From: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+Date: Sun, 19 Jan 2025 18:31:58 +0100
+Subject: [PATCH v2 1/4] iio: light: veml6030: extend regmap to support
+ regfields
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250118155153.2574dbe5@jic23-huawei>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250119-veml6030-scale-v2-1-6bfc4062a371@gmail.com>
+References: <20250119-veml6030-scale-v2-0-6bfc4062a371@gmail.com>
+In-Reply-To: <20250119-veml6030-scale-v2-0-6bfc4062a371@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Rishi Gupta <gupt21@gmail.com>, 
+ Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ Javier Carrasco <javier.carrasco.cruz@gmail.com>
+X-Mailer: b4 0.15-dev-1b0d6
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1737307920; l=8598;
+ i=javier.carrasco.cruz@gmail.com; s=20240312; h=from:subject:message-id;
+ bh=yUx0jU+a13IvjSM0IqnelCLfCdrYK4uIfAXReGUvlVI=;
+ b=a/1FIw0VNG2USKo5v2sPnDFvru0evj0KBb3cixDXG+LZda6rNM9xN/RI5QW94k2/CSZ2yWbQH
+ 4tN0Yk5wer+CBDbkhLW66o+DgQMcmjU8+F76Cf6WMENhgs02CHXARvC
+X-Developer-Key: i=javier.carrasco.cruz@gmail.com; a=ed25519;
+ pk=lzSIvIzMz0JhJrzLXI0HAdPwsNPSSmEn6RbS+PTS9aQ=
 
-Hi Jonathan,
+Add support for regfields as well to simplify register operations,
+taking into account the different fields for the veml6030/veml7700 and
+veml6035.
 
-Thanks for having another look at this.
-I'll do the changes suggested.
+Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+---
+ drivers/iio/light/veml6030.c | 95 ++++++++++++++++++++++++++++++++------------
+ 1 file changed, 70 insertions(+), 25 deletions(-)
 
-Thanks,
-Marcelo
+diff --git a/drivers/iio/light/veml6030.c b/drivers/iio/light/veml6030.c
+index 9b71825eea9bee2146be17ed2f30f5a8f7ad37e3..8e4eb8b0c19276635567d4eed74f4d402c3205fa 100644
+--- a/drivers/iio/light/veml6030.c
++++ b/drivers/iio/light/veml6030.c
+@@ -59,18 +59,31 @@
+ #define VEML6035_INT_CHAN     BIT(3)
+ #define VEML6035_CHAN_EN      BIT(2)
+ 
++/* Regfields */
++#define VEML6030_GAIN_RF      REG_FIELD(VEML6030_REG_ALS_CONF, 11, 12)
++#define VEML6030_IT_RF        REG_FIELD(VEML6030_REG_ALS_CONF, 6, 9)
++
++#define VEML6035_GAIN_RF      REG_FIELD(VEML6030_REG_ALS_CONF, 10, 12)
++
+ enum veml6030_scan {
+ 	VEML6030_SCAN_ALS,
+ 	VEML6030_SCAN_WH,
+ 	VEML6030_SCAN_TIMESTAMP,
+ };
+ 
++struct veml6030_rf {
++	struct regmap_field *it;
++	struct regmap_field *gain;
++};
++
+ struct veml603x_chip {
+ 	const char *name;
+ 	const int(*scale_vals)[][2];
+ 	const int num_scale_vals;
+ 	const struct iio_chan_spec *channels;
+ 	const int num_channels;
++	const struct reg_field gain_rf;
++	const struct reg_field it_rf;
+ 	int (*hw_init)(struct iio_dev *indio_dev, struct device *dev);
+ 	int (*set_info)(struct iio_dev *indio_dev);
+ 	int (*set_als_gain)(struct iio_dev *indio_dev, int val, int val2);
+@@ -91,6 +104,7 @@ struct veml603x_chip {
+ struct veml6030_data {
+ 	struct i2c_client *client;
+ 	struct regmap *regmap;
++	struct veml6030_rf rf;
+ 	int cur_resolution;
+ 	int cur_gain;
+ 	int cur_integration_time;
+@@ -330,17 +344,17 @@ static const struct regmap_config veml6030_regmap_config = {
+ static int veml6030_get_intgrn_tm(struct iio_dev *indio_dev,
+ 						int *val, int *val2)
+ {
+-	int ret, reg;
++	int it_idx, ret;
+ 	struct veml6030_data *data = iio_priv(indio_dev);
+ 
+-	ret = regmap_read(data->regmap, VEML6030_REG_ALS_CONF, &reg);
++	ret = regmap_field_read(data->rf.it, &it_idx);
+ 	if (ret) {
+ 		dev_err(&data->client->dev,
+ 				"can't read als conf register %d\n", ret);
+ 		return ret;
+ 	}
+ 
+-	switch ((reg >> 6) & 0xF) {
++	switch (it_idx) {
+ 	case 0:
+ 		*val2 = 100000;
+ 		break;
+@@ -405,8 +419,7 @@ static int veml6030_set_intgrn_tm(struct iio_dev *indio_dev,
+ 		return -EINVAL;
+ 	}
+ 
+-	ret = regmap_update_bits(data->regmap, VEML6030_REG_ALS_CONF,
+-					VEML6030_ALS_IT, new_int_time);
++	ret = regmap_field_write(data->rf.it, new_int_time);
+ 	if (ret) {
+ 		dev_err(&data->client->dev,
+ 				"can't update als integration time %d\n", ret);
+@@ -510,23 +523,22 @@ static int veml6030_set_als_gain(struct iio_dev *indio_dev,
+ 	struct veml6030_data *data = iio_priv(indio_dev);
+ 
+ 	if (val == 0 && val2 == 125000) {
+-		new_gain = 0x1000; /* 0x02 << 11 */
++		new_gain = 0x01;
+ 		gain_idx = 3;
+ 	} else if (val == 0 && val2 == 250000) {
+-		new_gain = 0x1800;
++		new_gain = 0x11;
+ 		gain_idx = 2;
+ 	} else if (val == 1 && val2 == 0) {
+ 		new_gain = 0x00;
+ 		gain_idx = 1;
+ 	} else if (val == 2 && val2 == 0) {
+-		new_gain = 0x800;
++		new_gain = 0x01;
+ 		gain_idx = 0;
+ 	} else {
+ 		return -EINVAL;
+ 	}
+ 
+-	ret = regmap_update_bits(data->regmap, VEML6030_REG_ALS_CONF,
+-					VEML6030_ALS_GAIN, new_gain);
++	ret = regmap_field_write(data->rf.gain, new_gain);
+ 	if (ret) {
+ 		dev_err(&data->client->dev,
+ 				"can't set als gain %d\n", ret);
+@@ -544,30 +556,31 @@ static int veml6035_set_als_gain(struct iio_dev *indio_dev, int val, int val2)
+ 	struct veml6030_data *data = iio_priv(indio_dev);
+ 
+ 	if (val == 0 && val2 == 125000) {
+-		new_gain = VEML6035_SENS;
++		new_gain = FIELD_GET(VEML6035_GAIN_M, VEML6035_SENS);
+ 		gain_idx = 5;
+ 	} else if (val == 0 && val2 == 250000) {
+-		new_gain = VEML6035_SENS | VEML6035_GAIN;
++		new_gain = FIELD_GET(VEML6035_GAIN_M, VEML6035_SENS |
++				      VEML6035_GAIN);
+ 		gain_idx = 4;
+ 	} else if (val == 0 && val2 == 500000) {
+-		new_gain = VEML6035_SENS | VEML6035_GAIN |
+-			VEML6035_DG;
++		new_gain = FIELD_GET(VEML6035_GAIN_M, VEML6035_SENS |
++				      VEML6035_GAIN | VEML6035_DG);
+ 		gain_idx = 3;
+ 	} else if (val == 1 && val2 == 0) {
+ 		new_gain = 0x0000;
+ 		gain_idx = 2;
+ 	} else if (val == 2 && val2 == 0) {
+-		new_gain = VEML6035_GAIN;
++		new_gain = FIELD_GET(VEML6035_GAIN_M, VEML6035_GAIN);
+ 		gain_idx = 1;
+ 	} else if (val == 4 && val2 == 0) {
+-		new_gain = VEML6035_GAIN | VEML6035_DG;
++		new_gain = FIELD_GET(VEML6035_GAIN_M, VEML6035_GAIN |
++				      VEML6035_DG);
+ 		gain_idx = 0;
+ 	} else {
+ 		return -EINVAL;
+ 	}
+ 
+-	ret = regmap_update_bits(data->regmap, VEML6030_REG_ALS_CONF,
+-				 VEML6035_GAIN_M, new_gain);
++	ret = regmap_field_write(data->rf.gain, new_gain);
+ 	if (ret) {
+ 		dev_err(&data->client->dev, "can't set als gain %d\n", ret);
+ 		return ret;
+@@ -581,17 +594,17 @@ static int veml6035_set_als_gain(struct iio_dev *indio_dev, int val, int val2)
+ static int veml6030_get_als_gain(struct iio_dev *indio_dev,
+ 						int *val, int *val2)
+ {
+-	int ret, reg;
++	int gain, ret;
+ 	struct veml6030_data *data = iio_priv(indio_dev);
+ 
+-	ret = regmap_read(data->regmap, VEML6030_REG_ALS_CONF, &reg);
++	ret = regmap_field_read(data->rf.gain, &gain);
+ 	if (ret) {
+ 		dev_err(&data->client->dev,
+ 				"can't read als conf register %d\n", ret);
+ 		return ret;
+ 	}
+ 
+-	switch ((reg >> 11) & 0x03) {
++	switch (gain) {
+ 	case 0:
+ 		*val = 1;
+ 		*val2 = 0;
+@@ -617,17 +630,17 @@ static int veml6030_get_als_gain(struct iio_dev *indio_dev,
+ 
+ static int veml6035_get_als_gain(struct iio_dev *indio_dev, int *val, int *val2)
+ {
+-	int ret, reg;
++	int gain, ret;
+ 	struct veml6030_data *data = iio_priv(indio_dev);
+ 
+-	ret = regmap_read(data->regmap, VEML6030_REG_ALS_CONF, &reg);
++	ret = regmap_field_read(data->rf.gain, &gain);
+ 	if (ret) {
+ 		dev_err(&data->client->dev,
+-			"can't read als conf register %d\n", ret);
++				"can't read als conf register %d\n", ret);
+ 		return ret;
+ 	}
+ 
+-	switch (FIELD_GET(VEML6035_GAIN_M, reg)) {
++	switch (gain) {
+ 	case 0:
+ 		*val = 1;
+ 		*val2 = 0;
+@@ -990,6 +1003,27 @@ static int veml7700_set_info(struct iio_dev *indio_dev)
+ 	return 0;
+ }
+ 
++static int veml6030_regfield_init(struct iio_dev *indio_dev)
++{
++	struct veml6030_data *data = iio_priv(indio_dev);
++	struct regmap *regmap = data->regmap;
++	struct device *dev = &data->client->dev;
++	struct regmap_field *rm_field;
++	struct veml6030_rf *rf = &data->rf;
++
++	rm_field = devm_regmap_field_alloc(dev, regmap, data->chip->it_rf);
++	if (IS_ERR(rm_field))
++		return PTR_ERR(rm_field);
++	rf->it = rm_field;
++
++	rm_field = devm_regmap_field_alloc(dev, regmap, data->chip->gain_rf);
++	if (IS_ERR(rm_field))
++		return PTR_ERR(rm_field);
++	rf->gain = rm_field;
++
++	return 0;
++}
++
+ /*
+  * Set ALS gain to 1/8, integration time to 100 ms, PSM to mode 2,
+  * persistence to 1 x integration time and the threshold
+@@ -1143,6 +1177,11 @@ static int veml6030_probe(struct i2c_client *client)
+ 	if (ret < 0)
+ 		return ret;
+ 
++	ret = veml6030_regfield_init(indio_dev);
++	if (ret)
++		return dev_err_probe(&client->dev, ret,
++				     "failed to init regfields\n");
++
+ 	ret = data->chip->hw_init(indio_dev, &client->dev);
+ 	if (ret < 0)
+ 		return ret;
+@@ -1191,6 +1230,8 @@ static const struct veml603x_chip veml6030_chip = {
+ 	.num_scale_vals = ARRAY_SIZE(veml6030_scale_vals),
+ 	.channels = veml6030_channels,
+ 	.num_channels = ARRAY_SIZE(veml6030_channels),
++	.gain_rf = VEML6030_GAIN_RF,
++	.it_rf = VEML6030_IT_RF,
+ 	.hw_init = veml6030_hw_init,
+ 	.set_info = veml6030_set_info,
+ 	.set_als_gain = veml6030_set_als_gain,
+@@ -1203,6 +1244,8 @@ static const struct veml603x_chip veml6035_chip = {
+ 	.num_scale_vals = ARRAY_SIZE(veml6035_scale_vals),
+ 	.channels = veml6030_channels,
+ 	.num_channels = ARRAY_SIZE(veml6030_channels),
++	.gain_rf = VEML6035_GAIN_RF,
++	.it_rf = VEML6030_IT_RF,
+ 	.hw_init = veml6035_hw_init,
+ 	.set_info = veml6030_set_info,
+ 	.set_als_gain = veml6035_set_als_gain,
+@@ -1215,6 +1258,8 @@ static const struct veml603x_chip veml7700_chip = {
+ 	.num_scale_vals = ARRAY_SIZE(veml6030_scale_vals),
+ 	.channels = veml7700_channels,
+ 	.num_channels = ARRAY_SIZE(veml7700_channels),
++	.gain_rf = VEML6030_GAIN_RF,
++	.it_rf = VEML6030_IT_RF,
+ 	.hw_init = veml6030_hw_init,
+ 	.set_info = veml7700_set_info,
+ 	.set_als_gain = veml6030_set_als_gain,
 
-On 01/18, Jonathan Cameron wrote:
-> On Wed, 15 Jan 2025 11:23:24 -0600
-> David Lechner <dlechner@baylibre.com> wrote:
-> 
-...
-> > > +1.1 Single-ended channels
-> > > +-------------------------
-> > > +
-> > > +Single-ended channels digitize the analog input voltage relative to ground and
-> > > +can be either unipolar or bipolar.
-> > > +
-> > > +1.1.1 Single-ended Unipolar Channels
-> > > +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> > > +
-> > > +::
-> > > +
-> > > +  ---------- VREF -------------
-> > > +      ´ `           ´ `                  _____________
-> > > +    /     \       /     \               /             |
-> > > +   /       \     /       \         --- <  IN    ADC   |
-> > > +            \   /         \   /         \             |
-> > > +             `-´           `-´           \       VREF |
-> > > +  -------- GND (0V) -----------           +-----------+
-> > > +                                                  ^
-> > > +                                                  |
-> > > +                                             External VREF
-> > > +
-> > > +The input voltage to a **single-ended unipolar** channel is allowed to swing
-> > > +from GND to VREF (where VREF is a voltage reference with electrical potential
-> > > +higher than system ground). The maximum input voltage is also called VFS
-> > > +(full-scale input voltage), with VFS being determined by VREF. The voltage
-> 
-> Just to align with acronym perhaps
-> Voltage input Full-Scale 
-> 
-Okay, will do.
+-- 
+2.43.0
 
-> > > +reference may be provided from an external supply or derived from the chip power
-> > > +source.
-> > > +
-> > > +A single-ended unipolar channel could be described in device tree like the
-> > > +following example::  
-> > 
-> > We should probably mention somewhere that channel@ nodes are only needed for
-> > chips that don't have uniform inputs.
-> 
-> They are allowed in all cases. For SoCs ADCs it's not unusual to have them even
-> if nothing exciting going on because they want to hide channels that aren't
-> wired to anything.  For stand along ADCs that is less common because people
-> don't buy a device with lots of channels intending to only use a few.
-> 
-> But sure, mention they may not be provided.
-
-Sure, will mention that. 
-
-> 
-> > 
-> > > +
-> > > +    adc@0 {
-> > > +        ...
-> > > +        #address-cells = <1>;
-> > > +        #size-cells = <0>;
-> > > +
-> > > +        channel@0 {
-> > > +            reg = <0>;  
-> > 
-> > If a chip has mixed differential and single-ended, single-channel could also
-> > be needed here in the case where reg is an arbitrary number and doesn't match
-> > the input pin number.
-> 
-> Indeed - that is a weird corner that would be good to highlight.
-
-Ack, will add a word about that too.
-
-> 
-> > 
-> > > +        };
-> > > +    };
-> > > +
-> > > +See ``Documentation/devicetree/bindings/iio/adc/adc.yaml`` for the complete
-> > > +documentation of ADC specific device tree properties.
-> > > +
-> > > +
-...
-> > > +1.2.2 Differential Unipolar Channels
-> > > +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> > > +
-> > > +For **differential unipolar** channels, the analog voltage at the positive input
-> > > +must also be higher than the voltage at the negative input. Thus, the actual
-> > > +input range allowed to a differential unipolar channel is IN- to +VREF. Because
-> > > +IN+ is allowed to swing with the measured analog signal and the input setup must
-> > > +guarantee IN+ will not go below IN- (nor IN- will raise above IN+), most
-> > > +differential unipolar channel setups have IN- fixed to a known voltage that does
-> > > +not fall within the voltage range expected for the measured signal. This leads
-> > > +to a setup that is equivalent to a pseudo-differential channel. Thus,
-> > > +differential unipolar channels are actually pseudo-differential unipolar
-> > > +channels.  
-> > 
-> > I don't think this is equevent to pseudo-differential unipolar. That one has
-> > a common mode voltage supply on the negative input. This one has a full range
-> > signal on the negative input. This is the diagram I was expecting here.
-> > 
-> > ::
-> > 
-> >   -------- VREF -------
-> >     ´ `       ´ `               +-------------------+
-> >   /     \   /     \   /        /                    |
-> >          `-´       `-´    --- <  IN+                |
-> >   ------ GND (0V) -----        |                    |
-> >                                |            ADC     |
-> >   -------- VREF -------        |                    |
-> >         ´ `       ´ `     --- <  IN-                |
-> >   \   /     \   /     \        \       VREF         |
-> >    `-´       `-´                +-------------------+
-> >   ------ GND (0V) -----                  ^        
-> >                                          |       
-> >                                   External VREF
-> 
-> If it's unipolar, output must be positive which isn't true here.
-> Do we actually see differential unipolar except for the pseudo case with
-> common mode voltage?   Seems like a weird device.
-
-I don't think we have differential unipolar with IN- allowed to float (i.e. not
-set to a constant voltage). Haven't seen any of those. Can't think of how we
-would support such thing either. See my reply to David for more thoughts on this.
-
-> 
-> > 
-> > > +
-> > > +1.3 Pseudo-differential Channels
-> > > +--------------------------------
-> > > +
-> > > +There is a third ADC input type which is called pseudo-differential or
-> > > +single-ended to differential configuration. A pseudo-differential channel is
-> > > +similar to a differential channel in that it also measures IN+ relative to IN-.
-> > > +However, unlike differential channels, the negative input is limited to a narrow
-> > > +(taken as constant) voltage range while only IN+ is allowed to swing. A
-> > > +pseudo-differential channel can be made out from a differential pair of inputs
-> > > +by restricting the negative input to a known voltage while allowing only the
-> > > +positive input to swing. Aside from that, some parts have a COM pin that allows
-> > > +single-ended inputs to be referenced to a common-mode voltage, making them
-> > > +pseudo-differential channels. Often, the common mode input voltage
-> > > +can be nicely described in the device tree as a voltage regulator (e.g.
-> > > +``com-supply``) since it is basically a constant voltage source.
-> > > +
-> > > +1.3.1 Pseudo-differential Unipolar Channels
-> > > +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> > > +
-> > > +::
-> > > +
-> > > +  -------- +VREF ------          +-------------------+
-> > > +    ´ `       ´ `               /                    |
-> > > +  /     \   /     \   /    --- <  IN+                |
-> > > +         `-´       `-´          |                    |
-> > > +  --------- IN- -------         |            ADC     |  
-> > 
-> > The bottom rail should be GND (or -VREF), not IN-. Making it GND in the diagram
-> > would be consistent with the other unipolar diagrams and reflect most typical
-> > cases. I think the counterexample you gave of AD4170-4 is the unusual case
-> > rather than the typical case.
-> > 
-> > FWIW, when I was first learning this stuff, I didn't really understand bipolar
-> > vs. unipolar until I saw diagrams that showed 0V as the bottom rail for unipolar
-> > and negative VREF as the bottom rail for bipolar. Even if it isn't strictly
-> > true in all cases, seeing the pattern was more helpful. Hard to say if most
-> > other people think like me though. :-)
-> 
-> Maybe IN- (typically GND) is appropriate?
-Sounds good to me.
-Can also add a typical case (with IN- at GND) example if desired.
-
-> > 
-...
-> > > +
-> > > +1.3.2 Pseudo-differential Bipolar Channels
-> > > +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> > > +
-> > > +::
-> > > +
-> > > +  -------- +VREF ------          +-------------------+
-> > > +    ´ `       ´ `               /                    |
-> > > +  /     \   /     \   /    --- <  IN+                |
-> > > +         `-´       `-´          |                    |
-> > > +  -------- -VREF ------         |            ADC     |
-> > > +                                |                    |
-> > > +  Common-mode voltage -->  --- <  IN-                |
-> > > +                                \       +VREF  -VREF |
-> > > +                                 +-------------------+
-> > > +                                          ^       ^
-> > > +                                          |       +---- External -VREF
-> > > +                                   External +VREF
-> > > +
-> > > +A **pseudo-differential bipolar** input is not limited by the level at IN- but
-> > > +it will be limited to -VREF or to GND on the lower end of the input range  
-> > 
-> > 
-> > If it was limited to GND, then it would be uniploar. It is only bipolar if
-> > -VREF is less than 0V.
-> 
-> I'm not sure on that.  See comment on your example above. That is
-> what I think a Pseudo-differential bipolar channel is (and it matches the
-> first thing google gave me).
-> 
-> Key here is that common mode voltage on IN- is between -VREF and +VREF so
-> we can swing past it and get both positive an negative.
-
-Yes, exactly.
-
-> 
-> > 
-...
-> > > --- a/Documentation/iio/index.rst
-> > > +++ b/Documentation/iio/index.rst
-> > > @@ -7,6 +7,7 @@ Industrial I/O
-> > >  .. toctree::
-> > >     :maxdepth: 1
-> > >  
-> > > +   iio_adc
-> > >     iio_configfs
-> > >     iio_devbuf
-> > >     iio_dmabuf_api
-> > > 
-> > > base-commit: 9b75dd1b7d6b98699a104c6b1eec0c8817e5fd4b  
-> > 
-> 
