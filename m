@@ -1,118 +1,147 @@
-Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AFA81E0DE6
-	for <linux-iio@vger.kernel.org>; Mon, 20 Jan 2025 14:11:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1FF033E7
+	for <linux-iio@vger.kernel.org>; Mon, 20 Jan 2025 14:15:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737382320; cv=none; b=KUn9vrjoQk8XT3A2U5I97LAO1050dk2hXYKYOfHEms6fCCfkqNjqOoegQT+6fAa7w3IkG0JG7PA8NbC9WrERjZ8eTwFkR6Km7Ca/zp5Jt06ksoG6UjPHLnyFDK+yC89k9rleoSUjinFRsWMrUIuuY1AaeJ5CT0mdijaTrUVp7YQ=
+	t=1737382538; cv=none; b=OcOJhnnUiTp/iJW5Avoa70lMnX1c3zIBAP9XtNFp7NniOzh2kt1GW0LoetIwIYyiGe8QRz4QjZEieHp7VKtw+duXgsOC+sA2WEL3WCE/yhDX6IZcPOiswi45UjCEpjLllWbFoC97xR9/eZE1JwMdjSSBoNExw+BxwejFvCMoXGQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737382320; c=relaxed/simple;
-	bh=YAuffjJ/hOF4tWtkCBthiKjc7h46t4U8Y7L5WfbatGI=;
-	h=From:References:In-Reply-To:MIME-Version:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NHAZzx3ZSkk+Bt28lQ0AqE7pkTWAu459AvGi/06PpBJl4nHhGBI6wxHXNP8ypw8WIcR/Bkwrcno4l+f4ahUsb0rnX/r+avsqRtq8qObdZasrB+9WuNFmM+uoGGcA6Y8F9T1+kx9s5UGs2G4D7KLT9hqhw5YrPqCG8LwlrphWSYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=Kug8KMqp; arc=none smtp.client-ip=209.85.160.50
+	s=arc-20240116; t=1737382538; c=relaxed/simple;
+	bh=Zsp71q6Rc0/Nhkg1Zve+/HiaQ5Vh0kbI2OZpw7dmjdg=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=bzPbwULYMyqYmldIXdwxZC3rnwpfh030PgInViURp521mopGlnfk9Ss1yZChPnoqYaWrqfVbbo8CUdR8kZ4RJLV9VJeJLRiJowkPempXulwN7W+T8AUEvLW18EZL9NVxXzrtDzSz084UBb76mT1Nl1RKr4ZLWLqUpCU3TF3I9Ag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=FLqoRtuL; arc=none smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="Kug8KMqp"
-Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-2adc2b6837eso1295028fac.1
-        for <linux-iio@vger.kernel.org>; Mon, 20 Jan 2025 06:11:58 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="FLqoRtuL"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-43634b570c1so32382255e9.0
+        for <linux-iio@vger.kernel.org>; Mon, 20 Jan 2025 06:15:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1737382317; x=1737987117; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:mime-version:in-reply-to:references
-         :user-agent:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=lBJHX/leRySwogU3LLXcsMAyho9zlRkLcfDGwEAvoMo=;
-        b=Kug8KMqpvdoHzdF/9FocFoPQ7ktuDlQFoQ0ObXfeOHNT6UJBGjlOT3g9VcW/LoF4pT
-         9kgcK0CGZnk+5OMOLcUzyFSfjTFNIOW9uBehPU/3nm3YpUuuc7PSf1B0A81nI/lv+Au2
-         jrDSL7I+7DrZzm61h20ImidQy+jKQpf0JqrGhNbyNhvdAUIq4TqDOry/Lj3fOEMOtSo7
-         MxKjD/CbpT7vTlq8Emo5U0UVHSsU0yz90HhfvQ5sOa+adchqO+qklpwDF4W0sJ2sjsAa
-         V5adbFqrrh1IskKvCGaUoPDYctMQbNCLms5qAtgXZY5vUahbgHJUfTDZJF4BN/R6NlJO
-         xY+Q==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1737382534; x=1737987334; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=D5slyFhFFg4eXgNrFHDN5dqCXylxctmjvDX+b8DDkEU=;
+        b=FLqoRtuLMSMA33g6QhKTKdQlqALcN5kAjA4vM65Y1WnXWNBEUAmCWlfzoTxc7Ykstg
+         Ew9E8zLAq+JrLixGp82Ms+EThaKpMiSedVVhrxES5HyPkXQB3FMlMrh/wzJy+RbMemtE
+         TjMCIZLgmV0B/otWPuekGzJL9r+EGKGEwDjUE9RVjSyPvGR+x9NHA1JeHzQGNpeSVg6m
+         Dy1Tuc/7WL294HZExQvpXfPJaf59TuYWWzqcsL5z6TLbgDbS7SbKmvlve06wbLm88vHM
+         T79++8S0bQO3gTYxrYbTct4hbSNz3ig60suDs59FabjsGfevQoJ+JqLpZmgtw2QfXxx/
+         0M6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737382317; x=1737987117;
-        h=cc:to:subject:message-id:date:mime-version:in-reply-to:references
-         :user-agent:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lBJHX/leRySwogU3LLXcsMAyho9zlRkLcfDGwEAvoMo=;
-        b=laDVQY5tZNFzFGB/kYdZRLoo5RDjc1lJiVWIM1mS8tDPVG+n6MG0PKKPQvSx33kWSj
-         0kSEzn+qRNXCoj4p+Mq+4F41ROpdNbJKhWCDmNSkVbeYLMIqSq5mF+wJSpfSwiU/GELi
-         d6gEbxfbv783bKxCREbrckPCfCaubfIPqPq5OvnYWdN6KGPJO9cZsm753JIEXTIhLPZW
-         ga1C2Nak/kQLZW1JeMbd6QpLbwn9ZegR+s8Bag8x9QZ0IAlXkwXTRDuA41yHeHEu4K/U
-         2My0JFqLgGQ0hdHWnpWQIBg1TaiUEtnLsFbuHyIWDW7cSheVLWzTtb1vfY/s2LZGhHIK
-         zdNQ==
-X-Gm-Message-State: AOJu0YwCexpnXons5qBXB9/iRtleIgj6vxHKTaEXgkUHNEPOuTVsp7/Y
-	8o58phW/r+l4cE/MeRdmO56DPn+BWxgEGn2/c05S1+k90ud7k+Hop2gSDTq+4ug9n2Xqudq9sWC
-	In5a1dMpKl4gF24A0pGZFz682FP87kgFQSo0p+76C0V1fpukH
-X-Gm-Gg: ASbGncs1gCVd8+FHbx7DH8fdDXvJq9vLl7prB4F1N4rmHVLIQ29riLSZRohYY47FVZY
-	O0IDO2JYxtSNrJzknzg3V7DQ0l02Wl4Qog280JmenxLlqeN/nwA==
-X-Google-Smtp-Source: AGHT+IFEaN/jIStERVW9M7MqjWWQmEG7EGXJjwG/0jHGRfV3YLI14NXWSvnS/+3IVRcAneOQV9Jpe7BKqXrsIBisxVE=
-X-Received: by 2002:a05:6871:7b81:b0:296:e481:8b4d with SMTP id
- 586e51a60fabf-2b1c0c541f4mr7256165fac.28.1737382317489; Mon, 20 Jan 2025
- 06:11:57 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 20 Jan 2025 09:11:56 -0500
+        d=1e100.net; s=20230601; t=1737382534; x=1737987334;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=D5slyFhFFg4eXgNrFHDN5dqCXylxctmjvDX+b8DDkEU=;
+        b=qfaoT4BzJQvTqXASo88wYsKJGDPai0Doi3QjHI7E9pWQdniH9lb7TBDthsvg0LrzVN
+         LFeOQOjTS+ngxhCirskIO+eVgAA6GdR+Qzcb6qEz/qK+Fy2WZBep27jwWk86FX+MaDSh
+         lQalQh8BucAojbibIjJA3GXpmNBeHn2jlAHBdXWJzUR1hKFCo14FrZKYQ/LRKwAGxrlL
+         IHUcmvn6Wq0V30LLycHMUJtQ41fYWYRBdrL7BL4k/1b81gF5yDqXKZeyZPcihHslnR21
+         HR6GqNkGr7cGuri55HGIgVerBKcZgkfLg6GFZx/pvF0WdOkoJc5mmDSY6jpYzNhZSMOj
+         CVFQ==
+X-Gm-Message-State: AOJu0YzE9TOZkNVUJZyR7hj1OyDLL07y7tCtH2mzUmyWB07zCghU+kfz
+	xx+Ioa3Wdypshbf3PbDrvW+UaMLCgwxz+p7DRDrCOwaK0rqcCYvIgNsufbyzQlPiILN7UAq0PbN
+	c
+X-Gm-Gg: ASbGnctZDsddMKfoySpLAAK2kqNg8YvxksIJyKg52uJHgRU+WPDvDB40gQT2PCOEKqX
+	3aCjl18u55co5Yj0tiLaisXMMIiAIaTMLQlAZJtV/4kQVME+8n5+uRPMdP1AmWRe8F4vahNuGuI
+	80c/F8HdcPRg9YXGrZlpFxtYE03MKuKGFAZR4/K8Cb9A7ZJBvxBMu93HCbBV1GGxxd6Uw4feGMe
+	zIifFOvuBhrSQxi9ROZyIEfgEiKvfyuGzUGoSjvAUmk93NXBhNzKhuctoZd+HaVfnUjwCGi2gb8
+	3cWRinbJzY6pAhqo773v4riuF4FI6+yArlpCEB3N
+X-Google-Smtp-Source: AGHT+IHFUycdZuUdNNL2CNUC3XjcWOrzCZ8rDoxNz7si90lttH6MVmvHJw+OO2r/Obhpa15FEiwyrQ==
+X-Received: by 2002:a05:600c:1f86:b0:436:aaf:7eb9 with SMTP id 5b1f17b1804b1-43891439d5fmr111420395e9.20.1737382533794;
+        Mon, 20 Jan 2025 06:15:33 -0800 (PST)
+Received: from [127.0.0.1] (alille-653-1-300-114.w90-1.abo.wanadoo.fr. [90.1.180.114])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-438904621cdsm141233345e9.27.2025.01.20.06.15.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jan 2025 06:15:32 -0800 (PST)
 From: Guillaume Ranquet <granquet@baylibre.com>
-User-Agent: meli 0.8.10
-References: <20250116-ad4111_openwire-v3-0-ea9ebf29bd1d@baylibre.com>
- <20250116-ad4111_openwire-v3-2-ea9ebf29bd1d@baylibre.com> <658b7ff2-7019-4a7e-bd0a-58467032978a@baylibre.com>
-In-Reply-To: <658b7ff2-7019-4a7e-bd0a-58467032978a@baylibre.com>
+Subject: [PATCH v4 0/2] iio: adc: ad7173: add ad4111 openwire detection
+ support
+Date: Mon, 20 Jan 2025 15:10:05 +0100
+Message-Id: <20250120-ad4111_openwire-v4-0-e647835dbe62@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Mon, 20 Jan 2025 09:11:56 -0500
-X-Gm-Features: AbW1kvbwkCGwWjx6RdJLj1yv68xqbIyEtUTAFNxUfzfMJaUDlVxd4N1gm5rs2CU
-Message-ID: <CABnWg9s3G9sWs+2gOJ_-g2ys-EKuL6OoZHg6EAQOTkMRx+2-hA@mail.gmail.com>
-Subject: Re: [PATCH RFC v3 2/2] iio: adc: ad7173: add openwire detection
- support for single conversions
-To: David Lechner <dlechner@baylibre.com>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAD5ZjmcC/3XP7WrDIBQG4FsJ/t4ZauoSwxi9jzGKH8dVWJJOb
+ ZZScu8zlsK6br/kVXzec84kYvAYSVedScDJRz8OOWweKmL2anhH8DZnwinfMMYEKLueu/GAw5c
+ PCCiERa1aLhtH8q9DQOfnIr6+XXLAz2OG0+WS9BijKnBXPd+6886oD6+DSnkMmBgwEK7l1DotT
+ Eu3Wp3WZ3w0Y/+ytmkVEXLofeqqAecEV5Cs5Xsf0xhOZbuJlfZ/FyltVstGmVY7Lm7bCjfxKyE
+ oo/Ke4ECB1g033FqkBv8g6h8Ee7on6kygkphHkNoy+4tYluUbvM4raLQBAAA=
+X-Change-ID: 20241115-ad4111_openwire-e55deba8297f
+To: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Guillaume Ranquet <granquet@baylibre.com>
+X-Mailer: b4 0.15-dev
 
-On Sat, 18 Jan 2025 18:25, David Lechner <dlechner@baylibre.com> wrote:
->On 1/16/25 9:01 AM, Guillaume Ranquet wrote:
->> Some chips of the ad7173 family supports open wire detection.
->>
->> Generate a level fault event whenever an external source is disconnected
->> from the system input on single conversions.
->>
->> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
->> ---
->
->...
->
->> @@ -1375,6 +1523,7 @@ static int ad7173_fw_parse_channel_config(struct iio_dev *indio_dev)
->>  		chan_st_priv->cfg.bipolar = false;
->>  		chan_st_priv->cfg.input_buf = st->info->has_input_buf;
->>  		chan_st_priv->cfg.ref_sel = AD7173_SETUP_REF_SEL_INT_REF;
->> +		chan_st_priv->cfg.openwire_comp_chan = -1;
->
->		^
->
->>  		st->adc_mode |= AD7173_ADC_MODE_REF_EN;
->>  		if (st->info->data_reg_only_16bit)
->>  			chan_arr[chan_index].scan_type = ad4113_scan_type;
->> @@ -1442,6 +1591,7 @@ static int ad7173_fw_parse_channel_config(struct iio_dev *indio_dev)
->>  		chan_st_priv->chan_reg = chan_index;
->>  		chan_st_priv->cfg.input_buf = st->info->has_input_buf;
->>  		chan_st_priv->cfg.odr = 0;
->> +		chan_st_priv->cfg.openwire_comp_chan = -1;
->
->		^
->
->Looks like the same line added twice in the same function.
+Hi.
 
-Indeed, but the first one is for the temperature channel which the
-parse_channel_config function handles separately than the rests of the
-input that are into the `device_for_each_child_node_scoped()`
+This patch adds the openwire detection support for the ad4111 chip.
+
+The openwire detection is done in software and relies on comparing the
+results of two conversions on different channels.
+
+The openwire detection on ad4111 is triggered automatically when a
+single conversion is requested.
+Due to the way openwire detection works on ad4111, implementing openwire
+detection for continuous conversion mode is out of the scope of this
+series.
+
+Following discussion on V2, I have changed the event to be
+IIO_EV_TYPE_FAULT and added a direction called IIO_EV_DIR_FAULT_OPENWIRE to
+signal the specific fault.
+
+The fault is level triggered (ie: the event will be sent as long as the
+fault persists).
+There's no event to signal that the fault has been "fixed", an absence
+of FAULT event means that the open wire condition is not detected.
 
 Thx,
 Guillaume.
->
->>
->>  		chan_st_priv->cfg.bipolar = fwnode_property_read_bool(child, "bipolar");
->>  		if (chan_st_priv->cfg.bipolar)
+
+Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+---
+Changes in v4:
+- Rename IIO_EV_DIR_OPENWIRE to IIO_EV_DIR_FAULT_OPENWIRE to make it
+  clearer the OPENWIRE direction is in the FAULT "namespace"
+- Removal of the RFC prefix
+- Link to v3: https://lore.kernel.org/r/20250116-ad4111_openwire-v3-0-ea9ebf29bd1d@baylibre.com
+
+Changes in v3:
+- Rename IIO_EV_TYPE_OPENWIRE to IIO_EV_TYPE_FAULT and add
+  IIO_EV_DIR_OPENWIRE.
+- Remove per channel open wire threshold configuration interface.
+- Link to v2: https://lore.kernel.org/r/20250109-ad4111_openwire-v2-0-0372c2dde0ce@baylibre.com
+
+Changes in v2:
+- Introduce IIO_EV_TYPE_OPENWIRE instead of misusing the IIO_EV_THRESH
+  event.
+- Link to v1: https://lore.kernel.org/r/20241115-ad4111_openwire-v1-1-db97ac8bf250@baylibre.com
+
+---
+Guillaume Ranquet (2):
+      iio: introduce the FAULT event type
+      iio: adc: ad7173: add openwire detection support for single conversions
+
+ drivers/iio/adc/ad7173.c         | 166 +++++++++++++++++++++++++++++++++++++++
+ drivers/iio/industrialio-event.c |   2 +
+ include/uapi/linux/iio/types.h   |   2 +
+ tools/iio/iio_event_monitor.c    |   4 +
+ 4 files changed, 174 insertions(+)
+---
+base-commit: c849f534b9ea4688304f80f4571af75931dda7c1
+change-id: 20241115-ad4111_openwire-e55deba8297f
+prerequisite-message-id: <20241115-ad411x_calibration-v1-1-5f820dfb5c80@baylibre.com>
+prerequisite-patch-id: 26241903b8fee8c4243e73d11fb2872cd9f52a15
+
+Best regards,
+-- 
+Guillaume Ranquet <granquet@baylibre.com>
+
