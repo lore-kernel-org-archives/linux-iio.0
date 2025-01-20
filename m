@@ -1,381 +1,324 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D368C1E32BE
-	for <linux-iio@vger.kernel.org>; Mon, 20 Jan 2025 14:15:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 330081E411C
+	for <linux-iio@vger.kernel.org>; Mon, 20 Jan 2025 14:59:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737382541; cv=none; b=LP7eaQO3HBcDbMD/U0Wxa0VBB+4dQrUAuTPxdbwnl2GSXhFX+AZeh1JpSdkvRaKGSP1u7wP6YywRxMhD6EWlltsaJdLQhqI8cMq0oQet1YYcLFL8LI3vXPGamzMa1KFAXP0R80ij/BrERL45jbLhOP1Bec6dor5ElIbQue0IShE=
+	t=1737385183; cv=none; b=N4OokFNrgCs2rP2vcFhuJbmCSXGWwhEZyQKF5hTEzHzRetaaX+SOvsSSS9Or1HgMTZ96GogeamBPxeEc0yrMKg7bod0Jb5rCvwn/750baGZpZrcUWuqCpFZp0DePORfSZr7dgZO8CfYd5MXkqMZf3MNPlPAEDiFxI5SO/5hEG8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737382541; c=relaxed/simple;
-	bh=4fWmPT5U5iIYdGC7FGnq6o830PTRNwQ1ZFYepe31fjI=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=TIoRkjIBFlkJFEFtKwgK2wXHKVC1gnGLR08CLCVTOjq2MLYMjaTBHeDHK59d+L3E+EV4ZTWGB9YqadXFjJOGEhfOM6OL1RsJkm5f5Vme7v9uLJY/IdtSY9uUKiaqWh6EJG/lcCd25Rd4Kn6hXJeyeSzSdgpcm8JtcfncTyn3n0Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=XNGcECdx; arc=none smtp.client-ip=209.85.221.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1737385183; c=relaxed/simple;
+	bh=AKIPfGPJFvZiS/iRGujwZKSJJiZR1tzVulRkdntn/d0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=uDU7fhxFp9YuAL/royDqnPVPF1jjOyKZxll86+6hNLZCwrBe1rAPBEFf8wRMcdlJoKqNJ9YmfxQIqBTdxFZ4NzDSAcM3bCXL5FKmNwRjYO04/x6PA8GWWB62vbjtQ+jKBd/hyL6y9MDSJdRs5/aCmEHN15omOOKjzq556L4y84k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=JBXzQO6s; arc=none smtp.client-ip=209.85.219.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="XNGcECdx"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-3863703258fso3664977f8f.1
-        for <linux-iio@vger.kernel.org>; Mon, 20 Jan 2025 06:15:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JBXzQO6s"
+Received: by mail-yb1-f179.google.com with SMTP id 3f1490d57ef6-e54bd61e793so8140932276.2
+        for <linux-iio@vger.kernel.org>; Mon, 20 Jan 2025 06:59:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1737382537; x=1737987337; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=u4AGdiyE0FIo0hXOi3JiADUkTve9fnI9QTIdSDa2ydg=;
-        b=XNGcECdx0RfnHBzoORXmftAO6gfydjvxvLJuRPgLLZfbh6kzyLbXO/jy7xfILX/mzb
-         o3Zw9OQjs1Vi4AXNrtHhWRStci03mJok1P/VePRZYEE995vgASvGOYvVgDHFIrQV5XkZ
-         2Xnv1RaOXofWsMJisTPmnAkpjpknTDBl/U+kIxyUi7fnuuSjVYMhfzRs9YKLVI46eaEQ
-         loNJw/JcaunMQchyUHYVg2gJt9n5LWb9LkKZPGV3NmxL/9wZjA8Xg86WEvEw4sGj/fCx
-         vBeJt5bLQHiovA8DO0a8fY1YzBLGkeCDR5hX26Za/DX+gzctj3I08cQ+YNzsk4TMZQ26
-         N/gQ==
+        d=linaro.org; s=google; t=1737385179; x=1737989979; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Y8HGj+4ADIYK1+I9oL+sbry4GxHS0y5T06mIK4lctbo=;
+        b=JBXzQO6sIbp4c8+XWIp9ZlwLq8LDpPXw84G3kZqybcS5+W07WFvrT3Fkm/roHDyUjt
+         VICOnW+dcl+Z0oZAuELB54WAfMlRqW1IUeC/dp5lKZBLMOwAXgnz2IECUSMfm/vTZEDG
+         wrnHybilSMkM+UFEkd9d+JywGrir1S1fTZ/1IS0PiYGws4NjaqG/9S3aHeCFjhRL2dwd
+         Cc9WJu/j9D+XIbImpBSVKe3WZ0MrLXnW8cI+lGUgbvl/zdNYbKkbIDFA+S38wFAhMBrr
+         1pgLEpcDwOHeHpLDAeoElE3PJBpi4P9dcM+h9VGWs0EX+6SsSDmlz7T0p+pV+eMU14/S
+         qShQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737382537; x=1737987337;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=u4AGdiyE0FIo0hXOi3JiADUkTve9fnI9QTIdSDa2ydg=;
-        b=pA6f1PYUHRwoFY9JW0wYcI5JtY5NzQ7uPGm8IfX72rZAvQpuSUgCbaEoJnVEW6nGSu
-         IOTbbLrJI0dz0Yd8lYSPTAp6x14kfaorN0I1HYvG+12vd68R0k5QJqoGCrcpCtI9EtMC
-         S3fvu7vareiI07m7xTlLYkUkwKEL+QU0Adrm88TFjYBCncrkgsL64VzNsnAWes8B4I+k
-         3vAaocNtuvV0DdI3lPLvhX5szGXXnv7YuYUUt4a7J4zDKF9Gyoj75/IfuWanXTIinyRk
-         PXyS0F0hg7AMWd60ce0m6L040x6ytpJTb5gcsLMiP2AzeicJS8/akdBSsHVQhm/WM4yu
-         LVLg==
-X-Gm-Message-State: AOJu0YxORT9+N8db5f4VNM1/1lOE+L4U3Cc1ChXaeany/TojPOrFzNCN
-	P5zCp+uwz+M3LeRlkdDayc3kIv+6HZA1eFOEPZjwIvkNVkD+/41SF6KFA+GsDJN9/tltjIa413E
-	K
-X-Gm-Gg: ASbGnct/BKay8nYAqnP8Gfb9LS4B4PjQlI6VOciLLQ2KVT8JR9VtJI9SJUixXZbFSr0
-	Ae33+6y2OU1ssSJZ/fApn6HeKr8QxrsihXDVY/9NWuNNtTj1Ho/S80EfFi5VG1IIRR/10OfcuX5
-	koE+5xj1hLCOOYctQ3q1t+Hnm6GnDHqwQ8gDMqooL4lGSBfuscMen07dsaEKYfhk8t6vNtIGFSY
-	F89nz1iQWuz+Um9yLD3vgdcJUsW358LIikXOZZdWNaoo8LI+J/IqvGP18J3sRDthcFToD5xh4Fl
-	0H+PxFM2iHMrOmGxCkF2AvNCO2qoF/yXxZV2kHPU
-X-Google-Smtp-Source: AGHT+IGe0i5va4/MmxVt8K6rQe8tH2KZ2ekUOvHo1Uf6eI0TGKMvhY3ImwajOXiWhNtHUB6cHVoXlA==
-X-Received: by 2002:a05:6000:1864:b0:38a:8b34:76b0 with SMTP id ffacd0b85a97d-38bec5489aamr15454266f8f.27.1737382536998;
-        Mon, 20 Jan 2025 06:15:36 -0800 (PST)
-Received: from [127.0.0.1] (alille-653-1-300-114.w90-1.abo.wanadoo.fr. [90.1.180.114])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-438904621cdsm141233345e9.27.2025.01.20.06.15.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2025 06:15:36 -0800 (PST)
-From: Guillaume Ranquet <granquet@baylibre.com>
-Date: Mon, 20 Jan 2025 15:10:07 +0100
-Subject: [PATCH v4 2/2] iio: adc: ad7173: add openwire detection support
- for single conversions
+        d=1e100.net; s=20230601; t=1737385179; x=1737989979;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Y8HGj+4ADIYK1+I9oL+sbry4GxHS0y5T06mIK4lctbo=;
+        b=vCxFFhKwlquyGsR0As4UmcLW45I2MVr8kCpjw8gMy8KcBHbqDT9LgjUhzeUi9zOcWE
+         EwnPR8VARustXxcTG3a3EdDbyMwzyxZLe+SY5m384DGdRNIm5o8qxMF3xwBSSnvDM2A7
+         48Gt5MA9VFLUQGmt0uZAPO2ZgGwR1lX7Fhd5g7LIRL5PLCsaT2ta7r3qedUKCyoRx5lv
+         nIob/mmebJv4QS6PhR+9RpvItR6D1c+d5a2vP7j9/ul5gB9j6RgE2PGtzeJpMb27hfB0
+         BMLbTxjVLwAq1OxYpU6RTaThTzXRShZWgv/BdoSDa04+NvElYmnnn2KqRR9CgTPKQJ9B
+         UDBA==
+X-Forwarded-Encrypted: i=1; AJvYcCUWODiRGcq/pRXGDMqwnw+2PvArvnvL8YZJvvVtxhJkCZlQxBYlZrjzd/doWTNCnAvi7s+QlTK98kc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwZgIj0vNnrcHU4ErHU7EWk1olmE+KLPVF0raHR6My19P0qopv2
+	ZEsbQ3zUjAPAOLYvrLYbJlWGg6y4rK5HGDpweXi2FzjlhbKj2gGxVjcoWBmlgKPgf/XSkXTFs1O
+	8KzGgUqKU6uqVahLr+SPKQQ+ttfgMX2O8UPwFBA==
+X-Gm-Gg: ASbGncv50qexQmlqv2Tf4Jg2iSYzYIp+s9+7i+YYr1Oc3gwTTsjNaYt9fiAgrTLx3Iq
+	OXZsvtLAgjmGmmaKohwt7etabnNIhjYToT2d+hPmUnmTXyhWQ/oU1
+X-Google-Smtp-Source: AGHT+IFQ5IXG4S9ARGvXg4t9oYdvzyL1htQknMe99cK2eITxWGkv2ohuVapx9MBkkQHqe2R/xZnfnZHhvClZ+XPELD0=
+X-Received: by 2002:a05:6902:2304:b0:e57:3fb7:598f with SMTP id
+ 3f1490d57ef6-e57b1051949mr10231733276.13.1737385178986; Mon, 20 Jan 2025
+ 06:59:38 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250120-ad4111_openwire-v4-2-e647835dbe62@baylibre.com>
-References: <20250120-ad4111_openwire-v4-0-e647835dbe62@baylibre.com>
-In-Reply-To: <20250120-ad4111_openwire-v4-0-e647835dbe62@baylibre.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Guillaume Ranquet <granquet@baylibre.com>
-X-Mailer: b4 0.15-dev
+References: <20250103140042.1619703-1-claudiu.beznea.uj@bp.renesas.com>
+ <20250103140042.1619703-2-claudiu.beznea.uj@bp.renesas.com>
+ <20250104135225.2573285b@jic23-huawei> <44e4a6b4-39a4-49d0-b3a5-fc5545c39a56@tuxon.dev>
+ <20250111131409.36bebfd3@jic23-huawei> <bb987a1b-a999-478c-8e35-124fcf41561d@tuxon.dev>
+ <CAPDyKFoJ3pLU-5_b5MSxMZd7B1cfOvmcdqR4FGkU2Wb7No0mcw@mail.gmail.com> <20250117155226.00002691@huawei.com>
+In-Reply-To: <20250117155226.00002691@huawei.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Mon, 20 Jan 2025 15:59:02 +0100
+X-Gm-Features: AbW1kva-aWI1SiBCmCsXiQ7gM90scDx3fujv8_8NycEvSMaCU96MoLvTbZTyre0
+Message-ID: <CAPDyKFpQUMOFtA-QCbYdaeKSDGJpnjcA+tiKZ=kzmrjYRtFZdw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iio: adc: rzg2l_adc: Drop devm_pm_runtime_enable()
+To: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Claudiu Beznea <claudiu.beznea@tuxon.dev>, Jonathan Cameron <jic23@kernel.org>, 
+	prabhakar.mahadev-lad.rj@bp.renesas.com, lars@metafoo.de, 
+	linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, 
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	linux-pm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Some chips of the ad7173 family supports open wire detection.
+On Fri, 17 Jan 2025 at 16:52, Jonathan Cameron
+<Jonathan.Cameron@huawei.com> wrote:
+>
+> On Wed, 15 Jan 2025 16:29:15 +0100
+> Ulf Hansson <ulf.hansson@linaro.org> wrote:
+>
+> > On Wed, 15 Jan 2025 at 14:37, Claudiu Beznea <claudiu.beznea@tuxon.dev> wrote:
+> > >
+> > > Hi, Jonathan,
+> > >
+> > > Thank you for your input!
+> > >
+> > > On 11.01.2025 15:14, Jonathan Cameron wrote:
+> > > > On Mon, 6 Jan 2025 11:18:41 +0200
+> > > > Claudiu Beznea <claudiu.beznea@tuxon.dev> wrote:
+> > > >
+> > > >> Hi, Jonathan,
+> > > >>
+> > > >>
+> > > >> On 04.01.2025 15:52, Jonathan Cameron wrote:
+> > > >>> On Fri,  3 Jan 2025 16:00:41 +0200
+> > > >>> Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> > > >>>
+> > > >>>> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> > > >>> +CC Rafael and linux-pm
+> > > >>>
+> > > >>>>
+> > > >>>> On all systems where the rzg2l_adc driver is used, the ADC clocks are part
+> > > >>>> of a PM domain. The code that implements the PM domains support is in
+> > > >>>> drivers/clk/renesas/rzg2l-cpg.c, the functions of interest for this commit
+> > > >>>> being rzg2l_cpg_attach_dev() and rzg2l_cpg_deattach_dev(). The PM
+> > > >>>> domains support is registered with GENPD_FLAG_PM_CLK which, according to
+> > > >>>> the documentation, instructs genpd to use the PM clk framework while
+> > > >>>> powering on/off attached devices.
+> > > >>>>
+> > > >>>> During probe, the ADC device is attached to the PM domain
+> > > >>>> controlling the ADC clocks. Similarly, during removal, the ADC device is
+> > > >>>> detached from the PM domain.
+> > > >>>>
+> > > >>>> The detachment call stack is as follows:
+> > > >>>>
+> > > >>>> device_driver_detach() ->
+> > > >>>>   device_release_driver_internal() ->
+> > > >>>>     __device_release_driver() ->
+> > > >>>>       device_remove() ->
+> > > >>>>         platform_remove() ->
+> > > >>>>           dev_pm_domain_detach()
+> > > >>>>
+> > > >>>> During driver unbind, after the ADC device is detached from its PM domain,
+> > > >>>> the device_unbind_cleanup() function is called, which subsequently invokes
+> > > >>>> devres_release_all(). This function handles devres resource cleanup.
+> > > >>>>
+> > > >>>> If runtime PM is enabled via devm_pm_runtime_enable(), the cleanup process
+> > > >>>> triggers the action or reset function for disabling runtime PM. This
+> > > >>>> function is pm_runtime_disable_action(), which leads to the following call
+> > > >>>> stack of interest when called:
+> > > >>>>
+> > > >>>> pm_runtime_disable_action() ->
+> > > >>>>   pm_runtime_dont_use_autosuspend() ->
+> > > >>>
+> > > >>> So is the only real difference that in the code below you disable runtime pm
+> > > >>> before autosuspend?
+> > > >>
+> > > >> No, the difference is that now, the driver specific runtime PM APIs are not
+> > > >> called anymore (through the pointed call stack) after the ADC was removed
+> > > >> from it's PM domain.
+> > > >
+> > > > By my reading they are only not called now because you turn autosuspend off
+> > > > after disabling runtime PM.
+> > >
+> > > Sorry, I wanted to say that the runtime PM APIs are not called anymore from
+> > > devm_action_release(), though this call stack:
+> > >
+> > > [   24.801195] Call trace:
+> > > [   24.803633]  rzg2l_adc_pm_runtime_suspend+0x18/0x54 (P)
+> > > [   24.808847]  pm_generic_runtime_suspend+0x2c/0x44 (L)
+> > > [   24.813887]  pm_generic_runtime_suspend+0x2c/0x44
+> > > [   24.818580]  __rpm_callback+0x48/0x198
+> > > [   24.822319]  rpm_callback+0x68/0x74
+> > > [   24.825798]  rpm_suspend+0x100/0x578
+> > > [   24.829362]  rpm_idle+0xd0/0x17c
+> > > [   24.832582]  update_autosuspend+0x30/0xc4
+> > > [   24.836580]  pm_runtime_disable_action+0x40/0x64
+> > > [   24.841184]  devm_action_release+0x14/0x20
+> > > [   24.845274]  devres_release_all+0xa0/0x100
+> > > [   24.849361]  device_unbind_cleanup+0x18/0x60
+> > >
+> > > This is because I dropped the devm_pm_runtime_enable() which registers the
+> > > pm_runtime_disable_action(), which is called at the time the
+> > > device_unbind_cleanup() is called, which is called when the ADC is not
+> > > anymore part of its PM domain.
+> > >
+> > > If I change the order in remove function proposed in this patch, thus do:
+> > >
+> > > +static void rzg2l_adc_remove(struct platform_device *pdev)
+> > > +{
+> > > +       struct device *dev = &pdev->dev;
+> > > +
+> > > +       pm_runtime_dont_use_autosuspend(dev);
+> > > +       pm_runtime_disable(dev);
+> > >  }
+> > >
+> > > nothing changes with the behavior of this patch. There will be no issue if
+> > > the device is runtime suspended/resumed through the
+> > > pm_runtime_dont_use_autosuspend() because at the time the
+> > > rzg2l_adc_remove() is called the ADC is still part of the PM domain.
+> > >
+> > >
+> > >
+> > > >
+> > > >>
+> > > >>
+> > > >>>  Can you still do that with a devm callback just not
+> > > >>> the standard one?
+> > > >>
+> > > >> No. It doesn't matter if we call the standard devm callback or driver
+> > > >> specific one. As long as it is devm it will impact us as long as the driver
+> > > >> specific runtime PM APIs are called through devres_release_all() after
+> > > >> dev_pm_domain_detach(). And at that time the PM domain may be off along
+> > > >> with its clocks disabled.
+> > > >
+> > > > As above, I think that this is only the case because of the reordering
+> > > > of those two calls, not something more fundamental.
+> > >
+> > > I tried having a local devm function (the following diff applied with this
+> > > patch reverted) identical with pm_runtime_disable_action():
+> > >
+> > > diff --git a/drivers/iio/adc/rzg2l_adc.c b/drivers/iio/adc/rzg2l_adc.c
+> > > index 22a581c894f8..459cc9c67eec 100644
+> > > --- a/drivers/iio/adc/rzg2l_adc.c
+> > > +++ b/drivers/iio/adc/rzg2l_adc.c
+> > > @@ -423,6 +423,12 @@ static int rzg2l_adc_hw_init(struct device *dev,
+> > > struct rzg2l_adc *adc)
+> > >         return ret;
+> > >  }
+> > >
+> > > +static void rzg2l_pm_runtime_disable(void *data)
+> > > +{
+> > > +       pm_runtime_dont_use_autosuspend(data);
+> > > +       pm_runtime_disable(data);
+> > > +}
+> > > +
+> > >  static int rzg2l_adc_probe(struct platform_device *pdev)
+> > >  {
+> > >         struct device *dev = &pdev->dev;
+> > > @@ -463,7 +469,9 @@ static int rzg2l_adc_probe(struct platform_device *pdev)
+> > >
+> > >         pm_runtime_set_autosuspend_delay(dev, 300);
+> > >         pm_runtime_use_autosuspend(dev);
+> > > -       ret = devm_pm_runtime_enable(dev);
+> > > +       pm_runtime_enable(dev);
+> > > +
+> > > +       ret = devm_add_action_or_reset(dev, rzg2l_pm_runtime_disable, dev);
+> > >         if (ret)
+> > >                 return ret;
+> > >
+> > > With this the issue is still reproducible.
+> > >
+> > > However, changing the order of functions in rzg2l_pm_runtime_disable() and
+> > > having it like:
+> > >
+> > > +static void rzg2l_pm_runtime_disable(void *data)
+> > > +{
+> > > +       pm_runtime_disable(data);
+> > > +       pm_runtime_dont_use_autosuspend(data);
+> > > +}
+> > >
+> > >
+> > > leads to no failure when doing unbind/bind.
+> > >
+> > > However, I see the pm_runtime_disable() can still call rpm_resume() under
+> > > certain conditions. It can still lead to failures if it is called after the
+> > > device was remove from its PM domain.
+> > >
+> > > >
+> > > > In driver remove flow, device_unbind_cleanup9() is called
+> > > > just after device_remove() which is calling the dev->driver_remove()
+> > > > callback. There are no runtime pm related calls in between that I can see.
+> > >
+> > > On my side the device_remove() is calling dev->bus->remove() which is
+> > > platform_remove(), which calls the dev_pm_domain_detach(). The
+> > > dev_pm_domain_detach() detaches the ADC from it's PM domain. Because of
+> > > this, accessing now the ADC registers after a runtime resume leads to
+> > > failures pointed in this patch (as of my investigation) (as the ADC is not
+> > > anymore part of its PM domain and its PM domain is not started anymore
+> > > though runtime PM APIs).
+> > >
+> > > A similar issue was found while I was adding thermal support for RZ/G3S,
+> > > explained in
+> > > https://lore.kernel.org/all/20250103163805.1775705-3-claudiu.beznea.uj@bp.renesas.com
+> > >
+> > >
+> > > Jonathan, Rafael, Ulf, all,
+> > >
+> > > Do consider OK to change the order in pm_runtime_disable_action() to get
+> > > rid of these issues, e.g.:
+> > >
+> > > diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
+> > > index 2ee45841486b..f27d311d2619 100644
+> > > --- a/drivers/base/power/runtime.c
+> > > +++ b/drivers/base/power/runtime.c
+> > > @@ -1547,8 +1547,8 @@ EXPORT_SYMBOL_GPL(pm_runtime_enable);
+> > >
+> > >  static void pm_runtime_disable_action(void *data)
+> > >  {
+> > > -       pm_runtime_dont_use_autosuspend(data);
+> > >         pm_runtime_disable(data);
+> > > +       pm_runtime_dont_use_autosuspend(data);
+> > >  }
+> > >
+> > > though I see a rpm_resume() call is still possible though pm_runtime_disable().
+> >
+> > I am still worried about keeping the device runtime enabled during a
+> > window when we have turned off all resources for the device. Typically
+> > we want to leave the device in a low power state after unbind.
+> >
+> > That said, I would rather just drop the devm_pm_runtime_enable() API
+> > altogether and convert all users of it into
+> > pm_runtime_enable|disable(), similar to what your patch does.
+>
+> That is making a mess of a lot of automated cleanup for a strange
+> runtime pm related path.  This is pain a driver should not have
+> to deal with, though I'm not clear what the right solution is!
+>
+> Key is that drivers should not mix devm managed cleanup and not, so
+> that means that anything that happens after runtime pm is enabled
+> has to be torn down manually.  One solution to this might be to
+> always enable it late assuming that is safe to do so there is
+> never anything else done after it in the probe path of a driver.
 
-Generate a level fault event whenever an external source is disconnected
-from the system input on single conversions.
+The problem is that runtime PM isn't really comparable to other
+resources that we are managing through devm* functions.
 
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
----
- drivers/iio/adc/ad7173.c | 166 +++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 166 insertions(+)
+Enabling runtime PM for a device changes the behaviour for how
+power-mgmt is handled for the device. Enabling/disabling of runtime PM
+really needs to be explicitly controlled by the driver for the device.
 
-diff --git a/drivers/iio/adc/ad7173.c b/drivers/iio/adc/ad7173.c
-index 11ff148cb5a315d32485acf04b8d6f7d0fb6e5fa..a2ea8f7ae8e61f1f3cdfba795551de2db96b8d60 100644
---- a/drivers/iio/adc/ad7173.c
-+++ b/drivers/iio/adc/ad7173.c
-@@ -35,6 +35,7 @@
- #include <linux/units.h>
- 
- #include <linux/iio/buffer.h>
-+#include <linux/iio/events.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
-@@ -102,6 +103,7 @@
- 
- #define AD7173_GPIO_PDSW	BIT(14)
- #define AD7173_GPIO_OP_EN2_3	BIT(13)
-+#define AD4111_GPIO_GP_OW_EN	BIT(12)
- #define AD7173_GPIO_MUX_IO	BIT(12)
- #define AD7173_GPIO_SYNC_EN	BIT(11)
- #define AD7173_GPIO_ERR_EN	BIT(10)
-@@ -149,6 +151,7 @@
- 
- #define AD7173_FILTER_ODR0_MASK		GENMASK(5, 0)
- #define AD7173_MAX_CONFIGS		8
-+#define AD4111_OW_DET_THRSH_MV		300
- 
- #define AD7173_MODE_CAL_INT_ZERO		0x4 /* Internal Zero-Scale Calibration */
- #define AD7173_MODE_CAL_INT_FULL		0x5 /* Internal Full-Scale Calibration */
-@@ -181,11 +184,15 @@ struct ad7173_device_info {
- 	bool has_int_ref;
- 	bool has_ref2;
- 	bool has_internal_fs_calibration;
-+	bool has_openwire_det;
- 	bool higher_gpio_bits;
- 	u8 num_gpios;
- };
- 
- struct ad7173_channel_config {
-+	/* Openwire detection threshold */
-+	unsigned int openwire_thrsh_raw;
-+	int openwire_comp_chan;
- 	u8 cfg_slot;
- 	bool live;
- 
-@@ -202,6 +209,7 @@ struct ad7173_channel {
- 	unsigned int chan_reg;
- 	unsigned int ain;
- 	struct ad7173_channel_config cfg;
-+	bool openwire_det_en;
- };
- 
- struct ad7173_state {
-@@ -280,6 +288,7 @@ static const struct ad7173_device_info ad4111_device_info = {
- 	.has_current_inputs = true,
- 	.has_int_ref = true,
- 	.has_internal_fs_calibration = true,
-+	.has_openwire_det = true,
- 	.clock = 2 * HZ_PER_MHZ,
- 	.sinc5_data_rates = ad7173_sinc5_data_rates,
- 	.num_sinc5_data_rates = ARRAY_SIZE(ad7173_sinc5_data_rates),
-@@ -616,6 +625,76 @@ static int ad7173_calibrate_all(struct ad7173_state *st, struct iio_dev *indio_d
- 	return 0;
- }
- 
-+/*
-+ * Associative array of channel pairs for open wire detection
-+ * The array is indexed by ain and gives the associated channel pair
-+ * to perform the open wire detection with
-+ * the channel pair [0] is for non differential and pair [1]
-+ * is for differential inputs
-+ */
-+static int openwire_ain_to_channel_pair[][2][2] = {
-+/*	AIN     Single    Differential */
-+	[0] = { {0, 15},  {1, 2}   },
-+	[1] = { {1, 2},   {2, 1}   },
-+	[2] = { {3, 4},   {5, 6}   },
-+	[3] = { {5, 6},   {6, 5}   },
-+	[4] = { {7, 8},   {9, 10}  },
-+	[5] = { {9, 10},  {10, 9}  },
-+	[6] = { {11, 12}, {13, 14} },
-+	[7] = { {13, 14}, {14, 13} },
-+};
-+
-+/*
-+ * Openwire detection on ad4111 works by running the same input measurement
-+ * on two different channels and compare if the difference between the two
-+ * measurements exceeds a certain value (typical 300mV)
-+ */
-+static int ad4111_openwire_event(struct iio_dev *indio_dev,
-+				 const struct iio_chan_spec *chan)
-+{
-+	struct ad7173_state *st = iio_priv(indio_dev);
-+	struct ad7173_channel *adchan = &st->channels[chan->address];
-+	struct ad7173_channel_config *cfg = &adchan->cfg;
-+	int ret, val1, val2;
-+
-+	ret = regmap_set_bits(st->reg_gpiocon_regmap, AD7173_REG_GPIO,
-+			      AD4111_GPIO_GP_OW_EN);
-+	if (ret)
-+		return ret;
-+
-+	adchan->cfg.openwire_comp_chan =
-+		openwire_ain_to_channel_pair[chan->channel][chan->differential][0];
-+
-+	ret = ad_sigma_delta_single_conversion(indio_dev, chan, &val1);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev,
-+			"Error running ad_sigma_delta single conversion: %d", ret);
-+		goto out;
-+	}
-+
-+	adchan->cfg.openwire_comp_chan =
-+		openwire_ain_to_channel_pair[chan->channel][chan->differential][1];
-+
-+	ret = ad_sigma_delta_single_conversion(indio_dev, chan, &val2);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev,
-+			"Error running ad_sigma_delta single conversion: %d", ret);
-+		goto out;
-+	}
-+
-+	if (abs(val1 - val2) > cfg->openwire_thrsh_raw)
-+		iio_push_event(indio_dev,
-+			       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE, chan->address,
-+						    IIO_EV_TYPE_FAULT, IIO_EV_DIR_FAULT_OPENWIRE),
-+			       iio_get_time_ns(indio_dev));
-+
-+out:
-+	adchan->cfg.openwire_comp_chan = -1;
-+	regmap_clear_bits(st->reg_gpiocon_regmap, AD7173_REG_GPIO,
-+			  AD4111_GPIO_GP_OW_EN);
-+	return ret;
-+}
-+
- static int ad7173_mask_xlate(struct gpio_regmap *gpio, unsigned int base,
- 			     unsigned int offset, unsigned int *reg,
- 			     unsigned int *mask)
-@@ -813,6 +892,9 @@ static int ad7173_set_channel(struct ad_sigma_delta *sd, unsigned int channel)
- 	      FIELD_PREP(AD7173_CH_SETUP_SEL_MASK, st->channels[channel].cfg.cfg_slot) |
- 	      st->channels[channel].ain;
- 
-+	if (st->channels[channel].cfg.openwire_comp_chan >= 0)
-+		channel = st->channels[channel].cfg.openwire_comp_chan;
-+
- 	return ad_sd_write_reg(&st->sd, AD7173_REG_CH(channel), 2, val);
- }
- 
-@@ -861,6 +943,11 @@ static int ad7173_disable_all(struct ad_sigma_delta *sd)
- 
- static int ad7173_disable_one(struct ad_sigma_delta *sd, unsigned int chan)
- {
-+	struct ad7173_state *st = ad_sigma_delta_to_ad7173(sd);
-+
-+	if (st->channels[chan].cfg.openwire_comp_chan >= 0)
-+		chan = st->channels[chan].cfg.openwire_comp_chan;
-+
- 	return ad_sd_write_reg(sd, AD7173_REG_CH(chan), 2, 0);
- }
- 
-@@ -968,6 +1055,12 @@ static int ad7173_read_raw(struct iio_dev *indio_dev,
- 		if (ret < 0)
- 			return ret;
- 
-+		if (ch->openwire_det_en) {
-+			ret = ad4111_openwire_event(indio_dev, chan);
-+			if (ret < 0)
-+				return ret;
-+		}
-+
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 
-@@ -1112,12 +1205,57 @@ static int ad7173_debug_reg_access(struct iio_dev *indio_dev, unsigned int reg,
- 	return ad_sd_write_reg(&st->sd, reg, reg_size, writeval);
- }
- 
-+static int ad7173_write_event_config(struct iio_dev *indio_dev,
-+				     const struct iio_chan_spec *chan,
-+				     enum iio_event_type type,
-+				     enum iio_event_direction dir,
-+				     bool state)
-+{
-+	struct ad7173_state *st = iio_priv(indio_dev);
-+	struct ad7173_channel *adchan = &st->channels[chan->address];
-+
-+	switch (type) {
-+	case IIO_EV_TYPE_FAULT:
-+		adchan->openwire_det_en = state;
-+		return 0;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad7173_read_event_config(struct iio_dev *indio_dev,
-+				    const struct iio_chan_spec *chan,
-+				    enum iio_event_type type,
-+				    enum iio_event_direction dir)
-+{
-+	struct ad7173_state *st = iio_priv(indio_dev);
-+	struct ad7173_channel *adchan = &st->channels[chan->address];
-+
-+	switch (type) {
-+	case IIO_EV_TYPE_FAULT:
-+		return adchan->openwire_det_en;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_event_spec ad4111_events[] = {
-+	{
-+		.type = IIO_EV_TYPE_FAULT,
-+		.dir = IIO_EV_DIR_FAULT_OPENWIRE,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-+		.mask_shared_by_all = BIT(IIO_EV_INFO_ENABLE),
-+	},
-+};
-+
- static const struct iio_info ad7173_info = {
- 	.read_raw = &ad7173_read_raw,
- 	.write_raw = &ad7173_write_raw,
- 	.debugfs_reg_access = &ad7173_debug_reg_access,
- 	.validate_trigger = ad_sd_validate_trigger,
- 	.update_scan_mode = ad7173_update_scan_mode,
-+	.write_event_config = ad7173_write_event_config,
-+	.read_event_config = ad7173_read_event_config,
- };
- 
- static const struct iio_scan_type ad4113_scan_type = {
-@@ -1321,6 +1459,21 @@ static int ad7173_validate_reference(struct ad7173_state *st, int ref_sel)
- 	return 0;
- }
- 
-+static int ad7173_validate_openwire_ain_inputs(struct ad7173_state *st,
-+					       bool differential,
-+					       unsigned int ain0,
-+					       unsigned int ain1)
-+{
-+	/*
-+	 * If the channel is configured as differential,
-+	 * the ad4111 requires specific ains to be used together
-+	 */
-+	if (differential)
-+		return (ain0 % 2) ? (ain0 - 1) == ain1 : (ain0 + 1) == ain1;
-+
-+	return ain1 == AD4111_VINCOM_INPUT;
-+}
-+
- static int ad7173_fw_parse_channel_config(struct iio_dev *indio_dev)
- {
- 	struct ad7173_channel *chans_st_arr, *chan_st_priv;
-@@ -1375,6 +1528,7 @@ static int ad7173_fw_parse_channel_config(struct iio_dev *indio_dev)
- 		chan_st_priv->cfg.bipolar = false;
- 		chan_st_priv->cfg.input_buf = st->info->has_input_buf;
- 		chan_st_priv->cfg.ref_sel = AD7173_SETUP_REF_SEL_INT_REF;
-+		chan_st_priv->cfg.openwire_comp_chan = -1;
- 		st->adc_mode |= AD7173_ADC_MODE_REF_EN;
- 		if (st->info->data_reg_only_16bit)
- 			chan_arr[chan_index].scan_type = ad4113_scan_type;
-@@ -1442,6 +1596,7 @@ static int ad7173_fw_parse_channel_config(struct iio_dev *indio_dev)
- 		chan_st_priv->chan_reg = chan_index;
- 		chan_st_priv->cfg.input_buf = st->info->has_input_buf;
- 		chan_st_priv->cfg.odr = 0;
-+		chan_st_priv->cfg.openwire_comp_chan = -1;
- 
- 		chan_st_priv->cfg.bipolar = fwnode_property_read_bool(child, "bipolar");
- 		if (chan_st_priv->cfg.bipolar)
-@@ -1456,6 +1611,17 @@ static int ad7173_fw_parse_channel_config(struct iio_dev *indio_dev)
- 			chan_st_priv->cfg.input_buf = st->info->has_input_buf;
- 			chan->channel2 = ain[1];
- 			chan_st_priv->ain = AD7173_CH_ADDRESS(ain[0], ain[1]);
-+			if (st->info->has_openwire_det &&
-+			    ad7173_validate_openwire_ain_inputs(st, chan->differential, ain[0], ain[1])) {
-+				chan->event_spec = ad4111_events;
-+				chan->num_event_specs = ARRAY_SIZE(ad4111_events);
-+				chan_st_priv->cfg.openwire_thrsh_raw =
-+					BIT(chan->scan_type.realbits - !!(chan_st_priv->cfg.bipolar))
-+					* AD4111_OW_DET_THRSH_MV
-+					/ ad7173_get_ref_voltage_milli(st, chan_st_priv->cfg.ref_sel);
-+				if (chan->channel < st->info->num_voltage_in_div)
-+					chan_st_priv->cfg.openwire_thrsh_raw /= AD4111_DIVIDER_RATIO;
-+			}
- 		}
- 
- 		if (st->info->data_reg_only_16bit)
+If there are cleanups to be made for runtime PM, beyond disabling
+runtime PM, we could instead consider adding that code in
+pm_runtime_reinit().
 
--- 
-2.47.1
+[...]
 
+Kind regards
+Uffe
