@@ -1,150 +1,333 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D150D16EC19
-	for <linux-iio@vger.kernel.org>; Fri, 24 Jan 2025 16:01:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C981221DBD;
+	Fri, 24 Jan 2025 18:41:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737734503; cv=none; b=kJi/G5pRKw5vlBHOZqkgChe8KFreX5QFalvxCYvmc3aVonedECAXOsWG3l2inesx5jgU5x1DxG7GW++go1NdJZH6ZAQg8w15d016LfrDwYpp740XUhYj5y8uGSazqJ8iJ2kkzacJHqRm5O70bkwaVsDfw+t3kUPa9o1gwX7gUT0=
+	t=1737744106; cv=none; b=owmW+8piqr4b1LBcxHeJL3er5zlZsrl9Z08vzzKu9wO5ii9numeUHlyOAZSoCfi6iyz+SfIP9LeICYPecf7AnVu/VGlXs7qyQUve8h3dNahyYHBRfg7kmHH0EURLwLuj/MItqF8BkiK8ISfd8zCbQGbWvmDzng3iI1QlUNUhw40=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737734503; c=relaxed/simple;
-	bh=uXr1ITHjKvOLpvD0hVAFujBjqWenww5u7P6+nwcKO0Q=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=L6SNKJBdal4nXC27xpJ6yRK+B6e6J6QiAvKuPBapEsRaTCw7HlNMIbwNVssY1/1P8lYuWWUoMZ7lJnUPgpuRsZdkUXeZX2a2PIUX2RqaGbPiVGshpwA4W88LS4D9x5V0uqif/0FOWVOkiuz3oZfkG6nXl7aJ6Us5RePwtI113+c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=DpKBM3Le; arc=none smtp.client-ip=209.85.218.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="DpKBM3Le"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-ab2aea81cd8so414244466b.2
-        for <linux-iio@vger.kernel.org>; Fri, 24 Jan 2025 08:01:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1737734498; x=1738339298; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=qrLugdlwL5/Ilh8OCqqpgiBabhYSEK2nNoDNBCgTthA=;
-        b=DpKBM3LeVqSiAw1Kd+4vyhZxQugySt9BNAz6kCPRHQ4KjQ4NYlIfz3nne24bhRHcsK
-         q/VBoHsY6sdcQgT8qhzfKZ2Vz3REVura/+9s8v/vrJFcEgdqVtWjDtcvhfsly23t1LLH
-         uVUcwu9kL+fvtMJ7ZDj0wHSwMRB1mcGtpr9L2HZqnQV3oUyBhyT3Jnzd1oKqdOUTlcjQ
-         wgTdY6X7EeI/c1KzMkb9nYyBV4jZ5zDpttJkmts2ysM1hkK8iY0PBcyIEtJ8LRSRF1w1
-         bqwXSwYDVmUKKvb+rXduZ1giDorP5Bbjdpc/oelc2IiVDsjFvTj4n70I94M0FeuZejyg
-         jWdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737734498; x=1738339298;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=qrLugdlwL5/Ilh8OCqqpgiBabhYSEK2nNoDNBCgTthA=;
-        b=vdqmd+nycaydohEilOT3+4zCgcQh62KF8o8p28f+prEdVJJrkEqt1MlRnu/CPI+0Y1
-         ArHU9s+cFP3L5612MMYXVbANdQ/3/dAVPL58ehwcW3b5MxHHPGVBijtGmdRKJ0/bzXIr
-         NRz5Enst6xF849xMn59eiJanX0nNFcO3So73kNT6+ZpgZ+SZMSTqGzSDlgY4xMQCuIQF
-         nwvCg2mMbXopOuIK9GjHoZHj4M4KSa0VLeUauqftN7pFOolyfyy2Tgp01Pg6NaNSVgWx
-         r2RMQjL+bx7uDrX0JNjBZpIMBQSq71/lTYndtb0eBZATRjKQdOgzSIYTqvJjwVH8ZHn4
-         ysqA==
-X-Gm-Message-State: AOJu0YxdjtWypmNwEtPbEwrNogh8qnJV58Xua9QGLLdAZwvh6/5Orz7Y
-	ZWwGuLbocUlUiljH39M1jX/C588ozpKaLryjeZ94DUl3OaqmeQUCEcbdPeZIeiw=
-X-Gm-Gg: ASbGncvAEA54QU3poDSwgZZPYLcd7U9ehQd4ZyicUBo1zmVC9wAldycngl+tpCMccBV
-	oDYbH5c5+a3B5BGb3Oq+qAA53OvRvdyLu93BV9pEwsTGFhhPZTxbJhYnIkuCIGflBcrzafyFmlr
-	5xJjVQJxOewbperl/IcRPAH87hQhtz/Kb3JxxA02hajkw/ro4n4xZyvvdmPgtlU1Uxtexrb8xcS
-	AvW8YogrhaA0I7zBiRsBVg7BtqdS/50GnTdGbspTOW6LP4ItLIjaLvUudqLDWlOwmMBf5ChgNZ9
-	Vd60zqz3YuDxnCMD0JnSoVwMHY3GsHPQ441khaZ7wOoVYUQ=
-X-Google-Smtp-Source: AGHT+IFxfINdDp7Y+XggTboowyqqKzj+s2twZAmHmh1GmjCd1HjVxcCiVBesq7+cWsAusIjOiPgslw==
-X-Received: by 2002:a17:907:7ba9:b0:aab:8ca7:43df with SMTP id a640c23a62f3a-ab38b37eb9fmr3199054066b.39.1737734496197;
-        Fri, 24 Jan 2025 08:01:36 -0800 (PST)
-Received: from localhost (p200300f65f018b0400000000000001b9.dip0.t-ipconnect.de. [2003:f6:5f01:8b04::1b9])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5dc186183eesm1355484a12.10.2025.01.24.08.01.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jan 2025 08:01:35 -0800 (PST)
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: [PATCH] iio: adc: ad7124: Fix comparison of channel configs
-Date: Fri, 24 Jan 2025 17:01:23 +0100
-Message-ID: <20250124160124.435520-2-u.kleine-koenig@baylibre.com>
-X-Mailer: git-send-email 2.47.1
+	s=arc-20240116; t=1737744106; c=relaxed/simple;
+	bh=PLg3fbBWVFPOAHM+bZDXpWZpzgB/HocdxNtJskjuxSw=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jbeiZmOdLPDwbsCSvJ3qMhipA2YxE1Bwv/agNeUr2mH5Ob/A9a7IoRiEzUN5QtaLhpWRfDa7CHsNS83E7PPoLCrauhaSUEh4jD8nhOb/l/M4zMJxVYDLi719Ubdp1GgG3AJDUtbcxpvoYrLBct9U1KdHrngLsJ++T4fj6ZidhTM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.216])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4YfmnR4bGjz6L57t;
+	Sat, 25 Jan 2025 02:39:39 +0800 (CST)
+Received: from frapeml500008.china.huawei.com (unknown [7.182.85.71])
+	by mail.maildlp.com (Postfix) with ESMTPS id 6C100140D1A;
+	Sat, 25 Jan 2025 02:41:39 +0800 (CST)
+Received: from localhost (10.203.177.66) by frapeml500008.china.huawei.com
+ (7.182.85.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Fri, 24 Jan
+ 2025 19:41:38 +0100
+Date: Fri, 24 Jan 2025 18:41:37 +0000
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To: Ulf Hansson <ulf.hansson@linaro.org>
+CC: Claudiu Beznea <claudiu.beznea@tuxon.dev>, Jonathan Cameron
+	<jic23@kernel.org>, <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	<lars@metafoo.de>, <linux-iio@vger.kernel.org>,
+	<linux-renesas-soc@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Claudiu
+ Beznea" <claudiu.beznea.uj@bp.renesas.com>, "Rafael J. Wysocki"
+	<rafael@kernel.org>, <linux-pm@vger.kernel.org>
+Subject: Re: [PATCH 1/2] iio: adc: rzg2l_adc: Drop devm_pm_runtime_enable()
+Message-ID: <20250124184137.0000047a@huawei.com>
+In-Reply-To: <CAPDyKFpQUMOFtA-QCbYdaeKSDGJpnjcA+tiKZ=kzmrjYRtFZdw@mail.gmail.com>
+References: <20250103140042.1619703-1-claudiu.beznea.uj@bp.renesas.com>
+	<20250103140042.1619703-2-claudiu.beznea.uj@bp.renesas.com>
+	<20250104135225.2573285b@jic23-huawei>
+	<44e4a6b4-39a4-49d0-b3a5-fc5545c39a56@tuxon.dev>
+	<20250111131409.36bebfd3@jic23-huawei>
+	<bb987a1b-a999-478c-8e35-124fcf41561d@tuxon.dev>
+	<CAPDyKFoJ3pLU-5_b5MSxMZd7B1cfOvmcdqR4FGkU2Wb7No0mcw@mail.gmail.com>
+	<20250117155226.00002691@huawei.com>
+	<CAPDyKFpQUMOFtA-QCbYdaeKSDGJpnjcA+tiKZ=kzmrjYRtFZdw@mail.gmail.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2864; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=uXr1ITHjKvOLpvD0hVAFujBjqWenww5u7P6+nwcKO0Q=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBnk7lVBLdQ4NOoxRtfSVmt/ll/CdcDjM9rbUMzs EjLMo0GQR6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZ5O5VQAKCRCPgPtYfRL+ ThaIB/46ACPryijFu2yam/bi6YvHAoAmvJW07Ac0jSfaiHAYX6GazvS36PvZpij1uyo6N6apr6O DnZfB8tvmwc+wwrfAQ6nY3yN8E/agQz3v6XafJist+0SRpVCpJx263cWLnGJrV1L5RuhXLpTfZ4 t9gu/e+X2ENm01IPzK69TVwTRexoIezyWxi7/zCMMH9eibLXoK7uuX3hxcfTmQbkHVEpLS03PkK H8vgcYONnPGD3TUD/dpo4+lt5np3Oh4dnDevEEBNJDu4qOdOJTRpGceDmMnhXuaL2L6x0hu0CNl +EOyFqws76Kk1THiG8sxSLzlsTNf12RAny2FBk+sbJcHEK5q
-X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: lhrpeml500005.china.huawei.com (7.191.163.240) To
+ frapeml500008.china.huawei.com (7.182.85.71)
 
-Checking the binary representation of two structs (of the same type)
-for equality doesn't have the same semantic as comparing all members for
-equality. The former might find a difference where the latter doesn't in
-the presence of padding or when ambiguous types like float or bool are
-involved. (Floats typically have different representations for single
-values, like -0.0 vs +0.0, or 0.5 * 2² vs 0.25 * 2³. The type bool has
-at least 8 bits and the raw values 1 and 2 (probably) both evaluate to
-true, but memcmp finds a difference.)
+On Mon, 20 Jan 2025 15:59:02 +0100
+Ulf Hansson <ulf.hansson@linaro.org> wrote:
 
-When searching for a channel that already has the configuration we need,
-the comparison by member is the one that is needed.
+> On Fri, 17 Jan 2025 at 16:52, Jonathan Cameron
+> <Jonathan.Cameron@huawei.com> wrote:
+> >
+> > On Wed, 15 Jan 2025 16:29:15 +0100
+> > Ulf Hansson <ulf.hansson@linaro.org> wrote:
+> >  
+> > > On Wed, 15 Jan 2025 at 14:37, Claudiu Beznea <claudiu.beznea@tuxon.dev> wrote:  
+> > > >
+> > > > Hi, Jonathan,
+> > > >
+> > > > Thank you for your input!
+> > > >
+> > > > On 11.01.2025 15:14, Jonathan Cameron wrote:  
+> > > > > On Mon, 6 Jan 2025 11:18:41 +0200
+> > > > > Claudiu Beznea <claudiu.beznea@tuxon.dev> wrote:
+> > > > >  
+> > > > >> Hi, Jonathan,
+> > > > >>
+> > > > >>
+> > > > >> On 04.01.2025 15:52, Jonathan Cameron wrote:  
+> > > > >>> On Fri,  3 Jan 2025 16:00:41 +0200
+> > > > >>> Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> > > > >>>  
+> > > > >>>> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>  
+> > > > >>> +CC Rafael and linux-pm
+> > > > >>>  
+> > > > >>>>
+> > > > >>>> On all systems where the rzg2l_adc driver is used, the ADC clocks are part
+> > > > >>>> of a PM domain. The code that implements the PM domains support is in
+> > > > >>>> drivers/clk/renesas/rzg2l-cpg.c, the functions of interest for this commit
+> > > > >>>> being rzg2l_cpg_attach_dev() and rzg2l_cpg_deattach_dev(). The PM
+> > > > >>>> domains support is registered with GENPD_FLAG_PM_CLK which, according to
+> > > > >>>> the documentation, instructs genpd to use the PM clk framework while
+> > > > >>>> powering on/off attached devices.
+> > > > >>>>
+> > > > >>>> During probe, the ADC device is attached to the PM domain
+> > > > >>>> controlling the ADC clocks. Similarly, during removal, the ADC device is
+> > > > >>>> detached from the PM domain.
+> > > > >>>>
+> > > > >>>> The detachment call stack is as follows:
+> > > > >>>>
+> > > > >>>> device_driver_detach() ->
+> > > > >>>>   device_release_driver_internal() ->
+> > > > >>>>     __device_release_driver() ->
+> > > > >>>>       device_remove() ->
+> > > > >>>>         platform_remove() ->
+> > > > >>>>           dev_pm_domain_detach()
+> > > > >>>>
+> > > > >>>> During driver unbind, after the ADC device is detached from its PM domain,
+> > > > >>>> the device_unbind_cleanup() function is called, which subsequently invokes
+> > > > >>>> devres_release_all(). This function handles devres resource cleanup.
+> > > > >>>>
+> > > > >>>> If runtime PM is enabled via devm_pm_runtime_enable(), the cleanup process
+> > > > >>>> triggers the action or reset function for disabling runtime PM. This
+> > > > >>>> function is pm_runtime_disable_action(), which leads to the following call
+> > > > >>>> stack of interest when called:
+> > > > >>>>
+> > > > >>>> pm_runtime_disable_action() ->
+> > > > >>>>   pm_runtime_dont_use_autosuspend() ->  
+> > > > >>>
+> > > > >>> So is the only real difference that in the code below you disable runtime pm
+> > > > >>> before autosuspend?  
+> > > > >>
+> > > > >> No, the difference is that now, the driver specific runtime PM APIs are not
+> > > > >> called anymore (through the pointed call stack) after the ADC was removed
+> > > > >> from it's PM domain.  
+> > > > >
+> > > > > By my reading they are only not called now because you turn autosuspend off
+> > > > > after disabling runtime PM.  
+> > > >
+> > > > Sorry, I wanted to say that the runtime PM APIs are not called anymore from
+> > > > devm_action_release(), though this call stack:
+> > > >
+> > > > [   24.801195] Call trace:
+> > > > [   24.803633]  rzg2l_adc_pm_runtime_suspend+0x18/0x54 (P)
+> > > > [   24.808847]  pm_generic_runtime_suspend+0x2c/0x44 (L)
+> > > > [   24.813887]  pm_generic_runtime_suspend+0x2c/0x44
+> > > > [   24.818580]  __rpm_callback+0x48/0x198
+> > > > [   24.822319]  rpm_callback+0x68/0x74
+> > > > [   24.825798]  rpm_suspend+0x100/0x578
+> > > > [   24.829362]  rpm_idle+0xd0/0x17c
+> > > > [   24.832582]  update_autosuspend+0x30/0xc4
+> > > > [   24.836580]  pm_runtime_disable_action+0x40/0x64
+> > > > [   24.841184]  devm_action_release+0x14/0x20
+> > > > [   24.845274]  devres_release_all+0xa0/0x100
+> > > > [   24.849361]  device_unbind_cleanup+0x18/0x60
+> > > >
+> > > > This is because I dropped the devm_pm_runtime_enable() which registers the
+> > > > pm_runtime_disable_action(), which is called at the time the
+> > > > device_unbind_cleanup() is called, which is called when the ADC is not
+> > > > anymore part of its PM domain.
+> > > >
+> > > > If I change the order in remove function proposed in this patch, thus do:
+> > > >
+> > > > +static void rzg2l_adc_remove(struct platform_device *pdev)
+> > > > +{
+> > > > +       struct device *dev = &pdev->dev;
+> > > > +
+> > > > +       pm_runtime_dont_use_autosuspend(dev);
+> > > > +       pm_runtime_disable(dev);
+> > > >  }
+> > > >
+> > > > nothing changes with the behavior of this patch. There will be no issue if
+> > > > the device is runtime suspended/resumed through the
+> > > > pm_runtime_dont_use_autosuspend() because at the time the
+> > > > rzg2l_adc_remove() is called the ADC is still part of the PM domain.
+> > > >
+> > > >
+> > > >  
+> > > > >  
+> > > > >>
+> > > > >>  
+> > > > >>>  Can you still do that with a devm callback just not
+> > > > >>> the standard one?  
+> > > > >>
+> > > > >> No. It doesn't matter if we call the standard devm callback or driver
+> > > > >> specific one. As long as it is devm it will impact us as long as the driver
+> > > > >> specific runtime PM APIs are called through devres_release_all() after
+> > > > >> dev_pm_domain_detach(). And at that time the PM domain may be off along
+> > > > >> with its clocks disabled.  
+> > > > >
+> > > > > As above, I think that this is only the case because of the reordering
+> > > > > of those two calls, not something more fundamental.  
+> > > >
+> > > > I tried having a local devm function (the following diff applied with this
+> > > > patch reverted) identical with pm_runtime_disable_action():
+> > > >
+> > > > diff --git a/drivers/iio/adc/rzg2l_adc.c b/drivers/iio/adc/rzg2l_adc.c
+> > > > index 22a581c894f8..459cc9c67eec 100644
+> > > > --- a/drivers/iio/adc/rzg2l_adc.c
+> > > > +++ b/drivers/iio/adc/rzg2l_adc.c
+> > > > @@ -423,6 +423,12 @@ static int rzg2l_adc_hw_init(struct device *dev,
+> > > > struct rzg2l_adc *adc)
+> > > >         return ret;
+> > > >  }
+> > > >
+> > > > +static void rzg2l_pm_runtime_disable(void *data)
+> > > > +{
+> > > > +       pm_runtime_dont_use_autosuspend(data);
+> > > > +       pm_runtime_disable(data);
+> > > > +}
+> > > > +
+> > > >  static int rzg2l_adc_probe(struct platform_device *pdev)
+> > > >  {
+> > > >         struct device *dev = &pdev->dev;
+> > > > @@ -463,7 +469,9 @@ static int rzg2l_adc_probe(struct platform_device *pdev)
+> > > >
+> > > >         pm_runtime_set_autosuspend_delay(dev, 300);
+> > > >         pm_runtime_use_autosuspend(dev);
+> > > > -       ret = devm_pm_runtime_enable(dev);
+> > > > +       pm_runtime_enable(dev);
+> > > > +
+> > > > +       ret = devm_add_action_or_reset(dev, rzg2l_pm_runtime_disable, dev);
+> > > >         if (ret)
+> > > >                 return ret;
+> > > >
+> > > > With this the issue is still reproducible.
+> > > >
+> > > > However, changing the order of functions in rzg2l_pm_runtime_disable() and
+> > > > having it like:
+> > > >
+> > > > +static void rzg2l_pm_runtime_disable(void *data)
+> > > > +{
+> > > > +       pm_runtime_disable(data);
+> > > > +       pm_runtime_dont_use_autosuspend(data);
+> > > > +}
+> > > >
+> > > >
+> > > > leads to no failure when doing unbind/bind.
+> > > >
+> > > > However, I see the pm_runtime_disable() can still call rpm_resume() under
+> > > > certain conditions. It can still lead to failures if it is called after the
+> > > > device was remove from its PM domain.
+> > > >  
+> > > > >
+> > > > > In driver remove flow, device_unbind_cleanup9() is called
+> > > > > just after device_remove() which is calling the dev->driver_remove()
+> > > > > callback. There are no runtime pm related calls in between that I can see.  
+> > > >
+> > > > On my side the device_remove() is calling dev->bus->remove() which is
+> > > > platform_remove(), which calls the dev_pm_domain_detach(). The
+> > > > dev_pm_domain_detach() detaches the ADC from it's PM domain. Because of
+> > > > this, accessing now the ADC registers after a runtime resume leads to
+> > > > failures pointed in this patch (as of my investigation) (as the ADC is not
+> > > > anymore part of its PM domain and its PM domain is not started anymore
+> > > > though runtime PM APIs).
+> > > >
+> > > > A similar issue was found while I was adding thermal support for RZ/G3S,
+> > > > explained in
+> > > > https://lore.kernel.org/all/20250103163805.1775705-3-claudiu.beznea.uj@bp.renesas.com
+> > > >
+> > > >
+> > > > Jonathan, Rafael, Ulf, all,
+> > > >
+> > > > Do consider OK to change the order in pm_runtime_disable_action() to get
+> > > > rid of these issues, e.g.:
+> > > >
+> > > > diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
+> > > > index 2ee45841486b..f27d311d2619 100644
+> > > > --- a/drivers/base/power/runtime.c
+> > > > +++ b/drivers/base/power/runtime.c
+> > > > @@ -1547,8 +1547,8 @@ EXPORT_SYMBOL_GPL(pm_runtime_enable);
+> > > >
+> > > >  static void pm_runtime_disable_action(void *data)
+> > > >  {
+> > > > -       pm_runtime_dont_use_autosuspend(data);
+> > > >         pm_runtime_disable(data);
+> > > > +       pm_runtime_dont_use_autosuspend(data);
+> > > >  }
+> > > >
+> > > > though I see a rpm_resume() call is still possible though pm_runtime_disable().  
+> > >
+> > > I am still worried about keeping the device runtime enabled during a
+> > > window when we have turned off all resources for the device. Typically
+> > > we want to leave the device in a low power state after unbind.
+> > >
+> > > That said, I would rather just drop the devm_pm_runtime_enable() API
+> > > altogether and convert all users of it into
+> > > pm_runtime_enable|disable(), similar to what your patch does.  
+> >
+> > That is making a mess of a lot of automated cleanup for a strange
+> > runtime pm related path.  This is pain a driver should not have
+> > to deal with, though I'm not clear what the right solution is!
+> >
+> > Key is that drivers should not mix devm managed cleanup and not, so
+> > that means that anything that happens after runtime pm is enabled
+> > has to be torn down manually.  One solution to this might be to
+> > always enable it late assuming that is safe to do so there is
+> > never anything else done after it in the probe path of a driver.  
+> 
+> The problem is that runtime PM isn't really comparable to other
+> resources that we are managing through devm* functions.
+> 
+> Enabling runtime PM for a device changes the behaviour for how
+> power-mgmt is handled for the device. Enabling/disabling of runtime PM
+> really needs to be explicitly controlled by the driver for the device.
 
-Convert the comparison accordingly to compare the members one after
-another. Also add a BUILD_BUG guard to (somewhat) ensure that when
-struct ad7124_channel_config::config_props is expanded, the comparison
-is adapted, too.
+I'm sorry to say I'm not yet convinced.
 
-Fixes: 7b8d045e497a ("iio: adc: ad7124: allow more than 8 channels")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
----
- drivers/iio/adc/ad7124.c | 29 ++++++++++++++++++++++++++---
- 1 file changed, 26 insertions(+), 3 deletions(-)
+Devm callbacks are explicitly registered by the driver so that they
+are unwound in a specific order.  Many other parts of driver
+registration rely on this ordering.  This does not seem different
+for runtime PM than anything else.
 
-diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
-index 6ae27cdd3250..5eb8ced416ba 100644
---- a/drivers/iio/adc/ad7124.c
-+++ b/drivers/iio/adc/ad7124.c
-@@ -338,15 +338,38 @@ static struct ad7124_channel_config *ad7124_find_similar_live_cfg(struct ad7124_
- 								  struct ad7124_channel_config *cfg)
- {
- 	struct ad7124_channel_config *cfg_aux;
--	ptrdiff_t cmp_size;
- 	int i;
- 
--	cmp_size = sizeof_field(struct ad7124_channel_config, config_props);
-+	/*
-+	 * This is just to make sure that the comparison is adapted after
-+	 * struct ad7124_channel_config was changed.
-+	 */
-+	BUILD_BUG_ON(sizeof_field(struct ad7124_channel_config, config_props) !=
-+		     sizeof(struct {
-+			    enum ad7124_ref_sel refsel;
-+			    bool bipolar;
-+			    bool buf_positive;
-+			    bool buf_negative;
-+			    unsigned int vref_mv;
-+			    unsigned int pga_bits;
-+			    unsigned int odr;
-+			    unsigned int odr_sel_bits;
-+			    unsigned int filter_type;
-+		     }));
-+
- 	for (i = 0; i < st->num_channels; i++) {
- 		cfg_aux = &st->channels[i].cfg;
- 
- 		if (cfg_aux->live &&
--		    !memcmp(&cfg->config_props, &cfg_aux->config_props, cmp_size))
-+		    cfg->refsel == cfg_aux->refsel &&
-+		    cfg->bipolar == cfg_aux->bipolar &&
-+		    cfg->buf_positive == cfg_aux->buf_positive &&
-+		    cfg->buf_negative == cfg_aux->buf_negative &&
-+		    cfg->vref_mv == cfg_aux->vref_mv &&
-+		    cfg->pga_bits == cfg_aux->pga_bits &&
-+		    cfg->odr == cfg_aux->odr &&
-+		    cfg->odr_sel_bits == cfg_aux->odr_sel_bits &&
-+		    cfg->filter_type == cfg_aux->filter_type)
- 			return cfg_aux;
- 	}
- 
+Superficially the issue here looks to me to be that a non devm
+cleanup is inserted by the bus->remove() callback into drivers
+that are otherwise relying on explicit ordering provided
+by managed cleanup.
 
-base-commit: 5ffa57f6eecefababb8cbe327222ef171943b183
--- 
-2.47.1
+I appreciate there may be no trivial solution.
+
+Maybe we can minimize that impact by always doing runtime pm last
+in any probe() function?  Can that work here?
+
+
+> 
+> If there are cleanups to be made for runtime PM, beyond disabling
+> runtime PM, we could instead consider adding that code in
+> pm_runtime_reinit().
+
+I'm not familiar enough to comment on this option beyond it being
+after devres_release_all() so, maybe?  It seems superficially
+a better point in the sequence.
+
+Jonathan
+> 
+> [...]
+> 
+> Kind regards
+> Uffe
 
