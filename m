@@ -1,62 +1,62 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A57491A2391;
-	Tue, 28 Jan 2025 12:01:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AA1A1A2642;
+	Tue, 28 Jan 2025 12:01:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738065697; cv=none; b=lFmWjXGpF6plS/cJhqxk6/UKESJGYHyQQxuKFZJXrOY+v515d4zTMKLMoVBVHdMGQtVrmMYqN/kNLqDPOwlrDpIWjYALd1iUqUb6ZzHj8tQF++ofXZq8BZBo7Ae6g9WaFqvLbUFahQtTOLEM+2FjZ7RpSzkUQGw5c3KyLQfnz34=
+	t=1738065699; cv=none; b=V8L/nZwfMGcUTNTmd4ZDWg8mPYlPLqujNPXR/JBA6AUXHQTPaYjPjfTWEcXm64/5Ri3aVkPeT1ovTEKdGzEjPIvtYAyszZLb3abL9m3ncUvxrofHmKxuYfUzBO286xuBYjZQUB5DprsVl40YBzq2tGgLWbZFQvu7zzequOqdAyk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738065697; c=relaxed/simple;
-	bh=32pxGww22uXNRSE1h4GEPFMYm4JjozUP+kLSK2TuVGU=;
+	s=arc-20240116; t=1738065699; c=relaxed/simple;
+	bh=ZFz+bNWBdxFwKvj5JBvO3WzvviDOLiFHaUfL5nFMdWk=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=qDZ7zDqXXbNu/u0wntLmBzCgLBLLx3oQd8X11qFVd1HNGXI+itMHD3bXZ2CJh7KN+P26UnkCKL6KddYuAJYpV2AoA0spTSpdx+SaJM/gLV7SeAm5KcLf2McbSoc9i4wUD7c67owebUkT76/Zfef9sVmarvnvzCtMJly8hxxXD/k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=I4mBYaGJ; arc=none smtp.client-ip=209.85.208.51
+	 MIME-Version; b=GWfSRTqg4zatOBTLB+Il1OmtcPI0kT0IfCKyeZTo4+yl9YyVpiykH4tAs8Vp0LePtWm8sQykAytAA8+4PeSpOyXqJUTHivYVxArreabPkUfu6lCL+9aRRd38juEX/DFBF9A/7JoLlmcSSRQed4U2Q6ouX5tzx8AX//KC2lRYpts=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bTAsiK8N; arc=none smtp.client-ip=209.85.208.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="I4mBYaGJ"
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-5dbf7d45853so1281251a12.1;
-        Tue, 28 Jan 2025 04:01:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bTAsiK8N"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-5dbe706f94fso1294765a12.2;
+        Tue, 28 Jan 2025 04:01:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738065694; x=1738670494; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1738065696; x=1738670496; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=iy4p7JxJyU0LbLEs05esQZqH8h+c7Oo1QTLQ6nSQRv8=;
-        b=I4mBYaGJEykNjEh4xr/1gfiHEuwbLBTNeOwPiz9nCCG+OsFTjdlU7OgbO7xSR+GA6l
-         h3WvptPz6VDr9R91TyATEU7YsN1viS1ddniMtmU0wcqoiFGlx7EJn3t93YJ3h+hn4VkN
-         Dbkq1DJxtgzwhDKvU1Lkz8RmU+mdqleWygqtIRJWYuYk6KWvYVsTTOLN222sjSqhm7ft
-         9xCoAW88AjlHIY4KJp9nd9zlePK0rztUSyZJ3mDFGMosMS4r+QQ3eOA8jD4TJg/YGbOw
-         8Yn0uOwiPaqTmddHWvCGMcN93bxDJax4XXSdELWRJgihZruBUTsFoNmPsh+Xe2lXaE7l
-         4wlg==
+        bh=NSksiAWnSWBTZBpd0M1uNpje3o8Xf8ZMdfKn4UpGQtU=;
+        b=bTAsiK8N5NKSN0dz7eIWbJxR/L4xIX6+fzwFv7gNHJob9vLK17q+IRo+nZRC+a0Fu9
+         l6RXFgbBhXWmn6exSaFCBJp4bDY4uDjsOJ20afHWBpsR//1m6StH5+8Y78JM2uPacteB
+         bVYf+v6ACm+LWjri9tTt+8UL3A37S1gCk1/vPIU0aXdTZPizPM/0rABfqw8eYh0nWMIF
+         0hCVROOjw5ARPKxFRS9h0qm379kQqNnSPvDCArTwD5v244DqYPK2eV4xQ0F86744tQdN
+         IyWch4whdJS20fIXxkk4C+BX5/BXuX4eppPijr6p+UuutAq71pGWFguyrL9VeCNm1j6o
+         aMlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738065694; x=1738670494;
+        d=1e100.net; s=20230601; t=1738065696; x=1738670496;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=iy4p7JxJyU0LbLEs05esQZqH8h+c7Oo1QTLQ6nSQRv8=;
-        b=DWp1rJz3hIvqWG1fWzKhmTR+m/LiPISt+65jiHPqsz+xuERgAFEZT9OlIgrQu6yH4E
-         0PLYXMXVGkEVo3w8TBZiCG2VN18sK6GGh6aOn1TtlRBZ6ChFvOJfqErEd/3ksL6/9Bp7
-         QzrjvJT+vCe7h69vGcFIjNlcjs9ZhfLIjQteeNspp48mjYLWhv6uIRt9nBcGJXJDQAOK
-         Xbn0HokvlQ070qRbXOCKqndKmy1xu80s/hL3BkQHrGRznWgggDq4ZjENKU3JYb7HnxDd
-         8waqz+mMD9QH5CIo2rUBkzuEhDBmjwcrte1G7HoS0YbJPq6r8N2e9FX/RIxATlRgewJp
-         6Inw==
-X-Forwarded-Encrypted: i=1; AJvYcCUwkFWfnqDt9BYyD/zLa38CCx07qducJzsD+HGjJp9DONqLLH13ERoobN2aSC0G6YDMQkM/cNSUTuSmqnY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzabJNJhoBQdAh0ehXWbbkpaF3Q6KGJ/KCUR7jcm8wLu+Qy/ofr
-	tXwPdiOVC0RjNm2duPbYYWMW09UB/LAOX3kp6vW1FS7r5fohaMp5
-X-Gm-Gg: ASbGncuvN/SdU08+aVRDWoAxeL690OXwlM67sOx7tBHObswwo4Z6n2pUubfExxHQH30
-	fK24Yc8BISK/ifYWS4Ln/LiXF966SB0I0Ht2O6XLO8Uuqxj7UCXsnzNzOA8FSAvAYEZobY5j26X
-	aVA84VZsRT9OXUUPN1eGJPGqRQjjSDDgzEZZ/hgHGGSY9Y7ouLHnI598U0DwKZCzgq6ALjHmHPa
-	2WfbLPpVisBp5LGsmxAaJNK33v3WuYNYdrKuwZe2ya4sPltmfGx70A5szvl656Ed8DuZRJTQaqv
-	UQa7X7opZQTDDYQDC3CYjU2SAqYjqdPdWY+w0tYevt+HcgsmZ3QuHeqNfZoo43VQsWlxvg==
-X-Google-Smtp-Source: AGHT+IEKXV7QElYUwfDqVcH7rzpBecIFcCv5h8XU4S7HREeyCDvE9mj6Omi5cxRHVFagSHCjM2dc5Q==
-X-Received: by 2002:a17:907:9715:b0:ab6:b8e0:4f25 with SMTP id a640c23a62f3a-ab6b8e05026mr150998666b.4.1738065693484;
-        Tue, 28 Jan 2025 04:01:33 -0800 (PST)
+        bh=NSksiAWnSWBTZBpd0M1uNpje3o8Xf8ZMdfKn4UpGQtU=;
+        b=sxMcFzdZwQp/x9gunaC+v4jYyvQg3YvgEogD4FsNaN667fHS8SjdFB3R0rvnZBI28j
+         gGxaGmcq+06m5s2qNCEFKVcZx4b4Ab1rRv6+whs+Tr4z+xITBFwZ5U3kgk1uAH5VX0S7
+         kd/k+nLwLHk1pvMd/tbcnIVYIiRwzg+y6tdVwzm+zFD7tROrD7ylo7jdK20jyytCP0/Y
+         df6WAUSPQRO+rd4CGmeUPPd6YsWB//G+5mtAT5ntUbt3GXjdmAGX6Wj1+wENhQGUC1Fv
+         qAHtipXCj/3ftrdQjmrvX2F5kDu5HfqDFlnip6lIA6rGulDa2tj0mxIRMBzKJPyMtDCb
+         weTg==
+X-Forwarded-Encrypted: i=1; AJvYcCVD9Q8SRcmFKvX21ruYW5SjWoKxxTNAY22woZA8iJE/T1lO38xx2DCEbaRyF2dyJpsdx33wc37UgJlAMxA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy30eh47+rL791Nl2LLikZYl36bT7jESlgmww4aPpA5CF+tFwqD
+	S/0k7NHlS5l4Yhy7sblpBhwezpZubIuyFBOPPsNnH1FTdWMDk0gr
+X-Gm-Gg: ASbGncurqVcl+9GXo6Sj2wXTikaTFUynDWY6LTTN6unfTDNV9hpSL5gE/BY9i0SLxsC
+	Z3u+zdMY8V/sLuVzh6Krhi6utWpX/qBHfZG+Xv3JEEmQ8jWvOyr7oaT3mAecMadbEoz7ENR6enG
+	2F9crzOUjtZw2ECXvcoH3t5z8Ifh5Ltx2gAfBshLAyMdNz4QFYuL2dHHQY/qgo8vrWmFQF3ZF9L
+	Q0pRrh5IvL5dJI2Cyv0a7mA6Ygm8UVjtMTRUIGasra9L+ydIxQh1lS/EeOqApYOysveJdXP81f1
+	R+YX1D5EC4CK1vHACTGIeVCAFKLbPlkKaKXX5qO7HTPZi9lIl4Zi7ssCMxYZrs/XNpvWSA==
+X-Google-Smtp-Source: AGHT+IHA9mxdm48PiQgAzgx9xYQ6pmLui4qTn/LtbVMF20kQadgBYdTwi8ZbGp7T+Psix4WfCtQB2A==
+X-Received: by 2002:a17:907:948a:b0:aa6:6792:8bce with SMTP id a640c23a62f3a-ab38b1b6f43mr1423110066b.3.1738065695477;
+        Tue, 28 Jan 2025 04:01:35 -0800 (PST)
 Received: from d9dabf0abd47.v.cablecom.net (84-72-156-211.dclient.hispeed.ch. [84.72.156.211])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab69f8555b7sm418865966b.71.2025.01.28.04.01.32
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab69f8555b7sm418865966b.71.2025.01.28.04.01.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jan 2025 04:01:33 -0800 (PST)
+        Tue, 28 Jan 2025 04:01:35 -0800 (PST)
 From: Lothar Rubusch <l.rubusch@gmail.com>
 To: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
@@ -65,9 +65,9 @@ Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	eraretuya@gmail.com,
 	l.rubusch@gmail.com
-Subject: [PATCH v1 02/12] iio: accel: adxl345: reorganize measurement enable
-Date: Tue, 28 Jan 2025 12:00:50 +0000
-Message-Id: <20250128120100.205523-3-l.rubusch@gmail.com>
+Subject: [PATCH v1 04/12] iio: accel: adxl345: reorganize irq handler
+Date: Tue, 28 Jan 2025 12:00:52 +0000
+Message-Id: <20250128120100.205523-5-l.rubusch@gmail.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20250128120100.205523-1-l.rubusch@gmail.com>
 References: <20250128120100.205523-1-l.rubusch@gmail.com>
@@ -79,88 +79,71 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In order to have this function generically available a position at the
-top makes more sense. In upcomming patches for particular features the
-function needs to be available, to turn off measuring while changing
-settings, and turn it on again afterwards.
+Reorganize the IRQ handler. Move the overrun handling to the bottom.
+Overrun leads to reset the interrupt register. This also happens at
+evaluation of a particular interrupt event. So, actually it makes more
+sense to evaluate the event if possible, and only fall back to pure
+overrun handling as a last resort. Further simplify fetching the
+interrupt status function. Both is in preparation to build interrupt
+handling up for the handling of different detected events, implemented
+in follow up patches.
 
 Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
 ---
- drivers/iio/accel/adxl345_core.c | 54 ++++++++++++++++----------------
- 1 file changed, 27 insertions(+), 27 deletions(-)
+ drivers/iio/accel/adxl345_core.c | 23 ++++++++---------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
-index ffdb03ed7a25..142f12117627 100644
+index 8fbf0a43746f..7ee50a0b23ea 100644
 --- a/drivers/iio/accel/adxl345_core.c
 +++ b/drivers/iio/accel/adxl345_core.c
-@@ -163,6 +163,33 @@ static const unsigned long adxl345_scan_masks[] = {
- 	0
+@@ -491,16 +491,9 @@ static const struct iio_buffer_setup_ops adxl345_buffer_ops = {
+ 	.predisable = adxl345_buffer_predisable,
  };
  
-+/**
-+ * adxl345_set_measure_en() - Enable and disable measuring.
-+ *
-+ * @st: The device data.
-+ * @en: Enable measurements, else standby mode.
-+ *
-+ * For lowest power operation, standby mode can be used. In standby mode,
-+ * current consumption is supposed to be reduced to 0.1uA (typical). In this
-+ * mode no measurements are made. Placing the device into standby mode
-+ * preserves the contents of FIFO.
-+ *
-+ * Return: Returns 0 if successful, or a negative error value.
-+ */
-+static int adxl345_set_measure_en(struct adxl345_state *st, bool en)
-+{
-+	unsigned int val = en ? ADXL345_POWER_CTL_MEASURE : ADXL345_POWER_CTL_STANDBY;
-+
-+	return regmap_write(st->regmap, ADXL345_REG_POWER_CTL, val);
-+}
-+
-+static void adxl345_powerdown(void *ptr)
-+{
-+	struct adxl345_state *st = ptr;
-+
-+	adxl345_set_measure_en(st, false);
-+}
-+
- static int adxl345_set_interrupts(struct adxl345_state *st)
+-static int adxl345_get_status(struct adxl345_state *st)
++static int adxl345_get_status(struct adxl345_state *st, unsigned int *int_stat)
  {
- 	int ret;
-@@ -301,33 +328,6 @@ static int adxl345_write_raw_get_fmt(struct iio_dev *indio_dev,
- 	}
+-	int ret;
+-	unsigned int regval;
+-
+-	ret = regmap_read(st->regmap, ADXL345_REG_INT_SOURCE, &regval);
+-	if (ret < 0)
+-		return ret;
+-
+-	return FIELD_GET(ADXL345_REG_INT_SOURCE_MSK, regval);
++	return regmap_read(st->regmap, ADXL345_REG_INT_SOURCE, int_stat);
  }
  
--/**
-- * adxl345_set_measure_en() - Enable and disable measuring.
-- *
-- * @st: The device data.
-- * @en: Enable measurements, else standby mode.
-- *
-- * For lowest power operation, standby mode can be used. In standby mode,
-- * current consumption is supposed to be reduced to 0.1uA (typical). In this
-- * mode no measurements are made. Placing the device into standby mode
-- * preserves the contents of FIFO.
-- *
-- * Return: Returns 0 if successful, or a negative error value.
-- */
--static int adxl345_set_measure_en(struct adxl345_state *st, bool en)
--{
--	unsigned int val = en ? ADXL345_POWER_CTL_MEASURE : ADXL345_POWER_CTL_STANDBY;
+ static int adxl345_fifo_push(struct iio_dev *indio_dev,
+@@ -536,14 +529,10 @@ static irqreturn_t adxl345_irq_handler(int irq, void *p)
+ 	int int_stat;
+ 	int samples;
+ 
+-	int_stat = adxl345_get_status(st);
+-	if (int_stat <= 0)
++	if (adxl345_get_status(st, &int_stat))
+ 		return IRQ_NONE;
+ 
+-	if (int_stat & ADXL345_INT_OVERRUN)
+-		goto err;
 -
--	return regmap_write(st->regmap, ADXL345_REG_POWER_CTL, val);
--}
--
--static void adxl345_powerdown(void *ptr)
--{
--	struct adxl345_state *st = ptr;
--
--	adxl345_set_measure_en(st, false);
--}
--
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
- "0.09765625 0.1953125 0.390625 0.78125 1.5625 3.125 6.25 12.5 25 50 100 200 400 800 1600 3200"
- );
+-	if (int_stat & ADXL345_INT_WATERMARK) {
++	if (FIELD_GET(ADXL345_INT_WATERMARK, int_stat)) {
+ 		samples = adxl345_get_samples(st);
+ 		if (samples < 0)
+ 			goto err;
+@@ -551,6 +540,10 @@ static irqreturn_t adxl345_irq_handler(int irq, void *p)
+ 		if (adxl345_fifo_push(indio_dev, samples) < 0)
+ 			goto err;
+ 	}
++
++	if (FIELD_GET(ADXL345_INT_OVERRUN, int_stat))
++		goto err;
++
+ 	return IRQ_HANDLED;
+ 
+ err:
 -- 
 2.39.5
 
