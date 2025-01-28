@@ -1,247 +1,266 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7623C33CFC;
-	Tue, 28 Jan 2025 00:06:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E8641F95C
+	for <linux-iio@vger.kernel.org>; Tue, 28 Jan 2025 00:08:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738022797; cv=none; b=czQx09cJQyQSZBP1BGgcNSPDnT/33NLH458yGgYegrxzEkMlKIWHpoEiTAZ81pp0GgYXFyfn2bx+1M2nBKPqio9+O9McP1ALYdDeIrCoR2S9pBV33Hu9yjghdInZOAMNq5+aqlc8LYgOqjeumxcERC58NaqefZZ9Ri/y5OdRAMY=
+	t=1738022919; cv=none; b=gF7Jt2neaIx0Icx22pL+5HvTqGLLND8rfd6Kl7XFdjlCmihn2hBei8nzaB/oC5NVJIh6T0+WSlk7gorwJiYjuNISYwg5p4BaYtV5ri7iIQ6E6LKsAzQu0IEFYYVN/gMAAYiwCqTe/ShuSMbEilTpyu8Dt39bKwBmKca5RxbO5cA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738022797; c=relaxed/simple;
-	bh=x0APBPBQWrivChaCg4k0Jly7N3L+drRwEE2afrYm3Ko=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=pG7vhzPeB2x/+yDwbNhJFIvm2jB/JWVTv+koS8hxTDg5Z8vqsXUMFlVaWKj0c1vnGe3Ib5tI8WY+a0QWCU7JGNxXNd2ZOTeL6JU+kenOZTLGkalPyzF3gOL/8SADA4mtZH/PNqc1Qu9OOsNupeiDlZQVhQmePYu7Rk4kIqicx/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YVMdUUsP; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1738022919; c=relaxed/simple;
+	bh=VDfCZNdJQ1F/h5J/7pRRLMpq5Y/QJQY2Qwmpng1K7Pg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=RrO1MEsTQfd9EzE0754MFZ+Z87J/Gz9jUl2TPfZOKJMsMeyShqXQTV8ZvpYFz0Jo3t20XypeMWcLb2pp3nh+UWYMyKOYmL5gwjmSyN4hnengL3vrxoc3t/mfoRj38nItpgQeDm7iMfO65uNJa0OeB5VDmUqcwgW309jIazO+7O4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=XEulo641; arc=none smtp.client-ip=209.85.210.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YVMdUUsP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA0CDC4CEE7;
-	Tue, 28 Jan 2025 00:06:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1738022796;
-	bh=x0APBPBQWrivChaCg4k0Jly7N3L+drRwEE2afrYm3Ko=;
-	h=From:To:Cc:Subject:Date:From;
-	b=YVMdUUsPMxPbkAk4qEzxydaiheiKgPq0V/bec3NjHqtsuNI4LbgEBDEej9+LgNza+
-	 ljIEnlJ8dOW66epiiZtLELOhM7CI9Xmfl04mwJsxOPi5DZqupGOzyLYI8OrEB0YMLK
-	 2aabCdo/efDt+1ketrNTclboOiYMqtBF3chVGB2EMC4yfr4ULHJGHphSkN/9c0uXJr
-	 2zeCibWgf8wkOz10yK0tDHg/2UyTNfnmjDli87oee4K3CFTkaD0PhvQA9VygWXf7kB
-	 Qo1Ry12uzmRsVIoEnhnI2jD01cboTneK2GBz8V4u2Zk1oJeS56JxjuAeS7Lo5BEMUu
-	 9jWWaNQP5ViKg==
-Received: from mchehab by mail.kernel.org with local (Exim 4.98)
-	(envelope-from <mchehab+huawei@kernel.org>)
-	id 1tcZ7h-0000000DRKO-2KyQ;
-	Tue, 28 Jan 2025 01:06:33 +0100
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To: Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-	Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	bpf@vger.kernel.org,
-	coresight@lists.linaro.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-block@vger.kernel.org,
-	linux-f2fs-devel@lists.sourceforge.net,
-	linux-hardening@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-media@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	linux-usb@vger.kernel.org,
-	linux-wireless@vger.kernel.org,
-	netdev@vger.kernel.org,
-	workflows@vger.kernel.org
-Subject: [RFC v2 00/38] Improve ABI documentation generation
-Date: Tue, 28 Jan 2025 01:05:49 +0100
-Message-ID: <cover.1738020236.git.mchehab+huawei@kernel.org>
-X-Mailer: git-send-email 2.48.1
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="XEulo641"
+Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-71e3284f963so2811874a34.1
+        for <linux-iio@vger.kernel.org>; Mon, 27 Jan 2025 16:08:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1738022916; x=1738627716; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=v2AtD2B4PvcFCPntB6dzsAFkLRpYqpJld4TMpheY3Yo=;
+        b=XEulo641gbHz6o9/QO2v+jbMpDA3QSUe3G+v1Skletg7vo+c0xkf83kr4s5/fOFRp4
+         l5kx5She8mk7xgSSCRm2QS2LYXD5hQyMvhS8h0bWyxpHHmlwNeT2qHtJTbJyrt52PUF+
+         /bZ8aEToQTQuABYdRDPJV13nzmxyqiHDLGFoZfuTb9D6cLNKLZG0fyJlHSDSAikyBh4X
+         RfHFiQobFBCuk/GripvIm6ykicEbAU2d6/yLGq9RHxJkUABncGHyHrxcAw+IYzSSOU0L
+         qNDIjOMiqQzaFsmKPJIX84QLGs3vFSqOb2Yvv5UY5LXxAW9dBj/lqG8uUE7FnoANgU2W
+         51Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1738022916; x=1738627716;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=v2AtD2B4PvcFCPntB6dzsAFkLRpYqpJld4TMpheY3Yo=;
+        b=dkRJZxk7I3OEydfIs/TQYLb2E0F80GS6sxR7LgvrLf1An5ZIpCaMJpseF8Z9TF6OIv
+         cPdmXaVR0dx+dc6UBznquey5aa8/2UeTyO0lwq90UT41GpJ7orna3Lm05MLViwmqG9qZ
+         qEQajEfefJr3w226ZL3GvcrOaAzxfzZIGHLH1ojoGROLt4xOQJrBFVAnk4EAsqVcfQ0p
+         /tod7p0M1xqE8g6qlXrIcqE5gqBda3Xywch3/qt72mWZC+Qm7Rig4ogafDoQuZDpdaoq
+         4WgLTZBV042YTXG7B/W0GIqwyXZWVGHPOYv36hKFn1kfjpjEJZt0o2l/gUx/BwfYbcic
+         T+Mg==
+X-Forwarded-Encrypted: i=1; AJvYcCU3Sv9tXwJpEIfCGckvKMleLp0d1Nc7YWryTTrr1sqWH4vrbOp6lM9qpqPoSLxjCMjdyGOlyZwzI1k=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyHBrE0xSoybdOCb4ya3AloaMjg61bYELgoKmBUVLIqsHCgegIU
+	jFS2hckQTlyENOC9D9enaxMZUx/cFjP7tyzapozLDVnNCjMBY2JzjrGI8rl9fx4=
+X-Gm-Gg: ASbGnctV9/rwy+LGbgBMXBCiLdicV82SZWaoO0VAH2abcsxEQF5XTuU5Yin9HsAWsPC
+	ODB9zj/9YeozQFb0Xth/ZjIao8IakvSU2rRCEcqlVyMHyk8RjmYt7nMUdv8kfUKbXPd4d51ChvC
+	WhBQgODkpjFX9wxSYYsu7oOb1E6M1VxGhbsyOnxR2x2D+m/XutV5zbaGgNO4F8J4GVkjOpUJANs
+	9rf5nRKAxxes/EogqQQBoEqGI66EVzyoYZTOWA7uzXDKnTiRYUQlP2fZhyk9sHatDP48TgZN+2m
+	kzkjYzqKkMxEK8znONMlZ2GW34Od7rFHF4i25i1ASw==
+X-Google-Smtp-Source: AGHT+IFCVZHIrKgRkZ+0N3SCeOCOWcmA6aEX0aZun4ZDC3zdRGxNE6OKKfWvqY0ml5mevyeVzcU6wA==
+X-Received: by 2002:a05:6830:2a86:b0:71d:fc52:1ab6 with SMTP id 46e09a7af769-7249db10bf2mr25946798a34.23.1738022916279;
+        Mon, 27 Jan 2025 16:08:36 -0800 (PST)
+Received: from [192.168.0.142] (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-724ecda5014sm2616402a34.14.2025.01.27.16.08.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jan 2025 16:08:35 -0800 (PST)
+Message-ID: <f90874bb-f08f-437e-bc8b-d549b888ff76@baylibre.com>
+Date: Mon, 27 Jan 2025 18:08:34 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Sender: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 14/16] iio: adc: ad7768-1: add support for
+ Synchronization over SPI
+To: Jonathan Santos <Jonathan.Santos@analog.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com,
+ marcelo.schmitt@analog.com, jic23@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, jonath4nns@gmail.com,
+ marcelo.schmitt1@gmail.com
+References: <cover.1737985435.git.Jonathan.Santos@analog.com>
+ <2d3c69d92a9688f4a20bd6de70f694482501f61c.1737985435.git.Jonathan.Santos@analog.com>
+From: David Lechner <dlechner@baylibre.com>
+Content-Language: en-US
+In-Reply-To: <2d3c69d92a9688f4a20bd6de70f694482501f61c.1737985435.git.Jonathan.Santos@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Jon/Greg,
+On 1/27/25 9:14 AM, Jonathan Santos wrote:
+> The synchronization method using GPIO requires the generated pulse to be
+> truly synchronous with the base MCLK signal. When it is not possible to
+> do that in hardware, the datasheet recommends using synchronization over
+> SPI, where the generated pulse is already synchronous with MCLK. This
+> requires the SYNC_OUT pin to be connected to SYNC_IN pin. In
+> multidevices setup, the SYNC_OUT from other devices can be used as
+> synchronization source.
+> 
+> Use trigger-sources property to enable device synchronization over SPI
+> for single and multiple devices.
+> 
+> Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
+> ---
+> v2 Changes:
+> * Synchronization via SPI is enabled when the Sync GPIO is not defined.
+> * now trigger-sources property indicates the synchronization provider or
+>   main device. The main device will be used to drive the SYNC_IN when
+>   requested (via GPIO or SPI).
+> ---
+>  drivers/iio/adc/ad7768-1.c | 81 ++++++++++++++++++++++++++++++++++----
+>  1 file changed, 73 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
+> index 7686556c7808..01ccbe0aa708 100644
+> --- a/drivers/iio/adc/ad7768-1.c
+> +++ b/drivers/iio/adc/ad7768-1.c
+> @@ -193,6 +193,7 @@ static const struct iio_chan_spec ad7768_channels[] = {
+>  
+>  struct ad7768_state {
+>  	struct spi_device *spi;
+> +	struct spi_device *sync_source_spi;
+>  	struct regmap *regmap;
+>  	struct regulator *vref;
+>  	struct mutex lock;
+> @@ -206,6 +207,7 @@ struct ad7768_state {
+>  	struct iio_trigger *trig;
+>  	struct gpio_desc *gpio_sync_in;
+>  	struct gpio_desc *gpio_reset;
+> +	bool en_spi_sync;
+>  	const char *labels[ARRAY_SIZE(ad7768_channels)];
+>  	/*
+>  	 * DMA (thus cache coherency maintenance) may require the
+> @@ -264,6 +266,21 @@ static int ad7768_spi_reg_write(void *context,
+>  	return spi_write(st->spi, st->data.d8, 2);
+>  }
+>  
+> +static int ad7768_send_sync_pulse(struct ad7768_state *st)
+> +{
+> +	if (st->en_spi_sync) {
+> +		st->data.d8[0] = AD7768_WR_FLAG_MSK(AD7768_REG_SYNC_RESET);
+> +		st->data.d8[1] = 0x00;
+> +
+> +		return spi_write(st->sync_source_spi, st->data.d8, 2);
+> +	} else if (st->gpio_sync_in) {
 
-That's the second version of my RFC patches meant to modenize the ABI
-parser that I wrote in Perl.
+Redundant else after return.
 
-I originally started it due to some issues I noticed when searching for
-ABI symbols. While I could just go ahead and fix the already existing
-script, I noticed that the script maintainance didn't have much care over
-all those years, probably because it is easier to find Python programmers
-those days.
+> +		gpiod_set_value_cansleep(st->gpio_sync_in, 1);
+> +		gpiod_set_value_cansleep(st->gpio_sync_in, 0);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static int ad7768_set_mode(struct ad7768_state *st,
+>  			   enum ad7768_conv_mode mode)
+>  {
+> @@ -348,10 +365,7 @@ static int ad7768_set_dig_fil(struct ad7768_state *st,
+>  		return ret;
+>  
+>  	/* A sync-in pulse is required every time the filter dec rate changes */
+> -	gpiod_set_value(st->gpio_sync_in, 1);
+> -	gpiod_set_value(st->gpio_sync_in, 0);
+> -
+> -	return 0;
+> +	return ad7768_send_sync_pulse(st);
+>  }
+>  
+>  static int ad7768_gpio_direction_input(struct gpio_chip *chip, unsigned int offset)
+> @@ -638,6 +652,58 @@ static const struct iio_info ad7768_info = {
+>  	.debugfs_reg_access = &ad7768_reg_access,
+>  };
+>  
+> +static int ad7768_parse_trigger_sources(struct device *dev, struct ad7768_state *st)
+> +{
+> +	struct fwnode_reference_args args;
+> +	int ret;
+> +
+> +	/*
+> +	 * The AD7768-1 allows two primary methods for driving the SYNC_IN pin to synchronize
+> +	 * one or more devices:
+> +	 * 1. Using a GPIO to directly drive the SYNC_IN pin.
+> +	 * 2. Using a SPI command, where the SYNC_OUT pin generates a synchronization pulse
+> +	 *    that loops back to the SYNC_IN pin.
+> +	 *
+> +	 * In multi-device setups, the SYNC_IN pin can also be driven by the SYNC_OUT pin of
+> +	 * another device. To support this, we use the "trigger-source" property to get a
+> +	 * reference to the "main" device responsible for generating the synchronization pulse.
+> +	 * In a single-device setup, the "trigger-source" property should reference the device's
+> +	 * own node.
+> +	 */
+> +	ret = fwnode_property_get_reference_args(dev_fwnode(dev), "trigger-sources",
+> +						 "#trigger-source-cells", 0, 0, &args);
 
-Also, the code is complex and was not using modules or classes and
-were using lots of global variables.
+The trigger-sources property is optional, so we should have a special case for
+ret == -EINVAL here. Otherwise existing users that use the gpio binding will
+fail here.
 
-So, I decided to rewrite it in Python. I started with a manual conversion
-for each function. Yet, to avoid future maintainership issues, I opted to
-divide the code on three classes. One class for the ABI parser, another
-one for regex conversion (used when checking symbols from local hardware,
-and an extra class for undefined symbols check.
+> +	if (ret) {
+> +		dev_err(dev, "Failed to get trigger-sources reference: %d\n", ret);
+> +		return ret;
 
-I opted to change the Sphinx integration gradually using different
-patch sets on 4 phases:
+		return dev_err_probe(...);
 
-1. minimal integration: just execute the new script on a similar way as
-   the perl one;
-2. the kernel_abi module was changed to import the ABI parser class,
-   using it directly;
-3. the logic at kernel_abi were rewritten to better integrate. As a bonus,
-   Sphinx now imports ReST data symbol by symbol. That solves one of
-   the issues I was discomfortable with the original approach: when lots
-   of data is sent to Sphinx parser, it stops in the middle of processing.
-   This was addressed in the past on a hacky way, but it could cause
-   problems in the future as the number of symbols increase;
-4. the ABI parser part is now called either by automarkup and kernel_abi.
-   This allowed automarkup to solve ABI symbols.
+> +	}
+> +
+> +	st->gpio_sync_in = devm_gpiod_get_optional(args.fwnode->dev, "adi,sync-in",
+> +						   GPIOD_OUT_LOW);
 
-Together with this series, I added some patches fixing issues and warnings
-when generating documentation.
+I would put this in the -EINVAL special case mentioned above, then we don't
+nee to use the _optional variant.
 
-Some notes about this new RFC:
+> +	if (IS_ERR(st->gpio_sync_in))
+> +		return PTR_ERR(st->gpio_sync_in);
 
-- despite being able to generate documentation cross-references with
-  auto-markup, the documentation build timt didn't increase on my machine
-  (it was actually 5 seconds faster);
-- I rewrote some algorithms at the undefined symbol detection code. With
-  that, it is now a lot faster than the previous version, at least on my desktop
-  (wich has 24 CPU threads). I didn't try it on a server yet;
-- the undefined parser can optionally use multiple CPUs. This sounds
-  fancier than it seems: Python (up to version 3.12) is really bad with
-  multi-CPU support and doesn't have real multi-thread support. Python
-  3.13 has now an optional way to address that (although I didn't test yet,
-  as it requires Python manual compilation). When such feature becomes
-  standard, maybe the undefined symbols detection will be faster.
+This leaks args.fwnode reference on return (but would be fixed if making the
+above suggested change).
 
-Btw, I'm opting to send this as an RFC because I'd like to have more
-people testing and checking it. In particular, the undefined ABI check
-is complex, as it requires lots of tricks to reduce the run time from hours
-to seconds.
-  
-On this series we have:
+> +
+> +	/*
+> +	 * If the SYNC_IN GPIO is not defined, fall back to synchronization over SPI.
+> +	 * Use the trigger-source reference to identify the main SPI device for generating
+> +	 * the synchronization pulse.
+> +	 */
+> +	if (!st->gpio_sync_in) {
+> +		st->sync_source_spi = to_spi_device(args.fwnode->dev);
 
-patches 1 to 11: several bug fixes addressing issues at ABI symbols;
-patch 12: a fix for scripts/documentation-file-ref-check
-patches 13-15: create new script with rest and search logic and 
-  minimally integrate with kernel_abi Sphinx extension(phase 1);
-patches 16-19: implement phase 2: class integration (phase 2);
-patch 20: fix a bug at kernel_abi: the way it splits lines is buggy;
-patches  21-24: rewrite kernel_abi logic to make it simpler and more
-  robust;
-patches 25-27: add cross-reference support at automarkup;
-patches 28-36: several ABI cleanups to cope with the improvements;
-patch 37: implement undefined command;
-patch 38: get rid of the old Perl script.
+This seems unsafe. The DT could be pointing to something other than a SPI device.
+to_spi_device() calls container_of() so would cause undefined behavior if dev
+was something else. Also, even if it is a spi device, we don't know what state
+it is in and if it is safe to use it.
 
-To make it easier to review/apply, I may end breaking the next version
-on a couple of different patchsets. Still it would be nice to have more
-people testing it and providing some feedback.
+I think it would be sufficient for now to just check that args.fw_node is the
+the same one as this SPI device since that is the supported case. 
 
----
-RFC v2:
-  - Dropped a patch touching the perl script;
-  - Implemented phases 2-4 of the script's logic;
-  - Added ABI cross-references via automarkup;
-  - Added support for undefined logic;
-  - Added more ABI and scripts' fixes;
-  - Added undefined logic;
-  - Added a patch to remove the old tool.
+> +		if (!st->sync_source_spi) {
+> +			dev_err(dev,
+> +				"Synchronization setup failed. GPIO is undefined and trigger-source reference is invalid\n");
+> +			return -EINVAL;
 
-Mauro Carvalho Chehab (38):
-  docs: power: video.rst: fix a footnote reference
-  docs: media: ipu3: fix two footnote references
-  docs: block: ublk.rst: remove a reference from a dropped text
-  docs: sphinx: remove kernellog.py file
-  docs: sphinx/kernel_abi: adjust coding style
-  docs: admin-guide: abi: add SPDX tags to ABI files
-  ABI: sysfs-class-rfkill: fix kernelversion tags
-  ABI: sysfs-bus-coresight-*: fix kernelversion tags
-  ABI: sysfs-driver-dma-idxd: fix date tags
-  ABI: sysfs-fs-f2fs: fix date tags
-  ABI: sysfs-power: fix a what tag
-  scripts/documentation-file-ref-check: don't check perl/python scripts
-  scripts/get_abi.py: add a Python tool to generate ReST output
-  scripts/get_abi.py: add support for symbol search
-  docs: use get_abi.py for ABI generation
-  scripts/get_abi.py: optimize parse_abi() function
-  scripts/get_abi.py: use an interactor for ReST output
-  docs: sphinx/kernel_abi: use AbiParser directly
-  docs: sphinx/kernel_abi: reduce buffer usage for ABI messages
-  docs: sphinx/kernel_abi: properly split lines
-  scripts/get_abi.pl: Add filtering capabilities to rest output
-  scripts/get_abi.pl: add support to parse ABI README file
-  docs: sphinx/kernel_abi: parse ABI files only once
-  docs: admin-guide/abi: split files from symbols
-  docs: sphinx/automarkup: add cross-references for ABI
-  docs: sphinx/kernel_abi: avoid warnings during Sphinx module init
-  scripts/get_abi.py: Rename title name for ABI files
-  docs: media: Allow creating cross-references for RC ABI
-  docs: thunderbolt: Allow creating cross-references for ABI
-  docs: arm: asymmetric-32bit: Allow creating cross-references for ABI
-  docs: arm: generic-counter: Allow creating cross-references for ABI
-  docs: iio: Allow creating cross-references ABI
-  docs: networking: Allow creating cross-references statistics ABI
-  docs: submit-checklist: Allow creating cross-references for ABI README
-  docs: translations: Allow creating cross-references for ABI README
-  docs: ABI: drop two duplicate symbols
-  scripts/get_abi.py: add support for undefined ABIs
-  scripts/get_abi.pl: drop now obsoleted script
+Leaks args.fwnode on return. Also, dev_err_probe().
 
- Documentation/ABI/removed/sysfs-class-rfkill  |    2 +-
- Documentation/ABI/stable/sysfs-class-rfkill   |   12 +-
- .../ABI/stable/sysfs-devices-system-cpu       |   10 -
- .../ABI/stable/sysfs-driver-dma-idxd          |    4 +-
- .../testing/sysfs-bus-coresight-devices-cti   |   78 +-
- .../testing/sysfs-bus-coresight-devices-tpdm  |   52 +-
- Documentation/ABI/testing/sysfs-fs-f2fs       |    4 +-
- Documentation/ABI/testing/sysfs-power         |    2 +-
- .../admin-guide/abi-obsolete-files.rst        |    7 +
- Documentation/admin-guide/abi-obsolete.rst    |    6 +-
- Documentation/admin-guide/abi-readme-file.rst |    6 +
- .../admin-guide/abi-removed-files.rst         |    7 +
- Documentation/admin-guide/abi-removed.rst     |    6 +-
- .../admin-guide/abi-stable-files.rst          |    7 +
- Documentation/admin-guide/abi-stable.rst      |    6 +-
- .../admin-guide/abi-testing-files.rst         |    7 +
- Documentation/admin-guide/abi-testing.rst     |    6 +-
- Documentation/admin-guide/abi.rst             |   17 +
- Documentation/admin-guide/media/ipu3.rst      |   12 +-
- Documentation/admin-guide/thunderbolt.rst     |    2 +-
- Documentation/arch/arm64/asymmetric-32bit.rst |    2 +-
- Documentation/block/ublk.rst                  |    2 -
- Documentation/driver-api/generic-counter.rst  |    4 +-
- Documentation/driver-api/iio/core.rst         |    2 +-
- Documentation/iio/iio_devbuf.rst              |    2 +-
- Documentation/networking/statistics.rst       |    2 +-
- Documentation/power/video.rst                 |    2 +-
- Documentation/process/submit-checklist.rst    |    2 +-
- Documentation/sphinx/automarkup.py            |   56 +
- Documentation/sphinx/kernel_abi.py            |  162 +-
- Documentation/sphinx/kerneldoc.py             |   14 +-
- Documentation/sphinx/kernellog.py             |   22 -
- Documentation/sphinx/kfigure.py               |   81 +-
- .../it_IT/process/submit-checklist.rst        |    2 +-
- .../sp_SP/process/submit-checklist.rst        |    2 +-
- .../zh_CN/process/submit-checklist.rst        |    2 +-
- .../zh_TW/process/submit-checklist.rst        |    2 +-
- .../userspace-api/media/rc/rc-sysfs-nodes.rst |    2 +-
- scripts/documentation-file-ref-check          |    2 +-
- scripts/get_abi.pl                            | 1103 -------------
- scripts/get_abi.py                            | 1437 +++++++++++++++++
- 41 files changed, 1804 insertions(+), 1354 deletions(-)
- create mode 100644 Documentation/admin-guide/abi-obsolete-files.rst
- create mode 100644 Documentation/admin-guide/abi-readme-file.rst
- create mode 100644 Documentation/admin-guide/abi-removed-files.rst
- create mode 100644 Documentation/admin-guide/abi-stable-files.rst
- create mode 100644 Documentation/admin-guide/abi-testing-files.rst
- delete mode 100644 Documentation/sphinx/kernellog.py
- delete mode 100755 scripts/get_abi.pl
- create mode 100755 scripts/get_abi.py
-
--- 
-2.48.1
-
+> +		}
+> +
+> +		st->en_spi_sync = true;
+> +	}
+> +
+> +	/* Release the fwnode reference after use */
+> +	fwnode_handle_put(args.fwnode);
+> +
+> +	return 0;
+> +}
+> +
+>  static int ad7768_setup(struct iio_dev *indio_dev)
+>  {
+>  	struct ad7768_state *st = iio_priv(indio_dev);
+> @@ -668,10 +734,9 @@ static int ad7768_setup(struct iio_dev *indio_dev)
+>  			return ret;
+>  	}
+>  
+> -	st->gpio_sync_in = devm_gpiod_get(&st->spi->dev, "adi,sync-in",
+> -					  GPIOD_OUT_LOW);
+> -	if (IS_ERR(st->gpio_sync_in))
+> -		return PTR_ERR(st->gpio_sync_in);
+> +	ret = ad7768_parse_trigger_sources(&st->spi->dev, st);
+> +	if (ret)
+> +		return ret;
+>  
+>  	/* Only create a Chip GPIO if flagged for it */
+>  	if (device_property_read_bool(&st->spi->dev, "gpio-controller")) {
 
