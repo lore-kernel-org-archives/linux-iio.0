@@ -1,62 +1,62 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 768B71ACEBF;
-	Tue, 28 Jan 2025 12:01:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A1DD1B0404;
+	Tue, 28 Jan 2025 12:01:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738065707; cv=none; b=NhE6Pvr4vqlnli+49VdjsbFLmVyrE1HnNl0p+WJlK+En6R6xDqMYvoddehk7fmCSmhynedCQYsJ3/2FN69a7Ghmfwiu5cGesZIR39lcvJpaTHFJIpgRbfEUH2fU44nuG6AG85Ji8w4BvTmfplqDblB+mJpm8bpiUSx/p1SsgSz0=
+	t=1738065708; cv=none; b=V02HpNcIDIRcRCu0yvvu1WiedgA3DkjNjhQ3IBM+H/ch744J+uL3kNMNAZgoPSGFuw0Bk9eQK0+WZVFYeQ59gMwQ73J5pIk7ffUSx2EMQScNq8DV2xDJ3DBYfsHKtUe2glJX6PpaxaV5cbvlC8992Rgr9crd74DJ1oBrCBDt95A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738065707; c=relaxed/simple;
-	bh=smBYyuU1n5MHiHwK6AtDzGI8tE9oqWL1TJdVd7NEdkY=;
+	s=arc-20240116; t=1738065708; c=relaxed/simple;
+	bh=ooSE/z8nHD4qO4yh+O7AGHDn8LEVgPgbJnX/wvZzEBY=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=tsTE4/BH9Bz0dHJUQ9B2+SjUiPlAfzXMTcLFv5vkb0kdrEJG0rVzkXbBT+WFV9aBV4wyVjGpw6ris6RpKCu+mE9cAOI5fvhHjwWToYvHpW+RKCkI2e1yF86x8ANvJh0uSL40MJGiE3eXDrz3rPuK8eEUzsCCt26ZojjGhucTQIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jMgbLT5W; arc=none smtp.client-ip=209.85.218.41
+	 MIME-Version; b=JGxlybmnB00Jlt4FCqKchzWWXIyNh/A3fyqLeZg5VS+ZdI+qR2ptSsWeMlwi1cpck634LlsCpkz7vS/4oAxLuHO2gDH4lJFjG721ggb8apouHvFmWSsDy4SPYw0o5jvkSRbDCSaUg2n1kL/LkN8MghHM4fpYHG2APWidZ3IDaE8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=isT3o6LU; arc=none smtp.client-ip=209.85.218.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jMgbLT5W"
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-ab30614c1d6so107598966b.1;
-        Tue, 28 Jan 2025 04:01:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="isT3o6LU"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-aa6965ad2a5so82414866b.3;
+        Tue, 28 Jan 2025 04:01:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738065703; x=1738670503; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1738065705; x=1738670505; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SI/nnzNJ193vlwe+KhpBZKRWN7AdPR78xeiJg6BW9/8=;
-        b=jMgbLT5WRot/10BbyDXf4o1qctt2MpoSphomh0n/OoJhSkTb9SBMAyYLSgTvOjBGcE
-         V0RQXN0GR9HlyiUP2p51hCC1bD945wgXK7TTOIByl9/aqd7ZNznUzwNobJ/LyETycgnY
-         oLNqobgEn37ImxbI5K0PrmIvdViWnNc612lmxuLbzaOwFqs9xtzRpjwNQjOXkt85vnbw
-         E5ocvi8KxdmyHYm0M0iYJLu862YMxFeISyTfqENkXiSzDTgu5r9QN1OiiWpgFGUtfhyj
-         mXsIZz7RAOYRbe6FfWvc8FEF1RHmu2uyN5RZPG7zeHbhfgwoZDwWDPO360eEmOMgQs7f
-         RKMQ==
+        bh=uxJICuKJGEvgJGZrYDbWlzD+OXLpb5BbFr8sRyR6UcY=;
+        b=isT3o6LU35ARHilax//rRup7vzE0zxYHBbUmUjZiI3R+pto22HCi80wjm/3Anlxnru
+         IVpoExBm9VeKUSyQiP5vfsvg5gnkDrTOhdhft8RYo8rrFtWMG9OFfJ+qJV+pzc5L1kWH
+         ZEor3j2ZY4zTXuOXF1q2M8BZ2Q2tvyOT99jkuuDf2KFxBb4HQR8DRMlElm9B+YRMypep
+         9990LaiG/F1T1vJli6G+xaqfWQ/20rYGN8TdK0m6OUony0ALVJLJ2s5H+aemVyh5oEMB
+         De3Im76rVR1XKEXlOUAdtmi1is0+SqW7wMhAUU4hQg0xRwOns3aynIvf/uUHGezlVWug
+         cJSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738065703; x=1738670503;
+        d=1e100.net; s=20230601; t=1738065705; x=1738670505;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=SI/nnzNJ193vlwe+KhpBZKRWN7AdPR78xeiJg6BW9/8=;
-        b=vj8MOvaM0K4PRctDQulUV8TQV689GU+eC2uuOs0QQx66PXtRT9HW3KeM1ZcBDDgzcJ
-         +q+n+SokZ/caQ7pueFc+ziQO5bPv9gQyg5O57qYzVpBPwHvjwoSiNLqM5mQsYHc6BZas
-         izK8I8mEgYxIsHboGXZQwSC9u4RUOwa2bHBx8Yw1pOkQW6FM2R0TzXz/UONpOuAIHjX7
-         deTuv0naoDL53qPWhLOl2BG0fnm9C3jhmp1Qmxz9huv1C5lTswdzg4JrUJLDgG7TP7+H
-         i7oxUFBEenMlGui7usi3zeIhNsbcQ9kKarcolFSp8aXcRcy0CeGeSVAD/56wg+xTohkJ
-         y/5g==
-X-Forwarded-Encrypted: i=1; AJvYcCXhWx3vkOrhCTw0Ht7wMZFIVkzwhUEoRN0lZRJTNKCMf1+3p1cplIw1e917hdle1mACaewYzrHhdfH+8vw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwuqID5A1Ra4iQc+JxpZg2i34P+zcPfTfuVSanxd1vm3TKg6z1d
-	+VCBI2LkpGDiGIBvMAAvFKg7zFV+lDj5BkWN1iPnxMPDdjQ27VJN
-X-Gm-Gg: ASbGncuoRXOpx9tkWL6+vG4BYrsMfsgEk3V3NPFv8M2jgmabdjFBPtcLMC5ydyjpgnl
-	RkeLDM9k1BrpLykm4uwPD2IU3n2l/avhyjJ3lR+xuYceyt5z9BkUNTzvN9xhiYAZSc8hDY7nCvk
-	x7aYh90P7S0ytFDtTaJkfN5SbMjnFyUDvF7wamW0fskFLyrf61ObEbZ1gLB5OBPNfkA0zAEAIjj
-	n3kTNlDkRmihu4Tw9Y2H4aB6wcSL9fpr7vM5W+tU6z7vRycaGoB4141KPQoBLu4iPrzgRsyE2D+
-	x7+H/8VzqY3mbTFhH+UEwQCtomfymk4pMwScAzRIor9ZSEa7jtLx7lUD5goLKJkNRHUwWQ==
-X-Google-Smtp-Source: AGHT+IE0si5YhOptbTHq1ER708uHctoL4MG4LmhhcIjfWXdwIwzQIZWmOkPXdGjGCqK5dHksg+r9LQ==
-X-Received: by 2002:a17:907:3e0d:b0:aac:619:6411 with SMTP id a640c23a62f3a-ab65167653cmr976882966b.11.1738065702649;
-        Tue, 28 Jan 2025 04:01:42 -0800 (PST)
+        bh=uxJICuKJGEvgJGZrYDbWlzD+OXLpb5BbFr8sRyR6UcY=;
+        b=oQY/Wq4k0bQQkQLKKOpQ5/zj/0rP9jVVW5VwyQVNTmbzqCZ8Obb/o3sYViuuonDP31
+         IcP39/IE2jcLE8KPeGcvJu6PBguOnSB7ZE6EBItCl5XTXxCHUcwG+HfBv5w2IYu+85dR
+         zD3DnqmogGVtQ/uRMD8P8Z2Z//+0q+x/0oDk+nG5NDET4fu7YL6GNLHfEc6Q+7hOxmLO
+         jyZWDQh4zWCjBRRvuaFo31y+HOo7Qv5UfLECizqiozUJvPxOF0wZrYdCiJIOqpcfPPv8
+         BD9Y/FGeGvWf6dC+l8/yOY3eocvDygGUPxqHFij/5iAfjoR86DNwKTMjoBiq5M4uEofN
+         O/xg==
+X-Forwarded-Encrypted: i=1; AJvYcCUUDUXXBddW5B8xox3GgJzjkGgrXGkr3pEfoOBhgrItrCmCFjo+DZHByylJnnbcdb4u3LZp/dPHehWMfDk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzReCnQcyFsk/IAEBSF+ExT9ZIGXuVrFEEHoZZsIyqpG48rzI5g
+	6J22HUCmQK9o35HZBON/JFEQvdH9YdHhwFnXMuajO6QkOPbxqhCE
+X-Gm-Gg: ASbGncsZNWcnrFGPQeK4VYmeEAZbAwWK2Bts2FtxpgTh216t2UtwlxARpwACNoIDhrG
+	Ll5C0rodHQSDKQqiwg2kfniF18C8uiU2hxrdr2a6LN7ObdYZKDaSjYtO6lWH7/HqLZOKKWsO9if
+	MTHscL8D+1KD5tQXZl4Uem453WmURM3GYkPW7Ey1dzdBD3jVilqxIGHJr08Ke4tbdI2+NEb4lKw
+	QTz+GGqutA+5p54UkHCDgPmkdmWjMwZ2282e2257ayGYscduxvj9eeNgzre/p3bgnkEzbNuljLc
+	vWYHXvQy5Mn5O8LXfV1cM6UdBkKqiZuh0ySF5nagbTtElD6yaZbIFAt7v1L3oGLy5/9gSA==
+X-Google-Smtp-Source: AGHT+IGxj/91ewZJORBmpFEOruy6g6SVAlbUfFsQe5K8dPIXsXkBeA4a8MMlRE9sLMYAAvdHzoMHGA==
+X-Received: by 2002:a17:907:969f:b0:ab3:2719:ca30 with SMTP id a640c23a62f3a-ab38b35c602mr1760150466b.10.1738065704501;
+        Tue, 28 Jan 2025 04:01:44 -0800 (PST)
 Received: from d9dabf0abd47.v.cablecom.net (84-72-156-211.dclient.hispeed.ch. [84.72.156.211])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab69f8555b7sm418865966b.71.2025.01.28.04.01.41
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab69f8555b7sm418865966b.71.2025.01.28.04.01.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jan 2025 04:01:42 -0800 (PST)
+        Tue, 28 Jan 2025 04:01:44 -0800 (PST)
 From: Lothar Rubusch <l.rubusch@gmail.com>
 To: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
@@ -65,9 +65,9 @@ Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	eraretuya@gmail.com,
 	l.rubusch@gmail.com
-Subject: [PATCH v1 09/12] iio: accel: adxl345: add double tap suppress bit
-Date: Tue, 28 Jan 2025 12:00:57 +0000
-Message-Id: <20250128120100.205523-10-l.rubusch@gmail.com>
+Subject: [PATCH v1 11/12] iio: accel: adxl345: add activity feature
+Date: Tue, 28 Jan 2025 12:00:59 +0000
+Message-Id: <20250128120100.205523-12-l.rubusch@gmail.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20250128120100.205523-1-l.rubusch@gmail.com>
 References: <20250128120100.205523-1-l.rubusch@gmail.com>
@@ -79,124 +79,261 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add the suppress bit feature to make double tap (in)sensitive to the
-configured threshold value for the tap feature. The feature is being
-enabled by a sysfs handle for enabling. This is also needed for further
-features in follow up patches.
+Add the handling of activity events, also add sysfs entries to
+configure threshold values to trigger the event. Allow to push the
+event over to the iio channel.
 
 Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
 ---
- drivers/iio/accel/adxl345_core.c | 67 ++++++++++++++++++++++++++++++++
- 1 file changed, 67 insertions(+)
+ drivers/iio/accel/adxl345_core.c | 158 ++++++++++++++++++++++++++++++-
+ 1 file changed, 154 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
-index f9e5f47ba303..ef0a12fd59be 100644
+index 62d75d28b6fc..94c3ad818ba5 100644
 --- a/drivers/iio/accel/adxl345_core.c
 +++ b/drivers/iio/accel/adxl345_core.c
-@@ -120,6 +120,7 @@
- #define ADXL345_INT2			1
+@@ -121,6 +121,8 @@
  
  #define ADXL345_REG_TAP_AXIS_MSK	GENMASK(2, 0)
-+#define ADXL345_REG_TAP_SUPPRESS_MSK	BIT(3)
+ #define ADXL345_REG_TAP_SUPPRESS_MSK	BIT(3)
++#define ADXL345_REG_ACT_AXIS_MSK	GENMASK(6, 4)
++#define ADXL345_REG_ACT_ACDC_MSK	BIT(7)
  
  enum adxl345_axis {
  	ADXL345_Z_EN = BIT(0),
-@@ -167,6 +168,7 @@ struct adxl345_state {
- 	u32 tap_duration_us;
- 	u32 tap_latent_us;
- 	u32 tap_window_us;
-+	bool tap_suppressed;
+@@ -163,6 +165,10 @@ struct adxl345_state {
+ 	u8 watermark;
+ 	u8 fifo_mode;
  
- 	__le16 fifo_buf[ADXL345_DIRS * ADXL345_FIFO_SIZE + 1] __aligned(IIO_DMA_MINALIGN);
++	u32 act_axis_ctrl;
++	bool act_ac;
++	u8 act_value;
++
+ 	u32 tap_axis_ctrl;
+ 	u8 tap_threshold;
+ 	u32 tap_duration_us;
+@@ -177,6 +183,11 @@ struct adxl345_state {
  };
-@@ -346,6 +348,22 @@ static int adxl345_set_doubletap_en(struct adxl345_state *st, bool en)
- 	return _adxl345_set_tap_int(st, ADXL345_DOUBLE_TAP, en);
+ 
+ static struct iio_event_spec adxl345_events[] = {
++	{
++		/* activity */
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_RISING,
++	},
+ 	{
+ 		/* single tap */
+ 		.type = IIO_EV_TYPE_GESTURE,
+@@ -276,6 +287,117 @@ static inline int adxl345_write_interrupts(struct adxl345_state *st)
+ 	return regmap_write(st->regmap, ADXL345_REG_INT_ENABLE, st->int_map);
  }
  
-+static int adxl345_is_suppressed_en(struct adxl345_state *st, bool *en)
++/* act/inact */
++
++static int adxl345_write_act_axis(struct adxl345_state *st, bool en)
 +{
-+	*en = st->tap_suppressed;
++	int ret;
++
++	/*
++	 * A setting of 0 selects dc-coupled operation, and a setting of 1
++	 * enables ac-coupled operation. In dc-coupled operation, the current
++	 * acceleration magnitude is compared directly with THRESH_ACT and
++	 * THRESH_INACT to determine whether activity or inactivity is
++	 * detected.
++	 *
++	 * In ac-coupled operation for activity detection, the acceleration
++	 * value at the start of activity detection is taken as a reference
++	 * value. New samples of acceleration are then compared to this
++	 * reference value, and if the magnitude of the difference exceeds the
++	 * THRESH_ACT value, the device triggers an activity interrupt.
++	 *
++	 * Similarly, in ac-coupled operation for inactivity detection, a
++	 * reference value is used for comparison and is updated whenever the
++	 * device exceeds the inactivity threshold. After the reference value
++	 * is selected, the device compares the magnitude of the difference
++	 * between the reference value and the current acceleration with
++	 * THRESH_INACT. If the difference is less than the value in
++	 * THRESH_INACT for the time in TIME_INACT, the device is  considered
++	 * inactive and the inactivity interrupt is triggered.
++	 */
++	ret = regmap_update_bits(st->regmap, ADXL345_REG_ACT_INACT_CTRL,
++				 ADXL345_REG_ACT_ACDC_MSK, st->act_ac);
++	if (ret)
++		return ret;
++
++	/*
++	 * The ADXL345 allows for individually enabling/disabling axis for
++	 * activity and inactivity detection, respectively. Here both axis are
++	 * kept in sync, i.e. an axis will be generally enabled or disabled for
++	 * both equally, activity and inactivity detection.
++	 */
++	st->act_axis_ctrl = en
++		? st->act_axis_ctrl | ADXL345_REG_ACT_AXIS_MSK
++		: st->act_axis_ctrl & ~ADXL345_REG_ACT_AXIS_MSK;
++
++	ret = regmap_update_bits(st->regmap, ADXL345_REG_ACT_INACT_CTRL,
++				 ADXL345_REG_ACT_AXIS_MSK,
++				 st->act_axis_ctrl);
++	if (ret)
++		return ret;
 +
 +	return 0;
 +}
 +
-+static int adxl345_set_suppressed_en(struct adxl345_state *st, bool en)
++static int adxl345_set_act_int(struct adxl345_state *st)
 +{
-+	st->tap_suppressed = en;
++	bool args_valid;
++	bool axis_en;
 +
-+	return regmap_update_bits(st->regmap, ADXL345_REG_TAP_AXIS,
-+				  ADXL345_REG_TAP_SUPPRESS_MSK,
-+				  en ? ADXL345_TAP_SUPPRESS : ~ADXL345_TAP_SUPPRESS);
++	axis_en = FIELD_GET(ADXL345_REG_ACT_AXIS_MSK, st->act_axis_ctrl) > 0;
++	args_valid = axis_en && st->act_value > 0;
++	adxl345_intmap_switch_bit(st, args_valid, ADXL345_INT_ACTIVITY);
++
++	return adxl345_write_interrupts(st);
 +}
 +
- static int adxl345_set_tap_value(struct adxl345_state *st, u8 val)
- {
- 	st->tap_threshold = val;
-@@ -693,6 +711,52 @@ static int adxl345_write_raw_get_fmt(struct iio_dev *indio_dev,
- 	}
- }
- 
-+#define ADXL345_generate_iio_dev_attr_EN(A, B)				\
-+	static ssize_t in_accel_##A##_##B##_en_show(struct device *dev, \
-+						    struct device_attribute *attr, \
-+						    char *buf)		\
-+	{								\
-+		struct iio_dev *indio_dev = dev_to_iio_dev(dev);	\
-+		struct adxl345_state *st = iio_priv(indio_dev);		\
-+		bool en;						\
-+		int val, ret;						\
-+									\
-+		ret = adxl345_is_##B##_en(st, &en);			\
-+		if (ret)						\
-+			return ret;					\
-+		val = en ? 1 : 0;					\
-+									\
-+		return iio_format_value(buf, IIO_VAL_INT, 1, &val);	\
-+	}								\
-+									\
-+	static ssize_t in_accel_##A##_##B##_en_store(struct device *dev, \
-+						     struct device_attribute *attr, \
-+						     const char *buf, size_t len) \
-+	{								\
-+		struct iio_dev *indio_dev = dev_to_iio_dev(dev);	\
-+		struct adxl345_state *st = iio_priv(indio_dev);		\
-+		int val, ret;						\
-+									\
-+		ret = kstrtoint(buf, 0, &val);				\
-+		if (ret)						\
-+			return ret;					\
-+									\
-+		ret = adxl345_set_measure_en(st, false);		\
-+		if (ret)						\
-+			return ret;					\
-+									\
-+		ret = adxl345_set_##B##_en(st, val > 0);		\
-+		if (ret)						\
-+			return ret;					\
-+									\
-+		ret =  adxl345_set_measure_en(st, true);		\
-+		if (ret)						\
-+			return ret;					\
-+									\
-+		return len;						\
-+	}								\
-+	static IIO_DEVICE_ATTR_RW(in_accel_##A##_##B##_en, 0)
++static int _adxl345_is_act_en(struct adxl345_state *st, bool *en)
++{
++	int ret;
++	unsigned int regval;
 +
- #define ADXL345_generate_iio_dev_attr_FRACTIONAL(A, B, C, D, E)		\
- 	static ssize_t in_accel_##A##_##C##_##E##_show(struct device *dev, \
- 						       struct device_attribute *attr, \
-@@ -738,8 +802,11 @@ ADXL345_generate_iio_dev_attr_FRACTIONAL(gesture_singletap, tap, duration, MICRO
- ADXL345_generate_iio_dev_attr_FRACTIONAL(gesture_doubletap, tap, window, MICRO, us);
++	ret = adxl345_read_interrupts(st, &regval);
++	if (ret)
++		return ret;
++
++	*en = FIELD_GET(ADXL345_INT_ACTIVITY, regval) > 0;
++
++	return 0;
++}
++
++static int _adxl345_set_act_en(struct adxl345_state *st, bool en)
++{
++	int ret;
++
++	ret = adxl345_write_act_axis(st, en);
++	if (ret)
++		return ret;
++
++	return adxl345_set_act_int(st);
++}
++
++static int adxl345_is_act_en(struct adxl345_state *st, bool *en)
++{
++	return _adxl345_is_act_en(st, en);
++}
++
++static int adxl345_set_act_en(struct adxl345_state *st, bool en)
++{
++	return _adxl345_set_act_en(st, en);
++}
++
++static int _adxl345_set_act_value(struct adxl345_state *st, u8 val)
++{
++	st->act_value = val;
++
++	return regmap_write(st->regmap, ADXL345_REG_THRESH_ACT, val);
++}
++
++static int adxl345_set_act_value(struct adxl345_state *st, u8 val)
++{
++	return _adxl345_set_act_value(st, val);
++}
++
+ /* tap */
+ 
+ static int adxl345_write_tap_axis(struct adxl345_state *st,
+@@ -904,6 +1026,7 @@ static int adxl345_write_raw_get_fmt(struct iio_dev *indio_dev,
+ 	}								\
+ 	static IIO_DEVICE_ATTR_RW(in_accel_##A##_##C##_##E, 0)
+ 
++ADXL345_generate_iio_dev_attr_INT(activity, act, value);
+ ADXL345_generate_iio_dev_attr_INT(freefall, ff, value);
+ 
+ ADXL345_generate_iio_dev_attr_FRACTIONAL(gesture_singletap, tap, duration, MICRO, us);
+@@ -911,10 +1034,13 @@ ADXL345_generate_iio_dev_attr_FRACTIONAL(gesture_doubletap, tap, window, MICRO,
  ADXL345_generate_iio_dev_attr_FRACTIONAL(gesture_doubletap, tap, latent, MICRO, us);
+ ADXL345_generate_iio_dev_attr_FRACTIONAL(freefall, ff, time, MILLI, ms);
  
-+ADXL345_generate_iio_dev_attr_EN(gesture_doubletap, suppressed);
-+
++ADXL345_generate_iio_dev_attr_EN(activity, act);
+ ADXL345_generate_iio_dev_attr_EN(freefall, ff);
+ ADXL345_generate_iio_dev_attr_EN(gesture_doubletap, suppressed);
+ 
  static struct attribute *adxl345_event_attrs[] = {
- 	&iio_dev_attr_in_accel_gesture_singletap_duration_us.dev_attr.attr,
-+	&iio_dev_attr_in_accel_gesture_doubletap_suppressed_en.dev_attr.attr,
- 	&iio_dev_attr_in_accel_gesture_doubletap_latent_us.dev_attr.attr,
- 	&iio_dev_attr_in_accel_gesture_doubletap_window_us.dev_attr.attr,
- 	NULL
++	&iio_dev_attr_in_accel_activity_act_en.dev_attr.attr,
++	&iio_dev_attr_in_accel_activity_act_value.dev_attr.attr,
+ 	&iio_dev_attr_in_accel_freefall_ff_en.dev_attr.attr,
+ 	&iio_dev_attr_in_accel_freefall_ff_value.dev_attr.attr,
+ 	&iio_dev_attr_in_accel_freefall_time_ms.dev_attr.attr,
+@@ -1087,20 +1213,25 @@ static int adxl345_get_status(struct adxl345_state *st, unsigned int *int_stat,
+ {
+ 	unsigned int regval;
+ 	bool check_tap_stat;
++	bool check_act_stat;
+ 
+ 	*act_tap_dir = IIO_NO_MOD;
+ 	check_tap_stat = FIELD_GET(ADXL345_REG_TAP_AXIS_MSK, st->tap_axis_ctrl) > 0;
++	check_act_stat = FIELD_GET(ADXL345_REG_ACT_AXIS_MSK, st->act_axis_ctrl) > 0;
+ 
+-	if (check_tap_stat) {
++	if (check_tap_stat || check_act_stat) {
+ 		/* ACT_TAP_STATUS should be read before clearing the interrupt */
+ 		if (regmap_read(st->regmap, ADXL345_REG_ACT_TAP_STATUS, &regval))
+ 			return -EINVAL;
+ 
+-		if (FIELD_GET(ADXL345_Z_EN, regval) > 0)
++		if ((FIELD_GET(ADXL345_Z_EN, regval >> 4)
++				| FIELD_GET(ADXL345_Z_EN, regval)) > 0)
+ 			*act_tap_dir = IIO_MOD_Z;
+-		else if (FIELD_GET(ADXL345_Y_EN, regval) > 0)
++		else if ((FIELD_GET(ADXL345_Y_EN, regval >> 4)
++				| FIELD_GET(ADXL345_Y_EN, regval)) > 0)
+ 			*act_tap_dir = IIO_MOD_Y;
+-		else if (FIELD_GET(ADXL345_X_EN, regval) > 0)
++		else if ((FIELD_GET(ADXL345_X_EN, regval >> 4)
++				| FIELD_GET(ADXL345_X_EN, regval)) > 0)
+ 			*act_tap_dir = IIO_MOD_X;
+ 	}
+ 
+@@ -1154,6 +1285,17 @@ static int adxl345_push_event(struct iio_dev *indio_dev, int int_stat,
+ 			return ret;
+ 	}
+ 
++	if (FIELD_GET(ADXL345_INT_ACTIVITY, int_stat)) {
++		ret = iio_push_event(indio_dev,
++				     IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
++							act_tap_dir,
++							IIO_EV_TYPE_THRESH,
++							IIO_EV_DIR_RISING),
++				     ts);
++		if (ret)
++			return ret;
++	}
++
+ 	if (FIELD_GET(ADXL345_INT_FREE_FALL, int_stat)) {
+ 		ret = iio_push_event(indio_dev,
+ 				     IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
+@@ -1264,6 +1406,13 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
+ 		return -ENODEV;
+ 	st->fifo_delay = fifo_delay_default;
+ 
++	/*
++	 * If the feature is enabled, scan all axis for activity and or
++	 * inactivity, and set activity and inactivity to the same ac / dc
++	 * setup.
++	 */
++	st->act_axis_ctrl = ADXL345_REG_ACT_AXIS_MSK;
++	st->act_ac = 0;
+ 	st->int_map = 0x00;			/* reset interrupts */
+ 
+ 	/* Init with reasonable values */
+@@ -1272,6 +1421,7 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
+ 	st->tap_window_us = 20;			/*   20 [0x14] -> .025    */
+ 	st->tap_latent_us = 20;			/*   20 [0x14] -> .025    */
+ 
++	st->act_value = 6;			/*    6 [0x06]            */
+ 	st->ff_value = 8;			/*    8 [0x08]            */
+ 	st->ff_time_ms = 32;			/*   32 [0x20] -> 0.16    */
+ 
 -- 
 2.39.5
 
