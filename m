@@ -1,34 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EA962E62B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EC26383A5;
 	Tue, 28 Jan 2025 00:06:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738022797; cv=none; b=uZXgMN4P3zsFvk8PmuDi0Yu76XvVkJsvFCjiuwUuTWqgV50r5Tw/aOwS/JoNmXvQV6MoEeONdJsPHGtxgJfq2FYp7qlC766J+wu6bB5VPXJSXccZAXf16WzIRbV/vtmV+q/F0SwjN7tVFvTJfYHpulOCK5r2uGcZmggsRsbMxfE=
+	t=1738022797; cv=none; b=n42gnjl4HKJ6PjdgWUYsVcdyrMPM8k0iWgd6QX0RU47VK3wgn7DAU16alMqHDUOotbYiPQtGlmDAXfH2t6+pAOk5/wjEbV8lRBjTAu+Ga9LE3Mq/IpOTM5S9kz3wO4EDIwgjGYfMOQPuen3RmDDXfXiG6/n6CpXttblW1EWu5u8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1738022797; c=relaxed/simple;
-	bh=aJ8SN/KmweREPu+e3BrG68E3yExC74uiWb70lROkL7Q=;
+	bh=QXk/JHBxUK/Ths9qSQMqY9AnKVsl6SgMJq6d9H2BT/U=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=e23IdOE+7O6L3I/ihk6ZqdIsOcrpWNNVEzlxOueBaXfhMiFsbS+6kMBGKM37ECNgmGd4ZgVSk9qv8YTuTYo+sQNoMC5Eoan6qeLZ3yN+5IR0nm19np1X0Iize4w2r6bpvWkJ0/QZpGc47LJYMKB31F7e9kwq0kP6AnQEzvqXqnU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E6QdLOBG; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=VLB+FBoamkiHw9teOm5NDe8beyv2QnYpp3XxThuhU9iUCUerYIRaNCGT/BX/zeVzebvjdhWL4aK00r/uxqDeW8okOtSuQQ0hdZV1LmAqAee+R19Db3Xw8rJAj6k+4yHbMvyThAfl9xLhQIEQFoWcQBpDw4JtKOM3oJMbvR1Mwfc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YIXLnxTN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E6QdLOBG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36367C2BCAF;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YIXLnxTN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 465ADC2BC9E;
 	Tue, 28 Jan 2025 00:06:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1738022796;
-	bh=aJ8SN/KmweREPu+e3BrG68E3yExC74uiWb70lROkL7Q=;
+	bh=QXk/JHBxUK/Ths9qSQMqY9AnKVsl6SgMJq6d9H2BT/U=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=E6QdLOBGGkLHrxzXL7xRWh8sA571ucTDZ13JHOz81/gCmvSBA/K+cG6iGGzB+P32e
-	 ezTwKuU7l+Hu1Ob8YZKIaPTZy2ltOtHdEQKosTNlh+Hc9uuKJ0v2gJCkPP57sK41Bo
-	 jleDMqW6uyNIR59ZzzhA13UzeMTRyBMig+GYofvNJ6ge+CEPqTVbSvGOpAE6TB/MMG
-	 Xkd/1P9pn9yf4qMrHQf60K7pfgDjfaJxIpCeIt51B1LUAsxA1SnkOaxWpobqY4MGmy
-	 rzLogHiF2rpRKV/+zPYCYUFj/Vj3ERsDfJ5EZQ0EzAEcOjVcqyZgChcbF3Dt62HJ/D
-	 5GHdv4pY5UfFA==
+	b=YIXLnxTNG7OUcOH0i7SRQ5lOz+0+nOzGxMUrgCJ/obzhVCbDHTnqhtjfeZwzFSWqN
+	 MOId/APnwOc3reFr+2IyuAD5B8y67Mr8zv/G/Ug8gccKFfBvQ2QodHKQ5TmTn03lMp
+	 9OmuoVBdIBfn7Mie9wFU59bLFlBCUNeSEXzU1Xwro0iXzgpeaDDJ9T2ntHC6/2m9kC
+	 aUg/MFKUxbM+3owqFkhUtuSzAp44Ok2GhKgq6QshyWtlGCNDe0yBmd8IGfDUMCv+IH
+	 7dty8Z5hpkaU3Pv3Mvxj9FDI91MlXz8GGlrSYCIRZ4hWN6TpgFM78Juwvi0JpflufJ
+	 G3+/dPhStHOjQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.98)
 	(envelope-from <mchehab+huawei@kernel.org>)
-	id 1tcZ7i-0000000DRMR-1nNr;
+	id 1tcZ7i-0000000DRMN-1gC4;
 	Tue, 28 Jan 2025 01:06:34 +0100
 From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To: Linux Doc Mailing List <linux-doc@vger.kernel.org>,
@@ -36,14 +36,12 @@ To: Linux Doc Mailing List <linux-doc@vger.kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
 	"Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-	Jonathan Cameron <mchehab+huawei@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Thorsten Scherer <t.scherer@eckelmann.de>,
+	William Breathitt Gray <mchehab+huawei@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [RFC v2 32/38] docs: iio: Allow creating cross-references ABI
-Date: Tue, 28 Jan 2025 01:06:21 +0100
-Message-ID: <71e13fab5e63de2f16d6953cc6ebf3b51f1f9f6e.1738020236.git.mchehab+huawei@kernel.org>
+Subject: [RFC v2 31/38] docs: arm: generic-counter: Allow creating cross-references for ABI
+Date: Tue, 28 Jan 2025 01:06:20 +0100
+Message-ID: <f948077fda09f7db7f13f5e1802e9c42926228ad.1738020236.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.48.1
 In-Reply-To: <cover.1738020236.git.mchehab+huawei@kernel.org>
 References: <cover.1738020236.git.mchehab+huawei@kernel.org>
@@ -61,34 +59,31 @@ generate cross-references for the corresponding ABI file.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- Documentation/driver-api/iio/core.rst | 2 +-
- Documentation/iio/iio_devbuf.rst      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ Documentation/driver-api/generic-counter.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/driver-api/iio/core.rst b/Documentation/driver-api/iio/core.rst
-index dfe438dc91a7..42b580fb2989 100644
---- a/Documentation/driver-api/iio/core.rst
-+++ b/Documentation/driver-api/iio/core.rst
-@@ -60,7 +60,7 @@ directory.  Common attributes are:
- * :file:`sampling_frequency_available`, available discrete set of sampling
-   frequency values for device.
- * Available standard attributes for IIO devices are described in the
--  :file:`Documentation/ABI/testing/sysfs-bus-iio` file in the Linux kernel
-+  :file:Documentation/ABI/testing/sysfs-bus-iio file in the Linux kernel
-   sources.
+diff --git a/Documentation/driver-api/generic-counter.rst b/Documentation/driver-api/generic-counter.rst
+index 71ccc30e586b..e826f16ea43d 100644
+--- a/Documentation/driver-api/generic-counter.rst
++++ b/Documentation/driver-api/generic-counter.rst
+@@ -467,7 +467,7 @@ Counter sysfs
+ Translates counter data to the standard Counter sysfs interface format
+ and vice versa.
  
- IIO device channels
-diff --git a/Documentation/iio/iio_devbuf.rst b/Documentation/iio/iio_devbuf.rst
-index 9919e4792d0e..dca1f0200b0d 100644
---- a/Documentation/iio/iio_devbuf.rst
-+++ b/Documentation/iio/iio_devbuf.rst
-@@ -148,5 +148,5 @@ applied), however there are corner cases in which the buffered data may be found
- in a processed form. Please note that these corner cases are not addressed by
- this documentation.
+-Please refer to the ``Documentation/ABI/testing/sysfs-bus-counter`` file
++Please refer to the Documentation/ABI/testing/sysfs-bus-counter file
+ for a detailed breakdown of the available Generic Counter interface
+ sysfs attributes.
  
--Please see ``Documentation/ABI/testing/sysfs-bus-iio`` for a complete
-+Please see Documentation/ABI/testing/sysfs-bus-iio for a complete
- description of the attributes.
+@@ -483,7 +483,7 @@ Sysfs Interface
+ Several sysfs attributes are generated by the Generic Counter interface,
+ and reside under the ``/sys/bus/counter/devices/counterX`` directory,
+ where ``X`` is to the respective counter device id. Please see
+-``Documentation/ABI/testing/sysfs-bus-counter`` for detailed information
++Documentation/ABI/testing/sysfs-bus-counter for detailed information
+ on each Generic Counter interface sysfs attribute.
+ 
+ Through these sysfs attributes, programs and scripts may interact with
 -- 
 2.48.1
 
