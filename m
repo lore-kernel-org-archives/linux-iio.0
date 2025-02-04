@@ -1,121 +1,163 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69DBA14B094
-	for <linux-iio@vger.kernel.org>; Tue,  4 Feb 2025 20:05:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64AC520C034;
+	Tue,  4 Feb 2025 23:37:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738699525; cv=none; b=K31KOkuuaIZ/iBzU5sTH/2KbTSEdnUaI7GS/QeXHJxHEErqzGQplIan6saCsSIVFqVVOti7wQN/glhz+jmHH0ANlqWMnCIXOWK2da3MVRa8I2rrz2UIvFy3bVupsd1Aj6jq6QU3SaAhYf6lN/MsKYGretzop30JS3dDxHAssiEk=
+	t=1738712256; cv=none; b=KBVSDnKtIMNM36wIX4OQ5EGwWBFu8C32DaU3ogJGLkiWbUoYOSTh84vFbfOolq2j/2C8GCyYCKkKC82Y6gFp3cG2xeA4wP5L+cKSaycbtnHE8NG8+YUuWdYl8wysD0K+uzN6P+ybUkdCaLpmTm4JmG1jYysTBQElXhG5wpgO28s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738699525; c=relaxed/simple;
-	bh=j704jEM6zRl8dthwMF87HDqSIh2q28YaY8n1BVqvnxE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qw0NmM4++a//BgT4nI6qQELOMbD+pSQQWmp3jzYSlxwAHc2SKCupsBzPHae+wmCrzE0tl3IEDoTc3n5hkaY6hOEAv1KaSbklAta0JYZ/JzDCCH/1Llb4WDbJxwt3fRwoy9dD0QMdfs43Ddz0nUTU3Cws7zs8Qf6kbCNRdgoIMRk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ijjsQbCL; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1738712256; c=relaxed/simple;
+	bh=vAY8VLfiDAEQkW2QlXq5vU119DGdr5y1FVx5inPsSCI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jiGAocK+tW3qfHabs3f6Ha2Rs8+nOgYgT7Wuj57GR5gdVR3PdtWbchDcwh8F7kdU+DN8uajHrvRaRw7duqZQgKDc9tTARDbzIO4HRtBCgm04vobMckbi2S3qwIZVtrs3YR14XD6PRHpbrR7Y9HfD33Q1K6Wtu2K/Zi39712qYmQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VKwivGzI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ijjsQbCL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D1F2C4CEDF;
-	Tue,  4 Feb 2025 20:05:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VKwivGzI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79B77C4CEDF;
+	Tue,  4 Feb 2025 23:37:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1738699524;
-	bh=j704jEM6zRl8dthwMF87HDqSIh2q28YaY8n1BVqvnxE=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ijjsQbCLbSYa4N+/U4AUW5PuTkzRsZ9BQQ0B6mRvM4FB148/YWt8LccharDb0i5RU
-	 RwuRBkGQPBANyFCz/5h3HpzsfweWaRJBZfFSIccvAiXRjhB+KREGqcsxF3mtUezLYl
-	 0ST4XfyfDPh8B4VLG5nnRVqNIRpjzbZJ+iqJyHDyCsGBeT+FAVNt8uDLro+prERfIf
-	 BDyoL/k/EIN0VDfJEDeawLixn8x/ZQXlvv2fwUKGnEwpNR8JaTaSUDfEI6pIOF5bWC
-	 Y4AqLVa7+DYAs9g7f4a6P7fNZBwXfwxZquwV5dKqTungZoNDvXaK8eviJMBViDokCu
-	 Fyl00NkUdLcjw==
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Mudit Sharma <muditsharma.info@gmail.com>,
-	Julien Stephan <jstephan@baylibre.com>,
-	Mariel Tinaco <Mariel.Tinaco@analog.com>,
-	Angelo Dureghello <adureghello@baylibre.com>,
-	Gustavo Silva <gustavograzs@gmail.com>,
-	Nuno Sa <nuno.sa@analog.com>,
-	=?UTF-8?q?Jo=C3=A3o=20Paulo=20Gon=C3=A7alves?= <joao.goncalves@toradex.com>,
-	ChiYuan Huang <cy_huang@richtek.com>,
-	Ramona Alexandra Nechita <ramona.nechita@analog.com>,
-	Trevor Gamblin <tgamblin@baylibre.com>,
-	Guillaume Stols <gstols@baylibre.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Cosmin Tanislav <demonsingur@gmail.com>,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>,
-	Gwendal Grignou <gwendal@chromium.org>,
-	Antoni Pokusinski <apokusinski01@gmail.com>,
-	Tomasz Duszynski <tomasz.duszynski@octakon.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 27/27] iio: Drop iio_device_claim_direct_scoped() and related infrastructure
-Date: Tue,  4 Feb 2025 20:02:49 +0000
-Message-ID: <20250204200250.636721-28-jic23@kernel.org>
-X-Mailer: git-send-email 2.48.1
-In-Reply-To: <20250204200250.636721-1-jic23@kernel.org>
-References: <20250204200250.636721-1-jic23@kernel.org>
+	s=k20201202; t=1738712255;
+	bh=vAY8VLfiDAEQkW2QlXq5vU119DGdr5y1FVx5inPsSCI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=VKwivGzIB7KSq8KgreBnpiCDIjWvwHPgeYknYhX3Kg9ltR4fZRZzNRDG51LxUu/Jc
+	 gVAvk+DnI1G7ghRdVUhcmgy+fSsdLf9bcno5Bv7v7jXBceCtmhzs5AUY1sUDv5nQmH
+	 p4lI5fHO8QVFY2PQ+XVxcFx55XQ94tgxGrBuADzVofn3/QM+FgFH0XGdyWdIxNLj3C
+	 w6M0DUGXhf9Dp9h8DNfP3IoPo9dhQE15o1JgqD6yx88avgOIPGHR1pAuPwJdJIDIKO
+	 cz2nGON1ELjxaDLMl0fywiP1a4s5FWAYHi+4z2zPXVJz8WFNQ9ABzFYk8RdectrZY/
+	 qjS4w3OSQueIA==
+Date: Wed, 5 Feb 2025 08:37:30 +0900
+From: William Breathitt Gray <wbg@kernel.org>
+To: =?iso-8859-1?B?Q3Pza+Fz?= Bence <csokas.bence@prolan.hu>
+Cc: linux-iio@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-arm-kernel@lists.infradead.org, timestamp@lists.linux.dev,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Dipen Patel <dipenp@nvidia.com>, dlechner@baylibre.com
+Subject: Re: [Q] Frequency & duty cycle measurement?
+Message-ID: <Z6KkusvLFPcNvEfl@ishi>
+References: <f2ec8a55-42ad-498a-b793-072444dcb92e@prolan.hu>
+ <Z5efcokgHix-k3lW@ishi>
+ <dffc0f18-799a-4fc7-a6b5-2fa270e1fc58@prolan.hu>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="2a9wQicw+mxwAn3v"
+Content-Disposition: inline
+In-Reply-To: <dffc0f18-799a-4fc7-a6b5-2fa270e1fc58@prolan.hu>
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Scoped conditional automated cleanup turned out to be harder to work
-with than expected. Despite several attempts to find a better solution
-non have surfaced. As such rip it out of the IIO code.
+--2a9wQicw+mxwAn3v
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
----
- include/linux/iio/iio.h | 27 ---------------------------
- 1 file changed, 27 deletions(-)
+On Thu, Jan 30, 2025 at 02:59:20PM +0100, Cs=F3k=E1s Bence wrote:
+> Hi William,
+>=20
+> On 2025. 01. 27. 16:00, William Breathitt Gray wrote:
+> > If RA and RB are provided as a memory buffer on your device, you can
+> > instead expose them via DEFINE_COUNTER_ARRAY_CAPTURE() such as the
+> > ti-ecap-capture driver does, then perform your userspace computations
+> > by utilizing those respective "capture" array attribute values (via
+> > chrdev like the example above or alternatively via sysfs).
+>=20
+> Thanks for your extensive explanation! With DEFINE_COUNTER_ARRAY_CAPTURE(=
+) I
+> was able to expose RA and RB as
+> `/sys/bus/counter/devices/counter0/count0/capture{0,1}`, and could verify
+> that by replacing `devmem` calls with read()-reopen(), our PoC code still
+> works. Now I want to use the chardev interface, but I couldn't find how to
+> set up the watches appropriately. So far I have:
+>=20
+> 	{
+> 		.component.type =3D COUNTER_COMPONENT_EXTENSION,
+> 		// also tried COUNTER_COMPONENT_COUNT
+> 		.component.scope =3D COUNTER_SCOPE_COUNT,
+> 		.component.parent =3D 0,
+> 		.component.id =3D X, // also tried this instead:
+> 		// .channel =3D X,
+> 		.event =3D COUNTER_EVENT_CAPTURE,
+> 	},
+>=20
+> However, with this, the first read() never comes back.
+>=20
+> Bence
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index fe33835b19cf..f8541468d391 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -9,7 +9,6 @@
- 
- #include <linux/device.h>
- #include <linux/cdev.h>
--#include <linux/cleanup.h>
- #include <linux/slab.h>
- #include <linux/iio/types.h>
- /* IIO TODO LIST */
-@@ -687,32 +686,6 @@ static inline void iio_device_release_direct(struct iio_dev *indio_dev)
- 	__release(indio_dev);
- }
- 
--/*
-- * This autocleanup logic is normally used via
-- * iio_device_claim_direct_scoped().
-- */
--DEFINE_GUARD(iio_claim_direct, struct iio_dev *, iio_device_claim_direct_mode(_T),
--	     iio_device_release_direct_mode(_T))
--
--DEFINE_GUARD_COND(iio_claim_direct, _try, ({
--			struct iio_dev *dev;
--			int d = iio_device_claim_direct_mode(_T);
--
--			if (d < 0)
--				dev = NULL;
--			else
--				dev = _T;
--			dev;
--		}))
--
--/**
-- * iio_device_claim_direct_scoped() - Scoped call to iio_device_claim_direct.
-- * @fail: What to do on failure to claim device.
-- * @iio_dev: Pointer to the IIO devices structure
-- */
--#define iio_device_claim_direct_scoped(fail, iio_dev) \
--	scoped_cond_guard(iio_claim_direct_try, fail, iio_dev)
--
- int iio_device_claim_buffer_mode(struct iio_dev *indio_dev);
- void iio_device_release_buffer_mode(struct iio_dev *indio_dev);
- 
--- 
-2.48.1
+Hi Bence,
 
+Are you still having trouble with this? Is "X" the
+capture{0,1}_component_id value?
+
+I apologize, the Generic Counter character device interface is
+underdocumented so it can be a bit confusing at first; I'll submit a
+patch improving the documentation later this cycle when I get a chance.
+For now, let's walk through how to create an appropriate Counter watch
+for the capture extension components you have.
+
+The first step is to decide which event we'll monitor and on which
+channel: we want to monitor Capture events so that's
+COUNTER_EVENT_CAPTURE, and we want event channel 0 (n.b. 0 because
+that's the channel parameter value passed to counter_push_event() in the
+driver).
+
+The next step is to choose the components you wish to watch: Count 0's
+capture0 and capture1 extensions. So type is COUNTER_COMPONENT_EXTENSION
+because we want to watch extensions, scope is COUNTER_SCOPE_COUNT
+because we want Count extensions, and parent is 0 because we want
+Count 0's Count extensions.
+
+Finally, we need to set the component id for each extension. You get a
+particular component's id by reading the respective *_component_id sysfs
+attribute: so for capture{0,1} you would read capture{0,1}_component_id
+respectively. These component id values potentially can change with
+future driver updates, so for robustness your userspace application
+should read the respective *_component_id sysfs attribute itself rather
+than hardcoding the component id in the Counter watch.
+
+However, for the sake of simplicity in this example, I'll assume the
+component ids are 42 and 43 respectively for capture0 and capture1. That
+gives us the following two watches:
+
+        {
+                .component.type =3D COUNTER_COMPONENT_EXTENSION,
+                .component.scope =3D COUNTER_SCOPE_COUNT,
+                .component.parent =3D 0,
+                .component.id =3D 42,
+                .event =3D COUNTER_EVENT_CAPTURE,
+                .channel =3D 0,
+        },
+        {
+                .component.type =3D COUNTER_COMPONENT_EXTENSION,
+                .component.scope =3D COUNTER_SCOPE_COUNT,
+                .component.parent =3D 0,
+                .component.id =3D 43,
+                .event =3D COUNTER_EVENT_CAPTURE,
+                .channel =3D 0,
+        },
+
+Does this resolve your chardev read issue? If you're still having
+troubling, just let me know and we can troubleshoot further to figure
+out what's going on.
+
+William Breathitt Gray
+
+--2a9wQicw+mxwAn3v
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCZ6KkugAKCRC1SFbKvhIj
+KyJaAQCCZ5Mnusdt0BDtO1DMxjwY6w6GX5ZblIIVbjUWAzAvIQD9E7WICJ4aGJSf
+5ohM1mSLRyf1qHJCM1IvPkVSD/qZrwg=
+=2fNK
+-----END PGP SIGNATURE-----
+
+--2a9wQicw+mxwAn3v--
