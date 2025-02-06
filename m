@@ -1,141 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4754228CB7;
-	Thu,  6 Feb 2025 15:42:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CEA322FE02
+	for <linux-iio@vger.kernel.org>; Thu,  6 Feb 2025 16:23:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738856555; cv=none; b=OY9cw4j6NvCUjSVN3T5gDqxNluKSSYKqQwe92ynenCYfmzGrTSdNZ0TzFCDvd6TwWx6lv5pGE4cKCYf+gNHfKsdR28vVTPurwjRYtm1wN2yBuDnev+Fibj6efNU2WPUcP/wbs8EhGRYqLcoBhfn/wOVK4ZkitnbS7bIqqk3sbLU=
+	t=1738858984; cv=none; b=nrF0vv0g1T25ixQIb3ffLMkFPFAL2dfwhuDqqE5wQFWjErNpFnARZTSJsBmZ0wyKM7KBLRcxlSzAxroHm56pYH1h22rd0ECLcmK+1z/mGcrZE/FqoqtwEMepd23w4qYtcbRBTTUsj6udkPfcvxC24We9zPZlAHVmgtUqaqMt8E8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738856555; c=relaxed/simple;
-	bh=1fOQzDV6HZJ2nN25yLU7hZ1P3TPmArQ54K7qLHm0wt0=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=D0NgjkXTSJjOQIBBx6dsGlMI0T0zDo/nb7aw8/J9iM33fGhXGG+mkadCoMEbsprXs8XOm0mVW4RibyFUP+UF7v6z+Qd8Sfv0a+ljMxGLlgdONgnD9RT+6eMNsd1NMM5yQc5wifZxVaWhey7wwQsEBmzAK5O7CU4MliFtyOfh6Ps=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OaMa6WbE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1738858984; c=relaxed/simple;
+	bh=yQ/cMahOawtP4PxuyH9DWGJ4UyQFQnjW962HmXPyWh0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=ipxVLj1sRpIg9DFtQWQCO08RW1psoska3QO4ugIFhkGyt1qtn7xB+DNZHJ0kJcaG4OPqxYT/o1JAvAZU7b9QHDNpnobYVqt+soaQP/ldQavGOVEVsk80h567xA6XqxUTj1xAxPEMttqgY4FaLw/puLn1KOnrvJKgovzLIopMgFM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=qSAURHyB; arc=none smtp.client-ip=209.85.160.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OaMa6WbE"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 12586C4CEDD;
-	Thu,  6 Feb 2025 15:42:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1738856555;
-	bh=1fOQzDV6HZJ2nN25yLU7hZ1P3TPmArQ54K7qLHm0wt0=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=OaMa6WbEdZSXs9whDxmywhoKlZ0JJeQ5stHvw2RxNRbhiNh9vjojCjCsARSMNFIza
-	 p5C8SvU936Jv9FD04FQ4dk17aNdZ38eAgyqNQ+LACMV+Yqg4VHHhHbwKsohJCJWEFI
-	 MlvBNgUOOCOrQsShzx+hI2MFA3sbtfTvLVUzckZar22ir2oqEzOBgjFLC0F64ZUjDS
-	 sb4pXD4owcpNuPi1h9oH/Dy9sXz3WJ9XYMEYPtHlPlpvFvboR9V5sesAHumALvtHS2
-	 WWrHOxrdDFBR/bb+Tu9K4pt6ZKi4Yc2W0bv88r8CoV8QBMJFGjRoQ9mDxgxDVdgRzT
-	 97lW4BNgpLIRQ==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6BCDC02194;
-	Thu,  6 Feb 2025 15:42:34 +0000 (UTC)
-From: Tobias Sperling via B4 Relay <devnull+tobias.sperling.softing.com@kernel.org>
-Subject: [PATCH v3 0/2] Support for TI ADS7128 and ADS7138 ADCs
-Date: Thu, 06 Feb 2025 16:41:47 +0100
-Message-Id: <20250206-adc_ml-v3-0-1d0bd3483aa2@softing.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="qSAURHyB"
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-2b806ee0fd1so488119fac.2
+        for <linux-iio@vger.kernel.org>; Thu, 06 Feb 2025 08:23:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1738858981; x=1739463781; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=cnC7VSfBG0ihPKxEu9pr9kDMCXHaSfGWdCeIs/YUaPw=;
+        b=qSAURHyB0MucZBOyEyuVQmqRltfrCih2RlPxOwn+Ccknf2jFEAE58Ngyb0outSC9Xc
+         gxYs5jitYNLO3Y62/z7/jEs2KgAEnlkm8yixp3TLREuWkvLO2xdeWxZ1WY2oOsHxzfsk
+         9nqq5v60hQNzykMqZTpAVkY2SZnEJzw0uuWnz+UFxSYOCPW4KAm7sMoCgLkSSI9TVZFJ
+         +CQMwBSNeEVeeF6H1/sYqsVkxaCzqR4s4fgiuK4jRY+3dA/VGgovuYOWSY+qnESOxFla
+         +l+MdyA1YQGlYJDrWEUmb4IHqoR7irDNIYDNRXIcwXxIDBQ3cr1NwGakxMUgxrx7ae5e
+         HzfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1738858981; x=1739463781;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cnC7VSfBG0ihPKxEu9pr9kDMCXHaSfGWdCeIs/YUaPw=;
+        b=AYJaOTAU6oYX8CX2GXzjMX0P9Sj63RMG/XhqQ3lOJoCisO6YCEO6eG6mRc6p2ZP7XZ
+         q9ZvM1sAj8J1UDWvjNmMASFyhQYPRQqBKfh/CvQ0dAZVqNDjAziPORmhTwhz5U+izNrD
+         YOtuBs78adMcmcht8B5n53/inw5GPWXzGNCJB6mIt7gkDe2F0d+UuHVbPJrNTcYt+yfP
+         TPwMRcFtZIS/uusf0WEXZDYxp80xaoO0Ljtz23mcv1Z60XsucI97hWSTXhkCItQUcnE3
+         JK2V4seyFpro1lwWKlHD85qiy4GDC5oZ01ffLcJ+vm7iibrMuLSy1ehssksZfTkBAlUN
+         4t8w==
+X-Forwarded-Encrypted: i=1; AJvYcCUnaX/w3c2vs4VoEUSh6f5bTd4XWCEX15IQk/ZHO6c+aom0G4379hHyaZCBakOX6U0rdOb4TEN2JOc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxKjS8zqZlPmQUZQbn8Kb/rhdZn48lCcKhUlGjsvKyAV4jh+S3e
+	FNjIYJEXVgnV9e91rKchhyJuYZDliOO6JBLvLMKKxtovtVLeQJsIHa3azC/r+TE=
+X-Gm-Gg: ASbGncuiElDHhoduSHZMWlyEyIkT69vUYmKEUmKnEcADA53iVXufIqZ8H3MHuORx15J
+	+6zp+349IIvHrsCbfLxWHGQVbEGwWrEe4pnhXrWZJQ5Q6VpMQZrqwIMc01Aa2oUbFyOcA0ZER0h
+	o3qD2xbPsrlk9pd8VD4EYS5hyH8HdECD0hbXb8SJwKwI7siPyckVYIu0J2nxW8M+bfUw2ddvXBX
+	DPGuxeEZ5eiI22ZXyuUWUPZc3i3GLS3GdtVgt7c4HTHPJUhW3WubuHcpp5owI3rhomxmlyk7OGz
+	u/jwvP53i8dsd2sYpH8Kcbs2fBMw0ak9db8DdopquI14DhsK6hOo
+X-Google-Smtp-Source: AGHT+IGrVh/v5vcStALrqpNGUOb3jAVtv3FbIdsyoVlK6kALxIyavVWIb5C4oJiOS9AS6CkGcYPmgw==
+X-Received: by 2002:a05:6870:7e07:b0:2a3:8331:717c with SMTP id 586e51a60fabf-2b804f44ca7mr5095585fac.10.1738858981173;
+        Thu, 06 Feb 2025 08:23:01 -0800 (PST)
+Received: from [192.168.0.142] (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-2b8262622cesm348477fac.33.2025.02.06.08.22.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Feb 2025 08:23:00 -0800 (PST)
+Message-ID: <b06f6457-4be3-4404-8c41-618bad0c7099@baylibre.com>
+Date: Thu, 6 Feb 2025 10:22:58 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v11 8/8] iio: adc: ad4851: add ad485x driver
+To: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>,
+ "jic23@kernel.org" <jic23@kernel.org>, "robh@kernel.org" <robh@kernel.org>,
+ "conor+dt@kernel.org" <conor+dt@kernel.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+References: <20250127105726.6314-1-antoniu.miclaus@analog.com>
+ <20250127105726.6314-9-antoniu.miclaus@analog.com>
+ <c5722215-b720-49ab-9f0e-00b01eb4679d@baylibre.com>
+ <CY4PR03MB3399B389972E92742EA3060D9BF62@CY4PR03MB3399.namprd03.prod.outlook.com>
+From: David Lechner <dlechner@baylibre.com>
+Content-Language: en-US
+In-Reply-To: <CY4PR03MB3399B389972E92742EA3060D9BF62@CY4PR03MB3399.namprd03.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIADvYpGcC/2WM0QqCMBSGXyXOdYvt2KZ21XtEhM6jHkgXm4xCf
- PemUBBdfj//980QyDMFOO1m8BQ5sBsTZPsd2L4aOxLcJAaUeFQKUVSNvQ130ShLhaFC12ghnR+
- eWn5uocs1cc9hcv61daNa179EVEIKmZuyRVJ1bdU5uHbisTtYN8AaifgRtUSZfUVMYlHpMjdG2
- qzUv+KyLG+d9ek51wAAAA==
-X-Change-ID: 20241122-adc_ml-d1ce86e85b2c
-To: Jonathan Cameron <jic23@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Tobias Sperling <tobias.sperling@softing.com>, 
- Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-X-Mailer: b4 0.15-dev-355e8
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1738856545; l=2986;
- i=tobias.sperling@softing.com; s=20241122; h=from:subject:message-id;
- bh=1fOQzDV6HZJ2nN25yLU7hZ1P3TPmArQ54K7qLHm0wt0=;
- b=EDhZjivm2O9mwyFHeORx+WauW1U4nzeS00mqk6I26KR0A+OjgJ+GiRdQyBsQO8xhOha5mygZE
- sXkn1loYnQtA73o2cnWWJCiCFgFHqyWz0OKd+GDYQrgOFyj6jlu8g4P
-X-Developer-Key: i=tobias.sperling@softing.com; a=ed25519;
- pk=v7hgaMHsrA9ul4UXkBVUuwusS9PF3uHW/CC+gABI65E=
-X-Endpoint-Received: by B4 Relay for tobias.sperling@softing.com/20241122
- with auth_id=281
-X-Original-From: Tobias Sperling <tobias.sperling@softing.com>
-Reply-To: tobias.sperling@softing.com
 
-This patch series adds support for Texas Instruments ADS7128 and
-ADS7138, which are 12-bit, 8 channel analog-to-digital converters (ADCs)
-with build-in digital window comparator (DWC), using the I2C interface.
+On 2/6/25 4:00 AM, Miclaus, Antoniu wrote:
+>> On 1/27/25 4:57 AM, Antoniu Miclaus wrote:
+>>> Add support for the AD485X a fully buffered, 8-channel simultaneous
+>>> sampling, 16/20-bit, 1 MSPS data acquisition system (DAS) with
+>>> differential, wide common-mode range inputs.
+>>>
+>>> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+>>> ---
+>>
+>> I think we have the important bits sorted now (i.e. userspace-facing stuff).
+>> Just noticed a few minor things in the latest revision.
+>>
+>>
+>>> +static int ad4851_setup(struct ad4851_state *st)
+>>> +{
+>>> +	unsigned int product_id;
+>>> +	int ret;
+>>> +
+>>> +	if (st->pd_gpio) {
+>>> +		/* To initiate a global reset, bring the PD pin high twice */
+>>> +		gpiod_set_value(st->pd_gpio, 1);
+>>> +		fsleep(1);
+>>> +		gpiod_set_value(st->pd_gpio, 0);
+>>> +		fsleep(1);
+>>> +		gpiod_set_value(st->pd_gpio, 1);
+>>> +		fsleep(1);
+>>> +		gpiod_set_value(st->pd_gpio, 0);
+>>> +		fsleep(1000);
+>>> +	} else {
+>>> +		ret = regmap_set_bits(st->regmap,
+>> AD4851_REG_INTERFACE_CONFIG_A,
+>>> +				      AD4851_SW_RESET);
+>>> +		if (ret)
+>>> +			return ret;
+>>
+>> Do we also need fsleep() after software reset?
+> The datasheet doesn't mention any delay required after performing Software Reset.
+> Should I add something just as a safety measure?
 
-The driver exposes the interfaces to read the raw values, as well as the
-minimum and maximum value for each channel. In addition several settings
-can be configured, like the DWC, sampling frequency or an averaging
-filter/oversampling. Interrupts triggered by the DWC, if configured, are
-then exposed as IIO events.
-
-ADS7128 differs in the addition of further hardware features, like a
-root-mean-square (RMS) and a zero-crossing-detect (ZCD) module, which
-are not yet supported by the driver.
-
-Regarding the I2C interface the chips using opcodes to define the way
-how the registeres are accessed, like single or multiple register(s)
-read/write or setting/clearing only bits.
-
----
-Changes in v3:
-- Make interrupt optional.
-- Replace SET_RUNTIME_PM_OPS() with RUNTIME_PM_OPS() to prevent warning.
-- Rework read_avail for sampling frequency to show each frequency only
-  once.
-- Use IIO_CHAN_INFO_PEAK and IIO_CHAN_INFO_TROUGH instead of ext_info.
-- Link to v2: https://lore.kernel.org/r/20250203-adc_ml-v2-0-8a597660c395@softing.com
-
-Changes in v2:
-- Improved commit messages.
-- dt-bindings: drop info about what driver supports, make 'avdd-supply'
-  optional.
-- General rework of driver regarding indentation and code style.
-- General code improvements to make code shorter and improve
-  readability, like remove 'goto's, order of declarations, ...
-- Use kernel macros and functions, like FIELD_*, guard(), ...
-- Rework i2c functions to return 0 in case of success and use
-  i2c_master_send() if possible.
-- Use struct for chip data instead of enum.
-- Add comment to what the lock is used for and make sure it's used in
-  these cases.
-- Use read_avail of iio_info and extend to return also the available
-  values for OSR.
-- Rework to only accept values of the availability list.
-- Use devm_* if possible and therefore drop 'remove' callback.
-- Rebase to kernel 6.13 and adjust to API changes.
-- Link to v1:
-  https://lore.kernel.org/r/20241122-adc_ml-v1-0-0769f2e1bbc1@softing.com
-
-Changes in v1 (to patch series without b4):
-- dt-bindings: Extended description
-
-Signed-off-by: Tobias Sperling <tobias.sperling@softing.com>
-
----
-Tobias Sperling (2):
-      dt-bindings: iio: adc: Introduce ADS7138
-      iio: adc: Add driver for ADS7128 / ADS7138
-
- .../devicetree/bindings/iio/adc/ti,ads7138.yaml    |  62 ++
- drivers/iio/adc/Kconfig                            |  10 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/ti-ads7138.c                       | 746 +++++++++++++++++++++
- 4 files changed, 819 insertions(+)
----
-base-commit: 05dbaf8dd8bf537d4b4eb3115ab42a5fb40ff1f5
-change-id: 20241122-adc_ml-d1ce86e85b2c
-
-Best regards,
--- 
-Tobias Sperling <tobias.sperling@softing.com>
-
-
+I guess it is probably OK if the datasheet doesn't say it needs a delay.
