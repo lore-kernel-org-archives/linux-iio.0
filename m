@@ -1,107 +1,154 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10D011A5B9B;
-	Thu,  6 Feb 2025 15:14:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A46891E5B80;
+	Thu,  6 Feb 2025 15:42:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738854870; cv=none; b=tE936cdcJHxTrp+1LMp7rSvxtjO7gN2WTQtwZSajzQa3HJ6ocRZi4lpU8RWHyX09WGjAdjzTooynqNutbJkJ3uVBch3VVxAECHyZCc5iwQS4/JkqIOv0asW5Fay5K6t6c1m/S3yDfJXV0qKmbxHCtrsqq7MuVv3K2Ld4PbiRJyc=
+	t=1738856555; cv=none; b=mKyY3ul0wNUhny9ibkd3cil5fW4B67P6PPn+EUJ0UUGjZZ/Qo/a0i974xVYmkaegmhstIZ1PnRgtWqLEbKLu70RoUd60F60+TgvYXL5v49oUonTdrAoh/qcCGrgKX0ZrbLkUQ7mHcW4We4PsjNfEEe4YW5WNsYSTjh1vqA5+Oak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738854870; c=relaxed/simple;
-	bh=t9cqZ73hIkX27lcJLtc+ipmxM7vC2a5RxdsIIVAnrsk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=J8PIjL+SDnrpG/9/ZDWjduoZII/pmtDvXQhz7B4Tm9jiwHb1mt4uIV6vHXqmtxiUCs+8EgucGCONVkM7yOm0BAlaJZ/+jxqEVYXKDKyL0yyixRJMJJreVklQDbZPOW/GeQzWmw80tyYhdiHkUkTo6G7DcqNUQNQ7b0AEkuxA/M0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HAMAfu77; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1738856555; c=relaxed/simple;
+	bh=hh8ljTGGcNCDtm/Ly7NCy34l8GzC+LqKQozyf6EJ+hU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=INj472j/S8DM5dbsKTTa21PTB5Zh4arnBMnf7n1vP0tYzDZvjG9jgbJa7eqyS7NKzr0Phm0TEeoChCjDmWJw1meP7Yf8TZaPrSz4gAKmEM6fDhsOM0I58v4YW49PM02WiqqGwyX+Flw/932SMeRJ8EmhQ7Zz3ZmPCZFBZbTNIjs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c72r3VMK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HAMAfu77"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1738854869; x=1770390869;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=t9cqZ73hIkX27lcJLtc+ipmxM7vC2a5RxdsIIVAnrsk=;
-  b=HAMAfu77ZBVsmu20c9imTIv/7e43R1qj310gq/wawx2sWTbHMxn4p/eR
-   NgygL9HvqkkrZCFthVL3ciaKYwg7ewXd5xCVSu3TybPyNneNCmHjblvw7
-   PIwCVQMwbnl3RDVBAWLOP7rV7ryH5K9Yt63bknyHHB/auFPo2yYUfCA/k
-   HD4Su9GoLANPv4f25PErCimYHEe3FaYCuEEMWyMtDQrBg3QVlYGkrGk2e
-   QSn5o1LZKZkBgrV9UIsPR8QLKAOANNqAmKCje2wbPOMz2jFU4879WyQhi
-   J2322jVMTFPWw+IIINz5iCkQc8I7v1H8/SoXV5PK7j1o0BLrye8BWOoUU
-   w==;
-X-CSE-ConnectionGUID: ZcgDtTWdRDS2r0w0mKWuWw==
-X-CSE-MsgGUID: l3JBex9qSqSmR3NqNK1G+g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11336"; a="42296130"
-X-IronPort-AV: E=Sophos;i="6.13,264,1732608000"; 
-   d="scan'208";a="42296130"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2025 07:14:28 -0800
-X-CSE-ConnectionGUID: ygznJFoSRH2VjRKbP8U1mg==
-X-CSE-MsgGUID: 9cOaqXNrQDSU5OfiOKsN0w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="111084299"
-Received: from smile.fi.intel.com ([10.237.72.58])
-  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2025 07:14:23 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1tg3Zt-00000008l7W-3Qru;
-	Thu, 06 Feb 2025 17:14:05 +0200
-Date: Thu, 6 Feb 2025 17:14:05 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Raag Jadav <raag.jadav@intel.com>
-Cc: kernel test robot <lkp@intel.com>, gregkh@linuxfoundation.org,
-	rafael@kernel.org, linus.walleij@linaro.org,
-	mika.westerberg@linux.intel.com, dmitry.torokhov@gmail.com,
-	lgirdwood@gmail.com, broonie@kernel.org, sre@kernel.org,
-	jic23@kernel.org, przemyslaw.kitszel@intel.com,
-	oe-kbuild-all@lists.linux.dev, linux-gpio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-sound@vger.kernel.org, linux-pm@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 01/20] driver core: Split devres APIs to
- device/devres.h
-Message-ID: <Z6TRveCRK7LFwSNV@smile.fi.intel.com>
-References: <20250203080902.1864382-2-raag.jadav@intel.com>
- <202502060025.XJwUub6I-lkp@intel.com>
- <Z6RS-A2FFjYuPoyn@black.fi.intel.com>
- <Z6TRcWCKe__oxCUV@smile.fi.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c72r3VMK"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 29BB8C4CEDF;
+	Thu,  6 Feb 2025 15:42:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1738856555;
+	bh=hh8ljTGGcNCDtm/Ly7NCy34l8GzC+LqKQozyf6EJ+hU=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=c72r3VMKS0AfgfIRqnV39abeI3FSYCkG/18eDPHiKHsHu/KbzUei/kycRc75qN2yI
+	 P9Y8fksVs57blmq8WV9zwtDtaqRCD+SkZslUCEn4wSpwhhJKqxzHeSkcKkRChSLp0T
+	 fLTUbyoEnxMUM1AlerNA0E3b0ndyug9OSSBF+a7eRdA23wLd+qqOoJVKbWGR0K6Jqj
+	 JfQfN4XouxfIEnnr5JUVUruJy3L7HDo7RYrzNAzJ5Zfi0G8NWl3VDHCRPxCrjSJhoq
+	 Ie4qm5N4muvX1KDrTIJXeSVIghd4HdCK98Vmb8ncp2hQHTBk17M4NKHO2MT2mktbKp
+	 e5TZFvXW+cUpQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15097C02198;
+	Thu,  6 Feb 2025 15:42:35 +0000 (UTC)
+From: Tobias Sperling via B4 Relay <devnull+tobias.sperling.softing.com@kernel.org>
+Date: Thu, 06 Feb 2025 16:41:48 +0100
+Subject: [PATCH v3 1/2] dt-bindings: iio: adc: Introduce ADS7138
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Z6TRcWCKe__oxCUV@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250206-adc_ml-v3-1-1d0bd3483aa2@softing.com>
+References: <20250206-adc_ml-v3-0-1d0bd3483aa2@softing.com>
+In-Reply-To: <20250206-adc_ml-v3-0-1d0bd3483aa2@softing.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Tobias Sperling <tobias.sperling@softing.com>, 
+ Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.15-dev-355e8
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1738856545; l=2570;
+ i=tobias.sperling@softing.com; s=20241122; h=from:subject:message-id;
+ bh=OmyOmU49Tz1XrsAj9x+7MhVBICvzllgrTbFg4A067Vw=;
+ b=HtdO/4QK6WW5DkmJDKjLdFYKyNCOOgjadEFB+aTgWm5C9Dge4Z/AYXERkwMyoeGJ0d7cINqxh
+ Z5XmFk0g7KZDU7EK/XFsF28L4ZmsZ29cxaiFmjxYd4Tjh6DDJKgIBOB
+X-Developer-Key: i=tobias.sperling@softing.com; a=ed25519;
+ pk=v7hgaMHsrA9ul4UXkBVUuwusS9PF3uHW/CC+gABI65E=
+X-Endpoint-Received: by B4 Relay for tobias.sperling@softing.com/20241122
+ with auth_id=281
+X-Original-From: Tobias Sperling <tobias.sperling@softing.com>
+Reply-To: tobias.sperling@softing.com
 
-On Thu, Feb 06, 2025 at 05:12:49PM +0200, Andy Shevchenko wrote:
-> On Thu, Feb 06, 2025 at 08:13:12AM +0200, Raag Jadav wrote:
-> > On Thu, Feb 06, 2025 at 12:27:03AM +0800, kernel test robot wrote:
+From: Tobias Sperling <tobias.sperling@softing.com>
 
-...
+Add documentation for the driver of ADS7128 and ADS7138 12-bit, 8-channel
+analog-to-digital converters. These ADCs have a wide operating range and
+a wide feature set. Communication is based on the I2C interface.
+ADS7128 differs in the addition of further hardware features, like a
+root-mean-square (RMS) and a zero-crossing-detect (ZCD) module.
 
-> > >    102	
-> > >    103	static inline
-> > >    104	void __iomem *devm_ioremap_resource(struct device *dev, const struct resource *res)
-> > >    105	{
-> > >  > 106		return ERR_PTR(-EINVAL);
-> > >    107	}
-> > >    108	
-> > 
-> > Andy, are we expecting this?
-> 
-> Oh, no, it's sparse error, but easy to fix. Need to have
-> 
-> 		return IOMEM_ERR_PTR(-EINVAL);
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Tobias Sperling <tobias.sperling@softing.com>
+---
+ .../devicetree/bindings/iio/adc/ti,ads7138.yaml    | 62 ++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
 
-But isn't it the original issue? I mean that it was already before this series.
-If so, perhaps you can fix all sparse errors like this in the devres* code.
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads7138.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads7138.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..c73057df6d8a56230a69978a7f673045f17a276b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/ti,ads7138.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/ti,ads7138.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Texas Instruments ADS7128/ADS7138 analog-to-digital converter (ADC)
++
++maintainers:
++  - Tobias Sperling <tobias.sperling@softing.com>
++
++description: |
++  The ADS7128 and ADS7138 chips are 12-bit, 8 channel analog-to-digital
++  converters (ADC) with build-in digital window comparator (DWC), using the
++  I2C interface.
++  ADS7128 differs in the addition of further hardware features, like a
++  root-mean-square (RMS) and a zero-crossing-detect (ZCD) module.
++
++  Datasheets:
++    https://www.ti.com/product/ADS7128
++    https://www.ti.com/product/ADS7138
++
++properties:
++  compatible:
++    enum:
++      - ti,ads7128
++      - ti,ads7138
++
++  reg:
++    maxItems: 1
++
++  avdd-supply:
++    description:
++      The regulator used as analog supply voltage as well as reference voltage.
++
++  interrupts:
++    description:
++      Interrupt on ALERT pin, triggers on low level.
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@10 {
++            compatible = "ti,ads7138";
++            reg = <0x10>;
++            avdd-supply = <&reg_stb_3v3>;
++            interrupt-parent = <&gpio2>;
++            interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
++        };
++    };
++...
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.34.1
 
 
