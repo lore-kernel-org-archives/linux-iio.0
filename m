@@ -1,114 +1,181 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92F0A7FD;
-	Fri,  7 Feb 2025 12:20:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C5471DE898;
+	Fri,  7 Feb 2025 14:10:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738930856; cv=none; b=VBRXehH1hJyIgA4qfGn4FQBv0kl/5Pe9MC7JO42CoG68vVEzKEOw5MZLvGj6yBZUvMhgd+EadNWFfx/qh/zLARVGW1cDE44Sz0cT+UldD+xGluyTHlIP3BwAvnUL7VibGMaAlcb2N2cVUwu0aTcHpzhlMkGdmAkiPTYPjTFBvAE=
+	t=1738937403; cv=none; b=NnjM1qQKWixXqrIgJjz7f7kLJHrljUHb6wrmuZHvlNTYU60CF8jd4AI5GNvqIEDldQXj9sJEo1nRZQ5JeJduy4zD/dURODF/sBpq6NDGOicCtUtoT+AB1vtxE18P+YNDofVeQbCvL1T03s1gV7xBe/Y7EcN6qQVRINOBvSti7NI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738930856; c=relaxed/simple;
-	bh=a54mOet32eur3UH8ItkoAvMxfKNhEKaOIWBLSYbvLSw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VriZtkutNIlYpxBSH4PORJQtgx6UkCFQNT40WRgni8byDVfrkTJiOrxrTiQ+meT4YYO5Boyu84w6bd8UvbbLtybGFy1hRSaGu7rVZ/ikO9DiDpgdSwhNcNQd8nyYCjZts51cUO9XloQx4ZH1XL4IvhfRXrjuu2vnmq917RLeGsI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Cl3GFrm9; arc=none smtp.client-ip=209.85.218.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1738937403; c=relaxed/simple;
+	bh=vzpJtHILmRiqEVkAwhNl6nkahlqa9s7JfG0PdZFe7o4=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=UMt2PEce4hkP5RSFbKNrImOiU9UwXIZ5aCxwVkYCqOIjM1x8DRCjnyDq0FGHJrfg1v0zTAOJIGMx5qDiwtF+K5drOTWqu71i9qJDQI+NZLgJAnG+uDYUnV7HcawyYB7oorbupPSdt4Jxx+1T9KI/4kGPSlQqFsgrM8EOsVxOPSU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=O6ZRwwiP; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Cl3GFrm9"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-aaf3c3c104fso366499866b.1;
-        Fri, 07 Feb 2025 04:20:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738930853; x=1739535653; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=a54mOet32eur3UH8ItkoAvMxfKNhEKaOIWBLSYbvLSw=;
-        b=Cl3GFrm9deRMNBDmGo/v09OGvHDpg+1wcX0MGboK+FkV4lFSu7z48MTLgoKhGOFHiM
-         dPJM5LEYg451fHwIROmRgURV8s5BIFhk2N0bGi0i8KfGqC47G/zfjygBgxHDlHnvDcIQ
-         V1BRCn9jQBku72VR1DF/eItSf8ToxhAsFpCN18PD7nv5WhmaVBcyeNBTUqdaIv/FlSBJ
-         zTb+L0PXXAlX0gHIq65/gt79snbeO9iJBYIfETi5EpSW+7O+WvIiNdZ6KWcCpBoavOJO
-         yUK8C4csVVIpNbkCCavGsuWA0Kxxeyf5CZFPTFQDRKui3Ga7118XGK6+fn8sCiDI6qX5
-         y3GA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738930853; x=1739535653;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=a54mOet32eur3UH8ItkoAvMxfKNhEKaOIWBLSYbvLSw=;
-        b=dK5tcmj2PLrJoR6gW8+2v/1eT5IKLLEF6zpaX6VOoP2LhWOU51B/U0z0xKs3tg3nJv
-         9gwbpaRy5EbxIDHZwqAKefwdZX+0RiXIYK0H1WenocgRs0Z5q2jj/AO6Ji5JO6ky+ppn
-         LsJKiRQrIsRliZcTCjCop3f40wSVXvAEsQL0DxZN+POxFuBOlyv1TChTVqK437YdCe3Z
-         M0eY+FSgIAV3DJhzFFRcoLx+r6+nkagNApQMHPrbEE6UQEpQbP6IzXzQmS8qDwa6wkix
-         zlazN4/4VX/IYRQa+8kRybU+RDqhrnzJjZ2XTe2QwU2Jwb/x9FL2BvsQk1D3X73duy4r
-         cA8A==
-X-Forwarded-Encrypted: i=1; AJvYcCUUAxAfM/T15pwJ/AtNcCw3yFLEKNB1MX15B9ZNvrJ1ecjNRwF0cfr8xIcLHyXboZnGYQ/4w39/nBr2aVQ=@vger.kernel.org, AJvYcCV0v63mPYiN9dI7SfpuFgXI5SLkhYOAiSf+H4h2dlSXYq35NOfpTXF4vflzKajA3Cgw8MM7rc5uJgpo+Buu@vger.kernel.org, AJvYcCX8PL0U55AEunDGKT8Rxv+KjgcqL4WH9PI2ZrPe52KtqqhNVhQtiMNmPswBNTmA5jVrcj+gE/8w@vger.kernel.org, AJvYcCXEsBPjK98wyq2FkGAwL9sv68z0sm3YkM2MMCh5d7bxWAjAQa5wJGGnASf4kcodUrjTi13Cu0eXOGH/@vger.kernel.org, AJvYcCXIWeAaw0ZOY6EKzvfcAsWc9/YkqnpmtMT4RRZ5YzxI6c6PcRj71B4ZmJI/P/OeF66hTL7bdRGZCJtB@vger.kernel.org, AJvYcCXKKEnUnoIhQph4qXY/3ciLO3L/eOlLiGYl/QZEKlRMO17eqUxksaMnjCG89YG9TJghuVf/Ke/pVV5C@vger.kernel.org
-X-Gm-Message-State: AOJu0YwGT1huF2220tGmR5mVX53Eu3o9YdDzVR8DkvlJZ4ly/1nyxaK5
-	2bUoTBB/pQ74lFe8TYkHhdWMojLwS+sMykQkMFnUbq5ozs65oit4ytb9dhxdH/SMQynNzX0BLgn
-	svVK5P36Yvh9rIeBk2fTANfx3JXg=
-X-Gm-Gg: ASbGncu68I7wOkxElwGb6MQFPMEA0GTJdcx8VpYc0I0ICbehOBktFba6i9uq8/w5gpG
-	Zxit48dKaEBZyHP2yzRCqvj+avyYLtPqXtz8FMuTawWhM56JS6OsHz22W8cXCC4ywCCz2ajgiNU
-	M=
-X-Google-Smtp-Source: AGHT+IGoiY/D1TiKwL5GXSoLaYBfuEuXQzNiPDbnqOiNifB0jsQGA+mFrH+WWqi6hARBZNpJM2EqqyBf+cDjmszsmSM=
-X-Received: by 2002:a17:907:c1b:b0:ab6:36fd:942a with SMTP id
- a640c23a62f3a-ab789c6cedbmr318216966b.50.1738930852678; Fri, 07 Feb 2025
- 04:20:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="O6ZRwwiP"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5179KeHE022323;
+	Fri, 7 Feb 2025 09:09:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=erHQV
+	DqCMF/ysWwKwCdYnuV0H4hC2eAl5TwPN8PKKWs=; b=O6ZRwwiP9ywmBGcWnL/gb
+	HEcc82qmn6cRDY5D3OlJzXQJCgqV827j2Q6vaGDeFnxzIdNbPjZVIHBsNuvhfdQS
+	icuDcPG0HUx3jjsn4LdUlYstjrB7O1/4u9VU6za5PE5DfQ0hbVVR8/bGPltKqzS/
+	jlNEccz3KQ2aERsFmgHMpxIoQqcaOXwtdlI5wL3GshMm7h+fdTulT3bwLNHlzwBU
+	Fz7YnhrV0C77DBf3y/bVhEhFQXcRHWJowKduzIhtAb9hN1efmU2SJfWKjdDTO8j8
+	ALo7KCkvTsRG4ag+NL40mkVuMSVD/JFixtYYgHPaCYuDzQx+akoy0iUjW9ZQTNNg
+	Q==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 44nff9912q-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 07 Feb 2025 09:09:51 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 517E9oOM056726
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 7 Feb 2025 09:09:50 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 7 Feb 2025 09:09:50 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 7 Feb 2025 09:09:49 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 7 Feb 2025 09:09:49 -0500
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.147])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 517E9a4n015095;
+	Fri, 7 Feb 2025 09:09:42 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Nuno Sa
+	<nuno.sa@analog.com>, David Lechner <dlechner@baylibre.com>
+Subject: [PATCH v12 1/9] iio: backend: add API for interface get
+Date: Fri, 7 Feb 2025 16:09:10 +0200
+Message-ID: <20250207140918.7814-2-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.48.1
+In-Reply-To: <20250207140918.7814-1-antoniu.miclaus@analog.com>
+References: <20250207140918.7814-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250206-gpio-set-array-helper-v2-0-1c5f048f79c3@baylibre.com>
- <CAMRc=Mf9WQjVXvea7tHx0MJG2H8Yqxw=zGqvjp7dfD7+=huDKw@mail.gmail.com> <CAPDyKFoNuXpTEm1rLPvAgib+ugqr7XyETZhfrNr6ypOOKRwjXQ@mail.gmail.com>
-In-Reply-To: <CAPDyKFoNuXpTEm1rLPvAgib+ugqr7XyETZhfrNr6ypOOKRwjXQ@mail.gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 7 Feb 2025 14:20:16 +0200
-X-Gm-Features: AWEUYZlfwIvy7LIm9pIahL5l8siSqdVektaSns5lQfpSrtnfvAL7yjcR2ciezX0
-Message-ID: <CAHp75VdmN2wqwwnea0gtTQJ+Y5twQaJp6iEL2esEMCHDi8bvVg@mail.gmail.com>
-Subject: Re: [PATCH v2 00/13] gpiolib: add gpiod_multi_set_value_cansleep
-To: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Bartosz Golaszewski <brgl@bgdev.pl>, David Lechner <dlechner@baylibre.com>, 
-	Linus Walleij <linus.walleij@linaro.org>, Andy Shevchenko <andy@kernel.org>, 
-	Geert Uytterhoeven <geert@linux-m68k.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	Peter Rosin <peda@axentia.se>, Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>, 
-	Russell King <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Vinod Koul <vkoul@kernel.org>, Kishon Vijay Abraham I <kishon@kernel.org>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, linux-gpio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-mmc@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-phy@lists.infradead.org, linux-sound@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: JOs4HyVdWIDaqdq5dlS50_LD90x5sSfA
+X-Proofpoint-ORIG-GUID: JOs4HyVdWIDaqdq5dlS50_LD90x5sSfA
+X-Authority-Analysis: v=2.4 cv=Pt9pbxM3 c=1 sm=1 tr=0 ts=67a6142f cx=c_pps a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17 a=T2h4t0Lz3GQA:10 a=gAnH3GRIAAAA:8 a=IpJZQVW2AAAA:8 a=tuWBB0tbXFTZP7NtKowA:9 a=oVHKYsEdi7-vN-J5QA_j:22
+ a=IawgGOuG5U0WyFbmm1f5:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-02-07_06,2025-02-07_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
+ malwarescore=0 suspectscore=0 bulkscore=0 impostorscore=0
+ lowpriorityscore=0 spamscore=0 clxscore=1015 mlxlogscore=999 phishscore=0
+ adultscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.19.0-2501170000
+ definitions=main-2502070108
 
-On Fri, Feb 7, 2025 at 11:48=E2=80=AFAM Ulf Hansson <ulf.hansson@linaro.org=
-> wrote:
-> On Fri, 7 Feb 2025 at 08:49, Bartosz Golaszewski <brgl@bgdev.pl> wrote:
-> > On Thu, Feb 6, 2025 at 11:48=E2=80=AFPM David Lechner <dlechner@baylibr=
-e.com> wrote:
+Add backend support for obtaining the interface type used.
 
-...
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
+Reviewed-by: David Lechner <dlechner@baylibre.com>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+no changes in v12.
+ drivers/iio/industrialio-backend.c | 24 ++++++++++++++++++++++++
+ include/linux/iio/backend.h        | 11 +++++++++++
+ 2 files changed, 35 insertions(+)
 
-> > > Maintainers, if you prefer to have this go through the gpio tree, ple=
-ase
-> > > give your Acked-by:, otherwise I will resend what is left after the n=
-ext
-> > > kernel release.
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index 363281272035..8bf3d570da1b 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -636,6 +636,30 @@ ssize_t iio_backend_ext_info_set(struct iio_dev *indio_dev, uintptr_t private,
+ }
+ EXPORT_SYMBOL_NS_GPL(iio_backend_ext_info_set, "IIO_BACKEND");
+ 
++/**
++ * iio_backend_interface_type_get - get the interface type used.
++ * @back: Backend device
++ * @type: Interface type
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_interface_type_get(struct iio_backend *back,
++				   enum iio_backend_interface_type *type)
++{
++	int ret;
++
++	ret = iio_backend_op_call(back, interface_type_get, type);
++	if (ret)
++		return ret;
++
++	if (*type >= IIO_BACKEND_INTERFACE_MAX)
++		return -EINVAL;
++
++	return 0;
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_interface_type_get, "IIO_BACKEND");
++
+ /**
+  * iio_backend_extend_chan_spec - Extend an IIO channel
+  * @back: Backend device
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+index 10be00f3b120..a0ea6c29d7ba 100644
+--- a/include/linux/iio/backend.h
++++ b/include/linux/iio/backend.h
+@@ -70,6 +70,12 @@ enum iio_backend_sample_trigger {
+ 	IIO_BACKEND_SAMPLE_TRIGGER_MAX
+ };
+ 
++enum iio_backend_interface_type {
++	IIO_BACKEND_INTERFACE_SERIAL_LVDS,
++	IIO_BACKEND_INTERFACE_SERIAL_CMOS,
++	IIO_BACKEND_INTERFACE_MAX
++};
++
+ /**
+  * struct iio_backend_ops - operations structure for an iio_backend
+  * @enable: Enable backend.
+@@ -88,6 +94,7 @@ enum iio_backend_sample_trigger {
+  * @extend_chan_spec: Extend an IIO channel.
+  * @ext_info_set: Extended info setter.
+  * @ext_info_get: Extended info getter.
++ * @interface_type_get: Interface type.
+  * @read_raw: Read a channel attribute from a backend device
+  * @debugfs_print_chan_status: Print channel status into a buffer.
+  * @debugfs_reg_access: Read or write register value of backend.
+@@ -128,6 +135,8 @@ struct iio_backend_ops {
+ 			    const char *buf, size_t len);
+ 	int (*ext_info_get)(struct iio_backend *back, uintptr_t private,
+ 			    const struct iio_chan_spec *chan, char *buf);
++	int (*interface_type_get)(struct iio_backend *back,
++				  enum iio_backend_interface_type *type);
+ 	int (*read_raw)(struct iio_backend *back,
+ 			struct iio_chan_spec const *chan, int *val, int *val2,
+ 			long mask);
+@@ -186,6 +195,8 @@ ssize_t iio_backend_ext_info_set(struct iio_dev *indio_dev, uintptr_t private,
+ 				 const char *buf, size_t len);
+ ssize_t iio_backend_ext_info_get(struct iio_dev *indio_dev, uintptr_t private,
+ 				 const struct iio_chan_spec *chan, char *buf);
++int iio_backend_interface_type_get(struct iio_backend *back,
++				   enum iio_backend_interface_type *type);
+ int iio_backend_read_raw(struct iio_backend *back,
+ 			 struct iio_chan_spec const *chan, int *val, int *val2,
+ 			 long mask);
+-- 
+2.48.1
 
-> > I can provide an immutable branch for the entire series for everyone
-> > to pull or I can apply patch one, provide an immutable branch and
-> > every subsystem can take their respective patches. What do you prefer?
->
-> The changes look small and trivial to me. I wouldn't mind if you take
-> them all (at least for mmc). An immutable branch would be good, if it
-> turns out that we need to pull them.
-
-+1 here, the potential user for immutable branch/tag is IIO.
-The rest looks trivial and unlikely to have conflicts.
-
---=20
-With Best Regards,
-Andy Shevchenko
