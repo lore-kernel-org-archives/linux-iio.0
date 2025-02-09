@@ -1,118 +1,125 @@
-Received: from a.peacevolution.org (a.peacevolution.org [206.189.193.133])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C8A2244E9E;
-	Sat,  8 Feb 2025 21:26:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=206.189.193.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D927243368;
+	Sun,  9 Feb 2025 14:47:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739050001; cv=none; b=XZFSySJI0scaN7oJuvoWeMmlK9KmdPSB5vLOlRgy+0KBh7IuWqdtf33dhTPdqdsglbIVUhes8SB/6r3OEC64ROsfKPDH7UMmv2s0Bwh/eQqacI1RtmGPZt4QGbgGd+U0xKeBOXpXt29J/Fcz+H2XrX5aWqG7rbxyE+2pATJBuEU=
+	t=1739112475; cv=none; b=rdnSWxOQ+px9A6ezbSRy90wkx5CWBCNzkYFNq8SCQcvhrg5TuMvUtR3UihOfUpzSN5fL2WznTw+qxzKIcI5Zq7/DeIrKb/k4HlFOAAgUc3FcMLjdzZK5oQmgQz2XR0lVWjz/4hvR+nZDiUu9+cHSNu+7WGwyDON3lU8RDRqaess=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739050001; c=relaxed/simple;
-	bh=sYQ5qlKk18c0A4Z5LLru+uwYh/WhPZ5cQ0bbtmlDVSo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=L2VsPqM0PKvYWoTXGmlgEiRJhkCuZFgJh3D9432moz84vVg8k+zO0DcxacK/lsNY/z2u8D/ZPoR47+NVXUqkk+u7jNc+g+BlrnVGDFOAABLjnVjvHy6rls3wKjfIRvH+KcE2NkEHcU4LE8Pz7Y8S8XdeQhu8HJmzTpS4HUEe4Ls=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=peacevolution.org; spf=pass smtp.mailfrom=peacevolution.org; dkim=pass (1024-bit key) header.d=peacevolution.org header.i=@peacevolution.org header.b=LsMjVCFw; arc=none smtp.client-ip=206.189.193.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=peacevolution.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=peacevolution.org
+	s=arc-20240116; t=1739112475; c=relaxed/simple;
+	bh=mfm0fzgHcJqEKVxh9uCNABxYv9pkHhFHRmLF/klPJB0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HdgCdWpeITve3scyFIAK4V9ACLB/TinNaZQrpLWB4O5BLZ714++lyupc23EpG6/ljv8L+4Qbk1nH6EKExWc75sMigPIUxj0ohtldE+jrIn7UO/8rg9tP68eG9hw7293u+1VlCftlIjsKf6UXQegnsXZvmcel7VxJrw/s2aNROBs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b0vvF64F; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=peacevolution.org header.i=@peacevolution.org header.b="LsMjVCFw"
-Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-	by a.peacevolution.org (Postfix) with ESMTPA id B852C41B41;
-	Sat,  8 Feb 2025 21:16:28 +0000 (UTC)
-From: Aren Moynihan <aren@peacevolution.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Rob Herring <robh@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b0vvF64F"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1739112474; x=1770648474;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=mfm0fzgHcJqEKVxh9uCNABxYv9pkHhFHRmLF/klPJB0=;
+  b=b0vvF64F+vFn2sX2VefsV5GxmP6w4+vmFLS7R9MEVfPDORU7Cd5pczjG
+   JXsAJw0rWULhvWIvT0ClcJpMyu0mmIcY/jCev+agSoX8gLROQKJURj5He
+   yhPE2Uv632hEQdT5eqYltMWUkNBhQzQO0WAnNFbYXLUiHrYY8lzYFb0qF
+   qNDLpYDIV5YWdxsj1rI/O/Sbdjj1Zf4vSA0qLhGeQIvATkHh9gA5BCqQy
+   OkkCu87IZkR09dp6fPhcGpC7iIaevAywoO0GNOsIBISobFczDP8Kx0M+u
+   2Zu9UW9u/LpUTCzV1XqFa8GGmkvDxa2hZRSwgY6h7IZiEvald4JAL2ps3
+   Q==;
+X-CSE-ConnectionGUID: yHTJ/ZGWQQGF2cQnI4fW5g==
+X-CSE-MsgGUID: ARU5nvGDQ/ij6KtH4tbftQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11314"; a="39814476"
+X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
+   d="scan'208";a="39814476"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2025 06:47:53 -0800
+X-CSE-ConnectionGUID: aiO4+LsNRneHiuvh2xmPZQ==
+X-CSE-MsgGUID: olmz5DBrQCayHBuyQLFg9w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="116039181"
+Received: from smile.fi.intel.com ([10.237.72.58])
+  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2025 06:47:48 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1th8b2-00000009qVD-1xjG;
+	Sun, 09 Feb 2025 16:47:44 +0200
+Date: Sun, 9 Feb 2025 16:47:44 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Aren Moynihan <aren@peacevolution.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Chen-Yu Tsai <wens@csie.org>,
+	Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
 	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>
-Cc: Aren Moynihan <aren@peacevolution.org>,
+	Samuel Holland <samuel@sholland.org>,
 	Kaustabh Chakraborty <kauschluss@disroot.org>,
-	=?UTF-8?q?Barnab=C3=A1s=20Cz=C3=A9m=C3=A1n?= <trabarni@gmail.com>,
+	=?iso-8859-1?B?QmFybmFi4XMgQ3rpbeFu?= <trabarni@gmail.com>,
 	Julien Stephan <jstephan@baylibre.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-sunxi@lists.linux.dev,
-	Ondrej Jirman <megi@xff.cz>,
-	Dragan Simic <dsimic@manjaro.org>,
-	phone-devel@vger.kernel.org
-Subject: [PATCH v5 0/8] iio: light: stk3310: support powering off during suspend
-Date: Sat,  8 Feb 2025 16:13:18 -0500
-Message-ID: <20250208211325.992280-2-aren@peacevolution.org>
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-sunxi@lists.linux.dev, Ondrej Jirman <megi@xff.cz>,
+	Dragan Simic <dsimic@manjaro.org>, phone-devel@vger.kernel.org
+Subject: Re: [PATCH v5 6/8] iio: light: stk3310: use dev_err_probe where
+ possible
+Message-ID: <Z6jAEEU2dqn_FJVp@smile.fi.intel.com>
+References: <20250208211325.992280-2-aren@peacevolution.org>
+ <20250208211325.992280-8-aren@peacevolution.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Authentication-Results: auth=pass smtp.auth=aren@peacevolution.org smtp.mailfrom=aren@peacevolution.org
-X-Spam-Level: ****
-X-Spamd-Bar: ++++
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=peacevolution.org;
-	s=dkim; t=1739049390;
-	h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
-	bh=2g66zt0j6YYPcgcDMhWi6vl+EYuVn16VPhbMythEXg8=;
-	b=LsMjVCFwIJa0HVwKJ1MEfttPkxVQeapgp9+l2aCgIXIAXgykqVD5fHvKFiBzXjKkwrdkQ3
-	KWcxtuV/We+qHesd72LHuukYRimqg69tT4PfsM0B+uBOukQQdpL6Xjws4ojfCEusID4sWX
-	lw9Kv40lzjrzWkV7ItsbqWaYXJfFkEE=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250208211325.992280-8-aren@peacevolution.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-In the Pine64 PinePhone, the stk3310 chip is powered by a regulator that
-is disabled at system boot and can be shut off during suspend. To ensure
-that the chip properly initializes, both after boot and suspend, we need
-to manage this regulator.
+On Sat, Feb 08, 2025 at 04:13:24PM -0500, Aren Moynihan wrote:
+> Using dev_err_probe instead of dev_err and return makes the errors
 
-Additionally if the chip is shut off in suspend, we need to make sure
-that it gets reinitialized with the same parameters after resume.
+Use dev_err_probe()
+dev_err()
 
-Changes in v5:
- - inline STK3310_REGFIELD macro
- - extract a separate dev variable instead of using &client->dev or
-   &data->client->dev
- - make log / error message format consistent (no period and a newline
-   at the end)
- - add error handling for devm_mutex_init
+> easier to understand by including the error name, and saves a little
+> code.
 
-Major changes in v4:
- - replace mutex_init with devm_mutex_init
- - code style cleanup
+I believe this patch will make more sense before switching to local 'dev'
+variable. Then the previous one will have an additional justification as
+the "struct device *dev = ...;" lines in some cases will be added already
+by this patch.
 
-Major changes in v3:
- - Use bulk regulators instead of two individual ones
- - Replace stk3310_remove with devm callbacks
+...
 
-Major changes in v2:
- - Add handling of the IR LED. I was hesitant to include this as it is
-   the same as pull-up regulator for the i2c bus on the hardware I have,
-   so I can't test it well. I think leaving it out is more likely to
-   cause issues than including it.
- - Convert stk3310 to use dev_err_probe for errors.
- - Always enable / disable regulators and rely on dummy devices if
-   they're not specified.
- - more listed in individual patches
+>  	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> -	if (!indio_dev) {
+> -		dev_err(&client->dev, "iio allocation failed!\n");
+> -		return -ENOMEM;
+> -	}
+> +	if (!indio_dev)
+> +		return dev_err_probe(dev, -ENOMEM, "iio allocation failed!\n");
 
-Aren Moynihan (7):
-  dt-bindings: iio: light: stk33xx: add vdd and leda regulators
-  iio: light: stk3310: handle all remove logic with devm callbacks
-  iio: light: stk3310: implement vdd and leda supplies
-  iio: light: stk3310: simplify and inline STK3310_REGFIELD macro
-  iio: light: stk3310: refactor to always make dev a variable
-  iio: light: stk3310: use dev_err_probe where possible
-  iio: light: stk3310: log error if reading the chip id fails
+We don't issue the messages for -ENOMEM.
 
-Ondrej Jirman (1):
-  arm64: dts: allwinner: pinephone: add power supplies to stk3311
+If it's in the current code, add a new patch to drop this message and return an
+error code directly.
 
- .../bindings/iio/light/stk33xx.yaml           |   4 +
- .../dts/allwinner/sun50i-a64-pinephone.dtsi   |   2 +
- drivers/iio/light/stk3310.c                   | 254 ++++++++++++------
- 3 files changed, 178 insertions(+), 82 deletions(-)
+...
+
+> +	if (ret < 0)
+
+Perhaps, while at it, drop these ' < 0' parts where they are not hinting about
+anything.
+
+> +		return dev_err_probe(dev, ret, "device_register failed\n");
 
 -- 
-2.48.1
+With Best Regards,
+Andy Shevchenko
+
 
