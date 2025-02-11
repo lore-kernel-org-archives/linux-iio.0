@@ -1,47 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0C7D264FAD;
-	Tue, 11 Feb 2025 19:22:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9401326388A;
+	Tue, 11 Feb 2025 19:28:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739301775; cv=none; b=CPfD3BV05IV7ffOG4iLDu2Z/pz3iKB99C4hOww6LnY5MK0Aa77OH/qJldXuvNivm4S7NKdUuLu1Bv1eE//awGV7GQ+VBhRI+gWG9bP3bKDeU5drcRgp2+/P8yl5I3phjPGLP4/425JWB/eh3NptBbXchp9cLHVS574Zgp+P03VQ=
+	t=1739302108; cv=none; b=Lni2id2bDcLJT7GIBoJj/7Yjl11WOp5/twRzAB7FO5MeQbkPe/NBgkciARssHXGa+W45HKDzSznSlhUXJ6q4qy3gYZzT+DAV/LWmyX+pBg4HxJ7uv+1vcX6M9NsdwhJJ1ER4teVWAdVxWlZAWpJDyIHxLNIkz/KDYjzn6vqJddo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739301775; c=relaxed/simple;
-	bh=5IaTcpAOuygrsLVKHnKcdOYvqEnpIjQxluHnnPqOJWs=;
+	s=arc-20240116; t=1739302108; c=relaxed/simple;
+	bh=FtiCB/Gnit/rjhpi4OMYVtXqmpza4wtHtS9goXNepZI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XBN+HK+VtdlOsL0qjbzjAdAeEjCswpCrFe/RuU/bWHlHURVSCRfHutP0yq02MFmQxua40hG7qWdr7Sme6VcpjCFEDdjBmltoVIFOtUQ+GgYcfdBpDcQMQr0INWhVZ8W4cSzot5OQuRXRryKiMYPgwOmW3o+s5MIXC6xfjHjfJuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TNlYEDsh; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=mCC6fnur3Jsp8S88ndUTBcTWpC3tZJOoPin5ksb5bv5ifwgEMRt9O4tSYrkXqRNmgH/VXsmE311PIXdhF9q2l02nTtNzJBZRWMchlEObMah+CRGvyOFTo+mdIYtKcgVtFEdzYNm25pXMcOJ1PuD2lzBZnlDAUkPHy7cuIiZnpGU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bD3ER5Te; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TNlYEDsh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F4C2C4CEDD;
-	Tue, 11 Feb 2025 19:22:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bD3ER5Te"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7B24C4CEDD;
+	Tue, 11 Feb 2025 19:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739301775;
-	bh=5IaTcpAOuygrsLVKHnKcdOYvqEnpIjQxluHnnPqOJWs=;
+	s=k20201202; t=1739302108;
+	bh=FtiCB/Gnit/rjhpi4OMYVtXqmpza4wtHtS9goXNepZI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=TNlYEDshy8Hec78h4vtwsNMw2j/1S6yiY9fL4RWnmAlXaFqX9gMQNqAKD0HXvQiMN
-	 qEZvO/TYkpXucnE9M7Z44a7wOTnfIQYL5BU2Usq2MSrI6FmXHzr7B3ro+6ySfiVB9z
-	 Eo0DyfJyhbfoOKmzmYYo6Oi25NDYTUc5CZOS+VgrJGAWulagJoa+JUPPsEEH/iC0sI
-	 28ko+ftPOGyugjqd4rhqKmz6PaFZqutv48ERgo/LaEWkCMjafsG6BbrbLy09fLl74Y
-	 XzUY/mL5LzrN/4qI2eeHC/l4Ele+g7QvST4EfJt4P4Sfc6K9+Ea6FjVsIa1WN7PDgn
-	 g3kRdod0dwPYg==
-Date: Tue, 11 Feb 2025 19:22:47 +0000
+	b=bD3ER5TeFDc1/t8c6JcAsesFhr004XSAaDs+wWifLhe9Xq1WuzTXvU6tMa7LZZzCH
+	 x8ggsZEEkJfHGZTb80k8HRy4fBERdEIjSbF2Pv3G6p/NAoczO3Aqp0tGVhpZ6RHCKQ
+	 RYk1jJXc1SegL4CfEEpy1zX2lNGAqrkFehNSO5udyIjwMlYjRm22d1vQLTYkXvVbRD
+	 L5eRXh9yWkFeZdWR70w8nHss1GeGRUl3FeOecdtKRxPC8JXTrP09NlG8KmBYaUnjkz
+	 HKvdXYUT1q6R9EShsmePqWHZUGZ2GLNQNKeCwEQ+7nW+39Gm05bofaQEYQJDlYqQxg
+	 ltVXRYXRKIKYw==
+Date: Tue, 11 Feb 2025 19:28:19 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Hermes Zhang <chenhuiz@axis.com>
-Cc: Hermes Zhang <Hermes.Zhang@axis.com>, robh@kernel.org, lars@metafoo.de,
- krzk+dt@kernel.org, kernel@axis.com, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: chemical: add support for Sensirion
- SEN5x/SEN6x
-Message-ID: <20250211192247.57e8d7d1@jic23-huawei>
-In-Reply-To: <c397401d-63b7-7a6e-80fa-16dd4ceb0537@axis.com>
-References: <20250206061521.2546108-1-Hermes.Zhang@axis.com>
-	<20250206061521.2546108-4-Hermes.Zhang@axis.com>
-	<20250208161501.7b6c6c17@jic23-huawei>
-	<1237314b-78a8-a871-ea24-f3011766606b@axis.com>
-	<20250210190942.21ba97cc@jic23-huawei>
-	<c397401d-63b7-7a6e-80fa-16dd4ceb0537@axis.com>
+To: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
+Cc: Angelo Dureghello <adureghello@baylibre.com>, Lars-Peter Clausen	
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Nuno
+ Sa	 <nuno.sa@analog.com>, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: dac: adi-axi-dac: drop io_mode check
+Message-ID: <20250211192819.0c0be5fb@jic23-huawei>
+In-Reply-To: <4c526d89750e1578d8c341caae77aac0321d7ace.camel@gmail.com>
+References: <20250206-wip-bl-ad3552r-axi-v0-iio-testing-carlos-v1-1-863a4b2af4ea@baylibre.com>
+	<20250208154521.193da461@jic23-huawei>
+	<2ae962c19bc9d180dabf52e256a1d6bf215f9bf0.camel@gmail.com>
+	<20250210191353.2a5fcd4b@jic23-huawei>
+	<4c526d89750e1578d8c341caae77aac0321d7ace.camel@gmail.com>
 X-Mailer: Claws Mail 4.3.0 (GTK 3.24.48; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,94 +48,99 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 11 Feb 2025 10:29:54 +0800
-Hermes Zhang <chenhuiz@axis.com> wrote:
+On Tue, 11 Feb 2025 09:56:31 +0000
+Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
 
-> On 2025/2/11 3:09, Jonathan Cameron wrote:
-> > On Mon, 10 Feb 2025 17:16:57 +0800
-> > Hermes Zhang <chenhuiz@axis.com> wrote:
-> >  
-> >> Hi Jonathan,
-> >>
-> >> Thanks a lot for your review. I will fix most of them in v2, just one
-> >> question below.
-> >>
-> >> Best Regards,
-> >> Hermes
-> >>
-> >>
-> >> On 2025/2/9 0:15, Jonathan Cameron wrote:  
-> >>> On Thu, 6 Feb 2025 14:15:17 +0800
-> >>> Hermes Zhang <Hermes.Zhang@axis.com> wrote:
-> >>>
-> >>>     
-> >>>> +
-> >>>> +	state->last_update = jiffies;
-> >>>> +
-> >>>> +	return 0;
-> >>>> +}
-> >>>> +
-> >>>> +static ssize_t status_show(struct device *dev, struct device_attribute *attr,
-> >>>> +			   char *buf)
-> >>>> +{
-> >>>> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> >>>> +	struct sen_common_state *state = iio_priv(indio_dev);
-> >>>> +	int status;
-> >>>> +	int ret;
-> >>>> +
-> >>>> +	ret = sen_common_status(state->client, &status);  
-> >>> This is custom ABI. So it would need documentation and will need
-> >>> to overcome quite a high barrier.
-> >>>
-> >>> Superficially this looks like debug perhaps that should be
-> >>> in debugfs?  
-> >> The status is one of the support commands from the chip, we (from
-> >> userspace) could read it and notify customer if the sensor is wrong or
-> >> not. So it is ued in normal usage, regarding the ABI, I see your point,
-> >> so instead of my way, do you have any suggestion for how to handle it in
-> >> iio? Thanks.  
-> > What is actually reporting?  I hope something more specific than
-> > 'wrong'.  Also when do you read it?  Standard software is never going to
-> > so you may be better of doing some scheduled reading or reading it
-> > on the back of a channel read.  Unfortunately the nature of failure modes
-> > is that they are not easy to describe in a generic ABI - sometimes
-> > our best bet is to just log an error (rate limited).
-> >
-> > Some of these look like they mean the data read is garbage when they
-> > are happening?
-> >
-> > Jonathan
-> >  
-> It's e.g. a 32bit data which some of the bits indicate if the 
-> PM/CO2/GAS/RHT/FAN is error. Yes, the software will scheduled to read it 
-> and deal the error based on some policy configurable (e.g reboot the 
-> device). I hope if the driver can provide such inteface to read it, so 
-> userspace can decide how to handle it. Is there some similar case 
-> already in driver now? Thanks.
+> On Mon, 2025-02-10 at 19:13 +0000, Jonathan Cameron wrote:
+> > On Mon, 10 Feb 2025 10:05:47 +0000
+> > Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+> >  =20
+> > > On Sat, 2025-02-08 at 15:45 +0000, Jonathan Cameron wrote: =20
+> > > > On Thu, 06 Feb 2025 09:36:14 +0100
+> > > > Angelo Dureghello <adureghello@baylibre.com> wrote:
+> > > > =C2=A0  =20
+> > > > > From: Angelo Dureghello <adureghello@baylibre.com>
+> > > > >=20
+> > > > > Drop mode check, producing the following robot test warning:
+> > > > >=20
+> > > > > smatch warnings:
+> > > > > drivers/iio/dac/adi-axi-dac.c:731 axi_dac_bus_set_io_mode()
+> > > > > =C2=A0 warn: always true condition '(mode >=3D 0) =3D> (0-u32max =
+>=3D 0)'
+> > > > >=20
+> > > > > The range check results not useful since these are the only
+> > > > > plausible modes for enum ad3552r_io_mode.
+> > > > >=20
+> > > > > Fixes: 493122c53af1 ("iio: dac: adi-axi-dac: add bus mode setup")
+> > > > > Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>=C2=A0=
+  =20
+> > > > Ah. I missed this.=C2=A0 Anyhow made the same change directly so al=
+l is well
+> > > > than ends well!
+> > > > =C2=A0  =20
+> > >=20
+> > > Hi Angelo, Jonathan,
+> > >=20
+> > > I wanted to reply to this one when I saw it but I haven't done right =
+away
+> > > and
+> > > then totally forgot. Sorry about that!
+> > >=20
+> > > I don't really agree with the "fix" in this patch. AFAIU, smatch is
+> > > complaining
+> > > since the enum is apparently defaulting to an unsigned type which mea=
+ns
+> > > doing
+> > > the >=3D 0 check is useless. But we should keep the upper bound... =20
+> >=20
+> > Why? It's an enum so unless we are messing around with deliberate casts=
+ the
+> > compiler should always be able to spot this. The check may be needed on=
+ a
+> > future =20
+>=20
+> I do not think the compiler will catch this:
+>=20
+> diff --git a/drivers/iio/dac/ad3552r-hs.c b/drivers/iio/dac/ad3552r-hs.c
+> index c1dae58c1975..5234dd5e227d 100644
+> --- a/drivers/iio/dac/ad3552r-hs.c
+> +++ b/drivers/iio/dac/ad3552r-hs.c
+> @@ -293,7 +293,7 @@ static int ad3552r_hs_buffer_postenable(struct iio_dev
+> *indio_dev)
+>          * Back bus to simple SPI, this must be executed together with ab=
+ove
+>          * target mode unwind, and can be done only after it.
+>          */
+> -       st->data->bus_set_io_mode(st->back, AD3552R_IO_MODE_SPI);
+> +       st->data->bus_set_io_mode(st->back, -1);
+>=20
+> A W=3D1 build (clang) did not complained at all... Maybe tools like smatc=
+h will.
+>=20
+> > date if we add more types to that enum.
+> >=20
+> > So I agree the check wasn't terrible and perhaps acted as hardening but=
+ it
+> > isn't strictly speaking doing anything today.
+> >  =20
+>=20
+> It's not a very super important check, I agree... and being an enum will =
+be
+> easier to spot a raw value being passed during a review but since we alre=
+ady had
+> the check, I don't see why we should remove it completely and not keep th=
+e upper
+> bound.
 
-There are some but they aren't typically left to userspace because
-that would require custom userspace for every driver (which is typically
-not possible).  Hence checks like this are usually done by the driver
-directly (often the device has an optimized read of data + status) and
-we report a simple error to userspace + restart device etc.
-
-Typical cases of this are things like fifo overflow which sometimes needs
-a device reset to recover.
-
-So can you do this check in the driver on each read? It's a really slow
-sensor so the extra bus access time isn't going to make much difference
-and then you can take correct action.
+ok.  I'd take a patch putting the upper bound back.   Enums checking is an =
+interesting
+hole to fall down.
 
 Jonathan
 
-
-> 
-> 
-> Best Regards,
-> 
-> Hermes
-> 
+>=20
+> - Nuno S=C3=A1
 
