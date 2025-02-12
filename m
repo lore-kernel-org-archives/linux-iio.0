@@ -1,162 +1,137 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB7CF11CA9;
-	Wed, 12 Feb 2025 06:07:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 244381DF751;
+	Wed, 12 Feb 2025 06:25:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739340428; cv=none; b=WVo2xzeV3cB9t1hyHlCk+1gRnqvn3bSe70Vs2vPz2dEsK31HCNpGvDZ1GjTtJlJhgFYF+2ZAPflcPkEE8n2O1rjUAB3OzpScK8dNW2XlyoM350JZtn5E0Q4aVxWWYqTRzKJuPgWzfCvSTSUIlCpQ9EB6fCtk/mG7aS73ttm7Cj0=
+	t=1739341523; cv=none; b=s17t3LzvHS29L//cMbKL0z1K+owPDekH4zXQIUjlXRKXK87MzkMlQlmg/sWOWICVK4YG0pzQUozHliq8vYMiIoiXuSFIFhKhVAZ70+Ofvp7lRR2hLMjSKb7pmffMPx4dkYwpScbY4Rb+7pnkFoiVJkLgLrMvD7Gv/8IVT9WSziE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739340428; c=relaxed/simple;
-	bh=xnpMPHYKZyIUkTsXMPC0zqMwSDXIWAxIdusy5ZDRwJc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nR80AWetVE5D1i+fTxH/pR4VNw3EE1u8MvvN9QtWjM4Cv+prrS8f4Wa5bn4W1xEpcMWVB3cjigDnYyw6sGAKOoCO0DUgo3YD1BditdJW3ToCj+E2Z7xbQp8NQ3TM+Yj6zILb+IWJLPIWhVKl8JVXK7Gwwq5Pdt/Zhl9YI25+b0o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W0K3Ek+C; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1739341523; c=relaxed/simple;
+	bh=3GczVSezF6lGkia8zxOIs0eEQ/zlXmjuOU3QyuA85dI=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Awhw+MquITzQQ8aTKDbMr9vHps2g11VvkyiLgd94dIFayUdRe89VT8ra6onzL7uHput8+5BU+o13sKrBaAkoNPFO8OWTLO6sv2vaW9iw64KrBFMinm4ficsFCTbFqpXrlKUwXOYWTQOodQ3L0AiJGbdWKAGL3FEiasygadPHuU4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cszXoyma; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W0K3Ek+C"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C914C4CEDF;
-	Wed, 12 Feb 2025 06:06:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739340428;
-	bh=xnpMPHYKZyIUkTsXMPC0zqMwSDXIWAxIdusy5ZDRwJc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=W0K3Ek+CuhdtAjyOvAbbcydSnrG2zp1DflRdPjYFIRzXeEIDJwoAs9UUwOjN1RMV2
-	 KfFqS1LedukoTcMtdmNALtUlA0VLBdwA+dm4HseGyjz/p3n/D4/fKY0apKs+eG5jKW
-	 49B2i+ZewMoA1XDsBZEsYj+eCVyfMdjhDyr6cLCIziZchsLA/NFwYJqN9Uyb8Tvnsp
-	 wEj0Zc5LHq6zjcs+bjoJACvWZ3+Y64905TsWXeqyPmKAx4xBkL7c7lwj/zdyzLa6Xr
-	 4HirepD+r+1mbNUmm+ZEZw/kXDQUykGu2HNpVrJkW3a/h0qpM4UPjlBHVlZfdBiWU/
-	 MVnIvFF+DnleQ==
-Message-ID: <9a61e73d-29d1-4189-89eb-1299b8934af9@kernel.org>
-Date: Wed, 12 Feb 2025 07:06:56 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cszXoyma"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1739341521; x=1770877521;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3GczVSezF6lGkia8zxOIs0eEQ/zlXmjuOU3QyuA85dI=;
+  b=cszXoymajda8ZkEtFF5YT/nvKik5eusHjEUQmB5vM9LJxUVuqCnIFyJC
+   IhnO9mzRXiDAq2NDb31p+WRbfacTRWT3NVQmoMwGLaZNF8vspiijgOlRy
+   Pi59M3tnSV//7WXOqupPDym1syyi/K++dUCh8otIKbrKgViiStR7wO/lf
+   zm8FZec400/fqSEkJFmnLCwvKdnvwG/tdzWKJWkaDZ/izZUuuT5dZQWyX
+   zMwO0S9MwN9Lk8JEWgFYlFEsynUbBKHFy8XPB0iOCdTMZRDrwZ0pl2fGq
+   fAreY6EwZUZfq3m2wtZH5gC1TMijQzx0XIxdo2NOEQULem5uZXd8NGDZb
+   w==;
+X-CSE-ConnectionGUID: KhLnZAcKRoySfMON43uzLw==
+X-CSE-MsgGUID: OlAbBpZYTiGTmTUnugbmJg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11342"; a="40005141"
+X-IronPort-AV: E=Sophos;i="6.13,279,1732608000"; 
+   d="scan'208";a="40005141"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2025 22:25:20 -0800
+X-CSE-ConnectionGUID: JKNa1+JKRrGMelK3GFrn9w==
+X-CSE-MsgGUID: Woal9iMTT/ylqywzPRsLMg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,279,1732608000"; 
+   d="scan'208";a="117811933"
+Received: from jraag-z790m-itx-wifi.iind.intel.com ([10.190.239.23])
+  by fmviesa004.fm.intel.com with ESMTP; 11 Feb 2025 22:25:16 -0800
+From: Raag Jadav <raag.jadav@intel.com>
+To: arnd@arndb.de,
+	gregkh@linuxfoundation.org,
+	rafael@kernel.org,
+	linus.walleij@linaro.org,
+	mika.westerberg@linux.intel.com,
+	andriy.shevchenko@linux.intel.com,
+	dmitry.torokhov@gmail.com,
+	jic23@kernel.org,
+	przemyslaw.kitszel@intel.com
+Cc: linux-gpio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Raag Jadav <raag.jadav@intel.com>
+Subject: [PATCH v5 00/12] Split devres APIs to device/devres.h and introduce devm_kmemdup_array()
+Date: Wed, 12 Feb 2025 11:55:01 +0530
+Message-Id: <20250212062513.2254767-1-raag.jadav@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v2 1/5] dt-bindings: thermal: Add MBG thermal monitor
- support
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: Satya Priya Kakitapalli <quic_skakitap@quicinc.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>,
- Lukasz Luba <lukasz.luba@arm.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>, Lee Jones <lee@kernel.org>,
- Stephen Boyd <sboyd@kernel.org>, Amit Kucheria <amitk@kernel.org>,
- Thara Gopinath <thara.gopinath@gmail.com>,
- Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Ajit Pandey
- <quic_ajipan@quicinc.com>, Imran Shaik <quic_imrashai@quicinc.com>,
- Taniya Das <quic_tdas@quicinc.com>, Jagadeesh Kona <quic_jkona@quicinc.com>,
- quic_kamalw@quicinc.com, quic_jprakash@quicinc.com,
- linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-References: <20241212-mbg-v2-support-v2-0-3249a4339b6e@quicinc.com>
- <20241212-mbg-v2-support-v2-1-3249a4339b6e@quicinc.com>
- <ojukpywkhu72cimujmijzidf26654g5vkjaj477imcf4suz2o6@cmow62jcqsfz>
- <7a5db383-914c-4c1e-846e-5d68cc6a7765@quicinc.com>
- <fcd718be-fe8a-466f-bd2b-7b75d5f8dd6c@kernel.org>
- <c85903c6-6a89-4382-bfa2-2fed95f0cbc0@kernel.org>
- <sybrfmrpegq7fcqykgsfhm56wjyx5vp6zafqw2d73tiral64aw@hg4di55fzdle>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <sybrfmrpegq7fcqykgsfhm56wjyx5vp6zafqw2d73tiral64aw@hg4di55fzdle>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 12/02/2025 00:57, Dmitry Baryshkov wrote:
-> On Tue, Feb 11, 2025 at 12:50:12PM +0100, Krzysztof Kozlowski wrote:
->> On 11/02/2025 12:46, Krzysztof Kozlowski wrote:
->>> On 11/02/2025 12:15, Satya Priya Kakitapalli wrote:
->>>>
->>>> On 12/13/2024 2:08 PM, Krzysztof Kozlowski wrote:
->>>>> On Thu, Dec 12, 2024 at 09:41:20PM +0530, Satya Priya Kakitapalli wrote:
->>>>>> +
->>>>>> +required:
->>>>>> +  - compatible
->>>>>> +  - reg
->>>>>> +  - interrupts
->>>>>> +  - io-channels
->>>>>> +  - io-channel-names
->>>>> Binding looks ok, but this wasn't tested due to unneeded dependency.
->>>>> Please decouple from dependency, so automation can properly test it.
->>>>
->>>>
->>>> The dependency is needed because this mbg peripheral is present on only 
->>>> targets which have GEN3 ADC5, for which the bindings support is added in 
->>>> the series [1]
->>>>
->>>>
->>>> [1] 
->>>> https://lore.kernel.org/linux-arm-msm/c4ca0a4c-e421-4cf6-b073-8e9019400f4c@quicinc.com/
->>>
->>> Sure. Then this cannot be merged due to resulting test failure.
->>>
->>> Please don't post new versions before this can be actually tested and
->>> applied.
->>
->> Heh, you responded *after two months*, to an old email so even previous
->> discussion is gone from my inbox.
-> 
-> Are you responding to your own email?
+This series
 
-Look at the timeline of these emails. Satya responded after two months
-with some comment. I responded now. Then I noticed that it is talk about
-something two months old, so I responded again. Two responses from me,
-that's correct.
+1. Splits device/devres.h for the users that are only interested in devres APIs.
+   Original work by Andy Shevchenko:
+   https://lore.kernel.org/r/20241203195340.855879-1-andriy.shevchenko@linux.intel.com
 
-I recently got way too many such 2-month old clarifications.
+2. Introduces a more robust and cleaner devm_kmemdup_array() helper and uses it
+   across drivers.
 
-That's indeed right of the contributor to respond in their own pace, I
-am also sometimes slow, but really there should be some limit. It's
-putting unnecessary burden on reviewers as now I should dig some old
-discussion.
-Best regards,
-Krzysztof
+The idea behind embedding both work into a single series is to make the review
+process easier and reduce conflicts while merging.
+
+Current proposal is to merge initial patches with an immutable tag (volunteered
+by Andy) for other subsystems to use. Feel free to share a better alternative.
+
+v2: Use size_mul() for multiplication (Dmitry)
+    Update commit message (Dmitry)
+
+v3: Embed devres.h work by Andy
+    Add more users of devm_kmemdup_array()
+    Update tags and rebase
+
+v4: Use IOMEM_ERR_PTR() to fix sparse warnings (Andy)
+    Use source size and make it robust against type changes (Andy)
+
+v5: Move IOMEM_ERR_PTR() to err.h (Andy)
+    Reduce distribution to pinctrl/iio/input patches
+
+Andy Shevchenko (2):
+  driver core: Split devres APIs to device/devres.h
+  iio: imu: st_lsm9ds0: Replace device.h with what is needed
+
+Raag Jadav (10):
+  err.h: move IOMEM_ERR_PTR() to err.h
+  devres: Introduce devm_kmemdup_array()
+  pinctrl: intel: copy communities using devm_kmemdup_array()
+  pinctrl: baytrail: copy communities using devm_kmemdup_array()
+  pinctrl: cherryview: use devm_kmemdup_array()
+  pinctrl: tangier: use devm_kmemdup_array()
+  pinctrl: pxa2xx: use devm_kmemdup_array()
+  iio: adc: xilinx-xadc-core: use devm_kmemdup_array()
+  input: sparse-keymap: use devm_kmemdup_array()
+  input: ipaq-micro-keys: use devm_kmemdup_array()
+
+ drivers/iio/adc/xilinx-xadc-core.c          |   4 +-
+ drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_i2c.c |   2 +-
+ drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_spi.c |   2 +-
+ drivers/input/keyboard/ipaq-micro-keys.c    |   5 +-
+ drivers/input/sparse-keymap.c               |   3 +-
+ drivers/pinctrl/intel/pinctrl-baytrail.c    |   6 +-
+ drivers/pinctrl/intel/pinctrl-cherryview.c  |   5 +-
+ drivers/pinctrl/intel/pinctrl-intel.c       |   6 +-
+ drivers/pinctrl/intel/pinctrl-tangier.c     |   5 +-
+ drivers/pinctrl/pxa/pinctrl-pxa2xx.c        |   8 +-
+ include/linux/device.h                      | 119 +-----------------
+ include/linux/device/devres.h               | 129 ++++++++++++++++++++
+ include/linux/err.h                         |   3 +
+ include/linux/io.h                          |   2 -
+ 14 files changed, 152 insertions(+), 147 deletions(-)
+ create mode 100644 include/linux/device/devres.h
+
+
+base-commit: 0eee258cdf172763502f142d85e967f27a573be0
+-- 
+2.34.1
+
