@@ -1,115 +1,147 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FD6C1FC102;
-	Wed, 12 Feb 2025 06:25:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5B461FCD0F;
+	Wed, 12 Feb 2025 06:25:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739341525; cv=none; b=V9dYxIRNX3EsjeVEZ2s/ruZBx8snzJntnxv12twF05Ad4VQgnk+joagITvhPIa9QxknO9H6bOvO9Z0MinGDx3hgsCladNWgqQmytVcA3RUGM4AuNd8MKcmRj7tXFNYB2xW6O2APrfI9+NiV0R18wPE/OjXyi52TRfKTKEj+jRtk=
+	t=1739341528; cv=none; b=WcHsF/F37gn6x9iGZh6AU3/CMKK+X9WyzrKHn/L3NKTkX7jsGm5yrjLKG1xxZv+gWkwiD5Y5VIE/F7DepBkRyw+8iFelzf8/ETEujioqP/vyX9ZVE6asUFMFYpglg67nq5Pmd9344Np8ggBw00hhuThsxeotW0nDcH5LmNsKPQg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739341525; c=relaxed/simple;
-	bh=CqUvbDifXD/ucYfzA400zsDG3CgGw3zeBPPdgNHOUDA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=V3nabzFbI+OH2ryNeTv6jMcaQE+E47tH+pejt5T0LSp9UzRYHJUKz8pbFZ6EMUWm7cQ9G+1z7gIRTYYdF9vynRAog1q58Vaz5k9zuUJ+VQ/xDfUsXKs04FG1XfW65hn3uzQ9k6siihRCnJhOWp8PWja3HtKqp6mztvUE+njBIoQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CM4BJDpj; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1739341528; c=relaxed/simple;
+	bh=3KVKWftS4v9GkHuIDUYvEWJA8wL+ta7vL74qDteO7js=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=gpfhuntcXJq3/YIxule7c0zM3BQV1t7C/EgeZwY8RWWCHRUEw2Qn5rijqWIiPUVLYSCCY5pFawH9qQoqmRtcqJb2CjRR+4rLJPdBQIXxTgJqEzpJ7T0DrvZNEY+xZmtV8MC/RMH9UU6TPwxvoMJoU3HIAlz32jYMVGygo9NecPc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=PalzXJ9Y; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CM4BJDpj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1739341524; x=1770877524;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CqUvbDifXD/ucYfzA400zsDG3CgGw3zeBPPdgNHOUDA=;
-  b=CM4BJDpjjo/CZACWkyn+NZklRMjlVvemPoqo8bwGgKaGpqJb0gRrAH9u
-   XmTU0i2lX9JE8AGScE/LXndUSvvx8VI+40uZzsu+IzSfFs1udjZ7KIKUb
-   O/3HsVeAb48zsIXZN5pnAfPo3PEuBHSt2iVt+D0Rj9FW9XFjMbiMKFkYc
-   ugb1vKEAl6wwIoNtXonNdy2CBUqGleG9ufXjRsCOqTf28Ig+CIZzUC5h6
-   cPs29VPxPRVLrxa/d6y69VDxK1GFcA4hivBUR1DV2FulespOMiP1vGA+K
-   /JO9maktkP6DiUbL7z+XPhVNffnM9amFk4vndIfvY8Uzo9SjdQWegrPAU
-   w==;
-X-CSE-ConnectionGUID: CqMve8XVRni5ZJYqXocpUQ==
-X-CSE-MsgGUID: pV4sqS7UR8aW42VHgfVz+A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11342"; a="40005152"
-X-IronPort-AV: E=Sophos;i="6.13,279,1732608000"; 
-   d="scan'208";a="40005152"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2025 22:25:24 -0800
-X-CSE-ConnectionGUID: M+WdjWQGTiyJRhxF4v7kZw==
-X-CSE-MsgGUID: sHXsn5zARjS8h6YiZD8jnw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,279,1732608000"; 
-   d="scan'208";a="117811953"
-Received: from jraag-z790m-itx-wifi.iind.intel.com ([10.190.239.23])
-  by fmviesa004.fm.intel.com with ESMTP; 11 Feb 2025 22:25:20 -0800
-From: Raag Jadav <raag.jadav@intel.com>
-To: arnd@arndb.de,
-	gregkh@linuxfoundation.org,
-	rafael@kernel.org,
-	linus.walleij@linaro.org,
-	mika.westerberg@linux.intel.com,
-	andriy.shevchenko@linux.intel.com,
-	dmitry.torokhov@gmail.com,
-	jic23@kernel.org,
-	przemyslaw.kitszel@intel.com
-Cc: linux-gpio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Raag Jadav <raag.jadav@intel.com>
-Subject: [PATCH v5 01/12] err.h: move IOMEM_ERR_PTR() to err.h
-Date: Wed, 12 Feb 2025 11:55:02 +0530
-Message-Id: <20250212062513.2254767-2-raag.jadav@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20250212062513.2254767-1-raag.jadav@intel.com>
-References: <20250212062513.2254767-1-raag.jadav@intel.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="PalzXJ9Y"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51BKXtGR024202;
+	Wed, 12 Feb 2025 06:25:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	obAcn0wLmydAzYC4ajDkNvD0xynlCwHkkiRAYv1Vxec=; b=PalzXJ9Y97SyU5Yg
+	0EjzK/0EqHEvCeCZ32H+vfSvUasPWifm+GF1RnuZwVFsDjd7+1IStT7NpWYHhik5
+	8gQC3VR3ZHo1SyJ5rzPCoHZtS9FpbqMIPfSE+iycCTkzfjwGxmhojkqDkqic5yUc
+	0U1mIPCiHG/xqHYNwsjhfTD4r7mwF/9hc8S7CpEWYeZxMstMIz01p7r7V8bbWBGc
+	julwEpuESY8aKGRTPE/ZgcvpSOFKNHetgiIwiboV5VchFuUk1nIlV87Iy4viNEQM
+	4mqebk4oO9D3d3us+zPSQfVJqGTMtK8sWJWe0wGQ4/zuZIXHV0lmoYsE946e4tAH
+	3EtKsw==
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44p0gv24wg-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 12 Feb 2025 06:24:59 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51C6Owik026154
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 12 Feb 2025 06:24:58 GMT
+Received: from [10.110.45.95] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 11 Feb
+ 2025 22:24:50 -0800
+Message-ID: <aec622a8-bc3f-4ecb-a020-72f1634b7bed@quicinc.com>
+Date: Wed, 12 Feb 2025 11:54:45 +0530
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v2 1/5] dt-bindings: thermal: Add MBG thermal monitor
+ support
+To: Krzysztof Kozlowski <krzk@kernel.org>
+CC: "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano
+	<daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba
+	<lukasz.luba@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Jonathan Cameron
+	<jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>, Lee Jones
+	<lee@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, Amit Kucheria
+	<amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        "Bjorn
+ Andersson" <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Ajit Pandey <quic_ajipan@quicinc.com>,
+        Imran Shaik
+	<quic_imrashai@quicinc.com>,
+        Taniya Das <quic_tdas@quicinc.com>,
+        "Jagadeesh
+ Kona" <quic_jkona@quicinc.com>, <quic_kamalw@quicinc.com>,
+        <quic_jprakash@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+References: <20241212-mbg-v2-support-v2-0-3249a4339b6e@quicinc.com>
+ <20241212-mbg-v2-support-v2-1-3249a4339b6e@quicinc.com>
+ <ojukpywkhu72cimujmijzidf26654g5vkjaj477imcf4suz2o6@cmow62jcqsfz>
+ <7a5db383-914c-4c1e-846e-5d68cc6a7765@quicinc.com>
+ <fcd718be-fe8a-466f-bd2b-7b75d5f8dd6c@kernel.org>
+ <c85903c6-6a89-4382-bfa2-2fed95f0cbc0@kernel.org>
+Content-Language: en-US
+From: Satya Priya Kakitapalli <quic_skakitap@quicinc.com>
+In-Reply-To: <c85903c6-6a89-4382-bfa2-2fed95f0cbc0@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: tLL0HZPILgFGv8Z41KvAkM3OKCPn4gyD
+X-Proofpoint-GUID: tLL0HZPILgFGv8Z41KvAkM3OKCPn4gyD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-02-12_02,2025-02-11_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ impostorscore=0 malwarescore=0 lowpriorityscore=0 phishscore=0
+ clxscore=1015 adultscore=0 bulkscore=0 mlxscore=0 spamscore=0
+ mlxlogscore=999 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.19.0-2501170000 definitions=main-2502120048
 
-Since IOMEM_ERR_PTR() macro deals with an error pointer, a better place
-for it is err.h. This helps avoid dependency on io.h for the users that
-don't need it.
 
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Raag Jadav <raag.jadav@intel.com>
----
- include/linux/err.h | 3 +++
- include/linux/io.h  | 2 --
- 2 files changed, 3 insertions(+), 2 deletions(-)
+On 2/11/2025 5:20 PM, Krzysztof Kozlowski wrote:
+> On 11/02/2025 12:46, Krzysztof Kozlowski wrote:
+>> On 11/02/2025 12:15, Satya Priya Kakitapalli wrote:
+>>> On 12/13/2024 2:08 PM, Krzysztof Kozlowski wrote:
+>>>> On Thu, Dec 12, 2024 at 09:41:20PM +0530, Satya Priya Kakitapalli wrote:
+>>>>> +
+>>>>> +required:
+>>>>> +  - compatible
+>>>>> +  - reg
+>>>>> +  - interrupts
+>>>>> +  - io-channels
+>>>>> +  - io-channel-names
+>>>> Binding looks ok, but this wasn't tested due to unneeded dependency.
+>>>> Please decouple from dependency, so automation can properly test it.
+>>>
+>>> The dependency is needed because this mbg peripheral is present on only
+>>> targets which have GEN3 ADC5, for which the bindings support is added in
+>>> the series [1]
+>>>
+>>>
+>>> [1]
+>>> https://lore.kernel.org/linux-arm-msm/c4ca0a4c-e421-4cf6-b073-8e9019400f4c@quicinc.com/
+>> Sure. Then this cannot be merged due to resulting test failure.
+>>
+>> Please don't post new versions before this can be actually tested and
+>> applied.
+> Heh, you responded *after two months*, to an old email so even previous
+> discussion is gone from my inbox.
 
-diff --git a/include/linux/err.h b/include/linux/err.h
-index a4dacd745fcf..1d60aa86db53 100644
---- a/include/linux/err.h
-+++ b/include/linux/err.h
-@@ -44,6 +44,9 @@ static inline void * __must_check ERR_PTR(long error)
- /* Return the pointer in the percpu address space. */
- #define ERR_PTR_PCPU(error) ((void __percpu *)(unsigned long)ERR_PTR(error))
- 
-+/* Cast an error pointer to __iomem. */
-+#define IOMEM_ERR_PTR(error) (__force void __iomem *)ERR_PTR(error)
-+
- /**
-  * PTR_ERR - Extract the error code from an error pointer.
-  * @ptr: An error pointer.
-diff --git a/include/linux/io.h b/include/linux/io.h
-index 59ec5eea696c..40cb2de73f5e 100644
---- a/include/linux/io.h
-+++ b/include/linux/io.h
-@@ -65,8 +65,6 @@ static inline void devm_ioport_unmap(struct device *dev, void __iomem *addr)
- }
- #endif
- 
--#define IOMEM_ERR_PTR(err) (__force void __iomem *)ERR_PTR(err)
--
- void __iomem *devm_ioremap(struct device *dev, resource_size_t offset,
- 			   resource_size_t size);
- void __iomem *devm_ioremap_uc(struct device *dev, resource_size_t offset,
--- 
-2.34.1
 
+Sorry about that, I initially misunderstood it was regarding the b4 deps 
+I created. I wanted to confirm before posting new version yesterday, 
+hence clarified about the dependency.
+
+
+> Best regards,
+> Krzysztof
