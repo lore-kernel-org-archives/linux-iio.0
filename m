@@ -1,67 +1,75 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [195.130.137.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC86D266568;
-	Fri, 14 Feb 2025 13:20:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D23D6264FB0
+	for <linux-iio@vger.kernel.org>; Fri, 14 Feb 2025 13:56:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.130.137.88
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739539230; cv=none; b=lUJHPvfF73EQ1G8U7DFywEuBE3in9heqkYUImShvB+6YVcT2YLqE6UvPWB390ASTs4jW4/e8tMwYKTue3adxeNRfe+o24Ivh6iHH+3PN1bBgyfTwYo1/297kcpKpL+OOWWy3D7qZwTCbpxTmklnD6whvQK9VZ70L8gtWcLVF4IM=
+	t=1739541390; cv=none; b=OMl843unAp4kmWRoY61xC3FX/XGc2G0AFY6EmODvs57pg9rJeqEa3K1eKJza478oj2aIskq8PfbGnTwMjWef+hOywJCMWqGza+sMqLamgyQQfk8uTpbzI+PJthCYXQyKj7Wl8f2V4HQ4Mi3+2xifYrF5qFHMTQOFqV2/Ty3H81E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739539230; c=relaxed/simple;
-	bh=So9Q1FlejRdM4gbAqhZQLc5a7c6cMmNLLlL5noONk48=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ShzF97zPxy8sR5Nxe0nO42liGfYSYuSIw+bP4zC40DSioLNsNP2YFMUmjlhG8zSfwBxqaCCvjaY4/IPFquDB3Vr7VoSlaHfkKqaf7t5zFDLClwQox2ncVstlsZhBZ566EdzBYUbQolWsPJc7asiRlYGUM5WRF+ZjgKRo3Zz2SVU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=0kBq+DhE; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="0kBq+DhE"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51EA9u9q020768;
-	Fri, 14 Feb 2025 08:20:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=Vy+qW
-	HG9mUD/9kR6+Bn2cd9l0Cg5hXKEe56CVBDxRX0=; b=0kBq+DhEBeEs409iDjb3q
-	80FSRDvDKKzB6dIgj8gZ3RSSSX6R45k+oJfwSrxfFAb5FYj5HBLxCNSlaBaIa2ll
-	08dsahYQMgFD6ng3CMU6S8iD5KNgatEt+UAGhhUTwZ14jY0gDktOZXwTkLW/HZy6
-	xyRmztKxm8voSx6kaW3LHm3LBDRjaSeGtGNHnyxH6byh3QcINUc2ATTr8iWdmkdt
-	FwtCmwmRIN1Rj3sowTwQxLo8rsRmqZj6OxnTH5IqMKX3tUsfyYq/TqncLORFX2JV
-	ycU/0SexR0EQPItqsyzUaojF6kFx/Jlj+ApcIG25MgsLpMu8+y2+0/AqPUG0qyi/
-	Q==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 44t3uc8n1d-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 14 Feb 2025 08:20:16 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 51EDKFFa018376
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 14 Feb 2025 08:20:15 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 14 Feb 2025 08:20:15 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 14 Feb 2025 08:20:14 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 14 Feb 2025 08:20:14 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.172])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 51EDJuUV020604;
-	Fri, 14 Feb 2025 08:20:09 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v13 5/9] dt-bindings: iio: adc: add ad485x axi variant
-Date: Fri, 14 Feb 2025 15:19:51 +0200
-Message-ID: <20250214131955.31973-6-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.48.1
-In-Reply-To: <20250214131955.31973-1-antoniu.miclaus@analog.com>
-References: <20250214131955.31973-1-antoniu.miclaus@analog.com>
+	s=arc-20240116; t=1739541390; c=relaxed/simple;
+	bh=2S77TW9eiued8sK0tteMFaR561SQrA057B+f2HQYgec=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=dUeZ9cgKHyD6JgB0Vu+W/EREhQjKVMEcGAyrRrRQ+KxJTBlr3Q8tJwBpmiQ033S64hSSyGtiRQ3BkjF5V4TKcSXIfprtVq4Heuq0N3c/QUOHXSLDqcXkapkdjKUFBIgG6Oa77WFv7hpRQgteq/YPdR0vMzDy6Twz9wnmy6+5MLs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be; spf=none smtp.mailfrom=linux-m68k.org; arc=none smtp.client-ip=195.130.137.88
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed80:6395:73cc:7fc4:4cab])
+	by michel.telenet-ops.be with cmsmtp
+	id DRvu2E00N1MuxXz06RvuMa; Fri, 14 Feb 2025 14:56:25 +0100
+Received: from rox.of.borg ([192.168.97.57])
+	by ramsan.of.borg with esmtp (Exim 4.97)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1tiwAL-00000006p2i-19TY;
+	Fri, 14 Feb 2025 14:55:54 +0100
+Received: from geert by rox.of.borg with local (Exim 4.97)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1tiwAc-00000000qEo-22dS;
+	Fri, 14 Feb 2025 14:55:54 +0100
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+To: Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	David Miller <davem@davemloft.net>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	Joel Stanley <joel@jms.id.au>,
+	Andrew Jeffery <andrew@codeconstruct.com.au>,
+	Crt Mori <cmo@melexis.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jacky Huang <ychuang3@nuvoton.com>,
+	Shan-Chun Hung <schung@nuvoton.com>,
+	Yury Norov <yury.norov@gmail.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Alex Elder <elder@ieee.org>,
+	David Laight <david.laight.linux@gmail.com>,
+	Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc: linux-clk@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-renesas-soc@vger.kernel.org,
+	linux-crypto@vger.kernel.org,
+	qat-linux@intel.com,
+	linux-gpio@vger.kernel.org,
+	linux-aspeed@lists.ozlabs.org,
+	linux-iio@vger.kernel.org,
+	linux-sound@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v3 3/4] clk: renesas: Use bitfield helpers
+Date: Fri, 14 Feb 2025 14:55:52 +0100
+Message-ID: <425fa9bb496eecc3fd7fb4bd8e6a98de18c14756.1739540679.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1739540679.git.geert+renesas@glider.be>
+References: <cover.1739540679.git.geert+renesas@glider.be>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,57 +77,131 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=PZcFhjhd c=1 sm=1 tr=0 ts=67af4310 cx=c_pps a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17 a=T2h4t0Lz3GQA:10 a=gAnH3GRIAAAA:8 a=wI1k2SEZAAAA:8 a=KzTIvUCHwj9sjodXf8EA:9 a=oVHKYsEdi7-vN-J5QA_j:22
- a=6HWbV-4b7c7AdzY24d_u:22
-X-Proofpoint-GUID: Ojfu9BTMlAvV5pBpTrmcVirW2ZLyScCu
-X-Proofpoint-ORIG-GUID: Ojfu9BTMlAvV5pBpTrmcVirW2ZLyScCu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-02-14_05,2025-02-13_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=999
- spamscore=0 suspectscore=0 impostorscore=0 clxscore=1015 mlxscore=0
- bulkscore=0 priorityscore=1501 lowpriorityscore=0 malwarescore=0
- adultscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.19.0-2501170000
- definitions=main-2502140097
 
-Add a new compatible and related bindigns for the fpga-based
-AD485x AXI IP core, a variant of the generic AXI ADC IP.
+Use the FIELD_{GET,PREP}() and field_{get,prep}() helpers for const
+respective non-const bitfields, instead of open-coding the same
+operations.
 
-The AXI AD485x IP is a very similar HDL (fpga) variant of the
-generic AXI ADC IP, intended to control ad485x familiy.
-
-Although this is not preffered, the wildcard naming is used to
-match the published firmware under the same name.
-
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
-changes in v13:
- - adjust commit body and add comment on wildcard matching the published
-   firmware.
- Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+v3:
+  - No changes,
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml b/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-index e1f450b80db2..f1b470f74069 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-@@ -19,11 +19,13 @@ description: |
-   memory via DMA.
+v2:
+  - Rebase on top of commit 470e3f0d0b1529ab ("clk: renesas: rcar-gen4:
+    Introduce R-Car Gen4 CPG driver").
+---
+ drivers/clk/renesas/clk-div6.c      |  6 +++---
+ drivers/clk/renesas/rcar-gen3-cpg.c | 15 +++++----------
+ drivers/clk/renesas/rcar-gen4-cpg.c |  9 +++------
+ 3 files changed, 11 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/clk/renesas/clk-div6.c b/drivers/clk/renesas/clk-div6.c
+index 3abd6e5400aded6a..f7b827b5e9b2dd32 100644
+--- a/drivers/clk/renesas/clk-div6.c
++++ b/drivers/clk/renesas/clk-div6.c
+@@ -7,6 +7,7 @@
+  * Contact: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+  */
  
-   https://wiki.analog.com/resources/fpga/docs/axi_adc_ip
-+  https://analogdevicesinc.github.io/hdl/library/axi_ad485x/index.html
++#include <linux/bitfield.h>
+ #include <linux/clk-provider.h>
+ #include <linux/init.h>
+ #include <linux/io.h>
+@@ -171,8 +172,7 @@ static u8 cpg_div6_clock_get_parent(struct clk_hw *hw)
+ 	if (clock->src_mask == 0)
+ 		return 0;
  
- properties:
-   compatible:
-     enum:
-       - adi,axi-adc-10.0.a
-+      - adi,axi-ad485x
+-	hw_index = (readl(clock->reg) & clock->src_mask) >>
+-		   __ffs(clock->src_mask);
++	hw_index = field_get(clock->src_mask, readl(clock->reg));
+ 	for (i = 0; i < clk_hw_get_num_parents(hw); i++) {
+ 		if (clock->parents[i] == hw_index)
+ 			return i;
+@@ -191,7 +191,7 @@ static int cpg_div6_clock_set_parent(struct clk_hw *hw, u8 index)
+ 	if (index >= clk_hw_get_num_parents(hw))
+ 		return -EINVAL;
  
-   reg:
-     maxItems: 1
+-	src = clock->parents[index] << __ffs(clock->src_mask);
++	src = field_prep(clock->src_mask, clock->parents[index]);
+ 	writel((readl(clock->reg) & ~clock->src_mask) | src, clock->reg);
+ 	return 0;
+ }
+diff --git a/drivers/clk/renesas/rcar-gen3-cpg.c b/drivers/clk/renesas/rcar-gen3-cpg.c
+index 027100e84ee4c429..ca8f6a68771628fb 100644
+--- a/drivers/clk/renesas/rcar-gen3-cpg.c
++++ b/drivers/clk/renesas/rcar-gen3-cpg.c
+@@ -54,10 +54,8 @@ static unsigned long cpg_pll_clk_recalc_rate(struct clk_hw *hw,
+ {
+ 	struct cpg_pll_clk *pll_clk = to_pll_clk(hw);
+ 	unsigned int mult;
+-	u32 val;
+ 
+-	val = readl(pll_clk->pllcr_reg) & CPG_PLLnCR_STC_MASK;
+-	mult = (val >> __ffs(CPG_PLLnCR_STC_MASK)) + 1;
++	mult = FIELD_GET(CPG_PLLnCR_STC_MASK, readl(pll_clk->pllcr_reg)) + 1;
+ 
+ 	return parent_rate * mult * pll_clk->fixed_mult;
+ }
+@@ -94,7 +92,7 @@ static int cpg_pll_clk_set_rate(struct clk_hw *hw, unsigned long rate,
+ 
+ 	val = readl(pll_clk->pllcr_reg);
+ 	val &= ~CPG_PLLnCR_STC_MASK;
+-	val |= (mult - 1) << __ffs(CPG_PLLnCR_STC_MASK);
++	val |= FIELD_PREP(CPG_PLLnCR_STC_MASK, mult - 1);
+ 	writel(val, pll_clk->pllcr_reg);
+ 
+ 	for (i = 1000; i; i--) {
+@@ -176,11 +174,7 @@ static unsigned long cpg_z_clk_recalc_rate(struct clk_hw *hw,
+ 					   unsigned long parent_rate)
+ {
+ 	struct cpg_z_clk *zclk = to_z_clk(hw);
+-	unsigned int mult;
+-	u32 val;
+-
+-	val = readl(zclk->reg) & zclk->mask;
+-	mult = 32 - (val >> __ffs(zclk->mask));
++	unsigned int mult = 32 - field_get(zclk->mask, readl(zclk->reg));
+ 
+ 	return DIV_ROUND_CLOSEST_ULL((u64)parent_rate * mult,
+ 				     32 * zclk->fixed_div);
+@@ -231,7 +225,8 @@ static int cpg_z_clk_set_rate(struct clk_hw *hw, unsigned long rate,
+ 	if (readl(zclk->kick_reg) & CPG_FRQCRB_KICK)
+ 		return -EBUSY;
+ 
+-	cpg_reg_modify(zclk->reg, zclk->mask, (32 - mult) << __ffs(zclk->mask));
++	cpg_reg_modify(zclk->reg, zclk->mask,
++		       field_prep(zclk->mask, 32 - mult));
+ 
+ 	/*
+ 	 * Set KICK bit in FRQCRB to update hardware setting and wait for
+diff --git a/drivers/clk/renesas/rcar-gen4-cpg.c b/drivers/clk/renesas/rcar-gen4-cpg.c
+index 31aa790fd003d45e..a63114a1d431968f 100644
+--- a/drivers/clk/renesas/rcar-gen4-cpg.c
++++ b/drivers/clk/renesas/rcar-gen4-cpg.c
+@@ -279,11 +279,7 @@ static unsigned long cpg_z_clk_recalc_rate(struct clk_hw *hw,
+ 					   unsigned long parent_rate)
+ {
+ 	struct cpg_z_clk *zclk = to_z_clk(hw);
+-	unsigned int mult;
+-	u32 val;
+-
+-	val = readl(zclk->reg) & zclk->mask;
+-	mult = 32 - (val >> __ffs(zclk->mask));
++	unsigned int mult = 32 - field_get(zclk->mask, readl(zclk->reg));
+ 
+ 	return DIV_ROUND_CLOSEST_ULL((u64)parent_rate * mult,
+ 				     32 * zclk->fixed_div);
+@@ -334,7 +330,8 @@ static int cpg_z_clk_set_rate(struct clk_hw *hw, unsigned long rate,
+ 	if (readl(zclk->kick_reg) & CPG_FRQCRB_KICK)
+ 		return -EBUSY;
+ 
+-	cpg_reg_modify(zclk->reg, zclk->mask, (32 - mult) << __ffs(zclk->mask));
++	cpg_reg_modify(zclk->reg, zclk->mask,
++		       field_prep(zclk->mask, 32 - mult));
+ 
+ 	/*
+ 	 * Set KICK bit in FRQCRB to update hardware setting and wait for
 -- 
-2.48.1
+2.43.0
 
