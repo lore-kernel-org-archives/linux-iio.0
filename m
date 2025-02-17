@@ -1,82 +1,84 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B6C4215766;
-	Mon, 17 Feb 2025 09:32:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A92A915C0
+	for <linux-iio@vger.kernel.org>; Mon, 17 Feb 2025 10:38:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739784746; cv=none; b=sXsQHKR5m+oFl0WzvrU9IEECysQeARqHtaU8ueHUGg3bCQlTXyJwvJEW3KvGwXtjdmOUO6H8ybcSAVupq0RCiZSBu5vs3XZbiOx3wmrVJfMl72QPqJF6ih1KsViE3n2+wVzvhvgNWfsgX606Q1DbbnRgGvBniJ0MbZBkHg/OgzU=
+	t=1739788693; cv=none; b=V9jeQ8UTauUIgsFQkcAI68awPA7YKdDbuf7nUBB3+clH9w2kLgQH8vO90MuZ53CUtIsY5aczm7+KFKNfHeriDxZLjLBQZYI9wpKswdAwKfgqw4bCfKM428bTqahLXEGER2b0LClFJunxhKo8gCIj6BOijNkBK/LkZeSFVDj5WdA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739784746; c=relaxed/simple;
-	bh=HUlJWNcvr8rqj8RDvx4vwOPQLHal/5LBmOUDIQw1ARI=;
+	s=arc-20240116; t=1739788693; c=relaxed/simple;
+	bh=7DH6yLD8v9Rv2jf9HhghW/fPK3EcFxEWh12/aqKQVE8=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=FdXlJ4iQ7R3WbM3XbtlBCc/9eDkLjgzC4BAMTDQ0bcT3nrailrePmU/pVZv6dyUH0PClmwhE0cra3/odnMKuP9bRhtVlTo2kPmjMrPf56cXmErPiWfP4HCm0fV7u2KKgUr23I+5IDCWh29IJpfAP08crGmmIskCBUDwcSZh/ki0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=P+6YlaKA; arc=none smtp.client-ip=209.85.218.44
+	 Content-Type:MIME-Version; b=Nj5FDIJRq3ejWt8PMMpdf1MEinVhSimqf5kPVbB9zGYErjfsDdl6Bq4hn7kTfI8f8lXniNX35ERJ2lPZyeAMSpjfYp2IFU0ZUIq3PpEypOSYyOh8dMaH8u8qh9h/rDHiVBszgrS8VhBu/0STUC2tRKsSuFUZSvaTwXt2eCs6LWs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GKFyYyfy; arc=none smtp.client-ip=209.85.208.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="P+6YlaKA"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-abb7a6ee2deso233735466b.0;
-        Mon, 17 Feb 2025 01:32:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GKFyYyfy"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-5df07041c24so3704533a12.0
+        for <linux-iio@vger.kernel.org>; Mon, 17 Feb 2025 02:38:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739784743; x=1740389543; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1739788689; x=1740393489; darn=vger.kernel.org;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=HUlJWNcvr8rqj8RDvx4vwOPQLHal/5LBmOUDIQw1ARI=;
-        b=P+6YlaKA4m7w9R9WGJCtrxZyZyxD6KQm0Q+RaEvoxzHLblzX/Vi4CfqL5RJJPy1c1w
-         T8qWAsueu8TTUcANT8ZrdaBu2x1xArfjrzkbtItfLLYOykpbrb52viAQlDYl0Ezb4rSH
-         vT7ye8/ljs9bkWAR0JcHigg6nJ2DmNkDf0fPK3STd1C1vGe3n8AMJUOPNL/nCyDRnRnn
-         wY9TClh873x7cnhqsJ/1ZuQyiZwa6RraU7T8HVzldtEEqPEaKIUcJf9wnzVSrM8UGi0s
-         cXh5n6CNTtrBfNfW+vEQthwLHWCvxDGVGmqcJrpDf38zY3OZjsN/cyaYwc71MgD+53bD
-         1IIA==
+        bh=JGfWsyGJFjqOoFXF5sHD7I08LcosBOpcKQVp17PrDmI=;
+        b=GKFyYyfya4CZasZJGbMND0g72ohpSlFUXSpsUZw4izFEuZ44Wsyprp7LYS+fYKTG+F
+         CzXb5ErQiMyBfhndI+ZeaIA9yUgslYSzXSSYu7xvfwi3OkYGqDBd1I/pcds/2iJ+LpzA
+         JaR59ej9L1ljdLuO6weL7wpxvJS2Vgy4tuy2r8bxvxIP9U5tTvDgKV+PLM5vDel6msqo
+         H8113o75IPdAsz1PeS/k+jknwIkoOxia0zEKGmnBJSVSfY4l39OtXgT0YGmpU2O6t4do
+         dM+UL2BclY1HfYWte9cKZEalfBCNqeemXHsuzNUCEzqKbOkoZDmaXUCvp+WIzA3t/8u8
+         LbkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739784743; x=1740389543;
+        d=1e100.net; s=20230601; t=1739788689; x=1740393489;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=HUlJWNcvr8rqj8RDvx4vwOPQLHal/5LBmOUDIQw1ARI=;
-        b=TZGRybqc72qKeq/+iByBBo40A+fuyGXo/D1T3Mylw6DHwmrwxQ3Fpi63pf5Vk/WZ5Q
-         nyuXS+1XIVoC9DD9kO16nIQA+9wMwfvjwYcF2HDZG8/briF82QzUYR4s9SvT/5AzzZ2P
-         9k9NJybQ7NO4N0vcRbylo6TSUom4MBZKPNgCkV6PEkyU16LRhyUNZJ/wQHG36x6DHxfq
-         yoeeXt70SMXQbWOeAfPYUWwYFC07OZlQ28jC25bDsZbzVMgE84HkR24o+6yAYQ7nrC7F
-         vWf2MNe8tzTbKT+IVnDZUY4UEiooKrvBCcbjNqJsQKc8ZyCq0Hz5mqft+B01VR+f++Ke
-         iqww==
-X-Forwarded-Encrypted: i=1; AJvYcCU1fJHsEBIOpUWol1zsX7F6vHRycaBN3H/kd1kZDGEclg71ZhkwFvj2Y0/KF2FoqjnFoRvrainLn3uV1A==@vger.kernel.org, AJvYcCUPCZsKDUhRaL8gTqg9+ktBKWTK+vqYF/+1YPOxwIix6CHj9thgWHm/I0b/50TvH2lTh5F5bmr3ojbf@vger.kernel.org, AJvYcCVBZeXYh9EEBGq6R7ShIiKmEeDrobBcAYqfCEc2fedAQPXxEJXZ3vAIUNHVCm72zLMoJ7a8r4aoY96W@vger.kernel.org, AJvYcCVRSV7tWx8Ek9U19f3sxBWU8yw+vW9/k7wZ1PdXqI5osEUnj0HHyuoJVknDqU02yO7WCo464lROlHhUcJ7Y@vger.kernel.org
-X-Gm-Message-State: AOJu0YxDVUNVxRZPDLmROoZl8e9eTJnNUgaqp+KOIzYWVF5PY4PJujuU
-	knbDx2fEo0+SWW3lCGRUA4AIY+HAEtmQyp5j3+XVbtvLIhqmsTVU6iMQi6FKucA=
-X-Gm-Gg: ASbGnctu12UTKP+zhgyKeCfstw7Et99f58aLuVVLxeJ6VhD4xxF2eVc4rv6EZ12/R+O
-	BLA1+258C9RnDrT9ZgQbTh5r4ebLilznq4DMUhDNJ255kr6OXv2j+tPkr5WA/nA09Rlko+gJ8Lv
-	iHmOwCLX+gH1/7GRYT72Kb8Ztdu7UXFijKRhSRowsA++soibTdvn03CDfJWzaE/9Anp4c5LxMWZ
-	9b3H3LdGHfFrI2uGFnfx8WRAsvIpZuBjwhTzSK7Os8g4gCniJhVbfPaBlQSLq91eGxyw+wT3ZEA
-	ebV2O06VgMZV1I9kpKHhDh5PnScZM9fIgGHzY6Ci3tO+SYRwrbbw6wgsZxQivX8=
-X-Google-Smtp-Source: AGHT+IFeH6Wktt/xfN2WBdLEobo9pLVyAWcoYAOXCOS3EAy5kk4fOKN+rE/Uo0oJPKzo/KUfKXgagQ==
-X-Received: by 2002:a17:906:57cc:b0:abb:9a1e:47cb with SMTP id a640c23a62f3a-abb9a1e4826mr281763866b.55.1739784742437;
-        Mon, 17 Feb 2025 01:32:22 -0800 (PST)
+        bh=JGfWsyGJFjqOoFXF5sHD7I08LcosBOpcKQVp17PrDmI=;
+        b=QqZ7n7qXZO1nL14zGZImecH1p42nZxCpjO0dRuFdAbvyhp/snt9GIRrMzyvIETiJL0
+         c0aD1H6CAVnhtXODQ7BeyQsSYU71J3I2UCkxAYktaBgO5vk181yi0tTt/Xnwwc6j+JEd
+         4f+aI7Pu49qcPgHNM2NaOAFdRy8RovegIP+iARFvORNVp5JGE2MW1TqPnnt8IOF9GATP
+         D8JGlgmJ+sRfFAHRMFLUnf3pyvPS0cSpE8EmP8fNL/faalR6ZrJatqk0bABytMFoARLF
+         b3ey3bq0RIr6ahrLfYhYreW+sijLZzGK91RC9V8/WzZ0BwYc7DDkPWQUN4K0YR/aTXVg
+         V3mA==
+X-Forwarded-Encrypted: i=1; AJvYcCW+vQprk+G3lAJgobgt02IwwtN2NUfckyEajIbFbx0Shh5Yqz/+YYyiyjcQZaJ9f2N2slQahqzaeKA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxzhNhKpSilcjEMmo+CmF0pRHsxk8T2qG9XZcAuDeaKwrHlu556
+	wsrQmCA5SV5jAwqNn9aPIr9/ETfvjB2QTKS8dQWd3ZwqN60v/R9I
+X-Gm-Gg: ASbGnct5FOJlI6xqC3cRDenJV9cllp9349eP0phVD8ckmO3ftsDFkIItcYv3IHH1nPt
+	kfUf4We/zFSSbypDp+Y/YPmZKRljzVPH13qxqm/8Yyisg+wSJAi/IcsplPKfZKI04Of0zNS5BCv
+	8mCVeeCQvbz7NDjshGbzK58M9esjWrqYUAVDbw/CVc8VTCp6k1sVaT+jj3znBbNDVgHdD2CMXyA
+	tu8i3+c2J0/HxUVFmvr79Q+BqG/+KLS7gw/AXRfzqc2WPTRzSVe27sOZxiZePGaZv1bT42U1Mnw
+	PEKeoJyv4XLi93YWk6NkjoBETii4d4hH7um+nj1SEaBrBMampWcDORhwAeyE8n8=
+X-Google-Smtp-Source: AGHT+IFFr0j3ZYgaZ7qY0oE4nBaXKXJva7liIBlBI2MgpMm/r63FBFN1UxsFfHGFjxGs/eHMIO7dSA==
+X-Received: by 2002:a05:6402:440d:b0:5d9:b84:a01f with SMTP id 4fb4d7f45d1cf-5e0360a6974mr8197717a12.18.1739788688692;
+        Mon, 17 Feb 2025 02:38:08 -0800 (PST)
 Received: from ?IPv6:2001:818:ea8e:7f00:2575:914:eedd:620e? ([2001:818:ea8e:7f00:2575:914:eedd:620e])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-abbae3512a6sm4128766b.179.2025.02.17.01.32.21
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5dece270cbcsm7369333a12.49.2025.02.17.02.38.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Feb 2025 01:32:21 -0800 (PST)
-Message-ID: <bf069d43ed76b68c91130233b264089c3f7b2514.camel@gmail.com>
-Subject: Re: [PATCH v2 2/2] gpio: gpio-adg1414: New driver
+        Mon, 17 Feb 2025 02:38:08 -0800 (PST)
+Message-ID: <c11d55efa6bb145aba7cd7141031b7aa45027a76.camel@gmail.com>
+Subject: Re: [PATCH v2 01/27] iio: core: Rework claim and release of direct
+ mode to work with sparse.
 From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: "Paller, Kim Seer" <KimSeer.Paller@analog.com>, Linus Walleij
-	 <linus.walleij@linaro.org>, Jonathan Cameron <jic23@kernel.org>
-Cc: Bartosz Golaszewski <brgl@bgdev.pl>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski	 <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>,  "linux-gpio@vger.kernel.org"	
- <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org"	
- <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org"	
- <linux-kernel@vger.kernel.org>, linux-iio <linux-iio@vger.kernel.org>,
- Peter Rosin <peda@axentia.se>
-Date: Mon, 17 Feb 2025 09:32:25 +0000
-In-Reply-To: <PH0PR03MB71419BE3FCE2DAE8AB72B79EF9FB2@PH0PR03MB7141.namprd03.prod.outlook.com>
-References: <20250213-for_upstream-v2-0-ec4eff3b3cd5@analog.com>
-	 <20250213-for_upstream-v2-2-ec4eff3b3cd5@analog.com>
-	 <CACRpkdZR8X17Bn-i2anqjxf0Gk60V175F7Xfwytkhy7_K+LsSA@mail.gmail.com>
-	 <880631da17a6d8ed4afe5a8c453fd4f7d0e4fca5.camel@gmail.com>
-	 <CACRpkda+CDRMYKmjw7kewenkteLhPYb040E4B=ZG6pgdy=65pg@mail.gmail.com>
-	 <PH0PR03MB71419BE3FCE2DAE8AB72B79EF9FB2@PH0PR03MB7141.namprd03.prod.outlook.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Mudit Sharma <muditsharma.info@gmail.com>, Julien Stephan	
+ <jstephan@baylibre.com>, Mariel Tinaco <Mariel.Tinaco@analog.com>, Angelo
+ Dureghello <adureghello@baylibre.com>, Gustavo Silva
+ <gustavograzs@gmail.com>, Nuno Sa	 <nuno.sa@analog.com>,
+ =?ISO-8859-1?Q?Jo=E3o?= Paulo =?ISO-8859-1?Q?Gon=E7alves?=	
+ <joao.goncalves@toradex.com>, ChiYuan Huang <cy_huang@richtek.com>, Ramona
+ Alexandra Nechita <ramona.nechita@analog.com>, Trevor Gamblin
+ <tgamblin@baylibre.com>, Guillaume Stols	 <gstols@baylibre.com>, David
+ Lechner <dlechner@baylibre.com>, Cosmin Tanislav	 <demonsingur@gmail.com>,
+ Marcelo Schmitt <marcelo.schmitt@analog.com>,  Gwendal Grignou
+ <gwendal@chromium.org>, Antoni Pokusinski <apokusinski01@gmail.com>, Tomasz
+ Duszynski	 <tomasz.duszynski@octakon.com>, Jonathan Cameron
+ <Jonathan.Cameron@huawei.com>
+Date: Mon, 17 Feb 2025 10:38:11 +0000
+In-Reply-To: <20250209180624.701140-2-jic23@kernel.org>
+References: <20250209180624.701140-1-jic23@kernel.org>
+	 <20250209180624.701140-2-jic23@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.54.3 
@@ -87,117 +89,91 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 
-On Mon, 2025-02-17 at 07:02 +0000, Paller, Kim Seer wrote:
+On Sun, 2025-02-09 at 18:05 +0000, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 >=20
+> Initial thought was to do something similar to __cond_lock()
 >=20
-> > -----Original Message-----
-> > From: Linus Walleij <linus.walleij@linaro.org>
-> > Sent: Saturday, February 15, 2025 7:22 AM
-> > To: Nuno S=C3=A1 <noname.nuno@gmail.com>; Jonathan Cameron
-> > <jic23@kernel.org>
-> > Cc: Paller, Kim Seer <KimSeer.Paller@analog.com>; Bartosz Golaszewski
-> > <brgl@bgdev.pl>; Rob Herring <robh@kernel.org>; Krzysztof Kozlowski
-> > <krzk+dt@kernel.org>; Conor Dooley <conor+dt@kernel.org>; linux-
-> > gpio@vger.kernel.org; devicetree@vger.kernel.org; linux-
-> > kernel@vger.kernel.org; linux-iio <linux-iio@vger.kernel.org>
-> > Subject: Re: [PATCH v2 2/2] gpio: gpio-adg1414: New driver
-> >=20
-> > [External]
-> >=20
-> > Let's check with Jonathan Cameron (IIO maintainer) on this as well.
-> > He might have ideas.
-> >=20
-> > For reference, the datasheet:
-> > https://www.analog.com/media/en/technical-documentation/data-
-> > sheets/adg1414.pdf
-> >=20
-> > (By the way: add the datasheet to a special Datasheet: tag in the
-> > commit please!)
-> >=20
-> > On Fri, Feb 14, 2025 at 2:17=E2=80=AFPM Nuno S=C3=A1 <noname.nuno@gmail=
-.com> wrote:
-> > > On Fri, 2025-02-14 at 00:25 +0100, Linus Walleij wrote:
-> >=20
-> > > > Now, the kernel does not have switch subsystem I think,
-> > > > so this is something like a special case, so we might be
-> > > > compelled to make an exception, if the users will all be in
-> > >=20
-> > > Exactly, since we could not find anything, the best fit seemed like t=
-he
-> > > gpio
-> > > subsystem. I was the one suggesting it since a new subsystem for a si=
-mple
-> > device
-> > > like this looked excessive. If we had more devices that would fit suc=
-h a
-> > > class
-> > > of devices, maybe it would make more sense to start thinking on such =
-a
-> > > subsystem?
-> > >=20
-> > > > say userspace and make use of this switch for factory lines
-> > > > or similar.
-> > >=20
-> > > Kim should know better again (about usecases) but I would also assume=
- this
-> > is
-> > > for userspace use.
-> >=20
-> > Actually the GPIO documentation Documentation/driver-api/gpio/using-
-> > gpio.rst
-> > even talks about this for userspace use cases:
-> >=20
-> > "The userspace ABI is intended for one-off deployments. Examples are
-> > prototypes,
-> > factory lines, maker community projects, workshop specimen, production
-> > tools,
-> > industrial automation, PLC-type use cases, door controllers, in short a
-> > piece
-> > of specialized equipment that is not produced by the numbers, requiring
-> > operators to have a deep knowledge of the equipment and knows about the
-> > software-hardware interface to be set up. They should not have a natura=
-l fit
-> > to any existing kernel subsystem and not be a good fit for an operating
-> > system,
-> > because of not being reusable or abstract enough, or involving a lot of=
- non
-> > computer hardware related policy."
-> >=20
-> > If this is the usecase, like controlling an external switch for such th=
-ings,
-> > using the GPIO subsystem might actually be reasonable in my opinion,
-> > (even if the DT bindings end up in their own category).
-> >=20
-> > If the switches control stuff related to computer machinery (i.e. integ=
-rated
-> > into a laptop to switch on/off the fans...) then no. So it depends on h=
-ow
-> > and where it will be used.
+> 	do_iio_device_claim_direct_mode(iio_dev) ? : ({ __acquire(iio_dev);
+> 0; })
+> + Appropriate static inline iio_device_release_direct_mode()
 >=20
-> In my case, this is a userspace use case. The ADG1414 was used to control=
- the
-> ADMFM2000 Microwave Downconverter device. According to the ADMFM2000
-> datasheet, it requires control over 14 digital pins, which can be set hig=
-h or
-> low [1].
-> While these pins could be directly controlled using GPIO, the evaluation =
-board
-> for
-> the ADMFM2000 is designed to use the ADG1414 switch for this purpose [2].
-> ADG1414 is an SPI controlled switch that allows switching of these digita=
-l
-> control lines.
+> However with that, sparse generates false positives. E.g.
 >=20
+> drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c:1811:17: warning: context
+> imbalance in 'st_lsm6dsx_read_raw' - unexpected unlock
+>=20
+> So instead, this patch rethinks the return type and makes it more
+> 'conditional lock like' (which is part of what is going on under the hood
+> anyway) and return a boolean - true for successfully acquired, false for
+> did not acquire.
+>=20
+> To allow a migration path given the rework is now non trivial, take a lea=
+f
+> out of the naming of the conditional guard we currently have for IIO
+> device direct mode and drop the _mode postfix from the new functions givi=
+ng
+> iio_device_claim_direct() and iio_device_release_direct()
+>=20
+> Whilst the kernel supports __cond_acquires() upstream sparse does not
+> yet do so.=C2=A0 Hence rely on sparse expanding a static inline wrapper
+> to explicitly see whether __acquire() is called.
+>=20
+> Note that even with the solution here, sparse sometimes gives false
+> positives. However in the few cases seen they were complex code
+> structures that benefited from simplification anyway.
+>=20
+> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> ---
+> v2: include linux/compiler_types.h (David)
 
-AFAICT the mux subsystem does not have any userspace so it would already no=
-t fit
-the above usecase. We could add a simple setter sysfs interface if Peter th=
-inks
-this belongs to the mux subsystem...
+UhU, I'm not seeing it?
 
-Let's see what Peter has to say about this.
+> ---
 
-What about misc devices? I mean, if there's no agreement...=20
+With the above,
 
-- Nuno S=C3=A1
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
+
+> =C2=A0include/linux/iio/iio.h | 25 +++++++++++++++++++++++++
+> =C2=A01 file changed, 25 insertions(+)
+>=20
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 56161e02f002..fe33835b19cf 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -662,6 +662,31 @@ int iio_push_event(struct iio_dev *indio_dev, u64
+> ev_code, s64 timestamp);
+> =C2=A0int iio_device_claim_direct_mode(struct iio_dev *indio_dev);
+> =C2=A0void iio_device_release_direct_mode(struct iio_dev *indio_dev);
+> =C2=A0
+> +/*
+> + * Helper functions that allow claim and release of direct mode
+> + * in a fashion that doesn't generate many false positives from sparse.
+> + * Note this must remain static inline in the header so that sparse
+> + * can see the __acquire() marking. Revisit when sparse supports
+> + * __cond_acquires()
+> + */
+> +static inline bool iio_device_claim_direct(struct iio_dev *indio_dev)
+> +{
+> +	int ret =3D iio_device_claim_direct_mode(indio_dev);
+> +
+> +	if (ret)
+> +		return false;
+> +
+> +	__acquire(iio_dev);
+> +
+> +	return true;
+> +}
+> +
+> +static inline void iio_device_release_direct(struct iio_dev *indio_dev)
+> +{
+> +	iio_device_release_direct_mode(indio_dev);
+> +	__release(indio_dev);
+> +}
+> +
+> =C2=A0/*
+> =C2=A0 * This autocleanup logic is normally used via
+> =C2=A0 * iio_device_claim_direct_scoped().
 
