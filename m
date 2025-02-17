@@ -1,64 +1,64 @@
 Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C8D91487D5;
-	Mon, 17 Feb 2025 06:29:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59BC518C33B;
+	Mon, 17 Feb 2025 07:08:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739773774; cv=none; b=JR/p0PvHKCTDLW90o8xDt7+6WFQXfnvrNQQXyZy2hMiC5ctinNZxZ5sdjcSBJjvftZONjqAVv/ZaL7sWoZymAAOMe8xuncQZReBh5W1YaP5nL/idukh8WtL1hR58QxfJeMISsncx55fREb1cKfREra9jHa58wN4Z6kye5hUi7SM=
+	t=1739776140; cv=none; b=FfasQOZUzE69lIFH/u8ZZsas8R5LRWod61Hr7P7WFYim67GTHg23gu5Hiha9FoAqmjwSKtj0VofNwF+MpDocoxHtdCY2qAcKLX6tEU5zISdBiZgVXXJwZqKf04NMN3CSSsMpRh7wuewBcgdRZKxK43zJwNp1Zdi5sJqRQhBZfbM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739773774; c=relaxed/simple;
-	bh=XdZq5Ziq11aG3YCD76Vd1zofs0JWom9sk4cDMmcU7KI=;
+	s=arc-20240116; t=1739776140; c=relaxed/simple;
+	bh=TIaLHfraef5v7lrUC7vTH4c6nnspd2dBgVOKfBQ9ud8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jIKLVKNzDBUW/hf8VnIAWWKIPItF4wPwvsdq0sHYD0uozRKWTyrcQZCUu6YFojGyESBG3oE7otbI1957TicBcqUP/qQUyMGXvOJqj6RlZ141bE9ZuC2qUi5b2tjgcJG+3bwKkb21Hg+MNdjnkdjYRcB3k261HyYjhhyUlhsB+Ps=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZTplb62L; arc=none smtp.client-ip=209.85.208.173
+	 In-Reply-To:Content-Type; b=Thw226FHZR3ewcxeHrCXB4MgEnf+m7oZ/jQfJMEY4+zxkRI5iaqL9URcJiAnAYCZACvK+b4J8U4HmOb1z1pYT5WzrM1sL7YsDB+auoRassQ7qieqYnKNY2PdSkQe+KRZCX90OfEDBRmTxVdsIgyi3nARTxqhvLjPUcseNdYHHsU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=huhWcwDq; arc=none smtp.client-ip=209.85.208.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZTplb62L"
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-30a2d4b61e4so5651431fa.1;
-        Sun, 16 Feb 2025 22:29:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="huhWcwDq"
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-309311e7b39so14477371fa.2;
+        Sun, 16 Feb 2025 23:08:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739773770; x=1740378570; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1739776136; x=1740380936; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=x1hNOOWWhSi22yPi2hiYSqeMnElfD+H2p8Kr9X9dF2Y=;
-        b=ZTplb62L+9dKYZ2oZDJK44c2rheofjVffxlGFs92/r9LF1IFB1EftFpdjxWqXfeJzJ
-         dTyG8q6hRHaS7hUS2fgzyfrgKL+NRDRug6NF+Jx5sa0in9Nn8L6ipFwZqVGewqFmgDLM
-         EjGC0rqXq0BgBwGzeY5gmk0OcsNFHk/54UzKRMaNpEDq4eZ1oVqjdcV7cwr5nt4nwak4
-         mzV6mAYE2OfY8H/Pte8b/TcR8f7BLJSFU/m/5vvMUnon4VnC95ydKrzd7a1tl+EktdWa
-         ebw0gBwtccsLPV3ejAL9OM1jwDR8k9E3EZYInPvWChVmP2whEpjw03K+GTPgUqWgtgq5
-         aDFQ==
+        bh=4alR9jTjsGdGSAcz4k2e3lKB3D23SrVBvx805wKurZo=;
+        b=huhWcwDqzN9JQpPfSH3HKFfJj8D2722bcGmIUoAFbdYpMVvRJ7mj931V01uPu1Gerd
+         Lc3RuglewXfUUqFBT9UURdExVwLIEwzV3fBoaQfebcA+nY1MdwOOM8tMh76vyxrZup9K
+         yN3SMW+GsmMwsNwpJ0l5JIlPyYNv7QRDWaa0Mgv8nZS/b7ZqAuTqgGTNd6XyQw56A7/d
+         hidTY59tiPnPlhhdT3OgDTDrQ2UM1JNHJ0E94Emg7wQ09YswBM7MucYvqGjqEDVCR8q8
+         HMIx48Zvt1P9W5TDjuOvfLEkeYB0/65Sh7YZl3ODnIXDbVRhLDwQGFC/GT0OPQQ2PhkU
+         ZqWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739773770; x=1740378570;
+        d=1e100.net; s=20230601; t=1739776136; x=1740380936;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=x1hNOOWWhSi22yPi2hiYSqeMnElfD+H2p8Kr9X9dF2Y=;
-        b=G5ak2ARagH6BosTWeRtQvxA0LKDw5108bsfpSZJen+OjBs3p2ShBIeVCIcBTemoLpT
-         7Uzv07MSJ8OnV4fU4UFYKJOkNQ20/u0iTtxxmlFjH1qNrwoFFbFNjBmAa2jQR3ngLeio
-         3ML4qFR/NNozuOkWGLsIQ1fbYRrTKc9k5Om6UbXvJFkUm6Gz5V4HQiLt2v9+bmrCyuxO
-         XzGVQpGgFys9kb6/XO3xqKZCFjBPoodTKacdo1ZJ9QZMi0wDkHdbAo2WaGhhWS8yirmB
-         5d1KzPlOuSDkixTU50unRqZNuJ4AYWC1OSn3bMALLFOpfkaW4waXHxaJZD6TyAkoBZa3
-         IO7Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUC+8qa1uvOROIDriRMWY8gOnINzVnxbHy34rzk54NLkgITXLQzM+M9YwlV0e1C/IFvtOJ749Ktyj2S@vger.kernel.org, AJvYcCX/Fdfq5c1txF+NReCctzpH/yxBWzs1g9AOd0kefXCHiYIrl5DmElammWb2ZOcNIkP9xHJkDr1zQ0vj@vger.kernel.org, AJvYcCXuwpCtdetzlfxb+eiGvhZ/ThKhLVf0UDUKqoyKdRVQXKwnxepVuWguMuJ3NCBkYYfE3jxnxDzbvjWx9NUa@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxw7o/rLoAxQ/I+E//ZJE5f3wgJOeAxznbtTW7Mne3z9nauGDsl
-	M79fMNcQkdBoeKT64YZdhq/qI/mvN7TR9IPf+CufhiOKtmh9FMbdHlmoHA==
-X-Gm-Gg: ASbGnctna/t7VRP1u0bQxFAe0PmfXWRme1L44Yd/+m7L61iixQl2rTnpQEigAuf478D
-	Kkh/PnfhOXbJjUlf451J8kHSfRNt8fFx7Pn4mv8tsWuW/nxOFrf4RhqeTogQGff7LJFoii3nrH+
-	7brO1ZNO9KwS28Xqx23l7mamEVc7I5e3v6R7a41Oiq16Usyb7B2GzWVXZrzD734a9mFRkBNSsmP
-	U2SongpPkqSGR2KzRzWLkUyUMSV1/aAoQOsLsXkrQcMzygTiUKotGCITUDYZr/jQUFq3cJYtgU6
-	YxUzNbnaHxvb3+GfT6vYNZ8WS4dF15pFKZ/ehBzMc/7g0/MzTfwza9alH7TNiBk97qlCpbzp
-X-Google-Smtp-Source: AGHT+IFQKTGdWtSAsRG8nQIAukWvEvvnDY2qSSWTlS2pz9stc65dYnhOKr8ja4FMF1UEngVoNCQnhw==
-X-Received: by 2002:a2e:9853:0:b0:309:277e:8c75 with SMTP id 38308e7fff4ca-30927a471bdmr19560741fa.12.1739773769754;
-        Sun, 16 Feb 2025 22:29:29 -0800 (PST)
+        bh=4alR9jTjsGdGSAcz4k2e3lKB3D23SrVBvx805wKurZo=;
+        b=VSRuPh2AlQRj55fu5oB8kNcvtaCZJcVhNHVKF0R/keUzNoSiFoWh8G97SX8TQABJEI
+         u7S/44NiUbg58wizAhu5EhbwgZ7NJlJGK7aWR/IswrUIOJ7GVpTKArxMDZf10hG0brKl
+         fQj+t0fwxLBSre+uzwgpfp0EU3nIryDIxAA/ePm0uTEDFR7VX8A/Al0RHoPHLTRZu04R
+         KaRV+QlH+Q1fULTmQdwGg1IkmjyUZlc0cjQi4jXEpWGJzIsUHD4E+1ig9OMe5pA5DRhf
+         J3MUxa90rj4MyOlqKqZsFMRoMOGV/4UBW0ZtTBAyxcvv55P7GkkOY0VF5OlcrwhzQbYo
+         I0gg==
+X-Forwarded-Encrypted: i=1; AJvYcCU3CXhTsWohgkcRWB7C2k5Vys1S7yoSkBXShxcp+ruhvU2xDhpaQadqzYBjE8/CL54bu9+LC5eon8jdr1J7@vger.kernel.org, AJvYcCUn/YfSkr8KV1nhwyv1/RhpRh8e1nVZmz3tHKdov/uBHm0pz2j8Xm623aq4HxWs/EVZ7qpdPlJHESOG@vger.kernel.org, AJvYcCXM/3YWUB4SR/uTGMp8J8DfmtdlOljMx756YW/wuviPZRZf/XrpqSC07cJUjnlK3puoDP5QY3WlN/nj@vger.kernel.org
+X-Gm-Message-State: AOJu0YxpzP9qOktiQ2KtYrmOEyGq+UmxKOLK2mPCrin3JHTWn/hn5oVP
+	OOlLWyKYY8ssBoPgib0/xFSpbz4ya15pZ5GaHxdzecXHYUIY6c+L9iWOmA==
+X-Gm-Gg: ASbGncuRdlBht9aJLmXNLs7InnEI5+7jcTFqxyH15PiH1s2XoR5HZDIdoHjEPR2jNvC
+	A6I0Z7Pr1GKiujhE2DnLPJj9q5xOiDBSlrJLskzhuQBlW+d+rlheHE8NtOGf9cMjMJ6L+t+3XLl
+	xeJ2u6/JuKwCxQqveVh0yAY78A5pSIAMVFds5AfMFI7GyzTPKHDp9QD4HJLxiTHKLpECcPbB1Xp
+	uYC54P9w4uTqxAWEZ6EtCOwvTJ2g1jhDToMKqHAT5jecfZ9pxvun6RXHcserZPPijWMDu9h20va
+	MUWbhAbGcj2NrsT+9N9ssjuhZtQfE+U2gdqhRS47M5sSuUODo9ePADeK4ijNKLR/2+MmDibG
+X-Google-Smtp-Source: AGHT+IFgezEO09iFpVK/dt0sEVIkF8nUioSGzkMyj5imKGMIO75UpW1jej2OEUPMhzHh6rCLIfJIjQ==
+X-Received: by 2002:a19:8c4e:0:b0:545:5be:a6b5 with SMTP id 2adb3069b0e04-5452fea6145mr2388706e87.49.1739776136039;
+        Sun, 16 Feb 2025 23:08:56 -0800 (PST)
 Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-309100eaf3csm15726041fa.39.2025.02.16.22.29.26
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-545315629c8sm786592e87.223.2025.02.16.23.08.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 16 Feb 2025 22:29:27 -0800 (PST)
-Message-ID: <26907711-45af-467b-89c1-8895ae3a7ab8@gmail.com>
-Date: Mon, 17 Feb 2025 08:29:25 +0200
+        Sun, 16 Feb 2025 23:08:54 -0800 (PST)
+Message-ID: <28b9dda3-6fb6-49b5-90bd-716eb35a3104@gmail.com>
+Date: Mon, 17 Feb 2025 09:08:51 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,147 +67,137 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2 2/5] iio: adc: add helpers for parsing ADC nodes
-To: David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
 Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
  Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, Nuno Sa <nuno.sa@analog.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
+ David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <cover.1738761899.git.mazziesaccount@gmail.com>
  <337895af7418a8e4b20b5a9322344b68082508ae.1738761899.git.mazziesaccount@gmail.com>
  <20250208164111.28ec9f2d@jic23-huawei>
  <ed0e43d8-9ab4-4614-9079-8a592ca8b185@gmail.com>
  <20250211190714.4db240d2@jic23-huawei>
- <dbbeb52c-18f4-415a-b2d4-520dd0184dda@baylibre.com>
 Content-Language: en-US, en-AU, en-GB, en-BW
 From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <dbbeb52c-18f4-415a-b2d4-520dd0184dda@baylibre.com>
+In-Reply-To: <20250211190714.4db240d2@jic23-huawei>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi David!
-
-Thanks for the input!
-
-On 16/02/2025 19:50, David Lechner wrote:
-> On 2/11/25 1:07 PM, Jonathan Cameron wrote:
->> On Tue, 11 Feb 2025 10:52:51 +0200
->> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+On 11/02/2025 21:07, Jonathan Cameron wrote:
+> On Tue, 11 Feb 2025 10:52:51 +0200
+> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+> 
+>> Hi Jonathan,
 >>
->>> Hi Jonathan,
->>>
->>> Thanks for the review and all the comments!
->>>
->>> Just a note that I am currently spending some quality time with
->>> rebuilding the floor of my house. Leaking floor drain can cause a bit of
->>> a work... :rolleyes: So, my time with upstream work is a bit limited -
->>> although writing an occasional bug or two can help one to keep the
->>> balance ;)
->>>
->>> Anyways, my replies and new versions may be slower than usual..
->>>
->>> On 08/02/2025 18:41, Jonathan Cameron wrote:
->>>> On Wed, 5 Feb 2025 15:34:51 +0200
->>>> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
->>>>    
->>>>> There are ADC ICs which may have some of the AIN pins usable for other
->>>>> functions. These ICs may have some of the AIN pins wired so that they
->>>>> should not be used for ADC.
->>>>>
->>>>> (Preferred?) way for marking pins which can be used as ADC inputs is to
->>>>> add corresponding channels@N nodes in the device tree as described in
->>>>> the ADC binding yaml.
->>>>>
->>>>> Add couple of helper functions which can be used to retrieve the channel
->>>>> information from the device node.
->>>>>
->>>>> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
->>>>>
->>>>> ---
->>>>> Revision history:
->>>>> RFC v1 => v2:
->>>>>    - New patch
->>>>>
->>>>> I think it might be nice to have helpers for fetching also the other
->>>>> generic (non vendor specific) ADC properties (as listed in the
->>>>> Documentation/devicetree/bindings/iio/adc/adc.yaml) - but as I don't
->>>>> have use for those in BD79124 driver (at least not for now), I don't
->>>>> imnplement them yet. Anyways, this commit creates a place for such
->>>>> helpers.
->>>>
->>>> There is often a mix of vendor specific and not in channel nodes.
->>>> Hence I'm not sure how widely this will be and it is driver
->>>> specific which of the standard things make sense.
->>>
->>> I definitely agree. Still, in my experience, no written standard
->>> standardizes use as well as written helpers ;) More we support parsing
->>> the generic helpers by the (add subsystem here)-core, more the driver
->>> writes will use the generic properties (instead of brewing vendor
->>> specific ones).
->>>
->>>> So before I'd consider a helper like this I'd want to see it alongside
->>>> a bunch of users including some of the complex ones so that we know
->>>> it generalizes well enough.  It doesn't make sense to introduce
->>>> it otherwise - just keep the code in the specific drivers instead.
->>>>
->>>> It's an interesting idea, but not a trivial one :)
->>>
->>> I agree it's not trivial. But I believe adding helpers one-by-one to
->>> cover 'normal' use-cases guide the use of the properties. Those who need
->>> something more exotic can always implement their custom handlers - and
->>> then a reviewer of such handler can ask "why" ;)
->> I'd be fine with a series taking on the task of converting handling of
->> all the documented properties in adc.yaml
+>> Thanks for the review and all the comments!
 >>
->> If we do less than that it may never get wide adoption and we end
->> up with a bit of generic looking infrastructure that isn't generic.
+>> Just a note that I am currently spending some quality time with
+>> rebuilding the floor of my house. Leaking floor drain can cause a bit of
+>> a work... :rolleyes: So, my time with upstream work is a bit limited -
+>> although writing an occasional bug or two can help one to keep the
+>> balance ;)
+
+The good thing when doing manual labour is that one can run thinking 
+processes at the background - and has no time to reply instantly. XD So, 
+I've been thinking about this quite a bit while installing new floor...
+
+...
+
 >>
-> Having reviewed quite a few patches recently that make use of these
-> generic channel properties (and writing one driver myself), I don't
-> really see how we could make generic functions for these that would
-> be any simpler than calling the fwnode_property functions directly
-> other than maybe saving a few arguments.
+>> Right, thanks.
+>>
+>>>> +			u32 ch;
+>>>> +
+>>>> +			ret = fwnode_property_read_u32(child, "reg", &ch);
+>>>> +			if (ret)
+>>>> +				return ret;
+>>>
+>>> In general the association between reg and channel is more complex.
+>>> We need to deal with a reasonable subset of cases (single-channel, diff-channels
+>>> etc) where it isn't the case that chan == chan->channel.
+>>
+>> I guess this is right. I, however, lacked of knowledge on how the
+>> differential channels etc. are handled :) Hence I just implemented what
+>> I believe is "the most common" approach, while leaving the rest to be
+>> implemented by those who need it.
+>>
+>> Still, I agree that a generic looking API which silently produces bad
+>> results for a few of the use-cases is not nice. By the very minimum we
+>> should check if single-channel, diff-channels properties are present,
+>> and then error out with a warning print. That should give a good hint
+>> for those driver writers who are trying to use API for something
+>> unsupported.
+>>
+>> Also, restrictions should be mentioned in the documentation.
+>>
+>> Do you think we should use some more specific function naming, like
+>> "_simple" - suffix?
+> 
+> No to _simple. I think this needs to handle those cases before we
+> take it at all  They should all have enough docs in adc.yaml to
+> work out what happens.
+> 
 
-I started this for the BD79124 - which is very simple ADC. What it 
-requires from the devicetree is the channel ID. What needs to be done in 
-oreder to get it?
+I am thinking it would be conceptually better to provide small helper 
+(like the *_simpe() ) - which handled only specific properties. We can 
+additionally provide '*_differential()' helper and potentially some 
+'*_full()' helper which covers both cases.
 
-1. Locate the ADC node (device-node)
-2. Loop through the sub-nodes and identify subnodes that denote
-    channels.
-3. Get the channel number (in this case from the reg-property).
+Rationale is that:
+  - writing _simple() helper is simpler. So is understanding it.
+  - Devices may not support differential inputs. Drivers for those
+   devices would want to call helper which does not accept the
+   'differential' channel config. Parsing the differential channel
+   information successfully and filling it in iio_chan_spec would be an
+   error for those drivers.
 
-I assume this is very usual need for the simple ADC drivers, and none of 
-this needs to be hardware specific (when we have simple input channels 
-(no need for the differential channel support).
+> The most complex cases are all Analog Devices parts and those
+> folk are very active on linux-iio so it should be easy to get
+> them to review a series using it.
+> 
+> I don't think it is going to be particularly hard to generalise
+> this.
+> 
+> We may end up with a variant that takes a 'per channel' callback
+> to fill in more data + a private pointer of some type as often
+> those are putting data in a parallel array of extra info about
+> the channels.  Let's see what it looks like.
 
-Providing a simple helper doing just this should remove code duplication 
-from drivers. Furthermore, this could help standardize the mechanism for 
-identifying the channel nodes - in my patch this would require channel 
-node to be named channel@<N>. (I see some drivers which don't require 
-this but just assume any sub-node is for channel information. This works 
-badly with chips which may provide multiple functions and thus I think 
-it'd be nice to guide towards naming the nodes to channel@N when possible).
+I was playing with this thought for a bit. I do love the regulator 
+framework's '.of_parse_cp' which the driver can fill in the regulator 
+desc. It's a pointer to function which is called by a regulator core 
+after it locates the regulator node so the driver can handle regulator 
+specific properties and do relevant configs in the registers.
 
-> The "normal" operation for
-> these properties usually involves poking some registers on the chip
-> (could be immediately or deferred) to configure it. So the only thing
-> we could generalize is reading the property value, but not doing
-> anything with that information.
+I some sense the use case is similar - PMICs usually contain multiple 
+regulators, each having own node. Being able to 'offload' locating the 
+node to the regulator-core is often very handy for drivers.
 
-Absolutely. I had no intention to do anything hardware specific with 
-these helpers. What I'd love to see is IIO-helpers which allowed passing 
-device pointer and a pointer to iio_info - and getting the (known by the 
-helper) device-tree properties parsed and filled in iio_info.
+I thought we could maybe add .fwnode_parse_chan_cp field in the iio_info 
+structure. Idea being that it'd be a function which would be called for 
+each channel - and it would probably be useful on other areas in IIO 
+besides the ADCs.
 
-This sure does not help more complex drivers which require some 'not 
-easily parsed' data from the device tree. But for simple drivers like 
-the BD79124 this would allow drivers to omit open-coding the loop 
-locating the channel nodes and getting the channel data.
+Problem is that the number of channels may not be known prior parsing 
+the device-tree. So, here is kind of a chicken-egg problem with 
+populating the iio_chan_spec. Furthermore, locating the channel node in 
+device-tree may not be 'standard enough' throughout all the different 
+IIO areas.
 
-Maybe a small improvement but one can't deny it still is an improvement, 
-right? :)
+What comes to a devicetree parsing helper which takes a pointer to a 
+device specific configuration function as argument - my initial feeling 
+is that it might get a bit overly complex to be user-friendly.
+
+Hence, I'd keep this simple and provided small-but-usefull _simple() ;)
+
+Well, if others aren't convinced by the usefulness of these helpers - 
+then I'll probably just squash it into bd79124 driver and be done with 
+this :) Later if I work for another ADC variant I might export it as 
+'rohm_adc_helper' with an internal to IIO header :)
+
+Thanks for the opinions / discussion!
 
 Yours,
   -- Matti
