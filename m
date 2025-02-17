@@ -1,72 +1,75 @@
 Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA6BD193084;
-	Mon, 17 Feb 2025 13:00:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76A5E21CC66;
+	Mon, 17 Feb 2025 13:00:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739797204; cv=none; b=RpWueGetBZKaDYDAH5S1N7UNHCeo9K27XLllSuUovTzwAWGMO81XGhnxrr5h5a87UmGbx3Ks2pim/29uK9/qcN6/6SBt5yqxBMusfFz+gC0fQWHH0+XqEtLMRFm6BPlNdjqc9JSNuD//7wJZ3L1uMbW8SE03tcp38ppZLYg71fI=
+	t=1739797207; cv=none; b=QNvIpjVCqNIQfosLcbNzS/jtYtxMTlM1QBeD25CHeZnCCBzIgOG09tL6iMBEChPZupLb92Hnxg8xW7IIiILRCCFcLG8IKtTItkuv3irsKfz0A3OtyjjyHQkfNn3tALuxMnO+TjXK8J8kEftJ5wvYhoF+eRwhYeJOlYEsaQLzkPo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739797204; c=relaxed/simple;
-	bh=Wi7Q09nZbP6PYA0nN4MtoKjYck5Qwpzr7AVv6cjpUHQ=;
+	s=arc-20240116; t=1739797207; c=relaxed/simple;
+	bh=qWYa56j81PapM+W3sJByggw7dVQxAocdRIDTuP9lB6s=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SI60Q6j/+p5LwPsDrczheoSvr3JkpUHFNUHdKeNlE41CNWgp+vRD2SL4C0kpRifrRJ8KIL1KGBs81WNYsBYMVoTTJM8NoGyuXh+OThT2vFXIvuVi3buZylaCP/Zf6irGzTz4zjunwO+mIEWnWe5rfPNQIJRqotqPQIXRRoQ10mw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=zQYBJu5P; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=t6LIvDEKXrizy1gEzeIZRePeIMtc329JhxXp/ByD9/SCIBscAnwCA4ZLtUS4QNoigwWBd5ZFwQB+Sf6tcY5YOhCWhnyhl/dDOeTdQ7/LUpxvpGJBAHT9zIAsSxTyp8YBaGGlB+P5FpIvCgq7NjwAElZohr38yC6x7F8y2IhrvW4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=nWDYpXBT; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="zQYBJu5P"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="nWDYpXBT"
 Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51HA09QX030186;
-	Mon, 17 Feb 2025 07:59:49 -0500
+	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51HA0BUl030453;
+	Mon, 17 Feb 2025 07:59:51 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
 	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=V9oEi
-	2wPDZQA3mIZnW6sbgrARZGGTxNCALa1ROcrweo=; b=zQYBJu5PFoLivWAIomsHJ
-	FvECxVsQC7w8N4bwNojyv9h592MYSYB5q2m710qx+/vBNHm5/+/ygPOy4RBf6we4
-	6pntanxL/r0Rroq6RrdXHpNqRQckAXLwrs03UuzOs/zaPn/22gAoG6tJLjPpMW1o
-	UIr8P44rGAgJ8Y6KyxScOexAkOJqejCzzORDD+0XbMF/xJq14OAPXW1RnAzMi66y
-	wZXSMhxIf99Xtlv4N8W887XTjux/lytcY6sDnHzRxcODdsyXT/jaFAM5V+jbBJgq
-	iavoii6/B3qb+q53Xxp6RX5nc4Wb9XKLFgrlwQlxu7AccJIb5dkL1aplA16F5EGa
-	Q==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=L9PTr
+	+1roj+D+Erg0keQlhYs0MbvahNvDQBA1aMhnYk=; b=nWDYpXBTjMeLEzNCmdFln
+	+ESjeHXEG/AwulG46nid/YKYm183gpXxwvVWf/tGjdoL9BcCxGvqNVwXvzD71fkf
+	JGTVOYa7ZtoObTlzJ6nn9AfN2PCKGLa0qJbAI1mA6+9grUU/YNcUrrVFSnDXgfXc
+	vEQhbG0KhGRE3bmGkdBcQxeXFbGaLIwjafh6VtGGVXPSHSYHe+IJUraDExyisQF+
+	vi9CI8KDUOcfy1PkDGVQriVt1lVAZIASmPDy6eLPcMbS/P8ugzvuFFtnTMcAkgJs
+	bDCd+UZzvaEE6nHvd3TK9mQ4UVPRmUaHsZn5FifRVdsKrqXtAkt+vtW0J6WESdQj
+	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 44v2ysrkv7-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 44v2ysrkvb-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
 	Mon, 17 Feb 2025 07:59:49 -0500 (EST)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 51HCxQKb012194
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 51HCxZ9m012203
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 17 Feb 2025 07:59:26 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 17 Feb
- 2025 07:59:26 -0500
+	Mon, 17 Feb 2025 07:59:35 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 17 Feb 2025 07:59:35 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 17 Feb 2025 07:59:34 -0500
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 17 Feb 2025 07:59:26 -0500
+ Transport; Mon, 17 Feb 2025 07:59:34 -0500
 Received: from desktop-robi.ad.analog.com ([10.48.65.85])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 51HCx3Es018359;
-	Mon, 17 Feb 2025 07:59:20 -0500
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 51HCx3Eu018359;
+	Mon, 17 Feb 2025 07:59:30 -0500
 From: Robert Budai <robert.budai@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Nuno Sa <nuno.sa@analog.com>,
-        Ramona
- Gradinariu <ramona.gradinariu@analog.com>,
-        Antoniu Miclaus
-	<antoniu.miclaus@analog.com>,
+To: Nuno Sa <nuno.sa@analog.com>,
+        Ramona Gradinariu
+	<ramona.gradinariu@analog.com>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
         Robert Budai <robert.budai@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof
- Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>, Jonathan
- Corbet <corbet@lwn.net>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron
+	<jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet
+	<corbet@lwn.net>,
         <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>
-Subject: [RESEND PATCH v8 2/6] iio: imu: adis: Add reset to custom ops
-Date: Mon, 17 Feb 2025 12:57:46 +0200
-Message-ID: <20250217105753.605465-3-robert.budai@analog.com>
+Subject: [RESEND PATCH v8 4/6] dt-bindings: iio: Add adis16550 bindings
+Date: Mon, 17 Feb 2025 12:57:48 +0200
+Message-ID: <20250217105753.605465-5-robert.budai@analog.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20250217105753.605465-1-robert.budai@analog.com>
 References: <20250217105753.605465-1-robert.budai@analog.com>
@@ -76,13 +79,13 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: tFWPH5jvI_XYbKZS3Bans5-DX6wacr4U
-X-Proofpoint-ORIG-GUID: tFWPH5jvI_XYbKZS3Bans5-DX6wacr4U
-X-Authority-Analysis: v=2.4 cv=ELj800ZC c=1 sm=1 tr=0 ts=67b332c5 cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=IkcTkHD0fZMA:10 a=T2h4t0Lz3GQA:10 a=gAnH3GRIAAAA:8 a=65Jcde3H-U0EgxZAQXYA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=Lq0aAXxcDe89wZWtTDul:22 a=oVHKYsEdi7-vN-J5QA_j:22
+X-Proofpoint-GUID: Y59p4kAWp3k7B5v_fxY466BT0Pi73oMx
+X-Proofpoint-ORIG-GUID: Y59p4kAWp3k7B5v_fxY466BT0Pi73oMx
+X-Authority-Analysis: v=2.4 cv=ELj800ZC c=1 sm=1 tr=0 ts=67b332c6 cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=T2h4t0Lz3GQA:10 a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8 a=R49muxxXEzkXWbzaYJUA:9 a=sptkURWiP4Gy88Gu7hUp:22
+ a=oVHKYsEdi7-vN-J5QA_j:22
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-02-17_05,2025-02-13_01,2024-11-22_01
@@ -93,69 +96,124 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscor
  reason=mlx scancount=1 engine=8.19.0-2501170000
  definitions=main-2502170114
 
-This patch allows the custom definition of reset functionality for adis object.
-It is useful in cases where the driver does not need to sleep after the reset
-since it is handled by the library.
+Document the ADIS16550 device devicetree bindings.
 
-Co-developed-by: Ramona Gradinariu <ramona.gradinariu@analog.com>
-Signed-off-by: Ramona Gradinariu <ramona.gradinariu@analog.com>
 Co-developed-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+Signed-off-by: Ramona Gradinariu <ramona.gradinariu@analog.com>
 Signed-off-by: Robert Budai <robert.budai@analog.com>
 ---
 
 v8:
-- no changes
+- added extra blank lines
+- changes reset-gpios description according to suggested changes
 
- drivers/iio/imu/adis.c       | 5 +++--
- include/linux/iio/imu/adis.h | 3 +++
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ .../bindings/iio/imu/adi,adis16550.yaml       | 74 +++++++++++++++++++
+ MAINTAINERS                                   | 10 +++
+ 2 files changed, 84 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
 
-diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
-index 54915c7a3..84344f052 100644
---- a/drivers/iio/imu/adis.c
-+++ b/drivers/iio/imu/adis.c
-@@ -491,6 +491,7 @@ EXPORT_SYMBOL_NS_GPL(adis_single_conversion, "IIO_ADISLIB");
- static const struct adis_ops adis_default_ops = {
- 	.read = __adis_read_reg,
- 	.write = __adis_write_reg,
-+	.reset = __adis_reset,
- };
+diff --git a/Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml b/Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
+new file mode 100644
+index 000000000..a4c273c7a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
+@@ -0,0 +1,74 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/imu/adi,adis16550.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices ADIS16550 and similar IMUs
++
++maintainers:
++  - Nuno Sa <nuno.sa@analog.com>
++  - Ramona Gradinariu <ramona.gradinariu@analog.com>
++  - Antoniu Miclaus <antoniu.miclaus@analog.com>
++  - Robert Budai <robert.budai@analog.com>
++
++properties:
++  compatible:
++    enum:
++      - adi,adis16550
++
++  reg:
++    maxItems: 1
++
++  spi-cpha: true
++
++  spi-cpol: true
++
++  spi-max-frequency:
++    maximum: 15000000
++
++  vdd-supply: true
++
++  interrupts:
++    maxItems: 1
++
++  reset-gpios:
++    description:
++      Active low RESET pin.
++    maxItems: 1
++
++  clocks:
++    description: If not provided, then the internal clock is used.
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - spi-cpha
++  - spi-cpol
++  - spi-max-frequency
++  - vdd-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        imu@0 {
++            compatible = "adi,adis16550";
++            reg = <0>;
++            spi-max-frequency = <15000000>;
++            spi-cpol;
++            spi-cpha;
++            vdd-supply = <&vdd>;
++            interrupts = <4 IRQ_TYPE_EDGE_FALLING>;
++            interrupt-parent = <&gpio>;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 25c86f473..d3e6258fa 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1485,6 +1485,16 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/imu/adi,adis16475.yaml
+ F:	drivers/iio/imu/adis16475.c
  
- /**
-@@ -522,9 +523,9 @@ int adis_init(struct adis *adis, struct iio_dev *indio_dev,
- 
- 	adis->spi = spi;
- 	adis->data = data;
--	if (!adis->ops->write && !adis->ops->read)
-+	if (!adis->ops->write && !adis->ops->read && !adis->ops->reset)
- 		adis->ops = &adis_default_ops;
--	else if (!adis->ops->write || !adis->ops->read)
-+	else if (!adis->ops->write || !adis->ops->read || !adis->ops->reset)
- 		return -EINVAL;
- 
- 	iio_device_set_drvdata(indio_dev, adis);
-diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-index 89cfa75ae..52652f51d 100644
---- a/include/linux/iio/imu/adis.h
-+++ b/include/linux/iio/imu/adis.h
-@@ -98,12 +98,15 @@ struct adis_data {
-  * struct adis_ops: Custom ops for adis devices.
-  * @write: Custom spi write implementation.
-  * @read: Custom spi read implementation.
-+ * @reset: Custom sw reset implementation. The custom implementation does not
-+ *	   need to sleep after the reset. It's done by the library already.
-  */
- struct adis_ops {
- 	int (*write)(struct adis *adis, unsigned int reg, unsigned int value,
- 		     unsigned int size);
- 	int (*read)(struct adis *adis, unsigned int reg, unsigned int *value,
- 		    unsigned int size);
-+	int (*reset)(struct adis *adis);
- };
- 
- /**
++ANALOG DEVICES INC ADIS16550 DRIVER
++M:	Nuno Sa <nuno.sa@analog.com>
++M:	Ramona Gradinariu <ramona.gradinariu@analog.com>
++M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
++M:	Robert Budai <robert.budai@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
++
+ ANALOG DEVICES INC ADM1177 DRIVER
+ M:	Michael Hennerich <Michael.Hennerich@analog.com>
+ L:	linux-hwmon@vger.kernel.org
 -- 
 2.34.1
 
