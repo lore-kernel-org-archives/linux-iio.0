@@ -1,155 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 660B62F5B
-	for <linux-iio@vger.kernel.org>; Mon, 17 Feb 2025 12:57:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 635D821C17E;
+	Mon, 17 Feb 2025 12:59:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739797071; cv=none; b=BdMaVKv0kcm+KBryhJng2D86/rNdERhcgbYAkXgnwY4ZmTSrbTR4qV/TWs1bGjfwrrNgu+6zvfiJYPqybq5t9O7XkyPHNKULweAchwUuzPClg92dvzpndzJ7nEwnBWj+lFfdH3w22mEDH7A0hgcQ2OgWMaPijGt6ngsYHACyHUY=
+	t=1739797172; cv=none; b=MV9BY1m9syv/fPD227jxSTuFa9XlzKXWNFLjSNfE4l7VDw6xSGHIngupJ9aeN+dbXGrfNkVL29R7klKBHChkIAbdX36pY3DwU+7FTcV+Gc/QDQlIO234o2oQSR8fw/mZ3Qqm68VGvo6dVGJp1zAw6v4DX/HXvkxy9Ay8C6eAIC8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739797071; c=relaxed/simple;
-	bh=1jSKaJ4FgoQrsyBryW3LAvxYogbTYwI6kLTs3GSkpnM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Dba2OeRjNZsWpL8vTbHfwOkmBOkRgakg25hevJ5h4h3+DkLnT0Om6mmj3DPv52B3YgfwxEbAG48xi31MWM3b5m5tf35gfH5SCNhO5Pw3Wmqg+DHYuBRmTH78xtRbNex5Sa7FDfJ+CxXrafTzOn3NasOwBYbxboZgJuGjw2G9ljo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=La7ElSxU; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1739797172; c=relaxed/simple;
+	bh=w4qUqGu+pnae/CodpYx0ogkuKuGj2dZyD24Fd0C1thM=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=qePrcFIU5gHLBhenAvU5p/XKERszJshwNerTxpfN04sVIorVHJmY7LoQd/Kfrl+HzQ7lTTGQA+JUGPWiU+NUNnFeIf9kPOy5+WMRuR7mxSOohOaW/dKoLOZIpw+D0F3UeY/ZfsxxfupA7V+OCzwUebPBY3XHMV8HWh8Bm1113fE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=qjVZpAJv; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="La7ElSxU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A851C4CED1;
-	Mon, 17 Feb 2025 12:57:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739797070;
-	bh=1jSKaJ4FgoQrsyBryW3LAvxYogbTYwI6kLTs3GSkpnM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=La7ElSxURc/qUYu5+67mCvDaXnXQk4/GxpLDTc9hdtvM6dlZ4xxTcoDgui2OwCE0y
-	 br6FoK/SkuIUjtuajN7dTPMAGx3CcKge4vvGW/Ymi1XXarN28ReS6v6GTBgNLNm2e8
-	 Lvrd2iNAEU7s0d5JxhjrlKrR0eUlQllC0D+rs8gcMYeemyhAxzuX89HrZaqFuqCYNr
-	 n2GVNCLhBj14ObRihBFgCNsKGRcwK+J0/Ss01MmKncB3EKorYkj85JoJjhS+7k5Eiq
-	 Ky4av+oTKm9SuEA8U9DYKGt9PV2fjReaeqzE2cnP15wRq14wY6tj3HNqXRelp5/Fox
-	 izFJLWk2y+fEQ==
-Date: Mon, 17 Feb 2025 12:57:40 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
-Cc: linux-iio@vger.kernel.org, Mudit Sharma <muditsharma.info@gmail.com>,
- Julien Stephan	 <jstephan@baylibre.com>, Mariel Tinaco
- <Mariel.Tinaco@analog.com>, Angelo Dureghello <adureghello@baylibre.com>,
- Gustavo Silva <gustavograzs@gmail.com>, Nuno Sa	 <nuno.sa@analog.com>,
- =?UTF-8?B?Sm/Do28=?= Paulo =?UTF-8?B?R29uw6dhbHZlcw==?=	
- <joao.goncalves@toradex.com>, ChiYuan Huang <cy_huang@richtek.com>, Ramona
- Alexandra Nechita <ramona.nechita@analog.com>, Trevor Gamblin
- <tgamblin@baylibre.com>, Guillaume Stols	 <gstols@baylibre.com>, David
- Lechner <dlechner@baylibre.com>, Cosmin Tanislav	 <demonsingur@gmail.com>,
- Marcelo Schmitt <marcelo.schmitt@analog.com>, Gwendal Grignou
- <gwendal@chromium.org>, Antoni Pokusinski <apokusinski01@gmail.com>, Tomasz
- Duszynski	 <tomasz.duszynski@octakon.com>, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 01/27] iio: core: Rework claim and release of direct
- mode to work with sparse.
-Message-ID: <20250217125740.65139187@jic23-huawei>
-In-Reply-To: <c11d55efa6bb145aba7cd7141031b7aa45027a76.camel@gmail.com>
-References: <20250209180624.701140-1-jic23@kernel.org>
-	<20250209180624.701140-2-jic23@kernel.org>
-	<c11d55efa6bb145aba7cd7141031b7aa45027a76.camel@gmail.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.48; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="qjVZpAJv"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51HA0AP7030330;
+	Mon, 17 Feb 2025 07:59:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=NDHtPjXfrkrLO78RC509HQt7UeV
+	gB+a/yBdbiL+s/rU=; b=qjVZpAJv8d5dy02jovx0OawjPSnJXSB9JuKlOEBw5Tc
+	Y58WFUGAe9cRvutXeU2+yNvmVLhew/KDnNCYf+kksShsdUpYZyQl61cFy5hhB+N3
+	2R5W4lJR68gV4vf/ZVp6FVjhhy12ysL0r4q+3rSKBCvjUtgWJvRqnnCh5umIjccs
+	L2QexyeTXRbWT/8tK3/yBH4cOgPGV0k3emTZvGjY1Bt7ZU4+S6ryKGqoeBB3LohY
+	/3Dj8o7KNr6Woh9zKwUP+lXRRL02nRHZgDqnK/hlP0aJKZ+nuBAzrlWtGjhfszP1
+	hslswiNAXmnJr6v03brxeZDxJTIw9osXW9A940wbixQ==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 44v2ysrkub-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 17 Feb 2025 07:59:15 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 51HCxEp4012185
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 17 Feb 2025 07:59:14 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 17 Feb 2025 07:59:14 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 17 Feb 2025 07:59:14 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 17 Feb 2025 07:59:14 -0500
+Received: from desktop-robi.ad.analog.com ([10.48.65.85])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 51HCx3Eq018359;
+	Mon, 17 Feb 2025 07:59:05 -0500
+From: Robert Budai <robert.budai@analog.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Nuno Sa <nuno.sa@analog.com>,
+        "Ramona
+ Gradinariu" <ramona.gradinariu@analog.com>,
+        Antoniu Miclaus
+	<antoniu.miclaus@analog.com>,
+        Robert Budai <robert.budai@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+        "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        "Jonathan Corbet" <corbet@lwn.net>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>
+Subject: [RESEND PATCH v8 0/6] Add support for ADIS16550
+Date: Mon, 17 Feb 2025 12:57:44 +0200
+Message-ID: <20250217105753.605465-1-robert.budai@analog.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: USUwmwpAzYaJI1JtDR4r62nDSNRUELh1
+X-Proofpoint-ORIG-GUID: USUwmwpAzYaJI1JtDR4r62nDSNRUELh1
+X-Authority-Analysis: v=2.4 cv=ELj800ZC c=1 sm=1 tr=0 ts=67b332a3 cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=IkcTkHD0fZMA:10 a=T2h4t0Lz3GQA:10 a=TpNKFGk_wJGFTPuD7poA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-02-17_05,2025-02-13_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=999
+ spamscore=0 adultscore=0 impostorscore=0 malwarescore=0 priorityscore=1501
+ lowpriorityscore=1 clxscore=1015 bulkscore=1 phishscore=0 suspectscore=0
+ classifier=spam authscore=0 authtc=n/a authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2501170000
+ definitions=main-2502170113
 
-On Mon, 17 Feb 2025 10:38:11 +0000
-Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+The ADIS16550 is a complete inertial system that includes a triaxis gyroscope
+and a triaxis accelerometer. Each inertial sensor in the ADIS16550 combines
+industry leading MEMS only technology with signal conditioning that optimizes
+dynamic performance. The factory calibration characterizes each sensor for
+sensitivity, bias, and alignment. As a result, each sensor has its own dynamic
+compensation formulas that provide accurate sensor measurements.
 
-> On Sun, 2025-02-09 at 18:05 +0000, Jonathan Cameron wrote:
-> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> >=20
-> > Initial thought was to do something similar to __cond_lock()
-> >=20
-> > 	do_iio_device_claim_direct_mode(iio_dev) ? : ({ __acquire(iio_dev);
-> > 0; })
-> > + Appropriate static inline iio_device_release_direct_mode()
-> >=20
-> > However with that, sparse generates false positives. E.g.
-> >=20
-> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c:1811:17: warning: context
-> > imbalance in 'st_lsm6dsx_read_raw' - unexpected unlock
-> >=20
-> > So instead, this patch rethinks the return type and makes it more
-> > 'conditional lock like' (which is part of what is going on under the ho=
-od
-> > anyway) and return a boolean - true for successfully acquired, false for
-> > did not acquire.
-> >=20
-> > To allow a migration path given the rework is now non trivial, take a l=
-eaf
-> > out of the naming of the conditional guard we currently have for IIO
-> > device direct mode and drop the _mode postfix from the new functions gi=
-ving
-> > iio_device_claim_direct() and iio_device_release_direct()
-> >=20
-> > Whilst the kernel supports __cond_acquires() upstream sparse does not
-> > yet do so.=C2=A0 Hence rely on sparse expanding a static inline wrapper
-> > to explicitly see whether __acquire() is called.
-> >=20
-> > Note that even with the solution here, sparse sometimes gives false
-> > positives. However in the few cases seen they were complex code
-> > structures that benefited from simplification anyway.
-> >=20
-> > Reviewed-by: David Lechner <dlechner@baylibre.com>
-> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > ---
-> > v2: include linux/compiler_types.h (David) =20
->=20
-> UhU, I'm not seeing it?
->=20
-Fixed up.  Thanks!
-> > --- =20
->=20
-> With the above,
->=20
-> Reviewed-by: Nuno Sa <nuno.sa@analog.com>
->=20
-> > =C2=A0include/linux/iio/iio.h | 25 +++++++++++++++++++++++++
-> > =C2=A01 file changed, 25 insertions(+)
-> >=20
-> > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> > index 56161e02f002..fe33835b19cf 100644
-> > --- a/include/linux/iio/iio.h
-> > +++ b/include/linux/iio/iio.h
-> > @@ -662,6 +662,31 @@ int iio_push_event(struct iio_dev *indio_dev, u64
-> > ev_code, s64 timestamp);
-> > =C2=A0int iio_device_claim_direct_mode(struct iio_dev *indio_dev);
-> > =C2=A0void iio_device_release_direct_mode(struct iio_dev *indio_dev);
-> > =C2=A0
-> > +/*
-> > + * Helper functions that allow claim and release of direct mode
-> > + * in a fashion that doesn't generate many false positives from sparse.
-> > + * Note this must remain static inline in the header so that sparse
-> > + * can see the __acquire() marking. Revisit when sparse supports
-> > + * __cond_acquires()
-> > + */
-> > +static inline bool iio_device_claim_direct(struct iio_dev *indio_dev)
-> > +{
-> > +	int ret =3D iio_device_claim_direct_mode(indio_dev);
-> > +
-> > +	if (ret)
-> > +		return false;
-> > +
-> > +	__acquire(iio_dev);
-> > +
-> > +	return true;
-> > +}
-> > +
-> > +static inline void iio_device_release_direct(struct iio_dev *indio_dev)
-> > +{
-> > +	iio_device_release_direct_mode(indio_dev);
-> > +	__release(indio_dev);
-> > +}
-> > +
-> > =C2=A0/*
-> > =C2=A0 * This autocleanup logic is normally used via
-> > =C2=A0 * iio_device_claim_direct_scoped(). =20
->=20
+Robert Budai (6):
+  iio: imu: adis: Add custom ops struct
+  iio: imu: adis: Add reset to custom ops
+  iio: imu: adis: Add DIAG_STAT register
+  dt-bindings: iio: Add adis16550 bindings
+  iio: imu: adis16550: add adis16550 support
+  docs: iio: add documentation for adis16550 driver
+
+ .../bindings/iio/imu/adi,adis16550.yaml       |   74 ++
+ Documentation/iio/adis16550.rst               |  376 ++++++
+ Documentation/iio/index.rst                   |    1 +
+ MAINTAINERS                                   |   10 +
+ drivers/iio/imu/Kconfig                       |   13 +
+ drivers/iio/imu/Makefile                      |    1 +
+ drivers/iio/imu/adis.c                        |   35 +-
+ drivers/iio/imu/adis16550.c                   | 1149 +++++++++++++++++
+ include/linux/iio/imu/adis.h                  |   34 +-
+ 9 files changed, 1680 insertions(+), 13 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
+ create mode 100644 Documentation/iio/adis16550.rst
+ create mode 100644 drivers/iio/imu/adis16550.c
+
+-- 
+2.34.1
 
