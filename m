@@ -1,73 +1,69 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B90E52356CE
-	for <linux-iio@vger.kernel.org>; Tue, 18 Feb 2025 18:31:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D16412356CE
+	for <linux-iio@vger.kernel.org>; Tue, 18 Feb 2025 18:31:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739903499; cv=none; b=SxdO/U2hCPtZJegnpG06uLtqZ51AK8oZqwdhLLVP0yQ0mqksVcnovLu6OwypelFkqzHdpWvpfaJpMZ4tFPdgRitVGlwcVVNx79BqgjzrUQYKikYAavoJc8HGpYPeNTK6B99ih9oFCwcxoFQnYxmpXzz3ASeHJgLrqmRrOxJmQ00=
+	t=1739903503; cv=none; b=dNcuWa3riFaXXENvPskUyWrAGrco+5XRYFZGgrfKMv5KTicYFfMjCbAabOkr72f/cl+1wXnoWWs+9RoFLyYe3PFulow0trx6uZ2j4GedSeTyhpki/CwPHIXK2pYzxS4s40MxuCB0zcai29YmBQ91/ZAgSbjkW8olnUPj/y2vIJ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739903499; c=relaxed/simple;
-	bh=lnzdjGNHBtKUFzUiqrLEQqzHtRGnNJWcjdjo3ejD0ng=;
+	s=arc-20240116; t=1739903503; c=relaxed/simple;
+	bh=JgC+G8ktSpz9khYBXPEB3Dhnohq+QNNcX3cLh+JMWuo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Ooqf8xZVGEOPiixWl91CQo6gb/YBOm/QPx/ZEC0SDhfnNVv0lEEv9zj3xtOXmrpDpwDqZY1ybpc3Z9fZsh6Peh3wOf/KD8gk7gDjG6tAa7sJakUi1Wg7CLFktvazKuAcZ8wtn4PRnL/Cl1xzQPvdmeGkGoS8avJnwBsT1Ds3s9o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=FrdLThK1; arc=none smtp.client-ip=209.85.128.48
+	 MIME-Version:Content-Type; b=R7mq3qKJOUlVFB2fVbM1w6dcLsxAFI3zcO7TA5l2oEqqI2yuFRCJFuu63hVFoDpQvr00d8Q6RjOLQy7PxxLt+4xtmbsRNnsFna/wR38vK+2sM880zhve1Tctsu2Fr7In39ltnTPJs6S6vZnUpcikigEu0FZvBCTIVp+rvnP5U1E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=dLaLMVeY; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="FrdLThK1"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-439846bc7eeso16296495e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 18 Feb 2025 10:31:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="dLaLMVeY"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-439846bc7eeso16296935e9.3
+        for <linux-iio@vger.kernel.org>; Tue, 18 Feb 2025 10:31:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1739903496; x=1740508296; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1739903499; x=1740508299; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=To6868pYlYT1wEDl3Zkm01Z81bAlVtBC9gPOfWm3OZw=;
-        b=FrdLThK1fjQ8dJzITA87osgUGpd/pqA3luBLX1gPN0hb2ZBAJGHp72cbHkm4YYnz8w
-         O7Zv3UP5tXm/GX8uCClkrRl7cdpnV9NRG+f8P52FVYTFDDcYKbYk8ZAmQHtqvMKax+/1
-         9g8/7MRXsC03u2rZBiAQvufht0fImYvzoKgRXxXBz18B2eMZL5Zk5GOF4yLjixf1PbPn
-         GH+59csmWXwVSlGfnDGGZzOIAV3QqV0BpXk70BYGPNrM0qOsLBeZCPtUP1llPLdwd0S0
-         fx4vz3OgiFcNh4vqkb7wKUxMZAWdhaSqvnUqFIFof2+u6E+mH+RzWe1W4MYbg1NLAGUF
-         7vBg==
+        bh=ddVYotV8Z3I4+l1sq9NABsbVhAoFcE9SbB2JMpNwSnM=;
+        b=dLaLMVeYE7SoqKixZ8VxvveR4+h5HUTRbgZhALYqsglCd9CY8/NRgmDjkdBqiSHryS
+         9r0rStPBjQRMumo9RMPucv/03drmjToFTn6avL5vBvJs1/LEqgbQD3hI067kjgn2W+i2
+         hx/8zrWMO6WKAsamvzixDF87MxYuMwgx4MEbYSdMe6rvnmK6ucGXWynqFxZAw5UAfhY1
+         aEty64GSO6G8NfYxBFAgMFR2vSq88E7ecei4RIv3LZnjJQW3L0rQylZaverYkKWoVOCR
+         4Dt/eGlpAgCaSiShywxQaYr2J6pe211XxFfNEVm9PJsesB1DUSGDyMqFk1j956CMKHA/
+         /KCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739903496; x=1740508296;
+        d=1e100.net; s=20230601; t=1739903499; x=1740508299;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=To6868pYlYT1wEDl3Zkm01Z81bAlVtBC9gPOfWm3OZw=;
-        b=B7uHs4ed7/U0xt5i9awZcpOAekVA2IV//kY/JPEnM2bm7FLMNxtIVSq1OCst/6/N1k
-         p8TuQQgV+scIOHSK+PEUhd7HEq5nA0lWsu3Sdzp1kzSWU5nWnFxTN051e86JzDff4RV4
-         8ht8W6+TLO9fYGQeSL7QtysoVa/c52r1H1EGbjlBAwjHBeRlXC2zbaWHn8ThTiPkO9pC
-         TGRDoWMYfXk5ikbZSdhZSW/GX3IsoSlcyiuGxWvext1aEzGGsjlWq1QwTpbUwZuOEm+J
-         YFILJhcIehjPFMJC5VcvBgCEfkokcVL84pgzKaa+VUAsFSdUkSHgMRHKyLakUd343etq
-         R50w==
-X-Gm-Message-State: AOJu0YzFjKgPSGNXEKJxOhXnTqpiNDJs67a2YLLqJhyFwKR21C/rd/sU
-	5RduUXV7sAf/uyrd7GUS2mEEjt3wr5ovv5McJzRs4nbOkD8LTU1AZLNZhqRH3aQ=
-X-Gm-Gg: ASbGncvt2/+87BXcVZ651XGAZXiUpaZRtkOCKicYPeJf5oUWVK1XdSFsokgvxqxbfU+
-	Bs/rI7dv8KsSr3xUuHbBMYQDDG1QuIpi9HknEpR0u2iREiGuivUIbtMdwpcVxvda7St8DcPLUdT
-	TEQuLW5QNX7nJxKKMNGHDZI3g3MCnKEFitLs3S442XYS/rAdoyq0LvCgGA6stFc6ku6finM9wNc
-	AvuElznnRw34GCyLUXYRG0XgrvlB3pc8q4LedRWn+kfivHJuF4QxcadNimWsD1Jq9FExies1afE
-	p6UbtkfnP3g76KAzytQlFTXM70WfukaKWEx/Mhtd2RAhVjkIh0BRdAsPNA==
-X-Google-Smtp-Source: AGHT+IFLW4E0Yuv60khlPum4m7QRLBSuMo5KJZgK9dltZ+nvUWho88JhGxznZLHYmg4Hs49XwG3KEw==
-X-Received: by 2002:a05:6000:1446:b0:388:da10:ff13 with SMTP id ffacd0b85a97d-38f587955camr741924f8f.21.1739903495964;
-        Tue, 18 Feb 2025 10:31:35 -0800 (PST)
+        bh=ddVYotV8Z3I4+l1sq9NABsbVhAoFcE9SbB2JMpNwSnM=;
+        b=xUqj3H2UFTUJyiPJ+9+PSXxFzEAaGEQBD77KRv2843oaeL7dfbX+Q1UT4B1ZLgT043
+         Ilg6jGMGJ5O4sNiMGrgtUVfoML9GGhZePWzNPQMHM+DE8hTwkP2P8sGUoW7LwjEXksou
+         cSN1NSZrOtiubgRCOjUuIEaR62HHRdSmooUHLteSd/EKpfaCkJfvSCUIQlN6LS9gisgT
+         lAghJAY2af6VRivs7PGkUEqr9HJLNAGOP1TS9rESmoH4V0c7wyObZOiIH2vVnnJGo/60
+         25CAomz6Irod3xy01f+meBARVKekBqg8PB8D3/jTdyfAQCUpP7D8mcSgYvJs0PRdSjjr
+         8qzw==
+X-Gm-Message-State: AOJu0YwKpCEpTktrVtSF9HiTxK/iTgenUH0rIsAhTAjUBr75dJckn1/M
+	0uuixaSAFdkt9q28VHPmnyegyIsqjRKizUgTtigsj1XLOXYOWh+iC8XC3JCQu6g=
+X-Gm-Gg: ASbGnct2k07QwiVlKK2ibpmVuE4RgYcOv+GVCzXtwy5MLIWKe0IgpNwiOi99ctDR4lW
+	ati1R6rZ5b43HpL9Vl2qEQp4uicr87EpLPsg5SsS1hTsQwDGNrCgazuL2Uweytzii/YHWncQDcB
+	Fm4lErPincbWP7B9tEOK8UZVmJpc+gpbtZfeODVPz+6YtkwUy+lowP5VFwpFBCauqzuQRNyvpaU
+	PLGHr8AvTgsJfNpjFdD9XpcYPxgH1wE3b8pBJq8uKzSbpNDTPg2SYITXu3qFlzO7yuTczdowXyN
+	0UCHXnajodGlADVGC20ucHmeAtE2MmfXtF+82KE2bHtZNPZ6ikKK0agsEg==
+X-Google-Smtp-Source: AGHT+IHsDXubScbtfd8GgSoO6cX+WZ3NdPewfCRB5+VEvsg2COHHD6x2qxQCztnGJkft2EjJlaCvAA==
+X-Received: by 2002:a05:600c:1c90:b0:439:96b2:e8f with SMTP id 5b1f17b1804b1-43999ddb0f4mr6856055e9.28.1739903499086;
+        Tue, 18 Feb 2025 10:31:39 -0800 (PST)
 Received: from localhost (p200300f65f083b0400000000000001b9.dip0.t-ipconnect.de. [2003:f6:5f08:3b04::1b9])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38f259f7987sm15411994f8f.87.2025.02.18.10.31.35
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-439617fc885sm157248675e9.9.2025.02.18.10.31.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2025 10:31:35 -0800 (PST)
+        Tue, 18 Feb 2025 10:31:38 -0800 (PST)
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
 To: Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Michael Walle <michael@walle.cc>,
-	Dumitru Ceclan <mitrutzceclan@gmail.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Nuno Sa <nuno.sa@analog.com>
+	Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org
-Subject: [PATCH v2 4/6] iio: adc: ad7173: Fix comparison of channel configs
-Date: Tue, 18 Feb 2025 19:31:11 +0100
-Message-ID:  <d64d8f211ab70be720908c88cc35951db3649228.1739902968.git.u.kleine-koenig@baylibre.com>
+Subject: [PATCH v2 6/6] iio: adc: ad7124: Implement system calibration
+Date: Tue, 18 Feb 2025 19:31:13 +0100
+Message-ID:  <5ee955a72e6f5226233053a883e8897ae325b568.1739902968.git.u.kleine-koenig@baylibre.com>
 X-Mailer: git-send-email 2.47.1
 In-Reply-To: <cover.1739902968.git.u.kleine-koenig@baylibre.com>
 References: <cover.1739902968.git.u.kleine-koenig@baylibre.com>
@@ -78,85 +74,191 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2865; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=lnzdjGNHBtKUFzUiqrLEQqzHtRGnNJWcjdjo3ejD0ng=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBntNH2RaqEfUbqYNkBw5Z+uLU1qCW/TIl5jIAU3 a0AL5AYRmyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZ7TR9gAKCRCPgPtYfRL+ Ts1OCACcCkChlEA3si6sfiPwvos5si6xlT7zMU2nECJr9vUTC7Oamx4ZePFZABsOryp/vklolI+ GheBuviSkmJ4AIYdYd3vURFYj7HL9spMM4wBso1aAsLCmwElmBl+HeJi8rd6YNPyglp0DNo2aGY 66fzeHdx5rVRkjU8NPb0JDCsazmdWMtr+G61nCBhfl8Os8jTdGpArFwi1/AMnmYPXM9adAj16c7 D/0JmIjdFu9S5uPCVK70ccQIpfm+KRI9IAuu56Lg3A8PUviIbs3aXsn+OImkrW3Yv1YY/L6M8e3 0MKMfpxg5PFGpdwIoV6korJrl5cxueZhAWbJq2PNpvs/5dRp
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5115; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=JgC+G8ktSpz9khYBXPEB3Dhnohq+QNNcX3cLh+JMWuo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBntNH6YlQqmjoWyzpLG78F/iWSxk4acEItxrcoy Ye4d51L4QeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZ7TR+gAKCRCPgPtYfRL+ Ttn0CACffqcnR6BmWr7uHcHMsKfK/izbwMcrt32VQ4iiDTuj6l82dz+tdf2k6plZ0kI7FZwykN/ eqNC6micBPzUN9cLHcpD+RE8G9R7x9ubcg31399LnvClASMZvxjnvMEgZWUbJ+wgoTsh7VebUIX 1enAyyZmQKUG3xSRr4r7OuzIcI9U0IR1Qpa0NQfYFJqr2YoiFEYlyp5BQ6IE9FNboml3oOSSd1L bl4sITgJ/pi6txT+jJpjpO2qF1TlATwZietHacZR6ORgwjr2Nb6Dh13/MJLZVjAmOxXEwnihaoe 73tuF/owcabz3r7++o0MB0I2Zh7lkcvWOCqyc1zGugpvmJsA
 X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 
-Checking the binary representation of two structs (of the same type)
-for equality doesn't have the same semantic as comparing all members for
-equality. The former might find a difference where the latter doesn't in
-the presence of padding or when ambiguous types like float or bool are
-involved. (Floats typically have different representations for single
-values, like -0.0 vs +0.0, or 0.5 * 2² vs 0.25 * 2³. The type bool has
-at least 8 bits and the raw values 1 and 2 (probably) both evaluate to
-true, but memcmp finds a difference.)
+Allow triggering both zero-scale and full-scale calibration via sysfs in
+the same way as it's done for ad7173.
 
-When searching for a channel that already has the configuration we need,
-the comparison by member is the one that is needed.
-
-Convert the comparison accordingly to compare the members one after
-another. Also add a static_assert guard to (somewhat) ensure that when
-struct ad7173_channel_config::config_props is expanded, the comparison
-is adapted, too.
-
-This issue is somewhat theoretic, but using memcmp() on a struct is a
-bad pattern that is worth fixing.
-
-Fixes: 76a1e6a42802 ("iio: adc: ad7173: add AD7173 driver")
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
 ---
- drivers/iio/adc/ad7173.c | 25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+ drivers/iio/adc/ad7124.c | 141 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 124 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iio/adc/ad7173.c b/drivers/iio/adc/ad7173.c
-index 54f9cc5a89f5..59cbb52f6f38 100644
---- a/drivers/iio/adc/ad7173.c
-+++ b/drivers/iio/adc/ad7173.c
-@@ -197,7 +197,11 @@ struct ad7173_channel_config {
- 	u8 cfg_slot;
- 	bool live;
- 
--	/* Following fields are used to compare equality. */
-+	/*
-+	 * Following fields are used to compare equality. If you
-+	 * make adaptions in it, you most likely also have to adapt
-+	 * ad7173_find_live_config(), too.
-+	 */
- 	struct_group(config_props,
- 		bool bipolar;
- 		bool input_buf;
-@@ -568,15 +572,28 @@ static struct ad7173_channel_config *
- ad7173_find_live_config(struct ad7173_state *st, struct ad7173_channel_config *cfg)
- {
- 	struct ad7173_channel_config *cfg_aux;
--	ptrdiff_t cmp_size;
- 	int i;
- 
--	cmp_size = sizeof_field(struct ad7173_channel_config, config_props);
-+	/*
-+	 * This is just to make sure that the comparison is adapted after
-+	 * struct ad7173_channel_config was changed.
-+	 */
-+	static_assert(sizeof_field(struct ad7173_channel_config, config_props) ==
-+		      sizeof(struct {
-+				     bool bipolar;
-+				     bool input_buf;
-+				     u8 odr;
-+				     u8 ref_sel;
-+			     }));
+diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+index 5c2e5a518af3..ad14503e9797 100644
+--- a/drivers/iio/adc/ad7124.c
++++ b/drivers/iio/adc/ad7124.c
+@@ -4,6 +4,9 @@
+  *
+  * Copyright 2018 Analog Devices Inc.
+  */
 +
- 	for (i = 0; i < st->num_channels; i++) {
- 		cfg_aux = &st->channels[i].cfg;
++#define DEBUG
++
+ #include <linux/bitfield.h>
+ #include <linux/bitops.h>
+ #include <linux/clk.h>
+@@ -181,6 +184,7 @@ struct ad7124_channel {
+ 	struct ad7124_channel_config cfg;
+ 	unsigned int ain;
+ 	unsigned int slot;
++	u8 syscalib_mode;
+ };
  
- 		if (cfg_aux->live &&
--		    !memcmp(&cfg->config_props, &cfg_aux->config_props, cmp_size))
-+		    cfg->bipolar == cfg_aux->bipolar &&
-+		    cfg->input_buf == cfg_aux->input_buf &&
-+		    cfg->odr == cfg_aux->odr &&
-+		    cfg->ref_sel == cfg_aux->ref_sel)
- 			return cfg_aux;
- 	}
- 	return NULL;
+ struct ad7124_state {
+@@ -202,23 +206,6 @@ struct ad7124_state {
+ 	DECLARE_KFIFO(live_cfgs_fifo, struct ad7124_channel_config *, AD7124_MAX_CONFIGS);
+ };
+ 
+-static const struct iio_chan_spec ad7124_channel_template = {
+-	.type = IIO_VOLTAGE,
+-	.indexed = 1,
+-	.differential = 1,
+-	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-		BIT(IIO_CHAN_INFO_SCALE) |
+-		BIT(IIO_CHAN_INFO_OFFSET) |
+-		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+-		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
+-	.scan_type = {
+-		.sign = 'u',
+-		.realbits = 24,
+-		.storagebits = 32,
+-		.endianness = IIO_BE,
+-	},
+-};
+-
+ static struct ad7124_chip_info ad7124_chip_info_tbl[] = {
+ 	[ID_AD7124_4] = {
+ 		.name = "ad7124-4",
+@@ -903,6 +890,126 @@ static int ad7124_check_chip_id(struct ad7124_state *st)
+ 	return 0;
+ }
+ 
++enum {
++	AD7124_SYSCALIB_ZERO_SCALE,
++	AD7124_SYSCALIB_FULL_SCALE,
++};
++
++static ssize_t ad7124_write_syscalib(struct iio_dev *indio_dev,
++				     uintptr_t private,
++				     const struct iio_chan_spec *chan,
++				     const char *buf, size_t len)
++{
++	struct ad7124_state *st = iio_priv(indio_dev);
++	struct ad7124_channel *ch = &st->channels[chan->channel];
++	struct device *dev = &st->sd.spi->dev;
++	bool sys_calib;
++	int ret, mode;
++
++	ret = kstrtobool(buf, &sys_calib);
++	if (ret)
++		return ret;
++
++	mode = ch->syscalib_mode;
++	if (sys_calib) {
++		if (mode == AD7124_SYSCALIB_ZERO_SCALE) {
++			ch->cfg.calibration_offset = 0x800000;
++
++			ret = ad_sd_calibrate(&st->sd, AD7124_MODE_CAL_SYS_ZERO,
++					      chan->address);
++			if (ret < 0)
++				return ret;
++
++			ret = ad_sd_read_reg(&st->sd, AD7124_OFFSET(ch->cfg.cfg_slot), 3,
++					     &ch->cfg.calibration_offset);
++			if (ret < 0)
++				return ret;
++
++			dev_dbg(dev, "offset for channel %d after zero-scale calibration: 0x%x\n",
++				chan->channel, ch->cfg.calibration_offset);
++		} else {
++			ch->cfg.calibration_gain = st->gain_default;
++
++			ret = ad_sd_calibrate(&st->sd, AD7124_MODE_CAL_SYS_FULL,
++					      chan->address);
++			if (ret < 0)
++				return ret;
++
++			ret = ad_sd_read_reg(&st->sd, AD7124_GAIN(ch->cfg.cfg_slot), 3,
++					     &ch->cfg.calibration_gain);
++			if (ret < 0)
++				return ret;
++
++			dev_dbg(dev, "gain for channel %d after full-scale calibration: 0x%x\n",
++				chan->channel, ch->cfg.calibration_gain);
++		}
++	}
++
++	return len;
++}
++
++static const char * const ad7124_syscalib_modes[] = {
++	[AD7124_SYSCALIB_ZERO_SCALE] = "zero_scale",
++	[AD7124_SYSCALIB_FULL_SCALE] = "full_scale",
++};
++
++static int ad7124_set_syscalib_mode(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan,
++				    unsigned int mode)
++{
++	struct ad7124_state *st = iio_priv(indio_dev);
++
++	st->channels[chan->channel].syscalib_mode = mode;
++
++	return 0;
++}
++
++static int ad7124_get_syscalib_mode(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan)
++{
++	struct ad7124_state *st = iio_priv(indio_dev);
++
++	return st->channels[chan->channel].syscalib_mode;
++}
++
++static const struct iio_enum ad7124_syscalib_mode_enum = {
++	.items = ad7124_syscalib_modes,
++	.num_items = ARRAY_SIZE(ad7124_syscalib_modes),
++	.set = ad7124_set_syscalib_mode,
++	.get = ad7124_get_syscalib_mode
++};
++
++static const struct iio_chan_spec_ext_info ad7124_calibsys_ext_info[] = {
++	{
++		.name = "sys_calibration",
++		.write = ad7124_write_syscalib,
++		.shared = IIO_SEPARATE,
++	},
++	IIO_ENUM("sys_calibration_mode", IIO_SEPARATE,
++		 &ad7124_syscalib_mode_enum),
++	IIO_ENUM_AVAILABLE("sys_calibration_mode", IIO_SHARED_BY_TYPE,
++			   &ad7124_syscalib_mode_enum),
++	{ }
++};
++
++static const struct iio_chan_spec ad7124_channel_template = {
++	.type = IIO_VOLTAGE,
++	.indexed = 1,
++	.differential = 1,
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++		BIT(IIO_CHAN_INFO_SCALE) |
++		BIT(IIO_CHAN_INFO_OFFSET) |
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
++	.scan_type = {
++		.sign = 'u',
++		.realbits = 24,
++		.storagebits = 32,
++		.endianness = IIO_BE,
++	},
++	.ext_info = ad7124_calibsys_ext_info,
++};
++
+ /*
+  * Input specifiers 8 - 15 are explicitly reserved for ad7124-4
+  * while they are fine for ad7124-8. Values above 31 don't fit
 -- 
 2.47.1
 
