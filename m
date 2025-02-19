@@ -1,129 +1,139 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1069B1FCCE7;
-	Wed, 19 Feb 2025 15:56:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9964F1EB195
+	for <linux-iio@vger.kernel.org>; Wed, 19 Feb 2025 16:06:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739980580; cv=none; b=XUylcvMQTHPtLp+1+rc8+LciWJ0sGXKX3XJv6XV3F8vwu7dPK9P+lfkWFDmfo70TAn2g1cwzrHhVyJna+hH4CTKdty6V653DCrqifTu2v9O9c+qp4rCuAGh0OAYe5bC3FXtwX/HSx+1pypWz5aVd1CUCkVyCClsrDI9D5Y9LPdk=
+	t=1739981178; cv=none; b=nhZejT0jlkb3dxFmzfMvYt1v0VWIiDjUbLrS7hKp4OYtt2eF7UyCDuCx5GDuLqFyYx1AtVBCwiU/hVlo7clVJY8iJQH8i6Q5N5uz5QuS/RUCdYd6eFbrbUeF4nRJKHEKYbIiRLXKLlpwPfldasd54tD6byhWubDCvdfET+GFxSU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739980580; c=relaxed/simple;
-	bh=uV3soKwL+HCNAvSymtrWOzDP+EtcGO1BQkAUCm5Wg+g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k8ihoQis5BMrsJSyR+VJ3NK9gH6MxP5xEBTlb5uanFZeKgw6YNb2iELwKlkWVP3iqJQ6aI4GdjdIVn6v4ontKtPuFNhv7X4xQMsswwgcxB9c3c9efBMLpL6Z6JUYYPItloEct+/cC3UHafqbbiEEgaN3vEN2uP3an3ulq2oVOYc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lwlqJK1L; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lwlqJK1L"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1739980579; x=1771516579;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=uV3soKwL+HCNAvSymtrWOzDP+EtcGO1BQkAUCm5Wg+g=;
-  b=lwlqJK1LXTvxJ+EWudFro8aZPJMqcJPUT58kxjNEZ30GML6GSKnX9EAB
-   liAhzqJS5SDhtwvZcQMnOjFibzq++KcRAtqG30zoRL9mbRMYhlJVvLHWE
-   bu52UwMhnVY4w8glg6dMCLs/Ax2z3KE1P99rj0e51sfsjJvOcRvsRVnC5
-   0lfWofu3WTokGPBr9X39mAVp1xImbe3esC5xatTO7alkn7svGQ/jSqCQ5
-   pxUA0mChaMFS3bJs+yC9z2N5B0T1ehQeC0MuLGKtuS7gybUcwMbHaj3CP
-   nsD2xaEGaf+xVJPa2Q/lB0yICi0LRhMeUC1XMs4a4P2ex5jUPk5IiRJc5
-   w==;
-X-CSE-ConnectionGUID: p18e5709S3i1yRm3An+ukg==
-X-CSE-MsgGUID: c4WqoUpRTjW1gzzBzpm1ng==
-X-IronPort-AV: E=McAfee;i="6700,10204,11350"; a="44641211"
-X-IronPort-AV: E=Sophos;i="6.13,299,1732608000"; 
-   d="scan'208";a="44641211"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2025 07:56:15 -0800
-X-CSE-ConnectionGUID: 9tQ7e4C6QyWDwrfSehe6Ew==
-X-CSE-MsgGUID: pjGdWZJjSauXppPQLfgMhw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,299,1732608000"; 
-   d="scan'208";a="145612236"
-Received: from smile.fi.intel.com ([10.237.72.58])
-  by orviesa002.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2025 07:23:30 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1tkluw-0000000D3ix-2SQZ;
-	Wed, 19 Feb 2025 17:23:18 +0200
-Date: Wed, 19 Feb 2025 17:23:18 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Pavel Machek <pavel@ucw.cz>,
-	Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>, Helge Deller <deller@gmx.de>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-leds@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] mfd: lm3533: convert to use OF
-Message-ID: <Z7X3ZvQbSe75U-AR@smile.fi.intel.com>
-References: <20250218132702.114669-1-clamor95@gmail.com>
- <20250218132702.114669-3-clamor95@gmail.com>
- <Z7XqKcOUt5niXzpv@smile.fi.intel.com>
- <CAPVz0n1_WQyOHhtEVAh53uhEUhZvqqZSEJh6XALtSrVfkMSLYw@mail.gmail.com>
- <Z7XzgfHcjyK_UZKv@smile.fi.intel.com>
- <CAPVz0n2WwAOb1UU7J7aDTdhXXCaAZkCpYjW_nc_CBRgkGWdEOw@mail.gmail.com>
+	s=arc-20240116; t=1739981178; c=relaxed/simple;
+	bh=Hu0If3mlWBwcmv138spO0M4vIhxxUoBa34IVKQCeJPc=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Qggp/k19enKkikQcPW4M2HRoOItyO0Be/c67SO6ffr+6EvYw+okgROM9TRfj5i5aqQP72THbddWYwmSB6tUvNX6WuXhpMfRxjiXRZYbO4YW797m52H+OiqaMJVQGWT3YuU0eFax1atpOXpnnoOO3JgYjXfchW4nUomflI56khdA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.31])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Yyh4V3WwXz6H6vL;
+	Thu, 20 Feb 2025 00:02:50 +0800 (CST)
+Received: from frapeml500008.china.huawei.com (unknown [7.182.85.71])
+	by mail.maildlp.com (Postfix) with ESMTPS id 501DE140382;
+	Thu, 20 Feb 2025 00:06:13 +0800 (CST)
+Received: from localhost (10.203.177.66) by frapeml500008.china.huawei.com
+ (7.182.85.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Wed, 19 Feb
+ 2025 17:06:12 +0100
+Date: Wed, 19 Feb 2025 16:06:11 +0000
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To: Matti Vaittinen <mazziesaccount@gmail.com>
+CC: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>, David Lechner
+	<dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>,
+	<linux-iio@vger.kernel.org>, Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: Re: [PATCH 5/8] iio: accel: kx022a: Switch to sparse friendly
+ iio_device_claim/release_direct()
+Message-ID: <20250219160611.00007916@huawei.com>
+In-Reply-To: <ade6ee75-7f38-4826-9359-2411165decb5@gmail.com>
+References: <20250217140135.896574-1-jic23@kernel.org>
+	<20250217140135.896574-6-jic23@kernel.org>
+	<0e17116e-6160-4920-83d9-086218245299@gmail.com>
+	<85d97cbe-9d34-462c-a89f-de6fc1ac6e34@baylibre.com>
+	<ead33fc6-48b9-488c-8993-2ca647e59735@gmail.com>
+	<df700bd7c8d3aab89177b122ed9adf0269bde62d.camel@gmail.com>
+	<ade6ee75-7f38-4826-9359-2411165decb5@gmail.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPVz0n2WwAOb1UU7J7aDTdhXXCaAZkCpYjW_nc_CBRgkGWdEOw@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: lhrpeml500003.china.huawei.com (7.191.162.67) To
+ frapeml500008.china.huawei.com (7.182.85.71)
 
-On Wed, Feb 19, 2025 at 05:13:15PM +0200, Svyatoslav Ryhel wrote:
-> ср, 19 лют. 2025 р. о 17:07 Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> пише:
-> > On Wed, Feb 19, 2025 at 04:36:38PM +0200, Svyatoslav Ryhel wrote:
-> > > ср, 19 лют. 2025 р. о 16:27 Andy Shevchenko
-> > > <andriy.shevchenko@linux.intel.com> пише:
+On Wed, 19 Feb 2025 14:21:51 +0200
+Matti Vaittinen <mazziesaccount@gmail.com> wrote:
 
-...
+> On 19/02/2025 12:51, Nuno S=E1 wrote:
+> > On Wed, 2025-02-19 at 07:36 +0200, Matti Vaittinen wrote: =20
+> >> On 18/02/2025 17:42, David Lechner wrote: =20
+> >>> On 2/18/25 1:39 AM, Matti Vaittinen wrote: =20
+> >>>> On 17/02/2025 16:01, Jonathan Cameron wrote: =20
+> >>>>> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> >>>>>
+> >>>>> These new functions allow sparse to find failures to release
+> >>>>> direct mode reducing chances of bugs over the claim_direct_mode()
+> >>>>> functions that are deprecated.
+> >>>>>
+> >>>>> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> >>>>> Cc: Matti Vaittinen <mazziesaccount@gmail.com>
+> >>>>> ---
+> >>>>>  =A0=A0 drivers/iio/accel/kionix-kx022a.c | 14 ++++++--------
+> >>>>>  =A0=A0 1 file changed, 6 insertions(+), 8 deletions(-)
+> >>>>>
+> >>>>> diff --git a/drivers/iio/accel/kionix-kx022a.c
+> >>>>> b/drivers/iio/accel/kionix-kx022a.c
+> >>>>> index 727e007c5fc1..07dcf5f0599f 100644
+> >>>>> --- a/drivers/iio/accel/kionix-kx022a.c
+> >>>>> +++ b/drivers/iio/accel/kionix-kx022a.c
+> >>>>> @@ -577,13 +577,12 @@ static int kx022a_write_raw(struct iio_dev *i=
+dev,
+> >>>>>  =A0=A0=A0=A0=A0=A0=A0 * issues if users trust the watermark to be =
+reached within known
+> >>>>>  =A0=A0=A0=A0=A0=A0=A0 * time-limit).
+> >>>>>  =A0=A0=A0=A0=A0=A0=A0 */
+> >>>>> -=A0=A0=A0 ret =3D iio_device_claim_direct_mode(idev);
+> >>>>> -=A0=A0=A0 if (ret)
+> >>>>> -=A0=A0=A0=A0=A0=A0=A0 return ret;
+> >>>>> +=A0=A0=A0 if (!iio_device_claim_direct(idev))
+> >>>>> +=A0=A0=A0=A0=A0=A0=A0 return -EBUSY; =20
+> >>>>
+> >>>> Not really in the scope of this review - but in my opinion the logic=
+ of
+> >>>> this check is terribly counter intuitive. I mean,
+> >>>> =20
+> >>>>> +=A0=A0=A0 if (iio_device_claim_direct(idev))
+> >>>>> +=A0=A0=A0=A0=A0=A0=A0 return -EBUSY; =20
+> >>>
+> >>> I'm curious how you read this then. I read this as:
+> >>>
+> >>> "If claiming direct mode succeeded, then return an error!" =20
+> >>
+> >> I am used to seeing a pattern where function returning zero indicates a
+> >> success. I have no statistics but I believe this is true for a vast
+> >> majority of functions in the kernel. I believe this was the case with
+> >> the old 'iio_device_claim_direct_mode(idev)' too.
+> >> =20
+> >=20
+> > Fair enough... Note though this is returning a boolean where true makes=
+ total
+> > sense for the "good" case. I do agree it's not super clear just by read=
+ing the
+> > code that the API is supposed to return a boolean. =20
+>=20
+> Exactly. Just seeing the call in code was not obvious to me. It required=
+=20
+> finding the prototype to understand what happens.
+>=20
+> Anyways, I guess this discussion is out of the scope of this patch and=20
+> if no one else sees this important enough to go and change the=20
+> iio_device_claim_direct() - then I am fine with this patch. So, with a=20
+> bit of teeth grinding:
+>=20
+> Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
 
-> > > MFD part is removed since MFD cells binding is unconditional, while
-> > > the device supports any amount of children grater then one. For
-> > > example, my  device uses only backlight at bank A, while all other
-> > > subdevices are not present and used. This patch switches to dynamic
-> > > bind of children.
-> >
-> > MFD does the same. Please, take your time and get familiar with how MFD works.
-> 
-> It does not. I have tried. If mfd cell binding is missing, driver will
-> complain and fail.
+This is copying what happens for the locks that can fail. I agree
+that it would have been nice to get the advantages of sparse with
+the old interface but from what I recall I got a lot more false positives
+so wanted it to look more lock like.
 
-I really don't know what exactly is going on here, you can check it later, but
-I'm 100% sure that MFD works for only driver that are present. What you are
-describing is how component framework is designed.
+Jonathan
 
-To proove my words you can check drivers/mfd/intel_soc_pmic_*.c and find listed
-cells that never had a driver in the Linux kernel. They are just placeholders.
-
-...
-
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
-
-Please, when answering, remove unrelated context from the replies.
-
-...
-
-> Let this driver rot for now, I might return to it. At some point
-
-Up to you. But thanks for trying!
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+>=20
+> Yours,
+>    -- Matti
+>=20
+>=20
 
