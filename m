@@ -1,197 +1,129 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB4891FCCF5
-	for <linux-iio@vger.kernel.org>; Wed, 19 Feb 2025 15:54:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1069B1FCCE7;
+	Wed, 19 Feb 2025 15:56:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739980449; cv=none; b=S9iyuK975TEEJgy+jNRqrq+r1EPTcvw9p/iQZRRBqiJViIJpr9CyQvkbEeJKbUUrnpxzNEV+nJItjFoe0bEIxu8bl1IczBapOVZNwhaHS4W1NwqSQLxBrKGJsFJn+BEy3/zZ1e4wa/cGpp48BSqxfg9UGil0YBzukSYQxpLpPz8=
+	t=1739980580; cv=none; b=XUylcvMQTHPtLp+1+rc8+LciWJ0sGXKX3XJv6XV3F8vwu7dPK9P+lfkWFDmfo70TAn2g1cwzrHhVyJna+hH4CTKdty6V653DCrqifTu2v9O9c+qp4rCuAGh0OAYe5bC3FXtwX/HSx+1pypWz5aVd1CUCkVyCClsrDI9D5Y9LPdk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739980449; c=relaxed/simple;
-	bh=s5MzxyKvsyEYBYrvNz6+0ntDjzoYrdjXYLL8YqFlP6k=;
+	s=arc-20240116; t=1739980580; c=relaxed/simple;
+	bh=uV3soKwL+HCNAvSymtrWOzDP+EtcGO1BQkAUCm5Wg+g=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GGsyXrZ6wIfK5kZDYIWwColYX5ccYStqCHN6I2DOAVimK/nLgxe8DLuxLEV7u+ekCqIGxXUhYGU6AOrxn7icb9Sulhg4N7ilO+M5FzggKpbQ3DpCbW306Ta3T5OGOmjDZP6Y6VpD5LehofI05pt8EByuT+tIhgby5TNe/yoGq28=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=W6qIqLHU; arc=none smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=k8ihoQis5BMrsJSyR+VJ3NK9gH6MxP5xEBTlb5uanFZeKgw6YNb2iELwKlkWVP3iqJQ6aI4GdjdIVn6v4ontKtPuFNhv7X4xQMsswwgcxB9c3c9efBMLpL6Z6JUYYPItloEct+/cC3UHafqbbiEEgaN3vEN2uP3an3ulq2oVOYc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lwlqJK1L; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="W6qIqLHU"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-38f22fe889aso5478597f8f.3
-        for <linux-iio@vger.kernel.org>; Wed, 19 Feb 2025 07:54:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1739980444; x=1740585244; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nJmRSUKL8F6ABuVjT69RlXhEUGlr4KIwTwqYJpsm44o=;
-        b=W6qIqLHUCLqNKAxID9EF9zpmA5C8pWmn6raQeJT2isuJY2cbqfNDI5wPwntSNva4Ej
-         Qd7nO9tB4RvoIlnyFDOYtYX52if3kr1YwQEXhE0/PS7JyBVRmk+yZH4GTPzbv6asBAbS
-         jXwWHDtBpUhp7qoj2QieGhHq/5LENETH/xmv500hebUF+Y6GSiGbsFenh6zoIKIb2R8a
-         Mn3nO3UntUj+G9Aud9SPfm5fjpmov5U1DhhCDmt160NStq8ccQ/vFvwBg32yZ4NdsL8m
-         VjQmzo5+5N+zKlgORldpm9uC/XBP217DOwv84fL3Kf8iLeuRaCHkAceemH4STlJOcb9H
-         B9jA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739980444; x=1740585244;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nJmRSUKL8F6ABuVjT69RlXhEUGlr4KIwTwqYJpsm44o=;
-        b=DsVdghpEbMoKkcZqvpNzvtQEV0Qe0XEXveMl00XfJMLuPJ9/bEXxM+j56LScE9iOY4
-         voN08sPOqPXq9P+xfHOL7DE6NOUTKB3XncAyhFvHWljxhYvj/RMqxlJV3JZK6VfKFfFf
-         4lZwsJsI9MJrEL78RRZ2LLwN+rTWFka00NCNEqfJyaySgJnU2ClTyTp6PUJ3hp9xCMRr
-         Dz+y3uTLcaTQ/jyYJL+Ilg/W41dzVi1JLUvCnGj3kcmXdG7CshqhLzpWBFjh3bX0nkqh
-         b4lOsgM/RGqUEo4si7njUSWvVY/dXdm/b1+NEHYe0s/IvWJyV6+wCfdbIkGvJQmVmBMQ
-         K4lw==
-X-Forwarded-Encrypted: i=1; AJvYcCWg/S9Gm33qQQUiaGJLPCWXZO/hdNjbpvii4n1Ys4lxsapeMERqzeKs5cx7o0rXepb5LTxWHaRDH+4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzXKk651FsjB0kKgL8N6qxmGfWZMY0IX1qTBFi4CRRYpqLJW9+q
-	7aGjzgwzkcg6ZHJyfM8Dr6I056oQotozEgHjlYdjDIy3+5ZwSpHWM61dcsCnDms=
-X-Gm-Gg: ASbGncuy4VFjjnyrh6CLqoV1Ja3+ai8UNlJ8l8E86W/TXPZK5xZfbAgEsqEtr1xSX/j
-	LUsTdoC2u2TenJzaYGehiMbrSLhOubhBrwLCbki3JTU7tVf6iTkM4IwJhAfFH0lIBszc6NTsRzX
-	nyVpHq25ikKhOzG9eAGZFvxDJP1FfrVzxdnaCULF2m+slt6WLXdG+iH/ka7YAQSsmzYUN1VEA7r
-	k496J+dyv4mcVmmS9JBoD0ISxloYrjxTGJu8Q+jW/IUGOIChDUvz1GqyUnBOcLh5mtjTW10ZfP9
-	FHljQrmAabABTn8NE4wPrcIyPHBkB62gSRCuAI0FTIDd5l5PakBNSMScaA==
-X-Google-Smtp-Source: AGHT+IEtqiGBsSY128uo+BoAGh9P0Wn+u6ZdCoc9mwYUfBpVWXs+LwP1cHGsV0roi4ZxBlwN3qK3Iw==
-X-Received: by 2002:a5d:47c3:0:b0:38f:3c6c:28ff with SMTP id ffacd0b85a97d-38f3c6c2ce0mr15508564f8f.23.1739980443959;
-        Wed, 19 Feb 2025 07:54:03 -0800 (PST)
-Received: from localhost (p200300f65f083b0400000000000001b9.dip0.t-ipconnect.de. [2003:f6:5f08:3b04::1b9])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38f259d5c36sm18402851f8f.67.2025.02.19.07.54.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2025 07:54:03 -0800 (PST)
-Date: Wed, 19 Feb 2025 16:54:02 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Cosmin Tanislav <cosmin.tanislav@analog.com>, 
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 2/6] iio: adc: ad4130: Fix comparison of channel setups
-Message-ID: <vxwfhjbrrs6e3sk7xvrdtshvr3suna45qiluu3zxba3dg2cy3b@gqnvtmlnufdk>
-References: <cover.1739902968.git.u.kleine-koenig@baylibre.com>
- <4d1ba8c9a890393fce38083b01db6ce03df8ac5b.1739902968.git.u.kleine-koenig@baylibre.com>
- <CAHp75VfmYVBpmq1_bChNrZ+pgcHN_eBOYTcnhcxqWvhKxx0G1g@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lwlqJK1L"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1739980579; x=1771516579;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=uV3soKwL+HCNAvSymtrWOzDP+EtcGO1BQkAUCm5Wg+g=;
+  b=lwlqJK1LXTvxJ+EWudFro8aZPJMqcJPUT58kxjNEZ30GML6GSKnX9EAB
+   liAhzqJS5SDhtwvZcQMnOjFibzq++KcRAtqG30zoRL9mbRMYhlJVvLHWE
+   bu52UwMhnVY4w8glg6dMCLs/Ax2z3KE1P99rj0e51sfsjJvOcRvsRVnC5
+   0lfWofu3WTokGPBr9X39mAVp1xImbe3esC5xatTO7alkn7svGQ/jSqCQ5
+   pxUA0mChaMFS3bJs+yC9z2N5B0T1ehQeC0MuLGKtuS7gybUcwMbHaj3CP
+   nsD2xaEGaf+xVJPa2Q/lB0yICi0LRhMeUC1XMs4a4P2ex5jUPk5IiRJc5
+   w==;
+X-CSE-ConnectionGUID: p18e5709S3i1yRm3An+ukg==
+X-CSE-MsgGUID: c4WqoUpRTjW1gzzBzpm1ng==
+X-IronPort-AV: E=McAfee;i="6700,10204,11350"; a="44641211"
+X-IronPort-AV: E=Sophos;i="6.13,299,1732608000"; 
+   d="scan'208";a="44641211"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2025 07:56:15 -0800
+X-CSE-ConnectionGUID: 9tQ7e4C6QyWDwrfSehe6Ew==
+X-CSE-MsgGUID: pjGdWZJjSauXppPQLfgMhw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,299,1732608000"; 
+   d="scan'208";a="145612236"
+Received: from smile.fi.intel.com ([10.237.72.58])
+  by orviesa002.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2025 07:23:30 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1tkluw-0000000D3ix-2SQZ;
+	Wed, 19 Feb 2025 17:23:18 +0200
+Date: Wed, 19 Feb 2025 17:23:18 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, Pavel Machek <pavel@ucw.cz>,
+	Daniel Thompson <danielt@kernel.org>,
+	Jingoo Han <jingoohan1@gmail.com>, Helge Deller <deller@gmx.de>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-leds@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] mfd: lm3533: convert to use OF
+Message-ID: <Z7X3ZvQbSe75U-AR@smile.fi.intel.com>
+References: <20250218132702.114669-1-clamor95@gmail.com>
+ <20250218132702.114669-3-clamor95@gmail.com>
+ <Z7XqKcOUt5niXzpv@smile.fi.intel.com>
+ <CAPVz0n1_WQyOHhtEVAh53uhEUhZvqqZSEJh6XALtSrVfkMSLYw@mail.gmail.com>
+ <Z7XzgfHcjyK_UZKv@smile.fi.intel.com>
+ <CAPVz0n2WwAOb1UU7J7aDTdhXXCaAZkCpYjW_nc_CBRgkGWdEOw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="agroq5nuknnye377"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAHp75VfmYVBpmq1_bChNrZ+pgcHN_eBOYTcnhcxqWvhKxx0G1g@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPVz0n2WwAOb1UU7J7aDTdhXXCaAZkCpYjW_nc_CBRgkGWdEOw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
+On Wed, Feb 19, 2025 at 05:13:15PM +0200, Svyatoslav Ryhel wrote:
+> ср, 19 лют. 2025 р. о 17:07 Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> пише:
+> > On Wed, Feb 19, 2025 at 04:36:38PM +0200, Svyatoslav Ryhel wrote:
+> > > ср, 19 лют. 2025 р. о 16:27 Andy Shevchenko
+> > > <andriy.shevchenko@linux.intel.com> пише:
 
---agroq5nuknnye377
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 2/6] iio: adc: ad4130: Fix comparison of channel setups
-MIME-Version: 1.0
+...
 
-On Wed, Feb 19, 2025 at 10:53:54AM +0200, Andy Shevchenko wrote:
-> On Tue, Feb 18, 2025 at 8:31=E2=80=AFPM Uwe Kleine-K=C3=B6nig
-> <u.kleine-koenig@baylibre.com> wrote:
+> > > MFD part is removed since MFD cells binding is unconditional, while
+> > > the device supports any amount of children grater then one. For
+> > > example, my  device uses only backlight at bank A, while all other
+> > > subdevices are not present and used. This patch switches to dynamic
+> > > bind of children.
 > >
-> > Checking the binary representation of two structs (of the same type)
-> > for equality doesn't have the same semantic as comparing all members for
-> > equality. The former might find a difference where the latter doesn't in
-> > the presence of padding or when ambiguous types like float or bool are
-> > involved. (Floats typically have different representations for single
-> > values, like -0.0 vs +0.0, or 0.5 * 2=C2=B2 vs 0.25 * 2=C2=B3. The type=
- bool has
-> > at least 8 bits and the raw values 1 and 2 (probably) both evaluate to
-> > true, but memcmp finds a difference.)
-> >
-> > When searching for a channel that already has the configuration we need,
-> > the comparison by member is the one that is needed.
-> >
-> > Convert the comparison accordingly to compare the members one after
-> > another. Also add a BUILD_BUG guard to (somewhat) ensure that when
-> > struct ad4130_setup_info is expanded, the comparison is adapted, too.
->=20
-> ...
->=20
-> > +/*
-> > + * If you make adaptions in this struct, you most likely also have to =
-adapt
->=20
-> adaptations?
+> > MFD does the same. Please, take your time and get familiar with how MFD works.
+> 
+> It does not. I have tried. If mfd cell binding is missing, driver will
+> complain and fail.
 
-ack.
+I really don't know what exactly is going on here, you can check it later, but
+I'm 100% sure that MFD works for only driver that are present. What you are
+describing is how component framework is designed.
 
-> > +static bool ad4130_setup_info_eq(struct ad4130_setup_info *a,
-> > +                                struct ad4130_setup_info *b)
-> > +{
-> > +       /*
-> > +        * This is just to make sure that the comparison is adapted aft=
-er
-> > +        * struct ad4130_setup_info was changed.
-> > +        */
-> > +       static_assert(sizeof(*a) =3D=3D
-> > +                     sizeof(struct {
-> > +                                    unsigned int iout0_val;
-> > +                                    unsigned int iout1_val;
-> > +                                    unsigned int burnout;
-> > +                                    unsigned int pga;
-> > +                                    unsigned int fs;
-> > +                                    u32 ref_sel;
-> > +                                    enum ad4130_filter_mode filter_mod=
-e;
-> > +                                    bool ref_bufp;
-> > +                                    bool ref_bufm;
-> > +                            }));
->=20
-> This can be moved out of the function, but in any case it should not
-> affect code generation I believe.
+To proove my words you can check drivers/mfd/intel_soc_pmic_*.c and find listed
+cells that never had a driver in the Linux kernel. They are just placeholders.
 
-It can, but I like having it near its usage.
-=20
-> > +       if (a->iout0_val !=3D b->iout0_val ||
-> > +           a->iout1_val !=3D b->iout1_val ||
-> > +           a->burnout !=3D b->burnout ||
-> > +           a->pga !=3D b->pga ||
-> > +           a->fs !=3D b->fs ||
-> > +           a->ref_sel !=3D b->ref_sel ||
-> > +           a->filter_mode !=3D b->filter_mode ||
-> > +           a->ref_bufp !=3D b->ref_bufp ||
-> > +           a->ref_bufm !=3D b->ref_bufm)
-> > +               return false;
-> > +
-> > +       return true;
-> > +}
->=20
-> ...
->=20
-> >                 struct ad4130_slot_info *slot_info =3D &st->slots_info[=
-i];
-> >
-> >                 /* Immediately accept a matching setup info. */
-> > -               if (!memcmp(target_setup_info, &slot_info->setup,
-> > -                           sizeof(*target_setup_info))) {
-> > +               if (ad4130_setup_info_eq(target_setup_info, &slot_info-=
->setup)) {
->=20
-> I don't remember if we discussed the idea of using crc32 to compare
-> the data structures, like it's done for PLD data in USB Type-C cases.
-> https://elixir.bootlin.com/linux/v6.14-rc3/C/ident/pld_crc
+...
 
-crc32 works on the binary representation again, right? That's what this
-patch targets to remove.
+> > --
+> > With Best Regards,
+> > Andy Shevchenko
 
-Best regards
-Uwe
+Please, when answering, remove unrelated context from the replies.
 
---agroq5nuknnye377
-Content-Type: application/pgp-signature; name="signature.asc"
+...
 
------BEGIN PGP SIGNATURE-----
+> Let this driver rot for now, I might return to it. At some point
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAme1/pcACgkQj4D7WH0S
-/k6hoQf+LzIltl6w+gHyQ04BbMe5z/LvKie9V0TS0Bw+T49OlzHW5RtzjcBIyZoI
-ctI6D5FInLQAK2srYFjg676P4iIYv83sRK1UbyISlwMBGxi5QbCZgVhMNtC5tIJ/
-I4HFL/IVu0Q25bFn/IwzS/A35zIFdmUWg/i/echeA3w69h8mXLUzDj84IkZxAfrO
-Dd1D2p4hVNGvlBNCLWT636411dDbApPE1GumrguP614wGhGJPUA9cxrHMhzxWU5W
-Md72k39OblHkcSAJNPOx0Gi+knmUACu1WJh2s2yOjCkFTDhNQggLWUMXRlIOGggV
-Qwgk19Eyy7bd8cCjM1Fc6N73UQE86A==
-=2cd3
------END PGP SIGNATURE-----
+Up to you. But thanks for trying!
 
---agroq5nuknnye377--
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
