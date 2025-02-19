@@ -1,184 +1,154 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54B771DE3DB;
-	Wed, 19 Feb 2025 15:13:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F5C01F5859
+	for <linux-iio@vger.kernel.org>; Wed, 19 Feb 2025 15:25:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739978010; cv=none; b=A73BEtmI0WtJXtiYP0EMpix2uMEVyGoX9bsj4g1um1fHSLm9lGCH7sgsbPTIl5QP3/qpOsiKg3ZDXiBPzk2kLXjDBvyyPd1m6IVlGfOwyPrraAuHWtu7thRZdEJVXNAOH4g21qEyDDccKrjIdV7m66icUf8+LGKdow3IwH+P/P8=
+	t=1739978705; cv=none; b=g9JdrlzqCdr1ZFJosgtyygFvGFSxJn8squl6cs7YGUsLq9QUSMJvbKfzxtSLSe7GuuiRCWsUromAnap3tfRcoXs7yQVmrPJinbuj9XWa3W1c40zGg8LTS6Pfubcq8wuizBuTgX3gCKzik3/ePHLNnUaZ4hVSX5m9NFJ0X86C9PY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739978010; c=relaxed/simple;
-	bh=heG+JSCrMhZza5YuqnAywconlxDmO02WZfs3lNmw9Bg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=dIlB5xS2L0D2IFXKeIHVu+J6kvKGXqX/zaB7eDp90xKR1Fyc7fBkIqUuKtw9uD7pkagD+fyZ8H9vmtTbeXpv53xfR1AQ5TWa/6I22+2Tl8A2OCvrNseWZAVBvWJV/5XQjJ4H3JLSeWXjTcaJKEbnBeXykGdJA64qVVz0uADXSVo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Lwjf7v7P; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1739978705; c=relaxed/simple;
+	bh=xo9i9YY4VxqZAabx7JlbkZSncYY0CVcTX+lGSBuMNQE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fy30D/XYBPKrk1iF0AWpcxDFUd1YVcYgCcRTIFAHeC4SM5Ap6jJFPtMnuAN7kwdI8nrO8Ku9uiGZmf9zf6B8m4Or5RnyQLzfNYqPi2Zbdm7rcX31N+V5FSPKvsmp1TGfKIt/ngnXHD3x0TIcZRoznt88FS/OKRzJxdZ4rUZK1dk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=LO9Qq71V; arc=none smtp.client-ip=209.85.210.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Lwjf7v7P"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4398e839cd4so6184195e9.0;
-        Wed, 19 Feb 2025 07:13:27 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="LO9Qq71V"
+Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-7272dae0604so1308039a34.1
+        for <linux-iio@vger.kernel.org>; Wed, 19 Feb 2025 07:25:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739978006; x=1740582806; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=drt0+j9GwUEYRUPa0Msh+AZlxPlFbPJs9VWQL5t8VpM=;
-        b=Lwjf7v7PdDf4mMOlt8lMlilhGB5p6pDB0ILCE48LPI0R/ZV+dQ/W1rqfk2hacCUagI
-         o/Jdc1Bv50fkT4BYH7PiixWoNad9VzMCO/Q7TwyHFvPR1+4PLkszCBDPRb4fdYoFrMTj
-         aOWYHI8W6uafgN51U2yk3JUaOAR1pyFuyy9C7m8TBYTcG/A96OXN1aQcLiJC/52b4rz2
-         ysXu/DO0wxB4I010RJ8KhPDjA5FjX+RdVUvqaSxFOrYxTMPjuJ7nzs6lxmyZLFiiIhtx
-         70sPMmUdHKkslqItYql0UVanOehjbHhx4Bu5f1tMvt/GsNCHJnkLoTuLlWY8xY62Dwxo
-         6dDA==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1739978701; x=1740583501; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+3Ne9a+ljYjLyHYgmxptshkN7EiMBblmyAcH64rom6A=;
+        b=LO9Qq71VI7Cmj69ziLlW2BouExlINEpRzoSJcU6J0VXnmRawTQQsDNDPzPTMAFe8o/
+         epGfIa35oJybo34L6g9gY+SSbF7kzalFxkWMU904cQ8w2aGSKA+j22bmcGEl498a8Vae
+         MCkM8oXXVl9AGjvEqtGScl8tC7Mg0/Is5M39JgHIQ5uOs1p+cOMoJa4Teur+2uPpmKv6
+         zlaDyTf9RsfnduHnxVKuAXaWJSmPXbKnMcnp/AXWN0pLvLTCCysmPxjqypH8QKWtYKm5
+         FZMU5L6kFbKXlEnP2V3fvcDF3wsCxXMgq4Q+VrMEOI3WWYLO5LKznmI0EaHJKmvMu5wr
+         yZhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739978006; x=1740582806;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=drt0+j9GwUEYRUPa0Msh+AZlxPlFbPJs9VWQL5t8VpM=;
-        b=WuLjwOoYQzN6/trbiteqy88sPNV4H4DQx61bBn7aYxTaYtoDv0mXz2D2GgmqMISxmE
-         QjPpUpb2nmTzFkJz12EESETvctg8nkLoNip5D5vOTk24GdBOTeDAAUFH5t5sb/86VBWB
-         UMfMc978ZAxELWIZn0DedtxjG2UYwBw1eaxAEbO1Ngx7mB0cjN5oc5uLjj/emFbggqwz
-         kdmE4/6eFFQGLKGutS6zyWDt3sF4PdVe34wDRyX6yBWJyy0jEDGp8G7QnvSNi0yZ+5+a
-         peLfXi9pNnbvsZG6fx85yyIqllbThttOo4YqZsrUe/dDItkbKK5UfOWN8bpP3rxR2ZkN
-         UV6w==
-X-Forwarded-Encrypted: i=1; AJvYcCVxbz+iIqb2Wz/h2fyMvsBGIVBJwJBr4FRP7B3ozsf+QBqOE2mwRuS0G0HwBzKZhEhnHAnf5f08aZ7G@vger.kernel.org, AJvYcCW6JhEA7w6VYTcuLzlXl41xdJl6V7IluLtwMmFGO71u4rUuEwA6dl/TXtTQiLcmR7FLcAKL+M73jafR@vger.kernel.org, AJvYcCW6VqydYS4MnuTX5ZVAauN8ug8ZMLG07Y12KjKCyj2Hv2G+DHqllTT/xBUDhiqfaBi1giOXlqTnXMDCtmA=@vger.kernel.org, AJvYcCWTBkHIJmi33EqNs3OkJEN1kmSvqDXTpjO8FPZ3IX3JCuED2kpS5jFNXqaqxdfPFxF/h3KkjZxyAzq9bLyu@vger.kernel.org, AJvYcCXA7cZOt8zMS77X+iuH9QqyEVllPLn0C0S94YyTayuyKuaE/BdUO+4lbj6N1/M+i9hDoNF2x1Yfy+o1EA==@vger.kernel.org
-X-Gm-Message-State: AOJu0YzYmN6/V+lh440R0pyJ2GfV/xHfOX85W2wH2PFj+/3/JPvW8hI7
-	YO6cfSiWjMzCTZOnOPSkUXRHlr/0HqLjR+qJtetHPTasRh6JauGfHnDsbK1a5T/0r/IFA2RqCcP
-	8QZXUc/C2EpCPuOGGa8oLQmarSc8=
-X-Gm-Gg: ASbGncsQs+W51MTGRYpxhKM25kwYAi590rRcLChepQe6R2/InIdEYnTmf64sakETWRi
-	y9/5vBZBHiyzN+2b6zufYEgh/j4PLAlPFV2H4HAwScThrsjFFgSVJWTQdMx214KMiMh1+zF9lGw
-	==
-X-Google-Smtp-Source: AGHT+IGZjyYv7inH5rGul4/nFCxLPjiYnaafDWPgkEdRu9+5PeRR1GZ+8z1ALgaPlmJj0wiSt+tzaqhh5lN+rJfpqVs=
-X-Received: by 2002:a05:6000:1fa1:b0:38d:c6b8:9fe1 with SMTP id
- ffacd0b85a97d-38f57ea1cfcmr3735864f8f.24.1739978006290; Wed, 19 Feb 2025
- 07:13:26 -0800 (PST)
+        d=1e100.net; s=20230601; t=1739978701; x=1740583501;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+3Ne9a+ljYjLyHYgmxptshkN7EiMBblmyAcH64rom6A=;
+        b=frXfi1glWXc/cMh+pAvf5X9+No8/q8igSlYgv8o/VsEVtCZnE9x7K+cFbO7Ka6rozn
+         54MbrH5+2PBsd8nS7VTeBIDR7JeLFGIaoXKaYUGx/CA0cDCkoRe9vRABUQLfCETQOjJW
+         RTANrPShp59w+jnVhUnV2SFFIgEIxjq/tPAr4gyQO1XuPs9SRPSJetxF/RrHUIioRoN/
+         S0gw9cRs8Zw/lOSTjnBq21uOZlPUErcpDKunxhqk53JEqnzq+AqYj6G8rjbkYbeP61GQ
+         +ockreKzTsKCEif2s9gr/wnYkVwdUnC1R1BkBbrUVS9QSOYumE5tuHIG5IjE6fD5iZqc
+         ZYqQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWKIUZp1leLCsDx3XDRot9C0RjuvUyJHChHNa4pWncnSoW2R9BmwHPmQY0tEjWHAtCyfYaYkpnPw7E=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy0mklMUAbWe/Hnu+IRyBfPc99zjShDwJ/qnjc3nEr5caw9qH4v
+	llQjdCAZfUueL4wkbIncPMQQSPQaXtQenrqnif7GxzbtkXj39zKP+BGQyj7BJg0=
+X-Gm-Gg: ASbGncsRBDIYr5NBIhOv72y8QmhRNgx5A7G1H1Ne0LcFl5Z5JeS/TcVDtBvl1feJ1Fo
+	E0OQUhhN1++wkV6fD2IzBZJ7FxnYEgfBV8d+xwL9cSY6qi5sMrXNqNas7g+iN6NEOUBMCKlsat7
+	tP56zbxG3+sYa61ZQ27Zl4Ecmd62/jelTlYPxFEFdh3MsJORgY96mU4wCmkyKvha06Xi51HP4LR
+	sxRjeatKbkE3CEm69sKANTfT7PL89nweGfwFva7s52qvk3ugYN/RZewPmAjX4vCPkrKJ+48WuRt
+	omS/+hmB0DPSy4/GL0yBp+QBvOR+VNacgFw0Kfz1eAxd1oo8UijP
+X-Google-Smtp-Source: AGHT+IHOQx18U1f2UiEOhCr5xhouAZgxDGO55YUlpjKxU/k/FZoke46S04y9CU87l50vqPHgTMJtVg==
+X-Received: by 2002:a05:6830:648e:b0:727:f9a:8ae8 with SMTP id 46e09a7af769-7271202a4c8mr11863856a34.3.1739978701466;
+        Wed, 19 Feb 2025 07:25:01 -0800 (PST)
+Received: from [192.168.0.142] (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-72733eb6951sm903498a34.7.2025.02.19.07.25.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Feb 2025 07:25:01 -0800 (PST)
+Message-ID: <2ad4ca67-5a70-4b7b-b744-d9bd92ce386a@baylibre.com>
+Date: Wed, 19 Feb 2025 09:25:00 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250218132702.114669-1-clamor95@gmail.com> <20250218132702.114669-3-clamor95@gmail.com>
- <Z7XqKcOUt5niXzpv@smile.fi.intel.com> <CAPVz0n1_WQyOHhtEVAh53uhEUhZvqqZSEJh6XALtSrVfkMSLYw@mail.gmail.com>
- <Z7XzgfHcjyK_UZKv@smile.fi.intel.com>
-In-Reply-To: <Z7XzgfHcjyK_UZKv@smile.fi.intel.com>
-From: Svyatoslav Ryhel <clamor95@gmail.com>
-Date: Wed, 19 Feb 2025 17:13:15 +0200
-X-Gm-Features: AWEUYZkkApm2pdMCm-ce2W0NUEFkWtCs86nFAeRIR60gASygQyZJcvz4RbQHc2Q
-Message-ID: <CAPVz0n2WwAOb1UU7J7aDTdhXXCaAZkCpYjW_nc_CBRgkGWdEOw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] mfd: lm3533: convert to use OF
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Pavel Machek <pavel@ucw.cz>, 
-	Daniel Thompson <danielt@kernel.org>, Jingoo Han <jingoohan1@gmail.com>, Helge Deller <deller@gmx.de>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@baylibre.com>, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-leds@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 5/8] iio: accel: kx022a: Switch to sparse friendly
+ iio_device_claim/release_direct()
+To: Matti Vaittinen <mazziesaccount@gmail.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>,
+ Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>
+References: <20250217140135.896574-1-jic23@kernel.org>
+ <20250217140135.896574-6-jic23@kernel.org>
+ <0e17116e-6160-4920-83d9-086218245299@gmail.com>
+ <85d97cbe-9d34-462c-a89f-de6fc1ac6e34@baylibre.com>
+ <ead33fc6-48b9-488c-8993-2ca647e59735@gmail.com>
+ <df700bd7c8d3aab89177b122ed9adf0269bde62d.camel@gmail.com>
+ <ade6ee75-7f38-4826-9359-2411165decb5@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <ade6ee75-7f38-4826-9359-2411165decb5@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-=D1=81=D1=80, 19 =D0=BB=D1=8E=D1=82. 2025=E2=80=AF=D1=80. =D0=BE 17:07 Andy=
- Shevchenko
-<andriy.shevchenko@linux.intel.com> =D0=BF=D0=B8=D1=88=D0=B5:
->
-> On Wed, Feb 19, 2025 at 04:36:38PM +0200, Svyatoslav Ryhel wrote:
-> > =D1=81=D1=80, 19 =D0=BB=D1=8E=D1=82. 2025=E2=80=AF=D1=80. =D0=BE 16:27 =
-Andy Shevchenko
-> > <andriy.shevchenko@linux.intel.com> =D0=BF=D0=B8=D1=88=D0=B5:
-> > > On Tue, Feb 18, 2025 at 03:27:00PM +0200, Svyatoslav Ryhel wrote:
-> > > > Remove platform data and fully relay on OF and device tree
-> > > > parsing and binding devices.
-> > >
-> > > Thanks for following the advice, but the problem with this change as =
-it does
-> > > too much at once. It should be split to a few simpler ones.
-> > > On top of that, this removes MFD participation from the driver but le=
-aves it
-> > > under MFD realm. Moreover, looking briefly at the code it looks like =
-it open
-> > > codes the parts of MFD. The latter needs a very goo justification whi=
-ch commit
-> > > message is missing.
->
-> ...
->
-> > Splitting this into a set of commits would be nearly impossible,
->
-> I don't buy this.
-> One patch can introduce device property support.
-> Another one removes the old platform data interface.
->
-> So, at bare minimum there will be two patches. (Besides the advice to hav=
-e
-> two more.)
->
-> > original driver does not relay on OF, it relays on platform data.
->
-> And?..
->
-> > Ripping out platform data will leave behind a broken useless driver.
->
-> Hmm... This cna be the case if and only if we have the user in kernel.
-> Is this the case?
->
-> > So it has to be done simultaneously.
->
-> Nope.
->
-> > MFD part is removed since MFD cells binding is unconditional, while
-> > the device supports any amount of children grater then one. For
-> > example, my  device uses only backlight at bank A, while all other
-> > subdevices are not present and used. This patch switches to dynamic
-> > bind of children.
->
-> MFD does the same. Please, take your time and get familiar with how MFD w=
-orks.
->
+On 2/19/25 6:21 AM, Matti Vaittinen wrote:
+> On 19/02/2025 12:51, Nuno Sá wrote:
+>> On Wed, 2025-02-19 at 07:36 +0200, Matti Vaittinen wrote:
+>>> On 18/02/2025 17:42, David Lechner wrote:
+>>>> On 2/18/25 1:39 AM, Matti Vaittinen wrote:
+>>>>> On 17/02/2025 16:01, Jonathan Cameron wrote:
+>>>>>> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>>>>>>
+>>>>>> These new functions allow sparse to find failures to release
+>>>>>> direct mode reducing chances of bugs over the claim_direct_mode()
+>>>>>> functions that are deprecated.
+>>>>>>
+>>>>>> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>>>>>> Cc: Matti Vaittinen <mazziesaccount@gmail.com>
+>>>>>> ---
+>>>>>>     drivers/iio/accel/kionix-kx022a.c | 14 ++++++--------
+>>>>>>     1 file changed, 6 insertions(+), 8 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/iio/accel/kionix-kx022a.c
+>>>>>> b/drivers/iio/accel/kionix-kx022a.c
+>>>>>> index 727e007c5fc1..07dcf5f0599f 100644
+>>>>>> --- a/drivers/iio/accel/kionix-kx022a.c
+>>>>>> +++ b/drivers/iio/accel/kionix-kx022a.c
+>>>>>> @@ -577,13 +577,12 @@ static int kx022a_write_raw(struct iio_dev *idev,
+>>>>>>          * issues if users trust the watermark to be reached within known
+>>>>>>          * time-limit).
+>>>>>>          */
+>>>>>> -    ret = iio_device_claim_direct_mode(idev);
+>>>>>> -    if (ret)
+>>>>>> -        return ret;
+>>>>>> +    if (!iio_device_claim_direct(idev))
+>>>>>> +        return -EBUSY;
+>>>>>
+>>>>> Not really in the scope of this review - but in my opinion the logic of
+>>>>> this check is terribly counter intuitive. I mean,
+>>>>>
+>>>>>> +    if (iio_device_claim_direct(idev))
+>>>>>> +        return -EBUSY;
+>>>>
+>>>> I'm curious how you read this then. I read this as:
+>>>>
+>>>> "If claiming direct mode succeeded, then return an error!"
+>>>
+>>> I am used to seeing a pattern where function returning zero indicates a
+>>> success. I have no statistics but I believe this is true for a vast
+>>> majority of functions in the kernel. I believe this was the case with
+>>> the old 'iio_device_claim_direct_mode(idev)' too.
+>>>
+>>
+>> Fair enough... Note though this is returning a boolean where true makes total
+>> sense for the "good" case. I do agree it's not super clear just by reading the
+>> code that the API is supposed to return a boolean.
+> 
+> Exactly. Just seeing the call in code was not obvious to me. It required finding the prototype to understand what happens.
+> 
+> Anyways, I guess this discussion is out of the scope of this patch and if no one else sees this important enough to go and change the iio_device_claim_direct() - then I am fine with this patch. So, with a bit of teeth grinding:
+> 
+> Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> 
+> Yours,
+>   -- Matti
+> 
+> 
 
-It does not. I have tried. If mfd cell binding is missing, driver will
-complain and fail.
-
-> ...
->
-> > > > +     device_property_read_string(&pdev->dev, "linux,default-trigge=
-r",
-> > > > +                                 &led->cdev.default_trigger);
-> > >
-> > > One prerequisite patch you probably want is an introduction of
-> > >
-> > >         struct device *dev =3D &pdev->dev;
-> > >
-> > > in the respective ->probe() implementations. This, in particular, mak=
-es the
-> > > above lines shorter and fit one line.
-> >
-> > This is not a scope of this patchset. Original driver uses &pdev->dev
->
-> Indirectly it is. The change you are proposing tries to continue using th=
-is
-> construction with making needlessly longer.
->
-> ...
->
-> > > > +             if (!strcmp(comatible, "ti,lm3533-als"))
-> > > > +                     lm3533->have_als =3D 1;
-> > >
-> > > If you end up having this, it's not the best what we can do. OF ID ta=
-bles have
-> > > a driver_data field exactly for the cases like this.
-> >
-> > This is required by core driver to handle some attributes and is here
-> > solely not to touch those in this patch.
->
-> What does this mean?
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
-
-Let this driver rot for now, I might return to it. At some point
+Would a name like iio_device_try_claim_direct_mode() make it more
+obvious that it returned a bool instead of int?
