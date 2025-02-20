@@ -1,120 +1,194 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFA9E1B0F33;
-	Thu, 20 Feb 2025 17:17:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C16B1EBA05
+	for <linux-iio@vger.kernel.org>; Thu, 20 Feb 2025 17:32:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740071848; cv=none; b=a/d90Vh96cXvrf89Dwtp1I86Ecnma+lJZ55PkqjT2JVI7Ep1L6xI5wV3gjT5otDTzk1sECPvu1fKAbKMfAxlQqB1UkSMnrBs1GR9xEhl5eQqnwLosLDuYpmSIZ35mtSOck8ISaTrXy0wtbBSBkqY6FzfdcQHJM6pjK5iI3fnivk=
+	t=1740072737; cv=none; b=aQSGAZd8eYO3XgnFqrlVQjEWIlvMVInEjx6Ea1wjiYSXIKVGSM+deS/0Fumjt62NBdXk1KvMQSz9kQ4WfT9cl8yzYerwH09X9C3xCDMT+xxZ0A6tvzqXFVfEcYJygJLQ0d0UcIar1Was97WXqLsJ9fYlFQHM/oqHZAVDwJbyFDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740071848; c=relaxed/simple;
-	bh=7CGSKMHde5rIbG0LCV4dYgFBgSrYGZsf7bUx73BQ6NI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=q089oG2vFZsIRxxwd0JYAXeynxAp/LZc15mZbjCqar1OJ2JOVRmsQYLdIv58BTIEji5lVNfGQKFeRBcuhlXNwqzbvOuvCevBLzZSKEhnme0rdB3hI18REjGaziIF7r+umP2NbSH+Hl+0qrJ5NJACJioc2yV4cIPTelt7DYCB53U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m1UlwNEi; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1740072737; c=relaxed/simple;
+	bh=3sYO6hLTbz1Yx4jhh2H9VLVNmtvcj0Yg/VTm0rvs6nk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=j2w3hij9Lt9BSY5e8Fh3t9JpNfSJAWTGJLuri14zsjrvyUODetQ10N+bvjgYIuhJPbafcdQXxq6Z41QlX6GL06ksLskh6TOuh0h0xGJDroLXgAPrMQMjY6IUjYG5XlxZKCaQzme1KVA7u2t+jOpZ/ANFJ5G6SP6SVh8qsv9pezI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=nbJmFXiM; arc=none smtp.client-ip=209.85.161.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m1UlwNEi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740071847; x=1771607847;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7CGSKMHde5rIbG0LCV4dYgFBgSrYGZsf7bUx73BQ6NI=;
-  b=m1UlwNEiURLv13OrYuyD7yEvIe7siq1TMLEJW9xTlAtXjEWN3POiidNY
-   5LGn21g4l5qoBOcucup+KimAoLYA2Q4JsLRNGMNvuWuuxaOJrRYS2/kvk
-   kzJ48/Un6Xslp9cOCTXgeztUx6cz+DF2+3TtJgt0oY4F5T3qYORwse3Xg
-   Ed0oj6LWY3ZFO8ZVihwGdh/YQv+9g6QS7oikOKluJKO6VmCb8KGmY+ivS
-   SqV6bfTmN/KexWk0/b7BFLoRsa2gY7ejSZsM+wr3m99ArSzmjiOIleKuC
-   NLgYb0d9XKjBpNM2nSYbWHDOO+/0PHWNnxjGwImcLM3PceIwDz9KVL6Sa
-   w==;
-X-CSE-ConnectionGUID: 2Ffmd/pzRKuhaOkOjrwmIg==
-X-CSE-MsgGUID: kNP26O+kR5yeF+6Q0YJQtQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11351"; a="66227618"
-X-IronPort-AV: E=Sophos;i="6.13,302,1732608000"; 
-   d="scan'208";a="66227618"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2025 09:17:26 -0800
-X-CSE-ConnectionGUID: G3FJM02tRbOugVssdF5ZIg==
-X-CSE-MsgGUID: niWiQBFIQH6uYj+yoBl1JA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="116001418"
-Received: from lkp-server02.sh.intel.com (HELO 76cde6cc1f07) ([10.239.97.151])
-  by orviesa008.jf.intel.com with ESMTP; 20 Feb 2025 09:17:24 -0800
-Received: from kbuild by 76cde6cc1f07 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tlAAr-0004Zj-2i;
-	Thu, 20 Feb 2025 17:17:21 +0000
-Date: Fri, 21 Feb 2025 01:16:32 +0800
-From: kernel test robot <lkp@intel.com>
-To: Jun Yan <jerrysteve1101@gmail.com>, jic23@kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, lars@metafoo.de,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Jun Yan <jerrysteve1101@gmail.com>
-Subject: Re: [PATCH 1/2] iio: gyro: bmg160_spi: add of_match_table
-Message-ID: <202502210125.5IaR1YAL-lkp@intel.com>
-References: <20250219150254.24664-2-jerrysteve1101@gmail.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="nbJmFXiM"
+Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-5fce03395d4so1037914eaf.2
+        for <linux-iio@vger.kernel.org>; Thu, 20 Feb 2025 09:32:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1740072733; x=1740677533; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AIc+j8TxBrdPej0mz926UOoeIMB5TisIsEjQp/BF3M8=;
+        b=nbJmFXiMhYuFOf79oDrqVL0kUcFacWOkUYIIIVtNWcAouw843PQE6H6udff9h7i+gU
+         K4eFJbkxtrv33IsMJtypin5N4rSk0sdRI+ttHI/mxSDO4A0KnN4PzZ/P3HpBfceM97AN
+         ZSFW8VtWZMDA1DKxgTQ0KjPIWp5/P1usyYosKLxCjuVu4/4KU9tdMgYQyt7hqqGP2/JS
+         XniHexCZveNbWFfTk4e5SAcDRtuwuZtXbx1TAY8A889gGMqIMoOECdNpUlX6+oR1TmrQ
+         ncy6dQ1Cxw4daDyqeZsTLbhTWMqIFz3GX9XN+ELoQoHLWvGmr2inL/N9EN9OVTsJ+xkM
+         tzOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740072733; x=1740677533;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=AIc+j8TxBrdPej0mz926UOoeIMB5TisIsEjQp/BF3M8=;
+        b=UydnZSkl8l6CTZrAJK5tXANtWrcAWqyQMmY8gXioRG141YvJX7by4rVZMzSX7WjmHy
+         2JVhxvtTnORQD8xWRfhszo4Cnxj8LaS0JuNrY3nQvPhrRevhKLZg+xeuC6teaiXtzDAi
+         c3Q8pH/kLNDiaAQCFGRvNgTwDTTT4zV0hULx/GLXGpUb4iWhb9OeoU9qrdIeLyhhChHW
+         ZgKc8/UKcUTmOi3Xo5kJALv+5GAVBtef4y3z/VKTyKN5ihT7WiRNcwaAU8a57P+hMrXZ
+         wLXQfIcolFuJmYpzYTgVbC8ig+5HtfLYOYzIl0TZY9x14LRK1iERTjDHZR/3+AJyklI/
+         kjGg==
+X-Forwarded-Encrypted: i=1; AJvYcCVMM3Eh+UL1nbIslNaZHeVeHx1YlXBt7aOoinaRb3sInNQEfEinBR+HMQlrh3Ebzvuy8PUUi0ikzGk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy6z3gycwbZXFfjW5UubmR7cFflWBEhDm4o7qvfTIAL2Q6dxkyq
+	c1SWiKFzvpk8CSyxblxUOQ1UsUR2g2SFZDtSjFylxEceTUhpqctZlELXw/AFVXw=
+X-Gm-Gg: ASbGncukkjdvzMffD2xZA7O1+Q7LhENf9b4QPeR2hBDjL1Ct6gm1oQ1NgPRJ76/yix7
+	8CKT71xYWx/BrgB4FVqU4is40+jV5jGb2oFox2MApwg5iNx+Hv5PEgMCoJWigMTvminPBWwghwX
+	+gL69j4O36RBWuhNJvBp0vbDisuA0jNPFEgsrLH2DVJjGyNKcxCIH+F/b3oqhYo3e1KZvTQZaVG
+	Mv2kbaDx+J+fOhXxfDD3/ZBx3W7qCHoAvYxc4DrEpAyzuneertJmhKQsMbzyivCoucM1dMH/g8d
+	Q9uIWPq8SWHdxXUhUyjo9mI25iMnks/dGQLFUC1LSv6XTvoA9pvx
+X-Google-Smtp-Source: AGHT+IHr8T5reKexqMOxlmPqVf7GUavXfHMshpa/XldJ83QUP4dtM6xNCp5f26J8xaA/wL6S5nPJuQ==
+X-Received: by 2002:a05:6820:260d:b0:5fc:92b3:2b03 with SMTP id 006d021491bc7-5fd1949807fmr168082eaf.1.1740072733243;
+        Thu, 20 Feb 2025 09:32:13 -0800 (PST)
+Received: from [192.168.0.142] (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7271f7c5ba8sm2752929a34.32.2025.02.20.09.32.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Feb 2025 09:32:12 -0800 (PST)
+Message-ID: <0084eef7-3831-4e62-acf1-6c2dc0e15dd1@baylibre.com>
+Date: Thu, 20 Feb 2025 11:32:10 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250219150254.24664-2-jerrysteve1101@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 05/15] bus: ts-nbus: use bitmap_get_value8()
+To: Simon Horman <horms@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+ Bartosz Golaszewski <brgl@bgdev.pl>, Andy Shevchenko <andy@kernel.org>,
+ Geert Uytterhoeven <geert@linux-m68k.org>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>,
+ Peter Rosin <peda@axentia.se>, Andrew Lunn <andrew@lunn.ch>,
+ Heiner Kallweit <hkallweit1@gmail.com>, Russell King
+ <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Vinod Koul <vkoul@kernel.org>,
+ Kishon Vijay Abraham I <kishon@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+ Takashi Iwai <tiwai@suse.com>, linux-gpio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
+ linux-phy@lists.infradead.org, linux-sound@vger.kernel.org,
+ Andy Shevchenko <andy.shevchenko@gmail.com>
+References: <20250210-gpio-set-array-helper-v3-0-d6a673674da8@baylibre.com>
+ <20250210-gpio-set-array-helper-v3-5-d6a673674da8@baylibre.com>
+ <20250220101742.GR1615191@kernel.org>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20250220101742.GR1615191@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi Jun,
+On 2/20/25 4:17 AM, Simon Horman wrote:
+> On Mon, Feb 10, 2025 at 04:33:31PM -0600, David Lechner wrote:
+>> Use bitmap_get_value8() instead of accessing the bitmap directly.
+>>
+>> Accessing the bitmap directly is not considered good practice. We now
+>> have a helper function that can be used instead, so let's use it.
+>>
+>> Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> u> Signed-off-by: David Lechner <dlechner@baylibre.com>
+>> ---
+>>  drivers/bus/ts-nbus.c | 5 +++--
+>>  1 file changed, 3 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/bus/ts-nbus.c b/drivers/bus/ts-nbus.c
+>> index b4c9308caf0647a3261071d9527fffce77784af2..beac67f3b820377f8bb1fc4f4ee77e15ee240834 100644
+>> --- a/drivers/bus/ts-nbus.c
+>> +++ b/drivers/bus/ts-nbus.c
+>> @@ -10,6 +10,7 @@
+>>   * TS-4600 SoM.
+>>   */
+>>  
+>> +#include <linux/bitmap.h>
+>>  #include <linux/bitops.h>
+>>  #include <linux/gpio/consumer.h>
+>>  #include <linux/kernel.h>
+>> @@ -107,7 +108,7 @@ static void ts_nbus_reset_bus(struct ts_nbus *ts_nbus)
+>>  {
+>>  	DECLARE_BITMAP(values, 8);
+>>  
+>> -	values[0] = 0;
+>> +	bitmap_set_value8(values, byte, 0);
+> 
+> Hi David,
+> 
+> byte doesn't appear to exist in the scope of this function.
+> 
+> I tried this:
+> 
+> 	bitmap_set_value8(values, 0, 8);
+> 
+> But when compiling with GCC 14.2.0 I see warnings that values
+> is used uninitialised - bitmap_set_value8() appears to rely on
+> it being so.
 
-kernel test robot noticed the following build errors:
+Ah yes, I see the problem (I don't think this driver compiles with
+allmodconfig so the compiler didn't catch it for me).
 
-[auto build test ERROR on jic23-iio/togreg]
-[also build test ERROR on linus/master v6.14-rc3 next-20250220]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> 
+>   CC      drivers/bus/ts-nbus.o
+> In file included from drivers/bus/ts-nbus.c:13:
+> In function ‘bitmap_write’,
+>     inlined from ‘ts_nbus_reset_bus’ at drivers/bus/ts-nbus.c:111:2:
+> ./include/linux/bitmap.h:818:12: error: ‘values’ is used uninitialized [-Werror=uninitialized]
+>   818 |         map[index] &= (fit ? (~(mask << offset)) : ~BITMAP_FIRST_WORD_MASK(start));
+>       |         ~~~^~~~~~~
+> In file included from ./include/linux/kasan-checks.h:5,
+>                  from ./include/asm-generic/rwonce.h:26,
+>                  from ./arch/x86/include/generated/asm/rwonce.h:1,
+>                  from ./include/linux/compiler.h:344,
+>                  from ./include/linux/build_bug.h:5,
+>                  from ./include/linux/bits.h:22,
+>                  from ./include/linux/bitops.h:6,
+>                  from ./include/linux/bitmap.h:8:
+> drivers/bus/ts-nbus.c: In function ‘ts_nbus_reset_bus’:
+> drivers/bus/ts-nbus.c:109:24: note: ‘values’ declared here
+>   109 |         DECLARE_BITMAP(values, 8);
+>       |                        ^~~~~~
+> ./include/linux/types.h:11:23: note: in definition of macro ‘DECLARE_BITMAP’
+>    11 |         unsigned long name[BITS_TO_LONGS(bits)]
+>       |                       ^~~~
+> 
+> 
+>>  
+>>  	gpiod_multi_set_value_cansleep(ts_nbus->data, values);
+>>  	gpiod_set_value_cansleep(ts_nbus->csn, 0);
+>> @@ -151,7 +152,7 @@ static void ts_nbus_write_byte(struct ts_nbus *ts_nbus, u8 byte)
+>>  {
+>>  	DECLARE_BITMAP(values, 8);
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jun-Yan/iio-gyro-bmg160_spi-add-of_match_table/20250219-231024
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20250219150254.24664-2-jerrysteve1101%40gmail.com
-patch subject: [PATCH 1/2] iio: gyro: bmg160_spi: add of_match_table
-config: i386-buildonly-randconfig-005-20250220 (https://download.01.org/0day-ci/archive/20250221/202502210125.5IaR1YAL-lkp@intel.com/config)
-compiler: clang version 19.1.3 (https://github.com/llvm/llvm-project ab51eccf88f5321e7c60591c5546b254b6afab99)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250221/202502210125.5IaR1YAL-lkp@intel.com/reproduce)
+We can fix by zero-initialing the bitmap.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202502210125.5IaR1YAL-lkp@intel.com/
+	DECLARE_BITMAP(values, 8) = { };
 
-All errors (new ones prefixed by >>):
+Would you like me to send a new version of the patch?
 
->> drivers/iio/gyro/bmg160_spi.c:57:3: error: member reference base type 'const struct of_device_id[4]' is not a structure or union
-      56 |                 .of_match_table = bmg160_of_match
-         |                                   ~~~~~~~~~~~~~~~
-      57 |                 .pm     = &bmg160_pm_ops,
-         |                 ^~~
-   1 error generated.
+>>  
+>> -	values[0] = byte;
+>> +	bitmap_set_value8(values, byte, 8);
+>>  
+>>  	gpiod_multi_set_value_cansleep(ts_nbus->data, values);
+>>  }
+>>
+>> -- 
+>> 2.43.0
+>>
 
-
-vim +57 drivers/iio/gyro/bmg160_spi.c
-
-c266686477490d Jun Yan                   2025-02-19  52  
-b1d125cc623639 Markus Schneider-Pargmann 2015-08-19  53  static struct spi_driver bmg160_spi_driver = {
-b1d125cc623639 Markus Schneider-Pargmann 2015-08-19  54  	.driver = {
-b1d125cc623639 Markus Schneider-Pargmann 2015-08-19  55  		.name	= "bmg160_spi",
-c266686477490d Jun Yan                   2025-02-19  56  		.of_match_table = bmg160_of_match
-b1d125cc623639 Markus Schneider-Pargmann 2015-08-19 @57  		.pm	= &bmg160_pm_ops,
-b1d125cc623639 Markus Schneider-Pargmann 2015-08-19  58  	},
-b1d125cc623639 Markus Schneider-Pargmann 2015-08-19  59  	.probe		= bmg160_spi_probe,
-b1d125cc623639 Markus Schneider-Pargmann 2015-08-19  60  	.remove		= bmg160_spi_remove,
-b1d125cc623639 Markus Schneider-Pargmann 2015-08-19  61  	.id_table	= bmg160_spi_id,
-b1d125cc623639 Markus Schneider-Pargmann 2015-08-19  62  };
-b1d125cc623639 Markus Schneider-Pargmann 2015-08-19  63  module_spi_driver(bmg160_spi_driver);
-b1d125cc623639 Markus Schneider-Pargmann 2015-08-19  64  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
