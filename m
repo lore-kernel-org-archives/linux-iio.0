@@ -1,123 +1,206 @@
-Received: from mail-m155116.qiye.163.com (mail-m155116.qiye.163.com [101.71.155.116])
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 525C522ACD4;
-	Thu, 27 Feb 2025 11:39:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.71.155.116
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A101322A1F1;
+	Thu, 27 Feb 2025 13:53:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740656356; cv=none; b=Z+fWneV36CJ3AO50yCEGAutT1sP7HKkwZJwjoUf+VDia0oyaUpIE6re7cNcOFYlHrSs9oD/rEz+u5PJuiQs+JFfzSmTXLkVS75at8uHYql5Z3YJ/qNWUbXiXuko/HrfZg/KczjupyHeoxO+bFlJiGlS73Fju5alaNVoXEDPiwGY=
+	t=1740664423; cv=none; b=Rhny/R7ES+RdR9zAxtoCAnSbPEWJeq1JfRuaD3ZIQJegEB1K7M6ZIGDjeCqahg5MI7F63l7P04CBDZ7zvZPTF0EnJra/QCSdi5fTkiYvjVBLdoYueHE3p4x2kG9vmgsWpGpN0vGuHKaoUk83tkt+JR3x6v1b+Q+FaFBqRVkbCXo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740656356; c=relaxed/simple;
-	bh=F0Z8rEAxBeFsa2HkvMbrKUdPBypxHLSg3HJ0e7tEzLc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=KkMAfp8r1bOkG0ATSfBYpbnQeHpf7SmubchRXcvNQB53E5g3/yYff+4eWirLlO3W2hbE/eGVaZ1Bjtdi3OglXdRsV9D6G8kJAF/KZ/IOlwQ0yg++2FZnaL/NUO/q7RK4CD9kuK1j0o3jk/LDNXzlgu6x/3Kq0uFf9307Dj34wEE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=d14/TOtj; arc=none smtp.client-ip=101.71.155.116
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	s=arc-20240116; t=1740664423; c=relaxed/simple;
+	bh=/0CuoKUVLpuPQxhmceRCN2FzvQjGgaTD8xNVJQ2xppM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=t3wALqHf/BMnewmaIR20OiZIOQPwfPcJrhBqLGBnj9s3kGYuO+rjwiAi0TjCyuDtU+JHqP5P3Bd7hetTvMCLVkMBVIKoWze7J/IIRaEjmAyrxNhUB1MjcPj0oZUQz9XS6gMwyI/acxwTsS3IBtMXo+VaYDt6yjHQNSNePpn6zjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=ph04i7/u; arc=none smtp.client-ip=217.70.183.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="d14/TOtj"
-Received: from localhost.localdomain (unknown [58.22.7.114])
-	by smtp.qiye.163.com (Hmail) with ESMTP id c65b3593;
-	Thu, 27 Feb 2025 19:03:45 +0800 (GMT+08:00)
-From: Kever Yang <kever.yang@rock-chips.com>
-To: heiko@sntech.de
-Cc: linux-rockchip@lists.infradead.org,
-	Simon Xue <xxm@rock-chips.com>,
-	Kever Yang <kever.yang@rock-chips.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="ph04i7/u"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id C0CEA4438F;
+	Thu, 27 Feb 2025 13:53:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1740664413;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=EeCUlXoRiIADqC0A6H/S/j5kKXNEbT6nm8SE/1r17qQ=;
+	b=ph04i7/uF97NWN9Q/xcyILvei0QmxZGcWpHgwk+dk6cATY7Rbz8qrbqossVyYXCDTN8VrE
+	+2KnBDvGM2wSumFg5efROxq9mQu5iSPrZBMsBGBmBcInAzZ2DFVKIMyTtvNLrEt0YmmS+m
+	jvP3e4VaWmyT/YV6YX6alWc56YgOkcV1FEYLmOz7nN7Hs6eUMeKXYy/NHQf1AuWNuDtImL
+	pH3rvUuuFFTEuRY3oD68EXFYG9cM7ALopL7ws3ferGtpqGRjG6+MNBdnWmi7C6tB8aivPi
+	0DmUTjEdgpVCX+t2jc2vD1tIpa5GdBqboPHwMBkbL4R3VILx0fqKs4WRq9BjNA==
+Date: Thu, 27 Feb 2025 14:53:30 +0100
+From: Kamel Bouhara <kamel.bouhara@bootlin.com>
+To: William Breathitt Gray <wbg@kernel.org>
+Cc: =?iso-8859-1?B?Q3Pza+Fz?= Bence <csokas.bence@prolan.hu>,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Dharma.B@microchip.com,
+	Ludovic Desroches <ludovic.desroches@microchip.com>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
 	Jonathan Cameron <jic23@kernel.org>,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 2/2] iio: adc: rockchip_saradc: add rk3562
-Date: Thu, 27 Feb 2025 19:03:43 +0800
-Message-Id: <20250227110343.2342017-2-kever.yang@rock-chips.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20250227110343.2342017-1-kever.yang@rock-chips.com>
-References: <20250227110343.2342017-1-kever.yang@rock-chips.com>
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [PATCH v4 0/2] microchip-tcb-capture: Add Capture, Compare,
+ Overflow etc. events
+Message-ID: <20250227135330.GC182392@tpx1.home>
+References: <20250211151914.313585-3-csokas.bence@prolan.hu>
+ <Z7h0AXV1zlgp9Nw-@ishi>
+ <8fb9f188-3065-4fdc-a9f1-152cc5959186@prolan.hu>
+ <Z7vihBqOgP3fBUVq@ishi>
+ <bfa70e78-3cc3-4295-820b-3925c26135cb@prolan.hu>
+ <Z7_xTQeTzD-RH3nH@ishi>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZQksfGlZDSkgdHR5DHx0eGEpWFRQJFh
-	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUpLSU9PT0
-	hVSktLVUpCS0tZBg++
-X-HM-Tid: 0a954713a96603afkunmc65b3593
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PhQ6Pio5SDIcEQ0hKB1KMk4U
-	HTQaCTNVSlVKTE9LTU5PSUlNQ0NNVTMWGhIXVRAeDR4JVQIaFRw7CRQYEFYYExILCFUYFBZFWVdZ
-	EgtZQVlOQ1VJSVVMVUpKT1lXWQgBWUFJSktINwY+
-DKIM-Signature:a=rsa-sha256;
-	b=d14/TOtjg9Yv9IjbpxXKPiLx6J8K3jXLTfVGaC3MteGr+YUR1nakxXWmFC7YaspoSIZyajxEvl5bHRL7Dm33sLHHrc1OYfS1Z+sYcm6DqbJmhmBy05Pa3BVKUuK7DmPzkOp1MNqsg3X71TBqy1/l9tvrp21dafzoC//1S3mkqXE=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
-	bh=v2NdId1ozjR949P6fBcdgfhadjWxpSqZ7R8aXjvMQIE=;
-	h=date:mime-version:subject:message-id:from;
+In-Reply-To: <Z7_xTQeTzD-RH3nH@ishi>
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdekjeeifecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepfffhvfevuffkfhggtggugfgjsehtkeertddttddunecuhfhrohhmpefmrghmvghluceuohhuhhgrrhgruceokhgrmhgvlhdrsghouhhhrghrrgessghoohhtlhhinhdrtghomheqnecuggftrfgrthhtvghrnhepfefhlefgueektddvhfegveduvefftdevgfejffegveevvdekgfffleffteevfeehnecuffhomhgrihhnpegsohhothhlihhnrdgtohhmnecukfhppeeltddrieefrddvtddvrdegtdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpeeltddrieefrddvtddvrdegtddphhgvlhhopehtphiguddrhhhomhgvpdhmrghilhhfrhhomhepkhgrmhgvlhdrsghouhhhrghrrgessghoohhtlhhinhdrtghomhdpnhgspghrtghpthhtohepuddupdhrtghpthhtohepfigsgheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheptghsohhkrghsrdgsvghntggvsehprhholhgrnhdrhhhupdhrtghpthhtoheplhhinhhugidqrghrmhdqkhgvrhhnvghlsehlihhsthhsrdhinhhfrhgruggvrggurdhorhhgpdhrtghpthhtoheplhhinhhugidqihhiohesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtp
+ hhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopeffhhgrrhhmrgdrueesmhhitghrohgthhhiphdrtghomhdprhgtphhtthhopehluhguohhvihgtrdguvghsrhhotghhvghssehmihgtrhhotghhihhprdgtohhmpdhrtghpthhtohepnhhitgholhgrshdrfhgvrhhrvgesmhhitghrohgthhhiphdrtghomh
+X-GND-Sasl: kamel.bouhara@bootlin.com
 
-From: Simon Xue <xxm@rock-chips.com>
+On Thu, Feb 27, 2025 at 01:59:57PM +0900, William Breathitt Gray wrote:
+> On Wed, Feb 26, 2025 at 01:58:37PM +0100, Csókás Bence wrote:
+> > On 2025. 02. 24. 4:07, William Breathitt Gray wrote:
+> > > On Fri, Feb 21, 2025 at 03:14:44PM +0100, Csókás Bence wrote:
+> > > > On 2025. 02. 21. 13:39, William Breathitt Gray wrote:
+> > > > > First, register RC seems to serve only as a threshold value for a
+> > > > > compare operation. So it shouldn't be exposed as "capture2", but rather
+> > > > > as its own dedicated threshold component. I think the 104-quad-8 module
+> > > > > is the only other driver supporting THRESHOLD events; it exposes the
+> > > > > threshold value configuration via the "preset" component, but perhaps we
+> > > > > should introduce a proper "threshold" component instead so counter
+> > > > > drivers have a standard way to expose this functionality. What do you
+> > > > > think?
+> > > >
+> > > > Possibly. What's the semantics of the `preset` component BTW? If we can
+> > > > re-use that here as well, that could work too.
+> > >
+> > > You can find the semantics of each attribute under the sysfs ABI doc
+> > > file located at Documentation/ABI/testing/sysfs-bus-counter. For the
+> > > `preset` component, its essential purpose is to configure a value to
+> > > preset register to reload the Count when some condition is met (e.g.
+> > > when an external INDEX/SYNC trigger line goes high).
+> >
+> > Hmm, that doesn't really match this use case. All right, then, for now, I'll
+> > skip the RC part, and then we can add it in a later patch when the
+> > "threshold" component is in place and used by the 104-quad-8 module.
+>
+> Understood, I'll work on a separate patchset introducing a "threshold"
+> component (perhaps "compare" is a better name) to the 104-quad-8 and
+> once that is complete we can add it to the microchip-tcb-capture as its
+> own patch to support the RC register functionality.
+>
+> > > In the same vein, move the uapi header introduction to its own patch.
+> > > That will separate the userspace-exposed changes and make things easier
+> > > for future users when bisecting the linux kernel history when tracking
+> > > down possible bugs.
+> >
+> > Isn't it better to keep API header changes in the same commit as the
+> > implementation using them? That way if someone bisects/blames the API
+> > header, they get the respective implementation as well.
+>
+> Fair enough, we'll keep the header together with the implementation.
+>
+> > > and it looks like this chip has
+> > > three timer counter channels described in section 54. Currently, the
+> > > microchip-tcb-capture module is exposing only one timer counter channel
+> > > (as Count0), correct? Should this driver expose all three channels (as
+> > > Count0, Count1, and Count2)?
+> >
+> > No, as this device is actually instantiated per-channel, i.e. in the DT,
+> > there are two TCB nodes (as the SoC has two peripherals, each with 3
+> > channels), and then the counter is a sub-node with `reg = <0/1/2>`,
+> > specifying which timer channel to use. Or, in quadrature decode mode, you'd
+> > have two elements in `reg`, i.e. `reg = <0>, <1>`.
+>
+> So right now each timer counter channel is exposed as an independent
+> Counter device? That means we're exposing the timer counter blocks
+> incorrectly.
+>
+> You're not at fault Bence, so you don't need to address this problem
+> with your current patchset, but I do want to discuss it briefly here so
+> we can come up with a plan for how to resolve it for the future. The
+> Generic Counter Interface was nascent at the time, so we likely
+> overlooked this problem at the time. I'm CCing some of those present
+> during the original introduction of the microchip-tcb-capture driver so
+> they are aware of this discussion.
+>
+> Let me make sure I understand the situation correctly. This SoC has two
+> Timer Counter Blocks (TCB) and each TCB has three Timer Counter Channels
+> (TCC); each TCC has a Counter Value (CV) and three general registers
+> (RA, RB, RC); RA and RB can store Captures, and RC can be used for
+> Compare operations.
+>
+> If that is true, then the correct way for this hardware to be exposed is
+> to have each TCB be a Counter device where each TCC is exposed as a
+> Count. So for this SoC: two Counter devices as counter0 and counter1;
+> count0, count1, and count2 as the three TCC; i.e. counter0/count{0,1,2}
+> and counter1/count{0,1,2}.
+>
+> With that setup, configurations that affect the entire TCB (e.g. Block
+> Mode Register) can be exposed as Counter device components. Furthermore,
+> this would allow users to set Counter watches to collect component
+> values for the other two Counts while triggering off of the events of
+> any particular one, which wouldn't be possible if each TCC is isolated
+> to its own Counter device as is the case right now.
+>
+> Regardless, the three TCC of each TCB should be grouped together
+> logically as they can represent related values. For example,  when using
+> the quadrature decoder TTC0 CV can represent Speed/Position while TTC1
+> CV represents rotation, thus giving a high level of precision on motion
+> system position as the datasheet points out.
+>
+> Kamel, what would it take for us to rectify this situation so that the
+> TCC are organized together by TCB under the same Counter devices?
 
-rk3562 is using v2 saradc with 8 channels.
+Hello,
 
-Signed-off-by: Simon Xue <xxm@rock-chips.com>
-Signed-off-by: Kever Yang <kever.yang@rock-chips.com>
----
+Indeed, each TCC operates independently except when quadrature mode is
+enabled. I assume this approach was taken to provide more flexibility by
+exposing them separately.
 
-Changes in v2: None
+Currently only one channel is configured this would need to rework the
+driver to make the 3 TCCs exposed.
 
- drivers/iio/adc/rockchip_saradc.c | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
+Greetings,
+Kamel
 
-diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-index a29e54754c8f..9995f95bafe0 100644
---- a/drivers/iio/adc/rockchip_saradc.c
-+++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- /*
-  * Rockchip Successive Approximation Register (SAR) A/D Converter
-- * Copyright (C) 2014 ROCKCHIP, Inc.
-+ * Copyright (C) 2014 Rockchip Electronics Co., Ltd.
-  */
- 
- #include <linux/bitfield.h>
-@@ -275,6 +275,25 @@ static const struct rockchip_saradc_data rk3399_saradc_data = {
- 	.power_down = rockchip_saradc_power_down_v1,
- };
- 
-+static const struct iio_chan_spec rockchip_rk3562_saradc_iio_channels[] = {
-+	SARADC_CHANNEL(0, "adc0", 10),
-+	SARADC_CHANNEL(1, "adc1", 10),
-+	SARADC_CHANNEL(2, "adc2", 10),
-+	SARADC_CHANNEL(3, "adc3", 10),
-+	SARADC_CHANNEL(4, "adc4", 10),
-+	SARADC_CHANNEL(5, "adc5", 10),
-+	SARADC_CHANNEL(6, "adc6", 10),
-+	SARADC_CHANNEL(7, "adc7", 10),
-+};
-+
-+static const struct rockchip_saradc_data rk3562_saradc_data = {
-+	.channels = rockchip_rk3562_saradc_iio_channels,
-+	.num_channels = ARRAY_SIZE(rockchip_rk3562_saradc_iio_channels),
-+	.clk_rate = 1000000,
-+	.start = rockchip_saradc_start_v2,
-+	.read = rockchip_saradc_read_v2,
-+};
-+
- static const struct iio_chan_spec rockchip_rk3568_saradc_iio_channels[] = {
- 	SARADC_CHANNEL(0, "adc0", 10),
- 	SARADC_CHANNEL(1, "adc1", 10),
-@@ -324,6 +343,9 @@ static const struct of_device_id rockchip_saradc_match[] = {
- 	}, {
- 		.compatible = "rockchip,rk3399-saradc",
- 		.data = &rk3399_saradc_data,
-+	}, {
-+		.compatible = "rockchip,rk3562-saradc",
-+		.data = &rk3562_saradc_data,
- 	}, {
- 		.compatible = "rockchip,rk3568-saradc",
- 		.data = &rk3568_saradc_data,
--- 
-2.25.1
+>
+> > > > The `mchp_tc_count_function_write()` function already disables PWM mode by
+> > > > clearing the `ATMEL_TC_WAVE` bit from the Channel Mode Register (CMR).
+> > >
+> > > So capture mode is unconditionally set by mchp_tc_count_function_write()
+> > > which means the first time the user sets the Count function then PWM
+> > > mode will be disabled. However, what happens if the user does not set
+> > > the Count function? Should PWM mode be disabled by default in
+> > > mchp_tc_probe(), or does that already happen?
+> >
+> > You're right, and it is a problem I encounter regularly: almost all HW
+> > initialization happens in `mchp_tc_count_function_write()`, the probe()
+> > function mostly just allocates stuff. Meaning, if you want to do anything
+> > with the counter, you have to set the "increase" function first (even
+> > though, if you `cat function`, it will seem like it's already in "increase"
+> > mode). I don't know if it was deliberate, or what, but again, that would be
+> > a separate bugfix patch.
+>
+> That does seem like an oversight that goes back to the original commit
+> 106b104137fd ("counter: Add microchip TCB capture counter"). I'll submit
+> a bug fix patch later separately to address this and we can continue
+> discussions about the issue there.
+>
+> William Breathitt Gray
 
+
+
+--
+Kamel Bouhara, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
