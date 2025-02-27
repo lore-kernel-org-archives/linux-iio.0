@@ -1,32 +1,32 @@
 Received: from smtp15.bhosted.nl (smtp15.bhosted.nl [94.124.121.26])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5CE41B042D
-	for <linux-iio@vger.kernel.org>; Thu, 27 Feb 2025 16:28:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EE291B0424
+	for <linux-iio@vger.kernel.org>; Thu, 27 Feb 2025 16:28:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=94.124.121.26
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740673734; cv=none; b=ULtvFlfXZrKOama6owksLWScfi6G7+Zn5oBdvKBu7X+SWgRd5zBfMT+aQLjK9F00RpsetM87ixmWxTZLmBa6DmzcRfluHKo3DM6rfz1yTMwTrdfmRd3FBo/0zzvn8j0D3wXbzLertMVNNDyIFSiXjVqGlwjUXccpWOFxucdrcsw=
+	t=1740673734; cv=none; b=ipBqcQclFUKNmlRw1D5oeMFYLJMOPXLwS6e+oFsBPXEcqX2j8k1TYrD5HY7OdkMMXlziDpAYVLXnQTwBaaTQ1xiqF7NC7x/kfaGumgufMMJjVNMgP7UDpk2OoAl5jK1bIMv07Mq/zyWU4RZibY1tzpSzUtyYB9jqpyK9aRLQ2VY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1740673734; c=relaxed/simple;
-	bh=udAh7uDuLY+cGyax5YTE+YVj8sAyIac+90OuDug+grE=;
+	bh=J/9AlyKf6QeA8EQ6Tq+qlaPzyqFY4XBKkC7Q0CUlhM0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ckZr37u6Vz2NdkpaGS8qTMxn0guf0rHFYHuAYjKVq9nwZ6xeA2kN4fYxRK+BzHKk2xhWp+AJvyFljx7Pfqq9SAjuMI3IvznLVjf/O4W4QDB4BGtlEz7b9JUo6QtEsBMq2jy6J2Qatlx4Gb7gktoS3SUr3VfVfYO5lFDIJGMbpsw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=protonic.nl; spf=pass smtp.mailfrom=protonic.nl; dkim=pass (2048-bit key) header.d=protonic.nl header.i=@protonic.nl header.b=cM/dQPBY; arc=none smtp.client-ip=94.124.121.26
+	 MIME-Version; b=IBmCkBwV2R/XKVr1SHS02U+p0T4LrHquS3aiMNIRZUPCsIOtxqSZIgdybTv6s5s/8dLqB6uEgdbBfVzBn1i77Xm3RyY9Z2IZFgWGankV1HXPxr0QNfcZJr8e82KVnMmqy8I/41mZGZzBTWFZhJq4oUM3JM3/Ue/tZCvgbrAK5ew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=protonic.nl; spf=pass smtp.mailfrom=protonic.nl; dkim=pass (2048-bit key) header.d=protonic.nl header.i=@protonic.nl header.b=mwaKnHs8; arc=none smtp.client-ip=94.124.121.26
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=protonic.nl
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonic.nl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonic.nl header.i=@protonic.nl header.b="cM/dQPBY"
+	dkim=pass (2048-bit key) header.d=protonic.nl header.i=@protonic.nl header.b="mwaKnHs8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=protonic.nl; s=202111;
 	h=content-transfer-encoding:mime-version:references:in-reply-to:message-id:date:
 	 subject:cc:to:from:from;
-	bh=s5vthmxohoyHnfh+ogQVgGD+RRR49Exo+/K1z/i8mW4=;
-	b=cM/dQPBYG0QIsB0KC7lBK1gMYT84ULTFE88W3UC02Cvp7EK4fp29j7NUZmzhO3XClWlmS9Txm7P7M
-	 mpzfescQd3S9WcBw7SNPYNLot8dvgQoYl4bJgYcqo+MDWGKaSaoQpr340oDsV7AXULUFQb3//hgzln
-	 FavsXmbuRU0mitvKTTmNxscp6ErYpGVphXH0eavBv9GxOrSz7nEFWEMeFAJ6lW4oCcR9gXQOD8bBrL
-	 kSaFwMcm8LFOgzzRC0hrsL22Cs56c7QFq0OVUBpz8406DXInHXCJWHC+zZj+0eCrT8E8olRCtSagtk
-	 aHU5Nni7ZDEgpq7lE0ZNuWL8ZSshF6Q==
-X-MSG-ID: ed44f6a5-f527-11ef-a399-00505681446f
+	bh=P9RgmlVt0pqtpNyTVoMT8mhKdFD8tM/crE5krUry5E8=;
+	b=mwaKnHs8ToCPKiB2FFZiEBzlYx5NGDpJ1MbxZzkbIgZSeWaWXoCnK8Sh80A+WYX92qUk+ekpKYqxZ
+	 8IvLSC2yxIgMFSxkaioOdneehasH1/rDA8uIIHuDHXNzl0QSxHN3tBbwi+VYuTdVcHG47X9BkoKMKM
+	 Ddy5vW9rb1o9ANtkxwKsYEs4sOm/aJRuxxAF0l+M4+8zvpkMWcbs2DfznIkEEApqaZgxEPy7YgGWHT
+	 zqg8fI7XUIX2rr10f+T3OR1yxmFKFpIZQd4f2y4H7KgIjlHWmzok7WiN70OMCjbOaZdEb54xXKxkMd
+	 5CTRYe6c03HymTT09p7qOdSIeXCg1RQ==
+X-MSG-ID: ec02b208-f527-11ef-a399-00505681446f
 From: David Jander <david@protonic.nl>
 To: linux-kernel@vger.kernel.org
 Cc: linux-iio@vger.kernel.org,
@@ -40,9 +40,9 @@ Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@kernel.org>,
 	Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Jander <david@protonic.nl>
-Subject: [RFC PATCH 7/7] dt-bindings: motion: Add motion-simple-pwm bindings
-Date: Thu, 27 Feb 2025 17:28:23 +0100
-Message-ID: <20250227162823.3585810-8-david@protonic.nl>
+Subject: [RFC PATCH 5/7] dt-bindings: motion: Add common motion device properties
+Date: Thu, 27 Feb 2025 17:28:21 +0100
+Message-ID: <20250227162823.3585810-6-david@protonic.nl>
 X-Mailer: git-send-email 2.47.2
 In-Reply-To: <20250227162823.3585810-1-david@protonic.nl>
 References: <20250227162823.3585810-1-david@protonic.nl>
@@ -54,76 +54,73 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add device-tree bindings for simple Linux Motion Control devices that
-are based on 1 or 2 PWM outputs.
+Add device-tree binding documentation for common Linux Motion Control
+device properties.
 
 Signed-off-by: David Jander <david@protonic.nl>
 ---
- .../bindings/motion/motion-simple-pwm.yaml    | 55 +++++++++++++++++++
- 1 file changed, 55 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/motion/motion-simple-pwm.yaml
+ .../devicetree/bindings/motion/common.yaml    | 52 +++++++++++++++++++
+ 1 file changed, 52 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/motion/common.yaml
 
-diff --git a/Documentation/devicetree/bindings/motion/motion-simple-pwm.yaml b/Documentation/devicetree/bindings/motion/motion-simple-pwm.yaml
+diff --git a/Documentation/devicetree/bindings/motion/common.yaml b/Documentation/devicetree/bindings/motion/common.yaml
 new file mode 100644
-index 000000000000..409e3aef6f3f
+index 000000000000..e92b360a0698
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/motion/motion-simple-pwm.yaml
-@@ -0,0 +1,55 @@
++++ b/Documentation/devicetree/bindings/motion/common.yaml
+@@ -0,0 +1,52 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/motion/motion-simple-pwm.yaml#
++$id: http://devicetree.org/schemas/motion/common.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Simple PWM based motor controller
++title: Common properties for motion control devices
 +
 +maintainers:
-+  - David Jander <david@protonic>
++  - David Jander <david@protonic.nl>
 +
 +description: |
-+   Simple motor control device based on 1 or 2 PWM outputs
++  This document defines device tree properties common to several motion control
++  devices. It doesn't constitute a device tree binding specification by itself but
++  is meant to be referenced by device tree bindings.
++
++  When referenced from motion device tree bindings the properties defined in this
++  document are defined as follows. The motion device tree bindings are responsible
++  for defining whether each property is required or optional.
 +
 +properties:
-+  compatible:
-+    enum:
-+      - motion-simple-pwm
++  motion,speed-conv-mul:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    default: 1
++    description: |
++      Numerator of a fractional representation of a speed conversion factor.
++      The speed conversion factor (represented by numerator and denominator)
++      is multiplied with the internal speed unit to obtain the physical speed
++      unit of the controller. For example, for a stepper motor controller, the
++      physical speed unit is microsteps/second (Hz).
 +
-+  pwms:
-+    maxItems: 2
++  motion,speed-conv-div:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    default: 1
++    description: |
++      Denominator of fractional representation of a speed conversion factor.
 +
-+  pwm-names:
-+    maxItems: 2
++  motion,acceleration-conv-mul:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    default: 1
++    description: |
++      Numerator of a fractional representation of an acceleration conversion
++      factor.
 +
-+  motion,pwm-inverted:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      If present, this flag indicates that the PWM signal should be inverted.
-+      The duty-cycle will be scaled from 100% down to 0% instead 0% to 100%.
++  motion,acceleration-conv-div:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    default: 1
++    description: |
++      Denominator of fractional representation of an acceleration conversion
++      factor.
 +
-+required:
-+  - compatible
-+  - pwms
-+
-+allOf:
-+  - $ref: /schemas/motion/common.yaml#
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    // This example shows how to use the TI DRV8873 or similar motor controllers
-+    // with this driver
-+    motion-simple-pwm0 {
-+      compatible = "motion-simple-pwm";
-+      pwms = <&hpdcm0_pwm 0 50000 0>,
-+             <&hpdcm0_pwm 1 50000 0>;
-+      pwm-names = "left", "right";
-+      motion,pwm-inverted;
-+      motion,speed-conv-mul = <3600>;
-+      motion,speed-conv-div = <100000>;
-+      motion,acceleration-conv-mul = <3600>;
-+      motion,acceleration-conv-div = <100000>;
-+    };
++additionalProperties: true
 -- 
 2.47.2
 
