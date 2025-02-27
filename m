@@ -1,31 +1,31 @@
 Received: from smtp.forwardemail.net (smtp.forwardemail.net [121.127.44.59])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7E9825CC6E
-	for <linux-iio@vger.kernel.org>; Thu, 27 Feb 2025 18:41:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 080B425CC6E
+	for <linux-iio@vger.kernel.org>; Thu, 27 Feb 2025 18:52:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=121.127.44.59
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740681695; cv=none; b=mgdlBEtFdgrZlVUmjRHU/WQlH75iMHxzyXp8cmh9ZiZtpTvPCrRvtPTEfgumMVF0Yiba9gJLQw9BUiaaPmfo3aLC2dNvU6LBVl+VaxB/Vw70iVQbLBtyjSM7RbAdCl88RhiwEgD6j/09eNG3zJ077w7h3b+fQ8yaf1w+LiayMBg=
+	t=1740682336; cv=none; b=R9GcXHfrPtLgzD1AjGPLD/1GTY/v61TqMapgAQ7Su5JJIqDS6KEp/tF+mLAb6vLS1xcOupRJPW+vwdyj0K7fdwwHoBevMWDqSCBDlyndzlJZ7IB9oTE8mukmXPedzqV2wII6EaCa61AH9IuBzu9taf+tGN/rj2GRcQK+VL6wwjE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740681695; c=relaxed/simple;
-	bh=tapKa4ENwa3OBlIjhb4jmk2jsNXPicM6WS6wpGM88bI=;
+	s=arc-20240116; t=1740682336; c=relaxed/simple;
+	bh=VrMIIw7LPPZy4RoPyOn/553vZWV0shlRFnyQkIIqvFY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Kc6Gq1BEMt9Cbf7MsgPi8gSRojGUZLCIibMfP2zUpHAYd1vEQlshPX2FEvUj4M9YwL+LsWHP3B4Lwuy+gAO/Dz8QNnBdtZQ7qgW+00ojWvUn4i+UvRbxadHF0OLjtOUNPXUp9OY4X2/O9JgEaec7sInSLDN2xIVuZZwGR4it0f8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kwiboo.se; spf=pass smtp.mailfrom=fe-bounces.kwiboo.se; dkim=pass (2048-bit key) header.d=kwiboo.se header.i=@kwiboo.se header.b=NBqM4qid; arc=none smtp.client-ip=121.127.44.59
+	 MIME-Version; b=txbcFS55iJmEDN5LAkNhv6ibuFWlmIs6ibfJ0poU2F97HHga6+p9m5bcqz+Da6q2UxUeH5mL0OBC7m5G9/dcObydhaT9WgVf0bkFJfhgIVdquu8U7/GCG+ojhJ65MAJySTWNCfOiYEAsPLKWRV9AS4zLz5AyqkKz+rnDGye0x1s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kwiboo.se; spf=pass smtp.mailfrom=fe-bounces.kwiboo.se; dkim=pass (2048-bit key) header.d=kwiboo.se header.i=@kwiboo.se header.b=lTXaJgDL; arc=none smtp.client-ip=121.127.44.59
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kwiboo.se
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fe-bounces.kwiboo.se
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kwiboo.se header.i=@kwiboo.se header.b="NBqM4qid"
+	dkim=pass (2048-bit key) header.d=kwiboo.se header.i=@kwiboo.se header.b="lTXaJgDL"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
  h=Content-Transfer-Encoding: MIME-Version: References: In-Reply-To:
  Message-ID: Date: Subject: Cc: To: From; q=dns/txt; s=fe-e1b5cab7be;
- t=1740681693; bh=bnDwHn3VE/1QDoX5PmDpHlQdrc4Kek1m+Wmq70y11Yg=;
- b=NBqM4qidq/tKl1rLyHAw6yL8e40xXGp8JWxgtAaFpf3gbe9rTrCYfBVhcJa0+tf3u6evneI0j
- 13OrUozS/vBmwjEJnUUiZOmdXUOOhAVMAX3UOzFTuARsyNkRz3cKTMOlwE0wm3Pe90eblUvf3Xu
- jA3tpNPUcNOjvBHSFCUUVLUROp3LHszgUa+6UEBQs8wE6LhGO+bHAVnTp79xnvgoY9+fTkZeEHV
- /HJDs8Q+ZEhrisx4h7nZrE0Eigfe7QZ1Opkzto8b5zXGkBlJatgaK2VKVx595BHTO8Uheuk7jpm
- 63ju8ROa7hRGbJOInrWx9I5sMLNIxdpc6g4ecd6Jh4xA==
-X-Forward-Email-ID: 67c0b1dabf572996e86214e5
+ t=1740682334; bh=pMcozivu7dJDqecE4ZqBly6aZRxhwM+QCDCIXaMvZo0=;
+ b=lTXaJgDLPUApqfZ2L8XwwIlWU2v0fPQBNO1HqV29P9awHkZdSuMfhhT+ypXAjtsUF2SC4NwIB
+ C5S7gqo3dxirwrwO6ou2pr0oSjUEELbK5mYi87FnOVmEIhBRdcyk+LlMcY81LRIJTJK3MBAzQ/6
+ j6qFxBamHKpgKNCGOiUPTlyOrR/8WrmScLe/4aKNk9YO2+kb76wBCqhFQqKV7mc3hJfQE1Y8nC3
+ KcmzRaOmgv+xccJvOnRRO3RPQXDGWAmFgFJD6v/BraV/ub/R7kn+EYskK2+dzAKR2foGxr7Abgc
+ oQysiwITTIVKqMJD9Rpdk287hL9LZAUkM8tdMC8RjnQA==
+X-Forward-Email-ID: 67c0b1d2bf572996e8621499
 X-Forward-Email-Sender: rfc822; jonas@kwiboo.se, smtp.forwardemail.net,
  121.127.44.59
 X-Forward-Email-Version: 0.4.40
@@ -35,11 +35,11 @@ X-Report-Abuse: abuse@forwardemail.net
 X-Report-Abuse-To: abuse@forwardemail.net
 From: Jonas Karlman <jonas@kwiboo.se>
 To: Heiko Stuebner <heiko@sntech.de>,
-	Rob Herring <robh@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Cc: Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+	Conor Dooley <conor+dt@kernel.org>,
 	Yao Zi <ziyao@disroot.org>,
 	linux-rockchip@lists.infradead.org,
 	devicetree@vger.kernel.org,
@@ -47,9 +47,9 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	Jonas Karlman <jonas@kwiboo.se>
-Subject: [PATCH 4/4] arm64: dts: rockchip: Add adc-keys node to Radxa E20C
-Date: Thu, 27 Feb 2025 18:40:53 +0000
-Message-ID: <20250227184058.2964204-5-jonas@kwiboo.se>
+Subject: [PATCH 2/4] iio: adc: rockchip_saradc: Add support for RK3528
+Date: Thu, 27 Feb 2025 18:40:51 +0000
+Message-ID: <20250227184058.2964204-3-jonas@kwiboo.se>
 X-Mailer: git-send-email 2.48.1
 In-Reply-To: <20250227184058.2964204-1-jonas@kwiboo.se>
 References: <20250227184058.2964204-1-jonas@kwiboo.se>
@@ -61,85 +61,57 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Radxa E20C has two buttons, one SARADC maskrom button and one GPIO user
-button.
+The Successive Approximation ADC (SARADC) in RK3528 uses the v2
+controller and support:
+- 10-bit resolution
+- Up to 1MS/s sampling rate
+- 4 single-ended input channels
+- Current consumption: 0.5mA @ 1MS/s
 
-Add support for the maskrom button using a adc-keys node, also add the
-regulators used by SARADC controller.
+Add support for the 4 channels of 10-bit resolution supported by SARADC
+in RK3528.
 
 Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 ---
- .../boot/dts/rockchip/rk3528-radxa-e20c.dts   | 50 +++++++++++++++++++
- 1 file changed, 50 insertions(+)
+ drivers/iio/adc/rockchip_saradc.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts b/arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
-index d2cdb63d4a9d..dcc0b2584bbc 100644
---- a/arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
-@@ -6,6 +6,8 @@
-  */
- 
- /dts-v1/;
-+
-+#include <dt-bindings/input/input.h>
- #include "rk3528.dtsi"
- 
- / {
-@@ -15,6 +17,54 @@ / {
- 	chosen {
- 		stdout-path = "serial0:1500000n8";
- 	};
-+
-+	adc-keys {
-+		compatible = "adc-keys";
-+		io-channels = <&saradc 0>;
-+		io-channel-names = "buttons";
-+		keyup-threshold-microvolt = <1800000>;
-+		poll-interval = <100>;
-+
-+		button-maskrom {
-+			label = "MASKROM";
-+			linux,code = <KEY_SETUP>;
-+			press-threshold-microvolt = <0>;
-+		};
-+	};
-+
-+	vcc_1v8: regulator-1v8-vcc {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc_1v8";
-+		regulator-always-on;
-+		regulator-boot-on;
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+		vin-supply = <&vcc_3v3>;
-+	};
-+
-+	vcc_3v3: regulator-3v3-vcc {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc_3v3";
-+		regulator-always-on;
-+		regulator-boot-on;
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		vin-supply = <&vcc5v0_sys>;
-+	};
-+
-+	vcc5v0_sys: regulator-5v0-vcc-sys {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc5v0_sys";
-+		regulator-always-on;
-+		regulator-boot-on;
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+	};
-+};
-+
-+&saradc {
-+	vref-supply = <&vcc_1v8>;
-+	status = "okay";
+diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+index a29e54754c8f..2619547d5d6f 100644
+--- a/drivers/iio/adc/rockchip_saradc.c
++++ b/drivers/iio/adc/rockchip_saradc.c
+@@ -275,6 +275,21 @@ static const struct rockchip_saradc_data rk3399_saradc_data = {
+ 	.power_down = rockchip_saradc_power_down_v1,
  };
  
- &uart0 {
++static const struct iio_chan_spec rockchip_rk3528_saradc_iio_channels[] = {
++	SARADC_CHANNEL(0, "adc0", 10),
++	SARADC_CHANNEL(1, "adc1", 10),
++	SARADC_CHANNEL(2, "adc2", 10),
++	SARADC_CHANNEL(3, "adc3", 10),
++};
++
++static const struct rockchip_saradc_data rk3528_saradc_data = {
++	.channels = rockchip_rk3528_saradc_iio_channels,
++	.num_channels = ARRAY_SIZE(rockchip_rk3528_saradc_iio_channels),
++	.clk_rate = 1000000,
++	.start = rockchip_saradc_start_v2,
++	.read = rockchip_saradc_read_v2,
++};
++
+ static const struct iio_chan_spec rockchip_rk3568_saradc_iio_channels[] = {
+ 	SARADC_CHANNEL(0, "adc0", 10),
+ 	SARADC_CHANNEL(1, "adc1", 10),
+@@ -324,6 +339,9 @@ static const struct of_device_id rockchip_saradc_match[] = {
+ 	}, {
+ 		.compatible = "rockchip,rk3399-saradc",
+ 		.data = &rk3399_saradc_data,
++	}, {
++		.compatible = "rockchip,rk3528-saradc",
++		.data = &rk3528_saradc_data,
+ 	}, {
+ 		.compatible = "rockchip,rk3568-saradc",
+ 		.data = &rk3568_saradc_data,
 -- 
 2.48.1
 
