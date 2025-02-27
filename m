@@ -1,91 +1,99 @@
-Received: from www522.your-server.de (www522.your-server.de [195.201.215.122])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from out-15.pe-b.jellyfish.systems (out-15.pe-b.jellyfish.systems [198.54.127.81])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D32E1A9B2A;
-	Thu, 27 Feb 2025 21:02:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.215.122
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 667398BEC;
+	Thu, 27 Feb 2025 21:20:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.81
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740690173; cv=none; b=PfmEV+XsTi8VUS1ZzIcyhKYQJd9weFYCqsHfe51BtjhLvtYmXvYbsrBO07iikYCqyP9Ss7L86zxVpNjUTRlkuCA9dnUFt56RPOGcUOWejV3MJpEq7k0ZvhLniqjfbHObx/qzZUrSGHMdJlhnTT+RbtzTMNRZPZdz4d6MaVkEqeI=
+	t=1740691255; cv=none; b=dbwNne4LRs8sgAhbCyY3OClK6F7+ofADF5tBdiphXlqFt1zmsgL4iRGFu7IuHPPAiNLKy2S+XNbCP/y3oO/4m05kXgTgm3r/OmBSpRzDZqZGQ5+D2tbM2pUJLxQJw4V+wVyRSpBA5PZEfr8EcNztkNtq+56W8beLhp/yRzNyyUM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740690173; c=relaxed/simple;
-	bh=6NYlHZ4xc25oN3QPeOzW7hvvodzJe/fumzzfcMmfcPw=;
-	h=Message-Id:Cc:To:From:Date:Subject; b=gEuhVk+QNFxS3BvpHGt55hmQ8n4vK2HhYfrb5X0FHE2TF1MbHSZkO+BShbLmCs2p1RK4/+LJRz5mZ/CfhjCFRBOHNK5g9+fdmMsT3Xrbu+vr/9pPfLZwi3fVnArKF4DsTfXHyyNwj6oCnSaweffau43I6rhy1D7o0sYz61pc07s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=folker-schwesinger.de; spf=pass smtp.mailfrom=folker-schwesinger.de; dkim=pass (2048-bit key) header.d=folker-schwesinger.de header.i=@folker-schwesinger.de header.b=etHdWh0w; arc=none smtp.client-ip=195.201.215.122
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=folker-schwesinger.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=folker-schwesinger.de
+	s=arc-20240116; t=1740691255; c=relaxed/simple;
+	bh=CHpD4CPGPUIyS+PYE6bP5+7Njrc+9jjZ0GXIxK4trAM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Sd+Nd//naCrHhGEBImI1RU4bf1sYtF+E+rYaTzqGmNrbRebyu1ZUZNi0PZwq/wrTP5krz6bcHw1NOomF/6m3s5DtxxLIen9dwWtAaEeZQRWZb4jxCxMEe0yuS+c9VTqF25cSd0OYU/kJoX/1wwbTASqbw7402lr6SXhrNd32osc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org; spf=pass smtp.mailfrom=framepointer.org; dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b=PEcFMusR; arc=none smtp.client-ip=198.54.127.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=framepointer.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=folker-schwesinger.de header.i=@folker-schwesinger.de header.b="etHdWh0w"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=folker-schwesinger.de; s=default2212; h=Subject:Date:From:To:Cc:Message-Id:
-	Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References;
-	bh=ct8SrB60d6zDrIGtD5NcucoiPwJRvKTewfeK7626vSE=; b=etHdWh0wVNkty5DRaf7xhYUiZT
-	BVcp/6G62MwKrAy6ofI/EcesilgaG1GMFVp+VkDSbZdS/FS+RuZx9+gY5wWLD+DMapgtbMRhgXDyp
-	A1PbwADor6SrcoCKXkxP9Asj8xXknf6w+gA7MXHQMCtnBIRDe5nYpJ93JyrFRO6Z/jeQwETGUxkl7
-	/60HNHQtGPkAF6HsATWJv0gtKFlySdhMSC6MZRQMvAyrBM1dvLkSK8sKYfEhXyotnJmt87CT7Ql/u
-	ZSN5EsWq/pyd74K0oiukEGh9yYDW9aMjRIw1uFppTYQTdovMhLViliXL8dQeU6OrnaMVNy8GmshlG
-	A4Ea7++Q==;
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-	by www522.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96.2)
-	(envelope-from <dev@folker-schwesinger.de>)
-	id 1tnkhQ-0008jC-2c;
-	Thu, 27 Feb 2025 21:41:41 +0100
-Received: from [170.62.100.249] (helo=localhost)
-	by sslproxy02.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <dev@folker-schwesinger.de>)
-	id 1tnkhQ-0002zu-3D;
-	Thu, 27 Feb 2025 21:41:40 +0100
-Message-Id: <D83IPSTKYWNB.1PUBV1530XI86@folker-schwesinger.de>
-Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Folker
- Schwesinger" <dev@folker-schwesinger.de>
-To: "Jonathan Cameron" <jic23@kernel.org>, "Lars-Peter Clausen"
- <lars@metafoo.de>, "Nuno Sa" <nuno.sa@analog.com>, "Paul Cercueil"
- <paul@crapouillou.net>, "Peter Zijlstra" <peterz@infradead.org>
-From: "Folker Schwesinger" <dev@folker-schwesinger.de>
-Date: Thu, 27 Feb 2025 20:27:53 +0100
-Subject: [PATCH] iio: buffer-dma: Fix docstrings
-X-Authenticated-Sender: dev@folker-schwesinger.de
-X-Virus-Scanned: Clear (ClamAV 1.0.7/27562/Thu Feb 27 10:48:50 2025)
+	dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b="PEcFMusR"
+Received: from prod-lbout-phx.jellyfish.systems (new-01.privateemail.com [198.54.118.220])
+	by pe-b.jellyfish.systems (Postfix) with ESMTPA id 4Z3klf69lGzDqT2;
+	Thu, 27 Feb 2025 21:20:46 +0000 (UTC)
+Received: from MTA-15.privateemail.com (unknown [10.50.14.40])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
+	(No client certificate requested)
+	by NEW-01.privateemail.com (Postfix) with ESMTPS id 4Z3klf5SD3z3hhVZ;
+	Thu, 27 Feb 2025 16:20:46 -0500 (EST)
+Received: from mta-15.privateemail.com (localhost [127.0.0.1])
+	by mta-15.privateemail.com (Postfix) with ESMTP id 4Z3klf43fVz3hhS0;
+	Thu, 27 Feb 2025 16:20:46 -0500 (EST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=framepointer.org;
+	s=default; t=1740691246;
+	bh=CHpD4CPGPUIyS+PYE6bP5+7Njrc+9jjZ0GXIxK4trAM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=PEcFMusR7Av/fBAh0iIF2lhfbzHlHQtD3NkN/RlBSlUmYl90jbF9TvPVxFRswj7mA
+	 o1g5wawkWUU+Nbeb3b+Y55iM3yJguGuKZUwziHM7Cx3jnBxg4yh9E4fCYMyWRfpCf0
+	 hRkhS0j74yLX599z6rDhbUv40926SwowNtLBUJm5cVjxvHPPo+mwRUlMMhOqr22tXC
+	 jD90iIUmbzqSBg/8ITp9dbmkEAwLBOTYR+CrAfoAv8C1nuSei/R2MNrrv9Z7sR8EZ1
+	 4KN4/Awne+vKQKgtoMoUBPxIObgQVuM7Pjv7sGpTQHnMHH22cRsOetE8ObNoEtUuu0
+	 TBTfF4Ekjqrtw==
+Received: from 65YTFL3.secure.tethers.com (unknown [152.44.190.141])
+	by mta-15.privateemail.com (Postfix) with ESMTPA;
+	Thu, 27 Feb 2025 16:20:31 -0500 (EST)
+Date: Thu, 27 Feb 2025 16:20:32 -0500
+From: Sam Winchenbach <sam.winchenbach@framepointer.org>
+To: kernel test robot <lkp@intel.com>
+Cc: linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+	oe-kbuild-all@lists.linux.dev, lars@metafoo.de,
+	Michael.Hennerich@analog.com, antoniu.miclaus@analog.com,
+	jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] iio: filter: admv8818: fix range calculation
+Message-ID: <Z8DXIGxA5mJK0oPN@65YTFL3.secure.tethers.com>
+References: <20250225134612.577022-1-sam.winchenbach@framepointer.org>
+ <202502280434.DHtcsf7x-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202502280434.DHtcsf7x-lkp@intel.com>
+X-Virus-Scanned: ClamAV using ClamSMTP
 
-Fix a typo in the docstring of iio_dma_buffer_read() and fix what looks
-like a copy-and-paste error in the iio_dma_buffer_write() docstring.
+On Fri, Feb 28, 2025 at 04:23:44AM +0800, kernel test robot wrote:
+> Hi Sam,
+> 
+> kernel test robot noticed the following build errors:
+> 
+--- snip ---
+> >> drivers/iio/filter/admv8818.c:304:34: error: use of undeclared identifier 'lfp_corner_target'; did you mean 'lpf_corner_target'?
+>      304 |         ret = __admv8818_lpf_select(st, lfp_corner_target);
+>          |                                         ^~~~~~~~~~~~~~~~~
+>          |                                         lpf_corner_target
+>    drivers/iio/filter/admv8818.c:283:25: note: 'lpf_corner_target' declared here
+>      283 |         u64 hpf_corner_target, lpf_corner_target;
+>          |                                ^
+>    12 warnings and 1 error generated.
 
-Signed-off-by: Folker Schwesinger <dev@folker-schwesinger.de>
----
- drivers/iio/buffer/industrialio-buffer-dma.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Well this is embarassing. I must have have had a fat-finger accident when
+inspecting the result of applying the patch to torvalds/master.
 
-diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
-index 7ea784304ffb..ee294a775e8a 100644
---- a/drivers/iio/buffer/industrialio-buffer-dma.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dma.c
-@@ -624,7 +624,7 @@ static int iio_dma_buffer_io(struct iio_buffer *buffer, size_t n,
- 
- /**
-  * iio_dma_buffer_read() - DMA buffer read callback
-- * @buffer: Buffer to read form
-+ * @buffer: Buffer to read from
-  * @n: Number of bytes to read
-  * @user_buffer: Userspace buffer to copy the data to
-  *
-@@ -640,7 +640,7 @@ EXPORT_SYMBOL_NS_GPL(iio_dma_buffer_read, "IIO_DMA_BUFFER");
- 
- /**
-  * iio_dma_buffer_write() - DMA buffer write callback
-- * @buffer: Buffer to read form
-+ * @buffer: Buffer to write to
-  * @n: Number of bytes to read
-  * @user_buffer: Userspace buffer to copy the data from
-  *
+I will fix this in v5 once we come to a concensus on the DTS changes.
 
-base-commit: faeaa1ec6c63b6676679f321601471772f2a0c9b
--- 
-2.48.1
+--- snip ---
+>    303	
+>  > 304		ret = __admv8818_lpf_select(st, lfp_corner_target);
+>    305	exit:
+>    306		mutex_unlock(&st->lock);
+>    307		return ret;
+>    308	}
+>    309	
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
