@@ -1,64 +1,65 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC84F1FECA9
-	for <linux-iio@vger.kernel.org>; Tue,  4 Mar 2025 09:39:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96A891FECCE
+	for <linux-iio@vger.kernel.org>; Tue,  4 Mar 2025 09:39:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741081181; cv=none; b=bmQqiwn4vHJUn3vbl/l7uVDfKz/JtSzVZzUwyKT+Wkgy/6IBu13JxsoraMOOf3Nb3zpQwyXAdO30YIuIIMKHHgNbwiWEChuQKALBQpsGMj4+ILbimYdNubxlcGTIerZdu3ogbe7Mw077fi2dxWNapMzUw1zCby9L6FnLtPj8o8o=
+	t=1741081184; cv=none; b=JmfhlopcRkBa57rQFHmLO3fpbFGys3r8SofbePrk79mHz1utrblnME6A855BuXhKY/rZZOzWUBPsMpzRwqmRLe/tcJ/IcXgRmoN+Fx6fxmY9mc1dqitHtP6JvmEEyM4akn0ttXBuZGd5NtPNLwTttBD39BzjJvQzc4U6BNbZFRQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741081181; c=relaxed/simple;
-	bh=aOGadUaD55/7NjVi9olJnWxHY2EQr81G0BMQB3FqhzQ=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=HBP4XUhUNKFkL0gcEPiPhTZD8jzjj+A2daXB/diIHb0OG4Fxms2NtexqfRBzgMMr4D/D7yBRFbFhkWUs/dlbFcftwd2/kfpRHiovQVJf9sUxEJBKLXzNnGDoHTw4SbKAf/KsJFTyhdMMUQ7YlknNtF8cir7VtVcmEbxHzGQ6xaw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=vE7b76Iv; arc=none smtp.client-ip=209.85.128.46
+	s=arc-20240116; t=1741081184; c=relaxed/simple;
+	bh=ZXzmpb4axwe5e+KmC+wKSRDPy9USmDbFe7MNC5wo4Dc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=jjyK0XI/U+xFrurKzlpwiSurgUF0Xhc3cQyADiIX+jdSUgj+hF/kvx8zPR8J4f7edTg68XpUHRIYgUgI6GWxNhLasheXsN+IAFshVrbzk+HEUEZVchq1NXdsDC1dALRrRkpxI9LkXRp3qtnmMUhSmUR98efD3XV7hMfkG+wXXQ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=LKLawjV7; arc=none smtp.client-ip=209.85.221.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="vE7b76Iv"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-43995b907cfso34409915e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 04 Mar 2025 01:39:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="LKLawjV7"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-390cf7458f5so5001493f8f.2
+        for <linux-iio@vger.kernel.org>; Tue, 04 Mar 2025 01:39:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1741081176; x=1741685976; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=yzSd2WWwaJ30wmCeIbpT1A/lGBwbvt5bCwq5/4oCS6I=;
-        b=vE7b76IvIy0hog7qW6HDTGl/PAw6bW7Adl2xf6+9tIfZ0V50hZffFnsnv3IKp9F1mz
-         8UVjdEGN0AndDgYH6sDggkyf9ppbwh1pp+84q7VBgmQ7nKzOZp7kBlXeXwDgfMysCooL
-         D5TbwBfv1W4OhSczgB58nzWukuQvKbLF4AytutKvRrvLuf7jzTfG28MsS6oG9gOJ3HT4
-         xiM7R3oz7ybaIGUfrX5vZmRgWOlYFjvzssNOPlXCSFrKgcACWKxPH9rvXE2ULmhgEpbS
-         Fxuj5KlTtYLw7vWj1+Fot5QLKFSS7+k6SjSg6FtT8o9QET42BZMBxkYUKeSdFuO2ushN
-         HGVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741081176; x=1741685976;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1741081179; x=1741685979; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=yzSd2WWwaJ30wmCeIbpT1A/lGBwbvt5bCwq5/4oCS6I=;
-        b=RVfBm7feyrZw6mw/UvuFCX5wr6gF4uaXPw4PQC/SgAw0ow6hswDKn9YqZvXx6zDiST
-         e5xF+NiOgqK6pSIG1l12RNJoni/LpP+9hwGnFcaXkTVpwDK4UZ436hlxYQyH6w9zMkMf
-         fgqyXsnWHpjZFALnDMBhZg0jujz5O28qZr7YxQfo/q4fakvwiO+JjDKHsIAgsI1olKB/
-         dnkKIcMDkilqN3kQd8J+9WqFOQiu+RkTuaDoyJh08jQenm8UNy75Gfnpv5MBAqocM3Sf
-         3+S1Mf4g6V+6rdhoJfU1vC7psWzUzgbsCjgLwIweJtPkv/9GMtJsweZJCDD25y81xZBE
-         qAEw==
-X-Gm-Message-State: AOJu0YwNTAf/G7SMcCzSDx9umTynHFBO0pIEm8XibM5TJrCKewaqPpgp
-	r5qI26TbaFtRIz3yOv1xUMzONsU2fbqgO+ymBhT5kIz9jm4zrqXpYNYBdsrhsVc=
-X-Gm-Gg: ASbGncvHY+V4JBgoM9K03aAf0DzD/4ZGSmgNUjtfIO+CfisAqs7Pa2uWN0KITTZmXgV
-	KOx1zvbJApxE5jJH/sqGyPrqy2xAoQn8UIf2tjxuxuGyKXUc0fuhKc4sm5ydfL29quyt71YXa1/
-	gRx/Lyd1BqOeK12vhR08UUc20w3wiEfLZ233P34PAPmqBG6j+G7WRZjjNLMmHmlFCxlTlPP4SFH
-	twXtCIe/e/07RP6Jy+bVjeSvp+Di8PBvN2bN5hZ3KGFDsFHdeHi8oCQbusJ34yn/ym4chQc+i2S
-	D6jqNiekbP2QeuqxK1gdEFj4tc+w+ypV1Y/IJi51MMMyMFIjWMG0W/o3jfFwF2spqo/I44jTkyq
-	7YgZSlq9CBqpZsCZD8OgQ6KdQR8UsFwY28Q==
-X-Google-Smtp-Source: AGHT+IHj42i+Jh0hoXFnYJNDz31oiilscLISu0w5fjYK90iskecg4D7mRgp2rynwPpr1wC+EJx98Hw==
-X-Received: by 2002:a5d:6d89:0:b0:390:f815:78ca with SMTP id ffacd0b85a97d-390f8157bf2mr8815914f8f.30.1741081176166;
-        Tue, 04 Mar 2025 01:39:36 -0800 (PST)
+        bh=PzkM1CNNQnYlbfs6JoNQ+Yr5xlry9PSvlEEig9xhArk=;
+        b=LKLawjV7AIYB1Dn4KIboRFFGQj7j/50uL+aCGqG4EVpkh0UsvexDVWmVyR2N49T7Hm
+         mYcwgKPoKzq1n8pHLsObgeEtHGgiUPRqLbxQIqCBC9+BZX8J6Ku0csPBoU57EiLgoQvS
+         JSSKV6LOU03PhRkVbt/lmeZKI4UyH+7F4RsRcycrWO3VgFFbZXXMlWQVqArctN/VqHuS
+         vrFByc+VKhjFum4iX0OZROWeUTqmZxpTy8K9FKBN97ZALainTsnErYkDpMiVtwH+xGMc
+         yxd6KeMHuwcBtsEk5/nBsTMDM/P+BEJ79OaejtsQZbCYYsvcKWjv/57+sZYyasRY8loM
+         wA0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741081179; x=1741685979;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=PzkM1CNNQnYlbfs6JoNQ+Yr5xlry9PSvlEEig9xhArk=;
+        b=tPdVPNI7+cZh8RPvkIgV4NMotNtP4CrpaNoOWcFf7fNcYPjj+eHBBURQPWxxaOOx3J
+         tdt5uo8Y/I5Svqu7ruJzek7orPo9sk93en0TUBdscLo63AZmE6Fg2aQmRt/pZpkdXLfZ
+         96wf5oRmZQaUMSVpbNP9f9VzKeucTmnQHoXOCqP4zEOL/PwevsYP0jSHzcSIQcqkWIeO
+         Jc+VzmL2/v153ikx+jYu9V+xasxuuv6/GQV65p5UTuzZjDukmaeMZDRRg2i5/jtG8cHf
+         pWdLGdJjx9TurMxz4ozxrJQrxH1g1N3j7YH0R8VkrbGY8l/fmDF1wxDzinoiXLVvCKpQ
+         qxNQ==
+X-Gm-Message-State: AOJu0Ywb3gSuM4mo4HiRnDC5kg2Ydr0Rm0BEbcWCKS4cehj1u9f7Y2Aq
+	4Hz1T1VfbBYFtWX1wL3NpGdYikr+kJw6CbWEjN3ZryrANwqyP44m2Gt/ZtkTXlo=
+X-Gm-Gg: ASbGncu0Lclkd0MGZt4aEdhbTN0iE70QSrX2VMJN/0Szrr+fYypkRHG9yHtZDuXnr/3
+	z/4iMXJAayZuu+nvMt6dpxq7W1gri97Gopj7JFLU3MkZEFdifqtiSZ/w+ykJgZruDhDxa49bAjj
+	eKQ+2BL3lpiBpwpoltysSEt8i5PEbyPUthWUpkK17NLJtxZuBHrUNvMhXqJTKRhG67PkVGcCRY3
+	baXfmZerXoecBp0ICbgg1O341vTcQzprftT0kGPSJB70GyRFytF2FMgWhH8xU3ahtC7ebG8YYcR
+	Tx7AmkY5g5bIScEcDx/dYgAvwjVX4qOUXKI1FBvqJBgA4oG4sad7kMNf4lzu9KK82kJJvmGqmhJ
+	g7DS+l5v6hIxJFxodO871jkeR+7IFwhvmcg==
+X-Google-Smtp-Source: AGHT+IGP8/XNJEym12siW12OXb4Z12lWgJwu5ud44/xI6+DcmWzTDDMlA/u9XUQdHWGyyJpPjSs+9A==
+X-Received: by 2002:a05:6000:1847:b0:390:fc5a:91c8 with SMTP id ffacd0b85a97d-390fc5a9e2emr10725079f8f.53.1741081178818;
+        Tue, 04 Mar 2025 01:39:38 -0800 (PST)
 Received: from [10.2.5.157] (amontpellier-556-1-148-206.w109-210.abo.wanadoo.fr. [109.210.4.206])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-390e47b7ddesm17307844f8f.57.2025.03.04.01.39.35
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-390e47b7ddesm17307844f8f.57.2025.03.04.01.39.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Mar 2025 01:39:35 -0800 (PST)
+        Tue, 04 Mar 2025 01:39:38 -0800 (PST)
 From: Angelo Dureghello <adureghello@baylibre.com>
-Subject: [PATCH v2 0/2] iio: ad7380: add SPI offload support
-Date: Tue, 04 Mar 2025 10:37:49 +0100
-Message-Id: <20250304-wip-bl-spi-offload-ad7380-v2-0-0fef61f2650a@baylibre.com>
+Date: Tue, 04 Mar 2025 10:37:51 +0100
+Subject: [PATCH v2 2/2] docs: iio: ad7380: add SPI offload support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,10 +68,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAO3JxmcC/x2MQQqEMAwAvyI5Gyhxu4pfEQ/VJhoQW1pQofj3L
- Xsa5jBTIHNSzjA2BRJfmjWcVahtYN3duTGqrw5kyJrOfPDWiMuBOSoGkSM4j8733WAqvr0VciR
- 2hdrHxKLP/z3N7/sD6aD5zWsAAAA=
-X-Change-ID: 20250304-wip-bl-spi-offload-ad7380-ad675f2a2f5c
+Message-Id: <20250304-wip-bl-spi-offload-ad7380-v2-2-0fef61f2650a@baylibre.com>
+References: <20250304-wip-bl-spi-offload-ad7380-v2-0-0fef61f2650a@baylibre.com>
+In-Reply-To: <20250304-wip-bl-spi-offload-ad7380-v2-0-0fef61f2650a@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>, 
  Michael Hennerich <Michael.Hennerich@analog.com>, 
@@ -80,28 +80,90 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-doc@vger.kernel.org, Angelo Dureghello <adureghello@baylibre.com>
 X-Mailer: b4 0.14.2
 
-Add SPI offload support for the ad7380 ADC. 
+Document SPI offload support for the ad7380 driver.
 
 Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
 ---
-Changes for v2:
-- fix return value on offload probe,
-- add documentation patch 2/2.
+ Documentation/iio/ad7380.rst | 54 +++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 43 insertions(+), 11 deletions(-)
 
----
-Angelo Dureghello (2):
-      iio: ad7380: add support for SPI offload
-      docs: iio: ad7380: add SPI offload support
+diff --git a/Documentation/iio/ad7380.rst b/Documentation/iio/ad7380.rst
+index cff688bcc2d9601a9faf42d5e9c217486639ca66..e593ab6037b0da4cebfad148313f21cca7f00fd4 100644
+--- a/Documentation/iio/ad7380.rst
++++ b/Documentation/iio/ad7380.rst
+@@ -142,21 +142,21 @@ Example for AD7386/7/8 (2 channels parts):
+ .. code-block::
+ 
+ 	   IIO   | AD7386/7/8
+-	         |         +----------------------------
+-	         |         |     _____        ______
+-	         |         |    |     |      |      |
++		 |         +----------------------------
++		 |         |     _____        ______
++		 |         |    |     |      |      |
+ 	voltage0 | AinA0 --|--->|     |      |      |
+-	         |         |    | mux |----->| ADCA |---
++		 |         |    | mux |----->| ADCA |---
+ 	voltage2 | AinA1 --|--->|     |      |      |
+-	         |         |    |_____|      |_____ |
+-	         |         |     _____        ______
+-	         |         |    |     |      |      |
++		 |         |    |_____|      |_____ |
++		 |         |     _____        ______
++		 |         |    |     |      |      |
+ 	voltage1 | AinB0 --|--->|     |      |      |
+-	         |         |    | mux |----->| ADCB |---
++		 |         |    | mux |----->| ADCB |---
+ 	voltage3 | AinB1 --|--->|     |      |      |
+-	         |         |    |_____|      |______|
+-	         |         |
+-	         |         +----------------------------
++		 |         |    |_____|      |______|
++		 |         |
++		 |         +----------------------------
+ 
+ 
+ When enabling sequencer mode, the effective sampling rate is divided by two.
+@@ -169,6 +169,38 @@ gain is selectable from device tree using the ``adi,gain-milli`` property.
+ Refer to the typical connection diagrams section of the datasheet for pin
+ wiring.
+ 
++
++SPI offload support
++-------------------
++
++To be able to achieve the maximum sample rate, the driver can be used with the
++`AXI SPI Engine`_ to provide SPI offload support.
++
++.. _AXI SPI Engine: http://analogdevicesinc.github.io/hdl/projects/ad738x_fmc/index.html
++
++When SPI offload is being used, some attributes will be different.
++
++* ``in_voltage-voltage_sampling_frequency`` attribute is added for setting the
++  sample rate.
++* ``in_voltage-voltage_sampling_frequency_available`` attribute is added for
++  querying the max sample rate.
++* ``timestamp`` channel is removed.
++* Buffer data format may be different compared to when offload is not used,
++  e.g. the ``buffer0/in_voltage0-voltage1_type`` and the
++  ``buffer0/in_voltage2-voltage3_type`` attributes.
++
++.. seealso:: `SPI offload support`_
++
++Effective sample rate for buffered reads
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++
++Using SPI offload, the PWM generator drives the starting of the conversion by
++executing the pre-recorded SPI transfer at each PWM cycle, asserting CS and
++reading the previous available sample values for all channels.
++Default sample rate is set to a quite low frequency, to allow oversampling x32,
++user is then reponsible to adjust ``in_voltage-voltage_sampling_frequency`` for
++the specific case.
++
+ Unimplemented features
+ ----------------------
+ 
 
- Documentation/iio/ad7380.rst |  54 ++++-
- drivers/iio/adc/Kconfig      |   2 +
- drivers/iio/adc/ad7380.c     | 509 ++++++++++++++++++++++++++++++++++++++++---
- 3 files changed, 518 insertions(+), 47 deletions(-)
----
-base-commit: b7508a5a672275694c2a1b09a5f491ca2a56bbcf
-change-id: 20250304-wip-bl-spi-offload-ad7380-ad675f2a2f5c
-
-Best regards,
 -- 
-Angelo Dureghello <adureghello@baylibre.com>
+2.48.1
 
