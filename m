@@ -1,189 +1,113 @@
-Received: from fw2.prolan.hu (fw2.prolan.hu [193.68.50.107])
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AAAB283C92;
-	Tue,  4 Mar 2025 15:52:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.68.50.107
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76D7E299B2D;
+	Tue,  4 Mar 2025 17:40:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741103551; cv=none; b=aPUVVAxmD4Uvm/qYoBEWZC688l41ANCjEfNMFD6z2FhRcCV5wceejAWbyezc6SyBH/CfRiGND8z0TiL5drLMs5ScdX0xegTs+zItmxazgdnT3e1OUn6mP3QL5JYPlQ8IpGMkYYi6hJ19djr5ibsLvyiXmneAQRs2CCZ56g9Lh6k=
+	t=1741110037; cv=none; b=hwvrlY2UIChpJ9F5OjVQbyz1UasfxmhgV3nvF6GptuMKyy5lljfpo5Iw2XcQEGr4CFL7KUE6gEcXzSPkPcU2ig8b9kWQNhue6FYcy+pJHpeDgffp5w2bo9CGauBf6nO4ELDPYxuoaT7mr9if5pk8+sbXTWnJFeobdsXR27lfAG8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741103551; c=relaxed/simple;
-	bh=iRWDcUtRmxfRKcGy3wuAz3smpd9AKV7GoZAwArM4x/Y=;
+	s=arc-20240116; t=1741110037; c=relaxed/simple;
+	bh=9FU/7m3L6w46a3y3tZQoZf0uV5nbJVVfFNXKFyOuXOs=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=o+oyzo2K4du5wXgEysqqdJ4+mNumfmc5d3ZMXQV53BoT+OlVVAyjgOgQDgOTIi3BE1V1EGIE9RCtXKO6fv+lLsSbFcAZ1YORcS9G/ACnL2eKQefFHknnBYkexhHL+8KW6TaGysyLzyP0oEGv8fHUKWZb4+dswxZCXmLKR7gZ6IE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=prolan.hu; spf=pass smtp.mailfrom=prolan.hu; dkim=pass (4096-bit key) header.d=prolan.hu header.i=@prolan.hu header.b=TfQlwImW; arc=none smtp.client-ip=193.68.50.107
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=prolan.hu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=prolan.hu
+	 MIME-Version:Content-Type; b=loOoMHaCAJLtKzyXY6UTpHKjmPYKuCFQWa8hmbU2AUFXAKcx83ZHregqgMTykgarhCrQ1NwTu9WZBKoDA4sibW49cdfLv1obkKqd0eOD/S8k5WaUfc0Sp1f58KOKBAegrNFX/dHmuM6WBIogfez6+SzlMEzoieIeCrJ8OCo/kiQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=ciaWwtKr; arc=none smtp.client-ip=185.132.182.106
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=prolan.hu header.i=@prolan.hu header.b="TfQlwImW"
-Received: from proxmox-mailgw.intranet.prolan.hu (localhost.localdomain [127.0.0.1])
-	by proxmox-mailgw.intranet.prolan.hu (Proxmox) with ESMTP id 0B499A06C2;
-	Tue,  4 Mar 2025 16:52:27 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prolan.hu; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:from:from:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=mail; bh=WmIWZfNW61AlqLDV5lti
-	3V+Y+HfZggvgwmSk+uB30ww=; b=TfQlwImWIiuaBo5goUiawgvODWdiEZys0s/J
-	UP7u+kDMExYT1dg29p5kwD9L7QYXSI/DYZnoUTj9zwDgQpvX9DQnowO2poArfGWn
-	YG+ivLwHug0ceL13BWlOT58HgxueSstrCd7/qcup8ibCsi2jDh43EY83udMSOhA0
-	lXffaBb4OGxFFxiKgdL3r1t/NNPjAYP8SVU43B6sO1inVHbqM2FyBXu1gURb2Xql
-	ZzbZrLWwlT5MzRTTvP53EsEiOvtXGhhFaFDX1IE/Hpx48yeVUkQp9XAR1dAxx//X
-	DZ+n0G4Y8+vobgyjhdkaBtT5B9DcSUn2HprQ0oGhJooCqnXLyh7gr50jr344Ww2P
-	9DnMaydN6w5ajIVeRHzjkBrzP925/mL9wV7UyKjtnoiDOcqYEYBV11WUHPwFo+A8
-	oYHCUSa+24U6qat3eWF4mSy6I5c5SMPdX8sGSHmGnsxoemv6zajz0fjJRPIvADNT
-	tJ3/DV15ufes0h63eh23rirBMy2rNtUkyMY8ULX8wlden+COSXzdWsSmIO/zrssU
-	nu6Sts9MhWS4SzxOUupp6grwrgE5QLl9lqAMxN1iGNj47bZIl/1YAWB8o3AsdnR0
-	h6ztpfXpn7ospQR0DBcGhqjBftji8dRV/orAEJ/4Z7s0YBWKnqwamuEzBb9aX4q6
-	T0bPt6s=
-From: =?UTF-8?q?Bence=20Cs=C3=B3k=C3=A1s?= <csokas.bence@prolan.hu>
-To: <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-CC: =?UTF-8?q?Bence=20Cs=C3=B3k=C3=A1s?= <csokas.bence@prolan.hu>, "Kamel
- Bouhara" <kamel.bouhara@bootlin.com>, William Breathitt Gray <wbg@kernel.org>
-Subject: [PATCH v7 2/2] counter: microchip-tcb-capture: Add capture extensions for registers RA/RB
-Date: Tue, 4 Mar 2025 16:51:52 +0100
-Message-ID: <20250304155156.374150-3-csokas.bence@prolan.hu>
-X-Mailer: git-send-email 2.48.1
-In-Reply-To: <20250304155156.374150-1-csokas.bence@prolan.hu>
-References: <20250304155156.374150-1-csokas.bence@prolan.hu>
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="ciaWwtKr"
+Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 524FmvcA027790;
+	Tue, 4 Mar 2025 18:40:00 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=selector1; bh=
+	HPWXN7XU6ij/VILhA4L2prDYWt4HSSzxWCxw+iSrXQ4=; b=ciaWwtKrwneppsvy
+	zsVpYRBHP59MOu5LloMTD7vh+ij+6BcxWhXqOaeNRVk+1M5onSLbmpnT4y/CSpuW
+	dNjH9RZoPm6Ey6HtKpbERnCkjZ12PAHDGp0GsragIXxqxDqk7mKu+wAI0srv7klP
+	vyodYxGDnm9xY8VU7jOgoJ3yzxIuDJcWJa8XyhrRsL+1AxPzE4BnSQ/FCnrFLNxO
+	u+Q+tl0ZAW+7o78k6TGIkXOtH7R42zH4atBJB3xMfi9E3ihSIVAZ6NZvN5MjfoSP
+	ykqlUhKMXiN6JfTZufWtgkadJDu/W/EIFcuyDvecPAqeio3fTk6+HKctknyVoC8i
+	i4VMkw==
+Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 454cp8fgcb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 04 Mar 2025 18:40:00 +0100 (CET)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 391A6400A8;
+	Tue,  4 Mar 2025 18:38:45 +0100 (CET)
+Received: from Webmail-eu.st.com (eqndag1node5.st.com [10.75.129.134])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 11C15594FBC;
+	Tue,  4 Mar 2025 18:32:51 +0100 (CET)
+Received: from SAFDAG1NODE1.st.com (10.75.90.17) by EQNDAG1NODE5.st.com
+ (10.75.129.134) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 4 Mar
+ 2025 18:32:50 +0100
+Received: from localhost (10.252.16.143) by SAFDAG1NODE1.st.com (10.75.90.17)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 4 Mar
+ 2025 18:32:51 +0100
+From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+To: <lee@kernel.org>, <ukleinek@kernel.org>, <alexandre.torgue@foss.st.com>,
+        <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+        <jic23@kernel.org>, <daniel.lezcano@linaro.org>, <tglx@linutronix.de>
+CC: <catalin.marinas@arm.com>, <will@kernel.org>, <devicetree@vger.kernel.org>,
+        <wbg@kernel.org>, <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <olivier.moysan@foss.st.com>, <fabrice.gasnier@foss.st.com>
+Subject: [PATCH v2 6/8] arm64: defconfig: enable STM32 LP timer clockevent driver
+Date: Tue, 4 Mar 2025 18:32:27 +0100
+Message-ID: <20250304173229.3215445-7-fabrice.gasnier@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20250304173229.3215445-1-fabrice.gasnier@foss.st.com>
+References: <20250304173229.3215445-1-fabrice.gasnier@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-ESET-AS: R=OK;S=0;OP=CALC;TIME=1741103546;VERSION=7985;MC=2493638075;ID=1544448;TRN=0;CRV=0;IPC=;SP=0;SIPS=0;PI=3;F=0
-X-ESET-Antispam: OK
-X-EsetResult: clean, is OK
-X-EsetId: 37303A2980D94852637264
+Content-Type: text/plain
+X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SAFDAG1NODE1.st.com
+ (10.75.90.17)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-04_07,2025-03-03_04,2024-11-22_01
 
-TCB hardware is capable of capturing the timer value to registers RA and
-RB. Add these registers as capture extensions.
+Enable the STM32 LP timer MFD core and clockevent drivers used on
+STM32MP257F-EV1 board, for PSCI OSI.
 
-Signed-off-by: Bence Csókás <csokas.bence@prolan.hu>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 ---
+Changes in v2:
+- dropped unused IIO trigger, PWM and counter driver unused on upstream
+board currently, as advised by Krzysztof
+---
+ arch/arm64/configs/defconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Notes:
-    Changes in v2:
-    * Add IRQs
-    Changes in v3:
-    * Move IRQs to previous patch
-    Changes in v4:
-    * Return the status of the regmap_*() operations
-    * Add names for the extension numbers
-    Changes in v6:
-    * Remove RC, as it is not a capture register
-    Changes in v7:
-    * Change enums to #define's in UAPI header
-    * Return early on error in `mchp_tc_count_cap_read()`
-
- drivers/counter/microchip-tcb-capture.c       | 58 +++++++++++++++++++
- .../linux/counter/microchip-tcb-capture.h     |  6 ++
- 2 files changed, 64 insertions(+)
-
-diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
-index cc12c2e2113a..52493f7e8b57 100644
---- a/drivers/counter/microchip-tcb-capture.c
-+++ b/drivers/counter/microchip-tcb-capture.c
-@@ -254,6 +254,62 @@ static int mchp_tc_count_read(struct counter_device *counter,
- 	return 0;
- }
- 
-+static int mchp_tc_count_cap_read(struct counter_device *counter,
-+				  struct counter_count *count, size_t idx, u64 *val)
-+{
-+	struct mchp_tc_data *const priv = counter_priv(counter);
-+	u32 cnt;
-+	int ret;
-+
-+	switch (idx) {
-+	case COUNTER_MCHP_EXCAP_RA:
-+		ret = regmap_read(priv->regmap, ATMEL_TC_REG(priv->channel[0], RA), &cnt);
-+		break;
-+	case COUNTER_MCHP_EXCAP_RB:
-+		ret = regmap_read(priv->regmap, ATMEL_TC_REG(priv->channel[0], RB), &cnt);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	*val = cnt;
-+
-+	return 0;
-+}
-+
-+static int mchp_tc_count_cap_write(struct counter_device *counter,
-+				   struct counter_count *count, size_t idx, u64 val)
-+{
-+	struct mchp_tc_data *const priv = counter_priv(counter);
-+	int ret;
-+
-+	if (val > U32_MAX)
-+		return -ERANGE;
-+
-+	switch (idx) {
-+	case COUNTER_MCHP_EXCAP_RA:
-+		ret = regmap_write(priv->regmap, ATMEL_TC_REG(priv->channel[0], RA), val);
-+		break;
-+	case COUNTER_MCHP_EXCAP_RB:
-+		ret = regmap_write(priv->regmap, ATMEL_TC_REG(priv->channel[0], RB), val);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+static DEFINE_COUNTER_ARRAY_CAPTURE(mchp_tc_cnt_cap_array, 2);
-+
-+static struct counter_comp mchp_tc_count_ext[] = {
-+	COUNTER_COMP_ARRAY_CAPTURE(mchp_tc_count_cap_read, mchp_tc_count_cap_write,
-+				   mchp_tc_cnt_cap_array),
-+};
-+
- static struct counter_count mchp_tc_counts[] = {
- 	{
- 		.id = 0,
-@@ -262,6 +318,8 @@ static struct counter_count mchp_tc_counts[] = {
- 		.num_functions = ARRAY_SIZE(mchp_tc_count_functions),
- 		.synapses = mchp_tc_count_synapses,
- 		.num_synapses = ARRAY_SIZE(mchp_tc_count_synapses),
-+		.ext = mchp_tc_count_ext,
-+		.num_ext = ARRAY_SIZE(mchp_tc_count_ext),
- 	},
- };
- 
-diff --git a/include/uapi/linux/counter/microchip-tcb-capture.h b/include/uapi/linux/counter/microchip-tcb-capture.h
-index f3ef315fe9f6..136e2faa7730 100644
---- a/include/uapi/linux/counter/microchip-tcb-capture.h
-+++ b/include/uapi/linux/counter/microchip-tcb-capture.h
-@@ -12,6 +12,8 @@
-  * Count 0
-  * \__  Synapse 0 -- Signal 0 (Channel A, i.e. TIOA)
-  * \__  Synapse 1 -- Signal 1 (Channel B, i.e. TIOB)
-+ * \__  Extension capture0    (RA register)
-+ * \__  Extension capture1    (RB register)
-  *
-  * It also supports the following events:
-  *
-@@ -25,6 +27,10 @@
-  * - RC compare triggered
-  */
- 
-+/* Capture extensions */
-+#define COUNTER_MCHP_EXCAP_RA 0
-+#define COUNTER_MCHP_EXCAP_RB 1
-+
- /* Event channels */
- #define COUNTER_MCHP_EVCHN_CV 0
- #define COUNTER_MCHP_EVCHN_RA 0
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 1f25423de383..b29b2350ae27 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -775,6 +775,7 @@ CONFIG_MFD_TI_LP873X=m
+ CONFIG_MFD_TPS65219=y
+ CONFIG_MFD_TPS6594_I2C=m
+ CONFIG_MFD_ROHM_BD718XX=y
++CONFIG_MFD_STM32_LPTIMER=m
+ CONFIG_MFD_WCD934X=m
+ CONFIG_MFD_KHADAS_MCU=m
+ CONFIG_REGULATOR_FIXED_VOLTAGE=y
+@@ -1401,6 +1402,7 @@ CONFIG_CLK_RENESAS_VBATTB=m
+ CONFIG_HWSPINLOCK=y
+ CONFIG_HWSPINLOCK_QCOM=y
+ CONFIG_TEGRA186_TIMER=y
++CONFIG_CLKSRC_STM32_LP=y
+ CONFIG_RENESAS_OSTM=y
+ CONFIG_ARM_MHU=y
+ CONFIG_IMX_MBOX=y
 -- 
-2.48.1
-
+2.25.1
 
