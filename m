@@ -1,52 +1,50 @@
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+Received: from mx08-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5BF5285402;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5AFD27BF7C;
 	Tue,  4 Mar 2025 17:40:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.207.212.93
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741110052; cv=none; b=JezDQx/TuNdDbcCakTfVcl5Aan9Lp6F3YH9/F4z+vvAEFk7ai4OkIFrXBT4fZtttGaumwIufrhnthmyeUswjYutQOCC5u4e9+IFVemygIQ1HIL4Z1okTpIJEuOgOgHoVIPwWLxpSP6MlTmlOaIXAAv8lrsZ/B/VvZ5L6DdOPAP8=
+	t=1741110052; cv=none; b=r2T2LGvmkRjJ5vs2OamiBepp6Wx0rH6Yju7lMy5C5iSrErIPbny2b3aFmP0/G3KRr4L6CjJcS3wVCexIQdFvOT9HRiH1RsWQuPs3zGHdvOkkI6b6iIesvTKE/meWtSSlHra5+GJmqwUMY2d0srBKu+NZlQVoxtcN+5qJPvl4Ki0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1741110052; c=relaxed/simple;
-	bh=0UnlsJ/QMPp3en93prvQfDrfGSRGtCvMeCyLsWlTT+o=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QwiU0N93J4I6k6m9q1htJleQLTRKgiPjIRLFYdZgKssCaIeDZv6+MTM07OtCbQaT7yB7zGSNh/Rj2iLaljFoT90V4E0QuLa4Ejrv9tsqA+v84b49FD8U2CkafdB9kDtztDaGaA+BfI7c/1YTIOj653X4fKwlyL/1zQ9MM8S9uIw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=l0N6wU/m; arc=none smtp.client-ip=91.207.212.93
+	bh=4GiJb+BW1xJ1plvjs1Z+/EEpPV5Ru1GlcBRFYPwXoCk=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=iaYL8o9LRmR9BwPF9bFYVQlZcdUGonHBrFXlZcYpcA2w/d1sdXKpC9kCdS/BBz4teqjcxtxSgwXHc4QBnlcO4UtQ+Q3pTSyc4pyPjYFvshocpYsqZm7298TUDBf9ZKj8ZKFK2WYX6QhKOy2hy+bFerF3X94DQyjcCK4MRHdC4XA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=dxCjS/X0; arc=none smtp.client-ip=91.207.212.93
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="l0N6wU/m"
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 524HXaf1010806;
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="dxCjS/X0"
+Received: from pps.filterd (m0369457.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 524GGX8T004186;
 	Tue, 4 Mar 2025 18:40:20 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=selector1; bh=
-	2wY6Dic8hzBm+S2wld/DgwBFhKKy9RZVyTbW8u8LUKQ=; b=l0N6wU/mIwkLnrve
-	lkY+E5+N4aIn5MVtiEYfr1OFPmz+jauaVKYeBoXloM67YVbVm4R/Eltr+d3IWGQL
-	KsE2Dc1XxlneQv3k0bRxF3TEugh4zmQBvplKL9H32cI/8F28bwTl9q38N6W4bRl0
-	BPtMhBqHchXsuwWh0RB4n++5yix9xYXTEbzHaqeTUJTeaOsm9Rvo2l1A5x2661MY
-	N/jK8QE90w2FIBWAlAu6tm04b3up4QVDX6kNE4EYbx7gPIRanfyg157iNUDDq1k9
-	VxzOLzaHbWZGjnWzkwngh2qZqlqgNSQm4Og0YnV3u/uWIqmeQz620xzGoDeOwj/M
-	vTrwsg==
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=selector1; bh=xiv+tmWQj8JxNcIFBhipf2
+	x0bR1+XTfjHUYBtG0sdcE=; b=dxCjS/X045HVrPxtzpRU9FysmctxMZGVwhO1pq
+	OPw6YgY9q1daiz8WEJ1bmU8tlY7SfqiPJl6Lnc5XD8dOFawOFUIh0/gFHLFeCIwn
+	lhUfXBGC1MWNxMe1bgPYybnDhHljALRmxY8Hs5PBVO69PeOh9MlJzoHrxxhjhMOf
+	u2HWp6W/Mmvb6kS9/XoSL5ihmFqHOVuvVE6gHD8B02IFket9q9NAN9pXCPb57yPD
+	nyjerrpW2JMAljk3l5BvnBHt5XrF9dn+mKOpxahodx0NfE3NdDphrLYUsOKWe/ev
+	ZYdCk+o1IuulnC/B3/bD7UsZMEftjOWJw1C0H68MlomkPieA==
 Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 455wbhmdyv-1
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 454e2sf0qt-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
 	Tue, 04 Mar 2025 18:40:20 +0100 (CET)
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 929BB4006A;
-	Tue,  4 Mar 2025 18:39:15 +0100 (CET)
-Received: from Webmail-eu.st.com (eqndag1node6.st.com [10.75.129.135])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C3136594C2B;
-	Tue,  4 Mar 2025 18:32:52 +0100 (CET)
-Received: from SAFDAG1NODE1.st.com (10.75.90.17) by EQNDAG1NODE6.st.com
- (10.75.129.135) with Microsoft SMTP Server (version=TLS1_2,
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id A71C4400CA;
+	Tue,  4 Mar 2025 18:39:19 +0100 (CET)
+Received: from Webmail-eu.st.com (eqndag1node5.st.com [10.75.129.134])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 067C0594045;
+	Tue,  4 Mar 2025 18:32:46 +0100 (CET)
+Received: from SAFDAG1NODE1.st.com (10.75.90.17) by EQNDAG1NODE5.st.com
+ (10.75.129.134) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 4 Mar
- 2025 18:32:52 +0100
+ 2025 18:32:45 +0100
 Received: from localhost (10.252.16.143) by SAFDAG1NODE1.st.com (10.75.90.17)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 4 Mar
- 2025 18:32:52 +0100
+ 2025 18:32:45 +0100
 From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 To: <lee@kernel.org>, <ukleinek@kernel.org>, <alexandre.torgue@foss.st.com>,
         <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
@@ -56,12 +54,10 @@ CC: <catalin.marinas@arm.com>, <will@kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
         <linux-iio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
         <olivier.moysan@foss.st.com>, <fabrice.gasnier@foss.st.com>
-Subject: [PATCH v2 8/8] arm64: dts: st: use lptimer3 as tick broadcast source on stm32mp257f-ev1
-Date: Tue, 4 Mar 2025 18:32:29 +0100
-Message-ID: <20250304173229.3215445-9-fabrice.gasnier@foss.st.com>
+Subject: [PATCH v2 0/8] Add STM32MP25 LPTIM support: MFD, PWM, IIO, counter, clocksource
+Date: Tue, 4 Mar 2025 18:32:21 +0100
+Message-ID: <20250304173229.3215445-1-fabrice.gasnier@foss.st.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20250304173229.3215445-1-fabrice.gasnier@foss.st.com>
-References: <20250304173229.3215445-1-fabrice.gasnier@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -76,35 +72,50 @@ X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-03-04_07,2025-03-03_04,2024-11-22_01
 
-During the low power modes the generic ARM timer is deactivated, so the
-the tick broadcast is used, based on LPTIMER3 which is clocked by LSE on
-STMicroelectronics boards.
+This series adds support for STM32MP25 to MFD PWM, IIO, counter and
+clocksource low-power timer (LPTIM) drivers.
+This new variant is managed by using a new DT compatible string, hardware
+configuration and version registers.
+It comes with a slightly updated register set, some new features and new
+interconnect signals inside the SoC.
+Same feature list as on STM32MP1x is supported currently.
+The device tree files add all instances in stm32mp251 dtsi file.
 
-Signed-off-by: Patrick Delaunay <patrick.delaunay@foss.st.com>
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Changes in V2
 ---
- arch/arm64/boot/dts/st/stm32mp257f-ev1.dts | 8 ++++++++
- 1 file changed, 8 insertions(+)
+- Review comments from Krzysztof
+  - Adopt compatible fallback in dt-bindings and driver
+  - drivers: drop "st,stm32mp25-..." compatibles when unused (e.g. no .data)
+  - counter driver: no update (patch dropped)
+  - defconfig: only enable the necessary config for upstream board
+  - add lptimer DT node in stm32mp257f-ev1 board
+- Add missing management of IER access for stm32mp25
 
-diff --git a/arch/arm64/boot/dts/st/stm32mp257f-ev1.dts b/arch/arm64/boot/dts/st/stm32mp257f-ev1.dts
-index 1b88485a62a1..242115863ab4 100644
---- a/arch/arm64/boot/dts/st/stm32mp257f-ev1.dts
-+++ b/arch/arm64/boot/dts/st/stm32mp257f-ev1.dts
-@@ -190,6 +190,14 @@ &i2c8 {
- 	status = "disabled";
- };
- 
-+/* use LPTIMER with tick broadcast for suspend mode */
-+&lptimer3 {
-+	status = "okay";
-+	timer {
-+		status = "okay";
-+	};
-+};
-+
- &rtc {
- 	status = "okay";
- };
+Fabrice Gasnier (7):
+  dt-bindings: mfd: stm32-lptimer: add support for stm32mp25
+  mfd: stm32-lptimer: add support for stm32mp25
+  clocksource: stm32-lptimer: add support for stm32mp25
+  pwm: stm32-lp: add support for stm32mp25
+  arm64: defconfig: enable STM32 LP timer clockevent driver
+  arm64: dts: st: add low-power timer nodes on stm32mp251
+  arm64: dts: st: use lptimer3 as tick broadcast source on
+    stm32mp257f-ev1
+
+Olivier Moysan (1):
+  iio: trigger: stm32-lptimer: add support for stm32mp25
+
+ .../bindings/mfd/st,stm32-lptimer.yaml        |  40 +++-
+ arch/arm64/boot/dts/st/stm32mp251.dtsi        | 177 ++++++++++++++
+ arch/arm64/boot/dts/st/stm32mp257f-ev1.dts    |   8 +
+ arch/arm64/configs/defconfig                  |   2 +
+ drivers/clocksource/timer-stm32-lp.c          |  26 ++-
+ drivers/iio/trigger/stm32-lptimer-trigger.c   | 109 +++++++--
+ drivers/mfd/stm32-lptimer.c                   |  33 ++-
+ drivers/pwm/pwm-stm32-lp.c                    | 219 +++++++++++++++---
+ include/linux/iio/timer/stm32-lptim-trigger.h |   9 +
+ include/linux/mfd/stm32-lptimer.h             |  35 ++-
+ 10 files changed, 599 insertions(+), 59 deletions(-)
+
 -- 
 2.25.1
 
