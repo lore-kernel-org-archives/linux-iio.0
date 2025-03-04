@@ -1,121 +1,110 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB02A1FF61E;
-	Tue,  4 Mar 2025 12:07:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D18CD202974;
+	Tue,  4 Mar 2025 13:13:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741090074; cv=none; b=Sm1AjrbIpSDowmvV3eQ9LyYuJWTMKMa+3iMjgttr9icUWC2BnApd6O1XRBoPzKjMM+zQi84gNyrNySXgiaIVTs14vfyN+GWf1gAdcflMuluHL3KxXOHKJWHfSFDlaPxuspy8gz0kKRq4PVytArX5kTixl/eqH8+MUy3uGAbgX/s=
+	t=1741094038; cv=none; b=AJ/QWbbf3eAfFXQ1exj/9vtbyFKP2zRFCJ0PGMe8Iu23TaLRuJySr1rjSSW30cjFGQHVez/6NYtawcfMA9kXQCwqBebMZZDlQNw02AFyHv0h8p4w3HXilhB8Sw461HVUE98i7cVyM+xqyufUobk/WK9I5QDICMjZI1yKa9loCgs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741090074; c=relaxed/simple;
-	bh=MZy0VWiaiUcAOLUZr1EitCj53YlBljkRvHR7tDzANe4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SZ91nflJ6+O0DuCx4XStF74lpKu/eS2FuFeJUPQR6BEa8yj7Ro3R/eWKGZ+U/f2qpOzQpk9t1PWBNNs760LgJEc8kEPaaP/U9xOpjAQK+QQbr+dPbK82bFISvMOdqpKw6gwo53lndi7ERUyirKxdJOsLV2tN56W3vfJpo24OIak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OjFDoHtE; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1741094038; c=relaxed/simple;
+	bh=ko8x7nXq9/vzwLbMrAAmg57HdZ0vk6zRRFPCu6remI8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=e/dbG4kyjP2Oq3iflr3+FotBt8LLbJifHTkCbyClgr4aM370jPP3gVXJFDl8P2TcxDI6BOlXXuwITcc2OzRYoer0LQSIE2mLb55QcLimxN2YD/lY17e0nxj0OB3aXoj0eht/bod00AkmH8Zp5n4qwWns5tLkjqrfGiVTyX+ocP8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=urBNGoIe; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OjFDoHtE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741090073; x=1772626073;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=MZy0VWiaiUcAOLUZr1EitCj53YlBljkRvHR7tDzANe4=;
-  b=OjFDoHtEB8j+hYmH5eI5uYxefcf3gD3to6tJdRfi+6LB3IB4C+JNQMUf
-   zVD9O8qDmuFFhnZn3wvFyoQnkwe0Zv6rMd6de2tQ/fCYHyOnEjXNTedCd
-   7PzzLdhA+3MrdJzRZurKr0HwGnANjDAYFffSMXMXT5ea4K+QEuEQ7fpgt
-   aLIwemjZAXYL4sAgrce77s8fqaFHwLk3cTptT+iHKNhVu+pTw83xsnGDN
-   zTrzZNLXtkhlhi1uS/Wxl8pNE+NewiST3Df05uYQu3aw6wO6xaUvSmtzl
-   UHF0kbE4hlf7X9zkG9S0GaUDsQpmfgL1TA9XeVyFdRIYooICvqKKQ10X6
-   A==;
-X-CSE-ConnectionGUID: v0K3UTOQRPymv5kbKNuyoQ==
-X-CSE-MsgGUID: yv8O43eeTDydbsGhE5ahpA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11362"; a="45930048"
-X-IronPort-AV: E=Sophos;i="6.13,331,1732608000"; 
-   d="scan'208";a="45930048"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2025 04:07:52 -0800
-X-CSE-ConnectionGUID: LzJzP827Tnuswzqwqylwxg==
-X-CSE-MsgGUID: 40ygOT6kTlyfDKAMKfgDBw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,331,1732608000"; 
-   d="scan'208";a="118352213"
-Received: from smile.fi.intel.com ([10.237.72.58])
-  by fmviesa007.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2025 04:07:46 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1tpR3n-0000000H7I7-1M7c;
-	Tue, 04 Mar 2025 14:07:43 +0200
-Date: Tue, 4 Mar 2025 14:07:43 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
-	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Nuno Sa <nuno.sa@analog.com>,
-	Javier Carrasco <javier.carrasco.cruz@gmail.com>,
-	Guillaume Stols <gstols@baylibre.com>,
-	Dumitru Ceclan <mitrutzceclan@gmail.com>,
-	Trevor Gamblin <tgamblin@baylibre.com>,
-	Matteo Martelli <matteomartelli3@gmail.com>,
-	Alisa-Dariana Roman <alisadariana@gmail.com>,
-	Ramona Alexandra Nechita <ramona.nechita@analog.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v5 03/10] iio: adc: add helpers for parsing ADC nodes
-Message-ID: <Z8btDzggD29xtaAo@smile.fi.intel.com>
-References: <cover.1740993491.git.mazziesaccount@gmail.com>
- <e71c63c2f61135f9a8c7884525aab2c48f1e84c2.1740993491.git.mazziesaccount@gmail.com>
- <CAMknhBGQaqFZJsPAoauZL4S5MYtN05EOQ-BO2vw5gH+Z2RLOhw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="urBNGoIe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46E0EC4CEE5;
+	Tue,  4 Mar 2025 13:13:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741094038;
+	bh=ko8x7nXq9/vzwLbMrAAmg57HdZ0vk6zRRFPCu6remI8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=urBNGoIeWygwRfnI73T1Zq1iOYee7M/qtQZnV7h9r9eRmVI5G/1KTGjq5y5qz4NEr
+	 9fL8YJUhIg6yxaezJ5V2QQpXY1DUb9tIG+SY20zeXiUjZbrLHDwDQqA3RfIsGYc3wp
+	 pJ8mjltULVmHR4M495kkEXMb8zTkMKnwp+FitIBBR31MoJfPyWkfP8CCOL6CzDNITX
+	 nkbB/DlVUSpA9GVFzDyb3AnX8Iut++XZVW/wI6RzSxdPpzdvd0lrNrzIREr45WCMKu
+	 mXzaKGQ8xHHM4UIZl58gTeaag+jpGQM85wWmJdGyih7YDJUkNoXdN+pEaVrEWXs4Bg
+	 0jiFWmOa9bgew==
+Date: Tue, 4 Mar 2025 13:13:44 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
+Cc: Dan Carpenter <dan.carpenter@linaro.org>, Antoniu Miclaus 
+ <antoniu.miclaus@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich  <Michael.Hennerich@analog.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH next] iio: adc: ad4851: Fix signedness bug in
+ ad4851_calibrate()
+Message-ID: <20250304131344.65211155@jic23-huawei>
+In-Reply-To: <5fa78e957fc85fa134cea5fa68b21b56c6173a44.camel@gmail.com>
+References: <f5e260e9-d7a8-4dae-b7ea-f1bbb1760e60@stanley.mountain>
+	<5fa78e957fc85fa134cea5fa68b21b56c6173a44.camel@gmail.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.48; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMknhBGQaqFZJsPAoauZL4S5MYtN05EOQ-BO2vw5gH+Z2RLOhw@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 04, 2025 at 10:25:03AM +0100, David Lechner wrote:
-> On Mon, Mar 3, 2025 at 12:32 PM Matti Vaittinen
-> <mazziesaccount@gmail.com> wrote:
+On Fri, 28 Feb 2025 13:24:20 +0000
+Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
 
-...
+> On Fri, 2025-02-28 at 12:36 +0300, Dan Carpenter wrote:
+> > The "c" variable is used to store error codes from ad4851_find_opt()
+> > so it has to be signed for the error handling to work.=C2=A0 Change it
+> > to type int.
+> >=20
+> > Fixes: 6250803fe2ec ("iio: adc: ad4851: add ad485x driver")
+> > Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+> > --- =20
+>=20
+> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+Julia + 0-day / coccinelle caught this one as well but seeing as you
+were both first to report and you sent me a patch I'll just apply this one.
 
-> There are some different opinions on this, but on the last patch I did
-> introducing a new namespace,
+Applied to the togreg branch of iio.git.
 
-> the consensus
+Thanks,
 
-Hmm... I may not call that "the consensus"...
+Jonathan
 
-> seems to be that putting
-> the MODULE_IMPORT_NS() in the header file was convenient so that users
-> of the API don't have to remember to both include the header and add
-> the import macro.
-
-Which I am against because it will diminish the point of prevention of
-the APIs abuse along with a potential to have the stale headers in
-the file when the code is moved somewhere else..
-
-So, please do not do that. We have only two abusers currently:
-the PWM and SPI OFFLOAD.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+>=20
+> > Btw, in ad4851_write_raw() there are some checks for negative but
+> > the multiplication could still wrap and turn negative so we might want =
+to
+> > add an upper bounds as well:
+> >=20
+> > =C2=A0=C2=A0=C2=A0 drivers/iio/adc/ad4851.c:826 ad4851_write_raw()
+> > =C2=A0=C2=A0=C2=A0 warn: potential integer overflow from user 'val * st=
+->osr'
+> >=20
+> > =C2=A0drivers/iio/adc/ad4851.c | 4 ++--
+> > =C2=A01 file changed, 2 insertions(+), 2 deletions(-)
+> >=20
+> > diff --git a/drivers/iio/adc/ad4851.c b/drivers/iio/adc/ad4851.c
+> > index 1ad37084355e..98ebc853db79 100644
+> > --- a/drivers/iio/adc/ad4851.c
+> > +++ b/drivers/iio/adc/ad4851.c
+> > @@ -492,11 +492,11 @@ static int ad4851_find_opt(const unsigned long *f=
+ield,
+> > unsigned int start,
+> > =C2=A0static int ad4851_calibrate(struct iio_dev *indio_dev)
+> > =C2=A0{
+> > =C2=A0	struct ad4851_state *st =3D iio_priv(indio_dev);
+> > -	unsigned int opt_delay, num_lanes, delay, i, s, c;
+> > +	unsigned int opt_delay, num_lanes, delay, i, s;
+> > =C2=A0	enum iio_backend_interface_type interface_type;
+> > =C2=A0	DECLARE_BITMAP(pn_status, AD4851_MAX_LANES * AD4851_MAX_IODELAY);
+> > =C2=A0	bool status;
+> > -	int ret;
+> > +	int c, ret;
+> > =C2=A0
+> > =C2=A0	ret =3D iio_backend_interface_type_get(st->back, &interface_type=
+);
+> > =C2=A0	if (ret) =20
+>=20
+>=20
 
