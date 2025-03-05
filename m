@@ -1,290 +1,114 @@
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D40C205E0B;
-	Wed,  5 Mar 2025 09:54:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A28205AB0;
+	Wed,  5 Mar 2025 10:01:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741168471; cv=none; b=h82VvDpq1OyHyjkaceqpManOsmz/rLhe+wlIs4C3MP9Q5GZJBY57yxDsmQWyuq8QDlY+/BV/JxSsytsVrOSCSvkjjlcDhDmmwGOf4y225TooofaW2w+VhybI4E2agNJTHSS79Do6UYTLHrEuJ40OKrLof97KHAvjk8FGirDMrgI=
+	t=1741168902; cv=none; b=XMgDClmZjc0YvG8yupyvvbdVfQuOVpZziKzBqPCLf6E+DFR6qNbDjRJvVPjOb5wp6gEKnUYlu5zh0hVZR7kGaP1CQbI+tGAqYtzA4Cek7IQikaOzAE+nvLnmZu3+7OHqGmXYlIJfiEaGKmOGAtNGgpXNqB+MAZ8cYTwXx2gxQGQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741168471; c=relaxed/simple;
-	bh=1SGEnF4/9TakbDkU2bjvjWnbZwqNoZ3b+Nm0Y4ux24E=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QEo4nmoduT8S+/bXtIl1YWSmUUtKOKDad4ZjHPG1jxPp03+vMdj0A6EiGPkxzvuItbBidim8ASpLmM/64u2VpjecOnmIJ28iDtCHCX3YAlsafxKk/oP6mYOjjf3qcW8EqdQPao3dXB3HEPhNNUb3jPQt1kNg/URGC5wb+81X0qk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=gQsP8rCN; arc=none smtp.client-ip=185.132.182.106
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
+	s=arc-20240116; t=1741168902; c=relaxed/simple;
+	bh=1nIsRNc3Lh78MiadvQxVA9dZBYCTinDpe9nUk8DVt+g=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=gbHqY+Xm6QrcBJFTNkeQEiSkPoGxH+kBu/bmE9t5/saAnYDhwVMuYlEpXCymFgmBGr+2BQagvW0ZxZ4oRLqdY4byqyKv6fKdMRgUNmqbLFgPFkDGtXxi3q2lJaMmJAmyFMdlnHlopFNeLu+RaHji8zGLg3q7AVgulE71Xue0qWk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X6hAhl49; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="gQsP8rCN"
-Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5258N5TW027681;
-	Wed, 5 Mar 2025 10:54:21 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=selector1; bh=
-	Bf4Jif3iTwu6xhT/icuxJcCkmXcEX9OzuYCH60IJsfg=; b=gQsP8rCNCyfzGn7B
-	C3Hi9eMLbOsT0RPo+sJcPpkGmScvvCPJEwvx56M8zsuxvDLYN4UPLsVVX9qN1fAV
-	RlGEAVzvvBNI7bFPvPvR+6xoRKFAtZCO2B1ZhRWXf7Wwt8uq8f1CGGMGr+X06Mb6
-	nqA+qy6QXM9hq1Cwn7XU7TrQyhnDqz9CGA/CuyORk2rNAJ5SV3e7PK0Wk2+vtcRn
-	oSBEq5Kwl0JvYiBiaKHdIK4gpfq5kYSq+fa1xF6XpHAJnytJwMZ7m+SOsCmsAtnh
-	4bcgYUj2RlLOtvoqEOXYyfLgt4cyKvDreQ+63cUngwjbgSv2cYRb06IBNWyZX0Vu
-	0Ju6Fg==
-Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 454cp8nch1-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 05 Mar 2025 10:54:20 +0100 (CET)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 9ED8B4002D;
-	Wed,  5 Mar 2025 10:52:50 +0100 (CET)
-Received: from Webmail-eu.st.com (eqndag1node4.st.com [10.75.129.133])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id DF2C85AA719;
-	Wed,  5 Mar 2025 10:49:56 +0100 (CET)
-Received: from SAFDAG1NODE1.st.com (10.75.90.17) by EQNDAG1NODE4.st.com
- (10.75.129.133) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 5 Mar
- 2025 10:49:56 +0100
-Received: from localhost (10.48.86.222) by SAFDAG1NODE1.st.com (10.75.90.17)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 5 Mar
- 2025 10:49:56 +0100
-From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-To: <lee@kernel.org>, <ukleinek@kernel.org>, <alexandre.torgue@foss.st.com>,
-        <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
-        <jic23@kernel.org>, <daniel.lezcano@linaro.org>, <tglx@linutronix.de>
-CC: <catalin.marinas@arm.com>, <will@kernel.org>, <devicetree@vger.kernel.org>,
-        <wbg@kernel.org>, <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <olivier.moysan@foss.st.com>, <fabrice.gasnier@foss.st.com>
-Subject: [PATCH v3 7/8] arm64: dts: st: add low-power timer nodes on stm32mp251
-Date: Wed, 5 Mar 2025 10:49:34 +0100
-Message-ID: <20250305094935.595667-8-fabrice.gasnier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20250305094935.595667-1-fabrice.gasnier@foss.st.com>
-References: <20250305094935.595667-1-fabrice.gasnier@foss.st.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X6hAhl49"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 203DDC4CEE2;
+	Wed,  5 Mar 2025 10:01:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741168902;
+	bh=1nIsRNc3Lh78MiadvQxVA9dZBYCTinDpe9nUk8DVt+g=;
+	h=From:Date:Subject:To:Cc:From;
+	b=X6hAhl49+hDCpkMEOjmGnpsNm4VU9eLFAEo3RPawtan9YFA9ZrZ8ycCxQ4+GERR99
+	 qLZgiiJsnJ/IkxmALY+uBXBA53+mDJRfqIrKQ/57GCLv6Mn25Tb+TRm4ZHXxn74c7v
+	 SrMlAZO4QdKfc5sf0txRVsi+CTrtZO9GNnJdAwLoTr1bSsjMveoOvp9vGWX2f1TR7n
+	 RyQdUv2f8p+ogv8ZVC1zHDPMpY2cwkigS/wPI8X3KaqLAkN3dZCtIVNU4BpzV8Xavu
+	 Oxv+nTyyH3WHQptgqe9L7oeZQjtepHBpFUNj9NEFIz7C+9QIWixEllvf76ZFX3yNbY
+	 5kEf+DtqXcH7w==
+From: William Breathitt Gray <wbg@kernel.org>
+Date: Wed, 05 Mar 2025 19:01:19 +0900
+Subject: [PATCH] counter: microchip-tcb-capture: Fix undefined counter
+ channel state on probe
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SAFDAG1NODE1.st.com
- (10.75.90.17)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-03-05_03,2025-03-05_01,2024-11-22_01
+Message-Id: <20250305-preset-capture-mode-microchip-tcb-capture-v1-1-632c95c6421e@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAO4gyGcC/z2NsQrDMAxEfyVorsBJqqH9ldLBVeRGQ2Mju6EQ8
+ u8RGbocPI53t0EVU6lw7zYwWbVqXhz6Swc8x+UtqJMzDGGgMAbCYlKlIcfSvib4yZOHsmWetWD
+ j179KceyJgiS6XcH33Ez6O78ez30/AL3L2DN7AAAA
+X-Change-ID: 20250305-preset-capture-mode-microchip-tcb-capture-fa31550ef594
+To: =?utf-8?q?Cs=C3=B3k=C3=A1s_Bence?= <csokas.bence@prolan.hu>, 
+ Kamel Bouhara <kamel.bouhara@bootlin.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, William Breathitt Gray <wbg@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2137; i=wbg@kernel.org;
+ h=from:subject:message-id; bh=1nIsRNc3Lh78MiadvQxVA9dZBYCTinDpe9nUk8DVt+g=;
+ b=owGbwMvMwCW21SPs1D4hZW3G02pJDOknFFkcyyYYzr5cwv16hz/rr9W/2cuLw/m6b1WFHOhr6
+ vunLDS7o5SFQYyLQVZMkaXX/OzdB5dUNX68mL8NZg4rE8gQBi5OAZjIGQ1GhtYdH04vfRIT6LrZ
+ xPL8/qqTaTa2yrcTwloUEk29TeP/cjH84WCdeXSnU+Rs+YrAmUdfTtjGxygTz1P/weeDVJpIfmo
+ WHwA=
+X-Developer-Key: i=wbg@kernel.org; a=openpgp;
+ fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
 
-Add low-power timer (LPTimer) support on STM32MP25 SoC.
-The full feature set is implemented in LPTIM1/2/3/4. LPTIM5 supports a
-smaller set of features (no capture/compare) channel. Still, LPTIM5 can
-be used as single PWM, counter, trigger or timer.
+Hardware initialize of the timer counter channel does not occur on probe
+thus leaving the Count in an undefined state until the first
+function_write() callback is executed. Fix this by performing the proper
+hardware initialization during probe.
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Fixes: 106b104137fd ("counter: Add microchip TCB capture counter")
+Reported-by: Csókás Bence <csokas.bence@prolan.hu>
+Closes: https://lore.kernel.org/all/bfa70e78-3cc3-4295-820b-3925c26135cb@prolan.hu/
+Signed-off-by: William Breathitt Gray <wbg@kernel.org>
 ---
-Changes in V2:
-- Adopt two compatibles: newly introduced "st,stm32mp25-..." compatible,
-  and fallback "st,stm32-...".
+This should fix the issue where a user needs to set the count function
+before they can use the counter. I don't have this hardware in person,
+so please test this patch and let me know whether it works for you.
 ---
- arch/arm64/boot/dts/st/stm32mp251.dtsi | 177 +++++++++++++++++++++++++
- 1 file changed, 177 insertions(+)
+ drivers/counter/microchip-tcb-capture.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/st/stm32mp251.dtsi b/arch/arm64/boot/dts/st/stm32mp251.dtsi
-index f3c6cdfd7008..505176276e72 100644
---- a/arch/arm64/boot/dts/st/stm32mp251.dtsi
-+++ b/arch/arm64/boot/dts/st/stm32mp251.dtsi
-@@ -238,6 +238,78 @@ rifsc: bus@42080000 {
- 			#access-controller-cells = <1>;
- 			ranges;
+diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
+index 2f096a5b973d18edf5de5a2b33f2f72571deefb7..c391ac38b990939c6764a9120a4bd03289f68469 100644
+--- a/drivers/counter/microchip-tcb-capture.c
++++ b/drivers/counter/microchip-tcb-capture.c
+@@ -368,6 +368,25 @@ static int mchp_tc_probe(struct platform_device *pdev)
+ 			channel);
+ 	}
  
-+			lptimer1: timer@40090000 {
-+				compatible = "st,stm32mp25-lptimer", "st,stm32-lptimer";
-+				reg = <0x40090000 0x400>;
-+				interrupts-extended = <&exti1 47 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&rcc CK_KER_LPTIM1>;
-+				clock-names = "mux";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 17>;
-+				power-domains = <&RET_PD>;
-+				wakeup-source;
-+				status = "disabled";
++	/* Disable Quadrature Decoder and position measure */
++	ret = regmap_update_bits(regmap, ATMEL_TC_BMR, ATMEL_TC_QDEN | ATMEL_TC_POSEN, 0);
++	if (ret)
++		return ret;
 +
-+				counter {
-+					compatible = "st,stm32mp25-lptimer-counter", "st,stm32-lptimer-counter";
-+					status = "disabled";
-+				};
++	/* Setup the period capture mode */
++	ret = regmap_update_bits(regmap, ATMEL_TC_REG(priv->channel[0], CMR),
++				 ATMEL_TC_WAVE | ATMEL_TC_ABETRG | ATMEL_TC_CMR_MASK |
++				 ATMEL_TC_TCCLKS,
++				 ATMEL_TC_CMR_MASK);
++	if (ret)
++		return ret;
 +
-+				pwm {
-+					compatible = "st,stm32mp25-pwm-lp", "st,stm32-pwm-lp";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
++	/* Enable clock and trigger counter */
++	ret = regmap_write(regmap, ATMEL_TC_REG(priv->channel[0], CCR),
++			   ATMEL_TC_CLKEN | ATMEL_TC_SWTRG);
++	if (ret)
++		return ret;
 +
-+				timer {
-+					compatible = "st,stm32mp25-lptimer-timer", "st,stm32-lptimer-timer";
-+					status = "disabled";
-+				};
-+
-+				trigger@0 {
-+					compatible = "st,stm32mp25-lptimer-trigger", "st,stm32-lptimer-trigger";
-+					reg = <0>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			lptimer2: timer@400a0000 {
-+				compatible = "st,stm32mp25-lptimer", "st,stm32-lptimer";
-+				reg = <0x400a0000 0x400>;
-+				interrupts-extended = <&exti1 48 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&rcc CK_KER_LPTIM2>;
-+				clock-names = "mux";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 18>;
-+				power-domains = <&RET_PD>;
-+				wakeup-source;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-lptimer-counter", "st,stm32-lptimer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm-lp", "st,stm32-pwm-lp";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer {
-+					compatible = "st,stm32mp25-lptimer-timer", "st,stm32-lptimer-timer";
-+					status = "disabled";
-+				};
-+
-+				trigger@1 {
-+					compatible = "st,stm32mp25-lptimer-trigger", "st,stm32-lptimer-trigger";
-+					reg = <1>;
-+					status = "disabled";
-+				};
-+			};
-+
- 			i2s2: audio-controller@400b0000 {
- 				compatible = "st,stm32mp25-i2s";
- 				reg = <0x400b0000 0x400>;
-@@ -799,6 +871,111 @@ i2c8: i2c@46040000 {
- 				status = "disabled";
- 			};
- 
-+			lptimer3: timer@46050000 {
-+				compatible = "st,stm32mp25-lptimer", "st,stm32-lptimer";
-+				reg = <0x46050000 0x400>;
-+				interrupts-extended = <&exti2 29 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&rcc CK_KER_LPTIM3>;
-+				clock-names = "mux";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 19>;
-+				wakeup-source;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-lptimer-counter", "st,stm32-lptimer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm-lp", "st,stm32-pwm-lp";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer {
-+					compatible = "st,stm32mp25-lptimer-timer", "st,stm32-lptimer-timer";
-+					status = "disabled";
-+				};
-+
-+				trigger@2 {
-+					compatible = "st,stm32mp25-lptimer-trigger", "st,stm32-lptimer-trigger";
-+					reg = <2>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			lptimer4: timer@46060000 {
-+				compatible = "st,stm32mp25-lptimer", "st,stm32-lptimer";
-+				reg = <0x46060000 0x400>;
-+				interrupts-extended = <&exti2 30 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&rcc CK_KER_LPTIM4>;
-+				clock-names = "mux";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 20>;
-+				wakeup-source;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-lptimer-counter", "st,stm32-lptimer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm-lp", "st,stm32-pwm-lp";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer {
-+					compatible = "st,stm32mp25-lptimer-timer", "st,stm32-lptimer-timer";
-+					status = "disabled";
-+				};
-+
-+				trigger@3 {
-+					compatible = "st,stm32mp25-lptimer-trigger", "st,stm32-lptimer-trigger";
-+					reg = <3>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			lptimer5: timer@46070000 {
-+				compatible = "st,stm32mp25-lptimer", "st,stm32-lptimer";
-+				reg = <0x46070000 0x400>;
-+				interrupts-extended = <&exti2 31 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&rcc CK_KER_LPTIM5>;
-+				clock-names = "mux";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 21>;
-+				wakeup-source;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-lptimer-counter", "st,stm32-lptimer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm-lp", "st,stm32-pwm-lp";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer {
-+					compatible = "st,stm32mp25-lptimer-timer", "st,stm32-lptimer-timer";
-+					status = "disabled";
-+				};
-+
-+				trigger@4 {
-+					compatible = "st,stm32mp25-lptimer-trigger", "st,stm32-lptimer-trigger";
-+					reg = <4>;
-+					status = "disabled";
-+				};
-+			};
-+
- 			csi: csi@48020000 {
- 				compatible = "st,stm32mp25-csi";
- 				reg = <0x48020000 0x2000>;
+ 	priv->tc_cfg = tcb_config;
+ 	priv->regmap = regmap;
+ 	counter->name = dev_name(&pdev->dev);
+
+---
+base-commit: 8744dcd4fc7800de2eb9369410470bb2930d4c14
+change-id: 20250305-preset-capture-mode-microchip-tcb-capture-fa31550ef594
+
+Best regards,
 -- 
-2.25.1
+William Breathitt Gray <wbg@kernel.org>
 
