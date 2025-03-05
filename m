@@ -1,316 +1,92 @@
-Received: from smtp15.bhosted.nl (smtp15.bhosted.nl [94.124.121.26])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6D512500AA
-	for <linux-iio@vger.kernel.org>; Wed,  5 Mar 2025 15:40:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=94.124.121.26
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC7F205510;
+	Wed,  5 Mar 2025 15:59:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741189258; cv=none; b=ir162gIbmbDZofTIyDw5XB64uakLXPD9PXjZ0RbrC+JOJDY2YBHasvxsmf/Mc/3oTAdDik9k3LNiEp6vIPzVYPqQ3xnBGhlpcxLsh1xJPtBiC7plaC9guMdNCq+sC/jLxqB/Ex0R44A/QrQyTH3EmtIKWEfPZrc5Uj8D+F1P7lk=
+	t=1741190361; cv=none; b=OINRLhR04TpPn90a4/G3Vl5kAFIQ2ns/+edxBC06cqbuugO9yOjRdH1EKUvFnajl1rxQLFMtuCq9H/oDfDkEz6MvYlzJttWTvi62lZeFELB3I/7kczbdF22wTA15P3A4h+ucbwrLjBrDHH56WhTGOedupO2ZMd6K9B880ve2ZCI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741189258; c=relaxed/simple;
-	bh=S5V4K4G9/5vJWNMjiayM1hFuWoqlo2JQsadqMzM6j4s=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qALWIs+bRdYjpGvDhmWmZssux1o6ZyOJ8P4BsvrMrvr+hlje3ppZqE3MJZRFpne28LZDlng6ZZXhNdzq/4Q+JGG0ZagmcFSaniRTQdDhaJR9C61a//qIfbivcqXetQ3mDNFCdv9ghgFBxuu/nTdQ13FJiAOTUxonP6wPI+q6ItM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=protonic.nl; spf=pass smtp.mailfrom=protonic.nl; dkim=pass (2048-bit key) header.d=protonic.nl header.i=@protonic.nl header.b=Qk+UO+6v; arc=none smtp.client-ip=94.124.121.26
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=protonic.nl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonic.nl
+	s=arc-20240116; t=1741190361; c=relaxed/simple;
+	bh=mKXMDFy7W/QItIFVlHkupMeSaaEcMfQ0VqQn/kjbiBI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Gq0B/5auy0AtQpGoA9galyl2vkmKt6BYVmkAHlfEcfenSuUbHvojb9/q1uVFWHHofigxCNVr9QJ/3YRnlVxkF+UNvydhR9zEixazqlnCeesmc9dJ0z0DDiLKErt0FhkFWr9dDSeOOaDC3VW1APYObPZwRHE8NVJHW9OxDxy7yoA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kBrtU8dU; arc=none smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonic.nl header.i=@protonic.nl header.b="Qk+UO+6v"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kBrtU8dU"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2232aead377so139065595ad.0;
+        Wed, 05 Mar 2025 07:59:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=protonic.nl; s=202111;
-	h=content-transfer-encoding:content-type:mime-version:references:in-reply-to:
-	 message-id:subject:cc:to:from:date:from;
-	bh=E+kuQhjj9xzNE6BQn+tsChkhWmfrDEIZBYOWMsZmgiI=;
-	b=Qk+UO+6vvgBlPcvycrq9X9afftKz9msDJkOE4JHf9WXUXPHPlDemBTl6Ow4XjhWWOX8wlJfzCpxib
-	 aOlPD38wDrVUqO9xCaJ2kdtI/nY7hFlIS5xz4peuoSM/nPQFVd0a21QBOXFZC2HDtJH4Ac3i/KzSfX
-	 Oe5rqDbpHNRkglhrSfp9ki803Bxw/F2P3m5Dsob6QFhhTIajO1VhK7z/LdPNGeAsgebx5uYAKlSeJe
-	 uhEqeA3Te23Ec9/ctbFt3XU2h2F2WDzXYWI7GI6IS2qBkpAapzGHuvnNZyjUgadFJG50U8Jpw7xvY7
-	 EN6XLHNM+2dvv0oJCmnKzo6Xg4glinA==
-X-MSG-ID: 34bb63cf-f9d8-11ef-a39e-00505681446f
-Date: Wed, 5 Mar 2025 16:40:45 +0100
-From: David Jander <david@protonic.nl>
-To: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@baylibre.com>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, Jonathan Corbet
- <corbet@lwn.net>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Nuno Sa
- <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, Oleksij Rempel
- <o.rempel@pengutronix.de>
-Subject: Re: [RFC PATCH 1/7] drivers: Add motion control subsystem
-Message-ID: <20250305164046.4de5b6ef@erd003.prtnl>
-In-Reply-To: <6c6cqaxmsy7miesel4ghdeiea6nrpe4gti4xf5enfyg4uqro5u@vpmtd2t7gydi>
-References: <20250227162823.3585810-1-david@protonic.nl>
-	<20250227162823.3585810-2-david@protonic.nl>
-	<6c6cqaxmsy7miesel4ghdeiea6nrpe4gti4xf5enfyg4uqro5u@vpmtd2t7gydi>
-Organization: Protonic Holland
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.48; x86_64-pc-linux-gnu)
+        d=gmail.com; s=20230601; t=1741190359; x=1741795159; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=oiLVkJoOmKKWhZybYIihEffKcwMlU/S4KSLeOk4bur0=;
+        b=kBrtU8dU8WY1VCD1jekyfhpELpSptTUQkptVAofEA2976L59SHmtDXcceg6WYbT2K9
+         I86AsyF6Bl0T/d4VuFj1pIKWIJGqNwBJLZ5T5JlI+TOWjx90GdkjIFarx0tTaGEVx3jS
+         XkV/xYiy2Y2ik3pet2BvcPiPWgGhLUXNEj/1YY+dk1YmzkAvf789jgEcLta2uhBxKgHa
+         LjS2wKOtEHctjZrmdUqwqeJnVX0QxmXx9dzGKBbbqLjkA5SFCfdCLnONxp+HaFIaQ8ne
+         upIlrOI2gvpA0GOaqwcyK8u4np+li69EWNKVbmDjuo0SOvfAeQHUOWZVXwIzYwRHs+/C
+         g7GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741190359; x=1741795159;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=oiLVkJoOmKKWhZybYIihEffKcwMlU/S4KSLeOk4bur0=;
+        b=OgXb8dTru7KHeKg1ThItTIl+gaypFLIzUniYFIqtglNOARiS/Gw031IAGVH93vlx/0
+         q37vFIrfNGyGpNqsmV5/eBMeJle6wS/Nef43YzJZpsjQcBEGrv0VTbklQYOnmfNvC0WP
+         tLIBc70w1euSPsbrb23A4JOQSR2wylBvY1eckH0mNahcnbjjEd2Znu9pTDmsmJP7EUmP
+         yITtS2dGyFNrZiSiDKm557JFgLilz1KeMhFg7SvDNwxc+tdivf0CjPkVOONeIlWbHXlU
+         msGwVYd0Vr01fDqtQT3P09mvad2Nnim/nRDYimeQMfB703Bjq0zO+8GbbgSVj5m1KpJF
+         Vihg==
+X-Gm-Message-State: AOJu0Ywi1hw0JB08FXWP8JWtwmLhRKwoxZ47yN0Urc4jybot9+Iw+mgw
+	PMV7NDzcJ/lIyNdomlkf9/1ykEJOC2d98nVefuWYim1+r8SGpvGoabV1A40G9RE=
+X-Gm-Gg: ASbGncuKG5bZ5hD+qPHT9dFiIhYNfifVCVl2LRuceSCio3hSujLOspNpbb2jPUtw8Xd
+	1V5Bsmcis3TSuJu6G7DfBqXr5Or7o7dU+mBRZALZnYck0YwZwtTb6BDqtSIRc72EJ0IdnOxViDC
+	YLOSEg/rTqJSYGsIwDjrGuo4zEmPoYapROTgHe8+7Sz0gLT3C4x+Ji2++BHYEoFv+Nd4xgLUgnH
+	RKeNWG4M0Hd79NGjnlwepBSfuOCT4orEllw4vY83MMYqnSO+2G+47TJj0f0aumYWLwqGFHku9BT
+	glu4kl5mijjVlkrBcqyQ3aMcUpht4lFRpTufknpDNVOANepzSGseBOK46Wa/tpWAHqU=
+X-Google-Smtp-Source: AGHT+IE5QI2Fa0yoMUE51s3cn5NK1Suq/GDtTYbEyUTc0cC3esYxqKH57yGIYTktDsZr0iSfMPyYSQ==
+X-Received: by 2002:a17:902:ea10:b0:21b:b3c9:38ff with SMTP id d9443c01a7336-223f1cf49f5mr55675635ad.37.1741190359134;
+        Wed, 05 Mar 2025 07:59:19 -0800 (PST)
+Received: from fedora.am.students.amrita.edu ([175.184.253.10])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-223501f9d96sm114914245ad.54.2025.03.05.07.59.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Mar 2025 07:59:18 -0800 (PST)
+From: Siddharth Menon <simeddon@gmail.com>
+To: linux-iio@vger.kernel.org,
+	marcelo.schmitt1@gmail.com,
+	gregkh@linuxfoundation.org,
+	jic23@kernel.org,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com
+Cc: linux-kernel@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	lars@metafoo.d,
+	Siddharth Menon <simeddon@gmail.com>
+Subject: [PATCH 0/2] iio: accel: adis16203: cleanup and standardization
+Date: Wed,  5 Mar 2025 20:59:10 +0530
+Message-ID: <20250305155712.49833-2-simeddon@gmail.com>
+X-Mailer: git-send-email 2.48.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
+This series improves the adis16203 driver by using standard unit macros
+and removing an unused spi_set_drvdata() call.
 
-Hi Uwe,
+Siddharth Menon (2):
+  iio: accel: adis16203: Use units.h macros for voltage values
+  iio: accel: adis16203: Remove spi_set_drvdata()
 
-On Fri, 28 Feb 2025 17:44:27 +0100
-Uwe Kleine-K=C3=B6nig <u.kleine-koenig@baylibre.com> wrote:
+ drivers/staging/iio/accel/adis16203.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-> Hello David,
->=20
-> just a few highlevel review comments inline.
+-- 
+2.48.1
 
-Thanks...
-
-> On Thu, Feb 27, 2025 at 05:28:17PM +0100, David Jander wrote:
-> [...]
-> > +static int motion_open(struct inode *inode, struct file *file)
-> > +{
-> > +	int minor =3D iminor(inode);
-> > +	struct motion_device *mdev =3D NULL, *iter;
-> > +	int err;
-> > +
-> > +	mutex_lock(&motion_mtx); =20
->=20
-> If you use guard(), error handling gets a bit easier.
-
-This looks interesting. I didn't know about guard(). Thanks. I see the
-benefits, but in some cases it also makes the locked region less clearly
-visible. While I agree that guard() in this particular place is nice,
-I'm hesitant to try and replace all mutex_lock()/_unlock() calls with guard=
-().
-Let me know if my assessment of the intended use of guard() is incorrect.
-
-> > +	list_for_each_entry(iter, &motion_list, list) {
-> > +		if (iter->minor !=3D minor)
-> > +			continue;
-> > +		mdev =3D iter;
-> > +		break;
-> > +	} =20
->=20
-> This should be easier. If you use a cdev you can just do
-> container_of(inode->i_cdev, ...);
-
-Hmm... I don't yet really understand what you mean. I will have to study the
-involved code a bit more.
-
-> [...]
-> > +static int motion_release(struct inode *inode, struct file *file)
-> > +{
-> > +	struct motion_device *mdev =3D file->private_data;
-> > +	int i;
-> > +
-> > +	if (mdev->ops.device_release)
-> > +		mdev->ops.device_release(mdev);
-> > +
-> > +	for (i =3D 0; i < mdev->num_gpios; i++) {
-> > +		int irq;
-> > +		struct motion_gpio_input *gpio =3D &mdev->gpios[i];
-> > +
-> > +		if (gpio->function =3D=3D MOT_INP_FUNC_NONE)
-> > +			continue;
-> > +		irq =3D gpiod_to_irq(gpio->gpio);
-> > +		devm_free_irq(mdev->dev, irq, gpio); =20
->=20
-> It seems devm is just overhead here if you release by hand anyhow.
-
-Ack. This looks indeed unnecessary... I'll try to use non-devres calls here.
-
-> > [...]
-> > +
-> > +static const struct class motion_class =3D {
-> > +	.name		=3D "motion",
-> > +	.devnode	=3D motion_devnode, =20
->=20
-> IIRC it's recommended to not create new classes, but a bus.
-
-Interesting. I did some searching, and all I could find was that the chapter
-in driver-api/driver-model about classes magically vanished between versions
-5.12 and 5.13. Does anyone know where I can find some information about thi=
-s?
-Sorry if I'm being blind...
-
-> [...]
-> > +int motion_register_device(struct motion_device *mdev)
-> > +{
-> > +	dev_t devt;
-> > +	int err =3D 0;
-> > +	struct iio_motion_trigger_info *trig_info;
-> > +
-> > +	if (!mdev->capabilities.num_channels)
-> > +		mdev->capabilities.num_channels =3D 1;
-> > +	if (mdev->capabilities.features | MOT_FEATURE_PROFILE)
-> > +		mdev->capabilities.max_profiles =3D MOT_MAX_PROFILES;
-> > +	if (!mdev->capabilities.speed_conv_mul)
-> > +		mdev->capabilities.speed_conv_mul =3D 1;
-> > +	if (!mdev->capabilities.speed_conv_div)
-> > +		mdev->capabilities.speed_conv_div =3D 1;
-> > +	if (!mdev->capabilities.accel_conv_mul)
-> > +		mdev->capabilities.accel_conv_mul =3D 1;
-> > +	if (!mdev->capabilities.accel_conv_div)
-> > +		mdev->capabilities.accel_conv_div =3D 1;
-> > +
-> > +	mutex_init(&mdev->mutex);
-> > +	mutex_init(&mdev->read_mutex);
-> > +	INIT_KFIFO(mdev->events);
-> > +	init_waitqueue_head(&mdev->wait);
-> > +
-> > +	err =3D motion_of_parse_gpios(mdev);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	mdev->minor =3D motion_minor_alloc();
-> > +
-> > +	mdev->iiotrig =3D iio_trigger_alloc(NULL, "mottrig%d", mdev->minor);
-> > +	if (!mdev->iiotrig) {
-> > +		err =3D -ENOMEM;
-> > +		goto error_free_minor;
-> > +	}
-> > +
-> > +	trig_info =3D kzalloc(sizeof(*trig_info), GFP_KERNEL);
-> > +	if (!trig_info) {
-> > +		err =3D -ENOMEM;
-> > +		goto error_free_trigger;
-> > +	}
-> > +
-> > +	iio_trigger_set_drvdata(mdev->iiotrig, trig_info);
-> > +
-> > +	trig_info->minor =3D mdev->minor;
-> > +	err =3D iio_trigger_register(mdev->iiotrig);
-> > +	if (err)
-> > +		goto error_free_trig_info;
-> > +
-> > +	mdev->iiowork =3D IRQ_WORK_INIT_HARD(motion_trigger_work);
-> > +
-> > +	INIT_LIST_HEAD(&mdev->list);
-> > +
-> > +	mutex_lock(&motion_mtx);
-> > +
-> > +	devt =3D MKDEV(motion_major, mdev->minor);
-> > +	mdev->dev =3D device_create_with_groups(&motion_class, mdev->parent,
-> > +				devt, mdev, mdev->groups, "motion%d", mdev->minor); =20
->=20
-> What makes sure that mdev doesn't go away while one of the attributes is
-> accessed?
-
-Good question. I suppose you mean that since mdev is devres-managed and
-device_create_with_groups() apparently isn't aware of that, so there is no
-internal lock somewhere that prevents read() or ioctl() being called while =
-the
-devres code is freeing the memory of mdev?
-
-I will try to search for some example code to see how something like this is
-handled in other places. I assume I'd need to add a per-mdev lock or use the
-big motion_mtx everywhere... which sounds like a performance penalty that
-should be avoidable. If you know of a good example to learn from, I'd be
-grateful to know.
-
-> > +	if (IS_ERR(mdev->dev)) {
-> > +		dev_err(mdev->parent, "Error creating motion device %d\n",
-> > +				mdev->minor);
-> > +		mutex_unlock(&motion_mtx);
-> > +		goto error_free_trig_info;
-> > +	}
-> > +	list_add_tail(&mdev->list, &motion_list);
-> > +	mutex_unlock(&motion_mtx);
-> > +
-> > +	return 0;
-> > +
-> > +error_free_trig_info:
-> > +	kfree(trig_info);
-> > +error_free_trigger:
-> > +	iio_trigger_free(mdev->iiotrig);
-> > +error_free_minor:
-> > +	motion_minor_free(mdev->minor);
-> > +	dev_info(mdev->parent, "Registering motion device err=3D%d\n", err);
-> > +	return err;
-> > +}
-> > +EXPORT_SYMBOL(motion_register_device);
-> > [...]
-> > +struct mot_capabilities {
-> > +	__u32 features;
-> > +	__u8 type;
-> > +	__u8 num_channels;
-> > +	__u8 num_int_triggers;
-> > +	__u8 num_ext_triggers;
-> > +	__u8 max_profiles;
-> > +	__u8 max_vpoints;
-> > +	__u8 max_apoints;
-> > +	__u8 reserved1;
-> > +	__u32 subdiv; /* Position unit sub-divisions, microsteps, etc... */
-> > +	/*
-> > +	 * Coefficients for converting to/from controller time <--> seconds.
-> > +	 * Speed[1/s] =3D Speed[controller_units] * conv_mul / conv_div
-> > +	 * Accel[1/s^2] =3D Accel[controller_units] * conv_mul / conv_div
-> > +	 */
-> > +	__u32 speed_conv_mul;
-> > +	__u32 speed_conv_div;
-> > +	__u32 accel_conv_mul;
-> > +	__u32 accel_conv_div;
-> > +	__u32 reserved2;
-> > +}; =20
->=20
-> https://docs.kernel.org/gpu/imagination/uapi.html (which has some
-> generic bits that apply here, too) has: "The overall struct must be
-> padded to 64-bit alignment." If you drop reserved2 the struct is
-> properly sized (or I counted wrongly).
-
-Oh, thanks for pointing that out... I wouldn't have searched for that
-information in that particular place tbh. ;-)
-
-I am tempted to add another __u32 reserved3 though instead. Better to have
-some leeway if something needs to be added in a backwards-compatible way la=
-ter.
-
-> > +struct mot_speed_duration {
-> > +	__u32 channel;
-> > +	speed_raw_t speed; =20
->=20
-> What is the unit here?
-
-Speed doesn't have a fixed unit in this case. Or rather, the unit is
-device-dependent. For a motor it could be rotations per second, micro-steps=
- per
-second, etc... while for a linear actuator, it could be micrometers per sec=
-ond.
-
-Why no fixed unit? That's because in practice many devices (controllers) ha=
-ve
-their inherent base-unit, and it would get overly complicated if one needed=
- to
-convert back and forth between that and some universal unit just for the sa=
-ke
-of uniformity, and user-space most certainly expects the same unit as the
-hardware device it was initially designed for. So in this case it is a desi=
-gn
-decision to make user-space deal with unit-conversion if it is necessary to=
- do
-so.
-
-> > +	mot_time_t duration; =20
->=20
-> duration_ns? That makes usage much more ideomatic and there should be no
-> doubts what the unit is.
-
-Yes, mot_time_t is defined as nanoseconds, so I'll add the _ns suffix here.
-
-> > +	pos_raw_t distance; =20
->=20
-> What is the unit here?
-
-Again this unit can have different meanings: micrometers, micro-steps,
-angle-degrees, etc... so what suffix to use?
-
-> > +	__u32 reserved[3]; =20
->=20
-> Again the padding is wrong here.
-
-Will fix. thanks.
-=20
-Best regards,
-
---=20
-David Jander
