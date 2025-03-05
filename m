@@ -1,126 +1,192 @@
-Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB95119258E;
-	Wed,  5 Mar 2025 04:25:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38F2E205E3F;
+	Wed,  5 Mar 2025 09:54:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.207.212.93
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741148726; cv=none; b=q+WyIaoo/x1t/3xFJbdRHIFlyppXOERxLnEFK0iTkvxxt2r995Zw62aaZz3Lzrgrrht/y/xfM2QeidtRdl6eJauRPUyESVIkUxRr4cGHRyfeP0MwyOSvLxBZBwzqOgUCTLewcpseZKh1Cuf2YQzoNF8fznsJthOhh9ItZYT2Bdg=
+	t=1741168450; cv=none; b=eHPVY04pY5Er5mqU2sdBCw8ryKLjlIryufB4SAuIfCUJr06Sb+KHOnR7Rl7253rmx+u966PPYUh9GpNFI7qcQTvIuvni0IPXci5tGRkQeMOma9D7JxTaaSvyjmF/I0WuIw24W1wbACgdBUG5oqQhCgbHsLWU2EVVW4cNuIGcoME=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741148726; c=relaxed/simple;
-	bh=xVXj5uNuDprrX9NgzeSzCIaye5vTwhTZ/RbbjSMwxv8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=X8w0z3CJQakcaY+NLaMOPKA6hw2TlLPJ02j0GVa0je1KAbmBA3The0fw/jsGV7r26E4zXKDkH15dxhmIszGKYTPmRjY8vnxNNs5CMkAF1iJkx5kM8uxY9qiJs/PhNgfeQrifMm8vqpw/ID21BZKILQIoR452Z+hPq8k9TB3c2Sk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=faH+v/k0; arc=none smtp.client-ip=209.85.219.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1741168450; c=relaxed/simple;
+	bh=jiB4/6NxcdPBW0bNdUhxcALfkbBi6+y7zZz9AUW5g3g=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=cDGvBGvv17d+0xv6/Q0k+757swrFAb8zQJlEdH0Yt30C1scJedLWKOdt0ICha0O0PnGg5sYObUPGr3R7h1QRHQX0m/fTUn4t9A8fI4Trd/lSv8cTi5Q1GDmN4UIEZzfWtmD8mZ8EjS46r0eHmSPBM1NoCtquWSVugEyhUtF6nRM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=QK/T7l83; arc=none smtp.client-ip=91.207.212.93
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="faH+v/k0"
-Received: by mail-qv1-f46.google.com with SMTP id 6a1803df08f44-6e8e6dee861so4738226d6.1;
-        Tue, 04 Mar 2025 20:25:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741148723; x=1741753523; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+h56XZ364MGW+3FBcMIihUk2DOAx7HjP417UZqMWYwo=;
-        b=faH+v/k0c6gT7vu2CexVFI0yEpf86TzC/8s06zQm8Qd6yW3aN5XizvDjXaflYTKwn2
-         ajGKqfmEI2N/jOe3P83hsfqzvLUP8WvL80rWB/FqaHNODYkdwp6BiykvSxGA4xejMXuH
-         yohQAPWcnPsur2rum43mOLH1X5EgyyiNr3RmyhEoIzuje/BkoVJmimuByXrUb6IsoLfF
-         Yye6ILDRA2nQiLE/jJDfXPsT635dPhqW2xTHtIBixzWUDWfu2sIU1ASeaeycPhlYGX7S
-         o+DvIyE9vrJJgmgoyY0pFsL374nw2PziOR85UsKswF5u3lFCOQW2MR+iVBztoWBfgJUk
-         VjJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741148723; x=1741753523;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+h56XZ364MGW+3FBcMIihUk2DOAx7HjP417UZqMWYwo=;
-        b=RiE0DUV97axgVpmosX/prkiyxcjtMgmTanGDslXfrH9hxPiuGxF8dQA2UFqZifUmb6
-         LuW2JaEpncF/IzGCOrjXbQQ0BGtJ/DYwCKsiNMg1wbNgXki7nJEgbtf9Y8GxsAJW7WIW
-         Z9NazcIlrX7N49MX3xoZ0uWEAcPDF4xwF7d12OXpwbC+/H6XIjIw8U/io1fwnefmipw8
-         CZ7pyoHr7DXd0L8a1ud9PGZkDSGMT0MkuDV087caYareuTS0k2A1ourSZxhFD2SFAg1P
-         +cH57m7uVLlbg/g1KwBJh99boCBwmuCfJYqhdPCR3ucSS29PWeIdUurvelW+BGfJmEyS
-         vYVQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWq+poLsbfhmCcMPZ6O5FL1pdXFqu79zB3Gb995J1URSK0CjfQcJ6bz4ayMkgt3KC7YyonxFaWzYIY=@vger.kernel.org, AJvYcCXAiR1/zeMtDbFt4NTyjQa2W69oR3tCf5JddWHnfqTqUvt6RXPHm3X8R50SFRekLpASunllwJHOhOPX2JTP@vger.kernel.org
-X-Gm-Message-State: AOJu0YxbdUSgcyzn/QjdLeR/TzmabgKu6UsGqstp30LQCISpRpXmX2pM
-	K68MX8VLJp2Yu1aBSVM+MfBKchRFCOGsqj5sVRq2SHGSO4IAfXFcoCvAvA==
-X-Gm-Gg: ASbGncuDRQ+JhG+gM9Xfd8PBgbK7MngnPw477kbhAXw0k+OwzWxNQnlAkhsUfLIwzFv
-	x1pvqn42cKGbJsienUNxfBVXeHmVwe3BMMRcRRpiRRTg2fAVC31cfx3lRguk4x9FIO2tha4fuVI
-	oFYP5xlpIMvYgsRwzG6GwLPRZYcugXnhkbgZf7335fOPrfhgtxx50nEHyYKHrgd1olczOr2tnpl
-	/ZUvVXQhnExKEHBXj4ZrvsE5NUDa2fb+TbEpaJ9VF0DiteZTooSoLTWeHHAeH/cXKI8HqlxgB0I
-	rjeSJUrvnvvFHfRGU+kaLV8ve0CWvImFiJTaPliHOHgOlFFvr5nogspbNR3Up0JDK0CcZ5Y=
-X-Google-Smtp-Source: AGHT+IGAPdtnN/1ww52BZxy2q3tJ/zxTSHjHpKdJIPhjRDZ9WGwwJYaXC02FCoZF9ORBkR5++0QBkQ==
-X-Received: by 2002:a05:6214:da5:b0:6e6:646d:7550 with SMTP id 6a1803df08f44-6e8e6f8fdd9mr31367416d6.19.1741148723432;
-        Tue, 04 Mar 2025 20:25:23 -0800 (PST)
-Received: from VM-Arch (ool-1826d901.dyn.optonline.net. [24.38.217.1])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e8c0b4a49fsm42033556d6.67.2025.03.04.20.25.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Mar 2025 20:25:22 -0800 (PST)
-Date: Tue, 4 Mar 2025 23:25:20 -0500
-From: Alex Lanzano <lanzano.alex@gmail.com>
-To: Gustavo Silva <gustavograzs@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: bmi270: fix initial sampling frequency
- configuration
-Message-ID: <xvk32vz66mjl46rmrowfb3zxcbuw7e57pn2eh3kvqv5vk3jmuh@45p5qzyl5ljr>
-References: <20250304-bmi270-odr-fix-v1-1-384dbcd699fb@gmail.com>
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="QK/T7l83"
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5259B7xH015061;
+	Wed, 5 Mar 2025 10:53:55 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=selector1; bh=
+	mhvTaZuKOviAMTNavLZtF4RTa6aSH1vLPVWO7cdfE/U=; b=QK/T7l83yacrRjoE
+	pK3YolCaUm5PnjS4Ctex5g+hcMKrw8zFffYmw7Cnnhw4L9oTewyPtYdRzt1DmXND
+	a/rgy8+iFN7T/MEd4r/OX1n9beXuw4/YMcnZEEulEjwzcoKq7E9WvATA8YwTB3uT
+	zLhtELO/ofwAV7d2AkZC+RQLj0CgDrjbdEsc4zqjmkiuvFsLbZ0WP9ugjRIkMCA0
+	SbVGWArdD4kIBwrTUYbqvz3WiQCGgEYyQnDILOge8EdALpgUufDNGAv99fMngF15
+	aIlyTQoNwnug73Jj0+N8Farl39gtUbIIAbR/q+NTDieYIsO065mZmy9eFR7Yhm9w
+	mzTzvQ==
+Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 456krt8b9d-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 05 Mar 2025 10:53:55 +0100 (CET)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id ECF5540082;
+	Wed,  5 Mar 2025 10:52:45 +0100 (CET)
+Received: from Webmail-eu.st.com (eqndag1node5.st.com [10.75.129.134])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id EDA235A523A;
+	Wed,  5 Mar 2025 10:49:50 +0100 (CET)
+Received: from SAFDAG1NODE1.st.com (10.75.90.17) by EQNDAG1NODE5.st.com
+ (10.75.129.134) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 5 Mar
+ 2025 10:49:50 +0100
+Received: from localhost (10.48.86.222) by SAFDAG1NODE1.st.com (10.75.90.17)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 5 Mar
+ 2025 10:49:50 +0100
+From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+To: <lee@kernel.org>, <ukleinek@kernel.org>, <alexandre.torgue@foss.st.com>,
+        <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+        <jic23@kernel.org>, <daniel.lezcano@linaro.org>, <tglx@linutronix.de>
+CC: <catalin.marinas@arm.com>, <will@kernel.org>, <devicetree@vger.kernel.org>,
+        <wbg@kernel.org>, <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <olivier.moysan@foss.st.com>, <fabrice.gasnier@foss.st.com>
+Subject: [PATCH v3 1/8] dt-bindings: mfd: stm32-lptimer: add support for stm32mp25
+Date: Wed, 5 Mar 2025 10:49:28 +0100
+Message-ID: <20250305094935.595667-2-fabrice.gasnier@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20250305094935.595667-1-fabrice.gasnier@foss.st.com>
+References: <20250305094935.595667-1-fabrice.gasnier@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250304-bmi270-odr-fix-v1-1-384dbcd699fb@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SAFDAG1NODE1.st.com
+ (10.75.90.17)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-05_03,2025-03-05_01,2024-11-22_01
 
-On Tue, Mar 04, 2025 at 03:01:02PM -0300, Gustavo Silva wrote:
-> In the bmi270_configure_imu() function, the accelerometer and gyroscope
-> configuration registers are incorrectly written with the mask
-> BMI270_PWR_CONF_ADV_PWR_SAVE_MSK, which is unrelated to these registers.
-> 
-> As a result, the accelerometer's sampling frequency is set to 200 Hz
-> instead of the intended 100 Hz.
-> 
-> Remove the mask to ensure the correct bits are set in the configuration
-> registers.
-> 
-> Signed-off-by: Gustavo Silva <gustavograzs@gmail.com>
-> ---
->  drivers/iio/imu/bmi270/bmi270_core.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/bmi270/bmi270_core.c b/drivers/iio/imu/bmi270/bmi270_core.c
-> index a86be5af5ccb1f010f2282ee31c47f284c1bcc86..2e4469f30d538ca3e9eb9ef8bbc6eaa8b6a144b8 100644
-> --- a/drivers/iio/imu/bmi270/bmi270_core.c
-> +++ b/drivers/iio/imu/bmi270/bmi270_core.c
-> @@ -918,8 +918,7 @@ static int bmi270_configure_imu(struct bmi270_data *data)
->  			      FIELD_PREP(BMI270_ACC_CONF_ODR_MSK,
->  					 BMI270_ACC_CONF_ODR_100HZ) |
->  			      FIELD_PREP(BMI270_ACC_CONF_BWP_MSK,
-> -					 BMI270_ACC_CONF_BWP_NORMAL_MODE) |
-> -			      BMI270_PWR_CONF_ADV_PWR_SAVE_MSK);
-> +					 BMI270_ACC_CONF_BWP_NORMAL_MODE));
->  	if (ret)
->  		return dev_err_probe(dev, ret, "Failed to configure accelerometer");
->  
-> @@ -927,8 +926,7 @@ static int bmi270_configure_imu(struct bmi270_data *data)
->  			      FIELD_PREP(BMI270_GYR_CONF_ODR_MSK,
->  					 BMI270_GYR_CONF_ODR_200HZ) |
->  			      FIELD_PREP(BMI270_GYR_CONF_BWP_MSK,
-> -					 BMI270_GYR_CONF_BWP_NORMAL_MODE) |
-> -			      BMI270_PWR_CONF_ADV_PWR_SAVE_MSK);
-> +					 BMI270_GYR_CONF_BWP_NORMAL_MODE));
->  	if (ret)
->  		return dev_err_probe(dev, ret, "Failed to configure gyroscope");
->  
-> 
-> ---
-> base-commit: 8cca9edca867350e5f8dc65b71e7a6ef4157981e
-> change-id: 20250304-bmi270-odr-fix-620e7f8daa7a
-> 
+Add a new stm32mp25 compatible to stm32-lptimer dt-bindings, to support
+STM32MP25 SoC. Some features has been updated or added to the low-power
+timer:
+- new capture compare channels
+- up to two PWM channels
+- PWM input capture
+- peripheral interconnect in stm32mp25 has been updated (new triggers).
+- registers/bits has been added or revisited (IER access).
+So introduce a new compatible to handle this diversity.
 
-Good catch!
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+---
+Changes in V3:
+- Fix yaml indentation issue found by Rob's bot
+Changes in V2:
+- Use fallback compatibles, along with stm32mp25 specific compatible
+- trigger identifier can be up to 4 (e.g. from LPTIM1..5)
+---
+ .../bindings/mfd/st,stm32-lptimer.yaml        | 40 ++++++++++++++++---
+ 1 file changed, 34 insertions(+), 6 deletions(-)
 
-Reviewed-by: Alex Lanzano <lanzano.alex@gmail.com>
+diff --git a/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml b/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
+index d41308856408..4eabafb8079d 100644
+--- a/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
++++ b/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
+@@ -21,7 +21,12 @@ maintainers:
+ 
+ properties:
+   compatible:
+-    const: st,stm32-lptimer
++    oneOf:
++      - items:
++          - const: st,stm32mp25-lptimer
++          - const: st,stm32-lptimer
++      - items:
++          - const: st,stm32-lptimer
+ 
+   reg:
+     maxItems: 1
+@@ -48,13 +53,21 @@ properties:
+     minItems: 1
+     maxItems: 2
+ 
++  power-domains:
++    maxItems: 1
++
+   pwm:
+     type: object
+     additionalProperties: false
+ 
+     properties:
+       compatible:
+-        const: st,stm32-pwm-lp
++        oneOf:
++          - items:
++              - const: st,stm32mp25-pwm-lp
++              - const: st,stm32-pwm-lp
++          - items:
++              - const: st,stm32-pwm-lp
+ 
+       "#pwm-cells":
+         const: 3
+@@ -69,7 +82,12 @@ properties:
+ 
+     properties:
+       compatible:
+-        const: st,stm32-lptimer-counter
++        oneOf:
++          - items:
++              - const: st,stm32mp25-lptimer-counter
++              - const: st,stm32-lptimer-counter
++          - items:
++              - const: st,stm32-lptimer-counter
+ 
+     required:
+       - compatible
+@@ -80,7 +98,12 @@ properties:
+ 
+     properties:
+       compatible:
+-        const: st,stm32-lptimer-timer
++        oneOf:
++          - items:
++              - const: st,stm32mp25-lptimer-timer
++              - const: st,stm32-lptimer-timer
++          - items:
++              - const: st,stm32-lptimer-timer
+ 
+     required:
+       - compatible
+@@ -92,13 +115,18 @@ patternProperties:
+ 
+     properties:
+       compatible:
+-        const: st,stm32-lptimer-trigger
++        oneOf:
++          - items:
++              - const: st,stm32mp25-lptimer-trigger
++              - const: st,stm32-lptimer-trigger
++          - items:
++              - const: st,stm32-lptimer-trigger
+ 
+       reg:
+         description: Identify trigger hardware block.
+         items:
+           minimum: 0
+-          maximum: 2
++          maximum: 4
+ 
+     required:
+       - compatible
+-- 
+2.25.1
+
