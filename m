@@ -1,88 +1,133 @@
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com [209.85.219.178])
+Received: from out-09.pe-a.jellyfish.systems (out-09.pe-a.jellyfish.systems [198.54.127.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29AE026B088
-	for <linux-iio@vger.kernel.org>; Thu,  6 Mar 2025 18:56:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 076641A2391;
+	Thu,  6 Mar 2025 19:15:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741287386; cv=none; b=GC4C1xidxB0VWOVCaZus0DgXZhOA6iTF0cp3jgnRuHTr8tHsMECCnzpCVM7bDQBR8TeXofBA+zypoH/tHSSP5OWY9OwCQ/bMjDG3MRM9alUIxhrWaKMVt2oyA4lPK8vcxLKo8lQamyGxyTl0f7CKR9qLbvrqTVvIWzf38fY2mUM=
+	t=1741288502; cv=none; b=GrzteGhNMrlSaw5VT6KmDegDZY3YRbYB7fEkQcQTbgKizqizL0hrAXrRQ43hNTivu12X3pzh9DTM/YYt/tgrOLl0h+W0hiINenO7pQ65OpUEdBhNYzT+hwUiPYsbSGIbCP+yjGzqTFjoaLaUd2zf2RlVifHOG1mjcLsFtmFmxg8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741287386; c=relaxed/simple;
-	bh=qn6TH2PXifUHjmG0ByfngdDrdMJ9w0HJg1A2XHC9JX4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rG/o1RaIh+Xm3Sd/m/Iwhma732Nq3jtzZaZROPgHe3V8wYcRcUE86+QodE6YXQ1wMBrrJMnkaadjRQcYwbv6hTr51vy5TK+Nao8qlJjkYiJs5wArQXJ9fTog4G2KlgGg+XWPYG8ebkLQ891fgVeaDtaOqD5LXQL7aC2DKBs90oU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=U/2LXghN; arc=none smtp.client-ip=209.85.219.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1741288502; c=relaxed/simple;
+	bh=nBPkoZ8vNwJqp4riykZFnLWtVfneXz+CoQhXP02bOL0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=KCf0gsDT9EG9XVSmMdBa7sG8dVWnhL2dCt+gTZmlS0U72Mdp5mblgZrI1a2t5V8WbmjN9DrE4bJlIg3Qc7b7aJGjEM55cObjrQ6IKW1hB+sVEFduuUkHFhSDMLmIG6ZfAPAmx3FZdaWl/2jHzqPHQeQ1rT8Zo2kdS0u3OfiRdYE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org; spf=pass smtp.mailfrom=framepointer.org; dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b=FQFeUlT2; arc=none smtp.client-ip=198.54.127.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=framepointer.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="U/2LXghN"
-Received: by mail-yb1-f178.google.com with SMTP id 3f1490d57ef6-e60cab0f287so708507276.0
-        for <linux-iio@vger.kernel.org>; Thu, 06 Mar 2025 10:56:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741287384; x=1741892184; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=lirtugOWcR3f2sQ0CrGMqigxtGw45D1gVWdCKdHV4w0=;
-        b=U/2LXghNqGCqoC4g8iMlLKCZ+W7680GAZJDj1mFYFyBUfc3w+lpw7p02iygiTAf55v
-         OiOgPH/G0wU86wAHhlmLtW6PcY6jNdfaqK25dDZhwrraW5o9O1H46edodaPszysyNjkQ
-         Nw3wvJ4wr08tgwTr+2V1g3UIhJrk2CKeAFYeHLSLUXxkCV5D0KUvwx2sJlLO+D0iXJ3W
-         j2HCW3gCMNIuWmKXjmlXcK8mhVJk7JL21reUYekZ7ohlgS787m/RFhSbXGXd2GYLaAjP
-         S+7vJ/KQRjo9L5FOLH6AGRlRVAEJPLzk/kUYtVs/Ek1QVIKb8J5cMmJIvgrM2DreC2xo
-         9NKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741287384; x=1741892184;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=lirtugOWcR3f2sQ0CrGMqigxtGw45D1gVWdCKdHV4w0=;
-        b=e/ICCt3Q2uPoWZexiT9qZ5XKM99BLoYho3w9Sdc1zVOy0LRpIRTeP8+dved6uqW2Wy
-         VEBPHSZ4IewgBW17E694tjeCiKsf/uNLkDxk2xxymibKcEqbbBVSWP0IchdWsjizKmTx
-         0UzxO6IsS7OiiN5DDhvsIqEbavQJZo0t2t1s+D7QrIOgeo1c22AnS8JjjyuRKAqLuhNi
-         rXx8T2AYAbXbd0h7TR5PAv/rL9ohBYcsk9ZvhI9AwAKUBOuuqlwr9j0U6NKLhwISLJ73
-         5QtYNxYh/l38bNtUraqkP8XORNeVVe1A5FOszdExeTtz/B9SraWq8DQLcH8Kx88T2gCw
-         n9Ew==
-X-Forwarded-Encrypted: i=1; AJvYcCV3vNW+tXf3itCmmg+PqsB8fPcYofqwwBlwWfnkyL8L3wgqPJhojb/TyeniyLWZsSU89l3FLCQWmK0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxg8q9hBMkHSSd1dCWVB9crmKUGG8IOY4/Q5Th14RLs+06lPyha
-	LNsJWN7PgmV7MF7NG792CLaAWRzaOBBUVQHruHfofjWepkEb8guhSE9Lg28smksRfSbLSmAe5If
-	GtYJ9qpr0mXLbVp2ZeX6TCQhZCBI=
-X-Gm-Gg: ASbGnctCzkZYMV4Sq6/LVllCIBR3IfM3BpgaJkNe6N6H7LxR1p6yEmDhgfq7w6zm0rM
-	8G02QW83BInQxHE29t4eIlNjVuSKq4WTS9kgF/i2bdeiAsbMuDFWha53lywJlrTEX127FWt0ANx
-	CueBGJ/XftMkjgTZOJAIBmxQ==
-X-Google-Smtp-Source: AGHT+IGI9Fm0bopwYG3hS8L7LA2r8v8VYKqWsEiNhr02w+yqDusXjSc+oeC1AvmUNJbAGtc2Iv1RpaAbrH+zsxlLZZA=
-X-Received: by 2002:a05:6902:250f:b0:e60:a16c:d017 with SMTP id
- 3f1490d57ef6-e635c203662mr577128276.49.1741287384016; Thu, 06 Mar 2025
- 10:56:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b="FQFeUlT2"
+Received: from prod-lbout-phx.jellyfish.systems (new-01-3.privateemail.com [66.29.159.56])
+	by pe-a.jellyfish.systems (Postfix) with ESMTPA id 4Z7zR61wghz9sx5;
+	Thu, 06 Mar 2025 19:06:10 +0000 (UTC)
+Received: from MTA-07.privateemail.com (unknown [10.50.14.17])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
+	(No client certificate requested)
+	by NEW-01-3.privateemail.com (Postfix) with ESMTPS id 4Z7zR6174Sz2Sd0V;
+	Thu,  6 Mar 2025 14:06:10 -0500 (EST)
+Received: from mta-07.privateemail.com (localhost [127.0.0.1])
+	by mta-07.privateemail.com (Postfix) with ESMTP id 4Z7zR56rNMz3hhVN;
+	Thu,  6 Mar 2025 14:06:09 -0500 (EST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=framepointer.org;
+	s=default; t=1741287970;
+	bh=nBPkoZ8vNwJqp4riykZFnLWtVfneXz+CoQhXP02bOL0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=FQFeUlT28eIzW2YlCPlppE14abMY3SeLk1Tj1JXWghxfljlIK5Jl0+MUUdO9zSs3c
+	 1kwn2dI0z7XHjJqSaYUDmxQr1ry5cuPpO8rjQNE0Hx665rQNrK3hCGDD42LYYLTA4G
+	 LktsomKq/QO3kE3fXjTMoLiSK0v3yU7Es7ee6o23fxdRnwX5d2njSeWA0HLmMt3Nl4
+	 QN2eOJnJWKm2WjyjKBxjJiEZfu8UYFIPGiPK1M5rypui0PZgoq/t50klpzq5FBhA1C
+	 qXetHZ+ud8lwZMA8HBe+FDy1O27vWB8C6GYsgVAt5x+zU3vYeTI8e0rmbu7kC9IZsR
+	 MSV3kK8S6WAiA==
+Received: from 65YTFL3.secure.tethers.com (unknown [152.44.190.141])
+	by mta-07.privateemail.com (Postfix) with ESMTPA;
+	Thu,  6 Mar 2025 14:05:55 -0500 (EST)
+From: Sam Winchenbach <sam.winchenbach@framepointer.org>
+To: linux-kernel@vger.kernel.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	antoniu.miclaus@analog.com,
+	jic23@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	sam.winchenbach@framepointer.org,
+	bpellegrino@arka.org
+Subject: [PATCH 6/6] iio: filter: admv8818: Support frequencies >= 2^32
+Date: Thu,  6 Mar 2025 14:05:28 -0500
+Message-ID: <20250306190528.152133-2-sam.winchenbach@framepointer.org>
+X-Mailer: git-send-email 2.48.1
+In-Reply-To: <20250306190528.152133-1-sam.winchenbach@framepointer.org>
+References: <20250306183314.150253-1-sam.winchenbach@framepointer.org>
+ <20250306190528.152133-1-sam.winchenbach@framepointer.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CAGd6pzNTB5f++sbirWxnD1Tq_rjTkBDVmSrpFYsMisEasAq4Rg@mail.gmail.com>
- <20250222151143.7ca7f718@jic23-huawei> <CAGd6pzOO_8VV8RPVz81-LE=eisuPjYsRQZAYgyfxwKLjKSM06Q@mail.gmail.com>
- <Z8U0lsntJpTuBzyT@debian-BULLSEYE-live-builder-AMD64> <20250305145749.413fe30b@jic23-huawei>
-In-Reply-To: <20250305145749.413fe30b@jic23-huawei>
-From: Siddharth Menon <simeddon@gmail.com>
-Date: Fri, 7 Mar 2025 00:25:46 +0530
-X-Gm-Features: AQ5f1JoMX2OPL4R8Zxov-SPpxQIVGFxo8OMelTRo9_He05nJQLrTtqxrySjD694
-Message-ID: <CAGd6pzMzrJbRBXr2esV1x-TxXjg9zt22y6UdSXgXe7jCO3_raA@mail.gmail.com>
-Subject: Re: GSoC IIO project: Siddharth Menon
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Marcelo Schmitt <marcelo.schmitt1@gmail.com>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 
-On Wed, 5 Mar 2025 at 20:28, Jonathan Cameron <jic23@kernel.org> wrote:
->
-> This one is an interesting part - I have one somewhere from trying to help
-> on the previous go at cleaning it up.  One issue is that I couldn't manage
-> to get a stable SPI connection patched onto the dev board.  It kind of
-> worked if I used a long cable and did a rain dance, but not enough to really
-> test it.
+From: Brian Pellegrino <bpellegrino@arka.org>
 
-I'll see if I can get my hands on one. Just to clarify, were the issues present
-before, or are you referring specifically to the patch?
+This patch allows writing u64 values to the ADMV8818's high and low-pass
+filter frequencies. It includes the following changes:
 
-Please share the specific rain dance with me for future reference.
+- Rejects negative frequencies in admv8818_write_raw.
+- Adds a write_raw_get_fmt function to admv8818's iio_info, returning
+  IIO_VAL_INT_64 for the high and low-pass filter 3dB frequency channels.
 
-Regards,
-Siddharth Menon
+Fixes: f34fe888ad05 ("iio:filter:admv8818: add support for ADMV8818")
+Signed-off-by: Brian Pellegrino <bpellegrino@arka.org>
+Signed-off-by: Sam Winchenbach <sam.winchenbach@framepointer.org>
+---
+ drivers/iio/filter/admv8818.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/drivers/iio/filter/admv8818.c b/drivers/iio/filter/admv8818.c
+index 8cdfae56199b..1228dd5ddb36 100644
+--- a/drivers/iio/filter/admv8818.c
++++ b/drivers/iio/filter/admv8818.c
+@@ -402,6 +402,19 @@ static int admv8818_read_lpf_freq(struct admv8818_state *st, u64 *lpf_freq)
+ 	return ret;
+ }
+ 
++static int admv8818_write_raw_get_fmt(struct iio_dev *indio_dev,
++								struct iio_chan_spec const *chan,
++								long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
++	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
++		return IIO_VAL_INT_64;
++	default:
++		return -EINVAL;
++	}
++}
++
+ static int admv8818_write_raw(struct iio_dev *indio_dev,
+ 			      struct iio_chan_spec const *chan,
+ 			      int val, int val2, long info)
+@@ -410,6 +423,9 @@ static int admv8818_write_raw(struct iio_dev *indio_dev,
+ 
+ 	u64 freq = ((u64)val2 << 32 | (u32)val);
+ 
++	if ((s64)freq < 0)
++		return -EINVAL;
++
+ 	switch (info) {
+ 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+ 		return admv8818_lpf_select(st, freq);
+@@ -571,6 +587,7 @@ static int admv8818_set_mode(struct iio_dev *indio_dev,
+ 
+ static const struct iio_info admv8818_info = {
+ 	.write_raw = admv8818_write_raw,
++	.write_raw_get_fmt = admv8818_write_raw_get_fmt,
+ 	.read_raw = admv8818_read_raw,
+ 	.debugfs_reg_access = &admv8818_reg_access,
+ };
+-- 
+2.48.1
+
