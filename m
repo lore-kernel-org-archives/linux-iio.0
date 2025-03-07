@@ -1,58 +1,69 @@
-Received: from out-10.pe-a.jellyfish.systems (out-10.pe-a.jellyfish.systems [198.54.127.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DF8121ABB5;
-	Fri,  7 Mar 2025 13:55:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40AE021B9CE;
+	Fri,  7 Mar 2025 14:22:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741355704; cv=none; b=QPabEJwBQY81NoA1zNxLSFwCHJVHaoqD2PSb8wwAp5oxpw+g4YnTcRgJjRDhV38XUs+Q6IJ1Pp4gaM4K6OhEvZ4u9x6iFgc7o2ZufEq9qkEuiWEb0iWT0EiYGtNnMZ0zZWeWCGlJGmF+RmWuA0BQ6V7UPgeOkveqiQ3Z0rRdEMM=
+	t=1741357342; cv=none; b=FOdqOwUOk9Sv6uozHy/QNINQ6CQ4RVY/NbkJlgQbMpDenivBmCbXf/x4q3btNmkh9GJCjPos6fWzucGd6TM+rO31WWYpBX5wB778nuQlKSyXWo67ax9jbr9rISJud/JfqbK+AMQSA4FGxCv0bmcSt1tPQ9zBW/eMGGNnVZ2YkJ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741355704; c=relaxed/simple;
-	bh=uc4J9BqTYETHvuZVd/sGNbIUbnh5AJ3E2j0C33V4z/c=;
+	s=arc-20240116; t=1741357342; c=relaxed/simple;
+	bh=Xq0iwcDh7S4jmFV/WUP4gOkUzHiVYQo8h95MoE9/hh0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AsHbDIoSIQKbv+UJ2n/VgEhpzLQAkfFlBWQN1dI8OUUha8CEG0m2O4d8yJsBtn1BM3GAGOQUO3thvEubPs8++eutr/ul4M+JHrczoLWzMvEE5i1AofMijM7PcAvgSpjjKMkE29ZXFfHjcjGh6js82yYn7Y6s1md04ueTvoodnQ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org; spf=pass smtp.mailfrom=framepointer.org; dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b=UXygEk/l; arc=none smtp.client-ip=198.54.127.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=framepointer.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=UPvHRuW8aIaF+r/G69LhMQjMq1jKj22ehCqzfTDJ3ECjfi8wUxBy23BrIrbH87MxRLNhqrM+nYA63Ic9CWWMQ8j+0CjgykbRI4pVWYB/TSwV0S+B7+vTlKyaPeOMdXSh4Hnmr1LTcZYEVkWOUNqPmmQ4I5KVlW1B2OW1t62YPS8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aylFrI/M; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b="UXygEk/l"
-Received: from prod-lbout-phx.jellyfish.systems (new-01-3.privateemail.com [66.29.159.56])
-	by pe-a.jellyfish.systems (Postfix) with ESMTPA id 4Z8SJz2jJdz9tnp;
-	Fri, 07 Mar 2025 13:47:31 +0000 (UTC)
-Received: from MTA-08.privateemail.com (unknown [10.50.14.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
-	(No client certificate requested)
-	by NEW-01-3.privateemail.com (Postfix) with ESMTPS id 4Z8SJz2DVWz2Sd0Q;
-	Fri,  7 Mar 2025 08:47:31 -0500 (EST)
-Received: from mta-08.privateemail.com (localhost [127.0.0.1])
-	by mta-08.privateemail.com (Postfix) with ESMTP id 4Z8SJz0bSmz3hhV2;
-	Fri,  7 Mar 2025 08:47:31 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=framepointer.org;
-	s=default; t=1741355251;
-	bh=uc4J9BqTYETHvuZVd/sGNbIUbnh5AJ3E2j0C33V4z/c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=UXygEk/lmB4eI0JQGkG/tdu6xOk8cNUAP6GJx9mou8qte0P44wX/L2yQMHXTLsWZ7
-	 +VcDT5W+fvIHCjn/w+7V8/TYlyNPiCTCcssgbO/NeNlcJm8IkFWNKc2D6yR5MEA6mA
-	 l9bibJ8q5X0hDtLjGuam4p8X8bitNe99r6HkiJuJDQG79X4mTFMzfArxCKuIDhyPm+
-	 4egeQmjF/JSXE0iK3PelL9pNpEJAGsrDSU99GEJVlDgWeFDBQ5D4C1I68bM05Xu1jK
-	 Vpw0YcfGEfrBjVcrzMLLOOT0OhE0ybg3I/jFzDQlRi9fX1VXXli9IcrChwBNrdEURm
-	 k4fDr/q48aVPg==
-Received: from 65YTFL3.secure.tethers.com (unknown [152.44.190.141])
-	by mta-08.privateemail.com (Postfix) with ESMTPA;
-	Fri,  7 Mar 2025 08:47:17 -0500 (EST)
-Date: Fri, 7 Mar 2025 08:47:18 -0500
-From: Sam Winchenbach <sam.winchenbach@framepointer.org>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: linux-kernel@vger.kernel.org, lars@metafoo.de,
-	Michael.Hennerich@analog.com, antoniu.miclaus@analog.com,
-	jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, bpellegrino@arka.org
-Subject: Re: [PATCH v5 1/6] dt-bindings: iio: filter: Add lpf/hpf freq margins
-Message-ID: <Z8r45sR7uy0b4UEQ@65YTFL3.secure.tethers.com>
-References: <20250306183314.150253-1-sam.winchenbach@framepointer.org>
- <20250307-handsome-merry-alpaca-17da9f@krzk-bin>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aylFrI/M"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1741357340; x=1772893340;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Xq0iwcDh7S4jmFV/WUP4gOkUzHiVYQo8h95MoE9/hh0=;
+  b=aylFrI/MiF/8bLt5ceuyurxWJDqHTU8pSZKi5Y33N7y0NWnC+sbeB70b
+   zOs8b9sS5nGSeieMVrdr8O7lPH6VsOU9IxpkljhQP+S7T4YWf4ZW/oCqT
+   SW5bDPxpMWdQmy0oJgzQG0xXyyArCTcmdcIoNh5E+pmCBvNWE05o7o+Fy
+   kXoTkJpark5leyNUQJy3N44Ju8tUIDfeGLCpnztoXm+aCSxURD/7FYfJl
+   L1Hpmiz1yTNkcpb8dvb56YkcEmtB6xSbyfQa/T4XEXNRw9XGcO6IvjgVd
+   2tJ8Xz7dRlV+16WQ/HFmlC3EdjMUEKKVdCIf3JvtTUrVw2EQB0vft9pDJ
+   g==;
+X-CSE-ConnectionGUID: UZK/TksyQCi4r8lFQQzvHw==
+X-CSE-MsgGUID: YIiyeMnVSROIjYRXWZ2/WQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11365"; a="53042140"
+X-IronPort-AV: E=Sophos;i="6.14,229,1736841600"; 
+   d="scan'208";a="53042140"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2025 06:22:19 -0800
+X-CSE-ConnectionGUID: 5CF1E6FQR2CSWgcWhZHL5g==
+X-CSE-MsgGUID: 1+VCvBl2Tx+8X9gueM0WGA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="150280816"
+Received: from lkp-server02.sh.intel.com (HELO a4747d147074) ([10.239.97.151])
+  by fmviesa001.fm.intel.com with ESMTP; 07 Mar 2025 06:22:16 -0800
+Received: from kbuild by a4747d147074 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1tqYac-0000ZH-1A;
+	Fri, 07 Mar 2025 14:22:14 +0000
+Date: Fri, 7 Mar 2025 22:22:00 +0800
+From: kernel test robot <lkp@intel.com>
+To: Jorge Marques <jorge.marques@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	David Lechner <dlechner@baylibre.com>
+Cc: oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org, Jorge Marques <jorge.marques@analog.com>
+Subject: Re: [PATCH 4/4] iio: adc: add support for ad4052
+Message-ID: <202503080031.APfLdyiz-lkp@intel.com>
+References: <20250306-iio-driver-ad4052-v1-4-2badad30116c@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,56 +72,155 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250307-handsome-merry-alpaca-17da9f@krzk-bin>
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20250306-iio-driver-ad4052-v1-4-2badad30116c@analog.com>
 
-On Fri, Mar 07, 2025 at 09:34:24AM +0100, Krzysztof Kozlowski wrote:
-> On Thu, Mar 06, 2025 at 01:33:09PM -0500, Sam Winchenbach wrote:
-> > Adds two properties to add a margin when automatically finding the
-> > corner frequencies.
-> > 
-> > Signed-off-by: Sam Winchenbach <sam.winchenbach@framepointer.org>
-> > ---
-> >  .../bindings/iio/filter/adi,admv8818.yaml     | 23 +++++++++++++++++++
-> >  1 file changed, 23 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml b/Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml
-> > index b77e855bd594..3f9c61547a78 100644
-> > --- a/Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml
-> > @@ -44,6 +44,27 @@ properties:
-> >    '#clock-cells':
-> >      const: 0
-> >  
-> > +
-> 
-> Unnecessary blank line
-> 
+Hi Jorge,
 
-Noted for v6.
+kernel test robot noticed the following build warnings:
 
-> > +  adi,lpf-margin-hz:
-> > +    description:
-> > +      Sets the minimum distance (in Hz) between the fundamental
-> > +      frequency of `rf_in` and the corner frequency of the low-pass, output
-> > +      filter when operatred in 'auto' mode. The selected low-pass corner
-> > +      frequency will be greater than, or equal to, `rf_in` + `lpf-margin-hz`. If
-> > +      not setting is found that satisfies this relationship the filter will be
-> > +      put into 'bypass'.
-> > +    default: 0
-> 
-> hz are 32-bit, not 64-bit, so I think you need:
-> 
->   default: [0, 0]
->   minItems: 2
->   maxItems: 2
->
+[auto build test WARNING on aac287ec80d71a7ab7e44c936a434625417c3e30]
 
-I think I finally understand - "-hz" is a schema type defined as a uint32. Is that correct? I am really surprised that `dt_binding_check` did not complain about it being 64-bits.  I will update these to `-mhz` and make them uint32 in v6.
+url:    https://github.com/intel-lab-lkp/linux/commits/Jorge-Marques/iio-code-mark-iio_dev-as-const-in-iio_buffer_enabled/20250306-220719
+base:   aac287ec80d71a7ab7e44c936a434625417c3e30
+patch link:    https://lore.kernel.org/r/20250306-iio-driver-ad4052-v1-4-2badad30116c%40analog.com
+patch subject: [PATCH 4/4] iio: adc: add support for ad4052
+config: um-randconfig-r073-20250307 (https://download.01.org/0day-ci/archive/20250308/202503080031.APfLdyiz-lkp@intel.com/config)
+compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250308/202503080031.APfLdyiz-lkp@intel.com/reproduce)
 
-Thanks,
--Sam
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202503080031.APfLdyiz-lkp@intel.com/
 
-> Best regards,
-> Krzysztof
-> 
+All warnings (new ones prefixed by >>):
+
+   In file included from drivers/iio/adc/ad4052.c:14:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from arch/um/include/asm/hardirq.h:5:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:14:
+   In file included from arch/um/include/asm/io.h:24:
+   include/asm-generic/io.h:549:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+     549 |         val = __raw_readb(PCI_IOBASE + addr);
+         |                           ~~~~~~~~~~ ^
+   include/asm-generic/io.h:567:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+     567 |         val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+         |                                                         ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
+      37 | #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+         |                                                   ^
+   In file included from drivers/iio/adc/ad4052.c:14:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from arch/um/include/asm/hardirq.h:5:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:14:
+   In file included from arch/um/include/asm/io.h:24:
+   include/asm-generic/io.h:585:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+     585 |         val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+         |                                                         ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
+      35 | #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+         |                                                   ^
+   In file included from drivers/iio/adc/ad4052.c:14:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from arch/um/include/asm/hardirq.h:5:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:14:
+   In file included from arch/um/include/asm/io.h:24:
+   include/asm-generic/io.h:601:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+     601 |         __raw_writeb(value, PCI_IOBASE + addr);
+         |                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:616:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+     616 |         __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+         |                                                       ~~~~~~~~~~ ^
+   include/asm-generic/io.h:631:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+     631 |         __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+         |                                                       ~~~~~~~~~~ ^
+   include/asm-generic/io.h:724:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+     724 |         readsb(PCI_IOBASE + addr, buffer, count);
+         |                ~~~~~~~~~~ ^
+   include/asm-generic/io.h:737:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+     737 |         readsw(PCI_IOBASE + addr, buffer, count);
+         |                ~~~~~~~~~~ ^
+   include/asm-generic/io.h:750:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+     750 |         readsl(PCI_IOBASE + addr, buffer, count);
+         |                ~~~~~~~~~~ ^
+   include/asm-generic/io.h:764:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+     764 |         writesb(PCI_IOBASE + addr, buffer, count);
+         |                 ~~~~~~~~~~ ^
+   include/asm-generic/io.h:778:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+     778 |         writesw(PCI_IOBASE + addr, buffer, count);
+         |                 ~~~~~~~~~~ ^
+   include/asm-generic/io.h:792:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+     792 |         writesl(PCI_IOBASE + addr, buffer, count);
+         |                 ~~~~~~~~~~ ^
+>> drivers/iio/adc/ad4052.c:201:41: warning: unused variable 'ad4052_regmap_rd_table' [-Wunused-const-variable]
+     201 | static const struct regmap_access_table ad4052_regmap_rd_table = {
+         |                                         ^~~~~~~~~~~~~~~~~~~~~~
+>> drivers/iio/adc/ad4052.c:214:41: warning: unused variable 'ad4052_regmap_wr_table' [-Wunused-const-variable]
+     214 | static const struct regmap_access_table ad4052_regmap_wr_table = {
+         |                                         ^~~~~~~~~~~~~~~~~~~~~~
+>> drivers/iio/adc/ad4052.c:239:18: warning: unused variable 'ad4052_sample_rate_avail' [-Wunused-const-variable]
+     239 | static const int ad4052_sample_rate_avail[] = {
+         |                  ^~~~~~~~~~~~~~~~~~~~~~~~
+   15 warnings generated.
+
+
+vim +/ad4052_regmap_rd_table +201 drivers/iio/adc/ad4052.c
+
+   200	
+ > 201	static const struct regmap_access_table ad4052_regmap_rd_table = {
+   202		.yes_ranges = ad4052_regmap_rd_ranges,
+   203		.n_yes_ranges = ARRAY_SIZE(ad4052_regmap_rd_ranges),
+   204	};
+   205	
+   206	static const struct regmap_range ad4052_regmap_wr_ranges[] = {
+   207		regmap_reg_range(AD4052_REG_INTERFACE_CONFIG_A, AD4052_REG_DEVICE_CONFIG),
+   208		regmap_reg_range(AD4052_REG_SCRATCH_PAD, AD4052_REG_SCRATCH_PAD),
+   209		regmap_reg_range(AD4052_REG_STREAM_MODE, AD4052_REG_INTERFACE_STATUS),
+   210		regmap_reg_range(AD4052_REG_MODE_SET, AD4052_REG_MON_VAL),
+   211		regmap_reg_range(AD4052_REG_FUSE_CRC, AD4052_REG_DEVICE_STATUS),
+   212	};
+   213	
+ > 214	static const struct regmap_access_table ad4052_regmap_wr_table = {
+   215		.yes_ranges = ad4052_regmap_wr_ranges,
+   216		.n_yes_ranges = ARRAY_SIZE(ad4052_regmap_wr_ranges),
+   217	};
+   218	
+   219	static const struct iio_event_spec ad4052_events[] = {
+   220		{
+   221			.type = IIO_EV_TYPE_THRESH,
+   222			.dir = IIO_EV_DIR_EITHER,
+   223			.mask_shared_by_all = BIT(IIO_EV_INFO_ENABLE)
+   224		},
+   225		{
+   226			.type = IIO_EV_TYPE_THRESH,
+   227			.dir = IIO_EV_DIR_RISING,
+   228			.mask_shared_by_all = BIT(IIO_EV_INFO_VALUE) |
+   229					      BIT(IIO_EV_INFO_HYSTERESIS)
+   230		},
+   231		{
+   232			.type = IIO_EV_TYPE_THRESH,
+   233			.dir = IIO_EV_DIR_FALLING,
+   234			.mask_shared_by_all = BIT(IIO_EV_INFO_VALUE) |
+   235					      BIT(IIO_EV_INFO_HYSTERESIS)
+   236		}
+   237	};
+   238	
+ > 239	static const int ad4052_sample_rate_avail[] = {
+   240		2000000, 1000000, 300000, 100000, 33300,
+   241		10000, 3000, 500, 333, 250, 200,
+   242		166, 140, 125, 111
+   243	};
+   244	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
