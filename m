@@ -1,53 +1,53 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5325E217F31;
-	Fri,  7 Mar 2025 12:06:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67840215760;
+	Fri,  7 Mar 2025 12:40:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741349210; cv=none; b=oMjiA+Blnc8g2Zob7ju4FHGh0mtVPw6qvhr6IrC6lW3Sk3hY618rg+wjvAenkAe5wiG4LU40P2U/zvzh9loBky64CMkNFWdyUlRCXFWE0YINWh4YudMLr+x9SpOLHBa3/QBmwF2SfvZNzKBdHglXDxu9io+kkUaz/VrWD1PPkEE=
+	t=1741351212; cv=none; b=NpeftZzGXrcoEMFCn6Lv7oEvmr2TmknEJh3jGua4RJSvWSaI3SZY2wgNldnSANt/9OnaB2uQxS2f/1o48moplTNqxaZQHf5SZ9JcqCFrKTXbbM+Jr3iZslkSiljmE3hfXhhnxl4f+2j7KeUAr7SNp5jsAORuckSVXxOeAVtcHu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741349210; c=relaxed/simple;
-	bh=HAZxAV0kKIr9bNaLTZEMnA90XTslNhxbETGdPtCuEfw=;
+	s=arc-20240116; t=1741351212; c=relaxed/simple;
+	bh=G5VBh8i8J2WvpCjkRkouehcpWaB8KXAb2HO6V8L2dDY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HQoyj0YfblpY57mYQdLw6x50Y123BYe5wGuHj3sRWgfXuosU0kKIPwSbD1ztEqxvnFvFBvPpTXH3DRcdf2MPgxWrmdLxF5RcOSrFIz3mPZZXpa+n4HIzv8IrmnhtNhllapauk0G6KFW5W7dKC5LTvo3jeJoWHww2d5DetDwBsjU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SrupaYid; arc=none smtp.client-ip=198.175.65.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=cGLlbVbd2T/7UZ8ZURPgp0inq+jW755HBQNI7+BSMdXLYo0EcjphAzZHNchyAjwDNJILTUpIt01vsE7ovQKmkv/eujL4tlNkeddVufeoRxRs7Y83nmRIPv1wQg0q7+gmsKzL+UDxkYGbpTAOmXzritngCbehh2UHPWT7WKWlGJ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=d0vT0Kq4; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SrupaYid"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="d0vT0Kq4"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741349209; x=1772885209;
+  t=1741351211; x=1772887211;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=HAZxAV0kKIr9bNaLTZEMnA90XTslNhxbETGdPtCuEfw=;
-  b=SrupaYid32EOijizWGImvTGAil7fAMLTxugHFXXJstj7ocXYRt6CoQlK
-   YKUdZvIpbiSUKYpM+bSlvedQxLFf804slw1iABMx6TMaboofLIoz4NNh6
-   iitMJhzGYINWs+iiTL/N0bveTSUSUT0P6yXiv+OkWjes8Q0TwXHt0geiD
-   +T+Vmy1WQV2Obft6lXqax+0DHt2HroRVi1je8aGrcQ7P5Zu1cL2fGQq8F
-   zN9P7tEaxJM0DjbnufitiERqiB/J2neduS5im4VNAxchcroUJOUkMtOXk
-   FYdxAz+Gdd3k4cJk0ex0OSA3YUnMwO4YynrleRNjr+iCwCC+SkDWcf7Pp
-   A==;
-X-CSE-ConnectionGUID: o8jTK5DMTLOywUdz40Uebg==
-X-CSE-MsgGUID: +nqj0MBlT/S6zcYMeR6Mpg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11365"; a="42250770"
+  bh=G5VBh8i8J2WvpCjkRkouehcpWaB8KXAb2HO6V8L2dDY=;
+  b=d0vT0Kq4/PHjkJQKJYhK85RzhPPG4mCUW3Uhw28hGWvw5Wshh+HFDj+O
+   dJRlqw3ajrsEd041yWZfex0kq6FrucD8B0OXWJTPaKFfDzYOoY+JTtVTy
+   8Lcc5wZ0x6LnRh1dtzf5o+X5ZF9LPbI0mUAqLy6iXVvMeAhbdOdO6E0Ni
+   t0qkqE28X4QOV1qeb/V/9URan9BNCZWH6+V7FJrqnf3TDiGF1UfZXcpMP
+   qNTaR9jTXzr9gRW9Z1AyCvLKRMmHMcPRPGBv0pWKK2qcHk35niWU6uSYO
+   cmdHj2Q+/z7J1voivHR09TdfirJ0rST0JyuIE8C5r/0r8f2irsWCvCIM4
+   w==;
+X-CSE-ConnectionGUID: BCLkPKWwS1+cI9JmwPlzsg==
+X-CSE-MsgGUID: /P4xNMxDRLqsEaoGX4CUGA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11365"; a="41651808"
 X-IronPort-AV: E=Sophos;i="6.14,229,1736841600"; 
-   d="scan'208";a="42250770"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2025 04:06:47 -0800
-X-CSE-ConnectionGUID: twvlSRkKRhmqSqbU0yMTOg==
-X-CSE-MsgGUID: oi1X6wwIS/28+ISkReyDMw==
+   d="scan'208";a="41651808"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2025 04:40:10 -0800
+X-CSE-ConnectionGUID: dVzl55soTd23ED5spwyZmw==
+X-CSE-MsgGUID: n27M5QajR4efWEVWBq7Miw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,229,1736841600"; 
-   d="scan'208";a="119476456"
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="119235420"
 Received: from lkp-server02.sh.intel.com (HELO a4747d147074) ([10.239.97.151])
-  by fmviesa008.fm.intel.com with ESMTP; 07 Mar 2025 04:06:45 -0800
+  by orviesa010.jf.intel.com with ESMTP; 07 Mar 2025 04:40:06 -0800
 Received: from kbuild by a4747d147074 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1tqWTS-0000Qp-0N;
-	Fri, 07 Mar 2025 12:06:42 +0000
-Date: Fri, 7 Mar 2025 20:06:23 +0800
+	id 1tqWzj-0000Tr-2I;
+	Fri, 07 Mar 2025 12:40:03 +0000
+Date: Fri, 7 Mar 2025 20:39:32 +0800
 From: kernel test robot <lkp@intel.com>
 To: Jorge Marques <jorge.marques@analog.com>,
 	Jonathan Cameron <jic23@kernel.org>,
@@ -62,7 +62,7 @@ Cc: oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-doc@vger.kernel.org, Jorge Marques <jorge.marques@analog.com>
 Subject: Re: [PATCH 4/4] iio: adc: add support for ad4052
-Message-ID: <202503071916.STHJTSlp-lkp@intel.com>
+Message-ID: <202503072008.ysqhEBaX-lkp@intel.com>
 References: <20250306-iio-driver-ad4052-v1-4-2badad30116c@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -84,75 +84,79 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Jorge-Marques/iio-code-ma
 base:   aac287ec80d71a7ab7e44c936a434625417c3e30
 patch link:    https://lore.kernel.org/r/20250306-iio-driver-ad4052-v1-4-2badad30116c%40analog.com
 patch subject: [PATCH 4/4] iio: adc: add support for ad4052
-config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20250307/202503071916.STHJTSlp-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 14.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250307/202503071916.STHJTSlp-lkp@intel.com/reproduce)
+config: powerpc-randconfig-r132-20250307 (https://download.01.org/0day-ci/archive/20250307/202503072008.ysqhEBaX-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 14.2.0
+reproduce: (https://download.01.org/0day-ci/archive/20250307/202503072008.ysqhEBaX-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202503071916.STHJTSlp-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202503072008.ysqhEBaX-lkp@intel.com/
 
-All warnings (new ones prefixed by >>):
+sparse warnings: (new ones prefixed by >>)
+>> drivers/iio/adc/ad4052.c:357:31: sparse: sparse: symbol 'ad4050_chip_info' was not declared. Should it be static?
+>> drivers/iio/adc/ad4052.c:366:31: sparse: sparse: symbol 'ad4052_chip_info' was not declared. Should it be static?
+>> drivers/iio/adc/ad4052.c:375:31: sparse: sparse: symbol 'ad4056_chip_info' was not declared. Should it be static?
+>> drivers/iio/adc/ad4052.c:384:31: sparse: sparse: symbol 'ad4058_chip_info' was not declared. Should it be static?
+>> drivers/iio/adc/ad4052.c:711:22: sparse: sparse: incorrect type in assignment (different base types) @@     expected int @@     got restricted __be16 [usertype] d16 @@
+   drivers/iio/adc/ad4052.c:711:22: sparse:     expected int
+   drivers/iio/adc/ad4052.c:711:22: sparse:     got restricted __be16 [usertype] d16
+>> drivers/iio/adc/ad4052.c:715:22: sparse: sparse: incorrect type in assignment (different base types) @@     expected int @@     got restricted __be32 [usertype] d32 @@
+   drivers/iio/adc/ad4052.c:715:22: sparse:     expected int
+   drivers/iio/adc/ad4052.c:715:22: sparse:     got restricted __be32 [usertype] d32
+   drivers/iio/adc/ad4052.c:912:22: sparse: sparse: incorrect type in assignment (different base types) @@     expected int @@     got restricted __be32 [usertype] d32 @@
+   drivers/iio/adc/ad4052.c:912:22: sparse:     expected int
+   drivers/iio/adc/ad4052.c:912:22: sparse:     got restricted __be32 [usertype] d32
+>> drivers/iio/adc/ad4052.c:958:33: sparse: sparse: bad assignment (>>=) to restricted __be16
+   drivers/iio/adc/ad4052.c:251:12: sparse: sparse: context imbalance in 'ad4052_iio_device_claim_direct' - different lock contexts for basic block
+   drivers/iio/adc/ad4052.c:277:9: sparse: sparse: context imbalance in 'ad4052_sample_rate_get' - unexpected unlock
+   drivers/iio/adc/ad4052.c:294:9: sparse: sparse: context imbalance in 'ad4052_sample_rate_set' - unexpected unlock
+   drivers/iio/adc/ad4052.c:780:34: sparse: sparse: context imbalance in 'ad4052_read_raw' - unexpected unlock
+   drivers/iio/adc/ad4052.c:805:34: sparse: sparse: context imbalance in 'ad4052_write_raw' - unexpected unlock
+   drivers/iio/adc/ad4052.c:820:9: sparse: sparse: context imbalance in 'ad4052_read_event_config' - unexpected unlock
+   drivers/iio/adc/ad4052.c:903:42: sparse: sparse: context imbalance in 'ad4052_read_event_value' - unexpected unlock
+   drivers/iio/adc/ad4052.c:971:34: sparse: sparse: context imbalance in 'ad4052_write_event_value' - unexpected unlock
+   drivers/iio/adc/ad4052.c:1055:34: sparse: sparse: context imbalance in 'ad4052_debugfs_reg_access' - unexpected unlock
 
->> drivers/iio/adc/ad4052.c:239:18: warning: 'ad4052_sample_rate_avail' defined but not used [-Wunused-const-variable=]
-     239 | static const int ad4052_sample_rate_avail[] = {
-         |                  ^~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/iio/adc/ad4052.c:214:41: warning: 'ad4052_regmap_wr_table' defined but not used [-Wunused-const-variable=]
-     214 | static const struct regmap_access_table ad4052_regmap_wr_table = {
-         |                                         ^~~~~~~~~~~~~~~~~~~~~~
->> drivers/iio/adc/ad4052.c:201:41: warning: 'ad4052_regmap_rd_table' defined but not used [-Wunused-const-variable=]
-     201 | static const struct regmap_access_table ad4052_regmap_rd_table = {
-         |                                         ^~~~~~~~~~~~~~~~~~~~~~
+vim +/ad4050_chip_info +357 drivers/iio/adc/ad4052.c
 
-
-vim +/ad4052_sample_rate_avail +239 drivers/iio/adc/ad4052.c
-
-   200	
- > 201	static const struct regmap_access_table ad4052_regmap_rd_table = {
-   202		.yes_ranges = ad4052_regmap_rd_ranges,
-   203		.n_yes_ranges = ARRAY_SIZE(ad4052_regmap_rd_ranges),
-   204	};
-   205	
-   206	static const struct regmap_range ad4052_regmap_wr_ranges[] = {
-   207		regmap_reg_range(AD4052_REG_INTERFACE_CONFIG_A, AD4052_REG_DEVICE_CONFIG),
-   208		regmap_reg_range(AD4052_REG_SCRATCH_PAD, AD4052_REG_SCRATCH_PAD),
-   209		regmap_reg_range(AD4052_REG_STREAM_MODE, AD4052_REG_INTERFACE_STATUS),
-   210		regmap_reg_range(AD4052_REG_MODE_SET, AD4052_REG_MON_VAL),
-   211		regmap_reg_range(AD4052_REG_FUSE_CRC, AD4052_REG_DEVICE_STATUS),
-   212	};
-   213	
- > 214	static const struct regmap_access_table ad4052_regmap_wr_table = {
-   215		.yes_ranges = ad4052_regmap_wr_ranges,
-   216		.n_yes_ranges = ARRAY_SIZE(ad4052_regmap_wr_ranges),
-   217	};
-   218	
-   219	static const struct iio_event_spec ad4052_events[] = {
-   220		{
-   221			.type = IIO_EV_TYPE_THRESH,
-   222			.dir = IIO_EV_DIR_EITHER,
-   223			.mask_shared_by_all = BIT(IIO_EV_INFO_ENABLE)
-   224		},
-   225		{
-   226			.type = IIO_EV_TYPE_THRESH,
-   227			.dir = IIO_EV_DIR_RISING,
-   228			.mask_shared_by_all = BIT(IIO_EV_INFO_VALUE) |
-   229					      BIT(IIO_EV_INFO_HYSTERESIS)
-   230		},
-   231		{
-   232			.type = IIO_EV_TYPE_THRESH,
-   233			.dir = IIO_EV_DIR_FALLING,
-   234			.mask_shared_by_all = BIT(IIO_EV_INFO_VALUE) |
-   235					      BIT(IIO_EV_INFO_HYSTERESIS)
-   236		}
-   237	};
-   238	
- > 239	static const int ad4052_sample_rate_avail[] = {
-   240		2000000, 1000000, 300000, 100000, 33300,
-   241		10000, 3000, 500, 333, 250, 200,
-   242		166, 140, 125, 111
-   243	};
-   244	
+   356	
+ > 357	const struct ad4052_chip_info ad4050_chip_info = {
+   358		.name = "ad4050",
+   359		.channels = { AD4052_CHAN(12, AD4052_2MSPS) },
+   360		.offload_channels = { AD4052_OFFLOAD_CHAN(12, AD4052_2MSPS) },
+   361		.prod_id = 0x70,
+   362		.max_avg = AD4050_MAX_AVG,
+   363		.grade = AD4052_2MSPS,
+   364	};
+   365	
+ > 366	const struct ad4052_chip_info ad4052_chip_info = {
+   367		.name = "ad4052",
+   368		.channels = { AD4052_CHAN(16, AD4052_2MSPS) },
+   369		.offload_channels = { AD4052_OFFLOAD_CHAN(16, AD4052_2MSPS) },
+   370		.prod_id = 0x72,
+   371		.max_avg = AD4052_MAX_AVG,
+   372		.grade = AD4052_2MSPS,
+   373	};
+   374	
+ > 375	const struct ad4052_chip_info ad4056_chip_info = {
+   376		.name = "ad4056",
+   377		.channels = { AD4052_CHAN(12, AD4052_500KSPS) },
+   378		.offload_channels = { AD4052_OFFLOAD_CHAN(12, AD4052_500KSPS) },
+   379		.prod_id = 0x70,
+   380		.max_avg = AD4050_MAX_AVG,
+   381		.grade = AD4052_500KSPS,
+   382	};
+   383	
+ > 384	const struct ad4052_chip_info ad4058_chip_info = {
+   385		.name = "ad4058",
+   386		.channels = { AD4052_CHAN(16, AD4052_500KSPS) },
+   387		.offload_channels = { AD4052_OFFLOAD_CHAN(16, AD4052_500KSPS) },
+   388		.prod_id = 0x72,
+   389		.max_avg = AD4052_MAX_AVG,
+   390		.grade = AD4052_500KSPS,
+   391	};
+   392	
 
 -- 
 0-DAY CI Kernel Test Service
