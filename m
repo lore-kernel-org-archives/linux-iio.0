@@ -1,96 +1,175 @@
-Received: from out-16.pe-a.jellyfish.systems (out-16.pe-a.jellyfish.systems [198.54.127.94])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1BC121E091;
-	Fri,  7 Mar 2025 15:10:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.94
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 935D221CC54;
+	Fri,  7 Mar 2025 15:11:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741360203; cv=none; b=ClVo/p+XNBQ4HpSt/44gwx1n5hHGV3Zz8lNoiTsMh5nOXR9qACAuDVk8V49ExjutgD9hHIcJsHyqbhtqn2nLHzXk6oFhmdxSwDsXdAGE10mMCdEwD93lUMAraG6XHSOCCc7EPEYHKaJ+KcKgknWPG9vwGiUcf8fE5zeTHI/jbIU=
+	t=1741360293; cv=none; b=LOgVQ32THdTdiJW/X4VGaMC5d4eIDIQeqVMZT1Ia2DKuZu8SdHbGELnQcvxguQ59iQXu/eXk5y6d85cg542vdlikPCnH1vqNqylxn/BgC87ETtWuxjtJJe5VF4OnTu2sVo9DKtw+uik4nzZlSYC3BbaDdQVRJZDIkXcnN59Al0o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741360203; c=relaxed/simple;
-	bh=ihHvQIx2ztyg1h3yxcaLwTKJXChieyv6DV25l6QnD90=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=UESl9QDyPLWUCjDaRNLVY6tQ9WVmm6pShmLryK+zC0OwlkpM4hvAe51hFuDW11mj7TuFDBrPPu0dxOd78LpczkrIxBdy/5y/bswTOYER5dMOuvBRSUs4YBOfp8SuyBP3g2U38I5sWy99Sriq/Tc/r8Le4BzYdDSsyKMLwwTWIS0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org; spf=pass smtp.mailfrom=framepointer.org; dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b=qhy2KiDD; arc=none smtp.client-ip=198.54.127.94
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=framepointer.org
+	s=arc-20240116; t=1741360293; c=relaxed/simple;
+	bh=68PYA1EofC70Yl9+ZYYWiPFB1L+1AgWZwF/BIm3DqIU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nMBNZdcvACGz2G4QCj9iaRDdP6LHQdCCifI7hrSJ9BvIf063Eqsm8A5XJ3B0K0snXeFL7/8NxGenHCe0G/HiuBRbpII+MPadfSo2FsmddjzkvxJyTFgxnrzlOJxhpbPZvMswXGtMXZ2sTWSEMy7xrmCUedySl1C5xUumE+NeIdk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ciNWFTMf; arc=none smtp.client-ip=209.85.214.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b="qhy2KiDD"
-Received: from prod-lbout-phx.jellyfish.systems (new-01-3.privateemail.com [66.29.159.56])
-	by pe-a.jellyfish.systems (Postfix) with ESMTPA id 4Z8V030r8Wz4xR1;
-	Fri, 07 Mar 2025 15:02:59 +0000 (UTC)
-Received: from MTA-09.privateemail.com (unknown [10.50.14.19])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
-	(No client certificate requested)
-	by NEW-01-3.privateemail.com (Postfix) with ESMTPS id 4Z8V023W0Pz2Sd0Q;
-	Fri,  7 Mar 2025 10:02:58 -0500 (EST)
-Received: from mta-09.privateemail.com (localhost [127.0.0.1])
-	by mta-09.privateemail.com (Postfix) with ESMTP id 4Z8V022587z3hhS5;
-	Fri,  7 Mar 2025 10:02:58 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=framepointer.org;
-	s=default; t=1741359778;
-	bh=ihHvQIx2ztyg1h3yxcaLwTKJXChieyv6DV25l6QnD90=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=qhy2KiDDFvcqu+ixtgYPQY02OQ6Scwnhg48qe5Myk4QwVy1TCma8BfhzfNa7i3gXP
-	 ppkLwvL7igfCrEIBTdA3DnuMJkPEvcxCE2vdJ87GdqWDZUmYbMPoaGF9KO8l3HCOIh
-	 n5OMKsMIAU+6OshNBhzmIRWvrW3kXBAANolwEQciHg53ZuFZh2OVZQ0jr5teKGS+3q
-	 V6S2fSQbA9c1MeEzKZW/ZoUhDqlm4QfQSEg4sLG6jS3I9sD9/TjC3Y4f4RSaOLntk1
-	 5SzYmXRQYmxt/63wv5NbQIJsA0Y248UeM25ZLFs+uFtm4HwRSkc7Wy3OQDKt622/3m
-	 SbrImQE35mpKQ==
-Received: from 65YTFL3.secure.tethers.com (unknown [152.44.190.141])
-	by mta-09.privateemail.com (Postfix) with ESMTPA;
-	Fri,  7 Mar 2025 10:02:43 -0500 (EST)
-From: Sam Winchenbach <sam.winchenbach@framepointer.org>
-To: linux-kernel@vger.kernel.org
-Cc: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	antoniu.miclaus@analog.com,
-	jic23@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	sam.winchenbach@framepointer.org,
-	bpellegrino@arka.org
-Subject: [PATCH v6 2/6] iio: filter: admv8818: fix band 4, state 15
-Date: Fri,  7 Mar 2025 10:02:12 -0500
-Message-ID: <20250307150216.374643-2-sam.winchenbach@framepointer.org>
-X-Mailer: git-send-email 2.48.1
-In-Reply-To: <20250307150216.374643-1-sam.winchenbach@framepointer.org>
-References: <20250307150216.374643-1-sam.winchenbach@framepointer.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ciNWFTMf"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-223fb0f619dso40036225ad.1;
+        Fri, 07 Mar 2025 07:11:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1741360291; x=1741965091; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Z0smMQNuibFTABZ6w1NkSzGMBPcRi3Tk4bDjmrxiWek=;
+        b=ciNWFTMfK2AKyH+0KifL7CKVCX0AOjNUra7V5iruX44CeXaqGlUPq3fkJAVnSyOA8m
+         I+NgdZEw0E46Bc9fPDpwzUPoWIXXlrRY4KmrDM10uUGEu9WnChZ5BfpDPzdQwTwsrcLC
+         k/NdbAyciEF8dZtxC8r1txZyy3b2OvqxukNdYcwhstgfYHO4iEbOmz6FTL+l+17dwzZq
+         dQJDwBrcEmE8tOSxmp0GWbuha3RjdfhrqcGHqj7KocALAPr8PtCFUrNKHIgrIC0A4rfA
+         twTnXR3ZP23GrlXs6tGULCLNUOGq5Aks/rFaWcuymNdlahsB9a90q/2A3hZT9SX1amZW
+         d1Tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741360291; x=1741965091;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Z0smMQNuibFTABZ6w1NkSzGMBPcRi3Tk4bDjmrxiWek=;
+        b=Xb6hffvZ1QyA+qKTAc2qOLRF7JLC5WKPzKUNdtysi2ZX5iZf5CX1m/kh7kgEoEqQFU
+         i1LHRjlMhMny60uiwwERqgTV8Pt3Cm3TkIRQHaml2rmHkzduqCH9IhdkvzI8qS1F9Dcn
+         vvbFyGKY3AUiX8csyh3EadxUkxNyzsfJ31ZumiGYcht4ma0V60XzLPYf8ZcCnVd6E04g
+         q279iJM52CUqhlL92++JnbgDG1xPuyUkYPtGk2yUd72jxVYPLS6qw74xyQ5asydIJkjS
+         kMuWyn/kTvR7aj25IPUxtv5gJGWC3pmUV/FTrE49bOVjOuUGjSsKWT1ng/5qcD4svVzb
+         huZw==
+X-Forwarded-Encrypted: i=1; AJvYcCVmlcUEPD/ZMEk83fNT7FGZN7P6XnF7uqRI2tNNkuvfnroBgSKXQ7NXwhrnU7X4lEwleNJTBGkh7Aj1@vger.kernel.org, AJvYcCVnxH9bTPmYVyohiNUwzt952JA9uDGOB19ccv/hSkV31Hbpgk4cXZtG4oa5xJjdB26NGm+ZG2DbCSV8hUXs@vger.kernel.org, AJvYcCWf0B7OyzIqFtST1Q9PP8HTj2T93smDfCNl5E1j9PDvf4T3BVEYdkXZs3w32OyvJpSYIdneq6nNg/9xpQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw3KOJk4hJ3pAb5EGRsFqKRuj25lujdsEHqSsa6S+Q1XIgvEnad
+	KR/feZpFwltS//BcHWuT/CISWTgo0oH4CSWdNXUE6BoM9DRzcxRz
+X-Gm-Gg: ASbGncuusJ7qpIvKdwAtkehJ9Aeq+an1euwAZn5eDNzHr2ynpXbnoH6oKkCWhJP17iK
+	d00NbLp1qN7ToZ1yXSkLjDznXGdL2UaS1P5Z+Vcx1w31kW/8iBuVGwuJSRVSxqvwN/gQEnntpI/
+	2LGtRVQcB2FzTMJLGJhCzpdHqn4HP6A9H0gPTHhcM/STWKzVyprBniC4ZYRWtN+KwZeeLDNgP+n
+	qtAlwTakpHeeHFTa3ycLCwvzwQiGR9qkTT1hUjUuz7a+Uv8+PYOj8J8HS0sCqB8eNy1NLDxHmju
+	oBR5tr1ipT/Tx/DVQTYmDoCTArmZo+tvdUZzp6O4QnSeZPlcF9KA3g==
+X-Google-Smtp-Source: AGHT+IHrwpXL0L5f6em3IgAisRt8eToY4WUgHZ+JzvFiYSU/OoqGtox7zmG/M0KzUZdedDUwYqS0Jw==
+X-Received: by 2002:a17:903:32ce:b0:224:1074:63af with SMTP id d9443c01a7336-22428bdb76amr63670315ad.34.1741360290644;
+        Fri, 07 Mar 2025 07:11:30 -0800 (PST)
+Received: from localhost ([2804:30c:1f21:4300:1cf6:c485:6555:b1c5])
+        by smtp.gmail.com with UTF8SMTPSA id d9443c01a7336-22410a907adsm31000575ad.160.2025.03.07.07.11.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Mar 2025 07:11:29 -0800 (PST)
+Date: Fri, 7 Mar 2025 12:12:22 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Jonathan Santos <Jonathan.Santos@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	lars@metafoo.de, Michael.Hennerich@analog.com,
+	marcelo.schmitt@analog.com, jic23@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, linus.walleij@linaro.org,
+	brgl@bgdev.pl, lgirdwood@gmail.com, broonie@kernel.org,
+	dlechner@baylibre.com, jonath4nns@gmail.com
+Subject: Re: [PATCH v4 17/17] iio: adc: ad7768-1: add low pass -3dB cutoff
+ attribute
+Message-ID: <Z8sM1uW7pxJVmVN6@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1741268122.git.Jonathan.Santos@analog.com>
+ <2aa347a97e7ea974951609b0bdf81cad0b21b993.1741268122.git.Jonathan.Santos@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <2aa347a97e7ea974951609b0bdf81cad0b21b993.1741268122.git.Jonathan.Santos@analog.com>
 
-Corrects the upper range of LPF Band 4 from 18.5 GHz to 18.85 GHz per
-the ADMV8818 datasheet
+Looks good. Minor comment inline.
 
-Fixes: f34fe888ad05 ("iio:filter:admv8818: add support for ADMV8818")
-Signed-off-by: Sam Winchenbach <sam.winchenbach@framepointer.org>
----
- drivers/iio/filter/admv8818.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 03/06, Jonathan Santos wrote:
+> Ad7768-1 has a different -3db frequency multiplier depending on
+> the filter type configured. The cutoff frequency also varies according
+> to the current ODR.
+> 
+> Add a readonly low pass -3dB frequency cutoff attribute to clarify to
+> the user which bandwidth is being allowed depending on the filter
+> configurations.
+> 
+> Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
+> ---
 
-diff --git a/drivers/iio/filter/admv8818.c b/drivers/iio/filter/admv8818.c
-index 848baa6e3bbf..8f563a426232 100644
---- a/drivers/iio/filter/admv8818.c
-+++ b/drivers/iio/filter/admv8818.c
-@@ -103,7 +103,7 @@ static const unsigned long long freq_range_lpf[4][2] = {
- 	{2050000000ULL, 3850000000ULL},
- 	{3350000000ULL, 7250000000ULL},
- 	{7000000000, 13000000000},
--	{12550000000, 18500000000}
-+	{12550000000, 18850000000}
- };
- 
- static const struct regmap_config admv8818_regmap_config = {
--- 
-2.48.1
+Reviewed-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 
+> v4 Changes:
+> * None
+> 
+> v3 Changes:
+> * None
+> 
+> v2 Changes:
+> * New patch in v2.
+> ---
+>  drivers/iio/adc/ad7768-1.c | 22 ++++++++++++++++++++--
+>  1 file changed, 20 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
+> index 664d0b535340..9ba00e9089bd 100644
+> --- a/drivers/iio/adc/ad7768-1.c
+> +++ b/drivers/iio/adc/ad7768-1.c
+> @@ -150,6 +150,17 @@ enum ad7768_scan_type {
+>  	AD7768_SCAN_TYPE_HIGH_SPEED,
+>  };
+>  
+> +/*
+> + * -3dB cutoff frequency multipliers (relative to ODR) for
+> + * each filter type. Values are multiplied by 1000.
+> + */
+> +static const int ad7768_filter_3db_odr_multiplier[] = {
+> +	[AD7768_FILTER_SINC5] = 204,
+> +	[AD7768_FILTER_SINC3] = 261,
+> +	[AD7768_FILTER_SINC3_REJ60] = 261,
+
+Are these constants from ADAQ7768-1 datasheet?
+There it says "the sinc3 filter has a −3 dB bandwidth of 0.2617 × ODR."
+If so, maybe use 262 as SINC3 multiplier?
+
+> +	[AD7768_FILTER_WIDEBAND] = 433,
+> +};
+> +
+>  static const int ad7768_mclk_div_rates[4] = {
+>  	16, 8, 4, 2,
+>  };
+> @@ -228,7 +239,8 @@ static const struct iio_chan_spec ad7768_channels[] = {
+>  		.type = IIO_VOLTAGE,
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |
+> -					    BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +					    BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO) |
+> +					    BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
+>  		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>  		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+>  		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> @@ -762,7 +774,7 @@ static int ad7768_read_raw(struct iio_dev *indio_dev,
+>  {
+>  	struct ad7768_state *st = iio_priv(indio_dev);
+>  	const struct iio_scan_type *scan_type;
+> -	int scale_uv, ret;
+> +	int scale_uv, ret, temp;
+>  
+>  	scan_type = iio_get_current_scan_type(indio_dev, chan);
+>  	if (IS_ERR(scan_type))
+> @@ -802,6 +814,12 @@ static int ad7768_read_raw(struct iio_dev *indio_dev,
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>  		*val = st->oversampling_ratio;
+>  
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> +		temp = st->samp_freq * ad7768_filter_3db_odr_multiplier[st->filter_type];
+> +		*val = DIV_ROUND_CLOSEST(temp, 1000);
+> +
+>  		return IIO_VAL_INT;
+>  	}
+>  
+> -- 
+> 2.34.1
+> 
