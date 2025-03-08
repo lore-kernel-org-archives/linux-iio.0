@@ -1,170 +1,117 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0E4EBA49;
-	Sat,  8 Mar 2025 17:25:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4374206F0B;
+	Sat,  8 Mar 2025 20:02:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741454745; cv=none; b=j5S7njP4gPgh0MWTVvyPJAPrXBlG39sE+XzM2nfiYxaB5RxDCWRH6HJgH5QCWa2Xbjob5av9HnUW7zEISvh33qkHXTztXQzR9DOSLNjEvSxMN2pfDQxhs2ThhtwK9daRgQ8801btleH36IHQ9/8lpIe1VWOF2SAtbZ7Dmxdfdfs=
+	t=1741464150; cv=none; b=XZV9btYF3DoI1b9YoiBqB18E1t6d9WdbwtfqS8pRIgBLjn0CH1alb9Mg76oO0gGaxGfpGRLA3HG4PR2262RkfAEjDvLDN5/JQjnYgwnYictN0JmMwGpa3wa15txbdj0j8QPqQImfrVwr0OjvOYVDWjgr/YPp6WWVzC8JD4+JxXo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741454745; c=relaxed/simple;
-	bh=rDpyzLuOGQ9vhoXNk1PBzh+HBgo/29DvH9RSc9qi/jI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Gv4v2Ow0v2/NYTKBWNpsSXWTJKm0y5jpoVMaSD5VQNp/2AFuQvzqaG3KH3NiR3zuTF2Ug/zKpUbtV6JQdx7edcSFWHj4ZFDWm9L7pN4+OCtBYj7g3qS2k5w5o1iULDL7jIBZxOxlpLAwzdwYgL7wMIVzr8nOG+O5pBxumpx6K9g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ko6CAKs8; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1741464150; c=relaxed/simple;
+	bh=e/M1KcFrTfIKFEzZH5CjLPVwQnJcCPmkrwdiZwKmFT8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=XfnusLDBzgR76Egms5TOiGPEh0EL9lasOUs984hcM0SyQE3OEjLIxtujDht1ABR02c6lnNgasaCAIx7ltnZnBOUxZw/MaAjWwLLcf/GOTee/49hPMfo07dsBj5J60UdcPXW6Sh/tJetL2TSSHHTHVhH7UJhuJMah5U/obyFnIPA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uLm2++jd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ko6CAKs8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85619C4CEE0;
-	Sat,  8 Mar 2025 17:25:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uLm2++jd"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 26BE9C4CEE3;
+	Sat,  8 Mar 2025 20:02:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741454744;
-	bh=rDpyzLuOGQ9vhoXNk1PBzh+HBgo/29DvH9RSc9qi/jI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ko6CAKs8jrRI3vihYFZhuFCVC+gWko4DW9YC1u108+nP9DqKlM95L9KTnkW8QtGf3
-	 8aEeptstxr9xOQXYui5NfiotyHprgRKJgVySw6GJHcyiHqTyDy9IcJweFCrcWjRz/V
-	 wXa0Zwa81oZkHS8lTOX1HybZuQqgfRDKhGjUJNQsykLpSZYYHTjkLAZw65yKQK9HSr
-	 YrQbdVQdHh3YTeCKWVY+8WnJYVLLHUEXuVxIGqWFYB8Sx7DNQCuSUykDI9aEP08ZtO
-	 We1n8uz2NR6yJlMPw5b4IX+aBbx7tAg0iaMg2kkdKwdAAGs1CryEFp++waqyc6oQgX
-	 0zL/e4XyO5qjg==
-Date: Sat, 8 Mar 2025 17:25:35 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Sam Winchenbach <sam.winchenbach@framepointer.org>
-Cc: linux-kernel@vger.kernel.org, lars@metafoo.de,
- Michael.Hennerich@analog.com, antoniu.miclaus@analog.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] iio: filter: admv8818: fix range calculation
-Message-ID: <20250308172535.7b75359d@jic23-huawei>
-In-Reply-To: <Z8hKbxWT--0lMHao@65YTFL3.secure.tethers.com>
-References: <20250225134612.577022-1-sam.winchenbach@framepointer.org>
-	<20250304235502.4d0342a1@jic23-huawei>
-	<Z8hKbxWT--0lMHao@65YTFL3.secure.tethers.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.48; x86_64-pc-linux-gnu)
+	s=k20201202; t=1741464150;
+	bh=e/M1KcFrTfIKFEzZH5CjLPVwQnJcCPmkrwdiZwKmFT8=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=uLm2++jd5oItQkirHptb84L+yr9rhtZnncQR6glJdq9l2ZN20TXt2GcSD5qn9qyzc
+	 CyudSdC8bd9LBIJ5vN5VCrF4U9udwLnARf0WOOYdq4s7+yCt3mzglXhcjqqI26HKP2
+	 fWsmMAsVYNeyXS/JhIYpSDCLuXDgLflL1Qf37oFv7eGL9Pf7WvodOXBLpReUXnCUJ2
+	 EFqxqOUvXZyaC3Bvnk7uyueEWiWmM5Fb44oQH+C3ieSwoCV8SKZkjC0VNWE2Vwi/j2
+	 aL3iggLitx+XPRqo1GcUPjhwqFv3ic7W+a8RjTh9VZaFlD89sT3ZFNNcI+CngPPld/
+	 fvoCteRiIp1gQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 120F6C28B30;
+	Sat,  8 Mar 2025 20:02:30 +0000 (UTC)
+From: David Heidelberg via B4 Relay <devnull+david.ixit.cz@kernel.org>
+Date: Sat, 08 Mar 2025 21:00:59 +0100
+Subject: [PATCH 2/4] iio: light: al3000a: Use DRV_NAME
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20250308-al3010-iio-regmap-v1-2-b672535e8213@ixit.cz>
+References: <20250308-al3010-iio-regmap-v1-0-b672535e8213@ixit.cz>
+In-Reply-To: <20250308-al3010-iio-regmap-v1-0-b672535e8213@ixit.cz>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>
+Cc: Svyatoslav Ryhel <clamor95@gmail.com>, 
+ Robert Eckelmann <longnoserob@gmail.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, David Heidelberg <david@ixit.cz>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1248; i=david@ixit.cz;
+ h=from:subject:message-id;
+ bh=OztXp4B+Ou/RwdPOQioIug1hZ1oOyPA0zbFHMaWwpTA=;
+ b=owEBbQKS/ZANAwAIAWACP8TTSSByAcsmYgBnzKJUrEM0E1z5B6zdsevZMBPtg5f0lVFPsD1Jo
+ IU2gNgblVmJAjMEAAEIAB0WIQTXegnP7twrvVOnBHRgAj/E00kgcgUCZ8yiVAAKCRBgAj/E00kg
+ cmqDD/49ajNvfw4bP7MWvD/QQ0yRsdD47903cCoa5kt/iuVpdL+E4m9TsUnBoNqV9P877afkspN
+ xWyDbnm0w04tenzbVNKduFOwU5gFOzFkXA62PVGjO7K1EbaPzbojVcmwTwz7eNXIa+dtkdivyMR
+ 97ucGVvT9awYNRobTo5IL1Y8swyEXtcDtHOdxovY045POFdaCyYylii5OXl2g7658aWcJmV3ZMK
+ mQ25VT9EhTxjfJMDtKjSrrEqUoXXBymQRo1rVl+wBH9m0rZqih/fdJHGttGjeimTnRFRFOz6gHY
+ c/5ROacg0SHHmUip0N+oftd+Q5zvm1loaaKSe/kxeG64Q1S8NGGNzv6+zlcnXbVU7hrMuBY0q7G
+ 7MidBjLn8BSTyGQ7sWOrvKmKlixhVbzpDXMZflX5bwbYKfozBk5T2H02CXaMlVki/p55bzLWUPA
+ LW29MT8XkZLYm7hSaBN4SttCp5D7ZNA+XpYzz2st8a0RVLfWgguNo2PJAO4Tyvy+5B6nNffgYCu
+ RSdJUvya5hNvEJrCSpVHvaBoX1K+rsn6G0ACFxSR9+Le1dEvqooi0x+sQPbSReabF2+NU4odnW4
+ lKrjG2ztrvVxj2JnbgUoU5xXUvsy15dKCMrtihIpZblG3hAUcBm8BFCez9HMhaqXCQYTAkkAPT0
+ swYCZDFrIFJlEww==
+X-Developer-Key: i=david@ixit.cz; a=openpgp;
+ fpr=D77A09CFEEDC2BBD53A7047460023FC4D3492072
+X-Endpoint-Received: by B4 Relay for david@ixit.cz/default with auth_id=355
+X-Original-From: David Heidelberg <david@ixit.cz>
+Reply-To: david@ixit.cz
 
-On Wed, 5 Mar 2025 07:58:23 -0500
-Sam Winchenbach <sam.winchenbach@framepointer.org> wrote:
+From: David Heidelberg <david@ixit.cz>
 
-> On Tue, Mar 04, 2025 at 11:55:02PM +0000, Jonathan Cameron wrote:
-> > On Tue, 25 Feb 2025 08:46:11 -0500
-> > Sam Winchenbach <sam.winchenbach@framepointer.org> wrote:
-> > 
-> > Hi Sam,
-> > 
-> > Various comments inline.
-> > 
-> > Jonathan
-> > 
-> >   
-> > > Corrects the upper range of LPF Band 4 from 18.5 GHz to 18.85 GHz per
-> > > the ADMV8818 datasheet  
-> > This feels like a first fix...  
-> 
-> Agreed. This should be broken out. For discussion let's call this PATCH_1.
-> 
-> > > 
-> > > Search for the minimum error while ensuring that the LPF corner
-> > > frequency is greater than the target, and the HPF corner frequency
-> > > is lower than the target
-> > > 
-> > > This fixes issues where the range calculations were suboptimal.  
-> > This feels like a 2nd one.  Maybe two patches appropriate.
-> >  
-> 
-> Agreed. For discussion let's call this PATCH_2.
-> 
-> > > 
-> > > Add two new DTS properties to set the margin between the input frequency
-> > > and the calculated corner frequency  
-> > And this feels like a feature.  So 3rd patch that we don't necessarily
-> > backport.  For earlier stages we just use the default values that
-> > you have in the binding.
-> >  
-> 
-> Hmm. This is interesting.  I propose that PATCH_1 is a fix, and both PATCH_2 and this DTS change are treated as a feature. The reason I am suggesting this is that PATCH_2 changes the behavior of the corner frequency and if we backport that then some users may find that their devices no longer function as they used to. Another way of saying this is that PATCH_2 really should include the DTS changes for those users that depended on the old corner calculation algorithm. Does this sound reasonable?
+Sync syntax with other similar drivers.
 
-Sure. I'm fine going with your judgement on what is a fix and what isn't.
+Signed-off-by: David Heidelberg <david@ixit.cz>
+---
+ drivers/iio/light/al3000a.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Jonathan
+diff --git a/drivers/iio/light/al3000a.c b/drivers/iio/light/al3000a.c
+index e2fbb1270040f43d9f0a97838861818a8eaef813..e1fa4543f336cec61140b5c44d3794df1fa485cd 100644
+--- a/drivers/iio/light/al3000a.c
++++ b/drivers/iio/light/al3000a.c
+@@ -13,6 +13,8 @@
+ 
+ #include <linux/iio/iio.h>
+ 
++#define AL3000A_DRV_NAME "al3000a"
++
+ #define AL3000A_REG_SYSTEM		0x00
+ #define AL3000A_REG_DATA		0x05
+ 
+@@ -148,7 +150,7 @@ static int al3000a_probe(struct i2c_client *client)
+ 				     "failed to get vdd regulator\n");
+ 
+ 	indio_dev->info = &al3000a_info;
+-	indio_dev->name = "al3000a";
++	indio_dev->name = AL3000A_DRV_NAME;
+ 	indio_dev->channels = al3000a_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(al3000a_channels);
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+@@ -195,7 +197,7 @@ MODULE_DEVICE_TABLE(of, al3000a_of_match);
+ 
+ static struct i2c_driver al3000a_driver = {
+ 	.driver = {
+-		.name = "al3000a",
++		.name = AL3000A_DRV_NAME,
+ 		.of_match_table = al3000a_of_match,
+ 		.pm = pm_sleep_ptr(&al3000a_pm_ops),
+ 	},
 
->  
-> > > 
-> > > Below is a generated table of the differences between the old algorithm
-> > > and the new. This is a sweep from 0 to 20 GHz in 10 MHz steps.  
-> > 
-> > So, these are just the entries where the 3db point changes?
-> > All the others are same?
-> >   
-> 
-> With a 10 MHz resolution, yes. It was an attempt to show that if the user selected a corner frequency that in many cases there was a better option. The code, as it exists, uses the same algortihm for finding the corner frequency when in either manual or auto mode - There are two problems with this approach:
-> 1. If you are using manual mode, you can't select a specific corner frequency without subtracting 1 from your target frequency. This highlights problem number 2.
-> 2. If you are in automatic mode and your fundamental frequency is 1 Hz below a corner - that corner will be selected. This will efectively put the corner frequency/3db point at the fundamental frequency. This will cut your signal power in half.
-> 
-> Perhaps there is a better way to show this? Conveying this without images is challenging.
+-- 
+2.47.2
 
-Agreed.  Ascii art is always an option but obviously limited.
-
-> 
-> Here is an example of where both algorithms agree (1 Hz resolution):
-> freq = 1750000001 Hz, 3db: 1750000000 (old algorithm) => 1750000000 (new algorithm) Hz
-> 
-> Note that if the user is in `auto` mode then the corner frequency will be put almost exactly on their fundamental frequency.
-> The same will happen with the new algorithm, but the user has the ability to select a minimum margin using DTS.
-> 
-
-> > Multiline comment in IIO (and most of kernel for that matter) is
-> > /*
-> >  * This...
-> >  
-> 
-> Shoot, I figured check_patch would have caught that. Noted for v5
-
-Unfortunately it's not a consistent requirement across the kernel.
-networking still likes the style you used I think.
-
-
-> > > @@ -242,16 +280,28 @@ static int admv8818_lpf_select(struct admv8818_state *st, u64 freq)
-> > >  static int admv8818_rfin_band_select(struct admv8818_state *st)
-> > >  {
-> > >  	int ret;
-> > > +	u64 hpf_corner_target, lpf_corner_target;
-> > >  
-> > >  	st->cf_hz = clk_get_rate(st->clkin);
-> > >  
-> > > +	// Check for underflow  
-> > 
-> > No C++ style comments in IIO code.  This is just a consistency thing rather than
-> > really matter. We have lots of code that predates those being at all acceptable
-> > in the kernel and a mixture of the two styles is messy!
-> >  
-> 
-> Bugger. check_patch failed me again :)
-> Noted. I will go through and address all comments to make sure they fit the style.  
-
-Likewise, not a hard rule in all of the kernel.
-
-> 
-> > > +	if (st->cf_hz > st->hpf_margin_hz)
-
-> > 	st->lpf_margin_hz = 0;
-> > 	device_property_read_u64(...)
-> > 
-> > and no explicit error checking.
-> > 
-> > If you really want to retain the protection against wrong formats etc, then fair enough.  
-> 
-> My only concern that the user will have no feedback that his or her filter settings are not being used which could lead to subtle, hard to track down frequency responses. Would it be more appropriate here to print a warning instead of returning an error?
-
-Just stick to an error. I'd hope they test enough to know their
-DT is broken even without the error messages but i guess maybe not.
-
-Jonathan
-  
 
