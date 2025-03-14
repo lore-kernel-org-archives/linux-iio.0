@@ -1,190 +1,128 @@
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8710E20551D;
-	Fri, 14 Mar 2025 17:34:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 164782063FF;
+	Fri, 14 Mar 2025 17:34:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741973690; cv=none; b=p+KDQnJ996JkZczpLqCqOe648troxcGptN7NEss2fR/0ZABDgelwaG1EURBXEkyppQ7/1zlCR4kgZVJf1hOG3WupyrSVk91y4qOFOnM6mkeLDvzPHLvYD+qgWVtjDnDG5GS242/hN9CXChPB7Imd4ZDzEfJD32gphJIF9Un5iDc=
+	t=1741973694; cv=none; b=SY9QIq+kAUtKzItMXy341ZN+sEa+IK3jRLn+rn3iHhCpziujn1vgQTpVG9RO6zurLVsR+bxVFK87pZ0N5QcT5Tkfp2DhLNULtl75WVqtwwvgckwJi3+VRqlTwAAfE9h+sqELIJ34tfbgmESYMEsfs+JkXKWT11saqD+FvTh8dtc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741973690; c=relaxed/simple;
-	bh=zx1/JTL7WsUkJWQZ5pza4FBcv1p63o3C6N3kVoZRSJU=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=p033UFLKHDcwjshZUJJQPKQt0354meBNjokg1Z8j/RzBTrk4f5/GdbkjLMgNs/soTCoAERdL2fb1Q/hficsqEe86dDgtke2KnV6RlowSPJvocUfqJXWpaCD76JElDd9mJUi1frn1hTHHgluavR8bM8EqYRruEtikktf0aP+5+O0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=GY40LxxP; arc=none smtp.client-ip=185.132.182.106
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
+	s=arc-20240116; t=1741973694; c=relaxed/simple;
+	bh=3dqWiYds4otSifOzUdJHgMUDOfl0bH37/f/mkbsUst8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=j5oF9JqASJ1aPC7DUmA0oVA2P8ivtUJn1lsZgGDAptle3vh5/wjfgP/oFkzwTj4zRycNsdLnXaCvKzMILbah+xz3q84Gmenubvodigtxnclc+m4rvZqouxWijQrCIc3wad6qKyIdghQvdVqjY7pvjquV/p5IYjbuuhTEkr+CVfY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KrCiburC; arc=none smtp.client-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="GY40LxxP"
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52EEoeYB025496;
-	Fri, 14 Mar 2025 18:34:18 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=selector1; bh=
-	RTo8HJ3Jishlo1S9oATLW3zJolVjTmMMSnoy0RwwYIU=; b=GY40LxxPYbGPavRV
-	gW4g8aAj06IFl8YPN3lJIT8W3PaRPNU2jN5KXxYswKvXwg/xNrv/1Q3dR7HjJ1Jl
-	pe5+usUZChpeVqQeP8GIklPlSTsb0n3BtQe9x/JOfBurdf4hZkrV8exT9eZYG4l5
-	9ZI6CTq3CLmkS5bKPkY+mHe8j5K97jVCBp45AiXBHJXdyNzZDqs2kX2abUleFzhu
-	U0Q6Hh2yFSIrxw7a9mBZeGth5KgtrvQks9Xx289BvP4NjjuiN4uSLHodJYQXoZ2s
-	Uv89Y8DaT5o1qnqGi5LobChrYdfR8vRzHX+qVy6hcMle7xx85A9vblZ7uF+gcR9Z
-	eblMmA==
-Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 45c2p7wewr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 14 Mar 2025 18:34:18 +0100 (CET)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 46DD340066;
-	Fri, 14 Mar 2025 18:33:05 +0100 (CET)
-Received: from Webmail-eu.st.com (eqndag1node5.st.com [10.75.129.134])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3DE886D8E8B;
-	Fri, 14 Mar 2025 18:15:07 +0100 (CET)
-Received: from SAFDAG1NODE1.st.com (10.75.90.17) by EQNDAG1NODE5.st.com
- (10.75.129.134) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 14 Mar
- 2025 18:15:07 +0100
-Received: from localhost (10.252.1.141) by SAFDAG1NODE1.st.com (10.75.90.17)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 14 Mar
- 2025 18:15:06 +0100
-From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-To: <lee@kernel.org>, <ukleinek@kernel.org>, <alexandre.torgue@foss.st.com>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <jic23@kernel.org>,
-        <daniel.lezcano@linaro.org>, <tglx@linutronix.de>
-CC: <robh@kernel.org>, <catalin.marinas@arm.com>, <will@kernel.org>,
-        <devicetree@vger.kernel.org>, <wbg@kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <olivier.moysan@foss.st.com>, <fabrice.gasnier@foss.st.com>
-Subject: [PATCH v4 4/8] clocksource: stm32-lptimer: add support for stm32mp25
-Date: Fri, 14 Mar 2025 18:14:47 +0100
-Message-ID: <20250314171451.3497789-5-fabrice.gasnier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20250314171451.3497789-1-fabrice.gasnier@foss.st.com>
-References: <20250314171451.3497789-1-fabrice.gasnier@foss.st.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KrCiburC"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-aaecf50578eso412944466b.2;
+        Fri, 14 Mar 2025 10:34:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1741973690; x=1742578490; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=FMKegtIsjHp0vMy8cfsnzA/BzG0rC3QpG6n6TIAdO+0=;
+        b=KrCiburCLz6I3TR3U4wInOj9wkXG5g5nH0PTyOzUoglHqIothSvRiKzh/rdrP39kgZ
+         mfoVHawU0HOjhlTjqcBwNY7YxPW9qlwcMsnSJxnvHO781x53tzRLrbEypQyYQp5Cn7TX
+         HtTGox/1GwMPNQNeMAqfgC0QwHyAwW1DIHDIHdppv8fUmuvAzv9yqnPvzgQvZn9/8JZ1
+         K7+MCIrLcxHN/ksVGLEEgcc29tS3Fnl1cgzbqXQY5nVuEBm+ZfFMcYm7qFdCEw8qAuPB
+         sFCoJYPgyp3dOt+wgdjtGnjPR7/i5+GXMqoZziSpGUvc1IYJT4VvmYvPmmOmulZbNjO4
+         yYfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741973690; x=1742578490;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FMKegtIsjHp0vMy8cfsnzA/BzG0rC3QpG6n6TIAdO+0=;
+        b=Fe8c9YXjQe8qwhx0mt9xpc614BzyJIuD6FX1K+Ea6wfyUMmG9s0GnNx3p8nB1wxtiA
+         sI9vFDXLDRyctp7KQzmKnVsqx1WRoX2CxRZSMRw7W0F1cKtcFy+krgHI9ZMqwwYkrxhE
+         YqSKCRt/B9J0hi3LSW+0y0oBWjOCDSRYGb2abHwgN7X9w9X/W01Mg1WhU0dgHDNEPDSy
+         9bk/D4Vd2683oZYvE9bgmUisswKW4T2pYWitbRTgdYHDgWocUcrt8rHDttou9IOdFyKK
+         C4ssLAiUyHviz+JjDy7Y7B+CVEpm4kjpSfL8Ip9+iPd0BuDsQFouG5osXFIqcu1LKUSz
+         DM+A==
+X-Forwarded-Encrypted: i=1; AJvYcCUN/RzS9MjaHXgS4SesrUHz9L3MUe2Dn/MRtSsG1x+T/ZOZCbwe2jT3Mcv1Xb1gyWAKJ+LgHh1xqx1X@vger.kernel.org, AJvYcCVg6281K/+A1X+U0M17ZDlRShcy0XEqnbbOhJRIriD0rVw0u2agANCdjbDsSziQ4cwRYuisn8VrQSku@vger.kernel.org, AJvYcCVhwzwDd47K5cUquDmkS9tizx4Swj7bBMSijpQr/qDCqo8VO5/ZfdG6i2vpiJRaPIhHp9gApsnCYIuYAnbK@vger.kernel.org, AJvYcCWjXoVlZQf55+ZXB1fEc9SzWAr+AOHYxcADkFXEI0TpstcYeM6QGbq9x5wG0+BtELivLIaZKLutuhle@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywm0s0IAOxFTWsWB21BZ2t8qgWzbNntOPNlKW6JZp8FsATzX9ym
+	g3//K9om1ue8ciY/EvoyU66lfCkAcJPuqVYAtBKQzvTXGmKNUFBVBQ14uoEzC1AjhA==
+X-Gm-Gg: ASbGncscsX2VrRWMo4KRAUj9DxiUrOD+26UFp+sYOl/vJsij247RL6NbGK1d6hhz0x7
+	M/eACF5mGU2UjU0iWiFdl3Cwvuz+2k3c9xweqRsaWtAKTsd6r33S4LMbOOka7ERoOlz/MOG94w7
+	fh8SqufVCHYPNu4zNp6GpHx+xom1m1xltA41RmFlRwOFYYr4SD7fYO2FzZFLpUDiqvQLBwE0a/H
+	TecvqFoPiMBAlNWaMby9D+HNbHJtiUArQuczcC1H9w7E9XYQLcUU2Z8JtRd1c9ApUY5saknt4Ew
+	AcWtt5iCk0LL2yLK7hxfB/wvGPpUYl74icQ66S6kmr7MdH15PzOlFeHic95LLZKa
+X-Google-Smtp-Source: AGHT+IGb3XQCLdGuMRV9Yf73kXWw73/eQkbBSYamv8cSuoMzz+eghzAI42S6vGENftjgTqAmwmTKTg==
+X-Received: by 2002:a17:907:d92:b0:ac2:3ea:c23c with SMTP id a640c23a62f3a-ac330126e15mr442457666b.5.1741973689841;
+        Fri, 14 Mar 2025 10:34:49 -0700 (PDT)
+Received: from HYB-DlYm71t3hSl.ad.analog.com ([137.71.226.91])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ac3146aeb24sm251618766b.9.2025.03.14.10.34.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Mar 2025 10:34:49 -0700 (PDT)
+Date: Fri, 14 Mar 2025 18:34:46 +0100
+From: Jorge Marques <gastmaier@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, 
+	Jorge Marques <jorge.marques@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Corbet <corbet@lwn.net>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH 3/4] docs: iio: new docs for ad4052 driver
+Message-ID: <27kqar3ugxjzwss7hzxil2hz3kxaunnkpaaas3nnzemhssf6mo@65xknov7jh7k>
+References: <20250306-iio-driver-ad4052-v1-0-2badad30116c@analog.com>
+ <20250306-iio-driver-ad4052-v1-3-2badad30116c@analog.com>
+ <CAMknhBFiZZUtCkTjQ=AVSgwqe=wCkMnqAmaTqvW_X6fm1OKuYA@mail.gmail.com>
+ <e3p2r2fet2spkrxv7x76gunlivrp3vng22wktz4fkww5nkckt7@jpgne4uerr3c>
+ <6ca1eafd-276d-421b-8d35-bd3e363803d1@baylibre.com>
+ <20250310195629.47ca023f@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SAFDAG1NODE1.st.com
- (10.75.90.17)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-03-14_06,2025-03-14_01,2024-11-22_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250310195629.47ca023f@jic23-huawei>
 
-On stm32mp25, DIER (former IER) must only be modified when the lptimer
-is enabled. On earlier SoCs, it must be only be modified when it is
-disabled. There's also a new DIEROK flag, to ensure register access
-has completed.
-Add a new "set_evt" routine to be used on stm32mp25, called depending
-on the version register, read by the MFD core (LPTIM_VERR).
+On Mon, Mar 10, 2025 at 07:56:29PM +0000, Jonathan Cameron wrote:
+> On Mon, 10 Mar 2025 09:31:45 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
+> 
+> > On 3/9/25 3:49 PM, Jorge Marques wrote:
+> > >>> +   * - ``sample_rate``
+> > >>> +     - Device internal sample rate used in the burst averaging mode.
+> > >>> +   * - ``sample_rate_available``
+> > >>> +     - List of available sample rates.  
+> > >>
+> > >> Why not using the standard sampling_frequency[_available] attributes?  
+> > > Because sampling_frequency is the sampling frequency for the pwm trigger
+> > > during buffer readings.
+> > > sample_rate is the internal device clock used during monitor and burst
+> > > averaging modes.  
+> > 
+> > I haven't done a chips with a monitor mode yet where we aren't reading
+> > the samples, so hopefully Jonathan will chime in here on the usual way
+> > to handle that.
+> > 
+> > For the burst averaging mode, I understand the need for a separate attribute
+> > now. I would suggest to call this the conversion_frequency rather than
+> > sampling_rate since IIO already defines "sampling" to be the data read
+> > from the chip to Linux even if it is an averaged value, it still counts
+> > as one sample.
+> 
+> I should have read on.  I'd like this more closely associated with oversampling.
+> As per other reply we use sampling_frequency in the events directory for
+> the monitoring frequency case.  One of our very first drivers did this
+> (max1363) so it's been in the ABI a long time!
+> 
 
-Signed-off-by: Patrick Delaunay <patrick.delaunay@foss.st.com>
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
----
-Changes in V4:
-- Daniel suggests to encapsulate IER write into a separate function
-  that manages the enabling/disabling of the LP timer. In addition,
-  DIEROK and ARROK flags checks have been added. So adopt a new routine
-  to set the event into ARR register and enable the interrupt.
-Changes in V2:
-- rely on fallback compatible as no specific .data is associated to the
-  driver. Use version data from MFD core.
-- Added interrupt enable register access update in (missed in V1)
----
- drivers/clocksource/timer-stm32-lp.c | 51 +++++++++++++++++++++++++---
- 1 file changed, 47 insertions(+), 4 deletions(-)
+I get the idea but maybe the datasheet sample rate as conversion_frequency
+and stored as a channel attribute (iio_chan_spec.ext_info) is clear enough.
 
-diff --git a/drivers/clocksource/timer-stm32-lp.c b/drivers/clocksource/timer-stm32-lp.c
-index 928da2f6de69..e58932300fb4 100644
---- a/drivers/clocksource/timer-stm32-lp.c
-+++ b/drivers/clocksource/timer-stm32-lp.c
-@@ -27,6 +27,7 @@ struct stm32_lp_private {
- 	u32 psc;
- 	struct device *dev;
- 	struct clk *clk;
-+	u32 version;
- };
- 
- static struct stm32_lp_private*
-@@ -47,12 +48,37 @@ static int stm32_clkevent_lp_shutdown(struct clock_event_device *clkevt)
- 	return 0;
- }
- 
--static int stm32_clkevent_lp_set_timer(unsigned long evt,
--				       struct clock_event_device *clkevt,
--				       int is_periodic)
-+static int stm32mp25_clkevent_lp_set_evt(struct stm32_lp_private *priv, unsigned long evt)
- {
--	struct stm32_lp_private *priv = to_priv(clkevt);
-+	int ret;
-+	u32 val;
-+
-+	/* Enable LPTIMER to be able to write into IER and ARR registers */
-+	regmap_write(priv->reg, STM32_LPTIM_CR, STM32_LPTIM_ENABLE);
-+	/* set next event counter */
-+	regmap_write(priv->reg, STM32_LPTIM_ARR, evt);
-+	/* enable ARR interrupt */
-+	regmap_write(priv->reg, STM32_LPTIM_IER, STM32_LPTIM_ARRMIE);
-+
-+	/* Poll DIEROK and ARROK to ensure register access has completed */
-+	ret = regmap_read_poll_timeout_atomic(priv->reg, STM32_LPTIM_ISR, val,
-+					      (val & STM32_LPTIM_DIEROK_ARROK) ==
-+					      STM32_LPTIM_DIEROK_ARROK,
-+					      10, 500);
-+	if (ret) {
-+		dev_err(priv->dev, "access to LPTIM timed out\n");
-+		/* Disable LPTIMER */
-+		regmap_write(priv->reg, STM32_LPTIM_CR, 0);
-+		return ret;
-+	}
-+	/* Clear DIEROK and ARROK flags */
-+	regmap_write(priv->reg, STM32_LPTIM_ICR, STM32_LPTIM_DIEROKCF_ARROKCF);
-+
-+	return 0;
-+}
- 
-+static void stm32_clkevent_lp_set_evt(struct stm32_lp_private *priv, unsigned long evt)
-+{
- 	/* disable LPTIMER to be able to write into IER register*/
- 	regmap_write(priv->reg, STM32_LPTIM_CR, 0);
- 	/* enable ARR interrupt */
-@@ -61,6 +87,22 @@ static int stm32_clkevent_lp_set_timer(unsigned long evt,
- 	regmap_write(priv->reg, STM32_LPTIM_CR, STM32_LPTIM_ENABLE);
- 	/* set next event counter */
- 	regmap_write(priv->reg, STM32_LPTIM_ARR, evt);
-+}
-+
-+static int stm32_clkevent_lp_set_timer(unsigned long evt,
-+				       struct clock_event_device *clkevt,
-+				       int is_periodic)
-+{
-+	struct stm32_lp_private *priv = to_priv(clkevt);
-+	int ret;
-+
-+	if (priv->version == STM32_LPTIM_VERR_23) {
-+		ret = stm32mp25_clkevent_lp_set_evt(priv, evt);
-+		if (ret)
-+			return ret;
-+	} else {
-+		stm32_clkevent_lp_set_evt(priv, evt);
-+	}
- 
- 	/* start counter */
- 	if (is_periodic)
-@@ -176,6 +218,7 @@ static int stm32_clkevent_lp_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	priv->reg = ddata->regmap;
-+	priv->version = ddata->version;
- 	priv->clk = ddata->clk;
- 	ret = clk_prepare_enable(priv->clk);
- 	if (ret)
--- 
-2.25.1
+The datasheet sample rate affects both the burst averaging mode (oversampling) and
+monitor mode (threshold events).
 
+The max1363 stores as an event attribute (iio_info.event_attr) and requires iio/sysfs.h include.
+A last option is to store as a general purpose device attribute (iio_info.attrs).
+As a channel attribute, the driver logic is slightly simpler by using the macros.
+
+Jorge
