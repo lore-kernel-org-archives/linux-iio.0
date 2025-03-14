@@ -1,390 +1,121 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A389C192B65;
-	Fri, 14 Mar 2025 07:55:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1A638635C
+	for <linux-iio@vger.kernel.org>; Fri, 14 Mar 2025 08:00:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741938938; cv=none; b=EphBtqOqcbnigUIHjUsHWlKA2bhG9nyiVn6AMuDAUu1IX/8m3/SLnWQDVMwVwKCxoAJ2tviW34p6X/cpZ6k4jNqjG9WNVs34vGpKCdrCGTO3CsIZAwEwc1ck1VoJ7NI/YVuD1LjrRgzwUWFf0vIEAwgv+RTFGV7SIUva8UA7E0c=
+	t=1741939261; cv=none; b=dnG2N93kN40tFJUurK8asH84RQZU2Llx2NSsxVanTdF0fZb4i0k4uK8XyKP7UcxV1A0ZLLxvRlHU1DvhGiDT7qp8b9ZtN+UDgXbnSXUMNjP/SkG3kvgWYygFmPlKJ4TrsoIkXON9FMS3gUyEseMmG9TLSyBim+5MV+Yr9JnFRME=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741938938; c=relaxed/simple;
-	bh=HY0j+wYPJHp8dngZrnVwVVFsqEwJCPfDrPhdDj4GMec=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LTPm4AIX8Q0KWuaH5+EHRMxh1+/kyw7Gqvd3DMDGP7Q3ZD4DGGVAhLeaMGJoXbOLTD6ODvbEly07aijE9eYSUDb2DTJfceKvLxMYcXtgBXbtprql83qZRAKQ7wRKwdbNco+zXxBZW6DGcSEKdGFfEaMQ+ufrU9vLxz93Z1huyTY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=uYFtcfRw; arc=none smtp.client-ip=60.244.123.138
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
+	s=arc-20240116; t=1741939261; c=relaxed/simple;
+	bh=BhK6GgI0FV/PGqxE/UYn9XlVLwyJbqNy+bgumO4LchM=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=dckS/bOO5I21VLVfm6R4Uq1YFYBUAw904eSiby3wqM3kjBcZ0L4eJ0h/LoHuB+gLP/V4pL+P43gSV7gbuPQ+eKe/V3DG8jNJXTWckm0GBhRRS+DQVbgrRZxh41lX/j2tRBW6LKF4nHMZQip2lFyVoNYO6f4H3PEiBAO/eemGzKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ze9VQeEF; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="uYFtcfRw"
-X-UUID: b381703c00a911f0aae1fd9735fae912-20250314
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=YeVPzS50yaHINy2hyaHmo427d2ZmemrCtOQyBXxOGLc=;
-	b=uYFtcfRwdxaj2iS21RarYs0NybjH/gJXTkpxGu7gB+bb9CZNKKaFzHVB+8Ok+F2h+55CFTT7AW0ctkB2bYbOhY37wEBhkDtuo6Oq5F4sZ9DbNz95V1gqOobphRk+sfFGgEjR2I/cy7ImCGuGIK3Y+e5odC+iDryIioBdNywiC+M=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.2.1,REQID:bb84586e-4306-4851-bc17-525bc5161ce1,IP:0,UR
-	L:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:25
-X-CID-META: VersionHash:0ef645f,CLOUDID:f35927e1-3561-4519-9a12-e2c881788b70,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:81|82|102,TC:nil,Content:0|50,EDM:-3
-	,IP:nil,URL:11|83|1,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OS
-	A:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 0,NGT
-X-CID-BAS: 0,NGT,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_ULN
-X-UUID: b381703c00a911f0aae1fd9735fae912-20250314
-Received: from mtkmbs09n1.mediatek.inc [(172.21.101.35)] by mailgw01.mediatek.com
-	(envelope-from <lu.tang@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 377927494; Fri, 14 Mar 2025 15:55:30 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- MTKMBS09N2.mediatek.inc (172.21.101.94) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.28; Fri, 14 Mar 2025 15:55:30 +0800
-Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1258.28 via Frontend Transport; Fri, 14 Mar 2025 15:55:29 +0800
-From: Lu.Tang <Lu.Tang@mediatek.com>
-To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Dmitry Torokhov
-	<dmitry.torokhov@gmail.com>, Lee Jones <lee@kernel.org>, Matthias Brugger
-	<matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@collabora.com>, Sean Wang <sean.wang@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>, Liam Girdwood
-	<lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Stephen Boyd
-	<sboyd@kernel.org>, Chen Zhong <chen.zhong@mediatek.com>, Sen Chu
-	<shen.chu@mediatek.com>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>,
-	<linux-gpio@vger.kernel.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Lu.Tang
-	<Lu.Tang@mediatek.com>
-Subject: [PATCH 5/5] dt-bindings: pmic: mediatek: Add pmic documents
-Date: Fri, 14 Mar 2025 15:32:31 +0800
-Message-ID: <20250314073307.25092-6-Lu.Tang@mediatek.com>
-X-Mailer: git-send-email 2.46.0
-In-Reply-To: <20250314073307.25092-1-Lu.Tang@mediatek.com>
-References: <20250314073307.25092-1-Lu.Tang@mediatek.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ze9VQeEF"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-3914aba1ce4so1588242f8f.2
+        for <linux-iio@vger.kernel.org>; Fri, 14 Mar 2025 01:00:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1741939258; x=1742544058; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=ehTQcTsV6Hsd6RKy0xoaogdXSKGU0Gm9uxMCkHv/kqM=;
+        b=Ze9VQeEFwgiVHUDkuVLBQ+A9mfKFFfV24VeFmH35Xw+M8o/ozE3KoSpEBQpPfcgI56
+         Un9tG8CV677YJKVmx85A4kdCcJZl9YTPx3R/+kglUsUw9WXSOIYzVC6DA6TCh8pBYxyM
+         oRvgP1BYrRFxKIa9iBb07qpYxYSCAk7dgDR7ty/H5P1AQcWnxmv8TDHOiA+9FmvAUb0x
+         lOFzSsxRjhuhGeS1G7J1Nzg4yYn1WAtEao5WFkLbFRYI17uBgY4ub5im3fBCAUfDvnN0
+         ZriycyM9V0wYWsdJa2GhzCSsnN+5INuG563nRz4zUjxjxK/WFgpEM4mbiRo85kzvvwtx
+         Lfuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741939258; x=1742544058;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ehTQcTsV6Hsd6RKy0xoaogdXSKGU0Gm9uxMCkHv/kqM=;
+        b=CUCqHhXYStNZDBhM4dX6Kvz3fRB/kKqDADKgZZ5DYU7rFU9kpsoqoartglC0r4OLEN
+         5H4wzN5zaJwUlif2zVpkTIQFYSe/R/ofsH4gxoY5iDk99J4OhwvxNG0NPUtVRGmnSDBY
+         KCUWozmm0rzysGz33UqIWoZTx9B0VONCzwt/CtFVzmmvgPhJSOd1kOmUuZRmJ/9zDZWM
+         mXgQnCQVq/Mia3Y3jF5KRS0xNdkS+Ma2uIFmJOjYnz+ZC+yiu0g3v2Tw+bI3RSucy7m2
+         sNEiL7uBECbAPPhMFS/0B7X0puOtA9U82xhNzMDCBjeAd4htj6ivXfNhD00K9DM8fLpa
+         Q1hA==
+X-Gm-Message-State: AOJu0YyzkOXX/TKLk815gBlBAWiWqH05zglRlERuhLzrw4yJi869ePW4
+	D63Il2bZ2uiV/UqntAp15YouGjsmrOFiF3zv9wn5bYeDe9m/lgxDu7xsu3dUFcw=
+X-Gm-Gg: ASbGncsach70kZqivu/nFhrhk01HjGKM09y38vv9ULMsReR+5YqsNfkR6n8F4hTwWQl
+	SA/Fp1a9xO+YxiGfqADyxkf07yBjShUUMg8kcKaKtmklUTMutufIjeDv+OqEY7iBav5liYiU6W2
+	vdQlGiHdAlOxuXdrHzsZDu77NiEQSD3rFptSNSYf0GTuc0AfR0xpHbkVMOudXzt84K/SKpZoXof
+	CRc0v+a0qcMgG2+AqOhsgnO/3FekOPd+G3ae4bw4vi8DnD8tUi8X3a5ENilRVsLLM7X3nm/3TH/
+	avZ0gKpSKGwDxYfPgtHCi6K2A6lL1smru1LVnY7sjTt/1ZjNW04K85645N7YaYG8Mb0cI3jxMW+
+	KDkpbj5802UC0cTLxITM=
+X-Google-Smtp-Source: AGHT+IHq6YddAHwbXkU0lVXshInbMCfED8SIs1HvMQ1j1ZK5ltgd9iy/C3a2pI7navkGJYX9GEh+rA==
+X-Received: by 2002:a5d:64e7:0:b0:391:ba6:c069 with SMTP id ffacd0b85a97d-3971f033c1bmr1739280f8f.44.1741939257985;
+        Fri, 14 Mar 2025 01:00:57 -0700 (PDT)
+Received: from ?IPv6:2001:818:ea56:d000:56e0:ceba:7da4:6673? ([2001:818:ea56:d000:56e0:ceba:7da4:6673])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-395c7df413esm4646098f8f.20.2025.03.14.01.00.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Mar 2025 01:00:57 -0700 (PDT)
+Message-ID: <4d3e77deab4741112d7ef45ba331177bbc3879ca.camel@gmail.com>
+Subject: Re: [PATCH 2/2] iio: adc: ad7124: Fix 3dB filter frequency reading
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>, 
+ Lars-Peter Clausen
+	 <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron
+	 <jic23@kernel.org>, Alexandru Tachici <alexandru.tachici@analog.com>
+Cc: linux-iio@vger.kernel.org
+Date: Fri, 14 Mar 2025 08:01:13 +0000
+In-Reply-To: <6d31f9559939ec04066bec612a59bc7ace2ca548.1741801853.git.u.kleine-koenig@baylibre.com>
+References: <cover.1741801853.git.u.kleine-koenig@baylibre.com>
+	 <6d31f9559939ec04066bec612a59bc7ace2ca548.1741801853.git.u.kleine-koenig@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.4 (3.52.4-2.fc40) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 
-Add new pmic mfd and adc documents for mt8196
+On Wed, 2025-03-12 at 19:38 +0100, Uwe Kleine-K=C3=B6nig wrote:
+> The sinc4 filter has a factor 0.23 between Output Data Rate and f_{3dB}
+> and for sinc3 the factor is 0.272 according to the data sheets for
+> ad7124-4 (Rev. E.) and ad7124-8 (Rev. F).
+>=20
+> Fixes: cef2760954cf ("iio: adc: ad7124: add 3db filter")
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@baylibre.com>
+> ---
+> =C2=A0drivers/iio/adc/ad7124.c | 4 ++--
+> =C2=A01 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+> index 67d49e6184f7..a3cb47ca3901 100644
+> --- a/drivers/iio/adc/ad7124.c
+> +++ b/drivers/iio/adc/ad7124.c
+> @@ -291,9 +291,9 @@ static int ad7124_get_3db_filter_freq(struct ad7124_s=
+tate *st,
+> =C2=A0
+> =C2=A0	switch (st->channels[channel].cfg.filter_type) {
+> =C2=A0	case AD7124_FILTER_FILTER_SINC3:
+> -		return DIV_ROUND_CLOSEST(fadc * 230, 1000);
+> -	case AD7124_FILTER_FILTER_SINC4:
+> =C2=A0		return DIV_ROUND_CLOSEST(fadc * 262, 1000);
 
-Signed-off-by: Lu.Tang <Lu.Tang@mediatek.com>
----
- .../iio/adc/mediatek,spmi-pmic-auxadc.yaml    |  31 ++++
- .../bindings/input/mediatek,pmic-keys.yaml    |   1 +
- .../bindings/mfd/mediatek,mt6685.yaml         |  50 +++++
- .../bindings/mfd/mediatek,spmi-pmic.yaml      | 173 ++++++++++++++++++
- .../pinctrl/mediatek,mt65xx-pinctrl.yaml      |   1 +
- 5 files changed, 256 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/mediatek,spmi-pmic-auxadc.yaml
- create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,mt6685.yaml
- create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,spmi-pmic.yaml
+I wonder if we shouldn't fix the sinc3 factor as well? Or at the very least=
+ mention
+in the commit message why we're not doing it now. Otherwise it's confusing =
+and raises
+questions to state the proper factor in the commit and then look at this di=
+ff.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,spmi-pmic-auxadc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,spmi-pmic-auxadc.yaml
-new file mode 100644
-index 000000000000..250782ad7d01
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/mediatek,spmi-pmic-auxadc.yaml
-@@ -0,0 +1,31 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/mediatek,spmi-pmic-auxadc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek SPMI PMIC AUXADC
-+
-+maintainers:
-+  - Lu Tang <lu.tang@mediatek.com>
-+
-+description:
-+  The Auxiliary Analog/Digital Converter (AUXADC) is an ADC found
-+  in some MediaTek PMICs, performing various PMIC related measurements
-+  such as battery and PMIC internal voltage regulators temperatures,
-+  other than voltages for various PMIC internal components.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - mediatek,mt6363-auxadc
-+      - mediatek,mt6373-auxadc
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - "#io-channel-cells"
-+
-+additionalProperties: false
-diff --git a/Documentation/devicetree/bindings/input/mediatek,pmic-keys.yaml b/Documentation/devicetree/bindings/input/mediatek,pmic-keys.yaml
-index b95435bd6a9b..ce760039d4c2 100644
---- a/Documentation/devicetree/bindings/input/mediatek,pmic-keys.yaml
-+++ b/Documentation/devicetree/bindings/input/mediatek,pmic-keys.yaml
-@@ -31,6 +31,7 @@ properties:
-       - mediatek,mt6358-keys
-       - mediatek,mt6359-keys
-       - mediatek,mt6397-keys
-+      - mediatek,mt6363-keys
- 
-   power-off-time-sec: true
- 
-diff --git a/Documentation/devicetree/bindings/mfd/mediatek,mt6685.yaml b/Documentation/devicetree/bindings/mfd/mediatek,mt6685.yaml
-new file mode 100644
-index 000000000000..d3276df8952b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/mediatek,mt6685.yaml
-@@ -0,0 +1,50 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/mediatek,mt6685.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek MT6685 Clock IC
-+
-+maintainers:
-+  - Lu Tang <lu.tang@mediatek.com>
-+
-+description: |
-+  MT6685 is a clock IC.
-+  Please see the sub-modules below for supported features.
-+
-+  MT6685 is a multifunction device with the following sub modules:
-+  - RTC
-+  - Clock
-+
-+properties:
-+  compatible:
-+    const: mediatek,mt6685
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  interrupt-controller: true
-+
-+  "#interrupt-cells":
-+    const: 2
-+
-+required:
-+  - compatible
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/spmi/spmi.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    spmi {
-+        mfd@9 {
-+            compatible = "mediatek,mt6685";
-+            reg = <0x9 SPMI_USID>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/mfd/mediatek,spmi-pmic.yaml b/Documentation/devicetree/bindings/mfd/mediatek,spmi-pmic.yaml
-new file mode 100644
-index 000000000000..a8f1231623cf
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/mediatek,spmi-pmic.yaml
-@@ -0,0 +1,173 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/mediatek,spmi-pmic.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek SPMI PMICs multi-function device
-+
-+maintainers:
-+  - Lu Tang <lu.tang@mediatek.com>
-+
-+description: |
-+  Some Mediatek PMICs are interfaced to the chip via the SPMI (System Power
-+  Management Interface) bus.
-+
-+  The Mediatek SPMI series includes the MT6363, MT6373, MT6316 and other
-+  PMICs.Please see the sub-modules below for supported features.
-+
-+   MT6363/MT6373 is a multifunction device with the following sub modules:
-+  - Regulators
-+  - ADC
-+  - GPIO
-+  - Keys
-+   MT6316 is a multifunction device with the following sub modules:
-+  - Regulators
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - enum:
-+          - mediatek,mt6363
-+          - mediatek,mt6373
-+          - mediatek,mt6316
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  interrupt-controller: true
-+
-+  "#interrupt-cells":
-+    const: 2
-+
-+  regulators:
-+    type: object
-+    description:
-+      List of child nodes that specify the regulators.
-+    additionalProperties: true
-+
-+    properties:
-+      compatible:
-+        oneOf:
-+          - enum:
-+              - mediatek,mt6363-regulator
-+              - mediatek,mt6373-regulator
-+              - mediatek,mt6316-regulator
-+
-+    required:
-+      - compatible
-+
-+  adc:
-+    type: object
-+    $ref: /schemas/iio/adc/mediatek,spmi-pmic-auxadc.yaml#
-+    unevaluatedProperties: false
-+
-+  keys:
-+    type: object
-+    $ref: /schemas/input/mediatek,pmic-keys.yaml
-+    unevaluatedProperties: false
-+    description:
-+      Power and Home keys.
-+
-+  pinctrl:
-+    type: object
-+    $ref: /schemas/pinctrl/mediatek,mt65xx-pinctrl.yaml
-+    unevaluatedProperties: false
-+    description:
-+      Pin controller
-+
-+required:
-+  - compatible
-+  - regulators
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/spmi/spmi.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    spmi {
-+        main_pmic: pmic@4 {
-+            compatible = "mediatek,mt6363";
-+            reg = <0x4 SPMI_USID>;
-+            interrupts = <0x4 IRQ_TYPE_NONE>;
-+            #address-cells = <0>;
-+            interrupt-controller;
-+            #interrupt-cells = <2>;
-+
-+            mt6363keys: keys {
-+                compatible = "mediatek,mt6363-keys";
-+                mediatek,long-press-mode = <1>;
-+                power-off-time-sec = <0>;
-+
-+                power {
-+                    linux,keycodes = <116>;
-+                    wakeup-source;
-+                };
-+
-+                home {
-+                    linux,keycodes = <115>;
-+                };
-+            };
-+
-+            mt6363_pio: pinctrl {
-+                compatible = "mediatek,mt6363-pinctrl";
-+                gpio-controller;
-+                #gpio-cells = <2>;
-+            };
-+
-+            mt6363regulator: regulators {
-+                compatible = "mediatek,mt6363-regulator";
-+
-+                mt6363_vs2: vs2 {
-+                    regulator-name = "mt6363_vs2";
-+                    regulator-allowed-modes = <0 1 2>;
-+                    regulator-always-on;
-+                    regulator-allow-set-load;
-+                };
-+
-+                mt6363_vbuck1: vbuck1 {
-+                    regulator-name = "mt6363_vbuck1";
-+                    regulator-allowed-modes = <0 1 2>;
-+                };
-+
-+                mt6363_vbuck2: vbuck2 {
-+                    regulator-name = "mt6363_vbuck2";
-+                    regulator-allowed-modes = <0 1 2>;
-+                };
-+
-+                mt6363_vbuck3: vbuck3 {
-+                    regulator-name = "mt6363_vbuck3";
-+                    regulator-allowed-modes = <0 1 2>;
-+                };
-+
-+                mt6363_vbuck4: vbuck4 {
-+                    regulator-name = "mt6363_vbuck4";
-+                    regulator-allowed-modes = <0 1 2>;
-+                };
-+
-+                mt6363_vbuck5: vbuck5 {
-+                    regulator-name = "mt6363_vbuck5";
-+                    regulator-allowed-modes = <0 1 2>;
-+                };
-+
-+                mt6363_vbuck6: vbuck6 {
-+                    regulator-name = "mt6363_vbuck6";
-+                    regulator-allowed-modes = <0 1 2>;
-+                };
-+
-+                mt6363_vbuck7: vbuck7 {
-+                    regulator-name = "mt6363_vbuck7";
-+                    regulator-allowed-modes = <0 1 2>;
-+                };
-+
-+                // ...
-+
-+                mt6363_isink_load: isink-load {
-+                    regulator-name = "mt6363_isink_load";
-+                };
-+            };
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/pinctrl/mediatek,mt65xx-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/mediatek,mt65xx-pinctrl.yaml
-index bccff08a5ba3..bf3ba58a7705 100644
---- a/Documentation/devicetree/bindings/pinctrl/mediatek,mt65xx-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/mediatek,mt65xx-pinctrl.yaml
-@@ -17,6 +17,7 @@ properties:
-     enum:
-       - mediatek,mt2701-pinctrl
-       - mediatek,mt2712-pinctrl
-+      - mediatek,mt6363-pinctrl
-       - mediatek,mt6397-pinctrl
-       - mediatek,mt7623-pinctrl
-       - mediatek,mt8127-pinctrl
--- 
-2.46.0
+- Nuno S=C3=A1
+
+> +	case AD7124_FILTER_FILTER_SINC4:
+> +		return DIV_ROUND_CLOSEST(fadc * 230, 1000);
+> =C2=A0	default:
+> =C2=A0		return -EINVAL;
+> =C2=A0	}
 
