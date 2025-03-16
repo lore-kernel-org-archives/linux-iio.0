@@ -1,46 +1,45 @@
-Received: from out-10.pe-a.jellyfish.systems (out-10.pe-a.jellyfish.systems [198.54.127.74])
+Received: from out-09.pe-a.jellyfish.systems (out-09.pe-a.jellyfish.systems [198.54.127.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B7471AAA2F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8FA11AAE13;
 	Sun, 16 Mar 2025 14:00:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.74
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742133603; cv=none; b=W+pRwGy6pa4DhbPXqRSJE/Ob/8fcl1Y0Pg1+nQlwHPGeM+Bl6zxSLQZz8KJDC5CFg03uGY9sWULh6PAWS/EjsGb6M+r4k/hs+uX5g7DGa/oMHwr4kvar5mdpopLLPqveF/I422czo+p8iLP+HmZUyJLc/Q0XGMgahK07BiZAUF0=
+	t=1742133604; cv=none; b=Py7brnQyH2s+52S1mFo9Xqxz4R0Vtm6SOg0i3q5nSiCmih6/R6WrkSK54RDsIOUDlwH2hrABxKEFdp+ltON46/ZrkELbyTNBeEGGT3dNoQ/eZhrg84i3DbDVXaRlIZnjjXdSxJI4xhOjzlOFvY85CdOjCkZuTA3+ur2Uozj4lZw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742133603; c=relaxed/simple;
-	bh=ljc3oesl2r1E8aZ9fXFZUkkJvxGlE5eoRSoQ7GRd9BI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fIccF/1e5W1iG7je1/tBAmB6h/bBe5IRbQn3u8aOn3dp7CTNMi4H4JGrKzNhZM07j7NIPNxeVCmWTq72SSoqc6XOhXcP6uWZe4xVab1C0Dt5fmMoEDb6yQqHmAHv0DiLbCrhyxJUObNAuJtVBwWMc9wqawBrHzTMqfanWp7/DzM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org; spf=pass smtp.mailfrom=framepointer.org; dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b=W6mUAXpG; arc=none smtp.client-ip=198.54.127.74
+	s=arc-20240116; t=1742133604; c=relaxed/simple;
+	bh=EdJSBFycHciE/hpVez5MYlDu+bm8+MG1UwWwOySVc74=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=OiNmbkWnhOqSGdGysQJ5lwE7XTNc6NbbNScqYgAaFqtS26iWkFrelSMhbjyGNWSudyCdEbxNPmC5O0QbyhUfr/nITtA0xfByB8POY99HZxZqV3kk+a7tUlKTz/WAi7HbJmQ2wJx1a6VERO2g9zY+KZV2Of+76Ya+hLdxYseHWCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org; spf=pass smtp.mailfrom=framepointer.org; dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b=i48D6J6F; arc=none smtp.client-ip=198.54.127.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=framepointer.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b="W6mUAXpG"
+	dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b="i48D6J6F"
 Received: from prod-lbout-phx.jellyfish.systems (new-01-3.privateemail.com [66.29.159.56])
-	by pe-a.jellyfish.systems (Postfix) with ESMTPA id 4ZFzzr6ZFZz9sSS;
-	Sun, 16 Mar 2025 13:51:52 +0000 (UTC)
+	by pe-a.jellyfish.systems (Postfix) with ESMTPA id 4ZFzyc2ZsFz9sHW;
+	Sun, 16 Mar 2025 13:50:48 +0000 (UTC)
 Received: from MTA-12.privateemail.com (unknown [10.50.14.28])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
 	(No client certificate requested)
-	by NEW-01-3.privateemail.com (Postfix) with ESMTPS id 4ZFzzr5jLlz2Sd0Q;
-	Sun, 16 Mar 2025 09:51:52 -0400 (EDT)
+	by NEW-01-3.privateemail.com (Postfix) with ESMTPS id 4ZFzyc1tHDz2Sd0Q;
+	Sun, 16 Mar 2025 09:50:48 -0400 (EDT)
 Received: from mta-12.privateemail.com (localhost [127.0.0.1])
-	by mta-12.privateemail.com (Postfix) with ESMTP id 4ZFzzr4Mv1z3hhS4;
-	Sun, 16 Mar 2025 09:51:52 -0400 (EDT)
+	by mta-12.privateemail.com (Postfix) with ESMTP id 4ZFzyc0Srhz3hhRs;
+	Sun, 16 Mar 2025 09:50:48 -0400 (EDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=framepointer.org;
-	s=default; t=1742133112;
-	bh=ljc3oesl2r1E8aZ9fXFZUkkJvxGlE5eoRSoQ7GRd9BI=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=W6mUAXpGW8eKDsk3RQqQf1r5sfZB1CoTtBbxRLZD63/fIA8qfKnmaH56gbUup/McR
-	 TsshCVehpJ4BjwfGTIrocewkeLKZR5PhYYaBY+a/w2vYkr4u1CpPY4m7oZyOE41djE
-	 kPqnJY/yq1jRZJUI6/UVyEepEUZXRb57PWxDZumxb+WrqFaR43qsOi5AUdBJF9ntnm
-	 pz7lqrkUFtTxceofxLH4Jo7m5l/FrDFkzTSjhv89C8XaIlzyW9BNlkDxN+G0DiPp/x
-	 KX0YW634bPJOL3VYaPnMGYf3v9D+PzfCEJp9Tz2YXXDfR4D0tHr0sMSK3dEJC+XKLp
-	 FYIuBHY/QyBlg==
+	s=default; t=1742133048;
+	bh=EdJSBFycHciE/hpVez5MYlDu+bm8+MG1UwWwOySVc74=;
+	h=From:To:Cc:Subject:Date:From;
+	b=i48D6J6FjsPyzGnezRHbIbjsCzbTu6hXJic0KAaSRGHfTyM11Tnmrb1WcpQI++E5X
+	 heWJtySyaR/bGXcXYWvghkIR1pK59WQTXEKdnCzN0o+zJVi4Oxk8EQKed5+ZN/GmUq
+	 rsIGQvnK5kXqa9x9GkLV2+lR7eanm6oGzmdpprtnDA+lFzDv41lSMTsOkPWZRTk5YG
+	 qgENqTYXwUYRfrrjD1xPWA58Qn8gDhG2t0ugJj2DFbbmkfPMf4jJmldfKlyeUpGOOa
+	 7MrCZnTrVnWpUt3Fu3n5zfGuwgSE7+1M8C/xK5Q7ojAyiV7jY0uioog80HdOQ5mNeh
+	 C4vnrl/a4otVA==
 Received: from 65YTFL3.secure.tethers.com (unknown [152.44.190.141])
 	by mta-12.privateemail.com (Postfix) with ESMTPA;
-	Sun, 16 Mar 2025 09:51:36 -0400 (EDT)
+	Sun, 16 Mar 2025 09:50:33 -0400 (EDT)
 From: Sam Winchenbach <sam.winchenbach@framepointer.org>
 To: linux-kernel@vger.kernel.org
 Cc: lars@metafoo.de,
@@ -55,12 +54,10 @@ Cc: lars@metafoo.de,
 	sam.winchenbach@framepointer.org,
 	bpellegrino@arka.org,
 	Sam Winchenbach <swinchenbach@arka.org>
-Subject: [PATCH v7 5/6] iio: core: Add support for writing 64 bit attrs
-Date: Sun, 16 Mar 2025 09:50:07 -0400
-Message-ID: <20250316135008.155304-5-sam.winchenbach@framepointer.org>
+Subject: [PATCH v7 1/6] dt-bindings: iio: filter: Add lpf/hpf freq margins
+Date: Sun, 16 Mar 2025 09:50:03 -0400
+Message-ID: <20250316135008.155304-1-sam.winchenbach@framepointer.org>
 X-Mailer: git-send-email 2.48.1
-In-Reply-To: <20250316135008.155304-1-sam.winchenbach@framepointer.org>
-References: <20250316135008.155304-1-sam.winchenbach@framepointer.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,52 +69,52 @@ X-Virus-Scanned: ClamAV using ClamSMTP
 
 From: Sam Winchenbach <swinchenbach@arka.org>
 
-Prior to this patch it was only possible to read 64 bit integers.
+Adds two properties to add a margin when automatically finding the
+corner frequencies.
 
 Signed-off-by: Sam Winchenbach <swinchenbach@arka.org>
 ---
- drivers/iio/industrialio-core.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ .../bindings/iio/filter/adi,admv8818.yaml     | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index a2117ad1337d..b2436b8f3eea 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -965,8 +965,10 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int ret, fract_mult = 100000;
- 	int integer, fract = 0;
-+	long long integer64;
- 	bool is_char = false;
- 	bool scale_db = false;
-+	bool is_64bit = false;
+diff --git a/Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml b/Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml
+index b77e855bd594..ff0cb553e871 100644
+--- a/Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml
++++ b/Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml
+@@ -44,6 +44,24 @@ properties:
+   '#clock-cells':
+     const: 0
  
- 	/* Assumes decimal - precision based on number of digits */
- 	if (!indio_dev->info->write_raw)
-@@ -990,6 +992,9 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 		case IIO_VAL_CHAR:
- 			is_char = true;
- 			break;
-+		case IIO_VAL_INT_64:
-+			is_64bit = true;
-+			break;
- 		default:
- 			return -EINVAL;
- 		}
-@@ -1000,6 +1005,13 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 		if (sscanf(buf, "%c", &ch) != 1)
- 			return -EINVAL;
- 		integer = ch;
-+	} else if (is_64bit) {
-+		ret = kstrtoll(buf, 0, &integer64);
-+		if (ret)
-+			return ret;
++  adi,lpf-margin-mhz:
++    description:
++      Sets the minimum distance between the fundamental frequency of `rf_in`
++      and the corner frequency of the low-pass, output filter when operated in
++      'auto' mode. The selected low-pass corner frequency will be greater than,
++      or equal to, `rf_in` + `lpf-margin-hz`. If not setting is found that
++      satisfies this relationship the filter will be put into 'bypass'.
++    default: 0
 +
-+		fract = (int)(integer64 >> 32);
-+		integer = (int)(integer64 & 0xFFFFFFFF);
- 	} else {
- 		ret = __iio_str_to_fixpoint(buf, fract_mult, &integer, &fract,
- 					    scale_db);
++  adi,hpf-margin-mhz:
++    description:
++      Sets the minimum distance between the fundamental frequency of `rf_in`
++      and the corner frequency of the high-pass, input filter when operated in
++      'auto' mode. The selected high-pass corner frequency will be less than,
++      or equal to, `rf_in` - `hpf-margin-hz`. If not setting is found that
++      satisfies this relationship the filter will be put into 'bypass'.
++    default: 0
++
+ required:
+   - compatible
+   - reg
+@@ -61,6 +79,8 @@ examples:
+         spi-max-frequency = <10000000>;
+         clocks = <&admv8818_rfin>;
+         clock-names = "rf_in";
++        adi,lpf-margin-mhz = <300>;
++        adi,hpf-margin-mhz = <300>;
+       };
+     };
+ ...
 -- 
 2.48.1
 
