@@ -1,93 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from out-09.pe-a.jellyfish.systems (out-09.pe-a.jellyfish.systems [198.54.127.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7401718B47C;
-	Sun, 16 Mar 2025 12:19:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2CB825771;
+	Sun, 16 Mar 2025 13:51:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742127550; cv=none; b=onesSbxZ5NlFXQDPdHmafLqe5VEUonVyI4ts0hAD6xUVZm708VLs0VOEdDbvH7alnrJiD/RnXCopy1hywX72MPMNhfHqPha3vYsPHJba3On939wZ84LIluPO8uf/unE1ZZf09G8KSj1n6DBGBgIzf8MTPtq70RFLY0N4+0Epw10=
+	t=1742133069; cv=none; b=ZvQJFxZhD5cai49gCl21eYCOvqp8p5bADFIYQC59wnbgxYaKoUAaIWg066M8c+ghc6oOo/arjJZ+jCtrFEglc1iCPHgLNwoSzFDXJY02BFdUl1vHGXV0IjZgL5mHTI0vSgJw+DH31A2l7qWKdXiU7ku2FqoiEJPlHRkbyeN/AXA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742127550; c=relaxed/simple;
-	bh=WDOxL/RE2tl9pVb3nTkLv25ewYOD88rCDJFDv51Rt60=;
-	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=arIKmrpB6oAte5LL1kBg2rnUTExTRvPrSaqqlnul33ncIn4cJnDDsbKbIefjpwJnL2K+JYlE2/FeF0VCDiLdMyJHG3er+PedTVMM1wolQPpGCny6wYU0TGbzikCkMzBkJqh4CjdzBo8mkrWfy3OgWErvC5E9pBE7gsO0n4UCUcQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lNVZaGZc; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1742133069; c=relaxed/simple;
+	bh=rPlob9E1zdI1JHOhKrKRb7F75yfM4CIfwUErUMLk0/g=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=IjMHwaAKDCTXCAnO9+qgA1zJHpsutHUPzYhJVucOVXF2Xuz5FL3/IU+vbGx50JsjDjal7PMvitYpwqwdjLUaHYvuAG6UTbMlDFzreb6OmYpy4rxaSvASTxf2kVWgObKk0bEkSl6oxJlAhY62xiAdrsr/kGk5T04khLpYC3KTeog=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org; spf=pass smtp.mailfrom=framepointer.org; dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b=cE7YNbtf; arc=none smtp.client-ip=198.54.127.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=framepointer.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=framepointer.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lNVZaGZc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADDF0C4CEDD;
-	Sun, 16 Mar 2025 12:19:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742127549;
-	bh=WDOxL/RE2tl9pVb3nTkLv25ewYOD88rCDJFDv51Rt60=;
-	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
-	b=lNVZaGZcnDmKWO0/IM62w4eJ9ac/Bx23UxURPi0RwrfgtlIbCL6/iDUqHTbnSKAYa
-	 4oCXzcIqnXy6HCYJV6CQC9jVemEys/C9HDMCXewSTFwFJUYKAzhpGhE+eaGYX3QvPg
-	 OF3JH4JZhnu1DgvevbtrrbAObUjKSRTC8dAXcmkDhZtY0c7Ik5hsujsUWZp9YKlxxk
-	 PEPRNbjARhbpKGeEuAPmR1ZSWzT+EDOCw041838kZmUxHgy2FbES8tQxrKbQM901Xi
-	 HQHnvabhDfd4Iho/oRE5G3sKo+1lIidJl+MLXYPdkoO5xru9pS/fExQbxJ+Uwt0MSf
-	 qG8ZpNqXzL2yA==
-Date: Sun, 16 Mar 2025 07:19:08 -0500
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=framepointer.org header.i=@framepointer.org header.b="cE7YNbtf"
+Received: from prod-lbout-phx.jellyfish.systems (new-01-3.privateemail.com [66.29.159.56])
+	by pe-a.jellyfish.systems (Postfix) with ESMTPA id 4ZFzyw3HkPz9sNZ;
+	Sun, 16 Mar 2025 13:51:04 +0000 (UTC)
+Received: from MTA-12.privateemail.com (unknown [10.50.14.28])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
+	(No client certificate requested)
+	by NEW-01-3.privateemail.com (Postfix) with ESMTPS id 4ZFzyw2RH8z2Sd0Q;
+	Sun, 16 Mar 2025 09:51:04 -0400 (EDT)
+Received: from mta-12.privateemail.com (localhost [127.0.0.1])
+	by mta-12.privateemail.com (Postfix) with ESMTP id 4ZFzyw13hWz3hhS4;
+	Sun, 16 Mar 2025 09:51:04 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=framepointer.org;
+	s=default; t=1742133064;
+	bh=rPlob9E1zdI1JHOhKrKRb7F75yfM4CIfwUErUMLk0/g=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=cE7YNbtf7CXeSuAU9ViVYj/Z02d4KIbvtp5Kf9RlwfZVZEAwUyHQD4E2HdNTsKC2W
+	 4rFFXlZ+0oosKtnnzPEGCUiisxuVcX14HCX2lLKGuaEVQf5yIMdbWviVeVyOX6IWqi
+	 Q83TvHZUZyShdR/4UiXrJ1rMAS/6ff/ukM7w1cOZnxrkIk6j3PaTto1hy0pjpw8IBK
+	 vqPtD3uurGLsQZ5mDKsIZ7gYvvjPFyHlFAx06479hcoSJVpC7Q69YLwy7VQ6MNPaJ5
+	 MoSydEY7aYrPMQo5AAQp/laKbQzlzyPNsXYP3hVhEbGkGhr4jlb4SNYWRQ8e7qrsup
+	 PZ6eRfD31DZjA==
+Received: from 65YTFL3.secure.tethers.com (unknown [152.44.190.141])
+	by mta-12.privateemail.com (Postfix) with ESMTPA;
+	Sun, 16 Mar 2025 09:50:48 -0400 (EDT)
+From: Sam Winchenbach <sam.winchenbach@framepointer.org>
+To: linux-kernel@vger.kernel.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	antoniu.miclaus@analog.com,
+	jic23@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	sam.winchenbach@framepointer.org,
+	bpellegrino@arka.org,
+	Sam Winchenbach <swinchenbach@arka.org>
+Subject: [PATCH v7 2/6] iio: filter: admv8818: fix band 4, state 15
+Date: Sun, 16 Mar 2025 09:50:04 -0400
+Message-ID: <20250316135008.155304-2-sam.winchenbach@framepointer.org>
+X-Mailer: git-send-email 2.48.1
+In-Reply-To: <20250316135008.155304-1-sam.winchenbach@framepointer.org>
+References: <20250316135008.155304-1-sam.winchenbach@framepointer.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: mazziesaccount@gmail.com, arthur.becker@sentec.com, 
- subhajit.ghosh@tweaklogic.com, linux-iio@vger.kernel.org, 
- conor+dt@kernel.org, linux-kernel@vger.kernel.org, 
- javier.carrasco.cruz@gmail.com, muditsharma.info@gmail.com, 
- devicetree@vger.kernel.org, ivan.orlov0322@gmail.com, lars@metafoo.de, 
- jic23@kernel.org, krzk+dt@kernel.org
-To: Andreas Klinger <ak@it-klinger.de>
-In-Reply-To: <20250316113131.62884-2-ak@it-klinger.de>
-References: <20250316113131.62884-1-ak@it-klinger.de>
- <20250316113131.62884-2-ak@it-klinger.de>
-Message-Id: <174212754864.1517319.13796050097130379689.robh@kernel.org>
-Subject: Re: [PATCH 1/3] dt-bindings: iio: light: veml6046x00: add color
- sensor
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 
+From: Sam Winchenbach <swinchenbach@arka.org>
 
-On Sun, 16 Mar 2025 12:31:29 +0100, Andreas Klinger wrote:
-> Add a new compatible for Vishay high accuracy RGBIR color sensor
-> veml6046x00.
-> 
-> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
-> ---
->  .../iio/light/vishay,veml6046x00.yaml         | 49 +++++++++++++++++++
->  1 file changed, 49 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/vishay,veml6046x00.yaml
-> 
+Corrects the upper range of LPF Band 4 from 18.5 GHz to 18.85 GHz per
+the ADMV8818 datasheet
 
-My bot found errors running 'make dt_binding_check' on your patch:
+Fixes: f34fe888ad05 ("iio:filter:admv8818: add support for ADMV8818")
+Signed-off-by: Sam Winchenbach <swinchenbach@arka.org>
+---
+ drivers/iio/filter/admv8818.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-Error: Documentation/devicetree/bindings/iio/light/vishay,veml6046x00.example.dts:33.33-34 syntax error
-FATAL ERROR: Unable to parse input tree
-make[2]: *** [scripts/Makefile.dtbs:131: Documentation/devicetree/bindings/iio/light/vishay,veml6046x00.example.dtb] Error 1
-make[2]: *** Waiting for unfinished jobs....
-make[1]: *** [/builds/robherring/dt-review-ci/linux/Makefile:1518: dt_binding_check] Error 2
-make: *** [Makefile:248: __sub-make] Error 2
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20250316113131.62884-2-ak@it-klinger.de
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+diff --git a/drivers/iio/filter/admv8818.c b/drivers/iio/filter/admv8818.c
+index d85b7d3de866..3d8740caa145 100644
+--- a/drivers/iio/filter/admv8818.c
++++ b/drivers/iio/filter/admv8818.c
+@@ -103,7 +103,7 @@ static const unsigned long long freq_range_lpf[4][2] = {
+ 	{2050000000ULL, 3850000000ULL},
+ 	{3350000000ULL, 7250000000ULL},
+ 	{7000000000, 13000000000},
+-	{12550000000, 18500000000}
++	{12550000000, 18850000000}
+ };
+ 
+ static const struct regmap_config admv8818_regmap_config = {
+-- 
+2.48.1
 
