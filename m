@@ -1,43 +1,44 @@
 Received: from www571.your-server.de (www571.your-server.de [78.46.3.230])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AF2C1A5B96;
-	Sun, 16 Mar 2025 11:55:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FA4D1A76DA;
+	Sun, 16 Mar 2025 11:55:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.46.3.230
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742126146; cv=none; b=lGBKiN1DAfWxhD1LLhiAbBdvb4YNBpcOtT2l59TCJ7zUwejJbfv6AGzbFkT1vefeM9cgHYXM3IRMQmhzwLgzBg7D91chjTOUh2Fxk9bzbxLCaMZq/iIDfaGylUonqxPztfGYkNn+CswdUb/Llqb5SkZc9eaco9Obx00P08GJCBU=
+	t=1742126151; cv=none; b=RR/dWAdqoq77Ygu6ql/qCGgGd2fdesqGxFDM+MQA9p0zx2YJOa46cp5uDaAiSffbrdhCi8BREc42ECf43qQGzWEkqy0IH7PmXpdUTc+d/n21sDB5MxbKybPHDpYXBIngxSJxPo3EbkXzeagi81c2snZKMdEtb5E4iMtLbPJuRN0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742126146; c=relaxed/simple;
-	bh=mwRf/BXvhH7zuG7sYE9TsVwDAbvXHBd51xRCvnuiF+A=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=FXRGi6Uocxz6msPjjgItlWr5wJSKlDss37Ui+7YDYWeTFBLPQHEd1Uv8b5CzLnOEaXbSBzo1p4XDH6quF7ECVOTvXf9POHNN8JdqpbdQB5uR0PrwBmjf/BbpdywfDF/Wp9MoguBVvHitqwCG7Z22WpUqOEvEXbsrhO86AvdVInc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=it-klinger.de; spf=pass smtp.mailfrom=it-klinger.de; dkim=pass (2048-bit key) header.d=it-klinger.de header.i=@it-klinger.de header.b=c3oyOLJ+; arc=none smtp.client-ip=78.46.3.230
+	s=arc-20240116; t=1742126151; c=relaxed/simple;
+	bh=QbxOt/p54DmSJP4dWQ2+aIefJ2c8bg/B7zel+FD7QxI=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=t0zG48r+LBsDh4CnvGr8XliM7rG2UL1N1PqSqCP8mJTj2nyQy9U07OOCYIpO1qfKSaTxkwO4brlW9SfMxM72bvmXz5XMkdewbrlIdPP2ep+lssuFS13agCDgV5CVE9O5n3dpJLCYdT7O6iwcRJ/kFbULQ6TcpMyb9QRn8icqDG8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=it-klinger.de; spf=pass smtp.mailfrom=it-klinger.de; dkim=pass (2048-bit key) header.d=it-klinger.de header.i=@it-klinger.de header.b=fMY2ZFmA; arc=none smtp.client-ip=78.46.3.230
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=it-klinger.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=it-klinger.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=it-klinger.de header.i=@it-klinger.de header.b="c3oyOLJ+"
+	dkim=pass (2048-bit key) header.d=it-klinger.de header.i=@it-klinger.de header.b="fMY2ZFmA"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=it-klinger.de; s=default2502; h=Content-Transfer-Encoding:MIME-Version:
-	Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References;
-	bh=7Lf1k/FLn+1YDU3NpdaiPMjAxUJ9AeZfGfWOijgP4QI=; b=c3oyOLJ+ovGwc6cRu/kYzq2VmF
-	d1AxjGXfXfgznl7d0TPwa8clLH3azLc0+W0cOG/RTwAybbX7j6S9W936U1gtED6gZ8wGxp0EydB/L
-	8gJ2/l6riQuIj7eTRHvOfEtEBLjhbFhaYlPWr2jRA20kyG1tExkJRpk0noECLj0+RHmlDSNDL3+C2
-	pbYCDOErVHR/rCFs86zyAv2wSBjXnT1QlRY2Qvt3p3ddDC/J93geUn5ShtuHjD9WEi7/tuwg+zClx
-	Z2tsYlt1QiswPsEv3+mqeAkvGQ8xCisdp+TTByaRipg9wyYj5Jc1x8KFgdfX8Q/71UDWDK39IkpT7
-	ReRogLpA==;
+	References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+	Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
+	bh=aN1Pst06T43cahFdp7DGzY+KntPPtJvnCVY8ZeSWHe4=; b=fMY2ZFmAI9N0ifUS41re2UWNAs
+	7H65faB/7HQTrFXHMjrqRq8e4TujVE/YZPmjfTQGGsXdlKFHypiPxejNBDVS4AZTNU5NhV/PSVThZ
+	Ck8Re54wKuDa9lCn34ssVNuj1h4AG56DHQ9FfPsxSN60fUZAWOmfLTTByq/1mwGjoay5E2Q10V/1e
+	vrDE4Uj/4x3m4O8dUmfhISiJT2bxxzrQgJJl62fq50KQuGNWCEma3kvR2MlRbPir1AKFEjddzsY54
+	oT8OYP8fb1JoZAdAYW4UjbVgxUeYHnXl7yDPhRj1ZPSBHWR4JCild5wqcWE/IZAg7uCFAqz3DID0y
+	T4iWZ65A==;
 Received: from sslproxy02.your-server.de ([78.47.166.47])
 	by www571.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
 	(Exim 4.96.2)
 	(envelope-from <ak@it-klinger.de>)
-	id 1ttmET-0005bD-2a;
-	Sun, 16 Mar 2025 12:32:41 +0100
+	id 1ttmF1-0005hR-1c;
+	Sun, 16 Mar 2025 12:33:15 +0100
 Received: from [2a0f:6480:1:600:fc64:4dfc:9829:9e5f] (helo=anderl.linuxhotel.de)
 	by sslproxy02.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ak@it-klinger.de>)
-	id 1ttmET-0008s3-2U;
-	Sun, 16 Mar 2025 12:32:41 +0100
+	id 1ttmF1-0008s3-1S;
+	Sun, 16 Mar 2025 12:33:15 +0100
 From: Andreas Klinger <ak@it-klinger.de>
 To: jic23@kernel.org,
 	robh@kernel.org,
@@ -54,10 +55,12 @@ Cc: lars@metafoo.de,
 	arthur.becker@sentec.com,
 	ivan.orlov0322@gmail.com,
 	ak@it-klinger.de
-Subject: [PATCH 0/3] iio:light: add driver for veml6046x00 RGBIR color sensor
-Date: Sun, 16 Mar 2025 12:31:28 +0100
-Message-Id: <20250316113131.62884-1-ak@it-klinger.de>
+Subject: [PATCH 3/3] MAINTAINER: add maintainer for veml6046x00
+Date: Sun, 16 Mar 2025 12:31:31 +0100
+Message-Id: <20250316113131.62884-4-ak@it-klinger.de>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20250316113131.62884-1-ak@it-klinger.de>
+References: <20250316113131.62884-1-ak@it-klinger.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,22 +71,31 @@ Content-Transfer-Encoding: 8bit
 X-Authenticated-Sender: ak@it-klinger.de
 X-Virus-Scanned: Clear (ClamAV 1.0.7/27579/Sun Mar 16 09:35:38 2025)
 
-This patchset adds an IIO driver for Vishay veml6046x00 RGBIR color sensor
+Add maintainer for Vishay veml6046x00 RGBIR color sensor driver and dt
+binding.
 
-Andreas Klinger (3):
-  dt-bindings: iio: light: veml6046x00: add color sensor
-  iio: light: add support for veml6046x00 RGBIR color sensor
-  MAINTAINER: add maintainer for veml6046x00
+Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+---
+ MAINTAINERS | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
- .../iio/light/vishay,veml6046x00.yaml         |  49 +
- MAINTAINERS                                   |   6 +
- drivers/iio/light/Kconfig                     |  13 +
- drivers/iio/light/Makefile                    |   1 +
- drivers/iio/light/veml6046x00.c               | 890 ++++++++++++++++++
- 5 files changed, 959 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/vishay,veml6046x00.yaml
- create mode 100644 drivers/iio/light/veml6046x00.c
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index c9763412a508..5dc2ada88f2c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -25281,6 +25281,12 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/light/vishay,veml6030.yaml
+ F:	drivers/iio/light/veml6030.c
+ 
++VISHAY VEML6046X00 RGBIR COLOR SENSOR DRIVER
++M:	Andreas Klinger <ak@it-klinger.de>
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/light/vishay,veml6046x00.yaml
++F:	drivers/iio/light/veml6046x00.c
++
+ VISHAY VEML6075 UVA AND UVB LIGHT SENSOR DRIVER
+ M:	Javier Carrasco <javier.carrasco.cruz@gmail.com>
+ S:	Maintained
 -- 
 2.39.5
 
