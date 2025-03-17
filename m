@@ -1,72 +1,72 @@
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C80023536A
-	for <linux-iio@vger.kernel.org>; Mon, 17 Mar 2025 11:53:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64AF617D346
+	for <linux-iio@vger.kernel.org>; Mon, 17 Mar 2025 11:53:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742212391; cv=none; b=NUsiwBPH/1qwGrvtKgqPu0k9q2MIcwovMIR5VeSJ4AL2v3jwW/+QJua9tweEsov3joJN2AnH79NkbHzUPmdCXsJVrEMS8uXgsuyPzRBLpNxqkq6OFEf/GHeovkm9f0vvKNktEYoLfXkyY2ogQZ2FLnzr0aDuMgQO83BOvvTLQP4=
+	t=1742212394; cv=none; b=IvVBwXR/2gtXTnHKZoGjk7THsurHH/NY2egtfia+SFOXKBeCrJp2uQg9wzJLvNzlCJhoKOyLrzTm4Ibzq2PKik0wVEAneR0ydBlJQBpZniiv9gHN0QT8jCEZOKcfB/dWBE+HovPseU0Al1FBMza0P8UrHvixk3jHE/p2q2xUlC8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742212391; c=relaxed/simple;
-	bh=aDGsSr8z8o6oRQUxUQK/c3BVrSaGA5xI5Ivsc3r8erg=;
+	s=arc-20240116; t=1742212394; c=relaxed/simple;
+	bh=YhMUyJM5fDg5Jlde0+01XNR/iFaGYQ57vOstqAHyTd0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=o9NsFN5tybGLfV6nr+WIiWPDLjcxWxhBcH0g2+E7uJewd5nY2nTw+a13ksRjr2jdrbzPGO/ikWxBWDi75MsUNgdOUkdnRLUbYfzOfEC8CySE7mcHBA24vBcrSN/6GpKUmJ0eTLEvPyQ6nZpCHu67BdANIDLQoov0qLHC/WtAeKA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=XMpdHuPD; arc=none smtp.client-ip=209.85.208.41
+	 MIME-Version:Content-Type; b=p6ZK32SfUssbDttv5oyMV7gQcjw+JpfwOlmIs2XlhuXVmV1FUZ+XbB4BVAnF3rHJ2NR2pMRqZ+wps2VqhIm/6Nynon5RMfYbkFSASP30dzIP8Vw3J9F4wA2LuDlhVCo03d+wIWN32e9fiIPvm7jOBzhbN6saQSNRFgpNBL7CGmc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=WKMJzveu; arc=none smtp.client-ip=209.85.218.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="XMpdHuPD"
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-5e61375c108so5588653a12.1
-        for <linux-iio@vger.kernel.org>; Mon, 17 Mar 2025 04:53:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="WKMJzveu"
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-ac298c8fa50so810422566b.1
+        for <linux-iio@vger.kernel.org>; Mon, 17 Mar 2025 04:53:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1742212386; x=1742817186; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1742212390; x=1742817190; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=tomDGaytNyV4rRtxAxXsvffW2OKucbb/oDz/GZl5VdQ=;
-        b=XMpdHuPDBBN84/PIqPtQn1Z1EbIQLkWC10En0neDl2ZoZXkJH07PCYDl30D7VNbJV9
-         h5dJLcbHlmsuKLZOUMiDs/1iTftcdvIr/LvCpuVS0ednOD+Jb3Gihnz562FRSmu4uYrp
-         mkyR+auhYbB0fMr3nTmkw2DwSFAA70XXio2GOHrFv8q9rBKiwwUIGFI7lARYdD2QEanX
-         TRFpA8XjpZJey6VZdD3VOy3tzAUzFK3OOtWEqtz1OGYoT5H3Z+WyssW/NPICRF25JFsQ
-         vqdzEYbuqnkLPdNvawHP0LOyAv3BOHkVMFdZFPMKZExTPpCR+P29PDv9wkbuXhQH0Qq8
-         n0Jg==
+        bh=Q2gTyni6rTx81xybg3ArYnTMoEw6VvSUY3Q92SGdIRw=;
+        b=WKMJzveuUyfz4880MYmFZLCk4zA+z8XF2VgAx4vD4H1/Keyku5YHC626T24ZI2FtPg
+         E7WNNxRbF8CYtloieRLf+d//dRwOY9EbUJiD0bHfjqz24VSHMr3o+ToQ7GyjTrx3A/Qb
+         Uz4AWldFVynumhQ2ZDOB7DOv+nhRyzDAynZIPsTHggCGzPd2//qZ6w9F0/+qfjEn/vLz
+         pOgO+PSU0Cnb3jF2yeCn5Ou61MPsl0nQv/YXM1so8enKQ+ydvzNcdDxunX6MIgjJmZRk
+         Vsehu97APaXf4aPUY6AM5MgJ9cFRfz5E4/qsn4hJ8FsSCLBAo1dl6i+LqMZRB05Q2trk
+         cNEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742212386; x=1742817186;
+        d=1e100.net; s=20230601; t=1742212390; x=1742817190;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=tomDGaytNyV4rRtxAxXsvffW2OKucbb/oDz/GZl5VdQ=;
-        b=pW/GGLmpG5AEflLpRWYK7R4zsdoe3iQocsBMZHWCw2Q2WPjFpVUPEBoi1wZzFcMue/
-         ssXD0nMZJwb/Mi4BqxUoO+HwYa70XObc6oXMfawdeCJ04JpGce1MSarEVyCmsAAW3ghy
-         2OU6rjtwn3QnBJYdznwoD4koGZB+e5R4Rrx0aPju7j3QNyEgw6us+OIanG6b6bF8oCdc
-         FW1tsNWpc81/rBQMzsf5uDARtO9B/DoAQ3fshb8bBYS+afEFm/8y57GBkG2o1dex4uAF
-         WB4Xgr0N6M+Xmbgsnl9ci2p7nqhc8A20LMsWya9A1sfTv1nyBe+hdLaNoIqAWJshS94n
-         U0MQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXHH7YFeT5rXZnjaS0sOnnaDlAtvg8fcAnxFnOXK90ol5OnlnuJHJ8JMq4jUO5BMfs5BVrtd2Umb+M=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzF9rvABCYiuX7XpXn8opce90XGu9lhfcJko38oEf2/tPLuAK1V
-	QfjuStp6za/725UMhF2HVCEOGF2WHV/Zk9cNjhBQ2KDTzhvBKbMXkGlT0fQcy8E=
-X-Gm-Gg: ASbGnctIw6CaR84gwsikAa+jw6v8JLsjkTJz1CXZrpnGmocarh7WQriYjCp4wvRiTlp
-	LnywH2AwLMmY8+srG44Nq8KrX2pDs7ySAtiYqbbYyQszPZD2W856yE3tSVZVREbgKPUv5eXwlqT
-	EmaTOaWJVYHO/A/dQaV/AApkwYrgqIUb1B1JnZkmFjSKfG+QNwAsxa4i2j70nHRO8DJ4OfMeUgp
-	/2OOyzZdXDE7ouWs8mYX6m7wJlH/h3pgMXaQWu4av4kF+NxQE271xC4y921FQm74yJWFKMCe8yd
-	ck3c8ll/ZNM2cmI8vFNBCiyDka+CVdbrjAhvmRPet2NYKveSiSH0lnjtOCiApvvoWTq82nnvC5u
-	H6YTpxWmvIdw=
-X-Google-Smtp-Source: AGHT+IFus4yMP4oMcF5zTuuSlVz/Tvyby6EQn3imep0Jt/rBM2070QbnsM/Wz2wHompP/MZfIt37Qw==
-X-Received: by 2002:a05:6402:254b:b0:5e5:e396:3f9a with SMTP id 4fb4d7f45d1cf-5e8a09fd6ecmr9956405a12.31.1742212386254;
-        Mon, 17 Mar 2025 04:53:06 -0700 (PDT)
+        bh=Q2gTyni6rTx81xybg3ArYnTMoEw6VvSUY3Q92SGdIRw=;
+        b=JlcEpzcxB9TuFwedTKdoOzRcEzCvy6C/c8mToEzMLiENq2fSDZNo4YuqLsX6XkQDgP
+         fet04/BYawk3tEvRnpaBbt/o99SThpKprl/yjJMtt6fODsMzU+1tSCdDIh66K6rdL134
+         zR7xNOwdOjbzUUQ420ux0F9CTxhXGIcNXynA6RRXNooR8VZfOvOzcCMQ5Ha5BL4KsSXm
+         sjWBriu9VF3qm1RxIN+QS0MqyLBHLatojWhp8AdvD8AZg+XEDZZiDNUGw30ay9SKrylF
+         kCURYC0+FdeT1A+PAZ94mQ31/WhlngyqneV5TLt/BzHzheUybtByrszgYyrele3Y4pL8
+         2u6g==
+X-Forwarded-Encrypted: i=1; AJvYcCVyouJP9wW3kN+jIwLNjuNfa+mShQx3FJ7A0N3NeBc3elenqE9ZUUoVcKkxteFt0uvXGeoSBiJOO3M=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzgkvZJxpry6HcWXFmgwAAl/wuHN8cjOQXNhN1jvx1d+HWoJyIA
+	HTi1KWjW6TUDcBlX+alO0LX93OkWmy9JhIOm2dT8Zi8ag2oESBYOPsigeJ0ySKY=
+X-Gm-Gg: ASbGncvwVDKLU1xfXZ96uIfg169Q0booZ6FABzXZ+rt/E8GACzpAGlzr9HgLSdRlqtg
+	+z+MxHSeNljg6EZu3Ci0NP/BViDEm1cyjnBivRrWUUZkuaNqhcGSX4yAZb+xnPRzBYUv60Wd+YY
+	LyVxSUP3cdIL8WGowd73SkkOEgaHOy8KnFUKjnPHEjoLJkJCcnvFmC139IttTs02NMKiUy+L/sl
+	rJsLClAkOXTX61E6QnPiXX/lDaJh0jROQ+5Gqs2y4a/XgkEmvhR7Uc4yytIuueKWTmjHI3lI0on
+	nLy56dQP9L06jGZfY48K0UFTsh25ApSLL9PWZOWPxBCNqdDCuqwL94ok1y7OOoJMjvWr4Zx1BSj
+	TT0iyS9HrYxg=
+X-Google-Smtp-Source: AGHT+IEfMDb4N8YJcWKiPjWd7Tf2LwkFkYlARCQPlxnnMa9QOCDyxi451zlXMfP0TLFLsIqqVptUBA==
+X-Received: by 2002:a17:907:7290:b0:abf:e7c1:b3bf with SMTP id a640c23a62f3a-ac3301e352amr1391215266b.11.1742212389492;
+        Mon, 17 Mar 2025 04:53:09 -0700 (PDT)
 Received: from localhost (p200300f65f14610400000000000001b9.dip0.t-ipconnect.de. [2003:f6:5f14:6104::1b9])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5e816ad38f3sm6022663a12.63.2025.03.17.04.53.05
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ac3146aebb0sm664577566b.10.2025.03.17.04.53.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Mar 2025 04:53:05 -0700 (PDT)
+        Mon, 17 Mar 2025 04:53:09 -0700 (PDT)
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
 To: Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Jonathan Cameron <jic23@kernel.org>
 Cc: =?utf-8?q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>,
 	linux-iio@vger.kernel.org
-Subject: [PATCH v2 1/3] iio: adc: ad7124: Fix 3dB filter frequency reading
-Date: Mon, 17 Mar 2025 12:52:47 +0100
-Message-ID: <20250317115247.3735016-6-u.kleine-koenig@baylibre.com>
+Subject: [PATCH v2 3/3] iio: adc: ad7124: Make register naming consistent
+Date: Mon, 17 Mar 2025 12:52:49 +0100
+Message-ID: <20250317115247.3735016-8-u.kleine-koenig@baylibre.com>
 X-Mailer: git-send-email 2.47.1
 In-Reply-To: <20250317115247.3735016-5-u.kleine-koenig@baylibre.com>
 References: <20250317115247.3735016-5-u.kleine-koenig@baylibre.com>
@@ -77,36 +77,383 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1012; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=aDGsSr8z8o6oRQUxUQK/c3BVrSaGA5xI5Ivsc3r8erg=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBn2A0Syzbm9ok7QmAMQ7ChQRoUMKEqapyPKIV9v h35n5oYwz2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZ9gNEgAKCRCPgPtYfRL+ TpKdCACKDa5t8eiwkv7e5k/0EJcAx9cJoVPHDkSeZ104u+9V47XrxfqnY7TJi3zh8/EDPd6XzuE ZiZ8YE+Ixosork9QkkiUoDMi/7QPrJ+Mb42DlPnxvwdNf8CWxtoYBs3xp3tWm4eU2s8SlDTvlYG S5tPNq4XxfEkaAid+ZK4MQj9HrXatVED6KfSbx8aKjcFQn7h4CtEesZ9pOdXSoN6CkZdvYNzsTI dk9861Ks+b1p/cI81Jt32AgLCwXJHatPuNoYbRhlD9wsh/Rln1ZjugCG8kYrqjZPD8UnwoXWwkZ RhZ9rwCVjdRef/rIq6CYgUZ7RDsQrnt36Jytopqdjcsgzs61
+X-Developer-Signature: v=1; a=openpgp-sha256; l=15577; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=YhMUyJM5fDg5Jlde0+01XNR/iFaGYQ57vOstqAHyTd0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBn2A0Xm3tza7c8fSAVsxn7wvnytYizUwTEZK31D RIC0JNQfBKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZ9gNFwAKCRCPgPtYfRL+ ToQ0CACdr+aumO/f6GqL7lqundreQIQc6puZIN1LYFEMDRkBYO6dHJORsNnctYe3bsRrwyGnVBe zkD7OhQYz9BP4nzyvQn4X6Gsc+ZXJWj4zdMHuEbyJ1r6TkO4s80XahT7utqXBey982ZRXP83B43 twL9bTGLeY/JExkVjE4QKgL2Ei44ESiSBcbpUEcjsMMAl9wsJfNVEezn04U+tvr7wdW1K7kLFAb rrPqEk9FnAUtU3RlLJL1uvJyM25lpoAasaIoC7o5d4vfhi80A/QaonFnC3hrD08AUULyqA8P8kq UaenNtFbnhD36MlV5tCg+kqh1sxV+Ke64z9WEFTszIVWGDCX
 X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 
-The sinc4 filter has a factor 0.23 between Output Data Rate and f_{3dB}
-and for sinc3 the factor is 0.272 according to the data sheets for
-ad7124-4 (Rev. E.) and ad7124-8 (Rev. F).
+Cleanup definition of register related constants:
 
-Fixes: cef2760954cf ("iio: adc: ad7124: add 3db filter")
+ - Use the register and field names exactly as documented in the data
+   sheet.
+ - Consistently use <regname>_<bitfield> to name a register's bitfield.
+ - Drop _MSK definitions and implicit FIELD_PREP calls.
+ - Consistent indentation.
+
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
 ---
- drivers/iio/adc/ad7124.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/ad7124.c | 170 +++++++++++++++++++--------------------
+ 1 file changed, 82 insertions(+), 88 deletions(-)
 
 diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
-index 3ea81a98e455..7d5d84a07cae 100644
+index 662a3eb2f90e..92596f15e797 100644
 --- a/drivers/iio/adc/ad7124.c
 +++ b/drivers/iio/adc/ad7124.c
-@@ -301,9 +301,9 @@ static int ad7124_get_3db_filter_freq(struct ad7124_state *st,
+@@ -32,7 +32,7 @@
+ #define AD7124_IO_CONTROL_2		0x04
+ #define AD7124_ID			0x05
+ #define AD7124_ERROR			0x06
+-#define AD7124_ERROR_EN		0x07
++#define AD7124_ERROR_EN			0x07
+ #define AD7124_MCLK_COUNT		0x08
+ #define AD7124_CHANNEL(x)		(0x09 + (x))
+ #define AD7124_CONFIG(x)		(0x19 + (x))
+@@ -41,68 +41,58 @@
+ #define AD7124_GAIN(x)			(0x31 + (x))
+ 
+ /* AD7124_STATUS */
+-#define AD7124_STATUS_POR_FLAG_MSK	BIT(4)
++#define AD7124_STATUS_POR_FLAG			BIT(4)
+ 
+ /* AD7124_ADC_CONTROL */
+-#define AD7124_ADC_STATUS_EN_MSK	BIT(10)
+-#define AD7124_ADC_STATUS_EN(x)		FIELD_PREP(AD7124_ADC_STATUS_EN_MSK, x)
+-#define AD7124_ADC_CTRL_REF_EN_MSK	BIT(8)
+-#define AD7124_ADC_CTRL_REF_EN(x)	FIELD_PREP(AD7124_ADC_CTRL_REF_EN_MSK, x)
+-#define AD7124_ADC_CTRL_PWR_MSK	GENMASK(7, 6)
+-#define AD7124_ADC_CTRL_PWR(x)		FIELD_PREP(AD7124_ADC_CTRL_PWR_MSK, x)
+-#define AD7124_ADC_CTRL_MODE_MSK	GENMASK(5, 2)
+-#define AD7124_ADC_CTRL_MODE(x)	FIELD_PREP(AD7124_ADC_CTRL_MODE_MSK, x)
++#define AD7124_ADC_CONTROL_MODE			GENMASK(5, 2)
++#define AD7124_ADC_CONTROL_MODE_CONTINUOUS		0
++#define AD7124_ADC_CONTROL_MODE_SINGLE			1
++#define AD7124_ADC_CONTROL_MODE_STANDBY			2
++#define AD7124_ADC_CONTROL_MODE_POWERDOWN		3
++#define AD7124_ADC_CONTROL_MODE_IDLE			4
++#define AD7124_ADC_CONTROL_MODE_INT_OFFSET_CALIB	5 /* Internal Zero-Scale Calibration */
++#define AD7124_ADC_CONTROL_MODE_INT_GAIN_CALIB		6 /* Internal Full-Scale Calibration */
++#define AD7124_ADC_CONTROL_MODE_SYS_OFFSET_CALIB	7 /* System Zero-Scale Calibration */
++#define AD7124_ADC_CONTROL_MODE_SYS_GAIN_CALIB		8 /* System Full-Scale Calibration */
++#define AD7124_ADC_CONTROL_POWER_MODE		GENMASK(7, 6)
++#define AD7124_ADC_CONTROL_POWER_MODE_LOW		0
++#define AD7124_ADC_CONTROL_POWER_MODE_MID		1
++#define AD7124_ADC_CONTROL_POWER_MODE_FULL		2
++#define AD7124_ADC_CONTROL_REF_EN		BIT(8)
++#define AD7124_ADC_CONTROL_DATA_STATUS		BIT(10)
+ 
+-#define AD7124_MODE_CAL_INT_ZERO	0x5 /* Internal Zero-Scale Calibration */
+-#define AD7124_MODE_CAL_INT_FULL	0x6 /* Internal Full-Scale Calibration */
+-#define AD7124_MODE_CAL_SYS_ZERO	0x7 /* System Zero-Scale Calibration */
+-#define AD7124_MODE_CAL_SYS_FULL	0x8 /* System Full-Scale Calibration */
+-
+-/* AD7124 ID */
+-#define AD7124_DEVICE_ID_MSK		GENMASK(7, 4)
+-#define AD7124_DEVICE_ID_GET(x)		FIELD_GET(AD7124_DEVICE_ID_MSK, x)
+-#define AD7124_SILICON_REV_MSK		GENMASK(3, 0)
+-#define AD7124_SILICON_REV_GET(x)	FIELD_GET(AD7124_SILICON_REV_MSK, x)
+-
+-#define CHIPID_AD7124_4			0x0
+-#define CHIPID_AD7124_8			0x1
++/* AD7124_ID */
++#define AD7124_ID_SILICON_REVISION		GENMASK(3, 0)
++#define AD7124_ID_DEVICE_ID			GENMASK(7, 4)
++#define AD7124_ID_DEVICE_ID_AD7124_4			0x0
++#define AD7124_ID_DEVICE_ID_AD7124_8			0x1
+ 
+ /* AD7124_CHANNEL_X */
+-#define AD7124_CHANNEL_EN_MSK		BIT(15)
+-#define AD7124_CHANNEL_EN(x)		FIELD_PREP(AD7124_CHANNEL_EN_MSK, x)
+-#define AD7124_CHANNEL_SETUP_MSK	GENMASK(14, 12)
+-#define AD7124_CHANNEL_SETUP(x)	FIELD_PREP(AD7124_CHANNEL_SETUP_MSK, x)
+-#define AD7124_CHANNEL_AINP_MSK	GENMASK(9, 5)
+-#define AD7124_CHANNEL_AINP(x)		FIELD_PREP(AD7124_CHANNEL_AINP_MSK, x)
+-#define AD7124_CHANNEL_AINM_MSK	GENMASK(4, 0)
+-#define AD7124_CHANNEL_AINM(x)		FIELD_PREP(AD7124_CHANNEL_AINM_MSK, x)
++#define AD7124_CHANNEL_ENABLE		BIT(15)
++#define AD7124_CHANNEL_SETUP		GENMASK(14, 12)
++#define AD7124_CHANNEL_AINP		GENMASK(9, 5)
++#define AD7124_CHANNEL_AINM		GENMASK(4, 0)
++#define AD7124_CHANNEL_AINx_TEMPSENSOR		16
++#define AD7124_CHANNEL_AINx_AVSS		17
+ 
+ /* AD7124_CONFIG_X */
+-#define AD7124_CONFIG_BIPOLAR_MSK	BIT(11)
+-#define AD7124_CONFIG_BIPOLAR(x)	FIELD_PREP(AD7124_CONFIG_BIPOLAR_MSK, x)
+-#define AD7124_CONFIG_REF_SEL_MSK	GENMASK(4, 3)
+-#define AD7124_CONFIG_REF_SEL(x)	FIELD_PREP(AD7124_CONFIG_REF_SEL_MSK, x)
+-#define AD7124_CONFIG_PGA_MSK		GENMASK(2, 0)
+-#define AD7124_CONFIG_PGA(x)		FIELD_PREP(AD7124_CONFIG_PGA_MSK, x)
+-#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(6, 5)
+-#define AD7124_CONFIG_IN_BUFF(x)	FIELD_PREP(AD7124_CONFIG_IN_BUFF_MSK, x)
++#define AD7124_CONFIG_BIPOLAR		BIT(11)
++#define AD7124_CONFIG_IN_BUFF		GENMASK(6, 5)
++#define AD7124_CONFIG_AIN_BUFP		BIT(6)
++#define AD7124_CONFIG_AIN_BUFM		BIT(5)
++#define AD7124_CONFIG_REF_SEL		GENMASK(4, 3)
++#define AD7124_CONFIG_PGA		GENMASK(2, 0)
+ 
+ /* AD7124_FILTER_X */
+-#define AD7124_FILTER_FS_MSK		GENMASK(10, 0)
+-#define AD7124_FILTER_FS(x)		FIELD_PREP(AD7124_FILTER_FS_MSK, x)
+-#define AD7124_FILTER_TYPE_MSK		GENMASK(23, 21)
+-#define AD7124_FILTER_TYPE_SEL(x)	FIELD_PREP(AD7124_FILTER_TYPE_MSK, x)
++#define AD7124_FILTER_FS		GENMASK(10, 0)
++#define AD7124_FILTER_FILTER		GENMASK(23, 21)
++#define AD7124_FILTER_FILTER_SINC4		0
++#define AD7124_FILTER_FILTER_SINC3		2
+ 
+-#define AD7124_SINC3_FILTER 2
+-#define AD7124_SINC4_FILTER 0
+-
+-#define AD7124_CONF_ADDR_OFFSET	20
+ #define AD7124_MAX_CONFIGS	8
+ #define AD7124_MAX_CHANNELS	16
+ 
+ /* AD7124 input sources */
+-#define AD7124_INPUT_TEMPSENSOR	16
+-#define AD7124_INPUT_AVSS	17
+ 
+ enum ad7124_ids {
+ 	ID_AD7124_4,
+@@ -206,12 +196,12 @@ struct ad7124_state {
+ static struct ad7124_chip_info ad7124_chip_info_tbl[] = {
+ 	[ID_AD7124_4] = {
+ 		.name = "ad7124-4",
+-		.chip_id = CHIPID_AD7124_4,
++		.chip_id = AD7124_ID_DEVICE_ID_AD7124_4,
+ 		.num_inputs = 8,
+ 	},
+ 	[ID_AD7124_8] = {
+ 		.name = "ad7124-8",
+-		.chip_id = CHIPID_AD7124_8,
++		.chip_id = AD7124_ID_DEVICE_ID_AD7124_8,
+ 		.num_inputs = 16,
+ 	},
+ };
+@@ -260,8 +250,8 @@ static int ad7124_set_mode(struct ad_sigma_delta *sd,
+ {
+ 	struct ad7124_state *st = container_of(sd, struct ad7124_state, sd);
+ 
+-	st->adc_control &= ~AD7124_ADC_CTRL_MODE_MSK;
+-	st->adc_control |= AD7124_ADC_CTRL_MODE(mode);
++	st->adc_control &= ~AD7124_ADC_CONTROL_MODE;
++	st->adc_control |= FIELD_PREP(AD7124_ADC_CONTROL_MODE, mode);
+ 
+ 	return ad_sd_write_reg(&st->sd, AD7124_ADC_CONTROL, 2, st->adc_control);
+ }
+@@ -300,9 +290,9 @@ static int ad7124_get_3db_filter_freq(struct ad7124_state *st,
+ 	fadc = st->channels[channel].cfg.odr;
  
  	switch (st->channels[channel].cfg.filter_type) {
- 	case AD7124_SINC3_FILTER:
--		return DIV_ROUND_CLOSEST(fadc * 230, 1000);
-+		return DIV_ROUND_CLOSEST(fadc * 272, 1000);
- 	case AD7124_SINC4_FILTER:
--		return DIV_ROUND_CLOSEST(fadc * 262, 1000);
-+		return DIV_ROUND_CLOSEST(fadc * 230, 1000);
+-	case AD7124_SINC3_FILTER:
++	case AD7124_FILTER_FILTER_SINC3:
+ 		return DIV_ROUND_CLOSEST(fadc * 272, 1000);
+-	case AD7124_SINC4_FILTER:
++	case AD7124_FILTER_FILTER_SINC4:
+ 		return DIV_ROUND_CLOSEST(fadc * 230, 1000);
  	default:
  		return -EINVAL;
+@@ -387,8 +377,7 @@ static int ad7124_init_config_vref(struct ad7124_state *st, struct ad7124_channe
+ 		return 0;
+ 	case AD7124_INT_REF:
+ 		cfg->vref_mv = 2500;
+-		st->adc_control &= ~AD7124_ADC_CTRL_REF_EN_MSK;
+-		st->adc_control |= AD7124_ADC_CTRL_REF_EN(1);
++		st->adc_control |= AD7124_ADC_CONTROL_REF_EN;
+ 		return 0;
+ 	default:
+ 		return dev_err_probe(dev, -EINVAL, "Invalid reference %d\n", refsel);
+@@ -412,18 +401,20 @@ static int ad7124_write_config(struct ad7124_state *st, struct ad7124_channel_co
+ 	if (ret)
+ 		return ret;
+ 
+-	tmp = (cfg->buf_positive << 1) + cfg->buf_negative;
+-	val = AD7124_CONFIG_BIPOLAR(cfg->bipolar) | AD7124_CONFIG_REF_SEL(cfg->refsel) |
+-	      AD7124_CONFIG_IN_BUFF(tmp) | AD7124_CONFIG_PGA(cfg->pga_bits);
++	val = FIELD_PREP(AD7124_CONFIG_BIPOLAR, cfg->bipolar) |
++		FIELD_PREP(AD7124_CONFIG_REF_SEL, cfg->refsel) |
++		(cfg->buf_positive ? AD7124_CONFIG_AIN_BUFP : 0) |
++		(cfg->buf_negative ? AD7124_CONFIG_AIN_BUFM : 0) |
++		FIELD_PREP(AD7124_CONFIG_PGA, cfg->pga_bits);
+ 
+ 	ret = ad_sd_write_reg(&st->sd, AD7124_CONFIG(cfg->cfg_slot), 2, val);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	tmp = AD7124_FILTER_TYPE_SEL(cfg->filter_type) |
+-	      AD7124_FILTER_FS(cfg->odr_sel_bits);
++	tmp = FIELD_PREP(AD7124_FILTER_FILTER, cfg->filter_type) |
++		FIELD_PREP(AD7124_FILTER_FS, cfg->odr_sel_bits);
+ 	return ad7124_spi_write_mask(st, AD7124_FILTER(cfg->cfg_slot),
+-				     AD7124_FILTER_TYPE_MSK | AD7124_FILTER_FS_MSK,
++				     AD7124_FILTER_FILTER | AD7124_FILTER_FS,
+ 				     tmp, 3);
+ }
+ 
+@@ -488,7 +479,8 @@ static int ad7124_enable_channel(struct ad7124_state *st, struct ad7124_channel
+ {
+ 	ch->cfg.live = true;
+ 	return ad_sd_write_reg(&st->sd, AD7124_CHANNEL(ch->nr), 2, ch->ain |
+-			      AD7124_CHANNEL_SETUP(ch->cfg.cfg_slot) | AD7124_CHANNEL_EN(1));
++			       FIELD_PREP(AD7124_CHANNEL_SETUP, ch->cfg.cfg_slot) |
++			       AD7124_CHANNEL_ENABLE);
+ }
+ 
+ static int ad7124_prepare_read(struct ad7124_state *st, int address)
+@@ -538,8 +530,10 @@ static int ad7124_append_status(struct ad_sigma_delta *sd, bool append)
+ 	unsigned int adc_control = st->adc_control;
+ 	int ret;
+ 
+-	adc_control &= ~AD7124_ADC_STATUS_EN_MSK;
+-	adc_control |= AD7124_ADC_STATUS_EN(append);
++	if (append)
++		adc_control |= AD7124_ADC_CONTROL_DATA_STATUS;
++	else
++		adc_control &= ~AD7124_ADC_CONTROL_DATA_STATUS;
+ 
+ 	ret = ad_sd_write_reg(&st->sd, AD7124_ADC_CONTROL, 2, adc_control);
+ 	if (ret < 0)
+@@ -554,7 +548,7 @@ static int ad7124_disable_one(struct ad_sigma_delta *sd, unsigned int chan)
+ {
+ 	struct ad7124_state *st = container_of(sd, struct ad7124_state, sd);
+ 
+-	/* The relevant thing here is that AD7124_CHANNEL_EN_MSK is cleared. */
++	/* The relevant thing here is that AD7124_CHANNEL_ENABLE is cleared. */
+ 	return ad_sd_write_reg(&st->sd, AD7124_CHANNEL(chan), 2, 0);
+ }
+ 
+@@ -768,7 +762,7 @@ static int ad7124_update_scan_mode(struct iio_dev *indio_dev,
+ 		if (bit_set)
+ 			ret = __ad7124_set_channel(&st->sd, i);
+ 		else
+-			ret = ad7124_spi_write_mask(st, AD7124_CHANNEL(i), AD7124_CHANNEL_EN_MSK,
++			ret = ad7124_spi_write_mask(st, AD7124_CHANNEL(i), AD7124_CHANNEL_ENABLE,
+ 						    0, 2);
+ 		if (ret < 0) {
+ 			mutex_unlock(&st->cfgs_lock);
+@@ -809,14 +803,14 @@ static int ad7124_soft_reset(struct ad7124_state *st)
+ 		if (ret < 0)
+ 			return dev_err_probe(dev, ret, "Error reading status register\n");
+ 
+-		if (!(readval & AD7124_STATUS_POR_FLAG_MSK))
++		if (!(readval & AD7124_STATUS_POR_FLAG))
+ 			break;
+ 
+ 		/* The AD7124 requires typically 2ms to power up and settle */
+ 		usleep_range(100, 2000);
+ 	} while (--timeout);
+ 
+-	if (readval & AD7124_STATUS_POR_FLAG_MSK)
++	if (readval & AD7124_STATUS_POR_FLAG)
+ 		return dev_err_probe(dev, -EIO, "Soft reset failed\n");
+ 
+ 	ret = ad_sd_read_reg(&st->sd, AD7124_GAIN(0), 3, &st->gain_default);
+@@ -838,8 +832,8 @@ static int ad7124_check_chip_id(struct ad7124_state *st)
+ 	if (ret < 0)
+ 		return dev_err_probe(dev, ret, "Failure to read ID register\n");
+ 
+-	chip_id = AD7124_DEVICE_ID_GET(readval);
+-	silicon_rev = AD7124_SILICON_REV_GET(readval);
++	chip_id = FIELD_GET(AD7124_ID_DEVICE_ID, readval);
++	silicon_rev = FIELD_GET(AD7124_ID_SILICON_REVISION, readval);
+ 
+ 	if (chip_id != st->chip_info->chip_id)
+ 		return dev_err_probe(dev, -ENODEV,
+@@ -867,7 +861,7 @@ static int ad7124_syscalib_locked(struct ad7124_state *st, const struct iio_chan
+ 	if (ch->syscalib_mode == AD7124_SYSCALIB_ZERO_SCALE) {
+ 		ch->cfg.calibration_offset = 0x800000;
+ 
+-		ret = ad_sd_calibrate(&st->sd, AD7124_MODE_CAL_SYS_ZERO,
++		ret = ad_sd_calibrate(&st->sd, AD7124_ADC_CONTROL_MODE_SYS_OFFSET_CALIB,
+ 				      chan->address);
+ 		if (ret < 0)
+ 			return ret;
+@@ -882,7 +876,7 @@ static int ad7124_syscalib_locked(struct ad7124_state *st, const struct iio_chan
+ 	} else {
+ 		ch->cfg.calibration_gain = st->gain_default;
+ 
+-		ret = ad_sd_calibrate(&st->sd, AD7124_MODE_CAL_SYS_FULL,
++		ret = ad_sd_calibrate(&st->sd, AD7124_ADC_CONTROL_MODE_SYS_GAIN_CALIB,
+ 				      chan->address);
+ 		if (ret < 0)
+ 			return ret;
+@@ -997,7 +991,7 @@ static bool ad7124_valid_input_select(unsigned int ain, const struct ad7124_chip
+ 	if (ain >= info->num_inputs && ain < 16)
+ 		return false;
+ 
+-	return ain <= FIELD_MAX(AD7124_CHANNEL_AINM_MSK);
++	return ain <= FIELD_MAX(AD7124_CHANNEL_AINM);
+ }
+ 
+ static int ad7124_parse_channel_config(struct iio_dev *indio_dev,
+@@ -1062,8 +1056,8 @@ static int ad7124_parse_channel_config(struct iio_dev *indio_dev,
+ 					     "diff-channels property of %pfwP contains invalid data\n", child);
+ 
+ 		st->channels[channel].nr = channel;
+-		st->channels[channel].ain = AD7124_CHANNEL_AINP(ain[0]) |
+-						  AD7124_CHANNEL_AINM(ain[1]);
++		st->channels[channel].ain = FIELD_PREP(AD7124_CHANNEL_AINP, ain[0]) |
++			FIELD_PREP(AD7124_CHANNEL_AINM, ain[1]);
+ 
+ 		cfg = &st->channels[channel].cfg;
+ 		cfg->bipolar = fwnode_property_read_bool(child, "bipolar");
+@@ -1089,8 +1083,8 @@ static int ad7124_parse_channel_config(struct iio_dev *indio_dev,
+ 	if (num_channels < AD7124_MAX_CHANNELS) {
+ 		st->channels[num_channels] = (struct ad7124_channel) {
+ 			.nr = num_channels,
+-			.ain = AD7124_CHANNEL_AINP(AD7124_INPUT_TEMPSENSOR) |
+-				AD7124_CHANNEL_AINM(AD7124_INPUT_AVSS),
++			.ain = FIELD_PREP(AD7124_CHANNEL_AINP, AD7124_CHANNEL_AINx_TEMPSENSOR) |
++				FIELD_PREP(AD7124_CHANNEL_AINM, AD7124_CHANNEL_AINx_AVSS),
+ 			.cfg = {
+ 				.bipolar = true,
+ 			},
+@@ -1141,11 +1135,11 @@ static int ad7124_setup(struct ad7124_state *st)
  	}
+ 
+ 	/* Set the power mode */
+-	st->adc_control &= ~AD7124_ADC_CTRL_PWR_MSK;
+-	st->adc_control |= AD7124_ADC_CTRL_PWR(power_mode);
++	st->adc_control &= ~AD7124_ADC_CONTROL_POWER_MODE;
++	st->adc_control |= FIELD_PREP(AD7124_ADC_CONTROL_POWER_MODE, power_mode);
+ 
+-	st->adc_control &= ~AD7124_ADC_CTRL_MODE_MSK;
+-	st->adc_control |= AD7124_ADC_CTRL_MODE(AD_SD_MODE_IDLE);
++	st->adc_control &= ~AD7124_ADC_CONTROL_MODE;
++	st->adc_control |= FIELD_PREP(AD7124_ADC_CONTROL_MODE, AD_SD_MODE_IDLE);
+ 
+ 	mutex_init(&st->cfgs_lock);
+ 	INIT_KFIFO(st->live_cfgs_fifo);
+@@ -1199,7 +1193,7 @@ static int __ad7124_calibrate_all(struct ad7124_state *st, struct iio_dev *indio
+ 		 * usual: first zero-scale then full-scale calibration.
+ 		 */
+ 		if (st->channels[i].cfg.pga_bits > 0) {
+-			ret = ad_sd_calibrate(&st->sd, AD7124_MODE_CAL_INT_FULL, i);
++			ret = ad_sd_calibrate(&st->sd, AD7124_ADC_CONTROL_MODE_INT_GAIN_CALIB, i);
+ 			if (ret < 0)
+ 				return ret;
+ 
+@@ -1216,7 +1210,7 @@ static int __ad7124_calibrate_all(struct ad7124_state *st, struct iio_dev *indio
+ 				return ret;
+ 		}
+ 
+-		ret = ad_sd_calibrate(&st->sd, AD7124_MODE_CAL_INT_ZERO, i);
++		ret = ad_sd_calibrate(&st->sd, AD7124_ADC_CONTROL_MODE_INT_OFFSET_CALIB, i);
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -1245,9 +1239,9 @@ static int ad7124_calibrate_all(struct ad7124_state *st, struct iio_dev *indio_d
+ 	 * The resulting calibration is then also valid for high-speed, so just
+ 	 * restore adc_control afterwards.
+ 	 */
+-	if (FIELD_GET(AD7124_ADC_CTRL_PWR_MSK, adc_control) >= AD7124_FULL_POWER) {
+-		st->adc_control &= ~AD7124_ADC_CTRL_PWR_MSK;
+-		st->adc_control |= AD7124_ADC_CTRL_PWR(AD7124_MID_POWER);
++	if (FIELD_GET(AD7124_ADC_CONTROL_POWER_MODE, adc_control) >= AD7124_FULL_POWER) {
++		st->adc_control &= ~AD7124_ADC_CONTROL_POWER_MODE;
++		st->adc_control |= FIELD_PREP(AD7124_ADC_CONTROL_POWER_MODE, AD7124_MID_POWER);
+ 	}
+ 
+ 	ret = __ad7124_calibrate_all(st, indio_dev);
 -- 
 2.47.1
 
