@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 975E620C003;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9756A10E0;
 	Wed, 19 Mar 2025 20:59:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742417985; cv=none; b=eDgqyeVstr5JE0Soe5E59G9F5AAiHo5FE6yxMHYQpC5TbTVBYRXC/tKNLyLNrYVNAquFLlrtOa3h+64XtbA7hLOfGbD2Y7X5m7oCoPDsubzaW1cHgRgaw1br6Z5vsvuVAL3pf+Z29++k7vMbhlfKBEjTCIIKns9zIRDTVNQq8yI=
+	t=1742417985; cv=none; b=YlJ5QPgBrgj48lDfEznAv1AFRE77boRcdmlJ8sw7VCzo8g07zFzTPdAUY42COO6IAl3VW2N8yvMElRvU7/SaZLGfjAkdlPTALtEU3BrDHNzsiI4aZN1Fkc97olXWP6OlkMi0y6+CMSmpyos2oIi8hKoL8Noy6eS/daPN8t7C+ZE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1742417985; c=relaxed/simple;
-	bh=CT7ZJ/uDIYrIVA8eQYfKWvBAY6EzcaAv4fqcrOVsHQw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=uob9lL1QNS6gpko+WclydouZKH3zYpewqTik9LYTFsgaWvvn+f/GMIVavsKQ5dM/O62xiyl6aVAW53kTL0zKlMErmXUXE8t5oo0+iP/y7cx7dpu/L0KuKWk/l62pudq8nB63i7UxwxG8Hvbfmohd9NKbFeqgznN8CDcI6JJs+gU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eNLXQdTu; arc=none smtp.client-ip=10.30.226.201
+	bh=8STHuFc23s5ULduJ7aYVu6n8GpJ8UmJn4qmi5rEoGew=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=FTz5zkaN2aPK3LBQTLc5lW9sS/athDX+/uyYaM58MucIRwKevj/OIduXucnxzuB3MG0A/vrWf1UAY3v4nufb+ywMoNQ6CjERqDVWu0XeXofcIzy9jOrS1VMkWnRigfsz6EHdwEyVQ5/7ugpaX+kI5oOij7CD1WiAjXPeWx+3G+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tgsLD78H; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eNLXQdTu"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2BB33C4CEE7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tgsLD78H"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0ECA5C4CEE4;
 	Wed, 19 Mar 2025 20:59:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1742417985;
-	bh=CT7ZJ/uDIYrIVA8eQYfKWvBAY6EzcaAv4fqcrOVsHQw=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=eNLXQdTuT3CO1oGsuYUNUnN3MpW4+lRMQDGQDeiOh9hV9EA8IGHeqV64aOngfnLfs
-	 rpa2dejB//oDQu/yPP/4F0pOnP0uTPHJ4+3gd+SrWIFk2shyZsbf9N8e4tw0oNTvHP
-	 QMbYhR8z8Ha9oIb7t34aghxXwO9bDuJQt43HGkhcxVlbPUHzGXMbZmZGL06w56IqFK
-	 iQmxik9Sgs+uHN4BrZAc/9nxkv0KV7CYlZxtuFoQg/9nrjYqbAtM4Rp5AJq/bX569R
-	 At1VBhKFu4cxvNB+mS3dQHz0DZ5ZFFpFQeB4OVRc2vLqvHeQQ7iveS0cC8hUmBnGkr
-	 0+W6zotV6EQMg==
+	bh=8STHuFc23s5ULduJ7aYVu6n8GpJ8UmJn4qmi5rEoGew=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=tgsLD78HEArtyg/ox2BIB8wqjrZv48bVVcVPvbvRDVNikd6OsD1p0qybBV+WlC+52
+	 AjV08aplqWcWiw22eXPJDDKrPC6hE1QbunNqFktFf2vfR6d/w10wrS/v8a6Na5JdF5
+	 jGFia5NnqKe6rnV/9XCX/7XEH6PT2wm+cl+x0XZZEkwvh8sWVLu3tDzU2FNackJ2wf
+	 UfU3hLAcoi55t/p3C6DPlcG1GUGDUY66bcaFZ6OlI6GtAI1Eyqb1XC/CmVzR3NntaV
+	 SSWPHgEUERiPO2FAm+abtDKQ1LJ9n5aUCi3uX/QZxgH5MCbiSSiVNoko/p/ncrlGm7
+	 mDuaYy0adEDFw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A15DC36001;
-	Wed, 19 Mar 2025 20:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0452C35FFA;
+	Wed, 19 Mar 2025 20:59:44 +0000 (UTC)
 From: David Heidelberg via B4 Relay <devnull+david.ixit.cz@kernel.org>
-Date: Wed, 19 Mar 2025 21:59:41 +0100
-Subject: [PATCH v2 02/13] iio: light: al3320a: Use unsigned int for the
- indexing
+Subject: [PATCH v2 00/13] iio: light: Modernize al3010 and al3320a codebase
+Date: Wed, 19 Mar 2025 21:59:39 +0100
+Message-Id: <20250319-al3010-iio-regmap-v2-0-1310729d0543@ixit.cz>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,60 +40,85 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250319-al3010-iio-regmap-v2-2-1310729d0543@ixit.cz>
-References: <20250319-al3010-iio-regmap-v2-0-1310729d0543@ixit.cz>
-In-Reply-To: <20250319-al3010-iio-regmap-v2-0-1310729d0543@ixit.cz>
+X-B4-Tracking: v=1; b=H4sIADsw22cC/32NQQ6CMBBFr0Jm7Zhpm2p15T0Mi1oGmESBtISgp
+ He3cgCX7yX//Q0SR+EE12qDyIskGYcC+lBB6P3QMUpTGDRpS4Yc+qchRSgyYuTu5Sck4wJ7c2m
+ dbaDspsitrHvzXhfuJc1jfO8Xi/rZf7VFIeHjdNbWWHZamZusMh/DB+qc8xfyIQIDsAAAAA==
+X-Change-ID: 20250308-al3010-iio-regmap-038cea39f85d
 To: Jonathan Cameron <jic23@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>
 Cc: Svyatoslav Ryhel <clamor95@gmail.com>, 
  Robert Eckelmann <longnoserob@gmail.com>, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, David Heidelberg <david@ixit.cz>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=703; i=david@ixit.cz;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2111; i=david@ixit.cz;
  h=from:subject:message-id;
- bh=ynRSZu6nJx2UyMC/JZCn2Zq/vADVq3GqxbyApWvpw90=;
- b=owEBbQKS/ZANAwAIAWACP8TTSSByAcsmYgBn2zA9h4KIyY+7mFaql0PaaN5PNdcRvG54s2agu
- Skraz0efHKJAjMEAAEIAB0WIQTXegnP7twrvVOnBHRgAj/E00kgcgUCZ9swPQAKCRBgAj/E00kg
- cgB0EAC99yluiJrwzBdA3295VR1ghmmPqKqo3Kl7bxmKVdCv58MD418/Olkv3lQsF+Q5vbaktUw
- d5E6TaZG3blEcVIVU3XVzDHzE2Dss3vsVlngwO8m71fNCvPr2q4b5xo95SvHDL2i/8ihveYdgbd
- avPvXf8PlcAS2uxpsGAhPUkY9D/3qOjkyI9xZF7t9WMqgyMvAUsCZK5TIijGMGTA82Li5G3qYER
- IPTrkKnthER17g5HNdNXvYm94RWaMZ9q4xzP0zhOiTi7CfZr14s4vwoJes0k32IWfqsmvq3yxSt
- S4HaBucpBGazvYHriPStmCbKMqz+9Ey0Apq+vcNhYmAqMTNY+zgJduWt0LllHg7EQwkMdG8I9WA
- ZfxsQaQYx721hQygeRkrWSNTfVVUQXSCBlSqEoDfsYojOJMjuhE4K+oG34cpq5veQmSo9s/NlvH
- afBMNExYEqLUWWLcOh56qms9IFASDKmR/GuVooFQButX8KIcZm3DaAHBN591+3WhU5JWKpAX6gd
- bSkY+/h02Yuv7c36of7FsHw0EzZpBpedWhR4Yydn5xkdGTVHoFpP89aR+DwBhAtyzl8rNu0Zf2q
- G+d5+nJY1kPvgNQ3bC2CYkePeZ3BDhiZ/gWdps8uxwhoN8L+7ygbd6E1NqrlGZ8gM2MvfxoIO+w
- EfKmAaDyuAFsxVQ==
+ bh=8STHuFc23s5ULduJ7aYVu6n8GpJ8UmJn4qmi5rEoGew=;
+ b=owEBbQKS/ZANAwAIAWACP8TTSSByAcsmYgBn2zA9dM2IigZ+WKdbs+x1m9BqHCcuqSmS8yQ45
+ k8maostMXyJAjMEAAEIAB0WIQTXegnP7twrvVOnBHRgAj/E00kgcgUCZ9swPQAKCRBgAj/E00kg
+ coxGEAC6OpsSBl0OPAGqFhuQO2RGtAEYNsZKTtBhofN18Xig/hHMPc78pQIC3cDs6IDaYsSxXQC
+ eXvjJES2rQL+RzCRlY0BMPmQ0szDlcD+bmspi6CYyRDkDxcSAzL+1nKFHOkfutvf3YjzoLOvS+Y
+ sCvky9NZI0zWS0tGxtO5wl3ax8yXrs1tdPlvswpAMiYmg1rY3UMW2bqmaxIJle+b9v/fQnv6neC
+ yolZyCjcaJHxmreo0aVJ4z0f6CP47gpgM5OS1zTyMt5xNBfswKLrNkRZsCizG9NVJHFee3TpOL3
+ eCXiHBHapm6HoP7UVYxLOW1jR6yUAb9/R9H6OiypB/W1Ot2Q7xGZx1jzFjv1hOPSU5ny1AbvdpI
+ uUSbKsouLPDUHJ8GbCW1mY+f0FOI5hJ/XNA6ZBFFCNKZyaxV7MhQ45txevdBNj21ZTiuo1CyzyI
+ VNGmXPRYNZZzLht2NFdDaEOFIngomFLsgpc/EV9rsgwbS1SDNV24Ast4fc4ft6mT0A9stH6I4fZ
+ 9jmsMWzOOt3dmBdMAnzX3T7rGQ07M3rGlDw1kbS1TFUZZjUtCBcvOuFXQoH5x/ssuQ39MESr6fw
+ Ry+DB3FxXBGBlt8GfipmAKR79vNgMqNSJ3LoIusNTVQedHv6q9YuHXshNtRcUZc4SO7TnMP4xQA
+ s78kdnblK2PnaVw==
 X-Developer-Key: i=david@ixit.cz; a=openpgp;
  fpr=D77A09CFEEDC2BBD53A7047460023FC4D3492072
 X-Endpoint-Received: by B4 Relay for david@ixit.cz/default with auth_id=355
 X-Original-From: David Heidelberg <david@ixit.cz>
 Reply-To: david@ixit.cz
 
-From: David Heidelberg <david@ixit.cz>
+This series targetting improved readability of code
+and modernizing code to match AL3000a (recently upstreamed).
 
-The integer is used as array index which cannot be negative.
+Except slightly improved error reporting,
+there shouldn't be any function changes.
+
+Module  before after
+al3010  72 kB  58 kB
+al3320a 72 kB  58 kB
 
 Signed-off-by: David Heidelberg <david@ixit.cz>
 ---
- drivers/iio/light/al3320a.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v2:
+- Dropped Daniel's email update.
+- Dropped DRV_NAME introduction for al3000a
+- Added DRV_NAME define removal for al3010 and al3320a.
+- Splitted unsigned int conversion into separate patches.
+- Replaced generic value with specific raw and gain variable.
+- Use dev_err_probe() for error handling.
+- Separated devm_add_action_or_reset move from _init back to _probe.
+- Dropped copyright update.
+- Link to v1: https://lore.kernel.org/r/20250308-al3010-iio-regmap-v1-0-b672535e8213@ixit.cz
 
-diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
-index 497ea3fe337775b07efdfc56c80beb1aa55e394c..bceda71517c8180dff76db311aa3591ab9846156 100644
---- a/drivers/iio/light/al3320a.c
-+++ b/drivers/iio/light/al3320a.c
-@@ -163,7 +163,7 @@ static int al3320a_write_raw(struct iio_dev *indio_dev,
- 			     int val2, long mask)
- {
- 	struct al3320a_data *data = iio_priv(indio_dev);
--	int i;
-+	unsigned int i;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SCALE:
+---
+David Heidelberg (13):
+      iio: light: al3010: Use unsigned int for the indexing
+      iio: light: al3320a: Use unsigned int for the indexing
+      iio: light: al3010: Remove DRV_NAME definition
+      iio: light: al3320a: Remove DRV_NAME definition
+      iio: light: al3010: Abstract device reference in the probe function
+      iio: light: al3320a: Abstract device reference in the probe function
+      iio: light: al3010: Split set_pwr function into set_pwr_on and _off
+      iio: light: al3320a: Split set_pwr function into set_pwr_on and _off
+      iio: light: al3010: Move devm_add_action_or_reset back to _probe
+      iio: light: al3010: Improve al3010_init error handling with dev_err_probe
+      iio: light: al3320a: Improve error handling with dev_err_probe
+      iio: light: al3010: Implement regmap support
+      iio: light: al3320a: Implement regmap support
 
+ drivers/iio/light/al3010.c  | 103 +++++++++++++++++++++------------------
+ drivers/iio/light/al3320a.c | 115 +++++++++++++++++++++++---------------------
+ 2 files changed, 116 insertions(+), 102 deletions(-)
+---
+base-commit: ff7f9b199e3f4cc7d61df5a9a26a7cbb5c1492e6
+change-id: 20250308-al3010-iio-regmap-038cea39f85d
+
+Best regards,
 -- 
-2.49.0
+David Heidelberg <david@ixit.cz>
 
 
