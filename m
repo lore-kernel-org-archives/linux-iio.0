@@ -1,129 +1,121 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from p00-icloudmta-asmtp-us-central-1k-100-percent-8.p00-icloudmta-asmtp-vip.icloud-mail-production.svc.kube.us-central-1k.k8s.cloud.apple.com (p-east1-cluster2-host7-snip4-2.eps.apple.com [57.103.88.193])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A79F91DED49;
-	Fri, 21 Mar 2025 14:50:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C410E22ACC6
+	for <linux-iio@vger.kernel.org>; Fri, 21 Mar 2025 16:17:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=57.103.88.193
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742568649; cv=none; b=ujoSyfqrfWX8Q0r96gwQL86sCg+Sn/+HpBlR+RpSqoJuuU7noYQzi7kx/5z16ao4xKWFOBJEGkeF/zXL6lEGLAoZ4JqRBaIzTniBU6sl1P4vq28gTgzKLM7qQsil9kHJQAYKB+1V+5kbnBuSWHAgOHsbij/F2Pp/OmMydAEo/h4=
+	t=1742573849; cv=none; b=fFgqNIzkHtRsFAmzaQwAnT45fbHYW0WSjaJ+FutkxY03IxB/pkMcUi3Epxh3PqvRQrQhUXOSt+sYFbgZCnagM/iAX+wUeF0Rd+ojMict91YT15arhQ5R44RHiuLCrVsJNLw1aPnaEkVludL/rrDEwJ90cAtaR69fhheVos9DYlA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742568649; c=relaxed/simple;
-	bh=/fke0FZvpYVr1VpmHVa1ygKLi+Vnc7JrixCJyNiA7Ro=;
-	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=dEemYuzaHE2rn0sHGUtRa2rYVltnbvRI5WX7jh2pMN9ZhBKUQfNLOwyJEd0qsXbHjkGvI4Lt1iZ4bR9vWrff9dIq+bWywdNHoDN9Qbwumid3jHxlfu2ezRw673T9p5Eln7tAsg1k5A3W6KokcBrn4O9D0cKEneKCdfqikwRS6z4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=tIbopaX6; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1742573849; c=relaxed/simple;
+	bh=OeIjux2L+VD6vXxq8q41IkwVOrxAsgrjCtTRW+6pDr4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=hKeZ3iKtdSTjkocz7USI3hbI2mXhRWmAklmLwO5R/b0oGea15vL6/R+3cV8Fs6MGSZoLLO2g5dES1gb+ofjwiQLn3Eh4LSelK2bQly9EIV3gLtKb6/IyVUD9RAx41kxO33AbJNcyLhshtilUAabYaDA/qWrDmbUqsMEh4hg9jP0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pereznus.es; spf=pass smtp.mailfrom=pereznus.es; dkim=pass (2048-bit key) header.d=pereznus.es header.i=@pereznus.es header.b=RIEU0z+p; arc=none smtp.client-ip=57.103.88.193
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pereznus.es
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pereznus.es
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="tIbopaX6"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52LBNahF009105;
-	Fri, 21 Mar 2025 10:50:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=oSg1mqldn0GUtZnijpXisy8J008
-	1sPGcJiDUPXyz7ws=; b=tIbopaX6HGC8QCwC+dAD5so+fDyi3W8Txc7Kj3suLGK
-	6xAl/DZhVvzuPTmDs2yPkCdCNOqPirIb2VI6zzAzJOXqdA5yFyTUTf65Dx4YXWof
-	arBFUddYtfCvjV7FHUwPVl/H2crqVht4S3mdQRYj6n7IsdrFhqjyPoq/eAIIjUGr
-	J3553mhvH1vadTVWfGpmEhRcBNjalg+RdS6LKhj70ZbM5KYVI8CYP1naCc+1Rs05
-	eeNjc/9unqNT0KCNTfTnOITeivuJigOrQYJlbdmi5OyGbSesmz11fzo03ov0hStP
-	oWiOMbPy+tT6WI3nMIgRLalZD7EZOT2ubI6QBIdpNdw==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 45h76sgvv9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Mar 2025 10:50:14 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 52LEoD42057363
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 21 Mar 2025 10:50:13 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 21 Mar 2025 10:50:13 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 21 Mar 2025 10:50:13 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 21 Mar 2025 10:50:13 -0400
-Received: from HYB-DlYm71t3hSl.ad.analog.com (HYB-DlYm71t3hSl.ad.analog.com [10.44.3.52] (may be forged))
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 52LEo1ca011710;
-	Fri, 21 Mar 2025 10:50:03 -0400
-From: Jorge Marques <jorge.marques@analog.com>
-Subject: [PATCH 0/2] Add sys-bus-iio ABI frequency options to events and
- oversampling
-Date: Fri, 21 Mar 2025 15:50:00 +0100
-Message-ID: <20250321-abi-oversampling-events-frequency-v1-0-794c1ab2f079@analog.com>
+	dkim=pass (2048-bit key) header.d=pereznus.es header.i=@pereznus.es header.b="RIEU0z+p"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pereznus.es; s=sig1;
+	bh=YVvZ4UL0bFTiJFwO9+ZDas4+KDymXBDJvT0ZeYG903g=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:x-icloud-hme;
+	b=RIEU0z+pvlB1ltSuS8t3rOQ6U13ryJA9kAqfq8LoV3H1i0Bm4BEngIec1m2AkJLAQ
+	 v4KeIagjFybg48sxu1/dNpDGypCCtN0NiTxL8aKyNbbu6kf1cOaOV3IQtZKHGpgQf5
+	 lh8BFvIiYUgGL7luc6Ou7i+i2TbmgyMerFZ7A4TopqBciRRKL/UwWC2x3c+W+Gezot
+	 CpvNs7UC3urWXE1S3kb0nwuTMsoYHmtEl4kD/HDbdiOt7ql0/kJgs1o7hTOKzYnb4G
+	 C1ZiTtWy3wWV4BWNxxv6qrrmzCTgQeAqayXN5cMWT5Aha5CQte0gQUBBJRB7NcPm5e
+	 88ksjTGgWHdPQ==
+Received: from localhost.localdomain (ci-asmtp-me-k8s.p00.prod.me.com [17.57.156.36])
+	by p00-icloudmta-asmtp-us-central-1k-100-percent-8.p00-icloudmta-asmtp-vip.icloud-mail-production.svc.kube.us-central-1k.k8s.cloud.apple.com (Postfix) with ESMTPSA id 131D618004B3;
+	Fri, 21 Mar 2025 16:17:22 +0000 (UTC)
+From: Sergio Perez <sergio@pereznus.es>
+To: Tomasz Duszynski <tduszyns@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Sergio Perez <sergio@pereznus.es>
+Subject: [PATCH v5 1/2] dt-bindings: iio: light: bh1750: Add reset-gpios property
+Date: Fri, 21 Mar 2025 17:16:08 +0100
+Message-ID: <20250321161609.3662-1-sergio@pereznus.es>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAJh83WcC/x3NQQ6CMBBG4auQWTtJKcjCqxgXtfzFSbTgDDYaw
- t1pXH6b9zYyqMDo0mykKGIy54r21FB8hDyBZawm7/zZdb7lcBeeC9TCa3lKnhgFeTVOivcHOf6
- 474Y49CkiwlHtLIok3//jetv3A0oJp3BzAAAA
-X-Change-ID: 20250321-abi-oversampling-events-frequency-436c64fcece0
-To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-CC: <dlechner@baylibre.com>, <Michael.Hennerich@analog.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jorge Marques
-	<jorge.marques@analog.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1742568601; l=1384;
- i=jorge.marques@analog.com; s=20250303; h=from:subject:message-id;
- bh=/fke0FZvpYVr1VpmHVa1ygKLi+Vnc7JrixCJyNiA7Ro=;
- b=oGmhiPlKHkAucSXkcrRtxLPvHxede8avNQEhNkVGfpR4Jzj1pj5RUvB6Sawr61bxsgTvBfyt+
- 8Z3gKx5e12BCFN0O6pf/V/39gvLhOqoAPRRFiDy5Q3Xtyn0GjE05Zge
-X-Developer-Key: i=jorge.marques@analog.com; a=ed25519;
- pk=NUR1IZZMH0Da3QbJ2tBSznSPVfRpuoWdhBzKGSpAdbg=
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: kDfaLNeq1FtB-ErZ3PxTjZcICSu206o-
-X-Authority-Analysis: v=2.4 cv=BpidwZX5 c=1 sm=1 tr=0 ts=67dd7ca6 cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=IkcTkHD0fZMA:10 a=Vs1iUdzkB0EA:10 a=gAnH3GRIAAAA:8 a=sbcHFVb_5Oqvkv0eGmQA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: kDfaLNeq1FtB-ErZ3PxTjZcICSu206o-
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: 5VrYs6qDqU4-cOfEbqjs0JNSdM9txB9Q
+X-Proofpoint-ORIG-GUID: 5VrYs6qDqU4-cOfEbqjs0JNSdM9txB9Q
 X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-03-21_05,2025-03-20_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
- suspectscore=0 mlxlogscore=999 bulkscore=0 malwarescore=0 impostorscore=0
- phishscore=0 clxscore=1015 lowpriorityscore=0 adultscore=0 spamscore=0
- classifier=spam authscore=0 authtc=n/a authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2502280000
- definitions=main-2503210108
+ engine=ICAP:2.0.272,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-21_05,2025-03-21_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxscore=0 mlxlogscore=999
+ malwarescore=0 bulkscore=0 spamscore=0 adultscore=0 suspectscore=0
+ clxscore=1030 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2308100000 definitions=main-2503210119
 
-Some device families such as Analog Device's max1363, ad7606, ad799x, and
-ad4052 contain internal clocks used by monitor modes and oversampling.
-Devices' monitor modes are exposed as IIO events.
-The max1363 driver included the events/sampling_frequency in
-commit 168c9d95a940 ("iio:adc:max1363 move from staging.")
-and ad799x in
-commit ba1d79613df3 ("staging:iio:ad799x: Use event spec for threshold
-hysteresis")
-but went undocumented so far.
+Some BH1750 sensors require a hardware reset via GPIO before they can
+be properly detected on the I2C bus. Add a new reset-gpios property
+to the binding to support this functionality.
 
-The oversampling sampling frequency is a planned feature to be patched
-onto the ad7606 driver.
-In this particular device, it is called oversampling padding.
-The upcoming ad4052 linux driver will utilize both entries,
-it is worth noting, however, there is a single register for both
-options. Since the device is never concurrently in both modes, the
-values will be safely cached on the device state.
+The reset-gpios property allows specifying a GPIO that will be toggled
+during driver initialization to reset the sensor.
 
-Signed-off-by: Jorge Marques <jorge.marques@analog.com>
+Signed-off-by: Sergio Perez <sergio@pereznus.es>
 ---
-Jorge Marques (2):
-      Documentation: ABI: add events sampling frequency in sysfs-bus-iio
-      Documentation: ABI: add oversampling frequency in sysfs-bus-iio
-
- Documentation/ABI/testing/sysfs-bus-iio | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+Revision history:
+v4 => v5:
+ - Update description to reflect "active low" on reset signal as indicated by Krzysztof Kozlowski
+ - Update description to clarify what pin of sensor is used to do reset (DVI) as mentioned by Krzysztof Kozlowski
+ - Edit example to be coherent with "active low" as informed by Krzysztof Kozlowski
+ - Added necessary include on example
+v3 => v4:
+ - No changes
+v2 => v3:
+ - Split in two patches: dtbinding and code
+ - Ensure list off mantainers following instructions by Krzysztof Kozlowski
+ - Delete redundant details on description as suggested by Jonathan Cameron
+ - Added related example to existing one as suggested by Jonathan Cameron
+v1 => v2:
+ - Ensure check tests as commented by Rob Herring
+ - Fixes some whitespaces and end lines
 ---
-base-commit: 9f36acefb2621d980734a5bb7d74e0e24e0af166
-change-id: 20250321-abi-oversampling-events-frequency-436c64fcece0
+ Documentation/devicetree/bindings/iio/light/bh1750.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Best regards,
+diff --git a/Documentation/devicetree/bindings/iio/light/bh1750.yaml b/Documentation/devicetree/bindings/iio/light/bh1750.yaml
+index 1a88b3c253d5..e388610d3741 100644
+--- a/Documentation/devicetree/bindings/iio/light/bh1750.yaml
++++ b/Documentation/devicetree/bindings/iio/light/bh1750.yaml
+@@ -24,6 +24,10 @@ properties:
+   reg:
+     maxItems: 1
+ 
++  reset-gpios:
++    description: GPIO connected to the DVI reset pin (active low)
++    maxItems: 1
++
+ required:
+   - compatible
+   - reg
+@@ -36,9 +40,12 @@ examples:
+       #address-cells = <1>;
+       #size-cells = <0>;
+ 
++      #include <dt-bindings/gpio/gpio.h>
++
+       light-sensor@23 {
+         compatible = "rohm,bh1750";
+         reg = <0x23>;
++        reset-gpios = <&gpio2 17 GPIO_ACTIVE_LOW>;
+       };
+     };
+ 
 -- 
-Jorge Marques <jorge.marques@analog.com>
+2.43.0
 
