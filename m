@@ -1,66 +1,38 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB9232309AD
-	for <linux-iio@vger.kernel.org>; Fri, 21 Mar 2025 20:30:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C57B1D5174;
+	Fri, 21 Mar 2025 20:48:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742589015; cv=none; b=HQshiUQ8MqB7RBeTeuN2kkxQ+/sXaWE4oob5mTH5w4qtcuL9lb7c+QAj30JqUvC8D7L9UM39WRbfLuPItvSW+am1kiZRHGr9fVMNV30RAPTKSmkYZpYFegovXYUWjrc19tPxjjsB6P43mCtG67J3ToPf7HCUYK775H7EUDGs4Mc=
+	t=1742590129; cv=none; b=iDDX9V3aDZB3jKl2NwLKH+rq/jLSMyZ1cYUTnDb6YcSGNJOzAfUfwyz6M1HfuRofkktaaGoNXo/EDd+pon2NwtCFMs7A9XD+QxPuEeydm/LJHR4+Ejs/EiVZk4Tlltz95AZanQmm6h+PpT2hYhaepUbYlVC28A8z88FgqZMArjM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742589015; c=relaxed/simple;
-	bh=lzaSJ/be6is8Rty2tbrCLJKH6+jdZRvilPwu+v8J4Cs=;
+	s=arc-20240116; t=1742590129; c=relaxed/simple;
+	bh=XaAWivEqloIKFy1TevJCmaZVpsJl5G4NKVfEdzOR/pA=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=VktI/ZclFs3G5hihmwQW8duvZEUXjG2PJzZ2diyD7T7cxdUDacBIMJcxIi1BzxAnr06kDV6/574vQQGb1P2OvnLsHmXgW44o6DS2cgPgdo/12WRqEzetrm4lsB9s74EizQISlihnbLAKAmgSGFgWcYc7pXZVkyf0C4tph5oMoz0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=LaHXZn6J; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	 In-Reply-To:To:Cc; b=l+GyhZW+AXStBSUi0cfxB3hYWFW5Maw0GtmOynzysX27Tfmxgs53kF/c3lsalVDB7AMKlWzzb/MDKoyVnpHMHXU8xSPFArBAXgQcpyqBJdqVNP5pbUySMXBH3sTsNmwjlQuX81zHGuYDqi18nCCrgHB7qSYfS+e2mGRV9hsi58M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hQxFUIY9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="LaHXZn6J"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-43cfba466b2so21867555e9.3
-        for <linux-iio@vger.kernel.org>; Fri, 21 Mar 2025 13:30:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1742589010; x=1743193810; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=IKB6yQ/p4p5H9UdGeKJqY+C71MSKxypTKujViSujDac=;
-        b=LaHXZn6JNPGfznqTGqNxxz0/9SWD3RNBiXmugdQJKD4Jt7+TUb/E0jb0uyzm1qpL8u
-         dR1utsSXX05dTQ8k23aws3sXkphrbwrbYZGI9CungIA3LyhHmyIffho5rhlDCmt/Xvpl
-         jCnuhrQ24TOyW7KfoL8ee8jaYds0Lcjdx9wPj60TlzvzaSOWooxuog6wgScKZ9QIACHM
-         I9ogDKrrOJqrdUJQYS6TknGKU2XTFKTw5dbHR4Pp+NEN0Akh4y2UukC/8l/JURVx+nJt
-         mvUhbxvXWPM6fCFyX+CUtGbXPdi8QcsHIrNWWSr3ofTg8o/6FmQc/+AmLhpRzhYV/pRi
-         Poyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742589010; x=1743193810;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=IKB6yQ/p4p5H9UdGeKJqY+C71MSKxypTKujViSujDac=;
-        b=PL7sbAIdog4JZpizBFkzxg0TGQqQLqtyLiF0PQ4MDQORu3dY/468TPSKfa2YITjDJM
-         44S9yWEAC0pIYpocVUhcNnYVGKWIY7dGQjxCfCmQp+2+GkuvqCfc1OuKbeKpYekG2SVK
-         9ePGjBlU4OETPQC2hgw1aqxyOGZTc+UzCHb8jOdIhXG2Ntt26Ck2dbnvnwiVwizEtBCO
-         m0F46A9rJ4oLqk4FtDbI5HXcCUobDhfV3zCFJ+nwVSiCXz/OloHo7d0FhsH3JRGpDMqI
-         m8F51XbilL5gjXyTgbdVsAJw9sFaVfpQfJmMEpdXaAXo3dGVfmYQn9RvMtxEGDPdgfw4
-         mVog==
-X-Gm-Message-State: AOJu0Ywr4CwcLiUOo/PXZw1PmRMh5idaWrGRpJ0NVvm0C9cwU1LIKuNl
-	AL+v6QJEkkMMgdMvH15YJNfPVS/nGYpQuDdTbG3VmgJFl/dQESYcW+607UptQ+M=
-X-Gm-Gg: ASbGnctBYjpKvRRQQgO70IG1drfqgdJnvXo8X3xtVsq9Uc8TRF77fMk6uZROQwgn9GL
-	1uwj+G6n3hfooFJEQBCBbRcR3PIny4+1SNcLwB0k1Kd8Fwu0fkVK5ya0y/CxVTklSgHpJPBa4zA
-	6L6/9WeZagSDJBpv8jpoUmuu05wTB7xVXckGf+E+/hauXWbjRAD9vwVF0SAb5AFRf6isYdQEUvn
-	4iVTKtAcVYlT+yZ71v8xAzN6z81j6ZgXqzoyOoVteMCzZrZcn97IDn8YmN4Aq/h/MQX/+Qoa3Gl
-	IubtDEr3LGhNfQgyIhcUT7pBLk6B+u3+bFaPeK1RUaeqnvyehDMMTg7pVAmU03079yjAcivTTM8
-	jAZUbMat9O/pZHg==
-X-Google-Smtp-Source: AGHT+IGW0KT9uYhjfvzDuW5HrybppxMZ12fXv96hH0ZZ7RsY03Ppzqsltv2FqtvQ54zHcEEm7eOWKg==
-X-Received: by 2002:a5d:588b:0:b0:399:737f:4de6 with SMTP id ffacd0b85a97d-3997f8f8c35mr4323719f8f.3.1742589009965;
-        Fri, 21 Mar 2025 13:30:09 -0700 (PDT)
-Received: from [127.0.1.1] (host-87-8-62-49.retail.telecomitalia.it. [87.8.62.49])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3997f9955c0sm3258380f8f.3.2025.03.21.13.30.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Mar 2025 13:30:09 -0700 (PDT)
-From: Angelo Dureghello <adureghello@baylibre.com>
-X-Google-Original-From: Angelo Dureghello <adureghello@baylibre.org>
-Date: Fri, 21 Mar 2025 21:28:51 +0100
-Subject: [PATCH 4/4] iio: dac: ad3552r-hs: add support for internal ramp
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hQxFUIY9"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9855FC4CEE7;
+	Fri, 21 Mar 2025 20:48:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1742590128;
+	bh=XaAWivEqloIKFy1TevJCmaZVpsJl5G4NKVfEdzOR/pA=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=hQxFUIY9r2z1UIKFunSMbZUGZeP/YFCXL/jd7nzmnvehwXOJbvgyOB2QhslpmDg7R
+	 dtA6rF/THzjgiAiGQypz0PV6oP7LCVYd1YYUCBxooq2dksAEC8AQPznx2o0leNteuz
+	 CCmOhGB2bqHBUs0h78cq1MH8KB2h3YnMYJQGQUpusNfrVElcgaX7gyerCwW8I36vpu
+	 /jMq3A3ilaLZpncWO4P3wZjiIYMdd5PqVUM6A0jvW3Kln+3hisr2Psvfq8ZJmmXQYX
+	 gjxSUEnUOLo+KAy1YJro3i1aSf9QIG9ztnETSOeJiDmUe/fiMY4R13jE5WJeOA4I5G
+	 kDW+qXXX1ltpw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 822A3C36008;
+	Fri, 21 Mar 2025 20:48:48 +0000 (UTC)
+From: David Heidelberg via B4 Relay <devnull+david.ixit.cz@kernel.org>
+Date: Fri, 21 Mar 2025 21:48:43 +0100
+Subject: [PATCH v3 1/7] x86/Kconfig: Enable X86_X2APIC by default and
+ improve help text
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,183 +40,156 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250321-wip-bl-ad3552r-fixes-v1-4-3c1aa249d163@baylibre.com>
-References: <20250321-wip-bl-ad3552r-fixes-v1-0-3c1aa249d163@baylibre.com>
-In-Reply-To: <20250321-wip-bl-ad3552r-fixes-v1-0-3c1aa249d163@baylibre.com>
-To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
- Jonathan Corbet <corbet@lwn.net>, 
- Olivier Moysan <olivier.moysan@foss.st.com>, 
- Michael Hennerich <Michael.Hennerich@analog.com>
-Cc: linux-iio@vger.kernel.org, linux-doc@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Angelo Dureghello <adureghello@baylibre.com>
+Content-Transfer-Encoding: 8bit
+Message-Id: <20250321-x86_x2apic-v3-1-b0cbaa6fa338@ixit.cz>
+References: <20250321-x86_x2apic-v3-0-b0cbaa6fa338@ixit.cz>
+In-Reply-To: <20250321-x86_x2apic-v3-0-b0cbaa6fa338@ixit.cz>
+To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, 
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, 
+ x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, 
+ Kees Cook <kees@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>
+Cc: linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>, 
+ linux-iio@vger.kernel.org, 
+ =?utf-8?q?Mateusz_Jo=C5=84czyk?= <mat.jonczyk@o2.pl>, 
+ David Heidelberg <david@ixit.cz>
 X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4973; i=david@ixit.cz;
+ h=from:subject:message-id;
+ bh=a9HTfOr2lzvGamzwVwClUGQQDyIsU1IE/XeFaMhNH7o=;
+ b=owEBbQKS/ZANAwAIAWACP8TTSSByAcsmYgBn3dCu7PcJ8ZnpTOlCAfTY2brG3A6Z8ExtyTrA2
+ nUT0mvsrnqJAjMEAAEIAB0WIQTXegnP7twrvVOnBHRgAj/E00kgcgUCZ93QrgAKCRBgAj/E00kg
+ cqFbEACnBDsRY6QVE/dtZrOklQ1NSlLF0Rcyb7OwtbthuMy8lznPBITETuxak868zdMEBKmiXJy
+ iZTqKiki0fPSyh635Xdogfhq0mi6YU9bBCAEKg2gzXxILjQIKwexqQfMY9mmJ1jKYlMYlvofd2b
+ 4nzgWCeQie6jB/z5Htkwvq4V6REAuMoPPaKHCEJox+Gr15Ejt4TCNdeaExi+df4WRLsrjr2gc3/
+ Et73cD4ckPRYykEOGCuTnLSC1BorIxPHUe327gQiJnH4XALg9OcDu8LUAPSe5qhJdyypZYYQuwE
+ I3g8rMrUJLGGVH7Sr0fLdQWaenF5ZZnEUUc9/FKcHHBaVjHULb6sxTu2ktKNQUL/9WUBbBXeM1H
+ Qv7wBsJhMxRhVGiFFy+aJ4dNX23GFnt26MJVftitD5YCXAOPVcRB72SC/OZbQtIYpbBP3GlyvPO
+ xWdjyHdbuXG5ZNccSvcF5wPZwqg31fHGuBbGicNnxcdSYmRAATE+D66dqctRvTUEmWiT5s6C+Hn
+ kpQD1kg4CNt6NLMgD+OsFqjktOUo8Yyfa8UHlFCJJEEIDA4V7St/TsGZ+7Zb0E5V7u63HlZ7KrV
+ FsJAoLImX0wlK8oqMHvS8D2QlqQF0rfND3+3fG2DCtNGW8gGtMAOGKoeASQVxCcYOO2cZL7qvDQ
+ FWMp9HRiJ66sDIQ==
+X-Developer-Key: i=david@ixit.cz; a=openpgp;
+ fpr=D77A09CFEEDC2BBD53A7047460023FC4D3492072
+X-Endpoint-Received: by B4 Relay for david@ixit.cz/default with auth_id=355
+X-Original-From: David Heidelberg <david@ixit.cz>
+Reply-To: david@ixit.cz
 
-From: Angelo Dureghello <adureghello@baylibre.com>
+From: Mateusz Jończyk <mat.jonczyk@o2.pl>
 
-The ad3552r can be feeded from the HDL controller by an internally
-generated 16bit ramp, useful for debug pourposes. Add debugfs a file
-to enable or disable it.
+As many current platforms (most modern Intel CPUs and QEMU) have x2APIC
+present, enable CONFIG_X86_X2APIC by default as it gives performance
+and functionality benefits. Additionally, if the BIOS has already
+switched APIC to x2APIC mode, but CONFIG_X86_X2APIC is disabled, the
+kernel will panic in arch/x86/kernel/apic/apic.c .
 
-Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
+Also improve the help text, which was confusing and really did not
+describe what the feature is about.
+
+Help text references and discussion:
+
+Both Intel [1] and AMD [3] spell the name as "x2APIC", not "x2apic".
+
+"It allows faster access to the local APIC"
+        [2], chapter 2.1, page 15:
+        "More efficient MSR interface to access APIC registers."
+
+"x2APIC was introduced in Intel CPUs around 2008":
+        I was unable to find specific information which Intel CPUs
+        support x2APIC. Wikipedia claims it was "introduced with the
+        Nehalem microarchitecture in November 2008", but I was not able
+        to confirm this independently. At least some Nehalem CPUs do not
+        support x2APIC [1].
+
+        The documentation [2] is dated June 2008. Linux kernel also
+        introduced x2APIC support in 2008, so the year seems to be
+        right.
+
+"and in AMD EPYC CPUs in 2019":
+        [3], page 15:
+        "AMD introduced an x2APIC in our EPYC 7002 Series processors for
+        the first time."
+
+"It is also frequently emulated in virtual machines, even when the host
+CPU does not support it."
+        [1]
+
+"If this configuration option is disabled, the kernel will not boot on
+some platforms that have x2APIC enabled."
+        According to some BIOS documentation [4], the x2APIC may be
+        "disabled", "enabled", or "force enabled" on this system.
+        I think that "enabled" means "made available to the operating
+        system, but not already turned on" and "force enabled" means
+        "already switched to x2APIC mode when the OS boots". Only in the
+        latter mode a kernel without CONFIG_X86_X2APIC will panic in
+        validate_x2apic() in arch/x86/kernel/apic/apic.c .
+
+	QEMU 4.2.1 and my Intel HP laptop (bought in 2019) use the
+	"enabled" mode and the kernel does not panic.
+
+[1] "Re: [Qemu-devel] [Question] why x2apic's set by default without host sup"
+        https://lists.gnu.org/archive/html/qemu-devel/2013-07/msg03527.html
+
+[2] Intel® 64 Architecture x2APIC Specification,
+        ( https://www.naic.edu/~phil/software/intel/318148.pdf )
+
+[3] Workload Tuning Guide for AMD EPYC ™ 7002 Series Processor Based
+        Servers Application Note,
+        https://developer.amd.com/wp-content/resources/56745_0.80.pdf
+
+[4] UEFI System Utilities and Shell Command Mobile Help for HPE ProLiant
+        Gen10, ProLiant Gen10 Plus Servers and HPE Synergy:
+        Enabling or disabling Processor x2APIC Support
+        https://techlibrary.hpe.com/docs/iss/proliant-gen10-uefi/s_enable_disable_x2APIC_support.html
+
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
 ---
- drivers/iio/dac/ad3552r-hs.c | 106 ++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 100 insertions(+), 6 deletions(-)
+ arch/x86/Kconfig | 25 ++++++++++++++++---------
+ 1 file changed, 16 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/dac/ad3552r-hs.c b/drivers/iio/dac/ad3552r-hs.c
-index 37397e188f225a8099745ec03f7c604da76960b1..41fe78d982a68980db059b095fc27b37ea1a461b 100644
---- a/drivers/iio/dac/ad3552r-hs.c
-+++ b/drivers/iio/dac/ad3552r-hs.c
-@@ -7,6 +7,7 @@
-  */
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 5924c753097b0030fddeba246c72ff8b86e6c8ae..10f48afd67f6fd7d250f2effddcc5bc927b057af 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -462,20 +462,27 @@ config SMP
+ 	  If you don't know what to do here, say N.
  
- #include <linux/bitfield.h>
-+#include <linux/debugfs.h>
- #include <linux/delay.h>
- #include <linux/gpio/consumer.h>
- #include <linux/iio/backend.h>
-@@ -65,6 +66,18 @@ static int ad3552r_hs_reg_read(struct ad3552r_hs_state *st, u32 reg, u32 *val,
- 	return st->data->bus_reg_read(st->back, reg, val, xfer_size);
- }
+ config X86_X2APIC
+-	bool "Support x2apic"
++	bool "x2APIC interrupt controller architecture support"
+ 	depends on X86_LOCAL_APIC && X86_64 && (IRQ_REMAP || HYPERVISOR_GUEST)
++	default y
+ 	help
+-	  This enables x2apic support on CPUs that have this feature.
++	  x2APIC is an interrupt controller architecture, a component of which
++	  (the local APIC) is present in the CPU. It allows faster access to
++	  the local APIC and supports a larger number of CPUs in the system
++	  than the predecessors.
  
-+static int ad3552r_hs_set_data_source(struct ad3552r_hs_state *st,
-+				      enum iio_backend_data_source type)
-+{
-+	int ret;
-+
-+	ret = iio_backend_data_source_set(st->back, 0, type);
-+	if (ret)
-+		return ret;
-+
-+	return iio_backend_data_source_set(st->back, 1, type);
-+}
-+
- static int ad3552r_hs_update_reg_bits(struct ad3552r_hs_state *st, u32 reg,
- 				      u32 mask, u32 val, size_t xfer_size)
- {
-@@ -483,6 +496,66 @@ static int ad3552r_hs_reg_access(struct iio_dev *indio_dev, unsigned int reg,
- 	return st->data->bus_reg_write(st->back, reg, writeval, 1);
- }
+-	  This allows 32-bit apic IDs (so it can support very large systems),
+-	  and accesses the local apic via MSRs not via mmio.
++	  x2APIC was introduced in Intel CPUs around 2008 and in AMD EPYC CPUs
++	  in 2019, but it can be disabled by the BIOS. It is also frequently
++	  emulated in virtual machines, even when the host CPU does not support
++	  it. Support in the CPU can be checked by executing
++		cat /proc/cpuinfo | grep x2apic
  
-+static ssize_t ad3552r_hs_show_data_source(struct file *f, char __user *userbuf,
-+					   size_t count, loff_t *ppos)
-+{
-+	struct ad3552r_hs_state *st = file_inode(f)->i_private;
-+	enum iio_backend_data_source type;
-+	int ret;
-+
-+	ret = iio_backend_data_source_get(st->back, 0, &type);
-+	if (ret)
-+		return ret;
-+
-+	switch (type) {
-+	case IIO_BACKEND_INTERNAL_RAMP_16BIT:
-+		return simple_read_from_buffer(userbuf, count, ppos,
-+					       "backend-ramp-generator", 22);
-+	case IIO_BACKEND_EXTERNAL:
-+		return simple_read_from_buffer(userbuf, count, ppos,
-+					       "iio-buffer", 10);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static ssize_t ad3552r_hs_write_data_source(struct file *f,
-+					    const char __user *userbuf,
-+					    size_t count, loff_t *ppos)
-+{
-+	struct ad3552r_hs_state *st = file_inode(f)->i_private;
-+	char buf[64];
-+	int ret;
-+
-+	ret = simple_write_to_buffer(buf, sizeof(buf) - 1, ppos, userbuf,
-+				     count);
-+	if (ret < 0)
-+		return ret;
-+
-+	buf[count] = 0;
-+
-+	if (count == 10 && !strncmp(buf, "iio-buffer", 10)) {
-+		ret = ad3552r_hs_set_data_source(st, IIO_BACKEND_EXTERNAL);
-+		if (ret)
-+			return ret;
-+	} else if (count == 22 && !strncmp(buf, "backend-ramp-generator", 22)) {
-+		ret = ad3552r_hs_set_data_source(st,
-+			IIO_BACKEND_INTERNAL_RAMP_16BIT);
-+		if (ret)
-+			return ret;
-+	} else {
-+		return -EINVAL;
-+	}
-+
-+	return count;
-+}
-+
-+static const struct file_operations ad3552r_hs_data_source_fops = {
-+	.owner = THIS_MODULE,
-+	.write = ad3552r_hs_write_data_source,
-+	.read = ad3552r_hs_show_data_source,
-+};
-+
- static int ad3552r_hs_setup(struct ad3552r_hs_state *st)
- {
- 	u16 id;
-@@ -550,11 +623,7 @@ static int ad3552r_hs_setup(struct ad3552r_hs_state *st)
- 	if (ret)
- 		return ret;
+-	  Some Intel systems circa 2022 and later are locked into x2APIC mode
+-	  and can not fall back to the legacy APIC modes if SGX or TDX are
+-	  enabled in the BIOS. They will boot with very reduced functionality
+-	  without enabling this option.
++	  If this configuration option is disabled, the kernel will not boot on
++	  some platforms that have x2APIC enabled.
  
--	ret = iio_backend_data_source_set(st->back, 0, IIO_BACKEND_EXTERNAL);
--	if (ret)
--		return ret;
--
--	ret = iio_backend_data_source_set(st->back, 1, IIO_BACKEND_EXTERNAL);
-+	ret = ad3552r_hs_set_data_source(st, IIO_BACKEND_EXTERNAL);
- 	if (ret)
- 		return ret;
+-	  If you don't know what to do here, say N.
++	  Say N if you know that your platform does not have x2APIC.
++
++	  Otherwise, say Y.
  
-@@ -661,6 +730,24 @@ static const struct iio_info ad3552r_hs_info = {
- 	.debugfs_reg_access = &ad3552r_hs_reg_access,
- };
- 
-+static void ad3552r_hs_debugfs_init(struct iio_dev *indio_dev)
-+{
-+	struct ad3552r_hs_state *st = iio_priv(indio_dev);
-+	struct dentry *d = iio_get_debugfs_dentry(indio_dev);
-+
-+	if (!IS_ENABLED(CONFIG_DEBUG_FS))
-+		return;
-+
-+	d = iio_get_debugfs_dentry(indio_dev);
-+	if (!d) {
-+		dev_warn(st->dev, "can't set debugfs in driver dir\n");
-+		return;
-+	}
-+
-+	debugfs_create_file("data_source", 0600, d, st,
-+			    &ad3552r_hs_data_source_fops);
-+}
-+
- static int ad3552r_hs_probe(struct platform_device *pdev)
- {
- 	struct ad3552r_hs_state *st;
-@@ -705,7 +792,14 @@ static int ad3552r_hs_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	return devm_iio_device_register(&pdev->dev, indio_dev);
-+	ret = devm_iio_device_register(&pdev->dev, indio_dev);
-+	if (ret)
-+		return ret;
-+
-+	ad3552r_hs_debugfs_init(indio_dev);
-+
-+	return ret;
-+
- }
- 
- static const struct of_device_id ad3552r_hs_of_id[] = {
+ config X86_POSTED_MSI
+ 	bool "Enable MSI and MSI-x delivery by posted interrupts"
 
 -- 
 2.49.0
+
 
