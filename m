@@ -1,193 +1,127 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44250226D18;
-	Mon, 31 Mar 2025 14:36:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64CE321B9D1
+	for <linux-iio@vger.kernel.org>; Mon, 31 Mar 2025 14:39:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743431790; cv=none; b=j/b6DpUja7NGaLThNdWzn4aW06KTd7M/Qli2KjaalxVo75/gh6nSLbseNHaQHGDItwHaThJ7ZXFgSJ5OzcxhcXfLTkTvpD185B5kjkWrEE8kxdX8MGVubwWBxHgb/8/S7PB8vXYgm9S8NWqQLQdD9WwN/2yHLlN44VPtMs3hd70=
+	t=1743431983; cv=none; b=GzUko77ZdHzywILGCSbpXXNQ4iQTKsCWKu/tUX5xioURGq+84bYRkzPBrYmAqCLQFBCV8vo7m/OhAjb1fZdtBxqJdoYhZhwhwQ866HxMwYQXvhDDyFNfqIFaHRJkD8z0e8ywkBIkOaVhSCWI8lfbXjWhD1eR6R8eLQs7TVIiGQI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743431790; c=relaxed/simple;
-	bh=gTkTfbAuq15gZso4bpVxix7pTVeRXjBC1DNAQ66niYM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=SaeJkqpBWZz2wOn5Fv6ur35udlMf5c8e6Op54ljFOeGDUZHM+xGnX7za2Hj2nexlToI1vQwFnnrMCQT2ZOim3EN6mSanmduwbcz++m/5L+Z1d+a5skZ6ZAQmpYnqtm4dyKcEhDWhGvVQgUzkLghS6bmH9OlpVmmfgjB5c7ORBOA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PsKpsuVi; arc=none smtp.client-ip=209.85.214.178
+	s=arc-20240116; t=1743431983; c=relaxed/simple;
+	bh=F4IoPBPIxKuR2kCihi2djBiuyz8tm2BN9Vmb6can2V4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kqKbFg5H/5AYQzEiGAR5nw3VOofo9uRS9ycuencQShJQUbWFJNQTHeVh5HeFzxajpjwzIn1JWeeVlma+FkVd6b9ToV5mbwcpK1PcbHqBite9qkhXFSn8V8HzxU4AJ2wsef5DQcsvewEJqyR4YXfrjFIEOHLB04vQ5Vga6Y0NHT0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M2D51RVf; arc=none smtp.client-ip=209.85.214.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PsKpsuVi"
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-22438c356c8so89169235ad.1;
-        Mon, 31 Mar 2025 07:36:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M2D51RVf"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-223fb0f619dso85820435ad.1
+        for <linux-iio@vger.kernel.org>; Mon, 31 Mar 2025 07:39:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1743431788; x=1744036588; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=LL7vG5/tQduxfNKHAQVZyLzm1JLahcZCX114BxDCx+0=;
-        b=PsKpsuViUPfVz1pb/zh4b9Rxy/1yAcVAXqGkVNHbbDR5gwb+WocyC3Iyywp2MpkWpk
-         Guj96vteHH79jRob2QKr2/w0xxgYIvG45W85O3slsGu4TfS5xvbj7+np5YgcktgoXn9+
-         TalIFLhsFZd+d3xF1t2LFI2tPOadRHm7w8w/JGY2Ve7u72w296YkVBCBXXRvVOHAbZk5
-         K8lkXnrbgW22NB8RoyVkS8mhd9Pd5QMPW6okbCWYSgKvTAydp/cAZO6/GsO3cJBAgvEK
-         q7bHvJbpJ1fPUQVcjxyr48ox/8TbhqV7LIOD3sIPYr+lCY5AFglUxmaOk+V7o3x52fCb
-         cK8A==
+        d=gmail.com; s=20230601; t=1743431981; x=1744036781; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=p5J/qQKPDXGIQ/WUglBCRXAyOFbtYR41Crnbh8wUuqw=;
+        b=M2D51RVf7VuZtCGpKHWljd0Gs5r9BRRAVsERhwQM8cUNKtyz0VFVBR7hIX25gIjPGT
+         vcHChDGxs1cLI/rIqfy+iiWiWqcbvawbLaARqTwMGvbpkJklLHHjC3yYiVVoSK5CMOCu
+         Bg3X78lBLbyKE+mdaMb5/DeDcqveq+33uRZdNKAOsT3+a+C+wyHFhbLcI7o9toLTJJkH
+         yDduceQPMYLXa6vJU2XTps7QQM1tPE/qfuKefpyVqCttZQjTjbt7X1p5NqWrc+KqWNR6
+         532jGbiBL1pYG2RwavyaSHtggZq4Qexfq5n0p/XCrIi/pxR5r64bETmna0RZb3bSBaAA
+         GSMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743431788; x=1744036588;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=LL7vG5/tQduxfNKHAQVZyLzm1JLahcZCX114BxDCx+0=;
-        b=qBMSA8F0dvRAvMhR83o41E68dOPKoui/f/Kp7k7Do9uOb5v+8HZWsmk6PikqAbEg8O
-         3pxNbpCBB1onvBoWHJFtzaIX5zC3L88dgn/qG+LRxybfACvKTm5JJHkHv9PegzASZxIU
-         k/ikSuuELsjRy+DpdFsLcTwIgsDhnguAsHmHbAJT+93THAA3+nQP5k56tOo6z+kgyi/5
-         C6WN5psVrlhKNrlz0ktjjoBg6djiagBVNVQxlXH4h+hPe+K9Mx6Hvxaeg4uQSy7l+kaI
-         yt27ZhXq1z1B5MSnuIJeu5m21j8g38u9r6LJePC7hM6ihn9UVjHbS6zJnBi4sWNp/CVN
-         P8mA==
-X-Forwarded-Encrypted: i=1; AJvYcCWPaXhUa3499Xe9B2xoevUrqPcQhTh1Hc1GojttHITU823k1/VkdFnA8D1bZj1rf1dwE1LDrkGrIQp4@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx1vAArDTkWKOWXEobIX3VeCO3m+LoBXl42I5FIL/HmdIPTDF1L
-	ixTjcfpq7cxMwDFqysQCUoiYiWtE7WkTbN3ePLk4uXrxysyWk7g14Er53Mv/BJCrn1OPDE6SAct
-	iLT5AXVs+vQI1jgHAKDg6WCKzpCc=
-X-Gm-Gg: ASbGncvFQzm+JuQq3k3F/0B1LyE5B75FdpBJYTcUn4YLKnAiVzvdgvh1zfSsqyKZUZ7
-	e0SB0eSx18dYKB+f6XaTnM53a0fXPbwWPw2/vGVQWGYMwQ3KxXQxIArK88yJmqQ9kP6CCbZ2Lgs
-	MZ9REOOMNUfe6v7dd7kEfAhRPnQFk=
-X-Google-Smtp-Source: AGHT+IEl+3TwIlPc8xntIMk5HRocdNKS4IRtch/DXwy3r5uEzJLN0+htJhvRxRWs9ReXWP1XEPGgVZVSs0C5mlQO3WM=
-X-Received: by 2002:a17:90b:2801:b0:2fc:ec7c:d371 with SMTP id
- 98e67ed59e1d1-30531f79fe9mr13283832a91.3.1743431788183; Mon, 31 Mar 2025
- 07:36:28 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1743431981; x=1744036781;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=p5J/qQKPDXGIQ/WUglBCRXAyOFbtYR41Crnbh8wUuqw=;
+        b=U7Kpss/bDn6NEm4SNfapF3nI7MDkr/LNmlfahkjJg8wV3HJVG3VBJ3Xzseasi/sa3s
+         KsUq8cfGc0+pQxmHjF7UcLLub//WyuCZqHvyEJLZe6XpqmUMRhA7mZNLibfvjHnVaky5
+         IXQASTyOhgsJbNz/3L9GHRoI2R1xOe5B4JCLHdA0TTiJH5mKc2DBmkSwPbWATXNUAo9U
+         vubMtdf/v88QltRD4qMDIHfXcUlBPbZCtm6YgevcXpHy2S5m7C9J105E59dyBs+T4D1H
+         zF3aZAMupw1s3HJVhf0oUPv3lejYcNKYjGuOK0O32IhnA4pHJtPxp4PdwyH21nUsCA3V
+         /KLQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVCZF487Q7dCmrojfVG9voWMFNMXxkn70rbnosRpAS4B87v29Y9kj/dUvPqCJ4K8mmq+w2xh2BBIGM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxUaT5kZxG9pigTSYJveOSn+HDD9405lKI3xpl6jSKskt5iWuh+
+	aX4J5vosgmDzNTv4HCUzGVO+1suQjelUcBhj64qr3bC8qIC2si6y
+X-Gm-Gg: ASbGncsHo4bpDopUYcRHAzg3i+bAeZpSqAFU/NeHavEAhmWXKDCN01SNxpiUObpmGKN
+	35Xiyg2hYS8Z/IVGtodvFgbrvv/5xtDBTuJt9eODtd1Y2ro7ZMSYfSIb9eSQhWMMVq6IMZyRBT0
+	hcHMBSSRPYlCTwsOhBuXIcVuWNDgWJACHuufE3xUPmrOJNFX5DZUyx0QXh7yUYgTVL7BGoeUxsA
+	mcwxVxQm7oSnriaYdEhHmSFDDhlsoFhYlBCHBbd8aRe99CfXIfEnUg4ouNqASir39vIsgwmXyUn
+	vNlALdETpELHE/hKHFX57Wx5VN1F1fKM5+tGDl5Bq1xqAF2SFQ20rW0=
+X-Google-Smtp-Source: AGHT+IHCMWDzdFTdh6ca4DXz/W3LjGWBLlc8gKE9NjGyjjtuLYtdtH3Mg/ni3QrxA/aQHRW9VggqwA==
+X-Received: by 2002:a17:902:e550:b0:223:5945:ffd5 with SMTP id d9443c01a7336-2292f9e652dmr146180605ad.32.1743431981521;
+        Mon, 31 Mar 2025 07:39:41 -0700 (PDT)
+Received: from localhost ([2804:30c:1f4f:6800:9245:316f:6226:cc1e])
+        by smtp.gmail.com with UTF8SMTPSA id 98e67ed59e1d1-30516d3ea84sm7317979a91.8.2025.03.31.07.39.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Mar 2025 07:39:40 -0700 (PDT)
+Date: Mon, 31 Mar 2025 11:40:44 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] iio: adc: ad7124: Fix 3dB filter frequency reading
+Message-ID: <Z-qpbInHvb3PjMiu@debian-BULLSEYE-live-builder-AMD64>
+References: <20250317115247.3735016-5-u.kleine-koenig@baylibre.com>
+ <20250317115247.3735016-6-u.kleine-koenig@baylibre.com>
+ <Z-RFaLU5jtOScJiu@debian-BULLSEYE-live-builder-AMD64>
+ <p23r6fxfbbgszqaew42dby5yjwio4xipdh3y47rr3wbso6fwcb@ej7ut3sruzoa>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250329164905.632491-1-gye976@gmail.com> <20250329164905.632491-2-gye976@gmail.com>
- <20250330150410.23b148da@jic23-huawei>
-In-Reply-To: <20250330150410.23b148da@jic23-huawei>
-From: gyeyoung <gye976@gmail.com>
-Date: Mon, 31 Mar 2025 23:36:17 +0900
-X-Gm-Features: AQ5f1JoZbFBHT33j6UAwVVBPHIG8N5B-wGlpOGkmQfVIjzjGWmYYS66YbuYl89g
-Message-ID: <CAKbEznv9hRhto2tF5zwrGJ=7zfT=VKq2POdWKCRgY1UjgP6pUg@mail.gmail.com>
-Subject: Re: [PATCH 1/3] iio: chemical: add support for winsen MHZ19B CO2 sensor
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, lars@metafoo.de, 
-	gustavograzs@gmail.com, javier.carrasco.cruz@gmail.com, robh@kernel.org, 
-	krzk+dt@kernel.org, conor+dt@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <p23r6fxfbbgszqaew42dby5yjwio4xipdh3y47rr3wbso6fwcb@ej7ut3sruzoa>
 
-Hello Jonathan, thank you for the review.
-Sorry for the late response.
+On 03/31, Uwe Kleine-König wrote:
+> Hello,
+> 
+> On Wed, Mar 26, 2025 at 03:20:24PM -0300, Marcelo Schmitt wrote:
+> > Hello,
+> > 
+> > On 03/17, Uwe Kleine-König wrote:
+> > > The sinc4 filter has a factor 0.23 between Output Data Rate and f_{3dB}
+> > > and for sinc3 the factor is 0.272 according to the data sheets for
+> > > ad7124-4 (Rev. E.) and ad7124-8 (Rev. F).
+> > 
+> > Potentially dumb question but, how do we get to these factors between ODR and
+> > 3dB frequency?
+> > Looking at Table 8, Table 18, Table 28, and 
+> > dividing values from Output Data Rate (SPS) column by respective
+> > values from f3dB (Hz) column gives me 4.3478.
+> 
+> Using the datasheet for AD7124-4 Rev. E in Table 8 we have for example:
+> 
+> 	ODR = 19200 SPS
+> 	f_{3dB} = 4416 Hz
+> 
+> So it's either multiplying with 0.23 (as does my patch) or dividing by
+> 4.3478260869565215 (as you found).
 
-> > +
-> > +             /* at least 1000ppm */
-> > +             if (ppm < 1000 || ppm > 5000) {
-> > +                     dev_dbg(&indio_dev->dev, "span point ppm should be 1000~5000");
-> > +                     return -EINVAL;
-> > +             }
-> > +
-> > +             cmd_buf[3] = ppm / 256;
-> > +             cmd_buf[4] = ppm % 256;
->
-> That's an elaborate way of doing
->                 unaligned_put_be16()
-> so use that instead as it's also clearly documenting what is going on.
+Got it. Thanks for clarifying that out.
 
-Since I couldn't find a function like 'unaligned_put_be16',
-but I found a function like 'be16_to_cpu', so I will use that.
+> 
+> But having said that, a definitive formula would be nice instead of
+> guessing that there is a linear correlation between the columns and
+> determining the factor yourself. Note that in Table 10 the f_{3dB} value
+> corresponding to ODR = 15 SPS should be 4.08 Hz. The 5.44 Hz specified
+> there would be the right value for ODR = 20 SPS which is a value that
+> occurs in Tables 8 and 9, but not 10. :-\
 
+I see. Yeah, I feel like datasheets are similar to device drivers in the sense
+that they tend to get better over time. datasheets for newer parts often have
+more information and better explanations compared to old ones. Anyways,
 
-
-
-> > +struct iio_chan_spec_ext_info mhz19b_co2_ext_info[] = {
-> > +     {
-> > +             .name = "zero_point",
->
-> This is custom ABI.  Before we consider that in detail we
-> need documentation in
-> Documentation/ABI/testing/sysfs-bus-iio-mhz19b
-> It is much easier to review ABI with docs.
-> All 3 are direct commands to the device, so I've no idea from
-> what we have here on what they do.
->
-> Superficially this one looks like a calibration control.
-> There is existing ABI for that.
-
- I did it arbitrarily. I will refer to the documentation
-and rewrite it to be as compatible as possible with the existing ABI, thanks.
-
-
-
-
->
-> > +
-> > +static void mhz19b_write_wakeup(struct serdev_device *serdev)
-> > +{
-> > +     struct iio_dev *indio_dev;
-> > +
-> > +     indio_dev = dev_get_drvdata(&serdev->dev);
-> > +
-> > +     dev_dbg(&indio_dev->dev, "mhz19b_write_wakeup");
->
-> This doesn't do anything which makes me suspicious. Would
-> using serdev_device_write_wakeup() as the callback make
-> sense?  I'm not that familiar with serial drivers but I can
-> see that a number of other drivers do that.
->
-
-'serdev_device_write_wakeup' member function is mandatory.
-If this function is not set and remains NULL, the
-'serdev_device_write' function will just return -EINVAL.
-
-The following is a part of serdev_device_write().
-------------
-ssize_t serdev_device_write(struct serdev_device *serdev, const u8 *buf,
-   size_t count, long timeout)
-{
-struct serdev_controller *ctrl = serdev->ctrl;
-size_t written = 0;
-ssize_t ret;
-
-if (!ctrl || !ctrl->ops->write_buf || !serdev->ops->write_wakeup)
-return -EINVAL;
-.
-.
-.
-------------
-
-> > +}
-> > +
-> > +static const struct serdev_device_ops mhz19b_ops = {
-> > +     .receive_buf = mhz19b_receive_buf,
-> > +     .write_wakeup = mhz19b_write_wakeup,
-> > +};
-
-
-
-
-> > +static int mhz19b_probe(struct serdev_device *serdev)
-> > +{
-> > +     int ret;
-> > +
-> > +     struct device *dev;
-> > +
-> > +     dev = &serdev->dev;
-> > +     serdev_device_set_client_ops(serdev, &mhz19b_ops);
-> > +
-> > +     ret = devm_serdev_device_open(dev, serdev);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     serdev_device_set_baudrate(serdev, 9600);
-> > +     serdev_device_set_flow_control(serdev, false);
-> > +     ret = serdev_device_set_parity(serdev, SERDEV_PARITY_NONE);
-> > +     if (ret < 0)
-> > +             return ret;
->
-> Why check return value from this call but not the previous two?
-> I'm not immediately able to see a reason this is more likely to fail.
-
-'serdev_device_set_flow_control' is a void function.
-and as far as I know, 'serdev_device_set_baudrate' does not return an error.
-but I'll check again.
-
-I'll revise it considering your overall coding style guide.
+Reviewed-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 
 Thanks,
-Gyeyoung Baek
+Marcelo
