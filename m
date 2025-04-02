@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 785411E5B8B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4A5C1E9907;
 	Wed,  2 Apr 2025 19:15:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743621305; cv=none; b=nBqwtQzjtQ6fOr5+N1ZRe09C0As586lz+3f0O2B9SaitKp73W/FxDnUy3JGH2F5NX5MQe6SjMfbZyR14a5l3b+eEQEZbacj89oEKE8cxmJPYbQgQ21MrlRH74hSeipAR1evXduJ3lEaKm/Dvh7KmvlZZlfPkTHxoDs6sZ0xcW6s=
+	t=1743621305; cv=none; b=eWAko5hzwwQ9+kgt1vfmwel47Qkj6qi5BngQg5Ks4zPGZmGMpLHktK7T2ys0N8wnULDtNHYk12+OCqrqcJjnH1Q/T/PcG/6BZRBjPJeYXnpMbw1Rjc1WDFPnCLZG2kXAwCWYvb/xPpOmHC5ozfd08SRuuhSaa0xyVorlcOUCkn0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1743621305; c=relaxed/simple;
-	bh=Cfri1NLIzlUgZilRlHcF6Uc8bZB/2/S835fUpiVCEG8=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=CNkRR4LhpXhCOVwqWBsr7B7QHij2MYlDnftOBkeRDmGIeyYDgD+YmSijiA9LUdLAHgtzaIQhlNvyHjnKZhz1DOAIUVrsE07ey8C2JEjn2Hivxb/aXrgh8ya3eqxAWRUEzuR87OfGHtqvrSXNwUHHOkRpllD8Fs6wnF7RUuIJGWQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cC4e/79q; arc=none smtp.client-ip=10.30.226.201
+	bh=/6ORwPGEylk2ensJ45ZIl+JuJVNYG1Rvk/NerUkupug=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=V5UohpC9Ci6YuYPzuKjcRVlAXioRVfmAt1yEhta5ewxEPK3Dmi9EeLIF7GiJSc7pL+78asKGPGhX9oJjpJ15aZ4X+dtENMtflO10vUfmERK1hx1L83sK+f/2l0ORFzx3AJgfV/YHrLe6Z+tp0kitYUGQ5rGrn+p5wByaOBKkR+A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PzhYOeS4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cC4e/79q"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E602EC4CEDD;
-	Wed,  2 Apr 2025 19:15:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PzhYOeS4"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7B141C4CEEA;
+	Wed,  2 Apr 2025 19:15:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1743621305;
-	bh=Cfri1NLIzlUgZilRlHcF6Uc8bZB/2/S835fUpiVCEG8=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=cC4e/79qpde9MOTLi/aW07upCIKiF0VAxJRvkt9qlS73es0zfaxeJ2DaRW6hzSjlK
-	 9+FXMSTSWDmOGAEcJNFUuGZkrlp+B1inA78Zh6zZydXeuupC55E9yG3fwO8RFTIvjv
-	 Mq3byWjlYwLBIAnbAmpIpKSe3qTVNGJbczaqh613Sksr1T5WQSFTTcayhTvzaLbuY5
-	 DfrpC/JYAfoC5N6khGf+S+HS5p9D5f3BaHKFun2WTThOCVBDzZIgnK0rzyrtH13321
-	 cX3leNX3g1xmt/hMYcqcnN9+CizWkYz4Y9OmKsRTCXLmSXCM9O7Wv5nUQ5MRyXRQat
-	 gu7JOF0dvXnVQ==
+	bh=/6ORwPGEylk2ensJ45ZIl+JuJVNYG1Rvk/NerUkupug=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=PzhYOeS4NRLsh4sJf+eypzdtQPJJxbI3KdhTBTmR0KJgQqMhHXj4PoMYSR7I4c0vk
+	 rhcXGW5M9WQMt4hTgHjDM0zB+poLLZno9n1tY9qrdHZsU7LF9N/KpLLL9iC40V7Pmv
+	 oQjcbov0CjyaZodOAGwSmXbZDUlmboTPKShiCU4/7LT0C0skkoFXLlPENABvDgEfN9
+	 zkJFGn/Z7NUwq5Mj/f+QuEkXayIX2Kn5frzgI65KI0CPM95JsqmKQ/aaLQ1G/iwjTE
+	 +kVRE0Rg6FYgWOOowDzU+c7QyStLSTBbuTzHrWh+zvPMpnjiUSO8lR2EodG9r4TaKp
+	 FbskvvKeG0ZWQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF3CC36017;
-	Wed,  2 Apr 2025 19:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72CB4C3601B;
+	Wed,  2 Apr 2025 19:15:05 +0000 (UTC)
 From: David Heidelberg via B4 Relay <devnull+david.ixit.cz@kernel.org>
-Subject: [PATCH v3 0/5] iio: light: Modernize al3010 and al3320a codebase
-Date: Wed, 02 Apr 2025 21:14:12 +0200
-Message-Id: <20250402-al3010-iio-regmap-v3-0-cc3da273b5b2@ixit.cz>
+Date: Wed, 02 Apr 2025 21:14:17 +0200
+Subject: [PATCH v3 5/5] iio: light: al3320a: Implement regmap support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,87 +40,225 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAISM7WcC/32NQQ6CMBBFr0K6tmbasVJceQ/josIAkyiQljQo4
- e4WViyMy/eT9/4sAnmmIC7ZLDxFDtx3CfCQibJ1XUOSq8RCgzaAYKV7IiiQzL301LzcIAFtSQ6
- L2ppKJG/wVPO0NW/3xC2Hsffv7SKqdf1Xi0qCfJxzbdCQ1QqvPPF4LD9ibUW981Xxy9fJV6gg1
- 0UF5rTzl2X5Arjh/xHwAAAA
-X-Change-ID: 20250308-al3010-iio-regmap-038cea39f85d
+Message-Id: <20250402-al3010-iio-regmap-v3-5-cc3da273b5b2@ixit.cz>
+References: <20250402-al3010-iio-regmap-v3-0-cc3da273b5b2@ixit.cz>
+In-Reply-To: <20250402-al3010-iio-regmap-v3-0-cc3da273b5b2@ixit.cz>
 To: Jonathan Cameron <jic23@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>
 Cc: Svyatoslav Ryhel <clamor95@gmail.com>, 
  Robert Eckelmann <longnoserob@gmail.com>, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, David Heidelberg <david@ixit.cz>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2104; i=david@ixit.cz;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5785; i=david@ixit.cz;
  h=from:subject:message-id;
- bh=Cfri1NLIzlUgZilRlHcF6Uc8bZB/2/S835fUpiVCEG8=;
- b=owEBbQKS/ZANAwAIAWACP8TTSSByAcsmYgBn7Yy2OJq9mTFL96N/Fw3kTF1F7S/tllq1bbteS
- 1f06jEzeaCJAjMEAAEIAB0WIQTXegnP7twrvVOnBHRgAj/E00kgcgUCZ+2MtgAKCRBgAj/E00kg
- cqp4D/9rC1CkpeBs9N5PZlrTlGgeR1Caex2oJyaDmfKIYtJknSCVfJJE9eXHrkd4Lq33sPTwR1Q
- oyn0Tm2Ej1Ca5DxgBTeMbDG00KZOBFECTv+H0QgwB3zLJRmVi4Ua1F92syzWAhjFM6N2zoYRB0h
- wz5Cnuf8MhcUMfZcY4ZK5mVt+sRD/z8PbB2I1fjXrJzC7j7FOkFOmEQgEBIeEwkKI1K6yDN95Bu
- 6MtSzfEPH7HTu+V1o8omsMJPrB/x2ptthgnztBDLKBHZqj4Xsi6kMRGCiGu+7J1eq9P2gUBnZ/S
- 6wfIFinlzWvC/rF32x2SQZr0JE+s7GpiHSFndbSTu7Rr6g24OsgBrocSgqhqRAeW/zc7A6DxjZg
- 2qemO+7z+3EOiIOmJskJW/Po1PZOZekyeRZEtQmL8QjvK34hqYn5A3CGavAbqkSbbh15N7WXu0D
- IvS0u5E6jaczlcS9aBDtPncp7kIV3cAjA+iq779rq9kwum0lP3sIMrjr80j0Wn2ZE6aAYARFXOg
- YN16VnaLzVHUtVcC+1/iP+KvJizQxB1aeYTwLfOhbSdJe6Ji5a1K4L/jjBjgif3slYixUEiDpe6
- +2XSk2/vOZffHExSjgk4PEpmCzI6+yIPpQ/o57xES9IlfH/Qy31pFWiRlUYuHF/I3vRNGiC3aZG
- RhjSMrAH4zPmdKA==
+ bh=VF2IB659WVA5EWuUppV3rVlQHRbT5K4V8Zm1qxQVpcY=;
+ b=owEBbQKS/ZANAwAIAWACP8TTSSByAcsmYgBn7Yy3UYYbdVwzWjvefWbwlC9fPFuWVa7X+c7J7
+ glWpj6MxlSJAjMEAAEIAB0WIQTXegnP7twrvVOnBHRgAj/E00kgcgUCZ+2MtwAKCRBgAj/E00kg
+ cnieEADOUjVWO+EZ7SnPPLT/MviCrwZLrkrhnBolAMv/Mc9PWIh5Frxn77DKupA0yQlvNw4wSx0
+ rqV3rk3g70E0v/hr3Xchouc9htwHFLMqwLY4POatTRIH83HvX8BvTACMT2xxHhCGcdxEdz57Uby
+ uJ5GJxfOPn59l6wfgsG/gc7JXH0HUYUoWFAq61IGyD5/XZ16J3XW1eeJ7vad5b8fvWta644tSlz
+ TKB4n+cF6yQA5mV9lfoSZqs/3mfjon7M5Opt/HKvkzuH8QLg7s7RGHCCufwU2C348OZGTgg5Oa8
+ RyA4WuygFPrBYWY+38Pk64b+Q932ZOgKG5GNkjmxOtKfGcHtf5/U3S3331xlf/0DqFg1SS95voE
+ f7BGR3I5R81U0U2l00q5rI+CPmaC7EnpwwWGQEOaq4na+ZYK5GfuFYErwkkzrm4+OOR6Fo590vw
+ dipW06/DWvZqKN+uSeBbjvRkbsAS8aFz231pplz7KpEutM1ocyzX7Wnd+izdHtzS6Jy5J0no3zq
+ 5MiYZKLyo23Jd4UwIzcOJUmBkZgOGomYkZLk1A/9AJqiX3pYV00OhVgtWkSJHJV4HyEVuT/BhQI
+ Mrfgocgel+YmxN+iM0Inss30L4K/Ewifwdd3B/kp9e50mhvOszCY3ztpuLSP9i1qjx043OzmfFr
+ ZiINJ5K29vUxqSA==
 X-Developer-Key: i=david@ixit.cz; a=openpgp;
  fpr=D77A09CFEEDC2BBD53A7047460023FC4D3492072
 X-Endpoint-Received: by B4 Relay for david@ixit.cz/default with auth_id=355
 X-Original-From: David Heidelberg <david@ixit.cz>
 Reply-To: david@ixit.cz
 
-This series aims to improve code readability and modernize it to align
-with the recently upstreamed AL3000a.
+From: David Heidelberg <david@ixit.cz>
 
-Apart from slightly improved error reporting, and error handling
-there should be no functional changes.
+Modernize and clean up the driver using the regmap framework.
 
-Module  before after
-al3010  72 kB  58 kB
-al3320a 72 kB  58 kB
+With the regmap implementation, the compiler produces
+a significantly smaller module.
+
+Size before: 72 kB
+Size after:  58 kB
 
 Signed-off-by: David Heidelberg <david@ixit.cz>
 ---
-Changes in v3:
-- Stripped patches merged from second version of patchset.
-- Dropped iio: light: al3010: Move devm_add_action_or_reset back to _probe
-  in favor of opposite approach moving devm_add.. to _init for al3xx0a:
-  - iio: light: al3000a: Fix an error handling path in al3000a_probe()
-  - iio: light: al3320a: Fix an error handling path in al3320a_probe()
-- Link to v2: https://lore.kernel.org/r/20250319-al3010-iio-regmap-v2-0-1310729d0543@ixit.cz
+ drivers/iio/light/al3320a.c | 82 +++++++++++++++++++++++++--------------------
+ 1 file changed, 46 insertions(+), 36 deletions(-)
 
-Changes in v2:
-- Dropped Daniel's email update.
-- Dropped DRV_NAME introduction for al3000a
-- Added DRV_NAME define removal for al3010 and al3320a.
-- Splitted unsigned int conversion into separate patches.
-- Replaced generic value with specific raw and gain variable.
-- Use dev_err_probe() for error handling.
-- Separated devm_add_action_or_reset move from _init back to _probe.
-- Dropped copyright update.
-- Link to v1: https://lore.kernel.org/r/20250308-al3010-iio-regmap-v1-0-b672535e8213@ixit.cz
+diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
+index 005a7664568667b5cf9419baba6764f7b4e8fc39..05b6ec217ee8103e3527948aa2da1af75c2a495e 100644
+--- a/drivers/iio/light/al3320a.c
++++ b/drivers/iio/light/al3320a.c
+@@ -15,6 +15,7 @@
+ #include <linux/bitfield.h>
+ #include <linux/i2c.h>
+ #include <linux/module.h>
++#include <linux/regmap.h>
+ #include <linux/mod_devicetable.h>
+ 
+ #include <linux/iio/iio.h>
+@@ -57,8 +58,14 @@ static const int al3320a_scales[][2] = {
+ 	{0, 512000}, {0, 128000}, {0, 32000}, {0, 10000}
+ };
+ 
++static const struct regmap_config al3320a_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = AL3320A_REG_HIGH_THRESH_HIGH,
++};
++
+ struct al3320a_data {
+-	struct i2c_client *client;
++	struct regmap *regmap;
+ };
+ 
+ static const struct iio_chan_spec al3320a_channels[] = {
+@@ -80,25 +87,28 @@ static const struct attribute_group al3320a_attribute_group = {
+ 	.attrs = al3320a_attributes,
+ };
+ 
+-static int al3320a_set_pwr_on(struct i2c_client *client)
++static int al3320a_set_pwr_on(struct al3320a_data *data)
+ {
+-	return i2c_smbus_write_byte_data(client, AL3320A_REG_CONFIG, AL3320A_CONFIG_ENABLE);
++	return regmap_write(data->regmap, AL3320A_REG_CONFIG, AL3320A_CONFIG_ENABLE);
+ }
+ 
+ static void al3320a_set_pwr_off(void *_data)
+ {
+ 	struct al3320a_data *data = _data;
++	struct device *dev = regmap_get_device(data->regmap);
++	int ret;
+ 
+-	i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG, AL3320A_CONFIG_DISABLE);
++	ret = regmap_write(data->regmap, AL3320A_REG_CONFIG, AL3320A_CONFIG_DISABLE);
++	if (ret)
++		dev_err(dev, "failed to write system register\n");
+ }
+ 
+ static int al3320a_init(struct al3320a_data *data)
+ {
+ 	int ret;
+ 
+-	ret = al3320a_set_pwr_on(data->client);
+-
+-	if (ret < 0)
++	ret = al3320a_set_pwr_on(data);
++	if (ret)
+ 		return ret;
+ 
+ 	ret = devm_add_action_or_reset(&data->client->dev,
+@@ -107,23 +117,18 @@ static int al3320a_init(struct al3320a_data *data)
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "failed to add action\n");
+ 
+-	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG_RANGE,
+-					FIELD_PREP(AL3320A_GAIN_MASK,
+-						   AL3320A_RANGE_3));
+-	if (ret < 0)
+-		return ret;
+-
+-	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_MEAN_TIME,
+-					AL3320A_DEFAULT_MEAN_TIME);
+-	if (ret < 0)
++	ret = regmap_write(data->regmap, AL3320A_REG_CONFIG_RANGE,
++			   FIELD_PREP(AL3320A_GAIN_MASK, AL3320A_RANGE_3));
++	if (ret)
+ 		return ret;
+ 
+-	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_WAIT,
+-					AL3320A_DEFAULT_WAIT_TIME);
+-	if (ret < 0)
++	ret = regmap_write(data->regmap, AL3320A_REG_MEAN_TIME,
++			   AL3320A_DEFAULT_MEAN_TIME);
++	if (ret)
+ 		return ret;
+ 
+-	return 0;
++	return regmap_write(data->regmap, AL3320A_REG_WAIT,
++			    AL3320A_DEFAULT_WAIT_TIME);
+ }
+ 
+ static int al3320a_read_raw(struct iio_dev *indio_dev,
+@@ -131,7 +136,7 @@ static int al3320a_read_raw(struct iio_dev *indio_dev,
+ 			    int *val2, long mask)
+ {
+ 	struct al3320a_data *data = iio_priv(indio_dev);
+-	int ret;
++	int ret, gain, raw;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -140,21 +145,21 @@ static int al3320a_read_raw(struct iio_dev *indio_dev,
+ 		 * - low byte of output is stored at AL3320A_REG_DATA_LOW
+ 		 * - high byte of output is stored at AL3320A_REG_DATA_LOW + 1
+ 		 */
+-		ret = i2c_smbus_read_word_data(data->client,
+-					       AL3320A_REG_DATA_LOW);
+-		if (ret < 0)
++		ret = regmap_read(data->regmap, AL3320A_REG_DATA_LOW, &raw);
++		if (ret)
+ 			return ret;
+-		*val = ret;
++
++		*val = raw;
++
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+-		ret = i2c_smbus_read_byte_data(data->client,
+-					       AL3320A_REG_CONFIG_RANGE);
+-		if (ret < 0)
++		ret = regmap_read(data->regmap, AL3320A_REG_CONFIG_RANGE, &gain);
++		if (ret)
+ 			return ret;
+ 
+-		ret = FIELD_GET(AL3320A_GAIN_MASK, ret);
+-		*val = al3320a_scales[ret][0];
+-		*val2 = al3320a_scales[ret][1];
++		gain = FIELD_GET(AL3320A_GAIN_MASK, gain);
++		*val = al3320a_scales[gain][0];
++		*val2 = al3320a_scales[gain][1];
+ 
+ 		return IIO_VAL_INT_PLUS_MICRO;
+ 	}
+@@ -175,9 +180,8 @@ static int al3320a_write_raw(struct iio_dev *indio_dev,
+ 			    val2 != al3320a_scales[i][1])
+ 				continue;
+ 
+-			return i2c_smbus_write_byte_data(data->client,
+-					AL3320A_REG_CONFIG_RANGE,
+-					FIELD_PREP(AL3320A_GAIN_MASK, i));
++			return regmap_write(data->regmap, AL3320A_REG_CONFIG_RANGE,
++					    FIELD_PREP(AL3320A_GAIN_MASK, i));
+ 		}
+ 		break;
+ 	}
+@@ -203,7 +207,11 @@ static int al3320a_probe(struct i2c_client *client)
+ 
+ 	data = iio_priv(indio_dev);
+ 	i2c_set_clientdata(client, indio_dev);
+-	data->client = client;
++
++	data->regmap = devm_regmap_init_i2c(client, &al3320a_regmap_config);
++	if (IS_ERR(data->regmap))
++		return dev_err_probe(dev, PTR_ERR(data->regmap),
++				     "cannot allocate regmap\n");
+ 
+ 	indio_dev->info = &al3320a_info;
+ 	indio_dev->name = "al3320a";
+@@ -230,7 +238,9 @@ static int al3320a_suspend(struct device *dev)
+ 
+ static int al3320a_resume(struct device *dev)
+ {
+-	return al3320a_set_pwr_on(to_i2c_client(dev));
++	struct al3320a_data *data = iio_priv(dev_get_drvdata(dev));
++
++	return al3320a_set_pwr_on(data);
+ }
+ 
+ static DEFINE_SIMPLE_DEV_PM_OPS(al3320a_pm_ops, al3320a_suspend,
 
----
-David Heidelberg (5):
-      iio: light: al3010: Improve al3010_init error handling with dev_err_probe()
-      iio: light: al3000a: Fix an error handling path in al3000a_probe()
-      iio: light: al3320a: Fix an error handling path in al3320a_probe()
-      iio: light: al3010: Implement regmap support
-      iio: light: al3320a: Implement regmap support
-
- drivers/iio/light/al3000a.c |  8 ++--
- drivers/iio/light/al3010.c  | 80 +++++++++++++++++++++-------------------
- drivers/iio/light/al3320a.c | 90 +++++++++++++++++++++++++--------------------
- 3 files changed, 98 insertions(+), 80 deletions(-)
----
-base-commit: f8ffc92ae9052e6615896052f0c5b808bfc17520
-change-id: 20250308-al3010-iio-regmap-038cea39f85d
-
-Best regards,
 -- 
-David Heidelberg <david@ixit.cz>
+2.49.0
 
 
