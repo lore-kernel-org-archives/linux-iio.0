@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B85701EE028;
-	Wed,  2 Apr 2025 19:15:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A044D2AF19;
+	Wed,  2 Apr 2025 19:33:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743621306; cv=none; b=Xt866Vs34EjcMiUkugRGc64ANNJScADloPpyRaohOJJUpx1fRVMcfnP8zHqDwUcUGfI3gxWXmwJA0imESM4EgyYUCWjB3WiE+m9m4C1Z3K5f/FKHrwT89KscE8pHlKUnji3qB9WuGGFrWFJdcvj7thSPxwYIat2F5GgQFOgOBXY=
+	t=1743622412; cv=none; b=a2tEfYWzfCPKxhfEUiG8dKbmmL5wxiUdyRLCEcgqUFyaiQSdu8qoKeEq/h/uZoFsES42zg4QPCubYghfQ0jCsM0YxPHcOCQrl/p1bTUHZsBuyBbEH2usMC8wd69WKxzPbzcS3+lJbZ1Voj2r6x1fTVhm/Lyf6iDCmCfV/rf8niw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743621306; c=relaxed/simple;
-	bh=t8SlwYvfr0dVPDmeuPmUptlt1LXH2OgT7yF+9hGe7LY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Yzbc5/32h7LIAiOwHBVzPYNvP5JRDxdfJmeQGq0m+VyEdaTTmAw5047E0HvqrHdBMAmgolNYx7MtZEP90AkfG5NQ7L8/9w6f1dwwPLUaknj6stXihVyUHalpUbGXn2x4pW+Dpn7K0otyxcUEdBy9V8VVHRqG3IksegHlE7Nyz54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dc78sARN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1743622412; c=relaxed/simple;
+	bh=h8tuvLDl3dyrMAHTp36dgdIbL6QYBpALFuJOwvb3DtQ=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=kt26NzAPNoCuoA+ueqEWFzKfBIIx9gGHVJfPFUp11/al3vakpJMB63e5GJyXY5cMckED+dBREvAYJ0A9bC4tZ3kp3jkQ0S0RB57RYKGiPQkIL7kY8REwVGQAGZKTGy02Rfz6gy3puUHnbJ1mpYwEz+YzyCe3+zMsZwwxznMHIkg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pe2YXHXR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dc78sARN"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2B2A9C4CEEB;
-	Wed,  2 Apr 2025 19:15:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pe2YXHXR"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 14078C4CEDD;
+	Wed,  2 Apr 2025 19:33:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1743621305;
-	bh=t8SlwYvfr0dVPDmeuPmUptlt1LXH2OgT7yF+9hGe7LY=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=dc78sARNgxchz/KgHK9dXtQWdCPhhIeHRmGmv5a/McmuVhRgbveu2A4T0YQUVKmJz
-	 FFz3/SW2XdggyUgiEETH4aeEHB/o0fcKaW7VD1k0KWjcguRATsAteYLNpqL8d6W/xD
-	 6rHgXsr61/zQ3xcYpBJNUB5aXg59AZB9xfz2vY9jN2yrZDi62nrkdbhnmvrR47nSNF
-	 pb0fSiufIb/WFs8bkEDBVAxtCvDEkF8fG1JLaHPtmIQviy8OzQvuKg37luQkCxECOf
-	 5T+fM3V4oHYNbQNPkoLYD4Bx8wk4VRsVcmL2ponuPCYoDkHvi9O6LCXblxgi9ARJO3
-	 eUc4BudRqxcpQ==
+	s=k20201202; t=1743622412;
+	bh=h8tuvLDl3dyrMAHTp36dgdIbL6QYBpALFuJOwvb3DtQ=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=pe2YXHXRWIEYKHul3DyG0W/0KfP3tuve826otuEOZouchVcNQf+yfecA286W8vnSM
+	 Vps1UlVTQYn/CU46JZf3kOvzK89KNspswinzY2rwOu6emeu3XfKXHOVa1bf990XKGl
+	 wL5qpJEKqyR0CaNCL7Tk9VS/n69T7jjIBA/V3kOdxKJMQODK64/1ag/BqR9FE0emPl
+	 EEKo5GEAAlGUCCHe4afn9Kss0uyg1k2dR0BO2W8Dpe6b2TNmMUTe9t8SckWTNHnbI7
+	 3Vg7WfA88aoLdokC+W7gW7XeyhwviN/5PCL5MVRIfSPGehpcqPX+IvpR+XSRIE2HV/
+	 gyE6T+mEzIedQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20420C3601B;
-	Wed,  2 Apr 2025 19:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3340C36018;
+	Wed,  2 Apr 2025 19:33:31 +0000 (UTC)
 From: David Heidelberg via B4 Relay <devnull+david.ixit.cz@kernel.org>
-Date: Wed, 02 Apr 2025 21:14:15 +0200
-Subject: [PATCH v3 3/5] iio: light: al3320a: Fix an error handling path in
- al3320a_probe()
+Subject: [PATCH v4 0/5] iio: light: Modernize al3010 and al3320a codebase
+Date: Wed, 02 Apr 2025 21:33:23 +0200
+Message-Id: <20250402-al3010-iio-regmap-v4-0-d189bea87261@ixit.cz>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,80 +40,92 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250402-al3010-iio-regmap-v3-3-cc3da273b5b2@ixit.cz>
-References: <20250402-al3010-iio-regmap-v3-0-cc3da273b5b2@ixit.cz>
-In-Reply-To: <20250402-al3010-iio-regmap-v3-0-cc3da273b5b2@ixit.cz>
+X-B4-Tracking: v=1; b=H4sIAASR7WcC/33NQQ6CMBCF4auQrq2ZzlABV97DuCilwCQqpBCCE
+ u5uYYMxxOU/yfdmEp3z7Dpxjibh3cAdN88Q8SEStjbPykkuQgsE1ECQSnMnUCCZG+ld9TCtBEq
+ tM5SVqS5EcK13JY/r5vUWuuaub/xrfTGo5fpvbVASZH5KUJN2KSq68Mj90b7FsjXgl1fZnsfgF
+ SlIMCtAxz+eNh8D7nkK3loqDCaU6xw3P8/zByLKH7IwAQAA
+X-Change-ID: 20250308-al3010-iio-regmap-038cea39f85d
 To: Jonathan Cameron <jic23@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>
 Cc: Svyatoslav Ryhel <clamor95@gmail.com>, 
  Robert Eckelmann <longnoserob@gmail.com>, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, David Heidelberg <david@ixit.cz>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1336; i=david@ixit.cz;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2341; i=david@ixit.cz;
  h=from:subject:message-id;
- bh=xUR9gZOnjOoo0snJLgIn15f7Ro6lut1DvCDtNBnZliU=;
- b=owEBbQKS/ZANAwAIAWACP8TTSSByAcsmYgBn7Yy3HOIVp0gNPuYuFIC9TWknQMBqKiZtTfBDQ
- NHggVCvdbOJAjMEAAEIAB0WIQTXegnP7twrvVOnBHRgAj/E00kgcgUCZ+2MtwAKCRBgAj/E00kg
- ci+oEACT4SQ9qhj6AogU5XSeGSWVeoJmSF1/gDjIJFsYEk4x+IMWOilEld9etR8R9AVLgIIUz2N
- M9XEf73ktQ/UQNqq1Y6qRuRvWCOWW7QLYMFR6g0ufFcxfMRwQTpHfEQrTJfWfAvR5iDxuwqW7aD
- AhqQOR0tskfNAd4UTdWkKWqILRrcJW1Md9422fRpwNlFasiCAKMhaoGltqJULcFclEAw4y0eVtK
- 6w+LB1dR4R8YOU1kQmMJ6a6BzjpYezVSK6dOIBUw6L0UhO2ZDRWvXXPIntRIHq62Gg5XfCt0cXd
- Y4LIdBmPwonGzkVzGkBXeybA1dd7rDtXvdqv+eB3NRt0Um6+swHgVKDA2/BXkwwt/88/5e8afj7
- ph4GQH84p1GCEeudA5uGU64zN29pbQ8T+UpesfiT3XT2FV5siAuNedItlWrxu6bVJZBiVx/eGAH
- JlfIVjOvS3Qc77l+RODFHHDMySEZuQc8gnqN5isvQpjivajDa49PcikSQqZnHbAq5hhTsdRfGpb
- zJuJAeAIlyPpDH9c7R06S9WVyu9EpEcC7ceiWSQXrBXiaOmatqCvuAIb5NBXjIU+Bsvs24nJw5j
- YHDpQE6BMy8L2TIMAfn+VlR993h+krjuEwYaXVeN2FTjJN9uLTZ9vLqKPPRz3OMeGA8XOJlQqX+
- 53gPEkok5JDFmDw==
+ bh=h8tuvLDl3dyrMAHTp36dgdIbL6QYBpALFuJOwvb3DtQ=;
+ b=owEBbQKS/ZANAwAIAWACP8TTSSByAcsmYgBn7ZEJdW8z5YiN6QhjsBgTBRscuK546wMo+6Olk
+ VdZn8oC+LKJAjMEAAEIAB0WIQTXegnP7twrvVOnBHRgAj/E00kgcgUCZ+2RCQAKCRBgAj/E00kg
+ cvqUEADIYmKqGehh/rtSMJdz0ro0TLyKN6/f7m/2eQ03EGb0w4CeBqTKAKJxK1a6PfGDttTkkmo
+ eQ21rH2Du1l4baXDGm02JvjCzRVMUj+qb4TbRvaH4+tm0sLLaSGtdyydQV2o20pXoA2l9kmyo0U
+ G3wYLWfSSeomYLNROOPIhF9BdDav4ja9GQlo+/oNM+X3GIs2RXR7reLZy9X4DO3VjIvT76itLiC
+ IMcJiXVNg60XBY52hibee2tPxfo5x/O+cWipMA9+KwRDNmw4b5GBj92Dme3tJB1nb/53oiIr4cz
+ UV1FJKg5kCTVVG/IX3TaruRRMsRRNUJbpTNudh4FBm4TPOW5HOkvf6KpeGHDsSl3veuh9m2cN3a
+ s3t6ZC8VQyviMZOMHr8JaDNT3hX/wxXVLqVlGFQiTXVt8H21oxIfWta+wxR39wNjERkMB089O6u
+ etXU7giCX7P5jWaewiA5W4iaowZQPn6d8E6wTfc/ELrCTVsuiTjqms+m1INnbQu0qzxgZ5nkXSB
+ cSALXFy3567me+KvsCdfjrsGbopWhvaawoYKOnxOnGoOUjxUFbzBIOl1o3X4ETcb9DGyHD4zfer
+ kFH7kT0VZi55SQ5NgUeWLdkCq0ia4xYpW/IZKFT4ytZMnZfZVuaEXo7HHVMME+P2S5HTaER978t
+ jj4Ok3tGrnWJf1g==
 X-Developer-Key: i=david@ixit.cz; a=openpgp;
  fpr=D77A09CFEEDC2BBD53A7047460023FC4D3492072
 X-Endpoint-Received: by B4 Relay for david@ixit.cz/default with auth_id=355
 X-Original-From: David Heidelberg <david@ixit.cz>
 Reply-To: david@ixit.cz
 
-From: David Heidelberg <david@ixit.cz>
+This series aims to improve code readability and modernize it to align
+with the recently upstreamed AL3000a.
 
-If regmap_write() fails in al3320a_init(), al3320a_set_pwr_off is
-not called.
+Apart from slightly improved error reporting, and error handling
+there should be no functional changes.
 
-In order to avoid such a situation, move the devm_add_action_or_reset()
-which calls al3320a_set_pwr_off right after a successful
-al3320a_set_pwr_on.
+Module  before after
+al3010  72 kB  58 kB
+al3320a 72 kB  58 kB
 
 Signed-off-by: David Heidelberg <david@ixit.cz>
 ---
- drivers/iio/light/al3320a.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+Changes in v4:
+- Fixed mixed-up rebase changes between commits and added
+  regmap_get_device into _init functions to get the device.
+- Link to v3: https://lore.kernel.org/r/20250402-al3010-iio-regmap-v3-0-cc3da273b5b2@ixit.cz
 
-diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
-index 1b2b0359ed5dad5e00d2fe584f8f3495c13c997e..005a7664568667b5cf9419baba6764f7b4e8fc39 100644
---- a/drivers/iio/light/al3320a.c
-+++ b/drivers/iio/light/al3320a.c
-@@ -101,6 +101,12 @@ static int al3320a_init(struct al3320a_data *data)
- 	if (ret < 0)
- 		return ret;
- 
-+	ret = devm_add_action_or_reset(&data->client->dev,
-+				       al3320a_set_pwr_off,
-+				       data);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to add action\n");
-+
- 	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG_RANGE,
- 					FIELD_PREP(AL3320A_GAIN_MASK,
- 						   AL3320A_RANGE_3));
-@@ -211,10 +217,6 @@ static int al3320a_probe(struct i2c_client *client)
- 		return ret;
- 	}
- 
--	ret = devm_add_action_or_reset(dev, al3320a_set_pwr_off, data);
--	if (ret < 0)
--		return ret;
--
- 	return devm_iio_device_register(dev, indio_dev);
- }
- 
+Changes in v3:
+- Stripped patches merged from second version of patchset.
+- Dropped iio: light: al3010: Move devm_add_action_or_reset back to _probe
+  in favor of opposite approach moving devm_add.. to _init for al3xx0a:
+  - iio: light: al3000a: Fix an error handling path in al3000a_probe()
+  - iio: light: al3320a: Fix an error handling path in al3320a_probe()
+- Link to v2: https://lore.kernel.org/r/20250319-al3010-iio-regmap-v2-0-1310729d0543@ixit.cz
 
+Changes in v2:
+- Dropped Daniel's email update.
+- Dropped DRV_NAME introduction for al3000a
+- Added DRV_NAME define removal for al3010 and al3320a.
+- Splitted unsigned int conversion into separate patches.
+- Replaced generic value with specific raw and gain variable.
+- Use dev_err_probe() for error handling.
+- Separated devm_add_action_or_reset move from _init back to _probe.
+- Dropped copyright update.
+- Link to v1: https://lore.kernel.org/r/20250308-al3010-iio-regmap-v1-0-b672535e8213@ixit.cz
+
+---
+David Heidelberg (5):
+      iio: light: al3010: Improve al3010_init error handling with dev_err_probe()
+      iio: light: al3000a: Fix an error handling path in al3000a_probe()
+      iio: light: al3320a: Fix an error handling path in al3320a_probe()
+      iio: light: al3010: Implement regmap support
+      iio: light: al3320a: Implement regmap support
+
+ drivers/iio/light/al3000a.c |  9 +++--
+ drivers/iio/light/al3010.c  | 85 +++++++++++++++++++++++--------------------
+ drivers/iio/light/al3320a.c | 89 +++++++++++++++++++++++++--------------------
+ 3 files changed, 100 insertions(+), 83 deletions(-)
+---
+base-commit: f8ffc92ae9052e6615896052f0c5b808bfc17520
+change-id: 20250308-al3010-iio-regmap-038cea39f85d
+
+Best regards,
 -- 
-2.49.0
+David Heidelberg <david@ixit.cz>
 
 
