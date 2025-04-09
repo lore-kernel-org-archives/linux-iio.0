@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4204B18A6A5;
-	Wed,  9 Apr 2025 15:14:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CA40264633;
+	Wed,  9 Apr 2025 15:14:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744211688; cv=none; b=uwsMTQRwszc4Ys5gFFgHCXKlTa0GO47Uh80UXszEM1v6vEINAJs1gRWLHIneyiDNddXSlJkcmZvEPoqRSx+ateQfdEYBfVfeWNibkwhuEcqRG4d5XRZiyGHixOlQHlAywkv2H1CcMMWxZCFIuEUC2mvQBjaysRzpUES5gYmU/pI=
+	t=1744211688; cv=none; b=DD8w4nhscfd+ph/HT8OB5453RZ+ojBZUfCiNU+FjQ4kODcc0Hbor24W5Ddzdx9TYCk2AyQ1tARsPYXa1stl5UtsjOIgE7GC51czMgF26mjMt2S0whmkeEGcSAbWbSGKPSxfNRAzoaCFhP5lFVyyZJn2tE/v6WYghb4yt7eXzSAA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1744211688; c=relaxed/simple;
-	bh=FMJInia6WIVcnROgoVppgptni1eK+Ht+NAQikTBAa/c=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=lcPwp5B7E9glsjMsDu4g7M0RPjKpU7n3lo2eZnrPCHlehF0hPlhb1ud0ZLTfU/AyGpKyvBLTMC6muteo94OsfTVw0kDvFZupo4jbvoCXi/KFf8sa0Bue/PL0/ymup9LbMGM8xipd+3UWyYpVyLV4HQBX7CVwVcVKr5u+QBG8FDU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OQP5NabU; arc=none smtp.client-ip=10.30.226.201
+	bh=0w8yAQJiPOZnV0UHv/R8A2XVkSYUyrYq+ByRjE1W+QM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=RnV6rUXHzsi0pCH0cN7XpsVzKvaNdNfuCecZJxF9ns3ALvrT+0fBtVUWa6tBGUxjN1dB80LhQKbCKLd/0p1WJKcczvoL38FGvYyGsoUAU4pQgK1PFFKEEu0Gy9ILfWbF7419XYGbNZJEXgV+fgECP2k0sIrUJJX2RdD2fuN7OlI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fZekAEak; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OQP5NabU"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ADD5FC4CEE7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fZekAEak"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D2D0DC4CEE8;
 	Wed,  9 Apr 2025 15:14:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1744211687;
-	bh=FMJInia6WIVcnROgoVppgptni1eK+Ht+NAQikTBAa/c=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=OQP5NabUMTRSO3YQppTMB4J4vt8362BH1yG/JL90eHxUKiwkCt8il4/OcenoktP7J
-	 ssjmKkJ8ysB5Iw2h47fsP8AttlYaug+Mc4bzOcnUyL63EjZd/6W1ZUGqjYydGqnoV1
-	 +m20bgY/P4y4+okfXejKvmhFrT/ny0R68yNlhFM0jYTrjJuqFYsigY7t+rkQb4hHHn
-	 MEPT0CLLvyDPN5uddAFfnoo0gU/ZjibMctySwlxj2+YndDkK0ZvoghvXG3wqhPpge6
-	 dO/qceqbkRqJUwfnmXAEX4HXwGSamW376sVUQSbi885b/qC1qZDBYI504cKFpzNl3e
-	 XfiWLqpPEcshw==
+	bh=0w8yAQJiPOZnV0UHv/R8A2XVkSYUyrYq+ByRjE1W+QM=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=fZekAEak8Hd7jjr2cf5FY1tEMEauoC+/H1mQ41GqRqAhRy7t0nokoo1OGcOTFd+yn
+	 d37U0C6Q4chPU6zmA9+3QrjN3cFQDxKsya/cmqeHKyzM8yyG9yUTNvDgzQP1+Bl+Jp
+	 wFnm5cL/70ZHakz+SIMJQf5PKiSHhv7SMDfKHPHVMKOrqg/GeT2D+YvCA97uTWQeWI
+	 Zi8+cbb7XAJCAhnRFt2esrp77FYCmmq3S1lYnVSxPRILqWsel0uuWbynl2c6oky2da
+	 4t+/r0yTP6L4b5gC4kNVAWI71RmQF2c2OZ9Nm8XK2SkPVC6um4pcKkOcowbQdSHA5v
+	 NpoPTTBPLMKig==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCC1C36002;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6238C369A6;
 	Wed,  9 Apr 2025 15:14:47 +0000 (UTC)
 From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Subject: [PATCH v3 0/2] iio: imu: inv_icm42600: switch to use generic name
+Date: Wed, 09 Apr 2025 17:14:32 +0200
+Subject: [PATCH v3 2/2] iio: imu: inv_icm42600: switch to use generic name
  irq get
-Date: Wed, 09 Apr 2025 17:14:30 +0200
-Message-Id: <20250409-iio-imu-inv-icm42600-rework-interrupt-using-names-v3-0-dab85a0a7c2b@tdk.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,11 +41,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIANaO9mcC/52OQQ6CMBBFr2K6dkwZqEVX3sO4gHbUiaE1LVSN4
- e4WXOia5fuL9/5bRApMUexXbxEocWTvMpTrlTDXxl0I2GYWKFHJEhUwe+BuAHYJ2HQVbqWEQA8
- fbnnrKYTh3sMQ2V3ANR1FaMudNmQ11qUS2XsPdObn3DyeMl859j685gupmNZvrZLVgloqQIJGs
- qqQ0jZFdejtbWN8J6ZWwn+/XuLH7Deo68acVa1b/PnHcfwAelVUL1ABAAA=
-X-Change-ID: 20250325-iio-imu-inv-icm42600-rework-interrupt-using-names-b397ced72835
+Message-Id: <20250409-iio-imu-inv-icm42600-rework-interrupt-using-names-v3-2-dab85a0a7c2b@tdk.com>
+References: <20250409-iio-imu-inv-icm42600-rework-interrupt-using-names-v3-0-dab85a0a7c2b@tdk.com>
+In-Reply-To: <20250409-iio-imu-inv-icm42600-rework-interrupt-using-names-v3-0-dab85a0a7c2b@tdk.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -56,11 +54,11 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, 
  Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1744211686; l=1598;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1744211686; l=4065;
  i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=FMJInia6WIVcnROgoVppgptni1eK+Ht+NAQikTBAa/c=;
- b=G6CHdRYNzEfB/2L44UMhQFCEPqJdFTn0dDFgOjyByEvQUTft/AFsbhAU4qX1Sm2kjYx9HYvxw
- M79fQlQwI4ZBWrBTBNy6eIjdM2fz0vgMAWg7eY9by0seHQJz4IYpUTP
+ bh=/VtK2uQ40gbKTy8BClZYWTjqk6A7kwyWnfPM64PZuwk=;
+ b=Embo/tmwLQHDcYKYU6ptpEtaAO+uC89KyWB9MHCTT92WeA0vLH6Ux4kgPa3tz4Nhnlx0rB9Fr
+ 5YeeWovYXq9AjzISPQpd8sGhlFVql7rhCuiYv1bpzwgKn0vAuxQfHX5
 X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
  pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
 X-Endpoint-Received: by B4 Relay for
@@ -68,40 +66,101 @@ X-Endpoint-Received: by B4 Relay for
 X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 Reply-To: jean-baptiste.maneyrol@tdk.com
 
-The purpose of this series is to switch to fwnode_irq_get_by_name()
-in the core module instead of using irq from the bus parsing.
-Add interrupt naming and support only INT1.
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+
+Use generic fwnode_irq_get_byname() for getting interrupt pin using
+interrupt name. Only INT1 is supported by the driver currently.
+
+If not found fallback to first defined interrupt to keep compatibility.
 
 Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 ---
-Changes in v3:
-- Update dt-binding to report support of the 2 interrupts and delete
-  remark about driver feature support.
-- Link to v2: https://lore.kernel.org/r/20250407-iio-imu-inv-icm42600-rework-interrupt-using-names-v2-0-c278acf587b2@tdk.com
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h      |  2 +-
+ drivers/iio/imu/inv_icm42600/inv_icm42600_core.c | 17 +++++++++++++++--
+ drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c  |  2 +-
+ drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c  |  2 +-
+ 4 files changed, 18 insertions(+), 5 deletions(-)
 
-Changes in v2:
-- Add INT2 in interrupt-names enum and fix enum
-- Add fallback to first interrupt if naming is not here to ensure
-  backward compatibility
-- Link to v1: https://lore.kernel.org/r/20250404-iio-imu-inv-icm42600-rework-interrupt-using-names-v1-0-72ed5100da14@tdk.com
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+index 18787a43477b89db12caee597ab040af5c8f52d5..f893dbe6996506a33eb5d3be47e6765a923665c9 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+@@ -426,7 +426,7 @@ int inv_icm42600_set_temp_conf(struct inv_icm42600_state *st, bool enable,
+ int inv_icm42600_debugfs_reg(struct iio_dev *indio_dev, unsigned int reg,
+ 			     unsigned int writeval, unsigned int *readval);
+ 
+-int inv_icm42600_core_probe(struct regmap *regmap, int chip, int irq,
++int inv_icm42600_core_probe(struct regmap *regmap, int chip,
+ 			    inv_icm42600_bus_setup bus_setup);
+ 
+ struct iio_dev *inv_icm42600_gyro_init(struct inv_icm42600_state *st);
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+index ef9875d3b79db116f9fb4f6d881a7979292c1792..8ce817a4d5aa78cc8b228ee3064083b336c2c357 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+@@ -683,12 +683,13 @@ static void inv_icm42600_disable_pm(void *_data)
+ 	pm_runtime_disable(dev);
+ }
+ 
+-int inv_icm42600_core_probe(struct regmap *regmap, int chip, int irq,
++int inv_icm42600_core_probe(struct regmap *regmap, int chip,
+ 			    inv_icm42600_bus_setup bus_setup)
+ {
+ 	struct device *dev = regmap_get_device(regmap);
+ 	struct inv_icm42600_state *st;
+-	int irq_type;
++	struct fwnode_handle *fwnode;
++	int irq, irq_type;
+ 	bool open_drain;
+ 	int ret;
+ 
+@@ -697,6 +698,18 @@ int inv_icm42600_core_probe(struct regmap *regmap, int chip, int irq,
+ 		return -ENODEV;
+ 	}
+ 
++	/* get INT1 only supported interrupt or fallback to first interrupt */
++	fwnode = dev_fwnode(dev);
++	if (!fwnode)
++		return -ENODEV;
++	irq = fwnode_irq_get_byname(fwnode, "INT1");
++	if (irq < 0 && irq != -EPROBE_DEFER) {
++		dev_info(dev, "no INT1 interrupt defined, fallback to first interrupt\n");
++		irq = fwnode_irq_get(fwnode, 0);
++	}
++	if (irq < 0)
++		return dev_err_probe(dev, irq, "error missing INT1 interrupt\n");
++
+ 	irq_type = irq_get_trigger_type(irq);
+ 	if (!irq_type)
+ 		irq_type = IRQF_TRIGGER_FALLING;
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+index 04e440fe023aa3869529b0f0be003ea0544bfb8d..38cc0d7834fcb96dabc401f29d613cf9fc75b8f5 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+@@ -67,7 +67,7 @@ static int inv_icm42600_probe(struct i2c_client *client)
+ 	if (IS_ERR(regmap))
+ 		return PTR_ERR(regmap);
+ 
+-	return inv_icm42600_core_probe(regmap, chip, client->irq,
++	return inv_icm42600_core_probe(regmap, chip,
+ 				       inv_icm42600_i2c_bus_setup);
+ }
+ 
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+index 2bd2c4c8e50c3fe081e882aca6c64736510b474c..f40a09c4cbfc673e76922d13d61a3634785300ec 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+@@ -64,7 +64,7 @@ static int inv_icm42600_probe(struct spi_device *spi)
+ 	if (IS_ERR(regmap))
+ 		return PTR_ERR(regmap);
+ 
+-	return inv_icm42600_core_probe(regmap, chip, spi->irq,
++	return inv_icm42600_core_probe(regmap, chip,
+ 				       inv_icm42600_spi_bus_setup);
+ }
+ 
 
----
-Jean-Baptiste Maneyrol (2):
-      dt-bindings: iio: imu: icm42600: add interrupt naming support
-      iio: imu: inv_icm42600: switch to use generic name irq get
-
- .../bindings/iio/imu/invensense,icm42600.yaml           | 13 ++++++++++++-
- drivers/iio/imu/inv_icm42600/inv_icm42600.h             |  2 +-
- drivers/iio/imu/inv_icm42600/inv_icm42600_core.c        | 17 +++++++++++++++--
- drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c         |  2 +-
- drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c         |  2 +-
- 5 files changed, 30 insertions(+), 6 deletions(-)
----
-base-commit: 1c2409fe38d5c19015d69851d15ba543d1911932
-change-id: 20250325-iio-imu-inv-icm42600-rework-interrupt-using-names-b397ced72835
-
-Best regards,
 -- 
-Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+2.49.0
 
 
