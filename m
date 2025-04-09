@@ -1,63 +1,64 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED7E225D211
-	for <linux-iio@vger.kernel.org>; Wed,  9 Apr 2025 08:40:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E260F25D21A
+	for <linux-iio@vger.kernel.org>; Wed,  9 Apr 2025 08:40:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744188049; cv=none; b=jnwNIobkN+gHRuLlcX2KTrwvGY/GoyM1aBGT+wn+Ah8q4jTIBgyzU32fQ+CVOCCR5GeiR4Ohu5HODRr0aDgkOQcXx/qT9l/gJaOBda1043N1USs5v6LWDaVESzTFovsy2auyzreBGtwtI6JGJeheDn3OQCx8Oya1qZPYi5BFmcY=
+	t=1744188051; cv=none; b=mC3ItDdMpkHNE5z2QCSXgdaMHwQ0F5au1ls/+KWuDirNCpger0iHqrxH2W5iUEogkommNK75r/68MZ4m/OHAs/sHjlqx9QhmmClpwCSENCAgGP8plYszP5yD97Sym9B0r5CAtIResShfmDOzLI6aojFtEHQZu1+F+AzV7HCkwu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744188049; c=relaxed/simple;
-	bh=1VmSF1FsDxlYv2R/Yfi5O2efY79iuhVVKCImNUHwSDM=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=c6jGU8fbSHTE3tykO4lgpZbkSJZAafkdxm6eKpG703Dvx9mASKln6gBQfG8t+lHMvEcjxNXxSN+EClkDDTOA5uZ2iBZa/OrilPqodj8SgXgUoJNZ8pSUnRPYYsWwGNlz0yHZ7E1QJpFeagRUMjUOd1e5J4s1A2/F6+uUa3eHTJY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=idiVMP5Z; arc=none smtp.client-ip=209.85.221.42
+	s=arc-20240116; t=1744188051; c=relaxed/simple;
+	bh=pbTe8qf0kM23ufjkEF9J9UHiqeRqkU6/ANRUXpGOYIM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=MHJ5J+i3X3SMz0gRt2e9ucLNLhha6SJ3NkIRKQeJHszxU/BsU/JKyA0FEpinw3Re0cfGqH2Q2+9fM0LqU/PBv0wKF4va904Ex3AgrNv1aJxUp/adYukeXOz73ixod2pnthjiTrVE92QCzilj9GH2jiTGPO9n5fwc54R7rr9TP/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=Wh+7qFmQ; arc=none smtp.client-ip=209.85.128.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="idiVMP5Z"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-39c1ef4acf2so3946717f8f.0
-        for <linux-iio@vger.kernel.org>; Wed, 09 Apr 2025 01:40:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="Wh+7qFmQ"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-43cf848528aso50657365e9.2
+        for <linux-iio@vger.kernel.org>; Wed, 09 Apr 2025 01:40:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1744188046; x=1744792846; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=YfgRSjZMirwP4A4DT85B9dRR+tHIO2UwmfqRGQoebTc=;
-        b=idiVMP5ZxGM5uy5Lqg9/I8DHqtaXTshcRlICrYnn3Lc40+k90GSYwtAuUrjKVCiwlK
-         vuWTA0dSZzIWBOOEfPbcYutTuo1BSNvoKTMROXtJ30y3vR3r655//VajQlPVo8mucsAs
-         k4iXtcj6X5Senz+UJhUIXAx9TKf8F0j60MLNTmfSeqeCYaGpd8S+7rOdarUat7a+sRe1
-         ztGJm6pKAF8kqXIxgL9boP8aCJS40SlBZgTJW7NOCjzBIlZOXpCpkBHCpUJgCA0X/xJN
-         p4cbm2kBVx5xggm4ap5csZFIr5uNsJeNCrnSLLMR40LVxS1lX2fEtTHRmGW0CbX7HVFs
-         I4Vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744188046; x=1744792846;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1744188048; x=1744792848; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=YfgRSjZMirwP4A4DT85B9dRR+tHIO2UwmfqRGQoebTc=;
-        b=QkjzwnzZ04FqtouTaA9PMh88sX7CcEa7k3pppOZbxiChFGvIF4DdlcyEC7KTR7Ra2R
-         D0hSSiZoPdQsdIKwkX9lrgROyYL/qYnxm/8mhOUF7jucv/CHxBxhuKSXkMoEtc03nTx1
-         JzjVoiMnq2ShhMHI7pG1GQNdTKS5CwlDhS2l8Bs2n7r3w6FstowUQOEj7jf8bzxc4KKZ
-         T7OyNACOI1k0MNN6L0GsUf+sO6xepaQ9Tau8LKFi4hTYiM6UGYeGEJpWqMB8qKTzry16
-         oyI8BsXSVbG4GnHS79O3wMFX+j1RwXO2eT++sMcq/hoQNQJ0MMsXz05JE+xI11otj+VT
-         Hn7g==
-X-Gm-Message-State: AOJu0YwrWwjogix5pNbHVvC9FSTN7knK1XqexR97AzUoouaMsLkAfoPP
-	QWeYdrQshPMtvTsxi+AxurNmhdvnFip5BikZg0NZoSNAYiRKZO4MaTEOaIJHCn0=
-X-Gm-Gg: ASbGncu22NXGfZPh+kadFRDRYUba1KFa2AET9MEqHvhXhrPYQYnnNq3RdTfIV0rKWK/
-	eR8tSS8AtVsiuyVaNrOIPLk1MP6J8GBJR6XKWEYTlNvHhFmTJVhBG290w7EEIwzNr036lpbva7J
-	kPcsQqa+s7I0wjZBS3c7AELahu12x8sTG7T4ejNjcvcBty0PHN/HdFRuXcKHj3TE8w9DxFhomWr
-	eL/KnmaktTdI/rewnUNnmNkL+06AQhb1P/lXYvHa+0qDPTQHm1HSNzTvTJzomaadrmZLMp2473n
-	B/RNg2+NESUWDZwXlJShM30Zw8j21s7zvVTF/woAFckO
-X-Google-Smtp-Source: AGHT+IG/uLzpRERbCl1zMbJkXY/9e21B4Oye6Db7RIlllWZzhZho8vNAYbf9zIjaFjjXBvnoPW3ZfQ==
-X-Received: by 2002:a05:6000:4009:b0:391:3cb7:d441 with SMTP id ffacd0b85a97d-39d87ab6642mr1445941f8f.25.1744188046123;
-        Wed, 09 Apr 2025 01:40:46 -0700 (PDT)
+        bh=Taz3xuepxYQKsRgP/wZRl2QjotKjajKvx5x4lMN4Juk=;
+        b=Wh+7qFmQzD8lxV4X0VO3o0R3J/OcwsWCoH7AoxoRP1qa/dUziRuxF4wuT0yz5kxs0j
+         G+DffgeCMIc5zYlfYI4Idlc/gceqS+LYnztCAlo30tir48Cf5gn/EqjbSedaQDUgdPMu
+         qZMUXPFGaIzmrHW1H+AGi+y5bK5xUdRxo1cajtfeXpOgGj7/Onj34mUgqqEaUdnVLIFV
+         WRUTGaWmdX97wVEXD+9f7Cq6VOhqaHc4oVwlr0RTrq1Tw2oFtLys4CxLQlTJIrCpJ5QF
+         KNEKlbPmesmV19iwBJVOfOEHMvd/T9TDHRzBDsJyGiyq935MFESuofNyZcsTa2E2iJSi
+         2HSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744188048; x=1744792848;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Taz3xuepxYQKsRgP/wZRl2QjotKjajKvx5x4lMN4Juk=;
+        b=HToBMM/2eEeMaU8GzX4dEMIn3vgq9+n3NcyGyXwpVBn+GvThXhMA4nufwfAOWvTTMT
+         1swTuR+HHaC1LzXDnW9EJ78uMmc2Y85JAZAwos22RQn7ckJ8NYeE56u0/d2N/ONZYs3+
+         eKPoo76VvSNzeHMDTEB18Y/xH5dGnGz99wfQ1QP6cuMJYoRpwUGNIjdXejDGSum4r7uz
+         P5biAe11IbGM30MiWC3k+SrmTDH+l0x+beCelGY7EEE0kqSyHtdIN7yfJe1+OvGNJcQd
+         2qAQHzJcyl7KTPWdDCkM8LnyWfSe4AL6CeDkc7t2l2wJBpeTcHEkZOrnnfUQ7wVd3PQC
+         PdUQ==
+X-Gm-Message-State: AOJu0YwKApcyrgvi1/PclvwmUSTeTLui0mCIXMPtLjGJsYN08xk+g+3x
+	+dtXaDqRLvUbPN5GLCTHpFmTrYx6JERHifC4aTM1QhQbbm+pzzDlunl93WDGQ8k=
+X-Gm-Gg: ASbGncu+oPxNIWimYhItmlmxriA5nsS7hwHFWu43CLAjOYUyVanFc5B1na7Fw2V4PMs
+	T2qC8JGTnFT82Phty7ddkuPQ7pxByukiEBkjJdHc4D23e9vm3TkLBada8Crtt2WRdtE5Yol4nRn
+	f2d9gi8EU8zewsJBjIXb4PjOj2NevxUAWrHmr9zXrR2bC8JcZo9LPGkSqq8iA4A6C9u4wO6ORXA
+	amvgcngeiSSHnQwW+oXoi4+BWgDIDdUGtXWFL7MKCUl1/wyi+FcZOO7e4vLbf3jLNxkrbRfBpPm
+	1q0ph9d853Hu7PLhMqSISY2V2YSMR04m1w==
+X-Google-Smtp-Source: AGHT+IGMhUfCSWQGFB5uvH4/GS4X8GJnxqQ0UFim7GSu4hAoM1CRy23ZBBa463ljosi477RhQDam9A==
+X-Received: by 2002:a05:600c:3d94:b0:43c:ec28:d310 with SMTP id 5b1f17b1804b1-43f1eca80e8mr21424905e9.10.1744188048120;
+        Wed, 09 Apr 2025 01:40:48 -0700 (PDT)
 Received: from [127.0.1.1] ([2a01:cb1d:dc:7e00:7880:1c3f:3ac3:7c62])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43f233c8219sm8726235e9.21.2025.04.09.01.40.44
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43f233c8219sm8726235e9.21.2025.04.09.01.40.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Apr 2025 01:40:45 -0700 (PDT)
+        Wed, 09 Apr 2025 01:40:47 -0700 (PDT)
 From: Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH v2 0/7] iio: convert GPIO chips to using new value setters
-Date: Wed, 09 Apr 2025 10:40:38 +0200
-Message-Id: <20250409-gpiochip-set-rv-iio-v2-0-4b36428f39cb@linaro.org>
+Date: Wed, 09 Apr 2025 10:40:40 +0200
+Subject: [PATCH v2 2/7] iio: dac: ad5592r: use lock guards
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,10 +67,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAIYy9mcC/22NQQ6CMBBFr0Jm7ZgpLaKuvIdhAWWESQwlU9JoC
- He3krhz+V7y318hsgpHuBYrKCeJEqYM5aEAP7bTwCh9ZiiprMiRwWGW4EeZMfKCmlAkYEcn59n
- Z+mJ6yMtZ+SGvvXpvMo8Sl6Dv/SSZr/316r+9ZJDw7KzpiGxrXHV7ytRqOAYdoNm27QPDd74Vt
- wAAAA==
+Message-Id: <20250409-gpiochip-set-rv-iio-v2-2-4b36428f39cb@linaro.org>
+References: <20250409-gpiochip-set-rv-iio-v2-0-4b36428f39cb@linaro.org>
+In-Reply-To: <20250409-gpiochip-set-rv-iio-v2-0-4b36428f39cb@linaro.org>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>, 
@@ -80,62 +80,343 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-gpio@vger.kernel.org, 
  Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 X-Mailer: b4 0.14.1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1839;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=8820;
  i=bartosz.golaszewski@linaro.org; h=from:subject:message-id;
- bh=1VmSF1FsDxlYv2R/Yfi5O2efY79iuhVVKCImNUHwSDM=;
- b=owEBbQKS/ZANAwAKARGnLqAUcddyAcsmYgBn9jKL4ZxP/or07B09bNRWDnOGUJzJeTfjcs1xc
- 42EVnXNzv6JAjMEAAEKAB0WIQQWnetsC8PEYBPSx58Rpy6gFHHXcgUCZ/YyiwAKCRARpy6gFHHX
- ckkZEACfY8X9eP3FTD7PsTbprsHNKdiedrNEre7r1anPs+AIMIiioakugWK8lLaKg/b0Oq6EL9A
- iHk9z5hacSoe6g1CNB1DyC1QnXre0cYOwDScwvRjz9qfShj603Vjc+k+90JMdv61gQMKMsELcY8
- Iir8y+VHhI1yNhk7SI0lWwsRra0jrg1gsAHcE2M3DECmWXicFYuLofI6/12i4B8hDWu9TjquYLp
- PuT3jKMlJLz3ez2d+ukBGVnkNSFi/cx7n2CaV29RuhLy1SKTIgZ4j8gUlq8qg3RFPvwWL0lS/du
- /iA1MfeP4VJI/yEx1zpnGVGd8U1u3E/vpza0Eg8fHbl6ucXPFIv13zz+BfkkaipxzLPMUfvM7fl
- 4d/Kdr6obV74gUzBCswJHGUjQRX0zulefhXy54u2qyS6OMpV/xwZLx8sXXudahrC3kO4EG+SAcT
- Cnn51si0tPt/LDHOJ4RVkK4Cooda0mpm4zf+e1zqlxyPS8YgGc+Uf3tgn+M81YRPss/mPjE6oWN
- OHyvG7X2BMIPUTI4Rhwq3b0V8m1yNodxzeBNoeI+jZ247HpmarrknhbASt5M84HznC5M2EkEScD
- GU74ckqRtNrsPzVDQ1/fo1o5Md+OULTwqVnRI/CGMZOWKumNFixNnCYDHZHGGwXG8DlcdCEEp2J
- sABS+CKuL2MV9Ww==
+ bh=1vAOkph4RSRlxXIL03fJybHqa8k7PtHiCUYi8heCqHc=;
+ b=owEBbQKS/ZANAwAKARGnLqAUcddyAcsmYgBn9jKLZVn1FOhgbMDtXZw827Abtxy1D8yn3IvuO
+ sMRKUkuydSJAjMEAAEKAB0WIQQWnetsC8PEYBPSx58Rpy6gFHHXcgUCZ/YyiwAKCRARpy6gFHHX
+ coN8D/4vxRXZ3tWjiGyIv72luaGwtMnEOJvgFSIKHF9Uya0djXcv1SJB7TgJhyZQkiuBahr6rGY
+ oWhY+BrHin5LBrySTVdTJNDoL7cYfJeJT9l/aUJS4EMY7kjdq22nVlWBNeP2NoSZFFvFjSeEtQW
+ ly3bHKE2RtgSxAn5zFWXk2iygQqLYSG7Ex2KwdiuUj5MtCaM44sQtKo7EnCYSnYH0bW7Itysi/j
+ KtEfkcJ5RGXn21BkPo8tzeOcgiKYL6J/wTnk5ZPc9UDoaOsanHqjm2BZhTRFb6VdgyUB3s6kfGh
+ NUyMybUXsGsWkOWHskotR6zReUolFzyqRChaAQTwNeXw3oDKEmgMPqyeT8ceoy83rOzGqRQUwtC
+ t+AO5smaE7Aq5gT5P3IGmK0b9jtBzCe+bI6rI/9divtj3cVkx/o/DXCwCrhmi34v3x2BR7fF3m7
+ Q5GnyrgQTh/KXPztG5Ts+jBSPxsPKQWZC7BDtPTjFEg+A1NOWasTOQxSwPGSbLs8jR7lzaB4i87
+ TLl+7QKg0NewGGD7B9jT6CfPhQvxL9okCEwKlQfLfIfNuSHVZ672/CHqQNltRffRx+65PYg1Mul
+ 8FAFJAIgSv/ZhseCRm01CVi1596ks7fGon9FSALH1NDkMT3Als7bTY2xWFxoX1JXPfr4cMYZb51
+ QOkAE+PwcJYJtiQ==
 X-Developer-Key: i=bartosz.golaszewski@linaro.org; a=openpgp;
  fpr=169DEB6C0BC3C46013D2C79F11A72EA01471D772
 
-struct gpio_chip now has callbacks for setting line values that return
-an integer, allowing to indicate failures. We're in the process of
-converting all GPIO drivers to using the new API. This series converts
-all the IIO GPIO controllers and also contains some additional
-refactoring patches for ad5592r in preparation for the conversion.
+From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+
+Use lock guards from linux/cleanup.h to simplify the code and remove
+some labels.
+
+Note that we need to initialize some variables even though it's not
+technically required as scoped_guards() are implemented as for loops.
 
 Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 ---
-Changes in v2:
-- move devm_mutex_init() earlier in probe() to avoid using a goto
-- rework returning on error in ad5592r_set_channel_modes(): return
-  immediately instead of saving the return value and going to the bottom
-  of the function
-- use scoped_guard() in one more place to fix a build warning reported
-  by the build bot
-- Link to v1: https://lore.kernel.org/r/20250407-gpiochip-set-rv-iio-v1-0-8431b003a145@linaro.org
+ drivers/iio/dac/ad5592r-base.c | 132 +++++++++++++++++------------------------
+ 1 file changed, 54 insertions(+), 78 deletions(-)
 
----
-Bartosz Golaszewski (7):
-      iio: dac: ad5592r: destroy mutexes in detach paths
-      iio: dac: ad5592r: use lock guards
-      iio: dac: ad5592r: use new GPIO line value setter callbacks
-      iio: adc: ti-ads7950: use new GPIO line value setter callbacks
-      iio: adc: ad4130: use new GPIO line value setter callbacks
-      iio: addac: ad74413r: use new GPIO line value setter callbacks
-      iio: addac: ad74115: use new GPIO line value setter callbacks
+diff --git a/drivers/iio/dac/ad5592r-base.c b/drivers/iio/dac/ad5592r-base.c
+index eb85907f61ae..ada60f5ff1b6 100644
+--- a/drivers/iio/dac/ad5592r-base.c
++++ b/drivers/iio/dac/ad5592r-base.c
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include <linux/bitops.h>
++#include <linux/cleanup.h>
+ #include <linux/delay.h>
+ #include <linux/iio/iio.h>
+ #include <linux/module.h>
+@@ -24,16 +25,14 @@ static int ad5592r_gpio_get(struct gpio_chip *chip, unsigned offset)
+ {
+ 	struct ad5592r_state *st = gpiochip_get_data(chip);
+ 	int ret = 0;
+-	u8 val;
++	u8 val = 0;
+ 
+-	mutex_lock(&st->gpio_lock);
+-
+-	if (st->gpio_out & BIT(offset))
+-		val = st->gpio_val;
+-	else
+-		ret = st->ops->gpio_read(st, &val);
+-
+-	mutex_unlock(&st->gpio_lock);
++	scoped_guard(mutex, &st->gpio_lock) {
++		if (st->gpio_out & BIT(offset))
++			val = st->gpio_val;
++		else
++			ret = st->ops->gpio_read(st, &val);
++	}
+ 
+ 	if (ret < 0)
+ 		return ret;
+@@ -45,7 +44,7 @@ static void ad5592r_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
+ {
+ 	struct ad5592r_state *st = gpiochip_get_data(chip);
+ 
+-	mutex_lock(&st->gpio_lock);
++	guard(mutex)(&st->gpio_lock);
+ 
+ 	if (value)
+ 		st->gpio_val |= BIT(offset);
+@@ -53,8 +52,6 @@ static void ad5592r_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
+ 		st->gpio_val &= ~BIT(offset);
+ 
+ 	st->ops->reg_write(st, AD5592R_REG_GPIO_SET, st->gpio_val);
+-
+-	mutex_unlock(&st->gpio_lock);
+ }
+ 
+ static int ad5592r_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
+@@ -62,21 +59,16 @@ static int ad5592r_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
+ 	struct ad5592r_state *st = gpiochip_get_data(chip);
+ 	int ret;
+ 
+-	mutex_lock(&st->gpio_lock);
++	guard(mutex)(&st->gpio_lock);
+ 
+ 	st->gpio_out &= ~BIT(offset);
+ 	st->gpio_in |= BIT(offset);
+ 
+ 	ret = st->ops->reg_write(st, AD5592R_REG_GPIO_OUT_EN, st->gpio_out);
+ 	if (ret < 0)
+-		goto err_unlock;
++		return ret;
+ 
+-	ret = st->ops->reg_write(st, AD5592R_REG_GPIO_IN_EN, st->gpio_in);
+-
+-err_unlock:
+-	mutex_unlock(&st->gpio_lock);
+-
+-	return ret;
++	return st->ops->reg_write(st, AD5592R_REG_GPIO_IN_EN, st->gpio_in);
+ }
+ 
+ static int ad5592r_gpio_direction_output(struct gpio_chip *chip,
+@@ -85,7 +77,7 @@ static int ad5592r_gpio_direction_output(struct gpio_chip *chip,
+ 	struct ad5592r_state *st = gpiochip_get_data(chip);
+ 	int ret;
+ 
+-	mutex_lock(&st->gpio_lock);
++	guard(mutex)(&st->gpio_lock);
+ 
+ 	if (value)
+ 		st->gpio_val |= BIT(offset);
+@@ -97,18 +89,13 @@ static int ad5592r_gpio_direction_output(struct gpio_chip *chip,
+ 
+ 	ret = st->ops->reg_write(st, AD5592R_REG_GPIO_SET, st->gpio_val);
+ 	if (ret < 0)
+-		goto err_unlock;
++		return ret;
+ 
+ 	ret = st->ops->reg_write(st, AD5592R_REG_GPIO_OUT_EN, st->gpio_out);
+ 	if (ret < 0)
+-		goto err_unlock;
++		return ret;
+ 
+-	ret = st->ops->reg_write(st, AD5592R_REG_GPIO_IN_EN, st->gpio_in);
+-
+-err_unlock:
+-	mutex_unlock(&st->gpio_lock);
+-
+-	return ret;
++	return st->ops->reg_write(st, AD5592R_REG_GPIO_IN_EN, st->gpio_in);
+ }
+ 
+ static int ad5592r_gpio_request(struct gpio_chip *chip, unsigned offset)
+@@ -171,10 +158,9 @@ static int ad5592r_reset(struct ad5592r_state *st)
+ 		udelay(1);
+ 		gpiod_set_value(gpio, 1);
+ 	} else {
+-		mutex_lock(&st->lock);
+-		/* Writing this magic value resets the device */
+-		st->ops->reg_write(st, AD5592R_REG_RESET, 0xdac);
+-		mutex_unlock(&st->lock);
++		scoped_guard(mutex, &st->lock)
++			/* Writing this magic value resets the device */
++			st->ops->reg_write(st, AD5592R_REG_RESET, 0xdac);
+ 	}
+ 
+ 	udelay(250);
+@@ -249,46 +235,44 @@ static int ad5592r_set_channel_modes(struct ad5592r_state *st)
+ 		}
+ 	}
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
+ 
+ 	/* Pull down unused pins to GND */
+ 	ret = ops->reg_write(st, AD5592R_REG_PULLDOWN, pulldown);
+ 	if (ret)
+-		goto err_unlock;
++		return ret;
+ 
+ 	ret = ops->reg_write(st, AD5592R_REG_TRISTATE, tristate);
+ 	if (ret)
+-		goto err_unlock;
++		return ret;
+ 
+ 	/* Configure pins that we use */
+ 	ret = ops->reg_write(st, AD5592R_REG_DAC_EN, dac);
+ 	if (ret)
+-		goto err_unlock;
++		return ret;
+ 
+ 	ret = ops->reg_write(st, AD5592R_REG_ADC_EN, adc);
+ 	if (ret)
+-		goto err_unlock;
++		return ret;
+ 
+ 	ret = ops->reg_write(st, AD5592R_REG_GPIO_SET, st->gpio_val);
+ 	if (ret)
+-		goto err_unlock;
++		return ret;
+ 
+ 	ret = ops->reg_write(st, AD5592R_REG_GPIO_OUT_EN, st->gpio_out);
+ 	if (ret)
+-		goto err_unlock;
++		return ret;
+ 
+ 	ret = ops->reg_write(st, AD5592R_REG_GPIO_IN_EN, st->gpio_in);
+ 	if (ret)
+-		goto err_unlock;
++		return ret;
+ 
+ 	/* Verify that we can read back at least one register */
+ 	ret = ops->reg_read(st, AD5592R_REG_ADC_EN, &read_back);
+ 	if (!ret && (read_back & 0xff) != adc)
+-		ret = -EIO;
++		return -EIO;
+ 
+-err_unlock:
+-	mutex_unlock(&st->lock);
+-	return ret;
++	return 0;
+ }
+ 
+ static int ad5592r_reset_channel_modes(struct ad5592r_state *st)
+@@ -305,7 +289,7 @@ static int ad5592r_write_raw(struct iio_dev *iio_dev,
+ 	struct iio_chan_spec const *chan, int val, int val2, long mask)
+ {
+ 	struct ad5592r_state *st = iio_priv(iio_dev);
+-	int ret;
++	int ret = 0;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -316,11 +300,11 @@ static int ad5592r_write_raw(struct iio_dev *iio_dev,
+ 		if (!chan->output)
+ 			return -EINVAL;
+ 
+-		mutex_lock(&st->lock);
+-		ret = st->ops->write_dac(st, chan->channel, val);
+-		if (!ret)
+-			st->cached_dac[chan->channel] = val;
+-		mutex_unlock(&st->lock);
++		scoped_guard(mutex, &st->lock) {
++			ret = st->ops->write_dac(st, chan->channel, val);
++			if (!ret)
++				st->cached_dac[chan->channel] = val;
++		}
+ 		return ret;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		if (chan->type == IIO_VOLTAGE) {
+@@ -335,7 +319,7 @@ static int ad5592r_write_raw(struct iio_dev *iio_dev,
+ 			else
+ 				return -EINVAL;
+ 
+-			mutex_lock(&st->lock);
++			guard(mutex)(&st->lock);
+ 
+ 			ret = st->ops->reg_read(st, AD5592R_REG_CTRL,
+ 						&st->cached_gp_ctrl);
+@@ -360,11 +344,8 @@ static int ad5592r_write_raw(struct iio_dev *iio_dev,
+ 						~AD5592R_REG_CTRL_ADC_RANGE;
+ 			}
+ 
+-			ret = st->ops->reg_write(st, AD5592R_REG_CTRL,
+-						 st->cached_gp_ctrl);
+-			mutex_unlock(&st->lock);
+-
+-			return ret;
++			return st->ops->reg_write(st, AD5592R_REG_CTRL,
++						  st->cached_gp_ctrl);
+ 		}
+ 		break;
+ 	default:
+@@ -379,15 +360,15 @@ static int ad5592r_read_raw(struct iio_dev *iio_dev,
+ 			   int *val, int *val2, long m)
+ {
+ 	struct ad5592r_state *st = iio_priv(iio_dev);
+-	u16 read_val;
+-	int ret, mult;
++	u16 read_val = 0;
++	int ret = 0, mult = 0;
+ 
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		if (!chan->output) {
+-			mutex_lock(&st->lock);
+-			ret = st->ops->read_adc(st, chan->channel, &read_val);
+-			mutex_unlock(&st->lock);
++			scoped_guard(mutex, &st->lock)
++				ret = st->ops->read_adc(st, chan->channel,
++							&read_val);
+ 			if (ret)
+ 				return ret;
+ 
+@@ -400,9 +381,8 @@ static int ad5592r_read_raw(struct iio_dev *iio_dev,
+ 			read_val &= GENMASK(11, 0);
+ 
+ 		} else {
+-			mutex_lock(&st->lock);
+-			read_val = st->cached_dac[chan->channel];
+-			mutex_unlock(&st->lock);
++			scoped_guard(mutex, &st->lock)
++				read_val = st->cached_dac[chan->channel];
+ 		}
+ 
+ 		dev_dbg(st->dev, "Channel %u read: 0x%04hX\n",
+@@ -420,16 +400,14 @@ static int ad5592r_read_raw(struct iio_dev *iio_dev,
+ 			return IIO_VAL_INT_PLUS_NANO;
+ 		}
+ 
+-		mutex_lock(&st->lock);
+-
+-		if (chan->output)
+-			mult = !!(st->cached_gp_ctrl &
+-				AD5592R_REG_CTRL_DAC_RANGE);
+-		else
+-			mult = !!(st->cached_gp_ctrl &
+-				AD5592R_REG_CTRL_ADC_RANGE);
+-
+-		mutex_unlock(&st->lock);
++		scoped_guard(mutex, &st->lock) {
++			if (chan->output)
++				mult = !!(st->cached_gp_ctrl &
++					AD5592R_REG_CTRL_DAC_RANGE);
++			else
++				mult = !!(st->cached_gp_ctrl &
++					AD5592R_REG_CTRL_ADC_RANGE);
++		}
+ 
+ 		*val *= ++mult;
+ 
+@@ -439,15 +417,13 @@ static int ad5592r_read_raw(struct iio_dev *iio_dev,
+ 	case IIO_CHAN_INFO_OFFSET:
+ 		ret = ad5592r_get_vref(st);
+ 
+-		mutex_lock(&st->lock);
++		guard(mutex)(&st->lock);
+ 
+ 		if (st->cached_gp_ctrl & AD5592R_REG_CTRL_ADC_RANGE)
+ 			*val = (-34365 * 25) / ret;
+ 		else
+ 			*val = (-75365 * 25) / ret;
+ 
+-		mutex_unlock(&st->lock);
+-
+ 		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
 
- drivers/iio/adc/ad4130.c       |  10 +--
- drivers/iio/adc/ti-ads7950.c   |  17 +++--
- drivers/iio/addac/ad74115.c    |  18 +++--
- drivers/iio/addac/ad74413r.c   |  28 ++++----
- drivers/iio/dac/ad5592r-base.c | 147 ++++++++++++++++++-----------------------
- 5 files changed, 103 insertions(+), 117 deletions(-)
----
-base-commit: 0af2f6be1b4281385b618cb86ad946eded089ac8
-change-id: 20250401-gpiochip-set-rv-iio-b064ce43791d
-
-Best regards,
 -- 
-Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+2.45.2
 
