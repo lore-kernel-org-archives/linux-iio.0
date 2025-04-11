@@ -1,179 +1,149 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83FAC20C472;
-	Fri, 11 Apr 2025 12:17:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBB6B29C33C;
+	Fri, 11 Apr 2025 12:36:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744373845; cv=none; b=lW5cptQysbedLszv7aasMD5+gXu3FQfw/D+/GF8Q5zfKS5NJv7Ps6YB/cZo5qHhLgP0g5YHaTrPNN6YazARZ6NaxSP+w6PNdtNUYpXVUfNiUtssZdwbbioHjDxbcoDprQPSUyDnmc0tbMspXPQq7ccYZbIUCROBt98YIp0gbsGE=
+	t=1744375009; cv=none; b=us5e3p9Jog3tAqsNqcnrhYIPZy4cqtDI6x3wDO6ddnv7AXTN/FOv2vo/ZB7gstwFdZrADKb2qHRdfLNJcD1sRNJTBlYHVsIqQZOsmxkissENDGgwGbOLUVJgGTZxLgdKnzGf7pSJmJYskTM2+yvo3t+K3kPDPnlQmPBz3JNa9PM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744373845; c=relaxed/simple;
-	bh=LQ1M+1b8b9vBLsNLkDWj7I1E79qb0JgGieKSY9mEVNQ=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=r236M5fd5gbyNEkUyS1ksrFEPK4XLQQa7BT41DKW62YIWxdsnZmTNuQtwoZXHt/pPHikK7ffuY6m6IQubs9SX2rL7JkmwW1hemWNSoPZwi+jFzmskqmYt5fGqO0NUwix4I1K0INXcLzXb4YNJd8pfIkWDikDW3M8qE9qMIWDO9M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kxPOyF1P; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1744375009; c=relaxed/simple;
+	bh=442iTi1RNwcosl6qNVoczMJmJravZdgS2cI9stGoKsk=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=aCvmyDJiNo5Gst5xrWncJkVYWEq0crwrUTbEWuMrmAZz92P6WYN2vYobDzZqusng1Kuf+jHkfj7KHCSRzPJCs1twpyc2llE81jTiRp1e2AGYrU3rtW0qkiU9S31xAGtbZe+1abRStZCTrW058UoTEXwzbQZUEZOvnDUclMMtXN4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=JIPEVil3; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kxPOyF1P"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-43cf58eea0fso10237465e9.0;
-        Fri, 11 Apr 2025 05:17:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1744373842; x=1744978642; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=kn3LV5txXzAwuf3XmOeQiyMiqP5GN1TzCfz2bJ6NzTI=;
-        b=kxPOyF1P0ybe5zQxxO98hMxsXvV0myeBAArn760+K6xjegbbNIAQhv48MwTyBJq4z2
-         WG6Cr1qutM5wZC6pxI+cd5mR8KIb3H0ggO84nlgiFpdBx2dCsmlsj4P9tnDWcE5+/Z5O
-         RmZGkFt/yALYDMf7UC8PS9HSnhdsvd3KvEPcaXklVqpy/s7Jg8MLDoJLo9S1PZLkAtMm
-         VxXIaXnVbmwooUIv8cmhoUzylvMpRWAaCZijL8eIbdwnPyjyaj5a4CI6UDWjwv8o+WZ4
-         gktcFTJrJyfAhSjyFjz7bKyl3xN9NpsHskLqmj6OzhMBlEmakcfwAaht/ieoCIwAunwr
-         dHoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744373842; x=1744978642;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kn3LV5txXzAwuf3XmOeQiyMiqP5GN1TzCfz2bJ6NzTI=;
-        b=HJjz66Nd3jvMt8x/iQq42otMk8swbsCcPMnrl31VctVQpqtbXO4VrrDcgyqe24KH5k
-         mc/8NsVb3LpIk8inE4votm2OpqETSovl7O746A86yK6n/Rto+dZ3rm+zmrLxOW5aKAh0
-         eMzv2I6NaXwzgNZAbS3jpl/Dbt3/oIz4OgFfH7XZrzFrf9esYJjhakfSQWu/sT+Xcu46
-         AdIvxHQsHG+GLjur0qzVWv2KPVSaVNWXREGNBYG+ey03QvQnI1EU0bs5eGd4WnklyzE3
-         5tBSlQPebgcuQzseb++l068A98LbQfgDHQ7LdS766N80cQ4NhZMVEDCB2E4VFYki546E
-         ftKg==
-X-Forwarded-Encrypted: i=1; AJvYcCVKOX/vveucVSYpjqv6YwWP5wfC1btq6n919kOdS9TW+qdjzKoSfH+8MXZwvlvp7BNzmBchc6FFdLl8sUc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz8BxgXOKszyIkHY8FReshrNYHwGZWsiXz31Tsi5NZCXK42WpEX
-	fSU8Bh2Fl4/bKgZgyyt1bfnI/2u/enr+Dm6PW36Th68mXsrf3qqX
-X-Gm-Gg: ASbGncvXe3GX3RLOotUHJe2gJZ6ibV7EzqBUpFd3qtEbV5qDDkOBQcdUTRf2Cf7prmN
-	qxOysYU6XlF1CX6M6VjTQer0ibWW9zQZHpz9hADIN7mDLji5Yvp6ytVlg7rirTyEn5kTk9EwEFg
-	kzBZ4YbVr5j80/7sUXKzACElzxNuTX1l232JAEpZGV/pTkj2N5SEsUTU4IUWCFlv7zQmeZ9e6Ep
-	9MrNquNJ8WbAjof85jP4T6/t+wXaKOfZXvG77UTsVcxuf0KtTh4PFTNxw+iqkfAwcojWCZ0i/I/
-	cTwsxL6kQ01kyry5lt8PMp2W0l3WmdUSX3Bbhn+K6uXM7Dw1+LgpyfenWVgOhZA42HeFdT2VsZR
-	TUb6itOB7lARo
-X-Google-Smtp-Source: AGHT+IFog+0qqKPQLdM6uZje+i8YjA1ktJFYq86eWkauLTJn40A5FydWdSSXRi5qC247Pyx5FwVaBg==
-X-Received: by 2002:a05:600c:1d93:b0:43c:e9d0:9ee5 with SMTP id 5b1f17b1804b1-43f3a959c51mr23698005e9.18.1744373841571;
-        Fri, 11 Apr 2025 05:17:21 -0700 (PDT)
-Received: from ?IPv6:2001:818:ea8e:7f00:2575:914:eedd:620e? ([2001:818:ea8e:7f00:2575:914:eedd:620e])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43f23158849sm84339995e9.0.2025.04.11.05.17.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Apr 2025 05:17:20 -0700 (PDT)
-Message-ID: <5cb7ab70be67f8b97b5fd09eefab0f2c33d99d20.camel@gmail.com>
-Subject: Re: [PATCH] iio: addac: ad74115: Fix use of uninitialized variable
- rate
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Purva Yeshi <purvayeshi550@gmail.com>, David Lechner
- <dlechner@baylibre.com>, 	cosmin.tanislav@analog.com, lars@metafoo.de,
- Michael.Hennerich@analog.com, 	jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Fri, 11 Apr 2025 13:17:22 +0100
-In-Reply-To: <f5f40475-fae5-487f-b5ce-dc6c5dfe3600@gmail.com>
-References: <20250409202945.205088-1-purvayeshi550@gmail.com>
-	 <1254dfd7-e872-4c65-bd17-8015e1b2eba4@baylibre.com>
-	 <10a9dd5cdf55b6a9845fb9543cdef5f2251ffa6a.camel@gmail.com>
-	 <f5f40475-fae5-487f-b5ce-dc6c5dfe3600@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.0 
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="JIPEVil3"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53BA5YuE015128;
+	Fri, 11 Apr 2025 08:36:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=aexCs
+	pUfsridXQVw3Sf/TXKjWK5UbOJ/ylP/lpKeGDI=; b=JIPEVil3rfztxNAOBr1Zf
+	nYXzVmpy7Z86S/WyB+4uM19f352uvGsI1j307xcTR/FAWQ8qyKCaEbv6qJA0eCzY
+	l3JrhO100cjIJeiEnGYHbu/Hga7UHNyaLsPgKKePozNsUToE4OWS8UE9fT4jyQYT
+	hgwDezsV3CZd3tZJ3Zk3j/aWj3MEtlu06uJo3brDfwUlEDGmVaduIlXatdrLHGh+
+	dJ46svxNpqGSPVam7XjBcRRzaKoy/7aEgSMJJq5O0o+GG7U53YhCqieRM+Ti2ruS
+	k0q3rsQXQoTdUovdR2A7WJT9RiChQUPPD2rqb+gkC8jaFQx6J8gYnHh7RtxJdPBq
+	A==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 45u1e6u55h-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 11 Apr 2025 08:36:44 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 53BCahEs005158
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 11 Apr 2025 08:36:43 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 11 Apr
+ 2025 08:36:43 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 11 Apr 2025 08:36:43 -0400
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.151])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 53BCaTPO006015;
+	Fri, 11 Apr 2025 08:36:38 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v2 04/13] iio: backend: add support for sync status
+Date: Fri, 11 Apr 2025 15:36:18 +0300
+Message-ID: <20250411123627.6114-5-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.49.0
+In-Reply-To: <20250411123627.6114-1-antoniu.miclaus@analog.com>
+References: <20250411123627.6114-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: KbxxqnpQJHYDqz02l-DBlgDLb3iPLhGi
+X-Authority-Analysis: v=2.4 cv=cdjSrmDM c=1 sm=1 tr=0 ts=67f90cdc cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=XR8D0OoHHMoA:10 a=gAnH3GRIAAAA:8 a=x1tXHNgHMfKpHKJ5ZLIA:9
+X-Proofpoint-GUID: KbxxqnpQJHYDqz02l-DBlgDLb3iPLhGi
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-11_04,2025-04-10_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ lowpriorityscore=0 impostorscore=0 spamscore=0 malwarescore=0
+ priorityscore=1501 adultscore=0 mlxscore=0 clxscore=1015 mlxlogscore=999
+ phishscore=0 bulkscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
+ definitions=main-2504110080
 
-On Fri, 2025-04-11 at 14:39 +0530, Purva Yeshi wrote:
-> On 11/04/25 11:19, Nuno S=C3=A1 wrote:
-> > On Thu, 2025-04-10 at 09:51 -0500, David Lechner wrote:
-> > > On 4/9/25 3:29 PM, Purva Yeshi wrote:
-> > > > Fix Smatch-detected error:
-> > > > drivers/iio/addac/ad74115.c:823 _ad74115_get_adc_code() error:
-> > > > uninitialized symbol 'rate'.
-> > > >=20
-> > > > The variable rate was declared but not given any value before being=
- used
-> > > > in a division. If the code reached that point without setting rate,=
- it
-> > > > would cause unpredictable behavior.
-> > > >=20
-> > > > Declare and initialize 'rate' to zero inside the 'else' block where=
- it
-> > > > is
-> > > > used. This ensures 'rate' is always initialized before being passed=
- to
-> > > > DIV_ROUND_CLOSEST.
-> > > >=20
-> > > > Signed-off-by: Purva Yeshi <purvayeshi550@gmail.com>
-> > > > ---
-> > > > =C2=A0=C2=A0drivers/iio/addac/ad74115.c | 2 +-
-> > > > =C2=A0=C2=A01 file changed, 1 insertion(+), 1 deletion(-)
-> > > >=20
-> > > > diff --git a/drivers/iio/addac/ad74115.c b/drivers/iio/addac/ad7411=
-5.c
-> > > > index a7e480f2472d..26770c68e5fa 100644
-> > > > --- a/drivers/iio/addac/ad74115.c
-> > > > +++ b/drivers/iio/addac/ad74115.c
-> > > > @@ -814,7 +814,7 @@ static int _ad74115_get_adc_code(struct
-> > > > ad74115_state *st,
-> > > > =C2=A0=C2=A0			return -ETIMEDOUT;
-> > > > =C2=A0=C2=A0	} else {
-> > > > =C2=A0=C2=A0		unsigned int regval, wait_time;
-> > > > -		int rate;
-> > > > +		int rate =3D 0;
-> > > > =C2=A0=20
-> > > > =C2=A0=C2=A0		ret =3D ad74115_get_adc_rate(st, channel, &rate);
-> > > > =C2=A0=C2=A0		if (ret < 0)
-> > >=20
-> > > I don't see how rate could be used uninitialized since we are
-> > > returning the error if ad74115_get_adc_rate() fails.
-> > >=20
-> > > Also, initializing to 0 would then cause a divide by 0 error
-> > > if that value was actually used later in the code.
-> > >=20
-> >=20
-> > Agreed... A better check could actually be (in ad74115_get_adc_rate()):
-> >=20
-> >=20
-> > if (i >=3D ARRAY_SIZE(ad74115_get_adc_rate))
-> > =C2=A0=C2=A0=C2=A0=C2=A0 return -EIO;
-> >=20
-> > Kind of a paranoid check but just making sure a faulty chip does not le=
-ad to
-> > an out
-> > of bounds access.
-> >=20
-> > - Nuno S=C3=A1
->=20
-> Hi Nuno,
->=20
-> Thank you for your suggestion regarding the paranoid check.
->=20
-> However, ad74115_get_adc_rate is a function, not an array, pointer, or=
-=20
-> vector. Therefore, using ARRAY_SIZE on it results in a compilation error.
->=20
-> I believe the intended check was:
->=20
-> if (i >=3D ARRAY_SIZE(ad74115_adc_conv_rate_tbl))
-> =C2=A0=C2=A0=C2=A0=C2=A0 return -EIO;
->=20
+Add iio backend support for synchronization status read.
+The return value is a boolean stating if the synchronization is enabled
+or disabled.
 
-Oh yes, bad copy-paste...
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+no changes in v2.
+ drivers/iio/industrialio-backend.c | 14 ++++++++++++++
+ include/linux/iio/backend.h        |  3 +++
+ 2 files changed, 17 insertions(+)
 
->=20
-> This ensures that the index i does not exceed the bounds of the=20
-> ad74115_adc_conv_rate_tbl array, preventing potential out-of-bounds acces=
-s.
->=20
-> This check prevents potential out-of-bounds access, it does not address=
-=20
-> the Smatch warning about the uninitialized variable 'rate'. Smatch may=
-=20
-> still flag 'rate' as potentially uninitialized if it cannot determine=20
-> that ad74115_get_adc_rate() always initializes it before use.
->=20
-
-Well, as said, this is a false positive...
-
-- Nuno S=C3=A1
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index cb23433b22c6..0b27f88d6c27 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -860,6 +860,20 @@ int iio_backend_self_sync_disable(struct iio_backend *back)
+ }
+ EXPORT_SYMBOL_NS_GPL(iio_backend_self_sync_disable, "IIO_BACKEND");
+ 
++/**
++ * iio_backend_sync_status_get - Read the syncronization status
++ * @back: Backend device
++ * @sync_en: Synchronization status returned (enabled or disabled)
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_sync_status_get(struct iio_backend *back, bool *sync_en)
++{
++	return iio_backend_op_call(back, sync_status_get, sync_en);
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_sync_status_get, "IIO_BACKEND");
++
+ /**
+  * iio_backend_ddr_enable - Enable interface DDR (Double Data Rate) mode
+  * @back: Backend device
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+index 6d006cb0da5a..9bf03181c5c1 100644
+--- a/include/linux/iio/backend.h
++++ b/include/linux/iio/backend.h
+@@ -106,6 +106,7 @@ enum iio_backend_interface_type {
+  * @data_alignment_disable: Disable sync process.
+  * @self_sync_enable: Enable the self sync data capture.
+  * @self_sync_disable: Disable the self sync data capture.
++ * @sync_status_get: Get the syncronization status (enabled/disabled).
+  * @ddr_enable: Enable interface DDR (Double Data Rate) mode.
+  * @ddr_disable: Disable interface DDR (Double Data Rate) mode.
+  * @data_stream_enable: Enable data stream.
+@@ -162,6 +163,7 @@ struct iio_backend_ops {
+ 	int (*data_alignment_disable)(struct iio_backend *back);
+ 	int (*self_sync_enable)(struct iio_backend *back);
+ 	int (*self_sync_disable)(struct iio_backend *back);
++	int (*sync_status_get)(struct iio_backend *back, bool *sync_en);
+ 	int (*ddr_enable)(struct iio_backend *back);
+ 	int (*ddr_disable)(struct iio_backend *back);
+ 	int (*data_stream_enable)(struct iio_backend *back);
+@@ -208,6 +210,7 @@ int iio_backend_data_alignment_enable(struct iio_backend *back);
+ int iio_backend_data_alignment_disable(struct iio_backend *back);
+ int iio_backend_self_sync_enable(struct iio_backend *back);
+ int iio_backend_self_sync_disable(struct iio_backend *back);
++int iio_backend_sync_status_get(struct iio_backend *back, bool *sync_en);
+ int iio_backend_ddr_enable(struct iio_backend *back);
+ int iio_backend_ddr_disable(struct iio_backend *back);
+ int iio_backend_data_stream_enable(struct iio_backend *back);
+-- 
+2.49.0
 
