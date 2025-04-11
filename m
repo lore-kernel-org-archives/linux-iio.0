@@ -1,60 +1,64 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CAEA2BEC23;
-	Fri, 11 Apr 2025 12:36:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 325292BEC4D;
+	Fri, 11 Apr 2025 12:36:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744375012; cv=none; b=hxgOnVAXSPK7e75LrKc0PXJN1IfRDzQYJT6hcwwuJ5MQFdSHgciMBUCS4UvU7sQ7MtktpuJequBcLujXeFAZtpLbvJQMROvz0zi6ATZyWd6ggj3Ljucrek1cPY4Cw3utIdJj8WDuH184CIiu6DGeF+glwtiVITZblbLn38jOAt0=
+	t=1744375014; cv=none; b=LrAG05btwkvuNpvxWhz5y9W5BK68mAWoM0xs4olfW+afnCmK+le6fS1461IP/Ii6G9YvbgyoNFQfmEg2g7KgJ/qRMFDB6m3wHkAIq8qa0eFnv4FnxqbTaSwpx64nTiHSj9ccjoZqPgPf+hUDMnioQTkOm/tLvrS9ZF9kRfCXcdQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744375012; c=relaxed/simple;
-	bh=DUtlX8e5/K86bIN/m3HMWrcPv3oIKcbCqMK0mTYSV6M=;
+	s=arc-20240116; t=1744375014; c=relaxed/simple;
+	bh=yK0mkDN8ALiXZ4/3J/toMNem8KUgvx2szsl3CPXxjmE=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=trmscj8Th5YLW7lrT6lC3h56ORiW5AQlVWJer9Xmv8vFo0A9jPTROJiLr9DVvxyg3sTtIA0yKPOoU6cG4mESJzf3F0t+GgoOeevH4+iaP0Z7QkxpxLQBg+RPN2fLPL5qec4u8A8rfUJDWkIxNZxSh2ojeCKOIPRpxy+1tclpOWI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=qjjmT4N4; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=mrITP+PMri0Y7n1WmtCXqYcY20J03NfKGR8Wg1y18vteg2V+pwZEf05NfmA3jUdnVX4NuF4xDZ1UX6sp1h6oJW3EmuLwEQtWDlhuPA8Dt0dE6FKenfDnmOzAfy+jmI0Bn2grtzvCntpJ1k6pc5pxGbPTxaGSA/gSN3ieigauIkw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Zqo1Lo40; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="qjjmT4N4"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53B9sxYs001960;
-	Fri, 11 Apr 2025 08:36:48 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Zqo1Lo40"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53B9VvR2015129;
+	Fri, 11 Apr 2025 08:36:43 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=hZxko
-	t+XBybkwhacYbRtT9aCqwfwgFf1BEdm32d1oWo=; b=qjjmT4N4MVKTOqbVmqm8C
-	IM1SHIA3CZTRvYcRrXaARXFJXpmbUh3GRIhUFZDyRFnAL1mnolGxI6M841cFfcfc
-	YsauGbMq/eFSOlI8hcfxzf5iexiiv51wMCpRJthrxUaUjke4dAGB4GcE5i7sioB5
-	pUAZpFpExE/vUhPLWLDKzMztD0B1y83weSbBUaoOorzu33AxMXNFpUdRqAP1bU8W
-	tiqlcyTmqNHSmcSTHgFWvVoE75ys+2qNPN86WWnUndwp+21GiggUYu5juHJA1yo4
-	eE2Md6pdZe1OlHGIb5kaoLa2VrrUNhp/7yVjEKzwD0uZwYgewiL1m8OGnlGEWZ7S
-	g==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=lnmEA
+	lTnzjsRixf4kdaMCGr7P/uLkqVnRE4iogjkWIg=; b=Zqo1Lo40c1apR4sW2pGWf
+	SCR7NCXK9AYRJ6Sgfhd1UbqzmdD1K1kz+715wvNZ0sqxQrxAg6qm7a35zGbBLYVz
+	1jrZjfA+qhjiVFGw1K/6BnmQgg33QliDq9WtwYoGYOVPPvTpaBC0OPNxXJsejJpy
+	aIHSIxOXhR5NwC8/FDSeT6HWKyeyzu2fU0o7MdS7M2YbvtY15YGBCUzD+Jg3BBUl
+	Gl8F+C7V8sZgkSJ/alxGMwtDBd9hFrRGygEM0OhKMF2kBHCeAJfx+gvLkHCCnR8w
+	L2s0qNf753/i+CQLtogDJcOhik36sBPSS+Jtww4krK06Od77BUdC6JV/l6nDmtge
+	Q==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 45x8yp0brt-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 45u1e6u55f-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 11 Apr 2025 08:36:48 -0400 (EDT)
+	Fri, 11 Apr 2025 08:36:42 -0400 (EDT)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 53BCalJm005167
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 53BCafN8005149
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 11 Apr 2025 08:36:47 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 11 Apr
- 2025 08:36:47 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 11 Apr 2025 08:36:47 -0400
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.151])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 53BCaTPR006015;
 	Fri, 11 Apr 2025 08:36:41 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 11 Apr 2025 08:36:41 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 11 Apr 2025 08:36:41 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 11 Apr 2025 08:36:41 -0400
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.151])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 53BCaTPM006015;
+	Fri, 11 Apr 2025 08:36:35 -0400
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
         <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v2 07/13] iio: adc: adi-axi-adc: add filter enable/disable
-Date: Fri, 11 Apr 2025 15:36:21 +0300
-Message-ID: <20250411123627.6114-8-antoniu.miclaus@analog.com>
+Subject: [PATCH v2 02/13] iio: backend: add support for sync process
+Date: Fri, 11 Apr 2025 15:36:16 +0300
+Message-ID: <20250411123627.6114-3-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250411123627.6114-1-antoniu.miclaus@analog.com>
 References: <20250411123627.6114-1-antoniu.miclaus@analog.com>
@@ -67,104 +71,101 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: sHTm-Sqy-NjwbWJYKLQnSGjiix3cz-A3
-X-Authority-Analysis: v=2.4 cv=BoqdwZX5 c=1 sm=1 tr=0 ts=67f90ce0 cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=XR8D0OoHHMoA:10 a=gAnH3GRIAAAA:8 a=tS2dMKavNNEhNzk4wysA:9
-X-Proofpoint-GUID: sHTm-Sqy-NjwbWJYKLQnSGjiix3cz-A3
+X-Proofpoint-ORIG-GUID: XVFNQ9iN1YoLfzfnWh8AX0SbMnC5o454
+X-Authority-Analysis: v=2.4 cv=cdjSrmDM c=1 sm=1 tr=0 ts=67f90cda cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=XR8D0OoHHMoA:10 a=gAnH3GRIAAAA:8 a=AWommT912SskAef1OWUA:9
+X-Proofpoint-GUID: XVFNQ9iN1YoLfzfnWh8AX0SbMnC5o454
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-04-11_04,2025-04-10_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 mlxscore=0 lowpriorityscore=0 malwarescore=0
- suspectscore=0 adultscore=0 impostorscore=0 spamscore=0 mlxlogscore=999
- bulkscore=0 phishscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ lowpriorityscore=0 impostorscore=0 spamscore=0 malwarescore=0
+ priorityscore=1501 adultscore=0 mlxscore=0 clxscore=1015 mlxlogscore=999
+ phishscore=0 bulkscore=0 classifier=spam authscore=0 authtc=n/a authcc=
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
  definitions=main-2504110080
 
-Add support for enabling/disabling the filter.
+Add backend support for enabling/disabling the sync process for devices
+that have data capture synchronization done through bit-slip (correct
+data allignment) procedure and not through and external hardware pin.
+This setting can be adjusted within the IP cores interfacing devices.
 
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
-no changes in v2.
- drivers/iio/adc/adi-axi-adc.c | 42 +++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+changes in v2:
+ - rename function for better clarity.
+ - improve commit description
+ drivers/iio/industrialio-backend.c | 26 ++++++++++++++++++++++++++
+ include/linux/iio/backend.h        |  6 ++++++
+ 2 files changed, 32 insertions(+)
 
-diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
-index 61ab7dce43be..d4466e02fc28 100644
---- a/drivers/iio/adc/adi-axi-adc.c
-+++ b/drivers/iio/adc/adi-axi-adc.c
-@@ -52,6 +52,7 @@
- #define   AXI_AD485X_PACKET_FORMAT_20BIT	0x0
- #define   AXI_AD485X_PACKET_FORMAT_24BIT	0x1
- #define   AXI_AD485X_PACKET_FORMAT_32BIT	0x2
-+#define   AXI_AD408X_CNTRL_3_FILTER_EN_MSK	BIT(0)
- 
- #define ADI_AXI_ADC_REG_DRP_STATUS		0x0074
- #define   ADI_AXI_ADC_DRP_LOCKED		BIT(17)
-@@ -402,6 +403,22 @@ static int axi_adc_ad485x_oversampling_ratio_set(struct iio_backend *back,
- 	}
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index ffafe7c73508..60578267643d 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -804,6 +804,32 @@ int iio_backend_filter_disable(struct iio_backend *back)
  }
+ EXPORT_SYMBOL_NS_GPL(iio_backend_filter_disable, "IIO_BACKEND");
  
-+static int axi_adc_ad408x_filter_enable(struct iio_backend *back)
++/**
++ * iio_backend_data_alignment_enable - Enable the sync process.
++ * @back: Backend device
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_data_alignment_enable(struct iio_backend *back)
 +{
-+	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
-+
-+	return regmap_set_bits(st->regmap, ADI_AXI_ADC_REG_CNTRL_3,
-+			       AXI_AD408X_CNTRL_3_FILTER_EN_MSK);
++	return iio_backend_op_call(back, data_alignment_enable);
 +}
++EXPORT_SYMBOL_NS_GPL(iio_backend_data_alignment_enable, "IIO_BACKEND");
 +
-+static int axi_adc_ad408x_filter_disable(struct iio_backend *back)
++/**
++ * iio_backend_data_alignment_disable - Disable the sync process.
++ * @back: Backend device
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_data_alignment_disable(struct iio_backend *back)
 +{
-+	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
-+
-+	return regmap_clear_bits(st->regmap, ADI_AXI_ADC_REG_CNTRL_3,
-+				 AXI_AD408X_CNTRL_3_FILTER_EN_MSK);
++	return iio_backend_op_call(back, data_alignment_disable);
 +}
++EXPORT_SYMBOL_NS_GPL(iio_backend_data_alignment_disable, "IIO_BACKEND");
 +
- static struct iio_buffer *axi_adc_request_buffer(struct iio_backend *back,
- 						 struct iio_dev *indio_dev)
- {
-@@ -582,6 +599,25 @@ static const struct iio_backend_info axi_ad485x = {
- 	.ops = &adi_ad485x_ops,
- };
- 
-+static const struct iio_backend_ops adi_ad408x_ops = {
-+	.enable = axi_adc_enable,
-+	.disable = axi_adc_disable,
-+	.chan_enable = axi_adc_chan_enable,
-+	.chan_disable = axi_adc_chan_disable,
-+	.request_buffer = axi_adc_request_buffer,
-+	.free_buffer = axi_adc_free_buffer,
-+	.data_sample_trigger = axi_adc_data_sample_trigger,
-+	.filter_enable = axi_adc_ad408x_filter_enable,
-+	.filter_disable = axi_adc_ad408x_filter_disable,
-+	.debugfs_reg_access = iio_backend_debugfs_ptr(axi_adc_reg_access),
-+	.debugfs_print_chan_status = iio_backend_debugfs_ptr(axi_adc_debugfs_print_chan_status),
-+};
-+
-+static const struct iio_backend_info axi_ad408x = {
-+	.name = "axi-ad408x",
-+	.ops = &adi_ad408x_ops,
-+};
-+
- static int adi_axi_adc_probe(struct platform_device *pdev)
- {
- 	struct adi_axi_adc_state *st;
-@@ -697,9 +733,15 @@ static const struct axi_adc_info adc_ad7606 = {
- 	.has_child_nodes = true,
- };
- 
-+static const struct axi_adc_info adi_axi_ad408x = {
-+	.version = ADI_AXI_PCORE_VER(10, 0, 'a'),
-+	.backend_info = &axi_ad408x,
-+};
-+
- /* Match table for of_platform binding */
- static const struct of_device_id adi_axi_adc_of_match[] = {
- 	{ .compatible = "adi,axi-adc-10.0.a", .data = &adc_generic },
-+	{ .compatible = "adi,axi-ad408x", .data = &adi_axi_ad408x },
- 	{ .compatible = "adi,axi-ad485x", .data = &adi_axi_ad485x },
- 	{ .compatible = "adi,axi-ad7606x", .data = &adc_ad7606 },
- 	{ /* end of list */ }
+ /**
+  * iio_backend_ddr_enable - Enable interface DDR (Double Data Rate) mode
+  * @back: Backend device
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+index 7987d9f1cdb3..beff66d18151 100644
+--- a/include/linux/iio/backend.h
++++ b/include/linux/iio/backend.h
+@@ -102,6 +102,8 @@ enum iio_backend_interface_type {
+  * @debugfs_reg_access: Read or write register value of backend.
+  * @filter_enable: Enable filter.
+  * @filter_disable: Disable filter.
++ * @data_alignment_enable: Enable sync process.
++ * @data_alignment_disable: Disable sync process.
+  * @ddr_enable: Enable interface DDR (Double Data Rate) mode.
+  * @ddr_disable: Disable interface DDR (Double Data Rate) mode.
+  * @data_stream_enable: Enable data stream.
+@@ -154,6 +156,8 @@ struct iio_backend_ops {
+ 				  unsigned int writeval, unsigned int *readval);
+ 	int (*filter_enable)(struct iio_backend *back);
+ 	int (*filter_disable)(struct iio_backend *back);
++	int (*data_alignment_enable)(struct iio_backend *back);
++	int (*data_alignment_disable)(struct iio_backend *back);
+ 	int (*ddr_enable)(struct iio_backend *back);
+ 	int (*ddr_disable)(struct iio_backend *back);
+ 	int (*data_stream_enable)(struct iio_backend *back);
+@@ -196,6 +200,8 @@ int devm_iio_backend_request_buffer(struct device *dev,
+ 				    struct iio_dev *indio_dev);
+ int iio_backend_filter_enable(struct iio_backend *back);
+ int iio_backend_filter_disable(struct iio_backend *back);
++int iio_backend_data_alignment_enable(struct iio_backend *back);
++int iio_backend_data_alignment_disable(struct iio_backend *back);
+ int iio_backend_ddr_enable(struct iio_backend *back);
+ int iio_backend_ddr_disable(struct iio_backend *back);
+ int iio_backend_data_stream_enable(struct iio_backend *back);
 -- 
 2.49.0
 
