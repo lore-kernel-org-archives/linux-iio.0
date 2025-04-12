@@ -1,54 +1,59 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D117217BED0;
-	Sat, 12 Apr 2025 05:58:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DB9918BC06;
+	Sat, 12 Apr 2025 05:58:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744437519; cv=none; b=NFnjhOoeSc0uLICDdfPolNeiAJpq7I4G0xh32yMRNuZ/eY0LvNslYkD4jlgj8EEyQT3XBZ6IJ9pVtxTBb5gmWv1YMtHDzrpcX/1oi+2/hXy1mOCtRmK6b2mserUfyAtKNDrTlO23CeZunsW9pgzuAiEvebTXzvsqvTRsp9KrH98=
+	t=1744437520; cv=none; b=YJlWAecQjK1qSH2QEyEeSNLVBn2wxMRskYWAi51EH899ktgEs5vHU0heX3XQbENWVqiKn4ZmAuXJa/KUtbMlnZ8ujYXyOzAVYqc1khC0lh5N8NxsLgnp6UkevQs/KWeRg7vmZE8nPdLL7LvSZGVXH1XHWB5rFbnFT6S08WwV6Rc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744437519; c=relaxed/simple;
-	bh=kEclPaW8ZXhx5Z3H4yPfXzZx+JT31fc81HgL7FhCS0s=;
-	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=G8YymxKUzri/FBgszcZ8qenrJF91OeFCrf1uuEy/1CNRchaf6cxU4QSkLnIHAZ0jiRz/NIsejA6gmbA9s7+AwYG0yLOzHykY1N7tjswLxtPVVgd38JhefjaXi5jQk398c7DOGohc/K01ph0rcFmji4jRzKSgGBxBHgIWx94+l/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=DcOQSaqU; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1744437520; c=relaxed/simple;
+	bh=OdMDjTI9vMElJGgf17HPgzk4xDIIwt+t97xdBkKZ4vU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=MdyK9jz7YkzduRrKAxumwZ0UncZgxdy210uDoZYvjjpkKbjstFfgnExlSO8lEUYlFWFrkWCBzf+1risNut/ii6+0hBC6vxbablqGCUtme+cbl8J+KUbX5yEuB0wPAhWTSz8t45BDMWB+OTc4WwUgLZpjFfwiamef49ESZVnQdJE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=XeddvZy4; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="DcOQSaqU"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="XeddvZy4"
 Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53C5QA8w006939;
-	Sat, 12 Apr 2025 01:58:13 -0400
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53C5PwQw006787;
+	Sat, 12 Apr 2025 01:58:22 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=iV8cNTP7PVRNw4O5nSu63TVly+B
-	piRjgPXbUtnIzOPo=; b=DcOQSaqUhwAZ9kQ+2Sjqpm65wqnJtLn9wL7R2Obq68U
-	UZjavn6DFYM6WHk+a8uOMSkPp56UCF/gxYTVeDMPF/Qa/q1OQ2RTK0Vc4l/iqRRi
-	PSGEpTih4w49I7UHg4383WYTsqqlhXgY5Z5N54Sx0FiDqL5NFXN+3nhqIknySPTX
-	uSwyuyDWeqdICodYwL/j1frHaibOpF3vx09K5yOhDyZtWONSG2I3exND6IqvQ4UX
-	ytK2vGTvOcbIfrB/ue80z89kMAWPT5Xu2YQcGqXD6+4cOobaMxHiDpBazxMjO0Hw
-	H48/AH7ieNlkOKxA65BvXc09iAXQIqOY6DEUmvfYa8w==
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=l4+RD
+	NFjb6wMjYUSFNX/a0HnGLcOY6Y6mP7e1MNAebo=; b=XeddvZy4oBBoXUeCsFKi0
+	b41suN7p+u3CpHCKdtGHvOmB9biSA45C5/zY1Fb4uAApGTNjaFgzTZc5SSwHdZrf
+	fa3WI9RRtJNtVinfkQTANYlACmM/e1FiypGxTMLIQVYqs7IMcbuBXRn/P0NdAypA
+	m5+4TRbw/hgOKCPov9vBjYgFKh2Xmtbtb8NIGE5WvTPY4RWyI4V3z6PHDzIlCoyi
+	4RWf6Vf1MEBgMHl+BT9T4u2Kn6yFJl4nJ8OSVZ2Xx2DfDq/5tDkcn3BxTPXPQ3uA
+	RAWiaRFXdda20jBgByMdwY3a8PAgkF5xwxZIv58IRKJYhinbnqHj1GFT0xmLXgpo
+	g==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 45yj178390-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 45yj17839h-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sat, 12 Apr 2025 01:58:12 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 53C5wBUK064375
+	Sat, 12 Apr 2025 01:58:22 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 53C5wLwG064405
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Sat, 12 Apr 2025 01:58:11 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Sat, 12 Apr
- 2025 01:58:11 -0400
+	Sat, 12 Apr 2025 01:58:21 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Sat, 12 Apr 2025 01:58:21 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Sat, 12 Apr 2025 01:58:20 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Sat, 12 Apr 2025 01:58:11 -0400
+ Transport; Sat, 12 Apr 2025 01:58:20 -0400
 Received: from analog.ad.analog.com (KPALLER2-L03.ad.analog.com [10.116.18.50])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 53C5vswU023609;
-	Sat, 12 Apr 2025 01:57:58 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 53C5vswW023609;
+	Sat, 12 Apr 2025 01:58:14 -0400
 From: Kim Seer Paller <kimseer.paller@analog.com>
-Subject: [PATCH v4 0/3] Add driver for AD3530R and AD3531R DACs
-Date: Sat, 12 Apr 2025 13:57:29 +0800
-Message-ID: <20250412-togreg-v4-0-cb9e5309b99d@analog.com>
+Date: Sat, 12 Apr 2025 13:57:31 +0800
+Subject: [PATCH v4 2/3] dt-bindings: iio: dac: Add adi,ad3530r.yaml
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -57,11 +62,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAMkA+mcC/2XNTQ7CIBCG4asY1mJgoLV15T2Mi5G/kmgx0BBN0
- 7tLu6iaLr8Jz8tIkoneJHLajSSa7JMPfRlyvyOqw94Z6nXZBBhUTPCWDsFF46hVNTK0bc2NJuX
- xMxrrX0voci2782kI8b10M5+vm0TmlFHdgJRYMbCgztjjPbiDCg8yNzL8OJCrg+IscK6PDW9Bm
- I0TXyeZWJ2Y/5M3VqNEW2H756Zp+gBCNpTQDQEAAA==
-X-Change-ID: 20250319-togreg-fc6a0af961ed
+Message-ID: <20250412-togreg-v4-2-cb9e5309b99d@analog.com>
+References: <20250412-togreg-v4-0-cb9e5309b99d@analog.com>
+In-Reply-To: <20250412-togreg-v4-0-cb9e5309b99d@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Rob Herring
@@ -76,112 +79,168 @@ CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Kim Seer Paller <kimseer.paller@analog.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1744437475; l=3150;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1744437475; l=4929;
  i=kimseer.paller@analog.com; s=20250213; h=from:subject:message-id;
- bh=kEclPaW8ZXhx5Z3H4yPfXzZx+JT31fc81HgL7FhCS0s=;
- b=RLtv7VlmCe2hlaqalSMh9NsRu2gBek4a9V/dqAHZYmeAV9jWMvbQuCUMITGQtvzHLUNvEXEcR
- Jm4xBYFjDzcA0tJE7spwnvI2tyJDBFbGPRX8WK4b2xUc4LL+xi646vn
+ bh=OdMDjTI9vMElJGgf17HPgzk4xDIIwt+t97xdBkKZ4vU=;
+ b=DeqgrOqG3nvKXdoqI/yMIYuiEhNyNrDFjRd00469Ad4x8EIc5Sk+R4QP2wxeXEm+lUMQlwB3U
+ WFKdrvQ6ZwJDzqLoiy4kRK6bODcsT6D3/VUWjBwMPvBxrl23/rOwtDo
 X-Developer-Key: i=kimseer.paller@analog.com; a=ed25519;
  pk=SPXIwGLg4GFKUNfuAavY+YhSDsx+Q+NwGLceiKwm8Ac=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=UIPdHDfy c=1 sm=1 tr=0 ts=67fa00f4 cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=VwQbUJbxAAAA:8 a=gAnH3GRIAAAA:8 a=0-fQSIx2x2jmDMUy4EgA:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10
-X-Proofpoint-GUID: yqTzYeoJv7doCyyPhR45hdeBjiff5BmU
-X-Proofpoint-ORIG-GUID: yqTzYeoJv7doCyyPhR45hdeBjiff5BmU
+X-Authority-Analysis: v=2.4 cv=UIPdHDfy c=1 sm=1 tr=0 ts=67fa00fe cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8 a=KKAkSRfTAAAA:8 a=VwQbUJbxAAAA:8
+ a=Mm4sZ1b9CvxOHCGzALoA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=sptkURWiP4Gy88Gu7hUp:22 a=cvBusfyB2V15izCimMoJ:22
+X-Proofpoint-GUID: x0xhKyL-khBJpqDhLdTYyJhFXir5n6rr
+X-Proofpoint-ORIG-GUID: x0xhKyL-khBJpqDhLdTYyJhFXir5n6rr
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-04-12_01,2025-04-10_01,2024-11-22_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- phishscore=0 adultscore=0 clxscore=1011 suspectscore=0 spamscore=0
+ phishscore=0 adultscore=0 clxscore=1015 suspectscore=0 spamscore=0
  priorityscore=1501 mlxlogscore=999 bulkscore=0 mlxscore=0 impostorscore=0
  malwarescore=0 classifier=spam authscore=0 authtc=n/a authcc=
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
  definitions=main-2504120042
 
-The AD3530/AD3530R (8-channel) and AD3531/AD3531R (4-channel) are
+Document the AD3530/AD3530R (8-channel) and AD3531/AD3531R (4-channel)
 low-power, 16-bit, buffered voltage output DACs with software-
-programmable gain controls, providing full-scale output spans of 2.5V or
-5V for reference voltages of 2.5V. These devices operate from a single
-2.7V to 5.5V supply and are guaranteed monotonic by design. The "R"
-variants include a 2.5V, 5ppm/°C internal reference, which is disabled
-by default.
+programmable gain controls. They provide full-scale output spans of 2.5V
+or 5V for reference voltages of 2.5V. These devices operate on a single
+2.7V to 5.5V supply and are guaranteed to be monotonic by design.
+The "R" variants include a 2.5V, 5ppm/°C internal reference, which is
+disabled by default.
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
 ---
-Changes in v4:
-Bindings:
-- Add ad3531/ad3531r datasheet link.
-- Add reviewer's tag.
+ .../devicetree/bindings/iio/dac/adi,ad3530r.yaml   | 100 +++++++++++++++++++++
+ MAINTAINERS                                        |   7 ++
+ 2 files changed, 107 insertions(+)
 
-ad3530r:
-- Add commit description for unimplemented MUXOUT ADC monitoring feature.
-- Use a DMA-safe buffer for bulk register read/write.
-- Inline the AD3530R_CHAN_EXT_INFO macro for the "powerdown" attribute
-  since it is only used once.
-- Use enum ad3530r_mode for powerdown_mode.
-- Refactor ad3530r_set_dac_powerdown() use chan->address for bitmask
-  calculations and add helper variables.
-- Simplify single-bit configuration with regmap_set_bits().
-- Add .max_register for regmap_config.
-- Rework regulator handling and move ad3530r_setup() after enabling the
-  regulators.
+diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad3530r.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad3530r.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..a355d52a9d641e488fe291b97bc95ed115e96afd
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/adi,ad3530r.yaml
+@@ -0,0 +1,100 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/dac/adi,ad3530r.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices AD3530R and Similar DACs
++
++maintainers:
++  - Kim Seer Paller <kimseer.paller@analog.com>
++
++description: |
++  The AD3530/AD3530R (8-channel) and AD3531/AD3531R (4-channel) are low-power,
++  16-bit, buffered voltage output digital-to-analog converters (DACs) with
++  software-programmable gain controls, providing full-scale output spans of 2.5V
++  or 5V for reference voltages of 2.5V. These devices operate from a single 2.7V
++  to 5.5V supply and are guaranteed monotonic by design. The "R" variants
++  include a 2.5V, 5ppm/°C internal reference, which is disabled by default.
++  Datasheet can be found here:
++  https://www.analog.com/media/en/technical-documentation/data-sheets/ad3530_ad530r.pdf
++  https://www.analog.com/media/en/technical-documentation/data-sheets/ad3531-ad3531r.pdf
++
++properties:
++  compatible:
++    enum:
++      - adi,ad3530
++      - adi,ad3530r
++      - adi,ad3531
++      - adi,ad3531r
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 50000000
++
++  vdd-supply:
++    description: Power Supply Input.
++
++  iovdd-supply:
++    description: Digital Power Supply Input.
++
++  io-channels:
++    description:
++      ADC channel used to monitor internal die temperature, output voltages, and
++      current of a selected channel via the MUXOUT pin.
++    maxItems: 1
++
++  ref-supply:
++    description:
++      Reference Input/Output. The voltage at the REF pin sets the full-scale
++      range of all channels. If not provided the internal reference is used and
++      also provided on the VREF pin.
++
++  reset-gpios:
++    description:
++      Active low signal that is falling edge sensitive. When it is deasserted,
++      the digital core initialization is performed and all DAC registers except
++      the Interface Configuration A register are reset to their default values.
++    maxItems: 1
++
++  ldac-gpios:
++    description:
++      LDAC pin to be used as a hardware trigger to update the DAC channels. If
++      not present, the DAC channels are updated by Software LDAC.
++    maxItems: 1
++
++  adi,range-double:
++    description:
++      Configure the output range for all channels. If the property is present,
++      the output will range from 0V to 2Vref. If the property is not present,
++      the output will range from 0V to Vref.
++    type: boolean
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++  - iovdd-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        dac@0 {
++            compatible = "adi,ad3530r";
++            reg = <0>;
++            spi-max-frequency = <1000000>;
++
++            vdd-supply = <&vdd>;
++            iovdd-supply = <&iovdd>;
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ffdb3f21fc4fb35b349449afbb30fecd4fe72978..9deaf2561ade5b1319cef3cb31b997a4297c0cff 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1289,6 +1289,13 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
+ F:	drivers/net/amt.c
+ 
++ANALOG DEVICES INC AD3530R DRIVER
++M:	Kim Seer Paller <kimseer.paller@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/dac/adi,ad3530r.yaml
++
+ ANALOG DEVICES INC AD3552R DRIVER
+ M:	Nuno Sá <nuno.sa@analog.com>
+ L:	linux-iio@vger.kernel.org
 
-- Link to v3: https://lore.kernel.org/r/20250403-togreg-v3-0-d4b06a4af5a9@analog.com
-
-Changes in v3:
-- Drop ABI docs.
-
-Bindings:
-- Drop reviewer's tag.
-- Update commit message.
-- Add non-r variants to compatible list.
-- Add io-channels property to enable ADC channel support for MUXOUT
-  readings.
-- Switch to unevaluatedProperties: false.
-
-ad3530r:
-- Update commit message.
-- Drop spi field from ad3530r_state and use regmap to retrieve the device
-  pointer.
-- Update mutex lock comment and use devm_mutex_init().
-- Fix LDAC gpio pulse logic.
-- Replace usleep_range() with fsleep().
-- Use sizeof(reg_val) instead of hardcoded value in regmap_bulk_read.
-- Drop reporting of zero offset.
-- Add internal_ref_support chip_info parameter and modify reference
-  handling.
-
-- Link to v2: https://lore.kernel.org/r/20250324-togreg-v2-0-f211d781923e@analog.com
-
-Changes in v2:
-Bindings:
-- Updated commit message.
-- Changed adi,double-output-range to adi,range-double property.
-
-ad3530r:
-- Changed data type to __be16 to resolve sparse warnings related to
-  type mismatches.
-
-- Link to v1: https://lore.kernel.org/r/20250319-togreg-v1-0-d8244a502f2c@analog.com
-
----
-Kim Seer Paller (3):
-      iio: ABI: add new DAC powerdown mode
-      dt-bindings: iio: dac: Add adi,ad3530r.yaml
-      iio: dac: ad3530r: Add driver for AD3530R and AD3531R
-
- Documentation/ABI/testing/sysfs-bus-iio            |   2 +
- .../devicetree/bindings/iio/dac/adi,ad3530r.yaml   | 100 ++++
- MAINTAINERS                                        |   8 +
- drivers/iio/dac/Kconfig                            |  11 +
- drivers/iio/dac/Makefile                           |   1 +
- drivers/iio/dac/ad3530r.c                          | 506 +++++++++++++++++++++
- 6 files changed, 628 insertions(+)
----
-base-commit: 8dbeb413806f9f810d97d25284f585b201aa3bdc
-change-id: 20250319-togreg-fc6a0af961ed
-
-Best regards,
 -- 
-Kim Seer Paller <kimseer.paller@analog.com>
+2.34.1
 
