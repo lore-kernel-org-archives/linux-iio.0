@@ -1,173 +1,123 @@
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C80B29DB83
-	for <linux-iio@vger.kernel.org>; Fri, 11 Apr 2025 23:26:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D11C117E473;
+	Sat, 12 Apr 2025 05:58:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744413974; cv=none; b=SRPCTTjXv8dwgj8j/bWv0hxXNFJXFaqIfLRrj03SiQW0tTHjpkvq+VtGqT2rcOyExBBX5wVLxukcOWO6ZMjapv8Do7KeWTGbSXLVDz4r9kvcDVu4t3OlqKk7fd5z94COvZN/04C7DD3sB0Vh3Y07w5w/ggyr4hiOPBQ7QMkIGkY=
+	t=1744437518; cv=none; b=eJ+WTWE1GJYf1DdVtb59wzj9lC5SEyUWuyS0LgK/SshvWrLklw06aePu/krhY9fxUzfa8W7oXfaY8IJ7mdq9OXkgTSi83D1ZbgDDzqi1Vb8y4YfTSpfbyozb6N3jCzGApwI5eaoHEwpwf+gLrW9IwXRO+HB2clXCWe3So4+ouCw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744413974; c=relaxed/simple;
-	bh=V/HmqSsw49B0iA0sXtWqxb6ZKdFvyeYgbWEg2Qp5R24=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bfGtqpcWnrtgbEH81+50woJBVR4ondq7jkDBYvV3AmSg76VL+4wCP2gPbdOEu9qXr24mRuNIROZ2YdDihB1LChbReBWrIKyehFNPcfEk4TEEEJPMoQ+5IbxVbImDH6wqPVj2OmgOUVs/Z723WCQsQa2X7oDqN4sG50sMmPG7NPg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=PSKDqGOj; arc=none smtp.client-ip=209.85.210.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1744437518; c=relaxed/simple;
+	bh=CWPSFLzpZdUAVoKX4Y5Tce5c+YYCKMuBQ1vgBq7Dfpk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=AiUNmok/nLaE/Ir9f9abQPfTqYSZ7XLhY/KzaTaivOjMQWafdtGplRUAs1AiNa+lnM7vQ7YEvZOgWKe00AXwN7ESCaiYqoa1BKoUFqH1kPD3JrQFvwAkZVXXls51pWL2toYVVXQqwflv7xx19Eo2DHquRL9El4tsCpdkCcfc6HQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=yImaaL23; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="PSKDqGOj"
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-72c019869eeso854137a34.1
-        for <linux-iio@vger.kernel.org>; Fri, 11 Apr 2025 16:26:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1744413971; x=1745018771; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=5GZyvI2XLRL6983WEyW7fk4u8vu6YYokKaErcKJZw8g=;
-        b=PSKDqGOjsUHl4gPKOplW4nZEA/ogdifhtHm4Np0zTCflCM4Y/WL8Mjy02UxaInz+Ri
-         pPuJMzbLkMT8oXTdpRUG+de+x2yWdFWdSpiJrPEyzwHqrWXcAXJUloUF8uIJJv6hIH0T
-         UwSSBAdC0AvsrfoFUppl5RZUO+Dyf9Z/jRKIKfayBkH6XvM1z7ZXAi4ETA932ixbiiqt
-         iJIZyK2BObr2iIj9rbw9dk7WZHLL4OdftNkXvWcuzGVNDnk5MhBfriEJFDULF7ghwFJD
-         Woj61Y/DaYXawV/z9tMPBIi33H+A/lhIVLJ11fW73ZnDdXfaKgItInPcjcnLi8XSkuUy
-         t+7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744413971; x=1745018771;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5GZyvI2XLRL6983WEyW7fk4u8vu6YYokKaErcKJZw8g=;
-        b=fdotvszjj869adnbBOdrSlbRxV6Xb0xmXb0ei7aanmFDWvzx48FRKwX99R9TgUIOBu
-         JJTmrzelg6NJAuoIFa8crJlmrc+LdbwS7PCHN1Kjziwt42ohvAyPN33P8latizHGDLDG
-         K6cwpXwqdpJrpyWZc36MDVsbYH3saB6bq9QY1a2IhmHcIAPcPHrxRy1XAp+ndERQIZJV
-         Lei/Apho50IDOhSXvTYNAPdBk47XTZfVB5GEtDW3UVjuBuafuxavDFDNcwGsZJlt9RG4
-         0T485X+bBWEvL6GLZpJ/EaQcCdY2Y3ZmXSrKEAg+9id0/alMZPGGJT6m3DtNrtuN9dYe
-         actw==
-X-Forwarded-Encrypted: i=1; AJvYcCW825TTyVorEdO8vTEob3FWYTNmqI+zVOuFPRAgGT7hxh5Lj+afetaVfKTiHSplufNh+mrzjZVmQIw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzyWvIAAlw+Cj5x4wCnQ2a8PMRud6dLm41eeR/PJ4sQsmdPrVS7
-	PB17hPW/mOeD3sC8NviBBxHyzZZC40iFAHOmPiOwLhobB6DY0Zx0mGtf+ZiMpGM=
-X-Gm-Gg: ASbGncv5ueApNM85IbnjB1B+N9xXvUJi7iyY8jcQIR1cx8IQzQIwQSdPbjJ1bPes7i8
-	c+UCjAmwAvS3PBxxbOWzAoILqh258QW2mIGjPF4KQQahOa2qu2+Zi9Ql/ydD26OkIG5+RbCkCVh
-	ezkdjhW/QkgXjWZPhuM1LVEIABCzAmo8Cvl+QGEhBAQNDD09RoKuhy4S1Nz+2DJlKz0FR48OuSx
-	2EWvEJG0CEzICtnw4UkOUtY07G0ImZo8lwdA6Ibp+C0w2/31LJ1HapUELhusx2QpC7eu7baI7AQ
-	t36ncRNi09cjwu64Fnc8wmqneS3ayr0zPYF9ntoBgXtF8SJXU5naQSf3NWiETmwJb4PzE2k29Tv
-	Pew==
-X-Google-Smtp-Source: AGHT+IGW7pFNc5nsIkwQxDBSYzjjR5YXgf6KeUTb67LI0heNBL6cMHzjIGL4Ij3lbZixsILkVxuEKg==
-X-Received: by 2002:a05:6830:258a:b0:72a:e8b:a849 with SMTP id 46e09a7af769-72e863c35c8mr3394273a34.27.1744413971065;
-        Fri, 11 Apr 2025 16:26:11 -0700 (PDT)
-Received: from [192.168.0.142] (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-72e73d8d3bbsm1128472a34.33.2025.04.11.16.26.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Apr 2025 16:26:10 -0700 (PDT)
-Message-ID: <3a87627f-3210-4350-bfdc-0007de5671b7@baylibre.com>
-Date: Fri, 11 Apr 2025 18:26:09 -0500
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="yImaaL23"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53C5QA8x006939;
+	Sat, 12 Apr 2025 01:58:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=w+8OO
+	jOX7ylFNOT/aCCC86xoGb04s4jd0X1owSarB+c=; b=yImaaL23zOvDnZD8qwpxP
+	zRLgIzsSTEsKiLVKPwi4++j+aqqK8KwNRCWw2fsQD2aKYU05c+Vc6yzO/GfCgN7S
+	TnzpxWRQwf811huNVPGwREVdk0lAVQ41pQMjrWfaBDHxM76t/NFeC7EHDKxqwYm/
+	IbZIrZBWlaZ6UEzl9k9npOCb7DuKxA/5CPdsfRAH4ULs4dSf64T0mLcgV6LVp+UA
+	0bhYkcaGoXKo3RHbJt9/djPZccZ67ZwWIjsHbdeezjcB7SyhfXKIfZjGMOikSreM
+	SiXyNnvN35M2ZTbarQbHsFZBd5O1tp+/6eEoAOp/IYF2sNob9HPbXhSoaEubPaJ3
+	g==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 45yj178399-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 12 Apr 2025 01:58:17 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 53C5wG0e064390
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Sat, 12 Apr 2025 01:58:16 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Sat, 12 Apr
+ 2025 01:58:15 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Sat, 12 Apr 2025 01:58:15 -0400
+Received: from analog.ad.analog.com (KPALLER2-L03.ad.analog.com [10.116.18.50])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 53C5vswV023609;
+	Sat, 12 Apr 2025 01:58:09 -0400
+From: Kim Seer Paller <kimseer.paller@analog.com>
+Date: Sat, 12 Apr 2025 13:57:30 +0800
+Subject: [PATCH v4 1/3] iio: ABI: add new DAC powerdown mode
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 13/14] iio: adc: ad7768-1: add filter type and
- oversampling ratio attributes
-To: Jonathan Santos <Jonathan.Santos@analog.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com,
- marcelo.schmitt@analog.com, jic23@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, marcelo.schmitt1@gmail.com,
- linus.walleij@linaro.org, brgl@bgdev.pl, lgirdwood@gmail.com,
- broonie@kernel.org, jonath4nns@gmail.com, Pop Paul <paul.pop@analog.com>
-References: <cover.1744325346.git.Jonathan.Santos@analog.com>
- <e5ea27f88607d1cc12daecf310c18f71383a3bbe.1744325346.git.Jonathan.Santos@analog.com>
-From: David Lechner <dlechner@baylibre.com>
-Content-Language: en-US
-In-Reply-To: <e5ea27f88607d1cc12daecf310c18f71383a3bbe.1744325346.git.Jonathan.Santos@analog.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-ID: <20250412-togreg-v4-1-cb9e5309b99d@analog.com>
+References: <20250412-togreg-v4-0-cb9e5309b99d@analog.com>
+In-Reply-To: <20250412-togreg-v4-0-cb9e5309b99d@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        =?utf-8?q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        Kim Seer Paller <kimseer.paller@analog.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1744437475; l=1127;
+ i=kimseer.paller@analog.com; s=20250213; h=from:subject:message-id;
+ bh=CWPSFLzpZdUAVoKX4Y5Tce5c+YYCKMuBQ1vgBq7Dfpk=;
+ b=38XfwxMpEBLlCwYYrgQwFQG5TJTGd0puc3/uHPRz0seIZf1g5b6MH7zdpbzk6+QN2vvpZBpGI
+ 3AXPSHYOmqoCx/YTCbH/DtJ0cslpUKhv99IrZdZ7hHd7lpeTE5MHgNU
+X-Developer-Key: i=kimseer.paller@analog.com; a=ed25519;
+ pk=SPXIwGLg4GFKUNfuAavY+YhSDsx+Q+NwGLceiKwm8Ac=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=UIPdHDfy c=1 sm=1 tr=0 ts=67fa00f9 cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=gAnH3GRIAAAA:8 a=gcfc5SScG_S9f0DalRsA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: lt-x_46ZOfJ02U1q-fiCLIBvAwFX_WCy
+X-Proofpoint-ORIG-GUID: lt-x_46ZOfJ02U1q-fiCLIBvAwFX_WCy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-12_01,2025-04-10_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ phishscore=0 adultscore=0 clxscore=1011 suspectscore=0 spamscore=0
+ priorityscore=1501 mlxlogscore=706 bulkscore=0 mlxscore=0 impostorscore=0
+ malwarescore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
+ definitions=main-2504120042
 
-On 4/11/25 10:58 AM, Jonathan Santos wrote:
-> Separate filter type and decimation rate from the sampling frequency
-> attribute. The new filter type attribute enables sinc3, sinc3+rej60
-> and wideband filters, which were previously unavailable.
-> 
-> Previously, combining decimation and MCLK divider in the sampling
-> frequency obscured performance trade-offs. Lower MCLK divider
-> settings increase power usage, while lower decimation rates reduce
-> precision by decreasing averaging. By creating an oversampling
-> attribute, which controls the decimation, users gain finer control
-> over performance.
-> 
-> The addition of those attributes allows a wider range of sampling
-> frequencies and more access to the device features. Sampling frequency
-> table is updated after every digital filter paramerter change.
+Add a new powerdown mode for DACs with 7.7kohm and 32kohm resistor
+to GND.
 
-s/paramerter/parameter/
+Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> 
-> Co-developed-by: Pop Paul <paul.pop@analog.com>
-> Signed-off-by: Pop Paul <paul.pop@analog.com>
-> Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
-> ---
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 722aa989baac43f694076074b307d134867b4533..85790f943fd858021c75d67375abbd8b2976bb8b 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -740,7 +740,9 @@ Description:
+ 		1kohm_to_gnd: connected to ground via an 1kOhm resistor,
+ 		2.5kohm_to_gnd: connected to ground via a 2.5kOhm resistor,
+ 		6kohm_to_gnd: connected to ground via a 6kOhm resistor,
++		7.7kohm_to_gnd: connected to ground via a 7.7kOhm resistor,
+ 		20kohm_to_gnd: connected to ground via a 20kOhm resistor,
++		32kohm_to_gnd: connected to ground via a 32kOhm resistor,
+ 		42kohm_to_gnd: connected to ground via a 42kOhm resistor,
+ 		90kohm_to_gnd: connected to ground via a 90kOhm resistor,
+ 		100kohm_to_gnd: connected to ground via an 100kOhm resistor,
 
-The hardware designers sure didn't make this one easy for us. I'm very
-impressed that you were able to write code that actually makes sense to me
-without me having to read the data sheet 10 times. Nice work! :-)
+-- 
+2.34.1
 
-A few minor things to fix, but otherwise...
-
-Reviewed-by: David Lechner <dlechner@baylibre.com>
-
-> -static const struct ad7768_clk_configuration ad7768_clk_config[] = {
-> -	{ AD7768_MCLK_DIV_2, AD7768_DEC_RATE_8, 16,  AD7768_FAST_MODE },
-> -	{ AD7768_MCLK_DIV_2, AD7768_DEC_RATE_16, 32,  AD7768_FAST_MODE },
-
-Extra spaces should be removed.
-
-> -	{ AD7768_MCLK_DIV_2, AD7768_DEC_RATE_32, 64, AD7768_FAST_MODE },
-> -	{ AD7768_MCLK_DIV_2, AD7768_DEC_RATE_64, 128, AD7768_FAST_MODE },
-> -	{ AD7768_MCLK_DIV_2, AD7768_DEC_RATE_128, 256, AD7768_FAST_MODE },
-> -	{ AD7768_MCLK_DIV_4, AD7768_DEC_RATE_128, 512, AD7768_MED_MODE },
-> -	{ AD7768_MCLK_DIV_4, AD7768_DEC_RATE_256, 1024, AD7768_MED_MODE },
-> -	{ AD7768_MCLK_DIV_4, AD7768_DEC_RATE_512, 2048, AD7768_MED_MODE },
-> -	{ AD7768_MCLK_DIV_4, AD7768_DEC_RATE_1024, 4096, AD7768_MED_MODE },
-> -	{ AD7768_MCLK_DIV_8, AD7768_DEC_RATE_1024, 8192, AD7768_MED_MODE },
-> -	{ AD7768_MCLK_DIV_16, AD7768_DEC_RATE_1024, 16384, AD7768_ECO_MODE },
-> +static const int ad7768_dec_rate_values[8] = {
-> +	8, 16, 32, 64, 128, 256, 512, 1024,
-> +};
-
-...
-
-> +/*
-> + * The AD7768-1 supports three primary filter types:
-> + * Sinc5, Sinc3, and Wideband.
-> + * However, the filter register values can also encode additional parameters
-> + * such as decimation rates and 60Hz rejection. This utility function separates
-
-Technically, this is an array, not a function.
-
-> + * the filter type from these parameters.
-> + */
-
-...
-
-> +static const struct iio_enum ad7768_flt_type_iio_enum = {
-> +	.items = ad7768_filter_enum,
-> +	.num_items = ARRAY_SIZE(ad7768_filter_enum),
-> +	.set = ad7768_set_fil_type_attr,
-> +	.get = ad7768_get_fil_type_attr,
-
-Can we spell out filter here? It took me quite a while to figure out what "fil"
-is.
-
-> +};
-> +
-> +static struct iio_chan_spec_ext_info ad7768_ext_info[] = {
-> +	IIO_ENUM("filter_type", IIO_SHARED_BY_ALL, &ad7768_flt_type_iio_enum),
-> +	IIO_ENUM_AVAILABLE("filter_type", IIO_SHARED_BY_ALL, &ad7768_flt_type_iio_enum),
-
-"flt" is a bit more obvious, but still would be nice to spell it out too.
-
-> +	{ }
-> +};
-> +
