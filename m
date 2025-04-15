@@ -1,63 +1,59 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2B54296D12;
-	Tue, 15 Apr 2025 12:21:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C027D2820B0;
+	Tue, 15 Apr 2025 13:27:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744719717; cv=none; b=TKSPig+7ajbEfNlihADgp5jJoitQDpRos2zZbJLtMt3EVGESzUSScMH5AQFnyiZcKt4KVuTA/iyRheEt6eUslJ3IGfhTtnZrYJMyYdWb3DS1yQzGyoE+6a5uDrr2jMZMfwUpyKBxP+KAL6acz3YaMFvtG2YTwo1U1daDDqJ7918=
+	t=1744723653; cv=none; b=NQbukTZhS7f0sGJZkuHK3EvFQ5+U6Ks78YInOe7Yk/AlUyNBKGACX1KZaRj10emUeglpGpRfgk3bM6oO7C20wTlrBm30+pjGVgvw//NSVUamTM5p1dfuujD3KwiB03WZxJDyC/8FBMlRTJYO0oLEsvgFVraezkeAtiQrsz1RM4Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744719717; c=relaxed/simple;
-	bh=IELIMLjBjaGBaSjoaaPlcfY2mtZY+fdV73O+G80GU4I=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=j/vI919acNYmcUOB+AQO6i8bWdHJmnAvxjwE+WL7HlBVdqguQamMCgV99MG6kRKyPMqVE/aqVBdRi/6uYwXKYcORKP9bcqHw0S/JFRgm2i9E0S4dkDfpeN5OYIZ0p7SNyF5IPOXFAVxmcDL94+vNm9/FXYThZJKRgTyQ7pjB/eI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=fail smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=xROH9WJJ; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=analog.com
+	s=arc-20240116; t=1744723653; c=relaxed/simple;
+	bh=xZRvVk5qzUx/BSBKzSNc1vMSD4GWcEGpcr1tfcGLHmU=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Pg6j0VHqtShUvmiVF5VYUbDX50aaNt5IBdZjeWiEj/VZ6Ds3MwyJman9BF02+aKouCzmP5mt7dGa7nw0e6TudpfXRZBxPg/96NaHCQX73koc0DRgYYYQg36A43dJUXZDWv5mkI6LYg9qpTNe5KEr39AWODwIbEdsAvBwT09U5QI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=u08LAllH; arc=none smtp.client-ip=68.232.153.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="xROH9WJJ"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53FBXnUu007590;
-	Tue, 15 Apr 2025 08:21:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=pVJOZFhDVjnDo6D1R6xX4H51lpe
-	3Ag2BzfnILzseXcg=; b=xROH9WJJYCBKVVXqSxvsP22Jxcv0F2bTEWpjoHCnlZh
-	tRslK62sgy7SxvkAp12NUZUc7o4dLfZcl0TK6uLwNUvfCbnQFpNxN0RSMD3h6iJ0
-	1lM9rUBuIEwpXibV5B//y6pBH4sUq6knwYrFe5+UJT4Hiv4MLDN6qvQCwIWmII9D
-	WZQfkycspkttEQoe3Pnow1VwJpHKW00p7TlP+E589+Qwa4YBt5dMGsU7D7Gi7/m1
-	Z5wXTBIGRle8dMErVeishw3UHMdX55Gxcgm3K4HlrhpNVAhXPBmab//GFN0BKYH/
-	FmZD0YBwabfxLM2E7gYJ8xQdk8fdcLlgn2+JvKWkBhA==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 45yn37es15-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 15 Apr 2025 08:21:32 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 53FCLVLY003466
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 15 Apr 2025 08:21:31 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 15 Apr 2025 08:21:31 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 15 Apr 2025 08:21:31 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 15 Apr 2025 08:21:31 -0400
-Received: from work.ad.analog.com (HYB-hERzalRezfV.ad.analog.com [10.65.205.9])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 53FCLG4e013198;
-	Tue, 15 Apr 2025 08:21:18 -0400
-From: Marcelo Schmitt <marcelo.schmitt@analog.com>
-To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: <jic23@kernel.org>, <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <nuno.sa@analog.com>, <andy@kernel.org>, <marcelo.schmitt@analog.com>,
-        <marcelo.schmitt1@gmail.com>, David Lechner <dlechner@baylibre.com>
-Subject: [PATCH] iio: adc: ad4000: Avoid potential double data word read
-Date: Tue, 15 Apr 2025 09:21:10 -0300
-Message-ID: <8f765cfd6e93fad4e755dd95d709b7bea2a388e2.1744718916.git.marcelo.schmitt@analog.com>
-X-Mailer: git-send-email 2.39.2
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="u08LAllH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1744723652; x=1776259652;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xZRvVk5qzUx/BSBKzSNc1vMSD4GWcEGpcr1tfcGLHmU=;
+  b=u08LAllHVXZU5ZadnLBpf981BYcuQDuahIaVssLZ9hMbgXs8Jb8FVoZx
+   OL1fc9vkhRRasYgn7iaS/9AC51MY2T9VjE69dxVjzg0Wp9kzLe9JelZ/s
+   apGbWNcA+dysmjjXQNBCeCJ3klMUSzC1ka+Lcsbw2AWu5mlQDcGEgyR91
+   q+iQd60RfzxbUt6G3Z/IsLxvyNcEKiTdKb3iVbe4Dh0SloGYihlL9+OZ2
+   8nxoQMqGihVTIycWCvG3U/WeiVbco+X14TxD31GFaxsKnWfeEIP6yfd/2
+   2OQaQkfiQ5GfXyo0/2hLb0PumVxL7B142AFh4kFZ5I1Nsaz81C9YmS+TQ
+   w==;
+X-CSE-ConnectionGUID: FN4IPNwESQaGizKyN6d47Q==
+X-CSE-MsgGUID: V4DD7CvSTzCKsqBNaCUQUw==
+X-IronPort-AV: E=Sophos;i="6.15,213,1739862000"; 
+   d="scan'208";a="40495080"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 15 Apr 2025 06:27:31 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Tue, 15 Apr 2025 06:27:01 -0700
+Received: from vduicu-Virtual-Machine.mshome.net (10.10.85.11) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.44 via Frontend Transport; Tue, 15 Apr 2025 06:26:59 -0700
+From: <victor.duicu@microchip.com>
+To: <jic23@kernel.org>
+CC: <andy@kernel.org>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
+	<victor.duicu@microchip.com>, <marius.cristea@microchip.com>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v1 1/2] dt-bindings: iio: temperature: add support for MCP998X
+Date: Tue, 15 Apr 2025 16:26:22 +0300
+Message-ID: <20250415132623.14913-2-victor.duicu@microchip.com>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20250415132623.14913-1-victor.duicu@microchip.com>
+References: <20250415132623.14913-1-victor.duicu@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,59 +62,206 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=FogF/3rq c=1 sm=1 tr=0 ts=67fe4f4c cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=XR8D0OoHHMoA:10 a=IpJZQVW2AAAA:8 a=gAnH3GRIAAAA:8 a=XKF0PoAx1WVWLetZYlMA:9 a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-GUID: IuknmNQqfNYk8iVCtX9hxO0Zb92r1m5T
-X-Proofpoint-ORIG-GUID: IuknmNQqfNYk8iVCtX9hxO0Zb92r1m5T
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-15_05,2025-04-10_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
- malwarescore=0 priorityscore=1501 lowpriorityscore=0 clxscore=1015
- spamscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 adultscore=0
- mlxscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
- definitions=main-2504150087
 
-Currently, SPI-Engine offload module always sends 32-bit data elements to
-DMA engine. Appropriately, when set for SPI offloading, the IIO driver uses
-32 storagebits for IIO ADC channel buffer elements. However, setting SPI
-transfer length according to storagebits (32-bits in case of offload) can
-lead to unnecessarily long transfers for ADCs that are 16-bit or less
-precision. Adjust AD4000 single-shot read to run transfers of 2 bytes when
-that is enough to get all ADC data bits.
+From: Victor Duicu <victor.duicu@microchip.com>
 
-Fixes: d0dba3df842f ("iio: adc: ad4000: Add support for SPI offload")
-Suggested-by: David Lechner <dlechner@baylibre.com>
-Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+This is the devicetree schema for Microchip MCP998X/33 and
+MCP998XD/33D Multichannel Automotive Temperature Monitor Family.
+
+Signed-off-by: Victor Duicu <victor.duicu@microchip.com>
 ---
-After enough sleep and some time not looking at this driver I finally realize
-the potential issue David was talking about. Although I didn't see any clearly
-wrong reading when testing it last week, I'm adding the fixes tag since it's
-probably easier to drop the tag than to go fetch the commit log.
-Also adding a suggested-by tag.
+ .../iio/temperature/microchip,mcp9982.yaml    | 182 ++++++++++++++++++
+ 1 file changed, 182 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/microchip,mcp9982.yaml
 
-Thanks,
-Marcelo
-
- drivers/iio/adc/ad4000.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/adc/ad4000.c b/drivers/iio/adc/ad4000.c
-index e69a9d2a3e8c..5813db28510d 100644
---- a/drivers/iio/adc/ad4000.c
-+++ b/drivers/iio/adc/ad4000.c
-@@ -941,7 +941,7 @@ static int ad4000_prepare_3wire_mode_message(struct ad4000_state *st,
- 	xfers[0].cs_change_delay.unit = SPI_DELAY_UNIT_NSECS;
- 
- 	xfers[1].rx_buf = &st->scan.data;
--	xfers[1].len = BITS_TO_BYTES(chan->scan_type.storagebits);
-+	xfers[1].len = chan->scan_type.realbits > 16 ? 4 : 2;
- 
- 	/*
- 	 * If the device is set up for SPI offloading, IIO channel scan_type is
-
-base-commit: 1c2409fe38d5c19015d69851d15ba543d1911932
+diff --git a/Documentation/devicetree/bindings/iio/temperature/microchip,mcp9982.yaml b/Documentation/devicetree/bindings/iio/temperature/microchip,mcp9982.yaml
+new file mode 100644
+index 000000000000..8cbf897d1278
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/temperature/microchip,mcp9982.yaml
+@@ -0,0 +1,182 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/temperature/microchip,mcp9982.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip MCP998X/33 and MCP998XD/33D Multichannel Automotive Temperature Monitor Family
++
++maintainers:
++  - Victor Duicu <victor.duicu@microchip.com>
++
++description: |
++  The MCP998X/33 and MCP998XD/33D family is a high-accuracy 2-wire multichannel
++  automotive temperature monitor.
++  The datasheet can be found here:
++    https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP998X-Family-Data-Sheet-DS20006827.pdf
++
++properties:
++  compatible:
++    enum:
++      - microchip,mcp9933
++      - microchip,mcp9933D
++      - microchip,mcp9982
++      - microchip,mcp9982D
++      - microchip,mcp9983
++      - microchip,mcp9983D
++      - microchip,mcp9984
++      - microchip,mcp9984D
++      - microchip,mcp9985
++      - microchip,mcp9985D
++
++  reg:
++    maxItems: 1
++    
++  interrupts:
++    maxItems: 2
++    
++  interrupt-names:
++    description: |
++      ALERT1 indicates a HIGH or LOW limit was exceeded.
++      ALERT2 indicates a THERM limit was exceeded.
++    items:
++      - const: ALERT1
++      - const: ALERT2
++    
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++  microchip,temp-hysteresis:
++    description: |
++      Value of temperature limit hysteresis.
++      Omit this tag to set the default value.
++    $ref: /schemas/types.yaml#/definitions/uint32
++    
++  microchip,extended-temp-range:
++    description: |
++      Set the chip to work in the extended temperature range -64 degrees C to 191.875 degrees C.
++      Omit this tag to set the default range 0 degrees C to 127.875 degrees C
++    type: boolean
++    
++  microchip,beta-channel1:
++    description: |
++      The beta compensation factor for external channel 1 can be set
++      by the user, or can be set automatically by the chip.
++      If one wants to enable beta autodetection, omit this tag.
++      Please consult the documentation if one wants to set a specific beta.
++      If anti-parallel diode operation is enabled, the default value is set
++      and can't be changed.
++    type: boolean
++    
++  microchip,beta-channel2:
++    description: |
++      The beta compensation factor for external channel 2 can be set
++      by the user, or can be set automatically by the chip.
++      If one wants to enable beta autodetection, omit this tag.
++      Please consult the documentation if one wants to set a specific beta.
++      If anti-parallel diode operation is enabled, the default value is set
++      and can't be changed.
++    type: boolean
++    
++  microchip,apdd-state:
++    description: |
++      Enable anti-parallel diode mode operation.
++      Omit this tag to disable anti-parallel diode mode by default.
++    type: boolean
++    
++  microchip,recd12:
++    description: |
++      Enable resistance error correction for external channels 1 and 2.
++      Not all chips support resistance error correction on external
++      channels 1 and 2, please consult the documentation.
++      Omit this tag to disable REC for channels 1 and 2 by default.
++    type: boolean
++    
++  microchip,recd34:
++    description: |
++      Enable resistance error correction for external channels 3 and 4.
++      Not all chips support resistance error correction on external
++      channels 3 and 4, please consult the documentation.
++      Omit this tag to disable REC for channels 3 and 4 by default.
++    type: boolean
++    
++  label:
++    description: Unique name to identify which device this is.
++    
++  vdd-supply: true
++ 
++patternProperties:
++  "^channel@[1-4]+$":
++    description: |
++      Represents the external temperature channels to which a remote diode is
++      connected.
++    type: object
++
++    properties:
++      reg:
++        items:
++          minimum: 1
++          maximum: 4
++      
++      microchip,ideality-factor:
++        description: |
++          Each channel has an ideality factor.
++          Beta compensation and resistance error correction automatically correct
++          for most ideality error. So ideality factor does not need to be adjusted in general.
++          Omit this tag in order to set the default value.
++          Please consult the documentation if one wants to set a specific ideality value.
++        $ref: /schemas/types.yaml#/definitions/uint32
++      
++      label:
++        description: Unique name to identify which channel this is.
++    
++    required:
++      - reg
++    
++    unevaluatedProperties: false
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        
++        temperature-sensor@4c {
++            compatible = "microchip,mcp9985";
++            reg = <0x4c>;
++            
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            label = "temperature-sensor";
++            
++            microchip,temp-hysteresis = <10>;
++            microchip,extended-temp-range;
++            microchip,apdd-state;
++            microchip,recd12;
++            microchip,recd34;
++            vdd-supply = <&vdd>;
++            
++            channel@1{
++                reg = <0x1>;
++                label = "CPU Temperature";
++            };
++            
++            channel@2{
++                reg = <0x2>;
++                label = "GPU Temperature";
++            };
++        };
++    };
++
++...
 -- 
-2.47.2
+2.45.2
 
