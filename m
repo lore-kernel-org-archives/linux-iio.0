@@ -1,136 +1,237 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE6A01DC9A8;
-	Tue, 15 Apr 2025 13:54:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AA8B2BAF8;
+	Tue, 15 Apr 2025 14:47:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744725264; cv=none; b=Fw3GFsMwhe0YvZgt16p4C/UcAyREW0fsIZT5jte7GQUOQ+WbXGRUrWbfjWMzSk6Jyx1+SKu3r0AUD6OyxG77At5hzKh4lkm5b77HrEI6F2h+7BYeV9rIAdnsXxVcFREUmgyMeDzQvAYI6OpG54Ok5fi1eS1gWuDBu5F5y4YqTmM=
+	t=1744728456; cv=none; b=MIOoyKF6INSIpjZY66cVFCNMSAQRwHz3D5LCohgxyIrUTaQNrM6rAArMfNahCNWpBElw/Zb2VXSPdd/mybwj24wusy/7rIq7AyfT080OSsp80D9pK7GRxP2ImD/ZEPmIy6q8R7IWmKf18Xvl8BZVioSwlnoxKJ/+YasQYXwICM4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744725264; c=relaxed/simple;
-	bh=OrjfuIsLyMWBHpdPMqn3UuNzRJEMzPl4gvGx5zjyKQY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qygIf2V/0RNfV9qy7C5u7ZBmw7Kvgw0ncTGrqb7AYDcOxdlYd7qUWZEpsnS2sEthc6b0N2BjXO81/OHY6fYzK5z7EsPyVAoqqIkp7EviR0uDpkHBBOq9U0ZqooePfXP+GwTgkVt/s5op/ctSePOUQnsOCoX9nPAEbohpVWKVbjw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ku3wig1A; arc=none smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1744728456; c=relaxed/simple;
+	bh=LqB3B/3CmwyGt6HPrW41ZJQgvlYv2Gh1w1/YAFnXC6A=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=vBblGD1NeuL186eH4piOnJONdvn+rMdzx7RyDn08hcQljF/wyFJ9S48Xra6EtpCgCvKbNzXrEvz+WTbP1PUED9NzUcxuyUYAz5jHpjBzl/j/ieDi0QJ6mG25WpWjLi6hmmjrO0zhsba0gfEnxWpx7CrAocqdAd0YC/Qa5OdOwf4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fbeF7mOo; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ku3wig1A"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-47698757053so64454321cf.0;
-        Tue, 15 Apr 2025 06:54:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1744725262; x=1745330062; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8u/AmDRTyguVPS15vuo1k2JAoSJfdZVWVLXGNvKqIt0=;
-        b=ku3wig1AiWHBNkRAJfejif03uN3tO2uDfduvHjk+/WRar3/mhNKf4tskEHF7PAmLec
-         Xns4szP/HFvKooK01lO/uOr+Xx+BIU6/qJY3gcKKn3yO7Bw0lqShoXMC0UCSczJWB5fg
-         eXAdTFkk+fiApgT5aqDBaw4HwHCl6FShBaRbsALMPVUYVay99fSmln/FwaRyHMPjZ7Cu
-         F76RtTo8WG1M5xEb90CxeD6RwPHPhK7Wl5MFKaFY6hDFM2SznAthmfjLMJSc3CuS94zK
-         uawmVZZ+HbxwTDWwq+jMqgJ3Bf3ZNR/GURPjwuKQH4NK9yn1lqAowYpQ3K9xTIM7CBYC
-         BRgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744725262; x=1745330062;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8u/AmDRTyguVPS15vuo1k2JAoSJfdZVWVLXGNvKqIt0=;
-        b=Dh2XmOzOApTxXb2P9aIw+KlfrJXAyCvQ6YtGg530rQcDEi0nWd/ZGSLGF3kYxI9/IE
-         FztDlPIAxS7Qqnhu99dTLhBzd6BHWKFEG0GyBbJacWBwl/IVzJPN/olX9DKXQ4O2dRD0
-         C/8htqLo829vjhFOTig0b+GBwuhugUtcYAFCzyPTSHdRQZFYwPepm7x5fe97g6Eh3myX
-         7xwm1UNeonoCblvuzkR9x4CFGAMockMgWhddGx1PZ0gA2VjAP5HcPUI6JL4Vb4y54ofX
-         U/HL69fNQXRVozGi4pX1sGH+ziR9wkrafTQSou7dl+uc7bUEf45R9u/WHL92TGFcJ4Yw
-         OcZA==
-X-Forwarded-Encrypted: i=1; AJvYcCUiHS2s+crOKWiBTt8m20XWdaxkImHB98GQ8dV1RLb23pHe+mI22DfpKTD3WX4uXNOT6pMohd7B0kQ=@vger.kernel.org, AJvYcCVj+KD9KsaOPVErVNw2BB1ecS/GqbFddxaN+OgkyxbBk+uGNxfSpfd4avaLMQyaXbVeHS7HoePzLteKYijG@vger.kernel.org, AJvYcCXd9swfJtQcwlgjeo1uX8oMAQdabY5mv772EY5ENGc/V/KFl/UBRZkt4PnBw5YiKYHA+tHJ/hQd@vger.kernel.org
-X-Gm-Message-State: AOJu0YyxQyPcSh6V4+Jza6iJUVtrSuaFDaPEb/Ab6xfyKjU5m4Qf6A+R
-	nrsZkTVH5WAgLxBdEvY8jUEuS1smdXESKzvKgY4JW47tAh0KwLbOiTo9VFBDRylj9lq9GWI67q3
-	aLDUSpLsdQ6BIa+M02MNMraUPhAY=
-X-Gm-Gg: ASbGncuJSwTZHfpl7aUbODhJgZJLK23li3TCDlqGkGI0fxaejb1IkZGAQWm5tBbCgDt
-	nVo9rLgemngdrSjlOv3n7jrxjCfvTmCe2btY3f2ZA8uG6AkDA86b4ZlkKiQwavm3n2AkLU3/PUS
-	brFzPOSrVoCPcS8oqfKjDw2fwpl9M7cQPMnaOMY0ZtFO+ryUOj6sYxdClrIRfoGOk=
-X-Google-Smtp-Source: AGHT+IFncftquQsvM6bfh/Y2dgpRTHBlyTEX3Cse3b1bJHNcdPkrggiROQdsJEycAmbcnvsivaFxwRd0WVtvqZwZ3eU=
-X-Received: by 2002:ac8:5ac3:0:b0:478:e507:f6ec with SMTP id
- d75a77b69052e-47977562f45mr289779871cf.23.1744725261700; Tue, 15 Apr 2025
- 06:54:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fbeF7mOo"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9EE93C4CEEC;
+	Tue, 15 Apr 2025 14:47:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1744728455;
+	bh=LqB3B/3CmwyGt6HPrW41ZJQgvlYv2Gh1w1/YAFnXC6A=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=fbeF7mOoQZVmxO/GQebvCfZ7IUBpOaQGmh1Fnn0Asj8IPYsi9opPfgcUyw3Z877OS
+	 knD7mBBDZQV089J1ka/vo95rOTLHd4SXIt3Oavr4LiO2eq+hU77JZYzhzKonoA5bJl
+	 XXGs8E6VoM++QMFb9yIakfzkgPUrRHzCD6z0Ibl2KJ8InukDJeyASln5r6GvGx7/Vv
+	 Tel+RLEMKxNsNBNw0bSqSQMx1o8fKXFJDpaEUGTTHyRMm316O7pt4aGknj+vRNfR5s
+	 HArVVdlk3TzlAroAJYsf6SUru8J1Mo13oZ7eNjAHFQ684iccUEQfYB3Bf71ndq1weA
+	 zbIwMIY5DIBHw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B49C369BD;
+	Tue, 15 Apr 2025 14:47:35 +0000 (UTC)
+From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Date: Tue, 15 Apr 2025 16:47:32 +0200
+Subject: [PATCH v2 2/2] iio: imu: inv_icm42600: add wakeup functionality
+ for Wake-on-Motion
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250414154050.469482-1-gshahrouzi@gmail.com> <1fb5f1c5e61ce386cb431d48296e952bdd560a6c.camel@gmail.com>
-In-Reply-To: <1fb5f1c5e61ce386cb431d48296e952bdd560a6c.camel@gmail.com>
-From: Gabriel Shahrouzi <gshahrouzi@gmail.com>
-Date: Tue, 15 Apr 2025 09:54:00 -0400
-X-Gm-Features: ATxdqUHDElwhcKQXFR5mLMfMHxqVt-H7NGE6w7tSv_4jShaz4NFmHUQo7t9FlX4
-Message-ID: <CAKUZ0zLiP_w-4xOXfBDdZbm+M8yVYvd+A=M73fnRT_kMyWwk7Q@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: adc: Correct conditional logic for store mode
-To: =?UTF-8?B?TnVubyBTw6E=?= <noname.nuno@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Jonathan Cameron <jic23@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org, 
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	skhan@linuxfoundation.org, kernelmentees@lists.linuxfoundation.org, 
-	stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250415-losd-3-inv-icm42600-add-wom-support-v2-2-de94dfb92b7e@tdk.com>
+References: <20250415-losd-3-inv-icm42600-add-wom-support-v2-0-de94dfb92b7e@tdk.com>
+In-Reply-To: <20250415-losd-3-inv-icm42600-add-wom-support-v2-0-de94dfb92b7e@tdk.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1744728454; l=5749;
+ i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
+ bh=CuFRYaRZxPuw+fgDSMa7IYo+bKSh1dwxzccbZhiX9sA=;
+ b=vbuV00uOU5VTIzGu9D4r3pMAh4mKVxn8sBkrGlWTDOc5qrgJHSGLTivgyBPW++UvzimZdDFVi
+ BNoL2+3nGkKB9e0sKWYFKS+GCYCAYTnFFr/9S7F9qOsLuUGYZyIb8ec
+X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
+ pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
+X-Endpoint-Received: by B4 Relay for
+ jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
+X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reply-To: jean-baptiste.maneyrol@tdk.com
 
-On Tue, Apr 15, 2025 at 5:13=E2=80=AFAM Nuno S=C3=A1 <noname.nuno@gmail.com=
-> wrote:
->
-> On Mon, 2025-04-14 at 11:40 -0400, Gabriel Shahrouzi wrote:
-> > The mode setting logic in ad7816_store_mode was reversed due to
-> > incorrect handling of the strcmp return value. strcmp returns 0 on
-> > match, so the `if (strcmp(buf, "full"))` block executed when the
-> > input was not "full".
-> >
-> > This resulted in "full" setting the mode to AD7816_PD (power-down) and
-> > other inputs setting it to AD7816_FULL.
-> >
-> > Fix this by checking it against 0 to correctly check for "full" and
-> > "power-down", mapping them to AD7816_FULL and AD7816_PD respectively.
-> >
-> > Fixes: 7924425db04a ("staging: iio: adc: new driver for AD7816 devices"=
-)
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Gabriel Shahrouzi <gshahrouzi@gmail.com>
-> > ---
->
-> LGTM, do you happen to have this device? It would more interesting to mov=
-e this
-> driver out of staging :)
-Unfortunately, I do not have this device. However, I would still be
-interested in contributing if possible. I was looking over
-https://lore.kernel.org/all/20230716144024.30ded663@jic23-huawei/T/
-where the goal seemed to be to modernize it by replacing the sysfs
-interface with the iio channel. I also looked through the datasheet
-and it seemed to be missing some stuff like a channel that can be
-selected.
->
-> Acked-by: Nuno S=C3=A1 <nuno.sa@analog.com>
->
-> > Changes since v3:
-> >       - Tag stable@vger.kernel.org instead of an email CC
-> >       - Use the correct version for patch
-> > Changes since v2:
-> >       - Add fixes tag that references commit that introduced the bug.
-> >         - Replace sysfs_streq with strcmp.
-> > ---
-> >  drivers/staging/iio/adc/ad7816.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/staging/iio/adc/ad7816.c
-> > b/drivers/staging/iio/adc/ad7816.c
-> > index 6c14d7bcdd675..081b17f498638 100644
-> > --- a/drivers/staging/iio/adc/ad7816.c
-> > +++ b/drivers/staging/iio/adc/ad7816.c
-> > @@ -136,7 +136,7 @@ static ssize_t ad7816_store_mode(struct device *dev=
-,
-> >       struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> >       struct ad7816_chip_info *chip =3D iio_priv(indio_dev);
-> >
-> > -     if (strcmp(buf, "full")) {
-> > +     if (strcmp(buf, "full") =3D=3D 0) {
-> >               gpiod_set_value(chip->rdwr_pin, 1);
-> >               chip->mode =3D AD7816_FULL;
-> >       } else {
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+
+When Wake-on-Motion is on, enable system wakeup and keep chip on for
+waking up system with interrupt.
+
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+---
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h       |  2 +
+ drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c |  3 ++
+ drivers/iio/imu/inv_icm42600/inv_icm42600_core.c  | 65 +++++++++++++++++------
+ 3 files changed, 54 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+index f5adebe4640fc36c5dc9810b515369d4909ba834..768d773a9129c5d64f0af1959504889ffbc9c131 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+@@ -151,6 +151,7 @@ struct inv_icm42600_apex {
+  *  @map:		regmap pointer.
+  *  @vdd_supply:	VDD voltage regulator for the chip.
+  *  @vddio_supply:	I/O voltage regulator for the chip.
++ *  @irq:		chip irq, required to enable/disable and set wakeup
+  *  @orientation:	sensor chip orientation relative to main hardware.
+  *  @conf:		chip sensors configurations.
+  *  @suspended:		suspended sensors configuration.
+@@ -168,6 +169,7 @@ struct inv_icm42600_state {
+ 	struct regmap *map;
+ 	struct regulator *vdd_supply;
+ 	struct regulator *vddio_supply;
++	int irq;
+ 	struct iio_mount_matrix orientation;
+ 	struct inv_icm42600_conf conf;
+ 	struct inv_icm42600_suspended suspended;
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
+index 94515166c1fcdf6cc7ba4843334f51cb14696eba..2249f551f10f3211dadde2f6aa1dccd9b704f146 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
+@@ -1162,6 +1162,9 @@ struct iio_dev *inv_icm42600_accel_init(struct inv_icm42600_state *st)
+ 	if (ret)
+ 		return ERR_PTR(ret);
+ 
++	/* accel events are wakeup capable */
++	device_set_wakeup_capable(&indio_dev->dev, true);
++
+ 	return indio_dev;
+ }
+ 
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+index 9a2150ab9e874f17d7fda731cb131c3f688a75a3..14b64d14a6241ec60c23b64486a615a84513ae3c 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+@@ -765,6 +765,7 @@ int inv_icm42600_core_probe(struct regmap *regmap, int chip,
+ 	mutex_init(&st->lock);
+ 	st->chip = chip;
+ 	st->map = regmap;
++	st->irq = irq;
+ 
+ 	ret = iio_read_mount_matrix(dev, &st->orientation);
+ 	if (ret) {
+@@ -843,6 +844,9 @@ EXPORT_SYMBOL_NS_GPL(inv_icm42600_core_probe, "IIO_ICM42600");
+ static int inv_icm42600_suspend(struct device *dev)
+ {
+ 	struct inv_icm42600_state *st = dev_get_drvdata(dev);
++	struct device *accel_dev;
++	bool wakeup;
++	int accel_conf;
+ 	int ret;
+ 
+ 	mutex_lock(&st->lock);
+@@ -863,20 +867,33 @@ static int inv_icm42600_suspend(struct device *dev)
+ 			goto out_unlock;
+ 	}
+ 
+-	/* disable APEX features */
+-	if (st->apex.wom.enable) {
+-		ret = inv_icm42600_disable_wom(st);
+-		if (ret)
+-			goto out_unlock;
++	/* keep chip on and wake-up capable if APEX and wakeup on */
++	accel_dev = &st->indio_accel->dev;
++	wakeup = (st->apex.on && device_may_wakeup(accel_dev)) ? true : false;
++
++	if (!wakeup) {
++		/* disable APEX features and accel if wakeup disabled */
++		if (st->apex.wom.enable) {
++			ret = inv_icm42600_disable_wom(st);
++			if (ret)
++				goto out_unlock;
++		}
++		accel_conf = INV_ICM42600_SENSOR_MODE_OFF;
++	} else {
++		/* keep accel on and setup irq for wakeup */
++		accel_conf = st->conf.accel.mode;
++		enable_irq_wake(st->irq);
++		disable_irq(st->irq);
+ 	}
+ 
+ 	ret = inv_icm42600_set_pwr_mgmt0(st, INV_ICM42600_SENSOR_MODE_OFF,
+-					 INV_ICM42600_SENSOR_MODE_OFF, false,
+-					 NULL);
++					 accel_conf, false, NULL);
+ 	if (ret)
+ 		goto out_unlock;
+ 
+-	regulator_disable(st->vddio_supply);
++	/* disable vddio regulator if chip is sleeping */
++	if (!wakeup)
++		regulator_disable(st->vddio_supply);
+ 
+ out_unlock:
+ 	mutex_unlock(&st->lock);
+@@ -892,13 +909,25 @@ static int inv_icm42600_resume(struct device *dev)
+ 	struct inv_icm42600_state *st = dev_get_drvdata(dev);
+ 	struct inv_icm42600_sensor_state *gyro_st = iio_priv(st->indio_gyro);
+ 	struct inv_icm42600_sensor_state *accel_st = iio_priv(st->indio_accel);
++	struct device *accel_dev;
++	bool wakeup;
+ 	int ret;
+ 
+ 	mutex_lock(&st->lock);
+ 
+-	ret = inv_icm42600_enable_regulator_vddio(st);
+-	if (ret)
+-		goto out_unlock;
++	/* check wakeup capability */
++	accel_dev = &st->indio_accel->dev;
++	wakeup = (st->apex.on && device_may_wakeup(accel_dev)) ? true : false;
++
++	/* restore vddio if cut off or irq state */
++	if (!wakeup) {
++		ret = inv_icm42600_enable_regulator_vddio(st);
++		if (ret)
++			goto out_unlock;
++	} else {
++		enable_irq(st->irq);
++		disable_irq_wake(st->irq);
++	}
+ 
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_set_active(dev);
+@@ -911,11 +940,13 @@ static int inv_icm42600_resume(struct device *dev)
+ 	if (ret)
+ 		goto out_unlock;
+ 
+-	/* restore APEX features */
+-	if (st->apex.wom.enable) {
+-		ret = inv_icm42600_enable_wom(st);
+-		if (ret)
+-			goto out_unlock;
++	/* restore APEX features if disabled */
++	if (!wakeup) {
++		if (st->apex.wom.enable) {
++			ret = inv_icm42600_enable_wom(st);
++			if (ret)
++				goto out_unlock;
++		}
+ 	}
+ 
+ 	/* restore FIFO data streaming */
+@@ -924,6 +955,8 @@ static int inv_icm42600_resume(struct device *dev)
+ 		inv_sensors_timestamp_reset(&accel_st->ts);
+ 		ret = regmap_write(st->map, INV_ICM42600_REG_FIFO_CONFIG,
+ 				   INV_ICM42600_FIFO_CONFIG_STREAM);
++		if (ret)
++			goto out_unlock;
+ 	}
+ 
+ out_unlock:
+
+-- 
+2.49.0
+
+
