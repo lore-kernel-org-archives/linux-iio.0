@@ -1,104 +1,128 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AB1017A317;
-	Tue, 15 Apr 2025 14:47:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 136E5210F49;
+	Tue, 15 Apr 2025 16:08:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744728456; cv=none; b=jPLdLQc5EM8XU/7gtTRaM/IOsexqnC2GYujnK7+nM8/HUX+XBJ4OUjTPRl0UxRU6EMvNepBhv+Ufm4BouX3wvIqF0kVLDDAuKVXGdlTI3u3AI2A89qHrmhdDsdu1GRmcQVsHrlI8WLJQC/rNaFruh7sFnfXtqV51xLanKat05Gs=
+	t=1744733313; cv=none; b=hurlovsvGw545Q+7RuJtlPr2bqn98or00KWEAxEisOFzm3F7lqfZEnZnMDLQFXGXRiEA3jRRiiZZfXpfjqDNhUetBCdl5XdQ8vZFfNnuGa3FNbL0j0kSY2EFEgFfvowbgpaxIdQQzCHD2PfzGOOHKOvniZ2g7i4o9KPyfYdcb2Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744728456; c=relaxed/simple;
-	bh=GW6rmLEB+/jR0gzntBZE6oCSjXW/0GJVVJVpvKoCtfc=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=LUQclM/BKQ3GefStw+qQvBPe4kAgaHQ5UPeVy6Rk8PwQXgmM7I3GAT4iIuid3D4G5HmEN91p2c4LIeI9nsLCo3l67zybIQv307VoCSwtWGcgmALiu739ZEkO8VgGbkaQ5A7QUJH/Bgfzc791Ja24N6oIBXc7ngcH8CU/hJqJLlo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zk1CgVzY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744733313; c=relaxed/simple;
+	bh=Epp6DWQBFHduWN1dTbfRFnc7iki98bhG5lprQjMcCx8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UHRC2VdkusJup3qE2t3y+40jIdqipybBMlEsQ26vIxt1ac1zaL7RQvMGdTEohRiYJnj0IYi3pAaQwwXhSGPSzEAbHWMIBHyGuYsNx+ePZhvMO1EqnIMANyK3pwcJT9hkUXDRyp8V8EEDDrhVWfNOkeB9Ie0xwGmrfI9UOo6iTWc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=APlfLJVr; arc=none smtp.client-ip=209.85.210.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zk1CgVzY"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 878D9C4CEE5;
-	Tue, 15 Apr 2025 14:47:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744728455;
-	bh=GW6rmLEB+/jR0gzntBZE6oCSjXW/0GJVVJVpvKoCtfc=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=Zk1CgVzYnx7oMucamAHdVdoOfUm3MSz3BoP5sXAOgTjqF5vv7Fwm3JObOowYPkYPJ
-	 Q5zstOHUGiOwTXgIZZMXB0Crb+6S4FSWMhncbcpo3xoDFggqaix4kk7rnc6v9lxJS5
-	 UJqmhdh3z5pcL8aHmFaYT3c5kryybotKAgziWSZLjLM0CWotnALbvuU0Pxv3QAqcwO
-	 gxtSCPsjoqr2Uo+ZgmvdHC7CdSFlsAU4pN8zc1S/iJCaKiQ00QZMAf+OUQcdljc1bo
-	 DfoRWaHhXmvkyA2akaw3QO7OtRqHMz0VZciqCv6pzBM0k9PUUYaCfmslZwulyZ8q/j
-	 lWuDZP+D7GumA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D767C369AB;
-	Tue, 15 Apr 2025 14:47:35 +0000 (UTC)
-From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Subject: [PATCH v2 0/2] Add support for WoM (Wake-on-Motion) feature
-Date: Tue, 15 Apr 2025 16:47:30 +0200
-Message-Id: <20250415-losd-3-inv-icm42600-add-wom-support-v2-0-de94dfb92b7e@tdk.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="APlfLJVr"
+Received: by mail-pf1-f172.google.com with SMTP id d2e1a72fcca58-736c1cf75e4so4126780b3a.2;
+        Tue, 15 Apr 2025 09:08:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1744733311; x=1745338111; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=o5KFN8rQwRDsAQ/Yg9O45rfWFUONIccvAncbkaEGxW0=;
+        b=APlfLJVrB2ROLfHQYbAgUIHs73+5xQ1lVroSuuRYbcVyqi6b6y9r3+OzmCPAiTvoPC
+         isD7FUv9LYRfuwq2SKZxzGbGjPt6sknEI/RHeSjQIRzydxNhl3oqwKBhFRC0kMbfGWa0
+         Dd8nhUtoKODPwjcFq+0Qx5C6mzPIw7b3B4AWoXOth/Rb/B30COgDjXAguUit8TpyWszd
+         Qi3HL5ar+ljXBvf97akHBHwubwGm+U8VPg090ceK5Bmdj2ojOtQxn2z6IJfQAaCIi4LI
+         as7GnLhmwXFXrOeuqTdg5UkrVjja+MS/grhEnKgHEl2/rMVjd440uOfxVCC+jnEG9SXh
+         K/ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744733311; x=1745338111;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=o5KFN8rQwRDsAQ/Yg9O45rfWFUONIccvAncbkaEGxW0=;
+        b=xCugEiqIQZ+/+0RNshpeRZ9axmiktXLcfP7VxGuyWavdTd0XKx2eS8BT0QUNPADo3v
+         X8iCr/f/Cez+rQBapXpHEXKldVMrSs6okoz/0NmA6DAzwTFTn2U2rfD62js0GwhLXl09
+         uhpBqbBscAcdNUEGnZk/dyBBfE+84zgH+5WGcaK6RhxB3F8+3mm/V0bD1OQa4kvJtcn1
+         7wNeU8e7Tj5BajbkD+byyjg83X556yB+noDZqFrs6QbWCb5ofrZIi6DOwDe+un6POZdw
+         d90nGkshRReMji5NC+ewAGRF02cpLhrKFbiV1B25AKWDMuB+h6o2Z/gCGopcebQibEa0
+         G7ZA==
+X-Forwarded-Encrypted: i=1; AJvYcCUHCSkv3HUnRAsRi460WJO2irZlxd91GrUeYiZG54XqsJRlVp6XFT3qps8x9SxaAu1940to30u+V9DLSAc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyqqNiCdS2aM/kV1iwAWAVw65OBf/3WdaszTKPaTOSL0cbOGTJZ
+	OtgYmyAR1U3yUPNCxhLq0uP45jiRIwIEWwfUN3+e9KVLWIqHjWxo
+X-Gm-Gg: ASbGncuDNJwA25cvppbWJAYVWRW7Kjy+7pBP336hCitfxVKhSBEjxU/99D8+YUxDluJ
+	qq4sgoYDmxI3G8V3uzZjdoImpSgzV/Izv1e3yqA6N9hlD6ysKJj+HTML/HkbHL9Dbm8tb7877MB
+	XvpXZwX7FSC8Yec+hqSKPESg9lsSRQ4RL0MI6mC0nSjnJjs+sSLNhNt7C91kak2uCOcxkslCzSf
+	ah6KatW1eYX362ajXtgaSZFnOqD+w91I82QTPwUehV5LIbtTmjrQ28LrlOq3W1EjBz81FLzS2WX
+	dsjmwbVoVWuM5KZFPxC8XXMRP1AyFr+emhaCTUJTODL8F1E=
+X-Google-Smtp-Source: AGHT+IH6y8NaDWBYMTdPKnRuy2ZV18VnXaLplADliZlMQ0z4zUxVD/TIhKxxpiEyVinXAg5jXp/ocA==
+X-Received: by 2002:a05:6a00:1785:b0:736:55ec:ea8b with SMTP id d2e1a72fcca58-73c1fb5ee47mr21490b3a.24.1744733311052;
+        Tue, 15 Apr 2025 09:08:31 -0700 (PDT)
+Received: from localhost ([2804:30c:92d:f600:d5e4:543:c403:4767])
+        by smtp.gmail.com with UTF8SMTPSA id d2e1a72fcca58-73bd2198be9sm8669243b3a.9.2025.04.15.09.08.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Apr 2025 09:08:30 -0700 (PDT)
+Date: Tue, 15 Apr 2025 13:09:40 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Siddharth Menon <simeddon@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-staging@lists.linux.dev, gregkh@linuxfoundation.org,
+	jic23@kernel.org, Michael.Hennerich@analog.com, lars@metafoo.de
+Subject: Re: [PATCH v7] iio: frequency: ad9832: Use FIELD_PREP macro to set
+ bit fields
+Message-ID: <Z_6ExCvQg8lH20z6@debian-BULLSEYE-live-builder-AMD64>
+References: <20250414191453.10222-1-simeddon@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAIJx/mcC/5WNSw6CMBBAr0Jm7Zhx+GhdeQ/DAmgrE4WSFquGc
- HcrN3D53uK9BYLxYgKcswW8iRLEjQl4l0HXN+PNoOjEwMQlMRM+XNCYo4wRpRsKroiw0RpfbsD
- wnCbnZ6SKyRqrdMs5pNLkjZX3drnWiXsJs/OfbRoPP/tfPx6QULUqP1p1qlRZXGZ933dugHpd1
- y/W0xKX1AAAAA==
-X-Change-ID: 20250220-losd-3-inv-icm42600-add-wom-support-0620fef9db23
-To: Jonathan Cameron <jic23@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1744728454; l=1534;
- i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=GW6rmLEB+/jR0gzntBZE6oCSjXW/0GJVVJVpvKoCtfc=;
- b=Yb4lqMPuRKStcCXktJRLJOTaN8pYqhSL6Bbwgc6KcEZO3aE2jCejFsr5xle77v3m3Eir8k3ht
- sua8y/RfdJ3D12NX37dIHDPeN8OUOWzEix/l2R1JqJpgNHX8XstWl2x
-X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
- pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
-X-Endpoint-Received: by B4 Relay for
- jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
-X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Reply-To: jean-baptiste.maneyrol@tdk.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250414191453.10222-1-simeddon@gmail.com>
 
-Similar to feature present in older chip, it compares the magnitude of
-the last 2 accel samples against a threshold and returns an interrupt
-even if the value is higher.
+On 04/15, Siddharth Menon wrote:
+> Use bitfield and bitmask macros to clearly specify AD9832 SPI
+> command fields to make register write code more readable.
+> 
+> Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+> Suggested-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+> Signed-off-by: Siddharth Menon <simeddon@gmail.com>
+> ---
+...
+>  v6->v7
+>  - fix st->ctrl_x alignment
+>  drivers/staging/iio/frequency/ad9832.c | 92 ++++++++++++++------------
+>  1 file changed, 48 insertions(+), 44 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+...
+> -		st->data = cpu_to_be16((AD9832_CMD_SYNCSELSRC << CMD_SHIFT) |
+> -					st->ctrl_ss);
+> +		st->ctrl_ss &= ~AD9832_SELSRC;
+> +		st->ctrl_ss |= FIELD_PREP(AD9832_SELSRC, val ? 0 : 1);
+> +
+> +		st->data = cpu_to_be16(FIELD_PREP(AD9832_CMD_MSK, AD9832_CMD_SYNCSELSRC) |
+> +							st->ctrl_ss);
+Oof getting Linux code style compliant tabs and spaces correctly can be tricky.
+In sum, tabs should be size 8 and be actual tabs (not 8 blank characters).
+Also, when we need to align code at some column that doesn't match 8 sized tabs
+exactly, we start with tabs and go until the last tab that precedes the column
+we want to align to, then we use spaces to go from that last tab until the
+column we want to align to.
 
-WoM maps best to accel x|y|z ROC event. This series add system wakeup
-functionality if WoM is on and wakeup is enabled when system suspends.
+For this particular example, the opening parenthesis of FIELD_PREP is at column
+50, so to align st->ctrl_ss with the arguments of FIELD_PREP on the preceding
+line, we use 6 tabs and 2 spaces.
 
-This series also prepare the driver for supporting further APEX
-features like pedometer, tilt, ... It introduces an apex structure that
-will hold all APEX settings and track the enable state.
+		st->data = cpu_to_be16(FIELD_PREP(AD9832_CMD_MSK, AD9832_CMD_SYNCSELSRC) |
+						  st->ctrl_ss);
 
-Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
----
-Changes in v2:
-- change struct order to avoir DMA overflow
-- separate wom enable/disable in 2 functions
-- delete mutex rework
-- Link to v1: https://lore.kernel.org/r/20250220-losd-3-inv-icm42600-add-wom-support-v1-0-9b937f986954@tdk.com
+Setting tabs the right size depends on the code editor. For vim, the following
+settings should ensure the correct tab size.
+set tabstop=8
+set shiftwidth=8
+set softtabstop=0 
+set noexpandtab
 
----
-Jean-Baptiste Maneyrol (2):
-      iio: imu: inv_icm42600: add WoM support
-      iio: imu: inv_icm42600: add wakeup functionality for Wake-on-Motion
+See Documentation/process/coding-style.rst for complete code style guidance.
 
- drivers/iio/imu/inv_icm42600/inv_icm42600.h        |  56 +++-
- drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c  | 283 ++++++++++++++++++++-
- drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c |   2 +-
- drivers/iio/imu/inv_icm42600/inv_icm42600_core.c   | 103 +++++++-
- 4 files changed, 430 insertions(+), 14 deletions(-)
----
-base-commit: d3d6cb27a945c6fc7ddd3e7423c4303b4b6bad36
-change-id: 20250220-losd-3-inv-icm42600-add-wom-support-0620fef9db23
+Apply the same spacing to the other cases.
 
-Best regards,
--- 
-Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-
-
+Regards,
+Marcelo
