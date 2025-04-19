@@ -1,62 +1,62 @@
 Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A875D1DDC11;
-	Sat, 19 Apr 2025 13:56:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABDB31DE3DB;
+	Sat, 19 Apr 2025 13:56:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745071006; cv=none; b=RAa7WSqfcOYnLXCQa+cwjAallE3iuAVbiKM6eqoPXMfTRhR+3vnHeUjXlwWmT0mRRLTiuM4WWt3/4tJXcO+eHMps23RRLc2oY1hfjnx/ST1IgODkSvxuF8Ie10QNvGfdtBi9l9x0fHQ9PrICJA5EubaSXJZgjAd8XhsVFBw4LbY=
+	t=1745071007; cv=none; b=S4SolaRVmgkP5vpq1IXkZxZ5lheS55tTzrTWi4yI6QjF1AhI4wSyQw+cq1AmFYBGoSr32GdLNtdTvUSih5vIRRKO24P2q1w25TT7ei+w9il0DwXyAfd9KNMT1c3s/+ExI9URRMkAEkEtjXtqdwLfYwqjRAVxT2SG/Th4NTV4TRM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745071006; c=relaxed/simple;
-	bh=ZtWyf+85ZAZuuUdke/D6KK+1edjKVBiOUFx39D2hd6E=;
+	s=arc-20240116; t=1745071007; c=relaxed/simple;
+	bh=IeGkgU0YBXtfAvHiWobFFEYEFFchmZKYlSuvetJAaME=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=p/X4TQvk1aU9it6r0yA4X38jb5MmVSLBxW6TKGKDTrrvd60D+c40AlgY8Ns9Kw7IknP/fFGJVfP7VrYpq1xmtc6kWP/M+iuw3bwpB/JwlZGNaAt4NQ1cQk87MzKxCkhZHNRpImWuBtSN2nz097HMNVFVgkJwUcaRulQZyc7HotM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=d6QjuiaX; arc=none smtp.client-ip=209.85.222.173
+	 MIME-Version; b=rH5MMLyeS5VlEU1TFVsQMQ/72tEZrNL5LxJacNGmyuppX6E0p7NRwuKdBvNpjSIYChwm9/LDDcvb4E+uM0YztutixtOBjtYtW3Uykpf10CqWiJeXivKVV2Se8eC1lTZfxPyf5YvsmnD0+M0jiWnp77i4hpURyL3tRUrwtmHlIf0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dc1uxoNo; arc=none smtp.client-ip=209.85.222.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="d6QjuiaX"
-Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-7c5ba363f1aso348222985a.0;
-        Sat, 19 Apr 2025 06:56:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dc1uxoNo"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-7c55500cf80so206252085a.1;
+        Sat, 19 Apr 2025 06:56:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745071002; x=1745675802; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1745071004; x=1745675804; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=de216G9QJ9z5gWQFLLYUZKYI5uHds9pgvjd/vVy9J+I=;
-        b=d6QjuiaX1CgnE2nRscsRM+IqfTEql7UN3dLnMwdOgGaunp+Lh6lc9sr5RuFA4JqH/W
-         3wMHoIU6MxXyKhu7JMIn9tCMzzutUoJnUg1HDrOUyHh7hc4HagEei8Byhrl+lOfXBuur
-         eMqSYcoc5AiyXewNmOgI8UlY4VvaK1uXAI3tqIlFa13K4q71WDoqncveALt8ZKDOrin+
-         Qr5elWefzdZuFaKyy87VwOdNXZKnzpzzyJIhCI6/N49B0z0bbfvIKLGgH6vnphc06pCJ
-         KwMrNULyHIpK9tQAju/Vj2Rgvqe8QDL/yZteOhIFz0p/bzag4h5e2hbbbGXUx23Hj5Cv
-         BK5A==
+        bh=AWMbB3RCjLtzIka1EeVCBu0jLU/YK5i3+0Q0+aZfr+E=;
+        b=dc1uxoNo1VkYUuLz2XEtTs/kKzGjAhLw8zazTaU/W00Qd9Xo6wUJvNEonRwGJTCnMq
+         Wiyk4kSaHXFR88dE3BQZ1/AD/9rIcYaB3//Lxizf+LBXtRvhHm5eE7Hd6IY/pDHWp+Tu
+         kmuIS4exmgeE7/aSbmVaKLLoyHUn/xcXg3nJy+IK6PoObMXYajeXRUtKxAH0V2N3Djti
+         QFM7v3rOKbiU58tiTc+G007nH2MbdS4deML/lMIGyZWsEs84+e6W2yjFHonP9gqXWVmq
+         U0TMQ/bmXmUCaST8zTC00cMXS9UFItFXIxT4DbrOK9Ttb7HJ36xMzXahC7KJRo63C1kW
+         4uBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745071002; x=1745675802;
+        d=1e100.net; s=20230601; t=1745071004; x=1745675804;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=de216G9QJ9z5gWQFLLYUZKYI5uHds9pgvjd/vVy9J+I=;
-        b=oi8ehL0dEA074pqhN+Gcq14JPCx6mjBlPN2UtYhVIUQXNwfazcKFNXMiYnaygjwVDK
-         gMC3G+XnjDW01KYjgkRjlnHAgjG2BOZgryHIrmyDmDrFZLW3eeQOGPNWHST1Dfw0dXfN
-         qYeP91mmpahMQAXUiMJlM7cOehQ1tZcgUd/BjzeyxC7T9P93BqyLMfZGsOjTUUd7/ZeG
-         1TLfFZKmlV3LrZScGdnnMnpXVznjkll2MesuTqiMupPnKY4dKKUdzL9EFdRIv2/t9oj9
-         WPFlGP82seNzWtH21kl+WEpiF27eMRZvpnqz+mADIOKSAnTj71NJaSiLdo2JQ57+D3Hz
-         3f7w==
-X-Forwarded-Encrypted: i=1; AJvYcCWc8CKAuFnlTodYiOOuXKx/Lp4ho1tjgvo5SO9/fz807cjSA63wi4ERpgDXID4tgX95VbRxsF84KmZePDNC@vger.kernel.org, AJvYcCXPjlGGgpREKwP8SdGldm8z3sb4ZB1uZttuZ0OvKVNmyNFZGxZ2pffXWJNM9ATd5lgFkMUKjV4lxnk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywq1ie2t8SqgwzGrz/uTIhyXqVi1v3Iq4GcG01gpYX06QzHP7mN
-	jyE3Td9Gh0V6+Soya05S1dmfdCgfc93QKv18Z167GLnDyVFjbcUVjZfZnswbAWo=
-X-Gm-Gg: ASbGnctTzJD11CxW35hE2ONWdGhirBJsKq0QUt4vmiH3ZqeDgbEGV2mPqB6Ub8EA0Si
-	YdWJJdAV9V6zOdlr/dz257gLIwOHuPGZm0c0WE8r0lFUuyYUVU9o3iDnI82k3auKHysNMDi1iK4
-	OLc8S56u7mpKhQ6f+9rg/7vE1nARMz4lMQItoVGeltAcKftSNHQcld+BJ40U3fGPRDrqn4NVZT8
-	tSBwq0FACacqXZnG1HVq6EAMBZADeKeNgeKevRDfywIb17rV94mmp7ypOpBkF6Bbw7u5zYZGmaE
-	zKU/OXR5U6wK+Nj3Pl6fTb8khaxydtdsZme+BrBpyt4jVsxrWRyn97ULg3JRJvNyIg==
-X-Google-Smtp-Source: AGHT+IGjO9XrU530ITxvlahmC6BM8XwQH9uXIKeS9Jh/wyHB2OzRz2dqUKbHhGBZbB44HCl8uOWXMg==
-X-Received: by 2002:a05:620a:2802:b0:7c5:a2f8:e6e4 with SMTP id af79cd13be357-7c927fb1a9bmr968863585a.29.1745071002382;
-        Sat, 19 Apr 2025 06:56:42 -0700 (PDT)
+        bh=AWMbB3RCjLtzIka1EeVCBu0jLU/YK5i3+0Q0+aZfr+E=;
+        b=sPpZG7sCs5u7/0S3LySTKmVxQmX+GF0E2eh3CCqA/DJIJQLgkLIvZmsIjVNP0VX97i
+         RjdtxWZnlJe6msBONuYqBpXFUrVDlNlT20kVmQCvkHSoAOzMWYFhxmW7JXYbabeNXCCq
+         WYWpgDbJoxMfmYne2N7031L+Z2o5Ehtiinj/ZWlETepLZvnHN0EKjXp/c22DjbKduNyi
+         od6LcmVUO38eVJAetWwsxFP37SaGebdeA0hewnslymqJIO4MfPaJR9JkGtpIoskMrMIc
+         BXCyHoeLkJONNYzI4q/2gnNLcxk/2Qaejxn5RPQGRdYhbLspsWJz8mjg8cnpBGPexSB3
+         1AWw==
+X-Forwarded-Encrypted: i=1; AJvYcCVKHWaUe7zAueGhyqEYKbrNDO2I60OYVzK7RDHeVCklVmt6z5713BvcxKw0nGirSQr+v7iN+zVc4OZgWLza@vger.kernel.org, AJvYcCWg/ZRbBs5efQ6t/5iCNexZo9FpFgZv7sxna8iM+hMIONy/yOkxzySJ7QCgvTQGJ4oVW03h8xbuQe4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxGLxgfMJwnfbnN2MzgL9ugcPPTdh2UECVTDx/kauG/CR5jXiMW
+	C56u3OXkzI10QWxf5OYgA8B15bIed44zBEcctV4ojh7YCv6IoNlM
+X-Gm-Gg: ASbGnctFH4kEKXhWSRdm/pceyrOU7pT7Y3rNqSHv2oyOxLn4bZO8+YZKeKaAnAEhxLk
+	VqVXQ0HshNpKYYeW+60h2vQFfQO+2NnjoFE1FQokk1Z4eh35c3sUv7ekgzAnbyZBzn0h5Dp8KVg
+	A9Mpf+H3F4hQ1lnmrCPbsuZAMHmHOFsQR0J4w33pPRiQHRv3WgA/0ZKC5n7T6I/p8SKf9dQZaCW
+	OAE4ay31BUVp+ejiWNLYyyl7wb/VJRf5CqnffAyo2wXZ97zS06KfPUaAmGbQrznA/5LDqWpqobU
+	gitA21rJJM/BHrSpXaDCzC6rHTViGBB6mimee5h0LSCdkQdzT7XcFaE=
+X-Google-Smtp-Source: AGHT+IFE5Q10ytdMM8/SuSSTefTUYIbTBwb4vK2u7waQDWVfRENh+ujjhU4ceANhgI0oVyC+lc+k9g==
+X-Received: by 2002:a05:620a:319d:b0:7c5:4c49:76a5 with SMTP id af79cd13be357-7c927f59296mr765340185a.12.1745071004357;
+        Sat, 19 Apr 2025 06:56:44 -0700 (PDT)
 Received: from theriatric.mshome.net ([73.123.232.110])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c925ac4749sm214350185a.59.2025.04.19.06.56.41
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c925ac4749sm214350185a.59.2025.04.19.06.56.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Apr 2025 06:56:42 -0700 (PDT)
+        Sat, 19 Apr 2025 06:56:44 -0700 (PDT)
 From: Gabriel Shahrouzi <gshahrouzi@gmail.com>
 To: gregkh@linuxfoundation.org,
 	jic23@kernel.org,
@@ -70,9 +70,9 @@ To: gregkh@linuxfoundation.org,
 Cc: gshahrouzi@gmail.com,
 	skhan@linuxfoundation.org,
 	linux-kernel-mentees@lists.linux.dev
-Subject: [PATCH 2/5] staging: iio: adc: ad7816: Rename state structure
-Date: Sat, 19 Apr 2025 09:56:35 -0400
-Message-ID: <20250419135638.810070-3-gshahrouzi@gmail.com>
+Subject: [PATCH 4/5] staging: iio: adc: ad7816: Use chip_info for device capabilities
+Date: Sat, 19 Apr 2025 09:56:37 -0400
+Message-ID: <20250419135638.810070-5-gshahrouzi@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250419135638.810070-1-gshahrouzi@gmail.com>
 References: <20250419135638.810070-1-gshahrouzi@gmail.com>
@@ -84,124 +84,53 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Rename the main driver state structure from 'ad7816_chip_info' to
-'ad7816_state' to avoid confusion with the upcoming structure that will
-hold static, per-device-type information.
-
-This is purely a mechanical rename with no functional changes.
+Move device-specific capability information, like the presence of a
+BUSY pin, into the ad7816_chip_info structure.
 
 Signed-off-by: Gabriel Shahrouzi <gshahrouzi@gmail.com>
 ---
- drivers/staging/iio/adc/ad7816.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/staging/iio/adc/ad7816.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index a44b0c8c82b12..cad2e55aff3f9 100644
+index 39310ade770d0..ab7520a8a3da9 100644
 --- a/drivers/staging/iio/adc/ad7816.c
 +++ b/drivers/staging/iio/adc/ad7816.c
-@@ -38,10 +38,10 @@
- #define AD7816_TEMP_FLOAT_MASK		0x3
+@@ -44,21 +44,25 @@
+ struct ad7816_chip_info {
+ 	const char *name;
+ 	u8 max_channels;
++	bool has_busy_pin;
+ };
  
- /*
-- * struct ad7816_chip_info - chip specific information
-+ * struct ad7816_state - chip specific information
-  */
+ static const struct ad7816_chip_info ad7816_info_ad7816 = {
+ 	.name = "ad7816",
+ 	.max_channels = 0,
++	.has_busy_pin = true,
+ };
  
--struct ad7816_chip_info {
-+struct ad7816_state {
- 	kernel_ulong_t id;
- 	struct spi_device *spi_dev;
- 	struct gpio_desc *rdwr_pin;
-@@ -61,7 +61,7 @@ enum ad7816_type {
- /*
-  * ad7816 data access by SPI
-  */
--static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
-+static int ad7816_spi_read(struct ad7816_state *chip, u16 *data)
- {
- 	struct spi_device *spi_dev = chip->spi_dev;
- 	int ret;
-@@ -102,7 +102,7 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
- 	return ret;
- }
+ static const struct ad7816_chip_info ad7817_info_ad7817 = {
+ 	.name = "ad7817",
+ 	.max_channels = 3,
++	.has_busy_pin = true,
+ };
  
--static int ad7816_spi_write(struct ad7816_chip_info *chip, u8 data)
-+static int ad7816_spi_write(struct ad7816_state *chip, u8 data)
- {
- 	struct spi_device *spi_dev = chip->spi_dev;
- 	int ret;
-@@ -121,7 +121,7 @@ static ssize_t ad7816_show_mode(struct device *dev,
- 				char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7816_chip_info *chip = iio_priv(indio_dev);
-+	struct ad7816_state *chip = iio_priv(indio_dev);
+ static const struct ad7816_chip_info ad7818_info_ad7818 = {
+ 	.name = "ad7818",
+ 	.max_channels = 1,
++	.has_busy_pin = false,
+ };
  
- 	if (chip->mode)
- 		return sprintf(buf, "power-save\n");
-@@ -134,7 +134,7 @@ static ssize_t ad7816_store_mode(struct device *dev,
- 				 size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7816_chip_info *chip = iio_priv(indio_dev);
-+	struct ad7816_state *chip = iio_priv(indio_dev);
+ struct ad7816_state {
+@@ -98,7 +102,7 @@ static int ad7816_spi_read(struct ad7816_state *chip, u16 *data)
+ 		gpiod_set_value(chip->convert_pin, 1);
+ 	}
  
- 	if (strcmp(buf, "full")) {
- 		gpiod_set_value(chip->rdwr_pin, 1);
-@@ -167,7 +167,7 @@ static ssize_t ad7816_show_channel(struct device *dev,
- 				   char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7816_chip_info *chip = iio_priv(indio_dev);
-+	struct ad7816_state *chip = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", chip->channel_id);
- }
-@@ -178,7 +178,7 @@ static ssize_t ad7816_store_channel(struct device *dev,
- 				    size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7816_chip_info *chip = iio_priv(indio_dev);
-+	struct ad7816_state *chip = iio_priv(indio_dev);
- 	unsigned long data;
- 	int ret;
- 
-@@ -215,7 +215,7 @@ static ssize_t ad7816_show_value(struct device *dev,
- 				 char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7816_chip_info *chip = iio_priv(indio_dev);
-+	struct ad7816_state *chip = iio_priv(indio_dev);
- 	u16 data;
- 	s8 value;
- 	int ret;
-@@ -271,7 +271,7 @@ static ssize_t ad7816_show_oti(struct device *dev,
- 			       char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7816_chip_info *chip = iio_priv(indio_dev);
-+	struct ad7816_state *chip = iio_priv(indio_dev);
- 	int value;
- 
- 	if (chip->channel_id > AD7816_CS_MAX) {
-@@ -292,7 +292,7 @@ static inline ssize_t ad7816_set_oti(struct device *dev,
- 				     size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7816_chip_info *chip = iio_priv(indio_dev);
-+	struct ad7816_state *chip = iio_priv(indio_dev);
- 	long value;
- 	u8 data;
- 	int ret;
-@@ -351,7 +351,7 @@ static const struct iio_info ad7816_info = {
- 
- static int ad7816_probe(struct spi_device *spi_dev)
- {
--	struct ad7816_chip_info *chip;
-+	struct ad7816_state *chip;
- 	struct iio_dev *indio_dev;
- 	int i, ret;
- 
+-	if (chip->chip_info == &ad7816_info_ad7816 || chip->chip_info == &ad7817_info_ad7817) {
++	if (chip->chip_info->has_busy_pin) {
+ 		while (gpiod_get_value(chip->busy_pin))
+ 			cpu_relax();
+ 	}
 -- 
 2.43.0
 
