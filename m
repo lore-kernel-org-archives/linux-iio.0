@@ -1,62 +1,62 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA2131A2390;
-	Sat, 19 Apr 2025 13:56:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 975E31DDC0B;
+	Sat, 19 Apr 2025 13:56:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745071004; cv=none; b=CiDFdzbBJp4tVwxaIR7e3uWxHlkJK9lg2eVDFL26EPEJmRcdGukBzRkbDbnGtnL33emFuXLVkjJfUITwid4uzrGHxNR2B/4qFOeBgmGJp1iaRyY0o5Y7a7hKnrexINhWDR+9oE4UmKmSWM3lCXA6CsiZst28rq6+zhAcC78mb8E=
+	t=1745071006; cv=none; b=d8vwris1afV2cXgDaDdO1/AHPZ5hLmWUwcPnYLKcQQBmmVVecwxgprMr2Js1xoOO9haT5Z81Hwt3HNFnVjItQCn/Naoae0hHw6ImehLlUXOzHdhKHRqu3UsQIn7DGHPD6J9vOIlVvAlif55O8mg3YHYLgpPidoeFOA5n6z0J8BQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745071004; c=relaxed/simple;
-	bh=nhjNiEws7JDfpSABnQRCrgaV/jVLhmHTd1ukZHOLh3Y=;
+	s=arc-20240116; t=1745071006; c=relaxed/simple;
+	bh=FS5Q98qLID6FAQ/N12FPnFMlE/nozAWlI7CwtVF5bKM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=tN5Veg1CjhTfyyZzd7P5lkFFXQKAXov4oVSyla8LhtYS/px1fYDHpMvZntoqiMdji/GrPixGQg3WfqNTKHFdDcn5U0sdeabxdyRja330CH18gqwDIRP0GZFLBkoowToFQwAG8VTlOKUV8gP1uPDYn8Yn4kZWtOwxD4Wj0aLQMLk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jQjHYoi+; arc=none smtp.client-ip=209.85.222.180
+	 MIME-Version; b=BV8w4GPSvsV9hRkHtDaI0HQaHDCxiRmgjlZhUD3sWa0fcBIspjUFUUsKUAJj9CYDQU7a+tHZdS7+cO15a+X7FXE3j7NMRXhqUxHaeGyAjtNe/fRjOGCHY4ySaXA740H6ruPSalao1VmraaTcKPfgEH2x9C03INuE23ygE3vCgUQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NxfAuJWg; arc=none smtp.client-ip=209.85.222.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jQjHYoi+"
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-7c5568355ffso213636085a.0;
-        Sat, 19 Apr 2025 06:56:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NxfAuJWg"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-7c59e7039eeso372765585a.2;
+        Sat, 19 Apr 2025 06:56:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745071001; x=1745675801; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1745071003; x=1745675803; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Gk0TUJMIcvb2/Yt9CvbEI4RZU5fYHN3893YNwk+aijI=;
-        b=jQjHYoi+O+tliMaVb0U0Ioxo0R45+1fwaMS/W/2mHwj82VorTVR1Hdze6XV4Z4huKG
-         +LHalZce+R11sQ+Z7I+aouM+s9WA/2kVwCD8YLoUCeBLDCk3IJ9f+R7cTJpEC7eEfwbx
-         RC6Quvp/5RY5Cvgks3yFW+mRKcemEgmJGWyZzVuHIi1iitOG2UIbSZEb9d/VVFfwk8wI
-         Y9nCjSFK6oRfZUuzwKEhkLGOVfc28Gxp+fILpvKt/nBoa5ytP3P44G4q7eS0ulW96oQJ
-         5hCOQEfq6Vuu9s2t2nvwmrRjbT1UZ7iiOMG+Oh47G0Z7dAUXQxbfy9voDMxSkCmy+elO
-         kNrw==
+        bh=rd8epHvveGFvAa9vnuKQvCxPWBU3eQ5S8aYIg7aa9r4=;
+        b=NxfAuJWgAnDE6QSV/g3duXOAXs/vym16QyE6w5h94iXYJ44EjdcWb4UY6Vsnmfjlkm
+         zEAUnbHbr98cEl1Ej9oaul83uyOwXR60JtpqGGcR84Qzvc7Dw/3qTN9ZO7TI1bgyitGv
+         42kw7uFofzQMsVW3rBxK/fUSGmr6bF2paVCqggwkMXSkwMMG1RfYt3FuGO/68/gIkbNB
+         aCYhrUGfKUBP1uroTbRtSu80/tH4fnCTUbYMpYuMMVnQN7FOGcIEX2SQJtMHzSx16ZSz
+         TZeGsWVkjmaActTHiKjjpuiWF5HNxNB3gxbpw3vJ6MG39QShi9MR3Lo1uO8ESff5aqkA
+         uAlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745071001; x=1745675801;
+        d=1e100.net; s=20230601; t=1745071003; x=1745675803;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Gk0TUJMIcvb2/Yt9CvbEI4RZU5fYHN3893YNwk+aijI=;
-        b=clJlLrPiTX5VyRwywAEVtLcYbJLwj2qnsmn7duxGBsHjCOFyC3HhMpEESocbbWO2mR
-         gzTJa4mzka9yytEQHhSGOAjmYR6yLTJBsc/uY5FUrBo/tyGsi2YCM2PVlpIsrckbMSHX
-         NsDUAhCLwOPQgGQHhMGIx5hrVo63A1H182qsvPWM8dOtpgtwLHRqJASMS3qmb+lAmofX
-         RqejzR8YjRNJOdq97HRMFeI7bKAtFPgeJEKXfRhhFgunoq6AHfGvBifSLNHfSoSvmFJp
-         fLdAcTxiI6XD/sM7duNvywfh8jzJzxW2fMtBEe/9aGnRNTAgBkhPhskh03SRgv/hkMHq
-         bNqA==
-X-Forwarded-Encrypted: i=1; AJvYcCUX6OWC6iHkYYj+3TVXbLj4mH0NWam8XFK35/8FW7UegHqY1J8GCZGVkAF/E5dNQjY5dsOw7VTtLIQ=@vger.kernel.org, AJvYcCVlUT5aGf+g5UpIU6KGieneeGvq/xCM9OzKC2oo+sGOnY+T38b+d8baRxG/dj7DmbFaU5/Q9efA@vger.kernel.org, AJvYcCXNAX+J2zeAmAxo5FdCQUBza8mpMIPA+ACHacOvsHB9I0P0BIJLWdXazmMw7D63scNgncXuNP9ylACAtp9c@vger.kernel.org
-X-Gm-Message-State: AOJu0YxFbQuUSIc0X0BPuNC2v4GIo4F8GeIPUrV75HohZ5ELLJEhqnfl
-	SPkb3nwElP51Z0CNWaGiaCpv2OVFteuORMvA8Du/LrVaI13CWE8v
-X-Gm-Gg: ASbGncu6xxqGqnkfXKl0I0+NVCd2QlDMeze5AywH9sHJZcnZpvLbGiJL/gAqErNGcE3
-	7t0qESE+j5KoJkKy7h+hKtLSn2YZk2FwCFmmj8BxyzZ2imGreYeBQkigdtwEAeToZQNe5/1BoDg
-	HUbwQgpAeFCFMx8Nq+9Ra48nRnxhpGetUh+SAPayJQMI/nNJZ49q5odTo7PFVQipA7AuX3iEtUP
-	u0A/EVGCBbPHPGMLEQi2cqiRePMOs/ivbWb/GDQB4qvxBtVlYJepfy+a2QdayisfWjynwFHcism
-	ZGGDpWOerWLiWQwyfVVzd8khhnxpEO+s9jnQnvh/e1okiW5SMpZ79GrJSN3gf4G+Nw==
-X-Google-Smtp-Source: AGHT+IF/z6GEDB37r31F0OmR0P3pDnZmdP9f9ReQJm7FpvmCkWJBHCBmLHMxzR7sz1S46RqTgA3Cew==
-X-Received: by 2002:a05:620a:400e:b0:7c7:6543:2018 with SMTP id af79cd13be357-7c927f6b2c4mr926327385a.7.1745071001441;
-        Sat, 19 Apr 2025 06:56:41 -0700 (PDT)
+        bh=rd8epHvveGFvAa9vnuKQvCxPWBU3eQ5S8aYIg7aa9r4=;
+        b=P+CM1S9fC/sr75zP/tu//h2C2sbwYRvGhF/qFJ1sbcFmQIFqRNpJt6arFhCHGMa92u
+         4OSd3A0PNM7NwgbeID/w75gj+JiGfzqHrYLMWZQOcG6TI7J/vJRA1WLchH7Vdxg2NKGm
+         X79dQujejISAjS6RIr39T8vi3xuvNssogTU7MbVHsPANEfCQHN3D5nKpboMlcRFWyNsz
+         1H05ZxtQzabuhvaLcwemw3XFoopmUtc5P6F/Q45LsVyU4mRnnoBFkzIMBt2I9wZOpc04
+         S7+VXqJY3TQqeSK1oGnQ+jbXXMYG65xwlq8v8Pq3sOh54fJiwVLIIUdlZNpcS7pAmhfU
+         KiLQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU2RAl1Pe2SZ8UJTqNIBYyYMzOvsjH5ZALcA/nq9uX2rK69QN2BNEvi05+pab/mr1nA9DnmVO60/8R+JkTV@vger.kernel.org, AJvYcCUR2/dguEzMudyiLds27LvNJcvHHbVKozml/CTBYUuCDNf5eRzvQAcp91HcPzlImSLnqoFpk4kKZ54=@vger.kernel.org
+X-Gm-Message-State: AOJu0YznSRf9fQ1kC7xuTtTmkk+HuugisKTPJNvrlfzb4nTElHVn7oIN
+	N+61iRFK30CcjnknwU2ePhABSZmM82DDfddHEmxrB+yvXIEpo8Bb
+X-Gm-Gg: ASbGncupm+28U6l0/kJq3eqFXBYAWv2qgBpiM3wL0cpaRd1n1nlWcy4Ti5QveUwiBDY
+	Qj+sAj/ECwls4S56xPlRCogRP1ZPAE4Z3rDFXYRoTP9sX1X1UYzKwKdo46gVQOJF/GZoOaHrVyd
+	JpohK3WECDppbdJ9f3qBF7jLBYArcQPWl6BaibXQ4afarCXoWhWu1VTGx3aI/qxJbAHDpXTdBQl
+	UhGfZObrG0ox4bAfCuEXD2E4tPCLdJMgrv/Wrl4n3t7yWcNUgHbeUb7lMhoIMsF6R6HzBwHLvJC
+	/PSH693D0u1w4pfmom+prVyoxvLwa0+3ofsZxD3zQOweBiilZRay4Jw=
+X-Google-Smtp-Source: AGHT+IFVmEYILIl7Bx9bPOG6d33ZGT/0pPwV1G1+NPCc5IPhW9OYdHlwxHRMX0my6CmQO0+vJtJu2w==
+X-Received: by 2002:a05:620a:4153:b0:7c5:a2de:71d3 with SMTP id af79cd13be357-7c927f92045mr827457885a.20.1745071003444;
+        Sat, 19 Apr 2025 06:56:43 -0700 (PDT)
 Received: from theriatric.mshome.net ([73.123.232.110])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c925ac4749sm214350185a.59.2025.04.19.06.56.40
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c925ac4749sm214350185a.59.2025.04.19.06.56.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Apr 2025 06:56:41 -0700 (PDT)
+        Sat, 19 Apr 2025 06:56:43 -0700 (PDT)
 From: Gabriel Shahrouzi <gshahrouzi@gmail.com>
 To: gregkh@linuxfoundation.org,
 	jic23@kernel.org,
@@ -69,11 +69,10 @@ To: gregkh@linuxfoundation.org,
 	vapier@gentoo.org
 Cc: gshahrouzi@gmail.com,
 	skhan@linuxfoundation.org,
-	linux-kernel-mentees@lists.linux.dev,
-	stable@vger.kernel.org
-Subject: [PATCH 1/5] staging: iio: adc: ad7816: Allow channel 7 for all devices
-Date: Sat, 19 Apr 2025 09:56:34 -0400
-Message-ID: <20250419135638.810070-2-gshahrouzi@gmail.com>
+	linux-kernel-mentees@lists.linux.dev
+Subject: [PATCH 3/5] staging: iio: adc: ad7816: Introduce chip_info and use pointer matching
+Date: Sat, 19 Apr 2025 09:56:36 -0400
+Message-ID: <20250419135638.810070-4-gshahrouzi@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250419135638.810070-1-gshahrouzi@gmail.com>
 References: <20250419135638.810070-1-gshahrouzi@gmail.com>
@@ -85,39 +84,145 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-According to the datasheet on page 9 under the channel selection table,
-all devices (AD7816/7/8) are able to use the channel marked as 7. This
-channel is used for diagnostic purposes by routing the internal 1.23V
-bandgap source through the MUX to the input of the ADC.
+Introduce struct ad7816_chip_info to centralize static properties (e.g.
+name, max channels) that differ between chip variants (AD7816/7/8) but
+are constant for any specific type.
 
-Modify the channel validation logic to permit channel 7 for all
-supported device types.
+Store pointers to these instances in the of_device_id (.data) and
+spi_device_id (driver_data) tables. Retrieve the pointer in probe()
+using the firmware-independent device_get_match_data() and store it in
+the ad7816_state struct.
 
-Fixes: 7924425db04a ("staging: iio: adc: new driver for AD7816 devices")
-Cc: stable@vger.kernel.org
 Signed-off-by: Gabriel Shahrouzi <gshahrouzi@gmail.com>
 ---
- drivers/staging/iio/adc/ad7816.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/iio/adc/ad7816.c | 55 +++++++++++++++++++++-----------
+ 1 file changed, 37 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index 6c14d7bcdd675..a44b0c8c82b12 100644
+index cad2e55aff3f9..39310ade770d0 100644
 --- a/drivers/staging/iio/adc/ad7816.c
 +++ b/drivers/staging/iio/adc/ad7816.c
-@@ -190,11 +190,11 @@ static ssize_t ad7816_store_channel(struct device *dev,
- 		dev_err(&chip->spi_dev->dev, "Invalid channel id %lu for %s.\n",
- 			data, indio_dev->name);
- 		return -EINVAL;
--	} else if (strcmp(indio_dev->name, "ad7818") == 0 && data > 1) {
-+	} else if (strcmp(indio_dev->name, "ad7818") == 0 && data > 1 && data != AD7816_CS_MASK) {
- 		dev_err(&chip->spi_dev->dev,
- 			"Invalid channel id %lu for ad7818.\n", data);
- 		return -EINVAL;
--	} else if (strcmp(indio_dev->name, "ad7816") == 0 && data > 0) {
-+	} else if (strcmp(indio_dev->name, "ad7816") == 0 && data > 0 && data != AD7816_CS_MASK) {
- 		dev_err(&chip->spi_dev->dev,
- 			"Invalid channel id %lu for ad7816.\n", data);
- 		return -EINVAL;
+@@ -41,8 +41,28 @@
+  * struct ad7816_state - chip specific information
+  */
+ 
++struct ad7816_chip_info {
++	const char *name;
++	u8 max_channels;
++};
++
++static const struct ad7816_chip_info ad7816_info_ad7816 = {
++	.name = "ad7816",
++	.max_channels = 0,
++};
++
++static const struct ad7816_chip_info ad7817_info_ad7817 = {
++	.name = "ad7817",
++	.max_channels = 3,
++};
++
++static const struct ad7816_chip_info ad7818_info_ad7818 = {
++	.name = "ad7818",
++	.max_channels = 1,
++};
++
+ struct ad7816_state {
+-	kernel_ulong_t id;
++	const struct ad7816_chip_info *chip_info;
+ 	struct spi_device *spi_dev;
+ 	struct gpio_desc *rdwr_pin;
+ 	struct gpio_desc *convert_pin;
+@@ -52,12 +72,6 @@ struct ad7816_state {
+ 	u8  mode;
+ };
+ 
+-enum ad7816_type {
+-	ID_AD7816,
+-	ID_AD7817,
+-	ID_AD7818,
+-};
+-
+ /*
+  * ad7816 data access by SPI
+  */
+@@ -84,7 +98,7 @@ static int ad7816_spi_read(struct ad7816_state *chip, u16 *data)
+ 		gpiod_set_value(chip->convert_pin, 1);
+ 	}
+ 
+-	if (chip->id == ID_AD7816 || chip->id == ID_AD7817) {
++	if (chip->chip_info == &ad7816_info_ad7816 || chip->chip_info == &ad7817_info_ad7817) {
+ 		while (gpiod_get_value(chip->busy_pin))
+ 			cpu_relax();
+ 	}
+@@ -353,6 +367,7 @@ static int ad7816_probe(struct spi_device *spi_dev)
+ {
+ 	struct ad7816_state *chip;
+ 	struct iio_dev *indio_dev;
++	const struct ad7816_chip_info *info;
+ 	int i, ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(&spi_dev->dev, sizeof(*chip));
+@@ -362,11 +377,15 @@ static int ad7816_probe(struct spi_device *spi_dev)
+ 	/* this is only used for device removal purposes */
+ 	dev_set_drvdata(&spi_dev->dev, indio_dev);
+ 
++	info = device_get_match_data(&spi_dev->dev);
++	if (!info)
++		return -ENODEV;
++	chip->chip_info = info;
++
+ 	chip->spi_dev = spi_dev;
+ 	for (i = 0; i <= AD7816_CS_MAX; i++)
+ 		chip->oti_data[i] = 203;
+ 
+-	chip->id = spi_get_device_id(spi_dev)->driver_data;
+ 	chip->rdwr_pin = devm_gpiod_get(&spi_dev->dev, "rdwr", GPIOD_OUT_HIGH);
+ 	if (IS_ERR(chip->rdwr_pin)) {
+ 		ret = PTR_ERR(chip->rdwr_pin);
+@@ -382,7 +401,7 @@ static int ad7816_probe(struct spi_device *spi_dev)
+ 			ret);
+ 		return ret;
+ 	}
+-	if (chip->id == ID_AD7816 || chip->id == ID_AD7817) {
++	if (chip->chip_info == &ad7816_info_ad7816 || chip->chip_info == &ad7817_info_ad7817) {
+ 		chip->busy_pin = devm_gpiod_get(&spi_dev->dev, "busy",
+ 						GPIOD_IN);
+ 		if (IS_ERR(chip->busy_pin)) {
+@@ -393,7 +412,7 @@ static int ad7816_probe(struct spi_device *spi_dev)
+ 		}
+ 	}
+ 
+-	indio_dev->name = spi_get_device_id(spi_dev)->name;
++	indio_dev->name = chip->chip_info->name;
+ 	indio_dev->info = &ad7816_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+@@ -420,18 +439,18 @@ static int ad7816_probe(struct spi_device *spi_dev)
+ }
+ 
+ static const struct of_device_id ad7816_of_match[] = {
+-	{ .compatible = "adi,ad7816", },
+-	{ .compatible = "adi,ad7817", },
+-	{ .compatible = "adi,ad7818", },
++	{ .compatible = "adi,ad7816", .data = &ad7816_info_ad7816 },
++	{ .compatible = "adi,ad7817", .data = &ad7817_info_ad7817 },
++	{ .compatible = "adi,ad7818", .data = &ad7818_info_ad7818 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, ad7816_of_match);
+ 
+ static const struct spi_device_id ad7816_id[] = {
+-	{ "ad7816", ID_AD7816 },
+-	{ "ad7817", ID_AD7817 },
+-	{ "ad7818", ID_AD7818 },
+-	{}
++	{ "ad7816", (kernel_ulong_t)&ad7816_info_ad7816 },
++	{ "ad7817", (kernel_ulong_t)&ad7817_info_ad7817 },
++	{ "ad7818", (kernel_ulong_t)&ad7818_info_ad7818 },
++	{ }
+ };
+ 
+ MODULE_DEVICE_TABLE(spi, ad7816_id);
 -- 
 2.43.0
 
