@@ -1,62 +1,62 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A137A1DF98E;
-	Sun, 20 Apr 2025 17:47:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5601E20CCCA;
+	Sun, 20 Apr 2025 17:47:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745171252; cv=none; b=TDzkqk8S1+iQwLpoTNAatv6rab2BFci6tqM97CKKlQmN2ZqWAH9yeQbhRzQxP511xaC8gH3UVXluUsfP6EEFVeBXLBlgCO34ZRXJURKVL4a2huwD5CgSw2in2FEQ0Tl34GPDkzBc3gePGcNZrE6zVyJl/1NdnJo8DYT40qtQcAQ=
+	t=1745171252; cv=none; b=Wok6TdUM74fTwzqhsXKVpK+85xdn4U31QXc6mS1O0QrBsvwd4pYYqYCsp0KXUPuVdmFaLxbk7EXp+ru90kLofN93dB3fUgc99ph1a9BiqXaP8DJvUKWdTO6rsRMElQRr+LlWVtb86PZV26oCKSxId94d3gOpqa6VY4a+5VcAHWQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1745171252; c=relaxed/simple;
-	bh=G7cQA1vbU7ME82rND+ta8qnI8kBAvliO793si5bKvhw=;
+	bh=Yjwh6DrsjcKU5bFRc6zRRnv4rV0fIl8jZH8L4C5u09I=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=o1P4z9loPDJ0XPjCvo4qVbAZ5vwWkG/Hoi0wSAwq+gZLeCIhwVnwsqXvaSdJMayWaQTB9OYSxtwbE0mAHDAXt7mzbZhJSju6nK043vZ9TYGoNe07ArCymCqIu9kOtsXAzzLgAf68weTOBKTepPpyT80Bbc6lHuKw4uKCLWRTZ8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aqt8yxOX; arc=none smtp.client-ip=209.85.160.175
+	 MIME-Version; b=JZlWHlDjOC4Ww+jBcriia8qkRJMnD0l1q9SV7omVqOt9ZA4MLXlzVRC20L10De9IoDgkuLwCYY39c4LWstKd7OqsTPw6VmZLekhtH2hRgBYt7iXXtqybi8o0gV8fRdvFbipyqUFf+cucyIHLorXF3coByl53o3WJ9TyZ3NBbdBE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BrDymEmg; arc=none smtp.client-ip=209.85.219.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aqt8yxOX"
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-47662449055so16501301cf.1;
-        Sun, 20 Apr 2025 10:47:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BrDymEmg"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6f0ad74483fso39134596d6.1;
+        Sun, 20 Apr 2025 10:47:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745171248; x=1745776048; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1745171250; x=1745776050; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YwMHB2nUwzNcRVsw3OgexWqiEt8JRdlA5caQ8STPGxo=;
-        b=aqt8yxOXxjqsJsCIPZ7YZLHUz3jnpsLsolFxywuvgVMk+RadPyiEUvU1TlEr2WRyV8
-         EVa96jKYVWaUgAxgxQrSSOjKsFWWfYWFg1hL6VzZX6Su6kHQlo84t03dwci/CfohOlLR
-         wNzKipLgCCni7EUSZmSfD93L4YWzXdWt3ARVTCvFdKdXC5uJLaGXSWhg5wF2vTCzt+/s
-         Shsa4oJFo/dqnnHjKk56FC59vjF0S9UrT1C6nasBsq2Akgjm1PFOi3w6yZWE/r0dzPTd
-         7MMV6B0MJVjm6LpBOknerG4m4YCdu+LKvhefxPFAZDTeZ5pClDEz30a7Wscy5ATM9/jA
-         JiaQ==
+        bh=gzOgfJm3r4ap/eGSZdUiYEYs4uCCNfYQBrjOjwlLAKQ=;
+        b=BrDymEmguZunLrgbM0rpqJYvXvsQIUBtNBUxoPN8SVD4fHmUh5LQephJ9g9Y2XJPy5
+         2KPDJ+H0lHrs20x9RQUheMZyCUuPTkLDTLlitc6lW2iYsSZ5gu3gZIzFfoDms8RZgGds
+         E1o6JWXsYHYFoy3nS3ZhUZLwt8fVVym7FJRsyHO/s6qQKJQCAdujmCISUnbNWsUbp76g
+         Wr+xXs+jYL62uAZ5AuR6DmTgW5+r7TzCBmGluvF1DRo+vWEVOO25UF+vlrYFdqcR9c+A
+         XpW3IkOA4+wHJAKTfz0QQOL1gKOuqc3qY+4PY24eHsdkt4xytyR4tGwM036EjMJ2kFxn
+         bq9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745171248; x=1745776048;
+        d=1e100.net; s=20230601; t=1745171250; x=1745776050;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=YwMHB2nUwzNcRVsw3OgexWqiEt8JRdlA5caQ8STPGxo=;
-        b=Cv7/peuZ4Ex9uZLCHRn/qKl0eXi77blDTZkqBobe/U+vjLfLDdv5bVf/352tdJSCh3
-         2D1aMRaoGDye1X8oIUm/o+tHJdqdMp1tFl8Csn+5hiL4CB98vf0U7vFec4oXCqUV33e3
-         d89UNHMHAs6kwo05R1RmwNJLbfXTcj44htdf3iQwosaYxg6dlHupT5lgFMhBT4RTjOXn
-         ty2ZsaHGWp+fyT7Fyg8nzzAiGuqTmz4VkGLUwGEy9qvNVD7oIDgrfI7JuneYB4Ars7PM
-         6jSObmEKD2Ox/tc4NqdtlY0hIHFxgQ382vx+J8m2Jc5Y7WuPD18uPmd1qRHodOphLRUj
-         op3g==
-X-Forwarded-Encrypted: i=1; AJvYcCU0jAQQ3Hn/csBO3E2Z8ZvXoA2SimS5xbOFkxP7Sn9aRu1oyevW3jyPzyMsQ7S3uhZss5uevyuhOvqC/va7@vger.kernel.org, AJvYcCWMLaMHQTEa/4871tFwXhTY6udewoowAUlK2fMbFRhOBQ+IRfr3MR2c+ynquUc/nKWpQ1pYWDwk@vger.kernel.org, AJvYcCWyU9LzQXZa95AOsZKyFnl5Tx/u7qs4HtvuzskvFQuFgEUOJ8Akl3riaCIDhTmxv0ZQR5SK45VlmgU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyuniohBhL3oOyf/COdl46qfAoATdXfBIZdr1K24c6XM1qfel+Q
-	Zmdy9bTrkl/Uv2Uvfqc9IWzGbGUCPDP50nPwpk+7xzCQ9qY2Bh2QruMhJsHc9ew=
-X-Gm-Gg: ASbGncsdagSaW61zK8e9Xg6eUP30UvIGT0guiaIVwkH0RCO6UOH6HIg7YRUtNP3TqCy
-	Ji/JwRif9R7gvVzZUX45Rsk5mA9dB7irXWhL3dPGsWRu4DRirmQp8HCKqEQoXbSuA6SRNHWLvPS
-	+2VmqbKc0KXfmd3t0AsnDBW1CM4yPR11gAK+B2VslPhKZNuO8cgWTvMfl4BDMAAoZMERx4wQYv3
-	ePMwiP2kRDSZ1lYbGlqbNq1kz/zs2c6zjnhDInr6ZZAB/4wSYgaTj/RmtciYhwW5mJXGJwimcFb
-	OaO6kzt84j2e7z+kwzlEpn0LeXotWtHpRrOUTEtrWISd7PNuxYgCE3k=
-X-Google-Smtp-Source: AGHT+IG0psL0GsQcZjIWDxL3CpYMMouucx4/293lu1Def4c/30lkEViKoNJRISzRxA+fpp0gxTi8KA==
-X-Received: by 2002:a05:6214:1c49:b0:6e8:f568:22e8 with SMTP id 6a1803df08f44-6f2c4556801mr156707866d6.15.1745171248371;
-        Sun, 20 Apr 2025 10:47:28 -0700 (PDT)
+        bh=gzOgfJm3r4ap/eGSZdUiYEYs4uCCNfYQBrjOjwlLAKQ=;
+        b=Vo064xtdFpdgF30p/a78FwSANKnlPIaNiIPhwyYuQKT2W+OZXW89PZkUz26mMipJ3o
+         fJ+wZ5dHICo7Oamr5Ks9gzKujBXwqhYVWeHkbGXy4ZtGQLcd34Byjdm4x4bPExlXlx3W
+         RIcayMK94O96IniYZ2d9hqdDQOI6fvOUak300FpkmmIJ6ElnanIc7kW5qdSnXRxsS212
+         9NZUKvo39PjMIJaEptl5eaSSkU2mifJSpZMhCI3hRKq8dEStAcX0Gjom1qoTC+6HWBK1
+         LXd2ncxUFcEdYCYT5QhHIOBzHAtt5tI8JTGiZ5TozzipgIPZkB+1oyYnU6QfRcomiYuR
+         LJ8Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUdjLcfmkcBHE4o5EHvVe8oEpBPbsa3UX/Y14F80EuXOpz9jp1BLpsZkilYukJQKXOB/zZz7tlmew8/h0cC@vger.kernel.org, AJvYcCVJympAu4vT9GVEd5FP9p2X1j4gtk+/ezixtl0hf7jpAGHGge7prl7UJFcXBE6DCbSxj/nHDBaT5/c=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwgLo2ojISevuxgUnvm4rDV9GPk6gcnQ71AGcoiPa5rZIqqft5t
+	LIfNl6uYRzHi29Q/3OJsWzptTl6uZnaKUl/FL1q26URQVdjgB+dQ
+X-Gm-Gg: ASbGnct+7DcaxDy9lwFTc7f1C1zPTtVWpV6IWxE7qirw7k7m8The5rHs2vy4k24zaDZ
+	PuAJ1rffqPvRhynKJt5lVto2/ewtYnbP7WHe9N34TDMfuIQnLDRy+6lxECNRo2X1IUSPbOGN2XL
+	vVNl55YmOazSERUdER5apwjR4HETeBh/JVij5/Z53YGpQ9FwGGFyz55wBZUEyx7qriijfSUyE40
+	1Dy053Gp3P+Un2/NU21FM3pXDXoEjmRPTdiDGscPnW/wBAC1ngnIlLymwPenXAxBWUfjwmDYHSI
+	V7ce5SiKG+zZYLKb9M59jTT7TIyuDENuurViRss9m6U2RgdtogyxRn0=
+X-Google-Smtp-Source: AGHT+IH9iK+h688srjo2GEMmT43pFIn1JTTyr94V8Hjcrdy3ZjQHR0kwwvkdR/Su2ueEF2lYQIVFog==
+X-Received: by 2002:a05:6214:5182:b0:6e6:646e:a0f0 with SMTP id 6a1803df08f44-6f2c454679fmr141748466d6.12.1745171250146;
+        Sun, 20 Apr 2025 10:47:30 -0700 (PDT)
 Received: from theriatric.mshome.net ([73.123.232.110])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6f2c2bfd3e4sm34110156d6.85.2025.04.20.10.47.27
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6f2c2bfd3e4sm34110156d6.85.2025.04.20.10.47.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Apr 2025 10:47:28 -0700 (PDT)
+        Sun, 20 Apr 2025 10:47:29 -0700 (PDT)
 From: Gabriel Shahrouzi <gshahrouzi@gmail.com>
 To: gregkh@linuxfoundation.org,
 	jic23@kernel.org,
@@ -67,11 +67,10 @@ To: gregkh@linuxfoundation.org,
 	Michael.Hennerich@analog.com
 Cc: gshahrouzi@gmail.com,
 	skhan@linuxfoundation.org,
-	linux-kernel-mentees@lists.linux.dev,
-	stable@vger.kernel.org
-Subject: [PATCH v2 1/3] iio: frequency: Use SLEEP bit instead of RESET to disable output
-Date: Sun, 20 Apr 2025 13:47:23 -0400
-Message-ID: <20250420174725.887242-2-gshahrouzi@gmail.com>
+	linux-kernel-mentees@lists.linux.dev
+Subject: [PATCH v2 3/3] staging: iio: ad9832: Add minor improvements to ad9832_write_powerdown
+Date: Sun, 20 Apr 2025 13:47:25 -0400
+Message-ID: <20250420174725.887242-4-gshahrouzi@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250420174725.887242-1-gshahrouzi@gmail.com>
 References: <20250420174725.887242-1-gshahrouzi@gmail.com>
@@ -83,34 +82,56 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-According to the AD9832 datasheet (Table 10, D12 description), setting
-the RESET bit forces the phase accumulator to zero, which corresponds to
-a full-scale DC output, rather than disabling the output signal.
+Minimize size of type that needs to be used by replacing unsigned long
+with bool. Avoid redundancy by checking if cached power state is the
+same as the one requested.
 
-The correct way to disable the output and enter a low-power state is to
-set the AD9832_SLEEP bit (Table 10, D13 description), which powers down
-the internal DAC current sources and disables internal clocks.
-
-Fixes: ea707584bac1 ("Staging: IIO: DDS: AD9832 / AD9835 driver")
-Cc: stable@vger.kernel.org
 Signed-off-by: Gabriel Shahrouzi <gshahrouzi@gmail.com>
 ---
- drivers/staging/iio/frequency/ad9832.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/iio/frequency/ad9832.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-index db42810c7664b..0872ff4ec4896 100644
+index a8fc20379efed..2ab6026d56b5c 100644
 --- a/drivers/staging/iio/frequency/ad9832.c
 +++ b/drivers/staging/iio/frequency/ad9832.c
-@@ -232,7 +232,7 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
- 			st->ctrl_src &= ~(AD9832_RESET | AD9832_SLEEP |
- 					AD9832_CLR);
- 		else
--			st->ctrl_src |= AD9832_RESET;
-+			st->ctrl_src |= AD9832_SLEEP;
+@@ -173,13 +173,19 @@ static ssize_t ad9832_write_powerdown(struct device *dev, struct device_attribut
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad9832_state *st = iio_priv(indio_dev);
+ 	int ret;
+-	unsigned long val;
++	bool val;
++	bool cur;
  
- 		st->data = cpu_to_be16((AD9832_CMD_SLEEPRESCLR << CMD_SHIFT) |
- 					st->ctrl_src);
+-	ret = kstrtoul(buf, 10, &val);
++	ret = kstrtobool(buf, &val);
+ 	if (ret)
+-		goto error_ret;
++		return ret;
+ 
+ 	mutex_lock(&st->lock);
++
++	cur = !!(st->ctrl_src & AD9832_SLEEP);
++	if (val == cur)
++		goto unlock;
++
+ 	if (val)
+ 		st->ctrl_src |= AD9832_SLEEP;
+ 	else
+@@ -189,10 +195,10 @@ static ssize_t ad9832_write_powerdown(struct device *dev, struct device_attribut
+ 	st->data = cpu_to_be16((AD9832_CMD_SLEEPRESCLR << CMD_SHIFT) |
+ 				st->ctrl_src);
+ 	ret = spi_sync(st->spi, &st->msg);
+-	mutex_unlock(&st->lock);
+ 
+-error_ret:
+-	return ret ? ret : len;
++unlock:
++	mutex_unlock(&st->lock);
++	return len;
+ }
+ 
+ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
 -- 
 2.43.0
 
