@@ -1,149 +1,265 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6507320F;
-	Mon, 21 Apr 2025 13:49:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2A1E265CCF;
+	Mon, 21 Apr 2025 13:51:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745243385; cv=none; b=GrHDWoCjmcATlJZCF0lyvt5tVplA4oCKQnODfIApyyDgYksH4pASGzwD/wK3sO3bhBLLTg1/xzAnnGsFhNTb+bOC9n2fL6Q4bAu8+9qZJRvOGCXf9glHVIO09txYg9v8Byib7lceCyK7N3bpQxPGUKM6njS5TfRs0eXjLNx1UCs=
+	t=1745243519; cv=none; b=q3qU0nB1rRO80XNyQcVHzNBtcIz4R6yMZvIeQT9NnqKgaLIhfvLdeZI6fWLCT03yJmLe/NrwPk7uOFqmfWis11QX2AMJoVDhs9+aN0hCkzMkCNsBIbiZTgs+ja5V/Mxyc9OTiIC94odveEbhhGSCr8iJ/Ph0/P/FGmFKaN4aHFk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745243385; c=relaxed/simple;
-	bh=l977plpmk0kxbBwv0656HR/4LTk1DAyZQR5KKCWAEqk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=SmU7rFGQEe0Uw/fbURxmgJroia+Yej9ezSHzT9+adglUw6gTst86ovDDgSN+uH0z5scqIy2No1sdF7ii93/m8VHeMcqf5t5CibV4mG0Fbw+CSUyszF8MUV94Uu1UUskiheysl3tMEhBDzFuv+VFcJrnXNd4fRCMoKkNWSo2sgMk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=myuuF7ki; arc=none smtp.client-ip=209.85.160.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1745243519; c=relaxed/simple;
+	bh=XHD5eA9xaklG7sjRpB1N5p1j7MCk5KvdlNPAy+eg8e4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jhyeKgt1T8CA03riGQVdp2SN+HnDqTnvj2vFGmRvG99aq+IE0rv7VT6z0Zy4vKjpwi60FgyimAA8V7CQdrOf5ZRlaRD1XEDmtTri0Pe+JfQzW4bNhwKV1nb6kluZjfdfcUoTYqV8nqb+u/bl4PAajDznl9euQYcLRdxr8eqKEOM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bHBJZJxF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="myuuF7ki"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-476b89782c3so47610371cf.1;
-        Mon, 21 Apr 2025 06:49:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745243382; x=1745848182; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RGx2p1+NRS+hgnX+A6l8EzX7jNG+2zBOfPRO5rKiie4=;
-        b=myuuF7kipqr2h+NMAmqqPu4oPM6NHfGzoCGf7+S1ijSEf0v+zpaqUyeAuNOWTIIt8U
-         RRWsv5QM1hbaTQ5o/qwPium/8csjM8LA4FsUXtwnJRv/cmUBntLPckEQo8otoB+dpb7+
-         4dM1JMgehf+Ex0SiHwHnlZLlXTMtAiC7d+fpLmrl0DA/wxG5b4flylBfu9bkTMpdJJA+
-         4rgsb1f4cyJ1kr7h+qxwkUiJ5KEC3z20cz3gISV7nNkozso6dTChqVw/FKMgpAe9sqs9
-         mukGaZTJ7vyAKwUXLKX7FlVdEmoMCEMJicLssWMq5m0oO+JywRVG88M/W6qB5OWZygis
-         TJMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745243382; x=1745848182;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RGx2p1+NRS+hgnX+A6l8EzX7jNG+2zBOfPRO5rKiie4=;
-        b=u8nOkU3GGVhIg12CgSEWfcWvk+z0tvsYtprPbsB0aapaHdmeRU/4IJPpmfT2OMlM9h
-         W91vBlip+6s3dnFNBJ6zx34HL0t3C9KqzotJ1vhlkuF2UYGHWGIFjS4GwWLx73yr2bY4
-         YwSORO1UqfsB41Ci3Dt0CVLIsn6JSx03Nk3epqUHSTe7JmHCOUvagwRr1n9aqlY4kXrj
-         9rXtRbwL4VYCeIGWdrkQX8NuP244tNwU2CPHr5D0JeQKKnnzXNQLJr0nBAs2qsmlhJOG
-         /Sa80Pw1APfIfItQHKrl0DOxRjd4o72omrl6sseRbcrCR1XOUpw2g/Ph0ausNq0+kV3o
-         lq2Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWRrpYzsM82X0aciiJs6O2NS1y8/AAL2ETkLXwJVogO0PGqDxE/RRfGuoPVa1NXWPWtRxgwmf1j+6Q=@vger.kernel.org, AJvYcCXcRIwqoRsu3E3mhp4c9vvUInZKrRREIUTeMSVFap26zhkrrKzv0VuXPgNoEouHRP0Z44ZIyz/wsWqyXhMg@vger.kernel.org
-X-Gm-Message-State: AOJu0YwL5up51GiuyAhMwj+u8v2ZXhI1P0f114eDpvf4pL5LvbbtPw4s
-	sNZ95/LnedQJBdmuqgo/bMJlqGHlwloj8CAZYi7yPbQo4MrBBqV7AA6RQEIv+KC+mM+yA8Fznmp
-	ArbZbt1rWiiE7P9r3kwlnKmfX/W8=
-X-Gm-Gg: ASbGncvGP63EslvuEt8tgHM36BAjcXce1AcJ2UHql+AXpPVHZXS8TbebfU49t+1uzG5
-	l1YnrveSK31vorqYcouIjLY5L/7sAqAnkwG3K4zk5488wej0vqpAXqq8wvZXmzhgJx5+mNSVeJf
-	7eM6gTgOGdoh2W37f0iJW9VzvroylgScRGtO5+jgxlFJ4BrbPR6rDUzw==
-X-Google-Smtp-Source: AGHT+IFCRDEQECEJYjxyKWUBfHcU70YDu9Hdfq/MMsvE0/1Ruba11CTbntRDCvns5SkXCogDR5hE0ZbhsSjPtbHP/F8=
-X-Received: by 2002:a05:622a:255:b0:471:cdae:ac44 with SMTP id
- d75a77b69052e-47aec4cf303mr202416191cf.47.1745243382551; Mon, 21 Apr 2025
- 06:49:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bHBJZJxF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C600C4CEE4;
+	Mon, 21 Apr 2025 13:51:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1745243518;
+	bh=XHD5eA9xaklG7sjRpB1N5p1j7MCk5KvdlNPAy+eg8e4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=bHBJZJxFvfm5oAVFOwNv+gPLmP4UIY07SREhtXVSMIGbO+TqDhq4VNhPCv0K3Fyh3
+	 K7CcALNoQSznT5bQUHPLFx+i82o0NM5OylheNLpG7uGm1Ah9iY320aqnp420HO4m75
+	 cNu/iSNQPN+tY4q6t3UvR3sO+qpJVfCZo7SbBv+ILigc/exZ1SVFcr6zYfGiu3+5cz
+	 PrsG5KaA3E/m8PfN61vPwZUYnHfY0Xr+ckAuapzbBoQ41yr/+P68XszR+2bUc1Od2b
+	 Yd3+ZowIwLls/AYAfkOzQrW1iZoeljpPN9nC+pIT4pEv+eeF2Sd38LP4npXpaC/m42
+	 jaR2o1GWNjiLA==
+Date: Mon, 21 Apr 2025 14:51:52 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Lothar Rubusch <l.rubusch@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ eraretuya@gmail.com
+Subject: Re: [PATCH v6 05/11] iio: accel: adxl345: add freefall feature
+Message-ID: <20250421145152.22f42bc6@jic23-huawei>
+In-Reply-To: <CAFXKEHaG2EBkoc5Zx=oCEePA3nwApRWAg1pGsQ-_68OY2esYVQ@mail.gmail.com>
+References: <20250414184245.100280-1-l.rubusch@gmail.com>
+	<20250414184245.100280-6-l.rubusch@gmail.com>
+	<20250418192254.0becd27d@jic23-huawei>
+	<CAFXKEHZNmUsUmheyDdh1bDDf97-7ZTpsm2xqqbwT+hq3K58F5A@mail.gmail.com>
+	<20250421111641.1cb83848@jic23-huawei>
+	<CAFXKEHaG2EBkoc5Zx=oCEePA3nwApRWAg1pGsQ-_68OY2esYVQ@mail.gmail.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.48; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250420014910.849934-1-gshahrouzi@gmail.com> <20250421123127.3a5a7d65@jic23-huawei>
-In-Reply-To: <20250421123127.3a5a7d65@jic23-huawei>
-From: Gabriel Shahrouzi <gshahrouzi@gmail.com>
-Date: Mon, 21 Apr 2025 09:49:31 -0400
-X-Gm-Features: ATxdqUHi6_oLdhhSvnK3V3HpaBLwSd6oHgBL4E1raTEh9xxnYSdB_6-I_5_l3Ro
-Message-ID: <CAKUZ0zKZ8QfbkPAWaJ59LVR4KfPa0mjv=vx3_NnH-yvx1kHavQ@mail.gmail.com>
-Subject: Re: [PATCH v5 0/5] staging: iio: adc: ad7816: Fix channel handling
- and refactor
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: gregkh@linuxfoundation.org, lars@metafoo.de, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev, 
-	Michael.Hennerich@analog.com, sonic.zhang@analog.com, vapier@gentoo.org, 
-	skhan@linuxfoundation.org, linux-kernel-mentees@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 21, 2025 at 7:31=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
- wrote:
->
-> On Sat, 19 Apr 2025 21:49:05 -0400
-> Gabriel Shahrouzi <gshahrouzi@gmail.com> wrote:
->
-> > The original patch combined a functional fix (allowing channel 7) with
-> > several refactoring steps (introducing chip_info, renaming structs,
-> > improving validation). As requested, these have now been separated.
+On Mon, 21 Apr 2025 15:31:19 +0200
+Lothar Rubusch <l.rubusch@gmail.com> wrote:
+
+> On Mon, Apr 21, 2025 at 12:16=E2=80=AFPM Jonathan Cameron <jic23@kernel.o=
+rg> wrote:
 > >
-> > The series proceeds as follows:
-> > 1. Fix: Allow diagnostic channel 7 for all device variants.
-> > 2. Refactor: Rename the main state structure for clarity before introdu=
-cing
-> >    the new chip_info struct.
-> > 3. Refactor: Introduce struct ad7816_chip_info to hold static per-varia=
-nt
-> >    data, update ID tables to store pointers, and switch to using
-> >    device_get_match_data() for firmware-independent identification.
-> >    This removes the old enum/id mechanism.
-> > 4. Refactor: Add has_busy_pin to chip_info and use this flag to
-> >    determine BUSY pin handling, replacing pointer comparisons.
-> > 5. Refactor: Simplify channel validation logic using
-> >    chip_info->max_channels, removing strcmp() checks.
+> > On Sun, 20 Apr 2025 23:26:47 +0200
+> > Lothar Rubusch <l.rubusch@gmail.com> wrote:
+> > =20
+> > > Happy Easter!
+> > >
+> > > On Fri, Apr 18, 2025 at 8:23=E2=80=AFPM Jonathan Cameron <jic23@kerne=
+l.org> wrote: =20
+> > > >
+> > > > On Mon, 14 Apr 2025 18:42:39 +0000
+> > > > Lothar Rubusch <l.rubusch@gmail.com> wrote:
+> > > > =20
+> > > > > Add the freefall detection of the sensor together with a threshol=
+d and
+> > > > > time parameter. A freefall event is detected if the measuring sig=
+nal
+> > > > > falls below the threshold.
+> > > > >
+> > > > > Introduce a freefall threshold stored in regmap cache, and a free=
+fall
+> > > > > time, having the scaled time value stored as a member variable in=
+ the
+> > > > > state instance.
+> > > > > =20
+> > > > Reading this I wondered whether we had the event code consistent for
+> > > > freefall detectors... Or indeed inactivity ones (which are kind of =
+similarish)
+> > > >
+> > > > :( We don't it seems.  The issue is that
+> > > > freefall is actually that all channels are simultaneously under the=
+ the magnitude
+> > > > threshold, not one of them.  So it should I think be
+> > > > X_AND_Y_AND_Z not X_OR_Y_OR_Z
+> > > > =20
+> > >
+> > > I change to X_AND_Y_AND_Z.
+> > > =20
+> > > > This is as opposed to activity detectors which tend to be any axis =
+shows
+> > > > activity and X_OR_Y_OR_Z applies.
+> > > >
+> > > > Anyhow upshot is I think I lead you astray on this and we should ma=
+ke this
+> > > > one IIO_MOD_X_AND_Y_AND_Z
+> > > >
+> > > > A few other things inline.
+> > > >
+> > > > Unfortunately we don't deal with these events that often so I forget
+> > > > what we did before :(
+> > > > =20
+> > > > > Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
+> > > > > ---
+> > > > >  drivers/iio/accel/adxl345_core.c | 125 +++++++++++++++++++++++++=
+++++++
+> > > > >  1 file changed, 125 insertions(+)
+> > > > >
+> > > > > diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel=
+/adxl345_core.c
+> > > > > index c464c87033fb..ae02826e552b 100644
+> > > > > --- a/drivers/iio/accel/adxl345_core.c
+> > > > > +++ b/drivers/iio/accel/adxl345_core.c
+> > > > > @@ -75,6 +75,7 @@ struct adxl345_state {
+> > > > >       u32 tap_duration_us;
+> > > > >       u32 tap_latent_us;
+> > > > >       u32 tap_window_us;
+> > > > > +     u32 ff_time_ms;
+> > > > >
+> > > > >       __le16 fifo_buf[ADXL345_DIRS * ADXL345_FIFO_SIZE + 1] __ali=
+gned(IIO_DMA_MINALIGN);
+> > > > >  };
+> > > > > @@ -96,6 +97,14 @@ static struct iio_event_spec adxl345_events[] =
+=3D {
+> > > > >                       BIT(IIO_EV_INFO_RESET_TIMEOUT) |
+> > > > >                       BIT(IIO_EV_INFO_TAP2_MIN_DELAY),
+> > > > >       },
+> > > > > +     {
+> > > > > +             /* free fall */
+> > > > > +             .type =3D IIO_EV_TYPE_MAG,
+> > > > > +             .dir =3D IIO_EV_DIR_FALLING,
+> > > > > +             .mask_shared_by_type =3D BIT(IIO_EV_INFO_ENABLE) |
+> > > > > +                     BIT(IIO_EV_INFO_VALUE) |
+> > > > > +                     BIT(IIO_EV_INFO_PERIOD),
+> > > > > +     }, =20
+> > > > This is creating separate per axis enables, values and period. Does=
+ that make
+> > > > sense?  If not you need to spin a kind of virtual channel (with mod=
+ X_AND_Y_AND_Z)
+> > > > and add the events to it.
+> > > >
+> > > > See how the sca3000 does it for example. =20
+> > >
+> > > Hum, I'm not sure if I understand you correctly. In my driver, I'm
+> > > using .mask_shared_by_type, and I verified there appears only one
+> > > enable, one value and one period handle.
+> > > # ls -l /sys/bus/iio/devices/iio:device0/events/
+> > > total 0
+> > > ...
+> > > -rw-r--r-- 1 root root 4096 Apr 20 21:59 in_accel_mag_falling_en
+> > > -rw-r--r-- 1 root root 4096 Apr 20 21:59 in_accel_mag_falling_period
+> > > -rw-r--r-- 1 root root 4096 Apr 20 21:59 in_accel_mag_falling_value
+> > > ...
+> > >
+> > > In the sources of sca3000.c I saw this setup with .mask_separate. So,
+> > > there I'd expect to see separate enables per axis, or am I wrong? In
+> > > the case of the ADXL345, there should only be one freefall enable (in
+> > > my driver) and not per axis. So, isn't this what is currently there?
+> > >
+> > > So far I only adjust the or'ing to and'ing the axis for freefall. =20
 > >
-> > Regarding the 'fixes' tag: I've applied it only to the first commit
-> > containing the core fix, primarily to make backporting easier. Is this
-> > the standard practice, or should the tag typically be applied to
-> > subsequent commits that build upon or are related to the fix as well?
+> > So this is a messy corner of the ABI (because these are tricky to descr=
+ibe).
+> > Shared by type usually means there is one attribute applying to all the
+> > axis, but that they are reported separately, or potentially multiple ev=
+ents
+> > / _OR_ form used if we can distinguish exactly what the event is.
 > >
-> > Changes in v5:
-> >       - Use correct patch version.
-> Generally I wouldn't resend for this. Instead a single email in
-> reply to the messed up version saying it is infact v4 would have
-> done the job.
-Got it.
->
-> Alternatively a quick reply to that thread to say it was messed
-> up and please look for v5 would have worked to make a reader
-> move on directly to the newer version
-Got it.
->
->
-> Jonathan
->
-> > Changes in v4:
-> >       - Include missing bracket for condtional statement.
-> > Chainges in v3:
-> >       - Split the patch into smaller patches. Make the fix first
-> >         followed by clean up.
-> >       - Include missing channel for channel selection.
-> >       - Address specific feedback regarding enums vs. chip_info data.
-> >       - Use device_get_match_data() for device identification.
-> >       - Move BUSY pin capability check into chip_info data.
-> >       - Simplify channel validation using chip_info data.
-> > Changes in v2:
-> >         - Refactor by adding chip_info struct which simplifies
-> >           conditional logic.
+> > In this case there is no way for userspace to anticipate that the event
+> > that might be generate is X_AND_Y_AND_Z.  So for this
+> > the ABI solution we came up with is that virtual channel and separate.
 > >
-> > Gabriel Shahrouzi (5):
-> >   staging: iio: adc: ad7816: Allow channel 7 for all devices
-> >   staging: iio: adc: ad7816: Rename state structure
-> >   staging: iio: adc: ad7816: Introduce chip_info and use pointer
-> >     matching
-> >   staging: iio: adc: ad7816: Use chip_info for device capabilities
-> >   staging: iio: adc: ad7816: Simplify channel validation using chip_inf=
-o
+> > So you get something along the lines of
+> > in_accel_x&y&z_mag_falling_en
+> > in_accel_x&y&z_mag_falling_period
+> > etc
 > >
-> >  drivers/staging/iio/adc/ad7816.c | 94 ++++++++++++++++++--------------
-> >  1 file changed, 54 insertions(+), 40 deletions(-)
+> > The tricky remaining corner is this only makes sense if we always enable
+> > all axis (which is typical for a freefall detector). If we get a device
+> > that oddly has per axis free fall enables, then it would be hard and I
+> > might argue nonsense to enable them separately anyway.  Not true
+> > here though I think.
 > >
->
+> > Note that we may well have drivers using the ABI slightly differently f=
+or
+> > freefall events which will be at least partly because I'd forgotten how
+> > we resolved all this complexity long ago (that sca3000 driver is ancien=
+t!)
+> > ABI like this is tricky to fix up, but we might want to consider some d=
+uplication
+> > in those drivers so we standardize on one form for freefall (even if we=
+ have some
+> > stray ABI from other possible solutions).
+> >
+> > What we should definitely do is pull together some documentation on mul=
+ti channel
+> > event handling as the ABI docs are probably not enough.
+> > =20
+>=20
+> As I (begin to) understand now, in case of the sca3000, the virtual
+> channel is literally an extra channel. That means, we're talking
+> probably about this here down below, right?
+> ...
+yes. That is what I was referring to.
+
+>  512 static const struct iio_chan_spec sca3000_channels[] =3D {
+>  513         SCA3000_CHAN(0, IIO_MOD_X),
+>  514         SCA3000_CHAN(1, IIO_MOD_Y),
+>  515         SCA3000_CHAN(2, IIO_MOD_Z),
+>  516         {
+>  517                 .type =3D IIO_ACCEL,
+>  518                 .modified =3D 1,
+>  519                 .channel2 =3D IIO_MOD_X_AND_Y_AND_Z,
+>  520                 .scan_index =3D -1, /* Fake channel */
+>  521                 .event_spec =3D &sca3000_freefall_event_spec,
+>  522                 .num_event_specs =3D 1,
+>  523         },
+>  524 };
+> ...
+> <taken from sca3000.c>
+>=20
+> What's now missing for freefall and the ADXL345 and v7 in particular?
+> - I need to provide a similar channel setup as in  the sca3000 snippet
+> above, the virtual channel
+> - I need to AND the axis for this channel
+> - Now, with the virtual channel usage will be "separate" instead of
+> "shared", which will result in a single enable handle in sysfs
+>=20
+> Is this correct?
+
+Yes.  I think that's all correct.
+
+>=20
+> Sry, I needed to re-read your answer several times. What confuses me
+> is still a bit the "virtual extra-channel".=20
+
+I made up that term for it as there is no actual traditional channel
+there.  I should have given a pointer to the actual iio_chan_spec entry.
+Sorry about that!
+
+>Probably, I need to build
+> up a bit more practical experience with the channels. Providing just a
+> single enable handle already looks good to me. I still don't grok
+> entirely where this can be / is problematic in such case, but no need
+> to explain it now in full detail. If the TODOs match at least with my
+> understanding I will try to implement the above points.
+
+These events are just a bit weird when aligned with the simpler ones
+we tend to get on ADCs etc.  Giving userspace the best visibility we
+can is always good.  Here it is possible to get that, but in some other
+cases we haven't yet come up with a good generic ABI :(
+
+Jonathan
+
+
+>=20
+> > Jonathan
+> > =20
+
