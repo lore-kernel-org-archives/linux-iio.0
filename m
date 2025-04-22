@@ -1,129 +1,106 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E630A2571B1
-	for <linux-iio@vger.kernel.org>; Tue, 22 Apr 2025 08:43:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B83BE9476;
+	Tue, 22 Apr 2025 08:55:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745311394; cv=none; b=fXOhdUdxXe3IIi9HbrV+LLGOEOuwuZMZ9H3L+pnWXfeDNgsiOLIpH5upZV1HR68OMGkDFg/M+3ODCLd+Oxz8gLJM2NFMx76hjqh81Wfqt54uPTV6T5MK2PJi9tIEibGgLlK7zd69BiAYzSZOqqMbr8jdFTf0T44/SPkkveKKuI8=
+	t=1745312159; cv=none; b=swI1q9u3ljE2Crn3h9de6uxkwafANn4QaG2nTHFSCd7GdpyZ7vmqHsLvtBwucupipAHhgIzgm9L8H1c5mlOcnOU+COjlMSiW5J9YXK4IiMkERU2lpUdMYYjQyFHeRBzG/kLbdB53dI6YTI/vCamLP5wa7R64vs6nRpO0zcp94N0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745311394; c=relaxed/simple;
-	bh=j2Ob66Rtr/OcL8WMKwjl8rSD9FSvM7IzHTjX9aLSPyk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ar9KxTV4w1tlhsc3cjhl060bpUI+sPykdmWya7J8fyOEt4NrWuGGYWMaMb0rSszOSLNnTRxj1D0JMYZ1NXTUToh7pgh1Jj3LJB6W9S2MfpQrQoEx2L5sX3MJDRIkoBiEy48hvMsu8yTi3WvMwnGFNJ4qqCN3rwJoxCgswAJFOXQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=NrZP9FM/; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1745312159; c=relaxed/simple;
+	bh=yX13Nrm7XU6lcL0Oap5aDNrx80Jy+5DZfYDRl7FDB38=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=XmaggfiLLlEaPuVWBf6AEMqNaLqVLYZDIUYwpeJ1MZ7tByAj4i0OD8M3vwfekmsgTWnJ91yh8Sab5ddRNrcJE09KCw05s9GunADPwmWLD4jbxK2TpMYigPM48hA5HUlfF4hKGTVt8P7TN34w2/fMYAMt/oHA6obKOqq2lzki+w0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=ri2lFMF6; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="NrZP9FM/"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-39c30d9085aso3548095f8f.1
-        for <linux-iio@vger.kernel.org>; Tue, 22 Apr 2025 01:43:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1745311390; x=1745916190; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=F6YQEjY5Q5v2Ad+avGWub9mCa2Qmpdp68n5WQvzZWuc=;
-        b=NrZP9FM/xwpD/KLG8bUo/LM53UbpLTrOxlctmCkm/zLK2mVjCzeWrBqio9NOOJ8Lo/
-         8YBGkDDSiv77CSHGhggmFAZ5CQ2DUpbhe7RUshn23DeO5WGWuw5jAW5Bk8ZwRl7ZCwei
-         U47o+8AwYWZsChfPNB6Y+ng1YfgyYLvt9xevQ2AmRHtNxVxXh4+x2McUWZnoAT2lT3UG
-         dnr83AjDmMHikHYw8/3A9FvhZQCSvbkD5ta5Ttgy930GKdadaoEJJBUEYK2LnQikMvF7
-         LjvvRXC1vS1YaN8RS+pqY3RP/KGrJgNuzrAi/RTdtbZHLjiDdxOmvd0McsAaLDJlnafB
-         rNWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745311390; x=1745916190;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=F6YQEjY5Q5v2Ad+avGWub9mCa2Qmpdp68n5WQvzZWuc=;
-        b=pyc85lSP3/Y3EwNx2pjy4xqIG3p5GaeBEAKxmrkFBb6S+Ibryx+WMrT02arhR9DNA1
-         bwvfjVcXjhNv6tjhLVV0oWJ6t3r25RXCA3DvQk/KxyrylRO7y60Pf5odeTiKVk8T5iNF
-         Oi+sy/rk2z3d7bueUOv18fhSLEIB0z8P3T4f+69zdDjGzGizyAGkBpOkaSV9QxgDEe04
-         Ucj1J9RR6vFPoG0GL9R8tNlncYNCJXV2xIGKeSJPP1nhGCvCeebCpc4VxoXdkEDGV8mJ
-         /oCaVFENV03DDeFphmKTA3JD1dhf9uw27iyWSPn7RIcNHPIoFcFQP95AbBfioNwbXhQH
-         SRjw==
-X-Forwarded-Encrypted: i=1; AJvYcCVZnGwKLiEFRAafhrwDPgHLsF3Wpc5Y2OVbYfyBh7rj+XNVsEB05HpgZU+D1yUbVh4bHzuvcLXLFhM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyTiJAae5YTzRH7hFllbf2G/YcCf+LVCVDlL0CDyOg73DMDshfC
-	gspkBiikUfO8ltP+m9I3B8s98B1I4glAqXEU2CjUF049sr4kNxXAe7nUCtABgsE=
-X-Gm-Gg: ASbGncsxdiUwxOeQulwaJ46woVdTILmWUkIokjQmvIV64E+mIH7ZODa3tyZWLI2EIK6
-	rvmeeBf0SzIzz51AL6hG9wWDpoJ7dBklt2NGa2wyCGna0mC4BZivDQPEnTBGtIO0c5fBJD8jxuK
-	Y6k1LGaOhdNZNwucdS4PrerxqlkM9u+t6Jnv3J4tXDnpxUZqw3mzZ+c30P66Qz5i2ZnVNvlrnrJ
-	G7ziL9pFujVSr1wiYtMboz7g4kiFN/oOJkfwmGyr++WC6tSIASp1GMECnZ+Zj0SKSQ++5g2xgyz
-	HdsQP/7jwzIYLQ1iyNZFM4fqKjizG7EpLcuyAcGU1UErWUDUSEcAZIcQS7SLGrNYfOzAl/CtRoz
-	sgv3WPzf/qSXc
-X-Google-Smtp-Source: AGHT+IHb0CZnzbJFbwD2JDDCuDOEX2AJjnDsr1vXrnpvtn07VBcb9b9mksDrCjTha5B29ZmjsCxaSQ==
-X-Received: by 2002:a5d:6da5:0:b0:391:3aaf:1d5f with SMTP id ffacd0b85a97d-39efbb09d5bmr11628403f8f.52.1745311390112;
-        Tue, 22 Apr 2025 01:43:10 -0700 (PDT)
-Received: from archlinux (host-87-15-70-119.retail.telecomitalia.it. [87.15.70.119])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-39efa4a4c0fsm14359582f8f.88.2025.04.22.01.43.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Apr 2025 01:43:09 -0700 (PDT)
-Date: Tue, 22 Apr 2025 10:41:52 +0200
-From: Angelo Dureghello <adureghello@baylibre.com>
-To: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-Cc: Nuno Sa <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 0/2] iio: dac: adi-axi-dac: fix for wrong bus read
-Message-ID: <pudzvw4sbgw7ixbke4glovai5vxahmwrjpqlwrwazpeulyowug@534aodgws5db>
-References: <20250409-ad3552r-fix-bus-read-v2-0-34d3b21e8ca0@baylibre.com>
- <ac50109f06d7191549a91779028aca6d639998cc.camel@gmail.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="ri2lFMF6"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53M8jb28021970;
+	Tue, 22 Apr 2025 04:55:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=EefXO0RJBAHGT9wE1slRaeGPqzD
+	LrkK42wILdaoz2hQ=; b=ri2lFMF6jPQgr7afwzvNovTK1ytCECLBkeGBAMxUA0e
+	dYCfheEanSKfFBGHRYRW+xvCzSLVjPSBY5Liw1lfFkXqgVn384adV1MSSKJPP3m1
+	cEGzfzWeG+MmyJ7WqldfsRs9XtjAVv8IDT7xZNqRlEaYAGajSklJ9JG+37diuPEf
+	hYiTNRQM9k2+q4fuOsNQKrLDybsbHrDzsyr7AK7o6d8cKQ2xPsts6TboBEx5CRem
+	0Uefl8jbuAjedjVy/0b3dIGnlZ2MlqimOmI2sIen3VQxQp6qcEAt1ylrC5iKFggQ
+	oPUYyNd0z7OR1DkCTh5DeD/RLhawW/J7g4/Rv7PA2SQ==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4645p7p8xs-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 22 Apr 2025 04:55:54 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 53M8trna041698
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Tue, 22 Apr 2025 04:55:53 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 22 Apr 2025 04:55:53 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 22 Apr 2025 04:55:53 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 22 Apr 2025 04:55:53 -0400
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.211])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 53M8tjRW016347;
+	Tue, 22 Apr 2025 04:55:47 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH 1/2] dt-bindings: iio: dac: ad7293: add vrefin support
+Date: Tue, 22 Apr 2025 11:55:28 +0300
+Message-ID: <20250422085529.4407-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ac50109f06d7191549a91779028aca6d639998cc.camel@gmail.com>
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=D4VHKuRj c=1 sm=1 tr=0 ts=6807599b cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=XR8D0OoHHMoA:10 a=gAnH3GRIAAAA:8 a=HDJaYqw-a77z7M850UcA:9
+X-Proofpoint-GUID: 1qzyEaTWT1rkKmrD4Htlm6SclVrd50fi
+X-Proofpoint-ORIG-GUID: 1qzyEaTWT1rkKmrD4Htlm6SclVrd50fi
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-22_04,2025-04-21_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
+ impostorscore=0 suspectscore=0 spamscore=0 clxscore=1015
+ priorityscore=1501 adultscore=0 mlxlogscore=923 bulkscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
+ definitions=main-2504220066
 
-Hi all,
+Add support for vrefin supply responsible for providing external
+reference to the SAR ADC within the part.
 
-please let me know if you want me to use defines for this patchset,
-i don't see the need honestly, but eventually it can be done in another
-separate patch, for the whole adi-axi-dac file.
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+ Documentation/devicetree/bindings/iio/dac/adi,ad7293.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-On 09.04.2025 14:57, Nuno Sá wrote:
-> On Wed, 2025-04-09 at 11:16 +0200, Angelo Dureghello wrote:
-> > This patchset is intended to fix a random wrong chip ID read, or a
-> > scratchpad test mismatch, tests done in the ad3552r-hs driver probe. The 
-> > bus "read" operation must always check for busy flag before reading.
-> > 
-> > First patch reorganizes a bit the busy-wait polling code, second patch
-> > fixes the wrong bus read occurence. 
-> > 
-> > NOTE: due to ongoing changes in adi-axi-dac.c, this patch is intended to be
-> > applied after the linked "ramp generator" patch.
-> > 
-> > Link:
-> > https://lore.kernel.org/linux-iio/20250408-wip-bl-ad3552r-fixes-v4-0-b33c0264bd78@baylibre.com
-> > Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
-> > ---
-> 
-> LGTM,
-> 
-> Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-> 
-> > Changes in v2:
-> > - invert patch order, fix first.
-> > - Link to v1:
-> > https://lore.kernel.org/r/20250408-ad3552r-fix-bus-read-v1-0-37add66aeb08@baylibre.com
-> > 
-> > ---
-> > Angelo Dureghello (2):
-> >       iio: dac: adi-axi-dac: fix bus read
-> >       iio: dac: adi-axi-dac: use unique bus free check
-> > 
-> >  drivers/iio/dac/adi-axi-dac.c | 40 +++++++++++++++++++++++++---------------
-> >  1 file changed, 25 insertions(+), 15 deletions(-)
-> > ---
-> > base-commit: 6fb85f14853ddde06d57030c753168402bf69cd9
-> > change-id: 20250408-ad3552r-fix-bus-read-1522622fbd2b
-> > 
-> > Best regards,
+diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad7293.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad7293.yaml
+index 5ee80bf6aa11..f994c1ef6d41 100644
+--- a/Documentation/devicetree/bindings/iio/dac/adi,ad7293.yaml
++++ b/Documentation/devicetree/bindings/iio/dac/adi,ad7293.yaml
+@@ -27,6 +27,8 @@ properties:
+ 
+   vdrive-supply: true
+ 
++  vrefin-supply: true
++
+   reset-gpios:
+     maxItems: 1
+ 
+-- 
+2.49.0
 
-Regards,
-angelo
