@@ -1,58 +1,58 @@
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
+Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23359283CAD;
-	Tue, 22 Apr 2025 08:39:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 792B4256C7D;
+	Tue, 22 Apr 2025 08:42:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745311149; cv=none; b=ofZAwbRrKTdhnb+xnGRGXCCPleCyioO5DnV3TN+gZtbhHGjdo/0VrbXoLZ4Lm7xtWHC5sJSiKAuCDKMZmeT5DRZNOp/LPTqJiMAy5+O0Iy58+cL3Y15WHkKaZ6wU5HCO04oN9VrU31r7tNJGR/8OyTijEg99IvSM1FIwqZBas0w=
+	t=1745311365; cv=none; b=EU35PsC/BYmXmauXHQlnMNdyeIyYUljxsuv3UF26p95BnwgjBtZPpxHvurvB/ylgQURctW1Vt/fNR2j9asCEb+wq1cNuKsmsvNYpM0IubKzr9mWoji/WtRmK+v7xHOSPECOv8Zam1RdqrYuv4pDeLfdeF4eoJQuefMltJnpo+vk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745311149; c=relaxed/simple;
-	bh=IQFl72OzJ4mBTOQPAIwQGKqNCYqAnIWUEXWp5iXWCeg=;
+	s=arc-20240116; t=1745311365; c=relaxed/simple;
+	bh=xZqSNLlN/1aQNo2XrEbX5OaqDAT9LgK6KDw6FW1HPkY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=sEEOHeJStX/EvBuIS1OFxnHZqHcU0j/i+pQa8J/p9nKGbAUeNO9yaU276fLGdUEjE1m9XNtLEI6SpEHwhfmS6WQa2NZOhZ9juhXdwhFIMgQSFDE4N/mWETGvM2tM8Mr+dWjmwjCVumhasJv3Uo08n16C5IW03eGeqUN00WGHDAU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Bkall4kD; arc=none smtp.client-ip=209.85.210.180
+	 To:Cc:Content-Type; b=F8diPm0EdYgRuCeyse9hgXVFCyXxjnvncre0w3oBwJtYySiWxZcNzw/BEF6FMO4rOM1Ki4pbc5WyQqdSIVCNBGYdv1MjXpxir1tHVqKz8yAw+tqLExC8kmRM+TpQuRaU/5CY6x7+kwGs4rfwSUxGp+YUC862Hh+gxRNv+N6hiug=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nhw/4tAf; arc=none smtp.client-ip=209.85.216.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Bkall4kD"
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-739be717eddso3621468b3a.2;
-        Tue, 22 Apr 2025 01:39:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nhw/4tAf"
+Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-30828fc17adso4188575a91.1;
+        Tue, 22 Apr 2025 01:42:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745311147; x=1745915947; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1745311364; x=1745916164; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=CCvA/v2EUituzS9kNtyUPMk5f4h9VA5Fx3x52Zgd4YE=;
-        b=Bkall4kDbQEDDdGOL3qER4eWI+RYnboB0jYAMcKsw+jcZq7CGYiPIXW2Zb8C63ZmXZ
-         AfoIdUvcjf8rCxf59pQDPKzujBAFYE69Kixg0+wAwpI+mH2HyblnL9MWHKF3tuQH019+
-         2VgBSEb5BCi9SyhVsVrP+bJP2j1PofHGgOXTuMiCBh6QqfjOv9H6hYycyTc382F6ypFj
-         Grk8QTi3Yz4DC+123H4DEcyvOphemSbui6cAg9PlsMz1gwF47isWom9SYSkVqcTtf8dC
-         8Y75Q80cbq3RGNYSsqC88FLnT03RF22s2Vw4DfswaFn5eJCK5ttLET7mDu22HsXr6A7C
-         I3pg==
+        bh=Dl4p7DRFRIT+f45qPT/jcA3pklzI/QxdUifagNm8DiM=;
+        b=nhw/4tAfmd6CSYdZ6vE9lqdNzinPuu8xIEeN36bhN13UtL5BzMFN89xAOFUyXiYKP9
+         +uHLXnsJiHtVHnpBGhIQulRcnJNlVflhkGNTg3w/AxGrX+fu1071NXaYaAKQIG8ipa1R
+         FxV+cnvYUPUdqWXQGIad7afruMRSCgvZL9JMkiddGuXDZDpdSr++3RLbgIfBuLa6IZwA
+         WNZKPoDf+Qr847LEIHYI1hVllN3ZPOur/IFKSfMMlA9q/fOBwrdXsnW17IPtuejtETud
+         bYjMwVvo5NPJk4mt+jFKsqMC4JZ9aHjAxHf8SFyk7j0SDctIbbhZAGjfzhsth1DHVv0F
+         5iig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745311147; x=1745915947;
+        d=1e100.net; s=20230601; t=1745311364; x=1745916164;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=CCvA/v2EUituzS9kNtyUPMk5f4h9VA5Fx3x52Zgd4YE=;
-        b=I0R5cPM/cZUSe0mlLKum9T9rFGe0RgP3Z+CJ+Jq4QQi9Uzs38U669hr63QKtPXvm2G
-         J+hkWnogteFqbU7nLP7P34ztP1oVpJvy+OptImXHdTmt+xsBLCZ6lnm3jNgm6BW3ubcM
-         LARUhMyZ2uZ1L1Bf6Zfh36QVopPZz8Kj9cW51ju26vV5ayrCTk4jAyjk8NuW6qME8Sa/
-         6Zz1DxBPHgePLahO7vCAaW4vA58LpbPAw4DpEv59VNd7kEuIJE7BVxroeKVVKAOihxa3
-         vX84I/4N3QLVbklytq54ERlvMqXghnWVJYsg6YFU3T01PVgRgeIngSIScBYSxhyx7F/4
-         4NUQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVq1z821hXbtw8eeIO5zOxWEg/r4VI2+u8Lt7e0+EVagwO+m+ysv4bAKnZissvJOY7KPBrzADdKVjXb@vger.kernel.org, AJvYcCXS4p5prGcNUH2jhZyZ1DbFT8amUALX/7dbhL2mcKHNeWIQ8QZ44Wdi1K4JE4x6vRXM1zzmuCiNdGQL@vger.kernel.org
-X-Gm-Message-State: AOJu0YyOlafZfT2r3JLc3gFk/WPwlzuI8F+jEUygWII1LrGbRuoUMKFL
-	CSdtpUvkzA0R/Z9h6uaBjSPD0QkhfGi168lT17yZR68rC1bWO96ydY6BJpzRdTPhN0wE7L9XYAs
-	DQSnY1Y5UapMya/INHa8UneFU/I4=
-X-Gm-Gg: ASbGncsJu+O/P6+wMBUUNjgARK6JzW3fFfSF897Jj/rEEIq2hFs+QZdJeUYe5DloMhg
-	YNAip3VWNGX15FHpENYiuEoshlu5+BBYs/bqemfV+bTIsZ51fTQv8guSiHAC+CHfnxj482iFyv4
-	MvA6Wzq/ibxo436vrKJRoeJVw=
-X-Google-Smtp-Source: AGHT+IG3YORNxBuSlbAhFau+N9rvGD7+/9/RdXTUKn/Kh/4XSDX1FAf35cZy5fMzyCG5uvoyK9JuoYkTcUJ6i/fljrY=
-X-Received: by 2002:a05:6a20:c6cb:b0:1f3:388b:3b4b with SMTP id
- adf61e73a8af0-203cbc524f1mr21369900637.15.1745311147329; Tue, 22 Apr 2025
- 01:39:07 -0700 (PDT)
+        bh=Dl4p7DRFRIT+f45qPT/jcA3pklzI/QxdUifagNm8DiM=;
+        b=gMAEFvB2OMnmUAmp9hDq52mm5dWOApGre1FHb2HX1l5Tm1e7e6WgruuiU0+S/DpKHx
+         pe0vjdo06Ose57P7ssoJXxcO5VqllnyUFr3vAeMLOoKymouzUimfiXf97mxYzqLUDiez
+         kYmJPmDI4ERcYBkuOtZuFtRDKia8JwCXTZ3rfvKkpMwpojuxdJkr/L907mKeoZflDh3r
+         vFHeH5j5KiAeQW8d+bZ7jzsZHmPvYcMlYsoPoeipXIvpvTTFR3iChxuh22SrApY7pM/K
+         hUymza5E6+F9NXweNwq3FYFZ4m5JUvJPoOyB9oLgqxJIRum9IZF0CteapPM4QARbuUKB
+         T9ZQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVAgeAuHVa58fg609jRqTkBMRQycssAZSGc9QGY1my8TgD9vs+e4RIEU2iyUvWhj8uM5CqYIGqvjOgS@vger.kernel.org, AJvYcCXxNJVXLYrsPXw5HSgWgyogVzjMvC868+rc6OFeMPnQhRLg5fFiEtLVeqGts6affhA252E2XmCeNjII@vger.kernel.org
+X-Gm-Message-State: AOJu0YxGzKSV4UIC8kJKUzNI9iOx++930qNVx3orzbAu2Q2RUSc7DFSy
+	tyYfnlibSre+C1uEv7UC9VQ0Q+YruwCDDvElRJqMDBTd7SfIqbavknUrB7J/+ofyhT0p4TgNoDZ
+	CPUnHIDryEXgV/fGpFDtZ2wdaLdU=
+X-Gm-Gg: ASbGncuW2QBeEzzp6ifnd30hVUyRGQTn5W5+S3KtDuVv0KfnSW7KrlXUBTjwzX14rkt
+	boRVhQLZZDDJ7iwYFwqQl423VOsxfXGvc/Io3rThbR+1OCKtkukOC1Rk/YolU7RUj+8eOL+xITQ
+	0MUMRbU0dbzx24QtkgQ5QPi/Y=
+X-Google-Smtp-Source: AGHT+IGqXBZzaRg3JHihoddQX0W5bstPf8xwZ6lzPnpvfWf0BpAYOl+Mq9UE7bYkMjao+4aXeYhJhmCS0WoWJS3Z2aQ=
+X-Received: by 2002:a17:90b:2647:b0:2fa:15ab:4de7 with SMTP id
+ 98e67ed59e1d1-3087bb53159mr25282363a91.12.1745311363829; Tue, 22 Apr 2025
+ 01:42:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -60,50 +60,59 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20250420181015.492671-1-gye976@gmail.com> <20250420181015.492671-4-gye976@gmail.com>
- <CAHp75VdAeJ0HhExE=OAeFdYz2MYFKgMffbD_Gidf86w=zhKccg@mail.gmail.com> <CAHp75VcaGqR-c23GCOKo3RLO-omtt9YgPuHmCUteAqYt6yon7Q@mail.gmail.com>
-In-Reply-To: <CAHp75VcaGqR-c23GCOKo3RLO-omtt9YgPuHmCUteAqYt6yon7Q@mail.gmail.com>
+ <CAHp75VdAeJ0HhExE=OAeFdYz2MYFKgMffbD_Gidf86w=zhKccg@mail.gmail.com>
+ <CAHp75VcaGqR-c23GCOKo3RLO-omtt9YgPuHmCUteAqYt6yon7Q@mail.gmail.com> <20250421142531.2084092e@jic23-huawei>
+In-Reply-To: <20250421142531.2084092e@jic23-huawei>
 From: Gyeyoung Baek <gye976@gmail.com>
-Date: Tue, 22 Apr 2025 17:38:56 +0900
-X-Gm-Features: ATxdqUH6KFlOdTRKwJGiiGzCSdBIeAWcBl164uuauYurpsla6SOBr9ewPOQhegA
-Message-ID: <CAKbEzns_cve+=8wQu2poVx5ZFr8zfUyMajmEz_YpSCDxffQXyg@mail.gmail.com>
+Date: Tue, 22 Apr 2025 17:42:32 +0900
+X-Gm-Features: ATxdqUH-BGQfiB5JAWsTB-8h8Z8k_s4xUFodmxDcDVsMtg_yWULk-zBnPoGU4gc
+Message-ID: <CAKbEzntJzKYsB3Nehyoo=2FrTnzKXcu0NcJEcvCXdi5HxvJk8A@mail.gmail.com>
 Subject: Re: [PATCH v4 3/4] iio: chemical: add support for winsen MHZ19B CO2 sensor
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, 
-	krzk+dt@kernel.org, conor+dt@kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello Andy,
+Hello Jonathan,
 
-On Mon, Apr 21, 2025 at 4:24=E2=80=AFAM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Sun, Apr 20, 2025 at 10:21=E2=80=AFPM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Sun, Apr 20, 2025 at 9:10=E2=80=AFPM Gyeyoung Baek <gye976@gmail.com=
+On Mon, Apr 21, 2025 at 10:25=E2=80=AFPM Jonathan Cameron <jic23@kernel.org=
 > wrote:
 >
-> ...
+> On Sun, 20 Apr 2025 22:23:57 +0300
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 >
-> > > --- a/drivers/iio/chemical/Makefile
-> > > +++ b/drivers/iio/chemical/Makefile
->
-> > >  obj-$(CONFIG_SPS30_I2C) +=3D sps30_i2c.o
-> > >  obj-$(CONFIG_SPS30_SERIAL) +=3D sps30_serial.o
-> > >  obj-$(CONFIG_VZ89X)            +=3D vz89x.o
-> > > +obj-$(CONFIG_WINSEN_MHZ19B) +=3D mhz19b.o
+> > On Sun, Apr 20, 2025 at 10:21=E2=80=AFPM Andy Shevchenko
+> > <andy.shevchenko@gmail.com> wrote:
+> > > On Sun, Apr 20, 2025 at 9:10=E2=80=AFPM Gyeyoung Baek <gye976@gmail.c=
+om> wrote:
 > >
-> > Preserve order.
+> > ...
+> >
+> > > > --- a/drivers/iio/chemical/Makefile
+> > > > +++ b/drivers/iio/chemical/Makefile
+> >
+> > > >  obj-$(CONFIG_SPS30_I2C) +=3D sps30_i2c.o
+> > > >  obj-$(CONFIG_SPS30_SERIAL) +=3D sps30_serial.o
+> > > >  obj-$(CONFIG_VZ89X)            +=3D vz89x.o
+> > > > +obj-$(CONFIG_WINSEN_MHZ19B) +=3D mhz19b.o
+> > >
+> > > Preserve order.
+> >
+> > Ah, I see it's ordered but by Kconfig, Why do you have WINSEN in the
+> > option and no such thing in the filename? I would drop that from the
+> > config option.
+> >
+> > Jonathan, what do you think about this? Which order (in case of
+> > misalignment between module name and configuration option) should be
+> > taken?
+> >
 >
-> Ah, I see it's ordered but by Kconfig, Why do you have WINSEN in the
-> option and no such thing in the filename? I would drop that from the
-> config option.
+> Hmm.. No idea.  It think just dropping it from the CONFIG name
+> is the right way to avoid the question ;)
 
-I followed the 'vendor_device' naming pattern seen in examples like
-'CONFIG_SENSEAIR_SUNRISE_CO2'
-But I'll drop the vendor prefix in the next patch, thanks.
+Thanks for your suggestion. I'll just drop that.
 
---
-Regards,
+Thanks,
 Gyeyoung
