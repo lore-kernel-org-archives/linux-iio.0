@@ -1,64 +1,64 @@
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49420297A60
-	for <linux-iio@vger.kernel.org>; Tue, 22 Apr 2025 22:08:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0D052C109C
+	for <linux-iio@vger.kernel.org>; Tue, 22 Apr 2025 22:08:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745359729; cv=none; b=MViMC7DRjLYh7nuJL/5e6lgFxMTlK6IOJqhiM9NHUShwgOwZxRLPAck32TsGkicaIB0Wrf6bxy8nncPgse5A7lxSJVFY/ituHETEHzZT39r7In9H9EgpmTAs2zWm6PKGmoGdfg4hkfNkvmjqo7hGL4m7BRDFRfPCpU30tg2c0DA=
+	t=1745359730; cv=none; b=m7rUTbcQFaWxkF5kw2RdzRHBxY4nF93m3lubMHptvtZbIBE2BPFM9DEfMHzYtT6axJvweKhVuqUCOp/802Hiri3zJsmLdOvoWOg1YEPpvp3T3ySnxjtlbk6uptnXuLx3DAXN1eobjp0iCvqySA/IRRl83XNDQu1zBgV2Ti9HWGs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745359729; c=relaxed/simple;
-	bh=nCzR1/emrbeUL84tCt3IiYuUEVzi1rCzDn2Z6fqJM44=;
+	s=arc-20240116; t=1745359730; c=relaxed/simple;
+	bh=NrHDY/s0Q8dzJXv6IKAEg8Tm8DyekgOKnNJSWC3747I=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=AHnOybI4PeM5hDpX5L8o/FmhRr5/YWlc+kUom+sbdVlFYN24159arDSozWcjraSdisBbf/7Wo4Tp9v/915mslsgi5hRfgpwhmeh/QROX38IoQ/O+OKY2VbQttTEmPARJ0iMwOhr0WSTYkAc1tQlEZj5xsAx8jk9pPQ6JQ7xOIFA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=KCOBwBNr; arc=none smtp.client-ip=209.85.210.42
+	 In-Reply-To:To:Cc; b=BBS0ABBJlC5mrqmeuw4cvF+dwsEWhwPj/El5XRi0OwJFlcoCLoKi2AoIl32UN+Fgkfc94TkRUqqfPEk4VQvhUreQikkB/knUPDALleBzUKuT1yXrKOz25C7JG7y9SzHD78zky4L5wX5CzOT68aJotWyO4tbxOyDLuEEabosftVM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=SCUn4hoZ; arc=none smtp.client-ip=209.85.210.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="KCOBwBNr"
-Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-72bb9725de1so1290530a34.2
-        for <linux-iio@vger.kernel.org>; Tue, 22 Apr 2025 15:08:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="SCUn4hoZ"
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-72ecb4d9a10so3446901a34.3
+        for <linux-iio@vger.kernel.org>; Tue, 22 Apr 2025 15:08:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1745359725; x=1745964525; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1745359728; x=1745964528; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=H9K2B+Xay9TH+WRl+WF3lyeO5h1JwZugbslpoI+5AHg=;
-        b=KCOBwBNrhb0MyQfMFQaroSKXqmrCq+7KR7e67Fg9b7h3ph4XEkTyLilnMXDKB12jzu
-         c+5yLHSD1Qh2v+FnPYuirb6mfyXrv6nKA2Rj9dt5kZGZV+ji3VSiEYuQGjrm/hP5604D
-         v8KP/SrDiQvcvnyp5hSDVtJ1Qgg/ziT7jpC+GuKfwzpIBwwS2eqcFU0kMkiGoWPA8p+E
-         LmUXkxB929ik+wzcNDMmR1R+OI0orgEkKlULjjDHi0bsPtNnZ/3UVgPDo6FzlVoXU9ye
-         eguOj0RT+dLEnnx+Vt8imU1HX6KqoYOwttlKBspNAOwEQkumWKTa7JWnUI0ctyPaDYjc
-         297g==
+        bh=MyqEc2A1DVG0wlj0as96NOrenir8mMhhJ0tJFCy/DAk=;
+        b=SCUn4hoZYb5wL0VdOlglKIksz30UAw6s2ASfYZ+TS1CAbxPCYrD1XV+++lHxbhPuAi
+         uxzlr2dwy3JrorR4zMrBjhh44YL8LJ79Vi3OJ2+IopP24O+L3Q/lyhAwINkmscVf/zHf
+         vQvIvd4PsFuQwJfAOdZgTEHX1vXGlhKhi7UegL9pIBIfkEbt3OuTCxGHzeCpwCG/R1dm
+         cA1/K23e2UWCqAOohKQ7sP2nAYdXuMms6BJgdW/YZELkrTRQwvtGMmQ2yjV02/hMdUNf
+         1s4p2azTHryEqBNE/t/DD9seusdQuhx/+Zl/f9mGR4uMR0aEVmGSICSSJXrUkxBhUwmq
+         uJ3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745359725; x=1745964525;
+        d=1e100.net; s=20230601; t=1745359728; x=1745964528;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=H9K2B+Xay9TH+WRl+WF3lyeO5h1JwZugbslpoI+5AHg=;
-        b=v3ccbvidp/ZB1mp6TpxHg1M4qIQmqPA2AC0kS6Rl6ZCZmC84OmHI/XJPBLPH+XVtXq
-         FTP/8HG3ifBvQTG2+DmbJkgGswQUfoHcdRc6WP5HLg/T8vPiCAk+ABoBIzGS0kWO0Kpz
-         DF4eq3Po7JcU1NPfEDHogg5bQPGCdn7YfKXVE907QAVQ3sJVkHPojBgqrI6VgRx+T5Zs
-         3Q2dHLxA+hNeI3cqALCBNcwr2B791QlxLcC2TSg5I6kI6J4XUpewh+vI+iq5BY3Nlg0I
-         jlYHd33KYFugjYSMvbzo+RqkJSJ1bPMEED/1eMhFm/mecb0UE+/iI5CpmUsreLA1c42b
-         nXZA==
-X-Gm-Message-State: AOJu0YwMX3TdrFFH01iySZvwRiLaBf4w/yNKZONoMLGxExo//fZT9D/v
-	14CJINj0gtU9RRkKDQVhH4Nq/RSbT3FhALduZbrkR6/gxVWmtuUBHjec4JV7Seg=
-X-Gm-Gg: ASbGncsNSf/0dJPxhQMKVAhdEE6zj66vJBURvH0YHO5Skqpm6im3cZmMcTxE9RcFtg5
-	nUi8SuAyB6JeN593Rh89V3B+pR1eYVc/oJUVyTthn/f7aACpZgP1oGApEYdLczHTRvsC26s9oAq
-	Anh+VluuJ3TJQBuYYQ9N6gt/sW8iwMfwAAeR4GnYUoYmSeVzTKqWMIoDJAOcf2uRuU2k2tr0Rzy
-	68+hSDQS8szM9d6MZvlMIPYdoPYVoJH8naC1P4AziQCitSO466ziy+uBJnkTeH23F2MW8SuOY1N
-	d+25KjRWnFoo4DN+DQEKnt4AhHHDqkQQCkLrNaYZcgPK5l4=
-X-Google-Smtp-Source: AGHT+IH9UlcMwP6SptMTSFVihJ/iz9gBXiP46PQmSgYR0lDL6OqVr1KITJanla834aaysMRXitqaWQ==
-X-Received: by 2002:a05:6830:3813:b0:730:da:1165 with SMTP id 46e09a7af769-7300632c65dmr13414959a34.21.1745359725278;
-        Tue, 22 Apr 2025 15:08:45 -0700 (PDT)
+        bh=MyqEc2A1DVG0wlj0as96NOrenir8mMhhJ0tJFCy/DAk=;
+        b=tiv5pZFA8Q+YP1yMVYNz31pyr8JAhqQB7JLWBWvjM6vv0UU/u+HLt2yq3kfEzzvJZD
+         G9nbYBFHMuKVPD5UmXhG1oauxSx+kHoY0zHzSpz/tfhreMIIc8nRbCRst/gjEJPhbyV/
+         WYpGwNGVCmRhPtN+L5VmaouHLeIUFztnJQrcMT4teyXx0SC3a9EPvf75zlfhUUQawNkR
+         vLA3vRPicqlHmJPnwNMuBgWv0sTnVWc5V/IFV0u4nNsAxOhN4k2FpRKJ0JGU0ozT0z9r
+         XLRiktJK8RfCqeyGar4SqUwUt1HQecUVN2AhW+81r7HkftBiWJDkUNA9PS7MgTAEnGMp
+         ot6w==
+X-Gm-Message-State: AOJu0YyaSchfOz8/gNFkQ3fEmnlYgtRfsYtndETtQ28mfLswEYiHf0gh
+	+cyErDUxaxj2yuIYqrx3rD1MyuSPiH+bqv/xmlrG+xa+QVJ/tXCXh5puu+oyg8Y=
+X-Gm-Gg: ASbGncsnjgGhGA73D4p/RXumfdu/s01XjJHYlRulYagCx7mZtj/TJU6i0ibYGEVMIN5
+	nFKtuyGfzaIECol/Io9GXvW65LQjnLU9lMBOPYBr+LVd+oo7Jm73q1KAVfX7zLCSf+lWxCPpWnL
+	5eQjNefz58Iz68C83guM1vv9psS9b7z3dl9vt2cAvbwnGwmlTLDGTlFl7yTnvAmWZGg0w3u4yvp
+	b1m4SqJshL9nEX1Dx4bfXgA4NL2KVVdQTqs6SnUUMvDo8PErMtFAtB3KwPYv8rrhplSF668vQqS
+	iobjKNUyFAUVimi7pdu3h5RY/wFwE0Pf05PkndygOy8IUnE=
+X-Google-Smtp-Source: AGHT+IEwuSSEoXlMTOYuepjnaQFx4CQHYKXQ+tl+tvq0S6my8j7uhxkWwjCkcKQdGsBjFpysXR3rjg==
+X-Received: by 2002:a05:6830:3693:b0:72b:9316:d596 with SMTP id 46e09a7af769-730061f15a7mr10959124a34.3.1745359727937;
+        Tue, 22 Apr 2025 15:08:47 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:1d00:c8d1:e0ed:ce8b:96a3])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-730048848dfsm2265938a34.52.2025.04.22.15.08.43
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-730048848dfsm2265938a34.52.2025.04.22.15.08.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Apr 2025 15:08:43 -0700 (PDT)
+        Tue, 22 Apr 2025 15:08:46 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
-Date: Tue, 22 Apr 2025 17:07:46 -0500
-Subject: [PATCH v2 1/6] iio: introduce IIO_DECLARE_BUFFER_WITH_TS macros
+Date: Tue, 22 Apr 2025 17:07:48 -0500
+Subject: [PATCH v2 3/6] iio: adc: ad4695: use IIO_DECLARE_BUFFER_WITH_TS
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,7 +67,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250422-iio-introduce-iio_declare_buffer_with_ts-v2-1-3fd36475c706@baylibre.com>
+Message-Id: <20250422-iio-introduce-iio_declare_buffer_with_ts-v2-3-3fd36475c706@baylibre.com>
 References: <20250422-iio-introduce-iio_declare_buffer_with_ts-v2-0-3fd36475c706@baylibre.com>
 In-Reply-To: <20250422-iio-introduce-iio_declare_buffer_with_ts-v2-0-3fd36475c706@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -82,85 +82,41 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-arm-kernel@lists.infradead.org
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2962; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=nCzR1/emrbeUL84tCt3IiYuUEVzi1rCzDn2Z6fqJM44=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBoCBM9pXsoFeECQODQSXKUf+R+nqAiwzg2R14di
- eSX7AycMvuJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaAgTPQAKCRDCzCAB/wGP
- wDU/CACaaPDIIK7yQ4QaByRNrsGGx3mAq/LvHL9GakyNv998abhnWQTZ0Ue2ye4vTXEsv/ERja0
- vlcjBv6HxuJ/mPV8MzNx6Rah+WZIAe0rcTIuBx4J7i+Mso7eGGVDp/LjMLePye3PYnumWKpavRy
- Yk0p1RqkgEIhIqTi+GggQYvsJVZ6h5ngl02BhN02xRtAKV46VjQci66m0EaYvmApDuqg0UPNjcZ
- M96Ap1ZaJxoNNvdMht3X9sIr5zcqG31wGiAQDSdCcdJTM4HYBVdPFlkIcpCGmnytcviPQmjjsxC
- /8f8RJrpl5Ip4TJfX7L/LddlhzV8vamiGUCUTqizsRvrrldk
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1015; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=NrHDY/s0Q8dzJXv6IKAEg8Tm8DyekgOKnNJSWC3747I=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBoCBNL77G6l8A6/bF//fY7ZeTEg8wbGvyZFhMTD
+ 6IADhTu2bqJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaAgTSwAKCRDCzCAB/wGP
+ wH2AB/976GCXJlNczBYNpuoqzA3QSldjyAoLBUjnc98rGro5CMS2LYb45sJ2n0Imtc0rqRArxHL
+ w6jcfJEO4D9RR5471sgm56n3vimrEmNiNoJX5Go0VLqd24YLaCCIzi5LfAw+2bIQvGpqIs9OMz8
+ y/F14BplhIVtRU25Ncgcfmnwa+ZIo52uWrQFI88i3mSkHVKvLktfZz1VlUgWrcavbCNCf9Rt1jo
+ f7U2Ca8mfA7CF2AEgiz9OCIc0XzDEH5SiKpp5T5tPCByU7j71MzT7C8nBRSubav6SCqRIWisv1O
+ LCl2DRu4gvDq3NuXQandle0Z6LC8R0WdvHNaXPvlbITyoWz3
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Add new macros to help with the common case of declaring a buffer that
-is safe to use with iio_push_to_buffers_with_ts(). This is not trivial
-to do correctly because of the alignment requirements of the timestamp.
-This will make it easier for both authors and reviewers.
-
-To avoid double __align() attributes in cases where we also need DMA
-alignment, add a 2nd variant IIO_DECLARE_DMA_BUFFER_WITH_TS.
+Use IIO_DECLARE_BUFFER_WITH_TS to declare the buffer that gets used with
+iio_push_to_buffers_with_ts(). This makes the code a bit easier to read
+and understand.
 
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
- include/linux/iio/iio.h | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ drivers/iio/adc/ad4695.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 638cf2420fbd85cf2924d09d061df601d1d4bb2a..4dd811e3530e228a6fadbd80cfb2f5068c3d6a9a 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -7,6 +7,7 @@
- #ifndef _INDUSTRIAL_IO_H_
- #define _INDUSTRIAL_IO_H_
- 
-+#include <linux/align.h>
- #include <linux/device.h>
- #include <linux/cdev.h>
- #include <linux/compiler_types.h>
-@@ -777,6 +778,41 @@ static inline void *iio_device_get_drvdata(const struct iio_dev *indio_dev)
-  * them safe for use with non-coherent DMA.
-  */
- #define IIO_DMA_MINALIGN ARCH_DMA_MINALIGN
-+
-+#define _IIO_DECLARE_BUFFER_WITH_TS(type, name, count) \
-+	type name[ALIGN((count), sizeof(s64) / sizeof(type)) + sizeof(s64) / sizeof(type)]
-+
-+/**
-+ * IIO_DECLARE_BUFFER_WITH_TS() - Declare a buffer with timestamp
-+ * @type: element type of the buffer
-+ * @name: identifier name of the buffer
-+ * @count: number of elements in the buffer
-+ *
-+ * Declares a buffer that is safe to use with iio_push_to_buffer_with_ts(). In
-+ * addition to allocating enough space for @count elements of @type, it also
-+ * allocates space for a s64 timestamp at the end of the buffer and ensures
-+ * proper alignment of the timestamp.
-+ */
-+#define IIO_DECLARE_BUFFER_WITH_TS(type, name, count) \
-+	_IIO_DECLARE_BUFFER_WITH_TS(type, name, count) __aligned(sizeof(s64))
-+
-+/**
-+ * IIO_DECLARE_DMA_BUFFER_WITH_TS() - Declare a DMA-aligned buffer with timestamp
-+ * @type: element type of the buffer
-+ * @name: identifier name of the buffer
-+ * @count: number of elements in the buffer
-+ *
-+ * Same as IIO_DECLARE_BUFFER_WITH_TS(), but is uses __aligned(IIO_DMA_MINALIGN)
-+ * to ensure that the buffer doesn't share cachelines with anything that comes
-+ * before it in a struct. This should not be used for stack-allocated buffers
-+ * as stack memory cannot generally be used for DMA.
-+ */
-+#define IIO_DECLARE_DMA_BUFFER_WITH_TS(type, name, count) \
-+	_IIO_DECLARE_BUFFER_WITH_TS(type, name, count) __aligned(IIO_DMA_MINALIGN)
-+
-+_Static_assert(sizeof(IIO_DMA_MINALIGN) % sizeof(s64) == 0,
-+	"macros above assume that IIO_DMA_MINALIGN also ensures s64 timestamp alignment");
-+
- struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv);
- 
- /* The information at the returned address is guaranteed to be cacheline aligned */
+diff --git a/drivers/iio/adc/ad4695.c b/drivers/iio/adc/ad4695.c
+index 0c633d43e480d5404074e9fa35f1d330b448f0a2..992abf6c63b51dee222caf624e172455fb9b9900 100644
+--- a/drivers/iio/adc/ad4695.c
++++ b/drivers/iio/adc/ad4695.c
+@@ -160,8 +160,7 @@ struct ad4695_state {
+ 	struct spi_transfer buf_read_xfer[AD4695_MAX_CHANNELS * 2 + 3];
+ 	struct spi_message buf_read_msg;
+ 	/* Raw conversion data received. */
+-	u16 buf[ALIGN((AD4695_MAX_CHANNELS + 1) * sizeof(u16),
+-		      sizeof(s64)) + sizeof(s64)] __aligned(IIO_DMA_MINALIGN);
++	IIO_DECLARE_DMA_BUFFER_WITH_TS(u16, buf, AD4695_MAX_CHANNELS + 1);
+ 	u16 raw_data;
+ 	/* Commands to send for single conversion. */
+ 	u16 cnv_cmd;
 
 -- 
 2.43.0
