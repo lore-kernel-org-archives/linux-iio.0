@@ -1,260 +1,191 @@
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176])
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A5791E5B66
-	for <linux-iio@vger.kernel.org>; Wed, 23 Apr 2025 22:05:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 934E4625
+	for <linux-iio@vger.kernel.org>; Thu, 24 Apr 2025 00:21:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745445918; cv=none; b=Ao451PKf/Ea3by71QgLEYjByrV/WERZ+YJHp1AWxQNjbltnVV8+izsQ8VGk8hfXDw9h0/jeiehJ4jX0pbs6HAUWBd94zVvHRlorDJhXrRg3fzCzKPb1ix1Xwnax1lecpKaPzfJBFKQybNB4WuaXvCzoWJ6UbToo6rfiLQU0EMl4=
+	t=1745454113; cv=none; b=oDgXh++Ug3qRYlPvVubTFkWMCsPrixY5VLKFSXa1pzJXQlsDsgmnreA5bd9ktUcU593jYqJt4Edg+RPXT3vNMpVrEHdbjeJ3sLXke0tho1j0H9IU9Smqbf2DmB28ZinwcFhGwFy632Ho1BGI5dYO0cu0o5ACHlgZrRpHHfsdr+4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745445918; c=relaxed/simple;
-	bh=0RgWlD++dai0ShsK29FeHW5kZU0mhofgjOIuyR4gaas=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=dl5t4qSPPh0C9vyNoQe0d1UH14woe6lMWczBeFcNHCTKtVEuHzGQCeLWdUqbKuhXLz9c5ZxNquD1m84fhiIp/J7ceTCK2eOHj4Pf9NgbNS6hM1Nhd1CyyQNRLrX0Dp9eSEWSi3wZMWtAXpLrGCGb3lBBjrIZYYPKq8IZSs/9iGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=MwqrlAYL; arc=none smtp.client-ip=209.85.221.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1745454113; c=relaxed/simple;
+	bh=93ydTHyzSEJ3B9/1OTqp/eamZinHPaD9QwPcbamT9g4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=uZoq6Zfmy46RqZOrX7LtbXn0ZcXW/wlQ23De2PBELxsFnW8L+h987ZicLtMzbMnvaP60jviwyJuAkuLt82ldAoNvbIa0rU8tGLihsbuz/c1DUgfJb+sTN+Um5EmUMINmRNjmWnk0xKGfBi2mVvxeFhk1eDJnTHsG7NvKOFCuks4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C1pA2VCz; arc=none smtp.client-ip=209.85.210.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="MwqrlAYL"
-Received: by mail-vk1-f176.google.com with SMTP id 71dfb90a1353d-5259331b31eso163577e0c.0
-        for <linux-iio@vger.kernel.org>; Wed, 23 Apr 2025 15:05:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C1pA2VCz"
+Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-736e52948ebso432577b3a.1
+        for <linux-iio@vger.kernel.org>; Wed, 23 Apr 2025 17:21:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1745445915; x=1746050715; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OPRkZJ58BSq7sWIenQSBLWI6JDYVj/zzAhaRJ7wMxFY=;
-        b=MwqrlAYLth/DJ7N174KBGOHa5ukE2x4/wwTwQPH5RtpNzvW7HCuDc7+6tI3q5jAiul
-         LhyUhmvMsZZIPWY8rUouhRgIX4BtFLp82a+ZXC3RS0D7GS8uN4pCGKA/pI6+JSSEApW3
-         HOAIyBm1GlsuGoaj0kQqs3cwGX26yN382IyDo=
+        d=gmail.com; s=20230601; t=1745454111; x=1746058911; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=4icbh1rmUW099CKanh6yMQrokwqUV9m1cuDSM17nlR4=;
+        b=C1pA2VCzb3PyzO7lqQao7J/7hdIdzcT2WNIzyxxr3MD+WeHf7TdwGB4FOdMiy9pqFx
+         5K34KXWAKWTQ8aHgTW92YvoCC7z1VX+NVlG87StI1CrbfziWsw4IZKhz2rotLMOCczZi
+         0oYSIN2WKcQKqfaH9594mzQaplsotBkJuVSW0RvvySkokesqvZLsio3S4/jiqabGBfe9
+         Beca3iCpdfbG5XYpNpmvIzhN+aT5LZO9AXQel6BoYZmiKR9mggx9NJQS5E+qbi/ubFdE
+         /+wnKhHFqUQiLavZ0TBt1yzm2Ai28uUVJDRlOs8Tok8M2XIuYr54hM4JfJhxUDKW6lwR
+         2r/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745445915; x=1746050715;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OPRkZJ58BSq7sWIenQSBLWI6JDYVj/zzAhaRJ7wMxFY=;
-        b=s/FRz7XPfdBiPh+yh9avSFBN4wQN/JGijSTHoOM4XrNOXyTgRB8FMyA7Xj+pUBu+/n
-         kmubHET1pPr6CPe9Npu3mju+W/18s6gopolQPQqcKOg9IWWw68WzH+iFwJdT+ZaWws+M
-         dKmQyzADv0MIRMj+saIu+G40aedP55tsVFeGAyBiM7MQlipRKu86pHR1xZXiP5PZ2XqM
-         Jl7LwyJuIiaSYB4kp8VPTERZyAPM6GpejEAM3Jv+5LdhWXZmUp9qCAmlaZQyKFtxTjTR
-         zT6AicH95iMgz6iD0wX3quOoC3hgFPgQHpkuoKAR+4rqAXccwHCn39/HAZ4yYJIYLnzw
-         tsTQ==
-X-Forwarded-Encrypted: i=1; AJvYcCX6ARbNmqDrSCaA+kSfs8rXvv2/ALV6jTLI88SLdTM/GOC8MVo+Bdq96qJ1suI9QxQDo3IM7rI6HVc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxKxS8jZLq3Hoe8IIc8IQHlEq11ULWbh6xHj+3CSjd130HUoHke
-	nH5O6tdV+R7G2eNijBkgwryBsMn4memgwRB8/EbAHvGUMF4QkpR7qmhh9tsGEKhlBanBwzlShBs
-	8UL/6osZfUqFkfaC9Vtpm90DxsNXsC10HIY9w
-X-Gm-Gg: ASbGncuxB94uns2Ky2IheXOv0Cue8+IxUUbDjODadBwcHCeehnG3D9VO7UkYJmYVtAn
-	YkOMakvVRVcEJLaRFJT+PDg3y/eU3L0n/Uds0+wzTuBhTaC0BSkOuINd+AJATTKS8BEFM7/BN7J
-	xLdDI6zFZDwtZ2VlyhLtDA5MMku8dVnRkpsSv2FwGpz/zEFAw=
-X-Google-Smtp-Source: AGHT+IHACjkHF1JhmqKNvkCjrjFp5IlPqI32PqceAcktEz1uSgkBIbcq3PdfCz48LI4RIIb6CZzBwhSupJSUIeB85DI=
-X-Received: by 2002:a05:6122:d85:b0:520:61ee:c814 with SMTP id
- 71dfb90a1353d-52a78248971mr404779e0c.1.1745445914934; Wed, 23 Apr 2025
- 15:05:14 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1745454111; x=1746058911;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4icbh1rmUW099CKanh6yMQrokwqUV9m1cuDSM17nlR4=;
+        b=h8lhIsKB0RR8fLFrrX3OtdNnR5hOB7kj997RSJR7B7L/FRcPPqnlruLV8bWXwnCtZC
+         +0V9InZHJREAhpiLyj0WZKeafTc2S5aPL38Rq3/yzfMEBGRpzFmINhYIqW/Z7QTMEres
+         llxR6Zha9CrT/8vgh5Og4yyIZsUltB247RQvEIyKkK2lnXYu2/pWji+6w8W3mXoozZ2W
+         8Fpm/BPQnDQ0SHImWHdS5JesL2/V5e0/9IstsQUqZODF5pSt2HduJj6ocIZXDNYWmQuG
+         kAqO2vrhTbSlwdAm7DoyGLv4RihH1/abmcJANW3OgggPbxE9DjEX6sI7cEOMvrCh0VQ+
+         8Pog==
+X-Forwarded-Encrypted: i=1; AJvYcCVIidMXmNx/n6j9dXV/AQgxsAVLMPAXpC6qteTAhP6GXo+TBhXHykwMHLEBYDkUlK9PPvw2B1mvziA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzpk2cjq1bhXsA3y8h/eQZEqJ0dH0ZBKaggyhcjs+1acM8s0Gsz
+	EQ1sYJp9T2ipWj5W/VP21I6nCVWhIFmOpbLdiLqzKxd2ss/agmA=
+X-Gm-Gg: ASbGncsJuoAqta35T5gyOtXG8m2I9N7vUTMPbo9FP2QKusbehvdSHplTDGKZ8rfsHDe
+	4bxDl07RBZWG7zuHe3mwkVaZ+rYjDGnVMUhIBWGUf/9VaRmcU05fnYwaSjqyUYhhSbj9E4qV2VS
+	sBMseN5C7LPwIC0uJK3bYcsQ82egtneoq34AxNPFttdZU75OzqMOIxKQTfCfTmdYXWWLflqJ6LK
+	LF6Ia9RJcOzuf0WCTd/K8EJ+QmFwQWsPd+fveHaIe9Fi0UcaYQ45UkqpMnhU7TorR30OCRLW5Mt
+	+IZv/A3KZOPQ/b5M6N7RdOdjcw1e6pOXMedkzWbQO4t1k4UvIcpDFVribTr/msMQJr8=
+X-Google-Smtp-Source: AGHT+IH/EqYJr+9iGDCJiGSjYsx1ziDrTpNhfwnW06WuucZeQbkwg89pUVp6LM0e0JJvntPjADTUhw==
+X-Received: by 2002:a05:6a20:3d1e:b0:1f5:8e54:9f07 with SMTP id adf61e73a8af0-20444f0e582mr778260637.24.1745454110869;
+        Wed, 23 Apr 2025 17:21:50 -0700 (PDT)
+Received: from localhost.localdomain ([2804:1b3:ad42:50ef:1925:5a6c:2254:2b71])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73e25a6a17csm180044b3a.111.2025.04.23.17.21.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Apr 2025 17:21:50 -0700 (PDT)
+From: Beatriz Viana Costa <beatrizvianacosta16@gmail.com>
+To: jic23@kernel.org
+Cc: beatrizvianacosta@usp.br,
+	linux-iio@vger.kernel.org,
+	gabevictor333@gmail.com,
+	gabevictor@usp.br
+Subject: [PATCH] iio: light: zopt2201: Remove code duplication in scale write functions
+Date: Wed, 23 Apr 2025 21:21:44 -0300
+Message-ID: <20250424002144.23260-1-beatrizvianacosta16@gmail.com>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CAPUE2uuY=BaPFro5cQSmQg4JS1Z5J5aBL7XvqqAo-X=LR4be3Q@mail.gmail.com>
- <20250408155619.2169189-1-gwendal@chromium.org> <20250412114256.41602d67@jic23-huawei>
-In-Reply-To: <20250412114256.41602d67@jic23-huawei>
-From: Gwendal Grignou <gwendal@chromium.org>
-Date: Wed, 23 Apr 2025 15:05:03 -0700
-X-Gm-Features: ATxdqUH9kIEs8tPt571DX3_0lEEpV2Ju8NJAKkecugPLh4XsF0QtpQ2-sXXLlPQ
-Message-ID: <CAPUE2ut-2Cp9pt_MkhnmrM3R4Lb-3d__3RyJzhQ+xYnoyUpgkw@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: cros_ec_sensors: Flush when changing the FIFO timeout
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: tzungbi@kernel.org, linux-iio@vger.kernel.org, 
-	chrome-platform@lists.linux.dev, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Sat, Apr 12, 2025 at 3:43=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
- wrote:
->
-> On Tue,  8 Apr 2025 08:56:19 -0700
-> Gwendal Grignou <gwendal@chromium.org> wrote:
->
-> > |hwfifo_timeout| is used by the EC firmware only when new samples are
-> > available.
-> > When the timeout changes, espcially when the new timeout is shorter tha=
-n
-> > the current one, send the samples waiting in the FIFO to the host.
-> > Inline the call to transmit |hwfifo_timeout| value to the firmware.
-> >
-> > Now flush when a sensor is suspended (ODR set to 0) as well.
-> >
-> > Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Firstly.  Don't send a new version in reply to an old one.
-> In general the reasons for this are:
-> 1 - it can get very confusing if a thread gets deeply nested.
-> 2 - at least some well known kernel folk start at their most recent email=
-s
->     and work backwards when looking for what to review.  They will probab=
-ly
->     never get to your thread!
->
-> There may be other parts of the kernel that prefer this style, but most
-> do not and I've never had anyone 'ask' for it (as opposed to not object).
-Point taken. Applied all the comments in v4.
+Consolidate duplicated logic from zopt2201_write_scale_als_by_idx() and
+zopt2201_write_scale_uvb_by_idx() into a new generic helper function
+zopt2201_write_scale_by_idx(). This function takes an additional
+parameter: a pointer to a zopt2201_scale array.
 
-Thanks,
-Gwendal.
->
-> Various minor comments inline.
->
-> Thanks,
-> Jonathan
->
-> > ---
-> > Changes in v3:
-> > - Fix error detection when setting the sensor frequency
-> >
-> > Changes in v2:
-> > - Fix sysfs attribute in commit message
-> > - Indicated the function to send the content of the attribute is now
-> >   inline.
-> > - Improve error detection when setting the sensor frequency and flusing
-> >   the FIFO.
-> >  .../cros_ec_sensors/cros_ec_sensors_core.c    | 50 ++++++++++++-------
-> >  1 file changed, 33 insertions(+), 17 deletions(-)
-> >
-> > diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c =
-b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> > index b1abd6e16c4ba..67ffe88df7b23 100644
-> > --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> > +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> > @@ -103,22 +103,6 @@ static void get_default_min_max_freq(enum motionse=
-nsor_type type,
-> >       }
-> >  }
-> >
-> > -static int cros_ec_sensor_set_ec_rate(struct cros_ec_sensors_core_stat=
-e *st,
-> > -                                   int rate)
-> > -{
-> > -     int ret;
-> > -
-> > -     if (rate > U16_MAX)
-> > -             rate =3D U16_MAX;
-> > -
-> > -     mutex_lock(&st->cmd_lock);
-> > -     st->param.cmd =3D MOTIONSENSE_CMD_EC_RATE;
-> > -     st->param.ec_rate.data =3D rate;
-> > -     ret =3D cros_ec_motion_send_host_cmd(st, 0);
-> > -     mutex_unlock(&st->cmd_lock);
-> > -     return ret;
-> > -}
-> > -
-> >  static ssize_t cros_ec_sensor_set_report_latency(struct device *dev,
-> >                                                struct device_attribute =
-*attr,
-> >                                                const char *buf, size_t =
-len)
-> > @@ -134,7 +118,25 @@ static ssize_t cros_ec_sensor_set_report_latency(s=
-truct device *dev,
-> >
-> >       /* EC rate is in ms. */
-> >       latency =3D integer * 1000 + fract / 1000;
-> > -     ret =3D cros_ec_sensor_set_ec_rate(st, latency);
-> > +
-> > +     mutex_lock(&st->cmd_lock);
-> Maybe use cleanup.h and
->         guard(mutex)(&st->cmd_lock);
-> mostly because it simplifies code and...
-> > +     st->param.cmd =3D MOTIONSENSE_CMD_EC_RATE;
-> > +     st->param.ec_rate.data =3D min(U16_MAX, latency);
-> > +     ret =3D cros_ec_motion_send_host_cmd(st, 0);
-> > +     mutex_unlock(&st->cmd_lock);
->
-> I'm not sure why you unlock briefly here?
-We don't have to; the intent was to let another command waiting go
-through since flush can be sent at anytime. But all in all it does not
-improve multi-tasking, so removed.
->
-> > +     if (ret < 0)
-> > +             return ret;
-> > +
-> > +     /*
-> > +      * Flush samples currently in the FIFO, especially when the new l=
-atency
-> > +      * is shorter than the old one: new timeout value is only conside=
-red when
-> > +      * there is a new sample available. It can take a while for a slo=
-w
-> > +      * sensor.
-> > +      */
-> > +     mutex_lock(&st->cmd_lock);
-> > +     st->param.cmd =3D MOTIONSENSE_CMD_FIFO_FLUSH;
-> > +     ret =3D cros_ec_motion_send_host_cmd(st, 0);
-> > +     mutex_unlock(&st->cmd_lock);
-> >       if (ret < 0)
-> >               return ret;
-> >
-> > @@ -764,6 +766,8 @@ EXPORT_SYMBOL_GPL(cros_ec_sensors_capture);
-> >   * @mask:    specifies which values to be requested
-> >   *
-> >   * Return:   the type of value returned by the device
-> > + *
-> > + * cmd_lock mutex held.
->
-> Maybe true, but has that changed in a fashion that means this should
-> be in this fix patch rather than a follow up improving documentation?
-Removed for now.
->
-> >   */
-> >  int cros_ec_sensors_core_read(struct cros_ec_sensors_core_state *st,
-> >                         struct iio_chan_spec const *chan,
-> > @@ -836,6 +840,8 @@ EXPORT_SYMBOL_GPL(cros_ec_sensors_core_read_avail);
-> >   * @mask:    specifies which values to write
-> >   *
-> >   * Return:   the type of value returned by the device
-> > + *
-> > + * cmd_lock mutex held.
-> As above.
-Removed for now.
->
-> >   */
-> >  int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
-> >                              struct iio_chan_spec const *chan,
-> > @@ -853,6 +859,16 @@ int cros_ec_sensors_core_write(struct cros_ec_sens=
-ors_core_state *st,
-> >               st->param.sensor_odr.roundup =3D 1;
-> >
-> >               ret =3D cros_ec_motion_send_host_cmd(st, 0);
-> I'd rather see
->                 if (ret)
->                         break;
-> given local style.
-Done.
->
-> Ideal would actually be to make this whole function do direct returns on =
-error
-> as that is easier to follow in cases like this where there is no cleanup.
-> However that change doesn't belong in a fix. Something for another day!
->
-> > +
-> > +             /* Flush the FIFO in case we are stopping a sensor.
-> Comment syntax slightly wrong.
->
->                 /*
->                  * Flush the FIFO
->
-> > +              * If the FIFO has just been emptied, pending samples wil=
-l be
-> > +              * stuck until new samples are available. It will not hap=
-pen
-> > +              * when all the sensors are stopped.
-> > +              */
-> > +             if (ret =3D=3D 0 && frequency =3D=3D 0) {
->
-> With the break above, only need to check frequency here.
->
-> > +                     st->param.cmd =3D MOTIONSENSE_CMD_FIFO_FLUSH;
-> > +                     ret =3D cros_ec_motion_send_host_cmd(st, 0);
-> > +             }
-> >               break;
-> >       default:
-> >               ret =3D -EINVAL;
->
+To support this, the previously anonymous and duplicated struct used in
+the scale arrays was promoted to a named struct: zopt2201_scale.
+
+This change also corrects an incorrect array access that existed in
+zopt2201_write_scale_uvb_by_idx().
+
+Signed-off-by: Beatriz Viana Costa <beatrizvianacosta16@gmail.com>
+Co-developed-by: Gabriela Victor <gabevictor333@gmail.com>
+Signed-off-by: Gabriela Victor <gabevictor333@gmail.com>
+---
+ drivers/iio/light/zopt2201.c | 42 +++++++++++-------------------------
+ 1 file changed, 12 insertions(+), 30 deletions(-)
+
+diff --git a/drivers/iio/light/zopt2201.c b/drivers/iio/light/zopt2201.c
+index 604be60e9..1e5e9bf29 100644
+--- a/drivers/iio/light/zopt2201.c
++++ b/drivers/iio/light/zopt2201.c
+@@ -113,11 +113,13 @@ static const struct {
+ 	{ 13,   3125 },
+ };
+ 
+-static const struct {
++struct zopt2201_scale {
+ 	unsigned int scale, uscale; /* scale factor as integer + micro */
+ 	u8 gain; /* gain register value */
+ 	u8 res; /* resolution register value */
+-} zopt2201_scale_als[] = {
++};
++
++static struct zopt2201_scale zopt2201_scale_als[] = {
+ 	{ 19, 200000, 0, 5 },
+ 	{  6, 400000, 1, 5 },
+ 	{  3, 200000, 2, 5 },
+@@ -142,11 +144,7 @@ static const struct {
+ 	{  0,   8333, 4, 0 },
+ };
+ 
+-static const struct {
+-	unsigned int scale, uscale; /* scale factor as integer + micro */
+-	u8 gain; /* gain register value */
+-	u8 res; /* resolution register value */
+-} zopt2201_scale_uvb[] = {
++static struct zopt2201_scale zopt2201_scale_uvb[] = {
+ 	{ 0, 460800, 0, 5 },
+ 	{ 0, 153600, 1, 5 },
+ 	{ 0,  76800, 2, 5 },
+@@ -348,16 +346,17 @@ static int zopt2201_set_gain(struct zopt2201_data *data, u8 gain)
+ 	return 0;
+ }
+ 
+-static int zopt2201_write_scale_als_by_idx(struct zopt2201_data *data, int idx)
++static int zopt2201_write_scale_by_idx(struct zopt2201_data *data, int idx,
++				     struct zopt2201_scale *zopt2201_scale_array)
+ {
+ 	int ret;
+ 
+ 	mutex_lock(&data->lock);
+-	ret = zopt2201_set_resolution(data, zopt2201_scale_als[idx].res);
++	ret = zopt2201_set_resolution(data, zopt2201_scale_array[idx].res);
+ 	if (ret < 0)
+ 		goto unlock;
+ 
+-	ret = zopt2201_set_gain(data, zopt2201_scale_als[idx].gain);
++	ret = zopt2201_set_gain(data, zopt2201_scale_array[idx].gain);
+ 
+ unlock:
+ 	mutex_unlock(&data->lock);
+@@ -371,29 +370,12 @@ static int zopt2201_write_scale_als(struct zopt2201_data *data,
+ 
+ 	for (i = 0; i < ARRAY_SIZE(zopt2201_scale_als); i++)
+ 		if (val == zopt2201_scale_als[i].scale &&
+-		    val2 == zopt2201_scale_als[i].uscale) {
+-			return zopt2201_write_scale_als_by_idx(data, i);
+-		}
++		    val2 == zopt2201_scale_als[i].uscale)
++			return zopt2201_write_scale_by_idx(data, i, zopt2201_scale_als);
+ 
+ 	return -EINVAL;
+ }
+ 
+-static int zopt2201_write_scale_uvb_by_idx(struct zopt2201_data *data, int idx)
+-{
+-	int ret;
+-
+-	mutex_lock(&data->lock);
+-	ret = zopt2201_set_resolution(data, zopt2201_scale_als[idx].res);
+-	if (ret < 0)
+-		goto unlock;
+-
+-	ret = zopt2201_set_gain(data, zopt2201_scale_als[idx].gain);
+-
+-unlock:
+-	mutex_unlock(&data->lock);
+-	return ret;
+-}
+-
+ static int zopt2201_write_scale_uvb(struct zopt2201_data *data,
+ 				     int val, int val2)
+ {
+@@ -402,7 +384,7 @@ static int zopt2201_write_scale_uvb(struct zopt2201_data *data,
+ 	for (i = 0; i < ARRAY_SIZE(zopt2201_scale_uvb); i++)
+ 		if (val == zopt2201_scale_uvb[i].scale &&
+ 		    val2 == zopt2201_scale_uvb[i].uscale)
+-			return zopt2201_write_scale_uvb_by_idx(data, i);
++			return zopt2201_write_scale_by_idx(data, i, zopt2201_scale_uvb);
+ 
+ 	return -EINVAL;
+ }
+-- 
+2.49.0
+
