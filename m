@@ -1,64 +1,60 @@
 Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EE68247293;
-	Fri, 25 Apr 2025 11:26:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93DF22417C5;
+	Fri, 25 Apr 2025 11:26:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745580366; cv=none; b=C9Eqf/cgeta0uH4obYnZvi+dnafNJ6USiestamgv4ERH00Qwx+Yq/xLhDbm42OmLXv1OiXV+tv2GQQ98ZoUHbty91H3/UEjEU71nyJnnD+j2bYbfKsQDUceYkctT+3uLLI73mf1fEyy/iuqVyHk2xrD3ty5LQlycw+50aHvUAYg=
+	t=1745580368; cv=none; b=l98acWK03OyeTSH0V1NAbzyqoLoj1dP/pZ578sOrzjDW7loPiPu0pvZ/l0zcy2Ss/4m5L2mEC7qVZwow3qbjfdmWeVQxwh2OjpbydlZ1+mnJAdjOGXlYAVB0Dxh6+i4xKuqz6IFuJtTMwf5EPrO2F0o97PF0MBuTkDfwfoSEsKk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745580366; c=relaxed/simple;
-	bh=luezTJpJz0RK2buP9pZzfZuqQ1R19pJY4CL1KohCf2I=;
+	s=arc-20240116; t=1745580368; c=relaxed/simple;
+	bh=16U6K1ZaW9fJBAKa6h+jzo9hCrNCS2YDK4RdtwilTYE=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=DPeTDRzwMWuEWyXyGTPZHwLOR0ORaoypLo1lwHP1oADXprJGkLdqnWpScgnwoObTLWCKIgceRqRmsZ/VSe6VK20QeDJ+lX8S6ckU8abyNPGKL543zOx8ol9To3nBbwmkRPLL1sIFx8DICAvnk0FfRmBGde/24WwXYtCs6Iv9aXY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=qpi4jfdU; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=fLUx0k5OoRUoDqlHt+dgRHFQy/WiJrtRO0KXtsuRonPhgmoAi6JCcJ0eyidZIFoIz2x4Hykn04dLRZWSkWZZRBXAZ/rmYsgjXv6UIA1DIes8zxi0E34P/vfn6gD1vpa/sNz1jqgQbZRv1GR0hv8hPJetpj3nAvEe0VBXjQs5IGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=sG6rp7fo; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="qpi4jfdU"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="sG6rp7fo"
 Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53P8g6NL016641;
-	Fri, 25 Apr 2025 07:26:02 -0400
+	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53P8aMOp016633;
+	Fri, 25 Apr 2025 07:26:04 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=inrnn
-	mBCMurOuxbxffwasYnpXiStrotr3slg59lcz4M=; b=qpi4jfdUdUqLpBr/JnA1X
-	SqZipIL8fhMdJRbrPbPN6z9JuAd5JGRCHQTDTtG3hm7M8ioW2QLnmh6+9Oe7lQXk
-	OownCUdUXur+2obWjADrp1ScV5HwXLgXcKL0cDNoH5lv+2iVhnqhzwOvGQyQiUKU
-	5hyng+0ud+q5PWjAB8Kef8oDmy5iDBcfKCKHtIZBoiRKxyXE5Y57yXKNnhrpOKVF
-	Pbc8Vu5SSHdEH657rUzhvvEhBpA43CBouIopxxAxeyLIv9ldI5ib9s71icylG06t
-	7cAHA1xb3ooWlkX+Jcfk9ti7NkaQUwoBaK9FaJz3LZPtCbbzVcwBEsplEgfyuIk0
-	Q==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=FxTA4
+	YN+qbGAZaVvp2OH98a+j0pSVAjr6TUg3qJra5Y=; b=sG6rp7foNTd6UFGEweMV3
+	bltG96gTewBYr5v6OBslZwkH28p1vJrdEpKN9UteZjYYFzRnFDcR81SQrtHc0TIy
+	aRpPnNiKRE1IglGCWIbH6b/Fg/HOMJDcEJepykXDAeb7WCUebswcNtKEpHtQVuLY
+	30/fJh9CNB+1y0aHXnwUCxP01pIS+USldIKoad0vc85UuunncxLYukCUAcZrpSVv
+	mcbA9KHOF5zNse1vP5/GmIiWuMbT+WD3J/C0NaNsJ/acY4nfzR2vagUFnfDge4o3
+	6ed+FEaPtx9kFHrNir41rAtpNFlenitLz6yGkdoTnc5I2vXsk9EGQzBeN2RFt5p6
+	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 46833j9qtx-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 46833j9qu1-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Apr 2025 07:26:02 -0400 (EDT)
+	Fri, 25 Apr 2025 07:26:04 -0400 (EDT)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 53PBQ0pA049233
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 53PBQ30G049239
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 25 Apr 2025 07:26:00 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 25 Apr 2025 07:26:00 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 25 Apr 2025 07:26:00 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 25 Apr 2025 07:26:00 -0400
+	Fri, 25 Apr 2025 07:26:03 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 25 Apr
+ 2025 07:26:03 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 25 Apr 2025 07:26:03 -0400
 Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.211])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 53PBPjbv003881;
-	Fri, 25 Apr 2025 07:25:55 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 53PBPjc1003881;
+	Fri, 25 Apr 2025 07:26:00 -0400
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
         <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v3 05/11] dt-bindings: iio: adc: add ad408x axi variant
-Date: Fri, 25 Apr 2025 14:25:32 +0300
-Message-ID: <20250425112538.59792-6-antoniu.miclaus@analog.com>
+Subject: [PATCH v3 09/11] iio: adc: adi-axi-adc: add num lanes support
+Date: Fri, 25 Apr 2025 14:25:36 +0300
+Message-ID: <20250425112538.59792-10-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250425112538.59792-1-antoniu.miclaus@analog.com>
 References: <20250425112538.59792-1-antoniu.miclaus@analog.com>
@@ -71,12 +67,12 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: _czqMqDi4jEB3Sq-Tn7nQ682JqFr5jIu
-X-Proofpoint-GUID: _czqMqDi4jEB3Sq-Tn7nQ682JqFr5jIu
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNDI1MDA4MiBTYWx0ZWRfX4pQDk9WRz3Vc mjiBwEiS0DSMf89yyjPqdkS4Y8zt4Inc1Q2Er0pjWIQlHHIfL9CJ4vHloxYFf6HZNZfxsVXMHbL u7oZVhr7oa8HmJ8m/Qe0m16zZgG0MskGIRBc1xDLQHLFLvSk1Csv+uIDYq7MPVHGQAqfgDgqgUQ
- 8V/39MnDTe9BFBRKKoNW7DE7O/Y//RB55H49rMyD2/lyOgYkZNRy3HfHnBKLD82vrhr5fjcx8KK gQ/ZGELazVAz4QP3yFv32yUhlqT8qG8FFtEHwTgiA4cLguMCVrI0gO19J1qFp8WfXzn9cjhJ22y GQM17NDRG5pk8BqjYZ6w//vbLuH7SKATdgsqCp30KGIscMz8rwor63zoqMpIIGeTCX5hdTdsfAx
- p4KFSdXHXeV1D0coqYfZ6HJpMXSKwCqulNuCwTRYkvcekOurA8h/F0eyhV9IgUlE/BS2aXAs
-X-Authority-Analysis: v=2.4 cv=Hu52G1TS c=1 sm=1 tr=0 ts=680b714a cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=XR8D0OoHHMoA:10 a=gAnH3GRIAAAA:8 a=wI1k2SEZAAAA:8 a=VwQbUJbxAAAA:8 a=q2Ulk47HLb923_f0sX4A:9 a=6HWbV-4b7c7AdzY24d_u:22
+X-Proofpoint-ORIG-GUID: L7rksMhKkZS5CsKRDtCW_PcxQaxHa3P3
+X-Proofpoint-GUID: L7rksMhKkZS5CsKRDtCW_PcxQaxHa3P3
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNDI1MDA4MiBTYWx0ZWRfX1MgfqAW4Iy/e 1Bg8alAl/BLzMLE05IrqexF5HfoKgR9OdEjtDz9bJJkOgS2mH3m4s7HdyDgSbigb95gJW51srse AjwZBhuU0DoT7IEY2yv72heNdIYOx5drwYlg0o+0mbZ5LRLSZ1iFmaDpVwKmNnAhQOXaPI9kUST
+ LX02I+OaXzu099MM5xXSX/CsUomLCm2UI8/XLKiOXrGlMRgbMwJPSBwb+UN8LXsLhAPU3k2+a3p /xpFiQlnQjjYwbHCbwmImer1rWwcKvzLjBkIcXauK0fum1lpWL5FA5v4tBCnlAnT9UuAbSNQWsz AEeN2l0W8nEV/M19AhdFhSo5hPNBoUKnELW/W26unqdVF2KRyYokBnUin3XYFOq2seBCjhCCZpY
+ XQkChpKa4ZSuLY/8qSJGwQydeJCbICbhL8GIqwZOkOIcsi4HB4eHcB3i77kKrrVDOBkfDPTX
+X-Authority-Analysis: v=2.4 cv=Hu52G1TS c=1 sm=1 tr=0 ts=680b714c cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=XR8D0OoHHMoA:10 a=gAnH3GRIAAAA:8 a=XZtg4_54fT2L5_ulfa8A:9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
  definitions=2025-04-25_03,2025-04-24_02,2025-02-21_01
@@ -87,45 +83,62 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscor
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
  definitions=main-2504250082
 
-Add a new compatible and related bindings for the fpga-based
-AD408x AXI IP core, a variant of the generic AXI ADC IP.
+Add support for setting the number of lanes enabled.
 
-The AXI AD408x IP is a very similar HDL (fpga) variant of the
-generic AXI ADC IP, intended to control ad408x familiy.
-
-Although there are some particularities added for extended
-control of the ad408x devices such as the filter configuration.
-
-Wildcard naming is used to match the naming of the published
-firmware.
-
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
 no changes in v3.
- Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/adc/adi-axi-adc.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml b/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-index cf74f84d6103..e91e421a3d6b 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-@@ -27,6 +27,7 @@ description: |
-       the ad7606 family.
+diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+index bf0155830d87..8ff781ab5ec3 100644
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -44,6 +44,7 @@
+ #define   ADI_AXI_ADC_REG_CONFIG_CMOS_OR_LVDS_N	BIT(7)
  
-   https://wiki.analog.com/resources/fpga/docs/axi_adc_ip
-+  https://analogdevicesinc.github.io/hdl/library/axi_ad408x/index.html
-   https://analogdevicesinc.github.io/hdl/library/axi_ad485x/index.html
-   http://analogdevicesinc.github.io/hdl/library/axi_ad7606x/index.html
+ #define ADI_AXI_ADC_REG_CTRL			0x0044
++#define    AXI_AD408X_CTRL_NUM_LANES_MSK	GENMASK(12, 8)
+ #define    AXI_AD408X_CTRL_SYNC_MSK		BIT(3)
+ #define    ADI_AXI_ADC_CTRL_DDR_EDGESEL_MASK	BIT(1)
  
-@@ -34,6 +35,7 @@ properties:
-   compatible:
-     enum:
-       - adi,axi-adc-10.0.a
-+      - adi,axi-ad408x
-       - adi,axi-ad7606x
-       - adi,axi-ad485x
+@@ -451,6 +452,19 @@ static int axi_adc_sync_status_get(struct iio_backend *back, bool *sync_en)
+ 	return 0;
+ }
  
++static int axi_adc_num_lanes_set(struct iio_backend *back,
++				 unsigned int num_lanes)
++{
++	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
++
++	if (!num_lanes)
++		return -EINVAL;
++
++	return regmap_update_bits(st->regmap, ADI_AXI_ADC_REG_CTRL,
++				  AXI_AD408X_CTRL_NUM_LANES_MSK,
++				  FIELD_PREP(AXI_AD408X_CTRL_NUM_LANES_MSK, num_lanes));
++}
++
+ static struct iio_buffer *axi_adc_request_buffer(struct iio_backend *back,
+ 						 struct iio_dev *indio_dev)
+ {
+@@ -601,6 +615,7 @@ static const struct iio_backend_ops adi_axi_adc_ops = {
+ 	.chan_status = axi_adc_chan_status,
+ 	.interface_type_get = axi_adc_interface_type_get,
+ 	.sync_status_get = axi_adc_sync_status_get,
++	.num_lanes_set = axi_adc_num_lanes_set,
+ 	.debugfs_reg_access = iio_backend_debugfs_ptr(axi_adc_reg_access),
+ 	.debugfs_print_chan_status = iio_backend_debugfs_ptr(axi_adc_debugfs_print_chan_status),
+ };
+@@ -646,6 +661,7 @@ static const struct iio_backend_ops adi_ad408x_ops = {
+ 	.data_alignment_enable = axi_adc_sync_enable,
+ 	.data_alignment_disable = axi_adc_sync_disable,
+ 	.sync_status_get = axi_adc_sync_status_get,
++	.num_lanes_set = axi_adc_num_lanes_set,
+ 	.debugfs_reg_access = iio_backend_debugfs_ptr(axi_adc_reg_access),
+ 	.debugfs_print_chan_status = iio_backend_debugfs_ptr(axi_adc_debugfs_print_chan_status),
+ };
 -- 
 2.49.0
 
