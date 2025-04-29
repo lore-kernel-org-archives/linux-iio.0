@@ -1,62 +1,59 @@
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F12F2980AA
-	for <linux-iio@vger.kernel.org>; Tue, 29 Apr 2025 02:17:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8672929AB11;
+	Tue, 29 Apr 2025 02:20:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745893050; cv=none; b=C2ze1wL3LQiTFSrhDZBYXu1jBDvxN2UzqdHGuw3C7Uw9Va2e0AmNQ9w4jGRscO2m0ih0pDPP6MO2obdN8pHts7iMmkLtEhe/o/jyO3ixKWYWhkNzzezf2Bp+1mmg6rw5MDx3+60rs9Dg4gy882prepm/Aw4qjQ7nVSj5wiGDN34=
+	t=1745893218; cv=none; b=J9iReHszQIt7qtEMZnM5nSbwYUL+i+J8FSAVDAFSFJ0ASgoetxtNBGhZQXEnB2IcbeG5MdEbsIS2rH7jNcoO/E/vqPovDXgx4Z57GWe7E8lZHBvdD+1040QCne4f72cL9Cmsc3OaEbBE9fW3c8lsf8A7sV19R6+//4ZjIicQmLA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745893050; c=relaxed/simple;
-	bh=r4Xvne1iEXPAeguZm1TQ8Dfad3TUBl5sXeU4woeJKM8=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=WNqgXiTSQu5cMjvbbuiw+Lhr8WKw7ZWyvBTRRs0ho5oiMe7LLH8KJaY+7JpjWyrDQJ2FpLnus3xT1YxitoEmCg1Uoba6RhIubqHzRbo18OcW23l+BJfhYX7NZUsZkYa1n3ilZeS8OqfnaTf6qDYBpAJZYiB8vezrSmMxfGb6KjA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=YiFJHeqh; arc=none smtp.client-ip=209.85.210.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1745893218; c=relaxed/simple;
+	bh=VyVRX1HVLv5yTqUASg+tT29VXQ7lBcgGjSS/IHh5E/s=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=nPCGbpzKYynlzzcsWpDRX7fSMlR1lmsyt/TPoBm8IMdwNv1Y1WvFUUidYDO73GiyB6CVFHAB7vMGBo/QdOvubYfhcTies1+USudHkZ3VGASPr0B/rn5BHwfyW6Xyzi030dMgyhRQjNmWrzGzK7lOGWZQlBUoDPguJm1ujcQUM/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=aQNR+/tr; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="YiFJHeqh"
-Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-72c14138668so1466199a34.2
-        for <linux-iio@vger.kernel.org>; Mon, 28 Apr 2025 19:17:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1745893048; x=1746497848; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=dxAQ7U3+wNbG9z9JR5W9etJLvPLXYYeasvIVL7H/WCo=;
-        b=YiFJHeqhOMLOoAOU/0Gx+yDiR6M3p+fyXtgOQzN3m8DaulOAwzwKc9M2Yag7JHDLaM
-         l0ZbHJtW/Wra//naTEXyf4pUTZYsIu5J3I6Vc3T07JlgQSbVbtvlS0bjyJxLjSlijEk1
-         EP1njqT35xJFsSr7t1R0bXRLd3rkd32l3GQkATNxbKlrx/N1OcYJsETSAycAhTnkNPCv
-         P7jms0MBI/Jy413R+H3cwCmwkn5cNZeBkzOEi/dSCbsCS2iPrAaF/nYYJRl6N4CmTOGJ
-         u1MlD1Ej8+TZsDQVojQSC8y5KI9pcneKIxwysHEhqNvUSuGMRx14mG37GvC82VA7xmMs
-         qhig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745893048; x=1746497848;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dxAQ7U3+wNbG9z9JR5W9etJLvPLXYYeasvIVL7H/WCo=;
-        b=mEESINTOv+mTdAP5LMxwvALqrxC7BI2QP8jxE+LdugxVoJu/EYY2yCSisiSWo/WGzG
-         lDr+IgBqg8wDNuUTLB7BZnLUP2M7anDG++0pHUlB85n2r4aXblQ4vvYTH/rtBetC8JfR
-         Vc7J4W+AY3nLc5fxQCH7yeFON8tgh3Q+lLIL1btlTqTGz5LWyInu8ZRXgk1U1ZkK1O6A
-         zEa57cOHAZuWZMFlSqS5wGxCoJM11Cg5Agvb7TCTkw+4AsrehqRKWJfGI9u4D/VwaWnw
-         ajt+irwip25pi/Hkn0tfuM0NIaydT0WDhfgV97qYHVItjgnw0xYpvJ7h6m1mM4ggjC4A
-         xQUw==
-X-Gm-Message-State: AOJu0YyFqXErOOt2SJAREX+vfC+c19I1i0HDL/lxzE4R2zUoBe204r96
-	pKtsuZIZzlWwf5D2hFo8zRcVAwdrT/b0LggRxnUxpz+oKTyeuVFgFH1zLgKmJZA=
-X-Gm-Gg: ASbGncsmfNTuriF+wZp+Z5e7toKVx6v+A/IUrmjNS4QwYBmX/1SAEbBOwrIRHrcZpCB
-	/jbj7r3cTuMwvP+g1yZR3GJcsNCh6rD4/fxJNuYgye9a4XQw+b4Xmdc6qgj3LG+ZuUfDU9DbkDY
-	XwxuMrH1iqIBb6pvEdr6SB4n39puHVAKZEICvXzOZnCBxKgiYZTWuEJSjEwQHntA7Rf03oVcaxa
-	CsQuueZ6Icg37GTyLblm0qJ8F+jljUAAZ4ZhjE2UHmg9Fw6oLZNYalbUGWeog3rVP8ci08MnYyz
-	+K4yIdiQXR6i+UWozercXjeTZoWbvlQV0S8UcYHStZOX6J3m69Bl/1BDkw==
-X-Google-Smtp-Source: AGHT+IHNkH1RRqrvPJPVcOqtzsqUP7XYeUcIbJHZzFCRpW2IVsA6MD82R7M5Yf5Dsop7VZdM8d3xPg==
-X-Received: by 2002:a05:6830:6019:b0:72a:4804:77ff with SMTP id 46e09a7af769-7306528b06fmr7224803a34.25.1745893048059;
-        Mon, 28 Apr 2025 19:17:28 -0700 (PDT)
-Received: from [127.0.1.1] ([2600:8803:e7e4:1d00:cff6:9ed0:6e45:1ff9])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7308b0f3ffdsm101440a34.9.2025.04.28.19.17.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Apr 2025 19:17:27 -0700 (PDT)
-From: David Lechner <dlechner@baylibre.com>
-Date: Mon, 28 Apr 2025 21:17:14 -0500
-Subject: [PATCH] iio: adc: ad7606: explicit timestamp alignment
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="aQNR+/tr"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53T1eFPx003171;
+	Mon, 28 Apr 2025 22:19:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=3tbVt
+	N3yqWbEoBc5MNER1lXQSbvuE+z9mXtyhsHJPSA=; b=aQNR+/tr+e6WFZ1E++6eG
+	wk2tdi6zh1ZkevTPyuzIkXRZ2mkKEW52Ox2fAwbnKBm5WcRMVEvU5/FSnRnZsrgO
+	nDpvD6l3MOuHDMxPQL8LoGWmxBJ0roXx77uvr+X9eYXw51e7qLg5gGILCW479Lep
+	z5ejI7EP3JERfVY77BKUh0AsiiyKY/pHZLJQuWL+G5A/ZFaVdrVmdPJlfcQHM6XT
+	Zpfz8xmmoV2mF2b/+10tJs8jNFkjHID13FZDUxthS3JtlgS1Xvc3Lqb43ksjM984
+	GnUaE22073zPhlvnJSq188PoEYET4ejnPRsFQf4w36k+ZrLea3sYwD2WVr46eDrJ
+	w==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 468sb79tnc-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 28 Apr 2025 22:19:55 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 53T2JsHR051535
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 28 Apr 2025 22:19:54 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 28 Apr 2025 22:19:54 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 28 Apr 2025 22:19:54 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 28 Apr 2025 22:19:53 -0400
+Received: from LRADU-D01.ad.analog.com (KPALLER2-L03.ad.analog.com [10.116.18.50])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 53T2JPCt007738;
+	Mon, 28 Apr 2025 22:19:41 -0400
+From: Kim Seer Paller <kimseer.paller@analog.com>
+Date: Tue, 29 Apr 2025 10:19:16 +0800
+Subject: [PATCH v7 1/3] iio: ABI: add new DAC powerdown mode
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,70 +62,73 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250428-iio-adc-ad7606-fix-buffer-alignment-v1-1-88dfc57e5df0@baylibre.com>
-X-B4-Tracking: v=1; b=H4sIAKk2EGgC/x2NQQqDMBBFryKzdiAGTdSrSBcxmdiBGiVpiyDe3
- cHFWzx4/H9CocxUYKxOyPTnwlsSaeoK/NulhZCDOGilO9XqHpk3dMEL1iiDkQ+cfzFSRvfhJa2
- UvjhEH8g2prfBgyztmaR7XqbXdd3U8X3AdQAAAA==
-X-Change-ID: 20250428-iio-adc-ad7606-fix-buffer-alignment-9fcde71687dc
-To: Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <20250429-togreg-v7-1-0af9c543b545@analog.com>
+References: <20250429-togreg-v7-0-0af9c543b545@analog.com>
+In-Reply-To: <20250429-togreg-v7-0-0af9c543b545@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko
+	<andy@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        Kim Seer Paller <kimseer.paller@analog.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1452; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=r4Xvne1iEXPAeguZm1TQ8Dfad3TUBl5sXeU4woeJKM8=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBoEDavdQc1qtun+85xGI5sUhiW1Z+XwmEcBblY/
- W2NloNufdGJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaBA2rwAKCRDCzCAB/wGP
- wLIPCACNjO5Z93T2mM8N/PlidRDDnXmwY48keUAbQpoi2XfexXkLj0fQ9tAYn3cq0ZeFSALoZM5
- ZJu9SAJHPXDVf+TJbfr01cbMkdpgKYxtBkAQ7LAM/DLY7Uklhi+kEOlUq7H116bUMn1tt5kdsnC
- OOlWcc9EVc/I45HbtFWLs7fdWJHvMW54bgnXuTqstJI2mWTjLGJ4NZ3lLkWjMxA5P2FgBe+7ZWX
- erFb8DVuIpgPzowsCD/8IrRrFGLApZ+qirxyGKyWoKoV2K8ZeYeYh98OLyE5/tMCcLxyh55BoiT
- 2rc5qYjjG7B5xvUL83OOrAWfuLT5u/XfmfKoibXyWi1ZIMdD
-X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
- fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1745893165; l=1179;
+ i=kimseer.paller@analog.com; s=20250213; h=from:subject:message-id;
+ bh=VyVRX1HVLv5yTqUASg+tT29VXQ7lBcgGjSS/IHh5E/s=;
+ b=mR1zeAqmzMEPBvLKLyNiS5uWwIBqupXSHuwfrAGo8DAeJzUquEZxDBkg7UERrxf43YiO79Wzc
+ pMC9ECSYExEBOdhl8tDkzeB79ZsoxkaR0fbl3oQzhcFSGvwZ+5lb6Sg
+X-Developer-Key: i=kimseer.paller@analog.com; a=ed25519;
+ pk=SPXIwGLg4GFKUNfuAavY+YhSDsx+Q+NwGLceiKwm8Ac=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: lt8J7QO3Dk2E47ZlnWMUJIXhy9hbRdfN
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNDI5MDAxNSBTYWx0ZWRfX6VNrVyemdHeQ BNbEMaU5Bxjp8+QoWJ5ASBFeVg3qrc7C6/d+LVgMQ4z9J6aw0n6YpeJ5y7y3UKkrO2p18CbblKf GFLIB/h62H8i9OjkbUYtwdzAvZWhDQ8tVFuupgdoWoD8Wm/I+4rz1dTTorx3+TidwjobnWQYGh3
+ DDwmmMi9Qr59AtYdrMlMQKZUa8PTXpiF8BSD4O/AO+n5XiL94IdkclWXoas/8NNl4q+VE6BYsjn Dlrnq+xepyTUv2IoTROomF1/x5285tVKYQirV7r2lMXsp6TD5Qzv62jy7N5trkbFQSs1MzXCuF3 04pK/e7tOU7wm5wciCnbRnuTnAGelFGG60i+rJi+CA5dk8zBZNW6BYETHL5fM+7Q9fwhTMv2fUz
+ zC/YN5Nk84t7E0P/iFUIceO/WVEJGLID5dkowI+Aus5U7UulSyhuEQdDsPRwVykJZxglC28r
+X-Proofpoint-ORIG-GUID: lt8J7QO3Dk2E47ZlnWMUJIXhy9hbRdfN
+X-Authority-Analysis: v=2.4 cv=HPzDFptv c=1 sm=1 tr=0 ts=6810374b cx=c_pps a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=IpJZQVW2AAAA:8 a=gAnH3GRIAAAA:8 a=3Hb1o_MSCnf1oSB8FUQA:9 a=QEXdDO2ut3YA:10
+ a=IawgGOuG5U0WyFbmm1f5:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-04-29_01,2025-04-24_02,2025-02-21_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=714 adultscore=0
+ suspectscore=0 impostorscore=0 phishscore=0 mlxscore=0 malwarescore=0
+ priorityscore=1501 bulkscore=0 lowpriorityscore=0 clxscore=1015
+ spamscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
+ definitions=main-2504290015
 
-Use struct with aligned_s64 timestamp to make timestamp alignment
-explicit. Technically, what we have works because for all known
-architectures, IIO_DMA_MINALIGN is a multiple of __alignof__(s64).
-But this way, we don't have to make people read the comments to know
-why there are extra elements in each buffer.
+Add a new powerdown mode for DACs with 7.7kohm and 32kohm resistor
+to GND.
 
+Reviewed-by: David Lechner <dlechner@baylibre.com>
+Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
 ---
- drivers/iio/adc/ad7606.h | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/adc/ad7606.h b/drivers/iio/adc/ad7606.h
-index 89d49551eaf515bab9706c12bff056dfcb707b67..441e62c521bcbea69b4f70bb2d55f65334d22276 100644
---- a/drivers/iio/adc/ad7606.h
-+++ b/drivers/iio/adc/ad7606.h
-@@ -155,12 +155,15 @@ struct ad7606_state {
- 	/*
- 	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
--	 * 16 * 16-bit samples + 64-bit timestamp - for AD7616
--	 * 8 * 32-bit samples + 64-bit timestamp - for AD7616C-18 (and similar)
-+	 * 16 * 16-bit samples for AD7616
-+	 * 8 * 32-bit samples for AD7616C-18 (and similar)
- 	 */
--	union {
--		u16 buf16[20];
--		u32 buf32[10];
-+	struct {
-+		union {
-+			u16 buf16[16];
-+			u32 buf32[8];
-+		};
-+		aligned_s64 timestamp;
- 	} data __aligned(IIO_DMA_MINALIGN);
- 	__be16				d16[2];
- };
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 33c09c4ac60a4feec82308461643134f5ba84b66..190bfcc1e836b69622692d7c056c0092e00f1a9b 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -741,7 +741,9 @@ Description:
+ 		1kohm_to_gnd: connected to ground via an 1kOhm resistor,
+ 		2.5kohm_to_gnd: connected to ground via a 2.5kOhm resistor,
+ 		6kohm_to_gnd: connected to ground via a 6kOhm resistor,
++		7.7kohm_to_gnd: connected to ground via a 7.7kOhm resistor,
+ 		20kohm_to_gnd: connected to ground via a 20kOhm resistor,
++		32kohm_to_gnd: connected to ground via a 32kOhm resistor,
+ 		42kohm_to_gnd: connected to ground via a 42kOhm resistor,
+ 		90kohm_to_gnd: connected to ground via a 90kOhm resistor,
+ 		100kohm_to_gnd: connected to ground via an 100kOhm resistor,
 
----
-base-commit: b475195fecc79a1a6e7fb0846aaaab0a1a4cb2e6
-change-id: 20250428-iio-adc-ad7606-fix-buffer-alignment-9fcde71687dc
-
-Best regards,
 -- 
-David Lechner <dlechner@baylibre.com>
+2.34.1
 
