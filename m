@@ -1,50 +1,52 @@
 Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEE402C2ABF;
-	Tue, 29 Apr 2025 12:54:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEA6A2D1F42;
+	Tue, 29 Apr 2025 12:54:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.207.212.93
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745931294; cv=none; b=YlNaA6B6bGS3HKJ2S8Dd37ZuLgK2UKbZOc3RgCprgxIrNvW0WCTO94zNymUC0Kch4j4iJdPW4MPB21qn+zhE+yl3rNX0AwRIADcP0AWNuB0MpzQm+JUtpLPxgd4dmfZ6Ck6h9fcAclRddHwRQL6g0UgxPy9zcNszSFRWmAIHdHc=
+	t=1745931299; cv=none; b=Rp5BOImHcdqAOmXpAJEaOontJ1uOFeh+TYNDkUoDBtNbeHSLcAyc9K0DrvIKgwma98vAPruVnN5fIJeTWH+L9j810c/uoEODULtHd6/SdClDKyQYs+72yaRGwc7CIbhNf04Z5MiDJeo+gIOxAdfwAZlapw8h7MEf35UEU7VpyoU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745931294; c=relaxed/simple;
-	bh=9sxFsQ8w8gMj+AilVBnCr0ylt/sgAVMT9xuG3Be9C+I=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=MSqO3NWsvDH8Utt1E5JEh+Fpw4twmpciBPhKtv+yEKsJSn0Xu3y+wU3ihZfbQS6dOhIurD0r+MibV1SkqqWzQ3Kwz2vl2REhesPBXMptnALIFH6mvxV9PpZAQcNMSblLqRyIVxtLveRIxfRPyI2Y8PQp57wC5NoUr0JLd2QTlqE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=zhHv2OGm; arc=none smtp.client-ip=91.207.212.93
+	s=arc-20240116; t=1745931299; c=relaxed/simple;
+	bh=8jCUZX42+NgDif7g0IscGuqaouL0USx3b9sj7yaINHY=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=gJx0hSxnY2Mk4ap4NV6RTiQfFGcpVBbblQt7tcOlaI5Ffob6ZCgP2XrEoGWxEKgXn9Us+xvk1s+x6JGx4MjvFvRwJuUE3dDNaVHVVf5OKSfsPo5LEViUxtK9xVcHj8QcNB2WF/BEK4ny+2F1dZYDFPqmIBQ7hIVLoHjToqAqf/U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=LiShzmIp; arc=none smtp.client-ip=91.207.212.93
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="zhHv2OGm"
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="LiShzmIp"
 Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53TBAfsm010486;
-	Tue, 29 Apr 2025 14:54:33 +0200
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53TBs57x010275;
+	Tue, 29 Apr 2025 14:54:48 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=selector1; bh=friZdCP02PIxujmS9U1259
-	XJwM1z2G20WzU8LNOMS1A=; b=zhHv2OGm/EjXwJeBYv0jDW1FyvHNbBVstYgTMx
-	5fSZ5pCIBBRl3Ye7tDX//R+VO/ZfzbhKXDl5QcZ7Zi5fJlPD8AUi36PmJwc3mIXU
-	5t/jjUKJHrFCveI0/na/uoBvrBEX40DcNiNVz6GKIIDWPU8ab1fi/bYbouoO3cWb
-	kQiQlkT1PlKgNBw7C62PGISpIRE+TXxu/4sVy/n5K9D+8caHl8QC215p6wSAPKSp
-	iKPYlAW7+PWd2LfmPJLQyVkUF1EVpY7rtMQ+g5zV3dRxD1kCeQyXg6WbI5cSEEx+
-	4uwr4VaHGVX3KYJ1SpBeCkUrZpSJt7MzWp0CrxZ77MNbAtnA==
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=selector1; bh=
+	dGEH/7W+8HHWW7dvPoseqXYAg/nEVy3nX2ybUJs+Dz0=; b=LiShzmIpVfS0a/vq
+	22fZAoEFkpMKH6P4FoA/yztGax+bSRigfA9bk59EcvX6YpRtYmNcvEZDA05k99cP
+	El2fzKLEQFHJR71SH5XeatkUqVhFnX1zSp8dMJItuICPyXxsi3glb5pCeRQaPqOP
+	/rgVJkn/x3fdoXIoFDu/WC3fN5XLhlbfYowXenvqu1wnCJR0F0bNJ4vPgVASGJ0F
+	7Zu/njiiT+6doshS11xok9iUocWHJ7b6BIe4hoDVXqqCg6kTUPzyuVPszaLhEGqC
+	MW1UdEShFqiGe8lCnES69ODd433ZJEBSdNo+TsdU+GhNeBFiIILjS7DP+vYZ1EEw
+	wv9czw==
 Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 468pcgb1tp-1
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 468pcgb1uj-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 29 Apr 2025 14:54:33 +0200 (MEST)
+	Tue, 29 Apr 2025 14:54:48 +0200 (MEST)
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 1500A4005D;
-	Tue, 29 Apr 2025 14:53:25 +0200 (CEST)
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 3C48E4007F;
+	Tue, 29 Apr 2025 14:53:44 +0200 (CEST)
 Received: from Webmail-eu.st.com (eqndag1node5.st.com [10.75.129.134])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E40B0ABE2D7;
-	Tue, 29 Apr 2025 14:51:45 +0200 (CEST)
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 84442A7D1E3;
+	Tue, 29 Apr 2025 14:51:48 +0200 (CEST)
 Received: from SAFDAG1NODE1.st.com (10.75.90.17) by EQNDAG1NODE5.st.com
  (10.75.129.134) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 29 Apr
- 2025 14:51:45 +0200
+ 2025 14:51:48 +0200
 Received: from localhost (10.252.5.160) by SAFDAG1NODE1.st.com (10.75.90.17)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 29 Apr
- 2025 14:51:45 +0200
+ 2025 14:51:48 +0200
 From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 To: <daniel.lezcano@linaro.org>, <lee@kernel.org>,
         <alexandre.torgue@foss.st.com>, <tglx@linutronix.de>
@@ -55,86 +57,157 @@ CC: <ukleinek@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
         <linux-iio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
         <olivier.moysan@foss.st.com>, <fabrice.gasnier@foss.st.com>
-Subject: [PATCH v6 0/7] Add STM32MP25 LPTIM support: MFD, PWM, IIO, counter, clocksource
-Date: Tue, 29 Apr 2025 14:51:26 +0200
-Message-ID: <20250429125133.1574167-1-fabrice.gasnier@foss.st.com>
+Subject: [PATCH v6 3/7] clocksource: stm32-lptimer: add support for stm32mp25
+Date: Tue, 29 Apr 2025 14:51:29 +0200
+Message-ID: <20250429125133.1574167-4-fabrice.gasnier@foss.st.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20250429125133.1574167-1-fabrice.gasnier@foss.st.com>
+References: <20250429125133.1574167-1-fabrice.gasnier@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-ClientProxiedBy: EQNCAS1NODE4.st.com (10.75.129.82) To SAFDAG1NODE1.st.com
  (10.75.90.17)
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
  definitions=2025-04-29_04,2025-04-24_02,2025-02-21_01
 
-This series adds support for STM32MP25 to MFD PWM, IIO, counter and
-clocksource low-power timer (LPTIM) drivers.
-This new variant is managed by using a new DT compatible string, hardware
-configuration and version registers.
-It comes with a slightly updated register set, some new features and new
-interconnect signals inside the SoC.
-Same feature list as on STM32MP1x is supported currently.
-The device tree files add all instances in stm32mp251 dtsi file.
+On stm32mp25, DIER (former IER) must only be modified when the lptimer
+is enabled. On earlier SoCs, it must be only be modified when it is
+disabled. There's also a new DIEROK flag, to ensure register access
+has completed.
+Add a new "set_evt" routine to be used on stm32mp25, called depending
+on the version register, read by the MFD core (LPTIM_VERR).
 
-Changes in V6
+Signed-off-by: Patrick Delaunay <patrick.delaunay@foss.st.com>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 ---
-- Fixed kernel test robot warning
+Changes in V6:
+- Fixed warning reported by kernel test robot in
   https://lore.kernel.org/oe-kbuild-all/202504261456.aCATBoYN-lkp@intel.com/
-
-Changes in V5
+  use FIELD_GET() macro
+Changes in V5:
+- Added a delay after timer enable, it needs two clock cycles.
+Changes in V4:
+- Daniel suggests to encapsulate IER write into a separate function
+  that manages the enabling/disabling of the LP timer. In addition,
+  DIEROK and ARROK flags checks have been added. So adopt a new routine
+  to set the event into ARR register and enable the interrupt.
+Changes in V2:
+- rely on fallback compatible as no specific .data is associated to the
+  driver. Use version data from MFD core.
+- Added interrupt enable register access update in (missed in V1)
 ---
-- Add a necessary delay in clocksource driver, when enabling the timer.
-- Add collected Acks
-- Dropped IIO trigger patch as applied by Jonathan [1] (no dependency)
-  [1] https://lore.kernel.org/all/20250331110435.26157ebe@jic23-huawei/
+ drivers/clocksource/timer-stm32-lp.c | 61 ++++++++++++++++++++++++++--
+ 1 file changed, 57 insertions(+), 4 deletions(-)
 
-Changes in V4
----
-- Simplify IIO trigger driver as per Jonathan's comments.
-- Rework clocksource driver: encapsulate mp25 changes in separate function
-  after Daniel's suggestion.
-- Add some definitions to MFD header.
-
-Changes in V3
----
-- Yaml indentation issue fixed, reported by Rob's bot
-
-Changes in V2
----
-- Review comments from Krzysztof
-  - Adopt compatible fallback in dt-bindings and driver
-  - drivers: drop "st,stm32mp25-..." compatibles when unused (e.g. no .data)
-  - counter driver: no update (patch dropped)
-  - defconfig: only enable the necessary config for upstream board
-  - add lptimer DT node in stm32mp257f-ev1 board
-- Add missing management of IER access for stm32mp25
-
-Fabrice Gasnier (7):
-  dt-bindings: mfd: stm32-lptimer: add support for stm32mp25
-  mfd: stm32-lptimer: add support for stm32mp25
-  clocksource: stm32-lptimer: add support for stm32mp25
-  pwm: stm32-lp: add support for stm32mp25
-  arm64: defconfig: enable STM32 LP timer clockevent driver
-  arm64: dts: st: add low-power timer nodes on stm32mp251
-  arm64: dts: st: use lptimer3 as tick broadcast source on
-    stm32mp257f-ev1
-
- .../bindings/mfd/st,stm32-lptimer.yaml        |  40 +++-
- arch/arm64/boot/dts/st/stm32mp251.dtsi        | 177 ++++++++++++++
- arch/arm64/boot/dts/st/stm32mp257f-ev1.dts    |   8 +
- arch/arm64/configs/defconfig                  |   2 +
- drivers/clocksource/timer-stm32-lp.c          |  61 ++++-
- drivers/mfd/stm32-lptimer.c                   |  33 ++-
- drivers/pwm/pwm-stm32-lp.c                    | 219 +++++++++++++++---
- include/linux/mfd/stm32-lptimer.h             |  37 ++-
- 8 files changed, 537 insertions(+), 40 deletions(-)
-
+diff --git a/drivers/clocksource/timer-stm32-lp.c b/drivers/clocksource/timer-stm32-lp.c
+index 928da2f6de69..6e7944ffd7c0 100644
+--- a/drivers/clocksource/timer-stm32-lp.c
++++ b/drivers/clocksource/timer-stm32-lp.c
+@@ -5,6 +5,7 @@
+  *	    Pascal Paillet <p.paillet@st.com> for STMicroelectronics.
+  */
+ 
++#include <linux/bitfield.h>
+ #include <linux/clk.h>
+ #include <linux/clockchips.h>
+ #include <linux/interrupt.h>
+@@ -27,6 +28,7 @@ struct stm32_lp_private {
+ 	u32 psc;
+ 	struct device *dev;
+ 	struct clk *clk;
++	u32 version;
+ };
+ 
+ static struct stm32_lp_private*
+@@ -47,12 +49,46 @@ static int stm32_clkevent_lp_shutdown(struct clock_event_device *clkevt)
+ 	return 0;
+ }
+ 
+-static int stm32_clkevent_lp_set_timer(unsigned long evt,
+-				       struct clock_event_device *clkevt,
+-				       int is_periodic)
++static int stm32mp25_clkevent_lp_set_evt(struct stm32_lp_private *priv, unsigned long evt)
+ {
+-	struct stm32_lp_private *priv = to_priv(clkevt);
++	int ret;
++	u32 val;
++
++	regmap_read(priv->reg, STM32_LPTIM_CR, &val);
++	if (!FIELD_GET(STM32_LPTIM_ENABLE, val)) {
++		/* Enable LPTIMER to be able to write into IER and ARR registers */
++		regmap_write(priv->reg, STM32_LPTIM_CR, STM32_LPTIM_ENABLE);
++		/*
++		 * After setting the ENABLE bit, a delay of two counter clock cycles is needed
++		 * before the LPTIM is actually enabled. For 32KHz rate, this makes approximately
++		 * 62.5 micro-seconds, round it up.
++		 */
++		udelay(63);
++	}
++	/* set next event counter */
++	regmap_write(priv->reg, STM32_LPTIM_ARR, evt);
++	/* enable ARR interrupt */
++	regmap_write(priv->reg, STM32_LPTIM_IER, STM32_LPTIM_ARRMIE);
++
++	/* Poll DIEROK and ARROK to ensure register access has completed */
++	ret = regmap_read_poll_timeout_atomic(priv->reg, STM32_LPTIM_ISR, val,
++					      (val & STM32_LPTIM_DIEROK_ARROK) ==
++					      STM32_LPTIM_DIEROK_ARROK,
++					      10, 500);
++	if (ret) {
++		dev_err(priv->dev, "access to LPTIM timed out\n");
++		/* Disable LPTIMER */
++		regmap_write(priv->reg, STM32_LPTIM_CR, 0);
++		return ret;
++	}
++	/* Clear DIEROK and ARROK flags */
++	regmap_write(priv->reg, STM32_LPTIM_ICR, STM32_LPTIM_DIEROKCF_ARROKCF);
+ 
++	return 0;
++}
++
++static void stm32_clkevent_lp_set_evt(struct stm32_lp_private *priv, unsigned long evt)
++{
+ 	/* disable LPTIMER to be able to write into IER register*/
+ 	regmap_write(priv->reg, STM32_LPTIM_CR, 0);
+ 	/* enable ARR interrupt */
+@@ -61,6 +97,22 @@ static int stm32_clkevent_lp_set_timer(unsigned long evt,
+ 	regmap_write(priv->reg, STM32_LPTIM_CR, STM32_LPTIM_ENABLE);
+ 	/* set next event counter */
+ 	regmap_write(priv->reg, STM32_LPTIM_ARR, evt);
++}
++
++static int stm32_clkevent_lp_set_timer(unsigned long evt,
++				       struct clock_event_device *clkevt,
++				       int is_periodic)
++{
++	struct stm32_lp_private *priv = to_priv(clkevt);
++	int ret;
++
++	if (priv->version == STM32_LPTIM_VERR_23) {
++		ret = stm32mp25_clkevent_lp_set_evt(priv, evt);
++		if (ret)
++			return ret;
++	} else {
++		stm32_clkevent_lp_set_evt(priv, evt);
++	}
+ 
+ 	/* start counter */
+ 	if (is_periodic)
+@@ -176,6 +228,7 @@ static int stm32_clkevent_lp_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	priv->reg = ddata->regmap;
++	priv->version = ddata->version;
+ 	priv->clk = ddata->clk;
+ 	ret = clk_prepare_enable(priv->clk);
+ 	if (ret)
 -- 
 2.25.1
 
