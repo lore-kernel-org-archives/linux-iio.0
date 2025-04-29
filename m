@@ -1,96 +1,114 @@
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2E9E2BE7C0
-	for <linux-iio@vger.kernel.org>; Tue, 29 Apr 2025 10:42:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 548B88BEE;
+	Tue, 29 Apr 2025 12:54:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745923355; cv=none; b=S2vw5PnUfuDmi4khj3+XbYf9P1q7zVDssNM8Yw3mxJ1Jx7kIGsZhZiFJ2Cfr8aq+8xEy3P/6OGYafEFIJeCsIQpt+tSsNjKDWENOfc8vBbbEEPc6lMMFqwTQA2WuPpUgKWVeXXjZpUR0issHtrPfLGcOMuKG/CJlHF9VgRfbJOA=
+	t=1745931268; cv=none; b=DA+ACFzQhngIPo3vChNnmnFHKMGCwL9yQ7QS+ss9ze1XqyRCotmQA6H7Qes6yiO1SESi/JvYbqqDOjxOofh1/2VvPM2U672FvrJEhBL304C4J8ySmgSSIbUPtvVcScws8t6lNPJDSfILF+47RpgrIVAC3TzebKo15qMmUswPdo4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745923355; c=relaxed/simple;
-	bh=C1mdFp2exogFCNC0seXIIsAXP/t5byZNIUxxIsqW/N8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ELxxJzpbyrzzbvxfPb2xDOSAJ3GX8xPstC6VSraet0CrxQAsku6h7pDeGCh2bQ1BR6wTfuqOkkRiSzqMGen/E2wTzq3zzNs/JGlK5exK9sKwHUolgAwOd+xAQT3UnzlVybq3bI5vmOBxSIUdnFsYHOM9ZAnOTSiuywq4zb37gIc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EAtZMK1J; arc=none smtp.client-ip=209.85.208.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1745931268; c=relaxed/simple;
+	bh=pSgyMyO+6NdvGJb/3PCYahO4sbYNutrYAsAdKDVc0TQ=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=EQrDZB2KIZWabWNjS2iUQxVHCViubwsb9OpeDkIhrfb28Gz3uKLuimRu026ceDoTs8/Jr8GwiWBKBVCuCiMRxQpj+P0IQm8t7gM0GxORqK0roqebimzB0WbGm0tFMS1CdZCoVNnromgQo+bAyeXxhOY+FO5HpO9KPRBqDD/76wg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=qksWZObr; arc=none smtp.client-ip=185.132.182.106
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EAtZMK1J"
-Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-30dd5a93b49so52336371fa.0
-        for <linux-iio@vger.kernel.org>; Tue, 29 Apr 2025 03:42:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745923351; x=1746528151; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ShqQVHZIze18zi/KkNJsulWu7w5abrDU6INRyLTw0mQ=;
-        b=EAtZMK1J7EkDQQkfpZjfZrEU4z7TmJxciU6D3FDgJT0hbpM7norED6qK4irf2U+4YB
-         G5ec1yKeXh/9n0PA0nTsU4BK3SodS+qpH87UgI2uFwVD0IFFdz39tuVdg6+bDiIV8hV2
-         GgOTkUgjMHCvF24AjnDfRmjJ4Ccb+tfuYLwQxsZ4qHKkmj5LK93PM6PNmBpch9EBvo8m
-         Ux6go81BSPODxtTMuZWIIvZj6NOaCUm6Atj8lFKpKiN3DFNCbFccJO9ZcfCfakcWST1E
-         hZSHayhgCKtbKC/bdVibN9LQRXFxz6/YrW7/cE6DSuSzCBdbOLh4EDwgN3mpJUdXoisa
-         wmCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745923351; x=1746528151;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ShqQVHZIze18zi/KkNJsulWu7w5abrDU6INRyLTw0mQ=;
-        b=SYNDdcCA898iyWdBV2PQIPdorjLCThuDS5J+3xUAYo/mBwlGQx+46M2j9d03eyqxSX
-         FJp62lwrThT+TUPOHd8I0UaL8Ppgy7qP5NmDeyDgY3PYgcRG8l46+xCOKbpmmc7EOuW4
-         veKKmLwsm3EYuVgy/JcB4lLFOIXiTEzHg9cAp4R3wjlsVSm27dFU6WpvtJz+F/hwnUxc
-         V0K/RkpiQTQwyFfMBb0uav0hfMWXJw9Qmn+yflzoXd1IV0wMbQvDLtKjKMW6G0C3XeWD
-         0VHteCoWoznVxpGGVbAsreL2j/pT0HiFflqoWOrwwpF1xVMbUHnvl7WY9dgkiqWUK166
-         7hBQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVGtBQ8bSeOFGulJKkeTnP+d4xLWozYpeWECBkTOKfYqqqztdNHXDPq4RSCf7mdmkakkcRSflx7a0U=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzN35Brt1N0XaZB1oZH+V4WuPuhfihegcoCk6IjS8KNneMoEhw0
-	zBeYGLvPitaU0+jggf78+KGRdm8HUhULeDWJzpW9Wprw6oPzYp/GcQlaOfDppTyVdxP9P/0XQ6f
-	A59AhqLj59CGbrUSq/KiK1jioY4gO8A==
-X-Gm-Gg: ASbGncsMB2w5rFCKWyhr1tdYre16OGzZ4V85dg915Vdls398ikmAXkOkaqfMR0O2Pow
-	/9TCgyHzJVwqy9VIGLSPQB0VTEqysOvRxKkZMl6qzsYTIe4uMZM+M1xTM5V/YTTLjqgCYLZEoH4
-	j1AwvXQGCinbalgHqo+PspBpQV+GFX0y4YgESG69ogckb9DlVeObopXQ==
-X-Google-Smtp-Source: AGHT+IEOURqf85Udyr2JtFJmBiznGFSIglDKFJG92L1+lerRcB1Pmi8Uo6zaNgag1UWMZVGnfOIiASzhifGkNZPhMC8=
-X-Received: by 2002:a05:651c:2222:b0:30c:5c6:91e0 with SMTP id
- 38308e7fff4ca-319dba4fae3mr41057921fa.2.1745923351172; Tue, 29 Apr 2025
- 03:42:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="qksWZObr"
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53TBFNBp006863;
+	Tue, 29 Apr 2025 14:54:00 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=selector1; bh=
+	/Etz2e5JwOfdvpR/r973gOFgQ/rV50weJX1P1VEC9tU=; b=qksWZObrzZeMPNA0
+	951aATAM6pzqSxx8j7dOyRPRQqE3DCdUy1/S3XDPh8DglmIpzUVgccqk/IqvLYzZ
+	ePLK3gvCYx2IGbHIk7XfEfqvXIkCpIrHCLdgldy1klXbrzRq1ni5wAmDN8Tw/sen
+	ctJWhkq75MS4L8KgYyIJ2AAGvnrlSvBLooxPY6tRD9absVyxptPVvgPMy457kZjl
+	a0lE46MPovbPe0QlscRI4AUCXmpPeM6guSDpeosKW0Kq/1kvVQHG5IoExVTeQmoF
+	dZbINyE88lHou5uFSL1UV3YPYtKTPPVLQRc+gbEJAj4iZVdbHBx3isl6rEg2RGjY
+	/ewFdw==
+Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 468pu7kcy3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 29 Apr 2025 14:53:59 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 1472140047;
+	Tue, 29 Apr 2025 14:52:48 +0200 (CEST)
+Received: from Webmail-eu.st.com (eqndag1node6.st.com [10.75.129.135])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3E8BEA82D67;
+	Tue, 29 Apr 2025 14:51:50 +0200 (CEST)
+Received: from SAFDAG1NODE1.st.com (10.75.90.17) by EQNDAG1NODE6.st.com
+ (10.75.129.135) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 29 Apr
+ 2025 14:51:50 +0200
+Received: from localhost (10.252.5.160) by SAFDAG1NODE1.st.com (10.75.90.17)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 29 Apr
+ 2025 14:51:49 +0200
+From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+To: <daniel.lezcano@linaro.org>, <lee@kernel.org>,
+        <alexandre.torgue@foss.st.com>, <tglx@linutronix.de>
+CC: <ukleinek@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+        <jic23@kernel.org>, <robh@kernel.org>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <devicetree@vger.kernel.org>, <wbg@kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <olivier.moysan@foss.st.com>, <fabrice.gasnier@foss.st.com>
+Subject: [PATCH v6 5/7] arm64: defconfig: enable STM32 LP timer clockevent driver
+Date: Tue, 29 Apr 2025 14:51:31 +0200
+Message-ID: <20250429125133.1574167-6-fabrice.gasnier@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20250429125133.1574167-1-fabrice.gasnier@foss.st.com>
+References: <20250429125133.1574167-1-fabrice.gasnier@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CAOMZO5BXp38RMt5vQQWnZBQDzpN+SYB6NVU3c-Krk3po+2Zv7A@mail.gmail.com>
- <20250426160009.161b9f08@jic23-huawei> <CAOMZO5CepxxXo9u+mSB1P8t-tKvayz8b39emo3jHzR+6hr1HSg@mail.gmail.com>
- <20250427112343.207918cd@jic23-huawei> <CAOMZO5BOXGcuuf7cyf-c6QLXVoKber2oWP+sgWA_RMHQtW5-cw@mail.gmail.com>
- <CAOMZO5Bzrfu14-mzaF+EbAq=xGKMc-FGwJsx-aZd_RraH2Gscw@mail.gmail.com> <ef215ea2-e283-4c89-9b54-61b84684bfe7@gmail.com>
-In-Reply-To: <ef215ea2-e283-4c89-9b54-61b84684bfe7@gmail.com>
-From: Fabio Estevam <festevam@gmail.com>
-Date: Tue, 29 Apr 2025 07:42:19 -0300
-X-Gm-Features: ATxdqUFH7GDIK-nbJjyaHeGVSAsVTj1MtY5nBxSGbU24ac27Hu7V8XFNgzksVTQ
-Message-ID: <CAOMZO5DUATUCTWM645rAE+1Kyov1Lh4Nu8nWxEg_Wzd9Zyiy5A@mail.gmail.com>
-Subject: Re: max1363 : Warnings from iio_sanity_check_avail_scan_masks()
-To: Matti Vaittinen <mazziesaccount@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: EQNCAS1NODE4.st.com (10.75.129.82) To SAFDAG1NODE1.st.com
+ (10.75.90.17)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-04-29_04,2025-04-24_02,2025-02-21_01
 
-Hi Matti,
+Enable the STM32 LP timer MFD core and clockevent drivers used on
+STM32MP257F-EV1 board, for PSCI OSI.
 
-On Tue, Apr 29, 2025 at 12:59=E2=80=AFAM Matti Vaittinen
-<mazziesaccount@gmail.com> wrote:
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+---
+Changes in v2:
+- dropped unused IIO trigger, PWM and counter driver unused on upstream
+board currently, as advised by Krzysztof
+---
+ arch/arm64/configs/defconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> So, majority of these prints seem to be garbage. AFAICS, we should only s=
-ee:
->  > [    1.652223] max1363 1-0064: available_scan_mask 8 subset of 7.
-> Never used
->
-> Or maybe:
-> available_scan_mask: mask[8] subset of mask[7]. Never used
->
-> Do you think you could send a patch to fix this, or should I take a look
-> at it?
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 5bb8f09422a2..d106cdac05fa 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -777,6 +777,7 @@ CONFIG_MFD_TI_LP873X=m
+ CONFIG_MFD_TPS65219=y
+ CONFIG_MFD_TPS6594_I2C=m
+ CONFIG_MFD_ROHM_BD718XX=y
++CONFIG_MFD_STM32_LPTIMER=m
+ CONFIG_MFD_WCD934X=m
+ CONFIG_MFD_KHADAS_MCU=m
+ CONFIG_REGULATOR_FIXED_VOLTAGE=y
+@@ -1414,6 +1415,7 @@ CONFIG_CLK_RENESAS_VBATTB=m
+ CONFIG_HWSPINLOCK=y
+ CONFIG_HWSPINLOCK_QCOM=y
+ CONFIG_TEGRA186_TIMER=y
++CONFIG_CLKSRC_STM32_LP=y
+ CONFIG_RENESAS_OSTM=y
+ CONFIG_ARM_MHU=y
+ CONFIG_IMX_MBOX=y
+-- 
+2.25.1
 
-Please take a look at it if you have a chance. I will be glad to test a pat=
-ch.
-
-Thanks!
