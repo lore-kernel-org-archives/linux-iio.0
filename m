@@ -1,158 +1,139 @@
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D96B2566FA
-	for <linux-iio@vger.kernel.org>; Fri,  2 May 2025 15:04:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B0FB2571D6;
+	Fri,  2 May 2025 15:12:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746198287; cv=none; b=jclWICvLZTBLE1XsxQ9Sr0F0fn3A3QECg7E/T62wgXOnVkD4x53OoMTulH4rtjg4q9zciqn+z5r1p6kbM5Wrcjl40OSRdrQOrpTXDATN49uNQAiGs9ZuSdMkMqm4gGp5WFSBJtOtfw0JSNdJhS7BpuwJAXHDt3MnfhTgiGaY/ag=
+	t=1746198724; cv=none; b=k2X44g0u6jAorADwAceZ2VImWihEXO0Na5341xMmOcEj2D4j1DX7OFfemGxoEUVmEQc8OZ1CZ/DWArcoez6d8a7IFZRQt/15HPTyoNPE0gOZ9P8NWZt2CQPgURDx7Rkp9SmdLibai3FGqlZGRKGaqfGx3rRLCCul4w6fU0rt/6I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746198287; c=relaxed/simple;
-	bh=QB2pd6K32pPm/R4yNnvzN2uXpyKKtYoPhUKZ0fvdOl4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=rWg+t+Ihxnb93MPc+bKKAPETyqvMIXk2g1/G8AK+FxwKyGn5/HxJPiNsVRvZ05VkkdH7VSIMtSmFtS7qYawIrTVqrL0aKIw+S3U15UoVNIbXPQsLE15MDyPqPoD0az/1BgH78TOdS/J5p1Cn2eubPAfohQLuCQJQ4/5bgcsjVps=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=mZ78Ol0G; arc=none smtp.client-ip=209.85.160.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1746198724; c=relaxed/simple;
+	bh=kZKXI6/uFrFgf0zzHWpzQU9eYJpYBDjFtMV5PFlTKpI=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=bSOhHT4AxpuYrHDhfcN6jmI+yGAv4TzJmnBs+nk3+/4lQDVyjFCHfiO65Zl11aA3s7TPvyZabnv6Cgfe60ymw+8G8+jo0hFj8MNt9Q7ZcpzSfT/Nqbxj3il4TMkLG9sjmedxP/9BxH+we7HurXo2xpRz9QOKES2cHTJluy8A1rs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IRB9eJLK; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="mZ78Ol0G"
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-2c7f876b320so1925498fac.1
-        for <linux-iio@vger.kernel.org>; Fri, 02 May 2025 08:04:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IRB9eJLK"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-43d2d952eb1so10909585e9.1;
+        Fri, 02 May 2025 08:12:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1746198282; x=1746803082; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Yx+8S/vQHwR2Y2hsJMbT8d2LyCyrGyIwd6nkEI2M9RY=;
-        b=mZ78Ol0Ggc1C8QpjO93TW5bLc5ysRWkMyywxI3QHQfkOGF1ab6UxZ8z7PbN0ZmwXP5
-         jw85lvUwqWVMT5Vb9CF7EWAXMfjdbsej3kYMKwwJJSQBHEWbosRWyS1izOUQKe0DaPSg
-         2LHstaRWBG1qYnkQ0oGZrW6aT5iAweOQl8ng8XcaTHJ/SvxWE4zEtEnU2H7D3IsYLAtE
-         ic5D0jssPgUKFcuHEfWwUAsOgS1xpFEqrGAECXnloRfN+X+eDi7HdQWnt9VDf5R6Yyx6
-         5d1Ca4w3HCE2C+zV8PVWCP/P+n19TFrWqyYP5nEA2VT1N77b/q/POromkIEt3J8MtjxS
-         mfpQ==
+        d=gmail.com; s=20230601; t=1746198721; x=1746803521; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=EkP+KLHEHGX3dt9RAviT/xgLgWvtY3Nj3l7Y6rhQasI=;
+        b=IRB9eJLKKuTm7fXD8YzpDkdvjStCXV+4ktOabKecWPmGZVwr9xqKEakkhnir7clrJ5
+         mWoGAd6EW3HO8mAPuzsG6JkK0cJ0Tj9MHo9f71i9QQ9xnIgtlyfvFSvzMGBm4VMVWuju
+         rO0OELDp8MlcK1PM2oyg0D6cZcdssEhU1j9fffm8KsgaXwZjU620eO5VxX/HRdmMiGz9
+         ht90c/RlqiKk3fg13zsiDTJfSoGWVajkHqPczp83G+qk44fGKPZnp0fn5WQvawbRQ2Fz
+         1GfBSLJk0iyJTh+5m47k/u9/QKD1SZc4wSPS15OuwgXIerKNqVZ436v2pZivm7sgfplU
+         AGvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746198282; x=1746803082;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Yx+8S/vQHwR2Y2hsJMbT8d2LyCyrGyIwd6nkEI2M9RY=;
-        b=ilNM9XK8GKPWD9smaAkCTu+6CXWgWyHNMVnh+twscsFUBsfqqQJNM9lL3YN4Q6vP5D
-         //pE+Tczc1UIhbe/lqSVntHeQ1LXdF2VyDCj2S7Q+XqA1KlAF+gSNOTAhDc3aMdc3l4H
-         prn50T8Qkqx3U5Vv5Zl0iYYwsmf2F6XBzxMutTxHUkuHUSjMD0PR5V8CiJfSQ1oyX3O2
-         RJsuE/09M5F1xqmYBMq8k1FhYJc3hWlowAF9fteg+TTfWFyih0MBSHUTQkpYmpcHsW8z
-         LtPyGXNOBnC19pYYQPxzrGGLhQ8awV9WwsvtoWIYZTI+k0xvl/0s/wG2/kSTYo69B67Y
-         bU3Q==
-X-Forwarded-Encrypted: i=1; AJvYcCU8SogPPr6Q0fIBtMmkRR4tYprAqf0qDvrTWgX7LWnAL77D0ZxJPDt/p7oofW4WQROJmH4qOITR75Q=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzFh93hx5i20xmO1lEXguLwrzdIMxQubvBdK2vdMfw05Fw9W2/A
-	rPgeMj5RSPmb1b1OKVlSmh1aDIGBCB3GoaMD/JBXkYCCkYAW3xnOJUiLazCXLdE=
-X-Gm-Gg: ASbGncsGN3dmKfuo4QBKPyh/f7jGHm5NnxpKLVtZ+CXa8UrkWoXFJed2kEKF6PuqJTE
-	V8jaQsGgQ8TfNsExBnwKoI6Fl8sThkE/1Xwftm6sims+T8SAFeZ4InI+Gmj4MFlNeyP+oO3RtXz
-	6qzecC5rh/OZrjS/QvEqMzvChnhzciA8gm2E1MolBC2vd1s3i+hQjEXIGU7liIZrcBJESxVqRGR
-	tRNRoeIk+I+zl3LJN7IfJrzKe8hGBCZ1sv2OjTl3BsGZj2UPgnjeVSJSMUMGXqFymVuW6DS0haB
-	2oY82JDO4o8b7LBgWEO/tX4w+juOBAe/fIJWs85ABaIB5ew=
-X-Google-Smtp-Source: AGHT+IGNMhkaVj+iDHOz99QtZekWxhAI81Hk2kvf5cOCHjEgB0H3yNw25pFfE+jxIY2yWDJiCPWz3w==
-X-Received: by 2002:a05:6871:2b19:b0:2b8:fab0:33c with SMTP id 586e51a60fabf-2dab30da0e1mr1585109fac.23.1746198282144;
-        Fri, 02 May 2025 08:04:42 -0700 (PDT)
-Received: from [127.0.1.1] ([2600:8803:e7e4:1d00:4489:d382:ca90:f531])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-2daa0ed6ef5sm644551fac.13.2025.05.02.08.04.40
+        d=1e100.net; s=20230601; t=1746198721; x=1746803521;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=EkP+KLHEHGX3dt9RAviT/xgLgWvtY3Nj3l7Y6rhQasI=;
+        b=lDtqNRI36dg4/tUC2s8MVOQsHHz4if3f46Vvv7Yv0qqTSVw7FIIKMsSOANDdR79tBP
+         OtxFzflcviZL7B5XkR5mzUaSIp7q76XOwK6BF5HQz2arMBWjLnlOuii+nXRANqME2dpv
+         E+WY7+yDgZaxOVye19SooTHETDjRiRBEtzrgT2PzAj2P1NQ5oV8VZzExZLlHJyk7Qcva
+         66R7c5GNZnpG0MSTyu5v4NUxywzNq5tyy5PtQEzN0FzCBvw5OvIMlrVp1AKaRnUqiXpD
+         9tTGe5vXRXjD5KiBoxwVxCJjaD8u/ZK45ZmWYmSqlTAfh5NwHLdmFTtADwJWpSs2XTyw
+         hlUw==
+X-Forwarded-Encrypted: i=1; AJvYcCV9zYyACQA81s0/K58NPUazhbeog1cF/erESVZzf9qbbWYk5FqvYgPFpaY6M+c4TevCUW9eunnEvnA=@vger.kernel.org, AJvYcCXKvWosvqcL2z7tqyfkVJziiwWbCWlE7qQL7wQGvXq7q5a3oUXVlDcNNe71IG/CZtKIc9iI9oT/B0brmALF@vger.kernel.org
+X-Gm-Message-State: AOJu0YwmD4uxksqbKu5Tnab+vBDHxDhCstTBPYPBXyiUAUM2Huuy5AyF
+	hDA1FTHxtMimDjl6qzGKrAil4uYkJyVEKxXo+Geygqi9AZljqRWl
+X-Gm-Gg: ASbGncu8+i5cMht0OgvokbQakFngkMxQEJjhdTHtFqyRP51IaX9qKjjw3r1yfK95wrj
+	7Spb64RW5Klj/b151bNGo/wXqPKMEv3Qix3xg6sNYlQ+dxcQwCeLH3xXVPzt983Ov8BCVdG3q4E
+	2cfI1pUU6OJO93w182+gbgild0eVujBxRYDqwv/luZmtn/iVa0n3PdEwlBc+oaszt4cQu8qeUk4
+	y99gueYhontfZfO77EqPZVr1TlKmH7o9ElCUf2QRicSeQ0g9HEf+6lECihzIRjxfudqfIDFdHzt
+	tA9Tw0/BQmpyZVyq3x+kobErgqcop5cIIGmm86WjIOHhjhDM9DZVyOqPZtUw5eC4gsgBPH9+JYR
+	n3N0TL98bP+QL
+X-Google-Smtp-Source: AGHT+IEp5bjABLf5PrKWB38QP0IfyOTotnngZj4wN/0BMYkWeiZ9iIddCIgGrgPPB0CGA0rFvWwaUw==
+X-Received: by 2002:a05:600c:828e:b0:43b:c5a3:2e1a with SMTP id 5b1f17b1804b1-441bbe98627mr33094745e9.2.1746198721079;
+        Fri, 02 May 2025 08:12:01 -0700 (PDT)
+Received: from ?IPv6:2001:818:ea8e:7f00:2575:914:eedd:620e? ([2001:818:ea8e:7f00:2575:914:eedd:620e])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-441b2af2a9dsm94013745e9.19.2025.05.02.08.11.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 May 2025 08:04:41 -0700 (PDT)
-From: David Lechner <dlechner@baylibre.com>
-Date: Fri, 02 May 2025 10:04:30 -0500
-Subject: [PATCH] iio: adc: ad7606: fix raw read for 18-bit chips
+        Fri, 02 May 2025 08:11:59 -0700 (PDT)
+Message-ID: <c3a792558b7d35f7342a53c94810861cb0eb0b8e.camel@gmail.com>
+Subject: Re: [PATCH v1] iio: backend: fix out-of-bound write
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Markus Burri <markus.burri@mt.com>, linux-kernel@vger.kernel.org
+Cc: Nuno Sa <nuno.sa@analog.com>, Olivier Moysan
+ <olivier.moysan@foss.st.com>,  Jonathan Cameron	 <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>, 	linux-iio@vger.kernel.org, Markus
+ Burri <markus.burri@bbv.ch>
+Date: Fri, 02 May 2025 16:12:04 +0100
+In-Reply-To: <20250501063240.25295-1-markus.burri@mt.com>
+References: <20250501063240.25295-1-markus.burri@mt.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.1 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250502-iio-adc-ad7606-fix-raw-read-for-18-bit-chips-v1-1-06caa92d8f11@baylibre.com>
-X-B4-Tracking: v=1; b=H4sIAP3eFGgC/x2NMQ7CMBAEvxJdzUqOiYPFVxCFOV+Sa+LojAJSl
- L9jUUwxxeweVMVUKt27g0x2rVrWJv2lI17SOgs0NyfvfHDBeagWpMyN2+hGTPqFpQ9MUsZUDH3
- ES9/gRbcKye4aeIhROFGb3Exa8L97PM/zBwaB2Kp+AAAA
-X-Change-ID: 20250502-iio-adc-ad7606-fix-raw-read-for-18-bit-chips-ed035c488eca
-To: Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, 
- Alexandru Ardelean <aardelean@baylibre.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- David Lechner <dlechner@baylibre.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2484; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=QB2pd6K32pPm/R4yNnvzN2uXpyKKtYoPhUKZ0fvdOl4=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBoFN8BDQTJjVmsd05Udedvo6DwlFVQpvv7G88qq
- m62v7OjfouJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaBTfAQAKCRDCzCAB/wGP
- wMqSB/4p3EefATkSJOp2LT+eaEEcLEPE9eaEssAG+AMtZ6FabUpkWgb/YEFfTk3mnKSswvNwWa5
- 5p8Fhtt1ksA/SZVBw6//aiLk8sDpMsbfDli/6VWnGmDkud4SQWtMm46BXu2f/57+vBBN3h/Bj7C
- iGUSvi7jDTSd2hWFgFb1I/puJg1pfQZq5PJF2D8rVNZ1Kxo0y1s4R5TqkIvHVjRmvOiSNOBg5VJ
- 138bd/m0O4itiHDskJgdLKZVVjTFXh7KI8H81tiESAYrphQhy5AM4/XZo+VXtTcnFe5inGNKaoI
- nFQzAQhb37auUXkEbGP9np12Kstjjh7c0bj0qzc/KFNcgzUq
-X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
- fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Fix 18-bit raw read for 18-bit chips by applying a mask to the value
-we receive from the SPI controller.
+On Thu, 2025-05-01 at 08:32 +0200, Markus Burri wrote:
+> The buffer is set to 80 character. If a caller write more characters,
+> count is truncated to the max available space in "simple_write_to_buffer"=
+.
+> But afterwards a string terminator is written to the buffer at offset cou=
+nt
+> without boundary check. The zero termination is written OUT-OF-BOUND.
+>=20
+> Add a check that the given buffer is smaller then the buffer to prevent.
+>=20
+> Fixes: 035b4989211d ("iio: backend: make sure to NULL terminate stack buf=
+fer")
+> Signed-off-by: Markus Burri <markus.burri@mt.com>
+> ---
+> =C2=A0drivers/iio/industrialio-backend.c | 3 +++
+> =C2=A01 file changed, 3 insertions(+)
+>=20
+> diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industriali=
+o-
+> backend.c
+> index a43c8d1bb3d0..3878bd698c98 100644
+> --- a/drivers/iio/industrialio-backend.c
+> +++ b/drivers/iio/industrialio-backend.c
+> @@ -155,6 +155,9 @@ static ssize_t iio_backend_debugfs_write_reg(struct f=
+ile
+> *file,
+> =C2=A0	ssize_t rc;
+> =C2=A0	int ret;
+> =C2=A0
+> +	if (count >=3D sizeof(buf))
+> +		return -ENOSPC;
+> +
 
-SPI controllers either return 1, 2 or 4 bytes per word depending on the
-bits_per_word. For 16-bit chips, there was no problem since they raw
-data fit exactly in the 2 bytes received from the SPI controller. But
-now that we have 18-bit chips and we are using bits_per_word = 18, we
-cannot assume that the extra bits in the 32-bit word are always zero.
-In fact, with the AXI SPI Engine controller, these bits are not always
-zero which caused the raw values to read 10s of 1000s of volts instead
-of the correct value. Therefore, we need to mask the value we receive
-from the SPI controller to ensure that only the 18 bits of real data
-are used.
+Oh, this can indeed easily lead to an oob access. However, I would likely n=
+ot
+mind in early returning an error. This is to write registers so 80 should b=
+e
+more than enough. Meaning that to trigger this, it has to be intentional. T=
+hat
+said, of course we should not let that happen but I would still truncate th=
+ings
+and let it fail afterwards (keep the code slightly simpler with one less ch=
+eck).
 
-Fixes: f3838e934dff ("iio: adc: ad7606: add support for AD7606C-{16,18} parts")
-Signed-off-by: David Lechner <dlechner@baylibre.com>
----
-Jonathan, I based this on the fixes-togreg branch since I assume it will
-go that route, but beware that there is a trivial merge conflict with
-https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=togreg&id=3b5b55ca940733b7b533fe3137a307ceacb4fb90
-as that patch modifies an adjacent line.
----
- drivers/iio/adc/ad7606.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+So I would instead do:
 
-diff --git a/drivers/iio/adc/ad7606.c b/drivers/iio/adc/ad7606.c
-index 703556eb7257ea0647135c4b268a8ead93115c6f..8ed65a35b4862315431a4852453639b4e056178e 100644
---- a/drivers/iio/adc/ad7606.c
-+++ b/drivers/iio/adc/ad7606.c
-@@ -727,17 +727,16 @@ static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned int ch,
- 		goto error_ret;
- 
- 	chan = &indio_dev->channels[ch + 1];
--	if (chan->scan_type.sign == 'u') {
--		if (realbits > 16)
--			*val = st->data.buf32[ch];
--		else
--			*val = st->data.buf16[ch];
--	} else {
--		if (realbits > 16)
--			*val = sign_extend32(st->data.buf32[ch], realbits - 1);
--		else
--			*val = sign_extend32(st->data.buf16[ch], realbits - 1);
--	}
-+
-+	if (realbits > 16)
-+		*val = st->data.buf32[ch];
-+	else
-+		*val = st->data.buf16[ch];
-+
-+	*val &= GENMASK(realbits - 1, 0);
-+
-+	if (chan->scan_type.sign == 's')
-+		*val = sign_extend32(*val, realbits - 1);
- 
- error_ret:
- 	if (!st->gpio_convst) {
+buf[rc] =3D '\0';
 
----
-base-commit: 609bc31eca06c7408e6860d8b46311ebe45c1fef
-change-id: 20250502-iio-adc-ad7606-fix-raw-read-for-18-bit-chips-ed035c488eca
+Thanks for catching this!
+- Nuno S=C3=A1
 
-Best regards,
--- 
-David Lechner <dlechner@baylibre.com>
 
+> =C2=A0	rc =3D simple_write_to_buffer(buf, sizeof(buf) - 1, ppos, userbuf,
+> count);
+> =C2=A0	if (rc < 0)
+> =C2=A0		return rc;
+>=20
+> base-commit: b4432656b36e5cc1d50a1f2dc15357543add530e
