@@ -1,47 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD7031B3957;
-	Sun,  4 May 2025 16:20:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEEA8156F45
+	for <linux-iio@vger.kernel.org>; Sun,  4 May 2025 16:46:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746375646; cv=none; b=kWpuYYlAGanHnd0RosVPD3VuNGSbhQpdsj+wnyYLa3a52+xBpMu39K2kByVVSm1wU/J6wsCK2PM/U+DzLsC9Zreb4XpxfGezcjnMXeP+4y8nFCV/wSf7/4f1APOqDWSSJuzLQNG7kUEgQ3/UCErAWmI2KxxaybYAk8LmvKorbQk=
+	t=1746377208; cv=none; b=OpvsIHDdqFe+Djvr5QkLSC98vM/xyfy1QMxGUWO4tJIVQqkK4nwgbAE8gmERscrObYITDLyfcRzIjNd60RdSBod+ChuOtMJ6JfKML8tAptyQjpi8nS3TK5uHyU1b8H5yohOOeXvHLnMd+p8hus3HkiEB3LnSXQR2zsqFPIwcfTI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746375646; c=relaxed/simple;
-	bh=8SGKrwFsi6MSGg1AkOsX7EbuWyf4IOy6I9k86qXwR5o=;
+	s=arc-20240116; t=1746377208; c=relaxed/simple;
+	bh=VY1JnMNPod/eMQARFKWyYjfOrsPuwmVewyRarRyDuhU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QJppkii1pv5na5j1iCOOGWSfdcy7ciJuVHsA9VO0fBMn/ZBz1lf3QbAX1Ev3yhft0CEjiclF513NtSyVXFKHiGjEbC8lt1qyuE+IfewobWsaRt0uN0nqbPNV3WQZyqP7sTK+lJta8Rob0jc6r3v8D93zj0lATbjPxr1uuwIzvew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=diEQgoGH; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=LwFeJN0ZGhztxwo9TujoqFtXVOIiPx6W0oS3YEOU8u/rezCSeU3YEICIdsq/gDPtxLnQxt/9mGBx5Q72Wu31Cowredb05GsyJ2KCOkV3bj+6xDuVlmuFkNZNiwM7A26YrqhndwwjMpAEPhzWta1jVWpqgIYigVmwirU6mlR2TAc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fUr0pUfI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="diEQgoGH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17B47C4CEED;
-	Sun,  4 May 2025 16:20:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fUr0pUfI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7AD3C4CEE7;
+	Sun,  4 May 2025 16:46:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746375645;
-	bh=8SGKrwFsi6MSGg1AkOsX7EbuWyf4IOy6I9k86qXwR5o=;
+	s=k20201202; t=1746377208;
+	bh=VY1JnMNPod/eMQARFKWyYjfOrsPuwmVewyRarRyDuhU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=diEQgoGHb4QlcwRjRjhFNpHordBbmX2YI7DoQFo0LlesJA9RE/dzCML+UxCx7sW0D
-	 89I5ZRX1FvabdAg4KLmjy491B7qQex8Mw+E82cv6NnLFOEt0tL5Ku91Ud7xtkJQQxl
-	 /kqQIS4N4fC2UevTvNmGITHZR+57QFnlkyTl0YJ0gj/XIafkRnqojzi0sQ1j1/IoXG
-	 gza8fKcWPhsqlmyLxQnZqZ+SaEGclgAFql4pQ29LEpXKnB/uxC0b/CgSuG3DVe3S0i
-	 /xcZw0hDBPweZAi+fnHfKXrphoDbjv+zRlCwubC92upOyveDn7f7/W5CJDPAUIPGdv
-	 AZVHVN5f4KkUQ==
-Date: Sun, 4 May 2025 17:20:34 +0100
+	b=fUr0pUfIJLbb+HG5ibCfTwwSaJ6n5wtZirfs+K8MxrvxKXBD0OJJf4J8qzT7hRv7t
+	 C6nGekoYMzB0gVYm/YzXNFhZKeWXY1RyC4KeAUtEfY9foerDynVUJ3hhT2YjjL0pU7
+	 6vMjLDEKiTCINX51s3bDYYM5boe2AzEUiCj2lyV90qJQT3ravFt0nl0g/JBNP529jJ
+	 eWv9BHq6xMuZwfzCB0N3VJWzr+Y8Ms5VzRH9T58vjFdNHakf1GUT17ixrPaVdqKODW
+	 O+XyIW6XB+i6UAvNrWZxseG0M6tnfVNb36A5JwHe3doDOiueHSb52fd0VQEZjFCwPq
+	 BoZecjjKlXtyA==
+Date: Sun, 4 May 2025 17:46:43 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Sayyad Abid <sayyad.abid16@gmail.com>
-Cc: linux-iio@vger.kernel.org, lars@metafoo.de, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, dlechner@baylibre.com,
- nuno.sa@analog.com, javier.carrasco.cruz@gmail.com,
- olivier.moysan@foss.st.com, gstols@baylibre.com, tgamblin@baylibre.com,
- alisadariana@gmail.com, eblanc@baylibre.com, antoniu.miclaus@analog.com,
- andriy.shevchenko@linux.intel.com, stefan.popa@analog.com,
- ramona.gradinariu@analog.com, herve.codina@bootlin.com,
- tobias.sperling@softing.com, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 0/5] iio: adc: Add initial support for TI ADS1262
-Message-ID: <20250504172034.2ab4936a@jic23-huawei>
-In-Reply-To: <20250501100043.325423-1-sayyad.abid16@gmail.com>
-References: <20250501100043.325423-1-sayyad.abid16@gmail.com>
+To: r2.arthur.prince@gmail.com
+Cc: linux-iio@vger.kernel.org, arthur.prince@ime.usp.br, Mariana
+ =?UTF-8?B?VmFsw6lyaW8=?= <mariana.valerio2@hotmail.com>
+Subject: Re: [PATCH] iio: adc: Kconfig: add kfifo dependency to fix module
+ build
+Message-ID: <20250504174643.40feaa67@jic23-huawei>
+In-Reply-To: <20250430191131.120831-1-r2.arthur.prince@gmail.com>
+References: <20250430191131.120831-1-r2.arthur.prince@gmail.com>
 X-Mailer: Claws Mail 4.3.0 (GTK 3.24.48; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,78 +43,38 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu,  1 May 2025 15:30:38 +0530
-Sayyad Abid <sayyad.abid16@gmail.com> wrote:
+On Wed, 30 Apr 2025 16:07:37 -0300
+r2.arthur.prince@gmail.com wrote:
 
-> The ADS1262 is a 32-bit, high-resolution delta-sigma ADC communicating
-> over SPI. It's designed for precision measurements.
-> 
-> This initial driver provides the basic functionality needed to:
->  - Probe and register the device via SPI.
->  - Expose standard IIO channels for reading raw voltage samples.
-> 
-> Basic testing was performed on a Raspberry Pi Zero 2W using the hardware
-> SPI0 interface. The connections used were:
-> 
-> +-----------------+            +-----------------+
-> | RPi Zero 2W     |            | TI ADS1262      |
-> | (SPI0 Pins)     |            |                 |
-> |-----------------|            |-----------------|
-> | MOSI            |----------->| DIN             |
-> | MISO            |<-----------| DOUT/DRDY       |
-> | SCLK            |----------->| SCLK            |
-> | CE0             |----------->| /CS             |
-> | 5V              |----------->| DVDD, AVDD      |
-> | GND             |----------->| DGND, AGND      |
-> +-----------------+            +-----------------+
-> 
-> I would greatly appreciate any feedback on the driver structure,
-> IIO integration, SPI communication handling, or any potential issues
-> or areas for improvement you might spot.
-> 
-> This series is broken down as follows:
->  Patch 1: Adds the core driver code (ti-ads1262.c).
->  Patch 2: Adds the Kconfig option.
->  Patch 3: Adds the Makefile entry for compilation.
->  Patch 4: Adds the MAINTAINERS entry.
-> 
-> Thanks for your time and consideration.
+> From: Arthur-Prince <r2.arthur.prince@gmail.com>
+>=20
+> Add dependency to Kconfig=E2=80=99s ti-ads1298 because compiling it as a =
+module
+> failed with an undefined kfifo symbol.
+>=20
+> Fixes: 00ef7708fa6 ("iio: adc: ti-ads1298: Add driver")
+> Signed-off-by: Arthur-Prince <r2.arthur.prince@gmail.com>
+> Co-developed-by: Mariana Val=C3=A9rio <mariana.valerio2@hotmail.com>
+> Signed-off-by: Mariana Val=C3=A9rio <mariana.valerio2@hotmail.com>
+Applied and marked for stable
 
-Hi Sayyad
-
-As a general rule, an RFC is usually meant to contain a list of open
-questions or some clear statement on why it is not ready for consideration
-as a final driver submissions. Often that is something like some other
-ongoing discussion that needs to conclude.
-
-I'm not seeing such questions, so I'm guessing this was just a bit of
-a lack of confidence?  In general it looks pretty good so drop the RFC on
-v2 :)
-
-Jonathan
-
-> 
-> Sayyad Abid (5):
->   iio: adc: ti-ads1262.c: add initial driver for TI ADS1262 ADC
->   iio: adc: Kconfig: add Kconfig entry for TI ADS1262 driver
->   iio: adc: Makefile: add compile support for TI ADS1262 driver
->   MAINTAINERS: add entry for TI ADS1262 ADC driver
->   dt-bindings: iio: adc: add bindings for TI ADS1262
-> 
->  .../bindings/iio/adc/ti,ads1262.yaml          | 189 ++++++++
->  MAINTAINERS                                   |   7 +
->  drivers/iio/adc/Kconfig                       |  12 +
->  drivers/iio/adc/Makefile                      |   1 +
->  drivers/iio/adc/ti-ads1262.c                  | 438 ++++++++++++++++++
->  5 files changed, 647 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads1262.yaml
->  create mode 100644 drivers/iio/adc/ti-ads1262.c
-> 
-> --
-> 2.39.5
-> 
-> 
+> ---
+>  drivers/iio/adc/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 849c90203071..513f2238fdee 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -1492,6 +1492,7 @@ config TI_ADS1298
+>  	tristate "Texas Instruments ADS1298"
+>  	depends on SPI
+>  	select IIO_BUFFER
+> +	select IIO_KFIFO_BUF
+>  	help
+>  	  If you say yes here you get support for Texas Instruments ADS1298
+>  	  medical ADC chips
 
