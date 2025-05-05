@@ -1,45 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A75625CC5F;
-	Mon,  5 May 2025 15:14:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 722D725DD01;
+	Mon,  5 May 2025 15:16:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746458050; cv=none; b=UkZkRaRtTC4ypmjjzoytz10XC5k7ipe00LyKZkhaj0wvNpqNeNFyVQmdAEBpc+j3Kq3Po1DbdaYiebsOiZiCAHKH+IOCqXRfFy8FqhGewSDLv7ubyWoqcLEUmn5lkZ+19itOeKXO/kSpFbWZzg94kTbzvd7ng1yuuGRtxTd9BEw=
+	t=1746458212; cv=none; b=l5uH7cAewGZnIBEP3dZoEqDAnDvwhqdIYMtr1KYR7Dfly+xNde5aklV5DFUzvNGuhYWyjvAiOiQdHNMmPFT0eb9BFnQmEIkJg1B0IOLEm3tUak9rO9Wl+uji7ihVNs5hTWVVLD6J1qCQv3/KuL4IFLEh5eQ7MecZ0BAGZRvQhIk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746458050; c=relaxed/simple;
-	bh=fOWCYB261CKY3DGII2XxD4+KR0IwD6lIj2iPQ/x+u2Q=;
+	s=arc-20240116; t=1746458212; c=relaxed/simple;
+	bh=6x3lekKTFSPzx8ESHrUQ2eoOKoI6fl0LkpCkCYPxYoI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tA83j0ChnrVBiqJbHerBmunmxFPKzpySVVy5z9CHUTjCagCsfD1DL5r2+a4WmjVLC4exciZ+bcEjEK9AKIsZPbyc/I/Cq5yyZFuluLheWlYNpSXGf/34O1nnXABwKLWoqfCNkqAjaf7+CXB+uTylIjhsYRIcgcJY85rzWk8xsgI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=soRzzs7g; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Vm7uMK3X8ojDXAXFIMxay0Lzkh2mOYcVygvy3QdhZ8Q5uOor6G3RnBr6LERLwsz/+64VEm0BYONHDQZ68lW3TvlSK2Pbx9PshGWsxYaL+TbV01a/BCnPzH5MHJBLP2cZinEe8wea9ZOIkfIohV5pf+fg6NUTEJNXoXaltSSAfBk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D/4y6Wt6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="soRzzs7g"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC174C4CEE4;
-	Mon,  5 May 2025 15:14:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D/4y6Wt6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DE02C4CEE4;
+	Mon,  5 May 2025 15:16:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746458049;
-	bh=fOWCYB261CKY3DGII2XxD4+KR0IwD6lIj2iPQ/x+u2Q=;
+	s=k20201202; t=1746458211;
+	bh=6x3lekKTFSPzx8ESHrUQ2eoOKoI6fl0LkpCkCYPxYoI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=soRzzs7g9IvNtjxqENbCb3reytQbYdGYBCy3jeIiULTpPPD7idv8FZKgGe4cvFehl
-	 d1j8CwPvz5jrw88vd881eCTy704qPKs2EiuH6Pzo2DomYy2c1s5sy6EkYIjijbzvpy
-	 hXSsa/f6/7mqz2SD61ck0GIv4bAagyqhK3EKd6B7UtA/6Y+B0QdPb+B1cdFqi4Tvym
-	 p/DI9FkMMHml7NgIYSi4yIbwzjTFrGl3AQURQQAwdLY3aeSglM7ZC6d6JSe1A0841r
-	 lS6KniAEoXNBuPWTz30OFDyl2tOVsGMADvvmRu4E3O3jyxqWKxpF9N4MYskGVdAhGJ
-	 l/YWygzrz+f0g==
-Date: Mon, 5 May 2025 16:14:02 +0100
+	b=D/4y6Wt6d5qDhvjgoQLNKP+g2gJDnZW7tMVOOE3cgWnYpDn/jT9Lm6ZreZtaFs6sM
+	 WQxTfYESl2L4Gygdn25AtPQ9ou4cTgVvAZ1BcDhbnvsnmpSB1D1FV5GBj26F5o91pS
+	 UC1YD45VdPMhNghFb7Y3ZvpHR8q4+lJ8a0ztZkkUayBY9Zj/JjQoWRfNGCa8/HGaKQ
+	 DH5qgZ2uvvn0araso6xTI6acj3KTRlV2JVIpDVCRnEXm8FpfVYjS1fIGpzmhAaE8sp
+	 YHFGFsk2qrilxsqSfhoOBzGgeq1u5Ewoap/K7QmzGtrGzGkLAqAuoC6dkW+9DY8344
+	 klXCALCoYS7Mg==
+Date: Mon, 5 May 2025 16:16:45 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ad7606: explicit timestamp alignment
-Message-ID: <20250505161402.48da1ba7@jic23-huawei>
-In-Reply-To: <efe160b5-5d91-4892-a0d6-ef73116fe071@baylibre.com>
-References: <20250428-iio-adc-ad7606-fix-buffer-alignment-v1-1-88dfc57e5df0@baylibre.com>
-	<d7f00a8c9d4da6f780c1ec067be2702fa0e60ea1.camel@gmail.com>
-	<20250504155544.60fe3464@jic23-huawei>
-	<efe160b5-5d91-4892-a0d6-ef73116fe071@baylibre.com>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ mazziesaccount@gmail.com, linux-iio@vger.kernel.org, Fabio Estevam
+ <festevam@denx.de>, stable@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: Fix scan mask subset check logic
+Message-ID: <20250505161645.5bca37c5@jic23-huawei>
+In-Reply-To: <CAOMZO5DeMNGqpF4T7tuvBBN=i95uReSTXkj-sNW2jZTUO++5ZA@mail.gmail.com>
+References: <20250429150213.2953747-1-festevam@gmail.com>
+	<20250429183301.326eaacf@jic23-huawei>
+	<CAOMZO5DBpF+iO4NY4-tn3ar+Ld+c=SA6W-UKN0haWmAK=4g-+g@mail.gmail.com>
+	<CAOMZO5B0nxVEW1Q-a05j8f+=waAYijvBq573Ha8DNbOgF0287w@mail.gmail.com>
+	<20250430141112.00004bb8@huawei.com>
+	<CAOMZO5CYuv94N_8ZepH04y8ez1CAmOJOq4eim=dLGmMFoStQ3g@mail.gmail.com>
+	<20250430182537.00007eab@huawei.com>
+	<CAOMZO5BCLWFJ=83r0saT=NxVP0f9G-P-2QosDNGArYAtX6v5Lw@mail.gmail.com>
+	<20250504180420.73b96437@jic23-huawei>
+	<CAOMZO5DeMNGqpF4T7tuvBBN=i95uReSTXkj-sNW2jZTUO++5ZA@mail.gmail.com>
 X-Mailer: Claws Mail 4.3.0 (GTK 3.24.48; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,30 +55,111 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 5 May 2025 08:57:29 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Mon, 5 May 2025 11:24:36 -0300
+Fabio Estevam <festevam@gmail.com> wrote:
 
-> On 5/4/25 9:55 AM, Jonathan Cameron wrote:
-> > On Tue, 29 Apr 2025 14:01:54 +0100
-> > Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
-> >  =20
-> >> On Mon, 2025-04-28 at 21:17 -0500, David Lechner wrote: =20
-> >>> Use struct with aligned_s64 timestamp to make timestamp alignment
-> >>> explicit. Technically, what we have works because for all known
-> >>> architectures, IIO_DMA_MINALIGN is a multiple of __alignof__(s64).
-> >>> But this way, we don't have to make people read the comments to know
-> >>> why there are extra elements in each buffer.
-> >>>
-> >>> ---   =20
-> >>
-> >> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com> =20
-> > Applied to the togreg branch of iio.git and pushed out as testing
-> > for all the normal reasons.
-> >  =20
-> Not sure how we all managed to this, but this is missing:
+> Hi Jonathan,
 >=20
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
+> On Sun, May 4, 2025 at 2:04=E2=80=AFPM Jonathan Cameron <jic23@kernel.org=
+> wrote:
 >=20
+> > Ah. I was wrong for last two channels above. The scan masks for single =
+channel for
+> > differential channels also index a bunch we aren't using in this device.
+> > =20
+> > > +       MAX1363_CHAN_B(0, 1, d0m1, 12, bits, ev_spec, num_ev_spec),  =
+   \
+> > > +       MAX1363_CHAN_B(2, 3, d2m3, 13, bits, ev_spec, num_ev_spec),  =
+   \ =20
+> > //gap here as we aren't using 4,5  6,7 8,9, 10,11
+> > =20
+> > > +       MAX1363_CHAN_B(1, 0, d1m0, 14, bits, ev_spec, num_ev_spec),  =
+   \ =20
+> > Should be 18
+> > https://elixir.bootlin.com/linux/v6.14.5/source/drivers/iio/adc/max1363=
+.c#L262 =20
+> > > +       MAX1363_CHAN_B(3, 2, d3m2, 15, bits, ev_spec, num_ev_spec),  =
+   \ =20
+> > and 19 I believe. =20
+>=20
+> This works fine for me, thanks:
+>=20
+> --- a/drivers/iio/adc/max1363.c
+> +++ b/drivers/iio/adc/max1363.c
+> @@ -504,10 +504,10 @@ static const struct iio_event_spec max1363_events[]=
+ =3D {
+>         MAX1363_CHAN_U(1, _s1, 1, bits, ev_spec, num_ev_spec),          \
+>         MAX1363_CHAN_U(2, _s2, 2, bits, ev_spec, num_ev_spec),          \
+>         MAX1363_CHAN_U(3, _s3, 3, bits, ev_spec, num_ev_spec),          \
+> -       MAX1363_CHAN_B(0, 1, d0m1, 4, bits, ev_spec, num_ev_spec),      \
+> -       MAX1363_CHAN_B(2, 3, d2m3, 5, bits, ev_spec, num_ev_spec),      \
+> -       MAX1363_CHAN_B(1, 0, d1m0, 6, bits, ev_spec, num_ev_spec),      \
+> -       MAX1363_CHAN_B(3, 2, d3m2, 7, bits, ev_spec, num_ev_spec),      \
+> +       MAX1363_CHAN_B(0, 1, d0m1, 12, bits, ev_spec, num_ev_spec),     \
+> +       MAX1363_CHAN_B(2, 3, d2m3, 13, bits, ev_spec, num_ev_spec),     \
+> +       MAX1363_CHAN_B(1, 0, d1m0, 18, bits, ev_spec, num_ev_spec),     \
+> +       MAX1363_CHAN_B(3, 2, d3m2, 19, bits, ev_spec, num_ev_spec),     \
+>         IIO_CHAN_SOFT_TIMESTAMP(8)                                      \
+>         }
+>=20
+> > Maybe we can simplify this and make it less error prone. These scan ind=
+ices
+> > are always the same as the enum max1363_mode entries in the 2nd or 3rd =
+parameter.
+> > We can just reuse those I think.  Only the single channel ones apply he=
+re
+> > but those are the first set of entries in that enum.
+> >
+> > Bonus points for just dropping the parameter and using the existing addr
+> > parameter for the macro as si as well.
+> >
+> > That is:
+> > #define MAX1363_CHAN_U(num, addr, bits, ev_spec, num_ev_spec)   \
+> >         {                                                              =
+ \
+> >                 .type =3D IIO_VOLTAGE,                                 =
+   \
+> >                 .indexed =3D 1,                                        =
+   \
+> >                 .channel =3D num,                                      =
+   \
+> >                 .address =3D addr,                                     =
+   \
+> >                 .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW),        =
+   \
+> >                 .info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE),=
+   \
+> >                 .datasheet_name =3D "AIN"#num,                         =
+   \
+> >                 .scan_type =3D {                                       =
+   \
+> >                         .sign =3D 'u',                                 =
+   \
+> >                         .realbits =3D bits,                            =
+   \
+> >                         .storagebits =3D (bits > 8) ? 16 : 8,          =
+   \
+> >                         .endianness =3D IIO_BE,                        =
+   \
+> >                 },                                                     =
+ \
+> >                 .scan_index =3D (addr),                                =
+   \
+> > The above changed from si to addr =20
+>=20
+> I tried this change on top of the previous one, and it still works.
+>=20
+> How do you think we should proceed? Can you please submit formal patches?
+That would be perfect! If you can do it by modifying the macro as that is
+going to be the simplest path to ensure there are no others even better.
 
-Oops.=20
-Added.
+Jonathan
+
+>=20
+> You can add:
+>=20
+> Reported-by: Fabio Estevam <festevam@denx.de>
+> Tested-by: Fabio Estevam <festevam@denx.de>
+>=20
+> Thanks
+
