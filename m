@@ -1,41 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E7861865E3
-	for <linux-iio@vger.kernel.org>; Mon,  5 May 2025 16:24:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66E6586342;
+	Mon,  5 May 2025 16:32:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746462289; cv=none; b=MF05J9YTNcXa5tMA9QmcymAR94DJqps5I1X665Edkm667XZCSYezvtJX1YHJUAjdYb7310BsuCVPpjOD6Y3LPTvYS7FyCsDSPd6RI7Z58EsUNpLglAe0ycXkrOZQ4VEJY356GGLiuFj4tStPxoEC3F4isPb2Dy4KzUw6BI+4pcw=
+	t=1746462725; cv=none; b=qTJbU4Y0VEFNb1tbDZDa66r7R6Wdb5jly7/ts3y5gn04RFiJlKNHhzwvO5K8petKBTaz8BgCDeGfQLXUUNH3ZP60r27tTqnIauOqSlUALGsM4+Ve/Y07Ixf2TFJBrTaFW6rtNQNesXuPrZefUO1VJCF1uU9/HLNrzZ2KzwHqyu0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746462289; c=relaxed/simple;
-	bh=SSFkXo+ypPrgNIUknBNtwIy0LF10pP1LidJc+qQFLX4=;
+	s=arc-20240116; t=1746462725; c=relaxed/simple;
+	bh=tiVRsmLJNLwUBFGcvVWRYCFsajScnZZQYzwaxhc6GeM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MOD2g4wXhCJ4jWiTVe9z7a26hROHB1W/6G/Cy+hD3bMX0nrgfz6uR5ofB/WsPMAFNQ3kPCqBeKWND3ffCPYlF9Wujs9JAA951BAl32A+/JDqhF7Ndx65UTIQyXtQCrvPPdOVdoyXLiP9ASrmi1y1ohCWJDcshsnPEd2LuNLb2ak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GEFjgyDa; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=U8ro0MKTVHx4O0tbNKYJfHd6TirVjkuLKQt+Knj3zOXmE3oms0txDE7psSw2tHZzi53xv+bKP8PYjly+PMInCjQndi2JWbcYm+goSyGRHwsUyUdbNr51Z3xB4PkW0Cto67Y4YvcZtJmEurxBClAE6xP2AMDonq7bjMHuccvUP+Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UW064QiB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GEFjgyDa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A97CBC4CEE4;
-	Mon,  5 May 2025 16:24:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UW064QiB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AC05C4CEE4;
+	Mon,  5 May 2025 16:32:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746462288;
-	bh=SSFkXo+ypPrgNIUknBNtwIy0LF10pP1LidJc+qQFLX4=;
+	s=k20201202; t=1746462724;
+	bh=tiVRsmLJNLwUBFGcvVWRYCFsajScnZZQYzwaxhc6GeM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=GEFjgyDatb6JM0cIWt4N/yM2FcYpZTqfJ0ZGuHy362BbW0m6mDdX10aYphVBCdF1/
-	 TYufF/Su10JzO+4/1WBBxSo8PaOQGtX5Ne4hGf6eIO2FOxu48RtOj2NbGfLadQmFoy
-	 Ts1IzAM8QFPoOG9/h+8Re6dxyfz/ydrFYyV0hAyZMNa12UZkPQTNi3KIAupRp2jDIx
-	 15qlCFtpaQTywEfApyVNoaLZnLMo41dzpn8q75CiumG3zOzEzR+AZaH2Bj1FjVb+wJ
-	 UHc5oK/ewCDiTDR3ajtSG+1ECdZkRLNW6NZQdawyeTi7XEjPWnmLuoQ+kcV0nIaLUo
-	 KYfr2l8vj61Mg==
-Date: Mon, 5 May 2025 17:24:42 +0100
+	b=UW064QiBvtoRNqQEFWYsghFhlwiRlSBbuEAjI5INi4UD4golpc1ZzglUQu3cT8FJd
+	 IR8+l0IhoKhUdkXizBvCbZ0K2CGGOxyO/jQpebhFsnn6faIxDWKA2wZDi0eESc8zGG
+	 a18Uw9AAMvSGn6kpsu9PC4zI7RbMvGYUH0nE78gQHfLB6oxe3AlttfthCIkkB9AeZM
+	 bSNoCPWna6Kcn+ZBIY/gcoP8sJ8IQJFqVhZ/tD2GjuVGmt3f6+I5osT+uKKr2dCRbc
+	 EVNDxFwnYEA8CzEjYthdTf14l1aXdyx9sMScPUM/Jea4VFNWJCJwjwKkbgxM0jXSiL
+	 +3pilCLj0s2rQ==
+Date: Mon, 5 May 2025 17:31:57 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Gabriel Geraldino <gabrielgeraldinosouza@gmail.com>
-Cc: orsonzhai@gmail.com, Baolin Wang <baolin.wang@linux.alibaba.com>,
- Nicolas Borsari <nicborsari@usp.br>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: sc27xx: Refactor sc27xx_adc_scale_init to
- reduce duplication
-Message-ID: <20250505172442.4d555967@jic23-huawei>
-In-Reply-To: <20250428034222.318898-1-gabrielgeraldinosouza@gmail.com>
-References: <20250428034222.318898-1-gabrielgeraldinosouza@gmail.com>
+To: Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Matti Vaittinen
+ <matti.vaittinen@fi.rohmeurope.com>, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: ti-adc128s052: Drop variable vref
+Message-ID: <20250505173157.57aa16f9@jic23-huawei>
+In-Reply-To: <4085fd58-c92c-406b-842b-ecda2fb3c895@gmail.com>
+References: <59106e24332743a7f9eb0b13ad6a2f5595ab485a.1745823530.git.mazziesaccount@gmail.com>
+	<CAHp75VcUcrj-BLp9QDsYMDY_SeQS76LDGge5vVqrx-MVwukP0w@mail.gmail.com>
+	<4085fd58-c92c-406b-842b-ecda2fb3c895@gmail.com>
 X-Mailer: Claws Mail 4.3.0 (GTK 3.24.48; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -43,164 +46,73 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 28 Apr 2025 05:42:22 +0200
-Gabriel Geraldino <gabrielgeraldinosouza@gmail.com> wrote:
+On Mon, 28 Apr 2025 12:45:13 +0300
+Matti Vaittinen <mazziesaccount@gmail.com> wrote:
 
-> Simplify the sc27xx_adc_scale_init() function by refactoring scale ratio
-> initialization logic for SC2720, SC2730, and SC2731 PMICs. This removes
-> code duplication by using a data structure to represent channel/scale
-> mapping.
-> 
-> This change improves readability and maintainability without changing
-> functional behavior.
-> 
-> Signed-off-by: Gabriel Geraldino <gabrielgeraldinosouza@gmail.com>
-> Co-developed-by: Nicolas Borsari <nicborsari@usp.br>
-> Signed-off-by: Nicolas Borsari <nicborsari@usp.br>
-Hi Gabriel, Nicolas,
+> On 28/04/2025 10:08, Andy Shevchenko wrote:
+> > On Mon, Apr 28, 2025 at 10:02=E2=80=AFAM Matti Vaittinen
+> > <mazziesaccount@gmail.com> wrote: =20
+> >>
+> >> According to Jonathan, variable reference voltages are very rare. It is
+> >> unlikely it is needed, and supporting it makes the code a bit more
+> >> complex.
+> >>
+> >> Simplify the driver and drop the variable vref support. =20
+> >=20
+> > ...
+> >  =20
+> >> +       int vref_mv; =20
+> >=20
+> > vref_mV please. And yes, I know historical and other reasons for them
+> > all being small, but let's try to be more scientific in these crazy
+> > days. =20
+>=20
+> Sorry Andy but I see zero reason to use capital letters here. In my=20
+> opinion, this is perfectly clear as it is. Capital letters in variables=20
+> are ugly (to me) and absolutely not needed to explain the meaning.
+>=20
+> > ...
+> >  =20
+> >> +       adc->vref_mv =3D ret / 1000; =20
+> >=20
+> > MILLI ? =20
+>=20
+> I suppose using MILLI is Ok. (Although 1000 seems still clear enough to=20
+> me. Seeing the amount of zeroes at a glance gets troublesome for me at=20
+> 10000).
+>=20
+> > Or actually a time to introduce MILLIVOLT_PER_VOLT in units.h ? =20
 
-A few comments inline, but overall I'm not sure the code reduction
-is sufficiently to cover the resulting loss of readability.
-Sometimes a switch is simply clear than a partial look up table.
+It's logically neither. If we did go that way it's MICROVOLT_PER_MILLIVOLT.
+So we move to constants it should be
+	adc->vref_mv =3D ret / (MICRO / MILLI);
 
-So nice idea, but I'm not seeing it as being a good move for this particular code.
-I'd be slightly interested to see the optimized output of the two approaches, but
-this is far from a high performance path so we care a lot more about readability here.
+I'm not seeing that as worthwhile though when people have been particularly
+keen on these units.h defines I have argued in favour of similar constructs.
 
-
-Thanks,
+Anyhow on basis of moving forwards and parking this discussion
+for the future, I'll apply the patch with just the alignment tweak
+David pointed out. =20
 
 Jonathan
 
 
-> ---
->  drivers/iio/adc/sc27xx_adc.c | 90 +++++++++++++-----------------------
->  1 file changed, 32 insertions(+), 58 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-> index 2535c2c3e..a8312859d 100644
-> --- a/drivers/iio/adc/sc27xx_adc.c
-> +++ b/drivers/iio/adc/sc27xx_adc.c
-> @@ -407,78 +407,52 @@ static int sc2731_adc_get_ratio(int channel, int scale)
->  /*
->   * According to the datasheet set specific value on some channel.
->   */
-> +struct adc_channel_scale {
-> +	int channel;
-> +	int scale;
-> +};
-> +
-> +static void sc27xx_adc_scale_init(struct sc27xx_adc_data *data,
-> +	const struct adc_channel_scale *table,
-> +	int table_len,
-> +	int default_scale)
 
-Style wise, I'd prefer these aligned after the (
-I don't think this will even go over 80 chars but if it did that would
-be fine if it doesn't go over by much.
-
-> +{
-> +	int j;
-> +
-> +	for (j = 0; j < sizeof(data->channel_scale); j++)
-> +		data->channel_scale[j] = default_scale;
-> +
-> +	for (j = 0; j < table_len; j++)
-> +		data->channel_scale[table[j].channel] = table[j].scale;
-> +}
-> +
->  static void sc2720_adc_scale_init(struct sc27xx_adc_data *data)
->  {
-> -	int i;
-> -
-> -	for (i = 0; i < SC27XX_ADC_CHANNEL_MAX; i++) {
-> -		switch (i) {
-> -		case 5:
-> -			data->channel_scale[i] = 3;
-> -			break;
-> -		case 7:
-> -		case 9:
-> -			data->channel_scale[i] = 2;
-> -			break;
-> -		case 13:
-> -			data->channel_scale[i] = 1;
-> -			break;
-> -		case 19:
-> -		case 30:
-> -		case 31:
-> -			data->channel_scale[i] = 3;
-> -			break;
-> -		default:
-> -			data->channel_scale[i] = 0;
-> -			break;
-> -		}
-> -	}
-> +	static const struct adc_channel_scale sc2720_table[] = {
-> +		{5, 3}, {7, 2}, {9, 2}, {13, 1}, {19, 3}, {30, 3}, {31, 3}
-
-Spaces after { and before }
-
-> +	};
-> +	sc27xx_adc_scale_init(data, sc2720_table, ARRAY_SIZE(sc2720_table), 0);
->  }
->  
->  static void sc2730_adc_scale_init(struct sc27xx_adc_data *data)
->  {
-> -	int i;
-> -
-> -	for (i = 0; i < SC27XX_ADC_CHANNEL_MAX; i++) {
-> -		switch (i) {
-> -		case 5:
-> -		case 10:
-> -		case 19:
-> -		case 30:
-> -		case 31:
-> -			data->channel_scale[i] = 3;
-> -			break;
-> -		case 7:
-> -		case 9:
-> -			data->channel_scale[i] = 2;
-> -			break;
-> -		case 13:
-> -			data->channel_scale[i] = 1;
-> -			break;
-> -		default:
-> -			data->channel_scale[i] = 0;
-> -			break;
-> -		}
-> -	}
-> +	static const struct adc_channel_scale sc2730_table[] = {
-> +		{5, 3}, {10, 3}, {19, 3}, {30, 3}, {31, 3},
-> +		{7, 2}, {9, 2}, {13, 1}
-> +	};
-> +	sc27xx_adc_scale_init(data, sc2730_table, ARRAY_SIZE(sc2730_table), 0);
->  }
->  
->  static void sc2731_adc_scale_init(struct sc27xx_adc_data *data)
->  {
-> -	int i;
->  	/*
->  	 * In the current software design, SC2731 support 2 scales,
->  	 * channels 5 uses big scale, others use smale.
->  	 */
-> -	for (i = 0; i < SC27XX_ADC_CHANNEL_MAX; i++) {
-> -		switch (i) {
-> -		case 5:
-> -			data->channel_scale[i] = 1;
-> -			break;
-> -		default:
-> -			data->channel_scale[i] = 0;
-> -			break;
-> -		}
-> -	}
-> +	static const struct adc_channel_scale sc2731_table[] = {
-> +		{5, 1}
-> +	};
-> +	sc27xx_adc_scale_init(data, sc2731_table, ARRAY_SIZE(sc2731_table), 0);
->  }
->  
->  static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
+>=20
+> I really fail to see the benefit. Do you think we should add=20
+> MILLIx_PER_x for each unit we can imagine/use?
+>=20
+> That doesn't really scale or make sense to me. We have MILLI. It does=20
+> not really matter if it is volts, amps, ohms or horse heads - it's still=
+=20
+> 1000. It just gets cumbersome to search the headers to see if we have=20
+> some fancy define for unit we have at our hands.
+>=20
+> And, to repeat myself - for me even the 1000 is still clear as it is.
+>=20
+> Yours,
+> 	-- Matti
 
