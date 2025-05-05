@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07CF01D5CD1;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07CA01C861D;
 	Mon,  5 May 2025 07:53:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746431588; cv=none; b=UjtxXYWw7XNVHErJLXP4PHXI0IqbbsnimbMVWEM8Hu92s4+Ojr00hN2lXsdrzH3PBrrpl/iTflkRSThmiW2pZUNgPuJOsS8a180A9AfEVUXbpkPyQO/3gbTL8LvTd7yN4Hp5WAZaYJ2NgNiLCTxPOPmpRgpzaufPto/khs9OXoc=
+	t=1746431588; cv=none; b=oVy35bUuFzM2rVQM16ylj389tBrdI1QhZyrtQ+lD9ZcDtRTQkcZQmKIMhbJwNRcyQmpJMlH6e7lyKiMqnULuFlUTw6vJFfqEgSquVAKeS+pOTByGah1Ejy1u4+u3lb/2WRn2ut6Wi5PwWAtWBxawMzDO1i6jrkFImUdubTVMmCE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1746431588; c=relaxed/simple;
-	bh=1v1/rio6XCqOmkruQ3uZOyPmUNsBY2ySnofdSs8eHtk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=aw1Dd49ZU543n84OIxzJGxl+5bJhECog5fxLZrJlnVrvaa1QM6Ees8Eo+hh8JDZ0ENc307e05XPKyriw03QYD4pcGN0PHTjW5zw+h92eVpyfIWwP3t1OhHMT1DWY5rbPOHaVGMCB+xPXLLAcSgZUaC6rKhnjmkh5D+PeVsQXDHg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qa60GQzp; arc=none smtp.client-ip=10.30.226.201
+	bh=HoVwgT0i6eQ5F0/UMVrAUgnAI8MgPO+NzAAD51dIqnU=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=S93j33cSaZ5wJCHXueEiPnMHkGkJrS3wqLOMuM03ZciXuLg/VssJa/rueaF70XEp5HUaEG0iDXCi3fhldTMdWruoM7yfTtRafSqkrgYAQ54qWrhDkNir+xd1bZ3/3kXaTkz9Jn1aWgiLw6om/DWMLsu/83golZCclzbSXn/KNDY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WXMaXPJz; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qa60GQzp"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8CC5CC4CEEF;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WXMaXPJz"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7E60FC4CEE9;
 	Mon,  5 May 2025 07:53:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1746431587;
-	bh=1v1/rio6XCqOmkruQ3uZOyPmUNsBY2ySnofdSs8eHtk=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=qa60GQzpw/wAXqtDhfmgaTgx5xgsrgze4xOFuh1zVt9gIWt/EzlUTc4JtCQiSbxew
-	 ibuf1mCXuKs9GqFgoDX4i2Pke6YRVNWvLduBSbr51tXjIG4c8tJmEmOxLjRsJXq+1c
-	 83EyM4If7EElP0eCFbLdP0OdKyVX1IN8Pc8r6v+uQRvnMp4BHVE9Bh9o20xOV46GYa
-	 K3kmkOAgXlqSIKbXKriKpuUpZ6b40eKieFYDfMzGTe2ymMrxsiEAoBJF//QBAVx5HC
-	 7UBoz0q1vtjvhzl1w8M0sO0viwxHuMcMDk+I4IgI7NJF4Z6crJzMLonH0FOhUxJg/q
-	 W0LL3DKvzZw1Q==
+	bh=HoVwgT0i6eQ5F0/UMVrAUgnAI8MgPO+NzAAD51dIqnU=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=WXMaXPJz25YYfeytdlV9ehWiLJg/fsbp4CPlYZGBOh9F3vIO1IciY9NkBbJKlS1VD
+	 lgRIyklbKfLAwdL0bzWWziqJcRteRZhS+LKVqgvEI55/jYBppQD8Z0LICnOiCQf46w
+	 k7Z1hz9RUGKEj00VwC2rTbulxmIZDep74stPQ8cr0Bq1BzqGNyNFn7N12/9FJjNZdY
+	 0yZDC8EGULw51bKKZ8u2fvmK53Jy9a1e3v709647BStBFKQzl7OPAPWJIrwAiHMoUN
+	 2fqOEaavsKydPz9UphLUFVlSch+w9P0tktZFuWdFyQoNXjRg9wpj2And2FWww5SUsB
+	 cAQWnXkgem5Iw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2BAC3ABB6;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7C6C3ABB0;
 	Mon,  5 May 2025 07:53:07 +0000 (UTC)
 From: =?utf-8?q?T=C3=B3th_J=C3=A1nos_via_B4_Relay?= <devnull+gomba007.gmail.com@kernel.org>
-Date: Mon, 05 May 2025 09:52:58 +0200
-Subject: [PATCH v2 1/2] dt-bindings: trivial-devices: Document SEN0322
+Subject: [PATCH v2 0/2] Add support for the DFRobot SEN0322 oxygen sensor
+Date: Mon, 05 May 2025 09:52:57 +0200
+Message-Id: <20250505-iio-chemical-sen0322-v2-0-217473983b42@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,9 +40,10 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20250505-iio-chemical-sen0322-v2-1-217473983b42@gmail.com>
-References: <20250505-iio-chemical-sen0322-v2-0-217473983b42@gmail.com>
-In-Reply-To: <20250505-iio-chemical-sen0322-v2-0-217473983b42@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAFluGGgC/4WNTQ6CMBBGr0Jm7Zh2+BFdeQ/DgtYpTAItaQ3RE
+ O5u5QIu30u+922QOAonuBUbRF4lSfAZ6FSAHXs/MMozM5CiWlXUokhAO/Istp8wsVclEVrXOmM
+ MX+qqgTxdIjt5H9lHl3mU9Arxc7ys+mf/BFeNCq9Gt2VTOscV3Ye5l+lswwzdvu9fIFMUBbgAA
+ AA=
 To: Jonathan Cameron <jic23@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -51,11 +52,11 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, 
  =?utf-8?q?T=C3=B3th_J=C3=A1nos?= <gomba007@gmail.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1746431586; l=910;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1746431586; l=1057;
  i=gomba007@gmail.com; s=20230706; h=from:subject:message-id;
- bh=1Mfxr5j12EbsEQWdQ2AY6ErLyezlks+9xDkOv+/nbsM=;
- b=kXQ6usTnCkZCv9d+dDS63qVsNQQKiFnQ8HkGcdC1VNXiaCoHf+pk17QrpX1IWEgIK0Usw2W/p
- OIvrkfPYZrTAu6I4g6MXLaDFdxwqtQ2AulBIOxE9E1azy83JaR8s3Xt
+ bh=HoVwgT0i6eQ5F0/UMVrAUgnAI8MgPO+NzAAD51dIqnU=;
+ b=XO542HNnKgid7hj9NoQ+7o+FzzeC5MmDo6ymU7S/zh5narQlm6FOtiUtWlvP7SwqEbdGKljGa
+ giu/oVLF0aDDmfU3ACwuNKlTSBu2+/vmVthiVtgXhDk6IVour77yTg5
 X-Developer-Key: i=gomba007@gmail.com; a=ed25519;
  pk=iY9MjPCbud82ULS2PQJIq3QwjKyP/Sg730I6T2M8Y5U=
 X-Endpoint-Received: by B4 Relay for gomba007@gmail.com/20230706 with
@@ -63,30 +64,34 @@ X-Endpoint-Received: by B4 Relay for gomba007@gmail.com/20230706 with
 X-Original-From: =?utf-8?q?T=C3=B3th_J=C3=A1nos?= <gomba007@gmail.com>
 Reply-To: gomba007@gmail.com
 
-From: Tóth János <gomba007@gmail.com>
-
-Add documentation for the DFRobot SEN0322 oxygen sensor.
+This patchset adds a driver and the documentation for the
+DFRobot SEN0322 oxygen sensor.
 
 Signed-off-by: Tóth János <gomba007@gmail.com>
 ---
- Documentation/devicetree/bindings/trivial-devices.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+Changes in v2:
+- Add SEN0322 to trivial-devices.
+- Use _RAW and _SCALE instead of fixed-point math.
+- Refactor based on reviewer's suggestions.
+- Link to v1: https://lore.kernel.org/r/20250428-iio-chemical-sen0322-v1-0-9b18363ffe42@gmail.com
 
-diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
-index 8da408107e55..a25bf2135649 100644
---- a/Documentation/devicetree/bindings/trivial-devices.yaml
-+++ b/Documentation/devicetree/bindings/trivial-devices.yaml
-@@ -85,6 +85,8 @@ properties:
-           - devantech,srf08
-             # Devantech SRF10 ultrasonic ranger
-           - devantech,srf10
-+            # DFRobot SEN0322 oxygen sensor
-+          - dfrobot,sen0322
-             # DH electronics GmbH on-board CPLD trivial SPI device
-           - dh,dhcom-board
-             # DA9053: flexible system level PMIC with multicore support
+---
+Tóth János (2):
+      dt-bindings: trivial-devices: Document SEN0322
+      iio: chemical: Add driver for SEN0322
 
+ .../devicetree/bindings/trivial-devices.yaml       |   2 +
+ MAINTAINERS                                        |   6 +
+ drivers/iio/chemical/Kconfig                       |  10 ++
+ drivers/iio/chemical/Makefile                      |   1 +
+ drivers/iio/chemical/sen0322.c                     | 167 +++++++++++++++++++++
+ 5 files changed, 186 insertions(+)
+---
+base-commit: b4432656b36e5cc1d50a1f2dc15357543add530e
+change-id: 20250428-iio-chemical-sen0322-cf8fbbbe7546
+
+Best regards,
 -- 
-2.34.1
+Tóth János <gomba007@gmail.com>
 
 
