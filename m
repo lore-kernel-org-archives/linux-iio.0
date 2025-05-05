@@ -1,163 +1,140 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D706E13AF2;
-	Mon,  5 May 2025 16:41:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 034121A3144;
+	Mon,  5 May 2025 16:41:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746463285; cv=none; b=uas3JGrl9FkEPxC31HKzzRR2FNVh7KOnxCjjhHPubPlx6eylmyuZLFOJJPf8xSz3ojf6mDkWccElRCdmLUUjl8cOR6IVUe87GsLcSDTtjB43AjIYcPKW72DzDRtZxNtC5AKJuZfNd4EVox/99sdVBEwQzb51cJcWn72cwskxXzk=
+	t=1746463298; cv=none; b=grV1iUxtTvjstLB6qLKxvDURP/4nk3iSM5tVt5AmCs23d9TvFrOJPrCd0gjlynPn8zYY1hp+1dZHWasLTAfPaifZC9WeoDA90q5mQ4o1EVGnjgkUurHhP49W28Ryt8Gme+Qy6znfI0OBeZJaWMRvezhPu56Q4a8pJKKBYoEKTms=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746463285; c=relaxed/simple;
-	bh=qLxPduiqkGHugggze3QWfRy/fdJg8U5VxiLfr6qyh1Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Z1uHpjscdeFyWTreK5lQHB560OmVBoqmc3oxAJ45oqkA26X01F6ePVtxZV+k/TwRMDOxFbCHbuUtsdr7yeVjYkWVyo6rk8+0IyZZbo+k7WgYEdYBtNO8RcV8lDBPx+7tfoGm7W5Z6/9IJs/Oo1uWgafwMt8kzosYymtfp+Ik734=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dWHGWs22; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1746463298; c=relaxed/simple;
+	bh=JYprB8GV8upmRPswjAV50c9OstRoU7o57f50GyAJhd0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=dNBJw0otsTRvr74z0juffzhm22dVWRHU0JfljQMwG5j9VRV6ECV1vazo3XfGrcGOkEw4Nue9LAPArWuJEWunYFqHMDoSnJI8EDuiYpieGHt3LfXIIvvdaU/KPi7rqNzv0UsToP+5DH9/rnxNy6XE/o5ZUoExEySOzj7gEpJdaOo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r//XJ3kb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dWHGWs22"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B53FC4CEF2;
-	Mon,  5 May 2025 16:41:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r//XJ3kb"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9FE84C4CEEE;
+	Mon,  5 May 2025 16:41:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746463285;
-	bh=qLxPduiqkGHugggze3QWfRy/fdJg8U5VxiLfr6qyh1Q=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=dWHGWs22JX8hc1B9VdI7Qt5b0BwcnoNYCo+/PLxbKJvFIWQaIBRE1yVvn70aKMaot
-	 wOtXUMtCexI5blruspoU1CsnAAqfgpWLBGpBm2l0daHNQ+e8J3kBsBzwwqEKrlrhK0
-	 S9o9+S8RYc7B2cTWIgC88Sg506N3ypARM55hhAytXcBDc4zVq6OMLoi2YojpVUGh4b
-	 qW/j+nWN9n4EckOb2Lm1khmBCkth4LRdgx7yRFZSnhFP6Ag3SS6x51K4nzFESLtTjd
-	 hyQaj9qaRpiTuBmw1FF8SJj+IED1Wdmm81I1so/Q6WDBXM66InYyLz33Yp1kvYV/F2
-	 tdBb4wVbZzY/g==
-Date: Mon, 5 May 2025 17:41:18 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
-Cc: Markus Burri <markus.burri@mt.com>, linux-kernel@vger.kernel.org, Nuno
- Sa <nuno.sa@analog.com>, Olivier Moysan <olivier.moysan@foss.st.com>,
- Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org, Markus
- Burri <markus.burri@bbv.ch>
-Subject: Re: EXTERNAL - [PATCH v1] iio: backend: fix out-of-bound write
-Message-ID: <20250505174118.2b3c1f43@jic23-huawei>
-In-Reply-To: <e6e05f18418a6dc30c1130e5979f642f6ec8d412.camel@gmail.com>
-References: <20250501063240.25295-1-markus.burri@mt.com>
-	<c3a792558b7d35f7342a53c94810861cb0eb0b8e.camel@gmail.com>
-	<aBU0-ZChCrMCWWLu@Debian-VM-Markus.debian>
-	<e6e05f18418a6dc30c1130e5979f642f6ec8d412.camel@gmail.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.48; x86_64-pc-linux-gnu)
+	s=k20201202; t=1746463297;
+	bh=JYprB8GV8upmRPswjAV50c9OstRoU7o57f50GyAJhd0=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=r//XJ3kbuHw+O+cT0SSFfHR3eCiePMLCmTi339dm4jO9H3SYM4rkBO4Ba7BPbEulA
+	 gOU6hagFow2/7+FOyoUMYGfoeu93vKMqkjXOFTGuZm+DwzYvchdLgBdlZsI8IGsRH7
+	 yNgMjV5zo5zUIcBRvfbW/vxhDfnaasw7X0/oYRpaJK0rd7UPgRl1RpsC6GK/D1eq2y
+	 /WOQ0QBlAkzHM11iDUjLH2440M4/9upb9LzYd8iZ2n0OIGcbbacPbz1TSBccd1Lyje
+	 Hb+m/X4uwq9afxRsRSC6xGaEm+XqObsT5zgSuyPZNHHXPjm/hxtTpBUlTc8YSvqRgk
+	 1+bc5mWJvuB3w==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9428EC3ABAA;
+	Mon,  5 May 2025 16:41:37 +0000 (UTC)
+From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
+Date: Mon, 05 May 2025 17:41:35 +0100
+Subject: [PATCH v4 4/7] include: fpga: adi-axi-common: add new helper
+ macros
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20250505-dev-axi-clkgen-limits-v4-4-3ad5124e19e1@analog.com>
+References: <20250505-dev-axi-clkgen-limits-v4-0-3ad5124e19e1@analog.com>
+In-Reply-To: <20250505-dev-axi-clkgen-limits-v4-0-3ad5124e19e1@analog.com>
+To: linux-clk@vger.kernel.org, linux-fpga@vger.kernel.org, 
+ dmaengine@vger.kernel.org, linux-hwmon@vger.kernel.org, 
+ linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org, 
+ linux-spi@vger.kernel.org
+Cc: Stephen Boyd <sboyd@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>, 
+ Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>, 
+ Vinod Koul <vkoul@kernel.org>, Jean Delvare <jdelvare@suse.com>, 
+ Guenter Roeck <linux@roeck-us.net>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, Trevor Gamblin <tgamblin@baylibre.com>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, Mark Brown <broonie@kernel.org>, 
+ Mike Turquette <mturquette@linaro.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1746463295; l=2042;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=kux5dWzKRW1hlIDODzjfwxlzKIR9+mSKGjP/CVy2QCQ=;
+ b=NPQA6P3E8Q2bOW5clAJxPhP4/IFUC1someMaPC7fea50GQ/1NVcE2NidukGTIOUR0ZpPOLJb0
+ mXNYlC2I/deA7AAw+mQUKXN78awHSKF3Lsn5QhJl2WINr644hq8l7e3
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
 
-On Sun, 04 May 2025 09:27:02 +0100
-Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+From: Nuno Sá <nuno.sa@analog.com>
 
-> On Fri, 2025-05-02 at 23:11 +0200, Markus Burri wrote:
-> > On Fri, May 02, 2025 at 04:12:04PM +0100, Nuno S=C3=A1 wrote: =20
-> > > On Thu, 2025-05-01 at 08:32 +0200, Markus Burri wrote: =20
-> > > > The buffer is set to 80 character. If a caller write more character=
-s,
-> > > > count is truncated to the max available space in "simple_write_to_b=
-uffer".
-> > > > But afterwards a string terminator is written to the buffer at offs=
-et count
-> > > > without boundary check. The zero termination is written OUT-OF-BOUN=
-D.
-> > > >=20
-> > > > Add a check that the given buffer is smaller then the buffer to pre=
-vent.
-> > > >=20
-> > > > Fixes: 035b4989211d ("iio: backend: make sure to NULL terminate sta=
-ck buffer")
-> > > > Signed-off-by: Markus Burri <markus.burri@mt.com>
-> > > > ---
-> > > > =C2=A0drivers/iio/industrialio-backend.c | 3 +++
-> > > > =C2=A01 file changed, 3 insertions(+)
-> > > >=20
-> > > > diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/indus=
-trialio-
-> > > > backend.c
-> > > > index a43c8d1bb3d0..3878bd698c98 100644
-> > > > --- a/drivers/iio/industrialio-backend.c
-> > > > +++ b/drivers/iio/industrialio-backend.c
-> > > > @@ -155,6 +155,9 @@ static ssize_t iio_backend_debugfs_write_reg(st=
-ruct file
-> > > > *file,
-> > > > =C2=A0	ssize_t rc;
-> > > > =C2=A0	int ret;
-> > > > =C2=A0
-> > > > +	if (count >=3D sizeof(buf))
-> > > > +		return -ENOSPC;
-> > > > + =20
-> > >=20
-> > > Oh, this can indeed easily lead to an oob access. However, I would li=
-kely not
-> > > mind in early returning an error. This is to write registers so 80 sh=
-ould be
-> > > more than enough. Meaning that to trigger this, it has to be intentio=
-nal. That
-> > > said, of course we should not let that happen but I would still trunc=
-ate things
-> > > and let it fail afterwards (keep the code slightly simpler with one l=
-ess check).
-> > >  =20
-> > Thanks for your response.
-> > I would prefer the upfront error check. The code is cleaner and simpler=
- to read. =20
->=20
-> Simpler yes, cleaner arguable :). Anyways, no strong feelings so leave it=
- as-is if
-> it's your preference. However, I think the proper way is:
->=20
-> if (count >=3D sizeof(buf) - 1)
-> 	return -ENOSPC;
->=20
-> And since you're doing this, I think my suggestion still makes sense. I m=
-ean:
->=20
-> buf[rc] =3D '\0';
->=20
-> since rc is indeed the number of bytes written and we do want to terminat=
-e the buffer
-> at the proper place. So the above is the correct form even if there's no =
-real issue
-> with the current form after this patch. Being this a fix, not sure if Jon=
-athan is ok
-> with the above in the current patch or as follow up.
+Add new helper macros and enums to help identifying the platform and some
+characteristics of it at runtime.
 
-Both together would be fine for this as it's related stuff.
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+ include/linux/adi-axi-common.h | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-I like the combination of the two though agree only the initial check is st=
-rictly
-necessary (though the - 1 is needed to avoid scrubbing the 80th char and ra=
-ther
-unexpected results.)
+diff --git a/include/linux/adi-axi-common.h b/include/linux/adi-axi-common.h
+index 141ac3f251e6f256526812b9d55cd440a2a46e76..a832ef9b37473ca339a2a2ff8a4a5716d428fd29 100644
+--- a/include/linux/adi-axi-common.h
++++ b/include/linux/adi-axi-common.h
+@@ -12,6 +12,8 @@
+ #define ADI_AXI_COMMON_H_
+ 
+ #define ADI_AXI_REG_VERSION			0x0000
++#define ADI_AXI_REG_FPGA_INFO			0x001C
++#define ADI_AXI_REG_FPGA_VOLTAGE		0x0140
+ 
+ #define ADI_AXI_PCORE_VER(major, minor, patch)	\
+ 	(((major) << 16) | ((minor) << 8) | (patch))
+@@ -20,4 +22,37 @@
+ #define ADI_AXI_PCORE_VER_MINOR(version)	(((version) >> 8) & 0xff)
+ #define ADI_AXI_PCORE_VER_PATCH(version)	((version) & 0xff)
+ 
++#define ADI_AXI_INFO_FPGA_TECH(info)            (((info) >> 24) & 0xff)
++#define ADI_AXI_INFO_FPGA_FAMILY(info)          (((info) >> 16) & 0xff)
++#define ADI_AXI_INFO_FPGA_SPEED_GRADE(info)     (((info) >> 8) & 0xff)
++#define ADI_AXI_INFO_FPGA_VOLTAGE(val)          ((val) & 0xffff)
++
++enum adi_axi_fpga_technology {
++	ADI_AXI_FPGA_TECH_UNKNOWN = 0,
++	ADI_AXI_FPGA_TECH_SERIES7,
++	ADI_AXI_FPGA_TECH_ULTRASCALE,
++	ADI_AXI_FPGA_TECH_ULTRASCALE_PLUS,
++};
++
++enum adi_axi_fpga_family {
++	ADI_AXI_FPGA_FAMILY_UNKNOWN = 0,
++	ADI_AXI_FPGA_FAMILY_ARTIX,
++	ADI_AXI_FPGA_FAMILY_KINTEX,
++	ADI_AXI_FPGA_FAMILY_VIRTEX,
++	ADI_AXI_FPGA_FAMILY_ZYNQ,
++};
++
++enum adi_axi_fpga_speed_grade {
++	ADI_AXI_FPGA_SPEED_UNKNOWN      = 0,
++	ADI_AXI_FPGA_SPEED_1    = 10,
++	ADI_AXI_FPGA_SPEED_1L   = 11,
++	ADI_AXI_FPGA_SPEED_1H   = 12,
++	ADI_AXI_FPGA_SPEED_1HV  = 13,
++	ADI_AXI_FPGA_SPEED_1LV  = 14,
++	ADI_AXI_FPGA_SPEED_2    = 20,
++	ADI_AXI_FPGA_SPEED_2L   = 21,
++	ADI_AXI_FPGA_SPEED_2LV  = 22,
++	ADI_AXI_FPGA_SPEED_3    = 30,
++};
++
+ #endif /* ADI_AXI_COMMON_H_ */
 
-J
->=20
-> - Nuno S=C3=A1
->=20
-> > As you wrote the buffer should only contain a register and a value and
-> > therefore never extend the 80 character.
-> > If there are more, it must be intentional or by mistake. In both cases =
-I expect
-> > to get an error back, instead of try to handle partial/wrong data.
-> >  =20
-> > > So I would instead do:
-> > >=20
-> > > buf[rc] =3D '\0';
-> > >=20
-> > > Thanks for catching this!
-> > > - Nuno S=C3=A1
-> > >=20
-> > >  =20
-> > > > =C2=A0	rc =3D simple_write_to_buffer(buf, sizeof(buf) - 1, ppos, us=
-erbuf,
-> > > > count);
-> > > > =C2=A0	if (rc < 0)
-> > > > =C2=A0		return rc;
-> > > >=20
-> > > > base-commit: b4432656b36e5cc1d50a1f2dc15357543add530e =20
->=20
+-- 
+2.49.0
+
 
