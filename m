@@ -1,187 +1,180 @@
-Received: from www571.your-server.de (www571.your-server.de [78.46.3.230])
+Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2070.outbound.protection.outlook.com [40.107.249.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBE112701AD;
-	Mon,  5 May 2025 19:26:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.46.3.230
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746473167; cv=none; b=UKqQ47u5K270eDTtua2MvBTnG4jAHEcVP1EVWZ9/BrvSNQpe2ZfhZKjPhsXvwTXOLHRgEDV/vajm1My/kQcWKZoBhSw9+T7Ymau4N671EvpDoXKrA4JVUHpMg2UtB3qk9+hPUFIYQAb9zF4CSiMdrcQpAmkgXZI0stqxtZP85gc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746473167; c=relaxed/simple;
-	bh=erLII/mmON5+5Rvm5sYc6e5eOqi2HGcTxk1Y6msZzqw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BjP7/ZLwiR5xtjUSrow7VnsONRZY5pf1Ast6fB4MuVvSUHYB/mgvSxAu7cbZgP4GvgtYoqIbESfliLNEkZvseonh5308jmA5p2YFiONrNBZPhYK5YQbODXHXsCM8/ir5znzXUwvm4fpZsD3WVvgY6T7OU3JLnkiqT02xXFWxcII=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=it-klinger.de; spf=pass smtp.mailfrom=it-klinger.de; dkim=pass (2048-bit key) header.d=it-klinger.de header.i=@it-klinger.de header.b=AD+e3bFa; arc=none smtp.client-ip=78.46.3.230
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=it-klinger.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=it-klinger.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2D2525C6F4;
+	Mon,  5 May 2025 20:40:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.249.70
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746477614; cv=fail; b=BSE1KG1UHI7qYp6Vw0r3uZ8PX+d1Xc5fXdgdpwuqx3BFOFwVx8Y1h40jcEtoePvqKYXzTKivaUqWEMHGfhMVqA3Of6aY7KUis4hQSmv4iKsTVm5J9fgpRXSuafyWRMMCVTCp0/I5/H2BxOHvw8zP7jNuvusNb0lqzq56rT2ncYo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746477614; c=relaxed/simple;
+	bh=mqUw7s+nehNvv8MGGEQ/E9H+tzHgL46W8rcS24G9r+Q=;
+	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=WbdwUoOj9BXtfxiXR4+6W5DaV4GCpJ/wrESMuw+GWVFSC870JHI56xU2HwKZQneWXdZf1av65M9k4r7MVatL3/QKcYwP6V1jU7VLYiqRibmgC5PGZEcfE17T5hPY75EYgBUsnTIEyja4eYqOfAqCOklmCfPre3qqE3SdJP3NyM0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mt.com; spf=fail smtp.mailfrom=mt.com; dkim=pass (2048-bit key) header.d=mt.com header.i=@mt.com header.b=OWmaglKi; arc=fail smtp.client-ip=40.107.249.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mt.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=mt.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=it-klinger.de header.i=@it-klinger.de header.b="AD+e3bFa"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=it-klinger.de; s=default2502; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=mXzZCIiXFkvY3wmMVtP0xagcjYmlfECJnCu8DYISA34=; b=AD+e3bFaBarbAC5QgufiQdNbqH
-	JWvWTEezsL/bDmN5PlAdJwwrlzF9r0P2eoYENoSTaO6Qtx76rjiV7obgohsEUZ+Tznhh+wvX1zADj
-	P8oJZgqUVAE3ZxzWyWvNukjEfeeljHqWRgMoTBjM7rcGuINxk/HgIK1lrgO3eVjk1x8jjz57NIU6v
-	qjhsab6RcxYAYDD/l90P4CQJNRJXYxDPLimLV54Vukb7SHqh3OXwiGp7QUMBWrS06ilPQVBjQGwHG
-	1BgBPTvPkVVhndAdrQH1LhaVkbnS1EUJ9KQYXDufB4Nx44wWn4iEoGYe1GuJE7WXNif22SUosnonZ
-	qB8iDuKw==;
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-	by www571.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96.2)
-	(envelope-from <ak@it-klinger.de>)
-	id 1uC1Cp-000Pr4-27;
-	Mon, 05 May 2025 21:10:23 +0200
-Received: from [31.220.118.240] (helo=mail.your-server.de)
-	by sslproxy03.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <ak@it-klinger.de>)
-	id 1uC1Co-0000k7-31;
-	Mon, 05 May 2025 21:10:23 +0200
-Date: Mon, 5 May 2025 21:10:21 +0200
-From: Andreas Klinger <ak@it-klinger.de>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Matti Vaittinen <mazziesaccount@gmail.com>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	lars@metafoo.de, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	javier.carrasco.cruz@gmail.com, subhajit.ghosh@tweaklogic.com,
-	muditsharma.info@gmail.com, arthur.becker@sentec.com,
-	ivan.orlov0322@gmail.com
-Subject: Re: [PATCH 2/3] iio: light: add support for veml6046x00 RGBIR color
- sensor
-Message-ID: <aBkNHSxU4T8j4oMT@mail.your-server.de>
-References: <20250316113131.62884-1-ak@it-klinger.de>
- <20250316113131.62884-3-ak@it-klinger.de>
- <20250317115005.72a539a0@jic23-huawei>
- <Z_I-qwzUrTNz1DZp@mail.your-server.de>
- <20250406120825.41b2575c@jic23-huawei>
- <ecb2844c-feb5-47d4-b4db-12171380a9cb@gmail.com>
+	dkim=pass (2048-bit key) header.d=mt.com header.i=@mt.com header.b="OWmaglKi"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=H4WOyKtNoAKCpAlEh+I/SmsXxVdtO8qRjd/cMQkF5SqSBaE6vjRuoQqg+0tq9WVywtjWZcQfe5yigXWcwSPV7XxEFwCPQ+MVH6uQ2T/oW1VAnTKxNdMU6uWv0jVg9ESQ39KWKZXnyKHTBEKEiUSyc4oqYdL+N41w6FLOUYQfY+xpXv7It6e8OxYV4tZoSOFC0H26/GjlSrp8QpaRH+uc/BpLl0cYiHosiBlnOoYrz9irMDv5PJVN1dH3qbZyXZGHqFxxoZfoNnmYs57omZ8pyPKnt/Wa5N+pU4wo8JYArTpp8dvpFukenU+KZFFB0Q/QW15+BXsMSfwqF9NXI7c00w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=d8VaWO1kXooxCo7LnJurz2FjBqrZkUyzdCaPN2PvKOI=;
+ b=KPjTZVfI0VCkezBmFgENX6tPMT16atOVtNozbchaEP73owVWWYN9nA25jgUmcGo/vB0KGhAX29J8aQmmSxyAHGKz3zW9gS+Iyz9eo2NesQLkaRIovnxHdM9onMprW6TeyNwLpl+3/H95uUCg7gJdoejhs1lw2+PMrv7h/WiJejk6anep3ZU2ggz36okgu23ZpOyMYsKc5LWcg/VRhR8fZuDnk2OiBNT+wCxJXBMKUr/XIRo0L5L0fju5NTE41kGHXKUyDE8Nzk2+pOn59DJLLm+borblxmrhMX0GaA9hOC6PToSl5hTAldLWxY9ZH4ww5t5n5rTVxGJmsMb+E14/aw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mt.com; dmarc=pass action=none header.from=mt.com; dkim=pass
+ header.d=mt.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mt.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=d8VaWO1kXooxCo7LnJurz2FjBqrZkUyzdCaPN2PvKOI=;
+ b=OWmaglKidjtFMPyCY4nHBOLaFeWTPj3VCGXYDap4StCbuPDPtS8yt8nro2+P9wDLYWP8wRxxNjkqt/VVrCUe/dEx9SrtwXHReUHOR3SktKRfDkNgRLzhv6Y1pfAOdDolQEjlDLwdmDtJs6OPQyGUoaxCHzqLiPB/VQG/eRk4qP80n/USOjSRUv7zpICMdUBMzcQyEApjTdMPyYwTMFRhvd+P7UGBbOxoGRkL+UcoIsAZ7+L0VMbLIYiUNHvQn/zFMdk07VEkPqBKUSJ3hu5FKLqHeZ+LHG2Yiqe8BQE9UiN/OYKt0u8L1SAT9fw3n7Ad5Gn0goKQCObFrvoeAOl1dA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=mt.com;
+Received: from VI1PR03MB6285.eurprd03.prod.outlook.com (2603:10a6:800:137::14)
+ by DU0PR03MB9613.eurprd03.prod.outlook.com (2603:10a6:10:420::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8699.24; Mon, 5 May
+ 2025 20:40:08 +0000
+Received: from VI1PR03MB6285.eurprd03.prod.outlook.com
+ ([fe80::e290:ebac:cbe4:198a]) by VI1PR03MB6285.eurprd03.prod.outlook.com
+ ([fe80::e290:ebac:cbe4:198a%5]) with mapi id 15.20.8699.026; Mon, 5 May 2025
+ 20:40:07 +0000
+From: Markus Burri <markus.burri@mt.com>
+To: linux-kernel@vger.kernel.org
+Cc: Markus Burri <markus.burri@mt.com>,
+	Nuno Sa <nuno.sa@analog.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org,
+	Markus Burri <markus.burri@bbv.ch>
+Subject: [PATCH v3] iio: backend: fix out-of-bound write
+Date: Mon,  5 May 2025 22:38:30 +0200
+Message-Id: <20250505203830.5117-1-markus.burri@mt.com>
+X-Mailer: git-send-email 2.39.5
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MI2P293CA0014.ITAP293.PROD.OUTLOOK.COM
+ (2603:10a6:290:45::13) To VI1PR03MB6285.eurprd03.prod.outlook.com
+ (2603:10a6:800:137::14)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ga5BT2NOkCzKwCye"
-Content-Disposition: inline
-In-Reply-To: <ecb2844c-feb5-47d4-b4db-12171380a9cb@gmail.com>
-X-Authenticated-Sender: ak@it-klinger.de
-X-Virus-Scanned: Clear (ClamAV 1.0.7/27629/Mon May  5 10:35:28 2025)
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR03MB6285:EE_|DU0PR03MB9613:EE_
+X-MS-Office365-Filtering-Correlation-Id: 91731a82-6fa0-4d75-474b-08dd8c1505bc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|52116014|376014|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?EXyVQjXqIFa25KyL7RFnSBOhFyZLQRORDfbEHyMBzZnzhBzefbogud4oKHsf?=
+ =?us-ascii?Q?LMZ+9wEsJSewOgvKmc9O30QWw0iJQyQzdQ7g/j2OmOOhEVPV9UzlBw6e8qrs?=
+ =?us-ascii?Q?t40wFW/A1yaeJ7SldNJRGxu9/hgLw4cp4qJG4JlvsdQ0H3iYAhXj0mZ/8Oon?=
+ =?us-ascii?Q?O+ylFtx/wN5ZgqFbcRAmwIrIsWL9Bxt7jGlHaILcose1Xy6B5yWdj7z9Sta9?=
+ =?us-ascii?Q?ZrV4q2Z4Z0z+CRSvjlyGzktCA2v+pcKxtAF/cE3UdV5lO/udjV89dJVIR3uS?=
+ =?us-ascii?Q?0+OtqUw4Mopy8YmQI/CouliF56aL0vKYdIubwkTIPXC2kXh/t+OuCpwP4rUf?=
+ =?us-ascii?Q?PoMRtkfrMJ9Pv/sfZ+z+tgKkHXfiUaSPcFVDD3ufMCk50oPm+VgvdrQZedDo?=
+ =?us-ascii?Q?Ky2pJTD7TLVEUJFdGTEva+BdlAGNW301NHhHKCKB3KSxGmu+qwkp/6pw0woJ?=
+ =?us-ascii?Q?wbr9Wb/LI7VUSjCRy7zYJWlIbtVJJGEDbRKavBrf+LqvQNGNMzq06VmSWcbi?=
+ =?us-ascii?Q?3AghqCLctEaGQaUoXjU15Sj30Qo0e9NVaTXcSu+nZedHaofHycFXKnxWhqgY?=
+ =?us-ascii?Q?0KqR2DACuD8i1F8OkOErIvU5FqlZvoWdQbd9Ru5CGfCYQOiyMtgsl/VVW4LP?=
+ =?us-ascii?Q?Oo/7qBZe4k7aefffzpnMUATdo1gR639gBlEO7IlrmMglSnYaHXZpV32LbX7g?=
+ =?us-ascii?Q?wtHtnAU/5I4d0BQSSVAvKwCMZJyE3fbL3uWJeHkKgHV9kgUBTtJft19LinnM?=
+ =?us-ascii?Q?onClbzyclpSCzmjBEpQUbqjniCRgL9pqcN8r2+lCtAA/62dqYsgDofJ+/aO4?=
+ =?us-ascii?Q?Mzse+qVeRccX5ULHqXCYgE6vcUjqIfInFf7KM9BJ1oEaZ2h033YSHg49OJ74?=
+ =?us-ascii?Q?1r+7c+NcOK1QEbnfn1G2t1BaLQFBocM66DsL39iyj7KgvsU24Od3/iIpJ/hv?=
+ =?us-ascii?Q?eUV1Frr5Pd5lJajhfF/kFGTucMq1Dgm8+1lvOruqG1e0edp2TmFroDVt8U8v?=
+ =?us-ascii?Q?du0hgvxkZg/HY3Qys0XbIp/76BB3N3e3rSDYirgXB5yu7ADjlF6OimV4u6gR?=
+ =?us-ascii?Q?aAVWf7TzZfOO+6jDLfbBsc+VKGqyKA20BfR+s6HK+sJU436/E+ES50PKxSWz?=
+ =?us-ascii?Q?dJz2doNe7xVz2A5HvWvUeIr/KFQLodg3SuVo5kIVyXYT5oEYzHDrJ8hHsW5m?=
+ =?us-ascii?Q?YRVWNoRyVLyzqvktn6Vr86+/U5ancb9kRQP61C0R9a70O0yPkoa8tks6KAeq?=
+ =?us-ascii?Q?YlKMWeLlvMzDnhipCxPE60vQ6AcGn3uEAWol5OfF/bZBI7E7aK0NrhuxJdvj?=
+ =?us-ascii?Q?i+IyCblURitp7lkVNIM+gDN/QOXd2+68HKB74/qIHVGrTeXmE9LMpH+NnnJ+?=
+ =?us-ascii?Q?kC7Aps2KUEkw7jmZNpzXtBCWWez8y3RUZrG8W1H5RdlSA4Zd+eahUJ3d7zCS?=
+ =?us-ascii?Q?jExqcDA3HPDWQm9wEFdBjb/Pg6oWrqZwaVtBrWRrU/MN7IdK78kdHA=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB6285.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(52116014)(376014)(38350700014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?tVWQMXj0u0DyCfAd+cxUMEJemjCnnH44Ekty6qLKCilLR24gx5NSoBQ+ube0?=
+ =?us-ascii?Q?hIVhe8qokRauAdeuFfy1IUfvsOasqSCXg/OPMu6BdkY2eSRYD5uvnmT7Bav8?=
+ =?us-ascii?Q?j3/9migT8fm1d3dFj+zm3PB/tIUBln32uy396qd3l4iodHGNnPTZK0POiQPV?=
+ =?us-ascii?Q?Sb2L5w58dGdKOh4e6rY3NkEObUThF9py1JFhD/svgoob2P9D8ZZYDcdy49kV?=
+ =?us-ascii?Q?+lVhTgsb08+n5D1suzuFNbsgLLSOLbQDERCCrPdlUlhF/GuEfwr2LZGn63FP?=
+ =?us-ascii?Q?aarX8HATzeNWQgftwUMSlLwkt2hNoyb/MkonAZboF05YmHWblf/K0j9hbNk/?=
+ =?us-ascii?Q?LAGfCsCGXvpsx/cmZGWZdxz++BQuulRahsRGvHX0bhIA5r6FDeSqhW5TnXEX?=
+ =?us-ascii?Q?A618yLimUfuzF3X9NqCT57hTtTSJH3po4hdIba/qNybcoh3PRoIA8uiNWGTP?=
+ =?us-ascii?Q?PslgwtAsSlNprrn7Jm2CFPAOEmK2Uw6Zq2oFs2OCfPz+irm5dzHi8RmviKID?=
+ =?us-ascii?Q?mlbPmTx3nHwnEGnz4U0v/QPnvXFf4s0RnyfkiLbW9czXhOVoZOWfA3LhD+lg?=
+ =?us-ascii?Q?DAstenyyMHGfgq8zzPkBj7htoS7d8De+RmJaoqexFZta0p5XraqxoLPLFoe6?=
+ =?us-ascii?Q?6PFkj+1xlfslbdpIGWR94ARC+c/GinaDOg5/2lqLNQ/lXnwkQs/Rev7BPGyc?=
+ =?us-ascii?Q?RMMcs+a3v0928W0ozMnMiSB60YTlHRCBp+If6I65AsnJan+B+LF9UOddTrwv?=
+ =?us-ascii?Q?3zjwutG2OwtgnJA1lWS7rWNetQum9aeAk5RLJP3rvWJynzqEYKzhF24r+rr1?=
+ =?us-ascii?Q?cPGEqYUmWTz82Hkq5D2WEZzl3YUGtdF2KqjHDMX9IFHu4HHcFfES6+qLSK7U?=
+ =?us-ascii?Q?i63NggYlvmqI+AdWEj7pkapgemedLdrFqqH5mxpIGOJmv8ikb3AaCQdQWZaT?=
+ =?us-ascii?Q?EgPyO8pR8I7I2v5mzjPh0u8+XRsDa4qNStZeryEIMYTMof/zilTeCKIEkF+2?=
+ =?us-ascii?Q?1F3Uk37EYKyMwejuC4r3b4zoXEp505XUM/UoviMgJJj1hTQ9q8Br6wmSrl6W?=
+ =?us-ascii?Q?Xta9aOKh6Tz7ND/eCkPbiJXEyJvKixuz8vpjYyJIz0vK4o4hWeA+b4KEL118?=
+ =?us-ascii?Q?d4Hi8iT/6ivJrp6ak0dgLvNpBINjfr85/v3hdJMIkEcLQnouOM6ijZMCUOVT?=
+ =?us-ascii?Q?2oDEi4hnFN2Hcce49T9fz5AffMtzbA9zsWpwkYEwSom9rdlRJXV4RuW0gBnw?=
+ =?us-ascii?Q?KWcNAgkxG96ooY+kSGLY2BO0Utu2MiDS1bEiSXlZowyLcOguRmIf/gBba9+m?=
+ =?us-ascii?Q?izNrfBiz23OaZeLolnMlRO0V1t0Nbsjw1DfnZ6XZ5ZwuzqCG7j0JB13vJLMJ?=
+ =?us-ascii?Q?QmYG90dclE/a5nJzNq5HKufpKx/HG+ZHxeJmbzC/3WcrWc4m5q91aDxEbYJs?=
+ =?us-ascii?Q?p1Vhkzxs5AnJHLwCgij0tQiGO1sTpPBKRiC/eYVlIfBFWjXqrWN3brfsFX6o?=
+ =?us-ascii?Q?NSPFIx44kEk9z7XIj48+BP5LjHeg3V+5p/larUq9pPWhM9l3EJ5O4n8ZCVOX?=
+ =?us-ascii?Q?dYIBdY8l06mhJqzhA/LpwmdlSErCSY2eLG4I8WTJ?=
+X-OriginatorOrg: mt.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 91731a82-6fa0-4d75-474b-08dd8c1505bc
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB6285.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2025 20:40:07.6310
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fb4c0aee-6cd2-482f-a1a5-717e7c02496b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WegfZyF2a3q5KVay1P7y+ybG24L+4Hu9pH4aWBcLvUYe1OEz57C/aI52HTfXfVgS9jxNI+NOdlFCYrs181izPA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR03MB9613
 
+The buffer is set to 80 character. If a caller write more characters,
+count is truncated to the max available space in "simple_write_to_buffer".
+But afterwards a string terminator is written to the buffer at offset count
+without boundary check. The zero termination is written OUT-OF-BOUND.
 
---ga5BT2NOkCzKwCye
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Add a check that the given buffer is smaller then the buffer to prevent.
 
-Hi Jonathan,
-hi Matti,
+Fixes: 035b4989211d ("iio: backend: make sure to NULL terminate stack buffer")
+Signed-off-by: Markus Burri <markus.burri@mt.com>
+---
+ drivers/iio/industrialio-backend.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Matti Vaittinen <mazziesaccount@gmail.com> schrieb am Mo, 07. Apr 08:52:
-> On 06/04/2025 14:08, Jonathan Cameron wrote:
-> > On Sun, 6 Apr 2025 10:43:23 +0200
-> > Andreas Klinger <ak@it-klinger.de> wrote:
-> >=20
-> > > Hi Jonathan,
-> > >=20
-> > > I need to pick up the meaning of scale once again for clarification.
-> > >=20
-> > > Jonathan Cameron <jic23@kernel.org> schrieb am Mo, 17. M=C3=A4r 11:50:
-> > > > On Sun, 16 Mar 2025 12:31:30 +0100
-> > > > Andreas Klinger <ak@it-klinger.de> wrote:
-> > > > > +static int veml6046x00_get_scale(struct veml6046x00_data *data,
-> > > > > +				 int *val, int *val2)
-> > > >=20
-> > > > How is this related to integration time?  I'd normally expect
-> > > > to see that read in here somewhere as well as doubling integration
-> > > > time tends to double scale.
-> > >=20
-> > > In the documentation file "sysfs-bus-iio" it says:
-> > > "
-> > > What:           /sys/.../iio:deviceX/in_illuminanceY_raw
-> > > [...]
-> > > Description:
-> > >                  Illuminance measurement, units after application of =
-scale
-> > >                                  and offset are lux.
-> > > "
-> > >=20
-> > > This means that the scale should be the real factor and not the gain =
-multiplied
-> > > by photodiode size (PDDIV) as i implemented it so far.
-> > >=20
-> > > This means also that doubling integration time should halve the scale=
-=2E The
-> > > higher raw value should lead to the same lux value.
-> >=20
-> > Sounds correct.
->=20
-> I was CC'd due to the GTS (gain-time-scale)-helpers. The above is the beef
-> of those helpers - which, attempt to aid drivers to convert the impact of
-> the hardware gain + integration time into a single scale value. This
-> approach has some caveats, but the goal is to fulfill the expectations of
-> those user-space apps which expect only scale to change the gain, while a=
-lso
-> need to have the integration time controllable (for example to reduce the
-> measurement time for one reason or another).
->=20
-> Problem is that, especially when there are multiple channels with separate
-> gain control but common integration time, there will be some situations
-> where the integration time change _will_ cause changes to "total gain (E.=
-g.
-> scale)" too. There may also be cases where some scale values can be met o=
-nly
-> with certain integration times, or where a scale for a channel can't be m=
-et
-> maintaining the scale for other channels etc.
->=20
-> All in all, I am not sure if the 'unchangeable hardware gain' approach ma=
-kes
-> things as simple as possible - but as long as we want to have it, the GTS
-> helpers may be of use :) There are couple of drivers using them - feel fr=
-ee
-> to take a look. "git grep gts_ drivers/iio/light/" should point you the
-> current users.
->=20
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index a43c8d1bb3d0..4a364e038449 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -155,11 +155,14 @@ static ssize_t iio_backend_debugfs_write_reg(struct file *file,
+ 	ssize_t rc;
+ 	int ret;
+ 
++	if (count >= sizeof(buf) - 1)
++		return -ENOSPC;
++
+ 	rc = simple_write_to_buffer(buf, sizeof(buf) - 1, ppos, userbuf, count);
+ 	if (rc < 0)
+ 		return rc;
+ 
+-	buf[count] = '\0';
++	buf[rc] = '\0';
+ 
+ 	ret = sscanf(buf, "%i %i", &back->cached_reg_addr, &val);
+ 
 
-Thanks a lot for illustrating and explaining the GTS. I implemented the dri=
-ver
-with GTS and by this learned a lot about it. But at the end i found it in my
-case to be simpler to implement it without GTS for some reasons:
-- User wants to be able to set up the integration time as well as scale and=
- the
-  driver should not optimize it somehow.
-- There is not only a relation from the scale to the gain of the sensor but=
- also
-  to the photodiode size. Because of this i need another helper table asize=
- of
-  GTS for translating the scale into sensor gain and photodiode size.
+base-commit: b4432656b36e5cc1d50a1f2dc15357543add530e
+-- 
+2.39.5
 
-I'll come up with a version 3 shortly.
-
-Andreas
-
-
-
---ga5BT2NOkCzKwCye
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGzBAABCgAdFiEE7/NrAFtB/Pj7rTUyyHDM+xwPAVEFAmgZDR0ACgkQyHDM+xwP
-AVG6lgwAr5MoPoUtUc10n/jCrF4oU2/jdI7w9KxznRNqANsXs+a/bOVQAqGXiSjh
-qTgGkZk8vDwDm2QE+bs/ychhXnEUGfo3oXlFX86O0f6bifkzQI9av/Vp+ofjoQS+
-TZz8nMvrEsAJhOGOW0c7eFDQvlBypXZ6h0h1UzjWuD55Uxv3c1W2YB6O2Zu3dwhw
-55rWBG8XkM+vWMhgBWJe1PMNMxTIB6TXHOMMzVqNn4aQCjDUlVpNL0YcBk5NUYpu
-HEbR83SoVSf+AiG+1V+J7cPR9WYR8on5hlp44WUw1Dfn/OhB7VQQ+xdx/tiDbv70
-SdlUUwwmLR0Yf80rx2E3ApS2tZ0JO/9U859Il09Gfhd1njT+orZ2oQDi0gKDcUqk
-1b8uhpvBASzF85yDkFCYAnJfOuRxBjhN4OKNWewRAhLJuttnc9YjdJJFKmzbOyTM
-1PX1HSHIF4qVRYxmMC/98cluieyg7F3zQ3dwlnZjp5r6dAWK/OAX8J1zjHI+oFwu
-8q5dDWQ0
-=ZWOw
------END PGP SIGNATURE-----
-
---ga5BT2NOkCzKwCye--
