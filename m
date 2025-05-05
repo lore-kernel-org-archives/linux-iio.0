@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 034D91F91C8;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 035DD25A2AD;
 	Mon,  5 May 2025 16:41:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746463298; cv=none; b=AKbc86FxhJ43b/MAeqtU+QwAxabfylzkpbvZUTdbCZiD2Ezcy82HCCeVy6o9WslkcqoRmD1TVYxSJaw5j95KHgo1Mn0cuMzWBD9ObpdW2UHFEBgzqGj8neZCOuK3JDiM9WFVDPI7yT12L8NZ1W8NnLaeDrUvwMWiIvyCTSIk+Q0=
+	t=1746463298; cv=none; b=LXcmaZyIKICqbKJepp8zr1vS9u7XELiJEgC3QPERZXc3AYl0gciGhprbVzBMTtMlRHvh/2YyYW3FBPk9BnenNBrnQy53M/AUPeteXxbGEviM3XFhCB9O3EBz2At6mK0PtjZ9r1XJFVP+lptgeh+9tCTgygh7C4k6lJfAX9bbWs8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1746463298; c=relaxed/simple;
-	bh=Lc+0ipnOsOyMrbnE9ygCUwscmE7Y6WD4G1olrBmxHzk=;
+	bh=HI59+3VsZAHzDG2lW8mj78HPsyNMQFBt0V6LHST9s0s=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hIVWDyMsp/tYGqSNCQphljNeBeJsiwrYumUxBzNFORSRHHbAxKS/cZUVXPuS+JH+ROKGyHTumx+w0rGMisaNKkufmhJIc+Zn1xGr/urPyIc6FaJM3jysfHu8QpC7fQenwxx03BGqFxVurx4/N/8wZVXzeCm+AO/4r8tZ2I1BKnU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Heh8WGs3; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=Fg6unijdNWKttU4igF68x3vlXPEmdJED23ibJ9Dhy+cXBHRSVDaL0Ji2sy1NatkYuaI0X25xdlfziBblT1GgfsSe8X8S1H7eyT3g6SylBNNzNkQEBgJyd855ND9fsGpu8yN98uRcAFHkdrzXWbLxKQ5oQTkPAX5gH4ZsA1VgZkY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dxmNvawv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Heh8WGs3"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 89CE8C4CEF0;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dxmNvawv"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7BC61C4CEEF;
 	Mon,  5 May 2025 16:41:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1746463297;
-	bh=Lc+0ipnOsOyMrbnE9ygCUwscmE7Y6WD4G1olrBmxHzk=;
+	bh=HI59+3VsZAHzDG2lW8mj78HPsyNMQFBt0V6LHST9s0s=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=Heh8WGs3ToIW0EeJvH6EkmUw1UK8+jSUXcESXJ5gMgpAk0Xc0Xvg7K6mJJfWCq5PH
-	 qLIcIjXNC9OJxgyw2dGPyeHEbgsYsnyM99huNU0PBIgNh5jKO2SdDAtrZVz2DinMMx
-	 DVUMyrCoHvg8VAXoydpqccKQVjkTiAUX+znQuYg8vnu7sSie3E4fg/wlZgTZv0eq92
-	 3Qo+OoxbOwSMVaTa+8v/tbRfrLUZAxsKY1OfM+ZNJkTdNLmu+smd2tmkIZQOFY1L9/
-	 0v54/r0Mp86puNBody6o5uKiMm/8qH5SLdztaQow+ydFyXENVg0RJIQf6EbNTH9NnF
-	 MWZj95wBKExBQ==
+	b=dxmNvawvOySthKC2h5HX3OBYp7mNZOccBje4oN3+8uEKBuxvPAVLPiHXhxp/zFQ/h
+	 otCd2vhOyzUmegmT4pTTnike213vqj5DSTaRrpJY81eqeINYNmGjDoYezpQRT5nNW3
+	 c3r9H/ssA9egWPCLSUDEkqHZ1j2Zf38Jmby8j6zIz9KlXY4y3IenQUMJU0NdpOKGaa
+	 nRoNYTyQPqbhugfxwOf5T2IJuYtiq9D+v9TcdVivPKoOdQuFoh5Ks3ZIJ+w5GTnHaT
+	 44Al+HMz52fUa4bdgCyoTNbnRJpvqjBfzgDBdYmqJ8Xqwui5ZFAtkxJTDPSRItHuwj
+	 qVffrBaa+mYBA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78ED0C3ABBC;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69EB9C3ABBB;
 	Mon,  5 May 2025 16:41:37 +0000 (UTC)
 From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
-Date: Mon, 05 May 2025 17:41:33 +0100
-Subject: [PATCH v4 2/7] clk: clk-axi-clkgen: make sure to include
- mod_devicetable.h
+Date: Mon, 05 May 2025 17:41:32 +0100
+Subject: [PATCH v4 1/7] clk: clk-axi-clkgen: fix fpfd_max frequency for
+ zynq
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20250505-dev-axi-clkgen-limits-v4-2-3ad5124e19e1@analog.com>
+Message-Id: <20250505-dev-axi-clkgen-limits-v4-1-3ad5124e19e1@analog.com>
 References: <20250505-dev-axi-clkgen-limits-v4-0-3ad5124e19e1@analog.com>
 In-Reply-To: <20250505-dev-axi-clkgen-limits-v4-0-3ad5124e19e1@analog.com>
 To: linux-clk@vger.kernel.org, linux-fpga@vger.kernel.org, 
@@ -60,11 +60,11 @@ Cc: Stephen Boyd <sboyd@kernel.org>,
  David Lechner <dlechner@baylibre.com>, Mark Brown <broonie@kernel.org>, 
  Mike Turquette <mturquette@linaro.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1746463295; l=659;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1746463295; l=999;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=/HIQW7i7xy9rSNcN8n33vnPmXH+zPymhP7sV+jmjYCI=;
- b=ibsXaHg5SmvmP29i8FBnfA9fex7vJB3eNG6DVEcPyMuUSXR2Z/E7lnTRdR7iKHJeFp5Nb5kmH
- 1T7a3IGuLSlAtBvym9441Btlds7Y3+boWsz3hx4jIPsctLWQvo54MwR
+ bh=5+y858CS+pLM6RSN4Bbzxos5w9xYK0rwoYDgzKAlxLk=;
+ b=JnMILPfgdPrKiAjlHa+0kVVuFT7iIapl+s0dtmxMQRdGK4FggI5iS5L0WswSPT5cL/SUCXp0K
+ 5L+kR1/Pz8sDGrP3kWDs9xbb6IAKZvvMsbdYURtP4fe+A9WYDroBDRA
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -74,26 +74,30 @@ Reply-To: nuno.sa@analog.com
 
 From: Nuno Sá <nuno.sa@analog.com>
 
-The mod_devicetable header is the one to be used for struct
-of_device_id.
+The fpfd_max frequency should be set to 450 MHz instead of 300 MHz.
+Well, it actually depends on the platform speed grade but we are being
+conservative for ultrascale so let's be consistent. In a following
+change we will set these limits at runtime.
 
+Fixes: 0e646c52cf0e ("clk: Add axi-clkgen driver")
 Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/clk/clk-axi-clkgen.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/clk/clk-axi-clkgen.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/clk/clk-axi-clkgen.c b/drivers/clk/clk-axi-clkgen.c
-index 00bf799964c61a3efc042b0f3a9ec3bc8625c9da..2a95f9b220234a1245024a821c50e1eb9c104ac9 100644
+index 934e53a96dddac8ed61dd109cfc188f3a2a0539a..00bf799964c61a3efc042b0f3a9ec3bc8625c9da 100644
 --- a/drivers/clk/clk-axi-clkgen.c
 +++ b/drivers/clk/clk-axi-clkgen.c
-@@ -13,6 +13,7 @@
- #include <linux/io.h>
- #include <linux/of.h>
- #include <linux/module.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/err.h>
+@@ -118,7 +118,7 @@ static const struct axi_clkgen_limits axi_clkgen_zynqmp_default_limits = {
  
- #define AXI_CLKGEN_V2_REG_RESET		0x40
+ static const struct axi_clkgen_limits axi_clkgen_zynq_default_limits = {
+ 	.fpfd_min = 10000,
+-	.fpfd_max = 300000,
++	.fpfd_max = 450000,
+ 	.fvco_min = 600000,
+ 	.fvco_max = 1200000,
+ };
 
 -- 
 2.49.0
