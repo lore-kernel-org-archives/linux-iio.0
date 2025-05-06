@@ -1,128 +1,94 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99A7D1D8DE4;
-	Tue,  6 May 2025 09:00:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0744253920;
+	Tue,  6 May 2025 09:01:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746522019; cv=none; b=aMFCx2a+A7S5M0mJcfe8r+I5yYgmllNZFTc705xuf+wBUQAzYGla6eUzXYZnUW52tBa827HMBXnkRpewWm+Qq9+B5JNdIc+OLEXycQDMKTn9R2oiPOL1pxEBGp8RHsHs2p9dVnX9/wRJyLZAAS93iAdpYj/MgqoY6BT2b8QfmKw=
+	t=1746522092; cv=none; b=p1SJy30fuwwtE0h0+EVWFdOu08B4uAZElLJzn1JYSmLBONpvyMGDmDdnv16DsIA8H/q98vnlU8o0wOZH5zfUxrVJXae9QCruFlW2/VwmwpgGbpH+LzKUwN7B87sEnxjreQKiVMABwSOR18kPZGF2q+ymsOReQL6THNOEaj8pKrQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746522019; c=relaxed/simple;
-	bh=bfJ+i+nxjlIUMvDoGZDzIdNxnwJIksoC8QFe5Y85Ngw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SmpXVcAHBg+9+UAEqZ/BhnSLjoiIxnFcRYIvPhyjvEzrvCnUrW008LDQ5c1aDd+YjIaafsd74TJgBBcLDPCP/R0u88jA9DGymQ0lNEA24BrJLMIflEn2GOopff4tQ6ydtE1HqB9cYbCp86u4Iv39+L6+ou3l0w2ayofTYN61KNM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rl/2s9ws; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1746522092; c=relaxed/simple;
+	bh=JXibkMDbejIFHci74gj1Ws/y17Lk0Z/3Sk4pdIyJ1Ok=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=fccIhJIzfdftzW4rvHUvSQ3Ddpf7CWgtIhYx/lLss6qGD26jcq1Vp1pDAXgMkoa4zs3dZpRWHE6/0/Gmf0NUKVTNypeU5dzOvpgwgmU2vwuP9Wo4A3OCT2N58IjIlLfvDhRQafoJRYLBTyXf7dIaFqzc5jDM0ykL5obG77mx44E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=br2QyGAP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rl/2s9ws"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4899AC4CEE4;
-	Tue,  6 May 2025 09:00:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="br2QyGAP"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6671FC4CEEE;
+	Tue,  6 May 2025 09:01:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746522019;
-	bh=bfJ+i+nxjlIUMvDoGZDzIdNxnwJIksoC8QFe5Y85Ngw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Rl/2s9wskItIvl3CUknUMoPYW3AlOVWiqtZVd1Mh90ULtbmf76k39STen9JbuzTws
-	 jO0w7bcSY9p+ZVEweLivWRkh9ptI2mAFH/8fM3+y0sjcOKvrbnMiE7CfA32/wB7naf
-	 EeUbZzl6AOc4fMPpBKvv9eaKZXEWNpWhSfRWo9TjEFTjFTTqYUfhk9HWPim+dr4AdW
-	 D13LKVjv5ZqNz/mM+gzoWnGTYaJ/nee0Ssnavcfc4++tJte9a5MKs7HlLoZSBNw591
-	 ZZY1XgxTmdzPPoNOp69ZDd6/BOATos3xcHBz9VzKvfAM4lchBMlRryhKaY+pLszCX6
-	 F596JZGCj17jQ==
-Message-ID: <4ef1f428-d580-4263-9190-d187d1fd0e53@kernel.org>
-Date: Tue, 6 May 2025 11:00:15 +0200
+	s=k20201202; t=1746522091;
+	bh=JXibkMDbejIFHci74gj1Ws/y17Lk0Z/3Sk4pdIyJ1Ok=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=br2QyGAP5SpTO3cGegug0cPGXlfnf+EPYB6GUwZb+Si8lo7bfH5+wt1XjDzmL03Mf
+	 JbSsgG6D07f6hfHWgQSHo+uNUVJqZtotL2OOCExejvbHffCmNXUfuI9QXz3HNh/gfM
+	 Oh9shmqRIHBjk9E9eRHwTitgJ+n/N6HqrXe8r6giYT0G0nLW0k5hcPL4hybRsyhUEF
+	 hJWaT2Pi6LeWGHtpd4fGoJtv2FbCz6chsHhLAJAwnLsV8nnzKQAa/Q1T62xRdm8N1T
+	 3FaMAwOWf8C6+yuhAKhR4uU90+KGuuONfSiAICgpCyD7vb+VFwSLQG8pfwtId4+VcH
+	 KiB10Vvognn9g==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 550BDC3ABAC;
+	Tue,  6 May 2025 09:01:31 +0000 (UTC)
+From: =?utf-8?q?T=C3=B3th_J=C3=A1nos_via_B4_Relay?= <devnull+gomba007.gmail.com@kernel.org>
+Date: Tue, 06 May 2025 11:01:15 +0200
+Subject: [PATCH v4 1/2] dt-bindings: trivial-devices: Document SEN0322
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/2] Add support for the DFRobot SEN0322 oxygen sensor
-To: gomba007@gmail.com, Jonathan Cameron <jic23@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20250506-iio-chemical-sen0322-v3-0-d6aa4acd00e0@gmail.com>
-Content-Language: en-US
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJoF1BKBQkWlnSaAAoJEBuTQ307
- QWKbHukP/3t4tRp/bvDnxJfmNdNVn0gv9ep3L39IntPalBFwRKytqeQkzAju0whYWg+R/rwp
- +r2I1Fzwt7+PTjsnMFlh1AZxGDmP5MFkzVsMnfX1lGiXhYSOMP97XL6R1QSXxaWOpGNCDaUl
- ajorB0lJDcC0q3xAdwzRConxYVhlgmTrRiD8oLlSCD5baEAt5Zw17UTNDnDGmZQKR0fqLpWy
- 786Lm5OScb7DjEgcA2PRm17st4UQ1kF0rQHokVaotxRM74PPDB8bCsunlghJl1DRK9s1aSuN
- hL1Pv9VD8b4dFNvCo7b4hfAANPU67W40AaaGZ3UAfmw+1MYyo4QuAZGKzaP2ukbdCD/DYnqi
- tJy88XqWtyb4UQWKNoQqGKzlYXdKsldYqrLHGoMvj1UN9XcRtXHST/IaLn72o7j7/h/Ac5EL
- 8lSUVIG4TYn59NyxxAXa07Wi6zjVL1U11fTnFmE29ALYQEXKBI3KUO1A3p4sQWzU7uRmbuxn
- naUmm8RbpMcOfa9JjlXCLmQ5IP7Rr5tYZUCkZz08LIfF8UMXwH7OOEX87Y++EkAB+pzKZNNd
- hwoXulTAgjSy+OiaLtuCys9VdXLZ3Zy314azaCU3BoWgaMV0eAW/+gprWMXQM1lrlzvwlD/k
- whyy9wGf0AEPpLssLVt9VVxNjo6BIkt6d1pMg6mHsUEVzsFNBFVDXDQBEADNkrQYSREUL4D3
- Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
- MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
- OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
- GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
- 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
- YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
- 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
- BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
- JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
- 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
- YpsFAmgXUF8FCRaWWyoACgkQG5NDfTtBYptO0w//dlXJs5/42hAXKsk+PDg3wyEFb4NpyA1v
- qmx7SfAzk9Hf6lWwU1O6AbqNMbh6PjEwadKUk1m04S7EjdQLsj/MBSgoQtCT3MDmWUUtHZd5
- RYIPnPq3WVB47GtuO6/u375tsxhtf7vt95QSYJwCB+ZUgo4T+FV4hquZ4AsRkbgavtIzQisg
- Dgv76tnEv3YHV8Jn9mi/Bu0FURF+5kpdMfgo1sq6RXNQ//TVf8yFgRtTUdXxW/qHjlYURrm2
- H4kutobVEIxiyu6m05q3e9eZB/TaMMNVORx+1kM3j7f0rwtEYUFzY1ygQfpcMDPl7pRYoJjB
- dSsm0ZuzDaCwaxg2t8hqQJBzJCezTOIkjHUsWAK+tEbU4Z4SnNpCyM3fBqsgYdJxjyC/tWVT
- AQ18NRLtPw7tK1rdcwCl0GFQHwSwk5pDpz1NH40e6lU+NcXSeiqkDDRkHlftKPV/dV+lQXiu
- jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
- zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
- XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20250506-iio-chemical-sen0322-v3-0-d6aa4acd00e0@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+Message-Id: <20250506-iio-chemical-sen0322-v4-1-1465ac8dc190@gmail.com>
+References: <20250506-iio-chemical-sen0322-v4-0-1465ac8dc190@gmail.com>
+In-Reply-To: <20250506-iio-chemical-sen0322-v4-0-1465ac8dc190@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, 
+ =?utf-8?q?T=C3=B3th_J=C3=A1nos?= <gomba007@gmail.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1746522090; l=974;
+ i=gomba007@gmail.com; s=20230706; h=from:subject:message-id;
+ bh=VzFnPjZnqjVvbbnD3sLYcomj606Uy+EsNotuByMgZoA=;
+ b=bzeda0kNU7P4qJv3M+SKIDTLp39oMNEcNnm6S4gIVQtwVkIget53vfKYPX0qCwA4SOnPuwko+
+ LtU+vtFaWM8CHKX8DMm3BQelXFp5+ozu4mVUHiunWHEYn46K0Q7dgc+
+X-Developer-Key: i=gomba007@gmail.com; a=ed25519;
+ pk=iY9MjPCbud82ULS2PQJIq3QwjKyP/Sg730I6T2M8Y5U=
+X-Endpoint-Received: by B4 Relay for gomba007@gmail.com/20230706 with
+ auth_id=60
+X-Original-From: =?utf-8?q?T=C3=B3th_J=C3=A1nos?= <gomba007@gmail.com>
+Reply-To: gomba007@gmail.com
 
-On 06/05/2025 10:53, Tóth János via B4 Relay wrote:
-> This patchset adds a driver and the documentation for the
-> DFRobot SEN0322 oxygen sensor.
-> 
-> Signed-off-by: Tóth János <gomba007@gmail.com>
-> ---
-> Changes in v3:
-> - Refactor based on reviewer's suggestions.
+From: Tóth János <gomba007@gmail.com>
 
-What exactly changed? I do not see any changes in the binding but you
-decided to drop my review tag.
+Add documentation for the DFRobot SEN0322 oxygen sensor.
+
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Tóth János <gomba007@gmail.com>
+---
+ Documentation/devicetree/bindings/trivial-devices.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+index 8da408107e55..a25bf2135649 100644
+--- a/Documentation/devicetree/bindings/trivial-devices.yaml
++++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+@@ -85,6 +85,8 @@ properties:
+           - devantech,srf08
+             # Devantech SRF10 ultrasonic ranger
+           - devantech,srf10
++            # DFRobot SEN0322 oxygen sensor
++          - dfrobot,sen0322
+             # DH electronics GmbH on-board CPLD trivial SPI device
+           - dh,dhcom-board
+             # DA9053: flexible system level PMIC with multicore support
+
+-- 
+2.34.1
 
 
-<form letter>
-This is a friendly reminder during the review process.
-
-It looks like you received a tag and forgot to add it.
-
-If you do not know the process, here is a short explanation:
-Please add Acked-by/Reviewed-by/Tested-by tags when posting new versions
-of patchset, under or above your Signed-off-by tag, unless patch changed
-significantly (e.g. new properties added to the DT bindings). Tag is
-"received", when provided in a message replied to you on the mailing
-list. Tools like b4 can help here. However, there's no need to repost
-patches *only* to add the tags. The upstream maintainer will do that for
-tags received on the version they apply.
-
-Please read:
-https://elixir.bootlin.com/linux/v6.12-rc3/source/Documentation/process/submitting-patches.rst#L577
-
-If a tag was not added on purpose, please state why and what changed.
-</form letter>
-
-Best regards,
-Krzysztof
