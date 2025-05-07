@@ -1,536 +1,146 @@
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C323C1DD877;
-	Wed,  7 May 2025 20:05:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44A8B28F948
+	for <linux-iio@vger.kernel.org>; Wed,  7 May 2025 20:43:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746648309; cv=none; b=VwsehOoHsjX4AD3H8ZpvcqZB5zdgzXjHwCf4XR/yHX2WyOOBVm+N1ijfiOb0V+bK4luIEFkU4xNsh+VrhR7L66avSPMj5VEVFruHZLHzlSjVf9FcVuzE1ELI7x/+0nXzqoZsNhp8tr3eff45Mfc3Rqb0G6b3KXYKc2S/5XMQ8uI=
+	t=1746650625; cv=none; b=sacqkKpEk+Fs3v6wulkgoW1sB6EQLq7nK1vvbM6NXIlF6xd8LiVE6Xkq/Y90O38e6ZgO7ewX7AmAQLsMVK6i8VNmLS4uVyYo/5p1F81th58OgrBai4ximDnuHycIjflUg2SIrTA2G0u+Mm9vfZsJgi0QR8kkNMjSRPUkX+Uo1D0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746648309; c=relaxed/simple;
-	bh=ELX/QrmRqtzvJbpT2zEnJU/4muWN49rAsluF5b3Bqfc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VVNhWi1gmWjHQP0e5eSxxh35K7hwcIpz/5QP4X/bcEV+YuIxpLHfwvt5BqOF07GSzqYs5IeUhDV64eixJ7mHrFKygF2AdfwUqqbAVFyJGiLY2lN/5FO5H2fFz/93MGGjS8de7hdA5mBeIbJ9qNwyh+eYN/odEDDW+HSS/3ECxcQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TujV5ghJ; arc=none smtp.client-ip=209.85.219.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1746650625; c=relaxed/simple;
+	bh=KXhEzNu9vMA0LlJD+DPGW7NGscBEnrm7VeMGbRK9U/g=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=W7fcKJsQf+i3zo9oLLWrU1lUBgu89j5hdsQmjJYR32noe0lr7CppYIxesLny9+ogMB70MCluADvO4P8KIuR3mONiG5U6vqAYMA8oTc5Y/6gHQi3F3d5V8bLUMelFDZqAPwWqbu9HWETdPzHuB7WmkiKNrNS9icc3WGqAJ5+XIUg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=AztOIbFo; arc=none smtp.client-ip=209.85.210.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TujV5ghJ"
-Received: by mail-yb1-f179.google.com with SMTP id 3f1490d57ef6-e7316c56e6eso26649276.3;
-        Wed, 07 May 2025 13:05:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="AztOIbFo"
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7302a769534so154857a34.1
+        for <linux-iio@vger.kernel.org>; Wed, 07 May 2025 13:43:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1746648307; x=1747253107; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OX2xFiglN/HlKVCaacNYo8er3Ud+iyqL0gELfOvfiJQ=;
-        b=TujV5ghJwZd4paK6DSdxW7jBgMtC2bifk+n2DkhrwNYKp9qbn82yGJ8wKLtTLC1KUu
-         KjciNsOfYK01O6LIyxlEBEtkVqfQfQjpBSCKaf2c25T+rGzeM9aOlgkQz9lYvqlLKdtV
-         sWR3YMTsjXXN21b+OCdl7qmZ6mFyCj+L1HbVrqmoviyIsmyfw5sl5CKDjn9RoOOl91uJ
-         06iknXPMAsqJ2FaYBH0imuY4op0JNd3cbqQcSy/XPW9HlFPloos7ik+H3wBb+lh13/1F
-         cs6R0tSaqlawsLaM/Pt65KB5VVaCLMORVevwwiajrobFt1skW+NX6/PlTRF5Sarmg33I
-         jxZQ==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1746650621; x=1747255421; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nsDoH9wedifhugPM5JBN/pxKp+uLG0gE7R6WQkp6CbY=;
+        b=AztOIbFo/40+dbLiN+K9vEq8Q27BO5256hxM2PWEh+9azhPiRF2OWGyNl3cmAv3PYL
+         G1HfNh/LgS/UM14FNTG6HwYRhakNKv3ku/jymdVqI2KTeF60u7bXU5UDgN9dP7c4VBxw
+         l2R0pcMv4MxYPL17ly1AjRVs4d2IYb8BDTZd3my4BrPo8pLV6y2Fr7OO1puFTbV0KPDq
+         3wvjf77z5F1qnrDmVSIbRU0Vr4kz9lRD2Dvc0OZY+l4C9JAdO8XsSlMk4AgOnOU7Wq10
+         FMlqpN70WyLGVmlavxiUa5H41QyqXQF+exFmwXgChS9s66OAxkgA1luNYWMPdfZQgg0N
+         ai4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746648307; x=1747253107;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1746650621; x=1747255421;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=OX2xFiglN/HlKVCaacNYo8er3Ud+iyqL0gELfOvfiJQ=;
-        b=BgxKCWjDoXLEuZaYRZppg+4oe8zgmjRHHN3te+7Ndbz0I7MUsZP2nSKfCuJ2yp1l/t
-         a8+8ucsEq5Dxuw+Dzz2IH0WBkqRCas1bLa4QK1Nc+6lByGW9V2/tdCJjEYKPfDIoblAc
-         BBHrmyp7kXzbFhThP/P/jfA+/cu7KTJQh+J7DoWtGGgF+vdJfQ4/to5+58N8jO5zLDLY
-         xagfBhUCxQwIMGm7j7yCYRQ7uELHu9U/p+/CgFrgQ5QocQb44vJnxxdsWxP6E6U2xYSz
-         WuzHmhcFQEpeI2OAsB6TA0ms8hanV4Acazh4RIOZe+iI90IHCKn6hSe4J8H/AkDsrrof
-         zVKg==
-X-Forwarded-Encrypted: i=1; AJvYcCUnd1nF128XyYAAUyY9CFuoLMYT/coNjUrQib1nShwe86xyDHGrIdYc00uFAjeGpWwxBWhkOAC/2clxl9aI@vger.kernel.org, AJvYcCX2tX01o37XJz+/v4UwBr5QERHiXaab1XLEh00glBV1rD+B2JLcm0C8QNuzJqECx3AWKn0lrdJfeO8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyHkLhDgpTikz0d8J+swfcsqzvjzdm6Zk1vb7z0aw7t9LGBGfa6
-	hoDR61idLZ8llBOB3GAnoBY8hB30vc3kDQKhAyuXD6EuWK/Snd1DOU/yak+XYwgWki7TtCmfROl
-	q6yXC1lnbxRzJQ9XLd0DlMTsWov4=
-X-Gm-Gg: ASbGncv70SUMUqQgkhSJNtEjLbnDhEcvs+301p+/S6KroAVuZbkmirji0h5uZshRegr
-	tD68SepV7Ef70SQeZkIz6pejxFwEM/0ZI3/xLtRTUCoAP+nxOvY/BXLddLYHXlSFlfSbGNEZPFf
-	GJ19rm8jXXJwsw/sSjGhlBs/fhAcR3yaWp
-X-Google-Smtp-Source: AGHT+IEwUCyR7ntKSaCs09Bcpk9E9rIBQ8jni8pevru8KPvXXiVNBayzJjNUOv+AfsBKTVvSOw/EfqvuX4spSnay/hc=
-X-Received: by 2002:a05:6902:240f:b0:e75:3db7:41cd with SMTP id
- 3f1490d57ef6-e78810be22amr2615197276.4.1746648306487; Wed, 07 May 2025
- 13:05:06 -0700 (PDT)
+        bh=nsDoH9wedifhugPM5JBN/pxKp+uLG0gE7R6WQkp6CbY=;
+        b=wTrXfCbvIBABiH75eAN1TCBXr3sIoYVNBlXDY9KkX+5/w0s3ZAdFDVdAN5FBLKn8NM
+         jON9j3p3m9FA/u+IDvwqTVlaLpBYaL4+rbZJFzN6D788N55UrXtx90in+4lvxwFM6uab
+         v7NLxXSYpXNHCF5BOT93Wuhj6FyFOwJ2BwUeG/e77igvE/PK64/tYAXZgGP9SasTR3zc
+         XPA2bEwoK/h658/ehePCry8bwg2zq1IHHrRWMr6e7iVdQivTozmS119joq9vYYISulF3
+         901ZG+4GsDH8bvYk5ZjNUcFD6NWaOxh9gGntshDR23vHNfAzZOnyPH/RdHLPaEgd+SD2
+         8NmQ==
+X-Gm-Message-State: AOJu0YyZc6xIfXPgXQeN6SZeElPabhZWWWcfqQAxLtgQdJGmx4x5pkCq
+	MOpxr/jrjB3gJKDX0V+JTdERnUdCQu8VGQQVXxoIECLXyfTASiaS0yDWvUULgm0=
+X-Gm-Gg: ASbGncu4C0rLjl4dbLcBW3UWp2Ik4B05aKAc3ufwUZUd2I6VCPPm/Jjbxjmy5kngrGz
+	c9rnitgZ5MgidM4qe9JYwkCzYkuKROITphW0s4VpC4Hmba54/BYWCWLKcTu3awu6gmnSOM6miO+
+	Z9RqxpVPtPYmERbybcTzZeHuAskI1GvE64WbGJZ4q8yd5GLp3GZGfMRpDOR9QZw5bBZPAC96xLM
+	VSyjW7zTvkpuS20LqrlO0v65N4o+K8LKHTpw4MrLy5TOvS1TSw7YVzWtqala67uBBghvxoLlac6
+	Wv+A5kAf0spEret7HFf1xN8ZyLQZRDuXR9i8o3Hs+QFl5g==
+X-Google-Smtp-Source: AGHT+IGuMbSopsw0kPB3BOKdZwGLMyA4fTqZkg1sp+VqbZBKSh74y17YUdx5+VNzA+Dlkjgu5EqA2g==
+X-Received: by 2002:a05:6871:692:b0:2d5:d5c:a851 with SMTP id 586e51a60fabf-2db5bd81d15mr3352825fac.6.1746650621211;
+        Wed, 07 May 2025 13:43:41 -0700 (PDT)
+Received: from [127.0.1.1] ([2600:8803:e7e4:1d00:3356:f6f6:bf76:a32])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-2db5cd716d3sm898642fac.21.2025.05.07.13.43.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 May 2025 13:43:39 -0700 (PDT)
+From: David Lechner <dlechner@baylibre.com>
+Date: Wed, 07 May 2025 15:42:40 -0500
+Subject: [PATCH v6 1/7] iio: make IIO_DMA_MINALIGN minimum of 8 bytes
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250421220641.105567-1-l.rubusch@gmail.com> <20250421220641.105567-11-l.rubusch@gmail.com>
- <20250427140032.3112f51b@jic23-huawei> <CAFXKEHZ60bREfFmi33XSyrUNigyuQv+by4vh+uoUErni_UEcnw@mail.gmail.com>
- <20250504113907.5030b02d@jic23-huawei>
-In-Reply-To: <20250504113907.5030b02d@jic23-huawei>
-From: Lothar Rubusch <l.rubusch@gmail.com>
-Date: Wed, 7 May 2025 22:04:29 +0200
-X-Gm-Features: ATxdqUHuwakHgkBzXFQv7139tjMjA7PhdfesuCM-dZEo2DyjJFtLroUbi5rf6Do
-Message-ID: <CAFXKEHaupT2RZqNaQnLjiKpCodHSHsswhRXCKAmGh_Tnr3iXJQ@mail.gmail.com>
-Subject: Re: [PATCH v7 10/11] iio: accel: adxl345: add coupling detection for activity/inactivity
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, eraretuya@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20250507-iio-introduce-iio_declare_buffer_with_ts-v6-1-4aee1b9f1b89@baylibre.com>
+References: <20250507-iio-introduce-iio_declare_buffer_with_ts-v6-0-4aee1b9f1b89@baylibre.com>
+In-Reply-To: <20250507-iio-introduce-iio_declare_buffer_with_ts-v6-0-4aee1b9f1b89@baylibre.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Eugen Hristev <eugen.hristev@linaro.org>, 
+ Nicolas Ferre <nicolas.ferre@microchip.com>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Claudiu Beznea <claudiu.beznea@tuxon.dev>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2051; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=KXhEzNu9vMA0LlJD+DPGW7NGscBEnrm7VeMGbRK9U/g=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBoG8XMenAMAnq7gPRRFS22x5xeEEEtJEsUd6xym
+ y6ke1GkKsKJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaBvFzAAKCRDCzCAB/wGP
+ wLngCACRoGSeRFy1n5EjP/iotCrHZcEvDzkEXMr6F/ZItm2ApnS+GHg2GEuOB5DOqzcUTIIXHCL
+ 9KQ+3veOSVxITb+z1+PHlVLj6hf79gLTAyV7h9dW3x8s3rY3fCT58TNwyK7/Se70eOlNThdaIu2
+ pkXyZHdfmNZPSjbfvTMxxLG4PsvkaX1byJZXk40WocOq0pqQXFzD/5+jvGeNRfsUHhrhPN0HCJL
+ Eg2YmfnUHvbYbWafrR8i25s9cd+kPm+MKU9xU3mEjale2EtU96Ej0fX4fvekuvWL8X0rClfwM3S
+ cdjsFjvGtSkBlUpbBSnj3SZSLZBce9MRNi27B3UPREc1YOcX
+X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
+ fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Hi Jonathan,
+Add a condition to ensure that IIO_DMA_MINALIGN is at least 8 bytes.
+On some 32-bit architectures, IIO_DMA_MINALIGN is 4. In many cases,
+drivers are using this alignment for buffers that include a 64-bit
+timestamp that is used with iio_push_to_buffers_with_ts(), which expects
+the timestamp to be aligned to 8 bytes. To handle this, we can just make
+IIO_DMA_MINALIGN at least 8 bytes.
 
-On Sun, May 4, 2025 at 12:39=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
- wrote:
->
-> On Thu, 1 May 2025 09:35:29 +0200
-> Lothar Rubusch <l.rubusch@gmail.com> wrote:
->
-> > On Sun, Apr 27, 2025 at 3:00=E2=80=AFPM Jonathan Cameron <jic23@kernel.=
-org> wrote:
-> > >
-> > > On Mon, 21 Apr 2025 22:06:40 +0000
-> > > Lothar Rubusch <l.rubusch@gmail.com> wrote:
-> > >
-> > > > Add coupling activity/inactivity detection by the AC/DC bit. This i=
-s an
-> > > > addititional enhancement for the detection of activity states and
-> > > > completes the activity / inactivity feature of the ADXL345.
-> > > >
-> > > > Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
-> > >
-> > > I've dragged the table from the earlier patch into this one that actu=
-ally uses it.
-> > > However I'm a little unsure on exactly how we present this feature.
-> > >
-> > > So until those questions are resolved I've dropped the patch (you'll =
-need
-> > > to rebase on my testing branch and fix up missing table for v8).
-> > >
-> > > The bit that made me not apply this series (with some tweaks) was tha=
-t
-> > > I'd expect enabling AC events to be visible as disabling of DC ones.
-> > >
-> >
-> > There are no AC events, nor DC ones.
-> >
-> > Think of AC- or DC-coupled detection as modes of operating the
-> > ACTIVITY/INACTIVITY
-> > detection. The events are ACTIVITY or INACTIVITY.
->
-> That's where we differ. For generalizing an ABI we absolutely should
-> not think of them as modes - that's an implementation detail only
->
-> > It has effect on how
-> > the sensor detects
-> > if it needs to trigger an (IN)/ACTIVITY event. DC is just going by the
-> > configured thresholds,
-> > where AC is supposed to apply some more elaborate way of declaring ACTI=
-VITY or
-> > INACTIVITY.
-> >
-> > The fact that you imply on this means to me, at least I explained it
-> > wrong, or need to clarify
-> > better.
->
-> Not at all (I think).  This is a question of datasheet representation vs
-> what we are doing in the ABI.  Lets have a thought experiment.
->
-> If the device had separate enables, thresholds and periods for
-> DC activity, DC inactivity, AC activity and AC inactivity would you be
-> thinking of them as modes of one event?  They would be separate event typ=
-es
-> that could be all enabled at the same time.
->
-> Now step 2.  We have many sensors that have limited numbers of highly pro=
-grammable
-> event detection engines (the adis IMUs for instance have only a few such =
-engines
-> but many types of events). For those we treat them as a fifo.  If you req=
-uest
-> 3 events and the device has 2 detectors you get the last two that were as=
-ked
-> for.  We do this because we don't want a detector with 10s of modes with
-> the parameter meaning changing for each one.  The ABI should look the sam=
-e
-> as independent detectors.  Some models are more complex and have more suc=
-h
-> engines, but the interface remains the same.
->
-> So here we have a pair of less flexible engines that can support either
-> AC or DC for inactivity/activity.  We should represent that the same
-> way we represent the separate engines case.  Hence when you enable
-> activity AC, our short (1 element) fifo means we disable activity DC.
->
-> Which is why treating them as separate engines (with rules on which can
-> be enabled at any time) is the right way to go.  IIRC correctly long
-> ago we had various experiments with interfaces around this (including
-> mode based ones) and ended up with this approach that looks like a
-> whole bunch of event detectors with a mux that means we can only use
-> a subset at a time.
->
-> Jonathan
->
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
 
-Thank  you so much for this explanation. It makes it much clearer to
-me now to understand what
-you were writing about before.
+v6 changes:
+- Removed the #if and use MAX instead since apparently clang raises an
+  error that __alignof__ isn't defined when used in a #if condition.
+---
+ include/linux/iio/iio.h | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-Anyway, I just wanted to confirm what is missing here. I'll need to
-distinguish the following events:
-- activity_ac
-- inactivity_ac
-- activity_dc
-- inactivity_dc
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 638cf2420fbd85cf2924d09d061df601d1d4bb2a..a574f22398e45cad1ea741d20d302f88756a1b13 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -10,6 +10,7 @@
+ #include <linux/device.h>
+ #include <linux/cdev.h>
+ #include <linux/compiler_types.h>
++#include <linux/minmax.h>
+ #include <linux/slab.h>
+ #include <linux/iio/types.h>
+ /* IIO TODO LIST */
+@@ -775,8 +776,14 @@ static inline void *iio_device_get_drvdata(const struct iio_dev *indio_dev)
+  * to in turn include IIO_DMA_MINALIGN'd elements such as buffers which
+  * must not share  cachelines with the rest of the structure, thus making
+  * them safe for use with non-coherent DMA.
++ *
++ * A number of drivers also use this on buffers that include a 64-bit timestamp
++ * that is used with iio_push_to_buffer_with_ts(). Therefore, in the case where
++ * DMA alignment is not sufficient for proper timestamp alignment, we align to
++ * 8 bytes instead.
+  */
+-#define IIO_DMA_MINALIGN ARCH_DMA_MINALIGN
++#define IIO_DMA_MINALIGN MAX(ARCH_DMA_MINALIGN, sizeof(s64))
++
+ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv);
+ 
+ /* The information at the returned address is guaranteed to be cacheline aligned */
 
-For the implementation, each shall be a separate event, i.e. each will
-have separate handles in sysfs:
-- event config: enable
-- event value: threshold
-- event value: time
+-- 
+2.43.0
 
-Internally I will use the regmap cached flag for AC/DC to distinguish
-if the ACTIVITY or INACTIVITY event belongs to activity_ac or
-inactivity_dc. Threshold and time values will be specific to ACTIVITY
-and INACTIVITY, respectively. Since, the events will be still activity
-/ inactivity, as their registers will be so, too. The distinction thus
-will be rather a question of the presented handles in sysfs.
-All events will be type MAG, and dir RISING (activity) or FALLING
-(inactivity). As said above, dc /  ac coupling I will read from the
-cache.
-
-Is this approach sufficient to solve the required adjustments, or do
-the events themselves need further information about coupling (I guess
-so, how can I represent this in the events?)?
-
-Best,
-L
-
->
-> >
-> > > Also, I just noticed you aren't pushing the new event types.
-> > >
-> > > These controls need to look like a separate event detector hardware b=
-lock
-> > > with it's own controls + its own event codes.  The fact only this or
-> > > the DC version can be enabled at any time should only be exposed in t=
-he
-> > > reported state, not apparent via what files we expose etc.  On some
-> > > other device they may be independent hardware blocks.
-> > >
-> > > Note I'd also expect to see value controls for these new events. You =
-may
-> > > need to cache the values and update on event change if the meaning is
-> > > very different.   That's because the expectation would be an event
-> > > setup sequence from userspace is:
-> > >
-> > > 1) Set value of threshold
-> > > 2) Enable event
-> > >
-> > > On a change of event (due to shared hardware) The value set may scram=
-ble
-> > > the event already enabled.
-> > >
-> > > So write the values into a cache and update to the right one when cha=
-nging
-> > > event.
-> > >
-> >
-> > Might be that I got you wrong here, but I assume the above does
-> > actually not apply.
-> >
-> > Best,
-> > L
-> >
-> > > > ---
-> > > >  drivers/iio/accel/adxl345_core.c | 162 +++++++++++++++++++++++++++=
-+++-
-> > > >  1 file changed, 159 insertions(+), 3 deletions(-)
-> > > >
-> > > > diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/a=
-dxl345_core.c
-> > > > index b25efcad069b..c07ad5774c8a 100644
-> > > > --- a/drivers/iio/accel/adxl345_core.c
-> > > > +++ b/drivers/iio/accel/adxl345_core.c
-> > > > @@ -37,7 +37,9 @@
-> > > >  #define ADXL345_REG_TAP_SUPPRESS_MSK BIT(3)
-> > > >  #define ADXL345_REG_TAP_SUPPRESS     BIT(3)
-> > > >  #define ADXL345_REG_ACT_AXIS_MSK     GENMASK(6, 4)
-> > > > +#define ADXL345_REG_ACT_ACDC_MSK     BIT(7)
-> > > >  #define ADXL345_REG_INACT_AXIS_MSK   GENMASK(2, 0)
-> > > > +#define ADXL345_REG_INACT_ACDC_MSK   BIT(3)
-> > > >  #define ADXL345_POWER_CTL_INACT_MSK  (ADXL345_POWER_CTL_AUTO_SLEEP=
- | ADXL345_POWER_CTL_LINK)
-> > > >
-> > > >  #define ADXL345_TAP_Z_EN             BIT(0)
-> > > > @@ -91,6 +93,11 @@ static const unsigned int adxl345_act_thresh_reg=
-[] =3D {
-> > > >       [ADXL345_INACTIVITY] =3D ADXL345_REG_THRESH_INACT,
-> > > >  };
-> > > >
-> > > > +static const unsigned int adxl345_act_acdc_msk[] =3D {
-> > > > +     [ADXL345_ACTIVITY] =3D ADXL345_REG_ACT_ACDC_MSK,
-> > > > +     [ADXL345_INACTIVITY] =3D ADXL345_REG_INACT_ACDC_MSK,
-> > > > +};
-> > > > +
-> > > >  enum adxl345_odr {
-> > > >       ADXL345_ODR_0P10HZ =3D 0,
-> > > >       ADXL345_ODR_0P20HZ,
-> > > > @@ -204,6 +211,18 @@ static struct iio_event_spec adxl345_events[] =
-=3D {
-> > > >                       BIT(IIO_EV_INFO_RESET_TIMEOUT) |
-> > > >                       BIT(IIO_EV_INFO_TAP2_MIN_DELAY),
-> > > >       },
-> > > > +     {
-> > > > +             /* activity, activity - ac bit */
-> > > Comment says activity and inactivity but channel type wise this
-> > > is just activity (as rising)
-> > >
-> > > > +             .type =3D IIO_EV_TYPE_MAG_REFERENCED,
-> > > > +             .dir =3D IIO_EV_DIR_RISING,
-> > > > +             .mask_shared_by_type =3D BIT(IIO_EV_INFO_ENABLE),
-> > > > +     },
-> > > > +     {
-> > > > +             /* activity, inactivity - ac bit */
-> > >
-> > > Likewise this seems to be inactivity.  Should this be in the x&y&z
-> > > channel, not this one?
-> > >
-> > > > +             .type =3D IIO_EV_TYPE_MAG_REFERENCED,
-> > > > +             .dir =3D IIO_EV_DIR_FALLING,
-> > > > +             .mask_shared_by_type =3D BIT(IIO_EV_INFO_ENABLE),
-> > > > +     },
-> > > >  };
-> > > >
-> > > >  #define ADXL345_CHANNEL(index, reg, axis) {                       =
-           \
-> > > > @@ -320,6 +339,69 @@ static int adxl345_set_measure_en(struct adxl3=
-45_state *st, bool en)
-> > > >
-> > > >  /* act/inact */
-> > > >
-> > > > +static int adxl345_is_act_inact_ac(struct adxl345_state *st,
-> > > > +                                enum adxl345_activity_type type, b=
-ool *ac)
-> > > > +{
-> > > > +     unsigned int regval;
-> > > > +     int ret;
-> > > > +
-> > > > +     ret =3D regmap_read(st->regmap, ADXL345_REG_ACT_INACT_CTRL, &=
-regval);
-> > > > +     if (ret)
-> > > > +             return ret;
-> > > > +
-> > > > +     if (type =3D=3D ADXL345_ACTIVITY)
-> > > > +             *ac =3D FIELD_GET(ADXL345_REG_ACT_ACDC_MSK, regval);
-> > > > +     else
-> > > > +             *ac =3D FIELD_GET(ADXL345_REG_INACT_ACDC_MSK, regval)=
-;
-> > > > +
-> > > > +     return 0;
-> > > > +}
-> > > > +
-> > > > +static int adxl345_set_act_inact_ac(struct adxl345_state *st,
-> > > > +                                 enum adxl345_activity_type type, =
-bool ac)
-> > > > +{
-> > > > +     unsigned int act_inact_ac =3D ac ? 0xff : 0x00;
-> > > > +
-> > > > +     /*
-> > > > +      * A setting of false selects dc-coupled operation, and a set=
-ting of
-> > > > +      * true enables ac-coupled operation. In dc-coupled operation=
-, the
-> > > > +      * current acceleration magnitude is compared directly with
-> > > > +      * ADXL345_REG_THRESH_ACT and ADXL345_REG_THRESH_INACT to det=
-ermine
-> > > > +      * whether activity or inactivity is detected.
-> > > > +      *
-> > > > +      * In ac-coupled operation for activity detection, the accele=
-ration
-> > > > +      * value at the start of activity detection is taken as a ref=
-erence
-> > > > +      * value. New samples of acceleration are then compared to th=
-is
-> > > > +      * reference value, and if the magnitude of the difference ex=
-ceeds the
-> > > > +      * ADXL345_REG_THRESH_ACT value, the device triggers an activ=
-ity
-> > > > +      * interrupt.
-> > > > +      *
-> > > > +      * Similarly, in ac-coupled operation for inactivity detectio=
-n, a
-> > > > +      * reference value is used for comparison and is updated when=
-ever the
-> > > > +      * device exceeds the inactivity threshold. After the referen=
-ce value
-> > > > +      * is selected, the device compares the magnitude of the diff=
-erence
-> > > > +      * between the reference value and the current acceleration w=
-ith
-> > > > +      * ADXL345_REG_THRESH_INACT. If the difference is less than t=
-he value in
-> > > > +      * ADXL345_REG_THRESH_INACT for the time in ADXL345_REG_TIME_=
-INACT, the
-> > > > +      * device is considered inactive and the inactivity interrupt=
- is
-> > > > +      * triggered. [quoted from p. 24, ADXL345 datasheet Rev. G]
-> > > > +      *
-> > > > +      * In a conclusion, the first acceleration snapshot sample wh=
-ich hit the
-> > > > +      * threshold in a particular direction is always taken as acc=
-eleration
-> > > > +      * reference value to that direction. Since for the hardware =
-activity
-> > > > +      * and inactivity depend on the x/y/z axis, so do ac and dc c=
-oupling.
-> > > > +      * Note, this sw driver always enables or disables all three =
-x/y/z axis
-> > > > +      * for detection via act_axis_ctrl and inact_axis_ctrl, respe=
-ctively.
-> > > > +      * Where in dc-coupling samples are compared against the thre=
-sholds, in
-> > > > +      * ac-coupling measurement difference to the first accelerati=
-on
-> > > > +      * reference value are compared against the threshold. So, ac=
--coupling
-> > > > +      * allows for a bit more dynamic compensation depending on th=
-e initial
-> > > > +      * sample.
-> > > > +      */
-> > > > +     return regmap_update_bits(st->regmap, ADXL345_REG_ACT_INACT_C=
-TRL,
-> > > > +                              adxl345_act_acdc_msk[type], act_inac=
-t_ac);
-> > > > +}
-> > >
-> > > >  static int adxl345_find_range(struct adxl345_state *st, int val, i=
-nt val2,
-> > > > @@ -797,9 +886,51 @@ static int adxl345_find_range(struct adxl345_s=
-tate *st, int val, int val2,
-> > > >
-> > > >  static int adxl345_set_range(struct adxl345_state *st, enum adxl34=
-5_range range)
-> > > >  {
-> > > > -     return regmap_update_bits(st->regmap, ADXL345_REG_DATA_FORMAT=
-,
-> > > > +     unsigned int act_threshold, inact_threshold;
-> > > > +     unsigned int range_old;
-> > > > +     unsigned int regval;
-> > > > +     int ret;
-> > > > +
-> > > > +     ret =3D regmap_read(st->regmap, ADXL345_REG_DATA_FORMAT, &reg=
-val);
-> > > > +     if (ret)
-> > > > +             return ret;
-> > > > +     range_old =3D FIELD_GET(ADXL345_DATA_FORMAT_RANGE, regval);
-> > > > +
-> > > > +     ret =3D regmap_read(st->regmap,
-> > > > +                       adxl345_act_thresh_reg[ADXL345_ACTIVITY],
-> > > > +                       &act_threshold);
-> > > > +     if (ret)
-> > > > +             return ret;
-> > > > +
-> > > > +     ret =3D regmap_read(st->regmap,
-> > > > +                       adxl345_act_thresh_reg[ADXL345_INACTIVITY],
-> > > > +                       &inact_threshold);
-> > > > +     if (ret)
-> > > > +             return ret;
-> > > > +
-> > > > +     ret =3D regmap_update_bits(st->regmap, ADXL345_REG_DATA_FORMA=
-T,
-> > > >                                ADXL345_DATA_FORMAT_RANGE,
-> > > >                                FIELD_PREP(ADXL345_DATA_FORMAT_RANGE=
-, range));
-> > > > +     if (ret)
-> > > > +             return ret;
-> > > > +
-> > > > +     act_threshold =3D act_threshold
-> > > > +             * adxl345_range_factor_tbl[range_old]
-> > > > +             / adxl345_range_factor_tbl[range];
-> > > > +     act_threshold =3D min(255, max(1, inact_threshold));
-> > > > +
-> > > This is first use of the range table. So introduce that in this patch=
-.
-> > >
-> > > > +     inact_threshold =3D inact_threshold
-> > > > +             * adxl345_range_factor_tbl[range_old]
-> > > > +             / adxl345_range_factor_tbl[range];
-> > > > +     inact_threshold =3D min(255, max(1, inact_threshold));
-> > > > +
-> > > > +     ret =3D regmap_write(st->regmap, adxl345_act_thresh_reg[ADXL3=
-45_ACTIVITY],
-> > > > +                        act_threshold);
-> > > > +     if (ret)
-> > > > +             return ret;
-> > > > +
-> > > > +     return regmap_write(st->regmap, adxl345_act_thresh_reg[ADXL34=
-5_INACTIVITY],
-> > > > +                        inact_threshold);
-> > > >  }
-> > > >
-> > > >  static int adxl345_read_avail(struct iio_dev *indio_dev,
-> > > > @@ -938,7 +1069,7 @@ static int adxl345_read_event_config(struct ii=
-o_dev *indio_dev,
-> > > >                                    enum iio_event_direction dir)
-> > > >  {
-> > > >       struct adxl345_state *st =3D iio_priv(indio_dev);
-> > > > -     bool int_en;
-> > > > +     bool int_en, act_ac, inact_ac;
-> > > >       int ret;
-> > > >
-> > > >       switch (type) {
-> > > > @@ -983,6 +1114,21 @@ static int adxl345_read_event_config(struct i=
-io_dev *indio_dev,
-> > > >               if (ret)
-> > > >                       return ret;
-> > > >               return int_en;
-> > > > +     case IIO_EV_TYPE_MAG_REFERENCED:
-> > > > +             switch (dir) {
-> > > > +             case IIO_EV_DIR_RISING:
-> > > > +                     ret =3D adxl345_is_act_inact_ac(st, ADXL345_A=
-CTIVITY, &act_ac);
-> > >
-> > > Do we not need a check in the enabling of the DC events as well?  If =
-we have enabled
-> > > AC the DC one should report disabled (and if we enable that again the=
-n we should
-> > > update this.
-> > >
-> > > > +                     if (ret)
-> > > > +                             return ret;
-> > > > +                     return act_ac;
-> > > > +             case IIO_EV_DIR_FALLING:
-> > > > +                     ret =3D adxl345_is_act_inact_ac(st, ADXL345_I=
-NACTIVITY, &inact_ac);
-> > > > +                     if (ret)
-> > > > +                             return ret;
-> > > > +                     return inact_ac;
-> > > > +             default:
-> > > > +                     return -EINVAL;
-> > > > +             }
-> > > >       default:
-> > > >               return -EINVAL;
-> > > >       }
-> > > > @@ -1019,6 +1165,16 @@ static int adxl345_write_event_config(struct=
- iio_dev *indio_dev,
-> > > >               }
-> > > >       case IIO_EV_TYPE_MAG:
-> > > >               return adxl345_set_ff_en(st, state);
-> > > > +     case IIO_EV_TYPE_MAG_REFERENCED:
-> > > > +             switch (dir) {
-> > > > +             case IIO_EV_DIR_RISING:
-> > > > +                     return adxl345_set_act_inact_ac(st, ADXL345_A=
-CTIVITY, state);
-> > >
-> > > Similar to read path.  The DC events should be affected by this as we=
-ll as the AC ones.
-> > >
-> > > > +             case IIO_EV_DIR_FALLING:
-> > > > +                     return adxl345_set_act_inact_ac(st, ADXL345_I=
-NACTIVITY, state);
-> > > > +             default:
-> > > > +                     return -EINVAL;
-> > > > +             }
-> > > > +
-> > > >       default:
-> > > >               return -EINVAL;
-> > > >       }
-> > >
->
