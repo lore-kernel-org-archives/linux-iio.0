@@ -1,108 +1,125 @@
-Received: from mx2.mythic-beasts.com (mx2.mythic-beasts.com [46.235.227.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EA4716E863
-	for <linux-iio@vger.kernel.org>; Wed,  7 May 2025 07:00:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.24
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CE8B20C02E;
+	Wed,  7 May 2025 07:08:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746601240; cv=none; b=UWI+XD6dTha/Rbv5NO/sjIcCTYGZ81BBfcRRWyYlETDnfVtp7OCFzMByqCDPMK52fvC39V4WhmM5k7WZWht7gqA0ZULcBcZwBV8pK9IW6Ux7BpeaSAKgMLHXE0LHlwkAfOLzA5esZAqFapsDuuQN6xqGYrM1xjSVLCQURsD8vyY=
+	t=1746601683; cv=none; b=mXYhi+O6ndoouLG5s2x1lGBs8zRoaPnhfQ42AIX2gBHmxjQeCPl3ra+uBLNP3hTSg22Ji848YLDkommzx61rfqPVPDzNFJ4GqL1HuT4TIWplyZs3merX0NU3Fm4rK1ysR2qcdaswCJ2czEKs4uPVrP74oiP9GmvRxTUJ+ToXYw0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746601240; c=relaxed/simple;
-	bh=iqeAMUETe8lP7uoHYOGKtQHS1AVSzKUx4h6sXRPHZus=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=E+0yiBuxgzh8yKgeeuNI+NNgjYrvLvj08J8xGoJDqOOYeIivYtR+oJo2/ocfsGqoR16LVgUs+KqeBC8HXBW/UbU6B7J69a1grz1Qulsu7R4f3Ov0rOJWdaEQzhrWzQJpbxHTErO9otyXfRE2fGyZfNlpV3hDsDt5d6ocTReMwhk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jic23.retrosnub.co.uk; spf=pass smtp.mailfrom=jic23.retrosnub.co.uk; arc=none smtp.client-ip=46.235.227.24
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jic23.retrosnub.co.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jic23.retrosnub.co.uk
-Received: by mailhub-hex-d.mythic-beasts.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <jic23@jic23.retrosnub.co.uk>)
-	id 1uCYNP-004TI3-9G; Wed, 07 May 2025 07:35:31 +0100
-Date: Wed, 07 May 2025 07:35:27 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Dan Carpenter <dan.carpenter@linaro.org>,
- David Lechner <dlechner@baylibre.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [bug report] iio: pressure: bmp280: drop sensor_data array
-User-Agent: K-9 Mail for Android
-In-Reply-To: <aBpWXB8c8RSjYBtD@stanley.mountain>
-References: <aBoBR5D1UMjsSUfZ@stanley.mountain> <487c81af-6604-4881-ae78-2d41ce23396f@baylibre.com> <aBpWXB8c8RSjYBtD@stanley.mountain>
-Message-ID: <FA0C8BC9-FD7F-44B7-A4A8-EA5E5BC6C8C7@jic23.retrosnub.co.uk>
+	s=arc-20240116; t=1746601683; c=relaxed/simple;
+	bh=yOFbH434Zg5rDi8e1kT9YhyjSm0ENvujCs9yLE99ktA=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Uj4sOuPpsAaY8xSrd+Z6WFgP0t4iP/jIgZrhQrF13N19pgwHYHulaoFjSgn43CQFNcQC5DCgvlLcnIqJwjErWrBjwL5mqRA8NrC8MuSJ8mIFpT46RJuF3bpCqbh3bEePHydr3YwPZ28Ju1Hngq7l4r1MP0lxEiNhlDQHs7MLuMs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hR2EZXUC; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hR2EZXUC"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-43cfe63c592so60439425e9.2;
+        Wed, 07 May 2025 00:08:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1746601680; x=1747206480; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=yOFbH434Zg5rDi8e1kT9YhyjSm0ENvujCs9yLE99ktA=;
+        b=hR2EZXUCI2jZcG3Skqx1VLOYTBnGlwfTWXzOxsAj4BLCL8CNEu4Xm9fPVNxT19dSOL
+         9dBSeLAsKEEc2VsTU6kqAvU5i95M2kQadFDuGcW+DLWsaHGHHd9RMNpicy8x+2/Ehfp5
+         RZjCc9D80MHtO13PPY7qH0FOpz+Nj73IgLEptsyokEGphijD9Fp+Wr9jpOXPZQwK7VNM
+         YAhnmjpSGXAgEo5uxfQQsHvOn5eF8E8R1c6kb5NGWo7RpXMqGL9aXFg14EagFT8X4TiT
+         wVpRkfi5jW3ZvwGR4ZptO/NoV62Y5UD39Mf5J5DzbIgjwwA6hpHDxade+ZdU9aZm49sk
+         G/3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746601680; x=1747206480;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=yOFbH434Zg5rDi8e1kT9YhyjSm0ENvujCs9yLE99ktA=;
+        b=sUXuYp2s+rvis+8Pmhc9fUP7IblXYIe26DwPlTaCk9k8xehoDD/ZLaI8xrf/KBAkP7
+         RQewgwBI0D1BjRK5q5UhOVRNV077QARhEoc15vRQegk2JS52MkF4y5W45upuve72853T
+         TAsOoBcDrakR2WmjUgvHh01n6/tyjwLhMeq6HZg2j8nE0+Iu/Gvv8q7875sDmvBbaYBm
+         +SbC7PJ+Utl7p9Cm25ju66fIxBTC5ohnNctbJq3zJTpxnjK8nOh1lKn7TXZ7TIvjODk8
+         cyEp5w/SIILLsmRRsyxHggi2baAXtjklDmIvB9LPO4Nt74YNCs72OFk3BRJl7l/m2nhn
+         EQDg==
+X-Forwarded-Encrypted: i=1; AJvYcCU+VUFKpp5D32Dv9zn8DTXZRW/4SXAqJlv/Y53o5kU/zLaFPrmULhgzQpadZIt+b/7UTYP7ZFwFaF7yeHU=@vger.kernel.org, AJvYcCUDnuTD/kvxpuhE0dEhRg32Zawu1w4kaGh8KguB2lAavivye8IygdgQDUca/vwpmyanroLqfWnnQzbl@vger.kernel.org, AJvYcCVFIZNDptWVnui5QsqOsSMMpof60ZI3vVwLB8GJjTAD7qNvs5GoscIrb3RIpwzt80iQ+AOxKzjQIiF/@vger.kernel.org, AJvYcCVNiARqhBe/pjr7+yeBsZ5KMXsYp0hK+DLxlBc701ggQwfaFkaWhNqYUQs0gsnizw9KN9PBv4P90Xbv@vger.kernel.org, AJvYcCVr7qqAm78KJE/6tHDJzFPwdovuxHo7crg42DNNOD7+RNhC61vvgzQv9N+Ax62jJJm5bIh6VhNHOLzxWg==@vger.kernel.org, AJvYcCVtmBLG+0r2DWFzdK8un0svH3Ux/ksZPIq2hBaIFodRxU0Hia35uiKUvD637wE7OhVApgTJFYqMr+M=@vger.kernel.org, AJvYcCXjcDZdxTVZPfv6cgQ5z1fxMfOVagM7+siGKfxEXf2sAxA/hMmgVWmg/yyEbhfNgOE4i5qmMuaMqx/d@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxs1ytfyUYkX51S5T0sgSt4mOlzzH88cGzju6T0sB3RP6qw/C9M
+	QsxRyEwpic+pNG/X6zQXuMJ/le5l5gXgswZvDOEf4cvpdhh9/Va8
+X-Gm-Gg: ASbGncsne0uqz2oJmPzSsiyrKCy4TzBFgtgaH0aZu4u2Wi5Ruk229K0leXUtjTqkO1D
+	2SeOhmgZU4LwLX7uP8EO7UCvzRzIVhVYv+pFlSpgB2aUmJgaqOsA8li6VAD3tBvRZsgLR5eRZ2U
+	VR30s5SPLtltHyVqXBH0vE2mwvi7soPDshHmmFRry6Jiy1HmlOT3SpNmDizoQ2kZQSirCIDpGlO
+	8NRGDaTj8QEA8pcmM1yJ6lt4DXfYiItq1GOzLdFRsCO1qRnqJgjgW1JzseEfgB4oCODDorvg0fb
+	Ew6R55OVNnlG5p3JW4Kzftd7whAWqysGii79aYEG/y96TKgQXBF1o+cjPbmH/9L9OagHIIpiU/N
+	p/aExdMCIADtTCTOGfKrhWZgsfw==
+X-Google-Smtp-Source: AGHT+IEVv9agzvTVDs5bbJ+MnVYrw4KNEaYxq9uzAgvReyxVwN3XJILLyTgLOKv4Mx4+2K0lZOywtA==
+X-Received: by 2002:a05:6000:188c:b0:38b:d7d2:12f6 with SMTP id ffacd0b85a97d-3a0b499c154mr1514674f8f.2.1746601679606;
+        Wed, 07 May 2025 00:07:59 -0700 (PDT)
+Received: from ?IPv6:2001:818:ea56:d000:56e0:ceba:7da4:6673? ([2001:818:ea56:d000:56e0:ceba:7da4:6673])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a099ae8377sm16222335f8f.59.2025.05.07.00.07.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 May 2025 00:07:59 -0700 (PDT)
+Message-ID: <ea70735157f47ea096e09f8a03d8151095a04c03.camel@gmail.com>
+Subject: Re: [PATCH v4 7/7] clk: clk-axi-clkgen: fix coding style issues
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: David Lechner <dlechner@baylibre.com>, nuno.sa@analog.com, 
+ linux-clk@vger.kernel.org, linux-fpga@vger.kernel.org,
+ dmaengine@vger.kernel.org,  linux-hwmon@vger.kernel.org,
+ linux-iio@vger.kernel.org,  linux-pwm@vger.kernel.org,
+ linux-spi@vger.kernel.org
+Cc: Stephen Boyd <sboyd@kernel.org>, Michael Turquette
+ <mturquette@baylibre.com>,  Moritz Fischer <mdf@kernel.org>, Wu Hao
+ <hao.wu@intel.com>, Xu Yilun <yilun.xu@intel.com>,  Tom Rix
+ <trix@redhat.com>, Vinod Koul <vkoul@kernel.org>, Jean Delvare
+ <jdelvare@suse.com>,  Guenter Roeck <linux@roeck-us.net>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Trevor
+ Gamblin <tgamblin@baylibre.com>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?=
+ <ukleinek@kernel.org>, Mark Brown <broonie@kernel.org>, Mike Turquette
+ <mturquette@linaro.org>
+Date: Wed, 07 May 2025 07:08:23 +0100
+In-Reply-To: <b5a5a8a6-bb8a-44f0-ba94-7657aba83311@baylibre.com>
+References: <20250505-dev-axi-clkgen-limits-v4-0-3ad5124e19e1@analog.com>
+	 <20250505-dev-axi-clkgen-limits-v4-7-3ad5124e19e1@analog.com>
+	 <b5a5a8a6-bb8a-44f0-ba94-7657aba83311@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.4 (3.52.4-2.fc40) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-BlackCat-Spam-Score: 0
 
+On Mon, 2025-05-05 at 12:21 -0500, David Lechner wrote:
+> On 5/5/25 11:41 AM, Nuno S=C3=A1 via B4 Relay wrote:
+> > From: Nuno S=C3=A1 <nuno.sa@analog.com>
+> >=20
+> > This is just cosmetics and so no functional changes intended.
+> >=20
+> > Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+> > ---
+> > =C2=A0drivers/clk/clk-axi-clkgen.c | 74 +++++++++++++++++++++++--------=
+-------------
+> > =C2=A01 file changed, 38 insertions(+), 36 deletions(-)
+> >=20
+> > diff --git a/drivers/clk/clk-axi-clkgen.c b/drivers/clk/clk-axi-clkgen.=
+c
+> > index
+> > d8634d1cb401fff2186702354ecda7b4fcda006f..63b7b7e48f8fa00842ce4cf2112ce=
+7a89fa25da
+> > e 100644
+> > --- a/drivers/clk/clk-axi-clkgen.c
+> > +++ b/drivers/clk/clk-axi-clkgen.c
+> > @@ -15,6 +15,7 @@
+> > =C2=A0#include <linux/module.h>
+> > =C2=A0#include <linux/mod_devicetable.h>
+> > =C2=A0#include <linux/err.h>
+> > +#include <linux/types.h>
+> > =C2=A0
+> Might as well sort the rest alphabetically while we are cleaning things u=
+p.
+>=20
 
+Alright, it looks like a v5 might be needed. I can do that
 
-On 6 May 2025 19:35:08 BST, Dan Carpenter <dan=2Ecarpenter@linaro=2Eorg> w=
-rote:
->On Tue, May 06, 2025 at 09:25:00AM -0500, David Lechner wrote:
->> On 5/6/25 7:32 AM, Dan Carpenter wrote:
->> > Hello David Lechner,
->> >=20
->> > Commit 4e6c3c4801a6 ("iio: pressure: bmp280: drop sensor_data array")
->> > from Apr 22, 2025 (linux-next), leads to the following Smatch static
->> > checker warning:
->> >=20
->> > 	drivers/iio/pressure/bmp280-core=2Ec:1280 bme280_trigger_handler()
->> > 	warn: check that 'buffer' doesn't leak information (struct has a hol=
-e after 'comp_humidity')
->> >=20
->> > drivers/iio/pressure/bmp280-core=2Ec
->> >     1225 static irqreturn_t bme280_trigger_handler(int irq, void *p)
->> >     1226 {
->> >     1227         struct iio_poll_func *pf =3D p;
->> >     1228         struct iio_dev *indio_dev =3D pf->indio_dev;
->> >     1229         struct bmp280_data *data =3D iio_priv(indio_dev);
->> >     1230         u32 adc_temp, adc_press, adc_humidity;
->> >     1231         s32 t_fine;
->> >     1232         struct {
->> >     1233                 u32 comp_press;
->> >     1234                 s32 comp_temp;
->> >     1235                 u32 comp_humidity;
->> >     1236                 aligned_s64 timestamp;
->> >=20
->> > There is a 4 byte hole between comp_humidity and timestamp=2E
->>=20
->> Yes, this was the intention of this patch=2E
->>=20
->> >=20
->> >     1237         } buffer;
->> >     1238         int ret;
->> >     1239=20
->>=20
->> =2E=2E=2E
->>=20
->> >     1279=20
->> > --> 1280         iio_push_to_buffers_with_ts(indio_dev, &buffer, size=
-of(buffer),
->> >                                                         ^^^^^^^^^^^^^=
-^^^^^^^^^^
->> > So I believe it leads to an information leaks here=2E
->>=20
->> Aha, so we should e=2Eg=2E do memset() to fill the hole first=2E
->>=20
->
->That works, or you could initialize it with =3D { }=2E
-
-I tried to track this down the other day=2E
-What are compilers guaranteeing around
-that vs { 0 }  and holes?  The c spec has only recently standardised on { =
-}=2E
-
-I'd love to stop using memset for these=2E
-
-
-J
->
->regards,
->dan carpenter
->
->
+- Nuno S=C3=A1
