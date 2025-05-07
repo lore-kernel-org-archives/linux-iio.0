@@ -1,65 +1,66 @@
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
+Received: from mail-io1-f42.google.com (mail-io1-f42.google.com [209.85.166.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF66F290095
-	for <linux-iio@vger.kernel.org>; Wed,  7 May 2025 20:43:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 799E8290BB3
+	for <linux-iio@vger.kernel.org>; Wed,  7 May 2025 20:43:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746650635; cv=none; b=Of5/okbP/NtrszmVsMK2Xe2CpcxeRtV7Thb7eX5Ik2mkc5FrCh42UVty01cH7SAQ65oE0cSG8+WyaSQ+tT+kOpNcndxWKiBZgvvco+B14ly6gREZn1zBTpaMlu7uFMPwLQ2vgXkumD5eZVQVy6luBSLS3UhM/E5BSJMOJ8do74k=
+	t=1746650638; cv=none; b=r3VWdPsKpB3AD+2xw0vMJ4D3CjwsAZxYH82IGyeCLWVQGA8CJ1NYT4wfySSAvBV7Cmxc3Fz2lgWcnhK/x3Qhu6+d1El3oq5Eqp6cvmbh49w267uLGwUepmVHmGcPko3LNtQ2FyNC8NnH5nQGMfstlnbzneVnbnaJuj4tp7Ob/Ag=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746650635; c=relaxed/simple;
-	bh=E9PIAfLoyJ0RJi3D/ewNgK6tsUeqLYCSdDUrepVzsaE=;
+	s=arc-20240116; t=1746650638; c=relaxed/simple;
+	bh=FKpB3dJAiexqEBZWnTYr74fw3YEDDpNI+Is7oC3Guzk=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=HsFuHVtnbpyr/pWJbdvCrDYeZAkGBddC85YqyBrnAsaaKKIwGA8dXfjn5TLQtCCq+3OjkMWREAp8OkKQuOSCRr0PfUAs8VJnavBNbeUtpKm//PLTvxrQJ7lb1nBh8dAQcLpH0WN3uvRMB6JvuP1AXNhdWmWWxfQWc1hq/BXOjkM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=cBnxvw/p; arc=none smtp.client-ip=209.85.160.46
+	 In-Reply-To:To:Cc; b=WiTfJEcsMgGJiSVzsZ5RIhKGqaOPOH//K1WsXPSSUXiQXwkSh5k4KiF1NkDHY/2/lVVQEAUtvGQ16ATOBXV5vP8HW1KzpkvffTdmXOMNC7ajcTzh/IKTAkl0o7cUzhoMLlROzKPDOIyBnzf8uZYKezEgU1GzMrMb5BUrZtVhEwE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=RVftG6V1; arc=none smtp.client-ip=209.85.166.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="cBnxvw/p"
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-2cc57330163so305382fac.2
-        for <linux-iio@vger.kernel.org>; Wed, 07 May 2025 13:43:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="RVftG6V1"
+Received: by mail-io1-f42.google.com with SMTP id ca18e2360f4ac-86135ae2a29so15210139f.2
+        for <linux-iio@vger.kernel.org>; Wed, 07 May 2025 13:43:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1746650633; x=1747255433; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1746650635; x=1747255435; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=AkEEnGIyeDiVPJ1Vchg86i4F6EdVT5nAWBfWqQhvCKc=;
-        b=cBnxvw/pK9M+OgCA9fecZ6Qj6seCy+4+ZfudiWK0UfdFC+AgrKZrR+T8DKCBirFM43
-         DZ90jmVifHGRTiVRtYSuda1E4RteaU0+4ItZgxlDMAk6nFkTBa1bof42yjH4LzHZKx3+
-         Y/uSLRDbdn/q8Pqg1qmWOoCNAV+bSORgYnYxiWGc8fExRXqUqkTt5XgtvUSF/LhkTMEl
-         oHfgQ5m5xDGwLPjvL3Z+MjbUbJSRKaVB/UFz1XnX+4tWbwSBROe1FYmEp8wuplenjAux
-         fk1lm/Q3qm1QhxmKKhbbdaWgv/iVMMFUbptLdC3TOcA/Fb6rKZK7adlQF/0A0La+xF6a
-         CgEQ==
+        bh=R2eAy2RW5hS2l6KPQzT1N6BY4unTaPpEg4WKTF1g7HU=;
+        b=RVftG6V1Lhufs1DG0u12iTwU0jKh8gUGI0m/6Krxuw4w1MkgUU5aC4JzYJxrZMRVTX
+         ck0KcrlEQ4MgvTUXNiNmfLQJ57DrDqYO9oLgFm3YfEwRxLcU/pyLTgmXWVsClKyAkfr1
+         UGpWBLqA1QN7qFmi4lvFA2Wa4Oa+eTkI79nPJMYpEMXtDb8gh4+LdURZEUw/HLU2x4Ed
+         MXtVE0QmJX6tbva3zG4LARMj6jOTjSdtVEyRJCUK71PSS/nL+HOQfMXglaroyBfPpqBH
+         OVm3hBGA0i1Fmc2RzQ0Ef/qMCPsxg8LaUlviGzOlP77WiItZI3A6tzMY/E10mphtk3oc
+         iHrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746650633; x=1747255433;
+        d=1e100.net; s=20230601; t=1746650635; x=1747255435;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=AkEEnGIyeDiVPJ1Vchg86i4F6EdVT5nAWBfWqQhvCKc=;
-        b=cW2yDN7jHu+c2kMNYLlhfA/Fr3xp7Gxp6elFF2vpTKU4ZmLQV0pEO/68DPMfCQpB7J
-         hH50xEtQpd1iaidP9rc0PaNdAdaPIXznu0Tn9m6DQV9JEyC5c02J+hUwiN+PvhOkzk8v
-         wzyYZN+JQ8bVU8RL/rlBU2eHZ64T/1G7H1TYKawyV9n3ru8c1B8QQUGajebU1tRGx+6y
-         xZX3phYm/IkzkH9bvGZH3h4TIs70Ecsk9ufrhTDHkJghnWngoy17BBqBsdW3FFi4X0+/
-         jDK+tAGb0sI4TNBk67NRtcbb7hqaX6blqmWuRGoErVNpOS7HkfX7Ozy2j7kME+FTiPDo
-         NE3w==
-X-Gm-Message-State: AOJu0YzFm3EUafZI5eRn51N09R4NunpriKrd8oCpcpmzJI8Sf01CUs8R
-	+6NE+cCOohqhQJdANmKEJ1mHlRsItFwM2n3HPUVnWt7Q4OktI6+6FvkdsUvliRM=
-X-Gm-Gg: ASbGncuoOsgjk9z2ojVCXkVpRZvit8qFsPQB/97cfva+Z3Ap8+rBBAzZR2UXWXgR4qZ
-	6w1twT+5+qMeR+6LP8q5It5GdAWPtqxfBso4csz796XzfP3GzPpRegu9BWGGlBKA/wRWl7dN5eh
-	hoNZrA9S4eJ31nqKW6IzMVeYnIasAZLVO757bRkyopff7VOfd58cx2Ze2Df7lV1kSlXd7K2IelV
-	yW+LRjbAGuuQ093PNO+7WRaZz+oPIWXDJ5zjb+hyrJwoqq1sa3m5/nweK0Jb10PRHCJvf7zdWFF
-	oUu5yfnOcQNQK9rS69DiIRGWbKN9Z01C6uVbHSHvDRj+0A==
-X-Google-Smtp-Source: AGHT+IFv9/lwSfeqqxrnWeC2Lb3fTYoOfdj8WDrV1djbCLjHfaiWSRE1YF1jLbIdYdNWncmdHjrl4g==
-X-Received: by 2002:a05:6870:47a8:b0:2b7:f8d9:d5f7 with SMTP id 586e51a60fabf-2db5becfba8mr2933835fac.19.1746650632817;
-        Wed, 07 May 2025 13:43:52 -0700 (PDT)
+        bh=R2eAy2RW5hS2l6KPQzT1N6BY4unTaPpEg4WKTF1g7HU=;
+        b=OEiXDrjgjtNr0JmwbIffG4sMcjgrAIe47LBNSUci12XY0AY/Luu0pbLiTAB6De1aT9
+         NHPVz5kQ1fpFJh91c6vFTdOnhOSwFPpS4upjYIQmquGAm5j70/MhrdsQ2PuTtiVIRkZy
+         Gp6X+v2yBgXrOzMdUcrlBlSW4GQB2qICY9gnl4hKCN8ND5ADMDOxdL2rXLP/Jlvu9lij
+         mvvjop7Vdp/8wEABRnrxlZpizOec2By877gT5R3LpkY1xX+8aTBzSdnUeOzzWa8/oeCb
+         JLuySWci4bDV2Vm8XPI7FHBrqmemPGC3p7gxjfYDSvgrRllsV/0iFeuh8IwceVZrBMKW
+         c1uQ==
+X-Gm-Message-State: AOJu0YxiEmsHGU7UWaCygLdGq2hOdZs72avkhKTpZYZEcUlYgl4N9qCX
+	Mf60j+X5Np34uK7gtYww9GNlx0Vh/EPHFODOWEFCZ2azwZ4ZgEd0rWoTsADxatzFlTGN7GqdtDf
+	P
+X-Gm-Gg: ASbGncsiuZfJyyhK1EU77T6sB4KO8/VCW8/A/8RTHBGVfPdVwQwKC1zelO/NBR7rgWD
+	YDkvmMRyp7GCVMgBcjZkfoD7tR1/QIfYX5stq8MUaSy2hv7389i9KIDjIozvvS0FJhLR/tYPMqH
+	aoVlizy7kaduDafVCORWglKjUinw9M47+fmG3Gj7DhnEQMj2x5P99oW4tYJyMk791w5LfoPoaZJ
+	p2pjUpAGXE1Y9LcTC/YfbvpSxDEAi7j5fyhT123hnVvCUCkwbO9vxOa5ygkI7efUD7KQTMdh6z1
+	BdQpvRANU6dTz/mt2oEaFVqLsSEVHQO0oc9K2ImZJQirPA==
+X-Google-Smtp-Source: AGHT+IHzAHhf7adgAgCwkuC/t79NMGTnVH1TVIxPBrVXd3EvJcltzOzimp3xX9uDQtvTagqhfmWlkA==
+X-Received: by 2002:a05:6870:9a17:b0:2d6:241:aed5 with SMTP id 586e51a60fabf-2db5c084b8bmr3450729fac.26.1746650624758;
+        Wed, 07 May 2025 13:43:44 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:1d00:3356:f6f6:bf76:a32])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-2db5cd716d3sm898642fac.21.2025.05.07.13.43.51
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-2db5cd716d3sm898642fac.21.2025.05.07.13.43.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 May 2025 13:43:51 -0700 (PDT)
+        Wed, 07 May 2025 13:43:44 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
-Date: Wed, 07 May 2025 15:42:46 -0500
-Subject: [PATCH v6 7/7] iio: adc: at91-sama5d2: use
- IIO_DECLARE_BUFFER_WITH_TS
+Date: Wed, 07 May 2025 15:42:42 -0500
+Subject: [PATCH v6 3/7] iio: adc: ad4695: use
+ IIO_DECLARE_DMA_BUFFER_WITH_TS
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,7 +69,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20250507-iio-introduce-iio_declare_buffer_with_ts-v6-7-4aee1b9f1b89@baylibre.com>
+Message-Id: <20250507-iio-introduce-iio_declare_buffer_with_ts-v6-3-4aee1b9f1b89@baylibre.com>
 References: <20250507-iio-introduce-iio_declare_buffer_with_ts-v6-0-4aee1b9f1b89@baylibre.com>
 In-Reply-To: <20250507-iio-introduce-iio_declare_buffer_with_ts-v6-0-4aee1b9f1b89@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -81,69 +82,46 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Alexandre Belloni <alexandre.belloni@bootlin.com>, 
  Claudiu Beznea <claudiu.beznea@tuxon.dev>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org
+ linux-arm-kernel@lists.infradead.org, 
+ Trevor Gamblin <tgamblin@baylibre.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1780; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=E9PIAfLoyJ0RJi3D/ewNgK6tsUeqLYCSdDUrepVzsaE=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBoG8XzuxRWPot5Lj1UBI0PQHvKcH+S/2Js7bWDC
- MwB352L8NCJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaBvF8wAKCRDCzCAB/wGP
- wC1JB/0Qrc6VwdlpFKuZ/ZskSEubr5JpckDQsyuLEoWu5pHwj3LfH2VhLa8WVcMwLPGyWbNbyQA
- 33488s4yfq3TNY1UOh5vaoWaqGkVmfSzeS24yx8k0aSi0KKfUJWNZparRvnuBocE6/6fF/dQKGX
- 9DTINk3cX+Nsrl+Ohqa0A8MU114uOBom9yKi0ukZKc3ue+pkKI/LKWU1lUYP6CPz9/Tmo0Aiom0
- kXxkWMtUU0ZBWlzv8u3nQ67fLe/pKlrlRh8noB2RDIK1ucNK8cgf3PgyZi8pm+NVMw2MWx8OOQl
- dlVuaTnCVHdp0ACpYSrD2WYk9ahopTw10uq3rJEVjmBWh2/N
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1118; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=FKpB3dJAiexqEBZWnTYr74fw3YEDDpNI+Is7oC3Guzk=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBoG8XYJuOU1coFxNGXKJ8ETwdyznURBIo5GKTW0
+ fBmAN0sBOKJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaBvF2AAKCRDCzCAB/wGP
+ wNwqB/43rBhN0ftZxpOAJIUlM+JDMGXM3Gn1VMlrXdmDKN5av4LjjrP7qsqMeRZtKu6gtCeGuVm
+ uTcKbDXFWKlXySdMtaKESE05oUfYN9sxjSyl+8XDHIzIdzt/X0zePBoCPD0UTi4BMiPxp05uh18
+ A4ltomln1OzMmicJ5HhtVRH6q8Hd3aa701di+9Y6P1dcJT35pCV3t8QsT+rzhD9Pga/0+sgWc2m
+ JlEl7QrVVWti4trSwEpjkrtjDr08ohggzW3i7oPd/fSjhybXBV7C+gelbR2Jbg+gn8edn8Eb2Sh
+ OwWo6ZofWr+dNGQjVAemLQAFKR8ZKYcS0UzWuEzSsfuz9cgt
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Use IIO_DECLARE_BUFFER_WITH_TS() to declare the buffer that gets used
-with iio_push_to_buffers_with_ts(). This makes the code a bit easier to
-read and understand.
+Use IIO_DECLARE_DMA_BUFFER_WITH_TS() to declare the buffer that gets
+used with iio_push_to_buffers_with_ts(). This makes the code a bit
+easier to read and understand.
 
+Reviewed-by: Trevor Gamblin <tgamblin@baylibre.com>
 Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
+ drivers/iio/adc/ad4695.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-v5 changes:
-* Fixed missing space at end of comment.
-
-This is an alternative to [1].
-
-[1]: https://lore.kernel.org/linux-iio/20250418-iio-prefer-aligned_s64-timestamp-v1-2-4c6080710516@baylibre.com/
----
- drivers/iio/adc/at91-sama5d2_adc.c | 13 ++-----------
- 1 file changed, 2 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index 414610afcb2c4128a63cf76767803c32cb01ac5e..c3450246730e08cdacc975ed19f46044dc76848f 100644
---- a/drivers/iio/adc/at91-sama5d2_adc.c
-+++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -586,15 +586,6 @@ struct at91_adc_temp {
- 	u16				saved_oversampling;
- };
- 
--/*
-- * Buffer size requirements:
-- * No channels * bytes_per_channel(2) + timestamp bytes (8)
-- * Divided by 2 because we need half words.
-- * We assume 32 channels for now, has to be increased if needed.
-- * Nobody minds a buffer being too big.
-- */
--#define AT91_BUFFER_MAX_HWORDS ((32 * 2 + 8) / 2)
--
- struct at91_adc_state {
- 	void __iomem			*base;
- 	int				irq;
-@@ -616,8 +607,8 @@ struct at91_adc_state {
- 	struct at91_adc_temp		temp_st;
- 	struct iio_dev			*indio_dev;
- 	struct device			*dev;
--	/* Ensure naturally aligned timestamp */
--	u16				buffer[AT91_BUFFER_MAX_HWORDS] __aligned(8);
-+	/* We assume 32 channels for now, has to be increased if needed. */
-+	IIO_DECLARE_BUFFER_WITH_TS(u16, buffer, 32);
- 	/*
- 	 * lock to prevent concurrent 'single conversion' requests through
- 	 * sysfs.
+diff --git a/drivers/iio/adc/ad4695.c b/drivers/iio/adc/ad4695.c
+index 0c633d43e480d5404074e9fa35f1d330b448f0a2..992abf6c63b51dee222caf624e172455fb9b9900 100644
+--- a/drivers/iio/adc/ad4695.c
++++ b/drivers/iio/adc/ad4695.c
+@@ -160,8 +160,7 @@ struct ad4695_state {
+ 	struct spi_transfer buf_read_xfer[AD4695_MAX_CHANNELS * 2 + 3];
+ 	struct spi_message buf_read_msg;
+ 	/* Raw conversion data received. */
+-	u16 buf[ALIGN((AD4695_MAX_CHANNELS + 1) * sizeof(u16),
+-		      sizeof(s64)) + sizeof(s64)] __aligned(IIO_DMA_MINALIGN);
++	IIO_DECLARE_DMA_BUFFER_WITH_TS(u16, buf, AD4695_MAX_CHANNELS + 1);
+ 	u16 raw_data;
+ 	/* Commands to send for single conversion. */
+ 	u16 cnv_cmd;
 
 -- 
 2.43.0
