@@ -1,62 +1,64 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33FFD2900BA;
-	Fri,  9 May 2025 10:50:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F98328F51F;
+	Fri,  9 May 2025 10:50:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746787845; cv=none; b=FIyGcacOVxkoJk18ZYSH9fJ2ICLwF1CvNR0+PDvhk6ag56Rh8RQrMkhA8hUZSqJkFIaJP/KxBP0RGxeI+BLGM7zlvICN/p6YRoMDI0IgHDqqqmLzAfKm5C6I6JH7SmKPlultlvbNXgW2/F1zW3ZldZBvMaf0VA7CcQmqrHNHJE0=
+	t=1746787849; cv=none; b=nw0LZiGn+MkXbbYPgBJI+N3Xmn4MN8UniXTP/4Ai9T/e9my3GGaa5AxNsZD+dSK9l1BZbbuSGIv+xyOBi+tZ1kpTGMHPTzHLYoKXx8qfd737q8s9O97JqjxK13zpeZBNtnybP1wwO3QueQt+6VgeTYZB3+y9l6F6D6a6kPuGpgM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746787845; c=relaxed/simple;
-	bh=QO3+heLiv//QBFzmUS97ic69T69qA7aFOSlf+aNg130=;
+	s=arc-20240116; t=1746787849; c=relaxed/simple;
+	bh=J/wcDT6qZyY5vPNBfpk3pjfrmURCBKSmkchRCipnz2U=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ijm4x3yLIgicfksE+f609y3vBjL2M8LiJOUI8MxVxNLacjelUjo1kdmhoyBvIaicjW5noJuw2BS5/zwm+mVZ+t1gQLGnjdbmCHyLrKAX2WnOY+Bg3jGLDt4qqQ4XCZHMP/o8xzp/Y1CCgfGQE/bQNw44qxN1xx40ZjAz+EjtN6Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=XNkdEbc+; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=L9RCEfQoak+gX++338ApGq5PmjNvl4W+KdKagi83GTN4jrQK3BiEPMTssvBRsJuLSVqB+j0hl9W62cedt9pQMaynlDZvvfgrGAvuHHOtqecotetisX9VeuLQH2BTGKDuUXG1n4liPzoqriZwJjSKOiitvRfPhqHMpv8kKXNGm/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=u6J4fl1U; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="XNkdEbc+"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5499eLTg007673;
-	Fri, 9 May 2025 06:50:41 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="u6J4fl1U"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 549AH0JL001889;
+	Fri, 9 May 2025 06:50:44 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=FWUTN
-	wvbeducbOQhkZlHJNRRZTh+nc4xsSRbCCtQ/W4=; b=XNkdEbc+cAY4qykKkx+z4
-	63a+JSFlH5G7aRJK0LQqa9yTUlVF+idDBjw8xTYHePch8nqTL5XPPKdv+KyQG/Rb
-	Lx47BtiBMDP7mtpUJd433Zs8gvR3F/xZZz9n77VMa2zwdjUVjEBM0ddDggxOp1sr
-	4XC0K+BU1JKxyY4b+QsXsuavR6RFUjW8forMz/BvpbpxaAT4jj06mUJnT0/YoscJ
-	NNoLlEETb6L1Ivqw3dMN4dEolVJcYCCaZmGUK1dYJmejOddHfdPXiiBhEsEcNHDa
-	gDZrKOat8wQWRCxyhyv9cufM3R4oWh/lOL25MsDgPC7qBwljiGIr/DVG3ddyurqu
-	A==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=RSI4p
+	duHjkvPzIQQUDZW5Kd3nXOFACdk0nUJaWx4USU=; b=u6J4fl1UKG8+QWyrMDkTa
+	ub6LPHAFiAchgriywnJAw7FB+5gukKSuS1abmwLxNkPzNvwJtc0Uf8Q+PwbBdUGp
+	imgdAZtgr98HGG7wIdRGaKDyOyeLjtYqO4IDNlPCEHPhG/lauyRqV7vyFGr6wRQE
+	w3hKDKoAyDtRk1gM8+PXnSXspNGp8XMb5hKlRjqo3AZix/pDFKg0K6TGhtA3DeAg
+	G7mUV8SjTrFjDXxW0Woe8dAGjWTHd/Cz4KIu3whVxkvMbsCPwFIyQNPpL7WUs+H8
+	LU8DZa0ZgBACmAwZ/wBLEbuFc1nLW/Olv3+ASXAVrWkn/j9hZLskWYohq80w8yIm
+	g==
 Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 46hc2yh8w0-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 46hftdr3w3-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 09 May 2025 06:50:40 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 549AodqK049063
+	Fri, 09 May 2025 06:50:43 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 549AogsX049072
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 9 May 2025 06:50:39 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 9 May 2025
- 06:50:39 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 9 May 2025 06:50:39 -0400
+	Fri, 9 May 2025 06:50:42 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 9 May 2025 06:50:42 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 9 May 2025 06:50:42 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 9 May 2025 06:50:42 -0400
 Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.148])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 549AoK17014223;
-	Fri, 9 May 2025 06:50:33 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 549AoK1A014223;
+	Fri, 9 May 2025 06:50:37 -0400
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
         <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?=
-	<nuno.sa@analog.com>
-Subject: [PATCH v5 07/10] iio: adc: adi-axi-adc: add num lanes support
-Date: Fri, 9 May 2025 13:50:16 +0300
-Message-ID: <20250509105019.8887-8-antoniu.miclaus@analog.com>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v5 10/10] Documetation: ABI: add sinc1 and sinc5+pf1 filter
+Date: Fri, 9 May 2025 13:50:19 +0300
+Message-ID: <20250509105019.8887-11-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250509105019.8887-1-antoniu.miclaus@analog.com>
 References: <20250509105019.8887-1-antoniu.miclaus@analog.com>
@@ -66,81 +68,62 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTA5MDEwMyBTYWx0ZWRfXzzz65lEeufDp
- n2qTPKshBgKsf5ZpfQ11EciXStB7pwZDMrMG09k5ez76cEQJcokjuFh3LC5T/Qd+09yQOU0lZ95
- slGAjBtsrlZJI4YBkpuAp3x5VSvc5sroN+PGegrYXj95Asv1a5/15bokz8fxswwmrB7w4vQZVSZ
- RCCG11DxK5PDSOOjUipuIMk42gKdUeEhrHzaO6K4P4StHoYUYLyblDRSn+R3JUK8gmATVErsWEw
- uYwgVRc5PV/gJeM7Cj30bWQA0NDQDXHQ5MNbzQe1pE6cAHE8QHMzAcyIRr9KyXLzzttc3cnQPBu
- ZKlbSH9Upxo427rwCZ5ayXUXH5imt2ohMbDq3rNKt7ECR0y2F7sQJXinAlNQOhmlpNuKtoMq3d+
- Gx0GfLSw1KkqVLF2j8gofjwjKHwl6l6+9iaj1L4NDDlarYSmtBb4rOVpMYJ187U2xi2voayz
-X-Proofpoint-ORIG-GUID: MINAD8d1HiOK43NMgfe-YTCMlgeSU78G
-X-Authority-Analysis: v=2.4 cv=UJbdHDfy c=1 sm=1 tr=0 ts=681dde00 cx=c_pps
+X-Authority-Analysis: v=2.4 cv=CP4qXQrD c=1 sm=1 tr=0 ts=681dde03 cx=c_pps
  a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
- a=IkcTkHD0fZMA:10 a=dt9VzEwgFbYA:10 a=gAnH3GRIAAAA:8 a=MtuLGBRfhagEvKnVNLsA:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-GUID: MINAD8d1HiOK43NMgfe-YTCMlgeSU78G
+ a=dt9VzEwgFbYA:10 a=gAnH3GRIAAAA:8 a=Jj58fO0nKZ7HuPVzIAUA:9
+ a=+jEqtf1s3R9VXZ0wqowq2kgwd+I=:19
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTA5MDEwNCBTYWx0ZWRfXxwcASVNlwIty
+ 79hUZp+9UmMPvY0lb9av97PRzCdJIVV/VBpVwY+wCElFWP/pvmTdhgsz6CFp5fobI1TLB0EaM5Q
+ JltUHfV41CDc7iA54KOCQdCHWdTv2hFby/rgqm5MToQ5ZGuTFVF4qcb1cEjONtGGWcTBizN/ECW
+ Px2NSJZe22q+z0lF+ECNLKinSvpx3WzBN4neEqgvWFF0DLNJDX3eU4V8tvLteXxQKcdvFYdZxEM
+ XbmAk74WJXOeUiFuSVkIl10l3iCTZcXMbT51/OC84TZjsLJR5X3spTqeCYQ/5kEybZcURbOV4VS
+ ezYi5TFGx+czojr8YpBDnN2EwdAH5BjRJKiL7Id+eJf5QyUfaB/iZIVcDLmC3/V9GlbCLtcRRss
+ pARst0UgEMVWgAkGNLt9/N0lgqzVEOMeGLIWfZyUn9kS+4BxZbCElikodfyyWNsPlG0k3aSr
+X-Proofpoint-GUID: 0KVRNoHHTKS91nuxIGGFS9TXgbPSuWOS
+X-Proofpoint-ORIG-GUID: 0KVRNoHHTKS91nuxIGGFS9TXgbPSuWOS
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
  definitions=2025-05-09_04,2025-05-08_04,2025-02-21_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 bulkscore=0 suspectscore=0 phishscore=0 adultscore=0
- impostorscore=0 clxscore=1015 priorityscore=1501 lowpriorityscore=0
- malwarescore=0 mlxlogscore=999 mlxscore=0 classifier=spam authscore=0
- authtc=n/a authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2504070000 definitions=main-2505090103
+ priorityscore=1501 adultscore=0 impostorscore=0 mlxscore=0 mlxlogscore=947
+ suspectscore=0 lowpriorityscore=0 malwarescore=0 phishscore=0 spamscore=0
+ bulkscore=0 clxscore=1015 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
+ definitions=main-2505090104
 
-Add support for setting the number of lanes enabled.
+Add sinc1 and sinc5+pf1 filter types used for ad4080 device.
 
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Add these two options into the filter_type available attribute.
+
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
-no changes in v5.
- drivers/iio/adc/adi-axi-adc.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
-index f9c4018e3b41..d9a14fb6b8e8 100644
---- a/drivers/iio/adc/adi-axi-adc.c
-+++ b/drivers/iio/adc/adi-axi-adc.c
-@@ -44,6 +44,7 @@
- #define   ADI_AXI_ADC_REG_CONFIG_CMOS_OR_LVDS_N	BIT(7)
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index b8838cb92d38..2dfb74b5a990 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -2275,6 +2275,8 @@ Description:
+ 		Reading returns a list with the possible filter modes. Options
+ 		for the attribute:
  
- #define ADI_AXI_ADC_REG_CTRL			0x0044
-+#define    ADI_AXI_ADC_CTRL_NUM_LANES_MSK	GENMASK(12, 8)
- #define    ADI_AXI_ADC_CTRL_SYNC_MSK		BIT(3)
- #define    ADI_AXI_ADC_CTRL_DDR_EDGESEL_MASK	BIT(1)
++		* "sinc1" - The digital sinc1 filter. Fast 1st
++		  conversion time. Poor noise performance.
+ 		* "sinc3" - The digital sinc3 filter. Moderate 1st
+ 		  conversion time. Good noise performance.
+ 		* "sinc4" - Sinc 4. Excellent noise performance. Long
+@@ -2290,6 +2292,7 @@ Description:
+ 		* "sinc3+pf2" - Sinc3 + device specific Post Filter 2.
+ 		* "sinc3+pf3" - Sinc3 + device specific Post Filter 3.
+ 		* "sinc3+pf4" - Sinc3 + device specific Post Filter 4.
++		* "sinc5+pf1" - Sinc5 + device specific Post Filter 1.
  
-@@ -439,6 +440,19 @@ static int axi_adc_ad408x_interface_data_align(struct iio_backend *back,
- 					1, timeout_us);
- }
- 
-+static int axi_adc_num_lanes_set(struct iio_backend *back,
-+				 unsigned int num_lanes)
-+{
-+	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
-+
-+	if (!num_lanes)
-+		return -EINVAL;
-+
-+	return regmap_update_bits(st->regmap, ADI_AXI_ADC_REG_CTRL,
-+				  ADI_AXI_ADC_CTRL_NUM_LANES_MSK,
-+				  FIELD_PREP(ADI_AXI_ADC_CTRL_NUM_LANES_MSK, num_lanes));
-+}
-+
- static struct iio_buffer *axi_adc_request_buffer(struct iio_backend *back,
- 						 struct iio_dev *indio_dev)
- {
-@@ -629,6 +643,7 @@ static const struct iio_backend_ops adi_ad408x_ops = {
- 	.data_sample_trigger = axi_adc_data_sample_trigger,
- 	.filter_type_set = axi_adc_ad408x_filter_type_set,
- 	.interface_data_align = axi_adc_ad408x_interface_data_align,
-+	.num_lanes_set = axi_adc_num_lanes_set,
- 	.debugfs_reg_access = iio_backend_debugfs_ptr(axi_adc_reg_access),
- 	.debugfs_print_chan_status = iio_backend_debugfs_ptr(axi_adc_debugfs_print_chan_status),
- };
+ What:		/sys/bus/iio/devices/iio:deviceX/filter_type
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY-voltageZ_filter_type
 -- 
 2.49.0
 
