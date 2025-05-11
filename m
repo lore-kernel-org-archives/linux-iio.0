@@ -1,140 +1,135 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com [209.85.217.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF2DE645;
-	Sun, 11 May 2025 15:19:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81C737464;
+	Sun, 11 May 2025 15:25:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746976800; cv=none; b=NNfut1/EsBZgAPlZv68z6pfeoqkDAftwhcWBRZR37fYWSX0RfOCeCiwNRrk9f65jVAgjKCnts1IkEtLypT/akSlmiCh8j5Ihc5ZkcNGV76QeziyeQ0RJrn+mjm+1jIkFfZX7t2+H1Wmk9y4COLH5EdMSuDwICQ5rDbm0w5Rz+pw=
+	t=1746977152; cv=none; b=XTbb9giCExTJuiwlJRKUDkvxqJLiu58BCx2Q75Q9gulqDm38m7qqjVG1O03dgiBuZMszkorVpa6xM0/YsV4AcFfkEpbEma6+m5We9okx7FBbbbmRjzJw2XrOLngovcEMO43IhZ8RhY5Tbqnip8tE+OR8e6zln/LbtriiQ1zVwfc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746976800; c=relaxed/simple;
-	bh=HA/A8GP89CnHack4rX1U/MIFbC/M5usm9D9sUC0jCcY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=j/RxuH1dk55Bnmdm4HSVrcge1sFhhdDxYoZpigdc/nTVWdLMagWlAGkk3cqQ9w8PkbWhttbzcimLZvkx2IBNAvEhInFrboH3aSDhT3ZvILZMQL8iyxO3ArMbJLDPh7HcE/lOyIiGpaRH2WZoBPCXKoufZzdtZSPWXj1hV6Rmqy8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GbJ3tXI4; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1746977152; c=relaxed/simple;
+	bh=NMOSZP82w/0JXMLtKi+E008KsrOyN+F1E/IjsnpTqcw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fA2IdYwqiaxj+1cTQNRd7Hqp5gDy/bYW5G4Ni4ALJOIuAlxJZwhuWrhVcIkPRUVkG9TEW0yfB9PwKcZDThTMQsYDV9Do20BGM4z/tol1E7z+32D9ma0lkNj1bTRJ5lenJ27eTPv0JvdntZ5djx124T/IOnn/P676Lnt6HaUoWJg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VK9OHVht; arc=none smtp.client-ip=209.85.217.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GbJ3tXI4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3B53C4CEE4;
-	Sun, 11 May 2025 15:19:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746976799;
-	bh=HA/A8GP89CnHack4rX1U/MIFbC/M5usm9D9sUC0jCcY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=GbJ3tXI4QBTX63n/YjN6uLAg/z3ZyweoXoTsR3x0oVxFN1U5mZSv8SOt8zFRa/zjB
-	 zX8o1JYIjPCdIxjVjJ1nTHUtdBboLy7Ru61WqzWI/CnlGh6zDWjE48mGhqoTG9oJo5
-	 +bh+0O9K8IzPVcDbdAugTTJsUWBJrnIPrJDGiQue1lqxiR+wtL6x11tvmDQl9Q96d9
-	 KUZBjpsunOPehBKh7fLLm+QarjNpD6eHn4rPPUlWn7CcIymriH5d0UfiHKT0hZC/DZ
-	 s2ui8qBhwFAcWdYG8x33gLu5zEBNTAvqroihfncXDGYQyEkp5ikxHcjZ6ufdCnw0V7
-	 xgHPajdCGzc1w==
-Date: Sun, 11 May 2025 16:19:52 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brajesh Patil <brajeshpatil11@gmail.com>
-Cc: lars@metafoo.de, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, marcelo.schmitt1@gmail.com,
- dlechner@baylibre.com
-Subject: Re: [PATCH v2 2/5] dt-bindings: iio: magnetometer: qst: Add
- QMC5883L device tree binding
-Message-ID: <20250511161952.5e608a0c@jic23-huawei>
-In-Reply-To: <20250508120846.114262-1-brajeshpatil11@gmail.com>
-References: <20250508120846.114262-1-brajeshpatil11@gmail.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.48; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VK9OHVht"
+Received: by mail-vs1-f42.google.com with SMTP id ada2fe7eead31-4ddb53a10d1so1297221137.3;
+        Sun, 11 May 2025 08:25:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1746977149; x=1747581949; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=wtcqqh0bZWYCdN7h46+yA3pFJVsAQ2unB/Qc6851wnc=;
+        b=VK9OHVhtlQojPfkKwx/bh4ETgX4bqN9c/TivVqQZ+nUKk7UR2mDBM+CFDz3yOdvNUs
+         P3e+uC1DFTfWea9fiy4jIhcL3JFReIihRRT7CVQ5zOiCJOyS/DZnLexgmO0Ps/P/+HhQ
+         P5OuMvqBH7Q0EXWtUvDnBoKEFVx7tqCNoNKiwvsgMEaT7SgaypNfaaNzAxXX2H4pbJPF
+         Tax8IunCohXVixr9CjBWugt5PCVMrL9uW+KzvKq25STaFy6KPn1sdwNZJ42G1kQUOsTZ
+         rMNshm5eJVjV/Bq8a8Iv5iBxabpjirKc2TkC7fburJBy7+JbK/AWqaNjQABvfTWgBaf3
+         COfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746977149; x=1747581949;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wtcqqh0bZWYCdN7h46+yA3pFJVsAQ2unB/Qc6851wnc=;
+        b=rSkD+QHj1xBZ7ULG5p8JD394VyjxL1Bx339Ws9te+w13rbutLtreQpGSaxBmvMzbq9
+         FVboSHs3wO49kQsj4Nk3B5F52FYQ2hdC1MZ9GYP3R+FS6BRj312roP+bL/XWv8/1+ZXR
+         CorBjS3KGXc412ySVPXA8DrkfaLdLwGRxuYfYwqhSEMsrlV0vGmJzVObVPL+hpYCC6c2
+         CQPkqq8hiIYa1i6iIC34shMjlztkuGwj+KEmAqqYHdSq+29FF3+S+z8vxvNAo+lHD2Uq
+         qnnrUlnf04xAPueD3Ks1f24JG9xH4G3P1+l/eQaIPMIVDhVEqMIympc4940VNCf0gp7G
+         9e0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVPiFk9yqugKO7oRqtkGDWd6MJWVENe+oxz3JDA2/v1n6J5KFX2TEQIRRffYDw++ZSUjMm7TozB+TiH@vger.kernel.org, AJvYcCVZzeun157K2sg8XuzF1K7eP2c+Ft9nU+4CsAUWxHsE4QclGMLRsOwv9FS7x3vy4T26IjCMvtiRoVTPu9fh@vger.kernel.org, AJvYcCWVWNhlC/4Rlq+qJV0mipCil4furlKd9fF/Ly4B+PmgELlTYRNK01H4guv3yb7N8u1LK+x2fRaabICx@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw2UjhsOsGAjphXPGHpEQLb41UIG10m4nV2/KGC9Kf3+crDjMlY
+	d36TAkyUmXrb/FTjMzyZ0FNdkJIfL5P/5d40RTIpt1Cki+gbc7lUvkuQhVrlC1k=
+X-Gm-Gg: ASbGnctaUy+7v7luUdkcJcaP4N5GdsdXGZ+rosAFOktVd0DvKG1AeImv/sFrk+eR1de
+	HSNyjaMuBW4xWTv7GQ6Hlrz/fRGd27qoakFni2gwxeJFTJyzwMIY6+AonhMrzDDETncK74TeZAI
+	UBRgM+yvi04Oy5KsM89qtHCfh9WEh5RUDxoCvCUTz3aSvpHrENfOIlPVlMkZNHW9/XUU7Ewcga2
+	q6Dzbm9aL/p3HkyVggZzKA9wJkqeVgRCdVX6xXC0cIpvCov2fxJUkavBoDzEzmcbA8LCdI8cnxv
+	DN9OIswBHNXdCALwXPsS7BzM87ZT3lxI/BEoU4GS1Ua5+ljBYFCI8rBR6FKl
+X-Google-Smtp-Source: AGHT+IFwaiGGCVLBdwmWlQrpUaG/zafHNwGA5268jm+7tcyB+/GNoVmO8AlBAJ6MrJxY4/JaS2lrnQ==
+X-Received: by 2002:a05:6102:3e16:b0:4de:ed21:4812 with SMTP id ada2fe7eead31-4deed3ef830mr8289938137.22.1746977149303;
+        Sun, 11 May 2025 08:25:49 -0700 (PDT)
+Received: from localhost ([2804:30c:404b:a800:55e1:4221:1a82:c6cf])
+        by smtp.gmail.com with UTF8SMTPSA id a1e0cc1a2514c-879f626c5b1sm3796903241.22.2025.05.11.08.25.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 May 2025 08:25:48 -0700 (PDT)
+Date: Sun, 11 May 2025 12:27:11 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Rob Herring <robh@kernel.org>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org
+Subject: Re: [PATCH v2 1/7] dt-bindings: iio: adc: Add AD4170
+Message-ID: <aCDBz7iUG7URn3pB@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1745841276.git.marcelo.schmitt@analog.com>
+ <add7510bd4c9f83011ab949f4fae2c77f57fbc43.1745841276.git.marcelo.schmitt@analog.com>
+ <20250509185607.GA3913574-robh@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250509185607.GA3913574-robh@kernel.org>
 
-On Thu,  8 May 2025 13:08:46 +0100
-Brajesh Patil <brajeshpatil11@gmail.com> wrote:
-
-Needs description. Give us a clue what the device is in a
-few lines.
-
-> Signed-off-by: Brajesh Patil <brajeshpatil11@gmail.com>
-> ---
->  .../iio/magnetometer/qst,qmc5883l.yaml        | 52 +++++++++++++++++++
->  1 file changed, 52 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/qst,qmc5883l.yaml
+...
+> > +
+> > +      adi,reference-select:
+> > +        description: |
+> > +          Select the reference source to use when converting on the specific
+> > +          channel. Valid values are:
+> > +          0: Differential reference voltage REFIN+ - REFIN−.
+> > +          1: Differential reference voltage REFIN2+ - REFIN2−.
+> > +          2: Internal 2.5V referece (REFOUT) relative to AVSS.
+> > +          3: Analog supply voltage (AVDD) relative AVSS.
+> > +          If this field is left empty, the internal reference is selected.
+> > +        $ref: /schemas/types.yaml#/definitions/uint8
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/qst,qmc5883l.yaml b/Documentation/devicetree/bindings/iio/magnetometer/qst,qmc5883l.yaml
-> new file mode 100644
-> index 000000000000..a2e6982a177d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/magnetometer/qst,qmc5883l.yaml
-> @@ -0,0 +1,52 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/magnetometer/qst,qmc5883l.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: QST QMC5883L 3-Axis Magnetometer
-> +
-> +maintainers:
-> +  - Brajesh Patil <brajeshpatil11@gmail.com>
-> +
-> +description: |
+> You already defined the type in the $defs, so no need to do it again.
 
-No need for | as paragraph that follows doesn't need any specific formatting.
+The ADC channel node doesn't include/reference the sensor-node.
+Wouldn't adi,reference-select default to uint32 if the type is dropped?
 
-> +  The QMC5883L is a 3-axis magnetic sensor with I2C interface. It provides
-> +  measurements of magnetic field strength along X, Y and Z axes, as well as
-> +  temperature readings.
+The issue here is that adi,reference-select is a property that is meaningful
+both for conventional ADC channels and for channels connecting to external
+sensors. Thus, the unfortunate repetition of the property. Another possibility
+would to be add another type for the ad4170 channels. Something like
 
-There are two supplies that should be listed here and in the required list
-(note that doesn't mean we can't reply on the regulator framework supplying
- stub regulators if the power is always on - it just documents that the
- device requires power to work!)
+$defs:
+  ad4170-channel:
+    $ref: /schemas/iio/adc/adc.yaml#
 
-There is also a drdy pin so I'd expect an optional interrupt.
+      adi,reference-select:
+		....
 
-Note that bindings should be as complete as possible, even if the driver
-doesn't make use of a particular feature yet.
+  sensor-node:
+    type: object
+    $ref: '#/$defs/ad4170-channel'
+	...
 
-> +
-> +properties:
-> +  compatible:
-> +    const: qst,qmc5883l
-> +
-> +  reg:
-> +    maxItems: 1
-> +    description: I2C slave address (0x0d)
-> +
-> +  mount-matrix:
-> +    description: |
-As above.
+patternProperties:
+  "^channel@[0-9a-f]$":
+    $ref: '#/$defs/ad4170-channel'
+	...
 
-> +      A 3x3 rotation matrix describing how the magnetometer is mounted
-> +      on the device. This is used to orient the sensor measurements
-> +      to match the device's coordinate system.
-> +
-> +additionalProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        magnetometer@0d {
-> +            compatible = "qst,qmc5883l";
-> +            reg = <0x0d>;
-> +            mount-matrix = "1", "0", "0",
-> +                           "0", "1", "0",
-> +                           "0", "0", "1";
-> +        };
-> +    };
-> +...
-> +
-> --
-> 2.39.5
-> 
+  "^weighscale@":
+    $ref: '#/$defs/sensor-node'
+	...
 
+  "^rtd@":
+    $ref: '#/$defs/sensor-node'
+	...
+
+would that be a better way of having those?
+
+Thanks,
+Marcelo
