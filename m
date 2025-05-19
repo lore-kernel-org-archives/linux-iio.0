@@ -1,150 +1,124 @@
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9868B3FE4
-	for <linux-iio@vger.kernel.org>; Mon, 19 May 2025 09:59:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F005881E;
+	Mon, 19 May 2025 10:14:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747648783; cv=none; b=IvLoMSuqX3cQyHJEcHc5wKAy+/gyaNBOPEOPteHfzMUlhm+VhtKqFnb6ETbSmBydbthyHtFlIsJBuTV8U84ru6qw6RQ9WU5WDm2kk1YnbgiGnj7CpE9ZRVyk6TfKl4AP7QeFn7ClL5ZAJSDNCtBiMuPimjhjFVg2sUsp/kBLLik=
+	t=1747649664; cv=none; b=CUCLBSZFrrh6YRUiYe8dam9IqjjEvncoxX4wqai8RXl10seJqArLXZGoses3NshTvpK0bUP14/cOjifz9WUMhJkKqSjfiO8LAGCLDVe2KA9J8Eav8EMj9zHnoMY5nDUkixWsoglUZyI5PjrV/sH9hVA5+O4WQdrPnhyhHApXeao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747648783; c=relaxed/simple;
-	bh=dSxij7d3UNEnc03Iwv5weNptcq49Yp5Ww8xB0LEZHn8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tqjkgqIptyqcvK1dk9M3VEnv8+xVqh149QjbOibUwcgvS+l1kq/lOXBW6WP7rHIyQuSAJINr+AHTQe9ff4JKKVXRoBkyBoIhVS/5Zsnw41mJ6XVsGjdk3sgRJCDg5YLR+AynEnPP0nCP5wkGzya3x62fwzqIDKxoQ3nbCGHK7ZY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=RrUci1Lw; arc=none smtp.client-ip=209.85.208.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="RrUci1Lw"
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-601aa44af77so2701425a12.3
-        for <linux-iio@vger.kernel.org>; Mon, 19 May 2025 02:59:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1747648780; x=1748253580; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=squm7R0/ZL3X4Ww4+m9myAtwPnq33Yj6/51YuPwNRrA=;
-        b=RrUci1Lwi50rXkdR60SsIy/4BWKSs449RUNskN/0F7yQQ284T0Pg9I7Nk2SLs2pbGR
-         010wn37lrErfrn9nvFQ8aDWAV2O3ZVXMt4vadNttWUWrQwlPX6/l7VyXT26ypEmeyYqZ
-         gXWh28MgocwIIBwmocOGfJUaHq5GYQKIk6HqNCSNOqJU/j8dX58TWPMw0EdtBWCbYBsp
-         ChujWVVmcdT4/2BNiHPGtR6g2Ob22JtgkpjT/JZjehmqI+OP3P20x1m3hGQdn0xXpp3a
-         t/ZpIVBCy6bRrHMFKMoL8Tx5M522CKRdpyS/NIK4ik9MaItdfWakh5Gz8sGExprdbOT2
-         VwHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747648780; x=1748253580;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=squm7R0/ZL3X4Ww4+m9myAtwPnq33Yj6/51YuPwNRrA=;
-        b=csav7b2VftPOdpBZUGS2b6XvoCbgbxWntOnMs0haDfqQf5UZdPAU/f5aEcez2XC+ZN
-         2WGKpNOsftDudrCE5nLWTFy4kGes+ozJoWak2dbONbc8S0Pwo/ojKfg2MlxBrp4fScI9
-         IVAkCUg+Pmo8MUTcpvRZx2sY2EyafjSG/dvSkz+VcGq1v6WF1c8BF7qhqigzXh5k5UJO
-         tNKjFw9l0linzNsmvPEmiy3WBlsMlPHHeHKQe2CbrTIcVk/4t9EDT32FpZkyRuEUvWb4
-         At7wO4aPYTv+cOcs8EsF+0fOz+HUmeiLI89Iy+GYsjgnJlFsy1S7S+zLxTUIR2aGm0Zk
-         G9kQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUCN6v0TmKFrkI+qR+i592nqPx3o+kUDXetWbWNykZL6tdfsY49nK+MGRDg3J7J3WjRorYhMUHgQJk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxj44RsItiSTFz+bLIBRGeyQQWRGTqFYDVoe6yKrMu6Jee/cb/K
-	BxPZQGgLedp49QS5rA1HWaETM64bgG2rN1xpS76qpbIyExa1qQk1PdH9nBg6qNBPk44=
-X-Gm-Gg: ASbGnctXRMERdDolx3tbvoRfHFiHBzsfClx6BWKF2sisurfdmkU4/9KZK31op9TVdfR
-	lDxtQU8rztXCju4J5EBnbTw9FoScy1q7wQH0168Q0OR8mYqWrp+NKJPWLTGQuNKF25KBQRGDlfd
-	l/5z2oqxSjjvJ6s9e75aWBhD7KYzajESBP1qAVWnGlJOkPVf3AAAwhBEUk5yAjYU66H6BPG2O0p
-	3pSHdSu2kGHYEOE0RmwjjYB6P+QJNpnCsODfSBJd42piXW4gDATeHXQ58DOlalKAKLibP51lxld
-	uPzu81REljqGpCz6MDxQswI7Qv7GXDcoAAVi0s+PYa3VsYYFjGPdLemLTcY=
-X-Google-Smtp-Source: AGHT+IGOf1zbVEfv3sqxO0+3n3nY9cx70R8hKHEv43EChu67h7Euqo+U4eNL1rpDVaHinhCtY9Q/Ag==
-X-Received: by 2002:a17:907:72d5:b0:ad5:2077:7a71 with SMTP id a640c23a62f3a-ad52d557911mr1094441466b.30.1747648779618;
-        Mon, 19 May 2025 02:59:39 -0700 (PDT)
-Received: from [192.168.50.4] ([82.78.167.58])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ad52d498f18sm562159966b.150.2025.05.19.02.59.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 May 2025 02:59:39 -0700 (PDT)
-Message-ID: <42ae4511-43db-4896-99b3-f203d52433e3@tuxon.dev>
-Date: Mon, 19 May 2025 12:59:37 +0300
+	s=arc-20240116; t=1747649664; c=relaxed/simple;
+	bh=+qY/W+Tl5bBKT/y1ObIIiIHY/AW5ZPx+TXJ/Ggj8xHA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cAsHNIikVaxamKno1MplcZ2sIGkFGCcO9j7m4Cnmoj7KXiTAC9bBKSHHJ5Rk/XUnipEg1Q8/VXaTeZXPnctXovxsA5YvlmD0LpGLEHlr+i3wruht8qH/baIV6ekXxPqvNUtVDqIn9jUmDhrMAC64ywhjQDf0qCYhGRhzyPDdu20=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org; spf=fail smtp.mailfrom=kernel.org; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=kernel.org
+X-CSE-ConnectionGUID: FYz9cRoRTqmhHxWjgSLyaQ==
+X-CSE-MsgGUID: /3UEGO4fREuR+ctDj8ntXA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11437"; a="49697120"
+X-IronPort-AV: E=Sophos;i="6.15,300,1739865600"; 
+   d="scan'208";a="49697120"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2025 03:14:22 -0700
+X-CSE-ConnectionGUID: KXafi+e/TJekXaV/pJPQCQ==
+X-CSE-MsgGUID: qj8D3cXCTpO2/sb/3vMoPA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,300,1739865600"; 
+   d="scan'208";a="140350370"
+Received: from smile.fi.intel.com ([10.237.72.52])
+  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2025 03:14:19 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andy@kernel.org>)
+	id 1uGxVh-00000002yrh-1LHz;
+	Mon, 19 May 2025 13:14:17 +0300
+Date: Mon, 19 May 2025 13:14:17 +0300
+From: Andy Shevchenko <andy@kernel.org>
+To: Angelo Dureghello <adureghello@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 5/5] iio: adc: ad7606: add gain calibration support
+Message-ID: <aCsEeQQyGdBg2ex9@smile.fi.intel.com>
+References: <20250508-wip-bl-ad7606-calibration-v4-0-91a3f2837e6b@baylibre.com>
+ <20250508-wip-bl-ad7606-calibration-v4-5-91a3f2837e6b@baylibre.com>
+ <aBz_Nlgx18UK2GIc@smile.fi.intel.com>
+ <shzx67wrpzaxje4vj6owwnof3pi5cuipdavd3k5svucyt5y527@mvytnov6zunk>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 0/2] iio: rzg2l_adc: Cleanups for rzg2l_adc driver
-To: Jonathan Cameron <jic23@kernel.org>, Greg KH <gregkh@linuxfoundation.org>
-Cc: prabhakar.mahadev-lad.rj@bp.renesas.com, lars@metafoo.de,
- linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, rafael@kernel.org,
- ulf.hansson@linaro.org, Daniel Lezcano <daniel.lezcano@linaro.org>,
- Bjorn Helgaas <helgaas@kernel.org>
-References: <20250324122627.32336-1-claudiu.beznea.uj@bp.renesas.com>
- <20250327153845.6ab73574@jic23-huawei>
- <2025032703-genre-excitable-9473@gregkh>
- <20250330163627.152d76ef@jic23-huawei>
-From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-Content-Language: en-US
-In-Reply-To: <20250330163627.152d76ef@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <shzx67wrpzaxje4vj6owwnof3pi5cuipdavd3k5svucyt5y527@mvytnov6zunk>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Hi, Jonathan, Daniel,
+On Mon, May 19, 2025 at 11:40:09AM +0200, Angelo Dureghello wrote:
+> On 08.05.2025 22:00, Andy Shevchenko wrote:
+> > On Thu, May 08, 2025 at 12:06:09PM +0200, Angelo Dureghello wrote:
 
-On 30.03.2025 18:36, Jonathan Cameron wrote:
-> On Thu, 27 Mar 2025 17:22:20 +0100
-> Greg KH <gregkh@linuxfoundation.org> wrote:
+...
+
+> > > +	device_for_each_child_node_scoped(dev, child) {
+> > > +		u32 reg, r_gain;
+> > > +
+> > > +		ret = fwnode_property_read_u32(child, "reg", &reg);
+> > > +		if (ret)
+> > > +			continue;
+> > 
+> > > +		/* Chan reg is a 1-based index. */
+> > > +		if (reg < 1 || reg > num_channels) {
+> > > +			dev_warn(dev, "wrong ch number (ignoring): %d\n", reg);
+> > > +			continue;
+> > > +		}
+> > 
+> > But this will allow to have a broken DT. This check basically diminishes the
+> > effort of the DT schema validation. If there are limits one still would be able
+> > to create a DT that passes the driver but doesn't pass the validation.
 > 
->> On Thu, Mar 27, 2025 at 03:38:45PM +0000, Jonathan Cameron wrote:
->>> On Mon, 24 Mar 2025 14:26:25 +0200
->>> Claudiu <claudiu.beznea@tuxon.dev> wrote:
->>>   
->>>> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>>>
->>>> Hi,
->>>>
->>>> Series adds some cleanups for the RZ/G2L ADC driver after the support
->>>> for the RZ/G3S SoC.  
->>>
->>> This doesn't address Dmitry's comment or highlight the outstanding
->>> question he had to Greg KH on v3.  
->>> I appreciate you want to get this fixed but I'd rather we got
->>> it 'right' first time!
->>>
->>> Also, please make sure to +CC anyone who engaged with an earlier version.
->>>
->>> For reference of Greg if he sees this, Dmitry was expressing view that
->>> the fix belongs in the bus layer not the individual drivers.
->>> FWIW that feels like the right layer to me as well.
->>>
->>> https://lore.kernel.org/all/Z8k8lDxA53gUJa0n@google.com/#t  
->>
->> As this is a PM question, Rafael would be the best to ask.
-> 
-> Sure. Perhaps Rafael missed previous discussion, so I've messaged
-> him directly to draw his attention to the series.
-> 
-> Claudiu, please include all relevant people in +CC.  Don't trim
-> it down to those effected by a particular solution as has happened
-> here. +CC Rafael, Daniel and Ulf.
+> fixed all your points on other patches of this patch-set. Still your
+> emails are going to google spam, just could catch them on friday. 
+> Really not clear why.
 
-As the discussion [1] is progressing very slowly:
+DKIM which I still need to configure...
 
-Jonathan: do you consider having this series as a temporary solution?
+> About the above, i understand, but the check is actually the same as
+> in ad7606_get_chan_config(), a warning that fdt is not correct, 
+> i dont see a blocking issue here now, so not going to change it
+> in this next patchset.
 
-Daniel: do you consider having the fix in [2] as a temporary solution (of
-course, with the adjustments suggested by Geert)?
+I think the 'continue' above is simply wrong. We should not allow to have
+broken tables. And I think it's kinda blocking issue.
 
-There is also [3] for which a similar approach was proposed. From what I
-understood from the discussions on [3], Bjorn is OK with the current solution.
+> > > +		ret = fwnode_property_read_u32(child, "adi,rfilter-ohms",
+> > > +					       &r_gain);
+> > > +		if (ret)
+> > > +			/* Keep the default register value. */
+> > > +			continue;
+> > > +
+> > > +		if (r_gain > AD7606_CALIB_GAIN_MAX) {
+> > > +			dev_warn(dev, "wrong gain calibration value");
+> > > +			continue;
+> > > +		}
+> > > +
+> > > +		ret = st->bops->reg_write(st, AD7606_CALIB_GAIN(reg - 1),
+> > > +			DIV_ROUND_CLOSEST(r_gain, AD7606_CALIB_GAIN_STEP));
+> > > +		if (ret) {
+> > > +			dev_warn(dev, "error writing r_gain");
+> > > +			continue;
+> > > +		}
+> > > +	}
 
-I am taking the responsibility to do the necessary adjustments to all these
-drivers once there is a resolution for [1].
-
-Thank you,
-Claudiu
-
-[1]
-https://lore.kernel.org/all/20250215130849.227812-1-claudiu.beznea.uj@bp.renesas.com/
-[2]
-https://lore.kernel.org/all/20250324135701.179827-3-claudiu.beznea.uj@bp.renesas.com/
-[3]
-https://lore.kernel.org/all/20250430103236.3511989-6-claudiu.beznea.uj@bp.renesas.com/
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
