@@ -1,187 +1,112 @@
-Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54])
+Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDC9574420;
-	Tue, 27 May 2025 21:03:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C62941FFC4F;
+	Tue, 27 May 2025 21:10:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748379801; cv=none; b=W+8cffkfza7hJUmyRtIAyx0am/4ruHYyyiJ4ib5uht6NxTpvAA6aDzLgCH2HsG4h/bg7fsFSeRssQVkPZ4VPharo4uET70znz4cBAbsJfJp3qt9BwwIDxks+4avnlGG3RLEjEZTP+G/JwvzY7V1DLJIzVdvM/RdOzNrdG13YN+8=
+	t=1748380242; cv=none; b=ReIetJHQc9rkxSc6VvJkz7TTZivgBTmRmBc8oOB0KTu4aKt4irxaxGSGrshF7xIq7jtddxPjjDlY2cjt8UvRQpJj2pmZQ/a8QWb0gTPlIhymhY+Uld8ou3kJLf8+hfAqZcemdikU7j63dhsYTBtkTvCN8K6jvGN1dGGDD18EvPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748379801; c=relaxed/simple;
-	bh=nEZFWJNF43/IBAqa8ZBZ+u1owD13TSpA7O97SW6e3ck=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ecCBhwwdtiTfyNtgxGTrq8RgnXmpBRHojY7oEoT/ZgQ3qyCNCJ6vMiGoOQLVI2fXJNt9ZRR+AN8wbo9YAnO+WPf3RJQne65dXbvJWhGDUslNGA7LaQXnVfduvfAM1nvH8JU4L0VJs9r4o//jphyy2e9f93yOxAKvQhC72Z7/31g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EpxbUeO5; arc=none smtp.client-ip=209.85.222.54
+	s=arc-20240116; t=1748380242; c=relaxed/simple;
+	bh=zCpa2pqyI2zP8sKDp4CTvJFpQyIi80OjbDKWSt2XCJ0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=YDcF+y//a/yoYbbwpSJA+NyFw+UBvb0HZWkjY9lD1F07GCmiq72f4lZ+VlJaelkrfbxzkhq3XFmPcSDMi+totOcEH3wySRyitda32/qi2u9zM0b4Rgzg+iSbGH3kdu0RXU7Bvz1penzjoIiyxQZLuZFTgHVOSr8A/xwsuvKuwdg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dbjvdyPx; arc=none smtp.client-ip=209.85.216.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EpxbUeO5"
-Received: by mail-ua1-f54.google.com with SMTP id a1e0cc1a2514c-86dc3482b3dso159301241.0;
-        Tue, 27 May 2025 14:03:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dbjvdyPx"
+Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-3114560d74aso2708439a91.0;
+        Tue, 27 May 2025 14:10:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1748379798; x=1748984598; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=v+tfX241W26Uivk8mErspfbe2VUCMhSXcBryN6E4qnU=;
-        b=EpxbUeO5FVYAb7s99XgdqNuKUzwmaPK4Pn27V8/y+ORqoian/CtNBFFzVY+siKcUyd
-         1aOLnbLTB0SOE5kywd4+6h/NI9IUHBZAoRJYZjFxX4Z41nH3IjCGbR8jLcEDKEcJylJt
-         5JrSCpYycORsrUAKas+pacT9406cHhJ5pWxaY+pclQhf/sEmY/AM3N5LJimNY3X2a6/n
-         r04WV/OHT31ETg74FfkioTXrECuZk7SheGux2rRBkoW88D3An5zOa1xbSjgQHXhmcy3B
-         bNaiSy8pAClRW91+9Ep1JWM4j2EDM7qwkX7MvyMNFJEUtcA0DH97hNwFHTKWYl8fuPv2
-         xjvw==
+        d=gmail.com; s=20230601; t=1748380240; x=1748985040; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ra/Kzn/tsEt4UqEeAwhyx54MKmURC8T1Q/5luTcmyIs=;
+        b=dbjvdyPxYqNLigadLrg5FUTU2Sg2HDlLZpIiOnYsVi/xHRsHTv0kOak1wLBvoK+6KE
+         M6+B4u1panm0g0/I08/ZzoRLouD2UfO/V4J8UBsm75E0Tb/5k1OjL6gZth8cmwcwTaXU
+         wFUBRyW3p1lzi9Rh3qg/1M12ecanv9GzdaklQ62qecqti3CAyr+tNmU31j+YBNgdviE2
+         7toknj5XB422jzoQLsoICF3yFzBbkg9jEwy5KwBj9p6IyR8f0ldQvD3me3JLPcBKxnRN
+         eILIq77hzGo5yJBiBWQUqReHn4cx3wChS/Gxm9fD8pgqtJzcsa9X8bGiBsDXZJ6gJjyf
+         6vgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1748379798; x=1748984598;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=v+tfX241W26Uivk8mErspfbe2VUCMhSXcBryN6E4qnU=;
-        b=n7FyKEMUkBBi6iEcevtSxA8x0Raosd9CgN80CnsGwdYqzqho/5hHjQpGC15TyVyaYR
-         e7ihUFO3WvjmmkXRre2Put34JJ5a3o5WaF8scW8yzOh0uL9oJ8kwRkIqKR0hyNK3plmK
-         ALlpZz1YqfFS+uKbCsObyPn88Qwt1c8m232P/KSVLmgcHILG8txpuedDHl4kX3B5WSLu
-         7xStYjKAKjSHfAqd8zMFo4jegSmgBpXvSDtGYF1MVR5iu1Nc7/qsc+fRTQdhtdYm3Lbs
-         NvM5HwSqGDZ7dCucHqhwrAOV1gqLixjFnsXCEJeF+7b1s6vjODAJQHeBpuat/XIkZJfA
-         VSIA==
-X-Forwarded-Encrypted: i=1; AJvYcCU0NRdt+BOl+7aWpXVpd/ZKM2gP66zh5e1Yf6w3nbG6m3886mTX25kAOYn6RbtaEYYtWvRZUjdpG1uS@vger.kernel.org, AJvYcCUr0uDSX/UprXID5pVpWsi5mcN7kBjiUZGAKx8ZDPRpykVfTm6HpfpCbgo7ZGpQ/kIiNeDJRh4wxLS54H9X@vger.kernel.org, AJvYcCVXRWEJIs1VtzzVhWUIinTvFXVzIPAs2v8/fPB0SWB69lkbR9aNwamPyU5gCBTbiITQXfosnfboRsk4@vger.kernel.org
-X-Gm-Message-State: AOJu0Yws4Uz9L5KZuiK75BW072koeqC5aeUYw+jZaGqVDCgRGr+opaEZ
-	qduRz6MTEPUcn4CYUNHyHK2KQjpi/+dDIP2Fk4jwTOJZZ3RgICP/Lr9l
-X-Gm-Gg: ASbGncuwsp8DR8ghL3L9yc8aOAl3i3RdCnLilQ+5C8Bcmy+TYmPFFCMNNtA/P9TIlko
-	XsM55Lt0ihO5Xf9J4JaaPLBYuuu1r3V+qcCbuwZJo0vWHjn9ieyOM2cPaJVQ+vzhCo9m6rOxHyA
-	4mJcHBhtYfjXUETKGJDn+uDao4KUzOROY+ERYI7jNLQxAitXR+ShMAobrlKPZswOwh4BBuQAuqe
-	wJYbYa4EjQEf9ICmOpalQW9fC0EtVXWHCTVtm6cLvWWdZBhzKOhyCFSJA1ZsMMeFzKU+PLRnesa
-	TMMezHaz7qq2XWXQLbKmVM9EUXNcBzCqDCIqpFJMU3zMj7dpjj52T2ZzrbzRdCkE79JGwhfOfp9
-	vdTSuisfdlA==
-X-Google-Smtp-Source: AGHT+IGahsV9cN1gLjmLmKKBxKssribhKdWt6xqIIDfYJ+6Xkj8fLEQKGmWCdlAv0G5Zzu0vS7jWrA==
-X-Received: by 2002:a05:6122:cd:b0:52d:beeb:c6a3 with SMTP id 71dfb90a1353d-5305fcdfe92mr1861095e0c.1.1748379798477;
-        Tue, 27 May 2025 14:03:18 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14d:4c64:81ec:7409:107a:a63b:a3da])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-4e59cea6ee0sm205800137.2.2025.05.27.14.03.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 May 2025 14:03:18 -0700 (PDT)
-From: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
-To: jic23@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	manuel.stahl@iis.fraunhofer.de
-Cc: ~lkcamp/patches@lists.sr.ht,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2] dt-bindings: iio: gyroscope: invensense,itg3200: add binding
-Date: Tue, 27 May 2025 17:55:28 -0300
-Message-ID: <20250527210308.4693-1-rodrigo.gobbi.7@gmail.com>
-X-Mailer: git-send-email 2.49.0
+        d=1e100.net; s=20230601; t=1748380240; x=1748985040;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ra/Kzn/tsEt4UqEeAwhyx54MKmURC8T1Q/5luTcmyIs=;
+        b=KuglWoY8GRTXtSXEqlaUFTvFsC+L0BBVvquWd4GxKoBeqZxwnhrRtjX2fpzXqxqaj3
+         TMYXiafbOEmty/C9gfiVpZ2SxONuZcNOqwgK3BkzxkgpMrN1hd99R7VdfCUDKEQD2tH+
+         mLc3jJLHDvXamGupnR7FY6UaInRRbtfqld4uZiWlBDX1qkw9gJOtY+mpwcBDHvQv3txF
+         bLuhzEo9TGl39EOPZuG5ZAMXy+qFQNLn41gQTSrXeHz4HY6fX+hcmHqCyqdlRAlRnDqF
+         mI/La/ti1VyRswrajHQrzVa9FTXupeoRzG3shyWLCpmdjagHxnCS6JYjLYKum53KmNZp
+         6bPA==
+X-Forwarded-Encrypted: i=1; AJvYcCUsIZwciW9IJQZSGiV8h0MdB42hp5O3OOoy+onFM7/y5PXRcHVz3quM1UUwigdbSx9PIq5wgik897o=@vger.kernel.org, AJvYcCVqpy2dOYfRBf/Zez6wrP7vnB+D5GKyiNeLuIsJf5fxXIXHeiasMTkaOmF36YA18JcQuAu0Q7WrYjTdkybL@vger.kernel.org
+X-Gm-Message-State: AOJu0YyU6X8wzcsEqTv+Ecez941HsfziKQZmGXD+w8RiF6XR+Z03dLDQ
+	ofy8YU6iHnJlE7/+RuM4UD0Qe4snTbrtWPcoEXW5SBTiUw5c8517/wpZSf0VLjiJ7qtYhiKtI0X
+	7nhkxtCPufyX0EAgj612keluYcyxy7oM=
+X-Gm-Gg: ASbGncuwZs/WPb9fWoB78K+eQOyN5+3199UGR1/mNUOJpcdtzll7zRgDDnuDozxed9x
+	6miInl6kB+D5pXQRZy/EKU8RctgsANMyyZr4iN5gLjZmUWsQeMPkvcy28ZULicruhYLkiIUvEA9
+	Uo4cvRJocc4OiMaiPKC6wd/QuF6+pbCXm5bA==
+X-Google-Smtp-Source: AGHT+IHl7P715WOF+LWqioosOOq3h5WiYgB+6CL8eDZad3EuHhNMuisn5T9/tqND2t4UBilrDM8H7rGnOyMxt470NGo=
+X-Received: by 2002:a17:90a:c2c3:b0:30e:6ac1:3716 with SMTP id
+ 98e67ed59e1d1-3110fc03f88mr18789493a91.34.1748380239820; Tue, 27 May 2025
+ 14:10:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20250527200534.98689-1-gye976@gmail.com> <CAHp75VcUr7-X+F1f=wPH4=Z7q3kFffv8BgkmKWM4VTjy2w-tGg@mail.gmail.com>
+In-Reply-To: <CAHp75VcUr7-X+F1f=wPH4=Z7q3kFffv8BgkmKWM4VTjy2w-tGg@mail.gmail.com>
+From: Gyeyoung Baek <gye976@gmail.com>
+Date: Wed, 28 May 2025 06:10:28 +0900
+X-Gm-Features: AX0GCFvB4TCZpBHeDE8nL4wxgndVCu-VH6I0tAyloGsL1wNjNLRxFmZlXW9TuoI
+Message-ID: <CAKbEznuuGX3Gnqg6WF2mqbigRps0gzK_PfGHGNy8-v1WOZoMUQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: trigger: Avoid data race
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-There is no txt file for it, add yaml for invensense,itg3200 gyroscope.
+On Wed, May 28, 2025 at 5:25=E2=80=AFAM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+> On Tue, May 27, 2025 at 10:05=E2=80=AFPM Gyeyoung Baek <gye976@gmail.com>=
+ wrote:
+> >
+> > A data race could occur between `atomic_read()` and `atomic_set()`
+> > Use `atomic_cmpxchg_relaxed()` to group them atomically.
+> >
+> > Previously the main logic was executed when `use_count` is 0.
+> > Now it returns early when `use_count` is not 0.
+>
+> > -       int i;
+>
+> I don't see the point in changing this line.
+> ...
+>
+> > -       int i;
+>
+> Ditto.
+>
+> ...
+>
+> At bare minimum they are not relevant to the patch change and haven't
+> been described in the commit messages.
 
-Signed-off-by: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
----
-Originally I`ve added @Jonathan as the binding maintainer due another thread
-but @Krzysztof mentioned at v1: "...this should be someone interested in the hardware".
-I`m not sure who might be this person in this case, a reasonable choice would be
-the original author of the driver, but looks like his last patch is from a
-long time ago [2] but I`ll ping here.
+Hi Andy, thanks for your review.
+I initially skipped this part as I thought it was minor.
+But on a second look, it seems better to separate the declaration from
+the logic.
 
-Dear @Manuel Stahl, I`ve noticed that since the driver was added,
-there was no binding doc for it and this is what this patch is addressing.
-In this case, a maintainer ref is required inside the .yaml file and I would
-like to ask if I can add you in this case. 
-I would appreciate your comment or suggestion over this topic.
+What do you think about the data race logic? Would it make sense?
 
-Tks all and regards.
-
-Changelog:
-v2: 
-    - removed the register map link; there is no datasheet available at public ref. At [1],
-    it is just a product overview, so we can`t use it;
-    - add supplies and external clocks (I`ve used as ref iio/gyroscope/invensense,mpu3050.yaml);
-    - add the author of the driver as the maintainer of this file but I`m CC him in
-    order to get his opinion about it;
-    - adding some CC missing at v1;
-
-v1: https://lore.kernel.org/linux-devicetree/20250515002817.81863-1-rodrigo.gobbi.7@gmail.com/
-
-[1] https://invensense.tdk.com/products/motion-tracking/3-axis/itg-3200/
-[2] https://web.git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/?qt=author&q=Manuel+Stahl
----
- .../iio/gyroscope/invensense,itg3200.yaml     | 59 +++++++++++++++++++
- 1 file changed, 59 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/invensense,itg3200.yaml
-
-diff --git a/Documentation/devicetree/bindings/iio/gyroscope/invensense,itg3200.yaml b/Documentation/devicetree/bindings/iio/gyroscope/invensense,itg3200.yaml
-new file mode 100644
-index 000000000000..4b2f9a57c6ea
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/gyroscope/invensense,itg3200.yaml
-@@ -0,0 +1,59 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/gyroscope/invensense,itg3200.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Invensense ITG-3200 Gyroscope
-+
-+maintainers:
-+  - Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-+
-+description: |
-+  Triple-axis, digital output gyroscope with a three 16-bit analog-to-digital
-+  converters (ADCs) for digitizing the gyro outputs, a user-selectable internal
-+  low-pass filter bandwidth, and a Fast-Mode I2C.
-+
-+properties:
-+  compatible:
-+    const: invensense,itg3200
-+
-+  reg:
-+    maxItems: 1
-+
-+  vdd-supply: true
-+
-+  vlogic-supply: true
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  mount-matrix:
-+    description: an optional 3x3 mounting rotation matrix.
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    items:
-+      - const: ext_clock
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        gyroscope@68 {
-+            compatible = "invensense,itg3200";
-+            reg = <0x68>;
-+            interrupt-parent = <&gpio2>;
-+            interrupts = <24 IRQ_TYPE_EDGE_FALLING>;
-+        };
-+    };
--- 
-2.49.0
-
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
