@@ -1,46 +1,46 @@
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2045.outbound.protection.outlook.com [40.107.21.45])
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2059.outbound.protection.outlook.com [40.107.241.59])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86A97279910;
-	Tue, 27 May 2025 14:45:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61B49185E7F;
+	Tue, 27 May 2025 14:45:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.241.59
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748357156; cv=fail; b=bloXGyvNMTkRV5wcBZhALmEbrufDLyBZzY9kAVr3vZANe8f7CfJUza5ib3aNw6J8nzMhkQsSLekYcPVp8AqiKzlVa3tMereuSB5agtqjulbmg3grjB3tM11najUF24XwWjT8yxgbI/vnED00dCjhIUOUBlogUfAa25JK0zJeL7M=
+	t=1748357157; cv=fail; b=r3RBx8x+Fbv57oeksoYHft1h3IfmcI+xB7IYQI6NdgPT24LFIDpT5REYOsxHOondPD6USg4Jol3LzLrtHWqT94rAZ347XBmuHLw13D1m2wTEINt31Pg8GuzaHLHHTEswuqrjTWkDmbJcbbefhTCA9BYIDHKQrpnOzWtfbv87G20=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748357156; c=relaxed/simple;
-	bh=0aPvqjQunqlXBRCN3KPkqe2qEqy7wDldQOUgpNZG2Qk=;
+	s=arc-20240116; t=1748357157; c=relaxed/simple;
+	bh=nziuJKMVozVMRXsy26glePr3KqK5bWYZsGNEZSH6Flc=;
 	h=From:To:CC:Subject:In-Reply-To:Message-ID:Date:MIME-Version:
-	 Content-Type; b=ccoM4nrE4FNfmxB4woRbbqezALoFmNOcKQ/HIh1TnjtPT1USZ0SiAhclqcxjZTK2yUdw5vDbsFSSR8imWDUof/aNvArUEnZyblY8rgG8tep0oz2LQ8oeuLb24wd82MxP15m+8U1/80gxSa4qy31OvsdswNBfsTrxrElm/q+V7jU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=TTLInaNQ; arc=fail smtp.client-ip=40.107.21.45
+	 Content-Type; b=epmjWLdWuMvdh/qTyVHv5AbW3VcdcCh3O6nD6N5irVf6ZS777f0uOmx3nNd9BmjWtLF0tETYf4V9A4wf4ncVhQN/xU/Pq+XAvdvX/da8QdQgpbQPc5eFp370aOVGNZ6A3CWMWwQkCY+/ZFtUF3b5fyLQdO0Jgwj/le5Ogumv/F0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=iSgy0law; arc=fail smtp.client-ip=40.107.241.59
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="TTLInaNQ"
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="iSgy0law"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=eLqixQtkcxDvXYPlRIYX7Z5U/hblIZcJB3etYeA3Uc09l8Ahe56uN+UO4aJ9mhb4c8xJTXSZKVD79yO7MtepwgQs1nL6TC/CJIUznnonY3J0HKXCM9EpAVXrL4km9hZsTmUmHyg8e10snyANnLGHU9kiU96naBv4JNHNcj/KBMiFMqc3BvzuO3pjW+RiArNaE/bR0rAC0pDHVyrUFoSri6keQDuqc55EGMr6Oci2bvmNu5J/mmCimFT+18imufEAtGHaDFTD2143qx/QMCVbQAhwI9My+uZIu1YhwkNqWZTNWZwTvsfQG8G7YFEtq4e7Pt/9l8T3cff8D3RCuqTfuQ==
+ b=SgiWpUemfEDlSpz0ER/LbnBXrdTCVxS29DVfqt0Sar2O+qAgTBxHHmVfillL/Kq9FqSsULfJ3sfdw6bHhNDOmjl/Mi+paLdpTgjRTwyggR+aBD8qVgvfJqQNBOTUOryGk8BcmBPDqJymJVzu2VuDeGMs0sv/9FN7uw6G7HJPOrZ+s7FbMAAS5UnXsjt4IIEwXBacNV5Ff4QDiFe4KT9JCtTQBTv2A8iLan2OGVg3wCRGRrM24IVRCDInjNRf4oHzjcOjYeRH8LqiN07veqnRln5mG6XX1D8/0cKazIGI2zxM+LbbnzPwmYpHv00t6gdUGpGag7CoIoc7ywl/pYY06A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WJ65HvJCva9kd0Ydx+Gm71eAxRtjhJtvbgHdr9yAmbs=;
- b=YCzHeypVfiINd89H2pBbFZ0+RoJVbJ5gCFQz75pMdlKW/gT0ZJuZpP8/RhKYEX45uDAbMaOloWEH4HIrRbY/utyNEUsXuqAab3PZLdYH9ZewOJm588ScJOEoP6C8SmLdKxkr0LOhXYmUxQtYlDs0wbjvzX21jKha7ORD7Yaf6y+8jKqwxf66P76ArZ5XVJeeKyDHejkesW5cDircn7Yp55MrkpC6QPGXnWzgejw811ZQImaurMjQ0iXl9asxJ+0NOLXvLZp8kPdNkT/OoVcF04RpeG8wTbsCy5CdPs/e6QDpG6dVZvWrdkYGHp/lI9aAfIUui3KPB/cbuVtyr3/6ww==
+ bh=RAzDZy7BlcLXZDGEB+MaYbT+/wxZeK0tYMX/+d/TL/o=;
+ b=L57wh7Mdwkq5oKoY6Cy1N9CvoB86GTy/LIWpST/0n1S0Y0U0ctO/hAwumQwi8mESSB7WN7X2+bcOgkJ8f++ocTyL/3zaOTVaCXwGau+bODpZDlwnS+R2czuzr62lWzLAHjZs2aiccDlrsmTcjOb21u9OOP80JhqEdvUz8VrF/q44gNtVjvxnXv9WqjlbEPROqDmOkr7sILPollNC/XagPmKcm087YX2L+l5F0B9gauDUXOFOLiS91CMzbZ5x9Vmv35wCfqP7BK+5tKwca5kftiGwlr/54xP/b0BkO64X1Yvp0pxiwsYgZZzmEUWfLL5nVGN2o+pE+BGSzBVvhxZ2qw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 195.60.68.100) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=axis.com;
+ 195.60.68.100) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=axis.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WJ65HvJCva9kd0Ydx+Gm71eAxRtjhJtvbgHdr9yAmbs=;
- b=TTLInaNQEzOERYFnGjLyBJpI7CQD/9AU7PiYPlu8W6dcCSm4AWmYmZLASYGBY902siLg6myjnpoOaomYw4ELSI6zTU2gOlemKxN5EqapeeEW3qYqLA94kLhao8k11ZovxgW4pAprL3Qj08T4fDuqv21rAsr4Izptu/5dDPAhLBo=
-Received: from CWLP265CA0323.GBRP265.PROD.OUTLOOK.COM (2603:10a6:401:57::23)
- by DU2PR02MB7776.eurprd02.prod.outlook.com (2603:10a6:10:2e7::22) with
+ bh=RAzDZy7BlcLXZDGEB+MaYbT+/wxZeK0tYMX/+d/TL/o=;
+ b=iSgy0lawUQtQkAk6alESlDnMy3HuyNV677nChWGBySa9jMg1O43QyfORW30kfJVXOa+cCuT8laCVxwxy/spLfgseFepObCWzN5a0ylBZzOBsh12IeoR6vCxK9Zk2h3FbeW1ie15c0HjR91C+Dl3XAGr5qgpN/El2+LCiDzCcMFo=
+Received: from CWLP265CA0330.GBRP265.PROD.OUTLOOK.COM (2603:10a6:401:57::30)
+ by DB9PR02MB7004.eurprd02.prod.outlook.com (2603:10a6:10:22e::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8769.25; Tue, 27 May
- 2025 14:45:46 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8769.26; Tue, 27 May
+ 2025 14:45:51 +0000
 Received: from AM4PEPF00027A6A.eurprd04.prod.outlook.com
- (2603:10a6:401:57:cafe::16) by CWLP265CA0323.outlook.office365.com
- (2603:10a6:401:57::23) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8769.25 via Frontend Transport; Tue,
- 27 May 2025 14:45:45 +0000
+ (2603:10a6:401:57:cafe::83) by CWLP265CA0330.outlook.office365.com
+ (2603:10a6:401:57::30) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8769.26 via Frontend Transport; Tue,
+ 27 May 2025 14:45:51 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 195.60.68.100)
  smtp.mailfrom=axis.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=axis.com;
@@ -50,23 +50,21 @@ Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
 Received: from mail.axis.com (195.60.68.100) by
  AM4PEPF00027A6A.mail.protection.outlook.com (10.167.16.88) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8769.18 via Frontend Transport; Tue, 27 May 2025 14:45:45 +0000
+ 15.20.8769.18 via Frontend Transport; Tue, 27 May 2025 14:45:51 +0000
 Received: from pc52311-2249 (10.4.0.13) by se-mail01w.axis.com (10.20.40.7)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.44; Tue, 27 May
- 2025 16:45:41 +0200
+ 2025 16:45:43 +0200
 From: Waqar Hameed <waqar.hameed@axis.com>
-To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-	Haibo Chen <haibo.chen@nxp.com>, Michael Hennerich
-	<Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
 CC: <kernel@axis.com>, <linux-iio@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <imx@lists.linux.dev>
-Subject: [PATCH 1/4] iio: Remove single use of macro definition for driver
+	<linux-kernel@vger.kernel.org>
+Subject: [PATCH 4/4] iio: Remove unused macro definition for driver and IRQ
  name
 In-Reply-To: <cover.1748356671.git.waqar.hameed@axis.com>
 User-Agent: a.out
-Message-ID: <4840779a167e027b8be77c82f7a4f27210ef084a.1748356671.git.waqar.hameed@axis.com>
-Date: Tue, 27 May 2025 16:45:41 +0200
+Message-ID: <0dec4fe7b2bdc90d06163ac75a53b97d4ae31c21.1748356671.git.waqar.hameed@axis.com>
+Date: Tue, 27 May 2025 16:45:42 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -78,357 +76,102 @@ X-ClientProxiedBy: se-mail01w.axis.com (10.20.40.7) To se-mail01w.axis.com
  (10.20.40.7)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM4PEPF00027A6A:EE_|DU2PR02MB7776:EE_
-X-MS-Office365-Filtering-Correlation-Id: 10317a23-a751-413d-a6f4-08dd9d2d29b9
+X-MS-TrafficTypeDiagnostic: AM4PEPF00027A6A:EE_|DB9PR02MB7004:EE_
+X-MS-Office365-Filtering-Correlation-Id: d49a8a9f-53eb-43a7-6d4e-08dd9d2d2d48
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700013|82310400026|376014;
+	BCL:0;ARA:13230040|82310400026|1800799024|36860700013|376014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?ZfK0j/AyCNLliCnMxvC549aJ+bjAqf6+CaX70ySNKNqxCzXCN/k1cIEpbfqg?=
- =?us-ascii?Q?TsPNojvFmlcTTsLnnTXU/R8iDnjArxOSqGCeSZqABQLtxOKb8so4/zUVOeTa?=
- =?us-ascii?Q?qQN3gAe9a1ZTE+O9dBMsU7N91vmJnewdpwSFKs8komsjbvimxZtc9tbTL4w5?=
- =?us-ascii?Q?yBvNpX9Re4V3E4osaR2Bn9ATviLRNHSqtZIzt56rJtyJbystfghbAqwXcfvE?=
- =?us-ascii?Q?dehQ3OJJ/+GfwrIfiPHMuIoZWrQwHBLM3C1jpnbeJaMVJBg+WKsFZhwjDKvZ?=
- =?us-ascii?Q?yBdTdA8L4Qq3ESmjWPN0ThqDW4kioYNbS8v4e0pV6KQnzbhlF7dBhVeQlUDj?=
- =?us-ascii?Q?iTbVXPfbZMxtjesneURgx69Xly4vws9AxMEsakS311UV/HPAV915DXGhv54O?=
- =?us-ascii?Q?Ie+WyjSXH5Ht5Yc/cL7onzlLDS7gzrzhGv2+6Rml2Fj/7gTQgYj9JASKnKn1?=
- =?us-ascii?Q?U1LnUU2DbDVFgbzeAlnqVvpOvgWsFa/u+JgPwXagzlUd68oENvK5m6RZTuKK?=
- =?us-ascii?Q?V9GPUyg9YyPZKNWkxdC5+UG8OStqRPnPsq1i0cfvTwwNkKforvty+n/HbdlT?=
- =?us-ascii?Q?tHBnrlm8pdKFyL6n5mQoFFueqzrxomZdTgnMCGnjNTClngy+WC2Gm0gNTonH?=
- =?us-ascii?Q?GSZjEwnYHCcoVNgwSszMBoR+vTLnhkFZ4oBWWTmjIFcMM53s0TzFqvCl/Q2Y?=
- =?us-ascii?Q?m+P8ui6d4zyNkmGIJK8FezaF2d9l/2Voy5y7WSjvTRmKtBT+7vEEaL/pDeXU?=
- =?us-ascii?Q?Ei36ErgP/Zr8sjlzSXWvUr8KPzosjVH8INUhyoa4rOupkBX+qMoWKQRmxcb3?=
- =?us-ascii?Q?plK6R4Q+Ox2wXtS14HZJIr+Tsv8QU2osPPaH5NG0cr0WBRkPmp058+Ngiml9?=
- =?us-ascii?Q?a52NH2hoE8TOQAcuyLlhK0F4kXVoEZt1KDrhVcbQht9SR9pvOn2zSimGrX9M?=
- =?us-ascii?Q?AoPK++u/70VniUklGd1a0gugf/C6Zxcdof5fYjEF5KMbD8JDXT2WQGgAV9Ic?=
- =?us-ascii?Q?UdX7rekHcati5SP6zjTWrTlvKwMQ2fdC/zCSuDG5FucZ83fB2RGZOu/wHJsT?=
- =?us-ascii?Q?tVZUC0DqFa3NK/nun7WNjNgSmGH2nk4gXQOT4YDQB4cSr1NyvG9VZOtOx96B?=
- =?us-ascii?Q?Q9l7KTnf0R5JHsYFnzTLyYvKpp5GatfWmrOK625BzwWw7CgJjM3lcdghA0Dm?=
- =?us-ascii?Q?jyxrWAv2deU6t+DCKeCNSKR7S3KZ9+xOtSC3Q8+xIhUx51EEYeyfbA7x8rqx?=
- =?us-ascii?Q?KePA3WKh4Lz2hv95wtKBTUfTR28+YwyyeJz0LYFa9gd5bJ+uk3nfHo7PBXw+?=
- =?us-ascii?Q?JP/uVN+6IAYTCsDZaFENfEEQ59n5CbuYMqKjoDpA0cYgfc4YwtwXR2ZjuNUH?=
- =?us-ascii?Q?YiZyEHGu8tb14x7PkZqBZKgZKi2JDJG46ICzrmVwBqJ7hwumFQr/SIlyer6G?=
- =?us-ascii?Q?7l9Duz2A17Zj6n7Ep2xefmkZh8Yx8bR2E+WXvN/cdrQkC6KXtlEqhW8LdKWo?=
- =?us-ascii?Q?OoVZNeY0sC4ikeMXTqyosZuRJmCH8LmiBml+?=
+	=?us-ascii?Q?FDQ3pbJEbMiBcYGAB55OpgQ6Lrcqdk33PuNP0lWSdyShl0R2b7PmVibUxEvx?=
+ =?us-ascii?Q?lQPVBawYhk1oz1fRpYJsoBIDYeVkp597Qop2U2nOxtxFqsmcA4IOqwB2e57/?=
+ =?us-ascii?Q?0zrxSzzn3PsYBWUXQK65jglJJ8eF3F3a7cZa7QmEYom6w+6ddDQvPOTOskgs?=
+ =?us-ascii?Q?zOmFygLKC9xzrxllUlsY7xzX91zzep4m+FCoQud+kVSqbSBIVai1m679YFCe?=
+ =?us-ascii?Q?TGhTu7en557k/pBAJIPXiYl8z4ZOfExmwRkVNj6RyLxh0Nj8ZpzHi7bLFXTl?=
+ =?us-ascii?Q?Jcvu80OQ56Yy/TptVWQqth5eTluC4NA+WqliSpKM45jyyQcxSYitRBr3ncAq?=
+ =?us-ascii?Q?PkIMnue6cxIX/AFV8xyo7ZTYBTsxRFCc9vyIO47C4DZ0/MJxmBCeyMRxpR25?=
+ =?us-ascii?Q?wKQVuZRJxdZKVXMFgx29YgszdWtJQhQnctt5qy5vi692iS/MwVJaWa1hK9Nx?=
+ =?us-ascii?Q?wJSu+ueZrGwuPSS9aBuaz7yT2wKyOjUUf+/Zjv6JDfB1gqNT4iD3dEm4KTJo?=
+ =?us-ascii?Q?tyMY17O4ZXiBMVWnB5zzo4u+IE4Lc9Ifm3F11el0I/Vddob8SXiw8H/Car4r?=
+ =?us-ascii?Q?/FoYepFT7XKdbUdrrQmiGV9jIpqCUYvU4rzWwJW4R4znUFTkHQTqwG7j82hN?=
+ =?us-ascii?Q?N7qcZ9NtE3rAvOp4n9ZQtKr6wLv3urkCjJXHFRIn/XJkfH1IDVx9PCbhcCAD?=
+ =?us-ascii?Q?lGf+JqKuCH9OpYUrszBw5DbdHxogQJQ23rt+xCgMYtqMS6wSgx52zyD8k5SO?=
+ =?us-ascii?Q?JqHmotEsM74uDUrdq48n5SVB4095tdW3dRYn5ikVFrSLY0VM+t57/rRNIJUs?=
+ =?us-ascii?Q?CYoAvaajRc1xunGZrX7sGD2ateOZs1qSm97g3CzHJuOnshGUkQ8B6AN80xVM?=
+ =?us-ascii?Q?MhnhGI53uO2wYkowrJrFUY+lo/C3VErk10wRTl4k5JQkhdmvkjmUS173ZsTn?=
+ =?us-ascii?Q?W2M9Y/l26UIX8/3IoFdA0hOrJOfv0641mNKaMWQd0aLOYt3fAzgKfz5X45nf?=
+ =?us-ascii?Q?jxfBG871pL1v9FldZ4l3mOzGJ8NmTBrcVkhzwvLWeMfcAW53iNb4EFxr0yTh?=
+ =?us-ascii?Q?YuLfEJeaZ+IiHzxiYYE3bn+G/DVE5hEdZsdpRkcoH93JB+a+SvuWVYbbRFYN?=
+ =?us-ascii?Q?nh53aJRsjQqL2KftCC8iB+rn856qm5JhaBVhHLEK+WC9ozfsalo33Quyza5L?=
+ =?us-ascii?Q?pmhj/a6S53NkMlyvFfoNaPv++CMNbS2Q0gtgVT1X6G2YbThqu1tNKawdgn1r?=
+ =?us-ascii?Q?nWk8mG8tOjrHzd8EsynRGV4ppn7uriayzZv700HkqtyLJfrJlUPfTJ4yarbN?=
+ =?us-ascii?Q?4xBRCUaUco/iFJPDYFInZsJlOm+/StttWVqcYl7zUxAKSgHosBPJu1si17Ah?=
+ =?us-ascii?Q?Frci7ykCL5cpM6npnf2c0oj1nyxY1g8IjnGuVYepTJXIJnpIYlqIJT0gngc3?=
+ =?us-ascii?Q?18kdOOlIJvIkSn/Q44wrJyqId4Mvue+EyWle7H08ZxU8y0GIRVpFn/gyfpb7?=
+ =?us-ascii?Q?GN8/rYV916BQwYT9mvznYedcwa1PTqBoFNos?=
 X-Forefront-Antispam-Report:
-	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(82310400026)(376014);DIR:OUT;SFP:1101;
+	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700013)(376014);DIR:OUT;SFP:1101;
 X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2025 14:45:45.5177
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2025 14:45:51.4865
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 10317a23-a751-413d-a6f4-08dd9d2d29b9
+X-MS-Exchange-CrossTenant-Network-Message-Id: d49a8a9f-53eb-43a7-6d4e-08dd9d2d2d48
 X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
 X-MS-Exchange-CrossTenant-AuthSource:
 	AM4PEPF00027A6A.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR02MB7776
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR02MB7004
 
-There is really no reason for having the driver name as a macro
-definition if it is only used once (often as `.name` in `struct
-device_driver`). It is also more readable this way. Remove these macro
-definitions and instead use the string literal directly.
+These macro definitions are completely unused. Remove them.
 
 Signed-off-by: Waqar Hameed <waqar.hameed@axis.com>
 ---
- drivers/iio/accel/kxcjk-1013.c  | 3 +--
- drivers/iio/accel/mma9551.c     | 3 +--
- drivers/iio/accel/mma9553.c     | 3 +--
- drivers/iio/accel/sca3300.c     | 4 +---
- drivers/iio/adc/hi8435.c        | 4 +---
- drivers/iio/adc/max9611.c       | 4 +---
- drivers/iio/adc/vf610_adc.c     | 5 +----
- drivers/iio/dac/max517.c        | 4 +---
- drivers/iio/dac/mcp4725.c       | 4 +---
- drivers/iio/humidity/dht11.c    | 4 +---
- drivers/iio/imu/kmx61.c         | 3 +--
- drivers/iio/light/ltr501.c      | 4 +---
- drivers/iio/resolver/ad2s1200.c | 3 +--
- 13 files changed, 13 insertions(+), 35 deletions(-)
+ drivers/iio/accel/bma180.c             | 3 ---
+ drivers/iio/accel/bmc150-accel-core.c  | 2 --
+ drivers/iio/magnetometer/bmc150_magn.c | 2 --
+ 3 files changed, 7 deletions(-)
 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index f2496cad8ec2..4480dee96fc5 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -26,7 +26,6 @@
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/accel/kxcjk_1013.h>
- 
--#define KXCJK1013_DRV_NAME "kxcjk1013"
- #define KXCJK1013_IRQ_NAME "kxcjk1013_event"
- 
- #define KXTF9_REG_HP_XOUT_L		0x00
-@@ -1727,7 +1726,7 @@ MODULE_DEVICE_TABLE(acpi, kx_acpi_match);
- 
- static struct i2c_driver kxcjk1013_driver = {
- 	.driver = {
--		.name	= KXCJK1013_DRV_NAME,
-+		.name	= "kxcjk1013",
- 		.acpi_match_table = kx_acpi_match,
- 		.of_match_table = kxcjk1013_of_match,
- 		.pm	= pm_ptr(&kxcjk1013_pm_ops),
-diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
-index 1b96687da01a..d00b238331e9 100644
---- a/drivers/iio/accel/mma9551.c
-+++ b/drivers/iio/accel/mma9551.c
-@@ -17,7 +17,6 @@
- #include <linux/pm_runtime.h>
- #include "mma9551_core.h"
- 
--#define MMA9551_DRV_NAME		"mma9551"
- #define MMA9551_IRQ_NAME		"mma9551_event"
- #define MMA9551_GPIO_COUNT		4
- 
-@@ -592,7 +591,7 @@ MODULE_DEVICE_TABLE(i2c, mma9551_id);
- 
- static struct i2c_driver mma9551_driver = {
- 	.driver = {
--		   .name = MMA9551_DRV_NAME,
-+		   .name = "mma9551",
- 		   .acpi_match_table = mma9551_acpi_match,
- 		   .pm = pm_ptr(&mma9551_pm_ops),
- 	},
-diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
-index 00e224efc8ed..02a3085a3fe1 100644
---- a/drivers/iio/accel/mma9553.c
-+++ b/drivers/iio/accel/mma9553.c
-@@ -15,7 +15,6 @@
- #include <linux/pm_runtime.h>
- #include "mma9551_core.h"
- 
--#define MMA9553_DRV_NAME			"mma9553"
- #define MMA9553_IRQ_NAME			"mma9553_event"
- 
- /* Pedometer configuration registers (R/W) */
-@@ -1230,7 +1229,7 @@ MODULE_DEVICE_TABLE(i2c, mma9553_id);
- 
- static struct i2c_driver mma9553_driver = {
- 	.driver = {
--		   .name = MMA9553_DRV_NAME,
-+		   .name = "mma9553",
- 		   .acpi_match_table = mma9553_acpi_match,
- 		   .pm = pm_ptr(&mma9553_pm_ops),
- 	},
-diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
-index ca0ce83e42b2..25cb88d64531 100644
---- a/drivers/iio/accel/sca3300.c
-+++ b/drivers/iio/accel/sca3300.c
-@@ -20,8 +20,6 @@
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index aa664a923f91..61349e47a209 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -29,9 +29,6 @@
  #include <linux/iio/trigger_consumer.h>
  #include <linux/iio/triggered_buffer.h>
  
--#define SCA3300_ALIAS "sca3300"
+-#define BMA180_DRV_NAME "bma180"
+-#define BMA180_IRQ_NAME "bma180_event"
 -
- #define SCA3300_CRC8_POLYNOMIAL 0x1d
- 
- /* Device mode register */
-@@ -687,7 +685,7 @@ MODULE_DEVICE_TABLE(spi, sca3300_ids);
- 
- static struct spi_driver sca3300_driver = {
- 	.driver   = {
--		.name		= SCA3300_ALIAS,
-+		.name		= "sca3300",
- 		.of_match_table = sca3300_dt_ids,
- 	},
- 	.probe	  = sca3300_probe,
-diff --git a/drivers/iio/adc/hi8435.c b/drivers/iio/adc/hi8435.c
-index 689e34f06987..1de3c921c7b7 100644
---- a/drivers/iio/adc/hi8435.c
-+++ b/drivers/iio/adc/hi8435.c
-@@ -19,8 +19,6 @@
- #include <linux/spi/spi.h>
- #include <linux/gpio/consumer.h>
- 
--#define DRV_NAME "hi8435"
--
- /* Register offsets for HI-8435 */
- #define HI8435_CTRL_REG		0x02
- #define HI8435_PSEN_REG		0x04
-@@ -536,7 +534,7 @@ MODULE_DEVICE_TABLE(spi, hi8435_id);
- 
- static struct spi_driver hi8435_driver = {
- 	.driver	= {
--		.name		= DRV_NAME,
-+		.name		= "hi8435",
- 		.of_match_table	= hi8435_dt_ids,
- 	},
- 	.probe		= hi8435_probe,
-diff --git a/drivers/iio/adc/max9611.c b/drivers/iio/adc/max9611.c
-index 14fe42fc4b7d..826566d7a85e 100644
---- a/drivers/iio/adc/max9611.c
-+++ b/drivers/iio/adc/max9611.c
+ enum chip_ids {
+ 	BMA023,
+ 	BMA150,
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 546839d386a9..be5fbb0c5d29 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
 @@ -25,8 +25,6 @@
- #include <linux/mod_devicetable.h>
- #include <linux/property.h>
  
--#define DRIVER_NAME			"max9611"
+ #include "bmc150-accel.h"
+ 
+-#define BMC150_ACCEL_DRV_NAME			"bmc150_accel"
 -
- /* max9611 register addresses */
- #define MAX9611_REG_CSA_DATA		0x00
- #define MAX9611_REG_RS_DATA		0x02
-@@ -553,7 +551,7 @@ static int max9611_probe(struct i2c_client *client)
+ #define BMC150_ACCEL_REG_CHIP_ID		0x00
  
- static struct i2c_driver max9611_driver = {
- 	.driver = {
--		   .name = DRIVER_NAME,
-+		   .name = "max9611",
- 		   .of_match_table = max9611_of_table,
- 	},
- 	.probe = max9611_probe,
-diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-index 513365d42aa5..4a325f3c626f 100644
---- a/drivers/iio/adc/vf610_adc.c
-+++ b/drivers/iio/adc/vf610_adc.c
-@@ -27,9 +27,6 @@
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
+ #define BMC150_ACCEL_REG_INT_STATUS_2		0x0B
+diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
+index b757ed55e99e..4b665635260c 100644
+--- a/drivers/iio/magnetometer/bmc150_magn.c
++++ b/drivers/iio/magnetometer/bmc150_magn.c
+@@ -28,8 +28,6 @@
  
--/* This will be the driver name the kernel reports */
--#define DRIVER_NAME "vf610-adc"
+ #include "bmc150_magn.h"
+ 
+-#define BMC150_MAGN_DRV_NAME			"bmc150_magn"
 -
- /* Vybrid/IMX ADC registers */
- #define VF610_REG_ADC_HC0		0x00
- #define VF610_REG_ADC_HC1		0x04
-@@ -962,7 +959,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(vf610_adc_pm_ops, vf610_adc_suspend,
- static struct platform_driver vf610_adc_driver = {
- 	.probe          = vf610_adc_probe,
- 	.driver         = {
--		.name   = DRIVER_NAME,
-+		.name   = "vf610-adc",
- 		.of_match_table = vf610_adc_match,
- 		.pm     = pm_sleep_ptr(&vf610_adc_pm_ops),
- 	},
-diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
-index 84336736a47b..d334c67821ad 100644
---- a/drivers/iio/dac/max517.c
-+++ b/drivers/iio/dac/max517.c
-@@ -15,8 +15,6 @@
- #include <linux/iio/sysfs.h>
- #include <linux/iio/dac/max517.h>
+ #define BMC150_MAGN_REG_CHIP_ID			0x40
+ #define BMC150_MAGN_CHIP_ID_VAL			0x32
  
--#define MAX517_DRV_NAME	"max517"
--
- /* Commands */
- #define COMMAND_CHANNEL0	0x00
- #define COMMAND_CHANNEL1	0x01 /* for MAX518 and MAX519 */
-@@ -200,7 +198,7 @@ MODULE_DEVICE_TABLE(i2c, max517_id);
- 
- static struct i2c_driver max517_driver = {
- 	.driver = {
--		.name	= MAX517_DRV_NAME,
-+		.name	= "max517",
- 		.pm	= pm_sleep_ptr(&max517_pm_ops),
- 	},
- 	.probe		= max517_probe,
-diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-index 1337fb02ccf5..8b9656a111e1 100644
---- a/drivers/iio/dac/mcp4725.c
-+++ b/drivers/iio/dac/mcp4725.c
-@@ -24,8 +24,6 @@
- 
- #include <linux/iio/dac/mcp4725.h>
- 
--#define MCP4725_DRV_NAME "mcp4725"
--
- #define MCP472X_REF_VDD			0x00
- #define MCP472X_REF_VREF_UNBUFFERED	0x02
- #define MCP472X_REF_VREF_BUFFERED	0x03
-@@ -546,7 +544,7 @@ MODULE_DEVICE_TABLE(of, mcp4725_of_match);
- 
- static struct i2c_driver mcp4725_driver = {
- 	.driver = {
--		.name	= MCP4725_DRV_NAME,
-+		.name	= "mcp4725",
- 		.of_match_table = mcp4725_of_match,
- 		.pm	= pm_sleep_ptr(&mcp4725_pm_ops),
- 	},
-diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-index 48c59d09eea7..73d2033954e7 100644
---- a/drivers/iio/humidity/dht11.c
-+++ b/drivers/iio/humidity/dht11.c
-@@ -27,8 +27,6 @@
- 
- #include <linux/iio/iio.h>
- 
--#define DRIVER_NAME	"dht11"
--
- #define DHT11_DATA_VALID_TIME	2000000000  /* 2s in ns */
- 
- #define DHT11_EDGES_PREAMBLE 2
-@@ -331,7 +329,7 @@ static int dht11_probe(struct platform_device *pdev)
- 
- static struct platform_driver dht11_driver = {
- 	.driver = {
--		.name	= DRIVER_NAME,
-+		.name	= "dht11",
- 		.of_match_table = dht11_dt_ids,
- 	},
- 	.probe  = dht11_probe,
-diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-index e19c5d3137c6..05343655e58a 100644
---- a/drivers/iio/imu/kmx61.c
-+++ b/drivers/iio/imu/kmx61.c
-@@ -22,7 +22,6 @@
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/trigger_consumer.h>
- 
--#define KMX61_DRV_NAME "kmx61"
- #define KMX61_IRQ_NAME "kmx61_event"
- 
- #define KMX61_REG_WHO_AM_I	0x00
-@@ -1494,7 +1493,7 @@ MODULE_DEVICE_TABLE(i2c, kmx61_id);
- 
- static struct i2c_driver kmx61_driver = {
- 	.driver = {
--		.name = KMX61_DRV_NAME,
-+		.name = "kmx61",
- 		.pm = pm_ptr(&kmx61_pm_ops),
- 	},
- 	.probe		= kmx61_probe,
-diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index 669da0840eba..34ab4702277a 100644
---- a/drivers/iio/light/ltr501.c
-+++ b/drivers/iio/light/ltr501.c
-@@ -24,8 +24,6 @@
- #include <linux/iio/buffer.h>
- #include <linux/iio/triggered_buffer.h>
- 
--#define LTR501_DRV_NAME "ltr501"
--
- #define LTR501_ALS_CONTR 0x80 /* ALS operation mode, SW reset */
- #define LTR501_PS_CONTR 0x81 /* PS operation mode */
- #define LTR501_PS_MEAS_RATE 0x84 /* measurement rate*/
-@@ -1624,7 +1622,7 @@ MODULE_DEVICE_TABLE(of, ltr501_of_match);
- 
- static struct i2c_driver ltr501_driver = {
- 	.driver = {
--		.name   = LTR501_DRV_NAME,
-+		.name   = "ltr501",
- 		.of_match_table = ltr501_of_match,
- 		.pm	= pm_sleep_ptr(&ltr501_pm_ops),
- 		.acpi_match_table = ltr_acpi_match,
-diff --git a/drivers/iio/resolver/ad2s1200.c b/drivers/iio/resolver/ad2s1200.c
-index 9d95241bdf8f..99c4333321d0 100644
---- a/drivers/iio/resolver/ad2s1200.c
-+++ b/drivers/iio/resolver/ad2s1200.c
-@@ -21,7 +21,6 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- 
--#define DRV_NAME "ad2s1200"
- 
- /* input clock on serial interface */
- #define AD2S1200_HZ	8192000
-@@ -192,7 +191,7 @@ MODULE_DEVICE_TABLE(spi, ad2s1200_id);
- 
- static struct spi_driver ad2s1200_driver = {
- 	.driver = {
--		.name = DRV_NAME,
-+		.name = "ad2s1200",
- 		.of_match_table = ad2s1200_of_match,
- 	},
- 	.probe = ad2s1200_probe,
 -- 
 2.39.5
 
