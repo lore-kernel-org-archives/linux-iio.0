@@ -1,148 +1,104 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35F1C2F2F;
-	Wed, 28 May 2025 06:14:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61B883595D;
+	Wed, 28 May 2025 06:22:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748412863; cv=none; b=hlhleCXwfjlaVAYHR4MhT/FfhJxRkixOawhXsbipxK2cVVcjIlCZiLBlZFzsTUWmpQ6uiIQ6vulnvw8XXfkRBzFvIYQ+ZtYwb5vra9pcrRhvyps+Fy7H7zN7N+XSe/5n76KY0HO2OUolYEnRQg3dEbvhYV/f+lchTlzkS0YzNNA=
+	t=1748413327; cv=none; b=gBz55vlZIItr0hLG/OoKeThL2fgzBfJ/ylswt4JENDIXPvk3oz/fGLV15IavSfCcn9cvMc9bQmd9Gf2Mpg2V3z0qhC9s2MJyg+UTCNHvNoBdUjsGe2v9IiEfFdsvdX5IbnzfgdnIuxs6APELa58pGvE3hRDr2Bhh6nxZgW01T/I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748412863; c=relaxed/simple;
-	bh=TktazPySSKGEf/0fslH0MvDKjlP70/UT5hkBSp27kl0=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=rwyewbJO089Y34kBx991HDKvmH6cLKstpgpOo0eA49x397dUKwZELO+BblSz3Cy68t8auVz62hQo5YJYhpH4WVcBkgAPqVj/6tHz6wxipRVr4un//ITz9/HspNFBu93Z009BVvrGIrT5VuC6WLyEaEfPTwRHiIHB9anekmB804k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=aBy6t+UK; arc=none smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	s=arc-20240116; t=1748413327; c=relaxed/simple;
+	bh=dkeqXqP5bwN2yutJIiKxhDYA23yreeU/xaihJHx2wWQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PrgKJVkP1oaSZ2z8sB/UYJNbmVqFdSVOONJ+J2mgT4Z9Qscc1XIkG3K0tC0HEE/zWAEWY8vFJXitbPdCShebLUoFswqAPZtm0LCQ/eD9Y7hnoSKM4ZRpRlrWCdWlKpkzQ+NtCGeZRz6SO009S5VZERADrL/jd6BWhi+Gx1LDaOU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CyXNFi2J; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="aBy6t+UK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1748412862; x=1779948862;
-  h=from:date:subject:mime-version:content-transfer-encoding:
-   message-id:references:in-reply-to:to:cc;
-  bh=TktazPySSKGEf/0fslH0MvDKjlP70/UT5hkBSp27kl0=;
-  b=aBy6t+UKI1vVC/Cb9H+vKTlDu3X0VU77VYCchRQafKHPEredXGXl3cYW
-   X4dZOTH+TJshMNbjFCVTN45ZmfipGaDSSJdYSp2Qi0p0n0sF7L0nfPat/
-   zRUsmqO/zdFY1yppRfqN+Gwp08HomhENol7bmvfJ3rgIZaB+44XA7WByK
-   be8uVKXmNmaq3+6bjnBJqrrNEzwGknzBVy4wseseHi67nVla+1LKIACOV
-   OqiHoQG0NaUpz+mm6lr79gAwb7Jas2JP0mGAu7UM/pgc9WN/2jMfTC068
-   FcZ0MDk1QrecoDsrSR+/pqdmTOFFNdGG7gLKulTfi2GUuOHtkLbl+Ohbw
-   A==;
-X-CSE-ConnectionGUID: eU1T+fZHR4iBV5joZbGgXA==
-X-CSE-MsgGUID: 73BKs1QST4O0fd8eBA9Lwg==
-X-IronPort-AV: E=Sophos;i="6.15,320,1739862000"; 
-   d="scan'208";a="209641304"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 May 2025 23:14:21 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Tue, 27 May 2025 23:13:19 -0700
-Received: from [127.0.0.1] (10.10.85.11) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.44 via Frontend
- Transport; Tue, 27 May 2025 23:13:16 -0700
-From: Dharma Balasubiramani <dharma.b@microchip.com>
-Date: Wed, 28 May 2025 11:43:04 +0530
-Subject: [PATCH 1/2] counter: microchip-tcb-capture: Retrieve and map
- parent base address
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CyXNFi2J"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CDF8C4CEE7;
+	Wed, 28 May 2025 06:22:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1748413326;
+	bh=dkeqXqP5bwN2yutJIiKxhDYA23yreeU/xaihJHx2wWQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=CyXNFi2J81j85OvBG1p1WD0UYqwkb4jyWDLTuAgkdWOOhwrVyHVdn5N7pQZxLq3BR
+	 O8OCzwJpbvvLEBWhqiMDtzEBpHbwKAVe2d0yeJuRR0cKtETAMh8tJ9zFMFL7+ON4kX
+	 rhxfi/4NjS/zQB1hTTnYTmUUAMjaxhrMe5MNokiH281npEeJsZK6CA2JSdEEDB3zDp
+	 sA5Hd/x7qidxUGeV+BloXGYPoDlbYV/27z8Eg5NGXJxMLDpOm5uG96ts5YTICNiCru
+	 SS5r/k019tSB8rZM7x7x1YgZPTyJ34gqdjB6ivSVjcyeZahAWLXeBAeWAMkQfRv6+5
+	 o6YlR62LjG/Nw==
+Message-ID: <50121bd6-76ae-4417-86c2-d5ef71164dfe@kernel.org>
+Date: Wed, 28 May 2025 08:22:01 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] dt-bindings: iio: gyroscope: invensense,itg3200: add
+ binding
+To: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>, jic23@kernel.org,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ manuel.stahl@iis.fraunhofer.de
+Cc: ~lkcamp/patches@lists.sr.ht, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20250527210308.4693-1-rodrigo.gobbi.7@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20250527210308.4693-1-rodrigo.gobbi.7@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-ID: <20250528-mchp-tcb-dma-v1-1-083a41fb7b51@microchip.com>
-References: <20250528-mchp-tcb-dma-v1-0-083a41fb7b51@microchip.com>
-In-Reply-To: <20250528-mchp-tcb-dma-v1-0-083a41fb7b51@microchip.com>
-To: Kamel Bouhara <kamel.bouhara@bootlin.com>, William Breathitt Gray
-	<wbg@kernel.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, "Alexandre
- Belloni" <alexandre.belloni@bootlin.com>, Claudiu Beznea
-	<claudiu.beznea@tuxon.dev>
-CC: <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, Dharma Balasubiramani
-	<dharma.b@microchip.com>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1748412791; l=2336;
- i=dharma.b@microchip.com; s=20240209; h=from:subject:message-id;
- bh=TktazPySSKGEf/0fslH0MvDKjlP70/UT5hkBSp27kl0=;
- b=EAc2uHlbuqLve1VW5JZDmKi9XT9LMUfU0eHvGLFn/cY0hKmuGha2kLctmQ9DuSGgrd5GAJjeq
- iCD8XMsq//NDmlAV08a/pEX6qXjvlt8leFAbv+5H2ySrbly0AgOMCte
-X-Developer-Key: i=dharma.b@microchip.com; a=ed25519;
- pk=kCq31LcpLAe9HDfIz9ZJ1U7T+osjOi7OZSbe0gqtyQ4=
 
-Retrieve the parent TCB controller's platform_device and map its MMIO
-region using devm_ioremap_resource(). This allows direct register access
-through a base address, which is required for features like DMA that need
-physical addresses.
+On 27/05/2025 22:55, Rodrigo Gobbi wrote:
+> There is no txt file for it, add yaml for invensense,itg3200 gyroscope.
 
-Signed-off-by: Dharma Balasubiramani <dharma.b@microchip.com>
----
- drivers/counter/microchip-tcb-capture.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+... which is already used in DTS and driver.
 
-diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
-index 1a299d1f350b..9634da75bd1a 100644
---- a/drivers/counter/microchip-tcb-capture.c
-+++ b/drivers/counter/microchip-tcb-capture.c
-@@ -12,6 +12,7 @@
- #include <linux/mutex.h>
- #include <linux/of.h>
- #include <linux/of_irq.h>
-+#include <linux/of_platform.h>
- #include <linux/platform_device.h>
- #include <linux/regmap.h>
- #include <uapi/linux/counter/microchip-tcb-capture.h>
-@@ -29,7 +30,9 @@
- 
- struct mchp_tc_data {
- 	const struct atmel_tcb_config *tc_cfg;
-+	struct platform_device *pdev;
- 	struct regmap *regmap;
-+	void __iomem *base;
- 	int qdec_mode;
- 	int num_channels;
- 	int channel[2];
-@@ -479,6 +482,8 @@ static int mchp_tc_probe(struct platform_device *pdev)
- 	const struct atmel_tcb_config *tcb_config;
- 	const struct of_device_id *match;
- 	struct counter_device *counter;
-+	struct platform_device *parent_pdev;
-+	struct resource *parent_res;
- 	struct mchp_tc_data *priv;
- 	char clk_name[7];
- 	struct regmap *regmap;
-@@ -491,6 +496,18 @@ static int mchp_tc_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	priv = counter_priv(counter);
- 
-+	parent_pdev = of_find_device_by_node(np->parent);
-+	if (!parent_pdev)
-+		return -EPROBE_DEFER;
-+
-+	parent_res = platform_get_resource(parent_pdev, IORESOURCE_MEM, 0);
-+	if (!parent_res)
-+		return -EINVAL;
-+
-+	priv->base = devm_ioremap_resource(&parent_pdev->dev, parent_res);
-+	if (IS_ERR(priv->base))
-+		return PTR_ERR(priv->base);
-+
- 	match = of_match_node(atmel_tc_of_match, np->parent);
- 	tcb_config = match->data;
- 	if (!tcb_config) {
-@@ -563,6 +580,7 @@ static int mchp_tc_probe(struct platform_device *pdev)
- 
- 	priv->tc_cfg = tcb_config;
- 	priv->regmap = regmap;
-+	priv->pdev = pdev;
- 	counter->name = dev_name(&pdev->dev);
- 	counter->parent = &pdev->dev;
- 	counter->ops = &mchp_tc_ops;
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
--- 
-2.43.0
-
+Best regards,
+Krzysztof
