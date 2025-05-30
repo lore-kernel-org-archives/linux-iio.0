@@ -1,63 +1,77 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 405B619F421;
-	Fri, 30 May 2025 04:40:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 720781EF363
+	for <linux-iio@vger.kernel.org>; Fri, 30 May 2025 07:38:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748580039; cv=none; b=jkIcwJvANAX7aNXODGbHhh4MiVx54qSXzN2vcNpYW6X/kgEc02NXqS5ODyzKVbevAYgRyRky8UWfT7iL4i3P38I9CL0biBLiyeA93AVHizy4hzQhq2lMDItF8b8hJDyWSAVerEK1iWfRi6N5TVeq9Lx5j3SsypaTjvyvr5KA5dE=
+	t=1748590705; cv=none; b=n8IRAoY5/gdJz6gBTq6wAaWVhSwcyBDepV4ATjzwYPaUrC5GdF7XgecrphN3wYP2xZJmq8D3Z6OmoGJGSe30InSSzHuesIVTXySwrgAeCV5Bj2baFWli7zLtJp5ck0H4A0Vip2VgouErJMEX4mtVY//a+13lxPhKHxCF4mM0RK0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748580039; c=relaxed/simple;
-	bh=ZnMRKAcuaAD1rxpeXbjaOqFS9Omdp1aqc5Y0HvQwzHY=;
+	s=arc-20240116; t=1748590705; c=relaxed/simple;
+	bh=iQgrvOqRA70LGQbw+GLCqJWS7MwZcGOXx4QpLJML8B4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fijYMe8XVj8s3cnqvTibkdezUn3QTdNexRwx45ozl8dsfKWGzGys2zkkUuLOkyD4SxJ6TzzONulgBzCkJ7CjLHHlwJx5/A56QsXPxar07SRh+gDrmhlAH7FFZKuSCkpv5VkvrZopm0vNCm+COY9xIAjaDn9Efb5ixNg8lJaFPVM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TAG0axz4; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=NhN712tChHeqUR4Sk68qXDPAGmnrSDk6pQqEUkYM7VY8fULZdvRr8RovASDllKY32WI40EBGdhInxOg/B/gqR5fnV6NVEZhCK4ZghtfMBsRwhbSAzwgdFhz/wEVMyGj6+QCmtYGLVDKeWu4fn5j6vnMzXy6sX2hjkQB8pOXk6eQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=TwvbsS9d; arc=none smtp.client-ip=209.85.221.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TAG0axz4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1748580039; x=1780116039;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZnMRKAcuaAD1rxpeXbjaOqFS9Omdp1aqc5Y0HvQwzHY=;
-  b=TAG0axz46DzvNfUlJK5IbdecvsKgw0IJZL50xrvSDnAUWlOw6YeIHKvH
-   wutILlm0xBJ5G7LI5DX2QP9t/1UFzMKVjYbu2odfsKL+kRi/FlEL/yu6z
-   bBBuqCfSYNFkS9KiZx3jUqordGGHkEXUsj5slrqUE2hfOQSkXixzSA2Uf
-   IeFsrkMb2UVDjYPWa02gZZIUHgcDc9K33w7kz03m955tOk7vmq7f92KI2
-   xVfICA4R38owonYX/7+2NBhY+4Y2p6SyQNIwmgw4sDdLmKr9nggExIrcn
-   dF0eNGEbYlwFvxeq9LhjDXfkLJwclpCEz89NyTu5/dwTCsaKStGhHG2or
-   w==;
-X-CSE-ConnectionGUID: 5bBlYA6VTDyQJPoXSYDlwQ==
-X-CSE-MsgGUID: hLtRwxFvTcCbPSpLjQeAJQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11448"; a="49907997"
-X-IronPort-AV: E=Sophos;i="6.16,194,1744095600"; 
-   d="scan'208";a="49907997"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2025 21:40:38 -0700
-X-CSE-ConnectionGUID: g09oUuRoQEW0E6yFOep4yA==
-X-CSE-MsgGUID: hRzTB1UPRx+E/ZQgolDxcg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,194,1744095600"; 
-   d="scan'208";a="144747777"
-Received: from lkp-server01.sh.intel.com (HELO 1992f890471c) ([10.239.97.150])
-  by orviesa008.jf.intel.com with ESMTP; 29 May 2025 21:40:34 -0700
-Received: from kbuild by 1992f890471c with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1uKrXk-000XLA-0y;
-	Fri, 30 May 2025 04:40:32 +0000
-Date: Fri, 30 May 2025 12:39:46 +0800
-From: kernel test robot <lkp@intel.com>
-To: victor.duicu@microchip.com, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, marius.cristea@microchip.com,
-	victor.duicu@microchip.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: temperature: add support for MCP998X
-Message-ID: <202505301210.l4ZriiEX-lkp@intel.com>
-References: <20250529093628.15042-3-victor.duicu@microchip.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="TwvbsS9d"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-3a36efcadb8so1513220f8f.0
+        for <linux-iio@vger.kernel.org>; Fri, 30 May 2025 00:38:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1748590702; x=1749195502; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=LfnbZiQbAmqPKSfMf+Mq18rGvap4moTa+Dp1DimkkJE=;
+        b=TwvbsS9d3VlOo3x6Q//jbKnLl5Vx4QDTxknbDZXit1vgjNBupa+rTyv9V6VEIT43tT
+         YZdImqytpkQBbO7cs5TPqbthDEj6MOsC0m3xzz39H3+juQJbXll1iU2a+/E5hma12GxV
+         7hTu/o+eqjw10KGJdF91MrJkn50gBgR9q5YsVw0CTintje57+ZisT38Ff+8lhsLiOUPY
+         ySHAF8DG7ZvdLn1F4z9gzenTSnXBnu1PXNSbjE1ApByfKuwZqsSVwkR4Ak7/3UI1GMgg
+         R5JZm2K6bHQsOzZeW6PJrVkgLGUMEG5HEsliGC+OERW1BV7cjCTz1yNVKKimTwvg/ugv
+         ayFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1748590702; x=1749195502;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LfnbZiQbAmqPKSfMf+Mq18rGvap4moTa+Dp1DimkkJE=;
+        b=PzdG20Neq2ksgUAHKrTjIB3CHJkhOO28IQui46iR/NWE3rAstvZtsXO3jGjtCa09J0
+         Ta42/1wy2eRtd49km9RxjMA7CCjMW4SSpHY9nmR/cSUKqSN6XnXgGeAey/h1XrAAxiFu
+         r4O2esw3+dpINLdEB4AfQMBPc+eFEjChffXOMUTZraZ8FXiwGV38+X6GWL2K5vD5hB6x
+         NWyBn2WayT+BPzvI15KbHbg8RbxDPRwwYSP+VepZOV4AUw0xYMRJR1IpkkSp31wyRtXn
+         armTWvNQYyDcN6HsEvY3OrNt14eiUoR2CI6BWcryEoWw4C4yjpvU4Ew6XRprMjEYwIca
+         X/ww==
+X-Forwarded-Encrypted: i=1; AJvYcCXE1Qo2/DeHZtoEXek5D3f/wug9x9jSPPUoJpiTD5tdLGMGgRiynL2p0srkEKPHYB+hBDHGXUcS7ac=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxlrc8Qdg5Sfn6PJuIOzDyZD4fo7XB6zb+9Zhe8/kFWZ/dn0Loq
+	AVo+FMpYyrz/uL5LfVGgbdDF7nijET/gA27k+QPnenhPWxUzyO29AMwoFuB7PsKH+GQ=
+X-Gm-Gg: ASbGncsdfQi6Tlw1NZhhdmaZ5WTlf1kLoDUxj42iDCy5YtohGGBsI2V24oK3oWPAuXK
+	aR/Iw0PGjSE+6qXsufHxQbB7E0t9sb/cNRuShd67sTbifwoOPgkQC7LmvretUc8M6U4DJtKpaRW
+	a2oMPO/pUH8gU3qANUPvFyTAZjzHDBgKP2N62dV4njCfvkg5+G2vYiF0WT8jKbjcK97JAvuFlu+
+	jMj6IUzCJhv1oHVSgL+4kOqaMPLdqd93mfFkCujaZB0kjdFJqN+GiwqUi77HFSAMInVLLSA1SX8
+	WROYgnWwwhhl/bdKkmKT+a8hmhDZmoT/XZLbkhOVlYcJ/uD17ee8ZkrMHYzwTO9JHo+CAWoLCd3
+	xKsAmv2m7MR+0cZMgUrIMUjPw9EzPcw==
+X-Google-Smtp-Source: AGHT+IE9MXHewsFsO65gOCbyBARWfhxCc3GiAp4JhYo92c97qkhscjKdSO1/x+TgAzn1ycE2rzPEIA==
+X-Received: by 2002:a05:6000:4212:b0:3a4:e1d2:9a7a with SMTP id ffacd0b85a97d-3a4f7aa591fmr1586687f8f.46.1748590701612;
+        Fri, 30 May 2025 00:38:21 -0700 (PDT)
+Received: from archlinux (host-80-116-51-117.pool80116.interbusiness.it. [80.116.51.117])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a4f009758esm4057600f8f.75.2025.05.30.00.38.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 May 2025 00:38:20 -0700 (PDT)
+Date: Fri, 30 May 2025 09:36:57 +0200
+From: Angelo Dureghello <adureghello@baylibre.com>
+To: Andy Shevchenko <andy@kernel.org>, Jonathan Cameron <jic23@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v7 1/6] Documentation: ABI: IIO: add calibconv_delay
+ documentation
+Message-ID: <lj2jhnuggbpil5ogler7uruhf5uv5u6lnrs5jxgsvxiy5lq2fd@kwmvftbyozkl>
+References: <20250526-wip-bl-ad7606-calibration-v7-0-b487022ce199@baylibre.com>
+ <20250526-wip-bl-ad7606-calibration-v7-1-b487022ce199@baylibre.com>
+ <aDbmTaX1d0HCx8V2@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,49 +80,40 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250529093628.15042-3-victor.duicu@microchip.com>
+In-Reply-To: <aDbmTaX1d0HCx8V2@smile.fi.intel.com>
 
-Hi,
+Hi Jonathan,
 
-kernel test robot noticed the following build warnings:
+If all the rest is ok and there is no need for v8, could you maybe adjust
+to 6.17 on acceptance ?
 
-[auto build test WARNING on 0c86e33819785fe50616b6ee3fb35c1e4be406d5]
+Thanks a lot,
+regards
+angelo
 
-url:    https://github.com/intel-lab-lkp/linux/commits/victor-duicu-microchip-com/dt-bindings-iio-temperature-add-support-for-MCP998X/20250529-173844
-base:   0c86e33819785fe50616b6ee3fb35c1e4be406d5
-patch link:    https://lore.kernel.org/r/20250529093628.15042-3-victor.duicu%40microchip.com
-patch subject: [PATCH v2 2/2] iio: temperature: add support for MCP998X
-config: m68k-randconfig-r111-20250530 (https://download.01.org/0day-ci/archive/20250530/202505301210.l4ZriiEX-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 12.4.0
-reproduce: (https://download.01.org/0day-ci/archive/20250530/202505301210.l4ZriiEX-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202505301210.l4ZriiEX-lkp@intel.com/
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/iio/temperature/mcp9982.c:200:14: sparse: sparse: symbol 'mcp9982_3db_values_map_tbl' was not declared. Should it be static?
-
-vim +/mcp9982_3db_values_map_tbl +200 drivers/iio/temperature/mcp9982.c
-
-   199	
- > 200	unsigned int mcp9982_3db_values_map_tbl[11][3][2];
-   201	static const int mcp9982_sampl_fr[][2] = {
-   202		{ 1, 16 },
-   203		{ 1, 8 },
-   204		{ 1, 4 },
-   205		{ 1, 2 },
-   206		{ 1, 1 },
-   207		{ 2, 1 },
-   208		{ 4, 1 },
-   209		{ 8, 1 },
-   210		{ 16, 1 },
-   211		{ 32, 1 },
-   212		{ 64, 1 },
-   213	};
-   214	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+On 28.05.2025 13:32, Andy Shevchenko wrote:
+> On Mon, May 26, 2025 at 12:03:16PM +0200, Angelo Dureghello wrote:
+> > 
+> > Add new IIO "convdelay" documentation.
+> > 
+> > The ad7606 implements a phase calibation feature, in nanoseconds.
+> > Being this a time delay, using the convdelay suffix.
+> 
+> ...
+> 
+> > +KernelVersion:	6.16
+> 
+> You need to bump to 6.17 if it's not a fix.
+> 
+> ...
+> 
+> > +KernelVersion:	6.16
+> 
+> Ditto.
+> 
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
