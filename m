@@ -1,514 +1,172 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com [209.85.217.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2049622A4E1;
-	Mon,  2 Jun 2025 16:20:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748881253; cv=pass; b=oE6CAsognMxoyeGw54QZfomHTp+YGPcf1jISMmvwHEY1zjYKvX+BqvrqIVGq6RG0iFdSFdsD+U2/v8434qAtg0ACKqQ8zyRsWNvof+1gqMzR9csodXRGmgfLEqRipG8m7PKStlU1UX3sd+U8M7MiVAmfpcQFTKRi3KQaWJJYenk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748881253; c=relaxed/simple;
-	bh=J1+2T8CKF7swBWeG8capMNZmtcEo3xOnirfUx5LZOAk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=mzKlEOaE2N6ZZZT9UEc0GlhXRkCeLVKkXl4qBiXJWck4cMHfbJttxcNwy+OmKKvwHIGkFHzyExAFfO0ekYtV1RfFJEUQjluu/RxRLZtbzSNcqFiEWh/W+U9mMSiSu6yVqVRrJQ7CCcLuc+xzs94rdVdVw/Q4VQoZATxIk7tjvcQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b=PK5903lB; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA6B2221DBD;
+	Mon,  2 Jun 2025 16:33:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.50
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1748881987; cv=none; b=sEYTqeesBWFQM15glYVCBXDUTYYgjS/7rcbKZyrs841Sor7ENdAM3E1OO53Qaf5mnyG8KUfRO9ClUbgtynozdK9VziGeWhJvsMhWi3XXR9Sm+Z2f7BEjWhPBPqlGxbwYn6zHUdroxS411L+PNucPK1ciyOUo9EGDyZS/dLhwvvU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1748881987; c=relaxed/simple;
+	bh=Xz+aD4WKbatFaE/ZleOL4RDN8L49A9nba2WKv1yXxo4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=k8xqyf3rEJ6nJ8Pz5RXQ4oVFG1m8p1h37YH+EMIuhMk6Wuk/Fi/2EiCfnQ5+fvMVB6PeheJDgnUoEQjut9yGoOwgJ91esRgz+KKqaHxVyYfNgwSIf/U8Fqtjca3TNPHHnwZwFlZEczdNCQHXKvsrgL/givlARwvRPzYXJlHNeWk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MTjmzWDz; arc=none smtp.client-ip=209.85.217.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b="PK5903lB"
-ARC-Seal: i=1; a=rsa-sha256; t=1748881216; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=W6l3S++w7vEUnCDwIz130jxNRRRiFp+AKBUJN1L3+eMEbjmUV0p/u4Tmk3wdEY8NcfgMtbIQSDr8v1JBJZXExEeGKtdD/tLMGQtOcspUxxlZNALgIai6RudRqLtk0FchPLuCqF5QqQnwKD2qPPSfJqICEUlBKdLJNG9BHBTNGcQ=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1748881216; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=oWnIoYr2mih/zNXcMWddvVTOEpewsuPNZh9QPCO1TMg=; 
-	b=I/UY94b2FzxEFpjwk2+pBnJuVVluXH6SJxv+37hxZ1X7akl8IZaaZT3a1n5UEalWnCG5sFioOO7u/OiZ4c/lUh4wl8huaZZ48vIcmxDby8bJWt31KXxxf+d45Y4QmaEIpdth3HdnU7+ez3NyEQ3amWwY47pWiJHnUr+imwhH+wY=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=nicolas.frattaroli@collabora.com;
-	dmarc=pass header.from=<nicolas.frattaroli@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1748881216;
-	s=zohomail; d=collabora.com; i=nicolas.frattaroli@collabora.com;
-	h=From:From:Date:Date:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Message-Id:References:In-Reply-To:To:To:Cc:Cc:Reply-To;
-	bh=oWnIoYr2mih/zNXcMWddvVTOEpewsuPNZh9QPCO1TMg=;
-	b=PK5903lB/eD6zlQC1KfkYx2QQNXgOmRWSXSgNIUIPHoQ6bHuU0mmgkOGhyHC4Luu
-	A6De/zjRd4Z7yT6Pct3j4Ic1cZoNl5gT3jtB3F/Nse3FG/joiXYzkKfP17ua/LV9XbR
-	ETkZ47gTSPyNHXBjM7ep8BBS6dwFA9+jA8aZ6fRI=
-Received: by mx.zohomail.com with SMTPS id 1748881215123789.3118220587755;
-	Mon, 2 Jun 2025 09:20:15 -0700 (PDT)
-From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-Date: Mon, 02 Jun 2025 18:19:17 +0200
-Subject: [PATCH v2 6/7] counter: Add rockchip-pwm-capture driver
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MTjmzWDz"
+Received: by mail-vs1-f50.google.com with SMTP id ada2fe7eead31-4e591544d42so1527813137.3;
+        Mon, 02 Jun 2025 09:33:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1748881984; x=1749486784; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=5dE+UsxBMqGkP0BbEtqtbaQdE82KuzoJQUPmSA85nzc=;
+        b=MTjmzWDzhNK8OLfLgUrToQm+eVx/QIMBgDcpkfLCCHEd+66eWzkJl0ALR0FPnkoq1R
+         Vr86J43862OBZkvyFrp3rQkNmcEcZc7NtGgvo6Y+rrt0Yg9MknR9tkP4/mm2rQfTcP9u
+         L09iaRbfK46hOgXf+AACpWILofwuiT/W4qmXvvjxZpLoEb3XfIgRwCp5xzdd93Dszuz6
+         DLxdOrMhElJxJSJ+2V394APflTs45RElnU/TqpZUvS1Xt6R9lEwAiPNlReW2qLFJdkGU
+         HrtsE3vZ5DCDX5eEbRHysUA6sdeIImjXmrnT0YLKy2va5aSfYypI7x/UDmtBuYJcfFEo
+         rnSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1748881984; x=1749486784;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5dE+UsxBMqGkP0BbEtqtbaQdE82KuzoJQUPmSA85nzc=;
+        b=N1i3VA6u/jmV2W4Q5R+/hgm49cNLi1KJyIZ8A9gICw5iJUMs06pmuY93iORXKhefws
+         TFMn1My2VJ7Oh5/1fygfdb68FY19+Z4SWY1+DjQxhT8fUJ4e8/T0c6YXEi7OyTmvR7oK
+         7no/6NaSBKtRDqhAblki0hJFlJ1gZjhJp1mecW26yttQahMw8NOkN69bwNj0jM4+EkDr
+         n+oaFrJ5WXjm/ZKrxQ7sJBSjmWVuZ92r46Er2Mf+qjUKToS93mEgzj0mXVBzpa2NoI55
+         2x9s+o/D6FO2m0w1oo3wPI6RrW3IyptTP3Lxr5n/B9qO7EOwGY5EUA4PO7fu/Y2Dz9wZ
+         RHyQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUoeppsOy4YsU3OmDKSW5QNgAL/nwzYn4geIX4wwSsN+/PIpkKZFIb59ITd9oeovX4GhwsnqPCoG0AP@vger.kernel.org, AJvYcCV3knfzbs88kGs42q23EE0o3HRdbMGos/Pw8FY3c2QhwGImncPrfUKwIWk0DzEHOxM/Z9JDLOn/kIyV@vger.kernel.org, AJvYcCVGZfrFMhp16U3PAYYdymfdgu58XBHM5SYamYyFjC+38vCvI2EBn4zvsQ8ftM85r/+CaieCE7gCN9Tg@vger.kernel.org, AJvYcCVdJQLJ31JFvcNJh23c44rm/tQjc2KPRIwUFl4THAjeZLe+t1h1pJNVGN9edvNqAyOJv1D6QsjPFjoP@vger.kernel.org, AJvYcCX684NwhN2Bhohfg9oPLxHGxKT0SUK+k4nGKF8M4D8TTQWG0F1cHAD2hxaIzznnyIiWZpqrzwwk3j8RxxfD@vger.kernel.org
+X-Gm-Message-State: AOJu0YyAOADZZxShqZodVtRsf5fU6QrvZf8eEqP5JS9x9q2FpOV1uMSi
+	TRowqON22IVdAMus06Yj9539sbJ2hTijjA+b5uxjrVwwUNcmOFOan4K3
+X-Gm-Gg: ASbGncsYXxsQ1wfaEPDBytAcw/jAqeXkbAqPBWaw/bdlOEH0pYo04EnnXQStLEtm3BR
+	3lA6QUsSHenepjpYVdLBRc0itfXE+HrzcCTmvnORJA28T1bQ3qt2hC3A1zyxnFn+lqsQdzkiQTH
+	/TCH9ed+duMeTVceiS0j11bqtMKcRqaEO39+yQ5Z817EDB2lIZ4+gAY8DZE3Laqh5+5zmEmhOuM
+	DrnEnDpNKbGdIYcxiNRPzOyZBuIDYlp05CJ5eucEI0MNywGoD7EgX0ToQjlWKDfDzYISJqyMYI+
+	NGIRGyVU0V+zjhdYMvC0xpYB/2R2zvQApCFz7A7A0vOhtgmPCpi8zawqrOpcMwxOztyiKFx7vZK
+	8
+X-Google-Smtp-Source: AGHT+IES5AO+Rxsfz4apvd5o1ztpHWeCsDwi5GiSxhjId0o3aGmiE04FWzNCWRSYdyXaBFN0S23Amw==
+X-Received: by 2002:a05:6102:ccb:b0:4e6:d995:94f9 with SMTP id ada2fe7eead31-4e701c887c2mr5933484137.12.1748881984383;
+        Mon, 02 Jun 2025 09:33:04 -0700 (PDT)
+Received: from HYB-DlYm71t3hSl.ad.analog.com ([2001:a61:1225:ec01:ecf2:8e21:9f0f:159e])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-4e644429616sm7449963137.1.2025.06.02.09.32.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Jun 2025 09:33:03 -0700 (PDT)
+Date: Mon, 2 Jun 2025 18:32:52 +0200
+From: Jorge Marques <gastmaier@gmail.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jorge Marques <jorge.marques@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Corbet <corbet@lwn.net>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v2 3/5] dt-bindings: iio: adc: Add adi,ad4052
+Message-ID: <a6cguahvrbqjv2wtisvgg2wvm2tj3awmn7omo6ebfpts6v546o@4xzpj353vlsx>
+References: <20250422-iio-driver-ad4052-v2-0-638af47e9eb3@analog.com>
+ <20250422-iio-driver-ad4052-v2-3-638af47e9eb3@analog.com>
+ <88a326e7-3910-4e02-b4ba-7afe06402871@baylibre.com>
+ <hvexchm2ozsto5s2o6n5j2z3odrkbcamgmg67umd4aehwzmgie@dvtx6anioasq>
+ <1b0e9003-7322-46fa-b2ba-518a142616dc@baylibre.com>
+ <vchomz3iazgdmotcs3jskrugi2qmdxyo74t4ruo2fsc7cjwtqb@7rtdmdkxobvg>
+ <a6f62963-5776-47e4-bdac-78e921a6e476@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250602-rk3576-pwm-v2-6-a6434b0ce60c@collabora.com>
-References: <20250602-rk3576-pwm-v2-0-a6434b0ce60c@collabora.com>
-In-Reply-To: <20250602-rk3576-pwm-v2-0-a6434b0ce60c@collabora.com>
-To: Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- William Breathitt Gray <wbg@kernel.org>, 
- Sebastian Reichel <sebastian.reichel@collabora.com>, 
- Kever Yang <kever.yang@rock-chips.com>, Yury Norov <yury.norov@gmail.com>, 
- Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Dave Ertman <david.m.ertman@intel.com>, Ira Weiny <ira.weiny@intel.com>, 
- Leon Romanovsky <leon@kernel.org>, Lee Jones <lee@kernel.org>, 
- linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, 
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
- linux-iio@vger.kernel.org, kernel@collabora.com, 
- Jonas Karlman <jonas@kwiboo.se>, 
- Detlev Casanova <detlev.casanova@collabora.com>, 
- Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-X-Mailer: b4 0.14.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a6f62963-5776-47e4-bdac-78e921a6e476@baylibre.com>
 
-Among many other things, Rockchip's new PWMv4 IP in the RK3576 supports
-PWM capture functionality.
+Hi David,
 
-Add a basic driver for this that works to capture period and duty cycle
-values and return them as nanoseconds to the user. It's quite basic, but
-works well enough to demonstrate the device function exclusion stuff
-that mfpwm does, in order to eventually support all the functions of
-this device in drivers within their appropriate subsystems, without them
-interfering with each other.
+On Mon, Jun 02, 2025 at 10:17:18AM -0500, David Lechner wrote:
+> On 6/2/25 4:17 AM, Jorge Marques wrote:
+> > On Tue, Apr 29, 2025 at 10:45:20AM -0500, David Lechner wrote:
+> >> On 4/29/25 8:48 AM, Jorge Marques wrote:
+> >>> Hi David, 
+> >>>
+> >>> I didn't went through your's and Jonathan's ad4052.c review yet,
+> >>> but for the trigger-source-cells I need to dig deeper and make
+> >>> considerable changes to the driver, as well as hardware tests.
+> >>> My idea was to have a less customizable driver, but I get that it is
+> >>> more interesting to make it user-definable.
+> >>
+> >> We don't need to make the driver support all possibilities, but the devicetree
+> >> needs to be as complete as possible since it can't be as easily changed in the
+> >> future.
+> >>
+> > 
+> > Ack.
+> > 
+> > I see that the node goes in the spi controller (the parent). To use the
+> > same information in the driver I need to look-up the parent node, then
+> > the node. I don't plan to do that in the version of the driver, just an
+> > observation.
+> > 
+> > There is something else I want to discuss on the dt-bindings actually.
+> > According to the schema, the spi-max-frequency is:
+> > 
+> >   > Maximum SPI clocking speed of the device in Hz.
+> > 
+> > The ad4052 has 2 maximum speeds: Configuration mode (lower) and ADC Mode
+> > (higher, depends on VIO). The solution I came up, to not require a
+> > custom regmap spi bus, is to have spi-max-frequency bound the
+> > Configuration mode speed,
+> 
+> The purpose of spi-max-frequency in the devicetree is that sometimes
+> the wiring of a complete system makes the effective max frequency
+> lower than what is allowed by the datasheet. So this really needs
+> to be the absolute highest frequency allowed.
+> 
+> > and have ADC Mode set by VIO regulator
+> > voltage, through spi_transfer.speed_hz. At the end of the day, both are
+> > bounded by the spi controller maximum speed.
+> 
+> If spi_transfer.speed_hz > spi-max-frequency, then the core SPI code
+> uses spi-max-frequency. So I don't think this would actually work.
+> 
+Ok, so that's something that may be worth some attention.
 
-Once enabled, the counter driver waits for enough high-to-low and
-low-to-high interrupt signals to arrive, and then writes the cycle count
-register values into some atomic members of the driver instance's state
-struct. The read callback can then do the conversion from cycle count to
-the more useful period and duty cycle nanosecond values, which require
-knowledge of the clock rate, which requires a call that the interrupt
-handler cannot make itself because said call may sleep.
+At spi/spi.c#2472
+	if (!of_property_read_u32(nc, "spi-max-frequency", &value))
+		spi->max_speed_hz = value;
 
-To detect the condition of a PWM signal disappearing, i.e. turning off,
-we modify the delay value of a delayed worker whose job it is to simply
-set those atomic members to zero. Should the "timeout" so to speak be
-reached, we assume the PWM signal is off. This isn't perfect; it
-obviously introduces a latency between it being off and the counter
-reporting it as such. Because there isn't a way to reset the internal
-double-buffered cycle count in the hardware, we filter out unreliable
-periods above the timeout value in the counter read callback.
+At spi/spi.c#4090
+	if (!xfer->speed_hz)
+		xfer->speed_hz = spi->max_speed_hz;
 
-Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
----
- MAINTAINERS                            |   1 +
- drivers/counter/Kconfig                |  13 ++
- drivers/counter/Makefile               |   1 +
- drivers/counter/rockchip-pwm-capture.c | 352 +++++++++++++++++++++++++++++++++
- 4 files changed, 367 insertions(+)
+So, speed_hz is max-spi-frequency only if xfer->speed_hz is 0 and
+not bounded by it.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 0014af1cbd3a7729a04bfdd0b0ed50e9df425693..9690f00053df17f8459aa2c6c8f0c62c6a25107e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21424,6 +21424,7 @@ L:	linux-rockchip@lists.infradead.org
- L:	linux-pwm@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/pwm/rockchip,rk3576-pwm.yaml
-+F:	drivers/counter/rockchip-pwm-capture.c
- F:	drivers/pwm/pwm-rockchip-v4.c
- F:	drivers/soc/rockchip/mfpwm.c
- F:	include/soc/rockchip/mfpwm.h
-diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
-index d30d22dfe57741b145a45632b6325d5f9680590e..01b4f5c326478c73b518041830ee0d65b37f6833 100644
---- a/drivers/counter/Kconfig
-+++ b/drivers/counter/Kconfig
-@@ -90,6 +90,19 @@ config MICROCHIP_TCB_CAPTURE
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called microchip-tcb-capture.
- 
-+config ROCKCHIP_PWM_CAPTURE
-+	tristate "Rockchip PWM Counter Capture driver"
-+	depends on ARCH_ROCKCHIP || COMPILE_TEST
-+	depends on ROCKCHIP_MFPWM
-+	depends on HAS_IOMEM
-+	help
-+	  Generic counter framework driver for the multi-function PWM on
-+	  Rockchip SoCs such as the RK3576.
-+
-+	  Uses the Rockchip Multi-function PWM controller driver infrastructure
-+	  to guarantee exclusive operation with other functions of the same
-+	  device implemented by drivers in other subsystems.
-+
- config RZ_MTU3_CNT
- 	tristate "Renesas RZ/G2L MTU3a counter driver"
- 	depends on RZ_MTU3
-diff --git a/drivers/counter/Makefile b/drivers/counter/Makefile
-index fa3c1d08f7068835aa912aa13bc92bcfd44d16fb..2bfcfc2c584bd174a9885064746a98f15b204aec 100644
---- a/drivers/counter/Makefile
-+++ b/drivers/counter/Makefile
-@@ -17,3 +17,4 @@ obj-$(CONFIG_FTM_QUADDEC)	+= ftm-quaddec.o
- obj-$(CONFIG_MICROCHIP_TCB_CAPTURE)	+= microchip-tcb-capture.o
- obj-$(CONFIG_INTEL_QEP)		+= intel-qep.o
- obj-$(CONFIG_TI_ECAP_CAPTURE)	+= ti-ecap-capture.o
-+obj-$(CONFIG_ROCKCHIP_PWM_CAPTURE)	+= rockchip-pwm-capture.o
-diff --git a/drivers/counter/rockchip-pwm-capture.c b/drivers/counter/rockchip-pwm-capture.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..03fe9cf32e7f273c0091c4743642eda6bee76222
---- /dev/null
-+++ b/drivers/counter/rockchip-pwm-capture.c
-@@ -0,0 +1,352 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (c) 2025 Collabora Ltd.
-+ *
-+ * A counter driver for the Pulse-Width-Modulation (PWM) hardware found on
-+ * Rockchip SoCs such as the RK3576, internally referred to as "PWM v4". It
-+ * allows for measuring the period and duty cycle in nanoseconds through the
-+ * generic counter framework, while guaranteeing exclusive use over the MFPWM
-+ * device while the counter is enabled.
-+ *
-+ * Authors:
-+ *     Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-+ */
-+
-+#include <linux/cleanup.h>
-+#include <linux/counter.h>
-+#include <linux/devm-helpers.h>
-+#include <linux/interrupt.h>
-+#include <linux/math64.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/platform_device.h>
-+#include <linux/spinlock.h>
-+#include <linux/workqueue.h>
-+#include <soc/rockchip/mfpwm.h>
-+
-+#define RKPWMC_INT_MASK			(PWMV4_INT_LPC | PWMV4_INT_HPC)
-+/*
-+ * amount of jiffies between no PWM signal change and us deciding PWM is off.
-+ * PWM signals with a period longer than this won't be detected by us, which is
-+ * the trade-off we make to have a faster response time when a signal is turned
-+ * off.
-+ */
-+#define RKPWMC_CLEAR_DELAY		(max(msecs_to_jiffies(100), 1))
-+
-+struct rockchip_pwm_capture {
-+	struct rockchip_mfpwm_func *pwmf;
-+	bool is_enabled;
-+	spinlock_t enable_lock;
-+	atomic_t lpc;
-+	atomic_t hpc;
-+	atomic_t captures_left;
-+	struct delayed_work clear_capture;
-+};
-+
-+static struct counter_signal rkpwmc_signals[] = {
-+	{
-+		.id = 0,
-+		.name = "Channel 1"
-+	},
-+};
-+
-+static const enum counter_synapse_action rkpwmc_hpc_lpc_actions[] = {
-+	COUNTER_SYNAPSE_ACTION_BOTH_EDGES,
-+
-+};
-+
-+static struct counter_synapse rkpwmc_pwm_synapses[] = {
-+	{
-+		.actions_list = rkpwmc_hpc_lpc_actions,
-+		.num_actions = ARRAY_SIZE(rkpwmc_hpc_lpc_actions),
-+		.signal = &rkpwmc_signals[0]
-+	},
-+};
-+
-+static const enum counter_function rkpwmc_functions[] = {
-+	COUNTER_FUNCTION_INCREASE,
-+};
-+
-+static int rkpwmc_enable_read(struct counter_device *counter,
-+			       struct counter_count *count,
-+			       u8 *enable)
-+{
-+	struct rockchip_pwm_capture *pc = counter_priv(counter);
-+
-+	guard(spinlock)(&pc->enable_lock);
-+
-+	*enable = pc->is_enabled;
-+
-+	return 0;
-+}
-+
-+static int rkpwmc_enable_write(struct counter_device *counter,
-+			       struct counter_count *count,
-+			       u8 enable)
-+{
-+	struct rockchip_pwm_capture *pc = counter_priv(counter);
-+	int ret;
-+
-+	guard(spinlock)(&pc->enable_lock);
-+
-+	if (!!enable != pc->is_enabled) {
-+		ret = mfpwm_acquire(pc->pwmf);
-+		if (ret)
-+			return ret;
-+
-+		if (enable) {
-+			mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_ENABLE,
-+					 PWMV4_EN(false));
-+			mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_CTRL,
-+					 PWMV4_CTRL_CAP_FLAGS);
-+			mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_INT_EN,
-+					 PWMV4_INT_LPC_W(true) |
-+					 PWMV4_INT_HPC_W(true));
-+			mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_ENABLE,
-+					 PWMV4_EN(true) | PWMV4_CLK_EN(true));
-+
-+			ret = clk_enable(pc->pwmf->core);
-+			if (ret)
-+				goto err_release;
-+
-+			ret = clk_rate_exclusive_get(pc->pwmf->core);
-+			if (ret)
-+				goto err_disable_pwm_clk;
-+
-+			ret = mfpwm_acquire(pc->pwmf);
-+			if (ret)
-+				goto err_unprotect_pwm_clk;
-+
-+			atomic_set(&pc->captures_left, 4);
-+			pc->is_enabled = true;
-+		} else {
-+			mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_INT_EN,
-+					 PWMV4_INT_LPC_W(false) |
-+					 PWMV4_INT_HPC_W(false));
-+			mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_ENABLE,
-+					 PWMV4_EN(false) | PWMV4_CLK_EN(false));
-+			/*
-+			 * Do not use cancel_delayed_work here unless you want
-+			 * to cause the interrupt handler, which may still be
-+			 * running at this point, to stall. Similarly, don't do
-+			 * flush_delayed_work since it may sleep.
-+			 */
-+			mod_delayed_work(system_bh_wq, &pc->clear_capture, 0);
-+			clk_rate_exclusive_put(pc->pwmf->core);
-+			clk_disable(pc->pwmf->core);
-+			pc->is_enabled = false;
-+			mfpwm_release(pc->pwmf);
-+		}
-+
-+		mfpwm_release(pc->pwmf);
-+	}
-+
-+	return 0;
-+
-+err_unprotect_pwm_clk:
-+	clk_rate_exclusive_put(pc->pwmf->core);
-+err_disable_pwm_clk:
-+	clk_disable(pc->pwmf->core);
-+err_release:
-+	mfpwm_release(pc->pwmf);
-+
-+	return ret;
-+}
-+
-+static struct counter_comp rkpwmc_ext[] = {
-+	COUNTER_COMP_ENABLE(rkpwmc_enable_read, rkpwmc_enable_write),
-+};
-+
-+enum rkpwmc_count_id {
-+	COUNT_PERIOD = 0,
-+	COUNT_DUTY = 1,
-+};
-+
-+static struct counter_count rkpwmc_counts[] = {
-+	{
-+		.id = COUNT_PERIOD,
-+		.name = "Period in nanoseconds",
-+		.functions_list = rkpwmc_functions,
-+		.num_functions = ARRAY_SIZE(rkpwmc_functions),
-+		.synapses = rkpwmc_pwm_synapses,
-+		.num_synapses = ARRAY_SIZE(rkpwmc_pwm_synapses),
-+		.ext = rkpwmc_ext,
-+		.num_ext = ARRAY_SIZE(rkpwmc_ext),
-+	},
-+	{
-+		.id = COUNT_DUTY,
-+		.name = "Duty cycle in nanoseconds",
-+		.functions_list = rkpwmc_functions,
-+		.num_functions = ARRAY_SIZE(rkpwmc_functions),
-+		.synapses = rkpwmc_pwm_synapses,
-+		.num_synapses = ARRAY_SIZE(rkpwmc_pwm_synapses),
-+		.ext = rkpwmc_ext,
-+		.num_ext = ARRAY_SIZE(rkpwmc_ext),
-+	},
-+};
-+
-+static int rkpwmc_count_read(struct counter_device *counter,
-+			     struct counter_count *count, u64 *value)
-+{
-+	struct rockchip_pwm_capture *pc = counter_priv(counter);
-+	unsigned long rate;
-+	u64 period;
-+	u64 lpc;
-+	u64 hpc;
-+	int ret = 0;
-+
-+	if (count->id != COUNT_PERIOD && count->id != COUNT_DUTY)
-+		return -EINVAL;
-+
-+	ret = mfpwm_acquire(pc->pwmf);
-+	if (ret)
-+		return ret;
-+
-+	rate = clk_get_rate(pc->pwmf->core);
-+	if (!rate) {
-+		ret = -EINVAL;
-+		goto out_release;
-+	}
-+
-+	hpc = (u32) atomic_read(&pc->hpc);
-+	lpc = (u32) atomic_read(&pc->lpc);
-+	period = mul_u64_u64_div_u64(hpc + lpc, NSEC_PER_SEC, rate);
-+
-+	if (period > jiffies_to_msecs(RKPWMC_CLEAR_DELAY) * NSEC_PER_MSEC) {
-+		*value = 0;
-+		goto out_release;
-+	}
-+
-+	if (count->id == COUNT_PERIOD)
-+		*value = period;
-+	else
-+		*value = mul_u64_u64_div_u64(hpc, NSEC_PER_SEC, rate);
-+
-+out_release:
-+	mfpwm_release(pc->pwmf);
-+
-+	return ret;
-+}
-+
-+static const struct counter_ops rkpwmc_ops = {
-+	.count_read = rkpwmc_count_read,
-+};
-+
-+static irqreturn_t rkpwmc_irq_handler(int irq, void *data)
-+{
-+	struct rockchip_pwm_capture *pc = data;
-+	u32 intsts;
-+	u32 clr = 0;
-+	u32 lpc;
-+	u32 hpc;
-+
-+	intsts = mfpwm_reg_read(pc->pwmf->base, PWMV4_REG_INTSTS);
-+
-+	if (!(intsts & RKPWMC_INT_MASK))
-+		return IRQ_NONE;
-+
-+	if (intsts & PWMV4_INT_LPC) {
-+		clr |= PWMV4_INT_LPC;
-+		atomic_dec_if_positive(&pc->captures_left);
-+	}
-+
-+	if (intsts & PWMV4_INT_HPC) {
-+		clr |= PWMV4_INT_HPC;
-+		atomic_dec_if_positive(&pc->captures_left);
-+	}
-+
-+	/* After 4 interrupts, reset to 4 captures left and read the regs */
-+	if (!atomic_cmpxchg(&pc->captures_left, 0, 4)) {
-+		lpc = mfpwm_reg_read(pc->pwmf->base, PWMV4_REG_LPC);
-+		hpc = mfpwm_reg_read(pc->pwmf->base, PWMV4_REG_HPC);
-+
-+		atomic_set(&pc->lpc, lpc);
-+		atomic_set(&pc->hpc, hpc);
-+		mod_delayed_work(system_bh_wq, &pc->clear_capture,
-+				 RKPWMC_CLEAR_DELAY);
-+	}
-+
-+	if (clr)
-+		mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_INTSTS, clr);
-+
-+	if (intsts ^ clr)
-+		return IRQ_NONE;
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static void rkpwmc_clear_capture_worker(struct work_struct *work)
-+{
-+	struct rockchip_pwm_capture *pc = container_of(
-+		work, struct rockchip_pwm_capture, clear_capture.work);
-+
-+	atomic_set(&pc->hpc, 0);
-+	atomic_set(&pc->lpc, 0);
-+}
-+
-+static int rockchip_pwm_capture_probe(struct platform_device *pdev)
-+{
-+	struct rockchip_mfpwm_func *pwmf = dev_get_platdata(&pdev->dev);
-+	struct rockchip_pwm_capture *pc;
-+	struct counter_device *counter;
-+	int ret;
-+
-+	counter = devm_counter_alloc(&pdev->dev, sizeof(*pc));
-+	if (IS_ERR(counter))
-+		return PTR_ERR(counter);
-+
-+	pc = counter_priv(counter);
-+	pc->pwmf = pwmf;
-+	spin_lock_init(&pc->enable_lock);
-+
-+	platform_set_drvdata(pdev, pc);
-+
-+	ret = devm_request_irq(&pdev->dev, pwmf->irq, rkpwmc_irq_handler,
-+			       IRQF_SHARED, pdev->name, pc);
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret, "Failed requesting IRQ\n");
-+
-+	ret = devm_delayed_work_autocancel(&pdev->dev, &pc->clear_capture,
-+					   rkpwmc_clear_capture_worker);
-+
-+	counter->name = pdev->name;
-+	counter->signals = rkpwmc_signals;
-+	counter->num_signals = ARRAY_SIZE(rkpwmc_signals);
-+	counter->ops = &rkpwmc_ops;
-+	counter->counts = rkpwmc_counts;
-+	counter->num_counts = ARRAY_SIZE(rkpwmc_counts);
-+
-+	ret = devm_counter_add(&pdev->dev, counter);
-+	if (ret < 0)
-+		return dev_err_probe(&pdev->dev, ret, "Failed to add counter\n");
-+
-+	return 0;
-+}
-+
-+static void rockchip_pwm_capture_remove(struct platform_device *pdev)
-+{
-+	struct rockchip_mfpwm_func *pwmf = dev_get_platdata(&pdev->dev);
-+
-+	mfpwm_remove_func(pwmf);
-+}
-+
-+static const struct platform_device_id rockchip_pwm_capture_id_table[] = {
-+	{ .name = "rockchip-pwm-capture", },
-+	{ /* sentinel */ },
-+};
-+MODULE_DEVICE_TABLE(platform, rockchip_pwm_capture_id_table);
-+
-+static struct platform_driver rockchip_pwm_capture_driver = {
-+	.probe = rockchip_pwm_capture_probe,
-+	.remove = rockchip_pwm_capture_remove,
-+	.id_table = rockchip_pwm_capture_id_table,
-+	.driver = {
-+		.name = "rockchip-pwm-capture",
-+	},
-+};
-+module_platform_driver(rockchip_pwm_capture_driver);
-+
-+MODULE_AUTHOR("Nicolas Frattaroli <nicolas.frattaroli@collabora.com>");
-+MODULE_DESCRIPTION("Rockchip PWM Counter Capture Driver");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS("ROCKCHIP_MFPWM");
-+MODULE_IMPORT_NS("COUNTER");
+Then at spi-axi-spi-engine.c:
 
--- 
-2.49.0
+	static int spi_engine_precompile_message(struct spi_message *msg)
+	{
+  		clk_div = DIV_ROUND_UP(max_hz, xfer->speed_hz);
+		xfer->effective_speed_hz = max_hz / min(clk_div, 256U);
+	}
 
+Where max_hz is set only by the IP spi_clk. If at the driver I set
+xfer.speed_hz, it won't be bounded by max-spi-frequency.
+
+The only that seems to bound as described is the layer for flash memory
+at spi-mem.c@spi_mem_adjust_op_freq.
+
+For the adc driver, I will then consider your behavioral description and
+create a custom regmap bus to limit set the reg access speed (fixed),
+and keep adc mode speed set by VIO. And consider spi-max-frequency can
+further reduce both speeds.
+(or should instead be handled at the driver like spi-mem.c ?)
+
+Thanks for the quick reply!
+Jorge
