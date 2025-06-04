@@ -1,52 +1,52 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC14B28E610;
-	Wed,  4 Jun 2025 13:36:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF3EC28FFEC;
+	Wed,  4 Jun 2025 13:36:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749044164; cv=none; b=Ip+hzlqhdnNPfZ04riZFIhHnelAWHial8iOtx8gEq6TJ91s3GMr1qVloNr0Qp+iuJ9zj+k32txXfrJLo5Hxvp6gW2Us5vCF5hbsXhwAsLmtU7yzD95UuHtDFnoYJF8yWYBdKF3EKUmpNb/JQvoRieI6TrOWd59RfepVR2sIwDLA=
+	t=1749044166; cv=none; b=tEKC3uLimJwajSPfpLMkPGD9FLBrqkgZb1eSK9Punpq9SUXngOnbO+b4InGHdEsfFr26SqU3zLb5qWHCYSNTXCWKv5wo3MuyaNLl7Dve9911QWA9q9VZ2+YDANKSca7w0LD/DTgs/AGMHMLjhZzNAVLzf1oOdduRqV/5DwqdBac=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749044164; c=relaxed/simple;
-	bh=qyyWAcb4tyvZwqvXmqUt1NsxFCrKyOmrUp190XU3Fqk=;
+	s=arc-20240116; t=1749044166; c=relaxed/simple;
+	bh=OgVkU6sSzNBDk3lwhBeaw+MxPdkdRVM+kQkCfGFbgx0=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tATkRaTudpW2OuGivB1mdFrOSQC0b6NIl6bol9Dt1dVaGe4TYGy41OIm4aW2Q8c0pH6Ic93jzrkj/8I2fg5Q19Yfo37608iF5/usvr+pkdUgHjF9clzvXVQ0tqLLK6i+4tzS07FB6w6FP2FfbfUpWzlXHPFGNt+fFU2gaq/u25g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=yIHik8Pg; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=VR7r3h8aHaJRSfjAxnzyxRQlunK9uOewOs6hat4VODe2T9FoEf5JylY18ynQNDrgf5H2sfcupq98rTFxM+s/0Fb/+JV/lwQ/Kd2AQ+CJ/A+64T+29PF7FCDujEoPloygSuBnUdn/kvutTt0W+rPIdq3ikb77GBzonV/riMF0PdM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=ELQv7+BH; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="yIHik8Pg"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 554BhisB028811;
-	Wed, 4 Jun 2025 09:35:40 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="ELQv7+BH"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 554D8QZn023939;
+	Wed, 4 Jun 2025 09:35:44 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
 	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=6+4OQ
-	Vr59kJNDqEMSIRD5EZr7b4y3gwa4a34o3K29e0=; b=yIHik8PgIy+YYZ2Se8XtK
-	gsjadqrMiyKuhgz82Suc6KDcIDWibn5ddsq7w5vjexqLDIex3ol5OfLW2wAnf1Do
-	kEZE3wUyBauxa8bMIbhIcJzf1m2bhvhwlYFaMcIvwviL9zmN5I2LHFezyx+csyAv
-	xuQRxFa4p4/Y9mCQI+VB0ngnQkFT7AlslLzffaLo0bn9efMhCOQbImuaYQ5JK5h6
-	0NovNVcFjt61VgHMisZrR+3GRUiiUTaveYFD/cdEzRjXHmu6ynJw+TcAG7IEeIOk
-	rFqk8jfGdiQUOAj8emNULns/PdFhDBcTp5NPguW8bW4qXTNZRlo8iIwPufJeGgh4
-	w==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 471g9j2jjh-1
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=6fTRK
+	BU2K1aSTaLrzJNCAaNdnsoME8k0fipl79wcyHc=; b=ELQv7+BHbCOM4KQmDL4++
+	+VP2Oib4m0LmCI86vdloF+TSfHowtpMwlYK6k26XxrRWNKIN7fVYl3xWcq/CivNJ
+	BgXk9zqnshoqkgUxsLfd594219uwgy1UPxLPEdks+uuT9IgqsZ0W1tUAj+QAzJrh
+	6D7JJ5QJ42/IhBeq9FGTOSyX80XvzGlPMNFJOQ56RfvmCFFAOJdMzf2aopccAFnV
+	QpHIX5UNr8erPjR40cYUvTxIH+KYYn+6L1uzTcXZ7734AArTUk4ZJgS7PZ3Y+Aca
+	ZhnMPSK3jJOgb46iw1FxA27QjjQxFg1xpNOf//eSa6K9aup7gkm/gQJ8wy9fKb+v
+	g==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 472k2u18tp-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Jun 2025 09:35:39 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 554DZO3v007772
+	Wed, 04 Jun 2025 09:35:43 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 554DZg67030319
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 4 Jun 2025 09:35:24 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+	Wed, 4 Jun 2025 09:35:42 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.10; Wed, 4 Jun
- 2025 09:35:24 -0400
+ 2025 09:35:42 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.10 via Frontend
- Transport; Wed, 4 Jun 2025 09:35:24 -0400
+ Transport; Wed, 4 Jun 2025 09:35:42 -0400
 Received: from romlx5.adlk.analog.com ([10.48.65.73])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 554DYVPZ029277;
-	Wed, 4 Jun 2025 09:35:14 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 554DYVPb029277;
+	Wed, 4 Jun 2025 09:35:35 -0400
 From: Pop Ioan Daniel <pop.ioan-daniel@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich
@@ -74,14 +74,13 @@ To: Lars-Peter Clausen <lars@metafoo.de>,
         Alisa-Dariana Roman <alisadariana@gmail.com>,
         Marcelo Schmitt
 	<marcelo.schmitt@analog.com>,
-        AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@collabora.com>,
-        Ioan Daniel
-	<pop.ioan-daniel@analog.com>, <linux-iio@vger.kernel.org>,
+        Esteban Blanc <eblanc@baylibre.com>,
+        Ioan
+ Daniel <pop.ioan-daniel@analog.com>, <linux-iio@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v6 3/5] iio: adc: adi-axi-adc: add axi_adc_oversampling_ratio_set
-Date: Wed, 4 Jun 2025 16:34:05 +0300
-Message-ID: <20250604133413.1528693-4-pop.ioan-daniel@analog.com>
+Subject: [PATCH v6 5/5] iio: adc: ad7405: add ad7405 driver
+Date: Wed, 4 Jun 2025 16:34:07 +0300
+Message-ID: <20250604133413.1528693-6-pop.ioan-daniel@analog.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20250604133413.1528693-1-pop.ioan-daniel@analog.com>
 References: <20250604133413.1528693-1-pop.ioan-daniel@analog.com>
@@ -94,81 +93,350 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: O5bmGVb8aBf7H_K9Vumlxzj83eh3gDm-
-X-Authority-Analysis: v=2.4 cv=DfIXqutW c=1 sm=1 tr=0 ts=68404bac cx=c_pps
- a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
- a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=IpJZQVW2AAAA:8 a=gAnH3GRIAAAA:8
- a=hj20C08OGkFrgq5-ZMUA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-ORIG-GUID: O5bmGVb8aBf7H_K9Vumlxzj83eh3gDm-
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjA0MDEwNCBTYWx0ZWRfX2QKkoioE4HMf
- 86tskbH3Fkry2CQxV2bdsasqOFCtwXvBpXNfmpuXUnS6GcrDz8yInqNSIQ0TRyLevSlCUbgPd51
- 6fQwot0mSSVqAb+pc/qzdM1Dy2ZP92wd3T/yg/eBpR6N6OgYy/a6ngIJTnhPh11PERmKYygmN2R
- 1gym7jHAGPp6uiFPkSawxR/u687Aym+xaWqt/Z2sOKJhA1svbFet2liUhyIHsdviNnZyivES70G
- 2Xsl/cvZRytjnVRevr8ii5bbz/aF5vGX/beAEpLVtbDJWbFVTMciwuuLhOorc2VYX9av8RaLlpm
- bEL32+B/ttLarNAwnvrziJDSiihE8IkPyUskIUZ8APJCAHU0vDqPs0smsryLGVhtriuDlKIXg3w
- RWcVsLqn4abW6ldLrXGnkFGFaXZCm8YSPn3D2KySoPY+g1dIdRvgckVcI75L7zTXfhBEZ3hP
+X-Proofpoint-GUID: CehAjf6nF489xnBLXbgtAaou1CrcQaiQ
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjA0MDEwNCBTYWx0ZWRfX1pm+6IhUknZP
+ YEGPWXt6aeTrhAqN5AgUzKezqzJLExH44Rt9BOuuhOTSotqa6AfluP3++oaJ6Zp2Irq86d4+98T
+ cV1OnuRHw7XtNrGnmV/pgwm0xsPna7MXe9l+POP+qIYEo7J5Wzl6QzE4BsAaqPEgpKw+2tgMb6P
+ 5GDHEI1D6WEy9Wg4bWNSr3isgnwLtHQydrIxMFn0g/J77VB1z2/9Y55JYo0+FvbI/fKhn1hDqr1
+ 5xg5y9DPfCBumGjbfoVvdNiTJRPaZ0p7HimrVFeNdv/mx+eZY5VAZnIMNz+pHK/YM9dbbGNROxN
+ XheCehgv2vvXmCi3S6hN99xhLECxJLlY5T4G6OjmLLL0w+jSx6718wSEJrCEEw2tECMWxbo7vOc
+ 0F2PkSflmEgYvuVkJrfh2BXVD4M4Iz7PT8jnPNDKlglVj0ROqEvC7f3Zk/kj/72F47Fb0aqT
+X-Proofpoint-ORIG-GUID: CehAjf6nF489xnBLXbgtAaou1CrcQaiQ
+X-Authority-Analysis: v=2.4 cv=Fv4F/3rq c=1 sm=1 tr=0 ts=68404baf cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=gAnH3GRIAAAA:8 a=xMrnY01I1BIIJWUPG5oA:9
+ a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
  definitions=2025-06-04_03,2025-06-03_02,2025-03-28_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- mlxscore=0 malwarescore=0 clxscore=1015 priorityscore=1501 suspectscore=0
- adultscore=0 mlxlogscore=999 spamscore=0 impostorscore=0 phishscore=0
- lowpriorityscore=0 bulkscore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2506040104
+ adultscore=0 impostorscore=0 suspectscore=0 mlxlogscore=999 spamscore=0
+ malwarescore=0 phishscore=0 clxscore=1015 lowpriorityscore=0
+ priorityscore=1501 bulkscore=0 mlxscore=0 classifier=spam authscore=0
+ authtc=n/a authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2505280000 definitions=main-2506040104
 
-Add support for setting decimation rate.
+Add support for the AD7405/ADUM770x, a high performance isolated ADC,
+1-channel, 16-bit with a second-order Σ-Δ modulator that converts an
+analog input signal into a high speed, single-bit data stream.
 
-Reviewed-by: David Lechner <dlechner@baylibre.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 Signed-off-by: Pop Ioan Daniel <pop.ioan-daniel@analog.com>
 ---
- drivers/iio/adc/adi-axi-adc.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+changes in v6:
+ - update list of headers according to IFYU principle.
+ - rename ad7405_dec_rates in ad7405_dec_rates_range.
+ - remove struct mutex lock.
+ - update read_avail function
+ - add iio_device_claim_direct()
+ - rename ADI drivers for consistency
+ - add comment that explain why 256 decimation rate is chosen
+ drivers/iio/adc/Kconfig  |  10 ++
+ drivers/iio/adc/Makefile |   1 +
+ drivers/iio/adc/ad7405.c | 262 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 273 insertions(+)
+ create mode 100644 drivers/iio/adc/ad7405.c
 
-diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
-index 9e8c30230791..0b8673668745 100644
---- a/drivers/iio/adc/adi-axi-adc.c
-+++ b/drivers/iio/adc/adi-axi-adc.c
-@@ -80,6 +80,9 @@
- #define ADI_AXI_ADC_REG_CHAN_CTRL_3(c)		(0x0418 + (c) * 0x40)
- #define   ADI_AXI_ADC_CHAN_PN_SEL_MASK		GENMASK(19, 16)
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index ad06cf556785..43af2070e27f 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -251,6 +251,16 @@ config AD7380
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called ad7380.
  
-+#define ADI_AXI_ADC_REG_CHAN_USR_CTRL_2(c)	(0x0424 + (c) * 0x40)
-+#define   ADI_AXI_ADC_CHAN_USR_CTRL_2_DEC_RATE_N_MASK		GENMASK(15, 0)
++config AD7405
++	tristate "Analog Device AD7405 ADC Driver"
++	depends on IIO_BACKEND
++	help
++	  Say yes here to build support for Analog Devices AD7405, ADUM7701,
++	  ADUM7702, ADUM7703 analog to digital converters (ADC).
 +
- /* IO Delays */
- #define ADI_AXI_ADC_REG_DELAY(l)		(0x0800 + (l) * 0x4)
- #define   AXI_ADC_DELAY_CTRL_MASK		GENMASK(4, 0)
-@@ -242,6 +245,19 @@ static int axi_adc_test_pattern_set(struct iio_backend *back,
- 	}
- }
- 
-+static int axi_adc_oversampling_ratio_set(struct iio_backend *back,
-+					  unsigned int chan,
-+					  unsigned int rate)
++	  To compile this driver as a module, choose M here: the module will be
++	  called ad7405.
++
+ config AD7476
+ 	tristate "Analog Devices AD7476 1-channel ADCs driver and other similar devices from AD and TI"
+ 	depends on SPI
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 07d4b832c42e..8115f30b7862 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -26,6 +26,7 @@ obj-$(CONFIG_AD7291) += ad7291.o
+ obj-$(CONFIG_AD7292) += ad7292.o
+ obj-$(CONFIG_AD7298) += ad7298.o
+ obj-$(CONFIG_AD7380) += ad7380.o
++obj-$(CONFIG_AD7405) += ad7405.o
+ obj-$(CONFIG_AD7476) += ad7476.o
+ obj-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
+ obj-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
+diff --git a/drivers/iio/adc/ad7405.c b/drivers/iio/adc/ad7405.c
+new file mode 100644
+index 000000000000..a5ca61ad5150
+--- /dev/null
++++ b/drivers/iio/adc/ad7405.c
+@@ -0,0 +1,262 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Analog Devices AD7405 driver
++ *
++ * Copyright 2025 Analog Devices Inc.
++ */
++
++#include <linux/clk.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/mod_devicetable.h>
++#include <linux/platform_device.h>
++#include <linux/property.h>
++#include <linux/regulator/consumer.h>
++#include <linux/util_macros.h>
++
++#include <linux/iio/backend.h>
++#include <linux/iio/iio.h>
++
++static const unsigned int ad7405_dec_rates_range[] = {
++	32, 1, 4096,
++};
++
++struct ad7405_chip_info {
++	const char *name;
++	struct iio_chan_spec channel;
++	const unsigned int full_scale_mv;
++};
++
++struct ad7405_state {
++	struct iio_backend *back;
++	const struct ad7405_chip_info *info;
++	unsigned int ref_frequency;
++	unsigned int dec_rate;
++};
++
++static int ad7405_set_dec_rate(struct iio_dev *indio_dev,
++			       const struct iio_chan_spec *chan,
++			       unsigned int dec_rate)
 +{
-+	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
++	struct ad7405_state *st = iio_priv(indio_dev);
++	int ret;
 +
-+	return regmap_update_bits(st->regmap,
-+				  ADI_AXI_ADC_REG_CHAN_USR_CTRL_2(chan),
-+				  ADI_AXI_ADC_CHAN_USR_CTRL_2_DEC_RATE_N_MASK,
-+				  FIELD_PREP(ADI_AXI_ADC_CHAN_USR_CTRL_2_DEC_RATE_N_MASK,
-+					     rate));
++	if (!iio_device_claim_direct(indio_dev))
++		return -EBUSY;
++
++	if (dec_rate > 4096 || dec_rate < 32)
++		return -EINVAL;
++
++	ret = iio_backend_oversampling_ratio_set(st->back, chan->scan_index, dec_rate);
++	if (ret)
++		return ret;
++
++	st->dec_rate = dec_rate;
++
++	iio_device_release_direct(indio_dev);
++
++	if (ret < 0)
++		return ret;
++
++	return 0;
 +}
 +
- static int axi_adc_read_chan_status(struct adi_axi_adc_state *st, unsigned int chan,
- 				    unsigned int *status)
- {
-@@ -550,6 +566,7 @@ static const struct iio_backend_ops adi_axi_adc_ops = {
- 	.test_pattern_set = axi_adc_test_pattern_set,
- 	.chan_status = axi_adc_chan_status,
- 	.interface_type_get = axi_adc_interface_type_get,
-+	.oversampling_ratio_set = axi_adc_oversampling_ratio_set,
- 	.debugfs_reg_access = iio_backend_debugfs_ptr(axi_adc_reg_access),
- 	.debugfs_print_chan_status = iio_backend_debugfs_ptr(axi_adc_debugfs_print_chan_status),
- };
++static int ad7405_read_raw(struct iio_dev *indio_dev,
++			   const struct iio_chan_spec *chan, int *val,
++			   int *val2, long info)
++{
++	struct ad7405_state *st = iio_priv(indio_dev);
++
++	switch (info) {
++	case IIO_CHAN_INFO_SCALE:
++		*val = st->info->full_scale_mv;
++		*val2 = st->info->channel.scan_type.realbits - 1;
++		return IIO_VAL_FRACTIONAL_LOG2;
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		*val = st->dec_rate;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = DIV_ROUND_CLOSEST_ULL(st->ref_frequency, st->dec_rate);
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_OFFSET:
++		*val = -(1 << (st->info->channel.scan_type.realbits - 1));
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ad7405_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan, int val,
++			    int val2, long info)
++{
++	switch (info) {
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		if (val < 0)
++			return -EINVAL;
++		return ad7405_set_dec_rate(indio_dev, chan, val);
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ad7405_read_avail(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     const int **vals, int *type, int *length,
++			     long info)
++{
++	switch (info) {
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		*vals = ad7405_dec_rates_range;
++		*type = IIO_VAL_INT;
++		return IIO_AVAIL_RANGE;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info ad7405_iio_info = {
++	.read_raw = &ad7405_read_raw,
++	.write_raw = &ad7405_write_raw,
++	.read_avail = &ad7405_read_avail,
++};
++
++#define AD7405_IIO_CHANNEL {					\
++	.type = IIO_VOLTAGE,					\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
++			BIT(IIO_CHAN_INFO_OFFSET),		\
++	.info_mask_shared_by_all = IIO_CHAN_INFO_SAMP_FREQ |	\
++			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
++	.info_mask_shared_by_all_available =			\
++			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
++	.indexed = 1,						\
++	.channel = 0,						\
++	.channel2 = 1,						\
++	.differential = 1,					\
++	.scan_index = 0,					\
++	.scan_type = {						\
++		.sign = 'u',					\
++		.realbits = 16,					\
++		.storagebits = 16,				\
++	},							\
++}
++
++static const struct ad7405_chip_info ad7405_chip_info = {
++	.name = "ad7405",
++	.full_scale_mv = 320,
++	.channel = AD7405_IIO_CHANNEL,
++};
++
++static const struct ad7405_chip_info adum7701_chip_info = {
++	.name = "adum7701",
++	.full_scale_mv = 320,
++	.channel = AD7405_IIO_CHANNEL,
++};
++
++static const struct ad7405_chip_info adum7702_chip_info = {
++	.name = "adum7702",
++	.full_scale_mv = 64,
++	.channel = AD7405_IIO_CHANNEL,
++};
++
++static const struct ad7405_chip_info adum7703_chip_info = {
++	.name = "adum7703",
++	.full_scale_mv = 320,
++	.channel = AD7405_IIO_CHANNEL,
++};
++
++static const char * const ad7405_power_supplies[] = {
++	"vdd1",	"vdd2",
++};
++
++static int ad7405_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct iio_dev *indio_dev;
++	struct ad7405_state *st;
++	struct clk *clk;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++
++	st->info = device_get_match_data(dev);
++	if (!st->info)
++		return dev_err_probe(dev, -EINVAL, "no chip info\n");
++
++	ret = devm_regulator_bulk_get_enable(dev, ARRAY_SIZE(ad7405_power_supplies),
++					     ad7405_power_supplies);
++	if (ret)
++		return dev_err_probe(dev, ret, "failed to get and enable supplies");
++
++	clk = devm_clk_get_enabled(dev, NULL);
++	if (IS_ERR(clk))
++		return PTR_ERR(clk);
++
++	st->ref_frequency = clk_get_rate(clk);
++	if (!st->ref_frequency)
++		return -EINVAL;
++
++	indio_dev->name = st->info->name;
++	indio_dev->channels = &st->info->channel;
++	indio_dev->num_channels = 1;
++	indio_dev->info = &ad7405_iio_info;
++
++	st->back = devm_iio_backend_get(dev, NULL);
++	if (IS_ERR(st->back))
++		return dev_err_probe(dev, PTR_ERR(st->back),
++				     "failed to get IIO backend");
++
++	ret = iio_backend_chan_enable(st->back, 0);
++	if (ret)
++		return ret;
++
++	ret = devm_iio_backend_request_buffer(dev, st->back, indio_dev);
++	if (ret)
++		return ret;
++
++	ret = devm_iio_backend_enable(dev, st->back);
++	if (ret)
++		return ret;
++
++	/*
++	 *Set 256 decimation rate. The default value in the AXI_ADC register
++	 *is 0, so we set the register with a decimation rate value that is
++	 *functional for all parts.
++	 */
++	ret = ad7405_set_dec_rate(indio_dev, &indio_dev->channels[0], 256);
++	if (ret)
++		return ret;
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static const struct of_device_id ad7405_of_match[] = {
++	{ .compatible = "adi,ad7405", .data = &ad7405_chip_info, },
++	{ .compatible = "adi,adum7701", .data = &adum7701_chip_info, },
++	{ .compatible = "adi,adum7702", .data = &adum7702_chip_info, },
++	{ .compatible = "adi,adum7703", .data = &adum7703_chip_info, },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ad7405_of_match);
++
++static struct platform_driver ad7405_driver = {
++	.driver = {
++		.name = "ad7405",
++		.owner = THIS_MODULE,
++		.of_match_table = ad7405_of_match,
++	},
++	.probe = ad7405_probe,
++};
++module_platform_driver(ad7405_driver);
++
++MODULE_AUTHOR("Dragos Bogdan <dragos.bogdan@analog.com>");
++MODULE_AUTHOR("Pop Ioan Daniel <pop.ioan-daniel@analog.com>");
++MODULE_DESCRIPTION("Analog Devices AD7405 driver");
++MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS("IIO_BACKEND");
 -- 
 2.34.1
 
