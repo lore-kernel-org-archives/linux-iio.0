@@ -1,106 +1,299 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4E72286419;
-	Fri,  6 Jun 2025 09:14:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34F491C861D;
+	Fri,  6 Jun 2025 09:39:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749201291; cv=none; b=i/e/UYISJ2ArBKkRcu1iNhGKNGbdy8xnK+RaD0gO5nPV5NkOiYTdjM/1t+Av5PdWO3gv7of7r7sdRbt11PMRcNo4QM00jycMqVlYj7PDb01cho9FzXn+vSjUJM4F02SrZ9sBkakJu2PVq3NhAlnCdg7V8cJJzN4SYLbf1M4A4Ps=
+	t=1749202789; cv=none; b=PV4GaTKWGMgstwESmCGr0/vIC+uiSZ+6kfCrh2yhkz/784ii8fj7C5K3+wH7N/86H3hNAjomIOKL26qvR/21roA6OMrQqBYOCC2pPRaihbYhgGJKv+UvDvoUboWnbXvD6s/CV/Tg4wgY/FYVe0MFmXPYOv8+9fIp2eTH3w+3Auk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749201291; c=relaxed/simple;
-	bh=2JiBmnzAZt/b74dkgeqvuFv398ChwEDi9igSc1dtK2s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R51Q56rpDAMuGSZJ2BNDpvzirutZluIf15HylUg85EQjkq/PY5hInkTrji6v8HryApLLO89SBUonrdhuI5ft1aBbr7Ucj/679f71re33WSFlQT9mvZB0hOQZOR0YmluYshzVWo2vEgEB/pplz6Am+uZfqcXiwbvy2cSRRKHV0sI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VjoeG4Ee; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1749202789; c=relaxed/simple;
+	bh=2OFIkwcFfGxbIptsJzGXFt9IKn/aP/aohtIajXB2Jno=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Wt9BoWgY4PvBFBxkhS3kesmbB99+pDpcTKkqbc4JsvESWbJFi99yZhIjTuO55Hw8gHA26kSPuQO7pugKPFp8i89fQexUwvQdYTXjFlgbInPYINQoz1UMWYxGENLIS9bR9c9byEs6HLhmDKHcDq2kdXk3kltq3tbc5Pc3rXNNAVU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=Lf2shYci; arc=none smtp.client-ip=68.232.154.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VjoeG4Ee"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="Lf2shYci"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1749201290; x=1780737290;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2JiBmnzAZt/b74dkgeqvuFv398ChwEDi9igSc1dtK2s=;
-  b=VjoeG4EegThTF57oJYt0nWJ+h7QEB//PDQ13D1Qyhd5qtjZVMrkkpIjr
-   85AfpSeZCawXwr7s1Jb5xZ4CaqDEL+bhwwndwGmrvG9QizxS4Qnlwfeqo
-   w2oU49tu6v3rdiX5s9wtbkKfc9XdSN9ETImRq6Dsiv59SHxtEpHUkLd8i
-   KLXVPCC2X4N9zDg2RNrM00QyY+1p6k7Az0eWK2SxWTP59HXkrH+GKnziN
-   +hyOAvGCWdS3GpD6cpuWwx1WG5mYieYNBC6QaW1OInJkzEisVFfPqZFDo
-   1SIri/Hebtfi6bQlCk/W1m/SmkQ+Ojc2D5m3xLZObL7O4wbnP4uiZYyxK
-   w==;
-X-CSE-ConnectionGUID: N2oV0nJzSf6MPPp3GXDdnQ==
-X-CSE-MsgGUID: lvwwZS03TfKwb7fBr+uhLA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11455"; a="51447692"
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1749202787; x=1780738787;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=2OFIkwcFfGxbIptsJzGXFt9IKn/aP/aohtIajXB2Jno=;
+  b=Lf2shYciSVxArhhKE7mtyIaFOO6vDkFpU1f+HejPiVz1KasX/xaU6OiR
+   p3XZ8Yxu/drKzfyq/wkkl7k8tsc2sYALWNuP+zFGiZc4JyLL30qfB6kOe
+   DAs/G/3UPPYypS7uxvwO4PPAcv5lYNR71rJezqcijFwPPzm6uSXzaXMu4
+   TEapBqFvB/Er2CaJUV1AWtYjMExW5ImHyz8nmgmeT+G71DjWOSnM/abR7
+   HnQBWhQIDaKBrwqWrxsJHk0wyITQXYrv7bB++5kyfDX40Ut7508NmO5DX
+   zZWoqzcsoZlD/Wx0lV/CIR27sqx/n/+CXeYayeTmOBw7GTwxHnyjDopBM
+   Q==;
+X-CSE-ConnectionGUID: RNxw4F1gS4uefnTd7vXzbA==
+X-CSE-MsgGUID: y5Nj09tiRyOGdHR44TJ84A==
 X-IronPort-AV: E=Sophos;i="6.16,214,1744095600"; 
-   d="scan'208";a="51447692"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2025 02:14:49 -0700
-X-CSE-ConnectionGUID: J9avamkJQriN8AOV9Y+kqA==
-X-CSE-MsgGUID: EId4XSqmSiWf+8t7MGmokg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,214,1744095600"; 
-   d="scan'208";a="150647666"
-Received: from smile.fi.intel.com ([10.237.72.52])
-  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2025 02:14:47 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1uNT9w-000000048uT-1wCU;
-	Fri, 06 Jun 2025 12:14:44 +0300
-Date: Fri, 6 Jun 2025 12:14:44 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Gustavo Silva <gustavograzs@gmail.com>
-Cc: Alex Lanzano <lanzano.alex@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] iio: imu: bmi270: add channel for step counter
-Message-ID: <aEKxhPFDQEIN1xnm@smile.fi.intel.com>
-References: <20250605-bmi270-events-v2-0-8b2c07d0c213@gmail.com>
- <20250605-bmi270-events-v2-1-8b2c07d0c213@gmail.com>
+   d="scan'208";a="43064047"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 Jun 2025 02:39:45 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Fri, 6 Jun 2025 02:39:43 -0700
+Received: from marius-VM.mshome.net (10.10.85.11) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.44 via Frontend
+ Transport; Fri, 6 Jun 2025 02:39:40 -0700
+From: <marius.cristea@microchip.com>
+To: <jic23@kernel.org>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
+	<andy@kernel.org>
+CC: <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+	<broonie@kernel.org>, <linux-iio@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<marius.cristea@microchip.com>
+Subject: [PATCH v3 1/2] dt-bindings: iio: adc: adding support for PAC194X
+Date: Fri, 6 Jun 2025 12:39:28 +0300
+Message-ID: <20250606093929.100118-2-marius.cristea@microchip.com>
+X-Mailer: git-send-email 2.48.1
+In-Reply-To: <20250606093929.100118-1-marius.cristea@microchip.com>
+References: <20250606093929.100118-1-marius.cristea@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250605-bmi270-events-v2-1-8b2c07d0c213@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On Thu, Jun 05, 2025 at 07:05:01PM -0300, Gustavo Silva wrote:
-> Add a channel for enabling/disabling the step counter, reading the
-> number of steps and resetting the counter.
+From: Marius Cristea <marius.cristea@microchip.com>
 
-...
+This is the device tree schema for iio driver for Microchip PAC194X
+and PAC195X series of Power Monitors with Accumulator. The PAC194X
+family supports 9V Full-Scale Range and the PAC195X supports 32V
+Full-Scale Range.
 
-> +static int bmi270_update_feature_reg(struct bmi270_data *data,
-> +				     enum bmi270_feature_reg_id id,
-> +				     u16 mask, u16 val)
-> +{
-> +	u16 regval = 0;
+There are two versions of the PAC194X/5X: the PAC194X/5X-1 devices
+are for high-side current sensing and the PAC194X/5X-2 devices are
+for low-side current sensing or floating VBUS applications.
 
-Redundant assignment.
+The PAC194X/5X-1 is named shortly PAC194X/5X.
 
-> +	int ret;
-> +
-> +	ret = bmi270_read_feature_reg(data, id, &regval);
-> +	if (ret)
-> +		return ret;
+Signed-off-by: Marius Cristea <marius.cristea@microchip.com>
+---
+ .../bindings/iio/adc/microchip,pac1944.yaml   | 204 ++++++++++++++++++
+ 1 file changed, 204 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/microchip,pac1944.yaml
 
-> +	set_mask_bits(&regval, mask, val);
-
-You can't do this on the 16-bit values on some architectures.
-Maybe it's easy to implement cmpxchg() for 16-bit values there,
-though.
-
-> +	return bmi270_write_feature_reg(data, id, regval);
-> +}
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,pac1944.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,pac1944.yaml
+new file mode 100644
+index 000000000000..4a2cf6b64055
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/microchip,pac1944.yaml
+@@ -0,0 +1,204 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/microchip,pac1944.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip PAC1944 and PAC1954 Power Monitors with Accumulator
++
++maintainers:
++  - Marius Cristea <marius.cristea@microchip.com>
++
++description: |
++  This device is part of the Microchip family of Power Monitors with
++  Accumulator. The datasheet for PAC1941-1, PAC1941-1, PAC1942-1, PAC1942-2,
++  PAC1943-1 and PAC1944-1 can be found here:
++    https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/PAC194X-Family-Data-Sheet-DS20006543.pdf
++  The datasheet for PAC1951-1, PAC1951-1, PAC1952-1, PAC1952-2, PAC1953-1 and
++  PAC1954-1 can be found here:
++    https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/PAC195X-Family-Data-Sheet-DS20006539.pdf
++
++properties:
++  compatible:
++    enum:
++      - microchip,pac1941
++      - microchip,pac19412
++      - microchip,pac1942
++      - microchip,pac19422
++      - microchip,pac1943
++      - microchip,pac1944
++      - microchip,pac1951
++      - microchip,pac19512
++      - microchip,pac1952
++      - microchip,pac19522
++      - microchip,pac1953
++      - microchip,pac1954
++
++  reg:
++    maxItems: 1
++
++  vdd-supply: true
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++  interrupts:
++    maxItems: 2
++
++  interrupt-names:
++    description:
++      alert1 indicates a HIGH or LOW limit was exceeded.
++      alert2 indicates a THERM limit was exceeded.
++    items:
++      - const: alert1
++      - const: alert2
++
++patternProperties:
++  "^channel@[1-4]+$":
++    type: object
++    $ref: adc.yaml
++    description:
++      Represents the external channels which are connected to the ADC.
++
++    properties:
++      reg:
++        items:
++          minimum: 1
++          maximum: 4
++
++      shunt-resistor-micro-ohms:
++        description:
++          Value in micro Ohms of the shunt resistor connected between
++          the SENSE+ and SENSE- inputs, across which the current is measured.
++          Value is needed to compute the scaling of the measured current.
++
++      microchip,vbus-half-range:
++        $ref: /schemas/types.yaml#/definitions/flag
++        description: |
++          In order to increase measurement resolution and keeping the same
++          number the of bits the device has a configurable VBUS full range scale
++          (FSR). The range should be set by hardware design and it should not be
++          changed during runtime. The bipolar capability for VBUS enables
++          accurate offset measurement and correction.
++          The VBUS could be configured into the following full scale range:
++            - VBUS has unipolar 0V to 32V FSR (default) for PAC195X or 0V to 9V
++              (default) for PAC194X.
++            - VBUS has bipolar -32V to 32V FSR for PAC195X or -9V to 9V for
++              PAC194X. The actual range is limited to about -200 mV due to the
++              impact of the ESD structures.
++            - VBUS has bipolar -16V to 16V FSR for PAC195X or -4.5V to 4.5V for
++              PAC194X. The actual range is limited to about -200 mV due to the
++              impact of the ESD structures.
++
++      microchip,vbus-bipolar:
++        $ref: /schemas/types.yaml#/definitions/flag
++        description:
++          If provided, the channel is to be used in bipolar mode. The
++          actual range is limited to about -200 mV due to the impact of the ESD
++          structures.
++
++      microchip,vsense-half-range:
++        $ref: /schemas/types.yaml#/definitions/flag
++        description: |
++          In order to decrease the power dissipation on the shunt resistor and
++          in the same time to increase measurement resolution by keeping the
++          same number the of bits the device has a configurable VSENSE full
++          range scale (FSR). The range should be set by hardware design and it
++          should not be changed during runtime.
++          The VSENSE could be configured into the following full scale range:
++            - VSENSE has unipolar 0V to 100 mV FSR (default)
++            - VSENSE has bipolar -100 mV to 100 mV FSR
++            - VSENSE has bipolar -50 mV to 50 mV FSR
++
++      microchip,vsense-bipolar:
++        $ref: /schemas/types.yaml#/definitions/flag
++        description:
++          If provided, the channel is to be used in bipolar mode.
++
++      microchip,accumulation-mode:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description:
++          The Hardware Accumulator may be used to accumulate VPOWER, VSENSE or
++          VBUS values for any channel. By setting the accumulator for a channel
++          to accumulate the VPOWER values gives a measure of accumulated power
++          into a time period, which is equivalent to energy. Setting the
++          accumulator for a channel to accumulate VSENSE values gives a measure
++          of accumulated current, which is equivalent to charge. This allows the
++          accumulator to be used as a coulomb counter. For either VSENSE or
++          VBUS, many samples may be accumulated on chip and the result collected
++          by the host and divided by the accumulator counter count value to
++          yield an average value with a very long integration time to reduce
++          noise. This feature is also very useful for system calibration,
++          allowing many averages to be accumulated for fast averaging/noise
++          reduction.
++          This functionality needs to be setup once and must not be changed
++          during the runtime, just in case the user wants to measure the charge
++          or the energy consumed from board power up till the user has control
++          or during a reboot of the system.
++          The Hardware Accumulator could be configured to accumulate
++          VPOWER, VSENSE or VBUS
++            <0>  -  Accumulator accumulates VPOWER (default)
++            <1>  -  Accumulator accumulates VSENSE
++            <2>  -  Accumulator accumulates VBUS
++        maximum: 2
++        default: 0
++
++    required:
++      - reg
++      - shunt-resistor-micro-ohms
++
++    unevaluatedProperties: false
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++  - "#address-cells"
++  - "#size-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        power-monitor@10 {
++            compatible = "microchip,pac1954";
++            reg = <0x10>;
++            vdd-supply = <&vdd>;
++
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            channel@1 {
++                reg = <0x1>;
++                shunt-resistor-micro-ohms = <24900>;
++                label = "CPU";
++                microchip,vsense-half-range;
++                microchip,vsense-bipolar;
++            };
++
++            channel@3 {
++                reg = <0x3>;
++                shunt-resistor-micro-ohms = <75000>;
++                label = "MEM";
++                microchip,vbus-half-range;
++                microchip,vbus-bipolar;
++                microchip,vsense-half-range;
++            };
++
++            channel@4 {
++                reg = <0x4>;
++                shunt-resistor-micro-ohms = <100000>;
++                label = "NET";
++                microchip,vbus-bipolar;
++            };
++        };
++    };
++
++...
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.48.1
 
