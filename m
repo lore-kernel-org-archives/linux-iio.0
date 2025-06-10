@@ -1,55 +1,56 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B22A227F164;
-	Tue, 10 Jun 2025 07:35:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77DAE27FD6B;
+	Tue, 10 Jun 2025 07:35:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749540931; cv=none; b=dbqzuupUoUjw5JC3LZ5l3xTKNxE1LrosftMv2sXMQrQzLjn6GuGCWl8SQxq/8Gb/O79Z0gqEa7K6y1tgQw8X7/GdtNrjTxauHytjOpnAJtWpfD/td9HHe9wsmxG/R3E9nsefFmeFNK1T98CcTSlowZUJm5KmU1gcOG8GHR0PwlU=
+	t=1749540932; cv=none; b=N0vibb5nx8ycnsiISxKwKkx6M1YUSeg1/CENw9X7H1kkKLdqEthFk+9K1TvLTxrfYgcb4X2rBrsKnDDw0AqfWhq9gksuwttgjBe36LzD+/aWucO7d+prF4fYSdeVG+/doelnx4V4G7is6ccEi2gKNb7gS06bnck+8DbrP5tTEIk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749540931; c=relaxed/simple;
-	bh=wRpByI1coJpFEIh+zJNKNHgrlO5l0ATlV/vp7byccE0=;
+	s=arc-20240116; t=1749540932; c=relaxed/simple;
+	bh=LpB0tn2W8J57FOE/gT31lMBVVdtKo2lsnkxO3IobWoQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=kP54xMx7ZjqeVxoo/BQFiKgxJ06v8pDbBdVXe18E/S1K7v1yM5wwYDIjVLCDKNMNTdJePAMwyToXqEERpGXEFAw5AXgN8/F9+f1gJXWNXirk4cKi8T3pNqhtbeXi0ZCXPVm9jyqcS6N8i0W4g1nD3t1OzMCSElq/WsHNZClIwhc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Vknqc7Fy; arc=none smtp.client-ip=148.163.135.77
+	 In-Reply-To:To:CC; b=hCmH5nqYmggPw+OM2kQPt5cIz/af/m9PDHi5DtavaaVt3RWZRBjlSEi+ujxC19nDMVB92B4hrU5skagyOv2dw/fZT5al81Fy/VDfFUBso+rJYpE1wcT3xWdeT7zZokANv1+awkjb+xmKhMrutW2JNSELsiluvVxyPpgPTAPNIV8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=SSMIWlDK; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Vknqc7Fy"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55A6uqt9002452;
-	Tue, 10 Jun 2025 03:35:16 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="SSMIWlDK"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55A6lCQ8030659;
+	Tue, 10 Jun 2025 03:35:11 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=b8URu
-	x3k/Kp76Jxq7h6A+CDTnwaDlwXerEzBO9LTHvw=; b=Vknqc7FytR5sBDtm3j283
-	9QpjvaFRtyLfeqJTEhDHWRHUye8caqEevT/Yzr9wn9Ss0YWbREy/cxV62SLWZ2nQ
-	JfTmY4Fqd4OX2v1Wzen45t7n5y0yrH26nOc+aoN9BWzumT8xHmJZ608sW54Eg6Ap
-	JXG317haEAW4fA2enQl+olRUYLqnM00aTYRD403MiDV41BkuelCzjDf8ivgTKJ2r
-	3E5+lYJ3GTzg/0GEidr9ZbZ18dMNCU3uMNW82uslXIBmNI5dzf41KkuOAl/S7TGW
-	rzNUk1yxwSw3CqRktpX+tUtiRfQiMYE7xnt0hLNPomN6usLUT0p7qHSgykjqty0d
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=adjeN
+	tw0XQXx7CGsSo6c8VElZl2N4SywtE1Yxk4K2KQ=; b=SSMIWlDKKBk8Olhs6chpw
+	5xp/i+Fne5fp1I3OAjmRUUQsZSORrvQw1+BbQtwmRFN/WfQg4FidSl6FIGLD4Tsz
+	PRwUDfXjjNw5h9iFTRlE3D7dCU1PrZjPvQdaM7SCRBkDMwuLjJuPdJbfAnTv6n+z
+	n6aEq5LEmBo/5mepGSBaGmFTKrvUxQg2KqfojvFBqveq6UGFYPjn66hoMYoeQkM8
+	lR/PrOMQUgKEtxOYkW6s8Xlj3JNBLeJ8cMHG6+KwYQtc2dxnkjPPB24w0845MQ2N
+	7dKx/HxtTXPUSgiUiUuwA4FQ9t9s6RraHIqwveVG7MEeY4CRnF3sVv6MIaosyFIa
 	w==
 Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 476fvkr7q1-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 476fc30bkg-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 10 Jun 2025 03:35:16 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 55A7ZF1x056174
+	Tue, 10 Jun 2025 03:35:10 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 55A7Z91X056157
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 10 Jun 2025 03:35:15 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+	Tue, 10 Jun 2025 03:35:09 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.10; Tue, 10 Jun
- 2025 03:35:15 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.10 via Frontend
- Transport; Tue, 10 Jun 2025 03:35:15 -0400
+ 2025 03:35:09 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.10 via Frontend
+ Transport; Tue, 10 Jun 2025 03:35:09 -0400
 Received: from HYB-DlYm71t3hSl.ad.analog.com (HYB-DlYm71t3hSl.ad.analog.com [10.44.3.51])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 55A7YkMl002608;
-	Tue, 10 Jun 2025 03:35:06 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 55A7YkMj002608;
+	Tue, 10 Jun 2025 03:35:03 -0400
 From: Jorge Marques <jorge.marques@analog.com>
-Date: Tue, 10 Jun 2025 09:34:40 +0200
-Subject: [PATCH v3 7/8] docs: iio: ad4052: Add event documentation
+Date: Tue, 10 Jun 2025 09:34:38 +0200
+Subject: [PATCH v3 5/8] docs: iio: ad4052: Add offload support
+ documentation
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -58,7 +59,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20250610-iio-driver-ad4052-v3-7-cf1e44c516d4@analog.com>
+Message-ID: <20250610-iio-driver-ad4052-v3-5-cf1e44c516d4@analog.com>
 References: <20250610-iio-driver-ad4052-v3-0-cf1e44c516d4@analog.com>
 In-Reply-To: <20250610-iio-driver-ad4052-v3-0-cf1e44c516d4@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
@@ -79,90 +80,83 @@ CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-doc@vger.kernel.org>,
         <linux-pwm@vger.kernel.org>, Jorge Marques <jorge.marques@analog.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1749540886; l=2133;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1749540886; l=1826;
  i=jorge.marques@analog.com; s=20250303; h=from:subject:message-id;
- bh=wRpByI1coJpFEIh+zJNKNHgrlO5l0ATlV/vp7byccE0=;
- b=ji7mAuuU994h1QB4oGT2M8cOkLGrPQA+pJPttJrdTg7uqIFql+lSN97ktdF9TMmyX35e5TF1W
- wCxz1XXouYqDN23EeV3MGIJmubwfiZVYoFyuNx9a08cfMiOl49vdAvR
+ bh=LpB0tn2W8J57FOE/gT31lMBVVdtKo2lsnkxO3IobWoQ=;
+ b=gASwBhMMaHdCRv4Vgk2/VpMe65RuPPDsnn+Uyu5xAKCfhzYFNe5zhAftG5PKERUGOlwbJFxro
+ qLHyKV2qP84C2D9gJ++nH7Txq5M7F6b6oi76mFdgRVd3IIaxPxwLSrx
 X-Developer-Key: i=jorge.marques@analog.com; a=ed25519;
  pk=NUR1IZZMH0Da3QbJ2tBSznSPVfRpuoWdhBzKGSpAdbg=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjEwMDA1NiBTYWx0ZWRfX8UhCCaKxg/J6
- xkr0upiZcQhcm1MNWm0QnQ0Nq7zsIGTFqnCljeC5mUrSu7RFKRe9w2rmikl2P2A9Zu2vQqjYkyM
- GJ03wjHPi/2F9Tm62fMJ7YDPsOchwIPo/Pv+Pf0+yd7JZSC+ygt9iCl52yFP8M5uv8nP2jpaj3s
- dc+mCsu3fMfx98F8rzvxbMkhoVUABV7Ik2IN5j1p6NsG0rdpjMd7gQf0W5xcnZcRmfcNJ1v0/k8
- 14JXcto58frfYSN7ovXtuZJ77t65vSTuetR5iiQbGJkYg++F+OFkW4G1N4x1OagOdWbQazRaDv0
- 95rsP65ySxLAsVrGf0d2+YCHJMoAirRXhVnzlZpc9pBoXRyKIqVLgLlmd49/ENhDKwd+sK/+LAY
- 0ujDnGP8UV7aXRGRiK4jX3m1dfWmOy3Mm0Xdu3z+Fv7jLp5lmBaoIiMX27MLAaEm4EWD9WUS
-X-Proofpoint-GUID: prhMjQO8IIsya-Yfpp1B43BKxKRaG-jg
-X-Authority-Analysis: v=2.4 cv=Coy/cm4D c=1 sm=1 tr=0 ts=6847e034 cx=c_pps
+X-Proofpoint-GUID: EYNPHrycvRh5RSJZAG4llzmJl9D6xp_R
+X-Proofpoint-ORIG-GUID: EYNPHrycvRh5RSJZAG4llzmJl9D6xp_R
+X-Authority-Analysis: v=2.4 cv=LtaSymdc c=1 sm=1 tr=0 ts=6847e02e cx=c_pps
  a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
- a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=gAnH3GRIAAAA:8 a=55yT-0NB-ohaRzUcirIA:9
- a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: prhMjQO8IIsya-Yfpp1B43BKxKRaG-jg
+ a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=wI1k2SEZAAAA:8 a=gAnH3GRIAAAA:8
+ a=d3jCkwYfNc7Hc5xPy-QA:9 a=QEXdDO2ut3YA:10 a=6HWbV-4b7c7AdzY24d_u:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjEwMDA1NiBTYWx0ZWRfX3Lbf+Jp+a27B
+ LIOj4O2rONhlQ2H1Lwr0nGPAotpSdxMN3fdD1UsWWBYUYjAopojWACWGZqYoloOueHOhEFqrHp7
+ 0gXD2JaZwBpnPrFRO2y+jVDamWWaFNHxMATmAuOzmGcykYcPjchBJUulApqKjjzt98xDY9nK1WH
+ U9Ho8nm7LhAnAMdiD3RZRgGn9fzyXabEXdeQ1gMF/AusdiHZo3oVMPfLFmkmQRhTk/1tT6hTbhz
+ Xofp/MRCt8a9kSK5mdPRegzh6OliU6QVa5dwTgdM6JQSEes+sB/kVHAu0dySuFIy0orVTdCCkUx
+ +6oCmfUzm16hFBg9luDgsektuQjeziiBDmnMV83+kfHAzwLypCETfpLFxZPQFugS5D30b14cVZ6
+ rnpoKAhI5ltL8XfGHBbTXe+vA9LLvjmiQeeqt8N8GdlT8v4HMvMdydyv901CSzkIi28wsosa
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
  definitions=2025-06-10_02,2025-06-09_02,2025-03-28_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 priorityscore=1501 mlxlogscore=999 spamscore=0
- lowpriorityscore=0 impostorscore=0 mlxscore=0 phishscore=0 bulkscore=0
- clxscore=1015 suspectscore=0 adultscore=0 classifier=spam authscore=0
+ adultscore=0 malwarescore=0 priorityscore=1501 phishscore=0
+ lowpriorityscore=0 mlxlogscore=906 impostorscore=0 mlxscore=0 spamscore=0
+ clxscore=1015 suspectscore=0 bulkscore=0 classifier=spam authscore=0
  authtc=n/a authcc= route=outbound adjust=0 reason=mlx scancount=1
  engine=8.19.0-2505280000 definitions=main-2506100056
 
-Explain the AD4052 monitoring support by exposing as an IIO event.
+Explain the AD4052 support for the SPI Engine Offload.
 
 Signed-off-by: Jorge Marques <jorge.marques@analog.com>
 ---
- Documentation/iio/ad4052.rst | 38 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ Documentation/iio/ad4052.rst | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
 diff --git a/Documentation/iio/ad4052.rst b/Documentation/iio/ad4052.rst
-index 2ad1c7712766118b03c48929d1f2b7670d5f8d41..da9c0481dfcd3b4eecd91280b7f259aa9118467c 100644
+index 25e55eb72e167bd2b2195ba789b45ce402869b0f..2ad1c7712766118b03c48929d1f2b7670d5f8d41 100644
 --- a/Documentation/iio/ad4052.rst
 +++ b/Documentation/iio/ad4052.rst
-@@ -93,3 +93,41 @@ When SPI offload is being used, additional attributes are present:
-      - Description
-    * - ``in_voltage_sampling_frequency``
-      - Set the sampling frequency.
+@@ -49,6 +49,12 @@ The ADC contains only one channel with following attributes:
+    * - ``in_voltage_oversampling_ratio_available``
+      - List of available oversampling values. Value 1 disable the burst
+        averaging mode.
++   * - ``in_voltage_sampling_frequency``
++     - Set the sampling frequency, only present if SPI Offload is being used.
 +
-+Threshold events
-+================
++If `gp1` interrupt is not set, the driver will not wait for the data ready
++assertion, and will result in reading a sample before it's ready, particularly
++in oversampling mode.
+ 
+ Also contain the following device attributes:
+ 
+@@ -69,3 +75,21 @@ Low-power mode
+ The device enters low-power mode on idle to save power. Enabling an event puts
+ the device out of the low-power since the ADC autonomously samples to assert
+ the event condition.
 +
-+The ADC supports a monitoring mode to raise threshold events. The driver
-+supports a single interrupt for both rising and falling readings.
++SPI offload support
++===================
 +
-+The feature is enabled/disabled by setting ``thresh_either_en``. During monitor
-+mode, the device continuously operates in autonomous mode until put back in
-+configuration mode, due to this, the device returns busy until the feature is
-+disabled.
++To be able to achieve the maximum sample rate, the driver can be used with the
++`AXI SPI Engine`_ to provide SPI offload support.
 +
-+The following event attributes are available:
++.. _AXI SPI Engine: http://analogdevicesinc.github.io/hdl/projects/ad4052_ardz/index.html
 +
-+.. list-table:: Event attributes
++When SPI offload is being used, additional attributes are present:
++
++.. list-table:: Additional attributes
 +   :header-rows: 1
 +
 +   * - Attribute
 +     - Description
-+   * - ``sampling_frequency``
-+     - Frequency used in the monitoring mode, sets the device internal sample
-+       rate when the mode is activated.
-+   * - ``sampling_frequency_available``
-+     - List of available sample rates.
-+   * - ``thresh_either_en``
-+     - Enable monitoring mode.
-+   * - ``thresh_falling_hysteresis``
-+     - Set the hysteresis value for the minimum threshold.
-+   * - ``thresh_falling_value``
-+     - Set the minimum threshold value.
-+   * - ``thresh_rising_hysteresis``
-+     - Set the hysteresis value for the maximum threshold.
-+   * - ``thresh_rising_value``
-+     - Set the maximum threshold value.
-+
-+If the interrupt ``gp0`` is not provided, the IIO events attributes are still
-+present, but no IIO Event will ever be triggered. This allows to use ``gp0``
-+output to trigger other resource.
++   * - ``in_voltage_sampling_frequency``
++     - Set the sampling frequency.
 
 -- 
 2.49.0
