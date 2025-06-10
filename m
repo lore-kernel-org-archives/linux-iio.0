@@ -1,56 +1,55 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CF7827F73A;
-	Tue, 10 Jun 2025 07:35:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B22A227F164;
+	Tue, 10 Jun 2025 07:35:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749540931; cv=none; b=dCC0Vj4EYXrjxZ7UHqlP0zriFq3/MIucW+U2x0d7e2nDU55nKFFafw70PDMJfwEieH0PpzkBYLBvji1MQf9yOXwNT8fThmSh3DDJW4nx71YxgUCwmyitPQwdNMevamcv+gcTa6OXI3DWaXzp5tssLxZD7h49JPtSXspfJ+/m2aY=
+	t=1749540931; cv=none; b=dbqzuupUoUjw5JC3LZ5l3xTKNxE1LrosftMv2sXMQrQzLjn6GuGCWl8SQxq/8Gb/O79Z0gqEa7K6y1tgQw8X7/GdtNrjTxauHytjOpnAJtWpfD/td9HHe9wsmxG/R3E9nsefFmeFNK1T98CcTSlowZUJm5KmU1gcOG8GHR0PwlU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1749540931; c=relaxed/simple;
-	bh=BStMCOgPLwAcv0102KzdZT2L0QgfKEUgCbYK4hAWzrM=;
+	bh=wRpByI1coJpFEIh+zJNKNHgrlO5l0ATlV/vp7byccE0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=fT2LUasoVCqtKdMJH9jwnW7RPJoJT0WUATYZ1vW/+F2RyKARYYbdiLNAbOP3eQ8Ofk5uwJv6jiq/7aeXPOJcs3/U3oeaSe6HGhRkkYfflSiQwp35R8desZinHYny/TjLXY8lkXMNf6xrdxSXKvafRX2Gg0gZ6qC5GGFhu2LyNrk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=UOSW/CX4; arc=none smtp.client-ip=148.163.135.77
+	 In-Reply-To:To:CC; b=kP54xMx7ZjqeVxoo/BQFiKgxJ06v8pDbBdVXe18E/S1K7v1yM5wwYDIjVLCDKNMNTdJePAMwyToXqEERpGXEFAw5AXgN8/F9+f1gJXWNXirk4cKi8T3pNqhtbeXi0ZCXPVm9jyqcS6N8i0W4g1nD3t1OzMCSElq/WsHNZClIwhc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Vknqc7Fy; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="UOSW/CX4"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55A62TUC027961;
-	Tue, 10 Jun 2025 03:35:02 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Vknqc7Fy"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55A6uqt9002452;
+	Tue, 10 Jun 2025 03:35:16 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=nYS8h
-	VWxHnvEOeh9OJgvFtJ0jhBoLhu+GpQOdvI/82o=; b=UOSW/CX4QCL+2irmCI5ig
-	ZlIUbOn96WxY91LYTaizweN5Y+5jhNUhUpzHWn/m+rUI9XQoCRllkW32k5M2Shzx
-	+tXW+nacLSweYW/HxPW1mjvasD4bFNlg6ZljxVbcHzENqS7ds6m6ntwBD5DDg6+h
-	bh9lo56iZBZoILsVA+IM8/sTX6a+xWeEwO7iEA5XAnInBtkLc4Q4a+tuiJ1oLFqa
-	PuLwXcKxXIE/WPMSza/5R4mewBNYfBYU8QD77L8LfSGSbN991/1YvN5LZlJdg9Rv
-	fBTtC692vt6khDlKfGwqPH50fIrGH0jQAO2A3t9IZyc1TF9OufkceWkYkJsOvN27
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=b8URu
+	x3k/Kp76Jxq7h6A+CDTnwaDlwXerEzBO9LTHvw=; b=Vknqc7FytR5sBDtm3j283
+	9QpjvaFRtyLfeqJTEhDHWRHUye8caqEevT/Yzr9wn9Ss0YWbREy/cxV62SLWZ2nQ
+	JfTmY4Fqd4OX2v1Wzen45t7n5y0yrH26nOc+aoN9BWzumT8xHmJZ608sW54Eg6Ap
+	JXG317haEAW4fA2enQl+olRUYLqnM00aTYRD403MiDV41BkuelCzjDf8ivgTKJ2r
+	3E5+lYJ3GTzg/0GEidr9ZbZ18dMNCU3uMNW82uslXIBmNI5dzf41KkuOAl/S7TGW
+	rzNUk1yxwSw3CqRktpX+tUtiRfQiMYE7xnt0hLNPomN6usLUT0p7qHSgykjqty0d
 	w==
 Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 475u346cyy-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 476fvkr7q1-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 10 Jun 2025 03:35:02 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 55A7Z1UF056124
+	Tue, 10 Jun 2025 03:35:16 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 55A7ZF1x056174
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 10 Jun 2025 03:35:01 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+	Tue, 10 Jun 2025 03:35:15 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.10; Tue, 10 Jun
- 2025 03:35:01 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.10 via Frontend
- Transport; Tue, 10 Jun 2025 03:35:01 -0400
+ 2025 03:35:15 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.10 via Frontend
+ Transport; Tue, 10 Jun 2025 03:35:15 -0400
 Received: from HYB-DlYm71t3hSl.ad.analog.com (HYB-DlYm71t3hSl.ad.analog.com [10.44.3.51])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 55A7YkMf002608;
-	Tue, 10 Jun 2025 03:34:55 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 55A7YkMl002608;
+	Tue, 10 Jun 2025 03:35:06 -0400
 From: Jorge Marques <jorge.marques@analog.com>
-Date: Tue, 10 Jun 2025 09:34:34 +0200
-Subject: [PATCH v3 1/8] Documentation: ABI: add oversampling frequency in
- sysfs-bus-iio
+Date: Tue, 10 Jun 2025 09:34:40 +0200
+Subject: [PATCH v3 7/8] docs: iio: ad4052: Add event documentation
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -59,7 +58,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20250610-iio-driver-ad4052-v3-1-cf1e44c516d4@analog.com>
+Message-ID: <20250610-iio-driver-ad4052-v3-7-cf1e44c516d4@analog.com>
 References: <20250610-iio-driver-ad4052-v3-0-cf1e44c516d4@analog.com>
 In-Reply-To: <20250610-iio-driver-ad4052-v3-0-cf1e44c516d4@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
@@ -80,89 +79,90 @@ CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-doc@vger.kernel.org>,
         <linux-pwm@vger.kernel.org>, Jorge Marques <jorge.marques@analog.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1749540886; l=2299;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1749540886; l=2133;
  i=jorge.marques@analog.com; s=20250303; h=from:subject:message-id;
- bh=BStMCOgPLwAcv0102KzdZT2L0QgfKEUgCbYK4hAWzrM=;
- b=SFBpg39X0yjLGyt/eCwcA2RBmfaREh3W1gW6zKTyksHjCCaH7RZr45LuEVmsirZo0JdpODEVX
- hl/Vxw2rDGlAh7EE212sGr3wi0O/iVCqWmJJXC9tc5ebCNPh3pT0f1P
+ bh=wRpByI1coJpFEIh+zJNKNHgrlO5l0ATlV/vp7byccE0=;
+ b=ji7mAuuU994h1QB4oGT2M8cOkLGrPQA+pJPttJrdTg7uqIFql+lSN97ktdF9TMmyX35e5TF1W
+ wCxz1XXouYqDN23EeV3MGIJmubwfiZVYoFyuNx9a08cfMiOl49vdAvR
 X-Developer-Key: i=jorge.marques@analog.com; a=ed25519;
  pk=NUR1IZZMH0Da3QbJ2tBSznSPVfRpuoWdhBzKGSpAdbg=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=R74DGcRX c=1 sm=1 tr=0 ts=6847e026 cx=c_pps
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjEwMDA1NiBTYWx0ZWRfX8UhCCaKxg/J6
+ xkr0upiZcQhcm1MNWm0QnQ0Nq7zsIGTFqnCljeC5mUrSu7RFKRe9w2rmikl2P2A9Zu2vQqjYkyM
+ GJ03wjHPi/2F9Tm62fMJ7YDPsOchwIPo/Pv+Pf0+yd7JZSC+ygt9iCl52yFP8M5uv8nP2jpaj3s
+ dc+mCsu3fMfx98F8rzvxbMkhoVUABV7Ik2IN5j1p6NsG0rdpjMd7gQf0W5xcnZcRmfcNJ1v0/k8
+ 14JXcto58frfYSN7ovXtuZJ77t65vSTuetR5iiQbGJkYg++F+OFkW4G1N4x1OagOdWbQazRaDv0
+ 95rsP65ySxLAsVrGf0d2+YCHJMoAirRXhVnzlZpc9pBoXRyKIqVLgLlmd49/ENhDKwd+sK/+LAY
+ 0ujDnGP8UV7aXRGRiK4jX3m1dfWmOy3Mm0Xdu3z+Fv7jLp5lmBaoIiMX27MLAaEm4EWD9WUS
+X-Proofpoint-GUID: prhMjQO8IIsya-Yfpp1B43BKxKRaG-jg
+X-Authority-Analysis: v=2.4 cv=Coy/cm4D c=1 sm=1 tr=0 ts=6847e034 cx=c_pps
  a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
- a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8
- a=RBIExvWx9eVdLZ2BeXAA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: NMKyQ_A2qgZtDghLkVgYwl1npDCu7nke
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjEwMDA1NiBTYWx0ZWRfX5Ky6/OkSuB4f
- birNCA5GKcokoo8V6BvTkpo0dkV25mnr+zM3j/vREzlAZejizFP+KMVR/JOQjD2Yl/EuVlE5w7w
- qulg5lEIYWX62lbO3ttYjqc4eAEyB/aUDigSEt6ViHB/f4VHNaSUHW6ZP2w10d4Sm3t1e1QMCvM
- Oc8F3OPPra+6yK72vR2MHtl2b1KaGSXkYgRFrjk3icrF1lEeumaS/y0NJ2lZAkPcDXHR7TLuysF
- nebQRCHWjw00LkEroDeV0cg9sArOVbrQYfUn+6Bgwak7xihIW+OsEGPUJPCfWqTdHRjoq9nLJtc
- 9A7nM8Ji4voJlfQ7S/srMQuir6CXFvqLv02nTVOnOOuBYKtUuOjRhD0nIVDWkelBI98tZWu3s+C
- 5UfhO3DHzYijoN8l8kz1vS1Y0DW61wpYdqLxCukIDRt7JWGBdaljhaM+5LrRrLs9oYaRR0CE
-X-Proofpoint-GUID: NMKyQ_A2qgZtDghLkVgYwl1npDCu7nke
+ a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=gAnH3GRIAAAA:8 a=55yT-0NB-ohaRzUcirIA:9
+ a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: prhMjQO8IIsya-Yfpp1B43BKxKRaG-jg
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
  definitions=2025-06-10_02,2025-06-09_02,2025-03-28_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 impostorscore=0 priorityscore=1501 malwarescore=0 bulkscore=0
- lowpriorityscore=0 phishscore=0 mlxscore=0 adultscore=0 spamscore=0
- suspectscore=0 mlxlogscore=999 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2506100056
+ malwarescore=0 priorityscore=1501 mlxlogscore=999 spamscore=0
+ lowpriorityscore=0 impostorscore=0 mlxscore=0 phishscore=0 bulkscore=0
+ clxscore=1015 suspectscore=0 adultscore=0 classifier=spam authscore=0
+ authtc=n/a authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2505280000 definitions=main-2506100056
 
-Some devices have an internal clock used to space out the conversion
-trigger for the oversampling filter, Consider an ADC with conversion and
-data ready pins topology:
-
-  Sampling trigger |       |       |       |       |
-  ADC conversion   ++++    ++++    ++++    ++++    ++++
-  ADC data ready      *       *       *       *       *
-
-With the oversampling frequency, conversions are spaced:
-
-  Sampling trigger |       |       |       |       |
-  ADC conversion   + + + + + + + + + + + + + + + + + + + +
-  ADC data ready         *       *       *       *       *
-
-In some devices and ranges, this internal clock can be used to evenly
-space the conversions between the sampling edge. In other devices the
-oversampling frequency is fixed or is computed based on the sampling
-frequency parameter, and the parameter is read only.
+Explain the AD4052 monitoring support by exposing as an IIO event.
 
 Signed-off-by: Jorge Marques <jorge.marques@analog.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ Documentation/iio/ad4052.rst | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index ef52c427a015cf47bb9847782e13afbee01e9f31..e60367255be89a9acc827ec1a749b729735f60e6 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -139,6 +139,23 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		Hardware dependent values supported by the oversampling filter.
- 
-+What:		/sys/bus/iio/devices/iio:deviceX/oversampling_frequency
-+KernelVersion:	6.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Some devices have internal clocks for oversampling.
-+		Sets the resulting frequency in Hz to trigger a conversion used by
-+		the oversampling filter.
-+		If the device has a fixed internal clock or is computed based on
-+		the sampling frequency parameter, the parameter is read only.
+diff --git a/Documentation/iio/ad4052.rst b/Documentation/iio/ad4052.rst
+index 2ad1c7712766118b03c48929d1f2b7670d5f8d41..da9c0481dfcd3b4eecd91280b7f259aa9118467c 100644
+--- a/Documentation/iio/ad4052.rst
++++ b/Documentation/iio/ad4052.rst
+@@ -93,3 +93,41 @@ When SPI offload is being used, additional attributes are present:
+      - Description
+    * - ``in_voltage_sampling_frequency``
+      - Set the sampling frequency.
 +
-+What:		/sys/bus/iio/devices/iio:deviceX/oversampling_frequency_available
-+KernelVersion:	6.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Hardware dependent values supported by the oversampling
-+		frequency.
++Threshold events
++================
 +
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_raw
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_raw
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_i_raw
++The ADC supports a monitoring mode to raise threshold events. The driver
++supports a single interrupt for both rising and falling readings.
++
++The feature is enabled/disabled by setting ``thresh_either_en``. During monitor
++mode, the device continuously operates in autonomous mode until put back in
++configuration mode, due to this, the device returns busy until the feature is
++disabled.
++
++The following event attributes are available:
++
++.. list-table:: Event attributes
++   :header-rows: 1
++
++   * - Attribute
++     - Description
++   * - ``sampling_frequency``
++     - Frequency used in the monitoring mode, sets the device internal sample
++       rate when the mode is activated.
++   * - ``sampling_frequency_available``
++     - List of available sample rates.
++   * - ``thresh_either_en``
++     - Enable monitoring mode.
++   * - ``thresh_falling_hysteresis``
++     - Set the hysteresis value for the minimum threshold.
++   * - ``thresh_falling_value``
++     - Set the minimum threshold value.
++   * - ``thresh_rising_hysteresis``
++     - Set the hysteresis value for the maximum threshold.
++   * - ``thresh_rising_value``
++     - Set the maximum threshold value.
++
++If the interrupt ``gp0`` is not provided, the IIO events attributes are still
++present, but no IIO Event will ever be triggered. This allows to use ``gp0``
++output to trigger other resource.
 
 -- 
 2.49.0
