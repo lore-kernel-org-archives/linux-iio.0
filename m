@@ -1,48 +1,48 @@
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 425451F09B0;
-	Tue, 10 Jun 2025 12:51:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF6D8299951;
+	Tue, 10 Jun 2025 12:56:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749559906; cv=none; b=EZ5rhslg/iOdgbSjA/kSNE+ctL5pzfZYG6jxBGjj8IvTfMINdpgnA3NJ9/uThcLpFUVYKQ7GJKNFdOn7vMnZPj2PDX6Esz2O5/kq9zAnNBdjmPInmOKR6KxUFTJCwavhMovpDt0Zw9tMJSD9rC+BqLwRKD2lfP2dZL0IPWAOyJw=
+	t=1749560164; cv=none; b=p27zNCtJj5oQHLv4D+BBJh00MKsBS3gdkfDvNAAIeWCLijqM7sElSq3KjJhP5dP5NEoVYIRPViIwre3hI1SiXgpxr7FSFm3dKZSsz/Qg3v10B6ndGqAj1Xnh97fWPG2Mx08cI0oonCI2OUGHC7tTPgH6PWE/qreaRjBn6Ukabss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749559906; c=relaxed/simple;
-	bh=hgGv4YzMb0WRrzbFVcwhGWCN1qPE2Q4DhTNK4a4HiH8=;
+	s=arc-20240116; t=1749560164; c=relaxed/simple;
+	bh=obh81dA6n2/QIwn9xppDLCO+0C+676zJ02YSkOC1q4g=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Hl1iQI4MXdlWmGzzvjwqwXz4B8XhKoRKQzOU/GG5I2qjZpU8Nabfv91F4QyCtLefPd3qtnUJyvQkVp3rH5Mxbb5Ku0hHxncjlDw93+lT4/TA7Yez/bQ42eJ4DhWYXgKBTWca3YgyJThUrT5FzIobSJv9XMSlWKggT2S1ss2pfK4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=PWCk4AM/; arc=none smtp.client-ip=185.132.182.106
+	 MIME-Version:Content-Type; b=JUp+iF3D7Bta21c5X5Hu8+hWQLjebyG6h5dwhHkAsTaOqGSQnCADe+yqjTre37da/B7hv1IoXfC0jDHhjb52DrRfp/rcVT/eT+KhoEdBoETRZBzNtgpNfv0GMxC4mucS9Y/Dar5vSMn28m9g0Di8YAWFPU/Y5uA2ub6ely7t42E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=DNWTm1pg; arc=none smtp.client-ip=185.132.182.106
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="PWCk4AM/"
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55ACLCR1012912;
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="DNWTm1pg"
+Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55ACLEi6010655;
 	Tue, 10 Jun 2025 14:50:43 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=selector1; bh=
-	d1Ux1q9BuJRxHbxPNIMoGJD4ASvq+/3OwQs7EDpLUOk=; b=PWCk4AM/11RuiVA3
-	n0i6g7xw14GSwJH/cJmerxWQus02kSKMsa3AC0QQFg5KNobzcP6jvdhwlbjpbOav
-	JbOH7NKpR8vHUr33edfJvrja+FNL+DweLR+1uaBmrpRnrhuSYsESj730plkQF1w9
-	WUacgfdA5M4atIFScYuk+cqg8shqyx3OgG3l1V2HZk52oIX68O3J5KhswnDaCHmI
-	x58hMmo1U5PN1gD84RSO+ux+nzsnK3tvLKOA2dhVbaGyoECmtb2sbH4TYFRg0mSE
-	DUJcAzFiTu4VSAlIuIXI+ieLHWEHgfBO+iXTuAShpV4454rwc8R83mNBdRohiNv7
-	9LpHCQ==
+	oUcADHRW/CG5RbFLRdu854s7Rq7hg+3h+CuKTVAO9D0=; b=DNWTm1pgax86feqh
+	VyQ9dkmv0nUbLOq5uDjbAxuM8ulylwzQ12xk+fUxjbJVzMTCEKRzp1NqbS5kQQ8Z
+	Kw7Hoh3GAfa2VjSwCKQ/OHIbrlHEVlDzCAYPgZyxiJcBsrgELSm1heXWGf7bF5ci
+	p6RdusyQaF0d0x1b52UJCFYqHVMnKAsbUm1gXQ5LRco+WEnHW6CEHTTe5S1J6/cL
+	qzoR3/eS5tv0CINKBRxOsflTw6x64V4uwYdsaMwsLwE2Yufti2X1JOq2DJseQC9Q
+	A8zAlxrg2K1ASNnLXLt0VMVQYsFJDtbIcpKRlOpZxCFKzVB8PzldBJSfobnObLMX
+	0tjHVA==
 Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 474aumd9u4-1
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 474y052j0v-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
 	Tue, 10 Jun 2025 14:50:43 +0200 (MEST)
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 8202C4004C;
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 64AC24004B;
 	Tue, 10 Jun 2025 14:49:43 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id BD7E4B4BF90;
-	Tue, 10 Jun 2025 14:49:01 +0200 (CEST)
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A4C03B34ED0;
+	Tue, 10 Jun 2025 14:49:00 +0200 (CEST)
 Received: from localhost (10.48.86.132) by SHFDAG1NODE1.st.com (10.75.129.69)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 10 Jun
- 2025 14:49:01 +0200
+ 2025 14:49:00 +0200
 From: Antonio Borneo <antonio.borneo@foss.st.com>
 To: Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Andy Shevchenko
@@ -63,9 +63,9 @@ CC: Antonio Borneo <antonio.borneo@foss.st.com>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         Maxime Coquelin
 	<mcoquelin.stm32@gmail.com>
-Subject: [PATCH 4/5] iio: trigger: stm32-lptimer: Fix build warnings about export.h
-Date: Tue, 10 Jun 2025 14:48:54 +0200
-Message-ID: <20250610124855.269158-5-antonio.borneo@foss.st.com>
+Subject: [PATCH 2/5] iio: adc: stm32-dfsdm: Fix build warnings about export.h
+Date: Tue, 10 Jun 2025 14:48:52 +0200
+Message-ID: <20250610124855.269158-3-antonio.borneo@foss.st.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20250610124855.269158-1-antonio.borneo@foss.st.com>
 References: <20250610124855.269158-1-antonio.borneo@foss.st.com>
@@ -86,29 +86,43 @@ X-Proofpoint-Virus-Version: vendor=baseguard
 After commit a934a57a42f6 ("scripts/misc-check: check missing #include
 <linux/export.h> when W=1") and commit 7d95680d64ac ("scripts/misc-check:
 check unnecessary #include <linux/export.h> when W=1") we get the build
-warning with W=1:
+warnings with W=1:
 
-drivers/iio/trigger/stm32-lptimer-trigger.c: warning: EXPORT_SYMBOL() is used, but #include <linux/export.h> is missing
+drivers/iio/adc/stm32-dfsdm-adc.c: warning: EXPORT_SYMBOL() is used, but #include <linux/export.h> is missing
+drivers/iio/adc/stm32-dfsdm-core.c: warning: EXPORT_SYMBOL() is used, but #include <linux/export.h> is missing
 
-Fix it.
+Fix them.
 
 Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
 ---
- drivers/iio/trigger/stm32-lptimer-trigger.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/adc/stm32-dfsdm-adc.c  | 1 +
+ drivers/iio/adc/stm32-dfsdm-core.c | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/iio/trigger/stm32-lptimer-trigger.c b/drivers/iio/trigger/stm32-lptimer-trigger.c
-index 2505ace440b46..c7bab18221c70 100644
---- a/drivers/iio/trigger/stm32-lptimer-trigger.c
-+++ b/drivers/iio/trigger/stm32-lptimer-trigger.c
-@@ -9,6 +9,7 @@
-  * Inspired by Benjamin Gaignard's stm32-timer-trigger driver
-  */
+diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+index f583924eb16bb..c2d21eecafe79 100644
+--- a/drivers/iio/adc/stm32-dfsdm-adc.c
++++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+@@ -8,6 +8,7 @@
  
+ #include <linux/dmaengine.h>
+ #include <linux/dma-mapping.h>
 +#include <linux/export.h>
- #include <linux/iio/timer/stm32-lptim-trigger.h>
- #include <linux/mfd/stm32-lptimer.h>
- #include <linux/mod_devicetable.h>
+ #include <linux/iio/adc/stm32-dfsdm-adc.h>
+ #include <linux/iio/backend.h>
+ #include <linux/iio/buffer.h>
+diff --git a/drivers/iio/adc/stm32-dfsdm-core.c b/drivers/iio/adc/stm32-dfsdm-core.c
+index 041dc9ebc0482..47e2d1338e9e6 100644
+--- a/drivers/iio/adc/stm32-dfsdm-core.c
++++ b/drivers/iio/adc/stm32-dfsdm-core.c
+@@ -8,6 +8,7 @@
+ 
+ #include <linux/bitfield.h>
+ #include <linux/clk.h>
++#include <linux/export.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/interrupt.h>
 -- 
 2.34.1
 
