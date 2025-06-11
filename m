@@ -1,41 +1,38 @@
-Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
+Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FA5D25334B;
-	Wed, 11 Jun 2025 08:59:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.51.26.145
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B040253347;
+	Wed, 11 Jun 2025 08:59:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.51.61.248
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749632367; cv=none; b=CfeP5TkBSN0pAtB60NktioVsfe5LhAK3efQGszPGRdRcpiwFoQ57UM6ta3om5IIM2E49JeHnFYj/kymgF0VkADq4ntZYmj5y93HWhd1GtNOTifgF0R7rjtyglR25kXTuFERuoGlBO5F+gfGslWkAlX9fSdWFXW18tohdSnaERl8=
+	t=1749632398; cv=none; b=BoVx672Zyn/2Hw8/Omn4xpbDoHyf0qQ7MrPwg06J6vLYiVBbnLhuV8Lp/8351veUpPAx1AG8p4BHjRD1oSwUJSpAVm6z0oZc1umMpX2jkqBIEgMEgqYtdaQs6Cv1jSBkJ9nGPSsBIO4ToNERXcEhk0OvUnFyjYrsbjCpLid0NjE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749632367; c=relaxed/simple;
-	bh=+EWtSJ8MP+4Yp1bq9//XPWjvZZuVOQu5/60e0t7FJNM=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MXSV/uJz3YZJFfVC23VKQ1G/SILSmupEgBN3gBky4M+emXl31c3q6NPj87jNnMk2qGzK8mO3RJGvtWRa1i9p8KIvqXg3GqZSptfVrRcnNObuIrmHBpDUpot1gxlf8r3S+2+FM7vRGgQnzCnTKc2nYoMf7QoKiVp6mswaknkCVtQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=inspur.com; spf=pass smtp.mailfrom=inspur.com; arc=none smtp.client-ip=210.51.26.145
+	s=arc-20240116; t=1749632398; c=relaxed/simple;
+	bh=7yls8RTqjCychy5J1UnejAVT7PgLZUjjuCxLZTqdq+Q=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ry3OvXBsDGQ67eZLrvIgb1g5ROlOhnf9H8NKBRlYLoecEAwvgwKZ+kjsmoQYAx8cCoyZlnpyFSNCZ6dBgZeT4FZpoE4mqhpXhLr/z2Yw1z7LXBmHIvedEYPqcvMSUg9rJARzdZef1OnY0M2cZcFk8m7H3nWw/Q6RWI3gTGEsU2g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=inspur.com; spf=pass smtp.mailfrom=inspur.com; arc=none smtp.client-ip=210.51.61.248
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=inspur.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=inspur.com
-Received: from jtjnmail201606.home.langchao.com
-        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id 202506111659061079;
-        Wed, 11 Jun 2025 16:59:06 +0800
+Received: from Jtjnmail201613.home.langchao.com
+        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id 202506111658409031;
+        Wed, 11 Jun 2025 16:58:40 +0800
 Received: from jtjnmail201607.home.langchao.com (10.100.2.7) by
- jtjnmail201606.home.langchao.com (10.100.2.6) with Microsoft SMTP Server
+ Jtjnmail201613.home.langchao.com (10.100.2.13) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Wed, 11 Jun 2025 16:59:05 +0800
+ 15.1.2507.39; Wed, 11 Jun 2025 16:58:41 +0800
 Received: from localhost.localdomain.com (10.94.12.179) by
  jtjnmail201607.home.langchao.com (10.100.2.7) with Microsoft SMTP Server id
- 15.1.2507.39; Wed, 11 Jun 2025 16:59:05 +0800
+ 15.1.2507.39; Wed, 11 Jun 2025 16:58:40 +0800
 From: chuguangqing <chuguangqing@inspur.com>
 To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>, Jean-Baptiste Maneyrol
 	<jmaneyrol@invensense.com>
 CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, chuguangqing
 	<chuguangqing@inspur.com>
-Subject: [PATCH 10/10] iio: light: opt4060: convert to use maple tree register cache
-Date: Wed, 11 Jun 2025 16:58:38 +0800
-Message-ID: <20250611085838.4761-11-chuguangqing@inspur.com>
+Subject: [PATCH 00/10] iio: convert to use maple tree register cache
+Date: Wed, 11 Jun 2025 16:58:28 +0800
+Message-ID: <20250611085838.4761-1-chuguangqing@inspur.com>
 X-Mailer: git-send-email 2.43.5
-In-Reply-To: <20250611085838.4761-1-chuguangqing@inspur.com>
-References: <20250611085838.4761-1-chuguangqing@inspur.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -44,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-tUid: 202561116590618cd26c374da5421bc4e811ef719d038
+tUid: 2025611165840d1a31d0baf7bc2147b65058e4232cda9
 X-Abuse-Reports-To: service@corp-email.com
 Abuse-Reports-To: service@corp-email.com
 X-Complaints-To: service@corp-email.com
@@ -54,24 +51,30 @@ The maple tree register cache is based on a much more modern data structure
 than the rbtree cache and makes optimisation choices which are probably
 more appropriate for modern systems than those made by the rbtree cache.
 
-Signed-off-by: chuguangqing <chuguangqing@inspur.com>
----
- drivers/iio/light/opt4060.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+chuguangqing (10):
+  iio: chemical: bme680: convert to use maple tree register cache
+  iio: dac: ad5380: convert to use maple tree register cache
+  iio: dac: bd79703: convert to use maple tree register cache
+  iio: health: afe4403: convert to use maple tree register cache
+  iio: health: afe4404: convert to use maple tree register cache
+  iio: imu: icm42600: convert to use maple tree register cache
+  iio: imu: bno055: convert to use maple tree register cache
+  iio: light: isl29028: convert to use maple tree register cache
+  iio: light: ltr501: convert to use maple tree register cache
+  iio: light: opt4060: convert to use maple tree register cache
 
-diff --git a/drivers/iio/light/opt4060.c b/drivers/iio/light/opt4060.c
-index f4085020e03e..88ed85cf1844 100644
---- a/drivers/iio/light/opt4060.c
-+++ b/drivers/iio/light/opt4060.c
-@@ -1063,7 +1063,7 @@ static const struct regmap_config opt4060_regmap_config = {
- 	.name = "opt4060",
- 	.reg_bits = 8,
- 	.val_bits = 16,
--	.cache_type = REGCACHE_RBTREE,
-+	.cache_type = REGCACHE_MAPLE,
- 	.max_register = OPT4060_DEVICE_ID,
- 	.readable_reg = opt4060_readable_reg,
- 	.writeable_reg = opt4060_writable_reg,
+ drivers/iio/chemical/bme680_core.c               | 2 +-
+ drivers/iio/dac/ad5380.c                         | 2 +-
+ drivers/iio/dac/rohm-bd79703.c                   | 2 +-
+ drivers/iio/health/afe4403.c                     | 2 +-
+ drivers/iio/health/afe4404.c                     | 2 +-
+ drivers/iio/imu/bno055/bno055.c                  | 2 +-
+ drivers/iio/imu/inv_icm42600/inv_icm42600_core.c | 4 ++--
+ drivers/iio/light/isl29028.c                     | 2 +-
+ drivers/iio/light/ltr501.c                       | 2 +-
+ drivers/iio/light/opt4060.c                      | 2 +-
+ 10 files changed, 11 insertions(+), 11 deletions(-)
+
 -- 
 2.31.1
 
