@@ -1,38 +1,38 @@
-Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
+Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0A8125334B;
-	Wed, 11 Jun 2025 08:59:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.51.26.145
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78FE825B1F0;
+	Wed, 11 Jun 2025 08:59:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.51.26.146
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749632362; cv=none; b=ImHuydxHyn4kTYdpIgMXnBkkCEW/Gg3OIcsnA8PpORK856wGXnXrTiH7H0D+CzQhVGj7da+wC2XzJH4pV4ra3G6bqJUM1R6v26TzOYcPaWCDocO1txdtpZHxqdQnswybPU0Jdt89z0o6NPRvgdyEtUNMhywpKe6ZUPi1FV+LMM4=
+	t=1749632365; cv=none; b=kQABgkmwy8qCsk8hODDHGty1UYuhRvvwUX1EB3LRUjxFj3qDIhvc2TZzeJ3oyWNOo3wSp3OTQZwrkEiziDzglDe0Wq6tAFK7VhCu9EouQj2oJU16oFb/byj3axi42lVU54+yfJj+jLZZb/+pTuS98APred+RzZoXvuXv9mOwSFE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749632362; c=relaxed/simple;
-	bh=1fWCwnlSXdLuAVukdT4G6sSI6gWBplyZTWeB9QlGs/Q=;
+	s=arc-20240116; t=1749632365; c=relaxed/simple;
+	bh=VF/D12KF+O2uGqA9x7ILCkxRBCK+OvWJpeQDG1Sn+p0=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jnLB3tmQ2WIs2M4DnRlarCesd/xmXc/EfVNqeMoT4jzOEg+LHvivHw+lvo10D5KyrAAwtNi1iaEC+EAJIXHHOXLUZwxh0GNjsL6qMFvmO3urPoDCy+m53LuUHeYWoRQOdrw/xOhBdgBCDseOMbJQB3wqTGz16NK4ihXMwr/g1ro=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=inspur.com; spf=pass smtp.mailfrom=inspur.com; arc=none smtp.client-ip=210.51.26.145
+	 MIME-Version:Content-Type; b=IVOYvchGRXllOZ4zggwrRM6VZhXJSjFp9KrUI/v+SrY4PIz55gjQMfAJyWWhcHuQZXwlxzXdy+XoLptX38hPzI5FpVKNHqhJflInVkoYoj1+Dfx4Vl9ME7GINx1iM5h0PUx1A+Hz6RQfxpOqsKVu0EyzqxhRrwIFSSc5GVS7n7o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=inspur.com; spf=pass smtp.mailfrom=inspur.com; arc=none smtp.client-ip=210.51.26.146
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=inspur.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=inspur.com
-Received: from jtjnmail201608.home.langchao.com
-        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id 202506111659061076;
-        Wed, 11 Jun 2025 16:59:06 +0800
+Received: from Jtjnmail201615.home.langchao.com
+        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id 202506111659031988;
+        Wed, 11 Jun 2025 16:59:03 +0800
 Received: from jtjnmail201607.home.langchao.com (10.100.2.7) by
- jtjnmail201608.home.langchao.com (10.100.2.8) with Microsoft SMTP Server
+ Jtjnmail201615.home.langchao.com (10.100.2.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Wed, 11 Jun 2025 16:59:05 +0800
+ 15.1.2507.39; Wed, 11 Jun 2025 16:59:04 +0800
 Received: from localhost.localdomain.com (10.94.12.179) by
  jtjnmail201607.home.langchao.com (10.100.2.7) with Microsoft SMTP Server id
- 15.1.2507.39; Wed, 11 Jun 2025 16:59:05 +0800
+ 15.1.2507.39; Wed, 11 Jun 2025 16:59:04 +0800
 From: chuguangqing <chuguangqing@inspur.com>
 To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>, Jean-Baptiste Maneyrol
 	<jmaneyrol@invensense.com>
 CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, chuguangqing
 	<chuguangqing@inspur.com>
-Subject: [PATCH 09/10] iio: light: ltr501: convert to use maple tree register cache
-Date: Wed, 11 Jun 2025 16:58:37 +0800
-Message-ID: <20250611085838.4761-10-chuguangqing@inspur.com>
+Subject: [PATCH 04/10] iio: health: afe4403: convert to use maple tree register cache
+Date: Wed, 11 Jun 2025 16:58:32 +0800
+Message-ID: <20250611085838.4761-5-chuguangqing@inspur.com>
 X-Mailer: git-send-email 2.43.5
 In-Reply-To: <20250611085838.4761-1-chuguangqing@inspur.com>
 References: <20250611085838.4761-1-chuguangqing@inspur.com>
@@ -44,7 +44,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-tUid: 202561116590618cd26c374da5421bc4e811ef719d038
+tUid: 2025611165903aac6313a1c759c92a6e2828091bde120
 X-Abuse-Reports-To: service@corp-email.com
 Abuse-Reports-To: service@corp-email.com
 X-Complaints-To: service@corp-email.com
@@ -56,20 +56,20 @@ more appropriate for modern systems than those made by the rbtree cache.
 
 Signed-off-by: chuguangqing <chuguangqing@inspur.com>
 ---
- drivers/iio/light/ltr501.c | 2 +-
+ drivers/iio/health/afe4403.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index 8d8051cf6927..e293707f4f7d 100644
---- a/drivers/iio/light/ltr501.c
-+++ b/drivers/iio/light/ltr501.c
-@@ -1408,7 +1408,7 @@ static const struct regmap_config ltr501_regmap_config = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
- 	.max_register = LTR501_MAX_REG,
+diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
+index 1582cfc03579..30d3f984b032 100644
+--- a/drivers/iio/health/afe4403.c
++++ b/drivers/iio/health/afe4403.c
+@@ -405,7 +405,7 @@ static const struct regmap_config afe4403_regmap_config = {
+ 	.val_bits = 24,
+ 
+ 	.max_register = AFE440X_PDNCYCLEENDC,
 -	.cache_type = REGCACHE_RBTREE,
 +	.cache_type = REGCACHE_MAPLE,
- 	.volatile_reg = ltr501_is_volatile_reg,
+ 	.volatile_table = &afe4403_volatile_table,
  };
  
 -- 
