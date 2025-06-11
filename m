@@ -1,38 +1,38 @@
-Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
+Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1425A25487A;
-	Wed, 11 Jun 2025 08:59:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.51.61.248
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD352258CC0;
+	Wed, 11 Jun 2025 08:59:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.51.26.146
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749632356; cv=none; b=EqfQGh7EvwF2FjsN2p9CCaV217pHjR6wsZlWnkGzWm+3S9NjV5l489Wnfi/6z839VO1c9u58Zt30tXwpsFmkoxs72LEXqtyLTOVmgDbesmZXDfMMRBwJuqKf5kvY+VGIRHPKu3pgTLmPjpQZyKv4NWqHVSBuXcluROEOZb4HjiA=
+	t=1749632360; cv=none; b=PzISswRGKEVtD1CfYZp7MdtHHSJoS+BD7hEBnjPsLVgKXfOky1unXUJfCeJGeSNOEAwVono7Bx4zkizPfQN4imETKFTNesMU5EDxIYgkow5x0pW/uZM1E27h/BWr9aZzMvR/XhB8D4pn4YjOfdfL5Wl83jmVVVXJe/tIj/elNwE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749632356; c=relaxed/simple;
-	bh=m4CWXoIJxXj7A/0m38Ur8raypeBQWVZqSo0YDfBdzU8=;
+	s=arc-20240116; t=1749632360; c=relaxed/simple;
+	bh=/7ERONOn65DkAqxdWLDhJF/JgfKwcALHwQpNy4s0gGw=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=N1ObJzzgAKTEc9ltmyfrR1tmkdCeuNhZZowDZATLH/+s1I0HbEI+uDKRHQ6HX8PD/ivVGGjbgi+iy7JbyZoSQD35Wa2JzFHQvLkIPXODuqTZVy48ENaAI0xUkzBLc2KUgZh3CqQcYQdlvuZ3z2LFsjkCMu2zvWG8WpipRQitAYA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=inspur.com; spf=pass smtp.mailfrom=inspur.com; arc=none smtp.client-ip=210.51.61.248
+	 MIME-Version:Content-Type; b=Wlt1pabjb/srMmYW1MfQOJeetBYLi+u/dKX6BgebHJ657numADNgdqrEeKvXmvnfxjWYLicNoNrsxYgni7rXcg7bsdCgmLvSbrbjocwr6UgcEBF3PafHzZ8ggN8hZ8gyz3tUDddvl/MNGo3mOwZLdCBaNyncnoPryyqZjKjE4lo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=inspur.com; spf=pass smtp.mailfrom=inspur.com; arc=none smtp.client-ip=210.51.26.146
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=inspur.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=inspur.com
-Received: from jtjnmail201609.home.langchao.com
-        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id 202506111659049660;
-        Wed, 11 Jun 2025 16:59:04 +0800
+Received: from Jtjnmail201616.home.langchao.com
+        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id 202506111659031966;
+        Wed, 11 Jun 2025 16:59:03 +0800
 Received: from jtjnmail201607.home.langchao.com (10.100.2.7) by
- jtjnmail201609.home.langchao.com (10.100.2.9) with Microsoft SMTP Server
+ Jtjnmail201616.home.langchao.com (10.100.2.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Wed, 11 Jun 2025 16:59:05 +0800
+ 15.1.2507.39; Wed, 11 Jun 2025 16:59:04 +0800
 Received: from localhost.localdomain.com (10.94.12.179) by
  jtjnmail201607.home.langchao.com (10.100.2.7) with Microsoft SMTP Server id
- 15.1.2507.39; Wed, 11 Jun 2025 16:59:04 +0800
+ 15.1.2507.39; Wed, 11 Jun 2025 16:59:03 +0800
 From: chuguangqing <chuguangqing@inspur.com>
 To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>, Jean-Baptiste Maneyrol
 	<jmaneyrol@invensense.com>
 CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, chuguangqing
 	<chuguangqing@inspur.com>
-Subject: [PATCH 07/10] iio: imu: bno055: convert to use maple tree register cache
-Date: Wed, 11 Jun 2025 16:58:35 +0800
-Message-ID: <20250611085838.4761-8-chuguangqing@inspur.com>
+Subject: [PATCH 03/10] iio: dac: bd79703: convert to use maple tree register cache
+Date: Wed, 11 Jun 2025 16:58:31 +0800
+Message-ID: <20250611085838.4761-4-chuguangqing@inspur.com>
 X-Mailer: git-send-email 2.43.5
 In-Reply-To: <20250611085838.4761-1-chuguangqing@inspur.com>
 References: <20250611085838.4761-1-chuguangqing@inspur.com>
@@ -44,7 +44,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-tUid: 2025611165904fd726e4cf646a75730e4f4d479ba992d
+tUid: 2025611165903aac6313a1c759c92a6e2828091bde120
 X-Abuse-Reports-To: service@corp-email.com
 Abuse-Reports-To: service@corp-email.com
 X-Complaints-To: service@corp-email.com
@@ -56,22 +56,22 @@ more appropriate for modern systems than those made by the rbtree cache.
 
 Signed-off-by: chuguangqing <chuguangqing@inspur.com>
 ---
- drivers/iio/imu/bno055/bno055.c | 2 +-
+ drivers/iio/dac/rohm-bd79703.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/bno055/bno055.c b/drivers/iio/imu/bno055/bno055.c
-index 597c402b98de..3f4c18dc3ee9 100644
---- a/drivers/iio/imu/bno055/bno055.c
-+++ b/drivers/iio/imu/bno055/bno055.c
-@@ -290,7 +290,7 @@ const struct regmap_config bno055_regmap_config = {
- 	.max_register = 0x80 * 2,
- 	.writeable_reg = bno055_regmap_writeable,
- 	.readable_reg = bno055_regmap_readable,
+diff --git a/drivers/iio/dac/rohm-bd79703.c b/drivers/iio/dac/rohm-bd79703.c
+index a35c37d2261d..e91090e4a66d 100644
+--- a/drivers/iio/dac/rohm-bd79703.c
++++ b/drivers/iio/dac/rohm-bd79703.c
+@@ -35,7 +35,7 @@ static const struct regmap_config bd79703_regmap_config = {
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
+ 	.max_register = BD79703_MAX_REGISTER,
 -	.cache_type = REGCACHE_RBTREE,
 +	.cache_type = REGCACHE_MAPLE,
  };
- EXPORT_SYMBOL_NS_GPL(bno055_regmap_config, "IIO_BNO055");
  
+ /* Dynamic driver private data */
 -- 
 2.31.1
 
