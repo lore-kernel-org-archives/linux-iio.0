@@ -1,607 +1,240 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EC481E51EB;
-	Thu, 12 Jun 2025 07:37:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749713871; cv=none; b=iTp07QYrawpwCn9lKnyzCCHskqH2FU58V2Y4+8Tv0t22OK9Y1I7ua6L09vHpZepD8esKete9wmdrpfQSAvurkGPkzqY7lUsoS0jSoiquHKXoTgeB75RgXiLUFGTy+sG40v3gHZg/uxSqQkqzUT4FIM3iR+DwW79J9S2cn3q52IE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749713871; c=relaxed/simple;
-	bh=X1xQm5L4ZOCoUnWaJLSbiEqfCpD15FXo7BwvXN6XHJM=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=EqUFvmZ5FywVQ38iEUiiQ8rlspNIkP72fqTwZb6DIKd7gh2gk0RmjY9wsNg8lImDYTcJ1BHP2/uT9LR65G61wUCtquhj+3W5GNny5o78lUX67BtNUlplNItBgYkjAYtdd7Rl1ke8tS6ap2lexNY/0JDtFDK+gUsmLtXpYunuIM4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ElvSBGH0; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB5AC1E51EB;
+	Thu, 12 Jun 2025 07:38:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.139.77
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1749713930; cv=fail; b=kJTHMzjVjdflrP25zWbHqxeQPmAuwupm08M1VWkBUPFSDNCLLJrhORUb9K7VI8PSJBuhuRzUebD4nHdwb1cq4atEIhHXQ52Be2jqf/tv+KZxcESKqg725tabpTKGBHVelP9AjdDPrzRuWSb8EgBNQ+XWaXOqEKBYQYe8CZYaeuk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1749713930; c=relaxed/simple;
+	bh=+8T/AqOnXMEE7P5k+JUZh5/vz2KouOcFaZXTh3q34oE=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=LxHTpzZB6hplGZBhNdh1wTnHZK/KqW+gkCllnFcrlCUqK03D1zXfxHZ6EJ6/TQzZhMyB1aaDbwpcPvgAHsGmVSHIVaxWgjU0JfvGm2Fa/kswqzfs7rwIj+5yteYn6SkV33+Kx6KjhZrkIxA6JQvfWRkOIUFHqdJVWdZd/IoapZc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=bCIBTLbx; arc=fail smtp.client-ip=148.163.139.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ElvSBGH0"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-3a361b8a664so569651f8f.3;
-        Thu, 12 Jun 2025 00:37:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1749713868; x=1750318668; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=m5GIspDP7X6wWgI2A2h0itSqo2tyEX++DMvUNjb6jiM=;
-        b=ElvSBGH0ZwMZ0QPuZ8D63539B/n+4tXCIVoMFA1FprPMg5W4yNcV5ugHnpJ2zVf37i
-         yOyn88lNBPQSbaHq4YV6XgBPJJEr8iFtOTYsV1tkigYJMKvdNqV3Qe/G/HUgeaNQG+n3
-         dvUaIpqI30QmWcSQIYo2iRkPFgdGfsQZiYMXZqBUn8deZjRKasYvkBQ83ZaY5ascbtRv
-         izvgj5nDIi9lrNDz5enh8Wh8tz6Ja+xRzo9wgy9q71SVQVMqG9mNKtg1DSm9tI/Mw3+G
-         AWsnWmbOdW9XhGoymxu+S6ufWhaAQWBKBnTHNODiLbTkri9dxRo1B7o4ebY32fx5aUUO
-         wUCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749713868; x=1750318668;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=m5GIspDP7X6wWgI2A2h0itSqo2tyEX++DMvUNjb6jiM=;
-        b=fNds+TxCg03pMdXU/tLLg2IRBrVnNCWzu1US9VwHJ8R96SsO2w2bLn7tRMMmUysB18
-         CisOWLHDd6F65iBxfTkAs9GETRJX417nICx4KfdxyyRAxJSRJmn3/z6INCArwsU1p1uU
-         cGad5EcF+T8xtHMmtyX1LegJu33Et0KmsbLiqxbQ8TTKtjy3uHKrjY0RXo/zRSl5FIDu
-         +0oW6gbK00vVmiparkzkQB3MGn9lbSaNFuwcJC0KkPxNCUhiNnx5OM4Jg9oF96geMYTY
-         NyEfCGj9LyEMyflGNqEchS3n1htm6beNNvb+gJcfiJfcardL3HwsQU/pusV0TRsw976d
-         qpEw==
-X-Forwarded-Encrypted: i=1; AJvYcCX96O+J3afi4194d6KxAq5wC2Hx/2PQPgQd3OTk9SfZe3j59FXHf8EIYQ394iLwq5chx9J5nTGreGM=@vger.kernel.org, AJvYcCXWvLxCZEiztBcLLMEUqwfFOY7tPIIBkZHPG2umoiZ0DM7z+DEbpZ4onzNjXhnD4YaxEuwcGQqSmMZK53fI@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx4YmiHowcYDKiwMAYfROIdo1yAiEY/4iR3GB0pQqv9iw2IdXYg
-	pL7/QYcxeGLIQvGeL7yKXc32+QSJ3iKjosKMO4Rj6ohHyLd7HAUeuRvA
-X-Gm-Gg: ASbGncufVmjPG+hcRW/+DQ1vPe9F8CZ6l8oeokF+KrBIzvEp4MCyIGRu0/Nnpi9cjZX
-	sFEiBCBqrWkQNxebSFqaQMDrk71ELHvB2SDsKyqEbMnAxHWN7fVTpxidqhJ4rJ9PXcP3hVndMrw
-	bYbbdk697y/L3YYVoGLh4OmOhDk8d23N0hzp+DS7VvTJdKZtHXICzxVWeRg7T/AnltC1IMq1z1T
-	VIOdJvn+JMRj8BTZlddihjD84TnGJK36ERzktDFECV+JCB/EX6mi98usfxCuZrXAD6lnLSLaUAl
-	x8r1UjPSk220EUUWQ+AyTGsaZ8BPflGzCi+jyWjTK1bvQq/B9xwpr/EvRdASu1VlUoGUE0WNxg8
-	esQheWTmDmKDqEoY3hY6OF2YFUyNfE0t0M0nI
-X-Google-Smtp-Source: AGHT+IGWw5COUvVIf0mONy/K+/WhsCZ8yXo0GpkrgMXzoz6Y5BeD/coH/o7Nh9eYh9MhRjcqKG49Ow==
-X-Received: by 2002:a05:6000:2002:b0:3a5:39a8:199c with SMTP id ffacd0b85a97d-3a558a436e7mr5890506f8f.53.1749713867530;
-        Thu, 12 Jun 2025 00:37:47 -0700 (PDT)
-Received: from ?IPv6:2001:818:ea56:d000:56e0:ceba:7da4:6673? ([2001:818:ea56:d000:56e0:ceba:7da4:6673])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a561b510ebsm1115416f8f.83.2025.06.12.00.37.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Jun 2025 00:37:47 -0700 (PDT)
-Message-ID: <c707bb2ad7334736c56687f20824be4b3ef71d74.camel@gmail.com>
-Subject: Re: [PATCH v5 3/3] iio: accel: sca3000: use guard(mutex)() for
- handling mutex lock
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Andrew Ijano <andrew.ijano@gmail.com>, jic23@kernel.org
-Cc: andrew.lopes@alumni.usp.br, gustavobastos@usp.br, dlechner@baylibre.com,
-  nuno.sa@analog.com, andy@kernel.org, jstephan@baylibre.com, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Thu, 12 Jun 2025 07:38:18 +0100
-In-Reply-To: <20250611194648.18133-4-andrew.lopes@alumni.usp.br>
-References: <20250611194648.18133-1-andrew.lopes@alumni.usp.br>
-	 <20250611194648.18133-4-andrew.lopes@alumni.usp.br>
-Content-Type: text/plain; charset="UTF-8"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="bCIBTLbx"
+Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55C2av8d014807;
+	Thu, 12 Jun 2025 03:38:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=/kNJn
+	hj8s994FS2vviQ4moM2PhJTga+5hADCCOGBOAo=; b=bCIBTLbxU9hZZxVqsDpPO
+	LDdzFAp08iOuwZs1RJUEW2uQakm1elwOd49BJZjxFx8qyvfapYDoCMRFSL5NcUDb
+	Tr9wQNWQBfAkWmMgDdFcijpoHpq7wb4IuvPD6u3LNMEmW76+3/4W3tT64aTBLQ+s
+	Ms5B3FgR5Sv+wrz1zHlD2t5YFB2SyLjTE0MFP3dXZNuioCl+Mgjy3RRUqb4VVTL8
+	Kg7ON60hwQpuEvYTQza39zmYTMXwn/zhhgjezfZyH+IyQnGAiMqLCBxIaH8HIYaM
+	Q+JrcMo2R6LiS6VLxOZ7mQXcm5jfmcEHsKhXB1t0ZUGnRlns3PAKixUyTkuswn3z
+	w==
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10on2083.outbound.protection.outlook.com [40.107.92.83])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4772mcef5y-2
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 12 Jun 2025 03:38:11 -0400 (EDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=d6MFeOqQOBa2UbPBBzRKDEfOcteI9w5lgmcGb48qiFuBaYqI/es5wrkY6k/pdJnxXQcxuEes2E7HP1h72dk9+ubmCdNoPeLrQBcFHy3NNvOdRwKjUlSDnik/jp5b6V7FJVdiPZhMhEqgOGNisxFyp5Dmd5UgCv9FbqgmmspgwNk9M4tbZho8f0KKXnfJdwRLVgRi01TNn4Na0qwRnEwDd8dLveQ4At+R7ngwZFA0j6J3isjs5gW2YIDkI8guJ8ktolBdMblkwCTFrGdb3URqBXCisXIhFEcOLweBBAMcW9Kmycvnl/IDC2VG25hFNC9uDo9zdql+gD8p4DDGjwoVxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/kNJnhj8s994FS2vviQ4moM2PhJTga+5hADCCOGBOAo=;
+ b=g+JWlBeTph7rBc1GWnyGywrNdRP7mcatjVmAeP3KnLCIhO75dLXSNygMUSHtq9O+KKnc8tJ1KELDwDPSx3bHu/H59Xbpk3MvKLmBjQSyCUpjt4+hxoCpffEdk8nOF9+vteQ44ofQAE2+oHLErCb/fX4XNrvMI13rUA5s/AO7oquj1AT6nhDMsIWF0ff3JUjAcQUf9VrJkAmZaLO1jZSKhzOVa9xBhNMDgpn+WmbB1Ch/2koM9+XnbFbiRUlMkb6eLht68Z3Qqac89i3hcQJSaHY6gzIMp7wVCfVqYdSB4tzF7sV0jpsn5Sxwy6KuaOBYUJeZSPzSJIQUWoPXQio2wg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
+Received: from PH0PR03MB6335.namprd03.prod.outlook.com (2603:10b6:510:aa::13)
+ by SN7PR03MB7295.namprd03.prod.outlook.com (2603:10b6:806:2e2::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8792.35; Thu, 12 Jun
+ 2025 07:38:08 +0000
+Received: from PH0PR03MB6335.namprd03.prod.outlook.com
+ ([fe80::6e6d:c16e:3cc5:93ad]) by PH0PR03MB6335.namprd03.prod.outlook.com
+ ([fe80::6e6d:c16e:3cc5:93ad%4]) with mapi id 15.20.8835.018; Thu, 12 Jun 2025
+ 07:38:08 +0000
+From: "Ioan-daniel, Pop" <Pop.Ioan-daniel@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+        "Hennerich, Michael"
+	<Michael.Hennerich@analog.com>,
+        David Lechner <dlechner@baylibre.com>,
+        "Sa,
+ Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+        Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        "Cuciurean, Sergiu" <Sergiu.Cuciurean@analog.com>,
+        "Bogdan, Dragos" <Dragos.Bogdan@analog.com>,
+        "Miclaus, Antoniu"
+	<Antoniu.Miclaus@analog.com>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Javier Carrasco <javier.carrasco.cruz@gmail.com>,
+        Matti Vaittinen
+	<mazziesaccount@gmail.com>,
+        adureghello <adureghello@baylibre.com>,
+        Guillaume
+ Stols <gstols@baylibre.com>,
+        Tobias Sperling <tobias.sperling@softing.com>,
+        "Schmitt, Marcelo" <Marcelo.Schmitt@analog.com>,
+        Trevor Gamblin
+	<tgamblin@baylibre.com>,
+        Alisa-Dariana Roman <alisadariana@gmail.com>,
+        "Nechita, Ramona" <Ramona.Nechita@analog.com>,
+        Herve Codina
+	<herve.codina@bootlin.com>,
+        AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>,
+        Thomas Bonnefille
+	<thomas.bonnefille@bootlin.com>,
+        =?iso-8859-1?Q?Jo=E3o_Paulo_Gon=E7alves?=
+	<joao.goncalves@toradex.com>,
+        "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v7 5/5] iio: adc: ad7405: add ad7405 driver
+Thread-Topic: [PATCH v7 5/5] iio: adc: ad7405: add ad7405 driver
+Thread-Index: AQHb1iwW/mxdmKlf10i9kTZdlYz6rrP32cIAgAR04YCAAc8KgIABDJeQ
+Date: Thu, 12 Jun 2025 07:38:08 +0000
+Message-ID:
+ <PH0PR03MB633588C429595BB9AB9827F1D174A@PH0PR03MB6335.namprd03.prod.outlook.com>
+References: <20250605150948.3091827-1-pop.ioan-daniel@analog.com>
+	<20250605150948.3091827-6-pop.ioan-daniel@analog.com>
+	<20250607164428.7a245af5@jic23-huawei>
+	<PH0PR03MB63351F2AA87604CC10BB6EC8D16AA@PH0PR03MB6335.namprd03.prod.outlook.com>
+ <20250611162507.6868c8c6@jic23-huawei>
+In-Reply-To: <20250611162507.6868c8c6@jic23-huawei>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-dg-rorf: true
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR03MB6335:EE_|SN7PR03MB7295:EE_
+x-ms-office365-filtering-correlation-id: 8ec7e969-4cf1-45ee-ab04-08dda984137f
+x-ld-processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|7416014|376014|366016|1800799024|38070700018;
+x-microsoft-antispam-message-info:
+ =?iso-8859-1?Q?vv4uhpLjGYLBFYajjFtmeMKSYnNYVQCfo6KwzVu4yY/Wvp3V9ou2qBWJGt?=
+ =?iso-8859-1?Q?bGXRSMO8gyz3xGllqrfXAUR4ceJ1GQlvwbWlXZQ46ngOJfbn2UwErLGPmH?=
+ =?iso-8859-1?Q?HVO4Z2RFWbyuifCdAXfjfN18mPAWVodS5h9q5A3fxLcrJ2zqMioTI5U6L7?=
+ =?iso-8859-1?Q?5BMSYqV9o+UBcaGs57pevdBD494TfapHZ6+bEIRxqYcJxT5DMrURqaxMaN?=
+ =?iso-8859-1?Q?lVA/D1o9cca8O+onwijYGWm6vJXKka1fZxUZyeiU/2UNgPeSDyoqapv2s0?=
+ =?iso-8859-1?Q?fIw3TGkvfyfkwkHhM/f0Ev+H6ibTpUuzgYnUhKzEYGwnb30Yn+ZvJI3qpL?=
+ =?iso-8859-1?Q?aJyEZZ7k5z7Id9TdP1ETCYbRVs5Kmsbh+CAg2t3o7gG3b/EZUAO7QVUL/E?=
+ =?iso-8859-1?Q?F59Unrz3SQeJamzzk7cmW6itMSH05oW3byNwwlBbz6xi0OJKkvlLtU79sI?=
+ =?iso-8859-1?Q?1e+i0prnjzVjf4Ua3kcKnTZ83AVmEKcbjDDP3cS8qHEK8Xwv1CF67ZnI8B?=
+ =?iso-8859-1?Q?YFJ1D5BCQ9hgWjHUHnnN49kGBQWpGEU639NZK585UV2EwnUJCsX9s3H7mS?=
+ =?iso-8859-1?Q?6EDBwOgrcG0CxHuxifYult2U/RBadQUSPf879E8ppVuBHk8LmySIfrh0Zk?=
+ =?iso-8859-1?Q?Gyr1imoNnfpIlOzr0RIfKU2bfzXhm6aUNt4fKOioJeX+o2FBmDgIoaXOcl?=
+ =?iso-8859-1?Q?7sgh+HjjfrwLKqtYkxUqFX9R47TRDa84LbnPB0+eL88yfIC0BbX86aOp9G?=
+ =?iso-8859-1?Q?1QoM46i6z2Him2b9w8zbf6Ee8BAGF5P4YoKjb3F/gA3gabLZIcN3KzJNcD?=
+ =?iso-8859-1?Q?pmIK4d0Bx9zzu6GgW9oq6YG1K1hU2suLYxJOt25+c7rRPFBEIwZHf2VpZk?=
+ =?iso-8859-1?Q?XrAV/UUKOtYdljXOtoyHlUaoQHX23t1viMxSnYAodOZSVAH70aYGVMsiLM?=
+ =?iso-8859-1?Q?h4zY+1lp6UgrPAZL5jTjH/SSFb/6MacrnkW3lA/c2EvPtsx+9wgRKYGlOi?=
+ =?iso-8859-1?Q?IyjTO6nMNd6gIfQe5tjyPPkYh9SY6h9ix8J6TWv3rHySR0jKcWfcv9U46V?=
+ =?iso-8859-1?Q?9/Q9DIje41AO2x5AqKFCJUhfl5XSCnREsSWtrVP+Krgjmg9lgKnC8qf7Mp?=
+ =?iso-8859-1?Q?lDkywbXeCKR4xT2leYsHdEzvGwwlGGU/ygfH7qKd38DEqfSOzzdzU2y3nD?=
+ =?iso-8859-1?Q?Iny969qgFmDmnqVQJdVQNHBtneOlIgK5k1uK5KAl+3WECuPGIcvk0tlh8f?=
+ =?iso-8859-1?Q?M0OgPW01OqlOj47UQ9o7zcyt+gbKFZPRlto0q5/zi0WUf3+GqueeWxF7Gn?=
+ =?iso-8859-1?Q?LD/aBI/Hbsn3XwVAwLa8FsXQ8pffnvcJmJaj2inM4OHYFA9ytahBuapvtG?=
+ =?iso-8859-1?Q?g5fg0zoIWcPjwwJ29qJrbi4+Fort5yqk0S3ixPZahi2xan+zW/QgHW0QmO?=
+ =?iso-8859-1?Q?JCL/c+uQG4k7E0ajdfjzucEHwQdaO2BUU+EofdNAyPtlysLsOezWWhyBqA?=
+ =?iso-8859-1?Q?4xVCP5r3IE5oDHwUSTa+q+7cSMjS8irEpgcz68LdPR+w=3D=3D?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR03MB6335.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?iso-8859-1?Q?LE3sPna+LzO1cCsBlM4oPuRgjZjAs+8R+Z+Ac2bHHB3wM313dygELfr8k4?=
+ =?iso-8859-1?Q?Pwtnzru9/3IT2JQ7Y9nun4GRJKr14LGs9ac9Pkez85osRZVumgDnM+kQ2g?=
+ =?iso-8859-1?Q?LcIzTJ4Q8hfV1RwRddiypZsgpz5b5jY3GMcE7gSOWA837LojRvnF8VW6gS?=
+ =?iso-8859-1?Q?ooLBOBVZ7VkhW2SiQS1/jqcn7uBRXXBK0E+fnKiip3/rDf5XISAWIlEqAS?=
+ =?iso-8859-1?Q?5CB3vtFGIsfU59Se9MmCDSQaz/5iQi3sf1wDTiBPFvkZChe4vsbrg9D0BU?=
+ =?iso-8859-1?Q?t+x/ciplcF4JfqS6IoEgU1ONQna+pQnyPGzMmVPgf31b68GkksUfG9i4em?=
+ =?iso-8859-1?Q?l6D4OA+TGrqxRcIdYRaKe2rzxtMsjRudQmVN/sooqMbTVmDEK8a48hVd3i?=
+ =?iso-8859-1?Q?VZvzOXJojy2RHyKON9WLvMCvewyi8whx5oXOs66KB9zrBQQjZJuTOcG/M1?=
+ =?iso-8859-1?Q?IosZOQWOd5mTOGwFWGhCJKXupjABfHSBBS1VWyYqSXRLRPZd2qH/d2mrmP?=
+ =?iso-8859-1?Q?hTBT9CuX4KLkR6z+h3liSAnypICw8t8l2GijyeCO+qpoF35YALz8KaNOTp?=
+ =?iso-8859-1?Q?GqJZZclKwyI4c3vZOi2ujgGe4uuSx6EMFW1IiPND4zt3n76TaqGlVjQG0g?=
+ =?iso-8859-1?Q?0A+oMkhCagE32JvNenLk4+LxSu4BvGayioLp0s/PjepsZzw8poa7a50Lbo?=
+ =?iso-8859-1?Q?naMT/uHOT4sqgbh/SRdAHQlJshR74OEYJIOhKdmeUf49v01aEbf9eBjhZ2?=
+ =?iso-8859-1?Q?HcqLoXXgvVlTcCKYQJuw6DNuHv7HttT5PEh6+fDMHC4UuLb6udooCIro8R?=
+ =?iso-8859-1?Q?hQE4VgMeiTh2soFJdxchZ4qTN0+osDbU1fYv4iFaksAQB1o9DnR+auytW+?=
+ =?iso-8859-1?Q?sdmhIaIzPc+ZrwrkDr2dRGEhmkhUTscduzFtdl0cp0toiNVA54qWqZciKH?=
+ =?iso-8859-1?Q?cBy6FY+3uzGFYydGanfskmX98KMPaICTy/duSjBLyflTnBSTIAX7Jv0wPx?=
+ =?iso-8859-1?Q?AA29g+WH7Ip6MCv4Nv6sg81KqBn6l85rI+mMQhmTEiuKpp+vPUsrP+3e7u?=
+ =?iso-8859-1?Q?odLmPCY67vUzYq99OPBFDILi4Q+C1fhx3qQLscE9sx+JsfTf4bmf8IqDz/?=
+ =?iso-8859-1?Q?w6HforZ8u5NryumcGQkZi5kf3kGRoRZLDqfd3kC/gSvjDYGMT5VBUBlNRg?=
+ =?iso-8859-1?Q?HSHgWz01shA3Mgx9x18tB2pyo4KIcasSIQ2KxAfu6rwYU2nAqpsnGu6kwh?=
+ =?iso-8859-1?Q?fZgU56p2z9VUTYRXlpshu2WBZfVO0xjVG5UNyS5uEK6jK0uQGwvL70lUzc?=
+ =?iso-8859-1?Q?1G34kAR1Jjz16OSsalxUth5OI2n3c2Z8IXOcLjgfEV3Qg/eShJMVWWW/sY?=
+ =?iso-8859-1?Q?wvLv7/voFccRQBa52VSPI8da86aBuK+j6pUwqsbfxSznsBkWzpcTnVVmt/?=
+ =?iso-8859-1?Q?He0n6nGhrvV0W/X/FMvTwcSUd36RLXr6f2uAcmsjcEq7iCKnP7GthR+HKv?=
+ =?iso-8859-1?Q?T3u1BzU3SEdpzMVXazLlNwCThaKdcCqE2F4OEVyZ+Z/1IBGTSbSLYaDykL?=
+ =?iso-8859-1?Q?5vXjbXZeqfRDssbMLxXw0E4mRHHSwBg8ZNDVjrSqgJZb6V+X2VLasbEKHX?=
+ =?iso-8859-1?Q?KoLXW1UX1crYctUIY8MqncNr9CLss8pyvK?=
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.4 (3.52.4-2.fc40) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR03MB6335.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ec7e969-4cf1-45ee-ab04-08dda984137f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jun 2025 07:38:08.4196
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zBzQBu1Zp1S4r6BK4p7nVy4xfkne3FsmSdbx3X2T4O4lzlAOy+Fgcx5R1HaDHUOoJik6Jq/FWjkbMD//3zWDmf1lCoCAqvplHxoHiIzjCMA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR03MB7295
+X-Authority-Analysis: v=2.4 cv=A7FsP7WG c=1 sm=1 tr=0 ts=684a83e3 cx=c_pps
+ a=glwKbk3EqpzANxFx8SABCw==:117 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19
+ a=wKuvFiaSGQ0qltdbU6+NXLB8nM8=:19 a=Ol13hO9ccFRV9qXi2t6ftBPywas=:19
+ a=xqWC_Br6kY4A:10 a=8nJEP1OIZ-IA:10 a=6IFa9wvqVegA:10
+ a=kCna3pJBYh0JelS_eeMA:9 a=wPNLvfGTeEIA:10
+X-Proofpoint-GUID: mMYEm8kksoXITcQkHvpSuC1bNESrvSf6
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjEyMDA1NyBTYWx0ZWRfXyfMQGHpU1Q9P
+ 0N+wroscgviRKruRRonTj2VTtztNRlHYUnp+re/mXOOGozAc7E6wo/Brg+0T9euVSyl+cyE1ANH
+ GCGIAtDbt7GUbyfXFBymGO3RdC4xtzAuEEx2VKmEJ116ByQzpykTvXEJxiGhfyUO/JDiG7lLyMV
+ R+7W8VVSxvZ9ooSO2BZLGOUlrrj8EqCOqp3Oi04AnYSOs9a5+8dFi5JO13NQ0kxi9lxfwnJslR3
+ G63tC7+4CRvQuYYQQ6ZLbmTE1ERo/2Czt/cmaosWnAcr4PK7L0Nq4fwrLUyfGdBVu+I2eQO98NN
+ eApPOAPG1TaYwEXSpppYUee7FGg9bK+N/k4/jbMZoNWtyTQSJd5+xAgM3pZd5JnByJ8FbR4LWZJ
+ upLUx3j+Io+vrsYInHHOY9Pyw76rPL5KeCyW7A5hWzfXT7qUHhvHHyMJfjR2jll0PZdlDgX6
+X-Proofpoint-ORIG-GUID: mMYEm8kksoXITcQkHvpSuC1bNESrvSf6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-06-12_05,2025-06-10_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 lowpriorityscore=0 bulkscore=0 malwarescore=0 spamscore=0
+ mlxlogscore=490 suspectscore=0 adultscore=0 phishscore=0 priorityscore=1501
+ clxscore=1015 mlxscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
+ definitions=main-2506120057
 
-On Wed, 2025-06-11 at 16:39 -0300, Andrew Ijano wrote:
-> Use guard(mutex)(&st->lock) for handling mutex lock instead of
-> manually locking and unlocking the mutex. This prevents forgotten
-> locks due to early exits and remove the need of gotos.
 >=20
-> Signed-off-by: Andrew Ijano <andrew.lopes@alumni.usp.br>
-> Co-developed-by: Gustavo Bastos <gustavobastos@usp.br>
-> Signed-off-by: Gustavo Bastos <gustavobastos@usp.br>
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> ---
-> For this one, there are two cases where the previous implementation
-> was a smalllocking portion of the code and now it's locking the whole
-> function. I don't know if this is a desired behavior.
+> Let me know if I messed it up.  Pushed out as testing for now.
 >=20
-
-In theory, it should not break anything. But you can always refactor things=
- (like
-small helpers) to lock only the code you want. There's also scoped_guard().=
- I would
-say, up to you for re-spinning a new version because of the above :).=C2=A0
-
-Just have something that I'm not totatlly sure... Did you made sure to comp=
-ile?
-AFAIR, guard() had some complains when used in switch() case statements. Ma=
-ybe that
-got improved.
-
-If the above is not an issue:
-
-Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-
-> =C2=A0drivers/iio/accel/sca3000.c | 177 ++++++++++++---------------------=
----
-> =C2=A01 file changed, 57 insertions(+), 120 deletions(-)
+> Thanks,
 >=20
-> diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
-> index d41759c68fb4..098d45bad389 100644
-> --- a/drivers/iio/accel/sca3000.c
-> +++ b/drivers/iio/accel/sca3000.c
-> @@ -405,17 +405,14 @@ static int sca3000_print_rev(struct iio_dev *indio_=
-dev)
-> =C2=A0	int ret;
-> =C2=A0	struct sca3000_state *st =3D iio_priv(indio_dev);
-> =C2=A0
-> -	mutex_lock(&st->lock);
-> +	guard(mutex)(&st->lock);
-> =C2=A0	ret =3D spi_w8r8(st->us, SCA3000_READ_REG(SCA3000_REG_REVID_ADDR))=
-;
-> =C2=A0	if (ret < 0)
-> -		goto error_ret;
-> +		return ret;
-> =C2=A0	dev_info(&indio_dev->dev,
-> =C2=A0		 "sca3000 revision major=3D%lu, minor=3D%lu\n",
-> =C2=A0		 ret & SCA3000_REG_REVID_MAJOR_MASK,
-> =C2=A0		 ret & SCA3000_REG_REVID_MINOR_MASK);
-> -error_ret:
-> -	mutex_unlock(&st->lock);
-> -
-> =C2=A0	return ret;
-> =C2=A0}
-> =C2=A0
-> @@ -699,32 +696,25 @@ static int sca3000_read_raw(struct iio_dev *indio_d=
-ev,
-> =C2=A0
-> =C2=A0	switch (mask) {
-> =C2=A0	case IIO_CHAN_INFO_RAW:
-> -		mutex_lock(&st->lock);
-> +		guard(mutex)(&st->lock);
-> =C2=A0		if (chan->type =3D=3D IIO_ACCEL) {
-> -			if (st->mo_det_use_count) {
-> -				mutex_unlock(&st->lock);
-> +			if (st->mo_det_use_count)
-> =C2=A0				return -EBUSY;
-> -			}
-> =C2=A0			address =3D sca3000_addresses[chan->address][0];
-> =C2=A0			ret =3D spi_w8r16be(st->us, SCA3000_READ_REG(address));
-> -			if (ret < 0) {
-> -				mutex_unlock(&st->lock);
-> +			if (ret < 0)
-> =C2=A0				return ret;
-> -			}
-> =C2=A0			*val =3D sign_extend32(ret >> chan->scan_type.shift,
-> =C2=A0					=C2=A0=C2=A0=C2=A0=C2=A0 chan->scan_type.realbits - 1);
-> =C2=A0		} else {
-> =C2=A0			/* get the temperature when available */
-> =C2=A0			ret =3D spi_w8r16be(st->us,
-> =C2=A0						SCA3000_READ_REG(SCA3000_REG_TEMP_
-> MSB_ADDR));
-> -			if (ret < 0) {
-> -				mutex_unlock(&st->lock);
-> +			if (ret < 0)
-> =C2=A0				return ret;
-> -			}
-> =C2=A0			*val =3D (ret >> chan->scan_type.shift) &
-> =C2=A0				GENMASK(chan->scan_type.realbits - 1, 0);
-> =C2=A0		}
-> -		mutex_unlock(&st->lock);
-> =C2=A0		return IIO_VAL_INT;
-> =C2=A0	case IIO_CHAN_INFO_SCALE:
-> =C2=A0		*val =3D 0;
-> @@ -738,14 +728,12 @@ static int sca3000_read_raw(struct iio_dev *indio_d=
-ev,
-> =C2=A0		*val2 =3D 600000;
-> =C2=A0		return IIO_VAL_INT_PLUS_MICRO;
-> =C2=A0	case IIO_CHAN_INFO_SAMP_FREQ:
-> -		mutex_lock(&st->lock);
-> +		guard(mutex)(&st->lock);
-> =C2=A0		ret =3D sca3000_read_raw_samp_freq(st, val);
-> -		mutex_unlock(&st->lock);
-> =C2=A0		return ret ? ret : IIO_VAL_INT;
-> =C2=A0	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-> -		mutex_lock(&st->lock);
-> +		guard(mutex)(&st->lock);
-> =C2=A0		ret =3D sca3000_read_3db_freq(st, val);
-> -		mutex_unlock(&st->lock);
-> =C2=A0		return ret;
-> =C2=A0	default:
-> =C2=A0		return -EINVAL;
-> @@ -763,22 +751,16 @@ static int sca3000_write_raw(struct iio_dev *indio_=
-dev,
-> =C2=A0	case IIO_CHAN_INFO_SAMP_FREQ:
-> =C2=A0		if (val2)
-> =C2=A0			return -EINVAL;
-> -		mutex_lock(&st->lock);
-> -		ret =3D sca3000_write_raw_samp_freq(st, val);
-> -		mutex_unlock(&st->lock);
-> -		return ret;
-> +		guard(mutex)(&st->lock);
-> +		return sca3000_write_raw_samp_freq(st, val);
-> =C2=A0	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-> =C2=A0		if (val2)
-> =C2=A0			return -EINVAL;
-> -		mutex_lock(&st->lock);
-> -		ret =3D sca3000_write_3db_freq(st, val);
-> -		mutex_unlock(&st->lock);
-> -		return ret;
-> +		guard(mutex)(&st->lock);
-> +		return sca3000_write_3db_freq(st, val);
-> =C2=A0	default:
-> =C2=A0		return -EINVAL;
-> =C2=A0	}
-> -
-> -	return ret;
-> =C2=A0}
-> =C2=A0
-> =C2=A0/**
-> @@ -800,9 +782,8 @@ static ssize_t sca3000_read_av_freq(struct device *de=
-v,
-> =C2=A0	struct sca3000_state *st =3D iio_priv(indio_dev);
-> =C2=A0	int len =3D 0, ret;
-> =C2=A0
-> -	mutex_lock(&st->lock);
-> +	guard(mutex)(&st->lock);
-> =C2=A0	ret =3D spi_w8r8(st->us, SCA3000_READ_REG(SCA3000_REG_MODE_ADDR));
-> -	mutex_unlock(&st->lock);
-> =C2=A0	if (ret)
-> =C2=A0		return ret;
-> =C2=A0
-> @@ -851,10 +832,9 @@ static int sca3000_read_event_value(struct iio_dev *=
-indio_dev,
-> =C2=A0
-> =C2=A0	switch (info) {
-> =C2=A0	case IIO_EV_INFO_VALUE:
-> -		mutex_lock(&st->lock);
-> +		guard(mutex)(&st->lock);
-> =C2=A0		ret =3D sca3000_read_ctrl_reg(st,
-> =C2=A0					=C2=A0=C2=A0=C2=A0 sca3000_addresses[chan->address][1]);
-> -		mutex_unlock(&st->lock);
-> =C2=A0		if (ret < 0)
-> =C2=A0			return ret;
-> =C2=A0		*val =3D 0;
-> @@ -918,13 +898,10 @@ static int sca3000_write_event_value(struct iio_dev
-> *indio_dev,
-> =C2=A0			}
-> =C2=A0	}
-> =C2=A0
-> -	mutex_lock(&st->lock);
-> -	ret =3D sca3000_write_ctrl_reg(st,
-> +	guard(mutex)(&st->lock);
-> +	return sca3000_write_ctrl_reg(st,
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 sca3000_addresses[chan->address][1],
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 nonlinear);
-> -	mutex_unlock(&st->lock);
-> -
-> -	return ret;
-> =C2=A0}
-> =C2=A0
-> =C2=A0static struct attribute *sca3000_attributes[] =3D {
-> @@ -969,12 +946,12 @@ static void sca3000_ring_int_process(u8 val, struct=
- iio_dev
-> *indio_dev)
-> =C2=A0	struct sca3000_state *st =3D iio_priv(indio_dev);
-> =C2=A0	int ret, i, num_available;
-> =C2=A0
-> -	mutex_lock(&st->lock);
-> +	guard(mutex)(&st->lock);
-> =C2=A0
-> =C2=A0	if (val & SCA3000_REG_INT_STATUS_HALF) {
-> =C2=A0		ret =3D spi_w8r8(st->us,
-> SCA3000_READ_REG(SCA3000_REG_BUF_COUNT_ADDR));
-> =C2=A0		if (ret)
-> -			goto error_ret;
-> +			return;
-> =C2=A0		num_available =3D ret;
-> =C2=A0		/*
-> =C2=A0		 * num_available is the total number of samples available
-> @@ -983,7 +960,7 @@ static void sca3000_ring_int_process(u8 val, struct i=
-io_dev
-> *indio_dev)
-> =C2=A0		ret =3D sca3000_read_data(st, SCA3000_REG_RING_OUT_ADDR,
-> =C2=A0					num_available * 2);
-> =C2=A0		if (ret)
-> -			goto error_ret;
-> +			return;
-> =C2=A0		for (i =3D 0; i < num_available / 3; i++) {
-> =C2=A0			/*
-> =C2=A0			 * Dirty hack to cover for 11 bit in fifo, 13 bit
-> @@ -995,8 +972,6 @@ static void sca3000_ring_int_process(u8 val, struct i=
-io_dev
-> *indio_dev)
-> =C2=A0			iio_push_to_buffers(indio_dev, st->rx + i * 3 * 2);
-> =C2=A0		}
-> =C2=A0	}
-> -error_ret:
-> -	mutex_unlock(&st->lock);
-> =C2=A0}
-> =C2=A0
-> =C2=A0/**
-> @@ -1022,9 +997,8 @@ static irqreturn_t sca3000_event_handler(int irq, vo=
-id
-> *private)
-> =C2=A0	 * Could lead if badly timed to an extra read of status reg,
-> =C2=A0	 * but ensures no interrupt is missed.
-> =C2=A0	 */
-> -	mutex_lock(&st->lock);
-> +	guard(mutex)(&st->lock);
-> =C2=A0	ret =3D spi_w8r8(st->us, SCA3000_READ_REG(SCA3000_REG_INT_STATUS_A=
-DDR));
-> -	mutex_unlock(&st->lock);
-> =C2=A0	if (ret)
-> =C2=A0		goto done;
-> =C2=A0
-> @@ -1081,16 +1055,15 @@ static int sca3000_read_event_config(struct iio_d=
-ev
-> *indio_dev,
-> =C2=A0	struct sca3000_state *st =3D iio_priv(indio_dev);
-> =C2=A0	int ret;
-> =C2=A0	/* read current value of mode register */
-> -	mutex_lock(&st->lock);
-> +	guard(mutex)(&st->lock);
-> =C2=A0
-> =C2=A0	ret =3D spi_w8r8(st->us, SCA3000_READ_REG(SCA3000_REG_MODE_ADDR));
-> =C2=A0	if (ret)
-> -		goto error_ret;
-> +		return ret;
-> =C2=A0
-> =C2=A0	switch (chan->channel2) {
-> =C2=A0	case IIO_MOD_X_AND_Y_AND_Z:
-> -		ret =3D !!(ret & SCA3000_REG_MODE_FREE_FALL_DETECT);
-> -		break;
-> +		return !!(ret & SCA3000_REG_MODE_FREE_FALL_DETECT);
-> =C2=A0	case IIO_MOD_X:
-> =C2=A0	case IIO_MOD_Y:
-> =C2=A0	case IIO_MOD_Z:
-> @@ -1100,24 +1073,18 @@ static int sca3000_read_event_config(struct iio_d=
-ev
-> *indio_dev,
-> =C2=A0		 */
-> =C2=A0		if ((ret & SCA3000_REG_MODE_MODE_MASK)
-> =C2=A0		=C2=A0=C2=A0=C2=A0 !=3D SCA3000_REG_MODE_MEAS_MODE_MOT_DET) {
-> -			ret =3D 0;
-> +			return 0;
-> =C2=A0		} else {
-> =C2=A0			ret =3D sca3000_read_ctrl_reg(st,
-> =C2=A0						SCA3000_REG_CTRL_SEL_MD_CTRL);
-> =C2=A0			if (ret < 0)
-> -				goto error_ret;
-> +				return ret;
-> =C2=A0			/* only supporting logical or's for now */
-> -			ret =3D !!(ret & sca3000_addresses[chan->address][2]);
-> +			return !!(ret & sca3000_addresses[chan->address][2]);
-> =C2=A0		}
-> -		break;
-> =C2=A0	default:
-> -		ret =3D -EINVAL;
-> +		return -EINVAL;
-> =C2=A0	}
-> -
-> -error_ret:
-> -	mutex_unlock(&st->lock);
-> -
-> -	return ret;
-> =C2=A0}
-> =C2=A0
-> =C2=A0static int sca3000_freefall_set_state(struct iio_dev *indio_dev, bo=
-ol state)
-> @@ -1220,26 +1187,19 @@ static int sca3000_write_event_config(struct iio_=
-dev
-> *indio_dev,
-> =C2=A0	struct sca3000_state *st =3D iio_priv(indio_dev);
-> =C2=A0	int ret;
-> =C2=A0
-> -	mutex_lock(&st->lock);
-> +	guard(mutex)(&st->lock);
-> =C2=A0	switch (chan->channel2) {
-> =C2=A0	case IIO_MOD_X_AND_Y_AND_Z:
-> -		ret =3D sca3000_freefall_set_state(indio_dev, state);
-> -		break;
-> -
-> +		return sca3000_freefall_set_state(indio_dev, state);
-> =C2=A0	case IIO_MOD_X:
-> =C2=A0	case IIO_MOD_Y:
-> =C2=A0	case IIO_MOD_Z:
-> -		ret =3D sca3000_motion_detect_set_state(indio_dev,
-> +		return sca3000_motion_detect_set_state(indio_dev,
-> =C2=A0						=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 chan->address,
-> =C2=A0						=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 state);
-> -		break;
-> =C2=A0	default:
-> -		ret =3D -EINVAL;
-> -		break;
-> +		return -EINVAL;
-> =C2=A0	}
-> -	mutex_unlock(&st->lock);
-> -
-> -	return ret;
-> =C2=A0}
-> =C2=A0
-> =C2=A0static inline
-> @@ -1248,23 +1208,19 @@ int __sca3000_hw_ring_state_set(struct iio_dev *i=
-ndio_dev,
-> bool state)
-> =C2=A0	struct sca3000_state *st =3D iio_priv(indio_dev);
-> =C2=A0	int ret;
-> =C2=A0
-> -	mutex_lock(&st->lock);
-> =C2=A0	ret =3D spi_w8r8(st->us, SCA3000_READ_REG(SCA3000_REG_MODE_ADDR));
-> =C2=A0	if (ret)
-> -		goto error_ret;
-> +		return ret;
-> +
-> =C2=A0	if (state) {
-> =C2=A0		dev_info(&indio_dev->dev, "supposedly enabling ring buffer\n");
-> -		ret =3D sca3000_write_reg(st,
-> +		return sca3000_write_reg(st,
-> =C2=A0			SCA3000_REG_MODE_ADDR,
-> =C2=A0			(ret | SCA3000_REG_MODE_RING_BUF_ENABLE));
-> -	} else
-> -		ret =3D sca3000_write_reg(st,
-> -			SCA3000_REG_MODE_ADDR,
-> -			(ret & ~SCA3000_REG_MODE_RING_BUF_ENABLE));
-> -error_ret:
-> -	mutex_unlock(&st->lock);
-> -
-> -	return ret;
-> +	}
-> +	return sca3000_write_reg(st,
-> +		SCA3000_REG_MODE_ADDR,
-> +		(ret & ~SCA3000_REG_MODE_RING_BUF_ENABLE));
-> =C2=A0}
-> =C2=A0
-> =C2=A0/**
-> @@ -1281,26 +1237,18 @@ static int sca3000_hw_ring_preenable(struct iio_d=
-ev
-> *indio_dev)
-> =C2=A0	int ret;
-> =C2=A0	struct sca3000_state *st =3D iio_priv(indio_dev);
-> =C2=A0
-> -	mutex_lock(&st->lock);
-> -
-> +	guard(mutex)(&st->lock);
-> =C2=A0	/* Enable the 50% full interrupt */
-> =C2=A0	ret =3D spi_w8r8(st->us, SCA3000_READ_REG(SCA3000_REG_INT_MASK_ADD=
-R));
-> =C2=A0	if (ret)
-> -		goto error_unlock;
-> +		return ret;
-> =C2=A0	ret =3D sca3000_write_reg(st,
-> =C2=A0				SCA3000_REG_INT_MASK_ADDR,
-> =C2=A0				ret | SCA3000_REG_INT_MASK_RING_HALF);
-> =C2=A0	if (ret)
-> -		goto error_unlock;
-> -
-> -	mutex_unlock(&st->lock);
-> +		return ret;
-> =C2=A0
-> =C2=A0	return __sca3000_hw_ring_state_set(indio_dev, 1);
-> -
-> -error_unlock:
-> -	mutex_unlock(&st->lock);
-> -
-> -	return ret;
-> =C2=A0}
-> =C2=A0
-> =C2=A0static int sca3000_hw_ring_postdisable(struct iio_dev *indio_dev)
-> @@ -1308,22 +1256,18 @@ static int sca3000_hw_ring_postdisable(struct iio=
-_dev
-> *indio_dev)
-> =C2=A0	int ret;
-> =C2=A0	struct sca3000_state *st =3D iio_priv(indio_dev);
-> =C2=A0
-> +	guard(mutex)(&st->lock);
-> =C2=A0	ret =3D __sca3000_hw_ring_state_set(indio_dev, 0);
-> =C2=A0	if (ret)
-> =C2=A0		return ret;
-> =C2=A0
-> =C2=A0	/* Disable the 50% full interrupt */
-> -	mutex_lock(&st->lock);
-> -
-> =C2=A0	ret =3D spi_w8r8(st->us, SCA3000_READ_REG(SCA3000_REG_INT_MASK_ADD=
-R));
-> =C2=A0	if (ret)
-> -		goto unlock;
-> -	ret =3D sca3000_write_reg(st,
-> +		return ret;
-> +	return sca3000_write_reg(st,
-> =C2=A0				SCA3000_REG_INT_MASK_ADDR,
-> =C2=A0				ret & ~SCA3000_REG_INT_MASK_RING_HALF);
-> -unlock:
-> -	mutex_unlock(&st->lock);
-> -	return ret;
-> =C2=A0}
-> =C2=A0
-> =C2=A0static const struct iio_buffer_setup_ops sca3000_ring_setup_ops =3D=
- {
-> @@ -1343,25 +1287,25 @@ static int sca3000_clean_setup(struct sca3000_sta=
-te *st)
-> =C2=A0{
-> =C2=A0	int ret;
-> =C2=A0
-> -	mutex_lock(&st->lock);
-> +	guard(mutex)(&st->lock);
-> =C2=A0	/* Ensure all interrupts have been acknowledged */
-> =C2=A0	ret =3D spi_w8r8(st->us, SCA3000_READ_REG(SCA3000_REG_INT_MASK_ADD=
-R));
-> =C2=A0	if (ret)
-> -		goto error_ret;
-> +		return ret;
-> =C2=A0
-> =C2=A0	/* Turn off all motion detection channels */
-> =C2=A0	ret =3D sca3000_read_ctrl_reg(st, SCA3000_REG_CTRL_SEL_MD_CTRL);
-> =C2=A0	if (ret < 0)
-> -		goto error_ret;
-> +		return ret;
-> =C2=A0	ret =3D sca3000_write_ctrl_reg(st, SCA3000_REG_CTRL_SEL_MD_CTRL,
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 ret & SCA3000_MD_CTRL_PROT_MASK);
-> =C2=A0	if (ret)
-> -		goto error_ret;
-> +		return ret;
-> =C2=A0
-> =C2=A0	/* Disable ring buffer */
-> =C2=A0	ret =3D sca3000_read_ctrl_reg(st, SCA3000_REG_CTRL_SEL_OUT_CTRL);
-> =C2=A0	if (ret < 0)
-> -		goto error_ret;
-> +		return ret;
-> =C2=A0	ret =3D sca3000_write_ctrl_reg(st, SCA3000_REG_CTRL_SEL_OUT_CTRL,
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 (ret & SCA3000_REG_OUT_CTRL_PROT_MASK)
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 | SCA3000_REG_OUT_CTRL_BUF_X_EN
-> @@ -1369,17 +1313,17 @@ static int sca3000_clean_setup(struct sca3000_sta=
-te *st)
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 | SCA3000_REG_OUT_CTRL_BUF_Z_EN
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 | SCA3000_REG_OUT_CTRL_BUF_DIV_4);
-> =C2=A0	if (ret)
-> -		goto error_ret;
-> +		return ret;
-> =C2=A0	/* Enable interrupts, relevant to mode and set up as active low */
-> =C2=A0	ret =3D spi_w8r8(st->us, SCA3000_READ_REG(SCA3000_REG_INT_MASK_ADD=
-R));
-> =C2=A0	if (ret)
-> -		goto error_ret;
-> +		return ret;
-> =C2=A0	ret =3D sca3000_write_reg(st,
-> =C2=A0				SCA3000_REG_INT_MASK_ADDR,
-> =C2=A0				(ret & SCA3000_REG_INT_MASK_PROT_MASK)
-> =C2=A0				| SCA3000_REG_INT_MASK_ACTIVE_LOW);
-> =C2=A0	if (ret)
-> -		goto error_ret;
-> +		return ret;
-> =C2=A0	/*
-> =C2=A0	 * Select normal measurement mode, free fall off, ring off
-> =C2=A0	 * Ring in 12 bit mode - it is fine to overwrite reserved bits 3,5
-> @@ -1387,13 +1331,9 @@ static int sca3000_clean_setup(struct sca3000_stat=
-e *st)
-> =C2=A0	 */
-> =C2=A0	ret =3D spi_w8r8(st->us, SCA3000_READ_REG(SCA3000_REG_MODE_ADDR));
-> =C2=A0	if (ret)
-> -		goto error_ret;
-> -	ret =3D sca3000_write_reg(st, SCA3000_REG_MODE_ADDR,
-> +		return ret;
-> +	return sca3000_write_reg(st, SCA3000_REG_MODE_ADDR,
-> =C2=A0				ret & SCA3000_MODE_PROT_MASK);
-> -
-> -error_ret:
-> -	mutex_unlock(&st->lock);
-> -	return ret;
-> =C2=A0}
-> =C2=A0
-> =C2=A0static const struct iio_info sca3000_info =3D {
-> @@ -1471,19 +1411,16 @@ static int sca3000_stop_all_interrupts(struct sca=
-3000_state
-> *st)
-> =C2=A0{
-> =C2=A0	int ret;
-> =C2=A0
-> -	mutex_lock(&st->lock);
-> +	guard(mutex)(&st->lock);
-> =C2=A0	ret =3D spi_w8r8(st->us, SCA3000_READ_REG(SCA3000_REG_INT_MASK_ADD=
-R));
-> =C2=A0	if (ret)
-> -		goto error_ret;
-> +		return ret;
-> =C2=A0
-> -	ret =3D sca3000_write_reg(st, SCA3000_REG_INT_MASK_ADDR,
-> +	return sca3000_write_reg(st, SCA3000_REG_INT_MASK_ADDR,
-> =C2=A0				ret &
-> =C2=A0				~(SCA3000_REG_INT_MASK_RING_THREE_QUARTER |
-> =C2=A0				=C2=A0 SCA3000_REG_INT_MASK_RING_HALF |
-> =C2=A0				=C2=A0 SCA3000_REG_INT_MASK_ALL_INTS));
-> -error_ret:
-> -	mutex_unlock(&st->lock);
-> -	return ret;
-> =C2=A0}
-> =C2=A0
-> =C2=A0static void sca3000_remove(struct spi_device *spi)
+> Jonathan
 
+Hi Jonathan,
+
+I tested the project with the latest changes, and everything is working wel=
+l.
+Thanks again for all the help and patience!
+
+Best regards,
+Ioan-Daniel Pop
