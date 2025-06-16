@@ -1,122 +1,221 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75D8F292B2C
-	for <linux-iio@vger.kernel.org>; Mon, 16 Jun 2025 13:08:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D2F32DBF68
+	for <linux-iio@vger.kernel.org>; Mon, 16 Jun 2025 13:54:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750079327; cv=none; b=jAcFJIFQ8vHshgfTXTMJvn4wEwU/qt3BVEfjzeHerfn2GGvViY+BCtsI6FXrbo5/Uk2gZPF91WmQDFH9Cky9CGGUErSTNV3ehtEScdF5bKpV2L9xnydkQjD2P93e8eQuaSQr2yuY7z69n4FDS/6usoYlHw7zim4WWi9kjHDS6Us=
+	t=1750082050; cv=none; b=BdZa42EV8Cd2PA1atQHh1dHDHckCZ8eW8EsDpQ9cKpIn+Vn3gWtNW0RxfqkxFmJzcx1GzubO/mToL/kVHmWE7R5TYcCWpn6cGwiyLZQU18OfO883Y0XiySb7mOKaxR+mSY0Re8FI1cXhkZlpvS6XEK03PKcfn8IsRvBK+vzia3E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750079327; c=relaxed/simple;
-	bh=ah5rJLZ6Ag5bCpEGVmMK40ONVUS/hIUB8mOhOGYJuYw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Zur8+VqUOMFUGlzORKW6JZ9a5e4mSvXReBb+k4dynsTYVUp0UkaHbUVGlse4qrGVBozYTMWPI9rhF3g9EevlojNfMeq0QJilRkWwK08hHS8q+6hLRi4NyVzVv+bIzNHnMo/EZkl+DBYCpOEOOLhMw+nkx9e0Zja5jw1+8vDNq2s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=NYjVVVoN; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1750082050; c=relaxed/simple;
+	bh=svE4SC3yD2VAnnKLAHEVk4+ObXPQzJ7EyNDf5HiDErA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=HjyiPgWxQq15e83Z076rOYpJ52WEkBnCMdA99k2slCjCJvoMXxA4yaEJqjB54FXZWSPpzqWT9e+mSs1CE7Itxe1OUaboB7RYVrEIQpYKzfIzQqImEqoI7NfHtwfPEOnONxQz5C3VcUVnWp1eSqBpQGzfiNOQvDOcb2u/Vup/W/U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=oJblHrE0; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="NYjVVVoN"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-3a54700a46eso2958545f8f.1
-        for <linux-iio@vger.kernel.org>; Mon, 16 Jun 2025 06:08:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="oJblHrE0"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-601dfef6a8dso7583888a12.1
+        for <linux-iio@vger.kernel.org>; Mon, 16 Jun 2025 06:54:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1750079324; x=1750684124; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ah5rJLZ6Ag5bCpEGVmMK40ONVUS/hIUB8mOhOGYJuYw=;
-        b=NYjVVVoNdHkwu2PC368UJbulp3NULBtBfS8pOrfLgPPVNDB3BcHkGt2XN9MUzKt4Ei
-         XawkIEMCciJaEgaqDweI2jwILrTI0yR9gop7Kmf3idGJoRb46gSeZEM+XXWLa3YB/0rL
-         XSkucm3M9UKgxybgjqH581gHRLAC/8R9x8Hvw4tu1nxVQukrrz5bq9FW8dPSe9wfk6pA
-         wBuB9BGoctfZTTkJMGoWfNxxZaq1VNeNtrBxWjyJ8KYejfmDdvuAHqdhof9irCwl45mj
-         lLftbTw6c88mDs7NxzENC8nmQx51pK/WHJhB3QSxmu0G34aJUBVOfhY2iVwJZRuFeUhn
-         WCcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750079324; x=1750684124;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=tuxon.dev; s=google; t=1750082046; x=1750686846; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ah5rJLZ6Ag5bCpEGVmMK40ONVUS/hIUB8mOhOGYJuYw=;
-        b=bpKeAbpI4bMZFu5YOI648Vh/bQ6E1w0tiLnCp4dVTMxxvB6MaUfX/DrpdyBq/V+SQS
-         hONImVa73/fKvxm/fvO5vFk2YrUeGNnt0LiQ7+VZC8z9caYiG9j1mtR9CQWUiSSKyIJe
-         Fzzoo7ww0zIwdkYKrgqZ7BppqRvRzkInDa8e654H2lgXFiboGomWGs9HUCtqUC+1xPL9
-         PDJpwPn92DrRm2/8MiN0uQsVIoE70a/0FHOg1bXn7ziM4txUQvJTgkI7DDoJrSUq94N/
-         7Br7oOqy90Q0DTXED7hjZ0CGBUJW1baLscAjquMXmO0C2r6bSdtABbb1EVJcq9Tiy5Q6
-         KpsQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVoBENp0XhSc1o8mL16DCSuXWTXjEFJoADb/thOJcYht1CgXMzDM6qi9lclJigwP1IUgmGSFvuKRkM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxXHV+fPI7uO1gykBpHa9mZ80eiI+25Z4eWoh0Gs/cUEYR7jdGQ
-	+mDRZqmiiFiBXhBZ9LuAnsiUBYKW7eKozpRdUNx8vM6qLbUPj2KKLkZ3fT/jKAIwBaE=
-X-Gm-Gg: ASbGncv7p0aKz/c+omTsd8GQl57SvVjJRr6YnFVngIqiUi1w2i05zHqXnENpbgDZfDY
-	Hw5CKRQi2MiQy3nZ/npL1L0hKuimoQqOuZdRKdX4G+fZz65wFRHxI0FRBFwV9ZkyRjpLC/xZk68
-	11HUwxM1BvfqKbNxMwzQZaaMPuln3Mgbt0X1zcwxShbIu1PhlzMSmvJkE6c0wUF1/DW/NrAuKdZ
-	GVdIM8ChKav2Mik8w0SBm43aG8PZMfGPnoSv8A794mRbjnmE6SMaxdfa1H72E3S570kv4vXtaFO
-	sVOS6to9FZTsl+YL1N32uuKK1aJaCtEtlYTDWxIwUatUnGHoeEF6axA8hu+bHsuciJ50azBMVtN
-	7lvtC3JxKNmI3IHlnS0fWh0L2f2vk
-X-Google-Smtp-Source: AGHT+IFNPYRALxn7pyrwOurNwG2b2zOxZ8DWDp/HD4Av4lUT1jBW6B1aDoGMobxjeaaXuhPwxcq0HQ==
-X-Received: by 2002:a05:6000:2284:b0:3a4:dd8e:e16b with SMTP id ffacd0b85a97d-3a572371cdcmr9144801f8f.20.1750079323743;
-        Mon, 16 Jun 2025 06:08:43 -0700 (PDT)
-Received: from localhost (p200300f65f13c80400000000000001b9.dip0.t-ipconnect.de. [2003:f6:5f13:c804::1b9])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-3a568b089a7sm10888086f8f.49.2025.06.16.06.08.42
+        bh=zAqKBohHrckCHj00ka3d3qdcyCUEgzr5W/g9gAi10Ic=;
+        b=oJblHrE0dxDgkvrwuLoUj7MscYK/lN4Wy0ENCc54gNgK8XQqJxDcVBvelrluiB7dDc
+         lL1RVX2nw4Yi01NaSZYXPHV/J/9/Ld8WXkpY9ctuAkb9Oe5kuUqwmKrE0lk9R88lXZA0
+         yhspxS0R4IXKVjKGpQeHToSAjt4zbQcXLeZ3/8DZ6ISlSlXO9MlnJ9ppjW9WT78b2ELk
+         3WDM6Ol4qseltYTMB7S4c+BAp2OtTsqg0uXtc0U8tCcIu55JaUDy+Y0ak/7GPusntSgP
+         qxK6zgVYRaRCeeiNpGrTJOYXb+fLDE8Az0jdn7+Pc0hIqttV/7e89V0eqoN7qDZbxmql
+         s3jQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750082046; x=1750686846;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zAqKBohHrckCHj00ka3d3qdcyCUEgzr5W/g9gAi10Ic=;
+        b=dR083iFFAQd3QzKP72RlvdO6n/yDZN+L7xkOPsePHalxXFM4NRz0+TS+nEKNY65wZ1
+         2yZU8Trh61FaLSVxt4Pr2tGqGpngWWqET7nF1H3aXJN2tnUdZqh5WJkemwITsFNzmdHW
+         NYmOrZdASJKcugyvX9dEzyOh0SmfLgljjL4oW3DAUTDaNyeCQPC3DLIOjCrG1XZJJTo9
+         lkSR9pyVHoAhZUmZ/LLFu/6rXjNfuOt/2Uvye2WlQQDO9ZT22aCo1U6NOKU3JHLLOix0
+         SqwlPTEfW/+eIz7Vjy15Xcg81kDF8/BmCx+TNkV+VwNx+GmElj1ZxVJgn9U6ffUYDHoY
+         EMrQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX+UrzyHbY4WI37fmfoDKhW9DhAkJQ4Q9N/mpMff4avov2fNG3Ixaa+7kK5Y65s5g7Rb7Vx9mcHkps=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyweRsbe/8nAVCYV6O+1DunylZzKrAbW/BCkazyXOu/X/tnNUs9
+	Yy/vqYRFkzKa/JsiDvrHx24kRrWLeS6MYomuOZrsTso73qMyZoDq93qeeCVOSw/khDE=
+X-Gm-Gg: ASbGncvTc5OH2L6fTs22Djq0+Ud8QrSMwAU3we//8aflUfGvor/2AtJ5+sU3rNnr1Yv
+	LkHOb5z+jFCwvomfFn9ZAPm89SsILW5KlKaUH+hWnJSXkIjSqf6nYkQlaFeSgYd9at6K2PJ2UVk
+	0gVOxPyYZE82ZvyFTLdge6CYlFDyVs1FJfFY3c2f8yc3oXpCI5AL9n15kz9W//b8z1lZNE5tKWS
+	LFTOliuScSmAy4FvYPTzRlTCBjM0xjJnQ8WK21I9KTKsyYMIL75d53kVrLRPiCsqHq/YHhruq2O
+	q8AOM/MXzZRmQAKcCa3XEBI28jb9jpryR5Ey4a5qL5hhBeA+B6mZkJWSUy0Yl48xATg5wFTZwKM
+	99G6FokHwp9bHrzTxkFTaLjdeE6E=
+X-Google-Smtp-Source: AGHT+IFCJHnvPKhcZEL3g4P9u4AcKsSY9xIC+tFOuoZRzGgFqNWr1jYsO6WAV1vgDYbQrUc3qilD/A==
+X-Received: by 2002:a17:907:7e8c:b0:ade:4121:8d3d with SMTP id a640c23a62f3a-adfad2a1e75mr997444066b.12.1750082046246;
+        Mon, 16 Jun 2025 06:54:06 -0700 (PDT)
+Received: from claudiu-X670E-Pro-RS.. ([82.78.167.110])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-adec897a70bsm662748966b.154.2025.06.16.06.54.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Jun 2025 06:08:43 -0700 (PDT)
-Date: Mon, 16 Jun 2025 15:08:41 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>, 
-	Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org, 
-	linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: timer: renesas,rz-mtu3: Use #pwm-cells = <3>
-Message-ID: <fmn3mrcbih3oq6hgl45jipdofko46ur2sux5p4lf3nzlpahklr@3tm5molhdfdx>
-References: <20250527205823.377785-2-u.kleine-koenig@baylibre.com>
+        Mon, 16 Jun 2025 06:54:05 -0700 (PDT)
+From: Claudiu <claudiu.beznea@tuxon.dev>
+X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
+To: gregkh@linuxfoundation.org,
+	rafael@kernel.org,
+	dakr@kernel.org,
+	len.brown@intel.com,
+	pavel@kernel.org,
+	ulf.hansson@linaro.org,
+	jic23@kernel.org,
+	daniel.lezcano@linaro.org,
+	dmitry.torokhov@gmail.com
+Cc: claudiu.beznea@tuxon.dev,
+	linux-kernel@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	bhelgaas@google.com,
+	geert@linux-m68k.org,
+	linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	fabrizio.castro.jz@renesas.com,
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Subject: [PATCH v4 1/2] PM: domains: Detach on device_unbind_cleanup()
+Date: Mon, 16 Jun 2025 16:53:56 +0300
+Message-ID: <20250616135357.3929441-2-claudiu.beznea.uj@bp.renesas.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250616135357.3929441-1-claudiu.beznea.uj@bp.renesas.com>
+References: <20250616135357.3929441-1-claudiu.beznea.uj@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="iilopq2yqcjx7szu"
-Content-Disposition: inline
-In-Reply-To: <20250527205823.377785-2-u.kleine-koenig@baylibre.com>
+Content-Transfer-Encoding: 8bit
 
+From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
---iilopq2yqcjx7szu
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] dt-bindings: timer: renesas,rz-mtu3: Use #pwm-cells = <3>
-MIME-Version: 1.0
+The dev_pm_domain_attach() function is typically used in bus code alongside
+dev_pm_domain_detach(), often following patterns like:
 
-Hello Daniel,
+static int bus_probe(struct device *_dev)
+{
+    struct bus_driver *drv = to_bus_driver(dev->driver);
+    struct bus_device *dev = to_bus_device(_dev);
+    int ret;
 
-On Tue, May 27, 2025 at 10:58:22PM +0200, Uwe Kleine-K=F6nig wrote:
-> With the goal to unify all PWM bindings to use #pwm-cells =3D <3> update
-> the renesas,rz-mtu3 binding accordingly. Keep <2> documented as a
-> deprecated value at least until the in-tree device trees are fixed
-> accordingly.
->=20
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com>
+    // ...
 
-I would expect that with the positive feedback by Biju Das and Rob
-Herring it's on you to pick up this patch. Or would you prefer that I
-take it via PWM?
+    ret = dev_pm_domain_attach(_dev, true);
+    if (ret)
+        return ret;
 
-Best regards
-Uwe
+    if (drv->probe)
+        ret = drv->probe(dev);
 
---iilopq2yqcjx7szu
-Content-Type: application/pgp-signature; name="signature.asc"
+    // ...
+}
 
------BEGIN PGP SIGNATURE-----
+static void bus_remove(struct device *_dev)
+{
+    struct bus_driver *drv = to_bus_driver(dev->driver);
+    struct bus_device *dev = to_bus_device(_dev);
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmhQF1cACgkQj4D7WH0S
-/k73Rgf/c74I8St/PS/sSA0sdengOBRQFwBTHGS4TSdeSMCM6NOyPPRbdOldZt5W
-q1zo6ebUQPfsmw0PNrLy8+1VM0mo7VODoKzbpzlJbU78nNY6dClrEh1NQhO8l1x/
-AGNrp70au94sZPzQ+Wl5kDjekdgZWRNhTqnvDB6Zr6N0yZQYJTTG8szaHAdn2MBA
-w79oUyr9u4CHCNKeSrmsng+LutRYTWa19H+euEWY6pfNoUevc6KcSLFQjuJFTa8G
-Bcl+0K2D9ds2udo5OX0fC2paLmzIdrNJOXLQdb15x5gtiPNeYUJpRwj/W6wLSGvr
-0kluQjZBdst9MdruqyCa0RRRSxFFRw==
-=CsNM
------END PGP SIGNATURE-----
+    if (drv->remove)
+        drv->remove(dev);
+    dev_pm_domain_detach(_dev);
+}
 
---iilopq2yqcjx7szu--
+When the driver's probe function uses devres-managed resources that depend
+on the power domain state, those resources are released later during
+device_unbind_cleanup().
+
+Releasing devres-managed resources that depend on the power domain state
+after detaching the device from its PM domain can cause failures.
+
+For example, if the driver uses devm_pm_runtime_enable() in its probe
+function, and the device's clocks are managed by the PM domain, then
+during removal the runtime PM is disabled in device_unbind_cleanup() after
+the clocks have been removed from the PM domain. It may happen that the
+devm_pm_runtime_enable() action causes the device to be runtime-resumed.
+If the driver specific runtime PM APIs access registers directly, this
+will lead to accessing device registers without clocks being enabled.
+Similar issues may occur with other devres actions that access device
+registers.
+
+Add detach_power_off member to struct dev_pm_info, to be used later in
+device_unbind_cleanup() as the power_off argument for
+dev_pm_domain_detach(). This is a preparatory step toward removing
+dev_pm_domain_detach() calls from bus remove functions. Since the current
+PM domain detach functions (genpd_dev_pm_detach() and acpi_dev_pm_detach())
+already set dev->pm_domain = NULL, there should be no issues with bus
+drivers that still call dev_pm_domain_detach() in their remove functions.
+
+Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+---
+
+Changes in v4:
+- save dev->power.detach_power_off in dev_pm_domain_attach() and use
+  it in device_unbind_cleanup() when detaching
+- adjusted patch description
+
+Changes in v3:
+- dropped devm_pm_domain_detach_off(), devm_pm_domain_detach_on()
+  and use a single function devm_pm_domain_detach()
+
+Changes in v2:
+- none; this patch is new
+
+ drivers/base/dd.c           | 2 ++
+ drivers/base/power/common.c | 3 +++
+ include/linux/pm.h          | 1 +
+ 3 files changed, 6 insertions(+)
+
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index b526e0e0f52d..13ab98e033ea 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -25,6 +25,7 @@
+ #include <linux/kthread.h>
+ #include <linux/wait.h>
+ #include <linux/async.h>
++#include <linux/pm_domain.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/pinctrl/devinfo.h>
+ #include <linux/slab.h>
+@@ -552,6 +553,7 @@ static void device_unbind_cleanup(struct device *dev)
+ 	dev->dma_range_map = NULL;
+ 	device_set_driver(dev, NULL);
+ 	dev_set_drvdata(dev, NULL);
++	dev_pm_domain_detach(dev, dev->power.detach_power_off);
+ 	if (dev->pm_domain && dev->pm_domain->dismiss)
+ 		dev->pm_domain->dismiss(dev);
+ 	pm_runtime_reinit(dev);
+diff --git a/drivers/base/power/common.c b/drivers/base/power/common.c
+index 781968a128ff..a8f302ed27a5 100644
+--- a/drivers/base/power/common.c
++++ b/drivers/base/power/common.c
+@@ -111,6 +111,9 @@ int dev_pm_domain_attach(struct device *dev, bool power_on)
+ 	if (!ret)
+ 		ret = genpd_dev_pm_attach(dev);
+ 
++	if (dev->pm_domain)
++		dev->power.detach_power_off = power_on;
++
+ 	return ret < 0 ? ret : 0;
+ }
+ EXPORT_SYMBOL_GPL(dev_pm_domain_attach);
+diff --git a/include/linux/pm.h b/include/linux/pm.h
+index f0bd8fbae4f2..dcbe2c1ef59b 100644
+--- a/include/linux/pm.h
++++ b/include/linux/pm.h
+@@ -720,6 +720,7 @@ struct dev_pm_info {
+ 	struct pm_subsys_data	*subsys_data;  /* Owned by the subsystem. */
+ 	void (*set_latency_tolerance)(struct device *, s32);
+ 	struct dev_pm_qos	*qos;
++	bool			detach_power_off:1;
+ };
+ 
+ extern int dev_pm_get_subsys_data(struct device *dev);
+-- 
+2.43.0
+
