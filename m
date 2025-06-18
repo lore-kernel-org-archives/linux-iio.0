@@ -1,56 +1,56 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C99B62F49E1;
-	Wed, 18 Jun 2025 17:38:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 256441E8323;
+	Wed, 18 Jun 2025 17:38:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750268307; cv=none; b=C31bpSQhkcpQyTyqbF6uKZTFmvEoq2wlQUdk9wrPZQKzmlxhZojTS3RQQdqNvW9DQ2B3GC6vNcwVqifQbeFmsmCskOwgUPtl0tglSVDjpexwNLsVYLDPielhJj/VKTwpRAAkt+AJ7el9rxSE1ur4t6GHOhxZSaQ9kkGnwEj5Jqw=
+	t=1750268332; cv=none; b=JNLlJKznVG2rsUL4E6LakvgjD5Qvh4LWmnpxK5cmoF+djRISzz+QKq0W9eNETiskUEfz7V0CG38yn8HH7KgX9JAI3B7/TMG5br1xDWVSwqfgB7Q25lG7tSA3CldnBHUwowNy1uEwI0PBK2l5CGCzXCfwQC3rwp/Lgi3J3ydFH44=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750268307; c=relaxed/simple;
-	bh=mjZYWaRkcRdjarRU3mciTYZiQMkNMt8qhA2kEYBByug=;
+	s=arc-20240116; t=1750268332; c=relaxed/simple;
+	bh=dau+XvDHWs1GEJ9J2OFwDLYZxnqpl1lDT9asmdflVR0=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=m+Pgede25emd0dnDB+qEK2C+7Q7FspMBYWJJD9AcnxEAQYVuh5sliBEIIqZJmXBb3zMmwR0b3vvAzpqrGSi4TLBUshO/Zca2IA2wZ9eiFXVEwToIbUWvreemhPZFSebzh7F7AlnuXBZvAKRmL50M+SMnC6e8yoeEtdnJOwjpwWM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=1Z83l+zA; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=VIZDT1jCvtKwoH/HgBrsMu1IANrWwWi+BwavwYC/HbnCrwJmHwIj1X6LO2Xs8Jd2MSLeCsqxNOjEhh45fHWZyT67DDr5XHyTfO07/O/4kR6qTG31zhnaX5xdslXXiuUTmPxlOtWV1tABZ07VgFxKSynZmD4VksUj4bOSfCd/Lqc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=VopXhwip; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="1Z83l+zA"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="VopXhwip"
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55IG2GcP027608;
-	Wed, 18 Jun 2025 13:38:09 -0400
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55IFbKZE027666;
+	Wed, 18 Jun 2025 13:38:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=yIzda
-	7vTpc+HHdRa8iOboc63iEN2HWlM5y0ZFmHhelI=; b=1Z83l+zAbId7mLaSjdPVQ
-	YeUaokilvDoN20PzVlcAZqGggmJBlCN7Jedtj6X8cBAu7xnBPf/nVH7eTHWFhFWS
-	MXfB50UimLRnauIel3lH+kyCVxlVT/D38JKusLbsb2mhs/jXDu/TrrpAqY26ZOdH
-	YgRj6NB9Bw+TFiEHcCJnQ0ExewcBi21u7V/FIFU4HsZ/+3jenGvtTWJNYBkd53eV
-	rY77BtiLBcuDBPcSxkTLCLVE0L+WhEKejU/kLQhMZRbanqZY0pYBuUIrby/hzBp4
-	jcSh1ZH8mdg3s8PrnQl9lIjkYUGn2wHre3d/AzXbkkPdKj40bgVZM+x8kYVmXfb+
-	Q==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 47bfxcwdd1-1
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=rLwqf
+	lLu6hpnIfd6CyHnH/lQ2eF/fiocikrUPNyd9XI=; b=VopXhwipuNJOF9xArjLHz
+	ksrJiIZCwGj4kzGAbcBurpJRIiP8Jj5ivJZifJ0pYQQdJhegvhm1nBjTTSYlxccE
+	mqQXdQI437rR0RjpllRYT2jL6EJqW6cPuf9oU84g3h6pjFnyL5VOk9TEjfn0AbGT
+	lLbvBDDnUM/1ocj4w+DSpXh602dba1CzWVvNF6xBiql2Xmq7/nBlRIG86tXVs5UE
+	ZOoQ2D1PpJPfJFoee3ABnzpZGjxyssHVa+ZLTsl3L+R0f5ZjrR0NKwCUW2+yHRAL
+	aaH5RhKDK0lwOXLzMfR8RuRJB3ZKiRBLcrtUqaX3ruRi3CcaWf/bAT4W0ZBTvDn+
+	g==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 47bfxcwdf0-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 18 Jun 2025 13:38:08 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 55IHc7R9016190
+	Wed, 18 Jun 2025 13:38:31 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 55IHcU0q031981
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 18 Jun 2025 13:38:07 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+	Wed, 18 Jun 2025 13:38:30 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.10; Wed, 18 Jun 2025 13:38:07 -0400
+ 15.2.1748.10; Wed, 18 Jun 2025 13:38:30 -0400
 Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.10; Wed, 18 Jun 2025 13:38:06 -0400
+ 15.2.1748.10; Wed, 18 Jun 2025 13:38:30 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.10 via Frontend
- Transport; Wed, 18 Jun 2025 13:38:06 -0400
+ Transport; Wed, 18 Jun 2025 13:38:30 -0400
 Received: from work.ad.analog.com (HYB-hERzalRezfV.ad.analog.com [10.65.205.9])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 55IHbo42007486;
-	Wed, 18 Jun 2025 13:37:53 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 55IHcDFE007639;
+	Wed, 18 Jun 2025 13:38:16 -0400
 From: Marcelo Schmitt <marcelo.schmitt@analog.com>
 To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
@@ -58,10 +58,12 @@ CC: <jic23@kernel.org>, <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <dlechner@baylibre.com>, <nuno.sa@analog.com>, <andy@kernel.org>,
         <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
         <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <broonie@kernel.org>,
-        <lgirdwood@gmail.com>, <marcelo.schmitt1@gmail.com>
-Subject: [PATCH v6 08/12] iio: adc: ad4170: Add clock provider support
-Date: Wed, 18 Jun 2025 14:37:49 -0300
-Message-ID: <46c3b9da0270e748db1676f176156093237980e7.1750258776.git.marcelo.schmitt@analog.com>
+        <lgirdwood@gmail.com>, <marcelo.schmitt1@gmail.com>,
+        Bartosz Golaszewski
+	<bartosz.golaszewski@linaro.org>
+Subject: [PATCH v6 09/12] iio: adc: ad4170: Add GPIO controller support
+Date: Wed, 18 Jun 2025 14:38:12 -0300
+Message-ID: <388c56894287671b4a23333584a0841480feb1ae.1750258776.git.marcelo.schmitt@analog.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1750258776.git.marcelo.schmitt@analog.com>
 References: <cover.1750258776.git.marcelo.schmitt@analog.com>
@@ -71,283 +73,359 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: cCnAUvFOtcjnVCAQ4WtswMq30Z20FPS0
-X-Proofpoint-GUID: cCnAUvFOtcjnVCAQ4WtswMq30Z20FPS0
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjE4MDE1MCBTYWx0ZWRfXwHrF68xtBU1g
- sNNh5yUUGSTtz0rTk9/seIp405drmnOk3jI3spbK4qmABWjgRjNBQLsgpfB5c1xOlWzfeX5snzE
- 7ha12xaNKEStaHNcShQfBR2LHfglQZVOcfE/kPB/YD0LGp9fbj2QR8iPpw3yhLGtMIF7KNq5fF4
- u0dLUD2jDU49i2QKHyCckBF/fuPfy+/Dke/QCGvTTkwkoiBgJI9vT28ovLC7ectQgc4TyqVjn4P
- lYuX13xqukZgHj7+FywDMaxc74wM0Cj6sJ20V9eNFl/5LgF6owS+BqylYlYHrFLWLsJ7QQEVYHg
- iAD9Wgr3w+0gEQad+jClTCq44NQr7gyTo/ZfqGnyz9n8NXCs49pnkaTzCP7g3QdBiUKTFrw2wjZ
- SWA3eZ7n6eKPVuL2dzy70FFR2uYUTEkKJhigFdWAsgvqRQ9xqGSMr1yYjaID2ZREmyn6jYCM
-X-Authority-Analysis: v=2.4 cv=Jb28rVKV c=1 sm=1 tr=0 ts=6852f980 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=gAnH3GRIAAAA:8 a=FbnkXhljGIpD8s1dgEMA:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: lXp9E7fTp4DkSp_sEi7XaG7mXWP2bseH
+X-Proofpoint-GUID: lXp9E7fTp4DkSp_sEi7XaG7mXWP2bseH
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjE4MDE1MCBTYWx0ZWRfX8OFQiXyYIcqc
+ GoLBroRCVd2ZqTFHSWWJqH573EfVV9R8L7/jc2jUK54fNrFwAmX+RanP9mluBVbLE2HaBo73v7b
+ 78skf2s8FtaU3NyzM7pMsYyz0AQ/vRHNWGw8zc3MOKIyO6xllMFZ8BgmMDIoWifvTDoBKmzxGUB
+ Zw/60VmK2JwEJvpEAaQXR8q9z7hhXFEUdURBQflqK9ez3raB06fgOvbOiRiAlOQJR9F26cfRAfg
+ SovuutH0vYnAw7U+hMM61PfEj6+RyzpoAqyeqwFzCg+GuLvoKUQfJ58l3hDDhCG2CZskMkVLURP
+ mlxa0Qw+FIvqQSrxXwIANwStoOPhPKOYc/brDR/05UxH5UyaqmhY0kSSXmgDnGxFZS/bWkA+/7T
+ D3kD6rCjs5HnbUy+vQxE4d6RcvstNfF4o/jdZi5bdA6pHCjRjjh7yd4mHUzVt90nDzsjdyTf
+X-Authority-Analysis: v=2.4 cv=Jb28rVKV c=1 sm=1 tr=0 ts=6852f997 cx=c_pps
+ a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
+ a=6IFa9wvqVegA:10 a=KKAkSRfTAAAA:8 a=gAnH3GRIAAAA:8 a=kZiCEncQAPmOuCAweDIA:9
+ a=cvBusfyB2V15izCimMoJ:22
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
  definitions=2025-06-18_05,2025-06-18_03,2025-03-28_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 mlxlogscore=999 clxscore=1011 mlxscore=0 priorityscore=1501
+ malwarescore=0 mlxlogscore=999 clxscore=1015 mlxscore=0 priorityscore=1501
  lowpriorityscore=0 phishscore=0 adultscore=0 suspectscore=0 spamscore=0
  impostorscore=0 bulkscore=0 classifier=spam authscore=0 authtc=n/a authcc=
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
  definitions=main-2506180150
 
-The AD4170 chip can use an externally supplied clock at the XTAL2 pin, or
-an external crystal connected to the XTAL1 and XTAL2 pins. Alternatively,
-the AD4170 can provide its 16 MHz internal clock at the XTAL2 pin. In
-addition, the chip has a programmable clock divider that allows dividing
-the external or internal clock frequency, however, control for that is not
-provided in this patch. Extend the AD4170 driver so it effectively uses the
-provided external clock, if any, or supplies its own clock as a clock
-provider.
+The AD4170 has four multifunctional pins that can be used as GPIOs. The
+GPIO functionality can be accessed when the AD4170 chip is not busy
+performing continuous data capture or handling any other register
+read/write request. Also, the AD4170 does not provide any interrupt based
+on GPIO pin states so AD4170 GPIOs can't be used as interrupt sources.
 
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Implement gpio_chip callbacks to make AD4170 GPIO pins controllable through
+the gpiochip interface.
+
+Acked-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 ---
 Change log v5 -> v6
-- Now using device_property_present() to check #clock-cells presence.
+- picked up Linus' review tag.
 
  drivers/iio/adc/Kconfig  |   1 +
- drivers/iio/adc/ad4170.c | 147 ++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 147 insertions(+), 1 deletion(-)
+ drivers/iio/adc/ad4170.c | 224 ++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 224 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index b12dcc04c894..32e5177ceebe 100644
+index 32e5177ceebe..0c16b2d5947d 100644
 --- a/drivers/iio/adc/Kconfig
 +++ b/drivers/iio/adc/Kconfig
-@@ -91,6 +91,7 @@ config AD4170
- 	select REGMAP_SPI
+@@ -92,6 +92,7 @@ config AD4170
  	select IIO_BUFFER
  	select IIO_TRIGGERED_BUFFER
-+	depends on COMMON_CLK
+ 	depends on COMMON_CLK
++	depends on GPIOLIB
  	help
  	  Say yes here to build support for Analog Devices AD4170 SPI analog
  	  to digital converters (ADC).
 diff --git a/drivers/iio/adc/ad4170.c b/drivers/iio/adc/ad4170.c
-index 2acd4316b079..21921844f5e6 100644
+index 21921844f5e6..11d04c50e613 100644
 --- a/drivers/iio/adc/ad4170.c
 +++ b/drivers/iio/adc/ad4170.c
-@@ -11,6 +11,8 @@
- #include <linux/bitops.h>
- #include <linux/bits.h>
- #include <linux/cleanup.h>
-+#include <linux/clk.h>
-+#include <linux/clk-provider.h>
+@@ -16,6 +16,7 @@
  #include <linux/delay.h>
  #include <linux/device.h>
  #include <linux/err.h>
-@@ -53,6 +55,7 @@
- #define AD4170_CONFIG_A_REG				0x00
- #define AD4170_DATA_24B_REG				0x1E
- #define AD4170_PIN_MUXING_REG				0x69
-+#define AD4170_CLOCK_CTRL_REG				0x6B
- #define AD4170_ADC_CTRL_REG				0x71
- #define AD4170_CHAN_EN_REG				0x79
- #define AD4170_CHAN_SETUP_REG(x)			(0x81 + 4 * (x))
-@@ -73,6 +76,9 @@
- /* AD4170_PIN_MUXING_REG */
- #define AD4170_PIN_MUXING_DIG_AUX1_CTRL_MSK		GENMASK(5, 4)
++#include <linux/gpio/driver.h>
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger.h>
+@@ -66,6 +67,9 @@
+ #define AD4170_FILTER_FS_REG(x)				(0xC7 + 14 * (x))
+ #define AD4170_OFFSET_REG(x)				(0xCA + 14 * (x))
+ #define AD4170_GAIN_REG(x)				(0xCD + 14 * (x))
++#define AD4170_GPIO_MODE_REG				0x191
++#define AD4170_GPIO_OUTPUT_REG				0x193
++#define AD4170_GPIO_INPUT_REG				0x195
+ #define AD4170_ADC_CTRL_CONT_READ_EXIT_REG		0x200 /* virtual reg */
  
-+/* AD4170_CLOCK_CTRL_REG */
-+#define AD4170_CLOCK_CTRL_CLOCKSEL_MSK			GENMASK(1, 0)
+ #define AD4170_REG_READ_MASK				BIT(14)
+@@ -104,6 +108,12 @@
+ /* AD4170_FILTER_REG */
+ #define AD4170_FILTER_FILTER_TYPE_MSK			GENMASK(3, 0)
+ 
++/* AD4170_GPIO_MODE_REG */
++#define AD4170_GPIO_MODE_GPIO0_MSK			GENMASK(1, 0)
++#define AD4170_GPIO_MODE_GPIO1_MSK			GENMASK(3, 2)
++#define AD4170_GPIO_MODE_GPIO2_MSK			GENMASK(5, 4)
++#define AD4170_GPIO_MODE_GPIO3_MSK			GENMASK(7, 6)
 +
- /* AD4170_ADC_CTRL_REG */
- #define AD4170_ADC_CTRL_MULTI_DATA_REG_SEL_MSK		BIT(7)
- #define AD4170_ADC_CTRL_CONT_READ_MSK			GENMASK(5, 4)
-@@ -100,6 +106,12 @@
- 
  /* AD4170 register constants */
  
-+/* AD4170_CLOCK_CTRL_REG constants */
-+#define AD4170_CLOCK_CTRL_CLOCKSEL_INT			0x0
-+#define AD4170_CLOCK_CTRL_CLOCKSEL_INT_OUT		0x1
-+#define AD4170_CLOCK_CTRL_CLOCKSEL_EXT			0x2
-+#define AD4170_CLOCK_CTRL_CLOCKSEL_EXT_XTAL		0x3
+ /* AD4170_CLOCK_CTRL_REG constants */
+@@ -144,9 +154,14 @@
+ #define AD4170_FILTER_FILTER_TYPE_SINC5			0x4
+ #define AD4170_FILTER_FILTER_TYPE_SINC3			0x6
+ 
++/* AD4170_GPIO_MODE_REG constants */
++#define AD4170_GPIO_MODE_GPIO_INPUT			1
++#define AD4170_GPIO_MODE_GPIO_OUTPUT			2
 +
- /* AD4170_CHAN_MAP_REG constants */
- #define AD4170_CHAN_MAP_AIN(x)			(x)
- #define AD4170_CHAN_MAP_TEMP_SENSOR		17
-@@ -147,6 +159,8 @@
+ /* Device properties and auxiliary constants */
  
- /* Internal and external clock properties */
- #define AD4170_INT_CLOCK_16MHZ				(16 * HZ_PER_MHZ)
-+#define AD4170_EXT_CLOCK_MHZ_MIN			(1 * HZ_PER_MHZ)
-+#define AD4170_EXT_CLOCK_MHZ_MAX			(17 * HZ_PER_MHZ)
+ #define AD4170_NUM_ANALOG_PINS				9
++#define AD4170_NUM_GPIO_PINS				4
+ #define AD4170_MAX_CHANNELS				16
+ #define AD4170_MAX_ANALOG_PINS				8
+ #define AD4170_MAX_SETUPS				8
+@@ -174,6 +189,9 @@
  
- #define AD4170_NUM_PGA_OPTIONS				10
+ #define AD4170_ADC_CTRL_CONT_READ_EXIT			0xA5
  
-@@ -164,6 +178,7 @@ static const unsigned int ad4170_reg_size[] = {
++/* GPIO pin functions  */
++#define AD4170_GPIO_UNASSIGNED				0x00
++
+ static const unsigned int ad4170_reg_size[] = {
  	[AD4170_CONFIG_A_REG] = 1,
  	[AD4170_DATA_24B_REG] = 3,
- 	[AD4170_PIN_MUXING_REG] = 2,
-+	[AD4170_CLOCK_CTRL_REG] = 2,
- 	[AD4170_ADC_CTRL_REG] = 2,
- 	[AD4170_CHAN_EN_REG] = 2,
- 	/*
-@@ -236,6 +251,10 @@ enum ad4170_regulator {
- 	AD4170_MAX_SUP,
+@@ -211,6 +229,9 @@ static const unsigned int ad4170_reg_size[] = {
+ 	[AD4170_OFFSET_REG(5) ... AD4170_GAIN_REG(5)] = 3,
+ 	[AD4170_OFFSET_REG(6) ... AD4170_GAIN_REG(6)] = 3,
+ 	[AD4170_OFFSET_REG(7) ... AD4170_GAIN_REG(7)] = 3,
++	[AD4170_GPIO_MODE_REG] = 2,
++	[AD4170_GPIO_OUTPUT_REG] = 2,
++	[AD4170_GPIO_INPUT_REG] = 2,
+ 	[AD4170_ADC_CTRL_CONT_READ_EXIT_REG] = 0,
  };
  
-+static const char *const ad4170_clk_sel[] = {
-+	"ext-clk", "xtal",
-+};
-+
- enum ad4170_int_pin_sel {
- 	AD4170_INT_PIN_SDO,
- 	AD4170_INT_PIN_DIG_AUX1,
-@@ -338,6 +357,8 @@ struct ad4170_state {
- 	struct completion completion;
+@@ -358,7 +379,9 @@ struct ad4170_state {
  	unsigned int pins_fn[AD4170_NUM_ANALOG_PINS];
  	u32 int_pin_sel;
-+	struct clk_hw int_clk_hw;
-+	unsigned int clock_ctrl;
+ 	struct clk_hw int_clk_hw;
++	struct gpio_chip gpiochip;
+ 	unsigned int clock_ctrl;
++	int gpio_fn[AD4170_NUM_GPIO_PINS];
  	/*
  	 * DMA (thus cache coherency maintenance) requires the transfer buffers
  	 * to live in their own cache lines.
-@@ -1616,13 +1637,137 @@ static int ad4170_parse_channels(struct iio_dev *indio_dev)
+@@ -1468,6 +1491,194 @@ static int ad4170_soft_reset(struct ad4170_state *st)
  	return 0;
  }
  
-+static struct ad4170_state *clk_hw_to_ad4170(struct clk_hw *hw)
++static int ad4170_gpio_get(struct gpio_chip *gc, unsigned int offset)
 +{
-+	return container_of(hw, struct ad4170_state, int_clk_hw);
-+}
-+
-+static unsigned long ad4170_sel_clk(struct ad4170_state *st,
-+				    unsigned int clk_sel)
-+{
-+	st->clock_ctrl &= ~AD4170_CLOCK_CTRL_CLOCKSEL_MSK;
-+	st->clock_ctrl |= FIELD_PREP(AD4170_CLOCK_CTRL_CLOCKSEL_MSK, clk_sel);
-+	return regmap_write(st->regmap, AD4170_CLOCK_CTRL_REG, st->clock_ctrl);
-+}
-+
-+static unsigned long ad4170_clk_recalc_rate(struct clk_hw *hw,
-+					    unsigned long parent_rate)
-+{
-+	return AD4170_INT_CLOCK_16MHZ;
-+}
-+
-+static int ad4170_clk_output_is_enabled(struct clk_hw *hw)
-+{
-+	struct ad4170_state *st = clk_hw_to_ad4170(hw);
-+	u32 clk_sel;
-+
-+	clk_sel = FIELD_GET(AD4170_CLOCK_CTRL_CLOCKSEL_MSK, st->clock_ctrl);
-+	return clk_sel == AD4170_CLOCK_CTRL_CLOCKSEL_INT_OUT;
-+}
-+
-+static int ad4170_clk_output_prepare(struct clk_hw *hw)
-+{
-+	struct ad4170_state *st = clk_hw_to_ad4170(hw);
-+
-+	return ad4170_sel_clk(st, AD4170_CLOCK_CTRL_CLOCKSEL_INT_OUT);
-+}
-+
-+static void ad4170_clk_output_unprepare(struct clk_hw *hw)
-+{
-+	struct ad4170_state *st = clk_hw_to_ad4170(hw);
-+
-+	ad4170_sel_clk(st, AD4170_CLOCK_CTRL_CLOCKSEL_INT);
-+}
-+
-+static const struct clk_ops ad4170_int_clk_ops = {
-+	.recalc_rate = ad4170_clk_recalc_rate,
-+	.is_enabled = ad4170_clk_output_is_enabled,
-+	.prepare = ad4170_clk_output_prepare,
-+	.unprepare = ad4170_clk_output_unprepare,
-+};
-+
-+static int ad4170_register_clk_provider(struct iio_dev *indio_dev)
-+{
++	struct iio_dev *indio_dev = gpiochip_get_data(gc);
 +	struct ad4170_state *st = iio_priv(indio_dev);
-+	struct device *dev = indio_dev->dev.parent;
-+	struct clk_init_data init = {};
++	unsigned int val;
 +	int ret;
 +
-+	if (device_property_read_string(dev, "clock-output-names", &init.name)) {
-+		init.name = devm_kasprintf(dev, GFP_KERNEL, "%pfw",
-+					   dev_fwnode(dev));
-+		if (!init.name)
-+			return -ENOMEM;
++	if (!iio_device_claim_direct(indio_dev))
++		return -EBUSY;
++
++	ret = regmap_read(st->regmap, AD4170_GPIO_MODE_REG, &val);
++	if (ret)
++		goto err_release;
++
++	/*
++	 * If the GPIO is configured as an input, read the current value from
++	 * AD4170_GPIO_INPUT_REG. Otherwise, read the input value from
++	 * AD4170_GPIO_OUTPUT_REG.
++	 */
++	if (val & BIT(offset * 2))
++		ret = regmap_read(st->regmap, AD4170_GPIO_INPUT_REG, &val);
++	else
++		ret = regmap_read(st->regmap, AD4170_GPIO_OUTPUT_REG, &val);
++	if (ret)
++		goto err_release;
++
++	ret = !!(val & BIT(offset));
++err_release:
++	iio_device_release_direct(indio_dev);
++
++	return ret;
++}
++
++static int ad4170_gpio_set(struct gpio_chip *gc, unsigned int offset, int value)
++{
++	struct iio_dev *indio_dev = gpiochip_get_data(gc);
++	struct ad4170_state *st = iio_priv(indio_dev);
++	int ret;
++
++	if (!iio_device_claim_direct(indio_dev))
++		return -EBUSY;
++
++	ret = regmap_assign_bits(st->regmap, AD4170_GPIO_OUTPUT_REG,
++				 BIT(offset), !!value);
++
++	iio_device_release_direct(indio_dev);
++	return ret;
++}
++
++static int ad4170_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
++{
++	struct iio_dev *indio_dev = gpiochip_get_data(gc);
++	struct ad4170_state *st = iio_priv(indio_dev);
++	unsigned int val;
++	int ret;
++
++	if (!iio_device_claim_direct(indio_dev))
++		return -EBUSY;
++
++	ret = regmap_read(st->regmap, AD4170_GPIO_MODE_REG, &val);
++	if (ret)
++		goto err_release;
++
++	if (val & BIT(offset * 2 + 1))
++		ret = GPIO_LINE_DIRECTION_OUT;
++	else
++		ret = GPIO_LINE_DIRECTION_IN;
++
++err_release:
++	iio_device_release_direct(indio_dev);
++
++	return ret;
++}
++
++static int ad4170_gpio_direction_input(struct gpio_chip *gc, unsigned int offset)
++{
++	struct iio_dev *indio_dev = gpiochip_get_data(gc);
++	struct ad4170_state *st = iio_priv(indio_dev);
++	unsigned long gpio_mask;
++	int ret;
++
++	if (!iio_device_claim_direct(indio_dev))
++		return -EBUSY;
++
++	switch (offset) {
++	case 0:
++		gpio_mask = AD4170_GPIO_MODE_GPIO0_MSK;
++		break;
++	case 1:
++		gpio_mask = AD4170_GPIO_MODE_GPIO1_MSK;
++		break;
++	case 2:
++		gpio_mask = AD4170_GPIO_MODE_GPIO2_MSK;
++		break;
++	case 3:
++		gpio_mask = AD4170_GPIO_MODE_GPIO3_MSK;
++		break;
++	default:
++		ret = -EINVAL;
++		goto err_release;
 +	}
++	ret = regmap_update_bits(st->regmap, AD4170_GPIO_MODE_REG, gpio_mask,
++				 AD4170_GPIO_MODE_GPIO_INPUT << (2 * offset));
 +
-+	init.ops = &ad4170_int_clk_ops;
++err_release:
++	iio_device_release_direct(indio_dev);
 +
-+	st->int_clk_hw.init = &init;
-+	ret = devm_clk_hw_register(dev, &st->int_clk_hw);
++	return ret;
++}
++
++static int ad4170_gpio_direction_output(struct gpio_chip *gc,
++					unsigned int offset, int value)
++{
++	struct iio_dev *indio_dev = gpiochip_get_data(gc);
++	struct ad4170_state *st = iio_priv(indio_dev);
++	unsigned long gpio_mask;
++	int ret;
++
++	ret = ad4170_gpio_set(gc, offset, value);
 +	if (ret)
 +		return ret;
 +
-+	return devm_of_clk_add_hw_provider(dev, of_clk_hw_simple_get,
-+					   &st->int_clk_hw);
++	if (!iio_device_claim_direct(indio_dev))
++		return -EBUSY;
++
++	switch (offset) {
++	case 0:
++		gpio_mask = AD4170_GPIO_MODE_GPIO0_MSK;
++		break;
++	case 1:
++		gpio_mask = AD4170_GPIO_MODE_GPIO1_MSK;
++		break;
++	case 2:
++		gpio_mask = AD4170_GPIO_MODE_GPIO2_MSK;
++		break;
++	case 3:
++		gpio_mask = AD4170_GPIO_MODE_GPIO3_MSK;
++		break;
++	default:
++		ret = -EINVAL;
++		goto err_release;
++	}
++	ret = regmap_update_bits(st->regmap, AD4170_GPIO_MODE_REG, gpio_mask,
++				 AD4170_GPIO_MODE_GPIO_OUTPUT << (2 * offset));
++
++err_release:
++	iio_device_release_direct(indio_dev);
++
++	return ret;
 +}
 +
-+static int ad4170_clock_select(struct iio_dev *indio_dev)
++static int ad4170_gpio_init_valid_mask(struct gpio_chip *gc,
++				       unsigned long *valid_mask,
++				       unsigned int ngpios)
 +{
-+	struct ad4170_state *st = iio_priv(indio_dev);
-+	struct device *dev = &st->spi->dev;
-+	struct clk *ext_clk;
-+	int ret;
++	struct ad4170_state *st = gpiochip_get_data(gc);
++	unsigned int i;
 +
-+	ext_clk = devm_clk_get_optional_enabled(dev, NULL);
-+	if (IS_ERR(ext_clk))
-+		return dev_err_probe(dev, PTR_ERR(ext_clk),
-+				     "Failed to get external clock\n");
++	/* Only expose GPIOs that were not assigned any other function. */
++	for (i = 0; i < ngpios; i++) {
++		bool valid = st->gpio_fn[i] == AD4170_GPIO_UNASSIGNED;
 +
-+	if (!ext_clk) {
-+		/* Use internal clock reference */
-+		st->mclk_hz = AD4170_INT_CLOCK_16MHZ;
-+		st->clock_ctrl |= FIELD_PREP(AD4170_CLOCK_CTRL_CLOCKSEL_MSK,
-+					     AD4170_CLOCK_CTRL_CLOCKSEL_INT_OUT);
-+
-+		if (!device_property_present(&st->spi->dev, "#clock-cells"))
-+			return 0;
-+
-+		return ad4170_register_clk_provider(indio_dev);
-+	}
-+
-+	/* Read optional clock-names prop to specify the external clock type */
-+	ret = device_property_match_property_string(dev, "clock-names",
-+						    ad4170_clk_sel,
-+						    ARRAY_SIZE(ad4170_clk_sel));
-+
-+	ret = ret < 0 ? 0 : ret; /* Default to external clock if no clock-names */
-+	st->clock_ctrl |= FIELD_PREP(AD4170_CLOCK_CTRL_CLOCKSEL_MSK,
-+				     AD4170_CLOCK_CTRL_CLOCKSEL_EXT + ret);
-+
-+	st->mclk_hz = clk_get_rate(ext_clk);
-+	if (st->mclk_hz < AD4170_EXT_CLOCK_MHZ_MIN ||
-+	    st->mclk_hz > AD4170_EXT_CLOCK_MHZ_MAX) {
-+		return dev_err_probe(dev, -EINVAL,
-+				     "Invalid external clock frequency %u\n",
-+				     st->mclk_hz);
++		__assign_bit(i, valid_mask, valid);
 +	}
 +
 +	return 0;
 +}
 +
- static int ad4170_parse_firmware(struct iio_dev *indio_dev)
- {
- 	struct ad4170_state *st = iio_priv(indio_dev);
- 	struct device *dev = &st->spi->dev;
- 	int reg_data, ret;
- 
--	st->mclk_hz = AD4170_INT_CLOCK_16MHZ;
-+	ret = ad4170_clock_select(indio_dev);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to setup device clock\n");
++static int ad4170_gpio_init(struct iio_dev *indio_dev)
++{
++	struct ad4170_state *st = iio_priv(indio_dev);
 +
-+	ret = regmap_write(st->regmap, AD4170_CLOCK_CTRL_REG, st->clock_ctrl);
++	st->gpiochip.label = "ad4170_gpios";
++	st->gpiochip.base = -1;
++	st->gpiochip.ngpio = AD4170_NUM_GPIO_PINS;
++	st->gpiochip.parent = &st->spi->dev;
++	st->gpiochip.can_sleep = true;
++	st->gpiochip.init_valid_mask = ad4170_gpio_init_valid_mask;
++	st->gpiochip.get_direction = ad4170_gpio_get_direction;
++	st->gpiochip.direction_input = ad4170_gpio_direction_input;
++	st->gpiochip.direction_output = ad4170_gpio_direction_output;
++	st->gpiochip.get = ad4170_gpio_get;
++	st->gpiochip.set_rv = ad4170_gpio_set;
++	st->gpiochip.owner = THIS_MODULE;
++
++	return devm_gpiochip_add_data(&st->spi->dev, &st->gpiochip, indio_dev);
++}
++
+ static int ad4170_parse_reference(struct ad4170_state *st,
+ 				  struct fwnode_handle *child,
+ 				  struct ad4170_setup *setup)
+@@ -1787,7 +1998,18 @@ static int ad4170_parse_firmware(struct iio_dev *indio_dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	return ad4170_parse_channels(indio_dev);
++	ret = ad4170_parse_channels(indio_dev);
 +	if (ret)
 +		return ret;
++
++	/* Only create a GPIO chip if flagged for it */
++	if (device_property_read_bool(&st->spi->dev, "gpio-controller")) {
++		ret = ad4170_gpio_init(indio_dev);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
+ }
  
- 	/* On power on, device defaults to using SDO pin for data ready signal */
- 	st->int_pin_sel = AD4170_INT_PIN_SDO;
+ static int ad4170_initial_config(struct iio_dev *indio_dev)
 -- 
 2.47.2
 
