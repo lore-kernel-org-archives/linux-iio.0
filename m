@@ -1,119 +1,135 @@
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com [209.85.219.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx4.wp.pl (mx4.wp.pl [212.77.101.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE66B1854;
-	Sat, 28 Jun 2025 21:11:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99995220689
+	for <linux-iio@vger.kernel.org>; Sat, 28 Jun 2025 22:38:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.77.101.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751145084; cv=none; b=B/dfyajarV0KZNztkYXmqGN78FmQFOivW/s4WWfCVfugsp4f3fZi5znVMleev84YktUHzYKZnqLpSx6ziojPwc3RTckuL9H3m2ZBz4GdEPyhD7xaTibCAmdVS8vkHoiG7/x1SW4oC1YczLU3eLbkK80U6G9oQR94yfWyk/dedwQ=
+	t=1751150332; cv=none; b=nzsk3F2EpOD38BRPcjH7XOHyr4LxtfcmlhR8AR8LVu8rG+cnty1ojn8vU0pnU8S0H+iDCVLHqYVXhUTYYpMqbQ7i0GDhJQg4+VB1iA3FxeS3iTEYri0uOOwN1Pm8NcKM2LorQ7Wz5ikPrL1gz7qz4QJRaUq4x5aijCT2/AiKvME=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751145084; c=relaxed/simple;
-	bh=K5lOL5R+pMRvani4cANrVeMbRi59BKZl5QLUHLJeD4o=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=TVW4nL8be6sMy2ByBDUfGiP9gLWW1fJ6dvxV1XHRAgq5Ag8TCw63cpR5QYMVT1H6TNjea/WwOHjEjdvWd27Iu+4yTxmiaHFVU/aX7M8eaA4lx3OnTWut+/rF0hT0xQd01fIph2d+c+GMwKPVBeWU95ozwlw1tujCmqcryonWSV0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h9C8acx1; arc=none smtp.client-ip=209.85.219.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1751150332; c=relaxed/simple;
+	bh=HOxtaYcGwe1Dr4Y1WuLiliZlybxYUzGV4lfY449z6QQ=;
+	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=j73nevi8VO2UFNzINSAJIO4bNy7E8PfYIb8Pzp8gk7B6Rho/cVCE8IYrDKSmkMETbpEYPGbA251YGGvixG+oRr/TwboaemU26gGKKunYqpRGMb1wkGPpMz3mH31EGrUEmwJiyDMtmvmyD/9avC2V7Wx6sRPhZUTpFoN+/Ga0ank=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wp.pl; spf=pass smtp.mailfrom=wp.pl; dkim=pass (2048-bit key) header.d=wp.pl header.i=@wp.pl header.b=ho9MfSrp; arc=none smtp.client-ip=212.77.101.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wp.pl
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wp.pl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h9C8acx1"
-Received: by mail-yb1-f173.google.com with SMTP id 3f1490d57ef6-e840ff8d8d7so170635276.1;
-        Sat, 28 Jun 2025 14:11:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1751145080; x=1751749880; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Vg2ZN4x/jiYpxSvViT0rI/By5pMyua8QKrH6UGvMF7o=;
-        b=h9C8acx1VDiIRw/mUiDkHd1DYaGfyuVo5VhKgJMzkumC8i6q5dpQsBuC7o5X5ESfDJ
-         GXRUQwCvnOnPyGsjN3a9G5mIfSaaJqAxK2LychJed06qDJfG74T/Mfrsp/KyinA4RkHW
-         /4Q18wtU2gzaaQnvlTjzmEm5FszKqIbQRyQcgiQGxUVbZvWA26VSMf/nbcgk71EiEef5
-         vzxlhZMwbmklIdaMpnCkZSft9meM3wcS+z8k4cciiHhUDOhy7aTOpaZXdWR28QRv//xR
-         5yEIixuDGQ6CgGdWdMwMDxfAtHER4Njn/VersElFqfprbk6FOCIpIghcC8XuaHDcJJt3
-         DcJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751145080; x=1751749880;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Vg2ZN4x/jiYpxSvViT0rI/By5pMyua8QKrH6UGvMF7o=;
-        b=djWp4ylJ+m5uO8/ABTHmftCVWbMsZUaP9j9/e2kPMSmXdkKG00TbnOyTyKHm/hXiDu
-         EBwO6V9Q27GmBxWuyl2i4UhWJN0B9HgO6f40Axm+voaEhCxhzJvoldGeBzcYpRWz7hI2
-         EYmQTEyIWLZaQKJv9PbHpxXClH4dr07uBM3X3qAf/6gac646dHslywNXshL4fVO3J9y6
-         5b9o6m0d8xRmYIKBqZdpTFzj4pOUjvbKKJsAspwMeQRTNCBBhiEDhrR92IsV5av/A6EO
-         VRoQReKtYSPZcY+gEq8UdmBG9FDfwNr8S1jnU3QpZi3+us53cREPd9A5cUaHgdkRqI5B
-         /MiA==
-X-Forwarded-Encrypted: i=1; AJvYcCVHjggfnc2fL7A5RzxUNZRFOn0oi/JsrnB+DytB3n7JwU2y8Q3eB/k8/Kl8vPWhdvIbUP9psfTthsJHm/f5@vger.kernel.org, AJvYcCVY5z2ihEyfu781/p05JcZOQ0+t09/OHLcmgDRNlWvqLF3wB8BNClv2+qPopw5qC4aG7QdZlM1vBYw=@vger.kernel.org, AJvYcCXdM78AXLU/B5jTXRhVe4SfQMZRaYVpXGU2PWuxopVOc8kN18fW/+yyQ0NMx5jBr0u88vECfZRA0KWq@vger.kernel.org
-X-Gm-Message-State: AOJu0YzKFhtyyrUapc4LBtLI8XC2+Ba4f40jyvDaQE2ecIKCDRN41nbn
-	DzKbujQvcMEDmZmHzF6UI5/3mu4VhZ49yFnvGlws941fphl+hzQDovWijFYSGhv48hRq0qKHJby
-	+AXScq+kGWNCG/lEasJRmRZGwvNpQS+E=
-X-Gm-Gg: ASbGncs1HpZs8JFflfC+ePkAkap5RL3u+eXR/OmZwsdv+5pXRB4MHst/6Etyuz5Ecy1
-	h47dznQC7sAsM3NAtFh8pPgK+YiyoNPN61ipc6xZLK0EeB7cK92rupXlDLczwljSiNjalJxenYk
-	PBdLojKBY8xyx0hTDxUwYFsUYw8M9wnzsj/pslhYFRdZw=
-X-Google-Smtp-Source: AGHT+IHTUCGAoH63GNLK/MPuTMrLTXnWs1MVm745M9pYQVSTlRlKIRjDAN9Q4WMwdtG2YrOyGFwqMh08Ucjwfpk43Qo=
-X-Received: by 2002:a05:690c:74c7:b0:711:7256:54c2 with SMTP id
- 00721157ae682-71523ccf032mr23088097b3.5.1751145080578; Sat, 28 Jun 2025
- 14:11:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=wp.pl header.i=@wp.pl header.b="ho9MfSrp"
+Received: (wp-smtpd smtp.wp.pl 30245 invoked from network); 29 Jun 2025 00:38:42 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=20241105;
+          t=1751150322; bh=4x6ilKt5iJmJ+aTcOPfoqYo5nK7rJ62lmNxO5mvvtEE=;
+          h=From:To:Subject;
+          b=ho9MfSrpJm1Tq1q9xQG60cHTcoy0xqWNNQBRf6smEjqkmqmh03r+oaznAE3MCLXOR
+           1qmy0TMgKCuhybMqGIlXeZBQ4CASBq01cG3czT44FWA/Y6m35b76pXrSPaCwK1imE3
+           OPvx2SwKrJ+WM9bM1Q3Cozk6ODfGfqDVQKl/3PfXk6DxySRgmgG7zYToHcZi53QT1u
+           0bIB4CBBOmkeMREbzCB8MqpFwDs1Ze+ICiYHeMXSodAFjnS2uXrgkc3HQwfVP6eiPs
+           2mP4PQeF4JNRBiSiqfehwu4XYKC1FBZh3e8zowxC5xba1btCrdZ9qeZIz2VCew+37I
+           /QktqBuN1dCBw==
+Received: from 83.24.145.121.ipv4.supernova.orange.pl (HELO laptop-olek.lan) (olek2@wp.pl@[83.24.145.121])
+          (envelope-sender <olek2@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <rafael@kernel.org>; 29 Jun 2025 00:38:42 +0200
+From: Aleksander Jan Bajkowski <olek2@wp.pl>
+To: rafael@kernel.org,
+	daniel.lezcano@linaro.org,
+	rui.zhang@intel.com,
+	lukasz.luba@arm.com,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	matthias.bgg@gmail.com,
+	angelogioacchino.delregno@collabora.com,
+	olek2@wp.pl,
+	zhiyong.tao@mediatek.com,
+	linux-pm@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: [PATCH 1/3] arm64: dts: mediatek: add thermal sensor support on mt7981
+Date: Sun, 29 Jun 2025 00:38:35 +0200
+Message-Id: <20250628223837.848244-2-olek2@wp.pl>
+X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20250628223837.848244-1-olek2@wp.pl>
+References: <20250628223837.848244-1-olek2@wp.pl>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250622155010.164451-1-l.rubusch@gmail.com> <20250622155010.164451-5-l.rubusch@gmail.com>
- <aFkh-E1dG__p_G4m@smile.fi.intel.com> <20250628170839.482a3d63@jic23-huawei>
-In-Reply-To: <20250628170839.482a3d63@jic23-huawei>
-From: Lothar Rubusch <l.rubusch@gmail.com>
-Date: Sat, 28 Jun 2025 23:10:44 +0200
-X-Gm-Features: Ac12FXzDfEya4tHe5BQ4CX4SgP5_iICg3xqcWHJseES0YJdR7UNgNanLqvpVn8I
-Message-ID: <CAFXKEHZ7bNuy+6X4NgPPMOsT3AkSXhacH=3HS33bLTNgYa3PWg@mail.gmail.com>
-Subject: Re: [PATCH v10 4/7] iio: accel: adxl345: add inactivity feature
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, lars@metafoo.de, 
-	Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, corbet@lwn.net, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, eraretuya@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: 83e3732595d5e7000e752de9e0de6415
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [ceMx]                               
 
-Hi Jonathan, Andy and the ML,
-Thank you both for the review and feedback. I'll prepare another
-version for the 313 and the 345.
+The temperature sensor in the MT7981 is same as in the MT7986.
 
-On Sat, Jun 28, 2025 at 6:08=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
- wrote:
->
->
-> > ...
-> >
-> > > +   case ADXL345_INACTIVITY:
-> > > +           axis_ctrl =3D ADXL345_INACT_X_EN | ADXL345_INACT_Y_EN |
-> > > +                           ADXL345_INACT_Z_EN;
-> >
-> > Consider
-> >               axis_ctrl =3D
-> >                       ADXL345_INACT_X_EN | ADXL345_INACT_Y_EN | ADXL345=
-_INACT_Z_EN;
-> >
-> > (yes, I see that it's longer than 80, but it might worth doing it for t=
-he sake of
-> >  consistency with the previous suggestion).
-> Hmm. I'd go longer rather than do that just because it looks really ugly.
->
->                 axis_ctrl =3D ADXL345_INACT_X_EN | ADXL345_INACT_Y_EN | A=
-DXL345_INACT_Z_EN;
->
-> I don't care that much as long as long lines are justified by readability=
-. Here
-> I think either Andy's suggestion or the all on one line are justified.
->
-> Tomorrow I may have a different view :(
->
+Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+---
+ arch/arm64/boot/dts/mediatek/mt7981b.dtsi | 29 ++++++++++++++++++++++-
+ 1 file changed, 28 insertions(+), 1 deletion(-)
 
-As I=E2=80=99ve seen quite a bit of discussion around this. In fact, using
-binary OR here might not even be necessary, since I can define
-ADXL345_ACT_XYZ_EN and ADXL345_INACT_XYZ_EN directly and OR the fields
-in the header. If you have no objections, I=E2=80=99ll likely prepare this
-change for the next version.
+diff --git a/arch/arm64/boot/dts/mediatek/mt7981b.dtsi b/arch/arm64/boot/dts/mediatek/mt7981b.dtsi
+index 5cbea9cd411f..c2001a82722a 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7981b.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt7981b.dtsi
+@@ -76,7 +76,7 @@ watchdog: watchdog@1001c000 {
+ 			#reset-cells = <1>;
+ 		};
+ 
+-		clock-controller@1001e000 {
++		apmixedsys: clock-controller@1001e000 {
+ 			compatible = "mediatek,mt7981-apmixedsys";
+ 			reg = <0 0x1001e000 0 0x1000>;
+ 			#clock-cells = <1>;
+@@ -184,6 +184,29 @@ spi@1100b000 {
+ 			status = "disabled";
+ 		};
+ 
++		thermal@1100c800 {
++			compatible = "mediatek,mt7981-thermal";
++			reg = <0 0x1100c800 0 0x800>;
++			interrupts = <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&infracfg CLK_INFRA_THERM_CK>,
++				 <&infracfg CLK_INFRA_ADC_26M_CK>;
++			clock-names = "therm", "auxadc";
++			nvmem-cells = <&thermal_calibration>;
++			nvmem-cell-names = "calibration-data";
++			#thermal-sensor-cells = <1>;
++			mediatek,auxadc = <&auxadc>;
++			mediatek,apmixedsys = <&apmixedsys>;
++		};
++
++		auxadc: adc@1100d000 {
++			compatible = "mediatek,mt7981-auxadc";
++			reg = <0 0x1100d000 0 0x1000>;
++			clocks = <&infracfg CLK_INFRA_ADC_26M_CK>;
++			clock-names = "main";
++			#io-channel-cells = <1>;
++			status = "disabled";
++		};
++
+ 		pio: pinctrl@11d00000 {
+ 			compatible = "mediatek,mt7981-pinctrl";
+ 			reg = <0 0x11d00000 0 0x1000>,
+@@ -211,6 +234,10 @@ efuse@11f20000 {
+ 			reg = <0 0x11f20000 0 0x1000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
++
++			thermal_calibration: calib@274 {
++				reg = <0x274 0xc>;
++			};
+ 		};
+ 
+ 		clock-controller@15000000 {
+-- 
+2.39.5
 
-Best,
-L
