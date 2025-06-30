@@ -1,186 +1,146 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C89F3286D5D;
-	Mon, 30 Jun 2025 14:02:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE934289372
+	for <linux-iio@vger.kernel.org>; Mon, 30 Jun 2025 14:06:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751292161; cv=none; b=RfgecU1BppQtY3taFneEwt7pUxYZMNg2e9rhuNjRRhHJOT/5MiHiPDmidUfm11W4ApDfdDTBCjmRaMbnr2NLgRGBJEom2s/47FQfyEfZizkPvwBY6Bnrv7ncf4QgGjrbIdbBXP4BomqaNLj3g1Xtt2iYtIUNlyl+Y1CQDQNkdyM=
+	t=1751292385; cv=none; b=hiZvNMqu7/ClI1NPj3OVjxc30As6qV7Nt87PJk7eX+kztUfizXeq3E1EfgPGEaQRPZ5BcFtINckZAsTivfSyX3jadGwDp2NNOSGBoDP8YL0H3zu5agW7OXRXvSRxVPMi6ds0FLFAIpV1nOzmAqtoyA0aTyWf4KugqZg8CL67ZQE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751292161; c=relaxed/simple;
-	bh=CERrMN1d3ZFqHU7gFszcxxxmVWa30PuxIIVY7qj37W8=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IjiUWJQxTXedUEoYgq9HolaqddgcmDiXcTHzHk5bqZ4ifqOum6FD6kD1nrkMzFxUulU66JkH8xK9GjJZwnMfYNZXygUqz1eycCLvUGCDqZ+8T55ss3UrZYRbuYamkP3VS1fr1U9Na8q6kijB+EP3+WVJS7mxMbHK5eQ4oQDRAqw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=uPGkZxM8; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="uPGkZxM8"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55UDc97d026449;
-	Mon, 30 Jun 2025 10:02:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=gpIyt
-	FLSmYcHOo7QvRrFC4g1sC0UPrKUJCM+Rfjt4P0=; b=uPGkZxM8V5UyoN9mYPKGZ
-	jkKp+dwyKwE3PjuEomG9H76RC+Co5EH+4x1eUqZVNLAMoOuL2nO6X0ULciWLG6UW
-	rSml48qt82bi79hpE1JOknGR6LMoHe9AO/SkO04PiSRUu3lndVSfQurFTaM7o75/
-	d0SYfLUvzYgcj7IRJPmF/Jp5PP8qNbYkv8TobgIEI+D/ClYldUQSIWZKsR8lyvEe
-	Y3M7nlT7hrnrYcXAFJM29B3hZLVbciyDPvoFk2aaqDtJHIXutCKojZ1zLoCslkc0
-	b1zhcqYtmdfD7ysBRwov4uFwY4f/UsCdBOOSir8I+AYYMoFqyVJ/jwo7XzgnV2vR
-	A==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 47krqa110y-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 30 Jun 2025 10:02:14 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 55UE2Dbv054752
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 30 Jun 2025 10:02:13 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.10; Mon, 30 Jun 2025 10:02:13 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.10; Mon, 30 Jun 2025 10:02:13 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.10 via Frontend
- Transport; Mon, 30 Jun 2025 10:02:13 -0400
-Received: from work.ad.analog.com (HYB-hERzalRezfV.ad.analog.com [10.65.205.9])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 55UE1uIV009320;
-	Mon, 30 Jun 2025 10:01:59 -0400
-From: Marcelo Schmitt <marcelo.schmitt@analog.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: <jic23@kernel.org>, <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <dlechner@baylibre.com>, <nuno.sa@analog.com>, <andy@kernel.org>,
-        <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
-        <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <broonie@kernel.org>,
-        <lgirdwood@gmail.com>, <marcelo.schmitt1@gmail.com>
-Subject: [PATCH v7 12/12] iio: adc: ad4170-4: Add timestamp channel
-Date: Mon, 30 Jun 2025 11:01:55 -0300
-Message-ID: <b7789604240f964ddeb756f9d17002371435f936.1751289747.git.marcelo.schmitt@analog.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <cover.1751289747.git.marcelo.schmitt@analog.com>
-References: <cover.1751289747.git.marcelo.schmitt@analog.com>
+	s=arc-20240116; t=1751292385; c=relaxed/simple;
+	bh=Bz8nmw7J/wizh3ZMuuNe2z/hgO39mVQirqw3wW6t9zA=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=HFUuSl8yoZOVbO5JFf5RiATGBCOI3xo01CBC327Aq0oXXLJuqLwzmAwAMVXmtPWBiEGMaMRJsokJEtba4uL7Uck2wnirkE/vaPGBPkN5xcZHiow9+EeDrjiEfR9LjKkZeESZ89VLis04ZVtyWYhNFHh3a/DCNYC1H142O5aaRdk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.231])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4bW7GY64qZz6M4gT;
+	Mon, 30 Jun 2025 22:05:25 +0800 (CST)
+Received: from frapeml500008.china.huawei.com (unknown [7.182.85.71])
+	by mail.maildlp.com (Postfix) with ESMTPS id 89CA41404F9;
+	Mon, 30 Jun 2025 22:06:18 +0800 (CST)
+Received: from localhost (10.203.177.66) by frapeml500008.china.huawei.com
+ (7.182.85.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Mon, 30 Jun
+ 2025 16:06:18 +0200
+Date: Mon, 30 Jun 2025 15:06:16 +0100
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+CC: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>, Nuno
+ =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko
+	<andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Matti Vaittinen
+	<mazziesaccount@gmail.com>, Nick Desaulniers
+	<nick.desaulniers+lkml@gmail.com>, Tanzir Hasan <tanzhasanwork@gmail.com>
+Subject: Re: [PATCH] iio: accel: kionix-kx022a: Apply approximate iwyu
+ principles to includes
+Message-ID: <20250630150616.000053b1@huawei.com>
+In-Reply-To: <aGJp-NYffceeX8bi@smile.fi.intel.com>
+References: <20250629183649.184479-1-jic23@kernel.org>
+	<20250629194336.34a03946@jic23-huawei>
+	<aGJp-NYffceeX8bi@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjMwMDExNSBTYWx0ZWRfX5LkCLmfzYSu9
- 6QqUcjpluRlbMdGrsT4yRsBhbqnj7I0Bzy3wG2/XV3u9BaaOKjMMHK+v/qs142PW3vR3sOS/jGJ
- 7wvrwRIcil93y8cRTWDru+oBc8fX4BZznUiMcQcU+tUAmw12PnOlQLonn7OdJ/5MZd4AANrYVOW
- Iby3vcFNuP6098HWwWCll0BaFEWnAePKDu3IePZoAmM9kMYj/RffRy5Lu8o6HRkCyBhmiju+74n
- iKgUoL0W/oWZHHUkw+X55mQT9XWEUHhl2tOd8i67S9uG/uuUQpzFR+KpgM6RsxitkujLtu90wQh
- 3ZV/QGo8feuCCKEPybFwXNZ5b4y2hdzUfWmcV/pq2MQhK86e1n1mjjYq3TAvphiB6nfZ9sIUceY
- k1NdmBji80c3WPLphMn6Y5y2fajj01Gw9Ft3JZjKslkeXChIoHCyNQbpZYusUDMOslWk/+Vs
-X-Proofpoint-GUID: NdKChKeZMOnQNOqpp-26XfVk4kX_RgS5
-X-Proofpoint-ORIG-GUID: NdKChKeZMOnQNOqpp-26XfVk4kX_RgS5
-X-Authority-Analysis: v=2.4 cv=U8+SDfru c=1 sm=1 tr=0 ts=686298e6 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=6IFa9wvqVegA:10 a=gAnH3GRIAAAA:8 a=ooJTjvKFDTQpXrV7GjsA:9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-06-30_03,2025-06-27_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 phishscore=0 impostorscore=0 spamscore=0 mlxlogscore=999
- lowpriorityscore=0 malwarescore=0 mlxscore=0 bulkscore=0 suspectscore=0
- adultscore=0 clxscore=1015 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2506300115
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
+ frapeml500008.china.huawei.com (7.182.85.71)
 
-Add timestamp channel allowing to record the moment at which ADC samples
-are captured in buffered read mode.
+On Mon, 30 Jun 2025 13:42:00 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
----
-No changes since v5.
+> On Sun, Jun 29, 2025 at 07:43:36PM +0100, Jonathan Cameron wrote:
+> > On Sun, 29 Jun 2025 19:36:49 +0100
+> > Jonathan Cameron <jic23@kernel.org> wrote:
+> >   
+> > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > > 
+> > > Motivated by the W=1 warning about export.h that was introduced this cycle
+> > > this is an attempt to apply an approximation of the principles of including
+> > > whatever is used in the file directly.
+> > > 
+> > > Helped by the include-what-you-use tool.
+> > > 
+> > > Reasoning:
+> > > - Drop linux/moduleparam.h as completely unused.
+> > > - linux/array_size.h for ARRAY_SIZE()
+> > > - linux/bitmap.h for for_each_set_bit
+> > > - linux/errno.h for error codes.
+> > > - linux/export.h for EXPORT_SYMBOL*()
+> > > - linux/math64.h for do_div - alternative would be asm/div64.h
+> > > - linux/minmax.h for min()
+> > > - linux/sysfs.h for sysfs_emit()
+> > > - linux/time64.h for USEC_PER_MSEC
+> > > - linux/iio/buffer.h for iio_push_to_buffers_with_timestamp()
+> > > - asm/byteorder.h for le16_to_cpu()
+> > > 
+> > > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > > ---
+> > > 
+> > > I picked this one fairly randomly as an example but longer term I'd like
+> > > to look through at least all new drivers with this in mind + all the ones
+> > > that are currently messing up my W=1 build logs.
+> > > 
+> > > Note I've been very descriptive in this patch to allow people to suggest
+> > > better alternatives for some of the ones that aren't entirely obvious.
+> > >   
+> > Helpfully I had a script lying around from 2021:
+> > https://lore.kernel.org/all/20211003153306.391766-1-jic23@kernel.org/
+> > 
+> > Just for reference I used iwyu with: 
+> > 
+> > make LLVM=1 LOCALVERSION= W=1 -j12 C=1 CHECK=include-what-you-use CHECKFLAGS="-Xiwyu --no_default_mappings -Xiwyu --mapping_file=iio.imp"
+> > 
+> > where iio.imp is from a few years ago and contains:
+> > 	{ include: ["\"linux/sizes.h\"", "private", <linux/sizes.h>, "public"] },
+> > 	{ include: ["\"linux/slab.h\"", "private", <linux/slab.h>, "public"] },
+> > 	{ include: ["\"linux/spinlock.h\"", "private", <linux/spinlock.h>, "public"] },
+> > 	{ include: ["\"linux/spinlock_types.h\"", "private", <linux/spinlock.h>, "public"] },
+> > 	{ include: ["\"linux/spi/spi.h\"", "private", <linux/spi/spi.h>, "public"] },
+> > 	{ include: ["\"linux/stat.h\"", "private", <linux/stat.h>, "public"] },
+> > 	{ include: ["\"linux/stdarg.h\"", "private", <linux/stdarg.h>, "public"] },
+> > 	{ include: ["\"linux/stddef.h\"", "private", <linux/stddef.h>, "public"] },
+> > 	{ include: ["\"linux/string.h\"", "private", <linux/string.h>, "public"] },
+> > 	{ include: ["\"linux/stringify.h\"", "private", <linux/stringify.h>, "public"] },
+> > 	{ include: ["\"linux/sysfs.h\"", "private", <linux/sysfs.h>, "public"] },
+> > 	{ include: ["\"linux/types.h\"", "private", <linux/types.h>, "public"] },
+> > 	{ include: ["\"linux/uuid.h\"", "private", <linux/uuid.h>, "public"] },
+> > 	{ include: ["\"linux/sched.h\"", "private", <linux/sched.h>, "public"] },
+> > 	{ include: ["\"linux/wait.h\"", "private", <linux/wait.h>, "public"] },
+> > 	{ include: ["\"linux/workqueue.h\"", "private", <linux/workqueue.h>, "public"] },
+> > 	{ include: ["\"asm-generic/int-ll64.h\"", "private", <linux/types.h>, "public"] },	
+> > 	{ include: ["\"linux/device.h\"", "private", <linux/device.h>, "public"] },
+> > 	{ include: ["\"linux/dev_printk.h\"", "private", <linux/device.h>, "public"] },
+> > 	{ include: ["\"linux/device/bus.h\"", "private", <linux/device.h>, "public"] },
+> > 	{ include: ["\"linux/device/driver.h\"", "private", <linux/device.h>, "public"] },
+> > 	{ include: ["\"linux/bits.h\"", "private", <linux/bits.h>, "public"] },	
+> > 	{ include: ["\"vdso/bits.h\"", "private", <linux/bits.h>, "public"] },
+> > 	{ include: ["\"vdso/limits.h\"", "private", <linux/limits.h>, "public"] },
+> > 	{ include: ["\"linux/limits.h\"", "private", <linux/limits.h>, "public"] },
+> > 	{ include: ["\"vdso/ktime.h\"", "private", <linux/ktime.h>, "public"] },
+> > 	{ include: ["\"linux/ktime.h\"", "private", <linux/ktime.h>, "public"] },
+> > 	{ include: ["\"vdso/time64.h\"", "private", <linux/time64.h>, "public"] },
+> > 	{ include: ["\"linux/time.h\"", "private", <linux/time.h>, "public"] },
+> > 	{ include: ["\"linux/timer.h\"", "private", <linux/timer.h>, "public"] }
+> > ]
+> > 
+> > Clear this needs a few upates, like mutex_types.h -> mutex.h and
+> > probably devres.h->device.h  
+> 
+> Right, we got a lot of new *_types.h headers.
+> This is a database (kind of) I was talking about in previous reply.
+> Can we actually start it as .iwyu or so in the kernel source tree?
 
- drivers/iio/adc/ad4170-4.c | 21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
+Nick and Tanzir talked about using iwyu at Plumbers 2023 and probably have
+a much better starting point that this (even more) ancient version.
+I missed the talk completely at the time, but came across it more recently.
 
-diff --git a/drivers/iio/adc/ad4170-4.c b/drivers/iio/adc/ad4170-4.c
-index 05730e36deea..b1476479b950 100644
---- a/drivers/iio/adc/ad4170-4.c
-+++ b/drivers/iio/adc/ad4170-4.c
-@@ -187,6 +187,7 @@
- #define AD4170_NUM_ANALOG_PINS				9
- #define AD4170_NUM_GPIO_PINS				4
- #define AD4170_MAX_CHANNELS				16
-+#define AD4170_MAX_IIO_CHANNELS				(AD4170_MAX_CHANNELS + 1)
- #define AD4170_MAX_ANALOG_PINS				8
- #define AD4170_MAX_SETUPS				8
- #define AD4170_INVALID_SETUP				9
-@@ -439,7 +440,7 @@ struct ad4170_state {
- 	int vrefs_uv[AD4170_MAX_SUP];
- 	u32 mclk_hz;
- 	struct ad4170_setup_info setup_infos[AD4170_MAX_SETUPS];
--	struct iio_chan_spec chans[AD4170_MAX_CHANNELS];
-+	struct iio_chan_spec chans[AD4170_MAX_IIO_CHANNELS];
- 	struct ad4170_chan_info chan_infos[AD4170_MAX_CHANNELS];
- 	struct spi_device *spi;
- 	struct regmap *regmap;
-@@ -456,6 +457,7 @@ struct ad4170_state {
- 	unsigned int clock_ctrl;
- 	int gpio_fn[AD4170_NUM_GPIO_PINS];
- 	unsigned int cur_src_pins[AD4170_NUM_CURRENT_SRC];
-+	unsigned int num_adc_chans;
- 	/*
- 	 * DMA (thus cache coherency maintenance) requires the transfer buffers
- 	 * to live in their own cache lines.
-@@ -2395,7 +2397,16 @@ static int ad4170_parse_channels(struct iio_dev *indio_dev)
- 			return dev_err_probe(dev, ret, "Invalid input config\n");
- 
- 		st->chan_infos[chan_num].input_range_uv = ret;
-+		chan_num++;
- 	}
-+	st->num_adc_chans = chan_num;
-+
-+	/* Add timestamp channel */
-+	struct iio_chan_spec ts_chan = IIO_CHAN_SOFT_TIMESTAMP(chan_num);
-+
-+	st->chans[chan_num] = ts_chan;
-+	num_channels = num_channels + 1;
-+
- 	indio_dev->num_channels = num_channels;
- 	indio_dev->channels = st->chans;
- 
-@@ -2608,7 +2619,7 @@ static int ad4170_initial_config(struct iio_dev *indio_dev)
- 		return dev_err_probe(dev, ret,
- 				     "Failed to set ADC mode to idle\n");
- 
--	for (i = 0; i < indio_dev->num_channels; i++) {
-+	for (i = 0; i < st->num_adc_chans; i++) {
- 		struct ad4170_chan_info *chan_info;
- 		struct iio_chan_spec const *chan;
- 		struct ad4170_setup *setup;
-@@ -2733,7 +2744,7 @@ static int ad4170_buffer_predisable(struct iio_dev *indio_dev)
- 	 * is done after buffer disable. Disable all channels so only requested
- 	 * channels will be read.
- 	 */
--	for (i = 0; i < indio_dev->num_channels; i++) {
-+	for (i = 0; i < st->num_adc_chans; i++) {
- 		ret = ad4170_set_channel_enable(st, i, false);
- 		if (ret)
- 			return ret;
-@@ -2785,7 +2796,9 @@ static irqreturn_t ad4170_trigger_handler(int irq, void *p)
- 		memcpy(&st->bounce_buffer[i++], st->rx_buf, ARRAY_SIZE(st->rx_buf));
- 	}
- 
--	iio_push_to_buffers(indio_dev, st->bounce_buffer);
-+	iio_push_to_buffers_with_ts(indio_dev, st->bounce_buffer,
-+				    sizeof(st->bounce_buffer),
-+				    iio_get_time_ns(indio_dev));
- err_out:
- 	iio_trigger_notify_done(indio_dev->trig);
- 	return IRQ_HANDLED;
--- 
-2.47.2
++CC them both
+
+Jonathan
 
