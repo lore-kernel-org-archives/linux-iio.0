@@ -1,90 +1,131 @@
-Received: from mx4.wp.pl (mx4.wp.pl [212.77.101.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A878723D282
-	for <linux-iio@vger.kernel.org>; Wed,  2 Jul 2025 21:48:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.77.101.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF4941E9B3D
+	for <linux-iio@vger.kernel.org>; Wed,  2 Jul 2025 22:01:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751492924; cv=none; b=HeBUQ/cv0tDWRkwDDr8Ja3vAVWRZ7TfHeCPBY0liPyN+sgy+z3D0nFRl0ESKbD2Ymz2yO9J1VMalgOG/MZ0Zjvec34JL9MURuBhE61NolTwssVaY70mek/Zn6Sen0rMncCe07M26im2MdOGgUibHEALHKHVjK3bKwx/Uh2ZmuTk=
+	t=1751493673; cv=none; b=FYT7yzTYgXeZaA2n25BxqW1QibJWTwxZ3QZ7W/oRu7uyRwvotXxgJkRy7F+U4xez4aGsrZZomciX7g8DuI9TCCuBOYYiJa6o1Rp21zEYn85KXXuMVmii7YZBfpjZ/ETgRqrmObxCB6AXQfbw9QbbfXlXN1vKbElgxEgtwUJ2OYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751492924; c=relaxed/simple;
-	bh=G4OzgqOi+DfuYxwpdc440Q3R+U7l0MLCB1cML+K4nuQ=;
-	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=JRadBX2P2UFTzMMHXrfhl2rE87h+F+ZkliVmOAMtaOShEA+kdrRXLCiILllMIfb7OhEvjgwiqerLqoyb/oGxt99tUOSPP7tno5p0GjlD1kB5G9NuoLJAq0mQ9OZdUlDpX+7uj/vFHfDcw4O8mefVFH18yFNozDbwwv9U0qK5YX4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wp.pl; spf=pass smtp.mailfrom=wp.pl; dkim=pass (2048-bit key) header.d=wp.pl header.i=@wp.pl header.b=kXJookvA; arc=none smtp.client-ip=212.77.101.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wp.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wp.pl
+	s=arc-20240116; t=1751493673; c=relaxed/simple;
+	bh=hjhHlOolfaZNDUs+RdvLckgniM7ltNQJFdfTBZFssqw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=LWpnTwRMGHPiv8B/zvfdtZH+/ykj/RKBq464zrTJygTMtdJDYeVlFHNYD6exKjdxh74ZV0gCux92BWylTp+QmiM6DINJthCpe233F4fnd2lPPWB9beY4bwkGbeVPQiNsgx4fzRcpvoZEW/26YykHcex7eaJmMhC+49OtTRVtCo4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=y48xNPQ1; arc=none smtp.client-ip=209.85.210.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=wp.pl header.i=@wp.pl header.b="kXJookvA"
-Received: (wp-smtpd smtp.wp.pl 32885 invoked from network); 2 Jul 2025 23:48:34 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=20241105;
-          t=1751492914; bh=iYgWJ8J7BoGFxKck1RjrUitwIQvjD7tq0nYE84HRdJ4=;
-          h=From:To:Subject;
-          b=kXJookvAoghUWQJckr2S92QLrUOqw6bSmwcRElr8a9q+J5sv11Q+Fnsrg+CLavybB
-           jr6rLaP3YmenP/R9z2VDjiLDV2fogADZSTegegBIHEGhvp7p9Poog1qe5EaMUWmFa4
-           h9CZDu3ScZCaA/srJCA2dG92hiaIBKO47mFFx0MHvaXoCXKsQXoP07ypCBHD/4QEx2
-           JbskowpLQDLbmmP7vKB31A0F3T1/ZmxgIJgIKiguARHWbD+XFfUH4jah2NgPK32Own
-           a4QAlSRj9yAjFNIKssonYCo/1RcP9RzMS5dUQF4yjqfWm4a8qKpx7ddQTTlGUj8JxE
-           kBRDD5rTg4EYA==
-Received: from 83.5.239.54.ipv4.supernova.orange.pl (HELO laptop-olek.lan) (olek2@wp.pl@[83.5.239.54])
-          (envelope-sender <olek2@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <jic23@kernel.org>; 2 Jul 2025 23:48:34 +0200
-From: Aleksander Jan Bajkowski <olek2@wp.pl>
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	matthias.bgg@gmail.com,
-	angelogioacchino.delregno@collabora.com,
-	olek2@wp.pl,
-	zhiyong.tao@mediatek.com,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: [PATCH v2 1/2] dt-bindings: iio: adc: Add support for MT7981
-Date: Wed,  2 Jul 2025 23:48:29 +0200
-Message-Id: <20250702214830.255898-2-olek2@wp.pl>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250702214830.255898-1-olek2@wp.pl>
-References: <20250702214830.255898-1-olek2@wp.pl>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="y48xNPQ1"
+Received: by mail-ot1-f44.google.com with SMTP id 46e09a7af769-73afbe1497bso2718902a34.1
+        for <linux-iio@vger.kernel.org>; Wed, 02 Jul 2025 15:01:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1751493669; x=1752098469; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=DKgWS7/qdk7+Eg50DbHdDl8mGYC2JyCvr3ER8bCDhe0=;
+        b=y48xNPQ1VGFonG90ers22n9CaIGu/U0THcQn5c8nBkrNDl4s9PaFjS+j1I6g9WKNKk
+         AIt90eg9oaV1EgKUwMKqT6KK+6qZm0ycbC3hNp4m6EMABEfx09alAUON+kWaoxtIKcLc
+         KpF0R66j9mNHBxgK3gVzHPFVU3zoE/wqhAbjqow81uQxg+cfY447RdnKngepHdBwkEoA
+         erkhwbWUhLFkvzceqJ0cHWv3nN9vR0F3ZV9QQRRlcAkjmr2yRwkjT/VoCkPEvvC4uya0
+         +4NGqWis8xoTuzKwFm7oiFKXthN/Lw8UdUwMqdkbwyOEA+arjT+4IL8OlrccbhJhMKY1
+         F5nQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751493669; x=1752098469;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=DKgWS7/qdk7+Eg50DbHdDl8mGYC2JyCvr3ER8bCDhe0=;
+        b=CDgaGmIlqto5XAKu9+N/jAs5WRiJ750NU69E1PIIN1WLpY5MkqMXR4OrXJO57N1glp
+         m1SsgzNTj6TqukyYfhY79Dn527Ovoj6iICp0oLGHLj2tqJvxZRbicrH/vbRVpLk1UFPo
+         i3NlVFA69QtCMa9sOOZb2xdeL54byuGU/IAjOZxMYf1Uwmb9q+3Kp9A2L4lk1ozm9FH5
+         Zw71h2B9p4gnEtGzwq6RHNYwW8cDNRnkdIvi/wgNB3iuR5M4jn2LgrhT0Zn8qQXM810p
+         o5uMEv/8Arfjyy4cZs312f5OAf0uUt7/6zxyWHyGsHYNRlZ8fJ2tfJ/YbgIFFLBiibe6
+         wcdg==
+X-Forwarded-Encrypted: i=1; AJvYcCWa1yIOoWN9dgLz7WK1V+EHraNr+GpOvKXpLFapCQA1YpXn7emXTCX6z41DIk9fy6LPLtA2NQXcumY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzy8l6m0xw0v+FFGKP8/y1VTCXCEEh5079p6BwMebYYKkSQa6/e
+	1XX8Fp57zUIwebcJpZCmAnYMzhnv7q2hGA3ETtUmQRU9mVv1YoiXUBXF/wUD6J7oqpI=
+X-Gm-Gg: ASbGncuECzKjmCZaE5JhyEi3Tpgu+dxZL/W8d9z1XSJZS41n5BnavczCKWf5/1pUULB
+	ODWxoYeovPnPpKX+IHE0+FOPF6N8RCFPdv2lePnF/UtS5upKcRlERRgbPddF3ZevujOEhH8n4B9
+	AUzhCPcu+4yVaMN2V7VDlTtGlALfkJxlZ9+bAyi7mKbFKwQJs+j03Skwx5v3hq7cU16HoJBen4t
+	9d5isMJ//SCH8b5nBH+n/rD3cbb5SwI016/HG77ey1fwEEQeKXn0LL9x/oZXCYZxZ5y28VEMecu
+	9nUFr7IhR4t9NZfOy1AUOsI1fks+I5vQsUDdfySYuEhkJI7ia3XEEK7KlgverbrBLvhl5AAofB2
+	0/d3lXTGPVah6CVBWlIsXufM+xq1r9QUvzxiN46g=
+X-Google-Smtp-Source: AGHT+IHKZNhePlF0+T6dWuoOeOIoDbpvywH95ABuicUB05Dmc1aVoalsdNueqPirXs97Btv0KkGWcg==
+X-Received: by 2002:a05:6808:e8a:b0:403:3673:65f0 with SMTP id 5614622812f47-40b88b25dc6mr3169424b6e.31.1751493668851;
+        Wed, 02 Jul 2025 15:01:08 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:1d00:5c00:24f0:997b:5458? ([2600:8803:e7e4:1d00:5c00:24f0:997b:5458])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-40b32420c83sm2747613b6e.36.2025.07.02.15.01.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Jul 2025 15:01:08 -0700 (PDT)
+Message-ID: <a30cbe3a-7d1b-4072-880e-99688657a093@baylibre.com>
+Date: Wed, 2 Jul 2025 17:01:07 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-WP-MailID: 4531e8972fbbdfc366c72f9ccf260a9d
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000000 [4UOh]                               
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: Add support for MT7981
+To: Aleksander Jan Bajkowski <olek2@wp.pl>, jic23@kernel.org,
+ nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, matthias.bgg@gmail.com,
+ angelogioacchino.delregno@collabora.com, zhiyong.tao@mediatek.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+References: <20250702214830.255898-1-olek2@wp.pl>
+ <20250702214830.255898-2-olek2@wp.pl>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20250702214830.255898-2-olek2@wp.pl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The temperature sensor in the MT7981 is same as in the MT7986.
-Add compatible string for mt7981.
+On 7/2/25 4:48 PM, Aleksander Jan Bajkowski wrote:
+> The temperature sensor in the MT7981 is same as in the MT7986.
+> Add compatible string for mt7981.
+> 
+> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>  .../devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml      | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
+> index b489c984c1bb..ceb914dde15b 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
+> @@ -26,6 +26,7 @@ properties:
+>            - mediatek,mt2712-auxadc
+>            - mediatek,mt6765-auxadc
+>            - mediatek,mt7622-auxadc
+> +          - mediatek,mt7981-auxadc
+>            - mediatek,mt7986-auxadc
+>            - mediatek,mt8173-auxadc
+>        - items:
 
-Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml      | 1 +
- 1 file changed, 1 insertion(+)
+The new compatible with fallback should look like this:
 
 diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
-index b489c984c1bb..ceb914dde15b 100644
+index b489c984c1bb..14363389f30a 100644
 --- a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
 +++ b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
-@@ -26,6 +26,7 @@ properties:
-           - mediatek,mt2712-auxadc
-           - mediatek,mt6765-auxadc
-           - mediatek,mt7622-auxadc
-+          - mediatek,mt7981-auxadc
-           - mediatek,mt7986-auxadc
-           - mediatek,mt8173-auxadc
+@@ -32,6 +32,10 @@ properties:
+           - enum:
+               - mediatek,mt7623-auxadc
+           - const: mediatek,mt2701-auxadc
++      - items:
++          - enum:
++              - mediatek,mt7981-auxadc
++          - const: mediatek,mt7986-auxadc
        - items:
--- 
-2.39.5
+           - enum:
+               - mediatek,mt6893-auxadc
+---
 
+Then you can validate that the next patch matches the bindings with
+`make CHECK_DTBS=1`. I would expect it to fail currently since the
+binding is specifying a compatible without a fallback but the .dts
+uses a fallback.
