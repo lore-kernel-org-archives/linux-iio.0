@@ -1,143 +1,207 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from AS8PR03CU001.outbound.protection.outlook.com (mail-westeuropeazon11012037.outbound.protection.outlook.com [52.101.71.37])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0F14309DC6
-	for <linux-iio@vger.kernel.org>; Fri,  4 Jul 2025 16:00:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751644842; cv=none; b=jsUmGFljJPjAt+sZVRyZ1oRWmVsuNeqjreAXkgJTojhRwuUdFKV7jE8GJWDlUQxsgVcwdP5xKjpbggmOKMVIE738P3P2NLtm8wRQ2fYxHVdZRpNiKhgsPyqj/1cLn60TPLsvx7mxmPYu8CN5SsXdPjlhHs3atVJllhPMyFRazfY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751644842; c=relaxed/simple;
-	bh=ycMEhz/Ymor31tiNW/7/5CKiWvgFdDIwLPBpH80D5o8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BdO53hFEXtrL5wndvmcVAi7CsyYuI6QXjn/gctx3K9AXHfvJmz7pHk6S7MN6mnb0lg5zTnvdkPrqOB4Hv1vXu/ZKq3kGHV27uo7h9yoFZNcBeJRhLbLQ+NjN41todPBkDGbPYM+/sJjOjMraqNf8fmq7aV3kfPBvDWUofXSkeLA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=melexis.com; spf=pass smtp.mailfrom=melexis.com; dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b=LGf1BJtk; arc=none smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=melexis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=melexis.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFE12327A25;
+	Fri,  4 Jul 2025 16:14:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.71.37
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751645686; cv=fail; b=HceRKSAA4NuUSRtT2Jl6F4sohnl2XvwYBa50VDAXv7cAH+Fpd0yStq8j9cgRaRPWEkjd8BOkjgWDcnqb6QKx99P9EHiR6ukDG4QgNpJk7XVbqpqM2p2HswAARI3YwFknJKEh7/MziLRvV+TzL98B8pWB3q8CVEMEzcy9uDFs6rw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751645686; c=relaxed/simple;
+	bh=xo1ATvoWd3a+RIu89EI3TQBARfI+STqw6q+g0QqTVuU=;
+	h=From:To:CC:Subject:In-Reply-To:Message-ID:Date:MIME-Version:
+	 Content-Type; b=uglW0bdod7Z/+iyDM+VnVD2A1yVOKBbNsYvF0yic+pGLcPjjdwcV0FCwtdY2KIOkBBXReGJIX5i05I8HFX06aWTkzdMwFBYWFvpqF7HVsF+YDQciUSx8xFEtY0PkW3Uen8Z0JLss52G8K+dDxbv5c5Huhwu6qvlBGQN0b7Ad3eo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=WWvyXwNx; arc=fail smtp.client-ip=52.101.71.37
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b="LGf1BJtk"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-4a818ed5b51so8163791cf.1
-        for <linux-iio@vger.kernel.org>; Fri, 04 Jul 2025 09:00:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=melexis.com; s=google; t=1751644840; x=1752249640; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ck5pH4TCdFvbc+j4rr/UURqCRGDwQIto4Y+SJ0crfmI=;
-        b=LGf1BJtk8nj5G2733cQR/5VYQgPKrI50a8cn5xDQqe4yo6CtINif5ioDTVbZSLGV9u
-         nycQ1JtaHQECDQqZZ/ssmbEWriCRVvtdIZqZYLqoAYCiU4DTHq0aHG0YyVaqVYpDTigk
-         dQG9gDjHRnq2CBzEEYoyYVRFAKhawmu3Lt8OcUiDLwfbgUMTCbIBcsinJ3rlL+7xSwnN
-         a1B05UREz2biwxArLZ5D7xZERZdvK/lh9M0YYpTLSIOY6zBIqfI5YcwCwkBNCjHDvDbD
-         0CKYGGoyEUP7MsKdp8SzuNdvZ9NEpdVL8pSLwV75oxir7UmjQrnTZMDoxJFscIwX4Nq/
-         kkFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751644840; x=1752249640;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Ck5pH4TCdFvbc+j4rr/UURqCRGDwQIto4Y+SJ0crfmI=;
-        b=ZF1rq2vYcArTeLG6eoDS8eWSNpUNb3CCIYZy2zPYT6f+H34Y6a4wXoygpk0nVzELEl
-         nPlIux05XpX+4bjrFVcVrLz9QDXYzbjEGliO09d45hf83H+uBkPDchac28OpkFrICWTl
-         2HcLX95YSnWo3hC2fpHpSWrH0ctkUh+A2Dg8p87Hio42NPutcZJdoS+RcBnvkzG8Jyih
-         t+gk0kA6lY6iW8OzUk0ilDNF3wfpiS7MCtv3tC5B0KtiF7cpN58vRyQxDJ/ZijA5Wrb1
-         JtgjGWhMheEYaf8y2zlbqMHuK+DQdmlK9uksw01Fa4s6ToatWCPKjaTplom0NlOG67of
-         r5yg==
-X-Forwarded-Encrypted: i=1; AJvYcCXPuRMokVqKa32xdkRBXIe561h52apk0OeDPkgolPNNnNwSBCUbiQszcdvHPA/tGnR/hgVNmgNGD5Q=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz86OD8iNwq81+jMFDDMS+9HqdAmZE58utTYosVAUwv+QAPJmt9
-	AD/lMTYoQpqfJzwLd5IiTvsDW9Qa4tQTX8xisxagwcWJxJfZL7r0eaq1u3vn4i9oVGeO00bY7yn
-	qMBZC6W1+1SZUrrFjYtfcJMUJXvI1f3VEIWe+m3cs
-X-Gm-Gg: ASbGncsVPHYFU84bzxizhQSLfBpQaXiAyAVsp84XBAqk00atowE6OSziiAiSnQbDpRv
-	ykpwlH2Mq9FC9wXoUjDI5CW963Mq52P0iwLPPYVah3v+wCo1uO7p7Q39aFZasBksEJKPj98dt/O
-	nz5oS0JRSh/7XXJ7dEnKsPd+3L2UVvZU/ci3qTVjBJL0UZ5Bwv6oxi4kuCYOUtQ4C6pYv8R2KVQ
-	5naQ0FV3NicfmxX
-X-Google-Smtp-Source: AGHT+IE/Ue+mLX7FnsWxENqyuQ0YBB6qs+VzIgDrYWL+iko7VKcfvXw8DWSoR2RhEh1WBsZm/t2iAUbF1v8iUCzXZ0c=
-X-Received: by 2002:a05:622a:1996:b0:4a7:2f49:37d6 with SMTP id
- d75a77b69052e-4a998600242mr38616231cf.5.1751644839366; Fri, 04 Jul 2025
- 09:00:39 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="WWvyXwNx"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=fxb3u9auXf3pZSkmDrvpaCpNLuyDLzVb6u5N0J6rc0B7JGM29/AQx2B7PbIUcv0H03gJKHaF/tSkJ2A2Waf9TUz0/4W8o5D2Ng3cDpoQ5PT7wmR6UX9Cv3/jC2QmzeoZCBR+ELfYiFFRyTcwKaP+kesNpvko+UKlCd8R2+U27ayMG94DIHkIcm1z9ASgkUTHRX1Lm2MNCOsrVO/nkkzXNqbKXPrXr8bVuvyEsVwab0tcZpu6+9/iQ9/8be20v/YanyYhzr+737sCD55x8PCAUD9zUsmV3mta8mh76JuCVvsT3P08rETI9s5L9lHBbBMdL4P6q7Jzdr/qYDeeeIRpuw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/ZYKb/exBbSqupP2VVv9WXvgi6tJGHUDt/484hz5TzE=;
+ b=Cd+3kPLEh+1jq1m/i8cKE8aauX83GrQurlO6hFboLCyd5RpYg9Af9L3/+IXd+vo1H6ZuxoYA7d1s4c1CboykHmGXSnK7l8MLXF3p8b+b2HGtVTp1PeLj50oyto0hj83kOarEIOcppm1fpOPY1SR82+WysE213XBPQ5NDMq+lsK82RtqA9XDmHaQ2Jh1Bdqq7e7e0ROxdplZnffWw783cwwCi9iGhefyusoYHACGQ/7EM9L2LwR+TdbyGtIQRwuh/qgspdtNUuhguaYOLHgEuWmoJOLPmfkpb4Jjo+/9bh5R6bPbFkOdypr8EHJQ6GW69qADNHsrlUVdGEgAOMb60WQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 195.60.68.100) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=axis.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/ZYKb/exBbSqupP2VVv9WXvgi6tJGHUDt/484hz5TzE=;
+ b=WWvyXwNxyM11nZ2taAIBdATrx9M7bRilB6esT73QLyM7e7VEqRirWgSOhG+m1Vm0XUlNm8cCGgFc6fgBCHc4we4xA/4FEVhdc5tz4GL5k8bxkRpPIYHEwbcxap1RGc6sdnhOBNHNBKEoKoxm5PDX2xOY4H7JLOJnoNPgr96jugI=
+Received: from AM0PR01CA0147.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:aa::16) by PA6PR02MB10740.eurprd02.prod.outlook.com
+ (2603:10a6:102:3c7::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8901.21; Fri, 4 Jul
+ 2025 16:14:39 +0000
+Received: from AMS0EPF000001AD.eurprd05.prod.outlook.com
+ (2603:10a6:208:aa:cafe::5) by AM0PR01CA0147.outlook.office365.com
+ (2603:10a6:208:aa::16) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8901.23 via Frontend Transport; Fri,
+ 4 Jul 2025 16:14:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 195.60.68.100)
+ smtp.mailfrom=axis.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=axis.com;
+Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
+ 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
+ client-ip=195.60.68.100; helo=mail.axis.com; pr=C
+Received: from mail.axis.com (195.60.68.100) by
+ AMS0EPF000001AD.mail.protection.outlook.com (10.167.16.153) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8901.15 via Frontend Transport; Fri, 4 Jul 2025 16:14:39 +0000
+Received: from pc52311-2249 (10.4.0.13) by se-mail01w.axis.com (10.20.40.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.44; Fri, 4 Jul
+ 2025 18:14:38 +0200
+From: Waqar Hameed <waqar.hameed@axis.com>
+To: Jonathan Cameron <jic23@kernel.org>, David Lechner
+	<dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+CC: <kernel@axis.com>, <linux-iio@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 2/3] dt-bindings: iio: proximity: Add Nicera D3-323-AA PIR
+ sensor
+In-Reply-To: <cover.1751636734.git.waqar.hameed@axis.com>
+User-Agent: a.out
+Message-ID: <19a2744cebaee57fe5349986094168524baa9838.1751636734.git.waqar.hameed@axis.com>
+Date: Fri, 4 Jul 2025 18:14:38 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250704075225.3212486-1-sakari.ailus@linux.intel.com> <20250704075428.3219924-1-sakari.ailus@linux.intel.com>
-In-Reply-To: <20250704075428.3219924-1-sakari.ailus@linux.intel.com>
-From: Crt Mori <cmo@melexis.com>
-Date: Fri, 4 Jul 2025 18:00:02 +0200
-X-Gm-Features: Ac12FXydqto7Ti7oKXJu3NtVrCWodiVKgbT6j1TWMXlIlpDLxJ7OBdzg-fhb8Rw
-Message-ID: <CAKv63utwwwQVMrAZAGy9rkk5fFPncQ=TzggZf6K0s-+GB-oi6g@mail.gmail.com>
-Subject: Re: [PATCH 38/80] iio: temperature: Remove redundant
- pm_runtime_mark_last_busy() calls
-To: Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-ClientProxiedBy: se-mail01w.axis.com (10.20.40.7) To se-mail01w.axis.com
+ (10.20.40.7)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AMS0EPF000001AD:EE_|PA6PR02MB10740:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1e7da977-25eb-4050-f621-08ddbb15e0d4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|36860700013|7416014|1800799024|376014|13003099007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?OLuJR8cPJer4eEI+/4yYjcmHZDikckwSdqBfPHjgoZvNea2sqKEwXLX+K/vE?=
+ =?us-ascii?Q?LYJ7n4q+OukZsXJ0LqufkjYTheRV7QNL0oLM9EI43kotk7+5p7r/oS7eCh/l?=
+ =?us-ascii?Q?a6DuXFvtyjEhO7ojD5A1sDgFnxUwxzRV8qsIGV24djXEqCzJXbCqq/er/h1g?=
+ =?us-ascii?Q?2RQP+tuHtgxmcLk6pxneNfsQsQQsJ3MVYlS5nzUCywmrJWTxePckUN3A27Yn?=
+ =?us-ascii?Q?NEhvCQ2/9s6CoqOBEeUPgg2EyUUA8zyAfFVePUnG6pUP6qfVBGeskmf9vVLl?=
+ =?us-ascii?Q?9RYRzyVhdvKt0C9G9qytUpfF4qqYyQW0Fat77zz/J5gY7STIuKZs6jjrXfc0?=
+ =?us-ascii?Q?+EtXf3Bar9vZ31PHcDM7B9FMrwQTCimm5eturR9gbVyWxvSTQ5or2Y7MOZlQ?=
+ =?us-ascii?Q?/p2V/mRJ8YCNJWfRBtHXwlMPnN+RDrz3BM7/7gOwuL8VdG8TX4gcqW2JbEI/?=
+ =?us-ascii?Q?17pdkxow/vFdmdWibJbTOfBDCNJFFstFjCwLw7psgAMl7XeNVhI0mY2dDR6H?=
+ =?us-ascii?Q?AxxucFRLGWqy6c+NMfxseQObsJapSJjODiUQsaCSGAS/En3QjDxdK7aUWuNp?=
+ =?us-ascii?Q?v523eW3fY2csFNsqMp0GVinFHVGgwIlJjJHckMwTPyVZvZWzTrciUNgXlQJK?=
+ =?us-ascii?Q?rsqkxnzRrQe4NfjXpIZ1hiPNDbQ7104sfPnUKnu9rVHxGFzUxoKx5XfGiF2g?=
+ =?us-ascii?Q?DnDg7dUU920AAfKDmCXNYQDX5uWEGvQR3FlciYbFvs8hDv3j1GIjrbCjGwW4?=
+ =?us-ascii?Q?JemozTlzTeWGLR5aCVPFfl8An6u9yiDpvUDvz3xREvcEia6DeTcG2JgeeCoc?=
+ =?us-ascii?Q?nr645yL8UjX5oSe9VMtAd/x3OOy+YffQUCRxSv/HycWhwyJpaMkvpsijCDTX?=
+ =?us-ascii?Q?zmklmcdAqFnpTAUrnIi6O3/TEEr48VxHmwdjs/xymbvse1qzWhk0bAxzf+6x?=
+ =?us-ascii?Q?03OUKoPGmyF3zZyW3bhZC9wZrtZrjiFE8OP0ngImnv6pBg26miHpGU0ky7L7?=
+ =?us-ascii?Q?m3239SAcHLL54c78mO0q7AIKqcy8qWE+8y39Uh0r7ObDHFodiMNSF+RMHhK0?=
+ =?us-ascii?Q?dVmwZYCGn8OXWGNC8BkOTGfImbwVWXa4f60iZw9/jClqx9N7IlLhr1mFiy2n?=
+ =?us-ascii?Q?7+Tul7xr/a6+H0cUwvL/soW34qQZ1o4EDsChQRAVNdHrpjkXG367HK2HwWA2?=
+ =?us-ascii?Q?AOqV7/ogg3KqFLMb9TPmzj7ys9S+ZxiYKrigXCeZEDXGD5ivC9n7BoZSXWe9?=
+ =?us-ascii?Q?6y8z/NbnJCHvMJq+KLURIjwnMKb0W5Qf4D6NnDufZFVxCuVGKFFWU6NFf/oQ?=
+ =?us-ascii?Q?KLDxBlyS4ZrmZO5EZiuoWCVzx1eIZILqC4aCKbXrlSjhGtookmeAwr/do9Au?=
+ =?us-ascii?Q?OO9QUOtcieKYLj1wT5g3KamTQa+mvyZxY+Dj8piYnRVS2B3ImvcTihU9YqOh?=
+ =?us-ascii?Q?aseT7BQIQY7ETf9nodlwClbo01BkVJJN8Qm9Ay7bSt/yu0UMrZ3smw=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(7416014)(1800799024)(376014)(13003099007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: axis.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2025 16:14:39.6809
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e7da977-25eb-4050-f621-08ddbb15e0d4
+X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	AMS0EPF000001AD.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA6PR02MB10740
 
-If that is the case then:
-Acked-by: Crt Mori<cmo@melexis.com>
+Nicera D3-323-AA is a PIR sensor for human detection. It has two GPIOs
+for detection and data communication.
 
+Signed-off-by: Waqar Hameed <waqar.hameed@axis.com>
+---
+ .../iio/proximity/nicera,d3323aa.yaml         | 62 +++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/nicera,d3323aa.yaml
 
+diff --git a/Documentation/devicetree/bindings/iio/proximity/nicera,d3323aa.yaml b/Documentation/devicetree/bindings/iio/proximity/nicera,d3323aa.yaml
+new file mode 100644
+index 000000000000..65d9b44fcd5e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/proximity/nicera,d3323aa.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/proximity/nicera,d3323aa.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Nicera D3-323-AA PIR sensor
++
++maintainers:
++  - Waqar Hameed <waqar.hameed@axis.com>
++
++description: |
++  PIR sensor for human detection.
++  Datasheet: https://www.endrich.com/Datenbl%C3%A4tter/Sensoren/D3-323-AA_e.pdf
++
++properties:
++  compatible:
++    const: nicera,d3323aa
++
++  vdd-supply:
++    description:
++      Supply voltage (1.8 to 5.5 V).
++
++  vout-clk-gpios:
++    maxItems: 1
++    description:
++      GPIO for clock and detection.
++      After reset, the device signals with two falling edges on this pin that it
++      is ready for configuration (within 1.2 s).
++      During configuration, it is used as clock for data reading and writing (on
++      data-gpios).
++      After all this, when device is in operational mode, it signals on this pin
++      for any detections.
++
++  data-gpios:
++    maxItems: 1
++    description:
++      GPIO for data reading and writing. This is denoted "DO (SI)" in datasheet.
++      During configuration, this pin is used for writing and reading
++      configuration data (together with vout-clk-gpios as clock).
++      After this, during operational mode, the device will output serial data on
++      this GPIO.
++
++required:
++  - compatible
++  - vdd-supply
++  - vout-clk-gpios
++  - data-gpios
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    proximity {
++        compatible = "nicera,d3323aa";
++        vdd-supply = <&regulator_3v3>;
++        vout-clk-gpios = <&gpio 78 GPIO_ACTIVE_HIGH>;
++        data-gpios = <&gpio 76 GPIO_ACTIVE_HIGH>;
++    };
++...
+-- 
+2.39.5
 
-On Fri, 4 Jul 2025 at 09:54, Sakari Ailus <sakari.ailus@linux.intel.com> wrote:
->
-> pm_runtime_put_autosuspend(), pm_runtime_put_sync_autosuspend(),
-> pm_runtime_autosuspend() and pm_request_autosuspend() now include a call
-> to pm_runtime_mark_last_busy(). Remove the now-reduntant explicit call to
-> pm_runtime_mark_last_busy().
->
-> Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-> ---
-> The cover letter of the set can be found here
-> <URL:https://lore.kernel.org/linux-pm/20250704075225.3212486-1-sakari.ailus@linux.intel.com>.
->
-> In brief, this patch depends on PM runtime patches adding marking the last
-> busy timestamp in autosuspend related functions. The patches are here, on
-> rc2:
->
->         git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
->                 pm-runtime-6.17-rc1
->
->  drivers/iio/temperature/mlx90614.c | 1 -
->  drivers/iio/temperature/mlx90632.c | 1 -
->  drivers/iio/temperature/mlx90635.c | 1 -
->  3 files changed, 3 deletions(-)
->
-> diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
-> index 740018d4b3df..8a44a00bfd5e 100644
-> --- a/drivers/iio/temperature/mlx90614.c
-> +++ b/drivers/iio/temperature/mlx90614.c
-> @@ -225,7 +225,6 @@ static void mlx90614_power_put(struct mlx90614_data *data)
->         if (!data->wakeup_gpio)
->                 return;
->
-> -       pm_runtime_mark_last_busy(&data->client->dev);
->         pm_runtime_put_autosuspend(&data->client->dev);
->  }
->  #else
-> diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
-> index ae4ea587e7f9..bf689f6143f3 100644
-> --- a/drivers/iio/temperature/mlx90632.c
-> +++ b/drivers/iio/temperature/mlx90632.c
-> @@ -1043,7 +1043,6 @@ static int mlx90632_read_raw(struct iio_dev *indio_dev,
->         }
->
->  mlx90632_read_raw_pm:
-> -       pm_runtime_mark_last_busy(&data->client->dev);
->         pm_runtime_put_autosuspend(&data->client->dev);
->         return ret;
->  }
-> diff --git a/drivers/iio/temperature/mlx90635.c b/drivers/iio/temperature/mlx90635.c
-> index f7f88498ba0e..80d0eb7d2294 100644
-> --- a/drivers/iio/temperature/mlx90635.c
-> +++ b/drivers/iio/temperature/mlx90635.c
-> @@ -749,7 +749,6 @@ static int mlx90635_read_raw(struct iio_dev *indio_dev,
->         }
->
->  mlx90635_read_raw_pm:
-> -       pm_runtime_mark_last_busy(&data->client->dev);
->         pm_runtime_put_autosuspend(&data->client->dev);
->         return ret;
->  }
-> --
-> 2.39.5
->
