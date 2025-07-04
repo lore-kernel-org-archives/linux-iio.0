@@ -1,75 +1,65 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A42D22D542C;
-	Fri,  4 Jul 2025 07:54:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A299B2DAFDF;
+	Fri,  4 Jul 2025 07:54:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751615675; cv=none; b=dQ2TxWP0b1dIqNrX5oj9jdtEgpnW4jqD6+Wuh38nShjAK2oCPylKI1D+YgWTKG7lT/2QkYnoXJi3nLq+7chuFq+r30nt6ge7cEzgkpXTy0sHDLeB6G3+rjzBgKe8BunLMP7JphBF3nCqQTY/Y8wHFmcR17vEcVBqmSUKP4BJfOs=
+	t=1751615676; cv=none; b=KgDInYj506zo60D9U93ICLfUqN22z79rXThDC1TI8a/qHqTh6gHakMdl5PazusFGrMHpmXl2weQqEV1zcKoc9UFqK3lvTF7aHj74Zu4CaVCTEVONNaJQ+C9PILqheH+EII41Sjqcac6IlSy6XW9QHRnzUet3Jlkyps6IWoEUByo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751615675; c=relaxed/simple;
-	bh=CRIWCLPCoDeia77/badXqEi5i8gzI/aN0BfcHkaARVU=;
+	s=arc-20240116; t=1751615676; c=relaxed/simple;
+	bh=feFnRJruPs12PNpvwdA5mfXFpw0U2Z/9ohGffVvSXnk=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Rv3Tx+5cGoDbfD0d7rf9nD32t9pbr2FN/KZyL9VKDFDH3siw5Y0FOoD9LwiNzA21LQ6aVeP/jiBylosGAQDXQ6ScUH7CJ1t3QN6v6saxA3BTH8NpzeLdGnIV15Xl8BXEtrMT8f+LBjGVsI8+SwZ3ASTXA1jzrAh4OY7Oa2tYFyY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cCMjBQKd; arc=none smtp.client-ip=198.175.65.9
+	 MIME-Version; b=HytyEdBl+i9brHjshg8xLcFdiNanYlv3WRVLSrzAKnBUTNUTNvst34Km3yfmb/KxSGroVDnBrC78hV+b8cKzw9b/er2bl0VsirRsVCJEfGPWgpQGa0CoyOjMFYwRoqtdKk6XrImEcotAB9jq9S4LzbyrQHmUUke6Tk5OOBsaUJ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Rg2WGBw0; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cCMjBQKd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Rg2WGBw0"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1751615672; x=1783151672;
+  t=1751615674; x=1783151674;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=CRIWCLPCoDeia77/badXqEi5i8gzI/aN0BfcHkaARVU=;
-  b=cCMjBQKdkd3z3ZYMmfxn3ChrHqXvlmp1uG+ssZK4J9xN+uxQZ0lzUJiF
-   ea6zFzO+N92myD9s9xGdcPORe9N8/tly61xdel2jhcr9/Ocf/RWX80JnJ
-   vbNNVQu7YB6kiT6DckHZcZDnfutQwInvncRfmCsyO9rh2S3JcvSvJBc6+
-   shpjNjY+t2vGGnBhiO8hzrpBWWlZI8AmO9L+Pj4PALJa7S48tMZygsojI
-   mEMhvXlu4fdVnB0Iy8obo7TeFVptiWRzGBDTCvfLWQ6MM2ONVw1SAFHlm
-   eI1i99idjDIe1fDoKE1d5O2N0F9rymr7VfI/xlTKVTE6xXMJsfVq2mowk
+  bh=feFnRJruPs12PNpvwdA5mfXFpw0U2Z/9ohGffVvSXnk=;
+  b=Rg2WGBw0B2p/ZPnzH5OdHAITXnovnqisW/SfCRHa6GfApS+NQNs/u29V
+   FmjUICqjfClo0KDuOk90jaIgDzNVVOSRbJRRaCX9odxfa0knvcA+pmzMi
+   b8auLieftcBEDAP+0afULWTRY8exLghIHUKzSL3+r91XG71Y8bchkUeub
+   2wNH+vDvB7FBHhJqckkwe0yKsTcrsJAGceTgKX07tT2bP0ZRNLZSl/e0x
+   5Hmby+qVAWZEPyOUUBTdx0LhivfKvWMqIoo3YMZ+olahU3uU6Eivb9toK
+   iby0boCa7nJ+p3SPBcuKjdaTNh+0xDEDJ8R4ANVpWNpxZHXzL1NFoHJ3x
    A==;
-X-CSE-ConnectionGUID: 0fQALHxnRfCq8NWaZcAJIA==
-X-CSE-MsgGUID: FEMv23WnRumA2GC2GhzJgw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11483"; a="76494715"
+X-CSE-ConnectionGUID: IBhLQrroTy+YYze8GnLxdQ==
+X-CSE-MsgGUID: Gvnx9dqoRNSCjLas4ql78Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11483"; a="76494726"
 X-IronPort-AV: E=Sophos;i="6.16,286,1744095600"; 
-   d="scan'208";a="76494715"
+   d="scan'208";a="76494726"
 Received: from orviesa003.jf.intel.com ([10.64.159.143])
   by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2025 00:54:32 -0700
-X-CSE-ConnectionGUID: 9JGs9zU8R3mlxCN1zcIBUg==
-X-CSE-MsgGUID: rPW2CgHGQ+Onfly1RQWb+A==
+X-CSE-ConnectionGUID: DK5QhGGXTvGZ9wYi7rJpVQ==
+X-CSE-MsgGUID: mqKhOVBnTpKYZlr9BhokPw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,286,1744095600"; 
-   d="scan'208";a="158924282"
+   d="scan'208";a="158924304"
 Received: from jkrzyszt-mobl2.ger.corp.intel.com (HELO svinhufvud.fi.intel.com) ([10.245.244.244])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2025 00:54:26 -0700
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2025 00:54:29 -0700
 Received: from svinhufvud.lan (localhost [IPv6:::1])
-	by svinhufvud.fi.intel.com (Postfix) with ESMTP id D826644433;
-	Fri,  4 Jul 2025 10:54:24 +0300 (EEST)
+	by svinhufvud.fi.intel.com (Postfix) with ESMTP id 8698E447EB;
+	Fri,  4 Jul 2025 10:54:27 +0300 (EEST)
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6 krs, Bertel Jungin Aukio 5, 02600 Espoo
 From: Sakari Ailus <sakari.ailus@linux.intel.com>
-To: Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Julien Stephan <jstephan@baylibre.com>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Waqar Hameed <waqar.hameed@axis.com>,
-	Abhash Jha <abhashkumarjha123@gmail.com>,
-	chuguangqing <chuguangqing@inspur.com>,
-	Shreeya Patel <shreeya.patel@collabora.com>,
-	Marek Vasut <marex@denx.de>,
-	Al Viro <viro@zeniv.linux.org.uk>,
-	Vasileios Amoiridis <vassilisamir@gmail.com>,
-	Per-Daniel Olsson <perdaniel.olsson@axis.com>,
-	Javier Carrasco <javier.carrasco.cruz@gmail.com>
+	Andreas Klinger <ak@it-klinger.de>,
+	Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 34/80] iio: light: Remove redundant pm_runtime_mark_last_busy() calls
-Date: Fri,  4 Jul 2025 10:54:24 +0300
-Message-Id: <20250704075424.3219556-1-sakari.ailus@linux.intel.com>
+Subject: [PATCH 37/80] iio: proximity: Remove redundant pm_runtime_mark_last_busy() calls
+Date: Fri,  4 Jul 2025 10:54:27 +0300
+Message-Id: <20250704075427.3219858-1-sakari.ailus@linux.intel.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20250704075225.3212486-1-sakari.ailus@linux.intel.com>
 References: <20250704075225.3212486-1-sakari.ailus@linux.intel.com>
@@ -98,199 +88,32 @@ rc2:
         git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
                 pm-runtime-6.17-rc1
 
- drivers/iio/light/apds9306.c   | 2 --
- drivers/iio/light/apds9960.c   | 1 -
- drivers/iio/light/bh1780.c     | 1 -
- drivers/iio/light/gp2ap002.c   | 2 --
- drivers/iio/light/isl29028.c   | 1 -
- drivers/iio/light/ltrf216a.c   | 1 -
- drivers/iio/light/pa12203001.c | 1 -
- drivers/iio/light/rpr0521.c    | 1 -
- drivers/iio/light/tsl2583.c    | 1 -
- drivers/iio/light/tsl2591.c    | 2 --
- drivers/iio/light/us5182d.c    | 1 -
- drivers/iio/light/vcnl4000.c   | 1 -
- drivers/iio/light/vcnl4035.c   | 1 -
- 13 files changed, 16 deletions(-)
+ drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 1 -
+ drivers/iio/proximity/srf04.c                     | 1 -
+ 2 files changed, 2 deletions(-)
 
-diff --git a/drivers/iio/light/apds9306.c b/drivers/iio/light/apds9306.c
-index f676da245aa7..5916cabd0755 100644
---- a/drivers/iio/light/apds9306.c
-+++ b/drivers/iio/light/apds9306.c
-@@ -537,7 +537,6 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
- 
- 	*val = get_unaligned_le24(&buff);
- 
--	pm_runtime_mark_last_busy(data->dev);
- 	pm_runtime_put_autosuspend(data->dev);
- 
- 	return 0;
-@@ -1121,7 +1120,6 @@ static int apds9306_write_event_config(struct iio_dev *indio_dev,
- 			if (ret)
- 				return ret;
- 
--			pm_runtime_mark_last_busy(data->dev);
- 			pm_runtime_put_autosuspend(data->dev);
- 
- 			return 0;
-diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
-index b92d0fce5aec..79b202c59a0f 100644
---- a/drivers/iio/light/apds9960.c
-+++ b/drivers/iio/light/apds9960.c
-@@ -495,7 +495,6 @@ static int apds9960_set_power_state(struct apds9960_data *data, bool on)
- 			usleep_range(data->als_adc_int_us,
- 				     APDS9960_MAX_INT_TIME_IN_US);
- 	} else {
--		pm_runtime_mark_last_busy(dev);
- 		ret = pm_runtime_put_autosuspend(dev);
- 	}
- 
-diff --git a/drivers/iio/light/bh1780.c b/drivers/iio/light/bh1780.c
-index c7c877d2fe67..5d3c6d5276ba 100644
---- a/drivers/iio/light/bh1780.c
-+++ b/drivers/iio/light/bh1780.c
-@@ -111,7 +111,6 @@ static int bh1780_read_raw(struct iio_dev *indio_dev,
- 			value = bh1780_read_word(bh1780, BH1780_REG_DLOW);
- 			if (value < 0)
- 				return value;
--			pm_runtime_mark_last_busy(&bh1780->client->dev);
- 			pm_runtime_put_autosuspend(&bh1780->client->dev);
- 			*val = value;
- 
-diff --git a/drivers/iio/light/gp2ap002.c b/drivers/iio/light/gp2ap002.c
-index 42859e5b1089..a0d8a58f2704 100644
---- a/drivers/iio/light/gp2ap002.c
-+++ b/drivers/iio/light/gp2ap002.c
-@@ -271,7 +271,6 @@ static int gp2ap002_read_raw(struct iio_dev *indio_dev,
- 	}
- 
- out:
--	pm_runtime_mark_last_busy(gp2ap002->dev);
- 	pm_runtime_put_autosuspend(gp2ap002->dev);
- 
- 	return ret;
-@@ -353,7 +352,6 @@ static int gp2ap002_write_event_config(struct iio_dev *indio_dev,
- 		pm_runtime_get_sync(gp2ap002->dev);
- 		gp2ap002->enabled = true;
- 	} else {
--		pm_runtime_mark_last_busy(gp2ap002->dev);
- 		pm_runtime_put_autosuspend(gp2ap002->dev);
- 		gp2ap002->enabled = false;
- 	}
-diff --git a/drivers/iio/light/isl29028.c b/drivers/iio/light/isl29028.c
-index 0e4284823d44..5ff20d423def 100644
---- a/drivers/iio/light/isl29028.c
-+++ b/drivers/iio/light/isl29028.c
-@@ -341,7 +341,6 @@ static int isl29028_set_pm_runtime_busy(struct isl29028_chip *chip, bool on)
- 	if (on) {
- 		ret = pm_runtime_resume_and_get(dev);
- 	} else {
--		pm_runtime_mark_last_busy(dev);
- 		ret = pm_runtime_put_autosuspend(dev);
- 	}
- 
-diff --git a/drivers/iio/light/ltrf216a.c b/drivers/iio/light/ltrf216a.c
-index 61f57a82b872..5f27f754fe1c 100644
---- a/drivers/iio/light/ltrf216a.c
-+++ b/drivers/iio/light/ltrf216a.c
-@@ -208,7 +208,6 @@ static int ltrf216a_set_power_state(struct ltrf216a_data *data, bool on)
- 			return ret;
+diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+index 1deaf70e92ce..d53a596128f5 100644
+--- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
++++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+@@ -191,7 +191,6 @@ static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
  		}
- 	} else {
--		pm_runtime_mark_last_busy(dev);
- 		pm_runtime_put_autosuspend(dev);
+ 		ret = -EIO;
  	}
- 
-diff --git a/drivers/iio/light/pa12203001.c b/drivers/iio/light/pa12203001.c
-index 8885852bef22..93823421f42f 100644
---- a/drivers/iio/light/pa12203001.c
-+++ b/drivers/iio/light/pa12203001.c
-@@ -189,7 +189,6 @@ static int pa12203001_set_power_state(struct pa12203001_data *data, bool on,
- 		ret = pm_runtime_resume_and_get(&data->client->dev);
- 
- 	} else {
--		pm_runtime_mark_last_busy(&data->client->dev);
- 		ret = pm_runtime_put_autosuspend(&data->client->dev);
- 	}
- 
-diff --git a/drivers/iio/light/rpr0521.c b/drivers/iio/light/rpr0521.c
-index c50183f07240..15e2cca22e4d 100644
---- a/drivers/iio/light/rpr0521.c
-+++ b/drivers/iio/light/rpr0521.c
-@@ -361,7 +361,6 @@ static int rpr0521_set_power_state(struct rpr0521_data *data, bool on,
- 	if (on) {
- 		ret = pm_runtime_resume_and_get(&data->client->dev);
- 	} else {
--		pm_runtime_mark_last_busy(&data->client->dev);
- 		ret = pm_runtime_put_autosuspend(&data->client->dev);
- 	}
- 	if (ret < 0) {
-diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
-index fc3b0c4226be..d3a4923e5adc 100644
---- a/drivers/iio/light/tsl2583.c
-+++ b/drivers/iio/light/tsl2583.c
-@@ -646,7 +646,6 @@ static int tsl2583_set_pm_runtime_busy(struct tsl2583_chip *chip, bool on)
- 	if (on) {
- 		ret = pm_runtime_resume_and_get(&chip->client->dev);
- 	} else {
--		pm_runtime_mark_last_busy(&chip->client->dev);
- 		ret = pm_runtime_put_autosuspend(&chip->client->dev);
- 	}
- 
-diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
-index 08476f193a44..c5557867ea43 100644
---- a/drivers/iio/light/tsl2591.c
-+++ b/drivers/iio/light/tsl2591.c
-@@ -772,7 +772,6 @@ static int tsl2591_read_raw(struct iio_dev *indio_dev,
- err_unlock:
- 	mutex_unlock(&chip->als_mutex);
- 
 -	pm_runtime_mark_last_busy(&client->dev);
  	pm_runtime_put_autosuspend(&client->dev);
  
  	return ret;
-@@ -995,7 +994,6 @@ static int tsl2591_write_event_config(struct iio_dev *indio_dev,
- 		pm_runtime_get_sync(&client->dev);
- 	} else if (!state && chip->events_enabled) {
- 		chip->events_enabled = false;
--		pm_runtime_mark_last_busy(&client->dev);
- 		pm_runtime_put_autosuspend(&client->dev);
- 	}
+diff --git a/drivers/iio/proximity/srf04.c b/drivers/iio/proximity/srf04.c
+index b059bac1078b..f2e2c638a2b6 100644
+--- a/drivers/iio/proximity/srf04.c
++++ b/drivers/iio/proximity/srf04.c
+@@ -118,7 +118,6 @@ static int srf04_read(struct srf04_data *data)
+ 	gpiod_set_value(data->gpiod_trig, 0);
  
-diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
-index 61a0957317a1..8f0f85e98f3a 100644
---- a/drivers/iio/light/us5182d.c
-+++ b/drivers/iio/light/us5182d.c
-@@ -369,7 +369,6 @@ static int us5182d_set_power_state(struct us5182d_data *data, bool on)
- 	if (on) {
- 		ret = pm_runtime_resume_and_get(&data->client->dev);
- 	} else {
--		pm_runtime_mark_last_busy(&data->client->dev);
- 		ret = pm_runtime_put_autosuspend(&data->client->dev);
- 	}
- 
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index 90e7d4421abf..39e2cf20038a 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -581,7 +581,6 @@ static int vcnl4000_set_pm_runtime_state(struct vcnl4000_data *data, bool on)
- 	if (on) {
- 		ret = pm_runtime_resume_and_get(dev);
- 	} else {
--		pm_runtime_mark_last_busy(dev);
- 		ret = pm_runtime_put_autosuspend(dev);
- 	}
- 
-diff --git a/drivers/iio/light/vcnl4035.c b/drivers/iio/light/vcnl4035.c
-index 01bc99564f98..079fb49bf73b 100644
---- a/drivers/iio/light/vcnl4035.c
-+++ b/drivers/iio/light/vcnl4035.c
-@@ -147,7 +147,6 @@ static int vcnl4035_set_pm_runtime_state(struct vcnl4035_data *data, bool on)
- 	if (on) {
- 		ret = pm_runtime_resume_and_get(dev);
- 	} else {
--		pm_runtime_mark_last_busy(dev);
- 		ret = pm_runtime_put_autosuspend(dev);
+ 	if (data->gpiod_power) {
+-		pm_runtime_mark_last_busy(data->dev);
+ 		pm_runtime_put_autosuspend(data->dev);
  	}
  
 -- 
