@@ -1,46 +1,45 @@
-Received: from AS8PR03CU001.outbound.protection.outlook.com (mail-westeuropeazon11012037.outbound.protection.outlook.com [52.101.71.37])
+Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012062.outbound.protection.outlook.com [52.101.66.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFE12327A25;
-	Fri,  4 Jul 2025 16:14:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.71.37
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF6D4327A24;
+	Fri,  4 Jul 2025 16:14:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.62
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751645686; cv=fail; b=HceRKSAA4NuUSRtT2Jl6F4sohnl2XvwYBa50VDAXv7cAH+Fpd0yStq8j9cgRaRPWEkjd8BOkjgWDcnqb6QKx99P9EHiR6ukDG4QgNpJk7XVbqpqM2p2HswAARI3YwFknJKEh7/MziLRvV+TzL98B8pWB3q8CVEMEzcy9uDFs6rw=
+	t=1751645687; cv=fail; b=P25aGkE5rZMWPS3xOGr7mJc0Fri+Ytd4jQRrIqhLTOkQ5fcl6PTzslCh+yXOZFWIpj/6lo4pKP42HCImV2QdHD4Zm3cFV2OyTzYVr5AjdHv40rgcYJTtAyDxD/XuGnCGV4b57W5X5rOsXrSEQrh6iw3JlKOlm/5j7VUX3TXx3r8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751645686; c=relaxed/simple;
-	bh=xo1ATvoWd3a+RIu89EI3TQBARfI+STqw6q+g0QqTVuU=;
-	h=From:To:CC:Subject:In-Reply-To:Message-ID:Date:MIME-Version:
-	 Content-Type; b=uglW0bdod7Z/+iyDM+VnVD2A1yVOKBbNsYvF0yic+pGLcPjjdwcV0FCwtdY2KIOkBBXReGJIX5i05I8HFX06aWTkzdMwFBYWFvpqF7HVsF+YDQciUSx8xFEtY0PkW3Uen8Z0JLss52G8K+dDxbv5c5Huhwu6qvlBGQN0b7Ad3eo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=WWvyXwNx; arc=fail smtp.client-ip=52.101.71.37
+	s=arc-20240116; t=1751645687; c=relaxed/simple;
+	bh=tTRcJgCvBnmEapOEsStgxhShxoc1I5iXbcrzmP9fa+U=;
+	h=From:To:CC:Subject:Message-ID:Date:MIME-Version:Content-Type; b=bvWydzwvXr1/3a4nvfQNQKd8dIgsLIFLWcObMWGr+NynP6vcR1TyUPu7yWEolpzf1cTbJmXWJurTvpVem0Vhr7ZCeLKfftG4odEGTS/pK0SwMhKuyT8q/Z4xmvd1/LCIC2y1xTbxkqWogu6kd01U6g7KJtgg9jpoRPHI9QzTFps=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=gBPRh8cK; arc=fail smtp.client-ip=52.101.66.62
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="WWvyXwNx"
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="gBPRh8cK"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=fxb3u9auXf3pZSkmDrvpaCpNLuyDLzVb6u5N0J6rc0B7JGM29/AQx2B7PbIUcv0H03gJKHaF/tSkJ2A2Waf9TUz0/4W8o5D2Ng3cDpoQ5PT7wmR6UX9Cv3/jC2QmzeoZCBR+ELfYiFFRyTcwKaP+kesNpvko+UKlCd8R2+U27ayMG94DIHkIcm1z9ASgkUTHRX1Lm2MNCOsrVO/nkkzXNqbKXPrXr8bVuvyEsVwab0tcZpu6+9/iQ9/8be20v/YanyYhzr+737sCD55x8PCAUD9zUsmV3mta8mh76JuCVvsT3P08rETI9s5L9lHBbBMdL4P6q7Jzdr/qYDeeeIRpuw==
+ b=qn5JV6LCYYSTpyQIJXKHfSpYjGyuKOXy2FhhlehgqCmO8M4O99dmpVOuoQx2w/LV2HdieOeitmMr2LEQ+mX2OtuC68cwJ2T6CQUTdoh3Ep7BHOafQMfaYeEa4pmwgkYHyYF77syh4wBSWsAxgplsgm64jtb9CIr9j1ixStGvFhtFu2v9B0BiantYZ7F7NbO57/IqVJwZ6oXbk03VSqjRP/EHVrchT4GrhmrY5e4w+y91YgyH4xNwxEl3qx7WRbiLR6Vc57HxEa4ZDmeE1dUsCoTpYOgmHL8Nusn5uVla5MQZTsOkPhQckeyTI0O71TK6vgO0BapU7o/BytL8c4qiAQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/ZYKb/exBbSqupP2VVv9WXvgi6tJGHUDt/484hz5TzE=;
- b=Cd+3kPLEh+1jq1m/i8cKE8aauX83GrQurlO6hFboLCyd5RpYg9Af9L3/+IXd+vo1H6ZuxoYA7d1s4c1CboykHmGXSnK7l8MLXF3p8b+b2HGtVTp1PeLj50oyto0hj83kOarEIOcppm1fpOPY1SR82+WysE213XBPQ5NDMq+lsK82RtqA9XDmHaQ2Jh1Bdqq7e7e0ROxdplZnffWw783cwwCi9iGhefyusoYHACGQ/7EM9L2LwR+TdbyGtIQRwuh/qgspdtNUuhguaYOLHgEuWmoJOLPmfkpb4Jjo+/9bh5R6bPbFkOdypr8EHJQ6GW69qADNHsrlUVdGEgAOMb60WQ==
+ bh=G++KAu1pD4bFRsIXpSlYQpH9I6HpyEmd4mQmMLIS3PE=;
+ b=C5Xy0nGdjNlNlMyFRcJUTrH0KzVGe8KrfphkAWz7pfIshawqGrDrXHf8iZiQ7rHiopRt7Nor1DQ8wv6MQVaHJSn/ScOwcF5xyP+eRhW2rlsRIab2SM1mFYCvE9mn4EQEwM2tix3I23hGUtjVOXYRtrLQgvsRFaE0Wr/TpavicQ0B5XSzQdh1biQ6Zn7UMWwL2g8FVEXSom+2ZvyntmL5v2laKYsgqhtowlw6M5nP5Gc3xOe2PbNT0ULbVf8liG3/eTQpj/ZGOqz0PbJiGpwcLpcCZcRLmQBrj3W+/SXLVv46U3FLwugJzHZTj6pmW7B6QjJmImpR/Khyknq6m/pENw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  195.60.68.100) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=axis.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/ZYKb/exBbSqupP2VVv9WXvgi6tJGHUDt/484hz5TzE=;
- b=WWvyXwNxyM11nZ2taAIBdATrx9M7bRilB6esT73QLyM7e7VEqRirWgSOhG+m1Vm0XUlNm8cCGgFc6fgBCHc4we4xA/4FEVhdc5tz4GL5k8bxkRpPIYHEwbcxap1RGc6sdnhOBNHNBKEoKoxm5PDX2xOY4H7JLOJnoNPgr96jugI=
-Received: from AM0PR01CA0147.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:aa::16) by PA6PR02MB10740.eurprd02.prod.outlook.com
- (2603:10a6:102:3c7::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8901.21; Fri, 4 Jul
- 2025 16:14:39 +0000
+ bh=G++KAu1pD4bFRsIXpSlYQpH9I6HpyEmd4mQmMLIS3PE=;
+ b=gBPRh8cKOdpyTW/yucuBktP08KoH9Vh81+lTiX44LrZRlwTVpfbA93pqx1SZ+jvWuerkyr/szPcJSph1Gnsn/IfViBLMHWJ7roVLCFDcQVLcO3MEn9NNj/ZhNVn2h/jMEctP8X79no+IC5UNhHzxfHyjWSQEMvb+rDSaTtNsnbI=
+Received: from AM0PR01CA0150.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:aa::19) by DBBPR02MB10464.eurprd02.prod.outlook.com
+ (2603:10a6:10:53b::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8901.20; Fri, 4 Jul
+ 2025 16:14:38 +0000
 Received: from AMS0EPF000001AD.eurprd05.prod.outlook.com
- (2603:10a6:208:aa:cafe::5) by AM0PR01CA0147.outlook.office365.com
- (2603:10a6:208:aa::16) with Microsoft SMTP Server (version=TLS1_3,
+ (2603:10a6:208:aa:cafe::d3) by AM0PR01CA0150.outlook.office365.com
+ (2603:10a6:208:aa::19) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.20.8901.23 via Frontend Transport; Fri,
- 4 Jul 2025 16:14:37 +0000
+ 4 Jul 2025 16:14:33 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 195.60.68.100)
  smtp.mailfrom=axis.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=axis.com;
@@ -50,24 +49,22 @@ Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
 Received: from mail.axis.com (195.60.68.100) by
  AMS0EPF000001AD.mail.protection.outlook.com (10.167.16.153) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8901.15 via Frontend Transport; Fri, 4 Jul 2025 16:14:39 +0000
+ 15.20.8901.15 via Frontend Transport; Fri, 4 Jul 2025 16:14:38 +0000
 Received: from pc52311-2249 (10.4.0.13) by se-mail01w.axis.com (10.20.40.7)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.44; Fri, 4 Jul
- 2025 18:14:38 +0200
+ 2025 18:14:37 +0200
 From: Waqar Hameed <waqar.hameed@axis.com>
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner
-	<dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-CC: <kernel@axis.com>, <linux-iio@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 2/3] dt-bindings: iio: proximity: Add Nicera D3-323-AA PIR
- sensor
-In-Reply-To: <cover.1751636734.git.waqar.hameed@axis.com>
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?=
+	<nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+CC: <kernel@axis.com>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: [PATCH v3 0/3] Add driver for Nicera D3-323-AA PIR sensor
 User-Agent: a.out
-Message-ID: <19a2744cebaee57fe5349986094168524baa9838.1751636734.git.waqar.hameed@axis.com>
-Date: Fri, 4 Jul 2025 18:14:38 +0200
+Message-ID: <cover.1751636734.git.waqar.hameed@axis.com>
+Date: Fri, 4 Jul 2025 18:14:37 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,133 +72,148 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-ClientProxiedBy: se-mail01w.axis.com (10.20.40.7) To se-mail01w.axis.com
+X-ClientProxiedBy: se-mail02w.axis.com (10.20.40.8) To se-mail01w.axis.com
  (10.20.40.7)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AMS0EPF000001AD:EE_|PA6PR02MB10740:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1e7da977-25eb-4050-f621-08ddbb15e0d4
+X-MS-TrafficTypeDiagnostic: AMS0EPF000001AD:EE_|DBBPR02MB10464:EE_
+X-MS-Office365-Filtering-Correlation-Id: 92349d94-8135-444c-f16f-08ddbb15dffc
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700013|7416014|1800799024|376014|13003099007;
+	BCL:0;ARA:13230040|1800799024|82310400026|36860700013|7416014|376014|13003099007;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?OLuJR8cPJer4eEI+/4yYjcmHZDikckwSdqBfPHjgoZvNea2sqKEwXLX+K/vE?=
- =?us-ascii?Q?LYJ7n4q+OukZsXJ0LqufkjYTheRV7QNL0oLM9EI43kotk7+5p7r/oS7eCh/l?=
- =?us-ascii?Q?a6DuXFvtyjEhO7ojD5A1sDgFnxUwxzRV8qsIGV24djXEqCzJXbCqq/er/h1g?=
- =?us-ascii?Q?2RQP+tuHtgxmcLk6pxneNfsQsQQsJ3MVYlS5nzUCywmrJWTxePckUN3A27Yn?=
- =?us-ascii?Q?NEhvCQ2/9s6CoqOBEeUPgg2EyUUA8zyAfFVePUnG6pUP6qfVBGeskmf9vVLl?=
- =?us-ascii?Q?9RYRzyVhdvKt0C9G9qytUpfF4qqYyQW0Fat77zz/J5gY7STIuKZs6jjrXfc0?=
- =?us-ascii?Q?+EtXf3Bar9vZ31PHcDM7B9FMrwQTCimm5eturR9gbVyWxvSTQ5or2Y7MOZlQ?=
- =?us-ascii?Q?/p2V/mRJ8YCNJWfRBtHXwlMPnN+RDrz3BM7/7gOwuL8VdG8TX4gcqW2JbEI/?=
- =?us-ascii?Q?17pdkxow/vFdmdWibJbTOfBDCNJFFstFjCwLw7psgAMl7XeNVhI0mY2dDR6H?=
- =?us-ascii?Q?AxxucFRLGWqy6c+NMfxseQObsJapSJjODiUQsaCSGAS/En3QjDxdK7aUWuNp?=
- =?us-ascii?Q?v523eW3fY2csFNsqMp0GVinFHVGgwIlJjJHckMwTPyVZvZWzTrciUNgXlQJK?=
- =?us-ascii?Q?rsqkxnzRrQe4NfjXpIZ1hiPNDbQ7104sfPnUKnu9rVHxGFzUxoKx5XfGiF2g?=
- =?us-ascii?Q?DnDg7dUU920AAfKDmCXNYQDX5uWEGvQR3FlciYbFvs8hDv3j1GIjrbCjGwW4?=
- =?us-ascii?Q?JemozTlzTeWGLR5aCVPFfl8An6u9yiDpvUDvz3xREvcEia6DeTcG2JgeeCoc?=
- =?us-ascii?Q?nr645yL8UjX5oSe9VMtAd/x3OOy+YffQUCRxSv/HycWhwyJpaMkvpsijCDTX?=
- =?us-ascii?Q?zmklmcdAqFnpTAUrnIi6O3/TEEr48VxHmwdjs/xymbvse1qzWhk0bAxzf+6x?=
- =?us-ascii?Q?03OUKoPGmyF3zZyW3bhZC9wZrtZrjiFE8OP0ngImnv6pBg26miHpGU0ky7L7?=
- =?us-ascii?Q?m3239SAcHLL54c78mO0q7AIKqcy8qWE+8y39Uh0r7ObDHFodiMNSF+RMHhK0?=
- =?us-ascii?Q?dVmwZYCGn8OXWGNC8BkOTGfImbwVWXa4f60iZw9/jClqx9N7IlLhr1mFiy2n?=
- =?us-ascii?Q?7+Tul7xr/a6+H0cUwvL/soW34qQZ1o4EDsChQRAVNdHrpjkXG367HK2HwWA2?=
- =?us-ascii?Q?AOqV7/ogg3KqFLMb9TPmzj7ys9S+ZxiYKrigXCeZEDXGD5ivC9n7BoZSXWe9?=
- =?us-ascii?Q?6y8z/NbnJCHvMJq+KLURIjwnMKb0W5Qf4D6NnDufZFVxCuVGKFFWU6NFf/oQ?=
- =?us-ascii?Q?KLDxBlyS4ZrmZO5EZiuoWCVzx1eIZILqC4aCKbXrlSjhGtookmeAwr/do9Au?=
- =?us-ascii?Q?OO9QUOtcieKYLj1wT5g3KamTQa+mvyZxY+Dj8piYnRVS2B3ImvcTihU9YqOh?=
- =?us-ascii?Q?aseT7BQIQY7ETf9nodlwClbo01BkVJJN8Qm9Ay7bSt/yu0UMrZ3smw=3D=3D?=
+	=?us-ascii?Q?ZnCQkCslGSmxPL623eapTBTvqrzHYFd7OvRCbbWZBMSH8N7QR903MRnAXMmM?=
+ =?us-ascii?Q?N5o/N0HNzJB1IWSlFxVIc3nBjG4rhI6T8SWEnd6pHywh9thkvegim79PfS6R?=
+ =?us-ascii?Q?ex/yf9h1iRN6WwAduXMqUTCB6qwTAX8vYgGsXctqOJmIW1oMubD90fSoB1bt?=
+ =?us-ascii?Q?clC+Z788jr1GioQ7NN5yhIAg3IJAYda6z2W5LHzTeFsi2jxfc/X57mVTlnmJ?=
+ =?us-ascii?Q?Th82Tej5D21vDovqwPCxLfj1IVp94gWp6BL8p4WZTmXKDhQ/SfetUcPtP5PR?=
+ =?us-ascii?Q?zHCt+RzpCAmMFT092ujgR9ZAy3UDu22lES7NkC7M8/7LCWn9ie5u3xfoCF6a?=
+ =?us-ascii?Q?1ZtFgZXDOBgww4mRnVk3HK6e7zmcOjv9AwvO9dQje+Wtatb6RtQ9Pginn7By?=
+ =?us-ascii?Q?nQz6X/TYreHCb/ogq+oA/uFOsiKdvce4bGG4b7iCawe7hMEm7NnumqZXu9Jj?=
+ =?us-ascii?Q?rA3jn8osJ7sn2C3VGyOCgrEU0TIroShVb6CatA4WodYAnKWhHZzMlyedBTMU?=
+ =?us-ascii?Q?l8+iYeTGALcSZod1IyiJN8WVswgmWmvE/WFhCNs4YZQuTNkuywBheWJKmXhO?=
+ =?us-ascii?Q?JFdaFsw4wYjH0tG1o22MhDtOI9Dc8InwXScmz+eCzsH7BfCv+yraUbuZRb0X?=
+ =?us-ascii?Q?O1o05VF5tUPk2LxdZdE5/Hw0rZaPAC1WYpTEuPNlwZMJ+tL1/zdGvF1yJ3VK?=
+ =?us-ascii?Q?RyuaTXjWxtq6EPTCa0MJNefmu389Re4qEpPNj193gC9xgcYgnZVkFU/Wc6qF?=
+ =?us-ascii?Q?kbodYqyMzlVhZh1vzkHrj5g8TO5Zb69JiBETybkrA79ABuavxdfccj6UBhFD?=
+ =?us-ascii?Q?lNTVBWwaEkugasajWRLpTwDHEZfDHbz+grSv+H842EheIRxUXY2N0OpKj3Lt?=
+ =?us-ascii?Q?B70AGTRdkDjyXm/tT4iyBZGDjjHI4ifVyTQJ6p19VoYn8HSldz+JfNOo3Gy6?=
+ =?us-ascii?Q?ROtYUo3G2c7O+rOeocINlLOakQ1UfATK5Flk+GiXVFTe/C+OcEY7D9NWkfss?=
+ =?us-ascii?Q?Sx9h5084kBB4SiWPxzhWz2RANb0e/81z8kI1tOlGqrrBeqA3gApR7qpGw1gh?=
+ =?us-ascii?Q?PUkfj9qrt7bFu7kXILlz3ZpkxwJHNmOrozJ+ksggrLYqEiSiCcMgBiRyhhst?=
+ =?us-ascii?Q?xXTFY3ts8I/PLB/LiPZkqx39ijirphEFyyxicXwacPezrwegNRlpHFcNS1NN?=
+ =?us-ascii?Q?3PqDslFtv2iQwVS3QHC0RnQOSTbEMPku4ztmPKVGFe46gJaGBC1jS+2sG3rW?=
+ =?us-ascii?Q?Z1FbpBVQZEo0cq0HtuKcOH6wyQg1Ob4HRPvL1e7vuaq7F6yGxOja1VOZyaon?=
+ =?us-ascii?Q?coZRqItmpXC5kWRmpErjSCBUw/KWrgvmEx0gdlPZM9oDwka1/+InU9GU7hz8?=
+ =?us-ascii?Q?qsuKZKKyRmkPUu8yzQ2q8+oyIViBS8ioOS3mNM0OMgEu5hdWnOfm7KaAI8l4?=
+ =?us-ascii?Q?QccM7rKdDqtjbiMBU9tqvA5ICX2w+fYECYEx2ILlQfVpgE4q8kb1VA=3D=3D?=
 X-Forefront-Antispam-Report:
-	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(7416014)(1800799024)(376014)(13003099007);DIR:OUT;SFP:1101;
+	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700013)(7416014)(376014)(13003099007);DIR:OUT;SFP:1101;
 X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2025 16:14:39.6809
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2025 16:14:38.2657
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e7da977-25eb-4050-f621-08ddbb15e0d4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92349d94-8135-444c-f16f-08ddbb15dffc
 X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
 X-MS-Exchange-CrossTenant-AuthSource:
 	AMS0EPF000001AD.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA6PR02MB10740
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR02MB10464
 
-Nicera D3-323-AA is a PIR sensor for human detection. It has two GPIOs
-for detection and data communication.
+Nicera D3-323-AA is a PIR sensor for human detection. It has support for
+raw data measurements and detection notification. The communication
+protocol is custom made and therefore needs to be GPIO bit banged.
 
-Signed-off-by: Waqar Hameed <waqar.hameed@axis.com>
----
- .../iio/proximity/nicera,d3323aa.yaml         | 62 +++++++++++++++++++
- 1 file changed, 62 insertions(+)
+Previously, there has been an attempt to add a driver for this device
+[1]. However, that driver was written for the wrong sub-system. `hwmon`
+is clearly not a suitable framework for a proximity device.
+
+In this series, we add a driver for support for event notification for
+detections through IIO (the more appropriate sub-system!). The various
+settings have been mapped to existing `sysfs` ABIs in the IIO framework.
+
+The public datasheet [2] is quite sparse. A more detailed version can be
+obtained through the company.
+
+[1] https://lore.kernel.org/lkml/20241212042412.702044-2-Hermes.Zhang@axis.com/
+[2] https://www.endrich.com/Datenbl%C3%A4tter/Sensoren/D3-323-AA_e.pdf
+
+Changes in v3:
+
+[dt-bindings]
+* Re-add gpio include header and use a constant from that header.
+
+[iio]
+* Convert `irq_reset_count` from `atomic_t` into an `u8`.
+* Add a comment in `d3323aa_reset()` explaining
+  `regulator_is_enabled()`-check is for `probe()`.
+* Use `flseep()` in places where the delay is flexible.
+* Rephrase comment about enabling VDD and counting falling edges.
+* Declare and use a variable for `struct device*` in `probe()`.
+* Remove impossible error print for `devm_add_action_or_reset()`.
+* Add a comment for `devm_add_action_or_reset()` call in
+  `d3323aa_probe()` explaining when the regulator is enabled.
+* Add a comment clarifying the `regulator_is_enabled()` check in
+  `d3323aa_disable_regulator()`.
+* Change `-ERANGE` return values to `-EINVAL` for the set-functions in
+  `d3323aa_write_raw()`.
+
+Link to v2: https://lore.kernel.org/lkml/cover.1749938844.git.waqar.hameed@axis.com/
+
+Changes in v2:
+
+[dt-bindings]
+* Convert `vdd-gpio` to a `vdd-supply`.
+* Rename `clk-vout-gpio` to `vout-clk-gpios`.
+* Add description for `data-gpios` explaining the rename to a more
+  descriptive name.
+* Drop all references to driver.
+* Remove unused gpio include in examples.
+* Re-phrase commit message to only describe the hardware.
+
+[iio]
+* Add newline after variable definitions inside the for-loop in
+  `d3323aa_set_lp_filter_freq()`.
+* Remove error code in string in `dev_err_probe()`.
+* Remove driver name macro and use it inline instead.
+* Format filter gain arrays into one line.
+* Drop structure comment in `probe()`.
+* Format sentinel value in `of_device_id` with a space.
+* Rename `gpiod_clk_vout` to `gpiod_clkin_detectout`.
+* Request `vout-clk` GPIO to match rename in dt-bindings.
+* Use the regulator framework for supply voltage.
+* Use only one IRQ handler for both reset and detection.
+* Reword comment about Vout/CLK ramp-up behavior (it's because of VDD charging
+  up).
+* Add comment for why we have both `IRQF_TRIGGER_RISING` and
+  `IRQF_TRIGGER_FALLING`.
+* Rename `regmap` to `regbitmap` to not confuse with the `regmap`-framework.
+* Move `d3323aa_setup()` into the set-functions.
+* Use state variables in `d3323aa_data` instead of bitmap and move bitmap
+  handling to read/write settings functions.
+* Pad bitmap with compulsory end pattern in `d3323aa_write_settings()`.
+* Add `d3323aa_set_hp_filter_freq()` and allow userspace to set it.
+
+Link to v1: https://lore.kernel.org/lkml/cover.1746802541.git.waqar.hameed@axis.com/
+
+Waqar Hameed (3):
+  dt-bindings: vendor-prefixes: Add Nicera
+  dt-bindings: iio: proximity: Add Nicera D3-323-AA PIR sensor
+  iio: Add driver for Nicera D3-323-AA PIR sensor
+
+ .../iio/proximity/nicera,d3323aa.yaml         |  62 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ drivers/iio/proximity/Kconfig                 |   9 +
+ drivers/iio/proximity/Makefile                |   1 +
+ drivers/iio/proximity/d3323aa.c               | 814 ++++++++++++++++++
+ 5 files changed, 888 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/proximity/nicera,d3323aa.yaml
+ create mode 100644 drivers/iio/proximity/d3323aa.c
 
-diff --git a/Documentation/devicetree/bindings/iio/proximity/nicera,d3323aa.yaml b/Documentation/devicetree/bindings/iio/proximity/nicera,d3323aa.yaml
-new file mode 100644
-index 000000000000..65d9b44fcd5e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/proximity/nicera,d3323aa.yaml
-@@ -0,0 +1,62 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/proximity/nicera,d3323aa.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Nicera D3-323-AA PIR sensor
-+
-+maintainers:
-+  - Waqar Hameed <waqar.hameed@axis.com>
-+
-+description: |
-+  PIR sensor for human detection.
-+  Datasheet: https://www.endrich.com/Datenbl%C3%A4tter/Sensoren/D3-323-AA_e.pdf
-+
-+properties:
-+  compatible:
-+    const: nicera,d3323aa
-+
-+  vdd-supply:
-+    description:
-+      Supply voltage (1.8 to 5.5 V).
-+
-+  vout-clk-gpios:
-+    maxItems: 1
-+    description:
-+      GPIO for clock and detection.
-+      After reset, the device signals with two falling edges on this pin that it
-+      is ready for configuration (within 1.2 s).
-+      During configuration, it is used as clock for data reading and writing (on
-+      data-gpios).
-+      After all this, when device is in operational mode, it signals on this pin
-+      for any detections.
-+
-+  data-gpios:
-+    maxItems: 1
-+    description:
-+      GPIO for data reading and writing. This is denoted "DO (SI)" in datasheet.
-+      During configuration, this pin is used for writing and reading
-+      configuration data (together with vout-clk-gpios as clock).
-+      After this, during operational mode, the device will output serial data on
-+      this GPIO.
-+
-+required:
-+  - compatible
-+  - vdd-supply
-+  - vout-clk-gpios
-+  - data-gpios
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    proximity {
-+        compatible = "nicera,d3323aa";
-+        vdd-supply = <&regulator_3v3>;
-+        vout-clk-gpios = <&gpio 78 GPIO_ACTIVE_HIGH>;
-+        data-gpios = <&gpio 76 GPIO_ACTIVE_HIGH>;
-+    };
-+...
+
+base-commit: 66701750d5565c574af42bef0b789ce0203e3071
 -- 
 2.39.5
 
