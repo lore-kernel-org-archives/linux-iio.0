@@ -1,214 +1,111 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 129642DECC6;
-	Fri,  4 Jul 2025 07:54:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD4073271B7;
+	Fri,  4 Jul 2025 07:59:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751615680; cv=none; b=HeKpA2t8mvhgzAHApBWJrQMcA1mpypCPTzGyL4ttnMEFgI0uCv4MpBao2q0H2SD8n8qgMuqp4tJLQxrrP3QWi9DwBZZHHmXVVOQWbSWCF126ukZwcuKloWqPJfYxjpbxVp9F6bZ/5eyvWHOBhluAHIlNnBDro2i0k/DxymudCo4=
+	t=1751615997; cv=none; b=HlGE3PFGIISnCQ6PkE2kKlmJMGXPMuejjbylPPgHXIrp+b+p55myQMRrKUlNPY8gjsd9GDROFWf/836VTlRrdBW32uYAKeyKpnvzeMeZvnLSzXiaF9/gN8SQJjHmGAc95P+FnYnzfZFO2hmUIUW+2TX3YJNPNx6tkHKvdEjp4J8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751615680; c=relaxed/simple;
-	bh=KXGcRkCRmz1Yw49o+1krTntMeAh4fibBDbmqTKlKnJc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=X2UiKrjX7pWYb1kWglgeWGwFQhZBjuWFP3Zosf7mhM+dO4iVGI3pwhSnJPEg4pe/81l5EsK/SAadHHqpeNQ7xn5P2oaaoU8OnbrI8FDK3knlo7cnRCEFGyUP8+ExAWWcI/frvfIt1cNzPgB+zRodUiq7vZX0TfNlqXyZnZ2u4UQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mOhBYska; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1751615997; c=relaxed/simple;
+	bh=A+M8QlgWxHjdYMXQHd0o3QdJ1Ddlbq92Z7OrRAURhMo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MfFXd/V49x4dE8yCAqHIUwTIwYDYN2klMa0pCNUrZsyBF4lkdyP8FHa0zYkN4Sg54xw84aoa6WxvpkV5gLz/iofR5vqBH4r8o0F4KWwvQg8V++7hT4CS0ltzft90aBRDCuQXQ64G+i3mCC4aZxQzZ2zMA86dMYY0JcE+Hp+6Oxg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j5nu57eZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mOhBYska"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1751615678; x=1783151678;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KXGcRkCRmz1Yw49o+1krTntMeAh4fibBDbmqTKlKnJc=;
-  b=mOhBYskac4u/u7hsom1f0v5Q7AsmI4pENvjpevX4wsJKvE6jgDyACe1l
-   i9H9ShyDahabrar7OnWns3a+TAA8GtAD4imR1m9xYID8iS1tiqLz+9FWG
-   2IurM4fspzh7YoChthDhbvzw4pTltFvq0ko6PpcUEWt1fe5Qfnk5jzah9
-   KVZTRfnkIz7cNez+sPOgl25R5fb3CzgS/hTm5YibE9AXQQW9yDXgTjBed
-   3vAnzQhUA9aNmV+/gjHIxhC76XZxy/JXEtMd5XVT/2ZV/nwbbQ3qFrJEl
-   DZvF74X/OECCmIGnaa8OpfUotTTY7xNiB0s2Iyt98VWzGyrNRGTaj0V56
-   A==;
-X-CSE-ConnectionGUID: VAPZc6yZRHaNzqJG5yHHLg==
-X-CSE-MsgGUID: 6QcJjU9CQDOCKn6tITgE9Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11483"; a="76494767"
-X-IronPort-AV: E=Sophos;i="6.16,286,1744095600"; 
-   d="scan'208";a="76494767"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2025 00:54:33 -0700
-X-CSE-ConnectionGUID: 0Yoxver4SRSwG28kmp1JFg==
-X-CSE-MsgGUID: HXkGrzJVS7uANh8xY2lUDA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,286,1744095600"; 
-   d="scan'208";a="158924290"
-Received: from jkrzyszt-mobl2.ger.corp.intel.com (HELO svinhufvud.fi.intel.com) ([10.245.244.244])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2025 00:54:28 -0700
-Received: from svinhufvud.lan (localhost [IPv6:::1])
-	by svinhufvud.fi.intel.com (Postfix) with ESMTP id 02D0B4445A;
-	Fri,  4 Jul 2025 10:54:26 +0300 (EEST)
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6 krs, Bertel Jungin Aukio 5, 02600 Espoo
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
-To: Linus Walleij <linus.walleij@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Gerald Loacker <gerald.loacker@wolfvision.net>,
-	=?UTF-8?q?Barnab=C3=A1s=20Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Waqar Hameed <waqar.hameed@axis.com>,
-	Hans de Goede <hansg@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Jakob Hauser <jahau@rocketmail.com>,
-	David Laight <david.laight@aculab.com>,
-	Al Viro <viro@zeniv.linux.org.uk>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 35/80] iio: magnetometer: Remove redundant pm_runtime_mark_last_busy() calls
-Date: Fri,  4 Jul 2025 10:54:25 +0300
-Message-Id: <20250704075425.3219648-1-sakari.ailus@linux.intel.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250704075225.3212486-1-sakari.ailus@linux.intel.com>
-References: <20250704075225.3212486-1-sakari.ailus@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j5nu57eZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44D99C4CEE3;
+	Fri,  4 Jul 2025 07:59:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1751615997;
+	bh=A+M8QlgWxHjdYMXQHd0o3QdJ1Ddlbq92Z7OrRAURhMo=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=j5nu57eZESI1vbMiNM5SzhZVj0nerjBjTxIsROToMYOLWqYT9zcJpzIDrG7ZtAf4I
+	 8oK/1n34G9oK+MQ4FD9X2BvSaszrGZ0lMQZOGE4/D+nCARk/dlgUJEuAfVjCbc0M4s
+	 epIe+ZleOCEesfj9GCHchbtCuYhouRcD/Uduh4HkAJTBVIgSq5iWq1nzcOn1ideoap
+	 tf4/LwP62GfPkX/QO/j40xoc52WGPh6W39zgCDKMH3kDQkFuSQcX43HDVsEkCAJ8bz
+	 LXUaP6R/E3ImmzHGzqOT+xM/YbhRbhSxsb3u6AyZt8+RdQjRkTG6nlLkFXmhZtDsu7
+	 LUXxnFBeFOe+w==
+Message-ID: <367e2429-bfd5-4c09-9d7a-194a0539091a@kernel.org>
+Date: Fri, 4 Jul 2025 09:59:53 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dt-bindings: trivial-devices: Add Garmin lidar-lite-v3
+To: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org
+Cc: ~lkcamp/patches@lists.sr.ht, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20250701223341.36835-1-rodrigo.gobbi.7@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20250701223341.36835-1-rodrigo.gobbi.7@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-pm_runtime_put_autosuspend(), pm_runtime_put_sync_autosuspend(),
-pm_runtime_autosuspend() and pm_request_autosuspend() now include a call
-to pm_runtime_mark_last_busy(). Remove the now-reduntant explicit call to
-pm_runtime_mark_last_busy().
+On 02/07/2025 00:30, Rodrigo Gobbi wrote:
+> The compatible grmn,lidar-lite-v3 is managed by the same
+> driver of pulsedlight,lidar-lite-v2, which is a trivial device.
 
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
----
-The cover letter of the set can be found here
-<URL:https://lore.kernel.org/linux-pm/20250704075225.3212486-1-sakari.ailus@linux.intel.com>.
+Nothing here explain the bug you are fixing. You need to be specific,
+what is missing, what are you doing. Apparently you are documenting
+existing ABI, but nothing in commit msg told me that.
 
-In brief, this patch depends on PM runtime patches adding marking the last
-busy timestamp in autosuspend related functions. The patches are here, on
-rc2:
+As David pointed out, this is not a trivial device.
 
-        git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
-                pm-runtime-6.17-rc1
+> 
+> Signed-off-by: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
+> Fixes: b257c1a45e99 ("iio: pulsedlight-lidar-lite-v2: add lidar-lite-v3 property")
 
- drivers/iio/magnetometer/ak8974.c        | 2 --
- drivers/iio/magnetometer/ak8975.c        | 1 -
- drivers/iio/magnetometer/als31300.c      | 2 --
- drivers/iio/magnetometer/bmc150_magn.c   | 1 -
- drivers/iio/magnetometer/tmag5273.c      | 2 --
- drivers/iio/magnetometer/yamaha-yas530.c | 2 --
- 6 files changed, 10 deletions(-)
+SoB goes the last.
 
-diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
-index 947fe8a475f2..68ece700c7ce 100644
---- a/drivers/iio/magnetometer/ak8974.c
-+++ b/drivers/iio/magnetometer/ak8974.c
-@@ -583,7 +583,6 @@ static int ak8974_measure_channel(struct ak8974 *ak8974, unsigned long address,
- 	*val = (s16)le16_to_cpu(hw_values[address]);
- out_unlock:
- 	mutex_unlock(&ak8974->lock);
--	pm_runtime_mark_last_busy(&ak8974->i2c->dev);
- 	pm_runtime_put_autosuspend(&ak8974->i2c->dev);
- 
- 	return ret;
-@@ -678,7 +677,6 @@ static void ak8974_fill_buffer(struct iio_dev *indio_dev)
- 
-  out_unlock:
- 	mutex_unlock(&ak8974->lock);
--	pm_runtime_mark_last_busy(&ak8974->i2c->dev);
- 	pm_runtime_put_autosuspend(&ak8974->i2c->dev);
- }
- 
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index a1e92b2abffd..3fd0171e5d69 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -775,7 +775,6 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 
- 	mutex_unlock(&data->lock);
- 
--	pm_runtime_mark_last_busy(&data->client->dev);
- 	pm_runtime_put_autosuspend(&data->client->dev);
- 
- 	/* Swap bytes and convert to valid range. */
-diff --git a/drivers/iio/magnetometer/als31300.c b/drivers/iio/magnetometer/als31300.c
-index f72af829715f..03d060995ba6 100644
---- a/drivers/iio/magnetometer/als31300.c
-+++ b/drivers/iio/magnetometer/als31300.c
-@@ -140,7 +140,6 @@ static int als31300_get_measure(struct als31300_data *data,
- 	*z = ALS31300_DATA_Z_GET(buf);
- 
- out:
--	pm_runtime_mark_last_busy(data->dev);
- 	pm_runtime_put_autosuspend(data->dev);
- 
- 	return ret;
-@@ -401,7 +400,6 @@ static int als31300_probe(struct i2c_client *i2c)
- 	pm_runtime_set_autosuspend_delay(dev, 200);
- 	pm_runtime_use_autosuspend(dev);
- 
--	pm_runtime_mark_last_busy(dev);
- 	pm_runtime_put_autosuspend(dev);
- 
- 	ret = devm_iio_device_register(dev, indio_dev);
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index 761daead5ada..53d860e640a9 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -263,7 +263,6 @@ static int bmc150_magn_set_power_state(struct bmc150_magn_data *data, bool on)
- 	if (on) {
- 		ret = pm_runtime_resume_and_get(data->dev);
- 	} else {
--		pm_runtime_mark_last_busy(data->dev);
- 		ret = pm_runtime_put_autosuspend(data->dev);
- 	}
- 
-diff --git a/drivers/iio/magnetometer/tmag5273.c b/drivers/iio/magnetometer/tmag5273.c
-index 2ca5c26f0091..f9ef501249e3 100644
---- a/drivers/iio/magnetometer/tmag5273.c
-+++ b/drivers/iio/magnetometer/tmag5273.c
-@@ -295,7 +295,6 @@ static int tmag5273_read_raw(struct iio_dev *indio_dev,
- 
- 		ret = tmag5273_get_measure(data, &t, &x, &y, &z, &angle, &magnitude);
- 
--		pm_runtime_mark_last_busy(data->dev);
- 		pm_runtime_put_autosuspend(data->dev);
- 
- 		if (ret)
-@@ -668,7 +667,6 @@ static int tmag5273_probe(struct i2c_client *i2c)
- 	indio_dev->channels = tmag5273_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(tmag5273_channels);
- 
--	pm_runtime_mark_last_busy(dev);
- 	pm_runtime_put_autosuspend(dev);
- 
- 	ret = devm_iio_device_register(dev, indio_dev);
-diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
-index 340607111d9a..d49e37edcbed 100644
---- a/drivers/iio/magnetometer/yamaha-yas530.c
-+++ b/drivers/iio/magnetometer/yamaha-yas530.c
-@@ -623,7 +623,6 @@ static int yas5xx_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_RAW:
- 		pm_runtime_get_sync(yas5xx->dev);
- 		ret = ci->get_measure(yas5xx, &t, &x, &y, &z);
--		pm_runtime_mark_last_busy(yas5xx->dev);
- 		pm_runtime_put_autosuspend(yas5xx->dev);
- 		if (ret)
- 			return ret;
-@@ -664,7 +663,6 @@ static void yas5xx_fill_buffer(struct iio_dev *indio_dev)
- 
- 	pm_runtime_get_sync(yas5xx->dev);
- 	ret = ci->get_measure(yas5xx, &t, &x, &y, &z);
--	pm_runtime_mark_last_busy(yas5xx->dev);
- 	pm_runtime_put_autosuspend(yas5xx->dev);
- 	if (ret) {
- 		dev_err(yas5xx->dev, "error refilling buffer\n");
--- 
-2.39.5
 
+Best regards,
+Krzysztof
