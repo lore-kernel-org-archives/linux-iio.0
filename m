@@ -1,96 +1,101 @@
-Received: from mail-106113.protonmail.ch (mail-106113.protonmail.ch [79.135.106.113])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAA802550D2
-	for <linux-iio@vger.kernel.org>; Tue,  8 Jul 2025 12:09:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.113
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 281FC2DCBF7;
+	Tue,  8 Jul 2025 13:14:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751976577; cv=none; b=WVmNiweAz7CNWBU3dFKpD5fxGEbe+QTIzCrkrMdGHhf9s2EdV8IepOJF9HjyYWk5gR8wEjbTK4E7/XKJNNj9TxtQc84uIQ22pB5AWLuALsCkMd5yeyHKduSliInfVjF3D1W7++oE9G1xmcS1BRfs+QdQsfvY61ZUCzi0VYbuOcw=
+	t=1751980499; cv=none; b=W9KMH3z2i9WtETIns6w3Lvc17wfCHVCvLB7DX3ayoupgURFSfu246J3Uw8f43sAUVOQ4JQgGLzLAuRnHhQEa9CcwrOmX0IozolmG1VrmkssPTHxOHJiuB1jtERLBsP/f4HLp9V1fxApc3B0PFwU6EggXZ3pFg0Pr/dDewXF2/ss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751976577; c=relaxed/simple;
-	bh=YThqgd8Hr0iqLD8U3Uf8SX7+JGexDAHHky/5vfYBvrw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=sGYwu08CBCsU7iau8Z6eFayzB4VzJ+XuiE1rW3x3f9nPrZKGC3zL2ElU47esZDw14njTPXnwlnfODp4TAkU2srSFadLZvtbCIxp4bYhVNL2+LnqzgZYQO40/EUzLSmd0rK+mYCw9lD0kv6zqQoazMQA3fa5FvF1L6RQbKknuhSM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=pBMNc9/v; arc=none smtp.client-ip=79.135.106.113
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1751980499; c=relaxed/simple;
+	bh=cU5ByOgwbuwKNQiNsdNv4TRrDApyVT56CFWQGxdiUP0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ToGI+qP9FmNyqcS/JIuX11GqPpqXFHTdINudc4qbr+69kRULTAWNFDmHE/oKf5K2yp4TNDBY6WcXUl0jgE2ddlM8z07UpshDwz0JTB8mJp+haQtJ96XiR1jDK9/UrnSbeA4ViT9IOlyHXaiu/FtkocGCnb8JWGaJow65bCxug3g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lRAXHFpu; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="pBMNc9/v"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1751976564; x=1752235764;
-	bh=rm8J5seC925zvsKJXNFZQeFgzMxHj8uQznDHJ7BLLrk=;
-	h=From:Date:Subject:Message-Id:To:Cc:From:To:Cc:Date:Subject:
-	 Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=pBMNc9/vKEzixlbA8SA2sYNlwrgCt1zuAZvhACSn3v8oEGgBiAG7LojdlYvMYAfu/
-	 Ywko6ShcV9KO4MmG3TSbaqm3QFp7ZAtRiodYG/inDYxI6SoDDDsK48QCH6ZvCKvD7f
-	 tGFp+ymELZHm1lGGmpaB7wyiRyjaQMx3sM+yTYZKWoc2FfNPm+nWS9y0HLNfG016s+
-	 gKjGadGYXPd8FQWkpGdK0o+JW4Ybovs/T5dFn8w3+pro/xIzAKJoyxk1b8sArWEAQ7
-	 6Ix/Z9bi9M2t01eFVsWZ42OG/LcSR/3SYRG1dPR+6nNmuEvZpRM0dCH8I39om3RSsK
-	 XfcpEFOdIMByA==
-X-Pm-Submission-Id: 4bc0Jt5sNqzB57
-From: Sean Nyekjaer <sean@geanix.com>
-Date: Tue, 08 Jul 2025 14:09:17 +0200
-Subject: [PATCH] iio: imu: inv_icm42600: fix temperature reading if
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lRAXHFpu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1751980498; x=1783516498;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cU5ByOgwbuwKNQiNsdNv4TRrDApyVT56CFWQGxdiUP0=;
+  b=lRAXHFpuvL2VGnvcE6Bo66yUerp+RmvYvQLlYbdUratVqxlYxwxK9Dfd
+   rGSHJM9mvymRbLL6gF4Hmdc01krGsXGq4Z33DMhrx3W51sjG6yFP00nfE
+   KAKuZyIgyWdGnlWcWo8bSzxKByQX3mR1EUBXHYdxs7LpRluzkKXb5pGgZ
+   IvOaAEAvrbvhrN7CvZZavRvdN6PJpPvk2/3J7+VexQrTxBoYREe6Pm7US
+   G/XBk+PTi8EkS2LauWtPGLc3queIu/6DJiRZJB0H5BZJDlCsmi3TpxHBn
+   cL2KGV2oTLNelnFWIFQQlqzWJ0pKBvrOytIP0Z1VT3rwl959uD/YLxj9A
+   Q==;
+X-CSE-ConnectionGUID: 9IBMOM4LTZaWjjOjWvkjhg==
+X-CSE-MsgGUID: bZbHR59NRO+59Mq8AckSog==
+X-IronPort-AV: E=McAfee;i="6800,10657,11487"; a="53334773"
+X-IronPort-AV: E=Sophos;i="6.16,297,1744095600"; 
+   d="scan'208";a="53334773"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2025 06:14:57 -0700
+X-CSE-ConnectionGUID: 7UxPEPlTTWahGYoQ/ql4JQ==
+X-CSE-MsgGUID: 95M+uA/cSfut1PFofi4xew==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,297,1744095600"; 
+   d="scan'208";a="186514106"
+Received: from smile.fi.intel.com ([10.237.72.52])
+  by orviesa002.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2025 06:14:55 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1uZ89s-0000000DZv7-0a3g;
+	Tue, 08 Jul 2025 16:14:52 +0300
+Date: Tue, 8 Jul 2025 16:14:51 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Sean Nyekjaer <sean@geanix.com>
+Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: imu: inv_icm42600: fix temperature reading if
  accel/gyro is off
+Message-ID: <aG0Zyxno62z1eMXx@smile.fi.intel.com>
+References: <20250708-icm42temp-v1-1-81af60aab82a@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250708-icm42temp-v1-1-81af60aab82a@geanix.com>
-X-B4-Tracking: v=1; b=H4sIAGwKbWgC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDI1MDcwML3czkXBOjktTcAl0zI0ujxKSUlCSzVDMloPqCotS0zAqwWdGxtbU
- ArqD1MVsAAAA=
-X-Change-ID: 20250708-icm42temp-6292abddb6e6
-To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Sean Nyekjaer <sean@geanix.com>
-X-Mailer: b4 0.14.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250708-icm42temp-v1-1-81af60aab82a@geanix.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Avoid return invalid argument if one tries to read the temperature,.
-if both the accelerometer and gyro are off. Power the accelerometer on
-before reading the temperature.
-The original state will be restored by runtine_suspend() or the next
-reading of the accelerometer.
+On Tue, Jul 08, 2025 at 02:09:17PM +0200, Sean Nyekjaer wrote:
+> Avoid return invalid argument if one tries to read the temperature,.
 
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
----
- drivers/iio/imu/inv_icm42600/inv_icm42600_core.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+returning
 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-index a4d42e7e21807f7954def431e9cf03dffaa5bd5e..f97376bc8bb3dd225236e3f5036fd58af4af35ac 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-@@ -399,9 +399,14 @@ int inv_icm42600_set_gyro_conf(struct inv_icm42600_state *st,
- int inv_icm42600_set_temp_conf(struct inv_icm42600_state *st, bool enable,
- 			       unsigned int *sleep_ms)
- {
--	return inv_icm42600_set_pwr_mgmt0(st, st->conf.gyro.mode,
--					  st->conf.accel.mode, enable,
--					  sleep_ms);
-+	enum inv_icm42600_sensor_mode accel = st->conf.accel.mode;
-+
-+	if (st->conf.gyro.mode == INV_ICM42600_SENSOR_MODE_OFF &&
-+	    st->conf.accel.mode == INV_ICM42600_SENSOR_MODE_OFF)
-+		accel = INV_ICM42600_SENSOR_MODE_LOW_POWER;
-+
-+	return inv_icm42600_set_pwr_mgmt0(st, st->conf.gyro.mode, accel,
-+					  enable, sleep_ms);
- }
- 
- int inv_icm42600_enable_wom(struct inv_icm42600_state *st)
+(Stray period at the end)
 
----
-base-commit: 3e28fa06444e7031aba0b3552cce332b776fe267
-change-id: 20250708-icm42temp-6292abddb6e6
+> if both the accelerometer and gyro are off. Power the accelerometer on
+> before reading the temperature.
+> The original state will be restored by runtine_suspend() or the next
+> reading of the accelerometer.
 
-Best regards,
+Why don't you use the room on the previous lines, the formatting looks ugly.
+
+...
+
+Does it need a Fixes tag?
+
+...
+
+Code wise LGTM, though.
+
 -- 
-Sean Nyekjaer <sean@geanix.com>
+With Best Regards,
+Andy Shevchenko
+
 
