@@ -1,34 +1,35 @@
-Received: from mx3.wp.pl (mx3.wp.pl [212.77.101.10])
+Received: from mx4.wp.pl (mx4.wp.pl [212.77.101.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C36DF2222C4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FFD82264CF
 	for <linux-iio@vger.kernel.org>; Tue,  8 Jul 2025 22:04:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.77.101.10
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.77.101.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752012257; cv=none; b=uw/TvdSWGseqcskV3lMXlQXa/vGbunKrl9l7VQ1Yt2ZwzUcVVD8sB2kIP2W5GqDQnhU4jKsM09yD5te//v6JKB750iwARqM0D5SXwP4O1C2CbJ4GXmOc8THq9lW5kwh7It+SKoWEo0douTCETJtdsX8mR9z4z595u11+c6wHFwM=
+	t=1752012258; cv=none; b=KqaSlzyd8hZExupnt8TreqoxHOq6A6dyaJQGFaiUo7xor9SImxmFpzO1KJXETR10zbeGlgON5/vg7IIuoI9hfmzFE9jlBZo0P8pSONgloZX9R/cc98g0etooaZke+FrEU6No95mufGxgGXYaxb2AUfAh/hk/s69kA3+V+/CISYo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752012257; c=relaxed/simple;
-	bh=T1pYAcpD4QD5aNKYoNzNjzWClNCiJm5FqrilVScTEPo=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type; b=UwwoQTK4kXBtWWW35QB8Oq66DbAaFlHmuTgM/x0crpRZrrWDbON9vGYsIkwQzQg6Rfs8T+LN9WNuC59C8J5M0b/djCm+8heLulxK9waCIBJgndZ9ZZ0lwfDHOYRjHt6Lh+kqueQtb//Woig1/Y8yeMSIldZKQgodKArRXpvrO4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wp.pl; spf=pass smtp.mailfrom=wp.pl; dkim=pass (2048-bit key) header.d=wp.pl header.i=@wp.pl header.b=BVOu1HOE; arc=none smtp.client-ip=212.77.101.10
+	s=arc-20240116; t=1752012258; c=relaxed/simple;
+	bh=Nvvb3b/gGfyOjhKPQN7T7eI9idEiaO/M3PTjidpAikE=;
+	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=t0e2v40lv4hzJS/poWFDgZiDtDPeXxxdbV3zgsTSMHDvnH100F4k4P6KjqOalQRKrNmFMo5idBsgBoOa8a1iaE1U1BXB/eT7SwC34Z6B2a1kGVLgOYYZToPt1mh5KfePXdniytN6dHk/FNIB4QOvBUTZ/0RdE0eEWV8DV+DCDlk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wp.pl; spf=pass smtp.mailfrom=wp.pl; dkim=pass (2048-bit key) header.d=wp.pl header.i=@wp.pl header.b=IGiWjfSK; arc=none smtp.client-ip=212.77.101.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wp.pl
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wp.pl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=wp.pl header.i=@wp.pl header.b="BVOu1HOE"
-Received: (wp-smtpd smtp.wp.pl 7799 invoked from network); 9 Jul 2025 00:04:07 +0200
+	dkim=pass (2048-bit key) header.d=wp.pl header.i=@wp.pl header.b="IGiWjfSK"
+Received: (wp-smtpd smtp.wp.pl 9932 invoked from network); 9 Jul 2025 00:04:13 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=20241105;
-          t=1752012247; bh=/Ziyoc6OWfBD4Ber22ISCAG5cMVClEJJdMXo55uffz4=;
+          t=1752012253; bh=p0DP/yEP8mz0tV12G5LR9PQ4AN9dj0wNDnAmLxZaMVk=;
           h=From:To:Subject;
-          b=BVOu1HOEHwN9oqxm64pZbA/fwotlzky4SavZdUIVoyfbQxxctjjt/jr0GtMv+SVF/
-           boVnLuBQZrSMerk9rWxDUGpSKAjdmOq7qQzaMkJuxciNge9NPquP/EHVjXmouKxYWi
-           UrHfy4PQKUh5ddrzWLWu2wPcruMxhOIegmH4YZDSsaDx+q4NMNGn17priedPlQ0MU1
-           DisTBZg5JkjLWrFWzCEc1SCqz5HjZGZrPcP21qNJFsbNeGCdxGOJCSyqaKlOsTIiMS
-           4gNdF6UgctLlGlAoTKCdFOojPGjp9OcgyThg2WTctA7DC1w7OLldbKQp/fVZAK6ldH
-           uZo1aTmAiuofA==
+          b=IGiWjfSKBf4/nudFRpbvz4M2qi5dOEUcoDZVGGIr3PBsISx2DYgsF1nItLnHYNlFF
+           +i7jhIFAUie0xU7mW6cF7V+xj11rU4wt2rwi5TSTBXyT3UhR6/G2WsaBMnmLWQCdnw
+           bBdlFqj220eBcdvpb56l+gNdLb7uP30px4YC0EWNt95hyrnOP77KJm4sM03o5TYMQ4
+           MEV8DRCQw9HhSJkKDoymm5uM1WLJl2ezgZl8VMXqlHmLs/bWPutT2rrPMdVBKSel4b
+           VEMn4mQRJkTfb+WOe9mQFYOfwo79Z3uxdydbWWdwrRkMVyjayd53rVTWV4x3xuy/4W
+           YyL/Isf8NER+w==
 Received: from 83.24.138.239.ipv4.supernova.orange.pl (HELO laptop-olek.lan) (olek2@wp.pl@[83.24.138.239])
           (envelope-sender <olek2@wp.pl>)
           by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <rafael@kernel.org>; 9 Jul 2025 00:04:07 +0200
+          for <rafael@kernel.org>; 9 Jul 2025 00:04:13 +0200
 From: Aleksander Jan Bajkowski <olek2@wp.pl>
 To: rafael@kernel.org,
 	daniel.lezcano@linaro.org,
@@ -52,43 +53,86 @@ To: rafael@kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org
-Subject: [PATCH v3 0/3] Add thermal sensors support for MT7981
-Date: Wed,  9 Jul 2025 00:04:02 +0200
-Message-Id: <20250708220405.1072393-1-olek2@wp.pl>
+Subject: [PATCH v3 3/3] arm64: dts: mediatek: add thermal sensor support on mt7981
+Date: Wed,  9 Jul 2025 00:04:05 +0200
+Message-Id: <20250708220405.1072393-4-olek2@wp.pl>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20250708220405.1072393-1-olek2@wp.pl>
+References: <20250708220405.1072393-1-olek2@wp.pl>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-WP-MailID: c47a9be9f1745f53a3fc4eba447605ae
+X-WP-MailID: 995d0e042c99d6c3b46f7c20e293c2da
 X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 000000A [ocM0]                               
+X-WP-SPAM: NO 0000000 [cbMx]                               
 
-This patch adds support for the temperature sensor in the MT7981 SoC.
-This sensor is exactly the same as the one in the MT7986.
+The temperature sensor in the MT7981 is same as in the MT7986.
 
-CHanges in v3:
- - added fallback in bindings
+Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+---
+ arch/arm64/boot/dts/mediatek/mt7981b.dtsi | 31 ++++++++++++++++++++++-
+ 1 file changed, 30 insertions(+), 1 deletion(-)
 
-Changes in v2:
- - added fallback to an existing compatible string
- - removed second patch as obsolete
-
-Aleksander Jan Bajkowski (3):
-  dt-bindings: iio: adc: Add support for MT7981
-  dt-bindings: thermal: mediatek: add falback compatible string for
-    MT7981 and MT8516
-  arm64: dts: mediatek: add thermal sensor support on mt7981
-
- .../iio/adc/mediatek,mt2701-auxadc.yaml       |  4 +++
- .../bindings/thermal/mediatek,thermal.yaml    | 27 ++++++++++------
- arch/arm64/boot/dts/mediatek/mt7981b.dtsi     | 31 ++++++++++++++++++-
- 3 files changed, 51 insertions(+), 11 deletions(-)
-
+diff --git a/arch/arm64/boot/dts/mediatek/mt7981b.dtsi b/arch/arm64/boot/dts/mediatek/mt7981b.dtsi
+index 5cbea9cd411f..277c11247c13 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7981b.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt7981b.dtsi
+@@ -76,7 +76,7 @@ watchdog: watchdog@1001c000 {
+ 			#reset-cells = <1>;
+ 		};
+ 
+-		clock-controller@1001e000 {
++		apmixedsys: clock-controller@1001e000 {
+ 			compatible = "mediatek,mt7981-apmixedsys";
+ 			reg = <0 0x1001e000 0 0x1000>;
+ 			#clock-cells = <1>;
+@@ -184,6 +184,31 @@ spi@1100b000 {
+ 			status = "disabled";
+ 		};
+ 
++		thermal@1100c800 {
++			compatible = "mediatek,mt7981-thermal",
++				     "mediatek,mt7986-thermal";
++			reg = <0 0x1100c800 0 0x800>;
++			interrupts = <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&infracfg CLK_INFRA_THERM_CK>,
++				 <&infracfg CLK_INFRA_ADC_26M_CK>;
++			clock-names = "therm", "auxadc";
++			nvmem-cells = <&thermal_calibration>;
++			nvmem-cell-names = "calibration-data";
++			#thermal-sensor-cells = <1>;
++			mediatek,auxadc = <&auxadc>;
++			mediatek,apmixedsys = <&apmixedsys>;
++		};
++
++		auxadc: adc@1100d000 {
++			compatible = "mediatek,mt7981-auxadc",
++				     "mediatek,mt7986-auxadc";
++			reg = <0 0x1100d000 0 0x1000>;
++			clocks = <&infracfg CLK_INFRA_ADC_26M_CK>;
++			clock-names = "main";
++			#io-channel-cells = <1>;
++			status = "disabled";
++		};
++
+ 		pio: pinctrl@11d00000 {
+ 			compatible = "mediatek,mt7981-pinctrl";
+ 			reg = <0 0x11d00000 0 0x1000>,
+@@ -211,6 +236,10 @@ efuse@11f20000 {
+ 			reg = <0 0x11f20000 0 0x1000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
++
++			thermal_calibration: thermal-calib@274 {
++				reg = <0x274 0xc>;
++			};
+ 		};
+ 
+ 		clock-controller@15000000 {
 -- 
 2.39.5
 
