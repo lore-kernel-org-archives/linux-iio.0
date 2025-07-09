@@ -1,98 +1,85 @@
-Received: from mail-0301.mail-europe.com (mail-0301.mail-europe.com [188.165.51.139])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D1C12DA75A;
-	Wed,  9 Jul 2025 12:35:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.165.51.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15440944F
+	for <linux-iio@vger.kernel.org>; Wed,  9 Jul 2025 13:32:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752064541; cv=none; b=p1nje7lkNi0tRs0QLp50mDYwEvW4VsMXqvnlEXpwoOt2r8fCB7HWAU6P045nC/1CuTxWhZ/ys9tq7WLQUeHQ2Kybx0Q4DsCdSqg5TqrkCnQGJFCX0cvD3UnjNuEeuan9GaVpmbZqFwO9Ug81MFUOnx9QeLtUuJehX9DG5zPRUG4=
+	t=1752067938; cv=none; b=ADODkbfKhfG9vILZ5f0PP6VMrDF5fHxdaQEZ9UrU4Z4Ps2BcnglkcZPUoJBkdDOUOPtP3ZiQ74SF5zhIvt8ywiYiiT73gGyUv9OPC6NOu8OGauGfoCpxad4tZC2wsvQArNmqN6fV39X/O1MLgvIQ6ccFv4dyHzP0pv0QjPcsvFg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752064541; c=relaxed/simple;
-	bh=90nZHr68OpVkdlPt2h1quO+Nu1erql/5QFWfMFY2vgE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=N1NMMpj7q54c40NTuSJvIqgQR+hgRLL2q76PgCwIRf8Le3Lk7HrfmqWya9UInmWmPwmryDB8a2PFyyysEWh5ueNzd68x6qF39zzj9wHi8ez5EsNbyepcNHGlPYYO4qLI6inScugStm7JFxbl4TyCfzkYCDmGNx7sxrNFGh7RTY0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=BjRfsRYh; arc=none smtp.client-ip=188.165.51.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1752067938; c=relaxed/simple;
+	bh=EdxvPjbZ3pfqvRK+OHlDIuiEL5jgjtSqmV6K15dJJ8k=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Nsu3bK0PR6P1Kdbh4y1AJ0/Z8v/OBlgd6cNa6PFAioB0MbUJe8mkHFgqQLt20Xx3zYLcfwlhguq/bDfcPqV7rytd5jxi4pXV9+TSKIM3oLseYWErGIht2/puF12URpP8QsHqTPp53GcWBSZenAOUR7XTweS9YPB40V3ykltdRaA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EyMI7rJR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="BjRfsRYh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1752064524; x=1752323724;
-	bh=qrCWuverZXRvjlPMM/+qLCn8I0Wqrro+j6nIJoVg+Yk=;
-	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=BjRfsRYhQ1g1AYHz066B3VE6PNEb7w/Jch8sfftGlPR3gLddQzJ85tAvwn88C5V7u
-	 E3OStfZ+YCSfnXiydTS4W4aUiOpJ4TxSPvNGrNbk1dnQ20dvF81oNfV+iYP1WmyO7J
-	 hXVfv3Vvy59ACip3nyk8Wt4XhHZae/g8BHsVCC2lY7irnnBEMrBr0Hg/i3JOpfnjn4
-	 0fxxpn0VcPrgPp7U+q+2FuLQ8i8JA91wB9SR6/FdQ+DZct8EaEpVHCPajKeCPzvUon
-	 gaegpY/h7opPZESRF82vdQ1G2qEzdlV6wzwgehbRRrBER0+2wvvE5ho2Das2XraXky
-	 s6hp5hrnJJamg==
-X-Pm-Submission-Id: 4bccrX07mCz1DDrY
-From: Sean Nyekjaer <sean@geanix.com>
-Date: Wed, 09 Jul 2025 14:35:12 +0200
-Subject: [PATCH 4/6] iio: imu: inv_icm42600: Simplify pm_runtime setup
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EyMI7rJR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7755C4CEF4;
+	Wed,  9 Jul 2025 13:32:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1752067936;
+	bh=EdxvPjbZ3pfqvRK+OHlDIuiEL5jgjtSqmV6K15dJJ8k=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=EyMI7rJR0aod6ztV+IjXxBVyh6UegOik0yL6pXG0RQNftfwECMPhaDNL+HtpwFAw/
+	 8ooaubPjn0sCz0PEjEoWiz7pIOP0PYULZlKog9HWk8GZxnjnhMCrwImiDXlae+Qjj/
+	 OB5VR8XtH9kp2k6MKN3VUTqXcvsyeA27Gy/dR8G2fM+i0+GohC7GXrymPt5kWgs9Y5
+	 BqnXqpH16Zpeyr9pmsoDyN+Zg8dQS4hrSDVDfuPc9ZWwIyYM9ExqhVWpt2D7Bek3TI
+	 oW+Vpfp7/8Rw7BIoq1m8LUFOtz4MBUMdSaG99AO7Yuh7BzNffsybiwnNlTZTAdnHir
+	 2akINDw+jTK2A==
+Date: Wed, 9 Jul 2025 14:32:10 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-iio@vger.kernel.org, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Matti Vaittinen <mazziesaccount@gmail.com>, Jonathan Cameron
+ <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH] iio: accel: kionix-kx022a: Apply approximate iwyu
+ principles to includes
+Message-ID: <20250709143210.633ad60a@jic23-huawei>
+In-Reply-To: <aGwlxyxRSm2WLXor@smile.fi.intel.com>
+References: <20250629183649.184479-1-jic23@kernel.org>
+	<aGwlxyxRSm2WLXor@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.49; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250709-icm42pmreg-v1-4-3d0e793c99b2@geanix.com>
-References: <20250709-icm42pmreg-v1-0-3d0e793c99b2@geanix.com>
-In-Reply-To: <20250709-icm42pmreg-v1-0-3d0e793c99b2@geanix.com>
-To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Sean Nyekjaer <sean@geanix.com>
-X-Mailer: b4 0.14.2
 
-Remove unnecessary pm_runtime_get_noresume() and pm_runtime_put()
-calls during probe. These are not required when the device is marked
-active via pm_runtime_set_active() before enabling pm_runtime with
-pm_runtime_enable().
+On Mon, 7 Jul 2025 22:53:43 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Also remove the redundant pm_runtime_put_sync() call from the cleanup
-path, since the core is not incrementing the usage count beforehand.
+> On Sun, Jun 29, 2025 at 07:36:49PM +0100, Jonathan Cameron wrote:
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > 
+> > Motivated by the W=1 warning about export.h that was introduced this cycle
+> > this is an attempt to apply an approximation of the principles of including
+> > whatever is used in the file directly.
+> > 
+> > Helped by the include-what-you-use tool.
+> > 
+> > Reasoning:
+> > - Drop linux/moduleparam.h as completely unused.
+> > - linux/array_size.h for ARRAY_SIZE()
+> > - linux/bitmap.h for for_each_set_bit
+> > - linux/errno.h for error codes.
+> > - linux/export.h for EXPORT_SYMBOL*()
+> > - linux/math64.h for do_div - alternative would be asm/div64.h
+> > - linux/minmax.h for min()
+> > - linux/sysfs.h for sysfs_emit()
+> > - linux/time64.h for USEC_PER_MSEC
+> > - linux/iio/buffer.h for iio_push_to_buffers_with_timestamp()
+> > - asm/byteorder.h for le16_to_cpu()  
+> 
+> Change LGTM,
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
 
-This simplifies the PM setup and avoids manipulating the usage counter
-unnecessarily.
+Applied.
 
-Fixes: 31c24c1e93c3 ("iio: imu: inv_icm42600: add core of new inv_icm42600 driver")
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
----
- drivers/iio/imu/inv_icm42600/inv_icm42600_core.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Thanks,
 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-index 55a29b1e2b11355598b0ede7af22857aed3ae134..1072bea11c73d09a9a0e6ea9d4a5c7a72248dca7 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-@@ -708,7 +708,6 @@ static void inv_icm42600_disable_pm(void *_data)
- {
- 	struct device *dev = _data;
- 
--	pm_runtime_put_sync(dev);
- 	pm_runtime_disable(dev);
- }
- 
-@@ -806,11 +805,10 @@ int inv_icm42600_core_probe(struct regmap *regmap, int chip,
- 	ret = pm_runtime_set_active(dev);
- 	if (ret)
- 		return ret;
--	pm_runtime_get_noresume(dev);
-+
- 	pm_runtime_enable(dev);
- 	pm_runtime_set_autosuspend_delay(dev, INV_ICM42600_SUSPEND_DELAY_MS);
- 	pm_runtime_use_autosuspend(dev);
--	pm_runtime_put(dev);
- 
- 	return devm_add_action_or_reset(dev, inv_icm42600_disable_pm, dev);
- }
-
--- 
-2.50.0
-
+Jonathan
