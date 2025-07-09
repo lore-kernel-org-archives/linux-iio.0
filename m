@@ -1,137 +1,88 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail-43170.protonmail.ch (mail-43170.protonmail.ch [185.70.43.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A76B2BD5BC;
-	Wed,  9 Jul 2025 11:52:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FDB52D97A6
+	for <linux-iio@vger.kernel.org>; Wed,  9 Jul 2025 12:35:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752061959; cv=none; b=HR6+3k1yDHZ5vgGX31EnSeJfuMb+yAY/65NLe0Xe3vBaz5e/7D0DjOOmkvFIWOysEY20h9B3vFhXlfXA1iW8cRwuch22DBkriELa30n6TyN3Bwiw3OYSQpiPEQTFkU2jCakyh/PM1ECyFhw9QZHHd5StdJ5rT9OUOyHAkvMe88c=
+	t=1752064532; cv=none; b=X9VNL8tT4THY+QLCvE5DpWwEq5aB+6Oj4fSROuer4wJVw4NvEHz51Nx7yKjZG84nhoBeNkP5HFJ17vXYrsgAYh5eOr4hINjDw/Nlizl2mLUnLQ9fUe+BrysYrjpRC8g3Ekxh0r/08H/jBpLd9Dm7381BLyjjw8K5wl0f+IKZCfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752061959; c=relaxed/simple;
-	bh=BL4mdT3PrGBtb3/SFQL2jD7FRK8O1qchsF7KKukY9XA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=r0juhkrdNJruGqJOhzhkQ5h0QdsKfYBfA+piqfRz1IFOFxPwXb0qdCFrX1n9AKdD2CYkMU1a0JzlZqfoqbzWGgKz51KX4nc81sH4FcIRylQA2CCZJCXAY6xUkth+64R6Prb2eLKlAHvSDIxhEfK4G3THRB+KjTC/e4nCN93cTUs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZvMd4y4R; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1752064532; c=relaxed/simple;
+	bh=WjBv+IqC825TXVG2xRcp0WQob+tWH9klHN01U9Jgx2c=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=LU2VhDXkq8eMMitWLlAV0qpFTzm7LajqeL5KIDJkdzJF1wvyJRMNdSUJEq1o4aOlYg2SCGa7VchRcVxN3YES3Rk0ABYHqhRF2XDm95OvXxvVEHaurLbxgBcG/DknDnwnU1y6r2L0Kx/TLp4O7KdCW843AC4SqxuwqChPThAZPBs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=iiyrDiIu; arc=none smtp.client-ip=185.70.43.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZvMd4y4R"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DA51C4CEEF;
-	Wed,  9 Jul 2025 11:52:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752061957;
-	bh=BL4mdT3PrGBtb3/SFQL2jD7FRK8O1qchsF7KKukY9XA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZvMd4y4RA/rH/vBz2NPE24B+63jpq3mXdRvGp9SqOHHXWwIfAg4hSDnkNt+OD6ZKq
-	 pCptueeS6OZeAkYaSoncsrNvJ8u0plrtK6kraivJUi5keG1qYYi/P/xx5bn/8eXvyR
-	 bgAQnt/NEdrcBNe00v1fxZOl+2HxbH5n+TZCNwJsnoaiTpOQfOISq63SRXLeKMHbBf
-	 /vVfgT1d1jJXYQdyNlQC/h5GtV9dYKqK2UcWJzRp9BDOpR/QokzyRzRDiPSc18bbIE
-	 R3OMtJbRFhCw1LqhPxL3Zk6wo9iAW4YEBIzOnXGqiXThDpUxRj79ndz30ijP5ExInM
-	 Rt85QuqDsa5Yw==
-Date: Wed, 9 Jul 2025 12:52:28 +0100
-From: Simon Horman <horms@kernel.org>
-To: Yassine Oudjana <y.oudjana@protonmail.com>
-Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nicolas Schier <nicolas.schier@linux.dev>,
-	Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-	Sean Nyekjaer <sean@geanix.com>,
-	Javier Carrasco <javier.carrasco.cruz@gmail.com>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Ramona Gradinariu <ramona.gradinariu@analog.com>,
-	"Yo-Jung (Leo) Lin" <0xff07@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	=?utf-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>,
-	Danila Tikhonov <danila@jiaxyga.com>,
-	Antoni Pokusinski <apokusinski01@gmail.com>,
-	Vasileios Amoiridis <vassilisamir@gmail.com>,
-	Petar Stoykov <pd.pstoykov@gmail.com>,
-	shuaijie wang <wangshuaijie@awinic.com>,
-	Yasin Lee <yasin.lee.x@gmail.com>,
-	"Borislav Petkov (AMD)" <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Tony Luck <tony.luck@intel.com>,
-	Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-	Ingo Molnar <mingo@kernel.org>,
-	Yassine Oudjana <yassine.oudjana@gmail.com>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-	linux-kbuild@vger.kernel.org
-Subject: Re: [PATCH 2/3] net: qrtr: Define macro to convert QMI version and
- instance to QRTR instance
-Message-ID: <20250709115228.GY452973@horms.kernel.org>
-References: <20250406140706.812425-1-y.oudjana@protonmail.com>
- <20250406140706.812425-3-y.oudjana@protonmail.com>
- <fb61323b-aabd-4661-a202-02da7da557ea@oss.qualcomm.com>
- <aMbAZigHiAN2xupOYs9DodY2mOdNtw_oVjOaweflgA8IoXRQ5ctoZ8GYJ8PNAKDgL4f9N_UD7tFmkePUy9BCE8v20Mae2x-eL1ZpyJEdLZY=@protonmail.com>
- <20250707170636.GR89747@horms.kernel.org>
- <X2KJB3xtnC-pWM7o5TBw6ln3ItpMwn7tdn5Z8gpZY3oW31isE8PLTX5GUbJ6HcZk_9s72jb6ImwGL-anIoto4dK1MINTxzdRKfbejp_nXcA=@protonmail.com>
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="iiyrDiIu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
+	s=protonmail; t=1752064522; x=1752323722;
+	bh=/KotKrvzSuZ1fCGQuYNoDiGuvp6Ejyo5IuM8cm1J9bY=;
+	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=iiyrDiIuCApiV4JDS6itxddo6T0/8ob/xUEmMt/f9eb8OZ/Qa90FsyFHlPZXjIcVo
+	 JAgCCJcGcIpFJIJu8KWuunkpWwPMn7miRj+9KyVZl6+jOa2nEhisk6OHHJuocqYqkr
+	 1Oq93mY/JV65scOYWPA12LoWIuv2iFnbkkhpUwueqaqHZQawn3nhUH7mHj1Pb0tNuE
+	 zJp/SQrJt95izW15GzqYNEQEa3XNTFNm9iGvQCfUG2J6c4o0VfZPUF5F9o9AENqsgj
+	 Ill8ZJg3ulPseMDz1fwQUE9fv3LgGEC0QaKJKpJBYs9pUb5ohNdDhqRn55f31v/tqM
+	 d4n7kVcEX9q4g==
+X-Pm-Submission-Id: 4bccrT0sZYz1DDrV
+From: Sean Nyekjaer <sean@geanix.com>
+Date: Wed, 09 Jul 2025 14:35:09 +0200
+Subject: [PATCH 1/6] iio: imu: inv_icm42600: Use
+ inv_icm42600_disable_vddio_reg()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <X2KJB3xtnC-pWM7o5TBw6ln3ItpMwn7tdn5Z8gpZY3oW31isE8PLTX5GUbJ6HcZk_9s72jb6ImwGL-anIoto4dK1MINTxzdRKfbejp_nXcA=@protonmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250709-icm42pmreg-v1-1-3d0e793c99b2@geanix.com>
+References: <20250709-icm42pmreg-v1-0-3d0e793c99b2@geanix.com>
+In-Reply-To: <20250709-icm42pmreg-v1-0-3d0e793c99b2@geanix.com>
+To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Sean Nyekjaer <sean@geanix.com>
+X-Mailer: b4 0.14.2
 
-On Wed, Jul 09, 2025 at 07:44:49AM +0000, Yassine Oudjana wrote:
-> 
-> 
-> 
-> 
-> 
-> Sent with Proton Mail secure email.
-> 
-> On Monday, July 7th, 2025 at 6:06 PM, Simon Horman <horms@kernel.org> wrote:
-> 
-> > On Sat, Jul 05, 2025 at 06:29:39PM +0000, Yassine Oudjana wrote:
-> > 
-> > > On Wednesday, April 9th, 2025 at 3:54 PM, Konrad Dybcio konrad.dybcio@oss.qualcomm.com wrote:
-> > > 
-> > > > On 4/6/25 4:07 PM, Yassine Oudjana wrote:
-> > 
-> > 
-> > ...
-> > 
-> > > > > diff --git a/include/linux/soc/qcom/qrtr.h b/include/linux/soc/qcom/qrtr.h
-> > > > > index 4d7f25c64c56..10c89a35cbb9 100644
-> > > > > --- a/include/linux/soc/qcom/qrtr.h
-> > > > > +++ b/include/linux/soc/qcom/qrtr.h
-> > > > > @@ -13,6 +13,8 @@ struct qrtr_device {
-> > > > > 
-> > > > > #define to_qrtr_device(d) container_of(d, struct qrtr_device, dev)
-> > > > > 
-> > > > > +#define QRTR_INSTANCE(qmi_version, qmi_instance) (qmi_version | qmi_instance << 8)
-> > > > 
-> > > > Please use FIELD_PREP + GENMASK to avoid potential overflows
-> > > > 
-> > > > Konrad
-> > > 
-> > > Since I'm using this macro in initializing QRTR match tables I am unable to use
-> > > FIELD_PREP. When I do, I get such errors:
-> > 
-> > 
-> > Does using FIELD_PREP_CONST, say in a QRTR_INSTANCE_CONST variant, help?
-> 
-> That works, but do we want to have two variants? Or in this case maybe
-> I should leave qmi_interface.c untouched and define the macro only for use
-> in match tables?
+Replace direct calls to regulator_disable() with the existing
+inv_icm42600_disable_vddio_reg() helper. This improves consistency
+and ensures any future changes to the disable logic are centralized.
 
-FWIIW, my order of preference would be:
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+---
+ drivers/iio/imu/inv_icm42600/inv_icm42600_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-1. Two variants, declared next to each other
-2. One variant (using FIELD_PREP_CONST)
-3. Leave qmi_interface.c untouched
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+index a4d42e7e21807f7954def431e9cf03dffaa5bd5e..69496d1c1ff73132f5e7bd076d18a62c293285a2 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+@@ -892,7 +892,7 @@ static int inv_icm42600_suspend(struct device *dev)
+ 
+ 	/* disable vddio regulator if chip is sleeping */
+ 	if (!wakeup)
+-		regulator_disable(st->vddio_supply);
++		inv_icm42600_disable_vddio_reg(st);
+ 
+ out_unlock:
+ 	mutex_unlock(&st->lock);
+@@ -973,7 +973,7 @@ static int inv_icm42600_runtime_suspend(struct device *dev)
+ 	if (ret)
+ 		goto error_unlock;
+ 
+-	regulator_disable(st->vddio_supply);
++	inv_icm42600_disable_vddio_reg(st);
+ 
+ error_unlock:
+ 	mutex_unlock(&st->lock);
 
-...
+-- 
+2.50.0
+
