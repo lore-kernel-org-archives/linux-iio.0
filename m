@@ -1,100 +1,91 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7C4429993F;
-	Thu, 10 Jul 2025 08:58:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06C722F3E;
+	Thu, 10 Jul 2025 09:03:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752137888; cv=none; b=MLv/KRlaQ8p5Xfs9UtwG209EXYdWOfCPkDIeAZU1PTim8tJORiowKIoNui9JSSP/7zyWRrCCyMnBZVKrdY9okCyf40tAwL8zhoC0XMMI0Zg1mDqLj+fYC8NOYC8M2f+jY6CnBFQflpntLcyJ/3Zcu0uKLHd0D2sBdh0CVEfHh7k=
+	t=1752138214; cv=none; b=XQ6SyLGkQ8Tm+i87yre4rzkpYqPjrLDoC/R3wEe2W/CuTJsQMLoVkIE/KZDPzuhPA/y4DXR3BdMetOJE2vYkQbcPUKjs/ZQuY43cAhHZgJuMA6X+78OsUkdPMfUPgQcmO8mrR13jXQC4NMQ0/t8A81u8DxNML/Voe9kI24H4fMQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752137888; c=relaxed/simple;
-	bh=ovY0wUbO/pvaHRTJ3gBlcrmaRXqj/rYP5snoHOc1kdk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=b6+w7k0sKsqFej6drZBSAS1e55I3l2YdKwB+1x/KGWSsLs+1IfOsRkrnqq81W254tK4/BFOCs1i45tHQbYYX7efpizmgBEh7NB/MOcKFIkcewc+P47+kWyBpkqc62vGXwq8xoEZRLs5Yi19L3hnPcawhfnDQccgsmOE+2BHcBJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ndmpyqvk; arc=none smtp.client-ip=209.85.218.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1752138214; c=relaxed/simple;
+	bh=j8Phv+9pRt6mRGClp582kQe91XOLKsvw5FUGQNmKXig=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=R6JJ6wrz7yNVKLDFmfDyFesWX1VJONO9vhFS0qPJs6pNImNt1kPqGD3KkPKyIBmcLvGOgwymnZLj+t5R9O9Bubn1wLO7YwNCSaNBBeNfG7sAXc5DmIht9v/gKBzf8d89SpKc7Qha0axjZzmSxqTce/UvZFJCYaqwX0nOp9Q+6uU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UaIf7yaE; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ndmpyqvk"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-ade76b8356cso132896766b.2;
-        Thu, 10 Jul 2025 01:58:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1752137885; x=1752742685; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ovY0wUbO/pvaHRTJ3gBlcrmaRXqj/rYP5snoHOc1kdk=;
-        b=ndmpyqvk9WuJqukKF3xa5SvB9wrpnj8d/yJt1LMTLO6PV6id0uShr9SxtluSt43eHt
-         O6+yjeSuiOkp6jrv0ZoYlH9Gcj/DyoYO9t1Kksd1LSu9CrAunSpU58CxLqYxFUmCuYAJ
-         H4+cEmG43rb4VKooGmvHAvzD83kqjgQXhwzTLuuZkSlerfhOjFhwXdy6uECPDl7l6J5N
-         U7p/3jJt1niHJd1kpqyIcWQUsJFRIXdu6JUJBIeMXGw1yKtHZ4Rz3mEhCVRU77pbd+qa
-         4JR2k0qZsuhIJ+PvRaw8P89wR6dLdxsBF+6QKvCPFrX+aDsfGUvbx4ahBS5aW111UhN8
-         CaWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752137885; x=1752742685;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ovY0wUbO/pvaHRTJ3gBlcrmaRXqj/rYP5snoHOc1kdk=;
-        b=scWyzRQQABROgFdzJcP6PYlJcuAIXKWikJi61RAIBcoCcmp8/q31szYhTPCTwAkq4V
-         UmiyyfOzJo0Cw5pZi98+i/J2EsCRw6tRxl9kTbeY1FH5qFyAfLMFGPPrYprpT1fAH2RH
-         07UfYLMwPDGXig2kyNfPzDd2IUC8m5M5CzN60fklJm5Q1Yuy3Hf+MDl6uMSt1LpSAWJG
-         cxmcMQ3c4+C5rFTWEJ8l+Ud+0MYrAzFWvSyV8q0sh6Q+NnImHcVmt6iRF+6V0j3A4mVc
-         BEHBi/vA6mt6lZ0nUdU5U+EidfV9I5J3ObD+WMYuha/wHSoTcSbCL33CJcNim/EjTJJu
-         EONQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU42flkMPx36FRBrBhlsyrQrGGLgsJ8ge0lZO5eCPEYm9YhZTRGUVYjDQKie4d3k6S57tLy+qwgJ6LvPOmC@vger.kernel.org, AJvYcCUwgntsYln3YZ0l5+DqpdvWfqChbmR7OEOSmWN2gRiCc2ltWYGUdSSvnSREkxHbVrQP6OrebOXRJgc0Ur8k@vger.kernel.org, AJvYcCVBR1KDM/LoJh6pWZKsvtOFEGE2/R7F7586JKznMyhm/VRIZipT1aOi+XBcQW7I+FwAc94391tI6a+2Y8T6@vger.kernel.org, AJvYcCWUCJ2DCwBZNaeIftEj3wzo6FuRhsu1xBYn9+Vu8qoYwdMLXELBtlFsZrcknMG0lqVcPFmTCigV15ql@vger.kernel.org, AJvYcCWXOqgenQjF4+fTPJZO3YRs/i2HeuRvL2JJIrL+bwQbeszw1skoWwnBSEQ9d9fkKp8mJzcvF4zr@vger.kernel.org
-X-Gm-Message-State: AOJu0YwCH3woDXeuC4Eud5JgVyu3sDxT5OrQw3HydnmRt5Bzlz5u+iXC
-	OL3qOtuVvA5P/Tl5B6nuEdVkgbaWIzON9QpKzUm+IKB/JtMxCiSEaYiQdtJ4GJmOGfMnCDBYmoJ
-	OYqtQmx4RnKGRA8KvYV++UbU91Hoe8YE=
-X-Gm-Gg: ASbGncugAyc1O2je3NXsoTpzOSILa0ibfZ9BYia63XjNrREV9Zq3IqCTs1/bf7ekfKy
-	DcdPc9EjYwKtHQuRtV3/xtcOHVR0eNCFYDF4QpuY6+4XIGQP+70vfvRlFweBUnh+8DYPhzZ8mMd
-	laBfRlV3XEWSpDCtPXkgsZfgbTm3iAwddTC92QBzXrIheHrg==
-X-Google-Smtp-Source: AGHT+IF4vkQQS93GlTFcXA3IUZu+Ie6aWTqS+ryt/tNRDWHUfU7VoFm+JQoC4Q9KZJPIsOeBw8GwkZX2MWvIWqAsv48=
-X-Received: by 2002:a17:907:3f26:b0:ae3:60e5:ece3 with SMTP id
- a640c23a62f3a-ae6e6e308aamr206701866b.6.1752137885114; Thu, 10 Jul 2025
- 01:58:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UaIf7yaE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1752138213; x=1783674213;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=j8Phv+9pRt6mRGClp582kQe91XOLKsvw5FUGQNmKXig=;
+  b=UaIf7yaESZvioQl6EDfOb8dF0wxMAs8rdhfZNtBiLW9rkYTG7B/GIPc2
+   z1++TdzxNNzPu17y2Wva33pmLCRlEoOlzWSaB5kJBPJr//P7h7Z1I4Jho
+   CAVUoZ4pcuF54br0URtAZCPAaHD7hNXsfUQbFlSzNbvy54ZQvWl7hMior
+   jgSeAIG5U7HKtMJV9KH8K3BuJjN4SD3CfhuCyqmIrMlrS4mPo5HBRj41N
+   uxe85y532oBnEJg9Z+EzaOLPHUOUgkXONOY6ZJFEazzYoH23V4ZdnuUDb
+   SV1xrau//ZGTG0VAujX5UVWcC5T8WKGwqSSsK/05wRpk+R1a7tF0H4bLH
+   g==;
+X-CSE-ConnectionGUID: MF7Bw6e4QYGibwCLT7X6aw==
+X-CSE-MsgGUID: S7BU2K3TSsONVozTMRWLJA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11489"; a="54541932"
+X-IronPort-AV: E=Sophos;i="6.16,300,1744095600"; 
+   d="scan'208";a="54541932"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2025 02:03:32 -0700
+X-CSE-ConnectionGUID: 34O0i2HBRF6xRFM2UmCbRw==
+X-CSE-MsgGUID: 1HQ9oNu/Q3iCKwLtTys6gQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,300,1744095600"; 
+   d="scan'208";a="156142383"
+Received: from smile.fi.intel.com ([10.237.72.52])
+  by orviesa007.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2025 02:03:30 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1uZnBe-0000000E9Os-3yNh;
+	Thu, 10 Jul 2025 12:03:26 +0300
+Date: Thu, 10 Jul 2025 12:03:26 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Sean Nyekjaer <sean@geanix.com>
+Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/6] iio: imu: inv_icm42600: Remove redundant error msg
+ on regulator_disable()
+Message-ID: <aG-B3uv6SsP1Ap0U@smile.fi.intel.com>
+References: <20250709-icm42pmreg-v1-0-3d0e793c99b2@geanix.com>
+ <20250709-icm42pmreg-v1-3-3d0e793c99b2@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250710-qcom-smgr-v2-0-f6e198b7aa8e@protonmail.com> <20250710-qcom-smgr-v2-4-f6e198b7aa8e@protonmail.com>
-In-Reply-To: <20250710-qcom-smgr-v2-4-f6e198b7aa8e@protonmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 10 Jul 2025 11:57:28 +0300
-X-Gm-Features: Ac12FXxFEAw7JJzM8ZextWSIZ2sUSr-CBvVZPV0WO2mg2RfGdJ-GJxGQGSEknhU
-Message-ID: <CAHp75Vf8NzYRMeM=+S4p9LGnOd4iXcdw93hBjd=Rn=LqBXgwgA@mail.gmail.com>
-Subject: Re: [PATCH v2 4/4] iio: Add Qualcomm Sensor Manager driver
-To: y.oudjana@protonmail.com
-Cc: Manivannan Sadhasivam <mani@kernel.org>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Simon Horman <horms@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
-	Konrad Dybcio <konradybcio@kernel.org>, Masahiro Yamada <masahiroy@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Luca Weiss <luca@lucaweiss.eu>, linux-arm-msm@vger.kernel.org, 
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250709-icm42pmreg-v1-3-3d0e793c99b2@geanix.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Jul 10, 2025 at 11:06=E2=80=AFAM Yassine Oudjana via B4 Relay
-<devnull+y.oudjana.protonmail.com@kernel.org> wrote:
->
-> Add a driver for sensors exposed by the Qualcomm Sensor Manager service,
-> which is provided by SLPI or ADSP on Qualcomm SoCs. Supported sensors
-> include accelerometers, gyroscopes, pressure sensors, proximity sensors
-> and magnetometers.
+On Wed, Jul 09, 2025 at 02:35:11PM +0200, Sean Nyekjaer wrote:
+> The regulator framework already emits an error message when
+> regulator_disable() fails, making the local dev_err() redundant.
+> Remove the duplicate message to avoid cluttering the kernel log
+> with the same error twice.
 
-First of all it's almost 2kLoCs, it's on the edge of unreviewable
-code. Please, try to make 3+ patches out of this one.
-Second, take your time and check what your code is using from the
-kernel internal libraries and APIs and follow IWYU principle when
-including headers.
+To me this sounds like a potential backporting material as it might full
+the logs (in case the module probed-removed zillion of time. Hence,
+I would put it to be the first patch in the series (yes, it will involve
+to fix something that you are removing in the following change, but still).
 
-
---=20
+-- 
 With Best Regards,
 Andy Shevchenko
+
+
