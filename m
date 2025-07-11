@@ -1,156 +1,267 @@
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC475139B
-	for <linux-iio@vger.kernel.org>; Fri, 11 Jul 2025 15:55:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1129227E054;
+	Fri, 11 Jul 2025 16:04:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752249320; cv=none; b=a406oyI4VbZVP7KbBwCxx85YAH4hDQOQwiE7QPu6IpZp5JK2fjrNmRQIRbOGlRYD+KVpADJB9uWnvUZmAvXnvPGe438Cv6AzgWdQRNv5FWktD2Y/ZZVqm9l4fv44MHHlFy8XQ5KD/eipKekXKpMLORJodM7PimAR0nGC5E7lays=
+	t=1752249882; cv=none; b=jkJcLExzn6/8UiXgomF0PJ3Lhx6OxSleNQFSFySobo7SDu/ovkG0RGjUDsSDl3cyENmw0o4svPDQSdyeYG6qaI7vx0hW8lHmfLZnA0auklH/xUnK8maQqVeH7razuafBEzGJgsRVC9pX1BEk1CpfxSaVSlHDEYmilufIMh6v/6g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752249320; c=relaxed/simple;
-	bh=p1Ot7fwFyp3rNeiGKP2Pf6ZoMkbKz4ivHLt6owO8qOA=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=e8McLRXIVf0FTAeiOkTVC5WKMDZmaUwqqKZoNs8Dn3KdfeVaz3lkg6xnA9YkZC8cnExovcCZAmqGqIrEOCkWayVgNAh3NwkTJE7HpG4rR+3XwikTcToBzLFdj2GGbeI5VREcG8CDEyHFpHpO8Xa1fMji95I07URAXFB6giynOQE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=YxBo7v3g; arc=none smtp.client-ip=209.85.210.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1752249882; c=relaxed/simple;
+	bh=rMPl7osvpnDKIQsHWmkHxPuALl8UmId+rqkHr1SXsII=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VsFd7+dME2DHTzONzMFeVRq55ylF33xgRy/W5z38N8Z3XqexfNXwLiZT+IT52FHBBefb5nJpAdERW3NH19bo6p7VXLcvk25q8FGCWqUO4xHEsJaaEReZ8Id+1Pl00h0zSA7Ebp68i8uj/dYGoSDcPHLFI/+kAjaiajMWy+GU3zE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=BIoo57Bs; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="YxBo7v3g"
-Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-73ce2761272so1276509a34.0
-        for <linux-iio@vger.kernel.org>; Fri, 11 Jul 2025 08:55:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1752249317; x=1752854117; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ALf1X7Rod+QmNvsPsp443TiwKUm1nvu6GsJBGeigeFI=;
-        b=YxBo7v3giUsnlBnEkHqEGJkxpEHyrUq8uV3w7TdZP3QCFWaubJSLMiZupk/SYLko9h
-         +K6P7OidnQKhmwjEkuiVv00VBge1Wif9C165lXaXO6ifZJuDgWvyLaDpowufiUyS9Sjy
-         wiKEKdhH5mLfFnRjUTekELvmyJmkxX8YK+bqj4/sW8avsrtjCPTqOCSAPDtS1YhS2K5C
-         8r8bE3aau3Lif4HZL6piC7E+m5VaFHJWJfmzrZuQq/Zq7Qhj4HeOW67qeyVFuihK41nh
-         NrfNuQdiWf3/fQv8twKeodT5V2hNJxbz2a077zv3TNRzp8wOpdscq99syEMrwme8GylN
-         I46A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752249317; x=1752854117;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ALf1X7Rod+QmNvsPsp443TiwKUm1nvu6GsJBGeigeFI=;
-        b=VrBt6m1XH5Ji1IibKUtszIZDJ6peheMFPU1SB1NBaec38vRKkGud65xbjpV/bIfnVF
-         Y6neypAO4sGau72IRRd/MswXSqpdAyDMajpCyEgdcpAWiVB3yGqOlDMGZYbnrBqwOn94
-         6CkLC6wfxqG9iStDH8TnbOpUr9zkPtc+htINgazUIn8ixtIs8cUGwNQ4ADVZWw+T/9D6
-         u+Rln/uKunc0mQmOqPcsJkWSTNuu5HvIM5mKEWh7PAoRBS+bUVRAsU7RH/gz/iMHq+qs
-         lAnCtAU+o9+gztQDFyEVdDZS63fSSK1w8HEEaI651eZgBEt3UuELYQznglXdzvgzXbJa
-         rPjQ==
-X-Gm-Message-State: AOJu0YxkMSpER4axts1bOge/b7cT1Ys13HeuWoRJmJ/OZqGnKW6YUBmH
-	sz1CDvSzxnMNiv7lvRkaO3C4PnOiRmfqaSKQILmTH2xli7teFUkzRzzVUlh2ZWgtpOE=
-X-Gm-Gg: ASbGnctqC4pJNfNXXHdNZBc1E3xeJCzG/I0ybmN8b4IctAh1oq+8RuW/qW43x6/LzUC
-	xNmO3NuevYbEpjhEEeKuEbIYvPbipn8HYJZFKrt/xxLVH+4UmwJUmBYWXk7mA5oYWd2lck7Mqce
-	/38QpSUpy7fyOuQvNusOSHeRlUHbKKMts3ilgXwKEzOPxqvxuS7D+FkvAB8xbXPlR91+K40cREV
-	IBTDo1Ct7tIjE5lZ62XY6u7h2OXxIbbEAJDZ9ams0paXOSyxpM8J2czFH9Pf/LL1NbavUjPUdxj
-	aZ88pTDiI0MLMtTVwzczrP/ulBqkkvOC5KvdzipCrY6WDNP2gp6Yur9YO1lv3n8bIIjej93XFSq
-	IM7RuKQdwhI9y+WTwv/VDgni0MU7n8mu8Z0POeAA=
-X-Google-Smtp-Source: AGHT+IHX/K76Zdq7pRcux0W/uzxRZwqWhKse0oq12O+uTQoErsfsBRX+nj7saE6UtNfnD2iOJDkNrw==
-X-Received: by 2002:a05:6808:15a5:b0:40b:1c78:f5f5 with SMTP id 5614622812f47-41567c4bd38mr1897734b6e.27.1752249316750;
-        Fri, 11 Jul 2025 08:55:16 -0700 (PDT)
-Received: from [127.0.1.1] ([2600:8803:e7e4:1d00:4601:15f9:b923:d487])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-613d9d820e8sm522402eaf.10.2025.07.11.08.55.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Jul 2025 08:55:16 -0700 (PDT)
-From: David Lechner <dlechner@baylibre.com>
-Date: Fri, 11 Jul 2025 10:55:07 -0500
-Subject: [PATCH] iio: proximity: sx_common: use stack allocated buffer for
- scan data
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="BIoo57Bs"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 56BAdTI2028522;
+	Fri, 11 Jul 2025 09:03:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=MxiLn
+	2Dq3GFG355z0/Nng/qsnOYXFufcv0jLL3WMs8w=; b=BIoo57BsScLoD7yrIblyM
+	AmKowQ+gkkQo3lh1FtDfN6pffX50OUITQryvPsN6ktiSMpfT+hwF4gUTD5YT0yH3
+	NRnOYPeo9ykUeX/j+O+kuK0KQ95T3SrBTB3eZVZ6BsSsC+10Wek3SgyS3fDOgpBf
+	VEz7+XfMj8aKsfhK4N7ELUppj6xV/nZW405YMPgIWLhCTlRlrt2Ss5tDClRtUUJR
+	5jEa174EA82R2d+WW8wvOwujx+cmJEcSTxvPZxOJbbTNpwns8vl6lhCw3ORmVZ58
+	+rOJAUTBVpiZ0yLB3UY4+o84b4NGbz8f7q8aBKy9WfvfvKfPDvqMqRsEAVbGtQiR
+	A==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 47t67qg6mh-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 11 Jul 2025 09:03:33 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 56BD3WT3026804
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 11 Jul 2025 09:03:32 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.10; Fri, 11 Jul
+ 2025 09:03:32 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.10 via Frontend
+ Transport; Fri, 11 Jul 2025 09:03:32 -0400
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.132])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 56BD3Jqs027484;
+	Fri, 11 Jul 2025 09:03:26 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH 2/3] dt-bindings: iio: adc: add ade9000
+Date: Fri, 11 Jul 2025 16:02:36 +0300
+Message-ID: <20250711130241.159143-3-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.49.0
+In-Reply-To: <20250711130241.159143-1-antoniu.miclaus@analog.com>
+References: <20250711130241.159143-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250711-iio-use-more-iio_declare_buffer_with_ts-5-v1-1-4209f54e010f@baylibre.com>
-X-B4-Tracking: v=1; b=H4sIANozcWgC/x3NQQrCMBBG4auUWTuQtJagVxEJNfljB7SRSVuF0
- rsbXX6b9zYqUEGhc7ORYpUieaqwh4bCOEx3sMRqak3bG2cti2ReCviZFT/4iPAYFP62pAT1b5l
- HPxfuOR3DyUbXmc5Fqr2XIsnn/7pc9/0Lf30rK3sAAAA=
-X-Change-ID: 20250711-iio-use-more-iio_declare_buffer_with_ts-5-f4c91d73037d
-To: Jonathan Cameron <jic23@kernel.org>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- David Lechner <dlechner@baylibre.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2345; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=p1Ot7fwFyp3rNeiGKP2Pf6ZoMkbKz4ivHLt6owO8qOA=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBocTPcQAlCrmKq9hNUJl4Kw1D57FHXb41y7wDMG
- 9e6SK3gwa6JATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaHEz3AAKCRDCzCAB/wGP
- wDkHB/0R8VoVxieBp9t+2WtlakC8LYp7TwVU2vpMN4VHE7qlhaPwavjM3pG7+GXQIxFLSJhVRDH
- OlUaS7ozUAoVDyXber96l+oXQUuBmMjpya2q7UTNVrPTX9mFHuhMtAjai7t2sUzt/2WiTbfJM9X
- i06AlLqqUC9Ka7dQq0h0nxA+P+c2zy0T1/nxliN3p0C/3svkGBUBcfbCvJuPQrxmO0rm1vDhkII
- ZJea/1lbreTdsrlTC2GRE7QH1mn4JlR0O/kQ41SvlkVezSIsVhkMq2SiSmuG3pc18MzaqXeOulH
- O1/lH32lhusjgG7aJ9VOx/RVvxXMGTQfK34JoQzqvCcl5uqH
-X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
- fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzExMDA5MiBTYWx0ZWRfX8m0xBmwZPuPk
+ SAhNZcj/uHxnAX7u5xLUiSX/ZhI+doDwuJLYvwSy5hfDIUca/TVf5fyxIWB8W1BmF+9rRCi6Nj1
+ 49TeMbOlOH+F88i446pZ1MnhRKRFeP4xVCroM8YcBSTwwgslF0xb08T0+qEVWtyNBYd9VpLTzI9
+ pq/3s8lASpy89Jcbf+KRDR1zFySEfzvDvMX7SBDGGI2rdbyN7AYIofbtEAQxWvTrBmInHKWADFa
+ BzhXkBQmMwwGEeVT7Cr8cnj97x84ViMQxu2CXRneBQL8SGeAz7tLL+ha561eSU0CK6PKp3FsS6E
+ XM5Sl3hzqQaGgccBJkqdf2o2jMX1uKcPpPktSCwDJs2rczVzrC0fyYk54Sqp8Bv4ryKmMB1LIz7
+ Mly7/YYVOOL6Ac0UIHWH8t595YweECb9/B103zVDcJGbzyS8HRjoipX/E3f3a3zENbfLdhV3
+X-Proofpoint-GUID: fxzAegytvHms1fUkbp5wsjaGm3WSFtcq
+X-Authority-Analysis: v=2.4 cv=eZc9f6EH c=1 sm=1 tr=0 ts=68710ba5 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=Wb1JkmetP80A:10 a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8
+ a=FvKjBdGZVvLRywz4negA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=sptkURWiP4Gy88Gu7hUp:22
+X-Proofpoint-ORIG-GUID: fxzAegytvHms1fUkbp5wsjaGm3WSFtcq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
+ definitions=2025-07-11_03,2025-07-09_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 spamscore=0 clxscore=1015 priorityscore=1501 impostorscore=0
+ lowpriorityscore=4 malwarescore=0 mlxlogscore=999 phishscore=0 mlxscore=0
+ adultscore=0 bulkscore=4 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
+ definitions=main-2507110092
 
-Use IIO_DECLARE_BUFFER_WITH_TS() to declare a stack allocated buffer
-in sx_common_trigger_handler(). Since the scan buffer isn't used outside
-of this function and doesn't need to be DMA-safe, it doesn't need to be
-in struct sx_common_data.
+Add devicetree bindings support for ade9000.
 
-Signed-off-by: David Lechner <dlechner@baylibre.com>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- drivers/iio/proximity/sx_common.c | 7 ++++---
- drivers/iio/proximity/sx_common.h | 6 ------
- 2 files changed, 4 insertions(+), 9 deletions(-)
+ .../bindings/iio/adc/adi,ade9000.yaml         | 157 ++++++++++++++++++
+ 1 file changed, 157 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
 
-diff --git a/drivers/iio/proximity/sx_common.c b/drivers/iio/proximity/sx_common.c
-index 59b35e40739b0d931dbac076ca5c83ba421ba766..fae035e8d2f5a40ed7379dd6e306f84878a9bef0 100644
---- a/drivers/iio/proximity/sx_common.c
-+++ b/drivers/iio/proximity/sx_common.c
-@@ -361,6 +361,7 @@ static irqreturn_t sx_common_irq_thread_handler(int irq, void *private)
- 
- static irqreturn_t sx_common_trigger_handler(int irq, void *private)
- {
-+	IIO_DECLARE_BUFFER_WITH_TS(__be16, buffer, SX_COMMON_MAX_NUM_CHANNELS);
- 	struct iio_poll_func *pf = private;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct sx_common_data *data = iio_priv(indio_dev);
-@@ -376,11 +377,11 @@ static irqreturn_t sx_common_trigger_handler(int irq, void *private)
- 		if (ret)
- 			goto out;
- 
--		data->buffer.channels[i++] = val;
-+		buffer[i++] = val;
- 	}
- 
--	iio_push_to_buffers_with_ts(indio_dev, &data->buffer,
--				    sizeof(data->buffer), pf->timestamp);
-+	iio_push_to_buffers_with_ts(indio_dev, buffer, sizeof(buffer),
-+				    pf->timestamp);
- 
- out:
- 	mutex_unlock(&data->mutex);
-diff --git a/drivers/iio/proximity/sx_common.h b/drivers/iio/proximity/sx_common.h
-index 259b5c695233b4e295ad8ae2b05fceeaa4a7ae61..97b264aa50b0c9811ce6b42be34eace03eae2627 100644
---- a/drivers/iio/proximity/sx_common.h
-+++ b/drivers/iio/proximity/sx_common.h
-@@ -122,12 +122,6 @@ struct sx_common_data {
- 	unsigned long chan_prox_stat;
- 	bool trigger_enabled;
- 
--	/* Ensure correct alignment of timestamp when present. */
--	struct {
--		__be16 channels[SX_COMMON_MAX_NUM_CHANNELS];
--		aligned_s64 ts;
--	} buffer;
--
- 	unsigned int suspend_ctrl;
- 	unsigned long chan_read;
- 	unsigned long chan_event;
-
----
-base-commit: f8f559752d573a051a984adda8d2d1464f92f954
-change-id: 20250711-iio-use-more-iio_declare_buffer_with_ts-5-f4c91d73037d
-
-Best regards,
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
+new file mode 100644
+index 000000000000..660dca4ea9b5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
+@@ -0,0 +1,157 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2025 Analog Devices Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/bindings/iio/adc/adi,ade9000.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices ADE9000 High Performance, Polyphase Energy Metering driver
++
++maintainers:
++  - Antoniu Miclaus <antoniu.miclaus@analog.com>
++
++description: |
++  The ADE9000 s a highly accurate, fully integrated, multiphase energy and power
++  quality monitoring device. Superior analog performance and a digital signal
++  processing (DSP) core enable accurate energy monitoring over a wide dynamic
++  range. An integrated high end reference ensures low drift over temperature
++  with a combined drift of less than ±25 ppm/°C maximum for the entire channel
++  including a programmable gain amplifier (PGA) and an analog-to- digital
++  converter (ADC).
++
++  https://www.analog.com/media/en/technical-documentation/data-sheets/ADE9000.pdf
++
++properties:
++  compatible:
++    enum:
++      - adi,ade9000
++
++  reg:
++    maxItems: 1
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  spi-max-frequency:
++    maximum: 20000000
++
++  interrupts:
++    maxItems: 2
++
++  reset-gpios:
++    description: |
++      Must be the device tree identifier of the RESET pin. As the line is
++      active low, it should be marked GPIO_ACTIVE_LOW.
++    maxItems: 1
++
++  interrupt-names:
++    items:
++      - const: irq0
++      - const: irq1
++
++  adi,wf-cap-en:
++    description: Enable fixed data rate for waveform buffer instead of resampled data
++    type: boolean
++
++  adi,wf-mode:
++    description: |
++      Waveform buffer filling and trigger mode.
++      0 - Stop when waveform buffer is full
++      1 - Continuous fill, stop only on enabled trigger events
++      2 - Continuous filling, center capture around enabled trigger events
++      3 - Streaming mode
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [0, 1, 2, 3]
++
++  adi,wf-src:
++    description: |
++      Waveform buffer data source selection.
++      0 - Sinc4 output, at 16 kSPS
++      1 - Reserved
++      2 - Sinc4 + IIR LPF output, at 4 kSPS
++      3 - Current and voltage channel waveform samples, processed by the DSP at 4 kSPS
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [0, 2, 3]
++
++  adi,wf-in-en:
++    description: Enable IN waveform samples readout from waveform buffer
++    type: boolean
++
++  adi,egy-time:
++    description: Energy accumulation time setting for energy registers
++    $ref: /schemas/types.yaml#/definitions/uint32
++
++required:
++  - compatible
++  - reg
++  - reset-gpios
++  - interrupts
++  - interrupt-names
++  - adi,wf-mode
++  - adi,wf-src
++
++additionalProperties: false
++
++patternProperties:
++  "^phase@[0-2]$":
++    type: object
++    description: |
++      Represents the external phases which are externally connected. Each phase
++      has a current, voltage and power component
++
++    properties:
++      reg:
++        description: |
++          The phase represented by a number
++          0 - Phase A
++          1 - Phase B
++          2 - Phase C
++        $ref: /schemas/types.yaml#/definitions/uint32
++        enum: [0, 1, 2]
++
++    required:
++      - reg
++
++    additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@0 {
++            compatible = "adi,ade9000";
++            reg = <0>;
++            spi-max-frequency = <7000000>;
++
++            #address-cells = <1>;
++            #size-cells = <0>;
++            reset-gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
++            interrupts = <2 IRQ_TYPE_EDGE_FALLING>, <3 IRQ_TYPE_EDGE_FALLING>;
++            interrupt-names = "irq0", "irq1";
++            interrupt-parent = <&gpio>;
++
++            adi,wf-cap-en;
++            adi,wf-mode = <3>;
++            adi,wf-src = <3>;
++            adi,wf-in-en;
++
++            phase@0 {
++                reg = <0>;
++            };
++            phase@1 {
++                reg = <1>;
++            };
++            phase@2 {
++                reg = <2>;
++            };
++        };
++    };
++...
 -- 
-David Lechner <dlechner@baylibre.com>
+2.49.0
 
